@@ -1,6 +1,16 @@
 import { useMemo, useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { DollarSign, CheckCircle2, AlertTriangle, TrendingUp, Clock, CalendarClock, ArrowUpRight, ArrowDownRight, ShieldAlert } from 'lucide-react';
+import {
+  DollarSign,
+  CheckCircle2,
+  AlertTriangle,
+  TrendingUp,
+  Clock,
+  CalendarClock,
+  ArrowUpRight,
+  ArrowDownRight,
+  ShieldAlert,
+} from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { formatCurrency } from '@/lib/formatters';
 import { cn } from '@/lib/utils';
@@ -19,7 +29,10 @@ interface ContasReceberKPIsProps {
   onKpiClick?: (filter: string) => void;
 }
 
-function calcVariation(current: number, previous: number): { text: string; positive: boolean } | null {
+function calcVariation(
+  current: number,
+  previous: number | undefined
+): { text: string; positive: boolean } | null {
   if (!previous || previous === 0) return null;
   const pct = ((current - previous) / previous) * 100;
   return { text: `${pct >= 0 ? '+' : ''}${pct.toFixed(1)}%`, positive: pct >= 0 };
@@ -39,9 +52,18 @@ export function ContasReceberKPIs({
 }: ContasReceberKPIsProps) {
   // A variação só é exibida quando há dados reais do período anterior — não
   // sintetizamos um comparativo fictício para não induzir o usuário a erro.
-  const varReceber = useMemo(() => calcVariation(totalReceber, totalReceberAnterior), [totalReceber, totalReceberAnterior]);
-  const varRecebido = useMemo(() => calcVariation(totalRecebidoMes, totalRecebidoMesAnterior), [totalRecebidoMes, totalRecebidoMesAnterior]);
-  const varVencido = useMemo(() => calcVariation(totalVencido, totalVencidoAnterior), [totalVencido, totalVencidoAnterior]);
+  const varReceber = useMemo(
+    () => calcVariation(totalReceber, totalReceberAnterior),
+    [totalReceber, totalReceberAnterior]
+  );
+  const varRecebido = useMemo(
+    () => calcVariation(totalRecebidoMes, totalRecebidoMesAnterior),
+    [totalRecebidoMes, totalRecebidoMesAnterior]
+  );
+  const varVencido = useMemo(
+    () => calcVariation(totalVencido, totalVencidoAnterior),
+    [totalVencido, totalVencidoAnterior]
+  );
 
   // Alert Grouping & Severity System
   const [lastNotificationTime, setLastNotificationTime] = useState(0);
@@ -50,13 +72,13 @@ export function ContasReceberKPIs({
   useEffect(() => {
     const now = Date.now();
     if (taxaInadimplencia > 15 && now - lastNotificationTime > COOLDOWN) {
-      toast.error("RISCO CRÍTICO DETECTADO", {
+      toast.error('RISCO CRÍTICO DETECTADO', {
         description: `Taxa de inadimplência em nível crítico: ${taxaInadimplencia.toFixed(1)}%. Ações de cobrança imediata recomendadas.`,
         duration: 10000,
       });
       setLastNotificationTime(now);
     } else if (venceHoje > 5 && now - lastNotificationTime > COOLDOWN) {
-      toast.warning("ALERTA DE FLUXO", {
+      toast.warning('ALERTA DE FLUXO', {
         description: `${venceHoje} títulos vencem hoje. Verifique a liquidez.`,
         duration: 5000,
       });
@@ -66,17 +88,32 @@ export function ContasReceberKPIs({
 
   const kpis = [
     {
-      label: 'Total a Receber', value: formatCurrency(totalReceber), icon: DollarSign,
-      iconBg: 'bg-primary/10', iconColor: 'text-primary', filter: 'all', variation: varReceber,
+      label: 'Total a Receber',
+      value: formatCurrency(totalReceber),
+      icon: DollarSign,
+      iconBg: 'bg-primary/10',
+      iconColor: 'text-primary',
+      filter: 'all',
+      variation: varReceber,
     },
     {
-      label: 'Recebido no Mês', value: formatCurrency(totalRecebidoMes), icon: CheckCircle2,
-      iconBg: 'bg-success/10', iconColor: 'text-success', filter: 'pago', variation: varRecebido,
+      label: 'Recebido no Mês',
+      value: formatCurrency(totalRecebidoMes),
+      icon: CheckCircle2,
+      iconBg: 'bg-success/10',
+      iconColor: 'text-success',
+      filter: 'pago',
+      variation: varRecebido,
     },
     {
-      label: 'Vencido', value: formatCurrency(totalVencido), icon: AlertTriangle,
-      iconBg: 'bg-destructive/10', iconColor: 'text-destructive', valueColor: 'text-destructive',
-      filter: 'vencido', variation: varVencido,
+      label: 'Vencido',
+      value: formatCurrency(totalVencido),
+      icon: AlertTriangle,
+      iconBg: 'bg-destructive/10',
+      iconColor: 'text-destructive',
+      valueColor: 'text-destructive',
+      filter: 'vencido',
+      variation: varVencido,
     },
   ];
 
@@ -95,41 +132,59 @@ export function ContasReceberKPIs({
             >
               <Card
                 className={cn(
-                  "border-none bg-card/[0.03] backdrop-blur-3xl shadow-[0_24px_48px_-12px_rgba(0,0,0,0.5)] rounded-[2rem] overflow-hidden ring-1 ring-white/10 group transition-all duration-700",
-                  onKpiClick && "cursor-pointer hover:ring-primary/40 hover:shadow-[0_32px_64px_-16px_rgba(0,0,0,0.6)]"
+                  'border-none bg-card/[0.03] backdrop-blur-3xl shadow-[0_24px_48px_-12px_rgba(0,0,0,0.5)] rounded-[2rem] overflow-hidden ring-1 ring-white/10 group transition-all duration-700',
+                  onKpiClick &&
+                    'cursor-pointer hover:ring-primary/40 hover:shadow-[0_32px_64px_-16px_rgba(0,0,0,0.6)]'
                 )}
                 onClick={() => onKpiClick?.(kpi.filter)}
               >
                 <CardContent className="p-6 relative">
                   <div className="absolute inset-0 bg-gradient-to-br from-white/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
-                  
+
                   <div className="relative z-10 flex flex-col justify-between h-full gap-4">
                     <div className="flex items-start justify-between gap-4">
                       <div className="space-y-1">
-                        <p className="text-[10px] font-black uppercase tracking-[0.3em] text-foreground/30">{kpi.label}</p>
-                        <p className={cn("text-3xl sm:text-4xl font-black font-display tracking-tighter tabular-nums drop-shadow-2xl", kpi.valueColor)}>
+                        <p className="text-[10px] font-black uppercase tracking-[0.3em] text-foreground/30">
+                          {kpi.label}
+                        </p>
+                        <p
+                          className={cn(
+                            'text-3xl sm:text-4xl font-black font-display tracking-tighter tabular-nums drop-shadow-2xl',
+                            kpi.valueColor
+                          )}
+                        >
                           {kpi.value}
                         </p>
                       </div>
-                      <div className={cn(
-                        "h-12 w-12 rounded-2xl flex items-center justify-center transition-all duration-500 shadow-lg group-hover:scale-110 group-hover:rotate-6",
-                        kpi.iconBg, kpi.iconColor
-                      )}>
+                      <div
+                        className={cn(
+                          'h-12 w-12 rounded-2xl flex items-center justify-center transition-all duration-500 shadow-lg group-hover:scale-110 group-hover:rotate-6',
+                          kpi.iconBg,
+                          kpi.iconColor
+                        )}
+                      >
                         <Icon className="h-6 w-6" />
                       </div>
                     </div>
 
                     {kpi.variation && (
-                      <div className={cn(
-                        "inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-black uppercase tracking-tight w-fit transition-all duration-500",
-                        kpi.label === 'Vencido'
-                          ? (kpi.variation.positive ? 'bg-destructive/10 text-destructive' : 'bg-success/10 text-success')
-                          : (kpi.variation.positive ? 'bg-success/10 text-success' : 'bg-destructive/10 text-destructive')
-                      )}>
-                        {kpi.variation.positive
-                          ? <ArrowUpRight className="h-3 w-3" />
-                          : <ArrowDownRight className="h-3 w-3" />
-                        }
+                      <div
+                        className={cn(
+                          'inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-black uppercase tracking-tight w-fit transition-all duration-500',
+                          kpi.label === 'Vencido'
+                            ? kpi.variation.positive
+                              ? 'bg-destructive/10 text-destructive'
+                              : 'bg-success/10 text-success'
+                            : kpi.variation.positive
+                              ? 'bg-success/10 text-success'
+                              : 'bg-destructive/10 text-destructive'
+                        )}
+                      >
+                        {kpi.variation.positive ? (
+                          <ArrowUpRight className="h-3 w-3" />
+                        ) : (
+                          <ArrowDownRight className="h-3 w-3" />
+                        )}
                         <span>{kpi.variation.text}</span>
                         <span className="opacity-40">vs mês anterior</span>
                       </div>
@@ -147,12 +202,14 @@ export function ContasReceberKPIs({
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.15, type: 'spring', stiffness: 300, damping: 24 }}
         >
-          <Card className={cn(
-            "border-none bg-card/[0.03] backdrop-blur-3xl shadow-[0_24px_48px_-12px_rgba(0,0,0,0.5)] rounded-[2rem] overflow-hidden ring-1 ring-white/10 group transition-all duration-700 hover:ring-primary/40",
-            taxaInadimplencia > 10 ? "relative" : ""
-          )}>
+          <Card
+            className={cn(
+              'border-none bg-card/[0.03] backdrop-blur-3xl shadow-[0_24px_48px_-12px_rgba(0,0,0,0.5)] rounded-[2rem] overflow-hidden ring-1 ring-white/10 group transition-all duration-700 hover:ring-primary/40',
+              taxaInadimplencia > 10 ? 'relative' : ''
+            )}
+          >
             {taxaInadimplencia > 10 && (
-              <motion.div 
+              <motion.div
                 className="absolute inset-0 bg-destructive/5 pointer-events-none"
                 animate={{ opacity: [0.1, 0.2, 0.1] }}
                 transition={{ duration: 2, repeat: Infinity }}
@@ -163,27 +220,45 @@ export function ContasReceberKPIs({
                 <div className="flex items-start justify-between gap-4">
                   <div className="space-y-1">
                     <div className="flex items-center gap-2">
-                      <p className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground/60">Inadimplência</p>
+                      <p className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground/60">
+                        Inadimplência
+                      </p>
                       {taxaInadimplencia > 10 && (
-                        <motion.div 
+                        <motion.div
                           animate={{ scale: [1, 1.2, 1], opacity: [0.5, 1, 0.5] }}
                           transition={{ duration: 1.5, repeat: Infinity }}
                           className="h-2 w-2 rounded-full bg-destructive shadow-[0_0_8px_rgba(239,68,68,0.8)]"
                         />
                       )}
                     </div>
-                    <p className={cn(
-                      "text-2xl sm:text-3xl font-black font-display tracking-tighter tabular-nums",
-                      taxaInadimplencia > 15 ? 'text-destructive animate-pulse' : taxaInadimplencia > 10 ? 'text-destructive' : taxaInadimplencia > 5 ? 'text-warning' : 'text-success'
-                    )}>
+                    <p
+                      className={cn(
+                        'text-2xl sm:text-3xl font-black font-display tracking-tighter tabular-nums',
+                        taxaInadimplencia > 15
+                          ? 'text-destructive animate-pulse'
+                          : taxaInadimplencia > 10
+                            ? 'text-destructive'
+                            : taxaInadimplencia > 5
+                              ? 'text-warning'
+                              : 'text-success'
+                      )}
+                    >
                       {taxaInadimplencia.toFixed(1)}%
                     </p>
                   </div>
-                  <div className={cn(
-                    "h-12 w-12 rounded-2xl flex items-center justify-center transition-all duration-500 shadow-lg group-hover:scale-110",
-                    taxaInadimplencia > 10 ? "bg-destructive/10 text-destructive shadow-[0_0_15px_rgba(239,68,68,0.2)]" : "bg-success/10 text-success"
-                  )}>
-                    {taxaInadimplencia > 15 ? <ShieldAlert className="h-6 w-6" /> : <TrendingUp className="h-6 w-6" />}
+                  <div
+                    className={cn(
+                      'h-12 w-12 rounded-2xl flex items-center justify-center transition-all duration-500 shadow-lg group-hover:scale-110',
+                      taxaInadimplencia > 10
+                        ? 'bg-destructive/10 text-destructive shadow-[0_0_15px_rgba(239,68,68,0.2)]'
+                        : 'bg-success/10 text-success'
+                    )}
+                  >
+                    {taxaInadimplencia > 15 ? (
+                      <ShieldAlert className="h-6 w-6" />
+                    ) : (
+                      <TrendingUp className="h-6 w-6" />
+                    )}
                   </div>
                 </div>
                 <div className="space-y-2">
@@ -198,14 +273,20 @@ export function ContasReceberKPIs({
                     <motion.div
                       initial={{ width: 0 }}
                       animate={{ width: `${taxaInadimplencia}%` }}
-                      transition={{ duration: 1.5, ease: "circOut" }}
+                      transition={{ duration: 1.5, ease: 'circOut' }}
                       className={cn(
-                        "h-full rounded-full shadow-[0_0_10px_rgba(var(--primary),0.5)]",
-                        taxaInadimplencia > 10 ? "bg-destructive" : taxaInadimplencia > 5 ? "bg-warning" : "bg-success"
+                        'h-full rounded-full shadow-[0_0_10px_rgba(var(--primary),0.5)]',
+                        taxaInadimplencia > 10
+                          ? 'bg-destructive'
+                          : taxaInadimplencia > 5
+                            ? 'bg-warning'
+                            : 'bg-success'
                       )}
                     />
                   </div>
-                  <span className="text-[9px] font-bold text-muted-foreground/40 uppercase tracking-widest">Taxa de inadimplência global</span>
+                  <span className="text-[9px] font-bold text-muted-foreground/40 uppercase tracking-widest">
+                    Taxa de inadimplência global
+                  </span>
                 </div>
               </div>
             </CardContent>
@@ -224,28 +305,34 @@ export function ContasReceberKPIs({
             <motion.div whileHover={{ scale: 1.01 }} whileTap={{ scale: 0.99 }}>
               <Card
                 className={cn(
-                  "border-none bg-warning/10 backdrop-blur-xl shadow-lg rounded-2xl overflow-hidden ring-1 ring-warning/20 group transition-all",
-                  onKpiClick && "cursor-pointer hover:ring-warning/40"
+                  'border-none bg-warning/10 backdrop-blur-xl shadow-lg rounded-2xl overflow-hidden ring-1 ring-warning/20 group transition-all',
+                  onKpiClick && 'cursor-pointer hover:ring-warning/40'
                 )}
                 onClick={() => onKpiClick?.('vence_hoje')}
               >
                 <CardContent className="p-4 flex items-center justify-between">
                   <div className="flex items-center gap-4">
-                    <div className={cn(
-                      "h-12 w-12 rounded-xl flex items-center justify-center shadow-inner relative",
-                      venceHoje > 5 ? "bg-warning/30" : "bg-warning/20"
-                    )}>
+                    <div
+                      className={cn(
+                        'h-12 w-12 rounded-xl flex items-center justify-center shadow-inner relative',
+                        venceHoje > 5 ? 'bg-warning/30' : 'bg-warning/20'
+                      )}
+                    >
                       {venceHoje > 5 && (
-                        <motion.div 
+                        <motion.div
                           className="absolute inset-0 rounded-xl bg-warning/40"
                           animate={{ scale: [1, 1.4], opacity: [0.5, 0] }}
                           transition={{ duration: 1, repeat: Infinity }}
                         />
                       )}
-                      <Clock className={cn("h-6 w-6 text-warning", venceHoje > 5 && "animate-bounce")} />
+                      <Clock
+                        className={cn('h-6 w-6 text-warning', venceHoje > 5 && 'animate-bounce')}
+                      />
                     </div>
                     <div>
-                      <p className="text-[10px] font-black uppercase tracking-[0.2em] text-warning/70">Vence Hoje</p>
+                      <p className="text-[10px] font-black uppercase tracking-[0.2em] text-warning/70">
+                        Vence Hoje
+                      </p>
                       <p className="text-xl font-black tabular-nums text-foreground tracking-tight">
                         {venceHoje} {venceHoje === 1 ? 'título' : 'títulos'}
                       </p>
@@ -260,8 +347,8 @@ export function ContasReceberKPIs({
             <motion.div whileHover={{ scale: 1.01 }} whileTap={{ scale: 0.99 }}>
               <Card
                 className={cn(
-                  "border-none bg-primary/10 backdrop-blur-xl shadow-lg rounded-2xl overflow-hidden ring-1 ring-primary/20 group transition-all",
-                  onKpiClick && "cursor-pointer hover:ring-primary/40"
+                  'border-none bg-primary/10 backdrop-blur-xl shadow-lg rounded-2xl overflow-hidden ring-1 ring-primary/20 group transition-all',
+                  onKpiClick && 'cursor-pointer hover:ring-primary/40'
                 )}
                 onClick={() => onKpiClick?.('vence_semana')}
               >
@@ -271,7 +358,9 @@ export function ContasReceberKPIs({
                       <CalendarClock className="h-6 w-6 text-primary" />
                     </div>
                     <div>
-                      <p className="text-[10px] font-black uppercase tracking-[0.2em] text-primary/70">Vence esta Semana</p>
+                      <p className="text-[10px] font-black uppercase tracking-[0.2em] text-primary/70">
+                        Vence esta Semana
+                      </p>
                       <p className="text-xl font-black tabular-nums text-foreground tracking-tight">
                         {venceSemana} {venceSemana === 1 ? 'título' : 'títulos'}
                       </p>

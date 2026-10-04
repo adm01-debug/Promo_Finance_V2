@@ -1,41 +1,53 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
-import {toISOLocal } from '@/lib/formatters';
-import { ALIQUOTAS_TRANSICAO, CONFIGURACOES_IS, REGIMES_ESPECIAIS } from '@/types/reforma-tributaria';
+import { toISOLocal } from '@/lib/formatters';
+import {
+  ALIQUOTAS_TRANSICAO,
+  CONFIGURACOES_IS,
+  REGIMES_ESPECIAIS,
+} from '@/types/reforma-tributaria';
 
 export interface OperacaoTributavel {
   id: string;
   empresa_id: string;
-  tipo_operacao: 'venda' | 'compra' | 'servico_prestado' | 'servico_tomado' | 'importacao' | 'exportacao' | 'devolucao_venda' | 'devolucao_compra';
-  
+  tipo_operacao:
+    | 'venda'
+    | 'compra'
+    | 'servico_prestado'
+    | 'servico_tomado'
+    | 'importacao'
+    | 'exportacao'
+    | 'devolucao_venda'
+    | 'devolucao_compra';
+
   // Documento
   documento_tipo: string;
   documento_numero?: string;
   documento_serie?: string;
   documento_chave?: string;
   nota_fiscal_id?: string;
-  
+
   // Partes
   cliente_id?: string;
   fornecedor_id?: string;
   cnpj_cpf_contraparte?: string;
   nome_contraparte?: string;
-  
+
   // Localização
   uf_origem?: string;
   uf_destino?: string;
-  
+
   // Classificação
   cfop?: string;
   ncm?: string;
-  
+
   // Valores
   valor_operacao: number;
   valor_desconto: number;
   valor_frete: number;
   base_calculo: number;
-  
+
   // CBS/IBS/IS
   cbs_aliquota: number;
   cbs_valor: number;
@@ -46,7 +58,7 @@ export interface OperacaoTributavel {
   is_categoria?: string;
   is_aliquota: number;
   is_valor: number;
-  
+
   // Tributos residuais
   icms_aliquota: number;
   icms_valor: number;
@@ -56,26 +68,26 @@ export interface OperacaoTributavel {
   pis_valor: number;
   cofins_aliquota: number;
   cofins_valor: number;
-  
+
   // Regime especial
   regime_especial?: string;
   reducao_aliquota: number;
   isento: boolean;
   motivo_isencao?: string;
-  
+
   // Split Payment
   split_payment: boolean;
   split_payment_valor: number;
-  
+
   // Período
   data_operacao: string;
   competencia: string;
-  
+
   // Controle
   apuracao_id?: string;
   status: 'pendente' | 'processado' | 'erro' | 'cancelado';
   erro_mensagem?: string;
-  
+
   created_at: string;
   updated_at: string;
 }
@@ -107,7 +119,7 @@ export interface CreateOperacaoInput {
 
 // Função para obter alíquotas do ano
 function obterAliquotasAno(ano: number) {
-  const config = ALIQUOTAS_TRANSICAO.find(a => a.ano === ano);
+  const config = ALIQUOTAS_TRANSICAO.find((a) => a.ano === ano);
   if (!config) {
     // Após 2033, usar alíquotas finais
     return { cbs: 0.088, ibs: 0.172, icms: 0, iss: 0, pis: 0, cofins: 0 };
@@ -125,14 +137,14 @@ function obterAliquotasAno(ano: number) {
 // Função para obter alíquota IS
 function obterAliquotaIS(categoria?: string) {
   if (!categoria) return 0;
-  const config = CONFIGURACOES_IS.find(c => c.categoria === categoria);
+  const config = CONFIGURACOES_IS.find((c) => c.categoria === categoria);
   return config?.aliquotaMaxima || 0;
 }
 
 // Função para obter redução de regime especial
 function obterReducaoRegime(regime?: string) {
   if (!regime) return { cbs: 0, ibs: 0 };
-  const config = REGIMES_ESPECIAIS.find(r => r.regime === regime);
+  const config = REGIMES_ESPECIAIS.find((r) => r.regime === regime);
   return {
     cbs: (config?.reducaoAliquotaCBS || 0) / 100,
     ibs: (config?.reducaoAliquotaIBS || 0) / 100,
@@ -143,7 +155,11 @@ export function useOperacoesTributaveis(empresaId?: string) {
   const queryClient = useQueryClient();
 
   // Buscar operações
-  const { data: operacoes, isLoading, error } = useQuery({
+  const {
+    data: operacoes,
+    isLoading,
+    error,
+  } = useQuery({
     queryKey: ['operacoes_tributaveis', empresaId],
     queryFn: async () => {
       let query = supabase
@@ -151,11 +167,11 @@ export function useOperacoesTributaveis(empresaId?: string) {
         .select('*')
         .order('data_operacao', { ascending: false })
         .limit(500);
-      
+
       if (empresaId) {
         query = query.eq('empresa_id', empresaId);
       }
-      
+
       const { data, error } = await query;
       if (error) throw error;
       return data as OperacaoTributavel[];
@@ -168,35 +184,44 @@ export function useOperacoesTributaveis(empresaId?: string) {
       const ano = new Date(input.data_operacao).getFullYear();
       const aliquotas = obterAliquotasAno(ano);
       const reducao = obterReducaoRegime(input.regime_especial);
-      
+
       // Calcular base de cálculo
       const baseCalculo = input.valor_operacao - (input.valor_desconto || 0);
-      
+
       // Verificar isenção
       const isento = input.isento || input.tipo_operacao === 'exportacao';
-      
+
       // Calcular tributos se não isento
-      let cbs_aliquota = 0, cbs_valor = 0, cbs_credito = 0;
-      let ibs_aliquota = 0, ibs_valor = 0, ibs_credito = 0;
-      let is_aliquota = 0, is_valor = 0;
-      let icms_aliquota = 0, icms_valor = 0;
-      let iss_aliquota = 0, iss_valor = 0;
-      let pis_aliquota = 0, pis_valor = 0;
-      let cofins_aliquota = 0, cofins_valor = 0;
-      
+      let cbs_aliquota = 0,
+        cbs_valor = 0,
+        cbs_credito = 0;
+      let ibs_aliquota = 0,
+        ibs_valor = 0,
+        ibs_credito = 0;
+      let is_aliquota = 0,
+        is_valor = 0;
+      let icms_aliquota = 0,
+        icms_valor = 0;
+      let iss_aliquota = 0,
+        iss_valor = 0;
+      let pis_aliquota = 0,
+        pis_valor = 0;
+      let cofins_aliquota = 0,
+        cofins_valor = 0;
+
       if (!isento) {
         // CBS
         cbs_aliquota = aliquotas.cbs * (1 - reducao.cbs);
         cbs_valor = baseCalculo * cbs_aliquota;
-        
+
         // IBS
         ibs_aliquota = aliquotas.ibs * (1 - reducao.ibs);
         ibs_valor = baseCalculo * ibs_aliquota;
-        
+
         // IS (Imposto Seletivo)
         is_aliquota = obterAliquotaIS(input.is_categoria);
         is_valor = baseCalculo * is_aliquota;
-        
+
         // Tributos residuais
         icms_aliquota = aliquotas.icms;
         icms_valor = baseCalculo * icms_aliquota;
@@ -206,20 +231,21 @@ export function useOperacoesTributaveis(empresaId?: string) {
         pis_valor = baseCalculo * pis_aliquota;
         cofins_aliquota = aliquotas.cofins;
         cofins_valor = baseCalculo * cofins_aliquota;
-        
+
         // Se for compra/serviço tomado, calcular créditos
         if (['compra', 'servico_tomado'].includes(input.tipo_operacao)) {
           cbs_credito = cbs_valor;
           ibs_credito = ibs_valor;
         }
       }
-      
+
       // Split payment (vendas)
-      const split_payment = ['venda', 'servico_prestado'].includes(input.tipo_operacao) && ano >= 2026;
+      const split_payment =
+        ['venda', 'servico_prestado'].includes(input.tipo_operacao) && ano >= 2026;
       const split_payment_valor = split_payment ? cbs_valor + ibs_valor + is_valor : 0;
-      
+
       const competencia = input.data_operacao.slice(0, 7) + '-01';
-      
+
       const { data, error } = await supabase
         .from('operacoes_tributaveis')
         .insert({
@@ -227,13 +253,22 @@ export function useOperacoesTributaveis(empresaId?: string) {
           valor_desconto: input.valor_desconto || 0,
           valor_frete: input.valor_frete || 0,
           base_calculo: baseCalculo,
-          cbs_aliquota, cbs_valor, cbs_credito,
-          ibs_aliquota, ibs_valor, ibs_credito,
-          is_aliquota, is_valor,
-          icms_aliquota, icms_valor,
-          iss_aliquota, iss_valor,
-          pis_aliquota, pis_valor,
-          cofins_aliquota, cofins_valor,
+          cbs_aliquota,
+          cbs_valor,
+          cbs_credito,
+          ibs_aliquota,
+          ibs_valor,
+          ibs_credito,
+          is_aliquota,
+          is_valor,
+          icms_aliquota,
+          icms_valor,
+          iss_aliquota,
+          iss_valor,
+          pis_aliquota,
+          pis_valor,
+          cofins_aliquota,
+          cofins_valor,
           reducao_aliquota: Math.max(reducao.cbs, reducao.ibs),
           isento,
           split_payment,
@@ -243,7 +278,7 @@ export function useOperacoesTributaveis(empresaId?: string) {
         })
         .select()
         .single();
-      
+
       if (error) throw error;
       return data;
     },
@@ -258,10 +293,14 @@ export function useOperacoesTributaveis(empresaId?: string) {
 
   // Importar operações de NF-e
   const importarDeNFe = useMutation({
-    mutationFn: async ({ notaFiscalId, empresaId, tipoOperacao }: { 
-      notaFiscalId: string; 
-      empresaId: string; 
-      tipoOperacao: 'venda' | 'compra' 
+    mutationFn: async ({
+      notaFiscalId,
+      empresaId,
+      tipoOperacao,
+    }: {
+      notaFiscalId: string;
+      empresaId: string;
+      tipoOperacao: 'venda' | 'compra';
     }) => {
       // Buscar nota fiscal
       const { data: nf, error: nfError } = await supabase
@@ -269,25 +308,26 @@ export function useOperacoesTributaveis(empresaId?: string) {
         .select('*')
         .eq('id', notaFiscalId)
         .single();
-      
+
       if (nfError) throw nfError;
-      
+      if (!nf.data_emissao) throw new Error('NF-e sem data de emissão');
+
       // Criar operação
       const input: CreateOperacaoInput = {
         empresa_id: empresaId,
         tipo_operacao: tipoOperacao,
         documento_tipo: 'nfe',
-        documento_numero: nf.numero,
-        documento_chave: nf.chave_acesso,
+        documento_numero: nf.numero ?? undefined,
+        documento_chave: nf.chave_acesso ?? undefined,
         nota_fiscal_id: notaFiscalId,
-        cnpj_cpf_contraparte: nf.cliente_cnpj,
-        nome_contraparte: nf.cliente_nome,
+        cnpj_cpf_contraparte: nf.cliente_cnpj ?? undefined,
+        nome_contraparte: nf.cliente_nome ?? undefined,
         valor_operacao: Number(nf.valor_produtos),
         valor_desconto: Number(nf.valor_desconto) || 0,
         valor_frete: Number(nf.valor_frete) || 0,
         data_operacao: nf.data_emissao,
       };
-      
+
       return criarOperacao.mutateAsync(input);
     },
     onSuccess: () => {
@@ -308,7 +348,7 @@ export function useOperacoesTributaveis(empresaId?: string) {
         .eq('id', id)
         .select()
         .single();
-      
+
       if (error) throw error;
       return data;
     },
@@ -328,28 +368,30 @@ export function useOperacoesTributaveis(empresaId?: string) {
       queryFn: async () => {
         const inicioMes = toISOLocal(new Date(ano, mes - 1, 1));
         const fimMes = toISOLocal(new Date(ano, mes, 0));
-        
+
         let query = supabase
           .from('operacoes_tributaveis')
-          .select('tipo_operacao, cbs_valor, ibs_valor, is_valor, cbs_credito, ibs_credito, icms_valor, iss_valor, pis_valor, cofins_valor')
+          .select(
+            'tipo_operacao, cbs_valor, ibs_valor, is_valor, cbs_credito, ibs_credito, icms_valor, iss_valor, pis_valor, cofins_valor'
+          )
           .gte('data_operacao', inicioMes)
           .lte('data_operacao', fimMes)
           .eq('status', 'processado');
-        
+
         if (empresaId) {
           query = query.eq('empresa_id', empresaId);
         }
-        
+
         const { data, error } = await query;
         if (error) throw error;
-        
+
         const stats = {
           totalOperacoes: data?.length || 0,
           debitos: { cbs: 0, ibs: 0, is: 0 },
           creditos: { cbs: 0, ibs: 0 },
           residuais: { icms: 0, iss: 0, pis: 0, cofins: 0 },
         };
-        
+
         interface OperacaoTributavel {
           tipo_operacao: string;
           cbs_valor: number | null;
@@ -362,7 +404,7 @@ export function useOperacoesTributaveis(empresaId?: string) {
           pis_valor: number | null;
           cofins_valor: number | null;
         }
-        
+
         (data || []).forEach((op: OperacaoTributavel) => {
           if (['venda', 'servico_prestado'].includes(op.tipo_operacao)) {
             stats.debitos.cbs += Number(op.cbs_valor) || 0;
@@ -376,7 +418,7 @@ export function useOperacoesTributaveis(empresaId?: string) {
           stats.residuais.pis += Number(op.pis_valor) || 0;
           stats.residuais.cofins += Number(op.cofins_valor) || 0;
         });
-        
+
         return stats;
       },
       enabled: !!ano && !!mes,

@@ -1,5 +1,5 @@
 import { todayISOLocal } from '@/lib/formatters';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, type ComponentProps } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
@@ -268,7 +268,7 @@ export function ContaReceberForm({ open, onOpenChange, conta }: ContaReceberForm
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
             <div className="space-y-6 max-h-[50vh] overflow-y-auto pr-2 custom-scrollbar">
               <ContaReceberFormFields
-                form={form}
+                form={form as unknown as ComponentProps<typeof ContaReceberFormFields>['form']}
                 isEditing={isEditing}
                 clientes={clientes}
                 empresas={empresas}

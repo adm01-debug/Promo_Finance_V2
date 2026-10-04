@@ -72,7 +72,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       if (profileError) {
         logger.error('[useAuth] Error fetching profile:', profileError);
       } else if (profileData) {
-        setProfile(profileData);
+        setProfile({
+          id: profileData.id,
+          email: profileData.email ?? '',
+          full_name: profileData.full_name,
+          avatar_url: profileData.avatar_url,
+        });
       }
 
       // user_roles can legitimately have multiple rows per user (legacy

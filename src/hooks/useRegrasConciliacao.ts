@@ -69,7 +69,7 @@ export async function aplicarRegras(descricaoExtrato: string) {
   const descNorm = descricaoExtrato.toLowerCase();
 
   for (const regra of regras) {
-    if (descNorm.includes(regra.padrao_descricao)) {
+    if (regra.padrao_descricao && descNorm.includes(regra.padrao_descricao)) {
       // Increment usage
       const { error } = await supabase
         .from('regras_conciliacao')
