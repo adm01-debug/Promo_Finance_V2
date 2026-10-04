@@ -226,9 +226,10 @@ export const handler = createHandler({
 });
 
 Deno.serve(async (req) => {
+  const _t0 = Date.now();
   try {
     return await handler(req);
   } finally {
-    await log.flush();
+    await log.flush(Date.now() - _t0);
   }
 });

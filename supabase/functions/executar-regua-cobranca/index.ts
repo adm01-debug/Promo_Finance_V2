@@ -13,6 +13,7 @@ const BodySchema = z.object({ dry_run: z.boolean().default(false) });
 const mensagemErro = (erro: unknown) => (erro instanceof Error ? erro.message : 'Erro inesperado');
 
 Deno.serve(async (req) => {
+  const _t0 = Date.now();
   try {
     const corsHeaders = corsHeadersPara(req);
     const res = (body: Record<string, unknown>, status = 200) =>
@@ -129,10 +130,10 @@ Deno.serve(async (req) => {
         error_message: mensagemErro(erro),
         context: contextoErro(erro),
       });
-      return res({ error: mensagemErro(erro), context: contextoErro(erro) }, 500);
+      return res({ error: mensagemErro(erro) }, 500);
     }
   } finally {
-    await log.flush();
+    await log.flush(Date.now() - _t0);
   }
 });
 

@@ -178,10 +178,11 @@ function timingSafeEqual(a: string, b: string): boolean {
 if (!Deno.env.get('DENO_TESTING')) {
   const handler = createHandler(defaultDeps());
   Deno.serve(async (req) => {
+    const _t0 = Date.now();
     try {
       return await handler(req);
     } finally {
-      await log.flush();
+      await log.flush(Date.now() - _t0);
     }
   });
 }

@@ -164,10 +164,11 @@ Forneça entre 3 e 5 insights ordenados por impacto. Seja específico com númer
 
 if (import.meta.main) {
   serve(async (req) => {
+    const _t0 = Date.now();
     try {
       return await handler(req);
     } finally {
-      await log.flush();
+      await log.flush(Date.now() - _t0);
     }
   });
 }

@@ -88,6 +88,7 @@ IMPORTANTE:
 - Ignore transações sem correspondência clara (score < 40)`;
 
 serve(async (req) => {
+  const _t0 = Date.now();
   try {
     const corsHeaders = corsHeadersPara(req);
     if (req.method === 'OPTIONS') {
@@ -268,6 +269,6 @@ Encontre os melhores matches e retorne o JSON conforme especificado.`;
       );
     }
   } finally {
-    await log.flush();
+    await log.flush(Date.now() - _t0);
   }
 });

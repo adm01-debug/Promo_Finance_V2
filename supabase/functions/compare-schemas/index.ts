@@ -5,6 +5,7 @@ const log = createLogger('compare-schemas');
 
 /** Auditoria administrativa: exige admin e obtém toda credencial do ambiente. */
 Deno.serve(async (req) => {
+  const _t0 = Date.now();
   try {
     if (req.method === 'OPTIONS')
       return new Response('ok', { headers: corsHeadersComSegredoPara(req) });
@@ -112,6 +113,6 @@ Deno.serve(async (req) => {
       });
     }
   } finally {
-    await log.flush();
+    await log.flush(Date.now() - _t0);
   }
 });

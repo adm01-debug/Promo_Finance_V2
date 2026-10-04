@@ -34,6 +34,7 @@ const SUPABASE_URL = Deno.env.get('SUPABASE_URL')!;
 const SUPABASE_SERVICE_ROLE_KEY = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
 
 serve(async (req) => {
+  const _t0 = Date.now();
   try {
     const corsHeaders = corsHeadersPara(req);
     if (req.method === 'OPTIONS') {
@@ -164,7 +165,7 @@ serve(async (req) => {
       });
     }
   } finally {
-    await log.flush();
+    await log.flush(Date.now() - _t0);
   }
 });
 

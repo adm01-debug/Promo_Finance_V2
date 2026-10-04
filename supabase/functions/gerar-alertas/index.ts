@@ -16,6 +16,7 @@ const _GerarAlertasSchema = z
   .partial();
 
 serve(async (req) => {
+  const _t0 = Date.now();
   try {
     const corsHeaders = corsHeadersPara(req);
     // Handle CORS preflight requests
@@ -101,7 +102,7 @@ serve(async (req) => {
       });
     }
   } finally {
-    await log.flush();
+    await log.flush(Date.now() - _t0);
   }
 });
 

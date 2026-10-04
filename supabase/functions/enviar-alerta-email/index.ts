@@ -39,7 +39,9 @@ export const handler = async (req: Request): Promise<Response> => {
     }
     const { tipo, destinatario, dados } = validation.data;
 
-    log.info(`Processando alerta do tipo: ${tipo} para ${destinatario}`);
+    // Destinatário (e-mail) fica fora do evento: edge_function_logs é lida por
+    // admin global e o texto livre não passa pela redação de chaves sensíveis.
+    log.info(`Processando alerta do tipo: ${tipo}`);
 
     // Verificar se Resend está configurado
     if (!resendApiKey) {
@@ -211,9 +213,10 @@ export const handler = async (req: Request): Promise<Response> => {
 
 if (import.meta.main)
   serve(async (req) => {
+    const _t0 = Date.now();
     try {
       return await handler(req);
     } finally {
-      await log.flush();
+      await log.flush(Date.now() - _t0);
     }
   });

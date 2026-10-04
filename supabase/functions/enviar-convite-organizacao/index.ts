@@ -48,6 +48,7 @@ function escapeHtml(value: string): string {
 }
 
 Deno.serve(async (req) => {
+  const _t0 = Date.now();
   try {
     const cors = corsHeadersPara(req);
     if (req.method === 'OPTIONS') return new Response('ok', { headers: cors });
@@ -174,6 +175,6 @@ Deno.serve(async (req) => {
       return res({ error: 'Erro interno ao enviar convite.' }, 500);
     }
   } finally {
-    await log.flush();
+    await log.flush(Date.now() - _t0);
   }
 });

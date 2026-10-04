@@ -23,6 +23,7 @@ interface AcaoIA {
 }
 
 serve(async (req) => {
+  const _t0 = Date.now();
   try {
     const corsHeaders = corsHeadersPara(req);
     if (req.method === 'OPTIONS') return new Response(null, { headers: corsHeaders });
@@ -217,6 +218,6 @@ Máximo 5 ações, ordenadas por urgência. Se nenhum sinal relevante, retorne a
       });
     }
   } finally {
-    await log.flush();
+    await log.flush(Date.now() - _t0);
   }
 });

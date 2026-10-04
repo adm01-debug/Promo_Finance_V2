@@ -67,6 +67,7 @@ function ultimasCompetencias(hojeISO: string, n: number): string[] {
 }
 
 Deno.serve(async (req: Request) => {
+  const _t0 = Date.now();
   try {
     const corsHeaders = corsHeadersPara(req);
     if (req.method === 'OPTIONS') return new Response('ok', { headers: corsHeaders });
@@ -275,6 +276,6 @@ Deno.serve(async (req: Request) => {
       return json({ error: 'Erro interno', details: (e as Error).message }, 500);
     }
   } finally {
-    await log.flush();
+    await log.flush(Date.now() - _t0);
   }
 });

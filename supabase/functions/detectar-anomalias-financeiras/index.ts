@@ -43,6 +43,7 @@ function percentile(arr: number[], p: number): number {
 }
 
 serve(async (req) => {
+  const _t0 = Date.now();
   try {
     const baseCors = corsHeadersPara(req);
     const corsHeaders = {
@@ -398,6 +399,6 @@ serve(async (req) => {
       });
     }
   } finally {
-    await log.flush();
+    await log.flush(Date.now() - _t0);
   }
 });

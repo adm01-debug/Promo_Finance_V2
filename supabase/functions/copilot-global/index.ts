@@ -146,6 +146,7 @@ async function executeTool(name: string, sb: ReturnType<typeof createClient>, us
 }
 
 Deno.serve(async (req) => {
+  const _t0 = Date.now();
   try {
     const corsHeaders = corsHeadersPara(req);
     if (req.method === 'OPTIONS') return new Response('ok', { headers: corsHeaders });
@@ -288,6 +289,6 @@ Deno.serve(async (req) => {
       });
     }
   } finally {
-    await log.flush();
+    await log.flush(Date.now() - _t0);
   }
 });

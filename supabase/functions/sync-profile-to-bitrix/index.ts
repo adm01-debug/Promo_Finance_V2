@@ -118,6 +118,7 @@ async function findBitrixContactByEmail(email: string): Promise<string | null> {
 }
 
 Deno.serve(async (req) => {
+  const _t0 = Date.now();
   try {
     const corsHeaders = corsHeadersPara(req);
     const res = (a: unknown, b = 200) => jsonResp(a, b, corsHeaders);
@@ -261,6 +262,6 @@ Deno.serve(async (req) => {
       return res({ ok: false, error: 'sync_failed', details: msg }, 500);
     }
   } finally {
-    await log.flush();
+    await log.flush(Date.now() - _t0);
   }
 });

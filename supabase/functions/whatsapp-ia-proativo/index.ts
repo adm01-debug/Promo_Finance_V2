@@ -831,10 +831,11 @@ export const handler = createHandler();
 
 if (import.meta.main) {
   serve(async (req) => {
+    const _t0 = Date.now();
     try {
       return await handler(req);
     } finally {
-      await log.flush();
+      await log.flush(Date.now() - _t0);
     }
   });
 }

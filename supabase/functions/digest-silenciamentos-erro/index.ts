@@ -109,6 +109,7 @@ function montarHtml(itens: ItemDigest[], janelaHoras: number): string {
 }
 
 Deno.serve(async (req: Request): Promise<Response> => {
+  const _t0 = Date.now();
   try {
     const corsHeaders = corsHeadersPara(req);
     if (req.method === 'OPTIONS') {
@@ -252,6 +253,6 @@ Deno.serve(async (req: Request): Promise<Response> => {
       return jsonResponse({ success: false, error: 'erro interno' }, 500);
     }
   } finally {
-    await log.flush();
+    await log.flush(Date.now() - _t0);
   }
 });

@@ -55,6 +55,7 @@ function json(payload: unknown, status = 200, headers: Record<string, string> = 
 }
 
 Deno.serve(async (req) => {
+  const _t0 = Date.now();
   try {
     const corsHeaders = corsHeadersPara(req);
     const res = (a: unknown, b = 200) => json(a, b, corsHeaders);
@@ -177,6 +178,6 @@ Deno.serve(async (req) => {
 
     return res({ inseridos: novos.length, atualizados });
   } finally {
-    await log.flush();
+    await log.flush(Date.now() - _t0);
   }
 });

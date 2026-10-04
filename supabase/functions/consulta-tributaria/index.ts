@@ -366,6 +366,7 @@ async function consultarNCM(
 
 // ---------------------------------------------------------------------------
 Deno.serve(async (req) => {
+  const _t0 = Date.now();
   try {
     const cors = corsHeadersPara(req);
     if (req.method === 'OPTIONS') return new Response('ok', { headers: cors });
@@ -412,6 +413,6 @@ Deno.serve(async (req) => {
       return res({ error: 'Erro interno na consulta tributária' }, 500);
     }
   } finally {
-    await log.flush();
+    await log.flush(Date.now() - _t0);
   }
 });

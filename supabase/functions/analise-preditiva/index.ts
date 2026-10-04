@@ -13,6 +13,7 @@ import { mensagemErro, contextoErro } from '../_shared/erros.ts';
 const log = createLogger('analise-preditiva');
 
 serve(async (req) => {
+  const _t0 = Date.now();
   try {
     const corsHeaders = corsHeadersPara(req);
     if (req.method === 'OPTIONS') {
@@ -335,6 +336,6 @@ IMPORTANTE:
       );
     }
   } finally {
-    await log.flush();
+    await log.flush(Date.now() - _t0);
   }
 });

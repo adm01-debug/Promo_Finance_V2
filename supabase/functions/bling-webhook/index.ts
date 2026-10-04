@@ -92,6 +92,7 @@ export const handler = async (req: Request) => {
       supabase,
       { source: 'bling', externalId, eventType, payload, maxAttempts: Math.max(5, retries + 1) },
       async () => {
+        const _t0 = Date.now();
         try {
           switch (module) {
             case 'Pedido de Venda':
@@ -183,10 +184,11 @@ export const handler = async (req: Request) => {
 
 if (import.meta.main) {
   Deno.serve(async (req) => {
+    const _t0 = Date.now();
     try {
       return await handler(req);
     } finally {
-      await log.flush();
+      await log.flush(Date.now() - _t0);
     }
   });
 }

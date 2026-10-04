@@ -187,10 +187,11 @@ Responda APENAS com o array JSON, sem texto adicional.`;
 
 if (import.meta.main) {
   serve(async (req) => {
+    const _t0 = Date.now();
     try {
       return await handler(req);
     } finally {
-      await log.flush();
+      await log.flush(Date.now() - _t0);
     }
   });
 }

@@ -17,6 +17,7 @@ const blingCB = createCircuitBreaker('bling');
 const BLING_FETCH_TIMEOUT_MS = 10000;
 
 Deno.serve(async (req) => {
+  const _t0 = Date.now();
   try {
     const corsHeaders = corsHeadersPara(req);
     if (req.method === 'OPTIONS') {
@@ -628,7 +629,7 @@ Deno.serve(async (req) => {
       );
     }
   } finally {
-    await log.flush();
+    await log.flush(Date.now() - _t0);
   }
 });
 

@@ -107,10 +107,11 @@ export const handler = async (req: Request) => {
 
 if (import.meta.main) {
   Deno.serve(async (req) => {
+    const _t0 = Date.now();
     try {
       return await handler(req);
     } finally {
-      await log.flush();
+      await log.flush(Date.now() - _t0);
     }
   });
 }
