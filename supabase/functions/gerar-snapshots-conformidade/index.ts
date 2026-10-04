@@ -109,7 +109,6 @@ Deno.serve(
           if (roleErr)
             return json({ error: 'Falha ao validar papel', details: roleErr.message }, 500);
           if (isAdmin !== true) return json({ error: 'Requer papel admin' }, 403);
-          autorizado = true;
           geradoPor = userData.user.id;
         }
 

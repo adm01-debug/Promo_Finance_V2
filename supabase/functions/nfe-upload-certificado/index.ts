@@ -171,7 +171,7 @@ Deno.serve(
       } catch (err) {
         const msg = err instanceof Error ? err.message : String(err);
         log('parse_error', msg);
-        return new Response(JSON.stringify({ error: 'pfx_parse_failed', details: msg }), {
+        return new Response(JSON.stringify({ error: 'pfx_parse_failed' }), {
           status: 400,
           headers: { ...corsHeaders, 'Content-Type': 'application/json' },
         });
@@ -253,7 +253,7 @@ Deno.serve(
     } catch (err) {
       const msg = err instanceof Error ? err.message : String(err);
       log('unhandled', msg);
-      return new Response(JSON.stringify({ error: 'internal_error', details: msg }), {
+      return new Response(JSON.stringify({ error: 'internal_error' }), {
         status: 500,
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       });

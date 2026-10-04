@@ -173,7 +173,7 @@ Deno.serve(
         error_message: msg,
       });
       await logger.flush();
-      return new Response(JSON.stringify({ error: msg }), {
+      return new Response(JSON.stringify({ error: 'Erro interno ao exportar SPED' }), {
         status: 500,
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       });

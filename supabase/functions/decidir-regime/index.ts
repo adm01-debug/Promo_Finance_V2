@@ -373,7 +373,7 @@ Deno.serve(
       const message = e instanceof Error ? e.message : String(e);
       logger.error('decidir_regime_failed', { error_message: message });
       await logger.flush();
-      return new Response(JSON.stringify({ error: message }), {
+      return new Response(JSON.stringify({ error: 'Erro interno ao decidir regime' }), {
         status: 500,
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       });

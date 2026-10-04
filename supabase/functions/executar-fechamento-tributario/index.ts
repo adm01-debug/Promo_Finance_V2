@@ -341,7 +341,7 @@ Deno.serve(
       const msg = err instanceof Error ? err.message : String(err);
       log.error('erro_fechamento', { error_message: msg, duration_ms: Date.now() - startedAt });
       await log.flush();
-      return new Response(JSON.stringify({ error: msg }), {
+      return new Response(JSON.stringify({ error: 'Erro interno no fechamento tributário' }), {
         status: 500,
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       });

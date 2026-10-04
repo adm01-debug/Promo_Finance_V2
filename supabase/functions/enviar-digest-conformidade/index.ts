@@ -117,7 +117,6 @@ Deno.serve(
         if (isAdmin !== true) return json({ error: 'Requer papel admin' }, 403);
         origem = 'usuario';
         userId = userData.user.id;
-        autorizado = true;
       }
 
       // ---- Entrada -----------------------------------------------------------

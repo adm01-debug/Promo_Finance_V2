@@ -32,7 +32,6 @@ Deno.serve(
       const serviceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY');
 
       let receitaBruta = 0;
-      let totalTributosPagos = 0;
       let regime = 'simples';
 
       if (supabaseUrl && serviceKey) {
@@ -67,7 +66,6 @@ Deno.serve(
 
         if (fat) {
           receitaBruta = Number(fat.receita_bruta || 0);
-          totalTributosPagos = Number(fat.total_tributos || 0);
         }
 
         const { data: emp } = await supa
@@ -141,7 +139,7 @@ Deno.serve(
         req
       );
     } catch (err) {
-      return jsonComCors({ error: err instanceof Error ? err.message : 'Erro interno' }, 500, req);
+      return jsonComCors({ error: 'Erro interno' }, 500, req);
     }
   })
 );
