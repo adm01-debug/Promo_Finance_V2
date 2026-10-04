@@ -9,6 +9,9 @@ import { withRetry, createCircuitBreaker, withTimeout } from '../_shared/resilie
 import { extrairAnaliseRisco, faixaDoScore } from './credit-risk.ts';
 import { exigirVinculoEmpresa } from '../_shared/auth-guard.ts';
 import { corsHeadersPara } from '../_shared/cors.ts';
+import { createLogger } from '../_shared/observability.ts';
+import { mensagemErro, contextoErro } from '../_shared/erros.ts';
+const log = createLogger('asaas-proxy');
 
 const ASAAS_BASE_URL = 'https://api.asaas.com/v3';
 const asaasCB = createCircuitBreaker('asaas');
@@ -34,10 +37,9 @@ async function asaasFetch(path: string, apiKey: string, options: RequestInit = {
       const contentType = response.headers.get('content-type') || '';
       if (!contentType.includes('application/json')) {
         const text = await response.text();
-        console.error(
-          `ASAAS retornou resposta não-JSON (${response.status}):`,
-          text.substring(0, 500)
-        );
+        log.error(`ASAAS retornou resposta não-JSON (${response.status}):`, {
+          error_message: mensagemErro(text.substring(0, 500)),
+        });
         throw new Error(`ASAAS retornou erro ${response.status}: resposta inesperada`);
       }
 
@@ -131,7 +133,9 @@ export const handler = async (req: Request) => {
       });
     const checkErrors = (result: any) => {
       if (result.errors) {
-        console.error(`Erro ASAAS ${action}:`, JSON.stringify(result.errors));
+        log.error(`Erro ASAAS ${action}:`, {
+          error_message: mensagemErro(JSON.stringify(result.errors)),
+        });
         return new Response(JSON.stringify(result), {
           status: 422,
           headers: { ...corsHeaders, 'Content-Type': 'application/json' },
@@ -224,7 +228,11 @@ export const handler = async (req: Request) => {
             telefone: data.telefone || null,
             endereco: data.endereco || null,
           });
-          if (dbError) console.error('Erro DB criar_cliente:', dbError);
+          if (dbError)
+            log.error('Erro DB criar_cliente:', {
+              error_message: mensagemErro(dbError),
+              context: contextoErro(dbError),
+            });
         }
         break;
       }
@@ -419,7 +427,11 @@ export const handler = async (req: Request) => {
             link_boleto: result.bankSlipUrl || null,
             link_fatura: result.invoiceUrl || null,
           });
-          if (dbError) console.error('Erro DB criar_cobranca:', dbError);
+          if (dbError)
+            log.error('Erro DB criar_cobranca:', {
+              error_message: mensagemErro(dbError),
+              context: contextoErro(dbError),
+            });
 
           result.pixData = pixData;
           result.boletoData = boletoData;
@@ -682,7 +694,11 @@ export const handler = async (req: Request) => {
             idempotency_key: data.idempotency_key,
             user_id: user.id,
           });
-          if (dbError) console.error('Erro DB asaas_transfers:', dbError);
+          if (dbError)
+            log.error('Erro DB asaas_transfers:', {
+              error_message: mensagemErro(dbError),
+              context: contextoErro(dbError),
+            });
 
           // Registrar na auditoria
           await supabase.from('asaas_audit_trail').insert({
@@ -813,7 +829,10 @@ export const handler = async (req: Request) => {
             created_by: user.id,
           });
           if (linkMirrorError)
-            console.error('Erro ao espelhar link de pagamento:', linkMirrorError);
+            log.error('Erro ao espelhar link de pagamento:', {
+              error_message: mensagemErro(linkMirrorError),
+              context: contextoErro(linkMirrorError),
+            });
         }
         break;
       }
@@ -1286,7 +1305,10 @@ export const handler = async (req: Request) => {
 
     return ok(result);
   } catch (error: any) {
-    console.error('Erro asaas-proxy:', error);
+    log.error('Erro asaas-proxy:', {
+      error_message: mensagemErro(error),
+      context: contextoErro(error),
+    });
     return new Response(JSON.stringify({ error: error.message }), {
       status: 500,
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
@@ -1295,5 +1317,13 @@ export const handler = async (req: Request) => {
 };
 
 if (import.meta.main) {
-  Deno.serve(handler);
+  Deno.serve(async (req) => {
+    const _t0 = Date.now();
+    try {
+      return await handler(req);
+    } finally {
+      log.info('request', { duration_ms: Date.now() - _t0 });
+      await log.flush();
+    }
+  });
 }

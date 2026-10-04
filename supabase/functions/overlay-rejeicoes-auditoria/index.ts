@@ -11,6 +11,9 @@
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.49.4';
 import { z } from '../_shared/zod.ts';
 import { corsHeaders, corsHeadersPara } from '../_shared/cors.ts';
+import { createLogger } from '../_shared/observability.ts';
+import { mensagemErro } from '../_shared/erros.ts';
+const log = createLogger('overlay-rejeicoes-auditoria');
 
 const RejeicaoSchema = z.object({
   catalogo: z.enum([
@@ -52,118 +55,130 @@ function json(payload: unknown, status = 200, headers: Record<string, string> = 
 }
 
 Deno.serve(async (req) => {
-  const corsHeaders = corsHeadersPara(req);
-  const res = (a: unknown, b = 200) => json(a, b, corsHeaders);
-
-  if (req.method === 'OPTIONS') return new Response(null, { headers: corsHeaders });
-  if (req.method !== 'POST') return res({ error: 'method_not_allowed' }, 405);
-
-  const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
-  const serviceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
-  const admin = createClient(supabaseUrl, serviceKey, {
-    auth: { persistSession: false, autoRefreshToken: false },
-  });
-
-  // 1) Autenticação: exige um JWT válido de usuário.
-  const token = req.headers.get('Authorization')?.replace('Bearer ', '') ?? '';
-  if (!token) return res({ error: 'unauthorized' }, 401);
-  const { data: userData, error: userError } = await admin.auth.getUser(token);
-  if (userError || !userData?.user) return res({ error: 'unauthorized' }, 401);
-  const userId = userData.user.id;
-
-  // 2) Autorização: escrita restrita a admin/manager (checagem server-side).
-  const [{ data: isAdmin }, { data: isManager }] = await Promise.all([
-    admin.rpc('has_role', { _user_id: userId, _role: 'admin' }),
-    admin.rpc('has_role', { _user_id: userId, _role: 'manager' }),
-  ]);
-  if (!isAdmin && !isManager) return res({ error: 'forbidden' }, 403);
-
-  // 3) Validação de entrada.
-  let body: z.infer<typeof BodySchema>;
+  const _t0 = Date.now();
   try {
-    const parsed = BodySchema.safeParse(await req.json());
-    if (!parsed.success) {
-      return res({ error: 'invalid_payload', detalhes: parsed.error.flatten() }, 400);
+    const corsHeaders = corsHeadersPara(req);
+    const res = (a: unknown, b = 200) => json(a, b, corsHeaders);
+
+    if (req.method === 'OPTIONS') return new Response(null, { headers: corsHeaders });
+    if (req.method !== 'POST') return res({ error: 'method_not_allowed' }, 405);
+
+    const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
+    const serviceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
+    const admin = createClient(supabaseUrl, serviceKey, {
+      auth: { persistSession: false, autoRefreshToken: false },
+    });
+
+    // 1) Autenticação: exige um JWT válido de usuário.
+    const token = req.headers.get('Authorization')?.replace('Bearer ', '') ?? '';
+    if (!token) return res({ error: 'unauthorized' }, 401);
+    const { data: userData, error: userError } = await admin.auth.getUser(token);
+    if (userError || !userData?.user) return res({ error: 'unauthorized' }, 401);
+    const userId = userData.user.id;
+
+    // 2) Autorização: escrita restrita a admin/manager (checagem server-side).
+    const [{ data: isAdmin }, { data: isManager }] = await Promise.all([
+      admin.rpc('has_role', { _user_id: userId, _role: 'admin' }),
+      admin.rpc('has_role', { _user_id: userId, _role: 'manager' }),
+    ]);
+    if (!isAdmin && !isManager) return res({ error: 'forbidden' }, 403);
+
+    // 3) Validação de entrada.
+    let body: z.infer<typeof BodySchema>;
+    try {
+      const parsed = BodySchema.safeParse(await req.json());
+      if (!parsed.success) {
+        return res({ error: 'invalid_payload', detalhes: parsed.error.flatten() }, 400);
+      }
+      body = parsed.data;
+    } catch {
+      return res({ error: 'invalid_json' }, 400);
     }
-    body = parsed.data;
-  } catch {
-    return res({ error: 'invalid_json' }, 400);
-  }
 
-  if (body.acao === 'resolver') {
-    const { error } = await admin
-      .from('overlay_rejeicoes_auditoria')
-      .update({
-        resolvido_em: body.resolvido ? new Date().toISOString() : null,
-        resolvido_por: body.resolvido ? userId : null,
-        observacao: body.observacao ?? null,
-      })
-      .eq('id', body.id);
-    if (error) {
-      console.error('[auditoria-overlay] falha ao resolver', error.message);
-      return res({ error: 'persist_failed' }, 500);
-    }
-    return res({ ok: true });
-  }
-
-  // acao === "registrar"
-  const { referencia, rejeicoes } = body;
-  if (rejeicoes.length === 0) return res({ inseridos: 0, atualizados: 0 });
-
-  const { data: existentes, error: readError } = await admin
-    .from('overlay_rejeicoes_auditoria')
-    .select('id, catalogo, identificador, campo, motivo, ocorrencias')
-    .eq('referencia', referencia);
-  if (readError) {
-    console.error('[auditoria-overlay] falha ao ler existentes', readError.message);
-    return res({ error: 'read_failed' }, 500);
-  }
-
-  const chave = (r: { catalogo: string; identificador: string; campo: string; motivo: string }) =>
-    `${r.catalogo}|${r.identificador}|${r.campo}|${r.motivo}`;
-  const indice = new Map((existentes ?? []).map((e) => [chave(e), e]));
-
-  const agora = new Date().toISOString();
-  const novos: Record<string, unknown>[] = [];
-  let atualizados = 0;
-
-  for (const r of rejeicoes) {
-    const atual = indice.get(chave(r));
-    if (atual) {
+    if (body.acao === 'resolver') {
       const { error } = await admin
         .from('overlay_rejeicoes_auditoria')
         .update({
-          ocorrencias: (atual.ocorrencias ?? 1) + 1,
-          ultima_deteccao: agora,
-          valor_recebido: r.valorRecebido ?? null,
-          descricao: r.descricao ?? null,
-          severidade: r.severidade,
+          resolvido_em: body.resolvido ? new Date().toISOString() : null,
+          resolvido_por: body.resolvido ? userId : null,
+          observacao: body.observacao ?? null,
         })
-        .eq('id', atual.id);
-      if (!error) atualizados += 1;
-      continue;
+        .eq('id', body.id);
+      if (error) {
+        log.error('[auditoria-overlay] falha ao resolver', {
+          error_message: mensagemErro(error.message),
+        });
+        return res({ error: 'persist_failed' }, 500);
+      }
+      return res({ ok: true });
     }
-    novos.push({
-      catalogo: r.catalogo,
-      identificador: r.identificador,
-      descricao: r.descricao ?? null,
-      campo: r.campo,
-      motivo: r.motivo,
-      valor_recebido: r.valorRecebido ?? null,
-      severidade: r.severidade,
-      referencia,
-      primeira_deteccao: agora,
-      ultima_deteccao: agora,
-    });
-  }
 
-  if (novos.length > 0) {
-    const { error } = await admin.from('overlay_rejeicoes_auditoria').insert(novos);
-    if (error) {
-      console.error('[auditoria-overlay] falha ao inserir', error.message);
-      return res({ error: 'persist_failed' }, 500);
+    // acao === "registrar"
+    const { referencia, rejeicoes } = body;
+    if (rejeicoes.length === 0) return res({ inseridos: 0, atualizados: 0 });
+
+    const { data: existentes, error: readError } = await admin
+      .from('overlay_rejeicoes_auditoria')
+      .select('id, catalogo, identificador, campo, motivo, ocorrencias')
+      .eq('referencia', referencia);
+    if (readError) {
+      log.error('[auditoria-overlay] falha ao ler existentes', {
+        error_message: mensagemErro(readError.message),
+      });
+      return res({ error: 'read_failed' }, 500);
     }
-  }
 
-  return res({ inseridos: novos.length, atualizados });
+    const chave = (r: { catalogo: string; identificador: string; campo: string; motivo: string }) =>
+      `${r.catalogo}|${r.identificador}|${r.campo}|${r.motivo}`;
+    const indice = new Map((existentes ?? []).map((e) => [chave(e), e]));
+
+    const agora = new Date().toISOString();
+    const novos: Record<string, unknown>[] = [];
+    let atualizados = 0;
+
+    for (const r of rejeicoes) {
+      const atual = indice.get(chave(r));
+      if (atual) {
+        const { error } = await admin
+          .from('overlay_rejeicoes_auditoria')
+          .update({
+            ocorrencias: (atual.ocorrencias ?? 1) + 1,
+            ultima_deteccao: agora,
+            valor_recebido: r.valorRecebido ?? null,
+            descricao: r.descricao ?? null,
+            severidade: r.severidade,
+          })
+          .eq('id', atual.id);
+        if (!error) atualizados += 1;
+        continue;
+      }
+      novos.push({
+        catalogo: r.catalogo,
+        identificador: r.identificador,
+        descricao: r.descricao ?? null,
+        campo: r.campo,
+        motivo: r.motivo,
+        valor_recebido: r.valorRecebido ?? null,
+        severidade: r.severidade,
+        referencia,
+        primeira_deteccao: agora,
+        ultima_deteccao: agora,
+      });
+    }
+
+    if (novos.length > 0) {
+      const { error } = await admin.from('overlay_rejeicoes_auditoria').insert(novos);
+      if (error) {
+        log.error('[auditoria-overlay] falha ao inserir', {
+          error_message: mensagemErro(error.message),
+        });
+        return res({ error: 'persist_failed' }, 500);
+      }
+    }
+
+    return res({ inseridos: novos.length, atualizados });
+  } finally {
+    log.info('request', { duration_ms: Date.now() - _t0 });
+    await log.flush();
+  }
 });

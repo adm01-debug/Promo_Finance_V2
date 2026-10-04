@@ -8,6 +8,9 @@ import {
 import { checkRateLimit, rateLimitResponse } from '../_shared/rate-limit.ts';
 import { exigirInternaOuUsuario } from '../_shared/auth-guard.ts';
 import { corsHeadersPara } from '../_shared/cors.ts';
+import { createLogger } from '../_shared/observability.ts';
+import { mensagemErro, contextoErro } from '../_shared/erros.ts';
+const log = createLogger('whatsapp-ia-proativo');
 
 interface AlertaProativo {
   tipo: 'vencimento' | 'inadimplencia' | 'meta' | 'fluxo' | 'oportunidade';
@@ -137,7 +140,10 @@ async function resolverEscopoEmpresas(
     .eq('ativo', true);
 
   if (error) {
-    console.error('[whatsapp-ia-proativo] Falha ao resolver empresas do usuário:', error);
+    log.error('[whatsapp-ia-proativo] Falha ao resolver empresas do usuário:', {
+      error_message: mensagemErro(error),
+      context: contextoErro(error),
+    });
     return {
       ok: false,
       resposta: respostaJson(
@@ -247,7 +253,7 @@ export function createHandler(overrides: Partial<WhatsappIaProativoDependencies>
       });
       if (!rl.allowed) return rateLimitResponse(rl, corsHeaders);
 
-      console.log('[whatsapp-ia-proativo] Ação:', action);
+      log.info('[whatsapp-ia-proativo] Ação:', { context: { args: [action] } });
 
       if (action === 'analisar-alertas') {
         // Buscar dados para análise
@@ -279,10 +285,9 @@ export function createHandler(overrides: Partial<WhatsappIaProativoDependencies>
         const { data: contasVencidasRaw, error: erroContasVencidas } = await contasVencidasQuery;
 
         if (erroContasVencer || erroContasVencidas) {
-          console.error(
-            '[whatsapp-ia-proativo] Falha ao consultar contas autorizadas:',
-            erroContasVencer ?? erroContasVencidas
-          );
+          log.error('[whatsapp-ia-proativo] Falha ao consultar contas autorizadas:', {
+            error_message: mensagemErro(erroContasVencer ?? erroContasVencidas),
+          });
           return respostaJson(
             { error: 'erro_consulta', message: 'Falha ao consultar alertas.' },
             503,
@@ -318,10 +323,10 @@ export function createHandler(overrides: Partial<WhatsappIaProativoDependencies>
           }
           const { data: clientesRaw, error: erroClientes } = await clientesQuery;
           if (erroClientes) {
-            console.error(
-              '[whatsapp-ia-proativo] Falha ao consultar clientes autorizados:',
-              erroClientes
-            );
+            log.error('[whatsapp-ia-proativo] Falha ao consultar clientes autorizados:', {
+              error_message: mensagemErro(erroClientes),
+              context: contextoErro(erroClientes),
+            });
             return respostaJson(
               {
                 error: 'erro_consulta',
@@ -436,7 +441,10 @@ export function createHandler(overrides: Partial<WhatsappIaProativoDependencies>
                 alerta.mensagem = aiData.choices[0].message.content.trim();
               }
             } catch (e: unknown) {
-              console.error('Erro ao gerar mensagem IA:', e);
+              log.error('Erro ao gerar mensagem IA:', {
+                error_message: mensagemErro(e),
+                context: contextoErro(e),
+              });
               alerta.mensagem = gerarMensagemFallback(alerta);
             }
           }
@@ -549,10 +557,10 @@ export function createHandler(overrides: Partial<WhatsappIaProativoDependencies>
           }
           const { data: conta, error: erroConta } = await contaQuery.maybeSingle();
           if (erroConta) {
-            console.error(
-              '[whatsapp-ia-proativo] Falha ao autorizar conta da mensagem:',
-              erroConta
-            );
+            log.error('[whatsapp-ia-proativo] Falha ao autorizar conta da mensagem:', {
+              error_message: mensagemErro(erroConta),
+              context: contextoErro(erroConta),
+            });
             return respostaJson(
               {
                 error: 'erro_autorizacao',
@@ -594,10 +602,10 @@ export function createHandler(overrides: Partial<WhatsappIaProativoDependencies>
             const { data: clienteDaConta, error: erroClienteDaConta } =
               await clienteDaContaQuery.maybeSingle();
             if (erroClienteDaConta) {
-              console.error(
-                '[whatsapp-ia-proativo] Falha ao autorizar cliente da conta:',
-                erroClienteDaConta
-              );
+              log.error('[whatsapp-ia-proativo] Falha ao autorizar cliente da conta:', {
+                error_message: mensagemErro(erroClienteDaConta),
+                context: contextoErro(erroClienteDaConta),
+              });
               return respostaJson(
                 {
                   error: 'erro_autorizacao',
@@ -632,10 +640,10 @@ export function createHandler(overrides: Partial<WhatsappIaProativoDependencies>
           }
           const { data: cliente, error: erroCliente } = await clienteQuery.maybeSingle();
           if (erroCliente) {
-            console.error(
-              '[whatsapp-ia-proativo] Falha ao autorizar cliente da mensagem:',
-              erroCliente
-            );
+            log.error('[whatsapp-ia-proativo] Falha ao autorizar cliente da mensagem:', {
+              error_message: mensagemErro(erroCliente),
+              context: contextoErro(erroCliente),
+            });
             return respostaJson(
               {
                 error: 'erro_autorizacao',
@@ -688,7 +696,10 @@ export function createHandler(overrides: Partial<WhatsappIaProativoDependencies>
               },
             });
           if (erroHistorico) {
-            console.error('[whatsapp-ia-proativo] Falha ao registrar histórico:', erroHistorico);
+            log.error('[whatsapp-ia-proativo] Falha ao registrar histórico:', {
+              error_message: mensagemErro(erroHistorico),
+              context: contextoErro(erroHistorico),
+            });
             return respostaJson(
               {
                 error: 'erro_registro',
@@ -773,7 +784,10 @@ export function createHandler(overrides: Partial<WhatsappIaProativoDependencies>
 
         if (!aiResponse.ok) {
           const errorText = await aiResponse.text();
-          console.error('Erro AI:', errorText);
+          log.error('Erro AI:', {
+            error_message: mensagemErro(errorText),
+            context: contextoErro(errorText),
+          });
           throw new Error('Erro ao gerar resposta');
         }
 
@@ -796,7 +810,10 @@ export function createHandler(overrides: Partial<WhatsappIaProativoDependencies>
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       });
     } catch (error) {
-      console.error('[whatsapp-ia-proativo] Erro:', error);
+      log.error('[whatsapp-ia-proativo] Erro:', {
+        error_message: mensagemErro(error),
+        context: contextoErro(error),
+      });
       return new Response(
         JSON.stringify({
           error: error instanceof Error ? error.message : 'Erro interno',
@@ -813,7 +830,15 @@ export function createHandler(overrides: Partial<WhatsappIaProativoDependencies>
 export const handler = createHandler();
 
 if (import.meta.main) {
-  serve(handler);
+  serve(async (req) => {
+    const _t0 = Date.now();
+    try {
+      return await handler(req);
+    } finally {
+      log.info('request', { duration_ms: Date.now() - _t0 });
+      await log.flush();
+    }
+  });
 }
 
 function normalizarPayloadLegado(rawBody: unknown): unknown {

@@ -2,6 +2,9 @@ import { serve } from 'https://deno.land/std@0.190.0/http/server.ts';
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.49.4';
 import { Bitrix24SyncSchema, validatePayload, createErrorResponse } from '../_shared/validation.ts';
 import { corsHeadersPara } from '../_shared/cors.ts';
+import { createLogger } from '../_shared/observability.ts';
+import { mensagemErro, contextoErro } from '../_shared/erros.ts';
+const log = createLogger('bitrix24-sync');
 
 interface BitrixResponse {
   result?: any;
@@ -47,7 +50,7 @@ async function getValidToken(supabase: any): Promise<string> {
     }
 
     // Token expired, try to refresh
-    console.log('[bitrix24-sync] Token expired, refreshing...');
+    log.info('[bitrix24-sync] Token expired, refreshing...');
     const refreshed = await refreshOAuthToken(supabase, tokenData.refresh_token);
     if (refreshed) {
       return refreshed;
@@ -77,7 +80,9 @@ async function refreshOAuthToken(supabase: any, refreshToken: string): Promise<s
     });
 
     if (!response.ok) {
-      console.error('[bitrix24-sync] Failed to refresh token:', await response.text());
+      log.error('[bitrix24-sync] Failed to refresh token:', {
+        error_message: mensagemErro(await response.text()),
+      });
       return null;
     }
 
@@ -93,10 +98,13 @@ async function refreshOAuthToken(supabase: any, refreshToken: string): Promise<s
       expires_at: expiresAt.toISOString(),
     });
 
-    console.log('[bitrix24-sync] Token refreshed successfully');
+    log.info('[bitrix24-sync] Token refreshed successfully');
     return data.access_token;
   } catch (error) {
-    console.error('[bitrix24-sync] Error refreshing token:', error);
+    log.error('[bitrix24-sync] Error refreshing token:', {
+      error_message: mensagemErro(error),
+      context: contextoErro(error),
+    });
     return null;
   }
 }
@@ -130,7 +138,7 @@ async function callBitrixAPI(
   const data = await response.json();
 
   if (data.error) {
-    console.error(`[bitrix24-sync] API Error: ${data.error} - ${data.error_description}`);
+    log.error(`[bitrix24-sync] API Error: ${data.error} - ${data.error_description}`);
   }
 
   return data;
@@ -164,7 +172,7 @@ async function syncDeals(
   accessToken: string,
   userId: string
 ): Promise<{ success: boolean; processed: number; errors: number; message: string }> {
-  console.log('[bitrix24-sync] Starting deals sync...');
+  log.info('[bitrix24-sync] Starting deals sync...');
 
   // Create sync log
   const { data: logData } = await supabase
@@ -254,7 +262,10 @@ async function syncDeals(
 
           processed++;
         } catch (err) {
-          console.error(`[bitrix24-sync] Error processing deal ${deal.ID}:`, err);
+          log.error(`[bitrix24-sync] Error processing deal ${deal.ID}:`, {
+            error_message: mensagemErro(err),
+            context: contextoErro(err),
+          });
           errors++;
         }
       }
@@ -282,7 +293,10 @@ async function syncDeals(
       message: `Sincronização concluída: ${processed} deals importados, ${errors} erros`,
     };
   } catch (error: any) {
-    console.error('[bitrix24-sync] Sync failed:', error);
+    log.error('[bitrix24-sync] Sync failed:', {
+      error_message: mensagemErro(error),
+      context: contextoErro(error),
+    });
 
     await supabase
       .from('bitrix_sync_logs')
@@ -309,7 +323,7 @@ async function syncContacts(
   accessToken: string,
   userId: string
 ): Promise<{ success: boolean; processed: number; errors: number; message: string }> {
-  console.log('[bitrix24-sync] Starting contacts sync...');
+  log.info('[bitrix24-sync] Starting contacts sync...');
 
   const { data: logData } = await supabase
     .from('bitrix_sync_logs')
@@ -377,7 +391,10 @@ async function syncContacts(
 
           processed++;
         } catch (err) {
-          console.error(`[bitrix24-sync] Error processing contact ${contact.ID}:`, err);
+          log.error(`[bitrix24-sync] Error processing contact ${contact.ID}:`, {
+            error_message: mensagemErro(err),
+            context: contextoErro(err),
+          });
           errors++;
         }
       }
@@ -403,7 +420,10 @@ async function syncContacts(
       message: `Sincronização concluída: ${processed} contatos importados, ${errors} erros`,
     };
   } catch (error: any) {
-    console.error('[bitrix24-sync] Contacts sync failed:', error);
+    log.error('[bitrix24-sync] Contacts sync failed:', {
+      error_message: mensagemErro(error),
+      context: contextoErro(error),
+    });
 
     await supabase
       .from('bitrix_sync_logs')
@@ -430,7 +450,7 @@ async function syncCompanies(
   accessToken: string,
   userId: string
 ): Promise<{ success: boolean; processed: number; errors: number; message: string }> {
-  console.log('[bitrix24-sync] Starting companies sync...');
+  log.info('[bitrix24-sync] Starting companies sync...');
 
   const { data: logData } = await supabase
     .from('bitrix_sync_logs')
@@ -488,7 +508,10 @@ async function syncCompanies(
 
           processed++;
         } catch (err) {
-          console.error(`[bitrix24-sync] Error processing company ${company.ID}:`, err);
+          log.error(`[bitrix24-sync] Error processing company ${company.ID}:`, {
+            error_message: mensagemErro(err),
+            context: contextoErro(err),
+          });
           errors++;
         }
       }
@@ -514,7 +537,10 @@ async function syncCompanies(
       message: `Sincronização concluída: ${processed} empresas importadas, ${errors} erros`,
     };
   } catch (error: any) {
-    console.error('[bitrix24-sync] Companies sync failed:', error);
+    log.error('[bitrix24-sync] Companies sync failed:', {
+      error_message: mensagemErro(error),
+      context: contextoErro(error),
+    });
 
     await supabase
       .from('bitrix_sync_logs')
@@ -541,7 +567,7 @@ async function exportPaymentStatus(
   accessToken: string,
   userId: string
 ): Promise<{ success: boolean; processed: number; errors: number; message: string }> {
-  console.log('[bitrix24-sync] Starting payment status export...');
+  log.info('[bitrix24-sync] Starting payment status export...');
 
   const { data: logData } = await supabase
     .from('bitrix_sync_logs')
@@ -583,7 +609,10 @@ async function exportPaymentStatus(
 
         processed++;
       } catch (err) {
-        console.error(`[bitrix24-sync] Error updating deal ${conta.bitrix_deal_id}:`, err);
+        log.error(`[bitrix24-sync] Error updating deal ${conta.bitrix_deal_id}:`, {
+          error_message: mensagemErro(err),
+          context: contextoErro(err),
+        });
         errors++;
       }
     }
@@ -605,7 +634,10 @@ async function exportPaymentStatus(
       message: `Exportação concluída: ${processed} status atualizados, ${errors} erros`,
     };
   } catch (error: any) {
-    console.error('[bitrix24-sync] Export failed:', error);
+    log.error('[bitrix24-sync] Export failed:', {
+      error_message: mensagemErro(error),
+      context: contextoErro(error),
+    });
 
     await supabase
       .from('bitrix_sync_logs')
@@ -632,7 +664,7 @@ async function syncElisaoTask(
   tarefaId: string,
   userId: string
 ): Promise<{ success: boolean; message: string }> {
-  console.log(`[bitrix24-sync] Syncing elisao task ${tarefaId}...`);
+  log.info(`[bitrix24-sync] Syncing elisao task ${tarefaId}...`);
 
   try {
     const { data: tarefa, error: tError } = await supabase
@@ -678,7 +710,10 @@ async function syncElisaoTask(
 
     return { success: true, message: 'Tarefa sincronizada com Bitrix24' };
   } catch (error: any) {
-    console.error('[bitrix24-sync] Elisao task sync failed:', error);
+    log.error('[bitrix24-sync] Elisao task sync failed:', {
+      error_message: mensagemErro(error),
+      context: contextoErro(error),
+    });
 
     await supabase
       .from('elisao_tarefas_acionaveis')
@@ -698,7 +733,7 @@ async function syncBoleto(
   boleto: any,
   userId: string
 ): Promise<{ success: boolean; message: string; bitrix_id?: string }> {
-  console.log(`[bitrix24-sync] Syncing boleto ${boleto.id} to Bitrix...`);
+  log.info(`[bitrix24-sync] Syncing boleto ${boleto.id} to Bitrix...`);
 
   try {
     // 1. Localizar o Deal no Bitrix (pela conta_receber)
@@ -745,87 +780,99 @@ async function syncBoleto(
       bitrix_id: dealId,
     };
   } catch (error: any) {
-    console.error('[bitrix24-sync] Boleto sync failed:', error);
+    log.error('[bitrix24-sync] Boleto sync failed:', {
+      error_message: mensagemErro(error),
+      context: contextoErro(error),
+    });
     return { success: false, message: error?.message || 'Erro na sincronização' };
   }
 }
 
 serve(async (req) => {
-  const corsHeaders = corsHeadersPara(req);
-  if (req.method === 'OPTIONS') {
-    return new Response(null, { headers: corsHeaders });
-  }
-
+  const _t0 = Date.now();
   try {
-    const authHeader = req.headers.get('Authorization');
-    if (!authHeader) {
-      throw new Error('Authorization header required');
+    const corsHeaders = corsHeadersPara(req);
+    if (req.method === 'OPTIONS') {
+      return new Response(null, { headers: corsHeaders });
     }
 
-    const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
-    const supabaseKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
-    const supabase = createClient(supabaseUrl, supabaseKey);
-
-    // Get user from auth header
-    const token = authHeader.replace('Bearer ', '');
-    const {
-      data: { user },
-      error: userError,
-    } = await supabase.auth.getUser(token);
-
-    if (userError || !user) {
-      throw new Error('Invalid authentication token');
-    }
-
-    const rawBody = await req.json();
-    const validation = validatePayload(Bitrix24SyncSchema, rawBody, 'bitrix24-sync');
-    if (!validation.success) {
-      return createErrorResponse(validation.error, 400, validation.details, req);
-    }
-    const { action, params } = validation.data;
-    console.log(`[bitrix24-sync] Action: ${action}, User: ${user.id}`);
-
-    // Get valid Bitrix token
-    const accessToken = await getValidToken(supabase);
-
-    let result;
-    switch (action) {
-      case 'test_connection':
-        result = await testConnection(accessToken);
-        break;
-      case 'sync_deals':
-        result = await syncDeals(supabase, accessToken, user.id);
-        break;
-      case 'sync_contacts':
-        result = await syncContacts(supabase, accessToken, user.id);
-        break;
-      case 'sync_companies':
-        result = await syncCompanies(supabase, accessToken, user.id);
-        break;
-      case 'export_payment_status':
-        result = await exportPaymentStatus(supabase, accessToken, user.id);
-        break;
-      case 'sync_elisao_task':
-        result = await syncElisaoTask(supabase, accessToken, params?.id, user.id);
-        break;
-      case 'sync_boleto':
-        result = await syncBoleto(supabase, accessToken, params?.boleto, user.id);
-        break;
-      default:
-        throw new Error(`Unknown action: ${action}`);
-    }
-
-    return new Response(JSON.stringify(result), {
-      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-    });
-  } catch (error: any) {
-    console.error('[bitrix24-sync] Error:', error);
-    return new Response(
-      JSON.stringify({ success: false, message: error?.message || 'Erro desconhecido' }),
-      {
-        status: 500,
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+    try {
+      const authHeader = req.headers.get('Authorization');
+      if (!authHeader) {
+        throw new Error('Authorization header required');
       }
-    );
+
+      const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
+      const supabaseKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
+      const supabase = createClient(supabaseUrl, supabaseKey);
+
+      // Get user from auth header
+      const token = authHeader.replace('Bearer ', '');
+      const {
+        data: { user },
+        error: userError,
+      } = await supabase.auth.getUser(token);
+
+      if (userError || !user) {
+        throw new Error('Invalid authentication token');
+      }
+
+      const rawBody = await req.json();
+      const validation = validatePayload(Bitrix24SyncSchema, rawBody, 'bitrix24-sync');
+      if (!validation.success) {
+        return createErrorResponse(validation.error, 400, validation.details, req);
+      }
+      const { action, params } = validation.data;
+      log.info(`[bitrix24-sync] Action: ${action}, User: ${user.id}`);
+
+      // Get valid Bitrix token
+      const accessToken = await getValidToken(supabase);
+
+      let result;
+      switch (action) {
+        case 'test_connection':
+          result = await testConnection(accessToken);
+          break;
+        case 'sync_deals':
+          result = await syncDeals(supabase, accessToken, user.id);
+          break;
+        case 'sync_contacts':
+          result = await syncContacts(supabase, accessToken, user.id);
+          break;
+        case 'sync_companies':
+          result = await syncCompanies(supabase, accessToken, user.id);
+          break;
+        case 'export_payment_status':
+          result = await exportPaymentStatus(supabase, accessToken, user.id);
+          break;
+        case 'sync_elisao_task':
+          result = await syncElisaoTask(supabase, accessToken, params?.id, user.id);
+          break;
+        case 'sync_boleto':
+          result = await syncBoleto(supabase, accessToken, params?.boleto, user.id);
+          break;
+        default:
+          throw new Error(`Unknown action: ${action}`);
+      }
+
+      return new Response(JSON.stringify(result), {
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
+    } catch (error: any) {
+      log.error('[bitrix24-sync] Error:', {
+        error_message: mensagemErro(error),
+        context: contextoErro(error),
+      });
+      return new Response(
+        JSON.stringify({ success: false, message: error?.message || 'Erro desconhecido' }),
+        {
+          status: 500,
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        }
+      );
+    }
+  } finally {
+    log.info('request', { duration_ms: Date.now() - _t0 });
+    await log.flush();
   }
 });

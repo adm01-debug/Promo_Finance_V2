@@ -9,6 +9,9 @@ import {
 import { checkRateLimit, rateLimitResponse } from '../_shared/rate-limit.ts';
 import { exigirUsuario } from '../_shared/auth-guard.ts';
 import { corsHeadersPara } from '../_shared/cors.ts';
+import { createLogger } from '../_shared/observability.ts';
+import { mensagemErro, contextoErro } from '../_shared/erros.ts';
+const log = createLogger('benchmarking-setorial');
 
 export const handler = async (req: Request): Promise<Response> => {
   const corsHeaders = corsHeadersPara(req);
@@ -155,7 +158,7 @@ Use referências reais do mercado brasileiro de eventos. Métricas importantes:
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     });
   } catch (e) {
-    console.error('benchmarking error:', e);
+    log.error('benchmarking error:', { error_message: mensagemErro(e), context: contextoErro(e) });
     return new Response(JSON.stringify({ error: e instanceof Error ? e.message : 'Erro' }), {
       status: 500,
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
@@ -164,5 +167,13 @@ Use referências reais do mercado brasileiro de eventos. Métricas importantes:
 };
 
 if (import.meta.main) {
-  serve(handler);
+  serve(async (req) => {
+    const _t0 = Date.now();
+    try {
+      return await handler(req);
+    } finally {
+      log.info('request', { duration_ms: Date.now() - _t0 });
+      await log.flush();
+    }
+  });
 }
