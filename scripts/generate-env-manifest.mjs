@@ -54,6 +54,8 @@ const opcionais = new Set([
   'EDGE_FUNCTION_NAME',
   'MFA_ADMIN_ENFORCED',
   'SUPABASE_FUNCTION_NAME',
+  'EDGE_SENTRY_DSN',
+  'SENTRY_DSN',
 ]);
 const edge = [...edgeSet].sort().map(name => ({
   name, scope: 'edge', required: !autoProvided.has(name) && !opcionais.has(name),
