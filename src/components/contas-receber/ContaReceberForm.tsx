@@ -221,11 +221,12 @@ export function ContaReceberForm({ open, onOpenChange, conta }: ContaReceberForm
     onError: (error: unknown) => {
       logger.error('Error updating conta receber:', error);
       if (error instanceof ConflitoVersaoError) {
+        if (!conta) return;
         queryClient.invalidateQueries({ queryKey: ['contas-receber'] });
         supabase
           .from('contas_receber')
           .select('*')
-          .eq('id', conta.id as string)
+          .eq('id', conta.id)
           .single()
           .then(({ data: row }) => {
             if (!row) return;
