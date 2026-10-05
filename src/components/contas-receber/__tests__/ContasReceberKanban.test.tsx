@@ -14,30 +14,33 @@ vi.mock('@/lib/formatters', () => ({
   calculateOverdueDays: () => 5,
 }));
 
-const createConta = (overrides: Partial<ContaReceberWithRelations> = {}): ContaReceberWithRelations => ({
-  id: `conta-${Math.random()}`,
-  cliente_nome: 'Cliente Teste',
-  descricao: 'Desc teste',
-  valor: 1000,
-  valor_recebido: 0,
-  data_vencimento: '2025-03-15',
-  data_emissao: '2025-03-01',
-  status: 'pendente',
-  empresa_id: 'emp-1',
-  created_by: 'user-1',
-  created_at: '2025-01-01',
-  updated_at: '2025-01-01',
-  tipo_cobranca: 'boleto',
-  etapa_cobranca: null,
-  numero_documento: null,
-  numero_parcela_atual: null,
-  total_parcelas: null,
-  valor_desconto: null,
-  clientes: null,
-  has_protesto: false,
-  has_boleto: false,
-  ...overrides,
-} as any);
+const createConta = (
+  overrides: Partial<ContaReceberWithRelations> = {}
+): ContaReceberWithRelations =>
+  ({
+    id: `conta-${Math.random()}`,
+    cliente_nome: 'Cliente Teste',
+    descricao: 'Desc teste',
+    valor: 1000,
+    valor_recebido: 0,
+    data_vencimento: '2025-03-15',
+    data_emissao: '2025-03-01',
+    status: 'pendente',
+    empresa_id: 'emp-1',
+    created_by: 'user-1',
+    created_at: '2025-01-01',
+    updated_at: '2025-01-01',
+    tipo_cobranca: 'boleto',
+    etapa_cobranca: null,
+    numero_documento: null,
+    numero_parcela_atual: null,
+    total_parcelas: null,
+    valor_desconto: null,
+    clientes: null,
+    has_protesto: false,
+    has_boleto: false,
+    ...overrides,
+  }) as any;
 
 describe('ContasReceberKanban', () => {
   // ===== #21: Modo Kanban =====

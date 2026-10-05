@@ -2,7 +2,13 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 
-export interface ChecklistItem { id: string; label: string; status: 'ok' | 'warn' | 'error'; detail?: string; itens?: string[] }
+export interface ChecklistItem {
+  id: string;
+  label: string;
+  status: 'ok' | 'warn' | 'error';
+  detail?: string;
+  itens?: string[];
+}
 
 export interface SpedValidacaoResult {
   mode: 'validate';
@@ -66,7 +72,13 @@ export function useSpedContabilHistorico(empresaId?: string) {
 
 export function useSpedEcdValidacao() {
   return useMutation({
-    mutationFn: async ({ empresaId, anoCalendario }: { empresaId: string; anoCalendario: number }) => {
+    mutationFn: async ({
+      empresaId,
+      anoCalendario,
+    }: {
+      empresaId: string;
+      anoCalendario: number;
+    }) => {
       const { data, error } = await supabase.functions.invoke('gerar-sped-ecd', {
         body: { empresa_id: empresaId, ano_calendario: anoCalendario, mode: 'validate' },
       });
@@ -80,7 +92,13 @@ export function useSpedEcdValidacao() {
 
 export function useSpedEcfValidacao() {
   return useMutation({
-    mutationFn: async ({ empresaId, anoCalendario }: { empresaId: string; anoCalendario: number }) => {
+    mutationFn: async ({
+      empresaId,
+      anoCalendario,
+    }: {
+      empresaId: string;
+      anoCalendario: number;
+    }) => {
       const { data, error } = await supabase.functions.invoke('gerar-sped-ecf', {
         body: { empresa_id: empresaId, ano_calendario: anoCalendario, mode: 'validate' },
       });
@@ -126,7 +144,17 @@ async function postBitrixLog(payload: {
 export function useGerarSpedContabil() {
   const qc = useQueryClient();
   return useMutation({
-    mutationFn: async ({ empresaId, anoCalendario, tipo, silent }: { empresaId: string; anoCalendario: number; tipo: 'ECD' | 'ECF'; silent?: boolean }) => {
+    mutationFn: async ({
+      empresaId,
+      anoCalendario,
+      tipo,
+      silent,
+    }: {
+      empresaId: string;
+      anoCalendario: number;
+      tipo: 'ECD' | 'ECF';
+      silent?: boolean;
+    }) => {
       const fnName = tipo === 'ECD' ? 'gerar-sped-ecd' : 'gerar-sped-ecf';
       const { data, error } = await supabase.functions.invoke(fnName, {
         body: { empresa_id: empresaId, ano_calendario: anoCalendario },
@@ -137,12 +165,17 @@ export function useGerarSpedContabil() {
         const erros: string[] = data?.validacoes?.erros ?? [];
         const avisos: string[] = data?.validacoes?.avisos ?? [];
         void postBitrixLog({
-          empresaId, tipo, anoCalendario,
+          empresaId,
+          tipo,
+          anoCalendario,
           status: 'bloqueado',
           totalErros: erros.length,
           totalAvisos: avisos.length,
         });
-        const err = new Error(data.error) as Error & { checklist?: ChecklistItem[]; validacoes?: { erros: string[]; avisos: string[] } };
+        const err = new Error(data.error) as Error & {
+          checklist?: ChecklistItem[];
+          validacoes?: { erros: string[]; avisos: string[] };
+        };
         err.checklist = data.checklist;
         err.validacoes = data.validacoes;
         throw err;
@@ -156,7 +189,9 @@ export function useGerarSpedContabil() {
       if (erros.length > 0) {
         toast.error(`SPED ${vars.tipo} gerado com ${erros.length} erro(s)`);
       } else {
-        toast.success(`SPED ${vars.tipo} gerado com sucesso (${data.total_lancamentos} lançamentos)`);
+        toast.success(
+          `SPED ${vars.tipo} gerado com sucesso (${data.total_lancamentos} lançamentos)`
+        );
       }
       // Log Bitrix24 — geração concluída (mesmo com erros não-bloqueantes registrados pelo backend)
       void postBitrixLog({
@@ -185,10 +220,16 @@ export function useRegistrarTransmissaoSped() {
       arquivoId,
       recibo,
       tipo,
-    }: { arquivoId: string; recibo: string; tipo?: 'ECD' | 'ECF' }) => {
+    }: {
+      arquivoId: string;
+      recibo: string;
+      tipo?: 'ECD' | 'ECF';
+    }) => {
       const { data: arquivo, error: fetchErr } = await supabase
         .from('sped_contabil_arquivos')
-        .select('empresa_id, ano_calendario, tipo, validacoes, total_linhas, total_lancamentos, hash_sha256, storage_path')
+        .select(
+          'empresa_id, ano_calendario, tipo, validacoes, total_linhas, total_lancamentos, hash_sha256, storage_path'
+        )
         .eq('id', arquivoId)
         .maybeSingle();
       if (fetchErr) throw fetchErr;
@@ -218,7 +259,7 @@ export function useRegistrarTransmissaoSped() {
         const v = (arquivo.validacoes ?? {}) as { erros?: string[]; avisos?: string[] };
         void postBitrixLog({
           empresaId: arquivo.empresa_id,
-          tipo: (tipo ?? (arquivo.tipo as 'ECD' | 'ECF')),
+          tipo: tipo ?? (arquivo.tipo as 'ECD' | 'ECF'),
           anoCalendario: arquivo.ano_calendario,
           status: 'transmitido',
           totalErros: v.erros?.length ?? 0,
@@ -230,6 +271,7 @@ export function useRegistrarTransmissaoSped() {
         });
       }
     },
-    onError: (e: Error) => toast.error('Falha ao registrar transmissão', { description: e.message }),
+    onError: (e: Error) =>
+      toast.error('Falha ao registrar transmissão', { description: e.message }),
   });
 }

@@ -8,7 +8,7 @@ import {
   Smile,
   Frown,
   Meh,
-  AlertTriangle
+  AlertTriangle,
 } from 'lucide-react';
 import {
   Dialog,
@@ -32,24 +32,36 @@ interface WhatsAppHistoryProps {
   onOpenChange: (open: boolean) => void;
 }
 
-export function WhatsAppHistoryIA({ clienteId, clienteNome, open, onOpenChange }: WhatsAppHistoryProps) {
+export function WhatsAppHistoryIA({
+  clienteId,
+  clienteNome,
+  open,
+  onOpenChange,
+}: WhatsAppHistoryProps) {
   const { data: conversas, isLoading } = useWhatsAppConversas(clienteId);
   const sendMessage = useSendMessage();
   const [mensagem, setMensagem] = useState('');
 
   const handleSend = () => {
     if (!mensagem.trim()) return;
-    sendMessage.mutate({ clienteId, mensagem }, {
-      onSuccess: () => setMensagem('')
-    });
+    sendMessage.mutate(
+      { clienteId, mensagem },
+      {
+        onSuccess: () => setMensagem(''),
+      }
+    );
   };
 
   const getSentimentoIcon = (sentimento: string) => {
     switch (sentimento) {
-      case 'positivo': return <Smile className="h-3 w-3 text-success" />;
-      case 'negativo': return <Frown className="h-3 w-3 text-destructive" />;
-      case 'agressivo': return <AlertTriangle className="h-3 w-3 text-destructive" />;
-      default: return <Meh className="h-3 w-3 text-muted-foreground" />;
+      case 'positivo':
+        return <Smile className="h-3 w-3 text-success" />;
+      case 'negativo':
+        return <Frown className="h-3 w-3 text-destructive" />;
+      case 'agressivo':
+        return <AlertTriangle className="h-3 w-3 text-destructive" />;
+      default:
+        return <Meh className="h-3 w-3 text-muted-foreground" />;
     }
   };
 
@@ -81,16 +93,16 @@ export function WhatsAppHistoryIA({ clienteId, clienteNome, open, onOpenChange }
                 <div
                   key={msg.id}
                   className={cn(
-                    "flex flex-col max-w-[80%] space-y-1",
-                    msg.direcao === 'saida' ? "ml-auto items-end" : "items-start"
+                    'flex flex-col max-w-[80%] space-y-1',
+                    msg.direcao === 'saida' ? 'ml-auto items-end' : 'items-start'
                   )}
                 >
                   <div
                     className={cn(
-                      "p-3 rounded-2xl text-sm",
+                      'p-3 rounded-2xl text-sm',
                       msg.direcao === 'saida'
-                        ? "bg-primary text-primary-foreground rounded-tr-none"
-                        : "bg-accent rounded-tl-none"
+                        ? 'bg-primary text-primary-foreground rounded-tr-none'
+                        : 'bg-accent rounded-tl-none'
                     )}
                   >
                     {msg.mensagem}
@@ -106,7 +118,10 @@ export function WhatsAppHistoryIA({ clienteId, clienteNome, open, onOpenChange }
                       </Badge>
                     )}
                     {msg.intencao_pagamento && (
-                      <Badge variant="secondary" className="h-4 text-[10px] bg-success/20 text-success border-success/30">
+                      <Badge
+                        variant="secondary"
+                        className="h-4 text-[10px] bg-success/20 text-success border-success/30"
+                      >
                         <TrendingUp className="h-2 w-2 mr-1" /> Intenção de Pago
                       </Badge>
                     )}
@@ -124,7 +139,10 @@ export function WhatsAppHistoryIA({ clienteId, clienteNome, open, onOpenChange }
 
         <div className="p-4 border-t bg-accent/30">
           <form
-            onSubmit={(e) => { e.preventDefault(); handleSend(); }}
+            onSubmit={(e) => {
+              e.preventDefault();
+              handleSend();
+            }}
             className="flex gap-2"
           >
             <Input
@@ -134,7 +152,11 @@ export function WhatsAppHistoryIA({ clienteId, clienteNome, open, onOpenChange }
               disabled={sendMessage.isPending}
             />
             <Button size="icon" type="submit" disabled={sendMessage.isPending || !mensagem.trim()}>
-              {sendMessage.isPending ? <Loader2 className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />}
+              {sendMessage.isPending ? (
+                <Loader2 className="h-4 w-4 animate-spin" />
+              ) : (
+                <Send className="h-4 w-4" />
+              )}
             </Button>
           </form>
         </div>

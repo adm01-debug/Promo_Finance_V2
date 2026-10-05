@@ -1,7 +1,7 @@
-import * as React from "react";
-import * as TooltipPrimitive from "@radix-ui/react-tooltip";
-import { cn } from "@/lib/utils";
-import { Info, HelpCircle, AlertTriangle } from "lucide-react";
+import * as React from 'react';
+import * as TooltipPrimitive from '@radix-ui/react-tooltip';
+import { cn } from '@/lib/utils';
+import { Info, HelpCircle, AlertTriangle } from 'lucide-react';
 
 const TooltipProvider = TooltipPrimitive.Provider;
 
@@ -27,13 +27,13 @@ const TooltipContent = React.forwardRef<
       ref={ref}
       sideOffset={sideOffset}
       className={cn(
-        "z-50 overflow-hidden rounded-md px-3 py-1.5 text-sm shadow-md",
-        "animate-in fade-in-0 zoom-in-95",
-        "data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=closed]:zoom-out-95",
-        "data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2",
-        "data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2",
+        'z-50 overflow-hidden rounded-md px-3 py-1.5 text-sm shadow-md',
+        'animate-in fade-in-0 zoom-in-95',
+        'data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=closed]:zoom-out-95',
+        'data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2',
+        'data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2',
         variantStyles[variant],
-        className,
+        className
       )}
       {...props}
     />
@@ -51,13 +51,13 @@ interface RichTooltipProps {
   className?: string;
 }
 
-function RichTooltip({ 
-  title, 
-  description, 
-  icon, 
-  children, 
+function RichTooltip({
+  title,
+  description,
+  icon,
+  children,
   side = 'top',
-  className 
+  className,
 }: RichTooltipProps) {
   const icons = {
     info: Info,
@@ -71,14 +71,12 @@ function RichTooltip({
   return (
     <Tooltip>
       <TooltipTrigger asChild>{children}</TooltipTrigger>
-      <TooltipContent side={side} variant={variant} className={cn("max-w-xs", className)}>
+      <TooltipContent side={side} variant={variant} className={cn('max-w-xs', className)}>
         <div className="flex gap-2">
-          {IconComponent && (
-            <IconComponent className="h-4 w-4 flex-shrink-0 mt-0.5" />
-          )}
+          {IconComponent && <IconComponent className="h-4 w-4 flex-shrink-0 mt-0.5" />}
           <div>
             {title && <p className="font-medium mb-0.5">{title}</p>}
-            <p className={cn("text-xs", title && "opacity-80")}>{description}</p>
+            <p className={cn('text-xs', title && 'opacity-80')}>{description}</p>
           </div>
         </div>
       </TooltipContent>
@@ -96,11 +94,11 @@ function InfoTooltip({ content, className }: InfoTooltipProps) {
   return (
     <Tooltip>
       <TooltipTrigger asChild>
-        <button 
-          type="button" 
+        <button
+          type="button"
           className={cn(
-            "inline-flex items-center justify-center h-4 w-4 rounded-full",
-            "text-muted-foreground hover:text-foreground transition-colors",
+            'inline-flex items-center justify-center h-4 w-4 rounded-full',
+            'text-muted-foreground hover:text-foreground transition-colors',
             className
           )}
         >
@@ -132,9 +130,7 @@ function ShortcutTooltip({ label, shortcut, children, side = 'bottom' }: Shortcu
           {shortcut.map((key, i) => (
             <React.Fragment key={i}>
               {i > 0 && <span className="text-muted-foreground text-xs">+</span>}
-              <kbd className="px-1.5 py-0.5 text-xs font-mono bg-muted rounded border">
-                {key}
-              </kbd>
+              <kbd className="px-1.5 py-0.5 text-xs font-mono bg-muted rounded border">{key}</kbd>
             </React.Fragment>
           ))}
         </div>
@@ -161,7 +157,7 @@ function TruncatedText({ text, maxLength = 30, className }: TruncatedTextProps) 
   return (
     <Tooltip>
       <TooltipTrigger asChild>
-        <span className={cn("cursor-help", className)}>{displayText}</span>
+        <span className={cn('cursor-help', className)}>{displayText}</span>
       </TooltipTrigger>
       <TooltipContent className="max-w-md">
         <p className="text-xs break-words">{text}</p>
@@ -170,13 +166,13 @@ function TruncatedText({ text, maxLength = 30, className }: TruncatedTextProps) 
   );
 }
 
-export { 
-  Tooltip, 
-  TooltipTrigger, 
-  TooltipContent, 
+export {
+  Tooltip,
+  TooltipTrigger,
+  TooltipContent,
   TooltipProvider,
   RichTooltip,
   InfoTooltip,
   ShortcutTooltip,
-  TruncatedText
+  TruncatedText,
 };

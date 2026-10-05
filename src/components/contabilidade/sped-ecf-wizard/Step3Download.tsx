@@ -22,7 +22,11 @@ interface Props {
   copyHash: () => void;
   baixarZip: () => void;
   handleRegistrar: () => void;
-  transmitir: UseMutationResult<unknown, Error, { arquivoId: string; recibo: string; tipo?: 'ECD' | 'ECF' }>;
+  transmitir: UseMutationResult<
+    unknown,
+    Error,
+    { arquivoId: string; recibo: string; tipo?: 'ECD' | 'ECF' }
+  >;
   validacoesOpen: boolean;
   setValidacoesOpen: (v: boolean) => void;
   setStep: (s: Step) => void;
@@ -76,8 +80,8 @@ export function Step3Download({
               Download bloqueado
             </p>
             <p className="text-sm text-muted-foreground">
-              O arquivo foi gerado, mas a validação retornou {errosResultado.length} erro(s). Corrija e
-              regenere antes de baixar.
+              O arquivo foi gerado, mas a validação retornou {errosResultado.length} erro(s).
+              Corrija e regenere antes de baixar.
             </p>
             <p className="text-xs text-muted-foreground font-mono mt-1">{resultado.file_name}</p>
           </div>
@@ -88,7 +92,9 @@ export function Step3Download({
             <CheckCircle2 className="h-5 w-5 text-success" />
           </div>
           <div className="flex-1 space-y-1">
-            <p className="text-lg font-semibold font-display tracking-tight">Arquivo gerado com sucesso</p>
+            <p className="text-lg font-semibold font-display tracking-tight">
+              Arquivo gerado com sucesso
+            </p>
             <p className="text-sm text-muted-foreground font-mono">{resultado.file_name}</p>
           </div>
         </div>
@@ -126,10 +132,15 @@ export function Step3Download({
                   aria-label={hashCopied ? 'Hash copiado' : 'Copiar hash SHA-256'}
                   className={cn(
                     'transition-all duration-200 hover-scale',
-                    hashCopied && 'bg-success text-success-foreground hover:bg-success/90 border-success',
+                    hashCopied &&
+                      'bg-success text-success-foreground hover:bg-success/90 border-success'
                   )}
                 >
-                  {hashCopied ? <Check className="h-3.5 w-3.5" /> : <Copy className="h-3.5 w-3.5" />}
+                  {hashCopied ? (
+                    <Check className="h-3.5 w-3.5" />
+                  ) : (
+                    <Copy className="h-3.5 w-3.5" />
+                  )}
                 </Button>
               </TooltipTrigger>
               <TooltipContent side="top">
@@ -158,10 +169,14 @@ export function Step3Download({
           variant={downloadBloqueado ? 'outline' : 'premium'}
           className={cn(
             'gap-2 hover-scale',
-            downloadBloqueado && 'border-destructive/40 text-destructive hover:bg-destructive/10',
+            downloadBloqueado && 'border-destructive/40 text-destructive hover:bg-destructive/10'
           )}
         >
-          {downloadBloqueado ? <ShieldAlert className="h-4 w-4" /> : <Download className="h-4 w-4" />}
+          {downloadBloqueado ? (
+            <ShieldAlert className="h-4 w-4" />
+          ) : (
+            <Download className="h-4 w-4" />
+          )}
           Ver validações & baixar
         </Button>
         {downloadBloqueado && (

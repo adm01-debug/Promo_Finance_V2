@@ -1,16 +1,16 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { toast } from "sonner";
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { toast } from 'sonner';
 import {
   usePendingAnomaliasQueueInfinite,
   useRevisarAnomalia,
   AnomaliaJaRevisadaError,
-} from "@/hooks/useAnomaliasDetectadas";
-import { useSincronizarAnomaliaBitrix } from "@/hooks/useSincronizarAnomaliaBitrix";
-import { supabase } from "@/integrations/supabase/client";
-import { TIPO_LABEL, mensagemErro } from "./helpers";
-import { useConflitoNotifier } from "./conflito";
-import { useRetry } from "./retry";
-import { useAtalhosTeclado } from "./atalhos";
+} from '@/hooks/useAnomaliasDetectadas';
+import { useSincronizarAnomaliaBitrix } from '@/hooks/useSincronizarAnomaliaBitrix';
+import { supabase } from '@/integrations/supabase/client';
+import { TIPO_LABEL, mensagemErro } from './helpers';
+import { useConflitoNotifier } from './conflito';
+import { useRetry } from './retry';
+import { useAtalhosTeclado } from './atalhos';
 import {
   MIN_CONFIRMAR,
   MIN_FALSO_POSITIVO,
@@ -19,11 +19,11 @@ import {
   type ConflitoBanner,
   type ProgressoPorSeveridade,
   type ReviewStats,
-} from "./types";
+} from './types';
 
 interface Options {
   open: boolean;
-  severidadeFilter: Anomalia["severidade"] | "todas";
+  severidadeFilter: Anomalia['severidade'] | 'todas';
 }
 
 export function useReviewQueue({ open, severidadeFilter }: Options) {
@@ -39,7 +39,7 @@ export function useReviewQueue({ open, severidadeFilter }: Options) {
 
   const [snapshot, setSnapshot] = useState<Anomalia[]>([]);
   const [index, setIndex] = useState(0);
-  const [comentario, setComentario] = useState("");
+  const [comentario, setComentario] = useState('');
   const [comentarioTocado, setComentarioTocado] = useState(false);
   const [stats, setStats] = useState<ReviewStats>({ confirmadas: 0, rejeitadas: 0, puladas: 0 });
   const [recarregando, setRecarregando] = useState(false);
@@ -73,16 +73,16 @@ export function useReviewQueue({ open, severidadeFilter }: Options) {
         while (cursor < snapshot.length) {
           const candidato = snapshot[cursor];
           const { data, error } = await supabase
-            .from("anomalias_detectadas")
-            .select("*")
-            .eq("id", candidato.id)
+            .from('anomalias_detectadas')
+            .select('*')
+            .eq('id', candidato.id)
             .maybeSingle();
 
           if (error) break;
 
           if (!data) {
-            toast.warning("Anomalia removida do sistema", {
-              description: "Pulando para a próxima da fila.",
+            toast.warning('Anomalia removida do sistema', {
+              description: 'Pulando para a próxima da fila.',
             });
             notificarRemovida(candidato);
             setStats((s) => ({ ...s, puladas: s.puladas + 1 }));
@@ -91,7 +91,7 @@ export function useReviewQueue({ open, severidadeFilter }: Options) {
           }
 
           const fresca = data as Anomalia;
-          if (fresca.status !== "nova" && fresca.status !== "investigando") {
+          if (fresca.status !== 'nova' && fresca.status !== 'investigando') {
             await notificarConflito(candidato, fresca);
             setStats((s) => ({ ...s, puladas: s.puladas + 1 }));
             cursor += 1;
@@ -111,19 +111,17 @@ export function useReviewQueue({ open, severidadeFilter }: Options) {
         setRecarregando(false);
       }
     },
-    [snapshot, notificarConflito, notificarRemovida],
+    [snapshot, notificarConflito, notificarRemovida]
   );
 
   // Snapshot inicial ao abrir
   useEffect(() => {
     if (open && !isLoading) {
       const filtrada =
-        severidadeFilter === "todas"
-          ? fila
-          : fila.filter((a) => a.severidade === severidadeFilter);
+        severidadeFilter === 'todas' ? fila : fila.filter((a) => a.severidade === severidadeFilter);
       setSnapshot(filtrada);
       setIndex(0);
-      setComentario("");
+      setComentario('');
       setComentarioTocado(false);
       setStats({ confirmadas: 0, rejeitadas: 0, puladas: 0 });
       setConflito(null);
@@ -138,9 +136,7 @@ export function useReviewQueue({ open, severidadeFilter }: Options) {
     setSnapshot((prev) => {
       if (!fila.length) return prev;
       const filtrada =
-        severidadeFilter === "todas"
-          ? fila
-          : fila.filter((a) => a.severidade === severidadeFilter);
+        severidadeFilter === 'todas' ? fila : fila.filter((a) => a.severidade === severidadeFilter);
       if (filtrada.length <= prev.length) return prev;
       const existentes = new Set(prev.map((a) => a.id));
       const novos = filtrada.filter((a) => !existentes.has(a.id));
@@ -165,8 +161,12 @@ export function useReviewQueue({ open, severidadeFilter }: Options) {
   const validoFalsoPositivo = comentarioTrim.length >= MIN_FALSO_POSITIVO;
   const comentarioValido = validoConfirmar;
 
-  const erroConfirmar = mensagemErro(comentarioTrim, MIN_CONFIRMAR, "confirmar o problema");
-  const erroFalsoPositivo = mensagemErro(comentarioTrim, MIN_FALSO_POSITIVO, "marcar como falso positivo");
+  const erroConfirmar = mensagemErro(comentarioTrim, MIN_CONFIRMAR, 'confirmar o problema');
+  const erroFalsoPositivo = mensagemErro(
+    comentarioTrim,
+    MIN_FALSO_POSITIVO,
+    'marcar como falso positivo'
+  );
   const erroComentario = erroConfirmar ?? erroFalsoPositivo;
   const mostrarErroComentario = comentarioTocado && !!erroComentario;
 
@@ -179,18 +179,33 @@ export function useReviewQueue({ open, severidadeFilter }: Options) {
   }, [atual?.id]);
 
   const dadosFormatados = useMemo(() => {
-    if (!atual) return "";
+    if (!atual) return '';
     try {
       return JSON.stringify(atual.dados ?? {}, null, 2);
     } catch {
-      return "—";
+      return '—';
     }
   }, [atual]);
 
   const { contagemPorSeveridade, progressoPorSeveridade } = useMemo(() => {
-    const total: Record<Anomalia["severidade"], number> = { critica: 0, alta: 0, media: 0, baixa: 0 };
-    const revisado: Record<Anomalia["severidade"], number> = { critica: 0, alta: 0, media: 0, baixa: 0 };
-    const restante: Record<Anomalia["severidade"], number> = { critica: 0, alta: 0, media: 0, baixa: 0 };
+    const total: Record<Anomalia['severidade'], number> = {
+      critica: 0,
+      alta: 0,
+      media: 0,
+      baixa: 0,
+    };
+    const revisado: Record<Anomalia['severidade'], number> = {
+      critica: 0,
+      alta: 0,
+      media: 0,
+      baixa: 0,
+    };
+    const restante: Record<Anomalia['severidade'], number> = {
+      critica: 0,
+      alta: 0,
+      media: 0,
+      baixa: 0,
+    };
     for (let i = 0; i < snapshot.length; i++) {
       const sev = snapshot[i].severidade;
       if (!(sev in total)) continue;
@@ -205,7 +220,7 @@ export function useReviewQueue({ open, severidadeFilter }: Options) {
   }, [snapshot, index]);
 
   const pularParaSeveridade = useCallback(
-    (sev: Anomalia["severidade"]) => {
+    (sev: Anomalia['severidade']) => {
       let alvo = snapshot.findIndex((a, i) => i >= index && a.severidade === sev);
       if (alvo === -1) alvo = snapshot.findIndex((a) => a.severidade === sev);
       if (alvo === -1) {
@@ -213,16 +228,16 @@ export function useReviewQueue({ open, severidadeFilter }: Options) {
         return;
       }
       if (alvo === index) return;
-      setComentario("");
+      setComentario('');
       setComentarioTocado(false);
       void recarregarPosicao(alvo);
     },
-    [snapshot, index, recarregarPosicao],
+    [snapshot, index, recarregarPosicao]
   );
 
   const avancar = useCallback(async () => {
     setTransicionando(true);
-    setComentario("");
+    setComentario('');
     setComentarioTocado(false);
     try {
       await recarregarPosicao(index + 1);
@@ -234,14 +249,14 @@ export function useReviewQueue({ open, severidadeFilter }: Options) {
   const { withRetry } = useRetry();
 
   const handleAcao = useCallback(
-    async (status: "confirmada" | "falso_positivo") => {
+    async (status: 'confirmada' | 'falso_positivo') => {
       if (!atual) return;
       // Idempotência: bloqueia re-entrada para o mesmo id (double-click, teclas rápidas)
       if (inFlightIds.current.has(atual.id)) return;
       // Concorrência local: não permitir novo submit enquanto outro está em andamento
       if (revisar.isPending || transicionando || recarregando) return;
 
-      const minRequerido = status === "confirmada" ? MIN_CONFIRMAR : MIN_FALSO_POSITIVO;
+      const minRequerido = status === 'confirmada' ? MIN_CONFIRMAR : MIN_FALSO_POSITIVO;
       if (comentarioTrim.length < minRequerido) {
         setComentarioTocado(true);
         return;
@@ -251,9 +266,7 @@ export function useReviewQueue({ open, severidadeFilter }: Options) {
       const obs = comentarioTrim;
       inFlightIds.current.add(alvo.id);
       try {
-        await withRetry(() =>
-          revisar.mutateAsync({ id: alvo.id, status, observacoes: obs }),
-        );
+        await withRetry(() => revisar.mutateAsync({ id: alvo.id, status, observacoes: obs }));
         setTransicionando(true);
         // Idempotência: só sincroniza Bitrix uma vez por id nesta sessão
         if (!bitrixSincronizados.current.has(alvo.id)) {
@@ -262,13 +275,11 @@ export function useReviewQueue({ open, severidadeFilter }: Options) {
         }
         setStats((s) => ({
           ...s,
-          confirmadas: status === "confirmada" ? s.confirmadas + 1 : s.confirmadas,
-          rejeitadas: status === "falso_positivo" ? s.rejeitadas + 1 : s.rejeitadas,
+          confirmadas: status === 'confirmada' ? s.confirmadas + 1 : s.confirmadas,
+          rejeitadas: status === 'falso_positivo' ? s.rejeitadas + 1 : s.rejeitadas,
         }));
         toast.success(
-          status === "confirmada"
-            ? "Confirmada como problema real"
-            : "Marcada como falso positivo",
+          status === 'confirmada' ? 'Confirmada como problema real' : 'Marcada como falso positivo'
         );
         await avancar();
       } catch (err) {
@@ -276,21 +287,21 @@ export function useReviewQueue({ open, severidadeFilter }: Options) {
           setTransicionando(true);
           try {
             const { data } = await supabase
-              .from("anomalias_detectadas")
-              .select("*")
-              .eq("id", alvo.id)
+              .from('anomalias_detectadas')
+              .select('*')
+              .eq('id', alvo.id)
               .maybeSingle();
             if (data) {
               await notificarConflito(alvo, data as Anomalia);
             } else {
               toast.warning(
                 `Anomalia [${alvo.severidade.toUpperCase()} · ${TIPO_LABEL[alvo.tipo_anomalia]}] foi removida`,
-                { description: "Avançando para a próxima da fila." },
+                { description: 'Avançando para a próxima da fila.' }
               );
             }
           } catch {
-            toast.warning("Outro revisor já resolveu esta anomalia", {
-              description: "Avançando para a próxima da fila.",
+            toast.warning('Outro revisor já resolveu esta anomalia', {
+              description: 'Avançando para a próxima da fila.',
             });
           }
           setStats((s) => ({ ...s, puladas: s.puladas + 1 }));
@@ -299,12 +310,12 @@ export function useReviewQueue({ open, severidadeFilter }: Options) {
         }
         // Falha de persistência definitiva: NÃO avança, NÃO atualiza stats.
         // Estado local intacto para permitir nova tentativa manual.
-        const detalhe = (err as { message?: string } | null)?.message ?? "Erro desconhecido";
-        toast.error("Falha ao registrar revisão", {
+        const detalhe = (err as { message?: string } | null)?.message ?? 'Erro desconhecido';
+        toast.error('Falha ao registrar revisão', {
           description: `${detalhe} — o item permanece na fila.`,
           duration: 8000,
           action: {
-            label: "Tentar novamente",
+            label: 'Tentar novamente',
             onClick: () => {
               void handleAcao(status);
             },
@@ -324,19 +335,19 @@ export function useReviewQueue({ open, severidadeFilter }: Options) {
       avancar,
       notificarConflito,
       withRetry,
-    ],
+    ]
   );
 
   const handlePular = useCallback(async () => {
     if (!atual || recarregando) return;
-    setComentario("");
+    setComentario('');
     setComentarioTocado(false);
     setRecarregando(true);
     try {
       const { data, error } = await supabase
-        .from("anomalias_detectadas")
-        .select("*")
-        .eq("id", atual.id)
+        .from('anomalias_detectadas')
+        .select('*')
+        .eq('id', atual.id)
         .maybeSingle();
 
       if (error) {
@@ -346,8 +357,8 @@ export function useReviewQueue({ open, severidadeFilter }: Options) {
       }
 
       if (!data) {
-        toast.warning("Anomalia removida do sistema", {
-          description: "Pulando para a próxima da fila.",
+        toast.warning('Anomalia removida do sistema', {
+          description: 'Pulando para a próxima da fila.',
         });
         setStats((s) => ({ ...s, puladas: s.puladas + 1 }));
         await recarregarPosicao(index + 1);
@@ -355,7 +366,7 @@ export function useReviewQueue({ open, severidadeFilter }: Options) {
       }
 
       const fresca = data as Anomalia;
-      if (fresca.status !== "nova" && fresca.status !== "investigando") {
+      if (fresca.status !== 'nova' && fresca.status !== 'investigando') {
         await notificarConflito(atual, fresca);
         setStats((s) => ({ ...s, puladas: s.puladas + 1 }));
         await recarregarPosicao(index + 1);
@@ -391,10 +402,8 @@ export function useReviewQueue({ open, severidadeFilter }: Options) {
   });
 
   const outrasSeveridades = useMemo(() => {
-    if (!atual) return [] as Anomalia["severidade"][];
-    return SEVERIDADES.filter(
-      (s) => s !== atual.severidade && progressoPorSeveridade.total[s] > 0,
-    );
+    if (!atual) return [] as Anomalia['severidade'][];
+    return SEVERIDADES.filter((s) => s !== atual.severidade && progressoPorSeveridade.total[s] > 0);
   }, [atual, progressoPorSeveridade]);
 
   return {

@@ -30,7 +30,7 @@ export function useCountUp(
     function animate(currentTime: number) {
       const elapsed = currentTime - startTime;
       const progress = Math.min(elapsed / duration, 1);
-      
+
       // Ease-out cubic
       const eased = 1 - Math.pow(1 - progress, 3);
       const current = startValue + (target - startValue) * eased;

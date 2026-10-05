@@ -130,8 +130,7 @@ export function competenciaReferenciaDe(series: readonly SerieEmpresa[]): string
   return maior;
 }
 
-const comparaNome = (a: string, b: string) =>
-  a.localeCompare(b, 'pt-BR', { sensitivity: 'base' });
+const comparaNome = (a: string, b: string) => a.localeCompare(b, 'pt-BR', { sensitivity: 'base' });
 
 /**
  * Compara as séries de conformidade de várias empresas.
@@ -161,9 +160,7 @@ export function compararConformidade(
 
   const parciais = unicas.map((serie) => {
     const pontos = normalizarPontos(serie.pontos);
-    const ateReferencia = referencia
-      ? pontos.filter((p) => p.competencia <= referencia)
-      : [];
+    const ateReferencia = referencia ? pontos.filter((p) => p.competencia <= referencia) : [];
     const atual = ateReferencia.at(-1) ?? null;
     const anterior = ateReferencia.length > 1 ? ateReferencia[ateReferencia.length - 2] : null;
     const tendencia = analisarTendencia(ateReferencia);
@@ -207,9 +204,7 @@ export function compararConformidade(
   ordenadas.forEach((linha, indice) => {
     const anterior = indice > 0 ? ordenadas[indice - 1] : null;
     const empatou =
-      anterior !== null &&
-      anterior.semDados === linha.semDados &&
-      anterior.score === linha.score;
+      anterior !== null && anterior.semDados === linha.semDados && anterior.score === linha.score;
     posicaoAtual = empatou ? posicaoAtual : indice + 1;
     linhas.push({ ...linha, posicao: posicaoAtual });
   });

@@ -6,23 +6,15 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Switch } from '@/components/ui/switch';
 import { Skeleton } from '@/components/ui/skeleton';
-import { 
-  Table, 
-  TableBody, 
-  TableCell, 
-  TableHead, 
-  TableHeader, 
-  TableRow 
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
 } from '@/components/ui/table';
-import { 
-  Clock, 
-  Play, 
-  Pause, 
-  Trash2, 
-  RefreshCw,
-  Calendar,
-  AlertCircle
-} from 'lucide-react';
+import { Clock, Play, Pause, Trash2, RefreshCw, Calendar, AlertCircle } from 'lucide-react';
 import { toast } from 'sonner';
 import { logger } from '@/lib/logger';
 import {
@@ -36,12 +28,7 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from '@/components/ui/alert-dialog';
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from '@/components/ui/tooltip';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 
 interface CronJob {
   jobid: number;
@@ -84,13 +71,13 @@ function parseCronExpression(schedule: string): string {
 // Extrair nome amigável do job
 function getJobDisplayName(jobname: string, command: string): string {
   if (jobname && jobname !== '') return jobname;
-  
+
   // Tentar extrair do comando
   const functionMatch = command.match(/functions\/v1\/([^'"]+)/);
   if (functionMatch) {
-    return functionMatch[1].replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
+    return functionMatch[1].replace(/-/g, ' ').replace(/\b\w/g, (l) => l.toUpperCase());
   }
-  
+
   return 'Job sem nome';
 }
 
@@ -99,17 +86,22 @@ export function CronJobsPanel() {
   const [deletingId, setDeletingId] = useState<number | null>(null);
 
   // Buscar cron jobs
-  const { data: jobs, isLoading, error, refetch } = useQuery({
+  const {
+    data: jobs,
+    isLoading,
+    error,
+    refetch,
+  } = useQuery({
     queryKey: ['cron-jobs'],
     queryFn: async () => {
       const { data, error } = await supabaseDyn.rpc<CronJob[]>('get_cron_jobs');
-      
+
       if (error) {
         // Se a função não existir, tentar query direta
         logger.error('Erro ao buscar cron jobs:', error);
         throw error;
       }
-      
+
       return data as CronJob[];
     },
     retry: false,
@@ -123,7 +115,7 @@ export function CronJobsPanel() {
         job_id: jobId,
         is_active: active,
       });
-      
+
       if (error) throw error;
     },
     onSuccess: () => {
@@ -186,9 +178,7 @@ export function CronJobsPanel() {
         <CardContent>
           <div className="flex flex-col items-center justify-center py-8 text-center">
             <AlertCircle className="h-12 w-12 text-muted-foreground mb-4" />
-            <p className="text-muted-foreground mb-4">
-              Não foi possível carregar os cron jobs.
-            </p>
+            <p className="text-muted-foreground mb-4">Não foi possível carregar os cron jobs.</p>
             <Button onClick={() => refetch()} variant="outline">
               <RefreshCw className="h-4 w-4 mr-2" />
               Tentar novamente
@@ -208,9 +198,7 @@ export function CronJobsPanel() {
               <Clock className="h-5 w-5" />
               Tarefas Agendadas (Cron Jobs)
             </CardTitle>
-            <CardDescription>
-              Gerencie as tarefas automáticas do sistema
-            </CardDescription>
+            <CardDescription>Gerencie as tarefas automáticas do sistema</CardDescription>
           </div>
           <Button onClick={() => refetch()} variant="outline" size="sm">
             <RefreshCw className="h-4 w-4 mr-2" />
@@ -222,9 +210,7 @@ export function CronJobsPanel() {
         {!jobs || jobs.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-8 text-center">
             <Calendar className="h-12 w-12 text-muted-foreground mb-4" />
-            <p className="text-muted-foreground">
-              Nenhuma tarefa agendada encontrada.
-            </p>
+            <p className="text-muted-foreground">Nenhuma tarefa agendada encontrada.</p>
           </div>
         ) : (
           <div className="rounded-md border">
@@ -288,7 +274,7 @@ export function CronJobsPanel() {
                             <TooltipTrigger asChild>
                               <Switch
                                 checked={job.active}
-                                onCheckedChange={(checked) => 
+                                onCheckedChange={(checked) =>
                                   toggleJobMutation.mutate({ jobId: job.jobid, active: checked })
                                 }
                                 disabled={toggleJobMutation.isPending}
@@ -300,10 +286,13 @@ export function CronJobsPanel() {
                           </Tooltip>
                         </TooltipProvider>
 
-                        <AlertDialog open={deletingId === job.jobid} onOpenChange={(open) => !open && setDeletingId(null)}>
+                        <AlertDialog
+                          open={deletingId === job.jobid}
+                          onOpenChange={(open) => !open && setDeletingId(null)}
+                        >
                           <AlertDialogTrigger asChild>
-                            <Button 
-                              variant="ghost" 
+                            <Button
+                              variant="ghost"
                               size="icon"
                               onClick={() => setDeletingId(job.jobid)}
                             >
@@ -314,8 +303,9 @@ export function CronJobsPanel() {
                             <AlertDialogHeader>
                               <AlertDialogTitle>Remover tarefa agendada?</AlertDialogTitle>
                               <AlertDialogDescription>
-                                Esta ação não pode ser desfeita. A tarefa "{getJobDisplayName(job.jobname, job.command)}" 
-                                será removida permanentemente.
+                                Esta ação não pode ser desfeita. A tarefa "
+                                {getJobDisplayName(job.jobname, job.command)}" será removida
+                                permanentemente.
                               </AlertDialogDescription>
                             </AlertDialogHeader>
                             <AlertDialogFooter>

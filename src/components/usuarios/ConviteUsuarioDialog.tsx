@@ -1,10 +1,22 @@
 import { useState } from 'react';
 import { Mail, Send, Loader2, UserPlus, Shield } from 'lucide-react';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+} from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 import { Badge } from '@/components/ui/badge';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
@@ -34,9 +46,10 @@ export function ConviteUsuarioDialog({ open, onOpenChange }: ConviteUsuarioDialo
       if (error) throw error;
 
       toast.success('Convite criado', {
-        description: data?.email_status === 'solicitado_ao_auth'
-          ? 'O serviço de autenticação processará o e-mail conforme sua configuração.'
-          : 'O convite foi criado.',
+        description:
+          data?.email_status === 'solicitado_ao_auth'
+            ? 'O serviço de autenticação processará o e-mail conforme sua configuração.'
+            : 'O convite foi criado.',
       });
       setEmail('');
       setRole('visualizador');
@@ -63,7 +76,9 @@ export function ConviteUsuarioDialog({ open, onOpenChange }: ConviteUsuarioDialo
             <UserPlus className="h-5 w-5 text-primary" />
             Convidar Novo Usuário
           </DialogTitle>
-          <DialogDescription>Envie um convite por email para adicionar ao sistema</DialogDescription>
+          <DialogDescription>
+            Envie um convite por email para adicionar ao sistema
+          </DialogDescription>
         </DialogHeader>
 
         <div className="space-y-4">
@@ -75,7 +90,7 @@ export function ConviteUsuarioDialog({ open, onOpenChange }: ConviteUsuarioDialo
                 type="email"
                 placeholder="nome@empresa.com"
                 value={email}
-                onChange={e => setEmail(e.target.value)}
+                onChange={(e) => setEmail(e.target.value)}
                 className="pl-10"
               />
             </div>
@@ -105,15 +120,27 @@ export function ConviteUsuarioDialog({ open, onOpenChange }: ConviteUsuarioDialo
             <p className="font-medium mb-1">O convidado receberá:</p>
             <ul className="text-xs text-muted-foreground space-y-1">
               <li>• Email com link de cadastro</li>
-              <li>• Perfil <Badge variant="outline" className="text-xs capitalize">{role}</Badge> atribuído automaticamente</li>
+              <li>
+                • Perfil{' '}
+                <Badge variant="outline" className="text-xs capitalize">
+                  {role}
+                </Badge>{' '}
+                atribuído automaticamente
+              </li>
               <li>• Acesso ao sistema após verificação de email</li>
             </ul>
           </div>
 
           <div className="flex justify-end gap-2">
-            <Button variant="outline" onClick={() => onOpenChange(false)}>Cancelar</Button>
+            <Button variant="outline" onClick={() => onOpenChange(false)}>
+              Cancelar
+            </Button>
             <Button onClick={handleSend} disabled={sending || !email} className="gap-2">
-              {sending ? <Loader2 className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />}
+              {sending ? (
+                <Loader2 className="h-4 w-4 animate-spin" />
+              ) : (
+                <Send className="h-4 w-4" />
+              )}
               Enviar Convite
             </Button>
           </div>

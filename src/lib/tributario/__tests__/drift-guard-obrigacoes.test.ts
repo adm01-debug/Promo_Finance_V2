@@ -20,7 +20,15 @@ const RAIZ_WEB = resolve(__dirname, '../obrigacoes');
 const RAIZ_EDGE = resolve(__dirname, '../../../../supabase/functions/_shared/obrigacoes');
 
 /** Módulos espelhados 1:1 entre os dois runtimes. */
-const MODULOS = ['types', 'catalogo', 'calendario', 'conformidade', 'alertas', 'digest', 'preferencias-digest'] as const;
+const MODULOS = [
+  'types',
+  'catalogo',
+  'calendario',
+  'conformidade',
+  'alertas',
+  'digest',
+  'preferencias-digest',
+] as const;
 
 /**
  * Blocos que legitimamente existem apenas no espelho Deno (não há como importar
@@ -55,7 +63,7 @@ describe('Drift guard: obrigações acessórias (web × Edge Function)', () => {
     expect(
       normalizeSource(edge),
       `Deriva detectada em obrigacoes/${modulo}.ts. Replique a alteração nas duas cópias ` +
-        '(src/lib/tributario/obrigacoes e supabase/functions/_shared/obrigacoes).',
+        '(src/lib/tributario/obrigacoes e supabase/functions/_shared/obrigacoes).'
     ).toBe(normalizeSource(web));
   });
 

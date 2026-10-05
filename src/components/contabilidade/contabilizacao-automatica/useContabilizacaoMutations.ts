@@ -2,13 +2,7 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { toast } from 'sonner';
 import { supabase } from '@/integrations/supabase/client';
 import { supabaseDyn } from '@/lib/supabase-dynamic';
-import type {
-  DryRunEntry,
-  DryRunInput,
-  DryRunOutcome,
-  Regra,
-  RegraFormState,
-} from './types';
+import type { DryRunEntry, DryRunInput, DryRunOutcome, Regra, RegraFormState } from './types';
 
 /**
  * Mutations da aba de Contabilização Automática.
@@ -18,8 +12,7 @@ import type {
  */
 export function useContabilizacaoMutations(empresaId: string) {
   const qc = useQueryClient();
-  const invalidateRegras = () =>
-    qc.invalidateQueries({ queryKey: ['regras_contab', empresaId] });
+  const invalidateRegras = () => qc.invalidateQueries({ queryKey: ['regras_contab', empresaId] });
 
   const createRegra = useMutation<void, Error, RegraFormState>({
     mutationFn: async (form) => {
@@ -73,13 +66,11 @@ export function useContabilizacaoMutations(empresaId: string) {
     mutationFn: async (regra) => {
       const { id: _id, ...data } = regra;
       void _id;
-      const { error } = await supabaseDyn
-        .from('regras_contabilizacao_automatica')
-        .insert({
-          ...data,
-          nome: `${data.nome} (Cópia)`,
-          prioridade: (data.prioridade ?? 0) + 1,
-        });
+      const { error } = await supabaseDyn.from('regras_contabilizacao_automatica').insert({
+        ...data,
+        nome: `${data.nome} (Cópia)`,
+        prioridade: (data.prioridade ?? 0) + 1,
+      });
       if (error) throw new Error(error.message);
     },
     onSuccess: () => {
@@ -118,8 +109,7 @@ export function useContabilizacaoMutations(empresaId: string) {
     mutationFn: async ({ simForm, isLote, onBefore }) => {
       const payload = {
         ...simForm,
-        categoria_id:
-          simForm.categoria_id === 'none' ? null : simForm.categoria_id || null,
+        categoria_id: simForm.categoria_id === 'none' ? null : simForm.categoria_id || null,
         empresa_id: empresaId,
         dry_run: true,
       };
@@ -129,7 +119,7 @@ export function useContabilizacaoMutations(empresaId: string) {
         for (let i = 0; i < simForm.lote_quantidade; i++) {
           const { data, error } = await supabase.functions.invoke<DryRunEntry>(
             'contabilizar-evento',
-            { body: { ...payload, evento_id: `sim-lote-${i}-${Date.now()}` } },
+            { body: { ...payload, evento_id: `sim-lote-${i}-${Date.now()}` } }
           );
           if (error) throw error;
           if (data) results.push(data);
@@ -137,29 +127,31 @@ export function useContabilizacaoMutations(empresaId: string) {
         return { type: 'lote', results };
       }
 
-      const { data: before, error: errBefore } =
-        await supabase.functions.invoke<DryRunEntry>('contabilizar-evento', {
+      const { data: before, error: errBefore } = await supabase.functions.invoke<DryRunEntry>(
+        'contabilizar-evento',
+        {
           body: {
             ...payload,
             evento_id: 'sim-before-' + Date.now(),
             ignore_rules: true,
           },
-        });
+        }
+      );
       if (errBefore) throw errBefore;
       if (before && onBefore) onBefore(before);
 
-      const { data: after, error: errAfter } =
-        await supabase.functions.invoke<DryRunEntry>('contabilizar-evento', {
+      const { data: after, error: errAfter } = await supabase.functions.invoke<DryRunEntry>(
+        'contabilizar-evento',
+        {
           body: { ...payload, evento_id: 'sim-after-' + Date.now() },
-        });
+        }
+      );
       if (errAfter) throw errAfter;
       if (!after) throw new Error('Sem retorno da simulação');
       return { type: 'single', after };
     },
     onSuccess: (data, variables) => {
-      toast.info(
-        variables.isLote ? 'Simulação em lote concluída' : 'Simulação concluída',
-      );
+      toast.info(variables.isLote ? 'Simulação em lote concluída' : 'Simulação concluída');
       void data;
     },
     onError: (e) => toast.error('Falha na simulação: ' + e.message),

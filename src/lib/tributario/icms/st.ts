@@ -1,12 +1,14 @@
-import {
-  aliquotaInternaDe, fcpDe, resolverAliquotaInterestadual,
-} from './tabelas';
+import { aliquotaInternaDe, fcpDe, resolverAliquotaInterestadual } from './tabelas';
 import { resolverMvaSt } from './overlay-mva';
 import type {
-  InputDifal, InputIcmsSt, InputMvaAjustada, LinhaIcms,
-  ResultadoDifal, ResultadoIcmsSt, SituacaoIcmsSt,
+  InputDifal,
+  InputIcmsSt,
+  InputMvaAjustada,
+  LinhaIcms,
+  ResultadoDifal,
+  ResultadoIcmsSt,
+  SituacaoIcmsSt,
 } from './types';
-
 
 /** Arredonda para 2 casas evitando erro de ponto flutuante (half-up). */
 export function round2(valor: number): number {
@@ -82,17 +84,19 @@ export function calcularIcmsSt(input: InputIcmsSt): ResultadoIcmsSt {
   const reducaoSt = rate(input.reducaoBaseSt);
   const baseIcmsProprio = round2(baseBruta * (1 - reducaoPropria));
 
-  const aliquotaInterestadual = input.aliquotaInterestadual !== undefined
-    ? rate(input.aliquotaInterestadual)
-    : resolverAliquotaInterestadual(input.ufOrigem, input.ufDestino, input.origem);
+  const aliquotaInterestadual =
+    input.aliquotaInterestadual !== undefined
+      ? rate(input.aliquotaInterestadual)
+      : resolverAliquotaInterestadual(input.ufOrigem, input.ufDestino, input.origem);
 
-  const aliquotaInternaDestino = input.aliquotaInternaDestino !== undefined
-    ? rate(input.aliquotaInternaDestino)
-    : aliquotaInternaDe(input.ufDestino);
+  const aliquotaInternaDestino =
+    input.aliquotaInternaDestino !== undefined
+      ? rate(input.aliquotaInternaDestino)
+      : aliquotaInternaDe(input.ufDestino);
 
   if (aliquotaInterestadual > aliquotaInternaDestino) {
     alertas.push(
-      'Alíquota da operação própria superior à interna de destino: a MVA ajustada foi limitada e não há ST a recolher.',
+      'Alíquota da operação própria superior à interna de destino: a MVA ajustada foi limitada e não há ST a recolher.'
     );
   }
 
@@ -112,7 +116,9 @@ export function calcularIcmsSt(input: InputIcmsSt): ResultadoIcmsSt {
   // jurídicas de isenção/não tributado/alíquota zero: nesses casos não há
   // operação subsequente tributada, logo não há imposto presumido a reter.
   const situacaoIcms: SituacaoIcmsSt = input.situacaoIcms ?? 'tributada';
-  const mvaInformada = Number.isFinite(input.mvaOriginal) ? Math.max(0, input.mvaOriginal as number) : null;
+  const mvaInformada = Number.isFinite(input.mvaOriginal)
+    ? Math.max(0, input.mvaOriginal as number)
+    : null;
 
   const resolucao = resolverMvaSt({
     ncm: input.ncm ?? '',
@@ -124,19 +130,22 @@ export function calcularIcmsSt(input: InputIcmsSt): ResultadoIcmsSt {
   // A MVA informada manualmente prevalece sobre o protocolo (o usuário pode
   // conhecer regime especial/pauta local); nesse caso só os avisos de bloqueio
   // jurídico são relevantes.
-  const usouProtocolo = !stAfastadaPorRegraJuridica && mvaInformada === null && resolucao.encontrado;
+  const usouProtocolo =
+    !stAfastadaPorRegraJuridica && mvaInformada === null && resolucao.encontrado;
   if (stAfastadaPorRegraJuridica || usouProtocolo) alertas.push(...resolucao.alertas);
   if (resolucao.encontrado && mvaInformada !== null) {
     alertas.push(
-      `MVA informada manualmente prevaleceu sobre a do protocolo ${resolucao.protocolo}.`,
+      `MVA informada manualmente prevaleceu sobre a do protocolo ${resolucao.protocolo}.`
     );
   }
-  const mvaOriginal = stAfastadaPorRegraJuridica
-    ? 0
-    : (mvaInformada ?? resolucao.mvaOriginal);
+  const mvaOriginal = stAfastadaPorRegraJuridica ? 0 : (mvaInformada ?? resolucao.mvaOriginal);
 
   const mvaAjustada = operacaoInterestadual
-    ? calcularMvaAjustada({ mvaOriginal, aliquotaInterestadual, aliquotaInterna: aliquotaInternaDestino })
+    ? calcularMvaAjustada({
+        mvaOriginal,
+        aliquotaInterestadual,
+        aliquotaInterna: aliquotaInternaDestino,
+      })
     : mvaOriginal;
 
   const pmpf = stAfastadaPorRegraJuridica ? 0 : money(input.pmpf);
@@ -175,7 +184,9 @@ export function calcularIcmsSt(input: InputIcmsSt): ResultadoIcmsSt {
 
   const aplicarFcp = (input.aplicarFcp ?? false) && !stAfastadaPorRegraJuridica;
   const aliquotaFcp = aplicarFcp
-    ? (input.aliquotaFcp !== undefined ? rate(input.aliquotaFcp) : fcpDe(input.ufDestino))
+    ? input.aliquotaFcp !== undefined
+      ? rate(input.aliquotaFcp)
+      : fcpDe(input.ufDestino)
     : 0;
   const fcpSt = round2(baseSt * aliquotaFcp);
   if (fcpSt > 0) {
@@ -213,7 +224,6 @@ export function calcularIcmsSt(input: InputIcmsSt): ResultadoIcmsSt {
     linhas,
     alertas,
   };
-
 }
 
 /**
@@ -236,12 +246,14 @@ export function calcularDifal(input: InputDifal): ResultadoDifal {
   const operacaoInterestadual = input.ufOrigem !== input.ufDestino;
   const contribuinte = input.destinatarioContribuinte ?? false;
 
-  const aliquotaInterestadual = input.aliquotaInterestadual !== undefined
-    ? rate(input.aliquotaInterestadual)
-    : resolverAliquotaInterestadual(input.ufOrigem, input.ufDestino, input.origem);
-  const aliquotaInternaDestino = input.aliquotaInternaDestino !== undefined
-    ? rate(input.aliquotaInternaDestino)
-    : aliquotaInternaDe(input.ufDestino);
+  const aliquotaInterestadual =
+    input.aliquotaInterestadual !== undefined
+      ? rate(input.aliquotaInterestadual)
+      : resolverAliquotaInterestadual(input.ufOrigem, input.ufDestino, input.origem);
+  const aliquotaInternaDestino =
+    input.aliquotaInternaDestino !== undefined
+      ? rate(input.aliquotaInternaDestino)
+      : aliquotaInternaDe(input.ufDestino);
 
   if (!operacaoInterestadual) {
     alertas.push('Operação interna: não há diferencial de alíquotas a recolher.');
@@ -281,9 +293,12 @@ export function calcularDifal(input: InputDifal): ResultadoDifal {
   });
 
   const aplicarFcp = input.aplicarFcp ?? false;
-  const aliquotaFcp = aplicarFcp && operacaoInterestadual
-    ? (input.aliquotaFcp !== undefined ? rate(input.aliquotaFcp) : fcpDe(input.ufDestino))
-    : 0;
+  const aliquotaFcp =
+    aplicarFcp && operacaoInterestadual
+      ? input.aliquotaFcp !== undefined
+        ? rate(input.aliquotaFcp)
+        : fcpDe(input.ufDestino)
+      : 0;
   const fcp = round2(baseDestino * aliquotaFcp);
   if (fcp > 0) {
     linhas.push({

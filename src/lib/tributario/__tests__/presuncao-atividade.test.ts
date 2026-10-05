@@ -45,13 +45,21 @@ describe('presunção por atividade no Lucro Presumido', () => {
   });
 
   it('registra a presunção efetiva nas observações', () => {
-    const r = simularPresumido({ ...base, presuncaoIrpjServicos: 0.16, presuncaoCsllServicos: 0.12 });
+    const r = simularPresumido({
+      ...base,
+      presuncaoIrpjServicos: 0.16,
+      presuncaoCsllServicos: 0.12,
+    });
     expect(r.observacoes.join(' ')).toContain('IRPJ 16%');
     expect(r.observacoes.join(' ')).toContain('CSLL 12%');
   });
 
   it('sanitiza valores fora dos limites legais', () => {
-    const s = sanitizarParametros({ ...base, presuncaoIrpjServicos: 0.9, presuncaoCsllServicos: 0.01 });
+    const s = sanitizarParametros({
+      ...base,
+      presuncaoIrpjServicos: 0.9,
+      presuncaoCsllServicos: 0.01,
+    });
     expect(s.presuncaoIrpjServicos).toBe(0.32);
     expect(s.presuncaoCsllServicos).toBe(0.12);
   });

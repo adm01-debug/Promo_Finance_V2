@@ -18,7 +18,7 @@ import {
   Clock,
   AlertCircle,
   ChevronRight,
-  RefreshCw
+  RefreshCw,
 } from 'lucide-react';
 import {
   AlertaRejeicao,
@@ -29,14 +29,14 @@ import {
   analisarPadroesRejeicao,
   verificarRejeicoesConsecutivas,
   registrarAlerta,
-  adicionarListenerAlerta
+  adicionarListenerAlerta,
 } from '@/lib/sefaz-rejection-monitor';
 import { toast } from 'sonner';
 
 const itemVariants = {
   hidden: { opacity: 0, x: -20 },
   visible: { opacity: 1, x: 0 },
-  exit: { opacity: 0, x: 20 }
+  exit: { opacity: 0, x: 20 },
 };
 
 // Componente de detalhe do alerta
@@ -47,18 +47,20 @@ const AlertaDetalhe = ({ alerta }: { alerta: AlertaRejeicao }) => {
       month: '2-digit',
       year: 'numeric',
       hour: '2-digit',
-      minute: '2-digit'
+      minute: '2-digit',
     });
   };
 
   return (
     <div className="space-y-4">
       {/* Header */}
-      <div className={`p-4 rounded-lg ${
-        alerta.tipo === 'critico' 
-          ? 'bg-destructive/10 border border-destructive/20' 
-          : 'bg-warning/10 border border-warning/20'
-      }`}>
+      <div
+        className={`p-4 rounded-lg ${
+          alerta.tipo === 'critico'
+            ? 'bg-destructive/10 border border-destructive/20'
+            : 'bg-warning/10 border border-warning/20'
+        }`}
+      >
         <div className="flex items-center gap-3">
           {alerta.tipo === 'critico' ? (
             <XCircle className="h-6 w-6 text-destructive" />
@@ -92,9 +94,7 @@ const AlertaDetalhe = ({ alerta }: { alerta: AlertaRejeicao }) => {
         </Card>
         <Card>
           <CardContent className="p-4">
-            <div className="text-2xl font-bold text-warning">
-              {alerta.ultimasRejeicoes.length}
-            </div>
+            <div className="text-2xl font-bold text-warning">{alerta.ultimasRejeicoes.length}</div>
             <p className="text-sm text-muted-foreground">Eventos registrados</p>
           </CardContent>
         </Card>
@@ -106,12 +106,12 @@ const AlertaDetalhe = ({ alerta }: { alerta: AlertaRejeicao }) => {
           <h4 className="text-sm font-medium mb-2">Últimas Rejeições</h4>
           <div className="space-y-2">
             {alerta.ultimasRejeicoes.map((evento, idx) => (
-              <div 
-                key={idx} 
-                className="p-3 bg-muted/50 rounded-lg text-sm"
-              >
+              <div key={idx} className="p-3 bg-muted/50 rounded-lg text-sm">
                 <div className="flex items-center justify-between mb-1">
-                  <Badge variant="outline" className="bg-destructive/10 text-destructive border-destructive/20">
+                  <Badge
+                    variant="outline"
+                    className="bg-destructive/10 text-destructive border-destructive/20"
+                  >
                     Código {evento.cStat}
                   </Badge>
                   <span className="text-xs text-muted-foreground">
@@ -119,9 +119,7 @@ const AlertaDetalhe = ({ alerta }: { alerta: AlertaRejeicao }) => {
                   </span>
                 </div>
                 <p className="text-muted-foreground">{evento.xMotivo}</p>
-                {evento.numeroNfe && (
-                  <p className="text-xs mt-1">NF-e: {evento.numeroNfe}</p>
-                )}
+                {evento.numeroNfe && <p className="text-xs mt-1">NF-e: {evento.numeroNfe}</p>}
               </div>
             ))}
           </div>
@@ -129,11 +127,13 @@ const AlertaDetalhe = ({ alerta }: { alerta: AlertaRejeicao }) => {
       )}
 
       {/* Ação recomendada */}
-      <div className={`p-4 rounded-lg ${
-        alerta.tipo === 'critico' 
-          ? 'bg-destructive/5 border border-destructive/10' 
-          : 'bg-warning/5 border border-warning/10'
-      }`}>
+      <div
+        className={`p-4 rounded-lg ${
+          alerta.tipo === 'critico'
+            ? 'bg-destructive/5 border border-destructive/10'
+            : 'bg-warning/5 border border-warning/10'
+        }`}
+      >
         <h4 className="text-sm font-medium mb-2 flex items-center gap-2">
           <AlertCircle className="h-4 w-4" />
           Ação Recomendada
@@ -164,7 +164,7 @@ export const AlertasRejeicao = () => {
       registrarAlerta(novoAlerta);
       toast.error(novoAlerta.titulo, {
         description: novoAlerta.mensagem,
-        duration: 8000
+        duration: 8000,
       });
     }
     carregarDados();
@@ -172,10 +172,10 @@ export const AlertasRejeicao = () => {
 
   useEffect(() => {
     carregarDados();
-    
+
     // Listener para novos alertas
     const unsubscribe = adicionarListenerAlerta((alerta) => {
-      setAlertas(prev => [alerta, ...prev]);
+      setAlertas((prev) => [alerta, ...prev]);
     });
 
     return () => unsubscribe();
@@ -207,8 +207,8 @@ export const AlertasRejeicao = () => {
     }
   };
 
-  const alertasNaoLidos = alertas.filter(a => !a.lido);
-  const alertasCriticos = alertas.filter(a => a.tipo === 'critico' && !a.lido);
+  const alertasNaoLidos = alertas.filter((a) => !a.lido);
+  const alertasCriticos = alertas.filter((a) => a.tipo === 'critico' && !a.lido);
 
   const getTendenciaIcon = () => {
     if (!padroes) return <Minus className="h-4 w-4" />;
@@ -226,13 +226,13 @@ export const AlertasRejeicao = () => {
     const now = new Date();
     const diff = now.getTime() - date.getTime();
     const minutos = Math.floor(diff / 60000);
-    
+
     if (minutos < 1) return 'Agora';
     if (minutos < 60) return `${minutos}min atrás`;
-    
+
     const horas = Math.floor(minutos / 60);
     if (horas < 24) return `${horas}h atrás`;
-    
+
     return date.toLocaleDateString('pt-BR');
   };
 
@@ -250,8 +250,8 @@ export const AlertasRejeicao = () => {
             )}
           </CardTitle>
           <div className="flex items-center gap-2">
-            <Button 
-              variant="ghost" 
+            <Button
+              variant="ghost"
               size="sm"
               onClick={verificarNovasRejeicoes}
               className="h-8 w-8 p-0"
@@ -259,9 +259,9 @@ export const AlertasRejeicao = () => {
               <RefreshCw className="h-4 w-4" />
             </Button>
             {alertasNaoLidos.length > 0 && (
-              <Button 
-                variant="ghost" 
-                size="sm" 
+              <Button
+                variant="ghost"
+                size="sm"
                 onClick={handleMarcarTodosLidos}
                 className="text-xs"
               >
@@ -284,7 +284,7 @@ export const AlertasRejeicao = () => {
             <div className="flex items-center gap-2 text-destructive">
               <AlertTriangle className="h-4 w-4" />
               <span className="text-sm font-medium">
-                {alertasCriticos.length > 0 
+                {alertasCriticos.length > 0
                   ? `${alertasCriticos.length} alerta(s) crítico(s) requer atenção imediata`
                   : 'Tendência de aumento nas rejeições detectada'}
               </span>
@@ -333,7 +333,7 @@ export const AlertasRejeicao = () => {
                     exit="exit"
                     layout
                     className={`p-3 rounded-lg border transition-colors cursor-pointer hover:bg-muted/50 ${
-                      !alerta.lido 
+                      !alerta.lido
                         ? alerta.tipo === 'critico'
                           ? 'bg-destructive/5 border-destructive/20'
                           : 'bg-warning/5 border-warning/20'
@@ -342,36 +342,40 @@ export const AlertasRejeicao = () => {
                     onClick={() => handleVerDetalhes(alerta)}
                   >
                     <div className="flex items-start gap-3">
-                      <div className={`mt-0.5 ${
-                        alerta.tipo === 'critico' ? 'text-destructive' : 'text-warning'
-                      }`}>
+                      <div
+                        className={`mt-0.5 ${
+                          alerta.tipo === 'critico' ? 'text-destructive' : 'text-warning'
+                        }`}
+                      >
                         {alerta.tipo === 'critico' ? (
                           <XCircle className="h-5 w-5" />
                         ) : (
                           <AlertTriangle className="h-5 w-5" />
                         )}
                       </div>
-                      
+
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center gap-2 mb-1">
-                          <span className={`text-sm font-medium ${!alerta.lido ? '' : 'text-muted-foreground'}`}>
+                          <span
+                            className={`text-sm font-medium ${!alerta.lido ? '' : 'text-muted-foreground'}`}
+                          >
                             {alerta.titulo}
                           </span>
                           {!alerta.lido && (
                             <span className="h-2 w-2 rounded-full bg-primary animate-pulse" />
                           )}
                         </div>
-                        
+
                         <p className="text-xs text-muted-foreground line-clamp-1 mb-2">
                           {alerta.mensagem}
                         </p>
-                        
+
                         <div className="flex items-center justify-between">
                           <div className="flex items-center gap-2 text-xs text-muted-foreground">
                             <Clock className="h-3 w-3" />
                             {formatTime(alerta.dataDetectado)}
                           </div>
-                          
+
                           <div className="flex items-center gap-1">
                             {!alerta.lido && (
                               <Button
@@ -419,9 +423,7 @@ export const AlertasRejeicao = () => {
               Detalhes do Alerta
             </DialogTitle>
           </DialogHeader>
-          {alertaSelecionado && (
-            <AlertaDetalhe alerta={alertaSelecionado} />
-          )}
+          {alertaSelecionado && <AlertaDetalhe alerta={alertaSelecionado} />}
         </DialogContent>
       </Dialog>
     </Card>

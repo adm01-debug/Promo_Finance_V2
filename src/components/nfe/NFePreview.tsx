@@ -3,9 +3,18 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
-import { 
-  FileText, Download, Copy, Check, Printer, Mail, 
-  Building2, FileCode, AlertTriangle, Package, User
+import {
+  FileText,
+  Download,
+  Copy,
+  Check,
+  Printer,
+  Mail,
+  Building2,
+  FileCode,
+  AlertTriangle,
+  Package,
+  User,
 } from 'lucide-react';
 import { formatCurrency, formatDateTime } from '@/lib/formatters';
 import { toast } from 'sonner';
@@ -124,7 +133,9 @@ export function NFePreview({ nfe }: { nfe: NotaFiscal }) {
                 <tr key={idx} className="border-t">
                   <td className="p-2 font-mono text-xs">{item.codigo}</td>
                   <td className="p-2">{item.descricao}</td>
-                  <td className="p-2 text-center">{item.quantidade} {item.unidade}</td>
+                  <td className="p-2 text-center">
+                    {item.quantidade} {item.unidade}
+                  </td>
                   <td className="p-2 text-right">{formatCurrency(item.valorUnitario)}</td>
                   <td className="p-2 text-right font-medium">{formatCurrency(item.valorTotal)}</td>
                 </tr>
@@ -137,10 +148,22 @@ export function NFePreview({ nfe }: { nfe: NotaFiscal }) {
       {/* Totais */}
       <div className="bg-muted/30 rounded-lg p-4">
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
-          <div><span className="text-muted-foreground">Produtos</span><p className="font-medium">{formatCurrency(nfe.valorProdutos)}</p></div>
-          <div><span className="text-muted-foreground">Frete</span><p className="font-medium">{formatCurrency(nfe.valorFrete)}</p></div>
-          <div><span className="text-muted-foreground">Desconto</span><p className="font-medium text-destructive">-{formatCurrency(nfe.valorDesconto)}</p></div>
-          <div><span className="text-muted-foreground">ICMS</span><p className="font-medium">{formatCurrency(nfe.valorICMS)}</p></div>
+          <div>
+            <span className="text-muted-foreground">Produtos</span>
+            <p className="font-medium">{formatCurrency(nfe.valorProdutos)}</p>
+          </div>
+          <div>
+            <span className="text-muted-foreground">Frete</span>
+            <p className="font-medium">{formatCurrency(nfe.valorFrete)}</p>
+          </div>
+          <div>
+            <span className="text-muted-foreground">Desconto</span>
+            <p className="font-medium text-destructive">-{formatCurrency(nfe.valorDesconto)}</p>
+          </div>
+          <div>
+            <span className="text-muted-foreground">ICMS</span>
+            <p className="font-medium">{formatCurrency(nfe.valorICMS)}</p>
+          </div>
         </div>
         <Separator className="my-3" />
         <div className="flex items-center justify-between">
@@ -161,31 +184,57 @@ export function NFePreview({ nfe }: { nfe: NotaFiscal }) {
 
       {/* Ações */}
       <div className="flex flex-wrap gap-2">
-        <Button onClick={() => toast.success('XML da NF-e baixado com sucesso!')} variant="outline" className="gap-2">
+        <Button
+          onClick={() => toast.success('XML da NF-e baixado com sucesso!')}
+          variant="outline"
+          className="gap-2"
+        >
           <FileCode className="h-4 w-4" /> Download XML
         </Button>
         <Button onClick={() => setDanfeOpen(true)} className="gap-2">
           <Download className="h-4 w-4" /> Download DANFE
         </Button>
-        <Button variant="outline" onClick={() => { window.print(); toast.success('Enviado para impressão!'); }} className="gap-2">
+        <Button
+          variant="outline"
+          onClick={() => {
+            window.print();
+            toast.success('Enviado para impressão!');
+          }}
+          className="gap-2"
+        >
           <Printer className="h-4 w-4" /> Imprimir
         </Button>
-        <Button variant="outline" onClick={() => toast.success('NF-e enviada por e-mail!')} className="gap-2">
+        <Button
+          variant="outline"
+          onClick={() => toast.success('NF-e enviada por e-mail!')}
+          className="gap-2"
+        >
           <Mail className="h-4 w-4" /> Enviar
         </Button>
       </div>
 
-      <DANFEGenerator 
+      <DANFEGenerator
         nota={{
-          numero: nfe.numero, serie: nfe.serie, chaveAcesso: nfe.chaveAcesso,
-          naturezaOperacao: nfe.naturezaOperacao, dataEmissao: nfe.dataEmissao,
-          cnpjEmitente: nfe.cnpjEmitente, emitenteNome: nfe.emitenteNome,
-          cnpjDestinatario: nfe.cnpjDestinatario, destinatarioNome: nfe.destinatarioNome,
+          numero: nfe.numero,
+          serie: nfe.serie,
+          chaveAcesso: nfe.chaveAcesso,
+          naturezaOperacao: nfe.naturezaOperacao,
+          dataEmissao: nfe.dataEmissao,
+          cnpjEmitente: nfe.cnpjEmitente,
+          emitenteNome: nfe.emitenteNome,
+          cnpjDestinatario: nfe.cnpjDestinatario,
+          destinatarioNome: nfe.destinatarioNome,
           destinatarioEndereco: nfe.destinatarioEndereco,
-          valorProdutos: nfe.valorProdutos, valorFrete: nfe.valorFrete,
-          valorSeguro: nfe.valorSeguro, valorDesconto: nfe.valorDesconto,
-          valorIPI: nfe.valorIPI, valorICMS: nfe.valorICMS, valorTotal: nfe.valorTotal,
-          status: nfe.status, protocolo: nfe.protocolo, itens: nfe.itens,
+          valorProdutos: nfe.valorProdutos,
+          valorFrete: nfe.valorFrete,
+          valorSeguro: nfe.valorSeguro,
+          valorDesconto: nfe.valorDesconto,
+          valorIPI: nfe.valorIPI,
+          valorICMS: nfe.valorICMS,
+          valorTotal: nfe.valorTotal,
+          status: nfe.status,
+          protocolo: nfe.protocolo,
+          itens: nfe.itens,
         }}
         open={danfeOpen}
         onOpenChange={setDanfeOpen}

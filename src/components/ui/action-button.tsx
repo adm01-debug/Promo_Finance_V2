@@ -15,36 +15,41 @@ interface ActionButtonProps extends ButtonProps {
 }
 
 export const ActionButton = React.forwardRef<HTMLButtonElement, ActionButtonProps>(
-  ({ 
-    children, 
-    state = 'idle', 
-    loadingText,
-    successText,
-    errorText,
-    className,
-    disabled,
-    ...props 
-  }, ref) => {
+  (
+    {
+      children,
+      state = 'idle',
+      loadingText,
+      successText,
+      errorText,
+      className,
+      disabled,
+      ...props
+    },
+    ref
+  ) => {
     const isLoading = state === 'loading';
     const isSuccess = state === 'success';
     const isError = state === 'error';
-    
+
     return (
       <Button
         ref={ref}
         className={cn(
-          "relative transition-all duration-300",
-          isSuccess && "bg-success hover:bg-success/90 text-success-foreground",
-          isError && "bg-destructive hover:bg-destructive/90",
+          'relative transition-all duration-300',
+          isSuccess && 'bg-success hover:bg-success/90 text-success-foreground',
+          isError && 'bg-destructive hover:bg-destructive/90',
           className
         )}
         disabled={disabled || isLoading}
         {...props}
       >
-        <span className={cn(
-          "flex items-center gap-2 transition-opacity duration-200",
-          isLoading && "opacity-0"
-        )}>
+        <span
+          className={cn(
+            'flex items-center gap-2 transition-opacity duration-200',
+            isLoading && 'opacity-0'
+          )}
+        >
           {isSuccess ? (
             <>
               <Check className="h-4 w-4 animate-scale-in" />
@@ -59,7 +64,7 @@ export const ActionButton = React.forwardRef<HTMLButtonElement, ActionButtonProp
             children
           )}
         </span>
-        
+
         {isLoading && (
           <span className="absolute inset-0 flex items-center justify-center gap-2">
             <Loader2 className="h-4 w-4 animate-spin" />

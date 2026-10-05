@@ -16,13 +16,13 @@ import {
 export function encontrarMatchesParaTransacao(
   transacao: TransacaoOFX,
   lancamentos: LancamentoSistema[],
-  config: ConfiguracaoMatch = DEFAULT_CONFIG,
+  config: ConfiguracaoMatch = DEFAULT_CONFIG
 ): MatchSugestao[] {
   const sugestoes: MatchSugestao[] = [];
 
   const tipoEsperado = transacao.tipo === 'credito' ? 'receber' : 'pagar';
   const lancamentosFiltrados = lancamentos.filter(
-    (l) => l.tipo === tipoEsperado && l.status !== 'pago' && l.status !== 'cancelado',
+    (l) => l.tipo === tipoEsperado && l.status !== 'pago' && l.status !== 'cancelado'
   );
 
   for (const lancamento of lancamentosFiltrados) {
@@ -34,7 +34,7 @@ export function encontrarMatchesParaTransacao(
     const similaridadeValor = calcularSimilaridadeValor(
       valorTransacao,
       lancamento.valor,
-      config.toleranciaValor,
+      config.toleranciaValor
     );
 
     if (similaridadeValor.tipo === 'exato') {
@@ -90,7 +90,7 @@ export function encontrarMatchesParaTransacao(
     const similaridadeData = calcularSimilaridadeData(
       transacao.data,
       lancamento.dataVencimento,
-      config.toleranciaDias,
+      config.toleranciaDias
     );
 
     if (similaridadeData > 0) {
@@ -119,10 +119,7 @@ export function encontrarMatchesParaTransacao(
       }
     }
 
-    if (
-      lancamento.entidade &&
-      lancamento.entidade.match(/\d{2}\.?\d{3}\.?\d{3}\/?\d{4}-?\d{2}/)
-    ) {
+    if (lancamento.entidade && lancamento.entidade.match(/\d{2}\.?\d{3}\.?\d{3}\/?\d{4}-?\d{2}/)) {
       const cnpj = lancamento.entidade.replace(/\D/g, '');
       if (cnpj && transacao.descricao.replace(/\D/g, '').includes(cnpj)) {
         motivos.push({
@@ -171,14 +168,12 @@ export function encontrarMatchesParaTransacao(
 export function encontrarTodosMatches(
   transacoes: TransacaoOFX[],
   lancamentos: LancamentoSistema[],
-  config: ConfiguracaoMatch = DEFAULT_CONFIG,
+  config: ConfiguracaoMatch = DEFAULT_CONFIG
 ): Map<string, MatchSugestao[]> {
   const resultado = new Map<string, MatchSugestao[]>();
   const lancamentosUsados = new Set<string>();
 
-  const transacoesOrdenadas = [...transacoes].sort(
-    (a, b) => Math.abs(b.valor) - Math.abs(a.valor),
-  );
+  const transacoesOrdenadas = [...transacoes].sort((a, b) => Math.abs(b.valor) - Math.abs(a.valor));
 
   for (const transacao of transacoesOrdenadas) {
     const lancamentosDisponiveis = lancamentos.filter((l) => !lancamentosUsados.has(l.id));

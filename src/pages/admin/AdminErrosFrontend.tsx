@@ -4,9 +4,19 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Skeleton } from '@/components/ui/skeleton';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import {
-  Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle,
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
 } from '@/components/ui/dialog';
 import { AlertTriangle, Bug, RefreshCw, Search, Users } from 'lucide-react';
 import {
@@ -22,7 +32,9 @@ const fmt = (v: string | null) =>
 
 function severityBadge(sev: string) {
   if (sev === 'fatal') {
-    return <Badge className="bg-destructive/20 text-destructive border-destructive/30">Fatal</Badge>;
+    return (
+      <Badge className="bg-destructive/20 text-destructive border-destructive/30">Fatal</Badge>
+    );
   }
   if (sev === 'error') return <Badge variant="destructive">Erro</Badge>;
   if (sev === 'warning') {
@@ -84,7 +96,9 @@ export default function AdminErrosFrontend() {
           <CardHeader className="pb-2">
             <CardTitle className="text-sm text-muted-foreground">Ocorrências</CardTitle>
           </CardHeader>
-          <CardContent className="text-2xl font-bold text-foreground">{totais.ocorrencias}</CardContent>
+          <CardContent className="text-2xl font-bold text-foreground">
+            {totais.ocorrencias}
+          </CardContent>
         </Card>
         <Card>
           <CardHeader className="pb-2">
@@ -92,7 +106,9 @@ export default function AdminErrosFrontend() {
               <Users className="h-4 w-4" /> Usuários impactados
             </CardTitle>
           </CardHeader>
-          <CardContent className="text-2xl font-bold text-foreground">{totais.usuarios}</CardContent>
+          <CardContent className="text-2xl font-bold text-foreground">
+            {totais.usuarios}
+          </CardContent>
         </Card>
       </div>
 
@@ -110,7 +126,9 @@ export default function AdminErrosFrontend() {
               />
             </div>
             <Select value={severity} onValueChange={setSeverity}>
-              <SelectTrigger className="md:w-40"><SelectValue /></SelectTrigger>
+              <SelectTrigger className="md:w-40">
+                <SelectValue />
+              </SelectTrigger>
               <SelectContent>
                 <SelectItem value="todos">Todas severidades</SelectItem>
                 <SelectItem value="fatal">Fatal</SelectItem>
@@ -120,7 +138,9 @@ export default function AdminErrosFrontend() {
               </SelectContent>
             </Select>
             <Select value={win} onValueChange={(v) => setWin(v as ErrorWindow)}>
-              <SelectTrigger className="md:w-32"><SelectValue /></SelectTrigger>
+              <SelectTrigger className="md:w-32">
+                <SelectValue />
+              </SelectTrigger>
               <SelectContent>
                 <SelectItem value="24h">24 horas</SelectItem>
                 <SelectItem value="7d">7 dias</SelectItem>
@@ -132,7 +152,9 @@ export default function AdminErrosFrontend() {
         <CardContent className="space-y-2">
           {grupos.isLoading && (
             <div className="space-y-2">
-              {[0, 1, 2, 3].map((i) => <Skeleton key={`sk-${i}`} className="h-14 w-full" />)}
+              {[0, 1, 2, 3].map((i) => (
+                <Skeleton key={`sk-${i}`} className="h-14 w-full" />
+              ))}
             </div>
           )}
 
@@ -159,7 +181,8 @@ export default function AdminErrosFrontend() {
               <div className="min-w-0 flex-1">
                 <p className="truncate text-sm font-medium text-foreground">{g.exemplo_mensagem}</p>
                 <p className="text-xs text-muted-foreground">
-                  {fmt(g.primeira_ocorrencia)} → {fmt(g.ultima_ocorrencia)} · {g.urls_distintas} URL(s)
+                  {fmt(g.primeira_ocorrencia)} → {fmt(g.ultima_ocorrencia)} · {g.urls_distintas}{' '}
+                  URL(s)
                 </p>
               </div>
               <div className="flex shrink-0 items-center gap-2">
@@ -185,7 +208,9 @@ export default function AdminErrosFrontend() {
 
           {ocorrencias.isLoading && <Skeleton className="h-32 w-full" />}
           {ocorrencias.data?.length === 0 && (
-            <p className="text-sm text-muted-foreground">Nenhuma ocorrência detalhada disponível.</p>
+            <p className="text-sm text-muted-foreground">
+              Nenhuma ocorrência detalhada disponível.
+            </p>
           )}
           <div className="space-y-3">
             {(ocorrencias.data ?? []).map((o) => (

@@ -30,7 +30,7 @@ const DISMISS_KEY = 'sso-profile-sync-banner-dismissed-id';
 export function SsoProfileSyncBanner({ userId }: Props) {
   const { data, isLoading } = useLastSsoProfileSync(userId);
   const [dismissed, setDismissed] = useState<string | null>(() =>
-    typeof window !== 'undefined' ? window.localStorage.getItem(DISMISS_KEY) : null,
+    typeof window !== 'undefined' ? window.localStorage.getItem(DISMISS_KEY) : null
   );
 
   const dateInfo = useMemo(() => {
@@ -63,8 +63,8 @@ export function SsoProfileSyncBanner({ userId }: Props) {
         <p className="text-sm">
           {dateInfo && (
             <>
-              No último login ({dateInfo.relative}, {dateInfo.absolute}), os seguintes
-              campos foram atualizados a partir do seu provedor de identidade:
+              No último login ({dateInfo.relative}, {dateInfo.absolute}), os seguintes campos foram
+              atualizados a partir do seu provedor de identidade:
             </>
           )}
         </p>

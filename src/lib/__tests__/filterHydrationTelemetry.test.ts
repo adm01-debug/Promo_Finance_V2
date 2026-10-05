@@ -10,14 +10,24 @@ async function freshModule() {
 function installStorage(initial: Record<string, string> = {}) {
   const store = new Map<string, string>(Object.entries(initial));
   const mock: Storage = {
-    get length() { return store.size; },
+    get length() {
+      return store.size;
+    },
     clear: () => store.clear(),
     getItem: (k) => (store.has(k) ? store.get(k)! : null),
-    setItem: (k, v) => { store.set(k, String(v)); },
-    removeItem: (k) => { store.delete(k); },
+    setItem: (k, v) => {
+      store.set(k, String(v));
+    },
+    removeItem: (k) => {
+      store.delete(k);
+    },
     key: (i) => Array.from(store.keys())[i] ?? null,
   };
-  Object.defineProperty(window, 'localStorage', { value: mock, configurable: true, writable: true });
+  Object.defineProperty(window, 'localStorage', {
+    value: mock,
+    configurable: true,
+    writable: true,
+  });
   return store;
 }
 
@@ -38,8 +48,19 @@ describe('filterHydrationTelemetry', () => {
   it('filtra falhas via getHydrationFailures', async () => {
     const m = await freshModule();
     m.recordHydrationEvent({ entityType: 'a', status: 'success', source: 'supabase' });
-    m.recordHydrationEvent({ entityType: 'b', status: 'error', source: 'none', errorMessage: 'x', stage: 'supabase-read' });
-    m.recordHydrationEvent({ entityType: 'c', status: 'error', source: 'localStorage', stage: 'merge' });
+    m.recordHydrationEvent({
+      entityType: 'b',
+      status: 'error',
+      source: 'none',
+      errorMessage: 'x',
+      stage: 'supabase-read',
+    });
+    m.recordHydrationEvent({
+      entityType: 'c',
+      status: 'error',
+      source: 'localStorage',
+      stage: 'merge',
+    });
     const fails = m.getHydrationFailures();
     expect(fails).toHaveLength(2);
     expect(fails.every((e) => e.status === 'error')).toBe(true);
@@ -58,7 +79,12 @@ describe('filterHydrationTelemetry', () => {
 
   it('persiste no localStorage e reidrata em módulo novo', async () => {
     const m1 = await freshModule();
-    m1.recordHydrationEvent({ entityType: 'x', status: 'error', source: 'none', errorMessage: 'boom' });
+    m1.recordHydrationEvent({
+      entityType: 'x',
+      status: 'error',
+      source: 'none',
+      errorMessage: 'boom',
+    });
     const raw = window.localStorage.getItem('filter-hydration-events');
     expect(raw).toBeTruthy();
     const parsed = JSON.parse(raw!);
@@ -117,7 +143,10 @@ describe('filterHydrationTelemetry', () => {
   it('isola erro em listener sem derrubar os demais', async () => {
     const m = await freshModule();
     let calls = 0;
-    const bad = vi.fn(() => { calls++; if (calls > 1) throw new Error('listener crash'); });
+    const bad = vi.fn(() => {
+      calls++;
+      if (calls > 1) throw new Error('listener crash');
+    });
     const good = vi.fn();
     m.subscribeHydrationEvents(bad);
     m.subscribeHydrationEvents(good);
@@ -146,11 +175,18 @@ describe('filterHydrationTelemetry', () => {
     const m = await freshModule();
     const original = window.localStorage;
     Object.defineProperty(window, 'localStorage', {
-      value: { getItem: () => { throw new Error('unavailable'); }, setItem: () => { throw new Error('quota'); } },
+      value: {
+        getItem: () => {
+          throw new Error('unavailable');
+        },
+        setItem: () => {
+          throw new Error('quota');
+        },
+      },
       configurable: true,
     });
     expect(() =>
-      m.recordHydrationEvent({ entityType: 'ssr', status: 'success', source: 'defaults' }),
+      m.recordHydrationEvent({ entityType: 'ssr', status: 'success', source: 'defaults' })
     ).not.toThrow();
     Object.defineProperty(window, 'localStorage', { value: original, configurable: true });
   });

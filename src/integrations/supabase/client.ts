@@ -64,7 +64,7 @@ const supabaseProxyHandler: ProxyHandler<object> = {
 
 export const supabase = new Proxy(
   supabaseInstance,
-  supabaseProxyHandler,
+  supabaseProxyHandler
 ) as unknown as typeof supabaseInstance;
 
 /**
@@ -77,7 +77,7 @@ export const supabase = new Proxy(
  * o boot em 100% das sessões (regressão P0 corrigida em 2026-07).
  */
 export async function verifySupabaseHealth(
-  timeoutMs = 3000,
+  timeoutMs = 3000
 ): Promise<{ ok: boolean; status?: number; error?: string }> {
   const controller = new AbortController();
   const timer = setTimeout(() => controller.abort(), timeoutMs);

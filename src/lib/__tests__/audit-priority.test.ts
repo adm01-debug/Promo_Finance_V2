@@ -9,11 +9,7 @@ vi.mock('sonner', () => ({
 }));
 
 import { toast } from 'sonner';
-import {
-  classifyAuditPriority,
-  toastForPriority,
-  PRIORITY_META,
-} from '../audit-priority';
+import { classifyAuditPriority, toastForPriority, PRIORITY_META } from '../audit-priority';
 
 describe('audit-priority', () => {
   beforeEach(() => {
@@ -39,32 +35,38 @@ describe('audit-priority', () => {
     });
 
     it('DELETE em tabela sensível é critical', () => {
-      expect(classifyAuditPriority({ action: 'DELETE', table_name: 'user_roles' })).toBe('critical');
+      expect(classifyAuditPriority({ action: 'DELETE', table_name: 'user_roles' })).toBe(
+        'critical'
+      );
       expect(classifyAuditPriority({ action: 'DELETE', table_name: 'profiles' })).toBe('critical');
     });
 
     it('padrões críticos em details sobrepõem', () => {
       expect(
-        classifyAuditPriority({ action: 'INSERT', details: 'Privilege escalation detected' }),
+        classifyAuditPriority({ action: 'INSERT', details: 'Privilege escalation detected' })
       ).toBe('critical');
       expect(
-        classifyAuditPriority({ action: 'LOGIN', details: 'Senha alterada com sucesso' }),
+        classifyAuditPriority({ action: 'LOGIN', details: 'Senha alterada com sucesso' })
       ).toBe('critical');
-      expect(
-        classifyAuditPriority({ action: 'UPDATE', details: 'MFA disabled' }),
-      ).toBe('critical');
-      expect(
-        classifyAuditPriority({ action: 'INSERT', details: 'API-key rotated' }),
-      ).toBe('critical');
-      expect(
-        classifyAuditPriority({ action: 'INSERT', details: 'bloqueio efetuado' }),
-      ).toBe('critical');
+      expect(classifyAuditPriority({ action: 'UPDATE', details: 'MFA disabled' })).toBe('critical');
+      expect(classifyAuditPriority({ action: 'INSERT', details: 'API-key rotated' })).toBe(
+        'critical'
+      );
+      expect(classifyAuditPriority({ action: 'INSERT', details: 'bloqueio efetuado' })).toBe(
+        'critical'
+      );
     });
 
     it('padrões high elevam para high mas não critical', () => {
-      expect(classifyAuditPriority({ action: 'INSERT', details: 'Falha ao processar' })).toBe('high');
-      expect(classifyAuditPriority({ action: 'LOGIN', details: 'Tentativa suspeita' })).toBe('high');
-      expect(classifyAuditPriority({ action: 'EXPORT', details: 'Bulk export solicitado' })).toBe('high');
+      expect(classifyAuditPriority({ action: 'INSERT', details: 'Falha ao processar' })).toBe(
+        'high'
+      );
+      expect(classifyAuditPriority({ action: 'LOGIN', details: 'Tentativa suspeita' })).toBe(
+        'high'
+      );
+      expect(classifyAuditPriority({ action: 'EXPORT', details: 'Bulk export solicitado' })).toBe(
+        'high'
+      );
     });
 
     it('nunca rebaixa a prioridade', () => {
@@ -73,8 +75,12 @@ describe('audit-priority', () => {
     });
 
     it('details/table nulos ou vazios não quebram', () => {
-      expect(classifyAuditPriority({ action: 'UPDATE', details: null, table_name: null })).toBe('medium');
-      expect(classifyAuditPriority({ action: 'UPDATE', details: '', table_name: '' })).toBe('medium');
+      expect(classifyAuditPriority({ action: 'UPDATE', details: null, table_name: null })).toBe(
+        'medium'
+      );
+      expect(classifyAuditPriority({ action: 'UPDATE', details: '', table_name: '' })).toBe(
+        'medium'
+      );
     });
   });
 
@@ -113,7 +119,7 @@ describe('audit-priority', () => {
       toastForPriority('critical', 'msg', { duration: 500, description: 'x' });
       expect(toast.error).toHaveBeenCalledWith(
         'msg',
-        expect.objectContaining({ duration: 500, description: 'x' }),
+        expect.objectContaining({ duration: 500, description: 'x' })
       );
     });
   });

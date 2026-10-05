@@ -80,7 +80,11 @@ export function CategoryList({ agrupados, expandedCats, onToggle, busca }: Props
                       isOpen ? 'bg-primary/10 text-primary' : 'text-muted-foreground'
                     )}
                   >
-                    {isOpen ? <ChevronDown className="h-4 w-4" /> : <ChevronRight className="h-4 w-4" />}
+                    {isOpen ? (
+                      <ChevronDown className="h-4 w-4" />
+                    ) : (
+                      <ChevronRight className="h-4 w-4" />
+                    )}
                   </div>
                 </button>
 

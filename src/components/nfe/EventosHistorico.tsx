@@ -4,12 +4,24 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from '@/components/ui/dialog';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { 
-  History, 
-  Search, 
+import {
+  History,
+  Search,
   FileCode,
   Clock,
   Server,
@@ -23,14 +35,14 @@ import {
   Filter,
   Activity,
   Zap,
-  Timer
+  Timer,
 } from 'lucide-react';
-import { 
-  getEventos, 
-  getEstatisticas, 
-  EventoSefaz, 
+import {
+  getEventos,
+  getEstatisticas,
+  EventoSefaz,
   EventoTipo,
-  eventTypeConfig 
+  eventTypeConfig,
 } from '@/lib/sefaz-event-logger';
 import { toast } from 'sonner';
 
@@ -41,7 +53,7 @@ const formatDateTime = (date: Date) => {
     year: 'numeric',
     hour: '2-digit',
     minute: '2-digit',
-    second: '2-digit'
+    second: '2-digit',
   }).format(date);
 };
 
@@ -49,25 +61,37 @@ const formatTime = (date: Date) => {
   return new Intl.DateTimeFormat('pt-BR', {
     hour: '2-digit',
     minute: '2-digit',
-    second: '2-digit'
+    second: '2-digit',
   }).format(date);
 };
 
 // Ícone por tipo de evento
 const getEventIcon = (tipo: EventoTipo) => {
   switch (tipo) {
-    case 'AUTORIZACAO': return CheckCircle2;
-    case 'REJEICAO': return XCircle;
-    case 'CANCELAMENTO': return XCircle;
-    case 'CONSULTA': return Search;
-    case 'ENVIO_LOTE': return Wifi;
-    case 'RETORNO_LOTE': return Server;
-    case 'ERRO_CONEXAO': return WifiOff;
-    case 'TIMEOUT': return Clock;
-    case 'VALIDACAO': return FileCode;
-    case 'CONTINGENCIA': return AlertCircle;
-    case 'INUTILIZACAO': return XCircle;
-    default: return Activity;
+    case 'AUTORIZACAO':
+      return CheckCircle2;
+    case 'REJEICAO':
+      return XCircle;
+    case 'CANCELAMENTO':
+      return XCircle;
+    case 'CONSULTA':
+      return Search;
+    case 'ENVIO_LOTE':
+      return Wifi;
+    case 'RETORNO_LOTE':
+      return Server;
+    case 'ERRO_CONEXAO':
+      return WifiOff;
+    case 'TIMEOUT':
+      return Clock;
+    case 'VALIDACAO':
+      return FileCode;
+    case 'CONTINGENCIA':
+      return AlertCircle;
+    case 'INUTILIZACAO':
+      return XCircle;
+    default:
+      return Activity;
   }
 };
 
@@ -91,9 +115,7 @@ const EventoDetalhes = ({ evento }: { evento: EventoSefaz }) => {
             <h3 className={`font-bold text-lg ${eventTypeConfig[evento.tipo].color}`}>
               {eventTypeConfig[evento.tipo].label}
             </h3>
-            <p className="text-sm text-muted-foreground">
-              {formatDateTime(evento.timestamp)}
-            </p>
+            <p className="text-sm text-muted-foreground">{formatDateTime(evento.timestamp)}</p>
           </div>
         </div>
       </div>
@@ -130,8 +152,8 @@ const EventoDetalhes = ({ evento }: { evento: EventoSefaz }) => {
             <code className="text-xs font-mono bg-muted px-2 py-1 rounded flex-1 break-all">
               {evento.chaveAcesso}
             </code>
-            <Button 
-              variant="ghost" 
+            <Button
+              variant="ghost"
               size="sm"
               onClick={() => handleCopy(evento.chaveAcesso!, 'Chave de acesso')}
             >
@@ -147,8 +169,8 @@ const EventoDetalhes = ({ evento }: { evento: EventoSefaz }) => {
           <span className="text-sm text-muted-foreground">Protocolo</span>
           <div className="flex items-center gap-2">
             <code className="text-sm font-mono">{evento.protocolo}</code>
-            <Button 
-              variant="ghost" 
+            <Button
+              variant="ghost"
               size="sm"
               onClick={() => handleCopy(evento.protocolo!, 'Protocolo')}
             >
@@ -166,13 +188,19 @@ const EventoDetalhes = ({ evento }: { evento: EventoSefaz }) => {
             <Timer className="h-4 w-4 text-muted-foreground" />
             <span className="font-medium">{evento.tempoResposta}ms</span>
             {evento.tempoResposta < 1000 && (
-              <Badge variant="outline" className="text-success border-success/20">Rápido</Badge>
+              <Badge variant="outline" className="text-success border-success/20">
+                Rápido
+              </Badge>
             )}
             {evento.tempoResposta >= 1000 && evento.tempoResposta < 3000 && (
-              <Badge variant="outline" className="text-warning border-warning/20">Normal</Badge>
+              <Badge variant="outline" className="text-warning border-warning/20">
+                Normal
+              </Badge>
             )}
             {evento.tempoResposta >= 3000 && (
-              <Badge variant="outline" className="text-destructive border-destructive/20">Lento</Badge>
+              <Badge variant="outline" className="text-destructive border-destructive/20">
+                Lento
+              </Badge>
             )}
           </div>
         </div>
@@ -202,15 +230,15 @@ export function EventosHistorico() {
   const stats = getEstatisticas();
 
   const filteredEventos = useMemo(() => {
-    return eventos.filter(evento => {
-      const matchesSearch = 
+    return eventos.filter((evento) => {
+      const matchesSearch =
         evento.numeroNfe?.includes(searchTerm) ||
         evento.chaveAcesso?.includes(searchTerm) ||
         evento.xMotivo.toLowerCase().includes(searchTerm.toLowerCase()) ||
         evento.cStat.includes(searchTerm);
-      
+
       const matchesTipo = tipoFilter === 'todos' || evento.tipo === tipoFilter;
-      
+
       return matchesSearch && matchesTipo;
     });
   }, [eventos, searchTerm, tipoFilter]);
@@ -223,7 +251,7 @@ export function EventosHistorico() {
     { value: 'CANCELAMENTO', label: 'Cancelamento' },
     { value: 'ENVIO_LOTE', label: 'Envio de Lote' },
     { value: 'VALIDACAO', label: 'Validação' },
-    { value: 'ERRO_CONEXAO', label: 'Erro de Conexão' }
+    { value: 'ERRO_CONEXAO', label: 'Erro de Conexão' },
   ];
 
   return (
@@ -321,9 +349,7 @@ export function EventosHistorico() {
             <History className="h-5 w-5" />
             Histórico de Eventos SEFAZ
           </CardTitle>
-          <CardDescription>
-            {filteredEventos.length} evento(s) encontrado(s)
-          </CardDescription>
+          <CardDescription>{filteredEventos.length} evento(s) encontrado(s)</CardDescription>
         </CardHeader>
         <CardContent>
           <ScrollArea className="h-[500px] pr-4">
@@ -332,7 +358,7 @@ export function EventosHistorico() {
                 {filteredEventos.map((evento, index) => {
                   const Icon = getEventIcon(evento.tipo);
                   const config = eventTypeConfig[evento.tipo];
-                  
+
                   return (
                     <motion.div
                       key={evento.id}
@@ -349,7 +375,10 @@ export function EventosHistorico() {
                           </div>
                           <div className="min-w-0 flex-1">
                             <div className="flex items-center gap-2 flex-wrap">
-                              <Badge variant="outline" className={`${config.color} ${config.bgColor} border-0`}>
+                              <Badge
+                                variant="outline"
+                                className={`${config.color} ${config.bgColor} border-0`}
+                              >
                                 {config.label}
                               </Badge>
                               <Badge variant="outline" className="font-mono text-xs">

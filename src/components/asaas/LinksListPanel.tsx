@@ -3,7 +3,14 @@
 import { useState, useEffect, useCallback } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
 import { EmptyState } from '@/components/ui/empty-state';
@@ -42,7 +49,9 @@ export function LinksListPanel({ empresaId }: Props) {
       if (error) throw error;
       setLinks(data?.data || []);
     } catch (e: unknown) {
-      toast.error('Erro ao buscar links: ' + (e instanceof Error ? e.message : 'Erro desconhecido'));
+      toast.error(
+        'Erro ao buscar links: ' + (e instanceof Error ? e.message : 'Erro desconhecido')
+      );
     } finally {
       setLoading(false);
     }
@@ -56,8 +65,10 @@ export function LinksListPanel({ empresaId }: Props) {
     if (!deleteConfirm) return;
     try {
       await excluirLinkPagamento.mutateAsync(deleteConfirm);
-      setLinks(prev => prev.filter(l => l.id !== deleteConfirm));
-    } catch { /* hook handles */ }
+      setLinks((prev) => prev.filter((l) => l.id !== deleteConfirm));
+    } catch {
+      /* hook handles */
+    }
     setDeleteConfirm(null);
   };
 
@@ -77,14 +88,26 @@ export function LinksListPanel({ empresaId }: Props) {
             <CardDescription>Links compartilháveis criados no ASAAS</CardDescription>
           </div>
           <Button variant="outline" size="sm" onClick={fetchLinks} disabled={loading}>
-            {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Search className="h-4 w-4" />}
+            {loading ? (
+              <Loader2 className="h-4 w-4 animate-spin" />
+            ) : (
+              <Search className="h-4 w-4" />
+            )}
           </Button>
         </CardHeader>
         <CardContent>
           {loading ? (
-            <div className="space-y-2">{[1,2,3].map(i => <Skeleton key={i} className="h-10 w-full" />)}</div>
+            <div className="space-y-2">
+              {[1, 2, 3].map((i) => (
+                <Skeleton key={i} className="h-10 w-full" />
+              ))}
+            </div>
           ) : links.length === 0 ? (
-            <EmptyState icon={Link2} title="Nenhum link" description="Crie links de pagamento para compartilhar com clientes" />
+            <EmptyState
+              icon={Link2}
+              title="Nenhum link"
+              description="Crie links de pagamento para compartilhar com clientes"
+            />
           ) : (
             <div className="overflow-x-auto">
               <Table>
@@ -101,10 +124,16 @@ export function LinksListPanel({ empresaId }: Props) {
                   {links.map((link) => (
                     <TableRow key={link.id}>
                       <TableCell className="font-medium text-sm">{link.name || '-'}</TableCell>
-                      <TableCell className="font-medium">{formatCurrency(link.value || 0)}</TableCell>
+                      <TableCell className="font-medium">
+                        {formatCurrency(link.value || 0)}
+                      </TableCell>
                       <TableCell>
                         <Badge variant="outline" className="text-xs">
-                          {link.chargeType === 'RECURRENT' ? 'Recorrente' : link.chargeType === 'INSTALLMENT' ? 'Parcelado' : 'Avulso'}
+                          {link.chargeType === 'RECURRENT'
+                            ? 'Recorrente'
+                            : link.chargeType === 'INSTALLMENT'
+                              ? 'Parcelado'
+                              : 'Avulso'}
                         </Badge>
                       </TableCell>
                       <TableCell>
@@ -116,17 +145,35 @@ export function LinksListPanel({ empresaId }: Props) {
                         <div className="flex gap-1">
                           {link.url && (
                             <>
-                              <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => copyLink(link.url)} title="Copiar link">
+                              <Button
+                                variant="ghost"
+                                size="icon"
+                                className="h-7 w-7"
+                                onClick={() => copyLink(link.url)}
+                                title="Copiar link"
+                              >
                                 <Copy className="h-3.5 w-3.5" />
                               </Button>
-                              <Button variant="ghost" size="icon" className="h-7 w-7" asChild title="Abrir link">
+                              <Button
+                                variant="ghost"
+                                size="icon"
+                                className="h-7 w-7"
+                                asChild
+                                title="Abrir link"
+                              >
                                 <a href={link.url} target="_blank" rel="noopener noreferrer">
                                   <ExternalLink className="h-3.5 w-3.5" />
                                 </a>
                               </Button>
                             </>
                           )}
-                          <Button variant="ghost" size="icon" className="h-7 w-7 text-destructive" onClick={() => setDeleteConfirm(link.id)} title="Excluir">
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            className="h-7 w-7 text-destructive"
+                            onClick={() => setDeleteConfirm(link.id)}
+                            title="Excluir"
+                          >
                             <Trash2 className="h-3.5 w-3.5" />
                           </Button>
                         </div>

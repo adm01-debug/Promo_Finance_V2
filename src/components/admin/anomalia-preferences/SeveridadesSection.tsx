@@ -1,8 +1,8 @@
-import { Label } from "@/components/ui/label";
-import { Checkbox } from "@/components/ui/checkbox";
-import { AlertTriangle } from "lucide-react";
-import type { Severidade } from "@/hooks/useAnomaliaPreferences";
-import { SEVERIDADES } from "./constants";
+import { Label } from '@/components/ui/label';
+import { Checkbox } from '@/components/ui/checkbox';
+import { AlertTriangle } from 'lucide-react';
+import type { Severidade } from '@/hooks/useAnomaliaPreferences';
+import { SEVERIDADES } from './constants';
 
 interface Props {
   severidadesAtivas: Severidade[];
@@ -23,7 +23,7 @@ export function SeveridadesSection({ severidadesAtivas, onToggle }: Props) {
             <label
               key={sev.value}
               className={`flex items-start gap-2 rounded-md border p-2.5 cursor-pointer transition-colors ${
-                checked ? "bg-primary/5 border-primary/40" : ""
+                checked ? 'bg-primary/5 border-primary/40' : ''
               }`}
             >
               <Checkbox

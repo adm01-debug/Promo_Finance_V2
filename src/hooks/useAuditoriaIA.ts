@@ -55,19 +55,35 @@ export function useAuditoriaIA() {
       const rows = (historico ?? []) as unknown as RawHistorico[];
       if (rows.length === 0) return [];
 
-      const userIds = Array.from(new Set(rows.map((r) => r.aprovado_por).filter(Boolean) as string[]));
-      const txIds = Array.from(new Set(rows.map((r) => r.transacao_bancaria_id).filter(Boolean) as string[]));
+      const userIds = Array.from(
+        new Set(rows.map((r) => r.aprovado_por).filter(Boolean) as string[])
+      );
+      const txIds = Array.from(
+        new Set(rows.map((r) => r.transacao_bancaria_id).filter(Boolean) as string[])
+      );
 
       const [profilesRes, txsRes, feedbackRes] = await Promise.all([
         userIds.length
           ? supabase.from('profiles').select('id,email,full_name').in('id', userIds)
-          : Promise.resolve({ data: [], error: null } as { data: Array<{ id: string; email: string | null; full_name: string | null }> | null; error: null }),
+          : Promise.resolve({ data: [], error: null } as {
+              data: Array<{ id: string; email: string | null; full_name: string | null }> | null;
+              error: null;
+            }),
         txIds.length
           ? supabase
               .from('transacoes_bancarias')
               .select('id,descricao,valor,data,conta_bancaria_id')
               .in('id', txIds)
-          : Promise.resolve({ data: [], error: null } as { data: Array<{ id: string; descricao: string | null; valor: number | null; data: string | null; conta_bancaria_id: string | null }> | null; error: null }),
+          : Promise.resolve({ data: [], error: null } as {
+              data: Array<{
+                id: string;
+                descricao: string | null;
+                valor: number | null;
+                data: string | null;
+                conta_bancaria_id: string | null;
+              }> | null;
+              error: null;
+            }),
         txIds.length
           ? supabase
               .from('feedback_conciliacao_ia')
@@ -75,14 +91,22 @@ export function useAuditoriaIA() {
               .in('transacao_bancaria_id', txIds)
               .eq('acao', 'rejeitado')
               .order('created_at', { ascending: false })
-          : Promise.resolve({ data: [], error: null } as { data: Array<{ transacao_bancaria_id: string | null; motivo_rejeicao: string | null; acao: string; created_at: string }> | null; error: null }),
+          : Promise.resolve({ data: [], error: null } as {
+              data: Array<{
+                transacao_bancaria_id: string | null;
+                motivo_rejeicao: string | null;
+                acao: string;
+                created_at: string;
+              }> | null;
+              error: null;
+            }),
       ]);
 
       const profileMap = new Map((profilesRes.data ?? []).map((p) => [p.id, p]));
       const txMap = new Map((txsRes.data ?? []).map((t) => [t.id, t]));
 
       const contaIds = Array.from(
-        new Set((txsRes.data ?? []).map((t) => t.conta_bancaria_id).filter(Boolean) as string[]),
+        new Set((txsRes.data ?? []).map((t) => t.conta_bancaria_id).filter(Boolean) as string[])
       );
 
       const contasRes = contaIds.length
@@ -91,7 +115,7 @@ export function useAuditoriaIA() {
       const contaMap = new Map((contasRes.data ?? []).map((c) => [c.id, c]));
 
       const empresaIds = Array.from(
-        new Set((contasRes.data ?? []).map((c) => c.empresa_id).filter(Boolean) as string[]),
+        new Set((contasRes.data ?? []).map((c) => c.empresa_id).filter(Boolean) as string[])
       );
       const empresasRes = empresaIds.length
         ? await supabase.from('empresas').select('id,cnpj,razao_social').in('id', empresaIds)
@@ -132,7 +156,9 @@ export function useAuditoriaIA() {
           transacao_descricao: tx?.descricao ?? null,
           transacao_valor: tx?.valor ?? null,
           transacao_data: tx?.data ?? null,
-          motivo_rejeicao: r.transacao_bancaria_id ? (motivoMap.get(r.transacao_bancaria_id) ?? null) : null,
+          motivo_rejeicao: r.transacao_bancaria_id
+            ? (motivoMap.get(r.transacao_bancaria_id) ?? null)
+            : null,
         } satisfies AuditoriaIARow;
       });
     },

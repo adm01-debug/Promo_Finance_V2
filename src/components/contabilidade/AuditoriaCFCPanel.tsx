@@ -15,7 +15,7 @@ import {
   Activity,
   Award,
   Target,
-  Copy
+  Copy,
 } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
@@ -40,10 +40,37 @@ interface Props {
 }
 
 function scoreColor(score: number) {
-  if (score >= 95) return { tone: 'text-success', bg: 'bg-success/10', border: 'border-success/20', label: 'Excelente', shadow: 'shadow-success/20' };
-  if (score >= 80) return { tone: 'text-primary', bg: 'bg-primary/10', border: 'border-primary/20', label: 'Bom', shadow: 'shadow-primary/20' };
-  if (score >= 60) return { tone: 'text-warning', bg: 'bg-warning/10', border: 'border-warning/20', label: 'Atenção', shadow: 'shadow-warning/20' };
-  return { tone: 'text-destructive', bg: 'bg-destructive/10', border: 'border-destructive/20', label: 'Crítico', shadow: 'shadow-destructive/20' };
+  if (score >= 95)
+    return {
+      tone: 'text-success',
+      bg: 'bg-success/10',
+      border: 'border-success/20',
+      label: 'Excelente',
+      shadow: 'shadow-success/20',
+    };
+  if (score >= 80)
+    return {
+      tone: 'text-primary',
+      bg: 'bg-primary/10',
+      border: 'border-primary/20',
+      label: 'Bom',
+      shadow: 'shadow-primary/20',
+    };
+  if (score >= 60)
+    return {
+      tone: 'text-warning',
+      bg: 'bg-warning/10',
+      border: 'border-warning/20',
+      label: 'Atenção',
+      shadow: 'shadow-warning/20',
+    };
+  return {
+    tone: 'text-destructive',
+    bg: 'bg-destructive/10',
+    border: 'border-destructive/20',
+    label: 'Crítico',
+    shadow: 'shadow-destructive/20',
+  };
 }
 
 export function AuditoriaCFCPanel({ resultado, empresa, className, compact = false }: Props) {
@@ -68,18 +95,31 @@ export function AuditoriaCFCPanel({ resultado, empresa, className, compact = fal
   };
 
   return (
-    <Card className={cn("border-none bg-background/20 backdrop-blur-3xl shadow-2xl rounded-[2rem] overflow-hidden ring-1 ring-white/10 relative group", className)}>
+    <Card
+      className={cn(
+        'border-none bg-background/20 backdrop-blur-3xl shadow-2xl rounded-[2rem] overflow-hidden ring-1 ring-white/10 relative group',
+        className
+      )}
+    >
       <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-transparent pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
       <CardHeader className="p-8 pb-4">
         <div className="flex flex-wrap items-start justify-between gap-6">
           <div className="flex items-center gap-5">
-            <div className={cn("p-4 rounded-2xl shadow-xl transform group-hover:scale-110 transition-all duration-500", score.bg, score.tone)}>
+            <div
+              className={cn(
+                'p-4 rounded-2xl shadow-xl transform group-hover:scale-110 transition-all duration-500',
+                score.bg,
+                score.tone
+              )}
+            >
               <ShieldCheck className="h-8 w-8" />
             </div>
             <div>
               <CardTitle className="text-2xl font-black tracking-tight flex items-center gap-2">
                 Auditoria CFC
-                {tudoOk && <Zap className="h-5 w-5 text-yellow-400 fill-yellow-400 animate-pulse" />}
+                {tudoOk && (
+                  <Zap className="h-5 w-5 text-yellow-400 fill-yellow-400 animate-pulse" />
+                )}
               </CardTitle>
               <CardDescription className="text-sm font-medium opacity-60">
                 Governança de códigos referenciais para conformidade SPED
@@ -113,37 +153,72 @@ export function AuditoriaCFCPanel({ resultado, empresa, className, compact = fal
       <CardContent className="p-8 pt-2 space-y-10">
         {/* KPI de score + totais */}
         <div className="grid grid-cols-1 md:grid-cols-5 gap-6">
-          <motion.div 
+          <motion.div
             whileHover={{ scale: 1.02, y: -5 }}
-            className={cn('md:col-span-2 rounded-[2.5rem] border p-8 shadow-3xl backdrop-blur-3xl transition-all relative overflow-hidden group/score', score.bg, score.border)}
+            className={cn(
+              'md:col-span-2 rounded-[2.5rem] border p-8 shadow-3xl backdrop-blur-3xl transition-all relative overflow-hidden group/score',
+              score.bg,
+              score.border
+            )}
           >
             <div className="absolute top-0 right-0 p-8 opacity-[0.03] group-hover/score:scale-125 transition-transform duration-700">
               <Award className="h-32 w-32" />
             </div>
             <div className="relative z-10 flex items-center justify-between">
               <div>
-                <p className="text-[11px] uppercase font-black tracking-[0.3em] opacity-40 mb-1">Qualidade Fiscal</p>
+                <p className="text-[11px] uppercase font-black tracking-[0.3em] opacity-40 mb-1">
+                  Qualidade Fiscal
+                </p>
                 <div className="flex items-baseline gap-3">
-                  <p className={cn('text-6xl font-black font-mono tracking-tighter', score.tone)}>{resultado.scoreConformidade}</p>
+                  <p className={cn('text-6xl font-black font-mono tracking-tighter', score.tone)}>
+                    {resultado.scoreConformidade}
+                  </p>
                   <span className="text-xl font-bold opacity-20">/100</span>
                 </div>
-                <Badge variant="outline" className={cn('mt-4 text-[10px] font-black uppercase border-none px-4 py-1.5 rounded-full shadow-lg', score.bg, score.tone)}>
+                <Badge
+                  variant="outline"
+                  className={cn(
+                    'mt-4 text-[10px] font-black uppercase border-none px-4 py-1.5 rounded-full shadow-lg',
+                    score.bg,
+                    score.tone
+                  )}
+                >
                   Selo {score.label}
                 </Badge>
               </div>
               <div className="h-24 w-24 relative">
                 <svg className="w-full h-full transform -rotate-90">
-                  <circle cx="48" cy="48" r="40" stroke="currentColor" strokeWidth="8" fill="transparent" className="opacity-10" />
-                  <motion.circle 
-                    cx="48" cy="48" r="40" stroke="currentColor" strokeWidth="8" fill="transparent" 
+                  <circle
+                    cx="48"
+                    cy="48"
+                    r="40"
+                    stroke="currentColor"
+                    strokeWidth="8"
+                    fill="transparent"
+                    className="opacity-10"
+                  />
+                  <motion.circle
+                    cx="48"
+                    cy="48"
+                    r="40"
+                    stroke="currentColor"
+                    strokeWidth="8"
+                    fill="transparent"
                     strokeDasharray={251.2}
                     initial={{ strokeDashoffset: 251.2 }}
-                    animate={{ strokeDashoffset: 251.2 - (251.2 * resultado.scoreConformidade) / 100 }}
-                    transition={{ duration: 1.5, ease: "easeOut" }}
+                    animate={{
+                      strokeDashoffset: 251.2 - (251.2 * resultado.scoreConformidade) / 100,
+                    }}
+                    transition={{ duration: 1.5, ease: 'easeOut' }}
                     className={score.tone}
                   />
                 </svg>
-                <Target className={cn("absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 h-8 w-8 opacity-20", score.tone)} />
+                <Target
+                  className={cn(
+                    'absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 h-8 w-8 opacity-20',
+                    score.tone
+                  )}
+                />
               </div>
             </div>
           </motion.div>
@@ -198,8 +273,8 @@ export function AuditoriaCFCPanel({ resultado, empresa, className, compact = fal
             <Sparkles className="h-4 w-4 text-success" />
             <AlertTitle>Plano de contas 100% conforme!</AlertTitle>
             <AlertDescription>
-              Todos os códigos referenciais CFC estão no formato esperado, com prefixos corretos e sem
-              duplicidades. Pronto para SPED ECD/ECF.
+              Todos os códigos referenciais CFC estão no formato esperado, com prefixos corretos e
+              sem duplicidades. Pronto para SPED ECD/ECF.
             </AlertDescription>
           </Alert>
         ) : (
@@ -211,35 +286,59 @@ export function AuditoriaCFCPanel({ resultado, empresa, className, compact = fal
                   {resultado.problemasCriticos} problema(s) crítico(s) impedem a transmissão
                 </AlertTitle>
                 <AlertDescription>
-                  Formato inválido e duplicidades causam rejeição direta na Receita Federal — corrija antes de
-                  gerar o SPED.
+                  Formato inválido e duplicidades causam rejeição direta na Receita Federal —
+                  corrija antes de gerar o SPED.
                 </AlertDescription>
               </Alert>
             )}
 
             <Tabs value={tab} onValueChange={(v) => setTab(v as typeof tab)}>
               <TabsList className="grid grid-cols-4 w-full h-12 bg-card/5 rounded-2xl p-1">
-                <TabsTrigger value="formato" className="rounded-xl data-[state=active]:bg-primary data-[state=active]:text-primary-foreground transition-all gap-2 text-xs font-black uppercase tracking-tighter">
+                <TabsTrigger
+                  value="formato"
+                  className="rounded-xl data-[state=active]:bg-primary data-[state=active]:text-primary-foreground transition-all gap-2 text-xs font-black uppercase tracking-tighter"
+                >
                   Formato
-                  <Badge variant="secondary" className="h-5 px-1.5 text-[10px] font-black bg-current/20 border-none">
+                  <Badge
+                    variant="secondary"
+                    className="h-5 px-1.5 text-[10px] font-black bg-current/20 border-none"
+                  >
                     {resultado.formatoInvalido.length}
                   </Badge>
                 </TabsTrigger>
-                <TabsTrigger value="prefixo" className="rounded-xl data-[state=active]:bg-primary data-[state=active]:text-primary-foreground transition-all gap-2 text-xs font-black uppercase tracking-tighter">
+                <TabsTrigger
+                  value="prefixo"
+                  className="rounded-xl data-[state=active]:bg-primary data-[state=active]:text-primary-foreground transition-all gap-2 text-xs font-black uppercase tracking-tighter"
+                >
                   Prefixo
-                  <Badge variant="secondary" className="h-5 px-1.5 text-[10px] font-black bg-current/20 border-none">
+                  <Badge
+                    variant="secondary"
+                    className="h-5 px-1.5 text-[10px] font-black bg-current/20 border-none"
+                  >
                     {resultado.prefixoIncorreto.length}
                   </Badge>
                 </TabsTrigger>
-                <TabsTrigger value="duplicidade" className="rounded-xl data-[state=active]:bg-primary data-[state=active]:text-primary-foreground transition-all gap-2 text-xs font-black uppercase tracking-tighter">
+                <TabsTrigger
+                  value="duplicidade"
+                  className="rounded-xl data-[state=active]:bg-primary data-[state=active]:text-primary-foreground transition-all gap-2 text-xs font-black uppercase tracking-tighter"
+                >
                   Duplicidade
-                  <Badge variant="secondary" className="h-5 px-1.5 text-[10px] font-black bg-current/20 border-none">
+                  <Badge
+                    variant="secondary"
+                    className="h-5 px-1.5 text-[10px] font-black bg-current/20 border-none"
+                  >
                     {resultado.duplicidades.length}
                   </Badge>
                 </TabsTrigger>
-                <TabsTrigger value="sem-ref" className="rounded-xl data-[state=active]:bg-primary data-[state=active]:text-primary-foreground transition-all gap-2 text-xs font-black uppercase tracking-tighter">
+                <TabsTrigger
+                  value="sem-ref"
+                  className="rounded-xl data-[state=active]:bg-primary data-[state=active]:text-primary-foreground transition-all gap-2 text-xs font-black uppercase tracking-tighter"
+                >
                   Sem ref.
-                  <Badge variant="secondary" className="h-5 px-1.5 text-[10px] font-black bg-current/20 border-none">
+                  <Badge
+                    variant="secondary"
+                    className="h-5 px-1.5 text-[10px] font-black bg-current/20 border-none"
+                  >
                     {resultado.semReferencial}
                   </Badge>
                 </TabsTrigger>
@@ -293,7 +392,9 @@ export function AuditoriaCFCPanel({ resultado, empresa, className, compact = fal
                       className="rounded-md border border-destructive/30 bg-destructive/5 p-3 text-xs"
                     >
                       <div className="flex items-center justify-between mb-2">
-                        <code className="font-mono font-semibold text-destructive">{d.codigo_referencial}</code>
+                        <code className="font-mono font-semibold text-destructive">
+                          {d.codigo_referencial}
+                        </code>
                         <Badge variant="destructive" className="text-[10px]">
                           {d.contas.length} contas
                         </Badge>
@@ -316,9 +417,9 @@ export function AuditoriaCFCPanel({ resultado, empresa, className, compact = fal
                   <EmptyOk msg="Todas as contas analíticas têm código referencial." />
                 ) : (
                   <p className="text-xs text-muted-foreground px-2">
-                    {resultado.semReferencial} conta(s) analítica(s) sem código referencial CFC. Sem isso o SPED é
-                    gerado mas algumas validações da Receita podem falhar. Edite cada conta no Plano de Contas
-                    para adicionar o código.
+                    {resultado.semReferencial} conta(s) analítica(s) sem código referencial CFC. Sem
+                    isso o SPED é gerado mas algumas validações da Receita podem falhar. Edite cada
+                    conta no Plano de Contas para adicionar o código.
                   </p>
                 )}
               </TabsContent>
@@ -329,4 +430,3 @@ export function AuditoriaCFCPanel({ resultado, empresa, className, compact = fal
     </Card>
   );
 }
-

@@ -37,9 +37,9 @@ export function useNetworkStatus() {
 
   const updateNetworkInfo = useCallback(() => {
     const connection = getConnection();
-    
+
     if (connection) {
-      setStatus(prev => ({
+      setStatus((prev) => ({
         ...prev,
         effectiveType: connection.effectiveType,
         downlink: connection.downlink,
@@ -50,7 +50,7 @@ export function useNetworkStatus() {
 
   useEffect(() => {
     const handleOnline = () => {
-      setStatus(prev => ({ ...prev, isOnline: true }));
+      setStatus((prev) => ({ ...prev, isOnline: true }));
       if (status.wasOffline) {
         toast.success('Conexão restaurada', {
           description: 'Você está online novamente.',
@@ -61,7 +61,7 @@ export function useNetworkStatus() {
     };
 
     const handleOffline = () => {
-      setStatus(prev => ({ ...prev, isOnline: false, wasOffline: true }));
+      setStatus((prev) => ({ ...prev, isOnline: false, wasOffline: true }));
       toast.error('Sem conexão', {
         description: 'Você está offline. Algumas funcionalidades podem não estar disponíveis.',
         duration: 5000,
@@ -70,7 +70,7 @@ export function useNetworkStatus() {
 
     window.addEventListener('online', handleOnline);
     window.addEventListener('offline', handleOffline);
-    
+
     // Listen for connection changes
     const connection = getConnection();
     if (connection) {

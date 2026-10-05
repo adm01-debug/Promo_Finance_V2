@@ -1,13 +1,13 @@
-import { useQuery } from "@tanstack/react-query";
-import { supabaseDyn } from "@/lib/supabase-dynamic";
+import { useQuery } from '@tanstack/react-query';
+import { supabaseDyn } from '@/lib/supabase-dynamic';
 
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import { Skeleton } from "@/components/ui/skeleton";
-import { AlertTriangle, CheckCircle2, RefreshCw, Scale } from "lucide-react";
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Skeleton } from '@/components/ui/skeleton';
+import { AlertTriangle, CheckCircle2, RefreshCw, Scale } from 'lucide-react';
 
-type Severidade = "critical" | "warning" | "info";
+type Severidade = 'critical' | 'warning' | 'info';
 
 /** Achado individual retornado por public.get_catalogos_tributarios_health. */
 interface AchadoCatalogo {
@@ -33,24 +33,24 @@ interface CatalogoHealth {
 }
 
 const ESTILO_SEVERIDADE: Record<Severidade, string> = {
-  critical: "bg-destructive/10 text-destructive border-destructive/30",
-  warning: "bg-warning/10 text-warning border-warning/30",
-  info: "bg-muted text-muted-foreground border-border",
+  critical: 'bg-destructive/10 text-destructive border-destructive/30',
+  warning: 'bg-warning/10 text-warning border-warning/30',
+  info: 'bg-muted text-muted-foreground border-border',
 };
 
 const ROTULO_SEVERIDADE: Record<Severidade, string> = {
-  critical: "Crítico",
-  warning: "Aviso",
-  info: "Informativo",
+  critical: 'Crítico',
+  warning: 'Aviso',
+  info: 'Informativo',
 };
 
 function formatarData(iso: string | null): string {
-  if (!iso) return "—";
-  return new Date(iso).toLocaleString("pt-BR", {
-    day: "2-digit",
-    month: "2-digit",
-    hour: "2-digit",
-    minute: "2-digit",
+  if (!iso) return '—';
+  return new Date(iso).toLocaleString('pt-BR', {
+    day: '2-digit',
+    month: '2-digit',
+    hour: '2-digit',
+    minute: '2-digit',
   });
 }
 
@@ -61,11 +61,11 @@ function formatarData(iso: string | null): string {
  */
 export function CatalogosTributariosHealthPanel() {
   const { data, isLoading, isError, refetch, isRefetching } = useQuery<CatalogoHealth>({
-    queryKey: ["catalogos-tributarios-health"],
+    queryKey: ['catalogos-tributarios-health'],
     queryFn: async () => {
       const { data, error } = await supabaseDyn.rpc<CatalogoHealth>(
-        "get_catalogos_tributarios_health",
-        {},
+        'get_catalogos_tributarios_health',
+        {}
       );
       if (error) throw error;
       return data as CatalogoHealth;
@@ -89,7 +89,10 @@ export function CatalogosTributariosHealthPanel() {
           disabled={isRefetching}
           aria-label="Revalidar catálogos tributários"
         >
-          <RefreshCw className={`h-4 w-4 ${isRefetching ? "animate-spin" : ""}`} aria-hidden="true" />
+          <RefreshCw
+            className={`h-4 w-4 ${isRefetching ? 'animate-spin' : ''}`}
+            aria-hidden="true"
+          />
           <span className="ml-2">Revalidar</span>
         </Button>
       </CardHeader>
@@ -102,7 +105,8 @@ export function CatalogosTributariosHealthPanel() {
           </div>
         ) : isError ? (
           <p className="text-sm text-muted-foreground">
-            Não foi possível carregar a auditoria dos catálogos. Esta visão é restrita a administradores.
+            Não foi possível carregar a auditoria dos catálogos. Esta visão é restrita a
+            administradores.
           </p>
         ) : (
           <>
@@ -124,19 +128,22 @@ export function CatalogosTributariosHealthPanel() {
             <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
               <div className="rounded-lg border border-border bg-card p-3">
                 <p className="text-xs text-muted-foreground">Alertas em aberto</p>
-                <p className="text-2xl font-semibold text-foreground">{data?.alertas_abertos ?? 0}</p>
+                <p className="text-2xl font-semibold text-foreground">
+                  {data?.alertas_abertos ?? 0}
+                </p>
               </div>
               <div className="rounded-lg border border-success/30 bg-success/5 p-3">
                 <p className="text-xs text-muted-foreground">Auto-resolvidos (24h)</p>
-                <p className="text-2xl font-semibold text-success">{data?.auto_resolvidos_24h ?? 0}</p>
+                <p className="text-2xl font-semibold text-success">
+                  {data?.auto_resolvidos_24h ?? 0}
+                </p>
               </div>
             </div>
 
             <p className="text-xs text-muted-foreground">
-              Última gravação de alerta fiscal: {formatarData(data?.ultima_verificacao ?? null)} · Verificado em{" "}
-              {formatarData(data?.gerado_em ?? null)}
+              Última gravação de alerta fiscal: {formatarData(data?.ultima_verificacao ?? null)} ·
+              Verificado em {formatarData(data?.gerado_em ?? null)}
             </p>
-
 
             {achados.length === 0 ? (
               <div className="flex items-center gap-2 rounded-lg border border-success/30 bg-success/10 p-3 text-sm text-success">
@@ -152,7 +159,10 @@ export function CatalogosTributariosHealthPanel() {
                   >
                     <div className="min-w-0">
                       <div className="flex items-center gap-2">
-                        <AlertTriangle className="h-4 w-4 shrink-0 text-muted-foreground" aria-hidden="true" />
+                        <AlertTriangle
+                          className="h-4 w-4 shrink-0 text-muted-foreground"
+                          aria-hidden="true"
+                        />
                         <span className="truncate font-medium">{achado.invariante}</span>
                       </div>
                       <p className="mt-1 text-sm text-muted-foreground">{achado.detalhe}</p>

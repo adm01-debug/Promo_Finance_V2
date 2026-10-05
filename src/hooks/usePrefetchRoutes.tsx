@@ -2,13 +2,7 @@ import { useEffect, useRef, type ReactNode } from 'react';
 import { usePrefetchRoutes } from './usePrefetchRoutes';
 
 // Component wrapper for prefetching on visibility
-export function PrefetchOnVisible({ 
-  route, 
-  children 
-}: { 
-  route: string; 
-  children: ReactNode;
-}) {
+export function PrefetchOnVisible({ route, children }: { route: string; children: ReactNode }) {
   const ref = useRef<HTMLDivElement>(null);
   const { prefetchRoute, prefetchData } = usePrefetchRoutes();
   const hasPrefetched = useRef(false);
@@ -32,7 +26,5 @@ export function PrefetchOnVisible({
     return () => observer.disconnect();
   }, [route, prefetchRoute, prefetchData]);
 
-  return (
-    <div ref={ref}>{children}</div>
-  );
+  return <div ref={ref}>{children}</div>;
 }

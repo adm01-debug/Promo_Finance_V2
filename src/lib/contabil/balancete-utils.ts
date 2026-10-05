@@ -94,7 +94,7 @@ export interface BalanceteFilterOptions {
 /** Filtro de apresentação aplicado sobre o retorno já consolidado da RPC. */
 export function filterBalancete(
   rows: readonly BalanceteRow[],
-  { nivelMax, apenasComMovimento, busca }: BalanceteFilterOptions = {},
+  { nivelMax, apenasComMovimento, busca }: BalanceteFilterOptions = {}
 ): BalanceteRow[] {
   const termo = (busca ?? '').trim().toLowerCase();
   return rows.filter((r) => {

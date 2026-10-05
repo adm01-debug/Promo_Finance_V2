@@ -103,16 +103,25 @@ export function PagamentosRecorrentesList() {
         <Card>
           <CardHeader className="p-3 sm:p-6 pb-2">
             <CardDescription className="text-xs sm:text-sm truncate">Valor Mensal</CardDescription>
-            <CardTitle className="text-lg sm:text-2xl truncate">{formatCurrency(stats.valorMensal)}</CardTitle>
+            <CardTitle className="text-lg sm:text-2xl truncate">
+              {formatCurrency(stats.valorMensal)}
+            </CardTitle>
           </CardHeader>
         </Card>
       </div>
 
       {/* Ação de gerar contas */}
       <div className="flex justify-end">
-        <Button onClick={() => gerarContas()} disabled={isGenerating} size="sm" className="sm:h-10 sm:px-4 sm:text-sm">
+        <Button
+          onClick={() => gerarContas()}
+          disabled={isGenerating}
+          size="sm"
+          className="sm:h-10 sm:px-4 sm:text-sm"
+        >
           <Zap className="mr-1 sm:mr-2 h-3 w-3 sm:h-4 sm:w-4" />
-          <span className="hidden sm:inline">{isGenerating ? 'Gerando...' : 'Gerar Contas Pendentes'}</span>
+          <span className="hidden sm:inline">
+            {isGenerating ? 'Gerando...' : 'Gerar Contas Pendentes'}
+          </span>
           <span className="sm:hidden">{isGenerating ? 'Gerando...' : 'Gerar Contas'}</span>
         </Button>
       </div>
@@ -156,7 +165,10 @@ export function PagamentosRecorrentesList() {
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel>Cancelar</AlertDialogCancel>
-            <AlertDialogAction onClick={handleDelete} className="bg-destructive text-destructive-foreground">
+            <AlertDialogAction
+              onClick={handleDelete}
+              className="bg-destructive text-destructive-foreground"
+            >
               Excluir
             </AlertDialogAction>
           </AlertDialogFooter>
@@ -173,7 +185,12 @@ interface PagamentoRecorrenteCardProps {
   onDelete: () => void;
 }
 
-function PagamentoRecorrenteCard({ pagamento, index, onToggle, onDelete }: PagamentoRecorrenteCardProps) {
+function PagamentoRecorrenteCard({
+  pagamento,
+  index,
+  onToggle,
+  onDelete,
+}: PagamentoRecorrenteCardProps) {
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
@@ -192,12 +209,19 @@ function PagamentoRecorrenteCard({ pagamento, index, onToggle, onDelete }: Pagam
                     <Repeat className="h-4 w-4 sm:h-5 sm:w-5 text-primary" />
                   </div>
                   <div className="min-w-0 flex-1">
-                    <h3 className="font-semibold text-sm sm:text-base truncate">{pagamento.descricao}</h3>
-                    <p className="text-xs sm:text-sm text-muted-foreground truncate">{pagamento.fornecedor_nome}</p>
+                    <h3 className="font-semibold text-sm sm:text-base truncate">
+                      {pagamento.descricao}
+                    </h3>
+                    <p className="text-xs sm:text-sm text-muted-foreground truncate">
+                      {pagamento.fornecedor_nome}
+                    </p>
                   </div>
                 </div>
                 <div className="flex items-center gap-1.5 flex-shrink-0 ml-6 sm:ml-0">
-                  <Badge variant={pagamento.ativo ? 'default' : 'secondary'} className="text-[10px] sm:text-xs">
+                  <Badge
+                    variant={pagamento.ativo ? 'default' : 'secondary'}
+                    className="text-[10px] sm:text-xs"
+                  >
                     {pagamento.ativo ? 'Ativo' : 'Pausado'}
                   </Badge>
                   <Badge variant="outline" className="text-[10px] sm:text-xs">
@@ -220,7 +244,7 @@ function PagamentoRecorrenteCard({ pagamento, index, onToggle, onDelete }: Pagam
                   <Clock className="h-3 w-3 sm:h-4 sm:w-4 text-muted-foreground flex-shrink-0" />
                   <span className="truncate">
                     {pagamento.proxima_geracao
-                      ? format(new Date(pagamento.proxima_geracao), "dd/MM/yy", { locale: ptBR })
+                      ? format(new Date(pagamento.proxima_geracao), 'dd/MM/yy', { locale: ptBR })
                       : 'N/A'}
                   </span>
                 </div>

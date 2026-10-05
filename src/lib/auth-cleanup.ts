@@ -31,12 +31,7 @@ const RUNTIME_CACHE_PATTERNS = [
 ];
 
 /** Padrões de IndexedDB que devem ser apagados. */
-const RUNTIME_IDB_PATTERNS = [
-  /^workbox-/i,
-  /^keyval-/i,
-  /^lovable-cache/i,
-  /^supabase/i,
-];
+const RUNTIME_IDB_PATTERNS = [/^workbox-/i, /^keyval-/i, /^lovable-cache/i, /^supabase/i];
 
 function clearLocalStorage(): void {
   try {
@@ -87,7 +82,7 @@ async function clearRuntimeCaches(): Promise<void> {
     await Promise.all(
       keys
         .filter((k) => RUNTIME_CACHE_PATTERNS.some((re) => re.test(k)))
-        .map((k) => caches.delete(k).catch(() => false)),
+        .map((k) => caches.delete(k).catch(() => false))
     );
   } catch (err) {
     logger.warn('[auth-cleanup] caches clear failed', err);
@@ -96,15 +91,17 @@ async function clearRuntimeCaches(): Promise<void> {
 
 async function clearRuntimeIndexedDB(): Promise<void> {
   try {
-    const idb = (indexedDB as unknown as {
+    const idb = indexedDB as unknown as {
       databases?: () => Promise<Array<{ name?: string }>>;
-    });
+    };
     if (!idb.databases) return;
     const dbs = await idb.databases();
     await Promise.all(
       dbs
         .map((d) => d.name)
-        .filter((name): name is string => !!name && RUNTIME_IDB_PATTERNS.some((re) => re.test(name)))
+        .filter(
+          (name): name is string => !!name && RUNTIME_IDB_PATTERNS.some((re) => re.test(name))
+        )
         .map(
           (name) =>
             new Promise<void>((resolve) => {
@@ -116,8 +113,8 @@ async function clearRuntimeIndexedDB(): Promise<void> {
               } catch {
                 resolve();
               }
-            }),
-        ),
+            })
+        )
     );
   } catch (err) {
     logger.warn('[auth-cleanup] indexedDB clear failed', err);

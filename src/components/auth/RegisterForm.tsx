@@ -3,15 +3,7 @@ import { motion } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { 
-  UserPlus, 
-  Mail, 
-  Lock, 
-  User,
-  Loader2,
-  Eye,
-  EyeOff
-} from 'lucide-react';
+import { UserPlus, Mail, Lock, User, Loader2, Eye, EyeOff } from 'lucide-react';
 import { PasswordStrengthIndicator } from '@/components/auth/PasswordStrengthIndicator';
 
 interface RegisterFormProps {
@@ -44,7 +36,12 @@ export function RegisterForm({
   return (
     <form onSubmit={onSubmit} className="space-y-4">
       <div className="space-y-2">
-        <Label htmlFor="register-name" className="text-xs font-bold uppercase tracking-widest opacity-70 ml-1">Nome Completo</Label>
+        <Label
+          htmlFor="register-name"
+          className="text-xs font-bold uppercase tracking-widest opacity-70 ml-1"
+        >
+          Nome Completo
+        </Label>
         <div className="relative group">
           <User className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground group-focus-within:text-primary transition-colors" />
           <Input
@@ -58,7 +55,7 @@ export function RegisterForm({
           />
         </div>
         {errors.fullName && (
-          <motion.p 
+          <motion.p
             initial={{ opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}
             className="text-sm text-destructive"
@@ -69,7 +66,12 @@ export function RegisterForm({
       </div>
 
       <div className="space-y-2">
-        <Label htmlFor="register-email" className="text-xs font-bold uppercase tracking-widest opacity-70 ml-1">Email Profissional</Label>
+        <Label
+          htmlFor="register-email"
+          className="text-xs font-bold uppercase tracking-widest opacity-70 ml-1"
+        >
+          Email Profissional
+        </Label>
         <div className="relative group">
           <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground group-focus-within:text-primary transition-colors" />
           <Input
@@ -83,7 +85,7 @@ export function RegisterForm({
           />
         </div>
         {errors.email && (
-          <motion.p 
+          <motion.p
             initial={{ opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}
             className="text-sm text-destructive"
@@ -94,12 +96,17 @@ export function RegisterForm({
       </div>
 
       <div className="space-y-2">
-        <Label htmlFor="register-password" className="text-xs font-bold uppercase tracking-widest opacity-70 ml-1">Senha de Acesso</Label>
+        <Label
+          htmlFor="register-password"
+          className="text-xs font-bold uppercase tracking-widest opacity-70 ml-1"
+        >
+          Senha de Acesso
+        </Label>
         <div className="relative group">
           <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground group-focus-within:text-primary transition-colors" />
           <Input
             id="register-password"
-            type={showPassword ? "text" : "password"}
+            type={showPassword ? 'text' : 'password'}
             placeholder="Segurança mínima: 8 caracteres"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
@@ -111,13 +118,13 @@ export function RegisterForm({
             onClick={() => setShowPassword(!showPassword)}
             className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-primary transition-colors"
             tabIndex={-1}
-            aria-label={showPassword ? "Esconder senha" : "Mostrar senha"}
+            aria-label={showPassword ? 'Esconder senha' : 'Mostrar senha'}
           >
             {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
           </button>
         </div>
         {errors.password && (
-          <motion.p 
+          <motion.p
             initial={{ opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}
             className="text-sm text-destructive"
@@ -125,15 +132,15 @@ export function RegisterForm({
             {errors.password}
           </motion.p>
         )}
-        <PasswordStrengthIndicator 
+        <PasswordStrengthIndicator
           password={password}
           onStrengthChange={onPasswordStrengthChange}
         />
       </div>
 
-      <Button 
-        type="submit" 
-        className="w-full gap-2 rounded-xl h-12 text-base font-bold shadow-lg shadow-primary/20 hover:shadow-xl hover:shadow-primary/30 transition-all duration-300 active:scale-[0.98]" 
+      <Button
+        type="submit"
+        className="w-full gap-2 rounded-xl h-12 text-base font-bold shadow-lg shadow-primary/20 hover:shadow-xl hover:shadow-primary/30 transition-all duration-300 active:scale-[0.98]"
         disabled={isLoading}
         variant="premium"
       >

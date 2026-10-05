@@ -35,7 +35,9 @@ export function usePlanoContaHistory({ empresaId, contaId, limit = 100 }: Option
     queryFn: async (): Promise<PlanoContaAuditEntry[]> => {
       let q = supabase
         .from('audit_logs')
-        .select('id, created_at, user_id, user_email, action, table_name, record_id, details, old_data, new_data')
+        .select(
+          'id, created_at, user_id, user_email, action, table_name, record_id, details, old_data, new_data'
+        )
         .in('table_name', ['plano_contas', 'plano_contas_import_cfc', 'plano_contas_mapeamento'])
         .order('created_at', { ascending: false })
         .limit(limit);

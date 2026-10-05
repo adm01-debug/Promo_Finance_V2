@@ -1,5 +1,5 @@
-import { Badge } from "@/components/ui/badge";
-import { TrendingUp, TrendingDown, Minus } from "lucide-react";
+import { Badge } from '@/components/ui/badge';
+import { TrendingUp, TrendingDown, Minus } from 'lucide-react';
 
 export function DeltaBadge({ delta }: { delta: number | null }) {
   if (delta == null) return <span className="text-muted-foreground text-[10px]">—</span>;
@@ -25,13 +25,21 @@ export function DeltaBadge({ delta }: { delta: number | null }) {
 }
 
 export function SeverityBadge({ severity }: { severity: string }) {
-  if (severity === "critical")
-    return <Badge variant="destructive" className="text-[10px]">Crítico</Badge>;
-  if (severity === "warning")
+  if (severity === 'critical')
+    return (
+      <Badge variant="destructive" className="text-[10px]">
+        Crítico
+      </Badge>
+    );
+  if (severity === 'warning')
     return (
       <Badge className="bg-yellow-500/15 text-yellow-600 border-yellow-500/30 text-[10px]">
         Aviso
       </Badge>
     );
-  return <Badge variant="secondary" className="text-[10px]">Info</Badge>;
+  return (
+    <Badge variant="secondary" className="text-[10px]">
+      Info
+    </Badge>
+  );
 }

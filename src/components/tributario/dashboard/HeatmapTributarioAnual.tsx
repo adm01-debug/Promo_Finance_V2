@@ -61,10 +61,18 @@ export function HeatmapTributarioAnual({ empresaId }: Props) {
             >
               {[0, 1, 2].map((d) => {
                 const y = new Date().getFullYear() - d;
-                return <option key={y} value={y}>{y}</option>;
+                return (
+                  <option key={y} value={y}>
+                    {y}
+                  </option>
+                );
               })}
             </select>
-            <Button size="sm" variant="outline" onClick={() => setModo(modo === 'absoluto' ? 'relativo' : 'absoluto')}>
+            <Button
+              size="sm"
+              variant="outline"
+              onClick={() => setModo(modo === 'absoluto' ? 'relativo' : 'absoluto')}
+            >
               {modo === 'absoluto' ? 'Absoluto' : 'Relativo'}
             </Button>
             <Button size="sm" variant="outline" onClick={exportarPNG}>
@@ -82,7 +90,9 @@ export function HeatmapTributarioAnual({ empresaId }: Props) {
                 <TrendingDown className="h-3 w-3 mr-1" /> Vale: {MESES[data.insights.mes_vale - 1]}
               </Badge>
             )}
-            <Badge variant="secondary" className="text-xs">Total: {fmtBRL(data.total_ano)}</Badge>
+            <Badge variant="secondary" className="text-xs">
+              Total: {fmtBRL(data.total_ano)}
+            </Badge>
           </div>
         )}
       </CardHeader>
@@ -90,7 +100,9 @@ export function HeatmapTributarioAnual({ empresaId }: Props) {
         {isLoading ? (
           <Skeleton className="h-64 w-full" />
         ) : !data ? (
-          <p className="text-sm text-muted-foreground">Selecione uma empresa e ano para visualizar.</p>
+          <p className="text-sm text-muted-foreground">
+            Selecione uma empresa e ano para visualizar.
+          </p>
         ) : (
           <div ref={gridRef} className="overflow-x-auto">
             <table className="w-full text-xs border-separate border-spacing-1">
@@ -98,7 +110,9 @@ export function HeatmapTributarioAnual({ empresaId }: Props) {
                 <tr>
                   <th className="text-left p-1 font-medium text-muted-foreground">Tributo</th>
                   {MESES.map((m) => (
-                    <th key={m} className="p-1 text-center font-medium text-muted-foreground">{m}</th>
+                    <th key={m} className="p-1 text-center font-medium text-muted-foreground">
+                      {m}
+                    </th>
                   ))}
                 </tr>
               </thead>
@@ -110,7 +124,10 @@ export function HeatmapTributarioAnual({ empresaId }: Props) {
                       const mes = i + 1;
                       const c = getCelula(mes, trib.key);
                       const intensidade = c?.intensidade ?? 0;
-                      const opacity = modo === 'relativo' ? Math.max(0.08, intensidade) : Math.min(1, (c?.valor ?? 0) / Math.max(1, data.max_valor));
+                      const opacity =
+                        modo === 'relativo'
+                          ? Math.max(0.08, intensidade)
+                          : Math.min(1, (c?.valor ?? 0) / Math.max(1, data.max_valor));
                       return (
                         <motion.td
                           key={mes}
@@ -123,7 +140,10 @@ export function HeatmapTributarioAnual({ empresaId }: Props) {
                             backgroundColor: `hsl(var(--${trib.token}) / ${opacity})`,
                             padding: '8px 4px',
                             minWidth: 40,
-                            color: opacity > 0.5 ? 'hsl(var(--primary-foreground))' : 'hsl(var(--foreground))',
+                            color:
+                              opacity > 0.5
+                                ? 'hsl(var(--primary-foreground))'
+                                : 'hsl(var(--foreground))',
                           }}
                         >
                           {(c?.valor ?? 0) > 0 ? Math.round((c?.valor ?? 0) / 1000) + 'k' : '—'}

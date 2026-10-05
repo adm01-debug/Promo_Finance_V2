@@ -1,22 +1,14 @@
-import { useEffect, useMemo } from "react";
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { supabase } from "@/integrations/supabase/client";
-import { useAuth } from "@/hooks/useAuth";
-import { assertValidAnomaliaPreferencesPatch } from "./anomaliaPreferencesValidation";
+import { useEffect, useMemo } from 'react';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { supabase } from '@/integrations/supabase/client';
+import { useAuth } from '@/hooks/useAuth';
+import { assertValidAnomaliaPreferencesPatch } from './anomaliaPreferencesValidation';
 
-export type Severidade = "baixa" | "media" | "alta" | "critica";
+export type Severidade = 'baixa' | 'media' | 'alta' | 'critica';
 
-export type ToastAcaoKey =
-  | "drill_down"
-  | "abrir_pagina"
-  | "copiar_id"
-  | "marcar_lida";
+export type ToastAcaoKey = 'drill_down' | 'abrir_pagina' | 'copiar_id' | 'marcar_lida';
 
-export type DrawerAcaoKey =
-  | "abrir_entidade"
-  | "pagina_completa"
-  | "copiar_id"
-  | "marcar_lida";
+export type DrawerAcaoKey = 'abrir_entidade' | 'pagina_completa' | 'copiar_id' | 'marcar_lida';
 
 export type ToastAcoes = Record<ToastAcaoKey, boolean>;
 export type DrawerAcoes = Record<DrawerAcaoKey, boolean>;
@@ -54,10 +46,10 @@ export const TOAST_DURACAO_MIN = 3;
 export const TOAST_DURACAO_MAX = 30;
 export const TOAST_DURACAO_DEFAULT = 12;
 
-const DEFAULT_PREFS: Omit<AnomaliaPreferences, "id" | "user_id"> = {
+const DEFAULT_PREFS: Omit<AnomaliaPreferences, 'id' | 'user_id'> = {
   toast_enabled: true,
-  toast_min_severidade: "critica",
-  toast_severidades_ativas: ["critica", "alta"],
+  toast_min_severidade: 'critica',
+  toast_severidades_ativas: ['critica', 'alta'],
   toast_duracao_segundos: TOAST_DURACAO_DEFAULT,
   toast_acoes: DEFAULT_TOAST_ACOES,
   drawer_acoes: DEFAULT_DRAWER_ACOES,
@@ -73,14 +65,12 @@ function normalizePrefs(raw: unknown): AnomaliaPreferences {
     id: r.id as string,
     user_id: r.user_id as string,
     toast_enabled: r.toast_enabled ?? DEFAULT_PREFS.toast_enabled,
-    toast_min_severidade:
-      r.toast_min_severidade ?? DEFAULT_PREFS.toast_min_severidade,
+    toast_min_severidade: r.toast_min_severidade ?? DEFAULT_PREFS.toast_min_severidade,
     toast_severidades_ativas:
       r.toast_severidades_ativas && r.toast_severidades_ativas.length > 0
         ? r.toast_severidades_ativas
         : DEFAULT_PREFS.toast_severidades_ativas,
-    toast_duracao_segundos:
-      r.toast_duracao_segundos ?? DEFAULT_PREFS.toast_duracao_segundos,
+    toast_duracao_segundos: r.toast_duracao_segundos ?? DEFAULT_PREFS.toast_duracao_segundos,
     toast_acoes: { ...DEFAULT_TOAST_ACOES, ...(r.toast_acoes ?? {}) },
     drawer_acoes: { ...DEFAULT_DRAWER_ACOES, ...(r.drawer_acoes ?? {}) },
     silenciar_ate: r.silenciar_ate ?? null,
@@ -95,14 +85,13 @@ export function shouldNotify(
     severidade?: string | null;
     centro_custo_id?: string | null;
     tipo_anomalia?: string | null;
-  },
+  }
 ): boolean {
   if (!prefs) return true;
   if (!prefs.toast_enabled) return false;
-  if (prefs.silenciar_ate && new Date(prefs.silenciar_ate) > new Date())
-    return false;
+  if (prefs.silenciar_ate && new Date(prefs.silenciar_ate) > new Date()) return false;
 
-  const sev = (anomalia.severidade ?? "baixa") as Severidade;
+  const sev = (anomalia.severidade ?? 'baixa') as Severidade;
 
   // Lista explícita de severidades ativas é a fonte da verdade
   if (
@@ -119,10 +108,7 @@ export function shouldNotify(
   )
     return false;
 
-  if (
-    anomalia.tipo_anomalia &&
-    prefs.tipos_silenciados.includes(anomalia.tipo_anomalia)
-  )
+  if (anomalia.tipo_anomalia && prefs.tipos_silenciados.includes(anomalia.tipo_anomalia))
     return false;
 
   return true;
@@ -131,7 +117,7 @@ export function shouldNotify(
 export function useAnomaliaPreferences() {
   const { user } = useAuth();
   const qc = useQueryClient();
-  const queryKey = useMemo(() => ["anomalia-preferences", user?.id] as const, [user?.id]);
+  const queryKey = useMemo(() => ['anomalia-preferences', user?.id] as const, [user?.id]);
 
   const query = useQuery({
     queryKey,
@@ -140,21 +126,18 @@ export function useAnomaliaPreferences() {
     queryFn: async (): Promise<AnomaliaPreferences | null> => {
       if (!user?.id) return null;
       const { data, error } = await supabase
-        .from("user_anomalia_preferences")
-        .select("*")
-        .eq("user_id", user.id)
+        .from('user_anomalia_preferences')
+        .select('*')
+        .eq('user_id', user.id)
         .maybeSingle();
       if (error) throw error;
       if (data) return normalizePrefs(data);
 
       // Upsert defensivo: evita corrida com outra aba criando a mesma linha
       const { data: created, error: insErr } = await supabase
-        .from("user_anomalia_preferences")
-        .upsert(
-          { user_id: user.id, ...DEFAULT_PREFS },
-          { onConflict: "user_id" },
-        )
-        .select("*")
+        .from('user_anomalia_preferences')
+        .upsert({ user_id: user.id, ...DEFAULT_PREFS }, { onConflict: 'user_id' })
+        .select('*')
         .maybeSingle();
       if (insErr) throw insErr;
       return created ? normalizePrefs(created) : null;
@@ -169,21 +152,21 @@ export function useAnomaliaPreferences() {
     const channel = supabase
       .channel(`user-anomalia-preferences:${user.id}-${Math.random().toString(36).slice(2, 8)}`)
       .on(
-        "postgres_changes",
+        'postgres_changes',
         {
-          event: "*",
-          schema: "public",
-          table: "user_anomalia_preferences",
+          event: '*',
+          schema: 'public',
+          table: 'user_anomalia_preferences',
           filter: `user_id=eq.${user.id}`,
         },
         (payload) => {
-          if (payload.eventType === "DELETE") {
+          if (payload.eventType === 'DELETE') {
             qc.setQueryData(queryKey, null);
             return;
           }
           const next = normalizePrefs(payload.new);
           qc.setQueryData(queryKey, next);
-        },
+        }
       )
       .subscribe();
 
@@ -193,19 +176,17 @@ export function useAnomaliaPreferences() {
   }, [user?.id, qc, queryKey]);
 
   const update = useMutation({
-    mutationFn: async (
-      patch: Partial<Omit<AnomaliaPreferences, "id" | "user_id">>,
-    ) => {
-      if (!user?.id) throw new Error("not authenticated");
+    mutationFn: async (patch: Partial<Omit<AnomaliaPreferences, 'id' | 'user_id'>>) => {
+      if (!user?.id) throw new Error('not authenticated');
       // Validação client-side espelha o trigger Postgres + regras de UX.
       // Falha rápida — não bate no banco se o patch for inválido.
       assertValidAnomaliaPreferencesPatch(patch);
       // Re-lê o estado mais recente do servidor antes de mesclar, evitando
       // sobrescrever mudanças vindas de outro dispositivo desde o último fetch.
       const { data: latest, error: readErr } = await supabase
-        .from("user_anomalia_preferences")
-        .select("*")
-        .eq("user_id", user.id)
+        .from('user_anomalia_preferences')
+        .select('*')
+        .eq('user_id', user.id)
         .maybeSingle();
       if (readErr) throw readErr;
 
@@ -221,12 +202,9 @@ export function useAnomaliaPreferences() {
       void _uid;
 
       const { data, error } = await supabase
-        .from("user_anomalia_preferences")
-        .upsert(
-          { user_id: user.id, ...payload },
-          { onConflict: "user_id" },
-        )
-        .select("*")
+        .from('user_anomalia_preferences')
+        .upsert({ user_id: user.id, ...payload }, { onConflict: 'user_id' })
+        .select('*')
         .maybeSingle();
       if (error) throw error;
       return data ? normalizePrefs(data) : null;

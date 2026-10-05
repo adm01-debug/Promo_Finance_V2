@@ -43,7 +43,7 @@ export interface PrefixoCheck {
 
 export function validarPrefixoNatureza(
   codigo: string | null | undefined,
-  natureza: NaturezaConta | null | undefined,
+  natureza: NaturezaConta | null | undefined
 ): PrefixoCheck {
   const atual = (codigo || '').trim().charAt(0) || '';
   const key = (natureza || '').toLowerCase();
@@ -57,7 +57,7 @@ export function validarPrefixoNatureza(
 
 export function validarHierarquiaCFC(
   codigo: string | null | undefined,
-  nivelDeclarado: number | null | undefined,
+  nivelDeclarado: number | null | undefined
 ): boolean {
   if (!codigo) return false;
   const nivel = codigo.trim().split('.').length;
