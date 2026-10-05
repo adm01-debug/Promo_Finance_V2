@@ -4403,6 +4403,18 @@ CREATE OR REPLACE TRIGGER trg_benchmarks_updated_at BEFORE UPDATE ON public.benc
 
 CREATE OR REPLACE TRIGGER trg_beneficios_updated_at BEFORE UPDATE ON public.beneficios_fiscais FOR EACH ROW EXECUTE FUNCTION public.set_updated_at();
 
+CREATE TABLE IF NOT EXISTS public.bitrix24_tokens (
+    id uuid NOT NULL DEFAULT gen_random_uuid(),
+    access_token text NOT NULL,
+    refresh_token text NOT NULL,
+    expires_at timestamp with time zone NOT NULL,
+    domain text NOT NULL,
+    created_at timestamp with time zone NOT NULL DEFAULT now(),
+    updated_at timestamp with time zone NOT NULL DEFAULT now(),
+    CONSTRAINT bitrix24_tokens_pkey PRIMARY KEY (id)
+);
+ALTER TABLE public.bitrix24_tokens ENABLE ROW LEVEL SECURITY;
+
 CREATE OR REPLACE TRIGGER update_bitrix24_tokens_updated_at BEFORE UPDATE ON public.bitrix24_tokens FOR EACH ROW EXECUTE FUNCTION public.update_updated_at_column();
 
 CREATE OR REPLACE TRIGGER trg_bitrix_tokens_updated_at BEFORE UPDATE ON public.bitrix_oauth_tokens FOR EACH ROW EXECUTE FUNCTION public.handle_updated_at();
@@ -4476,6 +4488,21 @@ CREATE OR REPLACE TRIGGER set_updated_at_d05a1e8f4af4f67d1bb5 BEFORE UPDATE ON p
 CREATE OR REPLACE TRIGGER trg_fe_alert_state_updated_at BEFORE UPDATE ON public.frontend_error_alert_state FOR EACH ROW EXECUTE FUNCTION public.handle_updated_at();
 
 CREATE OR REPLACE TRIGGER trg_frontend_error_logs_sanitize BEFORE INSERT ON public.frontend_error_logs FOR EACH ROW EXECUTE FUNCTION public.frontend_error_logs_sanitize();
+
+CREATE TABLE IF NOT EXISTS public.geo_blocks (
+    id uuid NOT NULL DEFAULT gen_random_uuid(),
+    country_code text NOT NULL,
+    country_name text NOT NULL,
+    is_blocked boolean NOT NULL DEFAULT true,
+    block_type text NOT NULL DEFAULT 'full'::text,
+    reason text,
+    blocked_by uuid,
+    created_at timestamp with time zone NOT NULL DEFAULT now(),
+    updated_at timestamp with time zone NOT NULL DEFAULT now(),
+    expires_at timestamp with time zone,
+    CONSTRAINT geo_blocks_pkey PRIMARY KEY (id)
+);
+ALTER TABLE public.geo_blocks ENABLE ROW LEVEL SECURITY;
 
 CREATE OR REPLACE TRIGGER trg_audit_geo_blocks AFTER INSERT OR DELETE OR UPDATE ON public.geo_blocks FOR EACH ROW EXECUTE FUNCTION public.audit_trigger_generic();
 
@@ -4606,6 +4633,20 @@ CREATE OR REPLACE TRIGGER trg_relat_agend_updated_at BEFORE UPDATE ON public.rel
 CREATE OR REPLACE TRIGGER trg_rel_trib_agend_updated_at BEFORE UPDATE ON public.relatorios_tributarios_agendados FOR EACH ROW EXECUTE FUNCTION public.handle_updated_at();
 
 CREATE OR REPLACE TRIGGER trg_retencao_politicas_updated_at BEFORE UPDATE ON public.retencao_politicas FOR EACH ROW EXECUTE FUNCTION public.handle_updated_at();
+
+CREATE TABLE IF NOT EXISTS public.risk_rules (
+    id uuid NOT NULL DEFAULT gen_random_uuid(),
+    name text NOT NULL,
+    description text,
+    condition jsonb NOT NULL,
+    score_impact numeric NOT NULL,
+    is_active boolean DEFAULT true,
+    created_at timestamp with time zone NOT NULL DEFAULT now(),
+    updated_at timestamp with time zone NOT NULL DEFAULT now(),
+    empresa_id uuid,
+    CONSTRAINT risk_rules_pkey PRIMARY KEY (id)
+);
+ALTER TABLE public.risk_rules ENABLE ROW LEVEL SECURITY;
 
 CREATE OR REPLACE TRIGGER trg_audit_risk_rules AFTER INSERT OR DELETE OR UPDATE ON public.risk_rules FOR EACH ROW EXECUTE FUNCTION public.audit_trigger_generic();
 
