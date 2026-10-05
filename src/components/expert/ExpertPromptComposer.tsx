@@ -8,7 +8,7 @@ import { DocumentAnalyzer } from './DocumentAnalyzer';
 interface ExpertPromptComposerProps {
   input: string;
   isLoading: boolean;
-  textareaRef: RefObject<HTMLTextAreaElement | null>;
+  textareaRef: RefObject<HTMLTextAreaElement>;
   showDocumentUpload: boolean;
   onInputChange: (value: string) => void;
   onInputKeyDown: (event: KeyboardEvent<HTMLTextAreaElement>) => void;

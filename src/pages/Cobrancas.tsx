@@ -2,8 +2,17 @@ import { useState, useEffect } from 'react';
 import { useAuth } from '@/hooks/useAuth';
 import { motion } from 'framer-motion';
 import {
-  Send, Mail, MessageSquare, Phone, Target,
-  AlertTriangle, CheckCircle2, Plus, BarChart3, Loader2, FileText
+  Send,
+  Mail,
+  MessageSquare,
+  Phone,
+  Target,
+  AlertTriangle,
+  CheckCircle2,
+  Plus,
+  BarChart3,
+  Loader2,
+  FileText,
 } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -13,13 +22,14 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { formatCurrency } from '@/lib/formatters';
 import { cn } from '@/lib/utils';
 import { MainLayout } from '@/components/layout/MainLayout';
-import { 
-  useCobrancaKPIs, useAgingData, useTopDevedores, useEtapasCobranca,
-  type TopDevedor
+import {
+  useCobrancaKPIs,
+  useAgingData,
+  useTopDevedores,
+  useEtapasCobranca,
+  type TopDevedor,
 } from '@/hooks/useCobrancas';
-import { 
-  ResponsiveContainer, BarChart, Bar, XAxis, YAxis, Tooltip,
-} from 'recharts';
+import { ResponsiveContainer, BarChart, Bar, XAxis, YAxis, Tooltip } from 'recharts';
 import { NegociacaoIA } from '@/components/cobranca/NegociacaoIA';
 import { ReguaCobrancaConfig } from '@/components/cobranca/ReguaCobrancaConfig';
 import { FilaCobrancasPanel } from '@/components/cobranca/FilaCobrancasPanel';
@@ -44,11 +54,51 @@ const itemVariants = {
 } as const;
 
 const etapasRegua = [
-  { id: 'preventiva', nome: 'Preventiva', dias: -3, descricao: 'Lembrete 3 dias antes do vencimento', canal: 'Email', icon: Mail, cor: 'bg-secondary/10 text-secondary border-secondary/20' },
-  { id: 'lembrete', nome: 'Lembrete', dias: 0, descricao: 'No dia do vencimento', canal: 'WhatsApp', icon: MessageSquare, cor: 'bg-warning/10 text-warning border-warning/20' },
-  { id: 'cobranca', nome: 'Cobrança', dias: 7, descricao: '7 dias após vencimento', canal: 'Email + WhatsApp', icon: Send, cor: 'bg-primary/10 text-primary border-primary/20' },
-  { id: 'negociacao', nome: 'Negociação', dias: 15, descricao: '15 dias após vencimento', canal: 'Telefone', icon: Phone, cor: 'bg-destructive/10 text-destructive border-destructive/20' },
-  { id: 'juridico', nome: 'Jurídico', dias: 30, descricao: '30 dias após - Escalação', canal: 'Jurídico', icon: AlertTriangle, cor: 'bg-destructive/10 text-destructive border-destructive/20' },
+  {
+    id: 'preventiva',
+    nome: 'Preventiva',
+    dias: -3,
+    descricao: 'Lembrete 3 dias antes do vencimento',
+    canal: 'Email',
+    icon: Mail,
+    cor: 'bg-secondary/10 text-secondary border-secondary/20',
+  },
+  {
+    id: 'lembrete',
+    nome: 'Lembrete',
+    dias: 0,
+    descricao: 'No dia do vencimento',
+    canal: 'WhatsApp',
+    icon: MessageSquare,
+    cor: 'bg-warning/10 text-warning border-warning/20',
+  },
+  {
+    id: 'cobranca',
+    nome: 'Cobrança',
+    dias: 7,
+    descricao: '7 dias após vencimento',
+    canal: 'Email + WhatsApp',
+    icon: Send,
+    cor: 'bg-primary/10 text-primary border-primary/20',
+  },
+  {
+    id: 'negociacao',
+    nome: 'Negociação',
+    dias: 15,
+    descricao: '15 dias após vencimento',
+    canal: 'Telefone',
+    icon: Phone,
+    cor: 'bg-destructive/10 text-destructive border-destructive/20',
+  },
+  {
+    id: 'juridico',
+    nome: 'Jurídico',
+    dias: 30,
+    descricao: '30 dias após - Escalação',
+    canal: 'Jurídico',
+    icon: AlertTriangle,
+    cor: 'bg-destructive/10 text-destructive border-destructive/20',
+  },
 ];
 
 export default function Cobrancas() {
@@ -57,15 +107,17 @@ export default function Cobrancas() {
   const { data: agingData, isLoading: loadingAging } = useAgingData();
   const { data: topDevedores, isLoading: loadingDevedores } = useTopDevedores(10);
   const { data: etapasCount } = useEtapasCobranca();
-  
+
   const [selectedDevedor, setSelectedDevedor] = useState<TopDevedor | null>(null);
   const [acordoDialogOpen, setAcordoDialogOpen] = useState(false);
 
   const getEtapaCount = (etapaId: string) => {
-    return etapasCount?.find(e => e.etapa === etapaId)?.count || 0;
+    return etapasCount?.find((e) => e.etapa === etapaId)?.count || 0;
   };
 
-  const [activeTab, setActiveTab] = useState(window.location.hash === '#whatsapp' ? 'whatsapp' : 'dashboard');
+  const [activeTab, setActiveTab] = useState(
+    window.location.hash === '#whatsapp' ? 'whatsapp' : 'dashboard'
+  );
 
   useEffect(() => {
     if (activeTab === 'whatsapp' && user?.id) {
@@ -76,29 +128,45 @@ export default function Cobrancas() {
 
   return (
     <MainLayout>
-      <motion.div variants={containerVariants} initial="hidden" animate="visible" className="space-y-6">
+      <motion.div
+        variants={containerVariants}
+        initial="hidden"
+        animate="visible"
+        className="space-y-6"
+      >
         {/* Page Header */}
-        <motion.div variants={itemVariants} className="flex flex-col lg:flex-row lg:items-center justify-between gap-6 p-8 rounded-[2.5rem] bg-gradient-to-br from-primary/10 via-background to-purple-500/5 border border-white/10 shadow-2xl relative overflow-hidden group">
+        <motion.div
+          variants={itemVariants}
+          className="flex flex-col lg:flex-row lg:items-center justify-between gap-6 p-8 rounded-[2.5rem] bg-gradient-to-br from-primary/10 via-background to-purple-500/5 border border-white/10 shadow-2xl relative overflow-hidden group"
+        >
           <div className="absolute top-0 right-0 p-8 opacity-10 group-hover:opacity-20 transition-opacity">
             <Target className="h-24 w-24 text-primary" />
           </div>
           <div className="relative z-10">
             <h1 className="text-4xl sm:text-5xl font-black tracking-tight text-foreground flex items-center gap-3">
-              Cobrança e <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary via-blue-500 to-purple-600">Inadimplência</span>
+              Cobrança e{' '}
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary via-blue-500 to-purple-600">
+                Inadimplência
+              </span>
             </h1>
-            <p className="text-lg font-medium text-muted-foreground/70 mt-2 italic max-w-2xl">Régua de cobrança neuro-automatizada e gestão de inadimplência estratégica 10/10.</p>
+            <p className="text-lg font-medium text-muted-foreground/70 mt-2 italic max-w-2xl">
+              Régua de cobrança neuro-automatizada e gestão de inadimplência estratégica 10/10.
+            </p>
           </div>
         </motion.div>
 
         {/* Main Tabs */}
-        <Tabs value={activeTab} onValueChange={(v) => {
-          setActiveTab(v);
-          if (v === 'whatsapp') {
-            window.history.replaceState(null, '', '/cobrancas#whatsapp');
-          } else {
-            window.history.replaceState(null, '', '/cobrancas');
-          }
-        }}>
+        <Tabs
+          value={activeTab}
+          onValueChange={(v) => {
+            setActiveTab(v);
+            if (v === 'whatsapp') {
+              window.history.replaceState(null, '', '/cobrancas#whatsapp');
+            } else {
+              window.history.replaceState(null, '', '/cobrancas');
+            }
+          }}
+        >
           <TabsList className="mb-8 p-1.5 bg-background/20 backdrop-blur-xl border border-white/10 rounded-2xl h-14 overflow-x-auto overflow-y-hidden">
             <TabsTrigger value="dashboard">Dashboard</TabsTrigger>
             <TabsTrigger value="analytics">Analytics & IA</TabsTrigger>
@@ -150,13 +218,33 @@ export default function Cobrancas() {
                     ) : (
                       <ResponsiveContainer width="100%" height="100%">
                         <BarChart data={agingData || []}>
-                          <XAxis dataKey="faixa" stroke="hsl(var(--muted-foreground))" fontSize={12} />
-                          <YAxis tickFormatter={(v) => `${(v/1000).toFixed(0)}K`} stroke="hsl(var(--muted-foreground))" fontSize={12} />
-                          <Tooltip 
-                            formatter={(v: number, name) => [formatCurrency(v), name === 'valor' ? 'Valor' : 'Qtd']}
-                            contentStyle={{ background: 'hsl(var(--card))', border: '1px solid hsl(var(--border))', borderRadius: '8px' }}
+                          <XAxis
+                            dataKey="faixa"
+                            stroke="hsl(var(--muted-foreground))"
+                            fontSize={12}
                           />
-                          <Bar dataKey="valor" fill="hsl(var(--destructive))" radius={[4, 4, 0, 0]} name="Valor" />
+                          <YAxis
+                            tickFormatter={(v) => `${(v / 1000).toFixed(0)}K`}
+                            stroke="hsl(var(--muted-foreground))"
+                            fontSize={12}
+                          />
+                          <Tooltip
+                            formatter={(v: number, name) => [
+                              formatCurrency(v),
+                              name === 'valor' ? 'Valor' : 'Qtd',
+                            ]}
+                            contentStyle={{
+                              background: 'hsl(var(--card))',
+                              border: '1px solid hsl(var(--border))',
+                              borderRadius: '8px',
+                            }}
+                          />
+                          <Bar
+                            dataKey="valor"
+                            fill="hsl(var(--destructive))"
+                            radius={[4, 4, 0, 0]}
+                            name="Valor"
+                          />
                         </BarChart>
                       </ResponsiveContainer>
                     )}
@@ -174,7 +262,9 @@ export default function Cobrancas() {
                   </CardHeader>
                   <CardContent className="space-y-3 overflow-y-auto max-h-[400px]">
                     {loadingDevedores ? (
-                      Array.from({ length: 5 }).map((_, i) => <Skeleton key={i} className="h-16 w-full" />)
+                      Array.from({ length: 5 }).map((_, i) => (
+                        <Skeleton key={i} className="h-16 w-full" />
+                      ))
                     ) : topDevedores && topDevedores.length > 0 ? (
                       topDevedores.map((devedor, index) => (
                         <motion.div
@@ -184,10 +274,10 @@ export default function Cobrancas() {
                           transition={{ delay: index * 0.08 }}
                           onClick={() => setSelectedDevedor(devedor)}
                           className={cn(
-                            "flex items-center justify-between p-3 rounded-xl border transition-all cursor-pointer",
-                            selectedDevedor?.cliente_id === devedor.cliente_id 
-                              ? "bg-primary/10 border-primary/30 ring-2 ring-primary/20" 
-                              : "bg-destructive/5 border-destructive/10 hover:bg-destructive/10"
+                            'flex items-center justify-between p-3 rounded-xl border transition-all cursor-pointer',
+                            selectedDevedor?.cliente_id === devedor.cliente_id
+                              ? 'bg-primary/10 border-primary/30 ring-2 ring-primary/20'
+                              : 'bg-destructive/5 border-destructive/10 hover:bg-destructive/10'
                           )}
                         >
                           <div className="flex items-center gap-3">
@@ -202,10 +292,20 @@ export default function Cobrancas() {
                             </div>
                           </div>
                           <div className="text-right">
-                            <p className="font-black text-destructive text-sm">{formatCurrency(devedor.valor_total)}</p>
-                            <Badge variant="outline" className={cn("text-[10px] h-4 px-1",
-                              devedor.score >= 700 ? "text-success border-success/20" : devedor.score >= 500 ? "text-warning border-warning/20" : "text-destructive border-destructive/20"
-                            )}>
+                            <p className="font-black text-destructive text-sm">
+                              {formatCurrency(devedor.valor_total)}
+                            </p>
+                            <Badge
+                              variant="outline"
+                              className={cn(
+                                'text-[10px] h-4 px-1',
+                                (devedor.score ?? 0) >= 700
+                                  ? 'text-success border-success/20'
+                                  : (devedor.score ?? 0) >= 500
+                                    ? 'text-warning border-warning/20'
+                                    : 'text-destructive border-destructive/20'
+                              )}
+                            >
                               Score: {devedor.score}
                             </Badge>
                           </div>
@@ -222,9 +322,7 @@ export default function Cobrancas() {
 
                 {selectedDevedor && (
                   <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}>
-                    <CustomerDeepScore 
-                      score={selectedDevedor.score || 0}
-                    />
+                    <CustomerDeepScore score={selectedDevedor.score || 0} />
                   </motion.div>
                 )}
               </motion.div>
@@ -233,14 +331,16 @@ export default function Cobrancas() {
             <MetricasPorCanal />
 
             <motion.div variants={itemVariants} className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-              <NegociacaoIA 
-                contasVencidas={topDevedores?.map(d => ({
-                  id: d.cliente_id || '',
-                  cliente_nome: d.cliente_nome,
-                  valor: d.valor_total,
-                  data_vencimento: new Date().toISOString(),
-                  diasAtraso: d.dias_atraso
-                })) || []}
+              <NegociacaoIA
+                contasVencidas={
+                  topDevedores?.map((d) => ({
+                    id: d.cliente_id || '',
+                    cliente_nome: d.cliente_nome,
+                    valor: d.valor_total,
+                    data_vencimento: new Date().toISOString(),
+                    diasAtraso: d.dias_atraso,
+                  })) || []
+                }
               />
               <Card className="border-none bg-background/20 backdrop-blur-3xl shadow-xl ring-1 ring-white/10 rounded-[2.5rem]">
                 <CardHeader>
@@ -251,7 +351,8 @@ export default function Cobrancas() {
                 </CardHeader>
                 <CardContent className="space-y-4">
                   <p className="text-sm text-muted-foreground">
-                    Crie acordos de parcelamento para clientes em atraso, com descontos e condições especiais.
+                    Crie acordos de parcelamento para clientes em atraso, com descontos e condições
+                    especiais.
                   </p>
                   <Button
                     className="w-full gap-2 rounded-xl"

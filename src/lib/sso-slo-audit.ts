@@ -1,4 +1,3 @@
-
 /**
  * Auditoria de retries do SLO (Single Logout) feitos a partir do banner em /auth.
  *
@@ -70,13 +69,13 @@ export async function logSloRetry({
     };
 
     const { error } = await supabase.rpc('log_sso_onboarding_event', {
-      _email: email ?? null,
+      _email: email ?? '',
       _event_type: eventType,
-      _provider_id: providerId ?? null,
+      _provider_id: providerId ?? undefined,
       _context: fullContext as never,
       _success: success,
-      _error_code: errorCode ?? null,
-      _error_message: errorMessage ?? null,
+      _error_code: errorCode ?? undefined,
+      _error_message: errorMessage ?? undefined,
     });
 
     if (error) {

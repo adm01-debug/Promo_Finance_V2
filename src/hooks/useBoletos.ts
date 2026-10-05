@@ -108,7 +108,7 @@ async function getNextBoletoNumber(): Promise<string> {
   if (error) throw error;
 
   if (data && data.length > 0) {
-    const lastNumber = parseInt(data[0].numero, 10);
+    const lastNumber = parseInt(data[0].numero ?? '0', 10);
     return (lastNumber + 1).toString().padStart(5, '0');
   }
 
@@ -165,7 +165,13 @@ export function useBoletos() {
 
       if (error) throw error;
 
-      return data;
+      return (data ?? []).map((c) => ({
+        ...c,
+        banco: c.banco ?? '',
+        agencia: c.agencia ?? '',
+        conta: c.conta ?? '',
+        empresa_id: c.empresa_id ?? '',
+      }));
     },
   });
 

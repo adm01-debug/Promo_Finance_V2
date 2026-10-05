@@ -1,5 +1,5 @@
 import { todayISOLocal } from '@/lib/formatters';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef, type ComponentProps } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
@@ -20,6 +20,7 @@ import { toast } from '@/hooks/use-toast';
 import { useConfetti } from '@/hooks/useConfetti';
 import { sounds } from '@/lib/sound-feedback';
 import { logger } from '@/lib/logger';
+import { ConflitoVersaoError, updateComLockOtimista } from '@/lib/optimistic-lock';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Form } from '@/components/ui/form';
 import { Button } from '@/components/ui/button';
@@ -66,6 +67,7 @@ interface ContaReceber {
   categoria_id: string | null;
   conta_bancaria_id: string | null;
   tipo_cobranca: string;
+  updated_at: string;
 }
 
 interface ContaReceberFormProps {
@@ -79,6 +81,9 @@ export function ContaReceberForm({ open, onOpenChange, conta }: ContaReceberForm
   const queryClient = useQueryClient();
   const confetti = useConfetti();
   const [showClienteSelect, setShowClienteSelect] = useState(false);
+  // Versao fresca apos conflito: `conta` fica congelado no form; em
+  // ConflitoVersaoError recarregamos o updated_at para a proxima tentativa.
+  const [versaoEsperada, setVersaoEsperada] = useState<string | null>(null);
   const isEditing = !!conta;
 
   const { data: clientes = [] } = useClientes();
@@ -105,8 +110,14 @@ export function ContaReceberForm({ open, onOpenChange, conta }: ContaReceberForm
   const isParcelado = form.watch('parcelado');
   const numParcelas = form.watch('numero_parcelas') || 1;
 
+  const contaIdRef = useRef<string | null>(null);
+
   useEffect(() => {
+    // Callbacks assíncronos (refetch de conflito) conferem o id aqui antes de
+    // mexer no form — resposta tardia da conta A não pode pisar na conta B.
+    contaIdRef.current = conta?.id ?? null;
     if (conta && open) {
+      setVersaoEsperada(null);
       form.reset({
         cliente_id: conta.cliente_id || undefined,
         cliente_nome: conta.cliente_nome,
@@ -189,9 +200,11 @@ export function ContaReceberForm({ open, onOpenChange, conta }: ContaReceberForm
   const updateMutation = useMutation({
     mutationFn: async (data: ContaReceberFormData) => {
       if (!conta) throw new Error('Conta não encontrada');
-      const { error } = await supabase
-        .from('contas_receber')
-        .update({
+      const novaVersao = await updateComLockOtimista(
+        'contas_receber',
+        conta.id,
+        versaoEsperada ?? conta.updated_at,
+        {
           cliente_id: data.cliente_id || null,
           cliente_nome: data.cliente_nome,
           descricao: data.descricao,
@@ -207,22 +220,74 @@ export function ContaReceberForm({ open, onOpenChange, conta }: ContaReceberForm
           // TODO: colunas 'codigo_barras' e 'link_boleto' não existem em contas_receber no types.ts (removidas)
           chave_pix: data.chave_pix || null,
           observacoes: data.observacoes || null,
-        })
-        .eq('id', conta.id);
-      if (error) throw error;
+        }
+      );
+      // A próxima edição já parte da versão que este write gerou — sem isso,
+      // reabrir rápido usaria a versão pré-save e cairia em falso conflito.
+      setVersaoEsperada(novaVersao);
     },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['contas-receber'] });
+    onSuccess: async () => {
+      // Aguarda a recarga antes de fechar: reabrir o mesmo recebível com a
+      // lista velha forneceria o updated_at pré-save e o próximo envio
+      // cairia em falso conflito.
+      await queryClient.invalidateQueries({ queryKey: ['contas-receber'] });
       toast({ title: 'Conta atualizada', description: 'Alterações salvas.' });
       onOpenChange(false);
     },
     onError: (error: unknown) => {
       logger.error('Error updating conta receber:', error);
-      toast({
-        title: 'Erro ao atualizar',
-        description: 'Tente novamente.',
-        variant: 'destructive',
-      });
+      if (error instanceof ConflitoVersaoError) {
+        if (!conta) return;
+        queryClient.invalidateQueries({ queryKey: ['contas-receber'] });
+        const contaId = conta.id;
+        supabase
+          .from('contas_receber')
+          .select('*')
+          .eq('id', contaId)
+          .single()
+          .then(({ data: row, error: reloadErr }) => {
+            if (reloadErr || !row) {
+              toast({
+                title: 'Conta alterada por outra pessoa',
+                description:
+                  'Não consegui recarregar a versão atual — feche e reabra a conta antes de salvar de novo.',
+                variant: 'destructive',
+              });
+              return;
+            }
+            if (contaIdRef.current !== contaId) return;
+            setVersaoEsperada(row.updated_at);
+            // Recarrega os campos com a versão vigente — salvar de novo em
+            // cima dos valores antigos sobrescreveria a edição da outra pessoa.
+            form.reset({
+              cliente_id: row.cliente_id || undefined,
+              cliente_nome: row.cliente_nome || '',
+              descricao: row.descricao || '',
+              valor: row.valor ?? 0,
+              data_vencimento: row.data_vencimento || '',
+              data_emissao: row.data_emissao || '',
+              empresa_id: row.empresa_id ?? '',
+              centro_custo_id: row.centro_custo_id || undefined,
+              categoria_id: row.categoria_id || undefined,
+              conta_bancaria_id: row.conta_bancaria_id || undefined,
+              tipo_cobranca: row.tipo_cobranca as ContaReceberFormData['tipo_cobranca'],
+              numero_documento: row.numero_documento || undefined,
+              chave_pix: row.chave_pix || undefined,
+              observacoes: row.observacoes || undefined,
+            });
+            toast({
+              title: 'Conta alterada por outra pessoa',
+              description: 'Os dados foram recarregados — revise e salve novamente.',
+              variant: 'destructive',
+            });
+          });
+      } else {
+        toast({
+          title: 'Erro ao atualizar',
+          description: error instanceof Error ? error.message : 'Tente novamente.',
+          variant: 'destructive',
+        });
+      }
     },
   });
 
@@ -268,7 +333,7 @@ export function ContaReceberForm({ open, onOpenChange, conta }: ContaReceberForm
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
             <div className="space-y-6 max-h-[50vh] overflow-y-auto pr-2 custom-scrollbar">
               <ContaReceberFormFields
-                form={form}
+                form={form as unknown as ComponentProps<typeof ContaReceberFormFields>['form']}
                 isEditing={isEditing}
                 clientes={clientes}
                 empresas={empresas}
