@@ -27,12 +27,12 @@ erDiagram
     fornecedores ||--o{ contas_pagar : "paga a"
     categorias ||--o{ contas_pagar : "classifica"
     categorias ||--o{ contas_receber : "classifica"
-    centros_custo ||--o{ contas_pagar : "rateia"
-    centros_custo ||--o{ contas_receber : "rateia"
+    centros_custo ||--o{ contas_pagar : "rateia (ref. lógica)"
+    centros_custo ||--o{ contas_receber : "rateia (ref. lógica)"
     centros_custo ||--o{ centros_custo : "hierarquia (parent_id)"
     contas_bancarias ||--o{ transacoes_bancarias : "movimenta"
-    contas_bancarias ||--o{ contas_pagar : "conta de pagamento"
-    contas_bancarias ||--o{ contas_receber : "conta de recebimento"
+    contas_bancarias ||--o{ contas_pagar : "conta de pagamento (ref. lógica)"
+    contas_bancarias ||--o{ contas_receber : "conta de recebimento (ref. lógica)"
 
 
     clientes ||--o{ asaas_customers : "espelha no Asaas"
@@ -67,8 +67,8 @@ erDiagram
         uuid empresa_id FK
         uuid fornecedor_id FK
         uuid categoria_id FK
-        uuid centro_custo_id FK
-        uuid conta_bancaria_id FK
+        uuid centro_custo_id "ref. lógica — SEM constraint FK"
+        uuid conta_bancaria_id "ref. lógica — SEM constraint FK"
         numeric valor
         date data_vencimento
         date data_pagamento
@@ -80,8 +80,8 @@ erDiagram
         uuid empresa_id FK
         uuid cliente_id FK
         uuid categoria_id FK
-        uuid centro_custo_id FK
-        uuid conta_bancaria_id FK
+        uuid centro_custo_id "ref. lógica — SEM constraint FK"
+        uuid conta_bancaria_id "ref. lógica — SEM constraint FK"
         numeric valor
         date data_vencimento
         date data_recebimento

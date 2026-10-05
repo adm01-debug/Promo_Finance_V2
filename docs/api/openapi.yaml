@@ -109,6 +109,22 @@ paths:
     post:
       tags: [webhooks]
       summary: Eventos de mensagem (Evolution API / WhatsApp)
+      description: >-
+        Autenticado ANTES do payload: assinatura HMAC em
+        `x-hub-signature-256`, `x-signature` ou `x-webhook-signature`, ou o
+        token compartilhado em `x-webhook-token`. Sem credencial → 401 mesmo
+        com corpo válido (fail-closed).
+      parameters:
+        - name: x-webhook-token
+          in: header
+          required: false
+          schema: { type: string }
+          description: Alternativa ao HMAC — token compartilhado do domínio
+        - name: x-signature
+          in: header
+          required: false
+          schema: { type: string }
+          description: HMAC do corpo (ou x-hub-signature-256 / x-webhook-signature)
       requestBody:
         required: true
         content:
@@ -118,6 +134,7 @@ paths:
       responses:
         '200': { description: Evento aceito }
         '400': { $ref: '#/components/responses/ErroValidacao' }
+        '401': { description: Credencial de webhook ausente ou inválida }
         '429': { $ref: '#/components/responses/RateLimited' }
 
   /n8n-callback:
@@ -185,7 +202,7 @@ paths:
                 redirect_to: { type: string, format: uri, nullable: true }
       responses:
         '200':
-          description: URL de redirecionamento para o IdP
+          description: URL de redirecionamento para o IdP + artefatos PKCE (OIDC)
           content:
             application/json:
               schema:
@@ -193,6 +210,17 @@ paths:
                 properties:
                   redirect_url: { type: string, format: uri }
                   type: { type: string, enum: [saml, oidc] }
+                  verifier:
+                    type: string
+                    description: >-
+                      PKCE code_verifier — só no fluxo OIDC. O cliente DEVE
+                      persistir (sessionStorage) e devolvê-lo no /sso-callback;
+                      sem ele a troca do code é rejeitada.
+                  state:
+                    type: string
+                    description: >-
+                      Nonce anti-CSRF — só no fluxo OIDC; devolvido pelo IdP
+                      na query do /sso-callback.
         '400': { $ref: '#/components/responses/ErroValidacao' }
         '404': { description: Provedor não encontrado ou inativo }
 
@@ -218,6 +246,9 @@ paths:
           in: query
           required: false
           schema: { type: string }
+          description: >-
+            Obrigatório no fluxo OIDC (PKCE): o code_verifier persistido pelo
+            cliente no /sso-initiate. Sem ele a troca do code é rejeitada.
       responses:
         '302': { description: Redirect para a aplicação com sessão estabelecida }
         '400': { $ref: '#/components/responses/ErroValidacao' }
@@ -229,7 +260,7 @@ paths:
       summary: Capabilities SCIM 2.0
       security: [{ bearerAuth: [] }]
       responses:
-        '200': { description: ServiceProviderConfig (patch/etag suportados) }
+        '200': { description: ServiceProviderConfig (patch suportado; etag NÃO implementado — o payload retorna `etag.supported=false`) }
         '401': { description: Bearer token SCIM inválido }
 
   /scim-server/scim/v2/Users:
@@ -254,7 +285,7 @@ paths:
           application/scim+json:
             schema: { $ref: '#/components/schemas/ScimUser' }
       responses:
-        '201': { description: User criado (Location: /scim/v2/Users/{id}) }
+        '201': { description: 'User criado (Location: /scim/v2/Users/{id})' }
         '400': { $ref: '#/components/responses/ErroValidacao' }
         '401': { description: Bearer token SCIM inválido }
         '409': { description: userName já provisionado }
@@ -340,7 +371,7 @@ paths:
                     properties:
                       value: { type: string }
       responses:
-        '201': { description: Group criado (Location: /scim/v2/Groups/{id}) }
+        '201': { description: 'Group criado (Location: /scim/v2/Groups/{id})' }
 
   '/scim-server/scim/v2/Groups/{id}':
     get:
