@@ -1,18 +1,32 @@
-import { useState } from "react";
-import { Link } from "react-router-dom";
-import { motion } from "framer-motion";
-import { MainLayout } from "@/components/layout/MainLayout";
-import { PageHeader, PageBackground } from "@/components/layout/PageHeader";
-import { Card } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { ArrowRight, Bell, CheckCircle2, Download, FileDown, History, ShieldCheck } from "lucide-react";
-import { useBloqueiosData } from "./bloqueios-duplicidade/useBloqueiosData";
-import { exportCSV, exportPDF } from "./bloqueios-duplicidade/bloqueiosExport";
-import { StatsCards } from "./bloqueios-duplicidade/StatsCards";
-import { FiltersBar } from "./bloqueios-duplicidade/FiltersBar";
-import { BloqueiosTable } from "./bloqueios-duplicidade/BloqueiosTable";
-import { DetailsDialog } from "./bloqueios-duplicidade/DetailsDialog";
-import { containerVariants, itemVariants, emptyFilters, type BloqueiosFilters, type BloqueioRow } from "./bloqueios-duplicidade/types";
+import { useState } from 'react';
+import { Link } from 'react-router-dom';
+import { motion } from 'framer-motion';
+import { MainLayout } from '@/components/layout/MainLayout';
+import { PageHeader, PageBackground } from '@/components/layout/PageHeader';
+import { Card } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import {
+  ArrowRight,
+  Bell,
+  CheckCircle2,
+  Download,
+  FileDown,
+  History,
+  ShieldCheck,
+} from 'lucide-react';
+import { useBloqueiosData } from './bloqueios-duplicidade/useBloqueiosData';
+import { exportCSV, exportPDF } from './bloqueios-duplicidade/bloqueiosExport';
+import { StatsCards } from './bloqueios-duplicidade/StatsCards';
+import { FiltersBar } from './bloqueios-duplicidade/FiltersBar';
+import { BloqueiosTable } from './bloqueios-duplicidade/BloqueiosTable';
+import { DetailsDialog } from './bloqueios-duplicidade/DetailsDialog';
+import {
+  containerVariants,
+  itemVariants,
+  emptyFilters,
+  type BloqueiosFilters,
+  type BloqueioRow,
+} from './bloqueios-duplicidade/types';
 
 export default function BloqueiosDuplicidade() {
   const [filters, setFilters] = useState<BloqueiosFilters>(emptyFilters);
@@ -21,7 +35,12 @@ export default function BloqueiosDuplicidade() {
 
   const { bloqueiosQuery, empresasQuery } = useBloqueiosData(filters);
   const { data: bloqueios, isLoading, refetch } = bloqueiosQuery;
-  const { data: empresas } = empresasQuery;
+  const { data: empresasRaw } = empresasQuery;
+  const empresas = empresasRaw?.map((e) => ({
+    ...e,
+    nome_fantasia: e.nome_fantasia ?? '',
+    cnpj: e.cnpj ?? '',
+  }));
 
   // Cast de fronteira: o Row real de bloqueios_duplicidade nao tem o shape local BloqueioRow
   // (tabela/motivo_bloqueio/campos_conflitantes existem so no DDL antigo, nao no type gerado).
@@ -31,11 +50,14 @@ export default function BloqueiosDuplicidade() {
   const totalCount = bloqueios?.length || 0;
   const mostTargeted =
     bloqueios?.reduce((acc: Record<string, number>, b) => {
-      const name = (b.dados_tentativa as { fornecedor_nome?: string } | null)?.fornecedor_nome || "N/D";
+      const name =
+        (b.dados_tentativa as { fornecedor_nome?: string } | null)?.fornecedor_nome || 'N/D';
       acc[name] = (acc[name] || 0) + 1;
       return acc;
     }, {}) || {};
-  const topSupplier = Object.entries(mostTargeted).sort((a, b) => b[1] - a[1])[0] as [string, number] | undefined;
+  const topSupplier = Object.entries(mostTargeted).sort((a, b) => b[1] - a[1])[0] as
+    | [string, number]
+    | undefined;
 
   return (
     <MainLayout>
@@ -84,7 +106,12 @@ export default function BloqueiosDuplicidade() {
             </div>
           </PageHeader>
 
-          <StatsCards totalValue={totalValue} totalCount={totalCount} periodo={filters.periodo} topSupplier={topSupplier} />
+          <StatsCards
+            totalValue={totalValue}
+            totalCount={totalCount}
+            periodo={filters.periodo}
+            topSupplier={topSupplier}
+          />
 
           <FiltersBar
             filters={filters}
@@ -113,7 +140,10 @@ export default function BloqueiosDuplicidade() {
                 <p className="text-sm text-muted-foreground font-medium">
                   Alertas automáticos em tempo real para cada tentativa de duplicidade bloqueada.
                 </p>
-                <Button variant="link" className="p-0 h-auto text-primary font-bold gap-1 text-sm hover:gap-2 transition-all">
+                <Button
+                  variant="link"
+                  className="p-0 h-auto text-primary font-bold gap-1 text-sm hover:gap-2 transition-all"
+                >
                   Configurar Canais <ArrowRight className="h-4 w-4" />
                 </Button>
               </div>
@@ -126,9 +156,13 @@ export default function BloqueiosDuplicidade() {
               <div className="space-y-2">
                 <h3 className="text-xl font-black">Conciliação Garantida</h3>
                 <p className="text-sm text-muted-foreground font-medium">
-                  Motor de integridade que assegura que nenhum pagamento duplicado chegue ao extrato.
+                  Motor de integridade que assegura que nenhum pagamento duplicado chegue ao
+                  extrato.
                 </p>
-                <Button variant="link" className="p-0 h-auto text-blue-400 font-bold gap-1 text-sm hover:gap-2 transition-all">
+                <Button
+                  variant="link"
+                  className="p-0 h-auto text-blue-400 font-bold gap-1 text-sm hover:gap-2 transition-all"
+                >
                   Ver Status do Motor <ArrowRight className="h-4 w-4" />
                 </Button>
               </div>
@@ -136,7 +170,11 @@ export default function BloqueiosDuplicidade() {
           </motion.div>
         </motion.div>
 
-        <DetailsDialog open={isDetailsOpen} onOpenChange={setIsDetailsOpen} selectedBlock={selectedBlock} />
+        <DetailsDialog
+          open={isDetailsOpen}
+          onOpenChange={setIsDetailsOpen}
+          selectedBlock={selectedBlock}
+        />
       </div>
     </MainLayout>
   );

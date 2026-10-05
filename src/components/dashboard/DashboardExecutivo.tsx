@@ -1,6 +1,16 @@
 import { useState, ReactNode } from 'react';
 import { motion } from 'framer-motion';
-import { Wallet, ArrowDownCircle, ArrowUpCircle, AlertTriangle, BarChart3, ShieldCheck, ShieldAlert, FileText, Download } from 'lucide-react';
+import {
+  Wallet,
+  ArrowDownCircle,
+  ArrowUpCircle,
+  AlertTriangle,
+  BarChart3,
+  ShieldCheck,
+  ShieldAlert,
+  FileText,
+  Download,
+} from 'lucide-react';
 import { formatCurrency } from '@/lib/formatters';
 import { cn } from '@/lib/utils';
 import { useAuth } from '@/hooks/useAuth';
@@ -49,9 +59,7 @@ function SectionDivider({ label, icon: Icon }: { label: string; icon: React.Elem
         <div className="h-9 w-9 rounded-xl bg-primary/5 flex items-center justify-center border border-primary/10 shadow-sm">
           <Icon className="h-4 w-4 text-primary" />
         </div>
-        <span className="text-caption text-muted-foreground/80">
-          {label}
-        </span>
+        <span className="text-caption text-muted-foreground/80">{label}</span>
       </div>
       <div className="flex-1 h-[2px] bg-gradient-to-r from-border/50 to-transparent rounded-full" />
     </div>
@@ -65,17 +73,14 @@ export const DashboardExecutivo = () => {
   const [periodoFluxo, setPeriodoFluxo] = useState('30');
   const [configDialogOpen, setConfigDialogOpen] = useState(false);
 
-  const {
-    widgets,
-    resetToDefault,
-  } = useDashboardConfig();
+  const { widgets, resetToDefault } = useDashboardConfig();
 
   const metrics = useDashboardMetrics({
     empresaFilter,
     centroCustoFilter,
     periodoFluxo,
   });
-  
+
   const { data: duplicateStats } = useQuery({
     queryKey: ['bloqueios-duplicidade-stats'],
     queryFn: async () => {
@@ -83,30 +88,30 @@ export const DashboardExecutivo = () => {
         .from('bloqueios_duplicidade')
         .select('valor_bloqueado')
         .order('created_at', { ascending: false });
-      
+
       if (error) throw error;
       return {
         count: data?.length || 0,
-        totalValue: data?.reduce((acc, curr) => acc + (Number(curr.valor_bloqueado) || 0), 0) || 0
+        totalValue: data?.reduce((acc, curr) => acc + (Number(curr.valor_bloqueado) || 0), 0) || 0,
       };
-    }
+    },
   });
 
   if (metrics.isLoading) {
     return <DashboardSkeleton />;
   }
 
-  const inadimplenciaBadge = metrics.totalVencidasReceber > 0
-    ? formatCurrency(metrics.totalVencidasReceber) + " atrasado"
-    : undefined;
+  const inadimplenciaBadge =
+    metrics.totalVencidasReceber > 0
+      ? formatCurrency(metrics.totalVencidasReceber) + ' atrasado'
+      : undefined;
 
-  const inadimplenciaBadgeVariant = metrics.totalVencidasReceber > 0
-    ? 'destructive' as const
-    : 'secondary' as const;
+  const inadimplenciaBadgeVariant =
+    metrics.totalVencidasReceber > 0 ? ('destructive' as const) : ('secondary' as const);
 
   const renderWidget = (widget: DashboardWidget): ReactNode => {
     const isTarget = window.location.hash === `#${widget.id}`;
-    
+
     const widgetContent = (() => {
       switch (widget.id) {
         case 'fluxo-caixa':
@@ -118,7 +123,16 @@ export const DashboardExecutivo = () => {
             />
           );
         case 'composicao':
-          return <SaldoPorBancoCard contasBancariasFiltradas={metrics.contasBancariasFiltradas} saldoTotal={metrics.saldoTotal} />;
+          return (
+            <SaldoPorBancoCard
+              contasBancariasFiltradas={metrics.contasBancariasFiltradas.map((c) => ({
+                id: c.id,
+                banco: c.banco ?? '',
+                saldo_atual: c.saldo_atual,
+              }))}
+              saldoTotal={metrics.saldoTotal}
+            />
+          );
         case 'top-clientes':
           return <TopClientesLeaderboard topClientesReceita={metrics.topClientesReceita} />;
         case 'vencimentos':
@@ -132,23 +146,34 @@ export const DashboardExecutivo = () => {
             <AlertasPreditivosPanel
               saldoAtual={metrics.saldoTotal}
               receitasPrevistas={metrics.contasReceberFiltradas
-                .filter(c => c.status !== 'pago' && c.status !== 'cancelado')
-                .map(c => ({
-                  valor: c.valor - (c.valor_recebido || 0),
-                  dataVencimento: new Date(c.data_vencimento),
-                  entidade: c.cliente_nome,
+                .filter(
+                  (c) =>
+                    c.status !== 'pago' && c.status !== 'cancelado' && c.data_vencimento != null
+                )
+                .map((c) => ({
+                  valor: (c.valor ?? 0) - (c.valor_recebido || 0),
+                  dataVencimento: new Date(c.data_vencimento ?? ''),
+                  entidade: c.cliente_nome ?? '',
                 }))}
               despesasPrevistas={metrics.contasPagarFiltradas
-                .filter(c => c.status !== 'pago' && c.status !== 'cancelado')
-                .map(c => ({
-                  valor: c.valor - (c.valor_pago || 0),
-                  dataVencimento: new Date(c.data_vencimento),
-                  entidade: c.fornecedor_nome,
+                .filter(
+                  (c) =>
+                    c.status !== 'pago' && c.status !== 'cancelado' && c.data_vencimento != null
+                )
+                .map((c) => ({
+                  valor: (c.valor ?? 0) - (c.valor_pago || 0),
+                  dataVencimento: new Date(c.data_vencimento ?? ''),
+                  entidade: c.fornecedor_nome ?? '',
                 }))}
-              historicoInadimplencia={metrics.vencidasReceber.map(c => ({
-                clienteId: c.cliente_id || 'unknown',
-                diasAtraso: Math.floor((new Date().getTime() - new Date(c.data_vencimento).getTime()) / (1000 * 60 * 60 * 24)),
-              }))}
+              historicoInadimplencia={metrics.vencidasReceber
+                .filter((c) => c.data_vencimento != null)
+                .map((c) => ({
+                  clienteId: c.cliente_id || 'unknown',
+                  diasAtraso: Math.floor(
+                    (new Date().getTime() - new Date(c.data_vencimento ?? '').getTime()) /
+                      (1000 * 60 * 60 * 24)
+                  ),
+                }))}
               defaultExpanded={isTarget}
             />
           );
@@ -171,7 +196,10 @@ export const DashboardExecutivo = () => {
     })();
 
     return (
-      <div id={widget.id} className={cn(isTarget && "ring-2 ring-primary ring-offset-2 rounded-lg")}>
+      <div
+        id={widget.id}
+        className={cn(isTarget && 'ring-2 ring-primary ring-offset-2 rounded-lg')}
+      >
         {widgetContent}
       </div>
     );
@@ -179,11 +207,11 @@ export const DashboardExecutivo = () => {
 
   return (
     <div className="relative min-h-screen">
-      <motion.div 
-        variants={containerVariants} 
-        initial="hidden" 
-        animate="visible" 
-        className="relative z-10 space-y-12 pb-32" 
+      <motion.div
+        variants={containerVariants}
+        initial="hidden"
+        animate="visible"
+        className="relative z-10 space-y-12 pb-32"
         data-tour="dashboard"
       >
         {/* Header Section */}
@@ -222,7 +250,11 @@ export const DashboardExecutivo = () => {
               accentColor="hsl(150, 70%, 42%)"
               href="/contas-receber"
               size="primary"
-              badge={metrics.receitasMes > 0 ? formatCurrency(metrics.receitasMes) + " recebido" : undefined}
+              badge={
+                metrics.receitasMes > 0
+                  ? formatCurrency(metrics.receitasMes) + ' recebido'
+                  : undefined
+              }
             />
             <HeroKPICard
               title="Compromissos a Pagar"
@@ -234,22 +266,50 @@ export const DashboardExecutivo = () => {
               accentColor="hsl(0, 78%, 55%)"
               href="/contas-pagar"
               size="primary"
-              badge={metrics.despesasMes > 0 ? formatCurrency(metrics.despesasMes) + " pago" : undefined}
+              badge={
+                metrics.despesasMes > 0 ? formatCurrency(metrics.despesasMes) + ' pago' : undefined
+              }
             />
             <HeroKPICard
               title="Índice de Inadimplência"
               value={metrics.inadimplencia}
               icon={AlertTriangle}
-              iconColor={metrics.inadimplencia > 10 ? "text-rose-600" : metrics.inadimplencia > 5 ? "text-amber-600" : "text-emerald-600"}
-              iconBg={metrics.inadimplencia > 10 ? "bg-rose-50" : metrics.inadimplencia > 5 ? "bg-amber-50" : "bg-emerald-50"}
-              accentColor={metrics.inadimplencia > 10 ? "hsl(0, 78%, 55%)" : metrics.inadimplencia > 5 ? "hsl(42, 95%, 48%)" : "hsl(150, 70%, 42%)"}
+              iconColor={
+                metrics.inadimplencia > 10
+                  ? 'text-rose-600'
+                  : metrics.inadimplencia > 5
+                    ? 'text-amber-600'
+                    : 'text-emerald-600'
+              }
+              iconBg={
+                metrics.inadimplencia > 10
+                  ? 'bg-rose-50'
+                  : metrics.inadimplencia > 5
+                    ? 'bg-amber-50'
+                    : 'bg-emerald-50'
+              }
+              accentColor={
+                metrics.inadimplencia > 10
+                  ? 'hsl(0, 78%, 55%)'
+                  : metrics.inadimplencia > 5
+                    ? 'hsl(42, 95%, 48%)'
+                    : 'hsl(150, 70%, 42%)'
+              }
               href="/cobrancas"
               size="primary"
               isPercentage
               isCurrency={false}
               badge={inadimplenciaBadge}
               badgeVariant={inadimplenciaBadgeVariant}
-              riskLevel={metrics.inadimplencia > 15 ? 'critical' : metrics.inadimplencia > 10 ? 'high' : metrics.inadimplencia > 5 ? 'medium' : 'none'}
+              riskLevel={
+                metrics.inadimplencia > 15
+                  ? 'critical'
+                  : metrics.inadimplencia > 10
+                    ? 'high'
+                    : metrics.inadimplencia > 5
+                      ? 'medium'
+                      : 'none'
+              }
             />
           </HeroKPIGrid>
         </motion.div>
@@ -274,16 +334,20 @@ export const DashboardExecutivo = () => {
 
             {/* Smart Actions Panel */}
             <motion.div variants={itemVariants}>
-              <CentroAcoesInteligentes empresaId={empresaFilter !== 'all' ? empresaFilter : undefined} />
+              <CentroAcoesInteligentes
+                empresaId={empresaFilter !== 'all' ? empresaFilter : undefined}
+              />
             </motion.div>
 
             {/* Analytics Section */}
             <div className="space-y-4">
               <SectionDivider label="Análises Estratégicas" icon={BarChart3} />
-              
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-12">
-                <motion.div variants={itemVariants} className="premium-card p-6 relative overflow-hidden group">
 
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-12">
+                <motion.div
+                  variants={itemVariants}
+                  className="premium-card p-6 relative overflow-hidden group"
+                >
                   <div className="absolute top-0 right-0 p-4 opacity-5 group-hover:opacity-10 transition-opacity">
                     <ShieldCheck className="h-10 w-10 text-primary" />
                   </div>
@@ -291,32 +355,48 @@ export const DashboardExecutivo = () => {
                     <div className="text-caption inline-flex items-center gap-2 px-2 py-1 rounded-md bg-blue-50 text-blue-700">
                       <ShieldAlert className="h-3 w-3" /> Anti-Duplicidade
                     </div>
-                    <h3 className="text-lg font-black tracking-tight text-foreground font-heading">Sentinel: Proteção de Caixa</h3>
+                    <h3 className="text-lg font-black tracking-tight text-foreground font-heading">
+                      Sentinel: Proteção de Caixa
+                    </h3>
                     <div className="flex items-center gap-2 py-1">
                       <div className="flex flex-col">
                         <span className="text-caption">Proteção</span>
-                        <span className="text-sm font-semibold text-emerald-600">{formatCurrency(duplicateStats?.totalValue || 0)}</span>
+                        <span className="text-sm font-semibold text-emerald-600">
+                          {formatCurrency(duplicateStats?.totalValue || 0)}
+                        </span>
                       </div>
                       <div className="h-6 w-px bg-border mx-2" />
                       <div className="flex flex-col">
                         <span className="text-caption">Bloqueios</span>
-                        <span className="text-sm font-semibold">{duplicateStats?.count || 0} ocorrências</span>
+                        <span className="text-sm font-semibold">
+                          {duplicateStats?.count || 0} ocorrências
+                        </span>
                       </div>
                     </div>
-                    <p className="text-xs text-muted-foreground leading-relaxed">Bloqueio automático de pagamentos duplicados e auditoria contínua.</p>
+                    <p className="text-xs text-muted-foreground leading-relaxed">
+                      Bloqueio automático de pagamentos duplicados e auditoria contínua.
+                    </p>
                     <div className="flex items-center gap-2 pt-2">
                       <Button asChild className="premium-button">
                         <Link to="/contas-pagar/bloqueios">Ver Auditoria</Link>
                       </Button>
 
-                      <Button asChild variant="ghost" size="sm" className="rounded-md font-medium text-muted-foreground hover:text-foreground h-9 px-4">
+                      <Button
+                        asChild
+                        variant="ghost"
+                        size="sm"
+                        className="rounded-md font-medium text-muted-foreground hover:text-foreground h-9 px-4"
+                      >
                         <Link to="/configuracoes">Configurar</Link>
                       </Button>
                     </div>
                   </div>
                 </motion.div>
 
-                <motion.div variants={itemVariants} className="premium-card p-6 relative overflow-hidden group">
+                <motion.div
+                  variants={itemVariants}
+                  className="premium-card p-6 relative overflow-hidden group"
+                >
                   <div className="absolute top-0 right-0 p-4 opacity-5 group-hover:opacity-10 transition-opacity">
                     <FileText className="h-10 w-10 text-indigo-400" />
                   </div>
@@ -324,14 +404,20 @@ export const DashboardExecutivo = () => {
                     <div className="text-caption inline-flex items-center gap-2 px-2 py-1 rounded-md bg-indigo-50 text-indigo-700">
                       <Download className="h-3 w-3" /> Relatórios
                     </div>
-                    <h3 className="text-lg font-black tracking-tight text-foreground font-heading">Relatórios & Conciliação</h3>
-                    <p className="text-xs text-muted-foreground leading-relaxed">Exporte trilhas de auditoria completas para conciliações bancárias impecáveis.</p>
+                    <h3 className="text-lg font-black tracking-tight text-foreground font-heading">
+                      Relatórios & Conciliação
+                    </h3>
+                    <p className="text-xs text-muted-foreground leading-relaxed">
+                      Exporte trilhas de auditoria completas para conciliações bancárias impecáveis.
+                    </p>
                     <div className="flex items-center gap-2 pt-2">
-                      <Button className="premium-button">
-                        Gerar PDF
-                      </Button>
+                      <Button className="premium-button">Gerar PDF</Button>
 
-                      <Button variant="ghost" size="sm" className="premium-button bg-transparent border-black/5 text-muted-foreground hover:text-foreground">
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        className="premium-button bg-transparent border-black/5 text-muted-foreground hover:text-foreground"
+                      >
                         Outros formatos
                       </Button>
                     </div>
@@ -340,11 +426,13 @@ export const DashboardExecutivo = () => {
               </div>
 
               <motion.div variants={itemVariants} className="space-y-6">
-                {widgets.filter(w => w.visible).map(widget => (
-                  <div key={widget.id} className="w-full">
-                    {renderWidget(widget)}
-                  </div>
-                ))}
+                {widgets
+                  .filter((w) => w.visible)
+                  .map((widget) => (
+                    <div key={widget.id} className="w-full">
+                      {renderWidget(widget)}
+                    </div>
+                  ))}
               </motion.div>
             </div>
           </div>
@@ -363,7 +451,6 @@ export const DashboardExecutivo = () => {
               <AlertasOrcamento />
             </motion.div>
           </div>
-
         </div>
       </motion.div>
 
@@ -375,7 +462,6 @@ export const DashboardExecutivo = () => {
         onResizeWidget={() => {}}
         onResetToDefault={resetToDefault}
       />
-
     </div>
   );
 };

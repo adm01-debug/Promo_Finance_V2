@@ -43,7 +43,7 @@ export const PhoneInput = forwardRef<HTMLInputElement, PhoneInputProps>(
     const [inputValue, setInputValue] = useState('');
     const [isFocused, setIsFocused] = useState(false);
     const containerRef = useRef<HTMLDivElement>(null);
-    const inputRef = useRef<HTMLInputElement>(null);
+    const inputRef = useRef<HTMLInputElement | null>(null);
 
     useEffect(() => {
       if (value) {
@@ -116,8 +116,8 @@ export const PhoneInput = forwardRef<HTMLInputElement, PhoneInputProps>(
             isFocused && !error
               ? 'border-primary ring-1 ring-primary'
               : error
-              ? 'border-destructive'
-              : 'border-input',
+                ? 'border-destructive'
+                : 'border-input',
             disabled && 'opacity-50 cursor-not-allowed bg-muted'
           )}
         >
@@ -135,9 +135,7 @@ export const PhoneInput = forwardRef<HTMLInputElement, PhoneInputProps>(
               )}
             >
               <span className="text-lg">{selectedCountry.flag}</span>
-              <span className="text-muted-foreground">
-                {selectedCountry.dialCode}
-              </span>
+              <span className="text-muted-foreground">{selectedCountry.dialCode}</span>
               <ChevronDown
                 className={cn(
                   'w-4 h-4 text-muted-foreground transition-transform',
@@ -199,15 +197,11 @@ export const PhoneInput = forwardRef<HTMLInputElement, PhoneInputProps>(
                 onClick={() => handleCountryChange(country)}
                 className={cn(
                   'w-full flex items-center gap-3 px-3 py-2 text-left transition-colors',
-                  country.code === selectedCountry.code
-                    ? 'bg-primary/10'
-                    : 'hover:bg-accent'
+                  country.code === selectedCountry.code ? 'bg-primary/10' : 'hover:bg-accent'
                 )}
               >
                 <span className="text-xl">{country.flag}</span>
-                <span className="flex-1 text-foreground">
-                  {country.name}
-                </span>
+                <span className="flex-1 text-foreground">{country.name}</span>
                 <span className="text-sm text-muted-foreground">{country.dialCode}</span>
               </button>
             ))}
@@ -215,12 +209,7 @@ export const PhoneInput = forwardRef<HTMLInputElement, PhoneInputProps>(
         )}
 
         {helperText && (
-          <p
-            className={cn(
-              'mt-1 text-sm',
-              error ? 'text-destructive' : 'text-muted-foreground'
-            )}
-          >
+          <p className={cn('mt-1 text-sm', error ? 'text-destructive' : 'text-muted-foreground')}>
             {helperText}
           </p>
         )}
@@ -266,9 +255,7 @@ export function BrazilPhoneInput({
           'w-full pl-10 pr-4 py-2 border rounded-lg',
           'bg-background',
           'focus:outline-none focus:ring-2 focus:ring-ring',
-          error
-            ? 'border-destructive'
-            : 'border-input',
+          error ? 'border-destructive' : 'border-input',
           disabled && 'opacity-50 cursor-not-allowed'
         )}
       />

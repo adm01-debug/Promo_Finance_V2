@@ -3,18 +3,50 @@
 
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Plus, Edit, Trash2, Gift, TrendingUp, DollarSign, Percent, CheckCircle } from 'lucide-react';
+import {
+  Plus,
+  Edit,
+  Trash2,
+  Gift,
+  TrendingUp,
+  DollarSign,
+  Percent,
+  CheckCircle,
+} from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 import { Switch } from '@/components/ui/switch';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '@/components/ui/table';
 import { Progress } from '@/components/ui/progress';
-import { useIncentivosFiscais } from '@/hooks/useIncentivosFiscais';
+import {
+  useIncentivosFiscais,
+  type CreateIncentivoInput,
+  type IncentivoFiscal,
+} from '@/hooks/useIncentivosFiscais';
 import { formatCurrency } from '@/lib/formatters';
 
 interface Props {
@@ -49,19 +81,25 @@ export function IncentivosFiscaisPanel({ empresaId }: Props) {
     ativo: true,
   });
 
-  const { 
-    incentivos = [], 
+  const {
+    incentivos = [],
     resumo,
-    criarIncentivo, 
-    atualizarIncentivo, 
+    criarIncentivo,
+    atualizarIncentivo,
     excluirIncentivo,
   } = useIncentivosFiscais(empresaId);
 
   const handleSubmit = async () => {
     if (editando) {
-      await atualizarIncentivo.mutateAsync({ id: editando, ...formData });
+      await atualizarIncentivo.mutateAsync({
+        id: editando,
+        ...formData,
+      } as Partial<IncentivoFiscal> & { id: string });
     } else {
-      await criarIncentivo.mutateAsync({ ...formData, empresa_id: empresaId });
+      await criarIncentivo.mutateAsync({
+        ...formData,
+        empresa_id: empresaId,
+      } as CreateIncentivoInput);
     }
     resetForm();
   };
@@ -82,7 +120,7 @@ export function IncentivosFiscaisPanel({ empresaId }: Props) {
     setDialogOpen(false);
   };
 
-  const handleEdit = (incentivo: typeof incentivos[0]) => {
+  const handleEdit = (incentivo: (typeof incentivos)[0]) => {
     setFormData({
       nome: incentivo.nome,
       tipo_incentivo: incentivo.tipo_incentivo,
@@ -99,7 +137,7 @@ export function IncentivosFiscaisPanel({ empresaId }: Props) {
   };
 
   const getTipoLabel = (tipo: string) => {
-    return TIPOS_INCENTIVO.find(t => t.value === tipo)?.label || tipo;
+    return TIPOS_INCENTIVO.find((t) => t.value === tipo)?.label || tipo;
   };
 
   return (
@@ -130,22 +168,22 @@ export function IncentivosFiscaisPanel({ empresaId }: Props) {
                 <Label>Nome do Incentivo</Label>
                 <Input
                   value={formData.nome}
-                  onChange={e => setFormData(prev => ({ ...prev, nome: e.target.value }))}
+                  onChange={(e) => setFormData((prev) => ({ ...prev, nome: e.target.value }))}
                   placeholder="Ex: Redução ICMS Exportação"
                 />
               </div>
 
               <div className="space-y-2">
                 <Label>Tipo de Incentivo</Label>
-                <Select 
-                  value={formData.tipo_incentivo} 
-                  onValueChange={v => setFormData(prev => ({ ...prev, tipo_incentivo: v }))}
+                <Select
+                  value={formData.tipo_incentivo}
+                  onValueChange={(v) => setFormData((prev) => ({ ...prev, tipo_incentivo: v }))}
                 >
                   <SelectTrigger>
                     <SelectValue placeholder="Selecione o tipo" />
                   </SelectTrigger>
                   <SelectContent>
-                    {TIPOS_INCENTIVO.map(tipo => (
+                    {TIPOS_INCENTIVO.map((tipo) => (
                       <SelectItem key={tipo.value} value={tipo.value}>
                         {tipo.label}
                       </SelectItem>
@@ -160,7 +198,9 @@ export function IncentivosFiscaisPanel({ empresaId }: Props) {
                   <Input
                     type="number"
                     value={formData.ano_inicio}
-                    onChange={e => setFormData(prev => ({ ...prev, ano_inicio: parseInt(e.target.value) }))}
+                    onChange={(e) =>
+                      setFormData((prev) => ({ ...prev, ano_inicio: parseInt(e.target.value) }))
+                    }
                   />
                 </div>
                 <div className="space-y-2">
@@ -168,10 +208,12 @@ export function IncentivosFiscaisPanel({ empresaId }: Props) {
                   <Input
                     type="number"
                     value={formData.ano_fim || ''}
-                    onChange={e => setFormData(prev => ({ 
-                      ...prev, 
-                      ano_fim: e.target.value ? parseInt(e.target.value) : null 
-                    }))}
+                    onChange={(e) =>
+                      setFormData((prev) => ({
+                        ...prev,
+                        ano_fim: e.target.value ? parseInt(e.target.value) : null,
+                      }))
+                    }
                     placeholder="Indefinido"
                   />
                 </div>
@@ -184,10 +226,12 @@ export function IncentivosFiscaisPanel({ empresaId }: Props) {
                     type="number"
                     step="0.01"
                     value={formData.limite_percentual || ''}
-                    onChange={e => setFormData(prev => ({ 
-                      ...prev, 
-                      limite_percentual: e.target.value ? parseFloat(e.target.value) : null 
-                    }))}
+                    onChange={(e) =>
+                      setFormData((prev) => ({
+                        ...prev,
+                        limite_percentual: e.target.value ? parseFloat(e.target.value) : null,
+                      }))
+                    }
                     placeholder="Ex: 4.00"
                   />
                 </div>
@@ -197,10 +241,12 @@ export function IncentivosFiscaisPanel({ empresaId }: Props) {
                     type="number"
                     step="0.01"
                     value={formData.limite_valor || ''}
-                    onChange={e => setFormData(prev => ({ 
-                      ...prev, 
-                      limite_valor: e.target.value ? parseFloat(e.target.value) : null 
-                    }))}
+                    onChange={(e) =>
+                      setFormData((prev) => ({
+                        ...prev,
+                        limite_valor: e.target.value ? parseFloat(e.target.value) : null,
+                      }))
+                    }
                     placeholder="Ex: 100000.00"
                   />
                 </div>
@@ -210,7 +256,9 @@ export function IncentivosFiscaisPanel({ empresaId }: Props) {
                 <Label>Nº Processo</Label>
                 <Input
                   value={formData.numero_processo}
-                  onChange={e => setFormData(prev => ({ ...prev, numero_processo: e.target.value }))}
+                  onChange={(e) =>
+                    setFormData((prev) => ({ ...prev, numero_processo: e.target.value }))
+                  }
                   placeholder="Número do processo administrativo"
                 />
               </div>
@@ -219,7 +267,9 @@ export function IncentivosFiscaisPanel({ empresaId }: Props) {
                 <Label>Ato Concessório</Label>
                 <Input
                   value={formData.ato_concessorio}
-                  onChange={e => setFormData(prev => ({ ...prev, ato_concessorio: e.target.value }))}
+                  onChange={(e) =>
+                    setFormData((prev) => ({ ...prev, ato_concessorio: e.target.value }))
+                  }
                   placeholder="Ex: Decreto 12345/2025"
                 />
               </div>
@@ -228,12 +278,12 @@ export function IncentivosFiscaisPanel({ empresaId }: Props) {
                 <Label>Ativo</Label>
                 <Switch
                   checked={formData.ativo}
-                  onCheckedChange={v => setFormData(prev => ({ ...prev, ativo: v }))}
+                  onCheckedChange={(v) => setFormData((prev) => ({ ...prev, ativo: v }))}
                 />
               </div>
 
-              <Button 
-                onClick={handleSubmit} 
+              <Button
+                onClick={handleSubmit}
                 disabled={!formData.nome || !formData.tipo_incentivo}
                 className="w-full"
               >
@@ -260,7 +310,11 @@ export function IncentivosFiscaisPanel({ empresaId }: Props) {
           </Card>
         </motion.div>
 
-        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}>
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.1 }}
+        >
           <Card>
             <CardHeader className="pb-2">
               <CardTitle className="text-sm font-medium text-muted-foreground flex items-center gap-2">
@@ -276,7 +330,11 @@ export function IncentivosFiscaisPanel({ empresaId }: Props) {
           </Card>
         </motion.div>
 
-        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }}>
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.2 }}
+        >
           <Card>
             <CardHeader className="pb-2">
               <CardTitle className="text-sm font-medium text-muted-foreground flex items-center gap-2">
@@ -290,7 +348,11 @@ export function IncentivosFiscaisPanel({ empresaId }: Props) {
           </Card>
         </motion.div>
 
-        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }}>
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.3 }}
+        >
           <Card>
             <CardHeader className="pb-2">
               <CardTitle className="text-sm font-medium text-muted-foreground flex items-center gap-2">
@@ -299,7 +361,9 @@ export function IncentivosFiscaisPanel({ empresaId }: Props) {
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">{formatCurrency(resumo.valorLimiteTotal - resumo.valorUtilizado)}</div>
+              <div className="text-2xl font-bold">
+                {formatCurrency(resumo.valorLimiteTotal - resumo.valorUtilizado)}
+              </div>
             </CardContent>
           </Card>
         </motion.div>
@@ -309,9 +373,7 @@ export function IncentivosFiscaisPanel({ empresaId }: Props) {
       <Card>
         <CardHeader>
           <CardTitle>Incentivos Cadastrados</CardTitle>
-          <CardDescription>
-            {incentivos.length} incentivo(s) registrado(s)
-          </CardDescription>
+          <CardDescription>{incentivos.length} incentivo(s) registrado(s)</CardDescription>
         </CardHeader>
         <CardContent>
           {incentivos.length === 0 ? (
@@ -336,10 +398,10 @@ export function IncentivosFiscaisPanel({ empresaId }: Props) {
               <TableBody>
                 <AnimatePresence>
                   {incentivos.map((incentivo) => {
-                    const utilizacao = incentivo.limite_valor 
-                      ? ((incentivo.valor_utilizado_ano || 0) / incentivo.limite_valor) * 100 
+                    const utilizacao = incentivo.limite_valor
+                      ? ((incentivo.valor_utilizado_ano || 0) / incentivo.limite_valor) * 100
                       : 0;
-                    
+
                     return (
                       <motion.tr
                         key={incentivo.id}
@@ -366,12 +428,11 @@ export function IncentivosFiscaisPanel({ empresaId }: Props) {
                           {incentivo.ano_fim ? ` - ${incentivo.ano_fim}` : '+'}
                         </TableCell>
                         <TableCell className="text-right">
-                          {incentivo.limite_valor 
+                          {incentivo.limite_valor
                             ? formatCurrency(incentivo.limite_valor)
-                            : incentivo.limite_percentual 
+                            : incentivo.limite_percentual
                               ? `${incentivo.limite_percentual}%`
-                              : '-'
-                          }
+                              : '-'}
                         </TableCell>
                         <TableCell className="text-right">
                           <div className="space-y-1">
@@ -393,15 +454,15 @@ export function IncentivosFiscaisPanel({ empresaId }: Props) {
                         </TableCell>
                         <TableCell className="text-right">
                           <div className="flex justify-end gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                            <Button 
-                              variant="ghost" 
+                            <Button
+                              variant="ghost"
                               size="icon"
                               onClick={() => handleEdit(incentivo)}
                             >
                               <Edit className="h-4 w-4" />
                             </Button>
-                            <Button 
-                              variant="ghost" 
+                            <Button
+                              variant="ghost"
                               size="icon"
                               onClick={() => excluirIncentivo.mutate(incentivo.id)}
                             >
