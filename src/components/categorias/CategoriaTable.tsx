@@ -1,4 +1,11 @@
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '@/components/ui/table';
 import { Button } from '@/components/ui/button';
 import { Edit2, Trash2, MoreHorizontal } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -50,13 +57,21 @@ export function CategoriaTable({ categorias, isLoading, onEdit }: CategoriaTable
       </TableHeader>
       <TableBody>
         {categorias.map((categoria) => {
-          const pascalName = categoria.icone?.split('-').map(s => s.charAt(0).toUpperCase() + s.slice(1)).join('') ?? '';
-          const IconComponent = (Icons as unknown as Record<string, Icons.LucideIcon>)[pascalName] || Icons.Tag;
-          
+          const pascalName =
+            categoria.icone
+              ?.split('-')
+              .map((s) => s.charAt(0).toUpperCase() + s.slice(1))
+              .join('') ?? '';
+          const IconComponent =
+            (Icons as unknown as Record<string, Icons.LucideIcon>)[pascalName] || Icons.Tag;
+
           return (
-            <TableRow key={categoria.id} className="border-white/5 group hover:bg-card/5 transition-colors">
+            <TableRow
+              key={categoria.id}
+              className="border-white/5 group hover:bg-card/5 transition-colors"
+            >
               <TableCell>
-                <div 
+                <div
                   className="w-8 h-8 rounded-lg flex items-center justify-center text-white shadow-sm"
                   style={{ backgroundColor: categoria.cor || 'var(--t2)' }}
                 >
@@ -68,7 +83,11 @@ export function CategoriaTable({ categorias, isLoading, onEdit }: CategoriaTable
               <TableCell className="text-right">
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
-                    <Button variant="ghost" size="icon" className="h-8 w-8 opacity-0 group-hover:opacity-100 transition-opacity">
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="h-8 w-8 opacity-0 group-hover:opacity-100 transition-opacity"
+                    >
                       <MoreHorizontal className="h-4 w-4" />
                     </Button>
                   </DropdownMenuTrigger>
@@ -77,8 +96,8 @@ export function CategoriaTable({ categorias, isLoading, onEdit }: CategoriaTable
                       <Edit2 className="h-4 w-4" />
                       Editar
                     </DropdownMenuItem>
-                    <DropdownMenuItem 
-                      onClick={() => deleteMutation.mutate(categoria.id)} 
+                    <DropdownMenuItem
+                      onClick={() => deleteMutation.mutate(categoria.id)}
                       className="gap-2 text-destructive focus:text-destructive"
                     >
                       <Trash2 className="h-4 w-4" />

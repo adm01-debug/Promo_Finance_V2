@@ -20,13 +20,18 @@ interface KPIs {
 
 export function CobrancaKpis({ kpis, isLoading }: { kpis?: KPIs; isLoading: boolean }) {
   return (
-    <motion.div variants={itemVariants} className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
+    <motion.div
+      variants={itemVariants}
+      className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4"
+    >
       <Card className="stat-card group">
         <CardContent className="p-5">
           <div className="flex items-start justify-between">
             <div>
               <p className="text-sm font-medium text-muted-foreground">Total Vencido</p>
-              {isLoading ? <Skeleton className="h-7 w-28 mt-1" /> : (
+              {isLoading ? (
+                <Skeleton className="h-7 w-28 mt-1" />
+              ) : (
                 <p className="text-xl font-bold font-display mt-1 text-destructive">
                   {formatCurrency(kpis?.totalVencido || 0)}
                 </p>
@@ -44,7 +49,9 @@ export function CobrancaKpis({ kpis, isLoading }: { kpis?: KPIs; isLoading: bool
           <div className="flex items-start justify-between">
             <div>
               <p className="text-sm font-medium text-muted-foreground">Recuperado (30d)</p>
-              {isLoading ? <Skeleton className="h-7 w-28 mt-1" /> : (
+              {isLoading ? (
+                <Skeleton className="h-7 w-28 mt-1" />
+              ) : (
                 <p className="text-xl font-bold font-display mt-1 text-success">
                   {formatCurrency(kpis?.totalRecuperado || 0)}
                 </p>
@@ -62,9 +69,13 @@ export function CobrancaKpis({ kpis, isLoading }: { kpis?: KPIs; isLoading: bool
           <div className="flex items-start justify-between">
             <div>
               <p className="text-sm font-medium text-muted-foreground">Taxa Recuperação</p>
-              {isLoading ? <Skeleton className="h-7 w-16 mt-1" /> : (
+              {isLoading ? (
+                <Skeleton className="h-7 w-16 mt-1" />
+              ) : (
                 <>
-                  <p className="text-xl font-bold font-display mt-1">{kpis?.taxaRecuperacao || 0}%</p>
+                  <p className="text-xl font-bold font-display mt-1">
+                    {kpis?.taxaRecuperacao || 0}%
+                  </p>
                   <Progress value={kpis?.taxaRecuperacao || 0} className="h-1.5 mt-2" />
                 </>
               )}
@@ -81,7 +92,9 @@ export function CobrancaKpis({ kpis, isLoading }: { kpis?: KPIs; isLoading: bool
           <div className="flex items-start justify-between">
             <div>
               <p className="text-sm font-medium text-muted-foreground">Títulos Vencidos</p>
-              {isLoading ? <Skeleton className="h-7 w-12 mt-1" /> : (
+              {isLoading ? (
+                <Skeleton className="h-7 w-12 mt-1" />
+              ) : (
                 <>
                   <p className="text-xl font-bold font-display mt-1">{kpis?.qtdVencidas || 0}</p>
                   <p className="text-xs text-muted-foreground mt-1">Em aberto</p>
@@ -100,7 +113,9 @@ export function CobrancaKpis({ kpis, isLoading }: { kpis?: KPIs; isLoading: bool
           <div className="flex items-start justify-between">
             <div>
               <p className="text-sm font-medium text-muted-foreground">Recuperados (30d)</p>
-              {isLoading ? <Skeleton className="h-7 w-12 mt-1" /> : (
+              {isLoading ? (
+                <Skeleton className="h-7 w-12 mt-1" />
+              ) : (
                 <>
                   <p className="text-xl font-bold font-display mt-1">{kpis?.qtdRecuperadas || 0}</p>
                   <p className="text-xs text-success mt-1 flex items-center gap-1">

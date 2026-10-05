@@ -6,6 +6,7 @@ import { exigirUsuario } from '../_shared/auth-guard.ts';
 import { corsHeadersPara } from '../_shared/cors.ts';
 import { createLogger } from '../_shared/observability.ts';
 import { mensagemErro, contextoErro } from '../_shared/erros.ts';
+import { withEdgeObservability } from '../_shared/edge-observability.ts';
 const log = createLogger('expert-agent');
 
 const SYSTEM_PROMPT = `Você é o EXPERT, um assistente de IA especializado em finanças corporativas para a empresa Promo Finance.
@@ -229,13 +230,15 @@ Baseado nos dados financeiros acima, você DEVE:
 };
 
 if (import.meta.main) {
-  serve(async (req) => {
-    const _t0 = Date.now();
-    try {
-      return await handler(req);
-    } finally {
-      log.info('request', { duration_ms: Date.now() - _t0 });
-      await log.flush();
-    }
-  });
+  serve(
+    withEdgeObservability('expert-agent', async (req) => {
+      const _t0 = Date.now();
+      try {
+        return await handler(req);
+      } finally {
+        log.info('request', { duration_ms: Date.now() - _t0 });
+        await log.flush();
+      }
+    })
+  );
 }

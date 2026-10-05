@@ -45,7 +45,11 @@ export function useSsoOnboardingAudit() {
     // Deduplicação: mesmo evento em <1500ms é ignorado
     const key = `${eventType}|${email ?? ''}|${providerId ?? ''}`;
     const now = Date.now();
-    if (lastSentRef.current && lastSentRef.current.key === key && now - lastSentRef.current.at < 1500) {
+    if (
+      lastSentRef.current &&
+      lastSentRef.current.key === key &&
+      now - lastSentRef.current.at < 1500
+    ) {
       return;
     }
     lastSentRef.current = { key, at: now };

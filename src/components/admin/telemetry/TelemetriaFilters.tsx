@@ -1,5 +1,11 @@
 import { Button } from '@/components/ui/button';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Calendar } from '@/components/ui/calendar';
 import { CalendarIcon } from 'lucide-react';
@@ -21,13 +27,22 @@ interface Props {
 }
 
 export function TelemetriaFilters({
-  severityFilter, timeFilter, customDateFrom, customDateTo, rowCount,
-  onSeverityChange, onTimeChange, onCustomDateFromChange, onCustomDateToChange,
+  severityFilter,
+  timeFilter,
+  customDateFrom,
+  customDateTo,
+  rowCount,
+  onSeverityChange,
+  onTimeChange,
+  onCustomDateFromChange,
+  onCustomDateToChange,
 }: Props) {
   return (
     <div className="flex items-center gap-3 flex-wrap">
       <Select value={severityFilter} onValueChange={(v) => onSeverityChange(v as SeverityFilter)}>
-        <SelectTrigger className="w-44"><SelectValue placeholder="Severidade" /></SelectTrigger>
+        <SelectTrigger className="w-44">
+          <SelectValue placeholder="Severidade" />
+        </SelectTrigger>
         <SelectContent>
           <SelectItem value="all">Todas</SelectItem>
           <SelectItem value="slow">🟡 Lentas</SelectItem>
@@ -36,7 +51,9 @@ export function TelemetriaFilters({
         </SelectContent>
       </Select>
       <Select value={timeFilter} onValueChange={(v) => onTimeChange(v as TimeFilter)}>
-        <SelectTrigger className="w-44"><SelectValue placeholder="Período" /></SelectTrigger>
+        <SelectTrigger className="w-44">
+          <SelectValue placeholder="Período" />
+        </SelectTrigger>
         <SelectContent>
           <SelectItem value="1h">Última hora</SelectItem>
           <SelectItem value="6h">Últimas 6h</SelectItem>

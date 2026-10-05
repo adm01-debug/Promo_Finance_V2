@@ -91,17 +91,28 @@ function sugerirCentroResultado(codigo: string, descricao: string, tipo: string)
 // ----------- Helpers de classificação -----------
 function classificarLinhaDRE(centro: string | null, codigo: string): string {
   const c = (centro || '').toLowerCase();
-  if (c.includes('deducao') || c.includes('dedução') || c.includes('imposto_venda')) return 'deducoes';
+  if (c.includes('deducao') || c.includes('dedução') || c.includes('imposto_venda'))
+    return 'deducoes';
   if (c.includes('cmv') || c.includes('custo_merc') || c.includes('custo_produ')) return 'cmv';
   if (c.includes('despesa_admin') || c.includes('administrativ')) return 'desp_admin';
-  if (c.includes('despesa_comercial') || c.includes('comercial') || c.includes('vendas')) return 'desp_comercial';
+  if (c.includes('despesa_comercial') || c.includes('comercial') || c.includes('vendas'))
+    return 'desp_comercial';
   if (c.includes('despesa_financeira')) return 'desp_financeira';
   if (c.includes('receita_financeira')) return 'rec_financeira';
-  if (c.includes('irpj') || c.includes('csll') || codigo.startsWith('3.4') || codigo.startsWith('3.5')) return 'ir_csll';
+  if (
+    c.includes('irpj') ||
+    c.includes('csll') ||
+    codigo.startsWith('3.4') ||
+    codigo.startsWith('3.5')
+  )
+    return 'ir_csll';
   return 'outras_op';
 }
 
-function classificarLinhaBP(tipo: string, codigo: string): 'circulante_ativo' | 'nao_circ_ativo' | 'circulante_pas' | 'nao_circ_pas' | 'pl' {
+function classificarLinhaBP(
+  tipo: string,
+  codigo: string
+): 'circulante_ativo' | 'nao_circ_ativo' | 'circulante_pas' | 'nao_circ_pas' | 'pl' {
   const t = tipo.toLowerCase();
   if (t === 'ativo' || codigo.startsWith('1')) {
     // 1.1 = circulante, 1.2 = não circulante
@@ -117,7 +128,7 @@ function classificarLinhaBP(tipo: string, codigo: string): 'circulante_ativo' | 
 // ----------- Cálculo por COMPETÊNCIA -----------
 export function calcularPorCompetencia(
   partidasPeriodo: PartidaRow[],
-  partidasAteFim: PartidaRow[],
+  partidasAteFim: PartidaRow[]
 ): Pick<DemonstrativosResult, 'dre' | 'balanco' | 'cobertura'> {
   // ---------- DRE (apenas período) ----------
   const buckets = {
@@ -191,20 +202,118 @@ export function calcularPorCompetencia(
 
   const pct = (v: number) => (receitaBruta > 0 ? (Math.abs(v) / receitaBruta) * 100 : 0);
   const linhas: DRELinha[] = [
-    { codigo: '1', descricao: 'RECEITA BRUTA DE VENDAS', valor: receitaBruta, percentual: 100, nivel: 0, tipo: 'receita' },
-    { codigo: '2', descricao: '(-) DEDUÇÕES DA RECEITA', valor: -deducoes, percentual: pct(deducoes), nivel: 0, tipo: 'despesa' },
-    { codigo: '3', descricao: '(=) RECEITA LÍQUIDA', valor: receitaLiquida, percentual: pct(receitaLiquida), nivel: 0, tipo: 'resultado' },
-    { codigo: '4', descricao: '(-) CUSTO DAS MERCADORIAS VENDIDAS', valor: -cmv, percentual: pct(cmv), nivel: 0, tipo: 'despesa' },
-    { codigo: '5', descricao: '(=) LUCRO BRUTO', valor: lucroBruto, percentual: pct(lucroBruto), nivel: 0, tipo: 'resultado' },
-    { codigo: '6', descricao: '(-) DESPESAS OPERACIONAIS', valor: -despOp, percentual: pct(despOp), nivel: 0, tipo: 'despesa' },
-    { codigo: '6.1', descricao: 'Despesas Administrativas', valor: -buckets.desp_admin, percentual: pct(buckets.desp_admin), nivel: 1, tipo: 'despesa' },
-    { codigo: '6.2', descricao: 'Despesas Comerciais', valor: -buckets.desp_comercial, percentual: pct(buckets.desp_comercial), nivel: 1, tipo: 'despesa' },
-    { codigo: '6.3', descricao: 'Outras Despesas Operacionais', valor: -buckets.outras_op, percentual: pct(buckets.outras_op), nivel: 1, tipo: 'despesa' },
-    { codigo: '7', descricao: '(=) LUCRO OPERACIONAL', valor: lucroOp, percentual: pct(lucroOp), nivel: 0, tipo: 'resultado' },
-    { codigo: '8', descricao: '(+/-) RESULTADO FINANCEIRO', valor: resFin, percentual: pct(resFin), nivel: 0, tipo: 'resultado' },
-    { codigo: '9', descricao: '(=) LUCRO ANTES DO IR/CSLL', valor: lucroAntesIR, percentual: pct(lucroAntesIR), nivel: 0, tipo: 'resultado' },
-    { codigo: '10', descricao: '(-) IRPJ/CSLL', valor: -irCsll, percentual: pct(irCsll), nivel: 0, tipo: 'despesa' },
-    { codigo: '11', descricao: '(=) LUCRO LÍQUIDO DO EXERCÍCIO', valor: lucroLiquido, percentual: pct(lucroLiquido), nivel: 0, tipo: 'resultado' },
+    {
+      codigo: '1',
+      descricao: 'RECEITA BRUTA DE VENDAS',
+      valor: receitaBruta,
+      percentual: 100,
+      nivel: 0,
+      tipo: 'receita',
+    },
+    {
+      codigo: '2',
+      descricao: '(-) DEDUÇÕES DA RECEITA',
+      valor: -deducoes,
+      percentual: pct(deducoes),
+      nivel: 0,
+      tipo: 'despesa',
+    },
+    {
+      codigo: '3',
+      descricao: '(=) RECEITA LÍQUIDA',
+      valor: receitaLiquida,
+      percentual: pct(receitaLiquida),
+      nivel: 0,
+      tipo: 'resultado',
+    },
+    {
+      codigo: '4',
+      descricao: '(-) CUSTO DAS MERCADORIAS VENDIDAS',
+      valor: -cmv,
+      percentual: pct(cmv),
+      nivel: 0,
+      tipo: 'despesa',
+    },
+    {
+      codigo: '5',
+      descricao: '(=) LUCRO BRUTO',
+      valor: lucroBruto,
+      percentual: pct(lucroBruto),
+      nivel: 0,
+      tipo: 'resultado',
+    },
+    {
+      codigo: '6',
+      descricao: '(-) DESPESAS OPERACIONAIS',
+      valor: -despOp,
+      percentual: pct(despOp),
+      nivel: 0,
+      tipo: 'despesa',
+    },
+    {
+      codigo: '6.1',
+      descricao: 'Despesas Administrativas',
+      valor: -buckets.desp_admin,
+      percentual: pct(buckets.desp_admin),
+      nivel: 1,
+      tipo: 'despesa',
+    },
+    {
+      codigo: '6.2',
+      descricao: 'Despesas Comerciais',
+      valor: -buckets.desp_comercial,
+      percentual: pct(buckets.desp_comercial),
+      nivel: 1,
+      tipo: 'despesa',
+    },
+    {
+      codigo: '6.3',
+      descricao: 'Outras Despesas Operacionais',
+      valor: -buckets.outras_op,
+      percentual: pct(buckets.outras_op),
+      nivel: 1,
+      tipo: 'despesa',
+    },
+    {
+      codigo: '7',
+      descricao: '(=) LUCRO OPERACIONAL',
+      valor: lucroOp,
+      percentual: pct(lucroOp),
+      nivel: 0,
+      tipo: 'resultado',
+    },
+    {
+      codigo: '8',
+      descricao: '(+/-) RESULTADO FINANCEIRO',
+      valor: resFin,
+      percentual: pct(resFin),
+      nivel: 0,
+      tipo: 'resultado',
+    },
+    {
+      codigo: '9',
+      descricao: '(=) LUCRO ANTES DO IR/CSLL',
+      valor: lucroAntesIR,
+      percentual: pct(lucroAntesIR),
+      nivel: 0,
+      tipo: 'resultado',
+    },
+    {
+      codigo: '10',
+      descricao: '(-) IRPJ/CSLL',
+      valor: -irCsll,
+      percentual: pct(irCsll),
+      nivel: 0,
+      tipo: 'despesa',
+    },
+    {
+      codigo: '11',
+      descricao: '(=) LUCRO LÍQUIDO DO EXERCÍCIO',
+      valor: lucroLiquido,
+      percentual: pct(lucroLiquido),
+      nivel: 0,
+      tipo: 'resultado',
+    },
   ];
 
   // ---------- BALANÇO (saldo até fim do período) ----------
@@ -238,7 +347,8 @@ export function calcularPorCompetencia(
     if (grupo === 'pl') {
       const c = (p.conta.codigo || '').toLowerCase();
       const desc = (p.conta.descricao || p.conta.nome || '').toLowerCase();
-      if (desc.includes('capital') || c.startsWith('2.3.1') || c.startsWith('3.1')) bp.pl_capital += saldo;
+      if (desc.includes('capital') || c.startsWith('2.3.1') || c.startsWith('3.1'))
+        bp.pl_capital += saldo;
       else bp.pl_outros += saldo;
     } else {
       bp[grupo] += saldo;
@@ -270,7 +380,7 @@ export function calcularPorCompetencia(
 
   // Linhas extras na DRE para "Não classificadas" (apenas se houver)
   const naoClassificadas = Array.from(naoClassMap.values()).sort(
-    (a, b) => Math.abs(b.valor) - Math.abs(a.valor),
+    (a, b) => Math.abs(b.valor) - Math.abs(a.valor)
   );
   if (naoClassificadas.length > 0) {
     linhas.push({

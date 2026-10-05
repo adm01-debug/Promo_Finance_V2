@@ -2,13 +2,33 @@
 // Preview, validação e UPSERT em lote
 
 import { useRef, useState } from 'react';
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
 import { Upload, Download, AlertTriangle, CheckCircle2, FileText } from 'lucide-react';
-import { parseCsv, downloadCsvTemplate, type CsvKind, type FaturamentoRow, type FolhaRow } from '@/lib/csv-importer';
+import {
+  parseCsv,
+  downloadCsvTemplate,
+  type CsvKind,
+  type FaturamentoRow,
+  type FolhaRow,
+} from '@/lib/csv-importer';
 import { formatCurrency } from '@/lib/formatters';
 import { Progress } from '@/components/ui/progress';
 import { toast } from 'sonner';
@@ -76,8 +96,12 @@ export function CsvImportDialog({ open, onOpenChange, kind, empresaId, onImport 
       const f = r as FaturamentoRow;
       return (
         <TableRow key={i}>
-          <TableCell>{String(f.mes).padStart(2, '0')}/{f.ano}</TableCell>
-          <TableCell className="text-right font-medium">{formatCurrency(f.receita_bruta)}</TableCell>
+          <TableCell>
+            {String(f.mes).padStart(2, '0')}/{f.ano}
+          </TableCell>
+          <TableCell className="text-right font-medium">
+            {formatCurrency(f.receita_bruta)}
+          </TableCell>
           <TableCell className="text-right">{formatCurrency(f.receita_servicos)}</TableCell>
           <TableCell className="text-right">{formatCurrency(f.receita_revenda)}</TableCell>
           <TableCell className="text-right">{formatCurrency(f.receita_industria)}</TableCell>
@@ -88,7 +112,9 @@ export function CsvImportDialog({ open, onOpenChange, kind, empresaId, onImport 
     const f = r as FolhaRow;
     return (
       <TableRow key={i}>
-        <TableCell>{String(f.mes).padStart(2, '0')}/{f.ano}</TableCell>
+        <TableCell>
+          {String(f.mes).padStart(2, '0')}/{f.ano}
+        </TableCell>
         <TableCell className="text-right">{formatCurrency(f.salarios)}</TableCell>
         <TableCell className="text-right">{formatCurrency(f.pro_labore)}</TableCell>
         <TableCell className="text-right">{formatCurrency(f.encargos)}</TableCell>
@@ -107,8 +133,8 @@ export function CsvImportDialog({ open, onOpenChange, kind, empresaId, onImport 
             Importar CSV — {kind === 'faturamento' ? 'Faturamento Mensal' : 'Folha de Pagamento'}
           </DialogTitle>
           <DialogDescription>
-            Aceita UTF-8 ou Latin-1, separadores `,` `;` ou tab. Detecção automática.
-            Valores BR (1.234,56) ou US (1234.56). Linhas duplicadas (mesmo ano/mês) são atualizadas (UPSERT).
+            Aceita UTF-8 ou Latin-1, separadores `,` `;` ou tab. Detecção automática. Valores BR
+            (1.234,56) ou US (1234.56). Linhas duplicadas (mesmo ano/mês) são atualizadas (UPSERT).
           </DialogDescription>
         </DialogHeader>
 
@@ -159,7 +185,9 @@ export function CsvImportDialog({ open, onOpenChange, kind, empresaId, onImport 
               </div>
               <div className="p-3 rounded border bg-muted/30">
                 <p className="text-xs text-muted-foreground">Separador</p>
-                <p className="text-xl font-bold">{result.separator === '\t' ? 'TAB' : result.separator}</p>
+                <p className="text-xl font-bold">
+                  {result.separator === '\t' ? 'TAB' : result.separator}
+                </p>
               </div>
               <div className="p-3 rounded border bg-muted/30">
                 <p className="text-xs text-muted-foreground">Encoding</p>
@@ -174,7 +202,9 @@ export function CsvImportDialog({ open, onOpenChange, kind, empresaId, onImport 
                 <AlertDescription>
                   <ul className="list-disc pl-4 mt-2 space-y-1 text-xs max-h-32 overflow-y-auto">
                     {result.errors.slice(0, 20).map((e, i) => (
-                      <li key={i}>Linha {e.line}: {e.message}</li>
+                      <li key={i}>
+                        Linha {e.line}: {e.message}
+                      </li>
                     ))}
                     {result.errors.length > 20 && <li>… e mais {result.errors.length - 20}</li>}
                   </ul>

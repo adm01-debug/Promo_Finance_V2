@@ -3,9 +3,18 @@
 // ============================================
 
 import { afterEach, describe, it, expect, beforeEach, vi } from 'vitest';
-import { parseCsv, downloadCsvTemplate, type FaturamentoRow, type FolhaRow } from '@/lib/csv-importer';
+import {
+  parseCsv,
+  downloadCsvTemplate,
+  type FaturamentoRow,
+  type FolhaRow,
+} from '@/lib/csv-importer';
 
-function makeFile(content: string, name = 'test.csv', encoding: 'utf-8' | 'latin1' = 'utf-8'): File {
+function makeFile(
+  content: string,
+  name = 'test.csv',
+  encoding: 'utf-8' | 'latin1' = 'utf-8'
+): File {
   const bytes =
     encoding === 'utf-8'
       ? new TextEncoder().encode(content)

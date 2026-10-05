@@ -1,11 +1,5 @@
 import { Activity } from 'lucide-react';
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from '@/components/ui/card';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
 import {
@@ -74,9 +68,7 @@ export function LogsTable({ logs, loading }: LogsTableProps) {
                   </TableCell>
                   <TableCell className="text-xs text-muted-foreground max-w-md truncate">
                     {l.detalhe ??
-                      (l.lancamento_id
-                        ? `Lançamento #${l.lancamento_id.slice(0, 8)}`
-                        : '—')}
+                      (l.lancamento_id ? `Lançamento #${l.lancamento_id.slice(0, 8)}` : '—')}
                   </TableCell>
                 </TableRow>
               ))}

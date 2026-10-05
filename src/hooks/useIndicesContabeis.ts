@@ -1,11 +1,7 @@
 import { useQuery } from '@tanstack/react-query';
 import { z } from 'zod';
 import { supabase } from '@/integrations/supabase/client';
-import {
-  calcularIndices,
-  type AgregadosContabeis,
-  type Indicador,
-} from '@/lib/contabil/indices';
+import { calcularIndices, type AgregadosContabeis, type Indicador } from '@/lib/contabil/indices';
 
 const numero = z.coerce.number().finite().catch(0);
 
@@ -119,7 +115,7 @@ export function useIndicesContabeis({
             const aggAnt = await buscarAgregados(
               empresaId as string,
               anterior.dataInicio,
-              anterior.dataFim,
+              anterior.dataFim
             );
             anteriores = calcularIndices(aggAnt);
           } catch {
@@ -177,7 +173,7 @@ export function useSerieIndices({ empresaId, dataInicio, dataFim }: UseIndicesPa
             label: `${mes}/${ano.slice(2)}`,
             indices: calcularIndices(agg),
           };
-        }),
+        })
       );
       return pontos;
     },

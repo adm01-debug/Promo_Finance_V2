@@ -43,14 +43,21 @@ export function DrawerCobrancasTab({ cobrancas, canEnviar, onEnviarCobranca }: P
               {c.canal === 'email' && <Send className="h-3 w-3" />}
               {c.canal?.toUpperCase() || 'N/A'}
             </Badge>
-            <Badge variant="outline" className={cn(
-              "text-xs",
-              c.status === 'enviado' ? 'text-success border-success/30' : 'text-destructive border-destructive/30'
-            )}>
+            <Badge
+              variant="outline"
+              className={cn(
+                'text-xs',
+                c.status === 'enviado'
+                  ? 'text-success border-success/30'
+                  : 'text-destructive border-destructive/30'
+              )}
+            >
               {c.status}
             </Badge>
           </div>
-          <p className="text-xs text-muted-foreground">Etapa: {getEtapaCobrancaLabel(c.etapa || '')}</p>
+          <p className="text-xs text-muted-foreground">
+            Etapa: {getEtapaCobrancaLabel(c.etapa || '')}
+          </p>
           <p className="text-xs text-muted-foreground">{formatDateTime(c.created_at)}</p>
         </div>
       ))}

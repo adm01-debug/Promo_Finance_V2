@@ -1,10 +1,10 @@
-import { motion } from "framer-motion";
-import { Card } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { Search, Building2, Calendar, FileText, RefreshCcw } from "lucide-react";
-import { itemVariants, type BloqueiosFilters } from "./types";
+import { motion } from 'framer-motion';
+import { Card } from '@/components/ui/card';
+import { Input } from '@/components/ui/input';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
+import { Search, Building2, Calendar, FileText, RefreshCcw } from 'lucide-react';
+import { itemVariants, type BloqueiosFilters } from './types';
 
 interface FiltersBarProps {
   filters: BloqueiosFilters;
@@ -66,7 +66,9 @@ export function FiltersBar({ filters, setFilters, onReset, onRefetch, empresas }
           </div>
 
           <div className="relative group">
-            <Badge className="absolute left-3 top-1/2 -translate-y-1/2 text-[8px] bg-primary/20 text-primary border-none">R$</Badge>
+            <Badge className="absolute left-3 top-1/2 -translate-y-1/2 text-[8px] bg-primary/20 text-primary border-none">
+              R$
+            </Badge>
             <Input
               placeholder="Valor..."
               className="pl-10 h-14 bg-card/5 border-white/5 rounded-2xl font-medium"

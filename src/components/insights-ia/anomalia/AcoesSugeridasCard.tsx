@@ -1,12 +1,12 @@
-import { useState } from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Textarea } from "@/components/ui/textarea";
-import { Lightbulb, Save } from "lucide-react";
-import { Link } from "react-router-dom";
-import type { Anomalia } from "@/hooks/useAnomaliasDetectadas";
-import { useAnomaliasDetectadas } from "@/hooks/useAnomaliasDetectadas";
-import { useSincronizarAnomaliaBitrix } from "@/hooks/useSincronizarAnomaliaBitrix";
+import { useState } from 'react';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Textarea } from '@/components/ui/textarea';
+import { Lightbulb, Save } from 'lucide-react';
+import { Link } from 'react-router-dom';
+import type { Anomalia } from '@/hooks/useAnomaliasDetectadas';
+import { useAnomaliasDetectadas } from '@/hooks/useAnomaliasDetectadas';
+import { useSincronizarAnomaliaBitrix } from '@/hooks/useSincronizarAnomaliaBitrix';
 
 interface AcaoSugerida {
   titulo: string;
@@ -17,73 +17,75 @@ interface AcaoSugerida {
 
 function acoesPara(a: Anomalia): AcaoSugerida[] {
   switch (a.tipo_anomalia) {
-    case "movimentacao_outlier":
+    case 'movimentacao_outlier':
       return [
         {
-          titulo: "Validar com responsável",
-          descricao: "Confirme com o operador que registrou a movimentação se o valor está correto.",
-          rota: "/movimentacoes",
-          cta: "Abrir movimentações",
+          titulo: 'Validar com responsável',
+          descricao:
+            'Confirme com o operador que registrou a movimentação se o valor está correto.',
+          rota: '/movimentacoes',
+          cta: 'Abrir movimentações',
         },
         {
-          titulo: "Comparar com série histórica",
-          descricao: "Verifique se há justificativa contábil (sazonalidade, evento único).",
+          titulo: 'Comparar com série histórica',
+          descricao: 'Verifique se há justificativa contábil (sazonalidade, evento único).',
         },
       ];
-    case "pagamento_duplicado":
+    case 'pagamento_duplicado':
       return [
         {
-          titulo: "Cancelar pagamento duplicado",
-          descricao: "Identifique qual conta é a duplicata e marque-a como cancelada antes do vencimento.",
-          rota: "/contas-pagar",
-          cta: "Ir para contas a pagar",
+          titulo: 'Cancelar pagamento duplicado',
+          descricao:
+            'Identifique qual conta é a duplicata e marque-a como cancelada antes do vencimento.',
+          rota: '/contas-pagar',
+          cta: 'Ir para contas a pagar',
         },
         {
-          titulo: "Verificar fornecedor",
-          descricao: "Notifique o fornecedor sobre a possível emissão duplicada.",
+          titulo: 'Verificar fornecedor',
+          descricao: 'Notifique o fornecedor sobre a possível emissão duplicada.',
         },
       ];
-    case "conta_pagar_alta":
+    case 'conta_pagar_alta':
       return [
         {
-          titulo: "Solicitar aprovação adicional",
-          descricao: "Submeta para fluxo de aprovação caso ultrapasse threshold definido.",
-          rota: "/aprovacoes",
-          cta: "Fluxo de aprovação",
+          titulo: 'Solicitar aprovação adicional',
+          descricao: 'Submeta para fluxo de aprovação caso ultrapasse threshold definido.',
+          rota: '/aprovacoes',
+          cta: 'Fluxo de aprovação',
         },
         {
-          titulo: "Comparar histórico do fornecedor",
-          descricao: "Avalie variação contra média de pagamentos anteriores ao mesmo fornecedor.",
-          rota: "/fornecedores",
-          cta: "Ver fornecedores",
+          titulo: 'Comparar histórico do fornecedor',
+          descricao: 'Avalie variação contra média de pagamentos anteriores ao mesmo fornecedor.',
+          rota: '/fornecedores',
+          cta: 'Ver fornecedores',
         },
       ];
-    case "conciliacao_atrasada":
+    case 'conciliacao_atrasada':
       return [
         {
-          titulo: "Executar conciliação assistida por IA",
-          descricao: "Use o motor de conciliação para sugerir matches e reduzir backlog.",
-          rota: "/conciliacao",
-          cta: "Abrir conciliação",
+          titulo: 'Executar conciliação assistida por IA',
+          descricao: 'Use o motor de conciliação para sugerir matches e reduzir backlog.',
+          rota: '/conciliacao',
+          cta: 'Abrir conciliação',
         },
         {
-          titulo: "Revisar regras automáticas",
-          descricao: "Verifique se há regras existentes que deveriam ter resolvido este caso.",
+          titulo: 'Revisar regras automáticas',
+          descricao: 'Verifique se há regras existentes que deveriam ter resolvido este caso.',
         },
       ];
-    case "mudanca_regime_brusca":
+    case 'mudanca_regime_brusca':
       return [
         {
-          titulo: "Recalcular regime tributário",
-          descricao: "Rode a simulação atualizada para confirmar o melhor enquadramento.",
-          rota: "/tributario/simulacao-regimes",
-          cta: "Simular regimes",
+          titulo: 'Recalcular regime tributário',
+          descricao: 'Rode a simulação atualizada para confirmar o melhor enquadramento.',
+          rota: '/tributario/simulacao-regimes',
+          cta: 'Simular regimes',
         },
         {
-          titulo: "Auditar lançamentos do mês",
-          descricao: "Verifique se houve erro de classificação ou evento extraordinário.",
-          rota: "/relatorios",
-          cta: "Ver relatórios",
+          titulo: 'Auditar lançamentos do mês',
+          descricao: 'Verifique se houve erro de classificação ou evento extraordinário.',
+          rota: '/relatorios',
+          cta: 'Ver relatórios',
         },
       ];
     default:
@@ -92,7 +94,7 @@ function acoesPara(a: Anomalia): AcaoSugerida[] {
 }
 
 export function AcoesSugeridasCard({ anomalia }: { anomalia: Anomalia }) {
-  const [obs, setObs] = useState(anomalia.observacoes ?? "");
+  const [obs, setObs] = useState(anomalia.observacoes ?? '');
   const { atualizarStatus } = useAnomaliasDetectadas();
   const sincronizar = useSincronizarAnomaliaBitrix();
   const acoes = acoesPara(anomalia);
@@ -145,21 +147,25 @@ export function AcoesSugeridasCard({ anomalia }: { anomalia: Anomalia }) {
               atualizarStatus.mutate(
                 {
                   id: anomalia.id,
-                  status: anomalia.status === "nova" ? "investigando" : anomalia.status,
+                  status: anomalia.status === 'nova' ? 'investigando' : anomalia.status,
                   observacoes: obs,
                 },
                 {
                   onSuccess: () =>
-                    sincronizar.mutate({ anomaliaId: anomalia.id, evento: "parecer" }),
-                },
+                    sincronizar.mutate({ anomaliaId: anomalia.id, evento: 'parecer' }),
+                }
               )
             }
-            disabled={atualizarStatus.isPending || sincronizar.isPending || obs.trim() === (anomalia.observacoes ?? "").trim()}
+            disabled={
+              atualizarStatus.isPending ||
+              sincronizar.isPending ||
+              obs.trim() === (anomalia.observacoes ?? '').trim()
+            }
             aria-label="Salvar parecer da investigação"
             title={
-              obs.trim() === (anomalia.observacoes ?? "").trim()
-                ? "Sem alterações para salvar"
-                : "Salvar parecer"
+              obs.trim() === (anomalia.observacoes ?? '').trim()
+                ? 'Sem alterações para salvar'
+                : 'Salvar parecer'
             }
           >
             <Save className="h-3 w-3 mr-1" aria-hidden="true" /> Salvar parecer

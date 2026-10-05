@@ -31,7 +31,10 @@ const FIELD_LABELS: Record<string, string> = {
   parent_id: 'Centro Pai',
 };
 
-function getChanges(oldData: Record<string, unknown> | null, newData: Record<string, unknown> | null) {
+function getChanges(
+  oldData: Record<string, unknown> | null,
+  newData: Record<string, unknown> | null
+) {
   if (!oldData || !newData) return [];
   const changes: { field: string; old: string; new: string }[] = [];
   const tracked = Object.keys(FIELD_LABELS);
@@ -87,16 +90,32 @@ export function CentroCustoHistorico({ centroId, centroNome }: CentroCustoHistor
     <ScrollArea className="h-[400px] pr-4">
       <div className="space-y-4">
         {historico.map((item) => {
-          const opLabel = item.operacao === 'INSERT' ? 'Criado' : item.operacao === 'UPDATE' ? 'Alterado' : 'Excluído';
-          const opColor = item.operacao === 'INSERT' ? 'default' : item.operacao === 'DELETE' ? 'destructive' : 'secondary';
-          const changes = item.operacao === 'UPDATE'
-            ? getChanges(item.dados_antigos as Record<string, unknown> | null, item.dados_novos as Record<string, unknown> | null)
-            : [];
+          const opLabel =
+            item.operacao === 'INSERT'
+              ? 'Criado'
+              : item.operacao === 'UPDATE'
+                ? 'Alterado'
+                : 'Excluído';
+          const opColor =
+            item.operacao === 'INSERT'
+              ? 'default'
+              : item.operacao === 'DELETE'
+                ? 'destructive'
+                : 'secondary';
+          const changes =
+            item.operacao === 'UPDATE'
+              ? getChanges(
+                  item.dados_antigos as Record<string, unknown> | null,
+                  item.dados_novos as Record<string, unknown> | null
+                )
+              : [];
 
           return (
             <div key={item.id} className="border-l-2 border-muted pl-4 pb-2">
               <div className="flex items-center gap-2 mb-1">
-                <Badge variant={opColor} className="text-xs">{opLabel}</Badge>
+                <Badge variant={opColor} className="text-xs">
+                  {opLabel}
+                </Badge>
                 <span className="text-xs text-muted-foreground">{formatDate(item.created_at)}</span>
               </div>
 

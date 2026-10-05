@@ -13,6 +13,7 @@ import {
 
 import { getRequestId } from '../_shared/correlation.ts';
 import { corsHeadersPara } from '../_shared/cors.ts';
+import { withEdgeObservability } from '../_shared/edge-observability.ts';
 const CACHE_TTL_DAYS = 30;
 const RATE_LIMIT_MAX = 10;
 const RATE_LIMIT_WINDOW_MIN = 60;
@@ -75,268 +76,270 @@ async function fetchCnpjaWithRetry(
   throw lastError ?? new Error('CNPJá: falha desconhecida após retries');
 }
 
-Deno.serve(async (req: Request) => {
-  const corsHeaders = corsHeadersPara(req);
-  if (req.method === 'OPTIONS') {
-    return new Response(null, { headers: corsHeaders });
-  }
+Deno.serve(
+  withEdgeObservability('cnpja-lookup', async (req: Request) => {
+    const corsHeaders = corsHeadersPara(req);
+    if (req.method === 'OPTIONS') {
+      return new Response(null, { headers: corsHeaders });
+    }
 
-  const logger = createLogger('cnpja-lookup', getRequestId(req));
-  const t0 = Date.now();
-  logger.info('fn_start');
+    const logger = createLogger('cnpja-lookup', getRequestId(req));
+    const t0 = Date.now();
+    logger.info('fn_start');
 
-  try {
-    const authHeader = req.headers.get('Authorization');
-    if (!authHeader?.startsWith('Bearer ')) {
-      return new Response(JSON.stringify({ error: 'Não autenticado' }), {
-        status: 401,
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+    try {
+      const authHeader = req.headers.get('Authorization');
+      if (!authHeader?.startsWith('Bearer ')) {
+        return new Response(JSON.stringify({ error: 'Não autenticado' }), {
+          status: 401,
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        });
+      }
+
+      const supabaseUrl = Deno.env.get('SUPABASE_URL');
+      const supabaseAnonKey = Deno.env.get('SUPABASE_ANON_KEY');
+      const serviceRoleKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY');
+      if (!supabaseUrl || !supabaseAnonKey || !serviceRoleKey) {
+        return new Response(JSON.stringify({ error: 'Configuração Supabase ausente' }), {
+          status: 500,
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        });
+      }
+
+      const userClient = createClient(supabaseUrl, supabaseAnonKey, {
+        global: { headers: { Authorization: authHeader } },
       });
-    }
 
-    const supabaseUrl = Deno.env.get('SUPABASE_URL');
-    const supabaseAnonKey = Deno.env.get('SUPABASE_ANON_KEY');
-    const serviceRoleKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY');
-    if (!supabaseUrl || !supabaseAnonKey || !serviceRoleKey) {
-      return new Response(JSON.stringify({ error: 'Configuração Supabase ausente' }), {
-        status: 500,
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      const token = authHeader.replace('Bearer ', '');
+      const { data: claims, error: claimsError } = await userClient.auth.getClaims(token);
+      // Exigir `sub`: a anon key (pública) também é um JWT válido do projeto,
+      // mas não carrega subject — sem esta checagem ela passaria o guard.
+      if (claimsError || !claims?.claims?.sub) {
+        return new Response(JSON.stringify({ error: 'Token inválido' }), {
+          status: 401,
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        });
+      }
+
+      const userId = claims.claims.sub as string;
+
+      if (req.method !== 'POST') {
+        return new Response(JSON.stringify({ error: 'Método não permitido' }), {
+          status: 405,
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        });
+      }
+
+      const rawBody = await req.json().catch(() => ({}));
+      const validation = validatePayload(CnpjaLookupSchema, rawBody, 'cnpja-lookup');
+      if (!validation.success) {
+        return createErrorResponse(validation.error, 400, validation.details, req);
+      }
+
+      const cnpj = sanitizeCnpj(String(validation.data.cnpj));
+
+      if (!isValidCnpj(cnpj)) {
+        return createErrorResponse('CNPJ inválido. Informe 14 dígitos.', undefined, req);
+      }
+
+      // Cliente admin para cache e rate limit
+      const admin = createClient(supabaseUrl, serviceRoleKey);
+
+      // 1) Cache persistente
+      const { data: cached } = await admin
+        .from('cnpja_cache')
+        .select('data, fetched_at, expires_at')
+        .eq('cnpj', cnpj)
+        .gt('expires_at', new Date().toISOString())
+        .maybeSingle();
+
+      if (cached) {
+        logger.info('cache_hit', {
+          duration_ms: Date.now() - t0,
+          status_code: 200,
+          context: { cnpj, fetched_at: cached.fetched_at },
+        });
+        await logger.flush();
+        return new Response(
+          JSON.stringify({
+            data: cached.data,
+            cached: true,
+            cached_at: cached.fetched_at,
+          }),
+          {
+            status: 200,
+            headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+          }
+        );
+      }
+
+      logger.info('cache_miss', { context: { cnpj } });
+
+      // 2) Rate limit antes de chamada externa
+      const { data: allowed, error: rlError } = await admin.rpc('cnpja_check_rate_limit', {
+        _user_id: userId,
+        _max: RATE_LIMIT_MAX,
+        _window_minutes: RATE_LIMIT_WINDOW_MIN,
       });
-    }
 
-    const userClient = createClient(supabaseUrl, supabaseAnonKey, {
-      global: { headers: { Authorization: authHeader } },
-    });
+      if (rlError) {
+        logger.warn('rate_limit_check_failed', {
+          error_message: rlError.message,
+          context: { userId },
+        });
+        await logger.flush();
+        return new Response(
+          JSON.stringify({
+            error: 'Serviço de rate limit indisponível. Tente novamente em instantes.',
+          }),
+          { status: 503, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        );
+      } else if (allowed === false) {
+        logger.warn('rate_limit_exceeded', {
+          status_code: 429,
+          context: { userId, max: RATE_LIMIT_MAX, window_min: RATE_LIMIT_WINDOW_MIN },
+        });
+        await logger.flush();
+        return new Response(
+          JSON.stringify({
+            error: `Limite de ${RATE_LIMIT_MAX} consultas por ${RATE_LIMIT_WINDOW_MIN} minutos atingido. Tente novamente mais tarde.`,
+          }),
+          {
+            status: 429,
+            headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+          }
+        );
+      }
 
-    const token = authHeader.replace('Bearer ', '');
-    const { data: claims, error: claimsError } = await userClient.auth.getClaims(token);
-    // Exigir `sub`: a anon key (pública) também é um JWT válido do projeto,
-    // mas não carrega subject — sem esta checagem ela passaria o guard.
-    if (claimsError || !claims?.claims?.sub) {
-      return new Response(JSON.stringify({ error: 'Token inválido' }), {
-        status: 401,
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      // 3) Chamada externa
+      const apiKey = Deno.env.get('CNPJA_API_KEY');
+      if (!apiKey) {
+        return new Response(JSON.stringify({ error: 'CNPJA_API_KEY não configurada' }), {
+          status: 500,
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        });
+      }
+
+      const tApi = Date.now();
+      const res = await fetchCnpjaWithRetry(cnpj, apiKey.trim());
+      const text = await res.text();
+      logger.info('external_api_call', {
+        duration_ms: Date.now() - tApi,
+        status_code: res.status,
+        context: { cnpj, provider: 'cnpja' },
       });
-    }
 
-    const userId = claims.claims.sub as string;
+      if (!res.ok) {
+        return new Response(
+          JSON.stringify({
+            error: `CNPJá retornou ${res.status}`,
+            detail: text.slice(0, 500),
+          }),
+          {
+            status: res.status,
+            headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+          }
+        );
+      }
 
-    if (req.method !== 'POST') {
-      return new Response(JSON.stringify({ error: 'Método não permitido' }), {
-        status: 405,
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      let raw: any;
+      try {
+        raw = JSON.parse(text);
+      } catch {
+        return new Response(JSON.stringify({ error: 'Resposta CNPJá inválida' }), {
+          status: 502,
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        });
+      }
+
+      const company = raw?.company ?? {};
+      const address = raw?.address ?? {};
+      const mainActivity = raw?.mainActivity ?? {};
+      const sideActivities = Array.isArray(raw?.sideActivities) ? raw.sideActivities : [];
+      const simples = company?.simples ?? null;
+      const simei = company?.simei ?? null;
+
+      let regimeAtual: 'simples' | 'mei' | 'presumido_real' = 'presumido_real';
+      if (simei?.optant) regimeAtual = 'mei';
+      else if (simples?.optant) regimeAtual = 'simples';
+
+      const normalized = {
+        cnpj,
+        razaoSocial: company?.name ?? raw?.alias ?? '',
+        nomeFantasia: raw?.alias ?? '',
+        situacaoCadastral: raw?.status?.text ?? null,
+        dataAbertura: raw?.founded ?? null,
+        capitalSocial: company?.equity ?? null,
+        naturezaJuridica: company?.nature?.text ?? null,
+        porte: company?.size?.text ?? null,
+        regimeAtual,
+        simplesOptante: !!simples?.optant,
+        meiOptante: !!simei?.optant,
+        cnaePrincipal: mainActivity?.id
+          ? {
+              codigo: String(mainActivity.id),
+              descricao: mainActivity.text ?? '',
+            }
+          : null,
+        cnaesSecundarios: sideActivities.map((s: any) => ({
+          codigo: String(s.id ?? ''),
+          descricao: s.text ?? '',
+        })),
+        endereco: {
+          logradouro: address?.street ?? '',
+          numero: address?.number ?? '',
+          complemento: address?.details ?? '',
+          bairro: address?.district ?? '',
+          cidade: address?.city ?? '',
+          uf: address?.state ?? '',
+          cep: address?.zip ?? '',
+        },
+        raw,
+      };
+
+      // 4) Persistir cache
+      const fetchedAt = new Date();
+      const expiresAt = new Date(fetchedAt.getTime() + CACHE_TTL_DAYS * 24 * 60 * 60 * 1000);
+      const { error: upsertError } = await admin.from('cnpja_cache').upsert({
+        cnpj,
+        data: normalized,
+        situacao_cadastral: normalized.situacaoCadastral,
+        fetched_at: fetchedAt.toISOString(),
+        expires_at: expiresAt.toISOString(),
       });
-    }
+      if (upsertError) {
+        logger.warn('cache_upsert_failed', { error_message: upsertError.message });
+      }
 
-    const rawBody = await req.json().catch(() => ({}));
-    const validation = validatePayload(CnpjaLookupSchema, rawBody, 'cnpja-lookup');
-    if (!validation.success) {
-      return createErrorResponse(validation.error, 400, validation.details, req);
-    }
-
-    const cnpj = sanitizeCnpj(String(validation.data.cnpj));
-
-    if (!isValidCnpj(cnpj)) {
-      return createErrorResponse('CNPJ inválido. Informe 14 dígitos.', undefined, req);
-    }
-
-    // Cliente admin para cache e rate limit
-    const admin = createClient(supabaseUrl, serviceRoleKey);
-
-    // 1) Cache persistente
-    const { data: cached } = await admin
-      .from('cnpja_cache')
-      .select('data, fetched_at, expires_at')
-      .eq('cnpj', cnpj)
-      .gt('expires_at', new Date().toISOString())
-      .maybeSingle();
-
-    if (cached) {
-      logger.info('cache_hit', {
+      logger.info('fn_success', {
         duration_ms: Date.now() - t0,
         status_code: 200,
-        context: { cnpj, fetched_at: cached.fetched_at },
+        context: { cnpj, cached: false },
       });
       await logger.flush();
       return new Response(
         JSON.stringify({
-          data: cached.data,
-          cached: true,
-          cached_at: cached.fetched_at,
+          data: normalized,
+          cached: false,
+          cached_at: fetchedAt.toISOString(),
         }),
         {
           status: 200,
           headers: { ...corsHeaders, 'Content-Type': 'application/json' },
         }
       );
-    }
-
-    logger.info('cache_miss', { context: { cnpj } });
-
-    // 2) Rate limit antes de chamada externa
-    const { data: allowed, error: rlError } = await admin.rpc('cnpja_check_rate_limit', {
-      _user_id: userId,
-      _max: RATE_LIMIT_MAX,
-      _window_minutes: RATE_LIMIT_WINDOW_MIN,
-    });
-
-    if (rlError) {
-      logger.warn('rate_limit_check_failed', {
-        error_message: rlError.message,
-        context: { userId },
+    } catch (err) {
+      const message = err instanceof Error ? err.message : 'Erro inesperado';
+      logger.error('fn_failure', {
+        duration_ms: Date.now() - t0,
+        status_code: 500,
+        error_message: message,
       });
       await logger.flush();
-      return new Response(
-        JSON.stringify({
-          error: 'Serviço de rate limit indisponível. Tente novamente em instantes.',
-        }),
-        { status: 503, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-      );
-    } else if (allowed === false) {
-      logger.warn('rate_limit_exceeded', {
-        status_code: 429,
-        context: { userId, max: RATE_LIMIT_MAX, window_min: RATE_LIMIT_WINDOW_MIN },
-      });
-      await logger.flush();
-      return new Response(
-        JSON.stringify({
-          error: `Limite de ${RATE_LIMIT_MAX} consultas por ${RATE_LIMIT_WINDOW_MIN} minutos atingido. Tente novamente mais tarde.`,
-        }),
-        {
-          status: 429,
-          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-        }
-      );
-    }
-
-    // 3) Chamada externa
-    const apiKey = Deno.env.get('CNPJA_API_KEY');
-    if (!apiKey) {
-      return new Response(JSON.stringify({ error: 'CNPJA_API_KEY não configurada' }), {
+      return new Response(JSON.stringify({ error: message }), {
         status: 500,
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       });
     }
-
-    const tApi = Date.now();
-    const res = await fetchCnpjaWithRetry(cnpj, apiKey.trim());
-    const text = await res.text();
-    logger.info('external_api_call', {
-      duration_ms: Date.now() - tApi,
-      status_code: res.status,
-      context: { cnpj, provider: 'cnpja' },
-    });
-
-    if (!res.ok) {
-      return new Response(
-        JSON.stringify({
-          error: `CNPJá retornou ${res.status}`,
-          detail: text.slice(0, 500),
-        }),
-        {
-          status: res.status,
-          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-        }
-      );
-    }
-
-    let raw: any;
-    try {
-      raw = JSON.parse(text);
-    } catch {
-      return new Response(JSON.stringify({ error: 'Resposta CNPJá inválida' }), {
-        status: 502,
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-      });
-    }
-
-    const company = raw?.company ?? {};
-    const address = raw?.address ?? {};
-    const mainActivity = raw?.mainActivity ?? {};
-    const sideActivities = Array.isArray(raw?.sideActivities) ? raw.sideActivities : [];
-    const simples = company?.simples ?? null;
-    const simei = company?.simei ?? null;
-
-    let regimeAtual: 'simples' | 'mei' | 'presumido_real' = 'presumido_real';
-    if (simei?.optant) regimeAtual = 'mei';
-    else if (simples?.optant) regimeAtual = 'simples';
-
-    const normalized = {
-      cnpj,
-      razaoSocial: company?.name ?? raw?.alias ?? '',
-      nomeFantasia: raw?.alias ?? '',
-      situacaoCadastral: raw?.status?.text ?? null,
-      dataAbertura: raw?.founded ?? null,
-      capitalSocial: company?.equity ?? null,
-      naturezaJuridica: company?.nature?.text ?? null,
-      porte: company?.size?.text ?? null,
-      regimeAtual,
-      simplesOptante: !!simples?.optant,
-      meiOptante: !!simei?.optant,
-      cnaePrincipal: mainActivity?.id
-        ? {
-            codigo: String(mainActivity.id),
-            descricao: mainActivity.text ?? '',
-          }
-        : null,
-      cnaesSecundarios: sideActivities.map((s: any) => ({
-        codigo: String(s.id ?? ''),
-        descricao: s.text ?? '',
-      })),
-      endereco: {
-        logradouro: address?.street ?? '',
-        numero: address?.number ?? '',
-        complemento: address?.details ?? '',
-        bairro: address?.district ?? '',
-        cidade: address?.city ?? '',
-        uf: address?.state ?? '',
-        cep: address?.zip ?? '',
-      },
-      raw,
-    };
-
-    // 4) Persistir cache
-    const fetchedAt = new Date();
-    const expiresAt = new Date(fetchedAt.getTime() + CACHE_TTL_DAYS * 24 * 60 * 60 * 1000);
-    const { error: upsertError } = await admin.from('cnpja_cache').upsert({
-      cnpj,
-      data: normalized,
-      situacao_cadastral: normalized.situacaoCadastral,
-      fetched_at: fetchedAt.toISOString(),
-      expires_at: expiresAt.toISOString(),
-    });
-    if (upsertError) {
-      logger.warn('cache_upsert_failed', { error_message: upsertError.message });
-    }
-
-    logger.info('fn_success', {
-      duration_ms: Date.now() - t0,
-      status_code: 200,
-      context: { cnpj, cached: false },
-    });
-    await logger.flush();
-    return new Response(
-      JSON.stringify({
-        data: normalized,
-        cached: false,
-        cached_at: fetchedAt.toISOString(),
-      }),
-      {
-        status: 200,
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-      }
-    );
-  } catch (err) {
-    const message = err instanceof Error ? err.message : 'Erro inesperado';
-    logger.error('fn_failure', {
-      duration_ms: Date.now() - t0,
-      status_code: 500,
-      error_message: message,
-    });
-    await logger.flush();
-    return new Response(JSON.stringify({ error: message }), {
-      status: 500,
-      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-    });
-  }
-});
+  })
+);

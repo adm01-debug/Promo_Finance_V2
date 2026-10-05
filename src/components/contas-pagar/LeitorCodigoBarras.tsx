@@ -1,16 +1,16 @@
 import { useState, useRef, useCallback } from 'react';
-import { 
-  Camera, 
-  Scan, 
-  Check, 
-  AlertCircle, 
+import {
+  Camera,
+  Scan,
+  Check,
+  AlertCircle,
   Loader2,
   Keyboard,
   Building2,
   Calendar,
   DollarSign,
   Copy,
-  FileText
+  FileText,
 } from 'lucide-react';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
@@ -31,7 +31,12 @@ import {
 } from '@/components/ui/dialog';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { toast } from 'sonner';
-import { parseBoleto, DadosBoleto, formatarLinhaDigitavel, validarCodigoBarras } from '@/lib/barcode-parser';
+import {
+  parseBoleto,
+  DadosBoleto,
+  formatarLinhaDigitavel,
+  validarCodigoBarras,
+} from '@/lib/barcode-parser';
 import { formatCurrency } from '@/lib/formatters';
 import { logger } from '@/lib/logger';
 
@@ -41,7 +46,11 @@ interface LeitorCodigoBarrasProps {
   onBoletoDetected: (dados: DadosBoleto) => void;
 }
 
-export function LeitorCodigoBarras({ open, onOpenChange, onBoletoDetected }: LeitorCodigoBarrasProps) {
+export function LeitorCodigoBarras({
+  open,
+  onOpenChange,
+  onBoletoDetected,
+}: LeitorCodigoBarrasProps) {
   const [activeTab, setActiveTab] = useState<'manual' | 'camera'>('manual');
   const [codigoInput, setCodigoInput] = useState('');
   const [isProcessing, setIsProcessing] = useState(false);
@@ -53,7 +62,7 @@ export function LeitorCodigoBarras({ open, onOpenChange, onBoletoDetected }: Lei
     // Remove espaços e formata conforme digita
     const limpo = value.replace(/\s/g, '');
     setCodigoInput(limpo);
-    
+
     // Auto-processar quando atingir tamanho válido
     if (validarCodigoBarras(limpo)) {
       processarCodigo(limpo);
@@ -64,11 +73,11 @@ export function LeitorCodigoBarras({ open, onOpenChange, onBoletoDetected }: Lei
 
   const processarCodigo = useCallback((codigo: string) => {
     setIsProcessing(true);
-    
+
     try {
       const dados = parseBoleto(codigo);
       setDadosBoleto(dados);
-      
+
       if (dados.valido) {
         toast.success('Código de barras processado com sucesso!');
       } else {
@@ -105,12 +114,12 @@ export function LeitorCodigoBarras({ open, onOpenChange, onBoletoDetected }: Lei
           height: { ideal: 720 },
         },
       });
-      
+
       setCameraStream(stream);
       if (videoRef.current) {
         videoRef.current.srcObject = stream;
       }
-      
+
       toast.info('Aponte a câmera para o código de barras do boleto');
     } catch (error: unknown) {
       logger.error('Erro ao acessar câmera:', error);
@@ -121,7 +130,7 @@ export function LeitorCodigoBarras({ open, onOpenChange, onBoletoDetected }: Lei
 
   const stopCamera = () => {
     if (cameraStream) {
-      cameraStream.getTracks().forEach(track => track.stop());
+      cameraStream.getTracks().forEach((track) => track.stop());
       setCameraStream(null);
     }
   };
@@ -197,12 +206,7 @@ export function LeitorCodigoBarras({ open, onOpenChange, onBoletoDetected }: Lei
 
           <TabsContent value="camera" className="space-y-4">
             <div className="relative aspect-video bg-black rounded-lg overflow-hidden">
-              <video
-                ref={videoRef}
-                autoPlay
-                playsInline
-                className="w-full h-full object-cover"
-              />
+              <video ref={videoRef} autoPlay playsInline className="w-full h-full object-cover" />
               {!cameraStream && (
                 <div className="absolute inset-0 flex items-center justify-center">
                   <Loader2 className="h-8 w-8 animate-spin text-white" />
@@ -214,8 +218,8 @@ export function LeitorCodigoBarras({ open, onOpenChange, onBoletoDetected }: Lei
               <AlertCircle className="h-4 w-4" />
               <AlertTitle>Dica</AlertTitle>
               <AlertDescription>
-                Posicione o código de barras dentro da área destacada. 
-                Se a leitura automática falhar, use a entrada manual.
+                Posicione o código de barras dentro da área destacada. Se a leitura automática
+                falhar, use a entrada manual.
               </AlertDescription>
             </Alert>
           </TabsContent>
@@ -283,14 +287,16 @@ export function LeitorCodigoBarras({ open, onOpenChange, onBoletoDetected }: Lei
                       <div>
                         <p className="text-xs text-muted-foreground">Vencimento</p>
                         <p className="font-medium">
-                          {dadosBoleto.dataVencimento 
-                            ? format(dadosBoleto.dataVencimento, "dd/MM/yyyy", { locale: ptBR })
+                          {dadosBoleto.dataVencimento
+                            ? format(dadosBoleto.dataVencimento, 'dd/MM/yyyy', { locale: ptBR })
                             : 'Não informado'}
                         </p>
                       </div>
                     </div>
                     <div className="flex items-center gap-2">
-                      <Badge variant="outline">{dadosBoleto.tipo === 'bancario' ? 'Boleto Bancário' : 'Convênio'}</Badge>
+                      <Badge variant="outline">
+                        {dadosBoleto.tipo === 'bancario' ? 'Boleto Bancário' : 'Convênio'}
+                      </Badge>
                     </div>
                   </div>
 
@@ -321,10 +327,7 @@ export function LeitorCodigoBarras({ open, onOpenChange, onBoletoDetected }: Lei
           <Button variant="outline" onClick={handleClose}>
             Cancelar
           </Button>
-          <Button 
-            onClick={handleConfirmar} 
-            disabled={!dadosBoleto?.valido}
-          >
+          <Button onClick={handleConfirmar} disabled={!dadosBoleto?.valido}>
             <Check className="mr-2 h-4 w-4" />
             Usar Dados do Boleto
           </Button>

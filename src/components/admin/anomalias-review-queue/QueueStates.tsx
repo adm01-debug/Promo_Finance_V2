@@ -1,6 +1,6 @@
-import { Loader2, Sparkles } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import type { ReviewStats } from "./types";
+import { Loader2, Sparkles } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import type { ReviewStats } from './types';
 
 export function LoadingState() {
   return (
@@ -20,13 +20,7 @@ export function EmptyState() {
   );
 }
 
-export function SummaryState({
-  stats,
-  onClose,
-}: {
-  stats: ReviewStats;
-  onClose: () => void;
-}) {
+export function SummaryState({ stats, onClose }: { stats: ReviewStats; onClose: () => void }) {
   return (
     <div className="py-8 text-center space-y-4">
       <Sparkles className="h-12 w-12 mx-auto text-success" />
@@ -43,10 +37,7 @@ export function SummaryState({
 
 export function TransitionState() {
   return (
-    <div
-      className="py-12 flex flex-col items-center justify-center gap-2"
-      aria-live="polite"
-    >
+    <div className="py-12 flex flex-col items-center justify-center gap-2" aria-live="polite">
       <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
       <p className="text-xs text-muted-foreground">Carregando próxima anomalia…</p>
     </div>

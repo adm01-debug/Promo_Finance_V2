@@ -6,6 +6,7 @@ import { exigirChamadaInterna, type ChamadaInterna } from '../_shared/auth-guard
 import { createErrorResponse, validatePayload } from '../_shared/validation.ts';
 import { z } from 'https://deno.land/x/zod@v3.22.4/mod.ts';
 import { corsHeaders, corsHeadersPara } from '../_shared/cors.ts';
+import { withEdgeObservability } from '../_shared/edge-observability.ts';
 
 const alertShape = z
   .object({
@@ -198,5 +199,5 @@ function json(
 }
 
 if (!Deno.env.get('DENO_TESTING')) {
-  Deno.serve(createHandler(defaultDeps()));
+  Deno.serve(withEdgeObservability('notify-performance-alert', createHandler(defaultDeps())));
 }

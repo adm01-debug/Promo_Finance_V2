@@ -54,7 +54,8 @@ export const CAMADAS: readonly Camada[] = [
   {
     id: 1,
     nome: 'Apresentação',
-    descricao: 'React 18 + shadcn/ui + Tailwind. Dashboard, cadastros, simulação, análise e relatórios.',
+    descricao:
+      'React 18 + shadcn/ui + Tailwind. Dashboard, cadastros, simulação, análise e relatórios.',
   },
   {
     id: 2,
@@ -64,7 +65,8 @@ export const CAMADAS: readonly Camada[] = [
   {
     id: 3,
     nome: 'Domínio Fiscal',
-    descricao: 'Motores de cálculo e decisão. Pure functions, sem dependência de framework ou banco.',
+    descricao:
+      'Motores de cálculo e decisão. Pure functions, sem dependência de framework ou banco.',
   },
   {
     id: 4,
@@ -296,7 +298,7 @@ export function violacoesDeCamada(modulos: readonly Modulo[] = MODULOS): string[
       }
       if (dep.camada < modulo.camada) {
         violacoes.push(
-          `${modulo.id} (camada ${modulo.camada}) depende de ${dep.id} (camada ${dep.camada}), invertendo a direção das camadas`,
+          `${modulo.id} (camada ${modulo.camada}) depende de ${dep.id} (camada ${dep.camada}), invertendo a direção das camadas`
         );
       }
     }

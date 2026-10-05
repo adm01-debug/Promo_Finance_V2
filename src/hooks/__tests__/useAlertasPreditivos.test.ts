@@ -41,7 +41,7 @@ describe('useAlertasPreditivos', () => {
       });
     });
 
-    const ruptura = result.current.alertas.find(a => a.tipo === 'ruptura');
+    const ruptura = result.current.alertas.find((a) => a.tipo === 'ruptura');
     expect(ruptura).toBeDefined();
     expect(ruptura?.prioridade).toBe('alta');
   });
@@ -61,7 +61,7 @@ describe('useAlertasPreditivos', () => {
       });
     });
 
-    const concentracao = result.current.alertas.find(a => a.tipo === 'concentracao_risco');
+    const concentracao = result.current.alertas.find((a) => a.tipo === 'concentracao_risco');
     expect(concentracao).toBeDefined();
     expect(concentracao?.descricao).toContain('Cliente A');
   });
@@ -83,7 +83,7 @@ describe('useAlertasPreditivos', () => {
       });
     });
 
-    expect(result.current.alertas.find(a => a.tipo === 'ruptura')).toBeUndefined();
+    expect(result.current.alertas.find((a) => a.tipo === 'ruptura')).toBeUndefined();
   });
 
   it('atualiza lastAnalysis após análise', async () => {
@@ -108,17 +108,13 @@ describe('useAlertasPreditivos', () => {
     await act(async () => {
       await result.current.analisarFluxoCaixa({
         saldoAtual: 50000,
-        receitasPrevistas: [
-          { valor: 5000, dataVencimento: new Date(), entidade: 'cliente-x' },
-        ],
+        receitasPrevistas: [{ valor: 5000, dataVencimento: new Date(), entidade: 'cliente-x' }],
         despesasPrevistas: [],
-        historicoInadimplencia: [
-          { clienteId: 'cliente-x', diasAtraso: 20 },
-        ],
+        historicoInadimplencia: [{ clienteId: 'cliente-x', diasAtraso: 20 }],
       });
     });
 
-    const inad = result.current.alertas.find(a => a.tipo === 'inadimplencia_provavel');
+    const inad = result.current.alertas.find((a) => a.tipo === 'inadimplencia_provavel');
     expect(inad).toBeDefined();
     expect(inad?.impactoEstimado).toBe(5000);
   });

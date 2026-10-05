@@ -3,35 +3,56 @@ import { motion } from 'framer-motion';
 import { TrendingUp, Scale, Wallet, Calendar, Building2 } from 'lucide-react';
 import { MainLayout } from '@/components/layout/MainLayout';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 import { DREStatement } from '@/components/demonstrativos/DREStatement';
 import { BalancoPatrimonial } from '@/components/demonstrativos/BalancoPatrimonial';
 import { FluxoCaixaContabil } from '@/components/demonstrativos/FluxoCaixaContabil';
 import { FonteDadosToggle } from '@/components/demonstrativos/FonteDadosToggle';
 import { ExportDemonstrativoPDF } from '@/components/demonstrativos/ExportDemonstrativoPDF';
 import { useEmpresas } from '@/hooks/useFinancialData';
-import { useDemonstrativosContabeis, type FonteDemonstrativo } from '@/hooks/useDemonstrativosContabeis';
+import {
+  useDemonstrativosContabeis,
+  type FonteDemonstrativo,
+} from '@/hooks/useDemonstrativosContabeis';
 
 const containerVariants = {
   hidden: { opacity: 0 },
   visible: {
     opacity: 1,
-    transition: { staggerChildren: 0.1 }
-  }
+    transition: { staggerChildren: 0.1 },
+  },
 };
 
 const itemVariants = {
   hidden: { opacity: 0, y: 20 },
-  visible: { opacity: 1, y: 0 }
+  visible: { opacity: 1, y: 0 },
 };
 
 const Demonstrativos = () => {
-  const [periodo, setPeriodo] = useState(() => localStorage.getItem('demonstrativos_periodo') || 'mensal');
-  const [mes, setMes] = useState(() => localStorage.getItem('demonstrativos_mes') || new Date().getMonth().toString());
-  const [ano, setAno] = useState(() => localStorage.getItem('demonstrativos_ano') || new Date().getFullYear().toString());
-  const [empresaId, setEmpresaId] = useState<string>(() => localStorage.getItem('demonstrativos_empresaId') || 'todas');
-  const [fonte, setFonte] = useState<FonteDemonstrativo>(() => (localStorage.getItem('demonstrativos_fonte') as FonteDemonstrativo) || 'competencia');
-  const [activeTab, setActiveTab] = useState(() => localStorage.getItem('demonstrativos_active_tab') || 'dre');
+  const [periodo, setPeriodo] = useState(
+    () => localStorage.getItem('demonstrativos_periodo') || 'mensal'
+  );
+  const [mes, setMes] = useState(
+    () => localStorage.getItem('demonstrativos_mes') || new Date().getMonth().toString()
+  );
+  const [ano, setAno] = useState(
+    () => localStorage.getItem('demonstrativos_ano') || new Date().getFullYear().toString()
+  );
+  const [empresaId, setEmpresaId] = useState<string>(
+    () => localStorage.getItem('demonstrativos_empresaId') || 'todas'
+  );
+  const [fonte, setFonte] = useState<FonteDemonstrativo>(
+    () => (localStorage.getItem('demonstrativos_fonte') as FonteDemonstrativo) || 'competencia'
+  );
+  const [activeTab, setActiveTab] = useState(
+    () => localStorage.getItem('demonstrativos_active_tab') || 'dre'
+  );
 
   const handleSetPeriodo = (v: string) => {
     setPeriodo(v);
@@ -85,8 +106,18 @@ const Demonstrativos = () => {
   });
 
   const meses = [
-    'Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho',
-    'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'
+    'Janeiro',
+    'Fevereiro',
+    'Março',
+    'Abril',
+    'Maio',
+    'Junho',
+    'Julho',
+    'Agosto',
+    'Setembro',
+    'Outubro',
+    'Novembro',
+    'Dezembro',
   ];
 
   const anos = Array.from({ length: 5 }, (_, i) => (new Date().getFullYear() - i).toString());
@@ -97,8 +128,14 @@ const Demonstrativos = () => {
         {/* Animated Background Elements */}
         <div className="absolute inset-0 overflow-hidden pointer-events-none">
           <div className="absolute -top-[10%] -left-[10%] w-[50%] h-[50%] rounded-full bg-primary/10 blur-[150px] animate-pulse" />
-          <div className="absolute top-[20%] -right-[10%] w-[40%] h-[40%] rounded-full bg-blue-500/10 blur-[120px] animate-pulse" style={{ animationDelay: '2s' }} />
-          <div className="absolute -bottom-[10%] left-[20%] w-[45%] h-[45%] rounded-full bg-purple-500/10 blur-[150px] animate-pulse" style={{ animationDelay: '4s' }} />
+          <div
+            className="absolute top-[20%] -right-[10%] w-[40%] h-[40%] rounded-full bg-blue-500/10 blur-[120px] animate-pulse"
+            style={{ animationDelay: '2s' }}
+          />
+          <div
+            className="absolute -bottom-[10%] left-[20%] w-[45%] h-[45%] rounded-full bg-purple-500/10 blur-[150px] animate-pulse"
+            style={{ animationDelay: '4s' }}
+          />
         </div>
 
         <motion.div
@@ -108,14 +145,20 @@ const Demonstrativos = () => {
           className="relative z-10 space-y-12 pb-20"
         >
           {/* Hero Header */}
-          <motion.div variants={itemVariants} className="flex flex-col gap-8 md:flex-row md:items-end md:justify-between pt-4">
+          <motion.div
+            variants={itemVariants}
+            className="flex flex-col gap-8 md:flex-row md:items-end md:justify-between pt-4"
+          >
             <div className="space-y-4">
               <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 border border-primary/20 text-primary text-xs font-bold uppercase tracking-widest animate-fade-in">
                 <div className="h-1.5 w-1.5 rounded-full bg-primary animate-pulse" />
                 Intelligence & Analysis
               </div>
               <h1 className="text-6xl font-black tracking-tighter md:text-7xl lg:text-8xl leading-none">
-                Demonstrativos <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary via-blue-500 to-purple-600 drop-shadow-2xl">Contábeis</span>
+                Demonstrativos{' '}
+                <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary via-blue-500 to-purple-600 drop-shadow-2xl">
+                  Contábeis
+                </span>
               </h1>
               <p className="text-xl text-muted-foreground/80 max-w-2xl leading-relaxed">
                 Visão analítica de alta precisão para governança financeira corporativa.
@@ -161,7 +204,9 @@ const Demonstrativos = () => {
                       </SelectTrigger>
                       <SelectContent className="bg-background/95 backdrop-blur-xl border-white/10 rounded-2xl">
                         {meses.map((m, i) => (
-                          <SelectItem key={i} value={i.toString()}>{m}</SelectItem>
+                          <SelectItem key={i} value={i.toString()}>
+                            {m}
+                          </SelectItem>
                         ))}
                       </SelectContent>
                     </Select>
@@ -173,7 +218,9 @@ const Demonstrativos = () => {
                     </SelectTrigger>
                     <SelectContent className="bg-background/95 backdrop-blur-xl border-white/10 rounded-2xl">
                       {anos.map((a) => (
-                        <SelectItem key={a} value={a}>{a}</SelectItem>
+                        <SelectItem key={a} value={a}>
+                          {a}
+                        </SelectItem>
                       ))}
                     </SelectContent>
                   </Select>
@@ -210,15 +257,24 @@ const Demonstrativos = () => {
             <Tabs value={activeTab} onValueChange={handleTabChange} className="space-y-12">
               <div className="flex justify-center">
                 <TabsList className="inline-flex h-16 items-center justify-center rounded-[2rem] bg-card/[0.03] p-2 text-muted-foreground w-full max-w-[700px] border border-white/10 backdrop-blur-3xl shadow-2xl ring-1 ring-white/10">
-                  <TabsTrigger value="dre" className="relative inline-flex items-center justify-center whitespace-nowrap rounded-xl px-10 py-3 text-sm font-bold tracking-tight transition-all data-[state=active]:bg-card data-[state=active]:text-primary data-[state=active]:shadow-lg gap-3">
+                  <TabsTrigger
+                    value="dre"
+                    className="relative inline-flex items-center justify-center whitespace-nowrap rounded-xl px-10 py-3 text-sm font-bold tracking-tight transition-all data-[state=active]:bg-card data-[state=active]:text-primary data-[state=active]:shadow-lg gap-3"
+                  >
                     <TrendingUp className="h-4.5 w-4.5" />
                     <span>DRE Analytical</span>
                   </TabsTrigger>
-                  <TabsTrigger value="balanco" className="relative inline-flex items-center justify-center whitespace-nowrap rounded-xl px-10 py-3 text-sm font-bold tracking-tight transition-all data-[state=active]:bg-card data-[state=active]:text-primary data-[state=active]:shadow-lg gap-3">
+                  <TabsTrigger
+                    value="balanco"
+                    className="relative inline-flex items-center justify-center whitespace-nowrap rounded-xl px-10 py-3 text-sm font-bold tracking-tight transition-all data-[state=active]:bg-card data-[state=active]:text-primary data-[state=active]:shadow-lg gap-3"
+                  >
                     <Scale className="h-4.5 w-4.5" />
                     <span>Balanço Patrimonial</span>
                   </TabsTrigger>
-                  <TabsTrigger value="fluxo" className="relative inline-flex items-center justify-center whitespace-nowrap rounded-xl px-10 py-3 text-sm font-bold tracking-tight transition-all data-[state=active]:bg-card data-[state=active]:text-primary data-[state=active]:shadow-lg gap-3">
+                  <TabsTrigger
+                    value="fluxo"
+                    className="relative inline-flex items-center justify-center whitespace-nowrap rounded-xl px-10 py-3 text-sm font-bold tracking-tight transition-all data-[state=active]:bg-card data-[state=active]:text-primary data-[state=active]:shadow-lg gap-3"
+                  >
                     <Wallet className="h-4.5 w-4.5" />
                     <span>Cash Flow</span>
                   </TabsTrigger>
@@ -247,10 +303,10 @@ const Demonstrativos = () => {
                 </TabsContent>
 
                 <TabsContent value="fluxo" className="mt-0 outline-none focus-visible:ring-0">
-                  <FluxoCaixaContabil 
-                    periodo={periodo} 
-                    mes={parseInt(mes)} 
-                    ano={parseInt(ano)} 
+                  <FluxoCaixaContabil
+                    periodo={periodo}
+                    mes={parseInt(mes)}
+                    ano={parseInt(ano)}
                     empresaId={empresaId}
                   />
                 </TabsContent>

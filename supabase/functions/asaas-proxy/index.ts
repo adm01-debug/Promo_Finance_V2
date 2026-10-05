@@ -5,12 +5,18 @@
 
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.49.4';
 import { validatePayload, createErrorResponse, AsaasProxySchema } from '../_shared/validation.ts';
-import { withRetry, createCircuitBreaker, withTimeout } from '../_shared/resilience.ts';
+import {
+  createCircuitBreaker,
+  respostaIntegracaoDesativada,
+  withRetry,
+  withTimeout,
+} from '../_shared/resilience.ts';
 import { extrairAnaliseRisco, faixaDoScore } from './credit-risk.ts';
 import { exigirVinculoEmpresa } from '../_shared/auth-guard.ts';
 import { corsHeadersPara } from '../_shared/cors.ts';
 import { createLogger } from '../_shared/observability.ts';
 import { mensagemErro, contextoErro } from '../_shared/erros.ts';
+import { withEdgeObservability } from '../_shared/edge-observability.ts';
 const log = createLogger('asaas-proxy');
 
 const ASAAS_BASE_URL = 'https://api.asaas.com/v3';
@@ -106,13 +112,6 @@ export const handler = async (req: Request) => {
       });
     }
 
-    // Só revela indisponibilidade da integração depois de autenticar e autorizar
-    // o usuário, evitando exposição de configuração interna a chamadas anônimas.
-    const ASAAS_API_KEY = Deno.env.get('ASAAS_API_KEY');
-    if (!ASAAS_API_KEY) {
-      throw new Error('Integração ASAAS indisponível');
-    }
-
     const rawBody = await req.json();
     const validation = validatePayload(AsaasProxySchema, rawBody, 'asaas-proxy');
 
@@ -121,6 +120,47 @@ export const handler = async (req: Request) => {
     }
 
     const { action, data } = validation.data;
+
+    // Ações globais (sem empresa) não passam por verificação de vínculo —
+    // para elas o papel admin/financeiro já é a autorização completa, e o
+    // kill-switch acontece aqui. As demais descobrem a desativação só depois
+    // do vínculo de empresa (ver exigirEmpresaDoRecurso e as listagens com
+    // filtro pós-fetch), para não vazar o estado a quem não tem acesso.
+    // cancelar_assinatura entra aqui porque a empresa só é resolvida depois
+    // de um GET prévio ao Asaas — sem este check a chamada alcançaria o
+    // gateway durante o incidente que o switch deveria isolar.
+    // O kill-switch roda DEPOIS do vínculo empresa↔usuário: um 503 aqui
+    // vazaria o estado da integração para quem tem papel mas não acesso
+    // ao recurso da empresa em questão.
+    const ACOES_SEM_ESCOPO_EMPRESA = new Set([
+      'consultar_saldo',
+      'processar_fila_sincronizacao',
+      'simular_backoff',
+      'analisar_risco_cliente',
+      'cancelar_assinatura',
+    ]);
+    // Ações que não tocam a API do Asaas (só dados locais/espelhos) não são
+    // derrubadas pelo kill-switch — desativar a integração não pode impedir
+    // simulação de backoff, análise de risco e a conciliação de dados já
+    // persistidos.
+    const ACOES_LOCAIS = new Set([
+      'simular_backoff',
+      'analisar_risco_cliente',
+      'gerar_sugestoes_conciliacao',
+      'aceitar_sugestao_conciliacao',
+    ]);
+    const checaSwitch = !ACOES_LOCAIS.has(action);
+    if (ACOES_SEM_ESCOPO_EMPRESA.has(action) && checaSwitch) {
+      const inativaGlobal = respostaIntegracaoDesativada('asaas', corsHeaders);
+      if (inativaGlobal) return inativaGlobal;
+    }
+
+    // A chave só é exigida para ações que realmente chamam a API — as
+    // locais (simulação, risco, conciliação) funcionam mesmo sem ela.
+    const ASAAS_API_KEY = Deno.env.get('ASAAS_API_KEY') ?? '';
+    if (!ASAAS_API_KEY && checaSwitch) {
+      throw new Error('Integração ASAAS indisponível');
+    }
 
     const ok = (result: any) =>
       new Response(JSON.stringify(result), {
@@ -185,7 +225,9 @@ export const handler = async (req: Request) => {
       if (!empresaId) return err('Recurso não encontrado', 404);
       const vinculo = await exigirVinculoEmpresa(user.id, empresaId, req);
       if (!vinculo.ok) return vinculo.resposta;
-      return null;
+      // Kill-switch pós-escopo: só quem tem vínculo com a empresa do recurso
+      // descobre que a integração está desativada.
+      return checaSwitch ? respostaIntegracaoDesativada('asaas', corsHeaders) : null;
     };
 
     let result: any;
@@ -286,6 +328,8 @@ export const handler = async (req: Request) => {
       case 'listar_clientes': {
         const escopoListarClientes = await exigirVinculoEmpresa(user.id, data?.empresa_id, req);
         if (!escopoListarClientes.ok) return escopoListarClientes.resposta;
+        const inativaClientes = respostaIntegracaoDesativada('asaas', corsHeaders);
+        if (inativaClientes) return inativaClientes;
         const params = new URLSearchParams();
         if (data?.offset) params.set('offset', data.offset);
         if (data?.limit) params.set('limit', data.limit || '20');
@@ -592,6 +636,8 @@ export const handler = async (req: Request) => {
         } else {
           escopoListarAssinaturas = await exigirVinculoEmpresa(user.id, data?.empresa_id, req);
           if (!escopoListarAssinaturas.ok) return escopoListarAssinaturas.resposta;
+          const inativaAssinaturas = respostaIntegracaoDesativada('asaas', corsHeaders);
+          if (inativaAssinaturas) return inativaAssinaturas;
         }
         const params = new URLSearchParams();
         if (data?.customer) params.set('customer', data.customer);
@@ -742,6 +788,8 @@ export const handler = async (req: Request) => {
       case 'extrato': {
         const escopoExtrato = await exigirVinculoEmpresa(user.id, data?.empresa_id, req);
         if (!escopoExtrato.ok) return escopoExtrato.resposta;
+        const inativaExtrato = respostaIntegracaoDesativada('asaas', corsHeaders);
+        if (inativaExtrato) return inativaExtrato;
         const params = new URLSearchParams();
         if (data?.startDate) params.set('startDate', data.startDate);
         if (data?.finishDate) params.set('finishDate', data.finishDate);
@@ -840,6 +888,8 @@ export const handler = async (req: Request) => {
       case 'listar_links_pagamento': {
         const escopoListarLinks = await exigirVinculoEmpresa(user.id, data?.empresa_id, req);
         if (!escopoListarLinks.ok) return escopoListarLinks.resposta;
+        const inativaLinks = respostaIntegracaoDesativada('asaas', corsHeaders);
+        if (inativaLinks) return inativaLinks;
         const params = new URLSearchParams();
         if (data?.offset) params.set('offset', data.offset || '0');
         if (data?.limit) params.set('limit', data.limit || '20');
@@ -929,6 +979,8 @@ export const handler = async (req: Request) => {
       case 'listar_antecipacoes': {
         const escopoListarAntecipacoes = await exigirVinculoEmpresa(user.id, data?.empresa_id, req);
         if (!escopoListarAntecipacoes.ok) return escopoListarAntecipacoes.resposta;
+        const inativaAntecipacoes = respostaIntegracaoDesativada('asaas', corsHeaders);
+        if (inativaAntecipacoes) return inativaAntecipacoes;
         const params = new URLSearchParams();
         if (data?.status) params.set('status', data.status);
         if (data?.offset) params.set('offset', data.offset || '0');
@@ -1317,13 +1369,15 @@ export const handler = async (req: Request) => {
 };
 
 if (import.meta.main) {
-  Deno.serve(async (req) => {
-    const _t0 = Date.now();
-    try {
-      return await handler(req);
-    } finally {
-      log.info('request', { duration_ms: Date.now() - _t0 });
-      await log.flush();
-    }
-  });
+  Deno.serve(
+    withEdgeObservability('asaas-proxy', async (req) => {
+      const _t0 = Date.now();
+      try {
+        return await handler(req);
+      } finally {
+        log.info('request', { duration_ms: Date.now() - _t0 });
+        await log.flush();
+      }
+    })
+  );
 }

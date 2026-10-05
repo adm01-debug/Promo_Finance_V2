@@ -1,10 +1,6 @@
 import { ShieldCheck, ShieldX, ShieldAlert, Clock } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from '@/components/ui/popover';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { formatCurrency, formatDate } from '@/lib/formatters';
 
@@ -52,10 +48,14 @@ const getStatusIcon = (statusAprovacao: string) => {
 
 const getStatusLabel = (statusAprovacao: string) => {
   switch (statusAprovacao) {
-    case 'aprovada': return 'Aprovada';
-    case 'rejeitada': return 'Rejeitada';
-    case 'pendente': return 'Aguardando Aprovação';
-    default: return statusAprovacao;
+    case 'aprovada':
+      return 'Aprovada';
+    case 'rejeitada':
+      return 'Rejeitada';
+    case 'pendente':
+      return 'Aguardando Aprovação';
+    default:
+      return statusAprovacao;
   }
 };
 
@@ -75,7 +75,10 @@ export function ContaPagarRowAprovacaoBadge({
   const getBadgeContent = () => {
     if (estaAprovado) {
       return (
-        <Badge variant="outline" className="gap-1 bg-success/10 text-success border-success/20 cursor-pointer hover:bg-success/20 transition-colors">
+        <Badge
+          variant="outline"
+          className="gap-1 bg-success/10 text-success border-success/20 cursor-pointer hover:bg-success/20 transition-colors"
+        >
           <ShieldCheck className="h-3 w-3" />
           Aprovado
         </Badge>
@@ -83,7 +86,10 @@ export function ContaPagarRowAprovacaoBadge({
     }
     if (temSolicitacaoPendente) {
       return (
-        <Badge variant="outline" className="gap-1 bg-warning/10 text-warning border-warning/20 cursor-pointer hover:bg-warning/20 transition-colors animate-pulse">
+        <Badge
+          variant="outline"
+          className="gap-1 bg-warning/10 text-warning border-warning/20 cursor-pointer hover:bg-warning/20 transition-colors animate-pulse"
+        >
           <Clock className="h-3 w-3" />
           Aguardando
         </Badge>
@@ -91,7 +97,10 @@ export function ContaPagarRowAprovacaoBadge({
     }
     if (foiRejeitado) {
       return (
-        <Badge variant="outline" className="gap-1 bg-destructive/10 text-destructive border-destructive/20 cursor-pointer hover:bg-destructive/20 transition-colors">
+        <Badge
+          variant="outline"
+          className="gap-1 bg-destructive/10 text-destructive border-destructive/20 cursor-pointer hover:bg-destructive/20 transition-colors"
+        >
           <ShieldX className="h-3 w-3" />
           Rejeitado
         </Badge>
@@ -99,7 +108,10 @@ export function ContaPagarRowAprovacaoBadge({
     }
     if (aguardandoSolicitacao) {
       return (
-        <Badge variant="outline" className="gap-1 bg-warning/10 text-warning border-warning/20 cursor-pointer hover:bg-warning/20 transition-colors">
+        <Badge
+          variant="outline"
+          className="gap-1 bg-warning/10 text-warning border-warning/20 cursor-pointer hover:bg-warning/20 transition-colors"
+        >
           <ShieldAlert className="h-3 w-3" />
           Requer
         </Badge>
@@ -140,7 +152,10 @@ export function ContaPagarRowAprovacaoBadge({
                     <p className="text-sm font-medium text-success">Aprovado na Conta</p>
                     {aprovado_por && (
                       <p className="text-xs text-muted-foreground">
-                        Por: {profilesMap.get(aprovado_por)?.full_name || profilesMap.get(aprovado_por)?.email || 'Usuário'}
+                        Por:{' '}
+                        {profilesMap.get(aprovado_por)?.full_name ||
+                          profilesMap.get(aprovado_por)?.email ||
+                          'Usuário'}
                       </p>
                     )}
                     {aprovado_em && (
@@ -174,7 +189,8 @@ export function ContaPagarRowAprovacaoBadge({
                       )}
                       {item.aprovado_em && (
                         <p className="text-xs text-muted-foreground mt-1">
-                          {item.status === 'aprovada' ? 'Aprovado' : 'Respondido'}: {formatDate(new Date(item.aprovado_em))}
+                          {item.status === 'aprovada' ? 'Aprovado' : 'Respondido'}:{' '}
+                          {formatDate(new Date(item.aprovado_em))}
                           {aprovador && ` por ${aprovador.full_name || aprovador.email}`}
                         </p>
                       )}

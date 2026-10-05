@@ -24,9 +24,21 @@ function linhas(indices: Indicador[], anteriores: Indicador[] | null) {
   });
 }
 
-const CABECALHO = ['Categoria', 'Indicador', 'Período', 'Anterior', 'Variação', 'Fórmula', 'Leitura'];
+const CABECALHO = [
+  'Categoria',
+  'Indicador',
+  'Período',
+  'Anterior',
+  'Variação',
+  'Fórmula',
+  'Leitura',
+];
 
-export function exportIndicesCSV(indices: Indicador[], anteriores: Indicador[] | null, ctx: PeriodoCtx) {
+export function exportIndicesCSV(
+  indices: Indicador[],
+  anteriores: Indicador[] | null,
+  ctx: PeriodoCtx
+) {
   const out = headerLines(TITULO, ctx);
   out.push(CABECALHO.map(csvEscape).join(';'));
   for (const linha of linhas(indices, anteriores)) {
@@ -35,7 +47,11 @@ export function exportIndicesCSV(indices: Indicador[], anteriores: Indicador[] |
   downloadCSV(out.join('\n'), buildFilename('indices-contabeis', ctx));
 }
 
-export function exportIndicesPDF(indices: Indicador[], anteriores: Indicador[] | null, ctx: PeriodoCtx) {
+export function exportIndicesPDF(
+  indices: Indicador[],
+  anteriores: Indicador[] | null,
+  ctx: PeriodoCtx
+) {
   const doc = new jsPDF({ orientation: 'landscape', unit: 'pt', format: 'a4' });
   drawHeader(doc, TITULO, ctx);
 

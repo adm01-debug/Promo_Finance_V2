@@ -7,12 +7,30 @@ import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
 import { Badge } from '@/components/ui/badge';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '@/components/ui/table';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 import { Info, Users } from 'lucide-react';
 import {
-  ALIQUOTAS_CPRB, FAP_MAXIMO, FAP_MINIMO, TABELA_FPAS,
-  calcularEncargosPatronais, compararDesoneracaoFolha, type GrauRisco,
+  ALIQUOTAS_CPRB,
+  FAP_MAXIMO,
+  FAP_MINIMO,
+  TABELA_FPAS,
+  calcularEncargosPatronais,
+  compararDesoneracaoFolha,
+  type GrauRisco,
 } from '@/lib/tributario/folha';
 import { formatCurrency } from '@/lib/formatters';
 
@@ -36,15 +54,17 @@ export default function FolhaEncargosPage() {
 
   const encargos = useMemo(
     () => calcularEncargosPatronais({ folha, proLabore, grauRisco, fap, fpas, simplesNacional }),
-    [folha, proLabore, grauRisco, fap, fpas, simplesNacional],
+    [folha, proLabore, grauRisco, fap, fpas, simplesNacional]
   );
 
   const desoneracao = useMemo(
-    () => compararDesoneracaoFolha({
-      receitaBruta, aliquotaCprb,
-      encargos: { folha, proLabore, grauRisco, fap, fpas, simplesNacional },
-    }),
-    [receitaBruta, aliquotaCprb, folha, proLabore, grauRisco, fap, fpas, simplesNacional],
+    () =>
+      compararDesoneracaoFolha({
+        receitaBruta,
+        aliquotaCprb,
+        encargos: { folha, proLabore, grauRisco, fap, fpas, simplesNacional },
+      }),
+    [receitaBruta, aliquotaCprb, folha, proLabore, grauRisco, fap, fpas, simplesNacional]
   );
 
   return (
@@ -72,32 +92,59 @@ export default function FolhaEncargosPage() {
             <CardContent className="grid grid-cols-1 gap-4 md:grid-cols-3">
               <div className="space-y-2">
                 <Label htmlFor="folha">Folha anual (R$)</Label>
-                <Input id="folha" type="number" min={0} value={folha} onChange={(e) => setFolha(Number(e.target.value))} />
+                <Input
+                  id="folha"
+                  type="number"
+                  min={0}
+                  value={folha}
+                  onChange={(e) => setFolha(Number(e.target.value))}
+                />
               </div>
               <div className="space-y-2">
                 <Label htmlFor="prolabore">Pró-labore anual (R$)</Label>
-                <Input id="prolabore" type="number" min={0} value={proLabore} onChange={(e) => setProLabore(Number(e.target.value))} />
+                <Input
+                  id="prolabore"
+                  type="number"
+                  min={0}
+                  value={proLabore}
+                  onChange={(e) => setProLabore(Number(e.target.value))}
+                />
               </div>
               <div className="space-y-2">
                 <Label htmlFor="grau">Grau de risco (RAT nominal)</Label>
                 <Select value={grauRisco} onValueChange={(v) => setGrauRisco(v as GrauRisco)}>
-                  <SelectTrigger id="grau"><SelectValue /></SelectTrigger>
+                  <SelectTrigger id="grau">
+                    <SelectValue />
+                  </SelectTrigger>
                   <SelectContent>
-                    {GRAUS.map((g) => <SelectItem key={g.value} value={g.value}>{g.label}</SelectItem>)}
+                    {GRAUS.map((g) => (
+                      <SelectItem key={g.value} value={g.value}>
+                        {g.label}
+                      </SelectItem>
+                    ))}
                   </SelectContent>
                 </Select>
               </div>
               <div className="space-y-2">
-                <Label htmlFor="fap">FAP ({FAP_MINIMO.toFixed(4)} a {FAP_MAXIMO.toFixed(4)})</Label>
+                <Label htmlFor="fap">
+                  FAP ({FAP_MINIMO.toFixed(4)} a {FAP_MAXIMO.toFixed(4)})
+                </Label>
                 <Input
-                  id="fap" type="number" step="0.0001" min={FAP_MINIMO} max={FAP_MAXIMO}
-                  value={fap} onChange={(e) => setFap(Number(e.target.value))}
+                  id="fap"
+                  type="number"
+                  step="0.0001"
+                  min={FAP_MINIMO}
+                  max={FAP_MAXIMO}
+                  value={fap}
+                  onChange={(e) => setFap(Number(e.target.value))}
                 />
               </div>
               <div className="space-y-2">
                 <Label htmlFor="fpas">Código FPAS (Terceiros)</Label>
                 <Select value={fpas} onValueChange={setFpas}>
-                  <SelectTrigger id="fpas"><SelectValue /></SelectTrigger>
+                  <SelectTrigger id="fpas">
+                    <SelectValue />
+                  </SelectTrigger>
                   <SelectContent>
                     {TABELA_FPAS.map((f) => (
                       <SelectItem key={f.fpas} value={f.fpas}>
@@ -108,18 +155,40 @@ export default function FolhaEncargosPage() {
                 </Select>
               </div>
               <div className="flex items-center justify-between rounded-md border border-border p-3">
-                <Label htmlFor="simples" className="cursor-pointer">Optante do Simples (Anexos I a III)</Label>
-                <Switch id="simples" checked={simplesNacional} onCheckedChange={setSimplesNacional} />
+                <Label htmlFor="simples" className="cursor-pointer">
+                  Optante do Simples (Anexos I a III)
+                </Label>
+                <Switch
+                  id="simples"
+                  checked={simplesNacional}
+                  onCheckedChange={setSimplesNacional}
+                />
               </div>
             </CardContent>
           </Card>
 
           <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4">
             {[
-              { titulo: 'RAT ajustado', valor: pct(encargos.ratAjustado), nota: `RAT ${pct(encargos.ratNominal)} × FAP ${encargos.fap.toFixed(4)}` },
-              { titulo: 'Total INSS patronal', valor: formatCurrency(encargos.totalInss), nota: 'CPP + RAT + Terceiros' },
-              { titulo: 'FGTS', valor: formatCurrency(encargos.fgts), nota: '8% da remuneração de empregados' },
-              { titulo: 'Encargos sobre a folha', valor: pct(encargos.percentualSobreFolha), nota: formatCurrency(encargos.totalEncargos) },
+              {
+                titulo: 'RAT ajustado',
+                valor: pct(encargos.ratAjustado),
+                nota: `RAT ${pct(encargos.ratNominal)} × FAP ${encargos.fap.toFixed(4)}`,
+              },
+              {
+                titulo: 'Total INSS patronal',
+                valor: formatCurrency(encargos.totalInss),
+                nota: 'CPP + RAT + Terceiros',
+              },
+              {
+                titulo: 'FGTS',
+                valor: formatCurrency(encargos.fgts),
+                nota: '8% da remuneração de empregados',
+              },
+              {
+                titulo: 'Encargos sobre a folha',
+                valor: pct(encargos.percentualSobreFolha),
+                nota: formatCurrency(encargos.totalEncargos),
+              },
             ].map((card) => (
               <Card key={card.titulo}>
                 <CardHeader className="pb-2">
@@ -132,7 +201,10 @@ export default function FolhaEncargosPage() {
           </div>
 
           {encargos.alertas.map((a) => (
-            <Alert key={a}><Info className="h-4 w-4" /><AlertDescription>{a}</AlertDescription></Alert>
+            <Alert key={a}>
+              <Info className="h-4 w-4" />
+              <AlertDescription>{a}</AlertDescription>
+            </Alert>
           ))}
 
           <Card>
@@ -156,10 +228,16 @@ export default function FolhaEncargosPage() {
                     {encargos.linhas.map((l) => (
                       <TableRow key={l.rubrica}>
                         <TableCell>{l.rubrica}</TableCell>
-                        <TableCell className="text-right tabular-nums">{formatCurrency(l.base)}</TableCell>
+                        <TableCell className="text-right tabular-nums">
+                          {formatCurrency(l.base)}
+                        </TableCell>
                         <TableCell className="text-right tabular-nums">{pct(l.aliquota)}</TableCell>
-                        <TableCell className="text-right font-medium tabular-nums">{formatCurrency(l.valor)}</TableCell>
-                        <TableCell className="text-xs text-muted-foreground">{l.fundamento}</TableCell>
+                        <TableCell className="text-right font-medium tabular-nums">
+                          {formatCurrency(l.valor)}
+                        </TableCell>
+                        <TableCell className="text-xs text-muted-foreground">
+                          {l.fundamento}
+                        </TableCell>
                       </TableRow>
                     ))}
                   </TableBody>
@@ -172,20 +250,31 @@ export default function FolhaEncargosPage() {
             <CardHeader>
               <CardTitle>Desoneração da folha (CPRB)</CardTitle>
               <CardDescription>
-                Comparativo entre a contribuição sobre a folha e a contribuição sobre a receita bruta
-                (Lei 12.546/11). RAT, Terceiros e FGTS permanecem devidos na desoneração.
+                Comparativo entre a contribuição sobre a folha e a contribuição sobre a receita
+                bruta (Lei 12.546/11). RAT, Terceiros e FGTS permanecem devidos na desoneração.
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
                 <div className="space-y-2">
                   <Label htmlFor="receita">Receita bruta anual (R$)</Label>
-                  <Input id="receita" type="number" min={0} value={receitaBruta} onChange={(e) => setReceitaBruta(Number(e.target.value))} />
+                  <Input
+                    id="receita"
+                    type="number"
+                    min={0}
+                    value={receitaBruta}
+                    onChange={(e) => setReceitaBruta(Number(e.target.value))}
+                  />
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="cprb">Alíquota CPRB</Label>
-                  <Select value={String(aliquotaCprb)} onValueChange={(v) => setAliquotaCprb(Number(v))}>
-                    <SelectTrigger id="cprb"><SelectValue /></SelectTrigger>
+                  <Select
+                    value={String(aliquotaCprb)}
+                    onValueChange={(v) => setAliquotaCprb(Number(v))}
+                  >
+                    <SelectTrigger id="cprb">
+                      <SelectValue />
+                    </SelectTrigger>
                     <SelectContent>
                       {ALIQUOTAS_CPRB.map((a) => (
                         <SelectItem key={a.setor} value={String(a.aliquota)}>
@@ -200,25 +289,41 @@ export default function FolhaEncargosPage() {
               <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
                 <div className="rounded-md border border-border p-4">
                   <p className="text-xs text-muted-foreground">Folha onerada</p>
-                  <p className="text-xl font-semibold tabular-nums">{formatCurrency(desoneracao.totalOnerado)}</p>
+                  <p className="text-xl font-semibold tabular-nums">
+                    {formatCurrency(desoneracao.totalOnerado)}
+                  </p>
                 </div>
                 <div className="rounded-md border border-border p-4">
                   <p className="text-xs text-muted-foreground">Folha desonerada (CPRB)</p>
-                  <p className="text-xl font-semibold tabular-nums">{formatCurrency(desoneracao.totalDesonerado)}</p>
+                  <p className="text-xl font-semibold tabular-nums">
+                    {formatCurrency(desoneracao.totalDesonerado)}
+                  </p>
                 </div>
                 <div className="rounded-md border border-border p-4">
                   <p className="text-xs text-muted-foreground">Resultado</p>
                   <p className="text-xl font-semibold tabular-nums">
                     {formatCurrency(Math.abs(desoneracao.economia))}
                   </p>
-                  <Badge variant="outline" className={desoneracao.recomendacao === 'cprb' ? 'border-success/40 text-success' : 'text-muted-foreground'}>
-                    {desoneracao.recomendacao === 'cprb' ? 'CPRB é mais vantajosa' : 'Manter folha onerada'}
+                  <Badge
+                    variant="outline"
+                    className={
+                      desoneracao.recomendacao === 'cprb'
+                        ? 'border-success/40 text-success'
+                        : 'text-muted-foreground'
+                    }
+                  >
+                    {desoneracao.recomendacao === 'cprb'
+                      ? 'CPRB é mais vantajosa'
+                      : 'Manter folha onerada'}
                   </Badge>
                 </div>
               </div>
 
               {desoneracao.alertas.map((a) => (
-                <Alert key={a}><Info className="h-4 w-4" /><AlertDescription>{a}</AlertDescription></Alert>
+                <Alert key={a}>
+                  <Info className="h-4 w-4" />
+                  <AlertDescription>{a}</AlertDescription>
+                </Alert>
               ))}
             </CardContent>
           </Card>

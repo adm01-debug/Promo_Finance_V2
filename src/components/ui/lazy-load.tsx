@@ -1,10 +1,4 @@
-import {
-  Suspense,
-  ReactNode,
-  useState,
-  useEffect,
-  useRef,
-} from 'react';
+import { Suspense, ReactNode, useState, useEffect, useRef } from 'react';
 import { Loader2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
@@ -31,10 +25,7 @@ interface LazyImageProps {
 // Default loading spinner
 export function DefaultFallback({ minHeight }: { minHeight?: number | string }) {
   return (
-    <div
-      className="flex items-center justify-center p-8"
-      style={{ minHeight }}
-    >
+    <div className="flex items-center justify-center p-8" style={{ minHeight }}>
       <Loader2 className="w-8 h-8 animate-spin text-primary" />
     </div>
   );
@@ -119,8 +110,14 @@ export function LazyImage({
     return () => observer.disconnect();
   }, []);
 
-  const handleLoad = () => { setIsLoaded(true); onLoad?.(); };
-  const handleError = () => { setHasError(true); onError?.(); };
+  const handleLoad = () => {
+    setIsLoaded(true);
+    onLoad?.();
+  };
+  const handleError = () => {
+    setHasError(true);
+    onError?.();
+  };
 
   const defaultPlaceholder = `data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 ${width || 400} ${height || 300}'%3E%3Crect fill='%23e5e7eb' width='100%25' height='100%25'/%3E%3C/svg%3E`;
 
@@ -198,12 +195,7 @@ export function Skeleton({
 
   return (
     <div
-      className={cn(
-        'bg-muted',
-        variantStyles[variant],
-        animationStyles[animation],
-        className
-      )}
+      className={cn('bg-muted', variantStyles[variant], animationStyles[animation], className)}
       style={{
         width: width || (variant === 'text' ? '100%' : undefined),
         height: height || (variant === 'text' ? '1em' : undefined),

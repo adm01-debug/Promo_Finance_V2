@@ -2,13 +2,22 @@ import { useState, useMemo } from 'react';
 import { useQueryClient } from '@tanstack/react-query';
 import { AlertTriangle, Save, Sparkles } from 'lucide-react';
 import {
-  Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle,
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
 } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import {
-  Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
 } from '@/components/ui/select';
 import { Skeleton } from '@/components/ui/skeleton';
 import { ScrollArea } from '@/components/ui/scroll-area';
@@ -101,7 +110,9 @@ export const ContasNaoClassificadasDialog = ({ open, onOpenChange, contas, isLoa
             Inteligência de Classificação ({contas.length})
           </DialogTitle>
           <DialogDescription className="text-base mt-2">
-            Contas detectadas sem o atributo <code className="text-xs font-bold text-primary">centro_resultado</code>. Reclassifique para sincronizar com a DRE Premium.
+            Contas detectadas sem o atributo{' '}
+            <code className="text-xs font-bold text-primary">centro_resultado</code>. Reclassifique
+            para sincronizar com a DRE Premium.
           </DialogDescription>
         </DialogHeader>
 
@@ -114,7 +125,12 @@ export const ContasNaoClassificadasDialog = ({ open, onOpenChange, contas, isLoa
         ) : (
           <>
             <div className="flex justify-end px-8 mb-4">
-              <Button variant="outline" size="sm" onClick={aplicarSugestoes} className="gap-2 rounded-xl border-primary/20 bg-primary/5 text-primary hover:bg-primary/10 transition-all active:scale-95">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={aplicarSugestoes}
+                className="gap-2 rounded-xl border-primary/20 bg-primary/5 text-primary hover:bg-primary/10 transition-all active:scale-95"
+              >
                 <Sparkles className="h-4 w-4" />
                 Sincronizar Sugestões por IA
               </Button>
@@ -128,21 +144,32 @@ export const ContasNaoClassificadasDialog = ({ open, onOpenChange, contas, isLoa
                   >
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2 flex-wrap mb-1">
-                        <span className="px-2 py-0.5 rounded-lg bg-muted text-[10px] font-mono font-bold text-muted-foreground">{c.codigo}</span>
-                        <span className="text-sm font-bold truncate tracking-tight">{c.descricao}</span>
-                        <Badge variant={c.tipo === 'receita' ? 'success' : 'destructive'} className="text-[9px]">
+                        <span className="px-2 py-0.5 rounded-lg bg-muted text-[10px] font-mono font-bold text-muted-foreground">
+                          {c.codigo}
+                        </span>
+                        <span className="text-sm font-bold truncate tracking-tight">
+                          {c.descricao}
+                        </span>
+                        <Badge
+                          variant={c.tipo === 'receita' ? 'success' : 'destructive'}
+                          className="text-[9px]"
+                        >
                           {c.tipo}
                         </Badge>
                       </div>
                       <div className="text-xs text-muted-foreground flex items-center gap-2">
                         <span className="opacity-70">{c.partidas} ocorrências</span>
                         <span className="h-1 w-1 rounded-full bg-border" />
-                        <span className="font-bold text-foreground">{formatCurrency(Math.abs(c.valor))}</span>
+                        <span className="font-bold text-foreground">
+                          {formatCurrency(Math.abs(c.valor))}
+                        </span>
                       </div>
                     </div>
                     <Select
                       value={c.conta_id ? selecoes[c.conta_id] || '' : ''}
-                      onValueChange={(v) => c.conta_id && setSelecoes((s) => ({ ...s, [c.conta_id!]: v }))}
+                      onValueChange={(v) =>
+                        c.conta_id && setSelecoes((s) => ({ ...s, [c.conta_id!]: v }))
+                      }
                       disabled={!c.conta_id}
                     >
                       <SelectTrigger className="w-full sm:w-[280px] rounded-xl border-border/40 h-10 bg-background/50">
@@ -153,7 +180,12 @@ export const ContasNaoClassificadasDialog = ({ open, onOpenChange, contas, isLoa
                           <SelectItem key={o.value} value={o.value} className="rounded-lg m-1">
                             <span className="text-sm font-medium">{o.label}</span>
                             {c.centro_resultado_sugerido === o.value && (
-                              <Badge variant="outline" className="ml-2 bg-primary/10 text-primary border-primary/20 scale-90">Sugerido IA</Badge>
+                              <Badge
+                                variant="outline"
+                                className="ml-2 bg-primary/10 text-primary border-primary/20 scale-90"
+                              >
+                                Sugerido IA
+                              </Badge>
                             )}
                           </SelectItem>
                         ))}
@@ -167,10 +199,20 @@ export const ContasNaoClassificadasDialog = ({ open, onOpenChange, contas, isLoa
         )}
 
         <DialogFooter className="p-6 bg-muted/20 border-t border-border/30 gap-3">
-          <Button variant="ghost" onClick={() => onOpenChange(false)} disabled={salvando} className="rounded-xl px-6 font-bold hover:bg-background/50 transition-all">
+          <Button
+            variant="ghost"
+            onClick={() => onOpenChange(false)}
+            disabled={salvando}
+            className="rounded-xl px-6 font-bold hover:bg-background/50 transition-all"
+          >
             Agora não
           </Button>
-          <Button onClick={salvar} disabled={salvando || contas.length === 0} className="gap-2 rounded-xl px-8 font-extrabold shadow-lg shadow-primary/20 active:scale-95" variant="premium">
+          <Button
+            onClick={salvar}
+            disabled={salvando || contas.length === 0}
+            className="gap-2 rounded-xl px-8 font-extrabold shadow-lg shadow-primary/20 active:scale-95"
+            variant="premium"
+          >
             {salvando ? 'Processando...' : 'Confirmar Mudanças'}
             <Save className="h-4 w-4" />
           </Button>

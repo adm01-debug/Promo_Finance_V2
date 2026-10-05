@@ -26,7 +26,16 @@ const KIND_META: Record<EventKind, { label: string; icon: JSX.Element; className
   },
 };
 
-export function StatsCards({ stats }: { stats: { total: number; jit: number; profile_sync: number; byField: Record<SsoSyncFieldKey, number> } }) {
+export function StatsCards({
+  stats,
+}: {
+  stats: {
+    total: number;
+    jit: number;
+    profile_sync: number;
+    byField: Record<SsoSyncFieldKey, number>;
+  };
+}) {
   return (
     <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
       <Card>

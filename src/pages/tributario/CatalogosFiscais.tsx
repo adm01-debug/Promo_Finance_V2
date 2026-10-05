@@ -20,7 +20,9 @@ import { descreverRejeicoesNcm } from '@/lib/tributario/ipi-iss/overlay-ncm';
 import { descreverRejeicoesMonofasico } from '@/lib/tributario/monofasico/overlay-monofasico';
 import { descreverBloqueiosMva, descreverRejeicoesMva } from '@/lib/tributario/icms/overlay-mva';
 import {
-  formatarFaixaMva, resumirOverlayMvaSt, type ResumoMvaSt,
+  formatarFaixaMva,
+  resumirOverlayMvaSt,
+  type ResumoMvaSt,
 } from '@/lib/tributario/catalogos/resumo-mva';
 
 const SITUACAO_LABEL: Record<SituacaoCatalogo, string> = {
@@ -47,7 +49,7 @@ export default function CatalogosFiscais() {
   // Agregação pura da cobertura dos protocolos de ST (memoizada por resultado).
   const resumoMva = useMemo<ResumoMvaSt | null>(
     () => (data ? resumirOverlayMvaSt(data.overlayMva) : null),
-    [data],
+    [data]
   );
 
   return (
@@ -59,7 +61,12 @@ export default function CatalogosFiscais() {
           subtitle="Coerência entre a base versionada e as tabelas do motor tributário"
           icon={Database}
           actions={
-            <Button variant="outline" size="sm" onClick={() => void refetch()} disabled={isFetching}>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => void refetch()}
+              disabled={isFetching}
+            >
               <RefreshCw className={`h-4 w-4 mr-2 ${isFetching ? 'animate-spin' : ''}`} />
               Revalidar
             </Button>
@@ -166,8 +173,7 @@ export default function CatalogosFiscais() {
                     <ul className="space-y-1">
                       {data.overlay.aplicadas.map((a) => (
                         <li key={`${a.uf}-${a.campo}`}>
-                          • {a.uf} — {a.campo}: motor{' '}
-                          {(a.valorCodigo * 100).toFixed(2)}% → banco{' '}
+                          • {a.uf} — {a.campo}: motor {(a.valorCodigo * 100).toFixed(2)}% → banco{' '}
                           {(a.valorBanco * 100).toFixed(2)}%
                         </li>
                       ))}
@@ -195,9 +201,7 @@ export default function CatalogosFiscais() {
               <Card>
                 <CardHeader className="pb-3">
                   <div className="flex items-start justify-between gap-2">
-                    <CardTitle className="text-base">
-                      ISS municipal (LC 116/2003)
-                    </CardTitle>
+                    <CardTitle className="text-base">ISS municipal (LC 116/2003)</CardTitle>
                     <Badge
                       variant={data.overlayIss.rejeitadas.length > 0 ? 'destructive' : 'default'}
                     >
@@ -205,8 +209,8 @@ export default function CatalogosFiscais() {
                     </Badge>
                   </div>
                   <CardDescription>
-                    Alíquotas municipais validadas contra o piso de 2% (art. 8º-A) e o teto
-                    de 5% (art. 8º, II). Registros fora da faixa legal são descartados.
+                    Alíquotas municipais validadas contra o piso de 2% (art. 8º-A) e o teto de 5%
+                    (art. 8º, II). Registros fora da faixa legal são descartados.
                   </CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-3 text-sm">
@@ -254,8 +258,8 @@ export default function CatalogosFiscais() {
                   </div>
                   <CardDescription>
                     Alíquotas de IPI do catálogo sobrepõem a TIPI embarcada após validação de
-                    formato (8 dígitos) e do teto de 300%. Registros inválidos são descartados
-                    e o motor mantém o valor canônico do código.
+                    formato (8 dígitos) e do teto de 300%. Registros inválidos são descartados e o
+                    motor mantém o valor canônico do código.
                   </CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-3 text-sm">
@@ -288,7 +292,9 @@ export default function CatalogosFiscais() {
               <Card>
                 <CardHeader className="pb-3">
                   <div className="flex items-start justify-between gap-2">
-                    <CardTitle className="text-base">PIS/COFINS — overlay monofásico (NCM)</CardTitle>
+                    <CardTitle className="text-base">
+                      PIS/COFINS — overlay monofásico (NCM)
+                    </CardTitle>
                     <Badge
                       variant={
                         data.overlayMonofasico.rejeitadas.length > 0 ? 'destructive' : 'default'
@@ -299,8 +305,8 @@ export default function CatalogosFiscais() {
                   </div>
                   <CardDescription>
                     O marcador <code>monofasico_pis_cofins</code> do catálogo é a fonte de verdade
-                    do enquadramento. As alíquotas continuam vindo dos grupos legais do motor —
-                    NCMs incluídos sem grupo mapeado exigem alíquota informada manualmente.
+                    do enquadramento. As alíquotas continuam vindo dos grupos legais do motor — NCMs
+                    incluídos sem grupo mapeado exigem alíquota informada manualmente.
                   </CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-3 text-sm">
@@ -313,7 +319,9 @@ export default function CatalogosFiscais() {
                   {data.overlayMonofasico.inclusoes.length > 0 && (
                     <ul className="space-y-1">
                       {data.overlayMonofasico.inclusoes.map((i) => (
-                        <li key={i.ncm}>• NCM {i.ncm}: incluído no monofásico — {i.descricao}</li>
+                        <li key={i.ncm}>
+                          • NCM {i.ncm}: incluído no monofásico — {i.descricao}
+                        </li>
                       ))}
                     </ul>
                   )}
@@ -330,88 +338,90 @@ export default function CatalogosFiscais() {
 
                   {data.overlayMonofasico.rejeitadas.length > 0 && (
                     <ul className="space-y-1 text-destructive">
-                      {descreverRejeicoesMonofasico(data.overlayMonofasico.rejeitadas).map((m, i) => (
-                        <li key={`${i}-${m}`}>• {m}</li>
-                      ))}
+                      {descreverRejeicoesMonofasico(data.overlayMonofasico.rejeitadas).map(
+                        (m, i) => (
+                          <li key={`${i}-${m}`}>• {m}</li>
+                        )
+                      )}
                     </ul>
                   )}
                 </CardContent>
               </Card>
 
               {resumoMva && (
-              <Card>
-                <CardHeader className="pb-3">
-                  <div className="flex items-start justify-between gap-2">
-                    <CardTitle className="text-base">ICMS-ST — overlay de MVA por protocolo</CardTitle>
-                    <Badge variant={RESUMO_MVA_VARIANT[resumoMva.situacao]}>
-                      {resumoMva.totalProtocolos} protocolo(s)
-                    </Badge>
-                  </div>
-                  <CardDescription>
-                    A MVA só é aplicada entre UFs signatárias do protocolo, observados o papel de
-                    cada uma e a vigência. Isenção, não incidência, alíquota zero, imunidade e
-                    suspensão afastam a retenção, ainda que exista MVA cadastrada.
-                  </CardDescription>
-                </CardHeader>
-                <CardContent className="space-y-3 text-sm">
-                  <p className="text-muted-foreground">
-                    {resumoMva.totalVinculos} vínculo(s) válido(s) · {resumoMva.totalNcms} NCM(s) ·{' '}
-                    {resumoMva.ufsCobertas.length} UF(s) cobertas ·{' '}
-                    {resumoMva.totalBloqueios} bloqueio(s) por regra jurídica.
-                  </p>
-
-                  {resumoMva.totalProtocolos === 0 && (
+                <Card>
+                  <CardHeader className="pb-3">
+                    <div className="flex items-start justify-between gap-2">
+                      <CardTitle className="text-base">
+                        ICMS-ST — overlay de MVA por protocolo
+                      </CardTitle>
+                      <Badge variant={RESUMO_MVA_VARIANT[resumoMva.situacao]}>
+                        {resumoMva.totalProtocolos} protocolo(s)
+                      </Badge>
+                    </div>
+                    <CardDescription>
+                      A MVA só é aplicada entre UFs signatárias do protocolo, observados o papel de
+                      cada uma e a vigência. Isenção, não incidência, alíquota zero, imunidade e
+                      suspensão afastam a retenção, ainda que exista MVA cadastrada.
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent className="space-y-3 text-sm">
                     <p className="text-muted-foreground">
-                      Nenhum protocolo produz efeito no momento. O motor segue operando com a MVA
-                      informada manualmente na simulação.
+                      {resumoMva.totalVinculos} vínculo(s) válido(s) · {resumoMva.totalNcms} NCM(s)
+                      · {resumoMva.ufsCobertas.length} UF(s) cobertas · {resumoMva.totalBloqueios}{' '}
+                      bloqueio(s) por regra jurídica.
                     </p>
-                  )}
 
-                  {resumoMva.protocolos.length > 0 && (
-                    <ul className="space-y-1">
-                      {resumoMva.protocolos.map((p) => (
-                        <li key={p.protocoloId}>
-                          • <span className="font-medium">{p.protocoloCodigo}</span>: MVA{' '}
-                          {formatarFaixaMva(p)} · {p.ncms.length} NCM(s) ·{' '}
-                          {p.origens.length} UF(s) remetentes / {p.destinos.length} destinatárias
-                          {p.ufsAusentes.length > 0 && (
-                            <span className="text-muted-foreground">
-                              {' '}— sem cobertura: {p.ufsAusentes.join(', ')}
-                            </span>
-                          )}
-                        </li>
-                      ))}
-                    </ul>
-                  )}
+                    {resumoMva.totalProtocolos === 0 && (
+                      <p className="text-muted-foreground">
+                        Nenhum protocolo produz efeito no momento. O motor segue operando com a MVA
+                        informada manualmente na simulação.
+                      </p>
+                    )}
 
-                  {resumoMva.ufsSemCobertura.length > 0 && resumoMva.totalProtocolos > 0 && (
-                    <p className="text-warning">
-                      UF(s) sem qualquer protocolo cadastrado:{' '}
-                      {resumoMva.ufsSemCobertura.join(', ')}.
-                    </p>
-                  )}
+                    {resumoMva.protocolos.length > 0 && (
+                      <ul className="space-y-1">
+                        {resumoMva.protocolos.map((p) => (
+                          <li key={p.protocoloId}>
+                            • <span className="font-medium">{p.protocoloCodigo}</span>: MVA{' '}
+                            {formatarFaixaMva(p)} · {p.ncms.length} NCM(s) · {p.origens.length}{' '}
+                            UF(s) remetentes / {p.destinos.length} destinatárias
+                            {p.ufsAusentes.length > 0 && (
+                              <span className="text-muted-foreground">
+                                {' '}
+                                — sem cobertura: {p.ufsAusentes.join(', ')}
+                              </span>
+                            )}
+                          </li>
+                        ))}
+                      </ul>
+                    )}
 
-                  {data.overlayMva.rejeitadas.length > 0 && (
-                    <ul className="space-y-1 text-destructive">
-                      {descreverRejeicoesMva(data.overlayMva.rejeitadas).map((m, i) => (
-                        <li key={`${i}-${m}`}>• {m}</li>
-                      ))}
-                    </ul>
-                  )}
+                    {resumoMva.ufsSemCobertura.length > 0 && resumoMva.totalProtocolos > 0 && (
+                      <p className="text-warning">
+                        UF(s) sem qualquer protocolo cadastrado:{' '}
+                        {resumoMva.ufsSemCobertura.join(', ')}.
+                      </p>
+                    )}
 
-                  {data.overlayMva.bloqueadas.length > 0 && (
-                    <ul className="space-y-1 text-warning">
-                      {descreverBloqueiosMva(data.overlayMva.bloqueadas).map((m, i) => (
-                        <li key={`${i}-${m}`}>• {m}</li>
-                      ))}
-                    </ul>
-                  )}
-                </CardContent>
-              </Card>
+                    {data.overlayMva.rejeitadas.length > 0 && (
+                      <ul className="space-y-1 text-destructive">
+                        {descreverRejeicoesMva(data.overlayMva.rejeitadas).map((m, i) => (
+                          <li key={`${i}-${m}`}>• {m}</li>
+                        ))}
+                      </ul>
+                    )}
+
+                    {data.overlayMva.bloqueadas.length > 0 && (
+                      <ul className="space-y-1 text-warning">
+                        {descreverBloqueiosMva(data.overlayMva.bloqueadas).map((m, i) => (
+                          <li key={`${i}-${m}`}>• {m}</li>
+                        ))}
+                      </ul>
+                    )}
+                  </CardContent>
+                </Card>
               )}
-
-
-
             </>
           )}
         </div>

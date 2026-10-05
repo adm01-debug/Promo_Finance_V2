@@ -52,7 +52,10 @@ const parentRouteMap: Record<string, string> = {
 };
 
 export const BackButton = forwardRef<HTMLButtonElement, BackButtonProps>(
-  ({ fallbackPath, label, showLabel = false, className, size = 'default', variant = 'ghost' }, ref) => {
+  (
+    { fallbackPath, label, showLabel = false, className, size = 'default', variant = 'ghost' },
+    ref
+  ) => {
     const navigate = useNavigate();
     const location = useLocation();
 
@@ -112,19 +115,18 @@ export const BackButton = forwardRef<HTMLButtonElement, BackButtonProps>(
               )}
               aria-label={tooltipLabel}
             >
-              <ArrowLeft className={cn(
-                iconSizes[size],
-                'transition-transform group-hover:-translate-x-0.5'
-              )} />
-              {showLabel && (
-                <span className="ml-1.5 text-sm">{tooltipLabel}</span>
-              )}
+              <ArrowLeft
+                className={cn(iconSizes[size], 'transition-transform group-hover:-translate-x-0.5')}
+              />
+              {showLabel && <span className="ml-1.5 text-sm">{tooltipLabel}</span>}
             </Button>
           </motion.div>
         </TooltipTrigger>
         {!showLabel && (
           <TooltipContent side="bottom">
-            <p>{tooltipLabel} <kbd className="ml-1 text-[10px] opacity-60">Alt+←</kbd></p>
+            <p>
+              {tooltipLabel} <kbd className="ml-1 text-[10px] opacity-60">Alt+←</kbd>
+            </p>
           </TooltipContent>
         )}
       </Tooltip>

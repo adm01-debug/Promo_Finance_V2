@@ -19,7 +19,7 @@ export function ScimUserJsonGenerator() {
 
   const result = useMemo(
     () => buildScimUserPayload({ userName, externalId, displayName, workEmail, active }),
-    [userName, externalId, displayName, workEmail, active],
+    [userName, externalId, displayName, workEmail, active]
   );
 
   const errors = result.issues.filter((i) => i.level === 'error');
@@ -61,7 +61,8 @@ export function ScimUserJsonGenerator() {
             <CardTitle className="text-base">Gerador de payload SCIM User</CardTitle>
             <CardDescription>
               Preencha os campos para validar e gerar um JSON compatível com o nosso endpoint{' '}
-              <code>POST /Users</code>. O botão "Copiar JSON" só fica ativo quando o payload é válido.
+              <code>POST /Users</code>. O botão "Copiar JSON" só fica ativo quando o payload é
+              válido.
             </CardDescription>
           </div>
           <Button variant="ghost" size="sm" onClick={fillExample} className="shrink-0">
@@ -73,7 +74,10 @@ export function ScimUserJsonGenerator() {
         <div className="grid gap-3 md:grid-cols-2">
           <div className="space-y-1.5">
             <Label htmlFor="scim-userName">
-              userName <Badge variant="outline" className="ml-1 text-[10px]">obrigatório</Badge>
+              userName{' '}
+              <Badge variant="outline" className="ml-1 text-[10px]">
+                obrigatório
+              </Badge>
             </Label>
             <Input
               id="scim-userName"
@@ -85,7 +89,10 @@ export function ScimUserJsonGenerator() {
           </div>
           <div className="space-y-1.5">
             <Label htmlFor="scim-externalId">
-              externalId <Badge variant="outline" className="ml-1 text-[10px]">obrigatório</Badge>
+              externalId{' '}
+              <Badge variant="outline" className="ml-1 text-[10px]">
+                obrigatório
+              </Badge>
             </Label>
             <Input
               id="scim-externalId"

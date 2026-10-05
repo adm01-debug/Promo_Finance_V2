@@ -4,7 +4,7 @@ import { validatePhone } from './phone';
 
 export function validatePIXKey(
   key: string,
-  type?: 'cpf' | 'cnpj' | 'phone' | 'email' | 'random',
+  type?: 'cpf' | 'cnpj' | 'phone' | 'email' | 'random'
 ): boolean {
   const cleanKey = key.trim();
 
@@ -12,10 +12,7 @@ export function validatePIXKey(
     const cleanDigits = cleanKey.replace(/\D/g, '');
     if (cleanDigits.length === 11 && validateCPF(cleanDigits)) return true;
     if (cleanDigits.length === 14 && validateCNPJ(cleanDigits)) return true;
-    if (
-      (cleanDigits.length === 10 || cleanDigits.length === 11) &&
-      validatePhone(cleanDigits)
-    ) {
+    if ((cleanDigits.length === 10 || cleanDigits.length === 11) && validatePhone(cleanDigits)) {
       return true;
     }
     if (cleanKey.includes('@') && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(cleanKey)) return true;

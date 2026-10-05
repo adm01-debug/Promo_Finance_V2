@@ -3,23 +3,23 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Switch } from '@/components/ui/switch';
-import { 
-  Select, 
-  SelectContent, 
-  SelectItem, 
-  SelectTrigger, 
-  SelectValue 
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
 } from '@/components/ui/select';
 import { Badge } from '@/components/ui/badge';
-import { 
-  Plus, 
-  Trash2, 
-  Building2, 
-  CreditCard, 
-  Route, 
+import {
+  Plus,
+  Trash2,
+  Building2,
+  CreditCard,
+  Route,
   Banknote,
   ShieldCheck,
-  ChevronRight
+  ChevronRight,
 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -47,23 +47,23 @@ const cnpjs = [
 
 export function RegrasRoteamentoTab() {
   const [regras, setRegras] = useState<RegraRoteamento[]>([
-    { 
-      id: '1', 
-      nome: 'Roteamento Padrão Matriz', 
-      cnpj: '12.345.678/0001-90', 
-      contaBancariaId: '1', 
-      tipoCobranca: 'todos', 
-      prioridade: 1, 
-      ativo: true 
+    {
+      id: '1',
+      nome: 'Roteamento Padrão Matriz',
+      cnpj: '12.345.678/0001-90',
+      contaBancariaId: '1',
+      tipoCobranca: 'todos',
+      prioridade: 1,
+      ativo: true,
     },
-    { 
-      id: '2', 
-      nome: 'Pix Emergencial Filial', 
-      cnpj: '98.765.432/0001-10', 
-      contaBancariaId: '3', 
-      tipoCobranca: 'pix', 
-      prioridade: 2, 
-      ativo: true 
+    {
+      id: '2',
+      nome: 'Pix Emergencial Filial',
+      cnpj: '98.765.432/0001-10',
+      contaBancariaId: '3',
+      tipoCobranca: 'pix',
+      prioridade: 2,
+      ativo: true,
     },
   ]);
 
@@ -81,21 +81,21 @@ export function RegrasRoteamentoTab() {
     };
     setRegras([...regras, newRegra]);
     toast({
-      title: "Regra adicionada",
-      description: "Uma nova regra de roteamento foi criada.",
+      title: 'Regra adicionada',
+      description: 'Uma nova regra de roteamento foi criada.',
     });
   };
 
   const handleRemoveRegra = (id: string) => {
-    setRegras(regras.filter(r => r.id !== id));
+    setRegras(regras.filter((r) => r.id !== id));
     toast({
-      title: "Regra removida",
-      variant: "destructive",
+      title: 'Regra removida',
+      variant: 'destructive',
     });
   };
 
   const toggleRegra = (id: string) => {
-    setRegras(regras.map(r => r.id === id ? { ...r, ativo: !r.ativo } : r));
+    setRegras(regras.map((r) => (r.id === id ? { ...r, ativo: !r.ativo } : r)));
   };
 
   return (
@@ -107,7 +107,8 @@ export function RegrasRoteamentoTab() {
               <Route className="h-6 w-6 text-primary" /> Roteamento Inteligente multi-CNPJ
             </CardTitle>
             <CardDescription>
-              Defina para qual conta bancária cada lançamento deve ser direcionado com base no CNPJ e tipo de cobrança.
+              Defina para qual conta bancária cada lançamento deve ser direcionado com base no CNPJ
+              e tipo de cobrança.
             </CardDescription>
           </div>
           <Button onClick={handleAddRegra} className="gap-2">
@@ -133,8 +134,8 @@ export function RegrasRoteamentoTab() {
                       </div>
                       <div className="space-y-1 min-w-0">
                         <div className="flex items-center gap-2">
-                          <Input 
-                            value={regra.nome} 
+                          <Input
+                            value={regra.nome}
                             onChange={(e) => {
                               const newRegras = [...regras];
                               newRegras[index].nome = e.target.value;
@@ -142,7 +143,10 @@ export function RegrasRoteamentoTab() {
                             }}
                             className="h-7 text-sm font-bold bg-transparent border-none p-0 focus-visible:ring-0 w-auto min-w-[200px]"
                           />
-                          <Badge variant={regra.ativo ? "default" : "outline"} className="text-[10px] uppercase">
+                          <Badge
+                            variant={regra.ativo ? 'default' : 'outline'}
+                            className="text-[10px] uppercase"
+                          >
                             {regra.ativo ? 'Ativa' : 'Inativa'}
                           </Badge>
                         </div>
@@ -151,7 +155,8 @@ export function RegrasRoteamentoTab() {
                             <Building2 className="h-3 w-3" /> {regra.cnpj}
                           </span>
                           <span className="flex items-center gap-1">
-                            <Banknote className="h-3 w-3" /> {contasBancarias.find(c => c.id === regra.contaBancariaId)?.nome}
+                            <Banknote className="h-3 w-3" />{' '}
+                            {contasBancarias.find((c) => c.id === regra.contaBancariaId)?.nome}
                           </span>
                         </div>
                       </div>
@@ -159,7 +164,7 @@ export function RegrasRoteamentoTab() {
 
                     <div className="flex items-center gap-4 w-full md:w-auto">
                       <div className="grid grid-cols-2 gap-2 flex-1 md:flex-none">
-                        <Select 
+                        <Select
                           value={regra.cnpj}
                           onValueChange={(val) => {
                             const newRegras = [...regras];
@@ -171,13 +176,15 @@ export function RegrasRoteamentoTab() {
                             <SelectValue placeholder="CNPJ" />
                           </SelectTrigger>
                           <SelectContent>
-                            {cnpjs.map(c => (
-                              <SelectItem key={c.id} value={c.numero}>{c.nome}</SelectItem>
+                            {cnpjs.map((c) => (
+                              <SelectItem key={c.id} value={c.numero}>
+                                {c.nome}
+                              </SelectItem>
                             ))}
                           </SelectContent>
                         </Select>
 
-                        <Select 
+                        <Select
                           value={regra.contaBancariaId}
                           onValueChange={(val) => {
                             const newRegras = [...regras];
@@ -189,21 +196,23 @@ export function RegrasRoteamentoTab() {
                             <SelectValue placeholder="Conta Destino" />
                           </SelectTrigger>
                           <SelectContent>
-                            {contasBancarias.map(c => (
-                              <SelectItem key={c.id} value={c.id}>{c.nome}</SelectItem>
+                            {contasBancarias.map((c) => (
+                              <SelectItem key={c.id} value={c.id}>
+                                {c.nome}
+                              </SelectItem>
                             ))}
                           </SelectContent>
                         </Select>
                       </div>
 
                       <div className="flex items-center gap-2">
-                        <Switch 
-                          checked={regra.ativo} 
+                        <Switch
+                          checked={regra.ativo}
                           onCheckedChange={() => toggleRegra(regra.id)}
                         />
-                        <Button 
-                          variant="ghost" 
-                          size="icon" 
+                        <Button
+                          variant="ghost"
+                          size="icon"
                           onClick={() => handleRemoveRegra(regra.id)}
                           className="text-destructive opacity-0 group-hover:opacity-100 transition-opacity"
                         >
@@ -219,7 +228,9 @@ export function RegrasRoteamentoTab() {
             {regras.length === 0 && (
               <div className="text-center py-12 border-2 border-dashed border-white/5 rounded-xl">
                 <Route className="h-12 w-12 text-muted-foreground mx-auto mb-4 opacity-20" />
-                <p className="text-muted-foreground font-medium">Nenhuma regra de roteamento configurada.</p>
+                <p className="text-muted-foreground font-medium">
+                  Nenhuma regra de roteamento configurada.
+                </p>
                 <Button variant="link" onClick={handleAddRegra} className="mt-2">
                   Clique para criar a primeira regra
                 </Button>
@@ -237,11 +248,13 @@ export function RegrasRoteamentoTab() {
             </div>
             <div>
               <p className="text-sm font-bold">Validação Alpha</p>
-              <p className="text-[10px] text-muted-foreground italic">Garante que não existam conflitos de roteamento entre CNPJs.</p>
+              <p className="text-[10px] text-muted-foreground italic">
+                Garante que não existam conflitos de roteamento entre CNPJs.
+              </p>
             </div>
           </CardContent>
         </Card>
-        
+
         <Card className="bg-secondary/5 border-secondary/20">
           <CardContent className="p-4 flex items-center gap-3">
             <div className="h-10 w-10 rounded-lg bg-secondary/20 flex items-center justify-center text-secondary">
@@ -249,7 +262,9 @@ export function RegrasRoteamentoTab() {
             </div>
             <div>
               <p className="text-sm font-bold">Matching Automático</p>
-              <p className="text-[10px] text-muted-foreground italic">Integração direta com Asaas e Open Finance para liquidação.</p>
+              <p className="text-[10px] text-muted-foreground italic">
+                Integração direta com Asaas e Open Finance para liquidação.
+              </p>
             </div>
           </CardContent>
         </Card>
@@ -261,7 +276,9 @@ export function RegrasRoteamentoTab() {
             </div>
             <div>
               <p className="text-sm font-bold">Priorização Dinâmica</p>
-              <p className="text-[10px] text-muted-foreground italic">Regras processadas por ordem de precedência configurada.</p>
+              <p className="text-[10px] text-muted-foreground italic">
+                Regras processadas por ordem de precedência configurada.
+              </p>
             </div>
           </CardContent>
         </Card>

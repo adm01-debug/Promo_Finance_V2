@@ -5,6 +5,7 @@ import { z } from 'https://deno.land/x/zod@v3.22.4/mod.ts';
 import { corsHeadersComSegredoPara, exigirPapel } from '../_shared/auth-guard.ts';
 import { getRequestId } from '../_shared/correlation.ts';
 import { resolveSecret } from '../_shared/webhook-auth.ts';
+import { withEdgeObservability } from '../_shared/edge-observability.ts';
 
 // crypto.getRandomValues no lugar de Math.random: os valores vão para
 // payloads simulados de webhook — rand criptográfico evita o alerta de PRNG
@@ -22,210 +23,216 @@ const _WebhookSimSchema = z.object({
   mode: z.string().optional(),
 });
 
-Deno.serve(async (req) => {
-  if (req.method === 'OPTIONS') {
-    return new Response(null, { headers: corsHeadersComSegredoPara(req) });
-  }
-
-  const requestId = getRequestId(req);
-  const guard = await exigirPapel(req, ['admin']);
-  if (!guard.ok) return guard.resposta;
-
-  const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
-  const serviceRoleKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
-  const supabase = createClient(supabaseUrl, serviceRoleKey);
-
-  try {
-    const _raw = await req.json().catch(() => null);
-    const _v = await validateContract(_WebhookSimSchema, _raw);
-    if (!_v.success) return _v.response;
-    const body = _v.data;
-    const { run_id, target_function, scenarios_count = 10, mode = 'normal' } = body;
-
-    if (!run_id || !target_function) {
-      throw new Error('run_id e target_function são obrigatórios');
+Deno.serve(
+  withEdgeObservability('webhook-simulator', async (req) => {
+    if (req.method === 'OPTIONS') {
+      return new Response(null, { headers: corsHeadersComSegredoPara(req) });
     }
 
-    // Update status to running
-    await supabase
-      .from('webhook_simulation_runs')
-      .update({
-        status: 'running',
-        started_at: new Date().toISOString(),
-        total_scenarios: scenarios_count,
-      })
-      .eq('id', run_id);
+    const requestId = getRequestId(req);
+    const guard = await exigirPapel(req, ['admin']);
+    if (!guard.ok) return guard.resposta;
 
-    const scenarios = {
-      'asaas-webhook': [
-        { name: 'Pagamento Recebido', type: 'PAYMENT_RECEIVED' },
-        { name: 'Pagamento Confirmado', type: 'PAYMENT_CONFIRMED' },
-        { name: 'Pagamento Vencido', type: 'PAYMENT_OVERDUE' },
-        { name: 'Pagamento Estornado', type: 'PAYMENT_REFUNDED' },
-        { name: 'Transferência Concluída', type: 'TRANSFER_DONE' },
-        { name: 'Transferência Falhou', type: 'TRANSFER_FAILED' },
-      ],
-      'bling-webhook': [
-        { name: 'Pedido Criado', type: 'pedido.criado' },
-        { name: 'Pedido Alterado', type: 'pedido.alterado' },
-        { name: 'Estoque Alterado', type: 'estoque.alterado' },
-      ],
-      'bitrix24-webhook': [
-        { name: 'Novo Negócio', type: 'ONCRMDEALADD' },
-        { name: 'Negócio Atualizado', type: 'ONCRMDEALUPDATE' },
-      ],
-    };
+    const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
+    const serviceRoleKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
+    const supabase = createClient(supabaseUrl, serviceRoleKey);
 
-    const fuzzingScenarios = [
-      { name: 'Payload Malformado', type: 'MALFORMED', payload: '{ invalid json }' },
-      { name: 'Campos Ausentes', type: 'MISSING_FIELDS', payload: { event: 'UNKNOWN' } },
-      { name: 'UUID Inválido', type: 'INVALID_UUID', payload: { id: 'not-a-uuid', event: 'TEST' } },
-      { name: 'Injeção SQL', type: 'SQL_INJECTION', payload: { event: "' OR '1'='1" } },
-      { name: 'XSS Attempt', type: 'XSS', payload: { event: '<script>alert(1)</script>' } },
-    ];
+    try {
+      const _raw = await req.json().catch(() => null);
+      const _v = await validateContract(_WebhookSimSchema, _raw);
+      if (!_v.success) return _v.response;
+      const body = _v.data;
+      const { run_id, target_function, scenarios_count = 10, mode = 'normal' } = body;
 
-    let successCount = 0;
-    let failureCount = 0;
-    const errors: string[] = [];
+      if (!run_id || !target_function) {
+        throw new Error('run_id e target_function são obrigatórios');
+      }
 
-    const functionUrl = `${supabaseUrl}/functions/v1/${target_function}`;
+      // Update status to running
+      await supabase
+        .from('webhook_simulation_runs')
+        .update({
+          status: 'running',
+          started_at: new Date().toISOString(),
+          total_scenarios: scenarios_count,
+        })
+        .eq('id', run_id);
 
-    const buildHeaders = async () => {
-      const headers: Record<string, string> = {
-        'Content-Type': 'application/json',
-        'x-request-id': requestId,
+      const scenarios = {
+        'asaas-webhook': [
+          { name: 'Pagamento Recebido', type: 'PAYMENT_RECEIVED' },
+          { name: 'Pagamento Confirmado', type: 'PAYMENT_CONFIRMED' },
+          { name: 'Pagamento Vencido', type: 'PAYMENT_OVERDUE' },
+          { name: 'Pagamento Estornado', type: 'PAYMENT_REFUNDED' },
+          { name: 'Transferência Concluída', type: 'TRANSFER_DONE' },
+          { name: 'Transferência Falhou', type: 'TRANSFER_FAILED' },
+        ],
+        'bling-webhook': [
+          { name: 'Pedido Criado', type: 'pedido.criado' },
+          { name: 'Pedido Alterado', type: 'pedido.alterado' },
+          { name: 'Estoque Alterado', type: 'estoque.alterado' },
+        ],
+        'bitrix24-webhook': [
+          { name: 'Novo Negócio', type: 'ONCRMDEALADD' },
+          { name: 'Negócio Atualizado', type: 'ONCRMDEALUPDATE' },
+        ],
       };
 
-      if (target_function === 'asaas-webhook') {
-        headers['asaas-access-token'] = Deno.env.get('ASAAS_WEBHOOK_TOKEN') || 'simulated-token';
-        return headers;
-      }
+      const fuzzingScenarios = [
+        { name: 'Payload Malformado', type: 'MALFORMED', payload: '{ invalid json }' },
+        { name: 'Campos Ausentes', type: 'MISSING_FIELDS', payload: { event: 'UNKNOWN' } },
+        {
+          name: 'UUID Inválido',
+          type: 'INVALID_UUID',
+          payload: { id: 'not-a-uuid', event: 'TEST' },
+        },
+        { name: 'Injeção SQL', type: 'SQL_INJECTION', payload: { event: "' OR '1'='1" } },
+        { name: 'XSS Attempt', type: 'XSS', payload: { event: '<script>alert(1)</script>' } },
+      ];
 
-      const provider = target_function.replace('-webhook', '');
-      const secret = await resolveSecret(supabase, provider);
-      if (secret) {
-        headers['x-webhook-token'] = secret;
-      }
+      let successCount = 0;
+      let failureCount = 0;
+      const errors: string[] = [];
 
-      return headers;
-    };
+      const functionUrl = `${supabaseUrl}/functions/v1/${target_function}`;
 
-    const runScenario = async (i: number) => {
-      let scenario;
-      let payload;
-
-      if (mode === 'fuzzing') {
-        scenario = fuzzingScenarios[i % fuzzingScenarios.length];
-        payload = scenario.payload;
-      } else {
-        const targetScenarios =
-          scenarios[target_function as keyof typeof scenarios] || scenarios['asaas-webhook'];
-        scenario = targetScenarios[i % targetScenarios.length];
+      const buildHeaders = async () => {
+        const headers: Record<string, string> = {
+          'Content-Type': 'application/json',
+          'x-request-id': requestId,
+        };
 
         if (target_function === 'asaas-webhook') {
-          payload = {
-            id: `evt_${crypto.randomUUID()}`,
-            event: scenario.type,
-            payment: scenario.type.startsWith('PAYMENT')
-              ? {
-                  id: `pay_${crypto.randomUUID()}`,
-                  status: 'RECEIVED',
-                  value: aleatorio(1000),
-                }
-              : null,
-            transfer: scenario.type.startsWith('TRANSFER')
-              ? {
-                  id: `tra_${crypto.randomUUID()}`,
-                  status: 'PENDING',
-                  value: aleatorio(5000),
-                }
-              : null,
-          };
-        } else if (target_function === 'bling-webhook') {
-          payload = {
-            event: scenario.type,
-            data: { id: Math.floor(aleatorio(100000)), status: 'ok' },
-          };
-        } else {
-          payload = {
-            event: scenario.type,
-            data: { FIELDS: { ID: Math.floor(aleatorio(1000)) } },
-          };
+          headers['asaas-access-token'] = Deno.env.get('ASAAS_WEBHOOK_TOKEN') || 'simulated-token';
+          return headers;
         }
+
+        const provider = target_function.replace('-webhook', '');
+        const secret = await resolveSecret(supabase, provider);
+        if (secret) {
+          headers['x-webhook-token'] = secret;
+        }
+
+        return headers;
+      };
+
+      const runScenario = async (i: number) => {
+        let scenario;
+        let payload;
+
+        if (mode === 'fuzzing') {
+          scenario = fuzzingScenarios[i % fuzzingScenarios.length];
+          payload = scenario.payload;
+        } else {
+          const targetScenarios =
+            scenarios[target_function as keyof typeof scenarios] || scenarios['asaas-webhook'];
+          scenario = targetScenarios[i % targetScenarios.length];
+
+          if (target_function === 'asaas-webhook') {
+            payload = {
+              id: `evt_${crypto.randomUUID()}`,
+              event: scenario.type,
+              payment: scenario.type.startsWith('PAYMENT')
+                ? {
+                    id: `pay_${crypto.randomUUID()}`,
+                    status: 'RECEIVED',
+                    value: aleatorio(1000),
+                  }
+                : null,
+              transfer: scenario.type.startsWith('TRANSFER')
+                ? {
+                    id: `tra_${crypto.randomUUID()}`,
+                    status: 'PENDING',
+                    value: aleatorio(5000),
+                  }
+                : null,
+            };
+          } else if (target_function === 'bling-webhook') {
+            payload = {
+              event: scenario.type,
+              data: { id: Math.floor(aleatorio(100000)), status: 'ok' },
+            };
+          } else {
+            payload = {
+              event: scenario.type,
+              data: { FIELDS: { ID: Math.floor(aleatorio(1000)) } },
+            };
+          }
+        }
+
+        const start = Date.now();
+        try {
+          const headers = await buildHeaders();
+          const response = await fetch(functionUrl, {
+            method: 'POST',
+            headers,
+            body: typeof payload === 'string' ? payload : JSON.stringify(payload),
+          });
+
+          const duration = Date.now() - start;
+          const resBody = await response.json().catch(() => ({ raw: 'Response was not JSON' }));
+
+          // No modo fuzzing, esperamos que a função lide com o erro (4xx) mas não quebre (5xx)
+          const success =
+            mode === 'fuzzing' ? response.status < 500 : response.ok && resBody.success === true;
+
+          if (success) successCount++;
+          else failureCount++;
+
+          await supabase.from('webhook_simulation_results').insert({
+            run_id,
+            scenario_name: `${scenario.name} #${i + 1}`,
+            payload,
+            response_status: response.status,
+            response_body: resBody,
+            duration_ms: duration,
+            success,
+            error_message: response.ok ? null : `Status ${response.status}`,
+          });
+        } catch (err) {
+          failureCount++;
+          const errorMessage = err instanceof Error ? err.message : String(err);
+          errors.push(errorMessage);
+          await supabase.from('webhook_simulation_results').insert({
+            run_id,
+            scenario_name: `${scenario.name} #${i + 1} (Erro)`,
+            payload,
+            success: false,
+            error_message: errorMessage,
+          });
+        }
+      };
+
+      // Usar limitador de concorrência para rodar milhares de simulações com segurança
+      const limiter = new ConcurrencyLimiter(mode === 'stress' ? 50 : 20);
+      const simulationPromises = [];
+
+      for (let i = 0; i < scenarios_count; i++) {
+        simulationPromises.push(limiter.run(() => runScenario(i)));
       }
 
-      const start = Date.now();
-      try {
-        const headers = await buildHeaders();
-        const response = await fetch(functionUrl, {
-          method: 'POST',
-          headers,
-          body: typeof payload === 'string' ? payload : JSON.stringify(payload),
-        });
+      await Promise.all(simulationPromises);
 
-        const duration = Date.now() - start;
-        const resBody = await response.json().catch(() => ({ raw: 'Response was not JSON' }));
+      await supabase
+        .from('webhook_simulation_runs')
+        .update({
+          status: 'completed',
+          finished_at: new Date().toISOString(),
+          success_count: successCount,
+          failure_count: failureCount,
+          error_summary: errors.length > 0 ? { errors: errors.slice(0, 10) } : null,
+        })
+        .eq('id', run_id);
 
-        // No modo fuzzing, esperamos que a função lide com o erro (4xx) mas não quebre (5xx)
-        const success =
-          mode === 'fuzzing' ? response.status < 500 : response.ok && resBody.success === true;
-
-        if (success) successCount++;
-        else failureCount++;
-
-        await supabase.from('webhook_simulation_results').insert({
-          run_id,
-          scenario_name: `${scenario.name} #${i + 1}`,
-          payload,
-          response_status: response.status,
-          response_body: resBody,
-          duration_ms: duration,
-          success,
-          error_message: response.ok ? null : `Status ${response.status}`,
-        });
-      } catch (err) {
-        failureCount++;
-        const errorMessage = err instanceof Error ? err.message : String(err);
-        errors.push(errorMessage);
-        await supabase.from('webhook_simulation_results').insert({
-          run_id,
-          scenario_name: `${scenario.name} #${i + 1} (Erro)`,
-          payload,
-          success: false,
-          error_message: errorMessage,
-        });
-      }
-    };
-
-    // Usar limitador de concorrência para rodar milhares de simulações com segurança
-    const limiter = new ConcurrencyLimiter(mode === 'stress' ? 50 : 20);
-    const simulationPromises = [];
-
-    for (let i = 0; i < scenarios_count; i++) {
-      simulationPromises.push(limiter.run(() => runScenario(i)));
+      return new Response(JSON.stringify({ success: true, run_id }), {
+        headers: { ...corsHeadersComSegredoPara(req), 'Content-Type': 'application/json' },
+      });
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : String(error);
+      return new Response(JSON.stringify({ error: errorMessage }), {
+        status: 500,
+        headers: { ...corsHeadersComSegredoPara(req), 'Content-Type': 'application/json' },
+      });
     }
-
-    await Promise.all(simulationPromises);
-
-    await supabase
-      .from('webhook_simulation_runs')
-      .update({
-        status: 'completed',
-        finished_at: new Date().toISOString(),
-        success_count: successCount,
-        failure_count: failureCount,
-        error_summary: errors.length > 0 ? { errors: errors.slice(0, 10) } : null,
-      })
-      .eq('id', run_id);
-
-    return new Response(JSON.stringify({ success: true, run_id }), {
-      headers: { ...corsHeadersComSegredoPara(req), 'Content-Type': 'application/json' },
-    });
-  } catch (error) {
-    const errorMessage = error instanceof Error ? error.message : String(error);
-    return new Response(JSON.stringify({ error: errorMessage }), {
-      status: 500,
-      headers: { ...corsHeadersComSegredoPara(req), 'Content-Type': 'application/json' },
-    });
-  }
-});
+  })
+);

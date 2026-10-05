@@ -2,7 +2,12 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 
-export type EntityType = 'contas_pagar' | 'contas_receber' | 'clientes' | 'fornecedores' | 'empresas';
+export type EntityType =
+  | 'contas_pagar'
+  | 'contas_receber'
+  | 'clientes'
+  | 'fornecedores'
+  | 'empresas';
 export type FieldType = 'text' | 'number' | 'date' | 'select' | 'boolean';
 
 export interface CustomFieldDefinition {
@@ -53,7 +58,12 @@ export function useSaveCustomFieldDefinition() {
   const qc = useQueryClient();
   return useMutation({
     mutationFn: async (
-      payload: Partial<CustomFieldDefinition> & { entity_type: EntityType; name: string; label: string; empresa_id: string },
+      payload: Partial<CustomFieldDefinition> & {
+        entity_type: EntityType;
+        name: string;
+        label: string;
+        empresa_id: string;
+      }
     ) => {
       const { id, ...rest } = payload;
       const dbPayload = {

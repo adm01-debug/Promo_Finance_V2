@@ -1,7 +1,7 @@
-import { useQuery } from "@tanstack/react-query";
-import { supabase } from "@/integrations/supabase/client";
+import { useQuery } from '@tanstack/react-query';
+import { supabase } from '@/integrations/supabase/client';
 
-export type TrilhaTipo = "financeira" | "tributaria" | "sistema" | "conformidade";
+export type TrilhaTipo = 'financeira' | 'tributaria' | 'sistema' | 'conformidade';
 
 export interface TrilhaFiltros {
   inicio?: string; // YYYY-MM-DD
@@ -14,10 +14,10 @@ export interface TrilhaFiltros {
 }
 
 const TABELA_POR_TIPO: Record<TrilhaTipo, { table: string; dateCol: string; userCol?: string }> = {
-  financeira: { table: "auditoria_financeira", dateCol: "created_at", userCol: "user_email" },
-  tributaria: { table: "auditoria_tributaria", dateCol: "criado_em", userCol: "user_email" },
-  sistema: { table: "audit_logs", dateCol: "created_at", userCol: "user_email" },
-  conformidade: { table: "verificacoes_conformidade", dateCol: "created_at" },
+  financeira: { table: 'auditoria_financeira', dateCol: 'created_at', userCol: 'user_email' },
+  tributaria: { table: 'auditoria_tributaria', dateCol: 'criado_em', userCol: 'user_email' },
+  sistema: { table: 'audit_logs', dateCol: 'created_at', userCol: 'user_email' },
+  conformidade: { table: 'verificacoes_conformidade', dateCol: 'created_at' },
 };
 
 /**
@@ -28,7 +28,10 @@ const TABELA_POR_TIPO: Record<TrilhaTipo, { table: string; dateCol: string; user
  * espalhado pelo código e restringir o escopo do unsafe a uma função pequena.
  */
 type QueryBuilder = {
-  select(cols: string, opts?: { count?: "exact" | "planned" | "estimated"; head?: boolean }): QueryBuilder;
+  select(
+    cols: string,
+    opts?: { count?: 'exact' | 'planned' | 'estimated'; head?: boolean }
+  ): QueryBuilder;
   order(col: string, opts?: { ascending?: boolean }): QueryBuilder;
   limit(n: number): QueryBuilder;
   range(from: number, to: number): QueryBuilder;
@@ -37,7 +40,11 @@ type QueryBuilder = {
   eq(col: string, val: string): QueryBuilder;
   or(expr: string): QueryBuilder;
   not(col: string, op: string, val: unknown): QueryBuilder;
-  then: PromiseLike<{ data: unknown[] | null; error: { message: string } | null; count?: number | null }>["then"];
+  then: PromiseLike<{
+    data: unknown[] | null;
+    error: { message: string } | null;
+    count?: number | null;
+  }>['then'];
 };
 
 function fromDynamic(table: string): QueryBuilder {
@@ -49,19 +56,22 @@ function aplicarFiltros(q: QueryBuilder, tipo: TrilhaTipo, f: TrilhaFiltros): Qu
   const cfg = TABELA_POR_TIPO[tipo];
   if (f.inicio) q = q.gte(cfg.dateCol, `${f.inicio}T00:00:00`);
   if (f.fim) q = q.lte(cfg.dateCol, `${f.fim}T23:59:59`);
-  if (f.acao && f.acao !== "todas") {
-    if (tipo === "financeira") q = q.eq("operacao", f.acao);
-    else if (tipo === "tributaria") q = q.eq("acao", f.acao);
-    else if (tipo === "sistema") q = q.eq("action", f.acao);
+  if (f.acao && f.acao !== 'todas') {
+    if (tipo === 'financeira') q = q.eq('operacao', f.acao);
+    else if (tipo === 'tributaria') q = q.eq('acao', f.acao);
+    else if (tipo === 'sistema') q = q.eq('action', f.acao);
   }
   if (f.usuario && cfg.userCol) {
     q = q.eq(cfg.userCol, f.usuario);
   }
   if (f.busca) {
-    if (tipo === "financeira") q = q.or(`tabela.ilike.%${f.busca}%,acao.ilike.%${f.busca}%`);
-    else if (tipo === "tributaria") q = q.or(`entidade_tipo.ilike.%${f.busca}%,user_email.ilike.%${f.busca}%`);
-    else if (tipo === "sistema")
-      q = q.or(`details.ilike.%${f.busca}%,user_email.ilike.%${f.busca}%,table_name.ilike.%${f.busca}%`);
+    if (tipo === 'financeira') q = q.or(`tabela.ilike.%${f.busca}%,acao.ilike.%${f.busca}%`);
+    else if (tipo === 'tributaria')
+      q = q.or(`entidade_tipo.ilike.%${f.busca}%,user_email.ilike.%${f.busca}%`);
+    else if (tipo === 'sistema')
+      q = q.or(
+        `details.ilike.%${f.busca}%,user_email.ilike.%${f.busca}%,table_name.ilike.%${f.busca}%`
+      );
   }
   return q;
 }
@@ -71,7 +81,7 @@ export function useTrilhaAuditoria(tipo: TrilhaTipo, filtros: TrilhaFiltros = {}
   const cfg = TABELA_POR_TIPO[tipo];
   return useQuery({
     queryKey: [
-      "trilha-auditoria",
+      'trilha-auditoria',
       tipo,
       filtros.inicio,
       filtros.fim,
@@ -83,7 +93,7 @@ export function useTrilhaAuditoria(tipo: TrilhaTipo, filtros: TrilhaFiltros = {}
     ],
     queryFn: async () => {
       let q = fromDynamic(cfg.table)
-        .select("*", { count: "exact" })
+        .select('*', { count: 'exact' })
         .order(cfg.dateCol, { ascending: false });
       q = aplicarFiltros(q, tipo, filtros);
       const from = (pagina - 1) * porPagina;
@@ -100,7 +110,7 @@ const EXPORT_CAP = 5000;
 export async function fetchTrilhaCompleto(tipo: TrilhaTipo, filtros: TrilhaFiltros) {
   const cfg = TABELA_POR_TIPO[tipo];
   let q = fromDynamic(cfg.table)
-    .select("*")
+    .select('*')
     .order(cfg.dateCol, { ascending: false })
     .limit(EXPORT_CAP);
   q = aplicarFiltros(q, tipo, filtros);
@@ -118,14 +128,14 @@ export async function fetchUsuariosTrilha(tipo: TrilhaTipo): Promise<string[]> {
   if (!cfg.userCol) return [];
   const { data, error } = await fromDynamic(cfg.table)
     .select(cfg.userCol)
-    .not(cfg.userCol, "is", null)
+    .not(cfg.userCol, 'is', null)
     .order(cfg.dateCol, { ascending: false })
     .limit(1000);
   if (error) return [];
   const set = new Set<string>();
   for (const r of data ?? []) {
     const v = (r as Record<string, unknown>)[cfg.userCol!];
-    if (typeof v === "string" && v.trim()) set.add(v);
+    if (typeof v === 'string' && v.trim()) set.add(v);
   }
   return Array.from(set).sort();
 }

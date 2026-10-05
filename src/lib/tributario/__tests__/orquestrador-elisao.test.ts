@@ -29,7 +29,7 @@ describe('analisarOportunidadesElisao', () => {
     const r = analisarOportunidadesElisao(ctxBase);
     for (let i = 1; i < r.oportunidades.length; i++) {
       expect(r.oportunidades[i - 1].economia_estimada).toBeGreaterThanOrEqual(
-        r.oportunidades[i].economia_estimada,
+        r.oportunidades[i].economia_estimada
       );
     }
   });
@@ -44,7 +44,11 @@ describe('analisarOportunidadesElisao', () => {
   });
 
   it('Simples Nacional limita aplicabilidade de várias estratégias', () => {
-    const r = analisarOportunidadesElisao({ ...ctxBase, regime_atual: 'simples', rbt12: 1_000_000 });
+    const r = analisarOportunidadesElisao({
+      ...ctxBase,
+      regime_atual: 'simples',
+      rbt12: 1_000_000,
+    });
     expect(r.total_aplicaveis).toBeLessThan(r.total_oportunidades);
   });
 

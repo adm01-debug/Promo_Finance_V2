@@ -20,8 +20,7 @@ const resources = {
       clientes: 'Clientes',
       fornecedores: 'Fornecedores',
       seguranca: 'Segurança',
-    }
-
+    },
   },
   en: {
     common: {
@@ -39,8 +38,7 @@ const resources = {
       clientes: 'Clients',
       fornecedores: 'Suppliers',
       seguranca: 'Security',
-    }
-
+    },
   },
   es: {
     common: {
@@ -58,9 +56,8 @@ const resources = {
       clientes: 'Clientes',
       fornecedores: 'Proveedores',
       seguranca: 'Seguridad',
-    }
-
-  }
+    },
+  },
 };
 
 i18n
@@ -77,7 +74,7 @@ i18n
     detection: {
       order: ['querystring', 'cookie', 'localStorage', 'navigator', 'htmlTag'],
       caches: ['localStorage', 'cookie'],
-    }
+    },
   });
 
 export default i18n;

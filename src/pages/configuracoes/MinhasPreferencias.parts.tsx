@@ -14,11 +14,7 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
 import { Switch } from '@/components/ui/switch';
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipTrigger,
-} from '@/components/ui/tooltip';
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -63,7 +59,13 @@ interface ModuleSectionProps {
   busyId: string | null;
 }
 
-export function ModuleSection({ group, onToggleDefault, onStopSharing, onDelete, busyId }: ModuleSectionProps) {
+export function ModuleSection({
+  group,
+  onToggleDefault,
+  onStopSharing,
+  onDelete,
+  busyId,
+}: ModuleSectionProps) {
   const { entry, rows } = group;
   const catalog = findCatalogEntry(entry.entityType);
   return (
@@ -75,9 +77,7 @@ export function ModuleSection({ group, onToggleDefault, onStopSharing, onDelete,
             <Badge variant="outline" className="text-[10px]">
               {entry.area}
             </Badge>
-            <span className="text-xs text-muted-foreground font-mono">
-              {entry.entityType}
-            </span>
+            <span className="text-xs text-muted-foreground font-mono">{entry.entityType}</span>
           </div>
           {catalog?.defaultsKeys?.length ? (
             <p className="text-xs text-muted-foreground mt-1">
@@ -97,7 +97,8 @@ export function ModuleSection({ group, onToggleDefault, onStopSharing, onDelete,
       <Separator />
       {rows.length === 0 ? (
         <div className="p-6 text-center text-xs text-muted-foreground">
-          Nenhum preset salvo para este módulo. Aplique filtros ou ajuste colunas na tela e clique em <span className="font-semibold">Salvar preset</span>.
+          Nenhum preset salvo para este módulo. Aplique filtros ou ajuste colunas na tela e clique
+          em <span className="font-semibold">Salvar preset</span>.
         </div>
       ) : (
         <ul className="divide-y divide-border">
@@ -174,7 +175,8 @@ function PresetRow({ row, onToggleDefault, onStopSharing, onDelete, busy }: Pres
           <div className="flex items-start gap-1">
             <Columns className="h-3 w-3 mt-0.5 shrink-0" />
             <span>
-              <span className="font-medium text-foreground">{columns.length}</span> coluna(s) sincronizada(s)
+              <span className="font-medium text-foreground">{columns.length}</span> coluna(s)
+              sincronizada(s)
               {columns.length > 0 && (
                 <span className="block font-mono truncate">{columns.join(', ')}</span>
               )}
@@ -236,18 +238,15 @@ function PresetRow({ row, onToggleDefault, onStopSharing, onDelete, busy }: Pres
               disabled={busy}
               aria-label="Excluir preset"
             >
-              {busy ? (
-                <Loader2 className="h-4 w-4 animate-spin" />
-              ) : (
-                <Trash2 className="h-4 w-4" />
-              )}
+              {busy ? <Loader2 className="h-4 w-4 animate-spin" /> : <Trash2 className="h-4 w-4" />}
             </Button>
           </AlertDialogTrigger>
           <AlertDialogContent>
             <AlertDialogHeader>
               <AlertDialogTitle>Excluir preset “{row.name}”?</AlertDialogTitle>
               <AlertDialogDescription>
-                Esta ação remove permanentemente o preset desta sua conta. Outras pessoas que receberam este preset compartilhado deixarão de vê-lo.
+                Esta ação remove permanentemente o preset desta sua conta. Outras pessoas que
+                receberam este preset compartilhado deixarão de vê-lo.
               </AlertDialogDescription>
             </AlertDialogHeader>
             <AlertDialogFooter>

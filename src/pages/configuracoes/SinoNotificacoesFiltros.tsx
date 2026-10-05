@@ -1,6 +1,6 @@
-import { useMemo } from "react";
-import { Link } from "react-router-dom";
-import { motion } from "framer-motion";
+import { useMemo } from 'react';
+import { Link } from 'react-router-dom';
+import { motion } from 'framer-motion';
 import {
   Bell,
   Loader2,
@@ -11,24 +11,22 @@ import {
   Mail,
   Filter,
   Sparkles,
-} from "lucide-react";
-import { useQuery } from "@tanstack/react-query";
-import { supabaseDyn } from "@/lib/supabase-dynamic";
-import { useAuth } from "@/hooks/useAuth";
-import {
-  useSavedFilterSubscriptions,
-} from "@/hooks/useSavedFilterSubscriptions";
-import { useWebPushSubscription } from "@/hooks/useWebPushSubscription";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { cn } from "@/lib/utils";
-import { SubscriptionRow } from "./SinoNotificacoesFiltros.parts";
+} from 'lucide-react';
+import { useQuery } from '@tanstack/react-query';
+import { supabaseDyn } from '@/lib/supabase-dynamic';
+import { useAuth } from '@/hooks/useAuth';
+import { useSavedFilterSubscriptions } from '@/hooks/useSavedFilterSubscriptions';
+import { useWebPushSubscription } from '@/hooks/useWebPushSubscription';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
+import { cn } from '@/lib/utils';
+import { SubscriptionRow } from './SinoNotificacoesFiltros.parts';
 import {
   REALTIME_ENABLED_ENTITY_TYPES,
   getEntityMeta,
   type SavedFilterRowMin,
-} from "./SinoNotificacoesFiltros.helpers";
+} from './SinoNotificacoesFiltros.helpers';
 
 export default function SinoNotificacoesFiltros() {
   const { user } = useAuth();
@@ -40,20 +38,23 @@ export default function SinoNotificacoesFiltros() {
     updateChannels,
     unsubscribe,
   } = useSavedFilterSubscriptions();
-  const { supported: pushSupported, subscribed: pushReady, subscribe: enablePush } =
-    useWebPushSubscription();
+  const {
+    supported: pushSupported,
+    subscribed: pushReady,
+    subscribe: enablePush,
+  } = useWebPushSubscription();
 
   // Lista TODOS os filtros salvos visíveis ao usuário, agrupados por entity_type
   const filtersQuery = useQuery({
-    queryKey: ["sino-saved-filters", user?.id],
+    queryKey: ['sino-saved-filters', user?.id],
     enabled: !!user,
     queryFn: async () => {
       const { data, error } = await supabaseDyn
-        .from("saved_filters")
-        .select("id,name,entity_type,is_default,is_shared,updated_at")
-        .order("entity_type", { ascending: true })
-        .order("is_default", { ascending: false })
-        .order("name", { ascending: true });
+        .from('saved_filters')
+        .select('id,name,entity_type,is_default,is_shared,updated_at')
+        .order('entity_type', { ascending: true })
+        .order('is_default', { ascending: false })
+        .order('name', { ascending: true });
       if (error) throw error;
       return (data ?? []) as unknown as SavedFilterRowMin[];
     },
@@ -67,7 +68,7 @@ export default function SinoNotificacoesFiltros() {
       map.set(f.entity_type, list);
     });
     return Array.from(map.entries()).sort(([a], [b]) =>
-      getEntityMeta(a).label.localeCompare(getEntityMeta(b).label),
+      getEntityMeta(a).label.localeCompare(getEntityMeta(b).label)
     );
   }, [filtersQuery.data]);
 
@@ -99,8 +100,8 @@ export default function SinoNotificacoesFiltros() {
             Sino dos filtros salvos
           </h1>
           <p className="text-sm text-muted-foreground max-w-2xl">
-            Para cada filtro salvo, escolha por onde quer ser avisado quando
-            entrarem novos registros e veja se o tempo real está ativo no preset.
+            Para cada filtro salvo, escolha por onde quer ser avisado quando entrarem novos
+            registros e veja se o tempo real está ativo no preset.
           </p>
         </div>
         <Button variant="outline" size="sm" asChild>
@@ -156,8 +157,7 @@ export default function SinoNotificacoesFiltros() {
         <Card className="border-warning/30 bg-warning/5">
           <CardContent className="p-3 text-xs flex items-center gap-2">
             <Sparkles className="h-4 w-4 text-warning" />
-            Este navegador não suporta push. As assinaturas funcionarão apenas
-            no app e por e-mail.
+            Este navegador não suporta push. As assinaturas funcionarão apenas no app e por e-mail.
           </CardContent>
         </Card>
       )}
@@ -183,8 +183,8 @@ export default function SinoNotificacoesFiltros() {
       ) : grouped.length === 0 ? (
         <Card>
           <CardContent className="p-8 text-center text-sm text-muted-foreground">
-            Você ainda não tem filtros salvos. Crie um preset em qualquer módulo
-            para configurar notificações por aqui.
+            Você ainda não tem filtros salvos. Crie um preset em qualquer módulo para configurar
+            notificações por aqui.
           </CardContent>
         </Card>
       ) : (
@@ -217,19 +217,14 @@ export default function SinoNotificacoesFiltros() {
                           <Badge
                             variant="outline"
                             className={cn(
-                              "h-5 px-1.5 text-[10px] gap-1",
+                              'h-5 px-1.5 text-[10px] gap-1',
                               realtimeOn
-                                ? "border-success/40 bg-success/5 text-success"
-                                : "border-muted-foreground/30 text-muted-foreground",
+                                ? 'border-success/40 bg-success/5 text-success'
+                                : 'border-muted-foreground/30 text-muted-foreground'
                             )}
                           >
-                            <Radio
-                              className={cn(
-                                "h-2.5 w-2.5",
-                                realtimeOn && "animate-pulse",
-                              )}
-                            />
-                            {realtimeOn ? "Tempo real ativo" : "Sem tempo real"}
+                            <Radio className={cn('h-2.5 w-2.5', realtimeOn && 'animate-pulse')} />
+                            {realtimeOn ? 'Tempo real ativo' : 'Sem tempo real'}
                           </Badge>
                         </CardTitle>
                         <CardDescription className="text-xs">
@@ -246,9 +241,8 @@ export default function SinoNotificacoesFiltros() {
                   <CardContent className="pt-0 space-y-2">
                     {!realtimeOn && (
                       <p className="text-[11px] text-muted-foreground/80 italic">
-                        Este módulo ainda não dispara alertas de novos registros.
-                        As preferências ficam salvas e serão aplicadas assim que
-                        o tempo real for habilitado.
+                        Este módulo ainda não dispara alertas de novos registros. As preferências
+                        ficam salvas e serão aplicadas assim que o tempo real for habilitado.
                       </p>
                     )}
                     {filters.map((f) => {
@@ -292,9 +286,7 @@ export default function SinoNotificacoesFiltros() {
                           }}
                           onUnsubscribe={(id) => unsubscribe.mutate(id)}
                           isBusy={
-                            subscribe.isPending ||
-                            updateChannels.isPending ||
-                            unsubscribe.isPending
+                            subscribe.isPending || updateChannels.isPending || unsubscribe.isPending
                           }
                         />
                       );

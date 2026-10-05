@@ -27,7 +27,7 @@ export function aliquotasRegimeNormal(regime: RegimeApuracaoPisCofins): Aliquota
 export function calcularItemMonofasico(
   item: ItemMonofasico,
   posicaoPadrao: PosicaoCadeia,
-  regime: RegimeApuracaoPisCofins,
+  regime: RegimeApuracaoPisCofins
 ): ResultadoItemMonofasico {
   const posicao = item.posicao ?? posicaoPadrao;
   const receita = Number.isFinite(item.receita) && item.receita > 0 ? item.receita : 0;
@@ -103,7 +103,7 @@ export function calcularItemMonofasico(
 export function calcularMixMonofasico(
   itens: ItemMonofasico[],
   posicaoPadrao: PosicaoCadeia = 'revenda',
-  regime: RegimeApuracaoPisCofins = 'presumido',
+  regime: RegimeApuracaoPisCofins = 'presumido'
 ): ResumoMonofasico {
   const resultados = itens.map((i) => calcularItemMonofasico(i, posicaoPadrao, regime));
   const alertas: string[] = [];
@@ -130,12 +130,12 @@ export function calcularMixMonofasico(
 
   if (regime === 'simples' && receitaMonofasica > 0) {
     alertas.push(
-      'No Simples Nacional a receita monofásica deve ser segregada no PGDAS-D para excluir PIS/COFINS da alíquota efetiva.',
+      'No Simples Nacional a receita monofásica deve ser segregada no PGDAS-D para excluir PIS/COFINS da alíquota efetiva.'
     );
   }
   if (economiaAnual > 0) {
     alertas.push(
-      `Receita monofásica identificada: economia de R$ ${economiaAnual.toLocaleString('pt-BR', { minimumFractionDigits: 2 })} frente ao tratamento como receita comum.`,
+      `Receita monofásica identificada: economia de R$ ${economiaAnual.toLocaleString('pt-BR', { minimumFractionDigits: 2 })} frente ao tratamento como receita comum.`
     );
   }
 
@@ -161,12 +161,13 @@ export function calcularRecuperacaoRetroativa(
   receitaMonofasicaMensal: number,
   regime: RegimeApuracaoPisCofins = 'presumido',
   meses: number = MESES_RECUPERACAO_RETROATIVA,
-  referencia: Date = new Date(),
+  referencia: Date = new Date()
 ): RecuperacaoRetroativa {
   const mesesValidos = Math.max(0, Math.min(Math.trunc(meses), MESES_RECUPERACAO_RETROATIVA));
-  const receita = Number.isFinite(receitaMonofasicaMensal) && receitaMonofasicaMensal > 0
-    ? receitaMonofasicaMensal
-    : 0;
+  const receita =
+    Number.isFinite(receitaMonofasicaMensal) && receitaMonofasicaMensal > 0
+      ? receitaMonofasicaMensal
+      : 0;
   const normal = aliquotasRegimeNormal(regime);
   const creditoMensalMedio = round2(receita * (normal.pis + normal.cofins));
 

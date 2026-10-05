@@ -4,7 +4,7 @@ import type { ContingencyMode, NFeData } from './types';
 export function generateContingencyXml(
   _nfeData: NFeData,
   mode: ContingencyMode,
-  chaveAcesso: string,
+  chaveAcesso: string
 ): string {
   const tpEmis = TIPO_EMISSAO[mode]?.code || '1';
   const dhCont = new Date().toISOString();

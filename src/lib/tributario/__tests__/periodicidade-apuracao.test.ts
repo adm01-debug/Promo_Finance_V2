@@ -127,7 +127,11 @@ describe('Lucro Real — trimestral vs anual', () => {
   });
 
   it('sanitiza lucroTrimestral com tamanho inválido', () => {
-    const r = simularReal({ ...base, lucroTrimestral: [1, 2] as number[], periodicidadeApuracao: 'trimestral' });
+    const r = simularReal({
+      ...base,
+      lucroTrimestral: [1, 2] as number[],
+      periodicidadeApuracao: 'trimestral',
+    });
     expect(Number.isFinite(r.totalTributos)).toBe(true);
     expect(r.totalTributos).toBeGreaterThan(0);
   });
@@ -136,7 +140,7 @@ describe('Lucro Real — trimestral vs anual', () => {
 describe('Fuzzing de 500 cenários de periodicidade', () => {
   it('mantém invariantes numéricas em todos os cenários', () => {
     let rng = 987654321;
-    const rand = () => ((rng = (rng * 1103515245 + 12345) & 0x7fffffff) / 0x7fffffff);
+    const rand = () => (rng = (rng * 1103515245 + 12345) & 0x7fffffff) / 0x7fffffff;
     for (let i = 0; i < 500; i += 1) {
       const p: ParametrosSimulacao = {
         faturamentoAnual: 10_000 + rand() * 60_000_000,

@@ -1,7 +1,16 @@
 import { motion } from 'framer-motion';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
-import { Loader2, CheckCircle2, XCircle, AlertCircle, ShieldCheck, Wifi, Send, Server } from 'lucide-react';
+import {
+  Loader2,
+  CheckCircle2,
+  XCircle,
+  AlertCircle,
+  ShieldCheck,
+  Wifi,
+  Send,
+  Server,
+} from 'lucide-react';
 import { SefazResponse } from '@/lib/sefaz-simulator';
 
 interface SefazStatusPanelProps {
@@ -19,7 +28,7 @@ export function SefazStatusPanel({ isProcessing, currentStep, response }: SefazS
     { id: 'done', label: 'Finalizado', icon: CheckCircle2 },
   ];
 
-  const currentIndex = steps.findIndex(s => s.id === currentStep);
+  const currentIndex = steps.findIndex((s) => s.id === currentStep);
   const progress = ((currentIndex + 1) / steps.length) * 100;
 
   if (!isProcessing && !response) return null;
@@ -40,8 +49,11 @@ export function SefazStatusPanel({ isProcessing, currentStep, response }: SefazS
           <XCircle className="h-5 w-5 text-destructive" />
         )}
         <span className="font-medium">
-          {isProcessing ? 'Comunicando com SEFAZ...' :
-           response?.success ? 'NF-e Autorizada!' : 'Erro na Autorização'}
+          {isProcessing
+            ? 'Comunicando com SEFAZ...'
+            : response?.success
+              ? 'NF-e Autorizada!'
+              : 'Erro na Autorização'}
         </span>
       </div>
 
@@ -70,9 +82,18 @@ export function SefazStatusPanel({ isProcessing, currentStep, response }: SefazS
       )}
 
       {response && (
-        <div className={`rounded-lg p-3 ${response.success ? 'bg-success/10 border border-success/20' : 'bg-destructive/10 border border-destructive/20'}`}>
+        <div
+          className={`rounded-lg p-3 ${response.success ? 'bg-success/10 border border-success/20' : 'bg-destructive/10 border border-destructive/20'}`}
+        >
           <div className="flex items-center gap-2 mb-2">
-            <Badge variant="outline" className={response.success ? 'bg-success/20 text-success' : 'bg-destructive/20 text-destructive'}>
+            <Badge
+              variant="outline"
+              className={
+                response.success
+                  ? 'bg-success/20 text-success'
+                  : 'bg-destructive/20 text-destructive'
+              }
+            >
               cStat: {response.cStat}
             </Badge>
             <span className="text-sm font-medium">{response.xMotivo}</span>
@@ -81,7 +102,9 @@ export function SefazStatusPanel({ isProcessing, currentStep, response }: SefazS
             <div className="space-y-1 text-sm">
               <div className="flex items-center gap-2">
                 <span className="text-muted-foreground">Chave:</span>
-                <code className="font-mono text-xs bg-background px-2 py-1 rounded">{response.chaveAcesso}</code>
+                <code className="font-mono text-xs bg-background px-2 py-1 rounded">
+                  {response.chaveAcesso}
+                </code>
               </div>
               {response.protocolo && (
                 <div className="flex items-center gap-2">
