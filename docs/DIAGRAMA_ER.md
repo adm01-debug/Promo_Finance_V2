@@ -73,7 +73,7 @@ erDiagram
         numeric valor
         date data_vencimento
         date data_pagamento
-        string status "pendente|pago|cancelado|aprovacao"
+        string status "escrita: pendente|pago|cancelado (interseção dos 2 CHECKs); leitura pode trazer legado: vencido|parcial|atrasado"
         timestamptz updated_at "lock otimista"
     }
     contas_receber {
@@ -86,7 +86,7 @@ erDiagram
         numeric valor
         date data_vencimento
         date data_recebimento
-        string status "pendente|recebido|cancelado"
+        string status "pendente|recebido|pago|vencido|cancelado|parcial|atrasado|em_acordo"
         string etapa_cobranca
         timestamptz updated_at "lock otimista"
     }

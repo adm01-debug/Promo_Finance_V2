@@ -54,7 +54,8 @@ paths:
           schema: { type: string, enum: [v1, v2] }
           description: >-
             Seletor de contrato (alternativa ao envelope
-{contract_version, data} no corpo); sem ele assume v1. No v2,
+            {contract_version, data} no corpo); sem ele assume v1.
+            No v2,
             o campo `id` é obrigatório (idempotência)
       requestBody:
         required: true
@@ -132,7 +133,8 @@ paths:
           schema: { type: string, enum: [v1, v2] }
           description: >-
             Seletor de contrato (alternativa ao envelope
-{contract_version, data} no corpo); sem ele assume v1. No v2,
+            {contract_version, data} no corpo); sem ele assume v1.
+            No v2,
             o campo `eventId` é obrigatório (idempotência)
       requestBody:
         required: true
@@ -172,7 +174,8 @@ paths:
           schema: { type: string, enum: [v1, v2] }
           description: >-
             Seletor de contrato (alternativa ao envelope
-{contract_version, data} no corpo); sem ele assume v1. No v2,
+            {contract_version, data} no corpo); sem ele assume v1.
+            No v2,
             o campo `event_id` é obrigatório (idempotência)
       requestBody:
         required: true
@@ -224,7 +227,8 @@ paths:
           schema: { type: string, enum: [v1, v2] }
           description: >-
             Seletor de contrato (alternativa ao envelope
-{contract_version, data} no corpo); sem ele assume v1. No v2,
+            {contract_version, data} no corpo); sem ele assume v1.
+            No v2,
             o campo `messageId` é obrigatório (idempotência)
       requestBody:
         required: true
@@ -279,7 +283,8 @@ paths:
                     Campos por action: create_alert usa
                     {alert_type, severity, title, message, description,
                     deal_id, driver_id, order_id, record_id} (title é
-                    obrigatório para o título do alerta); create_task aceita
+                    opcional — sem ele o servidor usa o fallback
+                    'Alerta via n8n'); create_task aceita
                     subject ou title; log usa {action, message, ...}.
       responses:
         '200':
@@ -455,6 +460,7 @@ paths:
         - { name: count, in: query, schema: { type: integer } }
       responses:
         '200': { description: ListResponse SCIM }
+        '400': { description: 'Filtro inválido ou atributo não suportado — {scimType: "invalidFilter", detail}' }
         '401': { description: Bearer token SCIM inválido }
     post:
       tags: [identidade]
@@ -751,6 +757,11 @@ paths:
                 type: object
                 properties:
                   token: { type: string }
+        '500':
+          description: >-
+            MAPBOX_ACCESS_TOKEN não configurado no servidor ({error:
+            "MAPBOX_ACCESS_TOKEN não configurado"}) — indisponibilidade
+            de configuração, não falha de autenticação
 
 components:
   securitySchemes:
