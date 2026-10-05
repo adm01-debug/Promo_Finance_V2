@@ -97,8 +97,11 @@ paths:
                     type: boolean
                     description: 'Em success:false — a retentativa acontece na fila interna'
                   status:
-                    type: integer
-                    description: 'Em success:false — status HTTP equivalente à falha'
+                    type: string
+                    description: >-
+                      Em success:false — estado interno da fila de retry/DLQ
+                      (valor textual da RPC, ex.: retry_pending/dlq), não
+                      código HTTP; a resposta sempre sai com HTTP 200
         '422':
           $ref: '#/components/responses/ErroValidacaoContrato'
         '403':
@@ -1206,12 +1209,26 @@ components:
 
     ScimUser:
       type: object
-      required: [userName]
+      # O handler aceita o e-mail por qualquer um dos dois caminhos
+      # (`body.userName || body.emails[0].value`) — scim-server/index.ts ~420.
+      oneOf:
+        - required: [userName]
+        - required: [emails]
       properties:
         schemas:
           type: array
           items: { type: string }
         userName: { type: string, format: email }
+        emails:
+          type: array
+          minItems: 1
+          items:
+            type: object
+            required: [value]
+            properties:
+              value: { type: string, format: email }
+              primary: { type: boolean }
+              type: { type: string }
         displayName: { type: string }
         externalId: { type: string }
         active: { type: boolean }

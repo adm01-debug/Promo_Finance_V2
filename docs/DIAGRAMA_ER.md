@@ -117,7 +117,9 @@ erDiagram
   NÃO tem `empresa_id` — seu isolamento é indireto via
   `conta_bancaria_id` → `contas_bancarias.empresa_id`.
   GAPs de isolamento abertos (P1, lista exaustiva em
-  `RLS_MATRIZ_NEGATIVA.md`): `anexos_financeiros`, `acoes_recomendadas`,
+  `RLS_MATRIZ_NEGATIVA.md`): `contas_pagar`, `contas_receber`,
+  `fornecedores`, `logs_conciliacao_retroativa`, `conciliacoes*`,
+  `anexos_financeiros`, `acoes_recomendadas`,
   `transferencias`, `vendedores`, `retencoes_fonte`,
   `whatsapp_conversas`, `historico_cobranca_whatsapp`,
   `resumos_executivos_semanais`, `faturamento_mensal`, `folha_pagamento`,
