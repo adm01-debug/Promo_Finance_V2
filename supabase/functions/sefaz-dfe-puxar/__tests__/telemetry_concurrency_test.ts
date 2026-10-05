@@ -131,8 +131,11 @@ function captureLogs() {
       if (typeof msg === 'string') {
         try {
           const parsed = JSON.parse(msg);
-          if (parsed && typeof parsed === 'object' && parsed.fn === 'sefaz-dfe-puxar') {
-            lines.push({ level, obj: parsed });
+          if (parsed && typeof parsed === 'object' && parsed.function_name === 'sefaz-dfe-puxar') {
+            lines.push({
+              level,
+              obj: { ...(parsed.context ?? {}), ...parsed },
+            });
             return;
           }
         } catch {
