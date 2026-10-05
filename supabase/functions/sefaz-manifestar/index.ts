@@ -32,6 +32,7 @@ import {
   type EventoInput,
   type ManifTipo,
 } from '../_shared/sefaz/manifestacao.ts';
+import { createLogger } from '../_shared/observability.ts';
 import { corsHeaders, corsHeadersPara } from '../_shared/cors.ts';
 import { withEdgeObservability } from '../_shared/edge-observability.ts';
 
@@ -56,9 +57,10 @@ function slog(
     event,
     ...fields,
   });
-  if (level === 'ERROR') console.error(line);
-  else if (level === 'WARN') console.warn(line);
-  else console.log(line);
+  const logg = createLogger('sefaz-manifestar');
+  if (level === 'ERROR') logg.error(event, { context: fields });
+  else if (level === 'WARN') logg.warn(event, { context: fields });
+  else logg.info(event, { context: fields });
 }
 
 export type SefazFetch = (url: string, envelope: string) => Promise<string>;

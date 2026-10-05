@@ -35,6 +35,7 @@ import {
 import { gunzipBase64 } from '../_shared/sefaz/gunzip.ts';
 import { parseDoc, type ParsedDoc } from '../_shared/sefaz/parser.ts';
 import { buildXmlPath, uploadNfeXml } from '../_shared/nfe/xml-storage.ts';
+import { createLogger } from '../_shared/observability.ts';
 import { corsHeaders, corsHeadersPara } from '../_shared/cors.ts';
 import { withEdgeObservability } from '../_shared/edge-observability.ts';
 
@@ -80,9 +81,10 @@ function slog(level: LogLevel, event: string, fields: Record<string, unknown> = 
       event,
       ...fields,
     });
-    if (level === 'ERROR') console.error(line);
-    else if (level === 'WARN') console.warn(line);
-    else console.log(line);
+    const logg = createLogger('sefaz-dfe-puxar');
+    if (level === 'ERROR') logg.error(event, { context: fields });
+    else if (level === 'WARN') logg.warn(event, { context: fields });
+    else logg.info(event, { context: fields });
   } catch {
     // Nunca deixar log estruturado quebrar o fluxo.
   }
@@ -527,13 +529,7 @@ Deno.serve(
     const cronSecret = Deno.env.get('SEFAZ_CRON_SECRET');
     const provided = req.headers.get('x-cron-secret');
     if (!cronSecret || provided !== cronSecret) {
-      console.warn(
-        JSON.stringify({
-          level: 'WARN',
-          fn: 'sefaz-dfe-puxar',
-          message: 'unauthorized dispatch attempt',
-        })
-      );
+      createLogger('sefaz-dfe-puxar').warn('unauthorized_dispatch_attempt');
       return res(401, { error: 'unauthorized' });
     }
 

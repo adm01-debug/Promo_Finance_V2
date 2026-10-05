@@ -326,7 +326,7 @@ Deno.serve(
           }
         }
       } catch (e) {
-        console.error('AI error:', e);
+        logger.error('ai_error', { error_message: e instanceof Error ? e.message : String(e) });
       }
 
       const finalResponse = { ...resultado, justificativaIA, params };

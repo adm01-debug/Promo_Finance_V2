@@ -5,6 +5,7 @@
 // ============================================
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.49.4';
 import { exigirChamadaInterna } from '../_shared/auth-guard.ts';
+import { createLogger } from '../_shared/observability.ts';
 import { corsHeadersPara } from '../_shared/cors.ts';
 import { withEdgeObservability } from '../_shared/edge-observability.ts';
 
@@ -29,8 +30,10 @@ interface AlertaInsert {
 
 // ─── Structured logging helper ───────────────────────────────────────────────
 type LogLevel = 'info' | 'warn' | 'error';
+const loggers = createLogger(FN_NAME);
+const LEVEL_FN = { info: 'info', warn: 'warn', error: 'error' } as const;
 function log(level: LogLevel, event: string, ctx: Record<string, unknown> = {}) {
-  console.log(JSON.stringify({ level, event, fn: FN_NAME, ts: new Date().toISOString(), ...ctx }));
+  loggers[LEVEL_FN[level]](event, { context: ctx });
 }
 
 // ─── Retry com exponential backoff (3 tentativas: 500ms, 1s, 2s) ─────────────
