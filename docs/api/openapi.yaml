@@ -621,6 +621,10 @@ paths:
         '200': { description: User substituído }
         '404': { description: Não encontrado }
         '401': { description: Bearer token SCIM ausente, inválido ou expirado }
+        '500':
+          description: >-
+            putUser devolve SCIM 500 quando updateUserEmail falha em
+            Auth ou profiles ao trocar o e-mail
     delete:
       tags: [identidade]
       summary: Desprovisiona (desativa vínculo user_empresas)
@@ -668,7 +672,7 @@ paths:
               type: object
               required: [displayName]
               properties:
-                displayName: { type: string }
+                displayName: { type: string, minLength: 1, pattern: '\\S' }
                 members:
                   type: array
                   items:
@@ -748,7 +752,7 @@ paths:
               type: object
               required: [displayName]
               properties:
-                displayName: { type: string }
+                displayName: { type: string, minLength: 1, pattern: '\\S' }
                 members:
                   type: array
                   items:
@@ -767,6 +771,14 @@ paths:
       responses:
         '204': { description: Removido }
         '401': { description: Bearer token SCIM ausente, inválido ou expirado }
+        '404':
+          description: >-
+            deleteGroup devolve 404 quando a empresa não tem provedor
+            vinculado ao token
+        '500':
+          description: >-
+            deleteGroup devolve SCIM 500 quando o DELETE em
+            sso_role_mappings falha
 
   /validar-token-contador:
     post:
@@ -1025,11 +1037,6 @@ components:
       additionalProperties: false
       properties:
         event: { type: string }
-        event_id:
-          type: string
-          minLength: 1
-          pattern: '\\S'
-          description: Obrigatório no contrato v2 (idempotência)
         data:
           type: object
           required: [FIELDS]
@@ -1052,6 +1059,12 @@ components:
         - $ref: '#/components/schemas/Bitrix24Webhook'
         - type: object
           required: [event_id]
+          properties:
+            event_id:
+              type: string
+              minLength: 1
+              pattern: '\\S'
+              description: Obrigatório no contrato v2 (idempotência)
 
     WhatsappWebhook:
       type: object

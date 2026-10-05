@@ -19,7 +19,7 @@ erDiagram
     empresas ||--o{ asaas_customers : "tem"
     empresas ||--o{ asaas_transfers : "tem"
     empresas ||--o{ notas_fiscais : "tem"
-    empresas ||--o{ sso_providers : "tem"
+    empresas |o--o{ sso_providers : "tem (empresa_id anulável)"
 
     user_empresas }o--|| auth_users : "user_id"
 
@@ -115,6 +115,9 @@ erDiagram
   `RLS_MATRIZ_NEGATIVA.md`); exceção documentada: `transacoes_bancarias`
   NÃO tem `empresa_id` — seu isolamento é indireto via
   `conta_bancaria_id` → `contas_bancarias.empresa_id`.
+  GAPs de isolamento abertos (matriz, P1): `anexos_financeiros`
+  (leitura/escrita cross-empresa por policies permissivas) e
+  `acoes_recomendadas` (FOR ALL USING(true) permite gerenciamento global).
 - **Baixa de conta é via `conciliacoes_parciais`** — join entre
   `transacoes_bancarias` e a conta (pagar/receber); conta paga/recebida sem
   transação conciliada é exceção manual, não o fluxo.
