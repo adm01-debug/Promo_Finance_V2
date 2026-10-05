@@ -233,7 +233,7 @@ paths:
     post:
       tags: [webhooks]
       security:
-        - webhookHmac: []
+        - whatsappHmac: []
         - webhookToken: []
       summary: Eventos de mensagem (Evolution API / WhatsApp)
       description: >-
@@ -939,6 +939,13 @@ components:
       description: >-
         Assinatura HMAC-SHA256 do corpo bruto (também aceitos
         x-bling-signature, x-signature, x-webhook-signature)
+    whatsappHmac:
+      type: apiKey
+      in: header
+      name: x-hub-signature-256
+      description: >-
+        Assinatura HMAC do corpo — o handler WhatsApp também aceita
+        x-signature ou x-webhook-signature
     webhookToken:
       type: apiKey
       in: header
