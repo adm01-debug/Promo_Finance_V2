@@ -36,6 +36,7 @@ import { gunzipBase64 } from '../_shared/sefaz/gunzip.ts';
 import { parseDoc, type ParsedDoc } from '../_shared/sefaz/parser.ts';
 import { buildXmlPath, uploadNfeXml } from '../_shared/nfe/xml-storage.ts';
 import { corsHeaders, corsHeadersPara } from '../_shared/cors.ts';
+import { withEdgeObservability } from '../_shared/edge-observability.ts';
 
 const MAX_BATCHES_PER_CNPJ = 10;
 
@@ -513,52 +514,54 @@ export async function runPuxador(
 }
 
 // ------------------------------------------------------- HTTP handler
-Deno.serve(async (req) => {
-  const corsHeaders = corsHeadersPara(req);
-  const res = (status: number, body?: unknown) => json(status, body, corsHeaders);
+Deno.serve(
+  withEdgeObservability('sefaz-dfe-puxar', async (req) => {
+    const corsHeaders = corsHeadersPara(req);
+    const res = (status: number, body?: unknown) => json(status, body, corsHeaders);
 
-  if (req.method === 'OPTIONS') {
-    return new Response('ok', { headers: corsHeaders });
-  }
-  if (req.method !== 'POST') return res(405, { error: 'method_not_allowed' });
+    if (req.method === 'OPTIONS') {
+      return new Response('ok', { headers: corsHeaders });
+    }
+    if (req.method !== 'POST') return res(405, { error: 'method_not_allowed' });
 
-  const cronSecret = Deno.env.get('SEFAZ_CRON_SECRET');
-  const provided = req.headers.get('x-cron-secret');
-  if (!cronSecret || provided !== cronSecret) {
-    console.warn(
-      JSON.stringify({
-        level: 'WARN',
-        fn: 'sefaz-dfe-puxar',
-        message: 'unauthorized dispatch attempt',
-      })
-    );
-    return res(401, { error: 'unauthorized' });
-  }
+    const cronSecret = Deno.env.get('SEFAZ_CRON_SECRET');
+    const provided = req.headers.get('x-cron-secret');
+    if (!cronSecret || provided !== cronSecret) {
+      console.warn(
+        JSON.stringify({
+          level: 'WARN',
+          fn: 'sefaz-dfe-puxar',
+          message: 'unauthorized dispatch attempt',
+        })
+      );
+      return res(401, { error: 'unauthorized' });
+    }
 
-  let payload: { empresa_id?: string } = {};
-  try {
-    const text = await req.text();
-    if (text) payload = JSON.parse(text);
-  } catch {
-    return res(400, { error: 'invalid_json' });
-  }
-  const parsedPayload = RequestBodySchema.safeParse(payload);
-  if (!parsedPayload.success)
-    return createValidationErrorResponse(parsedPayload.error, corsHeaders);
-  payload = parsedPayload.data;
+    let payload: { empresa_id?: string } = {};
+    try {
+      const text = await req.text();
+      if (text) payload = JSON.parse(text);
+    } catch {
+      return res(400, { error: 'invalid_json' });
+    }
+    const parsedPayload = RequestBodySchema.safeParse(payload);
+    if (!parsedPayload.success)
+      return createValidationErrorResponse(parsedPayload.error, corsHeaders);
+    payload = parsedPayload.data;
 
-  const admin = makeAdminClient();
-  const certs = await fetchCertificados(admin, payload.empresa_id);
-  const summaries: PullSummary[] = [];
+    const admin = makeAdminClient();
+    const certs = await fetchCertificados(admin, payload.empresa_id);
+    const summaries: PullSummary[] = [];
 
-  // Sequencial para evitar sobrecarga de sockets mTLS.
-  for (const cert of certs) {
-    summaries.push(await runPuxador(admin, cert));
-  }
+    // Sequencial para evitar sobrecarga de sockets mTLS.
+    for (const cert of certs) {
+      summaries.push(await runPuxador(admin, cert));
+    }
 
-  return res(200, {
-    ok: true,
-    processed: summaries.length,
-    summaries,
-  });
-});
+    return res(200, {
+      ok: true,
+      processed: summaries.length,
+      summaries,
+    });
+  })
+);

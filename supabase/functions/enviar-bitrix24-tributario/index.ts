@@ -7,6 +7,7 @@ import { z } from 'https://deno.land/x/zod@v3.22.4/mod.ts';
 import { corsHeadersPara } from '../_shared/cors.ts';
 
 import { getRequestId } from '../_shared/correlation.ts';
+import { withEdgeObservability } from '../_shared/edge-observability.ts';
 import { respostaIntegracaoDesativada } from '../_shared/resilience.ts';
 const _BxTribSchema = z.object({
   empresaId: z.string().uuid(),
@@ -60,138 +61,138 @@ async function bitrixCall(
   return data;
 }
 
-Deno.serve(async (req) => {
-  const corsHeaders = corsHeadersPara(req);
-  if (req.method === 'OPTIONS') {
-    return new Response(null, { headers: corsHeaders });
-  }
-
-  const logger = createLogger('enviar-bitrix24-tributario', getRequestId(req));
-  const t0 = Date.now();
-  logger.info('fn_start');
-
-  try {
-    const authHeader = req.headers.get('Authorization');
-    if (!authHeader?.startsWith('Bearer ')) {
-      return new Response(JSON.stringify({ error: 'Unauthorized' }), {
-        status: 401,
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-      });
+Deno.serve(
+  withEdgeObservability('enviar-bitrix24-tributario', async (req) => {
+    const corsHeaders = corsHeadersPara(req);
+    if (req.method === 'OPTIONS') {
+      return new Response(null, { headers: corsHeaders });
     }
 
-    const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
-    const anonKey = Deno.env.get('SUPABASE_ANON_KEY')!;
-    const supabaseAuth = createClient(supabaseUrl, anonKey, {
-      global: { headers: { Authorization: authHeader } },
-    });
-    const token = authHeader.replace('Bearer ', '');
-    const { data: claimsData, error: claimsErr } = await supabaseAuth.auth.getClaims(token);
-    // Exigir `sub`: a anon key (pública) também é um JWT válido do projeto,
-    // mas não carrega subject — sem esta checagem ela passaria o guard.
-    if (claimsErr || !claimsData?.claims?.sub) {
-      return new Response(JSON.stringify({ error: 'Unauthorized' }), {
-        status: 401,
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+    const logger = createLogger('enviar-bitrix24-tributario', getRequestId(req));
+    const t0 = Date.now();
+    logger.info('fn_start');
+
+    try {
+      const authHeader = req.headers.get('Authorization');
+      if (!authHeader?.startsWith('Bearer ')) {
+        return new Response(JSON.stringify({ error: 'Unauthorized' }), {
+          status: 401,
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        });
+      }
+
+      const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
+      const anonKey = Deno.env.get('SUPABASE_ANON_KEY')!;
+      const supabaseAuth = createClient(supabaseUrl, anonKey, {
+        global: { headers: { Authorization: authHeader } },
       });
-    }
+      const token = authHeader.replace('Bearer ', '');
+      const { data: claimsData, error: claimsErr } = await supabaseAuth.auth.getClaims(token);
+      // Exigir `sub`: a anon key (pública) também é um JWT válido do projeto,
+      // mas não carrega subject — sem esta checagem ela passaria o guard.
+      if (claimsErr || !claimsData?.claims?.sub) {
+        return new Response(JSON.stringify({ error: 'Unauthorized' }), {
+          status: 401,
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        });
+      }
 
-    const _raw = await req.json();
-    const _v = await validateContract(_BxTribSchema, _raw);
-    if (!_v.success) return _v.response;
-    const body = _v.data as unknown as ReqBody;
-    if (!body.empresaId || !body.signedUrl || !body.empresaNome) {
-      return new Response(JSON.stringify({ error: 'Campos obrigatórios ausentes' }), {
-        status: 400,
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-      });
-    }
+      const _raw = await req.json();
+      const _v = await validateContract(_BxTribSchema, _raw);
+      if (!_v.success) return _v.response;
+      const body = _v.data as unknown as ReqBody;
+      if (!body.empresaId || !body.signedUrl || !body.empresaNome) {
+        return new Response(JSON.stringify({ error: 'Campos obrigatórios ausentes' }), {
+          status: 400,
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        });
+      }
 
-    const userId = claimsData.claims.sub;
-    const { data: acesso, error: acessoErr } = await supabaseAuth
-      .from('user_empresas')
-      .select('empresa_id')
-      .eq('user_id', userId)
-      .eq('empresa_id', body.empresaId)
-      .eq('ativo', true)
-      .maybeSingle();
-    if (acessoErr || !acesso) {
-      return new Response(JSON.stringify({ error: 'Acesso negado a esta empresa' }), {
-        status: 403,
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-      });
-    }
+      const userId = claimsData.claims.sub;
+      const { data: acesso, error: acessoErr } = await supabaseAuth
+        .from('user_empresas')
+        .select('empresa_id')
+        .eq('user_id', userId)
+        .eq('empresa_id', body.empresaId)
+        .eq('ativo', true)
+        .maybeSingle();
+      if (acessoErr || !acesso) {
+        return new Response(JSON.stringify({ error: 'Acesso negado a esta empresa' }), {
+          status: 403,
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        });
+      }
 
-    // Depois da autorização por empresa — um usuário sem vínculo recebe 403 e
-    // não o 503 que vazaria a configuração interna do kill-switch.
-    const inativa = respostaIntegracaoDesativada('bitrix24', corsHeaders);
-    if (inativa) return inativa;
+      // Depois da autorização por empresa — um usuário sem vínculo recebe 403 e
+      // não o 503 que vazaria a configuração interna do kill-switch.
+      const inativa = respostaIntegracaoDesativada('bitrix24', corsHeaders);
+      if (inativa) return inativa;
 
-    const titulo = `Recomendação Tributária — ${body.empresaNome} — ${body.periodo}`;
-    const economiaTxt =
-      body.economiaAnual > 0
-        ? `Economia anual estimada: R$ ${body.economiaAnual.toLocaleString('pt-BR', {
-            maximumFractionDigits: 0,
-          })}`
-        : 'Sem economia adicional vs. regime atual';
-    const comentario = `[B]Análise Tributária — ${body.periodo}[/B]\n\nRegime recomendado: ${body.regimeRecomendado}\n${economiaTxt}\n\nPDF: ${body.signedUrl}`;
+      const titulo = `Recomendação Tributária — ${body.empresaNome} — ${body.periodo}`;
+      const economiaTxt =
+        body.economiaAnual > 0
+          ? `Economia anual estimada: R$ ${body.economiaAnual.toLocaleString('pt-BR', { maximumFractionDigits: 0 })}`
+          : 'Sem economia adicional vs. regime atual';
+      const comentario = `[B]Análise Tributária — ${body.periodo}[/B]\n\nRegime recomendado: ${body.regimeRecomendado}\n${economiaTxt}\n\nPDF: ${body.signedUrl}`;
 
-    let dealId = body.dealId;
+      let dealId = body.dealId;
 
-    if (!dealId) {
-      // Cria novo Deal
-      const dealRes = (await bitrixCall('crm.deal.add', {
+      if (!dealId) {
+        // Cria novo Deal
+        const dealRes = (await bitrixCall('crm.deal.add', {
+          fields: {
+            TITLE: titulo,
+            COMMENTS: comentario,
+            OPPORTUNITY: body.economiaAnual,
+            CURRENCY_ID: 'BRL',
+            STAGE_ID: 'NEW',
+          },
+        })) as { result?: number };
+        dealId = String(dealRes.result ?? '');
+      } else {
+        // Atualiza Deal existente
+        await bitrixCall('crm.deal.update', {
+          id: dealId,
+          fields: {
+            TITLE: titulo,
+            COMMENTS: comentario,
+          },
+        });
+      }
+
+      // Adiciona timeline comment com link do PDF
+      await bitrixCall('crm.timeline.comment.add', {
         fields: {
-          TITLE: titulo,
-          COMMENTS: comentario,
-          OPPORTUNITY: body.economiaAnual,
-          CURRENCY_ID: 'BRL',
-          STAGE_ID: 'NEW',
-        },
-      })) as { result?: number };
-      dealId = String(dealRes.result ?? '');
-    } else {
-      // Atualiza Deal existente
-      await bitrixCall('crm.deal.update', {
-        id: dealId,
-        fields: {
-          TITLE: titulo,
-          COMMENTS: comentario,
+          ENTITY_ID: dealId,
+          ENTITY_TYPE: 'deal',
+          COMMENT: comentario,
         },
       });
+
+      const dealUrl = `https://${Deno.env.get('BITRIX24_DOMAIN')}/crm/deal/details/${dealId}/`;
+
+      logger.info('fn_success', {
+        duration_ms: Date.now() - t0,
+        status_code: 200,
+        context: { dealId, empresaId: body.empresaId },
+      });
+      await logger.flush();
+      return new Response(JSON.stringify({ success: true, dealId, dealUrl }), {
+        status: 200,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : 'Erro desconhecido';
+      logger.error('fn_failure', {
+        duration_ms: Date.now() - t0,
+        status_code: 500,
+        error_message: msg,
+      });
+      await logger.flush();
+      return new Response(JSON.stringify({ error: msg }), {
+        status: 500,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
     }
-
-    // Adiciona timeline comment com link do PDF
-    await bitrixCall('crm.timeline.comment.add', {
-      fields: {
-        ENTITY_ID: dealId,
-        ENTITY_TYPE: 'deal',
-        COMMENT: comentario,
-      },
-    });
-
-    const dealUrl = `https://${Deno.env.get('BITRIX24_DOMAIN')}/crm/deal/details/${dealId}/`;
-
-    logger.info('fn_success', {
-      duration_ms: Date.now() - t0,
-      status_code: 200,
-      context: { dealId, empresaId: body.empresaId },
-    });
-    await logger.flush();
-    return new Response(JSON.stringify({ success: true, dealId, dealUrl }), {
-      status: 200,
-      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-    });
-  } catch (err) {
-    const msg = err instanceof Error ? err.message : 'Erro desconhecido';
-    logger.error('fn_failure', {
-      duration_ms: Date.now() - t0,
-      status_code: 500,
-      error_message: msg,
-    });
-    await logger.flush();
-    return new Response(JSON.stringify({ error: msg }), {
-      status: 500,
-      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-    });
-  }
-});
+  })
+);

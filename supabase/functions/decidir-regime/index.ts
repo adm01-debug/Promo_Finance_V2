@@ -12,6 +12,7 @@ import {
 } from '../_shared/tributario-logic.ts';
 
 import { getRequestId } from '../_shared/correlation.ts';
+import { withEdgeObservability } from '../_shared/edge-observability.ts';
 function decidirRegimeInternal(
   p: ParametrosSimulacao,
   ano: number,
@@ -112,263 +113,270 @@ function normalizarOverride(raw: unknown): Partial<ParametrosSimulacao> {
   return out as Partial<ParametrosSimulacao>;
 }
 
-Deno.serve(async (req) => {
-  const corsHeaders = corsHeadersPara(req);
-  if (req.method === 'OPTIONS') return new Response('ok', { headers: corsHeaders });
+Deno.serve(
+  withEdgeObservability('decidir-regime', async (req) => {
+    const corsHeaders = corsHeadersPara(req);
+    if (req.method === 'OPTIONS') return new Response('ok', { headers: corsHeaders });
 
-  const logger = createLogger('decidir-regime', getRequestId(req));
+    const logger = createLogger('decidir-regime', getRequestId(req));
 
-  try {
-    const authHeader = req.headers.get('Authorization');
-    if (!authHeader?.startsWith('Bearer ')) {
-      return new Response(JSON.stringify({ error: 'Unauthorized' }), {
-        status: 401,
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-      });
-    }
-
-    // Cliente vinculado ao JWT do chamador: valida a identidade de verdade.
-    const sbUser = createClient(Deno.env.get('SUPABASE_URL')!, Deno.env.get('SUPABASE_ANON_KEY')!, {
-      global: { headers: { Authorization: authHeader } },
-    });
-    const { data: userData, error: userError } = await sbUser.auth.getUser();
-    const userId = userData?.user?.id;
-    if (userError || !userId) {
-      return new Response(JSON.stringify({ error: 'Unauthorized' }), {
-        status: 401,
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-      });
-    }
-
-    const sb = createClient(
-      Deno.env.get('SUPABASE_URL')!,
-      Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!
-    );
-
-    const raw = await req.json().catch(() => ({}));
-    const { z } = await import('https://deno.land/x/zod@v3.22.4/mod.ts');
-    const { validatePayload, createErrorResponse } = await import('../_shared/validation.ts');
-    const DecidirBodySchema = z
-      .object({
-        empresaId: z.string().uuid(),
-        anoReferencia: z.number().int().optional().nullable(),
-        mesReferencia: z.number().int().min(1).max(12).optional().nullable(),
-        parametrosOverride: z.record(z.any()).optional().nullable(),
-        regimeAtual: z
-          .enum(['simples_nacional', 'lucro_presumido', 'lucro_real'])
-          .optional()
-          .nullable(),
-        persist: z.boolean().optional(),
-      })
-      .passthrough();
-    const parsed = validatePayload(DecidirBodySchema, raw, 'decidir-regime');
-    if (!parsed.success) return createErrorResponse(parsed.error, 400, parsed.details, req);
-    const {
-      empresaId,
-      anoReferencia,
-      mesReferencia,
-      parametrosOverride,
-      regimeAtual,
-      persist = true,
-    } = parsed.data as Record<string, any>;
-
-    // Autorização multi-tenant: a leitura passa pelo RLS do próprio usuário.
-    const { data: empresaPermitida, error: empresaError } = await sbUser
-      .from('empresas')
-      .select('id')
-      .eq('id', empresaId)
-      .maybeSingle();
-    if (empresaError) throw new Error(`Falha ao validar acesso a empresa: ${empresaError.message}`);
-    if (!empresaPermitida) {
-      return new Response(JSON.stringify({ error: 'Forbidden' }), {
-        status: 403,
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-      });
-    }
-
-    const hoje = new Date();
-    const ano = anoReferencia ?? hoje.getFullYear();
-    const mes = mesReferencia ?? hoje.getMonth() + 1;
-
-    // Buscar dados reais da empresa para a simulação
-    const [faturamentoResult, folhaResult] = await Promise.all([
-      sb
-        .from('faturamento_mensal')
-        .select('*')
-        .eq('empresa_id', empresaId)
-        .order('ano', { ascending: false })
-        .order('mes', { ascending: false })
-        .limit(24),
-      sb
-        .from('folha_pagamento')
-        .select('*')
-        .eq('empresa_id', empresaId)
-        .order('ano', { ascending: false })
-        .order('mes', { ascending: false })
-        .limit(24),
-    ]);
-    if (faturamentoResult.error)
-      throw new Error(`Falha ao carregar faturamento: ${faturamentoResult.error.message}`);
-    if (folhaResult.error)
-      throw new Error(`Falha ao carregar folha de pagamento: ${folhaResult.error.message}`);
-    const faturamento = faturamentoResult.data;
-    const folha = folhaResult.data;
-
-    const faturamentoMensal: FaturamentoMes[] = (faturamento || []).map((f) => ({
-      ano: f.ano,
-      mes: f.mes,
-      receita_bruta: Number(f.receita_bruta) || 0,
-    }));
-    const folhaMensal: FolhaMes[] = (folha || []).map((f) => ({
-      ano: f.ano,
-      mes: f.mes,
-      salarios: Number(f.salarios) || 0,
-      pro_labore: Number(f.pro_labore) || 0,
-      encargos: Number(f.encargos) || 0,
-      total_folha:
-        Number(f.total_folha ?? (Number(f.salarios) || 0) + (Number(f.encargos) || 0)) || 0,
-    }));
-
-    const faturamentoAnual =
-      faturamentoMensal.filter((f) => f.ano === ano).reduce((a, f) => a + f.receita_bruta, 0) ||
-      faturamentoMensal.slice(0, 12).reduce((a, f) => a + f.receita_bruta, 0);
-    const folhaAnual =
-      folhaMensal.filter((f) => f.ano === ano).reduce((a, f) => a + f.total_folha, 0) ||
-      folhaMensal.slice(0, 12).reduce((a, f) => a + f.total_folha, 0);
-
-    const params: ParametrosSimulacao = {
-      ...normalizarOverride(parametrosOverride),
-      faturamentoAnual: numeroFinito(parametrosOverride?.faturamentoAnual) ?? faturamentoAnual,
-      faturamentoMensal,
-      folhaMensal,
-      folhaAnual: numeroFinito(parametrosOverride?.folhaAnual) ?? folhaAnual,
-      margemLucro: numeroFinito(parametrosOverride?.margemLucro) ?? 15,
-      percentualServicos: numeroFinito(parametrosOverride?.percentualServicos) ?? 50,
-      comprasComCredito: numeroFinito(parametrosOverride?.comprasComCredito) ?? 0,
-      despesasOperacionais: numeroFinito(parametrosOverride?.despesasOperacionais) ?? 0,
-    };
-
-    // CACHE LOOKUP
-    const cacheable =
-      persist && (!parametrosOverride || Object.keys(parametrosOverride).length === 0);
-    if (cacheable) {
-      const { data: cached, error: cacheReadError } = await sb
-        .from('regime_decision_cache')
-        .select('decisao, expires_at')
-        .eq('empresa_id', empresaId)
-        .eq('ano', ano)
-        .eq('mes', mes)
-        .gt('expires_at', new Date().toISOString())
-        .maybeSingle();
-      if (cacheReadError)
-        throw new Error(`Falha ao consultar cache tributario: ${cacheReadError.message}`);
-      if (cached?.decisao) {
-        // Log cache hit in audit trail
-        const { error: auditError } = await sb.from('tax_audit_trail').insert({
-          user_id: userId,
-          empresa_id: empresaId,
-          ano,
-          mes,
-          action: 'cache_hit',
-          parameters: params,
-        });
-        if (auditError)
-          throw new Error(`Falha ao registrar auditoria tributaria: ${auditError.message}`);
-
-        return new Response(
-          JSON.stringify({ ...(cached.decisao as object), params, fromCache: true }),
-          {
-            status: 200,
-            headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-          }
-        );
-      }
-    }
-
-    const resultado = decidirRegimeInternal(params, ano, mes, regimeAtual);
-
-    // AI Justification logic kept...
-    let justificativaIA = null;
     try {
-      const LOVABLE_API_KEY = Deno.env.get('LOVABLE_API_KEY');
-      if (LOVABLE_API_KEY) {
-        const prompt = `Analise os cenários tributários abaixo e forneça uma recomendação executiva curta (máx 3 frases) em português:
+      const authHeader = req.headers.get('Authorization');
+      if (!authHeader?.startsWith('Bearer ')) {
+        return new Response(JSON.stringify({ error: 'Unauthorized' }), {
+          status: 401,
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        });
+      }
+
+      // Cliente vinculado ao JWT do chamador: valida a identidade de verdade.
+      const sbUser = createClient(
+        Deno.env.get('SUPABASE_URL')!,
+        Deno.env.get('SUPABASE_ANON_KEY')!,
+        {
+          global: { headers: { Authorization: authHeader } },
+        }
+      );
+      const { data: userData, error: userError } = await sbUser.auth.getUser();
+      const userId = userData?.user?.id;
+      if (userError || !userId) {
+        return new Response(JSON.stringify({ error: 'Unauthorized' }), {
+          status: 401,
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        });
+      }
+
+      const sb = createClient(
+        Deno.env.get('SUPABASE_URL')!,
+        Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!
+      );
+
+      const raw = await req.json().catch(() => ({}));
+      const { z } = await import('https://deno.land/x/zod@v3.22.4/mod.ts');
+      const { validatePayload, createErrorResponse } = await import('../_shared/validation.ts');
+      const DecidirBodySchema = z
+        .object({
+          empresaId: z.string().uuid(),
+          anoReferencia: z.number().int().optional().nullable(),
+          mesReferencia: z.number().int().min(1).max(12).optional().nullable(),
+          parametrosOverride: z.record(z.any()).optional().nullable(),
+          regimeAtual: z
+            .enum(['simples_nacional', 'lucro_presumido', 'lucro_real'])
+            .optional()
+            .nullable(),
+          persist: z.boolean().optional(),
+        })
+        .passthrough();
+      const parsed = validatePayload(DecidirBodySchema, raw, 'decidir-regime');
+      if (!parsed.success) return createErrorResponse(parsed.error, 400, parsed.details, req);
+      const {
+        empresaId,
+        anoReferencia,
+        mesReferencia,
+        parametrosOverride,
+        regimeAtual,
+        persist = true,
+      } = parsed.data as Record<string, any>;
+
+      // Autorização multi-tenant: a leitura passa pelo RLS do próprio usuário.
+      const { data: empresaPermitida, error: empresaError } = await sbUser
+        .from('empresas')
+        .select('id')
+        .eq('id', empresaId)
+        .maybeSingle();
+      if (empresaError)
+        throw new Error(`Falha ao validar acesso a empresa: ${empresaError.message}`);
+      if (!empresaPermitida) {
+        return new Response(JSON.stringify({ error: 'Forbidden' }), {
+          status: 403,
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        });
+      }
+
+      const hoje = new Date();
+      const ano = anoReferencia ?? hoje.getFullYear();
+      const mes = mesReferencia ?? hoje.getMonth() + 1;
+
+      // Buscar dados reais da empresa para a simulação
+      const [faturamentoResult, folhaResult] = await Promise.all([
+        sb
+          .from('faturamento_mensal')
+          .select('*')
+          .eq('empresa_id', empresaId)
+          .order('ano', { ascending: false })
+          .order('mes', { ascending: false })
+          .limit(24),
+        sb
+          .from('folha_pagamento')
+          .select('*')
+          .eq('empresa_id', empresaId)
+          .order('ano', { ascending: false })
+          .order('mes', { ascending: false })
+          .limit(24),
+      ]);
+      if (faturamentoResult.error)
+        throw new Error(`Falha ao carregar faturamento: ${faturamentoResult.error.message}`);
+      if (folhaResult.error)
+        throw new Error(`Falha ao carregar folha de pagamento: ${folhaResult.error.message}`);
+      const faturamento = faturamentoResult.data;
+      const folha = folhaResult.data;
+
+      const faturamentoMensal: FaturamentoMes[] = (faturamento || []).map((f) => ({
+        ano: f.ano,
+        mes: f.mes,
+        receita_bruta: Number(f.receita_bruta) || 0,
+      }));
+      const folhaMensal: FolhaMes[] = (folha || []).map((f) => ({
+        ano: f.ano,
+        mes: f.mes,
+        salarios: Number(f.salarios) || 0,
+        pro_labore: Number(f.pro_labore) || 0,
+        encargos: Number(f.encargos) || 0,
+        total_folha:
+          Number(f.total_folha ?? (Number(f.salarios) || 0) + (Number(f.encargos) || 0)) || 0,
+      }));
+
+      const faturamentoAnual =
+        faturamentoMensal.filter((f) => f.ano === ano).reduce((a, f) => a + f.receita_bruta, 0) ||
+        faturamentoMensal.slice(0, 12).reduce((a, f) => a + f.receita_bruta, 0);
+      const folhaAnual =
+        folhaMensal.filter((f) => f.ano === ano).reduce((a, f) => a + f.total_folha, 0) ||
+        folhaMensal.slice(0, 12).reduce((a, f) => a + f.total_folha, 0);
+
+      const params: ParametrosSimulacao = {
+        ...normalizarOverride(parametrosOverride),
+        faturamentoAnual: numeroFinito(parametrosOverride?.faturamentoAnual) ?? faturamentoAnual,
+        faturamentoMensal,
+        folhaMensal,
+        folhaAnual: numeroFinito(parametrosOverride?.folhaAnual) ?? folhaAnual,
+        margemLucro: numeroFinito(parametrosOverride?.margemLucro) ?? 15,
+        percentualServicos: numeroFinito(parametrosOverride?.percentualServicos) ?? 50,
+        comprasComCredito: numeroFinito(parametrosOverride?.comprasComCredito) ?? 0,
+        despesasOperacionais: numeroFinito(parametrosOverride?.despesasOperacionais) ?? 0,
+      };
+
+      // CACHE LOOKUP
+      const cacheable =
+        persist && (!parametrosOverride || Object.keys(parametrosOverride).length === 0);
+      if (cacheable) {
+        const { data: cached, error: cacheReadError } = await sb
+          .from('regime_decision_cache')
+          .select('decisao, expires_at')
+          .eq('empresa_id', empresaId)
+          .eq('ano', ano)
+          .eq('mes', mes)
+          .gt('expires_at', new Date().toISOString())
+          .maybeSingle();
+        if (cacheReadError)
+          throw new Error(`Falha ao consultar cache tributario: ${cacheReadError.message}`);
+        if (cached?.decisao) {
+          // Log cache hit in audit trail
+          const { error: auditError } = await sb.from('tax_audit_trail').insert({
+            user_id: userId,
+            empresa_id: empresaId,
+            ano,
+            mes,
+            action: 'cache_hit',
+            parameters: params,
+          });
+          if (auditError)
+            throw new Error(`Falha ao registrar auditoria tributaria: ${auditError.message}`);
+
+          return new Response(
+            JSON.stringify({ ...(cached.decisao as object), params, fromCache: true }),
+            {
+              status: 200,
+              headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+            }
+          );
+        }
+      }
+
+      const resultado = decidirRegimeInternal(params, ano, mes, regimeAtual);
+
+      // AI Justification logic kept...
+      let justificativaIA = null;
+      try {
+        const LOVABLE_API_KEY = Deno.env.get('LOVABLE_API_KEY');
+        if (LOVABLE_API_KEY) {
+          const prompt = `Analise os cenários tributários abaixo e forneça uma recomendação executiva curta (máx 3 frases) em português:
         ${JSON.stringify(resultado.cenarios)}
         
         Regime Recomendado: ${resultado.recomendado.nome}
         Economia Estimada: R$ ${resultado.economiaAnualVsAtual || 0}`;
 
-        const aiResponse = await fetch('https://ai.gateway.lovable.dev/v1/chat/completions', {
-          method: 'POST',
-          headers: {
-            Authorization: `Bearer ${LOVABLE_API_KEY}`,
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            model: 'google/gemini-2.0-flash-exp',
-            messages: [
-              { role: 'system', content: 'Você é um consultor tributário sênior.' },
-              { role: 'user', content: prompt },
-            ],
-          }),
-        });
+          const aiResponse = await fetch('https://ai.gateway.lovable.dev/v1/chat/completions', {
+            method: 'POST',
+            headers: {
+              Authorization: `Bearer ${LOVABLE_API_KEY}`,
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              model: 'google/gemini-2.0-flash-exp',
+              messages: [
+                { role: 'system', content: 'Você é um consultor tributário sênior.' },
+                { role: 'user', content: prompt },
+              ],
+            }),
+          });
 
-        if (aiResponse.ok) {
-          const aiData = await aiResponse.json();
-          justificativaIA = aiData.choices?.[0]?.message?.content;
+          if (aiResponse.ok) {
+            const aiData = await aiResponse.json();
+            justificativaIA = aiData.choices?.[0]?.message?.content;
+          }
+        }
+      } catch (e) {
+        console.error('AI error:', e);
+      }
+
+      const finalResponse = { ...resultado, justificativaIA, params };
+
+      if (persist) {
+        // A operacao so e confirmada depois que sua trilha obrigatoria foi gravada.
+        const { error: auditError } = await sb.from('tax_audit_trail').insert({
+          user_id: userId,
+          empresa_id: empresaId,
+          ano,
+          mes,
+          action: 'simulated',
+          parameters: params,
+          prompt: justificativaIA ? 'AI justification prompt' : null,
+          response: justificativaIA,
+          is_ai_justified: !!justificativaIA,
+        });
+        if (auditError)
+          throw new Error(`Falha ao registrar auditoria tributaria: ${auditError.message}`);
+      }
+
+      if (cacheable) {
+        const { error: cacheWriteError } = await sb.from('regime_decision_cache').upsert({
+          empresa_id: empresaId,
+          ano,
+          mes,
+          decisao: finalResponse,
+          expires_at: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString(),
+        });
+        if (cacheWriteError) {
+          logger.warn('regime_cache_write_failed', {
+            error_message: cacheWriteError.message,
+            context: { empresa_id: empresaId, ano, mes },
+          });
+          await logger.flush();
         }
       }
+
+      return new Response(JSON.stringify(finalResponse), {
+        status: 200,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
     } catch (e) {
-      console.error('AI error:', e);
-    }
-
-    const finalResponse = { ...resultado, justificativaIA, params };
-
-    if (persist) {
-      // A operacao so e confirmada depois que sua trilha obrigatoria foi gravada.
-      const { error: auditError } = await sb.from('tax_audit_trail').insert({
-        user_id: userId,
-        empresa_id: empresaId,
-        ano,
-        mes,
-        action: 'simulated',
-        parameters: params,
-        prompt: justificativaIA ? 'AI justification prompt' : null,
-        response: justificativaIA,
-        is_ai_justified: !!justificativaIA,
+      const message = e instanceof Error ? e.message : String(e);
+      logger.error('decidir_regime_failed', { error_message: message });
+      await logger.flush();
+      return new Response(JSON.stringify({ error: 'Erro interno ao decidir regime' }), {
+        status: 500,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       });
-      if (auditError)
-        throw new Error(`Falha ao registrar auditoria tributaria: ${auditError.message}`);
     }
-
-    if (cacheable) {
-      const { error: cacheWriteError } = await sb.from('regime_decision_cache').upsert({
-        empresa_id: empresaId,
-        ano,
-        mes,
-        decisao: finalResponse,
-        expires_at: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString(),
-      });
-      if (cacheWriteError) {
-        logger.warn('regime_cache_write_failed', {
-          error_message: cacheWriteError.message,
-          context: { empresa_id: empresaId, ano, mes },
-        });
-        await logger.flush();
-      }
-    }
-
-    return new Response(JSON.stringify(finalResponse), {
-      status: 200,
-      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-    });
-  } catch (e) {
-    const message = e instanceof Error ? e.message : String(e);
-    logger.error('decidir_regime_failed', { error_message: message });
-    await logger.flush();
-    return new Response(JSON.stringify({ error: message }), {
-      status: 500,
-      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-    });
-  }
-});
+  })
+);

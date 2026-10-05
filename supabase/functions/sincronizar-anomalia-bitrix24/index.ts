@@ -4,6 +4,7 @@ import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.49.4';
 import { validateContract } from '../_shared/contract-validator.ts';
 import { z } from 'https://deno.land/x/zod@v3.22.4/mod.ts';
 import { corsHeadersPara } from '../_shared/cors.ts';
+import { withEdgeObservability } from '../_shared/edge-observability.ts';
 import { respostaIntegracaoDesativada } from '../_shared/resilience.ts';
 
 const _SyncAnomSchema = z
@@ -81,152 +82,154 @@ function eventoLabel(e: Evento): string {
   }
 }
 
-Deno.serve(async (req) => {
-  const corsHeaders = corsHeadersPara(req);
+Deno.serve(
+  withEdgeObservability('sincronizar-anomalia-bitrix24', async (req) => {
+    const corsHeaders = corsHeadersPara(req);
 
-  if (req.method === 'OPTIONS') {
-    return new Response(null, { headers: corsHeaders });
-  }
-
-  try {
-    const authHeader = req.headers.get('Authorization');
-    if (!authHeader?.startsWith('Bearer ')) {
-      return new Response(JSON.stringify({ error: 'Unauthorized' }), {
-        status: 401,
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-      });
+    if (req.method === 'OPTIONS') {
+      return new Response(null, { headers: corsHeaders });
     }
 
-    const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
-    const anonKey = Deno.env.get('SUPABASE_ANON_KEY')!;
-    const supabaseAuth = createClient(supabaseUrl, anonKey, {
-      global: { headers: { Authorization: authHeader } },
-    });
-    const token = authHeader.replace('Bearer ', '');
-    const { data: claimsData, error: claimsErr } = await supabaseAuth.auth.getClaims(token);
-    if (claimsErr || !claimsData?.claims) {
-      return new Response(JSON.stringify({ error: 'Unauthorized' }), {
-        status: 401,
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+    try {
+      const authHeader = req.headers.get('Authorization');
+      if (!authHeader?.startsWith('Bearer ')) {
+        return new Response(JSON.stringify({ error: 'Unauthorized' }), {
+          status: 401,
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        });
+      }
+
+      const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
+      const anonKey = Deno.env.get('SUPABASE_ANON_KEY')!;
+      const supabaseAuth = createClient(supabaseUrl, anonKey, {
+        global: { headers: { Authorization: authHeader } },
       });
-    }
+      const token = authHeader.replace('Bearer ', '');
+      const { data: claimsData, error: claimsErr } = await supabaseAuth.auth.getClaims(token);
+      if (claimsErr || !claimsData?.claims) {
+        return new Response(JSON.stringify({ error: 'Unauthorized' }), {
+          status: 401,
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        });
+      }
 
-    const inativa = respostaIntegracaoDesativada('bitrix24', corsHeaders);
-    if (inativa) return inativa;
+      const inativa = respostaIntegracaoDesativada('bitrix24', corsHeaders);
+      if (inativa) return inativa;
 
-    const _raw = await req.json();
-    const _v = await validateContract(_SyncAnomSchema, _raw);
-    if (!_v.success) return _v.response;
-    const body = _v.data as unknown as ReqBody;
-    if (!body.anomaliaId || !body.evento) {
-      return new Response(JSON.stringify({ error: 'Campos obrigatórios ausentes' }), {
-        status: 400,
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-      });
-    }
+      const _raw = await req.json();
+      const _v = await validateContract(_SyncAnomSchema, _raw);
+      if (!_v.success) return _v.response;
+      const body = _v.data as unknown as ReqBody;
+      if (!body.anomaliaId || !body.evento) {
+        return new Response(JSON.stringify({ error: 'Campos obrigatórios ausentes' }), {
+          status: 400,
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        });
+      }
 
-    const domain = Deno.env.get('BITRIX24_DOMAIN');
-    const bitrixToken = Deno.env.get('BITRIX24_ACCESS_TOKEN');
-    if (!domain || !bitrixToken) {
-      return new Response(
-        JSON.stringify({ success: false, skipped: true, reason: 'Bitrix24 não configurado' }),
-        { status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-      );
-    }
+      const domain = Deno.env.get('BITRIX24_DOMAIN');
+      const bitrixToken = Deno.env.get('BITRIX24_ACCESS_TOKEN');
+      if (!domain || !bitrixToken) {
+        return new Response(
+          JSON.stringify({ success: false, skipped: true, reason: 'Bitrix24 não configurado' }),
+          { status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        );
+      }
 
-    // Carrega a anomalia com service role para garantir leitura
-    const serviceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
-    const supabaseAdmin = createClient(supabaseUrl, serviceKey);
-    const { data: anomalia, error: anomErr } = await supabaseAdmin
-      .from('anomalias_detectadas')
-      .select('*')
-      .eq('id', body.anomaliaId)
-      .maybeSingle();
-    if (anomErr || !anomalia) {
-      return new Response(JSON.stringify({ error: 'Anomalia não encontrada' }), {
-        status: 404,
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-      });
-    }
-
-    const tipoLabel = TIPO_LABEL[anomalia.tipo_anomalia] ?? anomalia.tipo_anomalia;
-    const titulo = `[Anomalia] ${tipoLabel} — ${anomalia.severidade}`;
-    const drillUrl = `${supabaseUrl.replace(/\/+$/, '')}`.includes('supabase.co')
-      ? `/admin/insights-ia/anomalia/${anomalia.id}`
-      : `/admin/insights-ia/anomalia/${anomalia.id}`;
-    const description =
-      `[B]${tipoLabel}[/B]\n\n` +
-      `Severidade: ${anomalia.severidade}\n` +
-      `Status: ${anomalia.status}\n` +
-      `Detectada em: ${new Date(anomalia.detectada_em).toLocaleString('pt-BR')}\n\n` +
-      `[B]Descrição:[/B] ${anomalia.descricao}\n\n` +
-      (anomalia.observacoes ? `[B]Parecer:[/B]\n${anomalia.observacoes}\n\n` : '') +
-      `[B]Evento:[/B] ${eventoLabel(body.evento)}\n` +
-      `[B]Drill-down:[/B] ${drillUrl}`;
-
-    const tags = ['lovable-anomalia', anomalia.tipo_anomalia, anomalia.severidade];
-    const status = statusBitrix(body.evento);
-    const priority = priorityFromSeveridade(anomalia.severidade);
-
-    let taskId = anomalia.bitrix_task_id as string | null;
-    let action: 'created' | 'updated' = 'updated';
-
-    if (taskId) {
-      await bitrixCall(domain, bitrixToken, 'tasks.task.update', {
-        taskId,
-        fields: {
-          TITLE: titulo,
-          DESCRIPTION: description,
-          PRIORITY: priority,
-          STATUS: status,
-          TAGS: tags,
-        },
-      });
-    } else {
-      const res = (await bitrixCall(domain, bitrixToken, 'tasks.task.add', {
-        fields: {
-          TITLE: titulo,
-          DESCRIPTION: description,
-          PRIORITY: priority,
-          TAGS: tags,
-        },
-      })) as { result?: { task?: { id?: string | number } } };
-      const newId = res.result?.task?.id;
-      if (!newId) throw new Error('Bitrix não retornou task id');
-      taskId = String(newId);
-      action = 'created';
-
-      await supabaseAdmin
+      // Carrega a anomalia com service role para garantir leitura
+      const serviceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
+      const supabaseAdmin = createClient(supabaseUrl, serviceKey);
+      const { data: anomalia, error: anomErr } = await supabaseAdmin
         .from('anomalias_detectadas')
-        .update({ bitrix_task_id: taskId })
-        .eq('id', anomalia.id);
+        .select('*')
+        .eq('id', body.anomaliaId)
+        .maybeSingle();
+      if (anomErr || !anomalia) {
+        return new Response(JSON.stringify({ error: 'Anomalia não encontrada' }), {
+          status: 404,
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        });
+      }
 
-      // Aplica STATUS depois (não aceito em add)
-      if (status !== 2) {
+      const tipoLabel = TIPO_LABEL[anomalia.tipo_anomalia] ?? anomalia.tipo_anomalia;
+      const titulo = `[Anomalia] ${tipoLabel} — ${anomalia.severidade}`;
+      const drillUrl = `${supabaseUrl.replace(/\/+$/, '')}`.includes('supabase.co')
+        ? `/admin/insights-ia/anomalia/${anomalia.id}`
+        : `/admin/insights-ia/anomalia/${anomalia.id}`;
+      const description =
+        `[B]${tipoLabel}[/B]\n\n` +
+        `Severidade: ${anomalia.severidade}\n` +
+        `Status: ${anomalia.status}\n` +
+        `Detectada em: ${new Date(anomalia.detectada_em).toLocaleString('pt-BR')}\n\n` +
+        `[B]Descrição:[/B] ${anomalia.descricao}\n\n` +
+        (anomalia.observacoes ? `[B]Parecer:[/B]\n${anomalia.observacoes}\n\n` : '') +
+        `[B]Evento:[/B] ${eventoLabel(body.evento)}\n` +
+        `[B]Drill-down:[/B] ${drillUrl}`;
+
+      const tags = ['lovable-anomalia', anomalia.tipo_anomalia, anomalia.severidade];
+      const status = statusBitrix(body.evento);
+      const priority = priorityFromSeveridade(anomalia.severidade);
+
+      let taskId = anomalia.bitrix_task_id as string | null;
+      let action: 'created' | 'updated' = 'updated';
+
+      if (taskId) {
         await bitrixCall(domain, bitrixToken, 'tasks.task.update', {
           taskId,
-          fields: { STATUS: status },
-        }).catch(() => undefined);
+          fields: {
+            TITLE: titulo,
+            DESCRIPTION: description,
+            PRIORITY: priority,
+            STATUS: status,
+            TAGS: tags,
+          },
+        });
+      } else {
+        const res = (await bitrixCall(domain, bitrixToken, 'tasks.task.add', {
+          fields: {
+            TITLE: titulo,
+            DESCRIPTION: description,
+            PRIORITY: priority,
+            TAGS: tags,
+          },
+        })) as { result?: { task?: { id?: string | number } } };
+        const newId = res.result?.task?.id;
+        if (!newId) throw new Error('Bitrix não retornou task id');
+        taskId = String(newId);
+        action = 'created';
+
+        await supabaseAdmin
+          .from('anomalias_detectadas')
+          .update({ bitrix_task_id: taskId })
+          .eq('id', anomalia.id);
+
+        // Aplica STATUS depois (não aceito em add)
+        if (status !== 2) {
+          await bitrixCall(domain, bitrixToken, 'tasks.task.update', {
+            taskId,
+            fields: { STATUS: status },
+          }).catch(() => undefined);
+        }
       }
+
+      // Comentário no histórico (formato posicional: [taskId, fields])
+      await bitrixCall(domain, bitrixToken, 'task.commentitem.add', [
+        taskId,
+        { POST_MESSAGE: `${eventoLabel(body.evento)}\n\n${anomalia.observacoes ?? ''}`.trim() },
+      ]).catch(() => undefined);
+
+      const taskUrl = `https://${domain}/company/personal/user/0/tasks/task/view/${taskId}/`;
+
+      return new Response(JSON.stringify({ success: true, taskId, taskUrl, action }), {
+        status: 200,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : 'Erro desconhecido';
+      return new Response(JSON.stringify({ error: msg }), {
+        status: 500,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
     }
-
-    // Comentário no histórico (formato posicional: [taskId, fields])
-    await bitrixCall(domain, bitrixToken, 'task.commentitem.add', [
-      taskId,
-      { POST_MESSAGE: `${eventoLabel(body.evento)}\n\n${anomalia.observacoes ?? ''}`.trim() },
-    ]).catch(() => undefined);
-
-    const taskUrl = `https://${domain}/company/personal/user/0/tasks/task/view/${taskId}/`;
-
-    return new Response(JSON.stringify({ success: true, taskId, taskUrl, action }), {
-      status: 200,
-      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-    });
-  } catch (err) {
-    const msg = err instanceof Error ? err.message : 'Erro desconhecido';
-    return new Response(JSON.stringify({ error: msg }), {
-      status: 500,
-      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-    });
-  }
-});
+  })
+);

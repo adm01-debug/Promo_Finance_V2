@@ -17,6 +17,7 @@ import {
 import { createValidationErrorResponse } from '../_shared/contract-response.ts';
 import { segredosIguais } from '../_shared/auth-guard.ts';
 import { corsHeadersPara } from '../_shared/cors.ts';
+import { withEdgeObservability } from '../_shared/edge-observability.ts';
 
 const logger = createLogger('asaas-webhook');
 
@@ -231,5 +232,5 @@ export const handler = async (req: Request) => {
 };
 
 if (import.meta.main) {
-  Deno.serve(handler);
+  Deno.serve(withEdgeObservability('asaas-webhook', handler));
 }
