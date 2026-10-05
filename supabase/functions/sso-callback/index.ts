@@ -753,9 +753,23 @@ Deno.serve(
       const admin = createClient(SUPABASE_URL, SERVICE_ROLE);
 
       const url = new URL(req.url);
-      const code = url.searchParams.get('code');
-      const state = url.searchParams.get('state');
-      const verifier = url.searchParams.get('verifier') || (await safeJson(req))?.verifier;
+      // O SPA reenvia code/state/verifier por POST form-urlencoded — o
+      // verifier não pode ir na URL (fica em history e logs de acesso).
+      const formData = (req.headers.get('content-type') || '').includes(
+        'application/x-www-form-urlencoded'
+      )
+        ? await req.formData()
+        : null;
+      const bodyJson = formData ? null : await safeJson(req);
+      const param = (k: string): string | null => {
+        const v = url.searchParams.get(k) || formData?.get(k);
+        if (v) return v as string;
+        const bv = bodyJson?.[k];
+        return typeof bv === 'string' ? bv : null;
+      };
+      const code = param('code');
+      const state = param('state');
+      const verifier = param('verifier');
 
       if (!code || !state) {
         await logAttempt({
@@ -817,7 +831,15 @@ Deno.serve(
               ua,
               appRedirect,
             });
-            return redirectErr(req, 'pkce_verifier_missing', appRedirect);
+            // O redirect do IdP chega só com code+state — o verifier ficou no
+            // sessionStorage do SPA (pkce:<state>). Devolve os parâmetros para
+            // /auth reenviar a chamada completa; sem isso o login OIDC sempre
+            // morre aqui.
+            const retry = new URL(`${safeOrigin(req, appRedirect)}/auth`);
+            retry.searchParams.set('sso_error', 'pkce_verifier_missing');
+            retry.searchParams.set('sso_code', code);
+            retry.searchParams.set('sso_state', state);
+            return Response.redirect(retry.toString(), 302);
           }
           const h = await sha256(verifier);
           if (h !== attempt.code_verifier_hash) {

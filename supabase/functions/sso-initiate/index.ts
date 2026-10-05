@@ -1,4 +1,5 @@
-import { corsHeadersPara } from '../_shared/cors.ts';
+import { corsHeadersPara, origemCorsPermitida } from '../_shared/cors.ts';
+import { getAppBaseUrl } from '../_shared/app-url.ts';
 import { createClient } from 'npm:@supabase/supabase-js@2.49.4';
 import { withEdgeObservability } from '../_shared/edge-observability.ts';
 
@@ -16,6 +17,26 @@ function base64url(buf: ArrayBuffer | Uint8Array) {
     .replace(/\+/g, '-')
     .replace(/\//g, '_')
     .replace(/=+$/, '');
+}
+
+function origemRedirectPermitida(_req: Request, redirectTo: string): boolean {
+  let alvo: URL;
+  try {
+    alvo = new URL(redirectTo);
+  } catch {
+    return false;
+  }
+  // Origin/referer da chamada são controláveis pelo solicitante — a allowlist
+  // vem só de config (ALLOWED_ORIGINS + PUBLIC_APP_URL), nunca do request.
+  if (origemCorsPermitida(alvo.origin)) return true;
+  const appBase = getAppBaseUrl();
+  if (appBase)
+    try {
+      return alvo.origin === new URL(appBase).origin;
+    } catch {
+      return false;
+    }
+  return false;
 }
 
 Deno.serve(
@@ -37,6 +58,11 @@ Deno.serve(
       if (!parsed.success)
         return json({ error: parsed.error, details: parsed.details }, 400, corsHeaders);
       const { provider_id, redirect_to } = parsed.data;
+
+      // app_redirect alimenta os 302 do sso-callback — só origens confiáveis
+      // (a origem da própria SPA ou PUBLIC_APP_URL) podem receber code/state.
+      if (redirect_to && !origemRedirectPermitida(req, redirect_to))
+        return json({ error: 'redirect_to_forbidden' }, 400, corsHeaders);
 
       const admin = createClient(SUPABASE_URL, SERVICE_ROLE);
       const { data: provider, error } = await admin
