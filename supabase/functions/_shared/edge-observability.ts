@@ -130,14 +130,14 @@ function segundoPlano(p: Promise<void>): Promise<void> | void {
 // quando o consumidor desiste — sem bloquear a entrega do primeiro chunk.
 function espelharStream(
   origem: ReadableStream<Uint8Array>,
-  aoTerminar: (desfecho: 'ok' | 'error' | 'cancel', detalhe?: string) => void
+  aoTerminar: (desfecho: 'ok' | 'error' | 'cancel', detalhe?: unknown) => void
 ): ReadableStream<Uint8Array> {
   const reader = origem.getReader();
   // Um request = um evento: cancel() dispara o desfecho e o read()
   // pendente rejeita logo em seguida — sem a trava, pull() registraria
   // um segundo request_error fantasma para a mesma requisição.
   let terminado = false;
-  const registrar = (d: 'ok' | 'error' | 'cancel', detalhe?: string) => {
+  const registrar = (d: 'ok' | 'error' | 'cancel', detalhe?: unknown) => {
     if (terminado) return;
     terminado = true;
     aoTerminar(d, detalhe);
@@ -156,7 +156,7 @@ function espelharStream(
         }
         controller.enqueue(value);
       } catch (e) {
-        registrar('error', e instanceof Error ? e.message : String(e));
+        registrar('error', e);
         controller.error(e);
         reader.releaseLock();
       }
@@ -177,9 +177,14 @@ export function withEdgeObservability(functionName: string, handler: Handler): H
     if (req.method === 'OPTIONS') return handler(req);
 
     // O client Supabase propaga x-request-id (correlation.ts); o
-    // x-correlation-id cobre chamadas externas fora do client.
+    // x-correlation-id cobre chamadas externas fora do client. ID vindo
+    // de fora só vale se for usável (não vazio, teto de 200 chars —
+    // suficiente para UUID/ULID e ids de gateway); senão gera um novo.
+    const idRecebido = req.headers.get('x-request-id') ?? req.headers.get('x-correlation-id');
     const requestId =
-      req.headers.get('x-request-id') ?? req.headers.get('x-correlation-id') ?? crypto.randomUUID();
+      idRecebido && idRecebido.length > 0 && idRecebido.length <= 200
+        ? idRecebido
+        : crypto.randomUUID();
     const log = createLogger(functionName, requestId);
     const inicio = Date.now();
     try {
@@ -194,17 +199,37 @@ export function withEdgeObservability(functionName: string, handler: Handler): H
       // falhar no meio. Encadeia um stream espelho que registra o fim real.
       if (res.headers.get('content-type')?.includes('text/event-stream') && res.body) {
         const corpoEspelhado = espelharStream(res.body, (desfecho, detalhe) => {
-          if (desfecho === 'ok') {
-            log.info('request_end', {
-              duration_ms: Date.now() - inicio,
-              status_code: res.status,
-              context: { method: req.method, stream: true },
-            });
-          } else {
+          if (desfecho === 'error') {
             log.error('request_error', {
               duration_ms: Date.now() - inicio,
               status_code: res.status,
-              error_message: detalhe ?? 'stream interrompido',
+              error_message:
+                detalhe instanceof Error
+                  ? detalhe.message
+                  : String(detalhe ?? 'stream interrompido'),
+              context: { method: req.method, stream: true, desfecho },
+            });
+            // A falha do produtor acontece depois dos headers: o catch
+            // externo nunca a vê, então o Sentry é acionado daqui.
+            void segundoPlano(
+              capturarExcecaoSentry(
+                detalhe instanceof Error
+                  ? detalhe
+                  : new Error(String(detalhe ?? 'stream interrompido')),
+                {
+                  function_name: functionName,
+                  request_id: requestId,
+                  method: req.method,
+                  path: new URL(req.url).pathname,
+                }
+              )
+            );
+          } else {
+            // 'ok' e 'cancel' (o cliente desistiu — abort() do fetch) não
+            // são erro: contam como request_end com o desfecho marcado.
+            log.info('request_end', {
+              duration_ms: Date.now() - inicio,
+              status_code: res.status,
               context: { method: req.method, stream: true, desfecho },
             });
           }
