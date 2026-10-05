@@ -31,8 +31,8 @@ erDiagram
     centros_custo ||--o{ contas_receber : "rateia (ref. lógica)"
     centros_custo ||--o{ centros_custo : "hierarquia (parent_id)"
     contas_bancarias ||--o{ transacoes_bancarias : "movimenta"
-    contas_bancarias ||--o{ contas_pagar : "conta de pagamento (ref. lógica)"
-    contas_bancarias ||--o{ contas_receber : "conta de recebimento (ref. lógica)"
+    contas_bancarias |o--o{ contas_pagar : "conta de pagamento (ref. lógica)"
+    contas_bancarias |o--o{ contas_receber : "conta de recebimento (ref. lógica)"
 
 
     clientes ||--o{ asaas_customers : "espelha no Asaas"
@@ -43,8 +43,8 @@ erDiagram
     %% notas_fiscais não tem FK para contas_pagar/nfe_recebidas — sua única
     %% relação persistida é empresa_id; associações de negócio são conceituais
 
-    contas_receber ||--o{ conciliacoes_parciais : "baixa parcial"
-    contas_pagar ||--o{ conciliacoes_parciais : "baixa parcial"
+    contas_receber |o--o{ conciliacoes_parciais : "baixa parcial"
+    contas_pagar |o--o{ conciliacoes_parciais : "baixa parcial"
     transacoes_bancarias ||--o{ conciliacoes_parciais : "compõe baixa"
 
     sso_providers |o--o{ scim_tokens : "provisiona com (provider_id anulável — token pode nascer sem provedor e só é rejeitado ao criar grupo)"
@@ -59,7 +59,7 @@ erDiagram
         uuid id PK
         uuid user_id FK
         uuid empresa_id FK
-        string role "admin|financeiro|operacional|visualizador|contador (enum app_role)"
+        string role "admin|financeiro|operacional|visualizador|contador|manager|operator|viewer (enum app_role — os 3 últimos legados, usados em policies)"
         boolean is_default
         string provisioned_via "manual|sso|scim (CHECK no banco)"
     }
