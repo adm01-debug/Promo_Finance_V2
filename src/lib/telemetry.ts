@@ -85,10 +85,12 @@ function buildPerfRows(userId: string | null, batch: Metric[]) {
 const KEEPALIVE_ORCAMENTO_BYTES = 60_000;
 
 function loteKeepalive<T>(rows: T[], orcamento: number): T[] {
+  const encoder = new TextEncoder();
   const lote: T[] = [];
   let usado = 2; // colchetes do array serializado
   for (const row of rows) {
-    const tam = JSON.stringify(row).length + 1; // vírgula
+    // bytes UTF-8 do corpo real, não unidades UTF-16 do .length
+    const tam = encoder.encode(JSON.stringify(row)).length + 1; // vírgula
     if (usado + tam > orcamento) break;
     lote.push(row);
     usado += tam;

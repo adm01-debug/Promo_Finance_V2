@@ -658,8 +658,23 @@ async function handleSamlFinalize(
     identity_data?: Record<string, unknown>;
   }>;
   const viaBroker = identities.some((i) => i.provider === `sso:${providerId}`);
-  const jaVinculado =
-    ((u.user.user_metadata || {}) as Record<string, unknown>).sso_provider_id === providerId;
+  // Alternativa ao broker sem usar user_metadata (campo editável pelo
+  // próprio usuário via auth.updateUser — não serve como prova):
+  // vínculo ativo pré-existente em user_empresas para a empresa do
+  // provider, estado que só o servidor controla.
+  let jaVinculado = false;
+  const empresaProvider = (provider.empresa_id as string | null) ?? null;
+  if (!viaBroker && empresaProvider) {
+    const { data: vinc } = await admin
+      .from('user_empresas')
+      .select('id')
+      .eq('user_id', u.user.id)
+      .eq('empresa_id', empresaProvider)
+      .eq('ativo', true)
+      .limit(1)
+      .maybeSingle();
+    jaVinculado = !!vinc;
+  }
   if (!viaBroker && !jaVinculado) {
     await logAttempt({
       admin,
@@ -696,7 +711,9 @@ async function handleSamlFinalize(
     'mobile',
     'mobilePhone',
   ]);
-  const groups = resolveClaimArray(sources, cm, 'groups', ['groups']);
+  // Grupos só valem como prova quando vieram do broker SSO — fora dele,
+  // user_metadata é editável pelo próprio usuário e forjaria papel.
+  const groups = viaBroker ? resolveClaimArray(sources, cm, 'groups', ['groups']) : [];
 
   const result = await applyPipeline({
     admin,
