@@ -328,25 +328,65 @@ paths:
         content:
           application/json:
             schema:
-              type: object
-              required: [action, payload]
-              properties:
-                action:
-                  type: string
-                  enum: [create_task, create_alert, log]
-                payload:
-                  type: object
+              oneOf:
+                - type: object
+                  required: [action, payload]
                   properties:
-                    severity:
+                    action:
                       type: string
-                      enum: [info, warning, critical, low, medium, high]
-                  description: >-
-                    Campos por action: create_alert usa
-                    {alert_type, severity, title, message, description,
-                    deal_id, driver_id, order_id, record_id} (title é
-                    opcional — sem ele o servidor usa o fallback
-                    'Alerta via n8n'); create_task aceita
-                    subject ou title; log usa {action, message, ...}.
+                      enum: [create_alert]
+                    payload:
+                      type: object
+                      additionalProperties: true
+                      properties:
+                        alert_type: { type: string, description: 'ou `type`' }
+                        type: { type: string }
+                        severity:
+                          type: string
+                          enum: [info, warning, critical, low, medium, high]
+                        title:
+                          type: string
+                          description: 'opcional — fallback "Alerta via n8n"'
+                        message: { type: string }
+                        description: { type: string, description: 'alias de message' }
+                        deal_id: { type: integer }
+                        driver_id: { type: string }
+                        order_id: { type: string }
+                        record_id: { type: string }
+                - type: object
+                  required: [action, payload]
+                  properties:
+                    action:
+                      type: string
+                      enum: [create_task]
+                    payload:
+                      type: object
+                      additionalProperties: true
+                      properties:
+                        subject: { type: string }
+                        title: { type: string, description: 'alias de subject' }
+                        order_id: { type: string }
+                        deal_id: { type: integer }
+                - type: object
+                  required: [action, payload]
+                  properties:
+                    action:
+                      type: string
+                      enum: [log]
+                    payload:
+                      type: object
+                      additionalProperties: true
+                      properties:
+                        action: { type: string }
+                        message: { type: string }
+                        table_name: { type: string }
+              description: >-
+                Campos por action: create_alert usa
+                {alert_type, severity, title, message, description,
+                deal_id, driver_id, order_id, record_id} (title é
+                opcional — sem ele o servidor usa o fallback
+                'Alerta via n8n'); create_task aceita
+                subject ou title; log usa {action, message, ...}.
       responses:
         '200':
           description: Ação executada
