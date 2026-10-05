@@ -1,9 +1,9 @@
 export enum LogLevel {
-  DEBUG = "DEBUG",
-  INFO = "INFO",
-  WARN = "WARN",
-  ERROR = "ERROR",
-  CRITICAL = "CRITICAL"
+  DEBUG = 'DEBUG',
+  INFO = 'INFO',
+  WARN = 'WARN',
+  ERROR = 'ERROR',
+  CRITICAL = 'CRITICAL',
 }
 
 /**
@@ -39,7 +39,7 @@ export class Logger {
       request_id: this.requestId,
       message,
       ...this.defaultContext,
-      ...context
+      ...context,
     };
 
     if (level === LogLevel.ERROR || level === LogLevel.CRITICAL) {
@@ -49,13 +49,21 @@ export class Logger {
     }
   }
 
-
-  debug(message: string, context?: Record<string, unknown>) { this.log(LogLevel.DEBUG, message, context); }
-  info(message: string, context?: Record<string, unknown>) { this.log(LogLevel.INFO, message, context); }
-  warn(message: string, context?: Record<string, unknown>) { this.log(LogLevel.WARN, message, context); }
-  error(message: string, context?: Record<string, unknown>) { this.log(LogLevel.ERROR, message, context); }
-  critical(message: string, context?: Record<string, unknown>) { this.log(LogLevel.CRITICAL, message, context); }
+  debug(message: string, context?: Record<string, unknown>) {
+    this.log(LogLevel.DEBUG, message, context);
+  }
+  info(message: string, context?: Record<string, unknown>) {
+    this.log(LogLevel.INFO, message, context);
+  }
+  warn(message: string, context?: Record<string, unknown>) {
+    this.log(LogLevel.WARN, message, context);
+  }
+  error(message: string, context?: Record<string, unknown>) {
+    this.log(LogLevel.ERROR, message, context);
+  }
+  critical(message: string, context?: Record<string, unknown>) {
+    this.log(LogLevel.CRITICAL, message, context);
+  }
 }
 
-export const createLogger = (name: string, requestId?: string) =>
-  new Logger(name, requestId);
+export const createLogger = (name: string, requestId?: string) => new Logger(name, requestId);

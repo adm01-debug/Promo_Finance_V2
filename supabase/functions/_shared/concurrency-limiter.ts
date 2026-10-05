@@ -13,7 +13,7 @@ export class ConcurrencyLimiter {
 
   async run<T>(task: () => Promise<T>): Promise<T> {
     if (this.activeCount >= this.limit) {
-      await new Promise<void>(resolve => this.queue.push(resolve));
+      await new Promise<void>((resolve) => this.queue.push(resolve));
     }
 
     this.activeCount++;

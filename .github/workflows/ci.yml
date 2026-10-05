@@ -196,7 +196,7 @@ jobs:
         # monotonicamente a cada PR sem um diff gigante de uma vez.
         run: |
           BASE=$(git merge-base origin/main HEAD)
-          FILES=$(git diff --name-only --diff-filter=ACMR "$BASE" HEAD -- 'src/**/*.ts' 'src/**/*.tsx' 'src/**/*.css' 'src/**/*.json')
+          FILES=$(git diff --name-only --diff-filter=ACMR "$BASE" HEAD -- 'src/**/*.ts' 'src/**/*.tsx' 'src/**/*.css' 'src/**/*.json' 'supabase/functions/**/*.ts')
           if [ -n "$FILES" ]; then
             echo "$FILES" | xargs bunx prettier --check
           else

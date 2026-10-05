@@ -8,31 +8,31 @@ import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.49.4';
 async function validateExternalDataContract() {
   const url = Deno.env.get('SUPABASE_URL');
   const anonKey = Deno.env.get('SUPABASE_ANON_KEY');
-  
+
   if (!url || !anonKey) {
-    console.warn("⚠️ Ambiente local incompleto. Pulando validação de contrato real.");
+    console.warn('⚠️ Ambiente local incompleto. Pulando validação de contrato real.');
     return;
   }
 
-  console.log("🧪 Iniciando validação de contrato: external-data...");
+  console.log('🧪 Iniciando validação de contrato: external-data...');
 
   try {
     const supabase = createClient(url, anonKey);
-    
+
     // Testa o comportamento de fallback (sem auth real ou sem config externa)
     const { data, error } = await supabase.functions.invoke('external-data', {
       method: 'GET',
-      query_params: { tabela: 'clientes' }
+      query_params: { tabela: 'clientes' },
     });
 
     if (error) {
-      console.error("❌ Falha na invocação da function:", error);
+      console.error('❌ Falha na invocação da function:', error);
       Deno.exit(1);
     }
 
     // Se for fallback, deve ter estrutura específica
     if (data.fallback) {
-      console.log("✅ Estrutura de Fallback validada.");
+      console.log('✅ Estrutura de Fallback validada.');
       const requiredFields = ['data', 'total', 'page', 'error', 'message'];
       for (const field of requiredFields) {
         if (!(field in data)) {
@@ -41,7 +41,7 @@ async function validateExternalDataContract() {
         }
       }
     } else {
-      console.log("✅ Estrutura de Resposta de Dados validada.");
+      console.log('✅ Estrutura de Resposta de Dados validada.');
       // Se houver dados, valida mapeamento
       if (data.data && data.data.length > 0) {
         const item = data.data[0];
@@ -55,9 +55,9 @@ async function validateExternalDataContract() {
       }
     }
 
-    console.log("🚀 Todos os contratos do external-data estão em conformidade.");
+    console.log('🚀 Todos os contratos do external-data estão em conformidade.');
   } catch (e) {
-    console.error("💥 Erro durante validação:", e);
+    console.error('💥 Erro durante validação:', e);
     Deno.exit(1);
   }
 }

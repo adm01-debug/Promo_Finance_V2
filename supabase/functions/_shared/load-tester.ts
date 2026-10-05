@@ -2,14 +2,17 @@
  * Simple Load Tester for Edge Functions.
  * Measures latency, throughput, and error rates.
  */
-export async function runLoadTest(url: string, options: { 
-  concurrency: number, 
-  durationMs: number,
-  method?: string,
-  headers?: Record<string, string>,
-  body?: unknown
-}) {
-  const { concurrency, durationMs, method = "POST", headers = {}, body } = options;
+export async function runLoadTest(
+  url: string,
+  options: {
+    concurrency: number;
+    durationMs: number;
+    method?: string;
+    headers?: Record<string, string>;
+    body?: unknown;
+  }
+) {
+  const { concurrency, durationMs, method = 'POST', headers = {}, body } = options;
   const startTime = Date.now();
   let totalRequests = 0;
   let successfulRequests = 0;
@@ -26,10 +29,10 @@ export async function runLoadTest(url: string, options: {
         const response = await fetch(url, {
           method,
           headers: {
-            "Content-Type": "application/json",
-            ...headers
+            'Content-Type': 'application/json',
+            ...headers,
           },
-          body: body ? JSON.stringify(body) : undefined
+          body: body ? JSON.stringify(body) : undefined,
         });
 
         const latency = Date.now() - reqStart;
@@ -49,7 +52,9 @@ export async function runLoadTest(url: string, options: {
     }
   };
 
-  const workers = Array(concurrency).fill(null).map(() => worker());
+  const workers = Array(concurrency)
+    .fill(null)
+    .map(() => worker());
   await Promise.all(workers);
 
   const totalTime = Date.now() - startTime;
@@ -62,12 +67,12 @@ export async function runLoadTest(url: string, options: {
   console.log(`Success Rate: ${((successfulRequests / totalRequests) * 100).toFixed(2)}%`);
   console.log(`Average Latency: ${avgLatency.toFixed(2)}ms`);
   console.log(`Requests Per Second: ${rps.toFixed(2)}`);
-  
+
   return {
     totalRequests,
     successfulRequests,
     failedRequests,
     avgLatency,
-    rps
+    rps,
   };
 }

@@ -1,6 +1,6 @@
-import type { ZodError, ZodIssue } from "./zod.ts";
+import type { ZodError, ZodIssue } from './zod.ts';
 
-export const VALIDATION_ERROR_CODE = "VALIDATION_ERROR";
+export const VALIDATION_ERROR_CODE = 'VALIDATION_ERROR';
 
 export interface ContractFieldError {
   path: string;
@@ -15,33 +15,36 @@ export interface ContractValidationError {
 }
 
 function isZodError(value: unknown): value is ZodError {
-  return typeof value === "object" && value !== null &&
-    Array.isArray((value as { issues?: unknown }).issues);
+  return (
+    typeof value === 'object' &&
+    value !== null &&
+    Array.isArray((value as { issues?: unknown }).issues)
+  );
 }
 
 function normalizeIssue(issue: ZodIssue): ContractFieldError {
   return {
-    path: issue.path.length > 0 ? issue.path.join(".") : "$",
+    path: issue.path.length > 0 ? issue.path.join('.') : '$',
     message: issue.message,
     code: issue.code,
   };
 }
 
-export function normalizeValidationFields(
-  error: unknown,
-): ContractFieldError[] {
+export function normalizeValidationFields(error: unknown): ContractFieldError[] {
   if (isZodError(error)) return error.issues.map(normalizeIssue);
 
   if (Array.isArray(error)) {
     return error.flatMap((item) => {
-      if (typeof item !== "object" || item === null) return [];
+      if (typeof item !== 'object' || item === null) return [];
       const candidate = item as Partial<ContractFieldError>;
       if (!candidate.message) return [];
-      return [{
-        path: candidate.path ?? "$",
-        message: candidate.message,
-        code: candidate.code ?? "custom",
-      }];
+      return [
+        {
+          path: candidate.path ?? '$',
+          message: candidate.message,
+          code: candidate.code ?? 'custom',
+        },
+      ];
     });
   }
 
@@ -51,7 +54,7 @@ export function normalizeValidationFields(
 export function createValidationErrorResponse(
   error: unknown,
   headers: Record<string, string> = {},
-  message = "Payload inválido",
+  message = 'Payload inválido'
 ): Response {
   const body: ContractValidationError = {
     code: VALIDATION_ERROR_CODE,
@@ -61,6 +64,6 @@ export function createValidationErrorResponse(
 
   return new Response(JSON.stringify(body), {
     status: 422,
-    headers: { ...headers, "Content-Type": "application/json" },
+    headers: { ...headers, 'Content-Type': 'application/json' },
   });
 }

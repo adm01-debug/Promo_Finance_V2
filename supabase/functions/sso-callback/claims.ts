@@ -16,27 +16,24 @@ export function resolveClaim(
   sources: Array<Record<string, unknown> | undefined | null>,
   mapping: Record<string, unknown>,
   logicalKey: string,
-  defaults: string[],
+  defaults: string[]
 ): string | null {
   const raw = mapping?.[logicalKey];
   const candidates: string[] = [];
   if (Array.isArray(raw)) {
-    for (const k of raw) if (typeof k === "string" && k.trim()) candidates.push(k.trim());
-  } else if (typeof raw === "string" && raw.trim()) {
+    for (const k of raw) if (typeof k === 'string' && k.trim()) candidates.push(k.trim());
+  } else if (typeof raw === 'string' && raw.trim()) {
     candidates.push(raw.trim());
   }
   for (const d of defaults) if (!candidates.includes(d)) candidates.push(d);
 
-  const getPath = (
-    obj: Record<string, unknown> | undefined | null,
-    path: string,
-  ): unknown => {
+  const getPath = (obj: Record<string, unknown> | undefined | null, path: string): unknown => {
     if (!obj) return undefined;
     if (path in obj) return obj[path];
-    const parts = path.split(".");
+    const parts = path.split('.');
     let cur: unknown = obj;
     for (const p of parts) {
-      if (cur && typeof cur === "object" && p in (cur as Record<string, unknown>)) {
+      if (cur && typeof cur === 'object' && p in (cur as Record<string, unknown>)) {
         cur = (cur as Record<string, unknown>)[p];
       } else {
         return undefined;
@@ -48,8 +45,8 @@ export function resolveClaim(
   for (const key of candidates) {
     for (const src of sources) {
       const v = getPath(src, key);
-      if (typeof v === "string" && v.trim()) return v;
-      if (typeof v === "number" || typeof v === "boolean") return String(v);
+      if (typeof v === 'string' && v.trim()) return v;
+      if (typeof v === 'number' || typeof v === 'boolean') return String(v);
     }
   }
   return null;
@@ -60,13 +57,13 @@ export function resolveClaimArray(
   sources: Array<Record<string, unknown> | undefined | null>,
   mapping: Record<string, unknown>,
   logicalKey: string,
-  defaults: string[],
+  defaults: string[]
 ): string[] {
   const raw = mapping?.[logicalKey];
   const candidates: string[] = [];
   if (Array.isArray(raw)) {
-    for (const k of raw) if (typeof k === "string" && k.trim()) candidates.push(k.trim());
-  } else if (typeof raw === "string" && raw.trim()) {
+    for (const k of raw) if (typeof k === 'string' && k.trim()) candidates.push(k.trim());
+  } else if (typeof raw === 'string' && raw.trim()) {
     candidates.push(raw.trim());
   }
   for (const d of defaults) if (!candidates.includes(d)) candidates.push(d);
@@ -76,31 +73,25 @@ export function resolveClaimArray(
       if (!src) continue;
       const v = (src as Record<string, unknown>)[key];
       if (Array.isArray(v)) return (v as unknown[]).map(String);
-      if (typeof v === "string" && v.trim()) return [v];
+      if (typeof v === 'string' && v.trim()) return [v];
     }
   }
   return [];
 }
 
-export const AVATAR_DEFAULTS = ["picture", "avatar_url", "photoUrl", "photo_url"];
-export const TELEFONE_DEFAULTS = [
-  "phone_number",
-  "phoneNumber",
-  "phone",
-  "mobile",
-  "mobilePhone",
-];
+export const AVATAR_DEFAULTS = ['picture', 'avatar_url', 'photoUrl', 'photo_url'];
+export const TELEFONE_DEFAULTS = ['phone_number', 'phoneNumber', 'phone', 'mobile', 'mobilePhone'];
 
 /**
  * Normaliza telefone removendo caracteres inválidos e mantendo apenas dígitos
  * (com possível "+" inicial). Retorna null se ficar vazio.
  */
 export function normalizeTelefone(raw: string | null | undefined): string | null {
-  if (typeof raw !== "string") return null;
+  if (typeof raw !== 'string') return null;
   const trimmed = raw.trim();
   if (!trimmed) return null;
-  const hasPlus = trimmed.startsWith("+");
-  const digits = trimmed.replace(/\D+/g, "");
+  const hasPlus = trimmed.startsWith('+');
+  const digits = trimmed.replace(/\D+/g, '');
   if (!digits) return null;
   return hasPlus ? `+${digits}` : digits;
 }
@@ -111,10 +102,10 @@ export function normalizeTelefone(raw: string | null | undefined): string | null
  */
 export function mergeProfileSafely(
   current: { full_name?: string | null; avatar_url?: string | null; telefone?: string | null },
-  incoming: { full_name?: string | null; avatar_url?: string | null; telefone?: string | null },
+  incoming: { full_name?: string | null; avatar_url?: string | null; telefone?: string | null }
 ): { full_name: string | null; avatar_url: string | null; telefone: string | null } {
   const pick = (next: string | null | undefined, prev: string | null | undefined) => {
-    if (typeof next === "string" && next.trim()) return next;
+    if (typeof next === 'string' && next.trim()) return next;
     return prev ?? null;
   };
   return {
@@ -122,7 +113,7 @@ export function mergeProfileSafely(
     avatar_url: pick(incoming.avatar_url, current.avatar_url),
     telefone: pick(
       incoming.telefone ? normalizeTelefone(incoming.telefone) : null,
-      current.telefone,
+      current.telefone
     ),
   };
 }
