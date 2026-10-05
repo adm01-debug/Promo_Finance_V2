@@ -1,5 +1,5 @@
 import { todayISOLocal } from '@/lib/formatters';
-import { useState, useMemo, useEffect } from 'react';
+import { useState, useMemo, useEffect, useRef, useCallback } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { toast } from 'sonner';
 import { toastDeleteWithUndo } from '@/lib/toast-with-undo';
@@ -401,6 +401,35 @@ export function useContasPagarLogic() {
     }
   };
 
+  // A versão esperada do lock é congelada no MOMENTO DA SELEÇÃO: guardar
+  // só o id e ler updated_at na hora do lote pegaria a versão de um refetch
+  // posterior — edição alheia entre seleção e ação passaria pelo lock.
+  const versoesNaSelecao = useRef(new Map<string, string | null>());
+
+  const toggleSelectComVersao = useCallback(
+    (id: string) => {
+      if (versoesNaSelecao.current.has(id)) {
+        versoesNaSelecao.current.delete(id);
+      } else {
+        const row = sortedContas.find((c) => c.id === id) ?? allContas.find((c) => c.id === id);
+        versoesNaSelecao.current.set(id, row?.updated_at ?? null);
+      }
+      bulkActionsHook.toggleSelect(id);
+    },
+    [sortedContas, allContas, bulkActionsHook]
+  );
+
+  const selectAllComVersao = useCallback(() => {
+    const todosSelecionados =
+      sortedContas.length > 0 && sortedContas.every((c) => bulkActionsHook.selectedIds.has(c.id));
+    if (todosSelecionados) {
+      versoesNaSelecao.current.clear();
+    } else {
+      for (const c of sortedContas) versoesNaSelecao.current.set(c.id, c.updated_at ?? null);
+    }
+    bulkActionsHook.selectAll();
+  }, [sortedContas, bulkActionsHook]);
+
   // A seleção em massa persiste entre páginas, mas sortedContas só cobre a
   // página atual: busca a linha na lista completa. O snapshot é tirado uma
   // vez, no início da ação — durante o lote cada sucesso invalida e refaz
@@ -414,6 +443,9 @@ export function useContasPagarLogic() {
     { updated_at: string | null; valor: number | null }
   > => {
     const selecionadas = new Map<string, { updated_at: string | null; valor: number | null }>();
+    for (const id of versoesNaSelecao.current.keys()) {
+      if (!bulkActionsHook.selectedIds.has(id)) versoesNaSelecao.current.delete(id);
+    }
     for (const id of bulkActionsHook.selectedIds) {
       const local = sortedContas.find((c) => c.id === id) ?? allContas.find((c) => c.id === id);
       if (!local) {
@@ -421,7 +453,10 @@ export function useContasPagarLogic() {
           'Conta fora da janela carregada — recarregue a lista e repita a ação em massa.'
         );
       }
-      selecionadas.set(id, { updated_at: local.updated_at, valor: local.valor });
+      selecionadas.set(id, {
+        updated_at: versoesNaSelecao.current.get(id) ?? local.updated_at,
+        valor: local.valor,
+      });
     }
     return selecionadas;
   };
@@ -538,6 +573,8 @@ export function useContasPagarLogic() {
 
     // Bulk actions
     ...bulkActionsHook,
+    toggleSelect: toggleSelectComVersao,
+    selectAll: selectAllComVersao,
 
     // Handlers
     setFormOpen,
