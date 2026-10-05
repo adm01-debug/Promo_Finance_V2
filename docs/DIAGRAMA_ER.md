@@ -110,8 +110,11 @@ erDiagram
 
 ## Invariantes de modelo (o que o diagrama garante)
 
-- **Toda tabela de negócio tem `empresa_id`** — isolamento multi-tenant; a RLS
-  nega cross-empresa (ver `RLS_MATRIZ_NEGATIVA.md`).
+- **Tabelas de negócio são isoladas por empresa** — quase todas têm
+  `empresa_id` direto e a RLS nega cross-empresa (ver
+  `RLS_MATRIZ_NEGATIVA.md`); exceção documentada: `transacoes_bancarias`
+  NÃO tem `empresa_id` — seu isolamento é indireto via
+  `conta_bancaria_id` → `contas_bancarias.empresa_id`.
 - **Baixa de conta é via `conciliacoes_parciais`** — join entre
   `transacoes_bancarias` e a conta (pagar/receber); conta paga/recebida sem
   transação conciliada é exceção manual, não o fluxo.

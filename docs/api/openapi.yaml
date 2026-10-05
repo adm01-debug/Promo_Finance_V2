@@ -192,6 +192,11 @@ paths:
         '422': { $ref: '#/components/responses/ErroValidacaoContrato' }
         '401': { description: Token inválido }
         '429': { $ref: '#/components/responses/RateLimited' }
+        '503':
+          description: >-
+            Webhook não configurado no servidor ({error: "Webhook não
+            configurado"}) — falha fechada antes da validação do payload;
+            não é erro de credencial do cliente
 
   /whatsapp-webhook:
     post:
@@ -239,6 +244,11 @@ paths:
         '422': { $ref: '#/components/responses/ErroValidacaoContrato' }
         '401': { description: Credencial de webhook ausente ou inválida }
         '429': { $ref: '#/components/responses/RateLimited' }
+        '503':
+          description: >-
+            Webhook não configurado no servidor ({error: "Webhook não
+            configurado"}) — fail-closed antes de processar o corpo;
+            não é erro de credencial do cliente
 
   /n8n-callback:
     post:
@@ -282,6 +292,10 @@ paths:
                   ok: { type: boolean }
                   action: { type: string }
                   result: { type: object }
+        '400':
+          description: >-
+            JSON malformado ({error: invalid_json}) ou corpo fora do
+            contrato action/payload ({error, details})
         '401': { description: x-n8n-secret inválido }
         '405': { description: Método diferente de POST }
         '503':
@@ -428,7 +442,7 @@ paths:
       summary: Schemas SCIM 2.0
       description: Discovery PÚBLICO (sem autenticação).
       responses:
-        '200': { description: ListResponse com os schemas de User, Group e ServiceProviderConfig }
+        '200': { description: 'ListResponse com os schemas User, Group e a extensão EnterpriseUser (urn:ietf:params:scim:schemas:extension:enterprise:2.0:User)' }
 
   /scim-server/scim/v2/Users:
     get:
@@ -521,8 +535,25 @@ paths:
       tags: [identidade]
       summary: Lista grupos/papéis provisionáveis
       security: [{ bearerAuth: [] }]
+      parameters:
+        - name: filter
+          in: query
+          required: false
+          schema: { type: string }
+          description: >-
+            Filtro SCIM por displayName/externalId (sintaxe `attr eq
+            "valor"`, combinável com `and`); filtro não suportado → 400
+        - name: startIndex
+          in: query
+          required: false
+          schema: { type: integer, default: 1 }
+        - name: count
+          in: query
+          required: false
+          schema: { type: integer, default: 50, maximum: 200 }
       responses:
         '200': { description: ListResponse SCIM }
+        '400': { description: 'Filtro inválido — {scimType: "invalidFilter", detail}' }
     post:
       tags: [identidade]
       summary: Cria mapeamento de grupo → papel
@@ -648,6 +679,8 @@ paths:
         '401': { description: JWT inválido ou expirado }
         '403': { description: Role incorreta, convite revogado ou convite expirado }
         '404': { description: Convite ou empresa não encontrados }
+        '422':
+          $ref: '#/components/responses/ErroValidacaoContrato'
 
   /health:
     get:
@@ -693,6 +726,11 @@ paths:
                 type: object
                 properties:
                   vapidPublicKey: { type: string }
+        '500':
+          description: >-
+            VAPID_PUBLIC_KEY não configurada ({error: "VAPID key not
+            configured"}) ou exceção interna — indisponibilidade do
+            servidor, não do cliente
 
   /get-mapbox-token:
     get:
@@ -748,7 +786,7 @@ components:
           schema:
             type: object
             properties:
-              code: { type: string, enum: [VALIDATION_ERROR] }
+              code: { type: string, enum: [VALIDATION_ERROR, UNSUPPORTED_CONTRACT_VERSION] }
               message: { type: string }
               fields:
                 type: array
