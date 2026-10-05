@@ -405,7 +405,7 @@ export function useOperacoesTributaveis(empresaId?: string) {
           cofins_valor: number | null;
         }
 
-        (data || []).forEach((op: OperacaoTributavel) => {
+        ((data || []) as OperacaoTributavel[]).forEach((op) => {
           if (['venda', 'servico_prestado'].includes(op.tipo_operacao)) {
             stats.debitos.cbs += Number(op.cbs_valor) || 0;
             stats.debitos.ibs += Number(op.ibs_valor) || 0;

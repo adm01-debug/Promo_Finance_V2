@@ -1,36 +1,27 @@
-import { Link } from "react-router-dom";
-import {
-  CheckCircle2,
-  Eye,
-  Microscope,
-  RotateCcw,
-  Search,
-  X,
-} from "lucide-react";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import { Checkbox } from "@/components/ui/checkbox";
-import { Skeleton } from "@/components/ui/skeleton";
-import { ReabrirAnomaliaDialog } from "@/components/insights-ia/anomalia/ReabrirAnomaliaDialog";
-import { dispatchOpenAnomaliaDrawer } from "@/lib/anomalia-routes";
-import { formatProfileLabel, type ProfileMini } from "@/hooks/useProfilesByIds";
-import type { Anomalia } from "@/hooks/useAnomaliasDetectadas";
-import { severidadeBadge, TIPO_LABEL } from "./AnomaliasDetectadasPanel.helpers";
+import { Link } from 'react-router-dom';
+import { CheckCircle2, Eye, Microscope, RotateCcw, Search, X } from 'lucide-react';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Checkbox } from '@/components/ui/checkbox';
+import { Skeleton } from '@/components/ui/skeleton';
+import { ReabrirAnomaliaDialog } from '@/components/insights-ia/anomalia/ReabrirAnomaliaDialog';
+import { dispatchOpenAnomaliaDrawer } from '@/lib/anomalia-routes';
+import { formatProfileLabel, type ProfileMini } from '@/hooks/useProfilesByIds';
+import type { Anomalia } from '@/hooks/useAnomaliasDetectadas';
+import type { EventoBitrix } from '@/hooks/useSincronizarAnomaliaBitrix';
+import { severidadeBadge, TIPO_LABEL } from './AnomaliasDetectadasPanel.helpers';
 
 interface AtualizarStatusMutation {
   mutate: (
-    input: { id: string; status: Anomalia["status"] },
-    options?: { onSuccess?: () => void },
+    input: { id: string; status: Anomalia['status'] },
+    options?: { onSuccess?: () => void }
   ) => void;
   isPending: boolean;
 }
 
 interface SincronizarMutation {
-  mutate: (input: { anomaliaId: string; evento: string }) => void;
+  mutate: (input: { anomaliaId: string; evento: EventoBitrix }) => void;
 }
-
-
-
 
 export interface AnomaliasListProps {
   lista: Anomalia[];
@@ -62,7 +53,7 @@ export function AnomaliasList({
   onInvestigarNavigate,
 }: AnomaliasListProps) {
   const idsReabriveis = lista
-    .filter((a) => a.status === "confirmada" || a.status === "falso_positivo")
+    .filter((a) => a.status === 'confirmada' || a.status === 'falso_positivo')
     .map((a) => a.id);
   const setReabriveis = new Set(idsReabriveis);
   const selecionadosVisiveis = idsReabriveis.filter((id) => selecionados.has(id));
@@ -103,7 +94,7 @@ export function AnomaliasList({
           >
             {selecionadosVisiveis.length > 0
               ? `${selecionadosVisiveis.length} de ${idsReabriveis.length} selecionada(s) para reabertura`
-              : `Selecionar para reabrir em lote (${idsReabriveis.length} reabrível${idsReabriveis.length === 1 ? "" : "is"})`}
+              : `Selecionar para reabrir em lote (${idsReabriveis.length} reabrível${idsReabriveis.length === 1 ? '' : 'is'})`}
           </label>
           <div className="ml-auto flex items-center gap-2">
             {selecionadosVisiveis.length > 0 && (
@@ -118,7 +109,7 @@ export function AnomaliasList({
               onClick={onOpenReabrirLote}
             >
               <RotateCcw className="h-3 w-3 mr-1" />
-              Reabrir {selecionadosVisiveis.length || ""} em lote
+              Reabrir {selecionadosVisiveis.length || ''} em lote
             </Button>
           </div>
         </div>
@@ -139,7 +130,7 @@ export function AnomaliasList({
               <div
                 key={a.id}
                 className={`p-3 rounded-md border bg-card flex items-start justify-between gap-3 ${
-                  selecionado ? "border-primary/60 ring-1 ring-primary/30" : ""
+                  selecionado ? 'border-primary/60 ring-1 ring-primary/30' : ''
                 }`}
               >
                 {podeSelecionar && (
@@ -152,41 +143,34 @@ export function AnomaliasList({
                 )}
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2 flex-wrap mb-1">
-                    <Badge variant={severidadeBadge(a.severidade)}>
-                      {a.severidade}
-                    </Badge>
+                    <Badge variant={severidadeBadge(a.severidade)}>{a.severidade}</Badge>
                     <Badge variant="outline" className="text-xs">
                       {TIPO_LABEL[a.tipo_anomalia]}
                     </Badge>
-                    {isVisible("data") && (
+                    {isVisible('data') && (
                       <span className="text-xs text-muted-foreground">
-                        {new Date(a.detectada_em).toLocaleString("pt-BR")}
+                        {new Date(a.detectada_em).toLocaleString('pt-BR')}
                       </span>
                     )}
                   </div>
                   <p className="text-sm">{a.descricao}</p>
-                  {isVisible("observacoes") && a.observacoes && (
-                    <p className="text-xs text-muted-foreground mt-1 italic">
-                      {a.observacoes}
-                    </p>
+                  {isVisible('observacoes') && a.observacoes && (
+                    <p className="text-xs text-muted-foreground mt-1 italic">{a.observacoes}</p>
                   )}
-                  {(a.status === "confirmada" || a.status === "falso_positivo") &&
+                  {(a.status === 'confirmada' || a.status === 'falso_positivo') &&
                     a.resolvida_por && (
                       <p
                         className="text-[11px] text-muted-foreground mt-1"
                         title={profilesMap?.get(a.resolvida_por)?.email ?? undefined}
                       >
-                        {a.status === "confirmada"
-                          ? "Confirmada"
-                          : "Marcada falso positivo"}{" "}
-                        por{" "}
+                        {a.status === 'confirmada' ? 'Confirmada' : 'Marcada falso positivo'} por{' '}
                         <span className="font-medium text-foreground">
                           {formatProfileLabel(profilesMap?.get(a.resolvida_por))}
                         </span>
                         {a.resolvida_em && (
                           <>
-                            {" · "}
-                            {new Date(a.resolvida_em).toLocaleString("pt-BR")}
+                            {' · '}
+                            {new Date(a.resolvida_em).toLocaleString('pt-BR')}
                           </>
                         )}
                       </p>
@@ -201,21 +185,18 @@ export function AnomaliasList({
                     <Microscope className="h-3 w-3 mr-1" /> Drill-down
                   </Button>
                   <Button asChild size="sm" variant="ghost">
-                    <Link
-                      to={`/admin/insights-ia/anomalia/${a.id}`}
-                      target="_blank"
-                    >
+                    <Link to={`/admin/insights-ia/anomalia/${a.id}`} target="_blank">
                       <Microscope className="h-3 w-3 mr-1" /> Nova aba
                     </Link>
                   </Button>
                 </div>
-                {isVisible("acoes_inline") && a.status === "nova" && (
+                {isVisible('acoes_inline') && a.status === 'nova' && (
                   <div className="flex flex-col gap-1 shrink-0">
                     <Button
                       size="sm"
                       variant="outline"
                       onClick={() => {
-                        atualizarStatus.mutate({ id: a.id, status: "investigando" });
+                        atualizarStatus.mutate({ id: a.id, status: 'investigando' });
                         onInvestigarNavigate(a.id);
                       }}
                       disabled={atualizarStatus.isPending}
@@ -227,14 +208,14 @@ export function AnomaliasList({
                       variant="ghost"
                       onClick={() =>
                         atualizarStatus.mutate(
-                          { id: a.id, status: "falso_positivo" },
+                          { id: a.id, status: 'falso_positivo' },
                           {
                             onSuccess: () =>
                               sincronizar.mutate({
                                 anomaliaId: a.id,
-                                evento: "falso_positivo",
+                                evento: 'falso_positivo',
                               }),
-                          },
+                          }
                         )
                       }
                     >
@@ -242,27 +223,27 @@ export function AnomaliasList({
                     </Button>
                   </div>
                 )}
-                {isVisible("acoes_inline") && a.status === "investigando" && (
+                {isVisible('acoes_inline') && a.status === 'investigando' && (
                   <Button
                     size="sm"
                     onClick={() =>
                       atualizarStatus.mutate(
-                        { id: a.id, status: "confirmada" },
+                        { id: a.id, status: 'confirmada' },
                         {
                           onSuccess: () =>
                             sincronizar.mutate({
                               anomaliaId: a.id,
-                              evento: "confirmada",
+                              evento: 'confirmada',
                             }),
-                        },
+                        }
                       )
                     }
                   >
                     <CheckCircle2 className="h-3 w-3 mr-1" /> Confirmar
                   </Button>
                 )}
-                {isVisible("acoes_inline") &&
-                  (a.status === "confirmada" || a.status === "falso_positivo") && (
+                {isVisible('acoes_inline') &&
+                  (a.status === 'confirmada' || a.status === 'falso_positivo') && (
                     <ReabrirAnomaliaDialog anomaliaId={a.id} />
                   )}
               </div>

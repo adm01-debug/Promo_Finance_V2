@@ -62,7 +62,9 @@ export function useExpertContext(): ExpertContextData {
   const { data: clientes, isLoading: loadingClientes } = useQuery({
     queryKey: ['expert-clientes'],
     queryFn: async () => {
-      const { data: { session } } = await supabase.auth.getSession();
+      const {
+        data: { session },
+      } = await supabase.auth.getSession();
       if (!session) return [];
 
       const projectId = env.SUPABASE_PROJECT_ID;
@@ -70,16 +72,16 @@ export function useExpertContext(): ExpertContextData {
 
       const response = await fetch(url, {
         headers: {
-          'Authorization': `Bearer ${session.access_token}`,
-          'apikey': env.SUPABASE_PUBLISHABLE_KEY,
+          Authorization: `Bearer ${session.access_token}`,
+          apikey: env.SUPABASE_PUBLISHABLE_KEY,
         },
       });
 
       if (!response.ok) return [];
-      const result = await response.json();
-      return (result.data || []).map((c: Record<string, unknown>) => ({
-        razao_social: c.razao_social,
-        score: c.score,
+      const result = (await response.json()) as { data?: Array<Record<string, unknown>> };
+      return (result.data || []).map((c) => ({
+        razao_social: c.razao_social as string | undefined,
+        score: c.score as number | undefined,
         limite_credito: c.limite_credito,
       }));
     },
@@ -91,7 +93,9 @@ export function useExpertContext(): ExpertContextData {
     queryFn: async () => {
       const { data, error } = await supabase
         .from('solicitacoes_aprovacao')
-        .select('id, conta_pagar_id, status, solicitado_em, contas_pagar(valor, descricao, fornecedor_nome)')
+        .select(
+          'id, conta_pagar_id, status, solicitado_em, contas_pagar(valor, descricao, fornecedor_nome)'
+        )
         .eq('status', 'pendente');
       if (error) throw error;
       return data || [];
@@ -99,49 +103,58 @@ export function useExpertContext(): ExpertContextData {
     staleTime: 1000 * 60 * 5,
   });
 
-  const isLoading = loadingPagar || loadingReceber || loadingBancos || loadingClientes || loadingAprovacoes;
+  const isLoading =
+    loadingPagar || loadingReceber || loadingBancos || loadingClientes || loadingAprovacoes;
 
   // Build context string
   const buildContext = (): string => {
     if (isLoading) return '';
 
-    const formatCurrency = (value: number) => 
+    const formatCurrency = (value: number) =>
       new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(value);
 
     // Bank accounts summary
     const saldoTotal = contasBancarias?.reduce((acc, c) => acc + Number(c.saldo_atual), 0) || 0;
-    const saldoDisponivel = contasBancarias?.reduce((acc, c) => acc + Number(c.saldo_disponivel), 0) || 0;
+    const saldoDisponivel =
+      contasBancarias?.reduce((acc, c) => acc + Number(c.saldo_disponivel), 0) || 0;
 
     // Accounts payable analysis
-    const pagarPendente = contasPagar?.filter(c => c.status === 'pendente') || [];
-    const pagarVencido = contasPagar?.filter(c => c.status === 'vencido') || [];
-    const pagarProximos7Dias = pagarPendente.filter(c => 
-      new Date(c.data_vencimento) <= em7Dias && new Date(c.data_vencimento) >= hoje
+    const pagarPendente = contasPagar?.filter((c) => c.status === 'pendente') || [];
+    const pagarVencido = contasPagar?.filter((c) => c.status === 'vencido') || [];
+    const pagarProximos7Dias = pagarPendente.filter(
+      (c) => new Date(c.data_vencimento) <= em7Dias && new Date(c.data_vencimento) >= hoje
     );
     const totalPagarPendente = pagarPendente.reduce((acc, c) => acc + Number(c.valor), 0);
     const totalPagarVencido = pagarVencido.reduce((acc, c) => acc + Number(c.valor), 0);
     const totalPagarProximos7Dias = pagarProximos7Dias.reduce((acc, c) => acc + Number(c.valor), 0);
 
     // Accounts receivable analysis
-    const receberPendente = contasReceber?.filter(c => c.status === 'pendente') || [];
-    const receberVencido = contasReceber?.filter(c => c.status === 'vencido') || [];
-    const receberProximos7Dias = receberPendente.filter(c => 
-      new Date(c.data_vencimento) <= em7Dias && new Date(c.data_vencimento) >= hoje
+    const receberPendente = contasReceber?.filter((c) => c.status === 'pendente') || [];
+    const receberVencido = contasReceber?.filter((c) => c.status === 'vencido') || [];
+    const receberProximos7Dias = receberPendente.filter(
+      (c) => new Date(c.data_vencimento) <= em7Dias && new Date(c.data_vencimento) >= hoje
     );
     const totalReceberPendente = receberPendente.reduce((acc, c) => acc + Number(c.valor), 0);
     const totalReceberVencido = receberVencido.reduce((acc, c) => acc + Number(c.valor), 0);
-    const totalReceberProximos7Dias = receberProximos7Dias.reduce((acc, c) => acc + Number(c.valor), 0);
+    const totalReceberProximos7Dias = receberProximos7Dias.reduce(
+      (acc, c) => acc + Number(c.valor),
+      0
+    );
 
     // Collection stages analysis
-    const cobrancaEtapas = contasReceber?.reduce((acc, c) => {
-      if (c.etapa_cobranca) {
-        acc[c.etapa_cobranca] = (acc[c.etapa_cobranca] || 0) + 1;
-      }
-      return acc;
-    }, {} as Record<string, number>) || {};
+    const cobrancaEtapas =
+      contasReceber?.reduce(
+        (acc, c) => {
+          if (c.etapa_cobranca) {
+            acc[c.etapa_cobranca] = (acc[c.etapa_cobranca] || 0) + 1;
+          }
+          return acc;
+        },
+        {} as Record<string, number>
+      ) || {};
 
     // Low score clients
-    const clientesBaixoScore = clientes?.filter(c => (c.score || 100) < 70) || [];
+    const clientesBaixoScore = clientes?.filter((c) => (c.score || 100) < 70) || [];
 
     // Build detailed context
     let context = `
@@ -151,7 +164,7 @@ export function useExpertContext(): ExpertContextData {
 - Saldo Total: ${formatCurrency(saldoTotal)}
 - Saldo Disponível: ${formatCurrency(saldoDisponivel)}
 - Contas Ativas: ${contasBancarias?.length || 0}
-${contasBancarias?.map(c => `  • ${c.banco}: ${formatCurrency(Number(c.saldo_atual))}`).join('\n') || ''}
+${contasBancarias?.map((c) => `  • ${c.banco}: ${formatCurrency(Number(c.saldo_atual))}`).join('\n') || ''}
 
 ## CONTAS A PAGAR
 - Total Pendente: ${formatCurrency(totalPagarPendente)} (${pagarPendente.length} títulos)
@@ -161,7 +174,7 @@ ${contasBancarias?.map(c => `  • ${c.banco}: ${formatCurrency(Number(c.saldo_a
 
     if (pagarProximos7Dias.length > 0) {
       context += `\n**Vencimentos Próximos (7 dias):**\n`;
-      pagarProximos7Dias.slice(0, 5).forEach(c => {
+      pagarProximos7Dias.slice(0, 5).forEach((c) => {
         context += `  • ${format(new Date(c.data_vencimento), 'dd/MM')}: ${c.fornecedor_nome} - ${c.descricao} (${formatCurrency(Number(c.valor))})\n`;
       });
       if (pagarProximos7Dias.length > 5) {
@@ -178,7 +191,7 @@ ${contasBancarias?.map(c => `  • ${c.banco}: ${formatCurrency(Number(c.saldo_a
 
     if (receberVencido.length > 0) {
       context += `\n**Títulos Vencidos (Inadimplência):**\n`;
-      receberVencido.slice(0, 5).forEach(c => {
+      receberVencido.slice(0, 5).forEach((c) => {
         context += `  • ${c.cliente_nome}: ${formatCurrency(Number(c.valor))} - vencido em ${format(new Date(c.data_vencimento), 'dd/MM/yyyy')}\n`;
       });
       if (receberVencido.length > 5) {
@@ -208,19 +221,21 @@ ${contasBancarias?.map(c => `  • ${c.banco}: ${formatCurrency(Number(c.saldo_a
 
     if (clientesBaixoScore.length > 0) {
       context += `\n## CLIENTES COM RISCO (Score < 70)\n`;
-      clientesBaixoScore.slice(0, 5).forEach(c => {
+      clientesBaixoScore.slice(0, 5).forEach((c) => {
         context += `  • ${c.razao_social}: Score ${c.score}\n`;
       });
     }
 
     // Add key indicators
-    const taxaInadimplencia = totalReceberVencido > 0 && totalReceberPendente > 0
-      ? ((totalReceberVencido / (totalReceberPendente + totalReceberVencido)) * 100).toFixed(1)
-      : '0';
-    
-    const liquidez = totalPagarPendente > 0 
-      ? ((saldoDisponivel + totalReceberPendente) / totalPagarPendente).toFixed(2)
-      : 'N/A';
+    const taxaInadimplencia =
+      totalReceberVencido > 0 && totalReceberPendente > 0
+        ? ((totalReceberVencido / (totalReceberPendente + totalReceberVencido)) * 100).toFixed(1)
+        : '0';
+
+    const liquidez =
+      totalPagarPendente > 0
+        ? ((saldoDisponivel + totalReceberPendente) / totalPagarPendente).toFixed(2)
+        : 'N/A';
 
     context += `
 ## INDICADORES CHAVE
