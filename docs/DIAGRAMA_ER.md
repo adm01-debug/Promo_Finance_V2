@@ -35,9 +35,9 @@ erDiagram
     contas_bancarias |o--o{ contas_receber : "conta de recebimento (ref. lógica)"
 
 
-    clientes ||--o{ asaas_customers : "espelha no Asaas"
-    contas_receber ||--o{ asaas_payments : "cobra via"
-    asaas_customers ||--o{ asaas_payments : "paga (ref. externa asaas_customer_id, sem FK)"
+    clientes |o--o{ asaas_customers : "espelha no Asaas"
+    contas_receber |o--o{ asaas_payments : "cobra via"
+    asaas_customers |o--o{ asaas_payments : "paga (ref. externa asaas_customer_id, sem FK)"
 
     nfe_recebidas }o--o| contas_pagar : "vincula opcional (conta_pagar_id FK anulável)"
     %% notas_fiscais não tem FK para contas_pagar/nfe_recebidas — sua única
@@ -68,8 +68,8 @@ erDiagram
         uuid empresa_id FK
         uuid fornecedor_id FK "anulável"
         uuid categoria_id FK "anulável"
-        uuid centro_custo_id "ref. lógica — SEM constraint FK"
-        uuid conta_bancaria_id "ref. lógica — SEM constraint FK"
+        uuid centro_custo_id "FK anulável"
+        uuid conta_bancaria_id "FK anulável"
         numeric valor
         date data_vencimento
         date data_pagamento
@@ -81,8 +81,8 @@ erDiagram
         uuid empresa_id FK
         uuid cliente_id FK "anulável"
         uuid categoria_id FK "anulável"
-        uuid centro_custo_id "ref. lógica — SEM constraint FK"
-        uuid conta_bancaria_id "ref. lógica — SEM constraint FK"
+        uuid centro_custo_id "FK anulável"
+        uuid conta_bancaria_id "FK anulável"
         numeric valor
         date data_vencimento
         date data_recebimento

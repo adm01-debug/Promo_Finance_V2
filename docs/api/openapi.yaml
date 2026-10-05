@@ -452,6 +452,17 @@ paths:
               properties:
                 kind: { type: string, enum: [saml-finalize] }
                 provider_id: { type: string, format: uuid }
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              required: [code, state, verifier]
+              properties:
+                code: { type: string, minLength: 1 }
+                state: { type: string, minLength: 1 }
+                verifier: { type: string, minLength: 1 }
+            description: >-
+              Reenvio do fluxo OIDC/PKCE — o SPA repassa code/state/verifier
+              por formulário urlencoded (o verifier não pode ir na URL)
       responses:
         '200':
           description: Vínculo aplicado — JSON com o resultado do provisionamento
@@ -592,6 +603,10 @@ paths:
             {status:400, detail:'Operations array required', scimType:invalidValue}
         '401': { description: Bearer token SCIM ausente, inválido ou expirado }
         '404': { description: Não encontrado }
+        '500':
+          description: >-
+            Falha de persistência — patchUser devolve SCIM 500 quando
+            updateUserEmail falha em Auth ou profiles
     put:
       tags: [identidade]
       summary: Substitui o usuário inteiro
@@ -670,6 +685,10 @@ paths:
             token bound to provider_id"})
         '401': { description: Bearer token SCIM ausente, inválido ou expirado }
         '403': { description: provider_id do token não pertence à empresa resolvida }
+        '500':
+          description: >-
+            createGroup devolve SCIM 500 quando o upsert em
+            sso_role_mappings falha
 
   '/scim-server/scim/v2/Groups/{id}':
     get:
@@ -706,7 +725,16 @@ paths:
                       value: {}
       responses:
         '200': { description: Group atualizado }
+        '400':
+          description: >-
+            patchGroup devolve SCIM 400 (scimType:invalidPath) para
+            `path` fora dos suportados (displayName, members,
+            members[value eq "<id>"])
         '401': { description: Bearer token SCIM ausente, inválido ou expirado }
+        '404':
+          description: >-
+            patchGroup devolve 404 quando a empresa não tem provedor
+            vinculado ou o grupo não existe nos provedores dela
     put:
       tags: [identidade]
       summary: Substitui o grupo inteiro (membros inclusos)
@@ -970,9 +998,15 @@ components:
           pattern: '\\S'
           description: Obrigatório no contrato v2 (idempotência)
         date: { type: string, format: date-time }
-        version: { oneOf: [{ type: string }, { type: number }] }
-        companyId: { oneOf: [{ type: string }, { type: number }] }
-        event: { type: string }
+        version:
+          oneOf:
+            - { type: string, minLength: 1, pattern: '\\S' }
+            - { type: number }
+        companyId:
+          oneOf:
+            - { type: string, minLength: 1, pattern: '\\S' }
+            - { type: number }
+        event: { type: string, minLength: 1, pattern: '\\S' }
         module: { type: string }
         data:
           type: object
