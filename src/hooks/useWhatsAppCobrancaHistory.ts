@@ -1,4 +1,3 @@
-
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
@@ -7,16 +6,18 @@ export function useWhatsAppCobrancaHistory(contaReceberId?: string) {
   return useQuery({
     queryKey: ['historico-cobranca-whatsapp', contaReceberId],
     queryFn: async () => {
-      const baseQuery = supabase.from('historico_cobranca_whatsapp').select('*');
-      
-      let query = baseQuery.order('created_at', { ascending: false });
+      let query = supabase.from('historico_cobranca_whatsapp').select('*');
 
       if (contaReceberId) {
-        // @ts-expect-error -- instanciação de tipos excessivamente profunda no client supabase
-        query = query.eq('conta_receber_id', contaReceberId);
+        // Cast estrutural: a linha gerada de historico_cobranca_whatsapp dispara
+        // instanciação profunda de tipos no overload de .eq (TS2589).
+        interface EqChain<Q> {
+          eq: (column: string, value: string) => Q;
+        }
+        query = (query as unknown as EqChain<typeof query>).eq('conta_receber_id', contaReceberId);
       }
 
-      const { data, error } = await query.limit(200);
+      const { data, error } = await query.order('created_at', { ascending: false }).limit(200);
       if (error) throw error;
       return (data ?? []) as Record<string, unknown>[];
     },

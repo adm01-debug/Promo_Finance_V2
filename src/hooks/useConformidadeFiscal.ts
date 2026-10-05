@@ -1,5 +1,11 @@
 // Hook: validação de conformidade fiscal
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import {
+  useMutation,
+  useQuery,
+  useQueryClient,
+  type UseMutationResult,
+  type UseQueryResult,
+} from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 
@@ -24,7 +30,12 @@ export interface ConformidadeResultado {
   gerado_em: string;
 }
 
-export function useConformidadeFiscal(empresaId?: string, periodo?: string) {
+export function useConformidadeFiscal(
+  empresaId?: string,
+  periodo?: string
+): UseQueryResult<ConformidadeResultado | null> & {
+  verificar: UseMutationResult<ConformidadeResultado, Error, void>;
+} {
   const qc = useQueryClient();
   const periodoFinal = periodo ?? new Date().toISOString().slice(0, 7);
   const queryKey = ['conformidade-fiscal', empresaId, periodoFinal];
@@ -46,14 +57,14 @@ export function useConformidadeFiscal(empresaId?: string, periodo?: string) {
       if (ultimo) {
         return {
           id: ultimo.id,
-          empresa_id: ultimo.empresa_id,
-          periodo: ultimo.periodo,
-          score: ultimo.score,
+          empresa_id: ultimo.empresa_id ?? empresaId,
+          periodo: ultimo.periodo ?? periodoFinal,
+          score: ultimo.score ?? 0,
           nivel: ultimo.nivel as ConformidadeResultado['nivel'],
-          total_checks: ultimo.total_checks,
-          checks_aprovados: ultimo.checks_aprovados,
-          itens: ultimo.itens as unknown as ConformidadeItem[],
-          gerado_em: ultimo.created_at,
+          total_checks: ultimo.total_checks ?? 0,
+          checks_aprovados: ultimo.checks_aprovados ?? 0,
+          itens: (ultimo.itens ?? []) as unknown as ConformidadeItem[],
+          gerado_em: ultimo.created_at ?? '',
         };
       }
       return null;
@@ -79,5 +90,7 @@ export function useConformidadeFiscal(empresaId?: string, periodo?: string) {
     onError: (e: Error) => toast.error(e.message),
   });
 
-  return { ...query, verificar };
+  return { ...query, verificar } as UseQueryResult<ConformidadeResultado | null> & {
+    verificar: UseMutationResult<ConformidadeResultado, Error, void>;
+  };
 }

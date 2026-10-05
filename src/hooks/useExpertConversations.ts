@@ -34,7 +34,14 @@ export function useExpertConversations() {
         .limit(50);
 
       if (error) throw error;
-      return data || [];
+      return (data || []).map((c) => ({
+        id: c.id,
+        user_id: c.user_id,
+        titulo: c.titulo ?? '',
+        resumo: c.resumo,
+        created_at: c.created_at ?? '',
+        updated_at: c.updated_at ?? '',
+      }));
     },
   });
 }
@@ -52,11 +59,15 @@ export function useExpertMessages(conversationId: string | null) {
         .order('created_at', { ascending: true });
 
       if (error) throw error;
-      
-      return (data || []).map(msg => ({
-        ...msg,
+
+      return (data || []).map((msg) => ({
+        id: msg.id,
+        conversation_id: msg.conversation_id,
         role: msg.role as 'user' | 'assistant',
-        actions: msg.actions as unknown as ExpertAction[] | undefined,
+        content: msg.content,
+        actions: (msg.actions ?? undefined) as unknown as ExpertAction[] | undefined,
+        actions_executed: msg.actions_executed ?? false,
+        created_at: msg.created_at ?? '',
       }));
     },
     enabled: !!conversationId,
@@ -68,7 +79,9 @@ export function useCreateConversation() {
 
   return useMutation({
     mutationFn: async (titulo?: string): Promise<ExpertConversation> => {
-      const { data: { user } } = await supabase.auth.getUser();
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
       if (!user) throw new Error('Usuário não autenticado');
 
       const { data, error } = await supabase
@@ -81,7 +94,14 @@ export function useCreateConversation() {
         .single();
 
       if (error) throw error;
-      return data;
+      return {
+        id: data.id,
+        user_id: data.user_id,
+        titulo: data.titulo ?? '',
+        resumo: data.resumo,
+        created_at: data.created_at ?? '',
+        updated_at: data.updated_at ?? '',
+      };
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['expert-conversations'] });
@@ -93,10 +113,18 @@ export function useUpdateConversation() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async ({ id, titulo, resumo }: { id: string; titulo?: string; resumo?: string }) => {
+    mutationFn: async ({
+      id,
+      titulo,
+      resumo,
+    }: {
+      id: string;
+      titulo?: string;
+      resumo?: string;
+    }) => {
       const { error } = await supabase
         .from('expert_conversations')
-        .update({ 
+        .update({
           titulo: titulo,
           resumo: resumo,
           updated_at: new Date().toISOString(),
@@ -116,10 +144,7 @@ export function useDeleteConversation() {
 
   return useMutation({
     mutationFn: async (id: string) => {
-      const { error } = await supabase
-        .from('expert_conversations')
-        .delete()
-        .eq('id', id);
+      const { error } = await supabase.from('expert_conversations').delete().eq('id', id);
 
       if (error) throw error;
     },
@@ -169,7 +194,13 @@ export function useUpdateMessageActions() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async ({ messageId, conversationId }: { messageId: string; conversationId: string }) => {
+    mutationFn: async ({
+      messageId,
+      conversationId,
+    }: {
+      messageId: string;
+      conversationId: string;
+    }) => {
       const { error } = await supabase
         .from('expert_messages')
         .update({ actions_executed: true })

@@ -9,11 +9,19 @@ import { Input } from '@/components/ui/input';
 import { Zap, Plus, Trash2, Search, Eye, CheckCircle } from 'lucide-react';
 import { toast } from 'sonner';
 import {
-  Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter,
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
 } from '@/components/ui/dialog';
 import { Label } from '@/components/ui/label';
 import {
-  Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
 } from '@/components/ui/select';
 import { useAuth } from '@/hooks/useAuth';
 import { ScrollArea } from '@/components/ui/scroll-area';
@@ -44,11 +52,11 @@ export function RegrasConciliacaoPanel() {
         .from('regras_conciliacao')
         .select('*')
         .order('vezes_aplicada', { ascending: false });
-      
+
       if (currentEmpresaId) {
         query = query.eq('empresa_id', currentEmpresaId);
       }
-      
+
       const { data, error } = await query;
       if (error) throw error;
       return data;
@@ -57,10 +65,7 @@ export function RegrasConciliacaoPanel() {
 
   const toggleRegra = useMutation({
     mutationFn: async ({ id, ativo }: { id: string; ativo: boolean }) => {
-      const { error } = await supabase
-        .from('regras_conciliacao')
-        .update({ ativo })
-        .eq('id', id);
+      const { error } = await supabase.from('regras_conciliacao').update({ ativo }).eq('id', id);
       if (error) throw error;
     },
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ['regras-conciliacao'] }),
@@ -79,14 +84,35 @@ export function RegrasConciliacaoPanel() {
 
   const generatePreview = () => {
     const mockExtrato = [
-      { id: 'm1', data: '2024-05-01', descricao: 'PIX FORNECEDOR ABC SERVICOS', valor: -1500.00, tipo: 'debito' },
-      { id: 'm2', data: '2024-05-02', descricao: 'RECEBIMENTO CLIENTE XYZ LTDA', valor: 4500.00, tipo: 'credito' },
-      { id: 'm3', data: '2024-05-03', descricao: 'TARIFA BANCARIA MANUTENCAO', valor: -45.90, tipo: 'debito' },
+      {
+        id: 'm1',
+        data: '2024-05-01',
+        descricao: 'PIX FORNECEDOR ABC SERVICOS',
+        valor: -1500.0,
+        tipo: 'debito',
+      },
+      {
+        id: 'm2',
+        data: '2024-05-02',
+        descricao: 'RECEBIMENTO CLIENTE XYZ LTDA',
+        valor: 4500.0,
+        tipo: 'credito',
+      },
+      {
+        id: 'm3',
+        data: '2024-05-03',
+        descricao: 'TARIFA BANCARIA MANUTENCAO',
+        valor: -45.9,
+        tipo: 'debito',
+      },
     ];
 
-    const preview = mockExtrato.map(item => {
-      const match = regras?.find(r => 
-        r.ativo && item.descricao.toUpperCase().includes(r.padrao_descricao.toUpperCase())
+    const preview = mockExtrato.map((item) => {
+      const match = regras?.find(
+        (r) =>
+          r.ativo &&
+          r.padrao_descricao &&
+          item.descricao.toUpperCase().includes(r.padrao_descricao.toUpperCase())
       );
       return { ...item, match };
     });
@@ -95,11 +121,15 @@ export function RegrasConciliacaoPanel() {
     setShowPreview(true);
   };
 
-  const filtered = regras?.filter(r => {
-    if (!search) return true;
-    const s = search.toLowerCase();
-    return (r.padrao_descricao || '').toLowerCase().includes(s) || (r.entidade_nome || '').toLowerCase().includes(s);
-  }) || [];
+  const filtered =
+    regras?.filter((r) => {
+      if (!search) return true;
+      const s = search.toLowerCase();
+      return (
+        (r.padrao_descricao || '').toLowerCase().includes(s) ||
+        (r.entidade_nome || '').toLowerCase().includes(s)
+      );
+    }) || [];
 
   return (
     <Card className="card-base group overflow-hidden border-primary/10 shadow-xl shadow-primary/5">
@@ -115,10 +145,19 @@ export function RegrasConciliacaoPanel() {
             </CardDescription>
           </div>
           <div className="flex gap-2">
-            <Button size="sm" variant="ghost" onClick={generatePreview} className="gap-2 h-9 px-4 rounded-xl hover:bg-primary/10 text-primary font-bold">
+            <Button
+              size="sm"
+              variant="ghost"
+              onClick={generatePreview}
+              className="gap-2 h-9 px-4 rounded-xl hover:bg-primary/10 text-primary font-bold"
+            >
               <Eye className="h-4 w-4" /> Preview
             </Button>
-            <Button size="sm" onClick={() => setShowAddDialog(true)} className="gap-2 h-9 px-4 rounded-xl bg-primary hover:bg-primary/90 font-black shadow-lg shadow-primary/20">
+            <Button
+              size="sm"
+              onClick={() => setShowAddDialog(true)}
+              className="gap-2 h-9 px-4 rounded-xl bg-primary hover:bg-primary/90 font-black shadow-lg shadow-primary/20"
+            >
               <Plus className="h-4 w-4" /> Nova Regra
             </Button>
           </div>
@@ -128,10 +167,10 @@ export function RegrasConciliacaoPanel() {
         {filtered.length > 0 && (
           <div className="relative">
             <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-primary/30" />
-            <Input 
-              placeholder="Buscar regras por descrição ou entidade..." 
-              value={search} 
-              onChange={e => setSearch(e.target.value)} 
+            <Input
+              placeholder="Buscar regras por descrição ou entidade..."
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
               className="pl-11 h-12 rounded-2xl border-primary/10 bg-primary/[0.02] focus:ring-primary/20 transition-all font-medium"
             />
           </div>
@@ -139,14 +178,16 @@ export function RegrasConciliacaoPanel() {
 
         {filtered.length === 0 ? (
           <p className="text-sm text-muted-foreground text-center py-6">
-            {isLoading ? 'Carregando...' : 'Nenhuma regra cadastrada. Regras são criadas automaticamente ao confirmar matches manuais.'}
+            {isLoading
+              ? 'Carregando...'
+              : 'Nenhuma regra cadastrada. Regras são criadas automaticamente ao confirmar matches manuais.'}
           </p>
         ) : (
           <div className="space-y-2 max-h-[300px] overflow-y-auto">
-            {filtered.map(r => (
+            {filtered.map((r) => (
               <div key={r.id} className="flex items-center gap-3 p-3 rounded-lg border bg-card">
                 <Switch
-                  checked={r.ativo}
+                  checked={r.ativo ?? false}
                   onCheckedChange={(checked) => toggleRegra.mutate({ id: r.id, ativo: checked })}
                 />
                 <div className="flex-1 min-w-0">
@@ -184,26 +225,38 @@ export function RegrasConciliacaoPanel() {
               Demonstração de como as regras atuais seriam aplicadas a um extrato simulado.
             </CardDescription>
           </DialogHeader>
-          
+
           <ScrollArea className="h-[400px] mt-4 rounded-2xl border border-primary/5 bg-primary/[0.01]">
             <div className="p-4 space-y-3">
-              {previewExtrato.map(item => (
-                <div key={item.id} className="flex flex-col p-4 rounded-2xl border bg-card/50 transition-all hover:border-primary/20">
+              {previewExtrato.map((item) => (
+                <div
+                  key={item.id}
+                  className="flex flex-col p-4 rounded-2xl border bg-card/50 transition-all hover:border-primary/20"
+                >
                   <div className="flex items-center justify-between mb-2">
-                    <span className="text-xs font-black opacity-40 uppercase tracking-tighter">{item.data}</span>
-                    <span className={cn("text-sm font-black", item.valor < 0 ? "text-destructive" : "text-success")}>
+                    <span className="text-xs font-black opacity-40 uppercase tracking-tighter">
+                      {item.data}
+                    </span>
+                    <span
+                      className={cn(
+                        'text-sm font-black',
+                        item.valor < 0 ? 'text-destructive' : 'text-success'
+                      )}
+                    >
                       {formatCurrency(item.valor)}
                     </span>
                   </div>
                   <p className="text-sm font-bold truncate mb-3">{item.descricao}</p>
-                  
+
                   {item.match ? (
                     <div className="flex items-center gap-3 p-3 rounded-xl bg-success/5 border border-success/10 animate-in fade-in slide-in-from-bottom-2">
                       <div className="h-8 w-8 rounded-full bg-success/10 flex items-center justify-center">
                         <CheckCircle className="h-4 w-4 text-success" />
                       </div>
                       <div className="flex-1 min-w-0">
-                        <p className="text-[10px] font-black uppercase tracking-widest text-success/60">Match Encontrado</p>
+                        <p className="text-[10px] font-black uppercase tracking-widest text-success/60">
+                          Match Encontrado
+                        </p>
                         <p className="text-sm font-black truncate">{item.match.entidade_nome}</p>
                       </div>
                     </div>
@@ -213,8 +266,12 @@ export function RegrasConciliacaoPanel() {
                         <Search className="h-4 w-4 text-primary/40" />
                       </div>
                       <div className="flex-1 min-w-0">
-                        <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground/40">Sem Match Automático</p>
-                        <p className="text-sm font-bold text-muted-foreground/60 italic">Requer conciliação manual</p>
+                        <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground/40">
+                          Sem Match Automático
+                        </p>
+                        <p className="text-sm font-bold text-muted-foreground/60 italic">
+                          Requer conciliação manual
+                        </p>
                       </div>
                     </div>
                   )}
@@ -222,9 +279,11 @@ export function RegrasConciliacaoPanel() {
               ))}
             </div>
           </ScrollArea>
-          
+
           <DialogFooter className="mt-6">
-            <Button onClick={() => setShowPreview(false)} className="rounded-xl px-8 font-black">Fechar Preview</Button>
+            <Button onClick={() => setShowPreview(false)} className="rounded-xl px-8 font-black">
+              Fechar Preview
+            </Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
@@ -232,7 +291,13 @@ export function RegrasConciliacaoPanel() {
   );
 }
 
-function AddRegraDialog({ open, onOpenChange }: { open: boolean; onOpenChange: (v: boolean) => void }) {
+function AddRegraDialog({
+  open,
+  onOpenChange,
+}: {
+  open: boolean;
+  onOpenChange: (v: boolean) => void;
+}) {
   const [padrao, setPadrao] = useState('');
   const [entidade, setEntidade] = useState('');
   const [tipo, setTipo] = useState<string>('pagar');
@@ -273,26 +338,34 @@ function AddRegraDialog({ open, onOpenChange }: { open: boolean; onOpenChange: (
         </DialogHeader>
         <div className="space-y-6 py-4">
           <div className="space-y-2">
-            <Label className="text-[10px] font-black uppercase tracking-widest text-primary/60">Padrão de descrição (extrato)</Label>
-            <Input 
-              placeholder="Ex: PIX FORNECEDOR ABC" 
-              value={padrao} 
-              onChange={e => setPadrao(e.target.value)}
+            <Label className="text-[10px] font-black uppercase tracking-widest text-primary/60">
+              Padrão de descrição (extrato)
+            </Label>
+            <Input
+              placeholder="Ex: PIX FORNECEDOR ABC"
+              value={padrao}
+              onChange={(e) => setPadrao(e.target.value)}
               className="h-12 rounded-xl border-primary/10 bg-primary/[0.02]"
             />
-            <p className="text-[10px] text-muted-foreground italic">Dica: O sistema buscará este texto dentro da descrição do extrato.</p>
+            <p className="text-[10px] text-muted-foreground italic">
+              Dica: O sistema buscará este texto dentro da descrição do extrato.
+            </p>
           </div>
           <div className="space-y-2">
-            <Label className="text-[10px] font-black uppercase tracking-widest text-primary/60">Entidade (fornecedor/cliente)</Label>
-            <Input 
-              placeholder="Ex: ABC Comércio Ltda" 
-              value={entidade} 
-              onChange={e => setEntidade(e.target.value)}
+            <Label className="text-[10px] font-black uppercase tracking-widest text-primary/60">
+              Entidade (fornecedor/cliente)
+            </Label>
+            <Input
+              placeholder="Ex: ABC Comércio Ltda"
+              value={entidade}
+              onChange={(e) => setEntidade(e.target.value)}
               className="h-12 rounded-xl border-primary/10 bg-primary/[0.02]"
             />
           </div>
           <div className="space-y-2">
-            <Label className="text-[10px] font-black uppercase tracking-widest text-primary/60">Tipo de Lançamento</Label>
+            <Label className="text-[10px] font-black uppercase tracking-widest text-primary/60">
+              Tipo de Lançamento
+            </Label>
             <Select value={tipo} onValueChange={setTipo}>
               <SelectTrigger className="h-12 rounded-xl border-primary/10 bg-primary/[0.02]">
                 <SelectValue />
@@ -305,9 +378,15 @@ function AddRegraDialog({ open, onOpenChange }: { open: boolean; onOpenChange: (
           </div>
         </div>
         <DialogFooter className="gap-2">
-          <Button variant="ghost" onClick={() => onOpenChange(false)} className="rounded-xl font-bold h-12">Cancelar</Button>
-          <Button 
-            onClick={() => addRegra.mutate()} 
+          <Button
+            variant="ghost"
+            onClick={() => onOpenChange(false)}
+            className="rounded-xl font-bold h-12"
+          >
+            Cancelar
+          </Button>
+          <Button
+            onClick={() => addRegra.mutate()}
             disabled={!padrao || !entidade || !currentEmpresaId}
             className="rounded-xl font-black h-12 px-8 bg-primary hover:bg-primary/90 shadow-lg shadow-primary/20"
           >
