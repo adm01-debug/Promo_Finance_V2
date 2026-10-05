@@ -4906,7 +4906,7 @@ CREATE POLICY apuracoes_tributarias_tenant_rw ON public.apuracoes_tributarias TO
 DROP POLICY IF EXISTS asaas_audit_tenant_select ON public.asaas_audit_trail;
 CREATE POLICY asaas_audit_tenant_select ON public.asaas_audit_trail FOR SELECT TO authenticated USING ((public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role) AND (EXISTS ( SELECT 1
    FROM public.asaas_payments p
-  WHERE ((p.id = asaas_audit_trail.asaas_payment_id) AND public.empresa_acessivel(p.empresa_id))))));
+  WHERE ((p.id = asaas_audit_trail.payment_id) AND public.empresa_acessivel(p.empresa_id))))));
 
 DROP POLICY IF EXISTS asaas_config_tenant_rw ON public.asaas_config;
 CREATE POLICY asaas_config_tenant_rw ON public.asaas_config TO authenticated USING ((public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role) AND public.empresa_acessivel(empresa_id))) WITH CHECK ((public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role) AND public.empresa_acessivel(empresa_id)));
