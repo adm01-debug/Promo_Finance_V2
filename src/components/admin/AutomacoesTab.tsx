@@ -1,16 +1,16 @@
 // COMPONENT: AutomacoesTab (P13)
 // Status dos cron jobs ativos
-import { useQuery } from "@tanstack/react-query";
-import { formatDistanceToNow } from "date-fns";
-import { ptBR } from "date-fns/locale";
-import { Activity, CheckCircle2, XCircle, Clock, RefreshCw, Loader2 } from "lucide-react";
-import { useState } from "react";
-import { supabase } from "@/integrations/supabase/client";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import { Skeleton } from "@/components/ui/skeleton";
-import { toast } from "sonner";
+import { useQuery } from '@tanstack/react-query';
+import { formatDistanceToNow } from 'date-fns';
+import { ptBR } from 'date-fns/locale';
+import { Activity, CheckCircle2, XCircle, Clock, RefreshCw, Loader2 } from 'lucide-react';
+import { useState } from 'react';
+import { supabase } from '@/integrations/supabase/client';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Skeleton } from '@/components/ui/skeleton';
+import { toast } from 'sonner';
 
 interface CronJob {
   jobid: number;
@@ -31,30 +31,45 @@ interface CronRun {
 }
 
 const P13_JOB_NAMES = [
-  "p13-health-score-diario",
-  "p13-detectar-anomalias",
-  "p13-resumo-executivo-semanal",
-  "p13-refresh-benchmark",
-  "p13-gerar-acoes-recomendadas",
-  "p13-cleanup-acoes-expiradas",
+  'p13-health-score-diario',
+  'p13-detectar-anomalias',
+  'p13-resumo-executivo-semanal',
+  'p13-refresh-benchmark',
+  'p13-gerar-acoes-recomendadas',
+  'p13-cleanup-acoes-expiradas',
 ];
 
 const JOB_LABELS: Record<string, { label: string; description: string }> = {
-  "p13-health-score-diario": { label: "Health Score diário", description: "Calcula score 360° das empresas (07:00)" },
-  "p13-detectar-anomalias": { label: "Detector de anomalias", description: "Análise estatística (a cada 30 min)" },
-  "p13-resumo-executivo-semanal": { label: "Resumo executivo semanal", description: "Domingos 18:00" },
-  "p13-refresh-benchmark": { label: "Refresh benchmark setorial", description: "Segundas 03:00" },
-  "p13-gerar-acoes-recomendadas": { label: "Gerar ações recomendadas", description: "Top 5 ações por IA (06:00)" },
-  "p13-cleanup-acoes-expiradas": { label: "Limpeza ações expiradas", description: "Remove ações >24h (05:55)" },
+  'p13-health-score-diario': {
+    label: 'Health Score diário',
+    description: 'Calcula score 360° das empresas (07:00)',
+  },
+  'p13-detectar-anomalias': {
+    label: 'Detector de anomalias',
+    description: 'Análise estatística (a cada 30 min)',
+  },
+  'p13-resumo-executivo-semanal': {
+    label: 'Resumo executivo semanal',
+    description: 'Domingos 18:00',
+  },
+  'p13-refresh-benchmark': { label: 'Refresh benchmark setorial', description: 'Segundas 03:00' },
+  'p13-gerar-acoes-recomendadas': {
+    label: 'Gerar ações recomendadas',
+    description: 'Top 5 ações por IA (06:00)',
+  },
+  'p13-cleanup-acoes-expiradas': {
+    label: 'Limpeza ações expiradas',
+    description: 'Remove ações >24h (05:55)',
+  },
 };
 
 export function AutomacoesTab() {
   const [running, setRunning] = useState<string | null>(null);
 
   const { data: jobs, isLoading: loadingJobs } = useQuery({
-    queryKey: ["p13-cron-jobs"],
+    queryKey: ['p13-cron-jobs'],
     queryFn: async () => {
-      const { data, error } = await supabase.rpc("get_cron_jobs");
+      const { data, error } = await supabase.rpc('get_cron_jobs');
       if (error) throw error;
       const jobsArray = (data || []) as unknown as CronJob[];
       return jobsArray.filter((j) => P13_JOB_NAMES.includes(j.jobname));
@@ -62,11 +77,15 @@ export function AutomacoesTab() {
     refetchInterval: 60_000,
   });
 
-  const { data: runs, isLoading: loadingRuns, refetch } = useQuery({
-    queryKey: ["p13-cron-runs"],
+  const {
+    data: runs,
+    isLoading: loadingRuns,
+    refetch,
+  } = useQuery({
+    queryKey: ['p13-cron-runs'],
     queryFn: async () => {
-      const { data, error } = await supabase.rpc("get_cron_run_history", {
-        p_job_name: null,
+      const { data, error } = await supabase.rpc('get_cron_run_history', {
+        p_job_name: undefined,
         p_limit: 100,
       });
       if (error) throw error;
@@ -80,14 +99,14 @@ export function AutomacoesTab() {
     setRunning(jobname);
     try {
       const map: Record<string, string> = {
-        "p13-health-score-diario": "calcular-health-score-operacional",
-        "p13-detectar-anomalias": "detectar-anomalias-financeiras",
-        "p13-resumo-executivo-semanal": "gerar-resumo-executivo-semanal",
-        "p13-gerar-acoes-recomendadas": "gerar-acoes-recomendadas",
+        'p13-health-score-diario': 'calcular-health-score-operacional',
+        'p13-detectar-anomalias': 'detectar-anomalias-financeiras',
+        'p13-resumo-executivo-semanal': 'gerar-resumo-executivo-semanal',
+        'p13-gerar-acoes-recomendadas': 'gerar-acoes-recomendadas',
       };
       const fn = map[jobname];
       if (!fn) {
-        toast.info("Esta automação roda apenas dentro do banco");
+        toast.info('Esta automação roda apenas dentro do banco');
         return;
       }
       const { error } = await supabase.functions.invoke(fn);
@@ -95,7 +114,7 @@ export function AutomacoesTab() {
       toast.success(`${JOB_LABELS[jobname]?.label ?? jobname} executado`);
       refetch();
     } catch (e) {
-      toast.error(`Falha: ${e instanceof Error ? e.message : "erro"}`);
+      toast.error(`Falha: ${e instanceof Error ? e.message : 'erro'}`);
     } finally {
       setRunning(null);
     }
@@ -122,18 +141,19 @@ export function AutomacoesTab() {
           <Activity className="h-5 w-5 text-primary" aria-hidden />
           <div>
             <CardTitle>Automações Programadas (P13)</CardTitle>
-            <CardDescription>
-              Cron jobs que mantêm o sistema operando 24/7
-            </CardDescription>
+            <CardDescription>Cron jobs que mantêm o sistema operando 24/7</CardDescription>
           </div>
         </div>
       </CardHeader>
       <CardContent>
         <ul className="space-y-2.5" role="list">
           {(jobs ?? []).map((job) => {
-            const meta = JOB_LABELS[job.jobname] ?? { label: job.jobname, description: job.schedule };
+            const meta = JOB_LABELS[job.jobname] ?? {
+              label: job.jobname,
+              description: job.schedule,
+            };
             const lastRun = lastRunByJob.get(job.jobname);
-            const succeeded = lastRun?.status === "succeeded";
+            const succeeded = lastRun?.status === 'succeeded';
 
             return (
               <li
@@ -143,9 +163,15 @@ export function AutomacoesTab() {
                 <div className="flex items-start gap-3 min-w-0 flex-1">
                   {lastRun ? (
                     succeeded ? (
-                      <CheckCircle2 className="h-4 w-4 text-success mt-0.5 shrink-0" aria-label="Sucesso" />
+                      <CheckCircle2
+                        className="h-4 w-4 text-success mt-0.5 shrink-0"
+                        aria-label="Sucesso"
+                      />
                     ) : (
-                      <XCircle className="h-4 w-4 text-destructive mt-0.5 shrink-0" aria-label="Falha" />
+                      <XCircle
+                        className="h-4 w-4 text-destructive mt-0.5 shrink-0"
+                        aria-label="Falha"
+                      />
                     )
                   ) : (
                     <Clock className="h-4 w-4 text-muted-foreground mt-0.5 shrink-0" aria-hidden />
@@ -153,17 +179,27 @@ export function AutomacoesTab() {
                   <div className="min-w-0">
                     <div className="flex items-center gap-2 flex-wrap">
                       <p className="text-sm font-semibold">{meta.label}</p>
-                      <Badge variant={job.active ? "secondary" : "outline"} className="text-[10px] h-4 px-1.5">
-                        {job.active ? "Ativo" : "Pausado"}
+                      <Badge
+                        variant={job.active ? 'secondary' : 'outline'}
+                        className="text-[10px] h-4 px-1.5"
+                      >
+                        {job.active ? 'Ativo' : 'Pausado'}
                       </Badge>
-                      <code className="text-[10px] bg-muted px-1.5 py-0.5 rounded">{job.schedule}</code>
+                      <code className="text-[10px] bg-muted px-1.5 py-0.5 rounded">
+                        {job.schedule}
+                      </code>
                     </div>
                     <p className="text-xs text-muted-foreground mt-1">{meta.description}</p>
                     {lastRun && (
                       <p className="text-[10px] text-muted-foreground/70 mt-0.5">
-                        Última execução:{" "}
-                        {formatDistanceToNow(new Date(lastRun.start_time), { locale: ptBR, addSuffix: true })}
-                        {!succeeded && lastRun.return_message && ` · ${lastRun.return_message.slice(0, 80)}`}
+                        Última execução:{' '}
+                        {formatDistanceToNow(new Date(lastRun.start_time), {
+                          locale: ptBR,
+                          addSuffix: true,
+                        })}
+                        {!succeeded &&
+                          lastRun.return_message &&
+                          ` · ${lastRun.return_message.slice(0, 80)}`}
                       </p>
                     )}
                   </div>

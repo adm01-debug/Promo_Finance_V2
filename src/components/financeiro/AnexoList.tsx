@@ -216,7 +216,7 @@ export function AnexoList({ entidadeId, entidadeTipo, readonly = false }: AnexoL
               <div className="min-w-0">
                 <p className="text-xs font-bold truncate">{anexo.nome_arquivo}</p>
                 <p className="text-[10px] text-muted-foreground">
-                  {formatSize(anexo.tamanho_bytes)}
+                  {formatSize(anexo.tamanho_bytes ?? 0)}
                 </p>
               </div>
             </div>

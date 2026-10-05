@@ -1,12 +1,29 @@
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '@/components/ui/table';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { formatCurrency, formatDate, getStatusLabel } from '@/lib/formatters';
-import { Building2, Mail, Phone, MapPin, CreditCard, TrendingUp, Clock, CheckCircle2, AlertCircle } from 'lucide-react';
+import {
+  Building2,
+  Mail,
+  Phone,
+  MapPin,
+  CreditCard,
+  TrendingUp,
+  Clock,
+  CheckCircle2,
+  AlertCircle,
+} from 'lucide-react';
 import type { ExternalCliente } from '@/hooks/useFinancialData';
 
 interface ClienteDetailDialogProps {
@@ -24,11 +41,16 @@ const getScoreColor = (score: number | null) => {
 
 const getStatusColor = (status: string) => {
   switch (status) {
-    case 'pago': return 'bg-success/10 text-success border-success/20';
-    case 'pendente': return 'bg-warning/10 text-warning border-warning/20';
-    case 'vencido': return 'bg-destructive/10 text-destructive border-destructive/20';
-    case 'parcial': return 'bg-info/10 text-info border-info/20';
-    default: return 'bg-muted text-muted-foreground';
+    case 'pago':
+      return 'bg-success/10 text-success border-success/20';
+    case 'pendente':
+      return 'bg-warning/10 text-warning border-warning/20';
+    case 'vencido':
+      return 'bg-destructive/10 text-destructive border-destructive/20';
+    case 'parcial':
+      return 'bg-info/10 text-info border-info/20';
+    default:
+      return 'bg-muted text-muted-foreground';
   }
 };
 
@@ -52,8 +74,9 @@ export function ClienteDetailDialog({ cliente, open, onOpenChange }: ClienteDeta
 
   const totalContas = contasReceber?.length || 0;
   const totalValor = contasReceber?.reduce((acc, c) => acc + Number(c.valor), 0) || 0;
-  const totalRecebido = contasReceber?.reduce((acc, c) => acc + Number(c.valor_recebido || 0), 0) || 0;
-  const contasVencidas = contasReceber?.filter(c => c.status === 'vencido').length || 0;
+  const totalRecebido =
+    contasReceber?.reduce((acc, c) => acc + Number(c.valor_recebido || 0), 0) || 0;
+  const contasVencidas = contasReceber?.filter((c) => c.status === 'vencido').length || 0;
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -75,7 +98,7 @@ export function ClienteDetailDialog({ cliente, open, onOpenChange }: ClienteDeta
                   Score
                 </div>
                 <div className="mt-1">
-                  <Badge className={getScoreColor(cliente.score)}>
+                  <Badge className={getScoreColor(cliente.score ?? null)}>
                     {cliente.score || 'N/A'}
                   </Badge>
                 </div>
@@ -102,10 +125,11 @@ export function ClienteDetailDialog({ cliente, open, onOpenChange }: ClienteDeta
             <Card className="bg-card/50">
               <CardContent className="p-4">
                 <div className="flex items-center gap-2 text-muted-foreground text-sm">
-                  <Clock className="h-4 w-4 text-warning" />
-                  A Receber
+                  <Clock className="h-4 w-4 text-warning" />A Receber
                 </div>
-                <p className="mt-1 font-semibold text-warning">{formatCurrency(totalValor - totalRecebido)}</p>
+                <p className="mt-1 font-semibold text-warning">
+                  {formatCurrency(totalValor - totalRecebido)}
+                </p>
               </CardContent>
             </Card>
           </div>
@@ -126,7 +150,9 @@ export function ClienteDetailDialog({ cliente, open, onOpenChange }: ClienteDeta
               </div>
               <div className="flex items-center gap-2 col-span-2">
                 <MapPin className="h-4 w-4 text-muted-foreground" />
-                <span>{cliente.cidade && cliente.estado ? `${cliente.cidade}/${cliente.estado}` : '-'}</span>
+                <span>
+                  {cliente.cidade && cliente.estado ? `${cliente.cidade}/${cliente.estado}` : '-'}
+                </span>
               </div>
             </CardContent>
           </Card>
@@ -170,8 +196,8 @@ export function ClienteDetailDialog({ cliente, open, onOpenChange }: ClienteDeta
                           <TableCell>{formatCurrency(conta.valor)}</TableCell>
                           <TableCell>{formatCurrency(conta.valor_recebido || 0)}</TableCell>
                           <TableCell>
-                            <Badge className={getStatusColor(conta.status)}>
-                              {getStatusLabel(conta.status)}
+                            <Badge className={getStatusColor(conta.status ?? '')}>
+                              {getStatusLabel(conta.status ?? '')}
                             </Badge>
                           </TableCell>
                         </TableRow>
