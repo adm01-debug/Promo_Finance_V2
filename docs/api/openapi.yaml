@@ -114,6 +114,9 @@ paths:
   /bling-webhook:
     post:
       tags: [webhooks]
+      security:
+        - webhookHmac: []
+        - webhookToken: []
       summary: Eventos do ERP Bling
       description: >-
         Recebe callbacks do Bling (notas fiscais, pedidos, estoque). Credencial
@@ -164,6 +167,7 @@ paths:
                       $ref: '#/components/schemas/BlingWebhookV2'
       responses:
         '200': { description: Evento aceito }
+        '405': { description: Método diferente de POST — o handler devolve 405 antes de autenticar }
         '422': { $ref: '#/components/responses/ErroValidacaoContrato' }
         '401': { description: Assinatura/secret inválidos ou ausentes }
         '429': { $ref: '#/components/responses/RateLimited' }
@@ -916,6 +920,18 @@ components:
         Token SCIM opaco por provedor (secrets scim_tokens) — válido
         SOMENTE nos endpoints /scim-server/*; não é um JWT e não passa
         no gateway das demais funções
+    webhookHmac:
+      type: apiKey
+      in: header
+      name: x-bling-signature-256
+      description: >-
+        Assinatura HMAC-SHA256 do corpo bruto (também aceitos
+        x-bling-signature, x-signature, x-webhook-signature)
+    webhookToken:
+      type: apiKey
+      in: header
+      name: x-webhook-token
+      description: Token compartilhado do domínio — alternativa à assinatura HMAC
     userJwt:
       type: http
       scheme: bearer

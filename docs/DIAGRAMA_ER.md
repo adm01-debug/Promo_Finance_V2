@@ -23,7 +23,7 @@ erDiagram
 
     user_empresas }o--|| auth_users : "user_id"
 
-    clientes ||--o{ contas_receber : "recebe de"
+    clientes |o--o{ contas_receber : "recebe de (cliente_id anulável)"
     fornecedores ||--o{ contas_pagar : "paga a"
     categorias ||--o{ contas_pagar : "classifica"
     categorias ||--o{ contas_receber : "classifica"
