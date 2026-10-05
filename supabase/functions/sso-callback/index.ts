@@ -137,11 +137,14 @@ function safeOrigin(req: Request, fallback?: string | null): string {
       /* ignore */
     }
   }
-  // Origem do referer/origin do request, NÃO do hostname do Supabase
+  // Referer/origin só contam se estiverem na allowlist CORS — qualquer
+  // cliente pode forjar esses headers, então confiar neles cegamente seria
+  // um open redirect que também vaza `code`/`state` nos retries de PKCE.
   const referer = req.headers.get('referer') || req.headers.get('origin');
   if (referer) {
     try {
-      return new URL(referer).origin;
+      const origem = new URL(referer).origin;
+      if (origemCorsPermitida(origem)) return origem;
     } catch {
       /* ignore */
     }
@@ -204,7 +207,7 @@ function normalizePhone(v: unknown): {
 
 // buildProfileSyncDelta foi extraída para ./profile-sync-delta.ts
 import { buildProfileSyncDelta } from './profile-sync-delta.ts';
-import { corsHeadersPara } from '../_shared/cors.ts';
+import { corsHeadersPara, origemCorsPermitida } from '../_shared/cors.ts';
 import { createLogger } from '../_shared/observability.ts';
 import { withEdgeObservability } from '../_shared/edge-observability.ts';
 const log = createLogger('sso-callback');
@@ -641,6 +644,36 @@ async function handleSamlFinalize(
     return jsonResp({ error: 'user_not_found' }, 404, headers);
   }
   const email = u.user.email.toLowerCase();
+
+  // Prova de origem: só pode finalizar vínculo quem chegou pelo broker SSO
+  // deste provider (identity `sso` com o provider_id) ou quem já estava
+  // vinculado antes (sso_provider_id gravado num finalize anterior) — sem
+  // isso, um JWT qualquer ganharia vínculo na empresa via provider_id.
+  const identities = (u.user.identities ?? []) as Array<{
+    provider?: string;
+    identity_data?: Record<string, unknown>;
+  }>;
+  const viaBroker = identities.some(
+    (i) =>
+      i.provider === 'sso' && (i.identity_data?.provider_id as string | undefined) === providerId
+  );
+  const jaVinculado =
+    ((u.user.user_metadata || {}) as Record<string, unknown>).sso_provider_id === providerId;
+  if (!viaBroker && !jaVinculado) {
+    await logAttempt({
+      admin,
+      providerId,
+      email,
+      success: false,
+      errCode: 'sso_identity_mismatch',
+      errMsg: null,
+      t0,
+      ip,
+      ua,
+    });
+    return jsonResp({ error: 'sso_identity_mismatch' }, 403, headers);
+  }
+
   const cm = (provider.claim_mapping || {}) as Record<string, unknown>;
 
   // Em SAML pelo broker do Supabase, claims SAML chegam em user_metadata e app_metadata
@@ -858,6 +891,14 @@ Deno.serve(
             return redirectErr(req, 'pkce_mismatch', appRedirect);
           }
         }
+
+        // Consome o attempt: expira a linha para que code+state não possam
+        // ser reenviados dentro da janela de 5min (replay). Não pode ser
+        // antes: o retry de PKCE (GET → SPA → POST) reusa a mesma attempt.
+        await admin
+          .from('sso_login_attempts')
+          .update({ expires_at: new Date().toISOString() })
+          .eq('id', attempt.id);
 
         const { data: provider } = await admin
           .from('sso_providers')
