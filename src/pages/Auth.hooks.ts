@@ -9,6 +9,7 @@ import { useDeviceDetection } from '@/hooks/useDeviceDetection';
 import { useWebAuthn } from '@/hooks/useWebAuthn';
 import { useAuthValidation } from '@/hooks/useAuthValidation';
 import { readSloFailure, type SloFailureSnapshot } from '@/lib/sso-slo-state';
+import { env } from '@/config/env';
 
 // Validation schemas
 const emailSchema = z.string().email('Email inválido');
@@ -121,8 +122,27 @@ export function useAuthPage() {
       // Recarrega snapshot caso tenha sido escrito após o mount inicial.
       setSloFailureState(readSloFailure());
     } else if (params.get('sso_error')) {
-      toast.error('Falha no login SSO', { description: params.get('sso_error') ?? undefined });
+      // OIDC/PKCE: o redirect do IdP chega ao sso-callback sem o verifier
+      // (ele vive no sessionStorage). A edge devolve code+state para cá e o
+      // SPA reenvia a chamada completa — navegação, não fetch, para seguir o
+      // 302 final (sessão/magic link).
+      const ssoError = params.get('sso_error');
+      const ssoCode = params.get('sso_code');
+      const ssoState = params.get('sso_state');
+      const verifier = ssoState ? sessionStorage.getItem(`pkce:${ssoState}`) : null;
+      if (ssoError === 'pkce_verifier_missing' && ssoCode && ssoState && verifier) {
+        const retry = new URL(`${env.SUPABASE_URL}/functions/v1/sso-callback`);
+        retry.searchParams.set('code', ssoCode);
+        retry.searchParams.set('state', ssoState);
+        retry.searchParams.set('verifier', verifier);
+        sessionStorage.removeItem(`pkce:${ssoState}`);
+        window.location.href = retry.toString();
+        return;
+      }
+      toast.error('Falha no login SSO', { description: ssoError ?? undefined });
       params.delete('sso_error');
+      params.delete('sso_code');
+      params.delete('sso_state');
       const qs = params.toString();
       window.history.replaceState({}, '', window.location.pathname + (qs ? `?${qs}` : ''));
     }

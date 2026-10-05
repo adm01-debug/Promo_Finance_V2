@@ -144,7 +144,18 @@ export const handler = async (req: Request) => {
       'analisar_risco_cliente',
       'cancelar_assinatura',
     ]);
-    if (ACOES_SEM_ESCOPO_EMPRESA.has(action)) {
+    // Ações que não tocam a API do Asaas (só dados locais/espelhos) não são
+    // derrubadas pelo kill-switch — desativar a integração não pode impedir
+    // simulação de backoff, análise de risco e a conciliação de dados já
+    // persistidos.
+    const ACOES_LOCAIS = new Set([
+      'simular_backoff',
+      'analisar_risco_cliente',
+      'gerar_sugestoes_conciliacao',
+      'aceitar_sugestao_conciliacao',
+    ]);
+    const checaSwitch = !ACOES_LOCAIS.has(action);
+    if (ACOES_SEM_ESCOPO_EMPRESA.has(action) && checaSwitch) {
       const inativaGlobal = respostaIntegracaoDesativada('asaas', corsHeaders);
       if (inativaGlobal) return inativaGlobal;
     }
@@ -214,7 +225,7 @@ export const handler = async (req: Request) => {
       if (!vinculo.ok) return vinculo.resposta;
       // Kill-switch pós-escopo: só quem tem vínculo com a empresa do recurso
       // descobre que a integração está desativada.
-      return respostaIntegracaoDesativada('asaas', corsHeaders);
+      return checaSwitch ? respostaIntegracaoDesativada('asaas', corsHeaders) : null;
     };
 
     let result: any;

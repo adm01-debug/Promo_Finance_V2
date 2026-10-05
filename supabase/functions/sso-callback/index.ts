@@ -817,7 +817,15 @@ Deno.serve(
               ua,
               appRedirect,
             });
-            return redirectErr(req, 'pkce_verifier_missing', appRedirect);
+            // O redirect do IdP chega só com code+state — o verifier ficou no
+            // sessionStorage do SPA (pkce:<state>). Devolve os parâmetros para
+            // /auth reenviar a chamada completa; sem isso o login OIDC sempre
+            // morre aqui.
+            const retry = new URL(`${safeOrigin(req, appRedirect)}/auth`);
+            retry.searchParams.set('sso_error', 'pkce_verifier_missing');
+            retry.searchParams.set('sso_code', code);
+            retry.searchParams.set('sso_state', state);
+            return Response.redirect(retry.toString(), 302);
           }
           const h = await sha256(verifier);
           if (h !== attempt.code_verifier_hash) {
