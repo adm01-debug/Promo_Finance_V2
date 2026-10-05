@@ -78,7 +78,9 @@ serve(
         // Kill-switch depois de auth+schema para as ações sem recurso de empresa:
         // import_transactions tem vínculo próprio (conta bancária) e checa lá dentro,
         // senão um usuário sem escopo sobre a conta sondaria o estado do circuito.
-        if (action !== 'import_transactions') {
+        // revoke_consent também fica de fora: só atualiza o status local do
+        // consentimento — bloquear a revogação num incidente violaria LGPD.
+        if (action !== 'import_transactions' && action !== 'revoke_consent') {
           const inativa = respostaIntegracaoDesativada('open_finance', corsHeaders);
           if (inativa) return inativa;
         }

@@ -37,6 +37,14 @@ const origensPermitidas: readonly string[] = (() => {
   return lista.length > 0 ? lista : ORIGENS_PADRAO;
 })();
 
+/**
+ * `true` se a origem está na allowlist CORS — ignorando `*` (wildcard libera
+ * o header, mas não deve liberar redirects que carregam código/sessão).
+ */
+export function origemCorsPermitida(origin: string): boolean {
+  return origensPermitidas.includes(origin);
+}
+
 const BASE_HEADERS: Record<string, string> = {
   'Access-Control-Allow-Headers':
     'authorization, x-client-info, apikey, content-type, asaas-access-token, ' +

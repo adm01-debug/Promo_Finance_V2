@@ -112,14 +112,6 @@ export const handler = async (req: Request) => {
       });
     }
 
-    // O kill-switch roda DEPOIS do vínculo empresa↔usuário: um 503 aqui
-    // vazaria o estado da integração para quem tem papel mas não acesso
-    // ao recurso da empresa em questão.
-    const ASAAS_API_KEY = Deno.env.get('ASAAS_API_KEY');
-    if (!ASAAS_API_KEY) {
-      throw new Error('Integração ASAAS indisponível');
-    }
-
     const rawBody = await req.json();
     const validation = validatePayload(AsaasProxySchema, rawBody, 'asaas-proxy');
 
@@ -137,6 +129,9 @@ export const handler = async (req: Request) => {
     // cancelar_assinatura entra aqui porque a empresa só é resolvida depois
     // de um GET prévio ao Asaas — sem este check a chamada alcançaria o
     // gateway durante o incidente que o switch deveria isolar.
+    // O kill-switch roda DEPOIS do vínculo empresa↔usuário: um 503 aqui
+    // vazaria o estado da integração para quem tem papel mas não acesso
+    // ao recurso da empresa em questão.
     const ACOES_SEM_ESCOPO_EMPRESA = new Set([
       'consultar_saldo',
       'processar_fila_sincronizacao',
@@ -144,9 +139,27 @@ export const handler = async (req: Request) => {
       'analisar_risco_cliente',
       'cancelar_assinatura',
     ]);
-    if (ACOES_SEM_ESCOPO_EMPRESA.has(action)) {
+    // Ações que não tocam a API do Asaas (só dados locais/espelhos) não são
+    // derrubadas pelo kill-switch — desativar a integração não pode impedir
+    // simulação de backoff, análise de risco e a conciliação de dados já
+    // persistidos.
+    const ACOES_LOCAIS = new Set([
+      'simular_backoff',
+      'analisar_risco_cliente',
+      'gerar_sugestoes_conciliacao',
+      'aceitar_sugestao_conciliacao',
+    ]);
+    const checaSwitch = !ACOES_LOCAIS.has(action);
+    if (ACOES_SEM_ESCOPO_EMPRESA.has(action) && checaSwitch) {
       const inativaGlobal = respostaIntegracaoDesativada('asaas', corsHeaders);
       if (inativaGlobal) return inativaGlobal;
+    }
+
+    // A chave só é exigida para ações que realmente chamam a API — as
+    // locais (simulação, risco, conciliação) funcionam mesmo sem ela.
+    const ASAAS_API_KEY = Deno.env.get('ASAAS_API_KEY') ?? '';
+    if (!ASAAS_API_KEY && checaSwitch) {
+      throw new Error('Integração ASAAS indisponível');
     }
 
     const ok = (result: any) =>
@@ -214,7 +227,7 @@ export const handler = async (req: Request) => {
       if (!vinculo.ok) return vinculo.resposta;
       // Kill-switch pós-escopo: só quem tem vínculo com a empresa do recurso
       // descobre que a integração está desativada.
-      return respostaIntegracaoDesativada('asaas', corsHeaders);
+      return checaSwitch ? respostaIntegracaoDesativada('asaas', corsHeaders) : null;
     };
 
     let result: any;

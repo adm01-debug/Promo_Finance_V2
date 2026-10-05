@@ -73,11 +73,14 @@ export const handler = async (req: Request) => {
           corsHeaders
         );
       }
-      const bruto = rawPayload as { auth?: { application_token?: string } };
-      if (
-        !bruto.auth?.application_token ||
-        !segredosIguais(bruto.auth.application_token, segredo)
-      ) {
+      // O token nativo pode vir no nível externo (v1) ou dentro de `data`
+      // quando o corpo usa o envelope {contract_version, data} (v2).
+      const bruto = rawPayload as {
+        auth?: { application_token?: string };
+        data?: { auth?: { application_token?: string } };
+      };
+      const applicationToken = bruto.auth?.application_token ?? bruto.data?.auth?.application_token;
+      if (!applicationToken || !segredosIguais(applicationToken, segredo)) {
         return createErrorResponse('Token invalido', 401, undefined, req);
       }
     } else {
@@ -137,6 +140,12 @@ export const handler = async (req: Request) => {
     const authPayload = payloadSeguro.auth;
     if (authPayload && typeof authPayload === 'object') {
       delete (authPayload as Record<string, unknown>).application_token;
+    }
+    // Envelope v2: o token mora em data.auth — não persistir no evento.
+    const authEnvelope = (payloadSeguro as { data?: { auth?: Record<string, unknown> } }).data
+      ?.auth;
+    if (authEnvelope && typeof authEnvelope === 'object') {
+      delete authEnvelope.application_token;
     }
     const externalId =
       'event_id' in payload && typeof payload.event_id === 'string'
