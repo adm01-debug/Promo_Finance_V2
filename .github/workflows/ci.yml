@@ -93,6 +93,11 @@ jobs:
           # local de origin/main.
           if git rev-parse --verify -q HEAD^2 >/dev/null 2>&1; then
             BASE=$(git rev-parse HEAD^1)
+          elif [ "${{ github.event_name }}" = "push" ] && [ -n "${{ github.event.before }}" ]; then
+            # Em push, origin/main já aponta para o HEAD novo: merge-base
+            # devolve o próprio HEAD e `HEAD..HEAD` varreria zero commits.
+            # O `before` do evento é o sha anterior de main — o escopo certo.
+            BASE="${{ github.event.before }}"
           else
             BASE=$(git merge-base origin/main HEAD 2>/dev/null || echo "")
           fi
@@ -332,8 +337,8 @@ jobs:
         run: bun run type-check
 
       - name: Ratchet strictNullChecks (baseline só encolhe)
-        # Overlay progressivo: não exige strict global hoje, mas barra QUALQUER
-        # erro novo de strictNullChecks vs o baseline versionado. Ver script.
+        # O tsconfig principal já roda strict global (PR #141); este gate
+        # continua valendo como proteção contra regressão do overlay.
         run: bun run type-check:strict
 
       - name: Type check da infraestrutura de teste
@@ -384,7 +389,7 @@ jobs:
         # Impede regressão silenciosa de bundle: nenhum chunk JS individual
         # pode ultrapassar 600 KB (gzip off). Chunks grandes degradam LCP e
         # indicam import acidental de dep pesada. Ajuste o threshold em
-        # scripts/ci/bundle-size-threshold.json se uma dep legítima exigir.
+        # THRESHOLD_KB abaixo se uma dep legítima exigir.
         run: |
           set -euo pipefail
           THRESHOLD_KB=600
