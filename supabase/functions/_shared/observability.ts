@@ -98,9 +98,10 @@ export function createLogger(functionName: string, requestId?: string): EdgeLogg
     }
     buffer.push(entry);
     if (buffer.length > MAX_BUFFER) buffer.splice(0, buffer.length - MAX_BUFFER);
-    // Console também (compatibilidade com supabase logs)
+    // Console também (compatibilidade com supabase logs) — com o mesmo
+    // redact da persistência: stdout vira log do dashboard do Supabase.
     try {
-      console.log(JSON.stringify({ ts: new Date().toISOString(), ...entry }));
+      console.log(JSON.stringify(redigir({ ts: new Date().toISOString(), ...entry })));
     } catch {
       console.log(`[${functionName}] ${level} ${event}`);
     }

@@ -188,13 +188,15 @@ Deno.test(
 
       // 2. Log de batch tem cStat + duration_ms.
       const batch = logs.lines.find((l) => l.obj.event === 'puxador_batch')!;
-      assertEquals(batch.obj.cnpj, CNPJ);
+      // `cnpj` é chave sensível (CHAVE_SENSIVEL): o eco em stdout aplica o
+      // mesmo redact da persistência em edge_function_logs.
+      assertEquals(batch.obj.cnpj, '[REDACTED]');
       assert(typeof batch.obj.cStat === 'string' && batch.obj.cStat.length > 0);
       assert(typeof batch.obj.duration_ms === 'number' && batch.obj.duration_ms >= 0);
 
       // 3. Log finish traz cb_open + duration total por CNPJ.
       const finish = logs.lines.find((l) => l.obj.event === 'puxador_finish')!;
-      assertEquals(finish.obj.cnpj, CNPJ);
+      assertEquals(finish.obj.cnpj, '[REDACTED]');
       assertEquals(finish.obj.cb_open, false);
       assertEquals(finish.obj.backoff_pending, false);
       assert(typeof finish.obj.duration_ms === 'number');

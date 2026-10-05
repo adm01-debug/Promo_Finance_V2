@@ -161,7 +161,9 @@ Deno.test(
     // Mesmo com auto_provision_users=true, JIT não dispara em domínio bloqueado.
     assertEquals(result.preview.would_jit_provision, false);
     assertEquals(result.preview.provision_blocked_reason, null);
-    assert(result.errors.some((e) => e.includes('jit-tests.example.com')));
+    assert(
+      result.errors.some((e) => e === 'Domínio "jit-tests.example.com" não está na lista permitida')
+    );
   }
 );
 

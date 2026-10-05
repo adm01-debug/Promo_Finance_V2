@@ -259,6 +259,8 @@ Deno.serve(
         status: 500,
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       });
+    } finally {
+      await logger.flush();
     }
   })
 );

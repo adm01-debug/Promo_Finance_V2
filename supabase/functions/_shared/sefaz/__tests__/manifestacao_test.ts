@@ -61,8 +61,8 @@ Deno.test('buildEnvEvento serializa envelope SOAP', () => {
 });
 
 Deno.test('recepcaoEventoEndpoint distingue produção/homologação', () => {
-  assert(recepcaoEventoEndpoint('producao').startsWith('https://www1.nfe.fazenda.gov.br'));
-  assert(recepcaoEventoEndpoint('homologacao').startsWith('https://hom.nfe.fazenda.gov.br'));
+  assertEquals(new URL(recepcaoEventoEndpoint('producao')).hostname, 'www1.nfe.fazenda.gov.br');
+  assertEquals(new URL(recepcaoEventoEndpoint('homologacao')).hostname, 'hom.nfe.fazenda.gov.br');
 });
 
 Deno.test('parseRetEnvEvento extrai cStat/nProt do retEvento', () => {

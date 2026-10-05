@@ -45,22 +45,18 @@ function json(status: number, body: unknown, headers: Record<string, string> = c
   });
 }
 
+// Logger de módulo: eventos acumulam no buffer e são persistidos em
+// edge_function_logs no flush do final do handler.
+const manifLog = createLogger('sefaz-manifestar');
+
 function slog(
   level: 'INFO' | 'WARN' | 'ERROR',
   event: string,
   fields: Record<string, unknown> = {}
 ) {
-  const line = JSON.stringify({
-    ts: new Date().toISOString(),
-    level,
-    fn: 'sefaz-manifestar',
-    event,
-    ...fields,
-  });
-  const logg = createLogger('sefaz-manifestar');
-  if (level === 'ERROR') logg.error(event, { context: fields });
-  else if (level === 'WARN') logg.warn(event, { context: fields });
-  else logg.info(event, { context: fields });
+  if (level === 'ERROR') manifLog.error(event, { context: fields });
+  else if (level === 'WARN') manifLog.warn(event, { context: fields });
+  else manifLog.info(event, { context: fields });
 }
 
 export type SefazFetch = (url: string, envelope: string) => Promise<string>;
@@ -298,6 +294,7 @@ Deno.serve(
     if (!vinculoEmpresa) return res(403, { error: 'sem_permissao_empresa' });
     try {
       const result = await executeManifestacao(admin, body);
+      await manifLog.flush();
       return res(200, result);
     } catch (err) {
       const message = err instanceof Error ? err.message : String(err);
@@ -306,6 +303,7 @@ Deno.serve(
         tipo: body?.tipo,
         error: message,
       });
+      await manifLog.flush();
       return res(400, { error: message });
     }
   })

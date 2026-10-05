@@ -125,7 +125,10 @@ async function logAttempt(args: {
 function safeOrigin(req: Request, fallback?: string | null): string {
   if (fallback && /^https?:\/\//.test(fallback)) {
     try {
-      return new URL(fallback).origin;
+      const origem = new URL(fallback).origin;
+      // O fallback vem de app_redirect (validado no sso-initiate) — revalidar
+      // aqui garante que um valor forjado não vaza code/state nos 302.
+      if (origemCorsPermitida(origem)) return origem;
     } catch {
       /* ignore */
     }
@@ -892,14 +895,6 @@ Deno.serve(
           }
         }
 
-        // Consome o attempt: expira a linha para que code+state não possam
-        // ser reenviados dentro da janela de 5min (replay). Não pode ser
-        // antes: o retry de PKCE (GET → SPA → POST) reusa a mesma attempt.
-        await admin
-          .from('sso_login_attempts')
-          .update({ expires_at: new Date().toISOString() })
-          .eq('id', attempt.id);
-
         const { data: provider } = await admin
           .from('sso_providers')
           .select('*')
@@ -965,6 +960,15 @@ Deno.serve(
           return redirectErr(req, 'token_exchange_failed', appRedirect);
         }
         const tokens = await tokRes.json();
+
+        // Consome o attempt só depois da troca bem-sucedida: o `code` fica
+        // queimado no IdP (uso único), então expirar a linha aqui impede
+        // replay e ainda permite retentar o callback quando o provedor
+        // falhou de forma transitória (503, timeout) antes da troca.
+        await admin
+          .from('sso_login_attempts')
+          .update({ expires_at: new Date().toISOString() })
+          .eq('id', attempt.id);
 
         let claims: Record<string, unknown> = {};
         if (tokens.id_token) {
@@ -1108,7 +1112,7 @@ Deno.serve(
         }
 
         // Magic link e redirect para o app
-        const redirectTo = appRedirect || safeOrigin(req, null);
+        const redirectTo = safeOrigin(req, appRedirect);
         const link = await admin.auth.admin.generateLink({
           type: 'magiclink',
           email,

@@ -72,19 +72,16 @@ function json(status: number, body: unknown, headers: Record<string, string> = c
  * `cb_open`, `durationMs`) para agregações e alertas.
  */
 type LogLevel = 'INFO' | 'WARN' | 'ERROR';
+// Logger de módulo: eventos do puxador acumulam no buffer e são persistidos
+// em edge_function_logs no flush do final do handler — criar um logger por
+// chamada de slog descartaria o buffer sem nunca persistir.
+const puxadorLog = createLogger('sefaz-dfe-puxar');
+
 function slog(level: LogLevel, event: string, fields: Record<string, unknown> = {}) {
   try {
-    const line = JSON.stringify({
-      ts: new Date().toISOString(),
-      level,
-      fn: 'sefaz-dfe-puxar',
-      event,
-      ...fields,
-    });
-    const logg = createLogger('sefaz-dfe-puxar');
-    if (level === 'ERROR') logg.error(event, { context: fields });
-    else if (level === 'WARN') logg.warn(event, { context: fields });
-    else logg.info(event, { context: fields });
+    if (level === 'ERROR') puxadorLog.error(event, { context: fields });
+    else if (level === 'WARN') puxadorLog.warn(event, { context: fields });
+    else puxadorLog.info(event, { context: fields });
   } catch {
     // Nunca deixar log estruturado quebrar o fluxo.
   }
@@ -529,7 +526,8 @@ Deno.serve(
     const cronSecret = Deno.env.get('SEFAZ_CRON_SECRET');
     const provided = req.headers.get('x-cron-secret');
     if (!cronSecret || provided !== cronSecret) {
-      createLogger('sefaz-dfe-puxar').warn('unauthorized_dispatch_attempt');
+      puxadorLog.warn('unauthorized_dispatch_attempt');
+      await puxadorLog.flush();
       return res(401, { error: 'unauthorized' });
     }
 
@@ -554,6 +552,7 @@ Deno.serve(
       summaries.push(await runPuxador(admin, cert));
     }
 
+    await puxadorLog.flush();
     return res(200, {
       ok: true,
       processed: summaries.length,

@@ -684,10 +684,6 @@ async function handleTokenRevocation(supabase: any, cors: Record<string, string>
   const clientId = Deno.env.get('BLING_CLIENT_ID');
   const clientSecret = Deno.env.get('BLING_CLIENT_SECRET');
 
-  if (!clientId || !clientSecret) {
-    return jsonResponse({ error: 'Credenciais Bling não configuradas' }, 500, cors);
-  }
-
   const { data: tokens } = await adminClient
     .from('bling_tokens')
     .select('*')
@@ -699,27 +695,35 @@ async function handleTokenRevocation(supabase: any, cors: Record<string, string>
   }
 
   const token = tokens[0];
-  const basicAuth = btoa(`${clientId}:${clientSecret}`);
 
-  try {
-    const res = await fetch(`${BLING_AUTH_BASE}/revoke`, {
-      method: 'POST',
-      headers: {
-        Authorization: `Basic ${basicAuth}`,
-        'Content-Type': 'application/x-www-form-urlencoded',
-      },
-      body: new URLSearchParams({ token: token.access_token }),
-    });
+  // A revogação remota é best-effort: só roda com credenciais configuradas.
+  // Sem elas (ex.: integração desativada e secrets removidos) a limpeza
+  // local continua possível — é o objetivo do caminho liberado pelo
+  // kill-switch.
+  if (clientId && clientSecret) {
+    try {
+      const res = await fetch(`${BLING_AUTH_BASE}/revoke`, {
+        method: 'POST',
+        headers: {
+          Authorization: `Basic ${btoa(`${clientId}:${clientSecret}`)}`,
+          'Content-Type': 'application/x-www-form-urlencoded',
+        },
+        body: new URLSearchParams({ token: token.access_token }),
+      });
 
-    if (!res.ok) {
-      const errText = await res.text();
-      log.error('Bling revoke error:', {
-        error_message: mensagemErro(errText),
-        context: contextoErro(errText),
+      if (!res.ok) {
+        const errText = await res.text();
+        log.error('Bling revoke error:', {
+          error_message: mensagemErro(errText),
+          context: contextoErro(errText),
+        });
+      }
+    } catch (e) {
+      log.error('Revoke fetch error:', {
+        error_message: mensagemErro(e),
+        context: contextoErro(e),
       });
     }
-  } catch (e) {
-    log.error('Revoke fetch error:', { error_message: mensagemErro(e), context: contextoErro(e) });
   }
 
   // Always clean up local tokens

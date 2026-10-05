@@ -330,6 +330,7 @@ export const handler = async (req: Request): Promise<Response> => {
       /* observability nunca derruba */
     }
 
+    await loggers.flush();
     return new Response(
       JSON.stringify({
         ok: true,
@@ -362,6 +363,7 @@ export const handler = async (req: Request): Promise<Response> => {
       /* noop */
     }
 
+    await loggers.flush();
     return new Response(JSON.stringify({ ok: false, error: error_message }), {
       status: 500,
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
