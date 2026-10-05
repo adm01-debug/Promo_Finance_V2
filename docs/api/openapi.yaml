@@ -439,9 +439,12 @@ paths:
       parameters:
         - name: Authorization
           in: header
-          required: true
+          required: false
           schema: { type: string }
-          description: Bearer access_token da sessão Supabase pós-broker
+          description: >-
+            Bearer access_token da sessão Supabase pós-broker —
+            obrigatório APENAS na variante JSON (kind saml-finalize);
+            o reenvio urlencoded do OIDC não envia header
       requestBody:
         required: true
         content:
@@ -464,6 +467,10 @@ paths:
               Reenvio do fluxo OIDC/PKCE — o SPA repassa code/state/verifier
               por formulário urlencoded (o verifier não pode ir na URL)
       responses:
+        '302':
+          description: >-
+            Variante OIDC urlencoded: responde redirect (Location para
+            /auth com token ou sso_error) tanto no sucesso quanto no erro
         '200':
           description: Vínculo aplicado — JSON com o resultado do provisionamento
         '400':
@@ -672,7 +679,7 @@ paths:
               type: object
               required: [displayName]
               properties:
-                displayName: { type: string, minLength: 1, pattern: '\\S' }
+                displayName: { type: string, minLength: 1, pattern: '\S' }
                 members:
                   type: array
                   items:
@@ -752,7 +759,7 @@ paths:
               type: object
               required: [displayName]
               properties:
-                displayName: { type: string, minLength: 1, pattern: '\\S' }
+                displayName: { type: string, minLength: 1, pattern: '\S' }
                 members:
                   type: array
                   items:
@@ -990,7 +997,7 @@ components:
         id:
           type: string
           minLength: 1
-          pattern: '\\S'
+          pattern: '\S'
           description: Obrigatório no contrato v2 (idempotência)
 
     AsaasWebhookV2:
@@ -1007,18 +1014,18 @@ components:
         eventId:
           type: string
           minLength: 1
-          pattern: '\\S'
+          pattern: '\S'
           description: Obrigatório no contrato v2 (idempotência)
         date: { type: string, format: date-time }
         version:
           oneOf:
-            - { type: string, minLength: 1, pattern: '\\S' }
+            - { type: string, minLength: 1, pattern: '\S' }
             - { type: number }
         companyId:
           oneOf:
-            - { type: string, minLength: 1, pattern: '\\S' }
+            - { type: string, minLength: 1, pattern: '\S' }
             - { type: number }
-        event: { type: string, minLength: 1, pattern: '\\S' }
+        event: { type: string, minLength: 1, pattern: '\S' }
         module: { type: string }
         data:
           type: object
@@ -1055,16 +1062,35 @@ components:
             application_token: { type: string }
 
     Bitrix24WebhookV2:
-      allOf:
-        - $ref: '#/components/schemas/Bitrix24Webhook'
-        - type: object
-          required: [event_id]
+      type: object
+      required: [event, data, event_id]
+      additionalProperties: false
+      description: >-
+        Schema autônomo — `allOf` não se usa aqui porque o base tem
+        additionalProperties:false e rejeitaria o próprio event_id
+      properties:
+        event: { type: string }
+        event_id:
+          type: string
+          minLength: 1
+          pattern: '\S'
+          description: Obrigatório no contrato v2 (idempotência)
+        data:
+          type: object
+          required: [FIELDS]
           properties:
-            event_id:
-              type: string
-              minLength: 1
-              pattern: '\\S'
-              description: Obrigatório no contrato v2 (idempotência)
+            FIELDS:
+              type: object
+              additionalProperties: true
+        ts: { type: string }
+        auth:
+          type: object
+          properties:
+            domain: { type: string }
+            client_endpoint: { type: string }
+            server_endpoint: { type: string }
+            member_id: { type: string }
+            application_token: { type: string }
 
     WhatsappWebhook:
       type: object
@@ -1075,7 +1101,7 @@ components:
         messageId:
           type: string
           minLength: 1
-          pattern: '\\S'
+          pattern: '\S'
           description: Obrigatório no contrato v2 (idempotência)
         status: { type: string }
         from: { type: string }

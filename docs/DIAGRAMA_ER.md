@@ -118,6 +118,9 @@ erDiagram
   GAPs de isolamento abertos (matriz, P1): `anexos_financeiros`
   (leitura/escrita cross-empresa por policies permissivas) e
   `acoes_recomendadas` (FOR ALL USING(true) permite gerenciamento global).
+  Escopo de papel: `user_roles` não tem `empresa_id` e `has_role()` é
+  global — papéis em `user_roles` valem para qualquer empresa; só
+  `user_empresas.role` é por-empresa (ver ADR-003).
 - **Baixa de conta é via `conciliacoes_parciais`** — join entre
   `transacoes_bancarias` e a conta (pagar/receber); conta paga/recebida sem
   transação conciliada é exceção manual, não o fluxo.
