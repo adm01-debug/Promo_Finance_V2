@@ -232,6 +232,9 @@ paths:
   /whatsapp-webhook:
     post:
       tags: [webhooks]
+      security:
+        - webhookHmac: []
+        - webhookToken: []
       summary: Eventos de mensagem (Evolution API / WhatsApp)
       description: >-
         Autenticado ANTES do payload: assinatura HMAC em
@@ -369,7 +372,14 @@ paths:
               required: [provider_id]
               properties:
                 provider_id: { type: string, format: uuid }
-                redirect_to: { type: string, format: uri, nullable: true }
+                redirect_to:
+                  type: string
+                  format: uri
+                  nullable: true
+                  description: >-
+                    Restrito às origens de ALLOWED_ORIGINS e à origem de
+                    PUBLIC_APP_URL — qualquer outra URI é rejeitada com 400
+                    {error: redirect_to_forbidden}
       responses:
         '200':
           description: URL de redirecionamento para o IdP + artefatos PKCE (OIDC)
@@ -601,6 +611,7 @@ paths:
                   minItems: 1
                   items:
                     type: object
+                    required: [op]
                     properties:
                       op: { type: string, enum: [add, remove, replace] }
                       path: { type: string }
@@ -732,6 +743,7 @@ paths:
                   type: array
                   items:
                     type: object
+                    required: [op]
                     properties:
                       op: { type: string, enum: [add, remove, replace] }
                       path:

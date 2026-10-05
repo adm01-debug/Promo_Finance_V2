@@ -24,9 +24,9 @@ erDiagram
     user_empresas }o--|| auth_users : "user_id"
 
     clientes |o--o{ contas_receber : "recebe de (cliente_id anulável)"
-    fornecedores ||--o{ contas_pagar : "paga a"
-    categorias ||--o{ contas_pagar : "classifica"
-    categorias ||--o{ contas_receber : "classifica"
+    fornecedores |o--o{ contas_pagar : "paga a"
+    categorias |o--o{ contas_pagar : "classifica"
+    categorias |o--o{ contas_receber : "classifica"
     centros_custo ||--o{ contas_pagar : "rateia (ref. lógica)"
     centros_custo ||--o{ contas_receber : "rateia (ref. lógica)"
     centros_custo ||--o{ centros_custo : "hierarquia (parent_id)"
