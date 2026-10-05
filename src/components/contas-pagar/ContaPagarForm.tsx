@@ -1,5 +1,5 @@
 import { todayISOLocal, toISOLocal } from '@/lib/formatters';
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo, useRef } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
@@ -21,6 +21,8 @@ import { useProcessarNFMutation } from '@/hooks/useProcessarNFOCR';
 import { toast } from '@/hooks/use-toast';
 import { useCelebrations } from '@/components/wrappers/CelebrationActions';
 import { sounds } from '@/lib/sound-feedback';
+import { supabase } from '@/integrations/supabase/client';
+import { ConflitoVersaoError } from '@/lib/optimistic-lock';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import {
   Form,
@@ -83,6 +85,7 @@ interface ContaPagar {
   codigo_barras: string | null;
   observacoes: string | null;
   recorrente: boolean;
+  updated_at: string;
 }
 
 interface ContaPagarFormProps {
@@ -96,6 +99,9 @@ export function ContaPagarForm({ open, onOpenChange, conta }: ContaPagarFormProp
   const [showFornecedorSelect, setShowFornecedorSelect] = useState(false);
   const [showLeitorCodigoBarras, setShowLeitorCodigoBarras] = useState(false);
   const [isOcrProcessing, setIsOcrProcessing] = useState(false);
+  // Versao fresca apos conflito: o objeto `conta` fica congelado no form;
+  // em ConflitoVersaoError recarregamos o updated_at para a proxima tentativa.
+  const [versaoEsperada, setVersaoEsperada] = useState<string | null>(null);
   const isEditing = !!conta;
 
   const processarNF = useProcessarNFMutation();
@@ -122,8 +128,14 @@ export function ContaPagarForm({ open, onOpenChange, conta }: ContaPagarFormProp
     },
   });
 
+  const contaIdRef = useRef<string | null>(null);
+
   useEffect(() => {
+    // Callbacks assíncronos (refetch de conflito) conferem o id aqui antes de
+    // mexer no form — resposta tardia da conta A não pode pisar na conta B.
+    contaIdRef.current = conta?.id ?? null;
     if (conta && open) {
+      setVersaoEsperada(null);
       form.reset({
         fornecedor_id: conta.fornecedor_id || undefined,
         fornecedor_nome: conta.fornecedor_nome,
@@ -160,11 +172,69 @@ export function ContaPagarForm({ open, onOpenChange, conta }: ContaPagarFormProp
   const onSubmit = (data: ContaPagarFormData) => {
     if (isEditing && conta) {
       updateMutation.mutate(
-        { ...data, id: conta.id },
+        { ...data, id: conta.id, expected_updated_at: versaoEsperada ?? conta.updated_at },
         {
-          onSuccess: () => {
+          onSuccess: (novaVersao) => {
+            // A próxima edição já parte da versão que este write gerou —
+            // sem isso, reabrir rápido usaria a versão pré-save.
+            if (typeof novaVersao === 'string') setVersaoEsperada(novaVersao);
             celebrateSuccess('Conta atualizada com sucesso!');
             onOpenChange(false);
+          },
+          onError: (error: Error) => {
+            if (error instanceof ConflitoVersaoError) {
+              const contaId = conta.id;
+              supabase
+                .from('contas_pagar')
+                .select('*')
+                .eq('id', contaId)
+                .single()
+                .then(({ data: row, error: reloadErr }) => {
+                  if (reloadErr || !row) {
+                    toast({
+                      title: 'Conta alterada por outra pessoa',
+                      description:
+                        'Não consegui recarregar a versão atual — feche e reabra a conta antes de salvar de novo.',
+                      variant: 'destructive',
+                    });
+                    return;
+                  }
+                  if (contaIdRef.current !== contaId) return;
+                  setVersaoEsperada(row.updated_at);
+                  // Recarrega os campos com a versão vigente — salvar de novo
+                  // em cima dos valores antigos sobrescreveria a edição da outra pessoa.
+                  form.reset({
+                    fornecedor_id: row.fornecedor_id || undefined,
+                    fornecedor_nome: row.fornecedor_nome || '',
+                    descricao: row.descricao || '',
+                    valor: row.valor ?? 0,
+                    data_vencimento: row.data_vencimento || '',
+                    empresa_id: row.empresa_id ?? '',
+                    centro_custo_id: row.centro_custo_id || undefined,
+                    categoria_id: row.categoria_id || undefined,
+                    conta_bancaria_id: row.conta_bancaria_id || undefined,
+                    tipo_cobranca: row.tipo_cobranca as ContaPagarFormData['tipo_cobranca'],
+                    numero_documento: row.numero_documento || undefined,
+                    observacoes: row.observacoes || undefined,
+                    recorrente: row.recorrente || false,
+                    // Estas colunas não constam nos tipos gerados de
+                    // contas_pagar — leitura defensiva caso existam no banco.
+                    data_emissao:
+                      typeof (row as Record<string, unknown>).data_emissao === 'string'
+                        ? ((row as Record<string, unknown>).data_emissao as string)
+                        : '',
+                    codigo_barras:
+                      typeof (row as Record<string, unknown>).codigo_barras === 'string'
+                        ? ((row as Record<string, unknown>).codigo_barras as string)
+                        : undefined,
+                  });
+                  toast({
+                    title: 'Conta alterada por outra pessoa',
+                    description: 'Os dados foram recarregados — revise e salve novamente.',
+                    variant: 'destructive',
+                  });
+                });
+            }
           },
         }
       );
