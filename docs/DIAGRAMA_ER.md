@@ -69,8 +69,8 @@ erDiagram
         uuid empresa_id FK
         uuid fornecedor_id FK "anulável"
         uuid categoria_id FK "anulável"
-        uuid centro_custo_id "FK anulável"
-        uuid conta_bancaria_id "FK anulável"
+        uuid centro_custo_id "ref lógica (sem FK, 20260518164611)"
+        uuid conta_bancaria_id "ref lógica (sem FK, 20260518164611)"
         numeric valor
         date data_vencimento
         date data_pagamento
@@ -82,8 +82,8 @@ erDiagram
         uuid empresa_id FK
         uuid cliente_id FK "anulável"
         uuid categoria_id FK "anulável"
-        uuid centro_custo_id "FK anulável"
-        uuid conta_bancaria_id "FK anulável"
+        uuid centro_custo_id "ref lógica (sem FK, 20260518164611)"
+        uuid conta_bancaria_id "ref lógica (sem FK, 20260518164611)"
         numeric valor
         date data_vencimento
         date data_recebimento
