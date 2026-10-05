@@ -62,7 +62,7 @@ paths:
         content:
           application/json:
             schema:
-              oneOf:
+              anyOf:
                 - $ref: '#/components/schemas/AsaasWebhook'
                 - $ref: '#/components/schemas/AsaasWebhookV2'
                 - type: object
@@ -149,7 +149,7 @@ paths:
         content:
           application/json:
             schema:
-              oneOf:
+              anyOf:
                 - $ref: '#/components/schemas/BlingWebhook'
                 - $ref: '#/components/schemas/BlingWebhookV2'
                 - type: object
@@ -195,7 +195,7 @@ paths:
         content:
           application/json:
             schema:
-              oneOf:
+              anyOf:
                 - $ref: '#/components/schemas/Bitrix24Webhook'
                 - $ref: '#/components/schemas/Bitrix24WebhookV2'
                 - type: object
@@ -253,7 +253,7 @@ paths:
         content:
           application/json:
             schema:
-              oneOf:
+              anyOf:
                 - $ref: '#/components/schemas/WhatsappWebhook'
                 - $ref: '#/components/schemas/WhatsappWebhookV2'
                 - type: object
@@ -325,11 +325,15 @@ paths:
                   action: { type: string }
                   result: { type: object }
         '400':
-          description: >-
-            JSON malformado ({error: invalid_json}) ou corpo fora do
-            contrato action/payload ({error, details})
+          description: 'JSON malformado — {error: invalid_json}'
         '401': { description: x-n8n-secret inválido }
         '405': { description: Método diferente de POST }
+        '422':
+          $ref: '#/components/responses/ErroValidacaoContrato'
+        '500':
+          description: >-
+            Falha interna ao executar a ação (catch de createHandler) —
+            {error: <mensagem>}
         '503':
           description: >-
             N8N_CALLBACK_SECRET não configurado no servidor —
@@ -562,14 +566,20 @@ paths:
                 schemas: { type: array, items: { type: string } }
                 Operations:
                   type: array
+                  minItems: 1
                   items:
                     type: object
                     properties:
                       op: { type: string, enum: [add, remove, replace] }
                       path: { type: string }
                       value: {}
+              required: [Operations]
       responses:
         '200': { description: User atualizado }
+        '400':
+          description: >-
+            Operations ausente ou vazio — patchUser responde SCIM
+            {status:400, detail:'Operations array required', scimType:invalidValue}
         '404': { description: Não encontrado }
     put:
       tags: [identidade]
@@ -750,6 +760,10 @@ paths:
         '404': { description: Convite ou empresa não encontrados }
         '422':
           $ref: '#/components/responses/ErroValidacaoContrato'
+        '500':
+          description: >-
+            Falha inesperada na validação do JWT ou nas consultas a
+            convites_contador/empresas — {error: "Erro interno"}
 
   /health:
     get:

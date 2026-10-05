@@ -47,7 +47,7 @@ erDiagram
     contas_pagar ||--o{ conciliacoes_parciais : "baixa parcial"
     transacoes_bancarias ||--o{ conciliacoes_parciais : "compõe baixa"
 
-    sso_providers ||--o{ scim_tokens : "provisiona com"
+    sso_providers |o--o{ scim_tokens : "provisiona com (provider_id anulável — token pode nascer sem provedor e só é rejeitado ao criar grupo)"
 
     empresas {
         uuid id PK
@@ -59,7 +59,7 @@ erDiagram
         uuid id PK
         uuid user_id FK
         uuid empresa_id FK
-        string role "admin|financeiro|contador|visualizador"
+        string role "admin|financeiro|operacional|visualizador|contador (enum app_role)"
         boolean is_default
         string provisioned_via "manual|sso|scim (CHECK no banco)"
     }
@@ -120,8 +120,9 @@ erDiagram
   transação conciliada é exceção manual, não o fluxo.
 - **`contas_pagar.updated_at` / `contas_receber.updated_at`** são a versão do
   lock otimista — trigger `update_updated_at_column` os mantém.
-- **Espelhos de provedor** (`asaas_*`, `bling_*`) guardam o id externo
-  (`asaas_id`) + o vínculo interno (`conta_receber_id`) — reconciliação por
-  webhook casa os dois.
+- **Espelhos de provedor**: `asaas_*` guardam o id externo (`asaas_id`) +
+  o vínculo interno (`conta_receber_id`) — reconciliação por webhook casa
+  os dois; `bling_*` (`bling_sync_logs`, `bling_webhook_events`) registram
+  só `modulo`/`resource_id`, sem vínculo direto com `contas_receber`.
 - **`user_empresas` é a fronteira de autorização** — RLS e edge fns resolvem
   "usuário X pode acessar empresa Y" exclusivamente por ela.
