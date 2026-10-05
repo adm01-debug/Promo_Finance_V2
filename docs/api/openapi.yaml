@@ -54,7 +54,8 @@ paths:
           schema: { type: string, enum: [v1, v2] }
           description: >-
             Seletor de contrato (alternativa ao envelope
-            {contract_version, data} no corpo); sem ele assume v1
+{contract_version, data} no corpo); sem ele assume v1. No v2,
+            o campo `id` é obrigatório (idempotência)
       requestBody:
         required: true
         content:
@@ -67,7 +68,7 @@ paths:
                   properties:
                     contract_version: { type: string, enum: [v2] }
                     data:
-                      $ref: '#/components/schemas/AsaasWebhook'
+                      $ref: '#/components/schemas/AsaasWebhookV2'
       responses:
         '200':
           description: >-
@@ -92,8 +93,8 @@ paths:
                     description: 'Em success:false — status HTTP equivalente à falha'
         '422':
           $ref: '#/components/responses/ErroValidacaoContrato'
-        '401':
-          description: Token do webhook inválido/ausente
+        '403':
+          description: Token do webhook ausente ou inválido
         '429':
           $ref: '#/components/responses/RateLimited'
         '503':
@@ -131,7 +132,8 @@ paths:
           schema: { type: string, enum: [v1, v2] }
           description: >-
             Seletor de contrato (alternativa ao envelope
-            {contract_version, data} no corpo); sem ele assume v1
+{contract_version, data} no corpo); sem ele assume v1. No v2,
+            o campo `eventId` é obrigatório (idempotência)
       requestBody:
         required: true
         content:
@@ -144,7 +146,7 @@ paths:
                   properties:
                     contract_version: { type: string, enum: [v2] }
                     data:
-                      $ref: '#/components/schemas/BlingWebhook'
+                      $ref: '#/components/schemas/BlingWebhookV2'
       responses:
         '200': { description: Evento aceito }
         '422': { $ref: '#/components/responses/ErroValidacaoContrato' }
@@ -170,7 +172,8 @@ paths:
           schema: { type: string, enum: [v1, v2] }
           description: >-
             Seletor de contrato (alternativa ao envelope
-            {contract_version, data} no corpo); sem ele assume v1
+{contract_version, data} no corpo); sem ele assume v1. No v2,
+            o campo `event_id` é obrigatório (idempotência)
       requestBody:
         required: true
         content:
@@ -183,7 +186,7 @@ paths:
                   properties:
                     contract_version: { type: string, enum: [v2] }
                     data:
-                      $ref: '#/components/schemas/Bitrix24Webhook'
+                      $ref: '#/components/schemas/Bitrix24WebhookV2'
       responses:
         '200': { description: Evento aceito }
         '422': { $ref: '#/components/responses/ErroValidacaoContrato' }
@@ -216,7 +219,8 @@ paths:
           schema: { type: string, enum: [v1, v2] }
           description: >-
             Seletor de contrato (alternativa ao envelope
-            {contract_version, data} no corpo); sem ele assume v1
+{contract_version, data} no corpo); sem ele assume v1. No v2,
+            o campo `messageId` é obrigatório (idempotência)
       requestBody:
         required: true
         content:
@@ -229,7 +233,7 @@ paths:
                   properties:
                     contract_version: { type: string, enum: [v2] }
                     data:
-                      $ref: '#/components/schemas/WhatsappWebhook'
+                      $ref: '#/components/schemas/WhatsappWebhookV2'
       responses:
         '200': { description: Evento aceito }
         '422': { $ref: '#/components/responses/ErroValidacaoContrato' }
@@ -364,8 +368,41 @@ paths:
             para /auth?sso_error=<código> (missing_code_or_state,
             state_invalid_or_expired, pkce_verifier_missing, pkce_mismatch,
             provider_missing, token_exchange_failed, no_email_claim e outros).
-            Não há respostas JSON 4xx nesta operação ��� o cliente deve ler o
+            Não há respostas JSON 4xx nesta operação — o cliente deve ler o
             sso_error na query do redirect.
+    post:
+      tags: [identidade]
+      summary: Finaliza fluxo SAML (vínculo, papel e auditoria)
+      description: >-
+        Chamado pelo frontend após o retorno do broker SAML com a sessão já
+        autenticada: aplica o vínculo do usuário à empresa do provedor, o
+        papel default e registra a auditoria do login SSO. Requer
+        `Authorization: Bearer <access_token>` da sessão Supabase.
+      parameters:
+        - name: Authorization
+          in: header
+          required: true
+          schema: { type: string }
+          description: Bearer access_token da sessão Supabase pós-broker
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [kind, provider_id]
+              properties:
+                kind: { type: string, enum: [saml-finalize] }
+                provider_id: { type: string, format: uuid }
+      responses:
+        '200':
+          description: Vínculo aplicado — JSON com o resultado do provisionamento
+        '400':
+          description: provider_id_required ou erro de validação ({error, details})
+        '401':
+          description: 'Sessão ausente ({error: unauthorized}) ou inválida ({error: invalid_token})'
+        '404':
+          description: 'Provedor ({error: provider_missing}) ou usuário ({error: user_not_found}) não encontrado'
 
   /scim-server/scim/v2/ServiceProviderConfig:
     get:
@@ -417,9 +454,10 @@ paths:
       responses:
         '201':
           description: >-
-            'User criado (Location: /scim/v2/Users/{id}) — a criação é
-            idempotente: userName já provisionado localiza o usuário
-            existente, faz upsert do vínculo user_empresas e responde 201'
+            'User criado — a criação é idempotente: userName já
+            provisionado localiza o usuário existente, faz upsert do
+            vínculo user_empresas e responde 201. Sem header Location
+            (o recurso retorna com id no corpo)'
         '400': { $ref: '#/components/responses/ErroValidacao' }
         '401': { description: Bearer token SCIM inválido }
 
@@ -505,7 +543,7 @@ paths:
                     properties:
                       value: { type: string }
       responses:
-        '201': { description: 'Group criado (Location: /scim/v2/Groups/{id})' }
+        '201': { description: 'Group criado — sem header Location (o recurso retorna com id no corpo)' }
         '400': { description: 'displayName ausente — {error: "displayName required"}' }
 
   '/scim-server/scim/v2/Groups/{id}':
@@ -660,7 +698,13 @@ paths:
     get:
       tags: [util]
       summary: Token público do Mapbox
+      security: [{ bearerAuth: [] }]
+      description: >-
+        Exige JWT de usuário autenticado (verify_jwt = true no gateway):
+        chamada anônima é rejeitada pelo gateway antes do handler.
       responses:
+        '401':
+          description: JWT ausente ou inválido — rejeitado no gateway
         '200':
           description: Token de escopo público (pk.*)
           content:
@@ -750,6 +794,12 @@ components:
           type: string
           description: Obrigatório no contrato v2 (idempotência)
 
+    AsaasWebhookV2:
+      allOf:
+        - $ref: '#/components/schemas/AsaasWebhook'
+        - type: object
+          required: [id]
+
     BlingWebhook:
       type: object
       required: [event, data]
@@ -767,6 +817,12 @@ components:
           type: object
           additionalProperties: true
         retries: { type: number }
+
+    BlingWebhookV2:
+      allOf:
+        - $ref: '#/components/schemas/BlingWebhook'
+        - type: object
+          required: [eventId]
 
     Bitrix24Webhook:
       type: object
@@ -794,6 +850,12 @@ components:
             member_id: { type: string }
             application_token: { type: string }
 
+    Bitrix24WebhookV2:
+      allOf:
+        - $ref: '#/components/schemas/Bitrix24Webhook'
+        - type: object
+          required: [event_id]
+
     WhatsappWebhook:
       type: object
       required: [event, from]
@@ -806,6 +868,12 @@ components:
         status: { type: string }
         from: { type: string }
         text: { type: string }
+
+    WhatsappWebhookV2:
+      allOf:
+        - $ref: '#/components/schemas/WhatsappWebhook'
+        - type: object
+          required: [messageId]
 
     ScimUser:
       type: object
