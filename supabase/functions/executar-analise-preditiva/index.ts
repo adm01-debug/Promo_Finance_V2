@@ -5,6 +5,7 @@ import { corsHeadersPara } from '../_shared/cors.ts';
 import { getRequestId, correlationHeaders } from '../_shared/correlation.ts';
 import { createLogger } from '../_shared/observability.ts';
 import { mensagemErro, contextoErro } from '../_shared/erros.ts';
+import { withEdgeObservability } from '../_shared/edge-observability.ts';
 const log = createLogger('executar-analise-preditiva');
 
 interface ResultadoEmpresa {
@@ -454,12 +455,14 @@ export const handler = async (req: Request): Promise<Response> => {
 };
 
 if (import.meta.main)
-  serve(async (req) => {
-    const _t0 = Date.now();
-    try {
-      return await handler(req);
-    } finally {
-      log.info('request', { duration_ms: Date.now() - _t0 });
-      await log.flush();
-    }
-  });
+  serve(
+    withEdgeObservability('executar-analise-preditiva', async (req) => {
+      const _t0 = Date.now();
+      try {
+        return await handler(req);
+      } finally {
+        log.info('request', { duration_ms: Date.now() - _t0 });
+        await log.flush();
+      }
+    })
+  );

@@ -6,6 +6,7 @@ import { exigirAdminOuVinculo, exigirInternaOuUsuario } from '../_shared/auth-gu
 import { corsHeadersPara } from '../_shared/cors.ts';
 import { createLogger } from '../_shared/observability.ts';
 import { mensagemErro, contextoErro } from '../_shared/erros.ts';
+import { withEdgeObservability } from '../_shared/edge-observability.ts';
 const log = createLogger('gerar-resumo-executivo-semanal');
 
 const ResumoSemanalBodySchema = z.object({
@@ -169,145 +170,147 @@ Tom: executivo, direto, em português brasileiro. Máximo 600 palavras.`;
   return { kpis, resumoMd };
 }
 
-serve(async (req) => {
-  const _t0 = Date.now();
-  try {
-    const corsHeaders = corsHeadersPara(req);
-    if (req.method === 'OPTIONS') return new Response(null, { headers: corsHeaders });
-
-    const guard = await exigirInternaOuUsuario(req, 'p13_resumo_executivo_semanal');
-    if (!guard.ok) return guard.resposta;
-
+serve(
+  withEdgeObservability('gerar-resumo-executivo-semanal', async (req) => {
+    const _t0 = Date.now();
     try {
-      const LOVABLE_API_KEY = Deno.env.get('LOVABLE_API_KEY')!;
-      const RESEND_API_KEY = Deno.env.get('RESEND_API_KEY');
-      const supabase = createClient(
-        Deno.env.get('SUPABASE_URL')!,
-        Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!
-      );
+      const corsHeaders = corsHeadersPara(req);
+      if (req.method === 'OPTIONS') return new Response(null, { headers: corsHeaders });
 
-      const rawBody = await req.json().catch(() => ({}));
-      const validation = await validateContract(ResumoSemanalBodySchema, rawBody);
-      if (!validation.success) return validation.response;
-      const empresaIdFilter: string | undefined = validation.data.empresa_id;
+      const guard = await exigirInternaOuUsuario(req, 'p13_resumo_executivo_semanal');
+      if (!guard.ok) return guard.resposta;
 
-      if (guard.dados.origem === 'usuario' && guard.dados.userId) {
-        const escopo = await exigirAdminOuVinculo(
-          supabase,
-          req,
-          guard.dados.userId,
-          empresaIdFilter
+      try {
+        const LOVABLE_API_KEY = Deno.env.get('LOVABLE_API_KEY')!;
+        const RESEND_API_KEY = Deno.env.get('RESEND_API_KEY');
+        const supabase = createClient(
+          Deno.env.get('SUPABASE_URL')!,
+          Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!
         );
-        if (escopo) return escopo;
-      }
 
-      const hoje = new Date();
-      const semanaFim = new Date(hoje);
-      semanaFim.setDate(hoje.getDate() - 1);
-      const semanaInicio = new Date(semanaFim);
-      semanaInicio.setDate(semanaFim.getDate() - 6);
-      const sIni = semanaInicio.toISOString().split('T')[0];
-      const sFim = semanaFim.toISOString().split('T')[0];
+        const rawBody = await req.json().catch(() => ({}));
+        const validation = await validateContract(ResumoSemanalBodySchema, rawBody);
+        if (!validation.success) return validation.response;
+        const empresaIdFilter: string | undefined = validation.data.empresa_id;
 
-      let q = supabase.from('empresas').select('id, razao_social').eq('ativa', true);
-      if (empresaIdFilter) q = q.eq('id', empresaIdFilter);
-      const { data: empresas, error: errE } = await q;
-      if (errE) throw errE;
-
-      const resultados: Array<{ empresa_id: string; ok: boolean; erro?: string }> = [];
-
-      for (const emp of empresas ?? []) {
-        try {
-          const { kpis, resumoMd } = await gerarResumoEmpresa(
+        if (guard.dados.origem === 'usuario' && guard.dados.userId) {
+          const escopo = await exigirAdminOuVinculo(
             supabase,
-            LOVABLE_API_KEY,
-            emp.id,
-            sIni,
-            sFim
+            req,
+            guard.dados.userId,
+            empresaIdFilter
           );
-
-          // Destinatários
-          const { data: agendados } = await supabase
-            .from('relatorios_tributarios_agendados')
-            .select('destinatarios')
-            .eq('empresa_id', emp.id)
-            .eq('ativo', true);
-          const destinatarios: string[] = [];
-          for (const a of agendados ?? []) {
-            if (Array.isArray(a.destinatarios)) destinatarios.push(...a.destinatarios);
-          }
-          const dest = Array.from(new Set(destinatarios.filter(Boolean)));
-
-          let enviadoEm: string | null = null;
-          let erroEnvio: string | null = null;
-          if (RESEND_API_KEY && dest.length > 0) {
-            const { response: r, text: rText } = await fetchComTimeout(
-              'https://api.resend.com/emails',
-              {
-                method: 'POST',
-                headers: {
-                  Authorization: `Bearer ${RESEND_API_KEY}`,
-                  'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                  from: 'Resumo Executivo <onboarding@resend.dev>',
-                  to: dest,
-                  subject: `📊 Resumo semanal — ${emp.razao_social} (${sIni} a ${sFim})`,
-                  html: `<div style="font-family:system-ui,sans-serif;max-width:680px;margin:auto"><h1>Resumo Executivo Semanal</h1><p><strong>${escapeHtml(emp.razao_social)}</strong> · ${sIni} a ${sFim}</p><pre style="white-space:pre-wrap;font-family:inherit">${escapeHtml(resumoMd)}</pre></div>`,
-                }),
-              }
-            );
-            if (r.ok) enviadoEm = new Date().toISOString();
-            else erroEnvio = rText;
-          }
-
-          const { error: errUpsert } = await supabase.from('resumos_executivos_semanais').upsert(
-            {
-              empresa_id: emp.id,
-              semana_inicio: sIni,
-              semana_fim: sFim,
-              resumo_md: resumoMd,
-              kpis: kpis as any,
-              destinatarios: dest,
-              enviado_em: enviadoEm,
-              erro_envio: erroEnvio,
-            },
-            { onConflict: 'empresa_id,semana_inicio' }
-          );
-          if (errUpsert) throw errUpsert;
-
-          resultados.push({ empresa_id: emp.id, ok: true });
-        } catch (e) {
-          resultados.push({
-            empresa_id: emp.id,
-            ok: false,
-            erro: e instanceof Error ? e.message : String(e),
-          });
+          if (escopo) return escopo;
         }
-      }
 
-      return new Response(
-        JSON.stringify({
-          success: true,
-          semana_inicio: sIni,
-          semana_fim: sFim,
-          total_empresas: empresas?.length ?? 0,
-          resultados,
-        }),
-        { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-      );
-    } catch (e) {
-      log.error('resumo-executivo error:', {
-        error_message: mensagemErro(e),
-        context: contextoErro(e),
-      });
-      return new Response(JSON.stringify({ error: e instanceof Error ? e.message : 'erro' }), {
-        status: 500,
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-      });
+        const hoje = new Date();
+        const semanaFim = new Date(hoje);
+        semanaFim.setDate(hoje.getDate() - 1);
+        const semanaInicio = new Date(semanaFim);
+        semanaInicio.setDate(semanaFim.getDate() - 6);
+        const sIni = semanaInicio.toISOString().split('T')[0];
+        const sFim = semanaFim.toISOString().split('T')[0];
+
+        let q = supabase.from('empresas').select('id, razao_social').eq('ativa', true);
+        if (empresaIdFilter) q = q.eq('id', empresaIdFilter);
+        const { data: empresas, error: errE } = await q;
+        if (errE) throw errE;
+
+        const resultados: Array<{ empresa_id: string; ok: boolean; erro?: string }> = [];
+
+        for (const emp of empresas ?? []) {
+          try {
+            const { kpis, resumoMd } = await gerarResumoEmpresa(
+              supabase,
+              LOVABLE_API_KEY,
+              emp.id,
+              sIni,
+              sFim
+            );
+
+            // Destinatários
+            const { data: agendados } = await supabase
+              .from('relatorios_tributarios_agendados')
+              .select('destinatarios')
+              .eq('empresa_id', emp.id)
+              .eq('ativo', true);
+            const destinatarios: string[] = [];
+            for (const a of agendados ?? []) {
+              if (Array.isArray(a.destinatarios)) destinatarios.push(...a.destinatarios);
+            }
+            const dest = Array.from(new Set(destinatarios.filter(Boolean)));
+
+            let enviadoEm: string | null = null;
+            let erroEnvio: string | null = null;
+            if (RESEND_API_KEY && dest.length > 0) {
+              const { response: r, text: rText } = await fetchComTimeout(
+                'https://api.resend.com/emails',
+                {
+                  method: 'POST',
+                  headers: {
+                    Authorization: `Bearer ${RESEND_API_KEY}`,
+                    'Content-Type': 'application/json',
+                  },
+                  body: JSON.stringify({
+                    from: 'Resumo Executivo <onboarding@resend.dev>',
+                    to: dest,
+                    subject: `📊 Resumo semanal — ${emp.razao_social} (${sIni} a ${sFim})`,
+                    html: `<div style="font-family:system-ui,sans-serif;max-width:680px;margin:auto"><h1>Resumo Executivo Semanal</h1><p><strong>${escapeHtml(emp.razao_social)}</strong> · ${sIni} a ${sFim}</p><pre style="white-space:pre-wrap;font-family:inherit">${escapeHtml(resumoMd)}</pre></div>`,
+                  }),
+                }
+              );
+              if (r.ok) enviadoEm = new Date().toISOString();
+              else erroEnvio = rText;
+            }
+
+            const { error: errUpsert } = await supabase.from('resumos_executivos_semanais').upsert(
+              {
+                empresa_id: emp.id,
+                semana_inicio: sIni,
+                semana_fim: sFim,
+                resumo_md: resumoMd,
+                kpis: kpis as any,
+                destinatarios: dest,
+                enviado_em: enviadoEm,
+                erro_envio: erroEnvio,
+              },
+              { onConflict: 'empresa_id,semana_inicio' }
+            );
+            if (errUpsert) throw errUpsert;
+
+            resultados.push({ empresa_id: emp.id, ok: true });
+          } catch (e) {
+            resultados.push({
+              empresa_id: emp.id,
+              ok: false,
+              erro: e instanceof Error ? e.message : String(e),
+            });
+          }
+        }
+
+        return new Response(
+          JSON.stringify({
+            success: true,
+            semana_inicio: sIni,
+            semana_fim: sFim,
+            total_empresas: empresas?.length ?? 0,
+            resultados,
+          }),
+          { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        );
+      } catch (e) {
+        log.error('resumo-executivo error:', {
+          error_message: mensagemErro(e),
+          context: contextoErro(e),
+        });
+        return new Response(JSON.stringify({ error: e instanceof Error ? e.message : 'erro' }), {
+          status: 500,
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        });
+      }
+    } finally {
+      log.info('request', { duration_ms: Date.now() - _t0 });
+      await log.flush();
     }
-  } finally {
-    log.info('request', { duration_ms: Date.now() - _t0 });
-    await log.flush();
-  }
-});
+  })
+);

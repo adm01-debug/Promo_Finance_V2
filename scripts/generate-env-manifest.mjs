@@ -67,6 +67,8 @@ const opcionais = new Set([
   'NFE_CERT_MASTER_KEY_PREV',
   'SUPABASE_FUNCTION_NAME',
   'CONTADOR_INVITE_SECRET',
+  'EDGE_SENTRY_DSN',
+  'SENTRY_DSN',
 ]);
 const edge = [...edgeSet].sort().map(name => ({
   name, scope: 'edge', required: !autoProvided.has(name) && !opcionais.has(name),

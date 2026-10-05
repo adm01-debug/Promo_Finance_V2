@@ -14,6 +14,7 @@ import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.49.4';
 import { corsHeadersPara } from '../_shared/cors.ts';
 import { createLogger } from '../_shared/observability.ts';
 import { mensagemErro, contextoErro } from '../_shared/erros.ts';
+import { withEdgeObservability } from '../_shared/edge-observability.ts';
 const log = createLogger('notify-saved-filter');
 
 interface NotifyRequest {
@@ -236,12 +237,14 @@ function renderEmail(input: {
   `;
 }
 
-serve(async (req) => {
-  const _t0 = Date.now();
-  try {
-    return await handler(req);
-  } finally {
-    log.info('request', { duration_ms: Date.now() - _t0 });
-    await log.flush();
-  }
-});
+serve(
+  withEdgeObservability('notify-saved-filter', async (req) => {
+    const _t0 = Date.now();
+    try {
+      return await handler(req);
+    } finally {
+      log.info('request', { duration_ms: Date.now() - _t0 });
+      await log.flush();
+    }
+  })
+);

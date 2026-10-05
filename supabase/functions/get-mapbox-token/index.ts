@@ -2,22 +2,25 @@
 // Token pk.* é seguro no browser; ficamos com ele em secret para centralizar rotação.
 import { corsHeaders } from '../_shared/cors.ts';
 import { corsHeadersPara } from '../_shared/cors.ts';
+import { withEdgeObservability } from '../_shared/edge-observability.ts';
 
-Deno.serve((req) => {
-  const corsHeaders = corsHeadersPara(req);
-  if (req.method === 'OPTIONS') return new Response(null, { headers: corsHeaders });
-  const token = Deno.env.get('MAPBOX_ACCESS_TOKEN');
-  if (!token) {
-    return new Response(JSON.stringify({ error: 'MAPBOX_ACCESS_TOKEN não configurado' }), {
-      status: 500,
-      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+Deno.serve(
+  withEdgeObservability('get-mapbox-token', (req) => {
+    const corsHeaders = corsHeadersPara(req);
+    if (req.method === 'OPTIONS') return new Response(null, { headers: corsHeaders });
+    const token = Deno.env.get('MAPBOX_ACCESS_TOKEN');
+    if (!token) {
+      return new Response(JSON.stringify({ error: 'MAPBOX_ACCESS_TOKEN não configurado' }), {
+        status: 500,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
+    }
+    return new Response(JSON.stringify({ token }), {
+      headers: {
+        ...corsHeaders,
+        'Content-Type': 'application/json',
+        'Cache-Control': 'private, max-age=300',
+      },
     });
-  }
-  return new Response(JSON.stringify({ token }), {
-    headers: {
-      ...corsHeaders,
-      'Content-Type': 'application/json',
-      'Cache-Control': 'private, max-age=300',
-    },
-  });
-});
+  })
+);

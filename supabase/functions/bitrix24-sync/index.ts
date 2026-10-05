@@ -2,9 +2,10 @@ import { serve } from 'https://deno.land/std@0.190.0/http/server.ts';
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.49.4';
 import { Bitrix24SyncSchema, validatePayload, createErrorResponse } from '../_shared/validation.ts';
 import { corsHeadersPara } from '../_shared/cors.ts';
-import { respostaIntegracaoDesativada } from '../_shared/resilience.ts';
 import { createLogger } from '../_shared/observability.ts';
 import { mensagemErro, contextoErro } from '../_shared/erros.ts';
+import { withEdgeObservability } from '../_shared/edge-observability.ts';
+import { respostaIntegracaoDesativada } from '../_shared/resilience.ts';
 const log = createLogger('bitrix24-sync');
 
 interface BitrixResponse {
@@ -789,95 +790,97 @@ async function syncBoleto(
   }
 }
 
-serve(async (req) => {
-  const _t0 = Date.now();
-  try {
-    const corsHeaders = corsHeadersPara(req);
-    if (req.method === 'OPTIONS') {
-      return new Response(null, { headers: corsHeaders });
-    }
-
+serve(
+  withEdgeObservability('bitrix24-sync', async (req) => {
+    const _t0 = Date.now();
     try {
-      const authHeader = req.headers.get('Authorization');
-      if (!authHeader) {
-        throw new Error('Authorization header required');
+      const corsHeaders = corsHeadersPara(req);
+      if (req.method === 'OPTIONS') {
+        return new Response(null, { headers: corsHeaders });
       }
 
-      const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
-      const supabaseKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
-      const supabase = createClient(supabaseUrl, supabaseKey);
-
-      // Get user from auth header
-      const token = authHeader.replace('Bearer ', '');
-      const {
-        data: { user },
-        error: userError,
-      } = await supabase.auth.getUser(token);
-
-      if (userError || !user) {
-        throw new Error('Invalid authentication token');
-      }
-
-      // Depois da autenticação — request não autenticada recebe erro de auth e não o 503 que vazaria a config do kill-switch.
-      const inativa = respostaIntegracaoDesativada('bitrix24', corsHeaders);
-      if (inativa) return inativa;
-
-      const rawBody = await req.json();
-      const validation = validatePayload(Bitrix24SyncSchema, rawBody, 'bitrix24-sync');
-      if (!validation.success) {
-        return createErrorResponse(validation.error, 400, validation.details, req);
-      }
-      const { action, params } = validation.data;
-      log.info(`[bitrix24-sync] Action: ${action}, User: ${user.id}`);
-
-      // Get valid Bitrix token
-      const accessToken = await getValidToken(supabase);
-
-      let result;
-      switch (action) {
-        case 'test_connection':
-          result = await testConnection(accessToken);
-          break;
-        case 'sync_deals':
-          result = await syncDeals(supabase, accessToken, user.id);
-          break;
-        case 'sync_contacts':
-          result = await syncContacts(supabase, accessToken, user.id);
-          break;
-        case 'sync_companies':
-          result = await syncCompanies(supabase, accessToken, user.id);
-          break;
-        case 'export_payment_status':
-          result = await exportPaymentStatus(supabase, accessToken, user.id);
-          break;
-        case 'sync_elisao_task':
-          result = await syncElisaoTask(supabase, accessToken, params?.id, user.id);
-          break;
-        case 'sync_boleto':
-          result = await syncBoleto(supabase, accessToken, params?.boleto, user.id);
-          break;
-        default:
-          throw new Error(`Unknown action: ${action}`);
-      }
-
-      return new Response(JSON.stringify(result), {
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-      });
-    } catch (error: any) {
-      log.error('[bitrix24-sync] Error:', {
-        error_message: mensagemErro(error),
-        context: contextoErro(error),
-      });
-      return new Response(
-        JSON.stringify({ success: false, message: error?.message || 'Erro desconhecido' }),
-        {
-          status: 500,
-          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      try {
+        const authHeader = req.headers.get('Authorization');
+        if (!authHeader) {
+          throw new Error('Authorization header required');
         }
-      );
+
+        const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
+        const supabaseKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
+        const supabase = createClient(supabaseUrl, supabaseKey);
+
+        // Get user from auth header
+        const token = authHeader.replace('Bearer ', '');
+        const {
+          data: { user },
+          error: userError,
+        } = await supabase.auth.getUser(token);
+
+        if (userError || !user) {
+          throw new Error('Invalid authentication token');
+        }
+
+        // Depois da autenticação — request não autenticada recebe erro de auth e não o 503 que vazaria a config do kill-switch.
+        const inativa = respostaIntegracaoDesativada('bitrix24', corsHeaders);
+        if (inativa) return inativa;
+
+        const rawBody = await req.json();
+        const validation = validatePayload(Bitrix24SyncSchema, rawBody, 'bitrix24-sync');
+        if (!validation.success) {
+          return createErrorResponse(validation.error, 400, validation.details, req);
+        }
+        const { action, params } = validation.data;
+        log.info(`[bitrix24-sync] Action: ${action}, User: ${user.id}`);
+
+        // Get valid Bitrix token
+        const accessToken = await getValidToken(supabase);
+
+        let result;
+        switch (action) {
+          case 'test_connection':
+            result = await testConnection(accessToken);
+            break;
+          case 'sync_deals':
+            result = await syncDeals(supabase, accessToken, user.id);
+            break;
+          case 'sync_contacts':
+            result = await syncContacts(supabase, accessToken, user.id);
+            break;
+          case 'sync_companies':
+            result = await syncCompanies(supabase, accessToken, user.id);
+            break;
+          case 'export_payment_status':
+            result = await exportPaymentStatus(supabase, accessToken, user.id);
+            break;
+          case 'sync_elisao_task':
+            result = await syncElisaoTask(supabase, accessToken, params?.id, user.id);
+            break;
+          case 'sync_boleto':
+            result = await syncBoleto(supabase, accessToken, params?.boleto, user.id);
+            break;
+          default:
+            throw new Error(`Unknown action: ${action}`);
+        }
+
+        return new Response(JSON.stringify(result), {
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        });
+      } catch (error: any) {
+        log.error('[bitrix24-sync] Error:', {
+          error_message: mensagemErro(error),
+          context: contextoErro(error),
+        });
+        return new Response(
+          JSON.stringify({ success: false, message: error?.message || 'Erro desconhecido' }),
+          {
+            status: 500,
+            headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+          }
+        );
+      }
+    } finally {
+      log.info('request', { duration_ms: Date.now() - _t0 });
+      await log.flush();
     }
-  } finally {
-    log.info('request', { duration_ms: Date.now() - _t0 });
-    await log.flush();
-  }
-});
+  })
+);
