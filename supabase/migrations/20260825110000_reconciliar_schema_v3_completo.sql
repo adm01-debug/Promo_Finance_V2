@@ -6189,7 +6189,7 @@ CREATE POLICY "Authenticated can insert error logs" ON public.runtime_error_logs
 DROP POLICY IF EXISTS saved_filter_subscriptions_owner ON public.saved_filter_subscriptions;
 CREATE POLICY saved_filter_subscriptions_owner ON public.saved_filter_subscriptions TO authenticated USING ((user_id = auth.uid())) WITH CHECK ((user_id = auth.uid()));
 
-ALTER TABLE public.saved_filters ADD COLUMN IF NOT EXISTS shared_with_roles jsonb;
+ALTER TABLE public.saved_filters ALTER COLUMN shared_with_roles TYPE text[] USING shared_with_roles::text[];
 
 DROP POLICY IF EXISTS saved_filters_owner_write ON public.saved_filters;
 CREATE POLICY saved_filters_owner_write ON public.saved_filters TO authenticated USING ((user_id = auth.uid())) WITH CHECK ((user_id = auth.uid()));
