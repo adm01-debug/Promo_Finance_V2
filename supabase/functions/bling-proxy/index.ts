@@ -696,11 +696,13 @@ async function handleTokenRevocation(supabase: any, cors: Record<string, string>
 
   const token = tokens[0];
 
-  // A revogação remota é best-effort: só roda com credenciais configuradas.
-  // Sem elas (ex.: integração desativada e secrets removidos) a limpeza
-  // local continua possível — é o objetivo do caminho liberado pelo
-  // kill-switch.
-  if (clientId && clientSecret) {
+  // A revogação remota é best-effort: só roda com credenciais configuradas
+  // e a integração ainda ativa. Sem elas (ex.: integração desativada e
+  // secrets removidos) a limpeza local continua possível — é o objetivo do
+  // caminho liberado pelo kill-switch, que não deve travar numa chamada de
+  // rede ao provedor desligado.
+  const integracaoAtiva = !respostaIntegracaoDesativada('bling', cors);
+  if (integracaoAtiva && clientId && clientSecret) {
     try {
       const res = await fetch(`${BLING_AUTH_BASE}/revoke`, {
         method: 'POST',
@@ -709,6 +711,7 @@ async function handleTokenRevocation(supabase: any, cors: Record<string, string>
           'Content-Type': 'application/x-www-form-urlencoded',
         },
         body: new URLSearchParams({ token: token.access_token }),
+        signal: AbortSignal.timeout(15_000),
       });
 
       if (!res.ok) {

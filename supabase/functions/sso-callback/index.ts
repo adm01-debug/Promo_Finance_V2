@@ -1112,7 +1112,16 @@ Deno.serve(
         }
 
         // Magic link e redirect para o app
-        const redirectTo = safeOrigin(req, appRedirect);
+        // app_redirect já foi validado no sso-initiate; aqui basta reconferir
+        // a origem na allowlist e preservar a rota completa (ex.: /tributario).
+        let redirectTo = safeOrigin(req, null);
+        if (appRedirect && /^https?:\/\//.test(appRedirect)) {
+          try {
+            if (origemCorsPermitida(new URL(appRedirect).origin)) redirectTo = appRedirect;
+          } catch {
+            /* origem inválida → mantém fallback */
+          }
+        }
         const link = await admin.auth.admin.generateLink({
           type: 'magiclink',
           email,
