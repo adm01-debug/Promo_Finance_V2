@@ -40,6 +40,8 @@ let initialized = false;
 // A assinatura acontece dentro do initTelemetry — no nível do módulo ela
 // quebraria os testes que mockam o client (supabase.auth indefinido).
 let cachedAccessToken: string | null = null;
+// O flush de unload não pode await getUser() — user.id fica em cache aqui.
+let cachedUserId: string | null = null;
 
 const errorQueue: TelemetryPayload[] = [];
 const perfQueue: Metric[] = [];
@@ -221,12 +223,13 @@ export function initTelemetry(): void {
 
   supabase.auth.onAuthStateChange((_event, session) => {
     cachedAccessToken = session?.access_token ?? null;
+    cachedUserId = session?.user?.id ?? null;
   });
 
   window.addEventListener('beforeunload', () => {
     if (errorQueue.length > 0 || perfQueue.length > 0) {
       // keepalive: o fetch async comum morreria com a aba antes do await.
-      flushQueuesKeepalive(null);
+      flushQueuesKeepalive(cachedUserId);
     }
   });
 

@@ -238,7 +238,10 @@ Deno.serve(
           { onConflict: 'cnpj,ambiente', ignoreDuplicates: true }
         );
 
-      log('success', { cnpj, ambiente, duration_ms: Date.now() - t0 });
+      // context estruturado — serializar o objeto na mensagem achataria a
+      // chave `cnpj` em texto livre e o redigir não a mascararia (o padrão
+      // textual só cobre CNPJ pontuado).
+      logger.info('success', { context: { cnpj, ambiente, duration_ms: Date.now() - t0 } });
 
       return new Response(
         JSON.stringify({

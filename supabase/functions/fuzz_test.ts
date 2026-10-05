@@ -1,7 +1,5 @@
-import { assertEquals } from 'https://deno.land/x/std@0.208.0/assert/mod.ts';
 import { Fuzzer } from './_shared/fuzzer.ts';
 import * as Schemas from './_shared/validation.ts';
-import { validatePayload } from './_shared/validation.ts';
 
 /**
  * Automated Fuzz Testing for all defined Contract Schemas.

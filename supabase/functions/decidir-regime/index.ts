@@ -365,6 +365,9 @@ Deno.serve(
         }
       }
 
+      // flush antes do retorno normal — um ai_error ou cache warn no buffer
+      // deste logger não seria persistido pelo wrapper (instância distinta).
+      await logger.flush();
       return new Response(JSON.stringify(finalResponse), {
         status: 200,
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },

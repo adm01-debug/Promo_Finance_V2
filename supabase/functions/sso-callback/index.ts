@@ -649,17 +649,15 @@ async function handleSamlFinalize(
   const email = u.user.email.toLowerCase();
 
   // Prova de origem: só pode finalizar vínculo quem chegou pelo broker SSO
-  // deste provider (identity `sso` com o provider_id) ou quem já estava
-  // vinculado antes (sso_provider_id gravado num finalize anterior) — sem
-  // isso, um JWT qualquer ganharia vínculo na empresa via provider_id.
+  // deste provider (identities SAML carregam provider `sso:<uuid>` —
+  // IsForSSOProvider do GoTrue) ou quem já estava vinculado antes
+  // (sso_provider_id gravado num finalize anterior) — sem isso, um JWT
+  // qualquer ganharia vínculo na empresa via provider_id.
   const identities = (u.user.identities ?? []) as Array<{
     provider?: string;
     identity_data?: Record<string, unknown>;
   }>;
-  const viaBroker = identities.some(
-    (i) =>
-      i.provider === 'sso' && (i.identity_data?.provider_id as string | undefined) === providerId
-  );
+  const viaBroker = identities.some((i) => i.provider === `sso:${providerId}`);
   const jaVinculado =
     ((u.user.user_metadata || {}) as Record<string, unknown>).sso_provider_id === providerId;
   if (!viaBroker && !jaVinculado) {

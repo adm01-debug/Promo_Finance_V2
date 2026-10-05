@@ -61,8 +61,10 @@ for (const dir of readdirSync(funcsDir)) {
   } catch { /* pasta sem index.ts */ }
 }
 // Lidos por template `${provider}_WEBHOOK_SECRET` em _shared/webhook-auth.ts
-// — nenhum regex textual os enxerga, então são declarados aqui.
-for (const prov of ['ASAAS','BLING','BITRIX24','WHATSAPP']) edgeSet.add(`${prov}_WEBHOOK_SECRET`);
+// (resolveSecret tem fallback em integration_secrets — ausência é válida,
+// então entram como opcionais). ASAAS_WEBHOOK_SECRET não existe: o webhook
+// Asaas consome ASAAS_WEBHOOK_TOKEN, enxergado pelo scan de env.
+for (const prov of ['BLING','BITRIX24','WHATSAPP']) edgeSet.add(`${prov}_WEBHOOK_SECRET`);
 
 const autoProvided = new Set([
   'SUPABASE_URL','SUPABASE_ANON_KEY','SUPABASE_SERVICE_ROLE_KEY',
@@ -71,6 +73,9 @@ const autoProvided = new Set([
 // Vars com fallback no código — ausência é estado válido, não config incompleta.
 const opcionais = new Set([
   'ALLOWED_ORIGINS',
+  'BLING_WEBHOOK_SECRET',
+  'BITRIX24_WEBHOOK_SECRET',
+  'WHATSAPP_WEBHOOK_SECRET',
   'EDGE_FUNCTION_NAME',
   'INTEGRACOES_DESATIVADAS',
   'MFA_ADMIN_ENFORCED',
