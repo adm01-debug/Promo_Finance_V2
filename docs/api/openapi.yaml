@@ -1043,15 +1043,17 @@ components:
             transactionReceiptUrl: { type: string }
         id:
           type: string
-          minLength: 1
-          pattern: '\S'
-          description: Obrigatório no contrato v2 (idempotência)
+          description: >-
+            V1: qualquer string (zod `id: z.string().optional()`). V2:
+            obrigatório e não-vazio (idempotência).
 
     AsaasWebhookV2:
       allOf:
         - $ref: '#/components/schemas/AsaasWebhook'
         - type: object
           required: [id]
+          properties:
+            id: { type: string, minLength: 1, pattern: '\S' }
 
     BlingWebhook:
       type: object
@@ -1159,9 +1161,9 @@ components:
         event: { type: string }
         messageId:
           type: string
-          minLength: 1
-          pattern: '\S'
-          description: Obrigatório no contrato v2 (idempotência)
+          description: >-
+            V1: qualquer string (zod `messageId: z.string().optional()`). V2:
+            obrigatório e não-vazio (idempotência).
         status: { type: string }
         from: { type: string }
         text: { type: string }
@@ -1171,6 +1173,8 @@ components:
         - $ref: '#/components/schemas/WhatsappWebhook'
         - type: object
           required: [messageId]
+          properties:
+            messageId: { type: string, minLength: 1, pattern: '\S' }
 
     ScimUser:
       type: object

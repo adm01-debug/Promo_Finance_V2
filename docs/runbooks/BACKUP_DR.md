@@ -21,7 +21,7 @@
    bucket S3/Backblaze fora do Supabase.
 3. **Secrets fora de controle de versão** — manter inventário em gerenciador de
    senhas (não no repo): `SUPABASE_SERVICE_ROLE_KEY`, `SUPABASE_ACCESS_TOKEN`,
-   `PROD_DB_URL`, chaves Asaas/Bling/Bitrix24, `ENCRYPTION_KEY` das credenciais.
+   `PROD_DB_URL`, chaves Asaas/Bling/Bitrix24, `NFE_CERT_MASTER_KEY` (cifra os PFX de certificado digital — `nfe-upload-certificado`, `_shared/sefaz/pfx.ts`).
 
 ## DR — cenarios
 
