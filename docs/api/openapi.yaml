@@ -98,8 +98,15 @@ paths:
           description: Token do webhook ausente ou inválido
         '429':
           $ref: '#/components/responses/RateLimited'
+        '500':
+          description: >-
+            Exceção interna no processamento ({error: <mensagem>}) —
+            erro de aplicação, não de contrato
         '503':
-          description: Erro transitório — o Asaas deve reenviar
+          description: >-
+            ASAAS_WEBHOOK_TOKEN não configurado no servidor ({error:
+            "Webhook não configurado"}) — fail-closed; NÃO é transitório:
+            reenvios falham até o segredo ser provisionado
 
   /bling-webhook:
     post:
@@ -742,7 +749,7 @@ paths:
     get:
       tags: [util]
       summary: Token público do Mapbox
-      security: [{ bearerAuth: [] }]
+      security: [{ userJwt: [] }]
       description: >-
         Exige JWT de usuário autenticado (verify_jwt = true no gateway):
         chamada anônima é rejeitada pelo gateway antes do handler.
@@ -769,7 +776,17 @@ components:
       type: http
       scheme: bearer
       bearerFormat: token
-      description: Token SCIM por provedor (secrets scim_tokens por provider)
+      description: >-
+        Token SCIM opaco por provedor (secrets scim_tokens) — válido
+        SOMENTE nos endpoints /scim-server/*; não é um JWT e não passa
+        no gateway das demais funções
+    userJwt:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: >-
+        JWT de usuário do Supabase Auth — exigido pelo gateway
+        (verify_jwt = true) nas funções autenticadas por usuário
 
   parameters:
     ScimId:
@@ -830,6 +847,7 @@ components:
           description: 'Ex.: PAYMENT_RECEIVED, PAYMENT_OVERDUE, TRANSFER_DONE'
         payment:
           type: object
+          required: [id]
           properties:
             id: { type: string }
             status: { type: string }
