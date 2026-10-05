@@ -1211,7 +1211,7 @@ components:
       type: object
       # O handler aceita o e-mail por qualquer um dos dois caminhos
       # (`body.userName || body.emails[0].value`) — scim-server/index.ts ~420.
-      oneOf:
+      anyOf:
         - required: [userName]
         - required: [emails]
       properties:
