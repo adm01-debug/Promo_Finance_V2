@@ -39,8 +39,9 @@ erDiagram
     contas_receber ||--o{ asaas_payments : "cobra via"
     asaas_customers ||--o{ asaas_payments : "paga"
 
-    notas_fiscais ||--o{ nfe_recebidas : "df-e SEFAZ"
-    contas_pagar ||--o{ notas_fiscais : "origina de"
+    nfe_recebidas }o--|| contas_pagar : "vincula (conta_pagar_id FK)"
+    %% notas_fiscais não tem FK para contas_pagar/nfe_recebidas — sua única
+    %% relação persistida é empresa_id; associações de negócio são conceituais
 
     contas_receber ||--o{ conciliacoes_parciais : "baixa parcial"
     contas_pagar ||--o{ conciliacoes_parciais : "baixa parcial"

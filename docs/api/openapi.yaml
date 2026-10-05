@@ -9,6 +9,13 @@ info:
     contrato. Schemas espelham os zod de
     supabase/functions/_shared/validation.ts — divergência entre este
     documento e o schema zod = bug neste documento.
+
+    **Versionamento de contrato (webhooks):** os quatro webhooks aceitam
+    o seletor `x-contract-version: v2` no header OU o envelope
+    `{contract_version: "v2", data: {...payload}}` no corpo (o campo data é
+    desembrulhado antes da validação). Sem seletor a requisição cai
+    silenciosamente em v1 — para o contrato v2 (idempotência obrigatória)
+    envie um dos dois seletores.
   version: '1.0.0'
 servers:
   - url: https://bwwbeyolnnzppeuhgkcd.supabase.co/functions/v1
@@ -41,24 +48,50 @@ paths:
           required: true
           schema: { type: string }
           description: Token de verificação configurado no Asaas
+        - name: x-contract-version
+          in: header
+          required: false
+          schema: { type: string, enum: [v1, v2] }
+          description: >-
+            Seletor de contrato (alternativa ao envelope
+            {contract_version, data} no corpo); sem ele assume v1
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/AsaasWebhook'
+              oneOf:
+                - $ref: '#/components/schemas/AsaasWebhook'
+                - type: object
+                  required: [contract_version, data]
+                  properties:
+                    contract_version: { type: string, enum: [v2] }
+                    data:
+                      $ref: '#/components/schemas/AsaasWebhook'
       responses:
         '200':
-          description: Evento aceito (ou duplicado já processado)
+          description: >-
+            Evento aceito — também usado para duplicado ({success:true,
+            duplicated:true}) e falha de processamento que segue para a fila
+            interna ({success:false, will_retry, status}).
           content:
             application/json:
               schema:
                 type: object
+                required: [success]
                 properties:
-                  ok: { type: boolean }
-                  evento: { type: string }
-        '400':
-          $ref: '#/components/responses/ErroValidacao'
+                  success: { type: boolean }
+                  duplicated:
+                    type: boolean
+                    description: Presente quando o evento já havia sido processado
+                  will_retry:
+                    type: boolean
+                    description: 'Em success:false — a retentativa acontece na fila interna'
+                  status:
+                    type: integer
+                    description: 'Em success:false — status HTTP equivalente à falha'
+        '422':
+          $ref: '#/components/responses/ErroValidacaoContrato'
         '401':
           description: Token do webhook inválido/ausente
         '429':
@@ -71,20 +104,57 @@ paths:
       tags: [webhooks]
       summary: Eventos do ERP Bling
       description: >-
-        Recebe callbacks do Bling (notas fiscais, pedidos, estoque). Assinatura
-        verificada por authenticateWebhook (secret por empresa). Idempotente
-        por eventId — obrigatório no contrato v2.
+        Recebe callbacks do Bling (notas fiscais, pedidos, estoque). Credencial
+        verificada ANTES do parse do corpo (a assinatura cobre os bytes
+        originais): HMAC-SHA256 do corpo em x-bling-signature-256 (também
+        aceitos x-bling-signature, x-signature ou x-webhook-signature, com ou
+        sem prefixo "sha256="), ou o token compartilhado em x-webhook-token.
+        Sem credencial válida → 401; sem segredo configurado no servidor →
+        503 (fail-closed). Idempotente por eventId — obrigatório no contrato
+        v2 (ver Versionamento de contrato no topo do documento).
+      parameters:
+        - name: x-bling-signature-256
+          in: header
+          required: false
+          schema: { type: string }
+          description: >-
+            HMAC-SHA256 hex ou base64 do corpo bruto (aceita também
+            x-bling-signature, x-signature, x-webhook-signature)
+        - name: x-webhook-token
+          in: header
+          required: false
+          schema: { type: string }
+          description: Alternativa ao HMAC — token compartilhado do domínio
+        - name: x-contract-version
+          in: header
+          required: false
+          schema: { type: string, enum: [v1, v2] }
+          description: >-
+            Seletor de contrato (alternativa ao envelope
+            {contract_version, data} no corpo); sem ele assume v1
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/BlingWebhook'
+              oneOf:
+                - $ref: '#/components/schemas/BlingWebhook'
+                - type: object
+                  required: [contract_version, data]
+                  properties:
+                    contract_version: { type: string, enum: [v2] }
+                    data:
+                      $ref: '#/components/schemas/BlingWebhook'
       responses:
         '200': { description: Evento aceito }
-        '400': { $ref: '#/components/responses/ErroValidacao' }
-        '401': { description: Assinatura/secret inválidos }
+        '422': { $ref: '#/components/responses/ErroValidacaoContrato' }
+        '401': { description: Assinatura/secret inválidos ou ausentes }
         '429': { $ref: '#/components/responses/RateLimited' }
+        '503':
+          description: >-
+            Webhook não configurado no servidor ({error: "Webhook não
+            configurado"}) ou rate limiter indisponível
+            ({error: "rate_limit_indisponivel"})
 
   /bitrix24-webhook:
     post:
@@ -93,15 +163,30 @@ paths:
       description: >-
         Recebe eventos outbound do Bitrix24 (entidades CRM). Autenticado por
         application_token no payload auth ou secret resolvido por domínio.
+      parameters:
+        - name: x-contract-version
+          in: header
+          required: false
+          schema: { type: string, enum: [v1, v2] }
+          description: >-
+            Seletor de contrato (alternativa ao envelope
+            {contract_version, data} no corpo); sem ele assume v1
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/Bitrix24Webhook'
+              oneOf:
+                - $ref: '#/components/schemas/Bitrix24Webhook'
+                - type: object
+                  required: [contract_version, data]
+                  properties:
+                    contract_version: { type: string, enum: [v2] }
+                    data:
+                      $ref: '#/components/schemas/Bitrix24Webhook'
       responses:
         '200': { description: Evento aceito }
-        '400': { $ref: '#/components/responses/ErroValidacao' }
+        '422': { $ref: '#/components/responses/ErroValidacaoContrato' }
         '401': { description: Token inválido }
         '429': { $ref: '#/components/responses/RateLimited' }
 
@@ -125,15 +210,29 @@ paths:
           required: false
           schema: { type: string }
           description: HMAC do corpo (ou x-hub-signature-256 / x-webhook-signature)
+        - name: x-contract-version
+          in: header
+          required: false
+          schema: { type: string, enum: [v1, v2] }
+          description: >-
+            Seletor de contrato (alternativa ao envelope
+            {contract_version, data} no corpo); sem ele assume v1
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/WhatsappWebhook'
+              oneOf:
+                - $ref: '#/components/schemas/WhatsappWebhook'
+                - type: object
+                  required: [contract_version, data]
+                  properties:
+                    contract_version: { type: string, enum: [v2] }
+                    data:
+                      $ref: '#/components/schemas/WhatsappWebhook'
       responses:
         '200': { description: Evento aceito }
-        '400': { $ref: '#/components/responses/ErroValidacao' }
+        '422': { $ref: '#/components/responses/ErroValidacaoContrato' }
         '401': { description: Credencial de webhook ausente ou inválida }
         '429': { $ref: '#/components/responses/RateLimited' }
 
@@ -181,6 +280,11 @@ paths:
                   result: { type: object }
         '401': { description: x-n8n-secret inválido }
         '405': { description: Método diferente de POST }
+        '503':
+          description: >-
+            N8N_CALLBACK_SECRET não configurado no servidor —
+            {error: "secret_not_configured"}; não é erro de credencial do
+            cliente
 
   /sso-initiate:
     post:
@@ -223,6 +327,9 @@ paths:
                       na query do /sso-callback.
         '400': { $ref: '#/components/responses/ErroValidacao' }
         '404': { description: Provedor não encontrado ou inativo }
+        '429': { description: Mais de 10 tentativas por provedor — aplicar backoff }
+        '500': { description: Falha inesperada no servidor }
+        '502': { description: Discovery OIDC do IdP falhou — IdP indisponível }
 
   /sso-callback:
     get:
@@ -250,18 +357,41 @@ paths:
             Obrigatório no fluxo OIDC (PKCE): o code_verifier persistido pelo
             cliente no /sso-initiate. Sem ele a troca do code é rejeitada.
       responses:
-        '302': { description: Redirect para a aplicação com sessão estabelecida }
-        '400': { $ref: '#/components/responses/ErroValidacao' }
-        '401': { description: State/verifier inválido ou expirado }
+        '302':
+          description: >-
+            Redirect para a aplicação — tanto no sucesso (sessão/magic link)
+            quanto em QUALQUER falha do fluxo: o handler sempre responde 302
+            para /auth?sso_error=<código> (missing_code_or_state,
+            state_invalid_or_expired, pkce_verifier_missing, pkce_mismatch,
+            provider_missing, token_exchange_failed, no_email_claim e outros).
+            Não há respostas JSON 4xx nesta operação ��� o cliente deve ler o
+            sso_error na query do redirect.
 
   /scim-server/scim/v2/ServiceProviderConfig:
     get:
       tags: [identidade]
       summary: Capabilities SCIM 2.0
-      security: [{ bearerAuth: [] }]
+      description: >-
+        Discovery PÚBLICO — atendido antes da checagem de Authorization;
+        qualquer cliente recebe 200 sem bearer token.
       responses:
         '200': { description: ServiceProviderConfig (patch suportado; etag NÃO implementado — o payload retorna `etag.supported=false`) }
-        '401': { description: Bearer token SCIM inválido }
+
+  /scim-server/scim/v2/ResourceTypes:
+    get:
+      tags: [identidade]
+      summary: ResourceTypes SCIM 2.0
+      description: Discovery PÚBLICO (sem autenticação).
+      responses:
+        '200': { description: ListResponse com os ResourceTypes User e Group }
+
+  /scim-server/scim/v2/Schemas:
+    get:
+      tags: [identidade]
+      summary: Schemas SCIM 2.0
+      description: Discovery PÚBLICO (sem autenticação).
+      responses:
+        '200': { description: ListResponse com os schemas de User, Group e ServiceProviderConfig }
 
   /scim-server/scim/v2/Users:
     get:
@@ -285,10 +415,13 @@ paths:
           application/scim+json:
             schema: { $ref: '#/components/schemas/ScimUser' }
       responses:
-        '201': { description: 'User criado (Location: /scim/v2/Users/{id})' }
+        '201':
+          description: >-
+            'User criado (Location: /scim/v2/Users/{id}) — a criação é
+            idempotente: userName já provisionado localiza o usuário
+            existente, faz upsert do vínculo user_empresas e responde 201'
         '400': { $ref: '#/components/responses/ErroValidacao' }
         '401': { description: Bearer token SCIM inválido }
-        '409': { description: userName já provisionado }
 
   '/scim-server/scim/v2/Users/{id}':
     get:
@@ -362,6 +495,7 @@ paths:
           application/scim+json:
             schema:
               type: object
+              required: [displayName]
               properties:
                 displayName: { type: string }
                 members:
@@ -372,6 +506,7 @@ paths:
                       value: { type: string }
       responses:
         '201': { description: 'Group criado (Location: /scim/v2/Groups/{id})' }
+        '400': { description: 'displayName ausente — {error: "displayName required"}' }
 
   '/scim-server/scim/v2/Groups/{id}':
     get:
@@ -387,8 +522,49 @@ paths:
       summary: Patch de membros do grupo
       security: [{ bearerAuth: [] }]
       parameters: [{ $ref: '#/components/parameters/ScimId' }]
+      requestBody:
+        required: true
+        content:
+          application/scim+json:
+            schema:
+              type: object
+              properties:
+                schemas: { type: array, items: { type: string } }
+                Operations:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      op: { type: string, enum: [add, remove, replace] }
+                      path:
+                        type: string
+                        description: 'Ex.: members, displayName'
+                      value: {}
       responses:
         '200': { description: Group atualizado }
+    put:
+      tags: [identidade]
+      summary: Substitui o grupo inteiro (membros inclusos)
+      security: [{ bearerAuth: [] }]
+      parameters: [{ $ref: '#/components/parameters/ScimId' }]
+      requestBody:
+        required: true
+        content:
+          application/scim+json:
+            schema:
+              type: object
+              required: [displayName]
+              properties:
+                displayName: { type: string }
+                members:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      value: { type: string }
+      responses:
+        '200': { description: Group substituído }
+        '404': { description: Não encontrado }
     delete:
       tags: [identidade]
       summary: Remove o mapeamento de grupo
@@ -430,33 +606,40 @@ paths:
                     properties:
                       email: { type: string, format: email }
                       expires_at: { type: string, format: date-time }
-        '401': { description: Token inválido ou expirado }
+        '400': { description: 'Claims malformados — {error: "Token malformado"}' }
+        '401': { description: JWT inválido ou expirado }
+        '403': { description: Role incorreta, convite revogado ou convite expirado }
+        '404': { description: Convite ou empresa não encontrados }
 
   /health:
     get:
       tags: [util]
       summary: Liveness público
       description: >-
-        Resposta mínima {status, timestamp} — não expõe detalhe de infra.
-        Público: status 'ok' ou 'outage' (503 quando o probe interno falha).
-        Usuário autenticado recebe o bloco services.* com
-        operational/degraded/outage por serviço (edge_runtime, database,
-        realtime, external_apis.asaas/bling).
+        Público (sem JWT): {status:'ok'|'outage', timestamp, services} — o
+        bloco services também é retornado no público, mas só como esqueleto
+        de status agregado (edge_runtime, database, realtime,
+        external_apis.asaas/bling), sem internals; 503 quando o probe do
+        banco falha. Usuário autenticado: status 'operational'|'degraded' e o
+        mesmo bloco services detalhado por serviço.
       responses:
         '200':
-          description: Sistema no ar (status 'ok' ou degradado autenticado)
+          description: Sistema no ar (status ok/outage no público; operational/degraded autenticado)
           content:
             application/json:
               schema:
                 type: object
                 properties:
-                  status: { type: string, enum: [ok, outage] }
+                  status:
+                    type: string
+                    enum: [ok, outage, operational, degraded]
+                    description: ok/outage no público; operational/degraded autenticado
                   timestamp: { type: string, format: date-time }
                   services:
                     type: object
                     description: >-
-                      Só presente para chamador autenticado — cada serviço
-                      reporta operational/degraded/outage
+                      Status agregado por serviço (operational/degraded/outage)
+                      — retornado também no público como esqueleto sem internals
         '503': { description: Probe público falhou — status 'outage' }
 
   /get-vapid-key:
@@ -512,6 +695,25 @@ components:
             properties:
               error: { type: string }
               details: { type: object }
+    ErroValidacaoContrato:
+      description: >-
+        HTTP 422 — envelope canônico de createValidationErrorResponse usado
+        pelos webhooks versionados (validateVersionedContract)
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              code: { type: string, enum: [VALIDATION_ERROR] }
+              message: { type: string }
+              fields:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    path: { type: string }
+                    message: { type: string }
+                    code: { type: string }
     RateLimited:
       description: Acima do limite por IP/função (checkRateLimit)
       headers:

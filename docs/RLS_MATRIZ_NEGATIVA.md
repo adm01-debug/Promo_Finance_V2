@@ -49,29 +49,32 @@ user_empresas do usuário)`, somado à policy de papel financeiro/admin.
   pendente (restringir por prefixo de path).
 - `visualizador` lendo não pode escrever: policies `FOR ALL` de escrita
   exigem `role IN ('admin','financeiro','contador')`.
-- Secrets (`integration_secrets`, `scim_tokens`, `empresas_certificados`)
+- Secrets (`integration_secrets`, `empresas_certificados`)
   têm policy de negação total para `authenticated` — acesso só via
-  `service_role` dentro de edge fn.
+  `service_role` dentro de edge fn. Exceção: `scim_tokens` é
+  gerenciável por quem tem papel global `admin` autenticado
+  (`Admins manage scim_tokens`, FOR ALL) — não-admin autenticado nega.
 
 ## 2. Tabelas de autenticação/conta (escopo por usuário)
 
-| Tabela                                                                                          | Expectativa negativa                                                 |
-| ----------------------------------------------------------------------------------------------- | -------------------------------------------------------------------- |
-| `login_attempts`, `known_devices`, `account_lockouts`, `new_device_alerts`, `acessos_suspeitos` | usuário não lê o rastro de OUTRO usuário; anônimo nega               |
-| `password_reset_requests`, `convites`                                                           | token não cruzável: validar o convite de outra empresa/expirado nega |
-| `sso_providers`, `scim_tokens`                                                                  | não-admin da empresa nega; `scim_tokens` invisível a `authenticated` |
-| `audit_log`, `auth_logs`, `audit_logs*`                                                         | leitura só do próprio tenant; sem escrita pelo cliente               |
+| Tabela                                                                                          | Expectativa negativa                                                                                                       |
+| ----------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------- |
+| `login_attempts`, `known_devices`, `account_lockouts`, `new_device_alerts`, `acessos_suspeitos` | usuário não lê o rastro de OUTRO usuário; anônimo nega                                                                     |
+| `password_reset_requests`, `convites`                                                           | token não cruzável: validar o convite de outra empresa/expirado nega                                                       |
+| `sso_providers`, `scim_tokens`                                                                  | não-admin nega; `scim_tokens` acessível só a `authenticated` com papel global `admin` (não é invisível a todo autenticado) |
+| `audit_log`, `auth_logs`, `audit_logs*`                                                         | leitura só do próprio tenant; sem escrita pelo cliente                                                                     |
 
 ## 3. Tabelas de sistema/referência (sem `empresa_id`)
 
 Não são multi-tenant — a negação aqui é de **escrita**, não de escopo:
 
-| Grupo               | Tabelas (exemplos)                                                                                              | Expectativa                                                                |
-| ------------------- | --------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------- |
-| Catálogos fiscais   | `aliquotas_*`, `faixas_simples_nacional`, `cnaes`, `ncm`, `ibpt`, `municipios`                                  | leitura liberada a autenticado; **INSERT/UPDATE/DELETE negado** ao cliente |
-| Infra/logs internos | `edge_function_logs`, `frontend_error_logs`, `frontend_performance_logs`, `bloat_snapshots`, `integrity_alerts` | escrita só via service_role; leitura restrita a admin                      |
-| Rate-limit/controle | `cnpja_rate_limit`, `blocked_ips`, `allowed_ips`, `ci_security_gate_events`                                     | acesso só service_role; cliente nega leitura e escrita                     |
-| Organizações        | `organizacoes`, `organizacao_membros`                                                                           | escopo por `organizacao_id` — membro de outra org nega                     |
+| Grupo               | Tabelas (exemplos)                                                             | Expectativa                                                                                                                                                                  |
+| ------------------- | ------------------------------------------------------------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Catálogos fiscais   | `aliquotas_*`, `faixas_simples_nacional`, `cnaes`, `ncm`, `ibpt`, `municipios` | leitura liberada a autenticado; **INSERT/UPDATE/DELETE negado** ao cliente                                                                                                   |
+| Infra/logs internos | `edge_function_logs`, `bloat_snapshots`, `integrity_alerts`                    | escrita só via service_role; leitura restrita a admin                                                                                                                        |
+| Telemetria do app   | `frontend_error_logs`, `frontend_performance_logs`                             | INSERT liberado a `authenticated`: error_logs com `auth.uid()=user_id` ou `user_id` nulo; performance_logs com `auth.uid()` não nulo. SELECT só admin; UPDATE/DELETE negados |
+| Rate-limit/controle | `cnpja_rate_limit`, `blocked_ips`, `allowed_ips`, `ci_security_gate_events`    | acesso só service_role; cliente nega leitura e escrita                                                                                                                       |
+| Organizações        | `organizacoes`, `organizacao_membros`                                          | escopo por `organizacao_id` — membro de outra org nega                                                                                                                       |
 
 ## 4. Views `security_invoker`
 
