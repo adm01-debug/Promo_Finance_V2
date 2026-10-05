@@ -18,7 +18,11 @@ export function OfflineBadge({ data }: OfflineBadgeProps) {
   return (
     <Tooltip>
       <TooltipTrigger asChild>
-        <Badge variant="outline" className="gap-1 font-normal text-warning" aria-label="Dado do cache offline">
+        <Badge
+          variant="outline"
+          className="gap-1 font-normal text-warning"
+          aria-label="Dado do cache offline"
+        >
           <CloudOff className="h-3 w-3" aria-hidden />
           Offline
         </Badge>

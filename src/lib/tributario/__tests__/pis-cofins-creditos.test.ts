@@ -73,7 +73,9 @@ describe('base creditável', () => {
 
   it('trata parcelas inválidas como parcela única', () => {
     expect(baseCredito({ natureza: 'insumos', valor: 1_000, parcelas: 0 }).base).toBe(1_000);
-    expect(baseCredito({ natureza: 'insumos', valor: 1_000, parcelas: Number.NaN }).base).toBe(1_000);
+    expect(baseCredito({ natureza: 'insumos', valor: 1_000, parcelas: Number.NaN }).base).toBe(
+      1_000
+    );
   });
 });
 
@@ -193,13 +195,13 @@ describe('simulação exaustiva de cenários', () => {
             if (r.pis.debito > 0) {
               expect(r.cofins.debito / r.pis.debito).toBeCloseTo(
                 ALIQUOTA_COFINS_NAO_CUMULATIVO / ALIQUOTA_PIS_NAO_CUMULATIVO,
-                4,
+                4
               );
             }
 
             // Carga efetiva jamais supera a soma das alíquotas nominais
             expect(r.cargaEfetiva).toBeLessThanOrEqual(
-              ALIQUOTA_PIS_NAO_CUMULATIVO + ALIQUOTA_COFINS_NAO_CUMULATIVO + 1e-9,
+              ALIQUOTA_PIS_NAO_CUMULATIVO + ALIQUOTA_COFINS_NAO_CUMULATIVO + 1e-9
             );
           }
         }

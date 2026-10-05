@@ -12,10 +12,36 @@ export function normalizarTexto(texto: string): string {
 
 export function extrairPalavrasChave(texto: string): string[] {
   const stopWords = new Set([
-    'de', 'da', 'do', 'das', 'dos', 'e', 'ou', 'para', 'com', 'em', 'por',
-    'ltda', 'sa', 'me', 'eireli', 'epp', 'sas', 'ss',
-    'pix', 'ted', 'doc', 'boleto', 'pag', 'pagamento', 'recebimento',
-    'transferencia', 'debito', 'credito', 'enviado', 'recebido',
+    'de',
+    'da',
+    'do',
+    'das',
+    'dos',
+    'e',
+    'ou',
+    'para',
+    'com',
+    'em',
+    'por',
+    'ltda',
+    'sa',
+    'me',
+    'eireli',
+    'epp',
+    'sas',
+    'ss',
+    'pix',
+    'ted',
+    'doc',
+    'boleto',
+    'pag',
+    'pagamento',
+    'recebimento',
+    'transferencia',
+    'debito',
+    'credito',
+    'enviado',
+    'recebido',
   ]);
 
   return normalizarTexto(texto)
@@ -25,7 +51,7 @@ export function extrairPalavrasChave(texto: string): string[] {
 
 export function calcularSimilaridadeTexto(
   texto1: string,
-  texto2: string,
+  texto2: string
 ): { score: number; tipo: 'exato' | 'parcial' | 'nenhum' } {
   const normalizado1 = normalizarTexto(texto1);
   const normalizado2 = normalizarTexto(texto2);
@@ -72,7 +98,7 @@ export function calcularSimilaridadeTexto(
 export function calcularSimilaridadeValor(
   valor1: number,
   valor2: number,
-  tolerancia: number,
+  tolerancia: number
 ): { score: number; tipo: 'exato' | 'proximo' | 'diferente' } {
   const diff = Math.abs(valor1 - valor2);
   const percentDiff = (diff / Math.max(Math.abs(valor1), Math.abs(valor2))) * 100;
@@ -92,11 +118,7 @@ export function calcularSimilaridadeValor(
   return { score: 0, tipo: 'diferente' };
 }
 
-export function calcularSimilaridadeData(
-  data1: Date,
-  data2: Date,
-  toleranciaDias: number,
-): number {
+export function calcularSimilaridadeData(data1: Date, data2: Date, toleranciaDias: number): number {
   const diffMs = Math.abs(data1.getTime() - data2.getTime());
   const diffDias = diffMs / (1000 * 60 * 60 * 24);
 

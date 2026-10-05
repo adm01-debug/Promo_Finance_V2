@@ -1,5 +1,14 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Area, AreaChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis, ReferenceLine } from 'recharts';
+import {
+  Area,
+  AreaChart,
+  CartesianGrid,
+  ResponsiveContainer,
+  Tooltip,
+  XAxis,
+  YAxis,
+  ReferenceLine,
+} from 'recharts';
 import { formatCurrency } from '@/lib/formatters';
 import type { SerieMensal } from '@/hooks/useDashboardTributario';
 
@@ -35,7 +44,11 @@ export function EvolucaoCargaChart({ serie, mediaIdeal }: Props) {
             </defs>
             <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" opacity={0.3} />
             <XAxis dataKey="label" stroke="hsl(var(--muted-foreground))" fontSize={11} />
-            <YAxis stroke="hsl(var(--muted-foreground))" fontSize={11} tickFormatter={(v) => `${(v / 1000).toFixed(0)}k`} />
+            <YAxis
+              stroke="hsl(var(--muted-foreground))"
+              fontSize={11}
+              tickFormatter={(v) => `${(v / 1000).toFixed(0)}k`}
+            />
             <Tooltip
               contentStyle={{
                 background: 'hsl(var(--popover))',
@@ -45,9 +58,20 @@ export function EvolucaoCargaChart({ serie, mediaIdeal }: Props) {
               }}
               formatter={(v: number) => formatCurrency(v)}
             />
-            <Area type="monotone" dataKey="total" stroke="hsl(var(--primary))" fill="url(#totalGrad)" strokeWidth={2} />
+            <Area
+              type="monotone"
+              dataKey="total"
+              stroke="hsl(var(--primary))"
+              fill="url(#totalGrad)"
+              strokeWidth={2}
+            />
             {mediaIdeal && mediaIdeal > 0 && (
-              <ReferenceLine y={mediaIdeal} stroke="hsl(var(--success))" strokeDasharray="4 4" label={{ value: 'Ideal', position: 'right', fontSize: 10 }} />
+              <ReferenceLine
+                y={mediaIdeal}
+                stroke="hsl(var(--success))"
+                strokeDasharray="4 4"
+                label={{ value: 'Ideal', position: 'right', fontSize: 10 }}
+              />
             )}
           </AreaChart>
         </ResponsiveContainer>

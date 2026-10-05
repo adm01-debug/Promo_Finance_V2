@@ -4,14 +4,33 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Progress } from '@/components/ui/progress';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '@/components/ui/table';
 import { format } from 'date-fns';
 import { formatCurrency } from '@/lib/formatters';
 import { InsightsIA } from './InsightsIA';
 
 export interface ResumoDados {
-  receitas: { total: number; realizado: number; pendente: number; percentual: number; count: number };
-  despesas: { total: number; realizado: number; pendente: number; percentual: number; count: number };
+  receitas: {
+    total: number;
+    realizado: number;
+    pendente: number;
+    percentual: number;
+    count: number;
+  };
+  despesas: {
+    total: number;
+    realizado: number;
+    pendente: number;
+    percentual: number;
+    count: number;
+  };
   saldo: number;
 }
 
@@ -79,7 +98,7 @@ export function ResumoDrillLevel({ resumoData, isLoadingResumo, onDrill, periodo
             </div>
           )}
           {/* Card Receitas */}
-          <Card 
+          <Card
             className="cursor-pointer hover:border-success transition-colors group"
             onClick={() => onDrill('receitas')}
           >
@@ -109,7 +128,7 @@ export function ResumoDrillLevel({ resumoData, isLoadingResumo, onDrill, periodo
           </Card>
 
           {/* Card Despesas */}
-          <Card 
+          <Card
             className="cursor-pointer hover:border-destructive transition-colors group"
             onClick={() => onDrill('despesas')}
           >
@@ -149,7 +168,11 @@ interface EmpresasProps {
   onSelectEmpresa: (empresaId: string, empresaNome: string) => void;
 }
 
-export function EmpresasDrillLevel({ empresasData, isLoadingEmpresas, onSelectEmpresa }: EmpresasProps) {
+export function EmpresasDrillLevel({
+  empresasData,
+  isLoadingEmpresas,
+  onSelectEmpresa,
+}: EmpresasProps) {
   return (
     <motion.div
       key="empresa"
@@ -159,7 +182,9 @@ export function EmpresasDrillLevel({ empresasData, isLoadingEmpresas, onSelectEm
     >
       {isLoadingEmpresas ? (
         <div className="space-y-2">
-          {[1, 2, 3].map(i => <Skeleton key={i} className="h-16" />)}
+          {[1, 2, 3].map((i) => (
+            <Skeleton key={i} className="h-16" />
+          ))}
         </div>
       ) : (
         <div className="space-y-2">
@@ -170,7 +195,7 @@ export function EmpresasDrillLevel({ empresasData, isLoadingEmpresas, onSelectEm
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: index * 0.05 }}
             >
-              <Card 
+              <Card
                 className="cursor-pointer hover:bg-accent/50 transition-colors"
                 onClick={() => onSelectEmpresa(empresa.id, empresa.nome)}
               >
@@ -180,9 +205,7 @@ export function EmpresasDrillLevel({ empresasData, isLoadingEmpresas, onSelectEm
                       <Building2 className="h-5 w-5 text-muted-foreground" />
                       <div>
                         <p className="font-medium">{empresa.nome}</p>
-                        <p className="text-sm text-muted-foreground">
-                          {empresa.count} lançamentos
-                        </p>
+                        <p className="text-sm text-muted-foreground">{empresa.count} lançamentos</p>
                       </div>
                     </div>
                     <div className="flex items-center gap-4">
@@ -239,10 +262,15 @@ export function DetalhesDrillLevel({ detalhesData, isLoadingDetalhes, categoria 
                 <TableCell>{item.entidade}</TableCell>
                 <TableCell>{format(new Date(item.vencimento), 'dd/MM/yyyy')}</TableCell>
                 <TableCell>
-                  <Badge variant={
-                    item.status === 'pago' ? 'default' :
-                    item.status === 'vencido' ? 'destructive' : 'secondary'
-                  }>
+                  <Badge
+                    variant={
+                      item.status === 'pago'
+                        ? 'default'
+                        : item.status === 'vencido'
+                          ? 'destructive'
+                          : 'secondary'
+                    }
+                  >
                     {item.status}
                   </Badge>
                 </TableCell>

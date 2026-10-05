@@ -11,10 +11,10 @@ export default function SpedExportPage() {
     <MainLayout>
       <div className="relative min-h-screen">
         <PageBackground />
-        
+
         <div className="container mx-auto p-6 relative z-10">
-          <PageHeader 
-            title="Exportação SPED" 
+          <PageHeader
+            title="Exportação SPED"
             subtitle="Geração de arquivos magnéticos para SPED Fiscal, Contribuições e Contábil."
             badge="Compliance Legal"
             icon={BookOpen}
@@ -22,7 +22,7 @@ export default function SpedExportPage() {
             gradientVia="via-primary"
             gradientTo="to-indigo-600"
           />
-          
+
           <ExportacaoSPED empresaId={currentEmpresaId || ''} />
         </div>
       </div>

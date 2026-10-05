@@ -29,7 +29,7 @@ export function AuthBackgroundOrbs() {
 
 export function AuthGridPattern() {
   return (
-    <div 
+    <div
       className="absolute inset-0 opacity-[0.03]"
       style={{
         backgroundImage: `linear-gradient(hsl(var(--foreground)) 1px, transparent 1px),
@@ -49,12 +49,12 @@ export function AuthAnimatedLogo() {
       className="relative mb-8"
     >
       <motion.div
-        animate={{ 
+        animate={{
           boxShadow: [
             '0 0 20px hsl(var(--primary) / 0.3)',
             '0 0 40px hsl(var(--primary) / 0.5)',
             '0 0 20px hsl(var(--primary) / 0.3)',
-          ]
+          ],
         }}
         transition={{ duration: 2, repeat: Infinity }}
         className="h-24 w-24 rounded-3xl bg-gradient-to-br from-primary to-primary/80 flex items-center justify-center"
@@ -97,11 +97,9 @@ export function AuthSocialProof() {
             </motion.div>
           ))}
         </div>
-        <span className="text-sm font-semibold text-foreground/70">
-          +500 empresas usando
-        </span>
+        <span className="text-sm font-semibold text-foreground/70">+500 empresas usando</span>
       </div>
-      
+
       <div className="flex items-center gap-6 text-sm text-muted-foreground">
         <motion.div
           initial={{ opacity: 0 }}
@@ -134,25 +132,25 @@ export function AuthLeftPanel() {
         <div className="absolute inset-0 bg-gradient-to-br from-primary/20 via-background to-accent/5 opacity-40" />
         <AuthBackgroundOrbs />
         <AuthGridPattern />
-        
+
         {/* Animated Gradient Sweep */}
         <motion.div
           animate={{
             x: ['-100%', '100%'],
-            opacity: [0, 0.1, 0]
+            opacity: [0, 0.1, 0],
           }}
           transition={{
             duration: 10,
             repeat: Infinity,
-            ease: "linear"
+            ease: 'linear',
           }}
           className="absolute inset-0 bg-gradient-to-r from-transparent via-foreground/20 to-transparent skew-x-12"
         />
       </div>
-      
+
       <div className="relative z-10 flex flex-col items-center justify-center w-full p-16 text-center">
         <AuthAnimatedLogo />
-        
+
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -163,18 +161,19 @@ export function AuthLeftPanel() {
             <span className="text-display-lg opacity-90 font-light">Bem-vindo ao</span>
             <span className="gradient-text text-display-xl drop-shadow-2xl">Promo Finance</span>
           </h1>
-          
+
           <div className="h-1 w-24 bg-gradient-to-r from-primary to-accent mx-auto rounded-full" />
-          
+
           <p className="text-xl text-muted-foreground font-medium max-w-sm mx-auto leading-relaxed">
-            A inteligência financeira definitiva para empresas que buscam o próximo nível de eficiência.
+            A inteligência financeira definitiva para empresas que buscam o próximo nível de
+            eficiência.
           </p>
         </motion.div>
 
         <AuthSocialProof />
-        
+
         {/* Footer info */}
-        <motion.div 
+        <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 0.4 }}
           transition={{ delay: 1.5 }}
@@ -189,21 +188,21 @@ export function AuthLeftPanel() {
 
 export const AuthMobileHeader = forwardRef<HTMLDivElement>(function AuthMobileHeader(_, ref) {
   return (
-    <motion.div 
+    <motion.div
       ref={ref}
       className="text-center mb-8 lg:hidden"
       initial={{ y: -20, opacity: 0 }}
       animate={{ y: 0, opacity: 1 }}
       transition={{ delay: 0.1 }}
     >
-      <motion.div 
+      <motion.div
         className="inline-flex items-center justify-center p-4 bg-gradient-to-br from-primary/20 to-primary/5 rounded-2xl mb-4 shadow-lg shadow-primary/10 backdrop-blur-sm border border-primary/10"
         whileHover={{ scale: 1.05, rotate: 5 }}
         transition={{ type: 'spring', stiffness: 300 }}
       >
         <Building2 className="h-10 w-10 text-primary" />
       </motion.div>
-      <motion.h1 
+      <motion.h1
         className="text-3xl font-bold gradient-text"
         initial={{ y: 10, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
@@ -211,7 +210,7 @@ export const AuthMobileHeader = forwardRef<HTMLDivElement>(function AuthMobileHe
       >
         Promo Finance
       </motion.h1>
-      <motion.p 
+      <motion.p
         className="text-muted-foreground mt-2"
         initial={{ y: 10, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}

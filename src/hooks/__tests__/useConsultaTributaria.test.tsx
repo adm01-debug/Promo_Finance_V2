@@ -84,7 +84,7 @@ describe('hooks de consulta — fallback e habilitação', () => {
     });
     const { result } = renderHook(
       () => useConsultaNCM(undefined, { monofasico: true, st: true, limite: 50 }),
-      { wrapper },
+      { wrapper }
     );
     await waitFor(() => expect(result.current.isSuccess).toBe(true));
     expect(invoke).toHaveBeenCalledWith('consulta-tributaria', {

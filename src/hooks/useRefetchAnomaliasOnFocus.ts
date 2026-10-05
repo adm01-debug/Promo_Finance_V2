@@ -1,5 +1,5 @@
-import { useEffect } from "react";
-import { useQueryClient } from "@tanstack/react-query";
+import { useEffect } from 'react';
+import { useQueryClient } from '@tanstack/react-query';
 
 /**
  * Revalidates anomaly-related React Query caches whenever the user returns
@@ -15,23 +15,23 @@ export function useRefetchAnomaliasOnFocus(anomaliaId?: string) {
 
   useEffect(() => {
     const invalidate = () => {
-      qc.invalidateQueries({ queryKey: ["anomalias-detectadas"] });
-      qc.invalidateQueries({ queryKey: ["anomalias-criticas-count"] });
+      qc.invalidateQueries({ queryKey: ['anomalias-detectadas'] });
+      qc.invalidateQueries({ queryKey: ['anomalias-criticas-count'] });
       if (anomaliaId) {
-        qc.invalidateQueries({ queryKey: ["anomalia-detalhe", anomaliaId] });
+        qc.invalidateQueries({ queryKey: ['anomalia-detalhe', anomaliaId] });
       }
     };
 
     const onVisibility = () => {
-      if (document.visibilityState === "visible") invalidate();
+      if (document.visibilityState === 'visible') invalidate();
     };
 
-    window.addEventListener("focus", invalidate);
-    document.addEventListener("visibilitychange", onVisibility);
+    window.addEventListener('focus', invalidate);
+    document.addEventListener('visibilitychange', onVisibility);
 
     return () => {
-      window.removeEventListener("focus", invalidate);
-      document.removeEventListener("visibilitychange", onVisibility);
+      window.removeEventListener('focus', invalidate);
+      document.removeEventListener('visibilitychange', onVisibility);
     };
   }, [qc, anomaliaId]);
 }

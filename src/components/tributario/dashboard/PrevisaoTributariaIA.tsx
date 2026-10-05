@@ -23,11 +23,11 @@ export function PrevisaoTributariaIA({ empresaId, serieReal = [] }: Props) {
       real: Number(s.total_tributos || 0),
       previsto: null as number | null,
     })),
-    ...((data?.previsao_base ?? []).map((p) => ({
+    ...(data?.previsao_base ?? []).map((p) => ({
       label: `+${p.mes_offset}m`,
       real: null as number | null,
       previsto: p.total_tributos,
-    }))),
+    })),
   ];
 
   return (
@@ -71,11 +71,27 @@ export function PrevisaoTributariaIA({ empresaId, serieReal = [] }: Props) {
               <ResponsiveContainer width="100%" height="100%">
                 <LineChart data={chartData}>
                   <XAxis dataKey="label" tick={{ fontSize: 10 }} />
-                  <YAxis tick={{ fontSize: 10 }} tickFormatter={(v) => `${(v / 1000).toFixed(0)}k`} />
+                  <YAxis
+                    tick={{ fontSize: 10 }}
+                    tickFormatter={(v) => `${(v / 1000).toFixed(0)}k`}
+                  />
                   <Tooltip formatter={(v: number) => formatCurrency(v)} />
                   <Legend wrapperStyle={{ fontSize: 11 }} />
-                  <Line type="monotone" dataKey="real" stroke="hsl(var(--primary))" strokeWidth={2} name="Real" />
-                  <Line type="monotone" dataKey="previsto" stroke="hsl(var(--warning))" strokeDasharray="4 2" strokeWidth={2} name="Previsto" />
+                  <Line
+                    type="monotone"
+                    dataKey="real"
+                    stroke="hsl(var(--primary))"
+                    strokeWidth={2}
+                    name="Real"
+                  />
+                  <Line
+                    type="monotone"
+                    dataKey="previsto"
+                    stroke="hsl(var(--warning))"
+                    strokeDasharray="4 2"
+                    strokeWidth={2}
+                    name="Previsto"
+                  />
                 </LineChart>
               </ResponsiveContainer>
             </div>
@@ -85,13 +101,17 @@ export function PrevisaoTributariaIA({ empresaId, serieReal = [] }: Props) {
                 <div className="flex items-center gap-1 text-xs text-destructive">
                   <TrendingUp className="h-3 w-3" /> Conservador
                 </div>
-                <div className="text-sm font-semibold">{formatCurrency(data.cenario_conservador_total)}</div>
+                <div className="text-sm font-semibold">
+                  {formatCurrency(data.cenario_conservador_total)}
+                </div>
               </div>
               <div className="rounded-lg bg-success/10 p-2">
                 <div className="flex items-center gap-1 text-xs text-success">
                   <TrendingDown className="h-3 w-3" /> Agressivo
                 </div>
-                <div className="text-sm font-semibold">{formatCurrency(data.cenario_agressivo_total)}</div>
+                <div className="text-sm font-semibold">
+                  {formatCurrency(data.cenario_agressivo_total)}
+                </div>
               </div>
             </div>
 
@@ -103,7 +123,13 @@ export function PrevisaoTributariaIA({ empresaId, serieReal = [] }: Props) {
                     <div className="flex items-center justify-between gap-2">
                       <span className="font-medium truncate">{a.titulo}</span>
                       <Badge
-                        variant={a.prioridade === 'alta' ? 'destructive' : a.prioridade === 'media' ? 'default' : 'secondary'}
+                        variant={
+                          a.prioridade === 'alta'
+                            ? 'destructive'
+                            : a.prioridade === 'media'
+                              ? 'default'
+                              : 'secondary'
+                        }
                         className="text-[10px] px-1.5 py-0"
                       >
                         {formatCurrency(a.impacto_estimado_brl)}

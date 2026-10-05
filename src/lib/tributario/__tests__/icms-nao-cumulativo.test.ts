@@ -79,7 +79,7 @@ describe('Lucro Presumido com ICMS não-cumulativo', () => {
     expect(comCredito.cargaEfetiva).toBeLessThan(semCredito.cargaEfetiva);
     expect(semCredito.cargaEfetiva - comCredito.cargaEfetiva).toBeCloseTo(
       (540_000 / base.faturamentoAnual) * 100,
-      6,
+      6
     );
   });
 });
@@ -123,7 +123,8 @@ describe('Fuzzing: invariantes do ICMS em 500 cenários', () => {
 
       for (const r of [simularPresumido(p), simularReal(p)]) {
         if (!r.elegivel) continue;
-        const debitoMax = faturamentoAnual * (1 - percentualServicos / 100) * (p.aliquotaICMS ?? 0.18);
+        const debitoMax =
+          faturamentoAnual * (1 - percentualServicos / 100) * (p.aliquotaICMS ?? 0.18);
         expect(r.icms).toBeGreaterThanOrEqual(0);
         expect(r.icms).toBeLessThanOrEqual(debitoMax + 1e-6);
         expect(Number.isFinite(r.totalTributos)).toBe(true);

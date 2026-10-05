@@ -1,68 +1,80 @@
-import { useCallback, useEffect, useRef, useState } from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
-import { LineChart, Download, Link2, FileText, RotateCcw } from "lucide-react";
-import { toast } from "sonner";
+import { useCallback, useEffect, useRef, useState } from 'react';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
+import { LineChart, Download, Link2, FileText, RotateCcw } from 'lucide-react';
+import { toast } from 'sonner';
 import {
   type SeverityFilter,
   readSeverityFromLocation,
   readWeekFromLocation,
   buildUrlWithParams,
-} from "./performance-alerts-deeplink";
-import { useWeeklyTrendData } from "./weekly-trend/useWeeklyTrendData";
-import { SparklineCards } from "./weekly-trend/SparklineCards";
-import { TrendBarChart } from "./weekly-trend/TrendBarChart";
-import { TrendTable } from "./weekly-trend/TrendTable";
-import { WeekDetailDialog } from "./weekly-trend/WeekDetailDialog";
-import { copyShareLink, exportCSV, exportPDF } from "./weekly-trend/exportUtils";
+} from './performance-alerts-deeplink';
+import { useWeeklyTrendData } from './weekly-trend/useWeeklyTrendData';
+import { SparklineCards } from './weekly-trend/SparklineCards';
+import { TrendBarChart } from './weekly-trend/TrendBarChart';
+import { TrendTable } from './weekly-trend/TrendTable';
+import { WeekDetailDialog } from './weekly-trend/WeekDetailDialog';
+import { copyShareLink, exportCSV, exportPDF } from './weekly-trend/exportUtils';
 
 export function PerformanceAlertsWeeklyTrend() {
   const [selectedWeek, setSelectedWeekState] = useState<string | null>(() => {
-    if (typeof window === "undefined") return null;
+    if (typeof window === 'undefined') return null;
     return readWeekFromLocation(window.location.search);
   });
   const [severityFilter, setSeverityFilter] = useState<SeverityFilter>(() => {
-    if (typeof window === "undefined") return "all";
-    const stored = window.localStorage.getItem("perf-alerts-severity-filter");
+    if (typeof window === 'undefined') return 'all';
+    const stored = window.localStorage.getItem('perf-alerts-severity-filter');
     return readSeverityFromLocation(window.location.search, stored);
   });
   const chartRef = useRef<HTMLDivElement | null>(null);
 
   const {
-    data, isLoading, filteredData, weekKeys, chartData, baseline,
-    sparklineBySource, criticalTotal,
+    data,
+    isLoading,
+    filteredData,
+    weekKeys,
+    chartData,
+    baseline,
+    sparklineBySource,
+    criticalTotal,
   } = useWeeklyTrendData(severityFilter);
 
   const setSelectedWeek = useCallback((wk: string | null) => {
     setSelectedWeekState(wk);
     try {
       const next = buildUrlWithParams(window.location.href, { week: wk });
-      window.history.replaceState({}, "", next);
-    } catch { /* history indisponível */ }
+      window.history.replaceState({}, '', next);
+    } catch {
+      /* history indisponível */
+    }
   }, []);
 
   const handleSeverityChange = useCallback((v: SeverityFilter) => {
     setSeverityFilter(v);
     try {
-      window.localStorage.setItem("perf-alerts-severity-filter", v);
+      window.localStorage.setItem('perf-alerts-severity-filter', v);
       const next = buildUrlWithParams(window.location.href, { severity: v });
-      window.history.replaceState({}, "", next);
-    } catch { /* storage/history indisponível */ }
+      window.history.replaceState({}, '', next);
+    } catch {
+      /* storage/history indisponível */
+    }
   }, []);
 
   const handleResetFilters = useCallback(() => {
-    setSeverityFilter("all");
+    setSeverityFilter('all');
     setSelectedWeek(null);
     try {
-      window.localStorage.removeItem("perf-alerts-severity-filter");
+      window.localStorage.removeItem('perf-alerts-severity-filter');
       const url = new URL(window.location.href);
-      url.searchParams.delete("severity");
-      url.searchParams.delete("week");
-      window.history.replaceState({}, "", url.toString());
-    } catch { /* storage/history indisponível */ }
-    toast.success("Filtros resetados");
+      url.searchParams.delete('severity');
+      url.searchParams.delete('week');
+      window.history.replaceState({}, '', url.toString());
+    } catch {
+      /* storage/history indisponível */
+    }
+    toast.success('Filtros resetados');
   }, [setSelectedWeek]);
 
   useEffect(() => {
@@ -70,27 +82,32 @@ export function PerformanceAlertsWeeklyTrend() {
       if (e.ctrlKey || e.metaKey || e.altKey) return;
       const t = e.target as HTMLElement | null;
       const tag = t?.tagName?.toLowerCase();
-      if (tag === "input" || tag === "textarea" || tag === "select" || t?.isContentEditable) return;
+      if (tag === 'input' || tag === 'textarea' || tag === 'select' || t?.isContentEditable) return;
 
-      if (selectedWeek && (e.key === "ArrowLeft" || e.key === "ArrowRight")) {
+      if (selectedWeek && (e.key === 'ArrowLeft' || e.key === 'ArrowRight')) {
         const idx = weekKeys.indexOf(selectedWeek);
         if (idx === -1) return;
-        const nextIdx = e.key === "ArrowLeft" ? idx - 1 : idx + 1;
+        const nextIdx = e.key === 'ArrowLeft' ? idx - 1 : idx + 1;
         if (nextIdx >= 0 && nextIdx < weekKeys.length) {
           e.preventDefault();
           setSelectedWeek(weekKeys[nextIdx]);
         }
         return;
       }
-      const map: Record<string, SeverityFilter> = { "1": "all", "2": "critical", "3": "warning", "4": "info" };
+      const map: Record<string, SeverityFilter> = {
+        '1': 'all',
+        '2': 'critical',
+        '3': 'warning',
+        '4': 'info',
+      };
       const next = map[e.key];
       if (next) {
         e.preventDefault();
         handleSeverityChange(next);
       }
     };
-    window.addEventListener("keydown", onKey);
-    return () => window.removeEventListener("keydown", onKey);
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
   }, [handleSeverityChange, selectedWeek, weekKeys, setSelectedWeek]);
 
   return (
@@ -106,7 +123,7 @@ export function PerformanceAlertsWeeklyTrend() {
               aria-label={`${criticalTotal} alertas críticos nas últimas 12 semanas`}
               title="Total de alertas críticos (12 semanas)"
             >
-              {criticalTotal} crítico{criticalTotal > 1 ? "s" : ""}
+              {criticalTotal} crítico{criticalTotal > 1 ? 's' : ''}
             </Badge>
           )}
         </CardTitle>
@@ -118,16 +135,24 @@ export function PerformanceAlertsWeeklyTrend() {
             onValueChange={(v) => v && handleSeverityChange(v as SeverityFilter)}
             className="h-8"
           >
-            <ToggleGroupItem value="all" title="Atalho: 1" className="h-7 px-2 text-[11px]">Todos</ToggleGroupItem>
-            <ToggleGroupItem value="critical" title="Atalho: 2" className="h-7 px-2 text-[11px]">Crítico</ToggleGroupItem>
-            <ToggleGroupItem value="warning" title="Atalho: 3" className="h-7 px-2 text-[11px]">Aviso</ToggleGroupItem>
-            <ToggleGroupItem value="info" title="Atalho: 4" className="h-7 px-2 text-[11px]">Info</ToggleGroupItem>
+            <ToggleGroupItem value="all" title="Atalho: 1" className="h-7 px-2 text-[11px]">
+              Todos
+            </ToggleGroupItem>
+            <ToggleGroupItem value="critical" title="Atalho: 2" className="h-7 px-2 text-[11px]">
+              Crítico
+            </ToggleGroupItem>
+            <ToggleGroupItem value="warning" title="Atalho: 3" className="h-7 px-2 text-[11px]">
+              Aviso
+            </ToggleGroupItem>
+            <ToggleGroupItem value="info" title="Atalho: 4" className="h-7 px-2 text-[11px]">
+              Info
+            </ToggleGroupItem>
           </ToggleGroup>
           <Button
             size="sm"
             variant="ghost"
             onClick={handleResetFilters}
-            disabled={severityFilter === "all" && !selectedWeek}
+            disabled={severityFilter === 'all' && !selectedWeek}
             className="h-8 gap-1.5"
             title="Resetar severidade e semana selecionada"
             aria-label="Resetar filtros"

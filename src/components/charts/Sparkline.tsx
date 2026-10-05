@@ -1,4 +1,14 @@
-export function Sparkline({ data, color = "var(--acc)", height = 36, strokeWidth = 2 }: { data: number[]; color?: string; height?: number; strokeWidth?: number }) {
+export function Sparkline({
+  data,
+  color = 'var(--acc)',
+  height = 36,
+  strokeWidth = 2,
+}: {
+  data: number[];
+  color?: string;
+  height?: number;
+  strokeWidth?: number;
+}) {
   if (data.length < 2) return null;
   const width = 100;
   const min = Math.min(...data);
@@ -12,8 +22,20 @@ export function Sparkline({ data, color = "var(--acc)", height = 36, strokeWidth
   });
 
   return (
-    <svg viewBox={`0 0 ${width} ${height}`} className="vela-reveal h-full w-full" preserveAspectRatio="none">
-      <polyline points={points.join(" ")} fill="none" stroke={color} strokeWidth={strokeWidth} strokeLinecap="round" strokeLinejoin="round" vectorEffect="non-scaling-stroke" />
+    <svg
+      viewBox={`0 0 ${width} ${height}`}
+      className="vela-reveal h-full w-full"
+      preserveAspectRatio="none"
+    >
+      <polyline
+        points={points.join(' ')}
+        fill="none"
+        stroke={color}
+        strokeWidth={strokeWidth}
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        vectorEffect="non-scaling-stroke"
+      />
     </svg>
   );
 }

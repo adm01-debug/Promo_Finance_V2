@@ -18,10 +18,22 @@ const AdminTelemetria = lazy(() => import('@/pages/AdminTelemetria'));
 type TabKey = 'slo' | 'system' | 'edge' | 'telemetry';
 
 const TAB_META: Record<TabKey, { label: string; icon: typeof Activity; description: string }> = {
-  slo: { label: 'SLO & Error Budget', icon: Gauge, description: 'Latência, disponibilidade e orçamento de erro' },
+  slo: {
+    label: 'SLO & Error Budget',
+    icon: Gauge,
+    description: 'Latência, disponibilidade e orçamento de erro',
+  },
   system: { label: 'Sistema', icon: Server, description: 'Saúde geral, integrações e automações' },
-  edge: { label: 'Edge Functions', icon: Activity, description: 'Latência, taxa de erro e últimos erros por função' },
-  telemetry: { label: 'Telemetria DB', icon: Database, description: 'Queries lentas, alertas de performance e trends' },
+  edge: {
+    label: 'Edge Functions',
+    icon: Activity,
+    description: 'Latência, taxa de erro e últimos erros por função',
+  },
+  telemetry: {
+    label: 'Telemetria DB',
+    icon: Database,
+    description: 'Queries lentas, alertas de performance e trends',
+  },
 };
 
 const FallbackPanel = () => (

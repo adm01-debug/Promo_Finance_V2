@@ -29,7 +29,7 @@ export interface InputReceitas {
 export interface InputFolha {
   folhaAnual: number;
   proLabore?: number;
-  aliquotaRat?: number;   // decimal, ex 0.02 (override do RAT nominal)
+  aliquotaRat?: number; // decimal, ex 0.02 (override do RAT nominal)
   aliquotaTerceiros?: number; // decimal, ex 0.058 (override do FPAS)
   /** CNAE preponderante — deriva o grau de risco quando aliquotaRat não é informada. */
   cnae?: string;
@@ -40,7 +40,6 @@ export interface InputFolha {
   /** Código FPAS que determina o pacote de Terceiros. */
   fpas?: string;
 }
-
 
 export interface CreditosPisCofins {
   insumos?: number;
@@ -66,12 +65,12 @@ export interface InputLalur {
 }
 
 export interface InputEstadualMunicipal {
-  aliquotaIcms?: number;         // decimal (ex 0.18)
+  aliquotaIcms?: number; // decimal (ex 0.18)
   aliquotaIcmsInterestadual?: number;
-  creditoIcmsCompras?: number;   // R$
+  creditoIcmsCompras?: number; // R$
   icmsSt?: number;
   difal?: number;
-  aliquotaIss?: number;          // decimal (ex 0.05)
+  aliquotaIss?: number; // decimal (ex 0.05)
 }
 
 export interface InputRetencoes {
@@ -85,7 +84,7 @@ export interface InputLucroReal {
   receitas: InputReceitas;
   lucroContabil: number;
   lalur: InputLalur;
-  prejuizoAcumulado?: number;    // saldo de prejuízo fiscal p/ compensar
+  prejuizoAcumulado?: number; // saldo de prejuízo fiscal p/ compensar
   csllAliquotaFinanceira?: boolean;
   creditosPisCofins: CreditosPisCofins;
   folha: InputFolha;
@@ -95,15 +94,19 @@ export interface InputLucroReal {
 }
 
 export type AtividadePresumido =
-  | 'comercio' | 'industria' | 'servicos_geral'
-  | 'servicos_profissionais' | 'transporte_cargas'
-  | 'transporte_passageiros' | 'servicos_hospitalares';
+  | 'comercio'
+  | 'industria'
+  | 'servicos_geral'
+  | 'servicos_profissionais'
+  | 'transporte_cargas'
+  | 'transporte_passageiros'
+  | 'servicos_hospitalares';
 
 export interface InputLucroPresumido {
   receitas: InputReceitas;
   atividade: AtividadePresumido;
-  aliquotaIrpjPresuncao?: number;   // override, decimal
-  aliquotaCsllPresuncao?: number;   // override, decimal
+  aliquotaIrpjPresuncao?: number; // override, decimal
+  aliquotaCsllPresuncao?: number; // override, decimal
   folha: InputFolha;
   estadualMunicipal: InputEstadualMunicipal;
   retencoes?: InputRetencoes;
@@ -125,8 +128,8 @@ export interface InputReforma {
   receitas: InputReceitas;
   anoReferencia: number; // 2026..2033+
   regimeEspecialReducao?: number; // 0..1 (ex 0.6 para 60% redução — saúde/educ)
-  aliquotaCbsAlvo?: number;  // decimal, default 0.088
-  aliquotaIbsAlvo?: number;  // decimal, default 0.177
+  aliquotaCbsAlvo?: number; // decimal, default 0.088
+  aliquotaIbsAlvo?: number; // decimal, default 0.177
   creditos?: number; // R$ base de créditos IVA
   categoriaImpostoSeletivo?: 'nenhum' | 'bebidas_alcoolicas' | 'fumo' | 'veiculos' | 'bens_luxo';
 }
@@ -140,7 +143,7 @@ export interface InputCalculadora {
 
 export interface LinhaMemoria {
   ordem: number;
-  grupo: string;      // "IRPJ", "PIS/COFINS", etc
+  grupo: string; // "IRPJ", "PIS/COFINS", etc
   descricao: string;
   base?: number;
   aliquota?: number;
@@ -163,10 +166,10 @@ export interface ResultadoRegime {
   motivoInelegibilidade?: string;
   tributos: TributoDetalhe[];
   retencoesCompensadas: number;
-  totalTributos: number;   // bruto
-  totalAPagar: number;     // total - retencoes
+  totalTributos: number; // bruto
+  totalAPagar: number; // total - retencoes
   receitaBase: number;
-  cargaEfetiva: number;    // %
+  cargaEfetiva: number; // %
   memoria: LinhaMemoria[];
   alertas: string[];
 }

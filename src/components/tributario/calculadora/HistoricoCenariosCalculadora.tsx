@@ -5,7 +5,8 @@ import { Badge } from '@/components/ui/badge';
 import { supabase } from '@/integrations/supabase/client';
 import { History } from 'lucide-react';
 
-const BRL = (v: number) => v.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL', maximumFractionDigits: 0 });
+const BRL = (v: number) =>
+  v.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL', maximumFractionDigits: 0 });
 
 interface Row {
   id: string;
@@ -22,7 +23,9 @@ export function HistoricoCenariosCalculadora({ empresaId }: { empresaId?: string
     queryFn: async (): Promise<Row[]> => {
       const { data } = await supabase
         .from('regimes_simulados')
-        .select('id, data_simulacao, regime_atual, regime_recomendado, economia_anual_estimada, parametros')
+        .select(
+          'id, data_simulacao, regime_atual, regime_recomendado, economia_anual_estimada, parametros'
+        )
         .eq('empresa_id', empresaId!)
         .contains('parametros', { tipo_calculo: 'calculadora' })
         .order('data_simulacao', { ascending: false })

@@ -1,20 +1,22 @@
 import { useState, ReactNode } from 'react';
 import { cn } from '@/lib/utils';
-import {
-  AlertTriangle,
-  Trash2,
-  CheckCircle,
-  Info,
-  HelpCircle,
-  X,
-} from 'lucide-react';
+import { AlertTriangle, Trash2, CheckCircle, Info, HelpCircle, X } from 'lucide-react';
 import { Button } from './button';
 
 // Types
 
 export type ConfirmationType = 'danger' | 'warning' | 'success' | 'info' | 'question';
 
-type ButtonVariant = 'default' | 'destructive' | 'ghost' | 'link' | 'outline' | 'premium' | 'secondary' | 'success' | 'warning';
+type ButtonVariant =
+  | 'default'
+  | 'destructive'
+  | 'ghost'
+  | 'link'
+  | 'outline'
+  | 'premium'
+  | 'secondary'
+  | 'success'
+  | 'warning';
 
 interface ConfirmationDialogProps {
   isOpen: boolean;
@@ -146,10 +148,7 @@ export function ConfirmationDialog({
         {/* Icon */}
         <div className="flex justify-center mb-4">
           <div
-            className={cn(
-              'flex items-center justify-center w-12 h-12 rounded-full',
-              config.iconBg
-            )}
+            className={cn('flex items-center justify-center w-12 h-12 rounded-full', config.iconBg)}
           >
             {icon || <Icon className={cn('h-6 w-6', config.iconColor)} />}
           </div>
@@ -157,28 +156,17 @@ export function ConfirmationDialog({
 
         {/* Content */}
         <div className="text-center">
-          <h3
-            id="confirmation-title"
-            className="text-lg font-semibold text-foreground mb-2"
-          >
+          <h3 id="confirmation-title" className="text-lg font-semibold text-foreground mb-2">
             {title}
           </h3>
-          <div
-            id="confirmation-message"
-            className="text-sm text-muted-foreground"
-          >
+          <div id="confirmation-message" className="text-sm text-muted-foreground">
             {message}
           </div>
         </div>
 
         {/* Actions */}
         <div className="flex gap-3 mt-6">
-          <Button
-            variant="outline"
-            onClick={onClose}
-            disabled={isProcessing}
-            className="flex-1"
-          >
+          <Button variant="outline" onClick={onClose} disabled={isProcessing} className="flex-1">
             {cancelText}
           </Button>
           <Button

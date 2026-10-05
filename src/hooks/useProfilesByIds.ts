@@ -1,5 +1,5 @@
-import { useQuery } from "@tanstack/react-query";
-import { supabase } from "@/integrations/supabase/client";
+import { useQuery } from '@tanstack/react-query';
+import { supabase } from '@/integrations/supabase/client';
 
 export interface ProfileMini {
   id: string;
@@ -16,18 +16,18 @@ export interface ProfileMini {
  */
 export function useProfilesByIds(userIds: Array<string | null | undefined>) {
   const ids = Array.from(
-    new Set(userIds.filter((x): x is string => typeof x === "string" && x.length > 0)),
+    new Set(userIds.filter((x): x is string => typeof x === 'string' && x.length > 0))
   ).sort();
 
   return useQuery({
-    queryKey: ["profiles-by-ids", ids],
+    queryKey: ['profiles-by-ids', ids],
     enabled: ids.length > 0,
     staleTime: 5 * 60_000,
     queryFn: async () => {
       const { data, error } = await supabase
-        .from("profiles")
-        .select("id, email, full_name")
-        .in("id", ids);
+        .from('profiles')
+        .select('id, email, full_name')
+        .in('id', ids);
       if (error) throw error;
       const map = new Map<string, ProfileMini>();
       for (const row of data ?? []) {
@@ -41,17 +41,17 @@ export function useProfilesByIds(userIds: Array<string | null | undefined>) {
 
 /** Retorna "Nome" / "email" / "—" priorizando full_name. */
 export function formatProfileLabel(p: ProfileMini | undefined | null): string {
-  if (!p) return "—";
+  if (!p) return '—';
   if (p.full_name?.trim()) return p.full_name.trim();
   if (p.email?.trim()) return p.email.trim();
-  return "—";
+  return '—';
 }
 
 /** Mascara email para exibição: "jo***@dominio.com". */
 export function maskEmail(email: string | null | undefined): string {
-  if (!email) return "—";
-  const [user, domain] = email.split("@");
+  if (!email) return '—';
+  const [user, domain] = email.split('@');
   if (!domain) return email;
   const visible = user.slice(0, Math.min(2, user.length));
-  return `${visible}${"*".repeat(Math.max(1, user.length - visible.length))}@${domain}`;
+  return `${visible}${'*'.repeat(Math.max(1, user.length - visible.length))}@${domain}`;
 }

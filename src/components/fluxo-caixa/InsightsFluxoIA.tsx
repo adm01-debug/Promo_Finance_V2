@@ -1,10 +1,10 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { 
-  Sparkles, 
-  Loader2, 
-  TrendingUp, 
-  AlertTriangle, 
+import {
+  Sparkles,
+  Loader2,
+  TrendingUp,
+  AlertTriangle,
   Lightbulb,
   RefreshCw,
   ChevronDown,
@@ -50,8 +50,8 @@ interface AnaliseIA {
   score_saude: number;
 }
 
-export function InsightsFluxoIA({ 
-  projecoes, 
+export function InsightsFluxoIA({
+  projecoes,
   saldoAtual,
   cenarioAtivo,
   diasCobertura,
@@ -71,7 +71,7 @@ export function InsightsFluxoIA({
       const totalReceitas = projecoes.reduce((sum, p) => sum + p.receitas, 0);
       const totalDespesas = projecoes.reduce((sum, p) => sum + p.despesas, 0);
       const saldoFinal = projecoes[projecoes.length - 1]?.saldo || saldoAtual;
-      const diasNegativos = projecoes.filter(p => p.saldo < 0).length;
+      const diasNegativos = projecoes.filter((p) => p.saldo < 0).length;
 
       const dadosAnalise = {
         saldo_atual: saldoAtual,
@@ -84,7 +84,8 @@ export function InsightsFluxoIA({
         probabilidade_ruptura: probabilidadeRuptura,
         cenario: cenarioAtivo,
         variacao_saldo: saldoFinal - saldoAtual,
-        margem_operacional: totalReceitas > 0 ? ((totalReceitas - totalDespesas) / totalReceitas) * 100 : 0,
+        margem_operacional:
+          totalReceitas > 0 ? ((totalReceitas - totalDespesas) / totalReceitas) * 100 : 0,
       };
 
       const { data, error: fnError } = await supabase.functions.invoke('analise-fluxo-ia', {
@@ -105,17 +106,23 @@ export function InsightsFluxoIA({
 
   const getIconeTipo = (tipo: Insight['tipo']) => {
     switch (tipo) {
-      case 'alerta': return <AlertTriangle className="h-4 w-4 text-warning" />;
-      case 'oportunidade': return <TrendingUp className="h-4 w-4 text-success" />;
-      case 'recomendacao': return <Lightbulb className="h-4 w-4 text-primary" />;
+      case 'alerta':
+        return <AlertTriangle className="h-4 w-4 text-warning" />;
+      case 'oportunidade':
+        return <TrendingUp className="h-4 w-4 text-success" />;
+      case 'recomendacao':
+        return <Lightbulb className="h-4 w-4 text-primary" />;
     }
   };
 
   const getCorPrioridade = (prioridade: Insight['prioridade']) => {
     switch (prioridade) {
-      case 'alta': return 'bg-destructive/10 text-destructive border-destructive/20';
-      case 'media': return 'bg-warning/10 text-warning border-warning/20';
-      case 'baixa': return 'bg-muted text-muted-foreground border-muted';
+      case 'alta':
+        return 'bg-destructive/10 text-destructive border-destructive/20';
+      case 'media':
+        return 'bg-warning/10 text-warning border-warning/20';
+      case 'baixa':
+        return 'bg-muted text-muted-foreground border-muted';
     }
   };
 
@@ -165,12 +172,12 @@ export function InsightsFluxoIA({
                 )}
               </Button>
               {analise && (
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  onClick={() => setIsExpanded(!isExpanded)}
-                >
-                  {isExpanded ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
+                <Button variant="ghost" size="icon" onClick={() => setIsExpanded(!isExpanded)}>
+                  {isExpanded ? (
+                    <ChevronUp className="h-4 w-4" />
+                  ) : (
+                    <ChevronDown className="h-4 w-4" />
+                  )}
                 </Button>
               )}
             </div>
@@ -182,7 +189,9 @@ export function InsightsFluxoIA({
           {!analise && !isAnalyzing && !error && (
             <div className="text-center py-8 text-muted-foreground">
               <Sparkles className="h-12 w-12 mx-auto mb-3 opacity-50" />
-              <p className="text-sm">Clique em "Gerar Análise" para obter insights personalizados do seu fluxo de caixa.</p>
+              <p className="text-sm">
+                Clique em "Gerar Análise" para obter insights personalizados do seu fluxo de caixa.
+              </p>
             </div>
           )}
 
@@ -190,7 +199,9 @@ export function InsightsFluxoIA({
           {isAnalyzing && (
             <div className="text-center py-8">
               <Loader2 className="h-12 w-12 mx-auto mb-3 animate-spin text-primary" />
-              <p className="text-sm text-muted-foreground">Analisando padrões e gerando recomendações...</p>
+              <p className="text-sm text-muted-foreground">
+                Analisando padrões e gerando recomendações...
+              </p>
             </div>
           )}
 
@@ -214,10 +225,12 @@ export function InsightsFluxoIA({
                 {/* Score e Resumo */}
                 <div className="flex items-start gap-4 p-4 rounded-lg bg-muted/30">
                   <div className="text-center">
-                    <div className={cn(
-                      "text-3xl font-bold font-display",
-                      getScoreColor(analise.score_saude)
-                    )}>
+                    <div
+                      className={cn(
+                        'text-3xl font-bold font-display',
+                        getScoreColor(analise.score_saude)
+                      )}
+                    >
                       {analise.score_saude}
                     </div>
                     <p className="text-xs text-muted-foreground">Score Saúde</p>
@@ -242,7 +255,7 @@ export function InsightsFluxoIA({
                           animate={{ opacity: 1, x: 0 }}
                           transition={{ delay: idx * 0.1 }}
                           className={cn(
-                            "p-3 rounded-lg border",
+                            'p-3 rounded-lg border',
                             getCorPrioridade(insight.prioridade)
                           )}
                         >

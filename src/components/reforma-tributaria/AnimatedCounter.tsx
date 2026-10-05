@@ -12,7 +12,14 @@ interface Props {
   suffix?: string;
 }
 
-export function AnimatedCounter({ value, duration = 1200, formatFn, className, prefix = '', suffix = '' }: Props) {
+export function AnimatedCounter({
+  value,
+  duration = 1200,
+  formatFn,
+  className,
+  prefix = '',
+  suffix = '',
+}: Props) {
   const [displayValue, setDisplayValue] = useState(0);
   const prevValue = useRef(0);
   const frameRef = useRef<number>(0);
@@ -45,7 +52,9 @@ export function AnimatedCounter({ value, duration = 1200, formatFn, className, p
 
   return (
     <span className={cn('tabular-nums', className)}>
-      {prefix}{formatted}{suffix}
+      {prefix}
+      {formatted}
+      {suffix}
     </span>
   );
 }

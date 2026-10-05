@@ -1,7 +1,13 @@
 // DIALOG: Estorno de Cobrança ASAAS
 
 import { useState } from 'react';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+} from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -37,9 +43,12 @@ export function EstornoDialog({ open, onOpenChange, asaasId, valorOriginal, empr
         valor,
         descricao: descricao || undefined,
       });
-      setValorEstorno(''); setDescricao('');
+      setValorEstorno('');
+      setDescricao('');
       onOpenChange(false);
-    } catch { /* hook handles */ }
+    } catch {
+      /* hook handles */
+    }
   };
 
   return (
@@ -63,19 +72,33 @@ export function EstornoDialog({ open, onOpenChange, asaasId, valorOriginal, empr
               min="0.01"
               max={valorOriginal}
               value={valorEstorno}
-              onChange={e => setValorEstorno(e.target.value)}
+              onChange={(e) => setValorEstorno(e.target.value)}
               placeholder={`Estorno total: ${formatCurrency(valorOriginal)}`}
             />
           </div>
           <div className="space-y-2">
             <Label>Motivo</Label>
-            <Textarea value={descricao} onChange={e => setDescricao(e.target.value)} placeholder="Motivo do estorno..." rows={2} />
+            <Textarea
+              value={descricao}
+              onChange={(e) => setDescricao(e.target.value)}
+              placeholder="Motivo do estorno..."
+              rows={2}
+            />
           </div>
-          <Button className="w-full" variant="destructive" onClick={handleEstornar} disabled={estornarCobranca.isPending}>
+          <Button
+            className="w-full"
+            variant="destructive"
+            onClick={handleEstornar}
+            disabled={estornarCobranca.isPending}
+          >
             {estornarCobranca.isPending ? (
-              <><Loader2 className="h-4 w-4 mr-2 animate-spin" /> Estornando...</>
+              <>
+                <Loader2 className="h-4 w-4 mr-2 animate-spin" /> Estornando...
+              </>
             ) : (
-              <><Undo2 className="h-4 w-4 mr-2" /> Confirmar Estorno</>
+              <>
+                <Undo2 className="h-4 w-4 mr-2" /> Confirmar Estorno
+              </>
             )}
           </Button>
         </div>

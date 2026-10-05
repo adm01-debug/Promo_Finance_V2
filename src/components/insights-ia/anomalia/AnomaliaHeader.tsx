@@ -1,19 +1,19 @@
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
-import { CheckCircle2, Eye, Search } from "lucide-react";
-import type { Anomalia } from "@/hooks/useAnomaliasDetectadas";
-import { useAnomaliasDetectadas } from "@/hooks/useAnomaliasDetectadas";
-import { useSincronizarAnomaliaBitrix } from "@/hooks/useSincronizarAnomaliaBitrix";
-import { useLogAudit } from "@/hooks/useAuditLog";
-import { ReabrirAnomaliaDialog } from "./ReabrirAnomaliaDialog";
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent } from '@/components/ui/card';
+import { CheckCircle2, Eye, Search } from 'lucide-react';
+import type { Anomalia } from '@/hooks/useAnomaliasDetectadas';
+import { useAnomaliasDetectadas } from '@/hooks/useAnomaliasDetectadas';
+import { useSincronizarAnomaliaBitrix } from '@/hooks/useSincronizarAnomaliaBitrix';
+import { useLogAudit } from '@/hooks/useAuditLog';
+import { ReabrirAnomaliaDialog } from './ReabrirAnomaliaDialog';
 
-const TIPO_LABEL: Record<Anomalia["tipo_anomalia"], string> = {
-  movimentacao_outlier: "Movimentação atípica",
-  pagamento_duplicado: "Pagamento duplicado",
-  conta_pagar_alta: "Conta a pagar alta",
-  conciliacao_atrasada: "Conciliação atrasada",
-  mudanca_regime_brusca: "Variação brusca de regime",
+const TIPO_LABEL: Record<Anomalia['tipo_anomalia'], string> = {
+  movimentacao_outlier: 'Movimentação atípica',
+  pagamento_duplicado: 'Pagamento duplicado',
+  conta_pagar_alta: 'Conta a pagar alta',
+  conciliacao_atrasada: 'Conciliação atrasada',
+  mudanca_regime_brusca: 'Variação brusca de regime',
 };
 
 export function AnomaliaHeader({ anomalia }: { anomalia: Anomalia }) {
@@ -25,38 +25,37 @@ export function AnomaliaHeader({ anomalia }: { anomalia: Anomalia }) {
 
   const handleInvestigar = () => {
     atualizarStatus.mutate(
-      { id: anomalia.id, status: "investigando" },
+      { id: anomalia.id, status: 'investigando' },
       {
         onSuccess: () => {
           audit
             .mutateAsync({
-              action: "UPDATE",
-              tableName: "anomalias_detectadas",
+              action: 'UPDATE',
+              tableName: 'anomalias_detectadas',
               recordId: anomalia.id,
-              details: `INVESTIGAR_CLICK: status → investigando | severidade=${anomalia.severidade} | tipo=${anomalia.tipo_anomalia} | centro_custo_id=${centroCustoId ?? "—"} | empresa_id=${anomalia.empresa_id ?? "—"}`,
+              details: `INVESTIGAR_CLICK: status → investigando | severidade=${anomalia.severidade} | tipo=${anomalia.tipo_anomalia} | centro_custo_id=${centroCustoId ?? '—'} | empresa_id=${anomalia.empresa_id ?? '—'}`,
             })
             .catch(() => undefined);
         },
-      },
+      }
     );
   };
 
-  const revisarComBitrix = (status: "confirmada" | "falso_positivo") => {
+  const revisarComBitrix = (status: 'confirmada' | 'falso_positivo') => {
     atualizarStatus.mutate(
       { id: anomalia.id, status },
       {
-        onSuccess: () =>
-          sincronizar.mutate({ anomaliaId: anomalia.id, evento: status }),
-      },
+        onSuccess: () => sincronizar.mutate({ anomaliaId: anomalia.id, evento: status }),
+      }
     );
   };
 
   const sevVariant =
-    anomalia.severidade === "critica" || anomalia.severidade === "alta"
-      ? "destructive"
-      : anomalia.severidade === "media"
-      ? "secondary"
-      : "outline";
+    anomalia.severidade === 'critica' || anomalia.severidade === 'alta'
+      ? 'destructive'
+      : anomalia.severidade === 'media'
+        ? 'secondary'
+        : 'outline';
 
   return (
     <Card>
@@ -65,14 +64,16 @@ export function AnomaliaHeader({ anomalia }: { anomalia: Anomalia }) {
           <div className="flex items-center gap-2 flex-wrap">
             <Badge variant={sevVariant}>{anomalia.severidade}</Badge>
             <Badge variant="outline">{TIPO_LABEL[anomalia.tipo_anomalia]}</Badge>
-            <Badge variant="outline" className="capitalize">{anomalia.status}</Badge>
+            <Badge variant="outline" className="capitalize">
+              {anomalia.status}
+            </Badge>
             {anomalia.bitrix_task_id && (
               <Badge variant="secondary" className="text-xs">
                 Bitrix24 #{anomalia.bitrix_task_id}
               </Badge>
             )}
             <span className="text-xs text-muted-foreground tabular-nums">
-              Detectada em {new Date(anomalia.detectada_em).toLocaleString("pt-BR")}
+              Detectada em {new Date(anomalia.detectada_em).toLocaleString('pt-BR')}
             </span>
           </div>
           <p className="text-base font-semibold">{anomalia.descricao}</p>
@@ -81,11 +82,11 @@ export function AnomaliaHeader({ anomalia }: { anomalia: Anomalia }) {
           )}
         </div>
         <div className="flex gap-2 shrink-0">
-          {anomalia.status === "confirmada" || anomalia.status === "falso_positivo" ? (
+          {anomalia.status === 'confirmada' || anomalia.status === 'falso_positivo' ? (
             <ReabrirAnomaliaDialog anomaliaId={anomalia.id} />
           ) : (
             <>
-              {anomalia.status === "nova" && (
+              {anomalia.status === 'nova' && (
                 <Button
                   size="sm"
                   variant="outline"
@@ -100,7 +101,7 @@ export function AnomaliaHeader({ anomalia }: { anomalia: Anomalia }) {
               <Button
                 size="sm"
                 variant="ghost"
-                onClick={() => revisarComBitrix("falso_positivo")}
+                onClick={() => revisarComBitrix('falso_positivo')}
                 disabled={atualizarStatus.isPending || sincronizar.isPending}
                 aria-label="Marcar anomalia como falso positivo"
                 title="Falso positivo"
@@ -109,7 +110,7 @@ export function AnomaliaHeader({ anomalia }: { anomalia: Anomalia }) {
               </Button>
               <Button
                 size="sm"
-                onClick={() => revisarComBitrix("confirmada")}
+                onClick={() => revisarComBitrix('confirmada')}
                 disabled={atualizarStatus.isPending || sincronizar.isPending}
                 aria-label="Confirmar anomalia"
                 title="Confirmar anomalia"

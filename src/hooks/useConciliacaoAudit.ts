@@ -10,7 +10,7 @@ export function useConciliacaoAudit(empresaId?: string) {
       // 1. Buscar transações pendentes há mais de 3 dias
       const threeDaysAgo = new Date();
       threeDaysAgo.setDate(threeDaysAgo.getDate() - 3);
-      
+
       const { data: pendentes } = await supabase
         .from('transacoes_bancarias')
         .select('*, contas_bancarias(empresa_id)')
@@ -18,13 +18,12 @@ export function useConciliacaoAudit(empresaId?: string) {
         .lt('data', threeDaysAgo.toISOString());
 
       const pendentesDaEmpresa = (pendentes ?? []).filter((p) => {
-        const cb = (p as { contas_bancarias?: { empresa_id?: string } | { empresa_id?: string }[] | null }).contas_bancarias;
+        const cb = (
+          p as { contas_bancarias?: { empresa_id?: string } | { empresa_id?: string }[] | null }
+        ).contas_bancarias;
         const empresa = Array.isArray(cb) ? cb[0]?.empresa_id : cb?.empresa_id;
         return empresa === empresaId;
       });
-
-
-
 
       if (pendentesDaEmpresa.length > 0) {
         // alertas (migration 20260518180000) não tem status/metadata — enviar
@@ -36,7 +35,8 @@ export function useConciliacaoAudit(empresaId?: string) {
           titulo: 'Pendências de Conciliação Antigas',
           mensagem: `Existem ${pendentesDaEmpresa.length} transações bancárias pendentes de conciliação há mais de 3 dias.`,
         });
-        if (alertaError) console.error('[useConciliacaoAudit] Falha ao criar alerta:', alertaError.message);
+        if (alertaError)
+          console.error('[useConciliacaoAudit] Falha ao criar alerta:', alertaError.message);
       }
 
       // 2. Buscar divergências de saldo registradas
@@ -53,7 +53,7 @@ export function useConciliacaoAudit(empresaId?: string) {
     },
     onSuccess: () => {
       toast.success('Auditoria de conciliação concluída');
-    }
+    },
   });
 
   return { runAudit };

@@ -8,7 +8,7 @@ export function detectarLeiBem(ctx: ContextoEmpresa): OportunidadeDetectada {
   const aplicavel = ctx.regime_atual === 'real' && pd > 50_000;
 
   // Exclusão de 60% (até 100%) das despesas de P&D da base IRPJ/CSLL
-  const exclusao = pd * 0.60;
+  const exclusao = pd * 0.6;
   const economiaEstimada = aplicavel ? exclusao * 0.34 : 0; // 25% IRPJ + 9% CSLL
 
   return {

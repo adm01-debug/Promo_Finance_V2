@@ -27,7 +27,9 @@ export function WebhookSimulator() {
       setResults([]);
       setStats({ total: 0, success: 0, fail: 0 });
 
-      const { data: { user } } = await supabase.auth.getUser();
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
       if (!user) throw new Error('Usuário não autenticado');
 
       // 1. Criar a rodada
@@ -35,7 +37,7 @@ export function WebhookSimulator() {
         .from('webhook_simulation_runs')
         .insert({
           status: 'pending',
-          created_by: user.id
+          created_by: user.id,
         })
         .select()
         .single();
@@ -44,23 +46,25 @@ export function WebhookSimulator() {
 
       // 2. Chamar a Edge Function
       const { error: funcError } = await supabase.functions.invoke('webhook-simulator', {
-        body: { 
-          run_id: run.id, 
+        body: {
+          run_id: run.id,
           target_function: 'asaas-webhook',
-          scenarios_count: 50
-        }
+          scenarios_count: 50,
+        },
       });
 
       if (funcError) throw funcError;
 
       toast.success('Simulação iniciada com sucesso!');
-      
+
       // 3. Monitorar resultados
       pollResults(run.id);
-
     } catch (error: unknown) {
       console.error('Erro na simulação:', error);
-      toast.error('Falha ao iniciar simulação: ' + (error instanceof Error ? error.message : 'Erro desconhecido'));
+      toast.error(
+        'Falha ao iniciar simulação: ' +
+          (error instanceof Error ? error.message : 'Erro desconhecido')
+      );
       setIsRunning(false);
     }
   };
@@ -85,7 +89,7 @@ export function WebhookSimulator() {
         setStats({
           total: resultsData.length,
           success,
-          fail: resultsData.length - success
+          fail: resultsData.length - success,
         });
       }
 
@@ -112,18 +116,23 @@ export function WebhookSimulator() {
                 Simulador de Estresse & Consistência
               </CardTitle>
               <CardDescription>
-                Executa milhares de cenários de webhooks para validar a resiliência das Edge Functions.
+                Executa milhares de cenários de webhooks para validar a resiliência das Edge
+                Functions.
               </CardDescription>
             </div>
-            <Button 
-              onClick={startSimulation} 
+            <Button
+              onClick={startSimulation}
               disabled={isRunning}
               className="bg-primary/20 hover:bg-primary/30 text-primary border border-primary/20"
             >
               {isRunning ? (
-                <><Loader2 className="mr-2 h-4 w-4 animate-spin" /> Processando...</>
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" /> Processando...
+                </>
               ) : (
-                <><Play className="mr-2 h-4 w-4" /> Iniciar Teste em Massa</>
+                <>
+                  <Play className="mr-2 h-4 w-4" /> Iniciar Teste em Massa
+                </>
               )}
             </Button>
           </div>
@@ -131,7 +140,9 @@ export function WebhookSimulator() {
         <CardContent>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
             <Card className="bg-card/5 border-white/5 p-4 text-center">
-              <p className="text-sm text-muted-foreground uppercase tracking-wider mb-1">Cenários Executados</p>
+              <p className="text-sm text-muted-foreground uppercase tracking-wider mb-1">
+                Cenários Executados
+              </p>
               <p className="text-2xl font-bold">{stats.total}</p>
             </Card>
             <Card className="bg-emerald-500/5 border-emerald-500/10 p-4 text-center">
@@ -163,7 +174,10 @@ export function WebhookSimulator() {
                 </div>
               ) : (
                 results.map((res) => (
-                  <div key={res.id} className="flex items-center justify-between p-2 rounded bg-card/5 border border-white/5">
+                  <div
+                    key={res.id}
+                    className="flex items-center justify-between p-2 rounded bg-card/5 border border-white/5"
+                  >
                     <div className="flex items-center gap-3">
                       {res.success ? (
                         <CheckCircle2 className="h-4 w-4 text-emerald-500" />
@@ -177,8 +191,11 @@ export function WebhookSimulator() {
                         </p>
                       </div>
                     </div>
-                    <Badge variant={res.success ? "outline" : "destructive"} className="text-[10px]">
-                      {res.success ? "VALIDADO" : "FALHOU"}
+                    <Badge
+                      variant={res.success ? 'outline' : 'destructive'}
+                      className="text-[10px]"
+                    >
+                      {res.success ? 'VALIDADO' : 'FALHOU'}
                     </Badge>
                   </div>
                 ))

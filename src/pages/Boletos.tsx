@@ -6,14 +6,26 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from '@/components/ui/dialog';
 import { TableShimmerSkeleton } from '@/components/ui/loading-skeleton';
-import { 
-  FileText, 
-  Eye, 
-  Plus, 
-  Search, 
+import {
+  FileText,
+  Eye,
+  Plus,
+  Search,
   Copy,
   Mail,
   Barcode,
@@ -22,7 +34,7 @@ import {
   XCircle,
   AlertCircle,
   Ban,
-  History as HistoryIcon
+  History as HistoryIcon,
 } from 'lucide-react';
 
 import { formatCurrency, formatDate } from '@/lib/formatters';
@@ -36,21 +48,37 @@ const containerVariants = {
   hidden: { opacity: 0 },
   visible: {
     opacity: 1,
-    transition: { staggerChildren: 0.1 }
-  }
+    transition: { staggerChildren: 0.1 },
+  },
 };
 
 const itemVariants = {
   hidden: { opacity: 0, y: 20 },
-  visible: { opacity: 1, y: 0 }
+  visible: { opacity: 1, y: 0 },
 };
 
 const statusConfig = {
-  gerado: { label: 'Gerado', color: 'bg-secondary/10 text-secondary border-secondary/20', icon: FileText },
+  gerado: {
+    label: 'Gerado',
+    color: 'bg-secondary/10 text-secondary border-secondary/20',
+    icon: FileText,
+  },
   enviado: { label: 'Enviado', color: 'bg-warning/10 text-warning border-warning/20', icon: Mail },
-  pago: { label: 'Pago', color: 'bg-success/10 text-success border-success/20', icon: CheckCircle2 },
-  vencido: { label: 'Vencido', color: 'bg-destructive/10 text-destructive border-destructive/20', icon: XCircle },
-  cancelado: { label: 'Cancelado', color: 'bg-muted text-muted-foreground border-muted', icon: AlertCircle }
+  pago: {
+    label: 'Pago',
+    color: 'bg-success/10 text-success border-success/20',
+    icon: CheckCircle2,
+  },
+  vencido: {
+    label: 'Vencido',
+    color: 'bg-destructive/10 text-destructive border-destructive/20',
+    icon: XCircle,
+  },
+  cancelado: {
+    label: 'Cancelado',
+    color: 'bg-muted text-muted-foreground border-muted',
+    icon: AlertCircle,
+  },
 };
 
 import { BoletoPreviewPanel } from '@/components/boletos/BoletoPreviewPanel';
@@ -61,7 +89,9 @@ export default function Boletos() {
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState<string>('todos');
   const [, setSelectedBoleto] = useState<Boleto | null>(null);
-  const [showNovoBoleto, setShowNovoBoleto] = useState(new URLSearchParams(window.location.search).get('novo') === 'true');
+  const [showNovoBoleto, setShowNovoBoleto] = useState(
+    new URLSearchParams(window.location.search).get('novo') === 'true'
+  );
   const [activeTab, setActiveTab] = useState('lista');
 
   const {
@@ -80,23 +110,52 @@ export default function Boletos() {
   // Make syncBitrixBoleto available for the preview panel
   window.syncBitrixBoleto = syncBitrixBoleto;
 
-  const filteredBoletos = boletos?.filter(boleto => {
-    const term = searchTerm.toLowerCase();
-    const matchesSearch = !searchTerm
-      || (boleto.sacado_nome ?? '').toLowerCase().includes(term)
-      || (boleto.numero ?? '').toLowerCase().includes(term)
-      || (boleto.linha_digitavel ?? '').toLowerCase().includes(term);
-    const matchesStatus = statusFilter === 'todos' || boleto.status === statusFilter;
-    return matchesSearch && matchesStatus;
-  }) || [];
+  const filteredBoletos =
+    boletos?.filter((boleto) => {
+      const term = searchTerm.toLowerCase();
+      const matchesSearch =
+        !searchTerm ||
+        (boleto.sacado_nome ?? '').toLowerCase().includes(term) ||
+        (boleto.numero ?? '').toLowerCase().includes(term) ||
+        (boleto.linha_digitavel ?? '').toLowerCase().includes(term);
+      const matchesStatus = statusFilter === 'todos' || boleto.status === statusFilter;
+      return matchesSearch && matchesStatus;
+    }) || [];
 
   const kpis = [
-    { label: 'Total Gerado', value: stats.totalGerado, icon: FileText, color: 'text-primary', bg: 'bg-primary/10', filter: 'todos' },
-    { label: 'Total Pago', value: stats.totalPago, icon: CheckCircle2, color: 'text-success', bg: 'bg-success/10', filter: 'pago' },
-    { label: 'Total Vencido', value: stats.totalVencido, icon: XCircle, color: 'text-destructive', bg: 'bg-destructive/10', filter: 'vencido' },
-    { label: 'Pendente', value: stats.totalPendente, icon: Clock, color: 'text-warning', bg: 'bg-warning/10', filter: 'gerado' }
+    {
+      label: 'Total Gerado',
+      value: stats.totalGerado,
+      icon: FileText,
+      color: 'text-primary',
+      bg: 'bg-primary/10',
+      filter: 'todos',
+    },
+    {
+      label: 'Total Pago',
+      value: stats.totalPago,
+      icon: CheckCircle2,
+      color: 'text-success',
+      bg: 'bg-success/10',
+      filter: 'pago',
+    },
+    {
+      label: 'Total Vencido',
+      value: stats.totalVencido,
+      icon: XCircle,
+      color: 'text-destructive',
+      bg: 'bg-destructive/10',
+      filter: 'vencido',
+    },
+    {
+      label: 'Pendente',
+      value: stats.totalPendente,
+      icon: Clock,
+      color: 'text-warning',
+      bg: 'bg-warning/10',
+      filter: 'gerado',
+    },
   ];
-
 
   return (
     <MainLayout>
@@ -107,7 +166,10 @@ export default function Boletos() {
         className="space-y-6"
       >
         {/* Header */}
-        <motion.div variants={itemVariants} className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+        <motion.div
+          variants={itemVariants}
+          className="flex flex-col lg:flex-row lg:items-center justify-between gap-4"
+        >
           <div className="flex items-center gap-4">
             <div className="h-12 w-12 rounded-2xl bg-primary/10 flex items-center justify-center">
               <Barcode className="h-6 w-6 text-primary" />
@@ -120,16 +182,27 @@ export default function Boletos() {
             </div>
           </div>
           <div className="flex items-center gap-3">
-             <Tabs value={activeTab} onValueChange={setActiveTab} className="bg-muted/50 p-1 rounded-xl">
+            <Tabs
+              value={activeTab}
+              onValueChange={setActiveTab}
+              className="bg-muted/50 p-1 rounded-xl"
+            >
               <TabsList className="bg-transparent border-none">
-                <TabsTrigger value="lista" className="rounded-lg gap-2"><FileText className="h-4 w-4" /> Lista</TabsTrigger>
-                <TabsTrigger value="historico" className="rounded-lg gap-2"><HistoryIcon className="h-4 w-4" /> Histórico</TabsTrigger>
+                <TabsTrigger value="lista" className="rounded-lg gap-2">
+                  <FileText className="h-4 w-4" /> Lista
+                </TabsTrigger>
+                <TabsTrigger value="historico" className="rounded-lg gap-2">
+                  <HistoryIcon className="h-4 w-4" /> Histórico
+                </TabsTrigger>
               </TabsList>
             </Tabs>
 
             <Dialog open={showNovoBoleto} onOpenChange={setShowNovoBoleto}>
               <DialogTrigger asChild>
-                <Button className="gap-2 bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary/70 shadow-lg shadow-primary/25 h-10" size="sm">
+                <Button
+                  className="gap-2 bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary/70 shadow-lg shadow-primary/25 h-10"
+                  size="sm"
+                >
                   <Plus className="h-4 w-4" />
                   Novo Boleto
                 </Button>
@@ -141,7 +214,7 @@ export default function Boletos() {
                     Gerar Novo Boleto
                   </DialogTitle>
                 </DialogHeader>
-                <NovoBoletoForm 
+                <NovoBoletoForm
                   onClose={() => setShowNovoBoleto(false)}
                   empresas={empresas}
                   contasBancarias={contasBancarias}
@@ -166,17 +239,29 @@ export default function Boletos() {
                 onClick={() => setStatusFilter(kpi.filter)}
                 className="cursor-pointer"
               >
-                <Card className={cn(
-                  "stat-card group hover:shadow-md hover:-translate-y-0.5 transition-all duration-200 h-full border-white/5 bg-card/[0.02]",
-                  statusFilter === kpi.filter && "ring-2 ring-primary/50 bg-primary/5"
-                )}>
+                <Card
+                  className={cn(
+                    'stat-card group hover:shadow-md hover:-translate-y-0.5 transition-all duration-200 h-full border-white/5 bg-card/[0.02]',
+                    statusFilter === kpi.filter && 'ring-2 ring-primary/50 bg-primary/5'
+                  )}
+                >
                   <CardContent className="p-3 sm:p-5">
                     <div className="flex items-start justify-between gap-2">
                       <div className="min-w-0 flex-1">
-                        <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">{kpi.label}</p>
-                        <p className="text-lg sm:text-2xl font-black font-display mt-1 tabular-nums tracking-tighter">{formatCurrency(kpi.value)}</p>
+                        <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">
+                          {kpi.label}
+                        </p>
+                        <p className="text-lg sm:text-2xl font-black font-display mt-1 tabular-nums tracking-tighter">
+                          {formatCurrency(kpi.value)}
+                        </p>
                       </div>
-                      <div className={cn("h-10 w-10 sm:h-12 sm:w-12 rounded-xl flex items-center justify-center transition-transform group-hover:scale-110 shrink-0", kpi.bg, kpi.color)}>
+                      <div
+                        className={cn(
+                          'h-10 w-10 sm:h-12 sm:w-12 rounded-xl flex items-center justify-center transition-transform group-hover:scale-110 shrink-0',
+                          kpi.bg,
+                          kpi.color
+                        )}
+                      >
                         <Icon className="h-5 w-5 sm:h-6 sm:w-6" />
                       </div>
                     </div>
@@ -186,7 +271,6 @@ export default function Boletos() {
             );
           })}
         </motion.div>
-
 
         {/* Filters */}
         <motion.div variants={itemVariants} className="flex flex-col sm:flex-row gap-4">
@@ -237,21 +321,25 @@ export default function Boletos() {
                   ) : filteredBoletos.length > 0 ? (
                     <div className="space-y-4">
                       {filteredBoletos.map((boleto) => {
-                        const status = statusConfig[boleto.status] ?? statusConfig.gerado;
+                        const status =
+                          statusConfig[boleto.status as keyof typeof statusConfig] ??
+                          statusConfig.gerado;
                         const StatusIcon = status.icon;
-                        
+
                         return (
                           <div
                             key={boleto.id}
                             className="flex items-center justify-between p-4 border rounded-lg hover:bg-muted/50 transition-colors"
                           >
                             <div className="flex items-center gap-4">
-                              <div className={cn("p-2 rounded-lg", status.color)}>
+                              <div className={cn('p-2 rounded-lg', status.color)}>
                                 <StatusIcon className="h-5 w-5" />
                               </div>
                               <div>
                                 <div className="flex items-center gap-2">
-                                  <span className="font-mono text-sm text-muted-foreground">#{boleto.numero}</span>
+                                  <span className="font-mono text-sm text-muted-foreground">
+                                    #{boleto.numero}
+                                  </span>
                                   <Badge variant="outline" className={status.color}>
                                     {status.label}
                                   </Badge>
@@ -262,7 +350,7 @@ export default function Boletos() {
                                 </p>
                               </div>
                             </div>
-                            
+
                             <div className="flex items-center gap-4">
                               <div className="text-right">
                                 <p className="font-bold text-lg">{formatCurrency(boleto.valor)}</p>
@@ -271,8 +359,8 @@ export default function Boletos() {
                               <div className="flex gap-1">
                                 <Dialog>
                                   <DialogTrigger asChild>
-                                    <Button 
-                                      variant="ghost" 
+                                    <Button
+                                      variant="ghost"
                                       size="icon"
                                       onClick={() => setSelectedBoleto(boleto)}
                                     >
@@ -283,8 +371,8 @@ export default function Boletos() {
                                     <DialogHeader>
                                       <DialogTitle>Boleto #{boleto.numero}</DialogTitle>
                                     </DialogHeader>
-                                     <BoletoPreviewPanel 
-                                      boleto={boleto} 
+                                    <BoletoPreviewPanel
+                                      boleto={boleto}
                                       onUpdateStatus={updateStatus}
                                     />
                                   </DialogContent>

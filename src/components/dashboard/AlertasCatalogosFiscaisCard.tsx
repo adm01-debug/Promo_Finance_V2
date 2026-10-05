@@ -26,9 +26,7 @@ function AlertaLinha({ alerta }: { alerta: AlertaCatalogo }) {
     <li
       className={cn(
         'rounded-lg border p-3 transition-colors',
-        critico
-          ? 'border-destructive/30 bg-destructive/5'
-          : 'border-warning/30 bg-warning/5',
+        critico ? 'border-destructive/30 bg-destructive/5' : 'border-warning/30 bg-warning/5'
       )}
     >
       <div className="flex flex-wrap items-center gap-2">
@@ -76,7 +74,7 @@ export function AlertasCatalogosFiscaisCard({
       className={cn(
         'border-l-4',
         temCritico ? 'border-l-destructive' : 'border-l-warning',
-        className,
+        className
       )}
     >
       <CardHeader className="flex flex-row items-start justify-between gap-3 pb-3">
@@ -86,7 +84,7 @@ export function AlertasCatalogosFiscaisCard({
               'flex h-9 w-9 items-center justify-center rounded-xl border',
               temCritico
                 ? 'border-destructive/20 bg-destructive/10 text-destructive'
-                : 'border-warning/20 bg-warning/10 text-warning',
+                : 'border-warning/20 bg-warning/10 text-warning'
             )}
           >
             {temCritico ? (
@@ -99,8 +97,8 @@ export function AlertasCatalogosFiscaisCard({
             <CardTitle className="text-base">Catálogos fiscais divergentes</CardTitle>
             <p className="mt-0.5 text-xs text-muted-foreground">
               {total} divergência{total > 1 ? 's' : ''} em {catalogosAfetados.length} catálogo
-              {catalogosAfetados.length > 1 ? 's' : ''} · {criticos} crítica{criticos === 1 ? '' : 's'} ·{' '}
-              {atencoes} de atenção
+              {catalogosAfetados.length > 1 ? 's' : ''} · {criticos} crítica
+              {criticos === 1 ? '' : 's'} · {atencoes} de atenção
             </p>
           </div>
         </div>

@@ -17,8 +17,16 @@ interface AdvancedProps {
 }
 
 export function ConfiguracoesAvancadas({
-  showAdvanced, setShowAdvanced, juros, setJuros, multa, setMulta,
-  descontoValor, setDescontoValor, descontoDias, setDescontoDias,
+  showAdvanced,
+  setShowAdvanced,
+  juros,
+  setJuros,
+  multa,
+  setMulta,
+  descontoValor,
+  setDescontoValor,
+  descontoDias,
+  setDescontoDias,
 }: AdvancedProps) {
   return (
     <div>
@@ -42,7 +50,7 @@ export function ConfiguracoesAvancadas({
                 step="0.01"
                 min="0"
                 value={juros}
-                onChange={e => setJuros(e.target.value)}
+                onChange={(e) => setJuros(e.target.value)}
                 placeholder="0.00"
                 className="h-8 text-sm"
               />
@@ -55,7 +63,7 @@ export function ConfiguracoesAvancadas({
                 min="0"
                 max="2"
                 value={multa}
-                onChange={e => setMulta(e.target.value)}
+                onChange={(e) => setMulta(e.target.value)}
                 placeholder="0.00"
                 className="h-8 text-sm"
               />
@@ -69,7 +77,7 @@ export function ConfiguracoesAvancadas({
                 step="0.01"
                 min="0"
                 value={descontoValor}
-                onChange={e => setDescontoValor(e.target.value)}
+                onChange={(e) => setDescontoValor(e.target.value)}
                 placeholder="0.00"
                 className="h-8 text-sm"
               />
@@ -80,7 +88,7 @@ export function ConfiguracoesAvancadas({
                 type="number"
                 min="0"
                 value={descontoDias}
-                onChange={e => setDescontoDias(e.target.value)}
+                onChange={(e) => setDescontoDias(e.target.value)}
                 placeholder="0"
                 className="h-8 text-sm"
               />
@@ -102,7 +110,12 @@ interface SplitProps {
 }
 
 export function SplitCobrancaConfig({
-  showSplit, setShowSplit, splitWalletId, setSplitWalletId, splitPercent, setSplitPercent,
+  showSplit,
+  setShowSplit,
+  splitWalletId,
+  setSplitWalletId,
+  splitPercent,
+  setSplitPercent,
 }: SplitProps) {
   return (
     <div>
@@ -123,7 +136,7 @@ export function SplitCobrancaConfig({
               <Label className="text-xs">Wallet ID Destino</Label>
               <Input
                 value={splitWalletId}
-                onChange={e => setSplitWalletId(e.target.value)}
+                onChange={(e) => setSplitWalletId(e.target.value)}
                 placeholder="Ex: d7a1..."
                 className="h-8 text-sm"
               />
@@ -135,7 +148,7 @@ export function SplitCobrancaConfig({
                 min="0"
                 max="100"
                 value={splitPercent}
-                onChange={e => setSplitPercent(e.target.value)}
+                onChange={(e) => setSplitPercent(e.target.value)}
                 placeholder="10"
                 className="h-8 text-sm"
               />

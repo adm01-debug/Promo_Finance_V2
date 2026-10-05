@@ -3,7 +3,7 @@ import type { EstatisticasMatch, MatchSugestao } from './types';
 
 export function calcularEstatisticasMatch(
   transacoes: TransacaoOFX[],
-  matches: Map<string, MatchSugestao[]>,
+  matches: Map<string, MatchSugestao[]>
 ): EstatisticasMatch {
   let confiancaAlta = 0;
   let confiancaMedia = 0;

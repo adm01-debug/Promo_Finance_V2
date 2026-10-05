@@ -167,7 +167,7 @@ function normalizarPapel(valor: string | null | undefined): PapelProtocolo | nul
 
 function vigenteEm(
   registro: { vigente_de?: string | null; vigente_ate?: string | null },
-  referencia: string | null,
+  referencia: string | null
 ): boolean | null {
   const de = registro.vigente_de ?? null;
   const ate = registro.vigente_ate ?? null;
@@ -230,12 +230,22 @@ export function aplicarOverlayMvaSt(entrada: EntradaOverlayMva): ResultadoOverla
     }
     const sigla = (registro.uf ?? '').toString().trim().toUpperCase();
     if (!isUF(sigla)) {
-      rejeitadas.push({ ncm: '—', protocolo, motivo: 'uf_desconhecida', valor: registro.uf ?? null });
+      rejeitadas.push({
+        ncm: '—',
+        protocolo,
+        motivo: 'uf_desconhecida',
+        valor: registro.uf ?? null,
+      });
       continue;
     }
     const papel = normalizarPapel(registro.papel);
     if (papel === null) {
-      rejeitadas.push({ ncm: '—', protocolo, motivo: 'papel_invalido', valor: registro.papel ?? null });
+      rejeitadas.push({
+        ncm: '—',
+        protocolo,
+        motivo: 'papel_invalido',
+        valor: registro.papel ?? null,
+      });
       continue;
     }
     const uf = sigla as UF;
@@ -261,17 +271,32 @@ export function aplicarOverlayMvaSt(entrada: EntradaOverlayMva): ResultadoOverla
     const ncm = normalizarNcmCodigo(ncmBruto);
 
     if (!protocolo) {
-      rejeitadas.push({ ncm: String(ncmBruto ?? '—'), protocolo: '—', motivo: 'protocolo_invalido', valor: null });
+      rejeitadas.push({
+        ncm: String(ncmBruto ?? '—'),
+        protocolo: '—',
+        motivo: 'protocolo_invalido',
+        valor: null,
+      });
       continue;
     }
     if (ncm === null) {
-      rejeitadas.push({ ncm: String(ncmBruto ?? '—'), protocolo: codigo, motivo: 'ncm_invalido', valor: ncmBruto });
+      rejeitadas.push({
+        ncm: String(ncmBruto ?? '—'),
+        protocolo: codigo,
+        motivo: 'ncm_invalido',
+        valor: ncmBruto,
+      });
       continue;
     }
 
     const chave = `${protocolo}#${ncm}`;
     if (vistos.has(chave)) {
-      rejeitadas.push({ ncm, protocolo: codigo, motivo: 'duplicado', valor: registro.mva_original });
+      rejeitadas.push({
+        ncm,
+        protocolo: codigo,
+        motivo: 'duplicado',
+        valor: registro.mva_original,
+      });
       continue;
     }
     vistos.add(chave);
@@ -291,18 +316,33 @@ export function aplicarOverlayMvaSt(entrada: EntradaOverlayMva): ResultadoOverla
 
     const mva = normalizarMva(registro.mva_original);
     if (mva === null) {
-      rejeitadas.push({ ncm, protocolo: codigo, motivo: 'mva_invalida', valor: registro.mva_original });
+      rejeitadas.push({
+        ncm,
+        protocolo: codigo,
+        motivo: 'mva_invalida',
+        valor: registro.mva_original,
+      });
       continue;
     }
     if (mva > MVA_MAXIMA) {
-      rejeitadas.push({ ncm, protocolo: codigo, motivo: 'mva_fora_da_faixa', valor: registro.mva_original });
+      rejeitadas.push({
+        ncm,
+        protocolo: codigo,
+        motivo: 'mva_fora_da_faixa',
+        valor: registro.mva_original,
+      });
       continue;
     }
 
     const origens = [...(origensPorProtocolo.get(protocolo) ?? new Set<UF>())].sort();
     const destinos = [...(destinosPorProtocolo.get(protocolo) ?? new Set<UF>())].sort();
     if (origens.length === 0 || destinos.length === 0) {
-      rejeitadas.push({ ncm, protocolo: codigo, motivo: 'sem_uf_signataria', valor: registro.mva_original });
+      rejeitadas.push({
+        ncm,
+        protocolo: codigo,
+        motivo: 'sem_uf_signataria',
+        valor: registro.mva_original,
+      });
       continue;
     }
 
@@ -310,7 +350,12 @@ export function aplicarOverlayMvaSt(entrada: EntradaOverlayMva): ResultadoOverla
     const regra = entrada.regras?.[ncm] ?? entrada.regras?.[String(ncmBruto ?? '')];
     if (regra) {
       if (regra.sujeitoSt === false) {
-        bloqueadas.push({ ncm, protocolo: codigo, motivo: 'ncm_nao_sujeito_st', mvaIgnorada: arredondar(mva) });
+        bloqueadas.push({
+          ncm,
+          protocolo: codigo,
+          motivo: 'ncm_nao_sujeito_st',
+          mvaIgnorada: arredondar(mva),
+        });
         continue;
       }
       const motivo = regra.situacao ? bloqueioDaSituacao(regra.situacao) : null;
@@ -415,13 +460,13 @@ export function resolverMvaSt(consulta: ConsultaMvaSt): ResolucaoMvaSt {
 
   const indice = consulta.indice ?? INDICE_EFETIVO;
   const candidatos = (indice[ncm] ?? []).filter(
-    (e) => e.origens.includes(consulta.ufOrigem) && e.destinos.includes(consulta.ufDestino),
+    (e) => e.origens.includes(consulta.ufOrigem) && e.destinos.includes(consulta.ufDestino)
   );
 
   if (candidatos.length === 0) return vazio;
 
   const escolhido = [...candidatos].sort(
-    (a, b) => b.mvaOriginal - a.mvaOriginal || a.protocoloCodigo.localeCompare(b.protocoloCodigo),
+    (a, b) => b.mvaOriginal - a.mvaOriginal || a.protocoloCodigo.localeCompare(b.protocoloCodigo)
   )[0];
 
   const alertas = [
@@ -429,7 +474,7 @@ export function resolverMvaSt(consulta: ConsultaMvaSt): ResolucaoMvaSt {
   ];
   if (candidatos.length > 1) {
     alertas.push(
-      `Há ${candidatos.length} protocolos aplicáveis ao NCM ${ncm} nesse par de UFs; prevaleceu a maior MVA. Revise o cadastro.`,
+      `Há ${candidatos.length} protocolos aplicáveis ao NCM ${ncm} nesse par de UFs; prevaleceu a maior MVA. Revise o cadastro.`
     );
   }
 
@@ -458,7 +503,8 @@ const ROTULO_MOTIVO: Record<MotivoRejeicaoMva, string> = {
 /** Traduz rejeições do overlay de MVA/ST em mensagens legíveis. */
 export function descreverRejeicoesMva(rejeicoes: readonly RejeicaoMva[]): string[] {
   return rejeicoes.map(
-    (r) => `Protocolo ${r.protocolo} · NCM ${r.ncm}: ${ROTULO_MOTIVO[r.motivo] ?? r.motivo.replace(/_/g, ' ')}`,
+    (r) =>
+      `Protocolo ${r.protocolo} · NCM ${r.ncm}: ${ROTULO_MOTIVO[r.motivo] ?? r.motivo.replace(/_/g, ' ')}`
   );
 }
 
@@ -474,6 +520,7 @@ const ROTULO_BLOQUEIO: Record<MotivoBloqueioMva, string> = {
 /** Traduz bloqueios jurídicos (MVA cadastrada, porém legalmente inaplicável). */
 export function descreverBloqueiosMva(bloqueios: readonly BloqueioMva[]): string[] {
   return bloqueios.map(
-    (b) => `Protocolo ${b.protocolo} · NCM ${b.ncm}: ${ROTULO_BLOQUEIO[b.motivo]} — MVA cadastrada não aplicada`,
+    (b) =>
+      `Protocolo ${b.protocolo} · NCM ${b.ncm}: ${ROTULO_BLOQUEIO[b.motivo]} — MVA cadastrada não aplicada`
   );
 }

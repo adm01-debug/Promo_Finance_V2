@@ -5,6 +5,7 @@ import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.49.4';
 import { corsHeadersPara } from '../_shared/cors.ts';
 import { createLogger } from '../_shared/observability.ts';
 import { mensagemErro, contextoErro } from '../_shared/erros.ts';
+import { withEdgeObservability } from '../_shared/edge-observability.ts';
 const log = createLogger('processar-nf-ocr');
 
 const TOOL_DEF = {
@@ -46,145 +47,150 @@ const TOOL_DEF = {
   },
 };
 
-serve(async (req) => {
-  const _t0 = Date.now();
-  try {
-    const corsHeaders = corsHeadersPara(req);
-    if (req.method === 'OPTIONS') return new Response(null, { headers: corsHeaders });
-
+serve(
+  withEdgeObservability('processar-nf-ocr', async (req) => {
+    const _t0 = Date.now();
     try {
-      const LOVABLE_API_KEY = Deno.env.get('LOVABLE_API_KEY');
-      if (!LOVABLE_API_KEY) throw new Error('LOVABLE_API_KEY não configurado');
+      const corsHeaders = corsHeadersPara(req);
+      if (req.method === 'OPTIONS') return new Response(null, { headers: corsHeaders });
 
-      const supabase = createClient(
-        Deno.env.get('SUPABASE_URL')!,
-        Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!,
-        { global: { headers: { Authorization: req.headers.get('Authorization') ?? '' } } }
-      );
+      try {
+        const LOVABLE_API_KEY = Deno.env.get('LOVABLE_API_KEY');
+        if (!LOVABLE_API_KEY) throw new Error('LOVABLE_API_KEY não configurado');
 
-      const {
-        data: { user },
-      } = await supabase.auth.getUser();
-      if (!user) {
-        return new Response(JSON.stringify({ error: 'Unauthorized' }), {
-          status: 401,
-          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        const supabase = createClient(
+          Deno.env.get('SUPABASE_URL')!,
+          Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!,
+          { global: { headers: { Authorization: req.headers.get('Authorization') ?? '' } } }
+        );
+
+        const {
+          data: { user },
+        } = await supabase.auth.getUser();
+        if (!user) {
+          return new Response(JSON.stringify({ error: 'Unauthorized' }), {
+            status: 401,
+            headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+          });
+        }
+
+        const rawJson = await req.json().catch(() => ({}));
+        const OcrSchema = z
+          .object({
+            arquivo_url: z.string().optional(),
+            arquivo_base64: z.string().optional(),
+            arquivo_tipo: z.string().optional(),
+            arquivo_nome: z.string().optional(),
+            empresa_id: z.string().uuid().optional(),
+          })
+          .refine((d) => !!(d.arquivo_base64 || d.arquivo_url), {
+            message: 'arquivo_base64 ou arquivo_url é obrigatório',
+          });
+        const __c = validatePayload(OcrSchema, rawJson, 'processar-nf-ocr');
+        if (!__c.success)
+          return new Response(JSON.stringify({ error: __c.error, details: __c.details }), {
+            status: 400,
+            headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+          });
+        const { arquivo_url, arquivo_base64, arquivo_tipo, arquivo_nome, empresa_id } = __c.data;
+
+        // Cria registro inicial em status processando
+        const { data: registro, error: errReg } = await supabase
+          .from('notas_fiscais_ocr')
+          .insert({
+            empresa_id: empresa_id ?? null,
+            arquivo_url: arquivo_url ?? `inline:${arquivo_nome ?? 'nf'}`,
+            arquivo_nome,
+            arquivo_tipo,
+            status: 'processando',
+            criado_por: user.id,
+          })
+          .select('id')
+          .single();
+        if (errReg) throw errReg;
+
+        const imageUrl = arquivo_base64
+          ? `data:${arquivo_tipo ?? 'image/jpeg'};base64,${arquivo_base64}`
+          : arquivo_url;
+
+        const aiResp = await fetch('https://ai.gateway.lovable.dev/v1/chat/completions', {
+          method: 'POST',
+          headers: {
+            Authorization: `Bearer ${LOVABLE_API_KEY}`,
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            model: 'google/gemini-2.5-flash',
+            messages: [
+              {
+                role: 'system',
+                content:
+                  'Você é um especialista em OCR de notas fiscais brasileiras. Extraia os dados solicitados via tool calling. Use apenas dígitos para CNPJs. Datas em ISO YYYY-MM-DD.',
+              },
+              {
+                role: 'user',
+                content: [
+                  { type: 'text', text: 'Extraia os dados desta nota fiscal.' },
+                  { type: 'image_url', image_url: { url: imageUrl } },
+                ],
+              },
+            ],
+            tools: [TOOL_DEF],
+            tool_choice: { type: 'function', function: { name: 'extract_nf_data' } },
+          }),
         });
-      }
 
-      const rawJson = await req.json().catch(() => ({}));
-      const OcrSchema = z
-        .object({
-          arquivo_url: z.string().optional(),
-          arquivo_base64: z.string().optional(),
-          arquivo_tipo: z.string().optional(),
-          arquivo_nome: z.string().optional(),
-          empresa_id: z.string().uuid().optional(),
-        })
-        .refine((d) => !!(d.arquivo_base64 || d.arquivo_url), {
-          message: 'arquivo_base64 ou arquivo_url é obrigatório',
-        });
-      const __c = validatePayload(OcrSchema, rawJson, 'processar-nf-ocr');
-      if (!__c.success)
-        return new Response(JSON.stringify({ error: __c.error, details: __c.details }), {
-          status: 400,
-          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-        });
-      const { arquivo_url, arquivo_base64, arquivo_tipo, arquivo_nome, empresa_id } = __c.data;
+        if (!aiResp.ok) {
+          const errTxt = await aiResp.text();
+          const status = aiResp.status === 429 ? 429 : aiResp.status === 402 ? 402 : 500;
+          const msg =
+            aiResp.status === 429
+              ? 'Rate limit excedido'
+              : aiResp.status === 402
+                ? 'Créditos esgotados'
+                : 'Erro AI';
+          await supabase
+            .from('notas_fiscais_ocr')
+            .update({ status: 'erro', mensagem_erro: `${msg}: ${errTxt}` })
+            .eq('id', registro.id);
+          return new Response(JSON.stringify({ error: msg }), {
+            status,
+            headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+          });
+        }
 
-      // Cria registro inicial em status processando
-      const { data: registro, error: errReg } = await supabase
-        .from('notas_fiscais_ocr')
-        .insert({
-          empresa_id: empresa_id ?? null,
-          arquivo_url: arquivo_url ?? `inline:${arquivo_nome ?? 'nf'}`,
-          arquivo_nome,
-          arquivo_tipo,
-          status: 'processando',
-          criado_por: user.id,
-        })
-        .select('id')
-        .single();
-      if (errReg) throw errReg;
+        const aiData = await aiResp.json();
+        const toolCall = aiData.choices?.[0]?.message?.tool_calls?.[0];
+        if (!toolCall) throw new Error('IA não retornou tool call');
 
-      const imageUrl = arquivo_base64
-        ? `data:${arquivo_tipo ?? 'image/jpeg'};base64,${arquivo_base64}`
-        : arquivo_url;
+        const dadosExtraidos = JSON.parse(toolCall.function.arguments);
 
-      const aiResp = await fetch('https://ai.gateway.lovable.dev/v1/chat/completions', {
-        method: 'POST',
-        headers: { Authorization: `Bearer ${LOVABLE_API_KEY}`, 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          model: 'google/gemini-2.5-flash',
-          messages: [
-            {
-              role: 'system',
-              content:
-                'Você é um especialista em OCR de notas fiscais brasileiras. Extraia os dados solicitados via tool calling. Use apenas dígitos para CNPJs. Datas em ISO YYYY-MM-DD.',
-            },
-            {
-              role: 'user',
-              content: [
-                { type: 'text', text: 'Extraia os dados desta nota fiscal.' },
-                { type: 'image_url', image_url: { url: imageUrl } },
-              ],
-            },
-          ],
-          tools: [TOOL_DEF],
-          tool_choice: { type: 'function', function: { name: 'extract_nf_data' } },
-        }),
-      });
-
-      if (!aiResp.ok) {
-        const errTxt = await aiResp.text();
-        const status = aiResp.status === 429 ? 429 : aiResp.status === 402 ? 402 : 500;
-        const msg =
-          aiResp.status === 429
-            ? 'Rate limit excedido'
-            : aiResp.status === 402
-              ? 'Créditos esgotados'
-              : 'Erro AI';
         await supabase
           .from('notas_fiscais_ocr')
-          .update({ status: 'erro', mensagem_erro: `${msg}: ${errTxt}` })
+          .update({
+            status: 'sucesso',
+            dados_extraidos: dadosExtraidos,
+          })
           .eq('id', registro.id);
-        return new Response(JSON.stringify({ error: msg }), {
-          status,
+
+        return new Response(
+          JSON.stringify({
+            success: true,
+            id: registro.id,
+            dados_extraidos: dadosExtraidos,
+          }),
+          { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        );
+      } catch (e) {
+        log.error('ocr error:', { error_message: mensagemErro(e), context: contextoErro(e) });
+        return new Response(JSON.stringify({ error: e instanceof Error ? e.message : 'erro' }), {
+          status: 500,
           headers: { ...corsHeaders, 'Content-Type': 'application/json' },
         });
       }
-
-      const aiData = await aiResp.json();
-      const toolCall = aiData.choices?.[0]?.message?.tool_calls?.[0];
-      if (!toolCall) throw new Error('IA não retornou tool call');
-
-      const dadosExtraidos = JSON.parse(toolCall.function.arguments);
-
-      await supabase
-        .from('notas_fiscais_ocr')
-        .update({
-          status: 'sucesso',
-          dados_extraidos: dadosExtraidos,
-        })
-        .eq('id', registro.id);
-
-      return new Response(
-        JSON.stringify({
-          success: true,
-          id: registro.id,
-          dados_extraidos: dadosExtraidos,
-        }),
-        { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-      );
-    } catch (e) {
-      log.error('ocr error:', { error_message: mensagemErro(e), context: contextoErro(e) });
-      return new Response(JSON.stringify({ error: e instanceof Error ? e.message : 'erro' }), {
-        status: 500,
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-      });
+    } finally {
+      log.info('request', { duration_ms: Date.now() - _t0 });
+      await log.flush();
     }
-  } finally {
-    log.info('request', { duration_ms: Date.now() - _t0 });
-    await log.flush();
-  }
-});
+  })
+);

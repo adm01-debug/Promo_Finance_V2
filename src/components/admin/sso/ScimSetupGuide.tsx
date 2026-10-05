@@ -4,8 +4,24 @@ import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { Copy, ExternalLink, Info, Loader2, CheckCircle2, XCircle, PlugZap, ListChecks } from 'lucide-react';
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '@/components/ui/table';
+import {
+  Copy,
+  ExternalLink,
+  Info,
+  Loader2,
+  CheckCircle2,
+  XCircle,
+  PlugZap,
+  ListChecks,
+} from 'lucide-react';
 import { toast } from 'sonner';
 import { useState, useMemo } from 'react';
 import { Checkbox } from '@/components/ui/checkbox';
@@ -55,15 +71,52 @@ type TestResult =
 const SCIM_SP_CONFIG_SCHEMA = 'urn:ietf:params:scim:schemas:core:2.0:ServiceProviderConfig';
 
 const CHECKLIST_ITEMS: Array<{ key: string; label: string; description: string }> = [
-  { key: 'token_generated', label: 'Token SCIM gerado e copiado', description: 'Gerei um token na aba "Tokens" e armazenei em local seguro (exibido uma única vez).' },
-  { key: 'tenant_url_configured', label: 'Tenant URL configurada no IdP', description: 'Colei a URL base SCIM no painel do provedor (Azure AD / Okta).' },
-  { key: 'auth_header_configured', label: 'Authorization header configurado', description: 'Configurei o header Bearer com o token SCIM.' },
-  { key: 'test_connection_passed', label: 'Test Connection retornou 200 OK', description: 'O teste de conexão do IdP passou sem erros.' },
-  { key: 'attr_userName', label: 'Mapeamento userName confirmado', description: 'userName apontando para userPrincipalName / email.' },
-  { key: 'attr_externalId', label: 'Mapeamento externalId confirmado', description: 'externalId apontando para objectId / user.id (estável).' },
-  { key: 'attr_active', label: 'Mapeamento active confirmado', description: 'Atributo active refletindo o status da conta no IdP.' },
-  { key: 'scope_assigned', label: 'Scope restrito a usuários atribuídos', description: 'Provisionamento limitado a usuários/grupos atribuídos.' },
-  { key: 'sync_enabled', label: 'Provisionamento ativado', description: 'Sync ativo no IdP e primeira execução validada.' },
+  {
+    key: 'token_generated',
+    label: 'Token SCIM gerado e copiado',
+    description:
+      'Gerei um token na aba "Tokens" e armazenei em local seguro (exibido uma única vez).',
+  },
+  {
+    key: 'tenant_url_configured',
+    label: 'Tenant URL configurada no IdP',
+    description: 'Colei a URL base SCIM no painel do provedor (Azure AD / Okta).',
+  },
+  {
+    key: 'auth_header_configured',
+    label: 'Authorization header configurado',
+    description: 'Configurei o header Bearer com o token SCIM.',
+  },
+  {
+    key: 'test_connection_passed',
+    label: 'Test Connection retornou 200 OK',
+    description: 'O teste de conexão do IdP passou sem erros.',
+  },
+  {
+    key: 'attr_userName',
+    label: 'Mapeamento userName confirmado',
+    description: 'userName apontando para userPrincipalName / email.',
+  },
+  {
+    key: 'attr_externalId',
+    label: 'Mapeamento externalId confirmado',
+    description: 'externalId apontando para objectId / user.id (estável).',
+  },
+  {
+    key: 'attr_active',
+    label: 'Mapeamento active confirmado',
+    description: 'Atributo active refletindo o status da conta no IdP.',
+  },
+  {
+    key: 'scope_assigned',
+    label: 'Scope restrito a usuários atribuídos',
+    description: 'Provisionamento limitado a usuários/grupos atribuídos.',
+  },
+  {
+    key: 'sync_enabled',
+    label: 'Provisionamento ativado',
+    description: 'Sync ativo no IdP e primeira execução validada.',
+  },
 ];
 
 export function ScimSetupGuide() {
@@ -73,7 +126,7 @@ export function ScimSetupGuide() {
 
   const completedCount = useMemo(
     () => CHECKLIST_ITEMS.filter((i) => isConfirmed(i.key)).length,
-    [isConfirmed],
+    [isConfirmed]
   );
   const progressPct = Math.round((completedCount / CHECKLIST_ITEMS.length) * 100);
 
@@ -97,7 +150,10 @@ export function ScimSetupGuide() {
           status: res.status,
           latencyMs,
           message: `Endpoint respondeu HTTP ${res.status} ${res.statusText}`,
-          hint: res.status >= 500 ? 'Servidor SCIM com falha — verifique logs da edge function scim-server.' : undefined,
+          hint:
+            res.status >= 500
+              ? 'Servidor SCIM com falha — verifique logs da edge function scim-server.'
+              : undefined,
         });
         return;
       }
@@ -120,7 +176,9 @@ export function ScimSetupGuide() {
       setResult({
         ok: false,
         latencyMs,
-        message: isAbort ? 'Timeout: o endpoint não respondeu em 8s.' : `Falha ao conectar: ${(err as Error).message}`,
+        message: isAbort
+          ? 'Timeout: o endpoint não respondeu em 8s.'
+          : `Falha ao conectar: ${(err as Error).message}`,
         hint: isAbort
           ? 'Tente novamente ou verifique a saúde da edge function scim-server.'
           : 'Se o erro for de CORS/rede, lembre que IdPs (Azure AD, Okta) chamam o endpoint a partir de servidores externos — esse teste local pode falhar mesmo com endpoint saudável em produção.',
@@ -136,22 +194,28 @@ export function ScimSetupGuide() {
       <Alert>
         <Info className="h-4 w-4" />
         <AlertDescription>
-          Use este guia para conectar Azure AD ou Okta ao endpoint SCIM. Antes de começar,
-          gere um <strong>token SCIM</strong> na aba "Tokens" e copie-o (será exibido apenas uma vez).
+          Use este guia para conectar Azure AD ou Okta ao endpoint SCIM. Antes de começar, gere um{' '}
+          <strong>token SCIM</strong> na aba "Tokens" e copie-o (será exibido apenas uma vez).
         </AlertDescription>
       </Alert>
 
       <Card>
         <CardHeader>
           <CardTitle>Endpoint do servidor SCIM</CardTitle>
-          <CardDescription>Cole estes valores no painel de provisionamento do seu IdP.</CardDescription>
+          <CardDescription>
+            Cole estes valores no painel de provisionamento do seu IdP.
+          </CardDescription>
         </CardHeader>
         <CardContent className="space-y-3">
           <CopyField label="Tenant URL / SCIM 2.0 Base URL" value={SCIM_BASE} />
           <CopyField label="Authorization header" value="Bearer <SEU_TOKEN_SCIM>" />
           <div className="grid grid-cols-2 gap-3 pt-2">
-            <Badge variant="outline" className="justify-center py-2">SCIM 2.0</Badge>
-            <Badge variant="outline" className="justify-center py-2">Bearer auth</Badge>
+            <Badge variant="outline" className="justify-center py-2">
+              SCIM 2.0
+            </Badge>
+            <Badge variant="outline" className="justify-center py-2">
+              Bearer auth
+            </Badge>
           </div>
 
           <div className="pt-2 space-y-3 border-t">
@@ -159,14 +223,21 @@ export function ScimSetupGuide() {
               <div>
                 <p className="text-sm font-medium">Testar conexão</p>
                 <p className="text-xs text-muted-foreground">
-                  Faz um <code>GET /ServiceProviderConfig</code> sem token para validar se o endpoint está online.
+                  Faz um <code>GET /ServiceProviderConfig</code> sem token para validar se o
+                  endpoint está online.
                 </p>
               </div>
               <Button onClick={handleTest} disabled={testing} variant="outline">
                 {testing ? (
-                  <><Loader2 className="h-4 w-4 mr-2 animate-spin" />Testando…</>
+                  <>
+                    <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                    Testando…
+                  </>
                 ) : (
-                  <><PlugZap className="h-4 w-4 mr-2" />Testar conexão</>
+                  <>
+                    <PlugZap className="h-4 w-4 mr-2" />
+                    Testar conexão
+                  </>
                 )}
               </Button>
             </div>
@@ -176,16 +247,24 @@ export function ScimSetupGuide() {
                 <div className="space-y-2">
                   <div className="flex items-center gap-2 text-xs">
                     <CheckCircle2 className="h-3.5 w-3.5" />
-                    <span>HTTP {result.status} • {result.latencyMs} ms • schema SCIM 2.0 válido</span>
+                    <span>
+                      HTTP {result.status} • {result.latencyMs} ms • schema SCIM 2.0 válido
+                    </span>
                   </div>
                   <div className="text-xs space-y-1 pt-1">
                     <p className="font-medium">Status esperado por IdP:</p>
                     <ul className="list-disc list-inside text-muted-foreground space-y-0.5">
-                      <li><strong>Azure AD:</strong> "Test Connection" deve retornar <code>200 OK</code>.</li>
-                      <li><strong>Okta:</strong> "Test Connector Configuration" deve ficar todo verde.</li>
+                      <li>
+                        <strong>Azure AD:</strong> "Test Connection" deve retornar{' '}
+                        <code>200 OK</code>.
+                      </li>
+                      <li>
+                        <strong>Okta:</strong> "Test Connector Configuration" deve ficar todo verde.
+                      </li>
                     </ul>
                     <p className="text-muted-foreground pt-1">
-                      Lembre-se que ações autenticadas (criação de usuários) ainda exigem um token SCIM válido.
+                      Lembre-se que ações autenticadas (criação de usuários) ainda exigem um token
+                      SCIM válido.
                     </p>
                   </div>
                 </div>
@@ -218,11 +297,15 @@ export function ScimSetupGuide() {
               <div>
                 <CardTitle>Checklist de configuração</CardTitle>
                 <CardDescription>
-                  Marque cada item ao concluí-lo. Suas confirmações ficam salvas no servidor e persistem entre sessões.
+                  Marque cada item ao concluí-lo. Suas confirmações ficam salvas no servidor e
+                  persistem entre sessões.
                 </CardDescription>
               </div>
             </div>
-            <Badge variant={completedCount === CHECKLIST_ITEMS.length ? 'default' : 'outline'} className="shrink-0">
+            <Badge
+              variant={completedCount === CHECKLIST_ITEMS.length ? 'default' : 'outline'}
+              className="shrink-0"
+            >
               {completedCount}/{CHECKLIST_ITEMS.length}
             </Badge>
           </div>
@@ -248,7 +331,9 @@ export function ScimSetupGuide() {
                       label={
                         <span className="flex items-center gap-2">
                           <span>{item.label}</span>
-                          {isSaving && <Loader2 className="h-3 w-3 animate-spin text-muted-foreground" />}
+                          {isSaving && (
+                            <Loader2 className="h-3 w-3 animate-spin text-muted-foreground" />
+                          )}
                         </span>
                       }
                       description={item.description}
@@ -256,7 +341,10 @@ export function ScimSetupGuide() {
                   </div>
                   {checked && confirmedAt && (
                     <span className="text-xs text-muted-foreground shrink-0 pt-1">
-                      {formatDistanceToNow(new Date(confirmedAt), { addSuffix: true, locale: ptBR })}
+                      {formatDistanceToNow(new Date(confirmedAt), {
+                        addSuffix: true,
+                        locale: ptBR,
+                      })}
                     </span>
                   )}
                 </div>
@@ -281,18 +369,38 @@ export function ScimSetupGuide() {
             </CardHeader>
             <CardContent className="space-y-3 text-sm">
               <ol className="list-decimal list-inside space-y-2 text-muted-foreground">
-                <li>Portal Azure → <strong>Enterprise applications</strong> → <strong>New application</strong> → <strong>Create your own application</strong>.</li>
-                <li>Em <strong>Provisioning</strong>, escolha modo <strong>Automatic</strong>.</li>
-                <li>Cole a <strong>Tenant URL</strong> e o <strong>Secret Token</strong> gerados acima.</li>
-                <li>Clique <strong>Test Connection</strong> — deve retornar 200 OK.</li>
-                <li>Em <strong>Mappings</strong>, mantenha apenas <strong>Provision Azure AD Users</strong> (Groups opcional).</li>
+                <li>
+                  Portal Azure → <strong>Enterprise applications</strong> →{' '}
+                  <strong>New application</strong> → <strong>Create your own application</strong>.
+                </li>
+                <li>
+                  Em <strong>Provisioning</strong>, escolha modo <strong>Automatic</strong>.
+                </li>
+                <li>
+                  Cole a <strong>Tenant URL</strong> e o <strong>Secret Token</strong> gerados
+                  acima.
+                </li>
+                <li>
+                  Clique <strong>Test Connection</strong> — deve retornar 200 OK.
+                </li>
+                <li>
+                  Em <strong>Mappings</strong>, mantenha apenas{' '}
+                  <strong>Provision Azure AD Users</strong> (Groups opcional).
+                </li>
                 <li>Ajuste atributos conforme a aba "Mapeamento de atributos".</li>
-                <li>Em <strong>Settings → Scope</strong>, selecione "Sync only assigned users and groups".</li>
-                <li>Atribua usuários ou grupos em <strong>Users and groups</strong> e ative o provisionamento.</li>
+                <li>
+                  Em <strong>Settings → Scope</strong>, selecione "Sync only assigned users and
+                  groups".
+                </li>
+                <li>
+                  Atribua usuários ou grupos em <strong>Users and groups</strong> e ative o
+                  provisionamento.
+                </li>
               </ol>
               <Alert>
                 <AlertDescription className="text-xs">
-                  Azure AD faz polling a cada ~40 minutos. Use "Provision on demand" para testar mudanças individuais.
+                  Azure AD faz polling a cada ~40 minutos. Use "Provision on demand" para testar
+                  mudanças individuais.
                 </AlertDescription>
               </Alert>
               <a
@@ -315,19 +423,44 @@ export function ScimSetupGuide() {
             </CardHeader>
             <CardContent className="space-y-3 text-sm">
               <ol className="list-decimal list-inside space-y-2 text-muted-foreground">
-                <li>Console Okta → <strong>Applications</strong> → <strong>Create App Integration</strong> (SAML 2.0 ou OIDC).</li>
-                <li>Após salvar, abra <strong>General → App Settings</strong> e marque <strong>Enable SCIM provisioning</strong>.</li>
-                <li>Em <strong>Provisioning → Integration</strong>, configure:
+                <li>
+                  Console Okta → <strong>Applications</strong> →{' '}
+                  <strong>Create App Integration</strong> (SAML 2.0 ou OIDC).
+                </li>
+                <li>
+                  Após salvar, abra <strong>General → App Settings</strong> e marque{' '}
+                  <strong>Enable SCIM provisioning</strong>.
+                </li>
+                <li>
+                  Em <strong>Provisioning → Integration</strong>, configure:
                   <ul className="list-disc list-inside ml-4 mt-1">
-                    <li><strong>SCIM connector base URL</strong>: cole a Tenant URL acima</li>
-                    <li><strong>Unique identifier field for users</strong>: <code>userName</code></li>
-                    <li><strong>Supported provisioning actions</strong>: Push New Users, Push Profile Updates, Push Groups</li>
-                    <li><strong>Authentication mode</strong>: <code>HTTP Header</code> com <code>Authorization: Bearer &lt;token&gt;</code></li>
+                    <li>
+                      <strong>SCIM connector base URL</strong>: cole a Tenant URL acima
+                    </li>
+                    <li>
+                      <strong>Unique identifier field for users</strong>: <code>userName</code>
+                    </li>
+                    <li>
+                      <strong>Supported provisioning actions</strong>: Push New Users, Push Profile
+                      Updates, Push Groups
+                    </li>
+                    <li>
+                      <strong>Authentication mode</strong>: <code>HTTP Header</code> com{' '}
+                      <code>Authorization: Bearer &lt;token&gt;</code>
+                    </li>
                   </ul>
                 </li>
-                <li>Clique <strong>Test Connector Configuration</strong> — todas as ações devem ficar verdes.</li>
-                <li>Em <strong>To App</strong>, ative: Create Users, Update User Attributes, Deactivate Users.</li>
-                <li>Em <strong>Assignments</strong>, adicione usuários ou grupos para iniciar o sync.</li>
+                <li>
+                  Clique <strong>Test Connector Configuration</strong> — todas as ações devem ficar
+                  verdes.
+                </li>
+                <li>
+                  Em <strong>To App</strong>, ative: Create Users, Update User Attributes,
+                  Deactivate Users.
+                </li>
+                <li>
+                  Em <strong>Assignments</strong>, adicione usuários ou grupos para iniciar o sync.
+                </li>
               </ol>
               <a
                 href="https://developer.okta.com/docs/concepts/scim/"
@@ -345,7 +478,9 @@ export function ScimSetupGuide() {
           <Card>
             <CardHeader>
               <CardTitle className="text-base">Mapeamento de atributos SCIM</CardTitle>
-              <CardDescription>Atributos suportados pelo nosso endpoint <code>/Users</code>.</CardDescription>
+              <CardDescription>
+                Atributos suportados pelo nosso endpoint <code>/Users</code>.
+              </CardDescription>
             </CardHeader>
             <CardContent>
               <Table>
@@ -362,7 +497,11 @@ export function ScimSetupGuide() {
                       <TableCell className="font-mono text-xs">{m.scim}</TableCell>
                       <TableCell className="text-xs text-muted-foreground">{m.source}</TableCell>
                       <TableCell className="text-center">
-                        {m.required ? <Badge>sim</Badge> : <Badge variant="secondary">opcional</Badge>}
+                        {m.required ? (
+                          <Badge>sim</Badge>
+                        ) : (
+                          <Badge variant="secondary">opcional</Badge>
+                        )}
                       </TableCell>
                     </TableRow>
                   ))}
@@ -370,9 +509,9 @@ export function ScimSetupGuide() {
               </Table>
               <Alert className="mt-4">
                 <AlertDescription className="text-xs">
-                  Usuários novos recebem o papel <code>visualizador</code> por padrão. Para mapear grupos do
-                  IdP a papéis (admin, financeiro, etc.), configure <strong>SSO Role Mappings</strong> no
-                  provedor SSO correspondente.
+                  Usuários novos recebem o papel <code>visualizador</code> por padrão. Para mapear
+                  grupos do IdP a papéis (admin, financeiro, etc.), configure{' '}
+                  <strong>SSO Role Mappings</strong> no provedor SSO correspondente.
                 </AlertDescription>
               </Alert>
             </CardContent>

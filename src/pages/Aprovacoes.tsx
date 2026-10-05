@@ -11,13 +11,13 @@ const containerVariants = {
   hidden: { opacity: 0 },
   visible: {
     opacity: 1,
-    transition: { staggerChildren: 0.1 }
-  }
+    transition: { staggerChildren: 0.1 },
+  },
 };
 
 const itemVariants = {
   hidden: { opacity: 0, y: 20 },
-  visible: { opacity: 1, y: 0 }
+  visible: { opacity: 1, y: 0 },
 };
 
 const Aprovacoes = () => {
@@ -39,9 +39,7 @@ const Aprovacoes = () => {
             </div>
             <div>
               <h1 className="text-3xl font-bold tracking-tight">Aprovações</h1>
-              <p className="text-muted-foreground">
-                Workflow de aprovação de pagamentos
-              </p>
+              <p className="text-muted-foreground">Workflow de aprovação de pagamentos</p>
             </div>
           </div>
         </motion.div>

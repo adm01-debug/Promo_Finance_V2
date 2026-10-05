@@ -58,9 +58,10 @@ export function baseCredito(item: ItemCredito): { base: number; motivo?: string 
   }
   const bruto = nonNeg(item.valor);
   const liquido = Math.max(0, bruto - nonNeg(item.icmsDestacado) - nonNeg(item.ipiRecuperavel));
-  const parcelas = Number.isFinite(item.parcelas) && (item.parcelas as number) >= 1
-    ? Math.floor(item.parcelas as number)
-    : 1;
+  const parcelas =
+    Number.isFinite(item.parcelas) && (item.parcelas as number) >= 1
+      ? Math.floor(item.parcelas as number)
+      : 1;
   return { base: round2(liquido / parcelas) };
 }
 
@@ -69,7 +70,7 @@ function apurar(
   baseCreditoTotal: number,
   aliquota: number,
   saldoAnterior: number,
-  retencoes: number,
+  retencoes: number
 ): ResultadoTributo {
   const debito = round2(baseDebito * aliquota);
   const creditoPeriodo = round2(baseCreditoTotal * aliquota);
@@ -134,7 +135,7 @@ export function apurarPisCofins(input: InputPisCofins): ResultadoPisCofins {
   if (percentualRateio > 0 && percentualRateio < 1) {
     alertas.push(
       `Receitas mistas no período: créditos rateados a ${(percentualRateio * 100).toFixed(2)}% ` +
-        '(método da proporção da receita bruta — art. 3º, §8º, II).',
+        '(método da proporção da receita bruta — art. 3º, §8º, II).'
     );
   }
 
@@ -161,14 +162,14 @@ export function apurarPisCofins(input: InputPisCofins): ResultadoPisCofins {
     baseCreditoTotal,
     ALIQUOTA_PIS_NAO_CUMULATIVO,
     nonNeg(input.saldoCredorAnteriorPis),
-    nonNeg(input.retencoesPis),
+    nonNeg(input.retencoesPis)
   );
   const cofins = apurar(
     receitaTributada,
     baseCreditoTotal,
     ALIQUOTA_COFINS_NAO_CUMULATIVO,
     nonNeg(input.saldoCredorAnteriorCofins),
-    nonNeg(input.retencoesCofins),
+    nonNeg(input.retencoesCofins)
   );
 
   memoria.push(
@@ -185,18 +186,18 @@ export function apurarPisCofins(input: InputPisCofins): ResultadoPisCofins {
       aliquota: ALIQUOTA_COFINS_NAO_CUMULATIVO,
       valor: cofins.debito,
       fundamento: 'Lei 10.833/2003, art. 2º',
-    },
+    }
   );
 
   if (pis.saldoCredorFinal > 0 || cofins.saldoCredorFinal > 0) {
     alertas.push(
       'Apuração encerrou com saldo credor: passível de transporte para o período seguinte ou ' +
-        'de ressarcimento/compensação quando vinculado a exportação (Lei 10.637/02, art. 5º, §1º).',
+        'de ressarcimento/compensação quando vinculado a exportação (Lei 10.637/02, art. 5º, §1º).'
     );
   }
   if (receitaExportacao > 0) {
     alertas.push(
-      'Receita de exportação é imune, mas mantém o direito ao crédito vinculado (CF/88, art. 149, §2º, I).',
+      'Receita de exportação é imune, mas mantém o direito ao crédito vinculado (CF/88, art. 149, §2º, I).'
     );
   }
 

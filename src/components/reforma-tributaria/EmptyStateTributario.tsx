@@ -2,14 +2,22 @@
 // Estados vazios com orientação ao usuário
 
 import { motion } from 'framer-motion';
-import { 
-  FileText, Calculator, TrendingUp, Shield,
-  Plus, ArrowRight, Lightbulb, Rocket, Target, Zap
+import {
+  FileText,
+  Calculator,
+  TrendingUp,
+  Shield,
+  Plus,
+  ArrowRight,
+  Lightbulb,
+  Rocket,
+  Target,
+  Zap,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 
-type EmptyStateType = 
+type EmptyStateType =
   | 'apuracoes'
   | 'creditos'
   | 'operacoes'
@@ -40,7 +48,8 @@ const EMPTY_STATES: Record<EmptyStateType, EmptyStateConfig> = {
     iconColor: 'text-primary',
     iconBg: 'bg-primary/10',
     title: 'Nenhuma apuração encontrada',
-    description: 'Crie sua primeira apuração tributária para começar a calcular CBS, IBS e tributos residuais.',
+    description:
+      'Crie sua primeira apuração tributária para começar a calcular CBS, IBS e tributos residuais.',
     primaryAction: { label: 'Criar Apuração', icon: Plus },
     secondaryAction: { label: 'Importar Dados', icon: ArrowRight },
     tips: [
@@ -53,7 +62,8 @@ const EMPTY_STATES: Record<EmptyStateType, EmptyStateConfig> = {
     iconColor: 'text-success',
     iconBg: 'bg-success/10',
     title: 'Nenhum crédito tributário',
-    description: 'Os créditos são gerados automaticamente quando você importa NF-e de compras ou registra operações de entrada.',
+    description:
+      'Os créditos são gerados automaticamente quando você importa NF-e de compras ou registra operações de entrada.',
     primaryAction: { label: 'Importar XML', icon: Plus },
     secondaryAction: { label: 'Registrar Manual', icon: FileText },
     tips: [
@@ -66,7 +76,8 @@ const EMPTY_STATES: Record<EmptyStateType, EmptyStateConfig> = {
     iconColor: 'text-accent-foreground',
     iconBg: 'bg-accent',
     title: 'Nenhuma operação registrada',
-    description: 'Registre operações de compra, venda, serviços ou importação para calcular os tributos automaticamente.',
+    description:
+      'Registre operações de compra, venda, serviços ou importação para calcular os tributos automaticamente.',
     primaryAction: { label: 'Nova Operação', icon: Plus },
     secondaryAction: { label: 'Importar Lote', icon: ArrowRight },
     tips: [
@@ -91,7 +102,8 @@ const EMPTY_STATES: Record<EmptyStateType, EmptyStateConfig> = {
     iconColor: 'text-warning',
     iconBg: 'bg-warning/10',
     title: 'Conciliação não executada',
-    description: 'Execute a conciliação para verificar se os valores calculados estão corretos em relação às NF-e emitidas.',
+    description:
+      'Execute a conciliação para verificar se os valores calculados estão corretos em relação às NF-e emitidas.',
     primaryAction: { label: 'Executar Conciliação', icon: Zap },
     tips: [
       'A conciliação cruza NF-e com os cálculos tributários',
@@ -103,7 +115,8 @@ const EMPTY_STATES: Record<EmptyStateType, EmptyStateConfig> = {
     iconColor: 'text-primary',
     iconBg: 'bg-primary/10',
     title: 'Bem-vindo à Reforma Tributária!',
-    description: 'Configure seu módulo em poucos passos para começar a gerenciar CBS, IBS e demais tributos.',
+    description:
+      'Configure seu módulo em poucos passos para começar a gerenciar CBS, IBS e demais tributos.',
     primaryAction: { label: 'Iniciar Configuração', icon: ArrowRight },
     tips: [
       '1. Cadastre sua empresa com CNPJ e regime tributário',
@@ -146,28 +159,23 @@ export function EmptyStateTributario({ type, onPrimaryAction, onSecondaryAction 
 
             {/* Title */}
             <h3 className="text-xl font-semibold mb-2">{config.title}</h3>
-            
+
             {/* Description */}
             <p className="text-muted-foreground mb-6">{config.description}</p>
 
             {/* Actions */}
             <div className="flex flex-col sm:flex-row gap-3 mb-8">
-              <Button 
-                size="lg" 
+              <Button
+                size="lg"
                 onClick={onPrimaryAction}
                 className="gap-2 shadow-md hover:shadow-lg transition-shadow"
               >
                 <PrimaryIcon className="h-4 w-4" />
                 {config.primaryAction.label}
               </Button>
-              
+
               {config.secondaryAction && SecondaryIcon && (
-                <Button 
-                  variant="outline" 
-                  size="lg"
-                  onClick={onSecondaryAction}
-                  className="gap-2"
-                >
+                <Button variant="outline" size="lg" onClick={onSecondaryAction} className="gap-2">
                   <SecondaryIcon className="h-4 w-4" />
                   {config.secondaryAction.label}
                 </Button>

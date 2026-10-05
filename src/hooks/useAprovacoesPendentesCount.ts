@@ -14,33 +14,31 @@ const listeners = new Set<(count: number) => void>();
 const ensureChannel = (queryClient: ReturnType<typeof useQueryClient>): RealtimeChannel => {
   if (sharedChannel) return sharedChannel;
 
-  const channel = supabase
-    .channel('aprovacoes-pendentes-realtime')
-    .on(
-      'postgres_changes',
-      {
-        event: '*',
-        schema: 'public',
-        table: 'solicitacoes_aprovacao',
-      },
-      async () => {
-        try {
-          const { count, error } = await supabase
-            .from('solicitacoes_aprovacao')
-            .select('*', { count: 'exact', head: true })
-            .eq('status', 'pendente');
+  const channel = supabase.channel('aprovacoes-pendentes-realtime').on(
+    'postgres_changes',
+    {
+      event: '*',
+      schema: 'public',
+      table: 'solicitacoes_aprovacao',
+    },
+    async () => {
+      try {
+        const { count, error } = await supabase
+          .from('solicitacoes_aprovacao')
+          .select('*', { count: 'exact', head: true })
+          .eq('status', 'pendente');
 
-          if (!error) {
-            listeners.forEach((cb) => cb(count || 0));
-          }
-        } catch (err) {
-          console.error('[Realtime] Failed to refetch approval count:', err);
+        if (!error) {
+          listeners.forEach((cb) => cb(count || 0));
         }
-
-        queryClient.invalidateQueries({ queryKey: ['aprovacoes-pendentes-count'] });
-        queryClient.invalidateQueries({ queryKey: ['solicitacoes-pendentes'] });
+      } catch (err) {
+        console.error('[Realtime] Failed to refetch approval count:', err);
       }
-    );
+
+      queryClient.invalidateQueries({ queryKey: ['aprovacoes-pendentes-count'] });
+      queryClient.invalidateQueries({ queryKey: ['solicitacoes-pendentes'] });
+    }
+  );
 
   sharedChannel = channel.subscribe();
   return sharedChannel;

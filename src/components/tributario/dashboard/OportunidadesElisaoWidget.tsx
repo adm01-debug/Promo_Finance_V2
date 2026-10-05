@@ -31,11 +31,16 @@ export function OportunidadesElisaoWidget({ oportunidades }: Props) {
       </CardHeader>
       <CardContent>
         {top3.length === 0 ? (
-          <p className="text-sm text-muted-foreground py-8 text-center">Nenhuma oportunidade detectada</p>
+          <p className="text-sm text-muted-foreground py-8 text-center">
+            Nenhuma oportunidade detectada
+          </p>
         ) : (
           <div className="space-y-3">
             {top3.map((o, idx) => (
-              <div key={idx} className="flex items-center justify-between p-3 rounded-lg border bg-background/50 hover:bg-background transition-colors">
+              <div
+                key={idx}
+                className="flex items-center justify-between p-3 rounded-lg border bg-background/50 hover:bg-background transition-colors"
+              >
                 <div className="flex-1 min-w-0">
                   <p className="font-medium text-sm truncate">{o.estrategia}</p>
                   <p className="text-xs text-muted-foreground truncate">{o.justificativa}</p>

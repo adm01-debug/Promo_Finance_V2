@@ -28,7 +28,7 @@ export function useRecentItems() {
   useEffect(() => {
     const savedRecent = localStorage.getItem(RECENT_KEY);
     const savedFavorites = localStorage.getItem(FAVORITES_KEY);
-    
+
     if (savedRecent) {
       try {
         setRecentItems(JSON.parse(savedRecent));
@@ -37,7 +37,7 @@ export function useRecentItems() {
         localStorage.removeItem(RECENT_KEY);
       }
     }
-    
+
     if (savedFavorites) {
       try {
         setFavoriteItems(JSON.parse(savedFavorites));
@@ -52,17 +52,14 @@ export function useRecentItems() {
   const addRecentItem = useCallback((path: string, label: string) => {
     // Skip dashboard and common routes
     if (path === '/' || path === '/auth') return;
-    
-    setRecentItems(prev => {
+
+    setRecentItems((prev) => {
       // Remove if already exists
-      const filtered = prev.filter(item => item.path !== path);
-      
+      const filtered = prev.filter((item) => item.path !== path);
+
       // Add to front
-      const updated = [
-        { path, label, timestamp: Date.now() },
-        ...filtered,
-      ].slice(0, MAX_RECENT);
-      
+      const updated = [{ path, label, timestamp: Date.now() }, ...filtered].slice(0, MAX_RECENT);
+
       localStorage.setItem(RECENT_KEY, JSON.stringify(updated));
       return updated;
     });
@@ -70,25 +67,28 @@ export function useRecentItems() {
 
   // Toggle favorite
   const toggleFavorite = useCallback((path: string, label: string) => {
-    setFavoriteItems(prev => {
-      const exists = prev.some(item => item.path === path);
-      
+    setFavoriteItems((prev) => {
+      const exists = prev.some((item) => item.path === path);
+
       let updated: FavoriteItem[];
       if (exists) {
-        updated = prev.filter(item => item.path !== path);
+        updated = prev.filter((item) => item.path !== path);
       } else {
         updated = [...prev, { path, label }];
       }
-      
+
       localStorage.setItem(FAVORITES_KEY, JSON.stringify(updated));
       return updated;
     });
   }, []);
 
   // Check if item is favorite
-  const isFavorite = useCallback((path: string) => {
-    return favoriteItems.some(item => item.path === path);
-  }, [favoriteItems]);
+  const isFavorite = useCallback(
+    (path: string) => {
+      return favoriteItems.some((item) => item.path === path);
+    },
+    [favoriteItems]
+  );
 
   // Clear recent items
   const clearRecent = useCallback(() => {

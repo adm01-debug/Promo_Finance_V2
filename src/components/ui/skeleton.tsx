@@ -1,5 +1,5 @@
-import { cn } from "@/lib/utils";
-import { motion } from "framer-motion";
+import { cn } from '@/lib/utils';
+import { motion } from 'framer-motion';
 
 interface SkeletonProps {
   className?: string;
@@ -9,12 +9,12 @@ interface SkeletonProps {
   style?: React.CSSProperties;
 }
 
-function Skeleton({ 
-  className, 
-  shimmer = true, 
-  variant = 'default', 
+function Skeleton({
+  className,
+  shimmer = true,
+  variant = 'default',
   animated = true,
-  style
+  style,
 }: SkeletonProps) {
   const variantStyles = {
     default: '',
@@ -28,14 +28,15 @@ function Skeleton({
 
   if (animated) {
     return (
-      <motion.div 
+      <motion.div
         initial={{ opacity: 0.5 }}
         animate={{ opacity: [0.5, 0.8, 0.5] }}
-        transition={{ repeat: Infinity, duration: 1.5, ease: "easeInOut" }}
+        transition={{ repeat: Infinity, duration: 1.5, ease: 'easeInOut' }}
         className={cn(
-          "bg-muted relative overflow-hidden",
+          'bg-muted relative overflow-hidden',
           variantStyles[variant],
-          shimmer && "before:absolute before:inset-0 before:-translate-x-full before:animate-[shimmer_2s_infinite] before:bg-gradient-to-r before:from-transparent before:via-white/20 before:to-transparent",
+          shimmer &&
+            'before:absolute before:inset-0 before:-translate-x-full before:animate-[shimmer_2s_infinite] before:bg-gradient-to-r before:from-transparent before:via-white/20 before:to-transparent',
           className
         )}
         style={style}
@@ -44,12 +45,13 @@ function Skeleton({
   }
 
   return (
-    <div 
+    <div
       className={cn(
-        "bg-muted relative overflow-hidden",
+        'bg-muted relative overflow-hidden',
         variantStyles[variant],
-        shimmer && "before:absolute before:inset-0 before:-translate-x-full before:animate-[shimmer_2s_infinite] before:bg-gradient-to-r before:from-transparent before:via-white/10 before:to-transparent",
-        !shimmer && "animate-pulse",
+        shimmer &&
+          'before:absolute before:inset-0 before:-translate-x-full before:animate-[shimmer_2s_infinite] before:bg-gradient-to-r before:from-transparent before:via-white/10 before:to-transparent',
+        !shimmer && 'animate-pulse',
         className
       )}
     />
@@ -65,7 +67,7 @@ interface SkeletonGroupProps {
 
 function SkeletonGroup({ children, className, staggerDelay = 0.1 }: SkeletonGroupProps) {
   return (
-    <motion.div 
+    <motion.div
       className={className}
       initial="hidden"
       animate="visible"
@@ -74,9 +76,9 @@ function SkeletonGroup({ children, className, staggerDelay = 0.1 }: SkeletonGrou
         visible: {
           opacity: 1,
           transition: {
-            staggerChildren: staggerDelay
-          }
-        }
+            staggerChildren: staggerDelay,
+          },
+        },
       }}
     >
       {children}
@@ -87,10 +89,10 @@ function SkeletonGroup({ children, className, staggerDelay = 0.1 }: SkeletonGrou
 // Skeleton para cards com animação de entrada
 function SkeletonCard({ className }: { className?: string }) {
   return (
-    <motion.div 
+    <motion.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
-      className={cn("rounded-xl border bg-card p-6 space-y-4", className)}
+      className={cn('rounded-xl border bg-card p-6 space-y-4', className)}
     >
       <div className="flex items-center gap-4">
         <Skeleton variant="avatar" className="h-12 w-12" />
@@ -120,18 +122,18 @@ function SkeletonTable({ rows = 5, cols = 4 }: { rows?: number; cols?: number })
       </div>
       {/* Rows with staggered animation */}
       {Array.from({ length: rows }).map((_, rowIndex) => (
-        <motion.div 
-          key={rowIndex} 
+        <motion.div
+          key={rowIndex}
           initial={{ opacity: 0, x: -20 }}
           animate={{ opacity: 1, x: 0 }}
           transition={{ delay: rowIndex * 0.05 }}
           className="p-4 flex gap-4 border-t"
         >
           {Array.from({ length: cols }).map((_, colIndex) => (
-            <Skeleton 
-              key={colIndex} 
-              variant="text" 
-              className={cn("flex-1", colIndex === 0 && "w-1/4 flex-none")} 
+            <Skeleton
+              key={colIndex}
+              variant="text"
+              className={cn('flex-1', colIndex === 0 && 'w-1/4 flex-none')}
             />
           ))}
         </motion.div>
@@ -145,8 +147,8 @@ function SkeletonList({ items = 3 }: { items?: number }) {
   return (
     <div className="space-y-3">
       {Array.from({ length: items }).map((_, i) => (
-        <motion.div 
-          key={i} 
+        <motion.div
+          key={i}
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: i * 0.08 }}
@@ -167,16 +169,12 @@ function SkeletonList({ items = 3 }: { items?: number }) {
 // Skeleton para dashboard com animação
 function SkeletonDashboard() {
   return (
-    <motion.div 
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      className="space-y-6"
-    >
+    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-6">
       {/* KPI Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
         {Array.from({ length: 4 }).map((_, i) => (
-          <motion.div 
-            key={i} 
+          <motion.div
+            key={i}
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ delay: i * 0.1 }}
@@ -188,11 +186,11 @@ function SkeletonDashboard() {
           </motion.div>
         ))}
       </div>
-      
+
       {/* Charts */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {[0, 1].map((i) => (
-          <motion.div 
+          <motion.div
             key={i}
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -211,13 +209,9 @@ function SkeletonDashboard() {
 // Skeleton para formulário
 function SkeletonForm({ fields = 4 }: { fields?: number }) {
   return (
-    <motion.div 
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      className="space-y-6"
-    >
+    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-6">
       {Array.from({ length: fields }).map((_, i) => (
-        <motion.div 
+        <motion.div
           key={i}
           initial={{ opacity: 0, x: -10 }}
           animate={{ opacity: 1, x: 0 }}
@@ -244,7 +238,7 @@ function SkeletonForm({ fields = 4 }: { fields?: number }) {
 // Skeleton para perfil de usuário
 function SkeletonProfile() {
   return (
-    <motion.div 
+    <motion.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       className="flex flex-col items-center text-center space-y-4"
@@ -269,40 +263,40 @@ function SkeletonProfile() {
 }
 
 // Inline skeleton text with wave effect
-function SkeletonText({ 
-  lines = 3, 
+function SkeletonText({
+  lines = 3,
   lastLineWidth = '60%',
-  className 
-}: { 
-  lines?: number; 
+  className,
+}: {
+  lines?: number;
   lastLineWidth?: string;
   className?: string;
 }) {
   return (
-    <div className={cn("space-y-2", className)}>
+    <div className={cn('space-y-2', className)}>
       {Array.from({ length: lines }).map((_, i) => (
-        <Skeleton 
+        <Skeleton
           key={i}
-          variant="text" 
+          variant="text"
           className="h-4"
-          style={{ 
+          style={{
             width: i === lines - 1 ? lastLineWidth : '100%',
-            animationDelay: `${i * 0.1}s`
-          }} 
+            animationDelay: `${i * 0.1}s`,
+          }}
         />
       ))}
     </div>
   );
 }
 
-export { 
-  Skeleton, 
+export {
+  Skeleton,
   SkeletonGroup,
-  SkeletonCard, 
-  SkeletonTable, 
-  SkeletonList, 
+  SkeletonCard,
+  SkeletonTable,
+  SkeletonList,
   SkeletonDashboard,
   SkeletonForm,
   SkeletonProfile,
-  SkeletonText
+  SkeletonText,
 };

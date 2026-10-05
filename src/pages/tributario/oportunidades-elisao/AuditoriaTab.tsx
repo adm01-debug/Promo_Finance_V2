@@ -33,7 +33,9 @@ interface CreditoAuditoriaComRelacoes extends CreditoAuditoriaRow {
 interface AuditoriaTabProps {
   creditosAuditoria: CreditoAuditoriaRow[];
   empresaRazaoSocial: string;
-  decidirCredito: { mutate: (args: { id: string; status: string }) => void };
+  decidirCredito: {
+    mutate: (args: { id: string; status: 'aprovado' | 'rejeitado'; motivo?: string }) => void;
+  };
 }
 
 export function AuditoriaTab({

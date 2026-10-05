@@ -11,22 +11,47 @@ interface IndicadorCoberturaProps {
   isLoading?: boolean;
 }
 
-export function IndicadorCobertura({ 
-  saldoAtual, 
-  despesaMediaDiaria, 
-  isLoading = false 
+export function IndicadorCobertura({
+  saldoAtual,
+  despesaMediaDiaria,
+  isLoading = false,
 }: IndicadorCoberturaProps) {
   // Calcular dias de cobertura
-  const diasCobertura = despesaMediaDiaria > 0 
-    ? Math.floor(saldoAtual / despesaMediaDiaria)
-    : 0;
+  const diasCobertura = despesaMediaDiaria > 0 ? Math.floor(saldoAtual / despesaMediaDiaria) : 0;
 
   // Definir níveis de saúde (30 dias = ótimo, 15 dias = bom, 7 dias = alerta, <7 = crítico)
   const getNivelSaude = () => {
-    if (diasCobertura >= 30) return { nivel: 'otimo', cor: 'text-success', bgCor: 'bg-success/10', label: 'Ótimo', progresso: 100 };
-    if (diasCobertura >= 15) return { nivel: 'bom', cor: 'text-primary', bgCor: 'bg-primary/10', label: 'Bom', progresso: 75 };
-    if (diasCobertura >= 7) return { nivel: 'alerta', cor: 'text-warning', bgCor: 'bg-warning/10', label: 'Atenção', progresso: 50 };
-    return { nivel: 'critico', cor: 'text-destructive', bgCor: 'bg-destructive/10', label: 'Crítico', progresso: 25 };
+    if (diasCobertura >= 30)
+      return {
+        nivel: 'otimo',
+        cor: 'text-success',
+        bgCor: 'bg-success/10',
+        label: 'Ótimo',
+        progresso: 100,
+      };
+    if (diasCobertura >= 15)
+      return {
+        nivel: 'bom',
+        cor: 'text-primary',
+        bgCor: 'bg-primary/10',
+        label: 'Bom',
+        progresso: 75,
+      };
+    if (diasCobertura >= 7)
+      return {
+        nivel: 'alerta',
+        cor: 'text-warning',
+        bgCor: 'bg-warning/10',
+        label: 'Atenção',
+        progresso: 50,
+      };
+    return {
+      nivel: 'critico',
+      cor: 'text-destructive',
+      bgCor: 'bg-destructive/10',
+      label: 'Crítico',
+      progresso: 25,
+    };
   };
 
   const saude = getNivelSaude();
@@ -56,7 +81,12 @@ export function IndicadorCobertura({
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.4 }}
     >
-      <Card className={cn("card-elevated overflow-hidden", saude.nivel === 'critico' && "border-destructive")}>
+      <Card
+        className={cn(
+          'card-elevated overflow-hidden',
+          saude.nivel === 'critico' && 'border-destructive'
+        )}
+      >
         <CardContent className="p-3 sm:p-4 lg:p-5">
           <div className="flex items-start justify-between mb-2 sm:mb-3 lg:mb-4">
             <div className="min-w-0 flex-1">
@@ -65,20 +95,22 @@ export function IndicadorCobertura({
                 <span className="truncate">Cobertura de Caixa</span>
               </p>
               <div className="flex items-baseline gap-1.5 sm:gap-2 mt-0.5 sm:mt-1">
-                <span className={cn("text-2xl sm:text-3xl font-bold font-display", saude.cor)}>
+                <span className={cn('text-2xl sm:text-3xl font-bold font-display', saude.cor)}>
                   {diasCobertura}
                 </span>
                 <span className="text-xs sm:text-sm text-muted-foreground">dias</span>
               </div>
             </div>
-            <div className={cn(
-              "h-10 w-10 sm:h-12 sm:w-12 rounded-lg sm:rounded-xl flex items-center justify-center shrink-0 ml-2",
-              saude.bgCor
-            )}>
+            <div
+              className={cn(
+                'h-10 w-10 sm:h-12 sm:w-12 rounded-lg sm:rounded-xl flex items-center justify-center shrink-0 ml-2',
+                saude.bgCor
+              )}
+            >
               {saude.nivel === 'critico' ? (
-                <AlertTriangle className={cn("h-5 w-5 sm:h-6 sm:w-6", saude.cor)} />
+                <AlertTriangle className={cn('h-5 w-5 sm:h-6 sm:w-6', saude.cor)} />
               ) : (
-                <Calendar className={cn("h-5 w-5 sm:h-6 sm:w-6", saude.cor)} />
+                <Calendar className={cn('h-5 w-5 sm:h-6 sm:w-6', saude.cor)} />
               )}
             </div>
           </div>
@@ -86,11 +118,11 @@ export function IndicadorCobertura({
           {/* Progress Bar */}
           <div className="space-y-1 sm:space-y-2">
             <div className="flex justify-between items-center text-[10px] sm:text-xs">
-              <span className={cn("font-medium", saude.cor)}>{saude.label}</span>
+              <span className={cn('font-medium', saude.cor)}>{saude.label}</span>
               <span className="text-muted-foreground">Meta: {metaCobertura}d</span>
             </div>
-            <Progress 
-              value={Math.min((diasCobertura / metaCobertura) * 100, 100)} 
+            <Progress
+              value={Math.min((diasCobertura / metaCobertura) * 100, 100)}
               className="h-1.5 sm:h-2"
             />
           </div>
@@ -120,7 +152,9 @@ export function IndicadorCobertura({
               <div className="flex items-start sm:items-center gap-1.5 sm:gap-2 text-muted-foreground">
                 <TrendingUp className="h-3 w-3 sm:h-3.5 sm:w-3.5 shrink-0 mt-0.5 sm:mt-0" />
                 <span className="line-clamp-2 sm:line-clamp-1">
-                  <span className="hidden sm:inline">Para {metaCobertura} dias de cobertura, precisa de mais </span>
+                  <span className="hidden sm:inline">
+                    Para {metaCobertura} dias de cobertura, precisa de mais{' '}
+                  </span>
                   <span className="sm:hidden">Falta </span>
                   <strong className="text-foreground">{formatCurrency(faltaParaMeta)}</strong>
                 </span>

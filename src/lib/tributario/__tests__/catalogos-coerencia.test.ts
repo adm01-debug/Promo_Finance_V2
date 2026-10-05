@@ -17,7 +17,7 @@ function catalogoEspelhandoCodigo(): FaixaSimplesCatalogo[] {
       parcela_deduzir: f.pd,
       vigente_de: '2018-01-01',
       vigente_ate: null,
-    })),
+    }))
   );
 }
 
@@ -41,7 +41,7 @@ describe('coerência entre catálogo do banco e constantes do motor', () => {
 
   it('detecta parcela a deduzir divergente', () => {
     const catalogo = catalogoEspelhandoCodigo().map((f) =>
-      f.anexo === 'III' && f.faixa === 6 ? { ...f, parcela_deduzir: 1 } : f,
+      f.anexo === 'III' && f.faixa === 6 ? { ...f, parcela_deduzir: 1 } : f
     );
 
     const divergencias = compararFaixasComCatalogo(catalogo);
@@ -61,21 +61,21 @@ describe('coerência entre catálogo do banco e constantes do motor', () => {
 
   it('tolera ruído de ponto flutuante dentro do epsilon', () => {
     const catalogo = catalogoEspelhandoCodigo().map((f) =>
-      f.anexo === 'I' && f.faixa === 2 ? { ...f, aliquota: f.aliquota + 1e-12 } : f,
+      f.anexo === 'I' && f.faixa === 2 ? { ...f, aliquota: f.aliquota + 1e-12 } : f
     );
     expect(compararFaixasComCatalogo(catalogo)).toEqual([]);
   });
 
   it('trata valores não finitos como divergência', () => {
     const catalogo = catalogoEspelhandoCodigo().map((f) =>
-      f.anexo === 'II' && f.faixa === 1 ? { ...f, rbt12_ate: Number.NaN } : f,
+      f.anexo === 'II' && f.faixa === 1 ? { ...f, rbt12_ate: Number.NaN } : f
     );
     expect(compararFaixasComCatalogo(catalogo)).toHaveLength(1);
   });
 
   it('descreve divergências de forma legível', () => {
     const catalogo = catalogoEspelhandoCodigo().map((f) =>
-      f.anexo === 'IV' && f.faixa === 5 ? { ...f, aliquota: 0.9 } : f,
+      f.anexo === 'IV' && f.faixa === 5 ? { ...f, aliquota: 0.9 } : f
     );
     const textos = descreverDivergencias(compararFaixasComCatalogo(catalogo));
     expect(textos[0]).toContain('Anexo IV faixa 5');

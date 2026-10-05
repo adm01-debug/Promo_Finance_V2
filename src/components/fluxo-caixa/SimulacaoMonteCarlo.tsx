@@ -4,12 +4,12 @@ import { Dice5, TrendingUp, TrendingDown, Info, RefreshCw, Loader2 } from 'lucid
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
-import { 
-  ResponsiveContainer, 
-  AreaChart, 
-  Area, 
-  XAxis, 
-  YAxis, 
+import {
+  ResponsiveContainer,
+  AreaChart,
+  Area,
+  XAxis,
+  YAxis,
   Tooltip as RechartsTooltip,
   ReferenceLine,
 } from 'recharts';
@@ -59,7 +59,7 @@ function executarMonteCarlo(
   const simulacoes: number[][] = [];
 
   // Calcular variabilidade histórica (simulando com +/- 20% de variação)
-  const variacaoReceita = 0.20;
+  const variacaoReceita = 0.2;
   const variacaoDespesa = 0.15;
 
   // Executar N simulações
@@ -69,18 +69,18 @@ function executarMonteCarlo(
 
     for (let d = 0; d < dias; d++) {
       const proj = projecoes[d];
-      
+
       // Aplicar variação aleatória (distribuição normal aproximada)
       const fatorReceita = 1 + (Math.random() - 0.5) * 2 * variacaoReceita;
       const fatorDespesa = 1 + (Math.random() - 0.5) * 2 * variacaoDespesa;
-      
+
       const receitaSimulada = proj.receitas * fatorReceita;
       const despesaSimulada = proj.despesas * fatorDespesa;
-      
+
       saldoAtual = saldoAtual + receitaSimulada - despesaSimulada;
       saldos.push(saldoAtual);
     }
-    
+
     simulacoes.push(saldos);
   }
 
@@ -90,20 +90,21 @@ function executarMonteCarlo(
   const percentil90: number[] = [];
 
   for (let d = 0; d < dias; d++) {
-    const saldosDia = simulacoes.map(sim => sim[d]).sort((a, b) => a - b);
-    percentil10.push(saldosDia[Math.floor(numSimulacoes * 0.10)]);
-    percentil50.push(saldosDia[Math.floor(numSimulacoes * 0.50)]);
-    percentil90.push(saldosDia[Math.floor(numSimulacoes * 0.90)]);
+    const saldosDia = simulacoes.map((sim) => sim[d]).sort((a, b) => a - b);
+    percentil10.push(saldosDia[Math.floor(numSimulacoes * 0.1)]);
+    percentil50.push(saldosDia[Math.floor(numSimulacoes * 0.5)]);
+    percentil90.push(saldosDia[Math.floor(numSimulacoes * 0.9)]);
   }
 
   // Calcular probabilidade de ruptura (saldo < 0 em algum momento)
-  const simulacoesComRuptura = simulacoes.filter(sim => sim.some(s => s < 0)).length;
+  const simulacoesComRuptura = simulacoes.filter((sim) => sim.some((s) => s < 0)).length;
   const probabilidadeRuptura = (simulacoesComRuptura / numSimulacoes) * 100;
 
   // Saldo médio final e desvio padrão
-  const saldosFinais = simulacoes.map(sim => sim[sim.length - 1]);
+  const saldosFinais = simulacoes.map((sim) => sim[sim.length - 1]);
   const saldoMedioFinal = saldosFinais.reduce((a, b) => a + b, 0) / numSimulacoes;
-  const variancia = saldosFinais.reduce((sum, s) => sum + Math.pow(s - saldoMedioFinal, 2), 0) / numSimulacoes;
+  const variancia =
+    saldosFinais.reduce((sum, s) => sum + Math.pow(s - saldoMedioFinal, 2), 0) / numSimulacoes;
   const desviopadrao = Math.sqrt(variancia);
 
   return {
@@ -116,10 +117,10 @@ function executarMonteCarlo(
   };
 }
 
-export function SimulacaoMonteCarlo({ 
-  projecoes, 
+export function SimulacaoMonteCarlo({
+  projecoes,
   saldoInicial,
-  isLoading = false 
+  isLoading = false,
 }: SimulacaoMonteCarloProps) {
   const [isSimulating, setIsSimulating] = useState(false);
   const [seed, setSeed] = useState(0);
@@ -133,7 +134,7 @@ export function SimulacaoMonteCarlo({
   const handleReSimular = () => {
     setIsSimulating(true);
     setTimeout(() => {
-      setSeed(prev => prev + 1);
+      setSeed((prev) => prev + 1);
       setIsSimulating(false);
     }, 500);
   };
@@ -184,8 +185,10 @@ export function SimulacaoMonteCarlo({
                     <Info className="h-4 w-4 text-muted-foreground cursor-help" />
                   </TooltipTrigger>
                   <TooltipContent className="max-w-xs">
-                    <p>1.000 simulações com variação de ±20% nas receitas e ±15% nas despesas. 
-                    O intervalo de confiança de 80% mostra a faixa entre os percentis 10 e 90.</p>
+                    <p>
+                      1.000 simulações com variação de ±20% nas receitas e ±15% nas despesas. O
+                      intervalo de confiança de 80% mostra a faixa entre os percentis 10 e 90.
+                    </p>
                   </TooltipContent>
                 </Tooltip>
               </TooltipProvider>
@@ -211,16 +214,18 @@ export function SimulacaoMonteCarlo({
           <div className="grid grid-cols-3 gap-4">
             <div className="p-3 rounded-lg bg-muted/50">
               <p className="text-xs text-muted-foreground">Prob. Ruptura</p>
-              <p className={cn("text-xl font-bold font-display", getCorRisco())}>
+              <p className={cn('text-xl font-bold font-display', getCorRisco())}>
                 {resultado.probabilidadeRuptura.toFixed(1)}%
               </p>
             </div>
             <div className="p-3 rounded-lg bg-muted/50">
               <p className="text-xs text-muted-foreground">Saldo Médio Final</p>
-              <p className={cn(
-                "text-xl font-bold font-display",
-                resultado.saldoMedioFinal >= 0 ? "text-success" : "text-destructive"
-              )}>
+              <p
+                className={cn(
+                  'text-xl font-bold font-display',
+                  resultado.saldoMedioFinal >= 0 ? 'text-success' : 'text-destructive'
+                )}
+              >
                 {formatCurrency(resultado.saldoMedioFinal)}
               </p>
             </div>
@@ -242,22 +247,26 @@ export function SimulacaoMonteCarlo({
                     <stop offset="95%" stopColor="hsl(var(--primary))" stopOpacity={0.05} />
                   </linearGradient>
                 </defs>
-                <XAxis 
-                  dataKey="data" 
-                  stroke="hsl(var(--muted-foreground))" 
+                <XAxis
+                  dataKey="data"
+                  stroke="hsl(var(--muted-foreground))"
                   fontSize={10}
                   tickLine={false}
                 />
-                <YAxis 
-                  tickFormatter={(v) => `${(v/1000).toFixed(0)}K`}
-                  stroke="hsl(var(--muted-foreground))" 
+                <YAxis
+                  tickFormatter={(v) => `${(v / 1000).toFixed(0)}K`}
+                  stroke="hsl(var(--muted-foreground))"
                   fontSize={10}
                   tickLine={false}
                 />
                 <RechartsTooltip
                   formatter={(v: number, name: string) => [
                     formatCurrency(v),
-                    name === 'p10' ? 'Pessimista (P10)' : name === 'p50' ? 'Mediana (P50)' : 'Otimista (P90)'
+                    name === 'p10'
+                      ? 'Pessimista (P10)'
+                      : name === 'p50'
+                        ? 'Mediana (P50)'
+                        : 'Otimista (P90)',
                   ]}
                   contentStyle={{
                     background: 'hsl(var(--card))',
@@ -267,7 +276,7 @@ export function SimulacaoMonteCarlo({
                   }}
                 />
                 <ReferenceLine y={0} stroke="hsl(var(--destructive))" strokeDasharray="5 5" />
-                
+
                 {/* Área de confiança (P10-P90) */}
                 <Area
                   type="monotone"
@@ -283,7 +292,7 @@ export function SimulacaoMonteCarlo({
                   fill="hsl(var(--card))"
                   fillOpacity={1}
                 />
-                
+
                 {/* Linhas de percentis */}
                 <Area
                   type="monotone"
@@ -335,7 +344,10 @@ export function SimulacaoMonteCarlo({
           {resultado.probabilidadeRuptura > 20 && (
             <div className="flex items-center gap-2 p-3 rounded-lg bg-destructive/10 text-destructive text-sm">
               <TrendingDown className="h-4 w-4" />
-              <span>Risco elevado de ruptura de caixa. Considere antecipar recebíveis ou postergar pagamentos.</span>
+              <span>
+                Risco elevado de ruptura de caixa. Considere antecipar recebíveis ou postergar
+                pagamentos.
+              </span>
             </div>
           )}
 

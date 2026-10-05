@@ -1,9 +1,9 @@
-import { Loader2 } from "lucide-react";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import { Progress } from "@/components/ui/progress";
-import { severidadeBadge } from "./helpers";
-import { SEVERIDADES, type Anomalia, type ProgressoPorSeveridade, type ReviewStats } from "./types";
+import { Loader2 } from 'lucide-react';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Progress } from '@/components/ui/progress';
+import { severidadeBadge } from './helpers';
+import { SEVERIDADES, type Anomalia, type ProgressoPorSeveridade, type ReviewStats } from './types';
 
 interface Props {
   atual: Anomalia;
@@ -13,10 +13,10 @@ interface Props {
   isFetchingNextPage: boolean;
   stats: ReviewStats;
   progressoPorSeveridade: ProgressoPorSeveridade;
-  outrasSeveridades: Anomalia["severidade"][];
-  contagemPorSeveridade: Record<Anomalia["severidade"], number>;
+  outrasSeveridades: Anomalia['severidade'][];
+  contagemPorSeveridade: Record<Anomalia['severidade'], number>;
   recarregando: boolean;
-  onPularParaSeveridade: (sev: Anomalia["severidade"]) => void;
+  onPularParaSeveridade: (sev: Anomalia['severidade']) => void;
 }
 
 export function QueueProgressHeader({
@@ -37,14 +37,14 @@ export function QueueProgressHeader({
       <div className="space-y-1.5" aria-live="polite">
         <div className="flex items-center justify-between text-xs text-muted-foreground">
           <span>
-            Revisando <span className="capitalize">{atual.severidade}</span>{" "}
+            Revisando <span className="capitalize">{atual.severidade}</span>{' '}
             <span className="tabular-nums">
               {progressoPorSeveridade.revisado[atual.severidade] + 1}/
               {progressoPorSeveridade.total[atual.severidade]}
             </span>
             {outrasSeveridades.map((s) => (
               <span key={s} className="ml-1">
-                · <span className="capitalize">{s}</span>{" "}
+                · <span className="capitalize">{s}</span>{' '}
                 <span className="tabular-nums">
                   {progressoPorSeveridade.revisado[s]}/{progressoPorSeveridade.total[s]}
                 </span>
@@ -84,14 +84,14 @@ export function QueueProgressHeader({
               key={sev}
               type="button"
               size="sm"
-              variant={ativo ? severidadeBadge(sev) : "outline"}
+              variant={ativo ? severidadeBadge(sev) : 'outline'}
               className="h-7 px-2 text-xs capitalize gap-1"
               onClick={() => onPularParaSeveridade(sev)}
               disabled={desabilitado}
               title={
                 count === 0
                   ? `Sem anomalias ${sev} restantes`
-                  : `Ir para a próxima ${sev} (${count} restante${count === 1 ? "" : "s"})`
+                  : `Ir para a próxima ${sev} (${count} restante${count === 1 ? '' : 's'})`
               }
               aria-pressed={ativo}
             >

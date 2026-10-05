@@ -79,7 +79,10 @@ export function DashboardFiltersHeader({
             </div>
             <div>
               <h1 className="text-3xl sm:text-4xl font-black tracking-tight text-foreground font-heading leading-tight">
-                {greeting.text}, <span className="bg-gradient-to-r from-primary to-primary-foreground bg-clip-text text-transparent">{displayName}</span>
+                {greeting.text},{' '}
+                <span className="bg-gradient-to-r from-primary to-primary-foreground bg-clip-text text-transparent">
+                  {displayName}
+                </span>
               </h1>
               <p className="text-[13px] font-medium text-muted-foreground/80 mt-1 max-w-md">
                 Análise estratégica e visão consolidada do seu fluxo financeiro em tempo real.
@@ -97,7 +100,7 @@ export function DashboardFiltersHeader({
           Personalizar
         </Button>
       </div>
-      
+
       <div className="flex flex-col sm:flex-row items-center gap-4 p-2.5 rounded-2xl glass-effect bg-card/40 dark:bg-zinc-900/40 border border-white/20 dark:border-white/5 shadow-xl backdrop-blur-xl">
         <div className="flex items-center px-2">
           <VisualValidator />
@@ -111,7 +114,7 @@ export function DashboardFiltersHeader({
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="all">Todas as Empresas</SelectItem>
-              {empresas.map(e => (
+              {empresas.map((e) => (
                 <SelectItem key={e.id} value={e.id}>
                   {e.nome_fantasia || e.razao_social}
                 </SelectItem>
@@ -119,7 +122,7 @@ export function DashboardFiltersHeader({
             </SelectContent>
           </Select>
         </div>
-        
+
         <div className="w-px h-6 bg-border hidden sm:block" />
 
         <div className="flex items-center gap-2 flex-1 w-full px-2">
@@ -130,8 +133,10 @@ export function DashboardFiltersHeader({
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="all">Filtro Global</SelectItem>
-              {centrosCusto.map(cc => (
-                <SelectItem key={cc.id} value={cc.id}>{cc.nome}</SelectItem>
+              {centrosCusto.map((cc) => (
+                <SelectItem key={cc.id} value={cc.id}>
+                  {cc.nome}
+                </SelectItem>
               ))}
             </SelectContent>
           </Select>

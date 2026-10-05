@@ -39,7 +39,12 @@ function Linha({
   return (
     <div className="flex items-baseline justify-between gap-4 py-2">
       <div>
-        <p className={cn('text-sm', destaque ? 'font-semibold text-foreground' : 'text-foreground/90')}>
+        <p
+          className={cn(
+            'text-sm',
+            destaque ? 'font-semibold text-foreground' : 'text-foreground/90'
+          )}
+        >
           {rotulo}
         </p>
         {detalhe && <p className="text-xs text-muted-foreground">{detalhe}</p>}
@@ -47,7 +52,7 @@ function Linha({
       <span
         className={cn(
           'shrink-0 font-mono text-sm tabular-nums',
-          destaque ? 'text-base font-semibold text-destructive' : 'text-foreground',
+          destaque ? 'text-base font-semibold text-destructive' : 'text-foreground'
         )}
       >
         {formatCurrency(valor)}
@@ -66,7 +71,8 @@ export function ResultadoPf({ data, otimizacao, className }: ResultadoPfProps) {
         <CardHeader className="pb-3">
           <CardTitle className="text-base">Carga tributária anual do sócio</CardTitle>
           <CardDescription>
-            Renda total considerada: {formatCurrency(data.rendaTotalAnual)} · base legal {data.baseLegal}
+            Renda total considerada: {formatCurrency(data.rendaTotalAnual)} · base legal{' '}
+            {data.baseLegal}
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
@@ -87,9 +93,7 @@ export function ResultadoPf({ data, otimizacao, className }: ResultadoPfProps) {
             </div>
             <div className="rounded-lg border p-4">
               <p className="text-xs text-muted-foreground">Alíquota mínima IRPFM</p>
-              <p className="mt-1 text-2xl font-bold">
-                {(irpfm.aliquotaMinima * 100).toFixed(2)}%
-              </p>
+              <p className="mt-1 text-2xl font-bold">{(irpfm.aliquotaMinima * 100).toFixed(2)}%</p>
               <Badge variant={irpfm.aplicavel ? 'destructive' : 'secondary'} className="mt-1">
                 {irpfm.aplicavel ? 'IRPFM aplicável' : 'Fora do IRPFM'}
               </Badge>
@@ -140,8 +144,8 @@ export function ResultadoPf({ data, otimizacao, className }: ResultadoPfProps) {
           <CardContent className="text-sm">
             <p>
               Mantendo a mesma remuneração bruta, um pró-labore de{' '}
-              <strong>{formatCurrency(otimizacao.melhorProLaboreMensal)}/mês</strong> reduz a carga anual
-              para <strong>{formatCurrency(otimizacao.melhorCarga)}</strong> — economia de{' '}
+              <strong>{formatCurrency(otimizacao.melhorProLaboreMensal)}/mês</strong> reduz a carga
+              anual para <strong>{formatCurrency(otimizacao.melhorCarga)}</strong> — economia de{' '}
               <strong className="text-success">{formatCurrency(otimizacao.economia)}</strong>.
             </p>
           </CardContent>
@@ -167,8 +171,8 @@ export function ResultadoPf({ data, otimizacao, className }: ResultadoPfProps) {
         <Info className="h-4 w-4" aria-hidden />
         <AlertDescription className="text-xs">
           Simulação conservadora de sócio único, sem considerar holding patrimonial, deduções legais
-          (dependentes, saúde, previdência) nem compensações de anos anteriores. O IRPFM é apurado na
-          Declaração de Ajuste Anual, com o IR já retido no ano abatido do mínimo devido.
+          (dependentes, saúde, previdência) nem compensações de anos anteriores. O IRPFM é apurado
+          na Declaração de Ajuste Anual, com o IR já retido no ano abatido do mínimo devido.
         </AlertDescription>
       </Alert>
     </div>

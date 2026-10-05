@@ -9,6 +9,7 @@ import { useDeviceDetection } from '@/hooks/useDeviceDetection';
 import { useWebAuthn } from '@/hooks/useWebAuthn';
 import { useAuthValidation } from '@/hooks/useAuthValidation';
 import { readSloFailure, type SloFailureSnapshot } from '@/lib/sso-slo-state';
+import { env } from '@/config/env';
 
 // Validation schemas
 const emailSchema = z.string().email('Email inválido');
@@ -121,8 +122,39 @@ export function useAuthPage() {
       // Recarrega snapshot caso tenha sido escrito após o mount inicial.
       setSloFailureState(readSloFailure());
     } else if (params.get('sso_error')) {
-      toast.error('Falha no login SSO', { description: params.get('sso_error') ?? undefined });
+      // OIDC/PKCE: o redirect do IdP chega ao sso-callback sem o verifier
+      // (ele vive no sessionStorage). A edge devolve code+state para cá e o
+      // SPA reenvia a chamada completa via POST form — o verifier não vai
+      // na URL (history/logs) e a navegação segue o 302 final de sessão.
+      // pkce:<state> fica no storage até o fluxo terminar: se a navegação
+      // falhar, recarregar /auth repete com o mesmo verifier.
+      const ssoError = params.get('sso_error');
+      const ssoCode = params.get('sso_code');
+      const ssoState = params.get('sso_state');
+      const verifier = ssoState ? sessionStorage.getItem(`pkce:${ssoState}`) : null;
+      if (ssoError === 'pkce_verifier_missing' && ssoCode && ssoState && verifier) {
+        const form = document.createElement('form');
+        form.method = 'POST';
+        form.action = `${env.SUPABASE_URL}/functions/v1/sso-callback`;
+        for (const [name, value] of [
+          ['code', ssoCode],
+          ['state', ssoState],
+          ['verifier', verifier],
+        ]) {
+          const input = document.createElement('input');
+          input.type = 'hidden';
+          input.name = name;
+          input.value = value;
+          form.appendChild(input);
+        }
+        document.body.appendChild(form);
+        form.submit();
+        return;
+      }
+      toast.error('Falha no login SSO', { description: ssoError ?? undefined });
       params.delete('sso_error');
+      params.delete('sso_code');
+      params.delete('sso_state');
       const qs = params.toString();
       window.history.replaceState({}, '', window.location.pathname + (qs ? `?${qs}` : ''));
     }

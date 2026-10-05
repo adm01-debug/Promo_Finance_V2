@@ -43,19 +43,21 @@ export default function InteligenciaOperacionalPage() {
             </div>
             <h1 className="text-3xl font-bold tracking-tight">Inteligência Operacional 360°</h1>
           </div>
-          <p className="text-muted-foreground">Monitoramento neural, Health Score e ações automáticas baseadas em IA</p>
+          <p className="text-muted-foreground">
+            Monitoramento neural, Health Score e ações automáticas baseadas em IA
+          </p>
         </div>
 
         <div className="grid gap-6 grid-cols-1 lg:grid-cols-3">
-          <motion.div 
+          <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             className="lg:col-span-1"
           >
             <HealthScoreCard />
           </motion.div>
-          
-          <motion.div 
+
+          <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.1 }}
@@ -66,21 +68,21 @@ export default function InteligenciaOperacionalPage() {
         </div>
 
         <div className="grid gap-6 grid-cols-1 lg:grid-cols-2">
-          <motion.div 
+          <motion.div
             id="alertas-preditivos"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.2 }}
             className="scroll-mt-24"
           >
-            <AlertasPreditivosPanel 
-              saldoAtual={100000} 
-              receitasPrevistas={[]} 
-              despesasPrevistas={[]} 
+            <AlertasPreditivosPanel
+              saldoAtual={100000}
+              receitasPrevistas={[]}
+              despesasPrevistas={[]}
               defaultExpanded={true}
             />
           </motion.div>
-          <motion.div 
+          <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.3 }}
@@ -89,14 +91,13 @@ export default function InteligenciaOperacionalPage() {
           </motion.div>
         </div>
 
-        <motion.div 
+        <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.4 }}
         >
           <MetasFinanceirasPanel defaultExpanded={true} />
         </motion.div>
-
       </div>
     </MainLayout>
   );

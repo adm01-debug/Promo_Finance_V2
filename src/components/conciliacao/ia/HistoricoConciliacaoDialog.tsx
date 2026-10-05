@@ -1,5 +1,11 @@
 import { History, CheckCircle2, X, Loader2 } from 'lucide-react';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+} from '@/components/ui/dialog';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
@@ -36,7 +42,11 @@ interface HistoricoConciliacaoDialogProps {
 }
 
 export function HistoricoConciliacaoDialog({
-  open, onOpenChange, historico, estatisticasHistorico, isLoadingHistorico
+  open,
+  onOpenChange,
+  historico,
+  estatisticasHistorico,
+  isLoadingHistorico,
 }: HistoricoConciliacaoDialogProps) {
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -71,13 +81,13 @@ export function HistoricoConciliacaoDialog({
               ) : (
                 <div className="space-y-2">
                   {historico.map((item) => (
-                    <div 
+                    <div
                       key={item.id}
                       className={cn(
-                        "p-3 rounded-lg border",
-                        item.acao === 'aprovado' 
-                          ? "bg-success/5 border-success/20" 
-                          : "bg-destructive/5 border-destructive/20"
+                        'p-3 rounded-lg border',
+                        item.acao === 'aprovado'
+                          ? 'bg-success/5 border-success/20'
+                          : 'bg-destructive/5 border-destructive/20'
                       )}
                     >
                       <div className="flex items-center justify-between">
@@ -89,7 +99,9 @@ export function HistoricoConciliacaoDialog({
                           )}
                           <div>
                             <p className="text-sm font-medium">
-                              {item.tipo_lancamento === 'receber' ? 'Conta a Receber' : 'Conta a Pagar'}
+                              {item.tipo_lancamento === 'receber'
+                                ? 'Conta a Receber'
+                                : 'Conta a Pagar'}
                             </p>
                             <p className="text-xs text-muted-foreground">
                               {new Date(item.created_at).toLocaleString('pt-BR')}
@@ -97,8 +109,8 @@ export function HistoricoConciliacaoDialog({
                           </div>
                         </div>
                         <div className="flex items-center gap-2">
-                          <ScoreBadgeIA 
-                            score={item.score_ia} 
+                          <ScoreBadgeIA
+                            score={item.score_ia}
                             confianca={item.confianca}
                             size="sm"
                           />
@@ -124,7 +136,9 @@ export function HistoricoConciliacaoDialog({
               <Card>
                 <CardContent className="pt-6">
                   <div className="text-center">
-                    <p className="text-3xl font-bold text-success">{estatisticasHistorico.totalAprovados}</p>
+                    <p className="text-3xl font-bold text-success">
+                      {estatisticasHistorico.totalAprovados}
+                    </p>
                     <p className="text-sm text-muted-foreground">Aprovados</p>
                   </div>
                 </CardContent>
@@ -132,7 +146,9 @@ export function HistoricoConciliacaoDialog({
               <Card>
                 <CardContent className="pt-6">
                   <div className="text-center">
-                    <p className="text-3xl font-bold text-destructive">{estatisticasHistorico.totalRejeitados}</p>
+                    <p className="text-3xl font-bold text-destructive">
+                      {estatisticasHistorico.totalRejeitados}
+                    </p>
                     <p className="text-sm text-muted-foreground">Rejeitados</p>
                   </div>
                 </CardContent>
@@ -140,7 +156,9 @@ export function HistoricoConciliacaoDialog({
               <Card>
                 <CardContent className="pt-6">
                   <div className="text-center">
-                    <p className="text-3xl font-bold text-primary">{estatisticasHistorico.scoreMedia}%</p>
+                    <p className="text-3xl font-bold text-primary">
+                      {estatisticasHistorico.scoreMedia}%
+                    </p>
                     <p className="text-sm text-muted-foreground">Score Médio</p>
                   </div>
                 </CardContent>
@@ -161,8 +179,8 @@ export function HistoricoConciliacaoDialog({
                     <div key={label} className="flex items-center justify-between">
                       <span className="text-sm">{label}</span>
                       <div className="flex items-center gap-2">
-                        <Progress 
-                          value={(count / (historico.length || 1)) * 100} 
+                        <Progress
+                          value={(count / (historico.length || 1)) * 100}
                           className="w-32 h-2"
                         />
                         <span className="text-sm font-mono w-8">{count}</span>

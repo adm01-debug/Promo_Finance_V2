@@ -1,9 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import {
-  parseOFX,
-  parseCSV,
-  parseExtratoBancario,
-} from '../ofx-parser';
+import { parseOFX, parseCSV, parseExtratoBancario } from '../ofx-parser';
 import { parseData, parseOFXDate } from '../ofx-parser/utils';
 
 describe('OFX/CSV Parser', () => {
@@ -69,12 +65,12 @@ describe('OFX/CSV Parser', () => {
       const r = parseOFX(ofx, 'extrato.ofx');
       expect(r.sucesso).toBe(true);
       expect(r.extrato?.transacoes.length).toBe(2);
-      
-      const credito = r.extrato?.transacoes.find(t => t.valor > 0);
+
+      const credito = r.extrato?.transacoes.find((t) => t.valor > 0);
       expect(credito?.tipo).toBe('credito');
       expect(credito?.valor).toBe(5000);
-      
-      const debito = r.extrato?.transacoes.find(t => t.valor < 0);
+
+      const debito = r.extrato?.transacoes.find((t) => t.valor < 0);
       expect(debito?.tipo).toBe('debito');
       expect(debito?.descricao).toContain('Pagamento');
     });
@@ -134,8 +130,8 @@ describe('OFX/CSV Parser', () => {
 15/01/2024;Débito;-100
 16/01/2024;Crédito;200`;
       const r = parseCSV(csv, 'test.csv');
-      const debito = r.extrato?.transacoes.find(t => t.tipo === 'debito');
-      const credito = r.extrato?.transacoes.find(t => t.tipo === 'credito');
+      const debito = r.extrato?.transacoes.find((t) => t.tipo === 'debito');
+      const credito = r.extrato?.transacoes.find((t) => t.tipo === 'credito');
       expect(debito).toBeTruthy();
       expect(credito).toBeTruthy();
     });
@@ -145,8 +141,8 @@ describe('OFX/CSV Parser', () => {
 15/01/2024;Conta luz;100;D
 16/01/2024;Venda;200;C`;
       const r = parseCSV(csv, 'test.csv');
-      expect(r.extrato?.transacoes.find(t => t.tipo === 'debito')).toBeTruthy();
-      expect(r.extrato?.transacoes.find(t => t.tipo === 'credito')).toBeTruthy();
+      expect(r.extrato?.transacoes.find((t) => t.tipo === 'debito')).toBeTruthy();
+      expect(r.extrato?.transacoes.find((t) => t.tipo === 'credito')).toBeTruthy();
     });
 
     it('formato é identificado como CSV', () => {

@@ -16,6 +16,7 @@ import { processWithIdempotency, RetryableError } from '../_shared/webhook-idemp
 import { corsHeadersPara } from '../_shared/cors.ts';
 import { createLogger } from '../_shared/observability.ts';
 import { mensagemErro } from '../_shared/erros.ts';
+import { withEdgeObservability } from '../_shared/edge-observability.ts';
 const log = createLogger('whatsapp-webhook');
 
 async function sha256(value: string): Promise<string> {
@@ -176,13 +177,15 @@ export const handler = async (req: Request) => {
 };
 
 if (import.meta.main) {
-  Deno.serve(async (req) => {
-    const _t0 = Date.now();
-    try {
-      return await handler(req);
-    } finally {
-      log.info('request', { duration_ms: Date.now() - _t0 });
-      await log.flush();
-    }
-  });
+  Deno.serve(
+    withEdgeObservability('whatsapp-webhook', async (req) => {
+      const _t0 = Date.now();
+      try {
+        return await handler(req);
+      } finally {
+        log.info('request', { duration_ms: Date.now() - _t0 });
+        await log.flush();
+      }
+    })
+  );
 }

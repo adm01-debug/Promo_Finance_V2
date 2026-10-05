@@ -35,10 +35,12 @@ describe('Trava dos 30% na compensação de prejuízos (Lei 9.065/95, arts. 15 e
 
   it('reduz IRPJ/CSLL do Lucro Real ao informar prejuízo acumulado', () => {
     const sem = simularReal(base());
-    const com = simularReal(base({
-      prejuizoFiscalAcumulado: 5_000_000,
-      baseNegativaCsllAcumulada: 5_000_000,
-    }));
+    const com = simularReal(
+      base({
+        prejuizoFiscalAcumulado: 5_000_000,
+        baseNegativaCsllAcumulada: 5_000_000,
+      })
+    );
     expect(com.irpj).toBeLessThan(sem.irpj);
     expect(com.csll).toBeCloseTo(sem.csll * 0.7, 2);
     expect(com.prejuizoFiscalCompensado).toBeCloseTo(300_000, 2);
@@ -46,12 +48,16 @@ describe('Trava dos 30% na compensação de prejuízos (Lei 9.065/95, arts. 15 e
   });
 
   it('mantém resultado idêntico quando não há estoque de prejuízo', () => {
-    expect(simularReal(base({ prejuizoFiscalAcumulado: 0 })).totalTributos)
-      .toBeCloseTo(simularReal(base()).totalTributos, 6);
+    expect(simularReal(base({ prejuizoFiscalAcumulado: 0 })).totalTributos).toBeCloseTo(
+      simularReal(base()).totalTributos,
+      6
+    );
   });
 
   it('é robusto a valores inválidos (NaN/negativos)', () => {
-    const r = simularReal(base({ prejuizoFiscalAcumulado: Number.NaN, baseNegativaCsllAcumulada: -1000 }));
+    const r = simularReal(
+      base({ prejuizoFiscalAcumulado: Number.NaN, baseNegativaCsllAcumulada: -1000 })
+    );
     expect(Number.isFinite(r.totalTributos)).toBe(true);
     expect(r.prejuizoFiscalCompensado).toBe(0);
   });
@@ -60,13 +66,15 @@ describe('Trava dos 30% na compensação de prejuízos (Lei 9.065/95, arts. 15 e
     for (let i = 0; i < 500; i += 1) {
       const fat = 300_000 + Math.random() * 60_000_000;
       const margem = Math.random() * 30;
-      const r = simularReal(base({
-        faturamentoAnual: fat,
-        margemLucro: margem,
-        percentualServicos: Math.random() * 100,
-        prejuizoFiscalAcumulado: Math.random() * fat,
-        baseNegativaCsllAcumulada: Math.random() * fat,
-      }));
+      const r = simularReal(
+        base({
+          faturamentoAnual: fat,
+          margemLucro: margem,
+          percentualServicos: Math.random() * 100,
+          prejuizoFiscalAcumulado: Math.random() * fat,
+          baseNegativaCsllAcumulada: Math.random() * fat,
+        })
+      );
       const lucro = fat * (margem / 100);
       expect(r.prejuizoFiscalCompensado ?? 0).toBeLessThanOrEqual(lucro * 0.3 + 0.01);
       expect(Number.isFinite(r.totalTributos)).toBe(true);

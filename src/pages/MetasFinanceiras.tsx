@@ -8,10 +8,10 @@ export default function MetasFinanceirasPage() {
     <MainLayout>
       <div className="relative min-h-screen">
         <PageBackground />
-        
+
         <div className="container mx-auto p-6 relative z-10">
-          <PageHeader 
-            title="Metas Financeiras" 
+          <PageHeader
+            title="Metas Financeiras"
             subtitle="Defina objetivos estratégicos e acompanhe a performance operacional em tempo real."
             badge="Performance 10/10"
             icon={Target}
@@ -19,7 +19,7 @@ export default function MetasFinanceirasPage() {
             gradientVia="via-primary"
             gradientTo="to-orange-500"
           />
-          
+
           <MetasFinanceirasPanel />
         </div>
       </div>

@@ -1,5 +1,5 @@
-import { useMemo, useState } from "react";
-import { useQuery } from "@tanstack/react-query";
+import { useMemo, useState } from 'react';
+import { useQuery } from '@tanstack/react-query';
 import {
   Area,
   AreaChart,
@@ -8,14 +8,14 @@ import {
   Tooltip as RechartsTooltip,
   XAxis,
   YAxis,
-} from "recharts";
-import { supabaseDyn } from "@/lib/supabase-dynamic";
+} from 'recharts';
+import { supabaseDyn } from '@/lib/supabase-dynamic';
 
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import { Skeleton } from "@/components/ui/skeleton";
-import { AlertTriangle, CheckCircle2, LineChart, RefreshCw } from "lucide-react";
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Skeleton } from '@/components/ui/skeleton';
+import { AlertTriangle, CheckCircle2, LineChart, RefreshCw } from 'lucide-react';
 
 /** Linha retornada por public.get_catalogos_tributarios_history (admin-only). */
 interface HistoricoDia {
@@ -30,9 +30,9 @@ interface HistoricoDia {
 const JANELAS = [7, 30, 90] as const;
 
 function formatarDia(iso: string): string {
-  return new Date(`${iso}T00:00:00`).toLocaleDateString("pt-BR", {
-    day: "2-digit",
-    month: "2-digit",
+  return new Date(`${iso}T00:00:00`).toLocaleDateString('pt-BR', {
+    day: '2-digit',
+    month: '2-digit',
   });
 }
 
@@ -47,12 +47,11 @@ export function CatalogosTributariosHistoryPanel() {
   const [dias, setDias] = useState<(typeof JANELAS)[number]>(30);
 
   const { data, isLoading, isError, refetch, isRefetching } = useQuery<HistoricoDia[]>({
-    queryKey: ["catalogos-tributarios-history", dias],
+    queryKey: ['catalogos-tributarios-history', dias],
     queryFn: async () => {
-      const { data, error } = await supabaseDyn.rpc(
-        "get_catalogos_tributarios_history",
-        { _dias: dias },
-      );
+      const { data, error } = await supabaseDyn.rpc('get_catalogos_tributarios_history', {
+        _dias: dias,
+      });
       if (error) throw error;
       return (data ?? []) as HistoricoDia[];
     },
@@ -69,7 +68,7 @@ export function CatalogosTributariosHistoryPanel() {
 
   const serie = useMemo(
     () => (data ?? []).map((l) => ({ ...l, rotulo: formatarDia(l.dia) })),
-    [data],
+    [data]
   );
 
   return (
@@ -84,7 +83,7 @@ export function CatalogosTributariosHistoryPanel() {
             <Button
               key={j}
               size="sm"
-              variant={j === dias ? "default" : "outline"}
+              variant={j === dias ? 'default' : 'outline'}
               onClick={() => setDias(j)}
               aria-pressed={j === dias}
             >
@@ -98,7 +97,7 @@ export function CatalogosTributariosHistoryPanel() {
             disabled={isRefetching}
             aria-label="Recarregar histórico de saúde fiscal"
           >
-            <RefreshCw className={isRefetching ? "h-4 w-4 animate-spin" : "h-4 w-4"} aria-hidden />
+            <RefreshCw className={isRefetching ? 'h-4 w-4 animate-spin' : 'h-4 w-4'} aria-hidden />
           </Button>
         </div>
       </CardHeader>
@@ -112,8 +111,8 @@ export function CatalogosTributariosHistoryPanel() {
           </p>
         ) : serie.length === 0 ? (
           <p className="text-sm text-muted-foreground">
-            Nenhum retrato diário registrado ainda. O primeiro ponto será gravado
-            na próxima execução do ciclo de integridade.
+            Nenhum retrato diário registrado ainda. O primeiro ponto será gravado na próxima
+            execução do ciclo de integridade.
           </p>
         ) : (
           <>
@@ -122,8 +121,8 @@ export function CatalogosTributariosHistoryPanel() {
                 variant="outline"
                 className={
                   resumo.diasComCritico > 0
-                    ? "border-destructive/30 bg-destructive/10 text-destructive"
-                    : "border-success/30 bg-success/10 text-success"
+                    ? 'border-destructive/30 bg-destructive/10 text-destructive'
+                    : 'border-success/30 bg-success/10 text-success'
                 }
               >
                 {resumo.diasComCritico > 0 ? (
@@ -135,8 +134,8 @@ export function CatalogosTributariosHistoryPanel() {
               </Badge>
               {resumo.ultimo && (
                 <span className="text-xs text-muted-foreground">
-                  Último retrato: {formatarDia(resumo.ultimo.dia)} —{" "}
-                  {resumo.ultimo.criticos} crítico(s), {resumo.ultimo.avisos} aviso(s)
+                  Último retrato: {formatarDia(resumo.ultimo.dia)} — {resumo.ultimo.criticos}{' '}
+                  crítico(s), {resumo.ultimo.avisos} aviso(s)
                 </span>
               )}
             </div>
@@ -149,10 +148,10 @@ export function CatalogosTributariosHistoryPanel() {
                   <YAxis allowDecimals={false} tick={{ fontSize: 11 }} stroke="currentColor" />
                   <RechartsTooltip
                     contentStyle={{
-                      background: "hsl(var(--popover))",
-                      border: "1px solid hsl(var(--border))",
+                      background: 'hsl(var(--popover))',
+                      border: '1px solid hsl(var(--border))',
                       borderRadius: 8,
-                      color: "hsl(var(--popover-foreground))",
+                      color: 'hsl(var(--popover-foreground))',
                       fontSize: 12,
                     }}
                   />

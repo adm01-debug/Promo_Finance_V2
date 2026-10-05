@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from 'react';
 
 interface Parsed {
   prefix: string;
@@ -15,15 +15,14 @@ function parse(value: string | number): Parsed | null {
   if (!m) return null;
   const [, prefix, num, suffix] = m;
   // Convert pt-BR format to JavaScript number: remove dots, replace comma with dot
-  const normalized = num.replace(/\./g, "").replace(",", ".");
+  const normalized = num.replace(/\./g, '').replace(',', '.');
   const target = parseFloat(normalized);
   if (Number.isNaN(target)) return null;
-  return { prefix, suffix, target, decimals: num.includes(",") };
+  return { prefix, suffix, target, decimals: num.includes(',') };
 }
 
 const prefersReduced =
-  typeof window !== "undefined" &&
-  window.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
+  typeof window !== 'undefined' && window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
 
 /**
  * Counts up from 0 to a numeric value on mount, preserving the original
@@ -42,7 +41,7 @@ export function AnimatedNumber({
 }) {
   const parsed = parse(value);
   const [display, setDisplay] = useState(() =>
-    parsed && !prefersReduced ? format(parsed, 0) : String(value),
+    parsed && !prefersReduced ? format(parsed, 0) : String(value)
   );
   const frame = useRef<number>(0);
 
@@ -69,7 +68,7 @@ export function AnimatedNumber({
 
 function format(p: Parsed, n: number): string {
   const num = p.decimals
-    ? n.toLocaleString("pt-BR", { minimumFractionDigits: 2, maximumFractionDigits: 2 })
-    : Math.round(n).toLocaleString("pt-BR");
+    ? n.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
+    : Math.round(n).toLocaleString('pt-BR');
   return `${p.prefix}${num}${p.suffix}`;
 }

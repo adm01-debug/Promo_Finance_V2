@@ -49,7 +49,11 @@ describe('CPP fora do DAS — Anexo IV', () => {
 
   it('não aplica CPP por fora em anexos onde ela já está no DAS', () => {
     for (const atividade of ['comércio varejista', 'indústria de brindes', 'consultoria']) {
-      const r = simularSimples(base({ atividadePrincipal: atividade, percentualServicos: 0, percentualRevenda: 100 }), 2026, 6);
+      const r = simularSimples(
+        base({ atividadePrincipal: atividade, percentualServicos: 0, percentualRevenda: 100 }),
+        2026,
+        6
+      );
       expect(r.anexoAplicavel).not.toBe('IV');
       expect(r.cppForaDAS ?? 0).toBe(0);
       expect(r.cpp).toBeGreaterThan(0);
@@ -62,9 +66,14 @@ describe('CPP fora do DAS — Anexo IV', () => {
       const folhaAnual = Math.random() * faturamentoAnual * 0.6;
       const rat = [0, 0.01, 0.02, 0.03][i % 4];
       const r = simularSimples(
-        base({ faturamentoAnual, folhaAnual, aliquotaRAT: rat, issRetidoFonte: i % 5 === 0 ? 5_000 : 0 }),
+        base({
+          faturamentoAnual,
+          folhaAnual,
+          aliquotaRAT: rat,
+          issRetidoFonte: i % 5 === 0 ? 5_000 : 0,
+        }),
         2026,
-        6,
+        6
       );
       expect(r.anexoAplicavel).toBe('IV');
       expect(Number.isFinite(r.totalTributos)).toBe(true);
