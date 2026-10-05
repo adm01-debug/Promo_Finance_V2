@@ -63,6 +63,8 @@ paths:
           application/json:
             schema:
               anyOf:
+                # Nota: o corpo pode casar com mais de uma variante —
+                # o servidor desempata v1/v2 pelo header/envelope.
                 - $ref: '#/components/schemas/AsaasWebhook'
                 - $ref: '#/components/schemas/AsaasWebhookV2'
                 - type: object
@@ -150,6 +152,8 @@ paths:
           application/json:
             schema:
               anyOf:
+                # Nota: o corpo pode casar com mais de uma variante —
+                # o servidor desempata v1/v2 pelo header/envelope.
                 - $ref: '#/components/schemas/BlingWebhook'
                 - $ref: '#/components/schemas/BlingWebhookV2'
                 - type: object
@@ -196,6 +200,8 @@ paths:
           application/json:
             schema:
               anyOf:
+                # Nota: o corpo pode casar com mais de uma variante —
+                # o servidor desempata v1/v2 pelo header/envelope.
                 - $ref: '#/components/schemas/Bitrix24Webhook'
                 - $ref: '#/components/schemas/Bitrix24WebhookV2'
                 - type: object
@@ -254,6 +260,8 @@ paths:
           application/json:
             schema:
               anyOf:
+                # Nota: o corpo pode casar com mais de uma variante —
+                # o servidor desempata v1/v2 pelo header/envelope.
                 - $ref: '#/components/schemas/WhatsappWebhook'
                 - $ref: '#/components/schemas/WhatsappWebhookV2'
                 - type: object
@@ -627,6 +635,7 @@ paths:
       responses:
         '200': { description: ListResponse SCIM }
         '400': { description: 'Filtro inválido — {scimType: "invalidFilter", detail}' }
+        '401': { description: Bearer token SCIM ausente, inválido ou expirado }
     post:
       tags: [identidade]
       summary: Cria mapeamento de grupo → papel
