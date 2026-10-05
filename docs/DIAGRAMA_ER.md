@@ -32,9 +32,10 @@ erDiagram
     centros_custo |o--o{ centros_custo : "hierarquia (parent_id)"
     contas_bancarias ||--o{ transacoes_bancarias : "movimenta"
     contas_bancarias |o--o{ contas_pagar : "conta de pagamento"
-    contas_pagar |o--o{ transacoes_bancarias : "quita (transacao_id)"
+    contas_pagar |o--o{ transacoes_bancarias : "quita (transacoes_bancarias.conta_pagar_id)"
     contas_bancarias |o--o{ contas_receber : "conta de recebimento"
-    contas_receber |o--o{ transacoes_bancarias : "recebe (transacao_id)"
+    contas_receber |o--o{ transacoes_bancarias : "recebe (transacoes_bancarias.conta_receber_id)"
+    contas_receber |o--o| transacoes_bancarias : "vínculo direto (contas_receber.transacao_conciliada_id)"
 
 
     clientes |o--o{ asaas_customers : "espelha no Asaas"
@@ -117,9 +118,22 @@ erDiagram
   `RLS_MATRIZ_NEGATIVA.md`); exceção documentada: `transacoes_bancarias`
   NÃO tem `empresa_id` — seu isolamento é indireto via
   `conta_bancaria_id` → `contas_bancarias.empresa_id`.
-  GAPs de isolamento abertos (matriz, P1): `anexos_financeiros`
-  (leitura/escrita cross-empresa por policies permissivas) e
-  `acoes_recomendadas` (FOR ALL USING(true) permite gerenciamento global).
+  GAPs de isolamento abertos (P1, lista exaustiva em
+  `RLS_MATRIZ_NEGATIVA.md`): `anexos_financeiros`, `acoes_recomendadas`,
+  `transferencias`, `vendedores`, `retencoes_fonte`,
+  `whatsapp_conversas`, `historico_cobranca_whatsapp`,
+  `resumos_executivos_semanais`, `faturamento_mensal`, `folha_pagamento`,
+  `parcelas_acordo`, `bloqueios_duplicidade`, `bitrix_webhook_events`,
+  `allowed_countries`, `dispositivos_conhecidos`, `contratos`,
+  `metas_financeiras`, `formas_pagamento`, `regras_duplicidade`,
+  `regras_roteamento_financeiro`, `partidas_contabeis`,
+  `regras_conciliacao`, `apuracoes_irpj_csll`, `regimes_tributarios`,
+  `alertas_tributarios`, `configuracoes_receber`,
+  `execucoes_regua_cobranca`, `logs_baixa_automatica`,
+  `transacoes_bancarias` (policies de papel global) e `storage.objects`
+  no bucket `financeiro` — todos com policies `FOR ALL USING (true)`
+  (ou equivalente de papel global) nunca derrubadas, permitindo
+  leitura e/ou escrita cross-empresa a qualquer `authenticated`.
   Escopo de papel: `user_roles` não tem `empresa_id` e `has_role()` é
   global — papéis em `user_roles` valem para qualquer empresa; só
   `user_empresas.role` é por-empresa (ver ADR-003).
@@ -132,5 +146,10 @@ erDiagram
   o vínculo interno (`conta_receber_id`) — reconciliação por webhook casa
   os dois; `bling_*` (`bling_sync_logs`, `bling_webhook_events`) registram
   só `modulo`/`resource_id`, sem vínculo direto com `contas_receber`.
-- **`user_empresas` é a fronteira de autorização** — RLS e edge fns resolvem
-  "usuário X pode acessar empresa Y" exclusivamente por ela.
+- **`user_empresas` é a fronteira principal de autorização**, mas não a
+  única: além das policies permissivas do GAP P1 acima, papéis **globais**
+  em `user_roles` bypassam o vínculo por empresa — ex.: `gerar-pdf-tributario`
+  aceita `has_role(uid, 'admin')` sem conferir `user_empresas`, e a ADR-003
+  enumera nove edge functions com o mesmo bypass. Um admin global sem
+  vínculo na empresa alvo acessa seus dados — esse cenário precisa constar
+  nos testes de isolamento.
