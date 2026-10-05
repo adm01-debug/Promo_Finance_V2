@@ -668,6 +668,7 @@ paths:
             token SCIM sem vínculo de provedor ({scimType:
             "invalidValue", detail: "Group provisioning requires SCIM
             token bound to provider_id"})
+        '401': { description: Bearer token SCIM ausente, inválido ou expirado }
         '403': { description: provider_id do token não pertence à empresa resolvida }
 
   '/scim-server/scim/v2/Groups/{id}':
