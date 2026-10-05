@@ -681,8 +681,21 @@ async function handleSamlFinalize(
   const identities = (u.user.identities ?? []) as Array<{
     provider?: string;
     identity_data?: Record<string, unknown>;
+    last_sign_in_at?: string;
   }>;
-  const viaBroker = identities.some((i) => i.provider === `sso:${providerId}`);
+  const idSso = identities.find((i) => i.provider === `sso:${providerId}`);
+  const viaBroker = !!idSso;
+  // A identidade sso: permanece no usuário após o primeiro login SAML —
+  // sozinha prova só vínculo histórico. O finalize legítimo acontece
+  // segundos após a assertion, então exige last_sign_in_at recente na
+  // identidade (imutável: gravado pelo GoTrue a cada login do broker).
+  // Sem isso, um usuário poderia forjar `groups` em user_metadata via
+  // auth.updateUser e chamar saml-finalize diretamente dias depois.
+  const SSO_FINALIZE_JANELA_MS = 10 * 60 * 1000;
+  const ssoRecente =
+    !!idSso?.last_sign_in_at &&
+    Date.now() - Date.parse(idSso.last_sign_in_at) < SSO_FINALIZE_JANELA_MS;
+  const provaDoIdp = viaBroker && ssoRecente;
   // Alternativa ao broker sem usar user_metadata (campo editável pelo
   // próprio usuário via auth.updateUser — não serve como prova):
   // vínculo ativo pré-existente em user_empresas para a empresa do
@@ -717,10 +730,14 @@ async function handleSamlFinalize(
 
   const cm = (provider.claim_mapping || {}) as Record<string, unknown>;
 
-  // Em SAML pelo broker do Supabase, claims SAML chegam em user_metadata e app_metadata
+  // Em SAML pelo broker do Supabase, claims chegam em user_metadata e
+  // app_metadata. identity_data da identidade sso: é imutável (gravado
+  // pelo GoTrue a partir da assertion) — quando presente, tem precedência
+  // sobre os metadados, que o próprio usuário pode editar.
+  const identityData = (idSso?.identity_data ?? {}) as Record<string, unknown>;
   const meta = (u.user.user_metadata || {}) as Record<string, unknown>;
   const appMeta = (u.user.app_metadata || {}) as Record<string, unknown>;
-  const sources = [meta, appMeta];
+  const sources = [identityData, meta, appMeta];
 
   const fullName = resolveClaim(sources, cm, 'full_name', ['name', 'full_name']) || email;
   const avatarUrl = resolveClaim(sources, cm, 'avatar_url', [
@@ -736,9 +753,10 @@ async function handleSamlFinalize(
     'mobile',
     'mobilePhone',
   ]);
-  // Grupos só valem como prova quando vieram do broker SSO — fora dele,
-  // user_metadata é editável pelo próprio usuário e forjaria papel.
-  const groups = viaBroker ? resolveClaimArray(sources, cm, 'groups', ['groups']) : [];
+  // Grupos só valem como prova num finalize recém-autenticado pelo
+  // broker (provaDoIdp) — com a identidade sso: antiga, user_metadata
+  // continua editável pelo próprio usuário e forjaria papel.
+  const groups = provaDoIdp ? resolveClaimArray(sources, cm, 'groups', ['groups']) : [];
 
   const result = await applyPipeline({
     admin,
@@ -750,7 +768,7 @@ async function handleSamlFinalize(
     groups,
     existingUserId: userId, // SAML: usuário já existe (broker criou)
     allowJit: false,
-    provaDoIdp: viaBroker,
+    provaDoIdp,
   });
 
   if ('error' in result) {

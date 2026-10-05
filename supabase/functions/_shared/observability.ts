@@ -113,29 +113,29 @@ export function createLogger(functionName: string, requestId?: string): EdgeLogg
     const url = Deno.env.get('SUPABASE_URL');
     const key = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY');
     if (!url || !key) return;
+    // A API pública do logger fala `context`, mas a coluna real da tabela é
+    // `metadata` — sem a tradução o PostgREST rejeita o lote inteiro.
+    const entries = buffer.splice(0, buffer.length);
+    const reenfileirar = (motivo: string) => {
+      // Falha transitória de banco/PostgREST: devolve o lote ao buffer
+      // para retry no próximo flush, como faz o console-persist.
+      buffer.unshift(...entries);
+      if (buffer.length > MAX_BUFFER) buffer.splice(0, buffer.length - MAX_BUFFER);
+      console.error(`[${functionName}] flush reenfileirou lote:`, motivo);
+    };
     try {
       const admin = createClient(url, key);
-      // A API pública do logger fala `context`, mas a coluna real da tabela é
-      // `metadata` — sem a tradução o PostgREST rejeita o lote inteiro.
-      const rows = buffer
-        .splice(0, buffer.length)
-        .map(({ context, event, error_message, ...rest }) => ({
-          ...rest,
-          event: redigir(event) as string,
-          ...(error_message !== undefined
-            ? { error_message: redigir(error_message) as string }
-            : {}),
-          ...(context !== undefined
-            ? { metadata: redigir(context) as Record<string, unknown> }
-            : {}),
-        }));
-      await admin.from('edge_function_logs').insert(rows);
+      const rows = entries.map(({ context, event, error_message, ...rest }) => ({
+        ...rest,
+        event: redigir(event) as string,
+        ...(error_message !== undefined ? { error_message: redigir(error_message) as string } : {}),
+        ...(context !== undefined ? { metadata: redigir(context) as Record<string, unknown> } : {}),
+      }));
+      const { error } = await admin.from('edge_function_logs').insert(rows);
+      if (error) reenfileirar(error.message);
     } catch (err) {
       // Nunca lançar — observabilidade não pode derrubar a função
-      console.error(
-        `[observability] flush failed for ${functionName}:`,
-        err instanceof Error ? err.message : String(err)
-      );
+      reenfileirar(err instanceof Error ? err.message : String(err));
     }
   };
 
