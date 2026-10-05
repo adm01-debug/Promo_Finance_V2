@@ -133,6 +133,15 @@ function espelharStream(
   aoTerminar: (desfecho: 'ok' | 'error' | 'cancel', detalhe?: string) => void
 ): ReadableStream<Uint8Array> {
   const reader = origem.getReader();
+  // Um request = um evento: cancel() dispara o desfecho e o read()
+  // pendente rejeita logo em seguida — sem a trava, pull() registraria
+  // um segundo request_error fantasma para a mesma requisição.
+  let terminado = false;
+  const registrar = (d: 'ok' | 'error' | 'cancel', detalhe?: string) => {
+    if (terminado) return;
+    terminado = true;
+    aoTerminar(d, detalhe);
+  };
   // pull() em vez de drenar em start(): cada leitura só acontece quando o
   // consumidor pede (desiredSize > 0), preservando a contrapressão do SSE.
   return new ReadableStream<Uint8Array>({
@@ -141,19 +150,19 @@ function espelharStream(
         const { done, value } = await reader.read();
         if (done) {
           controller.close();
-          aoTerminar('ok');
+          registrar('ok');
           reader.releaseLock();
           return;
         }
         controller.enqueue(value);
       } catch (e) {
-        aoTerminar('error', e instanceof Error ? e.message : String(e));
+        registrar('error', e instanceof Error ? e.message : String(e));
         controller.error(e);
         reader.releaseLock();
       }
     },
     cancel(reason) {
-      aoTerminar('cancel', typeof reason === 'string' ? reason : undefined);
+      registrar('cancel', typeof reason === 'string' ? reason : undefined);
       // Cancela o reader (e não a origem direta): a mesma referência usada
       // pelo pull é liberada e propaga o cancelamento ao produtor.
       void reader.cancel(reason);
