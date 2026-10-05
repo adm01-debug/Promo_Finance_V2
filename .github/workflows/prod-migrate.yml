@@ -70,7 +70,14 @@ jobs:
           CONFIRMADO: ${{ inputs.confirmar_project_ref }}
         run: |
           set -euo pipefail
-          EXPECTED="${PROD_PROJECT_REF:-bwwbeyolnnzppeuhgkcd}"
+          # O ref canônico é fixo no guard-rail: a variável de repo só pode
+          # confirmá-lo, nunca movê-lo — senão apontar PROD_PROJECT_REF para
+          # outro projeto faria a confirmação digitada aprovar esse projeto.
+          EXPECTED="bwwbeyolnnzppeuhgkcd"
+          if [ -n "${PROD_PROJECT_REF:-}" ] && [ "$PROD_PROJECT_REF" != "$EXPECTED" ]; then
+            echo "::error::vars.PROD_PROJECT_REF='$PROD_PROJECT_REF' difere do ref canônico $EXPECTED — corrija ou remova a variável"
+            exit 1
+          fi
           if [ "$CONFIRMADO" != "$EXPECTED" ]; then
             echo "::error::confirmar_project_ref '$CONFIRMADO' != '$EXPECTED'"
             exit 1
