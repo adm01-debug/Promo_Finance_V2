@@ -124,19 +124,31 @@ export function useAuthPage() {
     } else if (params.get('sso_error')) {
       // OIDC/PKCE: o redirect do IdP chega ao sso-callback sem o verifier
       // (ele vive no sessionStorage). A edge devolve code+state para cá e o
-      // SPA reenvia a chamada completa — navegação, não fetch, para seguir o
-      // 302 final (sessão/magic link).
+      // SPA reenvia a chamada completa via POST form — o verifier não vai
+      // na URL (history/logs) e a navegação segue o 302 final de sessão.
+      // pkce:<state> fica no storage até o fluxo terminar: se a navegação
+      // falhar, recarregar /auth repete com o mesmo verifier.
       const ssoError = params.get('sso_error');
       const ssoCode = params.get('sso_code');
       const ssoState = params.get('sso_state');
       const verifier = ssoState ? sessionStorage.getItem(`pkce:${ssoState}`) : null;
       if (ssoError === 'pkce_verifier_missing' && ssoCode && ssoState && verifier) {
-        const retry = new URL(`${env.SUPABASE_URL}/functions/v1/sso-callback`);
-        retry.searchParams.set('code', ssoCode);
-        retry.searchParams.set('state', ssoState);
-        retry.searchParams.set('verifier', verifier);
-        sessionStorage.removeItem(`pkce:${ssoState}`);
-        window.location.href = retry.toString();
+        const form = document.createElement('form');
+        form.method = 'POST';
+        form.action = `${env.SUPABASE_URL}/functions/v1/sso-callback`;
+        for (const [name, value] of [
+          ['code', ssoCode],
+          ['state', ssoState],
+          ['verifier', verifier],
+        ]) {
+          const input = document.createElement('input');
+          input.type = 'hidden';
+          input.name = name;
+          input.value = value;
+          form.appendChild(input);
+        }
+        document.body.appendChild(form);
+        form.submit();
         return;
       }
       toast.error('Falha no login SSO', { description: ssoError ?? undefined });

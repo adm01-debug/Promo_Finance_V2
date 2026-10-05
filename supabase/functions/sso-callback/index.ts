@@ -753,9 +753,23 @@ Deno.serve(
       const admin = createClient(SUPABASE_URL, SERVICE_ROLE);
 
       const url = new URL(req.url);
-      const code = url.searchParams.get('code');
-      const state = url.searchParams.get('state');
-      const verifier = url.searchParams.get('verifier') || (await safeJson(req))?.verifier;
+      // O SPA reenvia code/state/verifier por POST form-urlencoded — o
+      // verifier não pode ir na URL (fica em history e logs de acesso).
+      const formData = (req.headers.get('content-type') || '').includes(
+        'application/x-www-form-urlencoded'
+      )
+        ? await req.formData()
+        : null;
+      const bodyJson = formData ? null : await safeJson(req);
+      const param = (k: string): string | null => {
+        const v = url.searchParams.get(k) || formData?.get(k);
+        if (v) return v as string;
+        const bv = bodyJson?.[k];
+        return typeof bv === 'string' ? bv : null;
+      };
+      const code = param('code');
+      const state = param('state');
+      const verifier = param('verifier');
 
       if (!code || !state) {
         await logAttempt({
