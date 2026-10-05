@@ -64,6 +64,7 @@ paths:
             schema:
               oneOf:
                 - $ref: '#/components/schemas/AsaasWebhook'
+                - $ref: '#/components/schemas/AsaasWebhookV2'
                 - type: object
                   required: [contract_version, data]
                   properties:
@@ -150,6 +151,7 @@ paths:
             schema:
               oneOf:
                 - $ref: '#/components/schemas/BlingWebhook'
+                - $ref: '#/components/schemas/BlingWebhookV2'
                 - type: object
                   required: [contract_version, data]
                   properties:
@@ -161,6 +163,10 @@ paths:
         '422': { $ref: '#/components/responses/ErroValidacaoContrato' }
         '401': { description: Assinatura/secret inválidos ou ausentes }
         '429': { $ref: '#/components/responses/RateLimited' }
+        '500':
+          description: >-
+            Exceção interna no processamento ({error: <mensagem>}) —
+            erro de aplicação, não de contrato
         '503':
           description: >-
             Webhook não configurado no servidor ({error: "Webhook não
@@ -191,6 +197,7 @@ paths:
             schema:
               oneOf:
                 - $ref: '#/components/schemas/Bitrix24Webhook'
+                - $ref: '#/components/schemas/Bitrix24WebhookV2'
                 - type: object
                   required: [contract_version, data]
                   properties:
@@ -202,6 +209,10 @@ paths:
         '422': { $ref: '#/components/responses/ErroValidacaoContrato' }
         '401': { description: Token inválido }
         '429': { $ref: '#/components/responses/RateLimited' }
+        '500':
+          description: >-
+            Exceção interna no processamento ({error: <mensagem>}) —
+            erro de aplicação, não de contrato
         '503':
           description: >-
             Webhook não configurado no servidor ({error: "Webhook não
@@ -244,6 +255,7 @@ paths:
             schema:
               oneOf:
                 - $ref: '#/components/schemas/WhatsappWebhook'
+                - $ref: '#/components/schemas/WhatsappWebhookV2'
                 - type: object
                   required: [contract_version, data]
                   properties:
@@ -255,6 +267,10 @@ paths:
         '422': { $ref: '#/components/responses/ErroValidacaoContrato' }
         '401': { description: Credencial de webhook ausente ou inválida }
         '429': { $ref: '#/components/responses/RateLimited' }
+        '500':
+          description: >-
+            Exceção interna no processamento ({error: <mensagem>}) —
+            erro de aplicação, não de contrato
         '503':
           description: >-
             Webhook não configurado no servidor ({error: "Webhook não
@@ -286,6 +302,10 @@ paths:
                   enum: [create_task, create_alert, log]
                 payload:
                   type: object
+                  properties:
+                    severity:
+                      type: string
+                      enum: [info, warning, critical, low, medium, high]
                   description: >-
                     Campos por action: create_alert usa
                     {alert_type, severity, title, message, description,
@@ -456,6 +476,36 @@ paths:
       responses:
         '200': { description: 'ListResponse com os schemas User, Group e a extensão EnterpriseUser (urn:ietf:params:scim:schemas:extension:enterprise:2.0:User)' }
 
+  '/scim-server/scim/v2/ResourceTypes/{id}':
+    get:
+      tags: [identidade]
+      summary: ResourceType unitário (User | Group)
+      description: Discovery PÚBLICO (sem autenticação).
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: string, enum: [User, Group] }
+      responses:
+        '200': { description: ResourceType SCIM }
+        '404': { description: ResourceType desconhecido }
+
+  '/scim-server/scim/v2/Schemas/{id}':
+    get:
+      tags: [identidade]
+      summary: Schema unitário por URN
+      description: >-
+        Discovery PÚBLICO (sem autenticação). Aceita a URN completa do
+        schema (ex.: urn:ietf:params:scim:schemas:core:2.0:User).
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: string }
+      responses:
+        '200': { description: Schema SCIM }
+        '404': { description: Schema desconhecido }
+
   /scim-server/scim/v2/Users:
     get:
       tags: [identidade]
@@ -464,7 +514,7 @@ paths:
       parameters:
         - { name: filter, in: query, schema: { type: string }, description: 'SCIM filter (ex.: userName eq "a@b.com")' }
         - { name: startIndex, in: query, schema: { type: integer, default: 1 } }
-        - { name: count, in: query, schema: { type: integer } }
+        - { name: count, in: query, schema: { type: integer, default: 50, maximum: 200 } }
       responses:
         '200': { description: ListResponse SCIM }
         '400': { description: 'Filtro inválido ou atributo não suportado — {scimType: "invalidFilter", detail}' }
@@ -588,7 +638,13 @@ paths:
                       value: { type: string }
       responses:
         '201': { description: 'Group criado — sem header Location (o recurso retorna com id no corpo)' }
-        '400': { description: 'displayName ausente — {error: "displayName required"}' }
+        '400':
+          description: >-
+            displayName ausente ({error: "displayName required"}) ou
+            token SCIM sem vínculo de provedor ({scimType:
+            "invalidValue", detail: "Group provisioning requires SCIM
+            token bound to provider_id"})
+        '403': { description: provider_id do token não pertence à empresa resolvida }
 
   '/scim-server/scim/v2/Groups/{id}':
     get:
@@ -853,6 +909,7 @@ components:
             status: { type: string }
         transfer:
           type: object
+          required: [id]
           properties:
             id: { type: string }
             status: { type: string }

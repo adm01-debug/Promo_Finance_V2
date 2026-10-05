@@ -37,9 +37,9 @@ erDiagram
 
     clientes ||--o{ asaas_customers : "espelha no Asaas"
     contas_receber ||--o{ asaas_payments : "cobra via"
-    asaas_customers ||--o{ asaas_payments : "paga"
+    asaas_customers ||--o{ asaas_payments : "paga (ref. externa asaas_customer_id, sem FK)"
 
-    nfe_recebidas }o--|| contas_pagar : "vincula (conta_pagar_id FK)"
+    nfe_recebidas }o--o| contas_pagar : "vincula opcional (conta_pagar_id FK anulável)"
     %% notas_fiscais não tem FK para contas_pagar/nfe_recebidas — sua única
     %% relação persistida é empresa_id; associações de negócio são conceituais
 
@@ -61,7 +61,7 @@ erDiagram
         uuid empresa_id FK
         string role "admin|financeiro|contador|visualizador"
         boolean is_default
-        string provisioned_via "manual|scim|convite"
+        string provisioned_via "manual|sso|scim (CHECK no banco)"
     }
     contas_pagar {
         uuid id PK
@@ -101,7 +101,7 @@ erDiagram
         uuid id PK
         uuid empresa_id FK
         string asaas_id
-        uuid asaas_customer_id FK
+        string asaas_customer_id "id externo Asaas (TEXT, sem FK p/ asaas_customers)"
         uuid conta_receber_id FK
         numeric valor
         string status
