@@ -1101,6 +1101,12 @@ components:
         ts: { type: string }
         auth:
           type: object
+          description: >-
+            Bloco nativo do Bitrix24 — `application_token` aqui (ou em
+            `data.auth` no envelope v2) conta como credencial: sem nenhum
+            dos headers de `security` o handler valida esse token e
+            devolve 401 se ausente/inválido. Credenciais de corpo não são
+            expressáveis em securitySchemes (só header/query/cookie).
           properties:
             domain: { type: string }
             client_endpoint: { type: string }
@@ -1132,6 +1138,12 @@ components:
         ts: { type: string }
         auth:
           type: object
+          description: >-
+            Bloco nativo do Bitrix24 — `application_token` aqui (ou em
+            `data.auth` no envelope v2) conta como credencial: sem nenhum
+            dos headers de `security` o handler valida esse token e
+            devolve 401 se ausente/inválido. Credenciais de corpo não são
+            expressáveis em securitySchemes (só header/query/cookie).
           properties:
             domain: { type: string }
             client_endpoint: { type: string }
