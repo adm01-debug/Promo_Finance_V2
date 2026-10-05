@@ -25,7 +25,10 @@ export default function Tesouraria() {
               Visão consolidada de 3 CNPJs × 12+ contas bancárias
             </p>
           </div>
-          <Button onClick={() => setIsTransferOpen(true)} className="gap-2 bg-gradient-to-r from-primary to-primary/80">
+          <Button
+            onClick={() => setIsTransferOpen(true)}
+            className="gap-2 bg-gradient-to-r from-primary to-primary/80"
+          >
             <Plus className="h-4 w-4" />
             Nova Transferência
           </Button>

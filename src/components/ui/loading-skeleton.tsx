@@ -3,21 +3,30 @@ import { Card, CardContent, CardHeader } from './card';
 import { cn } from '@/lib/utils';
 
 interface LoadingSkeletonProps {
-  variant?: 'table' | 'cards' | 'form' | 'stats' | 'list' | 'chart' | 'kpi' | 'transactions' | 'calendar';
+  variant?:
+    | 'table'
+    | 'cards'
+    | 'form'
+    | 'stats'
+    | 'list'
+    | 'chart'
+    | 'kpi'
+    | 'transactions'
+    | 'calendar';
   rows?: number;
   columns?: number;
   className?: string;
 }
 
-export function LoadingSkeleton({ 
-  variant = 'table', 
-  rows = 5, 
+export function LoadingSkeleton({
+  variant = 'table',
+  rows = 5,
   columns = 4,
-  className 
+  className,
 }: LoadingSkeletonProps) {
   if (variant === 'stats') {
     return (
-      <div className={cn("grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4", className)}>
+      <div className={cn('grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4', className)}>
         {Array.from({ length: 4 }).map((_, i) => (
           <Card key={i} className="overflow-hidden">
             <CardContent className="p-5">
@@ -42,7 +51,7 @@ export function LoadingSkeleton({
 
   if (variant === 'kpi') {
     return (
-      <div className={cn("grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4", className)}>
+      <div className={cn('grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4', className)}>
         {Array.from({ length: 6 }).map((_, i) => (
           <Card key={i} className="p-4">
             <div className="flex items-center gap-3">
@@ -60,7 +69,7 @@ export function LoadingSkeleton({
 
   if (variant === 'chart') {
     return (
-      <Card className={cn("h-[400px]", className)}>
+      <Card className={cn('h-[400px]', className)}>
         <CardHeader className="pb-2">
           <div className="flex items-center justify-between">
             <div className="space-y-2">
@@ -77,9 +86,9 @@ export function LoadingSkeleton({
           {/* Simulated bar chart skeleton */}
           {Array.from({ length: 12 }).map((_, i) => (
             <div key={i} className="flex-1 flex flex-col items-center gap-2">
-              <Skeleton 
-                className="w-full rounded-t" 
-                style={{ height: `${Math.random() * 60 + 40}%` }} 
+              <Skeleton
+                className="w-full rounded-t"
+                style={{ height: `${Math.random() * 60 + 40}%` }}
               />
               <Skeleton className="h-3 w-6" />
             </div>
@@ -91,7 +100,7 @@ export function LoadingSkeleton({
 
   if (variant === 'transactions') {
     return (
-      <Card className={cn("", className)}>
+      <Card className={cn('', className)}>
         <CardHeader className="pb-3">
           <div className="flex items-center gap-2">
             <Skeleton className="h-5 w-5 rounded" />
@@ -100,7 +109,10 @@ export function LoadingSkeleton({
         </CardHeader>
         <CardContent className="space-y-3">
           {Array.from({ length: rows }).map((_, i) => (
-            <div key={i} className="flex items-center justify-between p-3 rounded-lg border border-border/50 bg-muted/30">
+            <div
+              key={i}
+              className="flex items-center justify-between p-3 rounded-lg border border-border/50 bg-muted/30"
+            >
               <div className="flex items-center gap-3">
                 <Skeleton className="h-9 w-9 rounded-lg" />
                 <div className="space-y-1.5">
@@ -121,7 +133,7 @@ export function LoadingSkeleton({
 
   if (variant === 'calendar') {
     return (
-      <Card className={cn("", className)}>
+      <Card className={cn('', className)}>
         <CardHeader className="pb-3">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
@@ -154,7 +166,7 @@ export function LoadingSkeleton({
 
   if (variant === 'cards') {
     return (
-      <div className={cn("grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4", className)}>
+      <div className={cn('grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4', className)}>
         {Array.from({ length: rows }).map((_, i) => (
           <Card key={i}>
             <CardHeader>
@@ -177,7 +189,7 @@ export function LoadingSkeleton({
 
   if (variant === 'form') {
     return (
-      <div className={cn("space-y-6", className)}>
+      <div className={cn('space-y-6', className)}>
         {Array.from({ length: rows }).map((_, i) => (
           <div key={i} className="space-y-2">
             <Skeleton className="h-4 w-24" />
@@ -194,7 +206,7 @@ export function LoadingSkeleton({
 
   if (variant === 'list') {
     return (
-      <div className={cn("space-y-3", className)}>
+      <div className={cn('space-y-3', className)}>
         {Array.from({ length: rows }).map((_, i) => (
           <div key={i} className="flex items-center gap-4 p-4 rounded-lg border">
             <Skeleton className="h-10 w-10 rounded-full" />
@@ -211,7 +223,7 @@ export function LoadingSkeleton({
 
   // Default: table
   return (
-    <div className={cn("", className)}>
+    <div className={cn('', className)}>
       {/* Header */}
       <div className="flex gap-4 p-4 border-b bg-muted/50">
         {Array.from({ length: columns }).map((_, i) => (
@@ -222,13 +234,13 @@ export function LoadingSkeleton({
       {Array.from({ length: rows }).map((_, rowIndex) => (
         <div key={rowIndex} className="flex gap-4 p-4 border-b">
           {Array.from({ length: columns }).map((_, colIndex) => (
-            <Skeleton 
-              key={colIndex} 
+            <Skeleton
+              key={colIndex}
               className={cn(
-                "h-4 flex-1",
-                colIndex === 0 && "w-1/4",
-                colIndex === columns - 1 && "w-16"
-              )} 
+                'h-4 flex-1',
+                colIndex === 0 && 'w-1/4',
+                colIndex === columns - 1 && 'w-16'
+              )}
             />
           ))}
         </div>
@@ -237,9 +249,8 @@ export function LoadingSkeleton({
   );
 }
 
-
 // Full page loading with centered spinner
-export function PageLoading({ message = "Carregando..." }: { message?: string }) {
+export function PageLoading({ message = 'Carregando...' }: { message?: string }) {
   return (
     <div className="flex flex-col items-center justify-center min-h-[400px] gap-3">
       <div className="relative">
@@ -259,16 +270,15 @@ interface TableShimmerSkeletonProps {
   className?: string;
 }
 
-export function TableShimmerSkeleton({ 
-  rows = 5, 
+export function TableShimmerSkeleton({
+  rows = 5,
   columns = 7,
   showCheckbox = true,
   showAvatar = true,
-  className 
+  className,
 }: TableShimmerSkeletonProps) {
-  
   return (
-    <div className={cn("w-full", className)}>
+    <div className={cn('w-full', className)}>
       {/* Table Header Skeleton */}
       <div className="flex items-center gap-4 px-4 py-3 border-b bg-muted/30">
         {showCheckbox && (
@@ -277,24 +287,27 @@ export function TableShimmerSkeleton({
           </div>
         )}
         {Array.from({ length: columns }).map((_, i) => (
-          <div key={i} className={cn(
-            "flex-1",
-            i === 0 && "max-w-[250px]",
-            i === columns - 1 && "max-w-[80px]"
-          )}>
+          <div
+            key={i}
+            className={cn(
+              'flex-1',
+              i === 0 && 'max-w-[250px]',
+              i === columns - 1 && 'max-w-[80px]'
+            )}
+          >
             <Skeleton className="h-4 w-20" />
           </div>
         ))}
       </div>
-      
+
       {/* Table Rows Skeleton with staggered animation */}
       {Array.from({ length: rows }).map((_, rowIndex) => (
-        <div 
-          key={rowIndex} 
+        <div
+          key={rowIndex}
           className="flex items-center gap-4 px-4 py-4 border-b border-border/50"
-          style={{ 
+          style={{
             animationDelay: `${rowIndex * 100}ms`,
-            opacity: 1 - (rowIndex * 0.1)
+            opacity: 1 - rowIndex * 0.1,
           }}
         >
           {showCheckbox && (
@@ -302,44 +315,50 @@ export function TableShimmerSkeleton({
               <Skeleton className="h-4 w-4 rounded" />
             </div>
           )}
-          
+
           {/* First column with avatar */}
           <div className="flex-1 max-w-[250px] flex items-center gap-3">
             {showAvatar && <Skeleton className="h-10 w-10 rounded-lg flex-shrink-0" />}
             <div className="space-y-1.5 flex-1">
               <div className="relative overflow-hidden rounded">
                 <Skeleton className="h-4 w-28" />
-                <div className="absolute inset-0 -translate-x-full animate-[shimmer_2s_infinite] bg-gradient-to-r from-transparent via-white/10 to-transparent" style={{ animationDelay: `${rowIndex * 150}ms` }} />
+                <div
+                  className="absolute inset-0 -translate-x-full animate-[shimmer_2s_infinite] bg-gradient-to-r from-transparent via-white/10 to-transparent"
+                  style={{ animationDelay: `${rowIndex * 150}ms` }}
+                />
               </div>
               <div className="relative overflow-hidden rounded">
                 <Skeleton className="h-3 w-20" />
-                <div className="absolute inset-0 -translate-x-full animate-[shimmer_2s_infinite] bg-gradient-to-r from-transparent via-white/10 to-transparent" style={{ animationDelay: `${rowIndex * 150 + 50}ms` }} />
+                <div
+                  className="absolute inset-0 -translate-x-full animate-[shimmer_2s_infinite] bg-gradient-to-r from-transparent via-white/10 to-transparent"
+                  style={{ animationDelay: `${rowIndex * 150 + 50}ms` }}
+                />
               </div>
             </div>
           </div>
-          
+
           {/* Other columns */}
           {Array.from({ length: columns - 2 }).map((_, colIndex) => (
             <div key={colIndex} className="flex-1">
               <div className="relative overflow-hidden rounded">
-                <Skeleton 
+                <Skeleton
                   className={cn(
-                    "h-4",
-                    colIndex === 0 && "w-32",
-                    colIndex === 1 && "w-24",
-                    colIndex === 2 && "w-28",
-                    colIndex === 3 && "w-20",
-                    colIndex >= 4 && "w-16"
-                  )} 
+                    'h-4',
+                    colIndex === 0 && 'w-32',
+                    colIndex === 1 && 'w-24',
+                    colIndex === 2 && 'w-28',
+                    colIndex === 3 && 'w-20',
+                    colIndex >= 4 && 'w-16'
+                  )}
                 />
-                <div 
-                  className="absolute inset-0 -translate-x-full animate-[shimmer_2s_infinite] bg-gradient-to-r from-transparent via-white/10 to-transparent" 
-                  style={{ animationDelay: `${rowIndex * 150 + colIndex * 50}ms` }} 
+                <div
+                  className="absolute inset-0 -translate-x-full animate-[shimmer_2s_infinite] bg-gradient-to-r from-transparent via-white/10 to-transparent"
+                  style={{ animationDelay: `${rowIndex * 150 + colIndex * 50}ms` }}
                 />
               </div>
             </div>
           ))}
-          
+
           {/* Actions column */}
           <div className="w-[80px] flex-shrink-0 flex justify-end">
             <Skeleton className="h-8 w-8 rounded" />

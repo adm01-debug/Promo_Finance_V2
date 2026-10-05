@@ -6,11 +6,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { runAuthCleanup } from '@/lib/auth-cleanup';
 import { logger } from '@/lib/logger';
 import { toast } from 'sonner';
-import {
-  clearSloFailure,
-  SLO_REASON_COPY,
-  type SloFailureSnapshot,
-} from '@/lib/sso-slo-state';
+import { clearSloFailure, SLO_REASON_COPY, type SloFailureSnapshot } from '@/lib/sso-slo-state';
 import { inferSsoErrorCode, SSO_ERROR_MESSAGES } from '@/lib/sso-error-messages';
 import { logSloRetry } from '@/lib/sso-slo-audit';
 
@@ -84,7 +80,9 @@ export function SloFailureBanner({ failure, onDismiss }: Props) {
         errorMessage: rawMessage,
         context: { provider_nome: failure.providerNome ?? null },
       });
-      toast.error(`Não foi possível encerrar a sessão no ${providerLabel}. Tente novamente em instantes.`);
+      toast.error(
+        `Não foi possível encerrar a sessão no ${providerLabel}. Tente novamente em instantes.`
+      );
     } finally {
       setRetryingProvider(false);
     }
@@ -106,12 +104,16 @@ export function SloFailureBanner({ failure, onDismiss }: Props) {
       await runAuthCleanup();
 
       // Revalida: confirma que não há mais sessão ativa nem acesso a áreas protegidas.
-      const { data: { session } } = await supabase.auth.getSession();
+      const {
+        data: { session },
+      } = await supabase.auth.getSession();
       if (session) {
         toast.error('Sessão ainda ativa após a limpeza. Atualize a página e tente novamente.', {
           id: 'sso-slo-local',
         });
-        logger.error('[SloFailureBanner] Sessão persistiu após cleanup', { userId: session.user.id });
+        logger.error('[SloFailureBanner] Sessão persistiu após cleanup', {
+          userId: session.user.id,
+        });
         await logSloRetry({
           kind: 'slo_retry_local_failed',
           providerId: failure.providerId,
@@ -170,13 +172,16 @@ export function SloFailureBanner({ failure, onDismiss }: Props) {
         {hint && (
           <div className="flex items-start gap-2 text-sm bg-muted/40 border border-border/50 rounded-md px-3 py-2">
             <Lightbulb className="h-4 w-4 mt-0.5 shrink-0 text-primary" />
-            <p className="leading-relaxed"><span className="font-medium">Dica:</span> {hint}</p>
+            <p className="leading-relaxed">
+              <span className="font-medium">Dica:</span> {hint}
+            </p>
           </div>
         )}
 
         {failure.message && (
           <p className="text-xs text-muted-foreground font-mono bg-muted/50 px-2 py-1 rounded break-all">
-            <span className="font-sans font-medium not-italic">Detalhe técnico:</span> {failure.message}
+            <span className="font-sans font-medium not-italic">Detalhe técnico:</span>{' '}
+            {failure.message}
           </p>
         )}
 

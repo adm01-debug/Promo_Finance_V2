@@ -6,8 +6,21 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '@/components/ui/table';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 import { Plus, Trash2, Upload, Download } from 'lucide-react';
 import { useHistoricoFinanceiro } from '@/hooks/useHistoricoFinanceiro';
 import { formatCurrency } from '@/lib/formatters';
@@ -51,7 +64,9 @@ export function FaturamentoTab({ empresaId }: { empresaId: string }) {
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
           <div>
             <CardTitle className="text-base">Faturamento Mensal</CardTitle>
-            <CardDescription>{faturamento.length} meses cadastrados (mínimo 12 para precisão)</CardDescription>
+            <CardDescription>
+              {faturamento.length} meses cadastrados (mínimo 12 para precisão)
+            </CardDescription>
           </div>
           <div className="flex gap-2">
             <Button
@@ -85,7 +100,10 @@ export function FaturamentoTab({ empresaId }: { empresaId: string }) {
           </div>
           <div>
             <Label className="text-xs">Mês</Label>
-            <Select value={String(novo.mes)} onValueChange={(v) => setNovo({ ...novo, mes: Number(v) })}>
+            <Select
+              value={String(novo.mes)}
+              onValueChange={(v) => setNovo({ ...novo, mes: Number(v) })}
+            >
               <SelectTrigger>
                 <SelectValue />
               </SelectTrigger>
@@ -163,11 +181,21 @@ export function FaturamentoTab({ empresaId }: { empresaId: string }) {
                     <TableCell>
                       {MESES[f.mes - 1]}/{f.ano}
                     </TableCell>
-                    <TableCell className="text-right font-medium">{formatCurrency(f.receita_bruta)}</TableCell>
-                    <TableCell className="text-right">{formatCurrency(f.receita_servicos)}</TableCell>
-                    <TableCell className="text-right">{formatCurrency(f.receita_revenda)}</TableCell>
-                    <TableCell className="text-right">{formatCurrency(f.receita_industria)}</TableCell>
-                    <TableCell className="text-right">{formatCurrency(f.receita_exportacao)}</TableCell>
+                    <TableCell className="text-right font-medium">
+                      {formatCurrency(f.receita_bruta)}
+                    </TableCell>
+                    <TableCell className="text-right">
+                      {formatCurrency(f.receita_servicos)}
+                    </TableCell>
+                    <TableCell className="text-right">
+                      {formatCurrency(f.receita_revenda)}
+                    </TableCell>
+                    <TableCell className="text-right">
+                      {formatCurrency(f.receita_industria)}
+                    </TableCell>
+                    <TableCell className="text-right">
+                      {formatCurrency(f.receita_exportacao)}
+                    </TableCell>
                     <TableCell>
                       <Button
                         variant="ghost"

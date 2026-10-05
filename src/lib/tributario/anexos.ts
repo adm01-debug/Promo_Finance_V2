@@ -8,9 +8,21 @@
  * onde a CPP fica FORA do DAS (recolhida à parte pela folha).
  */
 export const PALAVRAS_ANEXO_IV = [
-  'construcao', 'obra', 'edificacao', 'vigilancia', 'seguranca',
-  'limpeza', 'conservacao', 'zeladoria', 'portaria', 'advocacia', 'advogado',
+  'construcao',
+  'obra',
+  'edificacao',
+  'vigilancia',
+  'seguranca',
+  'limpeza',
+  'conservacao',
+  'zeladoria',
+  'portaria',
+  'advocacia',
+  'advogado',
 ];
 
 export const normalizar = (s: string) =>
-  s.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
+  s
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .toLowerCase();

@@ -1,5 +1,12 @@
 import { describe, it, expect } from 'vitest';
-import { computeStats, computeTopOffenders, formatDuration, getTimeThreshold, makeRow, makeRows } from './admin-telemetria-test-utils';
+import {
+  computeStats,
+  computeTopOffenders,
+  formatDuration,
+  getTimeThreshold,
+  makeRow,
+  makeRows,
+} from './admin-telemetria-test-utils';
 
 // ══════════════════════════════════════════════════════════════════════════
 //  INTEGRATION: Severity classification thresholds
@@ -45,10 +52,14 @@ describe('Severity classification thresholds', () => {
 describe('Severity badge mapping', () => {
   function getBadgeText(severity: string): string {
     switch (severity) {
-      case 'very_slow': return '🔴 Muito Lenta';
-      case 'slow': return '🟡 Lenta';
-      case 'error': return '❌ Erro';
-      default: return severity;
+      case 'very_slow':
+        return '🔴 Muito Lenta';
+      case 'slow':
+        return '🟡 Lenta';
+      case 'error':
+        return '❌ Erro';
+      default:
+        return severity;
     }
   }
 
@@ -74,7 +85,7 @@ describe('Large dataset stress tests', () => {
 
   it('computeTopOffenders handles 1000 rows across 20 tables', () => {
     const tables = Array.from({ length: 20 }, (_, i) => `table_${i}`);
-    const rows = tables.flatMap(t => makeRows(50, { table_name: t }));
+    const rows = tables.flatMap((t) => makeRows(50, { table_name: t }));
     const result = computeTopOffenders(rows);
     expect(result.length).toBe(8);
   });
@@ -93,9 +104,7 @@ describe('Large dataset stress tests', () => {
   });
 
   it('handles rows with diverse durations', () => {
-    const rows = Array.from({ length: 100 }, (_, i) =>
-      makeRow({ duration_ms: i * 100 })
-    );
+    const rows = Array.from({ length: 100 }, (_, i) => makeRow({ duration_ms: i * 100 }));
     const stats = computeStats(rows);
     // avg of 0, 100, 200, ..., 9900 = 4950
     expect(stats.avgDuration).toBe(4950);
@@ -174,7 +183,7 @@ describe('Filter logic', () => {
       makeRow({ severity: 'very_slow' }),
       makeRow({ severity: 'error' }),
     ];
-    const filtered = rows.filter(r => r.severity === 'slow');
+    const filtered = rows.filter((r) => r.severity === 'slow');
     expect(filtered.length).toBe(1);
   });
 
@@ -184,16 +193,13 @@ describe('Filter logic', () => {
       makeRow({ severity: 'very_slow' }),
       makeRow({ severity: 'very_slow' }),
     ];
-    const filtered = rows.filter(r => r.severity === 'very_slow');
+    const filtered = rows.filter((r) => r.severity === 'very_slow');
     expect(filtered.length).toBe(2);
   });
 
   it('severity filter "error" filters correctly', () => {
-    const rows = [
-      makeRow({ severity: 'error' }),
-      makeRow({ severity: 'slow' }),
-    ];
-    const filtered = rows.filter(r => r.severity === 'error');
+    const rows = [makeRow({ severity: 'error' }), makeRow({ severity: 'slow' })];
+    const filtered = rows.filter((r) => r.severity === 'error');
     expect(filtered.length).toBe(1);
   });
 
@@ -204,7 +210,7 @@ describe('Filter logic', () => {
       makeRow({ created_at: new Date(now - 2 * 60 * 60 * 1000).toISOString() }), // 2h ago
     ];
     const threshold = new Date(now - 60 * 60 * 1000).toISOString(); // 1h
-    const filtered = rows.filter(r => r.created_at >= threshold);
+    const filtered = rows.filter((r) => r.created_at >= threshold);
     expect(filtered.length).toBe(1);
   });
 
@@ -215,7 +221,7 @@ describe('Filter logic', () => {
       makeRow({ created_at: new Date(now - 8 * 24 * 60 * 60 * 1000).toISOString() }),
     ];
     const threshold = new Date(now - 7 * 24 * 60 * 60 * 1000).toISOString();
-    const filtered = rows.filter(r => r.created_at >= threshold);
+    const filtered = rows.filter((r) => r.created_at >= threshold);
     expect(filtered.length).toBe(1);
   });
 
@@ -227,7 +233,7 @@ describe('Filter logic', () => {
       makeRow({ severity: 'slow', created_at: new Date(now - 2 * 60 * 60 * 1000).toISOString() }),
     ];
     const threshold = new Date(now - 60 * 60 * 1000).toISOString();
-    const filtered = rows.filter(r => r.severity === 'slow' && r.created_at >= threshold);
+    const filtered = rows.filter((r) => r.severity === 'slow' && r.created_at >= threshold);
     expect(filtered.length).toBe(1);
   });
 });

@@ -30,7 +30,9 @@ export function PerDcompStats({ estatisticas }: { estatisticas: PerDcompEstatist
             <Clock className="h-8 w-8 text-primary" />
             <div>
               <p className="text-sm text-muted-foreground">Em Análise</p>
-              <p className="text-2xl font-bold">{estatisticas.transmitidos + estatisticas.emAnalise}</p>
+              <p className="text-2xl font-bold">
+                {estatisticas.transmitidos + estatisticas.emAnalise}
+              </p>
             </div>
           </div>
         </CardContent>
@@ -52,7 +54,9 @@ export function PerDcompStats({ estatisticas }: { estatisticas: PerDcompEstatist
             <DollarSign className="h-8 w-8 text-success" />
             <div>
               <p className="text-sm text-muted-foreground">Valor Compensado</p>
-              <p className="text-2xl font-bold">{formatCurrency(estatisticas.valorTotalCompensado)}</p>
+              <p className="text-2xl font-bold">
+                {formatCurrency(estatisticas.valorTotalCompensado)}
+              </p>
             </div>
           </div>
         </CardContent>

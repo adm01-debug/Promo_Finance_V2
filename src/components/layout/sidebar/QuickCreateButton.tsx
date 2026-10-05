@@ -29,9 +29,7 @@ export function QuickCreateButton({ collapsed }: QuickCreateButtonProps) {
       )}
     >
       <Plus className={cn('shrink-0', collapsed ? 'h-5 w-5' : 'h-4 w-4')} />
-      {!collapsed && (
-        <span className="text-sm font-medium">Novo Registro</span>
-      )}
+      {!collapsed && <span className="text-sm font-medium">Novo Registro</span>}
     </motion.button>
   );
 
@@ -49,7 +47,7 @@ export function QuickCreateButton({ collapsed }: QuickCreateButtonProps) {
       ) : (
         <div className="mb-2">{button}</div>
       )}
-      
+
       <QuickCreateModal open={open} onOpenChange={setOpen} />
     </>
   );

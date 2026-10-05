@@ -14,7 +14,14 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
-import { AlertTriangle, ArrowRight, Minus, ShieldCheck, TrendingDown, TrendingUp } from 'lucide-react';
+import {
+  AlertTriangle,
+  ArrowRight,
+  Minus,
+  ShieldCheck,
+  TrendingDown,
+  TrendingUp,
+} from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useConformidadeSnapshotsDaEmpresa } from '@/hooks/useConformidadeSnapshots';
 import {
@@ -84,8 +91,12 @@ export function ConformidadeTendenciaWidget({
     analise.direcao === 'alta' ? TrendingUp : analise.direcao === 'queda' ? TrendingDown : Minus;
 
   const serie = useMemo(
-    () => analise.pontos.map((p) => ({ competencia: rotuloCompetencia(p.competencia), score: p.score })),
-    [analise.pontos],
+    () =>
+      analise.pontos.map((p) => ({
+        competencia: rotuloCompetencia(p.competencia),
+        score: p.score,
+      })),
+    [analise.pontos]
   );
 
   /**
@@ -93,8 +104,10 @@ export function ConformidadeTendenciaWidget({
    * que o cron aplica ao persistir em `alertas_tributarios`, garantindo que a
    * UI nunca divirja do que foi notificado.
    */
-  const alertas = useMemo(() => avaliarAlertasConformidade(analise.pontos).slice(0, 3), [analise.pontos]);
-
+  const alertas = useMemo(
+    () => avaliarAlertasConformidade(analise.pontos).slice(0, 3),
+    [analise.pontos]
+  );
 
   return (
     <Card className={cn('backdrop-blur-xl bg-background/40 border-white/10 shadow-xl', className)}>
@@ -140,14 +153,24 @@ export function ConformidadeTendenciaWidget({
               <div className="flex flex-col items-end gap-1">
                 <Badge
                   variant="outline"
-                  className={cn('font-semibold', NIVEL_CLASSE[analise.pontos[analise.pontos.length - 1].nivel])}
+                  className={cn(
+                    'font-semibold',
+                    NIVEL_CLASSE[analise.pontos[analise.pontos.length - 1].nivel]
+                  )}
                 >
                   {NIVEL_LABEL[analise.pontos[analise.pontos.length - 1].nivel]}
                 </Badge>
-                <span className={cn('flex items-center gap-1 text-xs font-medium', DIRECAO_CLASSE[analise.direcao])}>
+                <span
+                  className={cn(
+                    'flex items-center gap-1 text-xs font-medium',
+                    DIRECAO_CLASSE[analise.direcao]
+                  )}
+                >
                   <Icone className="h-3.5 w-3.5" aria-hidden="true" />
                   {DIRECAO_LABEL[analise.direcao]}
-                  {analise.delta !== 0 ? ` (${analise.delta > 0 ? '+' : ''}${analise.delta.toFixed(1)})` : ''}
+                  {analise.delta !== 0
+                    ? ` (${analise.delta > 0 ? '+' : ''}${analise.delta.toFixed(1)})`
+                    : ''}
                 </span>
               </div>
             </div>
@@ -186,19 +209,25 @@ export function ConformidadeTendenciaWidget({
 
             <dl className="grid grid-cols-3 gap-2 text-center">
               <div className="rounded-lg border border-border/60 bg-muted/20 p-2">
-                <dt className="text-[10px] uppercase tracking-wider text-muted-foreground">Pontualidade</dt>
+                <dt className="text-[10px] uppercase tracking-wider text-muted-foreground">
+                  Pontualidade
+                </dt>
                 <dd className="text-sm font-bold tabular-nums">
                   {analise.pontos[analise.pontos.length - 1].pontualidade.toFixed(1)}%
                 </dd>
               </div>
               <div className="rounded-lg border border-border/60 bg-muted/20 p-2">
-                <dt className="text-[10px] uppercase tracking-wider text-muted-foreground">Vencidas</dt>
+                <dt className="text-[10px] uppercase tracking-wider text-muted-foreground">
+                  Vencidas
+                </dt>
                 <dd className="text-sm font-bold tabular-nums">
                   {analise.pontos[analise.pontos.length - 1].vencidasPendentes}
                 </dd>
               </div>
               <div className="rounded-lg border border-border/60 bg-muted/20 p-2">
-                <dt className="text-[10px] uppercase tracking-wider text-muted-foreground">Multas</dt>
+                <dt className="text-[10px] uppercase tracking-wider text-muted-foreground">
+                  Multas
+                </dt>
                 <dd className="text-sm font-bold tabular-nums">
                   {analise.multaAcumulada.toLocaleString('pt-BR', {
                     style: 'currency',
@@ -220,7 +249,7 @@ export function ConformidadeTendenciaWidget({
                         ? 'border-destructive/30 bg-destructive/10 text-destructive'
                         : a.severidade === 'alta'
                           ? 'border-warning/30 bg-warning/10 text-warning'
-                          : 'border-border/60 bg-muted/20 text-muted-foreground',
+                          : 'border-border/60 bg-muted/20 text-muted-foreground'
                     )}
                   >
                     <AlertTriangle className="mt-0.5 h-3.5 w-3.5 shrink-0" aria-hidden="true" />
@@ -230,7 +259,6 @@ export function ConformidadeTendenciaWidget({
               </ul>
             )}
           </>
-
         )}
       </CardContent>
     </Card>

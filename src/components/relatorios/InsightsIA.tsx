@@ -1,10 +1,17 @@
 import { useState } from 'react';
 import { useMutation } from '@tanstack/react-query';
 import { motion, AnimatePresence } from 'framer-motion';
-import { 
-  Sparkles, AlertTriangle, Lightbulb, Target, 
-  Loader2, ChevronDown, ChevronUp, TrendingUp,
-  Shield, Zap
+import {
+  Sparkles,
+  AlertTriangle,
+  Lightbulb,
+  Target,
+  Loader2,
+  ChevronDown,
+  ChevronUp,
+  TrendingUp,
+  Shield,
+  Zap,
 } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -36,9 +43,24 @@ interface InsightsIAProps {
 }
 
 const tipoConfig = {
-  alerta: { icon: AlertTriangle, color: 'text-destructive', bg: 'bg-destructive/10', badge: 'destructive' as const },
-  oportunidade: { icon: Lightbulb, color: 'text-warning', bg: 'bg-warning/10', badge: 'secondary' as const },
-  recomendacao: { icon: Target, color: 'text-primary', bg: 'bg-primary/10', badge: 'default' as const },
+  alerta: {
+    icon: AlertTriangle,
+    color: 'text-destructive',
+    bg: 'bg-destructive/10',
+    badge: 'destructive' as const,
+  },
+  oportunidade: {
+    icon: Lightbulb,
+    color: 'text-warning',
+    bg: 'bg-warning/10',
+    badge: 'secondary' as const,
+  },
+  recomendacao: {
+    icon: Target,
+    color: 'text-primary',
+    bg: 'bg-primary/10',
+    badge: 'default' as const,
+  },
 };
 
 const impactoColors: Record<string, string> = {
@@ -64,7 +86,9 @@ export function InsightsIA({ dados, contexto }: InsightsIAProps) {
       setExpanded(true);
     },
     onError: (err) => {
-      toast.error('Erro ao gerar insights: ' + (err instanceof Error ? err.message : 'Erro desconhecido'));
+      toast.error(
+        'Erro ao gerar insights: ' + (err instanceof Error ? err.message : 'Erro desconhecido')
+      );
     },
   });
 
@@ -155,7 +179,12 @@ export function InsightsIA({ dados, contexto }: InsightsIAProps) {
                         <div className="flex-1 min-w-0">
                           <div className="flex items-center gap-2 mb-1">
                             <span className="font-medium text-sm">{insight.titulo}</span>
-                            <Badge className={cn('text-[10px] px-1.5 py-0', impactoColors[insight.impacto] || '')}>
+                            <Badge
+                              className={cn(
+                                'text-[10px] px-1.5 py-0',
+                                impactoColors[insight.impacto] || ''
+                              )}
+                            >
                               {insight.impacto}
                             </Badge>
                           </div>
@@ -192,7 +221,11 @@ export function InsightsIA({ dados, contexto }: InsightsIAProps) {
             className="w-full text-xs"
             onClick={() => setExpanded(!expanded)}
           >
-            {expanded ? <ChevronUp className="h-3 w-3 mr-1" /> : <ChevronDown className="h-3 w-3 mr-1" />}
+            {expanded ? (
+              <ChevronUp className="h-3 w-3 mr-1" />
+            ) : (
+              <ChevronDown className="h-3 w-3 mr-1" />
+            )}
             {expanded ? 'Recolher insights' : 'Expandir insights'}
           </Button>
         </div>

@@ -26,11 +26,7 @@ export function useCriarEmpresa() {
 
   return useMutation({
     mutationFn: async (empresa: EmpresaInsert) => {
-      const { data, error } = await supabase
-        .from('empresas')
-        .insert(empresa)
-        .select()
-        .single();
+      const { data, error } = await supabase.from('empresas').insert(empresa).select().single();
 
       if (error) throw error;
       return data;
@@ -78,10 +74,7 @@ export function useExcluirEmpresa() {
   return useMutation({
     mutationFn: async (id: string) => {
       // Soft delete - apenas desativa
-      const { error } = await supabase
-        .from('empresas')
-        .update({ ativo: false })
-        .eq('id', id);
+      const { error } = await supabase.from('empresas').update({ ativo: false }).eq('id', id);
 
       if (error) throw error;
     },
@@ -101,10 +94,7 @@ export function useReativarEmpresa() {
 
   return useMutation({
     mutationFn: async (id: string) => {
-      const { error } = await supabase
-        .from('empresas')
-        .update({ ativo: true })
-        .eq('id', id);
+      const { error } = await supabase.from('empresas').update({ ativo: true }).eq('id', id);
 
       if (error) throw error;
     },

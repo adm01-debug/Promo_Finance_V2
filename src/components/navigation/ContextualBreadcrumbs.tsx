@@ -9,13 +9,13 @@ import {
   BreadcrumbPage,
   BreadcrumbSeparator,
 } from '@/components/ui/breadcrumb';
-import { 
-  Home, 
-  BarChart3, 
-  FileText, 
-  Users, 
-  Building2, 
-  ArrowDownCircle, 
+import {
+  Home,
+  BarChart3,
+  FileText,
+  Users,
+  Building2,
+  ArrowDownCircle,
   ArrowUpCircle,
   PiggyBank,
   Receipt,
@@ -28,7 +28,7 @@ import {
   TrendingUp,
   CreditCard,
   Repeat,
-  Landmark
+  Landmark,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { BackButton } from './BackButton';
@@ -69,88 +69,93 @@ interface BreadcrumbItemData {
   isLast: boolean;
 }
 
-export const ContextualBreadcrumbs = forwardRef<HTMLDivElement, { className?: string }>(function ContextualBreadcrumbs({ className }, ref) {
-  const location = useLocation();
-  
-  const breadcrumbs = useMemo(() => {
-    const items: BreadcrumbItemData[] = [];
-    let currentPath = location.pathname;
-    
-    while (currentPath) {
-      const config = routeConfig[currentPath];
-      if (config) {
-        items.unshift({
-          path: currentPath,
-          label: config.label,
-          icon: config.icon,
-          isLast: items.length === 0,
-        });
-        currentPath = config.parent || '';
-      } else {
-        break;
-      }
-    }
-    
-    if (items.length > 0 && items[0].path !== '/') {
-      items.unshift({
-        path: '/',
-        label: 'Dashboard',
-        icon: Home,
-        isLast: false,
-      });
-    }
-    
-    return items;
-  }, [location.pathname]);
-  
-  // Don't show breadcrumbs on home page
-  if (location.pathname === '/' || breadcrumbs.length <= 1) {
-    return null;
-  }
-  
-  return (
-    <motion.div
-      initial={{ opacity: 0, y: -10 }}
-      animate={{ opacity: 1, y: 0 }}
-      className={cn("mb-6 flex items-center gap-4 px-4 py-2 rounded-lg bg-card border border-border shadow-sm", className)}
-      ref={ref}
-    >
-      {/* Back Button integrated with breadcrumbs */}
-      <BackButton size="sm" variant="ghost" className="shrink-0" />
+export const ContextualBreadcrumbs = forwardRef<HTMLDivElement, { className?: string }>(
+  function ContextualBreadcrumbs({ className }, ref) {
+    const location = useLocation();
 
-      <Breadcrumb>
-        <BreadcrumbList>
-          {breadcrumbs.map((item, index) => {
-            const Icon = item.icon;
-            
-            return (
-              <React.Fragment key={item.path}>
-                {index > 0 && <BreadcrumbSeparator />}
-                <BreadcrumbItem>
-                  {item.isLast ? (
-                    <BreadcrumbPage className="flex items-center gap-1.5">
-                      <Icon className="h-3.5 w-3.5" />
-                      <span>{item.label}</span>
-                    </BreadcrumbPage>
-                  ) : (
-                    <BreadcrumbLink asChild>
-                      <Link 
-                        to={item.path}
-                        className="flex items-center gap-1.5 hover:text-primary transition-colors"
-                      >
+    const breadcrumbs = useMemo(() => {
+      const items: BreadcrumbItemData[] = [];
+      let currentPath = location.pathname;
+
+      while (currentPath) {
+        const config = routeConfig[currentPath];
+        if (config) {
+          items.unshift({
+            path: currentPath,
+            label: config.label,
+            icon: config.icon,
+            isLast: items.length === 0,
+          });
+          currentPath = config.parent || '';
+        } else {
+          break;
+        }
+      }
+
+      if (items.length > 0 && items[0].path !== '/') {
+        items.unshift({
+          path: '/',
+          label: 'Dashboard',
+          icon: Home,
+          isLast: false,
+        });
+      }
+
+      return items;
+    }, [location.pathname]);
+
+    // Don't show breadcrumbs on home page
+    if (location.pathname === '/' || breadcrumbs.length <= 1) {
+      return null;
+    }
+
+    return (
+      <motion.div
+        initial={{ opacity: 0, y: -10 }}
+        animate={{ opacity: 1, y: 0 }}
+        className={cn(
+          'mb-6 flex items-center gap-4 px-4 py-2 rounded-lg bg-card border border-border shadow-sm',
+          className
+        )}
+        ref={ref}
+      >
+        {/* Back Button integrated with breadcrumbs */}
+        <BackButton size="sm" variant="ghost" className="shrink-0" />
+
+        <Breadcrumb>
+          <BreadcrumbList>
+            {breadcrumbs.map((item, index) => {
+              const Icon = item.icon;
+
+              return (
+                <React.Fragment key={item.path}>
+                  {index > 0 && <BreadcrumbSeparator />}
+                  <BreadcrumbItem>
+                    {item.isLast ? (
+                      <BreadcrumbPage className="flex items-center gap-1.5">
                         <Icon className="h-3.5 w-3.5" />
-                        <span className="hidden sm:inline">{item.label}</span>
-                      </Link>
-                    </BreadcrumbLink>
-                  )}
-                </BreadcrumbItem>
-              </React.Fragment>
-            );
-          })}
-        </BreadcrumbList>
-      </Breadcrumb>
-    </motion.div>
-  );
-});
+                        <span>{item.label}</span>
+                      </BreadcrumbPage>
+                    ) : (
+                      <BreadcrumbLink asChild>
+                        <Link
+                          to={item.path}
+                          className="flex items-center gap-1.5 hover:text-primary transition-colors"
+                        >
+                          <Icon className="h-3.5 w-3.5" />
+                          <span className="hidden sm:inline">{item.label}</span>
+                        </Link>
+                      </BreadcrumbLink>
+                    )}
+                  </BreadcrumbItem>
+                </React.Fragment>
+              );
+            })}
+          </BreadcrumbList>
+        </Breadcrumb>
+      </motion.div>
+    );
+  }
+);
 
 export default ContextualBreadcrumbs;

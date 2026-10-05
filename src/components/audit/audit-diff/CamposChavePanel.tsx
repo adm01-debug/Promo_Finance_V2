@@ -15,7 +15,12 @@ interface Props {
   onToggleField: (key: string) => void;
 }
 
-export function CamposChavePanel({ camposChave, changedKeyFields, activeFields, onToggleField }: Props) {
+export function CamposChavePanel({
+  camposChave,
+  changedKeyFields,
+  activeFields,
+  onToggleField,
+}: Props) {
   if (camposChave.length === 0) return null;
   return (
     <div className="space-y-2 rounded-md border bg-muted/20 p-3">
@@ -64,7 +69,11 @@ export function CamposChavePanel({ camposChave, changedKeyFields, activeFields, 
             >
               <span
                 className={
-                  active ? 'opacity-80' : wasChanged ? 'text-primary font-semibold' : 'text-muted-foreground'
+                  active
+                    ? 'opacity-80'
+                    : wasChanged
+                      ? 'text-primary font-semibold'
+                      : 'text-muted-foreground'
                 }
               >
                 {c.key}:
@@ -72,7 +81,10 @@ export function CamposChavePanel({ camposChave, changedKeyFields, activeFields, 
               {wasChanged && changed!.kind === 'changed' ? (
                 <span className="inline-flex items-center gap-1">
                   <span className="line-through opacity-60">{formatValue(changed!.before)}</span>
-                  <ArrowRight className={`h-2.5 w-2.5 ${active ? '' : 'text-primary'}`} aria-hidden="true" />
+                  <ArrowRight
+                    className={`h-2.5 w-2.5 ${active ? '' : 'text-primary'}`}
+                    aria-hidden="true"
+                  />
                   <span className="font-semibold">{formatValue(changed!.after)}</span>
                 </span>
               ) : (

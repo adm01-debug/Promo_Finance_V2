@@ -24,8 +24,15 @@ export function AcoesTab({ tarefasAcionaveis, sincronizarBitrix }: AcoesTabProps
             <CardHeader className="pb-2">
               <div className="flex justify-between items-start">
                 <CardTitle className="text-base">{t.titulo}</CardTitle>
-                <Badge variant={(t.bitrix_sync_status ?? 'pendente') === 'sincronizado' ? 'success' : 'outline'} className="gap-1">
-                  {(t.bitrix_sync_status ?? 'pendente') === 'sincronizado' && <CheckCircle2 className="h-3 w-3" />}
+                <Badge
+                  variant={
+                    (t.bitrix_sync_status ?? 'pendente') === 'sincronizado' ? 'success' : 'outline'
+                  }
+                  className="gap-1"
+                >
+                  {(t.bitrix_sync_status ?? 'pendente') === 'sincronizado' && (
+                    <CheckCircle2 className="h-3 w-3" />
+                  )}
                   Bitrix: {(t.bitrix_sync_status ?? 'pendente').replace('_', ' ')}
                 </Badge>
               </div>
@@ -35,7 +42,9 @@ export function AcoesTab({ tarefasAcionaveis, sincronizarBitrix }: AcoesTabProps
               <div className="flex items-center justify-between mt-4">
                 <div className="text-xs">
                   <span className="text-muted-foreground">Valor em jogo: </span>
-                  <span className="font-semibold text-primary">{formatCurrency(t.valor_envolvido)}</span>
+                  <span className="font-semibold text-primary">
+                    {formatCurrency(t.valor_envolvido)}
+                  </span>
                 </div>
                 <Button
                   size="sm"
@@ -44,7 +53,9 @@ export function AcoesTab({ tarefasAcionaveis, sincronizarBitrix }: AcoesTabProps
                   onClick={() => sincronizarBitrix.mutate(t.id)}
                   disabled={sincronizarBitrix.isPending}
                 >
-                  <RefreshCw className={`h-4 w-4 ${sincronizarBitrix.isPending && 'animate-spin'}`} />
+                  <RefreshCw
+                    className={`h-4 w-4 ${sincronizarBitrix.isPending && 'animate-spin'}`}
+                  />
                   {t.bitrix_task_id ? 'Atualizar no Bitrix24' : 'Criar Tarefa no Bitrix24'}
                 </Button>
               </div>

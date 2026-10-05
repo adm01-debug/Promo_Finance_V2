@@ -113,17 +113,18 @@ describe('aplicarOverlayNcm — sobreposição e adição', () => {
 
 describe('aplicarOverlayNcm — rejeições defensivas', () => {
   it('rejeita código fora de 8 dígitos sem contaminar a tabela', () => {
-    const r = aplicarOverlayNcm([reg({ codigo: '2710124' }), reg({ codigo: '' }), reg({ codigo: null })]);
+    const r = aplicarOverlayNcm([
+      reg({ codigo: '2710124' }),
+      reg({ codigo: '' }),
+      reg({ codigo: null }),
+    ]);
     expect(r.rejeitadas.every((x) => x.motivo === 'codigo_invalido')).toBe(true);
     expect(r.rejeitadas).toHaveLength(3);
     expect(Object.keys(r.tabela)).toHaveLength(TIPI.length);
   });
 
   it('rejeita duplicidade mantendo a primeira ocorrência', () => {
-    const r = aplicarOverlayNcm([
-      reg({ aliquota_ipi: 0.15 }),
-      reg({ aliquota_ipi: 0.3 }),
-    ]);
+    const r = aplicarOverlayNcm([reg({ aliquota_ipi: 0.15 }), reg({ aliquota_ipi: 0.3 })]);
     expect(r.tabela['96081000'].aliquota).toBe(0.15);
     expect(r.rejeitadas).toEqual([{ ncm: '96081000', motivo: 'duplicado', valor: '96081000' }]);
   });
@@ -181,7 +182,7 @@ describe('tabela efetiva do motor', () => {
 // ---------------------------------------------------------------------------
 function rng(seed: number) {
   let s = seed >>> 0 || 1;
-  return () => ((s = (s * 1664525 + 1013904223) >>> 0) / 0x100000000);
+  return () => (s = (s * 1664525 + 1013904223) >>> 0) / 0x100000000;
 }
 
 const PATOLOGIAS: Array<(r: () => number) => RegistroNcmBanco> = [
@@ -202,7 +203,7 @@ describe('Fuzzing — 400 catálogos adversos de NCM', () => {
     for (let seed = 1; seed <= 400; seed++) {
       const r = rng(seed);
       const registros = Array.from({ length: 6 }, () =>
-        PATOLOGIAS[Math.floor(r() * PATOLOGIAS.length)](r),
+        PATOLOGIAS[Math.floor(r() * PATOLOGIAS.length)](r)
       );
       const out = aplicarOverlayNcm(registros);
 

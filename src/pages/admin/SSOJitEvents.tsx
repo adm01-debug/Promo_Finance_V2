@@ -3,12 +3,27 @@ import { MainLayout } from '@/components/layout/MainLayout';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Calendar } from '@/components/ui/calendar';
 import { format, subDays } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
-import { CalendarIcon, Search, Filter, RefreshCcw, Activity, Download, FileSpreadsheet, ShieldCheck } from 'lucide-react';
+import {
+  CalendarIcon,
+  Search,
+  Filter,
+  RefreshCcw,
+  Activity,
+  Download,
+  FileSpreadsheet,
+  ShieldCheck,
+} from 'lucide-react';
 import type { DateRange } from 'react-day-picker';
 import { cn } from '@/lib/utils';
 import { TableShimmerSkeleton } from '@/components/ui/loading-skeleton';
@@ -48,10 +63,12 @@ export default function SSOJitEvents() {
     defaults: SSO_DEFAULTS,
     localStorageKey: 'app-sso-jit-filters',
   });
-  const { fromIso, toIso, search, providerFilter, roleFilter, viaFilter, originFilter } = filtersController.values;
-  const dateRange: DateRange | undefined = fromIso || toIso
-    ? { from: fromIso ? new Date(fromIso) : undefined, to: toIso ? new Date(toIso) : undefined }
-    : undefined;
+  const { fromIso, toIso, search, providerFilter, roleFilter, viaFilter, originFilter } =
+    filtersController.values;
+  const dateRange: DateRange | undefined =
+    fromIso || toIso
+      ? { from: fromIso ? new Date(fromIso) : undefined, to: toIso ? new Date(toIso) : undefined }
+      : undefined;
   const setDateRange = (r: DateRange | undefined) => {
     filtersController.setValues({
       ...filtersController.values,
@@ -65,7 +82,11 @@ export default function SSOJitEvents() {
   const setViaFilter = (v: string) => filtersController.setField('viaFilter', v);
   const setOriginFilter = (v: string) => filtersController.setField('originFilter', v);
 
-  const { data: events, isLoading, refetch } = useSSOJitEvents({
+  const {
+    data: events,
+    isLoading,
+    refetch,
+  } = useSSOJitEvents({
     from: dateRange?.from,
     to: dateRange?.to,
   });
@@ -108,13 +129,26 @@ export default function SSOJitEvents() {
     {
       key: 'created_at',
       header: 'Data/Hora',
-      formatter: (v) => (typeof v === 'string' ? `${formatDate(v)} ${format(new Date(v), 'HH:mm:ss')}` : '-'),
+      formatter: (v) =>
+        typeof v === 'string' ? `${formatDate(v)} ${format(new Date(v), 'HH:mm:ss')}` : '-',
     },
     { key: 'user_email', header: 'Usuário', formatter: (v) => (typeof v === 'string' ? v : '-') },
-    { key: 'new_data.provider_nome', header: 'Provider', formatter: (v) => (typeof v === 'string' ? v : '-') },
-    { key: 'new_data.provider_tipo', header: 'Tipo', formatter: (v) => (typeof v === 'string' ? v.toUpperCase() : '-') },
+    {
+      key: 'new_data.provider_nome',
+      header: 'Provider',
+      formatter: (v) => (typeof v === 'string' ? v : '-'),
+    },
+    {
+      key: 'new_data.provider_tipo',
+      header: 'Tipo',
+      formatter: (v) => (typeof v === 'string' ? v.toUpperCase() : '-'),
+    },
     { key: 'new_data.role', header: 'Role', formatter: (v) => (typeof v === 'string' ? v : '-') },
-    { key: 'new_data.matched_group', header: 'Grupo Casado', formatter: (v) => (typeof v === 'string' ? v : '(default)') },
+    {
+      key: 'new_data.matched_group',
+      header: 'Grupo Casado',
+      formatter: (v) => (typeof v === 'string' ? v : '(default)'),
+    },
     { key: 'new_data.via', header: 'Via', formatter: (v) => (typeof v === 'string' ? v : '-') },
     {
       key: 'new_data.groups_received',
@@ -140,10 +174,13 @@ export default function SSOJitEvents() {
         <div className="flex flex-col gap-2">
           <div className="flex items-center gap-2">
             <ShieldCheck className="h-6 w-6 text-primary" />
-            <h1 className="text-3xl font-bold tracking-tight">Eventos JIT de Provisionamento SSO</h1>
+            <h1 className="text-3xl font-bold tracking-tight">
+              Eventos JIT de Provisionamento SSO
+            </h1>
           </div>
           <p className="text-muted-foreground">
-            Auditoria de usuários criados automaticamente via SSO (Just-In-Time), com role aplicada e grupo casado.
+            Auditoria de usuários criados automaticamente via SSO (Just-In-Time), com role aplicada
+            e grupo casado.
           </p>
         </div>
 
@@ -168,16 +205,22 @@ export default function SSOJitEvents() {
                 />
               </div>
               <Select value={providerFilter} onValueChange={setProviderFilter}>
-                <SelectTrigger><SelectValue placeholder="Provider" /></SelectTrigger>
+                <SelectTrigger>
+                  <SelectValue placeholder="Provider" />
+                </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="all">Todos os providers</SelectItem>
                   {(providers ?? []).map((p) => (
-                    <SelectItem key={p.id} value={p.id}>{p.nome}</SelectItem>
+                    <SelectItem key={p.id} value={p.id}>
+                      {p.nome}
+                    </SelectItem>
                   ))}
                 </SelectContent>
               </Select>
               <Select value={roleFilter} onValueChange={setRoleFilter}>
-                <SelectTrigger><SelectValue placeholder="Role" /></SelectTrigger>
+                <SelectTrigger>
+                  <SelectValue placeholder="Role" />
+                </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="all">Todas as roles</SelectItem>
                   <SelectItem value="admin">admin</SelectItem>
@@ -187,7 +230,9 @@ export default function SSOJitEvents() {
                 </SelectContent>
               </Select>
               <Select value={viaFilter} onValueChange={setViaFilter}>
-                <SelectTrigger><SelectValue placeholder="Via" /></SelectTrigger>
+                <SelectTrigger>
+                  <SelectValue placeholder="Via" />
+                </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="all">Todas vias</SelectItem>
                   <SelectItem value="oidc-jit">OIDC</SelectItem>
@@ -195,7 +240,9 @@ export default function SSOJitEvents() {
                 </SelectContent>
               </Select>
               <Select value={originFilter} onValueChange={setOriginFilter}>
-                <SelectTrigger><SelectValue placeholder="Origem da role" /></SelectTrigger>
+                <SelectTrigger>
+                  <SelectValue placeholder="Origem da role" />
+                </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="all">Todas origens</SelectItem>
                   <SelectItem value="group">Via grupo mapeado</SelectItem>
@@ -208,13 +255,15 @@ export default function SSOJitEvents() {
                     variant="outline"
                     className={cn(
                       'justify-start text-left font-normal md:col-span-2',
-                      !dateRange && 'text-muted-foreground',
+                      !dateRange && 'text-muted-foreground'
                     )}
                   >
                     <CalendarIcon className="mr-2 h-4 w-4" />
                     {dateRange?.from ? (
                       dateRange.to ? (
-                        <>{format(dateRange.from, 'dd/MM/yy')} - {format(dateRange.to, 'dd/MM/yy')}</>
+                        <>
+                          {format(dateRange.from, 'dd/MM/yy')} - {format(dateRange.to, 'dd/MM/yy')}
+                        </>
                       ) : (
                         format(dateRange.from, 'dd/MM/yyyy')
                       )
@@ -243,11 +292,19 @@ export default function SSOJitEvents() {
                 variant="outline"
                 describeFilters={(v) => [
                   { label: 'Busca', value: v.search, isActive: !!v.search },
-                  { label: 'Provider', value: v.providerFilter, isActive: v.providerFilter !== 'all' },
+                  {
+                    label: 'Provider',
+                    value: v.providerFilter,
+                    isActive: v.providerFilter !== 'all',
+                  },
                   { label: 'Role', value: v.roleFilter, isActive: v.roleFilter !== 'all' },
                   { label: 'Via', value: v.viaFilter, isActive: v.viaFilter !== 'all' },
                   { label: 'Origem', value: v.originFilter, isActive: v.originFilter !== 'all' },
-                  { label: 'Período', value: 'personalizado', isActive: v.fromIso !== SSO_DEFAULTS.fromIso || v.toIso !== SSO_DEFAULTS.toIso },
+                  {
+                    label: 'Período',
+                    value: 'personalizado',
+                    isActive: v.fromIso !== SSO_DEFAULTS.fromIso || v.toIso !== SSO_DEFAULTS.toIso,
+                  },
                 ]}
                 label="Limpar Filtros"
               />
@@ -260,13 +317,16 @@ export default function SSOJitEvents() {
             <CardTitle className="text-lg">Eventos ({filtered.length})</CardTitle>
             <div className="flex gap-2">
               <Button variant="outline" size="sm" onClick={handleCSV}>
-                <FileSpreadsheet className="h-4 w-4 mr-2" />CSV
+                <FileSpreadsheet className="h-4 w-4 mr-2" />
+                CSV
               </Button>
               <Button variant="outline" size="sm" onClick={handlePDF}>
-                <Download className="h-4 w-4 mr-2" />PDF
+                <Download className="h-4 w-4 mr-2" />
+                PDF
               </Button>
               <Button variant="outline" size="sm" onClick={() => refetch()}>
-                <RefreshCcw className="h-4 w-4 mr-2" />Atualizar
+                <RefreshCcw className="h-4 w-4 mr-2" />
+                Atualizar
               </Button>
             </div>
           </CardHeader>

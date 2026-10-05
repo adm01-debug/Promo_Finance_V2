@@ -36,21 +36,53 @@ function prng(seed: number) {
 }
 
 const SITUACOES: SituacaoIcmsSt[] = [
-  'tributada', 'isenta', 'nao_tributada', 'aliquota_zero', 'imune', 'suspensa',
+  'tributada',
+  'isenta',
+  'nao_tributada',
+  'aliquota_zero',
+  'imune',
+  'suspensa',
 ];
 
 const NCM_SUJOS: Array<string | null> = [
-  '87082999', '2203.00.00', '  33030010  ', '8708', '', null, 'ABCDEFGH',
-  '870829990', '3303.00.10',
+  '87082999',
+  '2203.00.00',
+  '  33030010  ',
+  '8708',
+  '',
+  null,
+  'ABCDEFGH',
+  '870829990',
+  '3303.00.10',
 ];
 
 const MVA_SUJAS: Array<number | string | null> = [
-  0.4025, 40.25, '71,78', '0.5', 0, -3, 1200, Number.NaN, Number.POSITIVE_INFINITY,
-  null, '', 'abc', 1, 100, 299.9, 300.1,
+  0.4025,
+  40.25,
+  '71,78',
+  '0.5',
+  0,
+  -3,
+  1200,
+  Number.NaN,
+  Number.POSITIVE_INFINITY,
+  null,
+  '',
+  'abc',
+  1,
+  100,
+  299.9,
+  300.1,
 ];
 
 const DATAS: Array<string | null> = [
-  null, '2000-01-01', '2020-12-31', '2026-01-01', '2030-01-01', 'ontem', '2026-13-45',
+  null,
+  '2000-01-01',
+  '2020-12-31',
+  '2026-01-01',
+  '2030-01-01',
+  'ontem',
+  '2026-13-45',
 ];
 
 function escolher<T>(rnd: () => number, lista: readonly T[]): T {
@@ -138,7 +170,10 @@ describe('fuzzing do overlay de MVA/ST — 750 cenários', () => {
       let resultado: ResultadoOverlayMva;
       try {
         resultado = aplicarOverlayMvaSt({
-          ncms: c.ncms, ufs: c.ufs, regras: c.regras, referencia: c.referencia,
+          ncms: c.ncms,
+          ufs: c.ufs,
+          regras: c.regras,
+          referencia: c.referencia,
         });
       } catch (erro) {
         falhas.push(`#${i} exceção no overlay: ${String(erro)}`);
@@ -146,7 +181,8 @@ describe('fuzzing do overlay de MVA/ST — 750 cenários', () => {
       }
 
       for (const entrada of resultado.aplicadas) {
-        if (!/^\d{8}$/.test(entrada.ncm)) falhas.push(`#${i} NCM inválido indexado: ${entrada.ncm}`);
+        if (!/^\d{8}$/.test(entrada.ncm))
+          falhas.push(`#${i} NCM inválido indexado: ${entrada.ncm}`);
         if (!Number.isFinite(entrada.mvaOriginal)) falhas.push(`#${i} MVA não finita`);
         if (entrada.mvaOriginal < 0 || entrada.mvaOriginal > MVA_MAXIMA) {
           falhas.push(`#${i} MVA fora da faixa: ${entrada.mvaOriginal}`);
@@ -159,13 +195,14 @@ describe('fuzzing do overlay de MVA/ST — 750 cenários', () => {
       // O índice não pode conter entradas duplicadas por protocolo.
       for (const [ncm, entradas] of Object.entries(resultado.indice)) {
         const chaves = entradas.map((e) => e.protocoloId);
-        if (new Set(chaves).size !== chaves.length) falhas.push(`#${i} protocolo duplicado em ${ncm}`);
+        if (new Set(chaves).size !== chaves.length)
+          falhas.push(`#${i} protocolo duplicado em ${ncm}`);
       }
 
       // Bloqueios jurídicos jamais viram MVA aplicável.
       for (const bloqueio of resultado.bloqueadas) {
         const noIndice = (resultado.indice[bloqueio.ncm] ?? []).some(
-          (e) => e.protocoloId === bloqueio.protocolo || e.protocoloCodigo === bloqueio.protocolo,
+          (e) => e.protocoloId === bloqueio.protocolo || e.protocoloCodigo === bloqueio.protocolo
         );
         if (noIndice) falhas.push(`#${i} bloqueio ${bloqueio.motivo} vazou para o índice`);
       }
@@ -175,7 +212,10 @@ describe('fuzzing do overlay de MVA/ST — 750 cenários', () => {
       let resolucao;
       try {
         resolucao = resolverMvaSt({
-          ncm: c.ncmConsulta, ufOrigem: c.ufOrigem, ufDestino: c.ufDestino, situacao: c.situacao,
+          ncm: c.ncmConsulta,
+          ufOrigem: c.ufOrigem,
+          ufDestino: c.ufDestino,
+          situacao: c.situacao,
         });
       } catch (erro) {
         falhas.push(`#${i} exceção na resolução: ${String(erro)}`);
@@ -193,7 +233,7 @@ describe('fuzzing do overlay de MVA/ST — 750 cenários', () => {
           ? (resultado.indice[c.ncmConsulta.replace(/\D/g, '')] ?? [])
           : [];
         const casa = entradas.some(
-          (e) => e.origens.includes(c.ufOrigem) && e.destinos.includes(c.ufDestino),
+          (e) => e.origens.includes(c.ufOrigem) && e.destinos.includes(c.ufDestino)
         );
         if (!casa) falhas.push(`#${i} MVA resolvida sem casamento de UFs signatárias`);
       }
@@ -216,19 +256,29 @@ describe('fuzzing do overlay de MVA/ST — 750 cenários', () => {
       }
 
       for (const [campo, valor] of Object.entries({
-        baseSt: calculo.baseSt, icmsSt: calculo.icmsSt, fcpSt: calculo.fcpSt,
-        icmsProprio: calculo.icmsProprio, totalRecolher: calculo.totalRecolher,
-        mvaOriginal: calculo.mvaOriginal, mvaAjustada: calculo.mvaAjustada,
+        baseSt: calculo.baseSt,
+        icmsSt: calculo.icmsSt,
+        fcpSt: calculo.fcpSt,
+        icmsProprio: calculo.icmsProprio,
+        totalRecolher: calculo.totalRecolher,
+        mvaOriginal: calculo.mvaOriginal,
+        mvaAjustada: calculo.mvaAjustada,
       })) {
         if (!Number.isFinite(valor)) falhas.push(`#${i} ${campo} não finito`);
         if (valor < 0) falhas.push(`#${i} ${campo} negativo: ${valor}`);
       }
 
       if (SITUACOES_SEM_ST.includes(c.situacao)) {
-        if (calculo.totalRecolher !== 0 || calculo.baseSt !== 0 || calculo.icmsSt !== 0 || calculo.fcpSt !== 0) {
+        if (
+          calculo.totalRecolher !== 0 ||
+          calculo.baseSt !== 0 ||
+          calculo.icmsSt !== 0 ||
+          calculo.fcpSt !== 0
+        ) {
           falhas.push(`#${i} retenção de ST em operação ${c.situacao}`);
         }
-        if (!calculo.stAfastadaPorRegraJuridica) falhas.push(`#${i} bandeira jurídica não sinalizada`);
+        if (!calculo.stAfastadaPorRegraJuridica)
+          falhas.push(`#${i} bandeira jurídica não sinalizada`);
       }
 
       if (calculo.totalRecolher !== 0) {
@@ -267,7 +317,12 @@ describe('fuzzing do overlay de MVA/ST — 750 cenários', () => {
   it('operação interna converge a MVA ajustada para a MVA original em todas as UFs', () => {
     const falhas: string[] = [];
     for (const uf of UFS) {
-      const r = calcularIcmsSt({ ufOrigem: uf, ufDestino: uf, valorProduto: 10_000, mvaOriginal: 0.4 });
+      const r = calcularIcmsSt({
+        ufOrigem: uf,
+        ufDestino: uf,
+        valorProduto: 10_000,
+        mvaOriginal: 0.4,
+      });
       if (Math.abs(r.mvaAjustada - 0.4) > 1e-9) falhas.push(`${uf}: ${r.mvaAjustada}`);
     }
     expect(falhas).toEqual([]);

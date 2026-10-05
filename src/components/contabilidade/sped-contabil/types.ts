@@ -23,5 +23,4 @@ export type ExportStatus = 'idle' | 'queued' | 'processing' | 'done' | 'error';
 export const DRAFT_KEY = (tipo: 'ECD' | 'ECF', empresaId?: string) =>
   `sped-wizard-draft:${tipo}:${empresaId || '_'}`;
 
-export const AUDIT_EXPANDED_KEY = (empresaId?: string) =>
-  `sped-audit:expanded:${empresaId || '_'}`;
+export const AUDIT_EXPANDED_KEY = (empresaId?: string) => `sped-audit:expanded:${empresaId || '_'}`;

@@ -28,11 +28,11 @@ interface FilterPresetsManagerProps<T> {
   onLoadPreset: (filters: T) => void;
 }
 
-export function FilterPresetsManager<T extends object>({ 
-  entityType, 
-  empresaId, 
-  currentFilters, 
-  onLoadPreset 
+export function FilterPresetsManager<T extends object>({
+  entityType,
+  empresaId,
+  currentFilters,
+  onLoadPreset,
 }: FilterPresetsManagerProps<T>) {
   const { user } = useAuth();
   const { presets, savePreset, deletePreset } = useFilterPresets(entityType, empresaId);
@@ -41,10 +41,10 @@ export function FilterPresetsManager<T extends object>({
 
   const handleSave = async () => {
     if (!newPresetName.trim()) return;
-    
+
     await savePreset.mutateAsync({
       name: newPresetName,
-      filters: currentFilters
+      filters: currentFilters,
     });
 
     if (user) {
@@ -52,7 +52,7 @@ export function FilterPresetsManager<T extends object>({
         userId: user.id,
         actionType: 'preset_saved',
         entityType,
-        newValue: { name: newPresetName, filters: currentFilters }
+        newValue: { name: newPresetName, filters: currentFilters },
       });
     }
 
@@ -62,13 +62,13 @@ export function FilterPresetsManager<T extends object>({
 
   const handleLoad = async (preset: FilterPreset) => {
     onLoadPreset(preset.filters as T);
-    
+
     if (user) {
       await logUserAction({
         userId: user.id,
         actionType: 'preset_loaded',
         entityType,
-        metadata: { presetId: preset.id, presetName: preset.name }
+        metadata: { presetId: preset.id, presetName: preset.name },
       });
     }
   };
@@ -77,15 +77,24 @@ export function FilterPresetsManager<T extends object>({
     <>
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
-          <Button variant="outline" size="sm" className="h-10 rounded-xl border-white/10 bg-card/5 gap-2 px-4 font-bold">
+          <Button
+            variant="outline"
+            size="sm"
+            className="h-10 rounded-xl border-white/10 bg-card/5 gap-2 px-4 font-bold"
+          >
             <FolderOpen className="h-4 w-4 text-primary" />
             <span className="hidden sm:inline">Presets</span>
           </Button>
         </DropdownMenuTrigger>
-        <DropdownMenuContent className="w-56 rounded-2xl border-white/10 bg-background/95 backdrop-blur-xl" align="end">
-          <DropdownMenuLabel className="text-[10px] font-black uppercase tracking-widest opacity-40">Meus Presets</DropdownMenuLabel>
+        <DropdownMenuContent
+          className="w-56 rounded-2xl border-white/10 bg-background/95 backdrop-blur-xl"
+          align="end"
+        >
+          <DropdownMenuLabel className="text-[10px] font-black uppercase tracking-widest opacity-40">
+            Meus Presets
+          </DropdownMenuLabel>
           <DropdownMenuSeparator className="bg-card/5" />
-          
+
           {presets.length === 0 ? (
             <div className="px-2 py-4 text-center text-xs text-muted-foreground italic">
               Nenhum preset salvo
@@ -93,15 +102,15 @@ export function FilterPresetsManager<T extends object>({
           ) : (
             presets.map((preset) => (
               <div key={preset.id} className="flex items-center group">
-                <DropdownMenuItem 
+                <DropdownMenuItem
                   className="flex-1 rounded-xl cursor-pointer"
                   onClick={() => handleLoad(preset)}
                 >
                   <span className="font-bold">{preset.name}</span>
                 </DropdownMenuItem>
-                <Button 
-                  variant="ghost" 
-                  size="icon" 
+                <Button
+                  variant="ghost"
+                  size="icon"
                   className="h-8 w-8 opacity-0 group-hover:opacity-100 text-destructive hover:bg-destructive/10"
                   onClick={(e) => {
                     e.stopPropagation();
@@ -113,9 +122,9 @@ export function FilterPresetsManager<T extends object>({
               </div>
             ))
           )}
-          
+
           <DropdownMenuSeparator className="bg-card/5" />
-          <DropdownMenuItem 
+          <DropdownMenuItem
             className="rounded-xl cursor-pointer text-primary focus:text-primary gap-2"
             onClick={() => setIsDialogOpen(true)}
           >
@@ -128,7 +137,9 @@ export function FilterPresetsManager<T extends object>({
       <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
         <DialogContent className="sm:max-w-md border-none bg-background/95 backdrop-blur-3xl shadow-3xl rounded-[2rem]">
           <DialogHeader>
-            <DialogTitle className="text-2xl font-black tracking-tight">Salvar Novo Preset</DialogTitle>
+            <DialogTitle className="text-2xl font-black tracking-tight">
+              Salvar Novo Preset
+            </DialogTitle>
           </DialogHeader>
           <div className="py-4">
             <Input
@@ -139,8 +150,17 @@ export function FilterPresetsManager<T extends object>({
             />
           </div>
           <DialogFooter>
-            <Button variant="ghost" onClick={() => setIsDialogOpen(false)} className="rounded-xl font-bold">Cancelar</Button>
-            <Button onClick={handleSave} className="rounded-xl font-black bg-primary text-primary-foreground shadow-lg shadow-primary/20">
+            <Button
+              variant="ghost"
+              onClick={() => setIsDialogOpen(false)}
+              className="rounded-xl font-bold"
+            >
+              Cancelar
+            </Button>
+            <Button
+              onClick={handleSave}
+              className="rounded-xl font-black bg-primary text-primary-foreground shadow-lg shadow-primary/20"
+            >
               <Save className="h-4 w-4 mr-2" />
               Salvar Preset
             </Button>

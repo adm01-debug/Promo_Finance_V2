@@ -56,7 +56,7 @@ export function obterAliquotasTransicao(ano: number): AliquotasTransicao {
 export function aplicarRegimeEspecial(
   aliquotaCBS: number,
   aliquotaIBS: number,
-  regime?: RegimeEspecial,
+  regime?: RegimeEspecial
 ): { cbs: number; ibs: number } {
   if (!regime || regime === 'nenhum') {
     return { cbs: aliquotaCBS, ibs: aliquotaIBS };
@@ -97,7 +97,7 @@ export function verificarIsencao(dados: DadosOperacao): { isento: boolean; motiv
       (c) =>
         dados.cfop.startsWith(c.substring(0, 1)) &&
         dados.cfop.length === 4 &&
-        dados.cfop.startsWith('7'),
+        dados.cfop.startsWith('7')
     )
   ) {
     return { isento: true, motivo: 'Exportação identificada pelo CFOP' };

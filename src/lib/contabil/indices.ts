@@ -84,7 +84,7 @@ export function safeDiv(numerador: number, divisor: number): number | null {
 export function classificar(
   valor: number | null,
   limiares: { bom: number; atencao: number },
-  maiorMelhor = true,
+  maiorMelhor = true
 ): FaixaIndice {
   if (valor === null || !Number.isFinite(valor)) return 'indefinido';
   if (maiorMelhor) {
@@ -111,12 +111,16 @@ interface Def {
 /** Helper: razão com motivo padronizado quando o divisor é zero. */
 function razao(n: number, d: number, nomeDivisor: string) {
   const v = safeDiv(n, d);
-  return v === null ? { valor: null, motivo: `${nomeDivisor} igual a zero no período` } : { valor: v };
+  return v === null
+    ? { valor: null, motivo: `${nomeDivisor} igual a zero no período` }
+    : { valor: v };
 }
 
 function pct(n: number, d: number, nomeDivisor: string) {
   const v = safeDiv(n, d);
-  return v === null ? { valor: null, motivo: `${nomeDivisor} igual a zero no período` } : { valor: v * 100 };
+  return v === null
+    ? { valor: null, motivo: `${nomeDivisor} igual a zero no período` }
+    : { valor: v * 100 };
 }
 
 const DEFS: Def[] = [
@@ -162,7 +166,7 @@ const DEFS: Def[] = [
       razao(
         a.ativoCirculante + a.realizavelLp,
         a.passivoCirculante + a.passivoNaoCirculante,
-        'Passivo total',
+        'Passivo total'
       ),
     faixa: (v) => classificar(v, { bom: 1.2, atencao: 1 }),
   },
@@ -288,7 +292,9 @@ const DEFS: Def[] = [
     interpretacao: 'Dias médios de prazo obtido junto a fornecedores.',
     calc: (a) => {
       const r = safeDiv(a.fornecedores, a.cmv);
-      return r === null ? { valor: null, motivo: 'CMV igual a zero no período' } : { valor: r * a.diasPeriodo };
+      return r === null
+        ? { valor: null, motivo: 'CMV igual a zero no período' }
+        : { valor: r * a.diasPeriodo };
     },
     faixa: (v) => classificar(v, { bom: 45, atencao: 20 }),
   },
@@ -301,7 +307,9 @@ const DEFS: Def[] = [
     interpretacao: 'Dias médios de permanência do estoque.',
     calc: (a) => {
       const r = safeDiv(a.estoques, a.cmv);
-      return r === null ? { valor: null, motivo: 'CMV igual a zero no período' } : { valor: r * a.diasPeriodo };
+      return r === null
+        ? { valor: null, motivo: 'CMV igual a zero no período' }
+        : { valor: r * a.diasPeriodo };
     },
     faixa: (v) => classificar(v, { bom: 30, atencao: 60 }, false),
   },

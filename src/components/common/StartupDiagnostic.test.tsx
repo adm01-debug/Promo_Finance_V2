@@ -17,7 +17,11 @@ describe('StartupDiagnostic', () => {
       retry: vi.fn(),
     });
 
-    render(<StartupDiagnostic><main>Login disponível</main></StartupDiagnostic>);
+    render(
+      <StartupDiagnostic>
+        <main>Login disponível</main>
+      </StartupDiagnostic>
+    );
 
     expect(screen.getByText('Login disponível')).toBeInTheDocument();
     const aviso = screen.getByText('Diagnóstico indisponível').closest('aside');
@@ -35,7 +39,11 @@ describe('StartupDiagnostic', () => {
       retry: vi.fn(),
     });
 
-    render(<StartupDiagnostic><main>Rota pública</main></StartupDiagnostic>);
+    render(
+      <StartupDiagnostic>
+        <main>Rota pública</main>
+      </StartupDiagnostic>
+    );
 
     expect(screen.getByText('Rota pública')).toBeInTheDocument();
   });

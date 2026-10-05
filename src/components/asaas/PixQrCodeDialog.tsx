@@ -1,7 +1,13 @@
 // DIALOG: QR Code Pix Viewer
 
 import { useState, useEffect } from 'react';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+} from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Copy, QrCode } from 'lucide-react';
@@ -17,7 +23,14 @@ interface Props {
   empresaId?: string;
 }
 
-export function PixQrCodeDialog({ open, onOpenChange, asaasId, pixCopiaCola, pixQrcode, empresaId }: Props) {
+export function PixQrCodeDialog({
+  open,
+  onOpenChange,
+  asaasId,
+  pixCopiaCola,
+  pixQrcode,
+  empresaId,
+}: Props) {
   const { buscarPixQrCode } = useAsaas(empresaId);
   const [qrData, setQrData] = useState<{ encodedImage?: string; payload?: string } | null>(null);
   const [loading, setLoading] = useState(false);
@@ -25,8 +38,9 @@ export function PixQrCodeDialog({ open, onOpenChange, asaasId, pixCopiaCola, pix
   useEffect(() => {
     if (open && !pixQrcode && !qrData) {
       setLoading(true);
-      buscarPixQrCode.mutateAsync(asaasId)
-        .then(data => setQrData(data))
+      buscarPixQrCode
+        .mutateAsync(asaasId)
+        .then((data) => setQrData(data))
         .catch(() => toast.error('Erro ao buscar QR Code'))
         .finally(() => setLoading(false));
     }
@@ -44,7 +58,13 @@ export function PixQrCodeDialog({ open, onOpenChange, asaasId, pixCopiaCola, pix
   };
 
   return (
-    <Dialog open={open} onOpenChange={(v) => { onOpenChange(v); if (!v) setQrData(null); }}>
+    <Dialog
+      open={open}
+      onOpenChange={(v) => {
+        onOpenChange(v);
+        if (!v) setQrData(null);
+      }}
+    >
       <DialogContent className="sm:max-w-[400px]">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
@@ -75,7 +95,12 @@ export function PixQrCodeDialog({ open, onOpenChange, asaasId, pixCopiaCola, pix
                 <code className="flex-1 text-xs bg-muted p-2 rounded overflow-hidden text-ellipsis whitespace-nowrap">
                   {copiaCola}
                 </code>
-                <Button variant="outline" size="icon" onClick={copyToClipboard} className="shrink-0">
+                <Button
+                  variant="outline"
+                  size="icon"
+                  onClick={copyToClipboard}
+                  className="shrink-0"
+                >
                   <Copy className="h-4 w-4" />
                 </Button>
               </div>

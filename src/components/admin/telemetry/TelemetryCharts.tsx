@@ -1,10 +1,18 @@
-import { useMemo } from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { useMemo } from 'react';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import {
-  AreaChart, Area, BarChart, Bar,
-  XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend,
-} from "recharts";
-import { BarChart3, TrendingUp, Activity } from "lucide-react";
+  AreaChart,
+  Area,
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  ResponsiveContainer,
+  Legend,
+} from 'recharts';
+import { BarChart3, TrendingUp, Activity } from 'lucide-react';
 
 interface TelemetryRow {
   id: string;
@@ -23,18 +31,22 @@ interface TelemetryChartsProps {
 
 function formatBucketTime(ts: number, timeFilter: string): string {
   const d = new Date(ts);
-  if (timeFilter === "7d") {
-    return d.toLocaleDateString("pt-BR", { day: "2-digit", month: "2-digit" });
+  if (timeFilter === '7d') {
+    return d.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' });
   }
-  return d.toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" });
+  return d.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
 }
 
 function getBucketMs(timeFilter: string): number {
   switch (timeFilter) {
-    case "1h": return 5 * 60 * 1000;       // 5 min
-    case "6h": return 30 * 60 * 1000;      // 30 min
-    case "24h": return 60 * 60 * 1000;     // 1 hora
-    default: return 6 * 60 * 60 * 1000;    // 6 horas (7d/custom)
+    case '1h':
+      return 5 * 60 * 1000; // 5 min
+    case '6h':
+      return 30 * 60 * 1000; // 30 min
+    case '24h':
+      return 60 * 60 * 1000; // 1 hora
+    default:
+      return 6 * 60 * 60 * 1000; // 6 horas (7d/custom)
   }
 }
 
@@ -43,28 +55,34 @@ export function TelemetryCharts({ rows, timeFilter }: TelemetryChartsProps) {
   const alertTimeData = useMemo(() => {
     if (rows.length === 0) return [];
     const bucketMs = getBucketMs(timeFilter);
-    const buckets = new Map<number, { ts: number; muitoLentas: number; lentas: number; erros: number }>();
+    const buckets = new Map<
+      number,
+      { ts: number; muitoLentas: number; lentas: number; erros: number }
+    >();
 
     for (const r of rows) {
       const t = new Date(r.created_at).getTime();
       const key = Math.floor(t / bucketMs) * bucketMs;
       const prev = buckets.get(key) || { ts: key, muitoLentas: 0, lentas: 0, erros: 0 };
-      if (r.severity === "very_slow") prev.muitoLentas += 1;
-      else if (r.severity === "slow") prev.lentas += 1;
-      else if (r.severity === "error") prev.erros += 1;
+      if (r.severity === 'very_slow') prev.muitoLentas += 1;
+      else if (r.severity === 'slow') prev.lentas += 1;
+      else if (r.severity === 'error') prev.erros += 1;
       buckets.set(key, prev);
     }
 
     return [...buckets.values()]
       .sort((a, b) => a.ts - b.ts)
-      .map(b => ({ ...b, label: formatBucketTime(b.ts, timeFilter) }));
+      .map((b) => ({ ...b, label: formatBucketTime(b.ts, timeFilter) }));
   }, [rows, timeFilter]);
 
   // ── Chart 2: AreaChart — Duração Média / Máxima ──
   const durationTimeData = useMemo(() => {
     if (rows.length === 0) return [];
     const bucketMs = getBucketMs(timeFilter);
-    const buckets = new Map<number, { ts: number; totalMs: number; count: number; maxMs: number }>();
+    const buckets = new Map<
+      number,
+      { ts: number; totalMs: number; count: number; maxMs: number }
+    >();
 
     for (const r of rows) {
       const t = new Date(r.created_at).getTime();
@@ -78,7 +96,7 @@ export function TelemetryCharts({ rows, timeFilter }: TelemetryChartsProps) {
 
     return [...buckets.values()]
       .sort((a, b) => a.ts - b.ts)
-      .map(b => ({
+      .map((b) => ({
         label: formatBucketTime(b.ts, timeFilter),
         mediaMs: Math.round(b.totalMs / b.count),
         maxMs: b.maxMs,
@@ -90,7 +108,7 @@ export function TelemetryCharts({ rows, timeFilter }: TelemetryChartsProps) {
     if (rows.length === 0) return [];
     const stats = new Map<string, number>();
     for (const r of rows) {
-      const key = r.rpc_name || r.table_name || "unknown";
+      const key = r.rpc_name || r.table_name || 'unknown';
       stats.set(key, (stats.get(key) || 0) + 1);
     }
     return [...stats.entries()]
@@ -101,7 +119,7 @@ export function TelemetryCharts({ rows, timeFilter }: TelemetryChartsProps) {
 
   if (rows.length === 0) return null;
 
-  const formatMs = (v: number) => v >= 1000 ? `${(v / 1000).toFixed(1)}s` : `${v}ms`;
+  const formatMs = (v: number) => (v >= 1000 ? `${(v / 1000).toFixed(1)}s` : `${v}ms`);
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
@@ -122,18 +140,30 @@ export function TelemetryCharts({ rows, timeFilter }: TelemetryChartsProps) {
               <Tooltip contentStyle={{ fontSize: 11, borderRadius: 8 }} />
               <Legend iconSize={10} wrapperStyle={{ fontSize: 10 }} />
               <Area
-                type="monotone" dataKey="muitoLentas" name="Muito Lentas"
-                stackId="1" fill="hsl(var(--destructive))" stroke="hsl(var(--destructive))"
+                type="monotone"
+                dataKey="muitoLentas"
+                name="Muito Lentas"
+                stackId="1"
+                fill="hsl(var(--destructive))"
+                stroke="hsl(var(--destructive))"
                 fillOpacity={0.6}
               />
               <Area
-                type="monotone" dataKey="lentas" name="Lentas"
-                stackId="1" fill="hsl(45, 93%, 47%)" stroke="hsl(45, 93%, 47%)"
+                type="monotone"
+                dataKey="lentas"
+                name="Lentas"
+                stackId="1"
+                fill="hsl(45, 93%, 47%)"
+                stroke="hsl(45, 93%, 47%)"
                 fillOpacity={0.6}
               />
               <Area
-                type="monotone" dataKey="erros" name="Erros"
-                stackId="1" fill="hsl(0, 84%, 60%)" stroke="hsl(0, 84%, 60%)"
+                type="monotone"
+                dataKey="erros"
+                name="Erros"
+                stackId="1"
+                fill="hsl(0, 84%, 60%)"
+                stroke="hsl(0, 84%, 60%)"
                 fillOpacity={0.6}
               />
             </AreaChart>
@@ -161,13 +191,19 @@ export function TelemetryCharts({ rows, timeFilter }: TelemetryChartsProps) {
               />
               <Legend iconSize={10} wrapperStyle={{ fontSize: 10 }} />
               <Area
-                type="monotone" dataKey="maxMs" name="Máxima"
-                fill="hsl(var(--destructive))" stroke="hsl(var(--destructive))"
+                type="monotone"
+                dataKey="maxMs"
+                name="Máxima"
+                fill="hsl(var(--destructive))"
+                stroke="hsl(var(--destructive))"
                 fillOpacity={0.3}
               />
               <Area
-                type="monotone" dataKey="mediaMs" name="Média"
-                fill="hsl(var(--primary))" stroke="hsl(var(--primary))"
+                type="monotone"
+                dataKey="mediaMs"
+                name="Média"
+                fill="hsl(var(--primary))"
+                stroke="hsl(var(--primary))"
                 fillOpacity={0.4}
               />
             </AreaChart>
@@ -188,12 +224,14 @@ export function TelemetryCharts({ rows, timeFilter }: TelemetryChartsProps) {
             <BarChart data={tableData} layout="vertical">
               <CartesianGrid strokeDasharray="3 3" className="opacity-30" />
               <XAxis type="number" tick={{ fontSize: 10 }} allowDecimals={false} />
-              <YAxis
-                type="category" dataKey="name" tick={{ fontSize: 9 }}
-                width={100}
-              />
+              <YAxis type="category" dataKey="name" tick={{ fontSize: 9 }} width={100} />
               <Tooltip contentStyle={{ fontSize: 11, borderRadius: 8 }} />
-              <Bar dataKey="count" fill="hsl(var(--primary))" radius={[0, 4, 4, 0]} name="Alertas" />
+              <Bar
+                dataKey="count"
+                fill="hsl(var(--primary))"
+                radius={[0, 4, 4, 0]}
+                name="Alertas"
+              />
             </BarChart>
           </ResponsiveContainer>
         </CardContent>

@@ -15,7 +15,7 @@ export function gerarEFD_IBS_CBS(
   competencia: string,
   operacoes: OperacaoTributavel[],
   creditos: CreditoTributario[],
-  apuracao: ApuracaoTributaria,
+  apuracao: ApuracaoTributaria
 ): string {
   const linhas: string[] = [];
   const [ano, mes] = competencia.split('-');
@@ -38,7 +38,7 @@ export function gerarEFD_IBS_CBS(
         empresa.inscricaoMunicipal || '',
         '0',
       ],
-    }),
+    })
   );
 
   linhas.push(gerarLinhaSPED({ tipo: '0001', campos: ['0'] }));
@@ -53,7 +53,7 @@ export function gerarEFD_IBS_CBS(
           ? '0'
           : '1',
       ],
-    }),
+    })
   );
 
   let contadorBlocoC = 1;
@@ -61,8 +61,7 @@ export function gerarEFD_IBS_CBS(
   operacoes
     .filter((o) => ['venda', 'compra', 'importacao', 'exportacao'].includes(o.tipo_operacao))
     .forEach((op, index) => {
-      const indOper =
-        op.tipo_operacao === 'venda' || op.tipo_operacao === 'exportacao' ? '1' : '0';
+      const indOper = op.tipo_operacao === 'venda' || op.tipo_operacao === 'exportacao' ? '1' : '0';
 
       linhas.push(
         gerarLinhaSPED({
@@ -90,7 +89,7 @@ export function gerarEFD_IBS_CBS(
             formatarValorSPED(op.ibs_valor),
             formatarValorSPED(op.is_valor),
           ],
-        }),
+        })
       );
       contadorBlocoC++;
 
@@ -110,7 +109,7 @@ export function gerarEFD_IBS_CBS(
             '',
             '0',
           ],
-        }),
+        })
       );
       contadorBlocoC++;
     });
@@ -121,7 +120,7 @@ export function gerarEFD_IBS_CBS(
     gerarLinhaSPED({
       tipo: 'D001',
       campos: [operacoes.filter((o) => o.tipo_operacao.includes('servico')).length > 0 ? '0' : '1'],
-    }),
+    })
   );
 
   let contadorBlocoD = 1;
@@ -147,7 +146,7 @@ export function gerarEFD_IBS_CBS(
             formatarValorSPED(op.cbs_valor),
             formatarValorSPED(op.ibs_valor),
           ],
-        }),
+        })
       );
       contadorBlocoD++;
     });
@@ -169,7 +168,7 @@ export function gerarEFD_IBS_CBS(
             formatarValorSPED(credito.aliquota * 100, 2),
             formatarValorSPED(credito.valor_credito),
           ],
-        }),
+        })
       );
     });
 
@@ -188,7 +187,7 @@ export function gerarEFD_IBS_CBS(
         formatarValorSPED(apuracao.cbs_creditos),
         formatarValorSPED(totalCreditosCBS - apuracao.cbs_creditos),
       ],
-    }),
+    })
   );
 
   creditos
@@ -204,7 +203,7 @@ export function gerarEFD_IBS_CBS(
             formatarValorSPED(credito.aliquota * 100, 2),
             formatarValorSPED(credito.valor_credito),
           ],
-        }),
+        })
       );
     });
 
@@ -223,7 +222,7 @@ export function gerarEFD_IBS_CBS(
         formatarValorSPED(apuracao.ibs_creditos),
         formatarValorSPED(totalCreditosIBS - apuracao.ibs_creditos),
       ],
-    }),
+    })
   );
 
   linhas.push(
@@ -236,7 +235,7 @@ export function gerarEFD_IBS_CBS(
         formatarValorSPED(apuracao.cbs_a_pagar),
         formatarValorSPED(0),
       ],
-    }),
+    })
   );
 
   linhas.push(
@@ -249,7 +248,7 @@ export function gerarEFD_IBS_CBS(
         formatarValorSPED(apuracao.ibs_a_pagar),
         formatarValorSPED(0),
       ],
-    }),
+    })
   );
 
   linhas.push(
@@ -260,7 +259,7 @@ export function gerarEFD_IBS_CBS(
         formatarValorSPED(0),
         formatarValorSPED(apuracao.is_a_pagar),
       ],
-    }),
+    })
   );
 
   linhas.push(gerarLinhaSPED({ tipo: 'M990', campos: ['12'] }));

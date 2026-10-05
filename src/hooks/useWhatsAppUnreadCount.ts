@@ -1,4 +1,3 @@
-
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 
@@ -13,7 +12,7 @@ export function useWhatsAppUnreadCount() {
         .select('*', { count: 'exact', head: true })
         .eq('status', 'recebido')
         .is('lido_em', null);
-      
+
       if (error) return 0;
       return count || 0;
     },

@@ -8,15 +8,7 @@ import { KnownDevicesPanel } from '@/components/security/KnownDevicesPanel';
 import { GeoRestrictionPanel } from '@/components/security/GeoRestrictionPanel';
 import { PermissionGate } from '@/components/auth/PermissionGate';
 import { useAuth } from '@/hooks/useAuth';
-import {
-  Shield,
-  Key,
-  Activity,
-  Settings,
-  UserCog,
-  Monitor,
-  Globe,
-} from 'lucide-react';
+import { Shield, Key, Activity, Settings, UserCog, Monitor, Globe } from 'lucide-react';
 
 export default function Seguranca() {
   const { isAdmin } = useAuth();

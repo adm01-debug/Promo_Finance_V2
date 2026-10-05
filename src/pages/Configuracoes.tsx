@@ -14,7 +14,7 @@ import {
   Link2,
   FileText,
   Brain,
-  Route
+  Route,
 } from 'lucide-react';
 import { RegrasRoteamentoTab } from '@/components/configuracoes/RegrasRoteamentoTab';
 import { OpenFinancePanel } from '@/components/integracoes/OpenFinancePanel';
@@ -46,7 +46,12 @@ import { NotificacoesPreferencias } from '@/components/configuracoes/Notificacoe
 import { ShieldAlert } from 'lucide-react';
 import { AtalhosRapidos } from './Configuracoes.parts';
 import { containerVariants } from './Configuracoes.constants';
-import { etapasIniciais, templatesIniciais, type EtapaConfig, type Template } from './Configuracoes.constants';
+import {
+  etapasIniciais,
+  templatesIniciais,
+  type EtapaConfig,
+  type Template,
+} from './Configuracoes.constants';
 
 export default function Configuracoes() {
   const [etapas, setEtapas] = useState<EtapaConfig[]>(etapasIniciais);
@@ -70,19 +75,17 @@ export default function Configuracoes() {
   });
 
   const toggleEtapa = (id: string) => {
-    setEtapas(prev => prev.map(e =>
-      e.id === id ? { ...e, ativo: !e.ativo } : e
-    ));
+    setEtapas((prev) => prev.map((e) => (e.id === id ? { ...e, ativo: !e.ativo } : e)));
     toast({
-      title: "Etapa atualizada",
-      description: "A régua de cobrança foi atualizada com sucesso.",
+      title: 'Etapa atualizada',
+      description: 'A régua de cobrança foi atualizada com sucesso.',
     });
   };
 
   const savePreferencias = () => {
     toast({
-      title: "Preferências salvas",
-      description: "Suas configurações foram atualizadas com sucesso.",
+      title: 'Preferências salvas',
+      description: 'Suas configurações foram atualizadas com sucesso.',
     });
   };
 
@@ -149,7 +152,10 @@ export default function Configuracoes() {
             <Settings className="h-4 w-4" />
             <span className="hidden sm:inline">Sistema</span>
           </TabsTrigger>
-          <TabsTrigger value="automacao-compras" className="gap-2 text-primary font-bold animate-pulse">
+          <TabsTrigger
+            value="automacao-compras"
+            className="gap-2 text-primary font-bold animate-pulse"
+          >
             <Zap className="h-4 w-4" />
             <span className="hidden sm:inline">IA Compras</span>
           </TabsTrigger>
@@ -166,7 +172,8 @@ export default function Configuracoes() {
                 <Zap className="h-6 w-6 text-primary" /> Automação de Compras IA
               </CardTitle>
               <CardDescription>
-                Configure o motor de inteligência preditiva para compras automáticas e reposição de estoque.
+                Configure o motor de inteligência preditiva para compras automáticas e reposição de
+                estoque.
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-6">
@@ -175,21 +182,27 @@ export default function Configuracoes() {
                   <div className="flex items-center justify-between p-4 rounded-xl border border-white/5 bg-card/5">
                     <div className="space-y-0.5">
                       <Label className="text-sm font-bold">Compras Preditivas</Label>
-                      <p className="text-xs text-muted-foreground">Reposição automática baseada em demanda histórica.</p>
+                      <p className="text-xs text-muted-foreground">
+                        Reposição automática baseada em demanda histórica.
+                      </p>
                     </div>
                     <Switch defaultChecked />
                   </div>
                   <div className="flex items-center justify-between p-4 rounded-xl border border-white/5 bg-card/5">
                     <div className="space-y-0.5">
                       <Label className="text-sm font-bold">Otimização Tributária</Label>
-                      <p className="text-xs text-muted-foreground">Selecionar fornecedores por melhor benefício fiscal (ICMS/IPI).</p>
+                      <p className="text-xs text-muted-foreground">
+                        Selecionar fornecedores por melhor benefício fiscal (ICMS/IPI).
+                      </p>
                     </div>
                     <Switch defaultChecked />
                   </div>
                 </div>
                 <div className="space-y-4">
                   <div className="space-y-2">
-                    <Label className="text-xs font-black uppercase tracking-widest text-muted-foreground">Margem de Segurança (Estoque)</Label>
+                    <Label className="text-xs font-black uppercase tracking-widest text-muted-foreground">
+                      Margem de Segurança (Estoque)
+                    </Label>
                     <Slider defaultValue={[20]} max={50} step={5} />
                     <div className="flex justify-between text-[10px] font-bold text-muted-foreground">
                       <span>Mínimo (5%)</span>
@@ -207,7 +220,10 @@ export default function Configuracoes() {
                 <div className="space-y-1">
                   <p className="text-sm font-bold">Quantum-Sentinel Insight</p>
                   <p className="text-xs text-muted-foreground leading-relaxed">
-                    O motor de IA detectou uma oportunidade de economia tributária de <strong>12.4%</strong> ao centralizar compras de insumos via fornecedores em estados com regime especial de ICMS. Ative a automação para permitir que o sistema sugira ordens de compra otimizadas.
+                    O motor de IA detectou uma oportunidade de economia tributária de{' '}
+                    <strong>12.4%</strong> ao centralizar compras de insumos via fornecedores em
+                    estados com regime especial de ICMS. Ative a automação para permitir que o
+                    sistema sugira ordens de compra otimizadas.
                   </p>
                 </div>
               </div>
@@ -221,7 +237,9 @@ export default function Configuracoes() {
               <CardTitle className="text-xl flex items-center gap-2">
                 <CreditCard className="h-6 w-6 text-primary" /> Integração Asaas
               </CardTitle>
-              <CardDescription>Configurações globais de pagamentos, cobranças e automatização.</CardDescription>
+              <CardDescription>
+                Configurações globais de pagamentos, cobranças e automatização.
+              </CardDescription>
             </CardHeader>
             <CardContent className="space-y-6">
               <div className="bg-muted/30 p-4 rounded-xl border border-dashed text-center">
@@ -247,11 +265,17 @@ export default function Configuracoes() {
               <CardTitle className="text-lg flex items-center gap-2">
                 <FileText className="h-5 w-5 text-primary" /> Mapeamento de Campos (Extrato CSV)
               </CardTitle>
-              <CardDescription>Configure como as colunas do seu arquivo CSV devem ser interpretadas pelo sistema para este CNPJ.</CardDescription>
+              <CardDescription>
+                Configure como as colunas do seu arquivo CSV devem ser interpretadas pelo sistema
+                para este CNPJ.
+              </CardDescription>
             </CardHeader>
             <CardContent>
               <div className="bg-muted/30 p-4 rounded-xl border border-dashed text-center">
-                <p className="text-sm text-muted-foreground">O mapeamento é feito individualmente por conta bancária dentro do menu lateral em <strong>Contas Bancárias → Mapeamento de Extrato</strong>.</p>
+                <p className="text-sm text-muted-foreground">
+                  O mapeamento é feito individualmente por conta bancária dentro do menu lateral em{' '}
+                  <strong>Contas Bancárias → Mapeamento de Extrato</strong>.
+                </p>
               </div>
             </CardContent>
           </Card>
@@ -274,7 +298,10 @@ export default function Configuracoes() {
 
         {/* Notificações */}
         <TabsContent value="notificacoes">
-          <NotificacoesPreferencias preferencias={preferencias} onPreferenciasChange={setPreferencias} />
+          <NotificacoesPreferencias
+            preferencias={preferencias}
+            onPreferenciasChange={setPreferencias}
+          />
         </TabsContent>
 
         {/* Agendamentos / Cron Jobs */}
@@ -306,7 +333,11 @@ export default function Configuracoes() {
 
         {/* Sistema */}
         <TabsContent value="sistema">
-          <SistemaTab preferencias={preferencias} onPreferenciasChange={setPreferencias} onSave={savePreferencias} />
+          <SistemaTab
+            preferencias={preferencias}
+            onPreferenciasChange={setPreferencias}
+            onSave={savePreferencias}
+          />
         </TabsContent>
 
         {/* Segurança */}

@@ -51,7 +51,11 @@ export function gerarGraficoComparativoBase64(decisao: ResultadoDecisao): string
     ctx.fillStyle = '#0f172a';
     ctx.font = 'bold 13px sans-serif';
     ctx.textAlign = 'left';
-    ctx.fillText(`${fmt(c.totalTributos)} (${pct(c.cargaEfetiva)})`, padding.left + w + 8, y + barH / 2 + 5);
+    ctx.fillText(
+      `${fmt(c.totalTributos)} (${pct(c.cargaEfetiva)})`,
+      padding.left + w + 8,
+      y + barH / 2 + 5
+    );
   });
 
   ctx.textAlign = 'left';

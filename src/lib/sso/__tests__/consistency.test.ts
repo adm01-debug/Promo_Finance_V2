@@ -30,13 +30,15 @@ describe('validateSSOConfig — happy path', () => {
 
 describe('claim_mapping', () => {
   it('cm.email.missing quando email vazio', () => {
-    expect(ids({ ...baseValid, claim_mapping: { email: '', full_name: 'name', groups: 'groups' } }))
-      .toContain('cm.email.missing');
+    expect(
+      ids({ ...baseValid, claim_mapping: { email: '', full_name: 'name', groups: 'groups' } })
+    ).toContain('cm.email.missing');
   });
 
   it('cm.email.unknown_for_preset em azure com claim atípica', () => {
-    expect(ids({ ...baseValid, claim_mapping: { email: 'mail', full_name: 'name', groups: 'groups' } }))
-      .toContain('cm.email.unknown_for_preset');
+    expect(
+      ids({ ...baseValid, claim_mapping: { email: 'mail', full_name: 'name', groups: 'groups' } })
+    ).toContain('cm.email.unknown_for_preset');
   });
 
   it('cm.groups.unused quando groups definido sem mappings', () => {
@@ -50,59 +52,79 @@ describe('allowed_domains', () => {
   });
 
   it('dom.duplicate quando repetido', () => {
-    expect(ids({ ...baseValid, allowed_domains: ['empresa.com', 'empresa.com'] })).toContain('dom.duplicate');
+    expect(ids({ ...baseValid, allowed_domains: ['empresa.com', 'empresa.com'] })).toContain(
+      'dom.duplicate'
+    );
   });
 
   it('dom.case_or_whitespace quando tem maiúscula/espaço', () => {
-    expect(ids({ ...baseValid, allowed_domains: [' Empresa.com '] })).toContain('dom.case_or_whitespace');
+    expect(ids({ ...baseValid, allowed_domains: [' Empresa.com '] })).toContain(
+      'dom.case_or_whitespace'
+    );
   });
 
   it('dom.empty_with_jit quando JIT ligado e sem domínios', () => {
-    expect(ids({ ...baseValid, allowed_domains: [], auto_provision_users: true }))
-      .toContain('dom.empty_with_jit');
+    expect(ids({ ...baseValid, allowed_domains: [], auto_provision_users: true })).toContain(
+      'dom.empty_with_jit'
+    );
   });
 
   it('dom.force_without_domains quando force ligado e sem domínios', () => {
-    expect(ids({ ...baseValid, allowed_domains: [], auto_provision_users: false, force_sso_for_domains: true }))
-      .toContain('dom.force_without_domains');
+    expect(
+      ids({
+        ...baseValid,
+        allowed_domains: [],
+        auto_provision_users: false,
+        force_sso_for_domains: true,
+      })
+    ).toContain('dom.force_without_domains');
   });
 });
 
 describe('role_mappings', () => {
   it('rm.empty_group quando idp_group em branco', () => {
-    expect(ids({ ...baseValid, role_mappings: [{ idp_group: '', app_role: 'visualizador' }] }))
-      .toContain('rm.empty_group');
+    expect(
+      ids({ ...baseValid, role_mappings: [{ idp_group: '', app_role: 'visualizador' }] })
+    ).toContain('rm.empty_group');
   });
 
   it('rm.duplicate_group quando mesmo grupo 2x', () => {
-    expect(ids({
-      ...baseValid,
-      role_mappings: [
-        { idp_group: 'X', app_role: 'visualizador' },
-        { idp_group: 'X', app_role: 'financeiro' },
-      ],
-    })).toContain('rm.duplicate_group');
+    expect(
+      ids({
+        ...baseValid,
+        role_mappings: [
+          { idp_group: 'X', app_role: 'visualizador' },
+          { idp_group: 'X', app_role: 'financeiro' },
+        ],
+      })
+    ).toContain('rm.duplicate_group');
   });
 
   it('rm.unknown_role quando papel inválido', () => {
-    expect(ids({
-      ...baseValid,
-      role_mappings: [{ idp_group: 'X', app_role: 'super-root' }],
-    })).toContain('rm.unknown_role');
+    expect(
+      ids({
+        ...baseValid,
+        role_mappings: [{ idp_group: 'X', app_role: 'super-root' }],
+      })
+    ).toContain('rm.unknown_role');
   });
 
   it('rm.coverage_missing quando preset azure sem grupos típicos', () => {
-    expect(ids({
-      ...baseValid,
-      role_mappings: [{ idp_group: 'Custom', app_role: 'visualizador' }],
-    })).toContain('rm.coverage_missing');
+    expect(
+      ids({
+        ...baseValid,
+        role_mappings: [{ idp_group: 'Custom', app_role: 'visualizador' }],
+      })
+    ).toContain('rm.coverage_missing');
   });
 
   it('rm.no_admin_route quando nenhum mapping resolve admin', () => {
-    expect(ids({
-      ...baseValid,
-      role_mappings: [{ idp_group: 'Admins-Financeiro', app_role: 'financeiro' }],
-    })).toContain('rm.no_admin_route');
+    expect(
+      ids({
+        ...baseValid,
+        role_mappings: [{ idp_group: 'Admins-Financeiro', app_role: 'financeiro' }],
+      })
+    ).toContain('rm.no_admin_route');
   });
 });
 

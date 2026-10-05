@@ -129,18 +129,18 @@ describe('registrarPagamento', () => {
     act(() => result.current.registrarPagamento(PAGAMENTO));
 
     await waitFor(() =>
-      expect(
-        escritas.some((e) => e.tabela === 'contas_receber' && e.metodo === 'update')
-      ).toBe(true)
+      expect(escritas.some((e) => e.tabela === 'contas_receber' && e.metodo === 'update')).toBe(
+        true
+      )
     );
 
     const escritaContasReceber = escritas.find(
       (e) => e.tabela === 'contas_receber' && e.metodo === 'update'
     );
     expect(escritaContasReceber?.payload).toMatchObject({ status: 'recebido' });
-    expect((escritaContasReceber?.payload as { data_recebimento?: string })?.data_recebimento).toMatch(
-      /^\d{4}-\d{2}-\d{2}$/
-    );
+    expect(
+      (escritaContasReceber?.payload as { data_recebimento?: string })?.data_recebimento
+    ).toMatch(/^\d{4}-\d{2}-\d{2}$/);
   });
 
   it('quita o acordo sem quebrar quando contas_receber_ids vem vazio/nulo', async () => {

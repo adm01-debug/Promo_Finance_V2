@@ -1,11 +1,23 @@
 // DIALOG: Transferência Pix ASAAS
 
 import { useState, useEffect } from 'react';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+} from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
 import { ConfirmationDialog } from '@/components/ui/confirmation-dialog';
 import { Loader2, Send, AlertCircle, CheckCircle2 } from 'lucide-react';
@@ -34,13 +46,13 @@ export function TransferenciaPixDialog({ open, onOpenChange, empresaId }: Props)
       setIsValidKey(null);
       return;
     }
-    
+
     let valid = true;
     if (tipoChave === 'CPF') valid = validateCPF(chavePix);
     else if (tipoChave === 'CNPJ') valid = validateCNPJ(chavePix);
     else if (tipoChave === 'EMAIL') valid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(chavePix);
     else if (tipoChave === 'PHONE') valid = chavePix.replace(/\D/g, '').length >= 10;
-    
+
     setIsValidKey(valid);
   }, [chavePix, tipoChave]);
 
@@ -66,7 +78,7 @@ export function TransferenciaPixDialog({ open, onOpenChange, empresaId }: Props)
     try {
       // Gerar chave de idempotência (ex: timestamp + chave + valor)
       const idempotencyKey = `pix_${Date.now()}_${chavePix}_${valor}`;
-      
+
       await transferirPix.mutateAsync({
         valor: parseFloat(valor),
         chave_pix: chavePix,
@@ -75,7 +87,9 @@ export function TransferenciaPixDialog({ open, onOpenChange, empresaId }: Props)
         empresa_id: empresaId,
         idempotency_key: idempotencyKey,
       });
-      setValor(''); setChavePix(''); setDescricao('');
+      setValor('');
+      setChavePix('');
+      setDescricao('');
       onOpenChange(false);
     } catch {
       // handled by hook
@@ -94,13 +108,22 @@ export function TransferenciaPixDialog({ open, onOpenChange, empresaId }: Props)
           <div className="space-y-4 mt-2">
             <div className="space-y-2">
               <Label>Valor (R$) *</Label>
-              <Input type="number" step="0.01" min="0.01" value={valor} onChange={e => setValor(e.target.value)} placeholder="100.00" />
+              <Input
+                type="number"
+                step="0.01"
+                min="0.01"
+                value={valor}
+                onChange={(e) => setValor(e.target.value)}
+                placeholder="100.00"
+              />
             </div>
             <div className="grid grid-cols-3 gap-2">
               <div className="col-span-1 space-y-2">
                 <Label>Tipo</Label>
                 <Select value={tipoChave} onValueChange={setTipoChave}>
-                  <SelectTrigger><SelectValue /></SelectTrigger>
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="CPF">CPF</SelectItem>
                     <SelectItem value="CNPJ">CNPJ</SelectItem>
@@ -113,26 +136,49 @@ export function TransferenciaPixDialog({ open, onOpenChange, empresaId }: Props)
               <div className="col-span-2 space-y-2">
                 <Label className="flex justify-between">
                   Chave Pix *
-                  {isValidKey === true && <span className="text-[10px] text-success flex items-center gap-1"><CheckCircle2 className="h-3 w-3" /> Válida</span>}
-                  {isValidKey === false && <span className="text-[10px] text-destructive flex items-center gap-1"><AlertCircle className="h-3 w-3" /> Inválida</span>}
+                  {isValidKey === true && (
+                    <span className="text-[10px] text-success flex items-center gap-1">
+                      <CheckCircle2 className="h-3 w-3" /> Válida
+                    </span>
+                  )}
+                  {isValidKey === false && (
+                    <span className="text-[10px] text-destructive flex items-center gap-1">
+                      <AlertCircle className="h-3 w-3" /> Inválida
+                    </span>
+                  )}
                 </Label>
-                <Input 
-                  value={chavePix} 
-                  onChange={e => setChavePix(e.target.value)} 
-                  placeholder="Chave Pix do destinatário" 
-                  className={isValidKey === false ? 'border-destructive focus-visible:ring-destructive' : ''}
+                <Input
+                  value={chavePix}
+                  onChange={(e) => setChavePix(e.target.value)}
+                  placeholder="Chave Pix do destinatário"
+                  className={
+                    isValidKey === false ? 'border-destructive focus-visible:ring-destructive' : ''
+                  }
                 />
               </div>
             </div>
             <div className="space-y-2">
               <Label>Descrição</Label>
-              <Textarea value={descricao} onChange={e => setDescricao(e.target.value)} placeholder="Descrição da transferência..." rows={2} />
+              <Textarea
+                value={descricao}
+                onChange={(e) => setDescricao(e.target.value)}
+                placeholder="Descrição da transferência..."
+                rows={2}
+              />
             </div>
-            <Button className="w-full" onClick={handleConfirmar} disabled={transferirPix.isPending || !chavePix || !valor}>
+            <Button
+              className="w-full"
+              onClick={handleConfirmar}
+              disabled={transferirPix.isPending || !chavePix || !valor}
+            >
               {transferirPix.isPending ? (
-                <><Loader2 className="h-4 w-4 mr-2 animate-spin" /> Transferindo...</>
+                <>
+                  <Loader2 className="h-4 w-4 mr-2 animate-spin" /> Transferindo...
+                </>
               ) : (
-                <><Send className="h-4 w-4 mr-2" /> Enviar Pix</>
+                <>
+                  <Send className="h-4 w-4 mr-2" /> Enviar Pix
+                </>
               )}
             </Button>
           </div>

@@ -5,19 +5,12 @@ import { motion } from 'framer-motion';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
-import { 
-  Calendar, 
-  CheckCircle2, 
-  Clock, 
-  ArrowRight,
-  AlertCircle,
-  Info,
-} from 'lucide-react';
+import { Calendar, CheckCircle2, Clock, ArrowRight, AlertCircle, Info } from 'lucide-react';
 import useReformaTributaria from '@/hooks/useReformaTributaria';
 
 const itemVariants = {
   hidden: { x: -20, opacity: 0 },
-  visible: { x: 0, opacity: 1 }
+  visible: { x: 0, opacity: 1 },
 };
 
 export function CronogramaTransicao() {
@@ -37,9 +30,17 @@ export function CronogramaTransicao() {
   const getStatusBadge = (status: string) => {
     switch (status) {
       case 'concluido':
-        return <Badge variant="default" className="bg-success">Concluído</Badge>;
+        return (
+          <Badge variant="default" className="bg-success">
+            Concluído
+          </Badge>
+        );
       case 'em_andamento':
-        return <Badge variant="default" className="bg-primary">Em Andamento</Badge>;
+        return (
+          <Badge variant="default" className="bg-primary">
+            Em Andamento
+          </Badge>
+        );
       default:
         return <Badge variant="secondary">Futuro</Badge>;
     }
@@ -50,7 +51,8 @@ export function CronogramaTransicao() {
       case 2026:
         return {
           titulo: 'Fase de Testes',
-          descricao: 'CBS com alíquota de teste (0,9%) e IBS simbólico (0,1%). Empresas começam a adaptar sistemas.',
+          descricao:
+            'CBS com alíquota de teste (0,9%) e IBS simbólico (0,1%). Empresas começam a adaptar sistemas.',
           marcos: [
             'Início da emissão de NF-e com campos IBS/CBS',
             'Split Payment em fase piloto',
@@ -60,7 +62,8 @@ export function CronogramaTransicao() {
       case 2027:
         return {
           titulo: 'CBS Plena',
-          descricao: 'CBS assume alíquota cheia. PIS e COFINS são extintos para o regime não-cumulativo.',
+          descricao:
+            'CBS assume alíquota cheia. PIS e COFINS são extintos para o regime não-cumulativo.',
           marcos: [
             'Extinção de PIS e COFINS (não-cumulativo)',
             'CBS com alíquota de referência (~8.8%)',
@@ -101,11 +104,7 @@ export function CronogramaTransicao() {
         return {
           titulo: 'Transição 50%',
           descricao: 'Marco de metade da transição. IBS e tributos antigos em paridade.',
-          marcos: [
-            'IBS assume 50% da carga',
-            'ICMS e ISS na metade',
-            'Avaliação de impactos',
-          ],
+          marcos: ['IBS assume 50% da carga', 'ICMS e ISS na metade', 'Avaliação de impactos'],
         };
       case 2032:
         return {
@@ -145,9 +144,7 @@ export function CronogramaTransicao() {
             <Calendar className="h-5 w-5" />
             Cronograma da Reforma Tributária
           </CardTitle>
-          <CardDescription>
-            Período de transição conforme EC 132/2023 e LC 214/2025
-          </CardDescription>
+          <CardDescription>Período de transição conforme EC 132/2023 e LC 214/2025</CardDescription>
         </CardHeader>
         <CardContent>
           <div className="flex items-center gap-4 text-sm">
@@ -171,12 +168,12 @@ export function CronogramaTransicao() {
       <div className="relative">
         {/* Linha central */}
         <div className="absolute left-8 top-0 bottom-0 w-0.5 bg-border" />
-        
+
         <div className="space-y-8">
           {cronogramaTransicao.map((etapa, index) => {
             const info = getDescricaoFase(etapa.ano);
             const isAtual = etapa.ano === anoReferencia;
-            
+
             return (
               <motion.div
                 key={etapa.ano}
@@ -187,8 +184,10 @@ export function CronogramaTransicao() {
                 className={`relative pl-20 ${isAtual ? 'scale-[1.02]' : ''}`}
               >
                 {/* Círculo do timeline */}
-                <div className={`absolute left-6 w-5 h-5 rounded-full ${getStatusColor(etapa.status)} border-4 border-background`} />
-                
+                <div
+                  className={`absolute left-6 w-5 h-5 rounded-full ${getStatusColor(etapa.status)} border-4 border-background`}
+                />
+
                 <Card className={isAtual ? 'ring-2 ring-primary' : ''}>
                   <CardHeader className="pb-2">
                     <div className="flex items-center justify-between">
@@ -237,7 +236,10 @@ export function CronogramaTransicao() {
                       <p className="text-sm font-medium">Marcos Principais:</p>
                       <ul className="space-y-1">
                         {info.marcos.map((marco, i) => (
-                          <li key={i} className="flex items-start gap-2 text-sm text-muted-foreground">
+                          <li
+                            key={i}
+                            className="flex items-start gap-2 text-sm text-muted-foreground"
+                          >
                             {etapa.status === 'concluido' ? (
                               <CheckCircle2 className="h-4 w-4 text-success mt-0.5 shrink-0" />
                             ) : etapa.status === 'em_andamento' ? (
@@ -273,37 +275,41 @@ export function CronogramaTransicao() {
               <div>
                 <p className="font-medium">Período de Adaptação</p>
                 <p className="text-sm text-muted-foreground">
-                  O período de 2026 é considerado fase de testes. Penalidades por erros de cálculo serão reduzidas ou isentas.
+                  O período de 2026 é considerado fase de testes. Penalidades por erros de cálculo
+                  serão reduzidas ou isentas.
                 </p>
               </div>
             </div>
-            
+
             <div className="flex items-start gap-3 p-4 bg-muted/50 rounded-lg">
               <AlertCircle className="h-5 w-5 text-primary mt-0.5" />
               <div>
                 <p className="font-medium">Créditos Acumulados</p>
                 <p className="text-sm text-muted-foreground">
-                  Créditos de ICMS acumulados até 2032 poderão ser compensados ou ressarcidos conforme regulamentação específica.
+                  Créditos de ICMS acumulados até 2032 poderão ser compensados ou ressarcidos
+                  conforme regulamentação específica.
                 </p>
               </div>
             </div>
-            
+
             <div className="flex items-start gap-3 p-4 bg-muted/50 rounded-lg">
               <AlertCircle className="h-5 w-5 text-success mt-0.5" />
               <div>
                 <p className="font-medium">Split Payment</p>
                 <p className="text-sm text-muted-foreground">
-                  A partir de 2026, o pagamento fracionado (split payment) será obrigatório para operações com cartão e Pix.
+                  A partir de 2026, o pagamento fracionado (split payment) será obrigatório para
+                  operações com cartão e Pix.
                 </p>
               </div>
             </div>
-            
+
             <div className="flex items-start gap-3 p-4 bg-muted/50 rounded-lg">
               <AlertCircle className="h-5 w-5 text-secondary-foreground mt-0.5" />
               <div>
                 <p className="font-medium">Documentos Fiscais</p>
                 <p className="text-sm text-muted-foreground">
-                  NF-e e NFC-e terão novos campos obrigatórios para IBS, CBS e IS a partir de janeiro de 2026.
+                  NF-e e NFC-e terão novos campos obrigatórios para IBS, CBS e IS a partir de
+                  janeiro de 2026.
                 </p>
               </div>
             </div>

@@ -1,7 +1,13 @@
 import { ReactNode } from 'react';
 import { motion } from 'framer-motion';
 import { Button } from '@/components/ui/button';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 import { X } from 'lucide-react';
 import { StandardFilterSection } from '@/components/shared/StandardFilterSection';
 
@@ -27,9 +33,18 @@ interface Props {
 }
 
 export function FornecedoresFiltersPanel({
-  searchTerm, onSearchChange, statusFilter, onStatusChange,
-  estadoFilter, onEstadoChange, estados, hasActiveFilters,
-  onClearFilters, filteredCount, totalCount, clearSlot,
+  searchTerm,
+  onSearchChange,
+  statusFilter,
+  onStatusChange,
+  estadoFilter,
+  onEstadoChange,
+  estados,
+  hasActiveFilters,
+  onClearFilters,
+  filteredCount,
+  totalCount,
+  clearSlot,
 }: Props) {
   return (
     <motion.div variants={itemVariants}>
@@ -57,13 +72,15 @@ export function FornecedoresFiltersPanel({
           <SelectContent>
             <SelectItem value="all">Todos</SelectItem>
             {estados.map((estado) => (
-              <SelectItem key={estado} value={estado}>{estado}</SelectItem>
+              <SelectItem key={estado} value={estado}>
+                {estado}
+              </SelectItem>
             ))}
           </SelectContent>
         </Select>
 
-        {clearSlot ?? (
-          hasActiveFilters && (
+        {clearSlot ??
+          (hasActiveFilters && (
             <Button
               variant="ghost"
               size="sm"
@@ -73,8 +90,7 @@ export function FornecedoresFiltersPanel({
               <X className="h-4 w-4 mr-1" />
               Limpar
             </Button>
-          )
-        )}
+          ))}
 
         <div className="ml-auto text-sm text-muted-foreground whitespace-nowrap">
           {filteredCount} de {totalCount} fornecedores

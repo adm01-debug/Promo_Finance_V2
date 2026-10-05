@@ -10,7 +10,13 @@ interface Props {
   aliquotaCSLL: number;
 }
 
-export function IRPJCSLLResumoCards({ totaisAno, qtdApuracoes, saldoPrejuizos, aliquotaIRPJ, aliquotaCSLL }: Props) {
+export function IRPJCSLLResumoCards({
+  totaisAno,
+  qtdApuracoes,
+  saldoPrejuizos,
+  aliquotaIRPJ,
+  aliquotaCSLL,
+}: Props) {
   return (
     <div className="grid gap-4 md:grid-cols-4">
       <Card>
@@ -20,7 +26,9 @@ export function IRPJCSLLResumoCards({ totaisAno, qtdApuracoes, saldoPrejuizos, a
         </CardHeader>
         <CardContent>
           <div className="text-2xl font-bold text-primary">{formatCurrency(totaisAno.irpj)}</div>
-          <p className="text-xs text-muted-foreground">Alíquota: {(aliquotaIRPJ * 100).toFixed(0)}% + 10% adicional</p>
+          <p className="text-xs text-muted-foreground">
+            Alíquota: {(aliquotaIRPJ * 100).toFixed(0)}% + 10% adicional
+          </p>
         </CardContent>
       </Card>
 
@@ -31,7 +39,9 @@ export function IRPJCSLLResumoCards({ totaisAno, qtdApuracoes, saldoPrejuizos, a
         </CardHeader>
         <CardContent>
           <div className="text-2xl font-bold text-success">{formatCurrency(totaisAno.csll)}</div>
-          <p className="text-xs text-muted-foreground">Alíquota: {(aliquotaCSLL * 100).toFixed(0)}%</p>
+          <p className="text-xs text-muted-foreground">
+            Alíquota: {(aliquotaCSLL * 100).toFixed(0)}%
+          </p>
         </CardContent>
       </Card>
 
@@ -56,7 +66,8 @@ export function IRPJCSLLResumoCards({ totaisAno, qtdApuracoes, saldoPrejuizos, a
             {formatCurrency(saldoPrejuizos.irpj + saldoPrejuizos.csll)}
           </div>
           <p className="text-xs text-muted-foreground">
-            IRPJ: {formatCurrency(saldoPrejuizos.irpj)} | CSLL: {formatCurrency(saldoPrejuizos.csll)}
+            IRPJ: {formatCurrency(saldoPrejuizos.irpj)} | CSLL:{' '}
+            {formatCurrency(saldoPrejuizos.csll)}
           </p>
         </CardContent>
       </Card>

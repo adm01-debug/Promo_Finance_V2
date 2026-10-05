@@ -43,17 +43,27 @@ export function ConformidadeFiscalCard({ empresaId }: Props) {
           onClick={() => verificar.mutate()}
           className="gap-1"
         >
-          {verificar.isPending ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Play className="h-3.5 w-3.5" />}
+          {verificar.isPending ? (
+            <Loader2 className="h-3.5 w-3.5 animate-spin" />
+          ) : (
+            <Play className="h-3.5 w-3.5" />
+          )}
           Verificar
         </Button>
       </CardHeader>
       <CardContent className="space-y-3">
         {!data ? (
           <div className="text-center py-8 text-sm text-muted-foreground">
-            {empresaId ? 'Clique em "Verificar" para rodar 8 checks automáticos' : 'Selecione uma empresa'}
+            {empresaId
+              ? 'Clique em "Verificar" para rodar 8 checks automáticos'
+              : 'Selecione uma empresa'}
           </div>
         ) : (
-          <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} className="space-y-3">
+          <motion.div
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            className="space-y-3"
+          >
             <div className="flex items-end gap-3">
               <div className={`text-4xl font-bold ${NIVEL_COLOR[data.nivel]}`}>{data.score}</div>
               <div className="text-xs text-muted-foreground pb-1">/100</div>
@@ -69,11 +79,16 @@ export function ConformidadeFiscalCard({ empresaId }: Props) {
 
             <div className="space-y-1.5 max-h-48 overflow-y-auto pr-1">
               {data.itens.map((item) => (
-                <div key={item.id} className="flex items-start gap-2 text-xs p-2 rounded-md bg-muted/30">
+                <div
+                  key={item.id}
+                  className="flex items-start gap-2 text-xs p-2 rounded-md bg-muted/30"
+                >
                   {STATUS_ICON[item.status]}
                   <div className="flex-1 min-w-0">
                     <div className="font-medium truncate">{item.titulo}</div>
-                    {item.detalhes && <div className="text-muted-foreground truncate">{item.detalhes}</div>}
+                    {item.detalhes && (
+                      <div className="text-muted-foreground truncate">{item.detalhes}</div>
+                    )}
                   </div>
                 </div>
               ))}

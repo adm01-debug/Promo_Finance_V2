@@ -5,11 +5,7 @@ import type { AnexoSimples } from '../types';
 import type { RegistroIssMunicipalBanco } from '../ipi-iss/overlay-iss';
 import type { NcmBanco } from './coerencia-ncm';
 
-import type {
-  AliquotaInterestadualCatalogo,
-  FaixaSimplesCatalogo,
-  UfCatalogo,
-} from './types';
+import type { AliquotaInterestadualCatalogo, FaixaSimplesCatalogo, UfCatalogo } from './types';
 
 /** Data de referência ISO (yyyy-mm-dd) usada nos filtros de vigência. */
 export function hojeIso(): string {
@@ -36,17 +32,19 @@ export function normalizarReferencia(entrada?: string | Date | null): string {
 
 function aplicarVigencia<T extends { vigente_de: string; vigente_ate: string | null }>(
   registros: readonly T[],
-  referencia: string,
+  referencia: string
 ): T[] {
   return registros.filter(
-    (r) => r.vigente_de <= referencia && (r.vigente_ate === null || r.vigente_ate >= referencia),
+    (r) => r.vigente_de <= referencia && (r.vigente_ate === null || r.vigente_ate >= referencia)
   );
 }
 
 export async function buscarUfs(referencia: string = hojeIso()): Promise<UfCatalogo[]> {
   const { data, error } = await supabase
     .from('ufs')
-    .select('sigla, nome, codigo_ibge, regiao, aliquota_interna_padrao, possui_fcp, aliquota_fcp, exige_antecipacao, difal_base_dupla, vigente_de, vigente_ate')
+    .select(
+      'sigla, nome, codigo_ibge, regiao, aliquota_interna_padrao, possui_fcp, aliquota_fcp, exige_antecipacao, difal_base_dupla, vigente_de, vigente_ate'
+    )
     .order('sigla');
 
   if (error) throw error;
@@ -62,7 +60,7 @@ export async function buscarUfs(referencia: string = hojeIso()): Promise<UfCatal
 }
 
 export async function buscarAliquotasInterestaduais(
-  referencia: string = hojeIso(),
+  referencia: string = hojeIso()
 ): Promise<AliquotaInterestadualCatalogo[]> {
   const { data, error } = await supabase
     .from('aliquotas_interestaduais')
@@ -80,7 +78,7 @@ export async function buscarAliquotasInterestaduais(
 }
 
 export async function buscarFaixasSimples(
-  referencia: string = hojeIso(),
+  referencia: string = hojeIso()
 ): Promise<FaixaSimplesCatalogo[]> {
   const { data, error } = await supabase
     .from('faixas_simples_nacional')
@@ -134,7 +132,7 @@ export async function buscarCnaes(): Promise<CnaeCatalogo[]> {
   const { data, error } = await supabase
     .from('cnaes')
     .select(
-      'codigo, descricao, anexo_simples, sujeito_fator_r, vedado_simples, presuncao_irpj, presuncao_csll, rat_padrao, terceiros_padrao',
+      'codigo, descricao, anexo_simples, sujeito_fator_r, vedado_simples, presuncao_irpj, presuncao_csll, rat_padrao, terceiros_padrao'
     )
     .order('codigo');
 
@@ -182,7 +180,9 @@ export interface ItemListaIssCatalogo {
 export async function buscarNcms(referencia: string = hojeIso()): Promise<NcmBanco[]> {
   const { data, error } = await supabase
     .from('ncms')
-    .select('codigo, descricao, aliquota_ipi, monofasico_pis_cofins, sujeito_st, mva_padrao, vigente_de, vigente_ate')
+    .select(
+      'codigo, descricao, aliquota_ipi, monofasico_pis_cofins, sujeito_st, mva_padrao, vigente_de, vigente_ate'
+    )
     .order('codigo');
 
   if (error) throw error;
@@ -202,11 +202,13 @@ export async function buscarNcms(referencia: string = hojeIso()): Promise<NcmBan
 }
 
 export async function buscarItensListaIss(
-  referencia: string = hojeIso(),
+  referencia: string = hojeIso()
 ): Promise<ItemListaIssCatalogo[]> {
   const { data, error } = await supabase
     .from('itens_lista_iss')
-    .select('codigo, descricao, retem_no_tomador, aliquota_minima, aliquota_maxima, vigente_de, vigente_ate')
+    .select(
+      'codigo, descricao, retem_no_tomador, aliquota_minima, aliquota_maxima, vigente_de, vigente_ate'
+    )
     .order('codigo');
 
   if (error) throw error;
@@ -230,11 +232,13 @@ export async function buscarItensListaIss(
  * cargo do overlay — aqui só normalizamos o formato.
  */
 export async function buscarAliquotasIssMunicipais(
-  referencia: string = hojeIso(),
+  referencia: string = hojeIso()
 ): Promise<RegistroIssMunicipalBanco[]> {
   const { data, error } = await supabase
     .from('aliquotas_iss_municipal')
-    .select('codigo_ibge, municipio, uf, aliquota, vigente_de, vigente_ate, base_legal, itens_lista_iss(codigo)')
+    .select(
+      'codigo_ibge, municipio, uf, aliquota, vigente_de, vigente_ate, base_legal, itens_lista_iss(codigo)'
+    )
     .order('codigo_ibge');
 
   if (error) throw error;
@@ -258,7 +262,7 @@ export async function buscarAliquotasIssMunicipais(
   return normalizados.filter(
     (r) =>
       (r.vigente_de === null || r.vigente_de === undefined || r.vigente_de <= referencia) &&
-      (r.vigente_ate === null || r.vigente_ate === undefined || r.vigente_ate >= referencia),
+      (r.vigente_ate === null || r.vigente_ate === undefined || r.vigente_ate >= referencia)
   );
 }
 
@@ -280,21 +284,23 @@ export interface ProtocoloStNcmCatalogo {
  * encerramento — o recorte considera a vigência do vínculo E a do protocolo.
  */
 export async function buscarProtocolosStNcms(
-  referencia: string = hojeIso(),
+  referencia: string = hojeIso()
 ): Promise<ProtocoloStNcmCatalogo[]> {
   const { data, error } = await supabase
     .from('protocolos_st_ncms')
     .select(
-      'protocolo_id, ncm_codigo, mva_original, cest, vigente_de, vigente_ate, protocolos_st!inner(codigo, vigente_de, vigente_ate)',
+      'protocolo_id, ncm_codigo, mva_original, cest, vigente_de, vigente_ate, protocolos_st!inner(codigo, vigente_de, vigente_ate)'
     )
     .order('ncm_codigo');
 
   if (error) throw error;
 
   const normalizados = (data ?? []).map((p) => {
-    const protocolo = p.protocolos_st as
-      | { codigo: string; vigente_de: string; vigente_ate: string | null }
-      | null;
+    const protocolo = p.protocolos_st as {
+      codigo: string;
+      vigente_de: string;
+      vigente_ate: string | null;
+    } | null;
     // O vínculo só vale enquanto o protocolo também estiver vigente: usa-se a
     // interseção das duas janelas temporais.
     const de = [p.vigente_de, protocolo?.vigente_de].filter(Boolean).sort().pop() as string;
@@ -339,4 +345,3 @@ export async function buscarProtocolosStUfs(): Promise<ProtocoloStUfCatalogo[]> 
     papel: String(r.papel ?? 'AMBOS'),
   }));
 }
-

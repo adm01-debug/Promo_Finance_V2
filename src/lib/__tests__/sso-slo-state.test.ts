@@ -77,7 +77,7 @@ describe('sso-slo-state', () => {
         message: null,
         localCleanupFailed: false,
         providerLogoutFailed: false,
-      }),
+      })
     ).not.toThrow();
   });
 

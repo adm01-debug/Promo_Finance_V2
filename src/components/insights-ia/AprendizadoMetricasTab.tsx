@@ -1,8 +1,19 @@
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
 import {
-  LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
-  PieChart, Pie, Cell, Legend, BarChart, Bar,
+  LineChart,
+  Line,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  ResponsiveContainer,
+  PieChart,
+  Pie,
+  Cell,
+  Legend,
+  BarChart,
+  Bar,
 } from 'recharts';
 import { TrendingUp, PieChart as PieIcon, BarChart3, Activity } from 'lucide-react';
 import { useMetricasAprendizadoIA } from '@/hooks/useMetricasAprendizadoIA';
@@ -60,9 +71,7 @@ export function AprendizadoMetricasTab() {
         </CardHeader>
         <CardContent>
           {data.serieAcerto.length === 0 ? (
-            <p className="text-sm text-muted-foreground text-center py-12">
-              Sem dados suficientes
-            </p>
+            <p className="text-sm text-muted-foreground text-center py-12">Sem dados suficientes</p>
           ) : (
             <ResponsiveContainer width="100%" height={240}>
               <LineChart data={data.serieAcerto}>
@@ -102,9 +111,7 @@ export function AprendizadoMetricasTab() {
         </CardHeader>
         <CardContent>
           {data.distribuicaoConfianca.every((d) => d.total === 0) ? (
-            <p className="text-sm text-muted-foreground text-center py-12">
-              Sem dados ainda
-            </p>
+            <p className="text-sm text-muted-foreground text-center py-12">Sem dados ainda</p>
           ) : (
             <ResponsiveContainer width="100%" height={240}>
               <PieChart>
@@ -147,12 +154,7 @@ export function AprendizadoMetricasTab() {
               <BarChart data={data.regras} layout="vertical">
                 <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
                 <XAxis type="number" tick={{ fontSize: 11 }} />
-                <YAxis
-                  type="category"
-                  dataKey="nome"
-                  tick={{ fontSize: 11 }}
-                  width={120}
-                />
+                <YAxis type="category" dataKey="nome" tick={{ fontSize: 11 }} width={120} />
                 <Tooltip
                   contentStyle={{
                     background: 'hsl(var(--card))',

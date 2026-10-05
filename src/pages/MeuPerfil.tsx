@@ -71,10 +71,13 @@ export default function MeuPerfil() {
     }
   };
 
-
   return (
     <MainLayout>
-      <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="space-y-6 max-w-2xl">
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        className="space-y-6 max-w-2xl"
+      >
         <div>
           <h1 className="text-3xl font-bold tracking-tight">Meu Perfil</h1>
           <p className="text-muted-foreground">Gerencie suas informações pessoais e segurança</p>
@@ -85,21 +88,29 @@ export default function MeuPerfil() {
         {/* Dados Pessoais */}
         <Card>
           <CardHeader>
-            <CardTitle className="flex items-center gap-2"><User className="h-5 w-5 text-primary" /> Dados Pessoais</CardTitle>
+            <CardTitle className="flex items-center gap-2">
+              <User className="h-5 w-5 text-primary" /> Dados Pessoais
+            </CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="flex items-center gap-4">
               <Avatar name={fullName || email} size="xl" />
               <div>
                 <p className="font-semibold">{fullName || email}</p>
-                <Badge variant="outline" className="capitalize">{role || 'Não definido'}</Badge>
+                <Badge variant="outline" className="capitalize">
+                  {role || 'Não definido'}
+                </Badge>
               </div>
             </div>
             <Separator />
             <div className="space-y-3">
               <div>
                 <Label>Nome Completo</Label>
-                <Input value={fullName} onChange={e => setFullName(e.target.value)} placeholder="Seu nome" />
+                <Input
+                  value={fullName}
+                  onChange={(e) => setFullName(e.target.value)}
+                  placeholder="Seu nome"
+                />
               </div>
               <div>
                 <Label>Email</Label>
@@ -119,16 +130,32 @@ export default function MeuPerfil() {
         {/* Alterar Senha */}
         <Card>
           <CardHeader>
-            <CardTitle className="flex items-center gap-2"><Key className="h-5 w-5 text-primary" /> Alterar Senha</CardTitle>
+            <CardTitle className="flex items-center gap-2">
+              <Key className="h-5 w-5 text-primary" /> Alterar Senha
+            </CardTitle>
             <CardDescription>Defina uma nova senha para sua conta</CardDescription>
           </CardHeader>
           <CardContent className="space-y-3">
             <div>
               <Label>Nova Senha</Label>
-              <Input type="password" value={newPassword} onChange={e => setNewPassword(e.target.value)} placeholder="Mínimo 6 caracteres" />
+              <Input
+                type="password"
+                value={newPassword}
+                onChange={(e) => setNewPassword(e.target.value)}
+                placeholder="Mínimo 6 caracteres"
+              />
             </div>
-            <Button onClick={handleChangePassword} disabled={changingPassword || !newPassword} variant="outline" className="gap-2">
-              {changingPassword ? <Loader2 className="h-4 w-4 animate-spin" /> : <Shield className="h-4 w-4" />}
+            <Button
+              onClick={handleChangePassword}
+              disabled={changingPassword || !newPassword}
+              variant="outline"
+              className="gap-2"
+            >
+              {changingPassword ? (
+                <Loader2 className="h-4 w-4 animate-spin" />
+              ) : (
+                <Shield className="h-4 w-4" />
+              )}
               Alterar Senha
             </Button>
           </CardContent>

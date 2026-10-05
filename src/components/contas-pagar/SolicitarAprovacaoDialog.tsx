@@ -52,7 +52,7 @@ export function SolicitarAprovacaoDialog({
             Confirme os detalhes da conta antes de enviar para aprovação.
           </DialogDescription>
         </DialogHeader>
-        
+
         {conta && (
           <div className="space-y-4">
             <div className="rounded-lg border bg-muted/30 p-4 space-y-3">
@@ -65,7 +65,7 @@ export function SolicitarAprovacaoDialog({
                   Requer Aprovação
                 </Badge>
               </div>
-              
+
               <div className="grid grid-cols-2 gap-3">
                 <div>
                   <p className="text-sm text-muted-foreground">Valor</p>
@@ -76,12 +76,12 @@ export function SolicitarAprovacaoDialog({
                   <p className="font-medium">{formatDate(conta.data_vencimento)}</p>
                 </div>
               </div>
-              
+
               <div>
                 <p className="text-sm text-muted-foreground">Descrição</p>
                 <p className="text-sm">{conta.descricao}</p>
               </div>
-              
+
               {conta.numero_documento && (
                 <div>
                   <p className="text-sm text-muted-foreground">Documento</p>
@@ -89,7 +89,7 @@ export function SolicitarAprovacaoDialog({
                 </div>
               )}
             </div>
-            
+
             <div className="space-y-2">
               <label className="text-sm font-medium">Observações (opcional)</label>
               <Input
@@ -100,19 +100,12 @@ export function SolicitarAprovacaoDialog({
             </div>
           </div>
         )}
-        
+
         <DialogFooter className="gap-2 sm:gap-0">
-          <Button 
-            variant="outline" 
-            onClick={() => onOpenChange(false)}
-          >
+          <Button variant="outline" onClick={() => onOpenChange(false)}>
             Cancelar
           </Button>
-          <Button 
-            onClick={onConfirm}
-            disabled={isLoading}
-            className="gap-2"
-          >
+          <Button onClick={onConfirm} disabled={isLoading} className="gap-2">
             {isLoading ? (
               <>
                 <Loader2 className="h-4 w-4 animate-spin" />

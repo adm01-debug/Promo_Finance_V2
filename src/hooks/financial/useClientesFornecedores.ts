@@ -102,7 +102,7 @@ export function useClientesPaginated(params: PaginatedClientesParams) {
             (c) =>
               (c.razao_social ?? '').toLowerCase().includes(needle) ||
               ((c.nome_fantasia ?? '') as string).toLowerCase().includes(needle) ||
-              ((c.cnpj_cpf ?? '') as string).includes(needle),
+              ((c.cnpj_cpf ?? '') as string).includes(needle)
           );
         }
         return { data: data as unknown as Cliente[], totalCount: data.length, totalPages: 1 };
@@ -148,7 +148,7 @@ export function useFornecedoresPaginated(params: PaginatedFornecedoresParams) {
             (c) =>
               (c.razao_social ?? '').toLowerCase().includes(needle) ||
               ((c.nome_fantasia ?? '') as string).toLowerCase().includes(needle) ||
-              ((c.cnpj_cpf ?? '') as string).includes(needle),
+              ((c.cnpj_cpf ?? '') as string).includes(needle)
           );
         }
         return { data: data as unknown as Fornecedor[], totalCount: data.length, totalPages: 1 };

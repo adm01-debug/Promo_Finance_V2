@@ -5,26 +5,89 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Zap, Download,
-  Clock, Lightbulb,
-  ExternalLink, Search, LayoutGrid, ListTodo
+import {
+  Zap,
+  Download,
+  Clock,
+  Lightbulb,
+  ExternalLink,
+  Search,
+  LayoutGrid,
+  ListTodo,
 } from 'lucide-react';
 import { generateBenchmarkingPDF } from '@/lib/pdf-generator';
 import { cn } from '@/lib/utils';
 
 const gapsData = [
-  { feature: 'Régua de Cobrança c/ IA', status: 'ok', prioridade: 'P1', impacto: 'Alto', esforço: 'Alto', evidencia: 'Nossa engine já suporta IA Generativa para mensagens.' },
-  { feature: 'Portal de Renegociação Self-Service', status: 'gap', prioridade: 'P1', impacto: 'Crítico', esforço: 'Médio', evidencia: 'Neofin permite que o devedor negocie sozinho 24/7.' },
-  { feature: 'Integração Oficial WhatsApp (Meta)', status: 'ok', prioridade: 'P1', impacto: 'Crítico', esforço: 'Alto', evidencia: 'Utilizamos API oficial para garantir segurança.' },
-  { feature: 'Módulo de Protesto Automático', status: 'partial', prioridade: 'P2', impacto: 'Médio', esforço: 'Baixo', evidencia: 'Temos o painel, mas o envio ainda requer ação manual.' },
-  { feature: 'CRM de Cobrança c/ Histórico', status: 'ok', prioridade: 'P1', impacto: 'Alto', esforço: 'Médio', evidencia: 'Completo em nossa plataforma.' },
-  { feature: 'Interface Multi-Canal (Omnichannel)', status: 'gap', prioridade: 'P2', impacto: 'Médio', esforço: 'Médio', evidencia: 'Neofin centraliza conversas de diversos canais em um só chat.' },
+  {
+    feature: 'Régua de Cobrança c/ IA',
+    status: 'ok',
+    prioridade: 'P1',
+    impacto: 'Alto',
+    esforço: 'Alto',
+    evidencia: 'Nossa engine já suporta IA Generativa para mensagens.',
+  },
+  {
+    feature: 'Portal de Renegociação Self-Service',
+    status: 'gap',
+    prioridade: 'P1',
+    impacto: 'Crítico',
+    esforço: 'Médio',
+    evidencia: 'Neofin permite que o devedor negocie sozinho 24/7.',
+  },
+  {
+    feature: 'Integração Oficial WhatsApp (Meta)',
+    status: 'ok',
+    prioridade: 'P1',
+    impacto: 'Crítico',
+    esforço: 'Alto',
+    evidencia: 'Utilizamos API oficial para garantir segurança.',
+  },
+  {
+    feature: 'Módulo de Protesto Automático',
+    status: 'partial',
+    prioridade: 'P2',
+    impacto: 'Médio',
+    esforço: 'Baixo',
+    evidencia: 'Temos o painel, mas o envio ainda requer ação manual.',
+  },
+  {
+    feature: 'CRM de Cobrança c/ Histórico',
+    status: 'ok',
+    prioridade: 'P1',
+    impacto: 'Alto',
+    esforço: 'Médio',
+    evidencia: 'Completo em nossa plataforma.',
+  },
+  {
+    feature: 'Interface Multi-Canal (Omnichannel)',
+    status: 'gap',
+    prioridade: 'P2',
+    impacto: 'Médio',
+    esforço: 'Médio',
+    evidencia: 'Neofin centraliza conversas de diversos canais em um só chat.',
+  },
 ];
 
 const roadmapData = [
-  { quarter: 'Q3 2026', item: 'Portal de Auto-Negociação', descricao: 'Interface para clientes finais renegociarem dívidas com base em regras de desconto pré-aprovadas pela IA.' },
-  { quarter: 'Q3 2026', item: 'Omnichannel Chat', descricao: 'Centralização de atendimentos WhatsApp, E-mail e SMS em uma única fila de atendimento no CRM.' },
-  { quarter: 'Q4 2026', item: 'Automação de Protesto via API', descricao: 'Integração direta com cartórios para envio de títulos inadimplentes sem intervenção humana após X dias.' },
+  {
+    quarter: 'Q3 2026',
+    item: 'Portal de Auto-Negociação',
+    descricao:
+      'Interface para clientes finais renegociarem dívidas com base em regras de desconto pré-aprovadas pela IA.',
+  },
+  {
+    quarter: 'Q3 2026',
+    item: 'Omnichannel Chat',
+    descricao:
+      'Centralização de atendimentos WhatsApp, E-mail e SMS em uma única fila de atendimento no CRM.',
+  },
+  {
+    quarter: 'Q4 2026',
+    item: 'Automação de Protesto via API',
+    descricao:
+      'Integração direta com cartórios para envio de títulos inadimplentes sem intervenção humana após X dias.',
+  },
 ];
 
 export function BenchmarkingConcorrentes() {
@@ -53,8 +116,12 @@ export function BenchmarkingConcorrentes() {
       <CardContent className="px-0">
         <Tabs value={activeTab} onValueChange={setActiveTab}>
           <TabsList className="grid grid-cols-2 w-full max-w-md mb-6">
-            <TabsTrigger value="gaps" className="gap-2"><LayoutGrid className="h-4 w-4" /> Matriz de Gaps</TabsTrigger>
-            <TabsTrigger value="roadmap" className="gap-2"><ListTodo className="h-4 w-4" /> Roadmap Priorizado</TabsTrigger>
+            <TabsTrigger value="gaps" className="gap-2">
+              <LayoutGrid className="h-4 w-4" /> Matriz de Gaps
+            </TabsTrigger>
+            <TabsTrigger value="roadmap" className="gap-2">
+              <ListTodo className="h-4 w-4" /> Roadmap Priorizado
+            </TabsTrigger>
           </TabsList>
 
           <TabsContent value="gaps" className="space-y-4">
@@ -66,42 +133,61 @@ export function BenchmarkingConcorrentes() {
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: i * 0.05 }}
                 >
-                  <Card className={cn(
-                    "border transition-all hover:shadow-md",
-                    gap.status === 'gap' ? "border-destructive/30 bg-destructive/[0.02]" : 
-                    gap.status === 'partial' ? "border-warning/30 bg-warning/[0.02]" : 
-                    "border-success/30 bg-success/[0.02]"
-                  )}>
+                  <Card
+                    className={cn(
+                      'border transition-all hover:shadow-md',
+                      gap.status === 'gap'
+                        ? 'border-destructive/30 bg-destructive/[0.02]'
+                        : gap.status === 'partial'
+                          ? 'border-warning/30 bg-warning/[0.02]'
+                          : 'border-success/30 bg-success/[0.02]'
+                    )}
+                  >
                     <CardContent className="p-4 space-y-3">
                       <div className="flex items-start justify-between">
                         <div className="space-y-1">
                           <h4 className="font-bold text-sm flex items-center gap-2">
                             {gap.feature}
-                            <Badge variant="outline" className={cn(
-                              "text-[10px] uppercase font-bold px-1.5 h-4",
-                              gap.status === 'gap' ? "text-destructive border-destructive/20" : 
-                              gap.status === 'partial' ? "text-warning border-warning/20" : 
-                              "text-success border-success/20"
-                            )}>
-                              {gap.status === 'gap' ? 'Gap Crítico' : gap.status === 'partial' ? 'Parcial' : 'Completo'}
+                            <Badge
+                              variant="outline"
+                              className={cn(
+                                'text-[10px] uppercase font-bold px-1.5 h-4',
+                                gap.status === 'gap'
+                                  ? 'text-destructive border-destructive/20'
+                                  : gap.status === 'partial'
+                                    ? 'text-warning border-warning/20'
+                                    : 'text-success border-success/20'
+                              )}
+                            >
+                              {gap.status === 'gap'
+                                ? 'Gap Crítico'
+                                : gap.status === 'partial'
+                                  ? 'Parcial'
+                                  : 'Completo'}
                             </Badge>
                           </h4>
                           <p className="text-xs text-muted-foreground italic leading-relaxed">
                             "{gap.evidencia}"
                           </p>
                         </div>
-                        <Badge className="bg-primary/10 text-primary border-primary/20">{gap.prioridade}</Badge>
+                        <Badge className="bg-primary/10 text-primary border-primary/20">
+                          {gap.prioridade}
+                        </Badge>
                       </div>
 
                       <div className="flex items-center gap-4 pt-2 border-t border-border/50">
                         <div className="space-y-0.5">
-                          <p className="text-[10px] font-bold text-muted-foreground uppercase">Impacto</p>
+                          <p className="text-[10px] font-bold text-muted-foreground uppercase">
+                            Impacto
+                          </p>
                           <div className="flex items-center gap-1 text-xs font-semibold">
                             <Zap className="h-3 w-3 text-warning" /> {gap.impacto}
                           </div>
                         </div>
                         <div className="space-y-0.5">
-                          <p className="text-[10px] font-bold text-muted-foreground uppercase">Esforço</p>
+                          <p className="text-[10px] font-bold text-muted-foreground uppercase">
+                            Esforço
+                          </p>
                           <div className="flex items-center gap-1 text-xs font-semibold">
                             <Clock className="h-3 w-3 text-primary" /> {gap.esforço}
                           </div>
@@ -128,7 +214,9 @@ export function BenchmarkingConcorrentes() {
                     <CheckCircle2 className="h-3 w-3 text-white" />
                   </div>
                   <div className="space-y-1">
-                    <Badge variant="secondary" className="text-[10px] font-bold">{item.quarter}</Badge>
+                    <Badge variant="secondary" className="text-[10px] font-bold">
+                      {item.quarter}
+                    </Badge>
                     <h4 className="font-bold text-base">{item.item}</h4>
                     <p className="text-sm text-muted-foreground leading-relaxed max-w-2xl">
                       {item.descricao}
@@ -170,5 +258,5 @@ function CheckCircle2(props: SVGProps<SVGSVGElement>) {
       <path d="M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2 2 6.477 2 12s4.477 10 10 10z" />
       <path d="m9 12 2 2 4-4" />
     </svg>
-  )
+  );
 }

@@ -5,20 +5,26 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 import { Progress } from '@/components/ui/progress';
 import { Badge } from '@/components/ui/badge';
-import { 
-  FileX, 
-  Loader2, 
-  CheckCircle2, 
-  XCircle, 
+import {
+  FileX,
+  Loader2,
+  CheckCircle2,
+  XCircle,
   AlertTriangle,
   ShieldCheck,
   Wifi,
   Send,
   Server,
-  Hash
+  Hash,
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { processarSefaz, SefazResponse } from '@/lib/sefaz-simulator';
@@ -36,14 +42,14 @@ interface InutilizacaoFormData {
 
 export function InutilizacaoNFe() {
   const { data: empresas = [] } = useEmpresas();
-  
+
   const [formData, setFormData] = useState<InutilizacaoFormData>({
     empresa: '',
     serie: '1',
     numeroInicial: '',
     numeroFinal: '',
     justificativa: '',
-    ano: new Date().getFullYear().toString()
+    ano: new Date().getFullYear().toString(),
   });
 
   const [isProcessing, setIsProcessing] = useState(false);
@@ -58,12 +64,13 @@ export function InutilizacaoNFe() {
     { id: 'done', label: 'Finalizado', icon: CheckCircle2 },
   ];
 
-  const currentIndex = steps.findIndex(s => s.id === currentStep);
+  const currentIndex = steps.findIndex((s) => s.id === currentStep);
   const progress = currentStep ? ((currentIndex + 1) / steps.length) * 100 : 0;
 
-  const quantidadeNumeros = formData.numeroInicial && formData.numeroFinal 
-    ? Math.max(0, parseInt(formData.numeroFinal) - parseInt(formData.numeroInicial) + 1)
-    : 0;
+  const quantidadeNumeros =
+    formData.numeroInicial && formData.numeroFinal
+      ? Math.max(0, parseInt(formData.numeroFinal) - parseInt(formData.numeroInicial) + 1)
+      : 0;
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -99,13 +106,13 @@ export function InutilizacaoNFe() {
     setIsProcessing(true);
     setSefazResponse(null);
 
-    const empresa = empresas.find(c => c.id === formData.empresa);
+    const empresa = empresas.find((c) => c.id === formData.empresa);
     const tempoInicio = Date.now();
 
     // Simula os passos de processamento
     for (const step of steps.slice(0, -1)) {
       setCurrentStep(step.id);
-      await new Promise(resolve => setTimeout(resolve, 600 + Math.random() * 400));
+      await new Promise((resolve) => setTimeout(resolve, 600 + Math.random() * 400));
     }
 
     // Processa com o simulador
@@ -118,8 +125,8 @@ export function InutilizacaoNFe() {
         numeroInicial: numInicio,
         numeroFinal: numFim,
         justificativa: formData.justificativa,
-        ano: formData.ano
-      }
+        ano: formData.ano,
+      },
     });
 
     const tempoTotal = Date.now() - tempoInicio;
@@ -132,9 +139,9 @@ export function InutilizacaoNFe() {
       protocolo: response.protocolo,
       ambiente: 'homologacao',
       tempoResposta: tempoTotal,
-      detalhes: response.success 
+      detalhes: response.success
         ? `Inutilização da faixa ${formData.numeroInicial} a ${formData.numeroFinal} (Série ${formData.serie}) - ${formData.justificativa}`
-        : `Falha na inutilização: ${response.errors?.join(', ') || response.xMotivo}`
+        : `Falha na inutilização: ${response.errors?.join(', ') || response.xMotivo}`,
     });
 
     setCurrentStep('done');
@@ -150,7 +157,7 @@ export function InutilizacaoNFe() {
         numeroInicial: '',
         numeroFinal: '',
         justificativa: '',
-        ano: new Date().getFullYear().toString()
+        ano: new Date().getFullYear().toString(),
       });
     } else {
       toast.error(response.xMotivo || 'Erro ao inutilizar numeração');
@@ -274,7 +281,7 @@ export function InutilizacaoNFe() {
 
             {/* Painel de Status */}
             {(isProcessing || sefazResponse) && (
-              <motion.div 
+              <motion.div
                 initial={{ opacity: 0, height: 0 }}
                 animate={{ opacity: 1, height: 'auto' }}
                 className="bg-muted/50 rounded-lg p-4 space-y-4"
@@ -288,8 +295,11 @@ export function InutilizacaoNFe() {
                     <XCircle className="h-5 w-5 text-destructive" />
                   )}
                   <span className="font-medium">
-                    {isProcessing ? 'Comunicando com SEFAZ...' : 
-                     sefazResponse?.success ? 'Numeração Inutilizada!' : 'Erro na Inutilização'}
+                    {isProcessing
+                      ? 'Comunicando com SEFAZ...'
+                      : sefazResponse?.success
+                        ? 'Numeração Inutilizada!'
+                        : 'Erro na Inutilização'}
                   </span>
                 </div>
 
@@ -302,13 +312,19 @@ export function InutilizacaoNFe() {
                         const isActive = idx === currentIndex;
                         const isDone = idx < currentIndex;
                         return (
-                          <div 
+                          <div
                             key={step.id}
                             className={`text-center transition-colors ${
-                              isActive ? 'text-primary' : isDone ? 'text-success' : 'text-muted-foreground'
+                              isActive
+                                ? 'text-primary'
+                                : isDone
+                                  ? 'text-success'
+                                  : 'text-muted-foreground'
                             }`}
                           >
-                            <StepIcon className={`h-4 w-4 mx-auto mb-1 ${isActive ? 'animate-pulse' : ''}`} />
+                            <StepIcon
+                              className={`h-4 w-4 mx-auto mb-1 ${isActive ? 'animate-pulse' : ''}`}
+                            />
                             <span className="text-xs">{step.label}</span>
                           </div>
                         );
@@ -318,9 +334,18 @@ export function InutilizacaoNFe() {
                 )}
 
                 {sefazResponse && (
-                  <div className={`rounded-lg p-3 ${sefazResponse.success ? 'bg-success/10 border border-success/20' : 'bg-destructive/10 border border-destructive/20'}`}>
+                  <div
+                    className={`rounded-lg p-3 ${sefazResponse.success ? 'bg-success/10 border border-success/20' : 'bg-destructive/10 border border-destructive/20'}`}
+                  >
                     <div className="flex items-center gap-2 mb-2">
-                      <Badge variant="outline" className={sefazResponse.success ? 'bg-success/20 text-success' : 'bg-destructive/20 text-destructive'}>
+                      <Badge
+                        variant="outline"
+                        className={
+                          sefazResponse.success
+                            ? 'bg-success/20 text-success'
+                            : 'bg-destructive/20 text-destructive'
+                        }
+                      >
                         cStat: {sefazResponse.cStat}
                       </Badge>
                       <span className="text-sm font-medium">{sefazResponse.xMotivo}</span>
@@ -328,7 +353,9 @@ export function InutilizacaoNFe() {
                     {sefazResponse.protocolo && (
                       <div className="flex items-center gap-2 text-sm">
                         <span className="text-muted-foreground">Protocolo:</span>
-                        <code className="font-mono text-xs bg-background px-2 py-1 rounded">{sefazResponse.protocolo}</code>
+                        <code className="font-mono text-xs bg-background px-2 py-1 rounded">
+                          {sefazResponse.protocolo}
+                        </code>
                       </div>
                     )}
                     {sefazResponse.errors && sefazResponse.errors.length > 0 && (
@@ -349,7 +376,13 @@ export function InutilizacaoNFe() {
             <div className="flex gap-3">
               <Button
                 type="submit"
-                disabled={isProcessing || !formData.empresa || !formData.numeroInicial || !formData.numeroFinal || formData.justificativa.length < 15}
+                disabled={
+                  isProcessing ||
+                  !formData.empresa ||
+                  !formData.numeroInicial ||
+                  !formData.numeroFinal ||
+                  formData.justificativa.length < 15
+                }
                 className="gap-2"
               >
                 {isProcessing ? (
@@ -382,7 +415,10 @@ export function InutilizacaoNFe() {
             <div className="space-y-2 text-sm">
               <p className="font-medium text-warning">Informações Importantes</p>
               <ul className="list-disc list-inside space-y-1 text-muted-foreground">
-                <li>A inutilização é <strong>irreversível</strong> e deve ser usada apenas para números que não serão utilizados.</li>
+                <li>
+                  A inutilização é <strong>irreversível</strong> e deve ser usada apenas para
+                  números que não serão utilizados.
+                </li>
                 <li>Utilize quando houver quebra de sequência na numeração das NF-e.</li>
                 <li>A faixa máxima permitida é de 1000 números por solicitação.</li>
                 <li>A justificativa deve conter no mínimo 15 caracteres.</li>

@@ -27,23 +27,26 @@ export function StandardTableCard({
   pageSize = 10,
 }: StandardTableCardProps) {
   return (
-    <Card className={cn("premium-card border-none bg-background/20 backdrop-blur-3xl overflow-hidden ring-1 ring-white/10", className)}>
+    <Card
+      className={cn(
+        'premium-card border-none bg-background/20 backdrop-blur-3xl overflow-hidden ring-1 ring-white/10',
+        className
+      )}
+    >
       {isLoading ? (
         <TableShimmerSkeleton rows={pageSize} columns={8} showCheckbox showAvatar />
       ) : (
         <>
-          <div className="overflow-x-auto">
-            {children}
-          </div>
+          <div className="overflow-x-auto">{children}</div>
           {pagination && (
             <div className="p-6 border-t border-white/5 bg-black/20">
-              <TablePagination 
-                currentPage={pagination.currentPage} 
-                totalPages={pagination.totalPages} 
-                pageSize={pagination.pageSize} 
-                totalItems={pagination.totalItems} 
-                onPageChange={pagination.onPageChange} 
-                onPageSizeChange={pagination.onPageSizeChange} 
+              <TablePagination
+                currentPage={pagination.currentPage}
+                totalPages={pagination.totalPages}
+                pageSize={pagination.pageSize}
+                totalItems={pagination.totalItems}
+                onPageChange={pagination.onPageChange}
+                onPageSizeChange={pagination.onPageSizeChange}
               />
             </div>
           )}

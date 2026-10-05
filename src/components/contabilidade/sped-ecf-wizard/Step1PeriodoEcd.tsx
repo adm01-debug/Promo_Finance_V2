@@ -58,18 +58,22 @@ export function Step1PeriodoEcd({ data, onNext }: Props) {
           </div>
           <div className="grid grid-cols-2 gap-4 text-xs">
             <div className="space-y-1">
-              <p className="text-[11px] uppercase tracking-wide text-muted-foreground font-medium">Gerada em</p>
+              <p className="text-[11px] uppercase tracking-wide text-muted-foreground font-medium">
+                Gerada em
+              </p>
               <p className="font-mono text-sm text-foreground">
                 {format(new Date(ecd.created_at), 'dd/MM/yyyy HH:mm')}
               </p>
             </div>
             <div id="wz-ecd-status" className="space-y-1 rounded-md transition-colors">
-              <p className="text-[11px] uppercase tracking-wide text-muted-foreground font-medium">Status</p>
+              <p className="text-[11px] uppercase tracking-wide text-muted-foreground font-medium">
+                Status
+              </p>
               <Badge
                 className={cn(
                   ecd.status === 'transmitido'
                     ? 'bg-success/15 text-success border-success/30'
-                    : 'bg-muted text-muted-foreground border-border',
+                    : 'bg-muted text-muted-foreground border-border'
                 )}
                 variant="outline"
               >
@@ -77,7 +81,9 @@ export function Step1PeriodoEcd({ data, onNext }: Props) {
               </Badge>
             </div>
             <div id="wz-ecd-hash" className="col-span-2 space-y-1 rounded-md transition-colors">
-              <p className="text-[11px] uppercase tracking-wide text-muted-foreground font-medium">Hash SHA-256</p>
+              <p className="text-[11px] uppercase tracking-wide text-muted-foreground font-medium">
+                Hash SHA-256
+              </p>
               <code className="text-xs font-mono text-foreground">
                 {(ecd.hash_sha256 || '').substring(0, 32)}…
               </code>
@@ -95,7 +101,8 @@ export function Step1PeriodoEcd({ data, onNext }: Props) {
       ) : (
         <Alert variant="error" title="ECD do período não localizada">
           <AlertDescription>
-            Gere e (idealmente) transmita a SPED ECD do mesmo ano-calendário antes de prosseguir com a ECF.
+            Gere e (idealmente) transmita a SPED ECD do mesmo ano-calendário antes de prosseguir com
+            a ECF.
           </AlertDescription>
         </Alert>
       )}

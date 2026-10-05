@@ -15,17 +15,15 @@ interface OfflineBannerProps {
   pendingChanges?: number;
 }
 
-export const OfflineBanner = forwardRef<HTMLDivElement, OfflineBannerProps>(function OfflineBanner({
-  className,
-  position = 'top',
-  showPendingCount = true,
-  pendingChanges = 0,
-}: OfflineBannerProps, _ref) {
+export const OfflineBanner = forwardRef<HTMLDivElement, OfflineBannerProps>(function OfflineBanner(
+  { className, position = 'top', showPendingCount = true, pendingChanges = 0 }: OfflineBannerProps,
+  _ref
+) {
   const { isOnline } = useNetworkStatus();
   const [wasOffline, setWasOffline] = useState(false);
   const [showReconnected, setShowReconnected] = useState(false);
   const [isSyncing, setIsSyncing] = useState(false);
-  
+
   useEffect(() => {
     if (!isOnline) {
       setWasOffline(true);
@@ -35,29 +33,29 @@ export const OfflineBanner = forwardRef<HTMLDivElement, OfflineBannerProps>(func
       setShowReconnected(true);
       sounds.success();
       triggerHaptic('success');
-      
+
       const timer = setTimeout(() => {
         setShowReconnected(false);
         setWasOffline(false);
       }, 3000);
-      
+
       return () => clearTimeout(timer);
     }
   }, [isOnline, wasOffline]);
-  
+
   const handleSync = async () => {
     setIsSyncing(true);
     sounds.click();
-    await new Promise(resolve => setTimeout(resolve, 2000));
+    await new Promise((resolve) => setTimeout(resolve, 2000));
     setIsSyncing(false);
     sounds.success();
     triggerHaptic('success');
   };
-  
+
   if (isOnline && !showReconnected) {
     return null;
   }
-  
+
   return (
     <AnimatePresence>
       {!isOnline && (
@@ -66,8 +64,8 @@ export const OfflineBanner = forwardRef<HTMLDivElement, OfflineBannerProps>(func
           animate={{ opacity: 1, y: 0 }}
           exit={{ opacity: 0, y: position === 'top' ? -50 : 50 }}
           className={cn(
-            "fixed left-0 right-0 z-50 px-4",
-            position === 'top' ? "top-0" : "bottom-20 md:bottom-0",
+            'fixed left-0 right-0 z-50 px-4',
+            position === 'top' ? 'top-0' : 'bottom-20 md:bottom-0',
             className
           )}
         >
@@ -76,7 +74,7 @@ export const OfflineBanner = forwardRef<HTMLDivElement, OfflineBannerProps>(func
               <div className="flex items-center justify-between gap-4">
                 <div className="flex items-center gap-3">
                   <motion.div
-                    animate={{ 
+                    animate={{
                       scale: [1, 1.1, 1],
                       opacity: [1, 0.7, 1],
                     }}
@@ -84,7 +82,7 @@ export const OfflineBanner = forwardRef<HTMLDivElement, OfflineBannerProps>(func
                   >
                     <WifiOff className="h-5 w-5" />
                   </motion.div>
-                  
+
                   <div>
                     <p className="font-medium text-sm">Você está offline</p>
                     <p className="text-xs opacity-80">
@@ -92,7 +90,7 @@ export const OfflineBanner = forwardRef<HTMLDivElement, OfflineBannerProps>(func
                     </p>
                   </div>
                 </div>
-                
+
                 <div className="flex items-center gap-2">
                   {showPendingCount && pendingChanges > 0 && (
                     <div className="flex items-center gap-1.5 bg-background/20 rounded-full px-3 py-1">
@@ -102,7 +100,7 @@ export const OfflineBanner = forwardRef<HTMLDivElement, OfflineBannerProps>(func
                       </span>
                     </div>
                   )}
-                  
+
                   <Button
                     variant="secondary"
                     size="sm"
@@ -110,13 +108,13 @@ export const OfflineBanner = forwardRef<HTMLDivElement, OfflineBannerProps>(func
                     onClick={handleSync}
                     disabled={isSyncing}
                   >
-                    <RefreshCw className={cn("h-4 w-4 mr-1.5", isSyncing && "animate-spin")} />
+                    <RefreshCw className={cn('h-4 w-4 mr-1.5', isSyncing && 'animate-spin')} />
                     {isSyncing ? 'Verificando...' : 'Verificar'}
                   </Button>
                 </div>
               </div>
-              
-              <motion.div 
+
+              <motion.div
                 className="absolute bottom-0 left-0 h-1 bg-background/30 rounded-full overflow-hidden"
                 style={{ width: '100%' }}
               >
@@ -131,15 +129,15 @@ export const OfflineBanner = forwardRef<HTMLDivElement, OfflineBannerProps>(func
           </div>
         </motion.div>
       )}
-      
+
       {showReconnected && (
         <motion.div
           initial={{ opacity: 0, y: position === 'top' ? -50 : 50, scale: 0.9 }}
           animate={{ opacity: 1, y: 0, scale: 1 }}
           exit={{ opacity: 0, y: position === 'top' ? -50 : 50, scale: 0.9 }}
           className={cn(
-            "fixed left-0 right-0 z-50 px-4",
-            position === 'top' ? "top-0" : "bottom-20 md:bottom-0",
+            'fixed left-0 right-0 z-50 px-4',
+            position === 'top' ? 'top-0' : 'bottom-20 md:bottom-0',
             className
           )}
         >
@@ -153,14 +151,12 @@ export const OfflineBanner = forwardRef<HTMLDivElement, OfflineBannerProps>(func
                 >
                   <CheckCircle2 className="h-5 w-5" />
                 </motion.div>
-                
+
                 <div className="flex-1">
                   <p className="font-medium text-sm">Conexão restaurada!</p>
-                  <p className="text-xs opacity-80">
-                    Sincronizando suas alterações...
-                  </p>
+                  <p className="text-xs opacity-80">Sincronizando suas alterações...</p>
                 </div>
-                
+
                 <motion.div
                   animate={{ rotate: 360 }}
                   transition={{ repeat: Infinity, duration: 1, ease: 'linear' }}
@@ -179,17 +175,17 @@ OfflineBanner.displayName = 'OfflineBanner';
 
 export function OfflineIndicator({ className }: { className?: string }) {
   const { isOnline } = useNetworkStatus();
-  
+
   if (isOnline) return null;
-  
+
   return (
     <motion.div
       initial={{ opacity: 0, scale: 0.8 }}
       animate={{ opacity: 1, scale: 1 }}
       className={cn(
-        "flex items-center gap-1.5 px-2 py-1 rounded-full",
-        "bg-warning/10 text-warning",
-        "border border-warning/20",
+        'flex items-center gap-1.5 px-2 py-1 rounded-full',
+        'bg-warning/10 text-warning',
+        'border border-warning/20',
         className
       )}
     >

@@ -1,5 +1,12 @@
 import { useHistoricoBoletos } from '@/hooks/useHistoricoBoletos';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
 import { formatDateTime } from '@/lib/formatters';
 import { Clock, History, FileText, User, Info } from 'lucide-react';
@@ -24,7 +31,8 @@ export function BoletoGlobalHistory() {
         <History className="h-12 w-12 text-muted-foreground/50 mb-4" />
         <h3 className="text-lg font-bold">Sem histórico global</h3>
         <p className="text-sm text-muted-foreground max-w-xs">
-          Eventos de cobrança e alterações de status aparecerão aqui conforme o sistema for utilizado.
+          Eventos de cobrança e alterações de status aparecerão aqui conforme o sistema for
+          utilizado.
         </p>
       </div>
     );

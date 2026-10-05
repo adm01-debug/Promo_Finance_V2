@@ -17,7 +17,6 @@ import {
   type FrontendErrorAlertState,
 } from '@/hooks/useFrontendErrorLogs';
 
-
 const fmt = (v: string | null) =>
   v ? new Date(v).toLocaleString('pt-BR', { dateStyle: 'short', timeStyle: 'short' }) : '—';
 
@@ -62,7 +61,9 @@ export function AlertasProativosErros() {
         {isLoading && <Skeleton className="h-24 w-full" />}
 
         {isError && (
-          <p className="text-sm text-muted-foreground">Não foi possível carregar o histórico de alertas.</p>
+          <p className="text-sm text-muted-foreground">
+            Não foi possível carregar o histórico de alertas.
+          </p>
         )}
         {!isLoading && !isError && linhas.length === 0 && (
           <p className="text-sm text-muted-foreground">
@@ -79,7 +80,8 @@ export function AlertasProativosErros() {
               <div className="min-w-0">
                 <p className="truncate font-mono text-xs text-foreground">{a.assinatura}</p>
                 <p className="text-xs text-muted-foreground">
-                  Último disparo: {fmt(a.ultimo_alerta_em)} · {a.ocorrencias_no_ultimo_alerta} ocorrências
+                  Último disparo: {fmt(a.ultimo_alerta_em)} · {a.ocorrencias_no_ultimo_alerta}{' '}
+                  ocorrências
                   {silenciado && ` · silenciado até ${fmt(a.silenciado_ate)}`}
                 </p>
               </div>

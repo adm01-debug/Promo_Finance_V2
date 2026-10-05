@@ -163,7 +163,7 @@ export function useRealtimeAuditToasts() {
             priority,
             target,
           });
-        },
+        }
       )
       .subscribe();
 

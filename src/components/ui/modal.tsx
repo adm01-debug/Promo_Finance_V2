@@ -88,18 +88,12 @@ export function Modal({
           <div className="flex items-center justify-between p-4 border-b border-border">
             <div>
               {title && (
-                <h2
-                  id="modal-title"
-                  className="text-lg font-semibold text-foreground"
-                >
+                <h2 id="modal-title" className="text-lg font-semibold text-foreground">
                   {title}
                 </h2>
               )}
               {description && (
-                <p
-                  id="modal-description"
-                  className="mt-1 text-sm text-muted-foreground"
-                >
+                <p id="modal-description" className="mt-1 text-sm text-muted-foreground">
                   {description}
                 </p>
               )}
@@ -156,7 +150,8 @@ export function ConfirmModal({
   variant = 'danger',
   isLoading = false,
 }: ConfirmModalProps) {
-  const confirmVariant = variant === 'danger' ? 'destructive' : variant === 'warning' ? 'warning' : 'default';
+  const confirmVariant =
+    variant === 'danger' ? 'destructive' : variant === 'warning' ? 'warning' : 'default';
 
   return (
     <Modal
@@ -169,7 +164,8 @@ export function ConfirmModal({
           <Button variant="outline" onClick={onClose} disabled={isLoading}>
             {cancelText}
           </Button>
-          <Button variant={confirmVariant} onClick={onConfirm} disabled={isLoading}>{isLoading ? 'Processando...' : ''}
+          <Button variant={confirmVariant} onClick={onConfirm} disabled={isLoading}>
+            {isLoading ? 'Processando...' : ''}
             {confirmText}
           </Button>
         </>

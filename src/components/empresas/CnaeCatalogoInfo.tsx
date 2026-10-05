@@ -51,14 +51,20 @@ export function CnaeCatalogoInfo({ resolucao, digitos }: CnaeCatalogoInfoProps) 
       </p>
       <div className="flex flex-wrap gap-1.5">
         {registro.vedado_simples ? (
-          <Badge variant="destructive" className="text-[10px]">Vedado ao Simples</Badge>
+          <Badge variant="destructive" className="text-[10px]">
+            Vedado ao Simples
+          </Badge>
         ) : (
           registro.anexo_simples && (
-            <Badge variant="secondary" className="text-[10px]">Anexo {registro.anexo_simples}</Badge>
+            <Badge variant="secondary" className="text-[10px]">
+              Anexo {registro.anexo_simples}
+            </Badge>
           )
         )}
         {registro.sujeito_fator_r && (
-          <Badge variant="outline" className="text-[10px]">Sujeito ao Fator R</Badge>
+          <Badge variant="outline" className="text-[10px]">
+            Sujeito ao Fator R
+          </Badge>
         )}
         <Badge variant="outline" className="text-[10px]">
           RAT {(registro.rat_padrao * 100).toFixed(0)}%

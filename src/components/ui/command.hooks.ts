@@ -1,4 +1,4 @@
-import * as React from "react";
+import * as React from 'react';
 
 // COMMAND MENU HOOK
 
@@ -7,14 +7,14 @@ export function useCommandMenu() {
 
   React.useEffect(() => {
     const down = (e: KeyboardEvent) => {
-      if (e.key === "k" && (e.metaKey || e.ctrlKey)) {
+      if (e.key === 'k' && (e.metaKey || e.ctrlKey)) {
         e.preventDefault();
         setOpen((open) => !open);
       }
     };
 
-    document.addEventListener("keydown", down);
-    return () => document.removeEventListener("keydown", down);
+    document.addEventListener('keydown', down);
+    return () => document.removeEventListener('keydown', down);
   }, []);
 
   return { open, setOpen };

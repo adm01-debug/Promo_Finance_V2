@@ -87,10 +87,7 @@ describe('coerência do catálogo de MVA/ST', () => {
 
   it('acusa vínculo duplicado, vigência invertida e UF inválida', () => {
     const campos = compararMvaComCatalogo({
-      vinculos: [
-        vinculo({ vigente_de: '2020-01-01', vigente_ate: '2019-01-01' }),
-        vinculo(),
-      ],
+      vinculos: [vinculo({ vigente_de: '2020-01-01', vigente_ate: '2019-01-01' }), vinculo()],
       ufs: [...todasUfs(), { protocolo_id: 'p41', uf: 'XX', papel: 'AMBOS' }],
       ncms: [ncm('40111000')],
     }).map((d) => d.campo);
@@ -156,7 +153,7 @@ describe('coerência do catálogo de MVA/ST', () => {
           mva_original: mvas[Math.floor(rnd() * mvas.length)],
           vigente_de: rnd() > 0.8 ? 'data-ruim' : '2010-01-01',
           vigente_ate: rnd() > 0.9 ? '2000-01-01' : null,
-        }),
+        })
       );
       const ufs = Array.from({ length: Math.floor(rnd() * 30) }, () => ({
         protocolo_id: `p${Math.floor(rnd() * 3)}`,
@@ -178,9 +175,8 @@ describe('coerência do catálogo de MVA/ST', () => {
 
 describe('drift de MVA/ST na trilha de auditoria', () => {
   it('converte alertas de protocolo em linhas auditáveis do catálogo mva_st', async () => {
-    const { coletarDriftMvaAuditavel, resumirRejeicoes } = await import(
-      '@/lib/tributario/catalogos/rejeicoes-auditoria'
-    );
+    const { coletarDriftMvaAuditavel, resumirRejeicoes } =
+      await import('@/lib/tributario/catalogos/rejeicoes-auditoria');
     const resumo = gerarAlertasCatalogos({
       ufs: [],
       interestaduais: [],
@@ -196,7 +192,9 @@ describe('drift de MVA/ST na trilha de auditoria', () => {
     expect(linhas.every((l) => l.motivo.startsWith('drift_'))).toBe(true);
     // Limites da API de persistência.
     expect(linhas.every((l) => (l.descricao ?? '').length <= 300)).toBe(true);
-    expect(linhas.every((l) => l.identificador.length > 0 && l.identificador.length <= 120)).toBe(true);
+    expect(linhas.every((l) => l.identificador.length > 0 && l.identificador.length <= 120)).toBe(
+      true
+    );
     expect(linhas.every((l) => l.campo.length <= 80 && l.motivo.length <= 80)).toBe(true);
 
     const agregado = resumirRejeicoes(linhas);
@@ -204,9 +202,8 @@ describe('drift de MVA/ST na trilha de auditoria', () => {
   });
 
   it('ignora alertas de outros catálogos', async () => {
-    const { coletarDriftMvaAuditavel } = await import(
-      '@/lib/tributario/catalogos/rejeicoes-auditoria'
-    );
+    const { coletarDriftMvaAuditavel } =
+      await import('@/lib/tributario/catalogos/rejeicoes-auditoria');
     const resumo = gerarAlertasCatalogos({ ufs: [], interestaduais: [], faixas: [] });
     expect(coletarDriftMvaAuditavel(resumo.alertas)).toEqual([]);
   });

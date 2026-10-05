@@ -6,10 +6,7 @@ export function useVendedores() {
   return useQuery({
     queryKey: ['vendedores'],
     queryFn: async () => {
-      const { data, error } = await supabase
-        .from('vendedores')
-        .select('*')
-        .order('nome');
+      const { data, error } = await supabase.from('vendedores').select('*').order('nome');
       if (error) throw error;
       return data || [];
     },
@@ -36,12 +33,20 @@ export function useVendedoresAtivos() {
 export function useCreateVendedor() {
   const qc = useQueryClient();
   return useMutation({
-    mutationFn: async (input: { nome: string; email?: string; telefone?: string; meta_mensal?: number }) => {
+    mutationFn: async (input: {
+      nome: string;
+      email?: string;
+      telefone?: string;
+      meta_mensal?: number;
+    }) => {
       const { data, error } = await supabase.from('vendedores').insert(input).select().single();
       if (error) throw error;
       return data;
     },
-    onSuccess: () => { qc.invalidateQueries({ queryKey: ['vendedores'] }); toast.success('Vendedor criado!'); },
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ['vendedores'] });
+      toast.success('Vendedor criado!');
+    },
     onError: (e: Error) => toast.error(`Erro: ${e.message}`),
   });
 }
@@ -49,11 +54,24 @@ export function useCreateVendedor() {
 export function useUpdateVendedor() {
   const qc = useQueryClient();
   return useMutation({
-    mutationFn: async ({ id, ...data }: { id: string; nome?: string; email?: string; telefone?: string; meta_mensal?: number; ativo?: boolean }) => {
+    mutationFn: async ({
+      id,
+      ...data
+    }: {
+      id: string;
+      nome?: string;
+      email?: string;
+      telefone?: string;
+      meta_mensal?: number;
+      ativo?: boolean;
+    }) => {
       const { error } = await supabase.from('vendedores').update(data).eq('id', id);
       if (error) throw error;
     },
-    onSuccess: () => { qc.invalidateQueries({ queryKey: ['vendedores'] }); toast.success('Vendedor atualizado!'); },
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ['vendedores'] });
+      toast.success('Vendedor atualizado!');
+    },
     onError: (e: Error) => toast.error(`Erro: ${e.message}`),
   });
 }
@@ -65,7 +83,10 @@ export function useDeleteVendedor() {
       const { error } = await supabase.from('vendedores').update({ ativo: false }).eq('id', id);
       if (error) throw error;
     },
-    onSuccess: () => { qc.invalidateQueries({ queryKey: ['vendedores'] }); toast.success('Vendedor desativado!'); },
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ['vendedores'] });
+      toast.success('Vendedor desativado!');
+    },
     onError: (e: Error) => toast.error(`Erro: ${e.message}`),
   });
 }

@@ -16,7 +16,11 @@ const STATUS_LABEL: Record<ChecklistItem['status'], string> = {
   error: 'Erro',
 };
 
-export function exportChecklistEcfPdf({ data, cfcCriticos = 0, preValidacaoOk = true }: ExportArgs) {
+export function exportChecklistEcfPdf({
+  data,
+  cfcCriticos = 0,
+  preValidacaoOk = true,
+}: ExportArgs) {
   const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
   const generatedAt = new Date().toLocaleString('pt-BR');
   const erros = data.validacoes.erros.length;
@@ -57,7 +61,10 @@ export function exportChecklistEcfPdf({ data, cfcCriticos = 0, preValidacaoOk = 
     styles: { fontSize: 9, cellPadding: 2 },
     head: [['Indicador', 'Resultado']],
     body: [
-      ['Erros (bloqueantes)', erros === 0 ? '0 — sem erros' : `${erros} erro(s) — geração bloqueada`],
+      [
+        'Erros (bloqueantes)',
+        erros === 0 ? '0 — sem erros' : `${erros} erro(s) — geração bloqueada`,
+      ],
       ['Avisos (toleráveis)', avisos === 0 ? '0' : `${avisos} aviso(s)`],
       ['Pré-validação SPED', preValidacaoOk ? 'OK' : 'Pendências críticas'],
       ['Pendências CFC críticas', cfcCriticos === 0 ? '0' : `${cfcCriticos}`],
@@ -103,7 +110,12 @@ export function exportChecklistEcfPdf({ data, cfcCriticos = 0, preValidacaoOk = 
     body: data.checklist.map((c) => [
       STATUS_LABEL[c.status],
       c.label,
-      [c.detail, c.itens?.length ? `Itens: ${c.itens.slice(0, 8).join(', ')}${c.itens.length > 8 ? '…' : ''}` : '']
+      [
+        c.detail,
+        c.itens?.length
+          ? `Itens: ${c.itens.slice(0, 8).join(', ')}${c.itens.length > 8 ? '…' : ''}`
+          : '',
+      ]
         .filter(Boolean)
         .join('\n'),
     ]),
@@ -162,7 +174,7 @@ export function exportChecklistEcfPdf({ data, cfcCriticos = 0, preValidacaoOk = 
     doc.text(
       `Checklist SPED ECF · ${data.empresa.cnpj} · página ${i}/${pages}`,
       14,
-      doc.internal.pageSize.getHeight() - 8,
+      doc.internal.pageSize.getHeight() - 8
     );
   }
 

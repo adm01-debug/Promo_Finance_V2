@@ -23,8 +23,16 @@ interface TagInputProps {
 }
 
 const DEFAULT_COLORS = [
-  '#3b82f6', '#22c55e', '#f59e0b', '#ef4444', '#8b5cf6',
-  '#ec4899', '#06b6d4', '#f97316', '#84cc16', '#6366f1',
+  '#3b82f6',
+  '#22c55e',
+  '#f59e0b',
+  '#ef4444',
+  '#8b5cf6',
+  '#ec4899',
+  '#06b6d4',
+  '#f97316',
+  '#84cc16',
+  '#6366f1',
 ];
 
 export function TagInput({
@@ -47,11 +55,13 @@ export function TagInput({
 
   const filteredSuggestions = suggestions.filter(
     (s) =>
-      !tags.some((t) => t.id === s.id) &&
-      s.label.toLowerCase().includes(inputValue.toLowerCase())
+      !tags.some((t) => t.id === s.id) && s.label.toLowerCase().includes(inputValue.toLowerCase())
   );
 
-  const getRandomColor = useCallback(() => colors[Math.floor(Math.random() * colors.length)], [colors]);
+  const getRandomColor = useCallback(
+    () => colors[Math.floor(Math.random() * colors.length)],
+    [colors]
+  );
 
   const addTag = useCallback(
     (tag: Tag | string) => {
@@ -99,9 +109,7 @@ export function TagInput({
       removeTag(tags[tags.length - 1].id);
     } else if (e.key === 'ArrowDown' && showSuggestions) {
       e.preventDefault();
-      setSelectedIndex((prev) =>
-        prev < filteredSuggestions.length - 1 ? prev + 1 : prev
-      );
+      setSelectedIndex((prev) => (prev < filteredSuggestions.length - 1 ? prev + 1 : prev));
     } else if (e.key === 'ArrowUp' && showSuggestions) {
       e.preventDefault();
       setSelectedIndex((prev) => (prev > 0 ? prev - 1 : prev));
@@ -148,7 +156,10 @@ export function TagInput({
             {!disabled && (
               <button
                 type="button"
-                onClick={(e) => { e.stopPropagation(); removeTag(tag.id); }}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  removeTag(tag.id);
+                }}
                 className="ml-0.5 hover:bg-foreground/10 rounded-full p-0.5 transition-colors"
               >
                 <X className="w-3 h-3" />
@@ -162,7 +173,11 @@ export function TagInput({
             ref={inputRef}
             type="text"
             value={inputValue}
-            onChange={(e) => { setInputValue(e.target.value); setShowSuggestions(true); setSelectedIndex(0); }}
+            onChange={(e) => {
+              setInputValue(e.target.value);
+              setShowSuggestions(true);
+              setSelectedIndex(0);
+            }}
             onFocus={() => setShowSuggestions(true)}
             onBlur={() => setTimeout(() => setShowSuggestions(false), 200)}
             onKeyDown={handleKeyDown}
@@ -185,13 +200,14 @@ export function TagInput({
               onClick={() => addTag(suggestion)}
               className={cn(
                 'w-full flex items-center gap-2 px-3 py-2 text-left transition-colors',
-                index === selectedIndex
-                  ? 'bg-accent'
-                  : 'hover:bg-muted'
+                index === selectedIndex ? 'bg-accent' : 'hover:bg-muted'
               )}
             >
               {suggestion.color && (
-                <span className="w-3 h-3 rounded-full" style={{ backgroundColor: suggestion.color }} />
+                <span
+                  className="w-3 h-3 rounded-full"
+                  style={{ backgroundColor: suggestion.color }}
+                />
               )}
               <span className="text-foreground">{suggestion.label}</span>
             </button>
@@ -235,13 +251,18 @@ export function TagsDisplay({ tags, size = 'md', maxVisible, className }: TagsDi
       {visibleTags.map((tag) => (
         <span
           key={tag.id}
-          className={cn('inline-flex items-center gap-1 rounded-full font-medium', sizeStyles[size])}
+          className={cn(
+            'inline-flex items-center gap-1 rounded-full font-medium',
+            sizeStyles[size]
+          )}
           style={{
             backgroundColor: tag.color ? `${tag.color}20` : 'hsl(var(--muted))',
             color: tag.color || 'hsl(var(--foreground))',
           }}
         >
-          {tag.color && <span className="w-2 h-2 rounded-full" style={{ backgroundColor: tag.color }} />}
+          {tag.color && (
+            <span className="w-2 h-2 rounded-full" style={{ backgroundColor: tag.color }} />
+          )}
           <span>{tag.label}</span>
         </span>
       ))}
@@ -281,7 +302,9 @@ export function TagButton({ tag, selected, onClick, size = 'md' }: TagButtonProp
         color: tag.color || 'hsl(var(--foreground))',
       }}
     >
-      {tag.color && <span className="w-2 h-2 rounded-full" style={{ backgroundColor: tag.color }} />}
+      {tag.color && (
+        <span className="w-2 h-2 rounded-full" style={{ backgroundColor: tag.color }} />
+      )}
       <span>{tag.label}</span>
     </button>
   );
@@ -296,7 +319,13 @@ interface TagFilterProps {
   className?: string;
 }
 
-export function TagFilter({ tags, selectedTags, onChange, multiSelect = true, className }: TagFilterProps) {
+export function TagFilter({
+  tags,
+  selectedTags,
+  onChange,
+  multiSelect = true,
+  className,
+}: TagFilterProps) {
   const handleToggle = (tagId: string) => {
     if (multiSelect) {
       if (selectedTags.includes(tagId)) {
