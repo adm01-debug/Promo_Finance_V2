@@ -93,10 +93,11 @@ jobs:
           # local de origin/main.
           if git rev-parse --verify -q HEAD^2 >/dev/null 2>&1; then
             BASE=$(git rev-parse HEAD^1)
-          elif [ "${{ github.event_name }}" = "push" ] && [ -n "${{ github.event.before }}" ]; then
+          elif [ "${{ github.event_name }}" = "push" ] && [ -n "${{ github.event.before }}" ] && [ "${{ github.event.before }}" != "0000000000000000000000000000000000000000" ]; then
             # Em push, origin/main já aponta para o HEAD novo: merge-base
             # devolve o próprio HEAD e `HEAD..HEAD` varreria zero commits.
             # O `before` do evento é o sha anterior de main — o escopo certo.
+            # (SHA todo-zero = primeiro push que cria a branch: sem base.)
             BASE="${{ github.event.before }}"
           else
             BASE=$(git merge-base origin/main HEAD 2>/dev/null || echo "")

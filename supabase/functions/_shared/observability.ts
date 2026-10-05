@@ -52,11 +52,12 @@ function redigir(x: unknown): unknown {
 }
 
 // Versão de redigir para payloads que saem da tabela (Sentry, webhooks):
-// mesma substituição de valores de segredo, mas sem a regra de chave
-// sensível — strings completas, não objetos.
+// mesma substituição de valores de segredo e de PII, mas sem a regra de
+// chave sensível — strings completas, não objetos.
 export function redigirTexto(texto: string): string {
   let out = texto;
   for (const segredo of segredos()) out = out.split(segredo).join('[REDACTED]');
+  for (const [re, rotulo] of PII_TEXTO) out = out.replace(re, rotulo);
   return out;
 }
 
