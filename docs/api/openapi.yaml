@@ -1,0 +1,1280 @@
+openapi: 3.0.3
+info:
+  title: Promo Finance V2 — API pública (edge functions)
+  description: >-
+    Contrato externo das edge functions chamadas por sistemas de terceiros
+    (provedores de cobrança, ERPs, IdPs, n8n) e utilitários públicos.
+    Todas as rotas vivem sob {SUPABASE_URL}/functions/v1/. As ~90 funções
+    internas (chamadas só pelo app autenticado) não fazem parte deste
+    contrato. Schemas espelham os zod de
+    supabase/functions/_shared/validation.ts — divergência entre este
+    documento e o schema zod = bug neste documento.
+
+    **Versionamento de contrato (webhooks):** os quatro webhooks aceitam
+    o seletor `x-contract-version: v2` no header OU o envelope
+    `{contract_version: "v2", data: {...payload}}` no corpo (o campo data é
+    desembrulhado antes da validação). Sem seletor a requisição cai
+    silenciosamente em v1 — para o contrato v2 (idempotência obrigatória)
+    envie um dos dois seletores.
+  version: '1.0.0'
+servers:
+  - url: https://bwwbeyolnnzppeuhgkcd.supabase.co/functions/v1
+tags:
+  - name: webhooks
+    description: Eventos inbound de provedores externos
+  - name: identidade
+    description: SSO e provisionamento SCIM
+  - name: automacao
+    description: Callbacks de automação (n8n)
+  - name: util
+    description: Health e chaves públicas de configuração
+
+paths:
+  /asaas-webhook:
+    post:
+      tags: [webhooks]
+      summary: Eventos de cobrança do Asaas
+      description: >-
+        Recebe eventos PAYMENT_*/TRANSFER_* do Asaas. Autenticado pelo header
+        asaas-access-token (configurado no painel Asaas → Integrações →
+        Webhooks). Idempotente por `id` no topo (fallback: payment.id
+        ou transfer.id — o schema é strict e rejeita `eventId` com 422)
+        — reenvio retorna 200 sem reprocessar. Falha de processamento retorna 200 com
+        {success: false, will_retry} e a retentativa acontece na fila interna
+        (retry/DLQ próprios — o Asaas não retransmite); 5xx só em erro fatal
+        fora do fluxo e 4xx em erro de validação.
+      parameters:
+        - name: asaas-access-token
+          in: header
+          required: true
+          schema: { type: string }
+          description: Token de verificação configurado no Asaas
+        - name: x-contract-version
+          in: header
+          required: false
+          schema: { type: string, enum: [v1, v2] }
+          description: >-
+            Seletor de contrato (alternativa ao envelope
+            {contract_version, data} no corpo); sem ele assume v1.
+            No v2,
+            o campo `id` é obrigatório (idempotência)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              anyOf:
+                # Nota: o seletor governa — com x-contract-version: v2
+                # ou envelope {contract_version: v2}, o payload DEVE
+                # casar a variante V2 (campo de idempotência obrigatório):
+                # corpo que só satisfaz a variante v1 recebe 422 mesmo
+                # válido em v1.
+                - $ref: '#/components/schemas/AsaasWebhook'
+                - $ref: '#/components/schemas/AsaasWebhookV2'
+                - type: object
+                  required: [contract_version, data]
+                  properties:
+                    contract_version: { type: string, enum: [v2] }
+                    data:
+                      $ref: '#/components/schemas/AsaasWebhookV2'
+      responses:
+        '200':
+          description: >-
+            Evento aceito — também usado para duplicado ({success:true,
+            duplicated:true}) e falha de processamento que segue para a fila
+            interna ({success:false, will_retry, status}).
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [success]
+                properties:
+                  success: { type: boolean }
+                  duplicated:
+                    type: boolean
+                    description: Presente quando o evento já havia sido processado
+                  will_retry:
+                    type: boolean
+                    description: 'Em success:false — a retentativa acontece na fila interna'
+                  status:
+                    type: string
+                    description: >-
+                      Em success:false — estado interno da fila de retry/DLQ
+                      (valor textual da RPC, ex.: retry_pending/dlq), não
+                      código HTTP; a resposta sempre sai com HTTP 200
+        '422':
+          $ref: '#/components/responses/ErroValidacaoContrato'
+        '403':
+          description: Token do webhook ausente ou inválido
+        '429':
+          $ref: '#/components/responses/RateLimited'
+        '500':
+          description: >-
+            Exceção interna no processamento ({error: <mensagem>}) —
+            erro de aplicação, não de contrato
+        '503':
+          description: >-
+            ASAAS_WEBHOOK_TOKEN não configurado no servidor ({error:
+            "Webhook não configurado"}) — fail-closed; NÃO é transitório:
+            reenvios falham até o segredo ser provisionado
+
+  /bling-webhook:
+    post:
+      tags: [webhooks]
+      security:
+        - webhookHmac: []
+        - webhookToken: []
+      summary: Eventos do ERP Bling
+      description: >-
+        Recebe callbacks do Bling (notas fiscais, pedidos, estoque). Credencial
+        verificada ANTES do parse do corpo (a assinatura cobre os bytes
+        originais): HMAC-SHA256 do corpo em x-bling-signature-256 (também
+        aceitos x-bling-signature, x-signature ou x-webhook-signature, com ou
+        sem prefixo "sha256="), ou o token compartilhado em x-webhook-token.
+        Sem credencial válida → 401; sem segredo configurado no servidor →
+        503 (fail-closed). Idempotente por eventId — obrigatório no contrato
+        v2 (ver Versionamento de contrato no topo do documento).
+      parameters:
+        - name: x-bling-signature-256
+          in: header
+          required: false
+          schema: { type: string }
+          description: >-
+            HMAC-SHA256 hex ou base64 do corpo bruto (aceita também
+            x-bling-signature, x-signature, x-webhook-signature)
+        - name: x-webhook-token
+          in: header
+          required: false
+          schema: { type: string }
+          description: Alternativa ao HMAC — token compartilhado do domínio
+        - name: x-contract-version
+          in: header
+          required: false
+          schema: { type: string, enum: [v1, v2] }
+          description: >-
+            Seletor de contrato (alternativa ao envelope
+            {contract_version, data} no corpo); sem ele assume v1.
+            No v2,
+            o campo `eventId` é obrigatório (idempotência)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              anyOf:
+                # Nota: o seletor governa — com x-contract-version: v2
+                # ou envelope {contract_version: v2}, o payload DEVE
+                # casar a variante V2 (campo de idempotência obrigatório):
+                # corpo que só satisfaz a variante v1 recebe 422 mesmo
+                # válido em v1.
+                - $ref: '#/components/schemas/BlingWebhook'
+                - $ref: '#/components/schemas/BlingWebhookV2'
+                - type: object
+                  required: [contract_version, data]
+                  properties:
+                    contract_version: { type: string, enum: [v2] }
+                    data:
+                      $ref: '#/components/schemas/BlingWebhookV2'
+      responses:
+        '200': { description: Evento aceito }
+        '405': { description: Método diferente de POST — o handler devolve 405 antes de autenticar }
+        '422': { $ref: '#/components/responses/ErroValidacaoContrato' }
+        '401': { description: Assinatura/secret inválidos ou ausentes }
+        '429': { $ref: '#/components/responses/RateLimited' }
+        '500':
+          description: >-
+            Exceção interna no processamento ({error: <mensagem>}) —
+            erro de aplicação, não de contrato
+        '503':
+          description: >-
+            Webhook não configurado no servidor ({error: "Webhook não
+            configurado"}) ou rate limiter indisponível
+            ({error: "rate_limit_indisponivel"})
+
+  /bitrix24-webhook:
+    post:
+      tags: [webhooks]
+      security:
+        - bitrixHmac: []
+        - webhookToken: []
+      summary: Eventos do Bitrix24
+      description: >-
+        Recebe eventos outbound do Bitrix24 (entidades CRM). Autenticado por
+        application_token no payload auth ou secret resolvido por domínio.
+      parameters:
+        - name: x-contract-version
+          in: header
+          required: false
+          schema: { type: string, enum: [v1, v2] }
+          description: >-
+            Seletor de contrato (alternativa ao envelope
+            {contract_version, data} no corpo); sem ele assume v1.
+            No v2,
+            o campo `event_id` é obrigatório (idempotência)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              anyOf:
+                # Nota: o seletor governa — com x-contract-version: v2
+                # ou envelope {contract_version: v2}, o payload DEVE
+                # casar a variante V2 (campo de idempotência obrigatório):
+                # corpo que só satisfaz a variante v1 recebe 422 mesmo
+                # válido em v1.
+                - $ref: '#/components/schemas/Bitrix24Webhook'
+                - $ref: '#/components/schemas/Bitrix24WebhookV2'
+                - type: object
+                  required: [contract_version, data]
+                  properties:
+                    contract_version: { type: string, enum: [v2] }
+                    data:
+                      $ref: '#/components/schemas/Bitrix24WebhookV2'
+      responses:
+        '200': { description: Evento aceito }
+        '422': { $ref: '#/components/responses/ErroValidacaoContrato' }
+        '401': { description: Token inválido }
+        '429': { $ref: '#/components/responses/RateLimited' }
+        '500':
+          description: >-
+            Exceção interna no processamento ({error: <mensagem>}) —
+            erro de aplicação, não de contrato
+        '503':
+          description: >-
+            Webhook não configurado no servidor ({error: "Webhook não
+            configurado"}) — falha fechada antes da validação do payload;
+            não é erro de credencial do cliente
+
+  /whatsapp-webhook:
+    post:
+      tags: [webhooks]
+      security:
+        - whatsappHmac: []
+        - webhookToken: []
+      summary: Eventos de mensagem (Evolution API / WhatsApp)
+      description: >-
+        Autenticado ANTES do payload: assinatura HMAC em
+        `x-hub-signature-256`, `x-signature` ou `x-webhook-signature`, ou o
+        token compartilhado em `x-webhook-token`. Sem credencial → 401 mesmo
+        com corpo válido (fail-closed).
+      parameters:
+        - name: x-webhook-token
+          in: header
+          required: false
+          schema: { type: string }
+          description: Alternativa ao HMAC — token compartilhado do domínio
+        - name: x-signature
+          in: header
+          required: false
+          schema: { type: string }
+          description: HMAC do corpo (ou x-hub-signature-256 / x-webhook-signature)
+        - name: x-contract-version
+          in: header
+          required: false
+          schema: { type: string, enum: [v1, v2] }
+          description: >-
+            Seletor de contrato (alternativa ao envelope
+            {contract_version, data} no corpo); sem ele assume v1.
+            No v2,
+            o campo `messageId` é obrigatório (idempotência)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              anyOf:
+                # Nota: o seletor governa — com x-contract-version: v2
+                # ou envelope {contract_version: v2}, o payload DEVE
+                # casar a variante V2 (campo de idempotência obrigatório):
+                # corpo que só satisfaz a variante v1 recebe 422 mesmo
+                # válido em v1.
+                - $ref: '#/components/schemas/WhatsappWebhook'
+                - $ref: '#/components/schemas/WhatsappWebhookV2'
+                - type: object
+                  required: [contract_version, data]
+                  properties:
+                    contract_version: { type: string, enum: [v2] }
+                    data:
+                      $ref: '#/components/schemas/WhatsappWebhookV2'
+      responses:
+        '200': { description: Evento aceito }
+        '422': { $ref: '#/components/responses/ErroValidacaoContrato' }
+        '401': { description: Credencial de webhook ausente ou inválida }
+        '429': { $ref: '#/components/responses/RateLimited' }
+        '500':
+          description: >-
+            Exceção interna no processamento ({error: <mensagem>}) —
+            erro de aplicação, não de contrato
+        '503':
+          description: >-
+            Webhook não configurado no servidor ({error: "Webhook não
+            configurado"}) — fail-closed antes de processar o corpo;
+            não é erro de credencial do cliente
+
+  /n8n-callback:
+    post:
+      tags: [automacao]
+      summary: Callback de workflows n8n
+      description: >-
+        Endpoint genérico para workflows n8n gravarem resultados. Autenticado
+        pelo header x-n8n-secret (comparado a N8N_CALLBACK_SECRET).
+      parameters:
+        - name: x-n8n-secret
+          in: header
+          required: true
+          schema: { type: string }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              oneOf:
+                - type: object
+                  required: [action, payload]
+                  properties:
+                    action:
+                      type: string
+                      enum: [create_alert]
+                    payload:
+                      type: object
+                      additionalProperties: true
+                      properties:
+                        alert_type: { type: string, description: 'ou `type`' }
+                        type: { type: string }
+                        severity:
+                          type: string
+                          enum: [info, warning, critical, low, medium, high]
+                        title:
+                          type: string
+                          description: 'opcional — fallback "Alerta via n8n"'
+                        message: { type: string }
+                        description: { type: string, description: 'alias de message' }
+                        deal_id: { type: integer }
+                        driver_id: { type: string }
+                        order_id: { type: string }
+                        record_id: { type: string }
+                - type: object
+                  required: [action, payload]
+                  properties:
+                    action:
+                      type: string
+                      enum: [create_task]
+                    payload:
+                      type: object
+                      additionalProperties: true
+                      properties:
+                        subject: { type: string }
+                        title: { type: string, description: 'alias de subject' }
+                        order_id: { type: string }
+                        deal_id: { type: integer }
+                - type: object
+                  required: [action, payload]
+                  properties:
+                    action:
+                      type: string
+                      enum: [log]
+                    payload:
+                      type: object
+                      additionalProperties: true
+                      properties:
+                        action: { type: string }
+                        message: { type: string }
+                        table_name: { type: string }
+              description: >-
+                Campos por action: create_alert usa
+                {alert_type, severity, title, message, description,
+                deal_id, driver_id, order_id, record_id} (title é
+                opcional — sem ele o servidor usa o fallback
+                'Alerta via n8n'); create_task aceita
+                subject ou title; log usa {action, message, ...}.
+      responses:
+        '200':
+          description: Ação executada
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  ok: { type: boolean }
+                  action: { type: string }
+                  result: { type: object }
+        '400':
+          description: >-
+            JSON malformado ({error: invalid_json}) — falha de
+            schema/validação NÃO vem em 400: validatePayload emite
+            'Contract Violation' que createErrorResponse intercepta e
+            devolve 422 (createValidationErrorResponse)
+        '422': { $ref: '#/components/responses/ErroValidacaoContrato' }
+        '401': { description: x-n8n-secret inválido }
+        '405': { description: Método diferente de POST }
+        '500':
+          description: >-
+            Falha interna ao executar a ação (catch de createHandler) —
+            {error: <mensagem>}
+        '503':
+          description: >-
+            N8N_CALLBACK_SECRET não configurado no servidor —
+            {error: "secret_not_configured"}; não é erro de credencial do
+            cliente
+
+  /sso-initiate:
+    post:
+      tags: [identidade]
+      summary: Inicia fluxo SSO (SAML ou OIDC)
+      description: >-
+        Retorna a URL de autorização do IdP. Para SAML devolve a URL nativa do
+        Supabase; para OIDC monta authorize com PKCE a partir da
+        authorization_endpoint/discovery_url do provedor.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [provider_id]
+              properties:
+                provider_id: { type: string, format: uuid }
+                redirect_to:
+                  type: string
+                  format: uri
+                  nullable: true
+                  description: >-
+                    Restrito às origens de ALLOWED_ORIGINS e à origem de
+                    PUBLIC_APP_URL — qualquer outra URI é rejeitada com 400
+                    {error: redirect_to_forbidden}
+      responses:
+        '200':
+          description: URL de redirecionamento para o IdP + artefatos PKCE (OIDC)
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  redirect_url: { type: string, format: uri }
+                  type: { type: string, enum: [saml, oidc] }
+                  verifier:
+                    type: string
+                    description: >-
+                      PKCE code_verifier — só no fluxo OIDC. O cliente DEVE
+                      persistir (sessionStorage) e devolvê-lo no /sso-callback;
+                      sem ele a troca do code é rejeitada.
+                  state:
+                    type: string
+                    description: >-
+                      Nonce anti-CSRF — só no fluxo OIDC; devolvido pelo IdP
+                      na query do /sso-callback.
+        '400': { $ref: '#/components/responses/ErroValidacao' }
+        '404': { description: Provedor não encontrado ou inativo }
+        '429': { description: Mais de 10 tentativas por provedor — aplicar backoff }
+        '500': { description: Falha inesperada no servidor }
+        '502': { description: Discovery OIDC do IdP falhou — IdP indisponível }
+
+  /sso-callback:
+    get:
+      tags: [identidade]
+      summary: Conclui fluxo OIDC (code → sessão)
+      description: >-
+        Callback que o IdP chama via redirect: lê code/state da query (e
+        verifier opcional na query ou no corpo), troca o authorization code
+        (com PKCE) e provisiona o usuário na empresa, respondendo redirect
+        ou magic link conforme o fluxo.
+      parameters:
+        - name: code
+          in: query
+          required: true
+          schema: { type: string }
+        - name: state
+          in: query
+          required: true
+          schema: { type: string }
+        - name: verifier
+          in: query
+          required: false
+          schema: { type: string }
+          description: >-
+            Obrigatório no fluxo OIDC (PKCE): o code_verifier persistido pelo
+            cliente no /sso-initiate. Sem ele a troca do code é rejeitada.
+      responses:
+        '302':
+          description: >-
+            Redirect para a aplicação — tanto no sucesso (sessão/magic link)
+            quanto em QUALQUER falha do fluxo: o handler sempre responde 302
+            para /auth?sso_error=<código> (missing_code_or_state,
+            state_invalid_or_expired, pkce_verifier_missing, pkce_mismatch,
+            provider_missing, token_exchange_failed, no_email_claim e outros).
+            Não há respostas JSON 4xx nesta operação — o cliente deve ler o
+            sso_error na query do redirect.
+    post:
+      tags: [identidade]
+      summary: Finaliza fluxo SAML (vínculo, papel e auditoria)
+      description: >-
+        Chamado pelo frontend após o retorno do broker SAML com a sessão já
+        autenticada: aplica o vínculo do usuário à empresa do provedor, o
+        papel default e registra a auditoria do login SSO. Requer
+        `Authorization: Bearer <access_token>` da sessão Supabase.
+      parameters:
+        - name: Authorization
+          in: header
+          required: false
+          schema: { type: string }
+          description: >-
+            Bearer access_token da sessão Supabase pós-broker —
+            obrigatório APENAS na variante JSON (kind saml-finalize);
+            o reenvio urlencoded do OIDC não envia header
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [kind, provider_id]
+              properties:
+                kind: { type: string, enum: [saml-finalize] }
+                provider_id: { type: string, format: uuid }
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              required: [code, state, verifier]
+              properties:
+                code: { type: string, minLength: 1 }
+                state: { type: string, minLength: 1 }
+                verifier: { type: string, minLength: 1 }
+            description: >-
+              Reenvio do fluxo OIDC/PKCE — o SPA repassa code/state/verifier
+              por formulário urlencoded (o verifier não pode ir na URL)
+      responses:
+        '302':
+          description: >-
+            Variante OIDC urlencoded: responde redirect (Location para
+            /auth com token ou sso_error) tanto no sucesso quanto no erro
+        '200':
+          description: Vínculo aplicado — JSON com o resultado do provisionamento
+        '400':
+          description: provider_id_required ou erro de validação ({error, details})
+        '401':
+          description: 'Sessão ausente ({error: unauthorized}) ou inválida ({error: invalid_token})'
+        '404':
+          description: 'Provedor ({error: provider_missing}) ou usuário ({error: user_not_found}) não encontrado'
+
+  /scim-server/scim/v2/ServiceProviderConfig:
+    get:
+      tags: [identidade]
+      summary: Capabilities SCIM 2.0
+      description: >-
+        Discovery PÚBLICO — atendido antes da checagem de Authorization;
+        qualquer cliente recebe 200 sem bearer token.
+      responses:
+        '200': { description: ServiceProviderConfig (patch suportado; etag NÃO implementado — o payload retorna `etag.supported=false`) }
+
+  /scim-server/scim/v2/ResourceTypes:
+    get:
+      tags: [identidade]
+      summary: ResourceTypes SCIM 2.0
+      description: Discovery PÚBLICO (sem autenticação).
+      responses:
+        '200': { description: ListResponse com os ResourceTypes User e Group }
+
+  /scim-server/scim/v2/Schemas:
+    get:
+      tags: [identidade]
+      summary: Schemas SCIM 2.0
+      description: Discovery PÚBLICO (sem autenticação).
+      responses:
+        '200': { description: 'ListResponse com os schemas User, Group e a extensão EnterpriseUser (urn:ietf:params:scim:schemas:extension:enterprise:2.0:User)' }
+
+  '/scim-server/scim/v2/ResourceTypes/{id}':
+    get:
+      tags: [identidade]
+      summary: ResourceType unitário (User | Group)
+      description: Discovery PÚBLICO (sem autenticação).
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: string, enum: [User, Group] }
+      responses:
+        '200': { description: ResourceType SCIM }
+        '404': { description: ResourceType desconhecido }
+
+  '/scim-server/scim/v2/Schemas/{id}':
+    get:
+      tags: [identidade]
+      summary: Schema unitário por URN
+      description: >-
+        Discovery PÚBLICO (sem autenticação). Aceita a URN completa do
+        schema (ex.: urn:ietf:params:scim:schemas:core:2.0:User).
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: string }
+      responses:
+        '200': { description: Schema SCIM }
+        '404': { description: Schema desconhecido }
+
+  /scim-server/scim/v2/Users:
+    get:
+      tags: [identidade]
+      summary: Lista usuários provisionados
+      security: [{ bearerAuth: [] }]
+      parameters:
+        - { name: filter, in: query, schema: { type: string }, description: 'SCIM filter (ex.: userName eq "a@b.com")' }
+        - { name: startIndex, in: query, schema: { type: integer, default: 1 } }
+        - { name: count, in: query, schema: { type: integer, default: 50, maximum: 200 } }
+      responses:
+        '200': { description: ListResponse SCIM }
+        '400': { description: 'Filtro inválido ou atributo não suportado — {scimType: "invalidFilter", detail}' }
+        '401': { description: Bearer token SCIM inválido }
+    post:
+      tags: [identidade]
+      summary: Provisiona usuário em user_empresas + user_roles
+      security: [{ bearerAuth: [] }]
+      requestBody:
+        required: true
+        content:
+          application/scim+json:
+            schema: { $ref: '#/components/schemas/ScimUser' }
+      responses:
+        '201':
+          description: >-
+            'User criado — a criação é idempotente: userName já
+            provisionado localiza o usuário existente, faz upsert do
+            vínculo user_empresas e responde 201. Sem header Location
+            (o recurso retorna com id no corpo)'
+        '400': { $ref: '#/components/responses/ErroValidacao' }
+        '401': { description: Bearer token SCIM inválido }
+        '500': { description: Falha de persistência (Auth ou upsert de user_empresas) }
+
+  '/scim-server/scim/v2/Users/{id}':
+    get:
+      tags: [identidade]
+      summary: Lê usuário por id
+      security: [{ bearerAuth: [] }]
+      parameters: [{ $ref: '#/components/parameters/ScimId' }]
+      responses:
+        '200': { description: User SCIM }
+        '404': { description: Não encontrado }
+        '401': { description: Bearer token SCIM ausente, inválido ou expirado }
+    patch:
+      tags: [identidade]
+      summary: Patch SCIM (active, displayName, name.*, externalId, department)
+      security: [{ bearerAuth: [] }]
+      parameters: [{ $ref: '#/components/parameters/ScimId' }]
+      requestBody:
+        required: true
+        content:
+          application/scim+json:
+            schema:
+              type: object
+              properties:
+                schemas:
+                  type: array
+                  items: { type: string }
+                  description: >-
+                    Quando presente, DEVE conter
+                    urn:ietf:params:scim:api:messages:2.0:PatchOp
+                    (RFC 7644 §3.5.2). `schemas` ausente é aceito;
+                    presente sem o URN PatchOp o endpoint responde 400
+                    invalidSyntax ('Missing PatchOp schema') — mesmo
+                    com Operations válido.
+                Operations:
+                  type: array
+                  minItems: 1
+                  items:
+                    type: object
+                    required: [op]
+                    properties:
+                      op: { type: string, enum: [add, remove, replace] }
+                      path: { type: string }
+                      value: {}
+              required: [Operations]
+      responses:
+        '200': { description: User atualizado }
+        '400':
+          description: >-
+            Operations ausente ou vazio ({scimType:invalidValue,
+            detail:'Operations array required'}) OU `schemas` presente
+            sem o URN PatchOp ({scimType:invalidSyntax, detail:
+            'Missing PatchOp schema'}) — patchUser exige
+            urn:ietf:params:scim:api:messages:2.0:PatchOp quando
+            `schemas` é enviado.
+        '401': { description: Bearer token SCIM ausente, inválido ou expirado }
+        '404': { description: Não encontrado }
+        '500':
+          description: >-
+            Falha de persistência — patchUser devolve SCIM 500 quando
+            updateUserEmail falha em Auth ou profiles
+    put:
+      tags: [identidade]
+      summary: Substitui o usuário inteiro
+      security: [{ bearerAuth: [] }]
+      parameters: [{ $ref: '#/components/parameters/ScimId' }]
+      requestBody:
+        required: true
+        content:
+          application/scim+json:
+            schema: { $ref: '#/components/schemas/ScimUser' }
+      responses:
+        '200': { description: User substituído }
+        '404': { description: Não encontrado }
+        '401': { description: Bearer token SCIM ausente, inválido ou expirado }
+        '500':
+          description: >-
+            putUser devolve SCIM 500 quando updateUserEmail falha em
+            Auth ou profiles ao trocar o e-mail
+    delete:
+      tags: [identidade]
+      summary: Desprovisiona (desativa vínculo user_empresas)
+      security: [{ bearerAuth: [] }]
+      parameters: [{ $ref: '#/components/parameters/ScimId' }]
+      responses:
+        '204': { description: Desprovisionado }
+        '404': { description: Não encontrado }
+        '401': { description: Bearer token SCIM ausente, inválido ou expirado }
+
+  /scim-server/scim/v2/Groups:
+    get:
+      tags: [identidade]
+      summary: Lista grupos/papéis provisionáveis
+      security: [{ bearerAuth: [] }]
+      parameters:
+        - name: filter
+          in: query
+          required: false
+          schema: { type: string }
+          description: >-
+            Filtro SCIM por displayName/externalId (sintaxe `attr eq
+            "valor"`, combinável com `and`); filtro não suportado → 400
+        - name: startIndex
+          in: query
+          required: false
+          schema: { type: integer, default: 1 }
+        - name: count
+          in: query
+          required: false
+          schema: { type: integer, default: 50, maximum: 200 }
+      responses:
+        '200': { description: ListResponse SCIM }
+        '400': { description: 'Filtro inválido — {scimType: "invalidFilter", detail}' }
+        '401': { description: Bearer token SCIM ausente, inválido ou expirado }
+    post:
+      tags: [identidade]
+      summary: Cria mapeamento de grupo → papel
+      security: [{ bearerAuth: [] }]
+      requestBody:
+        required: true
+        content:
+          application/scim+json:
+            schema:
+              type: object
+              required: [displayName]
+              properties:
+                displayName: { type: string, minLength: 1, pattern: '\S' }
+                members:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      value: { type: string }
+      responses:
+        '201': { description: 'Group criado — sem header Location (o recurso retorna com id no corpo)' }
+        '400':
+          description: >-
+            displayName ausente ({error: "displayName required"}) ou
+            token SCIM sem vínculo de provedor ({scimType:
+            "invalidValue", detail: "Group provisioning requires SCIM
+            token bound to provider_id"})
+        '401': { description: Bearer token SCIM ausente, inválido ou expirado }
+        '403': { description: provider_id do token não pertence à empresa resolvida }
+        '500':
+          description: >-
+            createGroup devolve SCIM 500 quando o upsert em
+            sso_role_mappings falha
+
+  '/scim-server/scim/v2/Groups/{id}':
+    get:
+      tags: [identidade]
+      summary: Lê grupo por id
+      security: [{ bearerAuth: [] }]
+      parameters: [{ $ref: '#/components/parameters/ScimId' }]
+      responses:
+        '200': { description: Group SCIM }
+        '404': { description: Não encontrado }
+        '401': { description: Bearer token SCIM ausente, inválido ou expirado }
+    patch:
+      tags: [identidade]
+      summary: Patch de membros do grupo
+      security: [{ bearerAuth: [] }]
+      parameters: [{ $ref: '#/components/parameters/ScimId' }]
+      requestBody:
+        required: true
+        content:
+          application/scim+json:
+            schema:
+              type: object
+              properties:
+                schemas: { type: array, items: { type: string } }
+                Operations:
+                  type: array
+                  items:
+                    type: object
+                    required: [op]
+                    properties:
+                      op: { type: string, enum: [add, remove, replace] }
+                      path:
+                        type: string
+                        description: 'Ex.: members, displayName'
+                      value: {}
+      responses:
+        '200': { description: Group atualizado }
+        '400':
+          description: >-
+            patchGroup devolve SCIM 400 (scimType:invalidPath) para
+            `path` fora dos suportados (displayName, members,
+            members[value eq "<id>"])
+        '401': { description: Bearer token SCIM ausente, inválido ou expirado }
+        '404':
+          description: >-
+            patchGroup devolve 404 quando a empresa não tem provedor
+            vinculado ou o grupo não existe nos provedores dela
+    put:
+      tags: [identidade]
+      summary: Substitui o grupo inteiro (membros inclusos)
+      security: [{ bearerAuth: [] }]
+      parameters: [{ $ref: '#/components/parameters/ScimId' }]
+      requestBody:
+        required: true
+        content:
+          application/scim+json:
+            schema:
+              type: object
+              required: [displayName]
+              properties:
+                displayName: { type: string, minLength: 1, pattern: '\S' }
+                members:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      value: { type: string }
+      responses:
+        '200': { description: Group substituído }
+        '404': { description: Não encontrado }
+        '401': { description: Bearer token SCIM ausente, inválido ou expirado }
+    delete:
+      tags: [identidade]
+      summary: Remove o mapeamento de grupo
+      security: [{ bearerAuth: [] }]
+      parameters: [{ $ref: '#/components/parameters/ScimId' }]
+      responses:
+        '204': { description: Removido }
+        '401': { description: Bearer token SCIM ausente, inválido ou expirado }
+        '404':
+          description: >-
+            deleteGroup devolve 404 quando a empresa não tem provedor
+            vinculado ao token
+        '500':
+          description: >-
+            deleteGroup devolve SCIM 500 quando o DELETE em
+            sso_role_mappings falha
+
+  /validar-token-contador:
+    post:
+      tags: [identidade]
+      summary: Valida token JWT de contador convidado
+      description: >-
+        Verifica assinatura/expiração do token emitido por convidar-contador e
+        devolve {success, empresa, convite} para o fluxo de aceite sem login.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [token]
+              properties:
+                token: { type: string, minLength: 10 }
+      responses:
+        '200':
+          description: Token validado
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success: { type: boolean }
+                  empresa:
+                    type: object
+                    description: Empresa dona do convite
+                  convite:
+                    type: object
+                    properties:
+                      email: { type: string, format: email }
+                      expires_at: { type: string, format: date-time }
+        '400': { description: 'Claims malformados — {error: "Token malformado"}' }
+        '401': { description: JWT inválido ou expirado }
+        '403': { description: Role incorreta, convite revogado ou convite expirado }
+        '404': { description: Convite ou empresa não encontrados }
+        '422':
+          $ref: '#/components/responses/ErroValidacaoContrato'
+        '500':
+          description: >-
+            Falha inesperada na validação do JWT ou nas consultas a
+            convites_contador/empresas — {error: "Erro interno"}
+
+  /health:
+    get:
+      tags: [util]
+      summary: Liveness público
+      description: >-
+        Público (sem JWT): {status:'ok'|'outage', timestamp, services} — o
+        bloco services também é retornado no público, mas só como esqueleto
+        de status agregado (edge_runtime, database, realtime,
+        external_apis.asaas/bling), sem internals; 503 quando o probe do
+        banco falha. Usuário autenticado: status 'operational'|'degraded' e o
+        mesmo bloco services detalhado por serviço.
+      responses:
+        '200':
+          description: Sistema no ar (status ok/outage no público; operational/degraded autenticado)
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    enum: [ok, outage, operational, degraded]
+                    description: ok/outage no público; operational/degraded autenticado
+                  timestamp: { type: string, format: date-time }
+                  services:
+                    type: object
+                    description: >-
+                      Status agregado por serviço (operational/degraded/outage)
+                      — retornado também no público como esqueleto sem internals
+        '503': { description: Probe público falhou — status 'outage' }
+
+  /get-vapid-key:
+    get:
+      tags: [util]
+      summary: Chave pública VAPID para Web Push
+      responses:
+        '200':
+          description: Chave pública (subject/applicationServerKey do push)
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  vapidPublicKey: { type: string }
+        '500':
+          description: >-
+            VAPID_PUBLIC_KEY não configurada ({error: "VAPID key not
+            configured"}) ou exceção interna — indisponibilidade do
+            servidor, não do cliente
+
+  /get-mapbox-token:
+    get:
+      tags: [util]
+      summary: Token público do Mapbox
+      security: [{ userJwt: [] }]
+      description: >-
+        Exige JWT de usuário autenticado (verify_jwt = true no gateway):
+        chamada anônima é rejeitada pelo gateway antes do handler.
+      responses:
+        '401':
+          description: JWT ausente ou inválido — rejeitado no gateway
+        '200':
+          description: Token de escopo público (pk.*)
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  token: { type: string }
+        '500':
+          description: >-
+            MAPBOX_ACCESS_TOKEN não configurado no servidor ({error:
+            "MAPBOX_ACCESS_TOKEN não configurado"}) — indisponibilidade
+            de configuração, não falha de autenticação
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: token
+      description: >-
+        Token SCIM opaco por provedor (secrets scim_tokens) — válido
+        SOMENTE nos endpoints /scim-server/*; não é um JWT e não passa
+        no gateway das demais funções
+    webhookHmac:
+      type: apiKey
+      in: header
+      name: x-bling-signature-256
+      description: >-
+        Assinatura HMAC-SHA256 do corpo bruto (também aceitos
+        x-bling-signature, x-signature, x-webhook-signature)
+    bitrixHmac:
+      type: apiKey
+      in: header
+      name: x-bitrix-signature
+      description: >-
+        Assinatura HMAC do corpo — o handler Bitrix24 também aceita
+        x-signature/x-webhook-signature ou `auth.application_token`
+        no corpo
+    whatsappHmac:
+      type: apiKey
+      in: header
+      name: x-hub-signature-256
+      description: >-
+        Assinatura HMAC do corpo — o handler WhatsApp também aceita
+        x-signature ou x-webhook-signature
+    webhookToken:
+      type: apiKey
+      in: header
+      name: x-webhook-token
+      description: Token compartilhado do domínio — alternativa à assinatura HMAC
+    userJwt:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: >-
+        JWT de usuário do Supabase Auth — exigido pelo gateway
+        (verify_jwt = true) nas funções autenticadas por usuário
+
+  parameters:
+    ScimId:
+      name: id
+      in: path
+      required: true
+      schema: { type: string }
+
+  responses:
+    ErroValidacao:
+      description: Payload fora do contrato (detalhes zod)
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              error: { type: string }
+              details: { type: object }
+    ErroValidacaoContrato:
+      description: >-
+        HTTP 422 — envelope canônico de createValidationErrorResponse usado
+        pelos webhooks versionados (validateVersionedContract)
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              code: { type: string, enum: [VALIDATION_ERROR, UNSUPPORTED_CONTRACT_VERSION] }
+              message: { type: string }
+              fields:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    path: { type: string }
+                    message: { type: string }
+                    code: { type: string }
+    RateLimited:
+      description: Acima do limite por IP/função (checkRateLimit)
+      headers:
+        Retry-After:
+          schema: { type: integer }
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              error: { type: string }
+
+  schemas:
+    AsaasWebhook:
+      type: object
+      required: [event]
+      additionalProperties: false
+      properties:
+        event:
+          type: string
+          description: 'Ex.: PAYMENT_RECEIVED, PAYMENT_OVERDUE, TRANSFER_DONE'
+        payment:
+          type: object
+          required: [id]
+          properties:
+            id: { type: string }
+            status: { type: string }
+        transfer:
+          type: object
+          required: [id]
+          properties:
+            id: { type: string }
+            status: { type: string }
+            transactionReceiptUrl: { type: string }
+        id:
+          type: string
+          description: >-
+            V1: qualquer string (zod `id: z.string().optional()`). V2:
+            obrigatório e não-vazio (idempotência).
+
+    AsaasWebhookV2:
+      allOf:
+        - $ref: '#/components/schemas/AsaasWebhook'
+        - type: object
+          required: [id]
+          properties:
+            id: { type: string, minLength: 1, pattern: '\S' }
+
+    BlingWebhook:
+      type: object
+      required: [event, data]
+      additionalProperties: false
+      properties:
+        eventId:
+          type: string
+          minLength: 1
+          pattern: '\S'
+          description: Obrigatório no contrato v2 (idempotência)
+        date: { type: string, format: date-time }
+        version:
+          oneOf:
+            - { type: string, minLength: 1, pattern: '\S' }
+            - { type: number }
+        companyId:
+          oneOf:
+            - { type: string, minLength: 1, pattern: '\S' }
+            - { type: number }
+        event: { type: string, minLength: 1, pattern: '\S' }
+        module: { type: string }
+        data:
+          type: object
+          additionalProperties: true
+        retries: { type: number }
+
+    BlingWebhookV2:
+      allOf:
+        - $ref: '#/components/schemas/BlingWebhook'
+        - type: object
+          required: [eventId]
+
+    Bitrix24Webhook:
+      type: object
+      required: [event, data]
+      additionalProperties: false
+      properties:
+        event: { type: string }
+        data:
+          type: object
+          required: [FIELDS]
+          properties:
+            FIELDS:
+              type: object
+              additionalProperties: true
+        ts: { type: string }
+        auth:
+          type: object
+          description: >-
+            Bloco nativo do Bitrix24 — `application_token` aqui (ou em
+            `data.auth` no envelope v2) conta como credencial: sem nenhum
+            dos headers de `security` o handler valida esse token e
+            devolve 401 se ausente/inválido. Credenciais de corpo não são
+            expressáveis em securitySchemes (só header/query/cookie).
+          properties:
+            domain: { type: string }
+            client_endpoint: { type: string }
+            server_endpoint: { type: string }
+            member_id: { type: string }
+            application_token: { type: string }
+
+    Bitrix24WebhookV2:
+      type: object
+      required: [event, data, event_id]
+      additionalProperties: false
+      description: >-
+        Schema autônomo — `allOf` não se usa aqui porque o base tem
+        additionalProperties:false e rejeitaria o próprio event_id
+      properties:
+        event: { type: string }
+        event_id:
+          type: string
+          minLength: 1
+          pattern: '\S'
+          description: Obrigatório no contrato v2 (idempotência)
+        data:
+          type: object
+          required: [FIELDS]
+          properties:
+            FIELDS:
+              type: object
+              additionalProperties: true
+        ts: { type: string }
+        auth:
+          type: object
+          description: >-
+            Bloco nativo do Bitrix24 — `application_token` aqui (ou em
+            `data.auth` no envelope v2) conta como credencial: sem nenhum
+            dos headers de `security` o handler valida esse token e
+            devolve 401 se ausente/inválido. Credenciais de corpo não são
+            expressáveis em securitySchemes (só header/query/cookie).
+          properties:
+            domain: { type: string }
+            client_endpoint: { type: string }
+            server_endpoint: { type: string }
+            member_id: { type: string }
+            application_token: { type: string }
+
+    WhatsappWebhook:
+      type: object
+      required: [event, from]
+      additionalProperties: false
+      properties:
+        event: { type: string }
+        messageId:
+          type: string
+          description: >-
+            V1: qualquer string (zod `messageId: z.string().optional()`). V2:
+            obrigatório e não-vazio (idempotência).
+        status: { type: string }
+        from: { type: string }
+        text: { type: string }
+
+    WhatsappWebhookV2:
+      allOf:
+        - $ref: '#/components/schemas/WhatsappWebhook'
+        - type: object
+          required: [messageId]
+          properties:
+            messageId: { type: string, minLength: 1, pattern: '\S' }
+
+    ScimUser:
+      type: object
+      # O handler aceita o e-mail por qualquer um dos dois caminhos
+      # (`body.userName || body.emails[0].value`) — scim-server/index.ts ~420.
+      anyOf:
+        - required: [userName]
+        - required: [emails]
+      properties:
+        schemas:
+          type: array
+          items: { type: string }
+        userName: { type: string, format: email }
+        emails:
+          type: array
+          minItems: 1
+          items:
+            type: object
+            required: [value]
+            properties:
+              value: { type: string, format: email }
+              primary: { type: boolean }
+              type: { type: string }
+        displayName: { type: string }
+        externalId: { type: string }
+        active: { type: boolean }
+        name:
+          type: object
+          properties:
+            givenName: { type: string }
+            familyName: { type: string }
+            formatted: { type: string }
