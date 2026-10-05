@@ -32,9 +32,7 @@ erDiagram
     centros_custo |o--o{ centros_custo : "hierarquia (parent_id)"
     contas_bancarias ||--o{ transacoes_bancarias : "movimenta"
     contas_bancarias |o--o{ contas_pagar : "conta de pagamento"
-    contas_pagar |o--o{ transacoes_bancarias : "quita (transacoes_bancarias.conta_pagar_id)"
     contas_bancarias |o--o{ contas_receber : "conta de recebimento"
-    contas_receber |o--o{ transacoes_bancarias : "recebe (transacoes_bancarias.conta_receber_id)"
     contas_receber |o--o| transacoes_bancarias : "vínculo direto (contas_receber.transacao_conciliada_id)"
 
 

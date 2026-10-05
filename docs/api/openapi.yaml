@@ -37,8 +37,9 @@ paths:
       description: >-
         Recebe eventos PAYMENT_*/TRANSFER_* do Asaas. Autenticado pelo header
         asaas-access-token (configurado no painel Asaas → Integrações →
-        Webhooks). Idempotente por id/eventId — reenvio retorna 200 sem
-        reprocessar. Falha de processamento retorna 200 com
+        Webhooks). Idempotente por `id` no topo (fallback: payment.id
+        ou transfer.id — o schema é strict e rejeita `eventId` com 422)
+        — reenvio retorna 200 sem reprocessar. Falha de processamento retorna 200 com
         {success: false, will_retry} e a retentativa acontece na fila interna
         (retry/DLQ próprios — o Asaas não retransmite); 5xx só em erro fatal
         fora do fluxo e 4xx em erro de validação.
@@ -356,9 +357,11 @@ paths:
                   result: { type: object }
         '400':
           description: >-
-            JSON malformado ({error: invalid_json}) OU falha de
-            schema/validação (action ausente ou inválida, payload
-            inválido) — validatePayload devolve 400 com details
+            JSON malformado ({error: invalid_json}) — falha de
+            schema/validação NÃO vem em 400: validatePayload emite
+            'Contract Violation' que createErrorResponse intercepta e
+            devolve 422 (createValidationErrorResponse)
+        '422': { $ref: '#/components/responses/ErroValidacaoContrato' }
         '401': { description: x-n8n-secret inválido }
         '405': { description: Método diferente de POST }
         '500':
