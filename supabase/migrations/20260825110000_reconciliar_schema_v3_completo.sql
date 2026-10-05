@@ -4558,6 +4558,7 @@ CREATE OR REPLACE TRIGGER trg_pag_recorr_updated_at BEFORE UPDATE ON public.paga
 
 CREATE OR REPLACE TRIGGER trg_normalizar_tipo_partida BEFORE INSERT OR UPDATE ON public.partidas_contabeis FOR EACH ROW EXECUTE FUNCTION public.normalizar_tipo_partida();
 
+DROP TRIGGER IF EXISTS trg_validar_partidas_dobradas ON public.partidas_contabeis;
 CREATE CONSTRAINT TRIGGER trg_validar_partidas_dobradas AFTER INSERT OR DELETE OR UPDATE ON public.partidas_contabeis DEFERRABLE INITIALLY DEFERRED FOR EACH ROW EXECUTE FUNCTION public.validar_partidas_dobradas();
 
 CREATE OR REPLACE FUNCTION public.invalidate_old_tokens() RETURNS trigger
