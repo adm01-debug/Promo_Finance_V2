@@ -73,6 +73,8 @@ const autoProvided = new Set([
 // Vars com fallback no código — ausência é estado válido, não config incompleta.
 const opcionais = new Set([
   'ALLOWED_ORIGINS',
+  // fallback 'alerts@resend.dev' em notify-performance-alert
+  'ALERTS_EMAIL_FROM',
   'BLING_WEBHOOK_SECRET',
   'BITRIX24_WEBHOOK_SECRET',
   'WHATSAPP_WEBHOOK_SECRET',
