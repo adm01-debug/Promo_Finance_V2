@@ -1,5 +1,6 @@
 import { corsHeadersPara } from '../_shared/cors.ts';
 import { createClient } from 'npm:@supabase/supabase-js@2.49.4';
+import { withEdgeObservability } from '../_shared/edge-observability.ts';
 
 const SUPABASE_URL = Deno.env.get('SUPABASE_URL')!;
 const SERVICE_ROLE = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
@@ -17,109 +18,115 @@ function base64url(buf: ArrayBuffer | Uint8Array) {
     .replace(/=+$/, '');
 }
 
-Deno.serve(async (req) => {
-  const corsHeaders = corsHeadersPara(req);
-  if (req.method === 'OPTIONS') return new Response('ok', { headers: corsHeaders });
+Deno.serve(
+  withEdgeObservability('sso-initiate', async (req) => {
+    const corsHeaders = corsHeadersPara(req);
+    if (req.method === 'OPTIONS') return new Response('ok', { headers: corsHeaders });
 
-  try {
-    const raw = await req.json().catch(() => ({}));
-    const { z } = await import('https://deno.land/x/zod@v3.22.4/mod.ts');
-    const { validatePayload } = await import('../_shared/validation.ts');
-    const Schema = z
-      .object({
-        provider_id: z.string().uuid(),
-        redirect_to: z.string().url().optional().nullable(),
-      })
-      .passthrough();
-    const parsed = validatePayload(Schema, raw, 'sso-initiate');
-    if (!parsed.success)
-      return json({ error: parsed.error, details: parsed.details }, 400, corsHeaders);
-    const { provider_id, redirect_to } = parsed.data;
+    try {
+      const raw = await req.json().catch(() => ({}));
+      const { z } = await import('https://deno.land/x/zod@v3.22.4/mod.ts');
+      const { validatePayload } = await import('../_shared/validation.ts');
+      const Schema = z
+        .object({
+          provider_id: z.string().uuid(),
+          redirect_to: z.string().url().optional().nullable(),
+        })
+        .passthrough();
+      const parsed = validatePayload(Schema, raw, 'sso-initiate');
+      if (!parsed.success)
+        return json({ error: parsed.error, details: parsed.details }, 400, corsHeaders);
+      const { provider_id, redirect_to } = parsed.data;
 
-    const admin = createClient(SUPABASE_URL, SERVICE_ROLE);
-    const { data: provider, error } = await admin
-      .from('sso_providers')
-      .select('*')
-      .eq('id', provider_id)
-      .eq('ativo', true)
-      .maybeSingle();
+      const admin = createClient(SUPABASE_URL, SERVICE_ROLE);
+      const { data: provider, error } = await admin
+        .from('sso_providers')
+        .select('*')
+        .eq('id', provider_id)
+        .eq('ativo', true)
+        .maybeSingle();
 
-    if (error || !provider)
-      return json({ error: 'Provedor não encontrado ou inativo' }, 404, corsHeaders);
+      if (error || !provider)
+        return json({ error: 'Provedor não encontrado ou inativo' }, 404, corsHeaders);
 
-    if (provider.tipo === 'saml') {
-      // Supabase nativo cuida do SAML — devolve URL pronta
-      const url = `${SUPABASE_URL}/auth/v1/sso?provider=${provider.id}&redirect_to=${encodeURIComponent(redirect_to || '')}`;
-      return json({ redirect_url: url, type: 'saml' }, 200, corsHeaders);
-    }
+      if (provider.tipo === 'saml') {
+        // Supabase nativo cuida do SAML — devolve URL pronta
+        const url = `${SUPABASE_URL}/auth/v1/sso?provider=${provider.id}&redirect_to=${encodeURIComponent(redirect_to || '')}`;
+        return json({ redirect_url: url, type: 'saml' }, 200, corsHeaders);
+      }
 
-    // OIDC: descobre endpoints + monta authorize com PKCE
-    let authEndpoint = provider.authorization_endpoint;
-    let scopes = provider.scopes ?? ['openid', 'profile', 'email'];
-    if (!authEndpoint && provider.discovery_url) {
-      const r = await fetch(provider.discovery_url);
-      if (!r.ok) return json({ error: 'Falha ao descobrir endpoints OIDC' }, 502, corsHeaders);
-      const meta = await r.json();
-      authEndpoint = meta.authorization_endpoint;
-    }
-    if (!authEndpoint)
-      return json({ error: 'authorization_endpoint indisponível' }, 400, corsHeaders);
+      // OIDC: descobre endpoints + monta authorize com PKCE
+      let authEndpoint = provider.authorization_endpoint;
+      let scopes = provider.scopes ?? ['openid', 'profile', 'email'];
+      if (!authEndpoint && provider.discovery_url) {
+        const r = await fetch(provider.discovery_url);
+        if (!r.ok) return json({ error: 'Falha ao descobrir endpoints OIDC' }, 502, corsHeaders);
+        const meta = await r.json();
+        authEndpoint = meta.authorization_endpoint;
+      }
+      if (!authEndpoint)
+        return json({ error: 'authorization_endpoint indisponível' }, 400, corsHeaders);
 
-    const verifier = base64url(crypto.getRandomValues(new Uint8Array(32)));
-    const challenge = base64url(
-      await crypto.subtle.digest('SHA-256', new TextEncoder().encode(verifier))
-    );
-    const state = base64url(crypto.getRandomValues(new Uint8Array(24)));
-    const verifierHash = await sha256(verifier);
+      const verifier = base64url(crypto.getRandomValues(new Uint8Array(32)));
+      const challenge = base64url(
+        await crypto.subtle.digest('SHA-256', new TextEncoder().encode(verifier))
+      );
+      const state = base64url(crypto.getRandomValues(new Uint8Array(24)));
+      const verifierHash = await sha256(verifier);
 
-    // Rate limit: max 10 tentativas de SSO por provider_id nos últimos 5 min
-    const windowStart = new Date(Date.now() - 5 * 60_000).toISOString();
-    const { count: recentCount } = await admin
-      .from('sso_login_attempts')
-      .select('id', { count: 'exact', head: true })
-      .eq('provider_id', provider.id)
-      .gte('created_at', windowStart);
-    if ((recentCount ?? 0) >= 10) {
-      return json({ error: 'Muitas tentativas de SSO. Aguarde alguns minutos.' }, 429, corsHeaders);
-    }
+      // Rate limit: max 10 tentativas de SSO por provider_id nos últimos 5 min
+      const windowStart = new Date(Date.now() - 5 * 60_000).toISOString();
+      const { count: recentCount } = await admin
+        .from('sso_login_attempts')
+        .select('id', { count: 'exact', head: true })
+        .eq('provider_id', provider.id)
+        .gte('created_at', windowStart);
+      if ((recentCount ?? 0) >= 10) {
+        return json(
+          { error: 'Muitas tentativas de SSO. Aguarde alguns minutos.' },
+          429,
+          corsHeaders
+        );
+      }
 
-    const expires_at = new Date(Date.now() + 5 * 60_000).toISOString();
-    await admin.from('sso_login_attempts').insert({
-      provider_id: provider.id,
-      empresa_id: provider.empresa_id,
-      success: false,
-      state,
-      code_verifier_hash: verifierHash,
-      expires_at,
-      app_redirect: redirect_to ?? null,
-    });
-
-    const callback = `${SUPABASE_URL}/functions/v1/sso-callback`;
-    const params = new URLSearchParams({
-      response_type: 'code',
-      client_id: provider.client_id || '',
-      redirect_uri: callback,
-      scope: scopes.join(' '),
-      state,
-      code_challenge: challenge,
-      code_challenge_method: 'S256',
-    });
-    if (redirect_to) params.set('app_redirect', redirect_to);
-
-    return json(
-      {
-        redirect_url: `${authEndpoint}?${params.toString()}`,
-        verifier, // cliente armazena em sessionStorage para devolver no callback
+      const expires_at = new Date(Date.now() + 5 * 60_000).toISOString();
+      await admin.from('sso_login_attempts').insert({
+        provider_id: provider.id,
+        empresa_id: provider.empresa_id,
+        success: false,
         state,
-        type: 'oidc',
-      },
-      200,
-      corsHeaders
-    );
-  } catch (e) {
-    return json({ error: e instanceof Error ? e.message : 'Erro' }, 500, corsHeaders);
-  }
-});
+        code_verifier_hash: verifierHash,
+        expires_at,
+        app_redirect: redirect_to ?? null,
+      });
+
+      const callback = `${SUPABASE_URL}/functions/v1/sso-callback`;
+      const params = new URLSearchParams({
+        response_type: 'code',
+        client_id: provider.client_id || '',
+        redirect_uri: callback,
+        scope: scopes.join(' '),
+        state,
+        code_challenge: challenge,
+        code_challenge_method: 'S256',
+      });
+      if (redirect_to) params.set('app_redirect', redirect_to);
+
+      return json(
+        {
+          redirect_url: `${authEndpoint}?${params.toString()}`,
+          verifier, // cliente armazena em sessionStorage para devolver no callback
+          state,
+          type: 'oidc',
+        },
+        200,
+        corsHeaders
+      );
+    } catch (e) {
+      return json({ error: e instanceof Error ? e.message : 'Erro' }, 500, corsHeaders);
+    }
+  })
+);
 
 function json(data: unknown, status: number, headers: Record<string, string>) {
   return new Response(JSON.stringify(data), {

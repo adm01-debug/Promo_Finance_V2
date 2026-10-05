@@ -62,10 +62,13 @@ const autoProvided = new Set([
 const opcionais = new Set([
   'ALLOWED_ORIGINS',
   'EDGE_FUNCTION_NAME',
+  'INTEGRACOES_DESATIVADAS',
   'MFA_ADMIN_ENFORCED',
   'NFE_CERT_MASTER_KEY_PREV',
   'SUPABASE_FUNCTION_NAME',
   'CONTADOR_INVITE_SECRET',
+  'EDGE_SENTRY_DSN',
+  'SENTRY_DSN',
 ]);
 const edge = [...edgeSet].sort().map(name => ({
   name, scope: 'edge', required: !autoProvided.has(name) && !opcionais.has(name),

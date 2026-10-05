@@ -6,6 +6,7 @@ import { validateContract } from '../_shared/contract-validator.ts';
 import { corsHeadersPara } from '../_shared/cors.ts';
 
 import { getRequestId } from '../_shared/correlation.ts';
+import { withEdgeObservability } from '../_shared/edge-observability.ts';
 const CopilotTributarioBodySchema = z.object({
   messages: z
     .array(
@@ -41,125 +42,135 @@ interface ChatMessage {
   content: string;
 }
 
-Deno.serve(async (req: Request) => {
-  const corsHeaders = corsHeadersPara(req);
-  if (req.method === 'OPTIONS') return new Response(null, { headers: corsHeaders });
-  const log = createLogger('copilot-tributario', getRequestId(req));
-  const t0 = Date.now();
+Deno.serve(
+  withEdgeObservability('copilot-tributario', async (req: Request) => {
+    const corsHeaders = corsHeadersPara(req);
+    if (req.method === 'OPTIONS') return new Response(null, { headers: corsHeaders });
+    const log = createLogger('copilot-tributario', getRequestId(req));
+    const t0 = Date.now();
 
-  try {
-    // Auth manual
-    const authHeader = req.headers.get('authorization');
-    if (!authHeader) {
-      return new Response(JSON.stringify({ error: 'Não autorizado' }), {
-        status: 401,
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-      });
-    }
-
-    const supaUrl = Deno.env.get('SUPABASE_URL')!;
-    const anonKey = Deno.env.get('SUPABASE_ANON_KEY')!;
-    const serviceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
-    const userClient = createClient(supaUrl, anonKey, {
-      global: { headers: { Authorization: authHeader } },
-    });
-    const { data: userRes } = await userClient.auth.getUser();
-    const user = userRes?.user;
-    if (!user) {
-      return new Response(JSON.stringify({ error: 'Sessão inválida' }), {
-        status: 401,
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-      });
-    }
-
-    // RBAC
-    const admin = createClient(supaUrl, serviceKey);
-    const { data: roleData } = await admin.from('user_roles').select('role').eq('user_id', user.id);
-    const roles = (roleData ?? []).map((r) => r.role);
-    const allowed = roles.some((r) => ['admin', 'financeiro', 'visualizador'].includes(r));
-    if (!allowed) {
-      log.warn('rbac_denied', { context: { userId: user.id, roles } });
-      await log.flush();
-      return new Response(JSON.stringify({ error: 'Sem permissão' }), {
-        status: 403,
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-      });
-    }
-
-    const rawBody = await req.json().catch(() => ({}));
-    const validation = await validateContract(CopilotTributarioBodySchema, rawBody);
-    if (!validation.success) return validation.response;
-    const messages = validation.data.messages;
-    const empresaId = validation.data.empresa_id;
-
-    // Contexto rico opcional
-    let contextoSistema = '';
-    if (empresaId) {
-      const { data: empresa } = await admin
-        .from('empresas')
-        .select('razao_social, regime_tributario, cnpj')
-        .eq('id', empresaId)
-        .maybeSingle();
-      if (empresa) {
-        contextoSistema = `\n\n**Contexto da empresa atual:**\n- Razão social: ${empresa.razao_social}\n- CNPJ: ${empresa.cnpj ?? 'n/d'}\n- Regime: ${empresa.regime_tributario ?? 'n/d'}`;
+    try {
+      // Auth manual
+      const authHeader = req.headers.get('authorization');
+      if (!authHeader) {
+        return new Response(JSON.stringify({ error: 'Não autorizado' }), {
+          status: 401,
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        });
       }
-    }
 
-    const LOVABLE_API_KEY = Deno.env.get('LOVABLE_API_KEY');
-    if (!LOVABLE_API_KEY) throw new Error('LOVABLE_API_KEY ausente');
+      const supaUrl = Deno.env.get('SUPABASE_URL')!;
+      const anonKey = Deno.env.get('SUPABASE_ANON_KEY')!;
+      const serviceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
+      const userClient = createClient(supaUrl, anonKey, {
+        global: { headers: { Authorization: authHeader } },
+      });
+      const { data: userRes } = await userClient.auth.getUser();
+      const user = userRes?.user;
+      if (!user) {
+        return new Response(JSON.stringify({ error: 'Sessão inválida' }), {
+          status: 401,
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        });
+      }
 
-    const aiResp = await fetch('https://ai.gateway.lovable.dev/v1/chat/completions', {
-      method: 'POST',
-      headers: {
-        Authorization: `Bearer ${LOVABLE_API_KEY}`,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        model: 'google/gemini-2.5-flash',
-        stream: true,
-        messages: [{ role: 'system', content: SYSTEM_PROMPT + contextoSistema }, ...messages],
-      }),
-    });
-
-    if (!aiResp.ok) {
-      if (aiResp.status === 429) {
-        log.warn('rate_limit', { status_code: 429 });
+      // RBAC
+      const admin = createClient(supaUrl, serviceKey);
+      const { data: roleData } = await admin
+        .from('user_roles')
+        .select('role')
+        .eq('user_id', user.id);
+      const roles = (roleData ?? []).map((r) => r.role);
+      const allowed = roles.some((r) => ['admin', 'financeiro', 'visualizador'].includes(r));
+      if (!allowed) {
+        log.warn('rbac_denied', { context: { userId: user.id, roles } });
         await log.flush();
-        return new Response(
-          JSON.stringify({ error: 'Limite de requisições atingido. Tente em alguns segundos.' }),
-          { status: 429, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-        );
+        return new Response(JSON.stringify({ error: 'Sem permissão' }), {
+          status: 403,
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        });
       }
-      if (aiResp.status === 402) {
-        log.warn('credits_exhausted', { status_code: 402 });
+
+      const rawBody = await req.json().catch(() => ({}));
+      const validation = await validateContract(CopilotTributarioBodySchema, rawBody);
+      if (!validation.success) return validation.response;
+      const messages = validation.data.messages;
+      const empresaId = validation.data.empresa_id;
+
+      // Contexto rico opcional
+      let contextoSistema = '';
+      if (empresaId) {
+        const { data: empresa } = await admin
+          .from('empresas')
+          .select('razao_social, regime_tributario, cnpj')
+          .eq('id', empresaId)
+          .maybeSingle();
+        if (empresa) {
+          contextoSistema = `\n\n**Contexto da empresa atual:**\n- Razão social: ${empresa.razao_social}\n- CNPJ: ${empresa.cnpj ?? 'n/d'}\n- Regime: ${empresa.regime_tributario ?? 'n/d'}`;
+        }
+      }
+
+      const LOVABLE_API_KEY = Deno.env.get('LOVABLE_API_KEY');
+      if (!LOVABLE_API_KEY) throw new Error('LOVABLE_API_KEY ausente');
+
+      const aiResp = await fetch('https://ai.gateway.lovable.dev/v1/chat/completions', {
+        method: 'POST',
+        headers: {
+          Authorization: `Bearer ${LOVABLE_API_KEY}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          model: 'google/gemini-2.5-flash',
+          stream: true,
+          messages: [{ role: 'system', content: SYSTEM_PROMPT + contextoSistema }, ...messages],
+        }),
+      });
+
+      if (!aiResp.ok) {
+        if (aiResp.status === 429) {
+          log.warn('rate_limit', { status_code: 429 });
+          await log.flush();
+          return new Response(
+            JSON.stringify({ error: 'Limite de requisições atingido. Tente em alguns segundos.' }),
+            { status: 429, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+          );
+        }
+        if (aiResp.status === 402) {
+          log.warn('credits_exhausted', { status_code: 402 });
+          await log.flush();
+          return new Response(
+            JSON.stringify({
+              error: 'Créditos Lovable AI esgotados. Adicione fundos na Workspace.',
+            }),
+            { status: 402, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+          );
+        }
+        const txt = await aiResp.text();
+        log.error('gateway_error', {
+          status_code: aiResp.status,
+          error_message: txt.slice(0, 500),
+        });
         await log.flush();
-        return new Response(
-          JSON.stringify({ error: 'Créditos Lovable AI esgotados. Adicione fundos na Workspace.' }),
-          { status: 402, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-        );
+        return new Response(JSON.stringify({ error: 'Erro no gateway de IA' }), {
+          status: 500,
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        });
       }
-      const txt = await aiResp.text();
-      log.error('gateway_error', { status_code: aiResp.status, error_message: txt.slice(0, 500) });
+
+      log.info('stream_started', { duration_ms: Date.now() - t0 });
+      // Flush log assíncrono — não bloqueia stream
+      log.flush().catch(() => {});
+
+      return new Response(aiResp.body, {
+        headers: { ...corsHeaders, 'Content-Type': 'text/event-stream' },
+      });
+    } catch (e) {
+      log.error('exception', { error_message: e instanceof Error ? e.message : String(e) });
       await log.flush();
-      return new Response(JSON.stringify({ error: 'Erro no gateway de IA' }), {
+      return new Response(JSON.stringify({ error: 'Erro interno' }), {
         status: 500,
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       });
     }
-
-    log.info('stream_started', { duration_ms: Date.now() - t0 });
-    // Flush log assíncrono — não bloqueia stream
-    log.flush().catch(() => {});
-
-    return new Response(aiResp.body, {
-      headers: { ...corsHeaders, 'Content-Type': 'text/event-stream' },
-    });
-  } catch (e) {
-    log.error('exception', { error_message: e instanceof Error ? e.message : String(e) });
-    await log.flush();
-    return new Response(JSON.stringify({ error: 'Erro interno' }), {
-      status: 500,
-      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-    });
-  }
-});
+  })
+);

@@ -5,6 +5,7 @@ import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.49.4';
 import { respostaPreflight, jsonComCors } from '../_shared/cors.ts';
 import { exigirUsuario } from '../_shared/auth-guard.ts';
 import { z } from '../_shared/zod.ts';
+import { withEdgeObservability } from '../_shared/edge-observability.ts';
 
 const ReqBodySchema = z.object({
   empresa_id: z.string().uuid(),
@@ -44,121 +45,123 @@ const ALIQUOTAS: Record<string, number> = {
   irpj_csll: 0.034,
 };
 
-Deno.serve(async (req) => {
-  if (req.method === 'OPTIONS') return respostaPreflight(req);
-  if (req.method !== 'POST') return jsonComCors({ error: 'Método não permitido' }, 405, req);
+Deno.serve(
+  withEdgeObservability('gerar-heatmap-tributario', async (req) => {
+    if (req.method === 'OPTIONS') return respostaPreflight(req);
+    if (req.method !== 'POST') return jsonComCors({ error: 'Método não permitido' }, 405, req);
 
-  // [auth-guard] Funcao chamada pelo app com o JWT do usuario logado (Authorization
-  // validado via getUser). Fail-closed: sem sessao valida -> 401.
-  const guard = await exigirUsuario(req);
-  if (!guard.ok) return guard.resposta;
+    // [auth-guard] Funcao chamada pelo app com o JWT do usuario logado (Authorization
+    // validado via getUser). Fail-closed: sem sessao valida -> 401.
+    const guard = await exigirUsuario(req);
+    if (!guard.ok) return guard.resposta;
 
-  try {
-    const parsed = ReqBodySchema.safeParse(await req.json().catch(() => null));
-    if (!parsed.success) return jsonComCors({ error: 'empresa_id ou ano inválido' }, 400, req);
-    const { empresa_id: empresaId, ano } = parsed.data;
+    try {
+      const parsed = ReqBodySchema.safeParse(await req.json().catch(() => null));
+      if (!parsed.success) return jsonComCors({ error: 'empresa_id ou ano inválido' }, 400, req);
+      const { empresa_id: empresaId, ano } = parsed.data;
 
-    const supabaseUrl = Deno.env.get('SUPABASE_URL');
-    const serviceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY');
+      const supabaseUrl = Deno.env.get('SUPABASE_URL');
+      const serviceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY');
 
-    // Buscar faturamento mensal real do ano (se houver)
-    let receitaPorMes: Record<number, number> = {};
-    if (supabaseUrl && serviceKey) {
-      const supa = createClient(supabaseUrl, serviceKey);
+      // Buscar faturamento mensal real do ano (se houver)
+      let receitaPorMes: Record<number, number> = {};
+      if (supabaseUrl && serviceKey) {
+        const supa = createClient(supabaseUrl, serviceKey);
 
-      // service_role ignora RLS: valida o vínculo do usuário com a empresa
-      // antes de ler o faturamento (mesmo padrão de comparar-benchmark-setorial).
-      const { data: isAdmin } = await supa.rpc('has_role', {
-        _user_id: guard.dados.userId,
-        _role: 'admin',
-      });
-      if (!isAdmin) {
-        const { data: vinculo } = await supa
-          .from('user_empresas')
-          .select('id')
-          .eq('user_id', guard.dados.userId)
-          .eq('empresa_id', empresaId)
-          .eq('ativo', true)
-          .maybeSingle();
-        if (!vinculo) return jsonComCors({ error: 'Sem permissão para esta empresa' }, 403, req);
-      }
-
-      const { data: fat } = await supa
-        .from('faturamento_mensal')
-        .select('mes, receita_bruta')
-        .eq('empresa_id', empresaId)
-        .eq('ano', ano);
-
-      if (fat && fat.length > 0) {
-        for (const r of fat) receitaPorMes[r.mes] = Number(r.receita_bruta || 0);
-      }
-    }
-
-    // Fallback sazonal determinístico (sazonalidade típica de eventos + indústria promocional)
-    const sazonalidade = [0.78, 0.82, 0.95, 1.05, 1.12, 1.18, 1.05, 0.98, 0.92, 0.88, 0.82, 0.75];
-    const receitaMedia = 285000;
-
-    // Gerar células
-    const celulas: CelulaHeatmap[] = [];
-    let maxValor = 0;
-    const totaisPorTributo: Record<string, number> = {};
-    for (const t of TRIBUTOS) totaisPorTributo[t] = 0;
-
-    const variacoesMesAnterior: Record<string, number | null> = {};
-    for (const t of TRIBUTOS) variacoesMesAnterior[t] = null;
-
-    for (let mes = 1; mes <= 12; mes++) {
-      const receita = receitaPorMes[mes] ?? receitaMedia * sazonalidade[mes - 1];
-      for (const t of TRIBUTOS) {
-        const valor = receita * ALIQUOTAS[t];
-        if (valor > maxValor) maxValor = valor;
-        celulas.push({
-          mes,
-          tributo: t,
-          valor: Math.round(valor),
-          intensidade: 0, // preenchido depois
-          variacao_mom: null,
+        // service_role ignora RLS: valida o vínculo do usuário com a empresa
+        // antes de ler o faturamento (mesmo padrão de comparar-benchmark-setorial).
+        const { data: isAdmin } = await supa.rpc('has_role', {
+          _user_id: guard.dados.userId,
+          _role: 'admin',
         });
-      }
-    }
+        if (!isAdmin) {
+          const { data: vinculo } = await supa
+            .from('user_empresas')
+            .select('id')
+            .eq('user_id', guard.dados.userId)
+            .eq('empresa_id', empresaId)
+            .eq('ativo', true)
+            .maybeSingle();
+          if (!vinculo) return jsonComCors({ error: 'Sem permissão para esta empresa' }, 403, req);
+        }
 
-    // Calcula intensidade (0-1 normalizado pelo máximo do mês+tributo) e variação MoM
-    for (const c of celulas) {
-      c.intensidade = maxValor > 0 ? Math.round((c.valor / maxValor) * 100) / 100 : 0;
-      // variação MoM: pegar célula do mês anterior do mesmo tributo
-      if (c.mes > 1) {
-        const anterior = celulas.find((x) => x.mes === c.mes - 1 && x.tributo === c.tributo);
-        if (anterior && anterior.valor > 0) {
-          c.variacao_mom = Math.round(((c.valor - anterior.valor) / anterior.valor) * 1000) / 10;
+        const { data: fat } = await supa
+          .from('faturamento_mensal')
+          .select('mes, receita_bruta')
+          .eq('empresa_id', empresaId)
+          .eq('ano', ano);
+
+        if (fat && fat.length > 0) {
+          for (const r of fat) receitaPorMes[r.mes] = Number(r.receita_bruta || 0);
         }
       }
+
+      // Fallback sazonal determinístico (sazonalidade típica de eventos + indústria promocional)
+      const sazonalidade = [0.78, 0.82, 0.95, 1.05, 1.12, 1.18, 1.05, 0.98, 0.92, 0.88, 0.82, 0.75];
+      const receitaMedia = 285000;
+
+      // Gerar células
+      const celulas: CelulaHeatmap[] = [];
+      let maxValor = 0;
+      const totaisPorTributo: Record<string, number> = {};
+      for (const t of TRIBUTOS) totaisPorTributo[t] = 0;
+
+      const variacoesMesAnterior: Record<string, number | null> = {};
+      for (const t of TRIBUTOS) variacoesMesAnterior[t] = null;
+
+      for (let mes = 1; mes <= 12; mes++) {
+        const receita = receitaPorMes[mes] ?? receitaMedia * sazonalidade[mes - 1];
+        for (const t of TRIBUTOS) {
+          const valor = receita * ALIQUOTAS[t];
+          if (valor > maxValor) maxValor = valor;
+          celulas.push({
+            mes,
+            tributo: t,
+            valor: Math.round(valor),
+            intensidade: 0, // preenchido depois
+            variacao_mom: null,
+          });
+        }
+      }
+
+      // Calcula intensidade (0-1 normalizado pelo máximo do mês+tributo) e variação MoM
+      for (const c of celulas) {
+        c.intensidade = maxValor > 0 ? Math.round((c.valor / maxValor) * 100) / 100 : 0;
+        // variação MoM: pegar célula do mês anterior do mesmo tributo
+        if (c.mes > 1) {
+          const anterior = celulas.find((x) => x.mes === c.mes - 1 && x.tributo === c.tributo);
+          if (anterior && anterior.valor > 0) {
+            c.variacao_mom = Math.round(((c.valor - anterior.valor) / anterior.valor) * 1000) / 10;
+          }
+        }
+      }
+
+      const totalPorMes = Array.from({ length: 12 }, (_, i) => {
+        const m = i + 1;
+        return celulas.filter((c) => c.mes === m).reduce((acc, c) => acc + c.valor, 0);
+      });
+
+      const totalAno = totalPorMes.reduce((a, b) => a + b, 0);
+      const mesPico = totalPorMes.indexOf(Math.max(...totalPorMes)) + 1;
+      const mesValeIdx = totalPorMes.findIndex((v) => v === Math.min(...totalPorMes));
+      const mesVale = mesValeIdx >= 0 ? mesValeIdx + 1 : null;
+
+      return jsonComCors(
+        {
+          success: true,
+          ano,
+          empresa_id: empresaId,
+          celulas,
+          total_por_mes: totalPorMes.map((v) => Math.round(v)),
+          total_ano: Math.round(totalAno),
+          max_valor: Math.round(maxValor),
+          insights: { mes_pico: mesPico, mes_vale: mesVale },
+        },
+        200,
+        req
+      );
+    } catch (err) {
+      return jsonComCors({ error: err instanceof Error ? err.message : 'Erro interno' }, 500, req);
     }
-
-    const totalPorMes = Array.from({ length: 12 }, (_, i) => {
-      const m = i + 1;
-      return celulas.filter((c) => c.mes === m).reduce((acc, c) => acc + c.valor, 0);
-    });
-
-    const totalAno = totalPorMes.reduce((a, b) => a + b, 0);
-    const mesPico = totalPorMes.indexOf(Math.max(...totalPorMes)) + 1;
-    const mesValeIdx = totalPorMes.findIndex((v) => v === Math.min(...totalPorMes));
-    const mesVale = mesValeIdx >= 0 ? mesValeIdx + 1 : null;
-
-    return jsonComCors(
-      {
-        success: true,
-        ano,
-        empresa_id: empresaId,
-        celulas,
-        total_por_mes: totalPorMes.map((v) => Math.round(v)),
-        total_ano: Math.round(totalAno),
-        max_valor: Math.round(maxValor),
-        insights: { mes_pico: mesPico, mes_vale: mesVale },
-      },
-      200,
-      req
-    );
-  } catch (err) {
-    return jsonComCors({ error: err instanceof Error ? err.message : 'Erro interno' }, 500, req);
-  }
-});
+  })
+);

@@ -9,6 +9,7 @@ import { exigirInternaOuUsuario } from '../_shared/auth-guard.ts';
 import { corsHeadersPara } from '../_shared/cors.ts';
 import { createLogger } from '../_shared/observability.ts';
 import { mensagemErro, contextoErro } from '../_shared/erros.ts';
+import { withEdgeObservability } from '../_shared/edge-observability.ts';
 const log = createLogger('calcular-health-score-operacional');
 
 const PESOS = {
@@ -194,129 +195,131 @@ async function gerarInsightsIA(score: Record<string, number>): Promise<string> {
   }
 }
 
-serve(async (req) => {
-  const _t0 = Date.now();
-  try {
-    const corsHeaders = corsHeadersPara(req);
-    if (req.method === 'OPTIONS') {
-      return new Response(null, { headers: corsHeaders });
-    }
-
-    const guard = await exigirInternaOuUsuario(req, 'p13_health_score_diario');
-    if (!guard.ok) return guard.resposta;
-
+serve(
+  withEdgeObservability('calcular-health-score-operacional', async (req) => {
+    const _t0 = Date.now();
     try {
-      const url = Deno.env.get('SUPABASE_URL')!;
-      const key = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
-      const client = createClient(url, key);
-
-      const rawBody = req.method === 'POST' ? await req.json().catch(() => ({})) : {};
-      const validation = validatePayload(
-        OptionalEmpresaIdSchema,
-        rawBody,
-        'calcular-health-score-operacional'
-      );
-      if (!validation.success) {
-        return createErrorResponse(validation.error, 400, validation.details, req);
+      const corsHeaders = corsHeadersPara(req);
+      if (req.method === 'OPTIONS') {
+        return new Response(null, { headers: corsHeaders });
       }
-      const empresaIdFiltro = validation.data.empresa_id ?? null;
 
-      if (guard.dados.origem === 'usuario') {
-        const { data: isAdmin } = await client.rpc('has_role', {
-          _user_id: guard.dados.userId,
-          _role: 'admin',
-        });
-        if (!isAdmin) {
-          if (!empresaIdFiltro) {
-            return new Response(
-              JSON.stringify({ error: 'Apenas admin pode rodar para todas as empresas' }),
-              {
+      const guard = await exigirInternaOuUsuario(req, 'p13_health_score_diario');
+      if (!guard.ok) return guard.resposta;
+
+      try {
+        const url = Deno.env.get('SUPABASE_URL')!;
+        const key = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
+        const client = createClient(url, key);
+
+        const rawBody = req.method === 'POST' ? await req.json().catch(() => ({})) : {};
+        const validation = validatePayload(
+          OptionalEmpresaIdSchema,
+          rawBody,
+          'calcular-health-score-operacional'
+        );
+        if (!validation.success) {
+          return createErrorResponse(validation.error, 400, validation.details, req);
+        }
+        const empresaIdFiltro = validation.data.empresa_id ?? null;
+
+        if (guard.dados.origem === 'usuario') {
+          const { data: isAdmin } = await client.rpc('has_role', {
+            _user_id: guard.dados.userId,
+            _role: 'admin',
+          });
+          if (!isAdmin) {
+            if (!empresaIdFiltro) {
+              return new Response(
+                JSON.stringify({ error: 'Apenas admin pode rodar para todas as empresas' }),
+                {
+                  status: 403,
+                  headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+                }
+              );
+            }
+            const { data: vinculo } = await client
+              .from('user_empresas')
+              .select('id')
+              .eq('user_id', guard.dados.userId)
+              .eq('empresa_id', empresaIdFiltro)
+              .eq('ativo', true)
+              .maybeSingle();
+            if (!vinculo) {
+              return new Response(JSON.stringify({ error: 'Sem permissão para esta empresa' }), {
                 status: 403,
                 headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-              }
-            );
-          }
-          const { data: vinculo } = await client
-            .from('user_empresas')
-            .select('id')
-            .eq('user_id', guard.dados.userId)
-            .eq('empresa_id', empresaIdFiltro)
-            .eq('ativo', true)
-            .maybeSingle();
-          if (!vinculo) {
-            return new Response(JSON.stringify({ error: 'Sem permissão para esta empresa' }), {
-              status: 403,
-              headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-            });
+              });
+            }
           }
         }
+
+        const { data: empresas } = await client
+          .from('empresas')
+          .select('id, razao_social')
+          .eq('ativo', true);
+
+        const lista = empresaIdFiltro
+          ? (empresas ?? []).filter((e: { id: string }) => e.id === empresaIdFiltro)
+          : (empresas ?? []);
+
+        const resultados: Array<Record<string, unknown>> = [];
+
+        for (const emp of lista) {
+          const scores = await calcularEmpresa(client, emp.id);
+
+          // Tendência vs 7 dias atrás
+          const { data: anterior } = await client
+            .from('health_scores_operacionais')
+            .select('score_total')
+            .eq('empresa_id', emp.id)
+            .lte(
+              'snapshot_data',
+              new Date(Date.now() - 7 * 24 * 3600 * 1000).toISOString().slice(0, 10)
+            )
+            .order('snapshot_data', { ascending: false })
+            .limit(1)
+            .maybeSingle();
+
+          const tendencia = anterior?.score_total
+            ? ((scores.score_total - Number(anterior.score_total)) / Number(anterior.score_total)) *
+              100
+            : null;
+
+          const insights = await gerarInsightsIA({ ...scores, empresa: emp.razao_social });
+
+          const { error } = await client.from('health_scores_operacionais').upsert(
+            {
+              empresa_id: emp.id,
+              snapshot_data: new Date().toISOString().slice(0, 10),
+              ...scores,
+              tendencia_pct: tendencia ? Number(tendencia.toFixed(2)) : null,
+              insights_md: insights,
+              detalhes: { pesos: PESOS },
+            },
+            { onConflict: 'empresa_id,snapshot_data' }
+          );
+          if (error) log.error('upsert error:', { error_message: mensagemErro(error.message) });
+
+          resultados.push({ empresa_id: emp.id, ...scores, tendencia_pct: tendencia });
+        }
+
+        return new Response(JSON.stringify({ ok: true, total: resultados.length, resultados }), {
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        });
+      } catch (e) {
+        log.error('calcular-health-score-operacional error:', {
+          error_message: mensagemErro(e),
+          context: contextoErro(e),
+        });
+        return new Response(JSON.stringify({ error: e instanceof Error ? e.message : 'unknown' }), {
+          status: 500,
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        });
       }
-
-      const { data: empresas } = await client
-        .from('empresas')
-        .select('id, razao_social')
-        .eq('ativo', true);
-
-      const lista = empresaIdFiltro
-        ? (empresas ?? []).filter((e: { id: string }) => e.id === empresaIdFiltro)
-        : (empresas ?? []);
-
-      const resultados: Array<Record<string, unknown>> = [];
-
-      for (const emp of lista) {
-        const scores = await calcularEmpresa(client, emp.id);
-
-        // Tendência vs 7 dias atrás
-        const { data: anterior } = await client
-          .from('health_scores_operacionais')
-          .select('score_total')
-          .eq('empresa_id', emp.id)
-          .lte(
-            'snapshot_data',
-            new Date(Date.now() - 7 * 24 * 3600 * 1000).toISOString().slice(0, 10)
-          )
-          .order('snapshot_data', { ascending: false })
-          .limit(1)
-          .maybeSingle();
-
-        const tendencia = anterior?.score_total
-          ? ((scores.score_total - Number(anterior.score_total)) / Number(anterior.score_total)) *
-            100
-          : null;
-
-        const insights = await gerarInsightsIA({ ...scores, empresa: emp.razao_social });
-
-        const { error } = await client.from('health_scores_operacionais').upsert(
-          {
-            empresa_id: emp.id,
-            snapshot_data: new Date().toISOString().slice(0, 10),
-            ...scores,
-            tendencia_pct: tendencia ? Number(tendencia.toFixed(2)) : null,
-            insights_md: insights,
-            detalhes: { pesos: PESOS },
-          },
-          { onConflict: 'empresa_id,snapshot_data' }
-        );
-        if (error) log.error('upsert error:', { error_message: mensagemErro(error.message) });
-
-        resultados.push({ empresa_id: emp.id, ...scores, tendencia_pct: tendencia });
-      }
-
-      return new Response(JSON.stringify({ ok: true, total: resultados.length, resultados }), {
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-      });
-    } catch (e) {
-      log.error('calcular-health-score-operacional error:', {
-        error_message: mensagemErro(e),
-        context: contextoErro(e),
-      });
-      return new Response(JSON.stringify({ error: e instanceof Error ? e.message : 'unknown' }), {
-        status: 500,
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-      });
+    } finally {
+      log.info('request', { duration_ms: Date.now() - _t0 });
+      await log.flush();
     }
-  } finally {
-    log.info('request', { duration_ms: Date.now() - _t0 });
-    await log.flush();
-  }
-});
+  })
+);

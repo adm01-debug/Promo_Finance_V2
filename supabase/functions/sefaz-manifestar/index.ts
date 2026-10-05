@@ -33,6 +33,7 @@ import {
   type ManifTipo,
 } from '../_shared/sefaz/manifestacao.ts';
 import { corsHeaders, corsHeadersPara } from '../_shared/cors.ts';
+import { withEdgeObservability } from '../_shared/edge-observability.ts';
 
 const VALID_TIPOS: ReadonlyArray<ManifTipo> = ['210200', '210210', '210220', '210240'];
 
@@ -234,74 +235,76 @@ export async function executeManifestacao(
   };
 }
 
-Deno.serve(async (req) => {
-  const corsHeaders = corsHeadersPara(req);
-  const res = (status: number, body?: unknown) => json(status, body, corsHeaders);
+Deno.serve(
+  withEdgeObservability('sefaz-manifestar', async (req) => {
+    const corsHeaders = corsHeadersPara(req);
+    const res = (status: number, body?: unknown) => json(status, body, corsHeaders);
 
-  if (req.method === 'OPTIONS') return new Response('ok', { headers: corsHeaders });
-  if (req.method !== 'POST') return res(405, { error: 'method_not_allowed' });
+    if (req.method === 'OPTIONS') return new Response('ok', { headers: corsHeaders });
+    if (req.method !== 'POST') return res(405, { error: 'method_not_allowed' });
 
-  const authHeader = req.headers.get('Authorization');
-  if (!authHeader?.startsWith('Bearer ')) return res(401, { error: 'missing_jwt' });
+    const authHeader = req.headers.get('Authorization');
+    if (!authHeader?.startsWith('Bearer ')) return res(401, { error: 'missing_jwt' });
 
-  const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
-  const anonKey = Deno.env.get('SUPABASE_ANON_KEY')!;
-  const userClient = createClient(supabaseUrl, anonKey, {
-    global: { headers: { Authorization: authHeader } },
-    auth: { persistSession: false, autoRefreshToken: false },
-  });
-  const { data: userData, error: userErr } = await userClient.auth.getUser();
-  if (userErr || !userData.user) return res(401, { error: 'invalid_jwt' });
-
-  let body: ManifestarArgs;
-  try {
-    const raw = await req.json();
-    const ManifSchema = z.object({
-      chave_acesso: z.string().length(44),
-      tipo: z.enum(['210200', '210210', '210220', '210240']),
-      justificativa: z.string().optional(),
+    const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
+    const anonKey = Deno.env.get('SUPABASE_ANON_KEY')!;
+    const userClient = createClient(supabaseUrl, anonKey, {
+      global: { headers: { Authorization: authHeader } },
+      auth: { persistSession: false, autoRefreshToken: false },
     });
-    const __c = validatePayload(ManifSchema, raw, 'sefaz-manifestar');
-    if (!__c.success) return res(400, { error: __c.error, details: __c.details });
-    body = __c.data as ManifestarArgs;
-  } catch {
-    return res(400, { error: 'invalid_json' });
-  }
+    const { data: userData, error: userErr } = await userClient.auth.getUser();
+    if (userErr || !userData.user) return res(401, { error: 'invalid_jwt' });
 
-  const admin = makeAdminClient();
+    let body: ManifestarArgs;
+    try {
+      const raw = await req.json();
+      const ManifSchema = z.object({
+        chave_acesso: z.string().length(44),
+        tipo: z.enum(['210200', '210210', '210220', '210240']),
+        justificativa: z.string().optional(),
+      });
+      const __c = validatePayload(ManifSchema, raw, 'sefaz-manifestar');
+      if (!__c.success) return res(400, { error: __c.error, details: __c.details });
+      body = __c.data as ManifestarArgs;
+    } catch {
+      return res(400, { error: 'invalid_json' });
+    }
 
-  // Vínculo de tenant: sem isso, qualquer usuário autenticado manifesta NFe de
-  // QUALQUER empresa, assinando com o certificado digital dela (achado A-010).
-  // Checagem fica aqui (não dentro de executeManifestacao) para não acoplar a
-  // função pura, testada por unit tests com admin stub, a uma tabela que o
-  // stub não modela.
-  const { data: nfeParaVinculo, error: nfeVinculoErr } = await admin
-    .from('nfe_recebidas')
-    .select('empresa_id')
-    .eq('chave_acesso', body.chave_acesso)
-    .maybeSingle();
-  if (nfeVinculoErr || !nfeParaVinculo?.empresa_id) {
-    return res(404, { error: 'nfe_nao_encontrada' });
-  }
-  const { data: vinculoEmpresa, error: vinculoErr } = await admin
-    .from('user_empresas')
-    .select('id')
-    .eq('user_id', userData.user.id)
-    .eq('empresa_id', nfeParaVinculo.empresa_id)
-    .eq('ativo', true)
-    .maybeSingle();
-  if (vinculoErr) return res(500, { error: 'erro_autorizacao' });
-  if (!vinculoEmpresa) return res(403, { error: 'sem_permissao_empresa' });
-  try {
-    const result = await executeManifestacao(admin, body);
-    return res(200, result);
-  } catch (err) {
-    const message = err instanceof Error ? err.message : String(err);
-    slog('ERROR', 'manifestar_failed', {
-      chave: body?.chave_acesso,
-      tipo: body?.tipo,
-      error: message,
-    });
-    return res(400, { error: message });
-  }
-});
+    const admin = makeAdminClient();
+
+    // Vínculo de tenant: sem isso, qualquer usuário autenticado manifesta NFe de
+    // QUALQUER empresa, assinando com o certificado digital dela (achado A-010).
+    // Checagem fica aqui (não dentro de executeManifestacao) para não acoplar a
+    // função pura, testada por unit tests com admin stub, a uma tabela que o
+    // stub não modela.
+    const { data: nfeParaVinculo, error: nfeVinculoErr } = await admin
+      .from('nfe_recebidas')
+      .select('empresa_id')
+      .eq('chave_acesso', body.chave_acesso)
+      .maybeSingle();
+    if (nfeVinculoErr || !nfeParaVinculo?.empresa_id) {
+      return res(404, { error: 'nfe_nao_encontrada' });
+    }
+    const { data: vinculoEmpresa, error: vinculoErr } = await admin
+      .from('user_empresas')
+      .select('id')
+      .eq('user_id', userData.user.id)
+      .eq('empresa_id', nfeParaVinculo.empresa_id)
+      .eq('ativo', true)
+      .maybeSingle();
+    if (vinculoErr) return res(500, { error: 'erro_autorizacao' });
+    if (!vinculoEmpresa) return res(403, { error: 'sem_permissao_empresa' });
+    try {
+      const result = await executeManifestacao(admin, body);
+      return res(200, result);
+    } catch (err) {
+      const message = err instanceof Error ? err.message : String(err);
+      slog('ERROR', 'manifestar_failed', {
+        chave: body?.chave_acesso,
+        tipo: body?.tipo,
+        error: message,
+      });
+      return res(400, { error: message });
+    }
+  })
+);
