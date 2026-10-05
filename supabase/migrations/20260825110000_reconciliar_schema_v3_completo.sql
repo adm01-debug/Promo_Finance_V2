@@ -4724,6 +4724,7 @@ DROP POLICY IF EXISTS acessos_suspeitos_tenant_select ON public.acessos_suspeito
 CREATE POLICY acessos_suspeitos_tenant_select ON public.acessos_suspeitos FOR SELECT TO authenticated USING ((public.has_role(auth.uid(), 'admin'::public.app_role) AND ((empresa_id IS NULL) OR public.empresa_acessivel(empresa_id))));
 
 DROP POLICY IF EXISTS "acoes_recomendadas Empresa-based access" ON public.acoes_recomendadas;
+DROP POLICY IF EXISTS "Empresa-based access" ON public.acoes_recomendadas;
 CREATE POLICY "Empresa-based access" ON public.acoes_recomendadas TO authenticated USING (((empresa_id IN ( SELECT user_empresas.empresa_id
    FROM public.user_empresas
   WHERE ((user_empresas.user_id = ( SELECT auth.uid() AS uid)) AND (user_empresas.ativo = true)))) OR (EXISTS ( SELECT 1
@@ -4731,6 +4732,7 @@ CREATE POLICY "Empresa-based access" ON public.acoes_recomendadas TO authenticat
   WHERE ((user_roles.user_id = ( SELECT auth.uid() AS uid)) AND (user_roles.role = 'admin'::public.app_role))))));
 
 DROP POLICY IF EXISTS "acordos_parcelamento Empresa-based access" ON public.acordos_parcelamento;
+DROP POLICY IF EXISTS "Empresa-based access" ON public.acordos_parcelamento;
 CREATE POLICY "Empresa-based access" ON public.acordos_parcelamento TO authenticated USING (((empresa_id IN ( SELECT user_empresas.empresa_id
    FROM public.user_empresas
   WHERE ((user_empresas.user_id = ( SELECT auth.uid() AS uid)) AND (user_empresas.ativo = true)))) OR (EXISTS ( SELECT 1
@@ -4738,6 +4740,7 @@ CREATE POLICY "Empresa-based access" ON public.acordos_parcelamento TO authentic
   WHERE ((user_roles.user_id = ( SELECT auth.uid() AS uid)) AND (user_roles.role = 'admin'::public.app_role))))));
 
 DROP POLICY IF EXISTS "acordos_parcelamento Owner manage acordos" ON public.acordos_parcelamento;
+DROP POLICY IF EXISTS "Owner manage acordos" ON public.acordos_parcelamento;
 CREATE POLICY "Owner manage acordos" ON public.acordos_parcelamento TO authenticated USING ((( SELECT auth.uid() AS uid) = user_id)) WITH CHECK ((( SELECT auth.uid() AS uid) = user_id));
 
 DROP POLICY IF EXISTS "alert_configurations alert_configurations_tenant_delete" ON public.alert_configurations;
@@ -4779,6 +4782,7 @@ CREATE POLICY alertas_preditivos_empresa_select ON public.alertas_preditivos FOR
   WHERE ((user_empresas.user_id = ( SELECT auth.uid() AS uid)) AND (user_empresas.ativo = true)))));
 
 DROP POLICY IF EXISTS "alertas_tributarios Empresa-based access" ON public.alertas_tributarios;
+DROP POLICY IF EXISTS "Empresa-based access" ON public.alertas_tributarios;
 CREATE POLICY "Empresa-based access" ON public.alertas_tributarios TO authenticated USING (((empresa_id IN ( SELECT user_empresas.empresa_id
    FROM public.user_empresas
   WHERE ((user_empresas.user_id = ( SELECT auth.uid() AS uid)) AND (user_empresas.ativo = true)))) OR (EXISTS ( SELECT 1
@@ -4852,11 +4856,13 @@ DROP POLICY IF EXISTS aliq_iss_write_admin ON public.aliquotas_iss_municipal;
 CREATE POLICY aliq_iss_write_admin ON public.aliquotas_iss_municipal TO authenticated USING (public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role)) WITH CHECK (public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role));
 
 DROP POLICY IF EXISTS "allowed_countries Admin manage" ON public.allowed_countries;
+DROP POLICY IF EXISTS "Admin manage" ON public.allowed_countries;
 CREATE POLICY "Admin manage" ON public.allowed_countries TO authenticated USING ((EXISTS ( SELECT 1
    FROM public.user_roles
   WHERE ((user_roles.user_id = ( SELECT auth.uid() AS uid)) AND (user_roles.role = 'admin'::public.app_role)))));
 
 DROP POLICY IF EXISTS "allowed_countries Public read" ON public.allowed_countries;
+DROP POLICY IF EXISTS "Public read" ON public.allowed_countries;
 CREATE POLICY "Public read" ON public.allowed_countries FOR SELECT TO authenticated USING (true);
 
 DROP POLICY IF EXISTS "allowed_ips allowed_ips_admin_all" ON public.allowed_ips;
@@ -4864,6 +4870,7 @@ DROP POLICY IF EXISTS allowed_ips_admin_all ON public.allowed_ips;
 CREATE POLICY allowed_ips_admin_all ON public.allowed_ips TO authenticated USING (public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role)) WITH CHECK (public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role));
 
 DROP POLICY IF EXISTS "anexos_financeiros Owner manage anexos" ON public.anexos_financeiros;
+DROP POLICY IF EXISTS "Owner manage anexos" ON public.anexos_financeiros;
 CREATE POLICY "Owner manage anexos" ON public.anexos_financeiros TO authenticated USING ((( SELECT auth.uid() AS uid) = user_id)) WITH CHECK ((( SELECT auth.uid() AS uid) = user_id));
 
 DROP POLICY IF EXISTS "anomalia_detection_runs anomalia_runs_owner_or_admin_select" ON public.anomalia_detection_runs;
@@ -4871,9 +4878,11 @@ DROP POLICY IF EXISTS anomalia_runs_owner_or_admin_select ON public.anomalia_det
 CREATE POLICY anomalia_runs_owner_or_admin_select ON public.anomalia_detection_runs FOR SELECT TO authenticated USING (((triggered_by = ( SELECT auth.uid() AS uid)) OR public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role)));
 
 DROP POLICY IF EXISTS "anomalia_toast_eventos Users can insert toast events" ON public.anomalia_toast_eventos;
+DROP POLICY IF EXISTS "Users can insert toast events" ON public.anomalia_toast_eventos;
 CREATE POLICY "Users can insert toast events" ON public.anomalia_toast_eventos FOR INSERT TO authenticated WITH CHECK ((( SELECT auth.uid() AS uid) = user_id));
 
 DROP POLICY IF EXISTS "anomalia_toast_eventos Users can view their own toast events" ON public.anomalia_toast_eventos;
+DROP POLICY IF EXISTS "Users can view their own toast events" ON public.anomalia_toast_eventos;
 CREATE POLICY "Users can view their own toast events" ON public.anomalia_toast_eventos FOR SELECT TO authenticated USING ((( SELECT auth.uid() AS uid) = user_id));
 
 DROP POLICY IF EXISTS "anomalias_detectadas anomalias_detectadas_empresa_select" ON public.anomalias_detectadas;
@@ -4895,6 +4904,7 @@ DROP POLICY IF EXISTS api_keys_select ON public.api_keys;
 CREATE POLICY api_keys_select ON public.api_keys FOR SELECT TO authenticated USING ((public.has_role(auth.uid(), 'admin'::public.app_role) AND public.empresa_acessivel(empresa_id)));
 
 DROP POLICY IF EXISTS "aprovacao_comentarios Users can insert their own comments" ON public.aprovacao_comentarios;
+DROP POLICY IF EXISTS "Users can insert their own comments" ON public.aprovacao_comentarios;
 CREATE POLICY "Users can insert their own comments" ON public.aprovacao_comentarios FOR INSERT TO authenticated WITH CHECK ((( SELECT auth.uid() AS uid) = user_id));
 
 DROP POLICY IF EXISTS "aprovacao_comentarios aprovacao_comentarios_owner_select" ON public.aprovacao_comentarios;
@@ -4904,6 +4914,7 @@ CREATE POLICY aprovacao_comentarios_owner_select ON public.aprovacao_comentarios
   WHERE ((solicitacoes_aprovacao.solicitado_por = ( SELECT auth.uid() AS uid)) OR (solicitacoes_aprovacao.aprovado_por = ( SELECT auth.uid() AS uid))))) OR (user_id = ( SELECT auth.uid() AS uid)) OR public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role)));
 
 DROP POLICY IF EXISTS "apuracoes_irpj_csll Empresa-based access" ON public.apuracoes_irpj_csll;
+DROP POLICY IF EXISTS "Empresa-based access" ON public.apuracoes_irpj_csll;
 CREATE POLICY "Empresa-based access" ON public.apuracoes_irpj_csll TO authenticated USING (((empresa_id IN ( SELECT user_empresas.empresa_id
    FROM public.user_empresas
   WHERE ((user_empresas.user_id = ( SELECT auth.uid() AS uid)) AND (user_empresas.ativo = true)))) OR (EXISTS ( SELECT 1
@@ -4985,6 +4996,7 @@ DROP POLICY IF EXISTS asaas_transfers_tenant_rw ON public.asaas_transfers;
 CREATE POLICY asaas_transfers_tenant_rw ON public.asaas_transfers TO authenticated USING ((public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role) AND public.empresa_acessivel(empresa_id))) WITH CHECK ((public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role) AND public.empresa_acessivel(empresa_id)));
 
 DROP POLICY IF EXISTS "audit_logs Admins can view audit logs" ON public.audit_logs;
+DROP POLICY IF EXISTS "Admins can view audit logs" ON public.audit_logs;
 CREATE POLICY "Admins can view audit logs" ON public.audit_logs FOR SELECT TO authenticated USING (public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role));
 
 DROP POLICY IF EXISTS "audit_logs audit_logs_insert_self_attributed" ON public.audit_logs;
@@ -5006,12 +5018,15 @@ DROP POLICY IF EXISTS auditoria_trib_select_tenant ON public.auditoria_tributari
 CREATE POLICY auditoria_trib_select_tenant ON public.auditoria_tributaria FOR SELECT TO authenticated USING ((public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role) AND public.empresa_acessivel(empresa_id)));
 
 DROP POLICY IF EXISTS "auth_logs Admins can view all auth logs" ON public.auth_logs;
+DROP POLICY IF EXISTS "Admins can view all auth logs" ON public.auth_logs;
 CREATE POLICY "Admins can view all auth logs" ON public.auth_logs FOR SELECT TO authenticated USING (public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role));
 
 DROP POLICY IF EXISTS "auth_logs Authenticated can insert auth logs" ON public.auth_logs;
+DROP POLICY IF EXISTS "Authenticated can insert auth logs" ON public.auth_logs;
 CREATE POLICY "Authenticated can insert auth logs" ON public.auth_logs FOR INSERT TO authenticated WITH CHECK ((public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role) OR public.has_role(( SELECT auth.uid() AS uid), 'manager'::public.app_role) OR public.has_role(( SELECT auth.uid() AS uid), 'operator'::public.app_role) OR public.has_role(( SELECT auth.uid() AS uid), 'viewer'::public.app_role)));
 
 DROP POLICY IF EXISTS "auth_logs Users can view own auth logs" ON public.auth_logs;
+DROP POLICY IF EXISTS "Users can view own auth logs" ON public.auth_logs;
 CREATE POLICY "Users can view own auth logs" ON public.auth_logs FOR SELECT TO authenticated USING ((( SELECT auth.uid() AS uid) = user_id));
 
 DROP POLICY IF EXISTS "benchmarks_setoriais benchmarks_admin_write" ON public.benchmarks_setoriais;
@@ -5057,27 +5072,35 @@ CREATE POLICY bitrix24_activities_tenant_update ON public.bitrix24_activities FO
   WHERE ((o.id = bitrix24_activities.order_id) AND public.empresa_membro_ativo(o.empresa_id)))));
 
 DROP POLICY IF EXISTS "bitrix24_stage_mappings Admins can delete stage mappings" ON public.bitrix24_stage_mappings;
+DROP POLICY IF EXISTS "Admins can delete stage mappings" ON public.bitrix24_stage_mappings;
 CREATE POLICY "Admins can delete stage mappings" ON public.bitrix24_stage_mappings FOR DELETE TO authenticated USING (public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role));
 
 DROP POLICY IF EXISTS "bitrix24_stage_mappings Authorized roles can view stage mappings" ON public.bitrix24_stage_mappings;
+DROP POLICY IF EXISTS "Authorized roles can view stage mappings" ON public.bitrix24_stage_mappings;
 CREATE POLICY "Authorized roles can view stage mappings" ON public.bitrix24_stage_mappings FOR SELECT TO authenticated USING ((public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role) OR public.has_role(( SELECT auth.uid() AS uid), 'manager'::public.app_role) OR public.has_role(( SELECT auth.uid() AS uid), 'operator'::public.app_role)));
 
 DROP POLICY IF EXISTS "bitrix24_stage_mappings Managers can insert stage mappings" ON public.bitrix24_stage_mappings;
+DROP POLICY IF EXISTS "Managers can insert stage mappings" ON public.bitrix24_stage_mappings;
 CREATE POLICY "Managers can insert stage mappings" ON public.bitrix24_stage_mappings FOR INSERT TO authenticated WITH CHECK ((public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role) OR public.has_role(( SELECT auth.uid() AS uid), 'manager'::public.app_role)));
 
 DROP POLICY IF EXISTS "bitrix24_stage_mappings Managers can update stage mappings" ON public.bitrix24_stage_mappings;
+DROP POLICY IF EXISTS "Managers can update stage mappings" ON public.bitrix24_stage_mappings;
 CREATE POLICY "Managers can update stage mappings" ON public.bitrix24_stage_mappings FOR UPDATE TO authenticated USING ((public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role) OR public.has_role(( SELECT auth.uid() AS uid), 'manager'::public.app_role)));
 
 DROP POLICY IF EXISTS "bitrix24_tokens Admins can delete tokens" ON public.bitrix24_tokens;
+DROP POLICY IF EXISTS "Admins can delete tokens" ON public.bitrix24_tokens;
 CREATE POLICY "Admins can delete tokens" ON public.bitrix24_tokens FOR DELETE TO authenticated USING (public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role));
 
 DROP POLICY IF EXISTS "bitrix24_tokens Admins can insert tokens" ON public.bitrix24_tokens;
+DROP POLICY IF EXISTS "Admins can insert tokens" ON public.bitrix24_tokens;
 CREATE POLICY "Admins can insert tokens" ON public.bitrix24_tokens FOR INSERT TO authenticated WITH CHECK (public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role));
 
 DROP POLICY IF EXISTS "bitrix24_tokens Admins can update tokens" ON public.bitrix24_tokens;
+DROP POLICY IF EXISTS "Admins can update tokens" ON public.bitrix24_tokens;
 CREATE POLICY "Admins can update tokens" ON public.bitrix24_tokens FOR UPDATE TO authenticated USING (public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role));
 
 DROP POLICY IF EXISTS "bitrix24_tokens Only admins can view tokens" ON public.bitrix24_tokens;
+DROP POLICY IF EXISTS "Only admins can view tokens" ON public.bitrix24_tokens;
 CREATE POLICY "Only admins can view tokens" ON public.bitrix24_tokens FOR SELECT TO authenticated USING (public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role));
 
 DROP POLICY IF EXISTS "bitrix_field_mappings bitrix_field_mappings_empresa_select" ON public.bitrix_field_mappings;
@@ -5097,6 +5120,7 @@ CREATE POLICY bitrix_sync_logs_empresa_select ON public.bitrix_sync_logs FOR SEL
   WHERE ((user_empresas.user_id = ( SELECT auth.uid() AS uid)) AND (user_empresas.ativo = true)))));
 
 DROP POLICY IF EXISTS "bitrix_webhook_events Admin only manage" ON public.bitrix_webhook_events;
+DROP POLICY IF EXISTS "Admin only manage" ON public.bitrix_webhook_events;
 CREATE POLICY "Admin only manage" ON public.bitrix_webhook_events TO authenticated USING ((EXISTS ( SELECT 1
    FROM public.user_roles
   WHERE ((user_roles.user_id = ( SELECT auth.uid() AS uid)) AND (user_roles.role = 'admin'::public.app_role)))));
@@ -5118,15 +5142,19 @@ DROP POLICY IF EXISTS bling_webhook_events_admin_select ON public.bling_webhook_
 CREATE POLICY bling_webhook_events_admin_select ON public.bling_webhook_events FOR SELECT TO authenticated USING (public.has_role(auth.uid(), 'admin'::public.app_role));
 
 DROP POLICY IF EXISTS "bloat_snapshots Admins podem consultar snapshots de bloat" ON public.bloat_snapshots;
+DROP POLICY IF EXISTS "Admins podem consultar snapshots de bloat" ON public.bloat_snapshots;
 CREATE POLICY "Admins podem consultar snapshots de bloat" ON public.bloat_snapshots FOR SELECT TO authenticated USING (public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role));
 
 DROP POLICY IF EXISTS "blocked_ips Admins can manage blocked IPs" ON public.blocked_ips;
+DROP POLICY IF EXISTS "Admins can manage blocked IPs" ON public.blocked_ips;
 CREATE POLICY "Admins can manage blocked IPs" ON public.blocked_ips TO authenticated USING (public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role));
 
 DROP POLICY IF EXISTS "blocked_ips Managers can view blocked IPs" ON public.blocked_ips;
+DROP POLICY IF EXISTS "Managers can view blocked IPs" ON public.blocked_ips;
 CREATE POLICY "Managers can view blocked IPs" ON public.blocked_ips FOR SELECT TO authenticated USING (public.has_role(( SELECT auth.uid() AS uid), 'manager'::public.app_role));
 
 DROP POLICY IF EXISTS "bloqueios_duplicidade Empresa-based access" ON public.bloqueios_duplicidade;
+DROP POLICY IF EXISTS "Empresa-based access" ON public.bloqueios_duplicidade;
 CREATE POLICY "Empresa-based access" ON public.bloqueios_duplicidade TO authenticated USING (((empresa_id IN ( SELECT user_empresas.empresa_id
    FROM public.user_empresas
   WHERE ((user_empresas.user_id = ( SELECT auth.uid() AS uid)) AND (user_empresas.ativo = true)))) OR (EXISTS ( SELECT 1
@@ -5134,6 +5162,7 @@ CREATE POLICY "Empresa-based access" ON public.bloqueios_duplicidade TO authenti
   WHERE ((user_roles.user_id = ( SELECT auth.uid() AS uid)) AND (user_roles.role = 'admin'::public.app_role))))));
 
 DROP POLICY IF EXISTS "boletos Owner manage boletos" ON public.boletos;
+DROP POLICY IF EXISTS "Owner manage boletos" ON public.boletos;
 CREATE POLICY "Owner manage boletos" ON public.boletos TO authenticated USING ((( SELECT auth.uid() AS uid) = user_id)) WITH CHECK ((( SELECT auth.uid() AS uid) = user_id));
 
 DROP POLICY IF EXISTS "boletos boletos_grupo_select" ON public.boletos;
@@ -5143,6 +5172,7 @@ CREATE POLICY boletos_grupo_select ON public.boletos FOR SELECT TO authenticated
   WHERE ((user_empresas.user_id = ( SELECT auth.uid() AS uid)) AND (user_empresas.ativo = true))))));
 
 DROP POLICY IF EXISTS "budgets Budgets scoped by owner or empresa" ON public.budgets;
+DROP POLICY IF EXISTS "Budgets scoped by owner or empresa" ON public.budgets;
 CREATE POLICY "Budgets scoped by owner or empresa" ON public.budgets TO authenticated USING (((user_id = ( SELECT auth.uid() AS uid)) OR public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role) OR (company_id IN ( SELECT ue.empresa_id
    FROM public.user_empresas ue
   WHERE ((ue.user_id = ( SELECT auth.uid() AS uid)) AND (ue.ativo = true)))))) WITH CHECK (((user_id = ( SELECT auth.uid() AS uid)) OR public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role) OR (company_id IN ( SELECT ue.empresa_id
@@ -5150,12 +5180,15 @@ CREATE POLICY "Budgets scoped by owner or empresa" ON public.budgets TO authenti
   WHERE ((ue.user_id = ( SELECT auth.uid() AS uid)) AND (ue.ativo = true))))));
 
 DROP POLICY IF EXISTS "catalogos_fiscais_cargas Admins leem cargas de catalogos fiscais" ON public.catalogos_fiscais_cargas;
+DROP POLICY IF EXISTS "Admins leem cargas de catalogos fiscais" ON public.catalogos_fiscais_cargas;
 CREATE POLICY "Admins leem cargas de catalogos fiscais" ON public.catalogos_fiscais_cargas FOR SELECT TO authenticated USING (public.has_role(auth.uid(), 'admin'::public.app_role));
 
 DROP POLICY IF EXISTS "catalogos_tributarios_health_history admins leem historico saude fiscal" ON public.catalogos_tributarios_health_history;
+DROP POLICY IF EXISTS "admins leem historico saude fiscal" ON public.catalogos_tributarios_health_history;
 CREATE POLICY "admins leem historico saude fiscal" ON public.catalogos_tributarios_health_history FOR SELECT TO authenticated USING (( SELECT public.has_role(auth.uid(), 'admin'::public.app_role) AS has_role));
 
 DROP POLICY IF EXISTS "categorias Categorias scoped by empresa" ON public.categorias;
+DROP POLICY IF EXISTS "Categorias scoped by empresa" ON public.categorias;
 CREATE POLICY "Categorias scoped by empresa" ON public.categorias TO authenticated USING ((public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role) OR (empresa_id IN ( SELECT ue.empresa_id
    FROM public.user_empresas ue
   WHERE ((ue.user_id = ( SELECT auth.uid() AS uid)) AND (ue.ativo = true)))))) WITH CHECK ((public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role) OR (empresa_id IN ( SELECT ue.empresa_id
@@ -5173,9 +5206,11 @@ DROP POLICY IF EXISTS centros_custo_tenant_rw ON public.centros_custo;
 CREATE POLICY centros_custo_tenant_rw ON public.centros_custo TO authenticated USING (((public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role) OR public.has_role(( SELECT auth.uid() AS uid), 'financeiro'::public.app_role)) AND public.empresa_acessivel(empresa_id))) WITH CHECK (((public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role) OR public.has_role(( SELECT auth.uid() AS uid), 'financeiro'::public.app_role)) AND public.empresa_acessivel(empresa_id)));
 
 DROP POLICY IF EXISTS "ci_security_gate_events Admins can view CI security gate events" ON public.ci_security_gate_events;
+DROP POLICY IF EXISTS "Admins can view CI security gate events" ON public.ci_security_gate_events;
 CREATE POLICY "Admins can view CI security gate events" ON public.ci_security_gate_events FOR SELECT TO authenticated USING (public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role));
 
 DROP POLICY IF EXISTS "ci_security_gate_events Service role manages CI security gate events" ON public.ci_security_gate_events;
+DROP POLICY IF EXISTS "Service role manages CI security gate events" ON public.ci_security_gate_events;
 CREATE POLICY "Service role manages CI security gate events" ON public.ci_security_gate_events TO service_role USING (true) WITH CHECK (true);
 
 DROP POLICY IF EXISTS "clientes clientes_grupo_select" ON public.clientes;
@@ -5235,6 +5270,7 @@ DROP POLICY IF EXISTS configuracoes_aprovacao_tenant_rw ON public.configuracoes_
 CREATE POLICY configuracoes_aprovacao_tenant_rw ON public.configuracoes_aprovacao TO authenticated USING ((public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role) AND public.empresa_acessivel(empresa_id))) WITH CHECK ((public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role) AND public.empresa_acessivel(empresa_id)));
 
 DROP POLICY IF EXISTS "configuracoes_duplicidade Empresa-based access" ON public.configuracoes_duplicidade;
+DROP POLICY IF EXISTS "Empresa-based access" ON public.configuracoes_duplicidade;
 CREATE POLICY "Empresa-based access" ON public.configuracoes_duplicidade TO authenticated USING (((empresa_id IN ( SELECT user_empresas.empresa_id
    FROM public.user_empresas
   WHERE ((user_empresas.user_id = ( SELECT auth.uid() AS uid)) AND (user_empresas.ativo = true)))) OR (EXISTS ( SELECT 1
@@ -5296,6 +5332,7 @@ DROP POLICY IF EXISTS contas_receber_tenant_rw ON public.contas_receber;
 CREATE POLICY contas_receber_tenant_rw ON public.contas_receber TO authenticated USING (((public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role) OR public.has_role(( SELECT auth.uid() AS uid), 'financeiro'::public.app_role)) AND public.empresa_acessivel(empresa_id))) WITH CHECK (((public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role) OR public.has_role(( SELECT auth.uid() AS uid), 'financeiro'::public.app_role)) AND public.empresa_acessivel(empresa_id)));
 
 DROP POLICY IF EXISTS "contratos Empresa-based access" ON public.contratos;
+DROP POLICY IF EXISTS "Empresa-based access" ON public.contratos;
 CREATE POLICY "Empresa-based access" ON public.contratos TO authenticated USING (((empresa_id IN ( SELECT user_empresas.empresa_id
    FROM public.user_empresas
   WHERE ((user_empresas.user_id = ( SELECT auth.uid() AS uid)) AND (user_empresas.ativo = true)))) OR (EXISTS ( SELECT 1
@@ -5315,6 +5352,7 @@ DROP POLICY IF EXISTS convites_contador_select ON public.convites_contador;
 CREATE POLICY convites_contador_select ON public.convites_contador FOR SELECT TO authenticated USING ((public.empresa_acessivel(empresa_id) AND (public.has_role(auth.uid(), 'admin'::public.app_role) OR public.has_role(auth.uid(), 'financeiro'::public.app_role))));
 
 DROP POLICY IF EXISTS "creditos_tributarios Access by empresa_id" ON public.creditos_tributarios;
+DROP POLICY IF EXISTS "Access by empresa_id" ON public.creditos_tributarios;
 CREATE POLICY "Access by empresa_id" ON public.creditos_tributarios TO authenticated USING (((empresa_id IN ( SELECT user_empresas.empresa_id
    FROM public.user_empresas
   WHERE ((user_empresas.user_id = ( SELECT auth.uid() AS uid)) AND (user_empresas.ativo = true)))) OR (EXISTS ( SELECT 1
@@ -5322,9 +5360,11 @@ CREATE POLICY "Access by empresa_id" ON public.creditos_tributarios TO authentic
   WHERE ((user_roles.user_id = ( SELECT auth.uid() AS uid)) AND (user_roles.role = 'admin'::public.app_role))))));
 
 DROP POLICY IF EXISTS "cron_job_logs Admins can view cron logs" ON public.cron_job_logs;
+DROP POLICY IF EXISTS "Admins can view cron logs" ON public.cron_job_logs;
 CREATE POLICY "Admins can view cron logs" ON public.cron_job_logs FOR SELECT TO authenticated USING (public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role));
 
 DROP POLICY IF EXISTS "custom_field_definitions Custom field definitions scoped by empresa" ON public.custom_field_definitions;
+DROP POLICY IF EXISTS "Custom field definitions scoped by empresa" ON public.custom_field_definitions;
 CREATE POLICY "Custom field definitions scoped by empresa" ON public.custom_field_definitions TO authenticated USING ((public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role) OR (empresa_id IN ( SELECT ue.empresa_id
    FROM public.user_empresas ue
   WHERE ((ue.user_id = ( SELECT auth.uid() AS uid)) AND (ue.ativo = true)))))) WITH CHECK ((public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role) OR (empresa_id IN ( SELECT ue.empresa_id
@@ -5332,6 +5372,7 @@ CREATE POLICY "Custom field definitions scoped by empresa" ON public.custom_fiel
   WHERE ((ue.user_id = ( SELECT auth.uid() AS uid)) AND (ue.ativo = true))))));
 
 DROP POLICY IF EXISTS "custom_field_values Custom field values scoped by definition empresa" ON public.custom_field_values;
+DROP POLICY IF EXISTS "Custom field values scoped by definition empresa" ON public.custom_field_values;
 CREATE POLICY "Custom field values scoped by definition empresa" ON public.custom_field_values TO authenticated USING ((EXISTS ( SELECT 1
    FROM public.custom_field_definitions d
   WHERE ((d.id = custom_field_values.definition_id) AND (public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role) OR (d.empresa_id IN ( SELECT ue.empresa_id
@@ -5343,6 +5384,7 @@ CREATE POLICY "Custom field values scoped by definition empresa" ON public.custo
           WHERE ((ue.user_id = ( SELECT auth.uid() AS uid)) AND (ue.ativo = true)))))))));
 
 DROP POLICY IF EXISTS "darfs DARFs scoped by linked empresa" ON public.darfs;
+DROP POLICY IF EXISTS "DARFs scoped by linked empresa" ON public.darfs;
 CREATE POLICY "DARFs scoped by linked empresa" ON public.darfs FOR SELECT TO authenticated USING ((public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role) OR (empresa_id IN ( SELECT ue.empresa_id
    FROM public.user_empresas ue
   WHERE ((ue.user_id = ( SELECT auth.uid() AS uid)) AND (ue.ativo = true)))) OR (alerta_id IN ( SELECT at.id
@@ -5356,14 +5398,17 @@ DROP POLICY IF EXISTS darfs_tenant_rw ON public.darfs;
 CREATE POLICY darfs_tenant_rw ON public.darfs TO authenticated USING ((public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role) AND public.empresa_acessivel(empresa_id))) WITH CHECK ((public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role) AND public.empresa_acessivel(empresa_id)));
 
 DROP POLICY IF EXISTS "digest_envios_log Admins podem consultar o log de envios do digest" ON public.digest_envios_log;
+DROP POLICY IF EXISTS "Admins podem consultar o log de envios do digest" ON public.digest_envios_log;
 CREATE POLICY "Admins podem consultar o log de envios do digest" ON public.digest_envios_log FOR SELECT TO authenticated USING (public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role));
 
 DROP POLICY IF EXISTS "dispositivos_conhecidos User-based access" ON public.dispositivos_conhecidos;
+DROP POLICY IF EXISTS "User-based access" ON public.dispositivos_conhecidos;
 CREATE POLICY "User-based access" ON public.dispositivos_conhecidos TO authenticated USING (((user_id = ( SELECT auth.uid() AS uid)) OR (EXISTS ( SELECT 1
    FROM public.user_roles
   WHERE ((user_roles.user_id = ( SELECT auth.uid() AS uid)) AND (user_roles.role = 'admin'::public.app_role))))));
 
 DROP POLICY IF EXISTS "divergencias_conciliacao Empresa-based access" ON public.divergencias_conciliacao;
+DROP POLICY IF EXISTS "Empresa-based access" ON public.divergencias_conciliacao;
 CREATE POLICY "Empresa-based access" ON public.divergencias_conciliacao TO authenticated USING (((empresa_id IN ( SELECT user_empresas.empresa_id
    FROM public.user_empresas
   WHERE ((user_empresas.user_id = ( SELECT auth.uid() AS uid)) AND (user_empresas.ativo = true)))) OR (EXISTS ( SELECT 1
@@ -5407,18 +5452,23 @@ DROP POLICY IF EXISTS tarefas_elisao_acesso ON public.elisao_tarefas_acionaveis;
 CREATE POLICY tarefas_elisao_acesso ON public.elisao_tarefas_acionaveis TO authenticated USING (public.empresa_acessivel(empresa_id)) WITH CHECK (public.empresa_acessivel(empresa_id));
 
 DROP POLICY IF EXISTS "email_verifications Admins can delete verifications" ON public.email_verifications;
+DROP POLICY IF EXISTS "Admins can delete verifications" ON public.email_verifications;
 CREATE POLICY "Admins can delete verifications" ON public.email_verifications FOR DELETE TO authenticated USING (public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role));
 
 DROP POLICY IF EXISTS "email_verifications Users can insert own verifications" ON public.email_verifications;
+DROP POLICY IF EXISTS "Users can insert own verifications" ON public.email_verifications;
 CREATE POLICY "Users can insert own verifications" ON public.email_verifications FOR INSERT TO authenticated WITH CHECK ((( SELECT auth.uid() AS uid) = user_id));
 
 DROP POLICY IF EXISTS "email_verifications Users can update their verifications" ON public.email_verifications;
+DROP POLICY IF EXISTS "Users can update their verifications" ON public.email_verifications;
 CREATE POLICY "Users can update their verifications" ON public.email_verifications FOR UPDATE TO authenticated USING (((( SELECT auth.uid() AS uid) = user_id) OR public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role)));
 
 DROP POLICY IF EXISTS "email_verifications Users can view own verifications" ON public.email_verifications;
+DROP POLICY IF EXISTS "Users can view own verifications" ON public.email_verifications;
 CREATE POLICY "Users can view own verifications" ON public.email_verifications FOR SELECT TO authenticated USING ((( SELECT auth.uid() AS uid) = user_id));
 
 DROP POLICY IF EXISTS "empresas Owner manage empresas" ON public.empresas;
+DROP POLICY IF EXISTS "Owner manage empresas" ON public.empresas;
 CREATE POLICY "Owner manage empresas" ON public.empresas TO authenticated USING ((( SELECT auth.uid() AS uid) = user_id)) WITH CHECK ((( SELECT auth.uid() AS uid) = user_id));
 
 DROP POLICY IF EXISTS "empresas_certificados cert_empresa_read" ON public.empresas_certificados;
@@ -5468,6 +5518,7 @@ DROP POLICY IF EXISTS eventos_contab_select ON public.eventos_contabilizacao_log
 CREATE POLICY eventos_contab_select ON public.eventos_contabilizacao_log FOR SELECT TO authenticated USING (public.empresa_acessivel(empresa_id));
 
 DROP POLICY IF EXISTS "evidencias_pacotes Evidencias scoped by verificacao" ON public.evidencias_pacotes;
+DROP POLICY IF EXISTS "Evidencias scoped by verificacao" ON public.evidencias_pacotes;
 CREATE POLICY "Evidencias scoped by verificacao" ON public.evidencias_pacotes TO authenticated USING ((EXISTS ( SELECT 1
    FROM public.verificacoes_conformidade vc
   WHERE ((vc.id = evidencias_pacotes.verificacao_id) AND (public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role) OR (vc.empresa_id IN ( SELECT ue.empresa_id
@@ -5479,6 +5530,7 @@ CREATE POLICY "Evidencias scoped by verificacao" ON public.evidencias_pacotes TO
           WHERE ((ue.user_id = ( SELECT auth.uid() AS uid)) AND (ue.ativo = true)))))))));
 
 DROP POLICY IF EXISTS "execucoes_cobranca Owner manage execucoes" ON public.execucoes_cobranca;
+DROP POLICY IF EXISTS "Owner manage execucoes" ON public.execucoes_cobranca;
 CREATE POLICY "Owner manage execucoes" ON public.execucoes_cobranca TO authenticated USING ((( SELECT auth.uid() AS uid) = user_id)) WITH CHECK ((( SELECT auth.uid() AS uid) = user_id));
 
 DROP POLICY IF EXISTS "execucoes_cobranca execucoes_cobranca_empresa_all" ON public.execucoes_cobranca;
@@ -5494,19 +5546,23 @@ DROP POLICY IF EXISTS execucoes_regua_select ON public.execucoes_regua_cobranca;
 CREATE POLICY execucoes_regua_select ON public.execucoes_regua_cobranca FOR SELECT TO authenticated USING (public.empresa_acessivel(empresa_id));
 
 DROP POLICY IF EXISTS "expert_conversations Users can manage their own conversations" ON public.expert_conversations;
+DROP POLICY IF EXISTS "Users can manage their own conversations" ON public.expert_conversations;
 CREATE POLICY "Users can manage their own conversations" ON public.expert_conversations TO authenticated USING ((( SELECT auth.uid() AS uid) = user_id)) WITH CHECK ((( SELECT auth.uid() AS uid) = user_id));
 
 DROP POLICY IF EXISTS "expert_messages Users can insert messages to their conversations" ON public.expert_messages;
+DROP POLICY IF EXISTS "Users can insert messages to their conversations" ON public.expert_messages;
 CREATE POLICY "Users can insert messages to their conversations" ON public.expert_messages FOR INSERT TO authenticated WITH CHECK ((EXISTS ( SELECT 1
    FROM public.expert_conversations c
   WHERE ((c.id = expert_messages.conversation_id) AND (c.user_id = ( SELECT auth.uid() AS uid))))));
 
 DROP POLICY IF EXISTS "expert_messages Users can view messages from their conversations" ON public.expert_messages;
+DROP POLICY IF EXISTS "Users can view messages from their conversations" ON public.expert_messages;
 CREATE POLICY "Users can view messages from their conversations" ON public.expert_messages FOR SELECT TO authenticated USING ((EXISTS ( SELECT 1
    FROM public.expert_conversations c
   WHERE ((c.id = expert_messages.conversation_id) AND (c.user_id = ( SELECT auth.uid() AS uid))))));
 
 DROP POLICY IF EXISTS "expert_messages Usuários veem mensagens de suas conversas" ON public.expert_messages;
+DROP POLICY IF EXISTS "Usuários veem mensagens de suas conversas" ON public.expert_messages;
 CREATE POLICY "Usuários veem mensagens de suas conversas" ON public.expert_messages TO authenticated USING ((EXISTS ( SELECT 1
    FROM public.expert_conversations c
   WHERE ((c.id = expert_messages.conversation_id) AND (c.user_id = ( SELECT auth.uid() AS uid)))))) WITH CHECK ((EXISTS ( SELECT 1
@@ -5514,6 +5570,7 @@ CREATE POLICY "Usuários veem mensagens de suas conversas" ON public.expert_mess
   WHERE ((c.id = expert_messages.conversation_id) AND (c.user_id = ( SELECT auth.uid() AS uid))))));
 
 DROP POLICY IF EXISTS "extrato_bancario Users can manage their own extrato_bancario" ON public.extrato_bancario;
+DROP POLICY IF EXISTS "Users can manage their own extrato_bancario" ON public.extrato_bancario;
 CREATE POLICY "Users can manage their own extrato_bancario" ON public.extrato_bancario TO authenticated USING ((( SELECT auth.uid() AS uid) = user_id)) WITH CHECK ((( SELECT auth.uid() AS uid) = user_id));
 
 DROP POLICY IF EXISTS "extrato_bancario extrato_owner_all" ON public.extrato_bancario;
@@ -5529,6 +5586,7 @@ DROP POLICY IF EXISTS faixas_simples_write_admin ON public.faixas_simples_nacion
 CREATE POLICY faixas_simples_write_admin ON public.faixas_simples_nacional TO authenticated USING (public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role)) WITH CHECK (public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role));
 
 DROP POLICY IF EXISTS "faturamento_mensal Empresa-based access" ON public.faturamento_mensal;
+DROP POLICY IF EXISTS "Empresa-based access" ON public.faturamento_mensal;
 CREATE POLICY "Empresa-based access" ON public.faturamento_mensal TO authenticated USING (((empresa_id IN ( SELECT user_empresas.empresa_id
    FROM public.user_empresas
   WHERE ((user_empresas.user_id = ( SELECT auth.uid() AS uid)) AND (user_empresas.ativo = true)))) OR (EXISTS ( SELECT 1
@@ -5548,11 +5606,13 @@ DROP POLICY IF EXISTS fechamentos_update ON public.fechamentos_tributarios;
 CREATE POLICY fechamentos_update ON public.fechamentos_tributarios FOR UPDATE TO authenticated USING (public.empresa_acessivel(empresa_id)) WITH CHECK (public.empresa_acessivel(empresa_id));
 
 DROP POLICY IF EXISTS "feedback_conciliacao_ia User-based access" ON public.feedback_conciliacao_ia;
+DROP POLICY IF EXISTS "User-based access" ON public.feedback_conciliacao_ia;
 CREATE POLICY "User-based access" ON public.feedback_conciliacao_ia TO authenticated USING (((user_id = ( SELECT auth.uid() AS uid)) OR (EXISTS ( SELECT 1
    FROM public.user_roles
   WHERE ((user_roles.user_id = ( SELECT auth.uid() AS uid)) AND (user_roles.role = 'admin'::public.app_role))))));
 
 DROP POLICY IF EXISTS "feedback_conciliacao_ia Users can manage feedback" ON public.feedback_conciliacao_ia;
+DROP POLICY IF EXISTS "Users can manage feedback" ON public.feedback_conciliacao_ia;
 CREATE POLICY "Users can manage feedback" ON public.feedback_conciliacao_ia TO authenticated USING ((( SELECT auth.uid() AS uid) = user_id));
 
 DROP POLICY IF EXISTS "fila_cobrancas fila_cobrancas_empresa_select" ON public.fila_cobrancas;
@@ -5566,6 +5626,7 @@ DROP POLICY IF EXISTS fila_cobrancas_tenant_rw ON public.fila_cobrancas;
 CREATE POLICY fila_cobrancas_tenant_rw ON public.fila_cobrancas TO authenticated USING ((public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role) AND public.empresa_acessivel(empresa_id))) WITH CHECK ((public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role) AND public.empresa_acessivel(empresa_id)));
 
 DROP POLICY IF EXISTS "fluxos_aprovacao_niveis Access by empresa_id" ON public.fluxos_aprovacao_niveis;
+DROP POLICY IF EXISTS "Access by empresa_id" ON public.fluxos_aprovacao_niveis;
 CREATE POLICY "Access by empresa_id" ON public.fluxos_aprovacao_niveis TO authenticated USING (((empresa_id IN ( SELECT user_empresas.empresa_id
    FROM public.user_empresas
   WHERE ((user_empresas.user_id = ( SELECT auth.uid() AS uid)) AND (user_empresas.ativo = true)))) OR (EXISTS ( SELECT 1
@@ -5573,6 +5634,7 @@ CREATE POLICY "Access by empresa_id" ON public.fluxos_aprovacao_niveis TO authen
   WHERE ((user_roles.user_id = ( SELECT auth.uid() AS uid)) AND (user_roles.role = 'admin'::public.app_role))))));
 
 DROP POLICY IF EXISTS "folha_pagamento Empresa-based access" ON public.folha_pagamento;
+DROP POLICY IF EXISTS "Empresa-based access" ON public.folha_pagamento;
 CREATE POLICY "Empresa-based access" ON public.folha_pagamento TO authenticated USING (((empresa_id IN ( SELECT user_empresas.empresa_id
    FROM public.user_empresas
   WHERE ((user_empresas.user_id = ( SELECT auth.uid() AS uid)) AND (user_empresas.ativo = true)))) OR (EXISTS ( SELECT 1
@@ -5580,6 +5642,7 @@ CREATE POLICY "Empresa-based access" ON public.folha_pagamento TO authenticated 
   WHERE ((user_roles.user_id = ( SELECT auth.uid() AS uid)) AND (user_roles.role = 'admin'::public.app_role))))));
 
 DROP POLICY IF EXISTS "formas_pagamento Empresa-based access" ON public.formas_pagamento;
+DROP POLICY IF EXISTS "Empresa-based access" ON public.formas_pagamento;
 CREATE POLICY "Empresa-based access" ON public.formas_pagamento TO authenticated USING (((empresa_id IN ( SELECT user_empresas.empresa_id
    FROM public.user_empresas
   WHERE ((user_empresas.user_id = ( SELECT auth.uid() AS uid)) AND (user_empresas.ativo = true)))) OR (EXISTS ( SELECT 1
@@ -5607,6 +5670,7 @@ DROP POLICY IF EXISTS fe_alert_state_admin_select ON public.frontend_error_alert
 CREATE POLICY fe_alert_state_admin_select ON public.frontend_error_alert_state FOR SELECT TO authenticated USING (public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role));
 
 DROP POLICY IF EXISTS "frontend_error_logs Admins can view frontend errors" ON public.frontend_error_logs;
+DROP POLICY IF EXISTS "Admins can view frontend errors" ON public.frontend_error_logs;
 CREATE POLICY "Admins can view frontend errors" ON public.frontend_error_logs FOR SELECT TO authenticated USING (public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role));
 
 DROP POLICY IF EXISTS "frontend_error_logs frontend_error_user_insert" ON public.frontend_error_logs;
@@ -5618,24 +5682,31 @@ DROP POLICY IF EXISTS fe_silence_digest_admin_select ON public.frontend_error_si
 CREATE POLICY fe_silence_digest_admin_select ON public.frontend_error_silence_digest_log FOR SELECT TO authenticated USING (public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role));
 
 DROP POLICY IF EXISTS "frontend_performance_logs Admins can view performance logs" ON public.frontend_performance_logs;
+DROP POLICY IF EXISTS "Admins can view performance logs" ON public.frontend_performance_logs;
 CREATE POLICY "Admins can view performance logs" ON public.frontend_performance_logs FOR SELECT TO authenticated USING (public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role));
 
 DROP POLICY IF EXISTS "frontend_performance_logs Authenticated users can insert performance logs" ON public.frontend_performance_logs;
+DROP POLICY IF EXISTS "Authenticated users can insert performance logs" ON public.frontend_performance_logs;
 CREATE POLICY "Authenticated users can insert performance logs" ON public.frontend_performance_logs FOR INSERT TO authenticated WITH CHECK ((( SELECT auth.uid() AS uid) IS NOT NULL));
 
 DROP POLICY IF EXISTS "geo_blocks Admins can delete geo blocks" ON public.geo_blocks;
+DROP POLICY IF EXISTS "Admins can delete geo blocks" ON public.geo_blocks;
 CREATE POLICY "Admins can delete geo blocks" ON public.geo_blocks FOR DELETE TO authenticated USING (public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role));
 
 DROP POLICY IF EXISTS "geo_blocks Admins can insert geo blocks" ON public.geo_blocks;
+DROP POLICY IF EXISTS "Admins can insert geo blocks" ON public.geo_blocks;
 CREATE POLICY "Admins can insert geo blocks" ON public.geo_blocks FOR INSERT TO authenticated WITH CHECK (public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role));
 
 DROP POLICY IF EXISTS "geo_blocks Admins can manage geo blocks" ON public.geo_blocks;
+DROP POLICY IF EXISTS "Admins can manage geo blocks" ON public.geo_blocks;
 CREATE POLICY "Admins can manage geo blocks" ON public.geo_blocks TO authenticated USING (public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role));
 
 DROP POLICY IF EXISTS "geo_blocks Admins can update geo blocks" ON public.geo_blocks;
+DROP POLICY IF EXISTS "Admins can update geo blocks" ON public.geo_blocks;
 CREATE POLICY "Admins can update geo blocks" ON public.geo_blocks FOR UPDATE TO authenticated USING (public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role));
 
 DROP POLICY IF EXISTS "geo_blocks Managers can view geo blocks" ON public.geo_blocks;
+DROP POLICY IF EXISTS "Managers can view geo blocks" ON public.geo_blocks;
 CREATE POLICY "Managers can view geo blocks" ON public.geo_blocks FOR SELECT TO authenticated USING (public.has_role(( SELECT auth.uid() AS uid), 'manager'::public.app_role));
 
 DROP POLICY IF EXISTS "glossario_tributario glossario_admin" ON public.glossario_tributario;
@@ -5671,6 +5742,7 @@ CREATE POLICY historico_cobranca_empresa_all ON public.historico_cobranca TO aut
   WHERE ((user_empresas.user_id = ( SELECT auth.uid() AS uid)) AND (user_empresas.ativo = true)))));
 
 DROP POLICY IF EXISTS "historico_cobranca_whatsapp Empresa-based access" ON public.historico_cobranca_whatsapp;
+DROP POLICY IF EXISTS "Empresa-based access" ON public.historico_cobranca_whatsapp;
 CREATE POLICY "Empresa-based access" ON public.historico_cobranca_whatsapp TO authenticated USING (((empresa_id IN ( SELECT user_empresas.empresa_id
    FROM public.user_empresas
   WHERE ((user_empresas.user_id = ( SELECT auth.uid() AS uid)) AND (user_empresas.ativo = true)))) OR (EXISTS ( SELECT 1
@@ -5716,9 +5788,11 @@ DROP POLICY IF EXISTS incentivos_fiscais_acesso ON public.incentivos_fiscais;
 CREATE POLICY incentivos_fiscais_acesso ON public.incentivos_fiscais TO authenticated USING (public.empresa_acessivel(empresa_id)) WITH CHECK (public.empresa_acessivel(empresa_id));
 
 DROP POLICY IF EXISTS "index_usage_snapshots Somente admins leem snapshots de índices" ON public.index_usage_snapshots;
+DROP POLICY IF EXISTS "Somente admins leem snapshots de índices" ON public.index_usage_snapshots;
 CREATE POLICY "Somente admins leem snapshots de índices" ON public.index_usage_snapshots FOR SELECT TO authenticated USING (public.has_role(auth.uid(), 'admin'::public.app_role));
 
 DROP POLICY IF EXISTS "indices_uso_excecoes Somente admins gerenciam exceções de índice" ON public.indices_uso_excecoes;
+DROP POLICY IF EXISTS "Somente admins gerenciam exceções de índice" ON public.indices_uso_excecoes;
 CREATE POLICY "Somente admins gerenciam exceções de índice" ON public.indices_uso_excecoes FOR SELECT TO authenticated USING (public.has_role(auth.uid(), 'admin'::public.app_role));
 
 DROP POLICY IF EXISTS "integration_secrets integration_secrets_no_client_access" ON public.integration_secrets;
@@ -5734,18 +5808,23 @@ DROP POLICY IF EXISTS integrity_alerts_service_all ON public.integrity_alerts;
 CREATE POLICY integrity_alerts_service_all ON public.integrity_alerts TO service_role USING (true) WITH CHECK (true);
 
 DROP POLICY IF EXISTS "ip_whitelist Admins can delete whitelist" ON public.ip_whitelist;
+DROP POLICY IF EXISTS "Admins can delete whitelist" ON public.ip_whitelist;
 CREATE POLICY "Admins can delete whitelist" ON public.ip_whitelist FOR DELETE TO authenticated USING (public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role));
 
 DROP POLICY IF EXISTS "ip_whitelist Admins can insert whitelist" ON public.ip_whitelist;
+DROP POLICY IF EXISTS "Admins can insert whitelist" ON public.ip_whitelist;
 CREATE POLICY "Admins can insert whitelist" ON public.ip_whitelist FOR INSERT TO authenticated WITH CHECK (public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role));
 
 DROP POLICY IF EXISTS "ip_whitelist Admins can manage IP whitelist" ON public.ip_whitelist;
+DROP POLICY IF EXISTS "Admins can manage IP whitelist" ON public.ip_whitelist;
 CREATE POLICY "Admins can manage IP whitelist" ON public.ip_whitelist TO authenticated USING (public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role));
 
 DROP POLICY IF EXISTS "ip_whitelist Admins can update whitelist" ON public.ip_whitelist;
+DROP POLICY IF EXISTS "Admins can update whitelist" ON public.ip_whitelist;
 CREATE POLICY "Admins can update whitelist" ON public.ip_whitelist FOR UPDATE TO authenticated USING (public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role));
 
 DROP POLICY IF EXISTS "ip_whitelist Managers can view IP whitelist" ON public.ip_whitelist;
+DROP POLICY IF EXISTS "Managers can view IP whitelist" ON public.ip_whitelist;
 CREATE POLICY "Managers can view IP whitelist" ON public.ip_whitelist FOR SELECT TO authenticated USING (public.has_role(( SELECT auth.uid() AS uid), 'manager'::public.app_role));
 
 DROP POLICY IF EXISTS "itens_lista_iss itens_iss_select_authenticated" ON public.itens_lista_iss;
@@ -5769,6 +5848,7 @@ DROP POLICY IF EXISTS kpis_operacionais_owner ON public.kpis_operacionais;
 CREATE POLICY kpis_operacionais_owner ON public.kpis_operacionais TO authenticated USING ((user_id = auth.uid())) WITH CHECK ((user_id = auth.uid()));
 
 DROP POLICY IF EXISTS "lancamentos_contabeis Lancamentos scoped by empresa" ON public.lancamentos_contabeis;
+DROP POLICY IF EXISTS "Lancamentos scoped by empresa" ON public.lancamentos_contabeis;
 CREATE POLICY "Lancamentos scoped by empresa" ON public.lancamentos_contabeis TO authenticated USING (((user_id = ( SELECT auth.uid() AS uid)) OR public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role) OR (empresa_id IN ( SELECT ue.empresa_id
    FROM public.user_empresas ue
   WHERE ((ue.user_id = ( SELECT auth.uid() AS uid)) AND (ue.ativo = true)))))) WITH CHECK (((user_id = ( SELECT auth.uid() AS uid)) OR public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role) OR (empresa_id IN ( SELECT ue.empresa_id
@@ -5776,15 +5856,19 @@ CREATE POLICY "Lancamentos scoped by empresa" ON public.lancamentos_contabeis TO
   WHERE ((ue.user_id = ( SELECT auth.uid() AS uid)) AND (ue.ativo = true))))));
 
 DROP POLICY IF EXISTS "login_attempts Admins can delete login attempts" ON public.login_attempts;
+DROP POLICY IF EXISTS "Admins can delete login attempts" ON public.login_attempts;
 CREATE POLICY "Admins can delete login attempts" ON public.login_attempts FOR DELETE TO authenticated USING (public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role));
 
 DROP POLICY IF EXISTS "login_attempts Admins can insert login attempts" ON public.login_attempts;
+DROP POLICY IF EXISTS "Admins can insert login attempts" ON public.login_attempts;
 CREATE POLICY "Admins can insert login attempts" ON public.login_attempts FOR INSERT TO authenticated WITH CHECK ((public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role) OR public.has_role(( SELECT auth.uid() AS uid), 'manager'::public.app_role)));
 
 DROP POLICY IF EXISTS "login_attempts Admins can update login attempts" ON public.login_attempts;
+DROP POLICY IF EXISTS "Admins can update login attempts" ON public.login_attempts;
 CREATE POLICY "Admins can update login attempts" ON public.login_attempts FOR UPDATE TO authenticated USING (public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role)) WITH CHECK (public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role));
 
 DROP POLICY IF EXISTS "login_attempts Admins can view login attempts" ON public.login_attempts;
+DROP POLICY IF EXISTS "Admins can view login attempts" ON public.login_attempts;
 CREATE POLICY "Admins can view login attempts" ON public.login_attempts FOR SELECT TO authenticated USING (public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role));
 
 DROP POLICY IF EXISTS "logs_baixa_automatica logs_baixa_insert_owner" ON public.logs_baixa_automatica;
@@ -5804,6 +5888,7 @@ DROP POLICY IF EXISTS logs_retro_select_owner ON public.logs_conciliacao_retroat
 CREATE POLICY logs_retro_select_owner ON public.logs_conciliacao_retroativa FOR SELECT TO authenticated USING ((( SELECT auth.uid() AS uid) = user_id));
 
 DROP POLICY IF EXISTS "metas_financeiras Empresa-based access" ON public.metas_financeiras;
+DROP POLICY IF EXISTS "Empresa-based access" ON public.metas_financeiras;
 CREATE POLICY "Empresa-based access" ON public.metas_financeiras TO authenticated USING (((empresa_id IN ( SELECT user_empresas.empresa_id
    FROM public.user_empresas
   WHERE ((user_empresas.user_id = ( SELECT auth.uid() AS uid)) AND (user_empresas.ativo = true)))) OR (EXISTS ( SELECT 1
@@ -5811,18 +5896,23 @@ CREATE POLICY "Empresa-based access" ON public.metas_financeiras TO authenticate
   WHERE ((user_roles.user_id = ( SELECT auth.uid() AS uid)) AND (user_roles.role = 'admin'::public.app_role))))));
 
 DROP POLICY IF EXISTS "mfa_sessions Users can delete their MFA sessions" ON public.mfa_sessions;
+DROP POLICY IF EXISTS "Users can delete their MFA sessions" ON public.mfa_sessions;
 CREATE POLICY "Users can delete their MFA sessions" ON public.mfa_sessions FOR DELETE TO authenticated USING (((( SELECT auth.uid() AS uid) = user_id) OR public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role)));
 
 DROP POLICY IF EXISTS "mfa_sessions Users can insert their MFA sessions" ON public.mfa_sessions;
+DROP POLICY IF EXISTS "Users can insert their MFA sessions" ON public.mfa_sessions;
 CREATE POLICY "Users can insert their MFA sessions" ON public.mfa_sessions FOR INSERT TO authenticated WITH CHECK ((( SELECT auth.uid() AS uid) = user_id));
 
 DROP POLICY IF EXISTS "mfa_sessions Users can manage own MFA sessions" ON public.mfa_sessions;
+DROP POLICY IF EXISTS "Users can manage own MFA sessions" ON public.mfa_sessions;
 CREATE POLICY "Users can manage own MFA sessions" ON public.mfa_sessions TO authenticated USING ((( SELECT auth.uid() AS uid) = user_id)) WITH CHECK ((( SELECT auth.uid() AS uid) = user_id));
 
 DROP POLICY IF EXISTS "mfa_sessions Users can update their MFA sessions" ON public.mfa_sessions;
+DROP POLICY IF EXISTS "Users can update their MFA sessions" ON public.mfa_sessions;
 CREATE POLICY "Users can update their MFA sessions" ON public.mfa_sessions FOR UPDATE TO authenticated USING ((( SELECT auth.uid() AS uid) = user_id));
 
 DROP POLICY IF EXISTS "movimentacoes Access by empresa_id" ON public.movimentacoes;
+DROP POLICY IF EXISTS "Access by empresa_id" ON public.movimentacoes;
 CREATE POLICY "Access by empresa_id" ON public.movimentacoes TO authenticated USING (((empresa_id IN ( SELECT user_empresas.empresa_id
    FROM public.user_empresas
   WHERE ((user_empresas.user_id = ( SELECT auth.uid() AS uid)) AND (user_empresas.ativo = true)))) OR (EXISTS ( SELECT 1
@@ -5830,9 +5920,11 @@ CREATE POLICY "Access by empresa_id" ON public.movimentacoes TO authenticated US
   WHERE ((user_roles.user_id = ( SELECT auth.uid() AS uid)) AND (user_roles.role = 'admin'::public.app_role))))));
 
 DROP POLICY IF EXISTS "n8n_dispatch_logs Admins e managers visualizam logs n8n" ON public.n8n_dispatch_logs;
+DROP POLICY IF EXISTS "Admins e managers visualizam logs n8n" ON public.n8n_dispatch_logs;
 CREATE POLICY "Admins e managers visualizam logs n8n" ON public.n8n_dispatch_logs FOR SELECT TO authenticated USING ((public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role) OR public.has_role(( SELECT auth.uid() AS uid), 'manager'::public.app_role)));
 
 DROP POLICY IF EXISTS "n8n_workflow_configs Admins e managers gerenciam configs n8n" ON public.n8n_workflow_configs;
+DROP POLICY IF EXISTS "Admins e managers gerenciam configs n8n" ON public.n8n_workflow_configs;
 CREATE POLICY "Admins e managers gerenciam configs n8n" ON public.n8n_workflow_configs TO authenticated USING ((public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role) OR public.has_role(( SELECT auth.uid() AS uid), 'manager'::public.app_role))) WITH CHECK ((public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role) OR public.has_role(( SELECT auth.uid() AS uid), 'manager'::public.app_role)));
 
 DROP POLICY IF EXISTS "ncms ncms_select_authenticated" ON public.ncms;
@@ -5854,15 +5946,19 @@ DROP POLICY IF EXISTS negativacoes_tenant_rw ON public.negativacoes;
 CREATE POLICY negativacoes_tenant_rw ON public.negativacoes TO authenticated USING ((public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role) AND public.empresa_acessivel(empresa_id))) WITH CHECK ((public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role) AND public.empresa_acessivel(empresa_id)));
 
 DROP POLICY IF EXISTS "new_device_alerts Users can delete their device alerts" ON public.new_device_alerts;
+DROP POLICY IF EXISTS "Users can delete their device alerts" ON public.new_device_alerts;
 CREATE POLICY "Users can delete their device alerts" ON public.new_device_alerts FOR DELETE TO authenticated USING (((( SELECT auth.uid() AS uid) = user_id) OR public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role)));
 
 DROP POLICY IF EXISTS "new_device_alerts Users can insert their device alerts" ON public.new_device_alerts;
+DROP POLICY IF EXISTS "Users can insert their device alerts" ON public.new_device_alerts;
 CREATE POLICY "Users can insert their device alerts" ON public.new_device_alerts FOR INSERT TO authenticated WITH CHECK ((( SELECT auth.uid() AS uid) = user_id));
 
 DROP POLICY IF EXISTS "new_device_alerts Users can update their device alerts" ON public.new_device_alerts;
+DROP POLICY IF EXISTS "Users can update their device alerts" ON public.new_device_alerts;
 CREATE POLICY "Users can update their device alerts" ON public.new_device_alerts FOR UPDATE TO authenticated USING (((( SELECT auth.uid() AS uid) = user_id) OR public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role)));
 
 DROP POLICY IF EXISTS "new_device_alerts Users can view own device alerts" ON public.new_device_alerts;
+DROP POLICY IF EXISTS "Users can view own device alerts" ON public.new_device_alerts;
 CREATE POLICY "Users can view own device alerts" ON public.new_device_alerts FOR SELECT TO authenticated USING ((( SELECT auth.uid() AS uid) = user_id));
 
 DROP POLICY IF EXISTS "nfe_eventos nfe_ev_read_via_nfe" ON public.nfe_eventos;
@@ -5899,6 +5995,7 @@ DROP POLICY IF EXISTS notification_history_owner ON public.notification_history;
 CREATE POLICY notification_history_owner ON public.notification_history TO authenticated USING ((user_id = auth.uid())) WITH CHECK ((user_id = auth.uid()));
 
 DROP POLICY IF EXISTS "open_finance_consents Users can manage their own consents" ON public.open_finance_consents;
+DROP POLICY IF EXISTS "Users can manage their own consents" ON public.open_finance_consents;
 CREATE POLICY "Users can manage their own consents" ON public.open_finance_consents TO authenticated USING ((( SELECT auth.uid() AS uid) = user_id)) WITH CHECK ((( SELECT auth.uid() AS uid) = user_id));
 
 DROP POLICY IF EXISTS "operacoes_icms operacoes_icms_acesso" ON public.operacoes_icms;
@@ -5940,15 +6037,19 @@ DROP POLICY IF EXISTS organizacoes_update_responsavel ON public.organizacoes;
 CREATE POLICY organizacoes_update_responsavel ON public.organizacoes FOR UPDATE TO authenticated USING (((responsavel_id = ( SELECT auth.uid() AS uid)) OR public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role))) WITH CHECK (((responsavel_id = ( SELECT auth.uid() AS uid)) OR public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role)));
 
 DROP POLICY IF EXISTS "overlay_rejeicoes_auditoria Gestores atualizam auditoria de overlay" ON public.overlay_rejeicoes_auditoria;
+DROP POLICY IF EXISTS "Gestores atualizam auditoria de overlay" ON public.overlay_rejeicoes_auditoria;
 CREATE POLICY "Gestores atualizam auditoria de overlay" ON public.overlay_rejeicoes_auditoria FOR UPDATE TO authenticated USING ((public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role) OR public.has_role(( SELECT auth.uid() AS uid), 'manager'::public.app_role))) WITH CHECK ((public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role) OR public.has_role(( SELECT auth.uid() AS uid), 'manager'::public.app_role)));
 
 DROP POLICY IF EXISTS "overlay_rejeicoes_auditoria Gestores inserem auditoria de overlay" ON public.overlay_rejeicoes_auditoria;
+DROP POLICY IF EXISTS "Gestores inserem auditoria de overlay" ON public.overlay_rejeicoes_auditoria;
 CREATE POLICY "Gestores inserem auditoria de overlay" ON public.overlay_rejeicoes_auditoria FOR INSERT TO authenticated WITH CHECK ((public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role) OR public.has_role(( SELECT auth.uid() AS uid), 'manager'::public.app_role)));
 
 DROP POLICY IF EXISTS "overlay_rejeicoes_auditoria Gestores leem auditoria de overlay" ON public.overlay_rejeicoes_auditoria;
+DROP POLICY IF EXISTS "Gestores leem auditoria de overlay" ON public.overlay_rejeicoes_auditoria;
 CREATE POLICY "Gestores leem auditoria de overlay" ON public.overlay_rejeicoes_auditoria FOR SELECT TO authenticated USING ((public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role) OR public.has_role(( SELECT auth.uid() AS uid), 'manager'::public.app_role)));
 
 DROP POLICY IF EXISTS "overlay_rejeicoes_auditoria Gestores removem auditoria de overlay" ON public.overlay_rejeicoes_auditoria;
+DROP POLICY IF EXISTS "Gestores removem auditoria de overlay" ON public.overlay_rejeicoes_auditoria;
 CREATE POLICY "Gestores removem auditoria de overlay" ON public.overlay_rejeicoes_auditoria FOR DELETE TO authenticated USING ((public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role) OR public.has_role(( SELECT auth.uid() AS uid), 'manager'::public.app_role)));
 
 DROP POLICY IF EXISTS "pagamentos_recorrentes pagamentos_recorrentes_acesso" ON public.pagamentos_recorrentes;
@@ -5972,6 +6073,7 @@ CREATE POLICY parcelas_acordo_tenant_write ON public.parcelas_acordo TO authenti
   WHERE ((a.id = parcelas_acordo.acordo_id) AND public.empresa_acessivel(a.empresa_id))))));
 
 DROP POLICY IF EXISTS "partidas_contabeis Partidas scoped by lancamento" ON public.partidas_contabeis;
+DROP POLICY IF EXISTS "Partidas scoped by lancamento" ON public.partidas_contabeis;
 CREATE POLICY "Partidas scoped by lancamento" ON public.partidas_contabeis TO authenticated USING ((EXISTS ( SELECT 1
    FROM public.lancamentos_contabeis lc
   WHERE ((lc.id = partidas_contabeis.lancamento_id) AND ((lc.user_id = ( SELECT auth.uid() AS uid)) OR public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role) OR (lc.empresa_id IN ( SELECT ue.empresa_id
@@ -5983,23 +6085,29 @@ CREATE POLICY "Partidas scoped by lancamento" ON public.partidas_contabeis TO au
           WHERE ((ue.user_id = ( SELECT auth.uid() AS uid)) AND (ue.ativo = true)))))))));
 
 DROP POLICY IF EXISTS "password_reset_requests Admins and managers can view reset requests" ON public.password_reset_requests;
+DROP POLICY IF EXISTS "Admins and managers can view reset requests" ON public.password_reset_requests;
 CREATE POLICY "Admins and managers can view reset requests" ON public.password_reset_requests FOR SELECT TO authenticated USING ((public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role) OR public.has_role(( SELECT auth.uid() AS uid), 'manager'::public.app_role)));
 
 DROP POLICY IF EXISTS "password_reset_requests Admins can update reset requests" ON public.password_reset_requests;
+DROP POLICY IF EXISTS "Admins can update reset requests" ON public.password_reset_requests;
 CREATE POLICY "Admins can update reset requests" ON public.password_reset_requests FOR UPDATE TO authenticated USING (public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role)) WITH CHECK (public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role));
 
 DROP POLICY IF EXISTS "password_reset_requests Users can request own password reset" ON public.password_reset_requests;
+DROP POLICY IF EXISTS "Users can request own password reset" ON public.password_reset_requests;
 CREATE POLICY "Users can request own password reset" ON public.password_reset_requests FOR INSERT TO authenticated WITH CHECK ((user_email = (( SELECT users.email
    FROM auth.users
   WHERE (users.id = ( SELECT auth.uid() AS uid))))::text));
 
 DROP POLICY IF EXISTS "password_reset_tokens Admins can delete reset tokens" ON public.password_reset_tokens;
+DROP POLICY IF EXISTS "Admins can delete reset tokens" ON public.password_reset_tokens;
 CREATE POLICY "Admins can delete reset tokens" ON public.password_reset_tokens FOR DELETE TO authenticated USING (public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role));
 
 DROP POLICY IF EXISTS "password_reset_tokens Authenticated can insert own reset tokens" ON public.password_reset_tokens;
+DROP POLICY IF EXISTS "Authenticated can insert own reset tokens" ON public.password_reset_tokens;
 CREATE POLICY "Authenticated can insert own reset tokens" ON public.password_reset_tokens FOR INSERT TO authenticated WITH CHECK ((( SELECT auth.uid() AS uid) = user_id));
 
 DROP POLICY IF EXISTS "password_reset_tokens Users can select own reset tokens" ON public.password_reset_tokens;
+DROP POLICY IF EXISTS "Users can select own reset tokens" ON public.password_reset_tokens;
 CREATE POLICY "Users can select own reset tokens" ON public.password_reset_tokens FOR SELECT TO authenticated USING ((( SELECT auth.uid() AS uid) = user_id));
 
 DROP POLICY IF EXISTS "pedidos_compra pedidos_compra_empresa_select" ON public.pedidos_compra;
@@ -6013,21 +6121,27 @@ DROP POLICY IF EXISTS per_dcomp_acesso ON public.per_dcomp;
 CREATE POLICY per_dcomp_acesso ON public.per_dcomp TO authenticated USING (public.empresa_acessivel(empresa_id)) WITH CHECK (public.empresa_acessivel(empresa_id));
 
 DROP POLICY IF EXISTS "performance_alerts Admins podem ler alertas de performance" ON public.performance_alerts;
+DROP POLICY IF EXISTS "Admins podem ler alertas de performance" ON public.performance_alerts;
 CREATE POLICY "Admins podem ler alertas de performance" ON public.performance_alerts FOR SELECT TO authenticated USING (public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role));
 
 DROP POLICY IF EXISTS "permissions Admins can delete permissions" ON public.permissions;
+DROP POLICY IF EXISTS "Admins can delete permissions" ON public.permissions;
 CREATE POLICY "Admins can delete permissions" ON public.permissions FOR DELETE TO authenticated USING (public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role));
 
 DROP POLICY IF EXISTS "permissions Admins can insert permissions" ON public.permissions;
+DROP POLICY IF EXISTS "Admins can insert permissions" ON public.permissions;
 CREATE POLICY "Admins can insert permissions" ON public.permissions FOR INSERT TO authenticated WITH CHECK (public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role));
 
 DROP POLICY IF EXISTS "permissions Admins can update permissions" ON public.permissions;
+DROP POLICY IF EXISTS "Admins can update permissions" ON public.permissions;
 CREATE POLICY "Admins can update permissions" ON public.permissions FOR UPDATE TO authenticated USING (public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role));
 
 DROP POLICY IF EXISTS "permissions Anyone authenticated can view permissions" ON public.permissions;
+DROP POLICY IF EXISTS "Anyone authenticated can view permissions" ON public.permissions;
 CREATE POLICY "Anyone authenticated can view permissions" ON public.permissions FOR SELECT TO authenticated USING ((( SELECT auth.uid() AS uid) IS NOT NULL));
 
 DROP POLICY IF EXISTS "pg_stat_statements_baseline Admins can view baselines" ON public.pg_stat_statements_baseline;
+DROP POLICY IF EXISTS "Admins can view baselines" ON public.pg_stat_statements_baseline;
 CREATE POLICY "Admins can view baselines" ON public.pg_stat_statements_baseline FOR SELECT TO authenticated USING (public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role));
 
 DROP POLICY IF EXISTS "pix_templates pix_templates_empresa_select" ON public.pix_templates;
@@ -6041,6 +6155,7 @@ DROP POLICY IF EXISTS pix_templates_tenant_rw ON public.pix_templates;
 CREATE POLICY pix_templates_tenant_rw ON public.pix_templates TO authenticated USING ((public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role) AND public.empresa_acessivel(empresa_id))) WITH CHECK ((public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role) AND public.empresa_acessivel(empresa_id)));
 
 DROP POLICY IF EXISTS "plano_contas Empresa-based access" ON public.plano_contas;
+DROP POLICY IF EXISTS "Empresa-based access" ON public.plano_contas;
 CREATE POLICY "Empresa-based access" ON public.plano_contas TO authenticated USING (((empresa_id IN ( SELECT user_empresas.empresa_id
    FROM public.user_empresas
   WHERE ((user_empresas.user_id = ( SELECT auth.uid() AS uid)) AND (user_empresas.ativo = true)))) OR (EXISTS ( SELECT 1
@@ -6074,12 +6189,15 @@ DROP POLICY IF EXISTS prejuizos_fiscais_tenant_rw ON public.prejuizos_fiscais;
 CREATE POLICY prejuizos_fiscais_tenant_rw ON public.prejuizos_fiscais TO authenticated USING ((public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role) AND public.empresa_acessivel(empresa_id))) WITH CHECK ((public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role) AND public.empresa_acessivel(empresa_id)));
 
 DROP POLICY IF EXISTS "profiles Admins can manage profiles" ON public.profiles;
+DROP POLICY IF EXISTS "Admins can manage profiles" ON public.profiles;
 CREATE POLICY "Admins can manage profiles" ON public.profiles TO authenticated USING (public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role)) WITH CHECK (public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role));
 
 DROP POLICY IF EXISTS "profiles Users can update own profile" ON public.profiles;
+DROP POLICY IF EXISTS "Users can update own profile" ON public.profiles;
 CREATE POLICY "Users can update own profile" ON public.profiles FOR UPDATE TO authenticated USING (((( SELECT auth.uid() AS uid) = id) OR (( SELECT auth.uid() AS uid) = user_id))) WITH CHECK ((((( SELECT auth.uid() AS uid) = id) OR (( SELECT auth.uid() AS uid) = user_id)) AND public.profile_sensitive_fields_unchanged(id, user_id, role, empresa_id)));
 
 DROP POLICY IF EXISTS "profiles Users can view own profile" ON public.profiles;
+DROP POLICY IF EXISTS "Users can view own profile" ON public.profiles;
 CREATE POLICY "Users can view own profile" ON public.profiles FOR SELECT TO authenticated USING (((( SELECT auth.uid() AS uid) = id) OR (( SELECT auth.uid() AS uid) = user_id) OR public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role)));
 
 DROP POLICY IF EXISTS "projecoes_reforma projecoes_reforma_acesso" ON public.projecoes_reforma;
@@ -6125,18 +6243,23 @@ DROP POLICY IF EXISTS push_subscriptions_owner ON public.push_subscriptions;
 CREATE POLICY push_subscriptions_owner ON public.push_subscriptions TO authenticated USING ((user_id = auth.uid())) WITH CHECK ((user_id = auth.uid()));
 
 DROP POLICY IF EXISTS "query_telemetry Admins can manage telemetry" ON public.query_telemetry;
+DROP POLICY IF EXISTS "Admins can manage telemetry" ON public.query_telemetry;
 CREATE POLICY "Admins can manage telemetry" ON public.query_telemetry TO authenticated USING (public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role)) WITH CHECK (public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role));
 
 DROP POLICY IF EXISTS "query_telemetry Managers can view telemetry" ON public.query_telemetry;
+DROP POLICY IF EXISTS "Managers can view telemetry" ON public.query_telemetry;
 CREATE POLICY "Managers can view telemetry" ON public.query_telemetry FOR SELECT TO authenticated USING (public.has_role(( SELECT auth.uid() AS uid), 'manager'::public.app_role));
 
 DROP POLICY IF EXISTS "query_telemetry System can insert telemetry" ON public.query_telemetry;
+DROP POLICY IF EXISTS "System can insert telemetry" ON public.query_telemetry;
 CREATE POLICY "System can insert telemetry" ON public.query_telemetry FOR INSERT TO authenticated WITH CHECK ((public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role) OR public.has_role(( SELECT auth.uid() AS uid), 'manager'::public.app_role) OR public.has_role(( SELECT auth.uid() AS uid), 'operator'::public.app_role)));
 
 DROP POLICY IF EXISTS "rate_limit_logs Admins can view rate limit logs" ON public.rate_limit_logs;
+DROP POLICY IF EXISTS "Admins can view rate limit logs" ON public.rate_limit_logs;
 CREATE POLICY "Admins can view rate limit logs" ON public.rate_limit_logs FOR SELECT TO authenticated USING ((public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role) OR public.has_role(( SELECT auth.uid() AS uid), 'manager'::public.app_role)));
 
 DROP POLICY IF EXISTS "rate_limit_logs Authenticated can insert rate limit logs" ON public.rate_limit_logs;
+DROP POLICY IF EXISTS "Authenticated can insert rate limit logs" ON public.rate_limit_logs;
 CREATE POLICY "Authenticated can insert rate limit logs" ON public.rate_limit_logs FOR INSERT TO authenticated WITH CHECK ((public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role) OR public.has_role(( SELECT auth.uid() AS uid), 'manager'::public.app_role) OR public.has_role(( SELECT auth.uid() AS uid), 'operator'::public.app_role) OR public.has_role(( SELECT auth.uid() AS uid), 'viewer'::public.app_role)));
 
 DROP POLICY IF EXISTS "recomendacoes_metas_ia recomendacoes_metas_ia_empresa_select" ON public.recomendacoes_metas_ia;
@@ -6150,6 +6273,7 @@ DROP POLICY IF EXISTS regime_cache_select ON public.regime_decision_cache;
 CREATE POLICY regime_cache_select ON public.regime_decision_cache FOR SELECT TO authenticated USING (public.empresa_acessivel(empresa_id));
 
 DROP POLICY IF EXISTS "regimes_especiais_empresa Access by empresa_id" ON public.regimes_especiais_empresa;
+DROP POLICY IF EXISTS "Access by empresa_id" ON public.regimes_especiais_empresa;
 CREATE POLICY "Access by empresa_id" ON public.regimes_especiais_empresa TO authenticated USING (((empresa_id IN ( SELECT user_empresas.empresa_id
    FROM public.user_empresas
   WHERE ((user_empresas.user_id = ( SELECT auth.uid() AS uid)) AND (user_empresas.ativo = true)))) OR (EXISTS ( SELECT 1
@@ -6169,6 +6293,7 @@ CREATE POLICY regimes_simulados_empresa_select ON public.regimes_simulados FOR S
   WHERE ((user_empresas.user_id = ( SELECT auth.uid() AS uid)) AND (user_empresas.ativo = true)))));
 
 DROP POLICY IF EXISTS "regimes_tributarios Empresa-based access" ON public.regimes_tributarios;
+DROP POLICY IF EXISTS "Empresa-based access" ON public.regimes_tributarios;
 CREATE POLICY "Empresa-based access" ON public.regimes_tributarios TO authenticated USING (((empresa_id IN ( SELECT user_empresas.empresa_id
    FROM public.user_empresas
   WHERE ((user_empresas.user_id = ( SELECT auth.uid() AS uid)) AND (user_empresas.ativo = true)))) OR (EXISTS ( SELECT 1
@@ -6176,6 +6301,7 @@ CREATE POLICY "Empresa-based access" ON public.regimes_tributarios TO authentica
   WHERE ((user_roles.user_id = ( SELECT auth.uid() AS uid)) AND (user_roles.role = 'admin'::public.app_role))))));
 
 DROP POLICY IF EXISTS "regras_conciliacao Empresa-based access" ON public.regras_conciliacao;
+DROP POLICY IF EXISTS "Empresa-based access" ON public.regras_conciliacao;
 CREATE POLICY "Empresa-based access" ON public.regras_conciliacao TO authenticated USING (((empresa_id IN ( SELECT user_empresas.empresa_id
    FROM public.user_empresas
   WHERE ((user_empresas.user_id = ( SELECT auth.uid() AS uid)) AND (user_empresas.ativo = true)))) OR (EXISTS ( SELECT 1
@@ -6191,6 +6317,7 @@ DROP POLICY IF EXISTS regras_contab_write ON public.regras_contabilizacao_automa
 CREATE POLICY regras_contab_write ON public.regras_contabilizacao_automatica TO authenticated USING ((public.empresa_acessivel(empresa_id) AND (public.has_role(auth.uid(), 'admin'::public.app_role) OR public.has_role(auth.uid(), 'financeiro'::public.app_role) OR public.has_role(auth.uid(), 'contador'::public.app_role)))) WITH CHECK ((public.empresa_acessivel(empresa_id) AND (public.has_role(auth.uid(), 'admin'::public.app_role) OR public.has_role(auth.uid(), 'financeiro'::public.app_role) OR public.has_role(auth.uid(), 'contador'::public.app_role))));
 
 DROP POLICY IF EXISTS "regras_duplicidade Empresa-based access" ON public.regras_duplicidade;
+DROP POLICY IF EXISTS "Empresa-based access" ON public.regras_duplicidade;
 CREATE POLICY "Empresa-based access" ON public.regras_duplicidade TO authenticated USING (((empresa_id IN ( SELECT user_empresas.empresa_id
    FROM public.user_empresas
   WHERE ((user_empresas.user_id = ( SELECT auth.uid() AS uid)) AND (user_empresas.ativo = true)))) OR (EXISTS ( SELECT 1
@@ -6198,6 +6325,7 @@ CREATE POLICY "Empresa-based access" ON public.regras_duplicidade TO authenticat
   WHERE ((user_roles.user_id = ( SELECT auth.uid() AS uid)) AND (user_roles.role = 'admin'::public.app_role))))));
 
 DROP POLICY IF EXISTS "regras_roteamento_financeiro Empresa-based access" ON public.regras_roteamento_financeiro;
+DROP POLICY IF EXISTS "Empresa-based access" ON public.regras_roteamento_financeiro;
 CREATE POLICY "Empresa-based access" ON public.regras_roteamento_financeiro TO authenticated USING (((empresa_id IN ( SELECT user_empresas.empresa_id
    FROM public.user_empresas
   WHERE ((user_empresas.user_id = ( SELECT auth.uid() AS uid)) AND (user_empresas.ativo = true)))) OR (EXISTS ( SELECT 1
@@ -6231,6 +6359,7 @@ CREATE POLICY regua_cobranca_etapas_tenant_write ON public.regua_cobranca_etapas
   WHERE ((r.id = regua_cobranca_etapas.regua_id) AND public.empresa_acessivel(r.empresa_id))))));
 
 DROP POLICY IF EXISTS "regua_cobranca_status Access by empresa_id" ON public.regua_cobranca_status;
+DROP POLICY IF EXISTS "Access by empresa_id" ON public.regua_cobranca_status;
 CREATE POLICY "Access by empresa_id" ON public.regua_cobranca_status TO authenticated USING (((empresa_id IN ( SELECT user_empresas.empresa_id
    FROM public.user_empresas
   WHERE ((user_empresas.user_id = ( SELECT auth.uid() AS uid)) AND (user_empresas.ativo = true)))) OR (EXISTS ( SELECT 1
@@ -6246,6 +6375,7 @@ DROP POLICY IF EXISTS rel_trib_agend_all ON public.relatorios_tributarios_agenda
 CREATE POLICY rel_trib_agend_all ON public.relatorios_tributarios_agendados TO authenticated USING (public.empresa_acessivel(empresa_id)) WITH CHECK (public.empresa_acessivel(empresa_id));
 
 DROP POLICY IF EXISTS "resumos_executivos_semanais Empresa-based access" ON public.resumos_executivos_semanais;
+DROP POLICY IF EXISTS "Empresa-based access" ON public.resumos_executivos_semanais;
 CREATE POLICY "Empresa-based access" ON public.resumos_executivos_semanais TO authenticated USING (((empresa_id IN ( SELECT user_empresas.empresa_id
    FROM public.user_empresas
   WHERE ((user_empresas.user_id = ( SELECT auth.uid() AS uid)) AND (user_empresas.ativo = true)))) OR (EXISTS ( SELECT 1
@@ -6257,6 +6387,7 @@ DROP POLICY IF EXISTS retencao_politicas_admin_select ON public.retencao_politic
 CREATE POLICY retencao_politicas_admin_select ON public.retencao_politicas FOR SELECT TO authenticated USING (public.has_role(auth.uid(), 'admin'::public.app_role));
 
 DROP POLICY IF EXISTS "retencoes_fonte Empresa-based access" ON public.retencoes_fonte;
+DROP POLICY IF EXISTS "Empresa-based access" ON public.retencoes_fonte;
 CREATE POLICY "Empresa-based access" ON public.retencoes_fonte TO authenticated USING (((empresa_id IN ( SELECT user_empresas.empresa_id
    FROM public.user_empresas
   WHERE ((user_empresas.user_id = ( SELECT auth.uid() AS uid)) AND (user_empresas.ativo = true)))) OR (EXISTS ( SELECT 1
@@ -6280,18 +6411,23 @@ DROP POLICY IF EXISTS risk_rules_tenant_update ON public.risk_rules;
 CREATE POLICY risk_rules_tenant_update ON public.risk_rules FOR UPDATE TO authenticated USING ((public.empresa_membro_ativo(empresa_id) AND (public.has_role(auth.uid(), 'admin'::public.app_role) OR public.has_role(auth.uid(), 'manager'::public.app_role) OR public.has_role(auth.uid(), 'operator'::public.app_role)))) WITH CHECK (public.empresa_membro_ativo(empresa_id));
 
 DROP POLICY IF EXISTS "role_permissions Admins can delete role permissions" ON public.role_permissions;
+DROP POLICY IF EXISTS "Admins can delete role permissions" ON public.role_permissions;
 CREATE POLICY "Admins can delete role permissions" ON public.role_permissions FOR DELETE TO authenticated USING (public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role));
 
 DROP POLICY IF EXISTS "role_permissions Admins can insert role permissions" ON public.role_permissions;
+DROP POLICY IF EXISTS "Admins can insert role permissions" ON public.role_permissions;
 CREATE POLICY "Admins can insert role permissions" ON public.role_permissions FOR INSERT TO authenticated WITH CHECK (public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role));
 
 DROP POLICY IF EXISTS "role_permissions Admins can manage role_permissions" ON public.role_permissions;
+DROP POLICY IF EXISTS "Admins can manage role_permissions" ON public.role_permissions;
 CREATE POLICY "Admins can manage role_permissions" ON public.role_permissions TO authenticated USING (public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role));
 
 DROP POLICY IF EXISTS "role_permissions Admins can update role permissions" ON public.role_permissions;
+DROP POLICY IF EXISTS "Admins can update role permissions" ON public.role_permissions;
 CREATE POLICY "Admins can update role permissions" ON public.role_permissions FOR UPDATE TO authenticated USING (public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role));
 
 DROP POLICY IF EXISTS "role_permissions Anyone authenticated can view role_permissions" ON public.role_permissions;
+DROP POLICY IF EXISTS "Anyone authenticated can view role_permissions" ON public.role_permissions;
 CREATE POLICY "Anyone authenticated can view role_permissions" ON public.role_permissions FOR SELECT TO authenticated USING ((( SELECT auth.uid() AS uid) IS NOT NULL));
 
 DROP POLICY IF EXISTS "rpc_observability_metrics admin_read_rpc_metrics" ON public.rpc_observability_metrics;
@@ -6299,15 +6435,19 @@ DROP POLICY IF EXISTS admin_read_rpc_metrics ON public.rpc_observability_metrics
 CREATE POLICY admin_read_rpc_metrics ON public.rpc_observability_metrics FOR SELECT TO authenticated USING (public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role));
 
 DROP POLICY IF EXISTS "runtime_error_logs Admins can delete error logs" ON public.runtime_error_logs;
+DROP POLICY IF EXISTS "Admins can delete error logs" ON public.runtime_error_logs;
 CREATE POLICY "Admins can delete error logs" ON public.runtime_error_logs FOR DELETE TO authenticated USING (public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role));
 
 DROP POLICY IF EXISTS "runtime_error_logs Admins can update error logs" ON public.runtime_error_logs;
+DROP POLICY IF EXISTS "Admins can update error logs" ON public.runtime_error_logs;
 CREATE POLICY "Admins can update error logs" ON public.runtime_error_logs FOR UPDATE TO authenticated USING ((public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role) OR public.has_role(( SELECT auth.uid() AS uid), 'manager'::public.app_role)));
 
 DROP POLICY IF EXISTS "runtime_error_logs Admins managers can view error logs" ON public.runtime_error_logs;
+DROP POLICY IF EXISTS "Admins managers can view error logs" ON public.runtime_error_logs;
 CREATE POLICY "Admins managers can view error logs" ON public.runtime_error_logs FOR SELECT TO authenticated USING ((public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role) OR public.has_role(( SELECT auth.uid() AS uid), 'manager'::public.app_role)));
 
 DROP POLICY IF EXISTS "runtime_error_logs Authenticated can insert error logs" ON public.runtime_error_logs;
+DROP POLICY IF EXISTS "Authenticated can insert error logs" ON public.runtime_error_logs;
 CREATE POLICY "Authenticated can insert error logs" ON public.runtime_error_logs FOR INSERT TO authenticated WITH CHECK ((( SELECT auth.uid() AS uid) IS NOT NULL));
 
 DROP POLICY IF EXISTS "saved_filter_subscriptions saved_filter_subscriptions_owner" ON public.saved_filter_subscriptions;
@@ -6333,6 +6473,7 @@ DROP POLICY IF EXISTS scim_checklist_own ON public.scim_setup_checklist;
 CREATE POLICY scim_checklist_own ON public.scim_setup_checklist TO authenticated USING ((user_id = auth.uid())) WITH CHECK ((user_id = auth.uid()));
 
 DROP POLICY IF EXISTS "scim_tokens Admins manage scim_tokens" ON public.scim_tokens;
+DROP POLICY IF EXISTS "Admins manage scim_tokens" ON public.scim_tokens;
 CREATE POLICY "Admins manage scim_tokens" ON public.scim_tokens TO authenticated USING ((EXISTS ( SELECT 1
    FROM public.user_roles
   WHERE ((user_roles.user_id = ( SELECT auth.uid() AS uid)) AND (user_roles.role = 'admin'::public.app_role)))));
@@ -6342,9 +6483,11 @@ DROP POLICY IF EXISTS security_alerts_admin_all ON public.security_alerts;
 CREATE POLICY security_alerts_admin_all ON public.security_alerts TO authenticated USING (public.has_role(auth.uid(), 'admin'::public.app_role)) WITH CHECK (public.has_role(auth.uid(), 'admin'::public.app_role));
 
 DROP POLICY IF EXISTS "security_audit_logs Authenticated users can insert security logs" ON public.security_audit_logs;
+DROP POLICY IF EXISTS "Authenticated users can insert security logs" ON public.security_audit_logs;
 CREATE POLICY "Authenticated users can insert security logs" ON public.security_audit_logs FOR INSERT TO authenticated WITH CHECK ((( SELECT auth.uid() AS uid) IS NOT NULL));
 
 DROP POLICY IF EXISTS "security_audit_logs Only admins can view security logs" ON public.security_audit_logs;
+DROP POLICY IF EXISTS "Only admins can view security logs" ON public.security_audit_logs;
 CREATE POLICY "Only admins can view security logs" ON public.security_audit_logs FOR SELECT TO authenticated USING (public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role));
 
 DROP POLICY IF EXISTS "security_settings sec_settings_admin_all" ON public.security_settings;
@@ -6356,9 +6499,11 @@ DROP POLICY IF EXISTS cursor_admin_read ON public.sefaz_dfe_cursor;
 CREATE POLICY cursor_admin_read ON public.sefaz_dfe_cursor FOR SELECT TO authenticated USING (public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role));
 
 DROP POLICY IF EXISTS "sessoes_conciliacao Owner manage sessoes" ON public.sessoes_conciliacao;
+DROP POLICY IF EXISTS "Owner manage sessoes" ON public.sessoes_conciliacao;
 CREATE POLICY "Owner manage sessoes" ON public.sessoes_conciliacao TO authenticated USING ((( SELECT auth.uid() AS uid) = user_id)) WITH CHECK ((( SELECT auth.uid() AS uid) = user_id));
 
 DROP POLICY IF EXISTS "sessoes_conciliacao Users can manage their own sessoes_conciliacao" ON public.sessoes_conciliacao;
+DROP POLICY IF EXISTS "Users can manage their own sessoes_conciliacao" ON public.sessoes_conciliacao;
 CREATE POLICY "Users can manage their own sessoes_conciliacao" ON public.sessoes_conciliacao TO authenticated USING ((( SELECT auth.uid() AS uid) = user_id)) WITH CHECK ((( SELECT auth.uid() AS uid) = user_id));
 
 DROP POLICY IF EXISTS "simulacao_tributos_detalhados sim_trib_acesso" ON public.simulacao_tributos_detalhados;
@@ -6378,9 +6523,11 @@ DROP POLICY IF EXISTS slo_metrics_admin_select ON public.slo_metrics_diarias;
 CREATE POLICY slo_metrics_admin_select ON public.slo_metrics_diarias FOR SELECT TO authenticated USING (public.has_role(auth.uid(), 'admin'::public.app_role));
 
 DROP POLICY IF EXISTS "slow_query_alerts Admins podem visualizar slow_query_alerts" ON public.slow_query_alerts;
+DROP POLICY IF EXISTS "Admins podem visualizar slow_query_alerts" ON public.slow_query_alerts;
 CREATE POLICY "Admins podem visualizar slow_query_alerts" ON public.slow_query_alerts FOR SELECT TO authenticated USING (public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role));
 
 DROP POLICY IF EXISTS "solicitacoes_aprovacao Owner manage aprovacoes" ON public.solicitacoes_aprovacao;
+DROP POLICY IF EXISTS "Owner manage aprovacoes" ON public.solicitacoes_aprovacao;
 CREATE POLICY "Owner manage aprovacoes" ON public.solicitacoes_aprovacao TO authenticated USING ((( SELECT auth.uid() AS uid) = user_id)) WITH CHECK ((( SELECT auth.uid() AS uid) = user_id));
 
 DROP POLICY IF EXISTS "solicitacoes_lgpd lgpd_owner_insert" ON public.solicitacoes_lgpd;
@@ -6432,9 +6579,11 @@ CREATE POLICY split_payment_empresa_update ON public.split_payment_transacoes FO
   WHERE ((user_empresas.user_id = ( SELECT auth.uid() AS uid)) AND (user_empresas.ativo = true)))));
 
 DROP POLICY IF EXISTS "sso_login_attempts Admins can view SSO login attempts" ON public.sso_login_attempts;
+DROP POLICY IF EXISTS "Admins can view SSO login attempts" ON public.sso_login_attempts;
 CREATE POLICY "Admins can view SSO login attempts" ON public.sso_login_attempts FOR SELECT TO authenticated USING (public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role));
 
 DROP POLICY IF EXISTS "sso_providers Admins manage sso providers" ON public.sso_providers;
+DROP POLICY IF EXISTS "Admins manage sso providers" ON public.sso_providers;
 CREATE POLICY "Admins manage sso providers" ON public.sso_providers TO authenticated USING (public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role)) WITH CHECK (public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role));
 
 DROP POLICY IF EXISTS "sso_role_mappings sso_role_mappings_admin" ON public.sso_role_mappings;
@@ -6472,6 +6621,7 @@ CREATE POLICY transacoes_bancarias_empresa_select ON public.transacoes_bancarias
           WHERE ((user_empresas.user_id = ( SELECT auth.uid() AS uid)) AND (user_empresas.ativo = true)))))));
 
 DROP POLICY IF EXISTS "transferencias Empresa-based access" ON public.transferencias;
+DROP POLICY IF EXISTS "Empresa-based access" ON public.transferencias;
 CREATE POLICY "Empresa-based access" ON public.transferencias TO authenticated USING (((empresa_id IN ( SELECT user_empresas.empresa_id
    FROM public.user_empresas
   WHERE ((user_empresas.user_id = ( SELECT auth.uid() AS uid)) AND (user_empresas.ativo = true)))) OR (EXISTS ( SELECT 1
@@ -6487,9 +6637,11 @@ DROP POLICY IF EXISTS ufs_write_admin ON public.ufs;
 CREATE POLICY ufs_write_admin ON public.ufs TO authenticated USING (public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role)) WITH CHECK (public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role));
 
 DROP POLICY IF EXISTS "user_action_audit Users can insert their own audit logs" ON public.user_action_audit;
+DROP POLICY IF EXISTS "Users can insert their own audit logs" ON public.user_action_audit;
 CREATE POLICY "Users can insert their own audit logs" ON public.user_action_audit FOR INSERT TO authenticated WITH CHECK ((( SELECT auth.uid() AS uid) = user_id));
 
 DROP POLICY IF EXISTS "user_action_audit Users can view their own audit logs" ON public.user_action_audit;
+DROP POLICY IF EXISTS "Users can view their own audit logs" ON public.user_action_audit;
 CREATE POLICY "Users can view their own audit logs" ON public.user_action_audit FOR SELECT TO authenticated USING ((( SELECT auth.uid() AS uid) = user_id));
 
 DROP POLICY IF EXISTS "user_active_filters user_active_filters_owner" ON public.user_active_filters;
@@ -6497,90 +6649,119 @@ DROP POLICY IF EXISTS user_active_filters_owner ON public.user_active_filters;
 CREATE POLICY user_active_filters_owner ON public.user_active_filters TO authenticated USING ((user_id = auth.uid())) WITH CHECK ((user_id = auth.uid()));
 
 DROP POLICY IF EXISTS "user_anomalia_preferences Users can manage their own preferences" ON public.user_anomalia_preferences;
+DROP POLICY IF EXISTS "Users can manage their own preferences" ON public.user_anomalia_preferences;
 CREATE POLICY "Users can manage their own preferences" ON public.user_anomalia_preferences TO authenticated USING ((( SELECT auth.uid() AS uid) = user_id)) WITH CHECK ((( SELECT auth.uid() AS uid) = user_id));
 
 DROP POLICY IF EXISTS "user_demonstrativo_preferences Users can manage their own preferences" ON public.user_demonstrativo_preferences;
+DROP POLICY IF EXISTS "Users can manage their own preferences" ON public.user_demonstrativo_preferences;
 CREATE POLICY "Users can manage their own preferences" ON public.user_demonstrativo_preferences TO authenticated USING ((( SELECT auth.uid() AS uid) = user_id)) WITH CHECK ((( SELECT auth.uid() AS uid) = user_id));
 
 DROP POLICY IF EXISTS "user_devices Users can delete their devices" ON public.user_devices;
+DROP POLICY IF EXISTS "Users can delete their devices" ON public.user_devices;
 CREATE POLICY "Users can delete their devices" ON public.user_devices FOR DELETE TO authenticated USING (((( SELECT auth.uid() AS uid) = user_id) OR public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role)));
 
 DROP POLICY IF EXISTS "user_devices Users can insert their devices" ON public.user_devices;
+DROP POLICY IF EXISTS "Users can insert their devices" ON public.user_devices;
 CREATE POLICY "Users can insert their devices" ON public.user_devices FOR INSERT TO authenticated WITH CHECK ((( SELECT auth.uid() AS uid) = user_id));
 
 DROP POLICY IF EXISTS "user_devices Users can manage own devices" ON public.user_devices;
+DROP POLICY IF EXISTS "Users can manage own devices" ON public.user_devices;
 CREATE POLICY "Users can manage own devices" ON public.user_devices TO authenticated USING ((( SELECT auth.uid() AS uid) = user_id)) WITH CHECK ((( SELECT auth.uid() AS uid) = user_id));
 
 DROP POLICY IF EXISTS "user_devices Users can update their devices" ON public.user_devices;
+DROP POLICY IF EXISTS "Users can update their devices" ON public.user_devices;
 CREATE POLICY "Users can update their devices" ON public.user_devices FOR UPDATE TO authenticated USING (((( SELECT auth.uid() AS uid) = user_id) OR public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role)));
 
 DROP POLICY IF EXISTS "user_devices Users can view own devices" ON public.user_devices;
+DROP POLICY IF EXISTS "Users can view own devices" ON public.user_devices;
 CREATE POLICY "Users can view own devices" ON public.user_devices FOR SELECT TO authenticated USING ((( SELECT auth.uid() AS uid) = user_id));
 
 DROP POLICY IF EXISTS "user_digest_preferences Admins visualizam preferencias de digest" ON public.user_digest_preferences;
+DROP POLICY IF EXISTS "Admins visualizam preferencias de digest" ON public.user_digest_preferences;
 CREATE POLICY "Admins visualizam preferencias de digest" ON public.user_digest_preferences FOR SELECT TO authenticated USING (public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role));
 
 DROP POLICY IF EXISTS "user_digest_preferences Usuarios gerenciam suas preferencias de digest" ON public.user_digest_preferences;
+DROP POLICY IF EXISTS "Usuarios gerenciam suas preferencias de digest" ON public.user_digest_preferences;
 CREATE POLICY "Usuarios gerenciam suas preferencias de digest" ON public.user_digest_preferences TO authenticated USING ((( SELECT auth.uid() AS uid) = user_id)) WITH CHECK ((( SELECT auth.uid() AS uid) = user_id));
 
 DROP POLICY IF EXISTS "user_empresas Admins manage user_empresas" ON public.user_empresas;
+DROP POLICY IF EXISTS "Admins manage user_empresas" ON public.user_empresas;
 CREATE POLICY "Admins manage user_empresas" ON public.user_empresas TO authenticated USING (public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role)) WITH CHECK (public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role));
 
 DROP POLICY IF EXISTS "user_empresas Users view own empresa links" ON public.user_empresas;
+DROP POLICY IF EXISTS "Users view own empresa links" ON public.user_empresas;
 CREATE POLICY "Users view own empresa links" ON public.user_empresas FOR SELECT TO authenticated USING (((( SELECT auth.uid() AS uid) = user_id) OR public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role)));
 
 DROP POLICY IF EXISTS "user_filter_presets Users can manage their presets" ON public.user_filter_presets;
+DROP POLICY IF EXISTS "Users can manage their presets" ON public.user_filter_presets;
 CREATE POLICY "Users can manage their presets" ON public.user_filter_presets TO authenticated USING ((( SELECT auth.uid() AS uid) = user_id)) WITH CHECK ((( SELECT auth.uid() AS uid) = user_id));
 
 DROP POLICY IF EXISTS "user_onboarding_progress Users can insert their own onboarding progress" ON public.user_onboarding_progress;
+DROP POLICY IF EXISTS "Users can insert their own onboarding progress" ON public.user_onboarding_progress;
 CREATE POLICY "Users can insert their own onboarding progress" ON public.user_onboarding_progress FOR INSERT TO authenticated WITH CHECK ((( SELECT auth.uid() AS uid) = user_id));
 
 DROP POLICY IF EXISTS "user_onboarding_progress Users can update their own onboarding progress" ON public.user_onboarding_progress;
+DROP POLICY IF EXISTS "Users can update their own onboarding progress" ON public.user_onboarding_progress;
 CREATE POLICY "Users can update their own onboarding progress" ON public.user_onboarding_progress FOR UPDATE TO authenticated USING ((( SELECT auth.uid() AS uid) = user_id)) WITH CHECK ((( SELECT auth.uid() AS uid) = user_id));
 
 DROP POLICY IF EXISTS "user_onboarding_progress Users can view their own onboarding progress" ON public.user_onboarding_progress;
+DROP POLICY IF EXISTS "Users can view their own onboarding progress" ON public.user_onboarding_progress;
 CREATE POLICY "Users can view their own onboarding progress" ON public.user_onboarding_progress FOR SELECT TO authenticated USING ((( SELECT auth.uid() AS uid) = user_id));
 
 DROP POLICY IF EXISTS "user_passkeys Users can delete own passkeys" ON public.user_passkeys;
+DROP POLICY IF EXISTS "Users can delete own passkeys" ON public.user_passkeys;
 CREATE POLICY "Users can delete own passkeys" ON public.user_passkeys FOR DELETE TO authenticated USING ((( SELECT auth.uid() AS uid) = user_id));
 
 DROP POLICY IF EXISTS "user_passkeys Users can delete their passkeys" ON public.user_passkeys;
+DROP POLICY IF EXISTS "Users can delete their passkeys" ON public.user_passkeys;
 CREATE POLICY "Users can delete their passkeys" ON public.user_passkeys FOR DELETE TO authenticated USING (((( SELECT auth.uid() AS uid) = user_id) OR public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role)));
 
 DROP POLICY IF EXISTS "user_passkeys Users can insert own passkeys" ON public.user_passkeys;
+DROP POLICY IF EXISTS "Users can insert own passkeys" ON public.user_passkeys;
 CREATE POLICY "Users can insert own passkeys" ON public.user_passkeys FOR INSERT TO authenticated WITH CHECK ((( SELECT auth.uid() AS uid) = user_id));
 
 DROP POLICY IF EXISTS "user_passkeys Users can insert their passkeys" ON public.user_passkeys;
+DROP POLICY IF EXISTS "Users can insert their passkeys" ON public.user_passkeys;
 CREATE POLICY "Users can insert their passkeys" ON public.user_passkeys FOR INSERT TO authenticated WITH CHECK ((( SELECT auth.uid() AS uid) = user_id));
 
 DROP POLICY IF EXISTS "user_passkeys Users can update own passkeys" ON public.user_passkeys;
+DROP POLICY IF EXISTS "Users can update own passkeys" ON public.user_passkeys;
 CREATE POLICY "Users can update own passkeys" ON public.user_passkeys FOR UPDATE TO authenticated USING ((( SELECT auth.uid() AS uid) = user_id)) WITH CHECK ((( SELECT auth.uid() AS uid) = user_id));
 
 DROP POLICY IF EXISTS "user_passkeys Users can update their passkeys" ON public.user_passkeys;
+DROP POLICY IF EXISTS "Users can update their passkeys" ON public.user_passkeys;
 CREATE POLICY "Users can update their passkeys" ON public.user_passkeys FOR UPDATE TO authenticated USING ((( SELECT auth.uid() AS uid) = user_id));
 
 DROP POLICY IF EXISTS "user_passkeys Users can view own passkeys" ON public.user_passkeys;
+DROP POLICY IF EXISTS "Users can view own passkeys" ON public.user_passkeys;
 CREATE POLICY "Users can view own passkeys" ON public.user_passkeys FOR SELECT TO authenticated USING ((( SELECT auth.uid() AS uid) = user_id));
 
 DROP POLICY IF EXISTS "user_roles Admins can delete user roles" ON public.user_roles;
+DROP POLICY IF EXISTS "Admins can delete user roles" ON public.user_roles;
 CREATE POLICY "Admins can delete user roles" ON public.user_roles FOR DELETE TO authenticated USING (public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role));
 
 DROP POLICY IF EXISTS "user_roles Admins can insert user roles" ON public.user_roles;
+DROP POLICY IF EXISTS "Admins can insert user roles" ON public.user_roles;
 CREATE POLICY "Admins can insert user roles" ON public.user_roles FOR INSERT TO authenticated WITH CHECK (public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role));
 
 DROP POLICY IF EXISTS "user_roles Admins can manage all roles" ON public.user_roles;
+DROP POLICY IF EXISTS "Admins can manage all roles" ON public.user_roles;
 CREATE POLICY "Admins can manage all roles" ON public.user_roles TO authenticated USING (public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role)) WITH CHECK (public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role));
 
 DROP POLICY IF EXISTS "user_roles Admins can update user roles" ON public.user_roles;
+DROP POLICY IF EXISTS "Admins can update user roles" ON public.user_roles;
 CREATE POLICY "Admins can update user roles" ON public.user_roles FOR UPDATE TO authenticated USING (public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role));
 
 DROP POLICY IF EXISTS "user_roles Users can view own roles" ON public.user_roles;
+DROP POLICY IF EXISTS "Users can view own roles" ON public.user_roles;
 CREATE POLICY "Users can view own roles" ON public.user_roles FOR SELECT TO authenticated USING (((( SELECT auth.uid() AS uid) = user_id) OR public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role)));
 
 DROP POLICY IF EXISTS "user_sessions Users see own sessions" ON public.user_sessions;
+DROP POLICY IF EXISTS "Users see own sessions" ON public.user_sessions;
 CREATE POLICY "Users see own sessions" ON public.user_sessions FOR SELECT TO authenticated USING ((( SELECT auth.uid() AS uid) = user_id));
 
 DROP POLICY IF EXISTS "vendedores Empresa-based access" ON public.vendedores;
+DROP POLICY IF EXISTS "Empresa-based access" ON public.vendedores;
 CREATE POLICY "Empresa-based access" ON public.vendedores TO authenticated USING (((empresa_id IN ( SELECT user_empresas.empresa_id
    FROM public.user_empresas
   WHERE ((user_empresas.user_id = ( SELECT auth.uid() AS uid)) AND (user_empresas.ativo = true)))) OR (EXISTS ( SELECT 1
@@ -6588,6 +6769,7 @@ CREATE POLICY "Empresa-based access" ON public.vendedores TO authenticated USING
   WHERE ((user_roles.user_id = ( SELECT auth.uid() AS uid)) AND (user_roles.role = 'admin'::public.app_role))))));
 
 DROP POLICY IF EXISTS "verificacoes_conformidade Access by empresa_id" ON public.verificacoes_conformidade;
+DROP POLICY IF EXISTS "Access by empresa_id" ON public.verificacoes_conformidade;
 CREATE POLICY "Access by empresa_id" ON public.verificacoes_conformidade TO authenticated USING (((empresa_id IN ( SELECT user_empresas.empresa_id
    FROM public.user_empresas
   WHERE ((user_empresas.user_id = ( SELECT auth.uid() AS uid)) AND (user_empresas.ativo = true)))) OR (EXISTS ( SELECT 1
@@ -6595,56 +6777,73 @@ CREATE POLICY "Access by empresa_id" ON public.verificacoes_conformidade TO auth
   WHERE ((user_roles.user_id = ( SELECT auth.uid() AS uid)) AND (user_roles.role = 'admin'::public.app_role))))));
 
 DROP POLICY IF EXISTS "webauthn_challenges Authenticated can create challenges" ON public.webauthn_challenges;
+DROP POLICY IF EXISTS "Authenticated can create challenges" ON public.webauthn_challenges;
 CREATE POLICY "Authenticated can create challenges" ON public.webauthn_challenges FOR INSERT TO authenticated WITH CHECK ((( SELECT auth.uid() AS uid) = user_id));
 
 DROP POLICY IF EXISTS "webauthn_challenges Authenticated can read own challenges" ON public.webauthn_challenges;
+DROP POLICY IF EXISTS "Authenticated can read own challenges" ON public.webauthn_challenges;
 CREATE POLICY "Authenticated can read own challenges" ON public.webauthn_challenges FOR SELECT TO authenticated USING (((( SELECT auth.uid() AS uid) = user_id) OR public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role)));
 
 DROP POLICY IF EXISTS "webauthn_challenges Users can delete their challenges" ON public.webauthn_challenges;
+DROP POLICY IF EXISTS "Users can delete their challenges" ON public.webauthn_challenges;
 CREATE POLICY "Users can delete their challenges" ON public.webauthn_challenges FOR DELETE TO authenticated USING (((( SELECT auth.uid() AS uid) = user_id) OR public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role)));
 
 DROP POLICY IF EXISTS "webauthn_challenges Users can insert their challenges" ON public.webauthn_challenges;
+DROP POLICY IF EXISTS "Users can insert their challenges" ON public.webauthn_challenges;
 CREATE POLICY "Users can insert their challenges" ON public.webauthn_challenges FOR INSERT TO authenticated WITH CHECK ((( SELECT auth.uid() AS uid) = user_id));
 
 DROP POLICY IF EXISTS "webauthn_challenges Users can update their challenges" ON public.webauthn_challenges;
+DROP POLICY IF EXISTS "Users can update their challenges" ON public.webauthn_challenges;
 CREATE POLICY "Users can update their challenges" ON public.webauthn_challenges FOR UPDATE TO authenticated USING ((( SELECT auth.uid() AS uid) = user_id));
 
 DROP POLICY IF EXISTS "webauthn_credentials users manage own webauthn" ON public.webauthn_credentials;
+DROP POLICY IF EXISTS "users manage own webauthn" ON public.webauthn_credentials;
 CREATE POLICY "users manage own webauthn" ON public.webauthn_credentials TO authenticated USING ((( SELECT auth.uid() AS uid) = user_id)) WITH CHECK ((( SELECT auth.uid() AS uid) = user_id));
 
 DROP POLICY IF EXISTS "webhook_dlq Admins podem atualizar DLQ" ON public.webhook_dlq;
+DROP POLICY IF EXISTS "Admins podem atualizar DLQ" ON public.webhook_dlq;
 CREATE POLICY "Admins podem atualizar DLQ" ON public.webhook_dlq FOR UPDATE TO authenticated USING (public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role)) WITH CHECK (public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role));
 
 DROP POLICY IF EXISTS "webhook_dlq Admins podem visualizar DLQ" ON public.webhook_dlq;
+DROP POLICY IF EXISTS "Admins podem visualizar DLQ" ON public.webhook_dlq;
 CREATE POLICY "Admins podem visualizar DLQ" ON public.webhook_dlq FOR SELECT TO authenticated USING (public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role));
 
 DROP POLICY IF EXISTS "webhook_events Admins can delete events" ON public.webhook_events;
+DROP POLICY IF EXISTS "Admins can delete events" ON public.webhook_events;
 CREATE POLICY "Admins can delete events" ON public.webhook_events FOR DELETE TO authenticated USING (public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role));
 
 DROP POLICY IF EXISTS "webhook_events Authorized roles can view webhook events" ON public.webhook_events;
+DROP POLICY IF EXISTS "Authorized roles can view webhook events" ON public.webhook_events;
 CREATE POLICY "Authorized roles can view webhook events" ON public.webhook_events FOR SELECT TO authenticated USING ((public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role) OR public.has_role(( SELECT auth.uid() AS uid), 'manager'::public.app_role)));
 
 DROP POLICY IF EXISTS "webhook_events Authorized roles can view webhooks" ON public.webhook_events;
+DROP POLICY IF EXISTS "Authorized roles can view webhooks" ON public.webhook_events;
 CREATE POLICY "Authorized roles can view webhooks" ON public.webhook_events FOR SELECT TO authenticated USING ((public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role) OR public.has_role(( SELECT auth.uid() AS uid), 'manager'::public.app_role)));
 
 DROP POLICY IF EXISTS "webhook_events Managers can update events" ON public.webhook_events;
+DROP POLICY IF EXISTS "Managers can update events" ON public.webhook_events;
 CREATE POLICY "Managers can update events" ON public.webhook_events FOR UPDATE TO authenticated USING ((public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role) OR public.has_role(( SELECT auth.uid() AS uid), 'manager'::public.app_role)));
 
 DROP POLICY IF EXISTS "webhook_events Operators can insert events" ON public.webhook_events;
+DROP POLICY IF EXISTS "Operators can insert events" ON public.webhook_events;
 CREATE POLICY "Operators can insert events" ON public.webhook_events FOR INSERT TO authenticated WITH CHECK ((public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role) OR public.has_role(( SELECT auth.uid() AS uid), 'manager'::public.app_role) OR public.has_role(( SELECT auth.uid() AS uid), 'operator'::public.app_role)));
 
 DROP POLICY IF EXISTS "webhook_events Viewers can view webhook events" ON public.webhook_events;
+DROP POLICY IF EXISTS "Viewers can view webhook events" ON public.webhook_events;
 CREATE POLICY "Viewers can view webhook events" ON public.webhook_events FOR SELECT TO authenticated USING (public.has_role(( SELECT auth.uid() AS uid), 'viewer'::public.app_role));
 
 DROP POLICY IF EXISTS "webhook_simulation_results Users can view simulation results" ON public.webhook_simulation_results;
+DROP POLICY IF EXISTS "Users can view simulation results" ON public.webhook_simulation_results;
 CREATE POLICY "Users can view simulation results" ON public.webhook_simulation_results FOR SELECT TO authenticated USING ((EXISTS ( SELECT 1
    FROM public.webhook_simulation_runs r
   WHERE ((r.id = webhook_simulation_results.run_id) AND (r.created_by = ( SELECT auth.uid() AS uid))))));
 
 DROP POLICY IF EXISTS "webhook_simulation_runs Users can insert simulation runs" ON public.webhook_simulation_runs;
+DROP POLICY IF EXISTS "Users can insert simulation runs" ON public.webhook_simulation_runs;
 CREATE POLICY "Users can insert simulation runs" ON public.webhook_simulation_runs FOR INSERT TO authenticated WITH CHECK ((( SELECT auth.uid() AS uid) = created_by));
 
 DROP POLICY IF EXISTS "webhook_simulation_runs Users can view simulation runs" ON public.webhook_simulation_runs;
+DROP POLICY IF EXISTS "Users can view simulation runs" ON public.webhook_simulation_runs;
 CREATE POLICY "Users can view simulation runs" ON public.webhook_simulation_runs FOR SELECT TO authenticated USING ((( SELECT auth.uid() AS uid) = created_by));
 
 DROP POLICY IF EXISTS "webhooks_log webhooks_log_admin_insert" ON public.webhooks_log;
@@ -6656,6 +6855,7 @@ DROP POLICY IF EXISTS webhooks_log_admin_select ON public.webhooks_log;
 CREATE POLICY webhooks_log_admin_select ON public.webhooks_log FOR SELECT TO authenticated USING (public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role));
 
 DROP POLICY IF EXISTS "whatsapp_conversas Empresa-based access" ON public.whatsapp_conversas;
+DROP POLICY IF EXISTS "Empresa-based access" ON public.whatsapp_conversas;
 CREATE POLICY "Empresa-based access" ON public.whatsapp_conversas TO authenticated USING (((empresa_id IN ( SELECT user_empresas.empresa_id
    FROM public.user_empresas
   WHERE ((user_empresas.user_id = ( SELECT auth.uid() AS uid)) AND (user_empresas.ativo = true)))) OR (EXISTS ( SELECT 1
