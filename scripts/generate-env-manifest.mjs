@@ -44,6 +44,9 @@ for (const dir of readdirSync(funcsDir)) {
           if (!e.name.endsWith('.ts') || e.name.endsWith('_test.ts') || e.name.endsWith('.test.ts')) continue;
           const t = readFileSync(full, 'utf8');
           for (const m of t.matchAll(/Deno\.env\.get\(['"]([A-Z0-9_]+)['"]\)/g)) edgeSet.add(m[1]);
+          // deps.getEnv('X') — indireção dos handlers testáveis (n8n-callback,
+          // enviar-alerta-email, alertas): mesma leitura de env por outro nome.
+          for (const m of t.matchAll(/getEnv\(['"]([A-Z0-9_]+)['"]\)/g)) edgeSet.add(m[1]);
         }
       }
     } catch { /* _shared ausente */ }
@@ -52,8 +55,15 @@ for (const dir of readdirSync(funcsDir)) {
   try {
     const t = readFileSync(`${funcsDir}/${dir}/index.ts`, 'utf8');
     for (const m of t.matchAll(/Deno\.env\.get\(['"]([A-Z0-9_]+)['"]\)/g)) edgeSet.add(m[1]);
+          // deps.getEnv('X') — indireção dos handlers testáveis (n8n-callback,
+          // enviar-alerta-email, alertas): mesma leitura de env por outro nome.
+          for (const m of t.matchAll(/getEnv\(['"]([A-Z0-9_]+)['"]\)/g)) edgeSet.add(m[1]);
   } catch { /* pasta sem index.ts */ }
 }
+// Lidos por template `${provider}_WEBHOOK_SECRET` em _shared/webhook-auth.ts
+// — nenhum regex textual os enxerga, então são declarados aqui.
+for (const prov of ['ASAAS','BLING','BITRIX24','WHATSAPP']) edgeSet.add(`${prov}_WEBHOOK_SECRET`);
+
 const autoProvided = new Set([
   'SUPABASE_URL','SUPABASE_ANON_KEY','SUPABASE_SERVICE_ROLE_KEY',
   'SUPABASE_DB_URL','SUPABASE_JWKS','SUPABASE_PUBLISHABLE_KEYS','SUPABASE_SECRET_KEYS',
@@ -67,6 +77,7 @@ const opcionais = new Set([
   'NFE_CERT_MASTER_KEY_PREV',
   'SUPABASE_FUNCTION_NAME',
   'CONTADOR_INVITE_SECRET',
+  'DENO_TESTING',
   'EDGE_SENTRY_DSN',
   'SENTRY_DSN',
 ]);
