@@ -8,6 +8,7 @@ import { corsHeadersPara } from '../_shared/cors.ts';
 
 import { getRequestId } from '../_shared/correlation.ts';
 import { withEdgeObservability } from '../_shared/edge-observability.ts';
+import { respostaIntegracaoDesativada } from '../_shared/resilience.ts';
 const _BxTribSchema = z.object({
   empresaId: z.string().uuid(),
   signedUrl: z.string().url(),
@@ -121,6 +122,11 @@ Deno.serve(
           headers: { ...corsHeaders, 'Content-Type': 'application/json' },
         });
       }
+
+      // Depois da autorização por empresa — um usuário sem vínculo recebe 403 e
+      // não o 503 que vazaria a configuração interna do kill-switch.
+      const inativa = respostaIntegracaoDesativada('bitrix24', corsHeaders);
+      if (inativa) return inativa;
 
       const titulo = `Recomendação Tributária — ${body.empresaNome} — ${body.periodo}`;
       const economiaTxt =

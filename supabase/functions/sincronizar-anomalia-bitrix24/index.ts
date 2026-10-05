@@ -5,6 +5,7 @@ import { validateContract } from '../_shared/contract-validator.ts';
 import { z } from 'https://deno.land/x/zod@v3.22.4/mod.ts';
 import { corsHeadersPara } from '../_shared/cors.ts';
 import { withEdgeObservability } from '../_shared/edge-observability.ts';
+import { respostaIntegracaoDesativada } from '../_shared/resilience.ts';
 
 const _SyncAnomSchema = z
   .object({
@@ -111,6 +112,9 @@ Deno.serve(
           headers: { ...corsHeaders, 'Content-Type': 'application/json' },
         });
       }
+
+      const inativa = respostaIntegracaoDesativada('bitrix24', corsHeaders);
+      if (inativa) return inativa;
 
       const _raw = await req.json();
       const _v = await validateContract(_SyncAnomSchema, _raw);

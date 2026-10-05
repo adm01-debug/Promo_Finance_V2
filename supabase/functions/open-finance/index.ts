@@ -7,6 +7,7 @@ import { corsHeadersPara } from '../_shared/cors.ts';
 import { createLogger } from '../_shared/observability.ts';
 import { mensagemErro, contextoErro } from '../_shared/erros.ts';
 import { withEdgeObservability } from '../_shared/edge-observability.ts';
+import { respostaIntegracaoDesativada } from '../_shared/resilience.ts';
 const log = createLogger('open-finance');
 
 const _OFSchema = z.object({
@@ -73,6 +74,14 @@ serve(
         const _v = await validateContract(_OFSchema, _raw);
         if (!_v.success) return _v.response;
         const { action, params } = _v.data as unknown as OpenFinanceRequest;
+
+        // Kill-switch depois de auth+schema para as ações sem recurso de empresa:
+        // import_transactions tem vínculo próprio (conta bancária) e checa lá dentro,
+        // senão um usuário sem escopo sobre a conta sondaria o estado do circuito.
+        if (action !== 'import_transactions') {
+          const inativa = respostaIntegracaoDesativada('open_finance', corsHeaders);
+          if (inativa) return inativa;
+        }
         log.info(`[open-finance] Action: ${action}, User: ${user.id}`);
 
         let result;
@@ -127,6 +136,9 @@ serve(
             }
             const vinculo = await exigirVinculoEmpresa(user.id, contaBancariaAlvo.empresa_id, req);
             if (!vinculo.ok) return vinculo.resposta;
+
+            const inativaImport = respostaIntegracaoDesativada('open_finance', corsHeaders);
+            if (inativaImport) return inativaImport;
 
             result = await importTransactionsToSystem(
               supabase,

@@ -9,6 +9,7 @@ import { corsHeadersPara } from '../_shared/cors.ts';
 
 import { getRequestId } from '../_shared/correlation.ts';
 import { withEdgeObservability } from '../_shared/edge-observability.ts';
+import { respostaIntegracaoDesativada } from '../_shared/resilience.ts';
 interface ReqBody {
   empresaId: string;
   empresaNome: string;
@@ -86,6 +87,9 @@ Deno.serve(
           headers: { ...corsHeaders, 'Content-Type': 'application/json' },
         });
       }
+
+      const inativa = respostaIntegracaoDesativada('bitrix24', corsHeaders);
+      if (inativa) return inativa;
 
       const body: ReqBody = await req.json();
       const __contract = validatePayload(

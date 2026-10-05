@@ -5,6 +5,7 @@ import { corsHeadersPara } from '../_shared/cors.ts';
 import { createLogger } from '../_shared/observability.ts';
 import { mensagemErro, contextoErro } from '../_shared/erros.ts';
 import { withEdgeObservability } from '../_shared/edge-observability.ts';
+import { respostaIntegracaoDesativada } from '../_shared/resilience.ts';
 const log = createLogger('bitrix24-sync');
 
 interface BitrixResponse {
@@ -818,6 +819,10 @@ serve(
         if (userError || !user) {
           throw new Error('Invalid authentication token');
         }
+
+        // Depois da autenticação — request não autenticada recebe erro de auth e não o 503 que vazaria a config do kill-switch.
+        const inativa = respostaIntegracaoDesativada('bitrix24', corsHeaders);
+        if (inativa) return inativa;
 
         const rawBody = await req.json();
         const validation = validatePayload(Bitrix24SyncSchema, rawBody, 'bitrix24-sync');

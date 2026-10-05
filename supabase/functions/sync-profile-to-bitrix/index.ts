@@ -5,6 +5,7 @@ import { corsHeaders, corsHeadersPara } from '../_shared/cors.ts';
 import { createLogger } from '../_shared/observability.ts';
 import { mensagemErro, contextoErro } from '../_shared/erros.ts';
 import { withEdgeObservability } from '../_shared/edge-observability.ts';
+import { respostaIntegracaoDesativada } from '../_shared/resilience.ts';
 const log = createLogger('sync-profile-to-bitrix');
 
 const _SyncProfileSchema = z
@@ -138,6 +139,10 @@ Deno.serve(
       const { data: userData, error: userErr } = await userClient.auth.getUser();
       if (userErr || !userData?.user) return res({ error: 'unauthorized' }, 401);
       const user = userData.user;
+
+      // Depois da autenticação — request não autenticada recebe 401 e não o 503 que vazaria a config do kill-switch.
+      const inativa = respostaIntegracaoDesativada('bitrix24', corsHeaders);
+      if (inativa) return inativa;
 
       // Body
       let body: SyncBody;
