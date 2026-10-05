@@ -51,14 +51,26 @@ Deno.serve(async (req) => {
 
     const SERVICE = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
     const SUPABASE_URL = Deno.env.get('SUPABASE_URL')!;
-    const JWT_SECRET =
-      Deno.env.get('CONTADOR_INVITE_SECRET') ?? Deno.env.get('SUPABASE_JWT_SECRET') ?? SERVICE;
+    // Candidatas não-vazias, da mais específica à mais genérica:
+    // CONTADOR_INVITE_SECRET (rotacionável) → JWT secret → service role
+    // (legado). Aceitar a primeira que validar mantém os convites
+    // emitidos antes do provisionamento/rotação válidos na janela.
+    const chaves = [
+      Deno.env.get('CONTADOR_INVITE_SECRET'),
+      Deno.env.get('SUPABASE_JWT_SECRET'),
+      SERVICE,
+    ].filter((v): v is string => typeof v === 'string' && v.length > 0);
 
-    let payload: Record<string, unknown>;
-    try {
-      const key = await importHmacKey(JWT_SECRET);
-      payload = await verifyJwt(token, key);
-    } catch {
+    let payload: Record<string, unknown> | null = null;
+    for (const segredo of chaves) {
+      try {
+        payload = await verifyJwt(token, await importHmacKey(segredo));
+        break;
+      } catch {
+        // tenta a próxima candidata
+      }
+    }
+    if (!payload) {
       log.warn('jwt_invalid');
       return res({ error: 'Token inválido ou expirado' }, 401);
     }

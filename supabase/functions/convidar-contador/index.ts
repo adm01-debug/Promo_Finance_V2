@@ -55,10 +55,13 @@ Deno.serve(async (req) => {
     const ANON = Deno.env.get('SUPABASE_ANON_KEY')!;
     const SERVICE = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
     // SUPABASE_* não pode ser cadastrado como secret custom em edge fns —
-    // CONTADOR_INVITE_SECRET é a chave dedicada (rotacionável); o fallback
-    // para a service role só cobre instalações antigas.
+    // CONTADOR_INVITE_SECRET é a chave dedicada (rotacionável). A primeira
+    // candidata NÃO-VAZIA assina: um secret cadastrado vazio não pode
+    // sequestrar a cadeia de fallback.
     const JWT_SECRET =
-      Deno.env.get('CONTADOR_INVITE_SECRET') ?? Deno.env.get('SUPABASE_JWT_SECRET') ?? SERVICE;
+      [Deno.env.get('CONTADOR_INVITE_SECRET'), Deno.env.get('SUPABASE_JWT_SECRET'), SERVICE].find(
+        (v): v is string => typeof v === 'string' && v.length > 0
+      ) ?? SERVICE;
 
     const supaUser = createClient(SUPABASE_URL, ANON, {
       global: { headers: { Authorization: authHeader } },
