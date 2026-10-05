@@ -62,6 +62,7 @@ const autoProvided = new Set([
 const opcionais = new Set([
   'ALLOWED_ORIGINS',
   'EDGE_FUNCTION_NAME',
+  'INTEGRACOES_DESATIVADAS',
   'MFA_ADMIN_ENFORCED',
   'NFE_CERT_MASTER_KEY_PREV',
   'SUPABASE_FUNCTION_NAME',

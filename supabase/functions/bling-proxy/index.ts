@@ -5,7 +5,12 @@ import {
   validatePayload,
   createErrorResponse,
 } from '../_shared/validation.ts';
-import { withRetry, createCircuitBreaker, withTimeout } from '../_shared/resilience.ts';
+import {
+  withRetry,
+  createCircuitBreaker,
+  withTimeout,
+  respostaIntegracaoDesativada,
+} from '../_shared/resilience.ts';
 import { corsHeadersPara } from '../_shared/cors.ts';
 import { createLogger } from '../_shared/observability.ts';
 import { mensagemErro, contextoErro } from '../_shared/erros.ts';
@@ -78,6 +83,11 @@ Deno.serve(async (req) => {
           return jsonResponse({ error: 'Sem permissao para executar esta acao' }, 403, corsHeaders);
         }
       }
+
+      // Depois da autenticação e do RBAC — ação destrutiva sem permissão recebe
+      // 403 e não o 503 que vazaria a configuração do kill-switch.
+      const inativa = respostaIntegracaoDesativada('bling', corsHeaders);
+      if (inativa) return inativa;
 
       // --- OAuth Actions ---
       if (action === 'oauth_callback') {

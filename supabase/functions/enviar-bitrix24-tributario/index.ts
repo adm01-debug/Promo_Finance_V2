@@ -7,6 +7,7 @@ import { z } from 'https://deno.land/x/zod@v3.22.4/mod.ts';
 import { corsHeadersPara } from '../_shared/cors.ts';
 
 import { getRequestId } from '../_shared/correlation.ts';
+import { respostaIntegracaoDesativada } from '../_shared/resilience.ts';
 const _BxTribSchema = z.object({
   empresaId: z.string().uuid(),
   signedUrl: z.string().url(),
@@ -120,10 +121,17 @@ Deno.serve(async (req) => {
       });
     }
 
+    // Depois da autorização por empresa — um usuário sem vínculo recebe 403 e
+    // não o 503 que vazaria a configuração interna do kill-switch.
+    const inativa = respostaIntegracaoDesativada('bitrix24', corsHeaders);
+    if (inativa) return inativa;
+
     const titulo = `Recomendação Tributária — ${body.empresaNome} — ${body.periodo}`;
     const economiaTxt =
       body.economiaAnual > 0
-        ? `Economia anual estimada: R$ ${body.economiaAnual.toLocaleString('pt-BR', { maximumFractionDigits: 0 })}`
+        ? `Economia anual estimada: R$ ${body.economiaAnual.toLocaleString('pt-BR', {
+            maximumFractionDigits: 0,
+          })}`
         : 'Sem economia adicional vs. regime atual';
     const comentario = `[B]Análise Tributária — ${body.periodo}[/B]\n\nRegime recomendado: ${body.regimeRecomendado}\n${economiaTxt}\n\nPDF: ${body.signedUrl}`;
 

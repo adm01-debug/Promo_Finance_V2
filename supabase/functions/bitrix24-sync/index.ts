@@ -2,6 +2,7 @@ import { serve } from 'https://deno.land/std@0.190.0/http/server.ts';
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.49.4';
 import { Bitrix24SyncSchema, validatePayload, createErrorResponse } from '../_shared/validation.ts';
 import { corsHeadersPara } from '../_shared/cors.ts';
+import { respostaIntegracaoDesativada } from '../_shared/resilience.ts';
 import { createLogger } from '../_shared/observability.ts';
 import { mensagemErro, contextoErro } from '../_shared/erros.ts';
 const log = createLogger('bitrix24-sync');
@@ -816,6 +817,10 @@ serve(async (req) => {
       if (userError || !user) {
         throw new Error('Invalid authentication token');
       }
+
+      // Depois da autenticação — request não autenticada recebe erro de auth e não o 503 que vazaria a config do kill-switch.
+      const inativa = respostaIntegracaoDesativada('bitrix24', corsHeaders);
+      if (inativa) return inativa;
 
       const rawBody = await req.json();
       const validation = validatePayload(Bitrix24SyncSchema, rawBody, 'bitrix24-sync');

@@ -5,6 +5,7 @@
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.49.4';
 import { segredosIguais } from '../_shared/auth-guard.ts';
 import { corsHeadersPara } from '../_shared/cors.ts';
+import { respostaIntegracaoDesativada } from '../_shared/resilience.ts';
 import { createLogger } from '../_shared/observability.ts';
 import { mensagemErro, contextoErro } from '../_shared/erros.ts';
 const log = createLogger('n8n-dispatch');
@@ -98,6 +99,10 @@ Deno.serve(async (req) => {
           headers: { ...corsHeaders, 'Content-Type': 'application/json' },
         });
       }
+
+      // Depois da validação do secret — request sem o x-n8n-secret recebe 401 e não o 503 que vazaria a config do kill-switch.
+      const inativa = respostaIntegracaoDesativada('n8n', corsHeaders);
+      if (inativa) return inativa;
 
       const raw = await req.json();
       const { z } = await import('https://deno.land/x/zod@v3.22.4/mod.ts');
