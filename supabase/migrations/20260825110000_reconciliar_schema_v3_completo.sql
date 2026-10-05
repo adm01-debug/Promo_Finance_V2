@@ -5324,6 +5324,8 @@ CREATE POLICY "User-based access" ON public.dispositivos_conhecidos TO authentic
    FROM public.user_roles
   WHERE ((user_roles.user_id = ( SELECT auth.uid() AS uid)) AND (user_roles.role = 'admin'::public.app_role))))));
 
+ALTER TABLE public.divergencias_conciliacao ADD COLUMN IF NOT EXISTS empresa_id uuid;
+
 DROP POLICY IF EXISTS "Empresa-based access" ON public.divergencias_conciliacao;
 CREATE POLICY "Empresa-based access" ON public.divergencias_conciliacao TO authenticated USING (((empresa_id IN ( SELECT user_empresas.empresa_id
    FROM public.user_empresas
@@ -5522,6 +5524,8 @@ CREATE POLICY "Empresa-based access" ON public.folha_pagamento TO authenticated 
    FROM public.user_roles
   WHERE ((user_roles.user_id = ( SELECT auth.uid() AS uid)) AND (user_roles.role = 'admin'::public.app_role))))));
 
+ALTER TABLE public.formas_pagamento ADD COLUMN IF NOT EXISTS empresa_id uuid;
+
 DROP POLICY IF EXISTS "Empresa-based access" ON public.formas_pagamento;
 CREATE POLICY "Empresa-based access" ON public.formas_pagamento TO authenticated USING (((empresa_id IN ( SELECT user_empresas.empresa_id
    FROM public.user_empresas
@@ -5599,6 +5603,8 @@ CREATE POLICY historico_cobranca_empresa_all ON public.historico_cobranca TO aut
   WHERE ((user_empresas.user_id = ( SELECT auth.uid() AS uid)) AND (user_empresas.ativo = true))))) WITH CHECK ((empresa_id IN ( SELECT user_empresas.empresa_id
    FROM public.user_empresas
   WHERE ((user_empresas.user_id = ( SELECT auth.uid() AS uid)) AND (user_empresas.ativo = true)))));
+
+ALTER TABLE public.historico_cobranca_whatsapp ADD COLUMN IF NOT EXISTS empresa_id uuid;
 
 DROP POLICY IF EXISTS "Empresa-based access" ON public.historico_cobranca_whatsapp;
 CREATE POLICY "Empresa-based access" ON public.historico_cobranca_whatsapp TO authenticated USING (((empresa_id IN ( SELECT user_empresas.empresa_id
@@ -5715,6 +5721,8 @@ CREATE POLICY logs_retro_insert_owner ON public.logs_conciliacao_retroativa FOR 
 
 DROP POLICY IF EXISTS logs_retro_select_owner ON public.logs_conciliacao_retroativa;
 CREATE POLICY logs_retro_select_owner ON public.logs_conciliacao_retroativa FOR SELECT TO authenticated USING ((( SELECT auth.uid() AS uid) = user_id));
+
+ALTER TABLE public.metas_financeiras ADD COLUMN IF NOT EXISTS empresa_id uuid;
 
 DROP POLICY IF EXISTS "Empresa-based access" ON public.metas_financeiras;
 CREATE POLICY "Empresa-based access" ON public.metas_financeiras TO authenticated USING (((empresa_id IN ( SELECT user_empresas.empresa_id
@@ -6434,6 +6442,8 @@ CREATE POLICY "Users can view own roles" ON public.user_roles FOR SELECT TO auth
 DROP POLICY IF EXISTS "Users see own sessions" ON public.user_sessions;
 CREATE POLICY "Users see own sessions" ON public.user_sessions FOR SELECT TO authenticated USING ((( SELECT auth.uid() AS uid) = user_id));
 
+ALTER TABLE public.vendedores ADD COLUMN IF NOT EXISTS empresa_id uuid;
+
 DROP POLICY IF EXISTS "Empresa-based access" ON public.vendedores;
 CREATE POLICY "Empresa-based access" ON public.vendedores TO authenticated USING (((empresa_id IN ( SELECT user_empresas.empresa_id
    FROM public.user_empresas
@@ -6516,6 +6526,8 @@ CREATE POLICY webhooks_log_admin_insert ON public.webhooks_log FOR INSERT TO aut
 
 DROP POLICY IF EXISTS webhooks_log_admin_select ON public.webhooks_log;
 CREATE POLICY webhooks_log_admin_select ON public.webhooks_log FOR SELECT TO authenticated USING (public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role));
+
+ALTER TABLE public.whatsapp_conversas ADD COLUMN IF NOT EXISTS empresa_id uuid;
 
 DROP POLICY IF EXISTS "Empresa-based access" ON public.whatsapp_conversas;
 CREATE POLICY "Empresa-based access" ON public.whatsapp_conversas TO authenticated USING (((empresa_id IN ( SELECT user_empresas.empresa_id
