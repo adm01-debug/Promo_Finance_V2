@@ -88,7 +88,9 @@ export function pontuarEmpresa(emp: EmpresaCandidata, ctx: ContextoOperacao): Re
       motivos.push('Regime permite crédito de ICMS na entrada');
       if ((emp.creditoIcms ?? 0) > 10_000) {
         score -= 5;
-        alertas.push(`Crédito ICMS acumulado alto (R$ ${(emp.creditoIcms ?? 0).toLocaleString('pt-BR')}) — avaliar uso prioritário`);
+        alertas.push(
+          `Crédito ICMS acumulado alto (R$ ${(emp.creditoIcms ?? 0).toLocaleString('pt-BR')}) — avaliar uso prioritário`
+        );
       }
     } else if (emp.regime === 'simples_nacional') {
       score -= 10;
@@ -101,10 +103,14 @@ export function pontuarEmpresa(emp: EmpresaCandidata, ctx: ContextoOperacao): Re
     const projecao = emp.rbt12 + (isVenda ? ctx.valor : 0);
     if (projecao > LIMITE_SIMPLES) {
       score -= 40;
-      alertas.push(`Operação ultrapassaria limite do Simples (R$ ${LIMITE_SIMPLES.toLocaleString('pt-BR')}) — desenquadramento iminente`);
+      alertas.push(
+        `Operação ultrapassaria limite do Simples (R$ ${LIMITE_SIMPLES.toLocaleString('pt-BR')}) — desenquadramento iminente`
+      );
     } else if (projecao > LIMITE_SIMPLES_ALERTA) {
       score -= 15;
-      alertas.push(`Próximo do teto do Simples (${((projecao / LIMITE_SIMPLES) * 100).toFixed(1)}%)`);
+      alertas.push(
+        `Próximo do teto do Simples (${((projecao / LIMITE_SIMPLES) * 100).toFixed(1)}%)`
+      );
     } else {
       score += 5;
       motivos.push('Faixa de faturamento confortável dentro do Simples');
@@ -130,9 +136,7 @@ export function pontuarEmpresa(emp: EmpresaCandidata, ctx: ContextoOperacao): Re
 /** Ordena candidatas pela recomendação. Retorna ranking decrescente. */
 export function recomendarEmpresa(
   candidatas: EmpresaCandidata[],
-  ctx: ContextoOperacao,
+  ctx: ContextoOperacao
 ): RecomendacaoEmpresa[] {
-  return candidatas
-    .map((emp) => pontuarEmpresa(emp, ctx))
-    .sort((a, b) => b.score - a.score);
+  return candidatas.map((emp) => pontuarEmpresa(emp, ctx)).sort((a, b) => b.score - a.score);
 }

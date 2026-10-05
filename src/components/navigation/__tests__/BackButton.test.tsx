@@ -80,7 +80,9 @@ describe('BackButton', () => {
 
     rerender(
       <MemoryRouter initialEntries={['/contas-receber']}>
-        <TooltipProvider><BackButton size="lg" /></TooltipProvider>
+        <TooltipProvider>
+          <BackButton size="lg" />
+        </TooltipProvider>
       </MemoryRouter>
     );
     expect(screen.getByRole('button', { name: /voltar/i })).toBeInTheDocument();

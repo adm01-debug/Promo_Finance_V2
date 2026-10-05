@@ -5,7 +5,9 @@ const BANK_ACCOUNT_STORAGE_KEY = 'pf:current-bank-account-id';
 
 export function useGlobalFinancialFilter() {
   const [currentEmpresaId, setCurrentEmpresaId] = useState<string | null>(getCurrentEmpresaId());
-  const [currentBankAccountId, setCurrentBankAccountId] = useState<string | null>(localStorage.getItem(BANK_ACCOUNT_STORAGE_KEY));
+  const [currentBankAccountId, setCurrentBankAccountId] = useState<string | null>(
+    localStorage.getItem(BANK_ACCOUNT_STORAGE_KEY)
+  );
 
   const updateFiltersFromStorage = useCallback(() => {
     setCurrentEmpresaId(getCurrentEmpresaId());
@@ -17,7 +19,7 @@ export function useGlobalFinancialFilter() {
       const detail = (e as CustomEvent<string | null>).detail;
       setCurrentEmpresaId(detail);
     };
-    
+
     const handleBankChange = (e: Event) => {
       const detail = (e as CustomEvent<string | null>).detail;
       setCurrentBankAccountId(detail);
@@ -26,7 +28,7 @@ export function useGlobalFinancialFilter() {
     window.addEventListener('current-empresa-changed', handleEmpresaChange);
     window.addEventListener('current-bank-account-changed', handleBankChange);
     window.addEventListener('storage', updateFiltersFromStorage);
-    
+
     return () => {
       window.removeEventListener('current-empresa-changed', handleEmpresaChange);
       window.removeEventListener('current-bank-account-changed', handleBankChange);
@@ -36,6 +38,6 @@ export function useGlobalFinancialFilter() {
 
   return {
     currentEmpresaId,
-    currentBankAccountId
+    currentBankAccountId,
   };
 }

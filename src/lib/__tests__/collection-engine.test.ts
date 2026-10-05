@@ -28,7 +28,9 @@ describe('collection-engine :: calculateCollectionStage', () => {
   });
 
   it('classifica como PREVENTIVA quando ainda não venceu', () => {
-    expect(calculateCollectionStage(daysFromToday(10), 'aberto')).toBe(COLLECTION_STAGES.PREVENTIVA);
+    expect(calculateCollectionStage(daysFromToday(10), 'aberto')).toBe(
+      COLLECTION_STAGES.PREVENTIVA
+    );
   });
 
   it('classifica como LEMBRETE entre 0 e 5 dias de atraso', () => {
@@ -42,13 +44,19 @@ describe('collection-engine :: calculateCollectionStage', () => {
   });
 
   it('classifica como NEGOCIACAO entre 16 e 30 dias', () => {
-    expect(calculateCollectionStage(daysFromToday(-16), 'aberto')).toBe(COLLECTION_STAGES.NEGOCIACAO);
-    expect(calculateCollectionStage(daysFromToday(-30), 'aberto')).toBe(COLLECTION_STAGES.NEGOCIACAO);
+    expect(calculateCollectionStage(daysFromToday(-16), 'aberto')).toBe(
+      COLLECTION_STAGES.NEGOCIACAO
+    );
+    expect(calculateCollectionStage(daysFromToday(-30), 'aberto')).toBe(
+      COLLECTION_STAGES.NEGOCIACAO
+    );
   });
 
   it('escalona para JURIDICO acima de 30 dias', () => {
     expect(calculateCollectionStage(daysFromToday(-31), 'aberto')).toBe(COLLECTION_STAGES.JURIDICO);
-    expect(calculateCollectionStage(daysFromToday(-365), 'aberto')).toBe(COLLECTION_STAGES.JURIDICO);
+    expect(calculateCollectionStage(daysFromToday(-365), 'aberto')).toBe(
+      COLLECTION_STAGES.JURIDICO
+    );
   });
 });
 
@@ -58,30 +66,19 @@ describe('collection-engine :: calculateDynamicScore', () => {
   });
 
   it('retorna score máximo para 100% de pontualidade', () => {
-    const history = [
-      { days_overdue: 0 },
-      { days_overdue: -3 },
-      { days_overdue: -1 },
-    ];
+    const history = [{ days_overdue: 0 }, { days_overdue: -3 }, { days_overdue: -1 }];
     expect(calculateDynamicScore(history)).toBe(1000);
   });
 
   it('penaliza histórico com atrasos médios altos', () => {
-    const history = [
-      { days_overdue: 30 },
-      { days_overdue: 45 },
-      { days_overdue: 60 },
-    ];
+    const history = [{ days_overdue: 30 }, { days_overdue: 45 }, { days_overdue: 60 }];
     const score = calculateDynamicScore(history);
     expect(score).toBeLessThan(600);
     expect(score).toBeGreaterThanOrEqual(0);
   });
 
   it('mistura atraso e pontualidade proporcionalmente', () => {
-    const history = [
-      { days_overdue: 0 },
-      { days_overdue: 10 },
-    ];
+    const history = [{ days_overdue: 0 }, { days_overdue: 10 }];
     // punctuality = 0.5 → +200 ; avgDelay = 5 → -50 ; base 600 → 750
     expect(calculateDynamicScore(history)).toBe(750);
   });
@@ -92,11 +89,7 @@ describe('collection-engine :: calculateDynamicScore', () => {
   });
 
   it('arredonda o resultado para inteiro', () => {
-    const history = [
-      { days_overdue: 0 },
-      { days_overdue: 1 },
-      { days_overdue: 2 },
-    ];
+    const history = [{ days_overdue: 0 }, { days_overdue: 1 }, { days_overdue: 2 }];
     const score = calculateDynamicScore(history);
     expect(Number.isInteger(score)).toBe(true);
   });

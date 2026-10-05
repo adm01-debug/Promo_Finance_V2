@@ -33,7 +33,9 @@ describe('EnviarCobrancaDialog', () => {
     });
 
     it('não renderiza quando conta é null', () => {
-      const { container } = render(<EnviarCobrancaDialog conta={null} open={true} onOpenChange={vi.fn()} />);
+      const { container } = render(
+        <EnviarCobrancaDialog conta={null} open={true} onOpenChange={vi.fn()} />
+      );
       expect(container.innerHTML).toBe('');
     });
 

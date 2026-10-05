@@ -1,7 +1,10 @@
 import { Banknote, QrCode, CreditCard } from 'lucide-react';
 import type { ComponentType } from 'react';
 
-export const statusConfig: Record<string, { label: string; variant: 'default' | 'secondary' | 'destructive' | 'outline' }> = {
+export const statusConfig: Record<
+  string,
+  { label: string; variant: 'default' | 'secondary' | 'destructive' | 'outline' }
+> = {
   PENDING: { label: 'Pendente', variant: 'secondary' },
   RECEIVED: { label: 'Recebido', variant: 'default' },
   CONFIRMED: { label: 'Confirmado', variant: 'default' },
@@ -12,9 +15,15 @@ export const statusConfig: Record<string, { label: string; variant: 'default' | 
 };
 
 export const tipoIcons: Record<string, ComponentType<{ className?: string }>> = {
-  boleto: Banknote, pix: QrCode, credit_card: CreditCard, debit_card: CreditCard,
+  boleto: Banknote,
+  pix: QrCode,
+  credit_card: CreditCard,
+  debit_card: CreditCard,
 };
 
 export const tipoLabels: Record<string, string> = {
-  boleto: 'Boleto', pix: 'Pix', credit_card: 'Cartão', debit_card: 'Débito',
+  boleto: 'Boleto',
+  pix: 'Pix',
+  credit_card: 'Cartão',
+  debit_card: 'Débito',
 };

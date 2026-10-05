@@ -105,11 +105,7 @@ describe('comparativo temporal — casos de borda', () => {
       {
         empresaId: 'a',
         nome: 'A',
-        pontos: [
-          ponto('2026-01', Number.NaN),
-          ponto('2026-02', 140),
-          ponto('2026-03', -20),
-        ],
+        pontos: [ponto('2026-01', Number.NaN), ponto('2026-02', 140), ponto('2026-03', -20)],
       },
     ]);
     expect(r.competencias).toEqual(['2026-02', '2026-03']);
@@ -127,7 +123,7 @@ describe('comparativo temporal — casos de borda', () => {
 
   it('janela limita às competências mais recentes', () => {
     const pontos = Array.from({ length: 12 }, (_, i) =>
-      ponto(`2026-${String(i + 1).padStart(2, '0')}`, 80),
+      ponto(`2026-${String(i + 1).padStart(2, '0')}`, 80)
     );
     const r = montarComparativoTemporal([{ empresaId: 'a', nome: 'A', pontos }], 3);
     expect(r.competencias).toEqual(['2026-10', '2026-11', '2026-12']);
@@ -141,9 +137,7 @@ describe('comparativo temporal — 300 cenários pseudoaleatórios', () => {
       const r = montarComparativoTemporal(series, 12);
 
       // 1) Eixo é a união ordenada das competências.
-      const uniao = [
-        ...new Set(series.flatMap((s) => s.pontos.map((p) => p.competencia))),
-      ].sort();
+      const uniao = [...new Set(series.flatMap((s) => s.pontos.map((p) => p.competencia)))].sort();
       expect(r.competencias).toEqual(uniao);
 
       // 2) Uma linha por competência; chaves únicas por série.
@@ -167,7 +161,7 @@ describe('comparativo temporal — 300 cenários pseudoaleatórios', () => {
         else
           expect(linha.media as number).toBeCloseTo(
             Math.round((presentes.reduce((a, b) => a + b, 0) / presentes.length) * 10) / 10,
-            1,
+            1
           );
       }
 
@@ -184,7 +178,7 @@ describe('comparativo temporal — 300 cenários pseudoaleatórios', () => {
           expect(s.ultimoScore).toBe(valores[valores.length - 1]);
           expect(s.media as number).toBeCloseTo(
             Math.round((valores.reduce((a, b) => a + b, 0) / valores.length) * 10) / 10,
-            1,
+            1
           );
         }
       }

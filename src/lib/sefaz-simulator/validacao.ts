@@ -1,8 +1,6 @@
 import type { NFEData } from './types';
 
-export function validarNFE(
-  dados: NFEData,
-): { valid: boolean; errors: string[]; cStat?: string } {
+export function validarNFE(dados: NFEData): { valid: boolean; errors: string[]; cStat?: string } {
   const errors: string[] = [];
 
   if (!dados.emitente.cnpj || dados.emitente.cnpj.replace(/\D/g, '').length !== 14) {
@@ -34,7 +32,7 @@ export function validarNFE(
   }
 
   const diasAtras = Math.floor(
-    (Date.now() - new Date(dados.dataEmissao).getTime()) / (1000 * 60 * 60 * 24),
+    (Date.now() - new Date(dados.dataEmissao).getTime()) / (1000 * 60 * 60 * 24)
   );
   if (diasAtras > 30) {
     errors.push('Data de emissão muito atrasada (mais de 30 dias)');

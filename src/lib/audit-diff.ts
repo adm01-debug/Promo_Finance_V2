@@ -2,7 +2,7 @@
 // Compara apenas o 1º nível das chaves; objetos/arrays aninhados são
 // serializados como JSON para a comparação textual.
 
-export type DiffKind = "added" | "removed" | "changed" | "unchanged";
+export type DiffKind = 'added' | 'removed' | 'changed' | 'unchanged';
 
 export interface DiffField {
   key: string;
@@ -19,17 +19,17 @@ export interface DiffResult {
 }
 
 const TECHNICAL_KEYS = new Set([
-  "id",
-  "created_at",
-  "updated_at",
-  "deleted_at",
-  "user_id",
-  "tenant_id",
+  'id',
+  'created_at',
+  'updated_at',
+  'deleted_at',
+  'user_id',
+  'tenant_id',
 ]);
 
 function normalize(v: unknown): string {
-  if (v === null || v === undefined) return "__null__";
-  if (typeof v === "object") {
+  if (v === null || v === undefined) return '__null__';
+  if (typeof v === 'object') {
     try {
       return JSON.stringify(v);
     } catch {
@@ -41,7 +41,7 @@ function normalize(v: unknown): string {
 
 export function computeDiff(
   before: Record<string, unknown> | null | undefined,
-  after: Record<string, unknown> | null | undefined,
+  after: Record<string, unknown> | null | undefined
 ): DiffResult {
   const a = before ?? {};
   const b = after ?? {};
@@ -55,13 +55,13 @@ export function computeDiff(
     const vb = b[key];
 
     if (inA && !inB) {
-      result.removed.push({ key, before: va, after: undefined, kind: "removed" });
+      result.removed.push({ key, before: va, after: undefined, kind: 'removed' });
     } else if (!inA && inB) {
-      result.added.push({ key, before: undefined, after: vb, kind: "added" });
+      result.added.push({ key, before: undefined, after: vb, kind: 'added' });
     } else if (normalize(va) !== normalize(vb)) {
-      result.changed.push({ key, before: va, after: vb, kind: "changed" });
+      result.changed.push({ key, before: va, after: vb, kind: 'changed' });
     } else {
-      result.unchanged.push({ key, before: va, after: vb, kind: "unchanged" });
+      result.unchanged.push({ key, before: va, after: vb, kind: 'unchanged' });
     }
   }
 
@@ -82,22 +82,22 @@ export function computeDiff(
 
 // Campos que costumam justificar/identificar a operação
 const PRIORITY_KEYS = [
-  "valor",
-  "valor_total",
-  "valor_pago",
-  "status",
-  "situacao",
-  "descricao",
-  "titulo",
-  "numero",
-  "numero_documento",
-  "competencia",
-  "data_vencimento",
-  "data_pagamento",
-  "empresa_id",
-  "cliente_nome",
-  "fornecedor_nome",
-  "user_email",
+  'valor',
+  'valor_total',
+  'valor_pago',
+  'status',
+  'situacao',
+  'descricao',
+  'titulo',
+  'numero',
+  'numero_documento',
+  'competencia',
+  'data_vencimento',
+  'data_pagamento',
+  'empresa_id',
+  'cliente_nome',
+  'fornecedor_nome',
+  'user_email',
 ];
 
 export interface CampoChave {
@@ -106,12 +106,12 @@ export interface CampoChave {
 }
 
 export function extractCamposChave(
-  record: Record<string, unknown> | null | undefined,
+  record: Record<string, unknown> | null | undefined
 ): CampoChave[] {
   if (!record) return [];
   const out: CampoChave[] = [];
   for (const k of PRIORITY_KEYS) {
-    if (k in record && record[k] !== null && record[k] !== undefined && record[k] !== "") {
+    if (k in record && record[k] !== null && record[k] !== undefined && record[k] !== '') {
       out.push({ key: k, value: record[k] });
     }
   }

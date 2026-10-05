@@ -5,8 +5,21 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
 import { Badge } from '@/components/ui/badge';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
+import {
+  Dialog,
+  DialogContent,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from '@/components/ui/dialog';
 import { CalendarClock, Mail, Plus, Trash2 } from 'lucide-react';
 import { format, parseISO } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
@@ -34,7 +47,12 @@ export function RelatoriosAgendadosCard({ empresaId }: Props) {
     if (!lista.length) return;
     create(
       { empresa_id: empresaId, ano, frequencia, dia_envio: diaEnvio, destinatarios: lista },
-      { onSuccess: () => { setOpen(false); setDestinatarios(''); } }
+      {
+        onSuccess: () => {
+          setOpen(false);
+          setDestinatarios('');
+        },
+      }
     );
   };
 
@@ -59,12 +77,21 @@ export function RelatoriosAgendadosCard({ empresaId }: Props) {
               <div className="grid grid-cols-2 gap-3">
                 <div>
                   <Label>Ano de referência</Label>
-                  <Input type="number" value={ano} onChange={(e) => setAno(Number(e.target.value))} />
+                  <Input
+                    type="number"
+                    value={ano}
+                    onChange={(e) => setAno(Number(e.target.value))}
+                  />
                 </div>
                 <div>
                   <Label>Frequência</Label>
-                  <Select value={frequencia} onValueChange={(v) => setFrequencia(v as typeof frequencia)}>
-                    <SelectTrigger><SelectValue /></SelectTrigger>
+                  <Select
+                    value={frequencia}
+                    onValueChange={(v) => setFrequencia(v as typeof frequencia)}
+                  >
+                    <SelectTrigger>
+                      <SelectValue />
+                    </SelectTrigger>
                     <SelectContent>
                       <SelectItem value="mensal">Mensal</SelectItem>
                       <SelectItem value="trimestral">Trimestral</SelectItem>
@@ -75,7 +102,13 @@ export function RelatoriosAgendadosCard({ empresaId }: Props) {
               </div>
               <div>
                 <Label>Dia do envio (1–28)</Label>
-                <Input type="number" min={1} max={28} value={diaEnvio} onChange={(e) => setDiaEnvio(Number(e.target.value))} />
+                <Input
+                  type="number"
+                  min={1}
+                  max={28}
+                  value={diaEnvio}
+                  onChange={(e) => setDiaEnvio(Number(e.target.value))}
+                />
               </div>
               <div>
                 <Label>Destinatários (vírgula ou linha)</Label>
@@ -87,7 +120,9 @@ export function RelatoriosAgendadosCard({ empresaId }: Props) {
               </div>
             </div>
             <DialogFooter>
-              <Button variant="outline" onClick={() => setOpen(false)}>Cancelar</Button>
+              <Button variant="outline" onClick={() => setOpen(false)}>
+                Cancelar
+              </Button>
               <Button onClick={handleSubmit} disabled={isCreating || !destinatarios.trim()}>
                 Criar agendamento
               </Button>
@@ -97,18 +132,29 @@ export function RelatoriosAgendadosCard({ empresaId }: Props) {
       </CardHeader>
       <CardContent className="space-y-2">
         {!empresaId ? (
-          <p className="text-xs text-muted-foreground">Selecione uma empresa para ver agendamentos.</p>
+          <p className="text-xs text-muted-foreground">
+            Selecione uma empresa para ver agendamentos.
+          </p>
         ) : isLoading ? (
           <p className="text-xs text-muted-foreground">Carregando...</p>
         ) : agendamentos.length === 0 ? (
-          <p className="text-xs text-muted-foreground">Nenhum agendamento. Crie o primeiro acima.</p>
+          <p className="text-xs text-muted-foreground">
+            Nenhum agendamento. Crie o primeiro acima.
+          </p>
         ) : (
           agendamentos.map((a) => (
-            <div key={a.id} className="flex items-center justify-between gap-2 rounded-lg border border-border/50 p-2.5">
+            <div
+              key={a.id}
+              className="flex items-center justify-between gap-2 rounded-lg border border-border/50 p-2.5"
+            >
               <div className="min-w-0">
                 <div className="flex items-center gap-2 text-sm font-medium">
-                  <Badge variant="secondary" className="text-[10px]">{a.frequencia}</Badge>
-                  <span>Ano {a.ano} · dia {a.dia_envio}</span>
+                  <Badge variant="secondary" className="text-[10px]">
+                    {a.frequencia}
+                  </Badge>
+                  <span>
+                    Ano {a.ano} · dia {a.dia_envio}
+                  </span>
                 </div>
                 <div className="mt-1 flex items-center gap-1 text-xs text-muted-foreground truncate">
                   <Mail className="h-3 w-3 shrink-0" />
@@ -116,12 +162,18 @@ export function RelatoriosAgendadosCard({ empresaId }: Props) {
                   {a.destinatarios.length > 2 && ` +${a.destinatarios.length - 2}`}
                 </div>
                 <p className="mt-0.5 text-[10px] text-muted-foreground">
-                  Próximo: {format(parseISO(a.proximo_envio_em), "dd/MM/yyyy 'às' HH:mm", { locale: ptBR })}
+                  Próximo:{' '}
+                  {format(parseISO(a.proximo_envio_em), "dd/MM/yyyy 'às' HH:mm", { locale: ptBR })}
                 </p>
               </div>
               <div className="flex items-center gap-2">
                 <Switch checked={a.ativo} onCheckedChange={(v) => toggle({ id: a.id, ativo: v })} />
-                <Button size="icon" variant="ghost" className="h-7 w-7 text-destructive" onClick={() => remove(a.id)}>
+                <Button
+                  size="icon"
+                  variant="ghost"
+                  className="h-7 w-7 text-destructive"
+                  onClick={() => remove(a.id)}
+                >
                   <Trash2 className="h-3.5 w-3.5" />
                 </Button>
               </div>

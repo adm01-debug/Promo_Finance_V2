@@ -3,7 +3,13 @@ import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { CheckCircle2, AlertTriangle, Layers, GitBranch } from 'lucide-react';
-import { CAMADAS, MODULOS, detectarCiclos, violacoesDeCamada, type Modulo } from '@/lib/arquitetura/modulos';
+import {
+  CAMADAS,
+  MODULOS,
+  detectarCiclos,
+  violacoesDeCamada,
+  type Modulo,
+} from '@/lib/arquitetura/modulos';
 import grafo from '@/lib/arquitetura/grafo-observado.json';
 
 interface SnapshotGrafo {
@@ -37,7 +43,9 @@ function CardModulo({ modulo, observadas }: { modulo: Modulo; observadas: Readon
       </CardHeader>
       <CardContent className="space-y-3 text-xs">
         <div>
-          <p className="text-muted-foreground mb-1 font-medium uppercase tracking-wide">Dependências</p>
+          <p className="text-muted-foreground mb-1 font-medium uppercase tracking-wide">
+            Dependências
+          </p>
           <div className="flex flex-wrap gap-1">
             {modulo.dependencias.length === 0 ? (
               <span className="text-muted-foreground">nenhuma (módulo base)</span>
@@ -87,8 +95,8 @@ export default function ArquiteturaModular() {
           Arquitetura Modular
         </h1>
         <p className="text-muted-foreground text-sm">
-          Documentação viva dos {MODULOS.length} módulos em {CAMADAS.length} camadas, validada contra o grafo real de
-          imports do repositório.
+          Documentação viva dos {MODULOS.length} módulos em {CAMADAS.length} camadas, validada
+          contra o grafo real de imports do repositório.
         </p>
       </header>
 
@@ -98,11 +106,14 @@ export default function ArquiteturaModular() {
         ) : (
           <AlertTriangle className="h-4 w-4" aria-hidden />
         )}
-        <AlertTitle>{conforme ? 'Arquitetura conforme' : 'Drift arquitetural detectado'}</AlertTitle>
+        <AlertTitle>
+          {conforme ? 'Arquitetura conforme' : 'Drift arquitetural detectado'}
+        </AlertTitle>
         <AlertDescription className="text-sm">
           {SNAPSHOT.totalImportsAnalisados} imports entre módulos analisados ·{' '}
           {SNAPSHOT.driftResumo.naoDeclaradas} dependência(s) não declarada(s) ·{' '}
-          {SNAPSHOT.driftResumo.inversoesDeCamada} inversão(ões) de camada · {ciclos.length} ciclo(s) no manifesto.
+          {SNAPSHOT.driftResumo.inversoesDeCamada} inversão(ões) de camada · {ciclos.length}{' '}
+          ciclo(s) no manifesto.
         </AlertDescription>
       </Alert>
 
@@ -139,8 +150,8 @@ export default function ArquiteturaModular() {
           ))}
         </div>
         <p className="text-muted-foreground text-xs">
-          Dependências declaradas sem import correspondente em runtime (acoplamento apenas planejado ou via tipos):{' '}
-          {SNAPSHOT.driftResumo.declaradasSemUso.length}.
+          Dependências declaradas sem import correspondente em runtime (acoplamento apenas planejado
+          ou via tipos): {SNAPSHOT.driftResumo.declaradasSemUso.length}.
         </p>
       </section>
     </div>

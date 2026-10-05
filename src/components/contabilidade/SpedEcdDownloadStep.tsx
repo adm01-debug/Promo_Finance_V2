@@ -33,7 +33,12 @@ export function SpedEcdDownloadStep({
   const [hashCopied, setHashCopied] = useState(false);
   const copyTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  useEffect(() => () => { if (copyTimer.current) clearTimeout(copyTimer.current); }, []);
+  useEffect(
+    () => () => {
+      if (copyTimer.current) clearTimeout(copyTimer.current);
+    },
+    []
+  );
 
   const errosResultado = resultado?.validacoes.erros ?? [];
   const avisosResultado = resultado?.validacoes.avisos ?? [];
@@ -88,7 +93,9 @@ export function SpedEcdDownloadStep({
           <div className="flex-1 space-y-1">
             <p className="text-lg font-semibold font-display tracking-tight">Download bloqueado</p>
             <p className="text-sm text-muted-foreground">
-              O arquivo <span className="font-mono text-foreground">{resultado.file_name}</span> foi gerado, mas a validação retornou {errosResultado.length} erro(s). Os botões de download estão bloqueados até a correção.
+              O arquivo <span className="font-mono text-foreground">{resultado.file_name}</span> foi
+              gerado, mas a validação retornou {errosResultado.length} erro(s). Os botões de
+              download estão bloqueados até a correção.
             </p>
           </div>
         </div>
@@ -98,7 +105,9 @@ export function SpedEcdDownloadStep({
             <CheckCircle2 className="h-5 w-5 text-success" />
           </div>
           <div className="flex-1 space-y-1">
-            <p className="text-lg font-semibold font-display tracking-tight">Arquivo gerado com sucesso</p>
+            <p className="text-lg font-semibold font-display tracking-tight">
+              Arquivo gerado com sucesso
+            </p>
             <p className="text-sm text-muted-foreground font-mono">{resultado.file_name}</p>
           </div>
         </div>
@@ -110,7 +119,9 @@ export function SpedEcdDownloadStep({
             <ul className="space-y-1.5 text-sm">
               {errosResultado.map((e, i) => (
                 <li key={i} className="flex gap-2 items-start">
-                  <Badge variant="destructive" className="h-5 px-1.5 shrink-0 mt-0.5">{i + 1}</Badge>
+                  <Badge variant="destructive" className="h-5 px-1.5 shrink-0 mt-0.5">
+                    {i + 1}
+                  </Badge>
                   <span className="text-foreground break-words">{e}</span>
                 </li>
               ))}
@@ -125,7 +136,12 @@ export function SpedEcdDownloadStep({
             <ul className="space-y-1 text-sm">
               {avisosResultado.map((a, i) => (
                 <li key={i} className="flex gap-2 items-start">
-                  <Badge variant="outline" className="h-5 px-1.5 shrink-0 mt-0.5 border-warning/40 text-warning">{i + 1}</Badge>
+                  <Badge
+                    variant="outline"
+                    className="h-5 px-1.5 shrink-0 mt-0.5 border-warning/40 text-warning"
+                  >
+                    {i + 1}
+                  </Badge>
                   <span className="text-foreground break-words">{a}</span>
                 </li>
               ))}
@@ -141,8 +157,12 @@ export function SpedEcdDownloadStep({
 
       <div className="rounded-xl border border-border/60 bg-card/60 backdrop-blur-sm p-4 space-y-2">
         <div className="flex items-center justify-between">
-          <p className="text-[11px] uppercase tracking-wide text-muted-foreground font-medium">Hash SHA-256</p>
-          <span className="text-[10px] uppercase tracking-wide text-muted-foreground">Integridade do arquivo</span>
+          <p className="text-[11px] uppercase tracking-wide text-muted-foreground font-medium">
+            Hash SHA-256
+          </p>
+          <span className="text-[10px] uppercase tracking-wide text-muted-foreground">
+            Integridade do arquivo
+          </span>
         </div>
         <div className="flex items-center gap-2">
           <code className="flex-1 text-xs font-mono bg-muted/40 border border-border/60 rounded-lg p-3 break-all select-all">
@@ -156,9 +176,17 @@ export function SpedEcdDownloadStep({
                   variant={hashCopied ? 'default' : 'outline'}
                   onClick={copyHash}
                   aria-label={hashCopied ? 'Hash copiado' : 'Copiar hash SHA-256'}
-                  className={cn('transition-all duration-200 hover-scale', hashCopied && 'bg-success text-success-foreground hover:bg-success/90 border-success')}
+                  className={cn(
+                    'transition-all duration-200 hover-scale',
+                    hashCopied &&
+                      'bg-success text-success-foreground hover:bg-success/90 border-success'
+                  )}
                 >
-                  {hashCopied ? <Check className="h-3.5 w-3.5" /> : <Copy className="h-3.5 w-3.5" />}
+                  {hashCopied ? (
+                    <Check className="h-3.5 w-3.5" />
+                  ) : (
+                    <Copy className="h-3.5 w-3.5" />
+                  )}
                 </Button>
               </TooltipTrigger>
               <TooltipContent side="top">
@@ -187,10 +215,14 @@ export function SpedEcdDownloadStep({
           variant={downloadBloqueado ? 'outline' : 'premium'}
           className={cn(
             'gap-2 hover-scale',
-            downloadBloqueado && 'border-destructive/40 text-destructive hover:bg-destructive/10',
+            downloadBloqueado && 'border-destructive/40 text-destructive hover:bg-destructive/10'
           )}
         >
-          {downloadBloqueado ? <ShieldAlert className="h-4 w-4" /> : <Download className="h-4 w-4" />}
+          {downloadBloqueado ? (
+            <ShieldAlert className="h-4 w-4" />
+          ) : (
+            <Download className="h-4 w-4" />
+          )}
           Ver validações & baixar
         </Button>
 
@@ -200,7 +232,9 @@ export function SpedEcdDownloadStep({
             <RefreshCw className="h-4 w-4" /> Voltar e revalidar
           </Button>
         )}
-        <Button variant="ghost" onClick={onClose}>Fechar</Button>
+        <Button variant="ghost" onClick={onClose}>
+          Fechar
+        </Button>
       </div>
 
       <ValidacoesPreSpedDialog

@@ -93,8 +93,10 @@ export function ContasReceberFilters({
             </SelectTrigger>
             <SelectContent className="bg-background/95 backdrop-blur-xl border-white/10 rounded-xl">
               <SelectItem value="all">Todas empresas</SelectItem>
-              {empresas.map(e => (
-                <SelectItem key={e.id} value={e.id}>{e.nome_fantasia || e.razao_social}</SelectItem>
+              {empresas.map((e) => (
+                <SelectItem key={e.id} value={e.id}>
+                  {e.nome_fantasia || e.razao_social}
+                </SelectItem>
               ))}
             </SelectContent>
           </Select>
@@ -129,14 +131,16 @@ export function ContasReceberFilters({
             </SelectTrigger>
             <SelectContent className="bg-background/95 backdrop-blur-xl border-white/10 rounded-xl">
               <SelectItem value="all">Todas as Contas</SelectItem>
-              {contasBancarias.map(cb => (
-                <SelectItem key={cb.id} value={cb.id}>{cb.banco} - {cb.conta}</SelectItem>
+              {contasBancarias.map((cb) => (
+                <SelectItem key={cb.id} value={cb.id}>
+                  {cb.banco} - {cb.conta}
+                </SelectItem>
               ))}
             </SelectContent>
           </Select>
         </div>
       )}
-      
+
       <div className="flex items-center gap-2 flex-1 min-w-[140px]">
         <Target className="h-4 w-4 text-primary/40 shrink-0" />
         <Select value={centroCustoFilter} onValueChange={onCentroCustoChange}>
@@ -145,13 +149,15 @@ export function ContasReceberFilters({
           </SelectTrigger>
           <SelectContent className="bg-background/95 backdrop-blur-xl border-white/10 rounded-xl">
             <SelectItem value="all">Todos centros</SelectItem>
-            {centrosCusto.map(cc => (
-              <SelectItem key={cc.id} value={cc.id}>{cc.nome}</SelectItem>
+            {centrosCusto.map((cc) => (
+              <SelectItem key={cc.id} value={cc.id}>
+                {cc.nome}
+              </SelectItem>
             ))}
           </SelectContent>
         </Select>
       </div>
-      
+
       <div className="lg:ml-auto">
         <AdvancedFiltersPopover
           filters={advancedFilters}
@@ -161,4 +167,3 @@ export function ContasReceberFilters({
     </StandardFilterSection>
   );
 }
-

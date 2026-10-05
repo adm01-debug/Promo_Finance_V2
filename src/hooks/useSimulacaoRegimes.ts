@@ -70,8 +70,6 @@ export interface SimulacaoHistoricoAuditada extends SimulaoHistoricoItem {
   ajustesAplicados: AjusteParametro[];
 }
 
-
-
 const REGIMES_VALIDOS: readonly RegimeTributario[] = [
   'simples_nacional',
   'lucro_presumido',
@@ -88,7 +86,11 @@ const DEFAULT_PARAMS: ParametrosSimulacao = {
 };
 
 export function useSimulacaoRegimes(options: UseSimulacaoOptions = {}) {
-  const { empresaId, anoReferencia = new Date().getFullYear(), mesReferencia = new Date().getMonth() + 1 } = options;
+  const {
+    empresaId,
+    anoReferencia = new Date().getFullYear(),
+    mesReferencia = new Date().getMonth() + 1,
+  } = options;
   const { user } = useAuth();
   const queryClient = useQueryClient();
   const decidirRegimeServer = useDecidirRegimeServer();
@@ -171,7 +173,7 @@ export function useSimulacaoRegimes(options: UseSimulacaoOptions = {}) {
                 anoReferencia: item.ano_referencia,
                 mesReferencia,
                 regimeAtual: REGIMES_VALIDOS.find((r) => r === item.regime_atual),
-              },
+              }
             );
             regimeRecalculado = recalculo.recomendado.regime;
           } catch {
@@ -187,15 +189,13 @@ export function useSimulacaoRegimes(options: UseSimulacaoOptions = {}) {
           divergente: regimeRecalculado !== null && regimeRecalculado !== item.regime_recomendado,
         };
       }),
-    [historicoSimulacoes, mesReferencia],
+    [historicoSimulacoes, mesReferencia]
   );
-
-
 
   /** Indicadores agregados de qualidade do histórico auditado. */
   const resumoAuditoria: ResumoAuditoriaHistorico = useMemo(
     () => resumirAuditoriaHistorico(historicoAuditado),
-    [historicoAuditado],
+    [historicoAuditado]
   );
 
   // Mescla parâmetros manuais com histórico real
@@ -205,7 +205,7 @@ export function useSimulacaoRegimes(options: UseSimulacaoOptions = {}) {
       faturamentoMensal: faturamentoMensal.length > 0 ? faturamentoMensal : undefined,
       folhaMensal: folhaMensal.length > 0 ? folhaMensal : undefined,
     }),
-    [parametros, faturamentoMensal, folhaMensal],
+    [parametros, faturamentoMensal, folhaMensal]
   );
 
   // Resultado da simulação (computado em memória ou retornado do server)
@@ -263,7 +263,6 @@ export function useSimulacaoRegimes(options: UseSimulacaoOptions = {}) {
         ajustes_aplicados: ajustesAplicados as unknown as Json,
       });
       if (error) throw error;
-
     },
     onSuccess: () => {
       toast.success('Simulação salva no histórico');
@@ -293,12 +292,14 @@ export function useSimulacaoRegimes(options: UseSimulacaoOptions = {}) {
   };
 
   return {
-
     parametros,
-    setParametros: useCallback((p: ParametrosSimulacao | ((prev: ParametrosSimulacao) => ParametrosSimulacao)) => {
-      setParametros(p);
-      setServerResult(null);
-    }, []),
+    setParametros: useCallback(
+      (p: ParametrosSimulacao | ((prev: ParametrosSimulacao) => ParametrosSimulacao)) => {
+        setParametros(p);
+        setServerResult(null);
+      },
+      []
+    ),
     regimeAtual,
     setRegimeAtual: useCallback((r: RegimeTributario | undefined) => {
       setRegimeAtual(r);

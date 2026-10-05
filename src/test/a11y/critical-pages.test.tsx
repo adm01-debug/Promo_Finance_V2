@@ -30,7 +30,7 @@ describe('A11y — componentes críticos WCAG 2.1 AA', () => {
         <Label htmlFor="email-test">E-mail</Label>
         <Input id="email-test" type="email" placeholder="voce@empresa.com" />
         <Button type="submit">Enviar</Button>
-      </form>,
+      </form>
     );
     const results = await axe(container, axeConfig);
     expect(results).toHaveNoViolations();
@@ -40,7 +40,7 @@ describe('A11y — componentes críticos WCAG 2.1 AA', () => {
     const { container } = render(
       <Button aria-label="Fechar modal" type="button">
         ×
-      </Button>,
+      </Button>
     );
     const results = await axe(container, axeConfig);
     expect(results).toHaveNoViolations();

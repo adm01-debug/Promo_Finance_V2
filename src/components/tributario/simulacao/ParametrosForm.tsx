@@ -5,7 +5,13 @@ import { useEffect, useRef } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 import { useResolucaoCnae } from '@/hooks/useCnaes';
 import { CnaeCatalogoInfo } from '@/components/empresas/CnaeCatalogoInfo';
 import { resolverFpasPorCnae } from '@/lib/tributario/folha/fpas-terceiros';
@@ -63,8 +69,6 @@ export function ParametrosForm({
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [resolucaoCnae.registro]);
-
-
 
   /**
    * Derivação de encargos patronais a partir do CNAE.
@@ -131,7 +135,9 @@ export function ParametrosForm({
             id="faturamento-anual"
             type="number"
             value={parametros.faturamentoAnual}
-            onChange={(e) => setParametros({ ...parametros, faturamentoAnual: Number(e.target.value) })}
+            onChange={(e) =>
+              setParametros({ ...parametros, faturamentoAnual: Number(e.target.value) })
+            }
           />
         </div>
 
@@ -142,7 +148,9 @@ export function ParametrosForm({
               id="margem"
               type="number"
               value={parametros.margemLucro}
-              onChange={(e) => setParametros({ ...parametros, margemLucro: Number(e.target.value) })}
+              onChange={(e) =>
+                setParametros({ ...parametros, margemLucro: Number(e.target.value) })
+              }
             />
           </div>
           <div className="space-y-2">
@@ -151,7 +159,9 @@ export function ParametrosForm({
               id="perc-servicos"
               type="number"
               value={parametros.percentualServicos}
-              onChange={(e) => setParametros({ ...parametros, percentualServicos: Number(e.target.value) })}
+              onChange={(e) =>
+                setParametros({ ...parametros, percentualServicos: Number(e.target.value) })
+              }
             />
           </div>
         </div>
@@ -163,7 +173,9 @@ export function ParametrosForm({
               id="perc-industria"
               type="number"
               value={parametros.percentualIndustria || 0}
-              onChange={(e) => setParametros({ ...parametros, percentualIndustria: Number(e.target.value) })}
+              onChange={(e) =>
+                setParametros({ ...parametros, percentualIndustria: Number(e.target.value) })
+              }
             />
           </div>
           <div className="space-y-2">
@@ -171,8 +183,16 @@ export function ParametrosForm({
             <Input
               id="perc-revenda"
               type="number"
-              value={parametros.percentualRevenda ?? Math.max(0, 100 - (parametros.percentualServicos || 0) - (parametros.percentualIndustria || 0))}
-              onChange={(e) => setParametros({ ...parametros, percentualRevenda: Number(e.target.value) })}
+              value={
+                parametros.percentualRevenda ??
+                Math.max(
+                  0,
+                  100 - (parametros.percentualServicos || 0) - (parametros.percentualIndustria || 0)
+                )
+              }
+              onChange={(e) =>
+                setParametros({ ...parametros, percentualRevenda: Number(e.target.value) })
+              }
             />
           </div>
         </div>
@@ -193,11 +213,10 @@ export function ParametrosForm({
             }
           />
           <p className="text-xs text-muted-foreground">
-            Parcela da receita destinada ao exterior. Imune a PIS/COFINS, ICMS e ISS
-            (CF/88 arts. 149 §2º I, 155 §2º X &quot;a&quot; e 156 §3º II). IRPJ e CSLL continuam devidos.
+            Parcela da receita destinada ao exterior. Imune a PIS/COFINS, ICMS e ISS (CF/88 arts.
+            149 §2º I, 155 §2º X &quot;a&quot; e 156 §3º II). IRPJ e CSLL continuam devidos.
           </p>
         </div>
-
 
         <div className="space-y-2">
           <Label htmlFor="folha-anual">Folha Anual</Label>
@@ -215,7 +234,9 @@ export function ParametrosForm({
             id="compras-credito"
             type="number"
             value={parametros.comprasComCredito || 0}
-            onChange={(e) => setParametros({ ...parametros, comprasComCredito: Number(e.target.value) })}
+            onChange={(e) =>
+              setParametros({ ...parametros, comprasComCredito: Number(e.target.value) })
+            }
           />
         </div>
 
@@ -225,7 +246,9 @@ export function ParametrosForm({
             id="despesas-op"
             type="number"
             value={parametros.despesasOperacionais || 0}
-            onChange={(e) => setParametros({ ...parametros, despesasOperacionais: Number(e.target.value) })}
+            onChange={(e) =>
+              setParametros({ ...parametros, despesasOperacionais: Number(e.target.value) })
+            }
           />
         </div>
 
@@ -238,7 +261,10 @@ export function ParametrosForm({
               step="0.01"
               value={((parametros.aliquotaICMS ?? 0.18) * 100).toFixed(2)}
               onChange={(e) =>
-                setParametros({ ...parametros, aliquotaICMS: Math.max(0, Number(e.target.value)) / 100 })
+                setParametros({
+                  ...parametros,
+                  aliquotaICMS: Math.max(0, Number(e.target.value)) / 100,
+                })
               }
             />
           </div>
@@ -250,7 +276,10 @@ export function ParametrosForm({
               step="0.01"
               value={((parametros.aliquotaISS ?? 0.05) * 100).toFixed(2)}
               onChange={(e) =>
-                setParametros({ ...parametros, aliquotaISS: Math.max(0, Number(e.target.value)) / 100 })
+                setParametros({
+                  ...parametros,
+                  aliquotaISS: Math.max(0, Number(e.target.value)) / 100,
+                })
               }
             />
           </div>
@@ -264,7 +293,10 @@ export function ParametrosForm({
               type="number"
               value={parametros.sublimiteEstadual ?? 3600000}
               onChange={(e) =>
-                setParametros({ ...parametros, sublimiteEstadual: Math.max(0, Number(e.target.value)) })
+                setParametros({
+                  ...parametros,
+                  sublimiteEstadual: Math.max(0, Number(e.target.value)),
+                })
               }
             />
             <p className="text-xs text-muted-foreground">
@@ -278,7 +310,10 @@ export function ParametrosForm({
               type="number"
               value={parametros.issRetidoFonte || 0}
               onChange={(e) =>
-                setParametros({ ...parametros, issRetidoFonte: Math.max(0, Number(e.target.value)) })
+                setParametros({
+                  ...parametros,
+                  issRetidoFonte: Math.max(0, Number(e.target.value)),
+                })
               }
             />
             <p className="text-xs text-muted-foreground">
@@ -300,8 +335,8 @@ export function ParametrosForm({
               }
             />
             <p className="text-xs text-muted-foreground">
-              Compõe a CPP patronal (20% + RAT) recolhida fora do DAS no Anexo IV
-              e a folha em Presumido/Real.
+              Compõe a CPP patronal (20% + RAT) recolhida fora do DAS no Anexo IV e a folha em
+              Presumido/Real.
             </p>
           </div>
 
@@ -315,8 +350,8 @@ export function ParametrosForm({
               onChange={(e) => handleCnaeChange(e.target.value)}
             />
             <p className="text-xs text-muted-foreground">
-              Define automaticamente o FPAS, a alíquota de terceiros e o RAT quando
-              o código consta do catálogo fiscal.
+              Define automaticamente o FPAS, a alíquota de terceiros e o RAT quando o código consta
+              do catálogo fiscal.
             </p>
             <CnaeCatalogoInfo
               resolucao={resolucaoCnae}
@@ -324,9 +359,7 @@ export function ParametrosForm({
             />
           </div>
 
-
           <div className="space-y-2">
-
             <Label htmlFor="aliquota-terceiros">Terceiros / Sistema S (%)</Label>
             <Input
               id="aliquota-terceiros"
@@ -341,11 +374,10 @@ export function ParametrosForm({
               }
             />
             <p className="text-xs text-muted-foreground">
-              INCRA, SEBRAE, Salário-Educação e Sistema S (padrão 5,8% — FPAS 507).
-              Não se aplica ao Simples Nacional.
+              INCRA, SEBRAE, Salário-Educação e Sistema S (padrão 5,8% — FPAS 507). Não se aplica ao
+              Simples Nacional.
             </p>
           </div>
-
         </div>
 
         <div className="space-y-2">
@@ -408,10 +440,6 @@ export function ParametrosForm({
         </p>
 
         <LucroTrimestralFields parametros={parametros} setParametros={setParametros} />
-
-
-
-
       </CardContent>
     </Card>
   );

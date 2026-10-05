@@ -1,5 +1,18 @@
 import { useState } from 'react';
-import { Download, Printer, Mail, CheckCircle2, Copy, Check, History, Clock, Share2, RefreshCw, Barcode, TrendingUp } from 'lucide-react';
+import {
+  Download,
+  Printer,
+  Mail,
+  CheckCircle2,
+  Copy,
+  Check,
+  History,
+  Clock,
+  Share2,
+  RefreshCw,
+  Barcode,
+  TrendingUp,
+} from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
 import { formatCurrency, formatDate, formatDateTime } from '@/lib/formatters';
@@ -17,12 +30,26 @@ interface EventoPagamento {
 }
 
 interface Boleto {
-  id: string; numero: string; linha_digitavel: string; codigo_barras: string;
-  valor: number; vencimento: string; cedente_nome: string; cedente_cnpj: string | null;
-  sacado_nome: string; sacado_cpf_cnpj: string | null; banco: string; agencia: string;
-  conta: string; descricao: string | null; status: string;
-  asaas_id?: string | null; external_provider?: string | null;
-  bitrix_id?: string | null; bitrix_status?: string | null; eventos_pagamento?: EventoPagamento[] | null;
+  id: string;
+  numero: string;
+  linha_digitavel: string;
+  codigo_barras: string;
+  valor: number;
+  vencimento: string;
+  cedente_nome: string;
+  cedente_cnpj: string | null;
+  sacado_nome: string;
+  sacado_cpf_cnpj: string | null;
+  banco: string;
+  agencia: string;
+  conta: string;
+  descricao: string | null;
+  status: string;
+  asaas_id?: string | null;
+  external_provider?: string | null;
+  bitrix_id?: string | null;
+  bitrix_status?: string | null;
+  eventos_pagamento?: EventoPagamento[] | null;
   rastreio_status?: Array<{ status: string; data: string; detalhe: string }>;
 }
 
@@ -35,27 +62,32 @@ export function BoletoPreviewPanel({ boleto, onUpdateStatus }: BoletoPreviewPane
   const [copied, setCopied] = useState(false);
   const [showRastreio, setShowRastreio] = useState(false);
 
-  const handleCopy = () => { navigator.clipboard.writeText(boleto.linha_digitavel.replace(/\s/g, '')); setCopied(true); toast.success('Linha digitável copiada!'); setTimeout(() => setCopied(false), 2000); };
-  
-  const handleDownload = () => { 
-    import('@/lib/pdf-generator').then(({ generateBoletoPDF }) => { 
-      generateBoletoPDF({ 
-        numero: boleto.numero, 
-        linha_digitavel: boleto.linha_digitavel, 
-        codigo_barras: boleto.codigo_barras, 
-        valor: boleto.valor, 
-        vencimento: boleto.vencimento, 
-        cedente_nome: boleto.cedente_nome, 
-        cedente_cnpj: boleto.cedente_cnpj, 
-        sacado_nome: boleto.sacado_nome, 
-        sacado_cpf_cnpj: boleto.sacado_cpf_cnpj, 
-        banco: boleto.banco, 
-        agencia: boleto.agencia, 
-        conta: boleto.conta, 
-        descricao: boleto.descricao 
-      }); 
-      toast.success('PDF do boleto gerado com sucesso!'); 
-    }); 
+  const handleCopy = () => {
+    navigator.clipboard.writeText(boleto.linha_digitavel.replace(/\s/g, ''));
+    setCopied(true);
+    toast.success('Linha digitável copiada!');
+    setTimeout(() => setCopied(false), 2000);
+  };
+
+  const handleDownload = () => {
+    import('@/lib/pdf-generator').then(({ generateBoletoPDF }) => {
+      generateBoletoPDF({
+        numero: boleto.numero,
+        linha_digitavel: boleto.linha_digitavel,
+        codigo_barras: boleto.codigo_barras,
+        valor: boleto.valor,
+        vencimento: boleto.vencimento,
+        cedente_nome: boleto.cedente_nome,
+        cedente_cnpj: boleto.cedente_cnpj,
+        sacado_nome: boleto.sacado_nome,
+        sacado_cpf_cnpj: boleto.sacado_cpf_cnpj,
+        banco: boleto.banco,
+        agencia: boleto.agencia,
+        conta: boleto.conta,
+        descricao: boleto.descricao,
+      });
+      toast.success('PDF do boleto gerado com sucesso!');
+    });
   };
 
   return (
@@ -63,7 +95,9 @@ export function BoletoPreviewPanel({ boleto, onUpdateStatus }: BoletoPreviewPane
       <div className="bg-card text-card-foreground rounded-lg p-6 space-y-4 print:shadow-none">
         <div className="flex items-center justify-between border-b-2 border-black pb-4">
           <div className="flex items-center gap-4">
-            <div className="w-20 h-10 bg-muted rounded flex items-center justify-center text-muted-foreground text-xs">Logo Banco</div>
+            <div className="w-20 h-10 bg-muted rounded flex items-center justify-center text-muted-foreground text-xs">
+              Logo Banco
+            </div>
             <div className="text-2xl font-bold">{boleto.banco}</div>
           </div>
           <div className="text-right">
@@ -71,11 +105,13 @@ export function BoletoPreviewPanel({ boleto, onUpdateStatus }: BoletoPreviewPane
             <div className="text-lg font-mono font-bold">{boleto.numero}</div>
           </div>
         </div>
-        
+
         <div className="bg-muted/50 p-4 rounded-lg">
           <div className="text-xs text-muted-foreground mb-1">Linha Digitável</div>
           <div className="flex items-center gap-2">
-            <code className="text-lg font-mono tracking-wider flex-1 break-all">{boleto.linha_digitavel}</code>
+            <code className="text-lg font-mono tracking-wider flex-1 break-all">
+              {boleto.linha_digitavel}
+            </code>
             <Button variant="ghost" size="sm" onClick={handleCopy}>
               {copied ? <Check className="h-4 w-4 text-success" /> : <Copy className="h-4 w-4" />}
             </Button>
@@ -91,7 +127,9 @@ export function BoletoPreviewPanel({ boleto, onUpdateStatus }: BoletoPreviewPane
             </div>
             <div>
               <div className="text-xs text-muted-foreground">Agência/Código do Beneficiário</div>
-              <div className="font-mono">{boleto.agencia} / {boleto.conta}</div>
+              <div className="font-mono">
+                {boleto.agencia} / {boleto.conta}
+              </div>
             </div>
           </div>
           <div className="space-y-4">
@@ -113,14 +151,20 @@ export function BoletoPreviewPanel({ boleto, onUpdateStatus }: BoletoPreviewPane
           </div>
         </div>
         <Separator />
-        <BoletoBarcode banco={boleto.banco} valor={boleto.valor} vencimento={boleto.vencimento} cedenteCnpj={boleto.cedente_cnpj || undefined} numero={boleto.numero} />
+        <BoletoBarcode
+          banco={boleto.banco}
+          valor={boleto.valor}
+          vencimento={boleto.vencimento}
+          cedenteCnpj={boleto.cedente_cnpj || undefined}
+          numero={boleto.numero}
+        />
       </div>
 
       {/* Seção de Rastreio */}
       <div className="space-y-3">
-        <Button 
-          variant="ghost" 
-          size="sm" 
+        <Button
+          variant="ghost"
+          size="sm"
           className="gap-2 text-muted-foreground"
           onClick={() => setShowRastreio(!showRastreio)}
         >
@@ -138,7 +182,9 @@ export function BoletoPreviewPanel({ boleto, onUpdateStatus }: BoletoPreviewPane
                     <div className="flex flex-col">
                       <div className="flex items-center gap-2">
                         <span className="text-xs font-bold uppercase">{step.status}</span>
-                        <span className="text-[10px] text-muted-foreground">{formatDateTime(step.data)}</span>
+                        <span className="text-[10px] text-muted-foreground">
+                          {formatDateTime(step.data)}
+                        </span>
                       </div>
                       <span className="text-xs text-muted-foreground">{step.detalhe}</span>
                     </div>
@@ -151,7 +197,7 @@ export function BoletoPreviewPanel({ boleto, onUpdateStatus }: BoletoPreviewPane
                 </div>
               )}
             </div>
-            
+
             <BoletoHistorico boletoId={boleto.id} />
 
             {/* Eventos de Pagamento/Baixa vinculados */}
@@ -162,17 +208,28 @@ export function BoletoPreviewPanel({ boleto, onUpdateStatus }: BoletoPreviewPane
                 </h4>
                 <div className="space-y-3">
                   {boleto.eventos_pagamento.map((evento: EventoPagamento, i: number) => (
-                    <div key={i} className="flex items-center justify-between text-xs bg-card/40 p-2 rounded-lg border border-success/5">
+                    <div
+                      key={i}
+                      className="flex items-center justify-between text-xs bg-card/40 p-2 rounded-lg border border-success/5"
+                    >
                       <div className="flex items-center gap-2">
                         <TrendingUp className="h-3 w-3 text-success" />
                         <div>
                           <p className="font-bold">{evento.tipo || 'Liquidação'}</p>
-                          <p className="text-muted-foreground">{formatDate(evento.data || new Date())}</p>
+                          <p className="text-muted-foreground">
+                            {formatDate(evento.data || new Date())}
+                          </p>
                         </div>
                       </div>
                       <div className="text-right">
-                        <p className="font-bold text-success">{formatCurrency(evento.valor || boleto.valor)}</p>
-                        {evento.metodo && <p className="text-[10px] text-muted-foreground uppercase tracking-wider">{evento.metodo}</p>}
+                        <p className="font-bold text-success">
+                          {formatCurrency(evento.valor || boleto.valor)}
+                        </p>
+                        {evento.metodo && (
+                          <p className="text-[10px] text-muted-foreground uppercase tracking-wider">
+                            {evento.metodo}
+                          </p>
+                        )}
                       </div>
                     </div>
                   ))}
@@ -184,12 +241,31 @@ export function BoletoPreviewPanel({ boleto, onUpdateStatus }: BoletoPreviewPane
       </div>
 
       <div className="flex gap-2 print:hidden flex-wrap pt-2">
-        <Button onClick={handleDownload} className="flex-1 gap-2"><Download className="h-4 w-4" />Download PDF</Button>
-        <Button variant="outline" onClick={() => window.print()} className="gap-2"><Printer className="h-4 w-4" />Imprimir</Button>
-        <Button variant="outline" onClick={() => { onUpdateStatus({ id: boleto.id, status: 'enviado' }); toast.success('Boleto enviado!'); }} className="gap-2"><Mail className="h-4 w-4" />Enviar</Button>
-        
+        <Button onClick={handleDownload} className="flex-1 gap-2">
+          <Download className="h-4 w-4" />
+          Download PDF
+        </Button>
+        <Button variant="outline" onClick={() => window.print()} className="gap-2">
+          <Printer className="h-4 w-4" />
+          Imprimir
+        </Button>
+        <Button
+          variant="outline"
+          onClick={() => {
+            onUpdateStatus({ id: boleto.id, status: 'enviado' });
+            toast.success('Boleto enviado!');
+          }}
+          className="gap-2"
+        >
+          <Mail className="h-4 w-4" />
+          Enviar
+        </Button>
+
         {boleto.asaas_id && (
-          <Badge variant="secondary" className="gap-1 flex items-center px-3 bg-blue-500/10 text-blue-500 hover:bg-blue-500/20">
+          <Badge
+            variant="secondary"
+            className="gap-1 flex items-center px-3 bg-blue-500/10 text-blue-500 hover:bg-blue-500/20"
+          >
             <Barcode className="h-3 w-3" />
             ASAAS: {boleto.asaas_id}
           </Badge>
@@ -201,11 +277,11 @@ export function BoletoPreviewPanel({ boleto, onUpdateStatus }: BoletoPreviewPane
             Bitrix24: {boleto.bitrix_status || 'Sincronizado'}
           </Badge>
         ) : (
-          <Button 
-            variant="outline" 
+          <Button
+            variant="outline"
             onClick={() => {
               if (window.syncBitrixBoleto) window.syncBitrixBoleto(boleto.id);
-            }} 
+            }}
             className="gap-2"
           >
             <RefreshCw className="h-4 w-4" />
@@ -214,7 +290,14 @@ export function BoletoPreviewPanel({ boleto, onUpdateStatus }: BoletoPreviewPane
         )}
 
         {boleto.status !== 'pago' && boleto.status !== 'cancelado' && (
-          <Button variant="outline" onClick={() => onUpdateStatus({ id: boleto.id, status: 'pago' })} className="gap-2 text-success"><CheckCircle2 className="h-4 w-4" />Marcar Pago</Button>
+          <Button
+            variant="outline"
+            onClick={() => onUpdateStatus({ id: boleto.id, status: 'pago' })}
+            className="gap-2 text-success"
+          >
+            <CheckCircle2 className="h-4 w-4" />
+            Marcar Pago
+          </Button>
         )}
       </div>
     </div>

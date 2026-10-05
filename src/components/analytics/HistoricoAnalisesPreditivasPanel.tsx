@@ -21,7 +21,11 @@ export function HistoricoAnalisesPreditivasPanel() {
       </CardHeader>
       <CardContent>
         {isLoading ? (
-          <div className="space-y-3">{Array.from({ length: 4 }).map((_, i) => <Skeleton key={i} className="h-16" />)}</div>
+          <div className="space-y-3">
+            {Array.from({ length: 4 }).map((_, i) => (
+              <Skeleton key={i} className="h-16" />
+            ))}
+          </div>
         ) : !analises || analises.length === 0 ? (
           <div className="text-center py-12 text-muted-foreground">
             <Brain className="h-12 w-12 mx-auto mb-2 opacity-30" />
@@ -30,15 +34,22 @@ export function HistoricoAnalisesPreditivasPanel() {
         ) : (
           <div className="space-y-2 max-h-[400px] overflow-y-auto">
             {analises.map((analise) => (
-              <div key={analise.id} className="flex items-center justify-between p-3 rounded-lg border hover:bg-accent/5 transition-colors">
+              <div
+                key={analise.id}
+                className="flex items-center justify-between p-3 rounded-lg border hover:bg-accent/5 transition-colors"
+              >
                 <div className="flex items-center gap-3">
                   <TrendingUp className="h-5 w-5 text-primary" />
                   <div>
-                    <p className="font-medium text-sm">{analise.resumo_executivo?.slice(0, 60) || 'Análise Geral'}</p>
+                    <p className="font-medium text-sm">
+                      {analise.resumo_executivo?.slice(0, 60) || 'Análise Geral'}
+                    </p>
                     <p className="text-xs text-muted-foreground flex items-center gap-1">
                       <Calendar className="h-3 w-3" />
                       {formatDate(analise.created_at)}
-                      {analise.alertas_gerados != null && <span>• {analise.alertas_gerados} alertas</span>}
+                      {analise.alertas_gerados != null && (
+                        <span>• {analise.alertas_gerados} alertas</span>
+                      )}
                     </p>
                   </div>
                 </div>

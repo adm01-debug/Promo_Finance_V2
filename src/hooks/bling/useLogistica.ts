@@ -39,7 +39,10 @@ export function useBlingLogisticaMutations() {
 
   const criarRemessa = useMutation({
     mutationFn: (data: Record<string, unknown>) => blingAction('criar_remessa', { data }),
-    onSuccess: () => { toast.success('Remessa criada'); queryClient.invalidateQueries({ queryKey: ['bling-remessas'] }); },
+    onSuccess: () => {
+      toast.success('Remessa criada');
+      queryClient.invalidateQueries({ queryKey: ['bling-remessas'] });
+    },
     onError: (err: Error) => toast.error(`Erro: ${err.message}`),
   });
 

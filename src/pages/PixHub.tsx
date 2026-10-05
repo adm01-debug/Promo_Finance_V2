@@ -30,10 +30,16 @@ export default function PixHub() {
             </p>
           </div>
           <div className="flex items-center gap-2">
-            <Button variant="outline" className="gap-2 border-primary/20 bg-primary/5 text-primary hover:bg-primary/10">
+            <Button
+              variant="outline"
+              className="gap-2 border-primary/20 bg-primary/5 text-primary hover:bg-primary/10"
+            >
               <Download className="h-4 w-4" /> Conciliação
             </Button>
-            <Button onClick={() => setReceiveDialogOpen(true)} className="gap-2 bg-gradient-to-r from-primary to-blue-600 shadow-lg shadow-primary/20">
+            <Button
+              onClick={() => setReceiveDialogOpen(true)}
+              className="gap-2 bg-gradient-to-r from-primary to-blue-600 shadow-lg shadow-primary/20"
+            >
               <Plus className="h-4 w-4" /> Receber via PIX
             </Button>
           </div>
@@ -41,42 +47,66 @@ export default function PixHub() {
 
         <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-4">
           <TabsList className="grid grid-cols-4 w-full max-w-xl bg-muted/50 p-1">
-            <TabsTrigger value="dashboard" className="gap-2 data-[state=active]:bg-background data-[state=active]:shadow-sm">
+            <TabsTrigger
+              value="dashboard"
+              className="gap-2 data-[state=active]:bg-background data-[state=active]:shadow-sm"
+            >
               <LayoutDashboard className="h-4 w-4" />
               <span className="hidden sm:inline">Dashboard</span>
             </TabsTrigger>
-            <TabsTrigger value="receber" className="gap-2 data-[state=active]:bg-background data-[state=active]:shadow-sm">
+            <TabsTrigger
+              value="receber"
+              className="gap-2 data-[state=active]:bg-background data-[state=active]:shadow-sm"
+            >
               <Download className="h-4 w-4" />
               <span className="hidden sm:inline">Recebimento</span>
             </TabsTrigger>
-            <TabsTrigger value="templates" className="gap-2 data-[state=active]:bg-background data-[state=active]:shadow-sm">
+            <TabsTrigger
+              value="templates"
+              className="gap-2 data-[state=active]:bg-background data-[state=active]:shadow-sm"
+            >
               <FileStack className="h-4 w-4" />
               <span className="hidden sm:inline">Templates</span>
             </TabsTrigger>
-            <TabsTrigger value="aprovacao" className="gap-2 data-[state=active]:bg-background data-[state=active]:shadow-sm">
+            <TabsTrigger
+              value="aprovacao"
+              className="gap-2 data-[state=active]:bg-background data-[state=active]:shadow-sm"
+            >
               <ShieldCheck className="h-4 w-4" />
               <span className="hidden sm:inline">Aprovação</span>
             </TabsTrigger>
           </TabsList>
 
-          <TabsContent value="dashboard" className="animate-in fade-in slide-in-from-bottom-2 duration-300">
+          <TabsContent
+            value="dashboard"
+            className="animate-in fade-in slide-in-from-bottom-2 duration-300"
+          >
             <PixDashboardRealtime />
           </TabsContent>
-          <TabsContent value="receber" className="animate-in fade-in slide-in-from-bottom-2 duration-300">
+          <TabsContent
+            value="receber"
+            className="animate-in fade-in slide-in-from-bottom-2 duration-300"
+          >
             <PixRecebimento />
           </TabsContent>
-          <TabsContent value="templates" className="animate-in fade-in slide-in-from-bottom-2 duration-300">
+          <TabsContent
+            value="templates"
+            className="animate-in fade-in slide-in-from-bottom-2 duration-300"
+          >
             <PixTemplates />
           </TabsContent>
-          <TabsContent value="aprovacao" className="animate-in fade-in slide-in-from-bottom-2 duration-300">
+          <TabsContent
+            value="aprovacao"
+            className="animate-in fade-in slide-in-from-bottom-2 duration-300"
+          >
             <AprovacaoRapidaMobile />
           </TabsContent>
         </Tabs>
 
-        <NovaCobrancaDialog 
-          open={receiveDialogOpen} 
-          onOpenChange={setReceiveDialogOpen} 
-          empresaId={firstEmpresaId} 
+        <NovaCobrancaDialog
+          open={receiveDialogOpen}
+          onOpenChange={setReceiveDialogOpen}
+          empresaId={firstEmpresaId}
         />
       </div>
     </MainLayout>

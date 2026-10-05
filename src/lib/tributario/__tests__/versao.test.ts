@@ -1,9 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import {
-  VERSAO_MOTOR_TRIBUTARIO,
-  compararVersaoMotor,
-  versaoDesatualizada,
-} from '../versao';
+import { VERSAO_MOTOR_TRIBUTARIO, compararVersaoMotor, versaoDesatualizada } from '../versao';
 
 describe('versionamento do motor tributário', () => {
   it('expõe uma versão semântica válida', () => {

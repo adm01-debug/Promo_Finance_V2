@@ -17,10 +17,10 @@ export default function FechamentoMensalPage() {
     <MainLayout>
       <div className="relative min-h-screen">
         <PageBackground />
-        
+
         <div className="container mx-auto p-6 relative z-10 space-y-8">
-          <PageHeader 
-            title="Fechamento Mensal Tributário" 
+          <PageHeader
+            title="Fechamento Mensal Tributário"
             subtitle="Assistente inteligente para conferência, conciliação e encerramento do período fiscal."
             badge="Fiscal Compliance"
             icon={FileCheck}
@@ -39,10 +39,10 @@ export default function FechamentoMensalPage() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5 }}
           >
-            <AssistenteFechamentoMensal 
-              empresaId={currentEmpresaId || ''} 
-              ano={currentYear} 
-              mes={currentMonth} 
+            <AssistenteFechamentoMensal
+              empresaId={currentEmpresaId || ''}
+              ano={currentYear}
+              mes={currentMonth}
             />
           </motion.div>
         </div>
@@ -50,4 +50,3 @@ export default function FechamentoMensalPage() {
     </MainLayout>
   );
 }
-

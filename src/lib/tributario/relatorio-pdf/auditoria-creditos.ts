@@ -14,7 +14,7 @@ export interface CreditoAuditoriaItem {
 
 export function baixarRelatorioAuditoriaCreditos(
   empresaNome: string,
-  creditos: CreditoAuditoriaItem[],
+  creditos: CreditoAuditoriaItem[]
 ) {
   const doc = new jsPDF({ unit: 'mm', format: 'a4' });
   const pageWidth = doc.internal.pageSize.getWidth();

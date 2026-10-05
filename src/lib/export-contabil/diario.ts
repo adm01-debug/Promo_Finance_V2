@@ -23,19 +23,19 @@ export function exportDiarioCSV(partidas: PartidaExport[], ctx: PeriodoCtx) {
         p.credito ? p.credito.toFixed(2).replace('.', ',') : '',
       ]
         .map(csvEscape)
-        .join(';'),
+        .join(';')
     );
   }
   lines.push('');
   lines.push(
     ['', '', '', 'TOTAIS', totalD.toFixed(2).replace('.', ','), totalC.toFixed(2).replace('.', ',')]
       .map(csvEscape)
-      .join(';'),
+      .join(';')
   );
   lines.push(
     ['', '', '', 'Diferença (D-C)', '', (totalD - totalC).toFixed(2).replace('.', ',')]
       .map(csvEscape)
-      .join(';'),
+      .join(';')
   );
   downloadCSV(lines.join('\n'), buildFilename('livro-diario', ctx));
 }

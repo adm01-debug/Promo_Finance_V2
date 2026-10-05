@@ -8,10 +8,7 @@ import {
   mergeWithDiscovered,
   type FilterCatalogEntry,
 } from '../savedFiltersCatalog';
-import {
-  subscribeHydrationEvents,
-  type HydrationEvent,
-} from '@/lib/filterHydrationTelemetry';
+import { subscribeHydrationEvents, type HydrationEvent } from '@/lib/filterHydrationTelemetry';
 import type { DiagnosticState } from './types';
 import { readLocalState } from './helpers';
 
@@ -26,9 +23,9 @@ export function useFiltrosSalvosDiagnostics(userId?: string | null) {
       setHydrationEvents(events);
       const last = events[events.length - 1];
       if (last && last.status === 'error') {
-        const previously = events.slice(0, -1).some(
-          (e) => e.entityType === last.entityType && e.at === last.at,
-        );
+        const previously = events
+          .slice(0, -1)
+          .some((e) => e.entityType === last.entityType && e.at === last.at);
         if (!previously) {
           logger.error('[FiltrosSalvos] hidratação falhou', {
             entityType: last.entityType,
@@ -86,7 +83,9 @@ export function useFiltrosSalvosDiagnostics(userId?: string | null) {
             remoteKeys = Object.keys(payload?.filters ?? {});
             remoteStatus = remoteKeys.length > 0 ? 'ok' : 'empty';
             remoteUpdatedAtIso = data.updated_at ? new Date(data.updated_at).toISOString() : null;
-            remoteUpdatedAt = data.updated_at ? new Date(data.updated_at).toLocaleString('pt-BR') : null;
+            remoteUpdatedAt = data.updated_at
+              ? new Date(data.updated_at).toLocaleString('pt-BR')
+              : null;
           } else {
             remoteStatus = 'empty';
           }
@@ -114,7 +113,7 @@ export function useFiltrosSalvosDiagnostics(userId?: string | null) {
         },
       }));
     },
-    [userId],
+    [userId]
   );
 
   const refreshAll = useCallback(async () => {
@@ -130,9 +129,7 @@ export function useFiltrosSalvosDiagnostics(userId?: string | null) {
             .select('entity_type')
             .eq('user_id', userId);
           if (error) throw error;
-          remoteEntityTypes = Array.from(
-            new Set((data ?? []).map((r) => r.entity_type as string)),
-          );
+          remoteEntityTypes = Array.from(new Set((data ?? []).map((r) => r.entity_type as string)));
         } catch (e) {
           logger.warn('[FiltrosSalvos] discovery remoto falhou', { e });
         }

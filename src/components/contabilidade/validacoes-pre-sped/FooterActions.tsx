@@ -42,7 +42,9 @@ export function FooterActions({
   onDownloadTxt,
   onDownloadZip,
 }: Props) {
-  const bloqueioMsg = isRejeitado ? 'Bloqueado: arquivo rejeitado' : 'Bloqueado por erros de validação';
+  const bloqueioMsg = isRejeitado
+    ? 'Bloqueado: arquivo rejeitado'
+    : 'Bloqueado por erros de validação';
   return (
     <DialogFooter className="gap-2">
       <Button variant="ghost" onClick={onClose}>
@@ -66,22 +68,32 @@ export function FooterActions({
           <DropdownMenuLabel className="text-[10px] uppercase tracking-widest opacity-50 px-2 py-1">
             Relatório Completo
           </DropdownMenuLabel>
-          <DropdownMenuItem onClick={() => onExportPdf(false)} className="gap-3 py-2 rounded-lg cursor-pointer">
+          <DropdownMenuItem
+            onClick={() => onExportPdf(false)}
+            className="gap-3 py-2 rounded-lg cursor-pointer"
+          >
             <div className="p-1.5 bg-destructive/10 rounded-md">
               <FileText className="h-4 w-4 text-destructive" />
             </div>
             <div className="flex flex-col">
               <span className="text-xs font-bold">PDF (.pdf)</span>
-              <span className="text-[10px] text-muted-foreground">{errosTotal + avisosTotal} item(ns)</span>
+              <span className="text-[10px] text-muted-foreground">
+                {errosTotal + avisosTotal} item(ns)
+              </span>
             </div>
           </DropdownMenuItem>
-          <DropdownMenuItem onClick={() => onExportJson(false)} className="gap-3 py-2 rounded-lg cursor-pointer">
+          <DropdownMenuItem
+            onClick={() => onExportJson(false)}
+            className="gap-3 py-2 rounded-lg cursor-pointer"
+          >
             <div className="p-1.5 bg-primary/10 rounded-md">
               <FileJson className="h-4 w-4 text-primary" />
             </div>
             <div className="flex flex-col">
               <span className="text-xs font-bold">JSON (.json)</span>
-              <span className="text-[10px] text-muted-foreground">{errosTotal + avisosTotal} item(ns)</span>
+              <span className="text-[10px] text-muted-foreground">
+                {errosTotal + avisosTotal} item(ns)
+              </span>
             </div>
           </DropdownMenuItem>
           {temFiltro && (

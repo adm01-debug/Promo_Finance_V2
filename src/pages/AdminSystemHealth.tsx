@@ -118,8 +118,14 @@ export default function AdminSystemHealth() {
     ? ((cnpjaCacheStats.validos / cnpjaCacheStats.total) * 100).toFixed(1)
     : '0.0';
 
-  const container = { hidden: { opacity: 0 }, show: { opacity: 1, transition: { staggerChildren: 0.08 } } };
-  const item = { hidden: { opacity: 0, y: 16 }, show: { opacity: 1, y: 0, transition: { duration: 0.4 } } };
+  const container = {
+    hidden: { opacity: 0 },
+    show: { opacity: 1, transition: { staggerChildren: 0.08 } },
+  };
+  const item = {
+    hidden: { opacity: 0, y: 16 },
+    show: { opacity: 1, y: 0, transition: { duration: 0.4 } },
+  };
 
   return (
     <div className="container mx-auto p-6 space-y-6">
@@ -129,7 +135,9 @@ export default function AdminSystemHealth() {
             <Activity className="h-7 w-7 text-primary" />
             System Health
           </h1>
-          <p className="text-muted-foreground">Painel operacional consolidado · atualizado a cada 60s</p>
+          <p className="text-muted-foreground">
+            Painel operacional consolidado · atualizado a cada 60s
+          </p>
         </div>
         <Badge variant={slaOk ? 'outline' : 'destructive'} className="text-sm">
           SLA: {slaOk ? 'OK' : 'Atenção'}
@@ -147,18 +155,43 @@ export default function AdminSystemHealth() {
         </TabsList>
 
         <TabsContent value="overview" className="space-y-6">
-          <motion.div variants={container} initial="hidden" animate="show" className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          <motion.div
+            variants={container}
+            initial="hidden"
+            animate="show"
+            className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4"
+          >
             <motion.div variants={item}>
-              <KpiCard icon={<Zap className="h-4 w-4" />} label="Edge — chamadas 7d" value={totalCalls.toLocaleString('pt-BR')} hint={`${errorRate}% erros`} />
+              <KpiCard
+                icon={<Zap className="h-4 w-4" />}
+                label="Edge — chamadas 7d"
+                value={totalCalls.toLocaleString('pt-BR')}
+                hint={`${errorRate}% erros`}
+              />
             </motion.div>
             <motion.div variants={item}>
-              <KpiCard icon={<Activity className="h-4 w-4" />} label="Edge — pior p95" value={`${maxP95} ms`} hint={maxP95 < 1000 ? 'Excelente' : maxP95 < 3000 ? 'Aceitável' : 'Lento'} />
+              <KpiCard
+                icon={<Activity className="h-4 w-4" />}
+                label="Edge — pior p95"
+                value={`${maxP95} ms`}
+                hint={maxP95 < 1000 ? 'Excelente' : maxP95 < 3000 ? 'Aceitável' : 'Lento'}
+              />
             </motion.div>
             <motion.div variants={item}>
-              <KpiCard icon={<Database className="h-4 w-4" />} label="CNPJá cache" value={`${cnpjaHitRate}%`} hint={`${cnpjaCacheStats?.validos ?? 0}/${cnpjaCacheStats?.total ?? 0} válidos`} />
+              <KpiCard
+                icon={<Database className="h-4 w-4" />}
+                label="CNPJá cache"
+                value={`${cnpjaHitRate}%`}
+                hint={`${cnpjaCacheStats?.validos ?? 0}/${cnpjaCacheStats?.total ?? 0} válidos`}
+              />
             </motion.div>
             <motion.div variants={item}>
-              <KpiCard icon={<Shield className="h-4 w-4" />} label="Cache regime" value={String(regimeCacheStats?.ativos ?? 0)} hint="entradas ativas (TTL 7d)" />
+              <KpiCard
+                icon={<Shield className="h-4 w-4" />}
+                label="Cache regime"
+                value={String(regimeCacheStats?.ativos ?? 0)}
+                hint="entradas ativas (TTL 7d)"
+              />
             </motion.div>
           </motion.div>
 
@@ -227,12 +260,24 @@ export default function AdminSystemHealth() {
   );
 }
 
-function KpiCard({ icon, label, value, hint }: { icon: React.ReactNode; label: string; value: string; hint: string }) {
+function KpiCard({
+  icon,
+  label,
+  value,
+  hint,
+}: {
+  icon: React.ReactNode;
+  label: string;
+  value: string;
+  hint: string;
+}) {
   return (
     <Card className="backdrop-blur-sm bg-card/60 border-border/50">
       <CardHeader className="flex flex-row items-center justify-between pb-2">
         <CardTitle className="text-xs font-medium text-muted-foreground">{label}</CardTitle>
-        <div className="h-7 w-7 rounded-lg bg-primary/10 text-primary flex items-center justify-center">{icon}</div>
+        <div className="h-7 w-7 rounded-lg bg-primary/10 text-primary flex items-center justify-center">
+          {icon}
+        </div>
       </CardHeader>
       <CardContent>
         <div className="text-2xl font-bold">{value}</div>

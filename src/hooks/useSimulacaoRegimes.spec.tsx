@@ -47,17 +47,24 @@ const wrapper = ({ children }: { children: React.ReactNode }) => (
 describe('useSimulacaoRegimes Integration', () => {
   it('deve alternar para resultado do servidor ao chamar sincronizarComServer', async () => {
     const mockServerResult = {
-      recomendado: { nome: 'Regime IA', regime: 'lucro_real', totalTributos: 100, cargaEfetiva: 10 },
+      recomendado: {
+        nome: 'Regime IA',
+        regime: 'lucro_real',
+        totalTributos: 100,
+        cargaEfetiva: 10,
+      },
       cenarios: [],
       justificativa: 'Justificativa IA',
       justificativaIA: 'Justificativa IA Premium',
       auditLogId: 'audit-123',
-      params: {}
+      params: {},
     };
 
     mockInvoke.mockResolvedValue({ data: mockServerResult, error: null });
 
-    const { result } = renderHook(() => useSimulacaoRegimes({ empresaId: 'empresa-123' }), { wrapper });
+    const { result } = renderHook(() => useSimulacaoRegimes({ empresaId: 'empresa-123' }), {
+      wrapper,
+    });
 
     // Inicialmente deve ter resultado local
     expect(result.current.resultado.recomendado.nome).not.toBe('Regime IA');
@@ -72,9 +79,14 @@ describe('useSimulacaoRegimes Integration', () => {
   });
 
   it('deve invalidar o resultado do servidor ao alterar parâmetros', async () => {
-    mockInvoke.mockResolvedValue({ data: { recomendado: { nome: 'IA', cargaEfetiva: 10 }, cenarios: [] }, error: null });
+    mockInvoke.mockResolvedValue({
+      data: { recomendado: { nome: 'IA', cargaEfetiva: 10 }, cenarios: [] },
+      error: null,
+    });
 
-    const { result } = renderHook(() => useSimulacaoRegimes({ empresaId: 'empresa-123' }), { wrapper });
+    const { result } = renderHook(() => useSimulacaoRegimes({ empresaId: 'empresa-123' }), {
+      wrapper,
+    });
 
     await act(async () => {
       await result.current.sincronizarComServer();

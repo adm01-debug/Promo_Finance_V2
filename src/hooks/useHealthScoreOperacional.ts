@@ -1,6 +1,6 @@
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { supabase } from "@/integrations/supabase/client";
-import { toast } from "sonner";
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { supabase } from '@/integrations/supabase/client';
+import { toast } from 'sonner';
 
 export interface HealthScore {
   id: string;
@@ -21,14 +21,14 @@ export function useHealthScoreOperacional(empresaId?: string | null) {
   const qc = useQueryClient();
 
   const latest = useQuery({
-    queryKey: ["health-score", empresaId],
+    queryKey: ['health-score', empresaId],
     queryFn: async () => {
       let q = supabase
-        .from("health_scores_operacionais")
-        .select("*")
-        .order("snapshot_data", { ascending: false })
+        .from('health_scores_operacionais')
+        .select('*')
+        .order('snapshot_data', { ascending: false })
         .limit(1);
-      if (empresaId) q = q.eq("empresa_id", empresaId);
+      if (empresaId) q = q.eq('empresa_id', empresaId);
       const { data, error } = await q.maybeSingle();
       if (error) throw error;
       return data as HealthScore | null;
@@ -37,16 +37,15 @@ export function useHealthScoreOperacional(empresaId?: string | null) {
 
   const recalcular = useMutation({
     mutationFn: async () => {
-      const { data, error } = await supabase.functions.invoke(
-        "calcular-health-score-operacional",
-        { body: empresaId ? { empresa_id: empresaId } : {} }
-      );
+      const { data, error } = await supabase.functions.invoke('calcular-health-score-operacional', {
+        body: empresaId ? { empresa_id: empresaId } : {},
+      });
       if (error) throw error;
       return data;
     },
     onSuccess: () => {
-      toast.success("Health Score recalculado");
-      qc.invalidateQueries({ queryKey: ["health-score"] });
+      toast.success('Health Score recalculado');
+      qc.invalidateQueries({ queryKey: ['health-score'] });
     },
     onError: (e: Error) => toast.error(`Erro: ${e.message}`),
   });

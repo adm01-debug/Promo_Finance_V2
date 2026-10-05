@@ -64,8 +64,13 @@ describe('derivarAtividadePresumido', () => {
   // ---- Varredura exaustiva: todas as divisões x subclasses ----
   it('nunca retorna resultado inválido em 900 CNAEs varridos', () => {
     const validas = new Set<AtividadePresumido>([
-      'comercio', 'industria', 'servicos_geral', 'servicos_profissionais',
-      'transporte_cargas', 'transporte_passageiros', 'servicos_hospitalares',
+      'comercio',
+      'industria',
+      'servicos_geral',
+      'servicos_profissionais',
+      'transporte_cargas',
+      'transporte_passageiros',
+      'servicos_hospitalares',
     ]);
     let checados = 0;
     for (let divisao = 1; divisao <= 99; divisao += 1) {

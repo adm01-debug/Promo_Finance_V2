@@ -1,9 +1,19 @@
 import { describe, expect, it } from 'vitest';
 import {
-  ALIQUOTA_CPP, ALIQUOTA_FGTS, FAP_MAXIMO, FAP_MINIMO,
-  RAT_AJUSTADO_MAXIMO, RAT_AJUSTADO_MINIMO, RAT_POR_GRAU,
-  buscarFpas, calcularEncargosPatronais, calcularRatAjustado,
-  compararDesoneracaoFolha, grauRiscoPorCnae, normalizarFap, resolverRatNominal,
+  ALIQUOTA_CPP,
+  ALIQUOTA_FGTS,
+  FAP_MAXIMO,
+  FAP_MINIMO,
+  RAT_AJUSTADO_MAXIMO,
+  RAT_AJUSTADO_MINIMO,
+  RAT_POR_GRAU,
+  buscarFpas,
+  calcularEncargosPatronais,
+  calcularRatAjustado,
+  compararDesoneracaoFolha,
+  grauRiscoPorCnae,
+  normalizarFap,
+  resolverRatNominal,
   type GrauRisco,
 } from '../folha';
 import { calcularLucroPresumido } from '../calculadora/lucro-presumido';
@@ -214,13 +224,16 @@ describe('folha — desoneração (CPRB)', () => {
 
   it('alerta quando não há CPP devida ou alíquota informada', () => {
     const semCpp = compararDesoneracaoFolha({
-      receitaBruta: 100_000, aliquotaCprb: 0.03,
+      receitaBruta: 100_000,
+      aliquotaCprb: 0.03,
       encargos: { folha: 100_000, simplesNacional: true },
     });
     expect(semCpp.alertas.some((a) => a.includes('sem CPP'))).toBe(true);
 
     const semAliquota = compararDesoneracaoFolha({
-      receitaBruta: 100_000, aliquotaCprb: 0, encargos: { folha: 100_000 },
+      receitaBruta: 100_000,
+      aliquotaCprb: 0,
+      encargos: { folha: 100_000 },
     });
     expect(semAliquota.cprb).toBe(0);
     expect(semAliquota.alertas.some((a) => a.includes('CPRB não informada'))).toBe(true);
@@ -232,12 +245,14 @@ describe('folha — integração com os motores de regime', () => {
 
   it('lucro presumido reflete RAT ajustado pelo FAP na CPP', () => {
     const base = calcularLucroPresumido({
-      receitas, atividade: 'servicos_geral',
+      receitas,
+      atividade: 'servicos_geral',
       folha: { folhaAnual: 1_000_000, grauRisco: 'medio', fap: 1 },
       estadualMunicipal: {},
     });
     const bonificado = calcularLucroPresumido({
-      receitas, atividade: 'servicos_geral',
+      receitas,
+      atividade: 'servicos_geral',
       folha: { folhaAnual: 1_000_000, grauRisco: 'medio', fap: 0.5 },
       estadualMunicipal: {},
     });
@@ -250,14 +265,22 @@ describe('folha — integração com os motores de regime', () => {
 
   it('lucro real deriva o RAT a partir do CNAE quando não há override', () => {
     const construcao = calcularLucroReal({
-      receitas, lucroContabil: 800_000, lalur: {}, creditosPisCofins: {},
+      receitas,
+      lucroContabil: 800_000,
+      lalur: {},
+      creditosPisCofins: {},
       folha: { folhaAnual: 1_000_000, cnae: '4120-4/00' },
-      estadualMunicipal: {}, modo: 'trimestral',
+      estadualMunicipal: {},
+      modo: 'trimestral',
     });
     const ti = calcularLucroReal({
-      receitas, lucroContabil: 800_000, lalur: {}, creditosPisCofins: {},
+      receitas,
+      lucroContabil: 800_000,
+      lalur: {},
+      creditosPisCofins: {},
       folha: { folhaAnual: 1_000_000, cnae: '6201-5/01' },
-      estadualMunicipal: {}, modo: 'trimestral',
+      estadualMunicipal: {},
+      modo: 'trimestral',
     });
     const cppConstrucao = construcao.tributos.find((t) => t.nome === 'CPP')!;
     const cppTi = ti.tributos.find((t) => t.nome === 'CPP')!;
@@ -267,7 +290,8 @@ describe('folha — integração com os motores de regime', () => {
 
   it('mantém compatibilidade com overrides legados de RAT e Terceiros', () => {
     const r = calcularLucroPresumido({
-      receitas, atividade: 'servicos_geral',
+      receitas,
+      atividade: 'servicos_geral',
       folha: { folhaAnual: 1_000_000, aliquotaRat: 0.03, aliquotaTerceiros: 0.058 },
       estadualMunicipal: {},
     });

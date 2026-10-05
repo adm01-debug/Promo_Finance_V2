@@ -3,7 +3,11 @@
  * Cobre normalização de erros, EdgeFunctionError e toast handling.
  */
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { FunctionsHttpError, FunctionsRelayError, FunctionsFetchError } from '@supabase/supabase-js';
+import {
+  FunctionsHttpError,
+  FunctionsRelayError,
+  FunctionsFetchError,
+} from '@supabase/supabase-js';
 
 const toastMocks = vi.hoisted(() => ({
   error: vi.fn(),
@@ -22,11 +26,7 @@ vi.mock('@/integrations/supabase/client', () => ({
   },
 }));
 
-import {
-  EdgeFunctionError,
-  handleEdgeError,
-  normalizeEdgeError,
-} from '../edge-function-error';
+import { EdgeFunctionError, handleEdgeError, normalizeEdgeError } from '../edge-function-error';
 
 beforeEach(() => {
   toastMocks.error.mockClear();
@@ -96,31 +96,54 @@ describe('normalizeEdgeError', () => {
 
 describe('handleEdgeError toast', () => {
   it('dispara toast de sessão expirada em 401', () => {
-    const err = new EdgeFunctionError({ functionName: 'fn', status: 401, code: 'X', message: 'auth' });
+    const err = new EdgeFunctionError({
+      functionName: 'fn',
+      status: 401,
+      code: 'X',
+      message: 'auth',
+    });
     handleEdgeError(err);
     expect(toastMocks.error).toHaveBeenCalledWith('Sessão expirada', expect.any(Object));
   });
 
   it('dispara toast de acesso negado em 403', () => {
-    const err = new EdgeFunctionError({ functionName: 'fn', status: 403, code: 'X', message: 'nope' });
+    const err = new EdgeFunctionError({
+      functionName: 'fn',
+      status: 403,
+      code: 'X',
+      message: 'nope',
+    });
     handleEdgeError(err);
     expect(toastMocks.error).toHaveBeenCalledWith('Acesso negado', expect.any(Object));
   });
 
   it('dispara warning em 429', () => {
-    const err = new EdgeFunctionError({ functionName: 'fn', status: 429, code: 'X', message: 'slow' });
+    const err = new EdgeFunctionError({
+      functionName: 'fn',
+      status: 429,
+      code: 'X',
+      message: 'slow',
+    });
     handleEdgeError(err);
     expect(toastMocks.warning).toHaveBeenCalledWith('Muitas requisições', expect.any(Object));
   });
 
   it('dispara serviço indisponível em 5xx', () => {
-    const err = new EdgeFunctionError({ functionName: 'fn', status: 503, code: 'X', message: 'down' });
+    const err = new EdgeFunctionError({
+      functionName: 'fn',
+      status: 503,
+      code: 'X',
+      message: 'down',
+    });
     handleEdgeError(err);
     expect(toastMocks.error).toHaveBeenCalledWith('Serviço indisponível', expect.any(Object));
   });
 
   it('usa titleFallback para erros genéricos', () => {
     handleEdgeError(new Error('qualquer'), 'Erro ao salvar');
-    expect(toastMocks.error).toHaveBeenCalledWith('Erro ao salvar', expect.objectContaining({ description: 'qualquer' }));
+    expect(toastMocks.error).toHaveBeenCalledWith(
+      'Erro ao salvar',
+      expect.objectContaining({ description: 'qualquer' })
+    );
   });
 });

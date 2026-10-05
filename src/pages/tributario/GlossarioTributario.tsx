@@ -25,9 +25,10 @@ export default function GlossarioTributario() {
   });
 
   const termosFiltrados = useMemo(() => {
-    return termos.filter(t => 
-      t.termo.toLowerCase().includes(search.toLowerCase()) ||
-      t.significado.toLowerCase().includes(search.toLowerCase())
+    return termos.filter(
+      (t) =>
+        t.termo.toLowerCase().includes(search.toLowerCase()) ||
+        t.significado.toLowerCase().includes(search.toLowerCase())
     );
   }, [termos, search]);
 
@@ -35,10 +36,10 @@ export default function GlossarioTributario() {
     <MainLayout>
       <div className="relative min-h-screen">
         <PageBackground />
-        
+
         <div className="container mx-auto p-6 relative z-10 space-y-6">
-          <PageHeader 
-            title="Glossário Tributário" 
+          <PageHeader
+            title="Glossário Tributário"
             subtitle="Termos e conceitos da Reforma Tributária (CBS, IBS, IS) explicados."
             badge="Educação Fiscal"
             icon={BookOpen}
@@ -61,7 +62,7 @@ export default function GlossarioTributario() {
 
           {isLoading ? (
             <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-              {[1, 2, 3, 4, 5, 6].map(i => (
+              {[1, 2, 3, 4, 5, 6].map((i) => (
                 <Skeleton key={i} className="h-40 w-full" />
               ))}
             </div>
@@ -83,7 +84,7 @@ export default function GlossarioTributario() {
                     <p className="text-sm leading-relaxed text-muted-foreground">
                       {item.significado}
                     </p>
-                    
+
                     {item.base_legal && (
                       <div className="flex items-center gap-2 pt-2 border-t text-[11px] text-muted-foreground">
                         <Info className="h-3 w-3" />
@@ -110,7 +111,8 @@ export default function GlossarioTributario() {
             </CardHeader>
             <CardContent>
               <p className="text-sm text-muted-foreground">
-                Consulte também o site oficial da Reforma Tributária do Ministério da Fazenda para atualizações em tempo real sobre leis complementares e cronogramas.
+                Consulte também o site oficial da Reforma Tributária do Ministério da Fazenda para
+                atualizações em tempo real sobre leis complementares e cronogramas.
               </p>
             </CardContent>
           </Card>

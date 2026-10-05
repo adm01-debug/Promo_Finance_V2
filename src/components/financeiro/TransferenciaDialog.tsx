@@ -4,32 +4,47 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
-import { 
-  Dialog, 
-  DialogContent, 
-  DialogHeader, 
-  DialogTitle, 
-  DialogFooter 
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
 } from '@/components/ui/dialog';
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 import { ArrowRightLeft, Building2 } from 'lucide-react';
 import { useContasBancarias, useEmpresas } from '@/hooks/useFinancialData';
 import { toast } from 'sonner';
 
-const transferenciaSchema = z.object({
-  empresa_id: z.string().min(1, 'Selecione a empresa'),
-  conta_origem_id: z.string().min(1, 'Selecione a conta de origem'),
-  conta_destino_id: z.string().min(1, 'Selecione a conta de destino'),
-  valor: z.number().positive('Valor deve ser maior que zero'),
-  data_transferencia: z.string().min(1, 'Data é obrigatória'),
-  descricao: z.string().optional(),
-}).refine(data => data.conta_origem_id !== data.conta_destino_id, {
-  message: "As contas de origem e destino devem ser diferentes",
-  path: ["conta_destino_id"],
-});
+const transferenciaSchema = z
+  .object({
+    empresa_id: z.string().min(1, 'Selecione a empresa'),
+    conta_origem_id: z.string().min(1, 'Selecione a conta de origem'),
+    conta_destino_id: z.string().min(1, 'Selecione a conta de destino'),
+    valor: z.number().positive('Valor deve ser maior que zero'),
+    data_transferencia: z.string().min(1, 'Data é obrigatória'),
+    descricao: z.string().optional(),
+  })
+  .refine((data) => data.conta_origem_id !== data.conta_destino_id, {
+    message: 'As contas de origem e destino devem ser diferentes',
+    path: ['conta_destino_id'],
+  });
 
 type TransferenciaFormData = z.infer<typeof transferenciaSchema>;
 
@@ -54,18 +69,16 @@ export function TransferenciaDialog({ open, onOpenChange }: TransferenciaDialogP
 
   const mutation = useMutation({
     mutationFn: async (data: TransferenciaFormData) => {
-      const { error } = await supabase
-        .from('transferencias')
-        .insert({
-          empresa_id: data.empresa_id,
-          conta_origem_id: data.conta_origem_id,
-          conta_destino_id: data.conta_destino_id,
-          valor: data.valor,
-          data_transferencia: data.data_transferencia,
-          descricao: data.descricao,
-          status: 'concluido'
-        });
-      
+      const { error } = await supabase.from('transferencias').insert({
+        empresa_id: data.empresa_id,
+        conta_origem_id: data.conta_origem_id,
+        conta_destino_id: data.conta_destino_id,
+        valor: data.valor,
+        data_transferencia: data.data_transferencia,
+        descricao: data.descricao,
+        status: 'concluido',
+      });
+
       if (error) throw error;
     },
     onSuccess: () => {
@@ -78,7 +91,7 @@ export function TransferenciaDialog({ open, onOpenChange }: TransferenciaDialogP
     },
     onError: (e) => {
       toast.error('Erro ao realizar transferência: ' + e.message);
-    }
+    },
   });
 
   return (
@@ -92,7 +105,10 @@ export function TransferenciaDialog({ open, onOpenChange }: TransferenciaDialogP
         </DialogHeader>
 
         <Form {...form}>
-          <form onSubmit={form.handleSubmit((data) => mutation.mutate(data))} className="space-y-4 pt-4">
+          <form
+            onSubmit={form.handleSubmit((data) => mutation.mutate(data))}
+            className="space-y-4 pt-4"
+          >
             <FormField
               control={form.control}
               name="empresa_id"
@@ -102,9 +118,17 @@ export function TransferenciaDialog({ open, onOpenChange }: TransferenciaDialogP
                     <Building2 className="h-3 w-3" /> Empresa
                   </FormLabel>
                   <Select onValueChange={field.onChange} value={field.value}>
-                    <FormControl><SelectTrigger><SelectValue placeholder="Selecione a empresa" /></SelectTrigger></FormControl>
+                    <FormControl>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Selecione a empresa" />
+                      </SelectTrigger>
+                    </FormControl>
                     <SelectContent>
-                      {empresas.map(e => <SelectItem key={e.id} value={e.id}>{e.nome_fantasia || e.razao_social}</SelectItem>)}
+                      {empresas.map((e) => (
+                        <SelectItem key={e.id} value={e.id}>
+                          {e.nome_fantasia || e.razao_social}
+                        </SelectItem>
+                      ))}
                     </SelectContent>
                   </Select>
                   <FormMessage />
@@ -120,11 +144,22 @@ export function TransferenciaDialog({ open, onOpenChange }: TransferenciaDialogP
                   <FormItem>
                     <FormLabel>Conta de Origem</FormLabel>
                     <Select onValueChange={field.onChange} value={field.value}>
-                      <FormControl><SelectTrigger><SelectValue placeholder="Débito" /></SelectTrigger></FormControl>
+                      <FormControl>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Débito" />
+                        </SelectTrigger>
+                      </FormControl>
                       <SelectContent>
-                        {contas.filter(c => !form.watch('empresa_id') || c.empresa_id === form.watch('empresa_id')).map(c => (
-                          <SelectItem key={c.id} value={c.id}>{c.banco} - {c.conta}</SelectItem>
-                        ))}
+                        {contas
+                          .filter(
+                            (c) =>
+                              !form.watch('empresa_id') || c.empresa_id === form.watch('empresa_id')
+                          )
+                          .map((c) => (
+                            <SelectItem key={c.id} value={c.id}>
+                              {c.banco} - {c.conta}
+                            </SelectItem>
+                          ))}
                       </SelectContent>
                     </Select>
                     <FormMessage />
@@ -138,11 +173,22 @@ export function TransferenciaDialog({ open, onOpenChange }: TransferenciaDialogP
                   <FormItem>
                     <FormLabel>Conta de Destino</FormLabel>
                     <Select onValueChange={field.onChange} value={field.value}>
-                      <FormControl><SelectTrigger><SelectValue placeholder="Crédito" /></SelectTrigger></FormControl>
+                      <FormControl>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Crédito" />
+                        </SelectTrigger>
+                      </FormControl>
                       <SelectContent>
-                        {contas.filter(c => !form.watch('empresa_id') || c.empresa_id === form.watch('empresa_id')).map(c => (
-                          <SelectItem key={c.id} value={c.id}>{c.banco} - {c.conta}</SelectItem>
-                        ))}
+                        {contas
+                          .filter(
+                            (c) =>
+                              !form.watch('empresa_id') || c.empresa_id === form.watch('empresa_id')
+                          )
+                          .map((c) => (
+                            <SelectItem key={c.id} value={c.id}>
+                              {c.banco} - {c.conta}
+                            </SelectItem>
+                          ))}
                       </SelectContent>
                     </Select>
                     <FormMessage />
@@ -159,7 +205,12 @@ export function TransferenciaDialog({ open, onOpenChange }: TransferenciaDialogP
                   <FormItem>
                     <FormLabel>Valor (R$)</FormLabel>
                     <FormControl>
-                      <Input type="number" step="0.01" {...field} onChange={e => field.onChange(parseFloat(e.target.value))} />
+                      <Input
+                        type="number"
+                        step="0.01"
+                        {...field}
+                        onChange={(e) => field.onChange(parseFloat(e.target.value))}
+                      />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -171,7 +222,9 @@ export function TransferenciaDialog({ open, onOpenChange }: TransferenciaDialogP
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Data</FormLabel>
-                    <FormControl><Input type="date" {...field} /></FormControl>
+                    <FormControl>
+                      <Input type="date" {...field} />
+                    </FormControl>
                     <FormMessage />
                   </FormItem>
                 )}
@@ -184,7 +237,9 @@ export function TransferenciaDialog({ open, onOpenChange }: TransferenciaDialogP
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Descrição / Motivo</FormLabel>
-                  <FormControl><Input placeholder="Ex: Aporte capital, Reequilíbrio..." {...field} /></FormControl>
+                  <FormControl>
+                    <Input placeholder="Ex: Aporte capital, Reequilíbrio..." {...field} />
+                  </FormControl>
                   <FormMessage />
                 </FormItem>
               )}

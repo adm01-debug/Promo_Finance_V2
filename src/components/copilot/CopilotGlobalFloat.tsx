@@ -12,12 +12,20 @@ import { env } from '@/config/env';
 type Msg = { role: 'user' | 'assistant'; content: string };
 
 function escapeHtml(s: string) {
-  return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#039;');
+  return s
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#039;');
 }
 
 function renderMarkdown(text: string): string {
   let html = escapeHtml(text);
-  html = html.replace(/```([\s\S]*?)```/g, '<pre class="bg-muted p-2 rounded text-xs overflow-x-auto"><code>$1</code></pre>');
+  html = html.replace(
+    /```([\s\S]*?)```/g,
+    '<pre class="bg-muted p-2 rounded text-xs overflow-x-auto"><code>$1</code></pre>'
+  );
   html = html.replace(/`([^`]+)`/g, '<code class="bg-muted px-1 rounded text-xs">$1</code>');
   html = html.replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>');
   html = html.replace(/(?<!\*)\*([^*]+)\*(?!\*)/g, '<em>$1</em>');
@@ -48,11 +56,7 @@ function sugestoesPorContexto(contexto: string): string[] {
       'Status das automações nas últimas 24h.',
     ];
   }
-  return [
-    'Resumo do dia.',
-    'Quais ações urgentes pendentes?',
-    'Qual meu saldo líquido projetado?',
-  ];
+  return ['Resumo do dia.', 'Quais ações urgentes pendentes?', 'Qual meu saldo líquido projetado?'];
 }
 
 export function CopilotGlobalFloat() {
@@ -138,7 +142,10 @@ export function CopilotGlobalFloat() {
           if (!line || line.startsWith(':')) continue;
           if (!line.startsWith('data: ')) continue;
           const json = line.slice(6).trim();
-          if (json === '[DONE]') { done = true; break; }
+          if (json === '[DONE]') {
+            done = true;
+            break;
+          }
           try {
             const parsed = JSON.parse(json);
             const delta = parsed.choices?.[0]?.delta?.content as string | undefined;
@@ -207,7 +214,9 @@ export function CopilotGlobalFloat() {
         <div ref={scrollRef} className="flex-1 overflow-y-auto p-4 space-y-3">
           {messages.length === 0 && (
             <div className="space-y-3">
-              <p className="text-sm text-muted-foreground">Pergunte algo ou comece com uma sugestão:</p>
+              <p className="text-sm text-muted-foreground">
+                Pergunte algo ou comece com uma sugestão:
+              </p>
               {sugestoes.map((s) => (
                 <Button
                   key={s}
@@ -225,11 +234,16 @@ export function CopilotGlobalFloat() {
             <div key={i} className={`flex ${m.role === 'user' ? 'justify-end' : 'justify-start'}`}>
               <div
                 className={`max-w-[85%] rounded-2xl px-4 py-2 text-sm ${
-                  m.role === 'user' ? 'bg-primary text-primary-foreground' : 'bg-muted text-foreground'
+                  m.role === 'user'
+                    ? 'bg-primary text-primary-foreground'
+                    : 'bg-muted text-foreground'
                 }`}
               >
                 {m.role === 'assistant' ? (
-                  <div className="prose prose-sm max-w-none dark:prose-invert" dangerouslySetInnerHTML={{ __html: renderMarkdown(m.content || '...') }} />
+                  <div
+                    className="prose prose-sm max-w-none dark:prose-invert"
+                    dangerouslySetInnerHTML={{ __html: renderMarkdown(m.content || '...') }}
+                  />
                 ) : (
                   m.content
                 )}

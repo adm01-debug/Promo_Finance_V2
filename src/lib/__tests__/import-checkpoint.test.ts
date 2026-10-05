@@ -115,7 +115,11 @@ describe('import-checkpoint', () => {
       const storageKey = 'import-checkpoint:' + key;
       window.localStorage.setItem(
         storageKey,
-        JSON.stringify({ refs: ['a', 'b'], total: 3, updatedAt: Date.now() - 1000 * 60 * 60 * 24 * 30 }),
+        JSON.stringify({
+          refs: ['a', 'b'],
+          total: 3,
+          updatedAt: Date.now() - 1000 * 60 * 60 * 24 * 30,
+        })
       );
       const ck = createImportCheckpoint(key, 3);
       expect(ck.size()).toBe(0);
@@ -126,7 +130,7 @@ describe('import-checkpoint', () => {
       const key = 'divtotal';
       window.localStorage.setItem(
         'import-checkpoint:' + key,
-        JSON.stringify({ refs: ['a'], total: 1000, updatedAt: Date.now() }),
+        JSON.stringify({ refs: ['a'], total: 1000, updatedAt: Date.now() })
       );
       const ck = createImportCheckpoint(key, 500);
       expect(ck.size()).toBe(0);
@@ -170,7 +174,7 @@ describe('import-checkpoint', () => {
     it('descarta e retorna null quando expirado', () => {
       window.localStorage.setItem(
         'import-checkpoint:old',
-        JSON.stringify({ refs: ['a'], total: 1, updatedAt: 0 }),
+        JSON.stringify({ refs: ['a'], total: 1, updatedAt: 0 })
       );
       expect(peekImportCheckpoint('old')).toBeNull();
       expect(window.localStorage.getItem('import-checkpoint:old')).toBeNull();
@@ -184,7 +188,7 @@ describe('import-checkpoint', () => {
     it('retorna null quando refs não é array', () => {
       window.localStorage.setItem(
         'import-checkpoint:shape',
-        JSON.stringify({ refs: 'nope', total: 1, updatedAt: Date.now() }),
+        JSON.stringify({ refs: 'nope', total: 1, updatedAt: Date.now() })
       );
       expect(peekImportCheckpoint('shape')).toBeNull();
     });

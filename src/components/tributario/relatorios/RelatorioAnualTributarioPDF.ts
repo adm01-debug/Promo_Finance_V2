@@ -32,10 +32,7 @@ const fmtBRL = (n: number) =>
   });
 const fmtPct = (n: number) => `${(n ?? 0).toFixed(2)}%`;
 
-const MESES = [
-  'Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun',
-  'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez',
-];
+const MESES = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'];
 
 function addHeaderFooter(doc: jsPDF, p: RelatorioAnualPayload) {
   const pages = doc.getNumberOfPages();
@@ -49,11 +46,7 @@ function addHeaderFooter(doc: jsPDF, p: RelatorioAnualPayload) {
     doc.text(`${p.empresa.razao_social} · CNPJ ${p.empresa.cnpj}`, 15, 10);
     doc.text(`Relatório Anual Tributário ${p.ano}`, w - 15, 10, { align: 'right' });
     doc.text(`Página ${i} de ${pages}`, w - 15, h - 8, { align: 'right' });
-    doc.text(
-      `Gerado em ${new Date(p.gerado_em).toLocaleString('pt-BR')}`,
-      15,
-      h - 8
-    );
+    doc.text(`Gerado em ${new Date(p.gerado_em).toLocaleString('pt-BR')}`, 15, h - 8);
   }
 }
 
@@ -130,10 +123,7 @@ export function gerarRelatorioAnualPDF(p: RelatorioAnualPayload): jsPDF {
       ['Regime atual', p.empresa.regime_atual],
       ['Regime ótimo recomendado', recomendado],
       ['Carga efetiva atual', fmtPct(p.kpis.carga_efetiva)],
-      [
-        'Carga regime ótimo',
-        fmtPct(p.decisao_regime?.recomendado?.cargaEfetiva ?? 0),
-      ],
+      ['Carga regime ótimo', fmtPct(p.decisao_regime?.recomendado?.cargaEfetiva ?? 0)],
       ['Economia anual potencial', fmtBRL(economia)],
       ['Tributos pagos no ano', fmtBRL(p.kpis.tributos_anuais)],
       ['Faturamento anual', fmtBRL(p.kpis.faturamento_anual)],
@@ -149,11 +139,7 @@ export function gerarRelatorioAnualPDF(p: RelatorioAnualPayload): jsPDF {
   doc.text('2. Apuração Mensal', 15, 25);
   doc.setFontSize(9);
   doc.setTextColor(71, 85, 105);
-  doc.text(
-    'Tributos novos (CBS/IBS/IS) e residuais por competência.',
-    15,
-    32
-  );
+  doc.text('Tributos novos (CBS/IBS/IS) e residuais por competência.', 15, 32);
 
   const linhasMes = Array.from({ length: 12 }, (_, i) => {
     const m = i + 1;
@@ -177,21 +163,10 @@ export function gerarRelatorioAnualPDF(p: RelatorioAnualPayload): jsPDF {
       [
         'Total',
         fmtBRL(p.kpis.faturamento_anual),
-        fmtBRL(
-          p.apuracao_mensal.reduce((a, x) => a + Number(x.cbs ?? 0), 0)
-        ),
-        fmtBRL(
-          p.apuracao_mensal.reduce((a, x) => a + Number(x.ibs ?? 0), 0)
-        ),
-        fmtBRL(
-          p.apuracao_mensal.reduce(
-            (a, x) => a + Number(x.imposto_seletivo ?? 0),
-            0
-          )
-        ),
-        fmtBRL(
-          p.apuracao_mensal.reduce((a, x) => a + Number(x.residuais ?? 0), 0)
-        ),
+        fmtBRL(p.apuracao_mensal.reduce((a, x) => a + Number(x.cbs ?? 0), 0)),
+        fmtBRL(p.apuracao_mensal.reduce((a, x) => a + Number(x.ibs ?? 0), 0)),
+        fmtBRL(p.apuracao_mensal.reduce((a, x) => a + Number(x.imposto_seletivo ?? 0), 0)),
+        fmtBRL(p.apuracao_mensal.reduce((a, x) => a + Number(x.residuais ?? 0), 0)),
         fmtBRL(p.kpis.tributos_anuais),
       ],
     ],
@@ -230,12 +205,14 @@ export function gerarRelatorioAnualPDF(p: RelatorioAnualPayload): jsPDF {
   autoTable(doc, {
     startY: 32,
     head: [['Estratégia', 'Aplicável', 'Economia estimada', 'Risco']],
-    body: elisao.oportunidades.slice(0, 9).map((o) => [
-      o.estrategia,
-      o.aplicavel ? 'Sim' : 'Não',
-      fmtBRL(o.economia_estimada),
-      o.risco ?? '—',
-    ]),
+    body: elisao.oportunidades
+      .slice(0, 9)
+      .map((o) => [
+        o.estrategia,
+        o.aplicavel ? 'Sim' : 'Não',
+        fmtBRL(o.economia_estimada),
+        o.risco ?? '—',
+      ]),
     headStyles: { fillColor: [37, 99, 235] },
     styles: { fontSize: 9 },
   });
@@ -246,10 +223,7 @@ export function gerarRelatorioAnualPDF(p: RelatorioAnualPayload): jsPDF {
   doc.setTextColor(0, 0, 0);
   doc.text('4. Recomendações', 15, 25);
 
-  const score = Math.max(
-    0,
-    Math.min(100, 100 - p.alertas_resolvidos.length * 2)
-  );
+  const score = Math.max(0, Math.min(100, 100 - p.alertas_resolvidos.length * 2));
   const recomendacoes: string[] = [];
   if (p.kpis.carga_efetiva > 25)
     recomendacoes.push(

@@ -140,7 +140,7 @@ export function Step2Validacoes({
                     'rounded-xl border p-4 space-y-3',
                     tone === 'destructive'
                       ? 'bg-destructive/5 border-destructive/10'
-                      : 'bg-warning/5 border-warning/10',
+                      : 'bg-warning/5 border-warning/10'
                   )}
                 >
                   <div className="flex items-center justify-between gap-2">
@@ -150,7 +150,7 @@ export function Step2Validacoes({
                           'p-1.5 rounded-lg',
                           tone === 'destructive'
                             ? 'bg-destructive/10 text-destructive'
-                            : 'bg-warning/10 text-warning',
+                            : 'bg-warning/10 text-warning'
                         )}
                       >
                         <AlertTriangle className="h-3.5 w-3.5" />
@@ -159,7 +159,7 @@ export function Step2Validacoes({
                         <h4
                           className={cn(
                             'text-xs font-black uppercase tracking-wider',
-                            tone === 'destructive' ? 'text-destructive' : 'text-warning',
+                            tone === 'destructive' ? 'text-destructive' : 'text-warning'
                           )}
                         >
                           {categoria.label}
@@ -197,7 +197,7 @@ export function Step2Validacoes({
                             'text-[11px] leading-relaxed p-2 rounded-lg border',
                             item.type === 'error'
                               ? 'bg-destructive/10 border-destructive/10 text-destructive'
-                              : 'bg-warning/10 border-warning/10 text-warning-foreground',
+                              : 'bg-warning/10 border-warning/10 text-warning-foreground'
                           )}
                         >
                           {item.text}
@@ -231,9 +231,21 @@ export function Step2Validacoes({
           Apuração preliminar (Lucro Real)
         </p>
         <div className="grid grid-cols-2 gap-3">
-          <KpiCard label="Lucro líquido" value={`R$ ${data.apuracao_preview.lucro_liquido.toFixed(2)}`} mono />
-          <KpiCard label="Base IRPJ" value={`R$ ${data.apuracao_preview.base_irpj.toFixed(2)}`} mono />
-          <KpiCard label="IRPJ (15% + adicional)" value={`R$ ${data.apuracao_preview.irpj.toFixed(2)}`} mono />
+          <KpiCard
+            label="Lucro líquido"
+            value={`R$ ${data.apuracao_preview.lucro_liquido.toFixed(2)}`}
+            mono
+          />
+          <KpiCard
+            label="Base IRPJ"
+            value={`R$ ${data.apuracao_preview.base_irpj.toFixed(2)}`}
+            mono
+          />
+          <KpiCard
+            label="IRPJ (15% + adicional)"
+            value={`R$ ${data.apuracao_preview.irpj.toFixed(2)}`}
+            mono
+          />
           <KpiCard label="CSLL (9%)" value={`R$ ${data.apuracao_preview.csll.toFixed(2)}`} mono />
         </div>
       </div>
@@ -260,7 +272,11 @@ export function Step2Validacoes({
                   onClick={onGerar}
                   disabled={!podeGerar || gerarPending}
                   variant={podeGerar ? 'premium' : 'outline'}
-                  className={cn('gap-2', podeGerar && 'hover-scale', !podeGerar && 'cursor-not-allowed')}
+                  className={cn(
+                    'gap-2',
+                    podeGerar && 'hover-scale',
+                    !podeGerar && 'cursor-not-allowed'
+                  )}
                 >
                   {gerarPending ? (
                     <Loader2 className="h-4 w-4 animate-spin" />

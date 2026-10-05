@@ -23,13 +23,19 @@ export function useBlingEstoqueMutations() {
 
   const lancarEstoque = useMutation({
     mutationFn: (data: Record<string, unknown>) => blingAction('lancar_estoque', { data }),
-    onSuccess: () => { toast.success('Movimentação de estoque lançada'); queryClient.invalidateQueries({ queryKey: ['bling-estoque'] }); },
+    onSuccess: () => {
+      toast.success('Movimentação de estoque lançada');
+      queryClient.invalidateQueries({ queryKey: ['bling-estoque'] });
+    },
     onError: (err: Error) => toast.error(`Erro: ${err.message}`),
   });
 
   const criarDeposito = useMutation({
     mutationFn: (data: Record<string, unknown>) => blingAction('criar_deposito', { data }),
-    onSuccess: () => { toast.success('Depósito criado'); queryClient.invalidateQueries({ queryKey: ['bling-depositos'] }); },
+    onSuccess: () => {
+      toast.success('Depósito criado');
+      queryClient.invalidateQueries({ queryKey: ['bling-depositos'] });
+    },
     onError: (err: Error) => toast.error(`Erro: ${err.message}`),
   });
 

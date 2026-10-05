@@ -87,7 +87,7 @@ vi.mock('framer-motion', () => ({
           delete (props as Record<string, unknown>).transition;
           return <div {...props}>{children}</div>;
         },
-    },
+    }
   ),
 }));
 
@@ -109,7 +109,7 @@ function renderPage() {
   return render(
     <MemoryRouter>
       <CorporateOnboarding />
-    </MemoryRouter>,
+    </MemoryRouter>
   );
 }
 
