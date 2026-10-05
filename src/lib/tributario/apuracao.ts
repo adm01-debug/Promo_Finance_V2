@@ -12,13 +12,13 @@ import type { ParametrosSimulacao } from './shared-logic';
  */
 export function irpjPeriodoTrimestral(base: number): number {
   const b = Math.max(0, Number.isFinite(base) ? Number(base) : 0);
-  return b * 0.15 + (b > 60000 ? (b - 60000) * 0.10 : 0);
+  return b * 0.15 + (b > 60000 ? (b - 60000) * 0.1 : 0);
 }
 
 /** IRPJ de um período ANUAL (adicional sobre o excedente a R$ 240.000). */
 export function irpjPeriodoAnual(base: number): number {
   const b = Math.max(0, Number.isFinite(base) ? Number(base) : 0);
-  return b * 0.15 + (b > 240000 ? (b - 240000) * 0.10 : 0);
+  return b * 0.15 + (b > 240000 ? (b - 240000) * 0.1 : 0);
 }
 
 /**
@@ -36,7 +36,10 @@ export function distribuirTrimestres(p: ParametrosSimulacao): number[] {
     let soma = 0;
     for (const m of meses) {
       const mes = Number(m?.mes);
-      const receita = Math.max(0, Number.isFinite(Number(m?.receita_bruta)) ? Number(m.receita_bruta) : 0);
+      const receita = Math.max(
+        0,
+        Number.isFinite(Number(m?.receita_bruta)) ? Number(m.receita_bruta) : 0
+      );
       if (!Number.isFinite(mes) || mes < 1 || mes > 12) continue;
       acc[Math.floor((mes - 1) / 3)] += receita;
       soma += receita;
@@ -57,7 +60,7 @@ export function distribuirTrimestres(p: ParametrosSimulacao): number[] {
  */
 export function compensarPrejuizo(
   basePositiva: number,
-  estoqueAcumulado: number,
+  estoqueAcumulado: number
 ): { baseAjustada: number; compensado: number; saldo: number } {
   const estoque = Math.max(0, Number.isFinite(estoqueAcumulado) ? estoqueAcumulado : 0);
   const base = Number.isFinite(basePositiva) ? basePositiva : 0;
@@ -65,7 +68,7 @@ export function compensarPrejuizo(
     // Prejuízo do período soma-se ao estoque; nada a compensar.
     return { baseAjustada: 0, compensado: 0, saldo: estoque + Math.abs(Math.min(0, base)) };
   }
-  const limite = base * 0.30;
+  const limite = base * 0.3;
   const compensado = Math.min(estoque, limite);
   return { baseAjustada: base - compensado, compensado, saldo: estoque - compensado };
 }
@@ -81,21 +84,40 @@ export function compensarPrejuizo(
 export function apurarRealTrimestral(
   lucrosTrimestrais: number[],
   estoqueIrpj: number,
-  estoqueCsll: number,
-): { irpj: number; csll: number; compensadoIrpj: number; compensadoCsll: number; saldoIrpj: number; saldoCsll: number } {
+  estoqueCsll: number
+): {
+  irpj: number;
+  csll: number;
+  compensadoIrpj: number;
+  compensadoCsll: number;
+  saldoIrpj: number;
+  saldoCsll: number;
+} {
   let sIrpj = Math.max(0, estoqueIrpj);
   let sCsll = Math.max(0, estoqueCsll);
-  let irpj = 0, csll = 0, cIrpj = 0, cCsll = 0;
+  let irpj = 0,
+    csll = 0,
+    cIrpj = 0,
+    cCsll = 0;
   for (const bruto of lucrosTrimestrais) {
     const lucro = Number.isFinite(bruto) ? Number(bruto) : 0;
     const ci = compensarPrejuizo(lucro, sIrpj);
     const cc = compensarPrejuizo(lucro, sCsll);
-    sIrpj = ci.saldo; sCsll = cc.saldo;
-    cIrpj += ci.compensado; cCsll += cc.compensado;
+    sIrpj = ci.saldo;
+    sCsll = cc.saldo;
+    cIrpj += ci.compensado;
+    cCsll += cc.compensado;
     irpj += irpjPeriodoTrimestral(ci.baseAjustada);
     csll += Math.max(0, cc.baseAjustada) * 0.09;
   }
-  return { irpj, csll, compensadoIrpj: cIrpj, compensadoCsll: cCsll, saldoIrpj: sIrpj, saldoCsll: sCsll };
+  return {
+    irpj,
+    csll,
+    compensadoIrpj: cIrpj,
+    compensadoCsll: cCsll,
+    saldoIrpj: sIrpj,
+    saldoCsll: sCsll,
+  };
 }
 
 /**
@@ -114,14 +136,14 @@ export function apurarRealTrimestral(
 export function apurarIcmsNaoCumulativo(
   p: ParametrosSimulacao,
   receitaMercadorias: number,
-  aliquota: number,
+  aliquota: number
 ): { icms: number; credito: number; saldoCredor: number; debito: number } {
-  const participacaoMercadorias = p.faturamentoAnual > 0
-    ? Math.max(0, Math.min(1, receitaMercadorias / p.faturamentoAnual))
-    : 0;
-  const comprasICMS = p.comprasComCreditoICMS !== undefined
-    ? Math.max(0, p.comprasComCreditoICMS)
-    : Math.max(0, p.comprasComCredito || 0) * participacaoMercadorias;
+  const participacaoMercadorias =
+    p.faturamentoAnual > 0 ? Math.max(0, Math.min(1, receitaMercadorias / p.faturamentoAnual)) : 0;
+  const comprasICMS =
+    p.comprasComCreditoICMS !== undefined
+      ? Math.max(0, p.comprasComCreditoICMS)
+      : Math.max(0, p.comprasComCredito || 0) * participacaoMercadorias;
 
   const debito = receitaMercadorias * aliquota;
   const credito = comprasICMS * aliquota;

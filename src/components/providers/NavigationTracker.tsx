@@ -44,13 +44,13 @@ export function NavigationTracker() {
 
   useEffect(() => {
     const path = location.pathname;
-    
+
     // Don't track excluded routes
     if (excludedRoutes.includes(path)) return;
-    
+
     // Get label for route
     const label = routeLabels[path];
-    
+
     // Only track known routes
     if (label) {
       addRecentItem(path, label);

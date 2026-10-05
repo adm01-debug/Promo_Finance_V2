@@ -3,7 +3,15 @@ import { motion } from 'framer-motion';
 import { cn } from '@/lib/utils';
 import { Calendar, CalendarDays, CalendarRange, RotateCcw } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { startOfDay, endOfDay, startOfWeek, endOfWeek, startOfMonth, endOfMonth, subDays } from 'date-fns';
+import {
+  startOfDay,
+  endOfDay,
+  startOfWeek,
+  endOfWeek,
+  startOfMonth,
+  endOfMonth,
+  subDays,
+} from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 
 export type DateFilterOption = 'all' | 'today' | 'week' | 'month' | 'last7' | 'last30' | 'overdue';
@@ -82,26 +90,29 @@ interface QuickDateFiltersProps {
   showOverdue?: boolean;
 }
 
-export function QuickDateFilters({ 
-  value, 
-  onChange, 
+export function QuickDateFilters({
+  value,
+  onChange,
   extended = false,
   className,
   showOverdue = false,
 }: QuickDateFiltersProps) {
   const activeFilters = extended ? extendedFilters : filters;
-  
-  const allFilters = showOverdue 
-    ? [...activeFilters, {
-        id: 'overdue' as DateFilterOption,
-        label: 'Vencidos',
-        icon: Calendar,
-        getRange: () => ({
-          start: new Date(2000, 0, 1),
-          end: subDays(startOfDay(new Date()), 1),
-        }),
-        color: 'text-destructive',
-      }]
+
+  const allFilters = showOverdue
+    ? [
+        ...activeFilters,
+        {
+          id: 'overdue' as DateFilterOption,
+          label: 'Vencidos',
+          icon: Calendar,
+          getRange: () => ({
+            start: new Date(2000, 0, 1),
+            end: subDays(startOfDay(new Date()), 1),
+          }),
+          color: 'text-destructive',
+        },
+      ]
     : activeFilters;
 
   const handleClick = (filter: QuickDateFilter) => {
@@ -110,31 +121,29 @@ export function QuickDateFilters({
   };
 
   return (
-    <div className={cn("flex flex-wrap items-center gap-2", className)}>
+    <div className={cn('flex flex-wrap items-center gap-2', className)}>
       {allFilters.map((filter) => {
         const Icon = filter.icon;
         const isActive = value === filter.id;
-        
+
         return (
-          <motion.div
-            key={filter.id}
-            whileHover={{ scale: 1.02 }}
-            whileTap={{ scale: 0.98 }}
-          >
+          <motion.div key={filter.id} whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
             <Button
-              variant={isActive ? "default" : "outline"}
+              variant={isActive ? 'default' : 'outline'}
               size="sm"
               onClick={() => handleClick(filter)}
               className={cn(
-                "gap-2 transition-all duration-200",
-                isActive && "shadow-md",
+                'gap-2 transition-all duration-200',
+                isActive && 'shadow-md',
                 !isActive && filter.color && filter.color,
-                !isActive && "hover:bg-muted"
+                !isActive && 'hover:bg-muted'
               )}
             >
               <Icon className="h-3.5 w-3.5" />
               <span className="hidden sm:inline">{filter.label}</span>
-              <span className="sm:hidden">{filter.id === 'all' ? 'Todos' : filter.label.split(' ')[0]}</span>
+              <span className="sm:hidden">
+                {filter.id === 'all' ? 'Todos' : filter.label.split(' ')[0]}
+              </span>
             </Button>
           </motion.div>
         );
@@ -142,4 +151,3 @@ export function QuickDateFilters({
     </div>
   );
 }
-

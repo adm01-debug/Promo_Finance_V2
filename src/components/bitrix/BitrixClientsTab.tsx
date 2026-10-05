@@ -2,7 +2,14 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '@/components/ui/table';
 import { Users, Building2 } from 'lucide-react';
 
 interface SyncedClient {
@@ -33,17 +40,23 @@ export function BitrixClientsTab({ clients, isLoading, onSyncContacts, onSyncCom
           </div>
           <div className="flex gap-2">
             <Button variant="outline" size="sm" onClick={onSyncContacts}>
-              <Users className="h-4 w-4 mr-2" />Sync Contatos
+              <Users className="h-4 w-4 mr-2" />
+              Sync Contatos
             </Button>
             <Button variant="outline" size="sm" onClick={onSyncCompanies}>
-              <Building2 className="h-4 w-4 mr-2" />Sync Empresas
+              <Building2 className="h-4 w-4 mr-2" />
+              Sync Empresas
             </Button>
           </div>
         </div>
       </CardHeader>
       <CardContent>
         {isLoading ? (
-          <div className="space-y-2">{[1, 2, 3].map(i => <Skeleton key={i} className="h-16 w-full" />)}</div>
+          <div className="space-y-2">
+            {[1, 2, 3].map((i) => (
+              <Skeleton key={i} className="h-16 w-full" />
+            ))}
+          </div>
         ) : clients && clients.length > 0 ? (
           <Table>
             <TableHeader>
@@ -58,11 +71,19 @@ export function BitrixClientsTab({ clients, isLoading, onSyncContacts, onSyncCom
             <TableBody>
               {clients.map((cliente) => (
                 <TableRow key={cliente.id}>
-                  <TableCell><Badge variant="outline" className="font-mono">{cliente.bitrix_id}</Badge></TableCell>
+                  <TableCell>
+                    <Badge variant="outline" className="font-mono">
+                      {cliente.bitrix_id}
+                    </Badge>
+                  </TableCell>
                   <TableCell className="font-medium">{cliente.razao_social}</TableCell>
                   <TableCell>{cliente.email || '-'}</TableCell>
                   <TableCell>{cliente.telefone || '-'}</TableCell>
-                  <TableCell>{cliente.cidade ? `${cliente.cidade}${cliente.estado ? `/${cliente.estado}` : ''}` : '-'}</TableCell>
+                  <TableCell>
+                    {cliente.cidade
+                      ? `${cliente.cidade}${cliente.estado ? `/${cliente.estado}` : ''}`
+                      : '-'}
+                  </TableCell>
                 </TableRow>
               ))}
             </TableBody>

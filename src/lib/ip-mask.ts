@@ -7,10 +7,7 @@
 
 const IPV4_REGEX = /^(\d{1,3})\.(\d{1,3})\.(\d{1,3})\.(\d{1,3})$/;
 
-export function maskIp(
-  ip: string | null | undefined,
-  enabled: boolean,
-): string {
+export function maskIp(ip: string | null | undefined, enabled: boolean): string {
   if (ip === null || ip === undefined || ip === '') return '-';
   if (!enabled) return ip;
 
@@ -40,10 +37,7 @@ export function maskIp(
  * (não-mascarado). Usar sempre esta função em filtros para que o usuário
  * possa buscar `192.168` mesmo com a opção de mascaramento ativa.
  */
-export function matchesIpFilter(
-  ip: string | null | undefined,
-  term: string,
-): boolean {
+export function matchesIpFilter(ip: string | null | undefined, term: string): boolean {
   if (!term) return true;
   if (!ip) return false;
   return ip.toLowerCase().includes(term.toLowerCase());

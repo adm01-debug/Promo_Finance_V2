@@ -1,5 +1,14 @@
 import { useMemo } from 'react';
-import { AlertTriangle, Activity, Check, CheckCircle2, Loader2, RefreshCw, ShieldAlert, Zap } from 'lucide-react';
+import {
+  AlertTriangle,
+  Activity,
+  Check,
+  CheckCircle2,
+  Loader2,
+  RefreshCw,
+  ShieldAlert,
+  Zap,
+} from 'lucide-react';
 import { formatDistanceToNow } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -13,7 +22,11 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
-import { useResolveAlert, useSefazAlerts, useSefazObservability } from '@/hooks/useSefazObservability';
+import {
+  useResolveAlert,
+  useSefazAlerts,
+  useSefazObservability,
+} from '@/hooks/useSefazObservability';
 
 const SEVERITY_VARIANT: Record<string, 'default' | 'secondary' | 'destructive' | 'outline'> = {
   critical: 'destructive',
@@ -70,18 +83,42 @@ export default function SefazObservabilidade() {
           }}
           disabled={loading}
         >
-          {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : <RefreshCw className="h-4 w-4" />}
+          {loading ? (
+            <Loader2 className="h-4 w-4 animate-spin" />
+          ) : (
+            <RefreshCw className="h-4 w-4" />
+          )}
           <span className="ml-2">Atualizar</span>
         </Button>
       </header>
 
       <section className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3">
         <KpiCard label="Cursores" value={kpis.total} icon={<Activity className="h-4 w-4" />} />
-        <KpiCard label="Parados >6h" value={kpis.stuck} tone={kpis.stuck > 0 ? 'warning' : 'ok'} icon={<AlertTriangle className="h-4 w-4" />} />
-        <KpiCard label="Circuit open" value={kpis.circuitOpen} tone={kpis.circuitOpen > 0 ? 'danger' : 'ok'} icon={<Zap className="h-4 w-4" />} />
+        <KpiCard
+          label="Parados >6h"
+          value={kpis.stuck}
+          tone={kpis.stuck > 0 ? 'warning' : 'ok'}
+          icon={<AlertTriangle className="h-4 w-4" />}
+        />
+        <KpiCard
+          label="Circuit open"
+          value={kpis.circuitOpen}
+          tone={kpis.circuitOpen > 0 ? 'danger' : 'ok'}
+          icon={<Zap className="h-4 w-4" />}
+        />
         <KpiCard label="NFe 24h" value={kpis.nfe24} icon={<CheckCircle2 className="h-4 w-4" />} />
-        <KpiCard label="Alertas abertos" value={kpis.alerts} tone={kpis.alerts > 0 ? 'warning' : 'ok'} icon={<ShieldAlert className="h-4 w-4" />} />
-        <KpiCard label="Críticos" value={kpis.critical} tone={kpis.critical > 0 ? 'danger' : 'ok'} icon={<ShieldAlert className="h-4 w-4" />} />
+        <KpiCard
+          label="Alertas abertos"
+          value={kpis.alerts}
+          tone={kpis.alerts > 0 ? 'warning' : 'ok'}
+          icon={<ShieldAlert className="h-4 w-4" />}
+        />
+        <KpiCard
+          label="Críticos"
+          value={kpis.critical}
+          tone={kpis.critical > 0 ? 'danger' : 'ok'}
+          icon={<ShieldAlert className="h-4 w-4" />}
+        />
       </section>
 
       <Card>
@@ -112,7 +149,10 @@ export default function SefazObservabilidade() {
                   <TableCell className="text-right font-mono">{r.ultimo_nsu ?? '—'}</TableCell>
                   <TableCell className="text-xs text-muted-foreground">
                     {r.ultima_consulta
-                      ? formatDistanceToNow(new Date(r.ultima_consulta), { addSuffix: true, locale: ptBR })
+                      ? formatDistanceToNow(new Date(r.ultima_consulta), {
+                          addSuffix: true,
+                          locale: ptBR,
+                        })
                       : 'nunca'}
                     {r.seconds_since_last !== null && (
                       <span className="ml-1 opacity-70">({fmtSeconds(r.seconds_since_last)})</span>

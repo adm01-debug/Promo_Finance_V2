@@ -62,7 +62,11 @@ export function WebhooksLogPanel() {
         </CardHeader>
         <CardContent>
           {isLoading ? (
-            <div className="space-y-3">{Array.from({ length: 5 }).map((_, i) => <Skeleton key={i} className="h-14" />)}</div>
+            <div className="space-y-3">
+              {Array.from({ length: 5 }).map((_, i) => (
+                <Skeleton key={i} className="h-14" />
+              ))}
+            </div>
           ) : !webhooks || webhooks.length === 0 ? (
             <div className="text-center py-12 text-muted-foreground">
               <Globe className="h-12 w-12 mx-auto mb-2 opacity-30" />
@@ -86,7 +90,7 @@ function WebhookRow({ wh }: { wh: WebhookLogRow }) {
 
   return (
     <div className="rounded-lg border bg-card text-card-foreground shadow-sm">
-      <div 
+      <div
         className="flex items-center justify-between p-3 cursor-pointer hover:bg-accent/50 transition-colors"
         onClick={() => setExpanded(!expanded)}
       >
@@ -114,7 +118,10 @@ function WebhookRow({ wh }: { wh: WebhookLogRow }) {
         </div>
         <div className="flex items-center gap-4">
           <div className="flex flex-col items-end gap-1">
-            <Badge variant={wh.processado ? 'default' : wh.erro_mensagem ? 'destructive' : 'secondary'} className="text-[10px]">
+            <Badge
+              variant={wh.processado ? 'default' : wh.erro_mensagem ? 'destructive' : 'secondary'}
+              className="text-[10px]"
+            >
               {wh.processado ? 'Processado' : wh.erro_mensagem ? 'Erro' : 'Pendente'}
             </Badge>
             <span className="text-[10px] text-muted-foreground">{formatDate(wh.created_at)}</span>
@@ -152,7 +159,10 @@ function WebhookRow({ wh }: { wh: WebhookLogRow }) {
 
           <div className="flex items-center justify-between text-[10px] text-muted-foreground pt-2 border-t border-border/50">
             <span>Correlation ID: {wh.correlation_id || wh.asaas_event_id || 'N/A'}</span>
-            <span>Duração: {wh.duration_ms ? `${wh.duration_ms}ms` : 'N/A'} • IP: {wh.ip_origem || 'Interno'}</span>
+            <span>
+              Duração: {wh.duration_ms ? `${wh.duration_ms}ms` : 'N/A'} • IP:{' '}
+              {wh.ip_origem || 'Interno'}
+            </span>
           </div>
         </div>
       )}

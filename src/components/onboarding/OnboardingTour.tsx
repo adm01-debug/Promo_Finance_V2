@@ -7,7 +7,8 @@ const STEPS: Step[] = [
     target: 'body',
     placement: 'center',
     title: 'Bem-vindo ao Promo Finance!',
-    content: 'Vamos fazer um tour rápido de 8 passos pelos principais módulos. Você pode pular a qualquer momento.',
+    content:
+      'Vamos fazer um tour rápido de 8 passos pelos principais módulos. Você pode pular a qualquer momento.',
     disableBeacon: true,
   },
   {
@@ -44,7 +45,8 @@ const STEPS: Step[] = [
     target: 'body',
     placement: 'center',
     title: 'Pronto para começar!',
-    content: 'O Copilot Global (canto inferior direito) está sempre disponível para tirar dúvidas. Bom trabalho!',
+    content:
+      'O Copilot Global (canto inferior direito) está sempre disponível para tirar dúvidas. Bom trabalho!',
   },
 ];
 
@@ -74,7 +76,7 @@ export function OnboardingTour() {
         overlayColor: 'rgba(0,0,0,0.5)',
       },
     }),
-    [],
+    []
   );
 
   const handleCallback = (data: CallBackProps) => {

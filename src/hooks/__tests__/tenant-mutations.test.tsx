@@ -85,7 +85,11 @@ describe('isolamento multiempresa em categorias', () => {
     const criar = criarChain({ data: { id: 'cat-1' }, error: null });
     mockFrom.mockReturnValue(criar);
     const { result: criacao } = renderHook(() => useCreateCategoria(), { wrapper });
-    await criacao.current.mutateAsync({ nome: 'Frete', tipo: 'despesa', empresa_id: 'outra-empresa' });
+    await criacao.current.mutateAsync({
+      nome: 'Frete',
+      tipo: 'despesa',
+      empresa_id: 'outra-empresa',
+    });
     expect(criar.insert).toHaveBeenCalledWith({
       nome: 'Frete',
       tipo: 'despesa',
@@ -96,7 +100,10 @@ describe('isolamento multiempresa em categorias', () => {
     const atualizar = criarChain({ data: { id: 'cat-1' }, error: null });
     mockFrom.mockReturnValue(atualizar);
     const { result: edicao } = renderHook(() => useUpdateCategoria(), { wrapper });
-    await edicao.current.mutateAsync({ id: 'cat-1', data: { nome: 'Frete nacional', empresa_id: 'outra-empresa' } });
+    await edicao.current.mutateAsync({
+      id: 'cat-1',
+      data: { nome: 'Frete nacional', empresa_id: 'outra-empresa' },
+    });
     expect(atualizar.update).toHaveBeenCalledWith({ nome: 'Frete nacional' });
     expect(atualizar.eq).toHaveBeenNthCalledWith(1, 'id', 'cat-1');
     expect(atualizar.eq).toHaveBeenNthCalledWith(2, 'empresa_id', 'empresa-atual');
@@ -121,14 +128,19 @@ describe('isolamento multiempresa em centros de custo', () => {
 
     mockUseAuth.mockReturnValue({ currentEmpresaId: null });
     const { result: semEmpresa } = renderHook(() => useCriarCentroCusto(), { wrapper });
-    await expect(semEmpresa.current.mutateAsync({ nome: 'Sem escopo' })).rejects.toThrow('Empresa não selecionada');
+    await expect(semEmpresa.current.mutateAsync({ nome: 'Sem escopo' })).rejects.toThrow(
+      'Empresa não selecionada'
+    );
   });
 
   it('restringe atualizar, desativar e reativar à empresa ativa', async () => {
     const atualizar = criarChain({ data: { id: 'cc-1' }, error: null });
     mockFrom.mockReturnValue(atualizar);
     const { result: edicao } = renderHook(() => useAtualizarCentroCusto(), { wrapper });
-    await edicao.current.mutateAsync({ id: 'cc-1', data: { nome: 'Operações Brasil', empresa_id: 'outra-empresa' } });
+    await edicao.current.mutateAsync({
+      id: 'cc-1',
+      data: { nome: 'Operações Brasil', empresa_id: 'outra-empresa' },
+    });
     expect(atualizar.update).toHaveBeenCalledWith({ nome: 'Operações Brasil' });
     expect(atualizar.eq).toHaveBeenNthCalledWith(1, 'id', 'cc-1');
     expect(atualizar.eq).toHaveBeenNthCalledWith(2, 'empresa_id', 'empresa-atual');

@@ -52,7 +52,9 @@ export function useSefazAlerts() {
     queryFn: async (): Promise<SefazIntegrityAlert[]> => {
       const { data, error } = await supabase
         .from('integrity_alerts')
-        .select('id, invariant, severity, reason, affected_count, metadata, created_at, resolved_at')
+        .select(
+          'id, invariant, severity, reason, affected_count, metadata, created_at, resolved_at'
+        )
         .eq('domain', 'nfe_sefaz')
         .is('resolved_at', null)
         .order('created_at', { ascending: false })

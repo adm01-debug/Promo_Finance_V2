@@ -24,9 +24,11 @@ export function useCategorizacaoIA() {
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [lastAnalysis, setLastAnalysis] = useState<Map<string, CategoriaDetectada>>(new Map());
 
-  const categorizarDespesa = async (despesa: DespesaParaCategorizar): Promise<CategoriaDetectada | null> => {
+  const categorizarDespesa = async (
+    despesa: DespesaParaCategorizar
+  ): Promise<CategoriaDetectada | null> => {
     setIsAnalyzing(true);
-    
+
     try {
       const { data, error } = await supabase.functions.invoke('categorizar-despesa', {
         body: { despesas: [despesa] },
@@ -37,10 +39,10 @@ export function useCategorizacaoIA() {
       const resultado = data?.categorias?.[0];
       if (resultado) {
         const key = despesa.id || despesa.descricao;
-        setLastAnalysis(prev => new Map(prev).set(key, resultado));
+        setLastAnalysis((prev) => new Map(prev).set(key, resultado));
         return resultado;
       }
-      
+
       return null;
     } catch (error: unknown) {
       logger.error('Erro ao categorizar despesa:', error);
@@ -51,7 +53,9 @@ export function useCategorizacaoIA() {
     }
   };
 
-  const categorizarEmLote = async (despesas: DespesaParaCategorizar[]): Promise<Map<string, CategoriaDetectada>> => {
+  const categorizarEmLote = async (
+    despesas: DespesaParaCategorizar[]
+  ): Promise<Map<string, CategoriaDetectada>> => {
     setIsAnalyzing(true);
     const resultados = new Map<string, CategoriaDetectada>();
 
@@ -69,7 +73,7 @@ export function useCategorizacaoIA() {
       });
 
       setLastAnalysis(new Map([...lastAnalysis, ...resultados]));
-      
+
       toast.success(`${resultados.size} despesas categorizadas com sucesso`);
       return resultados;
     } catch (error: unknown) {
@@ -101,14 +105,50 @@ export function useCategorizacaoIA() {
 
 // Categorias padrão do sistema
 export const CATEGORIAS_DESPESAS = [
-  { id: 'pessoal', nome: 'Despesas com Pessoal', subcategorias: ['Salários', 'Benefícios', 'Encargos', 'Treinamentos'] },
-  { id: 'operacional', nome: 'Despesas Operacionais', subcategorias: ['Aluguel', 'Energia', 'Água', 'Internet', 'Telefone', 'Manutenção'] },
-  { id: 'materiais', nome: 'Materiais e Insumos', subcategorias: ['Matéria-prima', 'Material de escritório', 'Material de limpeza'] },
-  { id: 'marketing', nome: 'Marketing e Vendas', subcategorias: ['Publicidade', 'Brindes', 'Eventos', 'Comissões'] },
-  { id: 'impostos', nome: 'Impostos e Taxas', subcategorias: ['Federais', 'Estaduais', 'Municipais', 'Taxas bancárias'] },
-  { id: 'financeiro', nome: 'Despesas Financeiras', subcategorias: ['Juros', 'Multas', 'Tarifas', 'IOF'] },
-  { id: 'ti', nome: 'Tecnologia da Informação', subcategorias: ['Software', 'Hardware', 'Serviços de TI', 'Cloud'] },
-  { id: 'juridico', nome: 'Jurídico e Contábil', subcategorias: ['Honorários', 'Taxas cartoriais', 'Certidões'] },
-  { id: 'transporte', nome: 'Transporte e Logística', subcategorias: ['Combustível', 'Frete', 'Pedágios', 'Manutenção veicular'] },
+  {
+    id: 'pessoal',
+    nome: 'Despesas com Pessoal',
+    subcategorias: ['Salários', 'Benefícios', 'Encargos', 'Treinamentos'],
+  },
+  {
+    id: 'operacional',
+    nome: 'Despesas Operacionais',
+    subcategorias: ['Aluguel', 'Energia', 'Água', 'Internet', 'Telefone', 'Manutenção'],
+  },
+  {
+    id: 'materiais',
+    nome: 'Materiais e Insumos',
+    subcategorias: ['Matéria-prima', 'Material de escritório', 'Material de limpeza'],
+  },
+  {
+    id: 'marketing',
+    nome: 'Marketing e Vendas',
+    subcategorias: ['Publicidade', 'Brindes', 'Eventos', 'Comissões'],
+  },
+  {
+    id: 'impostos',
+    nome: 'Impostos e Taxas',
+    subcategorias: ['Federais', 'Estaduais', 'Municipais', 'Taxas bancárias'],
+  },
+  {
+    id: 'financeiro',
+    nome: 'Despesas Financeiras',
+    subcategorias: ['Juros', 'Multas', 'Tarifas', 'IOF'],
+  },
+  {
+    id: 'ti',
+    nome: 'Tecnologia da Informação',
+    subcategorias: ['Software', 'Hardware', 'Serviços de TI', 'Cloud'],
+  },
+  {
+    id: 'juridico',
+    nome: 'Jurídico e Contábil',
+    subcategorias: ['Honorários', 'Taxas cartoriais', 'Certidões'],
+  },
+  {
+    id: 'transporte',
+    nome: 'Transporte e Logística',
+    subcategorias: ['Combustível', 'Frete', 'Pedágios', 'Manutenção veicular'],
+  },
   { id: 'outros', nome: 'Outras Despesas', subcategorias: ['Diversos'] },
 ];

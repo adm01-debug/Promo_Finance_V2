@@ -1,20 +1,20 @@
-import { useEffect } from "react";
-import { supabaseDyn } from "@/lib/supabase-dynamic";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { supabase } from "@/integrations/supabase/client";
-import { toast } from "sonner";
-import { useAuth } from "@/hooks/useAuth";
+import { useEffect } from 'react';
+import { supabaseDyn } from '@/lib/supabase-dynamic';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { supabase } from '@/integrations/supabase/client';
+import { toast } from 'sonner';
+import { useAuth } from '@/hooks/useAuth';
 
 /** Cadência de entrega das notificações para uma assinatura. */
-export type SubscriptionFrequencia = "imediata" | "horaria" | "diaria";
+export type SubscriptionFrequencia = 'imediata' | 'horaria' | 'diaria';
 
 /** Severidades padronizadas reutilizadas pelos pickers de UI/validação. */
-export type SeveridadeAlerta = "baixa" | "media" | "alta" | "critica";
+export type SeveridadeAlerta = 'baixa' | 'media' | 'alta' | 'critica';
 export const SEVERIDADES_DISPONIVEIS: readonly SeveridadeAlerta[] = [
-  "baixa",
-  "media",
-  "alta",
-  "critica",
+  'baixa',
+  'media',
+  'alta',
+  'critica',
 ] as const;
 
 export interface SavedFilterSubscription {
@@ -63,15 +63,13 @@ export interface SavedFilterSubscription {
 export function useSavedFilterSubscriptions() {
   const qc = useQueryClient();
   const { user } = useAuth();
-  const queryKey = ["saved-filter-subscriptions", user?.id];
+  const queryKey = ['saved-filter-subscriptions', user?.id];
 
   const list = useQuery({
     queryKey,
     enabled: !!user,
     queryFn: async () => {
-      const { data, error } = await supabaseDyn
-        .from("saved_filter_subscriptions")
-        .select("*");
+      const { data, error } = await supabaseDyn.from('saved_filter_subscriptions').select('*');
       if (error) throw error;
       return (data ?? []) as unknown as SavedFilterSubscription[];
     },
@@ -93,20 +91,16 @@ export function useSavedFilterSubscriptions() {
     // `.on()` lança "cannot add postgres_changes callbacks after subscribe()".
     const ch = supabase
       .channel(`saved-filter-permissions-${user.id}-${Math.random().toString(36).slice(2, 8)}`)
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'saved_filters' }, () => {
+        qc.invalidateQueries({ queryKey });
+        qc.invalidateQueries({ queryKey: ['saved-filters'] });
+      })
       .on(
-        "postgres_changes",
-        { event: "*", schema: "public", table: "saved_filters" },
+        'postgres_changes',
+        { event: 'DELETE', schema: 'public', table: 'saved_filter_subscriptions' },
         () => {
           qc.invalidateQueries({ queryKey });
-          qc.invalidateQueries({ queryKey: ["saved-filters"] });
-        },
-      )
-      .on(
-        "postgres_changes",
-        { event: "DELETE", schema: "public", table: "saved_filter_subscriptions" },
-        () => {
-          qc.invalidateQueries({ queryKey });
-        },
+        }
       )
       .subscribe();
     return () => {
@@ -130,30 +124,28 @@ export function useSavedFilterSubscriptions() {
       rateLimitMax?: number;
       rateLimitWindowMin?: number;
     }) => {
-      if (!user) throw new Error("Sessão expirada");
-      const { error } = await supabaseDyn
-        .from("saved_filter_subscriptions")
-        .upsert(
-          {
-            user_id: user.id,
-            saved_filter_id: input.savedFilterId,
-            notify_inapp: input.notifyInapp ?? true,
-            notify_push: input.notifyPush ?? false,
-            notify_email: input.notifyEmail ?? false,
-            frequencia: input.frequencia ?? "imediata",
-            horario_preferido: input.horarioPreferido ?? "09:00:00",
-            severidades_criticas: input.severidadesCriticas ?? ["critica"],
-            tipos_eventos_ativos: input.tiposEventosAtivos ?? [],
-            rate_limit_max: input.rateLimitMax ?? 5,
-            rate_limit_window_min: input.rateLimitWindowMin ?? 10,
-            last_seen_at: new Date().toISOString(),
-          },
-          { onConflict: "user_id,saved_filter_id" },
-        );
+      if (!user) throw new Error('Sessão expirada');
+      const { error } = await supabaseDyn.from('saved_filter_subscriptions').upsert(
+        {
+          user_id: user.id,
+          saved_filter_id: input.savedFilterId,
+          notify_inapp: input.notifyInapp ?? true,
+          notify_push: input.notifyPush ?? false,
+          notify_email: input.notifyEmail ?? false,
+          frequencia: input.frequencia ?? 'imediata',
+          horario_preferido: input.horarioPreferido ?? '09:00:00',
+          severidades_criticas: input.severidadesCriticas ?? ['critica'],
+          tipos_eventos_ativos: input.tiposEventosAtivos ?? [],
+          rate_limit_max: input.rateLimitMax ?? 5,
+          rate_limit_window_min: input.rateLimitWindowMin ?? 10,
+          last_seen_at: new Date().toISOString(),
+        },
+        { onConflict: 'user_id,saved_filter_id' }
+      );
       if (error) throw error;
     },
     onSuccess: () => {
-      toast.success("Assinatura ativada");
+      toast.success('Assinatura ativada');
       qc.invalidateQueries({ queryKey });
     },
     onError: (e: Error) => toast.error(`Erro ao assinar: ${e.message}`),
@@ -181,14 +173,12 @@ export function useSavedFilterSubscriptions() {
       if (input.notifyPush !== undefined) patch.notify_push = input.notifyPush;
       if (input.notifyEmail !== undefined) patch.notify_email = input.notifyEmail;
       if (input.frequencia !== undefined) patch.frequencia = input.frequencia;
-      if (input.horarioPreferido !== undefined)
-        patch.horario_preferido = input.horarioPreferido;
+      if (input.horarioPreferido !== undefined) patch.horario_preferido = input.horarioPreferido;
       if (input.severidadesCriticas !== undefined)
         patch.severidades_criticas = input.severidadesCriticas;
       if (input.tiposEventosAtivos !== undefined)
         patch.tipos_eventos_ativos = input.tiposEventosAtivos;
-      if (input.rateLimitMax !== undefined)
-        patch.rate_limit_max = input.rateLimitMax;
+      if (input.rateLimitMax !== undefined) patch.rate_limit_max = input.rateLimitMax;
       if (input.rateLimitWindowMin !== undefined)
         patch.rate_limit_window_min = input.rateLimitWindowMin;
       // Reset do agendamento sempre que a cadência muda — o hook de alertas
@@ -197,9 +187,9 @@ export function useSavedFilterSubscriptions() {
         patch.next_dispatch_at = null;
       }
       const { error } = await supabaseDyn
-        .from("saved_filter_subscriptions")
+        .from('saved_filter_subscriptions')
         .update(patch)
-        .eq("id", input.id);
+        .eq('id', input.id);
       if (error) throw error;
     },
     onSuccess: () => {
@@ -210,14 +200,11 @@ export function useSavedFilterSubscriptions() {
 
   const unsubscribe = useMutation({
     mutationFn: async (id: string) => {
-      const { error } = await supabaseDyn
-        .from("saved_filter_subscriptions")
-        .delete()
-        .eq("id", id);
+      const { error } = await supabaseDyn.from('saved_filter_subscriptions').delete().eq('id', id);
       if (error) throw error;
     },
     onSuccess: () => {
-      toast.success("Assinatura removida");
+      toast.success('Assinatura removida');
       qc.invalidateQueries({ queryKey });
     },
     onError: (e: Error) => toast.error(`Erro: ${e.message}`),
@@ -227,9 +214,9 @@ export function useSavedFilterSubscriptions() {
   const markSeen = useMutation({
     mutationFn: async (id: string) => {
       const { error } = await supabaseDyn
-        .from("saved_filter_subscriptions")
+        .from('saved_filter_subscriptions')
         .update({ last_seen_at: new Date().toISOString() })
-        .eq("id", id);
+        .eq('id', id);
       if (error) throw error;
     },
     onSuccess: () => qc.invalidateQueries({ queryKey }),

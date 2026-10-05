@@ -31,7 +31,7 @@ describe('coerência das UFs entre catálogo e motor ICMS', () => {
 
   it('detecta alíquota interna divergente (regressão MA/PI/RN)', () => {
     const catalogo = catalogoEspelhandoCodigo().map((u) =>
-      u.sigla === 'MA' ? { ...u, aliquota_interna_padrao: 0.22 } : u,
+      u.sigla === 'MA' ? { ...u, aliquota_interna_padrao: 0.22 } : u
     );
     const divergencias = compararUfsComCatalogo(catalogo);
     expect(divergencias).toEqual([
@@ -41,7 +41,7 @@ describe('coerência das UFs entre catálogo e motor ICMS', () => {
 
   it('detecta FCP divergente', () => {
     const catalogo = catalogoEspelhandoCodigo().map((u) =>
-      u.sigla === 'AL' ? { ...u, aliquota_fcp: 0.02 } : u,
+      u.sigla === 'AL' ? { ...u, aliquota_fcp: 0.02 } : u
     );
     const divergencias = compararUfsComCatalogo(catalogo);
     expect(divergencias).toHaveLength(1);
@@ -60,20 +60,25 @@ describe('coerência das UFs entre catálogo e motor ICMS', () => {
     catalogo.push({ ...catalogo[0], sigla: 'XX' });
     const divergencias = compararUfsComCatalogo(catalogo);
     expect(divergencias).toEqual([
-      { uf: 'XX', campo: 'excedente', valorCodigo: null, valorBanco: catalogo[0].aliquota_interna_padrao },
+      {
+        uf: 'XX',
+        campo: 'excedente',
+        valorCodigo: null,
+        valorBanco: catalogo[0].aliquota_interna_padrao,
+      },
     ]);
   });
 
   it('tolera ruído de ponto flutuante', () => {
     const catalogo = catalogoEspelhandoCodigo().map((u) =>
-      u.sigla === 'RJ' ? { ...u, aliquota_interna_padrao: u.aliquota_interna_padrao + 1e-12 } : u,
+      u.sigla === 'RJ' ? { ...u, aliquota_interna_padrao: u.aliquota_interna_padrao + 1e-12 } : u
     );
     expect(compararUfsComCatalogo(catalogo)).toEqual([]);
   });
 
   it('acusa marcador de FCP inconsistente', () => {
     const catalogo = catalogoEspelhandoCodigo().map((u) =>
-      u.sigla === 'PA' ? { ...u, possui_fcp: true } : u,
+      u.sigla === 'PA' ? { ...u, possui_fcp: true } : u
     );
     expect(validarMarcadorFcp(catalogo)).toEqual(['PA: possui_fcp=true mas aliquota_fcp=0']);
   });

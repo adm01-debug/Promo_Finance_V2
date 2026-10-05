@@ -61,7 +61,6 @@ export function useConformidadeSnapshots(limite = 24) {
   return useConformidadeSnapshotsDaEmpresa(empresaId ?? undefined, limite);
 }
 
-
 /**
  * Grava (ou regrava) os snapshots das competências informadas.
  * Recebe pontos já calculados pelo motor determinístico — nenhuma regra de

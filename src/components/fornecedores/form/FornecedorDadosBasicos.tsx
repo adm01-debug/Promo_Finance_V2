@@ -1,12 +1,7 @@
 import { Building2, User, FileText } from 'lucide-react';
 import { type FieldValues, type UseFormReturn } from 'react-hook-form';
 import { FieldLabel } from '@/components/ui/info-tooltip';
-import {
-  FormControl,
-  FormField,
-  FormItem,
-  FormMessage,
-} from '@/components/ui/form';
+import { FormControl, FormField, FormItem, FormMessage } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { maskCnpjCpf } from '@/lib/masks';
 
@@ -23,7 +18,11 @@ export function FornecedorDadosBasicos({ form }: FornecedorDadosBasicosProps) {
           name="razao_social"
           render={({ field }) => (
             <FormItem>
-              <FieldLabel label="Razão Social" required tooltip="Nome oficial registrado da empresa fornecedora" />
+              <FieldLabel
+                label="Razão Social"
+                required
+                tooltip="Nome oficial registrado da empresa fornecedora"
+              />
               <FormControl>
                 <div className="relative">
                   <Building2 className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
@@ -40,7 +39,10 @@ export function FornecedorDadosBasicos({ form }: FornecedorDadosBasicosProps) {
           name="nome_fantasia"
           render={({ field }) => (
             <FormItem>
-              <FieldLabel label="Nome Fantasia" tooltip="Nome comercial pelo qual o fornecedor é conhecido" />
+              <FieldLabel
+                label="Nome Fantasia"
+                tooltip="Nome comercial pelo qual o fornecedor é conhecido"
+              />
               <FormControl>
                 <Input {...field} placeholder="Nome fantasia (opcional)" />
               </FormControl>
@@ -56,7 +58,10 @@ export function FornecedorDadosBasicos({ form }: FornecedorDadosBasicosProps) {
           name="cnpj_cpf"
           render={({ field }) => (
             <FormItem>
-              <FieldLabel label="CNPJ/CPF" tooltip="Documento fiscal do fornecedor. Validação automática" />
+              <FieldLabel
+                label="CNPJ/CPF"
+                tooltip="Documento fiscal do fornecedor. Validação automática"
+              />
               <FormControl>
                 <div className="relative">
                   <FileText className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
@@ -79,7 +84,10 @@ export function FornecedorDadosBasicos({ form }: FornecedorDadosBasicosProps) {
           name="contato"
           render={({ field }) => (
             <FormItem>
-              <FieldLabel label="Pessoa de Contato" tooltip="Responsável por negociações e atendimento" />
+              <FieldLabel
+                label="Pessoa de Contato"
+                tooltip="Responsável por negociações e atendimento"
+              />
               <FormControl>
                 <div className="relative">
                   <User className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />

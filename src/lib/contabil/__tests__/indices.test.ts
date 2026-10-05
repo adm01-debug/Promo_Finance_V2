@@ -55,7 +55,8 @@ describe('classificar', () => {
     expect(classificar(60, { bom: 50, atencao: 70 }, false)).toBe('atencao');
     expect(classificar(90, { bom: 50, atencao: 70 }, false)).toBe('critico');
   });
-  it('null vira indefinido', () => expect(classificar(null, { bom: 1, atencao: 0 })).toBe('indefinido'));
+  it('null vira indefinido', () =>
+    expect(classificar(null, { bom: 1, atencao: 0 })).toBe('indefinido'));
 });
 
 describe('calcularIndices — caminho feliz', () => {
@@ -69,10 +70,13 @@ describe('calcularIndices — caminho feliz', () => {
   });
 
   it('liquidez corrente = AC / PC', () => expect(valor(base, 'liquidez_corrente')).toBe(2));
-  it('liquidez seca desconsidera estoques', () => expect(valor(base, 'liquidez_seca')).toBeCloseTo(1.33, 2));
-  it('liquidez imediata usa disponibilidades', () => expect(valor(base, 'liquidez_imediata')).toBe(0.5));
+  it('liquidez seca desconsidera estoques', () =>
+    expect(valor(base, 'liquidez_seca')).toBeCloseTo(1.33, 2));
+  it('liquidez imediata usa disponibilidades', () =>
+    expect(valor(base, 'liquidez_imediata')).toBe(0.5));
   it('liquidez geral soma longo prazo', () => expect(valor(base, 'liquidez_geral')).toBe(1.4));
-  it('endividamento geral em percentual', () => expect(valor(base, 'endividamento_geral')).toBe(50));
+  it('endividamento geral em percentual', () =>
+    expect(valor(base, 'endividamento_geral')).toBe(50));
   it('composição do endividamento', () => expect(valor(base, 'composicao_endividamento')).toBe(60));
   it('imobilização do PL', () => expect(valor(base, 'imobilizacao_pl')).toBe(60));
   it('margem bruta', () => expect(valor(base, 'margem_bruta')).toBe(40));

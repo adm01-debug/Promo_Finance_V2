@@ -20,7 +20,13 @@ interface Props {
   onDiscard: () => void;
 }
 
-export function ContingenciaGlobalSettings({ config, hasChanges, onConfigChange, onSave, onDiscard }: Props) {
+export function ContingenciaGlobalSettings({
+  config,
+  hasChanges,
+  onConfigChange,
+  onSave,
+  onDiscard,
+}: Props) {
   return (
     <motion.div variants={itemVariants}>
       <Card>
@@ -39,7 +45,9 @@ export function ContingenciaGlobalSettings({ config, hasChanges, onConfigChange,
                 min="10"
                 max="300"
                 value={config.checkIntervalSeconds}
-                onChange={(e) => onConfigChange({ checkIntervalSeconds: parseInt(e.target.value) || 30 })}
+                onChange={(e) =>
+                  onConfigChange({ checkIntervalSeconds: parseInt(e.target.value) || 30 })
+                }
               />
             </div>
             <div className="space-y-2">
@@ -49,7 +57,9 @@ export function ContingenciaGlobalSettings({ config, hasChanges, onConfigChange,
                 min="1"
                 max="60"
                 value={config.autoDeactivateDelayMinutes}
-                onChange={(e) => onConfigChange({ autoDeactivateDelayMinutes: parseInt(e.target.value) || 5 })}
+                onChange={(e) =>
+                  onConfigChange({ autoDeactivateDelayMinutes: parseInt(e.target.value) || 5 })
+                }
               />
             </div>
             <div className="flex items-center justify-between p-3 rounded-lg bg-muted/50">
@@ -63,7 +73,9 @@ export function ContingenciaGlobalSettings({ config, hasChanges, onConfigChange,
               <Label className="text-sm">Desativar automaticamente</Label>
               <Switch
                 checked={config.autoDeactivateWhenOnline}
-                onCheckedChange={(autoDeactivateWhenOnline) => onConfigChange({ autoDeactivateWhenOnline })}
+                onCheckedChange={(autoDeactivateWhenOnline) =>
+                  onConfigChange({ autoDeactivateWhenOnline })
+                }
               />
             </div>
           </div>

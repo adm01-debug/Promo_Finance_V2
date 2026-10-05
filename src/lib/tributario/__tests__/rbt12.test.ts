@@ -10,11 +10,11 @@ describe('calcularRBT12', () => {
         ano: 2024,
         mes: i > 12 ? i - 12 : i,
         receita_bruta: 100000,
-        receita_exportacao: 0
+        receita_exportacao: 0,
       });
     }
     // Adicionando um ano diferente para garantir ordenação
-    historico[12].ano = 2025; 
+    historico[12].ano = 2025;
     historico[13].ano = 2025;
     historico[14].ano = 2025;
 
@@ -47,7 +47,7 @@ describe('calcularRBA', () => {
       { ano: 2025, mes: 1, receita_bruta: 50000, receita_exportacao: 0 },
       { ano: 2025, mes: 2, receita_bruta: 50000, receita_exportacao: 0 },
     ];
-    
+
     expect(calcularRBA(historico, 2025)).toBe(100000);
     expect(calcularRBA(historico, 2024)).toBe(100000);
   });

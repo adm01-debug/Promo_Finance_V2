@@ -69,7 +69,9 @@ export function useVerificacaoIntegracoes(empresaId?: string, ano?: number) {
 
       const { data, error } = await supabase
         .from('lancamentos_contabeis')
-        .select('id, numero_lancamento, data_lancamento, historico, origem, valor_total, status, origem_id, partidas:partidas_contabeis(tipo, valor)')
+        .select(
+          'id, numero_lancamento, data_lancamento, historico, origem, valor_total, status, origem_id, partidas:partidas_contabeis(tipo, valor)'
+        )
         .eq('empresa_id', empresaId)
         .neq('origem', 'manual')
         .gte('data_lancamento', inicio)
@@ -79,32 +81,38 @@ export function useVerificacaoIntegracoes(empresaId?: string, ano?: number) {
 
       if (error) throw error;
 
-      const rows: LancamentoIntegracaoRow[] = ((data || []) as unknown as RawLancamento[]).map(l => {
-        const partidas = l.partidas || [];
-        const totalD = partidas.filter(p => p.tipo === 'D').reduce((s, p) => s + Number(p.valor || 0), 0);
-        const totalC = partidas.filter(p => p.tipo === 'C').reduce((s, p) => s + Number(p.valor || 0), 0);
-        const diff = Math.abs(totalD - totalC);
-        let status_consistencia: StatusConsistencia = 'ok';
-        if (partidas.length === 0) status_consistencia = 'sem_partidas';
-        else if (partidas.length < 2) status_consistencia = 'orfao';
-        else if (diff > 0.01) status_consistencia = 'desbalanceado';
+      const rows: LancamentoIntegracaoRow[] = ((data || []) as unknown as RawLancamento[]).map(
+        (l) => {
+          const partidas = l.partidas || [];
+          const totalD = partidas
+            .filter((p) => p.tipo === 'D')
+            .reduce((s, p) => s + Number(p.valor || 0), 0);
+          const totalC = partidas
+            .filter((p) => p.tipo === 'C')
+            .reduce((s, p) => s + Number(p.valor || 0), 0);
+          const diff = Math.abs(totalD - totalC);
+          let status_consistencia: StatusConsistencia = 'ok';
+          if (partidas.length === 0) status_consistencia = 'sem_partidas';
+          else if (partidas.length < 2) status_consistencia = 'orfao';
+          else if (diff > 0.01) status_consistencia = 'desbalanceado';
 
-        return {
-          id: l.id,
-          numero_lancamento: l.numero_lancamento,
-          data_lancamento: l.data_lancamento,
-          historico: l.historico,
-          origem: l.origem || 'desconhecida',
-          valor_total: Number(l.valor_total || 0),
-          status: l.status,
-          origem_id: l.origem_id ?? null,
-          total_debito: totalD,
-          total_credito: totalC,
-          diferenca: diff,
-          qtd_partidas: partidas.length,
-          status_consistencia,
-        };
-      });
+          return {
+            id: l.id,
+            numero_lancamento: l.numero_lancamento,
+            data_lancamento: l.data_lancamento,
+            historico: l.historico,
+            origem: l.origem || 'desconhecida',
+            valor_total: Number(l.valor_total || 0),
+            status: l.status,
+            origem_id: l.origem_id ?? null,
+            total_debito: totalD,
+            total_credito: totalC,
+            diferenca: diff,
+            qtd_partidas: partidas.length,
+            status_consistencia,
+          };
+        }
+      );
 
       // Agregar por origem
       const mapa = new Map<string, ResumoIntegracao>();
@@ -132,7 +140,7 @@ export function useVerificacaoIntegracoes(empresaId?: string, ano?: number) {
       }
 
       const resumos = Array.from(mapa.values()).sort((a, b) => b.total - a.total);
-      const totalOk = rows.filter(r => r.status_consistencia === 'ok').length;
+      const totalOk = rows.filter((r) => r.status_consistencia === 'ok').length;
       const totalDivergentes = rows.length - totalOk;
 
       return {

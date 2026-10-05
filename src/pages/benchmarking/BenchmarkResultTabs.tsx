@@ -1,13 +1,32 @@
 import { useMemo } from 'react';
 import { motion } from 'framer-motion';
 import {
-  ArrowUp, ArrowDown, Minus, Lightbulb, AlertTriangle, Zap, Clock,
-  TrendingUp, Shield, Sparkles,
+  ArrowUp,
+  ArrowDown,
+  Minus,
+  Lightbulb,
+  AlertTriangle,
+  Zap,
+  Clock,
+  TrendingUp,
+  Shield,
+  Sparkles,
 } from 'lucide-react';
 import {
-  ResponsiveContainer, RadarChart, Radar, PolarGrid,
-  PolarAngleAxis, PolarRadiusAxis, BarChart, Bar, XAxis, YAxis,
-  Tooltip as ReTooltip, CartesianGrid, Legend, Cell,
+  ResponsiveContainer,
+  RadarChart,
+  Radar,
+  PolarGrid,
+  PolarAngleAxis,
+  PolarRadiusAxis,
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  Tooltip as ReTooltip,
+  CartesianGrid,
+  Legend,
+  Cell,
 } from 'recharts';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -45,7 +64,12 @@ interface BenchmarkResult {
 const posicaoConfig = {
   acima: { icon: ArrowUp, color: 'text-success', bg: 'bg-success/10', label: 'Acima da média' },
   na_media: { icon: Minus, color: 'text-warning', bg: 'bg-warning/10', label: 'Na média' },
-  abaixo: { icon: ArrowDown, color: 'text-destructive', bg: 'bg-destructive/10', label: 'Abaixo da média' },
+  abaixo: {
+    icon: ArrowDown,
+    color: 'text-destructive',
+    bg: 'bg-destructive/10',
+    label: 'Abaixo da média',
+  },
 };
 
 const prazoConfig = {
@@ -60,7 +84,7 @@ interface Props {
 
 export function BenchmarkResultTabs({ result }: Props) {
   const radarData = useMemo(() => {
-    return result.benchmarks.slice(0, 6).map(b => ({
+    return result.benchmarks.slice(0, 6).map((b) => ({
       metrica: b.metrica.length > 15 ? b.metrica.substring(0, 15) + '...' : b.metrica,
       empresa: Math.min(100, Math.max(0, 50 + b.diferenca_percentual)),
       setor: 50,
@@ -68,7 +92,7 @@ export function BenchmarkResultTabs({ result }: Props) {
   }, [result]);
 
   const barData = useMemo(() => {
-    return result.benchmarks.map(b => ({
+    return result.benchmarks.map((b) => ({
       metrica: b.metrica.length > 12 ? b.metrica.substring(0, 12) + '...' : b.metrica,
       diferenca: b.diferenca_percentual,
     }));
@@ -90,14 +114,32 @@ export function BenchmarkResultTabs({ result }: Props) {
             const config = posicaoConfig[b.posicao] || posicaoConfig.na_media;
             const Icon = config.icon;
             return (
-              <motion.div key={i} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.05 }}>
-                <Card className={cn('border', b.posicao === 'acima' ? 'border-success/30' : b.posicao === 'abaixo' ? 'border-destructive/30' : 'border-warning/30')}>
+              <motion.div
+                key={i}
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: i * 0.05 }}
+              >
+                <Card
+                  className={cn(
+                    'border',
+                    b.posicao === 'acima'
+                      ? 'border-success/30'
+                      : b.posicao === 'abaixo'
+                        ? 'border-destructive/30'
+                        : 'border-warning/30'
+                  )}
+                >
                   <CardContent className="pt-4 pb-3 space-y-2">
                     <div className="flex items-center justify-between">
                       <span className="font-medium text-sm">{b.metrica}</span>
-                      <Badge variant="outline" className={cn('text-xs gap-1', config.color, config.bg)}>
+                      <Badge
+                        variant="outline"
+                        className={cn('text-xs gap-1', config.color, config.bg)}
+                      >
                         <Icon className="h-3 w-3" />
-                        {b.diferenca_percentual > 0 ? '+' : ''}{b.diferenca_percentual}%
+                        {b.diferenca_percentual > 0 ? '+' : ''}
+                        {b.diferenca_percentual}%
                       </Badge>
                     </div>
                     <div className="grid grid-cols-3 gap-2 text-xs">
@@ -136,7 +178,9 @@ export function BenchmarkResultTabs({ result }: Props) {
             <CardContent>
               <ul className="space-y-1.5">
                 {result.pontos_fortes.map((p, i) => (
-                  <li key={i} className="text-xs flex items-start gap-2"><span className="text-success mt-0.5">✓</span> {p}</li>
+                  <li key={i} className="text-xs flex items-start gap-2">
+                    <span className="text-success mt-0.5">✓</span> {p}
+                  </li>
                 ))}
               </ul>
             </CardContent>
@@ -150,7 +194,9 @@ export function BenchmarkResultTabs({ result }: Props) {
             <CardContent>
               <ul className="space-y-1.5">
                 {result.pontos_fracos.map((p, i) => (
-                  <li key={i} className="text-xs flex items-start gap-2"><span className="text-destructive mt-0.5">⚠</span> {p}</li>
+                  <li key={i} className="text-xs flex items-start gap-2">
+                    <span className="text-destructive mt-0.5">⚠</span> {p}
+                  </li>
                 ))}
               </ul>
             </CardContent>
@@ -171,9 +217,25 @@ export function BenchmarkResultTabs({ result }: Props) {
                 <RadarChart data={radarData}>
                   <PolarGrid className="stroke-border" />
                   <PolarAngleAxis dataKey="metrica" className="text-xs fill-muted-foreground" />
-                  <PolarRadiusAxis angle={30} domain={[0, 100]} className="text-xs fill-muted-foreground" />
-                  <Radar name="Sua Empresa" dataKey="empresa" stroke="hsl(var(--primary))" fill="hsl(var(--primary))" fillOpacity={0.3} />
-                  <Radar name="Média Setor" dataKey="setor" stroke="hsl(var(--muted-foreground))" fill="hsl(var(--muted-foreground))" fillOpacity={0.1} />
+                  <PolarRadiusAxis
+                    angle={30}
+                    domain={[0, 100]}
+                    className="text-xs fill-muted-foreground"
+                  />
+                  <Radar
+                    name="Sua Empresa"
+                    dataKey="empresa"
+                    stroke="hsl(var(--primary))"
+                    fill="hsl(var(--primary))"
+                    fillOpacity={0.3}
+                  />
+                  <Radar
+                    name="Média Setor"
+                    dataKey="setor"
+                    stroke="hsl(var(--muted-foreground))"
+                    fill="hsl(var(--muted-foreground))"
+                    fillOpacity={0.1}
+                  />
                   <Legend />
                 </RadarChart>
               </ResponsiveContainer>
@@ -190,14 +252,27 @@ export function BenchmarkResultTabs({ result }: Props) {
                 <BarChart data={barData} layout="vertical">
                   <CartesianGrid strokeDasharray="3 3" className="stroke-border" />
                   <XAxis type="number" className="text-xs fill-muted-foreground" />
-                  <YAxis dataKey="metrica" type="category" width={100} className="text-xs fill-muted-foreground" />
+                  <YAxis
+                    dataKey="metrica"
+                    type="category"
+                    width={100}
+                    className="text-xs fill-muted-foreground"
+                  />
                   <ReTooltip
                     formatter={(value: number) => [`${value > 0 ? '+' : ''}${value}%`, 'Diferença']}
-                    contentStyle={{ background: 'hsl(var(--background))', border: '1px solid hsl(var(--border))' }}
+                    contentStyle={{
+                      background: 'hsl(var(--background))',
+                      border: '1px solid hsl(var(--border))',
+                    }}
                   />
                   <Bar dataKey="diferenca" radius={[0, 4, 4, 0]}>
                     {barData.map((entry, i) => (
-                      <Cell key={i} fill={entry.diferenca >= 0 ? 'hsl(var(--success))' : 'hsl(var(--destructive))'} />
+                      <Cell
+                        key={i}
+                        fill={
+                          entry.diferenca >= 0 ? 'hsl(var(--success))' : 'hsl(var(--destructive))'
+                        }
+                      />
                     ))}
                   </Bar>
                 </BarChart>
@@ -212,16 +287,24 @@ export function BenchmarkResultTabs({ result }: Props) {
         {result.oportunidades.map((op, i) => {
           const prazo = prazoConfig[op.prazo] || prazoConfig.medio;
           return (
-            <motion.div key={i} initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: i * 0.1 }}>
+            <motion.div
+              key={i}
+              initial={{ opacity: 0, x: -10 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ delay: i * 0.1 }}
+            >
               <Card className="hover:shadow-md transition-shadow">
                 <CardContent className="pt-4 pb-3">
                   <div className="flex items-start gap-3">
-                    <div className="p-2 rounded-lg bg-primary/10"><Lightbulb className="h-5 w-5 text-primary" /></div>
+                    <div className="p-2 rounded-lg bg-primary/10">
+                      <Lightbulb className="h-5 w-5 text-primary" />
+                    </div>
                     <div className="flex-1">
                       <div className="flex items-center gap-2 mb-1">
                         <span className="font-medium text-sm">{op.titulo}</span>
                         <Badge className={cn('text-[10px]', prazo.color)}>
-                          <Clock className="h-2.5 w-2.5 mr-0.5" />{prazo.label}
+                          <Clock className="h-2.5 w-2.5 mr-0.5" />
+                          {prazo.label}
                         </Badge>
                       </div>
                       <p className="text-xs text-muted-foreground mb-2">{op.descricao}</p>
@@ -248,9 +331,16 @@ export function BenchmarkResultTabs({ result }: Props) {
           <CardContent>
             <div className="space-y-3">
               {result.tendencias_setor.map((t, i) => (
-                <motion.div key={i} initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: i * 0.1 }}
-                  className="flex items-start gap-3 p-3 rounded-lg bg-accent/5 border border-accent/20">
-                  <div className="p-1.5 rounded bg-accent/10"><Sparkles className="h-4 w-4 text-accent" /></div>
+                <motion.div
+                  key={i}
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ delay: i * 0.1 }}
+                  className="flex items-start gap-3 p-3 rounded-lg bg-accent/5 border border-accent/20"
+                >
+                  <div className="p-1.5 rounded bg-accent/10">
+                    <Sparkles className="h-4 w-4 text-accent" />
+                  </div>
                   <p className="text-sm">{t}</p>
                 </motion.div>
               ))}

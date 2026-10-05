@@ -29,7 +29,9 @@ describe('formatFilterValue', () => {
 
   it('datas ISO', () => {
     expect(formatFilterValue('2026-01-15')).toBe('15/01/2026');
-    expect(formatFilterValue(new Date('2026-07-23T00:00:00Z'))).toMatch(/23\/07\/2026|22\/07\/2026/);
+    expect(formatFilterValue(new Date('2026-07-23T00:00:00Z'))).toMatch(
+      /23\/07\/2026|22\/07\/2026/
+    );
   });
 
   it('arrays até 3 itens listam; >3 mostra contagem', () => {
@@ -38,7 +40,9 @@ describe('formatFilterValue', () => {
   });
 
   it('objetos range (from/to, start/end, dataInicio/dataFim)', () => {
-    expect(formatFilterValue({ from: '2026-01-01', to: '2026-01-31' })).toBe('01/01/2026 → 31/01/2026');
+    expect(formatFilterValue({ from: '2026-01-01', to: '2026-01-31' })).toBe(
+      '01/01/2026 → 31/01/2026'
+    );
     expect(formatFilterValue({ start: 10, end: 20 })).toBe('10 → 20');
   });
 

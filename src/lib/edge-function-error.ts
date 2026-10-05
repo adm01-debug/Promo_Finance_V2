@@ -6,7 +6,11 @@
  * e mensagem legível em PT-BR. Também expõe helpers para invocação segura
  * (`invokeEdge`) e para exibir toast padronizado (`handleEdgeError`).
  */
-import { FunctionsHttpError, FunctionsRelayError, FunctionsFetchError } from '@supabase/supabase-js';
+import {
+  FunctionsHttpError,
+  FunctionsRelayError,
+  FunctionsFetchError,
+} from '@supabase/supabase-js';
 import { toast } from 'sonner';
 import { supabase } from '@/integrations/supabase/client';
 import { logger } from '@/lib/logger';
@@ -100,13 +104,13 @@ async function readBody(res: Response): Promise<EdgeErrorBody | null> {
 export async function normalizeEdgeError(
   functionName: string,
   error: unknown,
-  bodyFallback?: EdgeErrorBody | null,
+  bodyFallback?: EdgeErrorBody | null
 ): Promise<EdgeFunctionError> {
   // FunctionsHttpError → non-2xx do handler
   if (error instanceof FunctionsHttpError) {
     const res = (error as unknown as { context?: Response }).context;
     const status = res?.status ?? 500;
-    const body = res ? await readBody(res) : bodyFallback ?? null;
+    const body = res ? await readBody(res) : (bodyFallback ?? null);
     return new EdgeFunctionError({
       functionName,
       status,
@@ -158,7 +162,7 @@ interface InvokeOptions {
 export async function invokeEdge<T = unknown>(
   functionName: string,
   body: Record<string, unknown>,
-  options: InvokeOptions = {},
+  options: InvokeOptions = {}
 ): Promise<T> {
   const { signOutOn401 = true, silent = false } = options;
 

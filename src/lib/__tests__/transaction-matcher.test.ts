@@ -1,8 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { 
-  encontrarMatchesParaTransacao, 
-  LancamentoSistema
-} from '../transaction-matcher';
+import { encontrarMatchesParaTransacao, LancamentoSistema } from '../transaction-matcher';
 import { TransacaoOFX } from '../ofx-parser';
 
 describe('Intelligent Transaction Matcher', () => {
@@ -11,39 +8,39 @@ describe('Intelligent Transaction Matcher', () => {
       id: 'l1',
       tipo: 'pagar',
       descricao: 'Pagamento Internet Vivo',
-      valor: 150.00,
+      valor: 150.0,
       dataVencimento: new Date('2024-05-10'),
       entidade: 'Vivo S.A.',
-      status: 'pendente'
+      status: 'pendente',
     },
     {
       id: 'l2',
       tipo: 'receber',
       descricao: 'Venda de Software Alpha',
-      valor: 5000.00,
+      valor: 5000.0,
       dataVencimento: new Date('2024-05-15'),
       entidade: 'Empresa Alpha',
-      status: 'pendente'
+      status: 'pendente',
     },
     {
       id: 'l3',
       tipo: 'pagar',
       descricao: 'Aluguel Escritório',
-      valor: 3500.00,
+      valor: 3500.0,
       dataVencimento: new Date('2024-05-05'),
       entidade: 'Imobiliária Beta (12.345.678/0001-90)',
-      status: 'pendente'
-    }
+      status: 'pendente',
+    },
   ];
 
   it('deve encontrar match exato por valor e nome', () => {
     const transacao: TransacaoOFX = {
       id: 't1',
       tipo: 'debito',
-      valor: -150.00,
+      valor: -150.0,
       data: new Date('2024-05-10'),
       descricao: 'VIVO INTERNET MENSAL',
-      tipoTransacao: 'PAYMENT'
+      tipoTransacao: 'PAYMENT',
     };
 
     const matches = encontrarMatchesParaTransacao(transacao, mockLancamentos);
@@ -56,10 +53,10 @@ describe('Intelligent Transaction Matcher', () => {
     const transacao: TransacaoOFX = {
       id: 't2',
       tipo: 'debito',
-      valor: -151.20, // 1.20 de diferença (menos de 2%)
+      valor: -151.2, // 1.20 de diferença (menos de 2%)
       data: new Date('2024-05-11'),
       descricao: 'VIVO INTERNET',
-      tipoTransacao: 'PAYMENT'
+      tipoTransacao: 'PAYMENT',
     };
 
     const matches = encontrarMatchesParaTransacao(transacao, mockLancamentos);
@@ -72,10 +69,10 @@ describe('Intelligent Transaction Matcher', () => {
     const transacao: TransacaoOFX = {
       id: 't3',
       tipo: 'debito',
-      valor: -3500.00,
+      valor: -3500.0,
       data: new Date('2024-05-07'), // 2 dias depois do vencimento
       descricao: 'ALUGUEL',
-      tipoTransacao: 'PAYMENT'
+      tipoTransacao: 'PAYMENT',
     };
 
     const matches = encontrarMatchesParaTransacao(transacao, mockLancamentos);
@@ -89,10 +86,10 @@ describe('Intelligent Transaction Matcher', () => {
     const transacao: TransacaoOFX = {
       id: 't_cnpj',
       tipo: 'debito',
-      valor: -3500.00,
+      valor: -3500.0,
       data: new Date('2024-05-05'),
       descricao: 'PGTO ALUGUEL 12345678000190',
-      tipoTransacao: 'PAYMENT'
+      tipoTransacao: 'PAYMENT',
     };
 
     const matches = encontrarMatchesParaTransacao(transacao, mockLancamentos);
@@ -107,10 +104,10 @@ describe('Intelligent Transaction Matcher', () => {
     const transacao: TransacaoOFX = {
       id: 't4',
       tipo: 'debito',
-      valor: -100.00, // 50 de diferença (muito mais que 2%)
+      valor: -100.0, // 50 de diferença (muito mais que 2%)
       data: new Date('2024-05-10'),
       descricao: 'VIVO INTERNET',
-      tipoTransacao: 'PAYMENT'
+      tipoTransacao: 'PAYMENT',
     };
 
     const matches = encontrarMatchesParaTransacao(transacao, mockLancamentos);
@@ -127,10 +124,10 @@ describe('Intelligent Transaction Matcher', () => {
     const transacao: TransacaoOFX = {
       id: 't5',
       tipo: 'credito',
-      valor: 5000.00,
+      valor: 5000.0,
       data: new Date('2024-05-15'),
       descricao: 'RECEBIMENTO ALPHA',
-      tipoTransacao: 'DEP'
+      tipoTransacao: 'DEP',
     };
 
     const matches = encontrarMatchesParaTransacao(transacao, mockLancamentos);

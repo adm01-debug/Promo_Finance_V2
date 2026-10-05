@@ -4,7 +4,16 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
-import { Calculator, CalendarIcon, FileText, Loader2, Percent, User, DollarSign, Hash } from 'lucide-react';
+import {
+  Calculator,
+  CalendarIcon,
+  FileText,
+  Loader2,
+  Percent,
+  User,
+  DollarSign,
+  Hash,
+} from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
@@ -12,8 +21,22 @@ import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Slider } from '@/components/ui/slider';
 import { Separator } from '@/components/ui/separator';
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+} from '@/components/ui/dialog';
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from '@/components/ui/form';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Calendar } from '@/components/ui/calendar';
 import { cn } from '@/lib/utils';
@@ -103,30 +126,33 @@ export function AcordoParcelamentoDialog({
   }, [valorOriginal, descontoPercentual, jurosPercentual, numeroParcelas]);
 
   const onSubmit = (values: FormValues) => {
-    criarAcordo({
-      cliente_nome: values.cliente_nome,
-      cliente_email: values.cliente_email || null,
-      cliente_telefone: values.cliente_telefone || null,
-      valor_original: values.valor_original,
-      desconto_percentual: values.desconto_percentual,
-      juros_percentual: values.juros_percentual,
-      numero_parcelas: numeroParcelas,
-      data_primeiro_vencimento: format(values.data_primeiro_vencimento, 'yyyy-MM-dd'),
-      dia_vencimento: values.dia_vencimento,
-      observacoes: values.observacoes || null,
-      contas_receber_ids: contasReceberId,
-      empresa_id: empresaId,
-    }, {
-      onSuccess: () => {
-        sounds.success();
-        customCelebration({ 
-          title: 'Acordo criado!', 
-          description: `${numeroParcelas}x de ${formatCurrency(simulacao.valorParcela)}` 
-        });
-        form.reset();
-        onOpenChange(false);
+    criarAcordo(
+      {
+        cliente_nome: values.cliente_nome,
+        cliente_email: values.cliente_email || null,
+        cliente_telefone: values.cliente_telefone || null,
+        valor_original: values.valor_original,
+        desconto_percentual: values.desconto_percentual,
+        juros_percentual: values.juros_percentual,
+        numero_parcelas: numeroParcelas,
+        data_primeiro_vencimento: format(values.data_primeiro_vencimento, 'yyyy-MM-dd'),
+        dia_vencimento: values.dia_vencimento,
+        observacoes: values.observacoes || null,
+        contas_receber_ids: contasReceberId,
+        empresa_id: empresaId,
       },
-    });
+      {
+        onSuccess: () => {
+          sounds.success();
+          customCelebration({
+            title: 'Acordo criado!',
+            description: `${numeroParcelas}x de ${formatCurrency(simulacao.valorParcela)}`,
+          });
+          form.reset();
+          onOpenChange(false);
+        },
+      }
+    );
   };
 
   return (
@@ -321,7 +347,7 @@ export function AcordoParcelamentoDialog({
                             )}
                           >
                             {field.value ? (
-                              format(field.value, "dd/MM/yyyy", { locale: ptBR })
+                              format(field.value, 'dd/MM/yyyy', { locale: ptBR })
                             ) : (
                               <span>Selecione</span>
                             )}
@@ -371,10 +397,7 @@ export function AcordoParcelamentoDialog({
                 <FormItem>
                   <FormLabel>Observações (opcional)</FormLabel>
                   <FormControl>
-                    <Textarea
-                      {...field}
-                      placeholder="Informações adicionais sobre o acordo..."
-                    />
+                    <Textarea {...field} placeholder="Informações adicionais sobre o acordo..." />
                   </FormControl>
                   <FormMessage />
                 </FormItem>

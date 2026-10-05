@@ -12,7 +12,11 @@ describe('adaptive-chunk (AIMD)', () => {
   it('cresce aditivamente quando latência ≤ alvo', () => {
     const events: AdaptiveAdjustment[] = [];
     const c = createAdaptiveChunkController({
-      initial: 10, min: 2, max: 50, targetLatencyPerItemMs: 100, increaseStep: 5,
+      initial: 10,
+      min: 2,
+      max: 50,
+      targetLatencyPerItemMs: 100,
+      increaseStep: 5,
       onAdjust: (e) => events.push(e),
     });
     c.report({ batchSize: 10, durationMs: 500 }); // 50ms/item
@@ -22,7 +26,12 @@ describe('adaptive-chunk (AIMD)', () => {
 
   it('reduz multiplicativamente quando latência acima da tolerância', () => {
     const c = createAdaptiveChunkController({
-      initial: 20, min: 2, max: 50, targetLatencyPerItemMs: 100, tolerance: 1.5, decreaseFactor: 0.5,
+      initial: 20,
+      min: 2,
+      max: 50,
+      targetLatencyPerItemMs: 100,
+      tolerance: 1.5,
+      decreaseFactor: 0.5,
     });
     c.report({ batchSize: 20, durationMs: 20 * 300 }); // 300ms/item > 150
     expect(c.size()).toBe(10);
@@ -31,7 +40,11 @@ describe('adaptive-chunk (AIMD)', () => {
   it('reduz agressivo quando taxa de falhas excede threshold', () => {
     const events: AdaptiveAdjustment[] = [];
     const c = createAdaptiveChunkController({
-      initial: 20, min: 2, max: 50, failureThreshold: 0.1, decreaseFactor: 0.5,
+      initial: 20,
+      min: 2,
+      max: 50,
+      failureThreshold: 0.1,
+      decreaseFactor: 0.5,
       onAdjust: (e) => events.push(e),
     });
     c.report({ batchSize: 20, durationMs: 100, failed: 5 }); // 25% falhas
@@ -41,7 +54,11 @@ describe('adaptive-chunk (AIMD)', () => {
 
   it('mantém tamanho na zona morta (entre alvo e tolerance*alvo)', () => {
     const c = createAdaptiveChunkController({
-      initial: 10, min: 2, max: 50, targetLatencyPerItemMs: 100, tolerance: 1.5,
+      initial: 10,
+      min: 2,
+      max: 50,
+      targetLatencyPerItemMs: 100,
+      tolerance: 1.5,
     });
     c.report({ batchSize: 10, durationMs: 10 * 130 }); // 130ms/item — entre 100 e 150
     expect(c.size()).toBe(10);
@@ -49,7 +66,12 @@ describe('adaptive-chunk (AIMD)', () => {
   });
 
   it('nunca cresce acima de max nem reduz abaixo de min', () => {
-    const c = createAdaptiveChunkController({ initial: 4, min: 2, max: 5, targetLatencyPerItemMs: 100 });
+    const c = createAdaptiveChunkController({
+      initial: 4,
+      min: 2,
+      max: 5,
+      targetLatencyPerItemMs: 100,
+    });
     // várias rodadas rápidas
     for (let i = 0; i < 10; i++) c.report({ batchSize: c.size(), durationMs: c.size() * 10 });
     expect(c.size()).toBeLessThanOrEqual(5);

@@ -1,6 +1,16 @@
 import { useMemo, useState } from 'react';
 
-import { CheckCircle2, Download, Eye, FileText, HelpCircle, Link2, Loader2, RefreshCw, XCircle } from 'lucide-react';
+import {
+  CheckCircle2,
+  Download,
+  Eye,
+  FileText,
+  HelpCircle,
+  Link2,
+  Loader2,
+  RefreshCw,
+  XCircle,
+} from 'lucide-react';
 import { formatDistanceToNow } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -47,11 +57,18 @@ import {
   type NfeFiltros,
   type NfeRecebida,
 } from '@/hooks/useNfeRecebidas';
-import { MANIFESTACAO_LABEL, useManifestarNfe, type ManifestacaoTipo } from '@/hooks/useManifestarNfe';
+import {
+  MANIFESTACAO_LABEL,
+  useManifestarNfe,
+  type ManifestacaoTipo,
+} from '@/hooks/useManifestarNfe';
 import { useDesvincularNfe } from '@/hooks/useNfeVinculo';
 import { NfeVinculoDialog } from '@/components/tributario/NfeVinculoDialog';
 
-const STATUS_LABELS: Record<ManifestacaoStatus, { label: string; variant: 'default' | 'secondary' | 'destructive' | 'outline' }> = {
+const STATUS_LABELS: Record<
+  ManifestacaoStatus,
+  { label: string; variant: 'default' | 'secondary' | 'destructive' | 'outline' }
+> = {
   pendente: { label: 'Pendente', variant: 'outline' },
   ciencia: { label: 'Ciência', variant: 'secondary' },
   confirmada: { label: 'Confirmada', variant: 'default' },
@@ -62,12 +79,17 @@ const STATUS_LABELS: Record<ManifestacaoStatus, { label: string; variant: 'defau
 const currency = new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' });
 
 export default function NfeRecebidasPage() {
-  const [filtros, setFiltros] = useState<NfeFiltros>({ status: 'todos', vinculadaContaPagar: 'todos' });
+  const [filtros, setFiltros] = useState<NfeFiltros>({
+    status: 'todos',
+    vinculadaContaPagar: 'todos',
+  });
   const { data = [], isLoading, refetch, isFetching } = useNfeRecebidas(filtros);
   const manifestar = useManifestarNfe();
   const desvincular = useDesvincularNfe();
 
-  const [justDialog, setJustDialog] = useState<{ nfe: NfeRecebida; tipo: ManifestacaoTipo } | null>(null);
+  const [justDialog, setJustDialog] = useState<{ nfe: NfeRecebida; tipo: ManifestacaoTipo } | null>(
+    null
+  );
   const [justTexto, setJustTexto] = useState('');
   const [vincDialog, setVincDialog] = useState<NfeRecebida | null>(null);
 
@@ -103,14 +125,17 @@ export default function NfeRecebidasPage() {
   function confirmarComJustificativa() {
     if (!justDialog) return;
     manifestar.mutate(
-      { chave_acesso: justDialog.nfe.chave_acesso, tipo: justDialog.tipo, justificativa: justTexto },
-      { onSuccess: () => setJustDialog(null) },
+      {
+        chave_acesso: justDialog.nfe.chave_acesso,
+        tipo: justDialog.tipo,
+        justificativa: justTexto,
+      },
+      { onSuccess: () => setJustDialog(null) }
     );
   }
 
   return (
     <>
-
       <div className="container mx-auto space-y-6 py-6">
         <header className="flex flex-wrap items-center justify-between gap-3">
           <div>
@@ -120,15 +145,27 @@ export default function NfeRecebidasPage() {
             </p>
           </div>
           <Button variant="outline" size="sm" onClick={() => refetch()} disabled={isFetching}>
-            {isFetching ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <RefreshCw className="mr-2 h-4 w-4" />}
+            {isFetching ? (
+              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+            ) : (
+              <RefreshCw className="mr-2 h-4 w-4" />
+            )}
             Atualizar
           </Button>
         </header>
 
         <div className="grid gap-4 md:grid-cols-4">
-          <KpiCard label="NF-e no período" value={String(totals.count)} icon={<FileText className="h-4 w-4" />} />
+          <KpiCard
+            label="NF-e no período"
+            value={String(totals.count)}
+            icon={<FileText className="h-4 w-4" />}
+          />
           <KpiCard label="Valor total" value={currency.format(totals.total)} />
-          <KpiCard label="Pendentes de manifestação" value={String(totals.pendentes)} tone="warning" />
+          <KpiCard
+            label="Pendentes de manifestação"
+            value={String(totals.pendentes)}
+            tone="warning"
+          />
           <KpiCard label="Sem vínculo financeiro" value={String(totals.semVinculo)} tone="muted" />
         </div>
 
@@ -146,9 +183,13 @@ export default function NfeRecebidasPage() {
             </div>
             <Select
               value={filtros.status ?? 'todos'}
-              onValueChange={(v) => setFiltros((f) => ({ ...f, status: v as NfeFiltros['status'] }))}
+              onValueChange={(v) =>
+                setFiltros((f) => ({ ...f, status: v as NfeFiltros['status'] }))
+              }
             >
-              <SelectTrigger><SelectValue placeholder="Status manifestação" /></SelectTrigger>
+              <SelectTrigger>
+                <SelectValue placeholder="Status manifestação" />
+              </SelectTrigger>
               <SelectContent>
                 <SelectItem value="todos">Todos os status</SelectItem>
                 <SelectItem value="pendente">Pendente</SelectItem>
@@ -160,9 +201,16 @@ export default function NfeRecebidasPage() {
             </Select>
             <Select
               value={filtros.vinculadaContaPagar ?? 'todos'}
-              onValueChange={(v) => setFiltros((f) => ({ ...f, vinculadaContaPagar: v as NfeFiltros['vinculadaContaPagar'] }))}
+              onValueChange={(v) =>
+                setFiltros((f) => ({
+                  ...f,
+                  vinculadaContaPagar: v as NfeFiltros['vinculadaContaPagar'],
+                }))
+              }
             >
-              <SelectTrigger><SelectValue placeholder="Vínculo financeiro" /></SelectTrigger>
+              <SelectTrigger>
+                <SelectValue placeholder="Vínculo financeiro" />
+              </SelectTrigger>
               <SelectContent>
                 <SelectItem value="todos">Todos os vínculos</SelectItem>
                 <SelectItem value="sim">Já vinculada</SelectItem>
@@ -173,12 +221,16 @@ export default function NfeRecebidasPage() {
               <Input
                 type="date"
                 value={filtros.dataInicio ?? ''}
-                onChange={(e) => setFiltros((f) => ({ ...f, dataInicio: e.target.value || undefined }))}
+                onChange={(e) =>
+                  setFiltros((f) => ({ ...f, dataInicio: e.target.value || undefined }))
+                }
               />
               <Input
                 type="date"
                 value={filtros.dataFim ?? ''}
-                onChange={(e) => setFiltros((f) => ({ ...f, dataFim: e.target.value || undefined }))}
+                onChange={(e) =>
+                  setFiltros((f) => ({ ...f, dataFim: e.target.value || undefined }))
+                }
               />
             </div>
           </CardContent>
@@ -208,7 +260,10 @@ export default function NfeRecebidasPage() {
                 )}
                 {!isLoading && data.length === 0 && (
                   <TableRow>
-                    <TableCell colSpan={7} className="py-10 text-center text-sm text-muted-foreground">
+                    <TableCell
+                      colSpan={7}
+                      className="py-10 text-center text-sm text-muted-foreground"
+                    >
                       Nenhuma NF-e recebida encontrada com os filtros atuais.
                     </TableCell>
                   </TableRow>
@@ -224,12 +279,17 @@ export default function NfeRecebidasPage() {
                         </div>
                       </TableCell>
                       <TableCell className="font-mono text-xs">
-                        <div>{n.numero ?? '—'}/{n.serie ?? '—'}</div>
+                        <div>
+                          {n.numero ?? '—'}/{n.serie ?? '—'}
+                        </div>
                         <div className="text-muted-foreground">{n.chave_acesso}</div>
                       </TableCell>
                       <TableCell className="text-sm">
                         {n.data_emissao
-                          ? formatDistanceToNow(new Date(n.data_emissao), { addSuffix: true, locale: ptBR })
+                          ? formatDistanceToNow(new Date(n.data_emissao), {
+                              addSuffix: true,
+                              locale: ptBR,
+                            })
                           : '—'}
                       </TableCell>
                       <TableCell className="text-right tabular-nums">
@@ -272,12 +332,9 @@ export default function NfeRecebidasPage() {
                           </Button>
                           <DropdownMenu>
                             <DropdownMenuTrigger asChild>
-                              <Button
-                                variant="outline"
-                                size="sm"
-                                disabled={manifestar.isPending}
-                              >
-                                {manifestar.isPending && manifestar.variables?.chave_acesso === n.chave_acesso ? (
+                              <Button variant="outline" size="sm" disabled={manifestar.isPending}>
+                                {manifestar.isPending &&
+                                manifestar.variables?.chave_acesso === n.chave_acesso ? (
                                   <Loader2 className="mr-1 h-4 w-4 animate-spin" />
                                 ) : (
                                   <Eye className="mr-1 h-4 w-4" />
@@ -292,13 +349,16 @@ export default function NfeRecebidasPage() {
                                 <Eye className="mr-2 h-4 w-4" /> {MANIFESTACAO_LABEL['210210']}
                               </DropdownMenuItem>
                               <DropdownMenuItem onClick={() => iniciarManifestacao(n, '210200')}>
-                                <CheckCircle2 className="mr-2 h-4 w-4 text-success" /> {MANIFESTACAO_LABEL['210200']}
+                                <CheckCircle2 className="mr-2 h-4 w-4 text-success" />{' '}
+                                {MANIFESTACAO_LABEL['210200']}
                               </DropdownMenuItem>
                               <DropdownMenuItem onClick={() => iniciarManifestacao(n, '210220')}>
-                                <HelpCircle className="mr-2 h-4 w-4 text-warning" /> {MANIFESTACAO_LABEL['210220']}
+                                <HelpCircle className="mr-2 h-4 w-4 text-warning" />{' '}
+                                {MANIFESTACAO_LABEL['210220']}
                               </DropdownMenuItem>
                               <DropdownMenuItem onClick={() => iniciarManifestacao(n, '210240')}>
-                                <XCircle className="mr-2 h-4 w-4 text-destructive" /> {MANIFESTACAO_LABEL['210240']}
+                                <XCircle className="mr-2 h-4 w-4 text-destructive" />{' '}
+                                {MANIFESTACAO_LABEL['210240']}
                               </DropdownMenuItem>
                             </DropdownMenuContent>
                           </DropdownMenu>
@@ -329,9 +389,13 @@ export default function NfeRecebidasPage() {
             minLength={15}
             maxLength={255}
           />
-          <div className="text-xs text-muted-foreground">{justTexto.trim().length} / 255 caracteres</div>
+          <div className="text-xs text-muted-foreground">
+            {justTexto.trim().length} / 255 caracteres
+          </div>
           <DialogFooter>
-            <Button variant="outline" onClick={() => setJustDialog(null)}>Cancelar</Button>
+            <Button variant="outline" onClick={() => setJustDialog(null)}>
+              Cancelar
+            </Button>
             <Button
               onClick={confirmarComJustificativa}
               disabled={justTexto.trim().length < 15 || manifestar.isPending}
@@ -364,7 +428,11 @@ function KpiCard({
   tone?: 'warning' | 'muted';
 }) {
   const valueClass =
-    tone === 'warning' ? 'text-warning' : tone === 'muted' ? 'text-muted-foreground' : 'text-foreground';
+    tone === 'warning'
+      ? 'text-warning'
+      : tone === 'muted'
+        ? 'text-muted-foreground'
+        : 'text-foreground';
   return (
     <Card>
       <CardContent className="flex items-center justify-between p-4">

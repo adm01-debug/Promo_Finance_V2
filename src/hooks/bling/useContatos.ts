@@ -31,25 +31,39 @@ export function useBlingContatoMutations() {
 
   const criarContato = useMutation({
     mutationFn: (data: Record<string, unknown>) => blingAction('criar_contato', { data }),
-    onSuccess: () => { toast.success('Contato criado no Bling'); queryClient.invalidateQueries({ queryKey: ['bling-contatos'] }); },
+    onSuccess: () => {
+      toast.success('Contato criado no Bling');
+      queryClient.invalidateQueries({ queryKey: ['bling-contatos'] });
+    },
     onError: (err: Error) => toast.error(`Erro: ${err.message}`),
   });
 
   const atualizarContato = useMutation({
-    mutationFn: ({ id, data }: { id: string; data: Record<string, unknown> }) => blingAction('atualizar_contato', { id, data }),
-    onSuccess: () => { toast.success('Contato atualizado no Bling'); queryClient.invalidateQueries({ queryKey: ['bling-contatos'] }); },
+    mutationFn: ({ id, data }: { id: string; data: Record<string, unknown> }) =>
+      blingAction('atualizar_contato', { id, data }),
+    onSuccess: () => {
+      toast.success('Contato atualizado no Bling');
+      queryClient.invalidateQueries({ queryKey: ['bling-contatos'] });
+    },
     onError: (err: Error) => toast.error(`Erro: ${err.message}`),
   });
 
   const excluirContatos = useMutation({
     mutationFn: (ids: string[]) => blingAction('excluir_contatos', { ids }),
-    onSuccess: () => { toast.success('Contato(s) excluído(s)'); queryClient.invalidateQueries({ queryKey: ['bling-contatos'] }); },
+    onSuccess: () => {
+      toast.success('Contato(s) excluído(s)');
+      queryClient.invalidateQueries({ queryKey: ['bling-contatos'] });
+    },
     onError: (err: Error) => toast.error(`Erro: ${err.message}`),
   });
 
   const alterarSituacaoContato = useMutation({
-    mutationFn: ({ id, data }: { id: string; data: Record<string, unknown> }) => blingAction('alterar_situacao_contato', { id, data }),
-    onSuccess: () => { toast.success('Situação alterada'); queryClient.invalidateQueries({ queryKey: ['bling-contatos'] }); },
+    mutationFn: ({ id, data }: { id: string; data: Record<string, unknown> }) =>
+      blingAction('alterar_situacao_contato', { id, data }),
+    onSuccess: () => {
+      toast.success('Situação alterada');
+      queryClient.invalidateQueries({ queryKey: ['bling-contatos'] });
+    },
     onError: (err: Error) => toast.error(`Erro: ${err.message}`),
   });
 

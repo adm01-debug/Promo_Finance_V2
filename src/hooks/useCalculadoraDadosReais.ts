@@ -47,12 +47,13 @@ export function useCalculadoraDadosReais(empresaId: string | undefined, enabled 
 
       const receitaBrutaAnual = (receber.data ?? []).reduce(
         (s, r) => s + Number(r.valor_recebido ?? r.valor ?? 0),
-        0,
+        0
       );
 
       const folhaAnual = (folha.data ?? []).reduce(
-        (s, f) => s + Number(f.total_folha ?? f.valor_total ?? ((f.salarios ?? 0) + (f.encargos ?? 0))),
-        0,
+        (s, f) =>
+          s + Number(f.total_folha ?? f.valor_total ?? (f.salarios ?? 0) + (f.encargos ?? 0)),
+        0
       );
 
       // NF-e recebidas = base para créditos PIS/COFINS (insumos) e crédito ICMS

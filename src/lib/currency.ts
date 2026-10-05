@@ -15,14 +15,70 @@ export interface CurrencyInfo {
 }
 
 const currencies: Record<CurrencyCode, CurrencyInfo> = {
-  BRL: { code: 'BRL', symbol: 'R$', name: 'Real Brasileiro', decimalPlaces: 2, thousandSeparator: '.', decimalSeparator: ',' },
-  USD: { code: 'USD', symbol: '$', name: 'US Dollar', decimalPlaces: 2, thousandSeparator: ',', decimalSeparator: '.' },
-  EUR: { code: 'EUR', symbol: '€', name: 'Euro', decimalPlaces: 2, thousandSeparator: '.', decimalSeparator: ',' },
-  GBP: { code: 'GBP', symbol: '£', name: 'British Pound', decimalPlaces: 2, thousandSeparator: ',', decimalSeparator: '.' },
-  JPY: { code: 'JPY', symbol: '¥', name: 'Japanese Yen', decimalPlaces: 0, thousandSeparator: ',', decimalSeparator: '.' },
-  CNY: { code: 'CNY', symbol: '¥', name: 'Chinese Yuan', decimalPlaces: 2, thousandSeparator: ',', decimalSeparator: '.' },
-  ARS: { code: 'ARS', symbol: '$', name: 'Peso Argentino', decimalPlaces: 2, thousandSeparator: '.', decimalSeparator: ',' },
-  CLP: { code: 'CLP', symbol: '$', name: 'Peso Chileno', decimalPlaces: 0, thousandSeparator: '.', decimalSeparator: ',' },
+  BRL: {
+    code: 'BRL',
+    symbol: 'R$',
+    name: 'Real Brasileiro',
+    decimalPlaces: 2,
+    thousandSeparator: '.',
+    decimalSeparator: ',',
+  },
+  USD: {
+    code: 'USD',
+    symbol: '$',
+    name: 'US Dollar',
+    decimalPlaces: 2,
+    thousandSeparator: ',',
+    decimalSeparator: '.',
+  },
+  EUR: {
+    code: 'EUR',
+    symbol: '€',
+    name: 'Euro',
+    decimalPlaces: 2,
+    thousandSeparator: '.',
+    decimalSeparator: ',',
+  },
+  GBP: {
+    code: 'GBP',
+    symbol: '£',
+    name: 'British Pound',
+    decimalPlaces: 2,
+    thousandSeparator: ',',
+    decimalSeparator: '.',
+  },
+  JPY: {
+    code: 'JPY',
+    symbol: '¥',
+    name: 'Japanese Yen',
+    decimalPlaces: 0,
+    thousandSeparator: ',',
+    decimalSeparator: '.',
+  },
+  CNY: {
+    code: 'CNY',
+    symbol: '¥',
+    name: 'Chinese Yuan',
+    decimalPlaces: 2,
+    thousandSeparator: ',',
+    decimalSeparator: '.',
+  },
+  ARS: {
+    code: 'ARS',
+    symbol: '$',
+    name: 'Peso Argentino',
+    decimalPlaces: 2,
+    thousandSeparator: '.',
+    decimalSeparator: ',',
+  },
+  CLP: {
+    code: 'CLP',
+    symbol: '$',
+    name: 'Peso Chileno',
+    decimalPlaces: 0,
+    thousandSeparator: '.',
+    decimalSeparator: ',',
+  },
 };
 
 export function formatCurrency(
@@ -65,11 +121,7 @@ export function formatCurrency(
   return isNegative ? `-${result}` : result;
 }
 
-function formatCompactCurrency(
-  value: number,
-  currency: CurrencyCode,
-  showSymbol: boolean
-): string {
+function formatCompactCurrency(value: number, currency: CurrencyCode, showSymbol: boolean): string {
   const info = currencies[currency];
   const absoluteValue = Math.abs(value);
   const isNegative = value < 0;
@@ -114,11 +166,13 @@ export function parseCurrency(value: string, currency: CurrencyCode = 'BRL'): nu
     let numStr = compactMatch[1];
     // Smart separator detection for compact notation
     if (numStr.includes(',') && numStr.includes('.')) {
-      numStr = numStr.replace(new RegExp(`\\${info.thousandSeparator}`, 'g'), '').replace(info.decimalSeparator, '.');
+      numStr = numStr
+        .replace(new RegExp(`\\${info.thousandSeparator}`, 'g'), '')
+        .replace(info.decimalSeparator, '.');
     } else if (numStr.includes(',')) {
       numStr = numStr.replace(',', '.');
     } else if (numStr.includes('.') && info.thousandSeparator === '.') {
-      // If BRL and someone writes 1.5K, it's ambiguous, but usually 1.5. 
+      // If BRL and someone writes 1.5K, it's ambiguous, but usually 1.5.
       // If it has 3 digits after the dot, it's a thousand separator.
       const parts = numStr.split('.');
       if (parts[parts.length - 1].length !== 3) {
@@ -129,7 +183,8 @@ export function parseCurrency(value: string, currency: CurrencyCode = 'BRL'): nu
     }
 
     const num = parseFloat(numStr);
-    const multiplier = { K: 1_000, M: 1_000_000, B: 1_000_000_000 }[compactMatch[2].toUpperCase()] || 1;
+    const multiplier =
+      { K: 1_000, M: 1_000_000, B: 1_000_000_000 }[compactMatch[2].toUpperCase()] || 1;
     const result = num * multiplier;
     return isNegative ? -result : result;
   }
@@ -140,7 +195,7 @@ export function parseCurrency(value: string, currency: CurrencyCode = 'BRL'): nu
   const escapedThousands = info.thousandSeparator.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
   const escapedDecimal = info.decimalSeparator.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
   const validFormatted = new RegExp(
-    `^(?:\\d+|\\d{1,3}(?:${escapedThousands}\\d{3})+)(?:${escapedDecimal}\\d+)?$`,
+    `^(?:\\d+|\\d{1,3}(?:${escapedThousands}\\d{3})+)(?:${escapedDecimal}\\d+)?$`
   );
   if (!validFormatted.test(cleaned)) return NaN;
 
@@ -239,7 +294,7 @@ export function calculateInstallments(
   // value down so the remainder absorbed by the final installment is never
   // negative.
   const totalCents = Math.round(totalWithInterest * 100);
-  const baseCents = Math.floor((installmentValue * 100) + 1e-9);
+  const baseCents = Math.floor(installmentValue * 100 + 1e-9);
   const lastCents = totalCents - baseCents * (installments - 1);
 
   const roundedInstallmentValue = baseCents / 100;
@@ -304,11 +359,7 @@ export function formatCurrencyRange(
   return `${info.symbol} ${formattedMin} - ${formattedMax}`;
 }
 
-export function compareCurrency(
-  a: number,
-  b: number,
-  currency: CurrencyCode = 'BRL'
-): -1 | 0 | 1 {
+export function compareCurrency(a: number, b: number, currency: CurrencyCode = 'BRL'): -1 | 0 | 1 {
   const aCents = valueToCents(a, currency);
   const bCents = valueToCents(b, currency);
 
@@ -317,10 +368,6 @@ export function compareCurrency(
   return 0;
 }
 
-export function currencyEquals(
-  a: number,
-  b: number,
-  currency: CurrencyCode = 'BRL'
-): boolean {
+export function currencyEquals(a: number, b: number, currency: CurrencyCode = 'BRL'): boolean {
   return compareCurrency(a, b, currency) === 0;
 }

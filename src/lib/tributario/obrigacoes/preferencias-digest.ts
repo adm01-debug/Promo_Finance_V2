@@ -174,7 +174,7 @@ export function estaNaJanela(pref: PreferenciaDigest, ctx: ContextoEnvio): boole
 /** Aplica severidade mínima, tipos ignorados, empresas e teto de volume. */
 export function filtrarAlertas(
   pref: PreferenciaDigest,
-  alertas: readonly AlertaDigest[],
+  alertas: readonly AlertaDigest[]
 ): readonly AlertaDigest[] {
   const empresas = new Set(pref.empresasFiltro);
   const tipos = new Set(pref.tiposIgnorados);
@@ -193,8 +193,14 @@ export function filtrarAlertas(
   // Ordenação total determinística antes de aplicar o teto, para que o corte
   // preserve sempre os alertas mais graves e não dependa da ordem da consulta.
   const ordenados = [...selecionados].sort((a, b) => {
-    const pa = PESO[(a.severidade as SeveridadeDigest) in PESO ? (a.severidade as SeveridadeDigest) : 'baixa'];
-    const pb = PESO[(b.severidade as SeveridadeDigest) in PESO ? (b.severidade as SeveridadeDigest) : 'baixa'];
+    const pa =
+      PESO[
+        (a.severidade as SeveridadeDigest) in PESO ? (a.severidade as SeveridadeDigest) : 'baixa'
+      ];
+    const pb =
+      PESO[
+        (b.severidade as SeveridadeDigest) in PESO ? (b.severidade as SeveridadeDigest) : 'baixa'
+      ];
     if (pa !== pb) return pa - pb;
     if (a.empresaNome !== b.empresaNome) return a.empresaNome < b.empresaNome ? -1 : 1;
     if (a.competencia !== b.competencia) return a.competencia < b.competencia ? 1 : -1;
@@ -226,10 +232,13 @@ export function hashAlertas(alertas: readonly AlertaDigest[]): string {
 export function planejarEnvios(
   preferencias: readonly PreferenciaDigestRaw[],
   alertas: readonly AlertaDigest[],
-  ctx: ContextoEnvio,
+  ctx: ContextoEnvio
 ): ResultadoPlanejamento {
   const envios: PlanoEnvioDigest[] = [];
-  const ignorados: { userId: string; motivo: ResultadoPlanejamento['ignorados'][number]['motivo'] }[] = [];
+  const ignorados: {
+    userId: string;
+    motivo: ResultadoPlanejamento['ignorados'][number]['motivo'];
+  }[] = [];
 
   for (const raw of preferencias) {
     const pref = normalizarPreferencia(raw);
@@ -255,7 +264,13 @@ export function planejarEnvios(
       ignorados.push({ userId: pref.userId, motivo: 'duplicado' });
       continue;
     }
-    envios.push({ preferencia: pref, email: pref.email, alertas: selecionados, hash, duplicado: false });
+    envios.push({
+      preferencia: pref,
+      email: pref.email,
+      alertas: selecionados,
+      hash,
+      duplicado: false,
+    });
   }
 
   envios.sort((a, b) => (a.email < b.email ? -1 : a.email > b.email ? 1 : 0));

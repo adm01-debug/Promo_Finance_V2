@@ -6,7 +6,12 @@ import { Link } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 
-interface CenarioResumo { regime: string; nome?: string; totalAPagar: number; cargaEfetiva: number }
+interface CenarioResumo {
+  regime: string;
+  nome?: string;
+  totalAPagar: number;
+  cargaEfetiva: number;
+}
 
 export function CalculadoraWidget() {
   const { data } = useQuery({
@@ -14,7 +19,9 @@ export function CalculadoraWidget() {
     queryFn: async () => {
       const { data: rows } = await supabase
         .from('regimes_simulados')
-        .select('regime_atual, regime_recomendado, cenarios, economia_anual_estimada, parametros, data_simulacao')
+        .select(
+          'regime_atual, regime_recomendado, cenarios, economia_anual_estimada, parametros, data_simulacao'
+        )
         .contains('parametros', { tipo_calculo: 'calculadora' })
         .order('data_simulacao', { ascending: false })
         .limit(1);
@@ -25,7 +32,9 @@ export function CalculadoraWidget() {
 
   const stats = useMemo(() => {
     if (!data) return null;
-    const cenarios = (Array.isArray(data.cenarios) ? data.cenarios : []) as unknown as CenarioResumo[];
+    const cenarios = (Array.isArray(data.cenarios)
+      ? data.cenarios
+      : []) as unknown as CenarioResumo[];
     const ativo = cenarios.find((c) => c.regime === data.regime_atual) ?? cenarios[0];
     return {
       regime: data.regime_atual ?? '—',
@@ -55,12 +64,18 @@ export function CalculadoraWidget() {
             <div>
               <p className="text-[10px] text-muted-foreground uppercase">Economia/ano</p>
               <p className="text-sm font-semibold text-success">
-                {stats.economia.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL', maximumFractionDigits: 0 })}
+                {stats.economia.toLocaleString('pt-BR', {
+                  style: 'currency',
+                  currency: 'BRL',
+                  maximumFractionDigits: 0,
+                })}
               </p>
             </div>
           </div>
         ) : (
-          <p className="text-xs text-muted-foreground">Nenhum cenário salvo. Abra a calculadora para simular.</p>
+          <p className="text-xs text-muted-foreground">
+            Nenhum cenário salvo. Abra a calculadora para simular.
+          </p>
         )}
         <Button asChild size="sm" variant="outline" className="w-full">
           <Link to="/tributario/calculadora">

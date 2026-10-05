@@ -1,9 +1,9 @@
-import { AlertTriangle, ExternalLink } from "lucide-react";
-import { Link } from "react-router-dom";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import { severidadeBadge, tempoDecorrido } from "./helpers";
-import type { ConflitoBanner } from "./types";
+import { AlertTriangle, ExternalLink } from 'lucide-react';
+import { Link } from 'react-router-dom';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { severidadeBadge, tempoDecorrido } from './helpers';
+import type { ConflitoBanner } from './types';
 
 interface Props {
   conflito: ConflitoBanner;
@@ -32,21 +32,19 @@ export function ConflitoBannerCard({ conflito, onDismiss }: Props) {
             </Badge>
           </div>
           <p className="text-xs font-medium">
-            {conflito.motivo === "removida"
-              ? "Esta anomalia foi removida do sistema enquanto você revisava."
-              : "Outro revisor já resolveu esta anomalia enquanto você revisava."}
+            {conflito.motivo === 'removida'
+              ? 'Esta anomalia foi removida do sistema enquanto você revisava.'
+              : 'Outro revisor já resolveu esta anomalia enquanto você revisava.'}
           </p>
           <p className="text-xs text-muted-foreground">
             <span className="font-medium text-foreground">{conflito.autorNome}</span>
             {conflito.autorEmail && conflito.autorEmail !== conflito.autorNome && (
               <span> ({conflito.autorEmail})</span>
-            )}{" "}
+            )}{' '}
             {conflito.acaoLabel}
             {conflito.resolvidaEm && <> · {tempoDecorrido(conflito.resolvidaEm)}</>}.
           </p>
-          <p className="text-xs text-muted-foreground italic line-clamp-2">
-            {conflito.descricao}
-          </p>
+          <p className="text-xs text-muted-foreground italic line-clamp-2">{conflito.descricao}</p>
           <div className="flex items-center gap-3 pt-1">
             <Button asChild variant="link" size="sm" className="h-auto px-0 text-xs">
               <Link

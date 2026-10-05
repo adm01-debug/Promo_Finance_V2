@@ -31,7 +31,7 @@ export function FluxoInterEmpresas() {
 
   const analise = useMemo(() => {
     // Saldo por empresa
-    const saldoEmpresa = empresas.map(emp => {
+    const saldoEmpresa = empresas.map((emp) => {
       const contasEmp = contas.filter((c) => c.empresa_id === emp.id);
       const saldo = contasEmp.reduce((s: number, c) => s + (c.saldo_atual || 0), 0);
       return {
@@ -46,7 +46,7 @@ export function FluxoInterEmpresas() {
     // Sugestões de otimização
     const sugestoes: Array<{ de: string; para: string; valor: number; motivo: string }> = [];
     const sorted = [...saldoEmpresa].sort((a, b) => b.saldo - a.saldo);
-    
+
     if (sorted.length >= 2) {
       const maior = sorted[0];
       const menor = sorted[sorted.length - 1];
@@ -89,7 +89,12 @@ export function FluxoInterEmpresas() {
                   <div className="flex-1 min-w-0">
                     <p className="font-semibold text-sm truncate">{emp.nome}</p>
                     <p className="text-xs text-muted-foreground font-mono">{emp.cnpj || '—'}</p>
-                    <p className={cn('text-lg font-bold tabular-nums mt-1', emp.saldo >= 0 ? 'text-foreground' : 'text-destructive')}>
+                    <p
+                      className={cn(
+                        'text-lg font-bold tabular-nums mt-1',
+                        emp.saldo >= 0 ? 'text-foreground' : 'text-destructive'
+                      )}
+                    >
                       {formatCurrency(emp.saldo)}
                     </p>
                     <p className="text-xs text-muted-foreground">{emp.numContas} conta(s)</p>
@@ -118,8 +123,14 @@ export function FluxoInterEmpresas() {
           </CardHeader>
           <CardContent className="space-y-3">
             {analise.sugestoes.map((sug, i) => (
-              <div key={i} className="flex items-center gap-3 p-3 rounded-lg bg-accent/5 border border-accent/20">
-                <Badge variant="outline" className="shrink-0 border-accent/30 text-accent-foreground">
+              <div
+                key={i}
+                className="flex items-center gap-3 p-3 rounded-lg bg-accent/5 border border-accent/20"
+              >
+                <Badge
+                  variant="outline"
+                  className="shrink-0 border-accent/30 text-accent-foreground"
+                >
                   Sugestão
                 </Badge>
                 <div className="flex-1 min-w-0">
@@ -150,24 +161,32 @@ export function FluxoInterEmpresas() {
             <div className="flex flex-col items-center justify-center py-8 text-muted-foreground">
               <AlertCircle className="h-8 w-8 mb-2 opacity-40" />
               <p className="text-sm">Nenhuma transferência inter-empresas registrada</p>
-              <p className="text-xs mt-1">Use a página de Movimentações para registrar transferências</p>
+              <p className="text-xs mt-1">
+                Use a página de Movimentações para registrar transferências
+              </p>
             </div>
           ) : (
             <div className="space-y-2">
               {transferencias.slice(0, 10).map((t) => {
-                const origem = empresas.find(e => e.id === t.empresa_id);
+                const origem = empresas.find((e) => e.id === t.empresa_id);
                 return (
-                  <div key={t.id} className="flex items-center justify-between p-3 rounded-lg bg-muted/20 border border-border/50">
+                  <div
+                    key={t.id}
+                    className="flex items-center justify-between p-3 rounded-lg bg-muted/20 border border-border/50"
+                  >
                     <div className="flex items-center gap-3">
                       <ArrowRight className="h-4 w-4 text-muted-foreground" />
                       <div>
                         <p className="text-sm font-medium">{t.descricao || 'Transferência'}</p>
                         <p className="text-xs text-muted-foreground">
-                          {origem?.nome_fantasia || origem?.razao_social || 'N/A'} • {t.data_transferencia || t.created_at?.substring(0, 10)}
+                          {origem?.nome_fantasia || origem?.razao_social || 'N/A'} •{' '}
+                          {t.data_transferencia || t.created_at?.substring(0, 10)}
                         </p>
                       </div>
                     </div>
-                    <span className="font-bold tabular-nums text-sm">{formatCurrency(t.valor || 0)}</span>
+                    <span className="font-bold tabular-nums text-sm">
+                      {formatCurrency(t.valor || 0)}
+                    </span>
                   </div>
                 );
               })}

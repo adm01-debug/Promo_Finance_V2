@@ -1,12 +1,12 @@
-import { Label } from "@/components/ui/label";
-import { Badge } from "@/components/ui/badge";
-import { Slider } from "@/components/ui/slider";
-import { Clock } from "lucide-react";
+import { Label } from '@/components/ui/label';
+import { Badge } from '@/components/ui/badge';
+import { Slider } from '@/components/ui/slider';
+import { Clock } from 'lucide-react';
 import {
   TOAST_DURACAO_MIN,
   TOAST_DURACAO_MAX,
   TOAST_DURACAO_DEFAULT,
-} from "@/hooks/useAnomaliaPreferences";
+} from '@/hooks/useAnomaliaPreferences';
 
 interface Props {
   duracao: number;

@@ -101,9 +101,7 @@ export function getHydrationFailures(): HydrationEvent[] {
  * Assina mudanças. Retorna função de unsubscribe. Dispara imediatamente com
  * o snapshot atual (sincrônico) para o consumidor receber o histórico.
  */
-export function subscribeHydrationEvents(
-  listener: (events: HydrationEvent[]) => void,
-): () => void {
+export function subscribeHydrationEvents(listener: (events: HydrationEvent[]) => void): () => void {
   loadFromStorage();
   listeners.add(listener);
   // Disparo inicial assíncrono — evita re-entrância dentro do useEffect que assina

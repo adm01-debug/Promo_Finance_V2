@@ -5,7 +5,12 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
-import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from '@/components/ui/accordion';
 import { useAuditoriaCompliance } from '@/hooks/useAuditoriaCompliance';
 import { formatCurrency } from '@/lib/formatters';
 
@@ -14,14 +19,19 @@ interface Props {
 }
 
 export function AuditoriaCompliancePanel({ empresaId }: Props) {
-  const { achamentos, resumo, isExecutando, executarAuditoria, resolverAchamento } = useAuditoriaCompliance(empresaId);
+  const { achamentos, resumo, isExecutando, executarAuditoria, resolverAchamento } =
+    useAuditoriaCompliance(empresaId);
 
   const getSeverityBadge = (severity: string) => {
     switch (severity) {
-      case 'critico': return <Badge variant="destructive">Crítico</Badge>;
-      case 'erro': return <Badge className="bg-warning text-warning-foreground">Erro</Badge>;
-      case 'aviso': return <Badge className="bg-warning/70 text-warning-foreground">Aviso</Badge>;
-      default: return <Badge variant="secondary">Info</Badge>;
+      case 'critico':
+        return <Badge variant="destructive">Crítico</Badge>;
+      case 'erro':
+        return <Badge className="bg-warning text-warning-foreground">Erro</Badge>;
+      case 'aviso':
+        return <Badge className="bg-warning/70 text-warning-foreground">Aviso</Badge>;
+      default:
+        return <Badge variant="secondary">Info</Badge>;
     }
   };
 
@@ -46,7 +56,9 @@ export function AuditoriaCompliancePanel({ empresaId }: Props) {
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className={`text-3xl font-bold ${resumo.scoreCompliance >= 80 ? 'text-success' : resumo.scoreCompliance >= 60 ? 'text-warning' : 'text-destructive'}`}>
+            <div
+              className={`text-3xl font-bold ${resumo.scoreCompliance >= 80 ? 'text-success' : resumo.scoreCompliance >= 60 ? 'text-warning' : 'text-destructive'}`}
+            >
               {resumo.scoreCompliance}%
             </div>
             <Progress value={resumo.scoreCompliance} className="h-2 mt-2" />
@@ -73,7 +85,9 @@ export function AuditoriaCompliancePanel({ empresaId }: Props) {
             <CardTitle className="text-sm text-muted-foreground">Impacto</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{formatCurrency(resumo.impactoFinanceiroTotal)}</div>
+            <div className="text-2xl font-bold">
+              {formatCurrency(resumo.impactoFinanceiroTotal)}
+            </div>
           </CardContent>
         </Card>
       </div>
@@ -100,7 +114,9 @@ export function AuditoriaCompliancePanel({ empresaId }: Props) {
                     <div className="space-y-3 pl-4">
                       <p>{item.descricao}</p>
                       {item.impactoFinanceiro && (
-                        <p><strong>Impacto:</strong> {formatCurrency(item.impactoFinanceiro)}</p>
+                        <p>
+                          <strong>Impacto:</strong> {formatCurrency(item.impactoFinanceiro)}
+                        </p>
                       )}
                       <div className="p-3 rounded bg-muted">
                         <p className="text-sm font-medium">Recomendação:</p>

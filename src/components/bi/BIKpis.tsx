@@ -1,13 +1,24 @@
-import { motion } from "framer-motion";
-import { DollarSign, TrendingUp, TrendingDown, AlertTriangle, ArrowUpRight, ArrowDownRight, Target, Users, Building2, BarChart3 } from "lucide-react";
-import { Card, CardContent } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { Progress } from "@/components/ui/progress";
-import { formatCurrency } from "@/lib/formatters";
+import { motion } from 'framer-motion';
+import {
+  DollarSign,
+  TrendingUp,
+  TrendingDown,
+  AlertTriangle,
+  ArrowUpRight,
+  ArrowDownRight,
+  Target,
+  Users,
+  Building2,
+  BarChart3,
+} from 'lucide-react';
+import { Card, CardContent } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
+import { Progress } from '@/components/ui/progress';
+import { formatCurrency } from '@/lib/formatters';
 
 const itemVariants = {
   hidden: { opacity: 0, y: 20 },
-  visible: { opacity: 1, y: 0 }
+  visible: { opacity: 1, y: 0 },
 };
 
 interface BIKpisProps {
@@ -44,7 +55,7 @@ export function BIMainKpis({ kpis }: BIKpisProps) {
             </div>
           </div>
           <div className="mt-2 flex items-center gap-1 text-sm">
-            <Badge variant={kpis.liquidez >= 1 ? "default" : "destructive"} className="text-xs">
+            <Badge variant={kpis.liquidez >= 1 ? 'default' : 'destructive'} className="text-xs">
               Liquidez: {kpis.liquidez.toFixed(2)}x
             </Badge>
           </div>
@@ -85,7 +96,9 @@ export function BIMainKpis({ kpis }: BIKpisProps) {
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm text-muted-foreground">Lucro do Mês</p>
-              <p className={`text-2xl font-bold ${kpis.lucroMes >= 0 ? 'text-success' : 'text-destructive'}`}>
+              <p
+                className={`text-2xl font-bold ${kpis.lucroMes >= 0 ? 'text-success' : 'text-destructive'}`}
+              >
                 {formatCurrency(kpis.lucroMes)}
               </p>
             </div>
@@ -109,7 +122,9 @@ export function BIMainKpis({ kpis }: BIKpisProps) {
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm text-muted-foreground">Inadimplência</p>
-              <p className={`text-2xl font-bold ${kpis.inadimplencia > 10 ? 'text-destructive' : 'text-warning'}`}>
+              <p
+                className={`text-2xl font-bold ${kpis.inadimplencia > 10 ? 'text-destructive' : 'text-warning'}`}
+              >
                 {kpis.inadimplencia.toFixed(1)}%
               </p>
             </div>
@@ -128,11 +143,36 @@ export function BIMainKpis({ kpis }: BIKpisProps) {
 
 export function BISecondaryKpis({ kpis }: BIKpisProps) {
   const items = [
-    { label: 'A Receber', value: formatCurrency(kpis.totalReceber), icon: TrendingUp, color: 'text-success' },
-    { label: 'A Pagar', value: formatCurrency(kpis.totalPagar), icon: TrendingDown, color: 'text-destructive' },
-    { label: 'Despesas Mês', value: formatCurrency(kpis.despesaMes), icon: BarChart3, color: 'text-streak' },
-    { label: 'Clientes Ativos', value: kpis.clientesAtivos.toString(), icon: Users, color: 'text-secondary' },
-    { label: 'Contas Bancárias', value: kpis.contasAtivas.toString(), icon: Building2, color: 'text-accent' }
+    {
+      label: 'A Receber',
+      value: formatCurrency(kpis.totalReceber),
+      icon: TrendingUp,
+      color: 'text-success',
+    },
+    {
+      label: 'A Pagar',
+      value: formatCurrency(kpis.totalPagar),
+      icon: TrendingDown,
+      color: 'text-destructive',
+    },
+    {
+      label: 'Despesas Mês',
+      value: formatCurrency(kpis.despesaMes),
+      icon: BarChart3,
+      color: 'text-streak',
+    },
+    {
+      label: 'Clientes Ativos',
+      value: kpis.clientesAtivos.toString(),
+      icon: Users,
+      color: 'text-secondary',
+    },
+    {
+      label: 'Contas Bancárias',
+      value: kpis.contasAtivas.toString(),
+      icon: Building2,
+      color: 'text-accent',
+    },
   ];
 
   return (

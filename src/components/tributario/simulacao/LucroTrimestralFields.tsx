@@ -55,18 +55,17 @@ export function LucroTrimestralFields({ parametros, setParametros }: LucroTrimes
       const inicial = Math.round(lucroEstimado * 100) / 100;
       setParametros({ ...parametros, lucroTrimestral: [inicial, inicial, inicial, inicial] });
     },
-    [lucroEstimado, parametros, setParametros],
+    [lucroEstimado, parametros, setParametros]
   );
 
   const atualizarTrimestre = useCallback(
     (indice: number, valor: string) => {
-      const base = parametros.lucroTrimestral?.length === 4
-        ? [...parametros.lucroTrimestral]
-        : [0, 0, 0, 0];
+      const base =
+        parametros.lucroTrimestral?.length === 4 ? [...parametros.lucroTrimestral] : [0, 0, 0, 0];
       base[indice] = paraNumero(valor);
       setParametros({ ...parametros, lucroTrimestral: base });
     },
-    [parametros, setParametros],
+    [parametros, setParametros]
   );
 
   return (
@@ -105,9 +104,10 @@ export function LucroTrimestralFields({ parametros, setParametros }: LucroTrimes
             ))}
           </div>
           <p className="text-xs text-muted-foreground">
-            Resultado do ano: <span className="font-medium text-foreground">{formatador.format(soma)}</span>.
-            Valores negativos representam prejuízo do trimestre, compensável nos períodos
-            seguintes com a trava dos 30% (Lei 9.065/95).
+            Resultado do ano:{' '}
+            <span className="font-medium text-foreground">{formatador.format(soma)}</span>. Valores
+            negativos representam prejuízo do trimestre, compensável nos períodos seguintes com a
+            trava dos 30% (Lei 9.065/95).
           </p>
         </>
       )}

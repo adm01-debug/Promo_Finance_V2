@@ -2,11 +2,23 @@ import { todayISOLocal } from '@/lib/formatters';
 // DIALOG: Nova Cobrança ASAAS (com parcelas, juros, multa, desconto)
 
 import { useState } from 'react';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+} from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useQuery } from '@tanstack/react-query';
@@ -26,9 +38,9 @@ interface Props {
 
 export function NovaCobrancaDialog({ open, onOpenChange, empresaId }: Props) {
   const { customers, criarCliente, criarCobranca } = useAsaas(empresaId);
-  
+
   const [tab, setTab] = useState<'cobranca' | 'cliente'>('cobranca');
-  
+
   // Form state - cobrança
   const [tipo, setTipo] = useState<AsaasBillingType>('boleto');
   const [customerId, setCustomerId] = useState('');
@@ -36,10 +48,10 @@ export function NovaCobrancaDialog({ open, onOpenChange, empresaId }: Props) {
   const [vencimento, setVencimento] = useState('');
   const [descricao, setDescricao] = useState('');
   const [contaReceberId, setContaReceberId] = useState('');
-  
+
   // Parcelamento
   const [parcelas, setParcelas] = useState('');
-  
+
   // Juros, Multa, Desconto
   const [juros, setJuros] = useState('');
   const [multa, setMulta] = useState('');
@@ -49,7 +61,7 @@ export function NovaCobrancaDialog({ open, onOpenChange, empresaId }: Props) {
   const [showSplit, setShowSplit] = useState(false);
   const [splitWalletId, setSplitWalletId] = useState('');
   const [splitPercent, setSplitPercent] = useState('');
-  
+
   // Cartão de crédito
   const [cardHolderName, setCardHolderName] = useState('');
   const [cardNumber, setCardNumber] = useState('');
@@ -60,7 +72,7 @@ export function NovaCobrancaDialog({ open, onOpenChange, empresaId }: Props) {
   const [cardCpfCnpj, setCardCpfCnpj] = useState('');
   const [cardCep, setCardCep] = useState('');
   const [cardPhone, setCardPhone] = useState('');
-  
+
   // Form state - novo cliente
   const [nomeCliente, setNomeCliente] = useState('');
   const [cpfCnpj, setCpfCnpj] = useState('');
@@ -81,11 +93,11 @@ export function NovaCobrancaDialog({ open, onOpenChange, empresaId }: Props) {
       if (error) throw error;
       return data;
     },
-    enabled: !!empresaId && open
+    enabled: !!empresaId && open,
   });
 
   const handleSelectPendencia = (id: string) => {
-    const pendencia = pendencias?.find(p => p.id === id);
+    const pendencia = pendencias?.find((p) => p.id === id);
     if (pendencia) {
       setContaReceberId(id);
       setValor(String(pendencia.valor));
@@ -108,8 +120,15 @@ export function NovaCobrancaDialog({ open, onOpenChange, empresaId }: Props) {
     setDescontoValor('');
     setDescontoDias('');
     setShowAdvanced(false);
-    setCardHolderName(''); setCardNumber(''); setCardExpiryMonth(''); setCardExpiryYear('');
-    setCardCcv(''); setCardEmail(''); setCardCpfCnpj(''); setCardCep(''); setCardPhone('');
+    setCardHolderName('');
+    setCardNumber('');
+    setCardExpiryMonth('');
+    setCardExpiryYear('');
+    setCardCcv('');
+    setCardEmail('');
+    setCardCpfCnpj('');
+    setCardCep('');
+    setCardPhone('');
     setNomeCliente('');
     setCpfCnpj('');
     setEmailCliente('');
@@ -173,7 +192,15 @@ export function NovaCobrancaDialog({ open, onOpenChange, empresaId }: Props) {
     }
 
     if (tipo === 'credit_card') {
-      if (!cardHolderName || !cardNumber || !cardExpiryMonth || !cardExpiryYear || !cardCcv || !cardEmail || !cardCpfCnpj) {
+      if (
+        !cardHolderName ||
+        !cardNumber ||
+        !cardExpiryMonth ||
+        !cardExpiryYear ||
+        !cardCcv ||
+        !cardEmail ||
+        !cardCpfCnpj
+      ) {
         toast.error('Preencha todos os dados do cartão de crédito');
         return;
       }
@@ -194,23 +221,30 @@ export function NovaCobrancaDialog({ open, onOpenChange, empresaId }: Props) {
         desconto_valor: descontoValor ? parseFloat(descontoValor) : undefined,
         desconto_dias: descontoDias ? parseInt(descontoDias) : undefined,
         desconto_tipo: descontoValor ? 'FIXED' : undefined,
-        split: showSplit && splitWalletId && splitPercent ? [{
-          walletId: splitWalletId,
-          percentualValue: parseFloat(splitPercent)
-        }] : undefined,
-        ...(tipo === 'credit_card' ? {
-          cartao: {
-            holder_name: cardHolderName,
-            number: cardNumber.replace(/\s/g, ''),
-            expiry_month: cardExpiryMonth,
-            expiry_year: cardExpiryYear,
-            ccv: cardCcv,
-          },
-          email: cardEmail,
-          cpf_cnpj: cardCpfCnpj.replace(/\D/g, ''),
-          cep: cardCep.replace(/\D/g, ''),
-          telefone: cardPhone,
-        } : {}),
+        split:
+          showSplit && splitWalletId && splitPercent
+            ? [
+                {
+                  walletId: splitWalletId,
+                  percentualValue: parseFloat(splitPercent),
+                },
+              ]
+            : undefined,
+        ...(tipo === 'credit_card'
+          ? {
+              cartao: {
+                holder_name: cardHolderName,
+                number: cardNumber.replace(/\s/g, ''),
+                expiry_month: cardExpiryMonth,
+                expiry_year: cardExpiryYear,
+                ccv: cardCcv,
+              },
+              email: cardEmail,
+              cpf_cnpj: cardCpfCnpj.replace(/\D/g, ''),
+              cep: cardCep.replace(/\D/g, ''),
+              telefone: cardPhone,
+            }
+          : {}),
         conta_receber_id: contaReceberId || undefined,
       });
       resetForm();
@@ -221,11 +255,19 @@ export function NovaCobrancaDialog({ open, onOpenChange, empresaId }: Props) {
   };
 
   return (
-    <Dialog open={open} onOpenChange={(v) => { onOpenChange(v); if (!v) resetForm(); }}>
+    <Dialog
+      open={open}
+      onOpenChange={(v) => {
+        onOpenChange(v);
+        if (!v) resetForm();
+      }}
+    >
       <DialogContent className="sm:max-w-[520px] max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle>Nova Cobrança ASAAS</DialogTitle>
-          <DialogDescription>Emita uma cobrança real por Boleto, Pix ou Cartão de Crédito</DialogDescription>
+          <DialogDescription>
+            Emita uma cobrança real por Boleto, Pix ou Cartão de Crédito
+          </DialogDescription>
         </DialogHeader>
 
         <Tabs value={tab} onValueChange={(v) => setTab(v as 'cobranca' | 'cliente')}>
@@ -239,11 +281,11 @@ export function NovaCobrancaDialog({ open, onOpenChange, empresaId }: Props) {
           <TabsContent value="cobranca" className="space-y-4 mt-4">
             {/* Tipo de cobrança */}
             <div className="grid grid-cols-3 gap-2">
-              {([
+              {[
                 { value: 'boleto' as const, label: 'Boleto', icon: Banknote },
                 { value: 'pix' as const, label: 'Pix', icon: QrCode },
                 { value: 'credit_card' as const, label: 'Cartão', icon: CreditCard },
-              ]).map(opt => (
+              ].map((opt) => (
                 <Button
                   key={opt.value}
                   type="button"
@@ -266,7 +308,7 @@ export function NovaCobrancaDialog({ open, onOpenChange, empresaId }: Props) {
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="none">Nenhuma (Lançamento avulso)</SelectItem>
-                    {pendencias?.map(p => (
+                    {pendencias?.map((p) => (
                       <SelectItem key={p.id} value={p.id}>
                         {p.descricao} (R$ {p.valor})
                       </SelectItem>
@@ -279,7 +321,9 @@ export function NovaCobrancaDialog({ open, onOpenChange, empresaId }: Props) {
                 <Label>Cliente ASAAS *</Label>
                 {customers.length === 0 ? (
                   <div className="text-sm text-muted-foreground p-2 border rounded-md text-center h-10 flex items-center justify-center">
-                    <button className="text-primary underline" onClick={() => setTab('cliente')}>Cadastrar</button>
+                    <button className="text-primary underline" onClick={() => setTab('cliente')}>
+                      Cadastrar
+                    </button>
                   </div>
                 ) : (
                   <Select value={customerId} onValueChange={setCustomerId}>
@@ -287,7 +331,7 @@ export function NovaCobrancaDialog({ open, onOpenChange, empresaId }: Props) {
                       <SelectValue placeholder="Selecione" />
                     </SelectTrigger>
                     <SelectContent>
-                      {customers.map(c => (
+                      {customers.map((c) => (
                         <SelectItem key={c.id} value={c.asaas_id}>
                           {c.nome}
                         </SelectItem>
@@ -307,7 +351,7 @@ export function NovaCobrancaDialog({ open, onOpenChange, empresaId }: Props) {
                   step="0.01"
                   min="0.01"
                   value={valor}
-                  onChange={e => setValor(e.target.value)}
+                  onChange={(e) => setValor(e.target.value)}
                   placeholder="100.00"
                 />
               </div>
@@ -316,7 +360,7 @@ export function NovaCobrancaDialog({ open, onOpenChange, empresaId }: Props) {
                 <Input
                   type="date"
                   value={vencimento}
-                  onChange={e => setVencimento(e.target.value)}
+                  onChange={(e) => setVencimento(e.target.value)}
                   min={todayISOLocal()}
                 />
               </div>
@@ -328,8 +372,10 @@ export function NovaCobrancaDialog({ open, onOpenChange, empresaId }: Props) {
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="1">À vista</SelectItem>
-                    {[2,3,4,5,6,7,8,9,10,11,12].map(n => (
-                      <SelectItem key={n} value={String(n)}>{n}x</SelectItem>
+                    {[2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12].map((n) => (
+                      <SelectItem key={n} value={String(n)}>
+                        {n}x
+                      </SelectItem>
                     ))}
                   </SelectContent>
                 </Select>
@@ -339,15 +385,24 @@ export function NovaCobrancaDialog({ open, onOpenChange, empresaId }: Props) {
             {/* Dados do Cartão de Crédito */}
             {tipo === 'credit_card' && (
               <CobrancaCardForm
-                cardHolderName={cardHolderName} setCardHolderName={setCardHolderName}
-                cardNumber={cardNumber} setCardNumber={setCardNumber}
-                cardExpiryMonth={cardExpiryMonth} setCardExpiryMonth={setCardExpiryMonth}
-                cardExpiryYear={cardExpiryYear} setCardExpiryYear={setCardExpiryYear}
-                cardCcv={cardCcv} setCardCcv={setCardCcv}
-                cardEmail={cardEmail} setCardEmail={setCardEmail}
-                cardCpfCnpj={cardCpfCnpj} setCardCpfCnpj={setCardCpfCnpj}
-                cardCep={cardCep} setCardCep={setCardCep}
-                cardPhone={cardPhone} setCardPhone={setCardPhone}
+                cardHolderName={cardHolderName}
+                setCardHolderName={setCardHolderName}
+                cardNumber={cardNumber}
+                setCardNumber={setCardNumber}
+                cardExpiryMonth={cardExpiryMonth}
+                setCardExpiryMonth={setCardExpiryMonth}
+                cardExpiryYear={cardExpiryYear}
+                setCardExpiryYear={setCardExpiryYear}
+                cardCcv={cardCcv}
+                setCardCcv={setCardCcv}
+                cardEmail={cardEmail}
+                setCardEmail={setCardEmail}
+                cardCpfCnpj={cardCpfCnpj}
+                setCardCpfCnpj={setCardCpfCnpj}
+                cardCep={cardCep}
+                setCardCep={setCardCep}
+                cardPhone={cardPhone}
+                setCardPhone={setCardPhone}
               />
             )}
 
@@ -356,7 +411,7 @@ export function NovaCobrancaDialog({ open, onOpenChange, empresaId }: Props) {
               <Label>Descrição</Label>
               <Textarea
                 value={descricao}
-                onChange={e => setDescricao(e.target.value)}
+                onChange={(e) => setDescricao(e.target.value)}
                 placeholder="Descrição da cobrança..."
                 rows={2}
               />
@@ -364,18 +419,26 @@ export function NovaCobrancaDialog({ open, onOpenChange, empresaId }: Props) {
 
             {/* Configurações avançadas */}
             <ConfiguracoesAvancadas
-              showAdvanced={showAdvanced} setShowAdvanced={setShowAdvanced}
-              juros={juros} setJuros={setJuros}
-              multa={multa} setMulta={setMulta}
-              descontoValor={descontoValor} setDescontoValor={setDescontoValor}
-              descontoDias={descontoDias} setDescontoDias={setDescontoDias}
+              showAdvanced={showAdvanced}
+              setShowAdvanced={setShowAdvanced}
+              juros={juros}
+              setJuros={setJuros}
+              multa={multa}
+              setMulta={setMulta}
+              descontoValor={descontoValor}
+              setDescontoValor={setDescontoValor}
+              descontoDias={descontoDias}
+              setDescontoDias={setDescontoDias}
             />
 
             {/* Split Settings */}
             <SplitCobrancaConfig
-              showSplit={showSplit} setShowSplit={setShowSplit}
-              splitWalletId={splitWalletId} setSplitWalletId={setSplitWalletId}
-              splitPercent={splitPercent} setSplitPercent={setSplitPercent}
+              showSplit={showSplit}
+              setShowSplit={setShowSplit}
+              splitWalletId={splitWalletId}
+              setSplitWalletId={setSplitWalletId}
+              splitPercent={splitPercent}
+              setSplitPercent={setSplitPercent}
             />
 
             <Button
@@ -384,7 +447,9 @@ export function NovaCobrancaDialog({ open, onOpenChange, empresaId }: Props) {
               disabled={criarCobranca.isPending || !customerId || !valor || !vencimento}
             >
               {criarCobranca.isPending ? (
-                <><Loader2 className="h-4 w-4 mr-2 animate-spin" /> Emitindo...</>
+                <>
+                  <Loader2 className="h-4 w-4 mr-2 animate-spin" /> Emitindo...
+                </>
               ) : (
                 <>Emitir Cobrança{parcelas && parseInt(parcelas) > 1 ? ` (${parcelas}x)` : ''}</>
               )}
@@ -393,10 +458,14 @@ export function NovaCobrancaDialog({ open, onOpenChange, empresaId }: Props) {
 
           <TabsContent value="cliente">
             <NovoClienteAsaasForm
-              nomeCliente={nomeCliente} setNomeCliente={setNomeCliente}
-              cpfCnpj={cpfCnpj} setCpfCnpj={setCpfCnpj}
-              emailCliente={emailCliente} setEmailCliente={setEmailCliente}
-              telefoneCliente={telefoneCliente} setTelefoneCliente={setTelefoneCliente}
+              nomeCliente={nomeCliente}
+              setNomeCliente={setNomeCliente}
+              cpfCnpj={cpfCnpj}
+              setCpfCnpj={setCpfCnpj}
+              emailCliente={emailCliente}
+              setEmailCliente={setEmailCliente}
+              telefoneCliente={telefoneCliente}
+              setTelefoneCliente={setTelefoneCliente}
               isPending={criarCliente.isPending}
               onCreate={handleCriarCliente}
             />

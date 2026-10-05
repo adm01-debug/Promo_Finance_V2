@@ -19,7 +19,9 @@ export function useSLOMetrics(diasJanela = 30) {
   return useQuery({
     queryKey: ['slo-metrics', diasJanela],
     queryFn: async (): Promise<SLOMetric[]> => {
-      const since = new Date(Date.now() - diasJanela * 24 * 60 * 60 * 1000).toISOString().slice(0, 10);
+      const since = new Date(Date.now() - diasJanela * 24 * 60 * 60 * 1000)
+        .toISOString()
+        .slice(0, 10);
       const { data, error } = await supabase
         .from('slo_metrics_diarias' as never)
         .select('*')

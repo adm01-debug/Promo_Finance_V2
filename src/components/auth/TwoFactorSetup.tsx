@@ -6,14 +6,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
-import { 
-  ShieldCheck, 
-  Smartphone, 
-  Copy, 
-  CheckCircle2,
-  Loader2,
-  QrCode
-} from 'lucide-react';
+import { ShieldCheck, Smartphone, Copy, CheckCircle2, Loader2, QrCode } from 'lucide-react';
 
 interface TwoFactorSetupProps {
   onComplete?: () => void;
@@ -33,7 +26,7 @@ export function TwoFactorSetup({ onComplete, onSkip }: TwoFactorSetupProps) {
     try {
       const { data, error } = await supabase.auth.mfa.enroll({
         factorType: 'totp',
-        friendlyName: 'Authenticator App'
+        friendlyName: 'Authenticator App',
       });
 
       if (error) throw error;
@@ -61,7 +54,7 @@ export function TwoFactorSetup({ onComplete, onSkip }: TwoFactorSetupProps) {
     setIsLoading(true);
     try {
       const { data: challengeData, error: challengeError } = await supabase.auth.mfa.challenge({
-        factorId
+        factorId,
       });
 
       if (challengeError) throw challengeError;
@@ -69,7 +62,7 @@ export function TwoFactorSetup({ onComplete, onSkip }: TwoFactorSetupProps) {
       const { error: verifyError } = await supabase.auth.mfa.verify({
         factorId,
         challengeId: challengeData.id,
-        code: verifyCode
+        code: verifyCode,
       });
 
       if (verifyError) throw verifyError;
@@ -103,9 +96,7 @@ export function TwoFactorSetup({ onComplete, onSkip }: TwoFactorSetupProps) {
             <ShieldCheck className="h-8 w-8 text-primary" />
           </div>
           <CardTitle>Autenticação de Dois Fatores</CardTitle>
-          <CardDescription>
-            Adicione uma camada extra de segurança à sua conta
-          </CardDescription>
+          <CardDescription>Adicione uma camada extra de segurança à sua conta</CardDescription>
         </CardHeader>
         <CardContent>
           {step === 'intro' && (
@@ -115,11 +106,12 @@ export function TwoFactorSetup({ onComplete, onSkip }: TwoFactorSetupProps) {
                 <div className="text-sm">
                   <p className="font-medium">Como funciona?</p>
                   <p className="text-muted-foreground">
-                    Use um aplicativo como Google Authenticator ou Authy para gerar códigos de verificação temporários.
+                    Use um aplicativo como Google Authenticator ou Authy para gerar códigos de
+                    verificação temporários.
                   </p>
                 </div>
               </div>
-              
+
               <div className="flex gap-2">
                 {onSkip && (
                   <Button variant="outline" onClick={onSkip} className="flex-1">
@@ -127,9 +119,7 @@ export function TwoFactorSetup({ onComplete, onSkip }: TwoFactorSetupProps) {
                   </Button>
                 )}
                 <Button onClick={handleEnroll} disabled={isLoading} className="flex-1">
-                  {isLoading ? (
-                    <Loader2 className="h-4 w-4 animate-spin mr-2" />
-                  ) : null}
+                  {isLoading ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : null}
                   Configurar 2FA
                 </Button>
               </div>
@@ -151,9 +141,7 @@ export function TwoFactorSetup({ onComplete, onSkip }: TwoFactorSetupProps) {
 
               {secret && (
                 <div className="space-y-2">
-                  <Label className="text-xs text-muted-foreground">
-                    Ou digite manualmente:
-                  </Label>
+                  <Label className="text-xs text-muted-foreground">Ou digite manualmente:</Label>
                   <div className="flex gap-2">
                     <Input value={secret} readOnly className="font-mono text-xs" />
                     <Button size="icon" variant="outline" onClick={copySecret}>
@@ -196,8 +184,8 @@ export function TwoFactorSetup({ onComplete, onSkip }: TwoFactorSetupProps) {
                 <Button variant="outline" onClick={() => setStep('qr')} className="flex-1">
                   Voltar
                 </Button>
-                <Button 
-                  onClick={handleVerify} 
+                <Button
+                  onClick={handleVerify}
                   disabled={isLoading || verifyCode.length !== 6}
                   className="flex-1"
                 >

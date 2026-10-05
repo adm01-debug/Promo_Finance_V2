@@ -2,10 +2,7 @@
 // Revisão dos últimos 5 anos de insumos não creditados no regime não-cumulativo
 
 import type { ContextoEmpresa, OportunidadeDetectada } from './types';
-import {
-  ANOS_PRESCRICAO_CREDITO,
-  TAXA_CREDITO_NAO_APROVEITADO_ESTIMADA,
-} from './types';
+import { ANOS_PRESCRICAO_CREDITO, TAXA_CREDITO_NAO_APROVEITADO_ESTIMADA } from './types';
 
 /**
  * Detecta potencial de recuperação de créditos de PIS/COFINS não aproveitados,
@@ -49,8 +46,9 @@ export function detectarRecuperacaoPisCofins(ctx: ContextoEmpresa): Oportunidade
       'Quantificar o crédito extemporâneo por competência',
       'Retificar a EFD-Contribuições e transmitir PER/DCOMP',
     ],
-    observacoes: aplicavel && creditoAnualInformado === undefined
-      ? 'Estimativa baseada em proxy de receita — informe o crédito anual apurado para refinar o valor.'
-      : undefined,
+    observacoes:
+      aplicavel && creditoAnualInformado === undefined
+        ? 'Estimativa baseada em proxy de receita — informe o crédito anual apurado para refinar o valor.'
+        : undefined,
   };
 }

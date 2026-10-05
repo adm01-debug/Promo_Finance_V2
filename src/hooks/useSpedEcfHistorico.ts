@@ -27,16 +27,14 @@ export function useSpedEcfHistorico(empresaId?: string) {
       const [arquivosRes, empresaRes] = await Promise.all([
         supabase
           .from('sped_contabil_arquivos')
-          .select('id, ano_calendario, created_at, total_lancamentos, total_linhas, status, hash_sha256, storage_path, recibo_transmissao, validacoes')
+          .select(
+            'id, ano_calendario, created_at, total_lancamentos, total_linhas, status, hash_sha256, storage_path, recibo_transmissao, validacoes'
+          )
           .eq('empresa_id', empresaId)
           .eq('tipo', 'ECF')
           .order('created_at', { ascending: false })
           .limit(50),
-        supabase
-          .from('empresas')
-          .select('cnpj, razao_social')
-          .eq('id', empresaId)
-          .maybeSingle(),
+        supabase.from('empresas').select('cnpj, razao_social').eq('id', empresaId).maybeSingle(),
       ]);
       if (arquivosRes.error) throw arquivosRes.error;
       const cnpj = empresaRes.data?.cnpj ?? '—';

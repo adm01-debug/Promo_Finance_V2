@@ -1,9 +1,20 @@
 import { motion } from 'framer-motion';
 import type { SVGProps } from 'react';
-import { 
-  Link2, Zap, Phone, Globe, Package, CreditCard, 
-  RefreshCw, CheckCircle2, ShieldCheck,
-  ExternalLink, Code2, Database, Key, Beaker
+import {
+  Link2,
+  Zap,
+  Phone,
+  Globe,
+  Package,
+  CreditCard,
+  RefreshCw,
+  CheckCircle2,
+  ShieldCheck,
+  ExternalLink,
+  Code2,
+  Database,
+  Key,
+  Beaker,
 } from 'lucide-react';
 import { MainLayout } from '@/components/layout/MainLayout';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -18,12 +29,12 @@ import { Separator } from '@/components/ui/separator';
 
 const containerVariants = {
   hidden: { opacity: 0 },
-  visible: { opacity: 1, transition: { staggerChildren: 0.1 } }
+  visible: { opacity: 1, transition: { staggerChildren: 0.1 } },
 };
 
 const itemVariants = {
   hidden: { opacity: 0, y: 20 },
-  visible: { opacity: 1, y: 0 }
+  visible: { opacity: 1, y: 0 },
 };
 
 export default function Integracoes() {
@@ -35,39 +46,44 @@ export default function Integracoes() {
   ];
 
   const integrations = [
-    { 
-      name: 'Bling ERP v3', 
-      desc: 'Sincronização de notas, produtos e pedidos', 
-      status: 'ativo', 
-      icon: Package, 
-      category: 'ERP' 
+    {
+      name: 'Bling ERP v3',
+      desc: 'Sincronização de notas, produtos e pedidos',
+      status: 'ativo',
+      icon: Package,
+      category: 'ERP',
     },
-    { 
-      name: 'Asaas Pagamentos', 
-      desc: 'Emissão de boletos, pix e cobranças', 
-      status: 'ativo', 
-      icon: CreditCard, 
-      category: 'Fintech' 
+    {
+      name: 'Asaas Pagamentos',
+      desc: 'Emissão de boletos, pix e cobranças',
+      status: 'ativo',
+      icon: CreditCard,
+      category: 'Fintech',
     },
-    { 
-      name: 'Bitrix24 CRM', 
-      desc: 'Sincronização de contatos e negócios', 
-      status: 'configurando', 
-      icon: Link2, 
-      category: 'CRM' 
+    {
+      name: 'Bitrix24 CRM',
+      desc: 'Sincronização de contatos e negócios',
+      status: 'configurando',
+      icon: Link2,
+      category: 'CRM',
     },
-    { 
-      name: 'WhatsApp IA', 
-      desc: 'Chatbot inteligente e régua proativa', 
-      status: 'ativo', 
-      icon: Phone, 
-      category: 'Comunicação' 
+    {
+      name: 'WhatsApp IA',
+      desc: 'Chatbot inteligente e régua proativa',
+      status: 'ativo',
+      icon: Phone,
+      category: 'Comunicação',
     },
   ];
 
   return (
     <MainLayout>
-      <motion.div variants={containerVariants} initial="hidden" animate="visible" className="space-y-6">
+      <motion.div
+        variants={containerVariants}
+        initial="hidden"
+        animate="visible"
+        className="space-y-6"
+      >
         {/* Header */}
         <motion.div variants={itemVariants} className="flex items-center justify-between">
           <div className="flex items-center gap-3">
@@ -90,7 +106,9 @@ export default function Integracoes() {
             <Card key={stat.label} className="border-border/50 shadow-sm">
               <CardContent className="p-4 flex items-center justify-between">
                 <div>
-                  <p className="text-xs text-muted-foreground font-bold uppercase tracking-wider">{stat.label}</p>
+                  <p className="text-xs text-muted-foreground font-bold uppercase tracking-wider">
+                    {stat.label}
+                  </p>
                   <p className={`text-2xl font-black mt-1 ${stat.color}`}>{stat.value}</p>
                 </div>
                 <stat.icon className={`h-8 w-8 opacity-20 ${stat.color}`} />
@@ -100,24 +118,39 @@ export default function Integracoes() {
         </motion.div>
 
         {/* Quick List */}
-        <motion.div variants={itemVariants} className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+        <motion.div
+          variants={itemVariants}
+          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4"
+        >
           {integrations.map((int) => (
-            <Card key={int.name} className="group hover:border-primary/50 transition-all cursor-pointer">
+            <Card
+              key={int.name}
+              className="group hover:border-primary/50 transition-all cursor-pointer"
+            >
               <CardContent className="p-4 space-y-3">
                 <div className="flex items-start justify-between">
-                  <div className={`p-2 rounded-lg ${int.status === 'ativo' ? 'bg-success/10 text-success' : 'bg-warning/10 text-warning'}`}>
+                  <div
+                    className={`p-2 rounded-lg ${int.status === 'ativo' ? 'bg-success/10 text-success' : 'bg-warning/10 text-warning'}`}
+                  >
                     <int.icon className="h-5 w-5" />
                   </div>
-                  <Badge variant={int.status === 'ativo' ? 'success' : 'warning'} className="text-[10px]">
+                  <Badge
+                    variant={int.status === 'ativo' ? 'success' : 'warning'}
+                    className="text-[10px]"
+                  >
                     {int.status.toUpperCase()}
                   </Badge>
                 </div>
                 <div>
-                  <h4 className="font-bold group-hover:text-primary transition-colors">{int.name}</h4>
+                  <h4 className="font-bold group-hover:text-primary transition-colors">
+                    {int.name}
+                  </h4>
                   <p className="text-xs text-muted-foreground line-clamp-1">{int.desc}</p>
                 </div>
                 <div className="pt-2 border-t flex items-center justify-between">
-                  <span className="text-[10px] font-bold text-muted-foreground uppercase">{int.category}</span>
+                  <span className="text-[10px] font-bold text-muted-foreground uppercase">
+                    {int.category}
+                  </span>
                   <ExternalLink className="h-3 w-3 text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity" />
                 </div>
               </CardContent>
@@ -167,12 +200,16 @@ export default function Integracoes() {
                     <ShieldCheck className="h-5 w-5 text-primary" />
                     Cofre de Credenciais
                   </CardTitle>
-                  <CardDescription>Gerencie suas chaves de API e segredos de forma segura</CardDescription>
+                  <CardDescription>
+                    Gerencie suas chaves de API e segredos de forma segura
+                  </CardDescription>
                 </CardHeader>
                 <CardContent>
                   <div className="bg-muted/30 p-8 rounded-xl border border-dashed text-center">
                     <Database className="h-10 w-10 mx-auto mb-4 text-muted-foreground/30" />
-                    <p className="text-sm text-muted-foreground">As credenciais são protegidas por criptografia de nível militar AES-256-GCM.</p>
+                    <p className="text-sm text-muted-foreground">
+                      As credenciais são protegidas por criptografia de nível militar AES-256-GCM.
+                    </p>
                     <Button variant="outline" className="mt-4 gap-2">
                       <RefreshCw className="h-4 w-4" /> Rotacionar Chaves Master
                     </Button>
@@ -207,5 +244,5 @@ function Plus(props: SVGProps<SVGSVGElement>) {
       <path d="M5 12h14" />
       <path d="M12 5v14" />
     </svg>
-  )
+  );
 }

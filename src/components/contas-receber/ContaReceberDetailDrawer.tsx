@@ -326,7 +326,9 @@ export function ContaReceberDetailDrawer({
                             type: string;
                             message: string;
                             timestamp: string;
-                            metadata?: { transacao_banco?: { descricao?: string; valor?: number } } | null;
+                            metadata?: {
+                              transacao_banco?: { descricao?: string; valor?: number };
+                            } | null;
                           }>
                         | undefined) ?? [])
                     : []

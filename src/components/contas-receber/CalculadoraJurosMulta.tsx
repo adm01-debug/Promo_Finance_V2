@@ -41,7 +41,9 @@ export function CalculadoraJurosMulta({
     <div className="rounded-lg border border-warning/30 bg-warning/5 p-4 space-y-3">
       <div className="flex items-center gap-2">
         <AlertTriangle className="h-4 w-4 text-warning" />
-        <span className="text-sm font-semibold text-warning">Título Vencido — {calculo.diasAtraso} dias de atraso</span>
+        <span className="text-sm font-semibold text-warning">
+          Título Vencido — {calculo.diasAtraso} dias de atraso
+        </span>
       </div>
 
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3 text-center">
@@ -76,7 +78,9 @@ export function CalculadoraJurosMulta({
       </div>
 
       <p className="text-xs text-muted-foreground text-center">
-        Cálculo: Juros de {calculo.jurosDiario.toFixed(4)}%/dia × {calculo.diasAtraso} dias + multa de {multaPercentual}% | Venc: {format(parseISO(dataVencimento), 'dd/MM/yyyy', { locale: ptBR })}
+        Cálculo: Juros de {calculo.jurosDiario.toFixed(4)}%/dia × {calculo.diasAtraso} dias + multa
+        de {multaPercentual}% | Venc:{' '}
+        {format(parseISO(dataVencimento), 'dd/MM/yyyy', { locale: ptBR })}
       </p>
     </div>
   );

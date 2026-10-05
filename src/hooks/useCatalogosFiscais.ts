@@ -24,10 +24,7 @@ import {
   gerarAlertasCatalogos,
   type ResumoAlertasCatalogos,
 } from '@/lib/tributario/catalogos/alertas';
-import {
-  calcularSaudeCatalogos,
-  type SaudeCatalogos,
-} from '@/lib/tributario/catalogos/saude';
+import { calcularSaudeCatalogos, type SaudeCatalogos } from '@/lib/tributario/catalogos/saude';
 
 import {
   aplicarOverlayUfs,
@@ -83,22 +80,17 @@ export interface CatalogosFiscaisData {
  * Registros rejeitados NÃO chegam ao motor — o cálculo segue com o valor
  * canônico do código, por isso precisam ser sinalizados ao usuário.
  */
-function descreverRejeicoesIcms(
-  rejeicoes: ResultadoOverlay['rejeitadas'],
-): string[] {
+function descreverRejeicoesIcms(rejeicoes: ResultadoOverlay['rejeitadas']): string[] {
   return rejeicoes.map((r) => `UF ${r.sigla}: ${r.motivo.replace(/_/g, ' ')}`);
 }
 
 /** Traduz rejeições do overlay de ISS municipal em mensagens legíveis. */
-function descreverRejeicoesIss(
-  rejeicoes: ResultadoOverlayIss['rejeitadas'],
-): string[] {
+function descreverRejeicoesIss(rejeicoes: ResultadoOverlayIss['rejeitadas']): string[] {
   return rejeicoes.map(
     (r) =>
-      `${r.municipio || r.codigoIbge || 'município desconhecido'} · item ${r.itemCodigo ?? '—'}: ${r.motivo.replace(/_/g, ' ')}`,
+      `${r.municipio || r.codigoIbge || 'município desconhecido'} · item ${r.itemCodigo ?? '—'}: ${r.motivo.replace(/_/g, ' ')}`
   );
 }
-
 
 /**
  * Carrega os catálogos fiscais recortados pela vigência.
@@ -116,7 +108,14 @@ export function useCatalogosFiscais(dataReferencia?: string | Date | null) {
     staleTime: 5 * 60 * 1000,
     queryFn: async () => {
       const [
-        ufs, interestaduais, faixas, issMunicipal, itensIss, ncms, protocolosNcms, protocolosUfs,
+        ufs,
+        interestaduais,
+        faixas,
+        issMunicipal,
+        itensIss,
+        ncms,
+        protocolosNcms,
+        protocolosUfs,
       ] = await Promise.all([
         buscarUfs(referencia),
         buscarAliquotasInterestaduais(referencia),
@@ -160,7 +159,7 @@ export function useCatalogosFiscais(dataReferencia?: string | Date | null) {
       // prevalecem sobre a MVA cadastrada — nunca se retém imposto presumido
       // sobre operação subsequente não tributada.
       const regras: Record<string, RegraJuridicaNcm> = Object.fromEntries(
-        ncms.map((n) => [n.codigo, { sujeitoSt: n.sujeito_st } satisfies RegraJuridicaNcm]),
+        ncms.map((n) => [n.codigo, { sujeitoSt: n.sujeito_st } satisfies RegraJuridicaNcm])
       );
       const overlayMva = aplicarOverlayMvaSt({
         ncms: protocolosNcms,
@@ -204,7 +203,6 @@ export function useCatalogosFiscais(dataReferencia?: string | Date | null) {
             ],
           },
         }),
-
       };
     },
   });

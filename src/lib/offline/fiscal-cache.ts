@@ -49,7 +49,7 @@ function abrir(): Promise<IDBDatabase | null> {
 
 function transacionar<R>(
   modo: IDBTransactionMode,
-  fn: (store: IDBObjectStore) => IDBRequest<R>,
+  fn: (store: IDBObjectStore) => IDBRequest<R>
 ): Promise<R | null> {
   return abrir().then(
     (db) =>
@@ -64,7 +64,7 @@ function transacionar<R>(
         } catch {
           resolve(null);
         }
-      }),
+      })
   );
 }
 
@@ -81,11 +81,11 @@ export async function salvarConsulta<T>(chave: string, payload: T): Promise<void
 /** Lê do cache respeitando o TTL; entradas expiradas são removidas. */
 export async function lerConsulta<T>(
   chave: string,
-  ttlMs: number = TTL_PADRAO_MS,
+  ttlMs: number = TTL_PADRAO_MS
 ): Promise<EntradaCache<T> | null> {
-  const entrada = (await transacionar<EntradaCache<T>>('readonly', (s) => s.get(chave))) as
-    | EntradaCache<T>
-    | null;
+  const entrada = (await transacionar<EntradaCache<T>>('readonly', (s) =>
+    s.get(chave)
+  )) as EntradaCache<T> | null;
   if (!entrada) return null;
   if (Date.now() - entrada.gravadoEm > ttlMs) {
     await transacionar('readwrite', (s) => s.delete(chave));

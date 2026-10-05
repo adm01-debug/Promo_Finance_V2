@@ -61,7 +61,9 @@ export function emailValido(email: string): boolean {
 function preencherAleatorio(bytes: Uint8Array): Uint8Array {
   const cripto = globalThis.crypto;
   if (cripto && typeof cripto.getRandomValues === 'function') {
-    cripto.getRandomValues(new Uint8Array(bytes.buffer as ArrayBuffer, bytes.byteOffset, bytes.byteLength));
+    cripto.getRandomValues(
+      new Uint8Array(bytes.buffer as ArrayBuffer, bytes.byteOffset, bytes.byteLength)
+    );
     return bytes;
   }
   // Fallback apenas para ambientes de teste sem WebCrypto (jsdom antigo).
@@ -72,7 +74,7 @@ function preencherAleatorio(bytes: Uint8Array): Uint8Array {
 }
 
 export function gerarTokenConvite(
-  aleatorio: (bytes: Uint8Array) => Uint8Array = preencherAleatorio,
+  aleatorio: (bytes: Uint8Array) => Uint8Array = preencherAleatorio
 ): string {
   const bytes = aleatorio(new Uint8Array(32));
   return Array.from(bytes)
@@ -120,7 +122,7 @@ export type AvaliacaoConvite =
 export function avaliarAceiteConvite(
   convite: ConviteAvaliavel | null | undefined,
   emailUsuario: string | null | undefined,
-  agora: Date = new Date(),
+  agora: Date = new Date()
 ): AvaliacaoConvite {
   if (!convite) return { aceitavel: false, motivo: 'CONVITE_INEXISTENTE' };
 
@@ -185,7 +187,7 @@ export function resumirMembros(membros: readonly MembroResumo[]): ResumoOrganiza
 export function permiteRebaixarOuRemover(
   membros: readonly MembroResumo[],
   alvo: MembroResumo,
-  novoPapel: OrgPapel | null,
+  novoPapel: OrgPapel | null
 ): boolean {
   const eraGestor = alvo.ativo && PESO_PAPEL[alvo.papel_na_org] >= PESO_PAPEL.ADMIN;
   if (!eraGestor) return true;
@@ -194,7 +196,7 @@ export function permiteRebaixarOuRemover(
   if (continuaGestor) return true;
 
   const gestoresAtivos = membros.filter(
-    (m) => m.ativo && PESO_PAPEL[m.papel_na_org] >= PESO_PAPEL.ADMIN,
+    (m) => m.ativo && PESO_PAPEL[m.papel_na_org] >= PESO_PAPEL.ADMIN
   ).length;
 
   return gestoresAtivos > 1;

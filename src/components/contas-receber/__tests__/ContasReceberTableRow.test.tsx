@@ -11,7 +11,6 @@ const toLocalYMD = (d: Date): string => {
   return `${y}-${m}-${day}`;
 };
 
-
 // Mock framer-motion
 vi.mock('framer-motion', () => ({
   motion: { tr: ({ children, ...props }: any) => <tr {...props}>{children}</tr> },
@@ -76,9 +75,11 @@ const renderRow = (conta: Partial<ContaReceberWithRelations> = {}, extraProps = 
   const queryClient = new QueryClient({ defaultOptions: { queries: { retry: false } } });
   return render(
     <QueryClientProvider client={queryClient}>
-      <Table><TableBody>
-        <ContasReceberTableRow conta={merged} {...defaultHandlers} />
-      </TableBody></Table>
+      <Table>
+        <TableBody>
+          <ContasReceberTableRow conta={merged} {...defaultHandlers} />
+        </TableBody>
+      </Table>
     </QueryClientProvider>
   );
 };
@@ -171,10 +172,23 @@ describe('ContasReceberTableRow', () => {
       // Menos colunas renderizadas
       const cells = container.querySelectorAll('td');
       const withDias = render(
-        <QueryClientProvider client={new QueryClient({ defaultOptions: { queries: { retry: false } } })}>
-          <Table><TableBody>
-            <ContasReceberTableRow conta={baseConta} index={0} isSelected={false} onToggleSelect={vi.fn()} onEdit={vi.fn()} onDelete={vi.fn()} onRegistrarRecebimento={vi.fn()} showDiasAtraso />
-          </TableBody></Table>
+        <QueryClientProvider
+          client={new QueryClient({ defaultOptions: { queries: { retry: false } } })}
+        >
+          <Table>
+            <TableBody>
+              <ContasReceberTableRow
+                conta={baseConta}
+                index={0}
+                isSelected={false}
+                onToggleSelect={vi.fn()}
+                onEdit={vi.fn()}
+                onDelete={vi.fn()}
+                onRegistrarRecebimento={vi.fn()}
+                showDiasAtraso
+              />
+            </TableBody>
+          </Table>
         </QueryClientProvider>
       ).container.querySelectorAll('td');
       expect(cells.length).toBeLessThan(withDias.length);
@@ -331,7 +345,7 @@ describe('ContasReceberTableRow', () => {
   // ===== Valor/Progress =====
   describe('Valor e progresso', () => {
     it('exibe valor formatado', () => {
-      renderRow({ valor: 1500.50 });
+      renderRow({ valor: 1500.5 });
       expect(screen.getByText('R$ 1500.50')).toBeInTheDocument();
     });
 
