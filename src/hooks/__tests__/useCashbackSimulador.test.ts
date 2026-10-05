@@ -77,7 +77,7 @@ describe('useCashbackSimulador', () => {
 
     expect(result.current.aliquotas.cbs).toBe(8.8);
     const cesta = result.current.resumoMensal.porCategoria.find(
-      (r) => r.categoria === 'cesta_basica',
+      (r) => r.categoria === 'cesta_basica'
     );
     expect(cesta?.cbsPago).toBeCloseTo(800 * 0.088, 2);
     expect(result.current.resumoMensal.totalCashback).toBeGreaterThan(15.76);
@@ -95,7 +95,7 @@ describe('useCashbackSimulador', () => {
     const { result } = renderHook(() => useCashbackSimulador());
 
     act(() =>
-      result.current.adicionarItem({ categoria: 'demais', descricao: 'Extra', valorMensal: 100 }),
+      result.current.adicionarItem({ categoria: 'demais', descricao: 'Extra', valorMensal: 100 })
     );
     expect(result.current.itensConsumo).toHaveLength(9);
     expect(result.current.resumoMensal.totalConsumo).toBe(CONSUMO_CESTA_PADRAO + 100);
@@ -121,7 +121,7 @@ describe('useCashbackSimulador', () => {
     expect(result.current.projecaoAnual.totalCashback).toBeCloseTo(15.76 * 12, 1);
     expect(result.current.projecaoAnual.totalTributos).toBeCloseTo(
       CONSUMO_CESTA_PADRAO * 0.01 * 12,
-      1,
+      1
     );
   });
 });

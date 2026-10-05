@@ -42,9 +42,7 @@ export function AtalhosRapidos() {
               </div>
               <div className="min-w-0">
                 <p className="font-semibold text-sm">{atalho.titulo}</p>
-                <p className="text-xs text-muted-foreground truncate">
-                  {atalho.descricao}
-                </p>
+                <p className="text-xs text-muted-foreground truncate">{atalho.descricao}</p>
               </div>
             </div>
             <Button variant="outline" size="sm" asChild>

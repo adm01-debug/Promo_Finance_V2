@@ -55,7 +55,10 @@ jobs:
         # substituição de entradas históricas por novas supressões.
         run: |
           set -euo pipefail
-          git fetch --depth=1 origin main 2>/dev/null || true
+          # Fetch sem --depth: --depth=1 trunca a main local e quebra o
+          # git merge-base do step de varredura (BASE vazio → varredura do
+          # histórico inteiro → achados antigos fora do baseline).
+          git fetch origin main 2>/dev/null || true
           if git show origin/main:.gitleaks-baseline.json >/dev/null 2>&1; then
             # Extrai e ordena fingerprints de ambas as versões
             jq -r '.[].Fingerprint' .gitleaks-baseline.json | sort > /tmp/pr_fps.txt
@@ -85,7 +88,14 @@ jobs:
         # histórico inteiro do repo), evitando falsos positivos de commits
         # já presentes em main antes desta PR existir.
         run: |
-          BASE=$(git merge-base origin/main HEAD 2>/dev/null || echo "")
+          # HEAD é o merge ref do PR (refs/pull/N/merge): o 1º pai é a main na
+          # época do merge — escopo determinístico que não depende do estado
+          # local de origin/main.
+          if git rev-parse --verify -q HEAD^2 >/dev/null 2>&1; then
+            BASE=$(git rev-parse HEAD^1)
+          else
+            BASE=$(git merge-base origin/main HEAD 2>/dev/null || echo "")
+          fi
           if [ -n "$BASE" ]; then
             LOG_OPTS="${BASE}..HEAD"
           else
@@ -124,6 +134,9 @@ jobs:
     steps:
       - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
         with:
+          # fetch-depth completo: o gate de formato precisa do merge-base
+          # com a branch de destino da PR.
+          fetch-depth: 0
           persist-credentials: false
       # Etapa 27: composite action elimina bloco bun+cache repetido 5x.
       - uses: ./.github/actions/setup-bun
@@ -132,7 +145,12 @@ jobs:
         # Bloqueante: vulnerabilidades conhecidas em dependências diretas
         # devem ser corrigidas antes do merge, não apenas registradas.
         # Em caso de falsa positivo documentado, use `bun audit --ignore`.
-        run: bun audit
+        # GHSA-vfj7-8cjw-p6xm (braces <=3.0.3): sem release corrigida —
+        # 3.0.3 é a última publicada. Só entra via micromatch de
+        # tailwindcss/lint-staged, ferramentas de build/dev cujos padrões
+        # glob são os nossos, não input de usuário — DoS por padrão
+        # aninhado não se aplica. Revisitar quando sair braces 3.0.4+.
+        run: bun audit --ignore=GHSA-vfj7-8cjw-p6xm
 
       - name: External secret isolation guard
         # Impede que EXTERNAL_SUPABASE_SERVICE_ROLE_KEY seja lido fora da
@@ -166,12 +184,19 @@ jobs:
         # falso positivo ou drift de ACL/assinatura fora do contrato revisado.
         run: node scripts/security/test-lint-function-repairs.mjs
 
-      - name: Format check
-        # Etapa 45: format:check garante que todo código committed segue o Prettier.
-        # Husky só formata o staged; este gate pega o diff inteiro da PR.
-        # TODO: remover continue-on-error após PR de formatação global (#prettier-pass).
-        continue-on-error: true
-        run: bun run format:check
+      - name: Format check (arquivos alterados)
+        # Gate incremental, no espírito do "baseline só encolhe": exige Prettier
+        # nos arquivos alterados pela PR em vez de exigir a formatação global,
+        # que ainda é dívida histórica. Assim a superfície formatada cresce
+        # monotonicamente a cada PR sem um diff gigante de uma vez.
+        run: |
+          BASE=$(git merge-base origin/main HEAD)
+          FILES=$(git diff --name-only --diff-filter=ACMR "$BASE" HEAD -- 'src/**/*.ts' 'src/**/*.tsx' 'src/**/*.css' 'src/**/*.json')
+          if [ -n "$FILES" ]; then
+            echo "$FILES" | xargs bunx prettier --check
+          else
+            echo "Nenhum arquivo formatável alterado — gate aprovado."
+          fi
 
       - name: Lint check
         # Etapa 46: bloqueia erros de lint.
@@ -305,6 +330,11 @@ jobs:
 
       - name: Type check
         run: bun run type-check
+
+      - name: Ratchet strictNullChecks (baseline só encolhe)
+        # Overlay progressivo: não exige strict global hoje, mas barra QUALQUER
+        # erro novo de strictNullChecks vs o baseline versionado. Ver script.
+        run: bun run type-check:strict
 
       - name: Type check da infraestrutura de teste
         # `tsc --noEmit` cobre só `src/`. O Playwright transpila as specs com

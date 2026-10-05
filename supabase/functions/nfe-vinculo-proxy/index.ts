@@ -6,12 +6,8 @@ import { auditedRpc, beginAudit, finalizeAudit, withCorrelation } from '../_shar
 import { VALIDATION_ERROR_CODE, normalizeValidationFields } from '../_shared/contract-response.ts';
 import { NfeVinculoProxySchema, validatePayload } from '../_shared/validation.ts';
 import type { z } from 'https://deno.land/x/zod@v3.22.4/mod.ts';
-
-const corsHeaders = {
-  'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Headers':
-    'authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-request-id',
-};
+import { corsHeadersPara } from '../_shared/cors.ts';
+import { withEdgeObservability } from '../_shared/edge-observability.ts';
 
 type Action = z.infer<typeof NfeVinculoProxySchema>;
 
@@ -22,6 +18,8 @@ export interface HandlerDeps {
 
 export function createHandler(deps: HandlerDeps) {
   return async (req: Request): Promise<Response> => {
+    const corsHeaders = corsHeadersPara(req);
+
     if (req.method === 'OPTIONS') return new Response('ok', { headers: corsHeaders });
 
     const ctx = beginAudit('nfe-vinculo-proxy', req);
@@ -153,5 +151,5 @@ function defaultDeps(): HandlerDeps {
 }
 
 if (!Deno.env.get('DENO_TESTING')) {
-  Deno.serve(createHandler(defaultDeps()));
+  Deno.serve(withEdgeObservability('nfe-vinculo-proxy', createHandler(defaultDeps())));
 }

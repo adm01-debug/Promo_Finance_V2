@@ -1,22 +1,21 @@
-import { useState, useMemo, useEffect, useRef } from "react";
-import { toast } from "sonner";
-import { Button } from "@/components/ui/button";
-import { RotateCcw } from "lucide-react";
-
+import { useState, useMemo, useEffect, useRef } from 'react';
+import { toast } from 'sonner';
+import { Button } from '@/components/ui/button';
+import { RotateCcw } from 'lucide-react';
 
 import {
   useSavedFilters,
   type AppRole,
   type SavedFilterPayload,
   type SavedFilterRow,
-} from "@/hooks/useSavedFilters";
-import { useSavedFilterSubscriptions } from "@/hooks/useSavedFilterSubscriptions";
-import { useWebPushSubscription } from "@/hooks/useWebPushSubscription";
-import { useAuth } from "@/hooks/useAuth";
-import { PresetsDropdownMenu } from "./saved-filters-bar/PresetsDropdownMenu";
-import { SavePresetDialog } from "./saved-filters-bar/SavePresetDialog";
-import { ShareFilterDialog } from "./saved-filters-bar/ShareFilterDialog";
-import { RestoreConfirmDialog } from "./saved-filters-bar/RestoreConfirmDialog";
+} from '@/hooks/useSavedFilters';
+import { useSavedFilterSubscriptions } from '@/hooks/useSavedFilterSubscriptions';
+import { useWebPushSubscription } from '@/hooks/useWebPushSubscription';
+import { useAuth } from '@/hooks/useAuth';
+import { PresetsDropdownMenu } from './saved-filters-bar/PresetsDropdownMenu';
+import { SavePresetDialog } from './saved-filters-bar/SavePresetDialog';
+import { ShareFilterDialog } from './saved-filters-bar/ShareFilterDialog';
+import { RestoreConfirmDialog } from './saved-filters-bar/RestoreConfirmDialog';
 
 interface SavedFiltersBarProps<T> {
   entityType: string;
@@ -29,10 +28,7 @@ interface SavedFiltersBarProps<T> {
    * após Restaurar padrão. Se ausente, o undo recai em onLoad/onClear, o que
    * pode não preservar o activePresetId quando o estado anterior era livre.
    */
-  onRestoreState?: (state: {
-    presetId: string | null;
-    payload: SavedFilterPayload<T>;
-  }) => void;
+  onRestoreState?: (state: { presetId: string | null; payload: SavedFilterPayload<T> }) => void;
 }
 
 export function SavedFiltersBar<T>({
@@ -58,7 +54,7 @@ export function SavedFiltersBar<T>({
   const { subscribed: pushReady, subscribe: enablePush } = useWebPushSubscription();
 
   const [dialogOpen, setDialogOpen] = useState(false);
-  const [name, setName] = useState("");
+  const [name, setName] = useState('');
   const [makeDefault, setMakeDefault] = useState(false);
   const [shareEnabled, setShareEnabled] = useState(false);
   const [shareRoles, setShareRoles] = useState<AppRole[]>([]);
@@ -85,7 +81,7 @@ export function SavedFiltersBar<T>({
 
   const activePreset = useMemo(
     () => filters.find((f) => f.id === activePresetId) ?? null,
-    [filters, activePresetId],
+    [filters, activePresetId]
   );
 
   const isModified = useMemo(() => {
@@ -108,12 +104,12 @@ export function SavedFiltersBar<T>({
         sharedWithRoles: shareEnabled ? shareRoles : [],
       });
       setDialogOpen(false);
-      setName("");
+      setName('');
       setMakeDefault(false);
       setShareEnabled(false);
       setShareRoles([]);
     } catch (err) {
-      setSaveError(err instanceof Error ? err.message : "Falha ao salvar o preset.");
+      setSaveError(err instanceof Error ? err.message : 'Falha ao salvar o preset.');
     }
   };
 
@@ -151,9 +147,7 @@ export function SavedFiltersBar<T>({
       });
       setShareDialog(null);
     } catch (err) {
-      setShareError(
-        err instanceof Error ? err.message : "Falha ao atualizar compartilhamento.",
-      );
+      setShareError(err instanceof Error ? err.message : 'Falha ao atualizar compartilhamento.');
     }
   };
 
@@ -188,10 +182,7 @@ export function SavedFiltersBar<T>({
   const handleDuplicate = (f: SavedFilterRow<T>) => {
     if (pendingDuplicateId || duplicate.isPending) return;
     setPendingDuplicateId(f.id);
-    duplicate.mutate(
-      { sourceId: f.id },
-      { onSettled: () => setPendingDuplicateId(null) },
-    );
+    duplicate.mutate({ sourceId: f.id }, { onSettled: () => setPendingDuplicateId(null) });
   };
 
   const canRestore =
@@ -217,22 +208,22 @@ export function SavedFiltersBar<T>({
       } else {
         onClear();
       }
-      toast.success("Alteração desfeita", {
-        description: "Estado anterior dos filtros foi restaurado.",
+      toast.success('Alteração desfeita', {
+        description: 'Estado anterior dos filtros foi restaurado.',
       });
     };
 
     const titulo = defaultFilter
       ? `Preset padrão aplicado: "${defaultFilter.name}"`
-      : "Filtros limpos";
+      : 'Filtros limpos';
     const descricao = defaultFilter
-      ? "Filtros, ordenação e colunas foram restaurados."
-      : "O painel voltou à configuração inicial.";
+      ? 'Filtros, ordenação e colunas foram restaurados.'
+      : 'O painel voltou à configuração inicial.';
 
     toast.success(titulo, {
       description: descricao,
       duration: 8000,
-      action: { label: "Desfazer", onClick: undo },
+      action: { label: 'Desfazer', onClick: undo },
     });
   };
 
@@ -249,13 +240,13 @@ export function SavedFiltersBar<T>({
   useEffect(() => {
     const onKeyDown = (e: KeyboardEvent) => {
       if (!e.altKey || e.ctrlKey || e.metaKey || e.shiftKey) return;
-      if (e.key !== "r" && e.key !== "R") return;
+      if (e.key !== 'r' && e.key !== 'R') return;
       const target = e.target as HTMLElement | null;
       const tag = target?.tagName;
       const isEditable =
-        tag === "INPUT" ||
-        tag === "TEXTAREA" ||
-        tag === "SELECT" ||
+        tag === 'INPUT' ||
+        tag === 'TEXTAREA' ||
+        tag === 'SELECT' ||
         (target?.isContentEditable ?? false);
       if (isEditable) return;
       if (!canRestore || anyMutationPending) return;
@@ -263,8 +254,8 @@ export function SavedFiltersBar<T>({
       handleRestoreDefault();
       requestAnimationFrame(() => restoreButtonRef.current?.focus());
     };
-    window.addEventListener("keydown", onKeyDown);
-    return () => window.removeEventListener("keydown", onKeyDown);
+    window.addEventListener('keydown', onKeyDown);
+    return () => window.removeEventListener('keydown', onKeyDown);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [canRestore, anyMutationPending, defaultFilter, activePresetId]);
 
@@ -312,7 +303,7 @@ export function SavedFiltersBar<T>({
           title={
             defaultFilter
               ? `Restaurar preset padrão "${defaultFilter.name}" (Alt+R)`
-              : "Voltar ao estado inicial (Alt+R)"
+              : 'Voltar ao estado inicial (Alt+R)'
           }
           aria-label="Restaurar padrão (atalho: Alt+R)"
           aria-keyshortcuts="Alt+R"

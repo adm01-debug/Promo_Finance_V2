@@ -29,12 +29,22 @@ const funcsDir = 'supabase/functions';
 const edgeSet = new Set();
 for (const dir of readdirSync(funcsDir)) {
   if (dir === '_shared') {
-    // Scan _shared/*.ts (exceto arquivos _test.ts) — contém helpers usados por todas as funções
+    // Scan recursivo de _shared/**/*.ts (exceto testes/mocks/fixtures) —
+    // helpers aninhados (sefaz/, nfe/, sped/, obrigacoes/) também leem envs.
+    const stack = [`${funcsDir}/_shared`];
     try {
-      for (const f of readdirSync(`${funcsDir}/_shared`)) {
-        if (!f.endsWith('.ts') || f.endsWith('_test.ts')) continue;
-        const t = readFileSync(`${funcsDir}/_shared/${f}`, 'utf8');
-        for (const m of t.matchAll(/Deno\.env\.get\(['"]([A-Z0-9_]+)['"]\)/g)) edgeSet.add(m[1]);
+      while (stack.length) {
+        const cur = stack.pop();
+        for (const e of readdirSync(cur, { withFileTypes: true })) {
+          const full = `${cur}/${e.name}`;
+          if (e.isDirectory()) {
+            if (!/^(?:__tests__|__mocks__|__fixtures__)$/.test(e.name)) stack.push(full);
+            continue;
+          }
+          if (!e.name.endsWith('.ts') || e.name.endsWith('_test.ts') || e.name.endsWith('.test.ts')) continue;
+          const t = readFileSync(full, 'utf8');
+          for (const m of t.matchAll(/Deno\.env\.get\(['"]([A-Z0-9_]+)['"]\)/g)) edgeSet.add(m[1]);
+        }
       }
     } catch { /* _shared ausente */ }
     continue;
@@ -48,26 +58,58 @@ const autoProvided = new Set([
   'SUPABASE_URL','SUPABASE_ANON_KEY','SUPABASE_SERVICE_ROLE_KEY',
   'SUPABASE_DB_URL','SUPABASE_JWKS','SUPABASE_PUBLISHABLE_KEYS','SUPABASE_SECRET_KEYS',
 ]);
+// Vars com fallback no código — ausência é estado válido, não config incompleta.
+const opcionais = new Set([
+  'ALLOWED_ORIGINS',
+  'EDGE_FUNCTION_NAME',
+  'INTEGRACOES_DESATIVADAS',
+  'MFA_ADMIN_ENFORCED',
+  'NFE_CERT_MASTER_KEY_PREV',
+  'SUPABASE_FUNCTION_NAME',
+  'CONTADOR_INVITE_SECRET',
+  'EDGE_SENTRY_DSN',
+  'SENTRY_DSN',
+]);
 const edge = [...edgeSet].sort().map(name => ({
-  name, scope: 'edge', required: !autoProvided.has(name),
+  name, scope: 'edge', required: !autoProvided.has(name) && !opcionais.has(name),
   dest: autoProvided.has(name) ? 'supabase_auto' : 'supabase_vault',
 }));
 
-// CI — secrets referenciados em todos os workflows do repositório
-const ciWorkflows = [
-  '.github/workflows/ci.yml',
-  '.github/workflows/supabase-linter.yml',
-];
+// CI — secrets referenciados em TODOS os workflows do repositório (glob:
+// enumerar nomes aqui deixava secrets de workflows novos fora do manifest)
+const ciWorkflows = readdirSync('.github/workflows')
+  .filter((f) => f.endsWith('.yml') || f.endsWith('.yaml'))
+  .map((f) => `.github/workflows/${f}`);
 const ciSet = new Set();
+const ciVarSet = new Set();
 for (const wf of ciWorkflows) {
   try {
     const src = readFileSync(wf, 'utf8');
-    for (const m of src.matchAll(/secrets\.([A-Z0-9_]+)/g)) ciSet.add(m[1]);
+    for (const m of src.matchAll(/secrets\.([A-Z0-9_]+)/g)) {
+      // GITHUB_* são providos pelo próprio Actions, não precisam de provisionamento.
+      if (m[1].startsWith('GITHUB_')) continue;
+      ciSet.add(m[1]);
+    }
+    // vars.* (variáveis do repositório) também exigem provisionamento manual —
+    // sem elas o workflow falha em runtime (ex.: PROD_PROJECT_REF no schema-drift).
+    // Vão para ciVarSet: variáveis vivem no endpoint /actions/variables, não em
+    // /actions/secrets — destino próprio evita falso MISSING no audit-env.
+    for (const m of src.matchAll(/vars\.([A-Z0-9_]+)/g)) {
+      ciVarSet.add(m[1]);
+    }
   } catch { /* workflow ausente — ignorar */ }
 }
-const ci = [...ciSet].sort().map(name => ({ name, scope: 'ci', required: true, dest: 'github_actions' }));
+// Variáveis que só ativam features opt-in — funcionam ausentes (CI roda sem
+// snapshots autenticados e sem simulação em prod), logo não são obrigatórias.
+const VARS_OPT_IN = new Set([
+  'ENABLE_AUTHENTICATED_VISUAL_SNAPSHOTS',
+  'ENABLE_PRODUCTION_SIMULATION_AUDIT',
+]);
+const porNome = (a, b) => a.localeCompare(b);
+const ci = [...ciSet].sort(porNome).map(name => ({ name, scope: 'ci', required: true, dest: 'github_actions' }));
+const ciVars = [...ciVarSet].sort(porNome).map(name => ({ name, scope: 'ci', required: !VARS_OPT_IN.has(name), dest: 'github_actions_vars' }));
 
-const freshVars = [...frontend, ...edge, ...ci];
+const freshVars = [...frontend, ...edge, ...ci, ...ciVars];
 
 if (CHECK_MODE) {
   let existing;

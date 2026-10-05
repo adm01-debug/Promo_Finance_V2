@@ -1,11 +1,23 @@
 // DIALOG: Link de Pagamento ASAAS
 
 import { useState } from 'react';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+} from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
 import { Loader2, Link2, Copy, ExternalLink } from 'lucide-react';
 import { useAsaas } from '@/hooks/useAsaas';
@@ -50,13 +62,19 @@ export function LinkPagamentoDialog({ open, onOpenChange, empresaId }: Props) {
         onOpenChange(false);
         resetForm();
       }
-    } catch { /* hook handles */ }
+    } catch {
+      /* hook handles */
+    }
   };
 
   const resetForm = () => {
-    setNome(''); setValor(''); setDescricao('');
-    setTipoCobranca('DETACHED'); setDiasLimite('10');
-    setMaxParcelas(''); setLinkGerado(null);
+    setNome('');
+    setValor('');
+    setDescricao('');
+    setTipoCobranca('DETACHED');
+    setDiasLimite('10');
+    setMaxParcelas('');
+    setLinkGerado(null);
   };
 
   const copyLink = () => {
@@ -67,7 +85,13 @@ export function LinkPagamentoDialog({ open, onOpenChange, empresaId }: Props) {
   };
 
   return (
-    <Dialog open={open} onOpenChange={(v) => { onOpenChange(v); if (!v) resetForm(); }}>
+    <Dialog
+      open={open}
+      onOpenChange={(v) => {
+        onOpenChange(v);
+        if (!v) resetForm();
+      }}
+    >
       <DialogContent className="sm:max-w-[480px]">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
@@ -102,18 +126,31 @@ export function LinkPagamentoDialog({ open, onOpenChange, empresaId }: Props) {
           <div className="space-y-4 mt-2">
             <div className="space-y-2">
               <Label>Nome do link *</Label>
-              <Input value={nome} onChange={e => setNome(e.target.value)} placeholder="Ex: Venda de Produto X" />
+              <Input
+                value={nome}
+                onChange={(e) => setNome(e.target.value)}
+                placeholder="Ex: Venda de Produto X"
+              />
             </div>
 
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
                 <Label>Valor (R$) *</Label>
-                <Input type="number" step="0.01" min="0.01" value={valor} onChange={e => setValor(e.target.value)} placeholder="100.00" />
+                <Input
+                  type="number"
+                  step="0.01"
+                  min="0.01"
+                  value={valor}
+                  onChange={(e) => setValor(e.target.value)}
+                  placeholder="100.00"
+                />
               </div>
               <div className="space-y-2">
                 <Label>Tipo</Label>
                 <Select value={tipoCobranca} onValueChange={setTipoCobranca}>
-                  <SelectTrigger><SelectValue /></SelectTrigger>
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="DETACHED">Avulso</SelectItem>
                     <SelectItem value="INSTALLMENT">Parcelado</SelectItem>
@@ -126,26 +163,51 @@ export function LinkPagamentoDialog({ open, onOpenChange, empresaId }: Props) {
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
                 <Label>Dias para vencimento</Label>
-                <Input type="number" min="1" value={diasLimite} onChange={e => setDiasLimite(e.target.value)} />
+                <Input
+                  type="number"
+                  min="1"
+                  value={diasLimite}
+                  onChange={(e) => setDiasLimite(e.target.value)}
+                />
               </div>
               {tipoCobranca === 'INSTALLMENT' && (
                 <div className="space-y-2">
                   <Label>Máx. parcelas</Label>
-                  <Input type="number" min="2" max="12" value={maxParcelas} onChange={e => setMaxParcelas(e.target.value)} placeholder="12" />
+                  <Input
+                    type="number"
+                    min="2"
+                    max="12"
+                    value={maxParcelas}
+                    onChange={(e) => setMaxParcelas(e.target.value)}
+                    placeholder="12"
+                  />
                 </div>
               )}
             </div>
 
             <div className="space-y-2">
               <Label>Descrição</Label>
-              <Textarea value={descricao} onChange={e => setDescricao(e.target.value)} placeholder="Descrição do pagamento..." rows={2} />
+              <Textarea
+                value={descricao}
+                onChange={(e) => setDescricao(e.target.value)}
+                placeholder="Descrição do pagamento..."
+                rows={2}
+              />
             </div>
 
-            <Button className="w-full" onClick={handleCriar} disabled={criarLinkPagamento.isPending || !nome || !valor}>
+            <Button
+              className="w-full"
+              onClick={handleCriar}
+              disabled={criarLinkPagamento.isPending || !nome || !valor}
+            >
               {criarLinkPagamento.isPending ? (
-                <><Loader2 className="h-4 w-4 mr-2 animate-spin" /> Gerando...</>
+                <>
+                  <Loader2 className="h-4 w-4 mr-2 animate-spin" /> Gerando...
+                </>
               ) : (
-                <><Link2 className="h-4 w-4 mr-2" /> Gerar Link</>
+                <>
+                  <Link2 className="h-4 w-4 mr-2" /> Gerar Link
+                </>
               )}
             </Button>
           </div>

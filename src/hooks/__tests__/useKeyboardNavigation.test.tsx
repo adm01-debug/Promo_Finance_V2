@@ -51,7 +51,7 @@ describe('useKeyboardNavigation', () => {
     const input = document.createElement('input');
     document.body.appendChild(input);
     input.focus();
-    
+
     const event = new KeyboardEvent('keydown', {
       key: 'ArrowLeft',
       altKey: true,
@@ -59,7 +59,7 @@ describe('useKeyboardNavigation', () => {
     });
     Object.defineProperty(event, 'target', { value: input });
     input.dispatchEvent(event);
-    
+
     // Should not have been called because target is input
     expect(mockNavigate).not.toHaveBeenCalled();
     document.body.removeChild(input);

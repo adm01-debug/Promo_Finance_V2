@@ -25,14 +25,14 @@ export function ResultadoTributos({ resultado, anoReferencia, faseAtual }: Props
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
-          {resultado.detalhamento.some(d => d.includes('isenta')) ? (
+          {resultado.detalhamento.some((d) => d.includes('isenta')) ? (
             <div className="p-4 bg-success/10 rounded-lg border border-success/20">
               <div className="flex items-center gap-2 text-success">
                 <CheckCircle2 className="h-5 w-5" />
                 <span className="font-medium">Operação Isenta</span>
               </div>
               <p className="text-sm text-muted-foreground mt-1">
-                {resultado.detalhamento.find(d => d.includes('isenta'))}
+                {resultado.detalhamento.find((d) => d.includes('isenta'))}
               </p>
             </div>
           ) : (
@@ -50,7 +50,9 @@ export function ResultadoTributos({ resultado, anoReferencia, faseAtual }: Props
                   </div>
                   <div className="text-right">
                     <p className="font-semibold text-cbs">{formatCurrency(resultado.valorCBS)}</p>
-                    <p className="text-xs text-muted-foreground">{resultado.aliquotaCBS.toFixed(2)}%</p>
+                    <p className="text-xs text-muted-foreground">
+                      {resultado.aliquotaCBS.toFixed(2)}%
+                    </p>
                   </div>
                 </div>
 
@@ -61,7 +63,9 @@ export function ResultadoTributos({ resultado, anoReferencia, faseAtual }: Props
                   </div>
                   <div className="text-right">
                     <p className="font-semibold text-ibs">{formatCurrency(resultado.valorIBS)}</p>
-                    <p className="text-xs text-muted-foreground">{resultado.aliquotaIBS.toFixed(2)}%</p>
+                    <p className="text-xs text-muted-foreground">
+                      {resultado.aliquotaIBS.toFixed(2)}%
+                    </p>
                   </div>
                 </div>
 
@@ -72,8 +76,12 @@ export function ResultadoTributos({ resultado, anoReferencia, faseAtual }: Props
                       <span>IS (Seletivo)</span>
                     </div>
                     <div className="text-right">
-                      <p className="font-semibold text-imposto-seletivo">{formatCurrency(resultado.valorIS)}</p>
-                      <p className="text-xs text-muted-foreground">{resultado.aliquotaIS.toFixed(2)}%</p>
+                      <p className="font-semibold text-imposto-seletivo">
+                        {formatCurrency(resultado.valorIS)}
+                      </p>
+                      <p className="text-xs text-muted-foreground">
+                        {resultado.aliquotaIS.toFixed(2)}%
+                      </p>
                     </div>
                   </div>
                 )}
@@ -127,12 +135,16 @@ export function ResultadoTributos({ resultado, anoReferencia, faseAtual }: Props
                 </div>
                 <div className="flex justify-between">
                   <span className="text-muted-foreground">Total Tributos Novos</span>
-                  <span className="font-semibold">{formatCurrency(resultado.totalTributosNovos)}</span>
+                  <span className="font-semibold">
+                    {formatCurrency(resultado.totalTributosNovos)}
+                  </span>
                 </div>
                 {resultado.totalTributosAntigos > 0 && (
                   <div className="flex justify-between">
                     <span className="text-muted-foreground">Total Tributos Antigos</span>
-                    <span className="font-semibold">{formatCurrency(resultado.totalTributosAntigos)}</span>
+                    <span className="font-semibold">
+                      {formatCurrency(resultado.totalTributosAntigos)}
+                    </span>
                   </div>
                 )}
                 <Separator />

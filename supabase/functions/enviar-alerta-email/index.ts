@@ -7,6 +7,11 @@ import {
   EnviarAlertaEmailSchema,
   validatePayload,
 } from '../_shared/validation.ts';
+import { corsHeadersPara } from '../_shared/cors.ts';
+import { createLogger } from '../_shared/observability.ts';
+import { mensagemErro, contextoErro } from '../_shared/erros.ts';
+import { withEdgeObservability } from '../_shared/edge-observability.ts';
+const log = createLogger('enviar-alerta-email');
 
 const corsHeaders = {
   ...baseCorsHeaders,
@@ -14,6 +19,7 @@ const corsHeaders = {
 };
 
 export const handler = async (req: Request): Promise<Response> => {
+  const corsHeaders = corsHeadersPara(req);
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders });
   }
@@ -30,15 +36,17 @@ export const handler = async (req: Request): Promise<Response> => {
     const rawBody = await req.json();
     const validation = validatePayload(EnviarAlertaEmailSchema, rawBody, 'enviar-alerta-email');
     if (!validation.success) {
-      return createErrorResponse(validation.error, 400, validation.details);
+      return createErrorResponse(validation.error, 400, validation.details, req);
     }
     const { tipo, destinatario, dados } = validation.data;
 
-    console.log(`Processando alerta do tipo: ${tipo} para ${destinatario}`);
+    // Destinatário (e-mail) fica fora do evento: edge_function_logs é lida por
+    // admin global e o texto livre não passa pela redação de chaves sensíveis.
+    log.info(`Processando alerta do tipo: ${tipo}`);
 
     // Verificar se Resend está configurado
     if (!resendApiKey) {
-      console.log('RESEND_API_KEY não configurada - simulando envio');
+      log.info('RESEND_API_KEY não configurada - simulando envio');
 
       // Registrar o alerta no banco mesmo sem enviar email
       await supabase.from('alertas').insert({
@@ -173,7 +181,7 @@ export const handler = async (req: Request): Promise<Response> => {
     });
 
     const result = await response.json();
-    console.log('Resultado do envio:', result);
+    log.info('Resultado do envio:', { context: { args: [result] } });
 
     if (!response.ok) {
       throw new Error(result.message || 'Erro ao enviar email');
@@ -192,7 +200,10 @@ export const handler = async (req: Request): Promise<Response> => {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     });
   } catch (error: unknown) {
-    console.error('Erro ao enviar alerta:', error);
+    log.error('Erro ao enviar alerta:', {
+      error_message: mensagemErro(error),
+      context: contextoErro(error),
+    });
     const message = error instanceof Error ? error.message : 'Erro desconhecido';
     return new Response(JSON.stringify({ error: message }), {
       status: 500,
@@ -201,4 +212,15 @@ export const handler = async (req: Request): Promise<Response> => {
   }
 };
 
-if (import.meta.main) serve(handler);
+if (import.meta.main)
+  serve(
+    withEdgeObservability('enviar-alerta-email', async (req) => {
+      const _t0 = Date.now();
+      try {
+        return await handler(req);
+      } finally {
+        log.info('request', { duration_ms: Date.now() - _t0 });
+        await log.flush();
+      }
+    })
+  );

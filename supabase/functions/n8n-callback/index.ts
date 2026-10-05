@@ -4,13 +4,11 @@
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.49.4';
 import { createErrorResponse, validatePayload } from '../_shared/validation.ts';
 import { z } from 'https://deno.land/x/zod@v3.22.4/mod.ts';
-
-const corsHeaders = {
-  'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Headers':
-    'authorization, x-client-info, apikey, content-type, x-n8n-secret, x-supabase-client-platform',
-  'Access-Control-Allow-Methods': 'POST, OPTIONS',
-};
+import { corsHeaders, corsHeadersPara } from '../_shared/cors.ts';
+import { createLogger } from '../_shared/observability.ts';
+import { mensagemErro, contextoErro } from '../_shared/erros.ts';
+import { withEdgeObservability } from '../_shared/edge-observability.ts';
+const log = createLogger('n8n-callback');
 
 const schema = z
   .object({
@@ -42,8 +40,11 @@ export interface HandlerDeps {
 
 export function createHandler(deps: HandlerDeps) {
   return async (req: Request): Promise<Response> => {
+    const corsHeaders = corsHeadersPara(req);
+    const res = (a: unknown, b = 200) => json(a, b, corsHeaders);
+
     if (req.method === 'OPTIONS') return new Response(null, { headers: corsHeaders });
-    if (req.method !== 'POST') return json({ error: 'method_not_allowed' }, 405);
+    if (req.method !== 'POST') return res({ error: 'method_not_allowed' }, 405);
 
     const secretAuth = authorizeSharedSecret(
       deps.getEnv('N8N_CALLBACK_SECRET'),
@@ -55,20 +56,24 @@ export function createHandler(deps: HandlerDeps) {
     try {
       raw = await deps.readJson(req);
     } catch {
-      return json({ error: 'invalid_json' }, 400);
+      return res({ error: 'invalid_json' }, 400);
     }
 
     const parsed = validatePayload(schema, raw ?? {}, 'n8n-callback');
-    if (!parsed.success) return withCors(createErrorResponse(parsed.error, 400, parsed.details));
+    if (!parsed.success)
+      return withCors(createErrorResponse(parsed.error, 400, parsed.details, req));
     const body: CallbackBody = parsed.data;
 
     try {
       const result = await executeAction(deps.admin, body);
-      return json({ ok: true, action: body.action, result });
+      return res({ ok: true, action: body.action, result });
     } catch (error) {
       const msg = error instanceof Error ? error.message : String(error);
-      console.error('n8n-callback error:', msg);
-      return json({ error: msg }, 500);
+      log.error('n8n-callback error:', {
+        error_message: mensagemErro(msg),
+        context: contextoErro(msg),
+      });
+      return res({ error: msg }, 500);
     }
   };
 }
@@ -165,10 +170,14 @@ function withCors(response: Response): Response {
   });
 }
 
-function json(payload: unknown, status = 200): Response {
+function json(
+  payload: unknown,
+  status = 200,
+  headers: Record<string, string> = corsHeaders
+): Response {
   return new Response(JSON.stringify(payload), {
     status,
-    headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+    headers: { ...headers, 'Content-Type': 'application/json' },
   });
 }
 
@@ -180,5 +189,16 @@ function timingSafeEqual(a: string, b: string): boolean {
 }
 
 if (!Deno.env.get('DENO_TESTING')) {
-  Deno.serve(createHandler(defaultDeps()));
+  const handler = createHandler(defaultDeps());
+  Deno.serve(
+    withEdgeObservability('n8n-callback', async (req) => {
+      const _t0 = Date.now();
+      try {
+        return await handler(req);
+      } finally {
+        log.info('request', { duration_ms: Date.now() - _t0 });
+        await log.flush();
+      }
+    })
+  );
 }

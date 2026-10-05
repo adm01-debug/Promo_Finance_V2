@@ -12,7 +12,7 @@ export const DIVERG_TONE_CLASSES: Record<DivergTone, string> = {
 export function buildDivergRows(
   resultado: WizardResultado,
   data: SpedEcfValidacaoResult | undefined,
-  ecdRef: EcdReferencia | null,
+  ecdRef: EcdReferencia | null
 ): DivergRow[] {
   const periodoEcfStr = `${resultado.periodo.inicio} → ${resultado.periodo.fim}`;
   const periodoEcdStr = data ? `${data.periodo.inicio} → ${data.periodo.fim}` : '—';
@@ -27,7 +27,9 @@ export function buildDivergRows(
       ecfValor: periodoEcfStr,
       ecdValor: periodoEcdStr,
       tone: periodoMatch ? 'success' : 'destructive',
-      detalhe: periodoMatch ? 'Coincide com a ECD' : 'Períodos divergentes — revise antes de transmitir',
+      detalhe: periodoMatch
+        ? 'Coincide com a ECD'
+        : 'Períodos divergentes — revise antes de transmitir',
       anchor: { step: 1, targetId: 'wz-meta-periodo' },
     },
     {

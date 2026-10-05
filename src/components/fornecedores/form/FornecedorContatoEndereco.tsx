@@ -1,13 +1,7 @@
 import { Mail, Phone, MapPin } from 'lucide-react';
 import { type FieldValues, type UseFormReturn } from 'react-hook-form';
 import { FieldLabel } from '@/components/ui/info-tooltip';
-import {
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from '@/components/ui/form';
+import { FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { maskPhone } from '@/lib/masks';
 
@@ -28,7 +22,12 @@ export function FornecedorContatoEndereco({ form }: FornecedorContatoEnderecoPro
               <FormControl>
                 <div className="relative">
                   <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                  <Input {...field} type="email" placeholder="email@exemplo.com" className="pl-10" />
+                  <Input
+                    {...field}
+                    type="email"
+                    placeholder="email@exemplo.com"
+                    className="pl-10"
+                  />
                 </div>
               </FormControl>
               <FormMessage />

@@ -1,8 +1,8 @@
-import { useRef, useState } from "react";
-import JSZip from "jszip";
-import { toast } from "sonner";
-import { isManifest, sha256OfBytes } from "./manifest-utils";
-import type { Manifest, ResultadoArquivo, Resumo } from "./types";
+import { useRef, useState } from 'react';
+import JSZip from 'jszip';
+import { toast } from 'sonner';
+import { isManifest, sha256OfBytes } from './manifest-utils';
+import type { Manifest, ResultadoArquivo, Resumo } from './types';
 
 export function useIntegridadeVerifier() {
   const [manifest, setManifest] = useState<Manifest | null>(null);
@@ -22,9 +22,9 @@ export function useIntegridadeVerifier() {
     setArquivos(new Map());
     setResumo(null);
     setProgresso(0);
-    if (inputZipRef.current) inputZipRef.current.value = "";
-    if (inputManifestRef.current) inputManifestRef.current.value = "";
-    if (inputArquivosRef.current) inputArquivosRef.current.value = "";
+    if (inputZipRef.current) inputZipRef.current.value = '';
+    if (inputManifestRef.current) inputManifestRef.current.value = '';
+    if (inputArquivosRef.current) inputArquivosRef.current.value = '';
   };
 
   const handleZip = async (file: File) => {
@@ -37,8 +37,8 @@ export function useIntegridadeVerifier() {
 
       const entradas = Object.values(zip.files).filter((f) => !f.dir);
       for (const entrada of entradas) {
-        const bytes = await entrada.async("uint8array");
-        if (entrada.name === "manifest.json") {
+        const bytes = await entrada.async('uint8array');
+        if (entrada.name === 'manifest.json') {
           try {
             const txt = new TextDecoder().decode(bytes);
             const parsed = JSON.parse(txt);
@@ -52,7 +52,7 @@ export function useIntegridadeVerifier() {
       }
 
       if (!manifestObj) {
-        toast.error("manifest.json não encontrado ou inválido dentro do ZIP.");
+        toast.error('manifest.json não encontrado ou inválido dentro do ZIP.');
         setVerificando(false);
         return;
       }
@@ -61,7 +61,7 @@ export function useIntegridadeVerifier() {
       setArquivos(novoMap);
       toast.success(`ZIP carregado: ${entradas.length} arquivo(s).`);
     } catch (e) {
-      toast.error(`Falha ao ler ZIP: ${e instanceof Error ? e.message : "erro"}`);
+      toast.error(`Falha ao ler ZIP: ${e instanceof Error ? e.message : 'erro'}`);
     } finally {
       setVerificando(false);
     }
@@ -72,17 +72,17 @@ export function useIntegridadeVerifier() {
       const txt = await file.text();
       const parsed = JSON.parse(txt);
       if (!isManifest(parsed)) {
-        toast.error("Arquivo não parece um manifest.json válido.");
+        toast.error('Arquivo não parece um manifest.json válido.');
         return;
       }
       setManifest(parsed);
       setManifestNome(file.name);
       setResumo(null);
       toast.success(
-        `Manifest carregado — ${Object.keys(parsed.arquivos).length} arquivo(s) declarado(s).`,
+        `Manifest carregado — ${Object.keys(parsed.arquivos).length} arquivo(s) declarado(s).`
       );
     } catch (e) {
-      toast.error(`JSON inválido: ${e instanceof Error ? e.message : "erro"}`);
+      toast.error(`JSON inválido: ${e instanceof Error ? e.message : 'erro'}`);
     }
   };
 
@@ -113,14 +113,14 @@ export function useIntegridadeVerifier() {
       const [nome, info] = declarados[i];
       const bytes = arquivos.get(nome);
       if (!bytes) {
-        resultados.push({ nome, status: "ausente", hashEsperado: info.sha256 });
+        resultados.push({ nome, status: 'ausente', hashEsperado: info.sha256 });
         ausentes++;
       } else {
         const hash = await sha256OfBytes(bytes);
         if (hash === info.sha256) {
           resultados.push({
             nome,
-            status: "ok",
+            status: 'ok',
             hashEsperado: info.sha256,
             hashCalculado: hash,
           });
@@ -128,7 +128,7 @@ export function useIntegridadeVerifier() {
         } else {
           resultados.push({
             nome,
-            status: "divergente",
+            status: 'divergente',
             hashEsperado: info.sha256,
             hashCalculado: hash,
           });
@@ -142,7 +142,7 @@ export function useIntegridadeVerifier() {
     for (const [nome, bytes] of arquivos.entries()) {
       if (!manifest.arquivos[nome]) {
         const hash = await sha256OfBytes(bytes);
-        resultados.push({ nome, status: "extra", hashCalculado: hash });
+        resultados.push({ nome, status: 'extra', hashCalculado: hash });
         extras++;
       }
     }
@@ -159,8 +159,7 @@ export function useIntegridadeVerifier() {
   };
 
   const podeVerificar = !!manifest && arquivos.size > 0 && !verificando;
-  const integridadeOk =
-    !!resumo && resumo.divergentes === 0 && resumo.ausentes === 0;
+  const integridadeOk = !!resumo && resumo.divergentes === 0 && resumo.ausentes === 0;
 
   return {
     manifest,

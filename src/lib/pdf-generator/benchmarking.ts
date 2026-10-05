@@ -17,7 +17,7 @@ export interface BenchmarkingRoadmap {
 export function generateBenchmarkingPDF(
   concorrente: string,
   gaps: BenchmarkingGap[],
-  roadmap: BenchmarkingRoadmap[],
+  roadmap: BenchmarkingRoadmap[]
 ): void {
   const w = openPrintWindow();
   if (!w) return;
@@ -32,7 +32,7 @@ export function generateBenchmarkingPDF(
       <td>${g.impacto}</td>
       <td>${g.esforço}</td>
     </tr>
-  `,
+  `
     )
     .join('');
 
@@ -44,7 +44,7 @@ export function generateBenchmarkingPDF(
       <td>${r.item}</td>
       <td>${r.descricao}</td>
     </tr>
-  `,
+  `
     )
     .join('');
 
@@ -91,7 +91,6 @@ export function generateBenchmarkingPDF(
         </table>
       </div>
 
-      <script>window.onload = function() { window.print(); };</script>
     </body>
     </html>
   `;

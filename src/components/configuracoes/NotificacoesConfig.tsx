@@ -15,7 +15,7 @@ export function NotificacoesConfig() {
     permission,
     subscribe,
     unsubscribe,
-    sendTestNotification
+    sendTestNotification,
   } = usePushNotifications();
 
   const handleToggle = async () => {
@@ -34,9 +34,7 @@ export function NotificacoesConfig() {
             <BellOff className="h-5 w-5" />
             Notificações Push
           </CardTitle>
-          <CardDescription>
-            Notificações não são suportadas neste navegador
-          </CardDescription>
+          <CardDescription>Notificações não são suportadas neste navegador</CardDescription>
         </CardHeader>
         <CardContent>
           <div className="flex items-center gap-2 text-muted-foreground">
@@ -112,15 +110,28 @@ export function NotificacoesConfig() {
             <h4 className="text-sm font-medium">Você receberá notificações para:</h4>
             <div className="grid gap-2">
               {[
-                { label: 'Tentativas de Duplicidade', desc: 'Alertas imediatos para pagamentos duplicados bloqueados 10/10', icon: ShieldAlert },
-                { label: 'Alertas Críticos', desc: 'Pagamentos muito atrasados, saldo negativo', icon: Bell },
-                { label: 'Alertas de Alta Prioridade', desc: 'Vencimentos próximos, inadimplência', icon: Bell },
-                { label: 'Aprovações Pendentes', desc: 'Pagamentos aguardando sua aprovação', icon: Bell }
+                {
+                  label: 'Tentativas de Duplicidade',
+                  desc: 'Alertas imediatos para pagamentos duplicados bloqueados 10/10',
+                  icon: ShieldAlert,
+                },
+                {
+                  label: 'Alertas Críticos',
+                  desc: 'Pagamentos muito atrasados, saldo negativo',
+                  icon: Bell,
+                },
+                {
+                  label: 'Alertas de Alta Prioridade',
+                  desc: 'Vencimentos próximos, inadimplência',
+                  icon: Bell,
+                },
+                {
+                  label: 'Aprovações Pendentes',
+                  desc: 'Pagamentos aguardando sua aprovação',
+                  icon: Bell,
+                },
               ].map((item) => (
-                <div
-                  key={item.label}
-                  className="flex items-start gap-2 p-2 rounded-md bg-muted/50"
-                >
+                <div key={item.label} className="flex items-start gap-2 p-2 rounded-md bg-muted/50">
                   <item.icon className="h-4 w-4 text-primary mt-0.5" />
                   <div>
                     <span className="text-sm font-medium">{item.label}</span>

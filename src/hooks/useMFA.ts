@@ -32,13 +32,13 @@ export function useMFA() {
 
     try {
       const { data, error } = await supabase.auth.mfa.listFactors();
-      
+
       if (error) {
         logger.error('[useMFA] Erro ao buscar fatores MFA:', error);
         return;
       }
 
-      const verifiedFactors = data.totp.filter(f => f.status === 'verified');
+      const verifiedFactors = data.totp.filter((f) => f.status === 'verified');
       setFactors(data.totp);
       setIsEnabled(verifiedFactors.length > 0);
     } catch {
@@ -131,8 +131,8 @@ export function useMFA() {
   };
 
   const verifyCode = async (code: string) => {
-    const verifiedFactors = factors.filter(f => f.status === 'verified');
-    
+    const verifiedFactors = factors.filter((f) => f.status === 'verified');
+
     if (verifiedFactors.length === 0) {
       throw new Error('Nenhum fator MFA verificado');
     }

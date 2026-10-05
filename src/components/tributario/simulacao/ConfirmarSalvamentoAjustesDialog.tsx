@@ -55,7 +55,9 @@ export function ConfirmarSalvamentoAjustesDialog({
                   </li>
                 ))}
               </ul>
-              <p>Recomendamos corrigir o cadastro antes de salvar, para preservar a auditabilidade.</p>
+              <p>
+                Recomendamos corrigir o cadastro antes de salvar, para preservar a auditabilidade.
+              </p>
             </div>
           </AlertDialogDescription>
         </AlertDialogHeader>

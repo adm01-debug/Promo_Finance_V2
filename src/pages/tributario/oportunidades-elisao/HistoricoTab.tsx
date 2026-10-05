@@ -1,6 +1,12 @@
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 import { TabsContent } from '@/components/ui/tabs';
 import { formatCurrency } from '@/lib/formatters';
 import { STATUS_LABEL } from './constants';
@@ -36,10 +42,14 @@ export function HistoricoTab({ oportunidadesSalvas, atualizarStatus }: Historico
                   value={o.status}
                   onValueChange={(v) => atualizarStatus.mutate({ id: o.id, status: v })}
                 >
-                  <SelectTrigger className="w-44"><SelectValue /></SelectTrigger>
+                  <SelectTrigger className="w-44">
+                    <SelectValue />
+                  </SelectTrigger>
                   <SelectContent>
                     {Object.entries(STATUS_LABEL).map(([k, v]) => (
-                      <SelectItem key={k} value={k}>{v}</SelectItem>
+                      <SelectItem key={k} value={k}>
+                        {v}
+                      </SelectItem>
                     ))}
                   </SelectContent>
                 </Select>

@@ -1,5 +1,5 @@
-import { useQuery } from "@tanstack/react-query";
-import { supabase } from "@/integrations/supabase/client";
+import { useQuery } from '@tanstack/react-query';
+import { supabase } from '@/integrations/supabase/client';
 
 export interface AnomaliaAuditEntry {
   id: string;
@@ -19,17 +19,17 @@ export interface AnomaliaAuditEntry {
  */
 export function useAnomaliaAuditHistory(anomaliaId: string | undefined) {
   return useQuery({
-    queryKey: ["anomalia-audit-history", anomaliaId],
+    queryKey: ['anomalia-audit-history', anomaliaId],
     enabled: !!anomaliaId,
     staleTime: 30_000,
     queryFn: async (): Promise<AnomaliaAuditEntry[]> => {
       if (!anomaliaId) return [];
       const { data, error } = await supabase
-        .from("audit_logs")
-        .select("id, created_at, user_id, user_email, action, details, old_data, new_data")
-        .eq("table_name", "anomalias_detectadas")
-        .eq("record_id", anomaliaId)
-        .order("created_at", { ascending: false })
+        .from('audit_logs')
+        .select('id, created_at, user_id, user_email, action, details, old_data, new_data')
+        .eq('table_name', 'anomalias_detectadas')
+        .eq('record_id', anomaliaId)
+        .order('created_at', { ascending: false })
         .limit(200);
       if (error) throw error;
       return (data ?? []) as AnomaliaAuditEntry[];

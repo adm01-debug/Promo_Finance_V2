@@ -6,6 +6,11 @@
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.49.4';
 import { validateContract } from '../_shared/contract-validator.ts';
 import { z } from 'https://deno.land/x/zod@v3.22.4/mod.ts';
+import { corsHeaders, corsHeadersPara } from '../_shared/cors.ts';
+import { createLogger } from '../_shared/observability.ts';
+import { mensagemErro, contextoErro } from '../_shared/erros.ts';
+import { withEdgeObservability } from '../_shared/edge-observability.ts';
+const log = createLogger('ci-security-gate-log');
 
 const bodySchema = z.object({
   git_sha: z.string().optional(),
@@ -30,13 +35,6 @@ const bodySchema = z.object({
     .max(500),
 });
 
-const corsHeaders = {
-  'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Headers':
-    'authorization, x-client-info, apikey, content-type, x-ci-gate-secret, x-supabase-client-platform',
-  'Access-Control-Allow-Methods': 'POST, OPTIONS',
-};
-
 type FailurePayload = z.infer<typeof bodySchema>['failures'][number];
 type RequestBody = z.infer<typeof bodySchema>;
 
@@ -50,8 +48,10 @@ export interface HandlerDeps {
 
 export function createHandler(deps: HandlerDeps) {
   return async (req: Request): Promise<Response> => {
+    const corsHeaders = corsHeadersPara(req);
+    const res = (a: unknown, b = 200) => json(a, b, corsHeaders);
     if (req.method === 'OPTIONS') return new Response(null, { headers: corsHeaders });
-    if (req.method !== 'POST') return json({ error: 'method_not_allowed' }, 405);
+    if (req.method !== 'POST') return res({ error: 'method_not_allowed' }, 405);
 
     const secretAuth = authorizeSharedSecret(
       deps.getEnv('CI_GATE_LOG_SECRET'),
@@ -63,7 +63,7 @@ export function createHandler(deps: HandlerDeps) {
     try {
       raw = await deps.readJson(req);
     } catch {
-      return json({ error: 'invalid_json' }, 400);
+      return res({ error: 'invalid_json' }, 400);
     }
 
     const validation = await validateContract(bodySchema, raw);
@@ -71,18 +71,21 @@ export function createHandler(deps: HandlerDeps) {
     const body: RequestBody = validation.data;
 
     if (body.failures.length === 0) {
-      return json({ inserted: 0, skipped: 'no_failures' }, 200);
+      return res({ inserted: 0, skipped: 'no_failures' }, 200);
     }
 
     const rows = body.failures.map((failure) => mapFailure(body, failure));
     const { error, count } = await deps.insertRows(rows);
 
     if (error) {
-      console.error('insert_failed', error);
-      return json({ error: 'insert_failed', details: error.message }, 500);
+      log.error('insert_failed', {
+        error_message: mensagemErro(error),
+        context: contextoErro(error),
+      });
+      return res({ error: 'insert_failed', details: error.message }, 500);
     }
 
-    return json({ inserted: count ?? rows.length }, 201);
+    return res({ inserted: count ?? rows.length }, 201);
   };
 }
 
@@ -155,10 +158,14 @@ function withCors(response: Response): Response {
   });
 }
 
-function json(payload: unknown, status = 200): Response {
+function json(
+  payload: unknown,
+  status = 200,
+  headers: Record<string, string> = corsHeaders
+): Response {
   return new Response(JSON.stringify(payload), {
     status,
-    headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+    headers: { ...headers, 'Content-Type': 'application/json' },
   });
 }
 
@@ -170,5 +177,16 @@ function timingSafeEqual(a: string, b: string): boolean {
 }
 
 if (!Deno.env.get('DENO_TESTING')) {
-  Deno.serve(createHandler(defaultDeps()));
+  const handler = createHandler(defaultDeps());
+  Deno.serve(
+    withEdgeObservability('ci-security-gate-log', async (req) => {
+      const _t0 = Date.now();
+      try {
+        return await handler(req);
+      } finally {
+        log.info('request', { duration_ms: Date.now() - _t0 });
+        await log.flush();
+      }
+    })
+  );
 }

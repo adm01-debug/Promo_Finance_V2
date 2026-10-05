@@ -16,14 +16,14 @@ implementadas parcialmente, simuladas ou sem comprovação de deploy.
 
 ## Estados permitidos
 
-| Estado | Significado |
-|---|---|
-| `⬜` | Não iniciada |
-| `🟨` | Em execução ou implementada apenas em código |
-| `🧪` | Implantada em staging, aguardando validação |
-| `🚀` | Implantada em produção, aguardando evidência de uso |
-| `✅` | Validada em produção com evidência registrada |
-| `⛔` | Bloqueada, com causa e responsável identificados |
+| Estado | Significado                                         |
+| ------ | --------------------------------------------------- |
+| `⬜`   | Não iniciada                                        |
+| `🟨`   | Em execução ou implementada apenas em código        |
+| `🧪`   | Implantada em staging, aguardando validação         |
+| `🚀`   | Implantada em produção, aguardando evidência de uso |
+| `✅`   | Validada em produção com evidência registrada       |
+| `⛔`   | Bloqueada, com causa e responsável identificados    |
 
 ## Gates obrigatórios para todas as etapas
 
@@ -381,14 +381,14 @@ implementadas parcialmente, simuladas ou sem comprovação de deploy.
 
 ## Marcos de controle
 
-| Marco | Etapas | Saída obrigatória |
-|---|---:|---|
-| M1 — Verdade do runtime | 01–05 | Baseline e diff reproduzíveis |
-| M2 — Fundação operacional | 06–15 | Banco, storage e automações funcionais em staging |
-| M3 — Produto sem fachadas falsas | 16–25 | Funções ausentes tratadas e simulações isoladas |
-| M4 — Rede de segurança | 26–35 | CI verde, cobertura crescente e segurança validada |
-| M5 — Operação sustentável | 36–45 | Integrações, performance, SRE e runbooks ativos |
-| M6 — Pronto de verdade | 46–50 | Produção validada com tráfego e aceite |
+| Marco                            | Etapas | Saída obrigatória                                  |
+| -------------------------------- | -----: | -------------------------------------------------- |
+| M1 — Verdade do runtime          |  01–05 | Baseline e diff reproduzíveis                      |
+| M2 — Fundação operacional        |  06–15 | Banco, storage e automações funcionais em staging  |
+| M3 — Produto sem fachadas falsas |  16–25 | Funções ausentes tratadas e simulações isoladas    |
+| M4 — Rede de segurança           |  26–35 | CI verde, cobertura crescente e segurança validada |
+| M5 — Operação sustentável        |  36–45 | Integrações, performance, SRE e runbooks ativos    |
+| M6 — Pronto de verdade           |  46–50 | Produção validada com tráfego e aceite             |
 
 ## Ordem de execução
 

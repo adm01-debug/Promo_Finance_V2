@@ -9,7 +9,10 @@
  */
 import { describe, expect, it } from 'vitest';
 
-import { gerarCalendario as gerarWeb, calcularPrazo as prazoWeb } from '@/lib/tributario/obrigacoes/calendario';
+import {
+  gerarCalendario as gerarWeb,
+  calcularPrazo as prazoWeb,
+} from '@/lib/tributario/obrigacoes/calendario';
 import { calcularConformidade as conformidadeWeb } from '@/lib/tributario/obrigacoes/conformidade';
 import { OBRIGACOES as OBRIGACOES_WEB } from '@/lib/tributario/obrigacoes/catalogo';
 import type { RegimeAplicavel } from '@/lib/tributario/obrigacoes/types';

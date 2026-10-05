@@ -4,12 +4,11 @@ import { z } from '../_shared/zod.ts';
 import { validateContract } from '../_shared/contract-validator.ts';
 import { checkRateLimit, rateLimitResponse } from '../_shared/rate-limit.ts';
 import { exigirUsuario } from '../_shared/auth-guard.ts';
-
-const corsHeaders = {
-  'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Headers':
-    'authorization, x-client-info, apikey, content-type, x-request-id',
-};
+import { corsHeadersPara } from '../_shared/cors.ts';
+import { createLogger } from '../_shared/observability.ts';
+import { mensagemErro, contextoErro } from '../_shared/erros.ts';
+import { withEdgeObservability } from '../_shared/edge-observability.ts';
+const log = createLogger('analise-fluxo-ia');
 
 const DadosFluxoSchema = z.object({
   saldo_atual: z.number(),
@@ -36,6 +35,7 @@ interface Insight {
 }
 
 export const handler = async (req: Request): Promise<Response> => {
+  const corsHeaders = corsHeadersPara(req);
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders });
   }
@@ -68,7 +68,7 @@ export const handler = async (req: Request): Promise<Response> => {
     }
 
     const dados = validation.data;
-    console.log('Dados validados para análise:', dados);
+    log.info('Dados validados para análise:', { context: { args: [dados] } });
 
     const LOVABLE_API_KEY = Deno.env.get('LOVABLE_API_KEY');
     if (!LOVABLE_API_KEY) {
@@ -160,12 +160,12 @@ REGRAS:
 
     if (!response.ok) {
       const errorText = await response.text();
-      console.error('Erro na API Lovable AI:', response.status, errorText);
+      log.error('Erro na API Lovable AI:', { context: { args: [response.status, errorText] } });
       throw new Error(`Erro na API: ${response.status}`);
     }
 
     const aiData = await response.json();
-    console.log('Resposta da IA:', JSON.stringify(aiData, null, 2));
+    log.info('Resposta da IA:', { context: { args: [JSON.stringify(aiData, null, 2)] } });
 
     // Extrair argumentos do tool call
     const toolCall = aiData.choices?.[0]?.message?.tool_calls?.[0];
@@ -185,7 +185,7 @@ REGRAS:
           headers: { ...corsHeaders, 'Content-Type': 'application/json' },
         });
       } catch {
-        console.log('Não foi possível parsear como JSON, gerando análise padrão');
+        log.info('Não foi possível parsear como JSON, gerando análise padrão');
       }
     }
 
@@ -195,7 +195,10 @@ REGRAS:
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     });
   } catch (error) {
-    console.error('Erro na análise de fluxo:', error);
+    log.error('Erro na análise de fluxo:', {
+      error_message: mensagemErro(error),
+      context: contextoErro(error),
+    });
     const errorMessage = error instanceof Error ? error.message : 'Erro desconhecido';
     return new Response(JSON.stringify({ error: errorMessage }), {
       status: 500,
@@ -205,7 +208,17 @@ REGRAS:
 };
 
 if (import.meta.main) {
-  serve(handler);
+  serve(
+    withEdgeObservability('analise-fluxo-ia', async (req) => {
+      const _t0 = Date.now();
+      try {
+        return await handler(req);
+      } finally {
+        log.info('request', { duration_ms: Date.now() - _t0 });
+        await log.flush();
+      }
+    })
+  );
 }
 
 function gerarAnaliseFallback(dados: DadosFluxo) {

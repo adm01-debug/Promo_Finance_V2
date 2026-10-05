@@ -15,7 +15,10 @@ export function useCorporateOnboarding() {
   const { providers, autoRedirectProvider, loading, domain } = useSsoDomainResolver(submittedEmail);
   const [redirecting, setRedirecting] = useState<ResolvedSsoProvider | null>(null);
   const [countdown, setCountdown] = useState(COUNTDOWN_SECONDS);
-  const [ssoError, setSsoError] = useState<{ provider: ResolvedSsoProvider; message: string } | null>(null);
+  const [ssoError, setSsoError] = useState<{
+    provider: ResolvedSsoProvider;
+    message: string;
+  } | null>(null);
   const [userCancelled, setUserCancelled] = useState(false);
   const cancelRef = useRef(false);
   const { logEvent } = useSsoOnboardingAudit();
@@ -56,7 +59,15 @@ export function useCorporateOnboarding() {
         provider_tipo: autoRedirectProvider.tipo,
       },
     });
-  }, [autoRedirectProvider, redirecting, ssoError, userCancelled, submittedEmail, domain, logEvent]);
+  }, [
+    autoRedirectProvider,
+    redirecting,
+    ssoError,
+    userCancelled,
+    submittedEmail,
+    domain,
+    logEvent,
+  ]);
 
   // Dispara o SSO de forma determinística: um ÚNICO timer de prazo
   // (countdown * 1000ms) agendado quando `redirecting` é definido, em vez de

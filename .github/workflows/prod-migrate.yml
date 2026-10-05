@@ -1,0 +1,271 @@
+name: prod-migrate
+
+# Aplica em PROD as migrations de supabase/migrations/ ainda pendentes.
+#
+# Gates (nesta ordem):
+#   1. workflow_dispatch manual — nunca automático em push/schedule.
+#   2. environment "production" — exige aprovação humana no GitHub
+#      (Settings > Environments > Production > Required reviewers).
+#   3. Confirmação digitada do project-ref de PROD.
+#   4. dry_run=true por padrão: primeiro rode só a listagem, depois aplique.
+#
+# Por que existe: hoje `supabase db push` em prod é feito manualmente da
+# máquina de alguém, sem registro e sem revisão. Este workflow registra o
+# diff aplicado como artefato e exige approval antes de tocar em PROD.
+
+on:
+  workflow_dispatch:
+    inputs:
+      confirmar_project_ref:
+        description: 'Digite o project-ref de PROD para confirmar: bwwbeyolnnzppeuhgkcd'
+        required: true
+        type: string
+      dry_run:
+        description: 'Apenas listar migrations pendentes, sem aplicar'
+        type: boolean
+        default: true
+
+concurrency:
+  group: prod-migrate
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+jobs:
+  migrate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    # Ref guard: workflow_dispatch pode ser disparado de qualquer branch;
+    # aplicar migrations de uma ref não integrada em PROD não é permitido
+    # (mesmo padrão de functions-deploy.yml).
+    if: github.ref == 'refs/heads/main'
+    # Gate de aprovação: o job só inicia depois que um reviewer aprova
+    # no Environment "Production" (proteção do repo).
+    environment: Production
+    env:
+      PROD_DB_URL: ${{ secrets.PROD_DB_URL }}
+      PROD_PROJECT_REF: ${{ vars.PROD_PROJECT_REF }}
+      SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
+    steps:
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+        with:
+          persist-credentials: false
+
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6 # v2
+        with:
+          bun-version-file: .bun-version
+
+      - name: Instalar utilitários
+        run: sudo apt-get update && sudo apt-get install -y postgresql-client
+
+      - name: Setup Supabase CLI
+        uses: supabase/setup-cli@1dedf2c611547ede7232d26866dd3c56ab903bbb # v1
+        with:
+          version: 2.22.6
+
+      - name: Guard-rails de confirmação
+        env:
+          CONFIRMADO: ${{ inputs.confirmar_project_ref }}
+        run: |
+          set -euo pipefail
+          # O ref canônico é fixo no guard-rail: a variável de repo só pode
+          # confirmá-lo, nunca movê-lo — senão apontar PROD_PROJECT_REF para
+          # outro projeto faria a confirmação digitada aprovar esse projeto.
+          EXPECTED="bwwbeyolnnzppeuhgkcd"
+          if [ -n "${PROD_PROJECT_REF:-}" ] && [ "$PROD_PROJECT_REF" != "$EXPECTED" ]; then
+            echo "::error::vars.PROD_PROJECT_REF='$PROD_PROJECT_REF' difere do ref canônico $EXPECTED — corrija ou remova a variável"
+            exit 1
+          fi
+          if [ "$CONFIRMADO" != "$EXPECTED" ]; then
+            echo "::error::confirmar_project_ref '$CONFIRMADO' != '$EXPECTED'"
+            exit 1
+          fi
+          # Defesa em profundidade: a URL apontada precisa ser do projeto certo.
+          case "$PROD_DB_URL" in
+            *"$EXPECTED"*) ;;
+            *) echo "::error::PROD_DB_URL não pertence ao project-ref $EXPECTED"; exit 1 ;;
+          esac
+          echo "Projeto de destino confirmado: $EXPECTED"
+
+      - name: Migrations pendentes em PROD
+        run: |
+          set -o pipefail
+          supabase migration list --db-url "$PROD_DB_URL" 2>&1 | tee /tmp/migration-list.txt
+
+      - name: Gate — divergência histórica do ledger
+        # docs/AUDITORIA_SINCRONIA_2026-09-17.md registra centenas de versões
+        # só locais e poucas em comum com o ledger remoto. `db push` aplica
+        # TUDO o que não consta do ledger — se houver versão pendente mais
+        # antiga que a última aplicada, o push tentaria reaplicar histórico
+        # contra schema existente (falha parcial = pior cenário). Só é
+        # seguro aplicar quando toda pendente é estritamente mais nova que
+        # o máximo remoto (migrations novas no fim da fila).
+        run: |
+          set -euo pipefail
+          # Versões aplicadas no ledger remoto
+          psql "$PROD_DB_URL" -Atc \
+            "SELECT version FROM supabase_migrations.schema_migrations" \
+            | sort -n > /tmp/ledger-remoto.txt
+          MAX_REMOTO=$(tail -1 /tmp/ledger-remoto.txt || true)
+          if [ -z "$MAX_REMOTO" ]; then
+            echo "::error::ledger remoto vazio ou supabase_migrations.schema_migrations inacessível — reconcile o ledger antes de aplicar."
+            exit 1
+          fi
+          # Versões locais pendentes (não constam do ledger)
+          DIVERGENTES=0
+          for f in supabase/migrations/*.sql; do
+            V=$(basename "$f" | cut -d_ -f1)
+            if ! grep -qx "$V" /tmp/ledger-remoto.txt; then
+              if [ "$V" -le "$MAX_REMOTO" ]; then
+                DIVERGENTES=$((DIVERGENTES + 1))
+              fi
+            fi
+          done
+          echo "Última versão no ledger remoto: $MAX_REMOTO — pendentes fora de ordem: $DIVERGENTES"
+          if [ "$DIVERGENTES" -gt 0 ]; then
+            echo "::error::Ledger divergente: $DIVERGENTES migration(s) local(is) anteriores ao máximo remoto ($MAX_REMOTO) não constam do ledger. Reconcile com 'supabase migration repair' antes de aplicar — db push as reaplicaria parcialmente."
+            exit 1
+          fi
+
+      - name: Dry-run — parar aqui sem aplicar
+        if: inputs.dry_run
+        run: echo "dry_run=true — nada aplicado. Re-dispare com dry_run=false para aplicar."
+
+      - name: Snapshot do schema antes do apply
+        if: '!inputs.dry_run'
+        run: |
+          pg_dump --schema-only --no-owner --no-privileges "$PROD_DB_URL" \
+            > /tmp/prod-schema-antes.sql
+          wc -l /tmp/prod-schema-antes.sql
+
+      - name: Aplicar migrations em PROD
+        if: '!inputs.dry_run'
+        run: |
+          set -o pipefail
+          supabase db push --db-url "$PROD_DB_URL" 2>&1 | tee /tmp/db-push.log
+
+      - name: Verificação pós-apply (drift)
+        if: '!inputs.dry_run'
+        run: |
+          set -o pipefail
+          # Schemas mantidos pelas migrations: public + storage (bucket e
+          # policies de storage.objects criados por migration dedicada).
+          if ! supabase db diff --db-url "$PROD_DB_URL" --schema public,storage \
+            > /tmp/prod-diff-pos.sql 2>&1; then
+            echo "::error::supabase db diff falhou — paridade não verificada. Revisar artefato."
+            exit 1
+          fi
+          # O CLI mistura logs operacionais ("Creating shadow database",
+          # "No schema changes found") com o DDL no stdout. Statement de
+          # verdade = divergência; o marcador do próprio CLI = paridade;
+          # nem um nem outro = não podemos afirmar nada — falha por segurança.
+          if grep -qiE '^\s*(create|alter|drop|grant|revoke|insert into|update |delete from|comment on|truncate )\b' /tmp/prod-diff-pos.sql; then
+            # Diff residual = apply não convergiu PROD para migrations/ — a
+            # execução tem que falhar, não terminar verde com warning.
+            echo "::error::Ainda há diff entre migrations/ e PROD — revisar artefato."
+            exit 1
+          elif grep -qi 'no schema changes' /tmp/prod-diff-pos.sql; then
+            echo "PROD em paridade com supabase/migrations/ (schemas: public, storage)."
+          else
+            echo "::error::db diff não retornou DDL nem marcador de paridade — revisar artefato."
+            exit 1
+          fi
+
+      - name: Verificar buckets esperados em PROD
+        if: '!inputs.dry_run'
+        # db diff não rastreia DML — buckets criados por INSERT INTO
+        # storage.buckets nas migrations precisam de verificação explícita.
+        run: |
+          set -euo pipefail
+          # Buckets criados por migrations versionadas deste repo
+          # ('uploads' existe só comentado numa migration — não é esperado).
+          # Existir não basta: um bucket que virou público expõe certificados
+          # e documentos financeiros, e drift de limite/MIME nos buckets NF-e
+          # muda o que pode ser gravado. Compara a configuração, não só a linha.
+          ESPERADOS=(financeiro nfe-certificados nfe-xml notas-fiscais-upload relatorios-tributarios)
+          for bucket in "${ESPERADOS[@]}"; do
+            PUBLICO=$(psql "$PROD_DB_URL" -Atc \
+              "SELECT coalesce(public::text,'<ausente>') FROM storage.buckets WHERE id = '$bucket'")
+            if [ "$PUBLICO" != "false" ]; then
+              echo "::error::Bucket storage '$bucket' ausente ou público em PROD (public='$PUBLICO')."
+              exit 1
+            fi
+          done
+          # nfe-certificados: 5 MiB + PKCS#12/octet-stream; nfe-xml: 50 MiB + XML.
+          CONF=$(psql "$PROD_DB_URL" -Atc "
+            SELECT count(*) FROM storage.buckets WHERE
+              (id='nfe-certificados' AND file_size_limit=5242880
+                AND allowed_mime_types='{application/pkcs12,application/x-pkcs12,application/octet-stream}'::text[])
+             OR (id='nfe-xml' AND file_size_limit=52428800
+                AND allowed_mime_types='{application/xml,text/xml}'::text[])")
+          if [ "$CONF" != "2" ]; then
+            echo "::error::Buckets NF-e com drift de file_size_limit/allowed_mime_types em PROD."
+            exit 1
+          fi
+          echo "Buckets esperados presentes, privados e com limites/MIME corretos."
+
+      - name: Verificar publicação supabase_realtime em PROD
+        if: '!inputs.dry_run'
+        # db diff (engine legado) não cobre membership de publicação — uma
+        # tabela removida de supabase_realtime em PROD sairia como paridade.
+        # Esperado = união dos ADD TABLE das migrations (incl. EXECUTE
+        # dinâmico); divergência em qualquer direção = erro.
+        run: |
+          set -euo pipefail
+          grep -rhoE "supabase_realtime ADD TABLE public\.[a-z_]+" supabase/migrations/ \
+            | sed 's/.*public\.//' | sort -u > /tmp/realtime-add.txt
+          grep -rhoE "supabase_realtime DROP TABLE public\.[a-z_]+" supabase/migrations/ \
+            | sed 's/.*public\.//' | sort -u > /tmp/realtime-drop.txt || true
+          comm -23 /tmp/realtime-add.txt /tmp/realtime-drop.txt > /tmp/realtime-esperado.txt
+          psql "$PROD_DB_URL" -Atc \
+            "SELECT tablename FROM pg_publication_tables WHERE pubname='supabase_realtime' ORDER BY 1" \
+            > /tmp/realtime-prod.txt
+          if ! diff -u /tmp/realtime-esperado.txt /tmp/realtime-prod.txt; then
+            echo "::error::Publicação supabase_realtime diverge das migrations — revisar artefato."
+            exit 1
+          fi
+          echo "Publicação supabase_realtime em paridade com migrations/."
+
+      - name: Verificar security_invoker das views em PROD
+        if: '!inputs.dry_run'
+        # O db diff do engine legado (migra) pode não detectar
+        # security_invoker de views — uma view que perdeu o atributo em PROD
+        # sairia como paridade rodando com privilégio do owner (bypass de
+        # RLS). Confere reloptions de cada view que as migrations marcam.
+        run: |
+          set -euo pipefail
+          grep -rhoE "ALTER VIEW public\.[a-z0-9_]+ SET \(security_invoker" supabase/migrations/ \
+            | sed -E 's/ALTER VIEW public\.([a-z0-9_]+).*/\1/' | sort -u \
+            > /tmp/si-esperado.txt
+          # Views criadas já com o atributo: o WITH (security_invoker)
+          # precisa pertencer ao mesmo CREATE VIEW — por isso o match é
+          # multiline dentro do statement, não um grep solto no arquivo.
+          perl -0777 -ne 'while (/CREATE (?:OR REPLACE )?VIEW public\.([a-z0-9_]+)[^;]*?WITH\s*\(\s*security_invoker/gi) { print "$1\n" }' \
+            supabase/migrations/*.sql | sort -u >> /tmp/si-esperado.txt || true
+          sort -u -o /tmp/si-esperado.txt /tmp/si-esperado.txt
+          # Só conta como protegida se o valor for verdadeiro — um
+          # security_invoker=false gravado em PROD não satisfaz a matriz.
+          psql "$PROD_DB_URL" -Atc \
+            "SELECT c.relname FROM pg_class c JOIN pg_namespace n ON n.oid=c.relnamespace WHERE n.nspname='public' AND c.relkind IN ('v','m') AND COALESCE(array_to_string(c.reloptions,','),'') ~ 'security_invoker\s*=\s*(true|on|1|yes)' ORDER BY 1" \
+            > /tmp/si-prod.txt
+          comm -23 /tmp/si-esperado.txt /tmp/si-prod.txt > /tmp/si-faltando.txt || true
+          if [ -s /tmp/si-faltando.txt ]; then
+            cat /tmp/si-faltando.txt
+            echo "::error::Views acima perderam security_invoker em PROD — rodando com privilégio do owner."
+            exit 1
+          fi
+          echo "$(wc -l < /tmp/si-esperado.txt) views com security_invoker conferidas em PROD."
+
+      - name: Upload evidências
+        if: always()
+        uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6
+        with:
+          name: prod-migrate-evidencias
+          path: |
+            /tmp/migration-list.txt
+            /tmp/db-push.log
+            /tmp/prod-schema-antes.sql
+            /tmp/prod-diff-pos.sql
+          retention-days: 90

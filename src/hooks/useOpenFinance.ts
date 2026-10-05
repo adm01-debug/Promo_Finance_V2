@@ -1,4 +1,3 @@
-
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
@@ -83,7 +82,13 @@ export const useOpenFinance = () => {
 
   // Create consent mutation
   const createConsentMutation = useMutation({
-    mutationFn: async ({ institutionId, permissions }: { institutionId: string; permissions?: string[] }) => {
+    mutationFn: async ({
+      institutionId,
+      permissions,
+    }: {
+      institutionId: string;
+      permissions?: string[];
+    }) => {
       const { data, error } = await supabase.functions.invoke('open-finance', {
         body: {
           action: 'create_consent',
@@ -158,7 +163,12 @@ export const useOpenFinance = () => {
       const { data, error } = await supabase.functions.invoke('open-finance', {
         body: {
           action: 'get_transactions',
-          params: { consent_id: consentId, account_id: accountId, start_date: startDate, end_date: endDate },
+          params: {
+            consent_id: consentId,
+            account_id: accountId,
+            start_date: startDate,
+            end_date: endDate,
+          },
         },
       });
 
@@ -185,12 +195,12 @@ export const useOpenFinance = () => {
       const { data, error } = await supabase.functions.invoke('open-finance', {
         body: {
           action: 'import_transactions',
-          params: { 
-            consent_id: consentId, 
-            account_id: accountId, 
+          params: {
+            consent_id: consentId,
+            account_id: accountId,
             conta_bancaria_id: contaBancariaId,
-            start_date: startDate, 
-            end_date: endDate 
+            start_date: startDate,
+            end_date: endDate,
           },
         },
       });

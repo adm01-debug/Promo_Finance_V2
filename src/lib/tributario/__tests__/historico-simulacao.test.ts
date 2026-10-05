@@ -8,7 +8,6 @@ import {
   montarLinhasAuditoriaCsv,
   paginarHistorico,
   ordenarHistorico,
-
 } from '../historico-simulacao';
 import type { AjusteParametro } from '../diagnostico-parametros';
 
@@ -49,7 +48,6 @@ describe('normalizarParametrosSnapshot', () => {
     });
   });
 });
-
 
 describe('normalizarAjustesAplicados', () => {
   it('retorna lista vazia para entradas não-array (registros legados)', () => {
@@ -100,7 +98,7 @@ describe('resumirAuditoriaHistorico', () => {
         divergente: false,
         motorDesatualizado: false,
         ajustesAplicados: [],
-      })),
+      }))
     );
     expect(resumo.saudavel).toBe(true);
     expect(resumo.total).toBe(200);
@@ -238,7 +236,11 @@ describe('ordenarHistorico', () => {
   const item = (
     data: string,
     economia: number | null,
-    extra: Partial<{ divergente: boolean; motorDesatualizado: boolean; ajustesAplicados: AjusteParametro[] }> = {},
+    extra: Partial<{
+      divergente: boolean;
+      motorDesatualizado: boolean;
+      ajustesAplicados: AjusteParametro[];
+    }> = {}
   ) => ({
     data_simulacao: data,
     economia_anual_estimada: economia,
@@ -278,9 +280,9 @@ describe('ordenarHistorico', () => {
 
   it('ordena por maior economia, jogando nulos para o fim', () => {
     const comNulo = [...base, item('2026-04-01', null)];
-    expect(ordenarHistorico(comNulo, 'economia_desc').map((i) => i.economia_anual_estimada)).toEqual([
-      900, 500, 100, null,
-    ]);
+    expect(
+      ordenarHistorico(comNulo, 'economia_desc').map((i) => i.economia_anual_estimada)
+    ).toEqual([900, 500, 100, null]);
   });
 
   it('prioriza pendências: crítico > divergente > ajuste > ok', () => {

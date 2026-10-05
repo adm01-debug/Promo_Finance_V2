@@ -1,6 +1,6 @@
-import { Checkbox } from "@/components/ui/checkbox";
-import { ALL_ROLES } from "./constants";
-import type { AppRole } from "@/hooks/useSavedFilters";
+import { Checkbox } from '@/components/ui/checkbox';
+import { ALL_ROLES } from './constants';
+import type { AppRole } from '@/hooks/useSavedFilters';
 
 interface RoleCheckboxGroupProps {
   idPrefix: string;

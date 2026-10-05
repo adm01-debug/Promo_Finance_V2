@@ -20,7 +20,7 @@ export function DivergenciasConciliacaoPanel({ empresaId }: { empresaId?: string
 
   if (isLoading) return <div className="p-8 text-center">Carregando divergências...</div>;
 
-  const pendentes = divergencias.filter(d => d.status === 'pendente');
+  const pendentes = divergencias.filter((d) => d.status === 'pendente');
 
   return (
     <div className="space-y-4">
@@ -34,21 +34,25 @@ export function DivergenciasConciliacaoPanel({ empresaId }: { empresaId?: string
             <AlertTriangle className="h-8 w-8 text-destructive opacity-50" />
           </CardContent>
         </Card>
-        
+
         <Card className="bg-primary/5 border-primary/20">
           <CardContent className="p-4 flex items-center justify-between">
             <div>
               <p className="text-sm font-medium text-primary">Auditoria Preventiva</p>
-              <Button 
-                variant="link" 
+              <Button
+                variant="link"
                 className="h-auto p-0 text-xs font-black uppercase text-primary/70 hover:text-primary"
                 onClick={handleRunAudit}
                 disabled={isAuditing}
               >
                 {isAuditing ? (
-                  <><Loader2 className="h-3 w-3 animate-spin mr-1" /> Executando...</>
+                  <>
+                    <Loader2 className="h-3 w-3 animate-spin mr-1" /> Executando...
+                  </>
                 ) : (
-                  <><ShieldCheck className="h-3 w-3 mr-1" /> Executar Auditoria Agora</>
+                  <>
+                    <ShieldCheck className="h-3 w-3 mr-1" /> Executar Auditoria Agora
+                  </>
                 )}
               </Button>
             </div>
@@ -60,28 +64,43 @@ export function DivergenciasConciliacaoPanel({ empresaId }: { empresaId?: string
       <Card>
         <CardHeader className="flex flex-row items-center justify-between">
           <CardTitle className="text-lg">Audit de Divergências</CardTitle>
-          <Badge variant="outline" className="font-mono text-[10px] uppercase tracking-widest opacity-60">
+          <Badge
+            variant="outline"
+            className="font-mono text-[10px] uppercase tracking-widest opacity-60"
+          >
             Real-Time Monitoring
           </Badge>
         </CardHeader>
         <CardContent className="space-y-4">
           {divergencias.length === 0 ? (
-            <div className="p-8 text-center text-muted-foreground">Nenhuma divergência encontrada.</div>
+            <div className="p-8 text-center text-muted-foreground">
+              Nenhuma divergência encontrada.
+            </div>
           ) : (
             divergencias.map((d) => (
-              <div key={d.id} className="flex items-start justify-between p-4 border rounded-lg hover:bg-muted/30 transition-colors">
+              <div
+                key={d.id}
+                className="flex items-start justify-between p-4 border rounded-lg hover:bg-muted/30 transition-colors"
+              >
                 <div className="space-y-1">
                   <div className="flex items-center gap-2">
                     <Badge variant={d.status === 'pendente' ? 'destructive' : 'default'}>
-                      {d.tipo_divergencia === 'saldo_final' ? 'Saldo de Extrato' : d.tipo_divergencia}
+                      {d.tipo_divergencia === 'saldo_final'
+                        ? 'Saldo de Extrato'
+                        : d.tipo_divergencia}
                     </Badge>
-                    <span className="text-sm text-muted-foreground">{formatDate(d.created_at)}</span>
+                    <span className="text-sm text-muted-foreground">
+                      {formatDate(d.created_at)}
+                    </span>
                   </div>
                   <p className="font-medium">{d.descricao}</p>
                   <p className="text-sm text-muted-foreground">{d.recomendacao}</p>
                   {d.valor_divergencia !== 0 && (
                     <p className="text-sm font-semibold">
-                      Diferença: <span className={d.valor_divergencia > 0 ? "text-success" : "text-destructive"}>
+                      Diferença:{' '}
+                      <span
+                        className={d.valor_divergencia > 0 ? 'text-success' : 'text-destructive'}
+                      >
                         {formatCurrency(d.valor_divergencia)}
                       </span>
                     </p>
@@ -89,17 +108,25 @@ export function DivergenciasConciliacaoPanel({ empresaId }: { empresaId?: string
                 </div>
                 {d.status === 'pendente' && (
                   <div className="flex gap-2">
-                    <Button size="sm" variant="outline" onClick={() => resolverDivergencia.mutate({ id: d.id, status: 'aceito' })}>
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      onClick={() => resolverDivergencia.mutate({ id: d.id, status: 'aceito' })}
+                    >
                       Aceitar
                     </Button>
-                    <Button size="sm" onClick={() => resolverDivergencia.mutate({ id: d.id, status: 'corrigido' })}>
+                    <Button
+                      size="sm"
+                      onClick={() => resolverDivergencia.mutate({ id: d.id, status: 'corrigido' })}
+                    >
                       Revisar
                     </Button>
                   </div>
                 )}
                 {d.status !== 'pendente' && (
                   <Badge variant="outline" className="gap-1">
-                    <CheckCircle className="h-3 w-3" /> {d.status === 'aceito' ? 'Aceito' : 'Corrigido'}
+                    <CheckCircle className="h-3 w-3" />{' '}
+                    {d.status === 'aceito' ? 'Aceito' : 'Corrigido'}
                   </Badge>
                 )}
               </div>

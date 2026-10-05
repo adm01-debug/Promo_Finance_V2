@@ -45,7 +45,12 @@ export const useCreatePixTemplate = () => {
   const { user } = useAuth();
 
   return useMutation({
-    mutationFn: async (template: Omit<PixTemplate, 'id' | 'created_at' | 'updated_at' | 'uso_count' | 'ultimo_uso' | 'created_by'>) => {
+    mutationFn: async (
+      template: Omit<
+        PixTemplate,
+        'id' | 'created_at' | 'updated_at' | 'uso_count' | 'ultimo_uso' | 'created_by'
+      >
+    ) => {
       const { data, error } = await supabase
         .from('pix_templates')
         .insert({ ...template, created_by: user!.id })
@@ -69,18 +74,22 @@ export const useIncrementTemplateUso = () => {
     mutationFn: async (templateId: string) => {
       const rpc = supabase.rpc as unknown as (
         fn: 'increment_pix_template_uso',
-        args: { p_template_id: string },
+        args: { p_template_id: string }
       ) => Promise<{ error: { message: string } | null }>;
       const { error } = await rpc('increment_pix_template_uso', { p_template_id: templateId });
       // Fallback if RPC doesn't exist - direct update
       if (error) {
-        const { data: current } = await supabase.from('pix_templates').select('uso_count').eq('id', templateId).maybeSingle();
+        const { data: current } = await supabase
+          .from('pix_templates')
+          .select('uso_count')
+          .eq('id', templateId)
+          .maybeSingle();
         const currentCount = (current?.uso_count as number) ?? 0;
         const { error: updateError } = await supabase
           .from('pix_templates')
-          .update({ 
+          .update({
             uso_count: currentCount + 1,
-            ultimo_uso: new Date().toISOString()
+            ultimo_uso: new Date().toISOString(),
           })
           .eq('id', templateId);
         if (updateError) throw updateError;
@@ -95,10 +104,7 @@ export const useDeletePixTemplate = () => {
 
   return useMutation({
     mutationFn: async (id: string) => {
-      const { error } = await supabase
-        .from('pix_templates')
-        .update({ ativo: false })
-        .eq('id', id);
+      const { error } = await supabase.from('pix_templates').update({ ativo: false }).eq('id', id);
       if (error) throw error;
     },
     onSuccess: () => {

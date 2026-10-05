@@ -40,9 +40,9 @@ export interface DedupCheckInput {
 }
 
 export type DedupReason =
-  | "duplicate_in_session"
-  | "older_than_last_seen"
-  | "permission_revoked"
+  | 'duplicate_in_session'
+  | 'older_than_last_seen'
+  | 'permission_revoked'
   | null;
 
 export interface DedupCheckResult {
@@ -68,21 +68,19 @@ export function checkShouldDispatch(input: DedupCheckInput): DedupCheckResult {
     input.currentUserId &&
     input.subscriptionUserId !== input.currentUserId
   ) {
-    return { shouldDispatch: false, reason: "permission_revoked" };
+    return { shouldDispatch: false, reason: 'permission_revoked' };
   }
   if (input.seen.has(input.rowId)) {
-    return { shouldDispatch: false, reason: "duplicate_in_session" };
+    return { shouldDispatch: false, reason: 'duplicate_in_session' };
   }
   const rowTs =
-    typeof input.rowTimestamp === "number"
+    typeof input.rowTimestamp === 'number'
       ? input.rowTimestamp
       : new Date(input.rowTimestamp).getTime();
   const seenTs =
-    typeof input.lastSeenAt === "number"
-      ? input.lastSeenAt
-      : new Date(input.lastSeenAt).getTime();
+    typeof input.lastSeenAt === 'number' ? input.lastSeenAt : new Date(input.lastSeenAt).getTime();
   if (Number.isFinite(rowTs) && Number.isFinite(seenTs) && rowTs <= seenTs) {
-    return { shouldDispatch: false, reason: "older_than_last_seen" };
+    return { shouldDispatch: false, reason: 'older_than_last_seen' };
   }
   return { shouldDispatch: true, reason: null };
 }
@@ -92,22 +90,16 @@ export function checkShouldDispatch(input: DedupCheckInput): DedupCheckResult {
  * `validate_saved_filter_subscription_rules` no banco. Centralizado para
  * evitar que UI envie payload que o banco vai rejeitar.
  */
-export function clampRateLimit(input: {
-  max?: number | null;
-  windowMin?: number | null;
-}): { max: number; windowMin: number } {
+export function clampRateLimit(input: { max?: number | null; windowMin?: number | null }): {
+  max: number;
+  windowMin: number;
+} {
   // Distingue ausência (null/undefined/NaN) de 0 — apenas o primeiro caso
   // recebe o default; 0 é valor explícito que deve ser clampado para o
   // mínimo permitido (1), espelhando o trigger do banco.
   const rawMax = Number(input.max);
   const rawWin = Number(input.windowMin);
-  const max = Math.min(
-    100,
-    Math.max(1, Math.round(Number.isFinite(rawMax) ? rawMax : 5)),
-  );
-  const windowMin = Math.min(
-    1440,
-    Math.max(1, Math.round(Number.isFinite(rawWin) ? rawWin : 10)),
-  );
+  const max = Math.min(100, Math.max(1, Math.round(Number.isFinite(rawMax) ? rawMax : 5)));
+  const windowMin = Math.min(1440, Math.max(1, Math.round(Number.isFinite(rawWin) ? rawWin : 10)));
   return { max, windowMin };
 }

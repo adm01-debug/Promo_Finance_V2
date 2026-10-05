@@ -4,9 +4,27 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Award, AlertTriangle, TrendingDown, Sparkles, History as HistoryIcon, Download, ChevronLeft, ChevronRight } from 'lucide-react';
+import {
+  Award,
+  AlertTriangle,
+  TrendingDown,
+  Sparkles,
+  History as HistoryIcon,
+  Download,
+  ChevronLeft,
+  ChevronRight,
+} from 'lucide-react';
 import { formatCurrency } from '@/lib/formatters';
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, ResponsiveContainer, Cell, Tooltip } from 'recharts';
+import {
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  ResponsiveContainer,
+  Cell,
+  Tooltip,
+} from 'recharts';
 import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
 import {
@@ -43,19 +61,29 @@ export function RegimeRecomendadoCard({
           <div className="flex-1">
             <p className="text-sm text-muted-foreground">Regime Recomendado</p>
             <div className="flex items-center gap-2">
-              <h2 className="text-2xl md:text-3xl font-bold text-success">{resultado.recomendado.nome}</h2>
+              <h2 className="text-2xl md:text-3xl font-bold text-success">
+                {resultado.recomendado.nome}
+              </h2>
               {isRecomendacaoIA && (
-                <Badge variant="outline" className="bg-primary/5 text-primary border-primary/20 animate-pulse">
+                <Badge
+                  variant="outline"
+                  className="bg-primary/5 text-primary border-primary/20 animate-pulse"
+                >
                   <Sparkles className="h-3 w-3 mr-1" /> IA
                 </Badge>
               )}
               {resultado.fromCache && (
-                <Badge variant="outline" className="text-muted-foreground border-muted-foreground/20">
+                <Badge
+                  variant="outline"
+                  className="text-muted-foreground border-muted-foreground/20"
+                >
                   Cached
                 </Badge>
               )}
             </div>
-            <p className="text-sm text-muted-foreground mt-1">{resultado.justificativaIA || resultado.justificativa}</p>
+            <p className="text-sm text-muted-foreground mt-1">
+              {resultado.justificativaIA || resultado.justificativa}
+            </p>
             {resultado.economiaAnualVsAtual !== undefined && resultado.economiaAnualVsAtual > 0 && (
               <div className="mt-3 inline-flex items-center gap-2 px-3 py-1 rounded-full bg-success/10 text-success">
                 <TrendingDown className="h-4 w-4" aria-hidden="true" />
@@ -87,7 +115,11 @@ export function AlertasSimulacaoCard({ alertas }: { alertas: string[] }) {
   );
 }
 
-export function ComparativoCargaCard({ dadosGrafico }: { dadosGrafico: { name: string; valor: number; regime: string }[] }) {
+export function ComparativoCargaCard({
+  dadosGrafico,
+}: {
+  dadosGrafico: { name: string; valor: number; regime: string }[];
+}) {
   return (
     <Card>
       <CardHeader>
@@ -107,7 +139,10 @@ export function ComparativoCargaCard({ dadosGrafico }: { dadosGrafico: { name: s
               <Tooltip formatter={(v: number) => formatCurrency(v)} />
               <Bar dataKey="valor" radius={[0, 4, 4, 0]}>
                 {dadosGrafico.map((d, i) => (
-                  <Cell key={i} fill={corPorRegime(d.regime as Parameters<typeof corPorRegime>[0])} />
+                  <Cell
+                    key={i}
+                    fill={corPorRegime(d.regime as Parameters<typeof corPorRegime>[0])}
+                  />
                 ))}
               </Bar>
             </BarChart>
@@ -179,7 +214,8 @@ export function HistoricoSimulacoesCard({
             <>
               {resumoAuditoria.divergentes > 0 && (
                 <Badge variant="outline" className="text-warning border-warning/40">
-                  {resumoAuditoria.divergentes} divergente{resumoAuditoria.divergentes > 1 ? 's' : ''}
+                  {resumoAuditoria.divergentes} divergente
+                  {resumoAuditoria.divergentes > 1 ? 's' : ''}
                 </Badge>
               )}
               {resumoAuditoria.motorDesatualizado > 0 && (
@@ -238,7 +274,6 @@ export function HistoricoSimulacoesCard({
           </div>
         </div>
 
-
         <div className="pt-2">
           <Button
             type="button"
@@ -260,7 +295,10 @@ export function HistoricoSimulacoesCard({
           </p>
         )}
         {pagina.itens.map((h) => (
-          <div key={h.id} className="flex items-center justify-between gap-2 p-2 rounded border text-sm">
+          <div
+            key={h.id}
+            className="flex items-center justify-between gap-2 p-2 rounded border text-sm"
+          >
             <div className="min-w-0">
               <p className="font-medium truncate">{h.regime_recomendado}</p>
               <p className="text-xs text-muted-foreground">
@@ -268,13 +306,14 @@ export function HistoricoSimulacoesCard({
                 {h.versao_motor ? ` · v${h.versao_motor}` : ' · versão não registrada'}
               </p>
               {h.divergente && h.regimeRecalculado && (
-                <p className="text-xs text-warning">
-                  Recálculo atual indica {h.regimeRecalculado}
-                </p>
+                <p className="text-xs text-warning">Recálculo atual indica {h.regimeRecalculado}</p>
               )}
               {h.ajustesAplicados.length > 0 && (
                 <p className="text-xs text-muted-foreground truncate">
-                  Ajustes: {h.ajustesAplicados.map((a) => `${a.rotulo} ${a.informado}→${a.aplicado}`).join(' · ')}
+                  Ajustes:{' '}
+                  {h.ajustesAplicados
+                    .map((a) => `${a.rotulo} ${a.informado}→${a.aplicado}`)
+                    .join(' · ')}
                 </p>
               )}
             </div>
@@ -356,7 +395,6 @@ export function HistoricoSimulacoesCard({
           </nav>
         )}
       </CardContent>
-
     </Card>
   );
 }

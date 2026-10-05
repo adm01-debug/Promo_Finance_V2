@@ -61,8 +61,7 @@ const PRESET_EXPECTED_GROUPS: Record<string, string[]> = {
   custom: [],
 };
 
-const DOMAIN_REGEX =
-  /^(?!-)[a-z0-9-]{1,63}(?:\.[a-z0-9-]{1,63})+$/;
+const DOMAIN_REGEX = /^(?!-)[a-z0-9-]{1,63}(?:\.[a-z0-9-]{1,63})+$/;
 
 function normalizeDomain(d: string): string {
   return d.trim().toLowerCase().replace(/^@/, '');

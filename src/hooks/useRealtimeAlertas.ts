@@ -18,7 +18,7 @@ export function useRealtimeAlertas() {
         { event: 'INSERT', schema: 'public', table: 'alertas' },
         (payload) => {
           if (!payload.new) return;
-          
+
           // Invalidate queries so badge counts update
           queryClient.invalidateQueries({ queryKey: ['alertas'] });
           queryClient.invalidateQueries({ queryKey: ['alertas-nao-lidos-count'] });

@@ -14,15 +14,15 @@ export interface Manifest {
 }
 
 export type ResultadoArquivo =
-  | { nome: string; status: "ok"; hashEsperado: string; hashCalculado: string }
+  | { nome: string; status: 'ok'; hashEsperado: string; hashCalculado: string }
   | {
       nome: string;
-      status: "divergente";
+      status: 'divergente';
       hashEsperado: string;
       hashCalculado: string;
     }
-  | { nome: string; status: "ausente"; hashEsperado: string }
-  | { nome: string; status: "extra"; hashCalculado: string };
+  | { nome: string; status: 'ausente'; hashEsperado: string }
+  | { nome: string; status: 'extra'; hashCalculado: string };
 
 export interface Resumo {
   totalManifest: number;

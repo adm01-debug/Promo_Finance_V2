@@ -1,13 +1,13 @@
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { useQuery } from "@tanstack/react-query";
-import { supabase } from "@/integrations/supabase/client";
-import { Gauge, Zap, Layout, MousePointer2, Timer } from "lucide-react";
-import { Badge } from "@/components/ui/badge";
-import { Skeleton } from "@/components/ui/skeleton";
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { useQuery } from '@tanstack/react-query';
+import { supabase } from '@/integrations/supabase/client';
+import { Gauge, Zap, Layout, MousePointer2, Timer } from 'lucide-react';
+import { Badge } from '@/components/ui/badge';
+import { Skeleton } from '@/components/ui/skeleton';
 
 export function PerformanceMetrics() {
   const { data: metrics, isLoading } = useQuery({
-    queryKey: ["frontend-performance-summary"],
+    queryKey: ['frontend-performance-summary'],
     queryFn: async () => {
       const { data, error } = await supabase
         .from('frontend_performance_logs')
@@ -34,20 +34,28 @@ export function PerformanceMetrics() {
 
   const getMetricIcon = (name: string) => {
     switch (name) {
-      case 'LCP': return <Layout className="h-4 w-4" />;
-      case 'FID': return <MousePointer2 className="h-4 w-4" />;
-      case 'CLS': return <Zap className="h-4 w-4" />;
-      case 'TTFB': return <Timer className="h-4 w-4" />;
-      default: return <Gauge className="h-4 w-4" />;
+      case 'LCP':
+        return <Layout className="h-4 w-4" />;
+      case 'FID':
+        return <MousePointer2 className="h-4 w-4" />;
+      case 'CLS':
+        return <Zap className="h-4 w-4" />;
+      case 'TTFB':
+        return <Timer className="h-4 w-4" />;
+      default:
+        return <Gauge className="h-4 w-4" />;
     }
   };
 
   const getMetricRating = (name: string, value: number) => {
-    if (name === 'LCP') return value <= 2500 ? 'good' : value <= 4000 ? 'needs-improvement' : 'poor';
+    if (name === 'LCP')
+      return value <= 2500 ? 'good' : value <= 4000 ? 'needs-improvement' : 'poor';
     if (name === 'FID') return value <= 100 ? 'good' : value <= 300 ? 'needs-improvement' : 'poor';
     if (name === 'CLS') return value <= 0.1 ? 'good' : value <= 0.25 ? 'needs-improvement' : 'poor';
-    if (name === 'FCP') return value <= 1800 ? 'good' : value <= 3000 ? 'needs-improvement' : 'poor';
-    if (name === 'TTFB') return value <= 800 ? 'good' : value <= 1800 ? 'needs-improvement' : 'poor';
+    if (name === 'FCP')
+      return value <= 1800 ? 'good' : value <= 3000 ? 'needs-improvement' : 'poor';
+    if (name === 'TTFB')
+      return value <= 800 ? 'good' : value <= 1800 ? 'needs-improvement' : 'poor';
     return 'neutral';
   };
 
@@ -77,8 +85,10 @@ export function PerformanceMetrics() {
                   {m.metric_name}
                 </div>
                 <div className="text-xl font-bold">{formatValue(m.metric_name, m.avg_value)}</div>
-                <Badge 
-                  variant={rating === 'good' ? 'outline' : rating === 'poor' ? 'destructive' : 'secondary'}
+                <Badge
+                  variant={
+                    rating === 'good' ? 'outline' : rating === 'poor' ? 'destructive' : 'secondary'
+                  }
                   className="w-fit text-[10px] px-1 h-4"
                 >
                   {rating === 'good' ? 'Bom' : rating === 'poor' ? 'Pobre' : 'Melhorar'}
@@ -97,4 +107,4 @@ export function PerformanceMetrics() {
   );
 }
 
-import { Activity } from "lucide-react";
+import { Activity } from 'lucide-react';

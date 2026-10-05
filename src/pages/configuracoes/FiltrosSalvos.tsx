@@ -34,18 +34,16 @@ import { useFiltrosSalvosDiagnostics } from './filtros-salvos/useFiltrosSalvosDi
 export default function FiltrosSalvos() {
   const { user } = useAuth();
   const [search, setSearch] = useState('');
-  const {
-    diagnostics,
-    catalog,
-    globalSyncing,
-    hydrationEvents,
-    refreshOne,
-    refreshAll,
-  } = useFiltrosSalvosDiagnostics(user?.id);
+  const { diagnostics, catalog, globalSyncing, hydrationEvents, refreshOne, refreshAll } =
+    useFiltrosSalvosDiagnostics(user?.id);
 
   const hydrationFailures = useMemo(
-    () => hydrationEvents.filter((e) => e.status === 'error').slice(-20).reverse(),
-    [hydrationEvents],
+    () =>
+      hydrationEvents
+        .filter((e) => e.status === 'error')
+        .slice(-20)
+        .reverse(),
+    [hydrationEvents]
   );
 
   const filteredCatalog = useMemo(() => {
@@ -56,7 +54,7 @@ export default function FiltrosSalvos() {
         e.label.toLowerCase().includes(q) ||
         e.entityType.toLowerCase().includes(q) ||
         e.area.toLowerCase().includes(q) ||
-        (e.localStorageKey ?? '').toLowerCase().includes(q),
+        (e.localStorageKey ?? '').toLowerCase().includes(q)
     );
   }, [search, catalog]);
 
@@ -70,7 +68,10 @@ export default function FiltrosSalvos() {
       errors: list.filter((d) => d.remote === 'error').length,
       divergent: divergences.filter(
         (dir) =>
-          dir === 'remote-newer' || dir === 'remote-only' || dir === 'local-newer' || dir === 'local-only',
+          dir === 'remote-newer' ||
+          dir === 'remote-only' ||
+          dir === 'local-newer' ||
+          dir === 'local-only'
       ).length,
     };
   }, [diagnostics, catalog.length]);
@@ -95,7 +96,8 @@ export default function FiltrosSalvos() {
               <div>
                 <h1 className="text-2xl font-bold tracking-tight font-display">Filtros salvos</h1>
                 <p className="text-sm text-muted-foreground">
-                  Diagnóstico de hidratação por tela: Supabase (sua conta) e localStorage (este dispositivo).
+                  Diagnóstico de hidratação por tela: Supabase (sua conta) e localStorage (este
+                  dispositivo).
                 </p>
               </div>
             </div>
@@ -158,7 +160,8 @@ export default function FiltrosSalvos() {
             <CardHeader>
               <CardTitle className="text-base">Telas com filtros</CardTitle>
               <CardDescription>
-                Cada linha mostra a entidade, a chave do localStorage e o status atual da hidratação.
+                Cada linha mostra a entidade, a chave do localStorage e o status atual da
+                hidratação.
               </CardDescription>
             </CardHeader>
             <CardContent>

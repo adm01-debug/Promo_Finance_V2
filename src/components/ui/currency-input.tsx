@@ -5,8 +5,10 @@ import { formatCurrency, parseCurrency, type CurrencyCode } from '@/lib/currency
 
 type CurrencyInputCurrency = Extract<CurrencyCode, 'BRL' | 'USD' | 'EUR'>;
 
-interface CurrencyInputProps
-  extends Omit<React.InputHTMLAttributes<HTMLInputElement>, 'onChange' | 'value' | 'size'> {
+interface CurrencyInputProps extends Omit<
+  React.InputHTMLAttributes<HTMLInputElement>,
+  'onChange' | 'value' | 'size'
+> {
   value?: number;
   onChange?: (value: number) => void;
   currency?: CurrencyInputCurrency;
@@ -18,8 +20,18 @@ interface CurrencyInputProps
 
 const sizeClasses = {
   sm: { input: 'h-8 text-sm', padding: 'pl-8 pr-3', paddingNoIcon: 'px-3', icon: 'w-4 h-4 left-2' },
-  md: { input: 'h-10 text-sm', padding: 'pl-10 pr-4', paddingNoIcon: 'px-4', icon: 'w-5 h-5 left-3' },
-  lg: { input: 'h-12 text-base', padding: 'pl-12 pr-4', paddingNoIcon: 'px-4', icon: 'w-6 h-6 left-4' },
+  md: {
+    input: 'h-10 text-sm',
+    padding: 'pl-10 pr-4',
+    paddingNoIcon: 'px-4',
+    icon: 'w-5 h-5 left-3',
+  },
+  lg: {
+    input: 'h-12 text-base',
+    padding: 'pl-12 pr-4',
+    paddingNoIcon: 'px-4',
+    icon: 'w-6 h-6 left-4',
+  },
 };
 
 export const CurrencyInput = forwardRef<HTMLInputElement, CurrencyInputProps>(
@@ -120,9 +132,7 @@ export const CurrencyInput = forwardRef<HTMLInputElement, CurrencyInputProps>(
             'focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent',
             'transition-colors',
             'text-right font-mono',
-            error
-              ? 'border-destructive'
-              : 'border-input',
+            error ? 'border-destructive' : 'border-input',
             disabled && 'opacity-50 cursor-not-allowed bg-muted',
             classes.input,
             showIcon ? classes.padding : classes.paddingNoIcon,
@@ -172,9 +182,7 @@ export function LabeledCurrencyInput({
 
       <CurrencyInput error={hasError} {...props} />
 
-      {errorMessage && (
-        <p className="mt-1 text-sm text-destructive">{errorMessage}</p>
-      )}
+      {errorMessage && <p className="mt-1 text-sm text-destructive">{errorMessage}</p>}
 
       {helperText && !errorMessage && (
         <p className="mt-1 text-sm text-muted-foreground">{helperText}</p>

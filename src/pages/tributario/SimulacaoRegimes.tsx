@@ -62,7 +62,11 @@ export default function SimulacaoRegimes() {
     empresaId,
     contexto: {
       regime_atual:
-        regimeAtual === 'lucro_real' ? 'real' : regimeAtual === 'lucro_presumido' ? 'presumido' : 'simples',
+        regimeAtual === 'lucro_real'
+          ? 'real'
+          : regimeAtual === 'lucro_presumido'
+            ? 'presumido'
+            : 'simples',
     },
   });
 
@@ -74,7 +78,7 @@ export default function SimulacaoRegimes() {
   // e ordenado conforme o critério escolhido (helpers puros, sem mutação).
   const historicoVisivel = useMemo(
     () => ordenarHistorico(filtrarHistorico(historicoSimulacoes, somentePendencias), ordenacao),
-    [historicoSimulacoes, somentePendencias, ordenacao],
+    [historicoSimulacoes, somentePendencias, ordenacao]
   );
 
   // Volta ao início sempre que o recorte muda, evitando página órfã.
@@ -82,18 +86,17 @@ export default function SimulacaoRegimes() {
     setPaginaHistorico(1);
   }, [somentePendencias, ordenacao, empresaId]);
 
-
   // O clamp acontece no helper puro: se a lista encurtar, a página é ajustada.
   const pagina = useMemo(
     () => paginarHistorico(historicoVisivel, paginaHistorico, TAMANHO_PAGINA_HISTORICO),
-    [historicoVisivel, paginaHistorico],
+    [historicoVisivel, paginaHistorico]
   );
 
   // Ajustes críticos exigem confirmação explícita antes de persistir o snapshot,
   // preservando a integridade auditável da base histórica de simulações.
   const ajustesCriticos = useMemo(
     () => ajustesParametros.filter((a) => a.severidade === 'critico'),
-    [ajustesParametros],
+    [ajustesParametros]
   );
   const [confirmarSalvamento, setConfirmarSalvamento] = useState(false);
 
@@ -120,9 +123,10 @@ export default function SimulacaoRegimes() {
     toast.success(`Trilha exportada (${linhas.length} snapshot(s)).`);
   };
 
-
-
-  const empresaSelecionada = useMemo(() => empresas.find((e) => e.id === empresaId), [empresas, empresaId]);
+  const empresaSelecionada = useMemo(
+    () => empresas.find((e) => e.id === empresaId),
+    [empresas, empresaId]
+  );
 
   // Carrega os parâmetros de folha cadastrados na empresa (CNAE, RAT/FAP e
   // terceiros). Valores nulos permanecem indefinidos para que o motor derive
@@ -137,7 +141,8 @@ export default function SimulacaoRegimes() {
           ? Number(empresaSelecionada.aliquota_rat)
           : atual.aliquotaRAT,
       aliquotaTerceiros:
-        empresaSelecionada.aliquota_terceiros !== null && empresaSelecionada.aliquota_terceiros !== undefined
+        empresaSelecionada.aliquota_terceiros !== null &&
+        empresaSelecionada.aliquota_terceiros !== undefined
           ? Number(empresaSelecionada.aliquota_terceiros)
           : atual.aliquotaTerceiros,
     }));
@@ -155,12 +160,13 @@ export default function SimulacaoRegimes() {
     if (!empresaSelecionada.cnae_principal) faltando.push('CNAE principal');
     if (empresaSelecionada.aliquota_rat === null || empresaSelecionada.aliquota_rat === undefined)
       faltando.push('Alíquota RAT/FAP');
-    if (empresaSelecionada.aliquota_terceiros === null || empresaSelecionada.aliquota_terceiros === undefined)
+    if (
+      empresaSelecionada.aliquota_terceiros === null ||
+      empresaSelecionada.aliquota_terceiros === undefined
+    )
       faltando.push('Alíquota de Terceiros');
     return faltando;
   }, [empresaSelecionada]);
-
-
 
   const popularDoHistorico = () => {
     if (faturamentoMensal.length === 0) {
@@ -175,14 +181,18 @@ export default function SimulacaoRegimes() {
     const totalIndustria = ultimos12.reduce((s, m) => s + Number(m.receita_industria || 0), 0);
     const totalRevenda = ultimos12.reduce((s, m) => s + Number(m.receita_revenda || 0), 0);
     const percentualServicos =
-      faturamentoAnual > 0 ? (totalServicos / faturamentoAnual) * 100 : parametros.percentualServicos;
+      faturamentoAnual > 0
+        ? (totalServicos / faturamentoAnual) * 100
+        : parametros.percentualServicos;
     const percentualIndustria =
-      faturamentoAnual > 0 ? (totalIndustria / faturamentoAnual) * 100 : (parametros.percentualIndustria ?? 0);
+      faturamentoAnual > 0
+        ? (totalIndustria / faturamentoAnual) * 100
+        : (parametros.percentualIndustria ?? 0);
     const percentualRevenda =
       faturamentoAnual > 0
-        ? (totalRevenda > 0
-            ? (totalRevenda / faturamentoAnual) * 100
-            : Math.max(0, 100 - percentualServicos - percentualIndustria))
+        ? totalRevenda > 0
+          ? (totalRevenda / faturamentoAnual) * 100
+          : Math.max(0, 100 - percentualServicos - percentualIndustria)
         : (parametros.percentualRevenda ?? 0);
 
     setParametros({
@@ -234,10 +244,11 @@ export default function SimulacaoRegimes() {
     }
   };
 
-  const dadosGrafico = useMemo(() =>
-    resultado.cenarios
-      .filter((c) => c.elegivel)
-      .map((c) => ({ name: c.nome, valor: c.totalTributos, regime: c.regime })),
+  const dadosGrafico = useMemo(
+    () =>
+      resultado.cenarios
+        .filter((c) => c.elegivel)
+        .map((c) => ({ name: c.nome, valor: c.totalTributos, regime: c.regime })),
     [resultado.cenarios]
   );
 
@@ -246,15 +257,12 @@ export default function SimulacaoRegimes() {
       <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
         <div className="flex-1">
           <div className="flex items-center gap-3">
-            <h1 className="text-2xl md:text-3xl font-bold">
-              Simulação de Regimes Tributários
-            </h1>
-            {isSincronizando && (
-              <RefreshCw className="h-5 w-5 animate-spin text-primary" />
-            )}
+            <h1 className="text-2xl md:text-3xl font-bold">Simulação de Regimes Tributários</h1>
+            {isSincronizando && <RefreshCw className="h-5 w-5 animate-spin text-primary" />}
           </div>
           <p className="text-muted-foreground mt-1 text-sm md:text-base">
-            Compare Simples Nacional, Lucro Presumido e Lucro Real e descubra o regime mais vantajoso.
+            Compare Simples Nacional, Lucro Presumido e Lucro Real e descubra o regime mais
+            vantajoso.
           </p>
         </div>
         <SimulacaoHeaderActions
@@ -281,14 +289,13 @@ export default function SimulacaoRegimes() {
         }}
       />
 
-
       {empresaId && autoLoaded && (
         <Alert role="status" aria-live="polite">
           <RefreshCw className="h-4 w-4" />
           <AlertTitle>Dados carregados automaticamente</AlertTitle>
           <AlertDescription>
-            Parâmetros preenchidos com base nos últimos {Math.min(faturamentoMensal.length, 12)} meses de histórico.
-            Você pode ajustar manualmente os valores abaixo.
+            Parâmetros preenchidos com base nos últimos {Math.min(faturamentoMensal.length, 12)}{' '}
+            meses de histórico. Você pode ajustar manualmente os valores abaixo.
           </AlertDescription>
         </Alert>
       )}
@@ -298,8 +305,9 @@ export default function SimulacaoRegimes() {
           <AlertTriangle className="h-4 w-4" />
           <AlertTitle>Parâmetros de folha incompletos</AlertTitle>
           <AlertDescription>
-            A empresa selecionada não possui {parametrosFolhaAusentes.join(', ')} no cadastro. A simulação usará
-            valores padrão (RAT 2% e Terceiros 5,8%), o que pode distorcer os encargos patronais. Preencha em{' '}
+            A empresa selecionada não possui {parametrosFolhaAusentes.join(', ')} no cadastro. A
+            simulação usará valores padrão (RAT 2% e Terceiros 5,8%), o que pode distorcer os
+            encargos patronais. Preencha em{' '}
             <Link to="/empresas" className="font-medium underline underline-offset-4">
               Cadastro de Empresas
             </Link>
@@ -307,8 +315,6 @@ export default function SimulacaoRegimes() {
           </AlertDescription>
         </Alert>
       )}
-
-
 
       <AjustesParametrosAlert ajustes={ajustesParametros} />
 
@@ -327,9 +333,7 @@ export default function SimulacaoRegimes() {
         <div className="lg:col-span-2 space-y-4">
           <RegimeRecomendadoCard resultado={resultado} isRecomendacaoIA={isRecomendacaoIA} />
 
-          {resultado.alertas.length > 0 && (
-            <AlertasSimulacaoCard alertas={resultado.alertas} />
-          )}
+          {resultado.alertas.length > 0 && <AlertasSimulacaoCard alertas={resultado.alertas} />}
 
           <ComparativoCargaCard dadosGrafico={dadosGrafico} />
 
@@ -350,7 +354,6 @@ export default function SimulacaoRegimes() {
               onPaginaChange={setPaginaHistorico}
             />
           )}
-
         </div>
       </div>
     </div>

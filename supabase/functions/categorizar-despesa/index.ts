@@ -8,6 +8,11 @@ import {
 } from '../_shared/validation.ts';
 import { checkRateLimit, rateLimitResponse } from '../_shared/rate-limit.ts';
 import { exigirUsuario } from '../_shared/auth-guard.ts';
+import { corsHeadersPara } from '../_shared/cors.ts';
+import { createLogger } from '../_shared/observability.ts';
+import { mensagemErro, contextoErro } from '../_shared/erros.ts';
+import { withEdgeObservability } from '../_shared/edge-observability.ts';
+const log = createLogger('categorizar-despesa');
 
 interface Despesa {
   id?: string;
@@ -27,6 +32,7 @@ interface CategoriaDetectada {
 }
 
 export const handler = async (req: Request): Promise<Response> => {
+  const corsHeaders = corsHeadersPara(req);
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders });
   }
@@ -54,7 +60,7 @@ export const handler = async (req: Request): Promise<Response> => {
     const rawBody = await req.json();
     const validation = validatePayload(CategorizarDespesaSchema, rawBody, 'categorizar-despesa');
     if (!validation.success) {
-      return createErrorResponse(validation.error, 400, validation.details);
+      return createErrorResponse(validation.error, 400, validation.details, req);
     }
     const { despesas } = validation.data;
 
@@ -125,14 +131,17 @@ Responda APENAS com o array JSON, sem texto adicional.`;
 
     if (!response.ok) {
       const errorText = await response.text();
-      console.error('Erro na API de IA:', errorText);
+      log.error('Erro na API de IA:', {
+        error_message: mensagemErro(errorText),
+        context: contextoErro(errorText),
+      });
       throw new Error(`Erro na API de IA: ${response.status}`);
     }
 
     const aiResponse = await response.json();
     const content = aiResponse.choices?.[0]?.message?.content || '';
 
-    console.log('Resposta da IA:', content);
+    log.info('Resposta da IA:', { context: { args: [content] } });
 
     // Extrair JSON da resposta
     let categorias: CategoriaDetectada[] = [];
@@ -147,7 +156,10 @@ Responda APENAS com o array JSON, sem texto adicional.`;
         categorias = JSON.parse(content);
       }
     } catch (parseError) {
-      console.error('Erro ao parsear resposta da IA:', parseError);
+      log.error('Erro ao parsear resposta da IA:', {
+        error_message: mensagemErro(parseError),
+        context: contextoErro(parseError),
+      });
       // Fallback: categorização básica
       categorias = despesas.map((d) => ({
         categoria: 'Outros',
@@ -162,7 +174,10 @@ Responda APENAS com o array JSON, sem texto adicional.`;
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     });
   } catch (error) {
-    console.error('Erro ao categorizar despesas:', error);
+    log.error('Erro ao categorizar despesas:', {
+      error_message: mensagemErro(error),
+      context: contextoErro(error),
+    });
     const errorMessage = error instanceof Error ? error.message : 'Erro interno';
     return new Response(JSON.stringify({ error: errorMessage }), {
       status: 500,
@@ -172,5 +187,15 @@ Responda APENAS com o array JSON, sem texto adicional.`;
 };
 
 if (import.meta.main) {
-  serve(handler);
+  serve(
+    withEdgeObservability('categorizar-despesa', async (req) => {
+      const _t0 = Date.now();
+      try {
+        return await handler(req);
+      } finally {
+        log.info('request', { duration_ms: Date.now() - _t0 });
+        await log.flush();
+      }
+    })
+  );
 }

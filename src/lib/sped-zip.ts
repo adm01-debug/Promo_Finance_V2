@@ -14,13 +14,15 @@ interface ZipParams {
 function gerarReadme(params: ZipParams): string {
   const { fileName, hash, empresa, periodo, totalLinhas, totalLancamentos, tipo = 'ECD' } = params;
   const geradoEm = new Date().toLocaleString('pt-BR', { timeZone: 'America/Sao_Paulo' });
-  const tituloLongo = tipo === 'ECD'
-    ? 'SPED ECD — Escrituração Contábil Digital'
-    : 'SPED ECF — Escrituração Contábil Fiscal';
+  const tituloLongo =
+    tipo === 'ECD'
+      ? 'SPED ECD — Escrituração Contábil Digital'
+      : 'SPED ECF — Escrituração Contábil Fiscal';
   const pvaNome = tipo === 'ECD' ? 'PVA-ECD' : 'PVA-ECF';
-  const linkPva = tipo === 'ECD'
-    ? 'https://www.gov.br/receitafederal/pt-br/centrais-de-conteudo/download/pgd/sped-ecd'
-    : 'https://www.gov.br/receitafederal/pt-br/centrais-de-conteudo/download/pgd/sped-ecf';
+  const linkPva =
+    tipo === 'ECD'
+      ? 'https://www.gov.br/receitafederal/pt-br/centrais-de-conteudo/download/pgd/sped-ecd'
+      : 'https://www.gov.br/receitafederal/pt-br/centrais-de-conteudo/download/pgd/sped-ecf';
 
   return [
     '='.repeat(70),

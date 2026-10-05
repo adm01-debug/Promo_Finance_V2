@@ -11,32 +11,62 @@ interface Props {
   onRunRoadmap: () => void;
 }
 
-export function BreakpointsTab({ activeBreakpoint, setActiveBreakpoint, validationSteps, isProcessing, onRunRoadmap }: Props) {
+export function BreakpointsTab({
+  activeBreakpoint,
+  setActiveBreakpoint,
+  validationSteps,
+  isProcessing,
+  onRunRoadmap,
+}: Props) {
   return (
     <div className="space-y-8">
       <div className="flex items-center gap-4 bg-card/5 p-2 rounded-xl border border-white/5 w-fit">
-        <DeviceToggle icon={Smartphone} label="Mobile (375px)" active={activeBreakpoint === 'mobile'} onClick={() => setActiveBreakpoint('mobile')} />
-        <DeviceToggle icon={Tablet} label="Tablet (768px)" active={activeBreakpoint === 'tablet'} onClick={() => setActiveBreakpoint('tablet')} />
-        <DeviceToggle icon={Monitor} label="Desktop (1440px)" active={activeBreakpoint === 'desktop'} onClick={() => setActiveBreakpoint('desktop')} />
+        <DeviceToggle
+          icon={Smartphone}
+          label="Mobile (375px)"
+          active={activeBreakpoint === 'mobile'}
+          onClick={() => setActiveBreakpoint('mobile')}
+        />
+        <DeviceToggle
+          icon={Tablet}
+          label="Tablet (768px)"
+          active={activeBreakpoint === 'tablet'}
+          onClick={() => setActiveBreakpoint('tablet')}
+        />
+        <DeviceToggle
+          icon={Monitor}
+          label="Desktop (1440px)"
+          active={activeBreakpoint === 'desktop'}
+          onClick={() => setActiveBreakpoint('desktop')}
+        />
       </div>
 
       <div className="space-y-4">
         <div className="flex items-center justify-between">
-          <h3 className="text-foreground font-bold tracking-tight">Roteiro de Validação Pixel-Perfect</h3>
+          <h3 className="text-foreground font-bold tracking-tight">
+            Roteiro de Validação Pixel-Perfect
+          </h3>
           <Button
             size="sm"
             onClick={onRunRoadmap}
             disabled={isProcessing}
             className="bg-card text-card-foreground text-xs font-black px-8 py-5 rounded-xl hover:bg-card/90 shadow-[0_0_20px_rgba(255,255,255,0.3)] transition-all hover:scale-105 active:scale-95"
           >
-            {isProcessing ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : <Zap className="h-4 w-4 mr-2" />}
+            {isProcessing ? (
+              <Loader2 className="h-4 w-4 animate-spin mr-2" />
+            ) : (
+              <Zap className="h-4 w-4 mr-2" />
+            )}
             EXECUTAR ROTEIRO COMPLETO
           </Button>
         </div>
 
         <div className="grid gap-3">
           {validationSteps.map((step) => (
-            <div key={step.id} className="flex items-center justify-between p-4 bg-card/5 rounded-xl border border-white/5">
+            <div
+              key={step.id}
+              className="flex items-center justify-between p-4 bg-card/5 rounded-xl border border-white/5"
+            >
               <div className="flex items-center gap-4">
                 <div className="h-8 w-8 rounded-full bg-zinc-800 flex items-center justify-center text-foreground/40 font-bold text-xs">
                   {step.id.slice(0, 1).toUpperCase()}
@@ -52,7 +82,13 @@ export function BreakpointsTab({ activeBreakpoint, setActiveBreakpoint, validati
                   <DeviceIndicator icon={Tablet} status={step.status} />
                   <DeviceIndicator icon={Monitor} status={step.status} />
                 </div>
-                <Button variant="ghost" size="sm" className="h-8 text-foreground/40 hover:text-foreground">Detalhes</Button>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="h-8 text-foreground/40 hover:text-foreground"
+                >
+                  Detalhes
+                </Button>
               </div>
             </div>
           ))}

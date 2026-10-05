@@ -11,7 +11,7 @@ import { toast } from '@/hooks/use-toast';
 import { toastPaymentSuccess } from '@/lib/toast-confetti';
 import { sounds } from '@/lib/sound-feedback';
 import { haptic } from '@/lib/haptic-feedback';
-import { formatCurrency , todayISOLocal} from '@/lib/formatters';
+import { formatCurrency, todayISOLocal } from '@/lib/formatters';
 import { logger } from '@/lib/logger';
 import {
   Dialog,
@@ -74,7 +74,11 @@ const tiposPagamento = [
   { value: 'parcial', label: 'Pagamento Parcial', icon: Wallet },
 ];
 
-export function RegistrarPagamentoDialog({ conta, open, onOpenChange }: RegistrarPagamentoDialogProps) {
+export function RegistrarPagamentoDialog({
+  conta,
+  open,
+  onOpenChange,
+}: RegistrarPagamentoDialogProps) {
   const queryClient = useQueryClient();
   const [tipoPagamento, setTipoPagamento] = useState<'total' | 'parcial'>('total');
   const { data: contasBancarias = [] } = useContasBancarias();
@@ -106,7 +110,7 @@ export function RegistrarPagamentoDialog({ conta, open, onOpenChange }: Registra
         .order('solicitado_em', { ascending: false })
         .limit(1)
         .maybeSingle();
-      
+
       if (error) throw error;
       return data;
     },
@@ -157,7 +161,7 @@ export function RegistrarPagamentoDialog({ conta, open, onOpenChange }: Registra
           data_pagamento: data.data_pagamento,
           conta_bancaria_id: data.conta_bancaria_id || null,
           status: isPagoTotal ? 'pago' : 'parcial',
-          observacoes: data.observacoes 
+          observacoes: data.observacoes
             ? `${conta.descricao ? conta.descricao + ' | ' : ''}Pagamento: ${data.observacoes}`
             : undefined,
         })
@@ -179,7 +183,10 @@ export function RegistrarPagamentoDialog({ conta, open, onOpenChange }: Registra
       logger.error('Error registering payment:', error);
       toast({
         title: 'Erro ao registrar pagamento',
-        description: error instanceof Error ? error.message : 'Não foi possível registrar o pagamento. Tente novamente.',
+        description:
+          error instanceof Error
+            ? error.message
+            : 'Não foi possível registrar o pagamento. Tente novamente.',
         variant: 'destructive',
       });
     },
@@ -206,7 +213,7 @@ export function RegistrarPagamentoDialog({ conta, open, onOpenChange }: Registra
       });
       return;
     }
-    
+
     if (data.valor_pago > saldoRestante) {
       toast({
         title: 'Valor inválido',
@@ -297,7 +304,9 @@ export function RegistrarPagamentoDialog({ conta, open, onOpenChange }: Registra
                   <FormLabel>Valor do Pagamento *</FormLabel>
                   <FormControl>
                     <div className="relative">
-                      <span className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground text-sm">R$</span>
+                      <span className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground text-sm">
+                        R$
+                      </span>
                       <Input
                         type="number"
                         step="0.01"
@@ -367,7 +376,11 @@ export function RegistrarPagamentoDialog({ conta, open, onOpenChange }: Registra
                 <FormItem>
                   <FormLabel>Observações</FormLabel>
                   <FormControl>
-                    <Textarea {...field} placeholder="Observações do pagamento (opcional)" className="min-h-[60px]" />
+                    <Textarea
+                      {...field}
+                      placeholder="Observações do pagamento (opcional)"
+                      className="min-h-[60px]"
+                    />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -379,7 +392,7 @@ export function RegistrarPagamentoDialog({ conta, open, onOpenChange }: Registra
               <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
                 Cancelar
               </Button>
-              
+
               {/* Show "Request Approval" button if approval is required but not granted */}
               {aprovacaoBloqueada && !temSolicitacaoPendente ? (
                 <Button
@@ -388,7 +401,9 @@ export function RegistrarPagamentoDialog({ conta, open, onOpenChange }: Registra
                   disabled={criarSolicitacaoMutation.isPending}
                   className="gap-2 bg-gradient-to-r from-warning to-warning/80 shadow-lg shadow-warning/25 text-warning-foreground"
                 >
-                  {criarSolicitacaoMutation.isPending && <Loader2 className="h-4 w-4 animate-spin" />}
+                  {criarSolicitacaoMutation.isPending && (
+                    <Loader2 className="h-4 w-4 animate-spin" />
+                  )}
                   <ShieldCheck className="h-4 w-4" />
                   Solicitar Aprovação
                 </Button>

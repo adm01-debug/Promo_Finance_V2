@@ -19,21 +19,21 @@ export function useConciliacaoRetroativa() {
           conta_bancaria_id: contaBancariaId,
           data_inicio: dataInicio,
           data_fim: dataFim,
-          status: 'processando'
+          status: 'processando',
         })
         .select()
         .single();
 
       if (error) throw error;
-      
+
       // Simulação de gatilho de processamento (em produção seria um Edge Function via Trigger)
       toast.info('Conciliação retroativa agendada e em processamento');
-      
+
       return data;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['logs-conciliacao-retroativa'] });
-    }
+    },
   });
 
   const reprocessar = useMutation({
@@ -43,7 +43,7 @@ export function useConciliacaoRetroativa() {
         .select('*')
         .eq('id', logId)
         .single();
-      
+
       if (!log) throw new Error('Log não encontrado');
 
       const { data, error } = await supabase
@@ -52,7 +52,7 @@ export function useConciliacaoRetroativa() {
           status: 'processando',
           progresso: 0,
           erro_detalhe: null,
-          created_at: new Date().toISOString()
+          created_at: new Date().toISOString(),
         })
         .eq('id', logId)
         .select()
@@ -64,9 +64,8 @@ export function useConciliacaoRetroativa() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['logs-conciliacao-retroativa'] });
-    }
+    },
   });
 
   return { agendar, reprocessar };
 }
-

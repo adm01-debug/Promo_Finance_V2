@@ -1,9 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import {
-  inferSsoErrorCode,
-  SSO_ERROR_MESSAGES,
-  type SsoErrorCode,
-} from '../sso-error-messages';
+import { inferSsoErrorCode, SSO_ERROR_MESSAGES, type SsoErrorCode } from '../sso-error-messages';
 
 describe('SSO_ERROR_MESSAGES', () => {
   it('possui título, descrição e hint para todos os códigos', () => {
@@ -57,6 +53,6 @@ describe('inferSsoErrorCode', () => {
     'inferindo "%s" → %s',
     (input, expected) => {
       expect(inferSsoErrorCode(input)).toBe(expected);
-    },
+    }
   );
 });

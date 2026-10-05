@@ -19,7 +19,12 @@ export function KPIComparativo({ valorAtual, valorAnterior, invertido = false, c
 
   if (absVariacao < 0.5) {
     return (
-      <span className={cn('inline-flex items-center gap-0.5 text-[10px] sm:text-xs text-muted-foreground', className)}>
+      <span
+        className={cn(
+          'inline-flex items-center gap-0.5 text-[10px] sm:text-xs text-muted-foreground',
+          className
+        )}
+      >
         <Minus className="h-3 w-3" />
         <span>Estável</span>
       </span>
@@ -29,16 +34,14 @@ export function KPIComparativo({ valorAtual, valorAnterior, invertido = false, c
   const isPositive = invertido ? variacao < 0 : variacao > 0;
 
   return (
-    <span className={cn(
-      'inline-flex items-center gap-0.5 text-[10px] sm:text-xs font-medium',
-      isPositive ? 'text-success' : 'text-destructive',
-      className
-    )}>
-      {variacao > 0 ? (
-        <TrendingUp className="h-3 w-3" />
-      ) : (
-        <TrendingDown className="h-3 w-3" />
+    <span
+      className={cn(
+        'inline-flex items-center gap-0.5 text-[10px] sm:text-xs font-medium',
+        isPositive ? 'text-success' : 'text-destructive',
+        className
       )}
+    >
+      {variacao > 0 ? <TrendingUp className="h-3 w-3" /> : <TrendingDown className="h-3 w-3" />}
       <span>{absVariacao.toFixed(1)}%</span>
     </span>
   );

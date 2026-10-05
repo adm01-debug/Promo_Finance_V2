@@ -1205,6 +1205,7 @@ export type Database = {
           id: string;
           mime_type: string | null;
           nome_arquivo: string;
+          storage_path: string | null;
           tamanho_bytes: number | null;
           url: string;
           url_publica: string | null;
@@ -1217,6 +1218,7 @@ export type Database = {
           id?: string;
           mime_type?: string | null;
           nome_arquivo: string;
+          storage_path?: string | null;
           tamanho_bytes?: number | null;
           url: string;
           url_publica?: string | null;
@@ -1229,6 +1231,7 @@ export type Database = {
           id?: string;
           mime_type?: string | null;
           nome_arquivo?: string;
+          storage_path?: string | null;
           tamanho_bytes?: number | null;
           url?: string;
           url_publica?: string | null;
@@ -21058,7 +21061,11 @@ export type Database = {
         | 'DAMAGE'
         | 'OTHER';
       nfe_manifestacao_status:
-        'pendente' | 'ciencia' | 'confirmada' | 'desconhecida' | 'nao_realizada';
+        | 'pendente'
+        | 'ciencia'
+        | 'confirmada'
+        | 'desconhecida'
+        | 'nao_realizada';
       nfe_schema_tipo: 'resNFe' | 'procNFe' | 'resEvento' | 'procEventoNFe' | 'resCTe' | 'procCTe';
       nivel_risco: 'BAIXO' | 'MEDIO' | 'ALTO';
       order_status:
@@ -21076,7 +21083,12 @@ export type Database = {
       regime_tributario_enum: 'MEI' | 'SIMPLES' | 'PRESUMIDO' | 'REAL' | 'ARBITRADO';
       sefaz_ambiente: 'homologacao' | 'producao';
       status_workflow:
-        'IDENTIFICADO' | 'EM_ANALISE' | 'APROVADO' | 'EM_EXECUCAO' | 'CONCLUIDO' | 'CANCELADO';
+        | 'IDENTIFICADO'
+        | 'EM_ANALISE'
+        | 'APROVADO'
+        | 'EM_EXECUCAO'
+        | 'CONCLUIDO'
+        | 'CANCELADO';
       tipo_alerta_tributario:
         | 'vencimento_apuracao'
         | 'vencimento_darf'
@@ -21091,9 +21103,18 @@ export type Database = {
         | 'nfe_rejeitada'
         | 'saldo_negativo';
       tipo_cobranca:
-        'boleto' | 'pix' | 'transferencia' | 'cartao' | 'debito_automatico' | 'dinheiro' | 'cheque';
+        | 'boleto'
+        | 'pix'
+        | 'transferencia'
+        | 'cartao'
+        | 'debito_automatico'
+        | 'dinheiro'
+        | 'cheque';
       tipo_destinatario:
-        'CONTRIBUINTE_REVENDA' | 'CONTRIBUINTE_USO_CONSUMO' | 'NAO_CONTRIBUINTE' | 'EXTERIOR';
+        | 'CONTRIBUINTE_REVENDA'
+        | 'CONTRIBUINTE_USO_CONSUMO'
+        | 'NAO_CONTRIBUINTE'
+        | 'EXTERIOR';
       uf_brasil:
         | 'AC'
         | 'AL'
@@ -21138,12 +21159,12 @@ export type Tables<
   DefaultSchemaTableNameOrOptions extends
     | keyof (DefaultSchema['Tables'] & DefaultSchema['Views'])
     | { schema: keyof DatabaseWithoutInternals },
-  TableName extends (DefaultSchemaTableNameOrOptions extends {
+  TableName extends DefaultSchemaTableNameOrOptions extends {
     schema: keyof DatabaseWithoutInternals;
   }
     ? keyof (DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions['schema']]['Tables'] &
         DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions['schema']]['Views'])
-    : never) = never,
+    : never = never,
 > = DefaultSchemaTableNameOrOptions extends {
   schema: keyof DatabaseWithoutInternals;
 }
@@ -21163,12 +21184,13 @@ export type Tables<
 
 export type TablesInsert<
   DefaultSchemaTableNameOrOptions extends
-    keyof DefaultSchema['Tables'] | { schema: keyof DatabaseWithoutInternals },
-  TableName extends (DefaultSchemaTableNameOrOptions extends {
+    | keyof DefaultSchema['Tables']
+    | { schema: keyof DatabaseWithoutInternals },
+  TableName extends DefaultSchemaTableNameOrOptions extends {
     schema: keyof DatabaseWithoutInternals;
   }
     ? keyof DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions['schema']]['Tables']
-    : never) = never,
+    : never = never,
 > = DefaultSchemaTableNameOrOptions extends {
   schema: keyof DatabaseWithoutInternals;
 }
@@ -21187,12 +21209,13 @@ export type TablesInsert<
 
 export type TablesUpdate<
   DefaultSchemaTableNameOrOptions extends
-    keyof DefaultSchema['Tables'] | { schema: keyof DatabaseWithoutInternals },
-  TableName extends (DefaultSchemaTableNameOrOptions extends {
+    | keyof DefaultSchema['Tables']
+    | { schema: keyof DatabaseWithoutInternals },
+  TableName extends DefaultSchemaTableNameOrOptions extends {
     schema: keyof DatabaseWithoutInternals;
   }
     ? keyof DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions['schema']]['Tables']
-    : never) = never,
+    : never = never,
 > = DefaultSchemaTableNameOrOptions extends {
   schema: keyof DatabaseWithoutInternals;
 }
@@ -21211,12 +21234,13 @@ export type TablesUpdate<
 
 export type Enums<
   DefaultSchemaEnumNameOrOptions extends
-    keyof DefaultSchema['Enums'] | { schema: keyof DatabaseWithoutInternals },
-  EnumName extends (DefaultSchemaEnumNameOrOptions extends {
+    | keyof DefaultSchema['Enums']
+    | { schema: keyof DatabaseWithoutInternals },
+  EnumName extends DefaultSchemaEnumNameOrOptions extends {
     schema: keyof DatabaseWithoutInternals;
   }
     ? keyof DatabaseWithoutInternals[DefaultSchemaEnumNameOrOptions['schema']]['Enums']
-    : never) = never,
+    : never = never,
 > = DefaultSchemaEnumNameOrOptions extends {
   schema: keyof DatabaseWithoutInternals;
 }
@@ -21227,12 +21251,13 @@ export type Enums<
 
 export type CompositeTypes<
   PublicCompositeTypeNameOrOptions extends
-    keyof DefaultSchema['CompositeTypes'] | { schema: keyof DatabaseWithoutInternals },
-  CompositeTypeName extends (PublicCompositeTypeNameOrOptions extends {
+    | keyof DefaultSchema['CompositeTypes']
+    | { schema: keyof DatabaseWithoutInternals },
+  CompositeTypeName extends PublicCompositeTypeNameOrOptions extends {
     schema: keyof DatabaseWithoutInternals;
   }
     ? keyof DatabaseWithoutInternals[PublicCompositeTypeNameOrOptions['schema']]['CompositeTypes']
-    : never) = never,
+    : never = never,
 > = PublicCompositeTypeNameOrOptions extends {
   schema: keyof DatabaseWithoutInternals;
 }

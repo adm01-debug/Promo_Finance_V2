@@ -71,14 +71,12 @@ export function SaudeCatalogosBadge({ className }: SaudeCatalogosBadgeProps) {
           className={cn(
             'inline-flex h-10 items-center gap-2 rounded-xl border px-3 text-xs font-semibold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring',
             classe,
-            className,
+            className
           )}
         >
           <Icone className="h-4 w-4 shrink-0" />
           <span>{rotulo}</span>
-          <span className="rounded-md bg-background/40 px-1.5 py-0.5 font-mono">
-            {saude.score}
-          </span>
+          <span className="rounded-md bg-background/40 px-1.5 py-0.5 font-mono">{saude.score}</span>
         </button>
       </PopoverTrigger>
 

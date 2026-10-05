@@ -7,7 +7,13 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 import { Skeleton } from '@/components/ui/skeleton';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { ExportMenu } from '@/components/ui/export-menu';
@@ -37,7 +43,8 @@ export default function AuditoriaIA() {
   const setUserFilter = (v: string) => filtersController.setField('userFilter', v);
   const setCnpjFilter = (v: string) => filtersController.setField('cnpjFilter', v);
   const setTransacaoFilter = (v: string) => filtersController.setField('transacaoFilter', v);
-  const setAcaoFilter = (v: 'all' | 'aprovado' | 'rejeitado') => filtersController.setField('acaoFilter', v);
+  const setAcaoFilter = (v: 'all' | 'aprovado' | 'rejeitado') =>
+    filtersController.setField('acaoFilter', v);
 
   const usuarios = useMemo(() => {
     const map = new Map<string, string>();
@@ -81,7 +88,9 @@ export default function AuditoriaIA() {
     const total = filtered.length;
     const aprovados = filtered.filter((r) => r.acao === 'aprovado').length;
     const rejeitados = total - aprovados;
-    const comMotivo = filtered.filter((r) => r.acao === 'rejeitado' && (r.motivo_rejeicao || '').trim()).length;
+    const comMotivo = filtered.filter(
+      (r) => r.acao === 'rejeitado' && (r.motivo_rejeicao || '').trim()
+    ).length;
     return { total, aprovados, rejeitados, comMotivo };
   }, [filtered]);
 
@@ -113,7 +122,8 @@ export default function AuditoriaIA() {
             <div>
               <h1 className="text-2xl font-bold font-display">Auditoria da IA</h1>
               <p className="text-sm text-muted-foreground">
-                Trilha de decisões de Conciliação Inteligente — filtre por usuário, CNPJ ou transação
+                Trilha de decisões de Conciliação Inteligente — filtre por usuário, CNPJ ou
+                transação
               </p>
             </div>
           </div>
@@ -229,7 +239,10 @@ export default function AuditoriaIA() {
               </div>
               <div className="space-y-1">
                 <Label htmlFor="f-acao">Ação</Label>
-                <Select value={acaoFilter} onValueChange={(v) => setAcaoFilter(v as typeof acaoFilter)}>
+                <Select
+                  value={acaoFilter}
+                  onValueChange={(v) => setAcaoFilter(v as typeof acaoFilter)}
+                >
                   <SelectTrigger id="f-acao">
                     <SelectValue />
                   </SelectTrigger>
@@ -304,9 +317,15 @@ function AuditRow({ row }: { row: AuditoriaIARow }) {
           {isReject ? <XCircle className="h-3 w-3" /> : <CheckCircle2 className="h-3 w-3" />}
           {row.acao}
         </Badge>
-        <Badge variant="outline" className="text-xs">Score: {Math.round(row.score_ia)}</Badge>
-        <Badge variant="outline" className="text-xs">Confiança: {row.confianca}</Badge>
-        <Badge variant="outline" className="text-xs capitalize">{row.tipo_lancamento}</Badge>
+        <Badge variant="outline" className="text-xs">
+          Score: {Math.round(row.score_ia)}
+        </Badge>
+        <Badge variant="outline" className="text-xs">
+          Confiança: {row.confianca}
+        </Badge>
+        <Badge variant="outline" className="text-xs capitalize">
+          {row.tipo_lancamento}
+        </Badge>
         <span className="text-xs text-muted-foreground ml-auto">{formatDate(row.created_at)}</span>
       </div>
 
@@ -328,7 +347,10 @@ function AuditRow({ row }: { row: AuditoriaIARow }) {
           <p className="font-medium truncate" title={row.transacao_descricao || ''}>
             {row.transacao_descricao || '—'}
           </p>
-          <p className="text-xs text-muted-foreground font-mono truncate" title={row.transacao_bancaria_id || ''}>
+          <p
+            className="text-xs text-muted-foreground font-mono truncate"
+            title={row.transacao_bancaria_id || ''}
+          >
             {row.transacao_bancaria_id || 'sem ID'}
             {row.transacao_valor != null && ` • ${formatCurrency(row.transacao_valor)}`}
           </p>

@@ -1,13 +1,7 @@
 // Relatório executivo tributário: capa + comparativo + elisão + timeline.
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
-import {
-  type OpcoesRelatorio,
-  fmt,
-  pct,
-  NOME_REGIME,
-  formatCnpj,
-} from './shared';
+import { type OpcoesRelatorio, fmt, pct, NOME_REGIME, formatCnpj } from './shared';
 import { gerarGraficoComparativoBase64, gerarTimelineReformaBase64 } from './charts';
 
 export function gerarRelatorioPdfExecutivo(opts: OpcoesRelatorio): jsPDF {
@@ -50,11 +44,19 @@ export function gerarRelatorioPdfExecutivo(opts: OpcoesRelatorio): jsPDF {
   doc.setTextColor(255, 255, 255);
   doc.setFont('helvetica', 'bold');
   doc.setFontSize(20);
-  doc.text(NOME_REGIME[opts.decisao.recomendado.regime] ?? opts.decisao.recomendado.regime, 28, 205);
+  doc.text(
+    NOME_REGIME[opts.decisao.recomendado.regime] ?? opts.decisao.recomendado.regime,
+    28,
+    205
+  );
   doc.setFontSize(11);
   doc.setFont('helvetica', 'normal');
   doc.setTextColor(148, 163, 184);
-  doc.text(`Carga: ${pct(opts.decisao.recomendado.cargaEfetiva)} · Total: ${fmt(opts.decisao.recomendado.totalTributos)}/ano`, 28, 215);
+  doc.text(
+    `Carga: ${pct(opts.decisao.recomendado.cargaEfetiva)} · Total: ${fmt(opts.decisao.recomendado.totalTributos)}/ano`,
+    28,
+    215
+  );
   if (opts.decisao.economiaAnualVsAtual && opts.decisao.economiaAnualVsAtual > 0) {
     doc.setTextColor(74, 222, 128);
     doc.setFont('helvetica', 'bold');
@@ -68,10 +70,14 @@ export function gerarRelatorioPdfExecutivo(opts: OpcoesRelatorio): jsPDF {
   doc.text(
     `Emitido em ${new Date().toLocaleDateString('pt-BR', { day: '2-digit', month: 'long', year: 'numeric' })}`,
     20,
-    pageHeight - 25,
+    pageHeight - 25
   );
   doc.setFontSize(8);
-  doc.text('Motor Tributário Lovable · Análise indicativa — consulte profissional habilitado', 20, pageHeight - 18);
+  doc.text(
+    'Motor Tributário Lovable · Análise indicativa — consulte profissional habilitado',
+    20,
+    pageHeight - 18
+  );
 
   // ============================================
   // PÁGINA 2 — Sumário e comparativo
@@ -103,7 +109,10 @@ export function gerarRelatorioPdfExecutivo(opts: OpcoesRelatorio): jsPDF {
   });
   y += 2;
 
-  const justText = doc.splitTextToSize(opts.decisao.justificativaIA || opts.decisao.justificativa || '', pageWidth - 28);
+  const justText = doc.splitTextToSize(
+    opts.decisao.justificativaIA || opts.decisao.justificativa || '',
+    pageWidth - 28
+  );
   doc.text(justText, 14, y);
   y += justText.length * 5 + 8;
 
@@ -207,7 +216,7 @@ export function gerarRelatorioPdfExecutivo(opts: OpcoesRelatorio): jsPDF {
     doc.text(
       `${opts.elisao.total_aplicaveis} estratégia(s) aplicável(eis) — Economia potencial: ${fmt(opts.elisao.economia_total_estimada)}`,
       14,
-      y,
+      y
     );
     y += 4;
 
@@ -240,7 +249,7 @@ export function gerarRelatorioPdfExecutivo(opts: OpcoesRelatorio): jsPDF {
       doc.text(
         'Projeção da carga efetiva durante a transição CBS/IBS (Lei Complementar 214/2025).',
         14,
-        y,
+        y
       );
       y += 6;
       const imgW = pageWidth - 28;
@@ -266,7 +275,7 @@ export function gerarRelatorioPdfExecutivo(opts: OpcoesRelatorio): jsPDF {
       `Motor Tributário Lovable · Gerado em ${geradoEm} · Página ${i}/${totalPages}`,
       pageWidth / 2,
       pageHeight - 8,
-      { align: 'center' },
+      { align: 'center' }
     );
   }
 
@@ -275,6 +284,9 @@ export function gerarRelatorioPdfExecutivo(opts: OpcoesRelatorio): jsPDF {
 
 export function baixarRelatorioPdf(opts: OpcoesRelatorio) {
   const doc = gerarRelatorioPdfExecutivo(opts);
-  const slug = opts.empresaNome.toLowerCase().replace(/[^a-z0-9]+/g, '-').slice(0, 40);
+  const slug = opts.empresaNome
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '-')
+    .slice(0, 40);
   doc.save(`relatorio-tributario-${slug}-${new Date().toISOString().slice(0, 10)}.pdf`);
 }

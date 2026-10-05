@@ -300,7 +300,7 @@ export default function Fornecedores() {
                   fornecedores.map((fornecedor, index) => (
                     <FornecedoresTableRow
                       key={fornecedor.id}
-                      fornecedor={fornecedor}
+                      fornecedor={fornecedor as unknown as ExternalCliente}
                       index={index}
                       onView={(f) => {
                         setViewingFornecedor(f);

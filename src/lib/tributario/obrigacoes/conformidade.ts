@@ -135,7 +135,8 @@ export function calcularConformidade(
     if (registro && (registro.status === 'entregue' || registro.status === 'retificada')) {
       entregues += 1;
       if (registro.status === 'retificada') retificadas += 1;
-      const atrasada = Boolean(registro.dataEntrega) && (registro.dataEntrega as string) > item.prazo;
+      const atrasada =
+        Boolean(registro.dataEntrega) && (registro.dataEntrega as string) > item.prazo;
       if (atrasada) entreguesComAtraso += 1;
       peso = atrasada ? PESO_ATRASADO : PESO_ENTREGUE;
     } else if (registro?.status === 'dispensada') {
@@ -163,7 +164,9 @@ export function calcularConformidade(
   const score = total === 0 ? 100 : round1((pesoObtido / total) * 100);
   const totalEntregues = entregues + dispensadas;
   const pontualidade =
-    totalEntregues === 0 ? 100 : round1(((totalEntregues - entreguesComAtraso) / totalEntregues) * 100);
+    totalEntregues === 0
+      ? 100
+      : round1(((totalEntregues - entreguesComAtraso) / totalEntregues) * 100);
 
   criticos.sort((a, b) => (a.prazo < b.prazo ? -1 : a.prazo > b.prazo ? 1 : 0));
 

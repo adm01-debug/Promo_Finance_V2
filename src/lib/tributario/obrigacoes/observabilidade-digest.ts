@@ -82,7 +82,7 @@ const numero = (v: unknown): number => {
 
 /** Consolida os indicadores principais do período carregado. */
 export function resumirEnvios(
-  registros: readonly RegistroEnvioDigest[],
+  registros: readonly RegistroEnvioDigest[]
 ): ResumoObservabilidadeDigest {
   let enviados = 0;
   let falhas = 0;
@@ -138,7 +138,10 @@ export function resumirEnvios(
 
 /** Série diária (ISO `YYYY-MM-DD`) ordenada cronologicamente. */
 export function serieDiaria(registros: readonly RegistroEnvioDigest[]): SerieDiaDigest[] {
-  const mapa = new Map<string, { enviados: number; falhas: number; ignorados: number; simulados: number }>();
+  const mapa = new Map<
+    string,
+    { enviados: number; falhas: number; ignorados: number; simulados: number }
+  >();
   for (const r of registros) {
     const dia = String(r.criadoEm).slice(0, 10);
     if (!dia) continue;
@@ -169,9 +172,12 @@ export function agruparMotivos(registros: readonly RegistroEnvioDigest[]): Motiv
 
 /** Ranking por destinatário: prioriza quem mais falha. */
 export function agruparDestinatarios(
-  registros: readonly RegistroEnvioDigest[],
+  registros: readonly RegistroEnvioDigest[]
 ): DestinatarioAgrupado[] {
-  const mapa = new Map<string, { enviados: number; falhas: number; ultimoEnvioEm: string | null }>();
+  const mapa = new Map<
+    string,
+    { enviados: number; falhas: number; ultimoEnvioEm: string | null }
+  >();
   for (const r of registros) {
     if (r.situacao === 'ignorado') continue;
     const atual = mapa.get(r.email) ?? { enviados: 0, falhas: 0, ultimoEnvioEm: null };
@@ -186,13 +192,15 @@ export function agruparDestinatarios(
   }
   return [...mapa.entries()]
     .map(([email, v]) => ({ email, ...v }))
-    .sort((a, b) => b.falhas - a.falhas || b.enviados - a.enviados || a.email.localeCompare(b.email));
+    .sort(
+      (a, b) => b.falhas - a.falhas || b.enviados - a.enviados || a.email.localeCompare(b.email)
+    );
 }
 
 /** Últimas falhas, da mais recente para a mais antiga. */
 export function ultimasFalhas(
   registros: readonly RegistroEnvioDigest[],
-  limite = 20,
+  limite = 20
 ): RegistroEnvioDigest[] {
   return registros
     .filter((r) => r.situacao === 'falhou')

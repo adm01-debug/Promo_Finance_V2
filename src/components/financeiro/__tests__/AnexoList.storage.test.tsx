@@ -14,20 +14,30 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 
 type Resultado = { data: unknown; error: unknown };
 
-const { mockFrom, mockRemove, mockUpload, mockGetPublicUrl, toastErro, toastSucesso, toastAviso } =
-  vi.hoisted(() => ({
-    mockFrom: vi.fn(),
-    mockRemove: vi.fn(),
-    mockUpload: vi.fn(),
-    mockGetPublicUrl: vi.fn(),
-    toastErro: vi.fn(),
-    toastSucesso: vi.fn(),
-    toastAviso: vi.fn(),
-  }));
+const {
+  mockFrom,
+  mockRemove,
+  mockUpload,
+  mockGetPublicUrl,
+  mockInvoke,
+  toastErro,
+  toastSucesso,
+  toastAviso,
+} = vi.hoisted(() => ({
+  mockFrom: vi.fn(),
+  mockRemove: vi.fn(),
+  mockUpload: vi.fn(),
+  mockGetPublicUrl: vi.fn(),
+  mockInvoke: vi.fn(),
+  toastErro: vi.fn(),
+  toastSucesso: vi.fn(),
+  toastAviso: vi.fn(),
+}));
 
 vi.mock('@/integrations/supabase/client', () => ({
   supabase: {
     from: mockFrom,
+    functions: { invoke: mockInvoke },
     storage: {
       from: () => ({ remove: mockRemove, upload: mockUpload, getPublicUrl: mockGetPublicUrl }),
     },
@@ -85,6 +95,7 @@ beforeEach(() => {
   vi.clearAllMocks();
   mockRemove.mockResolvedValue({ data: [], error: null });
   mockUpload.mockResolvedValue({ data: { path: 'x' }, error: null });
+  mockInvoke.mockResolvedValue({ data: { url: URL_ANEXO }, error: null });
   mockGetPublicUrl.mockReturnValue({ data: { publicUrl: URL_ANEXO } });
   queryClient = new QueryClient({
     defaultOptions: { queries: { retry: false }, mutations: { retry: false } },
@@ -169,38 +180,18 @@ describe('AnexoList — remoção', () => {
 describe('AnexoList — upload', () => {
   function anexaArquivo(container: HTMLElement) {
     const input = container.querySelector('#file-upload') as HTMLInputElement;
-    const file = new File(['conteudo'], 'nota.pdf', { type: 'application/pdf' });
+    // Bytes com assinatura %PDF — o gate de magic bytes exige que o conteúdo
+    // bata com a extensão declarada.
+    const file = new File(['%PDF-1.4 conteudo'], 'nota.pdf', { type: 'application/pdf' });
     fireEvent.change(input, { target: { files: [file] } });
   }
 
-  it('desfaz o upload quando o registro no banco falha', async () => {
-    // Sem a compensação, o arquivo ficava no bucket sem linha que o apontasse.
-    const escritas = montaCliente({
-      anexos_financeiros: [
-        { data: [], error: null },
-        { data: null, error: { code: '42501', message: 'sem permissão' } },
-      ],
-    });
-    const { container } = render(<AnexoList entidadeId="e-1" entidadeTipo="contas_pagar" />, {
-      wrapper,
-    });
-    await screen.findByText(/Nenhum comprovante anexado/);
-
-    anexaArquivo(container);
-
-    await waitFor(() => expect(toastErro).toHaveBeenCalled());
-    expect(mockRemove).toHaveBeenCalledWith([expect.stringContaining('contas_pagar/e-1/')]);
-    expect(escritas).toContainEqual({ tabela: 'anexos_financeiros', metodo: 'insert' });
-    expect(toastSucesso).not.toHaveBeenCalled();
-  });
-
-  it('não remove nada quando o registro grava', async () => {
-    montaCliente({
-      anexos_financeiros: [
-        { data: [], error: null },
-        { data: [{ id: 'anx-1' }], error: null },
-      ],
-    });
+  // O upload saiu do storage direto para a edge function `upload-anexo`:
+  // validar bytes no servidor é o que impede quem chama o HTTP do Storage
+  // por fora de contornar o gate. Rollback do objeto em falha de registro
+  // também migrou para lá.
+  it('envia o arquivo pela edge function com a entidade no FormData', async () => {
+    montaCliente({ anexos_financeiros: [{ data: [], error: null }] });
     const { container } = render(<AnexoList entidadeId="e-1" entidadeTipo="contas_pagar" />, {
       wrapper,
     });
@@ -209,6 +200,32 @@ describe('AnexoList — upload', () => {
     anexaArquivo(container);
 
     await waitFor(() => expect(toastSucesso).toHaveBeenCalledWith('Arquivo anexado com sucesso'));
-    expect(mockRemove).not.toHaveBeenCalled();
+    expect(mockInvoke).toHaveBeenCalledWith(
+      'upload-anexo',
+      expect.objectContaining({ body: expect.any(FormData) })
+    );
+    const form = mockInvoke.mock.calls[0][1].body as FormData;
+    expect(form.get('entidade_tipo')).toBe('contas_pagar');
+    expect(form.get('entidade_id')).toBe('e-1');
+    expect((form.get('arquivo') as File).name).toBe('nota.pdf');
+    expect(mockUpload).not.toHaveBeenCalled();
+  });
+
+  it('mostra erro quando a edge function recusa o arquivo', async () => {
+    mockInvoke.mockResolvedValue({
+      data: null,
+      error: { message: 'conteúdo executável não é permitido' },
+    });
+    montaCliente({ anexos_financeiros: [{ data: [], error: null }] });
+    const { container } = render(<AnexoList entidadeId="e-1" entidadeTipo="contas_pagar" />, {
+      wrapper,
+    });
+    await screen.findByText(/Nenhum comprovante anexado/);
+
+    anexaArquivo(container);
+
+    await waitFor(() => expect(toastErro).toHaveBeenCalled());
+    expect(toastSucesso).not.toHaveBeenCalled();
+    expect(mockUpload).not.toHaveBeenCalled();
   });
 });

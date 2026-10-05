@@ -7,13 +7,20 @@ import type { ChecklistItem } from '@/hooks/useSpedContabil';
 
 export function SpedChecklistRow({ item, id }: { item: ChecklistItem; id?: string }) {
   const [open, setOpen] = useState(false);
-  const Icon = item.status === 'ok' ? CheckCircle2 : item.status === 'warn' ? AlertTriangle : XCircle;
+  const Icon =
+    item.status === 'ok' ? CheckCircle2 : item.status === 'warn' ? AlertTriangle : XCircle;
   const color =
-    item.status === 'ok' ? 'text-success' :
-    item.status === 'warn' ? 'text-warning' : 'text-destructive';
+    item.status === 'ok'
+      ? 'text-success'
+      : item.status === 'warn'
+        ? 'text-warning'
+        : 'text-destructive';
   const border =
-    item.status === 'ok' ? 'border-l-emerald-500/50' :
-    item.status === 'warn' ? 'border-l-amber-500/50' : 'border-l-destructive';
+    item.status === 'ok'
+      ? 'border-l-emerald-500/50'
+      : item.status === 'warn'
+        ? 'border-l-amber-500/50'
+        : 'border-l-destructive';
   const hasItens = item.itens && item.itens.length > 0;
 
   return (
@@ -36,7 +43,11 @@ export function SpedChecklistRow({ item, id }: { item: ChecklistItem; id?: strin
         {hasItens && (
           <CollapsibleContent className="mt-2 pl-8">
             <ul className="text-xs space-y-1 text-muted-foreground">
-              {item.itens!.map((i, idx) => <li key={idx} className="font-mono">• {i}</li>)}
+              {item.itens!.map((i, idx) => (
+                <li key={idx} className="font-mono">
+                  • {i}
+                </li>
+              ))}
               {item.itens!.length >= 20 && <li className="italic">… mais itens omitidos</li>}
             </ul>
           </CollapsibleContent>

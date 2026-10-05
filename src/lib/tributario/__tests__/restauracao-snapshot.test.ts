@@ -1,8 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import {
-  mesclarSnapshotParametros,
-  normalizarParametrosSnapshot,
-} from '../historico-simulacao';
+import { mesclarSnapshotParametros, normalizarParametrosSnapshot } from '../historico-simulacao';
 import type { ParametrosSimulacao } from '../types';
 
 /**
@@ -88,7 +85,9 @@ describe('restauração reprodutível de snapshots', () => {
       };
       if (random() > 0.5) bruto.periodicidadeApuracao = random() > 0.5 ? 'anual' : 'trimestral';
       if (random() > 0.5) {
-        bruto.lucroTrimestral = Array.from({ length: 4 }, () => Math.round((random() - 0.3) * 800_000));
+        bruto.lucroTrimestral = Array.from({ length: 4 }, () =>
+          Math.round((random() - 0.3) * 800_000)
+        );
       }
       if (random() > 0.5) bruto.prejuizoFiscalAcumulado = Math.round(random() * 4_000_000);
 

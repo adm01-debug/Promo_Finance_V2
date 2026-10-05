@@ -1,7 +1,13 @@
 import { useState } from 'react';
 import { FileText, Download, Loader2, Printer } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+} from '@/components/ui/dialog';
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
 import { formatCurrency, formatDate } from '@/lib/formatters';
@@ -64,11 +70,15 @@ export function DANFEGenerator({ nota, open, onOpenChange }: DANFEGeneratorProps
       doc.setFontSize(10);
       doc.setFont('helvetica', 'bold');
       doc.rect(10, 10, pageWidth - 20, 25);
-      doc.text('DANFE - Documento Auxiliar da Nota Fiscal Eletrônica', pageWidth / 2, 18, { align: 'center' });
+      doc.text('DANFE - Documento Auxiliar da Nota Fiscal Eletrônica', pageWidth / 2, 18, {
+        align: 'center',
+      });
       doc.setFontSize(8);
       doc.setFont('helvetica', 'normal');
       doc.text(`0 - ENTRADA / 1 - SAÍDA`, pageWidth / 2, 24, { align: 'center' });
-      doc.text(`NF-e Nº ${nota.numero} | Série ${nota.serie}`, pageWidth / 2, 30, { align: 'center' });
+      doc.text(`NF-e Nº ${nota.numero} | Série ${nota.serie}`, pageWidth / 2, 30, {
+        align: 'center',
+      });
 
       // Chave de acesso
       doc.rect(10, 38, pageWidth - 20, 12);
@@ -113,7 +123,7 @@ export function DANFEGenerator({ nota, open, onOpenChange }: DANFEGeneratorProps
       autoTable(doc, {
         startY: 112,
         head: [['Cód.', 'Descrição', 'NCM', 'CFOP', 'UN', 'Qtd', 'V.Unit', 'V.Total']],
-        body: nota.itens.map(item => [
+        body: nota.itens.map((item) => [
           item.codigo,
           item.descricao,
           item.ncm,
@@ -136,11 +146,15 @@ export function DANFEGenerator({ nota, open, onOpenChange }: DANFEGeneratorProps
       });
 
       // Totais
-      const finalY = (doc as unknown as { lastAutoTable?: { finalY: number } }).lastAutoTable?.finalY || 200;
+      const finalY =
+        (doc as unknown as { lastAutoTable?: { finalY: number } }).lastAutoTable?.finalY || 200;
       doc.rect(10, finalY + 2, pageWidth - 20, 25);
       doc.setFontSize(7);
       doc.text('CÁLCULO DO IMPOSTO', 14, finalY + 7);
-      const col1 = 14; const col2 = 55; const col3 = 95; const col4 = 140;
+      const col1 = 14;
+      const col2 = 55;
+      const col3 = 95;
+      const col4 = 140;
       doc.text(`Base ICMS: ${formatCurrency(nota.valorProdutos)}`, col1, finalY + 13);
       doc.text(`Valor ICMS: ${formatCurrency(nota.valorICMS)}`, col2, finalY + 13);
       doc.text(`Valor IPI: ${formatCurrency(nota.valorIPI)}`, col3, finalY + 13);
@@ -184,14 +198,24 @@ export function DANFEGenerator({ nota, open, onOpenChange }: DANFEGeneratorProps
                 <p className="font-bold text-lg">{nota.emitenteNome}</p>
                 <p className="text-sm text-muted-foreground">CNPJ: {nota.cnpjEmitente}</p>
               </div>
-              <Badge variant={nota.status === 'autorizada' ? 'default' : 'destructive'}>{nota.status}</Badge>
+              <Badge variant={nota.status === 'autorizada' ? 'default' : 'destructive'}>
+                {nota.status}
+              </Badge>
             </div>
             <Separator />
             <div className="grid grid-cols-2 gap-2 text-sm">
-              <div><span className="text-muted-foreground">NF-e:</span> {nota.numero}</div>
-              <div><span className="text-muted-foreground">Série:</span> {nota.serie}</div>
-              <div><span className="text-muted-foreground">Destinatário:</span> {nota.destinatarioNome}</div>
-              <div><span className="text-muted-foreground">CNPJ:</span> {nota.cnpjDestinatario}</div>
+              <div>
+                <span className="text-muted-foreground">NF-e:</span> {nota.numero}
+              </div>
+              <div>
+                <span className="text-muted-foreground">Série:</span> {nota.serie}
+              </div>
+              <div>
+                <span className="text-muted-foreground">Destinatário:</span> {nota.destinatarioNome}
+              </div>
+              <div>
+                <span className="text-muted-foreground">CNPJ:</span> {nota.cnpjDestinatario}
+              </div>
             </div>
             <Separator />
             <div className="text-xs font-mono text-muted-foreground break-all">
@@ -199,28 +223,56 @@ export function DANFEGenerator({ nota, open, onOpenChange }: DANFEGeneratorProps
             </div>
             <Separator />
             <div className="grid grid-cols-4 gap-2 text-center">
-              <div><p className="text-xs text-muted-foreground">Produtos</p><p className="font-bold text-sm">{formatCurrency(nota.valorProdutos)}</p></div>
-              <div><p className="text-xs text-muted-foreground">ICMS</p><p className="font-bold text-sm text-warning">{formatCurrency(nota.valorICMS)}</p></div>
-              <div><p className="text-xs text-muted-foreground">IPI</p><p className="font-bold text-sm text-warning">{formatCurrency(nota.valorIPI)}</p></div>
-              <div><p className="text-xs text-muted-foreground">Total</p><p className="font-bold text-sm text-primary">{formatCurrency(nota.valorTotal)}</p></div>
+              <div>
+                <p className="text-xs text-muted-foreground">Produtos</p>
+                <p className="font-bold text-sm">{formatCurrency(nota.valorProdutos)}</p>
+              </div>
+              <div>
+                <p className="text-xs text-muted-foreground">ICMS</p>
+                <p className="font-bold text-sm text-warning">{formatCurrency(nota.valorICMS)}</p>
+              </div>
+              <div>
+                <p className="text-xs text-muted-foreground">IPI</p>
+                <p className="font-bold text-sm text-warning">{formatCurrency(nota.valorIPI)}</p>
+              </div>
+              <div>
+                <p className="text-xs text-muted-foreground">Total</p>
+                <p className="font-bold text-sm text-primary">{formatCurrency(nota.valorTotal)}</p>
+              </div>
             </div>
             <div className="text-sm">
               <p className="text-muted-foreground mb-1">Itens ({nota.itens.length}):</p>
               {nota.itens.map((item, i) => (
-                <div key={i} className="flex justify-between text-xs py-1 border-b border-border/30 last:border-0">
+                <div
+                  key={i}
+                  className="flex justify-between text-xs py-1 border-b border-border/30 last:border-0"
+                >
                   <span>{item.descricao}</span>
-                  <span className="font-medium">{item.quantidade}x {formatCurrency(item.valorUnitario)}</span>
+                  <span className="font-medium">
+                    {item.quantidade}x {formatCurrency(item.valorUnitario)}
+                  </span>
                 </div>
               ))}
             </div>
           </div>
 
           <div className="flex justify-end gap-3">
-            <Button variant="outline" onClick={() => { generatePDF(); window.print(); }} className="gap-2">
+            <Button
+              variant="outline"
+              onClick={() => {
+                generatePDF();
+                window.print();
+              }}
+              className="gap-2"
+            >
               <Printer className="h-4 w-4" /> Imprimir
             </Button>
             <Button onClick={generatePDF} disabled={generating} className="gap-2">
-              {generating ? <Loader2 className="h-4 w-4 animate-spin" /> : <Download className="h-4 w-4" />}
+              {generating ? (
+                <Loader2 className="h-4 w-4 animate-spin" />
+              ) : (
+                <Download className="h-4 w-4" />
+              )}
               Baixar DANFE (PDF)
             </Button>
           </div>

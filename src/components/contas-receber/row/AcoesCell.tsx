@@ -126,13 +126,22 @@ export function AcoesCell({
             <DropdownMenuLabel className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground/60 px-3 py-2">
               Operações
             </DropdownMenuLabel>
-            <DropdownMenuItem className="gap-3 rounded-xl focus:bg-card/10" onClick={() => onView?.(conta)}>
+            <DropdownMenuItem
+              className="gap-3 rounded-xl focus:bg-card/10"
+              onClick={() => onView?.(conta)}
+            >
               <Eye className="h-4 w-4 text-primary" /> Ver detalhes
             </DropdownMenuItem>
-            <DropdownMenuItem className="gap-3 rounded-xl focus:bg-card/10" onClick={() => onEdit(conta)}>
+            <DropdownMenuItem
+              className="gap-3 rounded-xl focus:bg-card/10"
+              onClick={() => onEdit(conta)}
+            >
               <Edit className="h-4 w-4" /> Editar
             </DropdownMenuItem>
-            <DropdownMenuItem className="gap-3 rounded-xl focus:bg-card/10" onClick={() => setHistoryOpen(true)}>
+            <DropdownMenuItem
+              className="gap-3 rounded-xl focus:bg-card/10"
+              onClick={() => setHistoryOpen(true)}
+            >
               <History className="h-4 w-4" /> Histórico de alterações
             </DropdownMenuItem>
             <DuplicateButton
@@ -146,7 +155,10 @@ export function AcoesCell({
               variant="ghost"
               size="default"
             />
-            <DropdownMenuItem className="gap-3 rounded-xl focus:bg-card/10" onClick={() => onEnviarCobranca?.(conta)}>
+            <DropdownMenuItem
+              className="gap-3 rounded-xl focus:bg-card/10"
+              onClick={() => onEnviarCobranca?.(conta)}
+            >
               <Send className="h-4 w-4 text-blue-400" /> Enviar cobrança
             </DropdownMenuItem>
             {notClosed && (
@@ -158,7 +170,10 @@ export function AcoesCell({
               </DropdownMenuItem>
             )}
             {notClosed && (
-              <DropdownMenuItem className="gap-3 rounded-xl focus:bg-card/10" onClick={() => onAplicarDesconto?.(conta)}>
+              <DropdownMenuItem
+                className="gap-3 rounded-xl focus:bg-card/10"
+                onClick={() => onAplicarDesconto?.(conta)}
+              >
                 <Tag className="h-4 w-4 text-warning" /> Aplicar Desconto
               </DropdownMenuItem>
             )}
@@ -180,7 +195,12 @@ export function AcoesCell({
           </DropdownMenuContent>
         </DropdownMenu>
       </div>
-      <VersionHistory open={historyOpen} onOpenChange={setHistoryOpen} recordId={conta.id} tableName="contas_receber" />
+      <VersionHistory
+        open={historyOpen}
+        onOpenChange={setHistoryOpen}
+        recordId={conta.id}
+        tableName="contas_receber"
+      />
     </TableCell>
   );
 }
