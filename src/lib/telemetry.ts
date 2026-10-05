@@ -115,7 +115,10 @@ function flushQueuesKeepalive(userId: string | null): void {
     }).catch(() => {});
   let orcamento = KEEPALIVE_ORCAMENTO_BYTES;
   if (errorQueue.length > 0) {
-    const rows = loteKeepalive(buildErrorRows(userId, errorQueue.splice(0)), orcamento);
+    // consome da fila só o que efetivamente entra no lote — o excedente
+    // fica para o próximo flush em vez de ser perdido pelo splice(0)
+    const rows = loteKeepalive(buildErrorRows(userId, errorQueue), orcamento);
+    errorQueue.splice(0, rows.length);
     if (rows.length > 0) {
       void post('frontend_error_logs', rows);
       // desconto também em bytes UTF-8, como a seleção do lote
@@ -123,7 +126,8 @@ function flushQueuesKeepalive(userId: string | null): void {
     }
   }
   if (perfQueue.length > 0 && orcamento > 0) {
-    const rows = loteKeepalive(buildPerfRows(userId, perfQueue.splice(0)), orcamento);
+    const rows = loteKeepalive(buildPerfRows(userId, perfQueue), orcamento);
+    perfQueue.splice(0, rows.length);
     if (rows.length > 0) void post('frontend_performance_logs', rows);
   }
 }

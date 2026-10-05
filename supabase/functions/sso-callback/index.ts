@@ -1160,7 +1160,14 @@ Deno.serve(
         let redirectTo = safeOrigin(req, null);
         if (appRedirect && /^https?:\/\//.test(appRedirect)) {
           try {
-            if (origemCorsPermitida(new URL(appRedirect).origin)) redirectTo = appRedirect;
+            const origemRedirect = new URL(appRedirect).origin;
+            // mesmo predicado do sso-initiate: ALLOWED_ORIGINS + APP_BASE_URL,
+            // para não descartar destinos que o início do fluxo já autorizou
+            if (
+              origemCorsPermitida(origemRedirect) ||
+              (PUBLIC_APP_URL && origemRedirect === new URL(PUBLIC_APP_URL).origin)
+            )
+              redirectTo = appRedirect;
           } catch {
             /* origem inválida → mantém fallback */
           }
