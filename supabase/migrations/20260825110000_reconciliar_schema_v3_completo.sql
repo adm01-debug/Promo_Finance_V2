@@ -5033,6 +5033,16 @@ CREATE POLICY bitrix24_activities_tenant_update ON public.bitrix24_activities FO
    FROM public.lalamove_orders o
   WHERE ((o.id = bitrix24_activities.order_id) AND public.empresa_membro_ativo(o.empresa_id)))));
 
+CREATE TABLE IF NOT EXISTS public.bitrix24_stage_mappings (
+    id uuid NOT NULL DEFAULT gen_random_uuid(),
+    lalamove_status text NOT NULL,
+    empresa_id uuid,
+    created_at timestamp with time zone NOT NULL DEFAULT now(),
+    CONSTRAINT bitrix24_stage_mappings_pkey PRIMARY KEY (id),
+    CONSTRAINT bitrix24_stage_mappings_lalamove_status_key UNIQUE (lalamove_status)
+);
+ALTER TABLE public.bitrix24_stage_mappings ENABLE ROW LEVEL SECURITY;
+
 DROP POLICY IF EXISTS "Admins can delete stage mappings" ON public.bitrix24_stage_mappings;
 CREATE POLICY "Admins can delete stage mappings" ON public.bitrix24_stage_mappings FOR DELETE TO authenticated USING (public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role));
 
@@ -5262,6 +5272,17 @@ CREATE POLICY "Access by empresa_id" ON public.creditos_tributarios TO authentic
    FROM public.user_roles
   WHERE ((user_roles.user_id = ( SELECT auth.uid() AS uid)) AND (user_roles.role = 'admin'::public.app_role))))));
 
+CREATE TABLE IF NOT EXISTS public.cron_job_logs (
+    id uuid NOT NULL DEFAULT gen_random_uuid(),
+    job_name text,
+    status text,
+    started_at timestamp with time zone NOT NULL DEFAULT now(),
+    finished_at timestamp with time zone,
+    error_message text,
+    CONSTRAINT cron_job_logs_pkey PRIMARY KEY (id)
+);
+ALTER TABLE public.cron_job_logs ENABLE ROW LEVEL SECURITY;
+
 DROP POLICY IF EXISTS "Admins can view cron logs" ON public.cron_job_logs;
 CREATE POLICY "Admins can view cron logs" ON public.cron_job_logs FOR SELECT TO authenticated USING (public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role));
 
@@ -5336,6 +5357,16 @@ CREATE POLICY elisao_sim_regime_acesso ON public.elisao_simulacoes_regime TO aut
 
 DROP POLICY IF EXISTS tarefas_elisao_acesso ON public.elisao_tarefas_acionaveis;
 CREATE POLICY tarefas_elisao_acesso ON public.elisao_tarefas_acionaveis TO authenticated USING (public.empresa_acessivel(empresa_id)) WITH CHECK (public.empresa_acessivel(empresa_id));
+
+CREATE TABLE IF NOT EXISTS public.email_verifications (
+    id uuid NOT NULL DEFAULT gen_random_uuid(),
+    user_id uuid NOT NULL,
+    token text,
+    verified_at timestamp with time zone,
+    created_at timestamp with time zone NOT NULL DEFAULT now(),
+    CONSTRAINT email_verifications_pkey PRIMARY KEY (id)
+);
+ALTER TABLE public.email_verifications ENABLE ROW LEVEL SECURITY;
 
 DROP POLICY IF EXISTS "Admins can delete verifications" ON public.email_verifications;
 CREATE POLICY "Admins can delete verifications" ON public.email_verifications FOR DELETE TO authenticated USING (public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role));
@@ -5691,6 +5722,17 @@ CREATE POLICY "Empresa-based access" ON public.metas_financeiras TO authenticate
   WHERE ((user_empresas.user_id = ( SELECT auth.uid() AS uid)) AND (user_empresas.ativo = true)))) OR (EXISTS ( SELECT 1
    FROM public.user_roles
   WHERE ((user_roles.user_id = ( SELECT auth.uid() AS uid)) AND (user_roles.role = 'admin'::public.app_role))))));
+
+CREATE TABLE IF NOT EXISTS public.mfa_sessions (
+    id uuid NOT NULL DEFAULT gen_random_uuid(),
+    user_id uuid NOT NULL,
+    method text,
+    verified_at timestamp with time zone,
+    expires_at timestamp with time zone,
+    created_at timestamp with time zone NOT NULL DEFAULT now(),
+    CONSTRAINT mfa_sessions_pkey PRIMARY KEY (id)
+);
+ALTER TABLE public.mfa_sessions ENABLE ROW LEVEL SECURITY;
 
 DROP POLICY IF EXISTS "Users can delete their MFA sessions" ON public.mfa_sessions;
 CREATE POLICY "Users can delete their MFA sessions" ON public.mfa_sessions FOR DELETE TO authenticated USING (((( SELECT auth.uid() AS uid) = user_id) OR public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role)));
@@ -6293,6 +6335,17 @@ CREATE POLICY "Users can manage their own preferences" ON public.user_anomalia_p
 DROP POLICY IF EXISTS "Users can manage their own preferences" ON public.user_demonstrativo_preferences;
 CREATE POLICY "Users can manage their own preferences" ON public.user_demonstrativo_preferences TO authenticated USING ((( SELECT auth.uid() AS uid) = user_id)) WITH CHECK ((( SELECT auth.uid() AS uid) = user_id));
 
+CREATE TABLE IF NOT EXISTS public.user_devices (
+    id uuid NOT NULL DEFAULT gen_random_uuid(),
+    user_id uuid NOT NULL,
+    device_name text,
+    device_type text,
+    last_seen_at timestamp with time zone,
+    created_at timestamp with time zone NOT NULL DEFAULT now(),
+    CONSTRAINT user_devices_pkey PRIMARY KEY (id)
+);
+ALTER TABLE public.user_devices ENABLE ROW LEVEL SECURITY;
+
 DROP POLICY IF EXISTS "Users can delete their devices" ON public.user_devices;
 CREATE POLICY "Users can delete their devices" ON public.user_devices FOR DELETE TO authenticated USING (((( SELECT auth.uid() AS uid) = user_id) OR public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role)));
 
@@ -6331,6 +6384,16 @@ CREATE POLICY "Users can update their own onboarding progress" ON public.user_on
 
 DROP POLICY IF EXISTS "Users can view their own onboarding progress" ON public.user_onboarding_progress;
 CREATE POLICY "Users can view their own onboarding progress" ON public.user_onboarding_progress FOR SELECT TO authenticated USING ((( SELECT auth.uid() AS uid) = user_id));
+
+CREATE TABLE IF NOT EXISTS public.user_passkeys (
+    id uuid NOT NULL DEFAULT gen_random_uuid(),
+    user_id uuid NOT NULL,
+    credential_id text,
+    public_key text,
+    created_at timestamp with time zone NOT NULL DEFAULT now(),
+    CONSTRAINT user_passkeys_pkey PRIMARY KEY (id)
+);
+ALTER TABLE public.user_passkeys ENABLE ROW LEVEL SECURITY;
 
 DROP POLICY IF EXISTS "Users can delete own passkeys" ON public.user_passkeys;
 CREATE POLICY "Users can delete own passkeys" ON public.user_passkeys FOR DELETE TO authenticated USING ((( SELECT auth.uid() AS uid) = user_id));
@@ -6384,6 +6447,16 @@ CREATE POLICY "Access by empresa_id" ON public.verificacoes_conformidade TO auth
   WHERE ((user_empresas.user_id = ( SELECT auth.uid() AS uid)) AND (user_empresas.ativo = true)))) OR (EXISTS ( SELECT 1
    FROM public.user_roles
   WHERE ((user_roles.user_id = ( SELECT auth.uid() AS uid)) AND (user_roles.role = 'admin'::public.app_role))))));
+
+CREATE TABLE IF NOT EXISTS public.webauthn_challenges (
+    id uuid NOT NULL DEFAULT gen_random_uuid(),
+    user_id uuid NOT NULL,
+    challenge text NOT NULL,
+    expires_at timestamp with time zone,
+    created_at timestamp with time zone NOT NULL DEFAULT now(),
+    CONSTRAINT webauthn_challenges_pkey PRIMARY KEY (id)
+);
+ALTER TABLE public.webauthn_challenges ENABLE ROW LEVEL SECURITY;
 
 DROP POLICY IF EXISTS "Authenticated can create challenges" ON public.webauthn_challenges;
 CREATE POLICY "Authenticated can create challenges" ON public.webauthn_challenges FOR INSERT TO authenticated WITH CHECK ((( SELECT auth.uid() AS uid) = user_id));
