@@ -29,7 +29,7 @@ erDiagram
     categorias |o--o{ contas_receber : "classifica"
     centros_custo |o--o{ contas_pagar : "rateia (ref. lógica)"
     centros_custo |o--o{ contas_receber : "rateia (ref. lógica)"
-    centros_custo ||--o{ centros_custo : "hierarquia (parent_id)"
+    centros_custo |o--o{ centros_custo : "hierarquia (parent_id)"
     contas_bancarias ||--o{ transacoes_bancarias : "movimenta"
     contas_bancarias |o--o{ contas_pagar : "conta de pagamento (ref. lógica)"
     contas_bancarias |o--o{ contas_receber : "conta de recebimento (ref. lógica)"

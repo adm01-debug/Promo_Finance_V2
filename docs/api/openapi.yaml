@@ -184,6 +184,9 @@ paths:
   /bitrix24-webhook:
     post:
       tags: [webhooks]
+      security:
+        - bitrixHmac: []
+        - webhookToken: []
       summary: Eventos do Bitrix24
       description: >-
         Recebe eventos outbound do Bitrix24 (entidades CRM). Autenticado por
@@ -340,11 +343,12 @@ paths:
                   action: { type: string }
                   result: { type: object }
         '400':
-          description: 'JSON malformado — {error: invalid_json}'
+          description: >-
+            JSON malformado ({error: invalid_json}) OU falha de
+            schema/validação (action ausente ou inválida, payload
+            inválido) — validatePayload devolve 400 com details
         '401': { description: x-n8n-secret inválido }
         '405': { description: Método diferente de POST }
-        '422':
-          $ref: '#/components/responses/ErroValidacaoContrato'
         '500':
           description: >-
             Falha interna ao executar a ação (catch de createHandler) —
@@ -939,6 +943,14 @@ components:
       description: >-
         Assinatura HMAC-SHA256 do corpo bruto (também aceitos
         x-bling-signature, x-signature, x-webhook-signature)
+    bitrixHmac:
+      type: apiKey
+      in: header
+      name: x-bitrix-signature
+      description: >-
+        Assinatura HMAC do corpo — o handler Bitrix24 também aceita
+        x-signature/x-webhook-signature ou `auth.application_token`
+        no corpo
     whatsappHmac:
       type: apiKey
       in: header
