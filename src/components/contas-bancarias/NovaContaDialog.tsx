@@ -1,15 +1,31 @@
 import { useState } from 'react';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 import { Plus } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { useQueryClient } from '@tanstack/react-query';
 
-interface Empresa { id: string; nome_fantasia?: string | null; razao_social: string }
+interface Empresa {
+  id: string;
+  nome_fantasia?: string | null;
+  razao_social: string;
+}
 
 interface Props {
   open: boolean;
@@ -46,7 +62,7 @@ export function NovaContaDialog({ open, onOpenChange, empresas, bancos }: Props)
         saldo_inicial: parseFloat(saldo) || 0,
         saldo_atual: parseFloat(saldo) || 0,
         saldo_disponivel: parseFloat(saldo) || 0,
-        ativo: true
+        ativo: true,
       });
 
       if (error) throw error;
@@ -60,7 +76,7 @@ export function NovaContaDialog({ open, onOpenChange, empresas, bancos }: Props)
       setConta('');
       setSaldo('0');
     } catch (err) {
-      toast.error('Erro ao adicionar conta: ' + err.message);
+      toast.error('Erro ao adicionar conta: ' + (err instanceof Error ? err.message : String(err)));
     } finally {
       setLoading(false);
     }
@@ -82,9 +98,11 @@ export function NovaContaDialog({ open, onOpenChange, empresas, bancos }: Props)
           <div className="grid gap-2">
             <Label>Empresa (Tenant CNPJ)</Label>
             <Select value={empresaId} onValueChange={setEmpresaId}>
-              <SelectTrigger><SelectValue placeholder="Selecione a empresa" /></SelectTrigger>
+              <SelectTrigger>
+                <SelectValue placeholder="Selecione a empresa" />
+              </SelectTrigger>
               <SelectContent>
-                {empresas.map(empresa => (
+                {empresas.map((empresa) => (
                   <SelectItem key={empresa.id} value={empresa.id}>
                     {empresa.nome_fantasia || empresa.razao_social}
                   </SelectItem>
@@ -95,10 +113,14 @@ export function NovaContaDialog({ open, onOpenChange, empresas, bancos }: Props)
           <div className="grid gap-2">
             <Label>Banco</Label>
             <Select value={banco} onValueChange={setBanco}>
-              <SelectTrigger><SelectValue placeholder="Selecione o banco" /></SelectTrigger>
+              <SelectTrigger>
+                <SelectValue placeholder="Selecione o banco" />
+              </SelectTrigger>
               <SelectContent>
-                {bancos.map(b => (
-                  <SelectItem key={b} value={b}>{b}</SelectItem>
+                {bancos.map((b) => (
+                  <SelectItem key={b} value={b}>
+                    {b}
+                  </SelectItem>
                 ))}
               </SelectContent>
             </Select>
@@ -106,17 +128,27 @@ export function NovaContaDialog({ open, onOpenChange, empresas, bancos }: Props)
           <div className="grid grid-cols-2 gap-4">
             <div className="grid gap-2">
               <Label>Agência</Label>
-              <Input placeholder="0000" value={agencia} onChange={(e) => setAgencia(e.target.value)} />
+              <Input
+                placeholder="0000"
+                value={agencia}
+                onChange={(e) => setAgencia(e.target.value)}
+              />
             </div>
             <div className="grid gap-2">
               <Label>Conta</Label>
-              <Input placeholder="00000-0" value={conta} onChange={(e) => setConta(e.target.value)} />
+              <Input
+                placeholder="00000-0"
+                value={conta}
+                onChange={(e) => setConta(e.target.value)}
+              />
             </div>
           </div>
           <div className="grid gap-2">
             <Label>Tipo de Conta</Label>
             <Select value={tipo} onValueChange={setTipo}>
-              <SelectTrigger><SelectValue placeholder="Selecione o tipo" /></SelectTrigger>
+              <SelectTrigger>
+                <SelectValue placeholder="Selecione o tipo" />
+              </SelectTrigger>
               <SelectContent>
                 <SelectItem value="corrente">Conta Corrente</SelectItem>
                 <SelectItem value="poupanca">Poupança</SelectItem>
@@ -125,7 +157,12 @@ export function NovaContaDialog({ open, onOpenChange, empresas, bancos }: Props)
           </div>
           <div className="grid gap-2">
             <Label>Saldo Inicial</Label>
-            <Input type="number" placeholder="0,00" value={saldo} onChange={(e) => setSaldo(e.target.value)} />
+            <Input
+              type="number"
+              placeholder="0,00"
+              value={saldo}
+              onChange={(e) => setSaldo(e.target.value)}
+            />
           </div>
           <Button className="w-full mt-2" onClick={handleSubmit} disabled={loading}>
             {loading ? 'Adicionando...' : 'Adicionar Conta'}
