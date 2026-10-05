@@ -5422,6 +5422,8 @@ CREATE POLICY estrategias_write_admin ON public.estrategias_elisao TO authentica
 DROP POLICY IF EXISTS eventos_contab_select ON public.eventos_contabilizacao_log;
 CREATE POLICY eventos_contab_select ON public.eventos_contabilizacao_log FOR SELECT TO authenticated USING (public.empresa_acessivel(empresa_id));
 
+ALTER TABLE public.evidencias_pacotes ADD COLUMN IF NOT EXISTS verificacao_id uuid;
+
 DROP POLICY IF EXISTS "Evidencias scoped by verificacao" ON public.evidencias_pacotes;
 CREATE POLICY "Evidencias scoped by verificacao" ON public.evidencias_pacotes TO authenticated USING ((EXISTS ( SELECT 1
    FROM public.verificacoes_conformidade vc
@@ -5622,6 +5624,8 @@ CREATE POLICY historico_cobrancas_boletos_empresa_select ON public.historico_cob
 
 DROP POLICY IF EXISTS historico_cobrancas_user_all ON public.historico_cobrancas_boletos;
 CREATE POLICY historico_cobrancas_user_all ON public.historico_cobrancas_boletos TO authenticated USING ((( SELECT auth.uid() AS uid) = user_id)) WITH CHECK ((( SELECT auth.uid() AS uid) = user_id));
+
+ALTER TABLE public.historico_conciliacao_ia ADD COLUMN IF NOT EXISTS sessao_id uuid;
 
 DROP POLICY IF EXISTS historico_conciliacao_ia_tenant_select ON public.historico_conciliacao_ia;
 CREATE POLICY historico_conciliacao_ia_tenant_select ON public.historico_conciliacao_ia FOR SELECT TO authenticated USING (((public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role) OR public.has_role(( SELECT auth.uid() AS uid), 'financeiro'::public.app_role)) AND ((EXISTS ( SELECT 1
@@ -6184,6 +6188,8 @@ CREATE POLICY "Authenticated can insert error logs" ON public.runtime_error_logs
 
 DROP POLICY IF EXISTS saved_filter_subscriptions_owner ON public.saved_filter_subscriptions;
 CREATE POLICY saved_filter_subscriptions_owner ON public.saved_filter_subscriptions TO authenticated USING ((user_id = auth.uid())) WITH CHECK ((user_id = auth.uid()));
+
+ALTER TABLE public.saved_filters ADD COLUMN IF NOT EXISTS shared_with_roles jsonb;
 
 DROP POLICY IF EXISTS saved_filters_owner_write ON public.saved_filters;
 CREATE POLICY saved_filters_owner_write ON public.saved_filters TO authenticated USING ((user_id = auth.uid())) WITH CHECK ((user_id = auth.uid()));
