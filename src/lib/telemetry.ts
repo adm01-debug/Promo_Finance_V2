@@ -10,6 +10,7 @@
 import { supabase } from '@/integrations/supabase/client';
 import type { Json } from '@/integrations/supabase/types';
 import { logger } from '@/lib/logger';
+import { env } from '@/config/env';
 import { onCLS, onINP, onLCP, onFCP, onTTFB, Metric } from 'web-vitals';
 
 // Breadcrumbs para rastreamento de ações do usuário e chamadas Supabase
@@ -36,6 +37,10 @@ interface TelemetryPayload {
 }
 
 let initialized = false;
+// A assinatura acontece dentro do initTelemetry — no nível do módulo ela
+// quebraria os testes que mockam o client (supabase.auth indefinido).
+let cachedAccessToken: string | null = null;
+
 const errorQueue: TelemetryPayload[] = [];
 const perfQueue: Metric[] = [];
 let flushing = false;
@@ -43,6 +48,56 @@ let flushing = false;
 const MAX_QUEUE = 50;
 const FLUSH_DEBOUNCE_MS = 2000;
 let flushTimer: ReturnType<typeof setTimeout> | null = null;
+
+function buildErrorRows(userId: string | null, batch: TelemetryPayload[]) {
+  return batch.map((p) => ({
+    user_id: userId,
+    error_message: p.message.slice(0, 2000),
+    error_stack: p.stack?.slice(0, 8000) ?? null,
+    url: p.url ?? window.location.href,
+    user_agent: p.user_agent ?? navigator.userAgent,
+    severity: p.severity ?? 'error',
+    metadata: { ...(p.context ?? {}), breadcrumbs: p.breadcrumbs },
+  }));
+}
+
+function buildPerfRows(userId: string | null, batch: Metric[]) {
+  return batch.map((m) => ({
+    user_id: userId,
+    metric_name: m.name,
+    value: m.value,
+    rating: m.rating,
+    url: window.location.href,
+    user_agent: navigator.userAgent,
+    navigation_type: (m as Metric & { navigationType?: string }).navigationType || 'navigate',
+  }));
+}
+
+// O unload fecha a aba antes do flush async terminar (await getUser +
+// inserts). `fetch` com keepalive continua depois do unload — mesma
+// semântica do sendBeacon, mas aceitando os headers que o PostgREST exige.
+function flushQueuesKeepalive(userId: string | null): void {
+  if (!cachedAccessToken) return;
+  const headers = {
+    apikey: env.SUPABASE_PUBLISHABLE_KEY,
+    authorization: `Bearer ${cachedAccessToken}`,
+    'content-type': 'application/json',
+    prefer: 'return=minimal',
+  };
+  const post = (tabela: string, rows: Record<string, unknown>[]) =>
+    fetch(`${env.SUPABASE_URL}/rest/v1/${tabela}`, {
+      method: 'POST',
+      headers,
+      body: JSON.stringify(rows),
+      keepalive: true,
+    }).catch(() => {});
+  if (errorQueue.length > 0) {
+    void post('frontend_error_logs', buildErrorRows(userId, errorQueue.splice(0)));
+  }
+  if (perfQueue.length > 0) {
+    void post('frontend_performance_logs', buildPerfRows(userId, perfQueue.splice(0)));
+  }
+}
 
 async function flushQueues(): Promise<void> {
   if (flushing || (errorQueue.length === 0 && perfQueue.length === 0)) return;
@@ -64,15 +119,7 @@ async function flushQueues(): Promise<void> {
     // 1. Process errors
     if (errorQueue.length > 0) {
       const batch = errorQueue.splice(0, errorQueue.length);
-      const rows = batch.map((p) => ({
-        user_id: user?.id ?? null,
-        error_message: p.message.slice(0, 2000),
-        error_stack: p.stack?.slice(0, 8000) ?? null,
-        url: p.url ?? window.location.href,
-        user_agent: p.user_agent ?? navigator.userAgent,
-        severity: p.severity ?? 'error',
-        metadata: { ...(p.context ?? {}), breadcrumbs: p.breadcrumbs },
-      }));
+      const rows = buildErrorRows(user?.id ?? null, batch);
       // eslint-disable-next-line local/no-floating-supabase-write -- débito de integridade de escrita, herdado do inventário da Etapa 15
       await supabase.from('frontend_error_logs').insert(rows);
     }
@@ -80,15 +127,7 @@ async function flushQueues(): Promise<void> {
     // 2. Process performance metrics
     if (perfQueue.length > 0) {
       const batch = perfQueue.splice(0, perfQueue.length);
-      const rows = batch.map((m) => ({
-        user_id: user?.id ?? null,
-        metric_name: m.name,
-        value: m.value,
-        rating: m.rating,
-        url: window.location.href,
-        user_agent: navigator.userAgent,
-        navigation_type: (m as Metric & { navigationType?: string }).navigationType || 'navigate',
-      }));
+      const rows = buildPerfRows(user?.id ?? null, batch);
       // eslint-disable-next-line local/no-floating-supabase-write -- débito de integridade de escrita, herdado do inventário da Etapa 15
       await supabase.from('frontend_performance_logs').insert(rows);
     }
@@ -156,9 +195,14 @@ export function initTelemetry(): void {
     logger.warn('[telemetry] Erro ao registrar web-vitals:', err);
   }
 
+  supabase.auth.onAuthStateChange((_event, session) => {
+    cachedAccessToken = session?.access_token ?? null;
+  });
+
   window.addEventListener('beforeunload', () => {
     if (errorQueue.length > 0 || perfQueue.length > 0) {
-      void flushQueues();
+      // keepalive: o fetch async comum morreria com a aba antes do await.
+      flushQueuesKeepalive(null);
     }
   });
 
