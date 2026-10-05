@@ -1,12 +1,22 @@
 import { describe, it, expect } from 'vitest';
 import {
-  validateCPF, validateCNPJ, validateCPFOrCNPJ,
-  formatCPF, formatCNPJ, formatCPFOrCNPJ,
-  generateCPF, generateCNPJ,
-  validatePhone, formatPhone,
-  validateCEP, formatCEP,
-  validateState, getStateName, getAllStates,
-  validateBankAccount, validatePIXKey,
+  validateCPF,
+  validateCNPJ,
+  validateCPFOrCNPJ,
+  formatCPF,
+  formatCNPJ,
+  formatCPFOrCNPJ,
+  generateCPF,
+  generateCNPJ,
+  validatePhone,
+  formatPhone,
+  validateCEP,
+  formatCEP,
+  validateState,
+  getStateName,
+  getAllStates,
+  validateBankAccount,
+  validatePIXKey,
 } from '../brazilian-validators';
 
 // ============================
@@ -56,7 +66,8 @@ describe('validateCPFOrCNPJ', () => {
 describe('formatCPFOrCNPJ', () => {
   it('formata CPF', () => expect(formatCPFOrCNPJ('52998224725')).toBe('529.982.247-25'));
   it('formata CNPJ', () => expect(formatCPFOrCNPJ('11222333000181')).toBe('11.222.333/0001-81'));
-  it('retorna original para tamanho inválido', () => expect(formatCPFOrCNPJ('12345')).toBe('12345'));
+  it('retorna original para tamanho inválido', () =>
+    expect(formatCPFOrCNPJ('12345')).toBe('12345'));
 });
 
 // ============================
@@ -155,8 +166,10 @@ describe('validatePIXKey', () => {
   it('CNPJ como chave', () => expect(validatePIXKey('11222333000181', 'cnpj')).toBe(true));
   it('email como chave', () => expect(validatePIXKey('test@email.com', 'email')).toBe(true));
   it('email inválido', () => expect(validatePIXKey('notanemail', 'email')).toBe(false));
-  it('chave aleatória válida', () => expect(validatePIXKey('a1b2c3d4-e5f6-7890-abcd-ef1234567890', 'random')).toBe(true));
+  it('chave aleatória válida', () =>
+    expect(validatePIXKey('a1b2c3d4-e5f6-7890-abcd-ef1234567890', 'random')).toBe(true));
   it('auto-detect CPF', () => expect(validatePIXKey('52998224725')).toBe(true));
   it('auto-detect email', () => expect(validatePIXKey('test@email.com')).toBe(true));
-  it('auto-detect aleatória', () => expect(validatePIXKey('a1b2c3d4-e5f6-7890-abcd-ef1234567890')).toBe(true));
+  it('auto-detect aleatória', () =>
+    expect(validatePIXKey('a1b2c3d4-e5f6-7890-abcd-ef1234567890')).toBe(true));
 });

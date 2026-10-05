@@ -34,7 +34,9 @@ export function RelatoriosResumosSemanais() {
     <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
       {/* List of Summaries */}
       <div className="space-y-4">
-        <h3 className="text-sm font-bold uppercase tracking-wider text-foreground/40 px-2">Histórico de Resumos</h3>
+        <h3 className="text-sm font-bold uppercase tracking-wider text-foreground/40 px-2">
+          Histórico de Resumos
+        </h3>
         <ScrollArea className="h-[600px] pr-4">
           <div className="space-y-3">
             {resumos.length === 0 ? (
@@ -54,19 +56,28 @@ export function RelatoriosResumosSemanais() {
                   }`}
                 >
                   <div className="flex justify-between items-start mb-2">
-                    <Badge variant="outline" className="bg-primary/10 text-primary border-primary/20 text-[10px] uppercase">
-                      Semana {format(new Date(resumo.semana_inicio), 'dd/MM')} - {format(new Date(resumo.semana_fim), 'dd/MM')}
+                    <Badge
+                      variant="outline"
+                      className="bg-primary/10 text-primary border-primary/20 text-[10px] uppercase"
+                    >
+                      Semana {format(new Date(resumo.semana_inicio), 'dd/MM')} -{' '}
+                      {format(new Date(resumo.semana_fim), 'dd/MM')}
                     </Badge>
                     {resumo.enviado_em && (
-                      <Badge variant="outline" className="bg-success/10 text-success border-success/20 text-[10px]">
+                      <Badge
+                        variant="outline"
+                        className="bg-success/10 text-success border-success/20 text-[10px]"
+                      >
                         Enviado
                       </Badge>
                     )}
                   </div>
-                  <h4 className="text-foreground font-bold text-sm truncate">Resumo Executivo Quantum</h4>
+                  <h4 className="text-foreground font-bold text-sm truncate">
+                    Resumo Executivo Quantum
+                  </h4>
                   <div className="flex items-center gap-2 mt-2 text-[10px] text-foreground/40">
                     <Calendar className="h-3 w-3" />
-                    {format(new Date(resumo.created_at), "PPP", { locale: ptBR })}
+                    {format(new Date(resumo.created_at), 'PPP', { locale: ptBR })}
                   </div>
                 </button>
               ))
@@ -95,15 +106,25 @@ export function RelatoriosResumosSemanais() {
                         Resumo Semanal
                       </CardTitle>
                       <CardDescription>
-                        Análise de IA para o período de {format(new Date(selectedResumo.semana_inicio), 'dd/MM/yyyy')} a {format(new Date(selectedResumo.semana_fim), 'dd/MM/yyyy')}
+                        Análise de IA para o período de{' '}
+                        {format(new Date(selectedResumo.semana_inicio), 'dd/MM/yyyy')} a{' '}
+                        {format(new Date(selectedResumo.semana_fim), 'dd/MM/yyyy')}
                       </CardDescription>
                     </div>
                     <div className="flex gap-2">
-                      <Button variant="outline" size="sm" className="bg-card/5 border-white/10 text-foreground">
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        className="bg-card/5 border-white/10 text-foreground"
+                      >
                         <Download className="h-4 w-4 mr-2" />
                         PDF
                       </Button>
-                      <Button variant="outline" size="sm" className="bg-card/5 border-white/10 text-foreground">
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        className="bg-card/5 border-white/10 text-foreground"
+                      >
                         <Mail className="h-4 w-4 mr-2" />
                         Reenviar
                       </Button>
@@ -124,7 +145,8 @@ export function RelatoriosResumosSemanais() {
               <Sparkles className="h-12 w-12 mb-4 opacity-10" />
               <h3 className="text-lg font-bold text-foreground/40 mb-2">Selecione um resumo</h3>
               <p className="max-w-xs text-sm">
-                Escolha um resumo semanal no histórico ao lado para visualizar os insights e KPIs detalhados.
+                Escolha um resumo semanal no histórico ao lado para visualizar os insights e KPIs
+                detalhados.
               </p>
             </div>
           )}

@@ -2,12 +2,7 @@
 // Redução de 75% do IRPJ sobre o lucro da exploração por 10 anos
 
 import type { ContextoEmpresa, OportunidadeDetectada } from './types';
-import {
-  ALIQUOTA_IRPJ_BASICA,
-  REDUCAO_IRPJ_REGIONAL,
-  UFS_SUDENE,
-  UFS_SUDAM,
-} from './types';
+import { ALIQUOTA_IRPJ_BASICA, REDUCAO_IRPJ_REGIONAL, UFS_SUDENE, UFS_SUDAM } from './types';
 
 /**
  * Detecta elegibilidade aos incentivos regionais de redução do IRPJ
@@ -20,24 +15,20 @@ import {
  */
 export function detectarSudeneSudam(ctx: ContextoEmpresa): OportunidadeDetectada {
   const uf = (ctx.uf ?? '').toUpperCase();
-  const orgao = UFS_SUDENE.includes(uf)
-    ? 'SUDENE'
-    : UFS_SUDAM.includes(uf)
-      ? 'SUDAM'
-      : null;
+  const orgao = UFS_SUDENE.includes(uf) ? 'SUDENE' : UFS_SUDAM.includes(uf) ? 'SUDAM' : null;
 
   const lucro = Math.max(0, ctx.lucro_liquido ?? 0);
   const aplicavel = ctx.regime_atual === 'real' && orgao !== null && lucro > 0;
 
   // Economia = 75% do IRPJ básico (15%) incidente sobre o lucro da exploração.
   // O adicional de 10% não é alcançado pelo benefício.
-  const economiaEstimada = aplicavel
-    ? lucro * ALIQUOTA_IRPJ_BASICA * REDUCAO_IRPJ_REGIONAL
-    : 0;
+  const economiaEstimada = aplicavel ? lucro * ALIQUOTA_IRPJ_BASICA * REDUCAO_IRPJ_REGIONAL : 0;
 
   const motivoNaoAplicavel = (() => {
-    if (ctx.regime_atual !== 'real') return 'O incentivo alcança apenas empresas tributadas pelo Lucro Real.';
-    if (!orgao) return 'A empresa não possui unidade informada em área de atuação da SUDENE ou da SUDAM.';
+    if (ctx.regime_atual !== 'real')
+      return 'O incentivo alcança apenas empresas tributadas pelo Lucro Real.';
+    if (!orgao)
+      return 'A empresa não possui unidade informada em área de atuação da SUDENE ou da SUDAM.';
     return 'Sem lucro da exploração positivo não há IRPJ a reduzir no período.';
   })();
 

@@ -4,7 +4,12 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
-import { usePortalClienteTokens, useCreatePortalToken, useRevokePortalToken, usePortalClienteAcessos } from '@/hooks/usePortalCliente';
+import {
+  usePortalClienteTokens,
+  useCreatePortalToken,
+  useRevokePortalToken,
+  usePortalClienteAcessos,
+} from '@/hooks/usePortalCliente';
 import { formatDate } from '@/lib/formatters';
 
 interface Props {
@@ -25,7 +30,14 @@ export function PortalClientePanel({ clienteId, clienteEmail }: Props) {
     setTimeout(() => setCopiedId(null), 2000);
   };
 
-  if (isLoading) return <Card><CardContent className="p-6"><Skeleton className="h-24" /></CardContent></Card>;
+  if (isLoading)
+    return (
+      <Card>
+        <CardContent className="p-6">
+          <Skeleton className="h-24" />
+        </CardContent>
+      </Card>
+    );
 
   return (
     <Card>
@@ -41,10 +53,16 @@ export function PortalClientePanel({ clienteId, clienteEmail }: Props) {
           <Button
             size="sm"
             className="gap-2"
-            onClick={() => createToken.mutate({ cliente_id: clienteId, email_cliente: clienteEmail })}
+            onClick={() =>
+              createToken.mutate({ cliente_id: clienteId, email_cliente: clienteEmail })
+            }
             disabled={createToken.isPending}
           >
-            {createToken.isPending ? <Loader2 className="h-4 w-4 animate-spin" /> : <Plus className="h-4 w-4" />}
+            {createToken.isPending ? (
+              <Loader2 className="h-4 w-4 animate-spin" />
+            ) : (
+              <Plus className="h-4 w-4" />
+            )}
             Gerar Token
           </Button>
         </div>
@@ -61,8 +79,12 @@ export function PortalClientePanel({ clienteId, clienteEmail }: Props) {
               <div key={t.id} className="flex items-center justify-between p-3 rounded-lg border">
                 <div>
                   <div className="flex items-center gap-2">
-                    <code className="text-xs bg-muted px-2 py-0.5 rounded">{t.token.slice(0, 8)}...{t.token.slice(-4)}</code>
-                    <Badge variant={t.ativo ? 'default' : 'secondary'}>{t.ativo ? 'Ativo' : 'Revogado'}</Badge>
+                    <code className="text-xs bg-muted px-2 py-0.5 rounded">
+                      {t.token.slice(0, 8)}...{t.token.slice(-4)}
+                    </code>
+                    <Badge variant={t.ativo ? 'default' : 'secondary'}>
+                      {t.ativo ? 'Ativo' : 'Revogado'}
+                    </Badge>
                   </div>
                   <p className="text-xs text-muted-foreground mt-1">
                     Criado: {formatDate(t.created_at)} • Expira: {formatDate(t.expires_at)}
@@ -71,10 +93,19 @@ export function PortalClientePanel({ clienteId, clienteEmail }: Props) {
                 </div>
                 <div className="flex gap-1">
                   <Button size="icon" variant="ghost" onClick={() => copyToken(t.token, t.id)}>
-                    {copiedId === t.id ? <Check className="h-4 w-4 text-success" /> : <Copy className="h-4 w-4" />}
+                    {copiedId === t.id ? (
+                      <Check className="h-4 w-4 text-success" />
+                    ) : (
+                      <Copy className="h-4 w-4" />
+                    )}
                   </Button>
                   {t.ativo && (
-                    <Button size="sm" variant="destructive" onClick={() => revokeToken.mutate(t.id)} disabled={revokeToken.isPending}>
+                    <Button
+                      size="sm"
+                      variant="destructive"
+                      onClick={() => revokeToken.mutate(t.id)}
+                      disabled={revokeToken.isPending}
+                    >
                       Revogar
                     </Button>
                   )}
@@ -87,10 +118,16 @@ export function PortalClientePanel({ clienteId, clienteEmail }: Props) {
         {/* Últimos acessos */}
         {acessos && acessos.length > 0 && (
           <div className="mt-4">
-            <h4 className="text-sm font-medium mb-2 flex items-center gap-1"><Clock className="h-4 w-4" />Últimos Acessos</h4>
+            <h4 className="text-sm font-medium mb-2 flex items-center gap-1">
+              <Clock className="h-4 w-4" />
+              Últimos Acessos
+            </h4>
             <div className="space-y-1">
               {(acessos || []).slice(0, 5).map((a) => (
-                <div key={a.id} className="text-xs text-muted-foreground flex justify-between p-2 rounded bg-muted/30">
+                <div
+                  key={a.id}
+                  className="text-xs text-muted-foreground flex justify-between p-2 rounded bg-muted/30"
+                >
                   <span>{formatDate(a.created_at)}</span>
                   <span>{String(a.ip_address || 'IP desconhecido')}</span>
                 </div>

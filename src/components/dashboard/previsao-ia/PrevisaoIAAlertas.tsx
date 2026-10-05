@@ -17,27 +17,33 @@ interface Props {
 
 function getAlertaBadge(tipo: string) {
   switch (tipo.toLowerCase()) {
-    case 'critico': 
+    case 'critico':
       return (
-        <Badge variant="destructive" className="gap-2 font-black uppercase tracking-widest text-[10px] py-1 px-3 rounded-lg animate-pulse">
+        <Badge
+          variant="destructive"
+          className="gap-2 font-black uppercase tracking-widest text-[10px] py-1 px-3 rounded-lg animate-pulse"
+        >
           <ShieldAlert className="h-3 w-3" /> CRITICAL VECTOR
         </Badge>
       );
-    case 'alto': 
+    case 'alto':
       return (
         <Badge className="gap-2 font-black uppercase tracking-widest text-[10px] py-1 px-3 rounded-lg bg-streak text-streak-foreground">
           <AlertTriangle className="h-3 w-3" /> HIGH EXPOSURE
         </Badge>
       );
-    case 'medio': 
+    case 'medio':
       return (
         <Badge className="gap-2 font-black uppercase tracking-widest text-[10px] py-1 px-3 rounded-lg bg-warning text-warning-foreground">
           <AlertTriangle className="h-3 w-3" /> MEDIUM RISK
         </Badge>
       );
-    default: 
+    default:
       return (
-        <Badge variant="secondary" className="gap-2 font-black uppercase tracking-widest text-[10px] py-1 px-3 rounded-lg">
+        <Badge
+          variant="secondary"
+          className="gap-2 font-black uppercase tracking-widest text-[10px] py-1 px-3 rounded-lg"
+        >
           <CheckCircle2 className="h-3 w-3" /> OPTIMIZED
         </Badge>
       );
@@ -59,11 +65,11 @@ export function PrevisaoIAAlertas({ alertas }: Props) {
             {alertas?.length ? (
               <div className="grid gap-4">
                 {alertas.map((alerta, i) => (
-                  <motion.div 
-                    key={i} 
-                    initial={{ opacity: 0, x: -10 }} 
-                    animate={{ opacity: 1, x: 0 }} 
-                    transition={{ delay: i * 0.1 }} 
+                  <motion.div
+                    key={i}
+                    initial={{ opacity: 0, x: -10 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: i * 0.1 }}
                     className="group relative rounded-2xl border border-white/5 bg-card/5 p-5 hover:bg-card/10 transition-all overflow-hidden"
                   >
                     <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
@@ -79,7 +85,8 @@ export function PrevisaoIAAlertas({ alertas }: Props) {
                       <div className="flex items-center gap-3 py-3 px-4 rounded-xl bg-black/40 border border-white/5">
                         <ArrowRight className="h-4 w-4 text-primary shrink-0" />
                         <p className="text-[10px] font-black uppercase tracking-widest text-primary/80">
-                          Recommended Action: <span className="text-foreground ml-1">{alerta.acao_recomendada}</span>
+                          Recommended Action:{' '}
+                          <span className="text-foreground ml-1">{alerta.acao_recomendada}</span>
                         </p>
                       </div>
                     </div>
@@ -93,7 +100,9 @@ export function PrevisaoIAAlertas({ alertas }: Props) {
                 </div>
                 <div className="space-y-1">
                   <p className="text-lg font-black tracking-tight">System Secured</p>
-                  <p className="text-xs font-bold uppercase tracking-widest text-muted-foreground/50">Zero active threats detected in matrix</p>
+                  <p className="text-xs font-bold uppercase tracking-widest text-muted-foreground/50">
+                    Zero active threats detected in matrix
+                  </p>
                 </div>
               </div>
             )}

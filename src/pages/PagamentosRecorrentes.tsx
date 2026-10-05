@@ -52,18 +52,20 @@ export default function PagamentosRecorrentes() {
                 <span className="sm:hidden">Novo</span>
               </Button>
             </DialogTrigger>
-          <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto p-4 sm:p-6">
-            <DialogHeader>
-              <DialogTitle className="text-base sm:text-lg">Criar Pagamento Recorrente</DialogTitle>
-              <DialogDescription className="text-xs sm:text-sm">
-                Configure um pagamento automático
-              </DialogDescription>
-            </DialogHeader>
-            <PagamentoRecorrenteForm
-              onSuccess={() => setIsDialogOpen(false)}
-              onCancel={() => setIsDialogOpen(false)}
-            />
-          </DialogContent>
+            <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto p-4 sm:p-6">
+              <DialogHeader>
+                <DialogTitle className="text-base sm:text-lg">
+                  Criar Pagamento Recorrente
+                </DialogTitle>
+                <DialogDescription className="text-xs sm:text-sm">
+                  Configure um pagamento automático
+                </DialogDescription>
+              </DialogHeader>
+              <PagamentoRecorrenteForm
+                onSuccess={() => setIsDialogOpen(false)}
+                onCancel={() => setIsDialogOpen(false)}
+              />
+            </DialogContent>
           </Dialog>
         </div>
       </div>
@@ -73,7 +75,8 @@ export default function PagamentosRecorrentes() {
         <CardHeader className="p-3 sm:p-6">
           <CardTitle className="text-sm sm:text-lg">Como funciona?</CardTitle>
           <CardDescription className="text-xs sm:text-sm">
-            Pagamentos recorrentes geram contas automaticamente. Pause, reative ou exclua a qualquer momento.
+            Pagamentos recorrentes geram contas automaticamente. Pause, reative ou exclua a qualquer
+            momento.
           </CardDescription>
         </CardHeader>
       </Card>

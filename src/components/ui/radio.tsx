@@ -43,28 +43,19 @@ export const Radio = forwardRef<HTMLInputElement, RadioProps>(
                 htmlFor={radioId}
                 className={cn(
                   'text-sm font-medium cursor-pointer',
-                  props.disabled
-                    ? 'text-muted-foreground cursor-not-allowed'
-                    : 'text-foreground'
+                  props.disabled ? 'text-muted-foreground cursor-not-allowed' : 'text-foreground'
                 )}
               >
                 {label}
               </label>
             )}
             {description && (
-              <p
-                id={`${radioId}-description`}
-                className="text-sm text-muted-foreground"
-              >
+              <p id={`${radioId}-description`} className="text-sm text-muted-foreground">
                 {description}
               </p>
             )}
             {error && (
-              <p
-                id={`${radioId}-error`}
-                className="mt-1 text-sm text-destructive"
-                role="alert"
-              >
+              <p id={`${radioId}-error`} className="mt-1 text-sm text-destructive" role="alert">
                 {error}
               </p>
             )}
@@ -119,10 +110,7 @@ export function RadioGroup({
       <div
         role="radiogroup"
         aria-label={label}
-        className={cn(
-          'space-y-2',
-          direction === 'horizontal' && 'flex flex-wrap gap-4 space-y-0'
-        )}
+        className={cn('space-y-2', direction === 'horizontal' && 'flex flex-wrap gap-4 space-y-0')}
       >
         {options.map((option) => (
           <Radio
@@ -207,9 +195,7 @@ export function CardRadioGroup({
             />
 
             {option.icon && (
-              <div className="flex-shrink-0 mr-3 text-muted-foreground">
-                {option.icon}
-              </div>
+              <div className="flex-shrink-0 mr-3 text-muted-foreground">{option.icon}</div>
             )}
 
             <div className="flex-1">

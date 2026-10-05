@@ -7,7 +7,11 @@
  */
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
-import type { CatalogoOverlay, RejeicaoAuditavel, SeveridadeRejeicao } from '@/lib/tributario/catalogos/rejeicoes-auditoria';
+import type {
+  CatalogoOverlay,
+  RejeicaoAuditavel,
+  SeveridadeRejeicao,
+} from '@/lib/tributario/catalogos/rejeicoes-auditoria';
 
 export interface RejeicaoAuditoriaRegistro {
   id: string;
@@ -44,7 +48,7 @@ export function useOverlayRejeicoesAuditoria(filtros: FiltrosAuditoriaOverlay = 
       let query = supabase
         .from('overlay_rejeicoes_auditoria')
         .select(
-          'id, catalogo, identificador, descricao, campo, motivo, valor_recebido, severidade, referencia, ocorrencias, primeira_deteccao, ultima_deteccao, resolvido_em, observacao',
+          'id, catalogo, identificador, descricao, campo, motivo, valor_recebido, severidade, referencia, ocorrencias, primeira_deteccao, ultima_deteccao, resolvido_em, observacao'
         )
         .order('ultima_deteccao', { ascending: false })
         .limit(500);
@@ -55,7 +59,7 @@ export function useOverlayRejeicoesAuditoria(filtros: FiltrosAuditoriaOverlay = 
       if (busca.trim()) {
         const termo = `%${busca.trim()}%`;
         query = query.or(
-          `identificador.ilike.${termo},descricao.ilike.${termo},motivo.ilike.${termo},campo.ilike.${termo}`,
+          `identificador.ilike.${termo},descricao.ilike.${termo},motivo.ilike.${termo},campo.ilike.${termo}`
         );
       }
 

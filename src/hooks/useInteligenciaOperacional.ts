@@ -52,7 +52,7 @@ export function useCreatePlanoAcao() {
     mutationFn: async (plano: Partial<PlanoAcao>) => {
       const { data: userData } = await supabase.auth.getUser();
       if (!userData.user) throw new Error('Usuário não autenticado');
-      
+
       const insertData = {
         ...plano,
         user_id: userData.user.id,
@@ -67,7 +67,6 @@ export function useCreatePlanoAcao() {
       if (error) throw error;
       return data;
     },
-
 
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ['planos-acao'] });
@@ -100,10 +99,7 @@ export function useKPIsOperacionais() {
   return useQuery({
     queryKey: ['kpis-operacionais'],
     queryFn: async () => {
-      const { data, error } = await supabase
-        .from('kpis_operacionais')
-        .select('*')
-        .order('nome');
+      const { data, error } = await supabase.from('kpis_operacionais').select('*').order('nome');
       if (error) throw error;
       return data as KPIOperacional[];
     },

@@ -14,7 +14,12 @@ interface Options {
  * Returns null `virtualizer` when row count is below `threshold` so callers
  * can fall back to plain rendering for small datasets.
  */
-export function useVirtualRows({ count, estimateSize = 56, overscan = 8, threshold = 50 }: Options) {
+export function useVirtualRows({
+  count,
+  estimateSize = 56,
+  overscan = 8,
+  threshold = 50,
+}: Options) {
   const parentRef = useRef<HTMLDivElement>(null);
   const enabled = count > threshold;
 

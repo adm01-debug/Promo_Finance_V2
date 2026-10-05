@@ -74,19 +74,17 @@ export function FilterRow({ entry, diagnostic, onRefresh, userId }: FilterRowPro
       if (!raw) throw new Error('localStorage vazio');
       const parsed = JSON.parse(raw);
       const filters = (parsed?.filters ?? parsed) as Record<string, unknown>;
-      const { error } = await supabase
-        .from('user_active_filters')
-        .upsert(
-          [
-            {
-              user_id: userId,
-              entity_type: entry.entityType,
-              payload: { filters } as never,
-              updated_at: new Date().toISOString(),
-            },
-          ],
-          { onConflict: 'user_id,entity_type' },
-        );
+      const { error } = await supabase.from('user_active_filters').upsert(
+        [
+          {
+            user_id: userId,
+            entity_type: entry.entityType,
+            payload: { filters } as never,
+            updated_at: new Date().toISOString(),
+          },
+        ],
+        { onConflict: 'user_id,entity_type' }
+      );
       if (error) throw error;
       toast.success('Filtros enviados para a conta', {
         description: `${entry.label}: outros dispositivos receberão na próxima abertura.`,
@@ -117,18 +115,15 @@ export function FilterRow({ entry, diagnostic, onRefresh, userId }: FilterRowPro
             {entry.auto && (
               <Tooltip>
                 <TooltipTrigger asChild>
-                  <Badge
-                    variant="outline"
-                    className="text-[10px] border-primary/40 text-primary"
-                  >
+                  <Badge variant="outline" className="text-[10px] border-primary/40 text-primary">
                     Auto
                   </Badge>
                 </TooltipTrigger>
                 <TooltipContent className="max-w-xs">
                   <p className="text-xs">
                     Descoberta automaticamente em runtime (Supabase ou localStorage). Adicione ao
-                    catálogo central em <code>savedFiltersCatalog.ts</code> para nomear, agrupar
-                    e linkar a tela correta.
+                    catálogo central em <code>savedFiltersCatalog.ts</code> para nomear, agrupar e
+                    linkar a tela correta.
                   </p>
                 </TooltipContent>
               </Tooltip>
@@ -180,7 +175,8 @@ export function FilterRow({ entry, diagnostic, onRefresh, userId }: FilterRowPro
               </TooltipTrigger>
               <TooltipContent className="max-w-xs">
                 <p className="text-xs">
-                  Copia o payload do Supabase para este dispositivo agora, sem esperar a próxima abertura da tela.
+                  Copia o payload do Supabase para este dispositivo agora, sem esperar a próxima
+                  abertura da tela.
                 </p>
               </TooltipContent>
             </Tooltip>
@@ -211,7 +207,8 @@ export function FilterRow({ entry, diagnostic, onRefresh, userId }: FilterRowPro
               </TooltipTrigger>
               <TooltipContent className="max-w-xs">
                 <p className="text-xs">
-                  Envia o estado deste dispositivo para a conta no Supabase agora; outros dispositivos receberão na próxima abertura.
+                  Envia o estado deste dispositivo para a conta no Supabase agora; outros
+                  dispositivos receberão na próxima abertura.
                 </p>
               </TooltipContent>
             </Tooltip>

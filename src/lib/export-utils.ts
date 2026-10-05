@@ -17,34 +17,36 @@ export function exportToCSV<T extends object>(
 ): void {
   // BOM para UTF-8 (Excel reconhecer acentos)
   const BOM = '\uFEFF';
-  
+
   // Header
-  const headers = columns.map(col => `"${col.header}"`).join(';');
-  
+  const headers = columns.map((col) => `"${col.header}"`).join(';');
+
   // Rows
-  const rows = data.map(row => {
-    return columns.map(col => {
-      const keys = col.key.toString().split('.');
-      let value: unknown = row;
-      for (const k of keys) {
-        value = (value as Record<string, unknown>)?.[k];
-      }
-      
-      if (col.formatter) {
-        value = col.formatter(value, row);
-      } else if (value === null || value === undefined) {
-        value = '';
-      } else if (typeof value === 'number') {
-        value = value.toString().replace('.', ',');
-      }
-      
-      // Escape quotes and wrap in quotes
-      return `"${String(value).replace(/"/g, '""')}"`;
-    }).join(';');
+  const rows = data.map((row) => {
+    return columns
+      .map((col) => {
+        const keys = col.key.toString().split('.');
+        let value: unknown = row;
+        for (const k of keys) {
+          value = (value as Record<string, unknown>)?.[k];
+        }
+
+        if (col.formatter) {
+          value = col.formatter(value, row);
+        } else if (value === null || value === undefined) {
+          value = '';
+        } else if (typeof value === 'number') {
+          value = value.toString().replace('.', ',');
+        }
+
+        // Escape quotes and wrap in quotes
+        return `"${String(value).replace(/"/g, '""')}"`;
+      })
+      .join(';');
   });
-  
+
   const csvContent = BOM + headers + '\n' + rows.join('\n');
-  
+
   // Download
   const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
   const link = document.createElement('a');
@@ -75,8 +77,6 @@ export function exportToJSON<T extends object>(
   URL.revokeObjectURL(link.href);
 }
 
-
-
 // Exportar para PDF (usando print do browser)
 export function exportToPDF<T extends object>(
   data: T[],
@@ -102,30 +102,37 @@ export function exportToPDF<T extends object>(
     toast.error('Permita pop-ups para exportar PDF');
     return;
   }
-  
-  const tableRows = data.map(row => {
-    const cells = columns.map(col => {
-      const keys = col.key.toString().split('.');
-      let value: unknown = row;
-      for (const k of keys) {
-        value = (value as Record<string, unknown>)?.[k];
-      }
-      
-      if (col.formatter) {
-        value = col.formatter(value, row);
-      } else if (value === null || value === undefined) {
-        value = '-';
-      }
-      
-      return `<td style="padding: 8px 12px; border-bottom: 1px solid #e5e7eb; text-align: left;">${value}</td>`;
-    }).join('');
-    return `<tr>${cells}</tr>`;
-  }).join('');
-  
-  const tableHeaders = columns.map(col => 
-    `<th style="padding: 10px 12px; border-bottom: 2px solid #374151; text-align: left; font-weight: 600; background: #f9fafb;">${col.header}</th>`
-  ).join('');
-  
+
+  const tableRows = data
+    .map((row) => {
+      const cells = columns
+        .map((col) => {
+          const keys = col.key.toString().split('.');
+          let value: unknown = row;
+          for (const k of keys) {
+            value = (value as Record<string, unknown>)?.[k];
+          }
+
+          if (col.formatter) {
+            value = col.formatter(value, row);
+          } else if (value === null || value === undefined) {
+            value = '-';
+          }
+
+          return `<td style="padding: 8px 12px; border-bottom: 1px solid #e5e7eb; text-align: left;">${value}</td>`;
+        })
+        .join('');
+      return `<tr>${cells}</tr>`;
+    })
+    .join('');
+
+  const tableHeaders = columns
+    .map(
+      (col) =>
+        `<th style="padding: 10px 12px; border-bottom: 2px solid #374151; text-align: left; font-weight: 600; background: #f9fafb;">${col.header}</th>`
+    )
+    .join('');
+
   const html = `
     <!DOCTYPE html>
     <html>
@@ -147,14 +154,20 @@ export function exportToPDF<T extends object>(
       <h1>${title}</h1>
       <p class="date">Gerado em ${formatDate(new Date())} às ${new Date().toLocaleTimeString('pt-BR')}</p>
       
-      ${options?.empresa ? `
+      ${
+        options?.empresa
+          ? `
         <div style="margin-bottom: 24px; padding: 16px; background: #f3f4f6; border-radius: 8px;">
           <h2 style="margin: 0; font-size: 16px;">${options.empresa.nome_fantasia || options.empresa.razao_social}</h2>
           <p style="margin: 4px 0 0 0; font-size: 12px; color: #4b5563;">CNPJ: ${options.empresa.cnpj}</p>
         </div>
-      ` : ''}
+      `
+          : ''
+      }
 
-      ${options?.kpis ? `
+      ${
+        options?.kpis
+          ? `
         <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 24px;">
           <div style="padding: 12px; border: 1px solid #e5e7eb; border-radius: 8px;">
             <p style="margin: 0; font-size: 10px; text-transform: uppercase; color: #6b7280;">Total a Receber</p>
@@ -173,7 +186,9 @@ export function exportToPDF<T extends object>(
             <p style="margin: 4px 0 0 0; font-size: 16px; font-weight: bold;">${(options.kpis.taxaInadimplencia ?? 0).toFixed(1)}%</p>
           </div>
         </div>
-      ` : ''}
+      `
+          : ''
+      }
 
       <table>
         <thead><tr>${tableHeaders}</tr></thead>
@@ -183,7 +198,7 @@ export function exportToPDF<T extends object>(
     </body>
     </html>
   `;
-  
+
   printWindow.document.write(html);
   printWindow.document.close();
 }
@@ -192,19 +207,47 @@ export function exportToPDF<T extends object>(
 export const contasPagarColumns: ExportColumn<Record<string, unknown>>[] = [
   { key: 'fornecedor_nome', header: 'Fornecedor' },
   { key: 'descricao', header: 'Descrição' },
-  { key: 'valor', header: 'Valor', formatter: (v) => formatCurrency(typeof v === 'number' ? v : 0) },
-  { key: 'data_vencimento', header: 'Vencimento', formatter: (v) => formatDate(typeof v === 'string' ? v : '') },
-  { key: 'status', header: 'Status', formatter: (v) => typeof v === 'string' ? v.toUpperCase() : '-' },
+  {
+    key: 'valor',
+    header: 'Valor',
+    formatter: (v) => formatCurrency(typeof v === 'number' ? v : 0),
+  },
+  {
+    key: 'data_vencimento',
+    header: 'Vencimento',
+    formatter: (v) => formatDate(typeof v === 'string' ? v : ''),
+  },
+  {
+    key: 'status',
+    header: 'Status',
+    formatter: (v) => (typeof v === 'string' ? v.toUpperCase() : '-'),
+  },
   { key: 'centro_custo.nome', header: 'Centro de Custo' },
 ];
 
 export const contasReceberColumns: ExportColumn<Record<string, unknown>>[] = [
   { key: 'cliente_nome', header: 'Cliente' },
   { key: 'descricao', header: 'Descrição' },
-  { key: 'valor', header: 'Valor', formatter: (v) => formatCurrency(typeof v === 'number' ? v : 0) },
-  { key: 'data_vencimento', header: 'Vencimento', formatter: (v) => formatDate(typeof v === 'string' ? v : '') },
-  { key: 'status', header: 'Status', formatter: (v) => typeof v === 'string' ? v.toUpperCase() : '-' },
-  { key: 'valor_recebido', header: 'Valor Recebido', formatter: (v) => formatCurrency(typeof v === 'number' ? v : 0) },
+  {
+    key: 'valor',
+    header: 'Valor',
+    formatter: (v) => formatCurrency(typeof v === 'number' ? v : 0),
+  },
+  {
+    key: 'data_vencimento',
+    header: 'Vencimento',
+    formatter: (v) => formatDate(typeof v === 'string' ? v : ''),
+  },
+  {
+    key: 'status',
+    header: 'Status',
+    formatter: (v) => (typeof v === 'string' ? v.toUpperCase() : '-'),
+  },
+  {
+    key: 'valor_recebido',
+    header: 'Valor Recebido',
+    formatter: (v) => formatCurrency(typeof v === 'number' ? v : 0),
+  },
 ];
 
 export const clientesColumns: ExportColumn<Record<string, unknown>>[] = [
@@ -216,7 +259,11 @@ export const clientesColumns: ExportColumn<Record<string, unknown>>[] = [
   { key: 'cidade', header: 'Cidade' },
   { key: 'estado', header: 'UF' },
   { key: 'score', header: 'Score' },
-  { key: 'limite_credito', header: 'Limite de Crédito', formatter: (v) => formatCurrency(typeof v === 'number' ? v : 0) },
+  {
+    key: 'limite_credito',
+    header: 'Limite de Crédito',
+    formatter: (v) => formatCurrency(typeof v === 'number' ? v : 0),
+  },
 ];
 
 export const fornecedoresColumns: ExportColumn<Record<string, unknown>>[] = [

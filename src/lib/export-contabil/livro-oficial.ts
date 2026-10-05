@@ -63,7 +63,7 @@ function termoParams(
   tipoLivro: TipoLivro,
   ctx: PeriodoCtx,
   params: LivroOficialParams,
-  totalPaginas: number,
+  totalPaginas: number
 ): TermoParams {
   return {
     tipoLivro,
@@ -90,7 +90,7 @@ function termoParams(
 export function exportLivroDiarioOficialPDF(
   partidas: PartidaExport[],
   ctx: PeriodoCtx,
-  params: LivroOficialParams,
+  params: LivroOficialParams
 ) {
   const doc = new jsPDF({ orientation: 'portrait', unit: 'pt', format: 'a4' }) as DocWithAT;
 
@@ -135,7 +135,7 @@ export function exportLivroDiarioOficialPDF(
       doc.text(
         `Soma da folha — Débito: ${formatCurrency(paginaD)} · Crédito: ${formatCurrency(paginaC)}`,
         MARGIN,
-        h - 20,
+        h - 20
       );
       paginaD = 0;
       paginaC = 0;
@@ -146,10 +146,10 @@ export function exportLivroDiarioOficialPDF(
   doc.setFontSize(9);
   doc.setFont('helvetica', 'bold');
   doc.text(
-    `TOTAIS DO PERÍODO — Débito: ${formatCurrency(totalD)} · Crédito: ${formatCurrency(totalC)} · `
-      + `Diferença: ${formatCurrency(totalD - totalC)}`,
+    `TOTAIS DO PERÍODO — Débito: ${formatCurrency(totalD)} · Crédito: ${formatCurrency(totalC)} · ` +
+      `Diferença: ${formatCurrency(totalD - totalC)}`,
     MARGIN,
-    finalY + 20,
+    finalY + 20
   );
 
   // 2) Encerramento
@@ -171,7 +171,7 @@ export function exportLivroDiarioOficialPDF(
 export function exportLivroRazaoOficialPDF(
   contas: RazaoContaExport[],
   ctx: PeriodoCtx,
-  params: LivroOficialParams,
+  params: LivroOficialParams
 ) {
   const doc = new jsPDF({ orientation: 'portrait', unit: 'pt', format: 'a4' }) as DocWithAT;
   escreverTermo(doc, buildTermoAbertura(termoParams('RAZAO', ctx, params, 0)));

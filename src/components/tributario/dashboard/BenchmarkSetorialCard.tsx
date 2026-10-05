@@ -9,8 +9,7 @@ interface Props {
   empresaId?: string;
 }
 
-const formatBRL = (n: number) =>
-  n.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+const formatBRL = (n: number) => n.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
 
 export function BenchmarkSetorialCard({ empresaId }: Props) {
   const { data, isLoading, error } = useBenchmarkSetorial(empresaId);
@@ -56,7 +55,11 @@ export function BenchmarkSetorialCard({ empresaId }: Props) {
         : 'bg-warning/10 text-warning border-warning/30';
 
   const Icone =
-    data.posicao === 'abaixo_p25' ? TrendingDown : data.posicao === 'acima_p75' ? TrendingUp : Minus;
+    data.posicao === 'abaixo_p25'
+      ? TrendingDown
+      : data.posicao === 'acima_p75'
+        ? TrendingUp
+        : Minus;
 
   const labelPosicao =
     data.posicao === 'abaixo_p25'

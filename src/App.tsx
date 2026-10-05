@@ -20,10 +20,6 @@ import { VisualCorrectionOverlay } from '@/components/layout/VisualCorrectionOve
 import { TransitionProvider } from '@/components/layout/transitions';
 import { useSelectiveEmpresaInvalidation } from '@/hooks/useSelectiveEmpresaInvalidation';
 
-
-
-
-
 const Index = lazy(() => import('./pages/Index'));
 const Auth = lazy(() => import('./pages/Auth'));
 const CorporateOnboarding = lazy(() => import('./pages/auth/CorporateOnboarding'));
@@ -134,7 +130,9 @@ const PisCofinsCreditosPage = lazy(() => import('./pages/tributario/PisCofinsCre
 const IrpjCsllLucroRealPage = lazy(() => import('./pages/tributario/IrpjCsllLucroReal'));
 const DarfConsolidadoPage = lazy(() => import('./pages/tributario/DarfConsolidado'));
 const ObrigacoesAcessoriasPage = lazy(() => import('./pages/tributario/ObrigacoesAcessorias'));
-const ComparativoConformidadePage = lazy(() => import('./pages/tributario/ComparativoConformidade'));
+const ComparativoConformidadePage = lazy(
+  () => import('./pages/tributario/ComparativoConformidade')
+);
 const PreferenciasDigestPage = lazy(() => import('./pages/tributario/PreferenciasDigest'));
 const ObservabilidadeDigestPage = lazy(() => import('./pages/tributario/ObservabilidadeDigest'));
 const CatalogosFiscaisPage = lazy(() => import('./pages/tributario/CatalogosFiscais'));
@@ -151,7 +149,6 @@ const StatusPage = lazy(() => import('./pages/StatusPage'));
 const Compras = lazy(() => import('./pages/Compras'));
 const Integracoes = lazy(() => import('./pages/Integracoes'));
 const NotFound = lazy(() => import('./pages/NotFound'));
-
 
 function AppRoutes() {
   // Sprint 2.3: invalidação seletiva do cache ao trocar de empresa
@@ -177,129 +174,954 @@ function AppRoutes() {
             <Route path="/design-system-debug" element={<DesignSystemDebug />} />
             {import.meta.env.DEV && <Route path="/__especimes" element={<Especimes />} />}
             <Route path="/theme-diagnostics" element={<ThemeDiagnostics />} />
-            <Route path="/" element={<ProtectedRoute><Index /></ProtectedRoute>} />
-            <Route path="/dashboard" element={<ProtectedRoute><Index /></ProtectedRoute>} />
-            <Route path="/dashboard-receber" element={<ProtectedRoute><DashboardReceber /></ProtectedRoute>} />
-            <Route path="/dashboard-empresa" element={<ProtectedRoute><DashboardEmpresa /></ProtectedRoute>} />
-            <Route path="/bi" element={<ProtectedRoute><BI /></ProtectedRoute>} />
-            <Route path="/contas-pagar" element={<ProtectedRoute><ContasPagar /></ProtectedRoute>} />
-            <Route path="/contas-pagar/bloqueios" element={<ProtectedRoute><BloqueiosDuplicidade /></ProtectedRoute>} />
-            <Route path="/contas-receber" element={<ProtectedRoute><ContasReceber /></ProtectedRoute>} />
-            <Route path="/notas-fiscais" element={<ProtectedRoute><NotasFiscais /></ProtectedRoute>} />
-            <Route path="/fluxo-caixa" element={<ProtectedRoute><FluxoCaixa /></ProtectedRoute>} />
-            <Route path="/relatorios" element={<ProtectedRoute><Relatorios /></ProtectedRoute>} />
-            <Route path="/expert" element={<ProtectedRoute><Expert /></ProtectedRoute>} />
-            <Route path="/conciliacao" element={<ProtectedRoute><Conciliacao /></ProtectedRoute>} />
-            <Route path="/cobrancas" element={<ProtectedRoute><Cobrancas /></ProtectedRoute>} />
-            <Route path="/boletos" element={<ProtectedRoute><Boletos /></ProtectedRoute>} />
-            <Route path="/clientes" element={<ProtectedRoute><Clientes /></ProtectedRoute>} />
-            <Route path="/fornecedores" element={<ProtectedRoute><Fornecedores /></ProtectedRoute>} />
-            <Route path="/empresas" element={<ProtectedRoute><Empresas /></ProtectedRoute>} />
-            <Route path="/contas-bancarias" element={<ProtectedRoute><ContasBancarias /></ProtectedRoute>} />
-            <Route path="/centro-custos" element={<ProtectedRoute><CentroCustos /></ProtectedRoute>} />
-            <Route path="/aprovacoes" element={<ProtectedRoute><Aprovacoes /></ProtectedRoute>} />
-            <Route path="/alertas" element={<ProtectedRoute><Alertas /></ProtectedRoute>} />
-            <Route path="/configuracoes" element={<ProtectedRoute><Configuracoes /></ProtectedRoute>} />
-            <Route path="/organizacoes" element={<ProtectedRoute><OrganizacoesPage /></ProtectedRoute>} />
+            <Route
+              path="/"
+              element={
+                <ProtectedRoute>
+                  <Index />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/dashboard"
+              element={
+                <ProtectedRoute>
+                  <Index />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/dashboard-receber"
+              element={
+                <ProtectedRoute>
+                  <DashboardReceber />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/dashboard-empresa"
+              element={
+                <ProtectedRoute>
+                  <DashboardEmpresa />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/bi"
+              element={
+                <ProtectedRoute>
+                  <BI />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/contas-pagar"
+              element={
+                <ProtectedRoute>
+                  <ContasPagar />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/contas-pagar/bloqueios"
+              element={
+                <ProtectedRoute>
+                  <BloqueiosDuplicidade />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/contas-receber"
+              element={
+                <ProtectedRoute>
+                  <ContasReceber />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/notas-fiscais"
+              element={
+                <ProtectedRoute>
+                  <NotasFiscais />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/fluxo-caixa"
+              element={
+                <ProtectedRoute>
+                  <FluxoCaixa />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/relatorios"
+              element={
+                <ProtectedRoute>
+                  <Relatorios />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/expert"
+              element={
+                <ProtectedRoute>
+                  <Expert />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/conciliacao"
+              element={
+                <ProtectedRoute>
+                  <Conciliacao />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/cobrancas"
+              element={
+                <ProtectedRoute>
+                  <Cobrancas />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/boletos"
+              element={
+                <ProtectedRoute>
+                  <Boletos />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/clientes"
+              element={
+                <ProtectedRoute>
+                  <Clientes />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/fornecedores"
+              element={
+                <ProtectedRoute>
+                  <Fornecedores />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/empresas"
+              element={
+                <ProtectedRoute>
+                  <Empresas />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/contas-bancarias"
+              element={
+                <ProtectedRoute>
+                  <ContasBancarias />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/centro-custos"
+              element={
+                <ProtectedRoute>
+                  <CentroCustos />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/aprovacoes"
+              element={
+                <ProtectedRoute>
+                  <Aprovacoes />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/alertas"
+              element={
+                <ProtectedRoute>
+                  <Alertas />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/configuracoes"
+              element={
+                <ProtectedRoute>
+                  <Configuracoes />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/organizacoes"
+              element={
+                <ProtectedRoute>
+                  <OrganizacoesPage />
+                </ProtectedRoute>
+              }
+            />
             <Route path="/convite/:token" element={<AceitarConvitePage />} />
-            <Route path="/usuarios" element={<ProtectedRoute><Usuarios /></ProtectedRoute>} />
-            <Route path="/audit-logs" element={<ProtectedRoute><AuditLogs /></ProtectedRoute>} />
-            <Route path="/seguranca" element={<ProtectedRoute><Seguranca /></ProtectedRoute>} />
-            <Route path="/integracoes" element={<ProtectedRoute><Integracoes /></ProtectedRoute>} />
-            <Route path="/demonstrativos" element={<ProtectedRoute><Demonstrativos /></ProtectedRoute>} />
-            <Route path="/contabilidade" element={<ProtectedRoute requiredRoles={['admin', 'financeiro']}><Contabilidade /></ProtectedRoute>} />
-            <Route path="/financeiro" element={<ProtectedRoute><Financeiro /></ProtectedRoute>} />
-            <Route path="/pagamentos-recorrentes" element={<ProtectedRoute><PagamentosRecorrentes /></ProtectedRoute>} />
-            <Route path="/bitrix24" element={<ProtectedRoute><Bitrix24 /></ProtectedRoute>} />
-            <Route path="/reforma-tributaria" element={<ProtectedRoute><ReformaTributaria /></ProtectedRoute>} />
-            <Route path="/reforma-tributaria/:tab" element={<ProtectedRoute><ReformaTributaria /></ProtectedRoute>} />
-            <Route path="/tributario/simulacao-regimes" element={<ProtectedRoute><SimulacaoRegimes /></ProtectedRoute>} />
-            <Route path="/tributario/historico-financeiro" element={<ProtectedRoute><HistoricoFinanceiroTributario /></ProtectedRoute>} />
-            <Route path="/tributario/oportunidades-elisao" element={<ProtectedRoute><OportunidadesElisao /></ProtectedRoute>} />
-            <Route path="/tributario/projecao-reforma" element={<ProtectedRoute><ProjecaoReformaPage /></ProtectedRoute>} />
-            <Route path="/tributario" element={<ProtectedRoute><DashboardTributario /></ProtectedRoute>} />
-            <Route path="/tributario/catalogos-fiscais" element={<ProtectedRoute><CatalogosFiscaisPage /></ProtectedRoute>} />
-            <Route path="/tributario/arquitetura" element={<ProtectedRoute><ArquiteturaModularPage /></ProtectedRoute>} />
-            <Route path="/tributario/auditoria-overlay" element={<ProtectedRoute><AuditoriaOverlayPage /></ProtectedRoute>} />
-            <Route path="/tributario/dashboard" element={<ProtectedRoute><DashboardTributario /></ProtectedRoute>} />
-            <Route path="/tributario/recomendacao" element={<ProtectedRoute><RecomendacaoExecutiva /></ProtectedRoute>} />
-            <Route path="/tributario/pf-vinculada" element={<ProtectedRoute><PfVinculada /></ProtectedRoute>} />
-            <Route path="/tributario/onboarding" element={<ProtectedRoute><OnboardingTributario /></ProtectedRoute>} />
-            <Route path="/tributario/certificados-digitais" element={<ProtectedRoute><CertificadosDigitais /></ProtectedRoute>} />
-            <Route path="/tributario/nfe-recebidas" element={<ProtectedRoute><NfeRecebidasPage /></ProtectedRoute>} />
-            <Route path="/tributario/sefaz-observabilidade" element={<ProtectedRoute><SefazObservabilidadePage /></ProtectedRoute>} />
-            <Route path="/tributario/calculadora" element={<ProtectedRoute><CalculadoraTributaria /></ProtectedRoute>} />
+            <Route
+              path="/usuarios"
+              element={
+                <ProtectedRoute>
+                  <Usuarios />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/audit-logs"
+              element={
+                <ProtectedRoute>
+                  <AuditLogs />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/seguranca"
+              element={
+                <ProtectedRoute>
+                  <Seguranca />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/integracoes"
+              element={
+                <ProtectedRoute>
+                  <Integracoes />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/demonstrativos"
+              element={
+                <ProtectedRoute>
+                  <Demonstrativos />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/contabilidade"
+              element={
+                <ProtectedRoute requiredRoles={['admin', 'financeiro']}>
+                  <Contabilidade />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/financeiro"
+              element={
+                <ProtectedRoute>
+                  <Financeiro />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/pagamentos-recorrentes"
+              element={
+                <ProtectedRoute>
+                  <PagamentosRecorrentes />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/bitrix24"
+              element={
+                <ProtectedRoute>
+                  <Bitrix24 />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/reforma-tributaria"
+              element={
+                <ProtectedRoute>
+                  <ReformaTributaria />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/reforma-tributaria/:tab"
+              element={
+                <ProtectedRoute>
+                  <ReformaTributaria />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/tributario/simulacao-regimes"
+              element={
+                <ProtectedRoute>
+                  <SimulacaoRegimes />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/tributario/historico-financeiro"
+              element={
+                <ProtectedRoute>
+                  <HistoricoFinanceiroTributario />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/tributario/oportunidades-elisao"
+              element={
+                <ProtectedRoute>
+                  <OportunidadesElisao />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/tributario/projecao-reforma"
+              element={
+                <ProtectedRoute>
+                  <ProjecaoReformaPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/tributario"
+              element={
+                <ProtectedRoute>
+                  <DashboardTributario />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/tributario/catalogos-fiscais"
+              element={
+                <ProtectedRoute>
+                  <CatalogosFiscaisPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/tributario/arquitetura"
+              element={
+                <ProtectedRoute>
+                  <ArquiteturaModularPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/tributario/auditoria-overlay"
+              element={
+                <ProtectedRoute>
+                  <AuditoriaOverlayPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/tributario/dashboard"
+              element={
+                <ProtectedRoute>
+                  <DashboardTributario />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/tributario/recomendacao"
+              element={
+                <ProtectedRoute>
+                  <RecomendacaoExecutiva />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/tributario/pf-vinculada"
+              element={
+                <ProtectedRoute>
+                  <PfVinculada />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/tributario/onboarding"
+              element={
+                <ProtectedRoute>
+                  <OnboardingTributario />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/tributario/certificados-digitais"
+              element={
+                <ProtectedRoute>
+                  <CertificadosDigitais />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/tributario/nfe-recebidas"
+              element={
+                <ProtectedRoute>
+                  <NfeRecebidasPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/tributario/sefaz-observabilidade"
+              element={
+                <ProtectedRoute>
+                  <SefazObservabilidadePage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/tributario/calculadora"
+              element={
+                <ProtectedRoute>
+                  <CalculadoraTributaria />
+                </ProtectedRoute>
+              }
+            />
 
-            <Route path="/asaas" element={<ProtectedRoute><Asaas /></ProtectedRoute>} />
-            <Route path="/bling" element={<ProtectedRoute><BlingPage /></ProtectedRoute>} />
-            <Route path="/vendedores" element={<ProtectedRoute><Vendedores /></ProtectedRoute>} />
-            <Route path="/meu-perfil" element={<ProtectedRoute><MeuPerfil /></ProtectedRoute>} />
-            <Route path="/contratos" element={<ProtectedRoute><Contratos /></ProtectedRoute>} />
-            <Route path="/simulador-antecipacao" element={<ProtectedRoute><SimuladorAntecipacaoPage /></ProtectedRoute>} />
-            <Route path="/assinatura-digital" element={<ProtectedRoute><AssinaturaDigitalPage /></ProtectedRoute>} />
-            <Route path="/comprovante-ocr" element={<ProtectedRoute><ComprovanteOCRPage /></ProtectedRoute>} />
-            <Route path="/movimentacoes" element={<ProtectedRoute><Movimentacoes /></ProtectedRoute>} />
-            <Route path="/tesouraria" element={<ProtectedRoute><Tesouraria /></ProtectedRoute>} />
-            <Route path="/pix-hub" element={<ProtectedRoute><PixHub /></ProtectedRoute>} />
-            <Route path="/orcamento-evento" element={<ProtectedRoute><OrcamentoEvento /></ProtectedRoute>} />
-            <Route path="/benchmarking" element={<ProtectedRoute><BenchmarkingSetorial /></ProtectedRoute>} />
-            <Route path="/admin/telemetria" element={<ProtectedRoute requiredRoles={['admin']}><AdminTelemetria /></ProtectedRoute>} />
-            <Route path="/admin/edge-health" element={<ProtectedRoute requiredRoles={['admin']}><AdminEdgeHealth /></ProtectedRoute>} />
-            <Route path="/admin/system-health" element={<ProtectedRoute requiredRoles={['admin']}><AdminSystemHealth /></ProtectedRoute>} />
-            <Route path="/admin/sre" element={<ProtectedRoute requiredRoles={['admin']}><SRECommandCenter /></ProtectedRoute>} />
-            <Route path="/admin/bloat-monitor" element={<ProtectedRoute requiredRoles={['admin']}><AdminBloatMonitor /></ProtectedRoute>} />
-            <Route path="/admin/sso" element={<ProtectedRoute requiredRoles={['admin']}><SSOAdmin /></ProtectedRoute>} />
-            <Route path="/admin/sso-jit-events" element={<ProtectedRoute requiredRoles={['admin']}><SSOJitEvents /></ProtectedRoute>} />
-            <Route path="/admin/scim-audit" element={<ProtectedRoute requiredRoles={['admin']}><ScimAudit /></ProtectedRoute>} />
-            <Route path="/audit-sso-profile-sync" element={<ProtectedRoute requiredRoles={['admin']}><AuditSsoProfileSync /></ProtectedRoute>} />
-            <Route path="/admin/sso-events" element={<ProtectedRoute requiredRoles={['admin']}><SsoEvents /></ProtectedRoute>} />
-            <Route path="/admin/insights-ia" element={<ProtectedRoute requiredRoles={['admin', 'financeiro']}><InsightsIA /></ProtectedRoute>} />
-            <Route path="/admin/insights-ia/anomalia/:id" element={<ProtectedRoute requiredRoles={['admin', 'financeiro']}><AnomaliaDetalhe /></ProtectedRoute>} />
-            <Route path="/admin/compliance" element={<ProtectedRoute requiredRoles={['admin']}><ComplianceAuditoria /></ProtectedRoute>} />
-            <Route path="/admin/auditoria-ia" element={<ProtectedRoute requiredRoles={['admin', 'financeiro']}><AuditoriaIA /></ProtectedRoute>} />
-            <Route path="/configuracoes/privacidade" element={<ProtectedRoute><CentroPrivacidadeLGPD /></ProtectedRoute>} />
-            <Route path="/configuracoes/filtros-salvos" element={<ProtectedRoute><FiltrosSalvos /></ProtectedRoute>} />
-            <Route path="/configuracoes/preferencias" element={<ProtectedRoute><MinhasPreferencias /></ProtectedRoute>} />
-            <Route path="/configuracoes/notificacoes/historico" element={<ProtectedRoute><HistoricoNotificacoes /></ProtectedRoute>} />
-            <Route path="/configuracoes/notificacoes/sino" element={<ProtectedRoute><SinoNotificacoesFiltros /></ProtectedRoute>} />
-            <Route path="/admin/filtros-compartilhados" element={<ProtectedRoute requiredRoles={['admin']}><SharedFiltersAdmin /></ProtectedRoute>} />
-            <Route path="/admin/api" element={<ProtectedRoute requiredRoles={['admin']}><ApiManagement /></ProtectedRoute>} />
-            <Route path="/admin/campos-customizados" element={<ProtectedRoute requiredRoles={['admin']}><CustomFieldsAdmin /></ProtectedRoute>} />
-            <Route path="/tributario/split-payment" element={<ProtectedRoute><SplitPaymentPage /></ProtectedRoute>} />
-            <Route path="/tributario/conciliacao" element={<ProtectedRoute><ConciliacaoTributariaPage /></ProtectedRoute>} />
-            <Route path="/tributario/incentivos" element={<ProtectedRoute><IncentivosFiscaisPage /></ProtectedRoute>} />
-            <Route path="/tributario/auditoria" element={<ProtectedRoute><AuditoriaCompliancePage /></ProtectedRoute>} />
-            <Route path="/tributario/comparativo" element={<ProtectedRoute><ComparativoRegimesPage /></ProtectedRoute>} />
-            <Route path="/tributario/cashback" element={<ProtectedRoute><CashbackSimuladorPage /></ProtectedRoute>} />
-            <Route path="/tributario/importacao-xml" element={<ProtectedRoute><ImportacaoXMLPage /></ProtectedRoute>} />
-            <Route path="/tributario/sped" element={<ProtectedRoute><SpedExportPage /></ProtectedRoute>} />
-            <Route path="/tributario/relatorios-contabeis" element={<ProtectedRoute><RelatoriosContabeisPage /></ProtectedRoute>} />
-            <Route path="/tributario/per-dcomp" element={<ProtectedRoute><PerDcompPage /></ProtectedRoute>} />
-            <Route path="/tributario/retencoes" element={<ProtectedRoute><RetencoesFontePage /></ProtectedRoute>} />
-            <Route path="/tributario/fechamento-mensal" element={<ProtectedRoute><FechamentoMensalPage /></ProtectedRoute>} />
-            <Route path="/tributario/glossario" element={<ProtectedRoute><GlossarioTributario /></ProtectedRoute>} />
-            <Route path="/tributario/monofasico" element={<ProtectedRoute><MonofasicoPage /></ProtectedRoute>} />
-            <Route path="/tributario/folha-encargos" element={<ProtectedRoute><FolhaEncargosPage /></ProtectedRoute>} />
-            <Route path="/tributario/icms-st" element={<ProtectedRoute><IcmsStDifalPage /></ProtectedRoute>} />
-            <Route path="/tributario/ipi-iss" element={<ProtectedRoute><IpiIssPage /></ProtectedRoute>} />
-            <Route path="/tributario/pis-cofins" element={<ProtectedRoute><PisCofinsCreditosPage /></ProtectedRoute>} />
-            <Route path="/tributario/irpj-csll" element={<ProtectedRoute><IrpjCsllLucroRealPage /></ProtectedRoute>} />
-            <Route path="/tributario/darf" element={<ProtectedRoute><DarfConsolidadoPage /></ProtectedRoute>} />
-            <Route path="/tributario/obrigacoes" element={<ProtectedRoute><ObrigacoesAcessoriasPage /></ProtectedRoute>} />
-            <Route path="/tributario/comparativo-conformidade" element={<ProtectedRoute><ComparativoConformidadePage /></ProtectedRoute>} />
-            <Route path="/tributario/preferencias-digest" element={<ProtectedRoute><PreferenciasDigestPage /></ProtectedRoute>} />
-            <Route path="/tributario/observabilidade-digest" element={<ProtectedRoute><ObservabilidadeDigestPage /></ProtectedRoute>} />
+            <Route
+              path="/asaas"
+              element={
+                <ProtectedRoute>
+                  <Asaas />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/bling"
+              element={
+                <ProtectedRoute>
+                  <BlingPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/vendedores"
+              element={
+                <ProtectedRoute>
+                  <Vendedores />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/meu-perfil"
+              element={
+                <ProtectedRoute>
+                  <MeuPerfil />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/contratos"
+              element={
+                <ProtectedRoute>
+                  <Contratos />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/simulador-antecipacao"
+              element={
+                <ProtectedRoute>
+                  <SimuladorAntecipacaoPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/assinatura-digital"
+              element={
+                <ProtectedRoute>
+                  <AssinaturaDigitalPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/comprovante-ocr"
+              element={
+                <ProtectedRoute>
+                  <ComprovanteOCRPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/movimentacoes"
+              element={
+                <ProtectedRoute>
+                  <Movimentacoes />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/tesouraria"
+              element={
+                <ProtectedRoute>
+                  <Tesouraria />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/pix-hub"
+              element={
+                <ProtectedRoute>
+                  <PixHub />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/orcamento-evento"
+              element={
+                <ProtectedRoute>
+                  <OrcamentoEvento />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/benchmarking"
+              element={
+                <ProtectedRoute>
+                  <BenchmarkingSetorial />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/admin/telemetria"
+              element={
+                <ProtectedRoute requiredRoles={['admin']}>
+                  <AdminTelemetria />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/admin/edge-health"
+              element={
+                <ProtectedRoute requiredRoles={['admin']}>
+                  <AdminEdgeHealth />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/admin/system-health"
+              element={
+                <ProtectedRoute requiredRoles={['admin']}>
+                  <AdminSystemHealth />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/admin/sre"
+              element={
+                <ProtectedRoute requiredRoles={['admin']}>
+                  <SRECommandCenter />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/admin/bloat-monitor"
+              element={
+                <ProtectedRoute requiredRoles={['admin']}>
+                  <AdminBloatMonitor />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/admin/sso"
+              element={
+                <ProtectedRoute requiredRoles={['admin']}>
+                  <SSOAdmin />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/admin/sso-jit-events"
+              element={
+                <ProtectedRoute requiredRoles={['admin']}>
+                  <SSOJitEvents />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/admin/scim-audit"
+              element={
+                <ProtectedRoute requiredRoles={['admin']}>
+                  <ScimAudit />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/audit-sso-profile-sync"
+              element={
+                <ProtectedRoute requiredRoles={['admin']}>
+                  <AuditSsoProfileSync />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/admin/sso-events"
+              element={
+                <ProtectedRoute requiredRoles={['admin']}>
+                  <SsoEvents />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/admin/insights-ia"
+              element={
+                <ProtectedRoute requiredRoles={['admin', 'financeiro']}>
+                  <InsightsIA />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/admin/insights-ia/anomalia/:id"
+              element={
+                <ProtectedRoute requiredRoles={['admin', 'financeiro']}>
+                  <AnomaliaDetalhe />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/admin/compliance"
+              element={
+                <ProtectedRoute requiredRoles={['admin']}>
+                  <ComplianceAuditoria />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/admin/auditoria-ia"
+              element={
+                <ProtectedRoute requiredRoles={['admin', 'financeiro']}>
+                  <AuditoriaIA />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/configuracoes/privacidade"
+              element={
+                <ProtectedRoute>
+                  <CentroPrivacidadeLGPD />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/configuracoes/filtros-salvos"
+              element={
+                <ProtectedRoute>
+                  <FiltrosSalvos />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/configuracoes/preferencias"
+              element={
+                <ProtectedRoute>
+                  <MinhasPreferencias />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/configuracoes/notificacoes/historico"
+              element={
+                <ProtectedRoute>
+                  <HistoricoNotificacoes />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/configuracoes/notificacoes/sino"
+              element={
+                <ProtectedRoute>
+                  <SinoNotificacoesFiltros />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/admin/filtros-compartilhados"
+              element={
+                <ProtectedRoute requiredRoles={['admin']}>
+                  <SharedFiltersAdmin />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/admin/api"
+              element={
+                <ProtectedRoute requiredRoles={['admin']}>
+                  <ApiManagement />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/admin/campos-customizados"
+              element={
+                <ProtectedRoute requiredRoles={['admin']}>
+                  <CustomFieldsAdmin />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/tributario/split-payment"
+              element={
+                <ProtectedRoute>
+                  <SplitPaymentPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/tributario/conciliacao"
+              element={
+                <ProtectedRoute>
+                  <ConciliacaoTributariaPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/tributario/incentivos"
+              element={
+                <ProtectedRoute>
+                  <IncentivosFiscaisPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/tributario/auditoria"
+              element={
+                <ProtectedRoute>
+                  <AuditoriaCompliancePage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/tributario/comparativo"
+              element={
+                <ProtectedRoute>
+                  <ComparativoRegimesPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/tributario/cashback"
+              element={
+                <ProtectedRoute>
+                  <CashbackSimuladorPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/tributario/importacao-xml"
+              element={
+                <ProtectedRoute>
+                  <ImportacaoXMLPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/tributario/sped"
+              element={
+                <ProtectedRoute>
+                  <SpedExportPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/tributario/relatorios-contabeis"
+              element={
+                <ProtectedRoute>
+                  <RelatoriosContabeisPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/tributario/per-dcomp"
+              element={
+                <ProtectedRoute>
+                  <PerDcompPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/tributario/retencoes"
+              element={
+                <ProtectedRoute>
+                  <RetencoesFontePage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/tributario/fechamento-mensal"
+              element={
+                <ProtectedRoute>
+                  <FechamentoMensalPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/tributario/glossario"
+              element={
+                <ProtectedRoute>
+                  <GlossarioTributario />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/tributario/monofasico"
+              element={
+                <ProtectedRoute>
+                  <MonofasicoPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/tributario/folha-encargos"
+              element={
+                <ProtectedRoute>
+                  <FolhaEncargosPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/tributario/icms-st"
+              element={
+                <ProtectedRoute>
+                  <IcmsStDifalPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/tributario/ipi-iss"
+              element={
+                <ProtectedRoute>
+                  <IpiIssPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/tributario/pis-cofins"
+              element={
+                <ProtectedRoute>
+                  <PisCofinsCreditosPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/tributario/irpj-csll"
+              element={
+                <ProtectedRoute>
+                  <IrpjCsllLucroRealPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/tributario/darf"
+              element={
+                <ProtectedRoute>
+                  <DarfConsolidadoPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/tributario/obrigacoes"
+              element={
+                <ProtectedRoute>
+                  <ObrigacoesAcessoriasPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/tributario/comparativo-conformidade"
+              element={
+                <ProtectedRoute>
+                  <ComparativoConformidadePage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/tributario/preferencias-digest"
+              element={
+                <ProtectedRoute>
+                  <PreferenciasDigestPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/tributario/observabilidade-digest"
+              element={
+                <ProtectedRoute>
+                  <ObservabilidadeDigestPage />
+                </ProtectedRoute>
+              }
+            />
 
+            <Route
+              path="/inteligencia"
+              element={
+                <ProtectedRoute>
+                  <InteligenciaOperacionalPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/metas"
+              element={
+                <ProtectedRoute>
+                  <MetasFinanceirasPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/orcamentos"
+              element={
+                <ProtectedRoute>
+                  <Orcamentos />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/categorias"
+              element={
+                <ProtectedRoute>
+                  <Categorias />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/clientes/portal-tokens"
+              element={
+                <ProtectedRoute>
+                  <PortalTokensPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/clientes/scoring"
+              element={
+                <ProtectedRoute>
+                  <ScoringClientesPage />
+                </ProtectedRoute>
+              }
+            />
 
-            <Route path="/inteligencia" element={<ProtectedRoute><InteligenciaOperacionalPage /></ProtectedRoute>} />
-            <Route path="/metas" element={<ProtectedRoute><MetasFinanceirasPage /></ProtectedRoute>} />
-            <Route path="/orcamentos" element={<ProtectedRoute><Orcamentos /></ProtectedRoute>} />
-            <Route path="/categorias" element={<ProtectedRoute><Categorias /></ProtectedRoute>} />
-            <Route path="/clientes/portal-tokens" element={<ProtectedRoute><PortalTokensPage /></ProtectedRoute>} />
-            <Route path="/clientes/scoring" element={<ProtectedRoute><ScoringClientesPage /></ProtectedRoute>} />
-
-            <Route path="/compras" element={<ProtectedRoute><Compras /></ProtectedRoute>} />
-            <Route path="/style-guide" element={<ProtectedRoute><StyleGuide /></ProtectedRoute>} />
+            <Route
+              path="/compras"
+              element={
+                <ProtectedRoute>
+                  <Compras />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/style-guide"
+              element={
+                <ProtectedRoute>
+                  <StyleGuide />
+                </ProtectedRoute>
+              }
+            />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </Suspense>
@@ -329,6 +1151,5 @@ function App() {
     </ErrorBoundary>
   );
 }
-
 
 export default App;

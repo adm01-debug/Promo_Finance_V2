@@ -31,9 +31,7 @@ export function IpMaskToggle({ className, label = 'Mascarar IPs' }: Props) {
             <Switch id={id} checked={enabled} onCheckedChange={setEnabled} />
           </div>
         </TooltipTrigger>
-        <TooltipContent>
-          Os filtros continuam funcionando com o IP original.
-        </TooltipContent>
+        <TooltipContent>Os filtros continuam funcionando com o IP original.</TooltipContent>
       </Tooltip>
     </TooltipProvider>
   );

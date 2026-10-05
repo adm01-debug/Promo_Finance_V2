@@ -30,13 +30,13 @@ interface ExportMenuProps<T extends object> {
   kpis?: ExportMenuKpis;
 }
 
-export function ExportMenu<T extends object>({ 
-  data, 
-  columns, 
-  filename, 
+export function ExportMenu<T extends object>({
+  data,
+  columns,
+  filename,
   title,
   empresa,
-  kpis
+  kpis,
 }: ExportMenuProps<T>) {
   return (
     <DropdownMenu>
@@ -47,19 +47,23 @@ export function ExportMenu<T extends object>({
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end">
-        <DropdownMenuItem 
+        <DropdownMenuItem
           className="gap-2 cursor-pointer"
           onClick={() => exportToCSV(data, columns, filename)}
         >
           <FileSpreadsheet className="h-4 w-4" />
           Exportar Excel (CSV)
         </DropdownMenuItem>
-        <DropdownMenuItem 
+        <DropdownMenuItem
           className="gap-2 cursor-pointer"
-          onClick={() => exportToPDF(data, columns, title, {
-            empresa: empresa as { nome_fantasia?: string; razao_social?: string; cnpj?: string } | undefined,
-            kpis,
-          })}
+          onClick={() =>
+            exportToPDF(data, columns, title, {
+              empresa: empresa as
+                | { nome_fantasia?: string; razao_social?: string; cnpj?: string }
+                | undefined,
+              kpis,
+            })
+          }
         >
           <FileText className="h-4 w-4" />
           Exportar PDF

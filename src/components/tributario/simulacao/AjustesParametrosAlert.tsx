@@ -32,7 +32,9 @@ export function AjustesParametrosAlert({ ajustes }: AjustesParametrosAlertProps)
         <ul className="space-y-1">
           {ajustes.map((a) => (
             <li key={a.campo} className="flex flex-wrap items-center gap-2 text-sm">
-              <Badge variant={a.severidade === 'critico' ? 'destructive' : 'secondary'}>{a.rotulo}</Badge>
+              <Badge variant={a.severidade === 'critico' ? 'destructive' : 'secondary'}>
+                {a.rotulo}
+              </Badge>
               <span className="text-muted-foreground line-through">{a.informado}</span>
               <span aria-hidden="true">→</span>
               <span className="font-medium">{a.aplicado}</span>

@@ -1,11 +1,11 @@
-import { useMemo, useState } from "react";
-import { useQuery } from "@tanstack/react-query";
-import { supabaseDyn } from "@/lib/supabase-dynamic";
+import { useMemo, useState } from 'react';
+import { useQuery } from '@tanstack/react-query';
+import { supabaseDyn } from '@/lib/supabase-dynamic';
 
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import { Skeleton } from "@/components/ui/skeleton";
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Skeleton } from '@/components/ui/skeleton';
 import {
   Table,
   TableBody,
@@ -13,8 +13,8 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/components/ui/table";
-import { Map, RefreshCw } from "lucide-react";
+} from '@/components/ui/table';
+import { Map, RefreshCw } from 'lucide-react';
 
 /** Cobertura consolidada de catálogos fiscais para uma UF. */
 interface CoberturaUF {
@@ -63,11 +63,11 @@ interface UltimaCargaFiscal {
 }
 
 function formatarData(iso: string | null): string {
-  if (!iso) return "—";
-  return new Date(iso).toLocaleDateString("pt-BR", {
-    day: "2-digit",
-    month: "2-digit",
-    year: "2-digit",
+  if (!iso) return '—';
+  return new Date(iso).toLocaleDateString('pt-BR', {
+    day: '2-digit',
+    month: '2-digit',
+    year: '2-digit',
   });
 }
 
@@ -75,9 +75,9 @@ function formatarData(iso: string | null): string {
 function CelulaContagem({ valor, sufixo }: { valor: number; sufixo?: string }) {
   const vazio = valor === 0;
   return (
-    <span className={vazio ? "font-medium text-destructive" : "text-foreground"}>
+    <span className={vazio ? 'font-medium text-destructive' : 'text-foreground'}>
       {valor}
-      {sufixo ? ` ${sufixo}` : ""}
+      {sufixo ? ` ${sufixo}` : ''}
     </span>
   );
 }
@@ -90,27 +90,26 @@ function CelulaContagem({ valor, sufixo }: { valor: number; sufixo?: string }) {
 export function CoberturaFiscalUFPanel() {
   const [somenteGaps, setSomenteGaps] = useState(false);
 
-  const { data, isLoading, isError, refetch, isRefetching } =
-    useQuery<CoberturaFiscalPayload>({
-      queryKey: ["cobertura-fiscal-uf"],
-      queryFn: async () => {
-        const { data, error } = await supabaseDyn.rpc<CoberturaFiscalPayload>(
-          "get_cobertura_fiscal_uf",
-          {},
-        );
-        if (error) throw error;
-        return data as CoberturaFiscalPayload;
-      },
-      staleTime: 300_000,
-    });
+  const { data, isLoading, isError, refetch, isRefetching } = useQuery<CoberturaFiscalPayload>({
+    queryKey: ['cobertura-fiscal-uf'],
+    queryFn: async () => {
+      const { data, error } = await supabaseDyn.rpc<CoberturaFiscalPayload>(
+        'get_cobertura_fiscal_uf',
+        {}
+      );
+      if (error) throw error;
+      return data as CoberturaFiscalPayload;
+    },
+    staleTime: 300_000,
+  });
 
   /** Última carga idempotente registrada pelo job agendado de seeds fiscais. */
   const { data: carga } = useQuery<UltimaCargaFiscal>({
-    queryKey: ["ultima-carga-fiscal"],
+    queryKey: ['ultima-carga-fiscal'],
     queryFn: async () => {
       const { data, error } = await supabaseDyn.rpc<UltimaCargaFiscal>(
-        "get_ultima_carga_fiscal",
-        {},
+        'get_ultima_carga_fiscal',
+        {}
       );
       if (error) throw error;
       return (data ?? {}) as UltimaCargaFiscal;
@@ -123,12 +122,9 @@ export function CoberturaFiscalUFPanel() {
   const ufsComGap = useMemo(
     () =>
       ufs.filter(
-        (u) =>
-          u.aliquotas_internas === 0 ||
-          u.iss_municipios === 0 ||
-          u.protocolos_st === 0,
+        (u) => u.aliquotas_internas === 0 || u.iss_municipios === 0 || u.protocolos_st === 0
       ),
-    [ufs],
+    [ufs]
   );
 
   const listaExibida = somenteGaps ? ufsComGap : ufs;
@@ -149,7 +145,7 @@ export function CoberturaFiscalUFPanel() {
           aria-label="Atualizar cobertura fiscal por UF"
         >
           <RefreshCw
-            className={`h-4 w-4 ${isRefetching ? "animate-spin" : ""}`}
+            className={`h-4 w-4 ${isRefetching ? 'animate-spin' : ''}`}
             aria-hidden="true"
           />
           <span className="ml-2">Atualizar</span>
@@ -164,28 +160,23 @@ export function CoberturaFiscalUFPanel() {
           </div>
         ) : isError ? (
           <p className="text-sm text-muted-foreground">
-            Não foi possível carregar a cobertura fiscal. Esta visão é restrita a
-            administradores.
+            Não foi possível carregar a cobertura fiscal. Esta visão é restrita a administradores.
           </p>
         ) : (
           <>
             <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
               <div className="rounded-lg border border-border bg-card p-3">
                 <p className="text-xs text-muted-foreground">CNAEs</p>
-                <p className="text-2xl font-semibold text-foreground">
-                  {globais?.cnaes ?? 0}
-                </p>
+                <p className="text-2xl font-semibold text-foreground">{globais?.cnaes ?? 0}</p>
                 <p className="text-xs text-muted-foreground">
                   Atualizado em {formatarData(globais?.cnaes_atualizado_em ?? null)}
                 </p>
               </div>
               <div className="rounded-lg border border-border bg-card p-3">
                 <p className="text-xs text-muted-foreground">NCMs</p>
-                <p className="text-2xl font-semibold text-foreground">
-                  {globais?.ncms ?? 0}
-                </p>
+                <p className="text-2xl font-semibold text-foreground">{globais?.ncms ?? 0}</p>
                 <p className="text-xs text-muted-foreground">
-                  {globais?.ncms_st ?? 0} sujeitos a ST ·{" "}
+                  {globais?.ncms_st ?? 0} sujeitos a ST ·{' '}
                   {formatarData(globais?.ncms_atualizado_em ?? null)}
                 </p>
               </div>
@@ -208,7 +199,7 @@ export function CoberturaFiscalUFPanel() {
             </div>
 
             <div className="flex flex-wrap items-center gap-2">
-              <Badge variant={ufsComGap.length > 0 ? "destructive" : "secondary"}>
+              <Badge variant={ufsComGap.length > 0 ? 'destructive' : 'secondary'}>
                 {ufsComGap.length} UF(s) com gap
               </Badge>
               <Badge variant="outline">{ufs.length} UFs mapeadas</Badge>
@@ -218,7 +209,7 @@ export function CoberturaFiscalUFPanel() {
                 onClick={() => setSomenteGaps((v) => !v)}
                 aria-pressed={somenteGaps}
               >
-                {somenteGaps ? "Mostrar todas" : "Mostrar somente gaps"}
+                {somenteGaps ? 'Mostrar todas' : 'Mostrar somente gaps'}
               </Button>
             </div>
 
@@ -249,9 +240,7 @@ export function CoberturaFiscalUFPanel() {
                           {u.uf}
                           <span className="ml-2 text-xs text-muted-foreground">{u.nome}</span>
                         </TableCell>
-                        <TableCell className="text-xs text-muted-foreground">
-                          {u.regiao}
-                        </TableCell>
+                        <TableCell className="text-xs text-muted-foreground">{u.regiao}</TableCell>
                         <TableCell className="text-right">
                           <CelulaContagem valor={u.aliquotas_internas} />
                         </TableCell>
@@ -268,7 +257,7 @@ export function CoberturaFiscalUFPanel() {
                           {formatarData(
                             u.iss_atualizado_em ??
                               u.aliquotas_internas_atualizado_em ??
-                              u.uf_atualizado_em,
+                              u.uf_atualizado_em
                           )}
                         </TableCell>
                       </TableRow>
@@ -279,21 +268,19 @@ export function CoberturaFiscalUFPanel() {
             </div>
 
             <div className="rounded-lg border border-border bg-muted/30 p-3">
-              <p className="text-xs font-medium text-foreground">
-                Última carga dos seeds fiscais
-              </p>
+              <p className="text-xs font-medium text-foreground">Última carga dos seeds fiscais</p>
               <p className="mt-1 text-xs text-muted-foreground">
                 {carga?.last_updated
-                  ? `${formatarData(carga.last_updated)} · origem: ${carga.origem ?? "—"} · situação: ${
-                      carga.status === "sem_alteracao" ? "sem alteração" : (carga.status ?? "—")
-                    } · versão ${carga.checksum?.slice(0, 8) ?? "—"} · ${carga.criticos ?? 0} crítico(s)`
-                  : "Nenhuma carga registrada ainda. O job diário roda às 03:20."}
+                  ? `${formatarData(carga.last_updated)} · origem: ${carga.origem ?? '—'} · situação: ${
+                      carga.status === 'sem_alteracao' ? 'sem alteração' : (carga.status ?? '—')
+                    } · versão ${carga.checksum?.slice(0, 8) ?? '—'} · ${carga.criticos ?? 0} crítico(s)`
+                  : 'Nenhuma carga registrada ainda. O job diário roda às 03:20.'}
               </p>
             </div>
 
             <p className="text-xs text-muted-foreground">
-              Consulta gerada em {formatarData(data?.gerado_em ?? null)} · valores em
-              vermelho indicam ausência total de dados para a UF.
+              Consulta gerada em {formatarData(data?.gerado_em ?? null)} · valores em vermelho
+              indicam ausência total de dados para a UF.
             </p>
           </>
         )}

@@ -1,6 +1,5 @@
-
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { supabase } from "@/integrations/supabase/client";
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { supabase } from '@/integrations/supabase/client';
 
 export interface WhatsAppConversa {
   id: string;
@@ -16,15 +15,15 @@ export interface WhatsAppConversa {
 
 export function useWhatsAppConversas(clienteId?: string) {
   return useQuery({
-    queryKey: ["whatsapp-conversas", clienteId],
+    queryKey: ['whatsapp-conversas', clienteId],
     queryFn: async () => {
       let query = supabase
-        .from("whatsapp_conversas")
-        .select("*")
-        .order("created_at", { ascending: false });
+        .from('whatsapp_conversas')
+        .select('*')
+        .order('created_at', { ascending: false });
 
       if (clienteId) {
-        query = query.eq("cliente_id", clienteId);
+        query = query.eq('cliente_id', clienteId);
       }
 
       const { data, error } = await query;
@@ -37,18 +36,18 @@ export function useWhatsAppConversas(clienteId?: string) {
 
 export function useSendMessage() {
   const queryClient = useQueryClient();
-  
+
   return useMutation({
     mutationFn: async ({ clienteId, mensagem }: { clienteId: string; mensagem: string }) => {
       const { data, error } = await supabase
-        .from("whatsapp_conversas")
+        .from('whatsapp_conversas')
         .insert([
           {
             cliente_id: clienteId,
             mensagem,
             direcao: 'saida',
-            status: 'enviado'
-          }
+            status: 'enviado',
+          },
         ])
         .select()
         .single();
@@ -57,7 +56,7 @@ export function useSendMessage() {
       return data;
     },
     onSuccess: (_, variables) => {
-      queryClient.invalidateQueries({ queryKey: ["whatsapp-conversas", variables.clienteId] });
+      queryClient.invalidateQueries({ queryKey: ['whatsapp-conversas', variables.clienteId] });
     },
   });
 }

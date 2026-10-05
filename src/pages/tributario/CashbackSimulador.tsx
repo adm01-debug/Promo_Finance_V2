@@ -8,10 +8,10 @@ export default function CashbackSimuladorPage() {
     <MainLayout>
       <div className="relative min-h-screen">
         <PageBackground />
-        
+
         <div className="container mx-auto p-6 relative z-10">
-          <PageHeader 
-            title="Simulador de Cashback" 
+          <PageHeader
+            title="Simulador de Cashback"
             subtitle="Calcule a devolução de impostos para famílias de baixa renda e impacto no consumo."
             badge="Justiça Fiscal"
             icon={RefreshCw}
@@ -19,7 +19,7 @@ export default function CashbackSimuladorPage() {
             gradientVia="via-primary"
             gradientTo="to-blue-500"
           />
-          
+
           <CashbackSimuladorPanel />
         </div>
       </div>

@@ -165,21 +165,19 @@ export function agruparPorEmpresa(alertas: readonly AlertaDigest[]): BlocoEmpres
         // Desempate final por conteúdo: garante ordenação total (determinismo
         // independente da ordem de chegada dos registros do banco).
         a.titulo.localeCompare(b.titulo, 'pt-BR') ||
-        a.mensagem.localeCompare(b.mensagem, 'pt-BR'),
+        a.mensagem.localeCompare(b.mensagem, 'pt-BR')
     );
-    const severidadeMaxima = ordenados.reduce<SeveridadeAlerta>(
-      (pior, a) => {
-        const s = normalizarSeveridade(a.severidade);
-        return PESO[s] < PESO[pior] ? s : pior;
-      },
-      'baixa',
-    );
+    const severidadeMaxima = ordenados.reduce<SeveridadeAlerta>((pior, a) => {
+      const s = normalizarSeveridade(a.severidade);
+      return PESO[s] < PESO[pior] ? s : pior;
+    }, 'baixa');
     blocos.push({
       empresaId,
       empresaNome: ordenados[0]?.empresaNome || 'Empresa sem nome',
       alertas: ordenados,
       severidadeMaxima,
-      valorTotal: Math.round(ordenados.reduce((acc, a) => acc + numeroSeguro(a.valor), 0) * 100) / 100,
+      valorTotal:
+        Math.round(ordenados.reduce((acc, a) => acc + numeroSeguro(a.valor), 0) * 100) / 100,
     });
   }
 
@@ -188,33 +186,29 @@ export function agruparPorEmpresa(alertas: readonly AlertaDigest[]): BlocoEmpres
       PESO[a.severidadeMaxima] - PESO[b.severidadeMaxima] ||
       b.alertas.length - a.alertas.length ||
       a.empresaNome.localeCompare(b.empresaNome, 'pt-BR') ||
-      a.empresaId.localeCompare(b.empresaId),
+      a.empresaId.localeCompare(b.empresaId)
   );
 }
 
 /** Monta o assunto do e-mail a partir do resumo dos alertas. */
 export function montarAssunto(
   blocos: readonly BlocoEmpresaDigest[],
-  competenciaReferencia?: string,
+  competenciaReferencia?: string
 ): string {
   const total = blocos.reduce((acc, b) => acc + b.alertas.length, 0);
   if (total === 0) return 'Conformidade fiscal — nenhum alerta em aberto';
 
   const pior = blocos.reduce<SeveridadeAlerta>(
     (p, b) => (PESO[b.severidadeMaxima] < PESO[p] ? b.severidadeMaxima : p),
-    'baixa',
+    'baixa'
   );
   const sufixoComp = competenciaReferencia ? ` — ${rotuloCompetencia(competenciaReferencia)}` : '';
-  const empresas =
-    blocos.length === 1 ? blocos[0].empresaNome : `${blocos.length} empresas`;
+  const empresas = blocos.length === 1 ? blocos[0].empresaNome : `${blocos.length} empresas`;
   return `${ICONE_SEVERIDADE[pior]} ${total} alerta${total > 1 ? 's' : ''} de conformidade fiscal (${ROTULO_SEVERIDADE[pior].toLowerCase()}) — ${empresas}${sufixoComp}`;
 }
 
 /** Versão texto puro (fallback para clientes sem HTML e leitores de tela). */
-function renderizarTexto(
-  blocos: readonly BlocoEmpresaDigest[],
-  opcoes: OpcoesDigest,
-): string {
+function renderizarTexto(blocos: readonly BlocoEmpresaDigest[], opcoes: OpcoesDigest): string {
   const linhas: string[] = ['DIGEST DE CONFORMIDADE FISCAL', ''];
   if (blocos.length === 0) {
     linhas.push('Nenhum alerta em aberto. Todas as obrigações monitoradas estão regulares.');
@@ -224,10 +218,11 @@ function renderizarTexto(
     for (const alerta of bloco.alertas) {
       const sev = normalizarSeveridade(alerta.severidade);
       linhas.push(
-        `- [${ROTULO_SEVERIDADE[sev]}] ${rotuloCompetencia(alerta.competencia)} — ${alerta.titulo}`,
+        `- [${ROTULO_SEVERIDADE[sev]}] ${rotuloCompetencia(alerta.competencia)} — ${alerta.titulo}`
       );
       linhas.push(`  ${alerta.mensagem}`);
-      if (numeroSeguro(alerta.valor) > 0) linhas.push(`  Valor: ${brl(numeroSeguro(alerta.valor))}`);
+      if (numeroSeguro(alerta.valor) > 0)
+        linhas.push(`  Valor: ${brl(numeroSeguro(alerta.valor))}`);
     }
     if (bloco.valorTotal > 0) linhas.push(`  Total em multas: ${brl(bloco.valorTotal)}`);
     linhas.push('');
@@ -310,7 +305,7 @@ function renderizarHtml(blocos: readonly BlocoEmpresaDigest[], opcoes: OpcoesDig
  */
 export function construirDigest(
   alertas: readonly AlertaDigest[],
-  opcoes: OpcoesDigest = {},
+  opcoes: OpcoesDigest = {}
 ): DigestConformidade {
   const blocos = agruparPorEmpresa(alertas ?? []);
   const totalAlertas = blocos.reduce((acc, b) => acc + b.alertas.length, 0);
@@ -319,7 +314,7 @@ export function construirDigest(
       ? null
       : blocos.reduce<SeveridadeAlerta>(
           (p, b) => (PESO[b.severidadeMaxima] < PESO[p] ? b.severidadeMaxima : p),
-          'baixa',
+          'baixa'
         );
   const texto = renderizarTexto(blocos, opcoes);
 

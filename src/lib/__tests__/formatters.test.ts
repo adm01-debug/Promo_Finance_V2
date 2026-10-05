@@ -1,11 +1,34 @@
 import { describe, it, expect } from 'vitest';
 import {
-  formatCurrency, formatCurrencyCompact, formatDate, formatDateShort, formatDateTime,
-  formatPercentage, formatNumber, getDaysUntil, getDaysOverdue, calculateOverdueDays,
-  getRelativeTime, getCNPJFormatted, getStatusLabel, getEtapaCobrancaLabel,
-  formatPhone, formatCPF, formatCEP, formatBytes, truncate, formatDuration,
-  formatVariation, formatAverageDays, parseCurrencyInput, formatDateForInput,
-  isToday, isPast, formatDisplayName, getInitials, formatNFNumber,
+  formatCurrency,
+  formatCurrencyCompact,
+  formatDate,
+  formatDateShort,
+  formatDateTime,
+  formatPercentage,
+  formatNumber,
+  getDaysUntil,
+  getDaysOverdue,
+  calculateOverdueDays,
+  getRelativeTime,
+  getCNPJFormatted,
+  getStatusLabel,
+  getEtapaCobrancaLabel,
+  formatPhone,
+  formatCPF,
+  formatCEP,
+  formatBytes,
+  truncate,
+  formatDuration,
+  formatVariation,
+  formatAverageDays,
+  parseCurrencyInput,
+  formatDateForInput,
+  isToday,
+  isPast,
+  formatDisplayName,
+  getInitials,
+  formatNFNumber,
 } from '../formatters';
 
 // ============================
@@ -28,7 +51,8 @@ describe('formatCurrency', () => {
 describe('formatCurrencyCompact', () => {
   it('formata em K', () => expect(formatCurrencyCompact(1500)).toBe('R$ 1.5K'));
   it('formata em M', () => expect(formatCurrencyCompact(2500000)).toBe('R$ 2.5M'));
-  it('formata valor pequeno normalmente', () => expect(formatCurrencyCompact(500)).toContain('500'));
+  it('formata valor pequeno normalmente', () =>
+    expect(formatCurrencyCompact(500)).toContain('500'));
   it('formata null como zero', () => expect(formatCurrencyCompact(null)).toContain('0'));
   it('formata undefined como zero', () => expect(formatCurrencyCompact(undefined)).toContain('0'));
 });
@@ -158,8 +182,10 @@ describe('getRelativeTime', () => {
 // getCNPJFormatted
 // ============================
 describe('getCNPJFormatted', () => {
-  it('formata CNPJ válido', () => expect(getCNPJFormatted('11222333000181')).toBe('11.222.333/0001-81'));
-  it('já formatado retorna idêntico', () => expect(getCNPJFormatted('11.222.333/0001-81')).toBe('11.222.333/0001-81'));
+  it('formata CNPJ válido', () =>
+    expect(getCNPJFormatted('11222333000181')).toBe('11.222.333/0001-81'));
+  it('já formatado retorna idêntico', () =>
+    expect(getCNPJFormatted('11.222.333/0001-81')).toBe('11.222.333/0001-81'));
 });
 
 // ============================
@@ -189,7 +215,8 @@ describe('getEtapaCobrancaLabel', () => {
 // formatPhone
 // ============================
 describe('formatPhone', () => {
-  it('formata celular 11 dígitos', () => expect(formatPhone('11999887766')).toBe('(11) 99988-7766'));
+  it('formata celular 11 dígitos', () =>
+    expect(formatPhone('11999887766')).toBe('(11) 99988-7766'));
   it('formata fixo 10 dígitos', () => expect(formatPhone('1133445566')).toBe('(11) 3344-5566'));
   it('retorna original se inválido', () => expect(formatPhone('123')).toBe('123'));
 });

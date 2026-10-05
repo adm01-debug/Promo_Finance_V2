@@ -1,9 +1,9 @@
-import { ExternalLink } from "lucide-react";
-import { Link } from "react-router-dom";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import { TIPO_LABEL, severidadeBadge, tempoDecorrido } from "./helpers";
-import type { Anomalia } from "./types";
+import { ExternalLink } from 'lucide-react';
+import { Link } from 'react-router-dom';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { TIPO_LABEL, severidadeBadge, tempoDecorrido } from './helpers';
+import type { Anomalia } from './types';
 
 interface Props {
   anomalia: Anomalia;

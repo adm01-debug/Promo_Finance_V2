@@ -64,7 +64,7 @@ export interface BatchReport {
 export interface AdaptiveAdjustment {
   previous: number;
   next: number;
-  reason: "increase" | "hold" | "decrease-latency" | "decrease-failures";
+  reason: 'increase' | 'hold' | 'decrease-latency' | 'decrease-failures';
   perItemMs: number;
   failureRate: number;
 }
@@ -79,7 +79,7 @@ export interface AdaptiveChunkController {
 }
 
 export function createAdaptiveChunkController(
-  options: AdaptiveChunkOptions = {},
+  options: AdaptiveChunkOptions = {}
 ): AdaptiveChunkController {
   const min = Math.max(1, options.min ?? 2);
   const max = Math.max(min, options.max ?? 50);
@@ -105,23 +105,23 @@ export function createAdaptiveChunkController(
 
       const previous = current;
       let next = current;
-      let reason: AdaptiveAdjustment["reason"] = "hold";
+      let reason: AdaptiveAdjustment['reason'] = 'hold';
 
       if (failureRate >= failureThreshold) {
         // Backend sob estresse / erros — recua de forma agressiva.
         next = clamp(Math.floor(current * decreaseFactor), min, max);
-        reason = "decrease-failures";
+        reason = 'decrease-failures';
       } else if (perItem > target * tolerance) {
         // Acima da tolerância de latência — recua multiplicativamente.
         next = clamp(Math.floor(current * decreaseFactor), min, max);
-        reason = "decrease-latency";
+        reason = 'decrease-latency';
       } else if (perItem <= target) {
         // Dentro do alvo — cresce aditivamente.
         next = clamp(current + increaseStep, min, max);
-        reason = next === current ? "hold" : "increase";
+        reason = next === current ? 'hold' : 'increase';
       } else {
         // Zona morta (entre alvo e tolerance*alvo): mantém.
-        reason = "hold";
+        reason = 'hold';
       }
 
       current = next;

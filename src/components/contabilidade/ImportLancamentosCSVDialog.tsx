@@ -2,10 +2,19 @@ import { useState, useRef, useMemo } from 'react';
 import { Upload } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import {
-  Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger,
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
 } from '@/components/ui/dialog';
 import { useImportLancamentosLote, type ImportLoteResult } from '@/hooks/useLancamentosContabeis';
-import { parseLancamentosCsv, type CsvLancParseResult, type ParsedLancamento } from '@/lib/lancamentos-csv-importer';
+import {
+  parseLancamentosCsv,
+  type CsvLancParseResult,
+  type ParsedLancamento,
+} from '@/lib/lancamentos-csv-importer';
 import { peekImportCheckpoint, quickHash } from '@/lib/import-checkpoint';
 import type { PlanoContaRow } from '@/hooks/usePlanoContas';
 import { UploadStep } from './import-lancamentos-csv/UploadStep';
@@ -28,7 +37,11 @@ export function ImportLancamentosCSVDialog({ empresaId, planoContas, ano }: Prop
   const [parsing, setParsing] = useState(false);
   const [parseResult, setParseResult] = useState<CsvLancParseResult | null>(null);
   const [progress, setProgress] = useState<ImportProgress>({
-    done: 0, total: 0, rate: 0, etaMs: 0, elapsedMs: 0,
+    done: 0,
+    total: 0,
+    rate: 0,
+    etaMs: 0,
+    elapsedMs: 0,
   });
   const [importResult, setImportResult] = useState<ImportLoteResult | null>(null);
   const [checkpointKey, setCheckpointKey] = useState<string | null>(null);
@@ -80,8 +93,13 @@ export function ImportLancamentosCSVDialog({ empresaId, planoContas, ano }: Prop
       setStep('preview');
     } catch (e) {
       setParseResult({
-        lancamentos: [], errors: [{ line: 0, message: e instanceof Error ? e.message : 'Erro ao ler arquivo' }],
-        warnings: [], separator: ';', encoding: 'utf-8', totalLines: 0, totalPartidas: 0,
+        lancamentos: [],
+        errors: [{ line: 0, message: e instanceof Error ? e.message : 'Erro ao ler arquivo' }],
+        warnings: [],
+        separator: ';',
+        encoding: 'utf-8',
+        totalLines: 0,
+        totalPartidas: 0,
       });
       setStep('preview');
     } finally {
@@ -92,7 +110,9 @@ export function ImportLancamentosCSVDialog({ empresaId, planoContas, ano }: Prop
   const lancamentosImportaveis = useMemo<ParsedLancamento[]>(() => {
     if (!parseResult) return [];
     const refsComErro = new Set(parseResult.errors.filter((e) => e.ref).map((e) => e.ref));
-    return parseResult.lancamentos.filter((l) => l.balanceado && l.partidas.length >= 2 && !refsComErro.has(l.ref));
+    return parseResult.lancamentos.filter(
+      (l) => l.balanceado && l.partidas.length >= 2 && !refsComErro.has(l.ref)
+    );
   }, [parseResult]);
 
   const lancsForaDoAno = useMemo(() => {
@@ -103,7 +123,8 @@ export function ImportLancamentosCSVDialog({ empresaId, planoContas, ano }: Prop
   }, [lancamentosImportaveis, ano]);
 
   const totalDebito = lancamentosImportaveis.reduce((s, l) => s + l.total_debito, 0);
-  const podeImportar = !!empresaId && lancamentosImportaveis.length > 0 && (parseResult?.errors.length ?? 0) === 0;
+  const podeImportar =
+    !!empresaId && lancamentosImportaveis.length > 0 && (parseResult?.errors.length ?? 0) === 0;
 
   const handleImport = async () => {
     if (!empresaId || lancamentosImportaveis.length === 0) return;
@@ -128,7 +149,10 @@ export function ImportLancamentosCSVDialog({ empresaId, planoContas, ano }: Prop
 
         const instantRate = dt > 0 ? dn / dt : 0;
         const ALPHA = 0.3;
-        const ema = emaRateRef.current === 0 ? instantRate : ALPHA * instantRate + (1 - ALPHA) * emaRateRef.current;
+        const ema =
+          emaRateRef.current === 0
+            ? instantRate
+            : ALPHA * instantRate + (1 - ALPHA) * emaRateRef.current;
         emaRateRef.current = ema;
         lastSampleRef.current = { t, done };
 
@@ -145,7 +169,8 @@ export function ImportLancamentosCSVDialog({ empresaId, planoContas, ano }: Prop
     <Dialog open={open} onOpenChange={handleClose}>
       <DialogTrigger asChild>
         <Button variant="outline" disabled={!empresaId}>
-          <Upload className="h-4 w-4 mr-2" />Importar CSV
+          <Upload className="h-4 w-4 mr-2" />
+          Importar CSV
         </Button>
       </DialogTrigger>
       <DialogContent className="max-w-4xl">
@@ -154,10 +179,13 @@ export function ImportLancamentosCSVDialog({ empresaId, planoContas, ano }: Prop
             <div className="p-3.5 bg-primary/20 rounded-2xl shadow-[0_0_30px_rgba(var(--primary),0.3)] ring-1 ring-primary/30">
               <Upload className="h-8 w-8 text-primary" />
             </div>
-            <span>Importação <span className="text-primary">Lote Alpha</span></span>
+            <span>
+              Importação <span className="text-primary">Lote Alpha</span>
+            </span>
           </DialogTitle>
           <DialogDescription>
-            Cada linha do CSV representa uma partida. Lançamentos são agrupados pelo campo <code className="bg-muted px-1 rounded">lancamento_ref</code>.
+            Cada linha do CSV representa uma partida. Lançamentos são agrupados pelo campo{' '}
+            <code className="bg-muted px-1 rounded">lancamento_ref</code>.
           </DialogDescription>
         </DialogHeader>
 

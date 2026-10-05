@@ -29,12 +29,17 @@ function colorStyle(corHex: string | null | undefined): CSSProperties {
   };
 }
 
-export function EmpresaBadge({ empresaId, showName = false, size = 'sm', className }: EmpresaBadgeProps) {
+export function EmpresaBadge({
+  empresaId,
+  showName = false,
+  size = 'sm',
+  className,
+}: EmpresaBadgeProps) {
   const { availableEmpresas } = useEmpresaScope();
 
   const empresa = useMemo(
     () => availableEmpresas.find((v) => v.empresa_id === empresaId)?.empresa ?? null,
-    [availableEmpresas, empresaId],
+    [availableEmpresas, empresaId]
   );
 
   if (!empresaId || !empresa) {
@@ -43,7 +48,7 @@ export function EmpresaBadge({ empresaId, showName = false, size = 'sm', classNa
         className={cn(
           'inline-flex items-center rounded-md border border-border bg-muted/40 text-muted-foreground font-semibold uppercase tracking-wider',
           size === 'sm' ? 'h-5 px-1.5 text-[10px]' : 'h-6 px-2 text-xs',
-          className,
+          className
         )}
         aria-label="Empresa não identificada"
       >
@@ -62,13 +67,15 @@ export function EmpresaBadge({ empresaId, showName = false, size = 'sm', classNa
       className={cn(
         'inline-flex items-center gap-1.5 rounded-md border font-bold uppercase tracking-wider',
         size === 'sm' ? 'h-5 px-1.5 text-[10px]' : 'h-6 px-2 text-xs',
-        className,
+        className
       )}
       style={colorStyle(e.cor_hex)}
     >
       <span aria-hidden>{sigla}</span>
       {showName && (
-        <span className="font-medium normal-case tracking-normal truncate max-w-[140px]">{fullName}</span>
+        <span className="font-medium normal-case tracking-normal truncate max-w-[140px]">
+          {fullName}
+        </span>
       )}
     </span>
   );

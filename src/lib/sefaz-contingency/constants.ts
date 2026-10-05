@@ -4,10 +4,26 @@ export const TIPO_EMISSAO = {
   normal: { code: '1', label: 'Normal', description: 'Emissão normal com autorização SEFAZ' },
   SCAN: { code: '3', label: 'SCAN', description: 'Sistema de Contingência do Ambiente Nacional' },
   DPEC: { code: '4', label: 'DPEC', description: 'Declaração Prévia de Emissão em Contingência' },
-  FSDA: { code: '5', label: 'FS-DA', description: 'Formulário de Segurança para Impressão de Documento Auxiliar' },
-  SVCAN: { code: '6', label: 'SVC-AN', description: 'SEFAZ Virtual de Contingência - Ambiente Nacional' },
-  SVCRS: { code: '7', label: 'SVC-RS', description: 'SEFAZ Virtual de Contingência - Rio Grande do Sul' },
-  offline: { code: '9', label: 'Offline', description: 'Contingência offline para posterior transmissão' },
+  FSDA: {
+    code: '5',
+    label: 'FS-DA',
+    description: 'Formulário de Segurança para Impressão de Documento Auxiliar',
+  },
+  SVCAN: {
+    code: '6',
+    label: 'SVC-AN',
+    description: 'SEFAZ Virtual de Contingência - Ambiente Nacional',
+  },
+  SVCRS: {
+    code: '7',
+    label: 'SVC-RS',
+    description: 'SEFAZ Virtual de Contingência - Rio Grande do Sul',
+  },
+  offline: {
+    code: '9',
+    label: 'Offline',
+    description: 'Contingência offline para posterior transmissão',
+  },
 } as const;
 
 export const MOTIVOS_CONTINGENCIA = [

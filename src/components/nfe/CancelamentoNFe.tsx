@@ -5,16 +5,16 @@ import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
-import { 
-  XCircle, 
-  AlertTriangle, 
-  Loader2, 
-  CheckCircle2, 
-  Wifi, 
-  Send, 
+import {
+  XCircle,
+  AlertTriangle,
+  Loader2,
+  CheckCircle2,
+  Wifi,
+  Send,
   Server,
   ShieldCheck,
-  FileText
+  FileText,
 } from 'lucide-react';
 import { processarSefaz, SefazResponse } from '@/lib/sefaz-simulator';
 import { registrarEvento } from '@/lib/sefaz-event-logger';
@@ -64,7 +64,7 @@ export function CancelamentoNFe({ nota, onClose, onSuccess }: CancelamentoNFePro
     { id: 'done', label: 'Finalizado', icon: CheckCircle2 },
   ];
 
-  const currentIndex = steps.findIndex(s => s.id === currentStep);
+  const currentIndex = steps.findIndex((s) => s.id === currentStep);
   const progress = currentStep ? ((currentIndex + 1) / steps.length) * 100 : 0;
 
   const handleCancelar = async () => {
@@ -85,19 +85,19 @@ export function CancelamentoNFe({ nota, onClose, onSuccess }: CancelamentoNFePro
       xMotivo: 'Solicitação de cancelamento enviada',
       ambiente: 'homologacao',
       tempoResposta: 0,
-      detalhes: `Justificativa: ${justificativa}`
+      detalhes: `Justificativa: ${justificativa}`,
     });
 
     for (const step of steps.slice(0, -1)) {
       setCurrentStep(step.id);
-      await new Promise(resolve => setTimeout(resolve, 600 + Math.random() * 400));
+      await new Promise((resolve) => setTimeout(resolve, 600 + Math.random() * 400));
     }
 
     const response = await processarSefaz({
       tipo: 'cancelamento',
       chaveAcesso: nota.chaveAcesso,
       protocolo: nota.protocolo,
-      justificativa
+      justificativa,
     });
 
     const tempoTotal = Date.now() - tempoInicio;
@@ -111,9 +111,9 @@ export function CancelamentoNFe({ nota, onClose, onSuccess }: CancelamentoNFePro
       protocolo: response.protocolo,
       ambiente: 'homologacao',
       tempoResposta: tempoTotal,
-      detalhes: response.success 
-        ? `Cancelamento homologado. Justificativa: ${justificativa}` 
-        : `Falha no cancelamento: ${response.errors?.join(', ') || response.xMotivo}`
+      detalhes: response.success
+        ? `Cancelamento homologado. Justificativa: ${justificativa}`
+        : `Falha no cancelamento: ${response.errors?.join(', ') || response.xMotivo}`,
     });
 
     setCurrentStep('done');
@@ -143,7 +143,7 @@ export function CancelamentoNFe({ nota, onClose, onSuccess }: CancelamentoNFePro
             <p className="text-sm text-muted-foreground">Série {nota.serie}</p>
           </div>
         </div>
-        
+
         <div className="grid grid-cols-2 gap-4 text-sm">
           <div>
             <span className="text-muted-foreground">Destinatário</span>
@@ -175,8 +175,8 @@ export function CancelamentoNFe({ nota, onClose, onSuccess }: CancelamentoNFePro
         <div className="text-sm">
           <p className="font-medium text-warning">Atenção: Ação Irreversível</p>
           <p className="text-muted-foreground mt-1">
-            O cancelamento de NF-e é definitivo e será registrado na SEFAZ. 
-            A NF-e só pode ser cancelada em até 24 horas após a autorização.
+            O cancelamento de NF-e é definitivo e será registrado na SEFAZ. A NF-e só pode ser
+            cancelada em até 24 horas após a autorização.
           </p>
         </div>
       </div>
@@ -199,8 +199,11 @@ export function CancelamentoNFe({ nota, onClose, onSuccess }: CancelamentoNFePro
                 <XCircle className="h-5 w-5 text-destructive" />
               )}
               <span className="font-medium">
-                {isProcessing ? 'Processando cancelamento...' : 
-                 sefazResponse?.success ? 'Cancelamento Homologado!' : 'Erro no Cancelamento'}
+                {isProcessing
+                  ? 'Processando cancelamento...'
+                  : sefazResponse?.success
+                    ? 'Cancelamento Homologado!'
+                    : 'Erro no Cancelamento'}
               </span>
             </div>
 
@@ -213,13 +216,19 @@ export function CancelamentoNFe({ nota, onClose, onSuccess }: CancelamentoNFePro
                     const isActive = idx === currentIndex;
                     const isDone = idx < currentIndex;
                     return (
-                      <div 
+                      <div
                         key={step.id}
                         className={`text-center transition-colors ${
-                          isActive ? 'text-primary' : isDone ? 'text-success' : 'text-muted-foreground'
+                          isActive
+                            ? 'text-primary'
+                            : isDone
+                              ? 'text-success'
+                              : 'text-muted-foreground'
                         }`}
                       >
-                        <StepIcon className={`h-4 w-4 mx-auto mb-1 ${isActive ? 'animate-pulse' : ''}`} />
+                        <StepIcon
+                          className={`h-4 w-4 mx-auto mb-1 ${isActive ? 'animate-pulse' : ''}`}
+                        />
                         <span className="text-xs">{step.label}</span>
                       </div>
                     );
@@ -229,9 +238,18 @@ export function CancelamentoNFe({ nota, onClose, onSuccess }: CancelamentoNFePro
             )}
 
             {sefazResponse && (
-              <div className={`rounded-lg p-3 ${sefazResponse.success ? 'bg-success/10 border border-success/20' : 'bg-destructive/10 border border-destructive/20'}`}>
+              <div
+                className={`rounded-lg p-3 ${sefazResponse.success ? 'bg-success/10 border border-success/20' : 'bg-destructive/10 border border-destructive/20'}`}
+              >
                 <div className="flex items-center gap-2 mb-2">
-                  <Badge variant="outline" className={sefazResponse.success ? 'bg-success/20 text-success' : 'bg-destructive/20 text-destructive'}>
+                  <Badge
+                    variant="outline"
+                    className={
+                      sefazResponse.success
+                        ? 'bg-success/20 text-success'
+                        : 'bg-destructive/20 text-destructive'
+                    }
+                  >
                     cStat: {sefazResponse.cStat}
                   </Badge>
                   <span className="text-sm font-medium">{sefazResponse.xMotivo}</span>
@@ -264,8 +282,8 @@ export function CancelamentoNFe({ nota, onClose, onSuccess }: CancelamentoNFePro
           />
           <div className="flex justify-between text-xs text-muted-foreground">
             <span>
-              {caracteresRestantes > 0 
-                ? `Faltam ${caracteresRestantes} caracteres` 
+              {caracteresRestantes > 0
+                ? `Faltam ${caracteresRestantes} caracteres`
                 : `${justificativa.length} caracteres`}
             </span>
             <span>Mínimo: {caracteresMinimos} caracteres</span>
@@ -275,14 +293,10 @@ export function CancelamentoNFe({ nota, onClose, onSuccess }: CancelamentoNFePro
 
       {/* Botões */}
       <div className="flex justify-end gap-3 pt-4 border-t">
-        <Button 
-          variant="outline" 
-          onClick={onClose}
-          disabled={isProcessing}
-        >
+        <Button variant="outline" onClick={onClose} disabled={isProcessing}>
           {sefazResponse?.success ? 'Fechar' : 'Voltar'}
         </Button>
-        
+
         {!sefazResponse?.success && (
           <Button
             variant="destructive"

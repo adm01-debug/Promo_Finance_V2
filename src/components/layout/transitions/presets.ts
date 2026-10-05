@@ -6,7 +6,7 @@ const DEFAULT_DISTANCE = 24;
 
 function resolveTransition(
   duration: number,
-  easing: EasingPreset | number[] | undefined,
+  easing: EasingPreset | number[] | undefined
 ): Transition {
   if (Array.isArray(easing)) {
     return { duration: duration / 1000, ease: easing as [number, number, number, number] };
@@ -21,7 +21,12 @@ function resolveTransition(
   };
 }
 
-function buildVariants(name: TransitionName, distance: number, opFrom: number, opTo: number): Variants {
+function buildVariants(
+  name: TransitionName,
+  distance: number,
+  opFrom: number,
+  opTo: number
+): Variants {
   switch (name) {
     case 'fade':
       return {

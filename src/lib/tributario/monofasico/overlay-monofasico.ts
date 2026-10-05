@@ -63,7 +63,7 @@ export interface ResultadoOverlayMonofasico {
  * banco. Só registra divergências reais frente ao classificador canônico.
  */
 export function aplicarOverlayMonofasico(
-  registros: readonly RegistroNcmMonofasicoBanco[],
+  registros: readonly RegistroNcmMonofasicoBanco[]
 ): ResultadoOverlayMonofasico {
   const override: Record<string, boolean> = {};
   const descricoes: Record<string, string> = {};
@@ -106,9 +106,7 @@ export function aplicarOverlayMonofasico(
 }
 
 /** Traduz as rejeições em mensagens legíveis para o painel administrativo. */
-export function descreverRejeicoesMonofasico(
-  rejeicoes: readonly RejeicaoMonofasico[],
-): string[] {
+export function descreverRejeicoesMonofasico(rejeicoes: readonly RejeicaoMonofasico[]): string[] {
   return rejeicoes.map((r) => {
     switch (r.motivo) {
       case 'codigo_invalido':

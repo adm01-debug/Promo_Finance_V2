@@ -95,9 +95,7 @@ export function calcularSaudeCatalogos(entrada: EntradaSaudeCatalogos): SaudeCat
   const divergencias = Math.max(0, entrada.alertas?.total ?? criticos + atencoes);
   const catalogosAfetados = entrada.alertas?.catalogosAfetados ?? [];
 
-  const rejeicoesPorOverlay: RejeicaoOverlayResumo[] = (
-    Object.keys(TITULOS_OVERLAY) as OverlayId[]
-  )
+  const rejeicoesPorOverlay: RejeicaoOverlayResumo[] = (Object.keys(TITULOS_OVERLAY) as OverlayId[])
     .map((overlay) => {
       const mensagens = entrada.rejeicoes?.[overlay] ?? [];
       return {
@@ -112,8 +110,7 @@ export function calcularSaudeCatalogos(entrada: EntradaSaudeCatalogos): SaudeCat
   const rejeicoes = rejeicoesPorOverlay.reduce((acc, r) => acc + r.quantidade, 0);
   const totalProblemas = divergencias + rejeicoes;
 
-  const penalidade =
-    criticos * PESO_CRITICO + atencoes * PESO_ATENCAO + rejeicoes * PESO_REJEICAO;
+  const penalidade = criticos * PESO_CRITICO + atencoes * PESO_ATENCAO + rejeicoes * PESO_REJEICAO;
   const score = Math.round(limitar(100 - penalidade, 0, 100));
 
   const status: StatusSaudeCatalogos =
@@ -141,7 +138,7 @@ function montarResumo(
   status: StatusSaudeCatalogos,
   divergencias: number,
   criticos: number,
-  rejeicoes: number,
+  rejeicoes: number
 ): string {
   if (status === 'saudavel') return 'Catálogos sincronizados com o motor';
 
@@ -150,7 +147,7 @@ function montarResumo(
     partes.push(
       criticos > 0
         ? `${plural(divergencias, 'divergência', 'divergências')} (${criticos} crítica${criticos === 1 ? '' : 's'})`
-        : plural(divergencias, 'divergência', 'divergências'),
+        : plural(divergencias, 'divergência', 'divergências')
     );
   }
   if (rejeicoes > 0) {

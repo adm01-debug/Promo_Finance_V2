@@ -1,6 +1,6 @@
-import { useEffect, useState } from "react";
-import { useQuery } from "@tanstack/react-query";
-import { supabase } from "@/integrations/supabase/client";
+import { useEffect, useState } from 'react';
+import { useQuery } from '@tanstack/react-query';
+import { supabase } from '@/integrations/supabase/client';
 import {
   Dialog,
   DialogContent,
@@ -8,30 +8,30 @@ import {
   DialogTitle,
   DialogDescription,
   DialogFooter,
-} from "@/components/ui/dialog";
-import { Button } from "@/components/ui/button";
-import { Switch } from "@/components/ui/switch";
-import { Label } from "@/components/ui/label";
-import { Separator } from "@/components/ui/separator";
-import { BellOff } from "lucide-react";
-import { toast } from "sonner";
+} from '@/components/ui/dialog';
+import { Button } from '@/components/ui/button';
+import { Switch } from '@/components/ui/switch';
+import { Label } from '@/components/ui/label';
+import { Separator } from '@/components/ui/separator';
+import { BellOff } from 'lucide-react';
+import { toast } from 'sonner';
 import {
   type Severidade,
   type ToastAcoes,
   type DrawerAcoes,
   TOAST_DURACAO_DEFAULT,
-} from "@/hooks/useAnomaliaPreferences";
-import { PreviewAnomaliaToastDrawer } from "./PreviewAnomaliaToastDrawer";
-import { AnomaliaPreferencePresetPicker } from "./AnomaliaPreferencePresetPicker";
-import type { AnomaliaPreferencePreset } from "./anomaliaPreferencePresets";
-import { AnomaliaToastHistorico } from "./AnomaliaToastHistorico";
-import { TOAST_ACOES_OPTIONS, DRAWER_ACOES_OPTIONS } from "./anomalia-preferences/constants";
-import { SeveridadesSection } from "./anomalia-preferences/SeveridadesSection";
-import { AcoesSection } from "./anomalia-preferences/AcoesSection";
-import { DuracaoSection } from "./anomalia-preferences/DuracaoSection";
-import { SonecaSection } from "./anomalia-preferences/SonecaSection";
-import { SilenciamentoSection } from "./anomalia-preferences/SilenciamentoSection";
-import { useSaveAnomaliaPreferences } from "./anomalia-preferences/useSaveAnomaliaPreferences";
+} from '@/hooks/useAnomaliaPreferences';
+import { PreviewAnomaliaToastDrawer } from './PreviewAnomaliaToastDrawer';
+import { AnomaliaPreferencePresetPicker } from './AnomaliaPreferencePresetPicker';
+import type { AnomaliaPreferencePreset } from './anomaliaPreferencePresets';
+import { AnomaliaToastHistorico } from './AnomaliaToastHistorico';
+import { TOAST_ACOES_OPTIONS, DRAWER_ACOES_OPTIONS } from './anomalia-preferences/constants';
+import { SeveridadesSection } from './anomalia-preferences/SeveridadesSection';
+import { AcoesSection } from './anomalia-preferences/AcoesSection';
+import { DuracaoSection } from './anomalia-preferences/DuracaoSection';
+import { SonecaSection } from './anomalia-preferences/SonecaSection';
+import { SilenciamentoSection } from './anomalia-preferences/SilenciamentoSection';
+import { useSaveAnomaliaPreferences } from './anomalia-preferences/useSaveAnomaliaPreferences';
 
 interface Props {
   open: boolean;
@@ -41,7 +41,7 @@ interface Props {
 export function AnomaliaPreferencesDialog({ open, onOpenChange }: Props) {
   const { save, isSaving, preferences } = useSaveAnomaliaPreferences();
   const [enabled, setEnabled] = useState(true);
-  const [severidadesAtivas, setSeveridadesAtivas] = useState<Severidade[]>(["critica", "alta"]);
+  const [severidadesAtivas, setSeveridadesAtivas] = useState<Severidade[]>(['critica', 'alta']);
   const [duracao, setDuracao] = useState<number>(TOAST_DURACAO_DEFAULT);
   const [toastAcoes, setToastAcoes] = useState<ToastAcoes>({
     drill_down: true,
@@ -60,14 +60,14 @@ export function AnomaliaPreferencesDialog({ open, onOpenChange }: Props) {
   const [tipos, setTipos] = useState<string[]>([]);
 
   const { data: centrosCusto = [] } = useQuery({
-    queryKey: ["centros-custo-min"],
+    queryKey: ['centros-custo-min'],
     enabled: open,
     queryFn: async () => {
       const { data, error } = await supabase
-        .from("centros_custo")
-        .select("id, nome")
-        .eq("ativo", true)
-        .order("nome");
+        .from('centros_custo')
+        .select('id, nome')
+        .eq('ativo', true)
+        .order('nome');
       if (error) throw error;
       return (data ?? []) as Array<{ id: string; nome: string }>;
     },
@@ -79,7 +79,7 @@ export function AnomaliaPreferencesDialog({ open, onOpenChange }: Props) {
       setSeveridadesAtivas(
         preferences.toast_severidades_ativas?.length
           ? preferences.toast_severidades_ativas
-          : ["critica", "alta"],
+          : ['critica', 'alta']
       );
       setDuracao(preferences.toast_duracao_segundos ?? TOAST_DURACAO_DEFAULT);
       setToastAcoes(preferences.toast_acoes);
@@ -92,7 +92,7 @@ export function AnomaliaPreferencesDialog({ open, onOpenChange }: Props) {
 
   const toggleSeveridade = (sev: Severidade, on: boolean) => {
     setSeveridadesAtivas((prev) =>
-      on ? Array.from(new Set([...prev, sev])) : prev.filter((s) => s !== sev),
+      on ? Array.from(new Set([...prev, sev])) : prev.filter((s) => s !== sev)
     );
   };
 
@@ -144,7 +144,7 @@ export function AnomaliaPreferencesDialog({ open, onOpenChange }: Props) {
               setDrawerAcoes(preset.drawerAcoes);
               if (!enabled) setEnabled(true);
               toast.success(`Preset "${preset.nome}" aplicado`, {
-                description: "Revise e clique em Salvar para confirmar.",
+                description: 'Revise e clique em Salvar para confirmar.',
               });
             }}
           />
@@ -160,10 +160,7 @@ export function AnomaliaPreferencesDialog({ open, onOpenChange }: Props) {
 
           <Separator />
 
-          <SeveridadesSection
-            severidadesAtivas={severidadesAtivas}
-            onToggle={toggleSeveridade}
-          />
+          <SeveridadesSection severidadesAtivas={severidadesAtivas} onToggle={toggleSeveridade} />
 
           <DuracaoSection duracao={duracao} onChange={setDuracao} />
 

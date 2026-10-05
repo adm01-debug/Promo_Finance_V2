@@ -17,7 +17,9 @@ describe('validarEmissaoBoletoConfirmada', () => {
   });
 
   it('impede criar boleto sem identificador externo', () => {
-    expect(() => validarEmissaoBoletoConfirmada({ ...confirmacao, id: '' })).toThrow(/identificador/i);
+    expect(() => validarEmissaoBoletoConfirmada({ ...confirmacao, id: '' })).toThrow(
+      /identificador/i
+    );
   });
 
   it('impede criar boleto sem instrumentos de pagamento', () => {

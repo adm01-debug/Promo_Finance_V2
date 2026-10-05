@@ -6,6 +6,7 @@ import {
   type UsuarioAutenticado,
 } from '../_shared/auth-guard.ts';
 import { jsonComCors, respostaPreflight } from '../_shared/cors.ts';
+import { withEdgeObservability } from '../_shared/edge-observability.ts';
 
 const ESCOPOS_PERMITIDOS = ['read', 'write', 'admin', 'finance', 'tax'] as const;
 
@@ -157,4 +158,4 @@ export const handler = createHandler({
   gerarHash: hashChaveApi,
 });
 
-Deno.serve(handler);
+Deno.serve(withEdgeObservability('api-keys-manage', handler));

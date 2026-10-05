@@ -29,9 +29,7 @@ const mkTx = (over: Partial<TransacaoOFX>): TransacaoOFX => ({
 
 describe('encontrarTodosMatches - alocação gulosa', () => {
   it('não reutiliza lançamento já matcheado com score alto', () => {
-    const lancamentos = [
-      mkLanc({ id: 'A', descricao: 'Cliente Alpha', valor: 1000 }),
-    ];
+    const lancamentos = [mkLanc({ id: 'A', descricao: 'Cliente Alpha', valor: 1000 })];
     const transacoes = [
       mkTx({ id: 't1', valor: 1000, descricao: 'CLIENTE ALPHA PAGAMENTO' }),
       mkTx({ id: 't2', valor: 1000, descricao: 'CLIENTE ALPHA PAGAMENTO' }),
@@ -124,9 +122,7 @@ describe('encontrarMatchesParaTransacao - edge cases', () => {
   });
 
   it('marca confiança baixa quando divergência > 10%', () => {
-    const lancamentos = [
-      mkLanc({ id: 'X', descricao: 'CLIENTE UNICO EXATO', valor: 1000 }),
-    ];
+    const lancamentos = [mkLanc({ id: 'X', descricao: 'CLIENTE UNICO EXATO', valor: 1000 })];
     const tx = mkTx({ valor: 1200, descricao: 'CLIENTE UNICO EXATO' });
     const matches = encontrarMatchesParaTransacao(tx, lancamentos, {
       pesoValorExato: 50,

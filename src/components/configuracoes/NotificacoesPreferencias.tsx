@@ -12,12 +12,12 @@ import { toast } from 'sonner';
 
 const containerVariants = {
   hidden: { opacity: 0 },
-  visible: { opacity: 1, transition: { staggerChildren: 0.05 } }
+  visible: { opacity: 1, transition: { staggerChildren: 0.05 } },
 };
 
 const itemVariants = {
   hidden: { opacity: 0, y: 10 },
-  visible: { opacity: 1, y: 0 }
+  visible: { opacity: 1, y: 0 },
 };
 
 export interface PreferenciasState {
@@ -48,7 +48,12 @@ export function NotificacoesPreferencias({ preferencias, onPreferenciasChange }:
   };
 
   return (
-    <motion.div className="space-y-6" variants={containerVariants} initial="hidden" animate="visible">
+    <motion.div
+      className="space-y-6"
+      variants={containerVariants}
+      initial="hidden"
+      animate="visible"
+    >
       <PushNotificationsBanner />
       <NotificacoesConfig />
 
@@ -67,7 +72,9 @@ export function NotificacoesPreferencias({ preferencias, onPreferenciasChange }:
       <Card>
         <CardHeader>
           <CardTitle>Preferências de Notificação</CardTitle>
-          <CardDescription>Configure como e quando deseja receber alertas do sistema</CardDescription>
+          <CardDescription>
+            Configure como e quando deseja receber alertas do sistema
+          </CardDescription>
         </CardHeader>
         <CardContent className="space-y-6">
           <motion.div variants={itemVariants} className="flex items-center justify-between">
@@ -77,12 +84,16 @@ export function NotificacoesPreferencias({ preferencias, onPreferenciasChange }:
               </div>
               <div>
                 <p className="font-medium">Notificações por E-mail</p>
-                <p className="text-sm text-muted-foreground">Receba alertas importantes por e-mail</p>
+                <p className="text-sm text-muted-foreground">
+                  Receba alertas importantes por e-mail
+                </p>
               </div>
             </div>
             <Switch
               checked={preferencias.notificacoesEmail}
-              onCheckedChange={(checked) => onPreferenciasChange(p => ({ ...p, notificacoesEmail: checked }))}
+              onCheckedChange={(checked) =>
+                onPreferenciasChange((p) => ({ ...p, notificacoesEmail: checked }))
+              }
             />
           </motion.div>
 
@@ -101,7 +112,9 @@ export function NotificacoesPreferencias({ preferencias, onPreferenciasChange }:
             <div className="flex items-center gap-4 pl-12">
               <Slider
                 value={[preferencias.alertasVencimento]}
-                onValueChange={([value]) => onPreferenciasChange(p => ({ ...p, alertasVencimento: value }))}
+                onValueChange={([value]) =>
+                  onPreferenciasChange((p) => ({ ...p, alertasVencimento: value }))
+                }
                 max={7}
                 min={1}
                 step={1}
@@ -120,12 +133,16 @@ export function NotificacoesPreferencias({ preferencias, onPreferenciasChange }:
               </div>
               <div>
                 <p className="font-medium">Alertas de Fluxo de Caixa</p>
-                <p className="text-sm text-muted-foreground">Alertar quando saldo projetado ficar negativo</p>
+                <p className="text-sm text-muted-foreground">
+                  Alertar quando saldo projetado ficar negativo
+                </p>
               </div>
             </div>
             <Switch
               checked={preferencias.alertasFluxoCaixa}
-              onCheckedChange={(checked) => onPreferenciasChange(p => ({ ...p, alertasFluxoCaixa: checked }))}
+              onCheckedChange={(checked) =>
+                onPreferenciasChange((p) => ({ ...p, alertasFluxoCaixa: checked }))
+              }
             />
           </motion.div>
 
@@ -138,13 +155,12 @@ export function NotificacoesPreferencias({ preferencias, onPreferenciasChange }:
               </div>
               <div>
                 <p className="font-medium">Alertas de Duplicidade</p>
-                <p className="text-sm text-muted-foreground">Notificar quando o motor anti-duplicidade bloquear um pagamento</p>
+                <p className="text-sm text-muted-foreground">
+                  Notificar quando o motor anti-duplicidade bloquear um pagamento
+                </p>
               </div>
             </div>
-            <Switch
-              checked={true}
-              disabled
-            />
+            <Switch checked={true} disabled />
           </motion.div>
         </CardContent>
       </Card>

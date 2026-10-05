@@ -48,11 +48,11 @@ export const OpenFinancePanel = () => {
         .order('banco');
 
       if (error) throw error;
-      
+
       // Map relationship array to single object for the frontend component
       return (data ?? []).map((item) => ({
         ...item,
-        empresas: Array.isArray(item.empresas) ? item.empresas[0] : item.empresas
+        empresas: Array.isArray(item.empresas) ? item.empresas[0] : item.empresas,
       }));
     },
   });

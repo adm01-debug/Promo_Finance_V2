@@ -84,6 +84,8 @@ describe('buildTermoEncerramento', () => {
   });
 
   it('lista contador com CRC', () => {
-    expect(buildTermoEncerramento(base).join('\n')).toContain('Maria Silva — Contador(a) · CRC 1SP123456/O-1');
+    expect(buildTermoEncerramento(base).join('\n')).toContain(
+      'Maria Silva — Contador(a) · CRC 1SP123456/O-1'
+    );
   });
 });

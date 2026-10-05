@@ -6,6 +6,7 @@ import { z } from 'https://deno.land/x/zod@v3.22.4/mod.ts';
 import { corsHeadersPara } from '../_shared/cors.ts';
 import { createLogger } from '../_shared/observability.ts';
 import { mensagemErro, contextoErro } from '../_shared/erros.ts';
+import { withEdgeObservability } from '../_shared/edge-observability.ts';
 const log = createLogger('gerar-pacote-evidencias');
 
 const _EvidBodySchema = z.object({
@@ -277,127 +278,129 @@ async function autenticar(req: Request) {
   return { admin, user: userData.user };
 }
 
-serve(async (req) => {
-  const _t0 = Date.now();
-  try {
-    const corsHeaders = corsHeadersPara(req);
-    if (req.method === 'OPTIONS') return new Response(null, { headers: corsHeaders });
-
-    const auth = await autenticar(req);
-    if ('error' in auth) {
-      return new Response(JSON.stringify({ error: auth.error }), {
-        status: auth.status,
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-      });
-    }
-
-    let body: Body;
+serve(
+  withEdgeObservability('gerar-pacote-evidencias', async (req) => {
+    const _t0 = Date.now();
     try {
-      const _raw = await req.json();
-      const _v = await validateContract(_EvidBodySchema, _raw);
-      if (!_v.success) return _v.response;
-      body = _v.data as unknown as Body;
-    } catch {
-      return new Response(JSON.stringify({ error: 'invalid json' }), {
-        status: 400,
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-      });
-    }
+      const corsHeaders = corsHeadersPara(req);
+      if (req.method === 'OPTIONS') return new Response(null, { headers: corsHeaders });
 
-    if (
-      !body.periodo_inicio ||
-      !body.periodo_fim ||
-      !Array.isArray(body.escopos) ||
-      body.escopos.length === 0
-    ) {
-      return new Response(JSON.stringify({ error: 'invalid payload' }), {
-        status: 400,
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-      });
-    }
-
-    const exigeEmpresa = body.escopos.some((e) => ESCOPOS_POR_EMPRESA.includes(e));
-    if (exigeEmpresa) {
-      if (!body.empresa_id) {
-        return new Response(
-          JSON.stringify({
-            error: 'empresa_id é obrigatório para os escopos financeiro/tributario/conformidade',
-          }),
-          {
-            status: 400,
-            headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-          }
-        );
+      const auth = await autenticar(req);
+      if ('error' in auth) {
+        return new Response(JSON.stringify({ error: auth.error }), {
+          status: auth.status,
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        });
       }
-      // "admin" em user_roles é papel global (RBAC), não vínculo com empresa —
-      // sem esta checagem, qualquer global-admin exportaria a trilha de
-      // QUALQUER empresa, mesmo sem vínculo com ela em user_empresas.
-      const { data: vinculo } = await auth.admin
-        .from('user_empresas')
-        .select('empresa_id')
-        .eq('user_id', auth.user.id)
-        .eq('empresa_id', body.empresa_id)
-        .eq('ativo', true)
-        .maybeSingle();
-      if (!vinculo) {
-        return new Response(
-          JSON.stringify({ error: 'forbidden: sem vínculo com a empresa informada' }),
-          {
-            status: 403,
-            headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-          }
-        );
+
+      let body: Body;
+      try {
+        const _raw = await req.json();
+        const _v = await validateContract(_EvidBodySchema, _raw);
+        if (!_v.success) return _v.response;
+        body = _v.data as unknown as Body;
+      } catch {
+        return new Response(JSON.stringify({ error: 'invalid json' }), {
+          status: 400,
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        });
       }
+
+      if (
+        !body.periodo_inicio ||
+        !body.periodo_fim ||
+        !Array.isArray(body.escopos) ||
+        body.escopos.length === 0
+      ) {
+        return new Response(JSON.stringify({ error: 'invalid payload' }), {
+          status: 400,
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        });
+      }
+
+      const exigeEmpresa = body.escopos.some((e) => ESCOPOS_POR_EMPRESA.includes(e));
+      if (exigeEmpresa) {
+        if (!body.empresa_id) {
+          return new Response(
+            JSON.stringify({
+              error: 'empresa_id é obrigatório para os escopos financeiro/tributario/conformidade',
+            }),
+            {
+              status: 400,
+              headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+            }
+          );
+        }
+        // "admin" em user_roles é papel global (RBAC), não vínculo com empresa —
+        // sem esta checagem, qualquer global-admin exportaria a trilha de
+        // QUALQUER empresa, mesmo sem vínculo com ela em user_empresas.
+        const { data: vinculo } = await auth.admin
+          .from('user_empresas')
+          .select('empresa_id')
+          .eq('user_id', auth.user.id)
+          .eq('empresa_id', body.empresa_id)
+          .eq('ativo', true)
+          .maybeSingle();
+        if (!vinculo) {
+          return new Response(
+            JSON.stringify({ error: 'forbidden: sem vínculo com a empresa informada' }),
+            {
+              status: 403,
+              headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+            }
+          );
+        }
+      }
+
+      const wantStream = new URL(req.url).searchParams.get('stream') === '1';
+
+      if (wantStream) {
+        const stream = new ReadableStream({
+          async start(controller) {
+            const enc = new TextEncoder();
+            const send = (obj: unknown) => {
+              controller.enqueue(enc.encode(`data: ${JSON.stringify(obj)}\n\n`));
+            };
+            try {
+              const result = await processarPacote(body, auth.user, auth.admin, send as Emit);
+              send({ done: true, payload: result });
+            } catch (e) {
+              send({ error: e instanceof Error ? e.message : 'unknown' });
+            } finally {
+              controller.close();
+            }
+          },
+        });
+
+        return new Response(stream, {
+          headers: {
+            ...corsHeaders,
+            'Content-Type': 'text/event-stream',
+            'Cache-Control': 'no-cache',
+            'X-Accel-Buffering': 'no',
+          },
+        });
+      }
+
+      // Modo JSON tradicional (compatibilidade)
+      try {
+        const result = await processarPacote(body, auth.user, auth.admin, () => {});
+        return new Response(JSON.stringify(result), {
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        });
+      } catch (e) {
+        log.error('gerar-pacote-evidencias error:', {
+          error_message: mensagemErro(e),
+          context: contextoErro(e),
+        });
+        return new Response(JSON.stringify({ error: e instanceof Error ? e.message : 'unknown' }), {
+          status: 500,
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        });
+      }
+    } finally {
+      log.info('request', { duration_ms: Date.now() - _t0 });
+      await log.flush();
     }
-
-    const wantStream = new URL(req.url).searchParams.get('stream') === '1';
-
-    if (wantStream) {
-      const stream = new ReadableStream({
-        async start(controller) {
-          const enc = new TextEncoder();
-          const send = (obj: unknown) => {
-            controller.enqueue(enc.encode(`data: ${JSON.stringify(obj)}\n\n`));
-          };
-          try {
-            const result = await processarPacote(body, auth.user, auth.admin, send as Emit);
-            send({ done: true, payload: result });
-          } catch (e) {
-            send({ error: e instanceof Error ? e.message : 'unknown' });
-          } finally {
-            controller.close();
-          }
-        },
-      });
-
-      return new Response(stream, {
-        headers: {
-          ...corsHeaders,
-          'Content-Type': 'text/event-stream',
-          'Cache-Control': 'no-cache',
-          'X-Accel-Buffering': 'no',
-        },
-      });
-    }
-
-    // Modo JSON tradicional (compatibilidade)
-    try {
-      const result = await processarPacote(body, auth.user, auth.admin, () => {});
-      return new Response(JSON.stringify(result), {
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-      });
-    } catch (e) {
-      log.error('gerar-pacote-evidencias error:', {
-        error_message: mensagemErro(e),
-        context: contextoErro(e),
-      });
-      return new Response(JSON.stringify({ error: e instanceof Error ? e.message : 'unknown' }), {
-        status: 500,
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-      });
-    }
-  } finally {
-    log.info('request', { duration_ms: Date.now() - _t0 });
-    await log.flush();
-  }
-});
+  })
+);

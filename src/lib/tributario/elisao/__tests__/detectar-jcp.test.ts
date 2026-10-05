@@ -14,16 +14,16 @@ describe('detectarJCP', () => {
 
   it('deve identificar oportunidade aplicável para empresa Lucro Real com PL e lucro positivos', () => {
     const result = detectarJCP(baseCtx);
-    
+
     expect(result.aplicavel).toBe(true);
     expect(result.estrategia).toBe('JCP');
-    
-    // Calculo esperado: 
+
+    // Calculo esperado:
     // limitePL = 1.000.000 * TJLP_ANUAL (0.0712) = 71.200
     // limiteLucro = 500.000 * 0.5 = 250.000
     // jcpDedutivel = min(71.200, 250.000) = 71.200
     // economiaEstimada = 71.200 * 0.19 = 13.528
-    
+
     expect(result.economia_estimada).toBeCloseTo(13528, 0);
     expect(result.risco).toBe('baixo');
     expect(result.justificativa).toContain('Empresa Lucro Real com PL');
@@ -33,11 +33,11 @@ describe('detectarJCP', () => {
     const ctx = {
       ...baseCtx,
       patrimonio_liquido: 10000000, // limitePL = 712.000
-      lucro_liquido: 100000,       // limiteLucro = 50.000
+      lucro_liquido: 100000, // limiteLucro = 50.000
     };
-    
+
     const result = detectarJCP(ctx);
-    
+
     // jcpDedutivel deve ser 50.000 (limite do lucro)
     // economiaEstimada = 50.000 * 0.19 = 9.500
     expect(result.economia_estimada).toBeCloseTo(9500, 0);
@@ -46,7 +46,7 @@ describe('detectarJCP', () => {
   it('não deve ser aplicável para empresas fora do Lucro Real', () => {
     const ctxPresumido: ContextoEmpresa = { ...baseCtx, regime_atual: 'presumido' };
     const ctxSimples: ContextoEmpresa = { ...baseCtx, regime_atual: 'simples' };
-    
+
     expect(detectarJCP(ctxPresumido).aplicavel).toBe(false);
     expect(detectarJCP(ctxSimples).aplicavel).toBe(false);
   });
@@ -60,7 +60,7 @@ describe('detectarJCP', () => {
   it('não deve ser aplicável se lucro for zero ou negativo', () => {
     const ctxZero = { ...baseCtx, lucro_liquido: 0 };
     const ctxNegativo = { ...baseCtx, lucro_liquido: -100 };
-    
+
     expect(detectarJCP(ctxZero).aplicavel).toBe(false);
     expect(detectarJCP(ctxNegativo).aplicavel).toBe(false);
   });
@@ -70,9 +70,9 @@ describe('detectarJCP', () => {
       empresa_id: '123',
       regime_atual: 'real',
       rbt12: 100000,
-      faturamento_anual: 100000
+      faturamento_anual: 100000,
     };
-    
+
     const result = detectarJCP(ctx);
     expect(result.aplicavel).toBe(false);
     expect(result.economia_estimada).toBe(0);
@@ -110,16 +110,15 @@ describe('detectarJCP', () => {
       const pl = 1000000;
       const limitePL = pl * TJLP_ANUAL; // 71.200
       const lucro = limitePL / 0.5; // 142.400
-      
+
       const ctx = { ...baseCtx, patrimonio_liquido: pl, lucro_liquido: lucro };
       const result = detectarJCP(ctx);
-      
+
       // jcpDedutivel = min(71200, 71200) = 71200
       expect(result.economia_estimada).toBeCloseTo(limitePL * 0.19, 0);
     });
   });
 });
-
 
 describe('detectarJCP — limite duplo do art. 9º §1º (Lei 9.249/95)', () => {
   const ctx: ContextoEmpresa = {
@@ -152,7 +151,11 @@ describe('detectarJCP — limite duplo do art. 9º §1º (Lei 9.249/95)', () => 
   });
 
   it('respeita a base restrita do PL da Lei 14.789/2023 quando informada', () => {
-    const r = detectarJCP({ ...ctx, patrimonio_liquido_base_jcp: 2_000_000, lucros_acumulados: 5_000_000 });
+    const r = detectarJCP({
+      ...ctx,
+      patrimonio_liquido_base_jcp: 2_000_000,
+      lucros_acumulados: 5_000_000,
+    });
     expect(r.memoria_calculo.base_patrimonio_liquido).toBe(2_000_000);
     expect(r.memoria_calculo.jcp_dedutivel).toBeCloseTo(2_000_000 * TJLP_ANUAL, 2);
   });

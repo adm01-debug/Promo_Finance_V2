@@ -22,7 +22,7 @@ describe('simularReal', () => {
   it('IRPJ 15% sobre lucro + adicional 10% sobre excedente de R$ 240k', () => {
     const r = simularReal(base);
     // lucro = 5M * 10% = 500k
-    const irpjEsperado = 500_000 * 0.15 + (500_000 - 240_000) * 0.10;
+    const irpjEsperado = 500_000 * 0.15 + (500_000 - 240_000) * 0.1;
     expect(r.irpj).toBeCloseTo(irpjEsperado, 0);
   });
 
@@ -41,7 +41,11 @@ describe('simularReal', () => {
   });
 
   it('PIS/COFINS nunca negativo (créditos > débitos)', () => {
-    const r = simularReal({ ...base, comprasComCredito: 10_000_000, despesasOperacionais: 10_000_000 });
+    const r = simularReal({
+      ...base,
+      comprasComCredito: 10_000_000,
+      despesasOperacionais: 10_000_000,
+    });
     expect(r.pis).toBeGreaterThanOrEqual(0);
     expect(r.cofins).toBeGreaterThanOrEqual(0);
   });

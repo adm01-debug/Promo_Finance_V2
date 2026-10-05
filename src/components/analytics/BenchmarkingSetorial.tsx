@@ -49,25 +49,29 @@ export function BenchmarkingSetorial() {
         .gte('data_vencimento', format(subMonths(hoje, 6), 'yyyy-MM-dd'));
 
       const totalReceber = receber?.reduce((sum, r) => sum + r.valor, 0) || 0;
-      const vencidos = receber?.filter(r => r.status === 'vencido') || [];
+      const vencidos = receber?.filter((r) => r.status === 'vencido') || [];
       const totalVencido = vencidos.reduce((sum, r) => sum + r.valor, 0);
-      
-      // Calcular prazos médios
-      const recebidos = receber?.filter(r => r.status === 'pago' && r.data_recebimento) || [];
-      const prazoMedioRec = recebidos.length > 0
-        ? recebidos.reduce((sum, r) => {
-            const diff = new Date(r.data_recebimento!).getTime() - new Date(r.data_vencimento).getTime();
-            return sum + diff / (1000 * 60 * 60 * 24);
-          }, 0) / recebidos.length
-        : 45;
 
-      const pagos = pagar?.filter(p => p.status === 'pago' && p.data_pagamento) || [];
-      const prazoMedioPag = pagos.length > 0
-        ? pagos.reduce((sum, p) => {
-            const diff = new Date(p.data_pagamento!).getTime() - new Date(p.data_vencimento).getTime();
-            return sum + diff / (1000 * 60 * 60 * 24);
-          }, 0) / pagos.length
-        : 35;
+      // Calcular prazos médios
+      const recebidos = receber?.filter((r) => r.status === 'pago' && r.data_recebimento) || [];
+      const prazoMedioRec =
+        recebidos.length > 0
+          ? recebidos.reduce((sum, r) => {
+              const diff =
+                new Date(r.data_recebimento!).getTime() - new Date(r.data_vencimento).getTime();
+              return sum + diff / (1000 * 60 * 60 * 24);
+            }, 0) / recebidos.length
+          : 45;
+
+      const pagos = pagar?.filter((p) => p.status === 'pago' && p.data_pagamento) || [];
+      const prazoMedioPag =
+        pagos.length > 0
+          ? pagos.reduce((sum, p) => {
+              const diff =
+                new Date(p.data_pagamento!).getTime() - new Date(p.data_vencimento).getTime();
+              return sum + diff / (1000 * 60 * 60 * 24);
+            }, 0) / pagos.length
+          : 35;
 
       return {
         taxaInadimplencia: totalReceber > 0 ? (totalVencido / totalReceber) * 100 : 0,
@@ -75,7 +79,7 @@ export function BenchmarkingSetorial() {
         prazoMedioPagamento: Math.max(0, prazoMedioPag + 30),
         cicloFinanceiro: prazoMedioRec - prazoMedioPag + 30,
       };
-    }
+    },
   });
 
   const indicadores = useMemo((): IndicadorBenchmark[] => {
@@ -141,7 +145,7 @@ export function BenchmarkingSetorial() {
   const getComparativo = (ind: IndicadorBenchmark) => {
     const diff = ind.valorEmpresa - ind.valorMercado;
     const percentDiff = ind.valorMercado !== 0 ? (diff / ind.valorMercado) * 100 : 0;
-    
+
     let status: 'melhor' | 'pior' | 'igual';
     if (Math.abs(percentDiff) < 5) {
       status = 'igual';
@@ -195,7 +199,7 @@ export function BenchmarkingSetorial() {
   // Calcular score geral
   const scoreGeral = useMemo(() => {
     let pontos = 0;
-    indicadores.forEach(ind => {
+    indicadores.forEach((ind) => {
       const { status } = getComparativo(ind);
       if (status === 'melhor') pontos += 2;
       else if (status === 'igual') pontos += 1;
@@ -211,17 +215,20 @@ export function BenchmarkingSetorial() {
             <BarChart3 className="h-5 w-5" />
             <div>
               <CardTitle>Benchmarking Setorial</CardTitle>
-              <CardDescription>
-                Compare seus indicadores com a média do mercado
-              </CardDescription>
+              <CardDescription>Compare seus indicadores com a média do mercado</CardDescription>
             </div>
           </div>
           <div className="text-right">
             <p className="text-sm text-muted-foreground">Score Geral</p>
-            <p className={`text-2xl font-bold ${
-              scoreGeral >= 70 ? 'text-success' : 
-              scoreGeral >= 50 ? 'text-warning' : 'text-destructive'
-            }`}>
+            <p
+              className={`text-2xl font-bold ${
+                scoreGeral >= 70
+                  ? 'text-success'
+                  : scoreGeral >= 50
+                    ? 'text-warning'
+                    : 'text-destructive'
+              }`}
+            >
               {scoreGeral}%
             </p>
           </div>
@@ -232,7 +239,7 @@ export function BenchmarkingSetorial() {
           {indicadores.map((ind, idx) => {
             const { status } = getComparativo(ind);
             const progressValue = Math.min(100, (ind.valorEmpresa / (ind.valorMercado * 2)) * 100);
-            
+
             return (
               <div key={idx} className="space-y-2">
                 <div className="flex items-center justify-between">
@@ -249,10 +256,15 @@ export function BenchmarkingSetorial() {
                   </div>
                   <div className="flex items-center gap-2">
                     {getStatusIcon(status)}
-                    <Badge variant={
-                      status === 'melhor' ? 'default' : 
-                      status === 'pior' ? 'destructive' : 'secondary'
-                    }>
+                    <Badge
+                      variant={
+                        status === 'melhor'
+                          ? 'default'
+                          : status === 'pior'
+                            ? 'destructive'
+                            : 'secondary'
+                      }
+                    >
                       {status === 'melhor' ? 'Acima' : status === 'pior' ? 'Abaixo' : 'Na média'}
                     </Badge>
                   </div>
@@ -261,14 +273,11 @@ export function BenchmarkingSetorial() {
                 <div className="flex items-center gap-4">
                   <div className="flex-1">
                     <div className="relative h-2 bg-muted rounded-full overflow-hidden">
-                      <div 
+                      <div
                         className={`absolute h-full ${getStatusColor(status)} transition-all`}
                         style={{ width: `${progressValue}%` }}
                       />
-                      <div 
-                        className="absolute h-full w-0.5 bg-primary"
-                        style={{ left: '50%' }}
-                      />
+                      <div className="absolute h-full w-0.5 bg-primary" style={{ left: '50%' }} />
                     </div>
                   </div>
                   <div className="w-32 text-right">
@@ -291,7 +300,7 @@ export function BenchmarkingSetorial() {
             <span className="text-sm font-medium">Referência de Mercado</span>
           </div>
           <p className="text-xs text-muted-foreground">
-            Os dados de benchmark são baseados em médias do setor de comércio e serviços. 
+            Os dados de benchmark são baseados em médias do setor de comércio e serviços.
             Indicadores individuais podem variar conforme o segmento específico de atuação.
           </p>
         </div>

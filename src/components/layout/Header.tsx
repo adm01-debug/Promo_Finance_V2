@@ -46,7 +46,12 @@ const roleLabels: Record<string, { label: string; color: string }> = {
 
 function getInitialsFromName(name?: string | null, email?: string | null): string {
   if (name) {
-    return name.split(' ').map(n => n[0]).slice(0, 2).join('').toUpperCase();
+    return name
+      .split(' ')
+      .map((n) => n[0])
+      .slice(0, 2)
+      .join('')
+      .toUpperCase();
   }
   if (email) {
     return email.slice(0, 2).toUpperCase();
@@ -64,7 +69,9 @@ export const Header = forwardRef<HTMLElement, HeaderProps>(({ sidebarCollapsed }
 
   const changeLanguage = (lng: string) => {
     i18n.changeLanguage(lng);
-    toast.success(`Idioma alterado para ${lng === 'pt' ? 'Português' : lng === 'en' ? 'English' : 'Español'}`);
+    toast.success(
+      `Idioma alterado para ${lng === 'pt' ? 'Português' : lng === 'en' ? 'English' : 'Español'}`
+    );
   };
 
   const unreadAlerts = useMemo(() => alertas.filter((a) => !a.lido).length, [alertas]);
@@ -89,7 +96,7 @@ export const Header = forwardRef<HTMLElement, HeaderProps>(({ sidebarCollapsed }
   const roleInfo = effectiveRole ? roleLabels[effectiveRole] : null;
   const currentEmpresa = useMemo(
     () => vinculos.find((v) => v.empresa_id === currentEmpresaId)?.empresa ?? null,
-    [vinculos, currentEmpresaId],
+    [vinculos, currentEmpresaId]
   );
   const empresaLabel = currentEmpresa?.nome_fantasia || currentEmpresa?.razao_social || null;
 
@@ -129,40 +136,63 @@ export const Header = forwardRef<HTMLElement, HeaderProps>(({ sidebarCollapsed }
         <div className="flex items-center gap-2">
           <div className="flex items-center gap-1">
             <EmpresaScopeBar />
-            
+
             <div className="w-px h-4 bg-border mx-1 hidden lg:block" />
 
             <KeyboardShortcutsDialog />
 
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="ghost" size="icon" className="h-9 w-9 text-muted-foreground hover:text-foreground hover:bg-muted">
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="h-9 w-9 text-muted-foreground hover:text-foreground hover:bg-muted"
+                >
                   <Languages className="h-4 w-4" />
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end" className="w-40">
                 <DropdownMenuLabel className="text-xs">Idioma</DropdownMenuLabel>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem onClick={() => changeLanguage('pt')} className="text-sm">Português</DropdownMenuItem>
-                <DropdownMenuItem onClick={() => changeLanguage('en')} className="text-sm">English</DropdownMenuItem>
-                <DropdownMenuItem onClick={() => changeLanguage('es')} className="text-sm">Español</DropdownMenuItem>
+                <DropdownMenuItem onClick={() => changeLanguage('pt')} className="text-sm">
+                  Português
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => changeLanguage('en')} className="text-sm">
+                  English
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => changeLanguage('es')} className="text-sm">
+                  Español
+                </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
 
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="ghost" size="icon" className="h-9 w-9 text-muted-foreground hover:text-foreground hover:bg-muted">
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="h-9 w-9 text-muted-foreground hover:text-foreground hover:bg-muted"
+                >
                   <ThemeIcon className="h-4 w-4" />
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end" className="w-40">
                 <DropdownMenuLabel className="text-xs">Tema</DropdownMenuLabel>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem onClick={() => setTheme('light')} className="text-sm">Claro</DropdownMenuItem>
-                <DropdownMenuItem onClick={() => setTheme('dark')} className="text-sm">Escuro</DropdownMenuItem>
-                <DropdownMenuItem onClick={() => setTheme('system')} className="text-sm">Sistema</DropdownMenuItem>
+                <DropdownMenuItem onClick={() => setTheme('light')} className="text-sm">
+                  Claro
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => setTheme('dark')} className="text-sm">
+                  Escuro
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => setTheme('system')} className="text-sm">
+                  Sistema
+                </DropdownMenuItem>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem onClick={() => resetTheme()} className="text-sm text-muted-foreground">
+                <DropdownMenuItem
+                  onClick={() => resetTheme()}
+                  className="text-sm text-muted-foreground"
+                >
                   Restaurar padrão (escuro)
                 </DropdownMenuItem>
               </DropdownMenuContent>
@@ -170,7 +200,11 @@ export const Header = forwardRef<HTMLElement, HeaderProps>(({ sidebarCollapsed }
 
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="ghost" size="icon" className="h-9 w-9 text-muted-foreground hover:text-foreground hover:bg-muted relative">
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="h-9 w-9 text-muted-foreground hover:text-foreground hover:bg-muted relative"
+                >
                   <Bell className="h-4 w-4" />
                   {unreadAlerts > 0 && (
                     <span className="absolute top-2 right-2 h-2 w-2 bg-rose-500 rounded-full border-2 border-white" />
@@ -178,21 +212,33 @@ export const Header = forwardRef<HTMLElement, HeaderProps>(({ sidebarCollapsed }
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end" className="w-80">
-                <DropdownMenuLabel className="text-xs font-bold px-4 py-3 border-b">Notificações</DropdownMenuLabel>
+                <DropdownMenuLabel className="text-xs font-bold px-4 py-3 border-b">
+                  Notificações
+                </DropdownMenuLabel>
                 <div className="max-h-[300px] overflow-y-auto">
                   {alertas.length > 0 ? (
                     alertas.slice(0, 5).map((alerta) => (
-                      <DropdownMenuItem key={alerta.id} className="p-4 cursor-pointer border-b last:border-0 flex flex-col items-start gap-1">
+                      <DropdownMenuItem
+                        key={alerta.id}
+                        className="p-4 cursor-pointer border-b last:border-0 flex flex-col items-start gap-1"
+                      >
                         <span className="font-semibold text-xs">{alerta.titulo}</span>
-                        <p className="text-[11px] text-muted-foreground line-clamp-2">{alerta.mensagem}</p>
+                        <p className="text-[11px] text-muted-foreground line-clamp-2">
+                          {alerta.mensagem}
+                        </p>
                       </DropdownMenuItem>
                     ))
                   ) : (
-                    <div className="p-8 text-center text-xs text-muted-foreground">Sem notificações</div>
+                    <div className="p-8 text-center text-xs text-muted-foreground">
+                      Sem notificações
+                    </div>
                   )}
                 </div>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem className="justify-center py-2 text-primary font-bold text-[11px] cursor-pointer" onClick={() => navigate('/alertas')}>
+                <DropdownMenuItem
+                  className="justify-center py-2 text-primary font-bold text-[11px] cursor-pointer"
+                  onClick={() => navigate('/alertas')}
+                >
                   Ver todas
                 </DropdownMenuItem>
               </DropdownMenuContent>
@@ -213,9 +259,13 @@ export const Header = forwardRef<HTMLElement, HeaderProps>(({ sidebarCollapsed }
                   {initials}
                 </div>
                 <div className="hidden sm:flex flex-col items-start text-left">
-                  <span className="text-xs font-semibold text-foreground leading-none">{displayName}</span>
+                  <span className="text-xs font-semibold text-foreground leading-none">
+                    {displayName}
+                  </span>
                   {roleInfo && (
-                    <span className="text-[10px] text-muted-foreground mt-0.5">{roleInfo.label}</span>
+                    <span className="text-[10px] text-muted-foreground mt-0.5">
+                      {roleInfo.label}
+                    </span>
                   )}
                 </div>
                 <ChevronDown className="h-3.5 w-3.5 text-muted-foreground" />
@@ -232,11 +282,17 @@ export const Header = forwardRef<HTMLElement, HeaderProps>(({ sidebarCollapsed }
               <DropdownMenuItem onClick={() => navigate('/meu-perfil')} className="cursor-pointer">
                 <User className="h-4 w-4 mr-2" /> Perfil
               </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => navigate('/configuracoes')} className="cursor-pointer">
+              <DropdownMenuItem
+                onClick={() => navigate('/configuracoes')}
+                className="cursor-pointer"
+              >
                 <Settings className="h-4 w-4 mr-2" /> Configurações
               </DropdownMenuItem>
               <DropdownMenuSeparator />
-              <DropdownMenuItem onClick={handleSignOut} className="text-rose-500 cursor-pointer focus:text-rose-500">
+              <DropdownMenuItem
+                onClick={handleSignOut}
+                className="text-rose-500 cursor-pointer focus:text-rose-500"
+              >
                 <LogOut className="h-4 w-4 mr-2" /> Sair
               </DropdownMenuItem>
             </DropdownMenuContent>

@@ -1,7 +1,13 @@
 // REGIME MONOFÁSICO PIS/COFINS — API pública
 
 export * from './types';
-export { GRUPOS_MONOFASICOS, GRUPO_MONOFASICO_CATALOGO, GRUPOS_POR_CHAVE, ALIQUOTAS_REGIME_NORMAL, MESES_RECUPERACAO_RETROATIVA } from './grupos';
+export {
+  GRUPOS_MONOFASICOS,
+  GRUPO_MONOFASICO_CATALOGO,
+  GRUPOS_POR_CHAVE,
+  ALIQUOTAS_REGIME_NORMAL,
+  MESES_RECUPERACAO_RETROATIVA,
+} from './grupos';
 export {
   classificarNcmMonofasico,
   classificarNcmMonofasicoCanonico,

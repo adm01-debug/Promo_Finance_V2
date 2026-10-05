@@ -16,6 +16,7 @@ import { processWithIdempotency } from '../_shared/webhook-idempotency.ts';
 import { corsHeadersPara } from '../_shared/cors.ts';
 import { createLogger } from '../_shared/observability.ts';
 import { mensagemErro } from '../_shared/erros.ts';
+import { withEdgeObservability } from '../_shared/edge-observability.ts';
 const log = createLogger('bitrix24-webhook');
 
 /** Comparação de segredos em tempo constante-ish (mesmo estilo do auth-guard). */
@@ -72,11 +73,14 @@ export const handler = async (req: Request) => {
           corsHeaders
         );
       }
-      const bruto = rawPayload as { auth?: { application_token?: string } };
-      if (
-        !bruto.auth?.application_token ||
-        !segredosIguais(bruto.auth.application_token, segredo)
-      ) {
+      // O token nativo pode vir no nível externo (v1) ou dentro de `data`
+      // quando o corpo usa o envelope {contract_version, data} (v2).
+      const bruto = rawPayload as {
+        auth?: { application_token?: string };
+        data?: { auth?: { application_token?: string } };
+      };
+      const applicationToken = bruto.auth?.application_token ?? bruto.data?.auth?.application_token;
+      if (!applicationToken || !segredosIguais(applicationToken, segredo)) {
         return createErrorResponse('Token invalido', 401, undefined, req);
       }
     } else {
@@ -137,6 +141,12 @@ export const handler = async (req: Request) => {
     if (authPayload && typeof authPayload === 'object') {
       delete (authPayload as Record<string, unknown>).application_token;
     }
+    // Envelope v2: o token mora em data.auth — não persistir no evento.
+    const authEnvelope = (payloadSeguro as { data?: { auth?: Record<string, unknown> } }).data
+      ?.auth;
+    if (authEnvelope && typeof authEnvelope === 'object') {
+      delete authEnvelope.application_token;
+    }
     const externalId =
       'event_id' in payload && typeof payload.event_id === 'string'
         ? payload.event_id
@@ -172,13 +182,15 @@ export const handler = async (req: Request) => {
 };
 
 if (import.meta.main) {
-  Deno.serve(async (req) => {
-    const _t0 = Date.now();
-    try {
-      return await handler(req);
-    } finally {
-      log.info('request', { duration_ms: Date.now() - _t0 });
-      await log.flush();
-    }
-  });
+  Deno.serve(
+    withEdgeObservability('bitrix24-webhook', async (req) => {
+      const _t0 = Date.now();
+      try {
+        return await handler(req);
+      } finally {
+        log.info('request', { duration_ms: Date.now() - _t0 });
+        await log.flush();
+      }
+    })
+  );
 }

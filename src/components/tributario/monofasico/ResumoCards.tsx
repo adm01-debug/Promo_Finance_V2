@@ -11,9 +11,8 @@ interface ResumoCardsProps {
 }
 
 export function ResumoCards({ resumo }: ResumoCardsProps) {
-  const participacao = resumo.receitaTotal > 0
-    ? (resumo.receitaMonofasica / resumo.receitaTotal) * 100
-    : 0;
+  const participacao =
+    resumo.receitaTotal > 0 ? (resumo.receitaMonofasica / resumo.receitaTotal) * 100 : 0;
 
   const cards = [
     {

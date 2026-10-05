@@ -145,10 +145,7 @@ export function useRelatoriosAgendados() {
 
   const deleteMutation = useMutation({
     mutationFn: async (id: string) => {
-      const { error } = await supabase
-        .from('relatorios_agendados')
-        .delete()
-        .eq('id', id);
+      const { error } = await supabase.from('relatorios_agendados').delete().eq('id', id);
 
       if (error) throw error;
     },
@@ -170,10 +167,7 @@ export function useRelatoriosAgendados() {
 
   const toggleAtivo = useMutation({
     mutationFn: async ({ id, ativo }: { id: string; ativo: boolean }) => {
-      const { error } = await supabase
-        .from('relatorios_agendados')
-        .update({ ativo })
-        .eq('id', id);
+      const { error } = await supabase.from('relatorios_agendados').update({ ativo }).eq('id', id);
 
       if (error) throw error;
     },
@@ -181,9 +175,7 @@ export function useRelatoriosAgendados() {
       queryClient.invalidateQueries({ queryKey: ['relatorios-agendados'] });
       toast({
         title: ativo ? 'Relatório ativado' : 'Relatório pausado',
-        description: ativo 
-          ? 'O agendamento foi reativado.' 
-          : 'O agendamento foi pausado.',
+        description: ativo ? 'O agendamento foi reativado.' : 'O agendamento foi pausado.',
       });
     },
   });
@@ -215,7 +207,7 @@ function calcularProximoEnvio(
 ): string {
   const agora = new Date();
   const [horas, minutos] = hora.split(':').map(Number);
-  
+
   const proximo = new Date(agora);
   proximo.setHours(horas, minutos, 0, 0);
 

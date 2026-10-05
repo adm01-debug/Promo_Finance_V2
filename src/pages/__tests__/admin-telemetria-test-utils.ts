@@ -52,40 +52,44 @@ export function formatDuration(ms: number): string {
 }
 
 export function formatTime(iso: string): string {
-  return new Date(iso).toLocaleString("pt-BR", {
-    hour: "2-digit",
-    minute: "2-digit",
-    second: "2-digit",
-    day: "2-digit",
-    month: "2-digit",
+  return new Date(iso).toLocaleString('pt-BR', {
+    hour: '2-digit',
+    minute: '2-digit',
+    second: '2-digit',
+    day: '2-digit',
+    month: '2-digit',
   });
 }
 
 export function getTimeThreshold(timeFilter: string): string {
   const now = new Date();
   switch (timeFilter) {
-    case "1h": return new Date(now.getTime() - 60 * 60 * 1000).toISOString();
-    case "6h": return new Date(now.getTime() - 6 * 60 * 60 * 1000).toISOString();
-    case "24h": return new Date(now.getTime() - 24 * 60 * 60 * 1000).toISOString();
-    case "7d": return new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000).toISOString();
-    default: return new Date().toISOString();
+    case '1h':
+      return new Date(now.getTime() - 60 * 60 * 1000).toISOString();
+    case '6h':
+      return new Date(now.getTime() - 6 * 60 * 60 * 1000).toISOString();
+    case '24h':
+      return new Date(now.getTime() - 24 * 60 * 60 * 1000).toISOString();
+    case '7d':
+      return new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000).toISOString();
+    default:
+      return new Date().toISOString();
   }
 }
 
 export function computeStats(rows: TelemetryRow[]) {
-  const verySlow = rows.filter(r => r.severity === "very_slow").length;
-  const slow = rows.filter(r => r.severity === "slow").length;
-  const errors = rows.filter(r => r.severity === "error").length;
-  const avgDuration = rows.length > 0
-    ? Math.round(rows.reduce((s, r) => s + r.duration_ms, 0) / rows.length)
-    : 0;
+  const verySlow = rows.filter((r) => r.severity === 'very_slow').length;
+  const slow = rows.filter((r) => r.severity === 'slow').length;
+  const errors = rows.filter((r) => r.severity === 'error').length;
+  const avgDuration =
+    rows.length > 0 ? Math.round(rows.reduce((s, r) => s + r.duration_ms, 0) / rows.length) : 0;
   return { verySlow, slow, errors, avgDuration };
 }
 
 export function computeTopOffenders(rows: TelemetryRow[]) {
   const tableStats = new Map<string, { count: number; totalMs: number; maxMs: number }>();
   for (const r of rows) {
-    const key = r.rpc_name || r.table_name || "unknown";
+    const key = r.rpc_name || r.table_name || 'unknown';
     const prev = tableStats.get(key) || { count: 0, totalMs: 0, maxMs: 0 };
     tableStats.set(key, {
       count: prev.count + 1,
@@ -93,7 +97,5 @@ export function computeTopOffenders(rows: TelemetryRow[]) {
       maxMs: Math.max(prev.maxMs, r.duration_ms),
     });
   }
-  return [...tableStats.entries()]
-    .sort((a, b) => b[1].count - a[1].count)
-    .slice(0, 8);
+  return [...tableStats.entries()].sort((a, b) => b[1].count - a[1].count).slice(0, 8);
 }

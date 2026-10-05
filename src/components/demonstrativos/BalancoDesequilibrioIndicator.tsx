@@ -17,7 +17,11 @@ interface Props {
   equilibrado: boolean;
 }
 
-interface PartidaRow { tipo: string; valor: number; conta?: { codigo?: string; descricao?: string | null; nome?: string | null } | null }
+interface PartidaRow {
+  tipo: string;
+  valor: number;
+  conta?: { codigo?: string; descricao?: string | null; nome?: string | null } | null;
+}
 interface LancRow {
   id: string;
   data_lancamento: string;
@@ -27,7 +31,14 @@ interface LancRow {
   partidas?: PartidaRow[] | null;
 }
 
-export function BalancoDesequilibrioIndicator({ empresaId, mes, ano, totalAtivo, totalPassivo, equilibrado }: Props) {
+export function BalancoDesequilibrioIndicator({
+  empresaId,
+  mes,
+  ano,
+  totalAtivo,
+  totalPassivo,
+  equilibrado,
+}: Props) {
   const navigate = useNavigate();
   const { data: lancs = [], isLoading } = useLancamentosContabeis(empresaId, ano);
 
@@ -81,12 +92,20 @@ export function BalancoDesequilibrioIndicator({ empresaId, mes, ano, totalAtivo,
           <div className="flex-1 min-w-0">
             <div className="flex items-center gap-2">
               <span className="text-sm font-semibold text-destructive">Balanço desequilibrado</span>
-              <Badge variant="outline" className="text-[10px] uppercase tracking-wide border-destructive/40 text-destructive">
+              <Badge
+                variant="outline"
+                className="text-[10px] uppercase tracking-wide border-destructive/40 text-destructive"
+              >
                 Tempo real
               </Badge>
             </div>
             <div className="text-xs text-muted-foreground mt-0.5">
-              Diferença de <span className="font-mono font-semibold text-destructive">{diferenca >= 0 ? '+' : ''}{formatCurrency(diferenca)}</span> entre Ativo e Passivo+PL
+              Diferença de{' '}
+              <span className="font-mono font-semibold text-destructive">
+                {diferenca >= 0 ? '+' : ''}
+                {formatCurrency(diferenca)}
+              </span>{' '}
+              entre Ativo e Passivo+PL
             </div>
           </div>
           <span className="text-xs text-muted-foreground hidden sm:inline">Investigar</span>
@@ -100,14 +119,20 @@ export function BalancoDesequilibrioIndicator({ empresaId, mes, ano, totalAtivo,
             <h4 className="text-sm font-semibold">Lançamentos com maior impacto no período</h4>
           </div>
           <p className="text-xs text-muted-foreground">
-            Diferença atual: <span className="font-mono font-bold text-destructive">{formatCurrency(diferencaAbs)}</span> — revise os lançamentos abaixo, em ordem do maior valor.
+            Diferença atual:{' '}
+            <span className="font-mono font-bold text-destructive">
+              {formatCurrency(diferencaAbs)}
+            </span>{' '}
+            — revise os lançamentos abaixo, em ordem do maior valor.
           </p>
         </div>
 
         <div className="max-h-[320px] overflow-auto">
           <AnimatePresence>
             {isLoading ? (
-              <div className="p-6 text-center text-xs text-muted-foreground">Carregando lançamentos…</div>
+              <div className="p-6 text-center text-xs text-muted-foreground">
+                Carregando lançamentos…
+              </div>
             ) : topLancamentos.length === 0 ? (
               <div className="p-6 text-center text-xs text-muted-foreground">
                 Nenhum lançamento no período. O desequilíbrio pode vir de saldos anteriores ao mês.

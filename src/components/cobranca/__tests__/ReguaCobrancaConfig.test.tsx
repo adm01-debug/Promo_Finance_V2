@@ -5,17 +5,57 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 vi.mock('@/hooks/useReguaCobranca', () => ({
   useReguaCobranca: () => ({
     data: [
-      { id: '1', nome: 'Preventiva', descricao: 'Lembrete antes do vencimento', dias_gatilho: -3, canais: ['email', 'whatsapp'], auto_executar: true, ativo: true },
-      { id: '2', nome: 'Lembrete', descricao: 'Lembrete no vencimento', dias_gatilho: 0, canais: ['email'], auto_executar: true, ativo: true },
-      { id: '3', nome: 'Cobranca', descricao: 'Após vencimento', dias_gatilho: 3, canais: ['email', 'sms'], auto_executar: false, ativo: true },
-      { id: '4', nome: 'Negociacao', descricao: 'Tentativa de acordo', dias_gatilho: 15, canais: ['telefone'], auto_executar: false, ativo: false },
+      {
+        id: '1',
+        nome: 'Preventiva',
+        descricao: 'Lembrete antes do vencimento',
+        dias_gatilho: -3,
+        canais: ['email', 'whatsapp'],
+        auto_executar: true,
+        ativo: true,
+      },
+      {
+        id: '2',
+        nome: 'Lembrete',
+        descricao: 'Lembrete no vencimento',
+        dias_gatilho: 0,
+        canais: ['email'],
+        auto_executar: true,
+        ativo: true,
+      },
+      {
+        id: '3',
+        nome: 'Cobranca',
+        descricao: 'Após vencimento',
+        dias_gatilho: 3,
+        canais: ['email', 'sms'],
+        auto_executar: false,
+        ativo: true,
+      },
+      {
+        id: '4',
+        nome: 'Negociacao',
+        descricao: 'Tentativa de acordo',
+        dias_gatilho: 15,
+        canais: ['telefone'],
+        auto_executar: false,
+        ativo: false,
+      },
     ],
     isLoading: false,
   }),
   useUpdateReguaCobranca: () => ({ mutate: vi.fn() }),
   useTemplatesCobranca: () => ({
     data: [
-      { id: 't1', nome: 'Template Preventivo', tipo: 'preventiva', canal: 'email', assunto: 'Assunto', corpo: 'Corpo', ativo: true },
+      {
+        id: 't1',
+        nome: 'Template Preventivo',
+        tipo: 'preventiva',
+        canal: 'email',
+        assunto: 'Assunto',
+        corpo: 'Corpo',
+        ativo: true,
+      },
     ],
   }),
   useUpdateTemplate: () => ({ mutate: vi.fn() }),
@@ -29,7 +69,7 @@ const wrapper = ({ children }: { children: React.ReactNode }) => (
 
 describe('ReguaCobrancaConfig', () => {
   let ReguaCobrancaConfig: any;
-  
+
   beforeAll(async () => {
     const mod = await import('../ReguaCobrancaConfig');
     ReguaCobrancaConfig = mod.ReguaCobrancaConfig;
