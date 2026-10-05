@@ -4787,6 +4787,22 @@ CREATE POLICY alerts_tenant_select ON public.alerts FOR SELECT TO authenticated 
 DROP POLICY IF EXISTS alerts_tenant_update ON public.alerts;
 CREATE POLICY alerts_tenant_update ON public.alerts FOR UPDATE TO authenticated USING ((public.empresa_membro_ativo(empresa_id) AND (public.has_role(auth.uid(), 'admin'::public.app_role) OR public.has_role(auth.uid(), 'manager'::public.app_role) OR public.has_role(auth.uid(), 'operator'::public.app_role)))) WITH CHECK (public.empresa_membro_ativo(empresa_id));
 
+CREATE TABLE IF NOT EXISTS public.alerts_sent (
+    id uuid NOT NULL DEFAULT gen_random_uuid(),
+    alert_id uuid NOT NULL,
+    channel text NOT NULL,
+    recipient text NOT NULL,
+    status text NOT NULL DEFAULT 'pending'::text,
+    sent_at timestamp with time zone,
+    error_message text,
+    metadata jsonb DEFAULT '{}'::jsonb,
+    created_at timestamp with time zone NOT NULL DEFAULT now(),
+    delivered_at timestamp with time zone,
+    retry_count integer DEFAULT 0,
+    CONSTRAINT alerts_sent_pkey PRIMARY KEY (id)
+);
+ALTER TABLE public.alerts_sent ENABLE ROW LEVEL SECURITY;
+
 DROP POLICY IF EXISTS alerts_sent_tenant_delete ON public.alerts_sent;
 CREATE POLICY alerts_sent_tenant_delete ON public.alerts_sent FOR DELETE TO authenticated USING (((EXISTS ( SELECT 1
    FROM public.alerts a
