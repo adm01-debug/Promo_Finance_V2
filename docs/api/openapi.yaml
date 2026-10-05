@@ -549,6 +549,7 @@ paths:
             (o recurso retorna com id no corpo)'
         '400': { $ref: '#/components/responses/ErroValidacao' }
         '401': { description: Bearer token SCIM inválido }
+        '500': { description: Falha de persistência (Auth ou upsert de user_empresas) }
 
   '/scim-server/scim/v2/Users/{id}':
     get:
@@ -745,7 +746,7 @@ paths:
               type: object
               required: [token]
               properties:
-                token: { type: string }
+                token: { type: string, minLength: 10 }
       responses:
         '200':
           description: Token validado
@@ -939,6 +940,7 @@ components:
             transactionReceiptUrl: { type: string }
         id:
           type: string
+          minLength: 1
           description: Obrigatório no contrato v2 (idempotência)
 
     AsaasWebhookV2:
@@ -954,6 +956,7 @@ components:
       properties:
         eventId:
           type: string
+          minLength: 1
           description: Obrigatório no contrato v2 (idempotência)
         date: { type: string, format: date-time }
         version: { oneOf: [{ type: string }, { type: number }] }

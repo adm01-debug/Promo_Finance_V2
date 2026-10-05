@@ -67,7 +67,7 @@ erDiagram
         uuid id PK
         uuid empresa_id FK
         uuid fornecedor_id FK "anulável"
-        uuid categoria_id FK
+        uuid categoria_id FK "anulável"
         uuid centro_custo_id "ref. lógica — SEM constraint FK"
         uuid conta_bancaria_id "ref. lógica — SEM constraint FK"
         numeric valor
@@ -80,7 +80,7 @@ erDiagram
         uuid id PK
         uuid empresa_id FK
         uuid cliente_id FK "anulável"
-        uuid categoria_id FK
+        uuid categoria_id FK "anulável"
         uuid centro_custo_id "ref. lógica — SEM constraint FK"
         uuid conta_bancaria_id "ref. lógica — SEM constraint FK"
         numeric valor
