@@ -92,17 +92,18 @@ Deno.serve(
 
         // Depois da autenticação e do RBAC — ação destrutiva sem permissão recebe
         // 403 e não o 503 que vazaria a configuração do kill-switch.
+        // Ações só locais passam mesmo com a integração desativada —
+        // revogar_token é limpeza de linha própria, não chamada ao provedor.
+        if (action === 'revogar_token') {
+          return await handleTokenRevocation(supabase, corsHeaders);
+        }
+
         const inativa = respostaIntegracaoDesativada('bling', corsHeaders);
         if (inativa) return inativa;
 
         // --- OAuth Actions ---
         if (action === 'oauth_callback') {
           return await handleOAuthCallback(supabase, params, userId, corsHeaders);
-        }
-
-        // --- Gap #3: Token revocation ---
-        if (action === 'revogar_token') {
-          return await handleTokenRevocation(supabase, corsHeaders);
         }
 
         // --- Get valid access token ---
