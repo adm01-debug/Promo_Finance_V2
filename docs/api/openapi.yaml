@@ -560,6 +560,7 @@ paths:
       responses:
         '200': { description: User SCIM }
         '404': { description: Não encontrado }
+        '401': { description: Bearer token SCIM ausente, inválido ou expirado }
     patch:
       tags: [identidade]
       summary: Patch SCIM (active, displayName, name.*, externalId, department)
@@ -589,6 +590,7 @@ paths:
           description: >-
             Operations ausente ou vazio — patchUser responde SCIM
             {status:400, detail:'Operations array required', scimType:invalidValue}
+        '401': { description: Bearer token SCIM ausente, inválido ou expirado }
         '404': { description: Não encontrado }
     put:
       tags: [identidade]
@@ -603,6 +605,7 @@ paths:
       responses:
         '200': { description: User substituído }
         '404': { description: Não encontrado }
+        '401': { description: Bearer token SCIM ausente, inválido ou expirado }
     delete:
       tags: [identidade]
       summary: Desprovisiona (desativa vínculo user_empresas)
@@ -611,6 +614,7 @@ paths:
       responses:
         '204': { description: Desprovisionado }
         '404': { description: Não encontrado }
+        '401': { description: Bearer token SCIM ausente, inválido ou expirado }
 
   /scim-server/scim/v2/Groups:
     get:
@@ -675,6 +679,7 @@ paths:
       responses:
         '200': { description: Group SCIM }
         '404': { description: Não encontrado }
+        '401': { description: Bearer token SCIM ausente, inválido ou expirado }
     patch:
       tags: [identidade]
       summary: Patch de membros do grupo
@@ -700,6 +705,7 @@ paths:
                       value: {}
       responses:
         '200': { description: Group atualizado }
+        '401': { description: Bearer token SCIM ausente, inválido ou expirado }
     put:
       tags: [identidade]
       summary: Substitui o grupo inteiro (membros inclusos)
@@ -723,6 +729,7 @@ paths:
       responses:
         '200': { description: Group substituído }
         '404': { description: Não encontrado }
+        '401': { description: Bearer token SCIM ausente, inválido ou expirado }
     delete:
       tags: [identidade]
       summary: Remove o mapeamento de grupo
@@ -730,6 +737,7 @@ paths:
       parameters: [{ $ref: '#/components/parameters/ScimId' }]
       responses:
         '204': { description: Removido }
+        '401': { description: Bearer token SCIM ausente, inválido ou expirado }
 
   /validar-token-contador:
     post:
@@ -941,6 +949,7 @@ components:
         id:
           type: string
           minLength: 1
+          pattern: '\\S'
           description: Obrigatório no contrato v2 (idempotência)
 
     AsaasWebhookV2:
@@ -957,6 +966,7 @@ components:
         eventId:
           type: string
           minLength: 1
+          pattern: '\\S'
           description: Obrigatório no contrato v2 (idempotência)
         date: { type: string, format: date-time }
         version: { oneOf: [{ type: string }, { type: number }] }
@@ -982,6 +992,8 @@ components:
         event: { type: string }
         event_id:
           type: string
+          minLength: 1
+          pattern: '\\S'
           description: Obrigatório no contrato v2 (idempotência)
         data:
           type: object
@@ -1014,6 +1026,8 @@ components:
         event: { type: string }
         messageId:
           type: string
+          minLength: 1
+          pattern: '\\S'
           description: Obrigatório no contrato v2 (idempotência)
         status: { type: string }
         from: { type: string }
