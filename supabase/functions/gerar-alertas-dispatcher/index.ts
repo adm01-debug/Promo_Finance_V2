@@ -12,6 +12,7 @@ import { getRequestId, correlationResponseHeaders } from '../_shared/correlation
 import { z } from '../_shared/zod.ts';
 import { createValidationErrorResponse } from '../_shared/contract-response.ts';
 import { corsHeadersPara } from '../_shared/cors.ts';
+import { withEdgeObservability } from '../_shared/edge-observability.ts';
 
 const ALERT_TYPES = ['financeiro', 'tributario', 'preditivo', 'health-score'] as const;
 type AlertType = (typeof ALERT_TYPES)[number];
@@ -24,61 +25,66 @@ const FUNCTION_MAP: Record<AlertType, string> = {
 };
 const ForwardedBodySchema = z.string().max(1_000_000);
 
-Deno.serve(async (req) => {
-  const corsHeaders = corsHeadersPara(req);
-  if (req.method === 'OPTIONS') {
-    return new Response('ok', { headers: corsHeaders });
-  }
-
-  const requestId = getRequestId(req);
-  const logger = createLogger('gerar-alertas-dispatcher', requestId);
-  const headers = {
-    ...corsHeaders,
-    ...correlationResponseHeaders(requestId),
-    'Content-Type': 'application/json',
-  };
-
-  try {
-    const url = new URL(req.url);
-    const tipo = (url.searchParams.get('tipo') || 'financeiro').toLowerCase() as AlertType;
-
-    if (!ALERT_TYPES.includes(tipo)) {
-      logger.warn('tipo inválido', { tipo });
-      return new Response(JSON.stringify({ error: 'tipo inválido', allowed: ALERT_TYPES }), {
-        headers,
-        status: 400,
-      });
+Deno.serve(
+  withEdgeObservability('gerar-alertas-dispatcher', async (req) => {
+    const corsHeaders = corsHeadersPara(req);
+    if (req.method === 'OPTIONS') {
+      return new Response('ok', { headers: corsHeaders });
     }
 
-    const targetFunction = FUNCTION_MAP[tipo];
-    const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
-    const authHeader = req.headers.get('Authorization') || '';
-    const body = req.method === 'GET' ? null : await req.text();
-    const parsedBody = ForwardedBodySchema.safeParse(body ?? '');
-    if (!parsedBody.success) return createValidationErrorResponse(parsedBody.error, headers);
+    const requestId = getRequestId(req);
+    const logger = createLogger('gerar-alertas-dispatcher', requestId);
+    const headers = {
+      ...corsHeaders,
+      ...correlationResponseHeaders(requestId),
+      'Content-Type': 'application/json',
+    };
 
-    logger.info('dispatching', { tipo, target: targetFunction });
+    try {
+      const url = new URL(req.url);
+      const tipo = (url.searchParams.get('tipo') || 'financeiro').toLowerCase() as AlertType;
 
-    const resp = await fetch(`${supabaseUrl}/functions/v1/${targetFunction}`, {
-      method: req.method,
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: authHeader,
-        'x-request-id': requestId,
-        apikey: Deno.env.get('SUPABASE_ANON_KEY') || '',
-      },
-      body,
-    });
+      if (!ALERT_TYPES.includes(tipo)) {
+        logger.warn('tipo inválido', { tipo });
+        return new Response(JSON.stringify({ error: 'tipo inválido', allowed: ALERT_TYPES }), {
+          headers,
+          status: 400,
+        });
+      }
 
-    const data = await resp.text();
-    logger.info('dispatched', { tipo, status: resp.status });
+      const targetFunction = FUNCTION_MAP[tipo];
+      const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
+      const authHeader = req.headers.get('Authorization') || '';
+      const body = req.method === 'GET' ? null : await req.text();
+      const parsedBody = ForwardedBodySchema.safeParse(body ?? '');
+      if (!parsedBody.success) return createValidationErrorResponse(parsedBody.error, headers);
 
-    return new Response(data, { headers, status: resp.status });
-  } catch (err) {
-    logger.error('dispatch failed', { error: (err as Error).message });
-    return new Response(JSON.stringify({ error: (err as Error).message, request_id: requestId }), {
-      headers,
-      status: 500,
-    });
-  }
-});
+      logger.info('dispatching', { tipo, target: targetFunction });
+
+      const resp = await fetch(`${supabaseUrl}/functions/v1/${targetFunction}`, {
+        method: req.method,
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: authHeader,
+          'x-request-id': requestId,
+          apikey: Deno.env.get('SUPABASE_ANON_KEY') || '',
+        },
+        body,
+      });
+
+      const data = await resp.text();
+      logger.info('dispatched', { tipo, status: resp.status });
+
+      return new Response(data, { headers, status: resp.status });
+    } catch (err) {
+      logger.error('dispatch failed', { error: (err as Error).message });
+      return new Response(
+        JSON.stringify({ error: (err as Error).message, request_id: requestId }),
+        {
+          headers,
+          status: 500,
+        }
+      );
+    }
+  })
+);

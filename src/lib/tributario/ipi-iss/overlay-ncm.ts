@@ -116,7 +116,7 @@ function derivarSituacao(aliquota: number, base?: ItemTipi): SituacaoIpi {
  */
 export function aplicarOverlayNcm(
   registros: readonly RegistroNcmBanco[],
-  base: readonly ItemTipi[] = TIPI,
+  base: readonly ItemTipi[] = TIPI
 ): ResultadoOverlayNcm {
   const tabela: Record<string, ItemTipi> = {};
   for (const item of base) tabela[normalizarNcm(item.ncm)] = { ...item };
@@ -142,16 +142,25 @@ export function aplicarOverlayNcm(
 
     const aliquota = normalizarAliquotaIpi(registro.aliquota_ipi);
     if (aliquota === null) {
-      rejeitadas.push({ ncm: codigo, motivo: 'aliquota_invalida', valor: registro.aliquota_ipi ?? null });
+      rejeitadas.push({
+        ncm: codigo,
+        motivo: 'aliquota_invalida',
+        valor: registro.aliquota_ipi ?? null,
+      });
       continue;
     }
     if (aliquota > IPI_ALIQUOTA_MAXIMA + EPSILON) {
-      rejeitadas.push({ ncm: codigo, motivo: 'aliquota_fora_da_faixa', valor: registro.aliquota_ipi ?? null });
+      rejeitadas.push({
+        ncm: codigo,
+        motivo: 'aliquota_fora_da_faixa',
+        valor: registro.aliquota_ipi ?? null,
+      });
       continue;
     }
 
     const atual = tabela[codigo];
-    const descricao = (registro.descricao ?? '').toString().trim() || atual?.descricao || `NCM ${codigo}`;
+    const descricao =
+      (registro.descricao ?? '').toString().trim() || atual?.descricao || `NCM ${codigo}`;
 
     if (!atual) {
       tabela[codigo] = {
@@ -165,7 +174,12 @@ export function aplicarOverlayNcm(
     }
 
     if (Math.abs(arredondar(atual.aliquota) - aliquota) > EPSILON) {
-      aplicadas.push({ ncm: codigo, campo: 'aliquota_ipi', valorCodigo: atual.aliquota, valorBanco: aliquota });
+      aplicadas.push({
+        ncm: codigo,
+        campo: 'aliquota_ipi',
+        valorCodigo: atual.aliquota,
+        valorBanco: aliquota,
+      });
       tabela[codigo] = {
         ...atual,
         aliquota,

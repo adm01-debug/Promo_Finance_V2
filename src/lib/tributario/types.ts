@@ -93,8 +93,6 @@ export interface ParametrosSimulacao {
   lucroTrimestral?: number[];
 }
 
-
-
 export interface ResultadoCenario {
   regime: RegimeTributario;
   nome: string;

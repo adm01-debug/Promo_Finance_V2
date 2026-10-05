@@ -6,8 +6,15 @@ import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
 import { Separator } from '@/components/ui/separator';
 import {
-  Settings as SettingsIcon, DollarSign, Bell, Mail, Phone,
-  History, FileText, Send, CheckCircle2,
+  Settings as SettingsIcon,
+  DollarSign,
+  Bell,
+  Mail,
+  Phone,
+  History,
+  FileText,
+  Send,
+  CheckCircle2,
 } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
@@ -27,27 +34,49 @@ export function ConfigTab({ config, salvarConfig, queueStats }: ConfigTabProps) 
         <CardTitle className="flex items-center gap-2">
           <SettingsIcon className="h-5 w-5" /> Políticas de Retentativa
         </CardTitle>
-        <CardDescription>Configure como o sistema deve lidar com falhas de comunicação com o Asaas</CardDescription>
+        <CardDescription>
+          Configure como o sistema deve lidar com falhas de comunicação com o Asaas
+        </CardDescription>
       </CardHeader>
       <CardContent className="space-y-6">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           <div className="space-y-2">
             <Label>Limite de Tentativas</Label>
-            <Input type="number" value={config?.retry_limit || 5}
-              onChange={(e) => salvarConfig.mutate({ retry_limit: parseInt(e.target.value) })} />
-            <p className="text-xs text-muted-foreground">Número máximo de vezes que o sistema tentará sincronizar.</p>
+            <Input
+              type="number"
+              value={config?.retry_limit || 5}
+              onChange={(e) => salvarConfig.mutate({ retry_limit: parseInt(e.target.value) })}
+            />
+            <p className="text-xs text-muted-foreground">
+              Número máximo de vezes que o sistema tentará sincronizar.
+            </p>
           </div>
           <div className="space-y-2">
             <Label>Intervalo Inicial (minutos)</Label>
-            <Input type="number" value={config?.retry_interval_minutes || 30}
-              onChange={(e) => salvarConfig.mutate({ retry_interval_minutes: parseInt(e.target.value) })} />
-            <p className="text-xs text-muted-foreground">Tempo de espera antes da primeira retentativa.</p>
+            <Input
+              type="number"
+              value={config?.retry_interval_minutes || 30}
+              onChange={(e) =>
+                salvarConfig.mutate({ retry_interval_minutes: parseInt(e.target.value) })
+              }
+            />
+            <p className="text-xs text-muted-foreground">
+              Tempo de espera antes da primeira retentativa.
+            </p>
           </div>
           <div className="space-y-2">
             <Label>Multiplicador Backoff</Label>
-            <Input type="number" step="0.5" value={config?.backoff_multiplier || 2.0}
-              onChange={(e) => salvarConfig.mutate({ backoff_multiplier: parseFloat(e.target.value) })} />
-            <p className="text-xs text-muted-foreground">Fator de aumento do intervalo entre tentativas.</p>
+            <Input
+              type="number"
+              step="0.5"
+              value={config?.backoff_multiplier || 2.0}
+              onChange={(e) =>
+                salvarConfig.mutate({ backoff_multiplier: parseFloat(e.target.value) })
+              }
+            />
+            <p className="text-xs text-muted-foreground">
+              Fator de aumento do intervalo entre tentativas.
+            </p>
           </div>
         </div>
 
@@ -64,7 +93,9 @@ export function ConfigTab({ config, salvarConfig, queueStats }: ConfigTabProps) 
                 type="number"
                 step="0.1"
                 value={config?.default_fine_percent || 2.0}
-                onChange={(e) => salvarConfig.mutate({ default_fine_percent: parseFloat(e.target.value) })}
+                onChange={(e) =>
+                  salvarConfig.mutate({ default_fine_percent: parseFloat(e.target.value) })
+                }
               />
             </div>
             <div className="space-y-2">
@@ -73,7 +104,9 @@ export function ConfigTab({ config, salvarConfig, queueStats }: ConfigTabProps) 
                 type="number"
                 step="0.1"
                 value={config?.default_interest_percent || 1.0}
-                onChange={(e) => salvarConfig.mutate({ default_interest_percent: parseFloat(e.target.value) })}
+                onChange={(e) =>
+                  salvarConfig.mutate({ default_interest_percent: parseFloat(e.target.value) })
+                }
               />
             </div>
           </div>
@@ -89,8 +122,12 @@ export function ConfigTab({ config, salvarConfig, queueStats }: ConfigTabProps) 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div className="flex items-center justify-between p-4 border rounded-lg">
               <div className="space-y-0.5">
-                <Label className="flex items-center gap-2"><Mail className="h-4 w-4" /> Alertas por E-mail</Label>
-                <p className="text-xs text-muted-foreground">Receba avisos quando a fila atingir o limite</p>
+                <Label className="flex items-center gap-2">
+                  <Mail className="h-4 w-4" /> Alertas por E-mail
+                </Label>
+                <p className="text-xs text-muted-foreground">
+                  Receba avisos quando a fila atingir o limite
+                </p>
               </div>
               <Switch
                 checked={config?.alert_email_enabled}
@@ -100,7 +137,9 @@ export function ConfigTab({ config, salvarConfig, queueStats }: ConfigTabProps) 
 
             <div className="flex items-center justify-between p-4 border rounded-lg">
               <div className="space-y-0.5">
-                <Label className="flex items-center gap-2"><Phone className="h-4 w-4" /> Alertas por WhatsApp</Label>
+                <Label className="flex items-center gap-2">
+                  <Phone className="h-4 w-4" /> Alertas por WhatsApp
+                </Label>
                 <p className="text-xs text-muted-foreground">Avisos via mensagens proativas</p>
               </div>
               <Switch
@@ -132,7 +171,9 @@ export function ConfigTab({ config, salvarConfig, queueStats }: ConfigTabProps) 
               <Input
                 type="number"
                 value={config?.failure_threshold || 5}
-                onChange={(e) => salvarConfig.mutate({ failure_threshold: parseInt(e.target.value) })}
+                onChange={(e) =>
+                  salvarConfig.mutate({ failure_threshold: parseInt(e.target.value) })
+                }
               />
             </div>
           </div>
@@ -152,7 +193,9 @@ export function ConfigTab({ config, salvarConfig, queueStats }: ConfigTabProps) 
                 value={config?.bitrix_trigger_stage || 'WON'}
                 onChange={(e) => salvarConfig.mutate({ bitrix_trigger_stage: e.target.value })}
               />
-              <p className="text-[10px] text-muted-foreground">ID da etapa no Bitrix24 que dispara a geração automática.</p>
+              <p className="text-[10px] text-muted-foreground">
+                ID da etapa no Bitrix24 que dispara a geração automática.
+              </p>
             </div>
           </div>
         </div>
@@ -167,7 +210,8 @@ export function ConfigTab({ config, salvarConfig, queueStats }: ConfigTabProps) 
             <div className="p-4 border rounded-lg bg-muted/20">
               <h4 className="text-xs font-bold mb-2">Relatório Diário</h4>
               <p className="text-[10px] text-muted-foreground mb-4">
-                O sistema gera um resumo automático das últimas 24h e envia para o e-mail de alerta configurado.
+                O sistema gera um resumo automático das últimas 24h e envia para o e-mail de alerta
+                configurado.
               </p>
               <Button
                 size="sm"
@@ -175,11 +219,15 @@ export function ConfigTab({ config, salvarConfig, queueStats }: ConfigTabProps) 
                 className="w-full h-8"
                 onClick={async () => {
                   try {
-                    const { error } = await supabase.functions.invoke('gerar-resumo-financeiro-diario');
+                    const { error } = await supabase.functions.invoke(
+                      'gerar-resumo-financeiro-diario'
+                    );
                     if (error) throw error;
                     toast.success('Relatório gerado e enviado com sucesso');
                   } catch (e: unknown) {
-                    toast.error('Erro ao gerar relatório: ' + (e instanceof Error ? e.message : String(e)));
+                    toast.error(
+                      'Erro ao gerar relatório: ' + (e instanceof Error ? e.message : String(e))
+                    );
                   }
                 }}
               >
@@ -202,7 +250,9 @@ export function ConfigTab({ config, salvarConfig, queueStats }: ConfigTabProps) 
                 </div>
                 <div className="flex justify-between text-[10px]">
                   <span>Fila de Sincronização:</span>
-                  <span className="font-bold text-warning">{queueStats.falhas > 0 ? 'ATENÇÃO' : 'NORMAL'}</span>
+                  <span className="font-bold text-warning">
+                    {queueStats.falhas > 0 ? 'ATENÇÃO' : 'NORMAL'}
+                  </span>
                 </div>
               </div>
             </div>

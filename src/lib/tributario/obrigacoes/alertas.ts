@@ -109,7 +109,7 @@ function normalizarConfig(parcial?: Partial<ConfigAlertasConformidade>): ConfigA
  */
 export function avaliarAlertasConformidade(
   serie: readonly PontoHistorico[],
-  configParcial?: Partial<ConfigAlertasConformidade>,
+  configParcial?: Partial<ConfigAlertasConformidade>
 ): AlertaConformidade[] {
   if (serie.length === 0) return [];
 
@@ -208,7 +208,8 @@ export function avaliarAlertasConformidade(
   }
 
   return alertas.sort(
-    (a, b) => PESO_SEVERIDADE[a.severidade] - PESO_SEVERIDADE[b.severidade] || a.tipo.localeCompare(b.tipo),
+    (a, b) =>
+      PESO_SEVERIDADE[a.severidade] - PESO_SEVERIDADE[b.severidade] || a.tipo.localeCompare(b.tipo)
   );
 }
 
@@ -217,6 +218,6 @@ export function severidadeMaxima(alertas: readonly AlertaConformidade[]): Severi
   if (alertas.length === 0) return null;
   return alertas.reduce<SeveridadeAlerta>(
     (pior, a) => (PESO_SEVERIDADE[a.severidade] < PESO_SEVERIDADE[pior] ? a.severidade : pior),
-    'baixa',
+    'baixa'
   );
 }

@@ -1,29 +1,36 @@
 import React, { useState } from 'react';
 import { MainLayout } from '@/components/layout/MainLayout';
 import { PageHeader, PageBackground } from '@/components/layout/PageHeader';
-import { 
-  Code2, 
-  Plus, 
-  Trash2, 
-  ExternalLink, 
-  Copy, 
-  CheckCircle2, 
+import {
+  Code2,
+  Plus,
+  Trash2,
+  ExternalLink,
+  Copy,
+  CheckCircle2,
   ShieldCheck,
   Zap,
   Book,
-  AlertTriangle
+  AlertTriangle,
 } from 'lucide-react';
 
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { 
-  Dialog, 
-  DialogContent, 
-  DialogHeader, 
-  DialogTitle, 
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '@/components/ui/table';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
   DialogFooter,
-  DialogDescription
+  DialogDescription,
 } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -55,12 +62,12 @@ export default function ApiManagement() {
 
   const handleCreate = async () => {
     if (!newKeyName || !currentEmpresaId) return;
-    
+
     try {
       const result = await createApiKey.mutateAsync({
         name: newKeyName,
         empresa_id: currentEmpresaId,
-        scopes: selectedScopes
+        scopes: selectedScopes,
       });
       setGeneratedKey(result.key);
     } catch (error) {
@@ -86,10 +93,10 @@ export default function ApiManagement() {
     <MainLayout>
       <div className="relative min-h-screen">
         <PageBackground />
-        
+
         <div className="container mx-auto p-6 relative z-10 space-y-8">
-          <PageHeader 
-            title="API & Integrações" 
+          <PageHeader
+            title="API & Integrações"
             subtitle="Gerencie chaves de acesso e configure webhooks para estender o Promo Finance."
             badge="Developer Hub"
             icon={Code2}
@@ -98,11 +105,19 @@ export default function ApiManagement() {
             gradientTo="to-indigo-500"
           >
             <div className="flex items-center gap-3">
-              <Button variant="outline" className="bg-card/5 border-border text-foreground gap-2" disabled title="A documentação pública da API ainda não foi publicada.">
+              <Button
+                variant="outline"
+                className="bg-card/5 border-border text-foreground gap-2"
+                disabled
+                title="A documentação pública da API ainda não foi publicada."
+              >
                 <Book className="h-4 w-4" />
                 Documentação API
               </Button>
-              <Button onClick={() => setIsCreateDialogOpen(true)} className="bg-primary hover:bg-primary/90 gap-2">
+              <Button
+                onClick={() => setIsCreateDialogOpen(true)}
+                className="bg-primary hover:bg-primary/90 gap-2"
+              >
                 <Plus className="h-4 w-4" />
                 Nova Chave API
               </Button>
@@ -115,7 +130,8 @@ export default function ApiManagement() {
                 <CardHeader>
                   <CardTitle className="text-foreground">Suas Chaves de API</CardTitle>
                   <CardDescription>
-                    Chaves ativas para integração com sistemas externos. Nunca compartilhe suas chaves secretas.
+                    Chaves ativas para integração com sistemas externos. Nunca compartilhe suas
+                    chaves secretas.
                   </CardDescription>
                 </CardHeader>
                 <CardContent>
@@ -131,26 +147,48 @@ export default function ApiManagement() {
                     </TableHeader>
                     <TableBody>
                       {isLoading ? (
-                        <TableRow><TableCell colSpan={5} className="text-center py-8 text-foreground/40">Carregando...</TableCell></TableRow>
+                        <TableRow>
+                          <TableCell colSpan={5} className="text-center py-8 text-foreground/40">
+                            Carregando...
+                          </TableCell>
+                        </TableRow>
                       ) : apiKeys.length === 0 ? (
-                        <TableRow><TableCell colSpan={5} className="text-center py-12 text-foreground/20">Nenhuma chave de API gerada.</TableCell></TableRow>
+                        <TableRow>
+                          <TableCell colSpan={5} className="text-center py-12 text-foreground/20">
+                            Nenhuma chave de API gerada.
+                          </TableCell>
+                        </TableRow>
                       ) : (
                         apiKeys.map((key) => (
-                          <TableRow key={key.id} className="border-white/5 hover:bg-card/5 transition-colors">
+                          <TableRow
+                            key={key.id}
+                            className="border-white/5 hover:bg-card/5 transition-colors"
+                          >
                             <TableCell className="font-bold text-foreground">{key.name}</TableCell>
-                            <TableCell><code className="bg-card/10 px-2 py-0.5 rounded text-xs text-primary">{key.key_prefix}...</code></TableCell>
+                            <TableCell>
+                              <code className="bg-card/10 px-2 py-0.5 rounded text-xs text-primary">
+                                {key.key_prefix}...
+                              </code>
+                            </TableCell>
                             <TableCell className="text-foreground/60 text-xs">
-                              {key.last_used_at ? format(new Date(key.last_used_at), 'dd/MM/yy HH:mm') : 'Nunca usada'}
+                              {key.last_used_at
+                                ? format(new Date(key.last_used_at), 'dd/MM/yy HH:mm')
+                                : 'Nunca usada'}
                             </TableCell>
                             <TableCell className="text-foreground/60 text-xs">
                               {format(new Date(key.created_at), 'dd/MM/yyyy')}
                             </TableCell>
                             <TableCell className="text-right">
-                              <Button 
-                                variant="ghost" 
-                                size="icon" 
+                              <Button
+                                variant="ghost"
+                                size="icon"
                                 className="text-foreground/20 hover:text-destructive"
-                                onClick={() => revokeApiKey.mutate({ id: key.id, empresa_id: currentEmpresaId || '' })}
+                                onClick={() =>
+                                  revokeApiKey.mutate({
+                                    id: key.id,
+                                    empresa_id: currentEmpresaId || '',
+                                  })
+                                }
                               >
                                 <Trash2 className="h-4 w-4" />
                               </Button>
@@ -173,7 +211,14 @@ export default function ApiManagement() {
                 <CardContent className="flex flex-col items-center justify-center py-12 text-foreground/20">
                   <Zap className="h-12 w-12 mb-4 opacity-10" />
                   <p className="mb-4">Nenhum webhook configurado.</p>
-                  <Button variant="outline" className="border-border text-foreground" disabled title="O cadastro de endpoints ainda não foi implantado.">Adicionar Endpoint</Button>
+                  <Button
+                    variant="outline"
+                    className="border-border text-foreground"
+                    disabled
+                    title="O cadastro de endpoints ainda não foi implantado."
+                  >
+                    Adicionar Endpoint
+                  </Button>
                 </CardContent>
               </Card>
             </div>
@@ -188,7 +233,8 @@ export default function ApiManagement() {
                 </CardHeader>
                 <CardContent className="text-sm text-foreground/60 space-y-4">
                   <p>
-                    A chave é exibida uma única vez e armazenada apenas como hash. O consumo por APIs externas depende do endpoint contratado para a integração.
+                    A chave é exibida uma única vez e armazenada apenas como hash. O consumo por
+                    APIs externas depende do endpoint contratado para a integração.
                   </p>
                   <ul className="list-disc pl-4 space-y-2">
                     <li>Use chaves com escopos restritos sempre que possível.</li>
@@ -204,12 +250,20 @@ export default function ApiManagement() {
                 </CardHeader>
                 <CardContent className="space-y-4">
                   <div className="p-3 bg-black/40 rounded-lg border border-border">
-                    <p className="text-[10px] text-primary font-black uppercase mb-2">Endpoint Base</p>
-                    <code className="text-xs text-foreground/80">Disponível por integração contratada</code>
+                    <p className="text-[10px] text-primary font-black uppercase mb-2">
+                      Endpoint Base
+                    </p>
+                    <code className="text-xs text-foreground/80">
+                      Disponível por integração contratada
+                    </code>
                   </div>
                   <div className="p-3 bg-black/40 rounded-lg border border-border">
-                    <p className="text-[10px] text-primary font-black uppercase mb-2">Autenticação</p>
-                    <code className="text-xs text-foreground/80 break-all">A chave não habilita uma API pública genérica.</code>
+                    <p className="text-[10px] text-primary font-black uppercase mb-2">
+                      Autenticação
+                    </p>
+                    <code className="text-xs text-foreground/80 break-all">
+                      A chave não habilita uma API pública genérica.
+                    </code>
                   </div>
                   <Button variant="link" className="text-primary p-0 h-auto text-xs gap-1" disabled>
                     Ver exemplos de código <ExternalLink className="h-3 w-3" />
@@ -224,10 +278,12 @@ export default function ApiManagement() {
       <Dialog open={isCreateDialogOpen} onOpenChange={(open) => !open && closeDialog()}>
         <DialogContent className="bg-popover border-border text-foreground max-w-md">
           <DialogHeader>
-            <DialogTitle>{generatedKey ? 'Chave de API Gerada' : 'Criar Nova Chave API'}</DialogTitle>
+            <DialogTitle>
+              {generatedKey ? 'Chave de API Gerada' : 'Criar Nova Chave API'}
+            </DialogTitle>
             <DialogDescription className="text-foreground/40">
-              {generatedKey 
-                ? 'Certifique-se de copiar sua chave agora. Você não poderá vê-la novamente por motivos de segurança.' 
+              {generatedKey
+                ? 'Certifique-se de copiar sua chave agora. Você não poderá vê-la novamente por motivos de segurança.'
                 : 'Defina o nome e as permissões para a nova chave.'}
             </DialogDescription>
           </DialogHeader>
@@ -236,8 +292,8 @@ export default function ApiManagement() {
             <div className="space-y-6 py-4">
               <div className="space-y-2">
                 <Label>Nome da Chave</Label>
-                <Input 
-                  value={newKeyName} 
+                <Input
+                  value={newKeyName}
                   onChange={(e) => setNewKeyName(e.target.value)}
                   placeholder="Ex: Integração ERP"
                   className="bg-card/5 border-border"
@@ -249,16 +305,19 @@ export default function ApiManagement() {
                 <div className="grid grid-cols-2 gap-3">
                   {SCOPES.map((scope) => (
                     <div key={scope.id} className="flex items-center space-x-2">
-                      <Checkbox 
-                        id={scope.id} 
+                      <Checkbox
+                        id={scope.id}
                         checked={selectedScopes.includes(scope.id)}
                         onChange={(e) => {
                           if (e.target.checked) setSelectedScopes([...selectedScopes, scope.id]);
-                          else setSelectedScopes(selectedScopes.filter(s => s !== scope.id));
+                          else setSelectedScopes(selectedScopes.filter((s) => s !== scope.id));
                         }}
                       />
 
-                      <label htmlFor={scope.id} className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
+                      <label
+                        htmlFor={scope.id}
+                        className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                      >
                         {scope.label}
                       </label>
                     </div>
@@ -272,29 +331,36 @@ export default function ApiManagement() {
                 <code className="text-sm text-primary font-bold break-all pr-10">
                   {generatedKey}
                 </code>
-                <Button 
-                  variant="ghost" 
-                  size="icon" 
+                <Button
+                  variant="ghost"
+                  size="icon"
                   className="absolute right-2 top-2 h-8 w-8 hover:bg-primary/20"
                   onClick={() => copyToClipboard(generatedKey)}
                 >
-                  {copied ? <CheckCircle2 className="h-4 w-4 text-success" /> : <Copy className="h-4 w-4" />}
+                  {copied ? (
+                    <CheckCircle2 className="h-4 w-4 text-success" />
+                  ) : (
+                    <Copy className="h-4 w-4" />
+                  )}
                 </Button>
               </div>
               <p className="text-xs text-foreground/40 leading-relaxed italic">
                 <AlertTriangle className="h-3 w-3 inline mr-1 text-warning" />
-                Aviso: O Promo Finance não armazena sua chave privada. Se você perdê-la, terá que gerar uma nova chave e atualizar suas integrações.
+                Aviso: O Promo Finance não armazena sua chave privada. Se você perdê-la, terá que
+                gerar uma nova chave e atualizar suas integrações.
               </p>
             </div>
           )}
 
           <DialogFooter>
             {generatedKey ? (
-              <Button onClick={closeDialog} className="bg-primary w-full">Concluído</Button>
+              <Button onClick={closeDialog} className="bg-primary w-full">
+                Concluído
+              </Button>
             ) : (
-              <Button 
-                onClick={handleCreate} 
-                disabled={!newKeyName || createApiKey.isPending} 
+              <Button
+                onClick={handleCreate}
+                disabled={!newKeyName || createApiKey.isPending}
                 className="bg-primary hover:bg-primary/90 w-full"
               >
                 {createApiKey.isPending ? 'Gerando...' : 'Gerar Chave Secret'}

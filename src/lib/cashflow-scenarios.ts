@@ -60,9 +60,9 @@ export const CENARIOS_CONFIG: Record<CenarioTipo, CenarioConfig> = {
     nome: 'Pessimista',
     cor: 'hsl(0, 78%, 50%)',
     descricao: 'Cenário com redução de receitas e aumento de despesas',
-    multiplicadorReceitas: 0.80, // -20% receitas
-    multiplicadorDespesas: 1.10, // +10% despesas
-    probabilidadeAtraso: 0.30, // 30% de atrasos
+    multiplicadorReceitas: 0.8, // -20% receitas
+    multiplicadorDespesas: 1.1, // +10% despesas
+    probabilidadeAtraso: 0.3, // 30% de atrasos
   },
 };
 
@@ -77,9 +77,12 @@ export function gerarProjecaoCenario(
 
   return dadosBase.map((dia) => {
     // Aplicar multiplicadores e simular atrasos
-    const receitasAjustadas = dia.receitas * config.multiplicadorReceitas * (1 - config.probabilidadeAtraso * Math.random());
+    const receitasAjustadas =
+      dia.receitas *
+      config.multiplicadorReceitas *
+      (1 - config.probabilidadeAtraso * Math.random());
     const despesasAjustadas = dia.despesas * config.multiplicadorDespesas;
-    
+
     saldoAcumulado = saldoAcumulado + receitasAjustadas - despesasAjustadas;
 
     return {
@@ -117,23 +120,28 @@ export function detectarAlertasRuptura(
 
   Object.entries(projecoes).forEach(([cenario, dados]) => {
     // Buscar o primeiro dia de ruptura ou risco alto para cada cenário
-    const diaRuptura = dados.find(d => d.saldo <= limiteRupturaTotal);
-    const diaRiscoAlto = dados.find(d => d.saldo <= limiteRiscoAlto && d.saldo > limiteRupturaTotal);
-    const diaRiscoMedio = dados.find(
-      d => d.saldo <= limiteRiscoMedio && d.saldo > limiteRiscoAlto,
+    const diaRuptura = dados.find((d) => d.saldo <= limiteRupturaTotal);
+    const diaRiscoAlto = dados.find(
+      (d) => d.saldo <= limiteRiscoAlto && d.saldo > limiteRupturaTotal
     );
-    
+    const diaRiscoMedio = dados.find(
+      (d) => d.saldo <= limiteRiscoMedio && d.saldo > limiteRiscoAlto
+    );
+
     [diaRuptura, diaRiscoAlto, diaRiscoMedio].filter(Boolean).forEach((dia) => {
       if (!dia) return;
-      
+
       const dataEvento = new Date(dia.data);
       dataEvento.setHours(0, 0, 0, 0);
-      const diasAteEvento = Math.ceil((dataEvento.getTime() - hoje.getTime()) / (1000 * 60 * 60 * 24));
-      const tipo = dia.saldo <= limiteRupturaTotal
-        ? 'ruptura'
-        : dia.saldo <= limiteRiscoAlto
-          ? 'risco_alto'
-          : 'risco_medio';
+      const diasAteEvento = Math.ceil(
+        (dataEvento.getTime() - hoje.getTime()) / (1000 * 60 * 60 * 24)
+      );
+      const tipo =
+        dia.saldo <= limiteRupturaTotal
+          ? 'ruptura'
+          : dia.saldo <= limiteRiscoAlto
+            ? 'risco_alto'
+            : 'risco_medio';
 
       alertas.push({
         id: `${tipo}-${cenario}-${dia.data}`,
@@ -141,17 +149,19 @@ export function detectarAlertasRuptura(
         data: dia.data,
         saldoProjetado: dia.saldo,
         cenario: cenario as CenarioTipo,
-        mensagem: tipo === 'ruptura' 
-          ? `Ruptura de caixa projetada no cenário ${CENARIOS_CONFIG[cenario as CenarioTipo].nome}`
-          : tipo === 'risco_alto'
-            ? `Saldo crítico projetado no cenário ${CENARIOS_CONFIG[cenario as CenarioTipo].nome}`
-            : `Saldo de atenção projetado no cenário ${CENARIOS_CONFIG[cenario as CenarioTipo].nome}`,
+        mensagem:
+          tipo === 'ruptura'
+            ? `Ruptura de caixa projetada no cenário ${CENARIOS_CONFIG[cenario as CenarioTipo].nome}`
+            : tipo === 'risco_alto'
+              ? `Saldo crítico projetado no cenário ${CENARIOS_CONFIG[cenario as CenarioTipo].nome}`
+              : `Saldo de atenção projetado no cenário ${CENARIOS_CONFIG[cenario as CenarioTipo].nome}`,
         diasAteEvento,
-        acaoSugerida: tipo === 'ruptura'
-          ? 'Antecipar recebíveis ou renegociar pagamentos urgentes'
-          : tipo === 'risco_alto'
-            ? 'Revisar fluxo de pagamentos e priorizar despesas essenciais'
-            : 'Monitorar recebimentos e revisar a projeção de caixa',
+        acaoSugerida:
+          tipo === 'ruptura'
+            ? 'Antecipar recebíveis ou renegociar pagamentos urgentes'
+            : tipo === 'risco_alto'
+              ? 'Revisar fluxo de pagamentos e priorizar despesas essenciais'
+              : 'Monitorar recebimentos e revisar a projeção de caixa',
       });
     });
   });
@@ -179,11 +189,11 @@ export function calcularMetricasCenarios(
   const resultado = {} as Record<CenarioTipo, MetricaCenario>;
 
   Object.entries(projecoes).forEach(([cenario, dados]) => {
-    const saldos = dados.map(d => d.saldo);
+    const saldos = dados.map((d) => d.saldo);
     resultado[cenario as CenarioTipo] = {
       saldoFinal: saldos[saldos.length - 1] || 0,
       saldoMinimo: saldos.length > 0 ? Math.min(...saldos) : 0,
-      diasCriticos: saldos.filter(s => s < 100000).length,
+      diasCriticos: saldos.filter((s) => s < 100000).length,
     };
   });
 
@@ -195,7 +205,7 @@ export function formatarDadosGrafico(
   projecoes: Record<CenarioTipo, ProjecaoCenario[]>
 ): Array<{ data: string; otimista: number; realista: number; pessimista: number }> {
   const dadosRealista = projecoes.realista;
-  
+
   return dadosRealista.map((dia, index) => ({
     data: dia.data,
     otimista: projecoes.otimista[index]?.saldo || 0,

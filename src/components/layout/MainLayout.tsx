@@ -31,7 +31,7 @@ export const MainLayout = ({ children }: MainLayoutProps) => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const isMobile = useIsMobile();
   const location = useLocation();
-  
+
   // Navigation enhancements
   useSwipeBack({ enabled: isMobile });
   useKeyboardNavigation();
@@ -53,38 +53,37 @@ export const MainLayout = ({ children }: MainLayoutProps) => {
 
       {/* Onboarding Tour P14 (react-joyride) */}
       <OnboardingTour />
-      
+
       {/* Offline Banner */}
       <OfflineBanner position="top" />
-      
+
       {/* Responsive Sidebar - Desktop */}
       {!isMobile && <ResponsiveSidebar onCollapseChange={setSidebarCollapsed} />}
-      
+
       {/* Mobile Sidebar Drawer */}
       {isMobile && (
-        <MobileSidebarDrawer 
-          isOpen={mobileMenuOpen} 
-          onClose={() => setMobileMenuOpen(false)} 
-        />
+        <MobileSidebarDrawer isOpen={mobileMenuOpen} onClose={() => setMobileMenuOpen(false)} />
       )}
-      
+
       {/* Header - only show on desktop */}
       {!isMobile && <Header sidebarCollapsed={sidebarCollapsed} />}
-      
+
       {/* Network status indicator - fixed position */}
-      <div className={cn(
-        "fixed z-40 flex items-center gap-2",
-        isMobile ? "bottom-20 right-4" : "bottom-4 right-4"
-      )}>
+      <div
+        className={cn(
+          'fixed z-40 flex items-center gap-2',
+          isMobile ? 'bottom-20 right-4' : 'bottom-4 right-4'
+        )}
+      >
         <InstallPWA />
         <NetworkStatusIndicator showDetails />
       </div>
-      
+
       <motion.main
         id="main-content"
         initial={false}
         animate={{
-          marginLeft: isMobile ? 0 : (sidebarCollapsed ? 80 : 280),
+          marginLeft: isMobile ? 0 : sidebarCollapsed ? 80 : 280,
         }}
         transition={{ duration: 0.5, ease: [0.25, 0.1, 0.25, 1] }}
         className={cn(
@@ -101,14 +100,13 @@ export const MainLayout = ({ children }: MainLayoutProps) => {
             <ContextualBreadcrumbs />
           </div>
 
-          
           {/* Onboarding Checklist - show on dashboard */}
           {showOnboarding && (
             <div className="mb-10 max-w-md">
               <OnboardingChecklist />
             </div>
           )}
-          
+
           {/* Stagger Vela (Z2/Z1): wrapper separado do motion.div para o
               fill-mode do CSS não pinar opacity e matar o exit do framer */}
           <PageTransition>
@@ -116,11 +114,9 @@ export const MainLayout = ({ children }: MainLayoutProps) => {
           </PageTransition>
         </div>
       </motion.main>
-      
+
       {/* Mobile Bottom Navigation */}
-      {isMobile && (
-        <MobileBottomNav onMenuClick={() => setMobileMenuOpen(true)} />
-      )}
+      {isMobile && <MobileBottomNav onMenuClick={() => setMobileMenuOpen(true)} />}
 
       {/* Copilot Global IA P14 */}
       <CopilotGlobalFloat />

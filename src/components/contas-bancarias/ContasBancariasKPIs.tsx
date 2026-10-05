@@ -5,12 +5,12 @@ import { formatCurrency } from '@/lib/formatters';
 
 const containerVariants = {
   hidden: { opacity: 0 },
-  visible: { opacity: 1, transition: { staggerChildren: 0.1 } }
+  visible: { opacity: 1, transition: { staggerChildren: 0.1 } },
 };
 
 const itemVariants = {
   hidden: { opacity: 0, y: 20 },
-  visible: { opacity: 1, y: 0 }
+  visible: { opacity: 1, y: 0 },
 };
 
 interface Props {
@@ -21,7 +21,13 @@ interface Props {
   showSaldos: boolean;
 }
 
-export function ContasBancariasKPIs({ saldoTotal, saldoDisponivel, contasAtivas, totalContas, showSaldos }: Props) {
+export function ContasBancariasKPIs({
+  saldoTotal,
+  saldoDisponivel,
+  contasAtivas,
+  totalContas,
+  showSaldos,
+}: Props) {
   return (
     <motion.div
       className="grid grid-cols-1 md:grid-cols-3 gap-4"
@@ -35,7 +41,9 @@ export function ContasBancariasKPIs({ saldoTotal, saldoDisponivel, contasAtivas,
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm text-muted-foreground">Saldo Total</p>
-                <p className="text-3xl font-bold">{showSaldos ? formatCurrency(saldoTotal) : '••••••'}</p>
+                <p className="text-3xl font-bold">
+                  {showSaldos ? formatCurrency(saldoTotal) : '••••••'}
+                </p>
               </div>
               <div className="p-3 rounded-full bg-primary/20">
                 <DollarSign className="h-6 w-6 text-primary" />
@@ -51,7 +59,9 @@ export function ContasBancariasKPIs({ saldoTotal, saldoDisponivel, contasAtivas,
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm text-muted-foreground">Saldo Disponível</p>
-                <p className="text-3xl font-bold">{showSaldos ? formatCurrency(saldoDisponivel) : '••••••'}</p>
+                <p className="text-3xl font-bold">
+                  {showSaldos ? formatCurrency(saldoDisponivel) : '••••••'}
+                </p>
                 <p className="text-sm text-muted-foreground mt-1">
                   {saldoTotal > 0 ? ((saldoDisponivel / saldoTotal) * 100).toFixed(1) : 0}% do total
                 </p>

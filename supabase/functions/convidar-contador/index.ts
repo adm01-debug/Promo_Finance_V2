@@ -10,6 +10,7 @@ import { createValidationErrorResponse } from '../_shared/contract-response.ts';
 import { corsHeaders, corsHeadersPara } from '../_shared/cors.ts';
 
 import { getRequestId } from '../_shared/correlation.ts';
+import { withEdgeObservability } from '../_shared/edge-observability.ts';
 const BodySchema = z.object({
   empresa_id: z.string().uuid(),
   email: z.string().trim().email().max(255),
@@ -34,129 +35,137 @@ async function importHmacKey(secret: string): Promise<CryptoKey> {
   );
 }
 
-Deno.serve(async (req) => {
-  const _t0 = Date.now();
-  const corsHeaders = corsHeadersPara(req);
-  const res = (a: unknown, b = 200) => json(a, b, corsHeaders);
-  if (req.method === 'OPTIONS') return new Response('ok', { headers: corsHeaders });
+Deno.serve(
+  withEdgeObservability('convidar-contador', async (req) => {
+    const _t0 = Date.now();
+    const corsHeaders = corsHeadersPara(req);
+    const res = (a: unknown, b = 200) => json(a, b, corsHeaders);
+    if (req.method === 'OPTIONS') return new Response('ok', { headers: corsHeaders });
 
-  const log = createLogger('convidar-contador', getRequestId(req));
-  const startedAt = Date.now();
-  log.info('fn_start');
+    const log = createLogger('convidar-contador', getRequestId(req));
+    const startedAt = Date.now();
+    log.info('fn_start');
 
-  try {
-    const authHeader = req.headers.get('Authorization');
-    if (!authHeader?.startsWith('Bearer ')) {
-      log.warn('unauthorized_no_token');
-      return res({ error: 'Unauthorized' }, 401);
-    }
-
-    const SUPABASE_URL = Deno.env.get('SUPABASE_URL')!;
-    const ANON = Deno.env.get('SUPABASE_ANON_KEY')!;
-    const SERVICE = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
-    const JWT_SECRET = Deno.env.get('SUPABASE_JWT_SECRET') ?? SERVICE;
-
-    const supaUser = createClient(SUPABASE_URL, ANON, {
-      global: { headers: { Authorization: authHeader } },
-    });
-    const token = authHeader.replace('Bearer ', '');
-    const { data: claims, error: claimsErr } = await supaUser.auth.getClaims(token);
-    if (claimsErr || !claims?.claims?.sub) {
-      log.warn('unauthorized_invalid_jwt');
-      return res({ error: 'Unauthorized' }, 401);
-    }
-    const userId = claims.claims.sub as string;
-
-    let rawBody: unknown;
     try {
-      rawBody = JSON.parse(await req.text());
-    } catch {
-      return createValidationErrorResponse(
-        [
-          {
-            path: '$',
-            message: 'JSON malformado',
-            code: 'invalid_json',
-          },
-        ],
-        corsHeaders
-      );
-    }
-    const parsed = BodySchema.safeParse(rawBody);
-    if (!parsed.success) {
-      log.warn('invalid_body', { context: { errors: parsed.error.flatten().fieldErrors } });
-      return createValidationErrorResponse(parsed.error, corsHeaders);
-    }
-    const { empresa_id, email, nome, origin } = parsed.data;
+      const authHeader = req.headers.get('Authorization');
+      if (!authHeader?.startsWith('Bearer ')) {
+        log.warn('unauthorized_no_token');
+        return res({ error: 'Unauthorized' }, 401);
+      }
 
-    const admin = createClient(SUPABASE_URL, SERVICE);
+      const SUPABASE_URL = Deno.env.get('SUPABASE_URL')!;
+      const ANON = Deno.env.get('SUPABASE_ANON_KEY')!;
+      const SERVICE = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
+      // SUPABASE_* não pode ser cadastrado como secret custom em edge fns —
+      // CONTADOR_INVITE_SECRET é a chave dedicada (rotacionável). A primeira
+      // candidata NÃO-VAZIA assina: um secret cadastrado vazio não pode
+      // sequestrar a cadeia de fallback.
+      const JWT_SECRET =
+        [Deno.env.get('CONTADOR_INVITE_SECRET'), Deno.env.get('SUPABASE_JWT_SECRET'), SERVICE].find(
+          (v): v is string => typeof v === 'string' && v.length > 0
+        ) ?? SERVICE;
 
-    // Sem esta checagem, qualquer usuário autenticado do sistema (mesmo de
-    // outra empresa) podia convidar um "contador" com acesso read-only de
-    // 30 dias para QUALQUER empresa, bastando informar o empresa_id (IDOR).
-    const { data: vinculo } = await admin
-      .from('user_empresas')
-      .select('role')
-      .eq('user_id', userId)
-      .eq('empresa_id', empresa_id)
-      .eq('ativo', true)
-      .maybeSingle();
-    if (!vinculo || !['admin', 'financeiro'].includes(vinculo.role)) {
-      log.warn('forbidden_empresa_access', { context: { empresa_id } });
-      return res({ error: 'Sem permissão para convidar contador nesta empresa' }, 403);
-    }
+      const supaUser = createClient(SUPABASE_URL, ANON, {
+        global: { headers: { Authorization: authHeader } },
+      });
+      const token = authHeader.replace('Bearer ', '');
+      const { data: claims, error: claimsErr } = await supaUser.auth.getClaims(token);
+      if (claimsErr || !claims?.claims?.sub) {
+        log.warn('unauthorized_invalid_jwt');
+        return res({ error: 'Unauthorized' }, 401);
+      }
+      const userId = claims.claims.sub as string;
 
-    // Gera token aleatório de 32 bytes (URL-safe)
-    const rawBytes = new Uint8Array(32);
-    crypto.getRandomValues(rawBytes);
-    const rawToken = btoa(String.fromCharCode(...rawBytes))
-      .replace(/\+/g, '-')
-      .replace(/\//g, '_')
-      .replace(/=+$/, '');
-
-    // JWT assinado contém payload, mas o que vai por e-mail é o rawToken
-    const expiresAt = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000);
-    const key = await importHmacKey(JWT_SECRET);
-    const signedJwt = await createJwt(
-      { alg: 'HS256', typ: 'JWT' },
-      {
-        sub: rawToken,
-        empresa_id,
-        role: 'contador_readonly',
-        exp: getNumericDate(60 * 60 * 24 * 30),
-      },
-      key
-    );
-
-    const tokenHash = await sha256Hex(rawToken);
-
-    const { data: convite, error: insertErr } = await admin
-      .from('convites_contador')
-      .insert({
-        empresa_id,
-        email,
-        nome: nome ?? null,
-        token_hash: tokenHash,
-        expires_at: expiresAt.toISOString(),
-        created_by: userId,
-      })
-      .select('id')
-      .single();
-
-    if (insertErr) {
-      log.error('insert_failed', { error_message: insertErr.message });
-      return res({ error: 'Falha ao registrar convite' }, 500);
-    }
-
-    // Envia e-mail via Resend (gateway connector)
-    const RESEND_API_KEY = Deno.env.get('RESEND_API_KEY');
-    const LOVABLE_API_KEY = Deno.env.get('LOVABLE_API_KEY');
-    const link = `${origin ?? 'https://app.lovable.app'}/contador/${signedJwt}`;
-
-    let emailSent = false;
-    if (RESEND_API_KEY && LOVABLE_API_KEY) {
+      let rawBody: unknown;
       try {
-        const html = `
+        rawBody = JSON.parse(await req.text());
+      } catch {
+        return createValidationErrorResponse(
+          [
+            {
+              path: '$',
+              message: 'JSON malformado',
+              code: 'invalid_json',
+            },
+          ],
+          corsHeaders
+        );
+      }
+      const parsed = BodySchema.safeParse(rawBody);
+      if (!parsed.success) {
+        log.warn('invalid_body', { context: { errors: parsed.error.flatten().fieldErrors } });
+        return createValidationErrorResponse(parsed.error, corsHeaders);
+      }
+      const { empresa_id, email, nome, origin } = parsed.data;
+
+      const admin = createClient(SUPABASE_URL, SERVICE);
+
+      // Sem esta checagem, qualquer usuário autenticado do sistema (mesmo de
+      // outra empresa) podia convidar um "contador" com acesso read-only de
+      // 30 dias para QUALQUER empresa, bastando informar o empresa_id (IDOR).
+      const { data: vinculo } = await admin
+        .from('user_empresas')
+        .select('role')
+        .eq('user_id', userId)
+        .eq('empresa_id', empresa_id)
+        .eq('ativo', true)
+        .maybeSingle();
+      if (!vinculo || !['admin', 'financeiro'].includes(vinculo.role)) {
+        log.warn('forbidden_empresa_access', { context: { empresa_id } });
+        return res({ error: 'Sem permissão para convidar contador nesta empresa' }, 403);
+      }
+
+      // Gera token aleatório de 32 bytes (URL-safe)
+      const rawBytes = new Uint8Array(32);
+      crypto.getRandomValues(rawBytes);
+      const rawToken = btoa(String.fromCharCode(...rawBytes))
+        .replace(/\+/g, '-')
+        .replace(/\//g, '_')
+        .replace(/=+$/, '');
+
+      // JWT assinado contém payload, mas o que vai por e-mail é o rawToken
+      const expiresAt = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000);
+      const key = await importHmacKey(JWT_SECRET);
+      const signedJwt = await createJwt(
+        { alg: 'HS256', typ: 'JWT' },
+        {
+          sub: rawToken,
+          empresa_id,
+          role: 'contador_readonly',
+          exp: getNumericDate(60 * 60 * 24 * 30),
+        },
+        key
+      );
+
+      const tokenHash = await sha256Hex(rawToken);
+
+      const { data: convite, error: insertErr } = await admin
+        .from('convites_contador')
+        .insert({
+          empresa_id,
+          email,
+          nome: nome ?? null,
+          token_hash: tokenHash,
+          expires_at: expiresAt.toISOString(),
+          created_by: userId,
+        })
+        .select('id')
+        .single();
+
+      if (insertErr) {
+        log.error('insert_failed', { error_message: insertErr.message });
+        return res({ error: 'Falha ao registrar convite' }, 500);
+      }
+
+      // Envia e-mail via Resend (gateway connector)
+      const RESEND_API_KEY = Deno.env.get('RESEND_API_KEY');
+      const LOVABLE_API_KEY = Deno.env.get('LOVABLE_API_KEY');
+      const link = `${origin ?? 'https://app.lovable.app'}/contador/${signedJwt}`;
+
+      let emailSent = false;
+      if (RESEND_API_KEY && LOVABLE_API_KEY) {
+        try {
+          const html = `
           <div style="font-family:Arial,sans-serif;max-width:560px;margin:0 auto;padding:24px;color:#0f172a">
             <h2 style="margin:0 0 12px">Acesso de contador concedido</h2>
             <p>Olá${nome ? `, ${nome}` : ''}.</p>
@@ -167,65 +176,66 @@ Deno.serve(async (req) => {
             <p style="color:#64748b;font-size:12px">Se você não esperava este e-mail, ignore-o.</p>
           </div>`;
 
-        const resp = await fetch('https://connector-gateway.lovable.dev/resend/emails', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${LOVABLE_API_KEY}`,
-            'X-Connection-Api-Key': RESEND_API_KEY,
-          },
-          body: JSON.stringify({
-            from: 'PromoFinance <onboarding@resend.dev>',
-            to: [email],
-            subject: 'Seu acesso ao painel tributário',
-            html,
-          }),
-        });
-        emailSent = resp.ok;
-        if (!resp.ok) {
-          const txt = await resp.text();
-          log.warn('email_send_failed', {
-            status_code: resp.status,
-            error_message: txt.slice(0, 200),
+          const resp = await fetch('https://connector-gateway.lovable.dev/resend/emails', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              Authorization: `Bearer ${LOVABLE_API_KEY}`,
+              'X-Connection-Api-Key': RESEND_API_KEY,
+            },
+            body: JSON.stringify({
+              from: 'PromoFinance <onboarding@resend.dev>',
+              to: [email],
+              subject: 'Seu acesso ao painel tributário',
+              html,
+            }),
           });
-        } else {
-          log.info('email_sent', { context: { email } });
+          emailSent = resp.ok;
+          if (!resp.ok) {
+            const txt = await resp.text();
+            log.warn('email_send_failed', {
+              status_code: resp.status,
+              error_message: txt.slice(0, 200),
+            });
+          } else {
+            log.info('email_sent', { context: { email } });
+          }
+        } catch (mailErr) {
+          log.warn('email_exception', {
+            error_message: mailErr instanceof Error ? mailErr.message : String(mailErr),
+          });
         }
-      } catch (mailErr) {
-        log.warn('email_exception', {
-          error_message: mailErr instanceof Error ? mailErr.message : String(mailErr),
-        });
+      } else {
+        log.warn('email_skipped_missing_keys');
       }
-    } else {
-      log.warn('email_skipped_missing_keys');
+
+      log.info('fn_success', {
+        duration_ms: Date.now() - startedAt,
+        context: { convite_id: convite.id, email_sent: emailSent },
+      });
+
+      return res(
+        {
+          success: true,
+          convite_id: convite.id,
+          link,
+          email_sent: emailSent,
+          expires_at: expiresAt.toISOString(),
+        },
+        200
+      );
+    } catch (err) {
+      log.error('fn_failure', {
+        error_message: err instanceof Error ? err.message : String(err),
+        duration_ms: Date.now() - startedAt,
+      });
+      return res({ error: 'Erro interno' }, 500);
+    } finally {
+      log.info('request', { duration_ms: Date.now() - _t0 });
+      await log.flush();
     }
-
-    log.info('fn_success', {
-      duration_ms: Date.now() - startedAt,
-      context: { convite_id: convite.id, email_sent: emailSent },
-    });
-
-    return res(
-      {
-        success: true,
-        convite_id: convite.id,
-        link,
-        email_sent: emailSent,
-        expires_at: expiresAt.toISOString(),
-      },
-      200
-    );
-  } catch (err) {
-    log.error('fn_failure', {
-      error_message: err instanceof Error ? err.message : String(err),
-      duration_ms: Date.now() - startedAt,
-    });
-    return res({ error: 'Erro interno' }, 500);
-  } finally {
-    log.info('request', { duration_ms: Date.now() - _t0 });
-    await log.flush();
-  }
-});
+  })
+);
 
 function json(body: unknown, status = 200, headers: Record<string, string> = corsHeaders) {
   return new Response(JSON.stringify(body), {

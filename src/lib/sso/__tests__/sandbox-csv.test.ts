@@ -8,7 +8,11 @@ describe('parseBulkCsv', () => {
     const { users, errors } = parseBulkCsv(csv);
     expect(errors).toEqual([]);
     expect(users).toHaveLength(2);
-    expect(users[0].claims).toEqual({ email: 'alice@x.com', name: 'Alice', groups: ['Admins', 'Todos'] });
+    expect(users[0].claims).toEqual({
+      email: 'alice@x.com',
+      name: 'Alice',
+      groups: ['Admins', 'Todos'],
+    });
     expect(users[1].claims).toEqual({ email: 'bob@x.com', name: 'Bob', groups: [] });
   });
 
@@ -60,30 +64,32 @@ describe('parseBulkJson', () => {
 
 describe('exportBulkResultsCsv', () => {
   it('inclui BOM e cabeçalho', () => {
-    const results: BulkResult[] = [{
-      row: 1,
-      claims: { email: 'a@x.com' },
-      outcome: 'seria_jit',
-      reason: null,
-      result: {
-        success: true,
-        errors: [],
-        preview: {
-          email: 'a***@x.com',
-          full_name: 'A',
-          groups: ['Admins'],
-          domain: 'x.com',
-          domain_allowed: true,
-          resolved_role: 'admin',
-          matched_group: 'Admins',
-          user_exists: false,
-          would_jit_provision: true,
-          provision_blocked_reason: null,
-          provider_nome: null,
-          auto_provision_users: true,
+    const results: BulkResult[] = [
+      {
+        row: 1,
+        claims: { email: 'a@x.com' },
+        outcome: 'seria_jit',
+        reason: null,
+        result: {
+          success: true,
+          errors: [],
+          preview: {
+            email: 'a***@x.com',
+            full_name: 'A',
+            groups: ['Admins'],
+            domain: 'x.com',
+            domain_allowed: true,
+            resolved_role: 'admin',
+            matched_group: 'Admins',
+            user_exists: false,
+            would_jit_provision: true,
+            provision_blocked_reason: null,
+            provider_nome: null,
+            auto_provision_users: true,
+          },
         },
       },
-    }];
+    ];
     const csv = exportBulkResultsCsv(results);
     expect(csv.startsWith('\uFEFF')).toBe(true);
     expect(csv).toContain('email_mascarado');

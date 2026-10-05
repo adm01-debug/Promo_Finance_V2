@@ -30,7 +30,9 @@ export function DrawerAnexosTab({ anexos }: { anexos: Anexo[] }) {
           </div>
           {a.url && (
             <a href={a.url} target="_blank" rel="noopener noreferrer">
-              <Button variant="ghost" size="icon-sm"><ExternalLink className="h-3.5 w-3.5" /></Button>
+              <Button variant="ghost" size="icon-sm">
+                <ExternalLink className="h-3.5 w-3.5" />
+              </Button>
             </a>
           )}
         </div>

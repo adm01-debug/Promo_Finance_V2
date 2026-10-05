@@ -2,8 +2,21 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog';
 import { Separator } from '@/components/ui/separator';
 import { DollarSign, ArrowLeftRight } from 'lucide-react';
 import type { TipoPedido, TipoCreditoOrigem } from '@/hooks/usePerDcomp';
@@ -19,7 +32,10 @@ export interface PerDcompFormData {
   justificativa: string;
 }
 
-interface Tributo { codigo: string; nome: string; }
+interface Tributo {
+  codigo: string;
+  nome: string;
+}
 
 interface Props {
   open: boolean;
@@ -32,8 +48,13 @@ interface Props {
 }
 
 export function PerDcompFormDialog({
-  open, onOpenChange, formData, setFormData, onSubmit,
-  TRIBUTOS_VALIDOS, TIPOS_CREDITO_ORIGEM,
+  open,
+  onOpenChange,
+  formData,
+  setFormData,
+  onSubmit,
+  TRIBUTOS_VALIDOS,
+  TIPOS_CREDITO_ORIGEM,
 }: Props) {
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -50,7 +71,7 @@ export function PerDcompFormDialog({
             <Button
               variant={formData.tipo === 'per' ? 'default' : 'outline'}
               className="h-20 flex-col"
-              onClick={() => setFormData(prev => ({ ...prev, tipo: 'per' }))}
+              onClick={() => setFormData((prev) => ({ ...prev, tipo: 'per' }))}
             >
               <DollarSign className="h-6 w-6 mb-1" />
               <span>PER - Restituição</span>
@@ -59,7 +80,7 @@ export function PerDcompFormDialog({
             <Button
               variant={formData.tipo === 'dcomp' ? 'default' : 'outline'}
               className="h-20 flex-col"
-              onClick={() => setFormData(prev => ({ ...prev, tipo: 'dcomp' }))}
+              onClick={() => setFormData((prev) => ({ ...prev, tipo: 'dcomp' }))}
             >
               <ArrowLeftRight className="h-6 w-6 mb-1" />
               <span>DCOMP - Compensação</span>
@@ -74,12 +95,18 @@ export function PerDcompFormDialog({
               <Label>Tipo do Crédito</Label>
               <Select
                 value={formData.tipo_credito_origem}
-                onValueChange={(v) => setFormData(prev => ({ ...prev, tipo_credito_origem: v as TipoCreditoOrigem }))}
+                onValueChange={(v) =>
+                  setFormData((prev) => ({ ...prev, tipo_credito_origem: v as TipoCreditoOrigem }))
+                }
               >
-                <SelectTrigger><SelectValue /></SelectTrigger>
+                <SelectTrigger>
+                  <SelectValue />
+                </SelectTrigger>
                 <SelectContent>
                   {TIPOS_CREDITO_ORIGEM.map((tipo) => (
-                    <SelectItem key={tipo.codigo} value={tipo.codigo}>{tipo.nome}</SelectItem>
+                    <SelectItem key={tipo.codigo} value={tipo.codigo}>
+                      {tipo.nome}
+                    </SelectItem>
                   ))}
                 </SelectContent>
               </Select>
@@ -89,12 +116,16 @@ export function PerDcompFormDialog({
               <Label>Tributo Origem</Label>
               <Select
                 value={formData.tributo_origem}
-                onValueChange={(v) => setFormData(prev => ({ ...prev, tributo_origem: v }))}
+                onValueChange={(v) => setFormData((prev) => ({ ...prev, tributo_origem: v }))}
               >
-                <SelectTrigger><SelectValue /></SelectTrigger>
+                <SelectTrigger>
+                  <SelectValue />
+                </SelectTrigger>
                 <SelectContent>
                   {TRIBUTOS_VALIDOS.map((tributo) => (
-                    <SelectItem key={tributo.codigo} value={tributo.codigo}>{tributo.nome}</SelectItem>
+                    <SelectItem key={tributo.codigo} value={tributo.codigo}>
+                      {tributo.nome}
+                    </SelectItem>
                   ))}
                 </SelectContent>
               </Select>
@@ -107,7 +138,9 @@ export function PerDcompFormDialog({
               <Input
                 type="month"
                 value={formData.competencia_origem}
-                onChange={(e) => setFormData(prev => ({ ...prev, competencia_origem: e.target.value }))}
+                onChange={(e) =>
+                  setFormData((prev) => ({ ...prev, competencia_origem: e.target.value }))
+                }
               />
             </div>
             <div className="space-y-2">
@@ -115,7 +148,9 @@ export function PerDcompFormDialog({
               <Input
                 type="number"
                 value={formData.valor_original}
-                onChange={(e) => setFormData(prev => ({ ...prev, valor_original: Number(e.target.value) }))}
+                onChange={(e) =>
+                  setFormData((prev) => ({ ...prev, valor_original: Number(e.target.value) }))
+                }
                 min={0}
                 step={0.01}
               />
@@ -131,12 +166,16 @@ export function PerDcompFormDialog({
                   <Label>Tributo Destino</Label>
                   <Select
                     value={formData.tributo_destino}
-                    onValueChange={(v) => setFormData(prev => ({ ...prev, tributo_destino: v }))}
+                    onValueChange={(v) => setFormData((prev) => ({ ...prev, tributo_destino: v }))}
                   >
-                    <SelectTrigger><SelectValue placeholder="Selecione" /></SelectTrigger>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Selecione" />
+                    </SelectTrigger>
                     <SelectContent>
                       {TRIBUTOS_VALIDOS.map((tributo) => (
-                        <SelectItem key={tributo.codigo} value={tributo.codigo}>{tributo.nome}</SelectItem>
+                        <SelectItem key={tributo.codigo} value={tributo.codigo}>
+                          {tributo.nome}
+                        </SelectItem>
                       ))}
                     </SelectContent>
                   </Select>
@@ -146,7 +185,9 @@ export function PerDcompFormDialog({
                   <Input
                     type="month"
                     value={formData.competencia_destino}
-                    onChange={(e) => setFormData(prev => ({ ...prev, competencia_destino: e.target.value }))}
+                    onChange={(e) =>
+                      setFormData((prev) => ({ ...prev, competencia_destino: e.target.value }))
+                    }
                   />
                 </div>
               </div>
@@ -157,7 +198,7 @@ export function PerDcompFormDialog({
             <Label>Justificativa</Label>
             <Textarea
               value={formData.justificativa}
-              onChange={(e) => setFormData(prev => ({ ...prev, justificativa: e.target.value }))}
+              onChange={(e) => setFormData((prev) => ({ ...prev, justificativa: e.target.value }))}
               placeholder="Descreva o motivo do pedido..."
               rows={3}
             />
@@ -165,7 +206,9 @@ export function PerDcompFormDialog({
         </div>
 
         <DialogFooter>
-          <Button variant="outline" onClick={() => onOpenChange(false)}>Cancelar</Button>
+          <Button variant="outline" onClick={() => onOpenChange(false)}>
+            Cancelar
+          </Button>
           <Button onClick={onSubmit} disabled={formData.valor_original <= 0}>
             Criar Rascunho
           </Button>

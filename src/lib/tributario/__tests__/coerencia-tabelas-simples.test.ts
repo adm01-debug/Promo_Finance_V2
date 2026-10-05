@@ -52,7 +52,7 @@ describe('Coerência das tabelas do Simples Nacional', () => {
       expect(motor[i].ate, `teto da faixa ${f.faixa} do anexo ${anexo}`).toBe(f.rbt12_ate);
       expect(motor[i].aliq, `alíquota da faixa ${f.faixa} do anexo ${anexo}`).toBeCloseTo(
         f.aliquota,
-        10,
+        10
       );
       expect(motor[i].pd, `parcela a deduzir da faixa ${f.faixa} do anexo ${anexo}`).toBe(f.pd);
     });
@@ -87,7 +87,7 @@ describe('Coerência das tabelas do Simples Nacional', () => {
         const antes = efetiva(teto, faixas[i]);
         const depois = efetiva(teto + 0.01, faixas[i + 1]);
         expect(Math.abs(depois - antes), `descontinuidade no teto da faixa ${i + 1}`).toBeLessThan(
-          0.005,
+          0.005
         );
         expect(depois).toBeGreaterThanOrEqual(antes - 1e-9);
       }
@@ -97,20 +97,19 @@ describe('Coerência das tabelas do Simples Nacional', () => {
       // nominal e PD próprias na 6ª faixa, o que gera degrau legítimo.
       const ultima = faixas[faixas.length - 1];
       expect(efetiva(ultima.rbt12_ate, ultima)).toBeGreaterThan(
-        efetiva(ultima.rbt12_de + 0.01, ultima),
+        efetiva(ultima.rbt12_de + 0.01, ultima)
       );
-
-
 
       for (const f of faixas) {
         const piso = Math.max(f.rbt12_de, 0.01);
-        expect(efetiva(piso, f), `alíquota efetiva negativa na faixa ${f.faixa}`).toBeGreaterThan(0);
+        expect(efetiva(piso, f), `alíquota efetiva negativa na faixa ${f.faixa}`).toBeGreaterThan(
+          0
+        );
         // Na 1ª faixa a PD é zero, logo efetiva == nominal; nas demais, sempre menor.
         expect(efetiva(f.rbt12_ate, f)).toBeLessThanOrEqual(f.aliquota);
         if (f.pd > 0) expect(efetiva(f.rbt12_ate, f)).toBeLessThan(f.aliquota);
-
       }
-    },
+    }
   );
 
   it('identificarFaixa concorda com o motor em centenas de cenários de RBT12', () => {
@@ -121,7 +120,12 @@ describe('Coerência das tabelas do Simples Nacional', () => {
     for (const anexo of ANEXOS_LISTA) {
       const pontos: number[] = [0.01, 1, 179_999.99];
       for (const f of obterAnexo(anexo)) {
-        pontos.push(f.rbt12_de || 0.01, f.rbt12_ate, f.rbt12_ate - 0.01, (f.rbt12_de + f.rbt12_ate) / 2);
+        pontos.push(
+          f.rbt12_de || 0.01,
+          f.rbt12_ate,
+          f.rbt12_ate - 0.01,
+          (f.rbt12_de + f.rbt12_ate) / 2
+        );
       }
       for (let i = 0; i < 100; i++) {
         pontos.push(Math.round(Math.random() * LIMITE_SIMPLES_NACIONAL * 100) / 100);
@@ -133,7 +137,7 @@ describe('Coerência das tabelas do Simples Nacional', () => {
         const motor = faixaDoMotor(rbt12, anexo);
         expect(canonica, `RBT12 ${rbt12} sem faixa no anexo ${anexo}`).not.toBeNull();
         expect(motor?.faixa, `divergência de faixa em RBT12 ${rbt12} (anexo ${anexo})`).toBe(
-          canonica?.faixa,
+          canonica?.faixa
         );
         verificados++;
       }

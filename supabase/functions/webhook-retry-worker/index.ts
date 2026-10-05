@@ -8,6 +8,7 @@ import { z } from '../_shared/zod.ts';
 import { createValidationErrorResponse } from '../_shared/contract-response.ts';
 import { exigirChamadaInterna } from '../_shared/auth-guard.ts';
 import { corsHeadersPara } from '../_shared/cors.ts';
+import { withEdgeObservability } from '../_shared/edge-observability.ts';
 
 const logger = createLogger('webhook-retry-worker');
 const RetryBodySchema = z.object({ limit: z.number().int().min(1).max(200).optional() }).strict();
@@ -104,5 +105,5 @@ export const handler = async (req: Request) => {
 };
 
 if (import.meta.main) {
-  Deno.serve(handler);
+  Deno.serve(withEdgeObservability('webhook-retry-worker', handler));
 }

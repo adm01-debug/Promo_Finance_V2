@@ -1,5 +1,5 @@
-import type { Rng } from "./rng";
-import type { FaultSpec } from "./types";
+import type { Rng } from './rng';
+import type { FaultSpec } from './types';
 
 /**
  * Injetores de falha aplicados sobre streams/callbacks in-memory.
@@ -37,24 +37,24 @@ export function duplicate<T>(events: readonly T[], k: number, rng: Rng): T[] {
  */
 export function shouldFail(fault: FaultSpec, rng: Rng, opIndex: number): string | null {
   switch (fault.kind) {
-    case "flaky":
-      return rng.bool(fault.param ?? 0.1) ? "flaky" : null;
-    case "timeout":
+    case 'flaky':
+      return rng.bool(fault.param ?? 0.1) ? 'flaky' : null;
+    case 'timeout':
       // "após N ms" — modelamos como "após N ops" já que não temos I/O real.
-      return opIndex >= (fault.param ?? 3) ? "timeout" : null;
-    case "partial_write":
-      return opIndex > 0 && rng.bool(fault.param ?? 0.2) ? "partial_write" : null;
-    case "latency":
-    case "reorder":
-    case "duplicate":
-    case "nfe_gzip_corrupt":
-    case "nfe_nsu_gap":
-    case "nfe_soap_timeout":
-    case "entrega_driver_offline":
-    case "entrega_gps_lost":
-    case "entrega_pod_missing":
-    case "entrega_status_regressivo":
-    case "none":
+      return opIndex >= (fault.param ?? 3) ? 'timeout' : null;
+    case 'partial_write':
+      return opIndex > 0 && rng.bool(fault.param ?? 0.2) ? 'partial_write' : null;
+    case 'latency':
+    case 'reorder':
+    case 'duplicate':
+    case 'nfe_gzip_corrupt':
+    case 'nfe_nsu_gap':
+    case 'nfe_soap_timeout':
+    case 'entrega_driver_offline':
+    case 'entrega_gps_lost':
+    case 'entrega_pod_missing':
+    case 'entrega_status_regressivo':
+    case 'none':
       return null;
   }
 }

@@ -21,7 +21,11 @@ import {
 } from '@/components/ui/select';
 import { Switch } from '@/components/ui/switch';
 import { Loader2 } from 'lucide-react';
-import { useCriarCentroCusto, useAtualizarCentroCusto, type CentroCusto } from '@/hooks/useCentrosCusto';
+import {
+  useCriarCentroCusto,
+  useAtualizarCentroCusto,
+  type CentroCusto,
+} from '@/hooks/useCentrosCusto';
 import { logger } from '@/lib/logger';
 
 const formSchema = z.object({
@@ -44,13 +48,19 @@ interface CentroCustoFormProps {
   onCancel: () => void;
 }
 
-export function CentroCustoForm({ centroCusto, centrosCusto, defaultParentId, onSuccess, onCancel }: CentroCustoFormProps) {
+export function CentroCustoForm({
+  centroCusto,
+  centrosCusto,
+  defaultParentId,
+  onSuccess,
+  onCancel,
+}: CentroCustoFormProps) {
   const criarCentroCusto = useCriarCentroCusto();
   const atualizarCentroCusto = useAtualizarCentroCusto();
   const isEditing = !!centroCusto;
 
   // Filter out the current centro and its children to prevent circular references
-  const availableParents = centrosCusto.filter(c => {
+  const availableParents = centrosCusto.filter((c) => {
     if (!centroCusto) return true;
     if (c.id === centroCusto.id) return false;
     // Prevent selecting children as parents
@@ -168,10 +178,7 @@ export function CentroCustoForm({ centroCusto, centrosCusto, defaultParentId, on
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Centro Pai (Hierarquia)</FormLabel>
-                <Select
-                  onValueChange={field.onChange}
-                  value={field.value || ''}
-                >
+                <Select onValueChange={field.onChange} value={field.value || ''}>
                   <FormControl>
                     <SelectTrigger>
                       <SelectValue placeholder="Selecione o centro pai (opcional)" />
@@ -198,13 +205,7 @@ export function CentroCustoForm({ centroCusto, centrosCusto, defaultParentId, on
               <FormItem>
                 <FormLabel>Orçamento Previsto *</FormLabel>
                 <FormControl>
-                  <Input
-                    type="number"
-                    step="0.01"
-                    min="0"
-                    placeholder="0.00"
-                    {...field}
-                  />
+                  <Input type="number" step="0.01" min="0" placeholder="0.00" {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>

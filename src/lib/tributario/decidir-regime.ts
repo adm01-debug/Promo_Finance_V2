@@ -24,7 +24,7 @@ export interface OpcoesDecisao {
  */
 export function decidirRegime(
   params: ParametrosSimulacao,
-  opcoes: OpcoesDecisao = {},
+  opcoes: OpcoesDecisao = {}
 ): ResultadoDecisao {
   const hoje = new Date();
   const ano = opcoes.anoReferencia ?? hoje.getFullYear();
@@ -68,7 +68,7 @@ export function decidirRegime(
     const diffPct = (diff / recomendado.totalTributos) * 100;
     if (diffPct < 5) {
       alertas.push(
-        `Diferença pequena (${diffPct.toFixed(1)}%) entre ${recomendado.nome} e ${segundoLugar.nome}. Avaliar fatores qualitativos.`,
+        `Diferença pequena (${diffPct.toFixed(1)}%) entre ${recomendado.nome} e ${segundoLugar.nome}. Avaliar fatores qualitativos.`
       );
     }
   }
@@ -92,20 +92,22 @@ export function decidirRegime(
 function montarJustificativa(
   recomendado: ResultadoDecisao['recomendado'],
   segundoLugar: ResultadoDecisao['segundoLugar'],
-  economia?: number,
+  economia?: number
 ): string {
   const partes: string[] = [];
   partes.push(
-    `${recomendado.nome} apresenta a menor carga tributária estimada: R$ ${recomendado.totalTributos.toLocaleString('pt-BR', { maximumFractionDigits: 0 })} (${recomendado.cargaEfetiva.toFixed(2)}% do faturamento).`,
+    `${recomendado.nome} apresenta a menor carga tributária estimada: R$ ${recomendado.totalTributos.toLocaleString('pt-BR', { maximumFractionDigits: 0 })} (${recomendado.cargaEfetiva.toFixed(2)}% do faturamento).`
   );
   if (segundoLugar) {
     const diff = segundoLugar.totalTributos - recomendado.totalTributos;
     partes.push(
-      `Economia vs ${segundoLugar.nome}: R$ ${diff.toLocaleString('pt-BR', { maximumFractionDigits: 0 })}/ano.`,
+      `Economia vs ${segundoLugar.nome}: R$ ${diff.toLocaleString('pt-BR', { maximumFractionDigits: 0 })}/ano.`
     );
   }
   if (economia !== undefined && economia > 0) {
-    partes.push(`Migrar do regime atual geraria economia anual de R$ ${economia.toLocaleString('pt-BR', { maximumFractionDigits: 0 })}.`);
+    partes.push(
+      `Migrar do regime atual geraria economia anual de R$ ${economia.toLocaleString('pt-BR', { maximumFractionDigits: 0 })}.`
+    );
   }
   return partes.join(' ');
 }

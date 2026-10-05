@@ -1,15 +1,9 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-} from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-
 
 import {
   Plus,
@@ -119,12 +113,12 @@ export function QuickCreateModal({ open, onOpenChange }: QuickCreateModalProps) 
     setIsSubmitting(true);
     // Simular delay para feedback visual
     await new Promise((resolve) => setTimeout(resolve, 500));
-    
+
     const entity = entityOptions.find((e) => e.id === selectedEntity);
     if (entity) {
       navigate(entity.route, { state: { quickCreate: formData } });
     }
-    
+
     setIsSubmitting(false);
     handleClose();
   };
@@ -205,7 +199,9 @@ export function QuickCreateModal({ open, onOpenChange }: QuickCreateModalProps) 
                 </Label>
                 <Input
                   id="name"
-                  placeholder={selectedEntity === 'cliente' ? 'Ex: Empresa ABC Ltda' : 'Ex: Fornecedor XYZ'}
+                  placeholder={
+                    selectedEntity === 'cliente' ? 'Ex: Empresa ABC Ltda' : 'Ex: Fornecedor XYZ'
+                  }
                   value={formData.name}
                   onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                   className="h-10"
@@ -215,7 +211,9 @@ export function QuickCreateModal({ open, onOpenChange }: QuickCreateModalProps) 
           ) : isFinancial ? (
             <>
               <div className="space-y-1.5">
-                <Label htmlFor="description" className="text-sm">Descrição</Label>
+                <Label htmlFor="description" className="text-sm">
+                  Descrição
+                </Label>
                 <Input
                   id="description"
                   placeholder="Ex: Pagamento de fornecedor"
@@ -225,7 +223,9 @@ export function QuickCreateModal({ open, onOpenChange }: QuickCreateModalProps) 
                 />
               </div>
               <div className="space-y-1.5">
-                <Label htmlFor="value" className="text-sm">Valor (R$)</Label>
+                <Label htmlFor="value" className="text-sm">
+                  Valor (R$)
+                </Label>
                 <Input
                   id="value"
                   type="number"
@@ -238,7 +238,9 @@ export function QuickCreateModal({ open, onOpenChange }: QuickCreateModalProps) 
             </>
           ) : (
             <div className="space-y-1.5">
-              <Label htmlFor="description" className="text-sm">Descrição</Label>
+              <Label htmlFor="description" className="text-sm">
+                Descrição
+              </Label>
               <Input
                 id="description"
                 placeholder="Descrição da nota fiscal"

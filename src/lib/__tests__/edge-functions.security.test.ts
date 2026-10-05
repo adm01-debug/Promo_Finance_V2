@@ -1,6 +1,6 @@
-import { describe, it, expect } from "vitest";
-import { readdirSync, readFileSync, existsSync } from "node:fs";
-import { join } from "node:path";
+import { describe, it, expect } from 'vitest';
+import { readdirSync, readFileSync, existsSync } from 'node:fs';
+import { join } from 'node:path';
 
 /**
  * Gate de segurança: toda Edge Function que instancia um cliente com
@@ -16,7 +16,7 @@ import { join } from "node:path";
  * explicitamente na lista abaixo — cada isenção precisa de justificativa.
  */
 
-const FUNCTIONS_DIR = join(process.cwd(), "supabase", "functions");
+const FUNCTIONS_DIR = join(process.cwd(), 'supabase', 'functions');
 
 /**
  * Endpoints privilegiados cobertos por esta rodada. A lista é explícita para
@@ -45,51 +45,49 @@ const PADROES_AUTORIZACAO: readonly RegExp[] = [
 function listarFuncoes(): string[] {
   if (!existsSync(FUNCTIONS_DIR)) return [];
   return readdirSync(FUNCTIONS_DIR, { withFileTypes: true })
-    .filter((e) => e.isDirectory() && !e.name.startsWith("_"))
+    .filter((e) => e.isDirectory() && !e.name.startsWith('_'))
     .map((e) => e.name)
-    .filter((nome) => existsSync(join(FUNCTIONS_DIR, nome, "index.ts")));
+    .filter((nome) => existsSync(join(FUNCTIONS_DIR, nome, 'index.ts')));
 }
 
-describe("Edge Functions — superfície com service_role", () => {
+describe('Edge Functions — superfície com service_role', () => {
   const funcoes = listarFuncoes();
 
-  it("encontra as edge functions do projeto", () => {
+  it('encontra as edge functions do projeto', () => {
     expect(funcoes.length).toBeGreaterThan(0);
   });
 
-  it("as funções privilegiadas auditadas provam a origem antes da ação", () => {
-    const desprotegidas = Object.entries(FUNCOES_PRIVILEGIADAS_AUDITADAS).filter(([nome, padrao]) => {
-      expect(funcoes).toContain(nome);
-      const src = readFileSync(join(FUNCTIONS_DIR, nome, "index.ts"), "utf8");
-      return !padrao.test(src) || !PADROES_AUTORIZACAO.some((autorizacao) => autorizacao.test(src));
-    });
+  it('as funções privilegiadas auditadas provam a origem antes da ação', () => {
+    const desprotegidas = Object.entries(FUNCOES_PRIVILEGIADAS_AUDITADAS).filter(
+      ([nome, padrao]) => {
+        expect(funcoes).toContain(nome);
+        const src = readFileSync(join(FUNCTIONS_DIR, nome, 'index.ts'), 'utf8');
+        return (
+          !padrao.test(src) || !PADROES_AUTORIZACAO.some((autorizacao) => autorizacao.test(src))
+        );
+      }
+    );
 
     expect(
       desprotegidas,
-      `Funções privilegiadas sem guarda concreta: ${desprotegidas.map(([nome]) => nome).join(", ")}`,
+      `Funções privilegiadas sem guarda concreta: ${desprotegidas.map(([nome]) => nome).join(', ')}`
     ).toEqual([]);
   });
 
-  it("webhooks públicos autenticam a origem e falham fechados", () => {
-    const webhooks = funcoes.filter((nome) => nome.endsWith("-webhook"));
+  it('webhooks públicos autenticam a origem e falham fechados', () => {
+    const webhooks = funcoes.filter((nome) => nome.endsWith('-webhook'));
     expect(webhooks.length).toBeGreaterThan(0);
 
     const semGuarda = webhooks.filter((nome) => {
-      const src = readFileSync(join(FUNCTIONS_DIR, nome, "index.ts"), "utf8");
+      const src = readFileSync(join(FUNCTIONS_DIR, nome, 'index.ts'), 'utf8');
       return !/authenticateWebhook|hmac|signature|access-token|x-webhook-token/i.test(src);
     });
 
-    expect(
-      semGuarda,
-      `Webhooks sem validação de origem: ${semGuarda.join(", ")}`,
-    ).toEqual([]);
+    expect(semGuarda, `Webhooks sem validação de origem: ${semGuarda.join(', ')}`).toEqual([]);
   });
 
-  it("o helper de webhook nunca aceita requisição sem segredo configurado", () => {
-    const helper = readFileSync(
-      join(FUNCTIONS_DIR, "_shared", "webhook-auth.ts"),
-      "utf8",
-    );
+  it('o helper de webhook nunca aceita requisição sem segredo configurado', () => {
+    const helper = readFileSync(join(FUNCTIONS_DIR, '_shared', 'webhook-auth.ts'), 'utf8');
     // Segredo ausente precisa resultar em rejeição explícita, não em bypass.
     expect(helper).toMatch(/secret_not_configured/);
     expect(helper).toMatch(/503/);

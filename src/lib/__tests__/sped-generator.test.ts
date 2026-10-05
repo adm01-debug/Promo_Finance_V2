@@ -1,9 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import {
-  gerarEFD_IBS_CBS,
-  gerarEFD_Contribuicoes,
-  validarArquivoSPED,
-} from '../sped-generator';
+import { gerarEFD_IBS_CBS, gerarEFD_Contribuicoes, validarArquivoSPED } from '../sped-generator';
 
 describe('SPED Generator', () => {
   const empresa = {
@@ -111,7 +107,7 @@ describe('SPED Generator', () => {
     it('linhas seguem formato pipe', () => {
       const sped = gerarEFD_IBS_CBS(empresa, '2024-01', operacoes, creditos, apuracao);
       const linhas = sped.split('\r\n');
-      linhas.forEach(l => {
+      linhas.forEach((l) => {
         expect(l.startsWith('|')).toBe(true);
         expect(l.endsWith('|')).toBe(true);
       });
@@ -137,13 +133,13 @@ describe('SPED Generator', () => {
     it('arquivo sem 0000 retorna erro', () => {
       const resultado = validarArquivoSPED('|C001|0|\r\n|9999|10|');
       expect(resultado.valido).toBe(false);
-      expect(resultado.erros.some(e => e.includes('0000'))).toBe(true);
+      expect(resultado.erros.some((e) => e.includes('0000'))).toBe(true);
     });
 
     it('arquivo sem 9999 retorna erro', () => {
       const resultado = validarArquivoSPED('|0000|dados|\r\n|C001|0|');
       expect(resultado.valido).toBe(false);
-      expect(resultado.erros.some(e => e.includes('9999'))).toBe(true);
+      expect(resultado.erros.some((e) => e.includes('9999'))).toBe(true);
     });
 
     it('linhas com formato inválido geram erro', () => {

@@ -9,11 +9,23 @@ import { formatCurrency, formatDateTime } from '@/lib/formatters';
 const getStatusConfig = (status: SolicitacaoAprovacao['status']) => {
   switch (status) {
     case 'aprovado':
-      return { label: 'Aprovado', icon: Check, color: 'bg-success/10 text-success border-success/30' };
+      return {
+        label: 'Aprovado',
+        icon: Check,
+        color: 'bg-success/10 text-success border-success/30',
+      };
     case 'rejeitado':
-      return { label: 'Rejeitado', icon: X, color: 'bg-destructive/10 text-destructive border-destructive/30' };
+      return {
+        label: 'Rejeitado',
+        icon: X,
+        color: 'bg-destructive/10 text-destructive border-destructive/30',
+      };
     default:
-      return { label: 'Pendente', icon: Clock, color: 'bg-warning/10 text-warning border-warning/30' };
+      return {
+        label: 'Pendente',
+        icon: Clock,
+        color: 'bg-warning/10 text-warning border-warning/30',
+      };
   }
 };
 
@@ -32,7 +44,7 @@ export const HistoricoAprovacoes = () => {
     );
   }
 
-  const historico = solicitacoes?.filter(s => s.status !== 'pendente') || [];
+  const historico = solicitacoes?.filter((s) => s.status !== 'pendente') || [];
 
   if (!historico.length) {
     return (
@@ -59,9 +71,7 @@ export const HistoricoAprovacoes = () => {
           <History className="h-5 w-5 text-primary" />
           Histórico de Aprovações
         </CardTitle>
-        <CardDescription>
-          Últimas decisões de aprovação de pagamentos
-        </CardDescription>
+        <CardDescription>Últimas decisões de aprovação de pagamentos</CardDescription>
       </CardHeader>
       <CardContent>
         <div className="space-y-3">
@@ -77,7 +87,9 @@ export const HistoricoAprovacoes = () => {
                 transition={{ delay: index * 0.03 }}
                 className="flex items-center gap-4 p-3 rounded-lg border border-border/50 hover:bg-muted/30 transition-colors"
               >
-                <div className={`h-10 w-10 rounded-full flex items-center justify-center flex-shrink-0 ${statusConfig.color.split(' ')[0]}`}>
+                <div
+                  className={`h-10 w-10 rounded-full flex items-center justify-center flex-shrink-0 ${statusConfig.color.split(' ')[0]}`}
+                >
                   <StatusIcon className={`h-5 w-5 ${statusConfig.color.split(' ')[1]}`} />
                 </div>
 
@@ -97,7 +109,9 @@ export const HistoricoAprovacoes = () => {
                     </span>
                     <span className="flex items-center gap-1">
                       <User className="h-3.5 w-3.5" />
-                      {solicitacao.aprovador?.full_name || solicitacao.aprovador?.email || 'Sistema'}
+                      {solicitacao.aprovador?.full_name ||
+                        solicitacao.aprovador?.email ||
+                        'Sistema'}
                     </span>
                     <span className="flex items-center gap-1">
                       <Calendar className="h-3.5 w-3.5" />

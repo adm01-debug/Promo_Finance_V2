@@ -9,6 +9,7 @@ import { z } from 'https://deno.land/x/zod@v3.22.4/mod.ts';
 import { corsHeaders, corsHeadersPara } from '../_shared/cors.ts';
 import { createLogger } from '../_shared/observability.ts';
 import { mensagemErro, contextoErro } from '../_shared/erros.ts';
+import { withEdgeObservability } from '../_shared/edge-observability.ts';
 const log = createLogger('ci-security-gate-log');
 
 const bodySchema = z.object({
@@ -177,13 +178,15 @@ function timingSafeEqual(a: string, b: string): boolean {
 
 if (!Deno.env.get('DENO_TESTING')) {
   const handler = createHandler(defaultDeps());
-  Deno.serve(async (req) => {
-    const _t0 = Date.now();
-    try {
-      return await handler(req);
-    } finally {
-      log.info('request', { duration_ms: Date.now() - _t0 });
-      await log.flush();
-    }
-  });
+  Deno.serve(
+    withEdgeObservability('ci-security-gate-log', async (req) => {
+      const _t0 = Date.now();
+      try {
+        return await handler(req);
+      } finally {
+        log.info('request', { duration_ms: Date.now() - _t0 });
+        await log.flush();
+      }
+    })
+  );
 }

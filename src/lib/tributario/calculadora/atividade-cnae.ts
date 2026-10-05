@@ -69,48 +69,88 @@ const SUBCLASSES: ReadonlyArray<readonly [string, AtividadePresumido, string]> =
 /** Divisões (2 primeiros dígitos) → atividade preponderante. */
 const DIVISOES: Readonly<Record<string, AtividadePresumido>> = {
   // Agropecuária e extrativa equiparadas a indústria para fins de presunção
-  '01': 'industria', '02': 'industria', '03': 'industria',
-  '05': 'industria', '06': 'industria', '07': 'industria', '08': 'industria', '09': 'industria',
+  '01': 'industria',
+  '02': 'industria',
+  '03': 'industria',
+  '05': 'industria',
+  '06': 'industria',
+  '07': 'industria',
+  '08': 'industria',
+  '09': 'industria',
   // Indústria de transformação (10..33)
   ...Object.fromEntries(
-    Array.from({ length: 24 }, (_, i) => [String(10 + i).padStart(2, '0'), 'industria' as const]),
+    Array.from({ length: 24 }, (_, i) => [String(10 + i).padStart(2, '0'), 'industria' as const])
   ),
   // Utilidades e construção
-  '35': 'industria', '36': 'industria', '37': 'industria', '38': 'industria', '39': 'industria',
-  '41': 'industria', '42': 'industria', '43': 'industria',
+  '35': 'industria',
+  '36': 'industria',
+  '37': 'industria',
+  '38': 'industria',
+  '39': 'industria',
+  '41': 'industria',
+  '42': 'industria',
+  '43': 'industria',
   // Comércio
-  '45': 'comercio', '46': 'comercio', '47': 'comercio',
+  '45': 'comercio',
+  '46': 'comercio',
+  '47': 'comercio',
   // Transporte / armazenagem / correio
-  '49': 'transporte_cargas', '50': 'transporte_cargas', '51': 'transporte_cargas',
-  '52': 'servicos_geral', '53': 'servicos_geral',
+  '49': 'transporte_cargas',
+  '50': 'transporte_cargas',
+  '51': 'transporte_cargas',
+  '52': 'servicos_geral',
+  '53': 'servicos_geral',
   // Serviços em geral
-  '55': 'servicos_geral', '56': 'servicos_geral',
-  '58': 'servicos_geral', '59': 'servicos_geral', '60': 'servicos_geral',
-  '61': 'servicos_geral', '62': 'servicos_geral', '63': 'servicos_geral',
-  '64': 'servicos_geral', '65': 'servicos_geral', '66': 'servicos_geral',
+  '55': 'servicos_geral',
+  '56': 'servicos_geral',
+  '58': 'servicos_geral',
+  '59': 'servicos_geral',
+  '60': 'servicos_geral',
+  '61': 'servicos_geral',
+  '62': 'servicos_geral',
+  '63': 'servicos_geral',
+  '64': 'servicos_geral',
+  '65': 'servicos_geral',
+  '66': 'servicos_geral',
   '68': 'servicos_geral',
   // Serviços profissionais, científicos e técnicos
-  '69': 'servicos_profissionais', '70': 'servicos_profissionais',
-  '71': 'servicos_profissionais', '72': 'servicos_profissionais',
-  '73': 'servicos_profissionais', '74': 'servicos_profissionais',
+  '69': 'servicos_profissionais',
+  '70': 'servicos_profissionais',
+  '71': 'servicos_profissionais',
+  '72': 'servicos_profissionais',
+  '73': 'servicos_profissionais',
+  '74': 'servicos_profissionais',
   '75': 'servicos_profissionais',
   // Administrativos e complementares
-  '77': 'servicos_geral', '78': 'servicos_geral', '79': 'servicos_geral',
-  '80': 'servicos_geral', '81': 'servicos_geral', '82': 'servicos_geral',
+  '77': 'servicos_geral',
+  '78': 'servicos_geral',
+  '79': 'servicos_geral',
+  '80': 'servicos_geral',
+  '81': 'servicos_geral',
+  '82': 'servicos_geral',
   // Administração pública, educação
-  '84': 'servicos_geral', '85': 'servicos_geral',
+  '84': 'servicos_geral',
+  '85': 'servicos_geral',
   // Saúde
-  '86': 'servicos_hospitalares', '87': 'servicos_geral', '88': 'servicos_geral',
+  '86': 'servicos_hospitalares',
+  '87': 'servicos_geral',
+  '88': 'servicos_geral',
   // Arte, cultura, esporte, outros serviços
-  '90': 'servicos_geral', '91': 'servicos_geral', '92': 'servicos_geral', '93': 'servicos_geral',
-  '94': 'servicos_geral', '95': 'servicos_geral', '96': 'servicos_geral',
-  '97': 'servicos_geral', '99': 'servicos_geral',
+  '90': 'servicos_geral',
+  '91': 'servicos_geral',
+  '92': 'servicos_geral',
+  '93': 'servicos_geral',
+  '94': 'servicos_geral',
+  '95': 'servicos_geral',
+  '96': 'servicos_geral',
+  '97': 'servicos_geral',
+  '99': 'servicos_geral',
 };
 
 function montar(
   atividade: AtividadePresumido,
   origem: AtividadeDerivada['origem'],
-  fundamento: string,
+  fundamento: string
 ): AtividadeDerivada {
   const [presuncaoIrpj, presuncaoCsll] = PRESUNCAO[atividade];
   return { atividade, presuncaoIrpj, presuncaoCsll, origem, fundamento };
@@ -140,6 +180,6 @@ export function derivarAtividadePresumido(cnae: string | null | undefined): Ativ
   return montar(
     'servicos_geral',
     'fallback',
-    `CNAE divisão ${divisao} sem mapeamento — presunção geral de 32%`,
+    `CNAE divisão ${divisao} sem mapeamento — presunção geral de 32%`
   );
 }

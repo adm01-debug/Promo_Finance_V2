@@ -87,10 +87,7 @@ export function ConfirmDialog({
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center">
       {/* Backdrop */}
-      <div
-        className="absolute inset-0 bg-black/50"
-        onClick={handleClose}
-      />
+      <div className="absolute inset-0 bg-black/50" onClick={handleClose} />
 
       {/* Dialog */}
       <div className="relative bg-card rounded-lg shadow-xl w-full max-w-md mx-4 animate-in fade-in-0 zoom-in-95">
@@ -106,40 +103,32 @@ export function ConfirmDialog({
         <div className="p-6">
           <div className="flex items-start gap-4">
             {/* Icon */}
-            <div className={cn('p-3 rounded-full', config.iconBg)}>
-              {icon || config.icon}
-            </div>
+            <div className={cn('p-3 rounded-full', config.iconBg)}>{icon || config.icon}</div>
 
             {/* Text */}
             <div className="flex-1 pt-1">
-              <h3 className="text-lg font-semibold text-foreground">
-                {title}
-              </h3>
-              {description && (
-                <p className="mt-2 text-sm text-muted-foreground">
-                  {description}
-                </p>
-              )}
-              {children && (
-                <div className="mt-4">
-                  {children}
-                </div>
-              )}
+              <h3 className="text-lg font-semibold text-foreground">{title}</h3>
+              {description && <p className="mt-2 text-sm text-muted-foreground">{description}</p>}
+              {children && <div className="mt-4">{children}</div>}
             </div>
           </div>
         </div>
 
         {/* Actions */}
         <div className="flex items-center justify-end gap-3 px-6 py-4 bg-muted/50 rounded-b-lg">
-          <Button
-            variant="outline"
-            onClick={handleClose}
-            disabled={isLoading}
-          >
+          <Button variant="outline" onClick={handleClose} disabled={isLoading}>
             {resolvedCancelText}
           </Button>
           <Button
-            variant={variant === 'danger' ? 'destructive' : variant === 'warning' ? 'warning' : variant === 'success' ? 'success' : 'default'}
+            variant={
+              variant === 'danger'
+                ? 'destructive'
+                : variant === 'warning'
+                  ? 'warning'
+                  : variant === 'success'
+                    ? 'success'
+                    : 'default'
+            }
             onClick={handleConfirm}
             disabled={isLoading}
           >

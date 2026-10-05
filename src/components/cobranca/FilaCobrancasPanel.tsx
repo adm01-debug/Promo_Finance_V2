@@ -5,13 +5,21 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Skeleton } from '@/components/ui/skeleton';
-import { useFilaCobrancas, useExecucoesCobranca, useProcessarRegua, useProcessarFila } from '@/hooks/useReguaCobranca';
+import {
+  useFilaCobrancas,
+  useExecucoesCobranca,
+  useProcessarRegua,
+  useProcessarFila,
+} from '@/hooks/useReguaCobranca';
 import { useMetricasCobranca } from '@/hooks/useViews';
 import { formatDate } from '@/lib/formatters';
 import type { Tables } from '@/integrations/supabase/types';
 
 type FilaRow = Tables<'fila_cobrancas'> & { cliente_nome?: string | null };
-type ExecucaoRow = Tables<'execucoes_cobranca'> & { cliente_nome?: string | null; provider?: string | null };
+type ExecucaoRow = Tables<'execucoes_cobranca'> & {
+  cliente_nome?: string | null;
+  provider?: string | null;
+};
 
 const statusConfig: Record<string, { icon: React.ElementType; color: string; label: string }> = {
   pendente: { icon: Clock, color: 'text-warning', label: 'Pendente' },
@@ -41,7 +49,9 @@ export function FilaCobrancasPanel() {
           {metricas.map((m: Record<string, unknown>) => (
             <Card key={String(m.etapa)}>
               <CardContent className="p-4">
-                <p className="text-sm font-medium text-muted-foreground capitalize">{String(m.etapa)}</p>
+                <p className="text-sm font-medium text-muted-foreground capitalize">
+                  {String(m.etapa)}
+                </p>
                 <p className="text-lg font-bold mt-1">{Number(m.total_enviados || 0)} enviados</p>
                 <div className="flex items-center gap-2 mt-1 text-xs text-muted-foreground">
                   <span>{Number(m.total_entregues || 0)} entregues</span>
@@ -49,7 +59,8 @@ export function FilaCobrancasPanel() {
                   <span>{Number(m.total_lidos || 0)} lidos</span>
                 </div>
                 <p className="text-xs mt-1">
-                  Taxa: <span className="font-semibold">{Number(m.taxa_entrega || 0).toFixed(1)}%</span>
+                  Taxa:{' '}
+                  <span className="font-semibold">{Number(m.taxa_entrega || 0).toFixed(1)}%</span>
                 </p>
               </CardContent>
             </Card>
@@ -77,7 +88,11 @@ export function FilaCobrancasPanel() {
             size="sm"
             className="gap-2"
           >
-            {processarRegua.isPending ? <Loader2 className="h-4 w-4 animate-spin" /> : <RefreshCw className="h-4 w-4" />}
+            {processarRegua.isPending ? (
+              <Loader2 className="h-4 w-4 animate-spin" />
+            ) : (
+              <RefreshCw className="h-4 w-4" />
+            )}
             Rodar Régua
           </Button>
           <Button
@@ -86,7 +101,11 @@ export function FilaCobrancasPanel() {
             size="sm"
             className="gap-2 bg-gradient-to-r from-primary to-primary/80"
           >
-            {processarFila.isPending ? <Loader2 className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />}
+            {processarFila.isPending ? (
+              <Loader2 className="h-4 w-4 animate-spin" />
+            ) : (
+              <Send className="h-4 w-4" />
+            )}
             Disparar Fila
           </Button>
         </div>
@@ -100,7 +119,7 @@ export function FilaCobrancasPanel() {
 
         <TabsContent value="fila" className="space-y-2">
           <div className="flex gap-2 mb-4">
-            {['pendente', 'processando', 'enviado', 'falhou'].map(s => (
+            {['pendente', 'processando', 'enviado', 'falhou'].map((s) => (
               <Button
                 key={s}
                 size="sm"
@@ -121,9 +140,14 @@ export function FilaCobrancasPanel() {
                 const config = statusConfig[item.status] || statusConfig.pendente;
                 const StatusIcon = config.icon;
                 return (
-                  <div key={item.id} className="flex items-center justify-between p-3 rounded-lg border">
+                  <div
+                    key={item.id}
+                    className="flex items-center justify-between p-3 rounded-lg border"
+                  >
                     <div className="flex items-center gap-3">
-                      <StatusIcon className={`h-5 w-5 ${config.color} ${item.status === 'processando' ? 'animate-spin' : ''}`} />
+                      <StatusIcon
+                        className={`h-5 w-5 ${config.color} ${item.status === 'processando' ? 'animate-spin' : ''}`}
+                      />
                       <div>
                         <p className="font-medium text-sm">{item.cliente_nome || 'Cliente'}</p>
                         <p className="text-xs text-muted-foreground">
@@ -132,13 +156,17 @@ export function FilaCobrancasPanel() {
                       </div>
                     </div>
                     <div className="flex items-center gap-2">
-                      <Badge variant="outline" className="capitalize text-[10px]">{config.label}</Badge>
+                      <Badge variant="outline" className="capitalize text-[10px]">
+                        {config.label}
+                      </Badge>
                       {item.tentativas != null && item.tentativas > 0 && (
                         <Badge variant="secondary" className="text-[10px]">
                           {item.tentativas}/{item.max_tentativas || 3}
                         </Badge>
                       )}
-                      <span className="text-[10px] text-muted-foreground">{formatDate(item.created_at)}</span>
+                      <span className="text-[10px] text-muted-foreground">
+                        {formatDate(item.created_at)}
+                      </span>
                     </div>
                   </div>
                 );
@@ -158,7 +186,10 @@ export function FilaCobrancasPanel() {
           ) : execucoes && execucoes.length > 0 ? (
             <div className="space-y-2">
               {execucoes.map((exec) => (
-                <div key={exec.id} className="flex items-center justify-between p-3 rounded-lg border">
+                <div
+                  key={exec.id}
+                  className="flex items-center justify-between p-3 rounded-lg border"
+                >
                   <div>
                     <p className="font-medium text-sm">{exec.cliente_nome}</p>
                     <p className="text-xs text-muted-foreground">
@@ -166,11 +197,20 @@ export function FilaCobrancasPanel() {
                     </p>
                   </div>
                   <div className="flex items-center gap-2">
-                    <Badge variant={exec.status === 'enviado' ? 'default' : 'destructive'} className="capitalize text-[10px]">
+                    <Badge
+                      variant={exec.status === 'enviado' ? 'default' : 'destructive'}
+                      className="capitalize text-[10px]"
+                    >
                       {exec.status}
                     </Badge>
-                    {exec.provider && <Badge variant="outline" className="text-[10px]">{exec.provider}</Badge>}
-                    <span className="text-[10px] text-muted-foreground">{formatDate(exec.created_at)}</span>
+                    {exec.provider && (
+                      <Badge variant="outline" className="text-[10px]">
+                        {exec.provider}
+                      </Badge>
+                    )}
+                    <span className="text-[10px] text-muted-foreground">
+                      {formatDate(exec.created_at)}
+                    </span>
                   </div>
                 </div>
               ))}

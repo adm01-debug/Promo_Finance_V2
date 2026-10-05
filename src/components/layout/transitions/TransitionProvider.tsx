@@ -10,7 +10,7 @@ export interface TransitionProviderProps {
 export function TransitionProvider({ children, defaults }: TransitionProviderProps) {
   const value = useMemo<TransitionContextValue>(
     () => ({ defaults: { effect: 'blur-rise', duration: 350, ...defaults } }),
-    [defaults],
+    [defaults]
   );
   return <TransitionContext.Provider value={value}>{children}</TransitionContext.Provider>;
 }

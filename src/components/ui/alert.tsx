@@ -24,8 +24,13 @@ interface AlertProps extends React.HTMLAttributes<HTMLDivElement> {
   onClose?: () => void;
 }
 
-export function Alert({ 
-  className, variant = 'default', title, children, onClose, ...props 
+export function Alert({
+  className,
+  variant = 'default',
+  title,
+  children,
+  onClose,
+  ...props
 }: AlertProps) {
   const Icon = alertIcons[variant];
   return (
@@ -52,6 +57,9 @@ export function AlertTitle({ className, ...props }: React.HTMLAttributes<HTMLHea
   return <h5 className={cn('font-medium leading-none tracking-tight', className)} {...props} />;
 }
 
-export function AlertDescription({ className, ...props }: React.HTMLAttributes<HTMLParagraphElement>) {
+export function AlertDescription({
+  className,
+  ...props
+}: React.HTMLAttributes<HTMLParagraphElement>) {
   return <div className={cn('text-sm [&_p]:leading-relaxed', className)} {...props} />;
 }

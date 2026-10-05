@@ -1,5 +1,5 @@
-import { DeltaBadge, SeverityBadge } from "./badges";
-import type { WeeklyRow } from "./types";
+import { DeltaBadge, SeverityBadge } from './badges';
+import type { WeeklyRow } from './types';
 
 export function TrendTable({ rows }: { rows: WeeklyRow[] }) {
   return (
@@ -24,24 +24,26 @@ export function TrendTable({ rows }: { rows: WeeklyRow[] }) {
               className="border-b border-muted/40"
             >
               <td className="py-2 tabular-nums">
-                {new Date(r.week_start).toLocaleDateString("pt-BR", {
-                  day: "2-digit",
-                  month: "2-digit",
+                {new Date(r.week_start).toLocaleDateString('pt-BR', {
+                  day: '2-digit',
+                  month: '2-digit',
                 })}
               </td>
               <td className="py-2 text-muted-foreground">
-                {r.source === "pg_stat_statements" ? "pg_stat" : "telemetry"}
+                {r.source === 'pg_stat_statements' ? 'pg_stat' : 'telemetry'}
               </td>
-              <td className="py-2"><SeverityBadge severity={r.severity} /></td>
+              <td className="py-2">
+                <SeverityBadge severity={r.severity} />
+              </td>
               <td className="py-2 text-right tabular-nums">{r.alert_count}</td>
               <td className="py-2 text-right tabular-nums text-muted-foreground">
                 {r.distinct_keys}
               </td>
               <td className="py-2 text-right tabular-nums">
-                {r.avg_current_ms != null ? `${Math.round(r.avg_current_ms)}ms` : "—"}
+                {r.avg_current_ms != null ? `${Math.round(r.avg_current_ms)}ms` : '—'}
               </td>
               <td className="py-2 text-right tabular-nums">
-                {r.max_ratio != null ? `${Number(r.max_ratio).toFixed(2)}x` : "—"}
+                {r.max_ratio != null ? `${Number(r.max_ratio).toFixed(2)}x` : '—'}
               </td>
               <td className="py-2 text-right">
                 <DeltaBadge delta={r.delta_pct_vs_prev_week} />

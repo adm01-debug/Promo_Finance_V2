@@ -64,7 +64,7 @@ export function useSplitPayment(empresaId?: string) {
 
   // Calcular split payment para uma transação
   const calcularSplit = (
-    valorTotal: number, 
+    valorTotal: number,
     anoReferencia: number = new Date().getFullYear(),
     temIS: boolean = false,
     aliquotaIS: number = 0
@@ -144,7 +144,10 @@ export function useSplitPayment(empresaId?: string) {
       });
     },
     onError: (error) => {
-      toast.error('Erro ao registrar split payment: ' + (error instanceof Error ? error.message : 'Erro desconhecido'));
+      toast.error(
+        'Erro ao registrar split payment: ' +
+          (error instanceof Error ? error.message : 'Erro desconhecido')
+      );
     },
   });
 
@@ -176,8 +179,8 @@ export function useSplitPayment(empresaId?: string) {
     totalTransacoes: transacoes.length,
     valorTotalOperacoes: transacoes.reduce((sum, t) => sum + (Number(t.valor_operacao) || 0), 0),
     totalTributosRetidos: transacoes.reduce((sum, t) => sum + (Number(t.total_retido) || 0), 0),
-    pendentes: transacoes.filter(t => t.status === 'pendente').length,
-    processados: transacoes.filter(t => t.status === 'processado').length,
+    pendentes: transacoes.filter((t) => t.status === 'pendente').length,
+    processados: transacoes.filter((t) => t.status === 'processado').length,
     cbsTotal: transacoes.reduce((sum, t) => sum + (Number(t.cbs_retido) || 0), 0),
     ibsTotal: transacoes.reduce((sum, t) => sum + (Number(t.ibs_retido) || 0), 0),
   };

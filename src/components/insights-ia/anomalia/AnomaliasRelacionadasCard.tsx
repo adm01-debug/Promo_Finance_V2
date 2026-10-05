@@ -1,9 +1,9 @@
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import { Link } from "react-router-dom";
-import { History, ArrowRight } from "lucide-react";
-import type { Anomalia } from "@/hooks/useAnomaliasDetectadas";
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Link } from 'react-router-dom';
+import { History, ArrowRight } from 'lucide-react';
+import type { Anomalia } from '@/hooks/useAnomaliasDetectadas';
 
 export function AnomaliasRelacionadasCard({ lista }: { lista: Anomalia[] }) {
   return (
@@ -29,16 +29,16 @@ export function AnomaliasRelacionadasCard({ lista }: { lista: Anomalia[] }) {
                   <div className="flex items-center gap-2 flex-wrap">
                     <Badge
                       variant={
-                        a.severidade === "critica" || a.severidade === "alta"
-                          ? "destructive"
-                          : "secondary"
+                        a.severidade === 'critica' || a.severidade === 'alta'
+                          ? 'destructive'
+                          : 'secondary'
                       }
                       className="text-[10px]"
                     >
                       {a.severidade}
                     </Badge>
                     <span className="text-xs text-muted-foreground tabular-nums">
-                      {new Date(a.detectada_em).toLocaleDateString("pt-BR")}
+                      {new Date(a.detectada_em).toLocaleDateString('pt-BR')}
                     </span>
                   </div>
                   <p className="text-sm leading-snug truncate">{a.descricao}</p>
@@ -51,7 +51,10 @@ export function AnomaliasRelacionadasCard({ lista }: { lista: Anomalia[] }) {
                   aria-label={`Abrir anomalia: ${a.descricao}`}
                   title="Abrir anomalia relacionada"
                 >
-                  <Link to={`/admin/insights-ia/anomalia/${a.id}`} aria-label={`Abrir anomalia: ${a.descricao}`}>
+                  <Link
+                    to={`/admin/insights-ia/anomalia/${a.id}`}
+                    aria-label={`Abrir anomalia: ${a.descricao}`}
+                  >
                     <ArrowRight className="h-3 w-3" aria-hidden="true" />
                   </Link>
                 </Button>

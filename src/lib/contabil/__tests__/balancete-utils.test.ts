@@ -101,7 +101,10 @@ describe('filterBalancete', () => {
   });
 
   it('oculta contas totalmente zeradas quando solicitado', () => {
-    expect(filterBalancete(rows, { apenasComMovimento: true }).map((r) => r.codigo)).toEqual(['1', '1.1']);
+    expect(filterBalancete(rows, { apenasComMovimento: true }).map((r) => r.codigo)).toEqual([
+      '1',
+      '1.1',
+    ]);
   });
 
   it('busca por código ou nome, sem diferenciar maiúsculas', () => {

@@ -16,10 +16,18 @@ import { join, normalize, relative, resolve, sep } from 'node:path';
 import { MODULOS, type Modulo, type ModuloId } from './modulos';
 
 const EXTENSOES = ['.ts', '.tsx'] as const;
-const IGNORAR_DIRS = new Set(['node_modules', 'dist', 'build', '.git', 'coverage', '__snapshots__']);
+const IGNORAR_DIRS = new Set([
+  'node_modules',
+  'dist',
+  'build',
+  '.git',
+  'coverage',
+  '__snapshots__',
+]);
 
 /** Regex que captura imports estáticos, `export ... from` e `import()` dinâmico. */
-const RE_IMPORT = /(?:import|export)\s[^;]*?from\s*['"]([^'"]+)['"]|import\(\s*['"]([^'"]+)['"]\s*\)/g;
+const RE_IMPORT =
+  /(?:import|export)\s[^;]*?from\s*['"]([^'"]+)['"]|import\(\s*['"]([^'"]+)['"]\s*\)/g;
 
 export interface ArestaObservada {
   readonly de: ModuloId;
@@ -84,13 +92,17 @@ export function arquivosDoModulo(raiz: string, modulo: Modulo): string[] {
       continue; // ausência é validada por outro teste do manifesto
     }
     if (info.isDirectory()) listarArquivos(raiz, absoluto, arquivos);
-    else if (EXTENSOES.some((ext) => caminho.endsWith(ext))) arquivos.push(normalizarPosix(caminho));
+    else if (EXTENSOES.some((ext) => caminho.endsWith(ext)))
+      arquivos.push(normalizarPosix(caminho));
   }
   return [...new Set(arquivos)].sort();
 }
 
 /** Mapeia um arquivo (relativo à raiz) para o módulo que o contém, se houver. */
-export function moduloDoArquivo(arquivo: string, indice: ReadonlyMap<string, ModuloId>): ModuloId | null {
+export function moduloDoArquivo(
+  arquivo: string,
+  indice: ReadonlyMap<string, ModuloId>
+): ModuloId | null {
   const alvo = normalizarPosix(arquivo);
   let melhor: { prefixo: string; id: ModuloId } | null = null;
   for (const [prefixo, id] of indice) {
@@ -145,7 +157,10 @@ export function resolverEspecificador(arquivoOrigem: string, especificador: stri
 }
 
 /** Constrói o grafo observado de arestas entre módulos a partir do código. */
-export function construirGrafoObservado(raiz: string, modulos: readonly Modulo[] = MODULOS): ArestaObservada[] {
+export function construirGrafoObservado(
+  raiz: string,
+  modulos: readonly Modulo[] = MODULOS
+): ArestaObservada[] {
   const indice = construirIndice(modulos);
   const arestas: ArestaObservada[] = [];
 

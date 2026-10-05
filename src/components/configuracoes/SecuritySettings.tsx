@@ -6,20 +6,20 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
 import { Badge } from '@/components/ui/badge';
-import { 
-  Dialog, 
-  DialogContent, 
-  DialogHeader, 
-  DialogTitle, 
-  DialogFooter 
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
 } from '@/components/ui/dialog';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
 import { toast } from 'sonner';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
-import { 
-  Shield, 
+import {
+  Shield,
   ShieldCheck,
   Globe,
   Plus,
@@ -28,14 +28,16 @@ import {
   AlertTriangle,
   Clock,
   CheckCircle,
-  XCircle
+  XCircle,
 } from 'lucide-react';
 import { z } from 'zod';
 
-const ipSchema = z.string().regex(
-  /^(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)(?:\/\d{1,2})?$/,
-  'IP inválido. Use formato: 192.168.1.1 ou 192.168.1.0/24'
-);
+const ipSchema = z
+  .string()
+  .regex(
+    /^(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)(?:\/\d{1,2})?$/,
+    'IP inválido. Use formato: 192.168.1.1 ou 192.168.1.0/24'
+  );
 
 interface AllowedIP {
   id: string;
@@ -74,18 +76,17 @@ export function SecuritySettings() {
   const { data: settings, isLoading: loadingSettings } = useQuery({
     queryKey: ['security-settings'],
     queryFn: async () => {
-      const { data, error } = await supabase
-        .from('security_settings')
-        .select('*')
-        .maybeSingle();
+      const { data, error } = await supabase.from('security_settings').select('*').maybeSingle();
 
       if (error) throw error;
-      return (data as SecuritySettingsData | null) ?? {
-        require_2fa: false,
-        restrict_by_ip: false,
-        allowed_global_ips: [],
-      };
-    }
+      return (
+        (data as SecuritySettingsData | null) ?? {
+          require_2fa: false,
+          restrict_by_ip: false,
+          allowed_global_ips: [],
+        }
+      );
+    },
   });
 
   // Buscar IPs permitidos
@@ -100,7 +101,7 @@ export function SecuritySettings() {
       if (error) throw error;
       return data as AllowedIP[];
     },
-    enabled: isAdmin
+    enabled: isAdmin,
   });
 
   // Buscar tentativas de login
@@ -116,7 +117,7 @@ export function SecuritySettings() {
       if (error) throw error;
       return data as LoginAttempt[];
     },
-    enabled: isAdmin
+    enabled: isAdmin,
   });
 
   // Atualizar configurações
@@ -136,14 +137,12 @@ export function SecuritySettings() {
         return;
       }
 
-      const { error } = await supabase
-        .from('security_settings')
-        .insert({
-          require_2fa: updates.require_2fa ?? false,
-          restrict_by_ip: updates.restrict_by_ip ?? false,
-          allowed_global_ips: updates.allowed_global_ips ?? [],
-          updated_by: user?.id,
-        });
+      const { error } = await supabase.from('security_settings').insert({
+        require_2fa: updates.require_2fa ?? false,
+        restrict_by_ip: updates.restrict_by_ip ?? false,
+        allowed_global_ips: updates.allowed_global_ips ?? [],
+        updated_by: user?.id,
+      });
 
       if (error) throw error;
     },
@@ -153,19 +152,17 @@ export function SecuritySettings() {
     },
     onError: () => {
       toast.error('Erro ao atualizar configurações');
-    }
+    },
   });
 
   // Adicionar IP
   const addIpMutation = useMutation({
     mutationFn: async () => {
-      const { error } = await supabase
-        .from('allowed_ips')
-        .insert({
-          ip_address: newIp,
-          descricao: newIpDesc || null,
-          created_by: user?.id
-        });
+      const { error } = await supabase.from('allowed_ips').insert({
+        ip_address: newIp,
+        descricao: newIpDesc || null,
+        created_by: user?.id,
+      });
 
       if (error) throw error;
     },
@@ -178,23 +175,20 @@ export function SecuritySettings() {
     },
     onError: () => {
       toast.error('Erro ao adicionar IP');
-    }
+    },
   });
 
   // Remover IP
   const deleteIpMutation = useMutation({
     mutationFn: async (id: string) => {
-      const { error } = await supabase
-        .from('allowed_ips')
-        .delete()
-        .eq('id', id);
+      const { error } = await supabase.from('allowed_ips').delete().eq('id', id);
 
       if (error) throw error;
     },
     onSuccess: () => {
       toast.success('IP removido');
       queryClient.invalidateQueries({ queryKey: ['allowed-ips'] });
-    }
+    },
   });
 
   const handleAddIp = () => {
@@ -262,7 +256,9 @@ export function SecuritySettings() {
             </div>
             <Switch
               checked={settings?.restrict_by_ip ?? false}
-              onCheckedChange={(checked) => updateSettingsMutation.mutate({ restrict_by_ip: checked })}
+              onCheckedChange={(checked) =>
+                updateSettingsMutation.mutate({ restrict_by_ip: checked })
+              }
               disabled={!isAdmin || updateSettingsMutation.isPending}
             />
           </div>
@@ -365,7 +361,7 @@ export function SecuritySettings() {
                     </div>
                   </div>
                   <span className="text-xs text-muted-foreground">
-                    {format(new Date(attempt.created_at), "dd/MM HH:mm", { locale: ptBR })}
+                    {format(new Date(attempt.created_at), 'dd/MM HH:mm', { locale: ptBR })}
                   </span>
                 </div>
               ))}
@@ -417,9 +413,7 @@ export function SecuritySettings() {
               Cancelar
             </Button>
             <Button onClick={handleAddIp} disabled={addIpMutation.isPending || !newIp}>
-              {addIpMutation.isPending ? (
-                <Loader2 className="h-4 w-4 animate-spin mr-1" />
-              ) : null}
+              {addIpMutation.isPending ? <Loader2 className="h-4 w-4 animate-spin mr-1" /> : null}
               Adicionar
             </Button>
           </DialogFooter>

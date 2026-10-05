@@ -31,7 +31,7 @@ describe('snapshot do grafo de arquitetura', () => {
     expect(snapshot.driftResumo.naoDeclaradas).toBe(drift.naoDeclaradas.length);
     expect(snapshot.driftResumo.inversoesDeCamada).toBe(drift.inversoesDeCamada.length);
     expect(snapshot.driftResumo.declaradasSemUso).toEqual(
-      drift.declaradasSemUso.map((d) => `${d.de}->${d.para}`).sort(),
+      drift.declaradasSemUso.map((d) => `${d.de}->${d.para}`).sort()
     );
     expect(snapshot.driftResumo.naoDeclaradas).toBe(0);
     expect(snapshot.driftResumo.inversoesDeCamada).toBe(0);

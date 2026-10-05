@@ -9,8 +9,9 @@ export function detectarMsLc224(ctx: ContextoEmpresa): OportunidadeDetectada {
   const aplicavel = ctx.regime_atual === 'simples' && proximidade >= 0.9 && proximidade <= 1.2;
 
   // Economia estimada: 5% a 15% da carga tributária anual em caso de êxito
-  const cargaAnual = (ctx.carga_tributaria_atual ?? ctx.faturamento_anual * 0.10) * ctx.faturamento_anual;
-  const economiaEstimada = aplicavel ? cargaAnual * 0.10 : 0;
+  const cargaAnual =
+    (ctx.carga_tributaria_atual ?? ctx.faturamento_anual * 0.1) * ctx.faturamento_anual;
+  const economiaEstimada = aplicavel ? cargaAnual * 0.1 : 0;
 
   return {
     estrategia: 'MS_LC224',
@@ -30,6 +31,7 @@ export function detectarMsLc224(ctx: ContextoEmpresa): OportunidadeDetectada {
       'Impetrar MS preventivo ou corretivo',
       'Acompanhar precedentes do STF/STJ sobre LC 224/2025',
     ],
-    observacoes: 'Estratégia depende de tese jurídica em construção. Avaliar precedentes regionais.',
+    observacoes:
+      'Estratégia depende de tese jurídica em construção. Avaliar precedentes regionais.',
   };
 }

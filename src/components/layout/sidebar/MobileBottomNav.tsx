@@ -1,12 +1,6 @@
 import { NavLink, useLocation } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import {
-  LayoutDashboard,
-  ArrowDownCircle,
-  ArrowUpCircle,
-  Bot,
-  Menu,
-} from 'lucide-react';
+import { LayoutDashboard, ArrowDownCircle, ArrowUpCircle, Bot, Menu } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useAprovacoesPendentesCount } from '@/hooks/useAprovacoesPendentesCount';
 
@@ -35,9 +29,11 @@ export const MobileBottomNav = ({ onMenuClick }: MobileBottomNavProps) => {
   return (
     <nav className="fixed bottom-0 left-0 right-0 z-50 bg-background/40 backdrop-blur-3xl border-t border-white/10 md:hidden pb-[env(safe-area-inset-bottom)] shadow-[0_-20px_50px_rgba(0,0,0,0.3)] ring-1 ring-white/5">
       <div className="flex items-center justify-around h-20 px-4">
-        {navItems.map(item => {
+        {navItems.map((item) => {
           const Icon = item.icon;
-          const isActive = location.pathname === item.href || (item.href === '/' && location.pathname === '/dashboard');
+          const isActive =
+            location.pathname === item.href ||
+            (item.href === '/' && location.pathname === '/dashboard');
 
           return (
             <NavLink
@@ -48,21 +44,24 @@ export const MobileBottomNav = ({ onMenuClick }: MobileBottomNavProps) => {
               <motion.div
                 className={cn(
                   'flex flex-col items-center gap-2 px-5 py-3 rounded-2xl transition-all duration-500 relative overflow-hidden',
-                  isActive
-                    ? 'text-primary'
-                    : 'text-muted-foreground/60 hover:text-foreground'
+                  isActive ? 'text-primary' : 'text-muted-foreground/60 hover:text-foreground'
                 )}
                 whileTap={{ scale: 0.85, y: -4 }}
               >
                 {isActive && (
-                  <motion.div 
+                  <motion.div
                     layoutId="mobileNavActiveBg"
                     className="absolute inset-0 bg-primary/10 -z-10"
                     transition={{ type: 'spring', bounce: 0.2, duration: 0.6 }}
                   />
                 )}
                 <div className="relative">
-                  <Icon className={cn("h-6 w-6 transition-transform duration-500", isActive && "scale-110")} />
+                  <Icon
+                    className={cn(
+                      'h-6 w-6 transition-transform duration-500',
+                      isActive && 'scale-110'
+                    )}
+                  />
                   {isActive && (
                     <motion.div
                       layoutId="bottomNavIndicator"
@@ -71,10 +70,12 @@ export const MobileBottomNav = ({ onMenuClick }: MobileBottomNavProps) => {
                     />
                   )}
                 </div>
-                <span className={cn(
-                  "text-[10px] uppercase tracking-widest transition-all duration-500",
-                  isActive ? "font-black" : "font-bold opacity-60"
-                )}>
+                <span
+                  className={cn(
+                    'text-[10px] uppercase tracking-widest transition-all duration-500',
+                    isActive ? 'font-black' : 'font-bold opacity-60'
+                  )}
+                >
                   {item.label}
                 </span>
               </motion.div>

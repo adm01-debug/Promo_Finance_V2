@@ -1,7 +1,7 @@
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Progress } from "@/components/ui/progress";
-import { Brain } from "lucide-react";
-import type { Anomalia } from "@/hooks/useAnomaliasDetectadas";
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Progress } from '@/components/ui/progress';
+import { Brain } from 'lucide-react';
+import type { Anomalia } from '@/hooks/useAnomaliasDetectadas';
 
 interface Detector {
   nome: string;
@@ -14,53 +14,53 @@ interface Detector {
 function buildDetectores(a: Anomalia): Detector[] {
   const d = (a.dados ?? {}) as Record<string, unknown>;
   switch (a.tipo_anomalia) {
-    case "movimentacao_outlier":
+    case 'movimentacao_outlier':
       return [
         {
-          nome: "Outlier estatístico (3σ)",
-          regra: "valor > média + 3 × desvio padrão (30d)",
+          nome: 'Outlier estatístico (3σ)',
+          regra: 'valor > média + 3 × desvio padrão (30d)',
           observado: `R$ ${Number(d.valor ?? 0).toFixed(2)}`,
           esperado: `≤ R$ ${Number(d.limite ?? 0).toFixed(2)} (média R$ ${Number(d.media ?? 0).toFixed(2)})`,
           contribuicao: 100,
         },
       ];
-    case "pagamento_duplicado":
+    case 'pagamento_duplicado':
       return [
         {
-          nome: "Chave duplicada",
-          regra: "fornecedor + valor + vencimento idênticos em 7d",
+          nome: 'Chave duplicada',
+          regra: 'fornecedor + valor + vencimento idênticos em 7d',
           observado: `${(Array.isArray(d.ids) ? d.ids : []).length} ocorrências`,
-          esperado: "1 ocorrência",
+          esperado: '1 ocorrência',
           contribuicao: 100,
         },
       ];
-    case "conta_pagar_alta":
+    case 'conta_pagar_alta':
       return [
         {
-          nome: "Acima de p95 da empresa",
-          regra: "valor > 1.5 × p95 das contas a pagar (30d)",
+          nome: 'Acima de p95 da empresa',
+          regra: 'valor > 1.5 × p95 das contas a pagar (30d)',
           observado: `R$ ${Number(d.valor ?? 0).toFixed(2)}`,
           esperado: `≤ R$ ${(Number(d.p95 ?? 0) * 1.5).toFixed(2)} (p95: R$ ${Number(d.p95 ?? 0).toFixed(2)})`,
           contribuicao: 100,
         },
       ];
-    case "conciliacao_atrasada":
+    case 'conciliacao_atrasada':
       return [
         {
-          nome: "Janela de conciliação excedida",
-          regra: "transação bancária não conciliada > 30 dias",
-          observado: `Data: ${d.data ?? "—"} | R$ ${Number(d.valor ?? 0).toFixed(2)}`,
-          esperado: "Conciliada em até 30 dias",
+          nome: 'Janela de conciliação excedida',
+          regra: 'transação bancária não conciliada > 30 dias',
+          observado: `Data: ${d.data ?? '—'} | R$ ${Number(d.valor ?? 0).toFixed(2)}`,
+          esperado: 'Conciliada em até 30 dias',
           contribuicao: 100,
         },
       ];
-    case "mudanca_regime_brusca":
+    case 'mudanca_regime_brusca':
       return [
         {
-          nome: "Variação MoM da carga tributária",
-          regra: "|Δ% mês a mês| > 30%",
+          nome: 'Variação MoM da carga tributária',
+          regra: '|Δ% mês a mês| > 30%',
           observado: `${Number(d.variacao_pct ?? 0).toFixed(1)}% (de ${Number(d.anterior ?? 0).toFixed(2)}% → ${Number(d.atual ?? 0).toFixed(2)}%)`,
-          esperado: "Variação ≤ 30%",
+          esperado: 'Variação ≤ 30%',
           contribuicao: 100,
         },
       ];

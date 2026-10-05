@@ -8,6 +8,7 @@ import { createLogger } from '../_shared/observability.ts';
 import { exigirChamadaInterna } from '../_shared/auth-guard.ts';
 import { getRequestId, correlationHeaders } from '../_shared/correlation.ts';
 import { corsHeadersPara } from '../_shared/cors.ts';
+import { withEdgeObservability } from '../_shared/edge-observability.ts';
 
 interface Agendamento {
   id: string;
@@ -98,124 +99,126 @@ async function enviarEmail(
   return res.ok;
 }
 
-Deno.serve(async (req) => {
-  const corsHeaders = corsHeadersPara(req);
-  if (req.method === 'OPTIONS') return new Response('ok', { headers: corsHeaders });
+Deno.serve(
+  withEdgeObservability('enviar-relatorios-tributarios-agendados', async (req) => {
+    const corsHeaders = corsHeadersPara(req);
+    if (req.method === 'OPTIONS') return new Response('ok', { headers: corsHeaders });
 
-  const requestId = getRequestId(req);
-  const guard = await exigirChamadaInterna(req, 'relatorios_tributarios_cron');
-  if (!guard.ok) return guard.resposta;
+    const requestId = getRequestId(req);
+    const guard = await exigirChamadaInterna(req, 'relatorios_tributarios_cron');
+    if (!guard.ok) return guard.resposta;
 
-  const logger = createLogger('enviar-relatorios-tributarios-agendados', requestId);
-  const t0 = Date.now();
-  logger.info('fn_start');
+    const logger = createLogger('enviar-relatorios-tributarios-agendados', requestId);
+    const t0 = Date.now();
+    logger.info('fn_start');
 
-  const sb = createClient(
-    Deno.env.get('SUPABASE_URL')!,
-    Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!
-  );
+    const sb = createClient(
+      Deno.env.get('SUPABASE_URL')!,
+      Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!
+    );
 
-  try {
-    const { data: agendamentos, error } = await sb
-      .from('relatorios_tributarios_agendados')
-      .select('id, empresa_id, ano, frequencia, dia_envio, destinatarios, proximo_envio_em')
-      .eq('ativo', true)
-      .lte('proximo_envio_em', new Date().toISOString())
-      .limit(50);
+    try {
+      const { data: agendamentos, error } = await sb
+        .from('relatorios_tributarios_agendados')
+        .select('id, empresa_id, ano, frequencia, dia_envio, destinatarios, proximo_envio_em')
+        .eq('ativo', true)
+        .lte('proximo_envio_em', new Date().toISOString())
+        .limit(50);
 
-    if (error) throw error;
-    const lista = (agendamentos ?? []) as Agendamento[];
+      if (error) throw error;
+      const lista = (agendamentos ?? []) as Agendamento[];
 
-    let processados = 0;
-    let falhas = 0;
+      let processados = 0;
+      let falhas = 0;
 
-    for (const ag of lista) {
-      try {
-        if (!ag.destinatarios?.length) {
-          logger.warn('sem_destinatarios', { context: { id: ag.id } });
-          continue;
-        }
-
-        // Gera o relatório anual reusando edge P6
-        const { data: relatorio, error: relErr } = await sb.functions.invoke(
-          'gerar-relatorio-anual',
-          {
-            headers: correlationHeaders(requestId),
-            body: { empresa_id: ag.empresa_id, ano: ag.ano },
+      for (const ag of lista) {
+        try {
+          if (!ag.destinatarios?.length) {
+            logger.warn('sem_destinatarios', { context: { id: ag.id } });
+            continue;
           }
-        );
-        if (relErr || !relatorio) throw new Error(relErr?.message || 'relatorio_vazio');
 
-        const { data: empresa } = await sb
-          .from('empresas')
-          .select('razao_social')
-          .eq('id', ag.empresa_id)
-          .maybeSingle();
-        const nomeEmp = empresa?.razao_social ?? 'Empresa';
+          // Gera o relatório anual reusando edge P6
+          const { data: relatorio, error: relErr } = await sb.functions.invoke(
+            'gerar-relatorio-anual',
+            {
+              headers: correlationHeaders(requestId),
+              body: { empresa_id: ag.empresa_id, ano: ag.ano },
+            }
+          );
+          if (relErr || !relatorio) throw new Error(relErr?.message || 'relatorio_vazio');
 
-        const pdfBytes = await gerarPdf(relatorio as Record<string, unknown>, nomeEmp, ag.ano);
-        // Prefixo precisa começar com empresa_id — é o que a policy de
-        // SELECT/DELETE do bucket relatorios-tributarios checa via
-        // split_part(name,'/',1) (achado do coderabbitai: "agendados/..."
-        // na frente fazia esse split retornar "agendados", não empresa_id).
-        const path = `${ag.empresa_id}/agendados/${ag.ano}/${Date.now()}.pdf`;
+          const { data: empresa } = await sb
+            .from('empresas')
+            .select('razao_social')
+            .eq('id', ag.empresa_id)
+            .maybeSingle();
+          const nomeEmp = empresa?.razao_social ?? 'Empresa';
 
-        const { error: upErr } = await sb.storage
-          .from('relatorios-tributarios')
-          .upload(path, pdfBytes, { contentType: 'application/pdf', upsert: false });
-        if (upErr) throw upErr;
+          const pdfBytes = await gerarPdf(relatorio as Record<string, unknown>, nomeEmp, ag.ano);
+          // Prefixo precisa começar com empresa_id — é o que a policy de
+          // SELECT/DELETE do bucket relatorios-tributarios checa via
+          // split_part(name,'/',1) (achado do coderabbitai: "agendados/..."
+          // na frente fazia esse split retornar "agendados", não empresa_id).
+          const path = `${ag.empresa_id}/agendados/${ag.ano}/${Date.now()}.pdf`;
 
-        const { data: signed } = await sb.storage
-          .from('relatorios-tributarios')
-          .createSignedUrl(path, 7 * 24 * 60 * 60);
+          const { error: upErr } = await sb.storage
+            .from('relatorios-tributarios')
+            .upload(path, pdfBytes, { contentType: 'application/pdf', upsert: false });
+          if (upErr) throw upErr;
 
-        const ok = await enviarEmail(
-          ag.destinatarios,
-          `Relatório Tributário ${ag.ano} — ${nomeEmp}`,
-          `<p>Olá,</p><p>Segue o relatório tributário automático de <strong>${nomeEmp}</strong> para o ano <strong>${ag.ano}</strong>.</p>`,
-          signed?.signedUrl ?? ''
-        );
+          const { data: signed } = await sb.storage
+            .from('relatorios-tributarios')
+            .createSignedUrl(path, 7 * 24 * 60 * 60);
 
-        await sb
-          .from('relatorios_tributarios_agendados')
-          .update({
-            ultimo_envio_em: new Date().toISOString(),
-            proximo_envio_em: calcularProximoEnvio(ag.frequencia, ag.dia_envio),
-          })
-          .eq('id', ag.id);
+          const ok = await enviarEmail(
+            ag.destinatarios,
+            `Relatório Tributário ${ag.ano} — ${nomeEmp}`,
+            `<p>Olá,</p><p>Segue o relatório tributário automático de <strong>${nomeEmp}</strong> para o ano <strong>${ag.ano}</strong>.</p>`,
+            signed?.signedUrl ?? ''
+          );
 
-        if (ok) processados++;
-        else falhas++;
-      } catch (err) {
-        falhas++;
-        logger.error('agendamento_falhou', {
-          error_message: (err as Error).message,
-          context: { id: ag.id },
-        });
+          await sb
+            .from('relatorios_tributarios_agendados')
+            .update({
+              ultimo_envio_em: new Date().toISOString(),
+              proximo_envio_em: calcularProximoEnvio(ag.frequencia, ag.dia_envio),
+            })
+            .eq('id', ag.id);
+
+          if (ok) processados++;
+          else falhas++;
+        } catch (err) {
+          falhas++;
+          logger.error('agendamento_falhou', {
+            error_message: (err as Error).message,
+            context: { id: ag.id },
+          });
+        }
       }
-    }
 
-    logger.info('fn_success', {
-      duration_ms: Date.now() - t0,
-      status_code: 200,
-      context: { total: lista.length, processados, falhas },
-    });
-    await logger.flush();
-    return new Response(JSON.stringify({ total: lista.length, processados, falhas }), {
-      status: 200,
-      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-    });
-  } catch (err) {
-    const msg = (err as Error).message || 'Erro interno';
-    logger.error('fn_failure', {
-      duration_ms: Date.now() - t0,
-      status_code: 500,
-      error_message: msg,
-    });
-    await logger.flush();
-    return new Response(JSON.stringify({ error: msg }), {
-      status: 500,
-      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-    });
-  }
-});
+      logger.info('fn_success', {
+        duration_ms: Date.now() - t0,
+        status_code: 200,
+        context: { total: lista.length, processados, falhas },
+      });
+      await logger.flush();
+      return new Response(JSON.stringify({ total: lista.length, processados, falhas }), {
+        status: 200,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
+    } catch (err) {
+      const msg = (err as Error).message || 'Erro interno';
+      logger.error('fn_failure', {
+        duration_ms: Date.now() - t0,
+        status_code: 500,
+        error_message: msg,
+      });
+      await logger.flush();
+      return new Response(JSON.stringify({ error: msg }), {
+        status: 500,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
+    }
+  })
+);

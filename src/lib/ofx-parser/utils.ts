@@ -38,7 +38,12 @@ export function parseData(dateStr: string): Date {
     let year = parseInt(match[3], 10);
     if (year < 100) year += 2000;
     const d = new Date(year, month, day);
-    if (isNaN(d.getTime()) || d.getFullYear() !== year || d.getMonth() !== month || d.getDate() !== day) {
+    if (
+      isNaN(d.getTime()) ||
+      d.getFullYear() !== year ||
+      d.getMonth() !== month ||
+      d.getDate() !== day
+    ) {
       throw new Error(`Data inválida: ${dateStr}`);
     }
     return d;
@@ -47,15 +52,16 @@ export function parseData(dateStr: string): Date {
   // YYYY-MM-DD or YYYY/MM/DD (ISO-like, local time)
   match = cleaned.match(/^(\d{4})[/-](\d{1,2})[/-](\d{1,2})$/);
   if (match) {
-    const d = new Date(
-      parseInt(match[1], 10),
-      parseInt(match[2], 10) - 1,
-      parseInt(match[3], 10),
-    );
+    const d = new Date(parseInt(match[1], 10), parseInt(match[2], 10) - 1, parseInt(match[3], 10));
     const year = parseInt(match[1], 10);
     const month = parseInt(match[2], 10) - 1;
     const day = parseInt(match[3], 10);
-    if (isNaN(d.getTime()) || d.getFullYear() !== year || d.getMonth() !== month || d.getDate() !== day) {
+    if (
+      isNaN(d.getTime()) ||
+      d.getFullYear() !== year ||
+      d.getMonth() !== month ||
+      d.getDate() !== day
+    ) {
       throw new Error(`Data inválida: ${dateStr}`);
     }
     return d;

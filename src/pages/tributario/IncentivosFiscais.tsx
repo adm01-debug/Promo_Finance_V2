@@ -6,15 +6,15 @@ import { useAuth } from '@/hooks/useAuth';
 
 export default function IncentivosFiscaisPage() {
   const { currentEmpresaId } = useAuth();
-  
+
   return (
     <MainLayout>
       <div className="relative min-h-screen">
         <PageBackground />
-        
+
         <div className="container mx-auto p-6 relative z-10">
-          <PageHeader 
-            title="Incentivos Fiscais" 
+          <PageHeader
+            title="Incentivos Fiscais"
             subtitle="Mapeamento e gestão de benefícios, isenções e regimes especiais (Sudene, Sudam, REIDI)."
             badge="Otimização Fiscal"
             icon={Zap}
@@ -22,7 +22,7 @@ export default function IncentivosFiscaisPage() {
             gradientVia="via-primary"
             gradientTo="to-amber-600"
           />
-          
+
           <IncentivosFiscaisPanel empresaId={currentEmpresaId || ''} />
         </div>
       </div>

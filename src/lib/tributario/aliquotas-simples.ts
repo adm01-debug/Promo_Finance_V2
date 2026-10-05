@@ -25,10 +25,10 @@ export const ANEXO_I: FaixaSimples[] = [
 export const ANEXO_II: FaixaSimples[] = [
   { faixa: 1, rbt12_de: 0, rbt12_ate: 180000, aliquota: 0.045, pd: 0 },
   { faixa: 2, rbt12_de: 180000.01, rbt12_ate: 360000, aliquota: 0.078, pd: 5940 },
-  { faixa: 3, rbt12_de: 360000.01, rbt12_ate: 720000, aliquota: 0.10, pd: 13860 },
+  { faixa: 3, rbt12_de: 360000.01, rbt12_ate: 720000, aliquota: 0.1, pd: 13860 },
   { faixa: 4, rbt12_de: 720000.01, rbt12_ate: 1800000, aliquota: 0.112, pd: 22500 },
   { faixa: 5, rbt12_de: 1800000.01, rbt12_ate: 3600000, aliquota: 0.147, pd: 85500 },
-  { faixa: 6, rbt12_de: 3600000.01, rbt12_ate: 4800000, aliquota: 0.30, pd: 720000 },
+  { faixa: 6, rbt12_de: 3600000.01, rbt12_ate: 4800000, aliquota: 0.3, pd: 720000 },
 ];
 
 // Anexo III — Serviços (com Fator R ≥ 0,28)

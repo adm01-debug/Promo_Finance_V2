@@ -9,7 +9,6 @@ import { formatCurrency } from '@/lib/formatters';
 import type { ResultadoCenario } from '@/lib/tributario';
 import { PeriodicidadeComparativoCard } from './PeriodicidadeComparativoCard';
 
-
 export function CenarioDetalhes({ cenario }: { cenario: ResultadoCenario }) {
   if (!cenario.elegivel) {
     return (
@@ -47,15 +46,21 @@ export function CenarioDetalhes({ cenario }: { cenario: ResultadoCenario }) {
           ))}
           <div className="p-3 rounded bg-primary/10 sm:col-span-2">
             <p className="text-xs text-muted-foreground">Total Anual</p>
-            <p className="text-2xl font-bold text-primary">{formatCurrency(cenario.totalTributos)}</p>
+            <p className="text-2xl font-bold text-primary">
+              {formatCurrency(cenario.totalTributos)}
+            </p>
             <p className="text-xs">Carga efetiva: {cenario.cargaEfetiva.toFixed(2)}%</p>
           </div>
         </div>
 
         {(cenario.anexoAplicavel || cenario.faixaAplicavel) && (
           <div className="flex gap-2 flex-wrap">
-            {cenario.anexoAplicavel && <Badge variant="outline">Anexo {cenario.anexoAplicavel}</Badge>}
-            {cenario.faixaAplicavel && <Badge variant="outline">Faixa {cenario.faixaAplicavel}</Badge>}
+            {cenario.anexoAplicavel && (
+              <Badge variant="outline">Anexo {cenario.anexoAplicavel}</Badge>
+            )}
+            {cenario.faixaAplicavel && (
+              <Badge variant="outline">Faixa {cenario.faixaAplicavel}</Badge>
+            )}
             {cenario.fatorR !== undefined && (
               <Badge variant="outline">Fator R: {(cenario.fatorR * 100).toFixed(2)}%</Badge>
             )}
@@ -66,8 +71,6 @@ export function CenarioDetalhes({ cenario }: { cenario: ResultadoCenario }) {
         )}
 
         <PeriodicidadeComparativoCard cenario={cenario} />
-
-
 
         {cenario.observacoes.length > 0 && (
           <div className="text-sm space-y-1 p-3 rounded bg-muted/30">

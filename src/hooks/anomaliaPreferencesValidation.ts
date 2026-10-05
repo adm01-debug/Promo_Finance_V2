@@ -15,46 +15,42 @@ import {
   type DrawerAcoes,
   type Severidade,
   type ToastAcoes,
-} from "./useAnomaliaPreferences";
+} from './useAnomaliaPreferences';
 
 export const SEVERIDADES_VALIDAS: readonly Severidade[] = [
-  "baixa",
-  "media",
-  "alta",
-  "critica",
+  'baixa',
+  'media',
+  'alta',
+  'critica',
 ] as const;
 
 export const TOAST_ACAO_KEYS = [
-  "drill_down",
-  "abrir_pagina",
-  "copiar_id",
-  "marcar_lida",
+  'drill_down',
+  'abrir_pagina',
+  'copiar_id',
+  'marcar_lida',
 ] as const satisfies ReadonlyArray<keyof ToastAcoes>;
 
 export const DRAWER_ACAO_KEYS = [
-  "abrir_entidade",
-  "pagina_completa",
-  "copiar_id",
-  "marcar_lida",
+  'abrir_entidade',
+  'pagina_completa',
+  'copiar_id',
+  'marcar_lida',
 ] as const satisfies ReadonlyArray<keyof DrawerAcoes>;
 
 export type ValidationCode =
-  | "DURACAO_FORA_DO_RANGE"
-  | "DURACAO_NAO_INTEIRA"
-  | "SEVERIDADE_INVALIDA"
-  | "SEVERIDADES_VAZIAS_COM_TOAST_ATIVO"
-  | "TOAST_SEM_ACOES_COM_DRILL_DOWN_OBRIGATORIO"
-  | "DRAWER_SEM_ACOES";
+  | 'DURACAO_FORA_DO_RANGE'
+  | 'DURACAO_NAO_INTEIRA'
+  | 'SEVERIDADE_INVALIDA'
+  | 'SEVERIDADES_VAZIAS_COM_TOAST_ATIVO'
+  | 'TOAST_SEM_ACOES_COM_DRILL_DOWN_OBRIGATORIO'
+  | 'DRAWER_SEM_ACOES';
 
 export interface ValidationIssue {
   code: ValidationCode;
   message: string;
   /** Caminho lógico do campo afetado, útil para destaque em UI. */
-  field:
-    | "toast_duracao_segundos"
-    | "toast_severidades_ativas"
-    | "toast_acoes"
-    | "drawer_acoes";
+  field: 'toast_duracao_segundos' | 'toast_severidades_ativas' | 'toast_acoes' | 'drawer_acoes';
 }
 
 export interface ValidationResult {
@@ -62,9 +58,7 @@ export interface ValidationResult {
   issues: ValidationIssue[];
 }
 
-export type AnomaliaPreferencesPatch = Partial<
-  Omit<AnomaliaPreferences, "id" | "user_id">
->;
+export type AnomaliaPreferencesPatch = Partial<Omit<AnomaliaPreferences, 'id' | 'user_id'>>;
 
 /** True se ao menos uma chave do objeto de ações está marcada como true. */
 function hasAtLeastOneTrue(record: Record<string, boolean> | undefined): boolean {
@@ -86,7 +80,7 @@ function hasAtLeastOneTrue(record: Record<string, boolean> | undefined): boolean
  *   torna a anomalia inacessível pelo realtime).
  */
 export function validateAnomaliaPreferencesPatch(
-  patch: AnomaliaPreferencesPatch,
+  patch: AnomaliaPreferencesPatch
 ): ValidationResult {
   const issues: ValidationIssue[] = [];
 
@@ -94,14 +88,14 @@ export function validateAnomaliaPreferencesPatch(
     const d = patch.toast_duracao_segundos;
     if (!Number.isFinite(d) || !Number.isInteger(d)) {
       issues.push({
-        code: "DURACAO_NAO_INTEIRA",
-        field: "toast_duracao_segundos",
-        message: "A duração do toast deve ser um número inteiro de segundos.",
+        code: 'DURACAO_NAO_INTEIRA',
+        field: 'toast_duracao_segundos',
+        message: 'A duração do toast deve ser um número inteiro de segundos.',
       });
     } else if (d < TOAST_DURACAO_MIN || d > TOAST_DURACAO_MAX) {
       issues.push({
-        code: "DURACAO_FORA_DO_RANGE",
-        field: "toast_duracao_segundos",
+        code: 'DURACAO_FORA_DO_RANGE',
+        field: 'toast_duracao_segundos',
         message: `A duração do toast deve estar entre ${TOAST_DURACAO_MIN}s e ${TOAST_DURACAO_MAX}s.`,
       });
     }
@@ -109,24 +103,20 @@ export function validateAnomaliaPreferencesPatch(
 
   if (patch.toast_severidades_ativas !== undefined) {
     const sevs = patch.toast_severidades_ativas;
-    const invalid = sevs.filter(
-      (s) => !SEVERIDADES_VALIDAS.includes(s as Severidade),
-    );
+    const invalid = sevs.filter((s) => !SEVERIDADES_VALIDAS.includes(s as Severidade));
     if (invalid.length > 0) {
       issues.push({
-        code: "SEVERIDADE_INVALIDA",
-        field: "toast_severidades_ativas",
-        message: `Severidade(s) inválida(s): ${invalid.join(", ")}.`,
+        code: 'SEVERIDADE_INVALIDA',
+        field: 'toast_severidades_ativas',
+        message: `Severidade(s) inválida(s): ${invalid.join(', ')}.`,
       });
     }
-    const enabledNow =
-      patch.toast_enabled !== undefined ? patch.toast_enabled : true;
+    const enabledNow = patch.toast_enabled !== undefined ? patch.toast_enabled : true;
     if (sevs.length === 0 && enabledNow) {
       issues.push({
-        code: "SEVERIDADES_VAZIAS_COM_TOAST_ATIVO",
-        field: "toast_severidades_ativas",
-        message:
-          "Selecione ao menos 1 severidade ou desative o master switch de toasts.",
+        code: 'SEVERIDADES_VAZIAS_COM_TOAST_ATIVO',
+        field: 'toast_severidades_ativas',
+        message: 'Selecione ao menos 1 severidade ou desative o master switch de toasts.',
       });
     }
   }
@@ -135,10 +125,10 @@ export function validateAnomaliaPreferencesPatch(
   if (patch.drawer_acoes !== undefined) {
     if (!hasAtLeastOneTrue(patch.drawer_acoes)) {
       issues.push({
-        code: "DRAWER_SEM_ACOES",
-        field: "drawer_acoes",
+        code: 'DRAWER_SEM_ACOES',
+        field: 'drawer_acoes',
         message:
-          "O drawer precisa de ao menos 1 ação habilitada (ex.: abrir entidade ou copiar ID).",
+          'O drawer precisa de ao menos 1 ação habilitada (ex.: abrir entidade ou copiar ID).',
       });
     }
   }
@@ -152,10 +142,10 @@ export function validateAnomaliaPreferencesPatch(
     const drawerVazio = !hasAtLeastOneTrue(patch.drawer_acoes);
     if (toastVazio && drawerVazio) {
       issues.push({
-        code: "TOAST_SEM_ACOES_COM_DRILL_DOWN_OBRIGATORIO",
-        field: "toast_acoes",
+        code: 'TOAST_SEM_ACOES_COM_DRILL_DOWN_OBRIGATORIO',
+        field: 'toast_acoes',
         message:
-          "Combinação inválida: toast e drawer ambos sem ações. Habilite ao menos uma rota de drill-down.",
+          'Combinação inválida: toast e drawer ambos sem ações. Habilite ao menos uma rota de drill-down.',
       });
     }
   }
@@ -164,12 +154,10 @@ export function validateAnomaliaPreferencesPatch(
 }
 
 /** Lança um Error com todas as mensagens concatenadas. Útil em mutations. */
-export function assertValidAnomaliaPreferencesPatch(
-  patch: AnomaliaPreferencesPatch,
-): void {
+export function assertValidAnomaliaPreferencesPatch(patch: AnomaliaPreferencesPatch): void {
   const result = validateAnomaliaPreferencesPatch(patch);
   if (!result.ok) {
-    const msg = result.issues.map((i) => i.message).join(" ");
+    const msg = result.issues.map((i) => i.message).join(' ');
     throw new Error(msg);
   }
 }

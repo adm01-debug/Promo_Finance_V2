@@ -30,7 +30,7 @@ function montarQuotas(
   principal: number,
   vencimento: string,
   selicMensal: Readonly<Record<string, number>> | undefined,
-  padrao: number | undefined,
+  padrao: number | undefined
 ): readonly QuotaDarf[] {
   if (principal < 2 * VALOR_MINIMO_QUOTA) return [];
   const maxQuotas = Math.min(3, Math.floor(principal / VALOR_MINIMO_QUOTA));
@@ -46,7 +46,7 @@ function montarQuotas(
     const [ano, mes] = parsePeriodo(compVenc);
     const dataQuota = calcularVencimento(
       `${String(ano).padStart(4, '0')}-${String(mes - 1 === 0 ? 12 : mes - 1).padStart(2, '0')}`,
-      'ultimo_dia_util_mes_seguinte',
+      'ultimo_dia_util_mes_seguinte'
     );
     // 1ª quota sem juros; demais com SELIC acumulada + 1% no mês do pagamento.
     const percentual = i === 0 ? 0 : selicAcumulada(vencimento, dataQuota, selicMensal, padrao);
@@ -122,7 +122,7 @@ export function consolidarDarf(params: ParametrosConsolidacao): ResultadoConsoli
       }
       if (arrastado > 0) {
         observacoes.push(
-          `Inclui R$ ${arrastado.toFixed(2)} diferidos de competências anteriores (Lei 9.430/96, art. 68).`,
+          `Inclui R$ ${arrastado.toFixed(2)} diferidos de competências anteriores (Lei 9.430/96, art. 68).`
         );
       }
 
@@ -182,7 +182,7 @@ export function consolidarDarf(params: ParametrosConsolidacao): ResultadoConsoli
 
       if (parcelarEmQuotas && meta?.permiteQuotas && quotas.length === 0) {
         observacoes.push(
-          `Quota mínima de R$ ${VALOR_MINIMO_QUOTA.toFixed(2)} não atingida — recolhimento em cota única.`,
+          `Quota mínima de R$ ${VALOR_MINIMO_QUOTA.toFixed(2)} não atingida — recolhimento em cota única.`
         );
       }
 
@@ -207,12 +207,12 @@ export function consolidarDarf(params: ParametrosConsolidacao): ResultadoConsoli
     (a, b) =>
       a.vencimento.localeCompare(b.vencimento) ||
       a.codigo.localeCompare(b.codigo) ||
-      a.periodoApuracao.localeCompare(b.periodoApuracao),
+      a.periodoApuracao.localeCompare(b.periodoApuracao)
   );
 
   const totalPrincipal = round2(darfs.reduce((s, d) => s + d.principal, 0));
   const totalAcrescimos = round2(
-    darfs.reduce((s, d) => s + d.acrescimos.multaMora + d.acrescimos.juros, 0),
+    darfs.reduce((s, d) => s + d.acrescimos.multaMora + d.acrescimos.juros, 0)
   );
 
   return {
@@ -248,7 +248,7 @@ export function exportarDarfCsv(resultado: ResultadoConsolidacao): string {
       d.acrescimos.multaMora.toFixed(2),
       d.acrescimos.juros.toFixed(2),
       d.total.toFixed(2),
-    ].join(';'),
+    ].join(';')
   );
   return [cab, ...linhas].join('\n');
 }

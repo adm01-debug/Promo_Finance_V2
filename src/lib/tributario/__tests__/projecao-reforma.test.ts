@@ -50,8 +50,19 @@ describe('Projeção Reforma Tributária 2026-2033', () => {
   });
 
   it('aplica redutor de 60% para setor de saúde', () => {
-    const { projecoes: comum } = projetarReforma({ faturamentoAnual: 1_000_000, percentualServicos: 100, pisCofinsAtual: 0, issAtual: 0 });
-    const { projecoes: saude } = projetarReforma({ faturamentoAnual: 1_000_000, percentualServicos: 100, pisCofinsAtual: 0, issAtual: 0, setor: 'saude' });
+    const { projecoes: comum } = projetarReforma({
+      faturamentoAnual: 1_000_000,
+      percentualServicos: 100,
+      pisCofinsAtual: 0,
+      issAtual: 0,
+    });
+    const { projecoes: saude } = projetarReforma({
+      faturamentoAnual: 1_000_000,
+      percentualServicos: 100,
+      pisCofinsAtual: 0,
+      issAtual: 0,
+      setor: 'saude',
+    });
     const c2033 = comum.find((p) => p.ano === 2033)!;
     const s2033 = saude.find((p) => p.ano === 2033)!;
     expect(s2033.totalTributos).toBeCloseTo(c2033.totalTributos * 0.4, 2);

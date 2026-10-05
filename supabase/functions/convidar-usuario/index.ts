@@ -15,6 +15,7 @@ import {
 import { getAppBaseUrl } from '../_shared/app-url.ts';
 import { corsHeadersPara } from '../_shared/cors.ts';
 import { createLogger } from '../_shared/observability.ts';
+import { withEdgeObservability } from '../_shared/edge-observability.ts';
 const log = createLogger('convidar-usuario');
 
 const PapelSchema = z.enum(['admin', 'financeiro', 'operacional', 'visualizador']);
@@ -225,12 +226,14 @@ export const handler = createHandler({
   verificarRateLimit: checkRateLimit,
 });
 
-Deno.serve(async (req) => {
-  const _t0 = Date.now();
-  try {
-    return await handler(req);
-  } finally {
-    log.info('request', { duration_ms: Date.now() - _t0 });
-    await log.flush();
-  }
-});
+Deno.serve(
+  withEdgeObservability('convidar-usuario', async (req) => {
+    const _t0 = Date.now();
+    try {
+      return await handler(req);
+    } finally {
+      log.info('request', { duration_ms: Date.now() - _t0 });
+      await log.flush();
+    }
+  })
+);

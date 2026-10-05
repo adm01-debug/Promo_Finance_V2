@@ -3,7 +3,13 @@ import { ptBR } from 'date-fns/locale';
 import { CalendarIcon, Search } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Calendar } from '@/components/ui/calendar';
 import { ClearFiltersButton } from '@/components/filters/ClearFiltersButton';
@@ -32,9 +38,21 @@ interface Props {
 const toIsoDate = (d: Date) => format(d, 'yyyy-MM-dd');
 
 export function FiltersBar({
-  ano, busca, setBusca, preset, handlePreset, dataInicio, dataFim,
-  setDataInicio, setDataFim, setPreset, contaId, setContaId, plano,
-  filtersController, countLabel,
+  ano,
+  busca,
+  setBusca,
+  preset,
+  handlePreset,
+  dataInicio,
+  dataFim,
+  setDataInicio,
+  setDataFim,
+  setPreset,
+  contaId,
+  setContaId,
+  plano,
+  filtersController,
+  countLabel,
 }: Props) {
   return (
     <div className="flex flex-wrap items-center gap-4">
@@ -50,7 +68,9 @@ export function FiltersBar({
 
       <div className="flex items-center gap-3">
         <Select value={preset} onValueChange={(v) => handlePreset(v as DatePreset)}>
-          <SelectTrigger className="h-12 w-[180px] rounded-2xl border-white/5 bg-card/5 font-bold"><SelectValue /></SelectTrigger>
+          <SelectTrigger className="h-12 w-[180px] rounded-2xl border-white/5 bg-card/5 font-bold">
+            <SelectValue />
+          </SelectTrigger>
           <SelectContent className="rounded-2xl border-white/10 bg-background/95 backdrop-blur-xl">
             <SelectItem value="ano">Ano de {ano}</SelectItem>
             <SelectItem value="all">Todo o período</SelectItem>
@@ -64,29 +84,71 @@ export function FiltersBar({
 
         <Popover>
           <PopoverTrigger asChild>
-            <Button variant="outline" size="sm" className={cn('h-12 rounded-2xl border-white/5 bg-card/5 gap-2 px-5 font-bold', !dataInicio && 'text-muted-foreground')}>
+            <Button
+              variant="outline"
+              size="sm"
+              className={cn(
+                'h-12 rounded-2xl border-white/5 bg-card/5 gap-2 px-5 font-bold',
+                !dataInicio && 'text-muted-foreground'
+              )}
+            >
               <CalendarIcon className="h-4 w-4 text-primary" />
-              {dataInicio ? format(new Date(`${dataInicio}T00:00:00`), 'dd/MM/yyyy', { locale: ptBR }) : 'Início'}
+              {dataInicio
+                ? format(new Date(`${dataInicio}T00:00:00`), 'dd/MM/yyyy', { locale: ptBR })
+                : 'Início'}
             </Button>
           </PopoverTrigger>
-          <PopoverContent className="w-auto p-0 border-none shadow-3xl rounded-3xl overflow-hidden" align="start">
-            <Calendar mode="single" selected={dataInicio ? new Date(`${dataInicio}T00:00:00`) : undefined}
-              onSelect={(d) => { if (d) { setDataInicio(toIsoDate(d)); setPreset('custom'); } }}
-              initialFocus className={cn('p-3 pointer-events-auto')} />
+          <PopoverContent
+            className="w-auto p-0 border-none shadow-3xl rounded-3xl overflow-hidden"
+            align="start"
+          >
+            <Calendar
+              mode="single"
+              selected={dataInicio ? new Date(`${dataInicio}T00:00:00`) : undefined}
+              onSelect={(d) => {
+                if (d) {
+                  setDataInicio(toIsoDate(d));
+                  setPreset('custom');
+                }
+              }}
+              initialFocus
+              className={cn('p-3 pointer-events-auto')}
+            />
           </PopoverContent>
         </Popover>
 
         <Popover>
           <PopoverTrigger asChild>
-            <Button variant="outline" size="sm" className={cn('h-12 rounded-2xl border-white/5 bg-card/5 gap-2 px-5 font-bold', !dataFim && 'text-muted-foreground')}>
+            <Button
+              variant="outline"
+              size="sm"
+              className={cn(
+                'h-12 rounded-2xl border-white/5 bg-card/5 gap-2 px-5 font-bold',
+                !dataFim && 'text-muted-foreground'
+              )}
+            >
               <CalendarIcon className="h-4 w-4 text-primary" />
-              {dataFim ? format(new Date(`${dataFim}T00:00:00`), 'dd/MM/yyyy', { locale: ptBR }) : 'Fim'}
+              {dataFim
+                ? format(new Date(`${dataFim}T00:00:00`), 'dd/MM/yyyy', { locale: ptBR })
+                : 'Fim'}
             </Button>
           </PopoverTrigger>
-          <PopoverContent className="w-auto p-0 border-none shadow-3xl rounded-3xl overflow-hidden" align="start">
-            <Calendar mode="single" selected={dataFim ? new Date(`${dataFim}T00:00:00`) : undefined}
-              onSelect={(d) => { if (d) { setDataFim(toIsoDate(d)); setPreset('custom'); } }}
-              initialFocus className={cn('p-3 pointer-events-auto')} />
+          <PopoverContent
+            className="w-auto p-0 border-none shadow-3xl rounded-3xl overflow-hidden"
+            align="start"
+          >
+            <Calendar
+              mode="single"
+              selected={dataFim ? new Date(`${dataFim}T00:00:00`) : undefined}
+              onSelect={(d) => {
+                if (d) {
+                  setDataFim(toIsoDate(d));
+                  setPreset('custom');
+                }
+              }}
+              initialFocus
+              className={cn('p-3 pointer-events-auto')}
+            />
           </PopoverContent>
         </Popover>
       </div>
@@ -97,9 +159,13 @@ export function FiltersBar({
         </SelectTrigger>
         <SelectContent className="rounded-2xl border-white/10 bg-background/95 backdrop-blur-xl">
           <SelectItem value="todas">Todas as contas</SelectItem>
-          {plano.filter((c) => c.tipo === 'analitica').map((c) => (
-            <SelectItem key={c.id} value={c.id} className="font-mono text-xs">{c.codigo} — {c.nome || c.descricao}</SelectItem>
-          ))}
+          {plano
+            .filter((c) => c.tipo === 'analitica')
+            .map((c) => (
+              <SelectItem key={c.id} value={c.id} className="font-mono text-xs">
+                {c.codigo} — {c.nome || c.descricao}
+              </SelectItem>
+            ))}
         </SelectContent>
       </Select>
 

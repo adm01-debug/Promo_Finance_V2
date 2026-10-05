@@ -3,6 +3,7 @@
 import { corsHeaders } from '../_shared/cors.ts';
 import { createClient, SupabaseClient } from 'npm:@supabase/supabase-js@2.49.4';
 import { corsHeadersPara } from '../_shared/cors.ts';
+import { withEdgeObservability } from '../_shared/edge-observability.ts';
 
 const SUPABASE_URL = Deno.env.get('SUPABASE_URL')!;
 const SERVICE_ROLE = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
@@ -116,12 +117,10 @@ async function resolveRole(
 
 async function syncUserRole(admin: SupabaseClient, userId: string, role: AppRole) {
   // RBAC aditivo: insere se ainda não tem essa role; não remove outras.
-  await admin
-    .from('user_roles')
-    .upsert({ user_id: userId, role }, {
-      onConflict: 'user_id,role',
-      ignoreDuplicates: true,
-    } as any);
+  await admin.from('user_roles').upsert({ user_id: userId, role }, {
+    onConflict: 'user_id,role',
+    ignoreDuplicates: true,
+  } as any);
 }
 
 // ============================== user lookup (escala >50) ==============================
@@ -1010,144 +1009,147 @@ async function deleteGroup(admin: SupabaseClient, empresaId: string, id: string)
 
 // ============================== main handler ==============================
 
-Deno.serve(async (req) => {
-  const corsHeaders = corsHeadersPara(req);
-  if (req.method === 'OPTIONS') return new Response('ok', { headers: corsHeaders });
+Deno.serve(
+  withEdgeObservability('scim-server', async (req) => {
+    const corsHeaders = corsHeadersPara(req);
+    if (req.method === 'OPTIONS') return new Response('ok', { headers: corsHeaders });
 
-  const t0 = Date.now();
-  const admin = createClient(SUPABASE_URL, SERVICE_ROLE);
-  const url = new URL(req.url);
-  const path = url.pathname.replace(/^\/functions\/v1\/scim-server/, '') || '/';
-  const seg = path.split('/').filter(Boolean); // ["scim","v2",resource,id?]
-  const resource = seg[2];
-  const id = seg[3];
+    const t0 = Date.now();
+    const admin = createClient(SUPABASE_URL, SERVICE_ROLE);
+    const url = new URL(req.url);
+    const path = url.pathname.replace(/^\/functions\/v1\/scim-server/, '') || '/';
+    const seg = path.split('/').filter(Boolean); // ["scim","v2",resource,id?]
+    const resource = seg[2];
+    const id = seg[3];
 
-  try {
-    // ---------- Discovery (público) ----------
-    if (req.method === 'GET' && resource === 'ServiceProviderConfig') return ok(SP_CONFIG_PAYLOAD);
-    if (req.method === 'GET' && resource === 'ResourceTypes') {
-      if (id) {
-        const r = RESOURCE_TYPES_PAYLOAD.Resources.find((x) => x.id === id);
-        return r ? ok(r) : err(404, 'ResourceType not found');
+    try {
+      // ---------- Discovery (público) ----------
+      if (req.method === 'GET' && resource === 'ServiceProviderConfig')
+        return ok(SP_CONFIG_PAYLOAD);
+      if (req.method === 'GET' && resource === 'ResourceTypes') {
+        if (id) {
+          const r = RESOURCE_TYPES_PAYLOAD.Resources.find((x) => x.id === id);
+          return r ? ok(r) : err(404, 'ResourceType not found');
+        }
+        return ok(
+          listResp(RESOURCE_TYPES_PAYLOAD.Resources, RESOURCE_TYPES_PAYLOAD.Resources.length, 1)
+        );
       }
-      return ok(
-        listResp(RESOURCE_TYPES_PAYLOAD.Resources, RESOURCE_TYPES_PAYLOAD.Resources.length, 1)
-      );
-    }
-    if (req.method === 'GET' && resource === 'Schemas') {
-      if (id) {
-        const s = SCHEMAS_PAYLOAD.Resources.find((x) => x.id === id);
-        return s ? ok(s) : err(404, 'Schema not found');
+      if (req.method === 'GET' && resource === 'Schemas') {
+        if (id) {
+          const s = SCHEMAS_PAYLOAD.Resources.find((x) => x.id === id);
+          return s ? ok(s) : err(404, 'Schema not found');
+        }
+        return ok(listResp(SCHEMAS_PAYLOAD.Resources, SCHEMAS_PAYLOAD.Resources.length, 1));
       }
-      return ok(listResp(SCHEMAS_PAYLOAD.Resources, SCHEMAS_PAYLOAD.Resources.length, 1));
+
+      // ---------- Auth ----------
+      const auth = req.headers.get('Authorization');
+      if (!auth?.startsWith('Bearer ')) return err(401, 'Missing bearer token');
+      const tokenHash = await sha256(auth.slice(7));
+      const { data: tok } = await admin
+        .from('scim_tokens')
+        .select('*')
+        .eq('token_hash', tokenHash)
+        .eq('ativo', true)
+        .maybeSingle();
+      if (!tok) return err(401, 'Invalid token');
+      if (tok.expires_at && new Date(tok.expires_at) < new Date()) return err(401, 'Token expired');
+      admin
+        .from('scim_tokens')
+        .update({ last_used_at: new Date().toISOString() })
+        .eq('id', tok.id)
+        .then(() => {});
+
+      const empresaId = tok.empresa_id as string;
+      const providerId = (tok.provider_id ?? null) as string | null;
+      const tokenDefaultRole: AppRole =
+        tok.default_role && (APP_ROLES as readonly string[]).includes(tok.default_role)
+          ? (tok.default_role as AppRole)
+          : 'visualizador';
+
+      let resp: Response;
+      let opName = req.method.toLowerCase();
+      let externalId: string | null = null;
+      let userId: string | null = null;
+      const reqBody = ['POST', 'PUT', 'PATCH'].includes(req.method)
+        ? await req
+            .clone()
+            .json()
+            .catch(() => null)
+        : null;
+
+      // ---------- Users ----------
+      if (resource === 'Users') {
+        if (req.method === 'GET' && !id) {
+          resp = await listUsers(admin, empresaId, url);
+          opName = 'list';
+        } else if (req.method === 'GET' && id) {
+          resp = await getUser(admin, empresaId, id);
+          opName = 'get';
+        } else if (req.method === 'POST' && !id) {
+          resp = await createUser(admin, providerId, empresaId, tokenDefaultRole, reqBody);
+          opName = 'create';
+          externalId = reqBody?.externalId ?? null;
+        } else if (req.method === 'PATCH' && id) {
+          resp = await patchUser(admin, providerId, empresaId, tokenDefaultRole, id, reqBody);
+          opName = 'patch';
+        } else if (req.method === 'PUT' && id) {
+          resp = await putUser(admin, providerId, empresaId, tokenDefaultRole, id, reqBody);
+          opName = 'put';
+        } else if (req.method === 'DELETE' && id) {
+          const r = await deleteUser(admin, empresaId, id);
+          resp = r.resp;
+          opName = 'delete';
+          userId = r.userId;
+          externalId = r.externalId;
+        } else resp = err(405, 'Method not allowed');
+      }
+      // ---------- Groups ----------
+      else if (resource === 'Groups') {
+        if (req.method === 'GET' && !id) {
+          resp = await listGroups(admin, empresaId, url);
+          opName = 'list';
+        } else if (req.method === 'GET' && id) {
+          resp = await getGroup(admin, empresaId, id);
+          opName = 'get';
+        } else if (req.method === 'POST' && !id) {
+          resp = await createGroup(admin, providerId, empresaId, reqBody);
+          opName = 'create';
+        } else if (req.method === 'PATCH' && id) {
+          resp = await patchGroup(admin, empresaId, id, reqBody);
+          opName = 'patch';
+        } else if (req.method === 'PUT' && id) {
+          resp = await putGroup(admin, empresaId, id, reqBody);
+          opName = 'put';
+        } else if (req.method === 'DELETE' && id) {
+          resp = await deleteGroup(admin, empresaId, id);
+          opName = 'delete';
+        } else resp = err(405, 'Method not allowed');
+      } else resp = err(404, `Resource ${resource ?? '(none)'} not supported`);
+
+      // log (best-effort, não bloqueia resposta)
+      let resBodyForLog: unknown = null;
+      if (resp.status !== 204 && resp.headers.get('content-type')?.includes('scim+json')) {
+        try {
+          resBodyForLog = await resp.clone().json();
+        } catch {}
+      }
+      await logOp(admin, {
+        tokenId: tok.id,
+        empresaId,
+        resource: resource || 'unknown',
+        operation: opName,
+        externalId,
+        userId,
+        status: resp.status,
+        reqBody,
+        resBody: resBodyForLog,
+        t0,
+      });
+      return resp;
+    } catch (e) {
+      return err(500, e instanceof Error ? e.message : 'unknown');
     }
-
-    // ---------- Auth ----------
-    const auth = req.headers.get('Authorization');
-    if (!auth?.startsWith('Bearer ')) return err(401, 'Missing bearer token');
-    const tokenHash = await sha256(auth.slice(7));
-    const { data: tok } = await admin
-      .from('scim_tokens')
-      .select('*')
-      .eq('token_hash', tokenHash)
-      .eq('ativo', true)
-      .maybeSingle();
-    if (!tok) return err(401, 'Invalid token');
-    if (tok.expires_at && new Date(tok.expires_at) < new Date()) return err(401, 'Token expired');
-    admin
-      .from('scim_tokens')
-      .update({ last_used_at: new Date().toISOString() })
-      .eq('id', tok.id)
-      .then(() => {});
-
-    const empresaId = tok.empresa_id as string;
-    const providerId = (tok.provider_id ?? null) as string | null;
-    const tokenDefaultRole: AppRole =
-      tok.default_role && (APP_ROLES as readonly string[]).includes(tok.default_role)
-        ? (tok.default_role as AppRole)
-        : 'visualizador';
-
-    let resp: Response;
-    let opName = req.method.toLowerCase();
-    let externalId: string | null = null;
-    let userId: string | null = null;
-    const reqBody = ['POST', 'PUT', 'PATCH'].includes(req.method)
-      ? await req
-          .clone()
-          .json()
-          .catch(() => null)
-      : null;
-
-    // ---------- Users ----------
-    if (resource === 'Users') {
-      if (req.method === 'GET' && !id) {
-        resp = await listUsers(admin, empresaId, url);
-        opName = 'list';
-      } else if (req.method === 'GET' && id) {
-        resp = await getUser(admin, empresaId, id);
-        opName = 'get';
-      } else if (req.method === 'POST' && !id) {
-        resp = await createUser(admin, providerId, empresaId, tokenDefaultRole, reqBody);
-        opName = 'create';
-        externalId = reqBody?.externalId ?? null;
-      } else if (req.method === 'PATCH' && id) {
-        resp = await patchUser(admin, providerId, empresaId, tokenDefaultRole, id, reqBody);
-        opName = 'patch';
-      } else if (req.method === 'PUT' && id) {
-        resp = await putUser(admin, providerId, empresaId, tokenDefaultRole, id, reqBody);
-        opName = 'put';
-      } else if (req.method === 'DELETE' && id) {
-        const r = await deleteUser(admin, empresaId, id);
-        resp = r.resp;
-        opName = 'delete';
-        userId = r.userId;
-        externalId = r.externalId;
-      } else resp = err(405, 'Method not allowed');
-    }
-    // ---------- Groups ----------
-    else if (resource === 'Groups') {
-      if (req.method === 'GET' && !id) {
-        resp = await listGroups(admin, empresaId, url);
-        opName = 'list';
-      } else if (req.method === 'GET' && id) {
-        resp = await getGroup(admin, empresaId, id);
-        opName = 'get';
-      } else if (req.method === 'POST' && !id) {
-        resp = await createGroup(admin, providerId, empresaId, reqBody);
-        opName = 'create';
-      } else if (req.method === 'PATCH' && id) {
-        resp = await patchGroup(admin, empresaId, id, reqBody);
-        opName = 'patch';
-      } else if (req.method === 'PUT' && id) {
-        resp = await putGroup(admin, empresaId, id, reqBody);
-        opName = 'put';
-      } else if (req.method === 'DELETE' && id) {
-        resp = await deleteGroup(admin, empresaId, id);
-        opName = 'delete';
-      } else resp = err(405, 'Method not allowed');
-    } else resp = err(404, `Resource ${resource ?? '(none)'} not supported`);
-
-    // log (best-effort, não bloqueia resposta)
-    let resBodyForLog: unknown = null;
-    if (resp.status !== 204 && resp.headers.get('content-type')?.includes('scim+json')) {
-      try {
-        resBodyForLog = await resp.clone().json();
-      } catch {}
-    }
-    await logOp(admin, {
-      tokenId: tok.id,
-      empresaId,
-      resource: resource || 'unknown',
-      operation: opName,
-      externalId,
-      userId,
-      status: resp.status,
-      reqBody,
-      resBody: resBodyForLog,
-      t0,
-    });
-    return resp;
-  } catch (e) {
-    return err(500, e instanceof Error ? e.message : 'unknown');
-  }
-});
+  })
+);

@@ -41,7 +41,7 @@ export function getCorrelationId(): string {
 /** Combina o correlation-id com outros headers para `functions.invoke`. */
 export function withCorrelationHeader(
   id: string = getCorrelationId(),
-  extras: Record<string, string> = {},
+  extras: Record<string, string> = {}
 ): Record<string, string> {
   return { [HEADER_NAME]: id, ...extras };
 }
