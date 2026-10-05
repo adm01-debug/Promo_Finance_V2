@@ -4993,6 +4993,15 @@ CREATE POLICY beneficios_select_authenticated ON public.beneficios_fiscais FOR S
 DROP POLICY IF EXISTS beneficios_write_admin ON public.beneficios_fiscais;
 CREATE POLICY beneficios_write_admin ON public.beneficios_fiscais TO authenticated USING (public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role)) WITH CHECK (public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role));
 
+CREATE TABLE IF NOT EXISTS public.lalamove_orders (
+    id uuid NOT NULL DEFAULT gen_random_uuid(),
+    empresa_id uuid,
+    status text,
+    created_at timestamp with time zone NOT NULL DEFAULT now(),
+    CONSTRAINT lalamove_orders_pkey PRIMARY KEY (id)
+);
+ALTER TABLE public.lalamove_orders ENABLE ROW LEVEL SECURITY;
+
 CREATE TABLE IF NOT EXISTS public.bitrix24_activities (
     id uuid NOT NULL DEFAULT gen_random_uuid(),
     order_id uuid,
