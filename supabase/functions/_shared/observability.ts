@@ -22,12 +22,22 @@ function segredos(): string[] {
 // console-persist, porque a tabela libera leitura a todo admin sem escopo
 // de empresa. Valores financeiros ficam: são o propósito da trilha.
 const CHAVE_SENSIVEL =
-  /(cpf|cnpj|senha|password|token|secret|segredo|chave|cart[aã]o|cvv|iban|ag[eê]ncia|conta_banc[aá]ria|api_?key|certificate|certificado|private|email)/i;
+  /(cpf|cnpj|senha|password|token|secret|segredo|chave|cart[aã]o|cvv|iban|ag[eê]ncia|conta_banc[aá]ria|api_?key|certificate|certificado|private|email|authorization|bearer|jwt|session)/i;
+
+// PII em texto livre — mesmas regras do console-persist: e-mail/CPF/CNPJ
+// interpolados em mensagens (Sentry e edge_function_logs são legíveis por
+// admin) saem mascarados. Só formatos com separadores para não comer ids.
+const PII_TEXTO: Array<[RegExp, string]> = [
+  [/[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}/g, '[EMAIL]'],
+  [/\b\d{3}\.\d{3}\.\d{3}-\d{2}\b/g, '[CPF]'],
+  [/\b\d{2}\.\d{3}\.\d{3}\/\d{4}-\d{2}\b/g, '[CNPJ]'],
+];
 
 function redigir(x: unknown): unknown {
   if (typeof x === 'string') {
     let out = x;
     for (const segredo of segredos()) out = out.split(segredo).join('[REDACTED]');
+    for (const [re, rotulo] of PII_TEXTO) out = out.replace(re, rotulo);
     return out;
   }
   if (Array.isArray(x)) return x.map(redigir);
