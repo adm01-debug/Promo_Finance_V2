@@ -1,4 +1,4 @@
-import { corsHeadersPara } from '../_shared/cors.ts';
+import { corsHeadersPara, origemCorsPermitida } from '../_shared/cors.ts';
 import { getAppBaseUrl } from '../_shared/app-url.ts';
 import { createClient } from 'npm:@supabase/supabase-js@2.49.4';
 import { withEdgeObservability } from '../_shared/edge-observability.ts';
@@ -19,30 +19,24 @@ function base64url(buf: ArrayBuffer | Uint8Array) {
     .replace(/=+$/, '');
 }
 
-function origemRedirectPermitida(req: Request, redirectTo: string): boolean {
+function origemRedirectPermitida(_req: Request, redirectTo: string): boolean {
   let alvo: URL;
   try {
     alvo = new URL(redirectTo);
   } catch {
     return false;
   }
-  const candidatos = new Set<string>();
-  const origin = req.headers.get('origin');
-  const referer = req.headers.get('referer');
-  if (origin)
-    try {
-      candidatos.add(new URL(origin).origin);
-    } catch {}
-  if (referer)
-    try {
-      candidatos.add(new URL(referer).origin);
-    } catch {}
+  // Origin/referer da chamada são controláveis pelo solicitante — a allowlist
+  // vem só de config (ALLOWED_ORIGINS + PUBLIC_APP_URL), nunca do request.
+  if (origemCorsPermitida(alvo.origin)) return true;
   const appBase = getAppBaseUrl();
   if (appBase)
     try {
-      candidatos.add(new URL(appBase).origin);
-    } catch {}
-  return candidatos.has(alvo.origin);
+      return alvo.origin === new URL(appBase).origin;
+    } catch {
+      return false;
+    }
+  return false;
 }
 
 Deno.serve(
