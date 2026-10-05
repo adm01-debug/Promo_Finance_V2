@@ -71,6 +71,8 @@ Deno.serve(
           'estornar_contas_nfe',
           'baixa_conta_pagar',
           'excluir_bordero',
+          // apaga o token OAuth compartilhado da integração via service role
+          'revogar_token',
         ]);
         if (ACOES_DESTRUTIVAS.has(action)) {
           const serviceRoleKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;

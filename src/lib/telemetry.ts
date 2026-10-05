@@ -118,7 +118,8 @@ function flushQueuesKeepalive(userId: string | null): void {
     const rows = loteKeepalive(buildErrorRows(userId, errorQueue.splice(0)), orcamento);
     if (rows.length > 0) {
       void post('frontend_error_logs', rows);
-      orcamento -= JSON.stringify(rows).length;
+      // desconto também em bytes UTF-8, como a seleção do lote
+      orcamento -= new TextEncoder().encode(JSON.stringify(rows)).length;
     }
   }
   if (perfQueue.length > 0 && orcamento > 0) {

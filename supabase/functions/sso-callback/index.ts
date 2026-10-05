@@ -225,6 +225,9 @@ async function applyPipeline(opts: {
   groups: string[];
   existingUserId?: string | null; // SAML: já existe (broker criou); OIDC: descoberto/criado aqui
   allowJit: boolean;
+  // true somente quando a identidade `sso:<providerId>` prova que o
+  // usuário passou pelo IdP — sem ela, nenhum papel/vínculo é alterado
+  provaDoIdp: boolean;
 }): Promise<
   | {
       userId: string;
@@ -244,6 +247,7 @@ async function applyPipeline(opts: {
     groups,
     existingUserId,
     allowJit,
+    provaDoIdp,
   } = opts;
   const providerId = provider.id as string;
   const providerNome = provider.nome as string;
@@ -430,7 +434,7 @@ async function applyPipeline(opts: {
   // Role mapping
   let role = defaultRole;
   let matchedGroup: string | null = null;
-  if (groups.length) {
+  if (provaDoIdp && groups.length) {
     const { data: maps } = await admin
       .from('sso_role_mappings')
       .select('idp_group, app_role')
@@ -445,77 +449,98 @@ async function applyPipeline(opts: {
 
   // Sincroniza grupos do IdP em sso_user_groups (independente do JIT).
   // Permite refletir alterações de grupo no IdP a cada login.
-  try {
-    const normalizedGroups = Array.from(
-      new Set((groups ?? []).map((g) => String(g).trim()).filter(Boolean))
-    ).sort();
-    const { data: existingGroupsRow } = await admin
-      .from('sso_user_groups')
-      .select('groups, matched_group, matched_role')
-      .eq('user_id', userId)
-      .eq('provider_id', providerId)
-      .maybeSingle();
+  // Sem prova do IdP os grupos podem ser forjados — não sincroniza.
+  if (provaDoIdp)
+    try {
+      const normalizedGroups = Array.from(
+        new Set((groups ?? []).map((g) => String(g).trim()).filter(Boolean))
+      ).sort();
+      const { data: existingGroupsRow } = await admin
+        .from('sso_user_groups')
+        .select('groups, matched_group, matched_role')
+        .eq('user_id', userId)
+        .eq('provider_id', providerId)
+        .maybeSingle();
 
-    const prevGroups: string[] = Array.isArray(existingGroupsRow?.groups)
-      ? [...existingGroupsRow!.groups].map(String).sort()
-      : [];
-    const added = normalizedGroups.filter((g) => !prevGroups.includes(g));
-    const removed = prevGroups.filter((g) => !normalizedGroups.includes(g));
-    const groupsChanged = added.length > 0 || removed.length > 0;
-    const roleChanged =
-      (existingGroupsRow?.matched_role ?? null) !== role ||
-      (existingGroupsRow?.matched_group ?? null) !== matchedGroup;
+      const prevGroups: string[] = Array.isArray(existingGroupsRow?.groups)
+        ? [...existingGroupsRow!.groups].map(String).sort()
+        : [];
+      const added = normalizedGroups.filter((g) => !prevGroups.includes(g));
+      const removed = prevGroups.filter((g) => !normalizedGroups.includes(g));
+      const groupsChanged = added.length > 0 || removed.length > 0;
+      const roleChanged =
+        (existingGroupsRow?.matched_role ?? null) !== role ||
+        (existingGroupsRow?.matched_group ?? null) !== matchedGroup;
 
-    await admin.from('sso_user_groups').upsert(
-      {
-        user_id: userId,
-        provider_id: providerId,
-        groups: normalizedGroups,
-        matched_group: matchedGroup,
-        matched_role: role,
-        last_synced_at: new Date().toISOString(),
-      },
-      { onConflict: 'user_id,provider_id' }
-    );
-
-    if (groupsChanged || roleChanged) {
-      await admin.from('audit_logs').insert({
-        user_id: userId,
-        user_email: email,
-        action: existingGroupsRow ? 'UPDATE' : 'INSERT',
-        table_name: 'sso_user_groups',
-        record_id: userId,
-        old_data: {
-          groups: prevGroups,
-          matched_group: existingGroupsRow?.matched_group ?? null,
-          matched_role: existingGroupsRow?.matched_role ?? null,
-        },
-        new_data: {
+      await admin.from('sso_user_groups').upsert(
+        {
+          user_id: userId,
           provider_id: providerId,
-          provider_nome: providerNome,
-          provider_tipo: (provider.tipo as string) ?? null,
           groups: normalizedGroups,
-          added,
-          removed,
           matched_group: matchedGroup,
           matched_role: role,
+          last_synced_at: new Date().toISOString(),
         },
-        details: `Sync de grupos SSO (${providerNome}): +${added.length} / -${removed.length}`,
+        { onConflict: 'user_id,provider_id' }
+      );
+
+      if (groupsChanged || roleChanged) {
+        await admin.from('audit_logs').insert({
+          user_id: userId,
+          user_email: email,
+          action: existingGroupsRow ? 'UPDATE' : 'INSERT',
+          table_name: 'sso_user_groups',
+          record_id: userId,
+          old_data: {
+            groups: prevGroups,
+            matched_group: existingGroupsRow?.matched_group ?? null,
+            matched_role: existingGroupsRow?.matched_role ?? null,
+          },
+          new_data: {
+            provider_id: providerId,
+            provider_nome: providerNome,
+            provider_tipo: (provider.tipo as string) ?? null,
+            groups: normalizedGroups,
+            added,
+            removed,
+            matched_group: matchedGroup,
+            matched_role: role,
+          },
+          details: `Sync de grupos SSO (${providerNome}): +${added.length} / -${removed.length}`,
+        });
+      }
+    } catch (err) {
+      log.warn('[sso-callback] falha ao sincronizar sso_user_groups:', {
+        context: { args: [err instanceof Error ? err.message : String(err)] },
       });
     }
-  } catch (err) {
-    log.warn('[sso-callback] falha ao sincronizar sso_user_groups:', {
-      context: { args: [err instanceof Error ? err.message : String(err)] },
-    });
-  }
 
   // Vínculo em user_empresas (com default exclusivo)
   if (empresaId) {
-    await vincularEmpresaComoPadrao(admin, userId!, empresaId, role);
+    if (provaDoIdp) {
+      await vincularEmpresaComoPadrao(admin, userId!, empresaId, role);
+    } else {
+      // Sem prova do IdP: nenhum papel é reescrito — o vínculo ativo
+      // (que já autorizou o caminho) fornece o papel de retorno.
+      const { data: vinc } = await admin
+        .from('user_empresas')
+        .select('role')
+        .eq('user_id', userId)
+        .eq('empresa_id', empresaId)
+        .eq('ativo', true)
+        .limit(1)
+        .maybeSingle();
+      if (vinc?.role) role = vinc.role as string;
+    }
   }
 
-  // Compat user_roles global
-  await admin.from('user_roles').upsert({ user_id: userId, role }, { onConflict: 'user_id,role' });
+  // Compat user_roles global — só com prova do IdP; no caminho de
+  // vínculo pré-existente o papel gravado não é sobrescrito.
+  if (provaDoIdp) {
+    await admin
+      .from('user_roles')
+      .upsert({ user_id: userId, role }, { onConflict: 'user_id,role' });
+  }
 
   // Audit — trilha estruturada
   const providerTipo = (provider.tipo as string) ?? null;
@@ -725,6 +750,7 @@ async function handleSamlFinalize(
     groups,
     existingUserId: userId, // SAML: usuário já existe (broker criou)
     allowJit: false,
+    provaDoIdp: viaBroker,
   });
 
   if ('error' in result) {
@@ -1045,6 +1071,8 @@ Deno.serve(
           groups,
           existingUserId: null,
           allowJit: !!provider.auto_provision_users,
+          // OIDC: a troca de código bem-sucedida já é a prova do IdP
+          provaDoIdp: true,
         });
 
         if ('error' in result) {
