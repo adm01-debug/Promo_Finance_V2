@@ -76,6 +76,24 @@ function buildPerfRows(userId: string | null, batch: Metric[]) {
 // O unload fecha a aba antes do flush async terminar (await getUser +
 // inserts). `fetch` com keepalive continua depois do unload — mesma
 // semântica do sendBeacon, mas aceitando os headers que o PostgREST exige.
+// keepalive limita ~64KiB no TOTAL dos corpos pendentes (não por request):
+// um lote maior é rejeitado depois que splice(0) esvaziou a fila, e a
+// telemetria se perde. O orçamento abaixo é único para os dois POSTs e
+// erros têm prioridade sobre métricas.
+const KEEPALIVE_ORCAMENTO_BYTES = 60_000;
+
+function loteKeepalive<T>(rows: T[], orcamento: number): T[] {
+  const lote: T[] = [];
+  let usado = 2; // colchetes do array serializado
+  for (const row of rows) {
+    const tam = JSON.stringify(row).length + 1; // vírgula
+    if (usado + tam > orcamento) break;
+    lote.push(row);
+    usado += tam;
+  }
+  return lote;
+}
+
 function flushQueuesKeepalive(userId: string | null): void {
   if (!cachedAccessToken) return;
   const headers = {
@@ -91,11 +109,17 @@ function flushQueuesKeepalive(userId: string | null): void {
       body: JSON.stringify(rows),
       keepalive: true,
     }).catch(() => {});
+  let orcamento = KEEPALIVE_ORCAMENTO_BYTES;
   if (errorQueue.length > 0) {
-    void post('frontend_error_logs', buildErrorRows(userId, errorQueue.splice(0)));
+    const rows = loteKeepalive(buildErrorRows(userId, errorQueue.splice(0)), orcamento);
+    if (rows.length > 0) {
+      void post('frontend_error_logs', rows);
+      orcamento -= JSON.stringify(rows).length;
+    }
   }
-  if (perfQueue.length > 0) {
-    void post('frontend_performance_logs', buildPerfRows(userId, perfQueue.splice(0)));
+  if (perfQueue.length > 0 && orcamento > 0) {
+    const rows = loteKeepalive(buildPerfRows(userId, perfQueue.splice(0)), orcamento);
+    if (rows.length > 0) void post('frontend_performance_logs', rows);
   }
 }
 

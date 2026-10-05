@@ -7,6 +7,7 @@ import {
 } from '../_shared/validation.ts';
 import {
   withRetry,
+  integracaoDesativada,
   respostaIntegracaoDesativada,
   createCircuitBreaker,
   withTimeout,
@@ -701,7 +702,10 @@ async function handleTokenRevocation(supabase: any, cors: Record<string, string>
   // secrets removidos) a limpeza local continua possível — é o objetivo do
   // caminho liberado pelo kill-switch, que não deve travar numa chamada de
   // rede ao provedor desligado.
-  const integracaoAtiva = !respostaIntegracaoDesativada('bling', cors);
+  // consulta direta ao kill-switch — respostaIntegracaoDesativada
+  // registraria um falso "rejeitada" em log para uma ação local que
+  // de fato prossegue.
+  const integracaoAtiva = !integracaoDesativada('bling');
   if (integracaoAtiva && clientId && clientSecret) {
     try {
       const res = await fetch(`${BLING_AUTH_BASE}/revoke`, {
