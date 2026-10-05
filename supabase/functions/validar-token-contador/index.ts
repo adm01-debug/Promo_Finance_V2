@@ -51,15 +51,17 @@ Deno.serve(async (req) => {
 
     const SERVICE = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
     const SUPABASE_URL = Deno.env.get('SUPABASE_URL')!;
-    // Candidatas não-vazias, da mais específica à mais genérica:
-    // CONTADOR_INVITE_SECRET (rotacionável) → JWT secret → service role
-    // (legado). Aceitar a primeira que validar mantém os convites
-    // emitidos antes do provisionamento/rotação válidos na janela.
-    const chaves = [
-      Deno.env.get('CONTADOR_INVITE_SECRET'),
-      Deno.env.get('SUPABASE_JWT_SECRET'),
-      SERVICE,
-    ].filter((v): v is string => typeof v === 'string' && v.length > 0);
+    // Com a chave dedicada provisionada, SÓ ela valida — manter as
+    // legadas na lista manteria um token forjado com chave comprometida
+    // válido para sempre. Sem ela (instalações antigas), caem as
+    // candidatas legadas não-vazias.
+    const dedicada = Deno.env.get('CONTADOR_INVITE_SECRET');
+    const chaves =
+      dedicada && dedicada.length > 0
+        ? [dedicada]
+        : [Deno.env.get('SUPABASE_JWT_SECRET'), SERVICE].filter(
+            (v): v is string => typeof v === 'string' && v.length > 0
+          );
 
     let payload: Record<string, unknown> | null = null;
     for (const segredo of chaves) {

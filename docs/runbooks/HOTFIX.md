@@ -9,11 +9,14 @@ Bug em produção com impacto real (S1/S2 do runbook INCIDENTES). Para qualquer 
 ## Fluxo
 
 1. **Worktree isolado a partir de `main` estável** (obrigatório — o checkout
-   compartilhado pode estar em outra branch/agente; ver AGENTS.md):
+   compartilhado pode estar em outra branch/agente; ver AGENTS.md).
+   O id único evita colisão entre hotfixes concorrentes com o mesmo slug:
    ```bash
    git fetch origin
-   git worktree add ~/hermes-workspaces/hotfix-<slug> -b hotfix/<slug> origin/main
-   cd ~/hermes-workspaces/hotfix-<slug> && bun install
+   HOTFIX_ID="h$(date +%s | tail -c 7)"
+   git worktree add "$HOME/hermes-workspaces/hotfix-${HOTFIX_ID}-<slug>" \
+     -b "hotfix/${HOTFIX_ID}-<slug>" origin/main
+   cd "$HOME/hermes-workspaces/hotfix-${HOTFIX_ID}-<slug>" && bun install
    ```
 2. **Diff mínimo**: só a correção. Refatoração e limpeza ficam para PR separado.
 3. **Commit convencional**: `fix(<escopo>): <o que corrige>` — hooks de husky rodam normalmente; `--no-verify` só se a emergência justificar e o PR documentar por quê.
