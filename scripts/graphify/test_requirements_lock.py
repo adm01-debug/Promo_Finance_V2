@@ -23,6 +23,8 @@ class TesteLockGraphify(unittest.TestCase):
         lock = (ROOT / "requirements-linux-py311.lock").read_text()
         self.assertRegex(requirement, rf"(?m)^graphifyy(\[[^\]]+\])?=={re.escape(config['version'])}$")
         self.assertRegex(lock, rf"(?m)^graphifyy=={re.escape(config['version'])}(?:\s|$)")
+        if "graphifyy[sql]" in requirement:
+            self.assertRegex(lock, r"(?m)^tree-sitter-sql==[^ \\]+")
 
 
 if __name__ == "__main__":
