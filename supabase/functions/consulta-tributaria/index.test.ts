@@ -31,12 +31,20 @@ Deno.test('vigentes filtra registros fora da janela', () => {
     { id: 2, vigente_de: '2030-01-01', vigente_ate: null },
     { id: 3, vigente_de: null, vigente_ate: '2021-01-01' },
   ];
-  assertEquals(vigentes<{ id: number }>(rows, '2026-07-28').map((r) => r.id), [1]);
+  assertEquals(
+    vigentes<{ id: number }>(rows, '2026-07-28').map((r) => r.id),
+    [1]
+  );
   assertEquals(vigentes(null, '2026-07-28'), []);
 });
 
 Deno.test('prefixosHierarquicos gera do mais específico ao mais genérico', () => {
-  assertEquals(prefixosHierarquicos('2202.10.00', [8, 6, 4, 2]), ['22021000', '220210', '2202', '22']);
+  assertEquals(prefixosHierarquicos('2202.10.00', [8, 6, 4, 2]), [
+    '22021000',
+    '220210',
+    '2202',
+    '22',
+  ]);
   // Código curto ignora tamanhos maiores que o disponível.
   assertEquals(prefixosHierarquicos('2202', [8, 6, 4, 2]), ['2202', '22']);
   assertEquals(prefixosHierarquicos('6201-5/01', [5, 4, 3, 2]), ['62015', '6201', '620', '62']);

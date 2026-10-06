@@ -146,7 +146,7 @@ function redigir(s: string): string {
 // financeiros (saldo, receita) ficam — são o propósito da trilha e a tabela
 // já é restrita a admin; PII não é necessária para depurar uma edge fn.
 const CHAVE_SENSIVEL =
-  /(cpf|cnpj|senha|password|token|secret|segredo|chave|cart[aã]o|cvv|iban|ag[eê]ncia|conta_banc[aá]ria|api_?key|certificate|certificado|private|email)/i;
+  /(cpf|cnpj|senha|password|token|secret|segredo|chave|cart[aã]o|cvv|iban|ag[eê]ncia|conta_banc[aá]ria|api_?key|certificate|certificado|private|email|authorization|bearer|jwt|session)/i;
 
 function redigirObj(x: unknown): unknown {
   if (typeof x === 'string') return redigir(x);

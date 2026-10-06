@@ -1,11 +1,13 @@
 #!/usr/bin/env bash
 #
-# Type-check do escopo endurecido nesta trilha.
+# Type-check do escopo endurecido.
 #
-# Contexto: este lote mexe em guards de autenticação e no `mcp-query`. O
-# repositório ainda tem dívida histórica de Deno fora desse escopo, então este
-# gate não afirma "todas as Edge Functions tipam"; ele prova apenas os módulos
-# críticos alterados aqui, sem gerar falso positivo ou falso negativo.
+# Todo o `_shared/` é coberto por glob — um arquivo compartilhado novo entra
+# no gate automaticamente (a lista cravada anterior deixou de fora
+# cors/observability/resilience/console-persist quando eles nasceram). As
+# funções endurecidas seguem em lista explícita porque o repo ainda tem
+# dívida histórica de Deno fora delas: este gate não afirma "todas as Edge
+# Functions tipam", ele prova os módulos críticos, sem falso positivo.
 #
 # Uso: scripts/ci/deno-check-functions.sh
 set -euo pipefail
@@ -15,11 +17,10 @@ cd "$(dirname "$0")/../.." || exit 1
 alvos=()
 while IFS= read -r arquivo; do
   alvos+=("$arquivo")
+done < <(find supabase/functions/_shared -name '*.ts' | sort)
+while IFS= read -r arquivo; do
+  alvos+=("$arquivo")
 done <<'EOF'
-supabase/functions/_shared/auth-guard.ts
-supabase/functions/_shared/proxy-audit.ts
-supabase/functions/_shared/sql-write-guard.ts
-supabase/functions/_shared/webhook-auth.ts
 supabase/functions/api-keys-manage/index.ts
 supabase/functions/convidar-usuario/index.ts
 supabase/functions/mcp-query/index.ts

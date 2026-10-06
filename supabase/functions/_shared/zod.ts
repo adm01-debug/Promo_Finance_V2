@@ -12,4 +12,10 @@
  * diretamente. Importe sempre `{ z }` daqui.
  */
 export { z } from 'https://deno.land/x/zod@v3.22.4/mod.ts';
-export type { ZodError, ZodIssue, ZodSchema, ZodType, ZodTypeAny } from 'https://deno.land/x/zod@v3.22.4/mod.ts';
+export type {
+  ZodError,
+  ZodIssue,
+  ZodSchema,
+  ZodType,
+  ZodTypeAny,
+} from 'https://deno.land/x/zod@v3.22.4/mod.ts';

@@ -15,30 +15,30 @@
  * de cenários (`src/test/scenarios/fixtures/nfe.ts`).
  */
 
-import { corruptedGzipBase64, gzipBase64 } from "../gunzip.ts";
+import { corruptedGzipBase64, gzipBase64 } from '../gunzip.ts';
 
 /** Hosts oficiais do webservice de Distribuição de DFe. */
 const SEFAZ_HOSTS = [
-  "www1.nfe.fazenda.gov.br",         // AN produção
-  "hom.nfe.fazenda.gov.br",          // AN homologação
-  "nfe.svrs.rs.gov.br",              // SVRS produção
-  "nfe-homologacao.svrs.rs.gov.br",  // SVRS homologação
-  "www.sefazvirtual.fazenda.gov.br", // SVAN produção
-  "hom.sefazvirtual.fazenda.gov.br", // SVAN homologação
+  'www1.nfe.fazenda.gov.br', // AN produção
+  'hom.nfe.fazenda.gov.br', // AN homologação
+  'nfe.svrs.rs.gov.br', // SVRS produção
+  'nfe-homologacao.svrs.rs.gov.br', // SVRS homologação
+  'www.sefazvirtual.fazenda.gov.br', // SVAN produção
+  'hom.sefazvirtual.fazenda.gov.br', // SVAN homologação
 ];
 
 export type SefazResponseKind =
-  | "batch"
-  | "empty"
-  | "rate_limit"
-  | "service_down"
-  | "timeout"
-  | "network_error"
-  | "gzip_corrupt"
-  | "xml_corrupt"
-  | "malformed_envelope"
-  | "nsu_gap"
-  | "duplicate";
+  | 'batch'
+  | 'empty'
+  | 'rate_limit'
+  | 'service_down'
+  | 'timeout'
+  | 'network_error'
+  | 'gzip_corrupt'
+  | 'xml_corrupt'
+  | 'malformed_envelope'
+  | 'nsu_gap'
+  | 'duplicate';
 
 export interface SefazDoc {
   /** XML bruto do documento (procNFe, resNFe, procEventoNFe, etc). */
@@ -46,7 +46,7 @@ export interface SefazDoc {
   /** NSU associado — se omitido, é atribuído sequencialmente. */
   nsu?: number;
   /** Se true, o docZip é intencionalmente corrompido. */
-  corrupt?: "gzip" | "xml";
+  corrupt?: 'gzip' | 'xml';
 }
 
 export interface SefazResponseSpec {
@@ -103,7 +103,7 @@ function isSefazHost(url: string): boolean {
 
 async function buildBatchEnvelope(
   spec: SefazResponseSpec,
-  fallbackStartNsu: number,
+  fallbackStartNsu: number
 ): Promise<{ body: string; ultNSU: number; maxNSU: number }> {
   const docs = spec.docs ?? [];
   let nsuCounter = fallbackStartNsu;
@@ -112,9 +112,9 @@ async function buildBatchEnvelope(
     const nsu = doc.nsu ?? ++nsuCounter;
     if (doc.nsu != null) nsuCounter = Math.max(nsuCounter, doc.nsu);
     let b64: string;
-    if (doc.corrupt === "gzip") {
+    if (doc.corrupt === 'gzip') {
       b64 = corruptedGzipBase64();
-    } else if (doc.corrupt === "xml") {
+    } else if (doc.corrupt === 'xml') {
       // gzip válido, XML truncado
       const truncated = doc.xml.slice(0, Math.floor(doc.xml.length / 2));
       b64 = await gzipBase64(truncated);
@@ -122,9 +122,7 @@ async function buildBatchEnvelope(
       b64 = await gzipBase64(doc.xml);
     }
     // schema="procNFe_v4.00.xsd" é apenas informativo aqui
-    encoded.push(
-      `<docZip NSU="${nsu}" schema="procNFe_v4.00.xsd">${b64}</docZip>`,
-    );
+    encoded.push(`<docZip NSU="${nsu}" schema="procNFe_v4.00.xsd">${b64}</docZip>`);
   }
 
   const ultNSU = spec.ultNSU ?? nsuCounter;
@@ -141,10 +139,10 @@ async function buildBatchEnvelope(
           <cStat>138</cStat>
           <xMotivo>Documento(s) localizado(s)</xMotivo>
           <dhResp>2026-07-22T10:00:00-03:00</dhResp>
-          <ultNSU>${String(ultNSU).padStart(15, "0")}</ultNSU>
-          <maxNSU>${String(maxNSU).padStart(15, "0")}</maxNSU>
+          <ultNSU>${String(ultNSU).padStart(15, '0')}</ultNSU>
+          <maxNSU>${String(maxNSU).padStart(15, '0')}</maxNSU>
           <loteDistDFeInt>
-            ${encoded.join("\n            ")}
+            ${encoded.join('\n            ')}
           </loteDistDFeInt>
         </retDistDFeInt>
       </nfeDistDFeInteresseResult>
@@ -192,9 +190,7 @@ const STATIC_ENVELOPES: Partial<Record<SefazResponseKind, string>> = {
 
 // ---------------------------------------------------------------- install
 
-export function installSefazSoapMock(
-  scenarios: SefazScenario[],
-): SefazMockHandle {
+export function installSefazSoapMock(scenarios: SefazScenario[]): SefazMockHandle {
   const original = globalThis.fetch;
   const queues = new Map<string, SefazResponseSpec[]>();
   for (const s of scenarios) {
@@ -203,10 +199,7 @@ export function installSefazSoapMock(
   const calls: SefazMockCall[] = [];
   const lastUltNsuByCnpj = new Map<string, number>();
 
-  globalThis.fetch = (async (
-    input: RequestInfo | URL,
-    init?: RequestInit,
-  ): Promise<Response> => {
+  globalThis.fetch = (async (input: RequestInfo | URL, init?: RequestInit): Promise<Response> => {
     const req = input instanceof Request ? input : new Request(input, init);
     const url = req.url;
 
@@ -215,21 +208,22 @@ export function installSefazSoapMock(
       return await original(input, init);
     }
 
-    const body = await req.clone().text().catch(() => null);
+    const body = await req
+      .clone()
+      .text()
+      .catch(() => null);
     const cnpj = extractCnpj(body);
     const ultNSUEnviado = extractUltNSU(body);
     calls.push({ url, cnpj, ultNSUEnviado, ts: Date.now() });
 
     if (!cnpj) {
-      throw new Error(
-        `[sefaz-mock] Requisição SEFAZ sem <CNPJ> no envelope: ${url}`,
-      );
+      throw new Error(`[sefaz-mock] Requisição SEFAZ sem <CNPJ> no envelope: ${url}`);
     }
     const queue = queues.get(cnpj);
     if (!queue || queue.length === 0) {
       throw new Error(
         `[sefaz-mock] Fila esgotada para CNPJ ${cnpj} (chamada #${calls.length}). ` +
-          `Registre respostas adicionais com handle.enqueue().`,
+          `Registre respostas adicionais com handle.enqueue().`
       );
     }
     const spec = queue.shift()!;
@@ -237,63 +231,63 @@ export function installSefazSoapMock(
     const lastNsu = lastUltNsuByCnpj.get(cnpj) ?? 0;
 
     switch (spec.kind) {
-      case "empty":
-      case "rate_limit":
-      case "service_down":
-      case "malformed_envelope":
+      case 'empty':
+      case 'rate_limit':
+      case 'service_down':
+      case 'malformed_envelope':
         return new Response(STATIC_ENVELOPES[spec.kind]!, {
           status: 200,
-          headers: { "Content-Type": "application/soap+xml; charset=utf-8" },
+          headers: { 'Content-Type': 'application/soap+xml; charset=utf-8' },
         });
 
-      case "network_error":
-        throw new TypeError("network error");
+      case 'network_error':
+        throw new TypeError('network error');
 
-      case "timeout": {
+      case 'timeout': {
         const ms = spec.timeoutMs ?? 30_000;
         const signal = init?.signal ?? req.signal;
         return await new Promise<Response>((_, reject) => {
           const timer = setTimeout(() => {
-            reject(new DOMException("Timed out", "TimeoutError"));
+            reject(new DOMException('Timed out', 'TimeoutError'));
           }, ms);
           if (signal) {
-            signal.addEventListener("abort", () => {
+            signal.addEventListener('abort', () => {
               clearTimeout(timer);
-              reject(new DOMException("Aborted", "AbortError"));
+              reject(new DOMException('Aborted', 'AbortError'));
             });
           }
         });
       }
 
-      case "gzip_corrupt": {
-        const docs = (spec.docs ?? [{ xml: "<x/>" }]).map((d) => ({
+      case 'gzip_corrupt': {
+        const docs = (spec.docs ?? [{ xml: '<x/>' }]).map((d) => ({
           ...d,
-          corrupt: "gzip" as const,
+          corrupt: 'gzip' as const,
         }));
         const built = await buildBatchEnvelope({ ...spec, docs }, lastNsu);
         lastUltNsuByCnpj.set(cnpj, built.ultNSU);
         return new Response(built.body, { status: 200 });
       }
 
-      case "xml_corrupt": {
-        const docs = (spec.docs ?? []).map((d) => ({ ...d, corrupt: "xml" as const }));
+      case 'xml_corrupt': {
+        const docs = (spec.docs ?? []).map((d) => ({ ...d, corrupt: 'xml' as const }));
         const built = await buildBatchEnvelope({ ...spec, docs }, lastNsu);
         lastUltNsuByCnpj.set(cnpj, built.ultNSU);
         return new Response(built.body, { status: 200 });
       }
 
-      case "nsu_gap": {
-        const gapStart = (spec.ultNSU ?? lastNsu + 500);
+      case 'nsu_gap': {
+        const gapStart = spec.ultNSU ?? lastNsu + 500;
         const built = await buildBatchEnvelope(
           { ...spec, ultNSU: gapStart, maxNSU: spec.maxNSU ?? gapStart },
-          gapStart - (spec.docs?.length ?? 0),
+          gapStart - (spec.docs?.length ?? 0)
         );
         lastUltNsuByCnpj.set(cnpj, built.ultNSU);
         return new Response(built.body, { status: 200 });
       }
 
-      case "duplicate":
-      case "batch": {
+      case 'duplicate':
+      case 'batch': {
         const built = await buildBatchEnvelope(spec, lastNsu);
         lastUltNsuByCnpj.set(cnpj, built.ultNSU);
         return new Response(built.body, { status: 200 });

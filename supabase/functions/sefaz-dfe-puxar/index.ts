@@ -35,6 +35,7 @@ import {
 import { gunzipBase64 } from '../_shared/sefaz/gunzip.ts';
 import { parseDoc, type ParsedDoc } from '../_shared/sefaz/parser.ts';
 import { buildXmlPath, uploadNfeXml } from '../_shared/nfe/xml-storage.ts';
+import { createLogger } from '../_shared/observability.ts';
 import { corsHeaders, corsHeadersPara } from '../_shared/cors.ts';
 import { withEdgeObservability } from '../_shared/edge-observability.ts';
 
@@ -71,18 +72,16 @@ function json(status: number, body: unknown, headers: Record<string, string> = c
  * `cb_open`, `durationMs`) para agregações e alertas.
  */
 type LogLevel = 'INFO' | 'WARN' | 'ERROR';
+// Logger de módulo: eventos do puxador acumulam no buffer e são persistidos
+// em edge_function_logs no flush do final do handler — criar um logger por
+// chamada de slog descartaria o buffer sem nunca persistir.
+const puxadorLog = createLogger('sefaz-dfe-puxar');
+
 function slog(level: LogLevel, event: string, fields: Record<string, unknown> = {}) {
   try {
-    const line = JSON.stringify({
-      ts: new Date().toISOString(),
-      level,
-      fn: 'sefaz-dfe-puxar',
-      event,
-      ...fields,
-    });
-    if (level === 'ERROR') console.error(line);
-    else if (level === 'WARN') console.warn(line);
-    else console.log(line);
+    if (level === 'ERROR') puxadorLog.error(event, { context: fields });
+    else if (level === 'WARN') puxadorLog.warn(event, { context: fields });
+    else puxadorLog.info(event, { context: fields });
   } catch {
     // Nunca deixar log estruturado quebrar o fluxo.
   }
@@ -527,13 +526,8 @@ Deno.serve(
     const cronSecret = Deno.env.get('SEFAZ_CRON_SECRET');
     const provided = req.headers.get('x-cron-secret');
     if (!cronSecret || provided !== cronSecret) {
-      console.warn(
-        JSON.stringify({
-          level: 'WARN',
-          fn: 'sefaz-dfe-puxar',
-          message: 'unauthorized dispatch attempt',
-        })
-      );
+      puxadorLog.warn('unauthorized_dispatch_attempt');
+      await puxadorLog.flush();
       return res(401, { error: 'unauthorized' });
     }
 
@@ -558,6 +552,7 @@ Deno.serve(
       summaries.push(await runPuxador(admin, cert));
     }
 
+    await puxadorLog.flush();
     return res(200, {
       ok: true,
       processed: summaries.length,

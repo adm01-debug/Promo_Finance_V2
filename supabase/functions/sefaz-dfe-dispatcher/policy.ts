@@ -12,7 +12,7 @@ export const MAX_BACKOFF_MS = 4 * 60 * 60 * 1000;
 /** Falhas consecutivas que abrem o circuit breaker. */
 export const CIRCUIT_OPEN_THRESHOLD = 8;
 /** Falha reportada pelo puller inexistente (não incrementa retry). */
-export const PULLER_MISSING_TAG = "puller-missing";
+export const PULLER_MISSING_TAG = 'puller-missing';
 
 export interface CursorState {
   cnpj: string;
@@ -24,7 +24,7 @@ export interface CursorState {
 }
 
 export interface PullOutcome {
-  kind: "success" | "failure";
+  kind: 'success' | 'failure';
   /** Se true, falha NÃO incrementa retry (ex.: puller ainda não deployado). */
   neutral?: boolean;
   errorTag?: string;
@@ -44,12 +44,8 @@ export function backoffMs(retryCount: number): number {
  * Aplica o resultado de uma execução ao cursor e retorna o novo estado.
  * Estado de entrada NÃO é mutado.
  */
-export function applyOutcome(
-  cursor: CursorState,
-  outcome: PullOutcome,
-  now: number,
-): CursorState {
-  if (outcome.kind === "success") {
+export function applyOutcome(cursor: CursorState, outcome: PullOutcome, now: number): CursorState {
+  if (outcome.kind === 'success') {
     return {
       ...cursor,
       retry_count: 0,

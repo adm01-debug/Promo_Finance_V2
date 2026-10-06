@@ -1,9 +1,9 @@
 // Auditoria compartilhada para Edge Function proxies.
 // Fornece logging estruturado + persistência opcional em audit_logs
 // com request_id, usuário autenticado, RPC alvo, duração e resultado.
-import type { SupabaseClient } from "npm:@supabase/supabase-js@2.49.4";
-import { createLogger, Logger } from "./logger.ts";
-import { CORRELATION_HEADER, correlationResponseHeaders, getRequestId } from "./correlation.ts";
+import type { SupabaseClient } from 'npm:@supabase/supabase-js@2.49.4';
+import { createLogger, Logger } from './logger.ts';
+import { CORRELATION_HEADER, correlationResponseHeaders, getRequestId } from './correlation.ts';
 
 export interface AuditContext {
   requestId: string;
@@ -16,33 +16,30 @@ export interface AuditContext {
 export function beginAudit(functionName: string, req: Request): AuditContext {
   const requestId = getRequestId(req);
   const logger = createLogger(functionName, requestId);
-  logger.info("request received", {
+  logger.info('request received', {
     method: req.method,
     url: new URL(req.url).pathname,
   });
   return { requestId, functionName, logger, userId: null, startedAt: Date.now() };
 }
 
-export function withCorrelation(
-  ctx: AuditContext,
-  headers: HeadersInit = {},
-): HeadersInit {
+export function withCorrelation(ctx: AuditContext, headers: HeadersInit = {}): HeadersInit {
   return { ...headers, ...correlationResponseHeaders(ctx.requestId) };
 }
 
 /** Persiste um evento na tabela `audit_logs` (best-effort — nunca lança). */
 async function persistAudit(
-  admin: Pick<SupabaseClient, "from">,
+  admin: Pick<SupabaseClient, 'from'>,
   ctx: AuditContext,
   entry: {
     action: string;
     resource: string;
-    status: "success" | "error" | "denied";
+    status: 'success' | 'error' | 'denied';
     details: Record<string, unknown>;
-  },
+  }
 ): Promise<void> {
   try {
-    await admin.from("audit_logs").insert({
+    await admin.from('audit_logs').insert({
       user_id: ctx.userId,
       action: `edge.${ctx.functionName}.${entry.action}`,
       resource_type: entry.resource,
@@ -54,7 +51,7 @@ async function persistAudit(
       },
     });
   } catch (e) {
-    ctx.logger.warn("failed to persist audit log", {
+    ctx.logger.warn('failed to persist audit log', {
       error: e instanceof Error ? e.message : String(e),
     });
   }
@@ -66,18 +63,18 @@ async function persistAudit(
  */
 export async function auditedRpc<T = unknown>(
   ctx: AuditContext,
-  admin: Pick<SupabaseClient, "rpc" | "from">,
+  admin: Pick<SupabaseClient, 'rpc' | 'from'>,
   rpc: string,
   params: Record<string, unknown>,
-  action = rpc,
+  action = rpc
 ): Promise<T> {
   const startedAt = Date.now();
-  ctx.logger.info("rpc call start", { rpc, action, user_id: ctx.userId });
+  ctx.logger.info('rpc call start', { rpc, action, user_id: ctx.userId });
   const { data, error } = await admin.rpc(rpc, params);
   const duration_ms = Date.now() - startedAt;
 
   if (error) {
-    ctx.logger.error("rpc call failed", {
+    ctx.logger.error('rpc call failed', {
       rpc,
       action,
       user_id: ctx.userId,
@@ -88,17 +85,17 @@ export async function auditedRpc<T = unknown>(
     await persistAudit(admin, ctx, {
       action,
       resource: rpc,
-      status: "error",
+      status: 'error',
       details: { params, error: { code: error.code, message: error.message } },
     });
     throw error;
   }
 
-  ctx.logger.info("rpc call success", { rpc, action, user_id: ctx.userId, duration_ms });
+  ctx.logger.info('rpc call success', { rpc, action, user_id: ctx.userId, duration_ms });
   await persistAudit(admin, ctx, {
     action,
     resource: rpc,
-    status: "success",
+    status: 'success',
     details: { params },
   });
   return data as T;
@@ -108,18 +105,18 @@ export async function auditedRpc<T = unknown>(
 export function finalizeAudit(
   ctx: AuditContext,
   status: number,
-  extra: Record<string, unknown> = {},
+  extra: Record<string, unknown> = {}
 ): void {
-  const level = status >= 500 ? "error" : status >= 400 ? "warn" : "info";
+  const level = status >= 500 ? 'error' : status >= 400 ? 'warn' : 'info';
   const payload = {
     status,
     duration_ms: Date.now() - ctx.startedAt,
     user_id: ctx.userId,
     ...extra,
   };
-  if (level === "error") ctx.logger.error("request finalized", payload);
-  else if (level === "warn") ctx.logger.warn("request finalized", payload);
-  else ctx.logger.info("request finalized", payload);
+  if (level === 'error') ctx.logger.error('request finalized', payload);
+  else if (level === 'warn') ctx.logger.warn('request finalized', payload);
+  else ctx.logger.info('request finalized', payload);
 }
 
 export { CORRELATION_HEADER };

@@ -7,6 +7,7 @@ import {
 } from '../_shared/validation.ts';
 import {
   withRetry,
+  integracaoDesativada,
   respostaIntegracaoDesativada,
   createCircuitBreaker,
   withTimeout,
@@ -70,6 +71,8 @@ Deno.serve(
           'estornar_contas_nfe',
           'baixa_conta_pagar',
           'excluir_bordero',
+          // apaga o token OAuth compartilhado da integração via service role
+          'revogar_token',
         ]);
         if (ACOES_DESTRUTIVAS.has(action)) {
           const serviceRoleKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
@@ -92,17 +95,18 @@ Deno.serve(
 
         // Depois da autenticação e do RBAC — ação destrutiva sem permissão recebe
         // 403 e não o 503 que vazaria a configuração do kill-switch.
+        // Ações só locais passam mesmo com a integração desativada —
+        // revogar_token é limpeza de linha própria, não chamada ao provedor.
+        if (action === 'revogar_token') {
+          return await handleTokenRevocation(supabase, corsHeaders);
+        }
+
         const inativa = respostaIntegracaoDesativada('bling', corsHeaders);
         if (inativa) return inativa;
 
         // --- OAuth Actions ---
         if (action === 'oauth_callback') {
           return await handleOAuthCallback(supabase, params, userId, corsHeaders);
-        }
-
-        // --- Gap #3: Token revocation ---
-        if (action === 'revogar_token') {
-          return await handleTokenRevocation(supabase, corsHeaders);
         }
 
         // --- Get valid access token ---
@@ -683,10 +687,6 @@ async function handleTokenRevocation(supabase: any, cors: Record<string, string>
   const clientId = Deno.env.get('BLING_CLIENT_ID');
   const clientSecret = Deno.env.get('BLING_CLIENT_SECRET');
 
-  if (!clientId || !clientSecret) {
-    return jsonResponse({ error: 'Credenciais Bling não configuradas' }, 500, cors);
-  }
-
   const { data: tokens } = await adminClient
     .from('bling_tokens')
     .select('*')
@@ -698,27 +698,41 @@ async function handleTokenRevocation(supabase: any, cors: Record<string, string>
   }
 
   const token = tokens[0];
-  const basicAuth = btoa(`${clientId}:${clientSecret}`);
 
-  try {
-    const res = await fetch(`${BLING_AUTH_BASE}/revoke`, {
-      method: 'POST',
-      headers: {
-        Authorization: `Basic ${basicAuth}`,
-        'Content-Type': 'application/x-www-form-urlencoded',
-      },
-      body: new URLSearchParams({ token: token.access_token }),
-    });
+  // A revogação remota é best-effort: só roda com credenciais configuradas
+  // e a integração ainda ativa. Sem elas (ex.: integração desativada e
+  // secrets removidos) a limpeza local continua possível — é o objetivo do
+  // caminho liberado pelo kill-switch, que não deve travar numa chamada de
+  // rede ao provedor desligado.
+  // consulta direta ao kill-switch — respostaIntegracaoDesativada
+  // registraria um falso "rejeitada" em log para uma ação local que
+  // de fato prossegue.
+  const integracaoAtiva = !integracaoDesativada('bling');
+  if (integracaoAtiva && clientId && clientSecret) {
+    try {
+      const res = await fetch(`${BLING_AUTH_BASE}/revoke`, {
+        method: 'POST',
+        headers: {
+          Authorization: `Basic ${btoa(`${clientId}:${clientSecret}`)}`,
+          'Content-Type': 'application/x-www-form-urlencoded',
+        },
+        body: new URLSearchParams({ token: token.access_token }),
+        signal: AbortSignal.timeout(15_000),
+      });
 
-    if (!res.ok) {
-      const errText = await res.text();
-      log.error('Bling revoke error:', {
-        error_message: mensagemErro(errText),
-        context: contextoErro(errText),
+      if (!res.ok) {
+        const errText = await res.text();
+        log.error('Bling revoke error:', {
+          error_message: mensagemErro(errText),
+          context: contextoErro(errText),
+        });
+      }
+    } catch (e) {
+      log.error('Revoke fetch error:', {
+        error_message: mensagemErro(e),
+        context: contextoErro(e),
       });
     }
-  } catch (e) {
-    log.error('Revoke fetch error:', { error_message: mensagemErro(e), context: contextoErro(e) });
   }
 
   // Always clean up local tokens

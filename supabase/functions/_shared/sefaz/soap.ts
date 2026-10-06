@@ -7,10 +7,10 @@
  * real e no mock (`__mocks__/soap-mock.ts`).
  */
 
-import { ambienteToTpAmb, cUFAutor, type Ambiente } from "./endpoints.ts";
+import { ambienteToTpAmb, cUFAutor, type Ambiente } from './endpoints.ts';
 
 export const SOAP_ACTION =
-  "http://www.portalfiscal.inf.br/nfe/wsdl/NFeDistribuicaoDFe/nfeDistDFeInteresse";
+  'http://www.portalfiscal.inf.br/nfe/wsdl/NFeDistribuicaoDFe/nfeDistDFeInteresse';
 
 export interface DistDFeRequest {
   ambiente: Ambiente;
@@ -20,7 +20,7 @@ export interface DistDFeRequest {
 }
 
 export function buildDistDFeEnvelope(req: DistDFeRequest): string {
-  const nsu = String(Math.max(0, Math.floor(req.ultNSU))).padStart(15, "0");
+  const nsu = String(Math.max(0, Math.floor(req.ultNSU))).padStart(15, '0');
   return `<?xml version="1.0" encoding="UTF-8"?>
 <soap:Envelope xmlns:soap="http://www.w3.org/2003/05/soap-envelope">
   <soap:Body>
@@ -62,13 +62,13 @@ function pick(xml: string, tag: string): string | null {
 }
 
 export function parseDistDFeResponse(xml: string): DistDFeResponse {
-  if (!xml.includes("<retDistDFeInt")) {
-    throw new Error("resposta SEFAZ malformada: retDistDFeInt ausente");
+  if (!xml.includes('<retDistDFeInt')) {
+    throw new Error('resposta SEFAZ malformada: retDistDFeInt ausente');
   }
-  const cStat = pick(xml, "cStat") ?? "0";
-  const xMotivo = pick(xml, "xMotivo") ?? "";
-  const ultNSU = Number(pick(xml, "ultNSU") ?? "0");
-  const maxNSU = Number(pick(xml, "maxNSU") ?? "0");
+  const cStat = pick(xml, 'cStat') ?? '0';
+  const xMotivo = pick(xml, 'xMotivo') ?? '';
+  const ultNSU = Number(pick(xml, 'ultNSU') ?? '0');
+  const maxNSU = Number(pick(xml, 'maxNSU') ?? '0');
   const docs: DistDFeDoc[] = [];
   let m: RegExpExecArray | null;
   while ((m = DOC_RE.exec(xml)) !== null) {
@@ -86,13 +86,18 @@ export function parseDistDFeResponse(xml: string): DistDFeResponse {
  * - 656: consumo indevido (backoff longo + circuit breaker).
  * - resto: erro definitivo — não avança cursor.
  */
-export function classifyCStat(cStat: string): "ok" | "empty" | "retry" | "rate_limit" | "fatal" {
+export function classifyCStat(cStat: string): 'ok' | 'empty' | 'retry' | 'rate_limit' | 'fatal' {
   switch (cStat) {
-    case "138": return "ok";
-    case "137": return "empty";
-    case "108":
-    case "109": return "retry";
-    case "656": return "rate_limit";
-    default: return "fatal";
+    case '138':
+      return 'ok';
+    case '137':
+      return 'empty';
+    case '108':
+    case '109':
+      return 'retry';
+    case '656':
+      return 'rate_limit';
+    default:
+      return 'fatal';
   }
 }

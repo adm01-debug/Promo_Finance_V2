@@ -22,12 +22,22 @@ function segredos(): string[] {
 // console-persist, porque a tabela libera leitura a todo admin sem escopo
 // de empresa. Valores financeiros ficam: são o propósito da trilha.
 const CHAVE_SENSIVEL =
-  /(cpf|cnpj|senha|password|token|secret|segredo|chave|cart[aã]o|cvv|iban|ag[eê]ncia|conta_banc[aá]ria|api_?key|certificate|certificado|private|email)/i;
+  /(cpf|cnpj|senha|password|token|secret|segredo|chave|cart[aã]o|cvv|iban|ag[eê]ncia|conta_banc[aá]ria|api_?key|certificate|certificado|private|email|authorization|bearer|jwt|session)/i;
+
+// PII em texto livre — mesmas regras do console-persist: e-mail/CPF/CNPJ
+// interpolados em mensagens (Sentry e edge_function_logs são legíveis por
+// admin) saem mascarados. Só formatos com separadores para não comer ids.
+const PII_TEXTO: Array<[RegExp, string]> = [
+  [/[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}/g, '[EMAIL]'],
+  [/\b\d{3}\.\d{3}\.\d{3}-\d{2}\b/g, '[CPF]'],
+  [/\b\d{2}\.\d{3}\.\d{3}\/\d{4}-\d{2}\b/g, '[CNPJ]'],
+];
 
 function redigir(x: unknown): unknown {
   if (typeof x === 'string') {
     let out = x;
     for (const segredo of segredos()) out = out.split(segredo).join('[REDACTED]');
+    for (const [re, rotulo] of PII_TEXTO) out = out.replace(re, rotulo);
     return out;
   }
   if (Array.isArray(x)) return x.map(redigir);
@@ -42,11 +52,12 @@ function redigir(x: unknown): unknown {
 }
 
 // Versão de redigir para payloads que saem da tabela (Sentry, webhooks):
-// mesma substituição de valores de segredo, mas sem a regra de chave
-// sensível — strings completas, não objetos.
+// mesma substituição de valores de segredo e de PII, mas sem a regra de
+// chave sensível — strings completas, não objetos.
 export function redigirTexto(texto: string): string {
   let out = texto;
   for (const segredo of segredos()) out = out.split(segredo).join('[REDACTED]');
+  for (const [re, rotulo] of PII_TEXTO) out = out.replace(re, rotulo);
   return out;
 }
 
@@ -88,9 +99,10 @@ export function createLogger(functionName: string, requestId?: string): EdgeLogg
     }
     buffer.push(entry);
     if (buffer.length > MAX_BUFFER) buffer.splice(0, buffer.length - MAX_BUFFER);
-    // Console também (compatibilidade com supabase logs)
+    // Console também (compatibilidade com supabase logs) — com o mesmo
+    // redact da persistência: stdout vira log do dashboard do Supabase.
     try {
-      console.log(JSON.stringify({ ts: new Date().toISOString(), ...entry }));
+      console.log(JSON.stringify(redigir({ ts: new Date().toISOString(), ...entry })));
     } catch {
       console.log(`[${functionName}] ${level} ${event}`);
     }
@@ -101,29 +113,29 @@ export function createLogger(functionName: string, requestId?: string): EdgeLogg
     const url = Deno.env.get('SUPABASE_URL');
     const key = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY');
     if (!url || !key) return;
+    // A API pública do logger fala `context`, mas a coluna real da tabela é
+    // `metadata` — sem a tradução o PostgREST rejeita o lote inteiro.
+    const entries = buffer.splice(0, buffer.length);
+    const reenfileirar = (motivo: string) => {
+      // Falha transitória de banco/PostgREST: devolve o lote ao buffer
+      // para retry no próximo flush, como faz o console-persist.
+      buffer.unshift(...entries);
+      if (buffer.length > MAX_BUFFER) buffer.splice(0, buffer.length - MAX_BUFFER);
+      console.error(`[${functionName}] flush reenfileirou lote:`, motivo);
+    };
     try {
       const admin = createClient(url, key);
-      // A API pública do logger fala `context`, mas a coluna real da tabela é
-      // `metadata` — sem a tradução o PostgREST rejeita o lote inteiro.
-      const rows = buffer
-        .splice(0, buffer.length)
-        .map(({ context, event, error_message, ...rest }) => ({
-          ...rest,
-          event: redigir(event) as string,
-          ...(error_message !== undefined
-            ? { error_message: redigir(error_message) as string }
-            : {}),
-          ...(context !== undefined
-            ? { metadata: redigir(context) as Record<string, unknown> }
-            : {}),
-        }));
-      await admin.from('edge_function_logs').insert(rows);
+      const rows = entries.map(({ context, event, error_message, ...rest }) => ({
+        ...rest,
+        event: redigir(event) as string,
+        ...(error_message !== undefined ? { error_message: redigir(error_message) as string } : {}),
+        ...(context !== undefined ? { metadata: redigir(context) as Record<string, unknown> } : {}),
+      }));
+      const { error } = await admin.from('edge_function_logs').insert(rows);
+      if (error) reenfileirar(error.message);
     } catch (err) {
       // Nunca lançar — observabilidade não pode derrubar a função
-      console.error(
-        `[observability] flush failed for ${functionName}:`,
-        err instanceof Error ? err.message : String(err)
-      );
+      reenfileirar(err instanceof Error ? err.message : String(err));
     }
   };
 

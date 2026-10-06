@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # Ratchet de strictNullChecks — "o baseline só encolhe".
 #
-# O tsconfig principal roda strict:false (dívida histórica). Este gate roda
+# O tsconfig principal já roda strict global (PR #141). Este gate roda
 # tsc com --strictNullChecks e compara as assinaturas de erro com o baseline
 # versionado em baselines/strictnullchecks-baseline.txt:
 #

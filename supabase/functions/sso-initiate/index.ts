@@ -106,6 +106,10 @@ Deno.serve(
         .from('sso_login_attempts')
         .select('id', { count: 'exact', head: true })
         .eq('provider_id', provider.id)
+        // Só attempts de initiate contam (state preenchido) — os logs de
+        // callback (success/fail do sso-callback) inflavam a janela e
+        // bloqueavam logins legítimos após poucos erros.
+        .not('state', 'is', null)
         .gte('created_at', windowStart);
       if ((recentCount ?? 0) >= 10) {
         return json(

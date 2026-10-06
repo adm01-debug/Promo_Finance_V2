@@ -35,12 +35,9 @@ export function installFetchMock(initial: MockMatcher[] = []): FetchMockHandle {
   const original = globalThis.fetch;
   const matchers: MockMatcher[] = [...initial];
   const callCounts: number[] = matchers.map(() => 0);
-  const calls: FetchMockHandle["calls"] = [];
+  const calls: FetchMockHandle['calls'] = [];
 
-  globalThis.fetch = (async (
-    input: RequestInfo | URL,
-    init?: RequestInit,
-  ): Promise<Response> => {
+  globalThis.fetch = (async (input: RequestInfo | URL, init?: RequestInit): Promise<Response> => {
     const req = input instanceof Request ? input : new Request(input, init);
     const url = req.url;
     const method = req.method.toUpperCase();
@@ -56,21 +53,19 @@ export function installFetchMock(initial: MockMatcher[] = []): FetchMockHandle {
       const m = matchers[i];
       if (m.method && m.method.toUpperCase() !== method) continue;
       const matches =
-        typeof m.urlPattern === "string"
-          ? url.includes(m.urlPattern)
-          : m.urlPattern.test(url);
+        typeof m.urlPattern === 'string' ? url.includes(m.urlPattern) : m.urlPattern.test(url);
       if (!matches) continue;
       callCounts[i]++;
-      if (typeof m.response === "function") {
+      if (typeof m.response === 'function') {
         return await m.response(req);
       }
       const status = m.response.status ?? 200;
       const body =
-        typeof m.response.body === "string"
+        typeof m.response.body === 'string'
           ? m.response.body
           : JSON.stringify(m.response.body ?? {});
       const headers = {
-        "Content-Type": "application/json",
+        'Content-Type': 'application/json',
         ...(m.response.headers ?? {}),
       };
       return new Response(body, { status, headers });
@@ -78,7 +73,7 @@ export function installFetchMock(initial: MockMatcher[] = []): FetchMockHandle {
 
     throw new Error(
       `[fetch-mock] Nenhum matcher para ${method} ${url}. ` +
-        `Registre um matcher antes do teste para evitar requisições reais.`,
+        `Registre um matcher antes do teste para evitar requisições reais.`
     );
   }) as typeof fetch;
 
@@ -100,9 +95,7 @@ export function installFetchMock(initial: MockMatcher[] = []): FetchMockHandle {
  * considerados existentes. Compatível com a assinatura usada por `evaluateClaims`.
  */
 export function makeUserLookup(existingEmails: Iterable<string> = []) {
-  const set = new Set(
-    Array.from(existingEmails).map((e) => e.toLowerCase()),
-  );
+  const set = new Set(Array.from(existingEmails).map((e) => e.toLowerCase()));
   return async (email: string): Promise<boolean> => {
     return set.has(email.toLowerCase());
   };

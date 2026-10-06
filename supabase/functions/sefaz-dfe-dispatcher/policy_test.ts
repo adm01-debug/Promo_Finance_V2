@@ -2,7 +2,7 @@
 // Executa 1000 cenários × 96 ticks (24h reais em intervalos de 15min) e valida
 // invariantes de segurança operacional.
 
-import { assertEquals, assert } from "https://deno.land/std@0.224.0/assert/mod.ts";
+import { assertEquals, assert } from 'https://deno.land/std@0.224.0/assert/mod.ts';
 import {
   applyOutcome,
   backoffMs,
@@ -12,7 +12,7 @@ import {
   MAX_BACKOFF_MS,
   type CursorState,
   type PullOutcome,
-} from "./policy.ts";
+} from './policy.ts';
 
 // ---------------- helpers ----------------
 
@@ -27,7 +27,7 @@ function mulberry32(seed: number) {
   };
 }
 
-type Profile = "always_ok" | "always_fail" | "flaky" | "recovers" | "neutral_only";
+type Profile = 'always_ok' | 'always_fail' | 'flaky' | 'recovers' | 'neutral_only';
 
 function makeCursor(cnpj: string, now: number): CursorState {
   return {
@@ -40,33 +40,25 @@ function makeCursor(cnpj: string, now: number): CursorState {
   };
 }
 
-function outcomeFor(
-  profile: Profile,
-  tick: number,
-  rand: () => number,
-): PullOutcome {
+function outcomeFor(profile: Profile, tick: number, rand: () => number): PullOutcome {
   switch (profile) {
-    case "always_ok":
-      return { kind: "success" };
-    case "always_fail":
-      return { kind: "failure", errorTag: "sefaz-500" };
-    case "flaky":
-      return rand() < 0.7
-        ? { kind: "failure", errorTag: "timeout" }
-        : { kind: "success" };
-    case "recovers":
+    case 'always_ok':
+      return { kind: 'success' };
+    case 'always_fail':
+      return { kind: 'failure', errorTag: 'sefaz-500' };
+    case 'flaky':
+      return rand() < 0.7 ? { kind: 'failure', errorTag: 'timeout' } : { kind: 'success' };
+    case 'recovers':
       // Falha as primeiras N tentativas, depois estabiliza.
-      return tick < 4
-        ? { kind: "failure", errorTag: "cert-parse" }
-        : { kind: "success" };
-    case "neutral_only":
-      return { kind: "failure", neutral: true, errorTag: "puller-missing" };
+      return tick < 4 ? { kind: 'failure', errorTag: 'cert-parse' } : { kind: 'success' };
+    case 'neutral_only':
+      return { kind: 'failure', neutral: true, errorTag: 'puller-missing' };
   }
 }
 
 // ---------------- unit ----------------
 
-Deno.test("backoffMs progride corretamente e satura no teto", () => {
+Deno.test('backoffMs progride corretamente e satura no teto', () => {
   assertEquals(backoffMs(0), BASE_INTERVAL_MS);
   assertEquals(backoffMs(1), BASE_INTERVAL_MS * 2);
   assertEquals(backoffMs(2), BASE_INTERVAL_MS * 4);
@@ -76,47 +68,41 @@ Deno.test("backoffMs progride corretamente e satura no teto", () => {
   assertEquals(backoffMs(50), MAX_BACKOFF_MS);
 });
 
-Deno.test("sucesso zera retry e agenda +15min", () => {
+Deno.test('sucesso zera retry e agenda +15min', () => {
   const t = 1_000_000;
-  const c = { ...makeCursor("a", t), retry_count: 3, next_run_at: t + 999 };
-  const next = applyOutcome(c, { kind: "success" }, t);
+  const c = { ...makeCursor('a', t), retry_count: 3, next_run_at: t + 999 };
+  const next = applyOutcome(c, { kind: 'success' }, t);
   assertEquals(next.retry_count, 0);
   assertEquals(next.next_run_at, t + BASE_INTERVAL_MS);
   assertEquals(next.circuit_open, false);
 });
 
-Deno.test("falha neutra não incrementa retry nem move next_run_at", () => {
+Deno.test('falha neutra não incrementa retry nem move next_run_at', () => {
   const t = 1_000_000;
-  const c = makeCursor("a", t);
+  const c = makeCursor('a', t);
   const original = c.next_run_at;
-  const next = applyOutcome(c, { kind: "failure", neutral: true }, t);
+  const next = applyOutcome(c, { kind: 'failure', neutral: true }, t);
   assertEquals(next.retry_count, 0);
   assertEquals(next.next_run_at, original);
   assertEquals(next.ultima_consulta, t);
 });
 
-Deno.test("circuit abre exatamente na 8ª falha consecutiva", () => {
-  let c = makeCursor("a", 0);
+Deno.test('circuit abre exatamente na 8ª falha consecutiva', () => {
+  let c = makeCursor('a', 0);
   for (let i = 1; i <= CIRCUIT_OPEN_THRESHOLD; i++) {
-    c = applyOutcome(c, { kind: "failure" }, i * 1000);
+    c = applyOutcome(c, { kind: 'failure' }, i * 1000);
     if (i < CIRCUIT_OPEN_THRESHOLD) {
       assertEquals(c.circuit_open, false, `abriu cedo em i=${i}`);
     } else {
-      assertEquals(c.circuit_open, true, "não abriu na 8ª");
+      assertEquals(c.circuit_open, true, 'não abriu na 8ª');
     }
   }
 });
 
 // ---------------- simulação exaustiva ----------------
 
-Deno.test("simulação: 1000 cenários × 96 ticks preserva invariantes", () => {
-  const profiles: Profile[] = [
-    "always_ok",
-    "always_fail",
-    "flaky",
-    "recovers",
-    "neutral_only",
-  ];
+Deno.test('simulação: 1000 cenários × 96 ticks preserva invariantes', () => {
+  const profiles: Profile[] = ['always_ok', 'always_fail', 'flaky', 'recovers', 'neutral_only'];
   const SCENARIOS = 1000;
   const TICKS = 96; // 24h em ticks de 15min
   const TICK_MS = 15 * 60 * 1000;
@@ -142,30 +128,30 @@ Deno.test("simulação: 1000 cenários × 96 ticks preserva invariantes", () => 
       const after = applyOutcome(before, out, now);
 
       // INV1: next_run_at nunca regride para trás do agora após falha.
-      if (out.kind === "failure" && !out.neutral) {
+      if (out.kind === 'failure' && !out.neutral) {
         assert(
           after.next_run_at > now,
-          `INV1 violado s=${s} tick=${tick}: next=${after.next_run_at} now=${now}`,
+          `INV1 violado s=${s} tick=${tick}: next=${after.next_run_at} now=${now}`
         );
       }
 
       // INV2: nenhum CNPJ é executado antes de next_run_at anterior.
       assert(
         before.next_run_at <= now,
-        `INV2 violado s=${s} tick=${tick}: executou antes de next_run_at`,
+        `INV2 violado s=${s} tick=${tick}: executou antes de next_run_at`
       );
 
       // INV3: backoff nunca decresce enquanto não houver sucesso.
-      if (out.kind === "failure" && !out.neutral) {
+      if (out.kind === 'failure' && !out.neutral) {
         consecutiveFailures++;
         const bo = after.next_run_at - now;
         assert(
           bo >= lastBackoffAfterFail,
-          `INV3 violado s=${s} tick=${tick}: bo=${bo} < prev=${lastBackoffAfterFail}`,
+          `INV3 violado s=${s} tick=${tick}: bo=${bo} < prev=${lastBackoffAfterFail}`
         );
         lastBackoffAfterFail = bo;
       }
-      if (out.kind === "success") {
+      if (out.kind === 'success') {
         // INV4: sucesso zera retry_count.
         assertEquals(after.retry_count, 0, `INV4 violado s=${s} tick=${tick}`);
         assertEquals(after.circuit_open, false);
@@ -177,7 +163,7 @@ Deno.test("simulação: 1000 cenários × 96 ticks preserva invariantes", () => 
       if (after.circuit_open) {
         assert(
           consecutiveFailures >= CIRCUIT_OPEN_THRESHOLD,
-          `INV5 violado s=${s} tick=${tick}: circuit aberto com ${consecutiveFailures} falhas`,
+          `INV5 violado s=${s} tick=${tick}: circuit aberto com ${consecutiveFailures} falhas`
         );
       }
 

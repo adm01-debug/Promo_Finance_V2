@@ -67,6 +67,8 @@ const EXTENSOES_BLOQUEADAS: ReadonlySet<string> = new Set([
   'elf',
   'exe',
   'hta',
+  'html',
+  'htm',
   'ipa',
   'jar',
   'js',
@@ -77,7 +79,10 @@ const EXTENSOES_BLOQUEADAS: ReadonlySet<string> = new Set([
   'scr',
   'sh',
   'so',
+  'svg',
   'vbs',
+  'xht',
+  'xhtml',
   'wsf',
 ]);
 
