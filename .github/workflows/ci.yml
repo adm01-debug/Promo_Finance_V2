@@ -156,7 +156,12 @@ jobs:
         # tailwindcss/lint-staged, ferramentas de build/dev cujos padrões
         # glob são os nossos, não input de usuário — DoS por padrão
         # aninhado não se aplica. Revisitar quando sair braces 3.0.4+.
-        run: bun audit --ignore=GHSA-vfj7-8cjw-p6xm
+        # GHSA-rj75-hqrm-r3gf (postcss-selector-parser <7.1.6): sem patch
+        # na linha 6.x, travada por tailwindcss@3/postcss-nested (^6).
+        # O próprio advisory diz que uso em build-time sobre seletores
+        # confiáveis não é afetado — só fere quem parseia seletor de
+        # terceiros em runtime. Revisitar na migração para tailwind 4.
+        run: bun audit --ignore=GHSA-vfj7-8cjw-p6xm --ignore=GHSA-rj75-hqrm-r3gf
 
       - name: External secret isolation guard
         # Impede que EXTERNAL_SUPABASE_SERVICE_ROLE_KEY seja lido fora da
