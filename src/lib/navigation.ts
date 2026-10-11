@@ -411,3 +411,15 @@ export function previousNavEntry(): NavEntry | undefined {
 export function hasForwardEntries(): boolean {
   return forwardStack.length > 0;
 }
+
+/**
+ * Descarta as entradas à frente registradas. Um pushState artificial
+ * (sentinela de não-salvos) trunca o histórico real do browser — sem
+ * isto a pilha em memória continuaria anunciando um Avançar que já não
+ * existe e os marcadores de modal ficariam desligados para sempre.
+ */
+export function dropForwardEntries(): void {
+  if (forwardStack.length === 0) return;
+  forwardStack.length = 0;
+  notifyNavStack();
+}

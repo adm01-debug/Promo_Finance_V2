@@ -10,6 +10,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
+import { dropForwardEntries } from '@/lib/navigation';
 import {
   artificialHistoryState,
   MODAL_HISTORY_MARKER,
@@ -49,7 +50,10 @@ export function UnsavedGuardProvider({ children }: { children: React.ReactNode }
     dirtyRef.current = dirty;
     if (dirty && !sentinelActiveRef.current) {
       // Sentinela: o próximo "voltar" do browser cai nela, não sai da página.
+      // O pushState trunca entradas reais à frente — descarta-as da
+      // pilha em memória para hasForwardEntries voltar a mentir certo.
       window.history.pushState(artificialHistoryState(SENTINEL), '');
+      dropForwardEntries();
       sentinelActiveRef.current = true;
     } else if (!dirty && sentinelActiveRef.current) {
       // Limpou sem navegar: remove a sentinela se ela ainda for o topo.
@@ -193,6 +197,7 @@ export function UnsavedGuardProvider({ children }: { children: React.ReactNode }
       // as edições sem aviso.
       if (dirtyRef.current && !sentinelActiveRef.current) {
         window.history.pushState(artificialHistoryState(SENTINEL), '');
+        dropForwardEntries();
         sentinelActiveRef.current = true;
       }
       return;
@@ -246,10 +251,17 @@ export function UnsavedGuardProvider({ children }: { children: React.ReactNode }
   const dismissLeave = () => {
     setPendingLeave(null);
     // Cancelou um "voltar" do browser: repõe a sentinela para o próximo.
-    if (awaitingPopRef.current && dirtyRef.current) {
+    // A liberação do awaitingPop é incondicional — se o salvamento
+    // terminou com o alerta aberto (dirtyRef já falso), deixar a flag
+    // presa faria o próximo Voltar cair no ramo de "pop extra" e dar
+    // forward() sem pedir confirmação de novo.
+    if (awaitingPopRef.current) {
       awaitingPopRef.current = false;
-      window.history.pushState(artificialHistoryState(SENTINEL), '');
-      sentinelActiveRef.current = true;
+      if (dirtyRef.current) {
+        window.history.pushState(artificialHistoryState(SENTINEL), '');
+        dropForwardEntries();
+        sentinelActiveRef.current = true;
+      }
     }
   };
 

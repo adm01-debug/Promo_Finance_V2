@@ -270,18 +270,20 @@ export function ContaPagarForm({ open, onOpenChange, conta }: ContaPagarFormProp
   const handleFornecedorSelect = (fornecedorId: string) => {
     const fornecedor = fornecedores.find((f) => f.id === fornecedorId);
     if (fornecedor) {
-      form.setValue('fornecedor_id', fornecedorId);
-      form.setValue('fornecedor_nome', fornecedor.razao_social);
+      form.setValue('fornecedor_id', fornecedorId, { shouldDirty: true });
+      form.setValue('fornecedor_nome', fornecedor.razao_social, { shouldDirty: true });
     }
   };
 
   const handleBoletoDetected = (dados: DadosBoleto) => {
-    if (dados.valor > 0) form.setValue('valor', dados.valor);
-    if (dados.dataVencimento) form.setValue('data_vencimento', toISOLocal(dados.dataVencimento));
-    if (dados.codigoBarras) form.setValue('codigo_barras', dados.codigoBarras);
-    form.setValue('tipo_cobranca', 'boleto');
+    if (dados.valor > 0) form.setValue('valor', dados.valor, { shouldDirty: true });
+    if (dados.dataVencimento)
+      form.setValue('data_vencimento', toISOLocal(dados.dataVencimento), { shouldDirty: true });
+    if (dados.codigoBarras)
+      form.setValue('codigo_barras', dados.codigoBarras, { shouldDirty: true });
+    form.setValue('tipo_cobranca', 'boleto', { shouldDirty: true });
     if (!form.getValues('descricao') && dados.banco)
-      form.setValue('descricao', `Boleto ${dados.banco}`);
+      form.setValue('descricao', `Boleto ${dados.banco}`, { shouldDirty: true });
     toast({
       title: 'Dados preenchidos automaticamente',
       description: `Boleto do ${dados.banco} no valor de R$ ${dados.valor.toFixed(2)}`,
@@ -297,12 +299,14 @@ export function ContaPagarForm({ open, onOpenChange, conta }: ContaPagarFormProp
       const result = await processarNF.mutateAsync(file);
       if (result.success && result.dados_extraidos) {
         const dados = result.dados_extraidos;
-        if (dados.valor_total) form.setValue('valor', dados.valor_total);
-        if (dados.data_emissao) form.setValue('data_emissao', dados.data_emissao);
-        if (dados.numero_nf) form.setValue('numero_documento', dados.numero_nf);
-        if (dados.descricao) form.setValue('descricao', dados.descricao);
+        if (dados.valor_total) form.setValue('valor', dados.valor_total, { shouldDirty: true });
+        if (dados.data_emissao)
+          form.setValue('data_emissao', dados.data_emissao, { shouldDirty: true });
+        if (dados.numero_nf)
+          form.setValue('numero_documento', dados.numero_nf, { shouldDirty: true });
+        if (dados.descricao) form.setValue('descricao', dados.descricao, { shouldDirty: true });
         if (dados.razao_social_emissor) {
-          form.setValue('fornecedor_nome', dados.razao_social_emissor);
+          form.setValue('fornecedor_nome', dados.razao_social_emissor, { shouldDirty: true });
           // Tenta encontrar fornecedor pelo nome ou CNPJ se disponível futuramente
         }
 

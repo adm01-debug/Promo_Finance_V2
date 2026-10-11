@@ -320,8 +320,8 @@ export function ContaReceberForm({ open, onOpenChange, conta }: ContaReceberForm
   const handleClienteSelect = (clienteId: string) => {
     const cliente = clientes.find((c) => c.id === clienteId);
     if (cliente) {
-      form.setValue('cliente_id', clienteId);
-      form.setValue('cliente_nome', cliente.razao_social);
+      form.setValue('cliente_id', clienteId, { shouldDirty: true });
+      form.setValue('cliente_nome', cliente.razao_social, { shouldDirty: true });
     }
   };
 
