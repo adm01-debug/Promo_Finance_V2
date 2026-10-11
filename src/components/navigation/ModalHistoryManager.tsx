@@ -206,19 +206,35 @@ export function ModalHistoryManager() {
     // sincronização inicial o Voltar sairia da página com eles abertos.
     syncMarkers();
 
+    // Escape só pode fechar o dialog do TOPO. Dialogs próprios
+    // (data-escape-owned) não estão na pilha de camadas do Radix: um
+    // Escape propagado fecharia os dois — o deles e o nosso. Na fase de
+    // captura (antes de qualquer listener do documento), retargetamos o
+    // evento só para o elemento do topo quando ele é nosso.
+    const onKeyDownCapture = (e: KeyboardEvent) => {
+      if (e.key !== 'Escape') return;
+      const dialogs = document.querySelectorAll<HTMLElement>(OPEN_DIALOG_SELECTOR);
+      const top = dialogs[dialogs.length - 1];
+      if (!top || top.dataset.escapeOwned === undefined) return;
+      e.preventDefault();
+      e.stopImmediatePropagation();
+      top.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', bubbles: false }));
+    };
+    document.addEventListener('keydown', onKeyDownCapture, true);
+
     const unregister = registerModalMarkerPopper(() => {
-      // Saída confirmada na guarda: consome os marcadores contíguos do topo
-      // (logo abaixo da sentinela) para a navegação real não parar neles.
-      // Marcadores soterrados por uma rota ficam — a navegação é deles.
+      // A guarda só precisa da contagem: ela mesma emite os history.
+      // back() um a um, por popstate — vários backs síncronos podem ser
+      // coalescidos pelo browser e a saída confirmada travaria.
+      // Marcadores soterrados por uma rota não entram (não são do topo).
       if (!topmostRef.current) return 0;
-      const n = markers.length;
-      for (let i = 0; i < n; i++) window.history.back();
-      return n;
+      return markers.length;
     });
 
     return () => {
       observer.disconnect();
       window.removeEventListener('popstate', onPopState);
+      document.removeEventListener('keydown', onKeyDownCapture, true);
       unregister();
     };
   }, []);
@@ -242,7 +258,9 @@ export function ModalHistoryManager() {
     }
     const top = markersRef.current[markersRef.current.length - 1];
     if (state?.[MODAL_MARKER] !== top && !state?.[SENTINEL]) {
-      markersRef.current = [];
+      // Esvazia sem trocar a identidade: os closures do efeito do
+      // observer seguram esta mesma lista.
+      markersRef.current.length = 0;
       topmostRef.current = false;
       onTopMarkerRef.current = false;
     }

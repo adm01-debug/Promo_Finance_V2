@@ -1,4 +1,4 @@
-import { ReactNode, useEffect } from 'react';
+import { ReactNode, useEffect, useRef } from 'react';
 import { AlertTriangle, Info, CheckCircle, XCircle, Loader2, X } from 'lucide-react';
 import { Button } from './button';
 import { cn } from '@/lib/utils';
@@ -82,13 +82,23 @@ export function ConfirmDialog({
     await onConfirm();
   };
 
+  const dialogRef = useRef<HTMLDivElement>(null);
+
+  // Escape roteado pelo ModalHistoryManager chega direcionado a este
+  // elemento (só ele fecha, nunca um dialog de baixo); o listener no
+  // documento cobre o caso do gerenciador ausente (ex.: testes).
   useEffect(() => {
     if (!isOpen) return;
     const onKeyDown = (e: KeyboardEvent) => {
       if (e.key === 'Escape' && !isLoading) handleClose();
     };
+    const el = dialogRef.current;
+    el?.addEventListener('keydown', onKeyDown);
     document.addEventListener('keydown', onKeyDown);
-    return () => document.removeEventListener('keydown', onKeyDown);
+    return () => {
+      el?.removeEventListener('keydown', onKeyDown);
+      document.removeEventListener('keydown', onKeyDown);
+    };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isOpen, isLoading]);
 
@@ -101,8 +111,10 @@ export function ConfirmDialog({
 
       {/* Dialog */}
       <div
+        ref={dialogRef}
         role="dialog"
         data-state="open"
+        data-escape-owned
         aria-modal="true"
         className="relative bg-card rounded-lg shadow-xl w-full max-w-md mx-4 animate-in fade-in-0 zoom-in-95"
       >

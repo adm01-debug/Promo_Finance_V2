@@ -86,10 +86,12 @@ describe('pilha de navegação in-app', () => {
     expect(previousNavEntry()).toBeUndefined();
   });
 
-  it('POP para key desconhecida empilha (entrada direta)', () => {
+  it('POP para key desconhecida reinicia a pilha (ex.: Voltar pós-reload)', () => {
     recordNavEntry({ key: 'a', pathname: '/clientes', search: '' }, 'PUSH');
     recordNavEntry({ key: 'x', pathname: '/fornecedores', search: '' }, 'POP');
-    expect(previousNavEntry()?.pathname).toBe('/clientes');
+    // A pilha não sabe a direção do pop — manter 'a' como anterior
+    // faria o Voltar semântico apontar para uma entrada à frente.
+    expect(previousNavEntry()).toBeUndefined();
   });
 });
 

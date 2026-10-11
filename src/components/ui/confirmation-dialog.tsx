@@ -1,4 +1,4 @@
-import { useEffect, useState, ReactNode } from 'react';
+import { useEffect, useRef, useState, ReactNode } from 'react';
 import { cn } from '@/lib/utils';
 import { AlertTriangle, Trash2, CheckCircle, Info, HelpCircle, X } from 'lucide-react';
 import { Button } from './button';
@@ -94,13 +94,23 @@ export function ConfirmationDialog({
   const config = typeConfig[type];
   const Icon = config.icon;
 
+  const dialogRef = useRef<HTMLDivElement>(null);
+
+  // Escape roteado pelo ModalHistoryManager chega direcionado a este
+  // elemento (só ele fecha, nunca um dialog de baixo); o listener no
+  // documento cobre o caso do gerenciador ausente (ex.: testes).
   useEffect(() => {
     if (!isOpen) return;
     const onKeyDown = (e: KeyboardEvent) => {
       if (e.key === 'Escape' && !loading && !isLoading) onClose();
     };
+    const el = dialogRef.current;
+    el?.addEventListener('keydown', onKeyDown);
     document.addEventListener('keydown', onKeyDown);
-    return () => document.removeEventListener('keydown', onKeyDown);
+    return () => {
+      el?.removeEventListener('keydown', onKeyDown);
+      document.removeEventListener('keydown', onKeyDown);
+    };
   }, [isOpen, loading, isLoading, onClose]);
 
   const handleConfirm = async () => {
@@ -135,8 +145,10 @@ export function ConfirmationDialog({
           'w-full max-w-md p-6 bg-card rounded-lg shadow-xl',
           className
         )}
+        ref={dialogRef}
         role="dialog"
         data-state="open"
+        data-escape-owned
         aria-modal="true"
         aria-labelledby="confirmation-title"
         aria-describedby="confirmation-message"

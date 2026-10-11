@@ -260,6 +260,13 @@ export function recordNavEntry(entry: NavEntry, type: 'POP' | 'PUSH' | 'REPLACE'
       notifyNavStack();
       return;
     }
+    // POP para chave desconhecida (ex.: Voltar nativo após reload): a
+    // pilha em memória não sabe a direção — empilhar produziria um
+    // "anterior" que na verdade está à frente no histórico. Reinicia.
+    navStack.length = 0;
+    navStack.push(entry);
+    notifyNavStack();
+    return;
   } else if (type === 'REPLACE' && navStack.length > 0) {
     navStack[navStack.length - 1] = entry;
     notifyNavStack();

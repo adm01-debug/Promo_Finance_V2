@@ -13,8 +13,8 @@ import {
 import {
   artificialHistoryState,
   MODAL_HISTORY_MARKER,
-  popTopModalMarkers,
   registerUnsavedGuard,
+  topModalMarkerCount,
   UNSAVED_GUARD_SENTINEL as SENTINEL,
 } from '@/lib/unsaved-guard';
 import { UnsavedGuardContext } from './unsaved-guard-context';
@@ -22,11 +22,13 @@ import { UnsavedGuardContext } from './unsaved-guard-context';
 export function UnsavedGuardProvider({ children }: { children: React.ReactNode }) {
   const dirtyRef = useRef(false);
   const sentinelActiveRef = useRef(false);
-  // Pops que disparamos nós mesmos (sentinela + marcadores de modal):
-  // o proceed pendente roda quando todos terminarem OU ao pousar numa
-  // entrada real — nunca junto com os history.back(), o que faria duas
-  // travessias competirem.
-  const skipPopsRef = useRef(0);
+  // Pops artificiais pendentes (sentinela + marcadores de modal): um
+  // history.back() por popstate — vários backs síncronos podem ser
+  // coalescidos pelo browser (WebKit bug 313808) e o proceed nunca
+  // rodaria. O proceed pendente roda quando o último pop chega OU ao
+  // pousar numa entrada real.
+  const plannedPopsRef = useRef(0);
+  const arrivedPopsRef = useRef(0);
   const awaitingPopRef = useRef(false);
   // Navegação que só pode rodar DEPOIS do pop da sentinela concluir —
   // chamar junto com history.back() faria dois "voltar" competirem.
@@ -44,7 +46,8 @@ export function UnsavedGuardProvider({ children }: { children: React.ReactNode }
     } else if (!dirty && sentinelActiveRef.current) {
       // Limpou sem navegar: remove a sentinela se ela ainda for o topo.
       if (window.history.state?.[SENTINEL]) {
-        skipPopsRef.current = 1;
+        plannedPopsRef.current = 1;
+        arrivedPopsRef.current = 0;
         window.history.back();
       }
       sentinelActiveRef.current = false;
@@ -87,16 +90,20 @@ export function UnsavedGuardProvider({ children }: { children: React.ReactNode }
   // Voltar do browser: a sentinela é estourada; pedimos confirmação.
   useEffect(() => {
     const onPopState = () => {
-      if (skipPopsRef.current > 0) {
-        skipPopsRef.current -= 1;
+      if (plannedPopsRef.current > 0) {
+        arrivedPopsRef.current += 1;
         const s = window.history.state as Record<string, unknown> | null;
         const onRealEntry = !(s?.[SENTINEL] || s?.[MODAL_HISTORY_MARKER]);
-        if (skipPopsRef.current <= 0 || onRealEntry) {
-          skipPopsRef.current = 0;
+        if (arrivedPopsRef.current >= plannedPopsRef.current || onRealEntry) {
+          plannedPopsRef.current = 0;
+          arrivedPopsRef.current = 0;
           // Todos os pops artificiais concluídos: agora navega de verdade.
           const proceed = pendingProceedRef.current;
           pendingProceedRef.current = null;
           proceed?.();
+        } else {
+          // Um back por popstate: backs síncronos podem ser coalescidos.
+          window.history.back();
         }
         return;
       }
@@ -131,42 +138,46 @@ export function UnsavedGuardProvider({ children }: { children: React.ReactNode }
     return () => window.removeEventListener('beforeunload', onBeforeUnload);
   }, []);
 
-  // Mudança de rota efetivada limpa o estado sujo (a página desmontou).
+  // Mudança de página efetivada limpa o estado sujo (o form desmontou).
+  // REPLACE de mesma página (ex.: remover ?highlight da query) muda a
+  // key mas não desmonta o form — a guarda tem que continuar armada.
+  const lastPathnameRef = useRef(location.pathname);
   useEffect(() => {
+    if (location.pathname === lastPathnameRef.current) return;
+    lastPathnameRef.current = location.pathname;
     if (dirtyRef.current) {
       dirtyRef.current = false;
       sentinelActiveRef.current = false;
     }
-  }, [location.key]);
+  }, [location.key, location.pathname]);
 
   const confirmLeave = () => {
     const proceed = pendingLeave;
     setPendingLeave(null);
     dirtyRef.current = false;
-    // Se a sentinela ainda é o topo (saída via link/botão, não via back do
-    // browser que já a estourou), remove-a antes de navegar — senão um
-    // navigate(-1) subsequente cairia nela e ficaria na mesma página.
-    if (sentinelActiveRef.current) {
+    // Posição real no histórico decide o caminho — a flag pode estar
+    // dessincronizada (Voltar extra desfeito por forward pousou de novo
+    // na sentinela com sentinelActiveRef já limpo).
+    if (window.history.state?.[SENTINEL]) {
       sentinelActiveRef.current = false;
-      if (window.history.state?.[SENTINEL]) {
-        // Serializa: marcadores de modal logo abaixo da sentinela (form
-        // em dialog) + a própria sentinela saem primeiro; o proceed só
-        // roda no popstate do último — senão as travessias competiriam
-        // e ultrapassariam o destino.
-        const n = popTopModalMarkers();
-        pendingProceedRef.current = proceed ?? null;
-        skipPopsRef.current = 1 + n;
-        window.history.back();
-        return;
-      }
+      // Sentinela no topo (saída via link/atalho): ela e os marcadores
+      // saem primeiro, um back por popstate; o proceed roda no último.
+      const n = topModalMarkerCount();
+      pendingProceedRef.current = proceed ?? null;
+      plannedPopsRef.current = 1 + n;
+      arrivedPopsRef.current = 0;
+      window.history.back();
+      return;
     }
+    sentinelActiveRef.current = false;
     // Voltar do browser já estourou a sentinela: consome os marcadores
-    // de modal no topo e aguarda todos os pops antes do proceed — as
-    // travessias assíncronas não podem competir entre si.
-    const n = popTopModalMarkers();
+    // que ainda formam o topo antes da navegação real.
+    const n = topModalMarkerCount();
     if (n > 0) {
       pendingProceedRef.current = proceed ?? null;
-      skipPopsRef.current = n;
+      plannedPopsRef.current = n;
+      arrivedPopsRef.current = 0;
+      window.history.back();
       return;
     }
     proceed?.();

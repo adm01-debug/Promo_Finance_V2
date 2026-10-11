@@ -1,4 +1,4 @@
-import { ReactNode, useEffect, useCallback } from 'react';
+import { ReactNode, useEffect, useCallback, useRef } from 'react';
 import { X } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Button } from './button';
@@ -47,16 +47,23 @@ export function Modal({
     [closeOnEscape, onClose]
   );
 
+  const dialogRef = useRef<HTMLDivElement>(null);
+
+  // Escape roteado pelo ModalHistoryManager chega direcionado a este
+  // elemento (só ele fecha, nunca um dialog de baixo); o listener no
+  // documento cobre o caso do gerenciador ausente (ex.: testes).
   useEffect(() => {
     if (isOpen) {
+      const el = dialogRef.current;
+      el?.addEventListener('keydown', handleEscape);
       document.addEventListener('keydown', handleEscape);
       document.body.style.overflow = 'hidden';
+      return () => {
+        el?.removeEventListener('keydown', handleEscape);
+        document.removeEventListener('keydown', handleEscape);
+        document.body.style.overflow = 'unset';
+      };
     }
-
-    return () => {
-      document.removeEventListener('keydown', handleEscape);
-      document.body.style.overflow = 'unset';
-    };
   }, [isOpen, handleEscape]);
 
   if (!isOpen) return null;
@@ -72,10 +79,12 @@ export function Modal({
 
       {/* Modal */}
       <div
+        ref={dialogRef}
         role="dialog"
         // Só conta como dialog fechável no histórico se Escape o fecha —
         // o ModalHistoryManager usa Escape para consumir o marcador.
         data-state={closeOnEscape ? 'open' : 'closed'}
+        data-escape-owned={closeOnEscape ? '' : undefined}
         aria-modal="true"
         aria-labelledby={title ? 'modal-title' : undefined}
         aria-describedby={description ? 'modal-description' : undefined}
