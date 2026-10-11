@@ -23,6 +23,7 @@ import { logger } from '@/lib/logger';
 import { ConflitoVersaoError, updateComLockOtimista } from '@/lib/optimistic-lock';
 import { useUnsavedChangesGuard } from '@/components/navigation/unsaved-guard-context';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { ConfirmationDialog } from '@/components/ui/confirmation-dialog';
 import { Form } from '@/components/ui/form';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
@@ -110,6 +111,18 @@ export function ContaReceberForm({ open, onOpenChange, conta }: ContaReceberForm
 
   // Navegar fora com o form sujo pede confirmação ("Descartar alterações?")
   useUnsavedChangesGuard(open && form.formState.isDirty);
+
+  // Fechar o Dialog (Escape, overlay, X, Cancelar) com o form sujo também
+  // pede confirmação — sem isto o descarte era silencioso: a guarda só
+  // cobria saída de rota, e `open` falso desarmava a sentinela.
+  const [confirmarDescarte, setConfirmarDescarte] = useState(false);
+  const requestClose = (next: boolean) => {
+    if (!next && form.formState.isDirty) {
+      setConfirmarDescarte(true);
+      return;
+    }
+    onOpenChange(next);
+  };
 
   const isParcelado = form.watch('parcelado');
   const numParcelas = form.watch('numero_parcelas') || 1;
@@ -314,75 +327,86 @@ export function ContaReceberForm({ open, onOpenChange, conta }: ContaReceberForm
   const isPending = createMutation.isPending || updateMutation.isPending;
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
-        <DialogHeader>
-          <DialogTitle className="flex items-center gap-2 text-xl font-display">
-            <div
-              className={cn(
-                'h-10 w-10 rounded-xl flex items-center justify-center',
-                isEditing ? 'bg-secondary/10' : 'bg-success/10'
-              )}
-            >
-              {isEditing ? (
-                <Edit className="h-5 w-5 text-secondary" />
-              ) : (
-                <DollarSign className="h-5 w-5 text-success" />
-              )}
-            </div>
-            {isEditing ? 'Editar Conta a Receber' : 'Nova Conta a Receber'}
-          </DialogTitle>
-        </DialogHeader>
-        <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-            <div className="space-y-6 max-h-[50vh] overflow-y-auto pr-2 custom-scrollbar">
-              <ContaReceberFormFields
-                form={form as unknown as ComponentProps<typeof ContaReceberFormFields>['form']}
-                isEditing={isEditing}
-                clientes={clientes}
-                empresas={empresas}
-                centrosCusto={centrosCusto}
-                contasBancarias={contasBancarias}
-                vendedores={vendedores}
-                showClienteSelect={showClienteSelect}
-                setShowClienteSelect={setShowClienteSelect}
-                onClienteSelect={handleClienteSelect}
-                categorias={categoriasReceita}
-              />
-
-              {isEditing && conta?.id && (
-                <div className="pt-6 border-t border-white/5">
-                  <AnexoList entidadeId={conta.id} entidadeTipo="contas_receber" />
-                </div>
-              )}
-            </div>
-
-            <div className="flex justify-end gap-3 pt-4 border-t">
-              <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
-                Cancelar
-              </Button>
-              <ActionButton
-                type="submit"
-                state={isPending ? 'loading' : 'idle'}
-                loadingText="Salvando..."
-                successText="Salvo!"
+    <>
+      <Dialog open={open} onOpenChange={requestClose}>
+        <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2 text-xl font-display">
+              <div
                 className={cn(
-                  'gap-2 shadow-lg',
-                  isEditing
-                    ? 'bg-gradient-to-r from-secondary to-secondary/80 shadow-secondary/25'
-                    : 'bg-gradient-to-r from-success to-success/80 shadow-success/25 text-success-foreground'
+                  'h-10 w-10 rounded-xl flex items-center justify-center',
+                  isEditing ? 'bg-secondary/10' : 'bg-success/10'
                 )}
               >
-                {isEditing
-                  ? 'Salvar Alterações'
-                  : isParcelado
-                    ? `Criar ${numParcelas} Parcelas`
-                    : 'Criar Conta'}
-              </ActionButton>
-            </div>
-          </form>
-        </Form>
-      </DialogContent>
-    </Dialog>
+                {isEditing ? (
+                  <Edit className="h-5 w-5 text-secondary" />
+                ) : (
+                  <DollarSign className="h-5 w-5 text-success" />
+                )}
+              </div>
+              {isEditing ? 'Editar Conta a Receber' : 'Nova Conta a Receber'}
+            </DialogTitle>
+          </DialogHeader>
+          <Form {...form}>
+            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+              <div className="space-y-6 max-h-[50vh] overflow-y-auto pr-2 custom-scrollbar">
+                <ContaReceberFormFields
+                  form={form as unknown as ComponentProps<typeof ContaReceberFormFields>['form']}
+                  isEditing={isEditing}
+                  clientes={clientes}
+                  empresas={empresas}
+                  centrosCusto={centrosCusto}
+                  contasBancarias={contasBancarias}
+                  vendedores={vendedores}
+                  showClienteSelect={showClienteSelect}
+                  setShowClienteSelect={setShowClienteSelect}
+                  onClienteSelect={handleClienteSelect}
+                  categorias={categoriasReceita}
+                />
+
+                {isEditing && conta?.id && (
+                  <div className="pt-6 border-t border-white/5">
+                    <AnexoList entidadeId={conta.id} entidadeTipo="contas_receber" />
+                  </div>
+                )}
+              </div>
+
+              <div className="flex justify-end gap-3 pt-4 border-t">
+                <Button type="button" variant="outline" onClick={() => requestClose(false)}>
+                  Cancelar
+                </Button>
+                <ActionButton
+                  type="submit"
+                  state={isPending ? 'loading' : 'idle'}
+                  loadingText="Salvando..."
+                  successText="Salvo!"
+                  className={cn(
+                    'gap-2 shadow-lg',
+                    isEditing
+                      ? 'bg-gradient-to-r from-secondary to-secondary/80 shadow-secondary/25'
+                      : 'bg-gradient-to-r from-success to-success/80 shadow-success/25 text-success-foreground'
+                  )}
+                >
+                  {isEditing
+                    ? 'Salvar Alterações'
+                    : isParcelado
+                      ? `Criar ${numParcelas} Parcelas`
+                      : 'Criar Conta'}
+                </ActionButton>
+              </div>
+            </form>
+          </Form>
+        </DialogContent>
+      </Dialog>
+      <ConfirmationDialog
+        isOpen={confirmarDescarte}
+        onClose={() => setConfirmarDescarte(false)}
+        onConfirm={() => onOpenChange(false)}
+        title="Descartar alterações?"
+        message="As alterações nesta conta serão perdidas."
+        type="warning"
+        confirmText="Descartar"
+      />
+    </>
   );
 }

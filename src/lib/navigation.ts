@@ -2,11 +2,23 @@
  * Metadados de navegação do app — fonte única para breadcrumbs,
  * título de página, resolução de "voltar/subir nível" e labels de rotas.
  */
+import type { AppRole } from '@/hooks/useAuth';
 
 export interface RouteMeta {
   label: string;
   /** Pai explícito quando o strip de segmento não resolve (ex.: /usuarios → /configuracoes). */
   parent?: string;
+  /**
+   * Papéis exigidos pelo ProtectedRoute da rota (espelho de App.tsx —
+   * manter em sincronia). Usado para não gravar em "recentes" uma rota
+   * que a autorização vai recusar.
+   */
+  requiredRoles?: AppRole[];
+  /**
+   * Rótulos por valor do parâmetro final da rota (ex.: abas na URL).
+   * Sem ele, /rota/:tab anuncia o mesmo label do pai.
+   */
+  tabLabels?: Record<string, string>;
 }
 
 /** Rotas exatas com metadados. Rotas públicas/dev ficam de fora propositalmente. */
@@ -98,21 +110,57 @@ export const ROUTE_META: Record<string, RouteMeta> = {
   '/tributario/simulacao-regimes': { label: 'Simulação de Regimes', parent: '/tributario' },
   '/tributario/sped': { label: 'SPED', parent: '/tributario' },
   '/tributario/split-payment': { label: 'Split Payment', parent: '/tributario' },
-  '/admin/api': { label: 'API', parent: '/configuracoes' },
-  '/admin/auditoria-ia': { label: 'Auditoria de IA', parent: '/configuracoes' },
-  '/admin/bloat-monitor': { label: 'Monitor de Bundle', parent: '/configuracoes' },
-  '/admin/campos-customizados': { label: 'Campos Customizados', parent: '/configuracoes' },
-  '/admin/compliance': { label: 'Compliance', parent: '/configuracoes' },
-  '/admin/edge-health': { label: 'Saúde das Edge Functions', parent: '/configuracoes' },
-  '/admin/filtros-compartilhados': { label: 'Filtros Compartilhados', parent: '/configuracoes' },
-  '/admin/insights-ia': { label: 'Insights de IA', parent: '/configuracoes' },
-  '/admin/scim-audit': { label: 'Auditoria SCIM', parent: '/configuracoes' },
-  '/admin/sre': { label: 'Centro SRE', parent: '/configuracoes' },
-  '/admin/sso': { label: 'SSO', parent: '/configuracoes' },
-  '/admin/sso-events': { label: 'Eventos SSO', parent: '/configuracoes' },
-  '/admin/sso-jit-events': { label: 'Eventos JIT SSO', parent: '/configuracoes' },
-  '/admin/system-health': { label: 'Saúde do Sistema', parent: '/configuracoes' },
-  '/admin/telemetria': { label: 'Telemetria', parent: '/configuracoes' },
+  '/admin/api': { label: 'API', parent: '/configuracoes', requiredRoles: ['admin'] },
+  '/admin/auditoria-ia': {
+    label: 'Auditoria de IA',
+    parent: '/configuracoes',
+    requiredRoles: ['admin', 'financeiro'],
+  },
+  '/admin/bloat-monitor': {
+    label: 'Monitor de Bundle',
+    parent: '/configuracoes',
+    requiredRoles: ['admin'],
+  },
+  '/admin/campos-customizados': {
+    label: 'Campos Customizados',
+    parent: '/configuracoes',
+    requiredRoles: ['admin'],
+  },
+  '/admin/compliance': { label: 'Compliance', parent: '/configuracoes', requiredRoles: ['admin'] },
+  '/admin/edge-health': {
+    label: 'Saúde das Edge Functions',
+    parent: '/configuracoes',
+    requiredRoles: ['admin'],
+  },
+  '/admin/filtros-compartilhados': {
+    label: 'Filtros Compartilhados',
+    parent: '/configuracoes',
+    requiredRoles: ['admin'],
+  },
+  '/admin/insights-ia': {
+    label: 'Insights de IA',
+    parent: '/configuracoes',
+    requiredRoles: ['admin', 'financeiro'],
+  },
+  '/admin/scim-audit': {
+    label: 'Auditoria SCIM',
+    parent: '/configuracoes',
+    requiredRoles: ['admin'],
+  },
+  '/admin/sre': { label: 'Centro SRE', parent: '/configuracoes', requiredRoles: ['admin'] },
+  '/admin/sso': { label: 'SSO', parent: '/configuracoes', requiredRoles: ['admin'] },
+  '/admin/sso-events': { label: 'Eventos SSO', parent: '/configuracoes', requiredRoles: ['admin'] },
+  '/admin/sso-jit-events': {
+    label: 'Eventos JIT SSO',
+    parent: '/configuracoes',
+    requiredRoles: ['admin'],
+  },
+  '/admin/system-health': {
+    label: 'Saúde do Sistema',
+    parent: '/configuracoes',
+    requiredRoles: ['admin'],
+  },
+  '/admin/telemetria': { label: 'Telemetria', parent: '/configuracoes', requiredRoles: ['admin'] },
   '/configuracoes': { label: 'Configurações' },
   '/configuracoes/filtros-salvos': { label: 'Filtros Salvos', parent: '/configuracoes' },
   '/configuracoes/notificacoes/historico': {
@@ -130,10 +178,14 @@ export const ROUTE_META: Record<string, RouteMeta> = {
   '/alertas': { label: 'Alertas' },
   '/aprovacoes': { label: 'Aprovações' },
   '/audit-logs': { label: 'Logs de Auditoria', parent: '/configuracoes' },
-  '/audit-sso-profile-sync': { label: 'Auditoria SSO', parent: '/configuracoes' },
+  '/audit-sso-profile-sync': {
+    label: 'Auditoria SSO',
+    parent: '/configuracoes',
+    requiredRoles: ['admin'],
+  },
   '/seguranca': { label: 'Segurança', parent: '/configuracoes' },
   '/demonstrativos': { label: 'Demonstrativos' },
-  '/contabilidade': { label: 'Contabilidade & SPED' },
+  '/contabilidade': { label: 'Contabilidade & SPED', requiredRoles: ['admin', 'financeiro'] },
   '/bitrix24': { label: 'Bitrix24', parent: '/integracoes' },
   '/asaas': { label: 'Asaas', parent: '/integracoes' },
   '/bling': { label: 'Bling', parent: '/integracoes' },
@@ -146,11 +198,27 @@ export const ROUTE_META: Record<string, RouteMeta> = {
 const PATTERN_ROUTES: Array<{ pattern: string; meta: RouteMeta }> = [
   {
     pattern: '/reforma-tributaria/:tab',
-    meta: { label: 'Reforma Tributária', parent: '/reforma-tributaria' },
+    meta: {
+      label: 'Reforma Tributária',
+      parent: '/reforma-tributaria',
+      tabLabels: {
+        'visao-geral': 'Visão Geral',
+        calculadora: 'Calculadora',
+        'calcular-tributos': 'Calcular Tributos',
+        creditos: 'Créditos',
+        'pis-cofins': 'PIS/COFINS',
+        regras: 'Regras de Transição',
+        simulador: 'Simulador',
+      },
+    },
   },
   {
     pattern: '/admin/insights-ia/anomalia/:id',
-    meta: { label: 'Anomalia', parent: '/admin/insights-ia' },
+    meta: {
+      label: 'Anomalia',
+      parent: '/admin/insights-ia',
+      requiredRoles: ['admin', 'financeiro'],
+    },
   },
 ];
 
@@ -178,7 +246,18 @@ export function getRouteMeta(pathname: string): RouteMeta | undefined {
 
 export function getRouteLabel(pathname: string): string {
   const meta = getRouteMeta(pathname);
-  if (meta) return meta.label;
+  if (meta) {
+    // Rota com parâmetro final (aba na URL): o item atual é a aba —
+    // tabLabels explícito, senão o segmento humanizado, nunca o label
+    // do pai duplicado.
+    const lastSeg = normalizePathname(pathname).split('/').pop() ?? '';
+    if (meta.tabLabels) {
+      return (
+        meta.tabLabels[lastSeg] ?? lastSeg.replace(/-/g, ' ').replace(/^\w/, (c) => c.toUpperCase())
+      );
+    }
+    return meta.label;
+  }
   // Fallback: último segmento legível
   const last = pathname.split('/').filter(Boolean).pop() ?? 'dashboard';
   return last.replace(/-/g, ' ').replace(/^\w/, (c) => c.toUpperCase());
@@ -302,7 +381,11 @@ export function recordNavEntry(entry: NavEntry, type: 'POP' | 'PUSH' | 'REPLACE'
 const SENSITIVE_ROUTE_PREFIXES = ['/contador/', '/convite/'];
 
 export function isSensitiveRoute(pathname: string): boolean {
-  return SENSITIVE_ROUTE_PREFIXES.some((p) => pathname.startsWith(p));
+  // O React Router casa rotas sem diferenciar maiúsculas — /Convite/x
+  // alcança o fluxo público igual a /convite/x e o token não pode vazar
+  // no document.title nem nos itens recentes.
+  const path = pathname.toLowerCase();
+  return SENSITIVE_ROUTE_PREFIXES.some((p) => path.startsWith(p));
 }
 
 /** Entrada in-app anterior à atual, se existir. */

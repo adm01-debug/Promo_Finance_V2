@@ -109,8 +109,10 @@ export function ModalHistoryManager() {
 
       // Pop que consumiu o marcador do topo: fecha o dialog do topo —
       // inclusive com form sujo (marcador acima da sentinela: o Voltar
-      // era do modal, não da guarda de não-salvos).
-      if (wasOnTopMarker && !onMarker) {
+      // era do modal, não da guarda de não-salvos). Pop auto-emitido por
+      // syncClosedDialogs já descontou o marcador na pilha — pousar na
+      // sentinela não pode remover o marcador do dialog de baixo.
+      if (wasOnTopMarker && !onMarker && !poppingOwnRef.current) {
         markers.pop();
         // A entrada em que pousamos pode ser outro marcador (novo topo).
         onTopMarkerRef.current = cur !== undefined && cur === markers[markers.length - 1];

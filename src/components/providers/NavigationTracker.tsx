@@ -1,6 +1,7 @@
 import { useEffect, useRef } from 'react';
 import { useLocation, useNavigationType } from 'react-router-dom';
 import { useRecentItems } from '@/hooks/useRecentItems';
+import { useAuth } from '@/hooks/useAuth';
 import {
   getRouteLabel,
   getRouteMeta,
@@ -19,6 +20,7 @@ export function NavigationTracker() {
   const location = useLocation();
   const navigationType = useNavigationType();
   const { addRecentItem } = useRecentItems();
+  const { hasRole } = useAuth();
   const prevPathRef = useRef<string | null>(null);
   const firstRenderRef = useRef(true);
 
@@ -73,10 +75,21 @@ export function NavigationTracker() {
       // Foco no conteúdo principal ao mudar de página (a11y — SPAs não
       // anunciam navegação automaticamente para leitores de tela).
       if (pathnameChanged) {
-        const main = document.getElementById('main-content');
-        if (main instanceof HTMLElement) {
+        const focusMain = () => {
+          const main = document.getElementById('main-content');
+          if (!(main instanceof HTMLElement)) return false;
           if (!main.hasAttribute('tabindex')) main.setAttribute('tabindex', '-1');
           main.focus({ preventScroll: true });
+          return true;
+        };
+        // Rota lazy: sob o Suspense ainda não existe #main-content —
+        // observa a montagem do conteúdo e foca quando ele aparecer.
+        if (!focusMain()) {
+          const observer = new MutationObserver(() => {
+            if (focusMain()) observer.disconnect();
+          });
+          observer.observe(document.body, { childList: true, subtree: true });
+          window.setTimeout(() => observer.disconnect(), 5000);
         }
       }
     }
@@ -86,11 +99,15 @@ export function NavigationTracker() {
     const path = location.pathname;
 
     // Recentes só para rotas internas conhecidas — nunca paths com token
-    // (ficam em localStorage e viram links na sidebar).
-    if (excludedRoutes.includes(path) || isSensitiveRoute(path) || !getRouteMeta(path)) return;
+    // (ficam em localStorage e viram links na sidebar) e nunca rotas que
+    // a autorização do ProtectedRoute vai recusar: o tracker monta acima
+    // do guard, então um link recusado entraria na lista igual.
+    const meta = getRouteMeta(path);
+    if (excludedRoutes.includes(path) || isSensitiveRoute(path) || !meta) return;
+    if (meta.requiredRoles?.length && !hasRole(meta.requiredRoles)) return;
 
     addRecentItem(path, getRouteLabel(path));
-  }, [location.pathname, addRecentItem]);
+  }, [location.pathname, addRecentItem, hasRole]);
 
   // This component doesn't render anything
   return null;

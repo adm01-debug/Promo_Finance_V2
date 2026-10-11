@@ -1,4 +1,4 @@
-import { ReactNode, useEffect, useRef } from 'react';
+import { ReactNode, useEffect, useId, useRef } from 'react';
 import { AlertTriangle, Info, CheckCircle, XCircle, Loader2, X } from 'lucide-react';
 import { Button } from './button';
 import { cn } from '@/lib/utils';
@@ -84,6 +84,7 @@ export function ConfirmDialog({
   };
 
   const dialogRef = useRef<HTMLDivElement>(null);
+  const titleId = useId();
 
   // Escape roteado pelo ModalHistoryManager chega direcionado a este
   // elemento (só ele fecha, nunca um dialog de baixo); o listener no
@@ -122,6 +123,7 @@ export function ConfirmDialog({
         data-state="open"
         data-escape-owned
         aria-modal="true"
+        aria-labelledby={titleId}
         className="relative bg-card rounded-lg shadow-xl w-full max-w-md mx-4 animate-in fade-in-0 zoom-in-95"
       >
         {/* Close button */}
@@ -140,7 +142,9 @@ export function ConfirmDialog({
 
             {/* Text */}
             <div className="flex-1 pt-1">
-              <h3 className="text-lg font-semibold text-foreground">{title}</h3>
+              <h3 id={titleId} className="text-lg font-semibold text-foreground">
+                {title}
+              </h3>
               {description && <p className="mt-2 text-sm text-muted-foreground">{description}</p>}
               {children && <div className="mt-4">{children}</div>}
             </div>

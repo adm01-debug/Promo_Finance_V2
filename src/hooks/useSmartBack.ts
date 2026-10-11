@@ -7,7 +7,7 @@ import {
   subscribeNavStack,
   getNavStackVersion,
 } from '@/lib/navigation';
-import { navigateWithUnsavedGuard } from '@/lib/unsaved-guard';
+import { MODAL_HISTORY_MARKER, navigateWithUnsavedGuard } from '@/lib/unsaved-guard';
 import { addBreadcrumb } from '@/lib/telemetry';
 
 export type BackMethod = 'button' | 'swipe' | 'keyboard' | 'programmatic';
@@ -38,6 +38,14 @@ export function useSmartBack(method: BackMethod = 'programmatic'): SmartBack {
   const backLabel = getRouteLabel(prev ? prev.pathname : resolveParentRoute(location.pathname));
 
   const goBack = useCallback(() => {
+    // Entrada atual é um marcador de modal: o Voltar atravessa só ele
+    // (fecha o dialog do topo) em vez de subir para a rota-pai — a página
+    // direta não tem entrada in-app anterior mas tem um modal aberto.
+    const s = window.history.state as Record<string, unknown> | null;
+    if (s?.[MODAL_HISTORY_MARKER] !== undefined) {
+      window.history.back();
+      return;
+    }
     navigateWithUnsavedGuard(() => {
       // Lê a pilha no momento do clique, não do último render.
       const target = previousNavEntry();

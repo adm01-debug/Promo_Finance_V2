@@ -25,6 +25,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { ConflitoVersaoError } from '@/lib/optimistic-lock';
 import { useUnsavedChangesGuard } from '@/components/navigation/unsaved-guard-context';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { ConfirmationDialog } from '@/components/ui/confirmation-dialog';
 import {
   Form,
   FormControl,
@@ -131,6 +132,18 @@ export function ContaPagarForm({ open, onOpenChange, conta }: ContaPagarFormProp
 
   // Navegar fora com o form sujo pede confirmação ("Descartar alterações?")
   useUnsavedChangesGuard(open && form.formState.isDirty);
+
+  // Fechar o Dialog (Escape, overlay, X, Cancelar) com o form sujo também
+  // pede confirmação — sem isto o descarte era silencioso: a guarda só
+  // cobria saída de rota, e `open` falso desarmava a sentinela.
+  const [confirmarDescarte, setConfirmarDescarte] = useState(false);
+  const requestClose = (next: boolean) => {
+    if (!next && form.formState.isDirty) {
+      setConfirmarDescarte(true);
+      return;
+    }
+    onOpenChange(next);
+  };
 
   const contaIdRef = useRef<string | null>(null);
 
@@ -337,7 +350,7 @@ export function ContaPagarForm({ open, onOpenChange, conta }: ContaPagarFormProp
         onOpenChange={setShowLeitorCodigoBarras}
         onBoletoDetected={handleBoletoDetected}
       />
-      <Dialog open={open} onOpenChange={onOpenChange}>
+      <Dialog open={open} onOpenChange={requestClose}>
         <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2 text-xl font-display">
@@ -486,7 +499,7 @@ export function ContaPagarForm({ open, onOpenChange, conta }: ContaPagarFormProp
               </div>
 
               <div className="flex justify-end gap-3 pt-4 border-t">
-                <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
+                <Button type="button" variant="outline" onClick={() => requestClose(false)}>
                   Cancelar
                 </Button>
                 <ActionButton
@@ -508,6 +521,15 @@ export function ContaPagarForm({ open, onOpenChange, conta }: ContaPagarFormProp
           </Form>
         </DialogContent>
       </Dialog>
+      <ConfirmationDialog
+        isOpen={confirmarDescarte}
+        onClose={() => setConfirmarDescarte(false)}
+        onConfirm={() => onOpenChange(false)}
+        title="Descartar alterações?"
+        message="As alterações nesta conta serão perdidas."
+        type="warning"
+        confirmText="Descartar"
+      />
     </>
   );
 }
