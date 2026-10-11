@@ -167,11 +167,14 @@ function AppRoutes() {
         <Toaster richColors closeButton position="top-right" />
         {new URLSearchParams(window.location.search).has('visualDebug') && <VisualValidator />}
         <VisualCorrectionOverlay />
+        {/* Voltar-fecha-modal FORA do Suspense: a paleta de comandos
+            (montada acima) pode abrir um dialog enquanto o chunk lazy
+            carrega — o gerenciador precisa já estar montado. */}
+        <ModalHistoryManager />
         <Suspense fallback={<PageLoading />}>
-          {/* Guarda de não-salvos e Voltar-fecha-modal acima das rotas:
-              valem para todas as páginas, com ou sem MainLayout. */}
+          {/* Guarda de não-salvos acima das rotas: vale para todas as
+              páginas, com ou sem MainLayout. */}
           <UnsavedGuardProvider>
-            <ModalHistoryManager />
             <Routes>
               <Route path="/auth" element={<Auth />} />
               <Route path="/auth/corporate" element={<CorporateOnboarding />} />

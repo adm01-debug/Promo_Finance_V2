@@ -35,9 +35,6 @@ export function ModalHistoryManager() {
   const location = useLocation();
   // Pilha de ids de marcadores (base → topo); cada dialog = um marcador.
   const markersRef = useRef<number[]>([]);
-  // Marcadores soterrados por uma rota real: nunca voltam ao topo — ao
-  // serem alcançados por um pop são pulados na mesma direção do pop.
-  const ghostsRef = useRef<Set<number>>(new Set());
   const seqRef = useRef(0);
   // Próximo pop é consequência de um history.back() nosso — não reagir.
   const poppingOwnRef = useRef(false);
@@ -58,7 +55,6 @@ export function ModalHistoryManager() {
 
   useEffect(() => {
     const markers = markersRef.current;
-    const ghosts = ghostsRef.current;
     const openDialogCount = () => document.querySelectorAll(OPEN_DIALOG_SELECTOR).length;
     const topMarkerIsCurrent = () => {
       const top = markers[markers.length - 1];
@@ -67,6 +63,16 @@ export function ModalHistoryManager() {
     const closeTopDialog = () => {
       pendingCloseRef.current += 1;
       document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', bubbles: true }));
+      // Se o dialog recusar o Escape (ex.: confirmação processando), a
+      // contagem não cai: libera o pendente e reempilha o marcador,
+      // senão o dialog ficaria aberto sem entrada no histórico.
+      window.setTimeout(() => {
+        pendingCloseRef.current = Math.max(0, pendingCloseRef.current - 1);
+        const open = openDialogCount();
+        prevOpenRef.current = open;
+        const effective = open - pendingCloseRef.current;
+        while (markers.length < effective) pushMarker();
+      }, 150);
     };
 
     // Dialog fechou pela UI (X, overlay) com o marcador ainda no topo:
@@ -101,11 +107,22 @@ export function ModalHistoryManager() {
       const onMarker = cur !== undefined && cur === markers[markers.length - 1];
       onTopMarkerRef.current = onMarker;
 
-      // Fantasma (marcador soterrado por rota real): entrada transparente
-      // — segue na mesma direção do pop até uma entrada real. O id fica
-      // no conjunto enquanto a entrada existir: travessias repetidas em
-      // qualquer direção também a pulam.
-      if (cur !== undefined && ghosts.has(cur)) {
+      // Pop que consumiu o marcador do topo: fecha o dialog do topo —
+      // inclusive com form sujo (marcador acima da sentinela: o Voltar
+      // era do modal, não da guarda de não-salvos).
+      if (wasOnTopMarker && !onMarker) {
+        markers.pop();
+        // A entrada em que pousamos pode ser outro marcador (novo topo).
+        onTopMarkerRef.current = cur !== undefined && cur === markers[markers.length - 1];
+        if (openDialogCount() > 0) closeTopDialog();
+        return;
+      }
+      // Qualquer entrada com marcador que não é o topo ativo é
+      // transparente — fantasma soterrado por rota ou órfã de sessão
+      // anterior (recarregamento esvazia a pilha): segue na direção do
+      // pop até uma entrada real, em qualquer direção e quantas vezes
+      // a entrada for atravessada.
+      if (cur !== undefined && !onMarker) {
         poppingOwnRef.current = true;
         if (ghostDirRef.current === 0) {
           // O fantasma tem o idx da entrada que o originou: chegar com idx
@@ -125,14 +142,6 @@ export function ModalHistoryManager() {
         syncClosedDialogs();
         return;
       }
-      // Pop que consumiu o marcador do topo: fecha o dialog do topo —
-      // inclusive com form sujo (marcador acima da sentinela: o Voltar
-      // era do modal, não da guarda de não-salvos).
-      if (wasOnTopMarker && !onMarker) {
-        markers.pop();
-        if (openDialogCount() > 0) closeTopDialog();
-        return;
-      }
       if (markers.length === 0) return;
       if (hasUnsavedChanges()) {
         // Formulário sujo: a guarda trata este Voltar; dialog fica aberto.
@@ -146,7 +155,7 @@ export function ModalHistoryManager() {
       }
     };
 
-    const observer = new MutationObserver(() => {
+    const syncMarkers = () => {
       const open = openDialogCount();
       const dropped = prevOpenRef.current - open;
       if (dropped > 0) {
@@ -157,7 +166,9 @@ export function ModalHistoryManager() {
       while (markers.length < effective) pushMarker();
       syncClosedDialogs();
       if (markers.length === 0) topmostRef.current = true;
-    });
+    };
+
+    const observer = new MutationObserver(syncMarkers);
 
     // Só data-state e inserções/remoções interessam — reagir a qualquer
     // atributo (class, style, ARIA) recontava dialogs a cada frame de
@@ -190,6 +201,11 @@ export function ModalHistoryManager() {
 
     window.addEventListener('popstate', onPopState);
 
+    // Dialogs já abertos antes da montagem (ex.: paleta aberta enquanto
+    // o chunk da rota carregava) recebem seus marcadores agora — sem a
+    // sincronização inicial o Voltar sairia da página com eles abertos.
+    syncMarkers();
+
     const unregister = registerModalMarkerPopper(() => {
       // Saída confirmada na guarda: consome os marcadores contíguos do topo
       // (logo abaixo da sentinela) para a navegação real não parar neles.
@@ -209,19 +225,23 @@ export function ModalHistoryManager() {
 
   // Rota real empilhada por cima dos marcadores quebra a contiguidade:
   // eles saem da pilha e viram fantasmas (entradas transparentes puladas
-  // quando o usuário voltar até eles). Sem isso, markers.length ficaria
-  // >= openDialogCount() na nova rota e nenhum marcador seria criado para
-  // dialogs abertos nela — o Voltar atravessaria o marcador soterrado.
+  // quando o usuário voltar até eles — qualquer entrada com marcador
+  // fora do topo é tratada como tal no popstate). Sem isso,
+  // markers.length ficaria >= openDialogCount() na nova rota e nenhum
+  // marcador seria criado para dialogs abertos nela.
   // (Pushes/pops de marcadores e sentinela não mudam location.key.)
   useEffect(() => {
+    // Navegações PUSH não disparam popstate: atualiza o índice aqui ou
+    // a inferência de direção dos fantasmas usaria um valor obsoleto.
+    const state = window.history.state as Record<string, unknown> | null;
+    const idx = state?.idx as number | undefined;
+    if (idx !== undefined) lastIdxRef.current = idx;
     if (markersRef.current.length === 0) {
       topmostRef.current = true;
       return;
     }
-    const state = window.history.state as Record<string, unknown> | null;
     const top = markersRef.current[markersRef.current.length - 1];
     if (state?.[MODAL_MARKER] !== top && !state?.[SENTINEL]) {
-      for (const m of markersRef.current) ghostsRef.current.add(m);
       markersRef.current = [];
       topmostRef.current = false;
       onTopMarkerRef.current = false;
