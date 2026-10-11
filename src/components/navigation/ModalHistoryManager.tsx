@@ -113,6 +113,16 @@ export function ModalHistoryManager() {
       // syncClosedDialogs já descontou o marcador na pilha — pousar na
       // sentinela não pode remover o marcador do dialog de baixo.
       if (wasOnTopMarker && !onMarker && !poppingOwnRef.current) {
+        // Sentinela órfã ACIMA do marcador (guarda desarmada por
+        // setDirty(false), que só a remove do topo): chegar nela é
+        // avanço, não Voltar — retorna ao marcador em vez de consumi-lo
+        // e fechar o dialog. Sentinela viva (dirty) segue o consumo:
+        // a travessia é para trás e a guarda trata a própria entrada.
+        if (state?.[SENTINEL] && !hasUnsavedChanges()) {
+          poppingOwnRef.current = true;
+          window.history.back();
+          return;
+        }
         markers.pop();
         // A entrada em que pousamos pode ser outro marcador (novo topo).
         onTopMarkerRef.current = cur !== undefined && cur === markers[markers.length - 1];
@@ -134,8 +144,18 @@ export function ModalHistoryManager() {
             ghostDirRef.current = 1;
           }
         }
-        if (ghostDirRef.current > 0) window.history.forward();
-        else window.history.back();
+        if (ghostDirRef.current > 0) {
+          window.history.forward();
+          // Marcador terminal (nada à frente): o forward é no-op e a
+          // entrada artificial ficaria exposta — retorna à entrada real.
+          const landed = cur;
+          window.setTimeout(() => {
+            if (window.history.state?.[MODAL_MARKER] === landed) {
+              poppingOwnRef.current = true;
+              window.history.back();
+            }
+          }, 150);
+        } else window.history.back();
         return;
       }
       ghostDirRef.current = 0;
