@@ -36,7 +36,7 @@ export function useKeyboardNavigation() {
 
       if (e.altKey && e.key === 'ArrowRight') {
         e.preventDefault();
-        navigate(1);
+        navigateWithUnsavedGuard(() => navigate(1));
       }
 
       if (e.altKey && e.key === 'Home') {

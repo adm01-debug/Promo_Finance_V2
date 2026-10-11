@@ -1,6 +1,8 @@
 import { useEffect, useCallback, useRef, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
+import type { NavigateFunction, NavigateOptions, To } from 'react-router-dom';
 import { toast } from 'sonner';
+import { navigateWithUnsavedGuard } from '@/lib/unsaved-guard';
 
 interface ShortcutConfig {
   key: string;
@@ -16,9 +18,17 @@ export const useKeyboardShortcuts = () => {
 
   // Ref espelha o navigate atual: o listener global de keydown é registrado
   // UMA vez (deps estáveis) e as actions sempre usam o navigate mais recente.
-  const navigateRef = useRef(navigate);
+  // Atalhos (Alt+letra) respeitam a guarda de não-salvos — navegar sobre um
+  // formulário sujo pede confirmação em vez de descartar os dados.
+  const navigateRef = useRef<NavigateFunction>(navigate);
   useEffect(() => {
-    navigateRef.current = navigate;
+    navigateRef.current = ((to: To | number, options?: NavigateOptions) => {
+      navigateWithUnsavedGuard(() => {
+        if (typeof to === 'number') navigate(to);
+        else if (options !== undefined) navigate(to, options);
+        else navigate(to);
+      });
+    }) as NavigateFunction;
   }, [navigate]);
 
   const shortcuts = useMemo<ShortcutConfig[]>(

@@ -53,7 +53,7 @@ describe('BackButton', () => {
     renderWithRouter(<BackButton />, '/usuarios');
     fireEvent.click(screen.getByRole('button', { name: /voltar/i }));
     // Sem entrada in-app anterior, sobe para a rota-pai (nunca sai do app)
-    expect(mockNavigate).toHaveBeenCalledWith('/configuracoes');
+    expect(mockNavigate).toHaveBeenCalledWith('/configuracoes', { replace: true });
   });
 
   it('uses in-app history stack when available', () => {
@@ -102,6 +102,6 @@ describe('BackButton', () => {
   it('falls back to "/" for unknown routes', () => {
     renderWithRouter(<BackButton />, '/some-unknown-route');
     fireEvent.click(screen.getByRole('button', { name: /voltar/i }));
-    expect(mockNavigate).toHaveBeenCalledWith('/');
+    expect(mockNavigate).toHaveBeenCalledWith('/', { replace: true });
   });
 });

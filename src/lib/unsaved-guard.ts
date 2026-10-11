@@ -51,3 +51,24 @@ export function navigateWithUnsavedGuard(proceed: () => void): void {
   }
   handlers.requestLeave(proceed);
 }
+
+/**
+ * Popper registrado pelo ModalHistoryManager: consome os marcadores de
+ * modal contíguos do topo do histórico. Chamado pela guarda ao confirmar
+ * uma saída, para que a navegação real não pare no marcador do dialog.
+ */
+type ModalMarkerPopper = () => number;
+
+let modalMarkerPopper: ModalMarkerPopper | null = null;
+
+export function registerModalMarkerPopper(popper: ModalMarkerPopper | null): () => void {
+  modalMarkerPopper = popper;
+  return () => {
+    if (modalMarkerPopper === popper) modalMarkerPopper = null;
+  };
+}
+
+/** Remove os marcadores de modal do topo; retorna quantos pops enfileirou. */
+export function popTopModalMarkers(): number {
+  return modalMarkerPopper?.() ?? 0;
+}

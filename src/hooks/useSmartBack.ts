@@ -51,7 +51,10 @@ export function useSmartBack(method: BackMethod = 'programmatic'): SmartBack {
       if (target) {
         navigate(-1);
       } else {
-        navigate(parentPath);
+        // REPLACE, não PUSH: empilhar a rota-pai sobre a origem faria o
+        // próximo Voltar apontar de volta para a página inicial e oscilar
+        // filho↔pai em vez de subir até o Dashboard.
+        navigate(parentPath, { replace: true });
       }
     });
   }, [navigate, location.pathname, method]);

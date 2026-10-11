@@ -12,6 +12,7 @@ import {
 } from '@/components/ui/alert-dialog';
 import {
   artificialHistoryState,
+  popTopModalMarkers,
   registerUnsavedGuard,
   UNSAVED_GUARD_SENTINEL as SENTINEL,
 } from '@/lib/unsaved-guard';
@@ -140,9 +141,16 @@ export function UnsavedGuardProvider({ children }: { children: React.ReactNode }
         pendingProceedRef.current = proceed ?? null;
         skipPopRef.current = true;
         window.history.back();
+        // Marcadores de modal logo abaixo da sentinela (form em dialog):
+        // consome-os também, senão o proceed (navigate(-1)) pararia no
+        // marcador e o Voltar confirmado só fecharia o formulário.
+        popTopModalMarkers();
         return;
       }
     }
+    // Voltar do browser já estourou a sentinela: os marcadores de modal
+    // estão no topo — consome-os antes da navegação real.
+    popTopModalMarkers();
     proceed?.();
   };
 

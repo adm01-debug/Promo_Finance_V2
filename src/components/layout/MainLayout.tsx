@@ -17,8 +17,6 @@ import { SkipLinks } from '@/components/accessibility/SkipLinks';
 import { MobileBottomNav } from './sidebar/MobileBottomNav';
 import { MobileSidebarDrawer } from './sidebar/MobileSidebarDrawer';
 import { MobileHeader } from './MobileHeader';
-import { ModalHistoryManager } from '@/components/navigation/ModalHistoryManager';
-import { UnsavedGuardProvider } from '@/components/navigation/UnsavedGuardProvider';
 import { useSwipeBack } from '@/hooks/useSwipeBack';
 import { useKeyboardNavigation } from '@/hooks/useKeyboardNavigation';
 import { CopilotGlobalFloat } from '@/components/copilot/CopilotGlobalFloat';
@@ -72,9 +70,6 @@ export const MainLayout = ({ children }: MainLayoutProps) => {
       {!isMobile && <Header sidebarCollapsed={sidebarCollapsed} />}
       {isMobile && <MobileHeader />}
 
-      {/* Voltar do browser/mobile fecha modais antes de sair da página */}
-      <ModalHistoryManager />
-
       {/* Network status indicator - fixed position */}
       <div
         className={cn(
@@ -116,11 +111,9 @@ export const MainLayout = ({ children }: MainLayoutProps) => {
 
           {/* Stagger Vela (Z2/Z1): wrapper separado do motion.div para o
               fill-mode do CSS não pinar opacity e matar o exit do framer */}
-          <UnsavedGuardProvider>
-            <PageTransition>
-              <div className="vela-page-enter">{children}</div>
-            </PageTransition>
-          </UnsavedGuardProvider>
+          <PageTransition>
+            <div className="vela-page-enter">{children}</div>
+          </PageTransition>
         </div>
       </motion.main>
 

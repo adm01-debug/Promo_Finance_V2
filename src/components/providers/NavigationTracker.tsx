@@ -50,7 +50,9 @@ export function NavigationTracker() {
     // Rotas com token no path não expõem o segmento no título.
     if (!untracked) {
       document.title = `${getRouteLabel(pathname)} — Promo Finance`;
-    } else if (isSensitiveRoute(pathname)) {
+    } else {
+      // Rotas excluídas (/auth, /404) ou sensíveis recebem título genérico —
+      // não carregar o contexto da tela anterior (ex.: logout para /auth).
       document.title = 'Promo Finance';
     }
 

@@ -161,11 +161,17 @@ function matchPattern(pathname: string, pattern: string): boolean {
   return psegs.every((seg, i) => seg.startsWith(':') || seg === segs[i]);
 }
 
+/** `/usuarios/` ≡ `/usuarios` — a barra final não muda a rota resolvida. */
+function normalizePathname(pathname: string): string {
+  return pathname.length > 1 && pathname.endsWith('/') ? pathname.slice(0, -1) : pathname;
+}
+
 export function getRouteMeta(pathname: string): RouteMeta | undefined {
-  const exact = ROUTE_META[pathname];
+  const exact = ROUTE_META[normalizePathname(pathname)];
   if (exact) return exact;
+  const normalized = normalizePathname(pathname);
   for (const { pattern, meta } of PATTERN_ROUTES) {
-    if (matchPattern(pathname, pattern)) return meta;
+    if (matchPattern(normalized, pattern)) return meta;
   }
   return undefined;
 }
@@ -190,7 +196,7 @@ export function resolveParentRoute(pathname: string): string {
   const meta = getRouteMeta(pathname);
   if (meta?.parent) return meta.parent;
 
-  let candidate = pathname;
+  let candidate = normalizePathname(pathname);
   while (candidate !== '/') {
     const idx = candidate.lastIndexOf('/');
     candidate = idx <= 0 ? '/' : candidate.slice(0, idx);

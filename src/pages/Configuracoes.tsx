@@ -67,6 +67,7 @@ const CONFIG_TABS = [
   'ocr',
   'asaas',
   'sistema',
+  'automacao-compras',
   'roteamento',
 ] as const;
 

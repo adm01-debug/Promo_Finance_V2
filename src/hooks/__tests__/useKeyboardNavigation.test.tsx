@@ -36,7 +36,7 @@ describe('useKeyboardNavigation', () => {
     renderHook(() => useKeyboardNavigation(), { wrapper });
     const event = new KeyboardEvent('keydown', { key: 'ArrowLeft', altKey: true, bubbles: true });
     window.dispatchEvent(event);
-    expect(mockNavigate).toHaveBeenCalledWith('/');
+    expect(mockNavigate).toHaveBeenCalledWith('/', { replace: true });
   });
 
   it('navigates forward on Alt+ArrowRight', () => {
