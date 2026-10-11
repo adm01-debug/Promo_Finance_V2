@@ -74,3 +74,25 @@ export function registerModalMarkerPopper(counter: ModalMarkerCounter | null): (
 export function topModalMarkerCount(): number {
   return modalMarkerCounter?.() ?? 0;
 }
+
+/**
+ * Pergunta registrada pelo provider: true enquanto uma sequência de pops
+ * planejados pela confirmação de saída está em andamento (inclui o pop em
+ * que o `proceed` roda — a flag só cai em microtask, depois dos listeners
+ * de popstate do evento). O ModalHistoryManager usa isto para não despachar
+ * Escape em pops que não vieram do usuário.
+ */
+type PlannedPopChecker = () => boolean;
+
+let plannedPopChecker: PlannedPopChecker | null = null;
+
+export function registerPlannedPopChecker(checker: PlannedPopChecker | null): () => void {
+  plannedPopChecker = checker;
+  return () => {
+    if (plannedPopChecker === checker) plannedPopChecker = null;
+  };
+}
+
+export function isPlannedGuardPop(): boolean {
+  return plannedPopChecker?.() ?? false;
+}

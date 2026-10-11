@@ -13,6 +13,7 @@ import {
 import {
   artificialHistoryState,
   MODAL_HISTORY_MARKER,
+  registerPlannedPopChecker,
   registerUnsavedGuard,
   topModalMarkerCount,
   UNSAVED_GUARD_SENTINEL as SENTINEL,
@@ -64,6 +65,17 @@ export function UnsavedGuardProvider({ children }: { children: React.ReactNode }
     return () => registerUnsavedGuard(null);
   }, [requestLeave]);
 
+  // O ModalHistoryManager pergunta isto para não despachar Escape nos pops
+  // que a própria guarda planejou — senão a confirmação de descarte
+  // reapareceria no form que ela está fechando.
+  useEffect(
+    () =>
+      registerPlannedPopChecker(
+        () => plannedPopsRef.current > 0 || pendingProceedRef.current !== null
+      ),
+    []
+  );
+
   // Intercepta cliques em links internos enquanto dirty.
   useEffect(() => {
     const onClick = (e: MouseEvent) => {
@@ -101,9 +113,13 @@ export function UnsavedGuardProvider({ children }: { children: React.ReactNode }
           plannedPopsRef.current = 0;
           arrivedPopsRef.current = 0;
           // Todos os pops artificiais concluídos: agora navega de verdade.
+          // pendingProceed só zera em microtask — outros listeners deste
+          // mesmo popstate ainda veem a sequência como planejada.
           const proceed = pendingProceedRef.current;
-          pendingProceedRef.current = null;
           proceed?.();
+          queueMicrotask(() => {
+            pendingProceedRef.current = null;
+          });
         } else {
           // Um back por popstate: backs síncronos podem ser coalescidos.
           window.history.back();

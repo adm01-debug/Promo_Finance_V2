@@ -3,6 +3,7 @@ import { useLocation } from 'react-router-dom';
 import {
   artificialHistoryState,
   hasUnsavedChanges,
+  isPlannedGuardPop,
   MODAL_HISTORY_MARKER as MODAL_MARKER,
   registerModalMarkerPopper,
   UNSAVED_GUARD_SENTINEL as SENTINEL,
@@ -126,7 +127,10 @@ export function ModalHistoryManager() {
         markers.pop();
         // A entrada em que pousamos pode ser outro marcador (novo topo).
         onTopMarkerRef.current = cur !== undefined && cur === markers[markers.length - 1];
-        if (openDialogCount() > 0) closeTopDialog();
+        // Pop planejado da guarda de não-salvos: ela remove marcadores e
+        // fecha o que precisa — um Escape aqui reabriria a confirmação de
+        // descarte no form que ela mesma está fechando.
+        if (!isPlannedGuardPop() && openDialogCount() > 0) closeTopDialog();
         return;
       }
       // Qualquer entrada com marcador que não é o topo ativo é
@@ -148,9 +152,13 @@ export function ModalHistoryManager() {
           window.history.forward();
           // Marcador terminal (nada à frente): o forward é no-op e a
           // entrada artificial ficaria exposta — retorna à entrada real.
+          // Inverte a direção ANTES de voltar: se a entrada abaixo também
+          // é órfã, seguimos para trás até uma real — manter +1 aqui
+          // avançaria de volta ao terminal e repetiria o ciclo para sempre.
           const landed = cur;
           window.setTimeout(() => {
             if (window.history.state?.[MODAL_MARKER] === landed) {
+              ghostDirRef.current = -1;
               poppingOwnRef.current = true;
               window.history.back();
             }
