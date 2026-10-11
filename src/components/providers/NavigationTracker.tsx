@@ -78,9 +78,13 @@ export function NavigationTracker() {
         const focusMain = () => {
           const main = document.getElementById('main-content');
           if (!(main instanceof HTMLElement)) return false;
+          // Sob o Suspense, o #main-content da rota ANTERIOR pode seguir
+          // no DOM oculto atrás do fallback — focar nele não anuncia a
+          // nova página: espera o conteúdo da nova rota montar.
+          if (main.getClientRects().length === 0) return false;
           if (!main.hasAttribute('tabindex')) main.setAttribute('tabindex', '-1');
           main.focus({ preventScroll: true });
-          return true;
+          return document.activeElement === main;
         };
         // Rota lazy: sob o Suspense ainda não existe #main-content —
         // observa a montagem do conteúdo e foca quando ele aparecer.

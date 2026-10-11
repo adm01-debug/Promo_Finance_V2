@@ -351,11 +351,16 @@ export function recordNavEntry(entry: NavEntry, type: 'POP' | 'PUSH' | 'REPLACE'
       notifyNavStack();
       return;
     }
-    const forward = forwardStack[forwardStack.length - 1];
-    if (forward?.key === entry.key) {
-      // Avançar nativo sobre entrada truncada: restaura sem perder o
-      // anterior real (ex.: A→B, Voltar, Avançar — Voltar volta a B).
-      forwardStack.pop();
+    const fIdx = forwardStack.findIndex((e) => e.key === entry.key);
+    if (fIdx >= 0) {
+      // Avançar nativo sobre entrada truncada — inclusive saltos além da
+      // próxima (menu de histórico do browser ou history.go(N)): as
+      // intermediárias atravessadas voltam à pilha na ordem real, senão
+      // o Voltar semântico no destino perderia o "anterior" correto.
+      const restored = forwardStack.splice(fIdx);
+      for (let i = restored.length - 1; i >= 1; i -= 1) {
+        navStack.push(restored[i]);
+      }
       navStack.push(entry);
       notifyNavStack();
       return;
@@ -396,4 +401,13 @@ export function isSensitiveRoute(pathname: string): boolean {
 /** Entrada in-app anterior à atual, se existir. */
 export function previousNavEntry(): NavEntry | undefined {
   return navStack.length > 1 ? navStack[navStack.length - 2] : undefined;
+}
+
+/**
+ * Há entradas reais à frente no histórico do browser (registradas por
+ * POPs recentes)? O ModalHistoryManager consulta isto antes de empilhar
+ * um marcador — um pushState ali descartaria o Avançar real do usuário.
+ */
+export function hasForwardEntries(): boolean {
+  return forwardStack.length > 0;
 }

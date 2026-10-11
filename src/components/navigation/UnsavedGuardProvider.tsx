@@ -31,6 +31,13 @@ export function UnsavedGuardProvider({ children }: { children: React.ReactNode }
   const plannedPopsRef = useRef(0);
   const arrivedPopsRef = useRef(0);
   const awaitingPopRef = useRef(false);
+  // Marca o pop do nosso próprio back() de saída confirmada — o popstate
+  // dele não pode ser reinterpretado como nova tentativa de sair.
+  const leavingOwnPopRef = useRef(false);
+  // AlertDialogAction dispara onOpenChange(false) depois do onClick:
+  // sem a flag, o fechamento do botão "Descartar" cai no dismissLeave e
+  // repõe uma sentinela no meio dos pops planejados.
+  const confirmedRef = useRef(false);
   // Navegação que só pode rodar DEPOIS do pop da sentinela concluir —
   // chamar junto com history.back() faria dois "voltar" competirem.
   const pendingProceedRef = useRef<(() => void) | null>(null);
@@ -126,6 +133,13 @@ export function UnsavedGuardProvider({ children }: { children: React.ReactNode }
         }
         return;
       }
+      // Pop do back() emitido pelo proceed de saída confirmada: a
+      // sujeira só limpa quando a página de fato trocar (efeito de
+      // localização) — reinterpretar aqui pediria confirmação de novo.
+      if (leavingOwnPopRef.current) {
+        leavingOwnPopRef.current = false;
+        return;
+      }
       if (!dirtyRef.current) return;
       if (awaitingPopRef.current) {
         // Pop extra enquanto a confirmação está aberta: desfaz para não sair da página.
@@ -140,8 +154,18 @@ export function UnsavedGuardProvider({ children }: { children: React.ReactNode }
       awaitingPopRef.current = true;
       setPendingLeave(() => () => {
         awaitingPopRef.current = false;
-        dirtyRef.current = false;
+        const before = window.history.state;
+        leavingOwnPopRef.current = true;
         window.history.back();
+        // Rota aberta direto (sem entrada anterior real): o back() é
+        // no-op e o form segue montado e sujo — rearma a sentinela,
+        // senão a próxima saída descartaria as edições sem aviso.
+        window.setTimeout(() => {
+          if (window.history.state === before && dirtyRef.current && !sentinelActiveRef.current) {
+            window.history.pushState(artificialHistoryState(SENTINEL), '');
+            sentinelActiveRef.current = true;
+          }
+        }, 150);
       });
     };
     window.addEventListener('popstate', onPopState);
@@ -181,6 +205,7 @@ export function UnsavedGuardProvider({ children }: { children: React.ReactNode }
   }, [location.key, location.pathname]);
 
   const confirmLeave = () => {
+    confirmedRef.current = true;
     const proceed = pendingLeave;
     setPendingLeave(null);
     // dirtyRef NÃO é limpo aqui: se o destino for a própria rota o form
@@ -231,7 +256,19 @@ export function UnsavedGuardProvider({ children }: { children: React.ReactNode }
   return (
     <UnsavedGuardContext.Provider value={{ setDirty }}>
       {children}
-      <AlertDialog open={pendingLeave !== null} onOpenChange={(open) => !open && dismissLeave()}>
+      <AlertDialog
+        open={pendingLeave !== null}
+        onOpenChange={(open) => {
+          if (open) return;
+          // O AlertDialogAction também fecha o Radix após o onClick —
+          // esse fechamento é da confirmação, não de um cancelamento.
+          if (confirmedRef.current) {
+            confirmedRef.current = false;
+            return;
+          }
+          dismissLeave();
+        }}
+      >
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle>Descartar alterações não salvas?</AlertDialogTitle>

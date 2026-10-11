@@ -1,6 +1,7 @@
 import { useEffect, useRef, useCallback } from 'react';
 import { useLocation } from 'react-router-dom';
 import { useSmartBack } from './useSmartBack';
+import { MODAL_HISTORY_MARKER } from '@/lib/unsaved-guard';
 
 interface SwipeBackOptions {
   /** Minimum swipe distance in pixels to trigger navigation */
@@ -49,7 +50,12 @@ export function useSwipeBack({
 
       // Must be a horizontal swipe (not vertical scroll)
       if (deltaX > threshold && deltaY < deltaX * 0.5 && elapsed < 500) {
-        if (location.pathname !== '/' && location.pathname !== '/dashboard') {
+        // Modal aberto é um marcador no topo: o gesto consome-o (fecha o
+        // dialog) mesmo em / e /dashboard, que não têm "anterior".
+        const onModalMarker =
+          (window.history.state as Record<string, unknown> | null)?.[MODAL_HISTORY_MARKER] !==
+          undefined;
+        if (onModalMarker || (location.pathname !== '/' && location.pathname !== '/dashboard')) {
           goBack();
         }
       }

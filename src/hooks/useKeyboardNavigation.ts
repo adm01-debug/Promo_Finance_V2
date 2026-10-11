@@ -1,7 +1,11 @@
 import { useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useSmartBack } from './useSmartBack';
-import { hasUnsavedChanges, navigateWithUnsavedGuard } from '@/lib/unsaved-guard';
+import {
+  hasUnsavedChanges,
+  MODAL_HISTORY_MARKER,
+  navigateWithUnsavedGuard,
+} from '@/lib/unsaved-guard';
 
 /**
  * Keyboard shortcuts for navigation:
@@ -29,7 +33,13 @@ export function useKeyboardNavigation() {
 
       if (e.altKey && e.key === 'ArrowLeft') {
         e.preventDefault();
-        if (location.pathname !== '/' && location.pathname !== '/dashboard') {
+        // Modal aberto é um marcador no topo: o Voltar consome-o (fecha
+        // o dialog) mesmo em rotas sem "anterior" como / e /dashboard —
+        // sem o marcador, continua valendo a exceção das rotas-raiz.
+        const onModalMarker =
+          (window.history.state as Record<string, unknown> | null)?.[MODAL_HISTORY_MARKER] !==
+          undefined;
+        if (onModalMarker || (location.pathname !== '/' && location.pathname !== '/dashboard')) {
           goBack();
         }
       }

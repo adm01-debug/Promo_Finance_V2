@@ -1,5 +1,6 @@
 import { useEffect, useRef } from 'react';
 import { useLocation } from 'react-router-dom';
+import { hasForwardEntries } from '@/lib/navigation';
 import {
   artificialHistoryState,
   hasUnsavedChanges,
@@ -53,6 +54,11 @@ export function ModalHistoryManager() {
   // o observer re-empilhar marcador na janela entre o pop e o unmount.
   const pendingCloseRef = useRef(0);
   const prevOpenRef = useRef(0);
+  // Pilha de abertura real dos dialogs (base → topo): a ordem do DOM
+  // mente a camada — portal Radix vai para o body DEPOIS do root onde
+  // um ConfirmationDialog próprio (não-portalado) foi renderizado, e a
+  // última ocorrência em querySelectorAll seria o Radix de baixo.
+  const openOrderRef = useRef<HTMLElement[]>([]);
 
   useEffect(() => {
     const markers = markersRef.current;
@@ -72,7 +78,9 @@ export function ModalHistoryManager() {
         const open = openDialogCount();
         prevOpenRef.current = open;
         const effective = open - pendingCloseRef.current;
-        while (markers.length < effective) pushMarker();
+        while (markers.length < effective) {
+          if (!pushMarker()) break;
+        }
       }, 150);
     };
 
@@ -89,6 +97,11 @@ export function ModalHistoryManager() {
     };
 
     const pushMarker = () => {
+      // pushState descarta as entradas reais à frente do browser: com
+      // Avançar pendente (A→B, Voltar, abrir dialog), prefere ficar sem
+      // o marcador a destruir esse histórico — o Voltar aqui navega
+      // normal e a página desmonta o dialog junto.
+      if (hasForwardEntries()) return false;
       seqRef.current += 1;
       const state = artificialHistoryState(MODAL_MARKER);
       state[MODAL_MARKER] = seqRef.current;
@@ -96,6 +109,7 @@ export function ModalHistoryManager() {
       if (markers.length === 0) topmostRef.current = true;
       markers.push(seqRef.current);
       onTopMarkerRef.current = true;
+      return true;
     };
 
     const onPopState = () => {
@@ -192,8 +206,20 @@ export function ModalHistoryManager() {
         pendingCloseRef.current = Math.max(0, pendingCloseRef.current - dropped);
       }
       prevOpenRef.current = open;
+      // Mantém a pilha de abertura real: remove fechados e anexa novos
+      // na ordem em que apareceram.
+      const openEls = Array.from(document.querySelectorAll<HTMLElement>(OPEN_DIALOG_SELECTOR));
+      const order = openOrderRef.current;
+      for (let i = order.length - 1; i >= 0; i -= 1) {
+        if (!openEls.includes(order[i])) order.splice(i, 1);
+      }
+      for (const el of openEls) {
+        if (!order.includes(el)) order.push(el);
+      }
       const effective = open - pendingCloseRef.current;
-      while (markers.length < effective) pushMarker();
+      while (markers.length < effective) {
+        if (!pushMarker()) break;
+      }
       syncClosedDialogs();
       if (markers.length === 0) topmostRef.current = true;
     };
@@ -246,8 +272,16 @@ export function ModalHistoryManager() {
     const forwarded = new WeakSet<KeyboardEvent>();
     const onKeyDownCapture = (e: KeyboardEvent) => {
       if (e.key !== 'Escape' || forwarded.has(e)) return;
-      const dialogs = document.querySelectorAll<HTMLElement>(OPEN_DIALOG_SELECTOR);
-      const top = dialogs[dialogs.length - 1];
+      // O topo real é o último a ABRIR, não o último no DOM: com o
+      // portal do Radix anexado ao body depois do root, um dialog
+      // próprio renderizado inline (ConfirmationDialog) apareceria
+      // abaixo de um Radix que ele sobrepõe visualmente.
+      const order = openOrderRef.current;
+      const top =
+        order[order.length - 1] ??
+        document.querySelectorAll<HTMLElement>(OPEN_DIALOG_SELECTOR)[
+          document.querySelectorAll(OPEN_DIALOG_SELECTOR).length - 1
+        ];
       if (!top || top.dataset.escapeOwned === undefined) return;
       e.preventDefault();
       e.stopImmediatePropagation();
