@@ -23,6 +23,8 @@ import { useCelebrations } from '@/components/wrappers/CelebrationActions';
 import { sounds } from '@/lib/sound-feedback';
 import { supabase } from '@/integrations/supabase/client';
 import { ConflitoVersaoError } from '@/lib/optimistic-lock';
+import { useUnsavedChangesGuard } from '@/components/navigation/unsaved-guard-context';
+import { navigateWithUnsavedGuard } from '@/lib/unsaved-guard';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import {
   Form,
@@ -127,6 +129,22 @@ export function ContaPagarForm({ open, onOpenChange, conta }: ContaPagarFormProp
       recorrente: false,
     },
   });
+
+  // Navegar fora com o form sujo pede confirmação ("Descartar alterações?")
+  useUnsavedChangesGuard(open && form.formState.isDirty);
+
+  // Fechar o Dialog (Escape, overlay, X, Cancelar) com o form sujo pede
+  // confirmação — sem isto o descarte era silencioso. Usa o AlertDialog
+  // global da guarda: um dialog próprio aqui abriria fora da camada do
+  // Radix (inacessível) e deixaria marcadores fora de ordem; a guarda
+  // já remove sentinela + marcadores em sequência antes de confirmar.
+  const requestClose = (next: boolean) => {
+    if (!next) {
+      navigateWithUnsavedGuard(() => onOpenChange(false));
+      return;
+    }
+    onOpenChange(next);
+  };
 
   const contaIdRef = useRef<string | null>(null);
 
@@ -252,18 +270,20 @@ export function ContaPagarForm({ open, onOpenChange, conta }: ContaPagarFormProp
   const handleFornecedorSelect = (fornecedorId: string) => {
     const fornecedor = fornecedores.find((f) => f.id === fornecedorId);
     if (fornecedor) {
-      form.setValue('fornecedor_id', fornecedorId);
-      form.setValue('fornecedor_nome', fornecedor.razao_social);
+      form.setValue('fornecedor_id', fornecedorId, { shouldDirty: true });
+      form.setValue('fornecedor_nome', fornecedor.razao_social, { shouldDirty: true });
     }
   };
 
   const handleBoletoDetected = (dados: DadosBoleto) => {
-    if (dados.valor > 0) form.setValue('valor', dados.valor);
-    if (dados.dataVencimento) form.setValue('data_vencimento', toISOLocal(dados.dataVencimento));
-    if (dados.codigoBarras) form.setValue('codigo_barras', dados.codigoBarras);
-    form.setValue('tipo_cobranca', 'boleto');
+    if (dados.valor > 0) form.setValue('valor', dados.valor, { shouldDirty: true });
+    if (dados.dataVencimento)
+      form.setValue('data_vencimento', toISOLocal(dados.dataVencimento), { shouldDirty: true });
+    if (dados.codigoBarras)
+      form.setValue('codigo_barras', dados.codigoBarras, { shouldDirty: true });
+    form.setValue('tipo_cobranca', 'boleto', { shouldDirty: true });
     if (!form.getValues('descricao') && dados.banco)
-      form.setValue('descricao', `Boleto ${dados.banco}`);
+      form.setValue('descricao', `Boleto ${dados.banco}`, { shouldDirty: true });
     toast({
       title: 'Dados preenchidos automaticamente',
       description: `Boleto do ${dados.banco} no valor de R$ ${dados.valor.toFixed(2)}`,
@@ -279,12 +299,14 @@ export function ContaPagarForm({ open, onOpenChange, conta }: ContaPagarFormProp
       const result = await processarNF.mutateAsync(file);
       if (result.success && result.dados_extraidos) {
         const dados = result.dados_extraidos;
-        if (dados.valor_total) form.setValue('valor', dados.valor_total);
-        if (dados.data_emissao) form.setValue('data_emissao', dados.data_emissao);
-        if (dados.numero_nf) form.setValue('numero_documento', dados.numero_nf);
-        if (dados.descricao) form.setValue('descricao', dados.descricao);
+        if (dados.valor_total) form.setValue('valor', dados.valor_total, { shouldDirty: true });
+        if (dados.data_emissao)
+          form.setValue('data_emissao', dados.data_emissao, { shouldDirty: true });
+        if (dados.numero_nf)
+          form.setValue('numero_documento', dados.numero_nf, { shouldDirty: true });
+        if (dados.descricao) form.setValue('descricao', dados.descricao, { shouldDirty: true });
         if (dados.razao_social_emissor) {
-          form.setValue('fornecedor_nome', dados.razao_social_emissor);
+          form.setValue('fornecedor_nome', dados.razao_social_emissor, { shouldDirty: true });
           // Tenta encontrar fornecedor pelo nome ou CNPJ se disponível futuramente
         }
 
@@ -333,7 +355,7 @@ export function ContaPagarForm({ open, onOpenChange, conta }: ContaPagarFormProp
         onOpenChange={setShowLeitorCodigoBarras}
         onBoletoDetected={handleBoletoDetected}
       />
-      <Dialog open={open} onOpenChange={onOpenChange}>
+      <Dialog open={open} onOpenChange={requestClose}>
         <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2 text-xl font-display">
@@ -482,7 +504,7 @@ export function ContaPagarForm({ open, onOpenChange, conta }: ContaPagarFormProp
               </div>
 
               <div className="flex justify-end gap-3 pt-4 border-t">
-                <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
+                <Button type="button" variant="outline" onClick={() => requestClose(false)}>
                   Cancelar
                 </Button>
                 <ActionButton

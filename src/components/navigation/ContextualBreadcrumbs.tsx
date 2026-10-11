@@ -29,37 +29,40 @@ import {
   CreditCard,
   Repeat,
   Landmark,
+  ChevronRight,
 } from 'lucide-react';
+import { getRouteLabel, getRouteMeta, resolveParentRoute } from '@/lib/navigation';
 import { cn } from '@/lib/utils';
 import { BackButton } from './BackButton';
 
-// Route configuration with icons and labels
-const routeConfig: Record<string, { label: string; icon: React.ElementType; parent?: string }> = {
-  '/': { label: 'Dashboard', icon: Home },
-  '/dashboard': { label: 'Dashboard', icon: Home },
-  '/bi': { label: 'Business Intelligence', icon: BarChart3, parent: '/' },
-  '/fluxo-caixa': { label: 'Fluxo de Caixa', icon: TrendingUp, parent: '/' },
-  '/contas-pagar': { label: 'Contas a Pagar', icon: ArrowDownCircle, parent: '/' },
-  '/contas-receber': { label: 'Contas a Receber', icon: ArrowUpCircle, parent: '/' },
-  '/cobrancas': { label: 'Cobranças', icon: CreditCard, parent: '/' },
-  '/boletos': { label: 'Boletos', icon: Receipt, parent: '/' },
-  '/conciliacao': { label: 'Conciliação', icon: CheckCircle, parent: '/' },
-  '/notas-fiscais': { label: 'Notas Fiscais', icon: FileText, parent: '/' },
-  '/relatorios': { label: 'Relatórios', icon: BarChart3, parent: '/' },
-  '/demonstrativos': { label: 'Demonstrativos', icon: FileText, parent: '/' },
-  '/clientes': { label: 'Clientes', icon: Users, parent: '/' },
-  '/fornecedores': { label: 'Fornecedores', icon: Building2, parent: '/' },
-  '/empresas': { label: 'Empresas', icon: Building2, parent: '/' },
-  '/centros-custo': { label: 'Centros de Custo', icon: PiggyBank, parent: '/' },
-  '/contas-bancarias': { label: 'Contas Bancárias', icon: Landmark, parent: '/' },
-  '/pagamentos-recorrentes': { label: 'Pagamentos Recorrentes', icon: Repeat, parent: '/' },
-  '/reforma-tributaria': { label: 'Reforma Tributária', icon: Calculator, parent: '/' },
-  '/expert': { label: 'Especialista IA', icon: Brain, parent: '/' },
-  '/configuracoes': { label: 'Configurações', icon: Settings, parent: '/' },
-  '/seguranca': { label: 'Segurança', icon: Shield, parent: '/' },
-  '/alertas': { label: 'Alertas', icon: Bell, parent: '/' },
-  '/aprovacoes': { label: 'Aprovações', icon: CheckCircle, parent: '/' },
-  '/usuarios': { label: 'Usuários', icon: Users, parent: '/configuracoes' },
+// Ícones por rota quando conhecidos; rotas sem mapeamento usam ChevronRight.
+const iconByRoute: Record<string, React.ElementType> = {
+  '/': Home,
+  '/dashboard': Home,
+  '/bi': BarChart3,
+  '/fluxo-caixa': TrendingUp,
+  '/contas-pagar': ArrowDownCircle,
+  '/contas-receber': ArrowUpCircle,
+  '/cobrancas': CreditCard,
+  '/boletos': Receipt,
+  '/conciliacao': CheckCircle,
+  '/notas-fiscais': FileText,
+  '/relatorios': BarChart3,
+  '/demonstrativos': FileText,
+  '/clientes': Users,
+  '/fornecedores': Building2,
+  '/empresas': Building2,
+  '/centro-custos': PiggyBank,
+  '/contas-bancarias': Landmark,
+  '/pagamentos-recorrentes': Repeat,
+  '/reforma-tributaria': Calculator,
+  '/tributario': Calculator,
+  '/expert': Brain,
+  '/configuracoes': Settings,
+  '/seguranca': Shield,
+  '/alertas': Bell,
+  '/aprovacoes': CheckCircle,
+  '/usuarios': Users,
 };
 
 interface BreadcrumbItemData {
@@ -76,36 +79,60 @@ export const ContextualBreadcrumbs = forwardRef<HTMLDivElement, { className?: st
     const breadcrumbs = useMemo(() => {
       const items: BreadcrumbItemData[] = [];
       let currentPath = location.pathname;
+      const seen = new Set<string>();
 
-      while (currentPath) {
-        const config = routeConfig[currentPath];
-        if (config) {
-          items.unshift({
-            path: currentPath,
-            label: config.label,
-            icon: config.icon,
-            isLast: items.length === 0,
-          });
-          currentPath = config.parent || '';
-        } else {
-          break;
+      // Sobe a cadeia de pais derivada dos metadados de rota (cobre todas
+      // as ~128 rotas, inclusive subseções de /tributario e /admin).
+      while (currentPath && !seen.has(currentPath)) {
+        seen.add(currentPath);
+        const meta = getRouteMeta(currentPath);
+        if (!meta) {
+          // Rota sem metadados: sobe por segmento até achar um conhecido.
+          const parent = resolveParentRoute(currentPath);
+          currentPath = parent === currentPath ? '' : parent;
+          continue;
         }
+        items.unshift({
+          path: currentPath,
+          // A página atual usa getRouteLabel (rótulo da aba ativa em
+          // rotas com parâmetro); os pais usam o label da meta.
+          label: items.length === 0 ? getRouteLabel(currentPath) : meta.label,
+          icon: iconByRoute[currentPath] ?? ChevronRight,
+          isLast: items.length === 0,
+        });
+        currentPath = resolveParentRoute(currentPath);
+        if (currentPath === items[0]?.path) break;
       }
 
-      if (items.length > 0 && items[0].path !== '/') {
-        items.unshift({
-          path: '/',
-          label: 'Dashboard',
-          icon: Home,
+      // A página atual sempre aparece por último, mesmo sem metadados
+      // (getRouteLabel cai para o segmento humanizado).
+      if (items[items.length - 1]?.path !== location.pathname) {
+        items.push({
+          path: location.pathname,
+          label: getRouteLabel(location.pathname),
+          icon: ChevronRight,
           isLast: false,
         });
       }
 
+      if (items.length > 0 && items[0].path !== '/') {
+        items.unshift({ path: '/', label: 'Dashboard', icon: Home, isLast: false });
+      }
+
+      // isLast marca só o item final (a página atual).
+      items.forEach((item, idx) => {
+        item.isLast = idx === items.length - 1;
+      });
+
       return items;
     }, [location.pathname]);
 
-    // Don't show breadcrumbs on home page
-    if (location.pathname === '/' || breadcrumbs.length <= 1) {
+    // Don't show breadcrumbs on home page (inclui o alias /dashboard)
+    if (
+      location.pathname === '/' ||
+      location.pathname === '/dashboard' ||
+      breadcrumbs.length <= 1
+    ) {
       return null;
     }
 
