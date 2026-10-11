@@ -4,8 +4,10 @@ import { hasForwardEntries } from '@/lib/navigation';
 import {
   artificialHistoryState,
   hasUnsavedChanges,
+  isGuardAwaitingPop,
   isPlannedGuardPop,
   MODAL_HISTORY_MARKER as MODAL_MARKER,
+  registerMarkerResync,
   registerModalMarkerPopper,
   UNSAVED_GUARD_SENTINEL as SENTINEL,
 } from '@/lib/unsaved-guard';
@@ -138,6 +140,10 @@ export function ModalHistoryManager() {
           window.history.back();
           return;
         }
+        // Voltar enquanto a confirmação de não-salvos aguarda resposta:
+        // a guarda desfaz este pop com forward() — a entrada não sai,
+        // então o marcador e o dialog devem permanecer como estão.
+        if (isGuardAwaitingPop()) return;
         markers.pop();
         // A entrada em que pousamos pode ser outro marcador (novo topo).
         onTopMarkerRef.current = cur !== undefined && cur === markers[markers.length - 1];
@@ -172,6 +178,26 @@ export function ModalHistoryManager() {
           const landed = cur;
           window.setTimeout(() => {
             if (window.history.state?.[MODAL_MARKER] === landed) {
+              ghostDirRef.current = -1;
+              poppingOwnRef.current = true;
+              window.history.back();
+            }
+          }, 150);
+        } else window.history.back();
+        return;
+      }
+      // Sentinela com guarda desarmada é tão artificial quanto um
+      // marcador órfão: pousar nela no meio de um pulo de fantasmas (ou
+      // por Avançar direto) exporia um beco com a mesma URL — segue a
+      // direção da travessia até uma entrada real. Se ela é a última
+      // entrada, o forward é no-op e o timeout inverte para trás.
+      if (state?.[SENTINEL] && !hasUnsavedChanges()) {
+        poppingOwnRef.current = true;
+        if (ghostDirRef.current === 0) ghostDirRef.current = 1;
+        if (ghostDirRef.current > 0) {
+          window.history.forward();
+          window.setTimeout(() => {
+            if (window.history.state?.[SENTINEL] && !hasUnsavedChanges()) {
               ghostDirRef.current = -1;
               poppingOwnRef.current = true;
               window.history.back();
@@ -291,6 +317,16 @@ export function ModalHistoryManager() {
     };
     document.addEventListener('keydown', onKeyDownCapture, true);
 
+    // A pilha à frente pode voltar a aceitar marcadores (um pushState
+    // de sentinela truncou o Avançar real que impedia o push): dialogs
+    // abertos cujo marcador foi recusado — ou consumido por pop
+    // planejado cujo back() final foi no-op — são marcados agora.
+    // Digitar num input não dispara o observer; sem este sinal o form
+    // continuaria fora do histórico.
+    const offResync = registerMarkerResync(() => {
+      syncMarkers();
+    });
+
     const unregister = registerModalMarkerPopper(() => {
       // A guarda só precisa da contagem: ela mesma emite os history.
       // back() um a um, por popstate — vários backs síncronos podem ser
@@ -304,6 +340,7 @@ export function ModalHistoryManager() {
       observer.disconnect();
       window.removeEventListener('popstate', onPopState);
       document.removeEventListener('keydown', onKeyDownCapture, true);
+      offResync();
       unregister();
     };
   }, []);

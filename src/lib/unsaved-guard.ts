@@ -96,3 +96,49 @@ export function registerPlannedPopChecker(checker: PlannedPopChecker | null): ()
 export function isPlannedGuardPop(): boolean {
   return plannedPopChecker?.() ?? false;
 }
+
+/**
+ * Pergunta registrada pelo provider: true enquanto a confirmação de
+ * saída aguarda resposta — o Voltar seguinte será desfeito com
+ * forward(), então a entrada não sai do histórico. O
+ * ModalHistoryManager usa isto para não consumir o marcador nesses
+ * pops: diferente dos pops planejados (que de fato removem entradas),
+ * aqui o marcador e o dialog devem permanecer.
+ */
+type AwaitingPopChecker = () => boolean;
+
+let awaitingPopChecker: AwaitingPopChecker | null = null;
+
+export function registerAwaitingPopChecker(checker: AwaitingPopChecker | null): () => void {
+  awaitingPopChecker = checker;
+  return () => {
+    if (awaitingPopChecker === checker) awaitingPopChecker = null;
+  };
+}
+
+export function isGuardAwaitingPop(): boolean {
+  return awaitingPopChecker?.() ?? false;
+}
+
+/**
+ * Resync registrado pelo ModalHistoryManager: chamado quando entradas
+ * artificiais são (re)empilhadas e dialogs abertos podem ter ficado
+ * sem marcador — o pushMarker recusado por hasForwardEntries, ou o
+ * marcador consumido por um pop planejado cujo back() final foi no-op.
+ * Digitar num input não dispara o MutationObserver, então sem este
+ * sinal o dialog permaneceria fora do histórico.
+ */
+type MarkerResync = () => void;
+
+let markerResync: MarkerResync | null = null;
+
+export function registerMarkerResync(resync: MarkerResync | null): () => void {
+  markerResync = resync;
+  return () => {
+    if (markerResync === resync) markerResync = null;
+  };
+}
+
+export function requestMarkerResync(): void {
+  markerResync?.();
+}

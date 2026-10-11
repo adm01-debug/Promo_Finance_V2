@@ -14,8 +14,10 @@ import { dropForwardEntries } from '@/lib/navigation';
 import {
   artificialHistoryState,
   MODAL_HISTORY_MARKER,
+  registerAwaitingPopChecker,
   registerPlannedPopChecker,
   registerUnsavedGuard,
+  requestMarkerResync,
   topModalMarkerCount,
   UNSAVED_GUARD_SENTINEL as SENTINEL,
 } from '@/lib/unsaved-guard';
@@ -55,6 +57,9 @@ export function UnsavedGuardProvider({ children }: { children: React.ReactNode }
       window.history.pushState(artificialHistoryState(SENTINEL), '');
       dropForwardEntries();
       sentinelActiveRef.current = true;
+      // Dialogs abertos cujo marcador foi recusado enquanto havia
+      // Avançar real agora podem ser marcados.
+      requestMarkerResync();
     } else if (!dirty && sentinelActiveRef.current) {
       // Limpou sem navegar: remove a sentinela se ela ainda for o topo.
       if (window.history.state?.[SENTINEL]) {
@@ -79,13 +84,16 @@ export function UnsavedGuardProvider({ children }: { children: React.ReactNode }
   // O ModalHistoryManager pergunta isto para não despachar Escape nos pops
   // que a própria guarda planejou — senão a confirmação de descarte
   // reapareceria no form que ela está fechando.
-  useEffect(
-    () =>
-      registerPlannedPopChecker(
-        () => plannedPopsRef.current > 0 || pendingProceedRef.current !== null
-      ),
-    []
-  );
+  useEffect(() => {
+    const offPlanned = registerPlannedPopChecker(
+      () => plannedPopsRef.current > 0 || pendingProceedRef.current !== null
+    );
+    const offAwaiting = registerAwaitingPopChecker(() => awaitingPopRef.current);
+    return () => {
+      offPlanned();
+      offAwaiting();
+    };
+  }, []);
 
   // Intercepta cliques em links internos enquanto dirty.
   useEffect(() => {
@@ -167,7 +175,11 @@ export function UnsavedGuardProvider({ children }: { children: React.ReactNode }
         window.setTimeout(() => {
           if (window.history.state === before && dirtyRef.current && !sentinelActiveRef.current) {
             window.history.pushState(artificialHistoryState(SENTINEL), '');
+            dropForwardEntries();
             sentinelActiveRef.current = true;
+            // O back() foi no-op e o dialog continua montado sem
+            // marcador (o pop planejado o consumiu) — recria-o.
+            requestMarkerResync();
           }
         }, 150);
       });
@@ -199,6 +211,7 @@ export function UnsavedGuardProvider({ children }: { children: React.ReactNode }
         window.history.pushState(artificialHistoryState(SENTINEL), '');
         dropForwardEntries();
         sentinelActiveRef.current = true;
+        requestMarkerResync();
       }
       return;
     }
@@ -261,6 +274,7 @@ export function UnsavedGuardProvider({ children }: { children: React.ReactNode }
         window.history.pushState(artificialHistoryState(SENTINEL), '');
         dropForwardEntries();
         sentinelActiveRef.current = true;
+        requestMarkerResync();
       }
     }
   };
