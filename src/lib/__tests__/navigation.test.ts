@@ -6,6 +6,8 @@ import {
   recordNavEntry,
   previousNavEntry,
   resetNavStack,
+  subscribeNavStack,
+  isSensitiveRoute,
 } from '../navigation';
 
 describe('getRouteMeta', () => {
@@ -88,5 +90,26 @@ describe('pilha de navegação in-app', () => {
     recordNavEntry({ key: 'a', pathname: '/clientes', search: '' }, 'PUSH');
     recordNavEntry({ key: 'x', pathname: '/fornecedores', search: '' }, 'POP');
     expect(previousNavEntry()?.pathname).toBe('/clientes');
+  });
+});
+
+describe('pilha reativa e rotas sensíveis', () => {
+  beforeEach(() => resetNavStack());
+
+  it('notifica assinantes a cada mudança da pilha', () => {
+    let calls = 0;
+    const unsubscribe = subscribeNavStack(() => calls++);
+    recordNavEntry({ key: 'a', pathname: '/', search: '' }, 'PUSH');
+    recordNavEntry({ key: 'a', pathname: '/', search: '' }, 'PUSH'); // dedup não notifica
+    recordNavEntry({ key: 'b', pathname: '/configuracoes', search: '' }, 'PUSH');
+    unsubscribe();
+    recordNavEntry({ key: 'c', pathname: '/clientes', search: '' }, 'PUSH');
+    expect(calls).toBe(2);
+  });
+
+  it('identifica rotas com token no path', () => {
+    expect(isSensitiveRoute('/contador/abc123')).toBe(true);
+    expect(isSensitiveRoute('/convite/xyz')).toBe(true);
+    expect(isSensitiveRoute('/clientes/portal-tokens')).toBe(false);
   });
 });

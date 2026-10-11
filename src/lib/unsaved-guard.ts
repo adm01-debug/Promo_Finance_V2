@@ -5,6 +5,24 @@
  * `components/navigation/UnsavedGuardProvider.tsx` preenche os handlers.
  */
 
+/** Chaves de `history.state` usadas pelas entradas artificiais de navegação. */
+export const MODAL_HISTORY_MARKER = '__modal_history__';
+export const UNSAVED_GUARD_SENTINEL = '__unsaved_guard__';
+
+/**
+ * State para uma entrada artificial: preserva idx/key do React Router e
+ * remove marcadores herdados (o marcador vale só para a entrada que o criou).
+ */
+export function artificialHistoryState(marker: string): Record<string, unknown> {
+  const current = window.history.state;
+  const base: Record<string, unknown> =
+    current && typeof current === 'object' ? { ...(current as Record<string, unknown>) } : {};
+  delete base[MODAL_HISTORY_MARKER];
+  delete base[UNSAVED_GUARD_SENTINEL];
+  base[marker] = true;
+  return base;
+}
+
 export interface UnsavedGuardHandlers {
   isDirty: () => boolean;
   /** Exibe confirmação; chama `proceed` se o usuário aceitar sair. */

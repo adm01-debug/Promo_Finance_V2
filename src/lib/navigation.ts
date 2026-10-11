@@ -212,10 +212,31 @@ export interface NavEntry {
 }
 
 const navStack: NavEntry[] = [];
+let navStackVersion = 0;
+const navStackListeners = new Set<() => void>();
 
-/** Reseta a pilha (usado em testes). */
+function notifyNavStack(): void {
+  navStackVersion++;
+  navStackListeners.forEach((l) => l());
+}
+
+/** Assinatura reativa da pilha (useSyncExternalStore). */
+export function subscribeNavStack(listener: () => void): () => void {
+  navStackListeners.add(listener);
+  return () => {
+    navStackListeners.delete(listener);
+  };
+}
+
+export function getNavStackVersion(): number {
+  return navStackVersion;
+}
+
+/** Reseta a pilha (cruzar rota excluída, testes). */
 export function resetNavStack(): void {
+  if (navStack.length === 0) return;
   navStack.length = 0;
+  notifyNavStack();
 }
 
 /**
@@ -230,14 +251,24 @@ export function recordNavEntry(entry: NavEntry, type: 'POP' | 'PUSH' | 'REPLACE'
     const idx = navStack.findIndex((e) => e.key === entry.key);
     if (idx >= 0) {
       navStack.length = idx + 1;
+      notifyNavStack();
       return;
     }
   } else if (type === 'REPLACE' && navStack.length > 0) {
     navStack[navStack.length - 1] = entry;
+    notifyNavStack();
     return;
   }
   // PUSH, REPLACE sem pilha, ou POP para entrada desconhecida
   navStack.push(entry);
+  notifyNavStack();
+}
+
+/** Rotas públicas cujo path carrega segredo (token de convite/contador). */
+const SENSITIVE_ROUTE_PREFIXES = ['/contador/', '/convite/'];
+
+export function isSensitiveRoute(pathname: string): boolean {
+  return SENSITIVE_ROUTE_PREFIXES.some((p) => pathname.startsWith(p));
 }
 
 /** Entrada in-app anterior à atual, se existir. */

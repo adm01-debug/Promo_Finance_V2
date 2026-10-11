@@ -1,6 +1,12 @@
-import { useCallback } from 'react';
+import { useCallback, useSyncExternalStore } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { previousNavEntry, resolveParentRoute, getRouteLabel } from '@/lib/navigation';
+import {
+  previousNavEntry,
+  resolveParentRoute,
+  getRouteLabel,
+  subscribeNavStack,
+  getNavStackVersion,
+} from '@/lib/navigation';
 import { navigateWithUnsavedGuard } from '@/lib/unsaved-guard';
 import { addBreadcrumb } from '@/lib/telemetry';
 
@@ -24,27 +30,31 @@ export interface SmartBack {
 export function useSmartBack(method: BackMethod = 'programmatic'): SmartBack {
   const navigate = useNavigate();
   const location = useLocation();
+  // Re-renderiza quando o NavigationTracker registra a nova localização.
+  useSyncExternalStore(subscribeNavStack, getNavStackVersion, getNavStackVersion);
 
   const prev = previousNavEntry();
   const canGoInApp = prev !== undefined;
-  const parentPath = canGoInApp ? prev.pathname : resolveParentRoute(location.pathname);
-  const backLabel = getRouteLabel(parentPath);
+  const backLabel = getRouteLabel(prev ? prev.pathname : resolveParentRoute(location.pathname));
 
   const goBack = useCallback(() => {
     navigateWithUnsavedGuard(() => {
+      // Lê a pilha no momento do clique, não do último render.
+      const target = previousNavEntry();
+      const parentPath = resolveParentRoute(location.pathname);
       addBreadcrumb('nav_back', {
         from: location.pathname,
-        to: canGoInApp ? prev.pathname : parentPath,
+        to: target ? target.pathname : parentPath,
         method,
-        inApp: canGoInApp,
+        inApp: target !== undefined,
       });
-      if (canGoInApp) {
+      if (target) {
         navigate(-1);
       } else {
         navigate(parentPath);
       }
     });
-  }, [navigate, location.pathname, canGoInApp, prev, parentPath, method]);
+  }, [navigate, location.pathname, method]);
 
   return { goBack, backLabel, canGoInApp };
 }

@@ -11,7 +11,7 @@ export function MobileHeader() {
   const location = useLocation();
 
   return (
-    <header className="fixed top-0 left-0 right-0 z-50 flex h-14 items-center gap-2 border-b border-white/10 bg-background/60 px-3 backdrop-blur-3xl md:hidden">
+    <header className="fixed top-0 left-0 right-0 z-50 flex h-[calc(3.5rem+env(safe-area-inset-top))] items-center gap-2 border-b border-white/10 bg-background/60 px-3 pt-[env(safe-area-inset-top)] backdrop-blur-3xl md:hidden">
       <BackButton size="sm" variant="ghost" className="shrink-0 -ml-1" />
       <h1 className="min-w-0 flex-1 truncate text-sm font-semibold text-foreground">
         {getRouteLabel(location.pathname)}

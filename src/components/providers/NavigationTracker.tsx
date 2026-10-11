@@ -1,7 +1,13 @@
 import { useEffect, useRef } from 'react';
 import { useLocation, useNavigationType } from 'react-router-dom';
 import { useRecentItems } from '@/hooks/useRecentItems';
-import { getRouteLabel, recordNavEntry, resetNavStack } from '@/lib/navigation';
+import {
+  getRouteLabel,
+  getRouteMeta,
+  isSensitiveRoute,
+  recordNavEntry,
+  resetNavStack,
+} from '@/lib/navigation';
 
 // Routes to exclude from tracking
 const excludedRoutes = ['/auth', '/404'];
@@ -33,15 +39,19 @@ export function NavigationTracker() {
     // Pilha in-app usada pelo Voltar semântico (useSmartBack). Cruzar por
     // rota excluída (ex.: /auth) invalida a contiguidade — sem isso,
     // navigate(-1) poderia devolver a página de autenticação.
-    if (excludedRoutes.includes(pathname)) {
+    const untracked = excludedRoutes.includes(pathname) || isSensitiveRoute(pathname);
+    if (untracked) {
       resetNavStack();
     } else {
       recordNavEntry({ key, pathname, search }, navigationType);
     }
 
     // Título do documento reflete a rota (abas, histórico, leitores de tela).
-    if (!excludedRoutes.includes(pathname)) {
+    // Rotas com token no path não expõem o segmento no título.
+    if (!untracked) {
       document.title = `${getRouteLabel(pathname)} — Promo Finance`;
+    } else if (isSensitiveRoute(pathname)) {
+      document.title = 'Promo Finance';
     }
 
     const isFirst = firstRenderRef.current;
@@ -73,8 +83,9 @@ export function NavigationTracker() {
   useEffect(() => {
     const path = location.pathname;
 
-    // Don't track excluded routes
-    if (excludedRoutes.includes(path)) return;
+    // Recentes só para rotas internas conhecidas — nunca paths com token
+    // (ficam em localStorage e viram links na sidebar).
+    if (excludedRoutes.includes(path) || isSensitiveRoute(path) || !getRouteMeta(path)) return;
 
     addRecentItem(path, getRouteLabel(path));
   }, [location.pathname, addRecentItem]);

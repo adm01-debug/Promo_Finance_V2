@@ -10,10 +10,12 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
-import { registerUnsavedGuard } from '@/lib/unsaved-guard';
+import {
+  artificialHistoryState,
+  registerUnsavedGuard,
+  UNSAVED_GUARD_SENTINEL as SENTINEL,
+} from '@/lib/unsaved-guard';
 import { UnsavedGuardContext } from './unsaved-guard-context';
-
-const SENTINEL = '__unsaved_guard__';
 
 export function UnsavedGuardProvider({ children }: { children: React.ReactNode }) {
   const dirtyRef = useRef(false);
@@ -31,7 +33,7 @@ export function UnsavedGuardProvider({ children }: { children: React.ReactNode }
     dirtyRef.current = dirty;
     if (dirty && !sentinelActiveRef.current) {
       // Sentinela: o próximo "voltar" do browser cai nela, não sai da página.
-      window.history.pushState({ [SENTINEL]: true }, '');
+      window.history.pushState(artificialHistoryState(SENTINEL), '');
       sentinelActiveRef.current = true;
     } else if (!dirty && sentinelActiveRef.current) {
       // Limpou sem navegar: remove a sentinela se ela ainda for o topo.
@@ -149,7 +151,7 @@ export function UnsavedGuardProvider({ children }: { children: React.ReactNode }
     // Cancelou um "voltar" do browser: repõe a sentinela para o próximo.
     if (awaitingPopRef.current && dirtyRef.current) {
       awaitingPopRef.current = false;
-      window.history.pushState({ [SENTINEL]: true }, '');
+      window.history.pushState(artificialHistoryState(SENTINEL), '');
       sentinelActiveRef.current = true;
     }
   };

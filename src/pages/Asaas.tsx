@@ -40,8 +40,19 @@ import {
   QueueHistoryDialog,
 } from './Asaas.parts';
 
+const ASAAS_TABS = [
+  'cobrancas',
+  'assinaturas',
+  'links',
+  'extrato',
+  'transfers',
+  'webhooks',
+  'fila',
+  'config',
+] as const;
+
 export default function Asaas() {
-  const [tab, setTab] = useUrlTab('cobrancas');
+  const [tab, setTab] = useUrlTab('cobrancas', ASAAS_TABS);
   const { data: empresas, isLoading: loadingEmpresas } = useAllEmpresas();
   const empresaId = empresas?.[0]?.id;
   const {

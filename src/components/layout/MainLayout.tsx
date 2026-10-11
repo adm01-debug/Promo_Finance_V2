@@ -95,7 +95,7 @@ export const MainLayout = ({ children }: MainLayoutProps) => {
         transition={{ duration: 0.5, ease: [0.25, 0.1, 0.25, 1] }}
         className={cn(
           'min-h-screen w-full transition-all duration-500',
-          isMobile ? 'pt-16 pb-24' : 'pt-20'
+          isMobile ? 'pt-[calc(4rem+env(safe-area-inset-top))] pb-24' : 'pt-20'
         )}
         style={{
           width: isMobile ? '100%' : `calc(100% - ${sidebarCollapsed ? 80 : 280}px)`,

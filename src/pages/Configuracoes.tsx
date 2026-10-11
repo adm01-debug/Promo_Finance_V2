@@ -54,13 +54,29 @@ import {
   type Template,
 } from './Configuracoes.constants';
 
+const CONFIG_TABS = [
+  'regua',
+  'templates',
+  'duplicidade',
+  'conciliacao',
+  'notificacoes',
+  'agendamentos',
+  'seguranca',
+  'integracoes',
+  'contratos',
+  'ocr',
+  'asaas',
+  'sistema',
+  'roteamento',
+] as const;
+
 export default function Configuracoes() {
   const [etapas, setEtapas] = useState<EtapaConfig[]>(etapasIniciais);
   const [templates] = useState<Template[]>(templatesIniciais);
   const [templateDialogOpen, setTemplateDialogOpen] = useState(false);
   const [selectedTemplate] = useState<Template | null>(null);
   const { toast } = useToast();
-  const [tab, setTab] = useUrlTab('regua');
+  const [tab, setTab] = useUrlTab('regua', CONFIG_TABS);
 
   // Preferências do Sistema
   const [preferencias, setPreferencias] = useState({

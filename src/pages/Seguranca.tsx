@@ -11,9 +11,12 @@ import { useAuth } from '@/hooks/useAuth';
 import { useUrlTab } from '@/hooks/useUrlTab';
 import { Shield, Key, Activity, Settings, UserCog, Monitor, Globe } from 'lucide-react';
 
+const SEGURANCA_TABS = ['mfa', 'devices'] as const;
+const SEGURANCA_TABS_ADMIN = [...SEGURANCA_TABS, 'geo', 'settings', 'ratelimit', 'audit'] as const;
+
 export default function Seguranca() {
   const { isAdmin } = useAuth();
-  const [tab, setTab] = useUrlTab('mfa');
+  const [tab, setTab] = useUrlTab('mfa', isAdmin ? SEGURANCA_TABS_ADMIN : SEGURANCA_TABS);
 
   return (
     <motion.div

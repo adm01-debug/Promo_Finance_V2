@@ -28,6 +28,14 @@ import { DocumentacaoAPI } from '@/components/api/DocumentacaoAPI';
 import { WebhookSimulator } from '@/components/admin/WebhookSimulator';
 import { Separator } from '@/components/ui/separator';
 
+const INTEGRACOES_TABS = [
+  'open-finance',
+  'whatsapp',
+  'api-docs',
+  'credentials',
+  'simulation',
+] as const;
+
 const containerVariants = {
   hidden: { opacity: 0 },
   visible: { opacity: 1, transition: { staggerChildren: 0.1 } },
@@ -39,7 +47,7 @@ const itemVariants = {
 };
 
 export default function Integracoes() {
-  const [tab, setTab] = useUrlTab('open-finance');
+  const [tab, setTab] = useUrlTab('open-finance', INTEGRACOES_TABS);
   const integrationStats = [
     { label: 'Ativas', value: '4', icon: CheckCircle2, color: 'text-success' },
     { label: 'Em Configuração', value: '2', icon: RefreshCw, color: 'text-warning' },
