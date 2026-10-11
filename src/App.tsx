@@ -19,6 +19,7 @@ import { VisualValidator } from '@/components/ui/ux-validator';
 import { VisualCorrectionOverlay } from '@/components/layout/VisualCorrectionOverlay';
 import { TransitionProvider } from '@/components/layout/transitions';
 import { useSelectiveEmpresaInvalidation } from '@/hooks/useSelectiveEmpresaInvalidation';
+import { MainLayout } from '@/components/layout/MainLayout';
 
 const Index = lazy(() => import('./pages/Index'));
 const Auth = lazy(() => import('./pages/Auth'));
@@ -258,7 +259,9 @@ function AppRoutes() {
               path="/relatorios"
               element={
                 <ProtectedRoute>
-                  <Relatorios />
+                  <MainLayout>
+                    <Relatorios />
+                  </MainLayout>
                 </ProtectedRoute>
               }
             />
@@ -314,7 +317,9 @@ function AppRoutes() {
               path="/empresas"
               element={
                 <ProtectedRoute>
-                  <Empresas />
+                  <MainLayout>
+                    <Empresas />
+                  </MainLayout>
                 </ProtectedRoute>
               }
             />
@@ -346,7 +351,9 @@ function AppRoutes() {
               path="/alertas"
               element={
                 <ProtectedRoute>
-                  <Alertas />
+                  <MainLayout>
+                    <Alertas />
+                  </MainLayout>
                 </ProtectedRoute>
               }
             />
@@ -354,7 +361,9 @@ function AppRoutes() {
               path="/configuracoes"
               element={
                 <ProtectedRoute>
-                  <Configuracoes />
+                  <MainLayout>
+                    <Configuracoes />
+                  </MainLayout>
                 </ProtectedRoute>
               }
             />
@@ -387,7 +396,9 @@ function AppRoutes() {
               path="/seguranca"
               element={
                 <ProtectedRoute>
-                  <Seguranca />
+                  <MainLayout>
+                    <Seguranca />
+                  </MainLayout>
                 </ProtectedRoute>
               }
             />
@@ -427,7 +438,9 @@ function AppRoutes() {
               path="/pagamentos-recorrentes"
               element={
                 <ProtectedRoute>
-                  <PagamentosRecorrentes />
+                  <MainLayout>
+                    <PagamentosRecorrentes />
+                  </MainLayout>
                 </ProtectedRoute>
               }
             />
@@ -435,7 +448,9 @@ function AppRoutes() {
               path="/bitrix24"
               element={
                 <ProtectedRoute>
-                  <Bitrix24 />
+                  <MainLayout>
+                    <Bitrix24 />
+                  </MainLayout>
                 </ProtectedRoute>
               }
             />
@@ -700,7 +715,9 @@ function AppRoutes() {
               path="/admin/edge-health"
               element={
                 <ProtectedRoute requiredRoles={['admin']}>
-                  <AdminEdgeHealth />
+                  <MainLayout>
+                    <AdminEdgeHealth />
+                  </MainLayout>
                 </ProtectedRoute>
               }
             />
@@ -708,7 +725,9 @@ function AppRoutes() {
               path="/admin/system-health"
               element={
                 <ProtectedRoute requiredRoles={['admin']}>
-                  <AdminSystemHealth />
+                  <MainLayout>
+                    <AdminSystemHealth />
+                  </MainLayout>
                 </ProtectedRoute>
               }
             />
@@ -804,7 +823,9 @@ function AppRoutes() {
               path="/configuracoes/privacidade"
               element={
                 <ProtectedRoute>
-                  <CentroPrivacidadeLGPD />
+                  <MainLayout>
+                    <CentroPrivacidadeLGPD />
+                  </MainLayout>
                 </ProtectedRoute>
               }
             />

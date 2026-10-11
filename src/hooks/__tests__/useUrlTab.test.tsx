@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import { renderHook, act } from '@testing-library/react';
-import { MemoryRouter, useLocation } from 'react-router-dom';
+import { MemoryRouter, useLocation, useNavigate } from 'react-router-dom';
 import { useUrlTab } from '../useUrlTab';
 
 const TABS = ['geral', 'avancado'] as const;
@@ -13,7 +13,8 @@ function setup(initial: string) {
     () => {
       const [tab, setTab] = useUrlTab('geral', TABS);
       const location = useLocation();
-      return { tab, setTab, search: location.search };
+      const navigate = useNavigate();
+      return { tab, setTab, search: location.search, navigate };
     },
     { wrapper }
   );
@@ -36,5 +37,16 @@ describe('useUrlTab', () => {
     expect(result.current.search).toBe('?foo=1&tab=avancado');
     act(() => result.current.setTab('geral'));
     expect(result.current.search).toBe('?foo=1');
+  });
+
+  it('chamadas repetidas antes do re-render empilham uma única entrada', () => {
+    const { result } = setup('/x');
+    act(() => {
+      result.current.setTab('avancado');
+      result.current.setTab('avancado'); // mousedown + focus do Radix
+    });
+    expect(result.current.tab).toBe('avancado');
+    act(() => result.current.navigate(-1));
+    expect(result.current.tab).toBe('geral');
   });
 });

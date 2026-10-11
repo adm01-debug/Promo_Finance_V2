@@ -1,4 +1,4 @@
-import { useCallback } from 'react';
+import { useCallback, useEffect, useRef } from 'react';
 import { useSearchParams } from 'react-router-dom';
 
 /**
@@ -12,8 +12,17 @@ export function useUrlTab(defaultTab: string, validTabs: readonly string[], para
   const fromUrl = searchParams.get(param);
   const tab = fromUrl !== null && validTabs.includes(fromUrl) ? fromUrl : defaultTab;
 
+  // Radix Tabs chama onValueChange no mousedown e de novo no focus, antes do
+  // re-render com a nova URL; sem isso cada clique empilharia 2 entradas.
+  const pendingRef = useRef<string | null>(null);
+  useEffect(() => {
+    pendingRef.current = null;
+  }, [tab]);
+
   const setTab = useCallback(
     (next: string) => {
+      if (next === (pendingRef.current ?? tab)) return;
+      pendingRef.current = next;
       setSearchParams(
         (prev) => {
           const params = new URLSearchParams(prev);
@@ -27,7 +36,7 @@ export function useUrlTab(defaultTab: string, validTabs: readonly string[], para
         { replace: false }
       );
     },
-    [setSearchParams, defaultTab, param]
+    [setSearchParams, defaultTab, param, tab]
   );
 
   return [tab, setTab] as const;
