@@ -8,10 +8,12 @@ import { KnownDevicesPanel } from '@/components/security/KnownDevicesPanel';
 import { GeoRestrictionPanel } from '@/components/security/GeoRestrictionPanel';
 import { PermissionGate } from '@/components/auth/PermissionGate';
 import { useAuth } from '@/hooks/useAuth';
+import { useUrlTab } from '@/hooks/useUrlTab';
 import { Shield, Key, Activity, Settings, UserCog, Monitor, Globe } from 'lucide-react';
 
 export default function Seguranca() {
   const { isAdmin } = useAuth();
+  const [tab, setTab] = useUrlTab('mfa');
 
   return (
     <motion.div
@@ -31,7 +33,7 @@ export default function Seguranca() {
         </div>
       </div>
 
-      <Tabs defaultValue="mfa" className="w-full">
+      <Tabs value={tab} onValueChange={setTab} className="w-full">
         <TabsList className="grid w-full grid-cols-3 lg:grid-cols-6">
           <TabsTrigger value="mfa" className="gap-2">
             <Key className="h-4 w-4" />

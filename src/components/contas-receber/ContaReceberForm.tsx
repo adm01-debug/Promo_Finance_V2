@@ -21,6 +21,7 @@ import { useConfetti } from '@/hooks/useConfetti';
 import { sounds } from '@/lib/sound-feedback';
 import { logger } from '@/lib/logger';
 import { ConflitoVersaoError, updateComLockOtimista } from '@/lib/optimistic-lock';
+import { useUnsavedChangesGuard } from '@/components/navigation/unsaved-guard-context';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Form } from '@/components/ui/form';
 import { Button } from '@/components/ui/button';
@@ -106,6 +107,9 @@ export function ContaReceberForm({ open, onOpenChange, conta }: ContaReceberForm
       recorrente: false,
     },
   });
+
+  // Navegar fora com o form sujo pede confirmação ("Descartar alterações?")
+  useUnsavedChangesGuard(form.formState.isDirty);
 
   const isParcelado = form.watch('parcelado');
   const numParcelas = form.watch('numero_parcelas') || 1;

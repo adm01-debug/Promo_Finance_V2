@@ -1,5 +1,6 @@
 import { useEffect, useRef, useCallback } from 'react';
-import { useNavigate, useLocation } from 'react-router-dom';
+import { useLocation } from 'react-router-dom';
+import { useSmartBack } from './useSmartBack';
 
 interface SwipeBackOptions {
   /** Minimum swipe distance in pixels to trigger navigation */
@@ -15,8 +16,8 @@ export function useSwipeBack({
   edgeWidth = 30,
   enabled = true,
 }: SwipeBackOptions = {}) {
-  const navigate = useNavigate();
   const location = useLocation();
+  const { goBack } = useSmartBack('swipe');
   const touchStart = useRef<{ x: number; y: number; time: number } | null>(null);
   const isEdgeSwipe = useRef(false);
 
@@ -49,18 +50,14 @@ export function useSwipeBack({
       // Must be a horizontal swipe (not vertical scroll)
       if (deltaX > threshold && deltaY < deltaX * 0.5 && elapsed < 500) {
         if (location.pathname !== '/' && location.pathname !== '/dashboard') {
-          if (window.history.length > 2) {
-            navigate(-1);
-          } else {
-            navigate('/');
-          }
+          goBack();
         }
       }
 
       isEdgeSwipe.current = false;
       touchStart.current = null;
     },
-    [enabled, threshold, navigate, location.pathname]
+    [enabled, threshold, goBack, location.pathname]
   );
 
   useEffect(() => {

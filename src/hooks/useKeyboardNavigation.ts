@@ -1,5 +1,7 @@
 import { useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
+import { useSmartBack } from './useSmartBack';
+import { navigateWithUnsavedGuard } from '@/lib/unsaved-guard';
 
 /**
  * Keyboard shortcuts for navigation:
@@ -10,6 +12,7 @@ import { useNavigate, useLocation } from 'react-router-dom';
 export function useKeyboardNavigation() {
   const navigate = useNavigate();
   const location = useLocation();
+  const { goBack } = useSmartBack('keyboard');
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -27,11 +30,7 @@ export function useKeyboardNavigation() {
       if (e.altKey && e.key === 'ArrowLeft') {
         e.preventDefault();
         if (location.pathname !== '/' && location.pathname !== '/dashboard') {
-          if (window.history.length > 2) {
-            navigate(-1);
-          } else {
-            navigate('/');
-          }
+          goBack();
         }
       }
 
@@ -42,11 +41,11 @@ export function useKeyboardNavigation() {
 
       if (e.altKey && e.key === 'Home') {
         e.preventDefault();
-        navigate('/');
+        navigateWithUnsavedGuard(() => navigate('/'));
       }
     };
 
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [navigate, location.pathname]);
+  }, [navigate, goBack, location.pathname]);
 }

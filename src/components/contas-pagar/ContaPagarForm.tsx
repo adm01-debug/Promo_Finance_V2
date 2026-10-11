@@ -23,6 +23,7 @@ import { useCelebrations } from '@/components/wrappers/CelebrationActions';
 import { sounds } from '@/lib/sound-feedback';
 import { supabase } from '@/integrations/supabase/client';
 import { ConflitoVersaoError } from '@/lib/optimistic-lock';
+import { useUnsavedChangesGuard } from '@/components/navigation/unsaved-guard-context';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import {
   Form,
@@ -127,6 +128,9 @@ export function ContaPagarForm({ open, onOpenChange, conta }: ContaPagarFormProp
       recorrente: false,
     },
   });
+
+  // Navegar fora com o form sujo pede confirmação ("Descartar alterações?")
+  useUnsavedChangesGuard(form.formState.isDirty);
 
   const contaIdRef = useRef<string | null>(null);
 

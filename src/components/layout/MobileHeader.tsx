@@ -1,0 +1,21 @@
+import { useLocation } from 'react-router-dom';
+import { BackButton } from '@/components/navigation/BackButton';
+import { getRouteLabel } from '@/lib/navigation';
+
+/**
+ * App-bar mobile: botão Voltar sempre visível + título da página atual.
+ * O gesto de swipe-back continua disponível como atalho; o botão é a
+ * affordance visível (gestos não são descobríveis).
+ */
+export function MobileHeader() {
+  const location = useLocation();
+
+  return (
+    <header className="fixed top-0 left-0 right-0 z-50 flex h-14 items-center gap-2 border-b border-white/10 bg-background/60 px-3 backdrop-blur-3xl md:hidden">
+      <BackButton size="sm" variant="ghost" className="shrink-0 -ml-1" />
+      <h1 className="min-w-0 flex-1 truncate text-sm font-semibold text-foreground">
+        {getRouteLabel(location.pathname)}
+      </h1>
+    </header>
+  );
+}

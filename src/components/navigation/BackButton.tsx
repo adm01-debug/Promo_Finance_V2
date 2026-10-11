@@ -1,9 +1,10 @@
 import { forwardRef } from 'react';
-import { useNavigate, useLocation } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { ArrowLeft } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
+import { useSmartBack } from '@/hooks/useSmartBack';
 import { cn } from '@/lib/utils';
 
 interface BackButtonProps {
@@ -21,43 +22,14 @@ interface BackButtonProps {
   variant?: 'ghost' | 'outline' | 'default';
 }
 
-// Map child routes to their parent for smart fallback
-const parentRouteMap: Record<string, string> = {
-  '/bi': '/',
-  '/fluxo-caixa': '/',
-  '/contas-pagar': '/',
-  '/contas-receber': '/',
-  '/cobrancas': '/',
-  '/boletos': '/',
-  '/conciliacao': '/',
-  '/notas-fiscais': '/',
-  '/relatorios': '/',
-  '/demonstrativos': '/',
-  '/clientes': '/',
-  '/fornecedores': '/',
-  '/empresas': '/',
-  '/centros-custo': '/',
-  '/contas-bancarias': '/',
-  '/pagamentos-recorrentes': '/',
-  '/reforma-tributaria': '/',
-  '/expert': '/',
-  '/configuracoes': '/',
-  '/seguranca': '/',
-  '/alertas': '/',
-  '/aprovacoes': '/',
-  '/usuarios': '/configuracoes',
-  '/pedidos': '/',
-  '/gestor-compras': '/',
-  '/catalogo': '/',
-};
-
 export const BackButton = forwardRef<HTMLButtonElement, BackButtonProps>(
   (
     { fallbackPath, label, showLabel = false, className, size = 'default', variant = 'ghost' },
     ref
   ) => {
-    const navigate = useNavigate();
     const location = useLocation();
+    const { goBack, backLabel } = useSmartBack('button');
+    const navigate = useNavigate();
 
     // Don't render on home page
     if (location.pathname === '/' || location.pathname === '/dashboard') {
@@ -69,19 +41,10 @@ export const BackButton = forwardRef<HTMLButtonElement, BackButtonProps>(
         navigate(fallbackPath);
         return;
       }
-
-      // Try to use browser history first
-      if (window.history.length > 2) {
-        navigate(-1);
-        return;
-      }
-
-      // Fallback to parent route
-      const parentRoute = parentRouteMap[location.pathname] || '/';
-      navigate(parentRoute);
+      goBack();
     };
 
-    const tooltipLabel = label || 'Voltar';
+    const tooltipLabel = label || `Voltar para ${backLabel}`;
 
     const sizeClasses = {
       sm: 'h-7 w-7',

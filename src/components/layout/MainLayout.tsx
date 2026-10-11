@@ -16,6 +16,9 @@ import { PWAInstallBanner } from '@/components/pwa/PWAInstallBanner';
 import { SkipLinks } from '@/components/accessibility/SkipLinks';
 import { MobileBottomNav } from './sidebar/MobileBottomNav';
 import { MobileSidebarDrawer } from './sidebar/MobileSidebarDrawer';
+import { MobileHeader } from './MobileHeader';
+import { ModalHistoryManager } from '@/components/navigation/ModalHistoryManager';
+import { UnsavedGuardProvider } from '@/components/navigation/UnsavedGuardProvider';
 import { useSwipeBack } from '@/hooks/useSwipeBack';
 import { useKeyboardNavigation } from '@/hooks/useKeyboardNavigation';
 import { CopilotGlobalFloat } from '@/components/copilot/CopilotGlobalFloat';
@@ -65,8 +68,12 @@ export const MainLayout = ({ children }: MainLayoutProps) => {
         <MobileSidebarDrawer isOpen={mobileMenuOpen} onClose={() => setMobileMenuOpen(false)} />
       )}
 
-      {/* Header - only show on desktop */}
+      {/* Header - only show on desktop; MobileHeader com Voltar visível no mobile */}
       {!isMobile && <Header sidebarCollapsed={sidebarCollapsed} />}
+      {isMobile && <MobileHeader />}
+
+      {/* Voltar do browser/mobile fecha modais antes de sair da página */}
+      <ModalHistoryManager />
 
       {/* Network status indicator - fixed position */}
       <div
@@ -88,7 +95,7 @@ export const MainLayout = ({ children }: MainLayoutProps) => {
         transition={{ duration: 0.5, ease: [0.25, 0.1, 0.25, 1] }}
         className={cn(
           'min-h-screen w-full transition-all duration-500',
-          isMobile ? 'pt-4 pb-24' : 'pt-20'
+          isMobile ? 'pt-16 pb-24' : 'pt-20'
         )}
         style={{
           width: isMobile ? '100%' : `calc(100% - ${sidebarCollapsed ? 80 : 280}px)`,
@@ -109,9 +116,11 @@ export const MainLayout = ({ children }: MainLayoutProps) => {
 
           {/* Stagger Vela (Z2/Z1): wrapper separado do motion.div para o
               fill-mode do CSS não pinar opacity e matar o exit do framer */}
-          <PageTransition>
-            <div className="vela-page-enter">{children}</div>
-          </PageTransition>
+          <UnsavedGuardProvider>
+            <PageTransition>
+              <div className="vela-page-enter">{children}</div>
+            </PageTransition>
+          </UnsavedGuardProvider>
         </div>
       </motion.main>
 
