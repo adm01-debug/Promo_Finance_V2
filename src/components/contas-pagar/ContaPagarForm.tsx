@@ -130,7 +130,7 @@ export function ContaPagarForm({ open, onOpenChange, conta }: ContaPagarFormProp
   });
 
   // Navegar fora com o form sujo pede confirmação ("Descartar alterações?")
-  useUnsavedChangesGuard(form.formState.isDirty);
+  useUnsavedChangesGuard(open && form.formState.isDirty);
 
   const contaIdRef = useRef<string | null>(null);
 

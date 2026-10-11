@@ -31,7 +31,7 @@ import {
   Landmark,
   ChevronRight,
 } from 'lucide-react';
-import { getRouteMeta, resolveParentRoute } from '@/lib/navigation';
+import { getRouteLabel, getRouteMeta, resolveParentRoute } from '@/lib/navigation';
 import { cn } from '@/lib/utils';
 import { BackButton } from './BackButton';
 
@@ -102,9 +102,25 @@ export const ContextualBreadcrumbs = forwardRef<HTMLDivElement, { className?: st
         if (currentPath === items[0]?.path) break;
       }
 
+      // A página atual sempre aparece por último, mesmo sem metadados
+      // (getRouteLabel cai para o segmento humanizado).
+      if (items[items.length - 1]?.path !== location.pathname) {
+        items.push({
+          path: location.pathname,
+          label: getRouteLabel(location.pathname),
+          icon: ChevronRight,
+          isLast: false,
+        });
+      }
+
       if (items.length > 0 && items[0].path !== '/') {
         items.unshift({ path: '/', label: 'Dashboard', icon: Home, isLast: false });
       }
+
+      // isLast marca só o item final (a página atual).
+      items.forEach((item, idx) => {
+        item.isLast = idx === items.length - 1;
+      });
 
       return items;
     }, [location.pathname]);

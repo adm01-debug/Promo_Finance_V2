@@ -20,6 +20,9 @@ export function UnsavedGuardProvider({ children }: { children: React.ReactNode }
   const sentinelActiveRef = useRef(false);
   const skipPopRef = useRef(false);
   const awaitingPopRef = useRef(false);
+  // Navegação que só pode rodar DEPOIS do pop da sentinela concluir —
+  // chamar junto com history.back() faria dois "voltar" competirem.
+  const pendingProceedRef = useRef<(() => void) | null>(null);
   const [pendingLeave, setPendingLeave] = useState<(() => void) | null>(null);
   const navigate = useNavigate();
   const location = useLocation();
@@ -54,8 +57,12 @@ export function UnsavedGuardProvider({ children }: { children: React.ReactNode }
   useEffect(() => {
     const onClick = (e: MouseEvent) => {
       if (!dirtyRef.current) return;
-      const anchor = (e.target as HTMLElement).closest?.('a[href]');
+      // Cliques modificados (nova aba/janela) não saem da página atual.
+      if (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey || e.button !== 0) return;
+      const anchor = (e.target as HTMLElement).closest?.('a[href]') as HTMLAnchorElement | null;
       if (!anchor) return;
+      if (anchor.target && anchor.target !== '_self') return;
+      if (anchor.hasAttribute('download')) return;
       const href = anchor.getAttribute('href') ?? '';
       if (!href.startsWith('/') || href.startsWith('//')) return;
       e.preventDefault();
@@ -74,6 +81,10 @@ export function UnsavedGuardProvider({ children }: { children: React.ReactNode }
     const onPopState = () => {
       if (skipPopRef.current) {
         skipPopRef.current = false;
+        // Pop da nossa própria remoção de sentinela: concluída, agora navega.
+        const proceed = pendingProceedRef.current;
+        pendingProceedRef.current = null;
+        proceed?.();
         return;
       }
       if (!dirtyRef.current) return;
@@ -121,7 +132,13 @@ export function UnsavedGuardProvider({ children }: { children: React.ReactNode }
     if (sentinelActiveRef.current) {
       sentinelActiveRef.current = false;
       if (window.history.state?.[SENTINEL]) {
+        // Serializa: executa proceed apenas quando o pop da sentinela voltar
+        // (flag skipPopRef no handler de popstate), senão dois "voltar"
+        // competiriam e a navegação ultrapassaria o destino.
+        pendingProceedRef.current = proceed ?? null;
+        skipPopRef.current = true;
         window.history.back();
+        return;
       }
     }
     proceed?.();

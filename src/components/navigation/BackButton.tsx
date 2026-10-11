@@ -5,6 +5,7 @@ import { ArrowLeft } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 import { useSmartBack } from '@/hooks/useSmartBack';
+import { navigateWithUnsavedGuard } from '@/lib/unsaved-guard';
 import { cn } from '@/lib/utils';
 
 interface BackButtonProps {
@@ -38,7 +39,8 @@ export const BackButton = forwardRef<HTMLButtonElement, BackButtonProps>(
 
     const handleBack = () => {
       if (fallbackPath) {
-        navigate(fallbackPath);
+        // Destino explícito também respeita a guarda de alterações não salvas.
+        navigateWithUnsavedGuard(() => navigate(fallbackPath));
         return;
       }
       goBack();

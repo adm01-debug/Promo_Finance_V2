@@ -1,7 +1,7 @@
 import { useEffect, useRef } from 'react';
 import { useLocation, useNavigationType } from 'react-router-dom';
 import { useRecentItems } from '@/hooks/useRecentItems';
-import { getRouteLabel, recordNavEntry } from '@/lib/navigation';
+import { getRouteLabel, recordNavEntry, resetNavStack } from '@/lib/navigation';
 
 // Routes to exclude from tracking
 const excludedRoutes = ['/auth', '/404'];
@@ -30,8 +30,12 @@ export function NavigationTracker() {
   useEffect(() => {
     const { pathname, search, key } = location;
 
-    // Pilha in-app usada pelo Voltar semântico (useSmartBack).
-    if (!excludedRoutes.includes(pathname)) {
+    // Pilha in-app usada pelo Voltar semântico (useSmartBack). Cruzar por
+    // rota excluída (ex.: /auth) invalida a contiguidade — sem isso,
+    // navigate(-1) poderia devolver a página de autenticação.
+    if (excludedRoutes.includes(pathname)) {
+      resetNavStack();
+    } else {
       recordNavEntry({ key, pathname, search }, navigationType);
     }
 

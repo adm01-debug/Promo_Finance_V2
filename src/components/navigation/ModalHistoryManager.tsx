@@ -1,14 +1,17 @@
 import { useEffect } from 'react';
 
 const MODAL_MARKER = '__modal_history__';
-const OPEN_DIALOG_SELECTOR =
-  '[role="dialog"][data-state="open"], [role="alertdialog"][data-state="open"]';
+// Apenas [role="dialog"]: AlertDialog não fecha por Escape no Radix, então
+// marcá-lo deixaria a confirmação aberta após o Voltar consumir o marcador.
+const OPEN_DIALOG_SELECTOR = '[role="dialog"][data-state="open"]';
 
 /**
  * Sincroniza dialogs modais com a pilha de histórico: ao abrir um modal,
  * empilha um marcador; o próximo "voltar" do browser/mobile fecha o modal
  * (via Escape, que o Radix já trata) em vez de sair da página.
- * Cobre todos os Radix Dialog/AlertDialog/Sheet do app sem mudanças neles.
+ * Cobre todos os Radix Dialog/Sheet do app sem mudanças neles; AlertDialog
+ * (confirmação que exige decisão explícita) não entra — o Voltar simplesmente
+ * navega, abandonando a confirmação junto com a página.
  */
 export function ModalHistoryManager() {
   useEffect(() => {
@@ -33,7 +36,8 @@ export function ModalHistoryManager() {
     const observer = new MutationObserver(() => {
       const open = anyDialogOpen();
       if (open && depth === 0) {
-        window.history.pushState({ [MODAL_MARKER]: true }, '');
+        // Preserva idx/key do histórico do React Router na entrada marcador.
+        window.history.pushState({ ...window.history.state, [MODAL_MARKER]: true }, '');
         depth = 1;
       } else if (!open && depth === 1) {
         // Fechou pela UI (botão X, overlay): consome o marcador restante.

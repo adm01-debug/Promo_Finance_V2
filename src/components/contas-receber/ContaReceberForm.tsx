@@ -109,7 +109,7 @@ export function ContaReceberForm({ open, onOpenChange, conta }: ContaReceberForm
   });
 
   // Navegar fora com o form sujo pede confirmação ("Descartar alterações?")
-  useUnsavedChangesGuard(form.formState.isDirty);
+  useUnsavedChangesGuard(open && form.formState.isDirty);
 
   const isParcelado = form.watch('parcelado');
   const numParcelas = form.watch('numero_parcelas') || 1;
