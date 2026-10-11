@@ -96,6 +96,10 @@ export function UnsavedGuardProvider({ children }: { children: React.ReactNode }
         window.history.forward();
         return;
       }
+      // Pop que chegou ATÉ a sentinela (havia um marcador de modal ou
+      // rota acima dela): esse Voltar pertencia ao que estava acima, não
+      // é tentativa de sair — a guarda só dispara ao cruzar abaixo dela.
+      if (window.history.state?.[SENTINEL]) return;
       sentinelActiveRef.current = false;
       awaitingPopRef.current = true;
       setPendingLeave(() => () => {

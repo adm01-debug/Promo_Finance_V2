@@ -1,7 +1,7 @@
 import { useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useSmartBack } from './useSmartBack';
-import { navigateWithUnsavedGuard } from '@/lib/unsaved-guard';
+import { hasUnsavedChanges, navigateWithUnsavedGuard } from '@/lib/unsaved-guard';
 
 /**
  * Keyboard shortcuts for navigation:
@@ -36,7 +36,10 @@ export function useKeyboardNavigation() {
 
       if (e.altKey && e.key === 'ArrowRight') {
         e.preventDefault();
-        navigateWithUnsavedGuard(() => navigate(1));
+        // Com form sujo a sentinela é o topo e já apagou o histórico à
+        // frente: não existe destino +1 real. Ignorar mantém a guarda armada.
+        if (hasUnsavedChanges()) return;
+        navigate(1);
       }
 
       if (e.altKey && e.key === 'Home') {
