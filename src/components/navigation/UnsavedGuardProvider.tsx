@@ -76,6 +76,9 @@ export function UnsavedGuardProvider({ children }: { children: React.ReactNode }
       if (anchor.hasAttribute('download')) return;
       const href = anchor.getAttribute('href') ?? '';
       if (!href.startsWith('/') || href.startsWith('//')) return;
+      // Destino = a própria rota (NavLink ativo, item atual da paleta):
+      // o form não desmonta e nada é descartado — deixa o clique seguir.
+      if (href.split('?')[0].split('#')[0] === location.pathname) return;
       e.preventDefault();
       e.stopPropagation();
       requestLeave(() => {
@@ -85,7 +88,7 @@ export function UnsavedGuardProvider({ children }: { children: React.ReactNode }
     };
     document.addEventListener('click', onClick, true);
     return () => document.removeEventListener('click', onClick, true);
-  }, [navigate, requestLeave]);
+  }, [navigate, requestLeave, location.pathname]);
 
   // Voltar do browser: a sentinela é estourada; pedimos confirmação.
   useEffect(() => {
@@ -143,7 +146,17 @@ export function UnsavedGuardProvider({ children }: { children: React.ReactNode }
   // key mas não desmonta o form — a guarda tem que continuar armada.
   const lastPathnameRef = useRef(location.pathname);
   useEffect(() => {
-    if (location.pathname === lastPathnameRef.current) return;
+    if (location.pathname === lastPathnameRef.current) {
+      // Navegação confirmada para a própria rota (link/paleta na página
+      // atual): o form não desmontou e continua sujo — repõe a sentinela
+      // que o fluxo de saída consumiu, senão a próxima saída descarta
+      // as edições sem aviso.
+      if (dirtyRef.current && !sentinelActiveRef.current) {
+        window.history.pushState(artificialHistoryState(SENTINEL), '');
+        sentinelActiveRef.current = true;
+      }
+      return;
+    }
     lastPathnameRef.current = location.pathname;
     if (dirtyRef.current) {
       dirtyRef.current = false;
@@ -154,7 +167,9 @@ export function UnsavedGuardProvider({ children }: { children: React.ReactNode }
   const confirmLeave = () => {
     const proceed = pendingLeave;
     setPendingLeave(null);
-    dirtyRef.current = false;
+    // dirtyRef NÃO é limpo aqui: se o destino for a própria rota o form
+    // segue montado e sujo — o efeito de localização rearma a sentinela.
+    // Em saída real, a mudança de pathname faz o reset.
     // Posição real no histórico decide o caminho — a flag pode estar
     // dessincronizada (Voltar extra desfeito por forward pousou de novo
     // na sentinela com sentinelActiveRef já limpo).
