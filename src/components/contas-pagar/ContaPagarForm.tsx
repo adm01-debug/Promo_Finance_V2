@@ -24,8 +24,8 @@ import { sounds } from '@/lib/sound-feedback';
 import { supabase } from '@/integrations/supabase/client';
 import { ConflitoVersaoError } from '@/lib/optimistic-lock';
 import { useUnsavedChangesGuard } from '@/components/navigation/unsaved-guard-context';
+import { navigateWithUnsavedGuard } from '@/lib/unsaved-guard';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
-import { ConfirmationDialog } from '@/components/ui/confirmation-dialog';
 import {
   Form,
   FormControl,
@@ -133,13 +133,14 @@ export function ContaPagarForm({ open, onOpenChange, conta }: ContaPagarFormProp
   // Navegar fora com o form sujo pede confirmação ("Descartar alterações?")
   useUnsavedChangesGuard(open && form.formState.isDirty);
 
-  // Fechar o Dialog (Escape, overlay, X, Cancelar) com o form sujo também
-  // pede confirmação — sem isto o descarte era silencioso: a guarda só
-  // cobria saída de rota, e `open` falso desarmava a sentinela.
-  const [confirmarDescarte, setConfirmarDescarte] = useState(false);
+  // Fechar o Dialog (Escape, overlay, X, Cancelar) com o form sujo pede
+  // confirmação — sem isto o descarte era silencioso. Usa o AlertDialog
+  // global da guarda: um dialog próprio aqui abriria fora da camada do
+  // Radix (inacessível) e deixaria marcadores fora de ordem; a guarda
+  // já remove sentinela + marcadores em sequência antes de confirmar.
   const requestClose = (next: boolean) => {
-    if (!next && form.formState.isDirty) {
-      setConfirmarDescarte(true);
+    if (!next) {
+      navigateWithUnsavedGuard(() => onOpenChange(false));
       return;
     }
     onOpenChange(next);
@@ -521,15 +522,6 @@ export function ContaPagarForm({ open, onOpenChange, conta }: ContaPagarFormProp
           </Form>
         </DialogContent>
       </Dialog>
-      <ConfirmationDialog
-        isOpen={confirmarDescarte}
-        onClose={() => setConfirmarDescarte(false)}
-        onConfirm={() => onOpenChange(false)}
-        title="Descartar alterações?"
-        message="As alterações nesta conta serão perdidas."
-        type="warning"
-        confirmText="Descartar"
-      />
     </>
   );
 }

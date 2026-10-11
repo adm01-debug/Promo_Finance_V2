@@ -94,7 +94,9 @@ export const ContextualBreadcrumbs = forwardRef<HTMLDivElement, { className?: st
         }
         items.unshift({
           path: currentPath,
-          label: meta.label,
+          // A página atual usa getRouteLabel (rótulo da aba ativa em
+          // rotas com parâmetro); os pais usam o label da meta.
+          label: items.length === 0 ? getRouteLabel(currentPath) : meta.label,
           icon: iconByRoute[currentPath] ?? ChevronRight,
           isLast: items.length === 0,
         });

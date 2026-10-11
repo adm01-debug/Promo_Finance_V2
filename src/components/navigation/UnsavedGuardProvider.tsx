@@ -169,10 +169,14 @@ export function UnsavedGuardProvider({ children }: { children: React.ReactNode }
       window.history.back();
       return;
     }
+    const stillSentinel = sentinelActiveRef.current;
     sentinelActiveRef.current = false;
     // Voltar do browser já estourou a sentinela: consome os marcadores
-    // que ainda formam o topo antes da navegação real.
-    const n = topModalMarkerCount();
+    // que ainda formam o topo antes da navegação real. Com a sentinela
+    // ainda empilhada sob eles (saída por link/fechar dialog), some-a ao
+    // plano — do contrário sobrava uma entrada morta e o próximo Voltar
+    // parecia não fazer nada.
+    const n = topModalMarkerCount() + (stillSentinel ? 1 : 0);
     if (n > 0) {
       pendingProceedRef.current = proceed ?? null;
       plannedPopsRef.current = n;

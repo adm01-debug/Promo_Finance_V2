@@ -235,9 +235,11 @@ function normalizePathname(pathname: string): string {
 }
 
 export function getRouteMeta(pathname: string): RouteMeta | undefined {
-  const exact = ROUTE_META[normalizePathname(pathname)];
+  // O React Router casa rotas sem diferenciar maiúsculas: a consulta
+  // aos metadados segue a mesma regra ou /Usuarios perde label/parent.
+  const normalized = normalizePathname(pathname).toLowerCase();
+  const exact = ROUTE_META[normalized];
   if (exact) return exact;
-  const normalized = normalizePathname(pathname);
   for (const { pattern, meta } of PATTERN_ROUTES) {
     if (matchPattern(normalized, pattern)) return meta;
   }
@@ -250,11 +252,13 @@ export function getRouteLabel(pathname: string): string {
     // Rota com parâmetro final (aba na URL): o item atual é a aba —
     // tabLabels explícito, senão o segmento humanizado, nunca o label
     // do pai duplicado.
-    const lastSeg = normalizePathname(pathname).split('/').pop() ?? '';
+    const lastSeg = normalizePathname(pathname).split('/').pop()?.toLowerCase() ?? '';
     if (meta.tabLabels) {
-      return (
-        meta.tabLabels[lastSeg] ?? lastSeg.replace(/-/g, ' ').replace(/^\w/, (c) => c.toUpperCase())
-      );
+      // hasOwnProperty: o segmento vem da URL e `__proto__` retornaria um
+      // objeto herdado em vez de rótulo (derruba o header móvel).
+      return Object.prototype.hasOwnProperty.call(meta.tabLabels, lastSeg)
+        ? meta.tabLabels[lastSeg]
+        : lastSeg.replace(/-/g, ' ').replace(/^\w/, (c) => c.toUpperCase());
     }
     return meta.label;
   }
@@ -365,8 +369,9 @@ export function recordNavEntry(entry: NavEntry, type: 'POP' | 'PUSH' | 'REPLACE'
     notifyNavStack();
     return;
   } else if (type === 'REPLACE' && navStack.length > 0) {
+    // replaceState não descarta as entradas à frente do browser: o
+    // forwardStack continua válido e o Avançar até ele restaura a pilha.
     navStack[navStack.length - 1] = entry;
-    forwardStack.length = 0;
     notifyNavStack();
     return;
   }

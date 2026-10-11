@@ -104,6 +104,17 @@ describe('pilha de navegação in-app', () => {
     recordNavEntry({ key: 'c', pathname: '/produtos', search: '' }, 'PUSH');
     expect(previousNavEntry()?.pathname).toBe('/fornecedores');
   });
+
+  it('REPLACE no topo preserva o avanço registrado pelo Voltar', () => {
+    recordNavEntry({ key: 'a', pathname: '/clientes', search: '' }, 'PUSH');
+    recordNavEntry({ key: 'b', pathname: '/fornecedores', search: '' }, 'PUSH');
+    recordNavEntry({ key: 'a', pathname: '/clientes', search: '' }, 'POP'); // Voltar
+    // replaceState não descarta o que está à frente no histórico real.
+    recordNavEntry({ key: 'a2', pathname: '/clientes', search: '?tab=ativos' }, 'REPLACE');
+    recordNavEntry({ key: 'b', pathname: '/fornecedores', search: '' }, 'POP'); // Avançar
+    expect(previousNavEntry()?.pathname).toBe('/clientes');
+    expect(previousNavEntry()?.search).toBe('?tab=ativos');
+  });
 });
 
 describe('pilha reativa e rotas sensíveis', () => {
