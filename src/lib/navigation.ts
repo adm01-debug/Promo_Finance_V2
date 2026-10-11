@@ -218,6 +218,10 @@ export interface NavEntry {
 }
 
 const navStack: NavEntry[] = [];
+// Entradas truncadas por um POP para trás, na ordem em que o Avançar
+// nativo as revisitária (topo = próxima). Um POP cuja key é o topo daqui
+// é um avanço: a entrada é restaurada em vez de reiniciar a pilha.
+const forwardStack: NavEntry[] = [];
 let navStackVersion = 0;
 const navStackListeners = new Set<() => void>();
 
@@ -240,8 +244,9 @@ export function getNavStackVersion(): number {
 
 /** Reseta a pilha (cruzar rota excluída, testes). */
 export function resetNavStack(): void {
-  if (navStack.length === 0) return;
+  if (navStack.length === 0 && forwardStack.length === 0) return;
   navStack.length = 0;
+  forwardStack.length = 0;
   notifyNavStack();
 }
 
@@ -256,7 +261,19 @@ export function recordNavEntry(entry: NavEntry, type: 'POP' | 'PUSH' | 'REPLACE'
   if (type === 'POP') {
     const idx = navStack.findIndex((e) => e.key === entry.key);
     if (idx >= 0) {
-      navStack.length = idx + 1;
+      // POP para trás: guarda as entradas truncadas para um eventual
+      // Avançar nativo (revertidas — topo = próxima a revisitar).
+      const removed = navStack.splice(idx + 1);
+      forwardStack.push(...removed.reverse());
+      notifyNavStack();
+      return;
+    }
+    const forward = forwardStack[forwardStack.length - 1];
+    if (forward?.key === entry.key) {
+      // Avançar nativo sobre entrada truncada: restaura sem perder o
+      // anterior real (ex.: A→B, Voltar, Avançar — Voltar volta a B).
+      forwardStack.pop();
+      navStack.push(entry);
       notifyNavStack();
       return;
     }
@@ -264,15 +281,19 @@ export function recordNavEntry(entry: NavEntry, type: 'POP' | 'PUSH' | 'REPLACE'
     // pilha em memória não sabe a direção — empilhar produziria um
     // "anterior" que na verdade está à frente no histórico. Reinicia.
     navStack.length = 0;
+    forwardStack.length = 0;
     navStack.push(entry);
     notifyNavStack();
     return;
   } else if (type === 'REPLACE' && navStack.length > 0) {
     navStack[navStack.length - 1] = entry;
+    forwardStack.length = 0;
     notifyNavStack();
     return;
   }
-  // PUSH, REPLACE sem pilha, ou POP para entrada desconhecida
+  // PUSH ou REPLACE sem pilha: descarta o avanço registrado — o
+  // histórico à frente do browser foi invalidado pela nova entrada.
+  forwardStack.length = 0;
   navStack.push(entry);
   notifyNavStack();
 }

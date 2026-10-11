@@ -1,6 +1,7 @@
 import { ReactNode, useEffect, useCallback, useRef } from 'react';
 import { X } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { OPEN_DIALOG_SELECTOR } from '@/components/navigation/ModalHistoryManager';
 import { Button } from './button';
 
 interface ModalProps {
@@ -55,12 +56,19 @@ export function Modal({
   useEffect(() => {
     if (isOpen) {
       const el = dialogRef.current;
-      el?.addEventListener('keydown', handleEscape);
-      document.addEventListener('keydown', handleEscape);
+      const onEscape = (e: KeyboardEvent) => {
+        // Só o dialog do topo fecha: um Escape chegando ao documento
+        // (topo Radix ou gerenciador ausente) não fecha os de baixo.
+        const dialogs = document.querySelectorAll(OPEN_DIALOG_SELECTOR);
+        if (dialogs[dialogs.length - 1] !== el) return;
+        handleEscape(e);
+      };
+      el?.addEventListener('keydown', onEscape);
+      document.addEventListener('keydown', onEscape);
       document.body.style.overflow = 'hidden';
       return () => {
-        el?.removeEventListener('keydown', handleEscape);
-        document.removeEventListener('keydown', handleEscape);
+        el?.removeEventListener('keydown', onEscape);
+        document.removeEventListener('keydown', onEscape);
         document.body.style.overflow = 'unset';
       };
     }

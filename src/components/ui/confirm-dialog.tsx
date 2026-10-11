@@ -2,6 +2,7 @@ import { ReactNode, useEffect, useRef } from 'react';
 import { AlertTriangle, Info, CheckCircle, XCircle, Loader2, X } from 'lucide-react';
 import { Button } from './button';
 import { cn } from '@/lib/utils';
+import { OPEN_DIALOG_SELECTOR } from '@/components/navigation/ModalHistoryManager';
 
 interface ConfirmDialogProps {
   // Support both naming conventions
@@ -89,10 +90,15 @@ export function ConfirmDialog({
   // documento cobre o caso do gerenciador ausente (ex.: testes).
   useEffect(() => {
     if (!isOpen) return;
-    const onKeyDown = (e: KeyboardEvent) => {
-      if (e.key === 'Escape' && !isLoading) handleClose();
-    };
     const el = dialogRef.current;
+    const onKeyDown = (e: KeyboardEvent) => {
+      if (e.key !== 'Escape' || isLoading) return;
+      // Só o dialog do topo fecha: um Escape chegando ao documento (topo
+      // Radix ou gerenciador ausente) não pode fechar os de baixo junto.
+      const dialogs = document.querySelectorAll(OPEN_DIALOG_SELECTOR);
+      if (dialogs[dialogs.length - 1] !== el) return;
+      handleClose();
+    };
     el?.addEventListener('keydown', onKeyDown);
     document.addEventListener('keydown', onKeyDown);
     return () => {

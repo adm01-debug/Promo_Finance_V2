@@ -11,7 +11,7 @@ import {
 // Apenas [role="dialog"]: AlertDialog (role="alertdialog") não fecha por
 // Escape no Radix, então marcá-lo deixaria a confirmação aberta após o
 // Voltar consumir o marcador.
-const OPEN_DIALOG_SELECTOR = '[role="dialog"][data-state="open"]';
+export const OPEN_DIALOG_SELECTOR = '[role="dialog"][data-state="open"]';
 // O tratamento do marcador órfão pós-reload roda uma única vez por
 // sessão — StrictMode remonta o efeito e um segundo history.back()
 // ultrapassaria a entrada real.
@@ -211,14 +211,19 @@ export function ModalHistoryManager() {
     // Escape propagado fecharia os dois — o deles e o nosso. Na fase de
     // captura (antes de qualquer listener do documento), retargetamos o
     // evento só para o elemento do topo quando ele é nosso.
+    // O evento sintético (mesmo com bubbles:false) atravessa o document
+    // na captura — marcamos os já encaminhados para não reinterceptar.
+    const forwarded = new WeakSet<KeyboardEvent>();
     const onKeyDownCapture = (e: KeyboardEvent) => {
-      if (e.key !== 'Escape') return;
+      if (e.key !== 'Escape' || forwarded.has(e)) return;
       const dialogs = document.querySelectorAll<HTMLElement>(OPEN_DIALOG_SELECTOR);
       const top = dialogs[dialogs.length - 1];
       if (!top || top.dataset.escapeOwned === undefined) return;
       e.preventDefault();
       e.stopImmediatePropagation();
-      top.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', bubbles: false }));
+      const retargeted = new KeyboardEvent('keydown', { key: 'Escape', bubbles: false });
+      forwarded.add(retargeted);
+      top.dispatchEvent(retargeted);
     };
     document.addEventListener('keydown', onKeyDownCapture, true);
 

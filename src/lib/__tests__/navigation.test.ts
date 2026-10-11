@@ -93,6 +93,17 @@ describe('pilha de navegação in-app', () => {
     // faria o Voltar semântico apontar para uma entrada à frente.
     expect(previousNavEntry()).toBeUndefined();
   });
+
+  it('Avançar nativo restaura o anterior truncado pelo Voltar', () => {
+    recordNavEntry({ key: 'a', pathname: '/clientes', search: '' }, 'PUSH');
+    recordNavEntry({ key: 'b', pathname: '/fornecedores', search: '' }, 'PUSH');
+    recordNavEntry({ key: 'a', pathname: '/clientes', search: '' }, 'POP'); // Voltar
+    recordNavEntry({ key: 'b', pathname: '/fornecedores', search: '' }, 'POP'); // Avançar
+    expect(previousNavEntry()?.pathname).toBe('/clientes');
+    // PUSH seguinte invalida o avanço restante do histórico
+    recordNavEntry({ key: 'c', pathname: '/produtos', search: '' }, 'PUSH');
+    expect(previousNavEntry()?.pathname).toBe('/fornecedores');
+  });
 });
 
 describe('pilha reativa e rotas sensíveis', () => {
