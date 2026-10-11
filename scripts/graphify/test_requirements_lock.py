@@ -23,7 +23,7 @@ class TesteLockGraphify(unittest.TestCase):
         lock = (ROOT / "requirements-linux-py311.lock").read_text()
         # O extra [sql] é obrigatório: sem tree-sitter-sql os .sql são
         # varridos mas extraem zero nós e a cobertura SQL some do grafo.
-        self.assertRegex(requirement, rf"(?m)^graphifyy\[[^\]]*\bsql\b[^\]]*\]=={re.escape(config['version'])}$")
+        self.assertRegex(requirement, rf"(?m)^graphifyy\[(?:[A-Za-z0-9_-]+,)*sql(?:,[A-Za-z0-9_-]+)*\]=={re.escape(config['version'])}$")
         self.assertRegex(lock, rf"(?m)^graphifyy=={re.escape(config['version'])}(?:\s|$)")
         self.assertRegex(lock, r"(?m)^tree-sitter-sql==[^ \\]+")
 
