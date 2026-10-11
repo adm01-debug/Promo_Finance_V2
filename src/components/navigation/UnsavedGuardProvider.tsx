@@ -12,6 +12,7 @@ import {
 } from '@/components/ui/alert-dialog';
 import {
   artificialHistoryState,
+  MODAL_HISTORY_MARKER,
   popTopModalMarkers,
   registerUnsavedGuard,
   UNSAVED_GUARD_SENTINEL as SENTINEL,
@@ -21,7 +22,11 @@ import { UnsavedGuardContext } from './unsaved-guard-context';
 export function UnsavedGuardProvider({ children }: { children: React.ReactNode }) {
   const dirtyRef = useRef(false);
   const sentinelActiveRef = useRef(false);
-  const skipPopRef = useRef(false);
+  // Pops que disparamos nós mesmos (sentinela + marcadores de modal):
+  // o proceed pendente roda quando todos terminarem OU ao pousar numa
+  // entrada real — nunca junto com os history.back(), o que faria duas
+  // travessias competirem.
+  const skipPopsRef = useRef(0);
   const awaitingPopRef = useRef(false);
   // Navegação que só pode rodar DEPOIS do pop da sentinela concluir —
   // chamar junto com history.back() faria dois "voltar" competirem.
@@ -39,7 +44,7 @@ export function UnsavedGuardProvider({ children }: { children: React.ReactNode }
     } else if (!dirty && sentinelActiveRef.current) {
       // Limpou sem navegar: remove a sentinela se ela ainda for o topo.
       if (window.history.state?.[SENTINEL]) {
-        skipPopRef.current = true;
+        skipPopsRef.current = 1;
         window.history.back();
       }
       sentinelActiveRef.current = false;
@@ -82,12 +87,17 @@ export function UnsavedGuardProvider({ children }: { children: React.ReactNode }
   // Voltar do browser: a sentinela é estourada; pedimos confirmação.
   useEffect(() => {
     const onPopState = () => {
-      if (skipPopRef.current) {
-        skipPopRef.current = false;
-        // Pop da nossa própria remoção de sentinela: concluída, agora navega.
-        const proceed = pendingProceedRef.current;
-        pendingProceedRef.current = null;
-        proceed?.();
+      if (skipPopsRef.current > 0) {
+        skipPopsRef.current -= 1;
+        const s = window.history.state as Record<string, unknown> | null;
+        const onRealEntry = !(s?.[SENTINEL] || s?.[MODAL_HISTORY_MARKER]);
+        if (skipPopsRef.current <= 0 || onRealEntry) {
+          skipPopsRef.current = 0;
+          // Todos os pops artificiais concluídos: agora navega de verdade.
+          const proceed = pendingProceedRef.current;
+          pendingProceedRef.current = null;
+          proceed?.();
+        }
         return;
       }
       if (!dirtyRef.current) return;
@@ -139,22 +149,26 @@ export function UnsavedGuardProvider({ children }: { children: React.ReactNode }
     if (sentinelActiveRef.current) {
       sentinelActiveRef.current = false;
       if (window.history.state?.[SENTINEL]) {
-        // Serializa: executa proceed apenas quando o pop da sentinela voltar
-        // (flag skipPopRef no handler de popstate), senão dois "voltar"
-        // competiriam e a navegação ultrapassaria o destino.
+        // Serializa: marcadores de modal logo abaixo da sentinela (form
+        // em dialog) + a própria sentinela saem primeiro; o proceed só
+        // roda no popstate do último — senão as travessias competiriam
+        // e ultrapassariam o destino.
+        const n = popTopModalMarkers();
         pendingProceedRef.current = proceed ?? null;
-        skipPopRef.current = true;
+        skipPopsRef.current = 1 + n;
         window.history.back();
-        // Marcadores de modal logo abaixo da sentinela (form em dialog):
-        // consome-os também, senão o proceed (navigate(-1)) pararia no
-        // marcador e o Voltar confirmado só fecharia o formulário.
-        popTopModalMarkers();
         return;
       }
     }
-    // Voltar do browser já estourou a sentinela: os marcadores de modal
-    // estão no topo — consome-os antes da navegação real.
-    popTopModalMarkers();
+    // Voltar do browser já estourou a sentinela: consome os marcadores
+    // de modal no topo e aguarda todos os pops antes do proceed — as
+    // travessias assíncronas não podem competir entre si.
+    const n = popTopModalMarkers();
+    if (n > 0) {
+      pendingProceedRef.current = proceed ?? null;
+      skipPopsRef.current = n;
+      return;
+    }
     proceed?.();
   };
 

@@ -12,6 +12,10 @@ import {
 // Escape no Radix, então marcá-lo deixaria a confirmação aberta após o
 // Voltar consumir o marcador.
 const OPEN_DIALOG_SELECTOR = '[role="dialog"][data-state="open"]';
+// O tratamento do marcador órfão pós-reload roda uma única vez por
+// sessão — StrictMode remonta o efeito e um segundo history.back()
+// ultrapassaria a entrada real.
+let orphanHandled = false;
 
 /**
  * Sincroniza dialogs modais com a pilha de histórico: cada dialog aberto
@@ -98,9 +102,10 @@ export function ModalHistoryManager() {
       onTopMarkerRef.current = onMarker;
 
       // Fantasma (marcador soterrado por rota real): entrada transparente
-      // — segue na mesma direção do pop até uma entrada real.
+      // — segue na mesma direção do pop até uma entrada real. O id fica
+      // no conjunto enquanto a entrada existir: travessias repetidas em
+      // qualquer direção também a pulam.
       if (cur !== undefined && ghosts.has(cur)) {
-        ghosts.delete(cur);
         poppingOwnRef.current = true;
         if (ghostDirRef.current === 0) {
           // O fantasma tem o idx da entrada que o originou: chegar com idx
@@ -154,8 +159,37 @@ export function ModalHistoryManager() {
       if (markers.length === 0) topmostRef.current = true;
     });
 
-    observer.observe(document.body, { attributes: true, childList: true, subtree: true });
+    // Só data-state e inserções/remoções interessam — reagir a qualquer
+    // atributo (class, style, ARIA) recontava dialogs a cada frame de
+    // animação em dashboards.
+    observer.observe(document.body, {
+      attributes: true,
+      attributeFilter: ['data-state'],
+      childList: true,
+      subtree: true,
+    });
+
+    // Marcador órfão de sessão anterior (reload com dialog aberto): se
+    // nenhum dialog está aberto a entrada é inútil — remove-a do topo,
+    // senão o próximo Voltar pousaria numa entrada com a mesma URL e
+    // pareceria não fazer nada. Com dialog aberto, adota-o como marcador.
+    if (!orphanHandled) {
+      orphanHandled = true;
+      const orphan = window.history.state?.[MODAL_MARKER] as number | undefined;
+      if (orphan !== undefined) {
+        if (openDialogCount() > 0) {
+          markers.push(orphan);
+          if (orphan > seqRef.current) seqRef.current = orphan;
+          onTopMarkerRef.current = true;
+        } else {
+          poppingOwnRef.current = true;
+          window.history.back();
+        }
+      }
+    }
+
     window.addEventListener('popstate', onPopState);
+
     const unregister = registerModalMarkerPopper(() => {
       // Saída confirmada na guarda: consome os marcadores contíguos do topo
       // (logo abaixo da sentinela) para a navegação real não parar neles.

@@ -1,4 +1,4 @@
-import { useState, ReactNode } from 'react';
+import { useEffect, useState, ReactNode } from 'react';
 import { cn } from '@/lib/utils';
 import { AlertTriangle, Trash2, CheckCircle, Info, HelpCircle, X } from 'lucide-react';
 import { Button } from './button';
@@ -94,6 +94,15 @@ export function ConfirmationDialog({
   const config = typeConfig[type];
   const Icon = config.icon;
 
+  useEffect(() => {
+    if (!isOpen) return;
+    const onKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape' && !loading && !isLoading) onClose();
+    };
+    document.addEventListener('keydown', onKeyDown);
+    return () => document.removeEventListener('keydown', onKeyDown);
+  }, [isOpen, loading, isLoading, onClose]);
+
   const handleConfirm = async () => {
     try {
       setLoading(true);
@@ -127,6 +136,7 @@ export function ConfirmationDialog({
           className
         )}
         role="dialog"
+        data-state="open"
         aria-modal="true"
         aria-labelledby="confirmation-title"
         aria-describedby="confirmation-message"

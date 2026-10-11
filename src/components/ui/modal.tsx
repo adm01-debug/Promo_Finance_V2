@@ -73,6 +73,9 @@ export function Modal({
       {/* Modal */}
       <div
         role="dialog"
+        // Só conta como dialog fechável no histórico se Escape o fecha —
+        // o ModalHistoryManager usa Escape para consumir o marcador.
+        data-state={closeOnEscape ? 'open' : 'closed'}
         aria-modal="true"
         aria-labelledby={title ? 'modal-title' : undefined}
         aria-describedby={description ? 'modal-description' : undefined}

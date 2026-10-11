@@ -1,4 +1,4 @@
-import { ReactNode } from 'react';
+import { ReactNode, useEffect } from 'react';
 import { AlertTriangle, Info, CheckCircle, XCircle, Loader2, X } from 'lucide-react';
 import { Button } from './button';
 import { cn } from '@/lib/utils';
@@ -82,6 +82,16 @@ export function ConfirmDialog({
     await onConfirm();
   };
 
+  useEffect(() => {
+    if (!isOpen) return;
+    const onKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape' && !isLoading) handleClose();
+    };
+    document.addEventListener('keydown', onKeyDown);
+    return () => document.removeEventListener('keydown', onKeyDown);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isOpen, isLoading]);
+
   if (!isOpen) return null;
 
   return (
@@ -90,7 +100,12 @@ export function ConfirmDialog({
       <div className="absolute inset-0 bg-black/50" onClick={handleClose} />
 
       {/* Dialog */}
-      <div className="relative bg-card rounded-lg shadow-xl w-full max-w-md mx-4 animate-in fade-in-0 zoom-in-95">
+      <div
+        role="dialog"
+        data-state="open"
+        aria-modal="true"
+        className="relative bg-card rounded-lg shadow-xl w-full max-w-md mx-4 animate-in fade-in-0 zoom-in-95"
+      >
         {/* Close button */}
         <button
           onClick={handleClose}
