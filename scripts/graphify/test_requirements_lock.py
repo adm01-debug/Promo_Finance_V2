@@ -21,10 +21,11 @@ class TesteLockGraphify(unittest.TestCase):
         config = json.loads((ROOT / "config.json").read_text())
         requirement = (ROOT / "requirements.in").read_text()
         lock = (ROOT / "requirements-linux-py311.lock").read_text()
-        self.assertRegex(requirement, rf"(?m)^graphifyy(\[[^\]]+\])?=={re.escape(config['version'])}$")
+        # O extra [sql] é obrigatório: sem tree-sitter-sql os .sql são
+        # varridos mas extraem zero nós e a cobertura SQL some do grafo.
+        self.assertRegex(requirement, rf"(?m)^graphifyy\[(?:[A-Za-z0-9_-]+,)*sql(?:,[A-Za-z0-9_-]+)*\]=={re.escape(config['version'])}$")
         self.assertRegex(lock, rf"(?m)^graphifyy=={re.escape(config['version'])}(?:\s|$)")
-        if "graphifyy[sql]" in requirement:
-            self.assertRegex(lock, r"(?m)^tree-sitter-sql==[^ \\]+")
+        self.assertRegex(lock, r"(?m)^tree-sitter-sql==[^ \\]+")
 
 
 if __name__ == "__main__":
