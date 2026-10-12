@@ -110,9 +110,14 @@ on:
           - webhook-replay
           - webhook-retry-worker
           - webhook-simulator
+          - upload-anexo
           - whatsapp-ai-analyzer
           - whatsapp-ia-proativo
           - whatsapp-webhook
+      deploy_all:
+        description: 'Implantar TODAS as functions com index.ts (ignora function_name)'
+        type: boolean
+        default: false
 
 permissions:
   contents: read
@@ -154,11 +159,18 @@ jobs:
           bash scripts/security/test-functions-deploy.sh
 
       - name: Implantar somente a função aprovada
+        if: ${{ !inputs.deploy_all }}
         env:
           FUNCTION_NAME: ${{ inputs.function_name }}
         run: |
           set -euo pipefail
           bash scripts/migrate-functions.sh --only "$FUNCTION_NAME"
+
+      - name: Implantar todas as functions com index.ts
+        if: ${{ inputs.deploy_all }}
+        run: |
+          set -euo pipefail
+          bash scripts/migrate-functions.sh
 
       - name: Registrar evidência do deploy
         if: always()
