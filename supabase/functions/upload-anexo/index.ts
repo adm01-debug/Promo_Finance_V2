@@ -83,7 +83,16 @@ Deno.serve(
         const cd = new Uint8Array(
           await arquivo.slice(dir.offset, dir.offset + dir.tamanho).arrayBuffer()
         );
-        const erroZip = validarZipDiretorioCompleto(arquivo.name, entradasDiretorioCentral(cd));
+        const entradas = entradasDiretorioCentral(cd);
+        if (!entradas) {
+          return erro(
+            req,
+            415,
+            'conteudo_invalido',
+            'Diretório do zip excede o limite inspecionável.'
+          );
+        }
+        const erroZip = validarZipDiretorioCompleto(arquivo.name, entradas);
         if (erroZip) {
           return erro(req, 415, 'conteudo_invalido', erroZip);
         }
@@ -111,8 +120,10 @@ Deno.serve(
         );
       }
       // Vínculo ativo + papel de escrita na empresa da entidade:
-      // `visualizador` é somente leitura (docs/MATRIZ_PAPEIS.md) e o
-      // service_role abaixo não passa por RLS.
+      // `visualizador` e `contador` são somente leitura
+      // (docs/MATRIZ_PAPEIS.md) e o service_role abaixo não passa por RLS —
+      // allowlist positiva, nunca denylist de papel.
+      const PAPEIS_ESCRITA = new Set(['admin', 'financeiro', 'operacional']);
       const { data: vinculo } = await supabase
         .from('user_empresas')
         .select('role')
@@ -120,7 +131,7 @@ Deno.serve(
         .eq('empresa_id', entidade.empresa_id)
         .eq('ativo', true)
         .maybeSingle();
-      if (!vinculo || vinculo.role === 'visualizador') {
+      if (!vinculo || !PAPEIS_ESCRITA.has(vinculo.role)) {
         return erro(
           req,
           403,

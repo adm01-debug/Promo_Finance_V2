@@ -149,8 +149,13 @@ def main():
         # imprimir o payload inteiro — só as chaves de MFA que nos interessam.
         seguro = {k: v for k, v in cfg.items() if k.startswith("mfa_")}
         print(json.dumps(seguro, indent=2))
-        if not cfg.get("mfa_totp_enroll_enabled") or not cfg.get(
-            "mfa_totp_verify_enabled"
+        # enroll+verify ligados não bastam: com mfa_max_enrolled_factors=0
+        # nenhum usuário consegue cadastrar um fator e o apply sairia verde
+        # sem MFA utilizável.
+        if (
+            not cfg.get("mfa_totp_enroll_enabled")
+            or not cfg.get("mfa_totp_verify_enabled")
+            or not cfg.get("mfa_max_enrolled_factors")
         ):
             pendencias.append("mfa_totp")
     else:
@@ -260,6 +265,8 @@ def main():
             {
                 "mfa_totp_enroll_enabled": True,
                 "mfa_totp_verify_enabled": True,
+                # Default do Supabase: 10 fatores por usuário.
+                "mfa_max_enrolled_factors": 10,
             },
         )
 

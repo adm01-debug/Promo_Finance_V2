@@ -170,8 +170,14 @@ export function diretorioCentralZip(
   return null;
 }
 
-/** Nomes de TODAS as entradas a partir dos bytes do diretório central. */
-export function entradasDiretorioCentral(cd: Uint8Array, max = 10000): string[] {
+/**
+ * Nomes de TODAS as entradas a partir dos bytes do diretório central.
+ * Retorna null quando a lista excede `max` e ficou truncada — validar um
+ * prefixo fingindo ser o arquivo inteiro reabriria o bypass de entradas
+ * escondidas depois do corte. O teto cobre o pior caso: um zip de 10 MB
+ * com entradas de nome mínimo comporta ~217 mil registros de 46 bytes.
+ */
+export function entradasDiretorioCentral(cd: Uint8Array, max = 250_000): string[] | null {
   const nomes: string[] = [];
   const dv = new DataView(cd.buffer, cd.byteOffset, cd.byteLength);
   let pos = 0;
@@ -184,6 +190,17 @@ export function entradasDiretorioCentral(cd: Uint8Array, max = 10000): string[] 
     const comentLen = dv.getUint16(pos + 32, true);
     nomes.push(new TextDecoder().decode(cd.subarray(pos + 46, pos + 46 + nomeLen)));
     pos += 46 + nomeLen + extraLen + comentLen;
+  }
+  // Parou pelo teto e ainda há central headers à frente → lista truncada.
+  if (
+    nomes.length >= max &&
+    pos + 46 <= cd.length &&
+    cd[pos] === 0x50 &&
+    cd[pos + 1] === 0x4b &&
+    cd[pos + 2] === 0x01 &&
+    cd[pos + 3] === 0x02
+  ) {
+    return null;
   }
   return nomes;
 }

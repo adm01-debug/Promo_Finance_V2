@@ -62,6 +62,11 @@ Deno.test('JAR além das 40 primeiras entradas é detectado', () => {
   assertNotEquals(erro, null);
 });
 
+Deno.test('diretório truncado pelo teto retorna null', () => {
+  const { cd } = montarZip(['a.txt', 'b.txt', 'c.txt']);
+  assertEquals(entradasDiretorioCentral(cd, 2), null);
+});
+
 Deno.test('zip benigno completo passa', () => {
   assertEquals(
     validarZipDiretorioCompleto('planilha.zip', ['[Content_Types].xml', 'xl/workbook.xml']),
