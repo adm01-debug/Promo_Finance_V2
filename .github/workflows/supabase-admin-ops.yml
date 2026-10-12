@@ -55,8 +55,13 @@ jobs:
           CONFIRMADO: ${{ inputs.confirmar_project_ref }}
         run: |
           set -euo pipefail
-          if [ "$CONFIRMADO" != "$SUPABASE_PROJECT_REF" ]; then
-            echo "::error::confirmação '$CONFIRMADO' != ref real '$SUPABASE_PROJECT_REF'"
+          CANONICO="bwwbeyolnnzppeuhgkcd"
+          if [ "$CONFIRMADO" != "$CANONICO" ]; then
+            echo "::error::confirmação '$CONFIRMADO' != project-ref canônico '$CANONICO'"
+            exit 1
+          fi
+          if [ "$SUPABASE_PROJECT_REF" != "$CANONICO" ]; then
+            echo "::error::vars.VITE_SUPABASE_PROJECT_ID ('$SUPABASE_PROJECT_REF') não é o canônico — abortando"
             exit 1
           fi
 

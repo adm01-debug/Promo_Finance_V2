@@ -13,8 +13,12 @@
 # O que cobre (check → apply):
 #   1. Auth config: mfa_totp_enroll_enabled / mfa_totp_verify_enabled / max factors
 #   2. Edge functions: verify_jwt divergente do supabase/config.toml
-#   3. Storage: bucket `financeiro` ausente (exigido pela fn upload-anexo)
-#   4. Auth users: usuários de teste/remanescentes (*.test, *@example.*, lovable)
+#   3. Storage: bucket `financeiro` ausente — criação é responsabilidade da
+#      migration 20261002093000 (bucket + coluna storage_path + policies);
+#      o apply só reporta, nunca cria o bucket isolado.
+#   4. Auth users: deleta SÓ a allowlist explícita de contas de teste;
+#      demais contas não confirmadas só são listadas (nunca confirmadas
+#      nem deletadas automaticamente).
 
 import json
 import os
@@ -29,9 +33,12 @@ REF = os.environ.get("SUPABASE_PROJECT_REF", "")
 MODE = sys.argv[1] if len(sys.argv) > 1 else "check"
 APPLY = MODE == "apply"
 
-TEST_EMAIL_RE = re.compile(
-    r"(?:@promo-finance\.test$|@example\.(?:com|test|org)$|@.*\.test$|lovable)", re.I
-)
+# Contas de teste identificadas na auditoria (migration E17 do plano de
+# correções). Somente esses e-mails podem ser deletados no apply.
+TEST_USER_ALLOWLIST = {
+    "e2e-admin@promo-finance.test",
+    "teste@lovable.com",
+}
 BUCKET_REQUIRED = "financeiro"
 
 
@@ -133,7 +140,8 @@ def main():
 
     # --- 4. Auth users ---------------------------------------------------------
     section("Auth users (teste/não confirmados)")
-    suspeitos = []
+    deletaveis = []
+    nao_confirmados = []
     page = 1
     total_usuarios = 0
     while page <= 20:
@@ -146,17 +154,19 @@ def main():
             break
         total_usuarios += len(lista)
         for u in lista:
-            email = u.get("email", "") or ""
+            email = (u.get("email") or "").lower()
             conf = bool(u.get("email_confirmed_at") or u.get("confirmed_at"))
-            if TEST_EMAIL_RE.search(email) or not conf:
-                suspeitos.append(
-                    {"id": u.get("id"), "email": email, "confirmed": conf}
-                )
+            if email in TEST_USER_ALLOWLIST:
+                deletaveis.append({"id": u.get("id"), "email": email})
+            elif not conf:
+                nao_confirmados.append({"id": u.get("id"), "email": email})
         if len(lista) < 100:
             break
         page += 1
-    print(f"usuários: {total_usuarios} | suspeitos: {suspeitos or 'nenhum'}")
-    if suspeitos:
+    print(f"usuários: {total_usuarios}")
+    print(f"contas de teste na allowlist (deletáveis): {deletaveis or 'nenhuma'}")
+    print(f"não confirmados (só relatados): {nao_confirmados or 'nenhum'}")
+    if deletaveis:
         pendencias.append("usuarios")
 
     # --- Apply ---------------------------------------------------------------
@@ -184,24 +194,19 @@ def main():
             print(f"PATCH {slug} verify_jwt={d['config.toml']} → {code}")
 
     if "bucket" in pendencias:
-        code, out = req(
-            "POST",
-            "/storage/buckets",
-            {"id": BUCKET_REQUIRED, "name": BUCKET_REQUIRED, "public": False},
+        # A migration 20261002093000_storage_financeiro_upload_via_edge.sql
+        # cria bucket + coluna storage_path + policies num passo atômico.
+        # Criar só o bucket deixaria upload-anexo falhando no insert —
+        # aplicar a migration via workflow prod-migrate em vez disso.
+        print(
+            f"bucket '{BUCKET_REQUIRED}' ausente — aplique a migration "
+            "20261002093000 via workflow prod-migrate (sem ação aqui)."
         )
-        print(f"POST bucket {BUCKET_REQUIRED} → {code}: {out}")
 
     if "usuarios" in pendencias:
-        for u in suspeitos:
-            eh_teste = bool(TEST_EMAIL_RE.search(u["email"]))
-            if eh_teste:
-                code, _ = req("DELETE", f"/auth/users/{u['id']}")
-                print(f"DELETE {u['email']} → {code}")
-            elif not u["confirmed"]:
-                code, _ = req(
-                    "PUT", f"/auth/users/{u['id']}", {"email_confirm": True}
-                )
-                print(f"CONFIRM {u['email']} → {code}")
+        for u in deletaveis:
+            code, _ = req("DELETE", f"/auth/users/{u['id']}")
+            print(f"DELETE {u['email']} → {code}")
 
 
 if __name__ == "__main__":
