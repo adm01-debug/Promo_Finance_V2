@@ -107,7 +107,14 @@ def want_verify_jwt():
             elif line.startswith("["):
                 fn = None
             elif fn and line.startswith("verify_jwt"):
-                out[fn] = line.split("=", 1)[1].strip() == "true"
+                raw = line.split("=", 1)[1]
+                # TOML: comentário inline começa em '#' fora de strings; aqui
+                # bastam valores booleanos simples.
+                val = raw.split("#", 1)[0].strip().strip('"').strip("'")
+                if val in ("true", "false"):
+                    out[fn] = val == "true"
+                else:
+                    print(f"verify_jwt não-booleano em {fn}: {val!r} — ignorado")
     return out
 
 
@@ -124,8 +131,10 @@ def main():
     section("Auth config")
     code, cfg = req("GET", "/config/auth")
     if code == 200:
-        mfa = {k: cfg.get(k) for k in sorted(cfg) if "mfa" in k or "captcha" in k}
-        print(json.dumps(mfa, indent=2))
+        # A resposta de /config/auth inclui segredos (captcha, hooks). Nunca
+        # imprimir o payload inteiro — só as chaves de MFA que nos interessam.
+        seguro = {k: v for k, v in cfg.items() if k.startswith("mfa_")}
+        print(json.dumps(seguro, indent=2))
         if not cfg.get("mfa_totp_enroll_enabled") or not cfg.get(
             "mfa_totp_verify_enabled"
         ):
@@ -180,10 +189,15 @@ def main():
     nao_confirmados = []
     total_usuarios = 0
     if not SERVICE_KEY:
-        print("SUPABASE_SERVICE_ROLE_KEY ausente — seção de usuários pulada.")
+        if os.environ.get("DELETE_TEST_USERS") == "1":
+            FALHAS.append(
+                "exclusão de contas de teste solicitada sem SUPABASE_SERVICE_ROLE_KEY"
+            )
+        else:
+            print("SUPABASE_SERVICE_ROLE_KEY ausente — seção de usuários pulada.")
     else:
         page = 1
-        while page <= 20:
+        while page <= 100:
             code, users = req(
                 "GET", f"/admin/users?page={page}&per_page=100", gotrue=True
             )
@@ -205,6 +219,8 @@ def main():
             if len(lista) < 100:
                 break
             page += 1
+        else:
+            FALHAS.append("paginação de usuários truncada em 100 páginas")
         print(f"usuários: {total_usuarios}")
         print(f"contas de teste na allowlist (deletáveis): {deletaveis or 'nenhuma'}")
         print(f"não confirmados (só relatados): {nao_confirmados or 'nenhum'}")

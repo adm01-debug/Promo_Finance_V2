@@ -162,6 +162,14 @@ validate_config_coverage() {
 
 validate_config_coverage
 
+stop_if_needed() {
+  if [[ "${STOP_ON_FAIL:-0}" == "1" ]]; then
+    echo "⛔ STOP_ON_FAIL=1 — lote interrompido." >&2
+    return 0
+  fi
+  return 1
+}
+
 # --- Loop de deploy ---------------------------------------------------------
 OK=0; FAIL=0
 for fn in "${FNS[@]}"; do
@@ -174,6 +182,7 @@ for fn in "${FNS[@]}"; do
     echo "❌ ${fn}: verify_jwt ausente em ${CONFIG_TOML}; deploy recusado." >&2
     FAIL=$((FAIL + 1))
     log_event "deploy" "$fn" "failed" '{"reason":"verify_jwt_missing"}'
+    stop_if_needed && break
     continue
   elif [[ "$vjwt" == "true" ]]; then
     # A CLI atual protege por JWT por padrão e não aceita mais --verify-jwt.
@@ -185,6 +194,7 @@ for fn in "${FNS[@]}"; do
     echo "❌ ${fn}: verify_jwt inválido em ${CONFIG_TOML}: ${vjwt}" >&2
     FAIL=$((FAIL + 1))
     log_event "deploy" "$fn" "failed" '{"reason":"verify_jwt_invalid"}'
+    stop_if_needed && break
     continue
   fi
 
@@ -205,11 +215,9 @@ for fn in "${FNS[@]}"; do
     ERR="$(tail -c 1000 /tmp/deploy-out-$$.log | jq -Rs .)"
     log_event "deploy" "$fn" "failed" "$(jq -cn --argjson e "$ERR" --arg f "$FLAG" '{flag:$f, error:$e}')"
     echo "   ❌ falhou — ver $LOG" >&2
-    if [[ "${STOP_ON_FAIL:-0}" == "1" ]]; then
-      # Falha no meio do lote deixa prod com versões mistas; parar aqui
-      # mantém o estrago mínimo e o log diz exatamente onde retomar com
-      # --only fn1,fn2,... .
-      echo "⛔ STOP_ON_FAIL=1 — lote interrompido em ${fn}." >&2
+    # Falha no meio do lote deixa prod com versões mistas; parar aqui mantém
+    # o estrago mínimo e o log diz onde retomar com --only fn1,fn2,...
+    if stop_if_needed; then
       rm -f /tmp/deploy-out-$$.log
       break
     fi
