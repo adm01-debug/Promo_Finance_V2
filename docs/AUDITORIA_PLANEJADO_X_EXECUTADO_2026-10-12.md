@@ -61,7 +61,7 @@ Itens que dependem disso estão marcados como **"a verificar"**.
 | Tabelas do schema público **vazias** em produção | **129**. Dessas, 23 **não têm nenhum código que escreva nelas** e 14 **não são usadas por nada** |
 | Funções SQL que existem em produção e **ninguém chama** | **43** (lockout, whitelist de IP, bloqueio por país, dispositivo conhecido, reprocessamento da DLQ, livro razão, 8 *gates* de integridade…) |
 | Colunas que o código das Edge Functions lê ou grava e que **não existem em produção** | **72 pares tabela.coluna** |
-| Edge Functions | 105 no total; **75 sem nenhum teste**, **8 sem nenhum chamador**, **5 quebradas em produção**, **9 integrações nunca ativadas** e **5 simuladas ou stub**. 20 dependem do gateway de IA da Lovable (`LOVABLE_API_KEY`) |
+| Edge Functions | 105 no total; **75 sem nenhum teste**, **13 sem nenhum chamador**, **5 quebradas em produção**, **9 integrações nunca ativadas** e **5 simuladas ou stub**. 17 chamam o gateway de IA da Lovable (`LOVABLE_API_KEY`) |
 | Deploy de Edge Functions pelo pipeline | Último em **12/09**. Desde então, 18 commits mudaram funções; o que roda em produção é desconhecido |
 | Trilha de auditoria | `audit_logs` parada desde **25/08**. `edge_function_logs` tem **1 linha no total**. `frontend_error_logs` está vazia |
 | Uso real | 1 empresa, 3 usuários, dados-semente de 28/07. Asaas, Bling, Bitrix24, Open Finance, certificado SEFAZ, push, API keys e LGPD: **zero registros** |
@@ -82,7 +82,11 @@ Itens que dependem disso estão marcados como **"a verificar"**.
 6. **A conciliação bancária quebra na ação principal.** "Confirmar conciliação" chama uma versão da RPC com 6 argumentos que não existe em produção. Veja §4.5.
 7. **Recebimento por boleto ou PIX (Asaas) não dá baixa no título.** O webhook só atualiza `asaas_payments`; o gatilho de liquidação não existe. A gravação local do boleto falha **depois** de a cobrança já ter sido criada no Asaas (cobrança órfã). Veja §4.6.
 8. **A cobrança por WhatsApp não envia mensagem.** A "régua" e a "IA proativa" só montam um link `wa.me`. **Não há integração com a Evolution API** (instância `wpp2`), embora o `CLAUDE.md` afirme que há. A fila de cobrança está parada (RPC ausente). Veja §4.7.
-9. **A emissão, o cancelamento, a inutilização e a contingência de NF-e são simulados.** Usam `Math.random`, protocolos fictícios e o ambiente fixo "homologação". A tela de Notas Fiscais nunca lê o banco. Veja §4.11.
+9. **NF-e: a emissão está bloqueada; cancelamento, inutilização e contingência são simulados.**
+   - A emissão mostra "Emissão indisponível" e não autoriza nota nenhuma.
+   - Cancelar, inutilizar e entrar em contingência "dão certo" na tela com `Math.random`, protocolos fictícios e ambiente fixo "homologação", sem falar com a SEFAZ.
+   - A tela de Notas Fiscais nunca lê o banco.
+   - Veja §4.11.
 10. **A captação de NF-e de entrada (DF-e) está parada.** O cron chama `sefaz-dfe-dispatcher`, que responde 500 a cada 15 minutos (secret `CRON_DISPATCH_SECRET` ausente) e não há certificado cadastrado. Veja §4.11.
 11. **A contabilidade não grava.** O front envia partidas como `'D'`/`'C'`, enquanto o CHECK de produção exige `'debito'`/`'credito'`. Os relatórios contábeis comparam `'D'`/`'C'` e somam zero. A contabilização automática só roda em *dry-run*. Veja §4.9.
 12. **DARF de retenções e importação de XML de NF-e com créditos de CBS/IBS quebram** por RPC ausente. Veja §4.10.
@@ -114,7 +118,7 @@ Itens que dependem disso estão marcados como **"a verificar"**.
 
 ## 2. Placar
 
-Foram registrados **278 itens** com ID nas seções 4, 6 e 7. Desses, 1 está OK/ativo e 1 é risco operacional. As 105 Edge Functions estão na §8, e as 49 migrations, as 129 tabelas vazias e as 43 funções SQL órfãs estão nas §3 e §5, fora desta contagem.
+Foram registrados **279 itens** com ID nas seções 4, 6 e 7. Desses, 1 está OK/ativo e 1 é risco operacional. As 105 Edge Functions estão na §8, e as 49 migrations, as 129 tabelas vazias e as 43 funções SQL órfãs estão nas §3 e §5, fora desta contagem.
 
 | Módulo | Quebrado | Não aplicado em prod | Declarado feito e ausente | Simulado/stub | Só UI/schema/backend | Nunca ativado | Órfão | Não iniciado | Parcial | Bloqueado | Desativado | A verificar | Total |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
@@ -122,7 +126,7 @@ Foram registrados **278 itens** com ID nas seções 4, 6 e 7. Desses, 1 está OK
 | 4.2 Contas a Receber | 4 | · | · | · | 2 | · | · | 4 | 9 | · | · | · | 19 |
 | 4.3 Aprovações | 2 | · | 1 | 1 | 1 | · | · | 4 | 1 | · | · | · | 10 |
 | 4.4 Tesouraria e contas bancárias | 3 | · | · | 1 | 5 | · | · | 3 | 5 | · | · | · | 17 |
-| 4.5 Conciliação e Open Finance | 1 | · | · | 3 | 4 | · | · | 2 | 5 | · | · | 1 | 16 |
+| 4.5 Conciliação e Open Finance | 1 | · | · | 4 | 4 | · | · | 2 | 4 | · | · | 1 | 16 |
 | 4.6 Boletos, PIX e Asaas | 2 | 1 | · | · | · | 1 | · | 2 | 2 | · | · | · | 8 |
 | 4.7 Cobrança e WhatsApp | 1 | 1 | · | 2 | 1 | · | · | 4 | 1 | · | · | 1 | 11 |
 | 4.8 Compras | · | · | · | 1 | · | · | · | 3 | 1 | · | · | · | 5 |
@@ -134,16 +138,16 @@ Foram registrados **278 itens** com ID nas seções 4, 6 e 7. Desses, 1 está OK
 | 4.14 Orçamento e centro de custo | 2 | · | · | · | · | · | · | 1 | 1 | · | · | · | 4 |
 | 4.15 Configurações e Admin | 1 | · | · | 3 | 1 | · | · | 2 | · | · | · | · | 7 |
 | 4.16 Segurança e multi-empresa | 1 | 7 | 1 | · | · | · | 1 | 4 | 4 | 2 | · | · | 20 |
-| 4.17 IA | · | · | · | 1 | 1 | 1 | · | 1 | · | · | · | 1 | 5 |
-| 4.18 Integrações | 3 | · | · | 1 | · | 2 | 2 | 1 | 3 | · | · | 1 | 13 |
-| 4.19 LGPD, i18n, PWA e outros | · | · | 3 | 1 | 1 | · | · | 1 | 3 | · | · | · | 9 |
+| 4.17 IA | · | · | · | 1 | · | 2 | · | 1 | · | · | · | 1 | 5 |
+| 4.18 Integrações | 4 | · | · | 1 | · | 2 | 2 | 1 | 3 | · | · | 1 | 14 |
+| 4.19 LGPD, i18n, PWA e outros | · | · | 2 | 1 | 1 | · | · | 1 | 4 | · | · | · | 9 |
 | 6.1 CI/CD e ambientes | 4 | · | · | · | · | · | · | 5 | 8 | · | 3 | · | 20 |
 | 6.2 Testes | · | · | · | · | · | · | · | 5 | 4 | · | 3 | · | 12 |
 | 6.3 Operação e DR | 2 | · | · | · | · | · | · | 8 | 1 | · | · | · | 12 |
 | 7 Observabilidade | · | 4 | · | · | · | · | · | 1 | 3 | · | · | 1 | 10 |
-| **Total** | **40** | **14** | **7** | **23** | **23** | **5** | **5** | **75** | **70** | **3** | **6** | **5** | **278** |
+| **Total** | **41** | **14** | **6** | **24** | **22** | **6** | **5** | **75** | **70** | **3** | **6** | **5** | **279** |
 
-**Em resumo:** 40 itens **quebrados** (em produção ou no pipeline), 14 prontos e **não aplicados ou desligados em produção**, 23 **simulados ou stub**, 7 **declarados feitos e ausentes**, 75 **não iniciados** e 70 **parciais**.
+**Em resumo:** 41 itens **quebrados** (em produção ou no pipeline), 14 prontos e **não aplicados ou desligados em produção**, 24 **simulados ou stub**, 6 **declarados feitos e ausentes**, 75 **não iniciados** e 70 **parciais**.
 
 ---
 
@@ -437,7 +441,7 @@ Tudo isso vale **só para contas a pagar**.
 | CO-12 | Conciliação retroativa | SÓ UI | `useConciliacaoRetroativa.ts:17-31` cria um log "processando" e exibe o toast "Simulação de gatilho…"; nenhum worker lê `logs_conciliacao_retroativa` | Fica "processando" para sempre |
 | CO-13 | Retorno CNAB, CAMT e MT940 | NÃO INICIADO | — | Banco sem OFX fica fora |
 | CO-14 | Conciliação de cartão (adquirente) | NÃO INICIADO | grep Cielo, Getnet, adquirente = 0 | Recebíveis de cartão sem controle |
-| CO-15 | Conciliação Asaas | PARCIAL | `asaas-proxy/index.ts:1306` gera sugestões; `asaas_reconciliation_suggestions` não tem escritor | — |
+| CO-15 | Conciliação Asaas | SIMULADO / STUB | `asaas-proxy/index.ts:1306` chama `generate_reconciliation_suggestions`, cuja definição (`20260825110000_reconciliar_schema_v3_completo.sql:1920-1927`) é um stub que só devolve `jsonb_build_array()` e não grava em `asaas_reconciliation_suggestions`. O proxy responde `{ok:true}` | O botão conclui sem erro e **nunca gera sugestão** |
 | CO-16 | Dependência da IA | A VERIFICAR | `conciliacao-ia` usa `ai.gateway.lovable.dev` (`LOVABLE_API_KEY`); o comentário em `comparar-benchmark-setorial/index.ts:2` diz que a chave está "ausente neste projeto" | Se a chave faltar, a sugestão por IA falha. Ver §4.17 |
 
 ### 4.6 Boletos, PIX e Asaas (`/boletos`, `/asaas`, `/pix-hub`, `/simulador-antecipacao`)
@@ -508,7 +512,7 @@ Tudo isso vale **só para contas a pagar**.
 | TR-05 | Heatmap tributário | SIMULADO / STUB | `gerar-heatmap-tributario/index.ts:1` diz "versão determinística (stub)" | — |
 | TR-06 | Previsão de carga tributária | PARCIAL | `prever-carga-tributaria/index.ts:42,63` cai em `stub_deterministico` sem dados | — |
 | TR-07 | Cálculo do IVA (`calculo-iva`) | ÓRFÃO | Nenhum chamador; o cronograma 2026–2033 está *inline*; sem teste (PLANO_MELHORIAS etapa 39) | — |
-| TR-08 | Motor tributário duplicado (cliente × edge) | PARCIAL | `supabase/functions/_shared/tributario-logic.ts` (960 linhas) × `src/lib/tributario/shared-logic.ts` (809 linhas); a "cura" (gerar uma a partir da outra) não foi feita | Risco de divergência de cálculo |
+| TR-08 | Motor tributário duplicado (cliente × edge) | PARCIAL | `supabase/functions/_shared/tributario-logic.ts` (960 linhas) × `src/lib/tributario/shared-logic.ts` (809 linhas); a "cura" (gerar uma a partir da outra) não foi feita. As edges `simular-simples`, `simular-presumido`, `simular-real` e `projecao-reforma` existem, mas **ninguém as chama**: o front calcula tudo no cliente (`src/lib/tributario/*`) | Risco de divergência de cálculo; 4 funções órfãs |
 | TR-09 | Paridade e casos de borda de `calculo-iva`, `decidir-regime` e `prever-carga-tributaria` | NÃO INICIADO | Não há testes (PLANO_MELHORIAS etapa 39) | — |
 | TR-10 | Regimes especiais por empresa | SÓ SCHEMA | `regimes_especiais_empresa` sem escritor | — |
 | TR-11 | Projeções da reforma, simulação detalhada, operações de ICMS | SÓ SCHEMA (não usadas) | `projecoes_reforma`, `simulacao_tributos_detalhados` e `operacoes_icms` sem nenhuma referência no código | — |
@@ -611,9 +615,9 @@ Tudo isso vale **só para contas a pagar**.
 
 | ID | Item | Status | Evidência | O que falta e efeito |
 | --- | --- | --- | --- | --- |
-| IA-01 | **Dependência única do gateway de IA da Lovable** | A VERIFICAR (risco alto) | 20 funções chamam `ai.gateway.lovable.dev` com `LOVABLE_API_KEY`: `analise-fluxo-ia`, `analise-preditiva`, `analyze-document`, `benchmarking-setorial`, `calcular-health-score-operacional`, `categorizar-despesa`, `comparar-benchmark-setorial`, `conciliacao-ia`, `convidar-contador`, `copilot-global`, `copilot-tributario`, `decidir-regime`, `executar-analise-preditiva`, `expert-agent`, `gerar-acoes-recomendadas`, `gerar-resumo-executivo-semanal`, `insights-relatorio`, `prever-carga-tributaria`, `processar-nf-ocr` e `whatsapp-ia-proativo`. O código afirma, em `comparar-benchmark-setorial/index.ts:2`, que a chave está "ausente neste projeto" | Confirmar o secret. Sem ele, toda IA do sistema para |
+| IA-01 | **Dependência do gateway de IA da Lovable** | A VERIFICAR (risco alto) | 17 funções chamam `ai.gateway.lovable.dev` com `LOVABLE_API_KEY`: `analise-fluxo-ia`, `analise-preditiva`, `analyze-document`, `benchmarking-setorial`, `calcular-health-score-operacional`, `categorizar-despesa`, `conciliacao-ia`, `copilot-global`, `copilot-tributario`, `decidir-regime`, `executar-analise-preditiva`, `expert-agent`, `gerar-acoes-recomendadas`, `gerar-resumo-executivo-semanal`, `insights-relatorio`, `processar-nf-ocr` e `whatsapp-ia-proativo`. `convidar-contador` usa a mesma chave, mas no conector de e-mail. `comparar-benchmark-setorial` e `prever-carga-tributaria` viraram cálculos fixos porque a chave estaria "ausente neste projeto" (comentário em `index.ts:2`) | Confirmar o secret. Sem ele, param Copilot, Expert, categorização, sugestão de conciliação por IA, OCR de nota e análises preditivas. `decidir-regime` e `calcular-health-score-operacional` seguem entregando o resultado principal, sem o complemento de IA |
 | IA-02 | Stubs no lugar da IA | SIMULADO / STUB | DRE tributária, benchmark e heatmap (TR-03 a TR-05) | — |
-| IA-03 | Aprendizado da conciliação por feedback | SÓ SCHEMA | `feedback_conciliacao_ia` = 0 | Nunca alimentado |
+| IA-03 | Aprendizado da conciliação por feedback | NUNCA ATIVADO | O código grava: `SugestoesMatchIA` → `registrarFeedback` (`useHistoricoConciliacaoIA.ts:140-143`), e os 20 últimos feedbacks seguem para a análise. Mesmo assim, `feedback_conciliacao_ia` tem 0 linhas | Implementado e nunca usado |
 | IA-04 | Ações recomendadas, alertas preditivos e resumos executivos | NUNCA ATIVADO | `acoes_recomendadas` = 0 (há escritor) | — |
 | IA-05 | Previsão estatística (não LLM) | NÃO INICIADO | GE-8.6 | — |
 
@@ -630,7 +634,8 @@ Tudo isso vale **só para contas a pagar**.
 | IN-07 | CNPJA | QUEBRADO EM PRODUÇÃO | RPC ausente (§3.2); `cnpja_cache` vazio | — |
 | IN-08 | n8n | ÓRFÃO e fora do domínio | `n8n-dispatch` não é disparado por nenhum código; `n8n_workflow_configs` sem escritor; o modelo de eventos é de **logística** (`driver_approval`, "Revisar motorista": `docs/N8N_WORKFLOWS.md`, `n8n-callback` ações `update_driver_approval`); HMAC do corpo não implementado (PLANO_100 E-043) | Nenhum evento financeiro vai para o n8n. **Decisão:** redesenhar para eventos financeiros ou remover |
 | IN-09 | Mapbox | ÓRFÃO | `get-mapbox-token` sem chamador; `mapbox-gl` instalado e sem import; o domínio está na CSP | Remover ou definir o uso |
-| IN-10 | SSO (SAML/OIDC) e SCIM | PARCIAL (sem uso real) | 4 `sso_providers` em produção; colunas de `sso_login_attempts` (`state`, `code_verifier_hash`, `expires_at`…) ausentes em produção; nenhum tenant SCIM | A verificação PKCE e state pode falhar |
+| IN-10 | SSO OIDC | QUEBRADO EM PRODUÇÃO | `sso-initiate/index.ts:123-130` grava `state`, `code_verifier_hash`, `expires_at` e `app_redirect` em `sso_login_attempts` sem checar o erro, e essas colunas **não existem em produção**. No retorno, `sso-callback` busca `.eq('state', …)` (`:890`) e não acha a tentativa | Todo login OIDC por esse caminho termina em `state_invalid_or_expired` |
+| IN-10b | SSO SAML e SCIM | PARCIAL (sem uso real) | 4 `sso_providers` em produção; nenhum tenant SCIM | — |
 | IN-11 | Resend (e-mail) e Slack | A VERIFICAR | 13 funções dependem de `RESEND_API_KEY`; sem ela, entram em "modo simulado" | — |
 | IN-12 | Push web (VAPID) | PARCIAL | Duas implementações paralelas (`sw.js` + `usePushNotifications` × `sw-push.js` + `useWebPushSubscription`); `PushNotificationsBanner` não é usado; `push_subscriptions` = 0; o trigger de push crítico não foi aplicado | — |
 | IN-13 | Lalamove (logística) — descomissionada (ADR-001) | PARCIAL (resíduo) | O cron `evaluate-delivery-alerts-every-min` segue ativo e chama uma função inexistente: **HTTP 404 todo minuto** (~46 mil execuções em 35 dias) | `cron.unschedule(37)` |
@@ -644,7 +649,7 @@ Tudo isso vale **só para contas a pagar**.
 | OU-03 | Campos customizados por entidade | SÓ BACKEND (definição sem preenchimento) | `/admin/campos-customizados` define campos; `custom_field_values` não é lido nem gravado por nenhum formulário | A feature é um "fantasma" |
 | OU-04 | Internacionalização PT/EN/ES | PARCIAL | `src/i18n.ts` com cerca de 14 chaves; `useTranslation` em 2 de 927 `.tsx` | — |
 | OU-05 | Página offline e fila de escrita offline | NÃO INICIADO / PARCIAL | `public/offline.html` não é referenciado; existe só o cache fiscal (`offline/fiscal-cache.ts`) | — |
-| OU-06 | Acessibilidade: tamanho de fonte, navegação por teclado, alto contraste com toggle | DECLARADO FEITO, MAS AUSENTE | `INVENTARIO_FUNCIONALIDADES.md:357-360`; só existe `SkipLinks.tsx` e `prefers-contrast` | — |
+| OU-06 | Acessibilidade: tamanho de fonte, navegação por teclado, alto contraste com toggle | PARCIAL | Existem a navegação por teclado (`useKeyboardNavigation`, montado em `MainLayout.tsx:38`) e o `SkipLinks.tsx`. Faltam o controle de tamanho de fonte e o toggle de alto contraste (só `prefers-contrast`), declarados em `INVENTARIO_FUNCIONALIDADES.md:357-360` | — |
 | OU-07 | Feature flags (`src/lib/feature-flags.ts`) | DECLARADO FEITO, MAS AUSENTE | grep = 0 | Sem *rollout* gradual |
 | OU-08 | Storybook | DECLARADO FEITO, MAS AUSENTE | Os scripts estão em `package.json:39-40`; não há `.storybook/` nem `*.stories.*` | Os scripts falham |
 | OU-09 | Contador externo (portal somente leitura) | PARCIAL | `ContadorReadonly.tsx` + `validar-token-contador` existem; `convidar-contador` depende da IA e do Resend | Não há uso registrado |
@@ -821,7 +826,7 @@ Fonte: workflows, configurações e API do GitHub, lidos em 11/10. `main` está 
 | OP-04 | Monitor de uptime externo com alerta (Better Stack, UptimeRobot) | NÃO INICIADO | `UPTIME_OBSERVABILIDADE.md:20-24` é só "configuração sugerida" |
 | OP-05 | Rotação de secrets a cada 90 dias | NÃO INICIADO | O registro de rotações está 100% vazio |
 | OP-06 | Post-mortems em `docs/postmortems/` | NÃO INICIADO | O diretório não existe |
-| OP-07 | Circuit breaker automático de integrações | PARCIAL | Só existe o *kill-switch* manual `INTEGRACOES_DESATIVADAS` |
+| OP-07 | Circuit breaker automático de integrações | PARCIAL | Existe um circuit breaker automático em memória (`_shared/resilience.ts`, estados fechado, aberto e semiaberto) usado por `asaas-proxy` e `bling-proxy`; o dispatcher de DF-e tem limiar próprio; e há o *kill-switch* manual `INTEGRACOES_DESATIVADAS`. Limitação: o estado vive por instância da Edge Function e não é compartilhado, e as demais integrações (Bitrix24, Open Finance, CNPJA, IA) não têm |
 | OP-08 | Hotfix por `functions-deploy` + `prod-migrate` | QUEBRADO | Ver CI-02 e CI-07 |
 | OP-09 | `db:migrate` = `supabase db push` | RISCO | Contraria o `CLAUDE.md` e o HOTFIX: com o ledger divergente, pode reaplicar o histórico |
 | OP-10 | `db:seed` e `storybook` | QUEBRADO | Scripts sem arquivo de seed e sem Storybook |
@@ -864,7 +869,7 @@ Fonte: workflows, configurações e API do GitHub, lidos em 11/10. `main` está 
 
 > **Como ler.**
 >
-> - **Chamadores** é a contagem de referências fora de testes em: telas (`src`) · SQL (migrations, inclusive cron e trigger) · outras funções · workflows · E2E. Webhooks de terceiros e crons criados direto em produção (como `sefaz-dfe-dispatcher`) não aparecem nas migrations.
+> - **Chamadores** é a contagem de referências fora de testes em: telas (`src`, só invocação explícita: o nome entre aspas ou `functions/v1/<nome>`) · SQL (migrations, inclusive cron e trigger) · outras funções · workflows · E2E. Webhooks de terceiros e crons criados direto em produção (como `sefaz-dfe-dispatcher`) não aparecem nas migrations.
 > - **Status apurado:**
 >   - "EM USO — sem defeito apurado" quer dizer que tem chamador e esta auditoria não achou defeito; não significa que foi testada ponta a ponta.
 >   - "NUNCA ATIVADA" quer dizer pronta, mas a integração não tem token nem certificado em produção.
@@ -878,7 +883,7 @@ Fonte: workflows, configurações e API do GitHub, lidos em 11/10. `main` está 
 | 3 | `analise-preditiva` | EM USO — sem defeito apurado | 1·0·1·0·0 | **0** | 346 | LOVABLE_API_KEY | depende do gateway de IA Lovable (LOVABLE_API_KEY) |
 | 4 | `analyze-document` | EM USO — sem defeito apurado | 2·0·0·1·0 | **0** | 214 | LOVABLE_API_KEY | depende do gateway de IA Lovable (LOVABLE_API_KEY) |
 | 5 | `api-keys-manage` | EM USO — sem defeito apurado | 1·0·0·0·0 | 1 | 162 | — | — |
-| 6 | `asaas-proxy` | NUNCA ATIVADA | 6·3·1·0·0 | 2 | 1429 | ASAAS_API_KEY | asaas_payments=0 e asaas_customers=0 em prod; consultar_saldo sem escopo de empresa |
+| 6 | `asaas-proxy` | NUNCA ATIVADA | 4·3·1·0·0 | 2 | 1429 | ASAAS_API_KEY | asaas_payments=0 e asaas_customers=0 em prod; consultar_saldo sem escopo de empresa |
 | 7 | `asaas-webhook` | PARCIAL | 1·0·6·1·0 | 1 | 237 | ASAAS_WEBHOOK_TOKEN | só atualiza asaas_payments (index.ts:101-130); não baixa contas_receber/boletos, não gera movimentação |
 | 8 | `benchmarking-setorial` | EM USO — sem defeito apurado | 1·0·0·1·0 | **0** | 183 | LOVABLE_API_KEY | depende do gateway de IA Lovable (LOVABLE_API_KEY) |
 | 9 | `bitrix24-sync` | NUNCA ATIVADA | 3·0·0·0·0 | **0** | 887 | BITRIX24_ACCESS_TOKEN BITRIX24_CLIENT_ID BITRIX24_CLIENT_SECRET BITRIX24_DOMAIN | bitrix_oauth_tokens=0 |
@@ -888,20 +893,20 @@ Fonte: workflows, configurações e API do GitHub, lidos em 11/10. `main` está 
 | 13 | `calcular-health-score-operacional` | EM USO — sem defeito apurado | 2·0·1·0·0 | **0** | 326 | LOVABLE_API_KEY | depende do gateway de IA Lovable (LOVABLE_API_KEY) |
 | 14 | `calcular-slo-metrics-diario` | ÓRFÃ | 0·0·0·0·0 | **0** | 122 | — | nenhum cron/código chama; nome sugere job diário nunca agendado |
 | 15 | `calculo-iva` | ÓRFÃ | 0·0·0·0·0 | **0** | 71 | — | nenhum chamador; CRONOGRAMA 2026-2033 inline; sem teste |
-| 16 | `categorizar-despesa` | EM USO — sem defeito apurado | 2·0·1·1·0 | **0** | 202 | LOVABLE_API_KEY | depende do gateway de IA Lovable (LOVABLE_API_KEY) |
-| 17 | `ci-security-gate-log` | EM USO — sem defeito apurado | 0·0·0·1·0 | 1 | 193 | DENO_TESTING | — |
+| 16 | `categorizar-despesa` | EM USO — sem defeito apurado | 1·0·1·1·0 | **0** | 202 | LOVABLE_API_KEY | depende do gateway de IA Lovable (LOVABLE_API_KEY) |
+| 17 | `ci-security-gate-log` | EM USO (CI) | 0·0·0·1·0 | 1 | 193 | DENO_TESTING | chamada pelo script de CI scripts/security/test-rpc-runtime.ts |
 | 18 | `cnpja-lookup` | QUEBRADA EM PROD | 1·1·0·0·0 | **0** | 346 | CNPJA_API_KEY | RPC cnpja_check_rate_limit ausente → HTTP 503 em todo CNPJ fora do cache (index.ts:179-196) |
-| 19 | `comparar-benchmark-setorial` | STUB | 1·0·2·0·0 | **0** | 151 | — | 'versão determinística (stub)' — removida a IA por falta de LOVABLE_API_KEY (index.ts:1-2); depende do gateway de IA Lovable (LOVABLE_API_KEY) |
+| 19 | `comparar-benchmark-setorial` | STUB | 1·0·2·0·0 | **0** | 151 | — | 'versão determinística (stub)' — removida a IA por falta de LOVABLE_API_KEY (index.ts:1-2) |
 | 20 | `compare-schemas` | ÓRFÃ (ferramenta dev) | 0·0·0·0·0 | **0** | 123 | SCHEMA_COMPARE_EXTERNAL_SERVICE_ROLE_KEY SCHEMA_COMPARE_EXTERNAL_URL SUPABASE_DB_URL | sem chamador; arquivo tinha chave service_role no histórico (.gitleaks-baseline) |
 | 21 | `conciliacao-ia` | EM USO — sem defeito apurado | 1·0·0·0·0 | **0** | 279 | LOVABLE_API_KEY | depende do gateway de IA Lovable (LOVABLE_API_KEY) |
-| 22 | `conciliacao-proxy` | QUEBRADA EM PROD | 2·2·0·2·0 | 1 | 135 | DENO_TESTING | chama confirmar_conciliacao_manual com 6 args; prod só tem 4/5 args (index.ts:84-92) → conciliar falha |
-| 23 | `consulta-tributaria` | EM USO — sem defeito apurado | 3·0·0·0·0 | 1 | 536 | — | — |
-| 24 | `contabilizar-evento` | PARCIAL | 4·0·0·0·0 | **0** | 262 | — | front só chama com dry_run (useContabilizacaoMutations.ts:108-150); INSERT de partidas falha por CHECK |
-| 25 | `convidar-contador` | EM USO — sem defeito apurado | 1·0·0·0·0 | **0** | 246 | CONTADOR_INVITE_SECRET LOVABLE_API_KEY RESEND_API_KEY SUPABASE_JWT_SECRET | depende do gateway de IA Lovable (LOVABLE_API_KEY) |
+| 22 | `conciliacao-proxy` | QUEBRADA EM PROD | 1·2·0·2·0 | 1 | 135 | DENO_TESTING | chama confirmar_conciliacao_manual com 6 args; prod só tem 4/5 args (index.ts:84-92) → conciliar falha |
+| 23 | `consulta-tributaria` | EM USO — sem defeito apurado | 2·0·0·0·0 | 1 | 536 | — | — |
+| 24 | `contabilizar-evento` | PARCIAL | 2·0·0·0·0 | **0** | 262 | — | front só chama com dry_run (useContabilizacaoMutations.ts:108-150); INSERT de partidas falha por CHECK |
+| 25 | `convidar-contador` | EM USO — sem defeito apurado | 1·0·0·0·0 | **0** | 246 | CONTADOR_INVITE_SECRET LOVABLE_API_KEY RESEND_API_KEY SUPABASE_JWT_SECRET | usa LOVABLE_API_KEY no conector de e-mail (com RESEND_API_KEY), não no gateway de IA |
 | 26 | `convidar-usuario` | EM USO — sem defeito apurado | 1·0·0·3·0 | 1 | 240 | — | — |
 | 27 | `copilot-global` | EM USO — sem defeito apurado | 1·0·1·0·0 | **0** | 305 | LOVABLE_API_KEY | depende do gateway de IA Lovable (LOVABLE_API_KEY) |
 | 28 | `copilot-tributario` | EM USO — sem defeito apurado | 1·0·0·0·0 | **0** | 177 | LOVABLE_API_KEY | depende do gateway de IA Lovable (LOVABLE_API_KEY) |
-| 29 | `decidir-regime` | EM USO — sem defeito apurado | 5·1·4·0·0 | **0** | 386 | LOVABLE_API_KEY | depende do gateway de IA Lovable (LOVABLE_API_KEY) |
+| 29 | `decidir-regime` | EM USO — sem defeito apurado | 1·1·4·0·0 | **0** | 386 | LOVABLE_API_KEY | depende do gateway de IA Lovable (LOVABLE_API_KEY) |
 | 30 | `detectar-anomalias-financeiras` | EM USO — sem defeito apurado | 3·0·0·0·0 | **0** | 415 | — | — |
 | 31 | `digest-silenciamentos-erro` | EM USO — sem defeito apurado | 0·12·0·0·0 | **0** | 263 | RESEND_API_KEY SLACK_WEBHOOK_URL | — |
 | 32 | `enviar-alerta-email` | SIMULADA sem RESEND | 0·0·5·2·0 | 1 | 227 | RESEND_API_KEY | sem RESEND_API_KEY devolve 'Email simulado' (index.ts:55-64) |
@@ -909,9 +914,9 @@ Fonte: workflows, configurações e API do GitHub, lidos em 11/10. `main` está 
 | 34 | `enviar-convite-organizacao` | PARCIAL | 1·0·0·0·0 | **0** | 185 | RESEND_API_KEY RESEND_FROM | 'modo simulado' quando não há provedor de e-mail (index.ts:134) |
 | 35 | `enviar-digest-conformidade` | PROVÁVEL 401 | 1·2·0·0·0 | **0** | 471 | RESEND_API_KEY RESEND_FROM | verify_jwt=true e o cron não manda Authorization → 'Missing authorization header' (inferido de net._http_response) |
 | 36 | `enviar-relatorios-tributarios-agendados` | EM USO — sem defeito apurado | 0·1·0·0·0 | **0** | 225 | RESEND_API_KEY | — |
-| 37 | `executar-analise-preditiva` | EM USO — sem defeito apurado | 0·0·0·2·0 | 1 | 469 | LOVABLE_API_KEY | depende do gateway de IA Lovable (LOVABLE_API_KEY) |
+| 37 | `executar-analise-preditiva` | ÓRFÃ | 0·0·0·2·0 | 1 | 469 | LOVABLE_API_KEY | nenhum cron ou tela chama (só testes); nome indica execução agendada nunca agendada; depende do gateway de IA Lovable (LOVABLE_API_KEY) |
 | 38 | `executar-fechamento-tributario` | EM USO — sem defeito apurado | 1·0·0·0·0 | **0** | 351 | RESEND_API_KEY | — |
-| 39 | `executar-regua-cobranca` | PARCIAL | 1·2·0·1·0 | 1 | 238 | REGUA_CRON_SECRET | canal WhatsApp delega a whatsapp-ia-proativo (só link); roda junto com o stub SQL processar_regua_cobranca (09h e 12h) |
+| 39 | `executar-regua-cobranca` | PARCIAL | 0·2·0·1·0 | 1 | 238 | REGUA_CRON_SECRET | canal WhatsApp delega a whatsapp-ia-proativo (só link); roda junto com o stub SQL processar_regua_cobranca (09h e 12h) |
 | 40 | `executar-relatorios` | EM USO — sem defeito apurado | 1·0·0·0·0 | **0** | 580 | — | — |
 | 41 | `expert-agent` | EM USO — sem defeito apurado | 2·0·0·0·0 | **0** | 245 | LOVABLE_API_KEY | depende do gateway de IA Lovable (LOVABLE_API_KEY) |
 | 42 | `exportar-sped-contribuicoes` | EM USO — sem defeito apurado | 1·1·3·0·0 | 1 | 387 | — | — |
@@ -919,20 +924,20 @@ Fonte: workflows, configurações e API do GitHub, lidos em 11/10. `main` está 
 | 44 | `gerar-acoes-recomendadas` | EM USO — sem defeito apurado | 2·0·0·0·0 | **0** | 228 | LOVABLE_API_KEY | depende do gateway de IA Lovable (LOVABLE_API_KEY) |
 | 45 | `gerar-alertas` | EM USO — sem defeito apurado | 0·0·1·0·0 | **0** | 342 | — | — |
 | 46 | `gerar-alertas-dispatcher` | ÓRFÃ | 0·0·0·0·0 | **0** | 91 | — | nenhum cron/código chama |
-| 47 | `gerar-alertas-tributarios` | EM USO — sem defeito apurado | 1·0·1·2·0 | 1 | 375 | — | — |
+| 47 | `gerar-alertas-tributarios` | EM USO — sem defeito apurado | 0·0·1·2·0 | 1 | 375 | — | — |
 | 48 | `gerar-dre-tributaria` | STUB | 1·0·0·0·0 | **0** | 146 | — | 'versão determinística (stub)' com percentuais fixos (index.ts:1) |
 | 49 | `gerar-heatmap-tributario` | STUB | 1·0·0·0·0 | **0** | 168 | — | 'versão determinística (stub)' (index.ts:1) |
 | 50 | `gerar-pacote-evidencias` | EM USO — sem defeito apurado | 2·0·0·0·0 | **0** | 407 | — | — |
 | 51 | `gerar-pdf-tributario` | EM USO — sem defeito apurado | 1·1·0·0·0 | **0** | 350 | — | — |
-| 52 | `gerar-relatorio-anual` | EM USO — sem defeito apurado | 2·0·1·0·0 | **0** | 204 | — | — |
+| 52 | `gerar-relatorio-anual` | EM USO — sem defeito apurado | 1·0·1·0·0 | **0** | 204 | — | — |
 | 53 | `gerar-resumo-executivo-semanal` | EM USO — sem defeito apurado | 2·0·0·0·0 | **0** | 317 | LOVABLE_API_KEY RESEND_API_KEY | depende do gateway de IA Lovable (LOVABLE_API_KEY) |
 | 54 | `gerar-resumo-financeiro-diario` | EM USO — sem defeito apurado | 1·0·0·0·0 | **0** | 111 | — | — |
 | 55 | `gerar-snapshots-conformidade` | EM USO — sem defeito apurado | 1·1·0·0·0 | **0** | 286 | — | — |
-| 56 | `gerar-sped-ecd` | EM USO — sem defeito apurado | 2·1·3·0·0 | 1 | 735 | — | — |
-| 57 | `gerar-sped-ecf` | EM USO — sem defeito apurado | 3·0·3·0·0 | 1 | 718 | — | — |
+| 56 | `gerar-sped-ecd` | EM USO — sem defeito apurado | 1·1·3·0·0 | 1 | 735 | — | — |
+| 57 | `gerar-sped-ecf` | EM USO — sem defeito apurado | 2·0·3·0·0 | 1 | 718 | — | — |
 | 58 | `get-mapbox-token` | ÓRFÃ | 0·0·0·0·0 | **0** | 27 | MAPBOX_ACCESS_TOKEN | mapbox-gl instalado e nunca importado no front |
 | 59 | `get-vapid-key` | EM USO — sem defeito apurado | 1·0·0·0·0 | **0** | 51 | VAPID_PUBLIC_KEY | — |
-| 60 | `health` | EM USO — sem defeito apurado | 60·10·3·0·0 | **0** | 138 | — | — |
+| 60 | `health` | EM USO — sem defeito apurado | 1·10·3·0·0 | **0** | 138 | — | — |
 | 61 | `insights-relatorio` | EM USO — sem defeito apurado | 1·0·0·1·0 | **0** | 179 | LOVABLE_API_KEY | depende do gateway de IA Lovable (LOVABLE_API_KEY) |
 | 62 | `log-sped-bitrix24` | NUNCA ATIVADA | 1·0·0·0·0 | **0** | 239 | BITRIX24_ACCESS_TOKEN BITRIX24_DOMAIN | Bitrix não conectado |
 | 63 | `mcp-query` | EM USO — sem defeito apurado | 0·1·0·5·0 | 2 | 616 | — | — |
@@ -940,53 +945,53 @@ Fonte: workflows, configurações e API do GitHub, lidos em 11/10. `main` está 
 | 65 | `n8n-callback` | WEBHOOK SEM USO | 0·0·0·0·0 | 1 | 205 | DENO_TESTING | inbound do n8n; ações create_task/update_driver_approval (domínio de logística) |
 | 66 | `n8n-dispatch` | ÓRFÃ | 0·0·0·0·0 | **0** | 214 | N8N_DISPATCH_SECRET | nenhum código dispara eventos; n8n_workflow_configs vazia; modelo de evento 'driver_approval' (logística) |
 | 67 | `nfe-upload-certificado` | NUNCA ATIVADA | 1·0·0·0·0 | **0** | 270 | NFE_CERT_MASTER_KEY | empresas_certificados=0 em prod |
-| 68 | `nfe-vinculo-proxy` | EM USO — sem defeito apurado | 3·1·0·3·0 | 1 | 156 | DENO_TESTING | — |
+| 68 | `nfe-vinculo-proxy` | EM USO — sem defeito apurado | 1·1·0·3·0 | 1 | 156 | DENO_TESTING | — |
 | 69 | `notify-performance-alert` | EM USO — sem defeito apurado | 0·7·0·0·0 | 1 | 204 | DENO_TESTING | — |
-| 70 | `notify-saved-filter` | EM USO — sem defeito apurado | 5·0·0·0·0 | **0** | 251 | RESEND_API_KEY | — |
-| 71 | `open-finance` | SIMULADA | 15·0·0·0·0 | **0** | 638 | OPEN_FINANCE_CLIENT_ID OPEN_FINANCE_REDIRECT_URI | instituições, consentimento e transações fictícias; URL openbanking.example.com; OPEN_FINANCE_CLIENT_SECRET/BASE_URL nunca lidas; open-finance-callback não existe |
-| 72 | `overlay-rejeicoes-auditoria` | EM USO — sem defeito apurado | 3·0·0·0·0 | **0** | 192 | — | — |
-| 73 | `prever-carga-tributaria` | PARCIAL | 1·0·0·0·0 | **0** | 194 | — | cai em origem 'stub_deterministico' quando faltam dados (index.ts:42,63); depende do gateway de IA Lovable (LOVABLE_API_KEY) |
+| 70 | `notify-saved-filter` | EM USO — sem defeito apurado | 2·0·0·0·0 | **0** | 251 | RESEND_API_KEY | — |
+| 71 | `open-finance` | SIMULADA | 3·0·0·0·0 | **0** | 638 | OPEN_FINANCE_CLIENT_ID OPEN_FINANCE_REDIRECT_URI | instituições, consentimento e transações fictícias; URL openbanking.example.com; OPEN_FINANCE_CLIENT_SECRET/BASE_URL nunca lidas; open-finance-callback não existe |
+| 72 | `overlay-rejeicoes-auditoria` | EM USO — sem defeito apurado | 1·0·0·0·0 | **0** | 192 | — | — |
+| 73 | `prever-carga-tributaria` | PARCIAL | 1·0·0·0·0 | **0** | 194 | — | cai em origem 'stub_deterministico' quando faltam dados (index.ts:42,63) |
 | 74 | `processar-fila-cobrancas` | QUEBRADA EM PROD | 1·0·0·0·0 | **0** | 158 | — | depende da RPC processar_fila_cobrancas, ausente em prod (index.ts:31-35) → a fila inteira não roda |
 | 75 | `processar-nf-ocr` | EM USO — sem defeito apurado | 1·0·0·0·0 | **0** | 197 | LOVABLE_API_KEY | depende do gateway de IA Lovable (LOVABLE_API_KEY) |
 | 76 | `processar-solicitacao-lgpd` | EM USO — sem defeito apurado | 1·0·0·0·0 | **0** | 238 | — | — |
-| 77 | `projecao-reforma` | EM USO — sem defeito apurado | 7·0·0·0·0 | **0** | 207 | — | — |
+| 77 | `projecao-reforma` | ÓRFÃ | 0·0·0·0·0 | **0** | 207 | — | o front calcula no cliente (src/lib/tributario/projecao-reforma.ts); a edge não é chamada |
 | 78 | `relatorio-diario-anomalias` | ÓRFÃ + SIMULADA | 0·0·0·0·0 | **0** | 297 | RESEND_API_KEY | sem cron/chamador; sem RESEND_API_KEY marca envio 'simulado' (index.ts:231-237) |
-| 79 | `scim-server` | SEM USO | 4·0·0·0·0 | **0** | 1156 | — | sem tenant SCIM configurado; URL example.com em comentário/doc |
+| 79 | `scim-server` | SEM USO | 2·0·0·0·0 | **0** | 1156 | — | sem tenant SCIM configurado; URL example.com em comentário/doc |
 | 80 | `sefaz-dfe-dispatcher` | QUEBRADA EM PROD | 0·0·0·0·0 | 1 | 342 | CRON_DISPATCH_SECRET | secret CRON_DISPATCH_SECRET ausente → HTTP 500 server-misconfigured a cada 15 min (index.ts:50-55); cron envia SEFAZ_CRON_SECRET do vault (nome diferente) |
 | 81 | `sefaz-dfe-puxar` | BLOQUEADA | 0·0·1·0·0 | 5 | 563 | SEFAZ_CRON_SECRET | sem certificado cadastrado e dispatcher quebrado |
-| 82 | `sefaz-manifestar` | BLOQUEADA | 3·0·0·0·0 | 1 | 311 | — | sem certificado cadastrado |
-| 83 | `send-device-alert` | EM USO — sem defeito apurado | 2·0·0·0·0 | **0** | 181 | RESEND_API_KEY | — |
-| 84 | `send-push-notification` | PARCIAL | 6·4·3·0·0 | 1 | 366 | VAPID_PRIVATE_KEY VAPID_PUBLIC_KEY | push_subscriptions=0; trigger de push crítico não aplicado (migration 20260913120000) |
-| 85 | `simular-presumido` | EM USO — sem defeito apurado | 4·0·0·0·0 | **0** | 34 | — | — |
-| 86 | `simular-real` | EM USO — sem defeito apurado | 4·0·0·0·0 | **0** | 34 | — | — |
-| 87 | `simular-simples` | EM USO — sem defeito apurado | 4·0·0·0·0 | **0** | 49 | — | — |
+| 82 | `sefaz-manifestar` | BLOQUEADA | 2·0·0·0·0 | 1 | 311 | — | sem certificado cadastrado |
+| 83 | `send-device-alert` | EM USO — sem defeito apurado | 1·0·0·0·0 | **0** | 181 | RESEND_API_KEY | — |
+| 84 | `send-push-notification` | PARCIAL | 4·4·3·0·0 | 1 | 366 | VAPID_PRIVATE_KEY VAPID_PUBLIC_KEY | push_subscriptions=0; trigger de push crítico não aplicado (migration 20260913120000) |
+| 85 | `simular-presumido` | ÓRFÃ | 0·0·0·0·0 | **0** | 34 | — | o front calcula no cliente (src/lib/tributario/simular-presumido.ts); a edge não é chamada |
+| 86 | `simular-real` | ÓRFÃ | 0·0·0·0·0 | **0** | 34 | — | o front calcula no cliente (src/lib/tributario/simular-real.ts); a edge não é chamada |
+| 87 | `simular-simples` | ÓRFÃ | 0·0·0·0·0 | **0** | 49 | — | o front calcula no cliente (src/lib/tributario/simular-simples.ts); a edge não é chamada |
 | 88 | `sincronizar-anomalia-bitrix24` | NUNCA ATIVADA | 1·0·0·0·0 | **0** | 236 | BITRIX24_ACCESS_TOKEN BITRIX24_DOMAIN | Bitrix não conectado |
-| 89 | `sso-callback` | EM USO — sem defeito apurado | 5·0·3·0·0 | 2 | 1388 | — | — |
+| 89 | `sso-callback` | EM USO — sem defeito apurado | 2·0·3·0·0 | 2 | 1388 | — | — |
 | 90 | `sso-generate-metadata` | EM USO — sem defeito apurado | 1·0·0·0·0 | **0** | 78 | — | — |
-| 91 | `sso-initiate` | EM USO — sem defeito apurado | 3·0·3·0·0 | **0** | 167 | — | — |
-| 92 | `sso-logout` | EM USO — sem defeito apurado | 8·0·0·0·0 | **0** | 106 | — | — |
-| 93 | `sso-test-login` | EM USO — sem defeito apurado | 3·0·1·3·0 | 2 | 437 | — | — |
+| 91 | `sso-initiate` | EM USO — sem defeito apurado | 2·0·3·0·0 | **0** | 167 | — | — |
+| 92 | `sso-logout` | EM USO — sem defeito apurado | 4·0·0·0·0 | **0** | 106 | — | — |
+| 93 | `sso-test-login` | EM USO — sem defeito apurado | 2·0·1·3·0 | 2 | 437 | — | — |
 | 94 | `sso-validate-config` | EM USO — sem defeito apurado | 1·0·0·0·0 | **0** | 148 | — | — |
 | 95 | `sync-profile-to-bitrix` | ÓRFÃ | 0·0·0·0·0 | **0** | 277 | BITRIX24_ACCESS_TOKEN BITRIX24_CLIENT_ID BITRIX24_CLIENT_SECRET BITRIX24_DOMAIN | nenhum chamador; Bitrix nunca conectado (bitrix_oauth_tokens=0) |
-| 96 | `upload-anexo` | NÃO PUBLICÁVEL | 2·2·0·0·0 | **0** | 121 | — | fora do config.toml e da lista do functions-deploy; bucket 'financeiro' não existe em prod |
+| 96 | `upload-anexo` | NÃO PUBLICÁVEL | 1·2·0·0·0 | **0** | 121 | — | fora do config.toml e da lista do functions-deploy; bucket 'financeiro' não existe em prod |
 | 97 | `validar-token-contador` | EM USO — sem defeito apurado | 1·0·0·0·0 | **0** | 152 | CONTADOR_INVITE_SECRET SUPABASE_JWT_SECRET | — |
-| 98 | `validate-ip-geo` | EM USO — sem defeito apurado | 2·0·0·0·0 | **0** | 218 | — | — |
+| 98 | `validate-ip-geo` | EM USO — sem defeito apurado | 1·0·0·0·0 | **0** | 218 | — | — |
 | 99 | `verificar-conformidade-fiscal` | EM USO — sem defeito apurado | 1·0·0·0·0 | **0** | 323 | — | — |
 | 100 | `webhook-replay` | EM USO — sem defeito apurado | 0·0·1·0·0 | **0** | 113 | — | — |
 | 101 | `webhook-retry-worker` | QUEBRADA EM PROD | 0·1·1·0·0 | **0** | 110 | ASAAS_WEBHOOK_TOKEN | cron envia {trigger,limit}; schema .strict() aceita só limit (index.ts:14) → HTTP 422 a cada minuto; nenhum webhook é reprocessado |
 | 102 | `webhook-simulator` | FERRAMENTA DE TESTE | 1·0·0·1·0 | 1 | 239 | ASAAS_WEBHOOK_TOKEN | simulador; ligado só por var ENABLE_PRODUCTION_SIMULATION_AUDIT=false |
 | 103 | `whatsapp-ai-analyzer` | EM USO — sem defeito apurado | 0·4·0·0·0 | **0** | 93 | OPENAI_API_KEY | — |
-| 104 | `whatsapp-ia-proativo` | PARCIAL | 3·0·3·2·0 | 1 | 918 | LOVABLE_API_KEY | 'enviar' só monta link wa.me (index.ts:495,675) — não há envio real via Evolution/API; IA via gateway Lovable; depende do gateway de IA Lovable (LOVABLE_API_KEY) |
+| 104 | `whatsapp-ia-proativo` | PARCIAL | 2·0·3·2·0 | 1 | 918 | LOVABLE_API_KEY | 'enviar' só monta link wa.me (index.ts:495,675) — não há envio real via Evolution/API; IA via gateway Lovable; depende do gateway de IA Lovable (LOVABLE_API_KEY) |
 | 105 | `whatsapp-webhook` | WEBHOOK SEM USO | 0·0·0·0·0 | 1 | 199 | — | inbound; whatsapp_conversas=0 em prod |
 
 **Resumo das 105 funções:**
 
 | Situação | Quantas |
 | --- | --- |
-| Em uso, sem defeito apurado | 61 |
+| Em uso, sem defeito apurado (inclui 1 chamada só pelo CI) | 56 |
 | Nunca ativadas (integração sem token ou certificado) | 9 |
 | Parciais | 8 |
-| Órfãs, sem chamador (inclui `relatorio-diario-anomalias`, que também é simulada) | 8 |
+| Órfãs, sem chamador (inclui `relatorio-diario-anomalias`, que também é simulada, e as 4 versões de servidor dos simuladores tributários) | 13 |
 | Quebradas em produção | 5 |
 | Simuladas ou stub (3 stubs determinísticos, Open Finance, e-mail simulado) | 5 |
 | Bloqueadas (sem certificado) | 2 |
@@ -1306,7 +1311,7 @@ Continuam **NÃO INICIADOS**, salvo marcação em contrário:
 
 | # | Decisão | Por que importa | Minha recomendação |
 | --- | --- | --- | --- |
-| D1 | **Aplicar em produção as 32 migrations pendentes** (DDL em produção) | Fecha o vazamento entre empresas e destrava aprovação, DARF, XML, dashboard e lockout | **Aplicar em lotes**: segurança, depois RPCs, depois o resto. Cada lote em uma PR com `APROVADO` e checagem de efeito |
+| D1 | **Aplicar em produção as 32 migrations pendentes** (DDL em produção) | Fecha o vazamento entre empresas e destrava DARF, XML, dashboard, lockout e conciliação. **Para destravar a aprovação** é preciso uma migration a mais: nenhuma das 32 cria `contas_pagar.aprovado_em`, e a RPC `aprovar_solicitacao_pagamento` só preenche `aprovado_por` na conta (`20260913140000:148-149`). Sem a coluna, o pagamento aprovado continua bloqueado (CP-03) | **Aplicar em lotes**: segurança, depois RPCs, depois o resto. Cada lote em uma PR com `APROVADO` e checagem de efeito |
 | D2 | Modelo de admin: global ou por empresa (ADR-003) | Define 19 policies e 7 funções tributárias | Admin **por empresa**, mais um papel "plataforma" explícito só para você |
 | D3 | NF-e: emissor próprio ou provedor | Hoje a tela finge emitir, cancelar e inutilizar | **Provedor** (menos homologação e certificado no seu servidor); até lá, **retirar ou rotular como simulação** as telas de cancelamento, inutilização e contingência |
 | D4 | WhatsApp de cobrança via Evolution (`wpp2`) | Hoje nenhuma cobrança sai pelo WhatsApp | Integrar `whatsapp-ia-proativo` à Evolution, que já roda na VPS |
