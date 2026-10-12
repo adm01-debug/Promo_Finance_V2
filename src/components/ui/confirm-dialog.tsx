@@ -1,7 +1,8 @@
-import { ReactNode } from 'react';
+import { ReactNode, useEffect, useId, useRef } from 'react';
 import { AlertTriangle, Info, CheckCircle, XCircle, Loader2, X } from 'lucide-react';
 import { Button } from './button';
 import { cn } from '@/lib/utils';
+import { OPEN_DIALOG_SELECTOR } from '@/components/navigation/ModalHistoryManager';
 
 interface ConfirmDialogProps {
   // Support both naming conventions
@@ -82,6 +83,32 @@ export function ConfirmDialog({
     await onConfirm();
   };
 
+  const dialogRef = useRef<HTMLDivElement>(null);
+  const titleId = useId();
+
+  // Escape roteado pelo ModalHistoryManager chega direcionado a este
+  // elemento (só ele fecha, nunca um dialog de baixo); o listener no
+  // documento cobre o caso do gerenciador ausente (ex.: testes).
+  useEffect(() => {
+    if (!isOpen) return;
+    const el = dialogRef.current;
+    const onKeyDown = (e: KeyboardEvent) => {
+      if (e.key !== 'Escape' || isLoading) return;
+      // Só o dialog do topo fecha: um Escape chegando ao documento (topo
+      // Radix ou gerenciador ausente) não pode fechar os de baixo junto.
+      const dialogs = document.querySelectorAll(OPEN_DIALOG_SELECTOR);
+      if (dialogs[dialogs.length - 1] !== el) return;
+      handleClose();
+    };
+    el?.addEventListener('keydown', onKeyDown);
+    document.addEventListener('keydown', onKeyDown);
+    return () => {
+      el?.removeEventListener('keydown', onKeyDown);
+      document.removeEventListener('keydown', onKeyDown);
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isOpen, isLoading]);
+
   if (!isOpen) return null;
 
   return (
@@ -90,7 +117,15 @@ export function ConfirmDialog({
       <div className="absolute inset-0 bg-black/50" onClick={handleClose} />
 
       {/* Dialog */}
-      <div className="relative bg-card rounded-lg shadow-xl w-full max-w-md mx-4 animate-in fade-in-0 zoom-in-95">
+      <div
+        ref={dialogRef}
+        role="dialog"
+        data-state="open"
+        data-escape-owned
+        aria-modal="true"
+        aria-labelledby={titleId}
+        className="relative bg-card rounded-lg shadow-xl w-full max-w-md mx-4 animate-in fade-in-0 zoom-in-95"
+      >
         {/* Close button */}
         <button
           onClick={handleClose}
@@ -107,7 +142,9 @@ export function ConfirmDialog({
 
             {/* Text */}
             <div className="flex-1 pt-1">
-              <h3 className="text-lg font-semibold text-foreground">{title}</h3>
+              <h3 id={titleId} className="text-lg font-semibold text-foreground">
+                {title}
+              </h3>
               {description && <p className="mt-2 text-sm text-muted-foreground">{description}</p>}
               {children && <div className="mt-4">{children}</div>}
             </div>

@@ -1,6 +1,7 @@
-import { ReactNode, useEffect, useCallback } from 'react';
+import { ReactNode, useEffect, useCallback, useRef } from 'react';
 import { X } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { OPEN_DIALOG_SELECTOR } from '@/components/navigation/ModalHistoryManager';
 import { Button } from './button';
 
 interface ModalProps {
@@ -47,16 +48,30 @@ export function Modal({
     [closeOnEscape, onClose]
   );
 
+  const dialogRef = useRef<HTMLDivElement>(null);
+
+  // Escape roteado pelo ModalHistoryManager chega direcionado a este
+  // elemento (só ele fecha, nunca um dialog de baixo); o listener no
+  // documento cobre o caso do gerenciador ausente (ex.: testes).
   useEffect(() => {
     if (isOpen) {
-      document.addEventListener('keydown', handleEscape);
+      const el = dialogRef.current;
+      const onEscape = (e: KeyboardEvent) => {
+        // Só o dialog do topo fecha: um Escape chegando ao documento
+        // (topo Radix ou gerenciador ausente) não fecha os de baixo.
+        const dialogs = document.querySelectorAll(OPEN_DIALOG_SELECTOR);
+        if (dialogs[dialogs.length - 1] !== el) return;
+        handleEscape(e);
+      };
+      el?.addEventListener('keydown', onEscape);
+      document.addEventListener('keydown', onEscape);
       document.body.style.overflow = 'hidden';
+      return () => {
+        el?.removeEventListener('keydown', onEscape);
+        document.removeEventListener('keydown', onEscape);
+        document.body.style.overflow = 'unset';
+      };
     }
-
-    return () => {
-      document.removeEventListener('keydown', handleEscape);
-      document.body.style.overflow = 'unset';
-    };
   }, [isOpen, handleEscape]);
 
   if (!isOpen) return null;
@@ -72,7 +87,12 @@ export function Modal({
 
       {/* Modal */}
       <div
+        ref={dialogRef}
         role="dialog"
+        // Só conta como dialog fechável no histórico se Escape o fecha —
+        // o ModalHistoryManager usa Escape para consumir o marcador.
+        data-state={closeOnEscape ? 'open' : 'closed'}
+        data-escape-owned={closeOnEscape ? '' : undefined}
         aria-modal="true"
         aria-labelledby={title ? 'modal-title' : undefined}
         aria-describedby={description ? 'modal-description' : undefined}
