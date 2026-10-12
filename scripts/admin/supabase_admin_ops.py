@@ -64,9 +64,13 @@ def req(method, path, body=None, gotrue=False):
         url = f"https://{REF}.supabase.co/auth/v1{path}"
         headers = {
             "apikey": SERVICE_KEY,
-            "Authorization": f"Bearer {SERVICE_KEY}",
             "Accept": "application/json",
         }
+        # Service keys novas (sb_secret_...) não são JWTs: enviá-las em
+        # Authorization: Bearer faz a GoTrue responder Invalid JWT. Só a
+        # chave legada (JWT, começa com eyJ) vai também como Bearer.
+        if SERVICE_KEY.startswith("eyJ"):
+            headers["Authorization"] = f"Bearer {SERVICE_KEY}"
     else:
         url = f"{API}/projects/{REF}{path}"
         headers = {"Authorization": f"Bearer {TOKEN}", "Accept": "application/json"}
@@ -82,6 +86,14 @@ def req(method, path, body=None, gotrue=False):
     except urllib.error.HTTPError as e:
         detail = e.read()[:400].decode("utf-8", "replace")
         return e.code, {"_error": detail}
+
+
+def mask_email(email):
+    """PII mínima nos logs do Actions: j***@dominio.tld."""
+    if "@" not in email:
+        return "***"
+    local, domain = email.split("@", 1)
+    return (local[:1] or "*") + "***@" + domain
 
 
 def mutate(desc, method, path, body=None, gotrue=False):
@@ -213,11 +225,13 @@ def main():
             total_usuarios += len(lista)
             for u in lista:
                 email = (u.get("email") or "").lower()
-                conf = bool(u.get("email_confirmed_at") or u.get("confirmed_at"))
+                # confirmed_at cobre e-mail OU telefone; aqui interessa
+                # especificamente a confirmação de e-mail.
+                conf = bool(u.get("email_confirmed_at"))
                 if email in TEST_USER_ALLOWLIST:
                     deletaveis.append({"id": u.get("id"), "email": email})
                 elif not conf:
-                    nao_confirmados.append({"id": u.get("id"), "email": email})
+                    nao_confirmados.append({"email": mask_email(email)})
             if len(lista) < 100:
                 break
             page += 1
