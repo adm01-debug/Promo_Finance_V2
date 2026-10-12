@@ -3,6 +3,7 @@ import { useLocation } from 'react-router-dom';
 import { hasForwardEntries } from '@/lib/navigation';
 import {
   artificialHistoryState,
+  getOwnedEscapeHandler,
   hasUnsavedChanges,
   isGuardAwaitingPop,
   isPlannedGuardPop,
@@ -292,13 +293,13 @@ export function ModalHistoryManager() {
     // Escape só pode fechar o dialog do TOPO. Dialogs próprios
     // (data-escape-owned) não estão na pilha de camadas do Radix: um
     // Escape propagado fecharia os dois — o deles e o nosso. Na fase de
-    // captura (antes de qualquer listener do documento), retargetamos o
-    // evento só para o elemento do topo quando ele é nosso.
-    // O evento sintético (mesmo com bubbles:false) atravessa o document
-    // na captura — marcamos os já encaminhados para não reinterceptar.
-    const forwarded = new WeakSet<KeyboardEvent>();
+    // captura (antes de qualquer listener do documento), barramos o
+    // evento e chamamos direto o handler do dialog do topo quando ele é
+    // nosso. Nada de reenviar um KeyboardEvent ao elemento: o dispatch
+    // atravessa de novo a captura do document, onde o Radix escuta
+    // Escape, e a camada Radix de baixo fecharia junto.
     const onKeyDownCapture = (e: KeyboardEvent) => {
-      if (e.key !== 'Escape' || forwarded.has(e)) return;
+      if (e.key !== 'Escape') return;
       // O topo real é o último a ABRIR, não o último no DOM: com o
       // portal do Radix anexado ao body depois do root, um dialog
       // próprio renderizado inline (ConfirmationDialog) apareceria
@@ -312,9 +313,7 @@ export function ModalHistoryManager() {
       if (!top || top.dataset.escapeOwned === undefined) return;
       e.preventDefault();
       e.stopImmediatePropagation();
-      const retargeted = new KeyboardEvent('keydown', { key: 'Escape', bubbles: false });
-      forwarded.add(retargeted);
-      top.dispatchEvent(retargeted);
+      getOwnedEscapeHandler(top)?.(e);
     };
     document.addEventListener('keydown', onKeyDownCapture, true);
 

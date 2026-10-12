@@ -1,7 +1,7 @@
 import { ReactNode, useEffect, useCallback, useRef } from 'react';
 import { X } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { isTopOpenDialog } from '@/lib/unsaved-guard';
+import { isTopOpenDialog, registerOwnedEscapeHandler } from '@/lib/unsaved-guard';
 import { Button } from './button';
 
 interface ModalProps {
@@ -50,8 +50,8 @@ export function Modal({
 
   const dialogRef = useRef<HTMLDivElement>(null);
 
-  // Escape roteado pelo ModalHistoryManager chega direcionado a este
-  // elemento (só ele fecha, nunca um dialog de baixo); o listener no
+  // Escape roteado pelo ModalHistoryManager chama este handler direto
+  // (registrado para o elemento) (só ele fecha, nunca um dialog de baixo); o listener no
   // documento cobre o caso do gerenciador ausente (ex.: testes).
   useEffect(() => {
     if (isOpen) {
@@ -63,11 +63,11 @@ export function Modal({
         if (!el || !isTopOpenDialog(el)) return;
         handleEscape(e);
       };
-      el?.addEventListener('keydown', onEscape);
+      const offOwned = el ? registerOwnedEscapeHandler(el, onEscape) : undefined;
       document.addEventListener('keydown', onEscape);
       document.body.style.overflow = 'hidden';
       return () => {
-        el?.removeEventListener('keydown', onEscape);
+        offOwned?.();
         document.removeEventListener('keydown', onEscape);
         document.body.style.overflow = 'unset';
       };
