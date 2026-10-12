@@ -1,7 +1,7 @@
 import { ReactNode, useEffect, useCallback, useRef } from 'react';
 import { X } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { OPEN_DIALOG_SELECTOR } from '@/components/navigation/ModalHistoryManager';
+import { isTopOpenDialog } from '@/lib/unsaved-guard';
 import { Button } from './button';
 
 interface ModalProps {
@@ -59,8 +59,8 @@ export function Modal({
       const onEscape = (e: KeyboardEvent) => {
         // Só o dialog do topo fecha: um Escape chegando ao documento
         // (topo Radix ou gerenciador ausente) não fecha os de baixo.
-        const dialogs = document.querySelectorAll(OPEN_DIALOG_SELECTOR);
-        if (dialogs[dialogs.length - 1] !== el) return;
+        // A ordem de abertura decide — o DOM mente com o portal Radix.
+        if (!el || !isTopOpenDialog(el)) return;
         handleEscape(e);
       };
       el?.addEventListener('keydown', onEscape);

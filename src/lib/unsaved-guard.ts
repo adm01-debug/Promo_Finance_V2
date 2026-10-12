@@ -8,6 +8,8 @@
 /** Chaves de `history.state` usadas pelas entradas artificiais de navegação. */
 export const MODAL_HISTORY_MARKER = '__modal_history__';
 export const UNSAVED_GUARD_SENTINEL = '__unsaved_guard__';
+/** Seletor dos dialogs que participam do histórico e do roteamento de Escape. */
+export const OPEN_DIALOG_SELECTOR = '[role="dialog"][data-state="open"]';
 
 /**
  * State para uma entrada artificial: preserva idx/key do React Router e
@@ -141,4 +143,30 @@ export function registerMarkerResync(resync: MarkerResync | null): () => void {
 
 export function requestMarkerResync(): void {
   markerResync?.();
+}
+
+/**
+ * Pergunta registrada pelo ModalHistoryManager: o elemento é o dialog
+ * do topo pela ordem real de ABERTURA? A ordem do DOM mente — o
+ * portal do Radix vai para o body depois do root onde um dialog
+ * próprio (ConfirmationDialog e cia.) foi renderizado antes, então
+ * comparar com a última posição do DOM deixava o Escape retargetado
+ * sem efeito. Sem gerenciador montado (ex.: testes), cai na última
+ * posição do DOM como fallback.
+ */
+type TopDialogChecker = (el: HTMLElement) => boolean;
+
+let topDialogChecker: TopDialogChecker | null = null;
+
+export function registerTopDialogChecker(checker: TopDialogChecker | null): () => void {
+  topDialogChecker = checker;
+  return () => {
+    if (topDialogChecker === checker) topDialogChecker = null;
+  };
+}
+
+export function isTopOpenDialog(el: HTMLElement): boolean {
+  if (topDialogChecker) return topDialogChecker(el);
+  const dialogs = document.querySelectorAll(OPEN_DIALOG_SELECTOR);
+  return dialogs[dialogs.length - 1] === el;
 }

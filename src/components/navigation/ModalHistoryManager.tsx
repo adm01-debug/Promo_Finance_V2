@@ -7,15 +7,16 @@ import {
   isGuardAwaitingPop,
   isPlannedGuardPop,
   MODAL_HISTORY_MARKER as MODAL_MARKER,
+  OPEN_DIALOG_SELECTOR,
   registerMarkerResync,
   registerModalMarkerPopper,
+  registerTopDialogChecker,
   UNSAVED_GUARD_SENTINEL as SENTINEL,
 } from '@/lib/unsaved-guard';
 
 // Apenas [role="dialog"]: AlertDialog (role="alertdialog") não fecha por
 // Escape no Radix, então marcá-lo deixaria a confirmação aberta após o
 // Voltar consumir o marcador.
-export const OPEN_DIALOG_SELECTOR = '[role="dialog"][data-state="open"]';
 // O tratamento do marcador órfão pós-reload roda uma única vez por
 // sessão — StrictMode remonta o efeito e um segundo history.back()
 // ultrapassaria a entrada real.
@@ -327,6 +328,16 @@ export function ModalHistoryManager() {
       syncMarkers();
     });
 
+    // Topo real de dialogs próprios: a ordem do DOM mente (portal Radix
+    // no body depois do root), então quem checar posição no DOM via
+    // isTopOpenDialog cai aqui pela ordem de abertura.
+    const offTopChecker = registerTopDialogChecker((el) => {
+      const order = openOrderRef.current;
+      const dialogs = document.querySelectorAll(OPEN_DIALOG_SELECTOR);
+      const top = order[order.length - 1] ?? dialogs[dialogs.length - 1];
+      return top === el;
+    });
+
     const unregister = registerModalMarkerPopper(() => {
       // A guarda só precisa da contagem: ela mesma emite os history.
       // back() um a um, por popstate — vários backs síncronos podem ser
@@ -341,6 +352,7 @@ export function ModalHistoryManager() {
       window.removeEventListener('popstate', onPopState);
       document.removeEventListener('keydown', onKeyDownCapture, true);
       offResync();
+      offTopChecker();
       unregister();
     };
   }, []);

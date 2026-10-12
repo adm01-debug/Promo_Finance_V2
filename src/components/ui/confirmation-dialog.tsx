@@ -2,7 +2,7 @@ import { useEffect, useRef, useState, ReactNode } from 'react';
 import { cn } from '@/lib/utils';
 import { AlertTriangle, Trash2, CheckCircle, Info, HelpCircle, X } from 'lucide-react';
 import { Button } from './button';
-import { OPEN_DIALOG_SELECTOR } from '@/components/navigation/ModalHistoryManager';
+import { isTopOpenDialog } from '@/lib/unsaved-guard';
 
 // Types
 
@@ -107,8 +107,8 @@ export function ConfirmationDialog({
       if (e.key !== 'Escape' || loading || isLoading) return;
       // Só o dialog do topo fecha: um Escape chegando ao documento (topo
       // Radix ou gerenciador ausente) não pode fechar os de baixo junto.
-      const dialogs = document.querySelectorAll(OPEN_DIALOG_SELECTOR);
-      if (dialogs[dialogs.length - 1] !== el) return;
+      // A ordem de abertura decide — o DOM mente com o portal Radix.
+      if (!el || !isTopOpenDialog(el)) return;
       onClose();
     };
     el?.addEventListener('keydown', onKeyDown);
