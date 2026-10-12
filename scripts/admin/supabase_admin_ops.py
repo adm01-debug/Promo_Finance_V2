@@ -51,6 +51,14 @@ TEST_USER_ALLOWLIST = {
 BUCKET_REQUIRED = "financeiro"
 
 
+class _SemRedirect(urllib.request.HTTPRedirectHandler):
+    def redirect_request(self, req_, fp, code, msg, headers, newurl):
+        return None
+
+
+_OPENER = urllib.request.build_opener(_SemRedirect())
+
+
 def req(method, path, body=None, gotrue=False):
     if gotrue:
         url = f"https://{REF}.supabase.co/auth/v1{path}"
@@ -68,7 +76,7 @@ def req(method, path, body=None, gotrue=False):
         headers["Content-Type"] = "application/json"
     r = urllib.request.Request(url, data=data, headers=headers, method=method)
     try:
-        with urllib.request.urlopen(r, timeout=30) as resp:
+        with _OPENER.open(r, timeout=30) as resp:
             raw = resp.read()
             return resp.status, json.loads(raw) if raw else {}
     except urllib.error.HTTPError as e:
