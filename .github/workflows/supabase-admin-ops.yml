@@ -27,6 +27,10 @@ on:
         description: 'Digite o project-ref de PROD para confirmar: bwwbeyolnnzppeuhgkcd'
         required: true
         type: string
+      excluir_contas_teste:
+        description: 'DELETE nas contas da allowlist (só após o E2E sair de PROD)'
+        type: boolean
+        default: false
 
 concurrency:
   group: supabase-admin-ops
@@ -67,4 +71,6 @@ jobs:
           fi
 
       - name: Executar ops (${{ inputs.mode }})
+        env:
+          DELETE_TEST_USERS: ${{ inputs.excluir_contas_teste && '1' || '0' }}
         run: python3 scripts/admin/supabase_admin_ops.py ${{ inputs.mode }}

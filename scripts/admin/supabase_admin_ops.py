@@ -132,7 +132,7 @@ def main():
             pendencias.append("mfa_totp")
     else:
         print(f"GET /config/auth → {code}: {cfg}")
-        pendencias.append("mfa_totp_unknown")
+        FALHAS.append(f"leitura de auth config (→ {code})")
 
     # --- 2. Edge functions (verify_jwt) --------------------------------------
     section("Edge functions (verify_jwt)")
@@ -172,7 +172,7 @@ def main():
             pendencias.append("bucket")
     else:
         print(f"GET /storage/buckets → {code}: {buckets}")
-        pendencias.append("bucket_unknown")
+        FALHAS.append(f"listagem de buckets (→ {code})")
 
     # --- 4. Auth users (GoTrue Admin API, service key) ------------------------
     section("Auth users (teste/não confirmados)")
@@ -251,12 +251,22 @@ def main():
         )
 
     if "usuarios" in pendencias:
-        for u in deletaveis:
-            mutate(
-                f"usuário {u['email']}",
-                "DELETE",
-                f"/admin/users/{u['id']}",
-                gotrue=True,
+        if os.environ.get("DELETE_TEST_USERS") == "1":
+            for u in deletaveis:
+                mutate(
+                    f"usuário {u['email']}",
+                    "DELETE",
+                    f"/admin/users/{u['id']}",
+                    gotrue=True,
+                )
+        else:
+            # O plano E17 exige mover o E2E para staging antes de apagar a
+            # conta — E2E_USER_EMAIL pode ainda autenticar contra PROD e os
+            # gates do ci.yml quebrariam. Só deleta com DELETE_TEST_USERS=1.
+            print(
+                "contas de teste presentes — DELETE_TEST_USERS=1 não definido; "
+                "após migrar o E2E para staging, rode apply com "
+                "excluir_contas_teste=true."
             )
 
     if FALHAS:

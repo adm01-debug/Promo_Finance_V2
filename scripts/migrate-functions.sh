@@ -12,6 +12,7 @@
 # Env opcionais:
 #   REQUIRED_SECRETS="LOVABLE_API_KEY,RESEND_API_KEY,..."   # aborta se faltar
 #   FUNCTIONS_DIR=supabase/functions                        # default
+#   STOP_ON_FAIL=1                                          # aborta no 1º deploy que falhar
 #
 # Saída: /tmp/deploy-log-YYYYMMDD-HHMM.jsonl
 
@@ -204,6 +205,14 @@ for fn in "${FNS[@]}"; do
     ERR="$(tail -c 1000 /tmp/deploy-out-$$.log | jq -Rs .)"
     log_event "deploy" "$fn" "failed" "$(jq -cn --argjson e "$ERR" --arg f "$FLAG" '{flag:$f, error:$e}')"
     echo "   ❌ falhou — ver $LOG" >&2
+    if [[ "${STOP_ON_FAIL:-0}" == "1" ]]; then
+      # Falha no meio do lote deixa prod com versões mistas; parar aqui
+      # mantém o estrago mínimo e o log diz exatamente onde retomar com
+      # --only fn1,fn2,... .
+      echo "⛔ STOP_ON_FAIL=1 — lote interrompido em ${fn}." >&2
+      rm -f /tmp/deploy-out-$$.log
+      break
+    fi
   fi
   rm -f /tmp/deploy-out-$$.log
 done

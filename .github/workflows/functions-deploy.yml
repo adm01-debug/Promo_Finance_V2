@@ -155,6 +155,11 @@ jobs:
           bash scripts/ci/require-env.sh \
             --label "Deploy de Edge Function no canônico" \
             SUPABASE_ACCESS_TOKEN SUPABASE_PROJECT_REF
+          CANONICO="bwwbeyolnnzppeuhgkcd"
+          if [ "$SUPABASE_PROJECT_REF" != "$CANONICO" ]; then
+            echo "::error::vars.VITE_SUPABASE_PROJECT_ID ('$SUPABASE_PROJECT_REF') não é o canônico — deploy abortado"
+            exit 1
+          fi
           python3 scripts/security/test-supabase-config.py
           bash scripts/security/test-functions-deploy.sh
 
@@ -168,6 +173,8 @@ jobs:
 
       - name: Implantar todas as functions com index.ts
         if: ${{ inputs.deploy_all }}
+        env:
+          STOP_ON_FAIL: "1"
         run: |
           set -euo pipefail
           bash scripts/migrate-functions.sh
