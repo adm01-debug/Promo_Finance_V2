@@ -3,19 +3,21 @@ import { useLocation } from 'react-router-dom';
 import { hasForwardEntries } from '@/lib/navigation';
 import {
   artificialHistoryState,
+  getOwnedEscapeHandler,
   hasUnsavedChanges,
   isGuardAwaitingPop,
   isPlannedGuardPop,
   MODAL_HISTORY_MARKER as MODAL_MARKER,
+  OPEN_DIALOG_SELECTOR,
   registerMarkerResync,
   registerModalMarkerPopper,
+  registerTopDialogChecker,
   UNSAVED_GUARD_SENTINEL as SENTINEL,
 } from '@/lib/unsaved-guard';
 
 // Apenas [role="dialog"]: AlertDialog (role="alertdialog") não fecha por
 // Escape no Radix, então marcá-lo deixaria a confirmação aberta após o
 // Voltar consumir o marcador.
-export const OPEN_DIALOG_SELECTOR = '[role="dialog"][data-state="open"]';
 // O tratamento do marcador órfão pós-reload roda uma única vez por
 // sessão — StrictMode remonta o efeito e um segundo history.back()
 // ultrapassaria a entrada real.
@@ -291,13 +293,13 @@ export function ModalHistoryManager() {
     // Escape só pode fechar o dialog do TOPO. Dialogs próprios
     // (data-escape-owned) não estão na pilha de camadas do Radix: um
     // Escape propagado fecharia os dois — o deles e o nosso. Na fase de
-    // captura (antes de qualquer listener do documento), retargetamos o
-    // evento só para o elemento do topo quando ele é nosso.
-    // O evento sintético (mesmo com bubbles:false) atravessa o document
-    // na captura — marcamos os já encaminhados para não reinterceptar.
-    const forwarded = new WeakSet<KeyboardEvent>();
+    // captura (antes de qualquer listener do documento), barramos o
+    // evento e chamamos direto o handler do dialog do topo quando ele é
+    // nosso. Nada de reenviar um KeyboardEvent ao elemento: o dispatch
+    // atravessa de novo a captura do document, onde o Radix escuta
+    // Escape, e a camada Radix de baixo fecharia junto.
     const onKeyDownCapture = (e: KeyboardEvent) => {
-      if (e.key !== 'Escape' || forwarded.has(e)) return;
+      if (e.key !== 'Escape') return;
       // O topo real é o último a ABRIR, não o último no DOM: com o
       // portal do Radix anexado ao body depois do root, um dialog
       // próprio renderizado inline (ConfirmationDialog) apareceria
@@ -311,9 +313,7 @@ export function ModalHistoryManager() {
       if (!top || top.dataset.escapeOwned === undefined) return;
       e.preventDefault();
       e.stopImmediatePropagation();
-      const retargeted = new KeyboardEvent('keydown', { key: 'Escape', bubbles: false });
-      forwarded.add(retargeted);
-      top.dispatchEvent(retargeted);
+      getOwnedEscapeHandler(top)?.(e);
     };
     document.addEventListener('keydown', onKeyDownCapture, true);
 
@@ -325,6 +325,16 @@ export function ModalHistoryManager() {
     // continuaria fora do histórico.
     const offResync = registerMarkerResync(() => {
       syncMarkers();
+    });
+
+    // Topo real de dialogs próprios: a ordem do DOM mente (portal Radix
+    // no body depois do root), então quem checar posição no DOM via
+    // isTopOpenDialog cai aqui pela ordem de abertura.
+    const offTopChecker = registerTopDialogChecker((el) => {
+      const order = openOrderRef.current;
+      const dialogs = document.querySelectorAll(OPEN_DIALOG_SELECTOR);
+      const top = order[order.length - 1] ?? dialogs[dialogs.length - 1];
+      return top === el;
     });
 
     const unregister = registerModalMarkerPopper(() => {
@@ -341,6 +351,7 @@ export function ModalHistoryManager() {
       window.removeEventListener('popstate', onPopState);
       document.removeEventListener('keydown', onKeyDownCapture, true);
       offResync();
+      offTopChecker();
       unregister();
     };
   }, []);

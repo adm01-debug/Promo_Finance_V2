@@ -2,7 +2,7 @@ import { ReactNode, useEffect, useId, useRef } from 'react';
 import { AlertTriangle, Info, CheckCircle, XCircle, Loader2, X } from 'lucide-react';
 import { Button } from './button';
 import { cn } from '@/lib/utils';
-import { OPEN_DIALOG_SELECTOR } from '@/components/navigation/ModalHistoryManager';
+import { isTopOpenDialog, registerOwnedEscapeHandler } from '@/lib/unsaved-guard';
 
 interface ConfirmDialogProps {
   // Support both naming conventions
@@ -86,8 +86,8 @@ export function ConfirmDialog({
   const dialogRef = useRef<HTMLDivElement>(null);
   const titleId = useId();
 
-  // Escape roteado pelo ModalHistoryManager chega direcionado a este
-  // elemento (só ele fecha, nunca um dialog de baixo); o listener no
+  // Escape roteado pelo ModalHistoryManager chama este handler direto
+  // (registrado para o elemento) (só ele fecha, nunca um dialog de baixo); o listener no
   // documento cobre o caso do gerenciador ausente (ex.: testes).
   useEffect(() => {
     if (!isOpen) return;
@@ -96,14 +96,14 @@ export function ConfirmDialog({
       if (e.key !== 'Escape' || isLoading) return;
       // Só o dialog do topo fecha: um Escape chegando ao documento (topo
       // Radix ou gerenciador ausente) não pode fechar os de baixo junto.
-      const dialogs = document.querySelectorAll(OPEN_DIALOG_SELECTOR);
-      if (dialogs[dialogs.length - 1] !== el) return;
+      // A ordem de abertura decide — o DOM mente com o portal Radix.
+      if (!el || !isTopOpenDialog(el)) return;
       handleClose();
     };
-    el?.addEventListener('keydown', onKeyDown);
+    const offOwned = el ? registerOwnedEscapeHandler(el, onKeyDown) : undefined;
     document.addEventListener('keydown', onKeyDown);
     return () => {
-      el?.removeEventListener('keydown', onKeyDown);
+      offOwned?.();
       document.removeEventListener('keydown', onKeyDown);
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
