@@ -7,7 +7,7 @@
 // única porta de escrita.
 
 import { createClient } from 'npm:@supabase/supabase-js@2.49.4';
-import { exigirUsuario } from '../_shared/auth-guard.ts';
+import { empresasDoUsuario, exigirUsuario } from '../_shared/auth-guard.ts';
 import { corsHeadersPara } from '../_shared/cors.ts';
 import { validarMagicBytesServidor } from '../_shared/magic-bytes.ts';
 import { createLogger } from '../_shared/logger.ts';
@@ -63,14 +63,34 @@ Deno.serve(
         return erro(req, 415, 'conteudo_invalido', erroConteudo);
       }
 
-      const ext = arquivo.name.split('.').pop()?.toLowerCase() ?? 'bin';
-      const caminho = `${entidadeTipo}/${entidadeId}/${crypto.randomUUID()}.${ext}`;
-
       const supabase = createClient(
         Deno.env.get('SUPABASE_URL')!,
         Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!,
         { auth: { persistSession: false, autoRefreshToken: false } }
       );
+
+      // entidade_id é só um UUID — sem a checagem abaixo qualquer usuário
+      // autenticado anexaria arquivo a uma entidade de outra empresa (IDOR).
+      const empresas = await empresasDoUsuario(userId);
+      if (!empresas) {
+        return erro(req, 500, 'erro_autorizacao', 'Falha ao validar vínculo de empresa.');
+      }
+      const { data: entidade } = await supabase
+        .from(entidadeTipo)
+        .select('empresa_id')
+        .eq('id', entidadeId)
+        .maybeSingle();
+      if (!entidade?.empresa_id || !empresas.includes(entidade.empresa_id)) {
+        return erro(
+          req,
+          403,
+          'sem_acesso',
+          'Entidade inexistente ou fora das empresas do usuário.'
+        );
+      }
+
+      const ext = arquivo.name.split('.').pop()?.toLowerCase() ?? 'bin';
+      const caminho = `${entidadeTipo}/${entidadeId}/${crypto.randomUUID()}.${ext}`;
 
       const { error: erroUpload } = await supabase.storage
         .from(BUCKET)
