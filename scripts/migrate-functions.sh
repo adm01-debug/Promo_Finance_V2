@@ -67,8 +67,9 @@ echo "📝 Log:     $LOG"
 # --- Verificação de secrets -------------------------------------------------
 # Sem REQUIRED_SECRETS no ambiente, cai no manifest autoritativo: entries
 # `supabase_vault` com required=true são os secrets que as functions exigem
-# em produção. Um var ausente NÃO pode silenciar o gate.
-if [[ -z "${REQUIRED_SECRETS:-}" ]]; then
+# em produção. Um var ausente NÃO pode silenciar o gate do deploy em lote
+# (com --only o operador escolhe o escopo e a env explícita continua valendo).
+if [[ -z "${REQUIRED_SECRETS:-}" && -z "$ONLY" ]]; then
   REQUIRED_SECRETS="$(jq -r '[.vars[] | select(.dest == "supabase_vault" and .required == true) | .name] | join(",")' env.manifest.json 2>/dev/null || true)"
 fi
 if [[ -n "${REQUIRED_SECRETS:-}" ]]; then
