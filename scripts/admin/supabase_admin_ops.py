@@ -110,10 +110,12 @@ def want_verify_jwt():
                 raw = line.split("=", 1)[1]
                 # TOML: comentário inline começa em '#' fora de strings; aqui
                 # bastam valores booleanos simples.
-                val = raw.split("#", 1)[0].strip().strip('"').strip("'")
+                val = raw.split("#", 1)[0].strip()
                 if val in ("true", "false"):
                     out[fn] = val == "true"
                 else:
+                    # Strings TOML ("true") e outros valores não são booleanos:
+                    # o deploy (migrate-functions.sh) também os rejeita.
                     print(f"verify_jwt não-booleano em {fn}: {val!r} — ignorado")
     return out
 
@@ -189,7 +191,7 @@ def main():
     nao_confirmados = []
     total_usuarios = 0
     if not SERVICE_KEY:
-        if os.environ.get("DELETE_TEST_USERS") == "1":
+        if APPLY and os.environ.get("DELETE_TEST_USERS") == "1":
             FALHAS.append(
                 "exclusão de contas de teste solicitada sem SUPABASE_SERVICE_ROLE_KEY"
             )
@@ -197,7 +199,7 @@ def main():
             print("SUPABASE_SERVICE_ROLE_KEY ausente — seção de usuários pulada.")
     else:
         page = 1
-        while page <= 100:
+        while page <= 1000:
             code, users = req(
                 "GET", f"/admin/users?page={page}&per_page=100", gotrue=True
             )
@@ -220,7 +222,7 @@ def main():
                 break
             page += 1
         else:
-            FALHAS.append("paginação de usuários truncada em 100 páginas")
+            FALHAS.append("paginação de usuários truncada em 1000 páginas")
         print(f"usuários: {total_usuarios}")
         print(f"contas de teste na allowlist (deletáveis): {deletaveis or 'nenhuma'}")
         print(f"não confirmados (só relatados): {nao_confirmados or 'nenhum'}")
