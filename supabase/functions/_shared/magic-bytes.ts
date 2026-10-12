@@ -145,6 +145,60 @@ function entradasZip(head: Uint8Array, max = 40): string[] {
   return nomes;
 }
 
+/**
+ * Localiza o diretório central do zip pelo EOCD (End Of Central Directory)
+ * lido na CAUDA do arquivo. `entradasZip` só enxerga as primeiras entradas
+ * da janela de cabeçalho — um JAR com 40+ arquivos benignos antes de
+ * META-INF/MANIFEST.MF passaria. O diretório central lista TODAS as
+ * entradas; sem ele a inspeção é incompleta e o upload deve falhar fechado.
+ */
+export function diretorioCentralZip(
+  tail: Uint8Array,
+  tamanhoArquivo: number
+): { offset: number; tamanho: number } | null {
+  const dv = new DataView(tail.buffer, tail.byteOffset, tail.byteLength);
+  for (let i = tail.length - 22; i >= 0; i--) {
+    if (tail[i] === 0x50 && tail[i + 1] === 0x4b && tail[i + 2] === 0x05 && tail[i + 3] === 0x06) {
+      const cdSize = dv.getUint32(i + 12, true);
+      const cdOffset = dv.getUint32(i + 16, true);
+      if (cdSize > 0 && cdOffset + cdSize <= tamanhoArquivo) {
+        return { offset: cdOffset, tamanho: cdSize };
+      }
+      return null;
+    }
+  }
+  return null;
+}
+
+/** Nomes de TODAS as entradas a partir dos bytes do diretório central. */
+export function entradasDiretorioCentral(cd: Uint8Array, max = 10000): string[] {
+  const nomes: string[] = [];
+  const dv = new DataView(cd.buffer, cd.byteOffset, cd.byteLength);
+  let pos = 0;
+  while (pos + 46 <= cd.length && nomes.length < max) {
+    if (cd[pos] !== 0x50 || cd[pos + 1] !== 0x4b || cd[pos + 2] !== 0x01 || cd[pos + 3] !== 0x02) {
+      break;
+    }
+    const nomeLen = dv.getUint16(pos + 28, true);
+    const extraLen = dv.getUint16(pos + 30, true);
+    const comentLen = dv.getUint16(pos + 32, true);
+    nomes.push(new TextDecoder().decode(cd.subarray(pos + 46, pos + 46 + nomeLen)));
+    pos += 46 + nomeLen + extraLen + comentLen;
+  }
+  return nomes;
+}
+
+/**
+ * Valida a lista COMPLETA de entradas de um zip (diretório central).
+ * Complementa `validarMagicBytesServidor`, que só vê a janela inicial.
+ */
+export function validarZipDiretorioCompleto(nome: string, entradas: string[]): string | null {
+  if (entradas.some((e) => e === 'META-INF/MANIFEST.MF' || e.endsWith('.class'))) {
+    return `${nome}: zip com estrutura de executável Java não é permitido`;
+  }
+  return null;
+}
+
 function corresponde(head: Uint8Array, assinatura: number[]): boolean {
   if (head.length < assinatura.length) return false;
   return assinatura.every((b, i) => head[i] === b);

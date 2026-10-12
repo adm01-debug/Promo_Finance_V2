@@ -9,7 +9,13 @@
 import { createClient } from 'npm:@supabase/supabase-js@2.49.4';
 import { exigirUsuario } from '../_shared/auth-guard.ts';
 import { corsHeadersPara } from '../_shared/cors.ts';
-import { validarMagicBytesServidor } from '../_shared/magic-bytes.ts';
+import {
+  detectarTipo,
+  diretorioCentralZip,
+  entradasDiretorioCentral,
+  validarMagicBytesServidor,
+  validarZipDiretorioCompleto,
+} from '../_shared/magic-bytes.ts';
 import { createLogger } from '../_shared/logger.ts';
 import { withEdgeObservability } from '../_shared/edge-observability.ts';
 const log = createLogger('upload-anexo');
@@ -61,6 +67,26 @@ Deno.serve(
       const erroConteudo = validarMagicBytesServidor(arquivo.name, head);
       if (erroConteudo) {
         return erro(req, 415, 'conteudo_invalido', erroConteudo);
+      }
+
+      // Zip: a janela de 32 KiB cobre só as ~40 primeiras entradas — um JAR
+      // renomeado com META-INF depois delas passaria. O diretório central, na
+      // cauda do arquivo, lista TODAS as entradas; sem ele, falha fechado.
+      if (detectarTipo(head) === 'zip') {
+        const tail = new Uint8Array(
+          await arquivo.slice(Math.max(0, arquivo.size - 65558)).arrayBuffer()
+        );
+        const dir = diretorioCentralZip(tail, arquivo.size);
+        if (!dir) {
+          return erro(req, 415, 'conteudo_invalido', 'Zip sem diretório central legível.');
+        }
+        const cd = new Uint8Array(
+          await arquivo.slice(dir.offset, dir.offset + dir.tamanho).arrayBuffer()
+        );
+        const erroZip = validarZipDiretorioCompleto(arquivo.name, entradasDiretorioCentral(cd));
+        if (erroZip) {
+          return erro(req, 415, 'conteudo_invalido', erroZip);
+        }
       }
 
       const supabase = createClient(

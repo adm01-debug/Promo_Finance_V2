@@ -10,7 +10,9 @@
 #   SUPABASE_PROJECT_REF=<ref do projeto destino>
 #
 # Env opcionais:
-#   REQUIRED_SECRETS="LOVABLE_API_KEY,RESEND_API_KEY,..."   # aborta se faltar
+#   REQUIRED_SECRETS="LOVABLE_API_KEY,RESEND_API_KEY,..."   # aborta se faltar;
+#                                                           # ausente, cai nos
+#                                                           # `supabase_vault` required=true do env.manifest.json
 #   FUNCTIONS_DIR=supabase/functions                        # default
 #   STOP_ON_FAIL=1                                          # aborta no 1º deploy que falhar
 #
@@ -63,6 +65,12 @@ echo "📝 Log:     $LOG"
 [[ $DRY_RUN -eq 1 ]] && echo "🧪 DRY-RUN ativo — nenhum deploy será executado."
 
 # --- Verificação de secrets -------------------------------------------------
+# Sem REQUIRED_SECRETS no ambiente, cai no manifest autoritativo: entries
+# `supabase_vault` com required=true são os secrets que as functions exigem
+# em produção. Um var ausente NÃO pode silenciar o gate.
+if [[ -z "${REQUIRED_SECRETS:-}" ]]; then
+  REQUIRED_SECRETS="$(jq -r '[.vars[] | select(.dest == "supabase_vault" and .required == true) | .name] | join(",")' env.manifest.json 2>/dev/null || true)"
+fi
 if [[ -n "${REQUIRED_SECRETS:-}" ]]; then
   echo "🔐 Verificando secrets obrigatórios no destino..."
   REMOTE_SECRETS="$(supabase secrets list --project-ref "$SUPABASE_PROJECT_REF" 2>/dev/null | awk 'NR>2 {print $1}' || true)"
