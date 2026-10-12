@@ -18,7 +18,13 @@
 #      o apply só reporta, nunca cria o bucket isolado.
 #   4. Auth users: deleta SÓ a allowlist explícita de contas de teste;
 #      demais contas não confirmadas só são listadas (nunca confirmadas
-#      nem deletadas automaticamente).
+#      nem deletadas automaticamente). Usa a GoTrue Admin API do projeto
+#      (`/auth/v1/admin/users`) com SUPABASE_SERVICE_ROLE_KEY — a Management
+#      API não tem endpoint de auth.users.
+#
+# Env opcionais:
+#   SUPABASE_SERVICE_ROLE_KEY  (necessária só para a seção de usuários;
+#                               sem ela a seção é pulada com aviso)
 
 import json
 import os
@@ -30,8 +36,11 @@ import urllib.request
 API = "https://api.supabase.com/v1"
 TOKEN = os.environ.get("SUPABASE_ACCESS_TOKEN", "")
 REF = os.environ.get("SUPABASE_PROJECT_REF", "")
+SERVICE_KEY = os.environ.get("SUPABASE_SERVICE_ROLE_KEY", "")
 MODE = sys.argv[1] if len(sys.argv) > 1 else "check"
 APPLY = MODE == "apply"
+
+FALHAS = []
 
 # Contas de teste identificadas na auditoria (migration E17 do plano de
 # correções). Somente esses e-mails podem ser deletados no apply.
@@ -42,10 +51,18 @@ TEST_USER_ALLOWLIST = {
 BUCKET_REQUIRED = "financeiro"
 
 
-def req(method, path, body=None):
-    url = f"{API}/projects/{REF}{path}"
+def req(method, path, body=None, gotrue=False):
+    if gotrue:
+        url = f"https://{REF}.supabase.co/auth/v1{path}"
+        headers = {
+            "apikey": SERVICE_KEY,
+            "Authorization": f"Bearer {SERVICE_KEY}",
+            "Accept": "application/json",
+        }
+    else:
+        url = f"{API}/projects/{REF}{path}"
+        headers = {"Authorization": f"Bearer {TOKEN}", "Accept": "application/json"}
     data = None
-    headers = {"Authorization": f"Bearer {TOKEN}", "Accept": "application/json"}
     if body is not None:
         data = json.dumps(body).encode()
         headers["Content-Type"] = "application/json"
@@ -57,6 +74,16 @@ def req(method, path, body=None):
     except urllib.error.HTTPError as e:
         detail = e.read()[:400].decode("utf-8", "replace")
         return e.code, {"_error": detail}
+
+
+def mutate(desc, method, path, body=None, gotrue=False):
+    """Operação de escrita: registra falha não-2xx para exit code != 0."""
+    code, out = req(method, path, body, gotrue=gotrue)
+    ok = 200 <= code < 300
+    print(f"{method} {path} → {code}" + (f": {out}" if not ok else ""))
+    if not ok:
+        FALHAS.append(f"{desc} ({method} {path} → {code})")
+    return ok
 
 
 def want_verify_jwt():
@@ -123,6 +150,7 @@ def main():
             pendencias.append("verify_jwt")
     else:
         print(f"GET /functions → {code}: {fns}")
+        FALHAS.append(f"listagem de functions (→ {code})")
 
     # --- 3. Storage bucket ----------------------------------------------------
     section("Storage buckets")
@@ -138,45 +166,55 @@ def main():
         print(f"GET /storage/buckets → {code}: {buckets}")
         pendencias.append("bucket_unknown")
 
-    # --- 4. Auth users ---------------------------------------------------------
+    # --- 4. Auth users (GoTrue Admin API, service key) ------------------------
     section("Auth users (teste/não confirmados)")
     deletaveis = []
     nao_confirmados = []
-    page = 1
     total_usuarios = 0
-    while page <= 20:
-        code, users = req("GET", f"/auth/users?page={page}&per_page=100")
-        if code != 200:
-            print(f"GET /auth/users → {code}: {users}")
-            break
-        lista = users if isinstance(users, list) else users.get("users", [])
-        if not lista:
-            break
-        total_usuarios += len(lista)
-        for u in lista:
-            email = (u.get("email") or "").lower()
-            conf = bool(u.get("email_confirmed_at") or u.get("confirmed_at"))
-            if email in TEST_USER_ALLOWLIST:
-                deletaveis.append({"id": u.get("id"), "email": email})
-            elif not conf:
-                nao_confirmados.append({"id": u.get("id"), "email": email})
-        if len(lista) < 100:
-            break
-        page += 1
-    print(f"usuários: {total_usuarios}")
-    print(f"contas de teste na allowlist (deletáveis): {deletaveis or 'nenhuma'}")
-    print(f"não confirmados (só relatados): {nao_confirmados or 'nenhum'}")
-    if deletaveis:
-        pendencias.append("usuarios")
+    if not SERVICE_KEY:
+        print("SUPABASE_SERVICE_ROLE_KEY ausente — seção de usuários pulada.")
+    else:
+        page = 1
+        while page <= 20:
+            code, users = req(
+                "GET", f"/admin/users?page={page}&per_page=100", gotrue=True
+            )
+            if code != 200:
+                print(f"GET /admin/users → {code}: {users}")
+                FALHAS.append(f"listagem de usuários (→ {code})")
+                break
+            lista = users if isinstance(users, list) else users.get("users", [])
+            if not lista:
+                break
+            total_usuarios += len(lista)
+            for u in lista:
+                email = (u.get("email") or "").lower()
+                conf = bool(u.get("email_confirmed_at") or u.get("confirmed_at"))
+                if email in TEST_USER_ALLOWLIST:
+                    deletaveis.append({"id": u.get("id"), "email": email})
+                elif not conf:
+                    nao_confirmados.append({"id": u.get("id"), "email": email})
+            if len(lista) < 100:
+                break
+            page += 1
+        print(f"usuários: {total_usuarios}")
+        print(f"contas de teste na allowlist (deletáveis): {deletaveis or 'nenhuma'}")
+        print(f"não confirmados (só relatados): {nao_confirmados or 'nenhum'}")
+        if deletaveis:
+            pendencias.append("usuarios")
 
     # --- Apply ---------------------------------------------------------------
     if not APPLY:
         print(f"\nMODE=check — pendências: {pendencias or 'nenhuma'}")
+        if FALHAS:
+            print(f"FALHAS de leitura: {FALHAS}")
+            sys.exit(1)
         return
 
     section("APPLY")
     if "mfa_totp" in pendencias:
-        code, out = req(
+        mutate(
+            "MFA TOTP",
             "PATCH",
             "/config/auth",
             {
@@ -184,14 +222,15 @@ def main():
                 "mfa_totp_verify_enabled": True,
             },
         )
-        print(f"PATCH auth MFA → {code}")
 
     if "verify_jwt" in pendencias:
         for slug, d in divergentes.items():
-            code, out = req(
-                "PATCH", f"/functions/{slug}", {"verify_jwt": d["config.toml"]}
+            mutate(
+                f"verify_jwt {slug}",
+                "PATCH",
+                f"/functions/{slug}",
+                {"verify_jwt": d["config.toml"]},
             )
-            print(f"PATCH {slug} verify_jwt={d['config.toml']} → {code}")
 
     if "bucket" in pendencias:
         # A migration 20261002093000_storage_financeiro_upload_via_edge.sql
@@ -205,8 +244,16 @@ def main():
 
     if "usuarios" in pendencias:
         for u in deletaveis:
-            code, _ = req("DELETE", f"/auth/users/{u['id']}")
-            print(f"DELETE {u['email']} → {code}")
+            mutate(
+                f"usuário {u['email']}",
+                "DELETE",
+                f"/admin/users/{u['id']}",
+                gotrue=True,
+            )
+
+    if FALHAS:
+        print(f"\nFALHAS: {FALHAS}")
+        sys.exit(1)
 
 
 if __name__ == "__main__":
