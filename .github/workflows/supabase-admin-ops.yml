@@ -9,7 +9,7 @@ name: Ops administrativas do Supabase canônico
 #
 # Gates (mesmo padrão de prod-migrate.yml):
 #   1. workflow_dispatch manual.
-#   2. environment "Production".
+#   2. environment "Production-Ops" (required reviewer + só branch protegida).
 #   3. Confirmação digitada do project-ref.
 #   4. mode=check por padrão: primeiro só listar, depois apply.
 
@@ -45,7 +45,7 @@ jobs:
     if: github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     timeout-minutes: 15
-    environment: Production
+    environment: Production-Ops
     env:
       SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
       SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
