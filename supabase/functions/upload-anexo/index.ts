@@ -9,7 +9,13 @@
 import { createClient } from 'npm:@supabase/supabase-js@2.49.4';
 import { exigirUsuario } from '../_shared/auth-guard.ts';
 import { corsHeadersPara } from '../_shared/cors.ts';
-import { validarMagicBytesServidor } from '../_shared/magic-bytes.ts';
+import {
+  detectarTipo,
+  diretorioCentralZip,
+  entradasDiretorioCentral,
+  validarMagicBytesServidor,
+  validarZipDiretorioCompleto,
+} from '../_shared/magic-bytes.ts';
 import { createLogger } from '../_shared/logger.ts';
 import { withEdgeObservability } from '../_shared/edge-observability.ts';
 const log = createLogger('upload-anexo');
@@ -63,14 +69,79 @@ Deno.serve(
         return erro(req, 415, 'conteudo_invalido', erroConteudo);
       }
 
-      const ext = arquivo.name.split('.').pop()?.toLowerCase() ?? 'bin';
-      const caminho = `${entidadeTipo}/${entidadeId}/${crypto.randomUUID()}.${ext}`;
+      // Zip: a janela de 32 KiB cobre só as ~40 primeiras entradas — um JAR
+      // renomeado com META-INF depois delas passaria. O diretório central, na
+      // cauda do arquivo, lista TODAS as entradas; sem ele, falha fechado.
+      if (detectarTipo(head) === 'zip') {
+        const tail = new Uint8Array(
+          await arquivo.slice(Math.max(0, arquivo.size - 65558)).arrayBuffer()
+        );
+        const dir = diretorioCentralZip(tail, arquivo.size);
+        if (!dir) {
+          return erro(req, 415, 'conteudo_invalido', 'Zip sem diretório central legível.');
+        }
+        const cd = new Uint8Array(
+          await arquivo.slice(dir.offset, dir.offset + dir.tamanho).arrayBuffer()
+        );
+        const entradas = entradasDiretorioCentral(cd);
+        if (!entradas) {
+          return erro(
+            req,
+            415,
+            'conteudo_invalido',
+            'Diretório do zip excede o limite inspecionável.'
+          );
+        }
+        const erroZip = validarZipDiretorioCompleto(arquivo.name, entradas);
+        if (erroZip) {
+          return erro(req, 415, 'conteudo_invalido', erroZip);
+        }
+      }
 
       const supabase = createClient(
         Deno.env.get('SUPABASE_URL')!,
         Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!,
         { auth: { persistSession: false, autoRefreshToken: false } }
       );
+
+      // entidade_id é só um UUID — sem a checagem abaixo qualquer usuário
+      // autenticado anexaria arquivo a uma entidade de outra empresa (IDOR).
+      const { data: entidade } = await supabase
+        .from(entidadeTipo)
+        .select('empresa_id')
+        .eq('id', entidadeId)
+        .maybeSingle();
+      if (!entidade?.empresa_id) {
+        return erro(
+          req,
+          403,
+          'sem_acesso',
+          'Entidade inexistente ou fora das empresas do usuário.'
+        );
+      }
+      // Vínculo ativo + papel de escrita na empresa da entidade:
+      // `visualizador` e `contador` são somente leitura
+      // (docs/MATRIZ_PAPEIS.md) e o service_role abaixo não passa por RLS —
+      // allowlist positiva, nunca denylist de papel.
+      const PAPEIS_ESCRITA = new Set(['admin', 'financeiro', 'operacional']);
+      const { data: vinculo } = await supabase
+        .from('user_empresas')
+        .select('role')
+        .eq('user_id', userId)
+        .eq('empresa_id', entidade.empresa_id)
+        .eq('ativo', true)
+        .maybeSingle();
+      if (!vinculo || !PAPEIS_ESCRITA.has(vinculo.role)) {
+        return erro(
+          req,
+          403,
+          'sem_acesso',
+          'Entidade inexistente ou fora das empresas do usuário.'
+        );
+      }
+
+      const ext = arquivo.name.split('.').pop()?.toLowerCase() ?? 'bin';
+      const caminho = `${entidadeTipo}/${entidadeId}/${crypto.randomUUID()}.${ext}`;
 
       const { error: erroUpload } = await supabase.storage
         .from(BUCKET)
