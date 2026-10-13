@@ -44,6 +44,9 @@ for (const dir of readdirSync(funcsDir)) {
           if (!e.name.endsWith('.ts') || e.name.endsWith('_test.ts') || e.name.endsWith('.test.ts')) continue;
           const t = readFileSync(full, 'utf8');
           for (const m of t.matchAll(/Deno\.env\.get\(['"]([A-Z0-9_]+)['"]\)/g)) edgeSet.add(m[1]);
+          // deps.getEnv('X') — indireção dos handlers testáveis (n8n-callback,
+          // enviar-alerta-email, alertas): mesma leitura de env por outro nome.
+          for (const m of t.matchAll(/getEnv\(['"]([A-Z0-9_]+)['"]\)/g)) edgeSet.add(m[1]);
         }
       }
     } catch { /* _shared ausente */ }
@@ -52,8 +55,17 @@ for (const dir of readdirSync(funcsDir)) {
   try {
     const t = readFileSync(`${funcsDir}/${dir}/index.ts`, 'utf8');
     for (const m of t.matchAll(/Deno\.env\.get\(['"]([A-Z0-9_]+)['"]\)/g)) edgeSet.add(m[1]);
+          // deps.getEnv('X') — indireção dos handlers testáveis (n8n-callback,
+          // enviar-alerta-email, alertas): mesma leitura de env por outro nome.
+          for (const m of t.matchAll(/getEnv\(['"]([A-Z0-9_]+)['"]\)/g)) edgeSet.add(m[1]);
   } catch { /* pasta sem index.ts */ }
 }
+// Lidos por template `${provider}_WEBHOOK_SECRET` em _shared/webhook-auth.ts
+// (resolveSecret tem fallback em integration_secrets — ausência é válida,
+// então entram como opcionais). ASAAS_WEBHOOK_SECRET não existe: o webhook
+// Asaas consome ASAAS_WEBHOOK_TOKEN, enxergado pelo scan de env.
+for (const prov of ['BLING','BITRIX24','WHATSAPP']) edgeSet.add(`${prov}_WEBHOOK_SECRET`);
+
 const autoProvided = new Set([
   'SUPABASE_URL','SUPABASE_ANON_KEY','SUPABASE_SERVICE_ROLE_KEY',
   'SUPABASE_DB_URL','SUPABASE_JWKS','SUPABASE_PUBLISHABLE_KEYS','SUPABASE_SECRET_KEYS',
@@ -61,12 +73,18 @@ const autoProvided = new Set([
 // Vars com fallback no código — ausência é estado válido, não config incompleta.
 const opcionais = new Set([
   'ALLOWED_ORIGINS',
+  // fallback 'alerts@resend.dev' em notify-performance-alert
+  'ALERTS_EMAIL_FROM',
+  'BLING_WEBHOOK_SECRET',
+  'BITRIX24_WEBHOOK_SECRET',
+  'WHATSAPP_WEBHOOK_SECRET',
   'EDGE_FUNCTION_NAME',
   'INTEGRACOES_DESATIVADAS',
   'MFA_ADMIN_ENFORCED',
   'NFE_CERT_MASTER_KEY_PREV',
   'SUPABASE_FUNCTION_NAME',
   'CONTADOR_INVITE_SECRET',
+  'DENO_TESTING',
   'EDGE_SENTRY_DSN',
   'SENTRY_DSN',
 ]);

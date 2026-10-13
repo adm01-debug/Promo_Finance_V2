@@ -10,6 +10,7 @@ import { EmptyState } from '@/components/ui/empty-state';
 import { ConfirmationDialog } from '@/components/ui/confirmation-dialog';
 import { CreditCard, Plus } from 'lucide-react';
 import { useAsaas, type AsaasPayment } from '@/hooks/useAsaas';
+import { useUrlTab } from '@/hooks/useUrlTab';
 import { useAllEmpresas } from '@/hooks/useEmpresas';
 import { supabase } from '@/integrations/supabase/client';
 import { NovaCobrancaDialog } from '@/components/asaas/NovaCobrancaDialog';
@@ -39,7 +40,19 @@ import {
   QueueHistoryDialog,
 } from './Asaas.parts';
 
+const ASAAS_TABS = [
+  'cobrancas',
+  'assinaturas',
+  'links',
+  'extrato',
+  'transfers',
+  'webhooks',
+  'fila',
+  'config',
+] as const;
+
 export default function Asaas() {
+  const [tab, setTab] = useUrlTab('cobrancas', ASAAS_TABS);
   const { data: empresas, isLoading: loadingEmpresas } = useAllEmpresas();
   const empresaId = empresas?.[0]?.id;
   const {
@@ -202,7 +215,7 @@ export default function Asaas() {
         </div>
 
         {/* Main Tabs */}
-        <Tabs defaultValue="cobrancas" className="space-y-4">
+        <Tabs value={tab} onValueChange={setTab} className="space-y-4">
           <TabsList>
             <TabsTrigger value="cobrancas">Cobranças</TabsTrigger>
             <TabsTrigger value="assinaturas">Assinaturas</TabsTrigger>

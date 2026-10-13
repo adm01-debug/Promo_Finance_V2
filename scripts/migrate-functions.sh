@@ -10,8 +10,11 @@
 #   SUPABASE_PROJECT_REF=<ref do projeto destino>
 #
 # Env opcionais:
-#   REQUIRED_SECRETS="LOVABLE_API_KEY,RESEND_API_KEY,..."   # aborta se faltar
+#   REQUIRED_SECRETS="LOVABLE_API_KEY,RESEND_API_KEY,..."   # aborta se faltar;
+#                                                           # ausente, cai nos
+#                                                           # `supabase_vault` required=true do env.manifest.json
 #   FUNCTIONS_DIR=supabase/functions                        # default
+#   STOP_ON_FAIL=1                                          # aborta no 1º deploy que falhar
 #
 # Saída: /tmp/deploy-log-YYYYMMDD-HHMM.jsonl
 
@@ -62,9 +65,36 @@ echo "📝 Log:     $LOG"
 [[ $DRY_RUN -eq 1 ]] && echo "🧪 DRY-RUN ativo — nenhum deploy será executado."
 
 # --- Verificação de secrets -------------------------------------------------
+# Sem REQUIRED_SECRETS no ambiente, cai no manifest autoritativo: entries
+# `supabase_vault` com required=true são os secrets que as functions exigem
+# em produção. Um var ausente NÃO pode silenciar o gate do deploy em lote
+# (com --only o operador escolhe o escopo e a env explícita continua valendo).
+if [[ -z "${REQUIRED_SECRETS:-}" && -z "$ONLY" ]]; then
+  # `SUPABASE_*` é reservado pela plataforma e nunca aparece em
+  # `supabase secrets list` (ROTACAO_SECRETS.md) — excluí-lo do diff, senão
+  # o gate acusaria ausência eterna e bloquearia todo deploy.
+  REQUIRED_SECRETS="$(jq -r '[.vars[] | select(.dest == "supabase_vault" and .required == true) | .name | select(startswith("SUPABASE_") | not)] | join(",")' env.manifest.json 2>/dev/null)" || REQUIRED_SECRETS=""
+  # Manifest ausente/inválido ou sem nenhum required não pode silenciar o
+  # gate — sem a lista o deploy em lote não é autorizado.
+  if [[ -z "$REQUIRED_SECRETS" ]]; then
+    echo "❌ Não foi possível derivar secrets obrigatórios de env.manifest.json — o gate não pode ser pulado." >&2
+    exit 5
+  fi
+fi
 if [[ -n "${REQUIRED_SECRETS:-}" ]]; then
   echo "🔐 Verificando secrets obrigatórios no destino..."
-  REMOTE_SECRETS="$(supabase secrets list --project-ref "$SUPABASE_PROJECT_REF" 2>/dev/null | awk 'NR>2 {print $1}' || true)"
+  LIST_ERR="$(mktemp)"
+  REMOTE_SECRETS="$(supabase secrets list --project-ref "$SUPABASE_PROJECT_REF" 2>"$LIST_ERR" | awk 'NR>2 {print $1}' || true)"
+  # Falha do CLI (token inválido, rede, versão) sai em LIST_ERR e deixa a
+  # lista vazia — sem essa contagem um vault vazio e um check quebrado são
+  # indistinguíveis e todos os names saem como "faltando".
+  REMOTE_COUNT="$(printf '%s\n' "$REMOTE_SECRETS" | grep -c . || true)"
+  echo "   Secrets visíveis no destino: $REMOTE_COUNT"
+  if [[ "$REMOTE_COUNT" -eq 0 && -s "$LIST_ERR" ]]; then
+    echo "   ⚠️  'supabase secrets list' retornou erro — confira o token antes de criar secrets:" >&2
+    head -3 "$LIST_ERR" >&2
+  fi
+  rm -f "$LIST_ERR"
   MISSING=()
   IFS=',' read -ra WANTED <<< "$REQUIRED_SECRETS"
   for s in "${WANTED[@]}"; do
@@ -161,6 +191,14 @@ validate_config_coverage() {
 
 validate_config_coverage
 
+stop_if_needed() {
+  if [[ "${STOP_ON_FAIL:-0}" == "1" ]]; then
+    echo "⛔ STOP_ON_FAIL=1 — lote interrompido." >&2
+    return 0
+  fi
+  return 1
+}
+
 # --- Loop de deploy ---------------------------------------------------------
 OK=0; FAIL=0
 for fn in "${FNS[@]}"; do
@@ -173,6 +211,7 @@ for fn in "${FNS[@]}"; do
     echo "❌ ${fn}: verify_jwt ausente em ${CONFIG_TOML}; deploy recusado." >&2
     FAIL=$((FAIL + 1))
     log_event "deploy" "$fn" "failed" '{"reason":"verify_jwt_missing"}'
+    stop_if_needed && break
     continue
   elif [[ "$vjwt" == "true" ]]; then
     # A CLI atual protege por JWT por padrão e não aceita mais --verify-jwt.
@@ -184,6 +223,7 @@ for fn in "${FNS[@]}"; do
     echo "❌ ${fn}: verify_jwt inválido em ${CONFIG_TOML}: ${vjwt}" >&2
     FAIL=$((FAIL + 1))
     log_event "deploy" "$fn" "failed" '{"reason":"verify_jwt_invalid"}'
+    stop_if_needed && break
     continue
   fi
 
@@ -204,6 +244,12 @@ for fn in "${FNS[@]}"; do
     ERR="$(tail -c 1000 /tmp/deploy-out-$$.log | jq -Rs .)"
     log_event "deploy" "$fn" "failed" "$(jq -cn --argjson e "$ERR" --arg f "$FLAG" '{flag:$f, error:$e}')"
     echo "   ❌ falhou — ver $LOG" >&2
+    # Falha no meio do lote deixa prod com versões mistas; parar aqui mantém
+    # o estrago mínimo e o log diz onde retomar com --only fn1,fn2,...
+    if stop_if_needed; then
+      rm -f /tmp/deploy-out-$$.log
+      break
+    fi
   fi
   rm -f /tmp/deploy-out-$$.log
 done

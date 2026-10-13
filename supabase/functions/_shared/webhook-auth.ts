@@ -16,26 +16,21 @@
  * configurado a função FALHA FECHADA (503) — nunca aceita tráfego anônimo.
  */
 
-import type { SupabaseClient } from "https://esm.sh/@supabase/supabase-js@2.49.4";
+import type { SupabaseClient } from 'https://esm.sh/@supabase/supabase-js@2.49.4';
 
 /** Headers de assinatura conhecidos por provedor (ordem de preferência). */
 const SIGNATURE_HEADERS: Record<string, readonly string[]> = {
-  whatsapp: ["x-hub-signature-256", "x-signature", "x-webhook-signature"],
-  bitrix24: ["x-bitrix-signature", "x-signature", "x-webhook-signature"],
-  bling: [
-    "x-bling-signature-256",
-    "x-bling-signature",
-    "x-signature",
-    "x-webhook-signature",
-  ],
+  whatsapp: ['x-hub-signature-256', 'x-signature', 'x-webhook-signature'],
+  bitrix24: ['x-bitrix-signature', 'x-signature', 'x-webhook-signature'],
+  bling: ['x-bling-signature-256', 'x-bling-signature', 'x-signature', 'x-webhook-signature'],
 };
 
-const DEFAULT_SIGNATURE_HEADERS = ["x-signature", "x-webhook-signature"] as const;
+const DEFAULT_SIGNATURE_HEADERS = ['x-signature', 'x-webhook-signature'] as const;
 
 export interface WebhookAuthOk {
   ok: true;
   /** Como a requisição foi autenticada — útil para auditoria. */
-  mode: "hmac" | "token";
+  mode: 'hmac' | 'token';
 }
 
 export interface WebhookAuthFail {
@@ -50,11 +45,11 @@ export type WebhookAuthResult = WebhookAuthOk | WebhookAuthFail;
 function jsonResponse(
   body: Record<string, unknown>,
   status: number,
-  corsHeaders: Record<string, string>,
+  corsHeaders: Record<string, string>
 ): Response {
   return new Response(JSON.stringify(body), {
     status,
-    headers: { ...corsHeaders, "Content-Type": "application/json" },
+    headers: { ...corsHeaders, 'Content-Type': 'application/json' },
   });
 }
 
@@ -68,8 +63,8 @@ function equals(a: string, b: string): boolean {
 
 function toHex(buffer: ArrayBuffer): string {
   return Array.from(new Uint8Array(buffer))
-    .map((b) => b.toString(16).padStart(2, "0"))
-    .join("");
+    .map((b) => b.toString(16).padStart(2, '0'))
+    .join('');
 }
 
 function toBase64(buffer: ArrayBuffer): string {
@@ -78,13 +73,13 @@ function toBase64(buffer: ArrayBuffer): string {
 
 async function hmacSha256(secret: string, payload: string): Promise<ArrayBuffer> {
   const key = await crypto.subtle.importKey(
-    "raw",
+    'raw',
     new TextEncoder().encode(secret),
-    { name: "HMAC", hash: "SHA-256" },
+    { name: 'HMAC', hash: 'SHA-256' },
     false,
-    ["sign"],
+    ['sign']
   );
-  return await crypto.subtle.sign("HMAC", key, new TextEncoder().encode(payload));
+  return await crypto.subtle.sign('HMAC', key, new TextEncoder().encode(payload));
 }
 
 /**
@@ -93,15 +88,15 @@ async function hmacSha256(secret: string, payload: string): Promise<ArrayBuffer>
  */
 export async function resolveSecret(
   supabase: SupabaseClient,
-  provider: string,
+  provider: string
 ): Promise<string | null> {
   const chave = `${provider}_webhook_secret`;
 
   try {
     const { data, error } = await supabase
-      .from("integration_secrets")
-      .select("valor")
-      .eq("chave", chave)
+      .from('integration_secrets')
+      .select('valor')
+      .eq('chave', chave)
       .maybeSingle();
 
     const valor = (data as { valor?: string } | null)?.valor?.trim();
@@ -110,11 +105,11 @@ export async function resolveSecret(
     // Compatibilidade com instalações antigas, nas quais a coluna se chama
     // `nome`. O fallback só ocorre quando o schema canônico (`chave`) não
     // existe; outros erros continuam fechando para o secret de ambiente.
-    if (error?.code === "42703") {
+    if (error?.code === '42703') {
       const legacy = await supabase
-        .from("integration_secrets")
-        .select("valor")
-        .eq("nome", chave)
+        .from('integration_secrets')
+        .select('valor')
+        .eq('nome', chave)
         .maybeSingle();
       const legacyValue = (legacy.data as { valor?: string } | null)?.valor?.trim();
       if (legacyValue) return legacyValue;
@@ -138,23 +133,19 @@ export async function authenticateWebhook(
     req: Request;
     rawBody: string;
     corsHeaders: Record<string, string>;
-  },
+  }
 ): Promise<WebhookAuthResult> {
   const { provider, req, rawBody, corsHeaders } = params;
 
   const secret = await resolveSecret(supabase, provider);
   if (!secret) {
     console.error(
-      `[webhook-auth] Segredo ausente para "${provider}" — requisição rejeitada (fail-closed).`,
+      `[webhook-auth] Segredo ausente para "${provider}" — requisição rejeitada (fail-closed).`
     );
     return {
       ok: false,
-      reason: "secret_not_configured",
-      response: jsonResponse(
-        { error: "Webhook não configurado" },
-        503,
-        corsHeaders,
-      ),
+      reason: 'secret_not_configured',
+      response: jsonResponse({ error: 'Webhook não configurado' }, 503, corsHeaders),
     };
   }
 
@@ -165,31 +156,31 @@ export async function authenticateWebhook(
     if (!provided) continue;
 
     // Alguns provedores prefixam com o algoritmo (`sha256=...`).
-    const normalized = provided.replace(/^sha256=/i, "").trim();
+    const normalized = provided.replace(/^sha256=/i, '').trim();
     const digest = await hmacSha256(secret, rawBody);
 
     if (equals(normalized.toLowerCase(), toHex(digest)) || equals(normalized, toBase64(digest))) {
-      return { ok: true, mode: "hmac" };
+      return { ok: true, mode: 'hmac' };
     }
 
     console.warn(`[webhook-auth] Assinatura inválida para "${provider}" em ${header}.`);
     return {
       ok: false,
-      reason: "invalid_signature",
-      response: jsonResponse({ error: "Assinatura inválida" }, 401, corsHeaders),
+      reason: 'invalid_signature',
+      response: jsonResponse({ error: 'Assinatura inválida' }, 401, corsHeaders),
     };
   }
 
   // 2) Token compartilhado (provedores sem suporte a HMAC).
-  const token = req.headers.get("x-webhook-token")?.trim();
+  const token = req.headers.get('x-webhook-token')?.trim();
   if (token && equals(token, secret)) {
-    return { ok: true, mode: "token" };
+    return { ok: true, mode: 'token' };
   }
 
   console.warn(`[webhook-auth] Requisição sem credencial válida para "${provider}".`);
   return {
     ok: false,
-    reason: "missing_credential",
-    response: jsonResponse({ error: "Não autorizado" }, 401, corsHeaders),
+    reason: 'missing_credential',
+    response: jsonResponse({ error: 'Não autorizado' }, 401, corsHeaders),
   };
 }

@@ -9,6 +9,7 @@ import { z } from 'npm:zod@3.23.8';
 import { validateContract } from '../_shared/contract-validator.ts';
 import { createValidationErrorResponse } from '../_shared/contract-response.ts';
 import { exigirVinculoEmpresa, mfaAdminInsuficiente } from '../_shared/auth-guard.ts';
+import { createLogger } from '../_shared/observability.ts';
 import { corsHeadersPara } from '../_shared/cors.ts';
 import { withEdgeObservability } from '../_shared/edge-observability.ts';
 
@@ -20,8 +21,9 @@ const BodySchema = z.object({
   uf: z.string().length(2),
 });
 
+const logger = createLogger('nfe-upload-certificado');
 function log(...args: unknown[]) {
-  console.log('[nfe-upload-certificado]', ...args);
+  logger.info(args.map((a) => (typeof a === 'string' ? a : JSON.stringify(a))).join(' '));
 }
 
 function extractCnpjFromSubject(subject: forge.pki.Certificate['subject']): string | null {
@@ -236,7 +238,10 @@ Deno.serve(
           { onConflict: 'cnpj,ambiente', ignoreDuplicates: true }
         );
 
-      log('success', { cnpj, ambiente, duration_ms: Date.now() - t0 });
+      // context estruturado — serializar o objeto na mensagem achataria a
+      // chave `cnpj` em texto livre e o redigir não a mascararia (o padrão
+      // textual só cobre CNPJ pontuado).
+      logger.info('success', { context: { cnpj, ambiente, duration_ms: Date.now() - t0 } });
 
       return new Response(
         JSON.stringify({
@@ -257,6 +262,8 @@ Deno.serve(
         status: 500,
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       });
+    } finally {
+      await logger.flush();
     }
   })
 );
