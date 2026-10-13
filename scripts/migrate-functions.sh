@@ -73,7 +73,13 @@ if [[ -z "${REQUIRED_SECRETS:-}" && -z "$ONLY" ]]; then
   # `SUPABASE_*` é reservado pela plataforma e nunca aparece em
   # `supabase secrets list` (ROTACAO_SECRETS.md) — excluí-lo do diff, senão
   # o gate acusaria ausência eterna e bloquearia todo deploy.
-  REQUIRED_SECRETS="$(jq -r '[.vars[] | select(.dest == "supabase_vault" and .required == true) | .name | select(startswith("SUPABASE_") | not)] | join(",")' env.manifest.json 2>/dev/null || true)"
+  REQUIRED_SECRETS="$(jq -r '[.vars[] | select(.dest == "supabase_vault" and .required == true) | .name | select(startswith("SUPABASE_") | not)] | join(",")' env.manifest.json 2>/dev/null)" || REQUIRED_SECRETS=""
+  # Manifest ausente/inválido ou sem nenhum required não pode silenciar o
+  # gate — sem a lista o deploy em lote não é autorizado.
+  if [[ -z "$REQUIRED_SECRETS" ]]; then
+    echo "❌ Não foi possível derivar secrets obrigatórios de env.manifest.json — o gate não pode ser pulado." >&2
+    exit 5
+  fi
 fi
 if [[ -n "${REQUIRED_SECRETS:-}" ]]; then
   echo "🔐 Verificando secrets obrigatórios no destino..."
