@@ -1,23 +1,35 @@
 -- Anexos financeiros: RLS por empresa nos METADADOS + resolução robusta de
 -- empresa para os objetos do bucket `financeiro` (revisão do PR #151).
 --
--- Três problemas corrigidos:
+-- Quatro problemas corrigidos:
 -- 1. As policies de `anexos_financeiros` filtravam por papel GLOBAL
 --    (has_any_role em user_roles), não por empresa — um financeiro da
 --    empresa A lia/alterava/apagava metadados de anexos da empresa B.
 -- 2. `(storage.foldername(name))[2]::uuid` estourava erro quando uma pasta
 --    legada não-UUID era inspecionada pela policy, quebrando a listagem.
 -- 3. Ao excluir a entidade (conta/movimentação), a policy deixava de
---    resolver a empresa e os objetos viravam órfãos irremovíveis — a
---    resolução agora cai na linha de `anexos_financeiros.storage_path`.
+--    resolver a empresa e os objetos viravam órfãos irremovíveis. A linha
+--    de metadados sobrevive à entidade (não há FK), mas não guardava a
+--    empresa — agora `anexos_financeiros.empresa_id` é persistido e o
+--    fallback usa a empresa gravada, não a entidade excluída.
+-- 4. Sem validação, uma linha de metadados forjada (storage_path de um
+--    objeto de outra empresa + entidade própria) sequestraria o órfão.
+--    O fallback exige que os segmentos do path batam com entidade_tipo/
+--    entidade_id da linha, e o WITH CHECK exige `empresa_id` igual à
+--    empresa real da entidade declarada — para forjar é preciso apontar
+--    para a entidade excluída de B, cuja empresa resolve NULL e o insert
+--    é negado.
 --
 -- Leitura (tabela e bucket): qualquer papel com vínculo ativo na empresa.
 -- Escrita: vínculo ativo + papel em {admin, financeiro, operacional}
 -- (mesmo conjunto PAPEIS_ESCRITA da edge upload-anexo).
+-- Linhas cuja empresa histórica não pode ser reconstruída (entidade já
+-- excluída antes desta migration) ficam com empresa_id NULL → invisíveis
+-- para RLS; a limpeza fica para o service_role (admin-ops).
 
 -- Resolve a empresa dona de uma entidade anexável. Aceita singular e plural
--- (linhas legadas usavam 'conta_pagar' etc.). Tipo desconhecido → NULL
--- (policy falha fechado: ninguém além do service_role enxerga a linha).
+-- (linhas legadas usavam 'conta_pagar' etc.). Tipo desconhecido ou entidade
+-- inexistente/excluída → NULL (policy falha fechado).
 CREATE OR REPLACE FUNCTION public.empresa_da_entidade_financeira(_tipo text, _entidade uuid)
 RETURNS uuid
 LANGUAGE sql
@@ -35,12 +47,26 @@ AS $$
   END;
 $$;
 
+-- A empresa passa a ser dado do próprio anexo — sem ela, a exclusão da
+-- entidade tornava o objeto irremovível e o registro ilegível.
+ALTER TABLE public.anexos_financeiros
+  ADD COLUMN IF NOT EXISTS empresa_id uuid;
+
+UPDATE public.anexos_financeiros a
+   SET empresa_id = public.empresa_da_entidade_financeira(a.entidade_tipo, a.entidade_id)
+ WHERE a.empresa_id IS NULL;
+
+CREATE INDEX IF NOT EXISTS idx_anexos_financeiros_storage_path
+  ON public.anexos_financeiros (storage_path);
+
 -- Resolve a empresa de um OBJETO do bucket pelo path
 -- `<entidadeTipo>/<entidadeId>/<uuid>.<ext>`:
 --  1. pela entidade do path (comparando id::text — pasta não-UUID simples-
 --     mente não casa, sem exceção de cast);
---  2. se a entidade já foi excluída, pela linha de metadados que aponta
---     para o objeto (anexos_financeiros.storage_path) — cobre o órfão.
+--  2. se a entidade já foi excluída, pela empresa gravada na linha de
+--     metadados que aponta para o objeto — exigindo que a linha declare a
+--     mesma entidade do path, senão metadados forjados sequestrariam
+--     anexos de outras empresas.
 CREATE OR REPLACE FUNCTION public.empresa_do_anexo_financeiro(_objeto text)
 RETURNS uuid
 LANGUAGE sql
@@ -66,9 +92,11 @@ AS $$
   )
   SELECT COALESCE(
     (SELECT empresa_id FROM pela_entidade),
-    (SELECT public.empresa_da_entidade_financeira(a.entidade_tipo, a.entidade_id)
-       FROM public.anexos_financeiros a
+    (SELECT a.empresa_id
+       FROM public.anexos_financeiros a, p
       WHERE a.storage_path = _objeto
+        AND a.entidade_tipo = p.tipo
+        AND a.entidade_id::text = p.id_txt
       LIMIT 1)
   );
 $$;
@@ -108,7 +136,9 @@ CREATE POLICY "anexos_financeiro_remocao_autenticada" ON storage.objects
 
 -- =========================================================================
 -- anexos_financeiros: substituir policies de papel global por escopo de
--- empresa (a resolução é a mesma função — entidade_tipo/entidade_id).
+-- empresa. `empresa_id` declarado precisa bater com a empresa real da
+-- entidade (impede atribuir o anexo a outra empresa), e um storage_path
+-- informado precisa bater com a entidade declarada.
 -- =========================================================================
 
 DROP POLICY IF EXISTS "Auth users can read anexos_financeiros" ON public.anexos_financeiros;
@@ -125,20 +155,24 @@ CREATE POLICY "anexos_financeiros_leitura_empresa" ON public.anexos_financeiros
       FROM public.user_empresas ue
       WHERE ue.user_id = auth.uid()
         AND ue.ativo
-        AND ue.empresa_id = public.empresa_da_entidade_financeira(entidade_tipo, entidade_id)
+        AND ue.empresa_id = anexos_financeiros.empresa_id
     )
   );
 
 CREATE POLICY "anexos_financeiros_insercao_empresa" ON public.anexos_financeiros
   FOR INSERT TO authenticated
   WITH CHECK (
-    EXISTS (
+    empresa_id IS NOT NULL
+    AND empresa_id = public.empresa_da_entidade_financeira(entidade_tipo, entidade_id)
+    AND (storage_path IS NULL
+         OR storage_path LIKE (entidade_tipo || '/' || entidade_id::text || '/%'))
+    AND EXISTS (
       SELECT 1
       FROM public.user_empresas ue
       WHERE ue.user_id = auth.uid()
         AND ue.ativo
         AND ue.role IN ('admin', 'financeiro', 'operacional')
-        AND ue.empresa_id = public.empresa_da_entidade_financeira(entidade_tipo, entidade_id)
+        AND ue.empresa_id = anexos_financeiros.empresa_id
     )
   );
 
@@ -151,17 +185,21 @@ CREATE POLICY "anexos_financeiros_atualizacao_empresa" ON public.anexos_financei
       WHERE ue.user_id = auth.uid()
         AND ue.ativo
         AND ue.role IN ('admin', 'financeiro', 'operacional')
-        AND ue.empresa_id = public.empresa_da_entidade_financeira(entidade_tipo, entidade_id)
+        AND ue.empresa_id = anexos_financeiros.empresa_id
     )
   )
   WITH CHECK (
-    EXISTS (
+    empresa_id IS NOT NULL
+    AND empresa_id = public.empresa_da_entidade_financeira(entidade_tipo, entidade_id)
+    AND (storage_path IS NULL
+         OR storage_path LIKE (entidade_tipo || '/' || entidade_id::text || '/%'))
+    AND EXISTS (
       SELECT 1
       FROM public.user_empresas ue
       WHERE ue.user_id = auth.uid()
         AND ue.ativo
         AND ue.role IN ('admin', 'financeiro', 'operacional')
-        AND ue.empresa_id = public.empresa_da_entidade_financeira(entidade_tipo, entidade_id)
+        AND ue.empresa_id = anexos_financeiros.empresa_id
     )
   );
 
@@ -174,6 +212,6 @@ CREATE POLICY "anexos_financeiros_remocao_empresa" ON public.anexos_financeiros
       WHERE ue.user_id = auth.uid()
         AND ue.ativo
         AND ue.role IN ('admin', 'financeiro', 'operacional')
-        AND ue.empresa_id = public.empresa_da_entidade_financeira(entidade_tipo, entidade_id)
+        AND ue.empresa_id = anexos_financeiros.empresa_id
     )
   );

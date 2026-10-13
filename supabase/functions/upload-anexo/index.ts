@@ -161,6 +161,7 @@ Deno.serve(
       const { error: erroInsert } = await supabase.from('anexos_financeiros').insert({
         entidade_id: entidadeId,
         entidade_tipo: entidadeTipo,
+        empresa_id: entidade.empresa_id,
         nome_arquivo: arquivo.name,
         mime_type: arquivo.type,
         tamanho_bytes: arquivo.size,
