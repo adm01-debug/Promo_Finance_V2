@@ -116,16 +116,24 @@ AS $$
         (SELECT mv.empresa_id FROM public.movimentacoes mv WHERE mv.id = v.entidade_id)
     END AS empresa_id
     FROM v
+  ),
+  pelo_metadado AS (
+    SELECT a.empresa_id
+    FROM public.anexos_financeiros a, v
+    WHERE a.storage_path = _objeto
+      AND a.entidade_tipo = v.tipo
+      AND a.entidade_id = v.entidade_id
+    ORDER BY a.empresa_id IS NULL
+    LIMIT 1
   )
-  SELECT COALESCE(
-    (SELECT a.empresa_id
-       FROM public.anexos_financeiros a, v
-      WHERE a.storage_path = _objeto
-        AND a.entidade_tipo = v.tipo
-        AND a.entidade_id = v.entidade_id
-      LIMIT 1),
-    (SELECT empresa_id FROM pela_entidade)
-  );
+  -- Linha de metadado existente manda — inclusive com empresa_id NULL:
+  -- trata-se de anexo cuja empresa não pôde ser reconstruída, e devolver a
+  -- entidade viva ali liberaria o objeto se o UUID for reutilizado por
+  -- outra empresa. Sem linha nenhuma é que a entidade viva resolve.
+  SELECT CASE
+    WHEN EXISTS (SELECT 1 FROM pelo_metadado) THEN (SELECT empresa_id FROM pelo_metadado)
+    ELSE (SELECT empresa_id FROM pela_entidade)
+  END;
 $$;
 
 -- Execução direta: anon e PUBLIC fora (mesmo fora do schema exposto, o
