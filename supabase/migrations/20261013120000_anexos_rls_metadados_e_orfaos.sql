@@ -82,6 +82,11 @@ UPDATE public.anexos_financeiros a
 CREATE INDEX IF NOT EXISTS idx_anexos_financeiros_storage_path
   ON public.anexos_financeiros (storage_path);
 
+-- Cobre a busca por entidade do fallback do resolver e dos triggers de
+-- empresa abaixo — sem ele, toda transferência varreria a tabela de anexos.
+CREATE INDEX IF NOT EXISTS idx_anexos_financeiros_entidade
+  ON public.anexos_financeiros (entidade_id, entidade_tipo);
+
 -- Resolve a empresa de um OBJETO do bucket pelo path
 -- `<entidadeTipo>/<entidadeId>/<uuid>.<ext>`:
 --  1. pela entidade do path — o segmento vira uuid (regex case-insensitive
@@ -306,3 +311,32 @@ CREATE TRIGGER trg_anexos_sync_empresa
   FOR EACH ROW
   WHEN (OLD.empresa_id IS DISTINCT FROM NEW.empresa_id)
   EXECUTE FUNCTION private.sincroniza_empresa_dos_anexos('movimentacoes', 'movimentacao');
+
+-- A edge lê a empresa da entidade ANTES do upload ao Storage; se a
+-- entidade for transferida nesse intervalo, o service_role gravaria a
+-- empresa obsoleta sem passar por WITH CHECK. Derivar a empresa no
+-- próprio banco, na hora do insert, fecha a janela: o valor é lido da
+-- entidade no instante do insert e, a partir daí, o trigger acima já
+-- acompanha transferências futuras.
+CREATE OR REPLACE FUNCTION private.atribui_empresa_do_anexo()
+RETURNS trigger
+LANGUAGE plpgsql
+SECURITY DEFINER
+SET search_path = public
+AS $$
+BEGIN
+  NEW.empresa_id := COALESCE(
+    private.empresa_da_entidade_financeira(NEW.entidade_tipo, NEW.entidade_id),
+    NEW.empresa_id
+  );
+  RETURN NEW;
+END;
+$$;
+
+REVOKE ALL ON FUNCTION private.atribui_empresa_do_anexo() FROM PUBLIC, anon;
+
+DROP TRIGGER IF EXISTS trg_anexos_atribui_empresa ON public.anexos_financeiros;
+CREATE TRIGGER trg_anexos_atribui_empresa
+  BEFORE INSERT OR UPDATE OF entidade_tipo, entidade_id ON public.anexos_financeiros
+  FOR EACH ROW
+  EXECUTE FUNCTION private.atribui_empresa_do_anexo();
