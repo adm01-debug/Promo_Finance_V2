@@ -77,8 +77,13 @@ Deno.serve(
       // renomeado com META-INF depois delas passaria. O diretório central, na
       // cauda do arquivo, lista TODAS as entradas; sem ele, falha fechado.
       if (detectarTipo(head) === 'zip') {
+        // Janela da cauda: EOCD (22 B) + comentário máximo (65.535 B) +
+        // ZIP64 locator (20 B) + EOCD64 mínimo (56 B) + margem p/ setor
+        // extensível do EOCD64 — sem a margem, um zip64 com comentário
+        // grande deixaria o registro EOCD64 fora da janela e o parser
+        // rejeitaria um arquivo válido.
         const tail = new Uint8Array(
-          await arquivo.slice(Math.max(0, arquivo.size - 65558)).arrayBuffer()
+          await arquivo.slice(Math.max(0, arquivo.size - 69_729)).arrayBuffer()
         );
         const dir = diretorioCentralZip(tail, arquivo.size);
         if (!dir) {

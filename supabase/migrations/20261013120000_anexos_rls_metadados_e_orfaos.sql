@@ -35,6 +35,11 @@
 -- as próprias policies.
 
 CREATE SCHEMA IF NOT EXISTS private;
+-- USAGE no schema é exigência separada do EXECUTE: sem ela a chamada das
+-- funções dentro das policies falha com `permission denied for schema
+-- private`. Não reabre exposição — o PostgREST continua servindo só
+-- `public`.
+GRANT USAGE ON SCHEMA private TO authenticated, service_role;
 
 -- Resolve a empresa dona de uma entidade anexável. Aceita singular e plural
 -- (linhas legadas usavam 'conta_pagar' etc.). Tipo desconhecido ou entidade
@@ -194,7 +199,8 @@ CREATE POLICY "anexos_financeiros_insercao_empresa" ON public.anexos_financeiros
     empresa_id IS NOT NULL
     AND empresa_id = private.empresa_da_entidade_financeira(entidade_tipo, entidade_id)
     AND (storage_path IS NULL
-         OR lower(storage_path) LIKE (entidade_tipo || '/' || entidade_id::text || '/%'))
+         OR starts_with(lower(storage_path),
+                        lower(entidade_tipo || '/' || entidade_id::text || '/')))
     AND EXISTS (
       SELECT 1
       FROM public.user_empresas ue
@@ -221,7 +227,8 @@ CREATE POLICY "anexos_financeiros_atualizacao_empresa" ON public.anexos_financei
     empresa_id IS NOT NULL
     AND empresa_id = private.empresa_da_entidade_financeira(entidade_tipo, entidade_id)
     AND (storage_path IS NULL
-         OR lower(storage_path) LIKE (entidade_tipo || '/' || entidade_id::text || '/%'))
+         OR starts_with(lower(storage_path),
+                        lower(entidade_tipo || '/' || entidade_id::text || '/')))
     AND EXISTS (
       SELECT 1
       FROM public.user_empresas ue
