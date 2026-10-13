@@ -83,7 +83,18 @@ if [[ -z "${REQUIRED_SECRETS:-}" && -z "$ONLY" ]]; then
 fi
 if [[ -n "${REQUIRED_SECRETS:-}" ]]; then
   echo "🔐 Verificando secrets obrigatórios no destino..."
-  REMOTE_SECRETS="$(supabase secrets list --project-ref "$SUPABASE_PROJECT_REF" 2>/dev/null | awk 'NR>2 {print $1}' || true)"
+  LIST_ERR="$(mktemp)"
+  REMOTE_SECRETS="$(supabase secrets list --project-ref "$SUPABASE_PROJECT_REF" 2>"$LIST_ERR" | awk 'NR>2 {print $1}' || true)"
+  # Falha do CLI (token inválido, rede, versão) sai em LIST_ERR e deixa a
+  # lista vazia — sem essa contagem um vault vazio e um check quebrado são
+  # indistinguíveis e todos os names saem como "faltando".
+  REMOTE_COUNT="$(printf '%s\n' "$REMOTE_SECRETS" | grep -c . || true)"
+  echo "   Secrets visíveis no destino: $REMOTE_COUNT"
+  if [[ "$REMOTE_COUNT" -eq 0 && -s "$LIST_ERR" ]]; then
+    echo "   ⚠️  'supabase secrets list' retornou erro — confira o token antes de criar secrets:" >&2
+    head -3 "$LIST_ERR" >&2
+  fi
+  rm -f "$LIST_ERR"
   MISSING=()
   IFS=',' read -ra WANTED <<< "$REQUIRED_SECRETS"
   for s in "${WANTED[@]}"; do
