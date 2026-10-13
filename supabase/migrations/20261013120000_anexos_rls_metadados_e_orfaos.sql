@@ -330,34 +330,46 @@ AS $$
 DECLARE
   v_empresa uuid;
 BEGIN
-  CASE NEW.entidade_tipo
-    WHEN 'contas_pagar', 'conta_pagar' THEN
-      SELECT cp.empresa_id INTO v_empresa
-        FROM public.contas_pagar cp WHERE cp.id = NEW.entidade_id FOR UPDATE;
-    WHEN 'contas_receber', 'conta_receber' THEN
-      SELECT cr.empresa_id INTO v_empresa
-        FROM public.contas_receber cr WHERE cr.id = NEW.entidade_id FOR UPDATE;
-    WHEN 'movimentacoes', 'movimentacao' THEN
-      SELECT mv.empresa_id INTO v_empresa
-        FROM public.movimentacoes mv WHERE mv.id = NEW.entidade_id FOR UPDATE;
-  END CASE;
-  -- Derivar a empresa também exige revalidar o vínculo ATOMICAMENTE: a
-  -- edge conferiu o acesso na empresa lida antes do upload; se a entidade
-  -- mudou de empresa nesse intervalo, um usuário sem vínculo de escrita na
-  -- empresa nova injetaria um anexo visível para ela — o insert usa
-  -- service_role, que não passa por RLS. O erro faz a edge desfazer o
-  -- upload, então nada fica órfão no bucket.
-  IF v_empresa IS NOT NULL AND NEW.user_id IS NOT NULL AND NOT EXISTS (
-    SELECT 1
-    FROM public.user_empresas ue
-    WHERE ue.user_id = NEW.user_id
-      AND ue.ativo
-      AND ue.role IN ('admin', 'financeiro', 'operacional')
-      AND ue.empresa_id = v_empresa
-  ) THEN
-    RAISE EXCEPTION 'anexos_financeiros: usuario % sem vinculo de escrita na empresa % da entidade',
-      NEW.user_id, v_empresa
-      USING ERRCODE = 'insufficient_privilege';
+  IF TG_OP = 'UPDATE' THEN
+    -- Reassociação: leitura simples, SEM lock. O UPDATE já bloqueou a
+    -- linha do anexo; travar a entidade aqui inverteria a ordem de locks
+    -- com o trigger de transferência (anexo→entidade × entidade→anexo =
+    -- deadlock). Sem o lock, uma transferência concorrente ainda sincroniza
+    -- a linha depois do commit via trg_anexos_sync_empresa.
+    v_empresa := private.empresa_da_entidade_financeira(NEW.entidade_tipo, NEW.entidade_id);
+  ELSE
+    -- INSERT: FOR UPDATE serializa com a transferência — e não gera
+    -- deadlock, porque a linha nova ainda não existe para o sync travar.
+    CASE NEW.entidade_tipo
+      WHEN 'contas_pagar', 'conta_pagar' THEN
+        SELECT cp.empresa_id INTO v_empresa
+          FROM public.contas_pagar cp WHERE cp.id = NEW.entidade_id FOR UPDATE;
+      WHEN 'contas_receber', 'conta_receber' THEN
+        SELECT cr.empresa_id INTO v_empresa
+          FROM public.contas_receber cr WHERE cr.id = NEW.entidade_id FOR UPDATE;
+      WHEN 'movimentacoes', 'movimentacao' THEN
+        SELECT mv.empresa_id INTO v_empresa
+          FROM public.movimentacoes mv WHERE mv.id = NEW.entidade_id FOR UPDATE;
+    END CASE;
+    -- Derivar a empresa também exige revalidar o vínculo ATOMICAMENTE: a
+    -- edge conferiu o acesso na empresa lida antes do upload; se a entidade
+    -- mudou de empresa nesse intervalo, um usuário sem vínculo de escrita
+    -- na empresa nova injetaria um anexo visível para ela — o insert usa
+    -- service_role, que não passa por RLS. O erro faz a edge desfazer o
+    -- upload, então nada fica órfão no bucket. Só no INSERT: no UPDATE o
+    -- user_id é o autor original e a policy já valida o editor.
+    IF v_empresa IS NOT NULL AND NEW.user_id IS NOT NULL AND NOT EXISTS (
+      SELECT 1
+      FROM public.user_empresas ue
+      WHERE ue.user_id = NEW.user_id
+        AND ue.ativo
+        AND ue.role IN ('admin', 'financeiro', 'operacional')
+        AND ue.empresa_id = v_empresa
+    ) THEN
+      RAISE EXCEPTION 'anexos_financeiros: usuario % sem vinculo de escrita na empresa % da entidade',
+        NEW.user_id, v_empresa
+        USING ERRCODE = 'insufficient_privilege';
+    END IF;
   END IF;
   NEW.empresa_id := COALESCE(v_empresa, NEW.empresa_id);
   RETURN NEW;
