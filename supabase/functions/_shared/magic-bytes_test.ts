@@ -1,6 +1,7 @@
 import { assertEquals, assertNotEquals } from 'jsr:@std/assert';
 import {
   diretorioCentralZip,
+  diretorioCentralZipRemoto,
   entradasDiretorioCentral,
   validarZipDiretorioCompleto,
 } from './magic-bytes.ts';
@@ -187,4 +188,42 @@ Deno.test('locator ZIP64 com EOCD64 inconsistente falha fechado', () => {
   const corrompido = new Uint8Array(tail);
   corrompido[103] = 0x00; // corrompe a assinatura PK\x06\x06 do registro EOCD64
   assertEquals(diretorioCentralZip(corrompido, tamanhoArquivo), null);
+});
+
+Deno.test('EOCD64 fora da janela é buscado pelo offset do locator', async () => {
+  // Registro EOCD64 mora ANTES da cauda lida: só locator+EOCD entram na
+  // janela — a variante remota busca os 56 B pelo offset do locator.
+  const { cd, tail, tamanhoArquivo, cdOffset } = montarZip64(['a.txt', 'b.txt']);
+  const janelaCurta = tail.subarray(156); // só locator (20 B) + EOCD (22 B)
+  const arquivo = new Uint8Array(tamanhoArquivo);
+  arquivo.set(tail.subarray(100), cdOffset + cd.length); // e64+loc+eocd contíguos ao CD
+  assertEquals(diretorioCentralZip(janelaCurta, tamanhoArquivo), null); // janela insuficiente
+  const dir = await diretorioCentralZipRemoto(janelaCurta, tamanhoArquivo, async (off, tam) =>
+    Promise.resolve(arquivo.subarray(off, off + tam))
+  );
+  assertEquals(dir, { offset: cdOffset, tamanho: cd.length });
+});
+
+Deno.test('diretório com assinatura digital terminal é aceito', () => {
+  const { cd } = montarZip(['a.txt']);
+  const sig = new Uint8Array(9); // PK\x05\x05 + dados_len(2) + 3 B de dados
+  const dv = new DataView(sig.buffer);
+  sig[0] = 0x50;
+  sig[1] = 0x4b;
+  sig[2] = 0x05;
+  sig[3] = 0x05;
+  dv.setUint16(4, 3, true);
+  const assinado = new Uint8Array([...cd, ...sig]);
+  assertEquals(entradasDiretorioCentral(assinado), ['a.txt']);
+});
+
+Deno.test('assinatura digital que não fecha o diretório falha', () => {
+  const { cd } = montarZip(['a.txt']);
+  const sig = new Uint8Array(6); // PK\x05\x05 com dados_len=0 + lixo depois
+  sig[0] = 0x50;
+  sig[1] = 0x4b;
+  sig[2] = 0x05;
+  sig[3] = 0x05;
+  const comLixo = new Uint8Array([...cd, ...sig, 0x00]);
+  assertEquals(entradasDiretorioCentral(comLixo), null);
 });

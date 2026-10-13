@@ -178,26 +178,28 @@ export function diretorioCentralZip(
       // clássico — entre eles ficam EOCD64 + locator, e os campos de 32 bits
       // do EOCD trazem sentinelas. O locator resolve os offsets reais em
       // 64 bits (zip de 65k+ entradas cabe no limite de upload).
-      const viaZip64 = diretorioViaZip64(tail, dv, i, baseTail);
-      if (viaZip64) return viaZip64;
+      const eocd64Abs = offsetEocd64DoLocator(tail, dv, i);
+      if (eocd64Abs !== null) {
+        const rel64 = eocd64Abs - BigInt(baseTail);
+        if (rel64 >= 0n && rel64 <= BigInt(tail.length - 56)) {
+          const viaZip64 = eocd64ParaDiretorio(
+            tail.subarray(Number(rel64), Number(rel64) + 56),
+            eocd64Abs,
+            BigInt(baseTail + i - 20)
+          );
+          if (viaZip64) return viaZip64;
+        }
+      }
     }
   }
   return null;
 }
 
 /**
- * Resolve o diretório central quando o EOCD clássico em `eocdPos` é
- * precedido por um locator ZIP64 (PK\x06\x07, 20 bytes). Mesma disciplina
- * do caminho clássico: locator contíguo ao EOCD, EOCD64 contíguo ao
- * locator (o campo de tamanho de 8 bytes cobre o setor extensível) e CD
- * contíguo ao EOCD64. Qualquer desalinho retorna null — fail closed.
+ * Locator ZIP64 (PK\x06\x07, 20 bytes) imediatamente antes do EOCD clássico
+ * em `eocdPos` → offset absoluto do registro EOCD64, ou null.
  */
-function diretorioViaZip64(
-  tail: Uint8Array,
-  dv: DataView,
-  eocdPos: number,
-  baseTail: number
-): { offset: number; tamanho: number } | null {
+function offsetEocd64DoLocator(tail: Uint8Array, dv: DataView, eocdPos: number): bigint | null {
   const locPos = eocdPos - 20;
   if (locPos < 0) return null;
   if (
@@ -208,17 +210,30 @@ function diretorioViaZip64(
   ) {
     return null;
   }
-  const eocd64Abs = dv.getBigUint64(locPos + 8, true); // offset absoluto do EOCD64
-  const rel64 = eocd64Abs - BigInt(baseTail);
-  if (rel64 < 0n || rel64 > BigInt(tail.length - 56)) return null;
-  const r = Number(rel64);
-  if (tail[r] !== 0x50 || tail[r + 1] !== 0x4b || tail[r + 2] !== 0x06 || tail[r + 3] !== 0x06) {
+  return dv.getBigUint64(locPos + 8, true);
+}
+
+/**
+ * Valida um registro EOCD64 (PK\x06\x06, ≥56 bytes lidos do offset que o
+ * locator declara) e devolve o diretório central. A cadeia exige: o CD
+ * termina onde o EOCD64 começa e o EOCD64 termina onde o locator começa
+ * (`fimEsperado` = offset absoluto do locator; o campo de tamanho de 8 B
+ * cobre o setor extensível). Qualquer desalinho retorna null — fail closed.
+ */
+function eocd64ParaDiretorio(
+  rec: Uint8Array,
+  eocd64Abs: bigint,
+  fimEsperado: bigint
+): { offset: number; tamanho: number } | null {
+  if (rec.length < 56) return null;
+  if (rec[0] !== 0x50 || rec[1] !== 0x4b || rec[2] !== 0x06 || rec[3] !== 0x06) {
     return null;
   }
-  const tamanho64 = dv.getBigUint64(r + 4, true); // registro após sig+size
-  if (eocd64Abs + 12n + tamanho64 !== BigInt(baseTail + locPos)) return null;
-  const cdSize64 = dv.getBigUint64(r + 40, true);
-  const cdOffset64 = dv.getBigUint64(r + 48, true);
+  const dv = new DataView(rec.buffer, rec.byteOffset, rec.byteLength);
+  const tamanho64 = dv.getBigUint64(4, true); // registro após sig+size
+  if (eocd64Abs + 12n + tamanho64 !== fimEsperado) return null;
+  const cdSize64 = dv.getBigUint64(40, true);
+  const cdOffset64 = dv.getBigUint64(48, true);
   if (
     cdSize64 <= 0n ||
     cdOffset64 + cdSize64 !== eocd64Abs ||
@@ -228,6 +243,37 @@ function diretorioViaZip64(
     return null;
   }
   return { offset: Number(cdOffset64), tamanho: Number(cdSize64) };
+}
+
+/**
+ * Variante para arquivos lidos em fatias: quando o EOCD64 fica fora da
+ * janela de cauda (setor extensível grande ou comentário quase máximo),
+ * busca só os 56 bytes fixos do registro no offset que o locator declara.
+ * `buscarFaixa` lê bytes absolutos do arquivo — em upload-anexo, um slice.
+ */
+export async function diretorioCentralZipRemoto(
+  tail: Uint8Array,
+  tamanhoArquivo: number,
+  buscarFaixa: (offset: number, tamanho: number) => Promise<Uint8Array>
+): Promise<{ offset: number; tamanho: number } | null> {
+  const direto = diretorioCentralZip(tail, tamanhoArquivo);
+  if (direto) return direto;
+  const dv = new DataView(tail.buffer, tail.byteOffset, tail.byteLength);
+  const baseTail = tamanhoArquivo - tail.length;
+  for (let i = tail.length - 22; i >= 0; i--) {
+    if (tail[i] === 0x50 && tail[i + 1] === 0x4b && tail[i + 2] === 0x05 && tail[i + 3] === 0x06) {
+      const comentLen = dv.getUint16(i + 20, true);
+      if (i + 22 + comentLen !== tail.length) continue;
+      const eocd64Abs = offsetEocd64DoLocator(tail, dv, i);
+      if (eocd64Abs === null) continue;
+      const rel64 = eocd64Abs - BigInt(baseTail);
+      if (rel64 >= 0n && rel64 <= BigInt(tail.length - 56)) continue; // na janela: já tentado
+      const rec = await buscarFaixa(Number(eocd64Abs), 56);
+      const dir = eocd64ParaDiretorio(rec, eocd64Abs, BigInt(baseTail + i - 20));
+      if (dir) return dir;
+    }
+  }
+  return null;
 }
 
 /**
@@ -241,10 +287,22 @@ export function entradasDiretorioCentral(cd: Uint8Array, max = 250_000): string[
   const nomes: string[] = [];
   const dv = new DataView(cd.buffer, cd.byteOffset, cd.byteLength);
   let pos = 0;
-  while (pos + 46 <= cd.length && nomes.length < max) {
-    // Cabeçalho inválido no meio do diretório: não dá para confiar no
-    // prefixo — entradas podem estar escondidas depois do ponto de parada.
-    if (cd[pos] !== 0x50 || cd[pos + 1] !== 0x4b || cd[pos + 2] !== 0x01 || cd[pos + 3] !== 0x02) {
+  while (pos < cd.length && nomes.length < max) {
+    if (cd[pos] !== 0x50 || cd[pos + 1] !== 0x4b) return null;
+    // Assinatura digital do diretório central (APPNOTE PKWARE): registro
+    // terminal de 6 bytes + dados declarados, DEPOIS do último PK\x01\x02 —
+    // só é legítimo fechando exatamente o CD, senão é lixo disfarçado.
+    if (cd[pos + 2] === 0x05 && cd[pos + 3] === 0x05) {
+      if (pos + 6 > cd.length) return null;
+      const dadosLen = dv.getUint16(pos + 4, true);
+      if (pos + 6 + dadosLen !== cd.length) return null;
+      pos = cd.length;
+      break;
+    }
+    // Cabeçalho inválido ou entrada incompleta no meio do diretório: não dá
+    // para confiar no prefixo — entradas podem estar escondidas depois do
+    // ponto de parada.
+    if (pos + 46 > cd.length || cd[pos + 2] !== 0x01 || cd[pos + 3] !== 0x02) {
       return null;
     }
     const nomeLen = dv.getUint16(pos + 28, true);

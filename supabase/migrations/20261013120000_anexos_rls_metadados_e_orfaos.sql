@@ -66,6 +66,15 @@ $$;
 ALTER TABLE public.anexos_financeiros
   ADD COLUMN IF NOT EXISTS empresa_id uuid;
 
+-- Linhas legadas (anteriores à edge) não têm storage_path — o único
+-- ponteiro é a `url` (formato `/object/(public|sign)/financeiro/<caminho>`
+-- ou `/financeiro/<caminho>`). Sem o caminho, o fallback de metadados não
+-- encontra a linha quando a entidade some e o órfão fica irremovível.
+UPDATE public.anexos_financeiros
+   SET storage_path = split_part(substring(url from '/financeiro/(.+)$'), '?', 1)
+ WHERE storage_path IS NULL
+   AND url ~ '/financeiro/.+';
+
 UPDATE public.anexos_financeiros a
    SET empresa_id = private.empresa_da_entidade_financeira(a.entidade_tipo, a.entidade_id)
  WHERE a.empresa_id IS NULL;
@@ -251,3 +260,49 @@ CREATE POLICY "anexos_financeiros_remocao_empresa" ON public.anexos_financeiros
         AND ue.empresa_id = anexos_financeiros.empresa_id
     )
   );
+
+-- =========================================================================
+-- Transferência de empresa: quando a entidade muda de empresa, o
+-- empresa_id persistido do anexo precisa acompanhar — senão a empresa
+-- antiga continua vendo/apagando metadados e a nova não os lista, enquanto
+-- a policy do bucket já resolve pela empresa ATUAL da entidade (divergência
+-- de escopo entre metadado e objeto).
+-- =========================================================================
+
+CREATE OR REPLACE FUNCTION private.sincroniza_empresa_dos_anexos()
+RETURNS trigger
+LANGUAGE plpgsql
+SECURITY DEFINER
+SET search_path = public
+AS $$
+BEGIN
+  UPDATE public.anexos_financeiros
+     SET empresa_id = NEW.empresa_id
+   WHERE entidade_id = NEW.id
+     AND entidade_tipo IN (TG_ARGV[0], TG_ARGV[1]);
+  RETURN NEW;
+END;
+$$;
+
+REVOKE ALL ON FUNCTION private.sincroniza_empresa_dos_anexos() FROM PUBLIC, anon;
+
+DROP TRIGGER IF EXISTS trg_anexos_sync_empresa ON public.contas_pagar;
+CREATE TRIGGER trg_anexos_sync_empresa
+  AFTER UPDATE OF empresa_id ON public.contas_pagar
+  FOR EACH ROW
+  WHEN (OLD.empresa_id IS DISTINCT FROM NEW.empresa_id)
+  EXECUTE FUNCTION private.sincroniza_empresa_dos_anexos('contas_pagar', 'conta_pagar');
+
+DROP TRIGGER IF EXISTS trg_anexos_sync_empresa ON public.contas_receber;
+CREATE TRIGGER trg_anexos_sync_empresa
+  AFTER UPDATE OF empresa_id ON public.contas_receber
+  FOR EACH ROW
+  WHEN (OLD.empresa_id IS DISTINCT FROM NEW.empresa_id)
+  EXECUTE FUNCTION private.sincroniza_empresa_dos_anexos('contas_receber', 'conta_receber');
+
+DROP TRIGGER IF EXISTS trg_anexos_sync_empresa ON public.movimentacoes;
+CREATE TRIGGER trg_anexos_sync_empresa
+  AFTER UPDATE OF empresa_id ON public.movimentacoes
+  FOR EACH ROW
+  WHEN (OLD.empresa_id IS DISTINCT FROM NEW.empresa_id)
+  EXECUTE FUNCTION private.sincroniza_empresa_dos_anexos('movimentacoes', 'movimentacao');

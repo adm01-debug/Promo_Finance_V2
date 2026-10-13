@@ -11,7 +11,7 @@ import { exigirUsuario } from '../_shared/auth-guard.ts';
 import { corsHeadersPara } from '../_shared/cors.ts';
 import {
   detectarTipo,
-  diretorioCentralZip,
+  diretorioCentralZipRemoto,
   entradasDiretorioCentral,
   validarMagicBytesServidor,
   validarZipDiretorioCompleto,
@@ -85,7 +85,12 @@ Deno.serve(
         const tail = new Uint8Array(
           await arquivo.slice(Math.max(0, arquivo.size - 69_729)).arrayBuffer()
         );
-        const dir = diretorioCentralZip(tail, arquivo.size);
+        // Se o EOCD64 ficar fora da janela (comentário + setor extensível
+        // grandes), a variante remota faz uma segunda leitura pontual de
+        // 56 B no offset declarado pelo locator.
+        const dir = await diretorioCentralZipRemoto(tail, arquivo.size, async (off, tam) => {
+          return new Uint8Array(await arquivo.slice(off, off + tam).arrayBuffer());
+        });
         if (!dir) {
           return erro(req, 415, 'conteudo_invalido', 'Zip sem diretório central legível.');
         }
