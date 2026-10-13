@@ -12,10 +12,13 @@
 -- linha com empresa NULL ou MAIS DE UMA empresa distinta entre as linhas →
 -- NULL (invisível para RLS; a limpeza fica com o service_role). Só quando
 -- todas as linhas concordam numa única empresa ela é devolvida. Sem linha
--- nenhuma, a entidade viva resolve como antes. O match do path é
--- case-insensitive: objetos legados com UUID maiúsculo teriam o metadado
--- em minúsculas (ou vice-versa) e a igualdade exata deixaria a linha de
--- fora, caindo no ramo da entidade viva.
+-- nenhuma, a entidade viva resolve como antes. O match do path tolera
+-- diferença de caso SÓ no segmento UUID: objetos legados com UUID maiúsculo
+-- teriam o metadado em minúsculas (ou vice-versa) e a igualdade exata
+-- deixaria a linha de fora, caindo no ramo da entidade viva. lower() no
+-- path inteiro agregaria metadados de objetos DISTINTOS que diferem no caso
+-- do nome do arquivo (o Storage é case-sensitive) e devolveria NULL para
+-- objetos legítimos.
 CREATE OR REPLACE FUNCTION private.empresa_do_anexo_financeiro(_objeto text)
 RETURNS uuid
 LANGUAGE sql
@@ -31,6 +34,9 @@ AS $$
   v AS (
     SELECT
       p.tipo,
+      p.id_txt,
+      -- tudo após "tipo/id_txt/": nome do arquivo (+ pastas internas)
+      substring(_objeto from char_length(p.tipo) + char_length(p.id_txt) + 3) AS resto,
       CASE
         WHEN p.id_txt ~* '^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$'
           THEN p.id_txt::uuid
@@ -55,7 +61,13 @@ AS $$
       count(DISTINCT a.empresa_id) AS empresas_distintas,
       (array_agg(a.empresa_id) FILTER (WHERE a.empresa_id IS NOT NULL))[1] AS empresa_id
     FROM public.anexos_financeiros a, v
-    WHERE lower(a.storage_path) = lower(_objeto)
+    WHERE (
+        -- caminho exato, ou o mesmo caminho com o UUID do próprio metadado
+        -- (diferença apenas de caixa no segmento UUID; o resto é exato)
+        a.storage_path = _objeto
+        OR a.storage_path =
+           (v.tipo || '/' || split_part(a.storage_path, '/', 2) || '/' || v.resto)
+      )
       AND a.entidade_tipo = v.tipo
       AND a.entidade_id = v.entidade_id
   )
@@ -69,7 +81,7 @@ AS $$
   END;
 $$;
 
--- O match passou a ser lower(storage_path): índice funcional correspondente,
--- senão toda avaliação de policy varreria a tabela de anexos.
-CREATE INDEX IF NOT EXISTS idx_anexos_financeiros_storage_path_lower
-  ON public.anexos_financeiros (lower(storage_path));
+-- O match usa igualdade exata (ou reconstrução do path): o B-tree existente
+-- sobre storage_path cobre o primeiro ramo e entidade_id restringe a varredura.
+CREATE INDEX IF NOT EXISTS idx_anexos_financeiros_storage_path
+  ON public.anexos_financeiros (storage_path);
