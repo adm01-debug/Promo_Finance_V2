@@ -8,7 +8,7 @@ import {
 // Monta um diretório central + EOCD sintéticos com os nomes dados, e o
 // arquivo "cheio" de bytes à frente (o offset aponta para onde o CD ficaria
 // num arquivo real). Devolve { arquivoTamanho, tail, cd } prontos p/ o parse.
-function montarZip(nomes: string[]) {
+function montarZip(nomes: string[], comentario = '') {
   const entradas: number[] = [];
   const enc = new TextEncoder();
   for (const nome of nomes) {
@@ -24,7 +24,8 @@ function montarZip(nomes: string[]) {
   }
   const cd = new Uint8Array(entradas);
 
-  const eocd = new Uint8Array(22);
+  const comentarioBytes = enc.encode(comentario);
+  const eocd = new Uint8Array(22 + comentarioBytes.length);
   const ev = new DataView(eocd.buffer);
   eocd[0] = 0x50;
   eocd[1] = 0x4b;
@@ -35,9 +36,16 @@ function montarZip(nomes: string[]) {
   ev.setUint16(10, nomes.length, true);
   ev.setUint32(12, cd.length, true); // tamanho do CD
   ev.setUint32(16, cdOffset, true); // offset do CD
+  ev.setUint16(20, comentarioBytes.length, true);
+  eocd.set(comentarioBytes, 22);
 
   const tail = new Uint8Array([...new Uint8Array(cdOffset - 900), ...eocd]);
-  return { cd, tail, tamanhoArquivo: cdOffset + cd.length + eocd.length, cdOffset };
+  return {
+    cd,
+    tail,
+    tamanhoArquivo: cdOffset + cd.length + eocd.length,
+    cdOffset,
+  };
 }
 
 Deno.test('diretorioCentralZip localiza o EOCD na cauda', () => {
@@ -72,4 +80,35 @@ Deno.test('zip benigno completo passa', () => {
     validarZipDiretorioCompleto('planilha.zip', ['[Content_Types].xml', 'xl/workbook.xml']),
     null
   );
+});
+
+Deno.test('comentário do zip com a assinatura PK\x05\x06 não engana o scan', () => {
+  // A assinatura falsa fica DEPOIS do EOCD real: a varredura reversa a
+  // encontra primeiro e só a descarta pelo comprimento do comentário.
+  const { cd, tail, tamanhoArquivo, cdOffset } = montarZip(['a.txt'], 'xPK\x05\x06y');
+  assertEquals(diretorioCentralZip(tail, tamanhoArquivo), {
+    offset: cdOffset,
+    tamanho: cd.length,
+  });
+});
+
+Deno.test('EOCD com offsets inconsistentes falha fechado', () => {
+  const { cd, tail, tamanhoArquivo, cdOffset } = montarZip(['a.txt']);
+  const eocdPos = tail.length - 22;
+  const dv = new DataView(tail.buffer);
+  dv.setUint32(eocdPos + 16, cdOffset - 8, true); // offset errado: CD não terminaria no EOCD
+  assertEquals(diretorioCentralZip(tail, tamanhoArquivo), null);
+});
+
+Deno.test('diretório com cabeçalho inválido no meio retorna null', () => {
+  const { cd } = montarZip(['a.txt', 'b.txt']);
+  const quebrado = new Uint8Array(cd.length);
+  quebrado.set(cd);
+  quebrado[51] = 0x00; // corrompe a assinatura PK\x01\x02 da 2ª entrada
+  assertEquals(entradasDiretorioCentral(quebrado), null);
+});
+
+Deno.test('diretório com bytes sobrando no fim retorna null', () => {
+  const { cd } = montarZip(['a.txt']);
+  assertEquals(entradasDiretorioCentral(new Uint8Array([...cd, 0x00, 0x00])), null);
 });

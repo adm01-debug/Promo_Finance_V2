@@ -157,14 +157,23 @@ export function diretorioCentralZip(
   tamanhoArquivo: number
 ): { offset: number; tamanho: number } | null {
   const dv = new DataView(tail.buffer, tail.byteOffset, tail.byteLength);
+  // Posição absoluta do início da cauda dentro do arquivo completo.
+  const baseTail = tamanhoArquivo - tail.length;
   for (let i = tail.length - 22; i >= 0; i--) {
     if (tail[i] === 0x50 && tail[i + 1] === 0x4b && tail[i + 2] === 0x05 && tail[i + 3] === 0x06) {
+      // O comentário do zip pode conter a assinatura PK\x05\x06: os campos
+      // lidos ali são lixo do comentário, não um EOCD. Um EOCD real termina
+      // exatamente no fim do arquivo (22 bytes fixos + comentário).
+      const comentLen = dv.getUint16(i + 20, true);
+      if (i + 22 + comentLen !== tail.length) continue;
       const cdSize = dv.getUint32(i + 12, true);
       const cdOffset = dv.getUint32(i + 16, true);
-      if (cdSize > 0 && cdOffset + cdSize <= tamanhoArquivo) {
+      // Num zip válido o diretório central termina imediatamente antes do
+      // EOCD. Sem essa amarra, offsets lidos de uma assinatura falsa dentro
+      // do comentário apontariam para qualquer lugar do arquivo.
+      if (cdSize > 0 && cdOffset + cdSize === baseTail + i) {
         return { offset: cdOffset, tamanho: cdSize };
       }
-      return null;
     }
   }
   return null;
@@ -182,26 +191,21 @@ export function entradasDiretorioCentral(cd: Uint8Array, max = 250_000): string[
   const dv = new DataView(cd.buffer, cd.byteOffset, cd.byteLength);
   let pos = 0;
   while (pos + 46 <= cd.length && nomes.length < max) {
+    // Cabeçalho inválido no meio do diretório: não dá para confiar no
+    // prefixo — entradas podem estar escondidas depois do ponto de parada.
     if (cd[pos] !== 0x50 || cd[pos + 1] !== 0x4b || cd[pos + 2] !== 0x01 || cd[pos + 3] !== 0x02) {
-      break;
+      return null;
     }
     const nomeLen = dv.getUint16(pos + 28, true);
     const extraLen = dv.getUint16(pos + 30, true);
     const comentLen = dv.getUint16(pos + 32, true);
+    if (pos + 46 + nomeLen > cd.length) return null;
     nomes.push(new TextDecoder().decode(cd.subarray(pos + 46, pos + 46 + nomeLen)));
     pos += 46 + nomeLen + extraLen + comentLen;
   }
-  // Parou pelo teto e ainda há central headers à frente → lista truncada.
-  if (
-    nomes.length >= max &&
-    pos + 46 <= cd.length &&
-    cd[pos] === 0x50 &&
-    cd[pos + 1] === 0x4b &&
-    cd[pos + 2] === 0x01 &&
-    cd[pos + 3] === 0x02
-  ) {
-    return null;
-  }
+  // Qualquer byte não consumido (teto atingido, entrada truncada ou lixo
+  // depois do último registro) significa lista incompleta → falha fechada.
+  if (pos !== cd.length) return null;
   return nomes;
 }
 
@@ -227,7 +231,9 @@ function pareceTexto(head: Uint8Array): boolean {
   if (head[0] === 0xff && head[1] === 0xfe) return true;
   if (head[0] === 0xfe && head[1] === 0xff) return true;
   for (const b of head.subarray(0, Math.min(head.length, 512))) {
-    if (b < 0x20 && b !== 0x09 && b !== 0x0a && b !== 0x0d && b !== 0x0c) return false;
+    if (b < 0x20 && b !== 0x09 && b !== 0x0a && b !== 0x0d && b !== 0x0c) {
+      return false;
+    }
     if (b === 0x00) return false;
   }
   return true;
