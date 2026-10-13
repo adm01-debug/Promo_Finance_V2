@@ -27,6 +27,13 @@ async function sha256(value: string): Promise<string> {
 export const handler = async (req: Request) => {
   const corsHeaders = corsHeadersPara(req);
   if (req.method === 'OPTIONS') return new Response(null, { headers: corsHeaders });
+  // Só POST é contrato de webhook — os demais métodos não passam pelo
+  // fluxo de auth (o provider nunca os envia; bling-webhook já faz o mesmo).
+  if (req.method !== 'POST')
+    return new Response(JSON.stringify({ error: 'method_not_allowed' }), {
+      status: 405,
+      headers: { ...corsHeaders, 'content-type': 'application/json' },
+    });
 
   try {
     const supabaseUrl = Deno.env.get('SUPABASE_URL')!;

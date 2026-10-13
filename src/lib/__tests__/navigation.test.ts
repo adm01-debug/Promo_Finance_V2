@@ -1,0 +1,139 @@
+import { describe, it, expect, beforeEach } from 'vitest';
+import {
+  getRouteMeta,
+  getRouteLabel,
+  resolveParentRoute,
+  recordNavEntry,
+  previousNavEntry,
+  resetNavStack,
+  subscribeNavStack,
+  isSensitiveRoute,
+} from '../navigation';
+
+describe('getRouteMeta', () => {
+  it('resolve rotas exatas', () => {
+    expect(getRouteMeta('/contas-pagar')?.label).toBe('Contas a Pagar');
+    expect(getRouteMeta('/tributario/sped')?.label).toBe('SPED');
+  });
+
+  it('resolve rotas com parâmetro', () => {
+    expect(getRouteMeta('/reforma-tributaria/pis-cofins')?.label).toBe('Reforma Tributária');
+    expect(getRouteMeta('/admin/insights-ia/anomalia/abc-123')?.label).toBe('Anomalia');
+  });
+
+  it('retorna undefined para rota desconhecida', () => {
+    expect(getRouteMeta('/rota-inexistente')).toBeUndefined();
+  });
+});
+
+describe('getRouteLabel', () => {
+  it('usa o label do metadado', () => {
+    expect(getRouteLabel('/clientes')).toBe('Clientes');
+  });
+
+  it('deriva label legível de rota desconhecida', () => {
+    expect(getRouteLabel('/nova-feature-x')).toBe('Nova feature x');
+  });
+});
+
+describe('resolveParentRoute', () => {
+  it('usa parent explícito do metadado', () => {
+    expect(resolveParentRoute('/usuarios')).toBe('/configuracoes');
+    expect(resolveParentRoute('/contas-pagar/bloqueios')).toBe('/contas-pagar');
+    expect(resolveParentRoute('/tributario/sped')).toBe('/tributario');
+    expect(resolveParentRoute('/admin/sre')).toBe('/configuracoes');
+  });
+
+  it('sobe por strip de segmento até rota conhecida', () => {
+    expect(resolveParentRoute('/clientes/portal-tokens')).toBe('/clientes');
+  });
+
+  it('rotas de topo caem no Dashboard', () => {
+    expect(resolveParentRoute('/contas-pagar')).toBe('/');
+    expect(resolveParentRoute('/expert')).toBe('/');
+  });
+
+  it('rota desconhecida sobe por segmento ou cai no Dashboard', () => {
+    expect(resolveParentRoute('/desconhecida/profunda')).toBe('/');
+    expect(resolveParentRoute('/')).toBe('/');
+  });
+});
+
+describe('pilha de navegação in-app', () => {
+  beforeEach(() => resetNavStack());
+
+  it('PUSH empilha e POP trunca pela location.key', () => {
+    recordNavEntry({ key: 'a', pathname: '/', search: '' }, 'PUSH');
+    recordNavEntry({ key: 'b', pathname: '/clientes', search: '' }, 'PUSH');
+    recordNavEntry({ key: 'c', pathname: '/fornecedores', search: '' }, 'PUSH');
+    expect(previousNavEntry()?.pathname).toBe('/clientes');
+
+    // Browser-back para 'b': a pilha trunca em 'b'
+    recordNavEntry({ key: 'b', pathname: '/clientes', search: '' }, 'POP');
+    expect(previousNavEntry()?.pathname).toBe('/');
+  });
+
+  it('REPLACE substitui o topo', () => {
+    recordNavEntry({ key: 'a', pathname: '/', search: '' }, 'PUSH');
+    recordNavEntry({ key: 'b', pathname: '/clientes', search: '' }, 'PUSH');
+    recordNavEntry({ key: 'c', pathname: '/fornecedores', search: '' }, 'REPLACE');
+    expect(previousNavEntry()?.pathname).toBe('/');
+  });
+
+  it('deduplica mesma location.key (StrictMode)', () => {
+    recordNavEntry({ key: 'a', pathname: '/', search: '' }, 'PUSH');
+    recordNavEntry({ key: 'a', pathname: '/', search: '' }, 'PUSH');
+    expect(previousNavEntry()).toBeUndefined();
+  });
+
+  it('POP para key desconhecida reinicia a pilha (ex.: Voltar pós-reload)', () => {
+    recordNavEntry({ key: 'a', pathname: '/clientes', search: '' }, 'PUSH');
+    recordNavEntry({ key: 'x', pathname: '/fornecedores', search: '' }, 'POP');
+    // A pilha não sabe a direção do pop — manter 'a' como anterior
+    // faria o Voltar semântico apontar para uma entrada à frente.
+    expect(previousNavEntry()).toBeUndefined();
+  });
+
+  it('Avançar nativo restaura o anterior truncado pelo Voltar', () => {
+    recordNavEntry({ key: 'a', pathname: '/clientes', search: '' }, 'PUSH');
+    recordNavEntry({ key: 'b', pathname: '/fornecedores', search: '' }, 'PUSH');
+    recordNavEntry({ key: 'a', pathname: '/clientes', search: '' }, 'POP'); // Voltar
+    recordNavEntry({ key: 'b', pathname: '/fornecedores', search: '' }, 'POP'); // Avançar
+    expect(previousNavEntry()?.pathname).toBe('/clientes');
+    // PUSH seguinte invalida o avanço restante do histórico
+    recordNavEntry({ key: 'c', pathname: '/produtos', search: '' }, 'PUSH');
+    expect(previousNavEntry()?.pathname).toBe('/fornecedores');
+  });
+
+  it('REPLACE no topo preserva o avanço registrado pelo Voltar', () => {
+    recordNavEntry({ key: 'a', pathname: '/clientes', search: '' }, 'PUSH');
+    recordNavEntry({ key: 'b', pathname: '/fornecedores', search: '' }, 'PUSH');
+    recordNavEntry({ key: 'a', pathname: '/clientes', search: '' }, 'POP'); // Voltar
+    // replaceState não descarta o que está à frente no histórico real.
+    recordNavEntry({ key: 'a2', pathname: '/clientes', search: '?tab=ativos' }, 'REPLACE');
+    recordNavEntry({ key: 'b', pathname: '/fornecedores', search: '' }, 'POP'); // Avançar
+    expect(previousNavEntry()?.pathname).toBe('/clientes');
+    expect(previousNavEntry()?.search).toBe('?tab=ativos');
+  });
+});
+
+describe('pilha reativa e rotas sensíveis', () => {
+  beforeEach(() => resetNavStack());
+
+  it('notifica assinantes a cada mudança da pilha', () => {
+    let calls = 0;
+    const unsubscribe = subscribeNavStack(() => calls++);
+    recordNavEntry({ key: 'a', pathname: '/', search: '' }, 'PUSH');
+    recordNavEntry({ key: 'a', pathname: '/', search: '' }, 'PUSH'); // dedup não notifica
+    recordNavEntry({ key: 'b', pathname: '/configuracoes', search: '' }, 'PUSH');
+    unsubscribe();
+    recordNavEntry({ key: 'c', pathname: '/clientes', search: '' }, 'PUSH');
+    expect(calls).toBe(2);
+  });
+
+  it('identifica rotas com token no path', () => {
+    expect(isSensitiveRoute('/contador/abc123')).toBe(true);
+    expect(isSensitiveRoute('/convite/xyz')).toBe(true);
+    expect(isSensitiveRoute('/clientes/portal-tokens')).toBe(false);
+  });
+});

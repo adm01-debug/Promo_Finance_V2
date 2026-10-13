@@ -17,6 +17,7 @@ import {
   Beaker,
 } from 'lucide-react';
 import { MainLayout } from '@/components/layout/MainLayout';
+import { useUrlTab } from '@/hooks/useUrlTab';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -26,6 +27,14 @@ import { WhatsAppConfigPanel } from '@/components/integracoes/WhatsAppConfigPane
 import { DocumentacaoAPI } from '@/components/api/DocumentacaoAPI';
 import { WebhookSimulator } from '@/components/admin/WebhookSimulator';
 import { Separator } from '@/components/ui/separator';
+
+const INTEGRACOES_TABS = [
+  'open-finance',
+  'whatsapp',
+  'api-docs',
+  'credentials',
+  'simulation',
+] as const;
 
 const containerVariants = {
   hidden: { opacity: 0 },
@@ -38,6 +47,7 @@ const itemVariants = {
 };
 
 export default function Integracoes() {
+  const [tab, setTab] = useUrlTab('open-finance', INTEGRACOES_TABS);
   const integrationStats = [
     { label: 'Ativas', value: '4', icon: CheckCircle2, color: 'text-success' },
     { label: 'Em Configuração', value: '2', icon: RefreshCw, color: 'text-warning' },
@@ -162,7 +172,7 @@ export default function Integracoes() {
 
         {/* Tabs for detailed config */}
         <motion.div variants={itemVariants}>
-          <Tabs defaultValue="open-finance" className="space-y-6">
+          <Tabs value={tab} onValueChange={setTab} className="space-y-6">
             <TabsList className="bg-muted/50 p-1 rounded-xl">
               <TabsTrigger value="open-finance" className="gap-2 rounded-lg">
                 <Globe className="h-4 w-4" /> Open Finance

@@ -10,7 +10,7 @@
 // exponencial no banco reagenda automaticamente. Falhas de contrato (400/422)
 // devem passar `retryable=false` para promover ao DLQ imediatamente.
 
-import { createClient, type SupabaseClient } from "https://esm.sh/@supabase/supabase-js@2.49.4";
+import { createClient, type SupabaseClient } from 'https://esm.sh/@supabase/supabase-js@2.49.4';
 
 export type WebhookClaim = {
   id: string;
@@ -27,9 +27,9 @@ export type WebhookFailureResult = {
 };
 
 export function serviceClient(): SupabaseClient {
-  const url = Deno.env.get("SUPABASE_URL");
-  const key = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
-  if (!url || !key) throw new Error("SUPABASE_URL / SUPABASE_SERVICE_ROLE_KEY ausentes");
+  const url = Deno.env.get('SUPABASE_URL');
+  const key = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY');
+  if (!url || !key) throw new Error('SUPABASE_URL / SUPABASE_SERVICE_ROLE_KEY ausentes');
   return createClient(url, key, { auth: { persistSession: false } });
 }
 
@@ -41,9 +41,9 @@ export async function claimWebhook(
     eventType: string;
     payload: unknown;
     maxAttempts?: number;
-  },
+  }
 ): Promise<WebhookClaim> {
-  const { data, error } = await supabase.rpc("webhook_claim", {
+  const { data, error } = await supabase.rpc('webhook_claim', {
     p_source: args.source,
     p_external_id: args.externalId,
     p_event_type: args.eventType,
@@ -52,7 +52,7 @@ export async function claimWebhook(
   });
   if (error) throw new Error(`webhook_claim failed: ${error.message}`);
   const row = Array.isArray(data) ? data[0] : data;
-  if (!row) throw new Error("webhook_claim returned empty result");
+  if (!row) throw new Error('webhook_claim returned empty result');
   return {
     id: row.id as string,
     status: row.status as string,
@@ -64,9 +64,9 @@ export async function claimWebhook(
 export async function markSuccess(
   supabase: SupabaseClient,
   id: string,
-  response?: unknown,
+  response?: unknown
 ): Promise<void> {
-  const { error } = await supabase.rpc("webhook_mark_success", {
+  const { error } = await supabase.rpc('webhook_mark_success', {
     p_id: id,
     p_response: response ?? null,
   });
@@ -77,9 +77,9 @@ export async function markFailure(
   supabase: SupabaseClient,
   id: string,
   errorMessage: string,
-  retryable = true,
+  retryable = true
 ): Promise<WebhookFailureResult> {
-  const { data, error } = await supabase.rpc("webhook_mark_failure", {
+  const { data, error } = await supabase.rpc('webhook_mark_failure', {
     p_id: id,
     p_error: errorMessage.slice(0, 2000),
     p_retryable: retryable,
@@ -87,7 +87,7 @@ export async function markFailure(
   if (error) throw new Error(`webhook_mark_failure failed: ${error.message}`);
   const row = Array.isArray(data) ? data[0] : data;
   return {
-    status: row?.status ?? "unknown",
+    status: row?.status ?? 'unknown',
     willRetry: Boolean(row?.will_retry),
     nextRetryAt: row?.next_retry_at ?? null,
     dlqId: row?.dlq_id ?? null,
@@ -103,7 +103,7 @@ export class RetryableError extends Error {
   readonly retryable = true as const;
   constructor(message: string) {
     super(message);
-    this.name = "RetryableError";
+    this.name = 'RetryableError';
   }
 }
 
@@ -116,7 +116,7 @@ export async function processWithIdempotency<T>(
     payload: unknown;
     maxAttempts?: number;
   },
-  handler: (ctx: { webhookId: string; attempts: number }) => Promise<T>,
+  handler: (ctx: { webhookId: string; attempts: number }) => Promise<T>
 ): Promise<{ claim: WebhookClaim; result?: T; failure?: WebhookFailureResult }> {
   const claim = await claimWebhook(supabase, args);
   if (claim.alreadyProcessed) return { claim };
@@ -131,7 +131,7 @@ export async function processWithIdempotency<T>(
       supabase,
       claim.id,
       err instanceof Error ? err.message : String(err),
-      retryable,
+      retryable
     );
     return { claim, failure };
   }

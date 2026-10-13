@@ -27,15 +27,11 @@ function normalize(v: unknown): string | null {
 
 export function buildProfileSyncDelta(
   current: ProfileFields,
-  incoming: Partial<ProfileFields>,
+  incoming: Partial<ProfileFields>
 ): ProfileSyncDelta {
-  const changes: ProfileSyncDelta["changes"] = {};
-  const updates: ProfileSyncDelta["updates"] = {};
-  const fields: Array<keyof ProfileFields> = [
-    "full_name",
-    "avatar_url",
-    "telefone",
-  ];
+  const changes: ProfileSyncDelta['changes'] = {};
+  const updates: ProfileSyncDelta['updates'] = {};
+  const fields: Array<keyof ProfileFields> = ['full_name', 'avatar_url', 'telefone'];
   for (const f of fields) {
     const nextNorm = normalize(incoming[f]);
     if (nextNorm === null) continue; // nunca sobrescreve com vazio
