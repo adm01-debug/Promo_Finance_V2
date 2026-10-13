@@ -174,9 +174,60 @@ export function diretorioCentralZip(
       if (cdSize > 0 && cdOffset + cdSize === baseTail + i) {
         return { offset: cdOffset, tamanho: cdSize };
       }
+      // ZIP64: o diretório central termina no registro EOCD64, não no EOCD
+      // clássico — entre eles ficam EOCD64 + locator, e os campos de 32 bits
+      // do EOCD trazem sentinelas. O locator resolve os offsets reais em
+      // 64 bits (zip de 65k+ entradas cabe no limite de upload).
+      const viaZip64 = diretorioViaZip64(tail, dv, i, baseTail);
+      if (viaZip64) return viaZip64;
     }
   }
   return null;
+}
+
+/**
+ * Resolve o diretório central quando o EOCD clássico em `eocdPos` é
+ * precedido por um locator ZIP64 (PK\x06\x07, 20 bytes). Mesma disciplina
+ * do caminho clássico: locator contíguo ao EOCD, EOCD64 contíguo ao
+ * locator (o campo de tamanho de 8 bytes cobre o setor extensível) e CD
+ * contíguo ao EOCD64. Qualquer desalinho retorna null — fail closed.
+ */
+function diretorioViaZip64(
+  tail: Uint8Array,
+  dv: DataView,
+  eocdPos: number,
+  baseTail: number
+): { offset: number; tamanho: number } | null {
+  const locPos = eocdPos - 20;
+  if (locPos < 0) return null;
+  if (
+    tail[locPos] !== 0x50 ||
+    tail[locPos + 1] !== 0x4b ||
+    tail[locPos + 2] !== 0x06 ||
+    tail[locPos + 3] !== 0x07
+  ) {
+    return null;
+  }
+  const eocd64Abs = dv.getBigUint64(locPos + 8, true); // offset absoluto do EOCD64
+  const rel64 = eocd64Abs - BigInt(baseTail);
+  if (rel64 < 0n || rel64 > BigInt(tail.length - 56)) return null;
+  const r = Number(rel64);
+  if (tail[r] !== 0x50 || tail[r + 1] !== 0x4b || tail[r + 2] !== 0x06 || tail[r + 3] !== 0x06) {
+    return null;
+  }
+  const tamanho64 = dv.getBigUint64(r + 4, true); // registro após sig+size
+  if (eocd64Abs + 12n + tamanho64 !== BigInt(baseTail + locPos)) return null;
+  const cdSize64 = dv.getBigUint64(r + 40, true);
+  const cdOffset64 = dv.getBigUint64(r + 48, true);
+  if (
+    cdSize64 <= 0n ||
+    cdOffset64 + cdSize64 !== eocd64Abs ||
+    cdSize64 > BigInt(Number.MAX_SAFE_INTEGER) ||
+    cdOffset64 > BigInt(Number.MAX_SAFE_INTEGER)
+  ) {
+    return null;
+  }
+  return { offset: Number(cdOffset64), tamanho: Number(cdSize64) };
 }
 
 /**

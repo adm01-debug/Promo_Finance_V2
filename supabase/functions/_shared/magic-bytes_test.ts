@@ -93,7 +93,7 @@ Deno.test('comentário do zip com a assinatura PK\x05\x06 não engana o scan', (
 });
 
 Deno.test('EOCD com offsets inconsistentes falha fechado', () => {
-  const { cd, tail, tamanhoArquivo, cdOffset } = montarZip(['a.txt']);
+  const { tail, tamanhoArquivo, cdOffset } = montarZip(['a.txt']);
   const eocdPos = tail.length - 22;
   const dv = new DataView(tail.buffer);
   dv.setUint32(eocdPos + 16, cdOffset - 8, true); // offset errado: CD não terminaria no EOCD
@@ -111,4 +111,80 @@ Deno.test('diretório com cabeçalho inválido no meio retorna null', () => {
 Deno.test('diretório com bytes sobrando no fim retorna null', () => {
   const { cd } = montarZip(['a.txt']);
   assertEquals(entradasDiretorioCentral(new Uint8Array([...cd, 0x00, 0x00])), null);
+});
+
+// Zip64: CD + registro EOCD64 (56 B) + locator (20 B) + EOCD clássico com
+// sentinelas 0xFFFF/0xFFFFFFFF — layout de um zip real com 65k+ entradas.
+function montarZip64(nomes: string[]) {
+  const entradas: number[] = [];
+  const enc = new TextEncoder();
+  for (const nome of nomes) {
+    const n = enc.encode(nome);
+    const h = new Uint8Array(46);
+    const dv = new DataView(h.buffer);
+    h[0] = 0x50;
+    h[1] = 0x4b;
+    h[2] = 0x01;
+    h[3] = 0x02;
+    dv.setUint16(28, n.length, true);
+    entradas.push(...h, ...n);
+  }
+  const cd = new Uint8Array(entradas);
+  const cdOffset = 1000;
+
+  const e64 = new Uint8Array(56);
+  const v64 = new DataView(e64.buffer);
+  e64[0] = 0x50;
+  e64[1] = 0x4b;
+  e64[2] = 0x06;
+  e64[3] = 0x06; // PK\x06\x06
+  v64.setBigUint64(4, 44n, true); // tamanho do registro após este campo
+  v64.setUint16(12, 45, true);
+  v64.setUint16(14, 45, true);
+  v64.setBigUint64(24, BigInt(nomes.length), true);
+  v64.setBigUint64(32, BigInt(nomes.length), true);
+  v64.setBigUint64(40, BigInt(cd.length), true);
+  v64.setBigUint64(48, BigInt(cdOffset), true);
+
+  const loc = new Uint8Array(20);
+  const lv = new DataView(loc.buffer);
+  loc[0] = 0x50;
+  loc[1] = 0x4b;
+  loc[2] = 0x06;
+  loc[3] = 0x07; // PK\x06\x07
+  lv.setBigUint64(8, BigInt(cdOffset + cd.length), true); // offset do EOCD64
+
+  const eocd = new Uint8Array(22);
+  const ev = new DataView(eocd.buffer);
+  eocd[0] = 0x50;
+  eocd[1] = 0x4b;
+  eocd[2] = 0x05;
+  eocd[3] = 0x06;
+  ev.setUint16(8, 0xffff, true); // sentinelas zip64
+  ev.setUint16(10, 0xffff, true);
+  ev.setUint32(12, 0xffffffff, true);
+  ev.setUint32(16, 0xffffffff, true);
+
+  const tail = new Uint8Array([...new Uint8Array(100), ...e64, ...loc, ...eocd]);
+  return {
+    cd,
+    tail,
+    tamanhoArquivo: cdOffset + cd.length + e64.length + loc.length + eocd.length,
+    cdOffset,
+  };
+}
+
+Deno.test('diretorioCentralZip resolve o diretório via registros ZIP64', () => {
+  const { cd, tail, tamanhoArquivo, cdOffset } = montarZip64(['a.txt', 'b.txt']);
+  assertEquals(diretorioCentralZip(tail, tamanhoArquivo), {
+    offset: cdOffset,
+    tamanho: cd.length,
+  });
+});
+
+Deno.test('locator ZIP64 com EOCD64 inconsistente falha fechado', () => {
+  const { tail, tamanhoArquivo } = montarZip64(['a.txt']);
+  const corrompido = new Uint8Array(tail);
+  corrompido[103] = 0x00; // corrompe a assinatura PK\x06\x06 do registro EOCD64
+  assertEquals(diretorioCentralZip(corrompido, tamanhoArquivo), null);
 });

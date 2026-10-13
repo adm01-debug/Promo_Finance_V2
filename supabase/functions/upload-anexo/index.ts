@@ -35,8 +35,12 @@ function erro(req: Request, status: number, codigo: string, mensagem: string): R
 Deno.serve(
   withEdgeObservability('upload-anexo', async (req) => {
     const corsHeaders = corsHeadersPara(req);
-    if (req.method === 'OPTIONS') return new Response('ok', { headers: corsHeaders });
-    if (req.method !== 'POST') return erro(req, 405, 'method_not_allowed', 'Apenas POST.');
+    if (req.method === 'OPTIONS') {
+      return new Response('ok', { headers: corsHeaders });
+    }
+    if (req.method !== 'POST') {
+      return erro(req, 405, 'method_not_allowed', 'Apenas POST.');
+    }
 
     try {
       const auth = await exigirUsuario(req);
@@ -141,13 +145,19 @@ Deno.serve(
       }
 
       const ext = arquivo.name.split('.').pop()?.toLowerCase() ?? 'bin';
-      const caminho = `${entidadeTipo}/${entidadeId}/${crypto.randomUUID()}.${ext}`;
+      // O path usa a forma canônica (minúsculas) do UUID — uuid::text no
+      // Postgres também gera minúsculas, e as policies de RLS do bucket
+      // resolvem a entidade comparando com esse segmento.
+      const caminho = `${entidadeTipo}/${entidadeId.toLowerCase()}/${crypto.randomUUID()}.${ext}`;
 
-      const { error: erroUpload } = await supabase.storage
-        .from(BUCKET)
-        .upload(caminho, arquivo, { contentType: arquivo.type || 'application/octet-stream' });
+      const { error: erroUpload } = await supabase.storage.from(BUCKET).upload(caminho, arquivo, {
+        contentType: arquivo.type || 'application/octet-stream',
+      });
       if (erroUpload) {
-        log.error('falha no upload ao storage', { caminho, erro: erroUpload.message });
+        log.error('falha no upload ao storage', {
+          caminho,
+          erro: erroUpload.message,
+        });
         return erro(req, 500, 'upload_falhou', 'Falha ao gravar o arquivo.');
       }
 
@@ -175,7 +185,10 @@ Deno.serve(
         // Sem a linha o arquivo fica invisível na tela e imorrível — desfaz
         // o upload para não deixar órfão no bucket.
         await supabase.storage.from(BUCKET).remove([caminho]);
-        log.error('falha ao registrar anexo', { caminho, erro: erroInsert.message });
+        log.error('falha ao registrar anexo', {
+          caminho,
+          erro: erroInsert.message,
+        });
         return erro(req, 500, 'registro_falhou', 'Falha ao registrar o anexo.');
       }
 
@@ -185,7 +198,9 @@ Deno.serve(
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       });
     } catch (e) {
-      log.error('erro inesperado', { erro: e instanceof Error ? e.message : String(e) });
+      log.error('erro inesperado', {
+        erro: e instanceof Error ? e.message : String(e),
+      });
       return erro(req, 500, 'erro_interno', 'Erro interno.');
     }
   })

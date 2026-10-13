@@ -26,11 +26,20 @@
 -- Linhas cuja empresa histórica não pode ser reconstruída (entidade já
 -- excluída antes desta migration) ficam com empresa_id NULL → invisíveis
 -- para RLS; a limpeza fica para o service_role (admin-ops).
+--
+-- As duas funções resolveras ficam no schema `private`: o PostgREST só
+-- expõe `public`, então nenhum papel chama os resolvedores via /rpc/ e
+-- enumera vínculo entidade→empresa de outro tenant. EXECUTE continua
+-- necessário para `authenticated` porque policies avaliam a função com
+-- os privilégios de quem consulta — revogar de authenticated quebraria
+-- as próprias policies.
+
+CREATE SCHEMA IF NOT EXISTS private;
 
 -- Resolve a empresa dona de uma entidade anexável. Aceita singular e plural
 -- (linhas legadas usavam 'conta_pagar' etc.). Tipo desconhecido ou entidade
 -- inexistente/excluída → NULL (policy falha fechado).
-CREATE OR REPLACE FUNCTION public.empresa_da_entidade_financeira(_tipo text, _entidade uuid)
+CREATE OR REPLACE FUNCTION private.empresa_da_entidade_financeira(_tipo text, _entidade uuid)
 RETURNS uuid
 LANGUAGE sql
 STABLE
@@ -53,7 +62,7 @@ ALTER TABLE public.anexos_financeiros
   ADD COLUMN IF NOT EXISTS empresa_id uuid;
 
 UPDATE public.anexos_financeiros a
-   SET empresa_id = public.empresa_da_entidade_financeira(a.entidade_tipo, a.entidade_id)
+   SET empresa_id = private.empresa_da_entidade_financeira(a.entidade_tipo, a.entidade_id)
  WHERE a.empresa_id IS NULL;
 
 CREATE INDEX IF NOT EXISTS idx_anexos_financeiros_storage_path
@@ -61,13 +70,15 @@ CREATE INDEX IF NOT EXISTS idx_anexos_financeiros_storage_path
 
 -- Resolve a empresa de um OBJETO do bucket pelo path
 -- `<entidadeTipo>/<entidadeId>/<uuid>.<ext>`:
---  1. pela entidade do path (comparando id::text — pasta não-UUID simples-
---     mente não casa, sem exceção de cast);
+--  1. pela entidade do path — o segmento vira uuid (regex case-insensitive
+--     cobre paths legados com UUID em maiúsculas; uuid::uuid normaliza o
+--     caso) e a comparação id = uuid usa o índice primário, sem varredura
+--     por policy avaliada e sem exceção de cast em pasta não-UUID;
 --  2. se a entidade já foi excluída, pela empresa gravada na linha de
 --     metadados que aponta para o objeto — exigindo que a linha declare a
 --     mesma entidade do path, senão metadados forjados sequestrariam
 --     anexos de outras empresas.
-CREATE OR REPLACE FUNCTION public.empresa_do_anexo_financeiro(_objeto text)
+CREATE OR REPLACE FUNCTION private.empresa_do_anexo_financeiro(_objeto text)
 RETURNS uuid
 LANGUAGE sql
 STABLE
@@ -79,27 +90,45 @@ AS $$
       (storage.foldername(_objeto))[1] AS tipo,
       (storage.foldername(_objeto))[2] AS id_txt
   ),
+  v AS (
+    SELECT
+      p.tipo,
+      CASE
+        WHEN p.id_txt ~* '^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$'
+          THEN p.id_txt::uuid
+      END AS entidade_id
+    FROM p
+  ),
   pela_entidade AS (
     SELECT CASE
-      WHEN p.tipo IN ('contas_pagar', 'conta_pagar') THEN
-        (SELECT cp.empresa_id FROM public.contas_pagar cp WHERE cp.id::text = p.id_txt)
-      WHEN p.tipo IN ('contas_receber', 'conta_receber') THEN
-        (SELECT cr.empresa_id FROM public.contas_receber cr WHERE cr.id::text = p.id_txt)
-      WHEN p.tipo IN ('movimentacoes', 'movimentacao') THEN
-        (SELECT mv.empresa_id FROM public.movimentacoes mv WHERE mv.id::text = p.id_txt)
+      WHEN v.tipo IN ('contas_pagar', 'conta_pagar') THEN
+        (SELECT cp.empresa_id FROM public.contas_pagar cp WHERE cp.id = v.entidade_id)
+      WHEN v.tipo IN ('contas_receber', 'conta_receber') THEN
+        (SELECT cr.empresa_id FROM public.contas_receber cr WHERE cr.id = v.entidade_id)
+      WHEN v.tipo IN ('movimentacoes', 'movimentacao') THEN
+        (SELECT mv.empresa_id FROM public.movimentacoes mv WHERE mv.id = v.entidade_id)
     END AS empresa_id
-    FROM p
+    FROM v
   )
   SELECT COALESCE(
     (SELECT empresa_id FROM pela_entidade),
     (SELECT a.empresa_id
-       FROM public.anexos_financeiros a, p
+       FROM public.anexos_financeiros a, v
       WHERE a.storage_path = _objeto
-        AND a.entidade_tipo = p.tipo
-        AND a.entidade_id::text = p.id_txt
+        AND a.entidade_tipo = v.tipo
+        AND a.entidade_id = v.entidade_id
       LIMIT 1)
   );
 $$;
+
+-- Execução direta: anon e PUBLIC fora (mesmo fora do schema exposto, o
+-- padrão do repo é revogar); authenticated e service_role precisam do
+-- EXECUTE porque as policies abaixo invocam as funções com os privilégios
+-- de quem executa a consulta.
+REVOKE ALL ON FUNCTION private.empresa_da_entidade_financeira(text, uuid) FROM PUBLIC, anon;
+REVOKE ALL ON FUNCTION private.empresa_do_anexo_financeiro(text) FROM PUBLIC, anon;
+GRANT EXECUTE ON FUNCTION private.empresa_da_entidade_financeira(text, uuid) TO authenticated, service_role;
+GRANT EXECUTE ON FUNCTION private.empresa_do_anexo_financeiro(text) TO authenticated, service_role;
 
 -- =========================================================================
 -- storage.objects (bucket financeiro): recriar com a resolução robusta.
@@ -115,7 +144,7 @@ CREATE POLICY "anexos_financeiro_leitura_autenticada" ON storage.objects
       FROM public.user_empresas ue
       WHERE ue.user_id = auth.uid()
         AND ue.ativo
-        AND ue.empresa_id = public.empresa_do_anexo_financeiro(name)
+        AND ue.empresa_id = private.empresa_do_anexo_financeiro(name)
     )
   );
 
@@ -130,7 +159,7 @@ CREATE POLICY "anexos_financeiro_remocao_autenticada" ON storage.objects
       WHERE ue.user_id = auth.uid()
         AND ue.ativo
         AND ue.role IN ('admin', 'financeiro', 'operacional')
-        AND ue.empresa_id = public.empresa_do_anexo_financeiro(name)
+        AND ue.empresa_id = private.empresa_do_anexo_financeiro(name)
     )
   );
 
@@ -163,9 +192,9 @@ CREATE POLICY "anexos_financeiros_insercao_empresa" ON public.anexos_financeiros
   FOR INSERT TO authenticated
   WITH CHECK (
     empresa_id IS NOT NULL
-    AND empresa_id = public.empresa_da_entidade_financeira(entidade_tipo, entidade_id)
+    AND empresa_id = private.empresa_da_entidade_financeira(entidade_tipo, entidade_id)
     AND (storage_path IS NULL
-         OR storage_path LIKE (entidade_tipo || '/' || entidade_id::text || '/%'))
+         OR lower(storage_path) LIKE (entidade_tipo || '/' || entidade_id::text || '/%'))
     AND EXISTS (
       SELECT 1
       FROM public.user_empresas ue
@@ -190,9 +219,9 @@ CREATE POLICY "anexos_financeiros_atualizacao_empresa" ON public.anexos_financei
   )
   WITH CHECK (
     empresa_id IS NOT NULL
-    AND empresa_id = public.empresa_da_entidade_financeira(entidade_tipo, entidade_id)
+    AND empresa_id = private.empresa_da_entidade_financeira(entidade_tipo, entidade_id)
     AND (storage_path IS NULL
-         OR storage_path LIKE (entidade_tipo || '/' || entidade_id::text || '/%'))
+         OR lower(storage_path) LIKE (entidade_tipo || '/' || entidade_id::text || '/%'))
     AND EXISTS (
       SELECT 1
       FROM public.user_empresas ue
