@@ -12,7 +12,10 @@
 -- linha com empresa NULL ou MAIS DE UMA empresa distinta entre as linhas →
 -- NULL (invisível para RLS; a limpeza fica com o service_role). Só quando
 -- todas as linhas concordam numa única empresa ela é devolvida. Sem linha
--- nenhuma, a entidade viva resolve como antes.
+-- nenhuma, a entidade viva resolve como antes. O match do path é
+-- case-insensitive: objetos legados com UUID maiúsculo teriam o metadado
+-- em minúsculas (ou vice-versa) e a igualdade exata deixaria a linha de
+-- fora, caindo no ramo da entidade viva.
 CREATE OR REPLACE FUNCTION private.empresa_do_anexo_financeiro(_objeto text)
 RETURNS uuid
 LANGUAGE sql
@@ -52,7 +55,7 @@ AS $$
       count(DISTINCT a.empresa_id) AS empresas_distintas,
       (array_agg(a.empresa_id) FILTER (WHERE a.empresa_id IS NOT NULL))[1] AS empresa_id
     FROM public.anexos_financeiros a, v
-    WHERE a.storage_path = _objeto
+    WHERE lower(a.storage_path) = lower(_objeto)
       AND a.entidade_tipo = v.tipo
       AND a.entidade_id = v.entidade_id
   )
@@ -65,3 +68,8 @@ AS $$
     ELSE (SELECT empresa_id FROM pelo_metadado)
   END;
 $$;
+
+-- O match passou a ser lower(storage_path): índice funcional correspondente,
+-- senão toda avaliação de policy varreria a tabela de anexos.
+CREATE INDEX IF NOT EXISTS idx_anexos_financeiros_storage_path_lower
+  ON public.anexos_financeiros (lower(storage_path));
