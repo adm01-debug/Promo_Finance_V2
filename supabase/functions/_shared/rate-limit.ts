@@ -34,10 +34,7 @@ export interface RateLimitResult {
   unavailable?: boolean;
 }
 
-function resultadoIndisponivel(
-  failureMode: 'open' | 'closed',
-  limit: number,
-): RateLimitResult {
+function resultadoIndisponivel(failureMode: 'open' | 'closed', limit: number): RateLimitResult {
   return {
     allowed: failureMode === 'open',
     count: 0,
@@ -49,7 +46,7 @@ function resultadoIndisponivel(
 
 export async function checkRateLimit(
   supabase: SupabaseLike,
-  opts: RateLimitOptions,
+  opts: RateLimitOptions
 ): Promise<RateLimitResult> {
   const window = opts.windowSeconds ?? 60;
   const failureMode = opts.failureMode ?? 'open';
@@ -99,7 +96,10 @@ export async function checkRateLimit(
   }
 }
 
-export function rateLimitResponse(result: RateLimitResult, corsHeaders: Record<string, string>): Response {
+export function rateLimitResponse(
+  result: RateLimitResult,
+  corsHeaders: Record<string, string>
+): Response {
   return new Response(
     JSON.stringify({
       error: 'Too Many Requests',
@@ -113,6 +113,6 @@ export function rateLimitResponse(result: RateLimitResult, corsHeaders: Record<s
         'Content-Type': 'application/json',
         'Retry-After': String(result.retryAfterSeconds),
       },
-    },
+    }
   );
 }

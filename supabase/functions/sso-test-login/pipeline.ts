@@ -18,7 +18,7 @@ export interface RoleMapping {
 }
 
 export interface RoleMappingEvaluated extends RoleMapping {
-  status: "matched" | "skipped" | "no_match";
+  status: 'matched' | 'skipped' | 'no_match';
   ordem: number;
 }
 
@@ -70,20 +70,18 @@ export interface PipelineResult {
 }
 
 export function maskEmail(email: string): string {
-  const [user, domain] = email.split("@");
+  const [user, domain] = email.split('@');
   if (!user || !domain) return email;
   const head = user.slice(0, 1);
-  const tail = user.length > 2 ? user.slice(-1) : "";
-  return `${head}${"*".repeat(Math.max(1, user.length - 2))}${tail}@${domain}`;
+  const tail = user.length > 2 ? user.slice(-1) : '';
+  return `${head}${'*'.repeat(Math.max(1, user.length - 2))}${tail}@${domain}`;
 }
 
-export async function evaluateClaims(
-  input: PipelineInput,
-): Promise<PipelineResult> {
+export async function evaluateClaims(input: PipelineInput): Promise<PipelineResult> {
   const {
     claim_mapping = {},
     role_mappings = [],
-    default_role = "visualizador",
+    default_role = 'visualizador',
     allowed_domains = [],
     auto_provision_users = true,
     provider_nome = null,
@@ -92,31 +90,27 @@ export async function evaluateClaims(
   const mock_claims = input.mock_claims ?? {};
 
   const claim_mapping_used = {
-    email: claim_mapping.email ?? "email",
-    full_name: claim_mapping.full_name ?? "name",
-    groups: claim_mapping.groups ?? "groups",
+    email: claim_mapping.email ?? 'email',
+    full_name: claim_mapping.full_name ?? 'name',
+    groups: claim_mapping.groups ?? 'groups',
   };
 
   const email_raw = mock_claims[claim_mapping_used.email];
   const full_name_raw = mock_claims[claim_mapping_used.full_name];
   const groups_raw = mock_claims[claim_mapping_used.groups];
 
-  const email = String(email_raw ?? "").toLowerCase();
-  const full_name = String(full_name_raw ?? "");
-  const groups: string[] = Array.isArray(groups_raw)
-    ? groups_raw.map(String)
-    : [];
+  const email = String(email_raw ?? '').toLowerCase();
+  const full_name = String(full_name_raw ?? '');
+  const groups: string[] = Array.isArray(groups_raw) ? groups_raw.map(String) : [];
 
   const errors: string[] = [];
-  if (!email) errors.push("Claim de email não encontrada");
-  else if (!email.includes("@")) errors.push("Email inválido");
+  if (!email) errors.push('Claim de email não encontrada');
+  else if (!email.includes('@')) errors.push('Email inválido');
 
-  const domain = email.split("@")[1]?.toLowerCase() ?? "";
+  const domain = email.split('@')[1]?.toLowerCase() ?? '';
   const domainAllowed =
-    !allowed_domains.length ||
-    allowed_domains.map((d) => d.toLowerCase()).includes(domain);
-  if (!domainAllowed)
-    errors.push(`Domínio "${domain}" não está na lista permitida`);
+    !allowed_domains.length || allowed_domains.map((d) => d.toLowerCase()).includes(domain);
+  if (!domainAllowed) errors.push(`Domínio "${domain}" não está na lista permitida`);
 
   let resolved_role = default_role;
   let matched_group: string | null = null;
@@ -125,16 +119,16 @@ export async function evaluateClaims(
   let alreadyMatched = false;
   role_mappings.forEach((m, i) => {
     const groupPresent = groups.includes(m.idp_group);
-    let status: RoleMappingEvaluated["status"];
+    let status: RoleMappingEvaluated['status'];
     if (groupPresent && !alreadyMatched) {
-      status = "matched";
+      status = 'matched';
       resolved_role = m.app_role;
       matched_group = m.idp_group;
       alreadyMatched = true;
     } else if (groupPresent && alreadyMatched) {
-      status = "skipped";
+      status = 'skipped';
     } else {
-      status = "no_match";
+      status = 'no_match';
     }
     role_mappings_evaluated.push({
       idp_group: m.idp_group,
@@ -149,7 +143,7 @@ export async function evaluateClaims(
   let user_exists = false;
   let would_jit_provision = false;
   let provision_blocked_reason: string | null = null;
-  if (email && email.includes("@") && input.userLookup) {
+  if (email && email.includes('@') && input.userLookup) {
     const exists = await input.userLookup(email);
     if (exists !== null) {
       user_exists = exists;
@@ -160,8 +154,7 @@ export async function evaluateClaims(
         } else if (auto_provision_users) {
           would_jit_provision = true;
         } else {
-          provision_blocked_reason =
-            "auto_provision_users desabilitado no provider";
+          provision_blocked_reason = 'auto_provision_users desabilitado no provider';
         }
       }
     }

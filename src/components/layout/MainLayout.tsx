@@ -16,6 +16,7 @@ import { PWAInstallBanner } from '@/components/pwa/PWAInstallBanner';
 import { SkipLinks } from '@/components/accessibility/SkipLinks';
 import { MobileBottomNav } from './sidebar/MobileBottomNav';
 import { MobileSidebarDrawer } from './sidebar/MobileSidebarDrawer';
+import { MobileHeader } from './MobileHeader';
 import { useSwipeBack } from '@/hooks/useSwipeBack';
 import { useKeyboardNavigation } from '@/hooks/useKeyboardNavigation';
 import { CopilotGlobalFloat } from '@/components/copilot/CopilotGlobalFloat';
@@ -65,8 +66,9 @@ export const MainLayout = ({ children }: MainLayoutProps) => {
         <MobileSidebarDrawer isOpen={mobileMenuOpen} onClose={() => setMobileMenuOpen(false)} />
       )}
 
-      {/* Header - only show on desktop */}
+      {/* Header - only show on desktop; MobileHeader com Voltar visível no mobile */}
       {!isMobile && <Header sidebarCollapsed={sidebarCollapsed} />}
+      {isMobile && <MobileHeader />}
 
       {/* Network status indicator - fixed position */}
       <div
@@ -88,7 +90,7 @@ export const MainLayout = ({ children }: MainLayoutProps) => {
         transition={{ duration: 0.5, ease: [0.25, 0.1, 0.25, 1] }}
         className={cn(
           'min-h-screen w-full transition-all duration-500',
-          isMobile ? 'pt-4 pb-24' : 'pt-20'
+          isMobile ? 'pt-[calc(4rem+env(safe-area-inset-top))] pb-24' : 'pt-20'
         )}
         style={{
           width: isMobile ? '100%' : `calc(100% - ${sidebarCollapsed ? 80 : 280}px)`,

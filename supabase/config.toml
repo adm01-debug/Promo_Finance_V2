@@ -304,6 +304,9 @@ verify_jwt = true
 [functions.sync-profile-to-bitrix]
 verify_jwt = true
 
+[functions.upload-anexo]
+verify_jwt = true
+
 [functions.verificar-conformidade-fiscal]
 verify_jwt = true
 

@@ -9,7 +9,13 @@
 import { createClient } from 'npm:@supabase/supabase-js@2.49.4';
 import { exigirUsuario } from '../_shared/auth-guard.ts';
 import { corsHeadersPara } from '../_shared/cors.ts';
-import { validarMagicBytesServidor } from '../_shared/magic-bytes.ts';
+import {
+  detectarTipo,
+  diretorioCentralZipRemoto,
+  entradasDiretorioCentral,
+  validarMagicBytesServidor,
+  validarZipDiretorioCompleto,
+} from '../_shared/magic-bytes.ts';
 import { createLogger } from '../_shared/logger.ts';
 import { withEdgeObservability } from '../_shared/edge-observability.ts';
 const log = createLogger('upload-anexo');
@@ -29,8 +35,12 @@ function erro(req: Request, status: number, codigo: string, mensagem: string): R
 Deno.serve(
   withEdgeObservability('upload-anexo', async (req) => {
     const corsHeaders = corsHeadersPara(req);
-    if (req.method === 'OPTIONS') return new Response('ok', { headers: corsHeaders });
-    if (req.method !== 'POST') return erro(req, 405, 'method_not_allowed', 'Apenas POST.');
+    if (req.method === 'OPTIONS') {
+      return new Response('ok', { headers: corsHeaders });
+    }
+    if (req.method !== 'POST') {
+      return erro(req, 405, 'method_not_allowed', 'Apenas POST.');
+    }
 
     try {
       const auth = await exigirUsuario(req);
@@ -63,8 +73,44 @@ Deno.serve(
         return erro(req, 415, 'conteudo_invalido', erroConteudo);
       }
 
-      const ext = arquivo.name.split('.').pop()?.toLowerCase() ?? 'bin';
-      const caminho = `${entidadeTipo}/${entidadeId}/${crypto.randomUUID()}.${ext}`;
+      // Zip: a janela de 32 KiB cobre só as ~40 primeiras entradas — um JAR
+      // renomeado com META-INF depois delas passaria. O diretório central, na
+      // cauda do arquivo, lista TODAS as entradas; sem ele, falha fechado.
+      if (detectarTipo(head) === 'zip') {
+        // Janela da cauda: EOCD (22 B) + comentário máximo (65.535 B) +
+        // ZIP64 locator (20 B) + EOCD64 mínimo (56 B) + margem p/ setor
+        // extensível do EOCD64 — sem a margem, um zip64 com comentário
+        // grande deixaria o registro EOCD64 fora da janela e o parser
+        // rejeitaria um arquivo válido.
+        const tail = new Uint8Array(
+          await arquivo.slice(Math.max(0, arquivo.size - 69_729)).arrayBuffer()
+        );
+        // Se o EOCD64 ficar fora da janela (comentário + setor extensível
+        // grandes), a variante remota faz uma segunda leitura pontual de
+        // 56 B no offset declarado pelo locator.
+        const dir = await diretorioCentralZipRemoto(tail, arquivo.size, async (off, tam) => {
+          return new Uint8Array(await arquivo.slice(off, off + tam).arrayBuffer());
+        });
+        if (!dir) {
+          return erro(req, 415, 'conteudo_invalido', 'Zip sem diretório central legível.');
+        }
+        const cd = new Uint8Array(
+          await arquivo.slice(dir.offset, dir.offset + dir.tamanho).arrayBuffer()
+        );
+        const entradas = entradasDiretorioCentral(cd);
+        if (!entradas) {
+          return erro(
+            req,
+            415,
+            'conteudo_invalido',
+            'Diretório do zip excede o limite inspecionável.'
+          );
+        }
+        const erroZip = validarZipDiretorioCompleto(arquivo.name, entradas);
+        if (erroZip) {
+          return erro(req, 415, 'conteudo_invalido', erroZip);
+        }
+      }
 
       const supabase = createClient(
         Deno.env.get('SUPABASE_URL')!,
@@ -72,11 +118,56 @@ Deno.serve(
         { auth: { persistSession: false, autoRefreshToken: false } }
       );
 
-      const { error: erroUpload } = await supabase.storage
-        .from(BUCKET)
-        .upload(caminho, arquivo, { contentType: arquivo.type || 'application/octet-stream' });
+      // entidade_id é só um UUID — sem a checagem abaixo qualquer usuário
+      // autenticado anexaria arquivo a uma entidade de outra empresa (IDOR).
+      const { data: entidade } = await supabase
+        .from(entidadeTipo)
+        .select('empresa_id')
+        .eq('id', entidadeId)
+        .maybeSingle();
+      if (!entidade?.empresa_id) {
+        return erro(
+          req,
+          403,
+          'sem_acesso',
+          'Entidade inexistente ou fora das empresas do usuário.'
+        );
+      }
+      // Vínculo ativo + papel de escrita na empresa da entidade:
+      // `visualizador` e `contador` são somente leitura
+      // (docs/MATRIZ_PAPEIS.md) e o service_role abaixo não passa por RLS —
+      // allowlist positiva, nunca denylist de papel.
+      const PAPEIS_ESCRITA = new Set(['admin', 'financeiro', 'operacional']);
+      const { data: vinculo } = await supabase
+        .from('user_empresas')
+        .select('role')
+        .eq('user_id', userId)
+        .eq('empresa_id', entidade.empresa_id)
+        .eq('ativo', true)
+        .maybeSingle();
+      if (!vinculo || !PAPEIS_ESCRITA.has(vinculo.role)) {
+        return erro(
+          req,
+          403,
+          'sem_acesso',
+          'Entidade inexistente ou fora das empresas do usuário.'
+        );
+      }
+
+      const ext = arquivo.name.split('.').pop()?.toLowerCase() ?? 'bin';
+      // O path usa a forma canônica (minúsculas) do UUID — uuid::text no
+      // Postgres também gera minúsculas, e as policies de RLS do bucket
+      // resolvem a entidade comparando com esse segmento.
+      const caminho = `${entidadeTipo}/${entidadeId.toLowerCase()}/${crypto.randomUUID()}.${ext}`;
+
+      const { error: erroUpload } = await supabase.storage.from(BUCKET).upload(caminho, arquivo, {
+        contentType: arquivo.type || 'application/octet-stream',
+      });
       if (erroUpload) {
-        log.error('falha no upload ao storage', { caminho, erro: erroUpload.message });
+        log.error('falha no upload ao storage', {
+          caminho,
+          erro: erroUpload.message,
+        });
         return erro(req, 500, 'upload_falhou', 'Falha ao gravar o arquivo.');
       }
 
@@ -90,6 +181,7 @@ Deno.serve(
       const { error: erroInsert } = await supabase.from('anexos_financeiros').insert({
         entidade_id: entidadeId,
         entidade_tipo: entidadeTipo,
+        empresa_id: entidade.empresa_id,
         nome_arquivo: arquivo.name,
         mime_type: arquivo.type,
         tamanho_bytes: arquivo.size,
@@ -103,7 +195,10 @@ Deno.serve(
         // Sem a linha o arquivo fica invisível na tela e imorrível — desfaz
         // o upload para não deixar órfão no bucket.
         await supabase.storage.from(BUCKET).remove([caminho]);
-        log.error('falha ao registrar anexo', { caminho, erro: erroInsert.message });
+        log.error('falha ao registrar anexo', {
+          caminho,
+          erro: erroInsert.message,
+        });
         return erro(req, 500, 'registro_falhou', 'Falha ao registrar o anexo.');
       }
 
@@ -113,7 +208,9 @@ Deno.serve(
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       });
     } catch (e) {
-      log.error('erro inesperado', { erro: e instanceof Error ? e.message : String(e) });
+      log.error('erro inesperado', {
+        erro: e instanceof Error ? e.message : String(e),
+      });
       return erro(req, 500, 'erro_interno', 'Erro interno.');
     }
   })

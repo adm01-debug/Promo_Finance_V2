@@ -125,7 +125,10 @@ async function logAttempt(args: {
 function safeOrigin(req: Request, fallback?: string | null): string {
   if (fallback && /^https?:\/\//.test(fallback)) {
     try {
-      return new URL(fallback).origin;
+      const origem = new URL(fallback).origin;
+      // O fallback vem de app_redirect (validado no sso-initiate) — revalidar
+      // aqui garante que um valor forjado não vaza code/state nos 302.
+      if (origemCorsPermitida(origem)) return origem;
     } catch {
       /* ignore */
     }
@@ -137,11 +140,14 @@ function safeOrigin(req: Request, fallback?: string | null): string {
       /* ignore */
     }
   }
-  // Origem do referer/origin do request, NÃO do hostname do Supabase
+  // Referer/origin só contam se estiverem na allowlist CORS — qualquer
+  // cliente pode forjar esses headers, então confiar neles cegamente seria
+  // um open redirect que também vaza `code`/`state` nos retries de PKCE.
   const referer = req.headers.get('referer') || req.headers.get('origin');
   if (referer) {
     try {
-      return new URL(referer).origin;
+      const origem = new URL(referer).origin;
+      if (origemCorsPermitida(origem)) return origem;
     } catch {
       /* ignore */
     }
@@ -204,7 +210,7 @@ function normalizePhone(v: unknown): {
 
 // buildProfileSyncDelta foi extraída para ./profile-sync-delta.ts
 import { buildProfileSyncDelta } from './profile-sync-delta.ts';
-import { corsHeadersPara } from '../_shared/cors.ts';
+import { corsHeadersPara, origemCorsPermitida } from '../_shared/cors.ts';
 import { createLogger } from '../_shared/observability.ts';
 import { withEdgeObservability } from '../_shared/edge-observability.ts';
 const log = createLogger('sso-callback');
@@ -219,6 +225,9 @@ async function applyPipeline(opts: {
   groups: string[];
   existingUserId?: string | null; // SAML: já existe (broker criou); OIDC: descoberto/criado aqui
   allowJit: boolean;
+  // true somente quando a identidade `sso:<providerId>` prova que o
+  // usuário passou pelo IdP — sem ela, nenhum papel/vínculo é alterado
+  provaDoIdp: boolean;
 }): Promise<
   | {
       userId: string;
@@ -238,6 +247,7 @@ async function applyPipeline(opts: {
     groups,
     existingUserId,
     allowJit,
+    provaDoIdp,
   } = opts;
   const providerId = provider.id as string;
   const providerNome = provider.nome as string;
@@ -424,7 +434,7 @@ async function applyPipeline(opts: {
   // Role mapping
   let role = defaultRole;
   let matchedGroup: string | null = null;
-  if (groups.length) {
+  if (provaDoIdp && groups.length) {
     const { data: maps } = await admin
       .from('sso_role_mappings')
       .select('idp_group, app_role')
@@ -439,77 +449,98 @@ async function applyPipeline(opts: {
 
   // Sincroniza grupos do IdP em sso_user_groups (independente do JIT).
   // Permite refletir alterações de grupo no IdP a cada login.
-  try {
-    const normalizedGroups = Array.from(
-      new Set((groups ?? []).map((g) => String(g).trim()).filter(Boolean))
-    ).sort();
-    const { data: existingGroupsRow } = await admin
-      .from('sso_user_groups')
-      .select('groups, matched_group, matched_role')
-      .eq('user_id', userId)
-      .eq('provider_id', providerId)
-      .maybeSingle();
+  // Sem prova do IdP os grupos podem ser forjados — não sincroniza.
+  if (provaDoIdp)
+    try {
+      const normalizedGroups = Array.from(
+        new Set((groups ?? []).map((g) => String(g).trim()).filter(Boolean))
+      ).sort();
+      const { data: existingGroupsRow } = await admin
+        .from('sso_user_groups')
+        .select('groups, matched_group, matched_role')
+        .eq('user_id', userId)
+        .eq('provider_id', providerId)
+        .maybeSingle();
 
-    const prevGroups: string[] = Array.isArray(existingGroupsRow?.groups)
-      ? [...existingGroupsRow!.groups].map(String).sort()
-      : [];
-    const added = normalizedGroups.filter((g) => !prevGroups.includes(g));
-    const removed = prevGroups.filter((g) => !normalizedGroups.includes(g));
-    const groupsChanged = added.length > 0 || removed.length > 0;
-    const roleChanged =
-      (existingGroupsRow?.matched_role ?? null) !== role ||
-      (existingGroupsRow?.matched_group ?? null) !== matchedGroup;
+      const prevGroups: string[] = Array.isArray(existingGroupsRow?.groups)
+        ? [...existingGroupsRow!.groups].map(String).sort()
+        : [];
+      const added = normalizedGroups.filter((g) => !prevGroups.includes(g));
+      const removed = prevGroups.filter((g) => !normalizedGroups.includes(g));
+      const groupsChanged = added.length > 0 || removed.length > 0;
+      const roleChanged =
+        (existingGroupsRow?.matched_role ?? null) !== role ||
+        (existingGroupsRow?.matched_group ?? null) !== matchedGroup;
 
-    await admin.from('sso_user_groups').upsert(
-      {
-        user_id: userId,
-        provider_id: providerId,
-        groups: normalizedGroups,
-        matched_group: matchedGroup,
-        matched_role: role,
-        last_synced_at: new Date().toISOString(),
-      },
-      { onConflict: 'user_id,provider_id' }
-    );
-
-    if (groupsChanged || roleChanged) {
-      await admin.from('audit_logs').insert({
-        user_id: userId,
-        user_email: email,
-        action: existingGroupsRow ? 'UPDATE' : 'INSERT',
-        table_name: 'sso_user_groups',
-        record_id: userId,
-        old_data: {
-          groups: prevGroups,
-          matched_group: existingGroupsRow?.matched_group ?? null,
-          matched_role: existingGroupsRow?.matched_role ?? null,
-        },
-        new_data: {
+      await admin.from('sso_user_groups').upsert(
+        {
+          user_id: userId,
           provider_id: providerId,
-          provider_nome: providerNome,
-          provider_tipo: (provider.tipo as string) ?? null,
           groups: normalizedGroups,
-          added,
-          removed,
           matched_group: matchedGroup,
           matched_role: role,
+          last_synced_at: new Date().toISOString(),
         },
-        details: `Sync de grupos SSO (${providerNome}): +${added.length} / -${removed.length}`,
+        { onConflict: 'user_id,provider_id' }
+      );
+
+      if (groupsChanged || roleChanged) {
+        await admin.from('audit_logs').insert({
+          user_id: userId,
+          user_email: email,
+          action: existingGroupsRow ? 'UPDATE' : 'INSERT',
+          table_name: 'sso_user_groups',
+          record_id: userId,
+          old_data: {
+            groups: prevGroups,
+            matched_group: existingGroupsRow?.matched_group ?? null,
+            matched_role: existingGroupsRow?.matched_role ?? null,
+          },
+          new_data: {
+            provider_id: providerId,
+            provider_nome: providerNome,
+            provider_tipo: (provider.tipo as string) ?? null,
+            groups: normalizedGroups,
+            added,
+            removed,
+            matched_group: matchedGroup,
+            matched_role: role,
+          },
+          details: `Sync de grupos SSO (${providerNome}): +${added.length} / -${removed.length}`,
+        });
+      }
+    } catch (err) {
+      log.warn('[sso-callback] falha ao sincronizar sso_user_groups:', {
+        context: { args: [err instanceof Error ? err.message : String(err)] },
       });
     }
-  } catch (err) {
-    log.warn('[sso-callback] falha ao sincronizar sso_user_groups:', {
-      context: { args: [err instanceof Error ? err.message : String(err)] },
-    });
-  }
 
   // Vínculo em user_empresas (com default exclusivo)
   if (empresaId) {
-    await vincularEmpresaComoPadrao(admin, userId!, empresaId, role);
+    if (provaDoIdp) {
+      await vincularEmpresaComoPadrao(admin, userId!, empresaId, role);
+    } else {
+      // Sem prova do IdP: nenhum papel é reescrito — o vínculo ativo
+      // (que já autorizou o caminho) fornece o papel de retorno.
+      const { data: vinc } = await admin
+        .from('user_empresas')
+        .select('role')
+        .eq('user_id', userId)
+        .eq('empresa_id', empresaId)
+        .eq('ativo', true)
+        .limit(1)
+        .maybeSingle();
+      if (vinc?.role) role = vinc.role as string;
+    }
   }
 
-  // Compat user_roles global
-  await admin.from('user_roles').upsert({ user_id: userId, role }, { onConflict: 'user_id,role' });
+  // Compat user_roles global — só com prova do IdP; no caminho de
+  // vínculo pré-existente o papel gravado não é sobrescrito.
+  if (provaDoIdp) {
+    await admin
+      .from('user_roles')
+      .upsert({ user_id: userId, role }, { onConflict: 'user_id,role' });
+  }
 
   // Audit — trilha estruturada
   const providerTipo = (provider.tipo as string) ?? null;
@@ -641,12 +672,72 @@ async function handleSamlFinalize(
     return jsonResp({ error: 'user_not_found' }, 404, headers);
   }
   const email = u.user.email.toLowerCase();
+
+  // Prova de origem: só pode finalizar vínculo quem chegou pelo broker SSO
+  // deste provider (identities SAML carregam provider `sso:<uuid>` —
+  // IsForSSOProvider do GoTrue) ou quem já estava vinculado antes
+  // (sso_provider_id gravado num finalize anterior) — sem isso, um JWT
+  // qualquer ganharia vínculo na empresa via provider_id.
+  const identities = (u.user.identities ?? []) as Array<{
+    provider?: string;
+    identity_data?: Record<string, unknown>;
+    last_sign_in_at?: string;
+  }>;
+  const idSso = identities.find((i) => i.provider === `sso:${providerId}`);
+  const viaBroker = !!idSso;
+  // A identidade sso: permanece no usuário após o primeiro login SAML —
+  // sozinha prova só vínculo histórico. O finalize legítimo acontece
+  // segundos após a assertion, então exige last_sign_in_at recente na
+  // identidade (imutável: gravado pelo GoTrue a cada login do broker).
+  // Sem isso, um usuário poderia forjar `groups` em user_metadata via
+  // auth.updateUser e chamar saml-finalize diretamente dias depois.
+  const SSO_FINALIZE_JANELA_MS = 10 * 60 * 1000;
+  const ssoRecente =
+    !!idSso?.last_sign_in_at &&
+    Date.now() - Date.parse(idSso.last_sign_in_at) < SSO_FINALIZE_JANELA_MS;
+  const provaDoIdp = viaBroker && ssoRecente;
+  // Alternativa ao broker sem usar user_metadata (campo editável pelo
+  // próprio usuário via auth.updateUser — não serve como prova):
+  // vínculo ativo pré-existente em user_empresas para a empresa do
+  // provider, estado que só o servidor controla.
+  let jaVinculado = false;
+  const empresaProvider = (provider.empresa_id as string | null) ?? null;
+  if (!viaBroker && empresaProvider) {
+    const { data: vinc } = await admin
+      .from('user_empresas')
+      .select('id')
+      .eq('user_id', u.user.id)
+      .eq('empresa_id', empresaProvider)
+      .eq('ativo', true)
+      .limit(1)
+      .maybeSingle();
+    jaVinculado = !!vinc;
+  }
+  if (!viaBroker && !jaVinculado) {
+    await logAttempt({
+      admin,
+      providerId,
+      email,
+      success: false,
+      errCode: 'sso_identity_mismatch',
+      errMsg: null,
+      t0,
+      ip,
+      ua,
+    });
+    return jsonResp({ error: 'sso_identity_mismatch' }, 403, headers);
+  }
+
   const cm = (provider.claim_mapping || {}) as Record<string, unknown>;
 
-  // Em SAML pelo broker do Supabase, claims SAML chegam em user_metadata e app_metadata
+  // Em SAML pelo broker do Supabase, claims chegam em user_metadata e
+  // app_metadata. identity_data da identidade sso: é imutável (gravado
+  // pelo GoTrue a partir da assertion) — quando presente, tem precedência
+  // sobre os metadados, que o próprio usuário pode editar.
+  const identityData = (idSso?.identity_data ?? {}) as Record<string, unknown>;
   const meta = (u.user.user_metadata || {}) as Record<string, unknown>;
   const appMeta = (u.user.app_metadata || {}) as Record<string, unknown>;
-  const sources = [meta, appMeta];
+  const sources = [identityData, meta, appMeta];
 
   const fullName = resolveClaim(sources, cm, 'full_name', ['name', 'full_name']) || email;
   const avatarUrl = resolveClaim(sources, cm, 'avatar_url', [
@@ -662,7 +753,10 @@ async function handleSamlFinalize(
     'mobile',
     'mobilePhone',
   ]);
-  const groups = resolveClaimArray(sources, cm, 'groups', ['groups']);
+  // Grupos só valem como prova num finalize recém-autenticado pelo
+  // broker (provaDoIdp) — com a identidade sso: antiga, user_metadata
+  // continua editável pelo próprio usuário e forjaria papel.
+  const groups = provaDoIdp ? resolveClaimArray(sources, cm, 'groups', ['groups']) : [];
 
   const result = await applyPipeline({
     admin,
@@ -674,6 +768,7 @@ async function handleSamlFinalize(
     groups,
     existingUserId: userId, // SAML: usuário já existe (broker criou)
     allowJit: false,
+    provaDoIdp,
   });
 
   if ('error' in result) {
@@ -925,6 +1020,15 @@ Deno.serve(
         }
         const tokens = await tokRes.json();
 
+        // Consome o attempt só depois da troca bem-sucedida: o `code` fica
+        // queimado no IdP (uso único), então expirar a linha aqui impede
+        // replay e ainda permite retentar o callback quando o provedor
+        // falhou de forma transitória (503, timeout) antes da troca.
+        await admin
+          .from('sso_login_attempts')
+          .update({ expires_at: new Date().toISOString() })
+          .eq('id', attempt.id);
+
         let claims: Record<string, unknown> = {};
         if (tokens.id_token) {
           try {
@@ -985,6 +1089,8 @@ Deno.serve(
           groups,
           existingUserId: null,
           allowJit: !!provider.auto_provision_users,
+          // OIDC: a troca de código bem-sucedida já é a prova do IdP
+          provaDoIdp: true,
         });
 
         if ('error' in result) {
@@ -1067,7 +1173,23 @@ Deno.serve(
         }
 
         // Magic link e redirect para o app
-        const redirectTo = appRedirect || safeOrigin(req, null);
+        // app_redirect já foi validado no sso-initiate; aqui basta reconferir
+        // a origem na allowlist e preservar a rota completa (ex.: /tributario).
+        let redirectTo = safeOrigin(req, null);
+        if (appRedirect && /^https?:\/\//.test(appRedirect)) {
+          try {
+            const origemRedirect = new URL(appRedirect).origin;
+            // mesmo predicado do sso-initiate: ALLOWED_ORIGINS + APP_BASE_URL,
+            // para não descartar destinos que o início do fluxo já autorizou
+            if (
+              origemCorsPermitida(origemRedirect) ||
+              (PUBLIC_APP_URL && origemRedirect === new URL(PUBLIC_APP_URL).origin)
+            )
+              redirectTo = appRedirect;
+          } catch {
+            /* origem inválida → mantém fallback */
+          }
+        }
         const link = await admin.auth.admin.generateLink({
           type: 'magiclink',
           email,

@@ -1,0 +1,76 @@
+name: Ops administrativas do Supabase canônico
+
+# Checa (check) e aplica (apply) correções operacionais no projeto de PROD
+# via Management API, usando SUPABASE_ACCESS_TOKEN já configurado no repo:
+#   - MFA TOTP habilitado no auth config
+#   - verify_jwt das edge functions divergente de supabase/config.toml
+#   - bucket `financeiro` (exigido por upload-anexo)
+#   - usuários de teste/não confirmados no auth.users
+#
+# Gates (mesmo padrão de prod-migrate.yml):
+#   1. workflow_dispatch manual.
+#   2. environment "Production-Ops" (required reviewer + só branch protegida).
+#   3. Confirmação digitada do project-ref.
+#   4. mode=check por padrão: primeiro só listar, depois apply.
+
+on:
+  workflow_dispatch:
+    inputs:
+      mode:
+        description: 'check = só leitura; apply = corrige o que o check apontou'
+        type: choice
+        default: check
+        options:
+          - check
+          - apply
+      confirmar_project_ref:
+        description: 'Digite o project-ref de PROD para confirmar: bwwbeyolnnzppeuhgkcd'
+        required: true
+        type: string
+      excluir_contas_teste:
+        description: 'DELETE nas contas da allowlist (só após o E2E sair de PROD)'
+        type: boolean
+        default: false
+
+concurrency:
+  group: supabase-admin-ops
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+jobs:
+  ops:
+    name: Check/apply no canônico
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    environment: Production-Ops
+    env:
+      SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
+      SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+      SUPABASE_PROJECT_REF: ${{ vars.VITE_SUPABASE_PROJECT_ID }}
+    steps:
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+        with:
+          persist-credentials: false
+
+      - name: Validar confirmação do project-ref
+        env:
+          CONFIRMADO: ${{ inputs.confirmar_project_ref }}
+        run: |
+          set -euo pipefail
+          CANONICO="bwwbeyolnnzppeuhgkcd"
+          if [ "$CONFIRMADO" != "$CANONICO" ]; then
+            echo "::error::confirmação '$CONFIRMADO' != project-ref canônico '$CANONICO'"
+            exit 1
+          fi
+          if [ "$SUPABASE_PROJECT_REF" != "$CANONICO" ]; then
+            echo "::error::vars.VITE_SUPABASE_PROJECT_ID ('$SUPABASE_PROJECT_REF') não é o canônico — abortando"
+            exit 1
+          fi
+
+      - name: Executar ops (${{ inputs.mode }})
+        env:
+          DELETE_TEST_USERS: ${{ inputs.excluir_contas_teste && '1' || '0' }}
+        run: python3 scripts/admin/supabase_admin_ops.py ${{ inputs.mode }}

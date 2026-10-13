@@ -1,7 +1,8 @@
-import { useState, ReactNode } from 'react';
+import { useEffect, useRef, useState, ReactNode } from 'react';
 import { cn } from '@/lib/utils';
 import { AlertTriangle, Trash2, CheckCircle, Info, HelpCircle, X } from 'lucide-react';
 import { Button } from './button';
+import { isTopOpenDialog, registerOwnedEscapeHandler } from '@/lib/unsaved-guard';
 
 // Types
 
@@ -94,6 +95,30 @@ export function ConfirmationDialog({
   const config = typeConfig[type];
   const Icon = config.icon;
 
+  const dialogRef = useRef<HTMLDivElement>(null);
+
+  // Escape roteado pelo ModalHistoryManager chama este handler direto
+  // (registrado para o elemento) (só ele fecha, nunca um dialog de baixo); o listener no
+  // documento cobre o caso do gerenciador ausente (ex.: testes).
+  useEffect(() => {
+    if (!isOpen) return;
+    const el = dialogRef.current;
+    const onKeyDown = (e: KeyboardEvent) => {
+      if (e.key !== 'Escape' || loading || isLoading) return;
+      // Só o dialog do topo fecha: um Escape chegando ao documento (topo
+      // Radix ou gerenciador ausente) não pode fechar os de baixo junto.
+      // A ordem de abertura decide — o DOM mente com o portal Radix.
+      if (!el || !isTopOpenDialog(el)) return;
+      onClose();
+    };
+    const offOwned = el ? registerOwnedEscapeHandler(el, onKeyDown) : undefined;
+    document.addEventListener('keydown', onKeyDown);
+    return () => {
+      offOwned?.();
+      document.removeEventListener('keydown', onKeyDown);
+    };
+  }, [isOpen, loading, isLoading, onClose]);
+
   const handleConfirm = async () => {
     try {
       setLoading(true);
@@ -126,7 +151,10 @@ export function ConfirmationDialog({
           'w-full max-w-md p-6 bg-card rounded-lg shadow-xl',
           className
         )}
+        ref={dialogRef}
         role="dialog"
+        data-state="open"
+        data-escape-owned
         aria-modal="true"
         aria-labelledby="confirmation-title"
         aria-describedby="confirmation-message"

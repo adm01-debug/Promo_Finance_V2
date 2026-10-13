@@ -1,5 +1,6 @@
 import { ReactNode } from 'react';
-import { Navigate, useNavigate } from 'react-router-dom';
+import { Navigate } from 'react-router-dom';
+import { useSmartBack } from '@/hooks/useSmartBack';
 import { useAuth } from '@/hooks/useAuth';
 import { Loader2, ShieldAlert, ArrowLeft, Mail } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -27,7 +28,7 @@ export function ProtectedRoute({ children, requiredRoles }: ProtectedRouteProps)
   // global role. Mirror that here so the access-denied card shows the same
   // role the gate actually evaluated, not just the global one.
   const effectiveRole = roleAtual ?? role;
-  const navigate = useNavigate();
+  const { goBack } = useSmartBack('button');
 
   if (isLoading) {
     return (
@@ -100,7 +101,7 @@ export function ProtectedRoute({ children, requiredRoles }: ProtectedRouteProps)
             </div>
 
             <div className="flex flex-col gap-2 sm:flex-row">
-              <Button variant="outline" className="flex-1" onClick={() => navigate(-1)}>
+              <Button variant="outline" className="flex-1" onClick={goBack}>
                 <ArrowLeft className="mr-2 h-4 w-4" />
                 Voltar
               </Button>
