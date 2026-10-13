@@ -289,6 +289,16 @@ export function entradasDiretorioCentral(cd: Uint8Array, max = 250_000): string[
   let pos = 0;
   while (pos < cd.length && nomes.length < max) {
     if (cd[pos] !== 0x50 || cd[pos + 1] !== 0x4b) return null;
+    // Archive Extra Data Record (APPNOTE 4.3.11–4.3.12): registro PK\x06\x08
+    // de 8 bytes + dados declarados que pode PRECEDER o diretório central e
+    // conta no tamanho dele — só é legítimo logo na abertura do CD.
+    if (pos === 0 && cd[pos + 2] === 0x06 && cd[pos + 3] === 0x08) {
+      if (pos + 8 > cd.length) return null;
+      const extraLen = dv.getUint32(pos + 4, true);
+      if (pos + 8 + extraLen > cd.length) return null;
+      pos += 8 + extraLen;
+      continue;
+    }
     // Assinatura digital do diretório central (APPNOTE PKWARE): registro
     // terminal de 6 bytes + dados declarados, DEPOIS do último PK\x01\x02 —
     // só é legítimo fechando exatamente o CD, senão é lixo disfarçado.

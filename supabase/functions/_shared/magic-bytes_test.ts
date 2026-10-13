@@ -217,6 +217,30 @@ Deno.test('diretório com assinatura digital terminal é aceito', () => {
   assertEquals(entradasDiretorioCentral(assinado), ['a.txt']);
 });
 
+Deno.test('archive extra data record antes do diretório é aceito', () => {
+  const { cd } = montarZip(['a.txt']);
+  const extra = new Uint8Array(11); // PK\x06\x08 + tamanho(4) + 3 B de dados
+  const dv = new DataView(extra.buffer);
+  extra[0] = 0x50;
+  extra[1] = 0x4b;
+  extra[2] = 0x06;
+  extra[3] = 0x08;
+  dv.setUint32(4, 3, true);
+  const comExtra = new Uint8Array([...extra, ...cd]);
+  assertEquals(entradasDiretorioCentral(comExtra), ['a.txt']);
+});
+
+Deno.test('extra data record fora da abertura falha', () => {
+  const { cd } = montarZip(['a.txt']);
+  const extra = new Uint8Array(8); // PK\x06\x08 no MEIO do diretório
+  extra[0] = 0x50;
+  extra[1] = 0x4b;
+  extra[2] = 0x06;
+  extra[3] = 0x08;
+  const comExtra = new Uint8Array([...cd, ...extra]);
+  assertEquals(entradasDiretorioCentral(comExtra), null);
+});
+
 Deno.test('assinatura digital que não fecha o diretório falha', () => {
   const { cd } = montarZip(['a.txt']);
   const sig = new Uint8Array(6); // PK\x05\x05 com dados_len=0 + lixo depois

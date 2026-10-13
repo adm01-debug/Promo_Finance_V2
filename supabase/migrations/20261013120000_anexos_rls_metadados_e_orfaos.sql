@@ -66,19 +66,6 @@ $$;
 ALTER TABLE public.anexos_financeiros
   ADD COLUMN IF NOT EXISTS empresa_id uuid;
 
--- Linhas legadas (anteriores à edge) não têm storage_path — o único
--- ponteiro é a `url` (formato `/object/(public|sign)/financeiro/<caminho>`
--- ou `/financeiro/<caminho>`). Sem o caminho, o fallback de metadados não
--- encontra a linha quando a entidade some e o órfão fica irremovível.
-UPDATE public.anexos_financeiros
-   SET storage_path = split_part(substring(url from '/financeiro/(.+)$'), '?', 1)
- WHERE storage_path IS NULL
-   AND url ~ '/financeiro/.+';
-
-UPDATE public.anexos_financeiros a
-   SET empresa_id = private.empresa_da_entidade_financeira(a.entidade_tipo, a.entidade_id)
- WHERE a.empresa_id IS NULL;
-
 CREATE INDEX IF NOT EXISTS idx_anexos_financeiros_storage_path
   ON public.anexos_financeiros (storage_path);
 
@@ -89,14 +76,15 @@ CREATE INDEX IF NOT EXISTS idx_anexos_financeiros_entidade
 
 -- Resolve a empresa de um OBJETO do bucket pelo path
 -- `<entidadeTipo>/<entidadeId>/<uuid>.<ext>`:
---  1. pela entidade do path — o segmento vira uuid (regex case-insensitive
---     cobre paths legados com UUID em maiúsculas; uuid::uuid normaliza o
---     caso) e a comparação id = uuid usa o índice primário, sem varredura
---     por policy avaliada e sem exceção de cast em pasta não-UUID;
---  2. se a entidade já foi excluída, pela empresa gravada na linha de
---     metadados que aponta para o objeto — exigindo que a linha declare a
---     mesma entidade do path, senão metadados forjados sequestrariam
---     anexos de outras empresas.
+--  1. pelo metadado que aponta para o objeto (storage_path exato + mesma
+--     entidade declarada): é a empresa do anexo, gravada no upload — e
+--     sobrevive a um UUID de entidade excluída reutilizado por outra
+--     empresa, caso em que o ramo pela entidade devolveria o tenant errado;
+--  2. sem metadado (objeto sem linha na tabela), pela entidade viva — o
+--     segmento vira uuid (regex case-insensitive cobre paths legados com
+--     UUID em maiúsculas; uuid::uuid normaliza o caso) e a comparação
+--     id = uuid usa o índice primário, sem varredura por policy avaliada
+--     e sem exceção de cast em pasta não-UUID.
 CREATE OR REPLACE FUNCTION private.empresa_do_anexo_financeiro(_objeto text)
 RETURNS uuid
 LANGUAGE sql
@@ -130,13 +118,13 @@ AS $$
     FROM v
   )
   SELECT COALESCE(
-    (SELECT empresa_id FROM pela_entidade),
     (SELECT a.empresa_id
        FROM public.anexos_financeiros a, v
       WHERE a.storage_path = _objeto
         AND a.entidade_tipo = v.tipo
         AND a.entidade_id = v.entidade_id
-      LIMIT 1)
+      LIMIT 1),
+    (SELECT empresa_id FROM pela_entidade)
   );
 $$;
 
@@ -383,3 +371,33 @@ CREATE TRIGGER trg_anexos_atribui_empresa
   BEFORE INSERT OR UPDATE OF entidade_tipo, entidade_id ON public.anexos_financeiros
   FOR EACH ROW
   EXECUTE FUNCTION private.atribui_empresa_do_anexo();
+
+-- =========================================================================
+-- Backfills por último, com os gatilhos já instalados: qualquer
+-- transferência comitada DURANTE a migration é apanhada pelo sync e a
+-- reconciliação final rederiva tudo. O gatilho `updated_at` fica suspenso
+-- para o bulk não reescrever o timestamp histórico das linhas.
+-- =========================================================================
+
+ALTER TABLE public.anexos_financeiros
+  DISABLE TRIGGER update_anexos_financeiros_updated_at;
+
+-- Linhas legadas (anteriores à edge) não têm storage_path — o único
+-- ponteiro é a `url` (formato `/object/(public|sign)/financeiro/<caminho>`
+-- ou `/financeiro/<caminho>`). Sem o caminho, o fallback de metadados não
+-- encontra a linha quando a entidade some e o órfão fica irremovível.
+UPDATE public.anexos_financeiros
+   SET storage_path = split_part(substring(url from '/financeiro/(.+)$'), '?', 1)
+ WHERE storage_path IS NULL
+   AND url ~ '/financeiro/.+';
+
+-- Reconciliação completa (não só NULL): cobre transferências comitadas
+-- entre o ADD COLUMN e a criação dos gatilhos.
+UPDATE public.anexos_financeiros a
+   SET empresa_id = COALESCE(
+     private.empresa_da_entidade_financeira(a.entidade_tipo, a.entidade_id),
+     a.empresa_id
+   );
+
+ALTER TABLE public.anexos_financeiros
+  ENABLE TRIGGER update_anexos_financeiros_updated_at;
