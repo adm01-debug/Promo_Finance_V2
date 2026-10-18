@@ -22,7 +22,7 @@ validação do banco. A aceitação operacional integral está reservada à etap
 - `README.md`, `AGENTS.md`, `docs/ARCHITECTURE.md` e `docs/DEPLOYMENT.md`.
 - Preservar `scripts/gerar-grafo-arquitetura.ts`, `src/lib/arquitetura/analisador-imports.ts`,
   `modulos.ts` e os testes existentes: o Graphify complementa, não substitui, essas regras.
-- Pacote Python **`graphifyy==0.9.48`**, executável `graphify`, API/CLI inspecionada na
+- Pacote Python **`graphifyy==0.9.91`**, executável `graphify`, API/CLI inspecionada na
   instalação local. Não confundir com pacotes homônimos ou uma biblioteca React.
 - Python 3.11 recomendado. Nenhuma dependência adicionada ao bundle Vite ou Deno.
 - Banco canônico: `bwwbeyolnnzppeuhgkcd`; catálogo parcial consultado somente
@@ -36,7 +36,7 @@ validação do banco. A aceitação operacional integral está reservada à etap
 Instalação explícita, apenas no ambiente de desenvolvimento:
 
 ```sh
-uv tool install graphifyy==0.9.48
+uv tool install graphifyy==0.9.91
 npm run graphify:inventory
 npm run graphify:test
 npm run graphify:pilot
