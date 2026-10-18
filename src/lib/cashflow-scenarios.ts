@@ -1,7 +1,5 @@
 // CASH FLOW SCENARIO PROJECTIONS ENGINE
 
-import { secureRandomInt } from './secure-random';
-
 export type CenarioTipo = 'otimista' | 'realista' | 'pessimista';
 
 export interface CenarioConfig {
@@ -82,7 +80,10 @@ export function gerarProjecaoCenario(
     const receitasAjustadas =
       dia.receitas *
       config.multiplicadorReceitas *
-      (1 - config.probabilidadeAtraso * (secureRandomInt(0, 1000) / 1000));
+      // NOSONAR — simulação financeira não-criptográfica; CodeQL veta
+      // aritmética sobre CSPRNG, e Math.random é adequado para jitter de
+      // cenário (não gera tokens nem segredos).
+      (1 - config.probabilidadeAtraso * Math.random());
     const despesasAjustadas = dia.despesas * config.multiplicadorDespesas;
 
     saldoAcumulado = saldoAcumulado + receitasAjustadas - despesasAjustadas;
