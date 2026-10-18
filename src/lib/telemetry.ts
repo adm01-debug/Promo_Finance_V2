@@ -57,7 +57,10 @@ let flushTimer: ReturnType<typeof setTimeout> | null = null;
 function urlSanitizada(urlCompleta: string): string {
   try {
     const u = new URL(urlCompleta);
-    return u.origin + u.pathname;
+    // Rotas que embutem segredos no próprio path — o token não pode
+    // pousar no log nem por pathname.
+    const path = u.pathname.replace(/^\/(convite|contador)\/[^/]+$/, '/$1/[redacted]');
+    return u.origin + path;
   } catch {
     return window.location.origin + window.location.pathname;
   }
@@ -211,7 +214,7 @@ export function initTelemetry(): void {
     reportError({
       message: event.message || 'Unknown error',
       stack: event.error?.stack,
-      url: event.filename || window.location.href,
+      url: event.filename || urlSanitizada(window.location.href),
       severity: 'error',
       context: { lineno: event.lineno, colno: event.colno },
     });
