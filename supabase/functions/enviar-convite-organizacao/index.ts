@@ -89,15 +89,14 @@ Deno.serve(
         const { data: convite, error: conviteError } = await admin
           .from('convites')
           .select(
-            'id, organizacao_id, email_convidado, papel_proposto, token, expira_em, aceito_em, revogado_em'
+            'id, organizacao_id, email_convidado, papel_proposto, token, expira_em, utilizado_em'
           )
           .eq('id', convite_id)
           .maybeSingle();
 
         if (conviteError) return res({ error: 'Falha ao carregar convite.' }, 500);
         if (!convite) return res({ error: 'Convite não encontrado.' }, 404);
-        if (convite.revogado_em) return res({ error: 'Convite revogado.' }, 409);
-        if (convite.aceito_em) return res({ error: 'Convite já aceito.' }, 409);
+        if (convite.utilizado_em) return res({ error: 'Convite já aceito.' }, 409);
         if (new Date(convite.expira_em).getTime() <= Date.now()) {
           return res({ error: 'Convite expirado.' }, 409);
         }
