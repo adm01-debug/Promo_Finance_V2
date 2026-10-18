@@ -174,6 +174,10 @@ export function UnsavedGuardProvider({ children }: { children: React.ReactNode }
         // senão a próxima saída descartaria as edições sem aviso.
         window.setTimeout(() => {
           if (window.history.state === before && dirtyRef.current && !sentinelActiveRef.current) {
+            // O back() foi no-op (aba nova sem entrada anterior): o popstate
+            // dele nunca chega — sem limpar a flag, o PRÓXIMO popstate real
+            // seria engolido como se fosse o nosso.
+            leavingOwnPopRef.current = false;
             window.history.pushState(artificialHistoryState(SENTINEL), '');
             dropForwardEntries();
             sentinelActiveRef.current = true;

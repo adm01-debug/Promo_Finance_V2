@@ -1,4 +1,4 @@
-import { NavLink, useLocation } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { LayoutDashboard, ArrowDownCircle, ArrowUpCircle, Bot, Menu } from 'lucide-react';
 import { cn } from '@/lib/utils';
@@ -36,9 +36,10 @@ export const MobileBottomNav = ({ onMenuClick }: MobileBottomNavProps) => {
             (item.href === '/' && location.pathname === '/dashboard');
 
           return (
-            <NavLink
+            <Link
               key={item.href}
               to={item.href}
+              aria-current={isActive ? 'page' : undefined}
               className="flex flex-col items-center justify-center flex-1 py-2 relative min-w-0"
             >
               <motion.div
@@ -79,7 +80,7 @@ export const MobileBottomNav = ({ onMenuClick }: MobileBottomNavProps) => {
                   {item.label}
                 </span>
               </motion.div>
-            </NavLink>
+            </Link>
           );
         })}
 

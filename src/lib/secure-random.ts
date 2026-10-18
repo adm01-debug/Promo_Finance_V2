@@ -26,6 +26,9 @@ function nextUint32(): number {
  * revisão do caso.
  */
 export function secureRandomInt(min: number, max: number): number {
+  if (!Number.isInteger(min) || !Number.isInteger(max)) {
+    throw new RangeError('secureRandomInt: min e max precisam ser inteiros');
+  }
   const range = max - min;
   if (range <= 0) return min;
   if (!Number.isFinite(range) || range > 0x100000000) {

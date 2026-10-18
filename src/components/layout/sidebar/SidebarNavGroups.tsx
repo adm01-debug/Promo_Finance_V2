@@ -1,5 +1,5 @@
 import { useState, Fragment } from 'react';
-import { NavLink, useLocation } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   LayoutDashboard,
@@ -249,8 +249,9 @@ export const SidebarNavGroups = ({ collapsed }: SidebarNavGroupsProps) => {
     const badge = getBadgeCount(item.badgeKey);
 
     const content = (
-      <NavLink
+      <Link
         to={item.href}
+        aria-current={isActive ? 'page' : undefined}
         className={cn(
           'flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all duration-200 group relative text-[13px] font-medium tracking-tight',
           isActive
@@ -283,7 +284,7 @@ export const SidebarNavGroups = ({ collapsed }: SidebarNavGroupsProps) => {
         {item.highlight && !collapsed && !badge && (
           <div className="h-1.5 w-1.5 rounded-full bg-primary animate-pulse" />
         )}
-      </NavLink>
+      </Link>
     );
 
     if (collapsed) {
@@ -301,7 +302,11 @@ export const SidebarNavGroups = ({ collapsed }: SidebarNavGroupsProps) => {
   };
 
   return (
-    <nav className="flex-1 overflow-y-auto py-4 px-3 space-y-1 scrollbar-thin">
+    <nav
+      id="main-nav"
+      aria-label="Navegação principal"
+      className="flex-1 overflow-y-auto py-4 px-3 space-y-1 scrollbar-thin"
+    >
       {navGroups.map((group) => {
         const GroupIcon = group.icon;
         const isOpen = openGroups[group.id];
