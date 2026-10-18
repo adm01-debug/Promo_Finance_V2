@@ -1,12 +1,17 @@
 import { Paperclip, ExternalLink } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { formatDateTime } from '@/lib/formatters';
+import { supabase } from '@/integrations/supabase/client';
+import { caminhoNoStorage, BUCKET_FINANCEIRO as BUCKET } from '@/lib/storage-path';
+import { toast } from 'sonner';
 
 interface Anexo {
   id: string;
   nome_arquivo: string;
   created_at: string;
   url?: string | null;
+  url_publica?: string | null;
+  storage_path?: string | null;
 }
 
 export function DrawerAnexosTab({ anexos }: { anexos: Anexo[] }) {
@@ -19,6 +24,38 @@ export function DrawerAnexosTab({ anexos }: { anexos: Anexo[] }) {
     );
   }
 
+  // Bucket privado: `url`/`url_publica` gravados pela edge são locators
+  // internos, não links HTTP — o clique precisa gerar signed URL.
+  const abrir = async (a: Anexo) => {
+    const caminho =
+      a.storage_path ??
+      ((a.url ?? a.url_publica) ? caminhoNoStorage(a.url ?? a.url_publica) : null);
+    if (!caminho) {
+      toast.error('Anexo sem caminho de storage válido.');
+      return;
+    }
+    // Aba aberta durante o gesto do usuário: window.open após await é
+    // bloqueado no Safari (ativação transitória expira no fetch assíncrono).
+    const abaNova = window.open('', '_blank', 'noopener,noreferrer');
+    try {
+      const { data, error } = await supabase.storage.from(BUCKET).createSignedUrl(caminho, 60);
+      if (error || !data?.signedUrl) {
+        abaNova?.close();
+        toast.error('Não foi possível abrir o anexo.');
+        return;
+      }
+      if (abaNova) {
+        abaNova.location = data.signedUrl;
+      } else {
+        // Popup bloqueado de vez — cai para a aba atual como último recurso.
+        window.location.assign(data.signedUrl);
+      }
+    } catch {
+      abaNova?.close();
+      toast.error('Não foi possível abrir o anexo.');
+    }
+  };
+
   return (
     <>
       {anexos.map((a) => (
@@ -28,12 +65,10 @@ export function DrawerAnexosTab({ anexos }: { anexos: Anexo[] }) {
             <p className="text-sm font-medium truncate">{a.nome_arquivo}</p>
             <p className="text-xs text-muted-foreground">{formatDateTime(a.created_at)}</p>
           </div>
-          {a.url && (
-            <a href={a.url} target="_blank" rel="noopener noreferrer">
-              <Button variant="ghost" size="icon-sm">
-                <ExternalLink className="h-3.5 w-3.5" />
-              </Button>
-            </a>
+          {(a.url || a.url_publica || a.storage_path) && (
+            <Button variant="ghost" size="icon-sm" onClick={() => void abrir(a)}>
+              <ExternalLink className="h-3.5 w-3.5" />
+            </Button>
           )}
         </div>
       ))}

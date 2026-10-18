@@ -66,11 +66,17 @@ function preencherAleatorio(bytes: Uint8Array): Uint8Array {
     );
     return bytes;
   }
-  // Fallback apenas para ambientes de teste sem WebCrypto (jsdom antigo).
-  for (let i = 0; i < bytes.length; i += 1) {
-    bytes[i] = Math.floor(Math.random() * 256);
+  // Ambientes de teste sem WebCrypto (jsdom): fallback determinístico
+  // aceitável porque o token não sai do processo. Em qualquer outro
+  // ambiente um token de convite NÃO pode nascer de PRNG fraco — falha
+  // explícita em vez de segredo adivinhável.
+  if (typeof import.meta !== 'undefined' && import.meta.env?.MODE === 'test') {
+    for (let i = 0; i < bytes.length; i += 1) {
+      bytes[i] = Math.floor(Math.random() * 256); // NOSONAR — fallback só em ambiente de teste
+    }
+    return bytes;
   }
-  return bytes;
+  throw new Error('gerarTokenConvite: WebCrypto indisponível — token de convite exige CSPRNG.');
 }
 
 export function gerarTokenConvite(
