@@ -80,10 +80,10 @@ export function gerarProjecaoCenario(
     const receitasAjustadas =
       dia.receitas *
       config.multiplicadorReceitas *
-      // NOSONAR — simulação financeira não-criptográfica; CodeQL veta
-      // aritmética sobre CSPRNG, e Math.random é adequado para jitter de
-      // cenário (não gera tokens nem segredos).
-      (1 - config.probabilidadeAtraso * Math.random());
+      // Simulação financeira não-criptográfica: CodeQL veta aritmética
+      // sobre CSPRNG e Math.random é adequado para jitter de cenário
+      // (não gera tokens nem segredos) — por isso o NOSONAR abaixo.
+      (1 - config.probabilidadeAtraso * Math.random()); // NOSONAR
     const despesasAjustadas = dia.despesas * config.multiplicadorDespesas;
 
     saldoAcumulado = saldoAcumulado + receitasAjustadas - despesasAjustadas;
