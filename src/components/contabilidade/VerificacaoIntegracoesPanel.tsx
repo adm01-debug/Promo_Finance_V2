@@ -161,7 +161,10 @@ export function VerificacaoIntegracoesPanel({ empresaId, ano }: Props) {
   const lancs = useMemo(() => data?.lancamentos ?? [], [data]);
   const resumos = data?.resumos ?? [];
 
-  const origens = useMemo(() => Array.from(new Set(lancs.map((l) => l.origem))).sort(), [lancs]);
+  const origens = useMemo(
+    () => Array.from(new Set(lancs.map((l) => l.origem))).sort((a, b) => a.localeCompare(b)),
+    [lancs]
+  );
 
   const filtrados = useMemo(() => {
     const termo = busca.trim().toLowerCase();

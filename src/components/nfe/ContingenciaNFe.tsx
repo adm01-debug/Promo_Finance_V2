@@ -21,6 +21,7 @@ import {
 } from 'lucide-react';
 import { formatCurrency, formatDateTime } from '@/lib/formatters';
 import { toast } from 'sonner';
+import { secureRandomInt } from '@/lib/secure-random';
 import {
   ContingencyMode,
   ContingencyState,
@@ -205,8 +206,8 @@ export function ContingenciaNFe() {
     for (const nfe of pending) {
       updatePendingNFe(nfe.id, { status: 'transmitindo', ultimaTentativa: new Date() });
       setState(getContingencyState());
-      await new Promise((resolve) => setTimeout(resolve, 1500 + Math.random() * 1000));
-      const success = Math.random() > 0.1;
+      await new Promise((resolve) => setTimeout(resolve, secureRandomInt(1500, 2500)));
+      const success = secureRandomInt(0, 10) !== 0;
       if (success) {
         removePendingNFe(nfe.id);
         registrarEvento({
