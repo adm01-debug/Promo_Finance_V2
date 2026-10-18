@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useUrlTab } from '@/hooks/useUrlTab';
 import { motion } from 'framer-motion';
 import {
   Settings,
@@ -53,12 +54,30 @@ import {
   type Template,
 } from './Configuracoes.constants';
 
+const CONFIG_TABS = [
+  'regua',
+  'templates',
+  'duplicidade',
+  'conciliacao',
+  'notificacoes',
+  'agendamentos',
+  'seguranca',
+  'integracoes',
+  'contratos',
+  'ocr',
+  'asaas',
+  'sistema',
+  'automacao-compras',
+  'roteamento',
+] as const;
+
 export default function Configuracoes() {
   const [etapas, setEtapas] = useState<EtapaConfig[]>(etapasIniciais);
   const [templates] = useState<Template[]>(templatesIniciais);
   const [templateDialogOpen, setTemplateDialogOpen] = useState(false);
   const [selectedTemplate] = useState<Template | null>(null);
   const { toast } = useToast();
+  const [tab, setTab] = useUrlTab('regua', CONFIG_TABS);
 
   // Preferências do Sistema
   const [preferencias, setPreferencias] = useState({
@@ -102,7 +121,7 @@ export default function Configuracoes() {
       {/* Atalhos rápidos */}
       <AtalhosRapidos />
 
-      <Tabs defaultValue="regua" className="space-y-6">
+      <Tabs value={tab} onValueChange={setTab} className="space-y-6">
         <TabsList className="grid w-full grid-cols-12 lg:w-[1500px]">
           <TabsTrigger value="regua" className="gap-2">
             <Clock className="h-4 w-4" />

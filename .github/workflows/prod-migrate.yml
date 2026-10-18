@@ -4,8 +4,8 @@ name: prod-migrate
 #
 # Gates (nesta ordem):
 #   1. workflow_dispatch manual — nunca automático em push/schedule.
-#   2. environment "production" — exige aprovação humana no GitHub
-#      (Settings > Environments > Production > Required reviewers).
+#   2. environment "Production-Ops" — exige aprovação humana no GitHub
+#      (required reviewer + deploys só de branch protegida).
 #   3. Confirmação digitada do project-ref de PROD.
 #   4. dry_run=true por padrão: primeiro rode só a listagem, depois aplique.
 #
@@ -41,8 +41,8 @@ jobs:
     # (mesmo padrão de functions-deploy.yml).
     if: github.ref == 'refs/heads/main'
     # Gate de aprovação: o job só inicia depois que um reviewer aprova
-    # no Environment "Production" (proteção do repo).
-    environment: Production
+    # no Environment "Production-Ops" (proteção do repo).
+    environment: Production-Ops
     env:
       PROD_DB_URL: ${{ secrets.PROD_DB_URL }}
       PROD_PROJECT_REF: ${{ vars.PROD_PROJECT_REF }}

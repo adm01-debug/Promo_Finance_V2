@@ -1,7 +1,4 @@
-import {
-  analisarSqlMcp,
-  validarEscritaEscopada,
-} from "../_shared/sql-write-guard.ts";
+import { analisarSqlMcp, validarEscritaEscopada } from '../_shared/sql-write-guard.ts';
 
 export interface AvaliacaoSqlMcp {
   finalSql: string;
@@ -12,14 +9,14 @@ export interface AvaliacaoSqlMcp {
 export function aplicarLimitePadrao(sql: string, limiteSeguro: number): string {
   const analise = analisarSqlMcp(sql);
   if (!analise.somenteLeitura) return sql;
-  const semPontoEVirgula = sql.replace(/;\s*$/, "");
+  const semPontoEVirgula = sql.replace(/;\s*$/, '');
   return `SELECT * FROM (${semPontoEVirgula}) AS __mcp_limited LIMIT ${limiteSeguro}`;
 }
 
 export function avaliarSqlMcp(
   sql: string,
   allowAllRows: boolean,
-  limiteSeguro?: number,
+  limiteSeguro?: number
 ): AvaliacaoSqlMcp {
   const analise = analisarSqlMcp(sql);
   if (analise.motivoBloqueio) {
@@ -41,9 +38,10 @@ export function avaliarSqlMcp(
     }
   }
 
-  const finalSql = analise.somenteLeitura && typeof limiteSeguro === "number"
-    ? aplicarLimitePadrao(sql, limiteSeguro)
-    : sql;
+  const finalSql =
+    analise.somenteLeitura && typeof limiteSeguro === 'number'
+      ? aplicarLimitePadrao(sql, limiteSeguro)
+      : sql;
 
   return {
     finalSql,

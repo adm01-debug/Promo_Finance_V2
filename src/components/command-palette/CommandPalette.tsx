@@ -1,6 +1,8 @@
 /** Acesso rápido via CMD/Ctrl + K para navegação e ações globais. */
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import type { NavigateFunction, NavigateOptions, To } from 'react-router-dom';
+import { navigateWithUnsavedGuard } from '@/lib/unsaved-guard';
 import {
   Command,
   CommandDialog,
@@ -52,12 +54,25 @@ export function CommandPalette() {
     command();
   }, []);
 
+  // Navegações disparadas pela paleta respeitam a guarda de não-salvos —
+  // senão Ctrl+K sobre um formulário sujo descartaria os dados digitados.
+  const guardedNavigate = useCallback<NavigateFunction>(
+    ((to: To | number, options?: NavigateOptions) => {
+      navigateWithUnsavedGuard(() => {
+        if (typeof to === 'number') navigate(to);
+        else if (options !== undefined) navigate(to, options);
+        else navigate(to);
+      });
+    }) as NavigateFunction,
+    [navigate]
+  );
+
   const commandGroups = useMemo<PaletteCommandGroup[]>(
     () => [
-      ...buildNavigationCommandGroups(navigate),
-      ...buildManagementCommandGroups(navigate, setTheme),
+      ...buildNavigationCommandGroups(guardedNavigate),
+      ...buildManagementCommandGroups(guardedNavigate, setTheme),
     ],
-    [navigate, setTheme]
+    [guardedNavigate, setTheme]
   );
   const filteredGroups = useMemo(() => {
     if (!search) return commandGroups;
