@@ -8,3 +8,4 @@ package-lock.json
 pnpm-lock.yaml
 yarn.lock
 .env*
+docs/GRAPHIFY_PLANO_50_ETAPAS.md
