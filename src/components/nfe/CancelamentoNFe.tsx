@@ -19,6 +19,7 @@ import {
 import { processarSefaz, SefazResponse } from '@/lib/sefaz-simulator';
 import { registrarEvento } from '@/lib/sefaz-event-logger';
 import { toast } from 'sonner';
+import { secureRandomInt } from '@/lib/secure-random';
 import { formatCurrency, formatDateTime } from '@/lib/formatters';
 
 // COMPONENTE: MODAL DE CANCELAMENTO DE NF-E
@@ -90,7 +91,7 @@ export function CancelamentoNFe({ nota, onClose, onSuccess }: CancelamentoNFePro
 
     for (const step of steps.slice(0, -1)) {
       setCurrentStep(step.id);
-      await new Promise((resolve) => setTimeout(resolve, 600 + Math.random() * 400));
+      await new Promise((resolve) => setTimeout(resolve, secureRandomInt(600, 1000)));
     }
 
     const response = await processarSefaz({

@@ -72,7 +72,7 @@ export function TagInput({
         if (tags.some((t) => t.label.toLowerCase() === trimmed.toLowerCase())) return;
 
         newTag = {
-          id: `tag-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+          id: `tag-${Date.now()}-${secureRandomInt(0, 0x100000000).toString(36)}`,
           label: trimmed,
           color: getRandomColor(),
         };
