@@ -119,8 +119,10 @@ jobs:
         # falhar antes do step "Run Supabase linter". O step de lint sobrescreve.
         run: echo '{"results":[]}' > lint.json
 
+      # Runs de dependabot[bot] não recebem secrets — guard só nos
+      # passos live, mantendo os gates offline do workflow.
       - name: Preflight dos gates live do Supabase
-        if: steps.filter.outputs.relevant == 'true'
+        if: steps.filter.outputs.relevant == 'true' && github.actor != 'dependabot[bot]'
         env:
           SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
           SUPABASE_PROJECT_REF: ${{ vars.VITE_SUPABASE_PROJECT_ID }}
@@ -130,7 +132,7 @@ jobs:
             SUPABASE_ACCESS_TOKEN SUPABASE_PROJECT_REF
 
       - name: Gate live do banco canônico
-        if: steps.filter.outputs.relevant == 'true'
+        if: steps.filter.outputs.relevant == 'true' && github.actor != 'dependabot[bot]'
         env:
           SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
           SUPABASE_PROJECT_REF: ${{ vars.VITE_SUPABASE_PROJECT_ID }}
@@ -149,7 +151,7 @@ jobs:
             SUPABASE_DB_PASSWORD
 
       - name: Fail when linter skipped (missing password)
-        if: steps.filter.outputs.relevant == 'true' && steps.db_pwd_preflight.outputs.available != 'true'
+        if: steps.filter.outputs.relevant == 'true' && steps.db_pwd_preflight.outputs.available != 'true' && github.actor != 'dependabot[bot]'
         run: |
           echo "::error::SUPABASE_DB_PASSWORD não configurado — impossível executar supabase db lint em PR com mudanças de banco. Configure o secret para habilitar a verificação completa de RLS/GRANT."
           exit 1
