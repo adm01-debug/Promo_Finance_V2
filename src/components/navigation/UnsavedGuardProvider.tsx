@@ -72,6 +72,10 @@ export function UnsavedGuardProvider({ children }: { children: React.ReactNode }
   }, []);
 
   const requestLeave = useCallback((proceed: () => void) => {
+    // Um novo pedido de saída substitui o anterior — o pop aguardado do
+    // pedido antigo nunca chega, então a flag precisa abrir para o novo
+    // fluxo não prender o Voltar em forward() perpétuo.
+    awaitingPopRef.current = false;
     setPendingLeave(() => proceed);
   }, []);
 
@@ -179,21 +183,18 @@ export function UnsavedGuardProvider({ children }: { children: React.ReactNode }
           // popstate real seria engolido como nosso.
           leavingOwnPopRef.current = false;
           if (window.history.state === before && dirtyRef.current && !sentinelActiveRef.current) {
-            // O back() foi no-op (aba nova sem entrada anterior) — rearma
-            // a sentinela para a próxima saída não descartar edições.
-            window.history.pushState(artificialHistoryState(SENTINEL), '');
-            dropForwardEntries();
-            sentinelActiveRef.current = true;
-            // O back() foi no-op e o dialog continua montado sem
-            // marcador (o pop planejado o consumiu) — recria-o.
-            requestMarkerResync();
+            // O back() foi no-op (aba nova sem entrada anterior): o usuário
+            // já confirmou sair — navega para a home como destino de
+            // fallback em vez de rearmar e deixar "Descartar e sair" sem
+            // efeito nenhum.
+            navigate('/', { replace: true });
           }
         }, 150);
       });
     };
     window.addEventListener('popstate', onPopState);
     return () => window.removeEventListener('popstate', onPopState);
-  }, []);
+  }, [navigate]);
 
   // Confirmação nativa ao fechar/recarregar a aba.
   useEffect(() => {

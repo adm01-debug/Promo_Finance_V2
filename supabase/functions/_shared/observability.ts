@@ -33,7 +33,7 @@ const PII_TEXTO: Array<[RegExp, string]> = [
   [/\b\d{2}\.\d{3}\.\d{3}\/\d{4}-\d{2}\b/g, '[CNPJ]'],
 ];
 
-function redigir(x: unknown): unknown {
+export function redigir(x: unknown): unknown {
   if (typeof x === 'string') {
     let out = x;
     for (const segredo of segredos()) out = out.split(segredo).join('[REDACTED]');

@@ -208,6 +208,7 @@
         "npm:cmdk@^1.1.1",
         "npm:cross-env@^10.1.0",
         "npm:date-fns@^2.30.0",
+        "npm:dompurify@3.4.16",
         "npm:embla-carousel-react@^8.6.0",
         "npm:esbuild@~0.28.2",
         "npm:eslint-config-prettier@^9.1.0",

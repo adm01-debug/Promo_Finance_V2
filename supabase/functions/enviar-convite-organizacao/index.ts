@@ -126,7 +126,18 @@ Deno.serve(
         }
 
         const resendKey = Deno.env.get('RESEND_API_KEY');
-        const baseUrl = (origin ?? getAppBaseUrl()).replace(/\/+$/, '');
+        // `origin` do cliente só vale se for o mesmo host do app — um gestor
+        // não pode apontar o botão 'Aceitar convite' do e-mail para um domínio
+        // externo carregando o token real do convite.
+        const baseUrl = (() => {
+          try {
+            const appHost = new URL(getAppBaseUrl()).host;
+            if (origin && new URL(origin).host === appHost) return origin;
+          } catch {
+            // origem inválida — ignora e usa a base do app
+          }
+          return getAppBaseUrl();
+        })().replace(/\/+$/, '');
         const link = `${baseUrl}/convite/${convite.token}`;
 
         if (!resendKey) {
