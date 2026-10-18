@@ -26,7 +26,8 @@ export function AnexoList({ entidadeId, entidadeTipo, readonly = false }: AnexoL
         .from('anexos_financeiros')
         .select('*')
         .eq('entidade_id', entidadeId)
-        .eq('entidade_tipo', entidadeTipo);
+        // Legado gravava singular ('conta_receber'); upload-anexo grava plural.
+        .in('entidade_tipo', [entidadeTipo, entidadeTipo.replace(/^contas_/, 'conta_')]);
 
       if (error) throw error;
       return data || [];
@@ -122,12 +123,24 @@ export function AnexoList({ entidadeId, entidadeTipo, readonly = false }: AnexoL
       toast.error('Não foi possível localizar o arquivo do anexo');
       return;
     }
+    // Aba aberta durante o gesto do usuário: window.open após await é
+    // bloqueado no Safari (mesmo padrão de DrawerAnexosTab.abrir). Sem
+    // 'noopener' aqui — ele faz window.open retornar null e a referência se
+    // perde; o opener é cortado manualmente logo abaixo.
+    const abaNova = window.open('', '_blank');
+    if (abaNova) abaNova.opener = null;
     const { data, error } = await supabase.storage.from(BUCKET).createSignedUrl(caminho, 60);
     if (error || !data?.signedUrl) {
+      abaNova?.close();
       toast.error('Falha ao gerar link de download: ' + (error?.message ?? 'sem URL assinada'));
       return;
     }
-    window.open(data.signedUrl, '_blank', 'noopener,noreferrer');
+    if (abaNova) {
+      abaNova.location = data.signedUrl;
+    } else {
+      // Popup bloqueado — cai para a aba atual como último recurso.
+      window.location.assign(data.signedUrl);
+    }
   };
 
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {

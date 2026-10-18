@@ -19,8 +19,26 @@ type BreadcrumbData = Record<string, Json> | undefined;
 const breadcrumbs: Array<{ message: string; timestamp: string; data?: BreadcrumbData }> = [];
 const MAX_BREADCRUMBS = 20;
 
+// Chaves de breadcrumb que carregam URL/path — redigidas na entrada para
+// o token de /convite|contador/ nunca chegar a frontend_error_logs.metadata
+// quando um componente futuro navegar a partir de rota sensível.
+const BREADCRUMB_URL_KEYS = /^(from|to|path|pathname|url|href)$/i;
+
+function sanitizeBreadcrumbData(data: BreadcrumbData): BreadcrumbData {
+  if (!data) return data;
+  const out: Record<string, Json> = {};
+  for (const [k, v] of Object.entries(data)) {
+    out[k] = BREADCRUMB_URL_KEYS.test(k) && typeof v === 'string' ? pathSemSegredo(v) : v;
+  }
+  return out;
+}
+
 export function addBreadcrumb(message: string, data?: BreadcrumbData) {
-  breadcrumbs.push({ message, data, timestamp: new Date().toISOString() });
+  breadcrumbs.push({
+    message,
+    data: sanitizeBreadcrumbData(data),
+    timestamp: new Date().toISOString(),
+  });
   if (breadcrumbs.length > MAX_BREADCRUMBS) breadcrumbs.shift();
 }
 

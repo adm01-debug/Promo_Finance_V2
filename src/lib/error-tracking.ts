@@ -126,6 +126,25 @@ export function reportErrorToTracker(error: Error, componentStack?: string) {
  * Sem `dsn` (VITE_SENTRY_DSN não configurada no ambiente), não faz nada —
  * errorTracker continua caindo no fallback de console, sem quebrar a app.
  */
+// Redige tokens embutidos em path antes de qualquer saída (Sentry e
+// telemetria persistida) — /convite/:token e /contador/:token são
+// credenciais utilizáveis, não parâmetros de navegação. Decodifica
+// URL-encoding (%2Fconvite%2F<token> em ?redirect=) e remove query/hash
+// por completo: GETs carregam busca digitada, CPF/CNPJ e e-mail, e o SDK
+// grava request.url cru mesmo com urlQueryParams:false.
+function redactPath(url: string): string {
+  let u = url;
+  try {
+    u = decodeURIComponent(u);
+  } catch {
+    // URL parcialmente encodada — redige o que for possível no texto cru.
+  }
+  return u
+    .split('#')[0]
+    .split('?')[0]
+    .replace(/(\/(?:convite|contador)\/)[^/\s]+/gi, '$1[redacted]');
+}
+
 export function initSentry(dsn: string | undefined, environment: string) {
   if (!dsn) {
     if (import.meta.env.DEV)
@@ -160,15 +179,30 @@ export function initSentry(dsn: string | undefined, environment: string) {
       // Nunca deixa vazar payload de request/response completo (pode conter
       // dado financeiro) — só stack trace e mensagem.
       if (event.request) delete event.request.data;
-      // urlQueryParams:false cobre só '?query' — tokens embutidos no path
-      // (/convite/:token, /contador/:token) chegariam crus ao Sentry.
-      const redactPath = (url: string) =>
-        url.replace(/(\/(?:convite|contador)\/)[^/?#]+/i, '$1[redacted]');
       if (event.request?.url) event.request.url = redactPath(event.request.url);
+      // Referer cru carrega a URL da página anterior — um reload saindo de
+      // /convite/:token vazaria o token neste header.
+      const headers = event.request?.headers;
+      if (headers) {
+        for (const k of Object.keys(headers)) {
+          if (k.toLowerCase() === 'referer' && typeof headers[k] === 'string') {
+            headers[k] = redactPath(headers[k]);
+          }
+        }
+      }
+      // Rota da transação no evento de erro também carrega o path cru.
+      if (typeof event.transaction === 'string') {
+        event.transaction = redactPath(event.transaction);
+      }
       for (const b of event.breadcrumbs ?? []) {
         if (b.category === 'navigation' && b.data) {
           if (typeof b.data.from === 'string') b.data.from = redactPath(b.data.from);
           if (typeof b.data.to === 'string') b.data.to = redactPath(b.data.to);
+        }
+        // Breadcrumbs de fetch/XHR carregam data.url CRUA — urlQueryParams
+        // não os cobre (GETs PostgREST embutem busca/CPF/e-mail no path+query).
+        if (b.data && typeof b.data.url === 'string') {
+          b.data.url = redactPath(b.data.url);
         }
       }
       // `extra` é preenchido por call-sites (reportEdgeError, withErrorTracking
@@ -177,6 +211,23 @@ export function initSentry(dsn: string | undefined, environment: string) {
       // conteúdo genericamente aqui, a opção segura é não enviar `extra`
       // nenhum ao Sentry — só stack trace, mensagem e tags estruturadas.
       if (event.extra) delete event.extra;
+      return event;
+    },
+    // Transactions NÃO passam por beforeSend — sem este hook a rota sensível
+    // (event.transaction='/convite/<token>') e a URL crua dos spans de
+    // navegação/fetch iriam direto ao Sentry.
+    beforeSendTransaction(event) {
+      if (typeof event.transaction === 'string') {
+        event.transaction = redactPath(event.transaction);
+      }
+      if (event.request?.url) event.request.url = redactPath(event.request.url);
+      for (const span of event.spans ?? []) {
+        if (typeof span.description === 'string') {
+          span.description = redactPath(span.description);
+        }
+        const data = span.data as Record<string, unknown> | undefined;
+        if (data && typeof data.url === 'string') data.url = redactPath(data.url);
+      }
       return event;
     },
   });
