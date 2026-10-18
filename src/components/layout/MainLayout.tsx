@@ -13,7 +13,6 @@ import { ContextualBreadcrumbs } from '@/components/navigation/ContextualBreadcr
 import { OfflineBanner } from '@/components/offline/OfflineBanner';
 import { InstallPWA } from '@/components/pwa/InstallPWA';
 import { PWAInstallBanner } from '@/components/pwa/PWAInstallBanner';
-import { SkipLinks } from '@/components/accessibility/SkipLinks';
 import { MobileBottomNav } from './sidebar/MobileBottomNav';
 import { MobileSidebarDrawer } from './sidebar/MobileSidebarDrawer';
 import { MobileHeader } from './MobileHeader';
@@ -43,9 +42,6 @@ export const MainLayout = ({ children }: MainLayoutProps) => {
 
   return (
     <div className="min-h-screen bg-background text-foreground font-sans antialiased">
-      {/* Skip links para acessibilidade WCAG AA */}
-      <SkipLinks />
-
       {/* Banner de instalação PWA (só aparece se beforeinstallprompt disparou) */}
       <PWAInstallBanner />
 

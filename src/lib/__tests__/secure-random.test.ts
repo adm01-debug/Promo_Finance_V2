@@ -12,10 +12,10 @@ describe('secureRandomInt', () => {
     }
   });
 
-  it('handles a single-element range and inverted bounds', () => {
+  it('handles a single-element range and rejects inverted bounds', () => {
     expect(secureRandomInt(5, 6)).toBe(5);
     expect(secureRandomInt(7, 7)).toBe(7);
-    expect(secureRandomInt(9, 3)).toBe(9);
+    expect(() => secureRandomInt(9, 3)).toThrow(RangeError);
   });
 
   it('rejects ranges wider than the 32-bit source instead of looping', () => {
