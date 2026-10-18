@@ -1,0 +1,42 @@
+name: Migration Ledger Check
+
+# Diagnóstico READ-ONLY: compara o ledger remoto
+# (supabase_migrations.schema_migrations) com as versões locais de
+# supabase/migrations/. Explica falhas do "Supabase Preview"
+# ("Remote migration versions not found in local migrations directory")
+# sem precisar de PROD_DB_URL — `supabase migration list` usa o projeto
+# linkado via SUPABASE_ACCESS_TOKEN + SUPABASE_DB_PASSWORD.
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  ledger:
+    name: Remote × local migration ledger
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    environment: Production
+    steps:
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+        with:
+          persist-credentials: false
+
+      - uses: supabase/setup-cli@1dedf2c611547ede7232d26866dd3c56ab903bbb # v1
+        with:
+          version: 2.22.6
+
+      - name: Ledger remoto × local
+        env:
+          SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
+          SUPABASE_PROJECT_REF: ${{ vars.VITE_SUPABASE_PROJECT_ID }}
+          SUPABASE_DB_PASSWORD: ${{ secrets.SUPABASE_DB_PASSWORD }}
+        run: |
+          set -euo pipefail
+          supabase link --project-ref "$SUPABASE_PROJECT_REF" --password "$SUPABASE_DB_PASSWORD"
+          supabase migration list 2>&1 | tee /tmp/migration-list.txt
+          echo "---- resumo ----"
+          echo "Só no remoto (falta arquivo local — causa do preview quebrado):"
+          awk -F'|' '$1 !~ /[0-9]/ && $2 ~ /[0-9]/ {print}' /tmp/migration-list.txt | head -40 || true
