@@ -1,6 +1,3 @@
-#!/usr/bin/env sh
-. "$(dirname -- "$0")/_/husky.sh"
-
 # Antecipa os dois gates que mais reprovam PR no CI, mas só os baratos:
 # type-check e os testes afetados pelo diff contra origin/main. A suíte
 # completa, o build e os E2E continuam sendo responsabilidade do CI.
