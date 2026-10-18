@@ -18,6 +18,12 @@ describe('secureRandomInt', () => {
     expect(secureRandomInt(9, 3)).toBe(9);
   });
 
+  it('rejects ranges wider than the 32-bit source instead of looping', () => {
+    expect(() => secureRandomInt(0, 0x100000001)).toThrow(RangeError);
+    expect(() => secureRandomInt(0, Infinity)).toThrow(RangeError);
+    expect(() => secureRandomInt(0, NaN)).toThrow(RangeError);
+  });
+
   it('covers the full range without a crypto dependency', () => {
     const seen = new Set<number>();
     for (let i = 0; i < 200; i++) seen.add(secureRandomInt(0, 10));

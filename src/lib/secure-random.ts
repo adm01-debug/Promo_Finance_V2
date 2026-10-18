@@ -28,6 +28,9 @@ function nextUint32(): number {
 export function secureRandomInt(min: number, max: number): number {
   const range = max - min;
   if (range <= 0) return min;
+  if (!Number.isFinite(range) || range > 0x100000000) {
+    throw new RangeError('secureRandomInt: intervalo maior que 2^32');
+  }
   // Maior múltiplo de `range` que cabe em 2^32: valores acima são
   // rejeitados para que todos os resultados saiam com a mesma chance.
   const limit = Math.floor(0x100000000 / range) * range;
