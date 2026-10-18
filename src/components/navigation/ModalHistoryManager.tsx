@@ -17,7 +17,6 @@ import {
 
 // Apenas [role="dialog"]: alertdialogs ficam fora de propósito — exigem
 // decisão explícita e o Radix já trata o Escape deles via onOpenChange.
-// Voltar consumir o marcador.
 // O tratamento do marcador órfão pós-reload roda uma única vez por
 // sessão — StrictMode remonta o efeito e um segundo history.back()
 // ultrapassaria a entrada real.

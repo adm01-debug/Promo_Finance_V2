@@ -30,13 +30,20 @@ export function DrawerAnexosTab({ anexos }: { anexos: Anexo[] }) {
     const caminho =
       a.storage_path ??
       ((a.url ?? a.url_publica) ? caminhoNoStorage(a.url ?? a.url_publica) : null);
-    if (!caminho) return;
-    const { data, error } = await supabase.storage.from(BUCKET).createSignedUrl(caminho, 60);
-    if (error || !data?.signedUrl) {
-      toast.error('Não foi possível abrir o anexo.');
+    if (!caminho) {
+      toast.error('Anexo sem caminho de storage válido.');
       return;
     }
-    window.open(data.signedUrl, '_blank', 'noopener,noreferrer');
+    try {
+      const { data, error } = await supabase.storage.from(BUCKET).createSignedUrl(caminho, 60);
+      if (error || !data?.signedUrl) {
+        toast.error('Não foi possível abrir o anexo.');
+        return;
+      }
+      window.open(data.signedUrl, '_blank', 'noopener,noreferrer');
+    } catch {
+      toast.error('Não foi possível abrir o anexo.');
+    }
   };
 
   return (

@@ -12,6 +12,7 @@ import { NavigationTracker } from '@/components/providers/NavigationTracker';
 import { ErrorBoundary } from '@/components/error/ErrorBoundary';
 import { PageLoading } from '@/components/ui/loading-skeleton';
 import { SkipLinks } from '@/components/accessibility/SkipLinks';
+import { MotionConfig } from 'framer-motion';
 import { ProtectedRoute } from '@/components/auth/ProtectedRoute';
 import { CommandPalette } from '@/components/command-palette/CommandPalette';
 import { StartupDiagnostic } from '@/components/common/StartupDiagnostic';
@@ -1171,7 +1172,9 @@ function App() {
               <StartupDiagnostic>
                 <BrowserRouter>
                   <TransitionProvider>
-                    <AppRoutes />
+                    <MotionConfig reducedMotion="user">
+                      <AppRoutes />
+                    </MotionConfig>
                   </TransitionProvider>
                 </BrowserRouter>
               </StartupDiagnostic>

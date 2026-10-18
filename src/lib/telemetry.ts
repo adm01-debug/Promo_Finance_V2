@@ -54,15 +54,23 @@ let flushTimer: ReturnType<typeof setTimeout> | null = null;
 // URLs persistidas vão sem query/hash: parâmetros carregam segredos de
 // fluxo (tokens de convite, magic links) que não devem pousar em
 // frontend_error_logs/frontend_performance_logs.
+// Rotas que embutem segredo no path. O React Router casa case-insensitive
+// e tolera trailing slash/sub-path — prefixo + toLowerCase cobre todos os
+// casos (mesma regra de isSensitiveRoute em src/lib/navigation.ts).
+const SENSITIVE_PATH_PREFIXES = ['/convite/', '/contador/'];
+
+function pathSemSegredo(pathname: string): string {
+  const lower = pathname.toLowerCase();
+  const prefixo = SENSITIVE_PATH_PREFIXES.find((p) => lower.startsWith(p));
+  return prefixo ? pathname.slice(0, prefixo.length) + '[redacted]' : pathname;
+}
+
 function urlSanitizada(urlCompleta: string): string {
   try {
     const u = new URL(urlCompleta);
-    // Rotas que embutem segredos no próprio path — o token não pode
-    // pousar no log nem por pathname.
-    const path = u.pathname.replace(/^\/(convite|contador)\/[^/]+$/, '/$1/[redacted]');
-    return u.origin + path;
+    return u.origin + pathSemSegredo(u.pathname);
   } catch {
-    return window.location.origin + window.location.pathname;
+    return window.location.origin + pathSemSegredo(window.location.pathname);
   }
 }
 

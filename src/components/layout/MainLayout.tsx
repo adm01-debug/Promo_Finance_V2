@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { motion, MotionConfig } from 'framer-motion';
+import { motion } from 'framer-motion';
 import { useLocation } from 'react-router-dom';
 import { ResponsiveSidebar } from './ResponsiveSidebar';
 import { Header } from './Header';
@@ -13,7 +13,6 @@ import { ContextualBreadcrumbs } from '@/components/navigation/ContextualBreadcr
 import { OfflineBanner } from '@/components/offline/OfflineBanner';
 import { InstallPWA } from '@/components/pwa/InstallPWA';
 import { PWAInstallBanner } from '@/components/pwa/PWAInstallBanner';
-import { SkipLinks } from '@/components/accessibility/SkipLinks';
 import { MobileBottomNav } from './sidebar/MobileBottomNav';
 import { MobileSidebarDrawer } from './sidebar/MobileSidebarDrawer';
 import { MobileHeader } from './MobileHeader';
@@ -42,90 +41,83 @@ export const MainLayout = ({ children }: MainLayoutProps) => {
   const showOnboarding = location.pathname === '/';
 
   return (
-    // reducedMotion="user" faz o framer-motion desligar transform/layout
-    // animations quando o SO pede redução de movimento (a11y).
-    <MotionConfig reducedMotion="user">
-      <div className="min-h-screen bg-background text-foreground font-sans antialiased">
-        {/* Skip links para acessibilidade WCAG AA */}
-        <SkipLinks />
+    <div className="min-h-screen bg-background text-foreground font-sans antialiased">
+      {/* Banner de instalação PWA (só aparece se beforeinstallprompt disparou) */}
+      <PWAInstallBanner />
 
-        {/* Banner de instalação PWA (só aparece se beforeinstallprompt disparou) */}
-        <PWAInstallBanner />
+      {/* Guided Tour for new users */}
+      <GuidedTour />
 
-        {/* Guided Tour for new users */}
-        <GuidedTour />
+      {/* Onboarding Tour P14 (react-joyride) */}
+      <OnboardingTour />
 
-        {/* Onboarding Tour P14 (react-joyride) */}
-        <OnboardingTour />
+      {/* Offline Banner */}
+      <OfflineBanner position="top" />
 
-        {/* Offline Banner */}
-        <OfflineBanner position="top" />
+      {/* Responsive Sidebar - Desktop */}
+      {!isMobile && <ResponsiveSidebar onCollapseChange={setSidebarCollapsed} />}
 
-        {/* Responsive Sidebar - Desktop */}
-        {!isMobile && <ResponsiveSidebar onCollapseChange={setSidebarCollapsed} />}
+      {/* Mobile Sidebar Drawer */}
+      {isMobile && (
+        <MobileSidebarDrawer isOpen={mobileMenuOpen} onClose={() => setMobileMenuOpen(false)} />
+      )}
 
-        {/* Mobile Sidebar Drawer */}
-        {isMobile && (
-          <MobileSidebarDrawer isOpen={mobileMenuOpen} onClose={() => setMobileMenuOpen(false)} />
+      {/* Header - only show on desktop; MobileHeader com Voltar visível no mobile */}
+      {!isMobile && <Header sidebarCollapsed={sidebarCollapsed} />}
+      {isMobile && <MobileHeader />}
+
+      {/* Network status indicator - fixed position */}
+      <div
+        className={cn(
+          'fixed z-40 flex items-center gap-2',
+          isMobile ? 'bottom-20 right-4' : 'bottom-4 right-4'
         )}
-
-        {/* Header - only show on desktop; MobileHeader com Voltar visível no mobile */}
-        {!isMobile && <Header sidebarCollapsed={sidebarCollapsed} />}
-        {isMobile && <MobileHeader />}
-
-        {/* Network status indicator - fixed position */}
-        <div
-          className={cn(
-            'fixed z-40 flex items-center gap-2',
-            isMobile ? 'bottom-20 right-4' : 'bottom-4 right-4'
-          )}
-        >
-          <InstallPWA />
-          <NetworkStatusIndicator showDetails />
-        </div>
-
-        <motion.main
-          id="main-content"
-          initial={false}
-          animate={{
-            marginLeft: isMobile ? 0 : sidebarCollapsed ? 80 : 280,
-          }}
-          transition={{ duration: 0.5, ease: [0.25, 0.1, 0.25, 1] }}
-          className={cn(
-            'min-h-screen w-full transition-all duration-500',
-            isMobile ? 'pt-[calc(4rem+env(safe-area-inset-top))] pb-24' : 'pt-20'
-          )}
-          style={{
-            width: isMobile ? '100%' : `calc(100% - ${sidebarCollapsed ? 80 : 280}px)`,
-          }}
-        >
-          <div className="layout-container w-full">
-            {/* Contextual Breadcrumbs with Back Button */}
-            <div className="mb-8">
-              <ContextualBreadcrumbs />
-            </div>
-
-            {/* Onboarding Checklist - show on dashboard */}
-            {showOnboarding && (
-              <div className="mb-10 max-w-md">
-                <OnboardingChecklist />
-              </div>
-            )}
-
-            {/* Stagger Vela (Z2/Z1): wrapper separado do motion.div para o
-              fill-mode do CSS não pinar opacity e matar o exit do framer */}
-            <PageTransition>
-              <div className="vela-page-enter">{children}</div>
-            </PageTransition>
-          </div>
-        </motion.main>
-
-        {/* Mobile Bottom Navigation */}
-        {isMobile && <MobileBottomNav onMenuClick={() => setMobileMenuOpen(true)} />}
-
-        {/* Copilot Global IA P14 */}
-        <CopilotGlobalFloat />
+      >
+        <InstallPWA />
+        <NetworkStatusIndicator showDetails />
       </div>
-    </MotionConfig>
+
+      <motion.main
+        id="main-content"
+        initial={false}
+        animate={{
+          marginLeft: isMobile ? 0 : sidebarCollapsed ? 80 : 280,
+        }}
+        transition={{ duration: 0.5, ease: [0.25, 0.1, 0.25, 1] }}
+        className={cn(
+          'min-h-screen w-full transition-all duration-500',
+          isMobile ? 'pt-[calc(4rem+env(safe-area-inset-top))] pb-24' : 'pt-20'
+        )}
+        style={{
+          width: isMobile ? '100%' : `calc(100% - ${sidebarCollapsed ? 80 : 280}px)`,
+        }}
+      >
+        <div className="layout-container w-full">
+          {/* Contextual Breadcrumbs with Back Button */}
+          <div className="mb-8">
+            <ContextualBreadcrumbs />
+          </div>
+
+          {/* Onboarding Checklist - show on dashboard */}
+          {showOnboarding && (
+            <div className="mb-10 max-w-md">
+              <OnboardingChecklist />
+            </div>
+          )}
+
+          {/* Stagger Vela (Z2/Z1): wrapper separado do motion.div para o
+              fill-mode do CSS não pinar opacity e matar o exit do framer */}
+          <PageTransition>
+            <div className="vela-page-enter">{children}</div>
+          </PageTransition>
+        </div>
+      </motion.main>
+
+      {/* Mobile Bottom Navigation */}
+      {isMobile && <MobileBottomNav onMenuClick={() => setMobileMenuOpen(true)} />}
+
+      {/* Copilot Global IA P14 */}
+      <CopilotGlobalFloat />
+    </div>
   );
 };

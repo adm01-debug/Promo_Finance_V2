@@ -391,9 +391,11 @@ jobs:
       - name: Build check
         run: bun run build
         env:
-          VITE_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL }}
-          VITE_SUPABASE_PROJECT_ID: ${{ secrets.VITE_SUPABASE_PROJECT_ID }}
-          VITE_SUPABASE_PUBLISHABLE_KEY: ${{ secrets.VITE_SUPABASE_PUBLISHABLE_KEY }}
+          # Runs de dependabot não recebem secrets — fallbacks não-sensíveis
+          # (URL/ref são públicos; a key é placeholder só p/ o assert do build).
+          VITE_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL || 'https://bwwbeyolnnzppeuhgkcd.supabase.co' }}
+          VITE_SUPABASE_PROJECT_ID: ${{ secrets.VITE_SUPABASE_PROJECT_ID || 'bwwbeyolnnzppeuhgkcd' }}
+          VITE_SUPABASE_PUBLISHABLE_KEY: ${{ secrets.VITE_SUPABASE_PUBLISHABLE_KEY || 'sb_publishable_dependabot_build_only' }}
 
       - name: Gate de tamanho de bundle (etapa 50)
         # Impede regressão silenciosa de bundle: nenhum chunk JS individual

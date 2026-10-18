@@ -157,7 +157,7 @@ jobs:
           exit 1
 
       - name: Run Supabase linter (fail on ERROR)
-        if: steps.filter.outputs.relevant == 'true' && steps.db_pwd_preflight.outputs.available == 'true'
+        if: steps.filter.outputs.relevant == 'true' && steps.db_pwd_preflight.outputs.available == 'true' && github.actor != 'dependabot[bot]'
         env:
           SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
           SUPABASE_PROJECT_REF: ${{ vars.VITE_SUPABASE_PROJECT_ID }}

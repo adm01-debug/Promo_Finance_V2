@@ -29,8 +29,11 @@ export function secureRandomInt(min: number, max: number): number {
   if (!Number.isInteger(min) || !Number.isInteger(max)) {
     throw new RangeError('secureRandomInt: min e max precisam ser inteiros');
   }
+  if (min > max) {
+    throw new RangeError('secureRandomInt: min maior que max');
+  }
   const range = max - min;
-  if (range <= 0) return min;
+  if (range === 0) return min;
   if (!Number.isFinite(range) || range > 0x100000000) {
     throw new RangeError('secureRandomInt: intervalo maior que 2^32');
   }
