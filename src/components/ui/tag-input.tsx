@@ -1,6 +1,7 @@
 import { useState, useRef, useCallback, KeyboardEvent } from 'react';
 import { X } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { secureRandomInt } from '@/lib/secure-random';
 
 interface Tag {
   id: string;
@@ -58,10 +59,7 @@ export function TagInput({
       !tags.some((t) => t.id === s.id) && s.label.toLowerCase().includes(inputValue.toLowerCase())
   );
 
-  const getRandomColor = useCallback(
-    () => colors[Math.floor(Math.random() * colors.length)],
-    [colors]
-  );
+  const getRandomColor = useCallback(() => colors[secureRandomInt(0, colors.length)], [colors]);
 
   const addTag = useCallback(
     (tag: Tag | string) => {

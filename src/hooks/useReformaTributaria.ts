@@ -6,6 +6,7 @@ import { useState, useMemo, useCallback, useEffect } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
+import { secureRandomInt } from '@/lib/secure-random';
 import {
   RegimeEspecial,
   CategoriaIS,
@@ -212,9 +213,15 @@ export function useReformaTributaria(empresaIdFiltro?: string) {
   // ========================
 
   useEffect(() => {
+    // randomUUID só existe em contexto seguro — fora dele (WebView, HTTP
+    // via IP) cai para o helper inteiro sem quebrar o realtime.
+    const channelSuffix =
+      typeof crypto !== 'undefined' && typeof crypto.randomUUID === 'function'
+        ? crypto.randomUUID().split('-')[0]
+        : secureRandomInt(0, 0x100000000).toString(16).padStart(8, '0');
     const channel = supabase
       .channel(
-        `reforma-tributaria-realtime-${empresaId ?? 'all'}-${anoReferencia}-${Math.random().toString(36).slice(2, 8)}`
+        `reforma-tributaria-realtime-${empresaId ?? 'all'}-${anoReferencia}-${channelSuffix}`
       )
       .on(
         'postgres_changes',
