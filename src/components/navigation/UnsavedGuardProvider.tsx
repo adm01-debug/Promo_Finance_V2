@@ -173,7 +173,14 @@ export function UnsavedGuardProvider({ children }: { children: React.ReactNode }
         // no-op e o form segue montado e sujo — rearma a sentinela,
         // senão a próxima saída descartaria as edições sem aviso.
         window.setTimeout(() => {
+          // Se a flag ainda estiver marcada é porque o popstate do back()
+          // nunca chegou — limpa em QUALQUER desfecho (rearm impossível por
+          // dirty limpo, nova sentinela ou state mudado), senão o próximo
+          // popstate real seria engolido como nosso.
+          leavingOwnPopRef.current = false;
           if (window.history.state === before && dirtyRef.current && !sentinelActiveRef.current) {
+            // O back() foi no-op (aba nova sem entrada anterior) — rearma
+            // a sentinela para a próxima saída não descartar edições.
             window.history.pushState(artificialHistoryState(SENTINEL), '');
             dropForwardEntries();
             sentinelActiveRef.current = true;

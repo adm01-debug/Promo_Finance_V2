@@ -160,6 +160,17 @@ export function initSentry(dsn: string | undefined, environment: string) {
       // Nunca deixa vazar payload de request/response completo (pode conter
       // dado financeiro) — só stack trace e mensagem.
       if (event.request) delete event.request.data;
+      // urlQueryParams:false cobre só '?query' — tokens embutidos no path
+      // (/convite/:token, /contador/:token) chegariam crus ao Sentry.
+      const redactPath = (url: string) =>
+        url.replace(/(\/(?:convite|contador)\/)[^/?#]+/i, '$1[redacted]');
+      if (event.request?.url) event.request.url = redactPath(event.request.url);
+      for (const b of event.breadcrumbs ?? []) {
+        if (b.category === 'navigation' && b.data) {
+          if (typeof b.data.from === 'string') b.data.from = redactPath(b.data.from);
+          if (typeof b.data.to === 'string') b.data.to = redactPath(b.data.to);
+        }
+      }
       // `extra` é preenchido por call-sites (reportEdgeError, withErrorTracking
       // etc.) que podem incluir corpo de resposta HTTP ou argumentos de função
       // com dado de negócio (valores, CPF/CNPJ). Sem forma de sanitizar o

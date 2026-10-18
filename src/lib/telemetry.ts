@@ -51,12 +51,35 @@ const MAX_QUEUE = 50;
 const FLUSH_DEBOUNCE_MS = 2000;
 let flushTimer: ReturnType<typeof setTimeout> | null = null;
 
+// URLs persistidas vão sem query/hash: parâmetros carregam segredos de
+// fluxo (tokens de convite, magic links) que não devem pousar em
+// frontend_error_logs/frontend_performance_logs.
+// Rotas que embutem segredo no path. O React Router casa case-insensitive
+// e tolera trailing slash/sub-path — prefixo + toLowerCase cobre todos os
+// casos (mesma regra de isSensitiveRoute em src/lib/navigation.ts).
+const SENSITIVE_PATH_PREFIXES = ['/convite/', '/contador/'];
+
+function pathSemSegredo(pathname: string): string {
+  const lower = pathname.toLowerCase();
+  const prefixo = SENSITIVE_PATH_PREFIXES.find((p) => lower.startsWith(p));
+  return prefixo ? pathname.slice(0, prefixo.length) + '[redacted]' : pathname;
+}
+
+function urlSanitizada(urlCompleta: string): string {
+  try {
+    const u = new URL(urlCompleta);
+    return u.origin + pathSemSegredo(u.pathname);
+  } catch {
+    return window.location.origin + pathSemSegredo(window.location.pathname);
+  }
+}
+
 function buildErrorRows(userId: string | null, batch: TelemetryPayload[]) {
   return batch.map((p) => ({
     user_id: userId,
     error_message: p.message.slice(0, 2000),
     error_stack: p.stack?.slice(0, 8000) ?? null,
-    url: p.url ?? window.location.href,
+    url: urlSanitizada(p.url ?? window.location.href),
     user_agent: p.user_agent ?? navigator.userAgent,
     severity: p.severity ?? 'error',
     metadata: { ...(p.context ?? {}), breadcrumbs: p.breadcrumbs },
@@ -69,7 +92,7 @@ function buildPerfRows(userId: string | null, batch: Metric[]) {
     metric_name: m.name,
     value: m.value,
     rating: m.rating,
-    url: window.location.href,
+    url: urlSanitizada(window.location.href),
     user_agent: navigator.userAgent,
     navigation_type: (m as Metric & { navigationType?: string }).navigationType || 'navigate',
   }));
@@ -199,7 +222,7 @@ export function initTelemetry(): void {
     reportError({
       message: event.message || 'Unknown error',
       stack: event.error?.stack,
-      url: event.filename || window.location.href,
+      url: event.filename || urlSanitizada(window.location.href),
       severity: 'error',
       context: { lineno: event.lineno, colno: event.colno },
     });
