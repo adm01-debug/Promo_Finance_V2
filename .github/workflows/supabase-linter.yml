@@ -45,6 +45,9 @@ permissions:
 jobs:
   supabase-linter:
     name: Supabase DB Linter
+    # Runs de dependabot não recebem secrets — todos os gates live
+    # morreriam no env-check.
+    if: github.actor != 'dependabot[bot]'
     runs-on: ubuntu-latest
     timeout-minutes: 10
     environment: Production
