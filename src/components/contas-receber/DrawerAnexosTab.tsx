@@ -36,7 +36,12 @@ export function DrawerAnexosTab({ anexos }: { anexos: Anexo[] }) {
     }
     // Aba aberta durante o gesto do usuário: window.open após await é
     // bloqueado no Safari (ativação transitória expira no fetch assíncrono).
-    const abaNova = window.open('', '_blank', 'noopener,noreferrer');
+    // NÃO usar 'noopener' aqui: com ele window.open retorna null e perderíamos
+    // a referência para navegar a aba depois do await (o fallback levava o
+    // usuário para a signed URL na aba atual e deixava uma aba vazia morta).
+    const abaNova = window.open('', '_blank');
+    // opener cortado manualmente — mesmo efeito do noopener, sem perder a ref.
+    if (abaNova) abaNova.opener = null;
     try {
       const { data, error } = await supabase.storage.from(BUCKET).createSignedUrl(caminho, 60);
       if (error || !data?.signedUrl) {
