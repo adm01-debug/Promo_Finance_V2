@@ -34,14 +34,24 @@ export function DrawerAnexosTab({ anexos }: { anexos: Anexo[] }) {
       toast.error('Anexo sem caminho de storage válido.');
       return;
     }
+    // Aba aberta durante o gesto do usuário: window.open após await é
+    // bloqueado no Safari (ativação transitória expira no fetch assíncrono).
+    const abaNova = window.open('', '_blank', 'noopener,noreferrer');
     try {
       const { data, error } = await supabase.storage.from(BUCKET).createSignedUrl(caminho, 60);
       if (error || !data?.signedUrl) {
+        abaNova?.close();
         toast.error('Não foi possível abrir o anexo.');
         return;
       }
-      window.open(data.signedUrl, '_blank', 'noopener,noreferrer');
+      if (abaNova) {
+        abaNova.location = data.signedUrl;
+      } else {
+        // Popup bloqueado de vez — cai para a aba atual como último recurso.
+        window.location.assign(data.signedUrl);
+      }
     } catch {
+      abaNova?.close();
       toast.error('Não foi possível abrir o anexo.');
     }
   };
