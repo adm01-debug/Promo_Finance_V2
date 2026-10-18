@@ -24,9 +24,9 @@ jobs:
         with:
           persist-credentials: false
 
-      - uses: supabase/setup-cli@f3bfe6f4106d798ff76b6189cd6344a90c2de5d5 # v1.7.3
+      - uses: supabase/setup-cli@1dedf2c611547ede7232d26866dd3c56ab903bbb # v1
         with:
-          version: latest
+          version: 2.22.6
 
       - name: Ledger remoto × local
         env:
@@ -39,4 +39,4 @@ jobs:
           supabase migration list 2>&1 | tee /tmp/migration-list.txt
           echo "---- resumo ----"
           echo "Só no remoto (falta arquivo local — causa do preview quebrado):"
-          grep -E '^\s+[0-9]+\s+\|' /tmp/migration-list.txt | head -40 || true
+          awk -F'|' '$1 !~ /[0-9]/ && $2 ~ /[0-9]/ {print}' /tmp/migration-list.txt | head -40 || true
