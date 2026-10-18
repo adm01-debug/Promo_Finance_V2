@@ -1,5 +1,7 @@
 // CASH FLOW SCENARIO PROJECTIONS ENGINE
 
+import { secureRandom } from './secure-random';
+
 export type CenarioTipo = 'otimista' | 'realista' | 'pessimista';
 
 export interface CenarioConfig {
@@ -80,7 +82,7 @@ export function gerarProjecaoCenario(
     const receitasAjustadas =
       dia.receitas *
       config.multiplicadorReceitas *
-      (1 - config.probabilidadeAtraso * Math.random());
+      (1 - config.probabilidadeAtraso * secureRandom());
     const despesasAjustadas = dia.despesas * config.multiplicadorDespesas;
 
     saldoAcumulado = saldoAcumulado + receitasAjustadas - despesasAjustadas;

@@ -30,6 +30,7 @@ import { toast } from 'sonner';
 import { processarSefaz, SefazResponse } from '@/lib/sefaz-simulator';
 import { registrarEvento } from '@/lib/sefaz-event-logger';
 import { useEmpresas } from '@/hooks/useFinancialData';
+import { secureRandom } from '@/lib/secure-random';
 
 interface InutilizacaoFormData {
   empresa: string;
@@ -112,7 +113,7 @@ export function InutilizacaoNFe() {
     // Simula os passos de processamento
     for (const step of steps.slice(0, -1)) {
       setCurrentStep(step.id);
-      await new Promise((resolve) => setTimeout(resolve, 600 + Math.random() * 400));
+      await new Promise((resolve) => setTimeout(resolve, 600 + secureRandom() * 400));
     }
 
     // Processa com o simulador

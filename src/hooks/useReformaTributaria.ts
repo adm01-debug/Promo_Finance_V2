@@ -214,7 +214,7 @@ export function useReformaTributaria(empresaIdFiltro?: string) {
   useEffect(() => {
     const channel = supabase
       .channel(
-        `reforma-tributaria-realtime-${empresaId ?? 'all'}-${anoReferencia}-${Math.random().toString(36).slice(2, 8)}`
+        `reforma-tributaria-realtime-${empresaId ?? 'all'}-${anoReferencia}-${crypto.randomUUID().split('-')[0]}`
       )
       .on(
         'postgres_changes',
