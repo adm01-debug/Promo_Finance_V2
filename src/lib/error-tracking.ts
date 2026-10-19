@@ -170,10 +170,24 @@ function redactSpanData(data: Record<string, unknown> | undefined) {
 }
 
 // Redige mensagens livres (breadcrumb.message, event.message, logentry,
-// exception values) — um Error ou log com o path cru na string vazia o
-// token no título do evento sem passar por nenhum campo de URL.
+// exception values) sem cortar pontuação: só tokens que parecem URL/path
+// passam por redactPath (que remove query/hash — em texto livre um '?'
+// normal é pontuação, não separador de query). O restante do texto só
+// recebe a máscara de token embutido.
 function redactText(text: string): string {
-  return redactPath(text);
+  let t = text;
+  try {
+    t = decodeURIComponent(t);
+  } catch {
+    // parcialmente encodado — redige no texto cru
+  }
+  return t
+    .split(/(\s+)/)
+    .map((tok) =>
+      tok.startsWith('/') || /^(?:https?|wss?|ftp):\/\//i.test(tok) ? redactPath(tok) : tok
+    )
+    .join('')
+    .replace(/(\/(?:convite|contador)\/)[^/\s]+/gi, '$1[redacted]');
 }
 
 export function initSentry(dsn: string | undefined, environment: string) {

@@ -35,11 +35,20 @@ function sanitizeBreadcrumbValue(v: Json): Json {
   return v;
 }
 
+// Chaves fora da lista ainda podem conter containers com campos de URL
+// aninhados ({context:{url:'/convite/…'}}) — recursão só em containers;
+// strings comuns ficam intactas (redigir tudo apagaria texto legítimo).
+function sanitizeBreadcrumbNested(v: Json): Json {
+  if (Array.isArray(v)) return v.map(sanitizeBreadcrumbNested);
+  if (v !== null && typeof v === 'object') return sanitizeBreadcrumbData(v as BreadcrumbData) ?? v;
+  return v;
+}
+
 export function sanitizeBreadcrumbData(data: BreadcrumbData): BreadcrumbData {
   if (!data) return data;
   const out: Record<string, Json> = {};
   for (const [k, v] of Object.entries(data)) {
-    out[k] = BREADCRUMB_URL_KEYS.test(k) ? sanitizeBreadcrumbValue(v) : v;
+    out[k] = BREADCRUMB_URL_KEYS.test(k) ? sanitizeBreadcrumbValue(v) : sanitizeBreadcrumbNested(v);
   }
   return out;
 }

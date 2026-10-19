@@ -140,6 +140,10 @@ Deno.serve(
             }
           })();
           if (!appUrl) return null;
+          // A base configurada no servidor também precisa ser https (ou
+          // localhost em dev) — um APP_*_URL em http mandaria o token do
+          // convite por link em claro no e-mail.
+          if (appUrl.protocol !== 'https:' && appUrl.hostname !== 'localhost') return null;
           try {
             if (origin) {
               const u = new URL(origin);

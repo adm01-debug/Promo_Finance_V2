@@ -62,4 +62,16 @@ describe('sanitizeBreadcrumbData', () => {
     expect(state.other).toBe(1);
     expect(out?.outra).toBe('sem toque');
   });
+
+  it('redige chave de URL dentro de objeto aninhado em chave comum', () => {
+    const out = sanitizeBreadcrumbData({
+      context: { url: '/convite/TOK', detalhe: 'ok' },
+      lista: [{ to: '/contador/XYZ' }],
+    });
+    const context = out?.context as Record<string, unknown>;
+    expect(context.url).toBe('/convite/[redacted]');
+    expect(context.detalhe).toBe('ok');
+    const lista = out?.lista as Array<Record<string, unknown>>;
+    expect(lista[0].to).toBe('/contador/[redacted]');
+  });
 });
