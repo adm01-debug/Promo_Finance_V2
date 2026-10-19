@@ -132,7 +132,7 @@ export function reportErrorToTracker(error: Error, componentStack?: string) {
 // URL-encoding (%2Fconvite%2F<token> em ?redirect=) e remove query/hash
 // por completo: GETs carregam busca digitada, CPF/CNPJ e e-mail, e o SDK
 // grava request.url cru mesmo com urlQueryParams:false.
-function redactPath(url: string): string {
+export function redactPath(url: string): string {
   let u = url;
   try {
     u = decodeURIComponent(u);
@@ -143,6 +143,37 @@ function redactPath(url: string): string {
     .split('#')[0]
     .split('?')[0]
     .replace(/(\/(?:convite|contador)\/)[^/\s]+/gi, '$1[redacted]');
+}
+
+// Campos de span do Sentry v11 que carregam URL crua (attributes semânticos):
+// url.full/url.path nas pageload/navigation, http.request.header.referer
+// nos spans http (httpcontext integration). A chave v8 'url' fica por
+// segurança caso alguma integração ainda a emita.
+const SPAN_URL_ATTRS = [
+  'url.full',
+  'url.path',
+  'url.query',
+  'url.fragment',
+  'url',
+  'http.request.header.referer',
+];
+
+function redactSpanData(data: Record<string, unknown> | undefined) {
+  if (!data) return;
+  for (const key of SPAN_URL_ATTRS) {
+    const v = data[key];
+    if (typeof v === 'string') data[key] = redactPath(v);
+    else if (Array.isArray(v)) {
+      data[key] = v.map((item) => (typeof item === 'string' ? redactPath(item) : item));
+    }
+  }
+}
+
+// Redige mensagens livres (breadcrumb.message, event.message, logentry,
+// exception values) — um Error ou log com o path cru na string vazia o
+// token no título do evento sem passar por nenhum campo de URL.
+function redactText(text: string): string {
+  return redactPath(text);
 }
 
 export function initSentry(dsn: string | undefined, environment: string) {
@@ -204,7 +235,23 @@ export function initSentry(dsn: string | undefined, environment: string) {
         if (b.data && typeof b.data.url === 'string') {
           b.data.url = redactPath(b.data.url);
         }
+        // Breadcrumbs de console carregam message + data.arguments crus —
+        // qualquer console.error com location.pathname vaza o token.
+        if (typeof b.message === 'string') b.message = redactText(b.message);
+        if (b.data && Array.isArray(b.data.arguments)) {
+          b.data.arguments = b.data.arguments.map((a) =>
+            typeof a === 'string' ? redactText(a) : a
+          );
+        }
       }
+      // Mensagem do evento e valores das exceptions também são texto livre.
+      if (typeof event.message === 'string') event.message = redactText(event.message);
+      if (event.logentry?.message) event.logentry.message = redactText(event.logentry.message);
+      for (const ex of event.exception?.values ?? []) {
+        if (typeof ex.value === 'string') ex.value = redactText(ex.value);
+      }
+      // contexts.trace.data replica os attributes do root span (url.full etc.).
+      redactSpanData(event.contexts?.trace?.data as Record<string, unknown> | undefined);
       // `extra` é preenchido por call-sites (reportEdgeError, withErrorTracking
       // etc.) que podem incluir corpo de resposta HTTP ou argumentos de função
       // com dado de negócio (valores, CPF/CNPJ). Sem forma de sanitizar o
@@ -213,9 +260,20 @@ export function initSentry(dsn: string | undefined, environment: string) {
       if (event.extra) delete event.extra;
       return event;
     },
-    // Transactions NÃO passam por beforeSend — sem este hook a rota sensível
-    // (event.transaction='/convite/<token>') e a URL crua dos spans de
-    // navegação/fetch iriam direto ao Sentry.
+    // Transactions NÃO passam por beforeSend. No @sentry/react v11 o
+    // traceLifecycle default é 'stream': spans são enviados em stream e
+    // passam APENAS por beforeSendSpan (beforeSendTransaction é ignorado
+    // pelo SDK nesse modo). Mantemos os dois: se traceLifecycle mudar para
+    // 'static', transactions voltam a passar por beforeSendTransaction.
+    beforeSendSpan(span) {
+      // StreamedSpanJSON: 'name' (não 'description') + 'attributes' com os
+      // attributes semânticos crus (url.full etc.).
+      if (typeof span.name === 'string') {
+        span.name = redactPath(span.name);
+      }
+      redactSpanData(span.attributes as Record<string, unknown> | undefined);
+      return span;
+    },
     beforeSendTransaction(event) {
       if (typeof event.transaction === 'string') {
         event.transaction = redactPath(event.transaction);
@@ -225,8 +283,7 @@ export function initSentry(dsn: string | undefined, environment: string) {
         if (typeof span.description === 'string') {
           span.description = redactPath(span.description);
         }
-        const data = span.data as Record<string, unknown> | undefined;
-        if (data && typeof data.url === 'string') data.url = redactPath(data.url);
+        redactSpanData(span.data as Record<string, unknown> | undefined);
       }
       return event;
     },

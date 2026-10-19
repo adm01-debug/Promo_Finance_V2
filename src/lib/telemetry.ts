@@ -10,6 +10,7 @@
 import { supabase } from '@/integrations/supabase/client';
 import type { Json } from '@/integrations/supabase/types';
 import { logger } from '@/lib/logger';
+import { redactPath } from '@/lib/error-tracking';
 import { env } from '@/config/env';
 import { onCLS, onINP, onLCP, onFCP, onTTFB, Metric } from 'web-vitals';
 
@@ -22,13 +23,23 @@ const MAX_BREADCRUMBS = 20;
 // Chaves de breadcrumb que carregam URL/path — redigidas na entrada para
 // o token de /convite|contador/ nunca chegar a frontend_error_logs.metadata
 // quando um componente futuro navegar a partir de rota sensível.
-const BREADCRUMB_URL_KEYS = /^(from|to|path|pathname|url|href)$/i;
+const BREADCRUMB_URL_KEYS = /^(from|to|path|pathname|url|href|search|query|redirect|route|state)$/i;
 
-function sanitizeBreadcrumbData(data: BreadcrumbData): BreadcrumbData {
+// redactPath decodifica %2F, remove query/hash e cobre URLs absolutas —
+// pathSemSegredo só olha pathname relativo e deixaria
+// 'https://app/convite/<token>' passar cru.
+function sanitizeBreadcrumbValue(v: Json): Json {
+  if (typeof v === 'string') return redactPath(v);
+  if (Array.isArray(v)) return v.map(sanitizeBreadcrumbValue);
+  if (v !== null && typeof v === 'object') return sanitizeBreadcrumbData(v as BreadcrumbData) ?? v;
+  return v;
+}
+
+export function sanitizeBreadcrumbData(data: BreadcrumbData): BreadcrumbData {
   if (!data) return data;
   const out: Record<string, Json> = {};
   for (const [k, v] of Object.entries(data)) {
-    out[k] = BREADCRUMB_URL_KEYS.test(k) && typeof v === 'string' ? pathSemSegredo(v) : v;
+    out[k] = BREADCRUMB_URL_KEYS.test(k) ? sanitizeBreadcrumbValue(v) : v;
   }
   return out;
 }
@@ -95,7 +106,7 @@ function urlSanitizada(urlCompleta: string): string {
 function buildErrorRows(userId: string | null, batch: TelemetryPayload[]) {
   return batch.map((p) => ({
     user_id: userId,
-    error_message: p.message.slice(0, 2000),
+    error_message: redactPath(p.message).slice(0, 2000),
     error_stack: p.stack?.slice(0, 8000) ?? null,
     url: urlSanitizada(p.url ?? window.location.href),
     user_agent: p.user_agent ?? navigator.userAgent,

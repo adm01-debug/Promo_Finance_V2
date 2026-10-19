@@ -126,19 +126,38 @@ Deno.serve(
         }
 
         const resendKey = Deno.env.get('RESEND_API_KEY');
-        // `origin` do cliente só vale se for o mesmo host do app — um gestor
-        // não pode apontar o botão 'Aceitar convite' do e-mail para um domínio
-        // externo carregando o token real do convite.
+        // `origin` do cliente só vale se for https no mesmo host do app —
+        // um gestor não pode apontar o botão 'Aceitar convite' do e-mail
+        // para um domínio externo ou esquema em claro (http/ftp/ws/file)
+        // carregando o token real do convite. O retorno usa u.origin
+        // normalizado, nunca a string crua (path/query do chamador fora).
         const baseUrl = (() => {
+          const appUrl = (() => {
+            try {
+              return new URL(getAppBaseUrl());
+            } catch {
+              return null;
+            }
+          })();
+          if (!appUrl) return null;
           try {
-            const appHost = new URL(getAppBaseUrl()).host;
-            if (origin && new URL(origin).host === appHost) return origin;
+            if (origin) {
+              const u = new URL(origin);
+              const esquemaOk = u.protocol === 'https:' || u.hostname === 'localhost';
+              if (esquemaOk && u.host === appUrl.host) return u.origin;
+            }
           } catch {
             // origem inválida — ignora e usa a base do app
           }
-          return getAppBaseUrl();
-        })().replace(/\/+$/, '');
-        const link = `${baseUrl}/convite/${convite.token}`;
+          return appUrl.origin;
+        })();
+        if (!baseUrl) {
+          // APP_BASE_URL/APP_PUBLIC_URL/PUBLIC_APP_URL vazio ou inválido
+          // produziria um link relativo morto no e-mail — falha ruidosa.
+          console.error('[enviar-convite-organizacao] base URL do app não configurada');
+          return res({ error: 'URL pública do app não configurada no servidor.' }, 500);
+        }
+        const link = `${baseUrl.replace(/\/+$/, '')}/convite/${convite.token}`;
 
         if (!resendKey) {
           // Modo simulado: não falha o fluxo de criação do convite.

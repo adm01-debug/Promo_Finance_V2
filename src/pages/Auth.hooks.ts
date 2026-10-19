@@ -85,12 +85,19 @@ export function useAuthPage() {
 
   // Check if user is already logged in
   useEffect(() => {
+    // ?redirect= é escrito por fluxos que exigem sessão antes de continuar
+    // (ex.: /convite/:token vindo de AceitarConvite). Só aceita path
+    // interno — '//' ou outro esquema abriria open redirect.
+    const destino = (() => {
+      const r = new URLSearchParams(window.location.search).get('redirect') ?? '/';
+      return r.startsWith('/') && !r.startsWith('//') ? r : '/';
+    })();
     const checkUser = async () => {
       const {
         data: { session },
       } = await supabase.auth.getSession();
       if (session) {
-        navigate('/');
+        navigate(destino);
       }
     };
     checkUser();
@@ -99,7 +106,7 @@ export function useAuthPage() {
       data: { subscription },
     } = supabase.auth.onAuthStateChange((event, session) => {
       if (session) {
-        navigate('/');
+        navigate(destino);
       }
     });
 
