@@ -1,6 +1,6 @@
 # RELATÓRIO CI — Promo Finance V2
 
-> Gerado em: 2026-10-22  
+> Gerado em: 2026-10-22 (atualizado 14:00 UTC)  
 > Branch de correção: `claude/festive-maxwell-d32vus`
 
 ---
