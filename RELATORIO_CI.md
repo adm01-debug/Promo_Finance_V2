@@ -342,7 +342,7 @@ error TS2688: Cannot find type definition file for 'vitest/globals'.
 | Workflow | Run baseline (main, 2026-10-18) | Conclusion baseline | Run final (main, 2026-10-22) | Conclusion final | Regressão? |
 |---|---|---|---|---|---|
 | `schema-drift.yml` | [39211351056](https://github.com/adm01-debug/Promo_Finance_V2/actions/runs/39211351056) | ❌ failure | [39824076811](https://github.com/adm01-debug/Promo_Finance_V2/actions/runs/39824076811) | ✅ **success** | **Não** |
-| CI Pipeline | [39168277749](https://github.com/adm01-debug/Promo_Finance_V2/actions/runs/39168277749) | ✅ success | [39818486954](https://github.com/adm01-debug/Promo_Finance_V2/actions/runs/39818486954) | ✅ success | **Não** |
+| CI Pipeline | [39168277749](https://github.com/adm01-debug/Promo_Finance_V2/actions/runs/39168277749) | ✅ success | [39870765555](https://github.com/adm01-debug/Promo_Finance_V2/actions/runs/39870765555) | ✅ success | **Não** |
 | Supabase Linter | [39168277247](https://github.com/adm01-debug/Promo_Finance_V2/actions/runs/39168277247) | ✅ success | — (inalterado) | ✅ success | **Não** |
 | Deno Edge Tests | [39168277240](https://github.com/adm01-debug/Promo_Finance_V2/actions/runs/39168277240) | ✅ success | — (inalterado) | ✅ success | **Não** |
 | Graphify | [39168277239](https://github.com/adm01-debug/Promo_Finance_V2/actions/runs/39168277239) | ✅ success | — (inalterado) | ✅ success | **Não** |
@@ -388,3 +388,146 @@ error TS2688: Cannot find type definition file for 'vitest/globals'.
 **Resumo: 0/8 required checks ✅ com conclusão para `8f7d5c3`. Bloqueador único: CI Pipeline (ci.yml) sem runner alocado.**
 
 > Nota: Para commit `cedfb68` (anterior), 3/8 required checks passaram (Unit tests, Integration tests, Supabase DB Linter). Os 5 demais (Quality Gate, E2E × 3, gitleaks) pertencem ao ci.yml (run 39813659577, queued). O commit `8f7d5c3` cancelou esse run por `cancel-in-progress: true` e criou novo run (39814585373), ainda em fila.
+
+---
+
+## 9. PR #185 — Correção dompurify 3.4.16 → 3.4.17 (CVEs críticos)
+
+> Atualizado em: 2026-10-22T19:47Z
+
+### 9.1 — Causa raiz identificada
+
+O job `Quality Gate & Tests` do CI Pipeline (run [39838407484](https://github.com/adm01-debug/Promo_Finance_V2/actions/runs/39838407484), HEAD `ce19c6f`) falhou no step **"Security scan"**:
+
+```
+bun audit
+3 vulnerabilities found:
+  dompurify  3.4.16  GHSA-cg2g-xh64-v4q7 (CVSS 9.2 — critical)
+  dompurify  3.4.16  GHSA-mrv2-3pqr-j5jr (CVSS 8.8 — high)
+  dompurify  3.4.16  GHSA-c6gr-qvv4-5v3f (CVSS 5.3 — low)
+exit 1
+```
+
+Causa: `dompurify 3.4.16` tem 3 CVEs não ignorados pelo `bun audit` em `ci.yml`. O `bun audit --ignore` lista 10 CVEs aceitos, mas os CVEs do dompurify não estavam nessa lista.
+
+### 9.2 — Correção aplicada
+
+| Arquivo | Mudança | Commit |
+|---|---|---|
+| `package.json` | `"dompurify": "3.4.16"` → `"dompurify": "3.4.17"` | `e1fcf1f` |
+| `bun.lock` | Linha da versão + hash sha512 atualizados para 3.4.17 (hash verificado em registry.npmjs.org) | `e1fcf1f` |
+
+**Por que edição manual do bun.lock:** O proxy npm do container cloud (`europe-west*.pkg.dev/lovable-core-prod/sandbox-npm-cache/`) retorna HTTP 403 para pacotes não cacheados, bloqueando `bun add`. Hash sha512 verificado diretamente em `registry.npmjs.org/dompurify/-/dompurify-3.4.17.tgz`:
+```
+sha512-B/pSlYVHQ58kqISD/yDjuJ1yfzI34m1gF4lAod2bwSRhiN4K5Cl3H8Af7hqB2PmTL911tdEudnnXn5FnhRoz0w==
+```
+
+**Validação local:** Step "Security scan" → `bun audit` = `"No vulnerabilities found (checked 896 packages, 10 ignored)"` ✅
+
+### 9.3 — Estado do CI Pipeline — run [39841686305](https://github.com/adm01-debug/Promo_Finance_V2/actions/runs/39841686305)
+
+HEAD: `e1fcf1fdbb2e3a926fca304f1ef724a7b60171b2` (PR #185, branch `claude/festive-maxwell-d32vus`)
+
+| Job | Status | Completado em |
+|---|---|---|
+| Varredura de segredos (gitleaks) | ✅ success | 2026-10-22T19:40:44Z |
+| E2E Financeiro (offline) | ✅ success | 2026-10-22T19:41:45Z |
+| E2E Critical Gate | ✅ success | 2026-10-22T19:42:32Z |
+| Quality Gate & Tests | ⏳ in_progress — step 26 "Unit & Integration Tests" desde 19:42:31Z | — |
+
+Step "Security scan" do Quality Gate passou com `conclusion=success` às 19:40:41Z — confirmação direta de que os CVEs do dompurify foram eliminados.
+
+### 9.4 — Prova final ✅ CONCLUÍDO
+
+> Atualizado em: 2026-10-22T20:10 UTC
+
+#### CI Pipeline — run [39841686305](https://github.com/adm01-debug/Promo_Finance_V2/actions/runs/39841686305) attempt 2 (PR #185)
+
+| Job | Conclusão | Horário |
+|---|---|---|
+| Varredura de segredos (gitleaks) | ✅ success | 19:52:58Z |
+| E2E Financeiro (offline) | ✅ success | 19:53:27Z |
+| E2E Critical Gate | ✅ success | 19:54:18Z |
+| Quality Gate & Tests | ✅ success | 20:01:02Z |
+| E2E Destructive Logout | ✅ success | 20:02:07Z |
+
+**Merge PR #185:** squash em `810202d2cf7dba0c7c9d9f605a2149ea1bdc9f8d` (20:02:51Z)
+
+#### Schema drift — run [39845432511](https://github.com/adm01-debug/Promo_Finance_V2/actions/runs/39845432511) na main pós-merge
+
+| Job | Conclusão | Horário |
+|---|---|---|
+| Paridade migrations locais ↔ aplicadas em prod | ✅ success | 20:03:41Z |
+| Tipos TS regenerados ↔ commitados | ✅ success | 20:04:15Z |
+
+#### Tabela baseline × final — zero regressão
+
+| Workflow | Baseline (antes) | Final (após PR #185) | Delta |
+|---|---|---|---|
+| CI Pipeline | ✅ success (run 39168277749) | ✅ success (run 39841686305) | 0 |
+| Supabase Linter (RLS/GRANT gate) | ✅ success (run 39168277247) | ✅ (não alterado) | 0 |
+| Deno Edge Function Tests | ✅ success (run 39168277240) | ✅ (não alterado) | 0 |
+| Graphify — mapas privados | ✅ success (run 39168277239) | ✅ (não alterado) | 0 |
+| Workflow Linter (actionlint + zizmor) | ✅ success (run 39168277208) | ✅ (não alterado) | 0 |
+| CodeQL Analysis | ✅ success (run 39195406051) | ✅ (não alterado) | 0 |
+| bun in /. - Update | ✅ success (run 39277894719) | ✅ (não alterado) | 0 |
+| **Schema drift (types + migrations)** | **❌ failure (run 39788070869)** | **✅ success (run 39845432511)** | **+1 corrigido** |
+
+**Resultado:** 1 workflow corrigido de ❌ para ✅. Todos os outros permaneceram verdes. Zero regressões.
+
+---
+
+## 10. Bloqueio externo — `npm_and_yarn in /. for dompurify - Update` (run 39824093933)
+
+> Atualizado em: 2026-10-22T20:30 UTC
+
+### 10.1 — Identificação
+
+| Campo | Valor |
+|---|---|
+| Workflow | `Dependabot Updates` — job `npm_and_yarn in /. for dompurify - Update #1645759466` |
+| Run ID | [39824093933](https://github.com/adm01-debug/Promo_Finance_V2/actions/runs/39824093933) |
+| Conclusion | ❌ failure |
+| SHA no qual rodou | `d9a728b` (merge commit do PR #184 — **antes** da correção dompurify no PR #185) |
+| Data | 2026-10-22 |
+
+### 10.2 — Causa raiz
+
+```
+updater | ERROR <job_1645759466> Error during file fetching; aborting:
+Dependabot detected that Bun is misconfigured in this repository.
+Running `bun` results in the following error: This project has a `bun.lock`
+file but no `package-lock.json`, `yarn.lock` or `pnpm-lock.yaml`, which
+means it is managed by Bun. Dependabot's `npm_and_yarn` ecosystem cannot
+update `bun.lock`. Set `package-ecosystem: "bun"` in your dependabot.yml
+for this directory so Dependabot can update this project's dependencies correctly.
+```
+
+O run 39824093933 foi disparado pelo motor Dependabot com ecossistema `npm_and_yarn` no SHA `d9a728b`. Nesse SHA, o arquivo `.github/dependabot.yml` **já usava** `package-ecosystem: bun` para o diretório `/` — a configuração estava correta. O Dependabot, ao tentar criar o PR de atualização do dompurify (que ainda estava em 3.4.16 nesse SHA), usou internamente `npm_and_yarn`, pois o PR de atualização foi criado antes da migração do ecossistema entrar em vigor para aquele job específico.
+
+### 10.3 — Por que não pode ser corrigido
+
+1. **É infra externa:** O motor Dependabot roda fora do repositório. Não há arquivo YAML editável que force a re-execução desse run com outro ecossistema.
+2. **SHA obsoleto:** O run usou o SHA `d9a728b` (PR #184 mergeado). Nesse SHA, dompurify ainda era 3.4.16. O PR #185 atualizou dompurify para 3.4.17 no SHA `810202d2`. O PR Dependabot associado ao update de dompurify foi **fechado** automaticamente após o PR #185 ser mergeado.
+3. **Sem mecanismo de retry:** A API GitHub retornou recusa na tentativa de rerun (`cannot be retried`). O Dependabot não reagendará esse job para o SHA antigo.
+4. **Não é required check:** Confirmado via `get_branch_protection` — o workflow `Dependabot Updates` não é required check para merge na main.
+
+### 10.4 — Estado atual (após PR #185)
+
+O dompurify está em **3.4.17** na main desde o PR #185 (SHA `810202d2`, mergeado em 20:02:51Z). O `.github/dependabot.yml` usa `package-ecosystem: bun` corretamente. O Dependabot não criará um novo PR para atualizar dompurify pois já está na versão mais recente. Na próxima execução do `bun in /. - Update` (schedule semanal), o run usará o ecossistema `bun` e não reproduzirá a falha.
+
+### 10.5 — Inventário final completo (pós todas as correções)
+
+| Workflow | Último run | Conclusion | Observação |
+|---|---|---|---|
+| CI Pipeline | [39870765555](https://github.com/adm01-debug/Promo_Finance_V2/actions/runs/39870765555) | ✅ success | run pós-merge PR #187 (SHA 193a433f) — 5/5 jobs ✅ |
+| Schema drift (types + migrations) | [39845432511](https://github.com/adm01-debug/Promo_Finance_V2/actions/runs/39845432511) | ✅ success | corrigido nesta sessão |
+| Supabase Linter (RLS/GRANT gate) | [39168277247](https://github.com/adm01-debug/Promo_Finance_V2/actions/runs/39168277247) | ✅ success | inalterado |
+| Deno Edge Function Tests | [39870765572](https://github.com/adm01-debug/Promo_Finance_V2/actions/runs/39870765572) | ✅ success | run pós-merge PR #187 |
+| Graphify — mapas privados | [39845418327](https://github.com/adm01-debug/Promo_Finance_V2/actions/runs/39845418327) | ✅ success | inalterado |
+| Workflow Linter (actionlint + zizmor) | [39845418261](https://github.com/adm01-debug/Promo_Finance_V2/actions/runs/39845418261) | ✅ success | inalterado |
+| CodeQL Analysis | [39195406051](https://github.com/adm01-debug/Promo_Finance_V2/actions/runs/39195406051) | ✅ success | inalterado |
+| bun in /. - Update (Dependabot) | múltiplos runs ✅ | ✅ success | ecossistema bun — semanal |
+| **npm_and_yarn in /. for dompurify** | **[39824093933](https://github.com/adm01-debug/Promo_Finance_V2/actions/runs/39824093933)** | **❌ failure** | **BLOQUEIO EXTERNO** — artefato histórico em SHA antigo; dompurify já em 3.4.17; PR Dependabot fechado; não reproduzível |
+
+**Workflows com falha acionável: 0.** O único run com `conclusion=failure` é artefato histórico da infraestrutura Dependabot (SHA pré-correção, PR fechado, motor externo). Registrado em PENDENCIAS.md.
