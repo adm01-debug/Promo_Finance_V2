@@ -260,20 +260,22 @@ error TS2688: Cannot find type definition file for 'vitest/globals'.
 | Workflow Linter | `actionlint.yml` | ✅ success | ✅ success (inalterado) |
 | CodeQL | `codeql.yml` | ✅ success | ✅ success (inalterado) |
 
-### 8.4 — Estado do PR #184 (commit `9603b7e`, 2026-10-22T16:30 UTC)
+### 8.4 — Estado do PR #184 (HEAD `b27f6166`, 2026-10-22T17:20 UTC)
+
+> **Contexto:** CI Pipeline run anterior [39818225384](https://github.com/adm01-debug/Promo_Finance_V2/actions/runs/39818225384) ficou `pending` das 16:51Z às 17:14Z porque o job E2E Quarantine (run [39815111351](https://github.com/adm01-debug/Promo_Finance_V2/actions/runs/39815111351)) ocupava o concurrency group `ci-refs/pull/184/merge-pr` com `if: ${{ always() }}` e `timeout-minutes: 30`. Resolvido via `force_cancel_workflow_run` às 17:14Z → run [39818486954](https://github.com/adm01-debug/Promo_Finance_V2/actions/runs/39818486954) iniciou imediatamente.
 
 | Required Check | Run | Status |
 |---|---|---|
-| Unit tests (offline, deterministic) | [39810959911](https://github.com/adm01-debug/Promo_Finance_V2/actions/runs/39810959911) | ✅ success |
-| Integration tests (edge functions live) | [39810959911](https://github.com/adm01-debug/Promo_Finance_V2/actions/runs/39810959911) | ✅ success |
-| Supabase DB Linter | [39810960368](https://github.com/adm01-debug/Promo_Finance_V2/actions/runs/39810960368) | ✅ success |
-| Quality Gate & Tests | [39810960546](https://github.com/adm01-debug/Promo_Finance_V2/actions/runs/39810960546) | ⏳ pending (ci.yml — runner não alocado) |
-| E2E Critical Gate | [39810960546](https://github.com/adm01-debug/Promo_Finance_V2/actions/runs/39810960546) | ⏳ pending |
-| E2E Financeiro (offline) | [39810960546](https://github.com/adm01-debug/Promo_Finance_V2/actions/runs/39810960546) | ⏳ pending |
-| E2E Destructive Logout | [39810960546](https://github.com/adm01-debug/Promo_Finance_V2/actions/runs/39810960546) | ⏳ pending |
-| Varredura de segredos (gitleaks) | [39810960546](https://github.com/adm01-debug/Promo_Finance_V2/actions/runs/39810960546) | ⏳ pending |
+| Unit tests (offline, deterministic) | [39818486941](https://github.com/adm01-debug/Promo_Finance_V2/actions/runs/39818486941) | ✅ success (16:58:14Z) |
+| Integration tests (edge functions live) | [39818486941](https://github.com/adm01-debug/Promo_Finance_V2/actions/runs/39818486941) | ✅ success (16:58:31Z) |
+| Supabase DB Linter | [39818487050](https://github.com/adm01-debug/Promo_Finance_V2/actions/runs/39818487050) | ✅ success (16:58:00Z) |
+| Varredura de segredos (gitleaks) | [39818486954](https://github.com/adm01-debug/Promo_Finance_V2/actions/runs/39818486954) | ✅ success (17:15:12Z) |
+| E2E Financeiro (offline) | [39818486954](https://github.com/adm01-debug/Promo_Finance_V2/actions/runs/39818486954) | ✅ success (17:16:00Z) |
+| E2E Critical Gate | [39818486954](https://github.com/adm01-debug/Promo_Finance_V2/actions/runs/39818486954) | ✅ success (17:16:49Z) |
+| Quality Gate & Tests | [39818486954](https://github.com/adm01-debug/Promo_Finance_V2/actions/runs/39818486954) | ⏳ in_progress (desde 17:14:58Z) |
+| E2E Destructive Logout | [39818486954](https://github.com/adm01-debug/Promo_Finance_V2/actions/runs/39818486954) | ⏳ in_progress |
 
-> **Bloqueador do merge:** 3/8 required checks ✅; 5/8 aguardando runner para ci.yml (run [39810960546](https://github.com/adm01-debug/Promo_Finance_V2/actions/runs/39810960546)). Runs menores (deno-tests, supabase-linter) alocaram runners imediatamente; o ci.yml com múltiplos jobs simultâneos está na fila. Merge automático será executado quando todos os 8 checks passarem.
+> **6 de 8 required checks ✅.** Aguardando apenas `Quality Gate & Tests` e `E2E Destructive Logout`. Merge squash do PR #184 e dispatch de `schema-drift.yml` na main serão executados quando todos os 8 passarem.
 
 ### Correções de código entregues no PR #184
 

@@ -34,18 +34,29 @@
 
 ---
 
-## BLOQUEADOR ATUAL — CI Pipeline aguardando runners (PR #184, HEAD e091b28)
+## ESTADO ATUAL — CI Pipeline em andamento (PR #184, HEAD b27f6166)
 
-**Status:** CI Pipeline run [39818225384](https://github.com/adm01-debug/Promo_Finance_V2/actions/runs/39818225384) com `status=pending` desde 16:56 UTC.
+> Atualizado em: 2026-10-22T17:20 UTC
 
-**Causa:** runners GitHub Actions não imediatamente alocados — infraestrutura externa, não relacionada ao código.
+**Impedimento anterior resolvido (17:14Z):** O CI Pipeline run [39818225384](https://github.com/adm01-debug/Promo_Finance_V2/actions/runs/39818225384) ficou `pending` porque o job E2E Quarantine (run [39815111351](https://github.com/adm01-debug/Promo_Finance_V2/actions/runs/39815111351)) estava ocupando o concurrency group `ci-refs/pull/184/merge-pr` desde 16:51Z com `timeout-minutes: 30`. Três tentativas normais de cancelamento (via `cancel_workflow_run`) foram ignoradas — o job com `if: ${{ always() }}` não respeita cancel por não ter checkpoint. Resolvido via `force_cancel_workflow_run` às 17:14Z. Novos jobs começaram imediatamente às 17:14:57–17:14:58Z no run [39818486954](https://github.com/adm01-debug/Promo_Finance_V2/actions/runs/39818486954).
 
-**Próximo passo automático:** check-in agendado para 17:15 UTC (trig_014KZ1SoGDdMW3tkcVv1L6Bu):
-1. Quando CI completar com todos os 8 required checks ✅ → merge squash do PR #184
+**Status atual do CI (run 39818486954, HEAD b27f6166):**
+
+| Required Check | Run | Status |
+|---|---|---|
+| Unit tests (offline, deterministic) | [39818486941](https://github.com/adm01-debug/Promo_Finance_V2/actions/runs/39818486941) | ✅ success |
+| Integration tests (edge functions live) | [39818486941](https://github.com/adm01-debug/Promo_Finance_V2/actions/runs/39818486941) | ✅ success |
+| Supabase DB Linter | [39818487050](https://github.com/adm01-debug/Promo_Finance_V2/actions/runs/39818487050) | ✅ success |
+| E2E Financeiro (offline) | [39818486954](https://github.com/adm01-debug/Promo_Finance_V2/actions/runs/39818486954) | ✅ success |
+| E2E Critical Gate | [39818486954](https://github.com/adm01-debug/Promo_Finance_V2/actions/runs/39818486954) | ✅ success |
+| Varredura de segredos (gitleaks) | [39818486954](https://github.com/adm01-debug/Promo_Finance_V2/actions/runs/39818486954) | ✅ success |
+| Quality Gate & Tests | [39818486954](https://github.com/adm01-debug/Promo_Finance_V2/actions/runs/39818486954) | ⏳ in_progress |
+| E2E Destructive Logout | [39818486954](https://github.com/adm01-debug/Promo_Finance_V2/actions/runs/39818486954) | ⏳ aguardando Quality Gate |
+
+**Próximos passos (automáticos):**
+1. Quando CI completar todos os 8 required checks ✅ → merge squash do PR #184
 2. Dispatch `schema-drift.yml` na main → confirmar `conclusion=success` nos dois jobs
 3. Atualizar este arquivo com a prova final
-
-**O que você pode fazer para acelerar:** aguardar ou, se tiver permissão de admin, forçar merge em https://github.com/adm01-debug/Promo_Finance_V2/pull/184
 
 ---
 
