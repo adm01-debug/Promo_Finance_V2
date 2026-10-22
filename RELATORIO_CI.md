@@ -7,11 +7,42 @@
 
 ## 1. Baseline (antes das correções)
 
-### Baseline local — BLOQUEADO
+### Baseline local — BLOQUEADO (resultados dos comandos)
 
-O `bun.lock` aponta todas as dependências para a registry privada `europe-west4-npm.pkg.dev/lovable-core-prod/sandbox-npm-cache`, inacessível no container cloud (HTTP 403). Portanto, `bun install --frozen-lockfile` falha e nenhum comando local (`build`, `lint`, `typecheck`, `test`) pode ser executado.
+`bun.lock` aponta todos os pacotes para registry privada Lovable (`europe-west1-npm.pkg.dev` e `europe-west4-npm.pkg.dev`), inacessível no container cloud (HTTP 403). Abaixo os resultados exatos dos comandos executados em 2026-10-22:
 
-**Referência de baseline adotada:** último run com `conclusion=success` na main.
+**`bun install --frozen-lockfile`**
+```
+warn: GET https://europe-west1-npm.pkg.dev/lovable-core-prod/sandbox-npm-cache/@swc/core-linux-x64-musl/... - 403
+warn: GET https://europe-west1-npm.pkg.dev/.../lightningcss-linux-x64-gnu/... - 403
+error: GET https://europe-west1-npm.pkg.dev/.../vitest/-/vitest-4.1.11.tgz - 403
+error: GET https://europe-west4-npm.pkg.dev/.../cloud-auth-js/-/cloud-auth-js-1.1.1.tgz - 403
+error: GET https://europe-west1-npm.pkg.dev/.../vite/-/vite-8.2.2.tgz - 403
+```
+Causa: `node_modules/` parcialmente instalado (sem `vitest`, sem `eslint` completo).
+
+**`bun run type-check` (`tsc --noEmit`)**
+```
+error TS2688: Cannot find type definition file for 'vitest/globals'.
+  The file is in the program because:
+    Entry point of type library 'vitest/globals' specified in compilerOptions
+exit 1
+```
+
+**`bun run lint`**
+```
+Error [ERR_MODULE_NOT_FOUND]: Cannot find module '...eslint/lib/languages/js/source-code/source-code.js'
+exit 1
+```
+
+**`bun run test:run`**
+```
+error: script "test:run" exited with code 1
+```
+(vitest não instalado)
+
+**Todos os 4 erros derivam da mesma causa raiz: registry privada inacessível → `bun install` incompleto.**  
+Nenhum erro de código da aplicação; o último CI verde em main (run 39168277749, SHA `040f4399`) é o baseline de referência.
 
 ### Último CI bem-sucedido na main
 
