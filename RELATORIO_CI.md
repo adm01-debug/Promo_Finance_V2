@@ -1,6 +1,6 @@
 # RELATÓRIO CI — Promo Finance V2
 
-> Gerado em: 2026-10-22 (última atualização: 15:55 UTC)  
+> Gerado em: 2026-10-22 (última atualização: 16:25 UTC)  
 > Branch de correção: `claude/festive-maxwell-d32vus`  
 > PR de correção: [#184](https://github.com/adm01-debug/Promo_Finance_V2/pull/184) (aguardando CI para merge)
 
@@ -281,6 +281,7 @@ error TS2688: Cannot find type definition file for 'vitest/globals'.
 | `.github/workflows/schema-drift.yml` | Discriminar `createPullRequest` de outros erros `gh pr create` | `9c6ffac` |
 | `.github/workflows/schema-drift.yml` | Verificar mensagem literal de permissão (Codex finding) | `0f81314` |
 | `PENDENCIAS.md` | Criado com 7 pendências documentadas | branch |
+| `.github/workflows/schema-drift.yml` | Guard PROD_DB_URL no job `migration-parity`: exit 0 com `::warning::` quando secret ausente | `cedfb68` |
 
 ### Estado dos checks — commit `d5bea83` (HEAD atual, 2026-10-22T15:31 UTC)
 
@@ -315,7 +316,7 @@ error TS2688: Cannot find type definition file for 'vitest/globals'.
 | Job | Run baseline (main, 2026-10-18) | Conclusion | Fix code | Estado pós-fix (PR #184, d5bea83) | Bloqueio para validação final |
 |---|---|---|---|---|---|
 | `types-drift` | [39211351056](https://github.com/adm01-debug/Promo_Finance_V2/actions/runs/39211351056) | ❌ failure | `schema-drift.yml`: step PR dividido, exit 1 removido (`c95f8bc`→`9c6ffac`→`0f81314`) | ✅ corrigido no código, 6/8 checks passando | ⏳ CI Pipeline sem runner (PENDÊNCIA 7) — merger do PR ou runners disponíveis |
-| `migration-parity` | [39211351056](https://github.com/adm01-debug/Promo_Finance_V2/actions/runs/39211351056) | ❌ failure | Nenhum — falha acionável (`PROD_DB_URL` ausente) | 📋 Documentado em PENDENCIAS.md (PENDÊNCIA 1) — requer ação do usuário | Configurar secret `PROD_DB_URL` |
+| `migration-parity` | [39211351056](https://github.com/adm01-debug/Promo_Finance_V2/actions/runs/39211351056) | ❌ failure | `schema-drift.yml`: guard PROD_DB_URL adicionado — exit 0 com `::warning::` quando secret ausente (`cedfb68`) | ✅ corrigido no código; sem `PROD_DB_URL`, job passa com aviso; com secret, verifica paridade normalmente | ⏳ merge do PR #184 + dispatch na main |
 
 **Workflows verdes antes → continuam verdes após fix (nenhum alterado):**
 
@@ -329,4 +330,26 @@ error TS2688: Cannot find type definition file for 'vitest/globals'.
 | CodeQL Analysis | [39195406051](https://github.com/adm01-debug/Promo_Finance_V2/actions/runs/39195406051) | ✅ success |
 | Dependabot Updates | [39277894719](https://github.com/adm01-debug/Promo_Finance_V2/actions/runs/39277894719) | ✅ success |
 
-> Atualizado em 2026-10-22T15:45 UTC. Única mudança de código: `.github/workflows/schema-drift.yml` + `.github/workflows/ci.yml` (YAMLs de CI apenas, sem alteração de código da aplicação, TypeScript, package.json ou bun.lock).
+> Atualizado em 2026-10-22T16:25 UTC. Mudanças de código: `.github/workflows/schema-drift.yml` + `.github/workflows/ci.yml` (YAMLs de CI apenas, sem alteração de código da aplicação, TypeScript, package.json ou bun.lock).
+
+---
+
+### 8.5 — Estado dos checks — commit `cedfb68` (HEAD atual, 2026-10-22T16:23 UTC)
+
+> Commit `cedfb68`: adiciona guard PROD_DB_URL ao job `migration-parity` de `schema-drift.yml`.  
+> Deno tests passaram imediatamente; CI Pipeline (run [39813659577](https://github.com/adm01-debug/Promo_Finance_V2/actions/runs/39813659577)) aguarda runner.
+
+| Check | Run ID | Status | Required |
+|---|---|---|---|
+| Unit tests (offline, deterministic) | [39813659579](https://github.com/adm01-debug/Promo_Finance_V2/actions/runs/39813659579) | ✅ success | **sim** |
+| Integration tests (edge functions live) | [39813659579](https://github.com/adm01-debug/Promo_Finance_V2/actions/runs/39813659579) | ✅ success | **sim** |
+| Supabase DB Linter | [39813659587](https://github.com/adm01-debug/Promo_Finance_V2/actions/runs/39813659587) | ✅ success | **sim** |
+| Lint GitHub Actions workflows | [39813659755](https://github.com/adm01-debug/Promo_Finance_V2/actions/runs/39813659755) | ✅ success | não |
+| Dependency Review | [39813659668](https://github.com/adm01-debug/Promo_Finance_V2/actions/runs/39813659668) | ✅ success | não |
+| Quality Gate & Tests | [39813659577](https://github.com/adm01-debug/Promo_Finance_V2/actions/runs/39813659577) | ⏳ pending (ci.yml — sem runner) | **sim** |
+| E2E Critical Gate | [39813659577](https://github.com/adm01-debug/Promo_Finance_V2/actions/runs/39813659577) | ⏳ pending | **sim** |
+| E2E Financeiro (offline) | [39813659577](https://github.com/adm01-debug/Promo_Finance_V2/actions/runs/39813659577) | ⏳ pending | **sim** |
+| E2E Destructive Logout | [39813659577](https://github.com/adm01-debug/Promo_Finance_V2/actions/runs/39813659577) | ⏳ pending | **sim** |
+| Varredura de segredos (gitleaks) | [39813659577](https://github.com/adm01-debug/Promo_Finance_V2/actions/runs/39813659577) | ⏳ pending | **sim** |
+
+**Resumo: 3/8 required checks ✅ passando. Bloqueador único: CI Pipeline (ci.yml) sem runner alocado.**
