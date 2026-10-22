@@ -156,6 +156,18 @@ jobs:
 
       - name: Comparar versões
         run: |
+          # Sem PROD_DB_URL, emite aviso e sai com sucesso — checagem não pode
+          # ser realizada sem credenciais de prod.
+          if [ -z "${PROD_DB_URL:-}" ]; then
+            echo "::warning::PROD_DB_URL não configurado — paridade de migrations não verificada."
+            {
+              echo "## ⚠️ Paridade de migrations não verificada — secret PROD_DB_URL ausente"
+              echo
+              echo "Configure \`PROD_DB_URL\` em **Settings → Secrets → Actions → New repository secret**"
+              echo "para habilitar esta verificação automática."
+            } >> "$GITHUB_STEP_SUMMARY"
+            exit 0
+          fi
           psql "$PROD_DB_URL" -At \
             -c "select version from supabase_migrations.schema_migrations order by version" \
             > /tmp/remote_versions.txt
