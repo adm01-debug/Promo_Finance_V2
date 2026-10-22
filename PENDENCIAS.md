@@ -133,6 +133,30 @@ As guards já garantem `exit 0` mesmo sem os secrets abaixo. Eles apenas habilit
 
 ---
 
+## BLOQUEIO EXTERNO — `npm_and_yarn in /. for dompurify - Update` (run 39824093933)
+
+> Adicionado em: 2026-10-22 | Natureza: infraestrutura Dependabot — não corrigível por código
+
+**Workflow:** `Dependabot Updates` — job `npm_and_yarn in /. for dompurify - Update #1645759466`  
+**Último run:** [39824093933](https://github.com/adm01-debug/Promo_Finance_V2/actions/runs/39824093933) — ❌ failure  
+**SHA no run:** `d9a728b` (pré-correção dompurify)
+
+**Por que está em failure:** O Dependabot rodou o job com ecossistema `npm_and_yarn` no SHA `d9a728b`, onde dompurify ainda era 3.4.16. O motor interno usou `npm_and_yarn`, incompatível com `bun.lock`. O erro reportado foi:
+> `Dependabot's npm_and_yarn ecosystem cannot update bun.lock`
+
+**Por que não pode ser corrigido:**
+1. O `.github/dependabot.yml` **já está correto** com `package-ecosystem: bun` — configuração correta.
+2. O run 39824093933 foi em SHA antigo (`d9a728b`) e o Dependabot não re-executa jobs em SHAs históricos.
+3. O PR Dependabot para o dompurify está **fechado** (dompurify atualizado manualmente para 3.4.17 no PR #185).
+4. Não é required check para merge — confirmado via branch protection.
+5. A API GitHub recusa retries: `"This workflow run cannot be retried"`.
+
+**Estado atual:** dompurify está em 3.4.17 na main. Na próxima execução semanal do Dependabot (`bun in /. - Update`), o run usará ecossistema `bun` e não reproduzirá a falha.
+
+**Ação necessária pelo usuário:** Nenhuma. Este run é artefato histórico e não reaparecerá.
+
+---
+
 ## dompurify 3.4.16 → 3.4.17 — ✅ CONCLUÍDO
 
 > Adicionado em: 2026-10-22 | Concluído em: 2026-10-22

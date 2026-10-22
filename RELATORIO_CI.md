@@ -474,3 +474,60 @@ Step "Security scan" do Quality Gate passou com `conclusion=success` às 19:40:4
 | **Schema drift (types + migrations)** | **❌ failure (run 39788070869)** | **✅ success (run 39845432511)** | **+1 corrigido** |
 
 **Resultado:** 1 workflow corrigido de ❌ para ✅. Todos os outros permaneceram verdes. Zero regressões.
+
+---
+
+## 10. Bloqueio externo — `npm_and_yarn in /. for dompurify - Update` (run 39824093933)
+
+> Atualizado em: 2026-10-22T20:30 UTC
+
+### 10.1 — Identificação
+
+| Campo | Valor |
+|---|---|
+| Workflow | `Dependabot Updates` — job `npm_and_yarn in /. for dompurify - Update #1645759466` |
+| Run ID | [39824093933](https://github.com/adm01-debug/Promo_Finance_V2/actions/runs/39824093933) |
+| Conclusion | ❌ failure |
+| SHA no qual rodou | `d9a728b` (merge commit do PR #184 — **antes** da correção dompurify no PR #185) |
+| Data | 2026-10-22 |
+
+### 10.2 — Causa raiz
+
+```
+updater | ERROR <job_1645759466> Error during file fetching; aborting:
+Dependabot detected that Bun is misconfigured in this repository.
+Running `bun` results in the following error: This project has a `bun.lock`
+file but no `package-lock.json`, `yarn.lock` or `pnpm-lock.yaml`, which
+means it is managed by Bun. Dependabot's `npm_and_yarn` ecosystem cannot
+update `bun.lock`. Set `package-ecosystem: "bun"` in your dependabot.yml
+for this directory so Dependabot can update this project's dependencies correctly.
+```
+
+O run 39824093933 foi disparado pelo motor Dependabot com ecossistema `npm_and_yarn` no SHA `d9a728b`. Nesse SHA, o arquivo `.github/dependabot.yml` **já usava** `package-ecosystem: bun` para o diretório `/` — a configuração estava correta. O Dependabot, ao tentar criar o PR de atualização do dompurify (que ainda estava em 3.4.16 nesse SHA), usou internamente `npm_and_yarn`, pois o PR de atualização foi criado antes da migração do ecossistema entrar em vigor para aquele job específico.
+
+### 10.3 — Por que não pode ser corrigido
+
+1. **É infra externa:** O motor Dependabot roda fora do repositório. Não há arquivo YAML editável que force a re-execução desse run com outro ecossistema.
+2. **SHA obsoleto:** O run usou o SHA `d9a728b` (PR #184 mergeado). Nesse SHA, dompurify ainda era 3.4.16. O PR #185 atualizou dompurify para 3.4.17 no SHA `810202d2`. O PR Dependabot associado ao update de dompurify foi **fechado** automaticamente após o PR #185 ser mergeado.
+3. **Sem mecanismo de retry:** A API GitHub retornou recusa na tentativa de rerun (`cannot be retried`). O Dependabot não reagendará esse job para o SHA antigo.
+4. **Não é required check:** Confirmado via `get_branch_protection` — o workflow `Dependabot Updates` não é required check para merge na main.
+
+### 10.4 — Estado atual (após PR #185)
+
+O dompurify está em **3.4.17** na main desde o PR #185 (SHA `810202d2`, mergeado em 20:02:51Z). O `.github/dependabot.yml` usa `package-ecosystem: bun` corretamente. O Dependabot não criará um novo PR para atualizar dompurify pois já está na versão mais recente. Na próxima execução do `bun in /. - Update` (schedule semanal), o run usará o ecossistema `bun` e não reproduzirá a falha.
+
+### 10.5 — Inventário final completo (pós todas as correções)
+
+| Workflow | Último run | Conclusion | Observação |
+|---|---|---|---|
+| CI Pipeline | [39848494811](https://github.com/adm01-debug/Promo_Finance_V2/actions/runs/39848494811) | ✅ success | — |
+| Schema drift (types + migrations) | [39845432511](https://github.com/adm01-debug/Promo_Finance_V2/actions/runs/39845432511) | ✅ success | corrigido nesta sessão |
+| Supabase Linter (RLS/GRANT gate) | [39168277247](https://github.com/adm01-debug/Promo_Finance_V2/actions/runs/39168277247) | ✅ success | inalterado |
+| Deno Edge Function Tests | [39848494809](https://github.com/adm01-debug/Promo_Finance_V2/actions/runs/39848494809) | ✅ success | inalterado |
+| Graphify — mapas privados | [39845418327](https://github.com/adm01-debug/Promo_Finance_V2/actions/runs/39845418327) | ✅ success | inalterado |
+| Workflow Linter (actionlint + zizmor) | [39845418261](https://github.com/adm01-debug/Promo_Finance_V2/actions/runs/39845418261) | ✅ success | inalterado |
+| CodeQL Analysis | [39195406051](https://github.com/adm01-debug/Promo_Finance_V2/actions/runs/39195406051) | ✅ success | inalterado |
+| bun in /. - Update (Dependabot) | múltiplos runs ✅ | ✅ success | ecossistema bun — semanal |
+| **npm_and_yarn in /. for dompurify** | **[39824093933](https://github.com/adm01-debug/Promo_Finance_V2/actions/runs/39824093933)** | **❌ failure** | **BLOQUEIO EXTERNO** — artefato histórico em SHA antigo; dompurify já em 3.4.17; PR Dependabot fechado; não reproduzível |
+
+**Workflows com falha acionável: 0.** O único run com `conclusion=failure` é artefato histórico da infraestrutura Dependabot (SHA pré-correção, PR fechado, motor externo). Registrado em PENDENCIAS.md.
