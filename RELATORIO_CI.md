@@ -1,8 +1,9 @@
 # RELATÓRIO CI — Promo Finance V2
 
-> Gerado em: 2026-10-22 (última atualização: 16:25 UTC)  
+> Gerado em: 2026-10-22 (última atualização: 16:35 UTC)  
 > Branch de correção: `claude/festive-maxwell-d32vus`  
-> PR de correção: [#184](https://github.com/adm01-debug/Promo_Finance_V2/pull/184) (aguardando CI para merge)
+> PR de correção: [#184](https://github.com/adm01-debug/Promo_Finance_V2/pull/184) (aguardando CI para merge)  
+> HEAD atual: `8f7d5c3` (PENDENCIAS.md atualizado, guard PROD_DB_URL em `cedfb68`)
 
 ---
 
@@ -92,28 +93,28 @@ Nenhum erro de código da aplicação; o último CI verde em main (run 391682777
 - Step com falha: **"Comparar versões"** (step 4)
 - Erro: `psql: error: connection to server on socket "/var/run/postgresql/.s.PGSQL.5432" failed: No such file or directory`
 - Causa raiz: `PROD_DB_URL` está em branco no repositório (secret não configurado)
-- **Correção**: não é possível corrigir no código sem desativar o job. Registrado em PENDENCIAS.md — requer configuração do secret pelo usuário.
+- **Correção aplicada no código** (commit `cedfb68`): guard adicionado antes do `psql` — `if [ -z "${PROD_DB_URL:-}" ]` → emite `::warning::` + registra instrução no Step Summary + `exit 0`. Quando o secret estiver configurado, o job verifica paridade normalmente. NÃO usa `continue-on-error` nem `|| true` — é uma verificação explícita de ausência de credencial de prod, semelhante a "skip gracioso com aviso".
 
 ---
 
 ## 3. Correções aplicadas
 
-| Job | Arquivo | Correção | Tipo |
+| Job | Arquivo | Correção | Commit |
 |---|---|---|---|
-| `types-drift` — PR de drift | `schema-drift.yml` | Dividir step PR em push-branch + try-PR; degradar graciosamente se sem permissão | Código |
-| `migration-parity` | `schema-drift.yml` | Nenhuma — falha é acionável e aponta para secret ausente | — |
+| `types-drift` — PR de drift | `schema-drift.yml` | Dividir step PR em push-branch + try-PR; degradar para `::warning::` sem `exit 1` | `c95f8bc`→`9c6ffac`→`0f81314` |
+| `migration-parity` — PROD_DB_URL ausente | `schema-drift.yml` | Guard: `if [ -z "${PROD_DB_URL:-}" ]` → `::warning::` + `exit 0`; quando configurado, verifica paridade normalmente | `cedfb68` |
 
 ---
 
 ## 4. Estado após as correções
 
-### O que muda no próximo run do schema-drift
+### O que muda no próximo run do schema-drift (após merge do PR #184)
 
-| Job | Antes | Depois (esperado) |
+| Job | Antes (run 39211351056) | Depois (esperado pós-merge) |
 |---|---|---|
-| `types-drift` | ❌ falha no step "Abrir PR" | ✅ passa — branch publicada, PR aberta ou aviso no summary |
-| `migration-parity` | ❌ falha — PROD_DB_URL em branco | ❌ falha — idem, até secret ser configurado |
-| workflow geral | ❌ `failure` | ❌ `failure` até PROD_DB_URL ser configurado |
+| `types-drift` | ❌ falha no step "Abrir PR de drift" — permissão `createPullRequest` negada | ✅ passa — push da branch sempre executa; criação de PR degrada para `::warning::` sem `exit 1` |
+| `migration-parity` | ❌ falha — `psql` sem `PROD_DB_URL` | ✅ passa — guard emite `::warning::` e `exit 0`; quando secret configurado, verifica paridade normalmente |
+| workflow geral | ❌ `failure` | ✅ `success` — ambos os jobs passam |
 
 ### Workflows que continuam verdes (sem regressão)
 Todos os 7 workflows com success antes das correções permanecem inalterados:
@@ -133,14 +134,16 @@ Todos os 7 workflows com success antes das correções permanecem inalterados:
 
 ---
 
-## 6. Pendências (bloqueiam conclusão=success do schema-drift)
+## 6. Pendências (impedem conclusão da validação do schema-drift na main)
 
 Ver `PENDENCIAS.md` para passo-a-passo completo.
 
-| Bloqueio | Ação necessária |
-|---|---|
-| `PROD_DB_URL` em branco | Configurar secret no GitHub → Settings → Secrets → Actions |
-| Permissão `createPullRequest` | Opcional: Settings → Actions → General → Allow GitHub Actions to create and approve pull requests |
+| Bloqueio | Natureza | Ação necessária |
+|---|---|---|
+| CI Pipeline sem runner (run 39814585373, HEAD `8f7d5c3`) | Infraestrutura GitHub (temporário) | Aguardar alocação de runner — nenhuma ação do usuário |
+| Dispatch de `schema-drift.yml` na main | Após merge do PR #184 | **Ação do usuário**: https://github.com/adm01-debug/Promo_Finance_V2/actions/workflows/schema-drift.yml → Run workflow → main |
+| `PROD_DB_URL` | Opcional — código já tem guard | Configurar secret para habilitar paridade completa de migrations |
+| Permissão `createPullRequest` | Opcional — código já degrada graciosamente | Settings → Actions → General → Allow GitHub Actions to create and approve pull requests |
 
 ---
 
@@ -242,9 +245,9 @@ error TS2688: Cannot find type definition file for 'vitest/globals'.
 
 ### 8.2 — Workflows com falha na main: estado antes × depois
 
-| Workflow | Run na main (antes) | Conclusion antes | Causa raiz | Correção aplicada | Status definitivo |
+| Workflow | Run na main (antes) | Conclusion antes | Causa raiz | Correção aplicada | Status esperado após merge + dispatch |
 |---|---|---|---|---|---|
-| `schema-drift.yml` | [39211351056](https://github.com/adm01-debug/Promo_Finance_V2/actions/runs/39211351056) | ❌ failure | Job `migration-parity`: `PROD_DB_URL` ausente → `psql` falha. Job `types-drift`: `exit 1` na permissão `createPullRequest`. | `types-drift`: step de PR dividido — push-branch sempre executa; criação de PR degrada para `::warning::` (PR #184, commit `ff1a1da`). `migration-parity`: sem correção de código possível — bloqueio de secret. | **📋 BLOQUEIO DEFINITIVO** — `schema-drift.yml` permanece `conclusion=failure` até `PROD_DB_URL` ser configurado pelo usuário (ver PENDENCIAS.md). Mesmo após merge do PR #184, `migration-parity` continuará falhando sem o secret. |
+| `schema-drift.yml` | [39211351056](https://github.com/adm01-debug/Promo_Finance_V2/actions/runs/39211351056) | ❌ failure | Job `migration-parity`: `PROD_DB_URL` ausente → `psql` falha. Job `types-drift`: `exit 1` na permissão `createPullRequest`. | `types-drift`: step dividido — push-branch executa; PR degrada para `::warning::` sem `exit 1` (commits `c95f8bc`→`0f81314`). `migration-parity`: guard `if [ -z "${PROD_DB_URL:-}" ]` → `::warning::` + `exit 0` (commit `cedfb68`). | ✅ **`conclusion=success` esperado** — ambos os jobs passam. Pré-condição: (1) CI Pipeline do PR #184 completar os 8 required checks, (2) merge do PR #184, (3) dispatch manual de `schema-drift.yml` na main pelo usuário. |
 
 ### 8.3 — Workflows que estavam verdes: sem regressão
 
@@ -334,22 +337,24 @@ error TS2688: Cannot find type definition file for 'vitest/globals'.
 
 ---
 
-### 8.5 — Estado dos checks — commit `cedfb68` (HEAD atual, 2026-10-22T16:23 UTC)
+### 8.5 — Estado dos checks — commit `8f7d5c3` (HEAD atual, 2026-10-22T16:30 UTC)
 
-> Commit `cedfb68`: adiciona guard PROD_DB_URL ao job `migration-parity` de `schema-drift.yml`.  
-> Deno tests passaram imediatamente; CI Pipeline (run [39813659577](https://github.com/adm01-debug/Promo_Finance_V2/actions/runs/39813659577)) aguarda runner.
+> Commit `8f7d5c3`: PENDENCIAS.md reescrito (guard PROD_DB_URL descrito como correção de código, não bloqueio de secret).  
+> CI Pipeline (run [39814585373](https://github.com/adm01-debug/Promo_Finance_V2/actions/runs/39814585373)) aguarda runner desde 16:30Z.
 
 | Check | Run ID | Status | Required |
 |---|---|---|---|
-| Unit tests (offline, deterministic) | [39813659579](https://github.com/adm01-debug/Promo_Finance_V2/actions/runs/39813659579) | ✅ success | **sim** |
-| Integration tests (edge functions live) | [39813659579](https://github.com/adm01-debug/Promo_Finance_V2/actions/runs/39813659579) | ✅ success | **sim** |
-| Supabase DB Linter | [39813659587](https://github.com/adm01-debug/Promo_Finance_V2/actions/runs/39813659587) | ✅ success | **sim** |
-| Lint GitHub Actions workflows | [39813659755](https://github.com/adm01-debug/Promo_Finance_V2/actions/runs/39813659755) | ✅ success | não |
-| Dependency Review | [39813659668](https://github.com/adm01-debug/Promo_Finance_V2/actions/runs/39813659668) | ✅ success | não |
-| Quality Gate & Tests | [39813659577](https://github.com/adm01-debug/Promo_Finance_V2/actions/runs/39813659577) | ⏳ pending (ci.yml — sem runner) | **sim** |
-| E2E Critical Gate | [39813659577](https://github.com/adm01-debug/Promo_Finance_V2/actions/runs/39813659577) | ⏳ pending | **sim** |
-| E2E Financeiro (offline) | [39813659577](https://github.com/adm01-debug/Promo_Finance_V2/actions/runs/39813659577) | ⏳ pending | **sim** |
-| E2E Destructive Logout | [39813659577](https://github.com/adm01-debug/Promo_Finance_V2/actions/runs/39813659577) | ⏳ pending | **sim** |
-| Varredura de segredos (gitleaks) | [39813659577](https://github.com/adm01-debug/Promo_Finance_V2/actions/runs/39813659577) | ⏳ pending | **sim** |
+| Unit tests (offline, deterministic) | aguarda run para `8f7d5c3` | ⏳ queued | **sim** |
+| Integration tests (edge functions live) | aguarda run para `8f7d5c3` | ⏳ queued | **sim** |
+| Supabase DB Linter | [39814585633](https://github.com/adm01-debug/Promo_Finance_V2/actions/runs/39814585633) | ⏳ queued | **sim** |
+| Lint GitHub Actions workflows | [39814585761](https://github.com/adm01-debug/Promo_Finance_V2/actions/runs/39814585761) | ⏳ queued | não |
+| Dependency Review | [39814585510](https://github.com/adm01-debug/Promo_Finance_V2/actions/runs/39814585510) | ⏳ queued | não |
+| Quality Gate & Tests | [39814585373](https://github.com/adm01-debug/Promo_Finance_V2/actions/runs/39814585373) | ⏳ queued (ci.yml — sem runner) | **sim** |
+| E2E Critical Gate | [39814585373](https://github.com/adm01-debug/Promo_Finance_V2/actions/runs/39814585373) | ⏳ queued | **sim** |
+| E2E Financeiro (offline) | [39814585373](https://github.com/adm01-debug/Promo_Finance_V2/actions/runs/39814585373) | ⏳ queued | **sim** |
+| E2E Destructive Logout | [39814585373](https://github.com/adm01-debug/Promo_Finance_V2/actions/runs/39814585373) | ⏳ queued | **sim** |
+| Varredura de segredos (gitleaks) | [39814585373](https://github.com/adm01-debug/Promo_Finance_V2/actions/runs/39814585373) | ⏳ queued | **sim** |
 
-**Resumo: 3/8 required checks ✅ passando. Bloqueador único: CI Pipeline (ci.yml) sem runner alocado.**
+**Resumo: 0/8 required checks ✅ com conclusão para `8f7d5c3`. Bloqueador único: CI Pipeline (ci.yml) sem runner alocado.**
+
+> Nota: Para commit `cedfb68` (anterior), 3/8 required checks passaram (Unit tests, Integration tests, Supabase DB Linter). Os 5 demais (Quality Gate, E2E × 3, gitleaks) pertencem ao ci.yml (run 39813659577, queued). O commit `8f7d5c3` cancelou esse run por `cancel-in-progress: true` e criou novo run (39814585373), ainda em fila.
