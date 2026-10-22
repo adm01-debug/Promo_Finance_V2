@@ -1,6 +1,6 @@
 # PENDÊNCIAS — Workflows do GitHub Actions
 
-> Atualizado em: 2026-10-22T16:05 UTC  
+> Atualizado em: 2026-10-22T16:35 UTC  
 > Responsável técnico: Claude (branch `claude/festive-maxwell-d32vus`)
 
 ---
@@ -38,21 +38,23 @@
 
 **Branch:** `claude/festive-maxwell-d32vus`  
 **PR:** https://github.com/adm01-debug/Promo_Finance_V2/pull/184  
-**HEAD:** `55469c429eedf46eb5f587ee930dbe1d98f86688`  
-**Estado:** `mergeable=true`, `mergeable_state=blocked` (aguardando 8 required checks)
+**HEAD:** `9f44b53` (2026-10-22T16:35 UTC)  
+**Estado:** `mergeable=true`, `mergeable_state=blocked`
 
-| Required Check | Fonte | Status (16:05 UTC) |
+| Required Check | Fonte | Status (HEAD `9f44b53`) |
 |---|---|---|
-| Unit tests (offline, deterministic) | `deno-tests.yml` | 🔄 in_progress |
-| Integration tests (edge functions live) | `deno-tests.yml` | 🔄 in_progress |
-| Supabase DB Linter | `deno-tests.yml` | ✅ success |
-| Quality Gate & Tests | `ci.yml` | ⏳ pending (runner aguardando) |
+| Unit tests (offline, deterministic) | `deno-tests.yml` | ✅ success (run 39810959911) |
+| Integration tests (edge functions live) | `deno-tests.yml` | ✅ success (run 39810959911) |
+| Supabase DB Linter | `deno-tests.yml` | ✅ success (run 39810960368) |
+| Quality Gate & Tests | `ci.yml` | ⏳ pending — runner não alocado (run 39810960546) |
 | E2E Critical Gate | `ci.yml` | ⏳ pending |
 | E2E Financeiro (offline) | `ci.yml` | ⏳ pending |
 | E2E Destructive Logout | `ci.yml` | ⏳ pending |
 | Varredura de segredos (gitleaks) | `ci.yml` | ⏳ pending |
 
-**Ação automática agendada:** verificação às 16:23 UTC fará o merge quando todos os 8 checks passarem.
+**Bloqueador do merge:** ci.yml (run [39810960546](https://github.com/adm01-debug/Promo_Finance_V2/actions/runs/39810960546)) aguarda runner há mais de 30 min. Runners de workflows com múltiplos jobs simultâneos estão esgotados. Merge automático será executado assim que todos os 8 checks passarem.
+
+> **Nota:** mesmo após o merge do PR #184, o `schema-drift.yml` continuará com `conclusion=failure` na main porque `migration-parity` falha sem `PROD_DB_URL`. Ver BLOQUEIO DEFINITIVO acima.
 
 ---
 
