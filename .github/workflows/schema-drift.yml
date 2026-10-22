@@ -60,11 +60,12 @@ jobs:
             echo "drift=true" >> "$GITHUB_OUTPUT"
           fi
 
-      - name: Abrir PR de drift
+      - name: Publicar branch e tentar abrir PR de drift
         if: steps.drift.outputs.drift == 'true'
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
+          set -euo pipefail
           BRANCH="chore/db-types-drift-$(date +%Y%m%d)"
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
@@ -83,25 +84,51 @@ jobs:
           else
             git push "$REMOTE" "$BRANCH"
           fi
+          echo "branch_name=$BRANCH" >> "$GITHUB_ENV"
+          echo "branch_pushed=true" >> "$GITHUB_ENV"
+
+      - name: Abrir PR de drift (requer permissão createPullRequest)
+        if: steps.drift.outputs.drift == 'true' && env.branch_pushed == 'true'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          BRANCH: ${{ env.branch_name }}
+        run: |
+          set -uo pipefail
           # Reusa a PR já aberta no mesmo dia em vez de falhar na criação.
           if gh pr view "$BRANCH" --json number >/dev/null 2>&1; then
             echo "PR da branch $BRANCH já existe — apenas os commits foram atualizados."
             exit 0
           fi
-          gh pr create \
-            --head "$BRANCH" \
-            --title "chore(db): tipos Supabase dessincronizados de prod" \
-            --body "$(cat <<'EOF'
-          Regeneração automática semanal detectou que `src/integrations/supabase/types.ts`
-          diverge do schema de prod (`bwwbeyolnnzppeuhgkcd`).
+          PR_BODY="$(cat <<'EOF'
+          Regeneração automática semanal detectou que \`src/integrations/supabase/types.ts\`
+          diverge do schema de prod (\`bwwbeyolnnzppeuhgkcd\`).
 
           Causa provável: DDL aplicada fora do fluxo de migrations ou migration
           aplicada sem regerar os tipos. Revisar o diff e mergear — tipos
           desatualizados escondem colunas renomeadas/removidas do TypeScript.
 
-          Gerado por `.github/workflows/schema-drift.yml`.
+          Gerado por \`.github/workflows/schema-drift.yml\`.
           EOF
-          )" --base main
+          )"
+          if gh pr create \
+            --head "$BRANCH" \
+            --title "chore(db): tipos Supabase dessincronizados de prod" \
+            --body "$PR_BODY" \
+            --base main; then
+            echo "PR criado com sucesso."
+          else
+            # A permissão 'createPullRequest' não está habilitada para o Actions token.
+            # Branch já foi publicada — a PR pode ser aberta manualmente.
+            echo "::warning::Não foi possível criar PR automaticamente. Branch '$BRANCH' publicada."
+            {
+              echo "## ⚠️ Schema drift detectado — PR pendente de criação manual"
+              echo
+              echo "Branch \`$BRANCH\` publicada com os tipos regenerados."
+              echo
+              echo "**Ação necessária:** abra a PR manualmente ou habilite"
+              echo "*Settings → Actions → General → Allow GitHub Actions to create and approve pull requests*."
+            } >> "$GITHUB_STEP_SUMMARY"
+          fi
 
   migration-parity:
     name: Paridade migrations locais ↔ aplicadas em prod
@@ -117,12 +144,29 @@ jobs:
           ref: main
           persist-credentials: false
 
+      - name: Preflight — PROD_DB_URL configurado
+        id: db_preflight
+        run: |
+          if [ -z "${PROD_DB_URL:-}" ]; then
+            {
+              echo "## ⚠️ migration-parity ignorado — PROD_DB_URL ausente"
+              echo
+              echo "O secret \`PROD_DB_URL\` não está configurado neste repositório."
+              echo "Configure em *Settings → Secrets → Actions* e re-execute o workflow."
+            } >> "$GITHUB_STEP_SUMMARY"
+            echo "skip=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "skip=false" >> "$GITHUB_OUTPUT"
+          fi
+
       - name: Instalar psql
+        if: steps.db_preflight.outputs.skip == 'false'
         run: |
           sudo apt-get update
           sudo apt-get install -y postgresql-client
 
       - name: Comparar versões
+        if: steps.db_preflight.outputs.skip == 'false'
         run: |
           psql "$PROD_DB_URL" -At \
             -c "select version from supabase_migrations.schema_migrations order by version" \
