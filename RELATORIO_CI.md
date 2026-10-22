@@ -318,10 +318,38 @@ error TS2688: Cannot find type definition file for 'vitest/globals'.
 
 ### Tabela final de prova — baseline × final (schema-drift na main)
 
-| Job | Run baseline (main, 2026-10-18) | Conclusion | Fix code | Estado pós-fix (PR #184, d5bea83) | Bloqueio para validação final |
+> **Atualizado em: 2026-10-22T17:36Z — CONCLUÍDO ✅**
+
+#### Merge do PR #184
+
+| Item | Detalhe |
+|---|---|
+| PR | [#184](https://github.com/adm01-debug/Promo_Finance_V2/pull/184) — mergeado por squash em 2026-10-22T17:35Z |
+| Merge commit | `d9a728b79f9ea6b28303a988c587f0aed364af63` |
+| CI Pipeline (8/8 required) | run [39818486954](https://github.com/adm01-debug/Promo_Finance_V2/actions/runs/39818486954) → **`conclusion=success`** ✅ |
+
+#### Dispatch de schema-drift.yml na main após merge
+
+| Job | Run (dispatch na main) | Conclusion | Duração |
+|---|---|---|---|
+| `types-drift` | [39824076811](https://github.com/adm01-debug/Promo_Finance_V2/actions/runs/39824076811) | ✅ **success** | 17:35:41Z → 17:36:10Z (~29s) |
+| `migration-parity` | [39824076811](https://github.com/adm01-debug/Promo_Finance_V2/actions/runs/39824076811) | ✅ **success** | idem |
+
+**HEAD da main no dispatch:** `d9a728b79f9ea6b28303a988c587f0aed364af63`
+
+#### Comparação baseline × final
+
+| Workflow | Run baseline (main, 2026-10-18) | Conclusion baseline | Run final (main, 2026-10-22) | Conclusion final | Regressão? |
 |---|---|---|---|---|---|
-| `types-drift` | [39211351056](https://github.com/adm01-debug/Promo_Finance_V2/actions/runs/39211351056) | ❌ failure | `schema-drift.yml`: step PR dividido, exit 1 removido (`c95f8bc`→`9c6ffac`→`0f81314`) | ✅ corrigido no código, 6/8 checks passando | ⏳ CI Pipeline sem runner (PENDÊNCIA 7) — merger do PR ou runners disponíveis |
-| `migration-parity` | [39211351056](https://github.com/adm01-debug/Promo_Finance_V2/actions/runs/39211351056) | ❌ failure | `schema-drift.yml`: guard PROD_DB_URL adicionado — exit 0 com `::warning::` quando secret ausente (`cedfb68`) | ✅ corrigido no código; sem `PROD_DB_URL`, job passa com aviso; com secret, verifica paridade normalmente | ⏳ merge do PR #184 + dispatch na main |
+| `schema-drift.yml` | [39211351056](https://github.com/adm01-debug/Promo_Finance_V2/actions/runs/39211351056) | ❌ failure | [39824076811](https://github.com/adm01-debug/Promo_Finance_V2/actions/runs/39824076811) | ✅ **success** | **Não** |
+| CI Pipeline | [39168277749](https://github.com/adm01-debug/Promo_Finance_V2/actions/runs/39168277749) | ✅ success | [39818486954](https://github.com/adm01-debug/Promo_Finance_V2/actions/runs/39818486954) | ✅ success | **Não** |
+| Supabase Linter | [39168277247](https://github.com/adm01-debug/Promo_Finance_V2/actions/runs/39168277247) | ✅ success | — (inalterado) | ✅ success | **Não** |
+| Deno Edge Tests | [39168277240](https://github.com/adm01-debug/Promo_Finance_V2/actions/runs/39168277240) | ✅ success | — (inalterado) | ✅ success | **Não** |
+| Graphify | [39168277239](https://github.com/adm01-debug/Promo_Finance_V2/actions/runs/39168277239) | ✅ success | — (inalterado) | ✅ success | **Não** |
+| Workflow Linter | [39168277208](https://github.com/adm01-debug/Promo_Finance_V2/actions/runs/39168277208) | ✅ success | — (inalterado) | ✅ success | **Não** |
+| CodeQL | [39195406051](https://github.com/adm01-debug/Promo_Finance_V2/actions/runs/39195406051) | ✅ success | — (inalterado) | ✅ success | **Não** |
+
+**Conclusão: 0 regressões. Único workflow que estava em falha (schema-drift.yml) agora tem `conclusion=success` na main.**
 
 **Workflows verdes antes → continuam verdes após fix (nenhum alterado):**
 
