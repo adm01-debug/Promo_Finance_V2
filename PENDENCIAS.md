@@ -1,4 +1,4 @@
-# PENDÊNCIAS — Correção do schema-drift.yml na main
+# PENDÊNCIAS — Promo Finance V2
 
 > Atualizado em: 2026-10-22T17:00 UTC  
 > Branch de desenvolvimento: `claude/festive-maxwell-d32vus` (PR #184)
@@ -89,3 +89,41 @@ As guards já garantem `exit 0` mesmo sem os secrets abaixo. Eles apenas habilit
 | `STAGING_PROJECT_REF` | ID do projeto Supabase de staging |
 | `STAGING_ANON_KEY` | Supabase dashboard → API Keys |
 | `TEST_ADMIN_JWT` | JWT de usuário admin para testes |
+
+---
+
+## AÇÃO NECESSÁRIA — dompurify 3.4.16 → 3.4.17 (CVE crítico)
+
+> Adicionado em: 2026-10-22
+
+**Por quê trava:** o ambiente de CI cloud tem acesso à rede bloqueado para o npm registry, impedindo `bun add dompurify@3.4.17` de ser executado automaticamente.
+
+**CVEs afetados:** GHSA-cg2g-xh64-v4q7, GHSA-mrv2-3pqr-j5jr, GHSA-c6gr-qvv4-5v3f (CVSS 9.2 — XSS crítico)
+
+**O que fazer (2 minutos no terminal local):**
+
+```bash
+# No seu computador, dentro da pasta do projeto:
+bun add dompurify@3.4.17
+git add package.json bun.lockb
+git commit -m "fix(deps): atualiza dompurify 3.4.16→3.4.17 (CVE CVSS 9.2)"
+git push origin main   # ou abrir PR se main for protegida
+```
+
+---
+
+## CONCLUÍDO nesta sessão (2026-10-22)
+
+| Item | Resultado |
+|---|---|
+| PR #184 mergeado na main | ✅ schema-drift.yml com guards |
+| schema-drift run na main `conclusion=success` | ✅ run 39824076811 |
+| Guard PROD_PROJECT_REF ausente no schema-drift.yml | ✅ corrigido (commit d3c8ab3) |
+| Bug sed prefixo numérico no schema-drift.yml | ✅ corrigido (commit d3c8ab3) |
+| Migration `20261002093000` — bucket financeiro + policy upload | ✅ aplicada em prod |
+| Migration `20261004220000` — vw_edge_health só eventos de conclusão | ✅ aplicada em prod |
+| Migration `20261012160000` — RLS storage por empresa | ✅ aplicada em prod |
+| Migration `20261013120000` — RLS metadados + triggers empresa | ✅ aplicada em prod |
+| Migration `20261013160000` — resolver fecha bypass duplicado | ✅ aplicada em prod |
+| Cross-tenant bypass storage.objects bucket financeiro | ✅ **FECHADO** |
+| dompurify 3.4.16 → 3.4.17 | ⚠️ **PENDENTE** (ver acima) |
