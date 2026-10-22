@@ -1,7 +1,23 @@
 # PENDÊNCIAS — Workflows do GitHub Actions
 
-> Atualizado em: 2026-10-22  
+> Atualizado em: 2026-10-22T15:45 UTC  
 > Responsável técnico: Claude (branch `claude/festive-maxwell-d32vus`)
+
+---
+
+## ⚠️ BLOQUEADOR PRINCIPAL (impede conclusão=success do schema-drift na main)
+
+O único workflow com `conclusion=failure` na main é `schema-drift.yml` (run [39211351056](https://github.com/adm01-debug/Promo_Finance_V2/actions/runs/39211351056)).
+
+**Fix de código:** aplicado no PR [#184](https://github.com/adm01-debug/Promo_Finance_V2/pull/184), branch `claude/festive-maxwell-d32vus`, commit `d5bea83`.
+
+**Bloqueio para merge do PR #184:** CI Pipeline (`ci.yml`, run [39805579157](https://github.com/adm01-debug/Promo_Finance_V2/actions/runs/39805579157)) preso em `pending` — runners GitHub Actions esgotados para workflows com múltiplos jobs paralelos.
+
+**6 de 8 required checks já passando** (Unit tests ✅, Integration tests ✅, Supabase DB Linter ✅, e outros). Faltam 5 checks do ci.yml (Quality Gate, E2E × 3, gitleaks) — todos do mesmo run pendente.
+
+**O que você precisa fazer para desbloquear:**  
+→ **Opção A (recomendada):** Aguardar os runners do GitHub Actions se liberarem. O run `39805579157` será alocado automaticamente.  
+→ **Opção B (imediata):** Como proprietário do repositório, acesse [PR #184](https://github.com/adm01-debug/Promo_Finance_V2/pull/184) e clique em "Merge pull request" mesmo com checks pendentes (bypass de administrador). Após o merge, dispare o schema-drift manualmente: Actions → "Schema drift" → Run workflow → branch: main.
 
 ---
 

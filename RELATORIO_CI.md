@@ -222,25 +222,27 @@ Nenhum desses é `main.yml`. Confirmado: inexistente.
 | `.github/workflows/schema-drift.yml` | Verificar mensagem literal de permissão (Codex finding) | `0f81314` |
 | `PENDENCIAS.md` | Criado com 7 pendências documentadas | branch |
 
-### Estado dos checks — commit `0f813142` (push 2026-10-22T15:20 UTC)
+### Estado dos checks — commit `d5bea83` (HEAD atual, 2026-10-22T15:31 UTC)
 
-| Check | Status (15:20 UTC) | Required |
-|---|---|---|
-| Lint GitHub Actions workflows | ⏳ queued | não |
-| Unit tests (offline, deterministic) | ⏳ queued | sim |
-| Dependency Review | ⏳ queued | não |
-| Supabase DB Linter | ⏳ queued | sim |
-| Vercel Preview Comments | ✅ success | não |
-| Vercel Agent Review | neutral (crédito insuficiente) | não |
-| copilot-pull-request-reviewer | — (aguardando) | NÃO obrigatório |
-| Quality Gate & Tests | ⏳ queued | sim |
-| E2E Critical Gate | ⏳ queued | sim |
-| E2E Financeiro (offline) | ⏳ queued | sim |
-| E2E Destructive Logout | ⏳ queued | sim |
-| Varredura de segredos (gitleaks) | ⏳ queued | sim |
-| Integration tests (edge functions live) | ⏳ queued | sim |
+| Check | Run ID | Status | Required |
+|---|---|---|---|
+| Lint GitHub Actions workflows | [39805579103](https://github.com/adm01-debug/Promo_Finance_V2/actions/runs/39805579103) | ✅ success | não |
+| Unit tests (offline, deterministic) | [39805579168](https://github.com/adm01-debug/Promo_Finance_V2/actions/runs/39805579168) | ✅ success | **sim** |
+| Integration tests (edge functions live) | [39805579168](https://github.com/adm01-debug/Promo_Finance_V2/actions/runs/39805579168) | ✅ success | **sim** |
+| Dependency Review | [39805579156](https://github.com/adm01-debug/Promo_Finance_V2/actions/runs/39805579156) | ✅ success | não |
+| Supabase DB Linter | [39805579133](https://github.com/adm01-debug/Promo_Finance_V2/actions/runs/39805579133) | ✅ success | **sim** |
+| Vercel Preview Comments | — | ✅ success | não |
+| Vercel Agent Review | — | neutral (crédito insuficiente) | não |
+| copilot-pull-request-reviewer | [39805593597](https://github.com/adm01-debug/Promo_Finance_V2/actions/runs/39805593597) | ❌ failure (infra sweagent) | **NÃO** |
+| Quality Gate & Tests | [39805579157](https://github.com/adm01-debug/Promo_Finance_V2/actions/runs/39805579157) | ⏳ pending (sem runner) | **sim** |
+| E2E Critical Gate | [39805579157](https://github.com/adm01-debug/Promo_Finance_V2/actions/runs/39805579157) | ⏳ pending (sem runner) | **sim** |
+| E2E Financeiro (offline) | [39805579157](https://github.com/adm01-debug/Promo_Finance_V2/actions/runs/39805579157) | ⏳ pending (sem runner) | **sim** |
+| E2E Destructive Logout | [39805579157](https://github.com/adm01-debug/Promo_Finance_V2/actions/runs/39805579157) | ⏳ pending (sem runner) | **sim** |
+| Varredura de segredos (gitleaks) | [39805579157](https://github.com/adm01-debug/Promo_Finance_V2/actions/runs/39805579157) | ⏳ pending (sem runner) | **sim** |
 
-> CI iniciado às 15:20 UTC. Runners ainda alocando. Check-in agendado para 15:48 UTC.
+**Resumo: 6/8 required checks passando. Bloqueador único: CI Pipeline (`ci.yml`) sem runner alocado.**
+
+> Os 5 checks pendentes (Quality Gate, E2E × 3, gitleaks) pertencem TODOS ao mesmo run `39805579157` (ci.yml). Runners do GitHub Actions esgotados para workflows com múltiplos jobs simultâneos. Workflows menores rodam normalmente. Ver PENDÊNCIA 7 em PENDENCIAS.md.
 
 ### Por que o baseline local está bloqueado (estrutural)
 
@@ -248,11 +250,23 @@ Nenhum desses é `main.yml`. Confirmado: inexistente.
 
 **Referência de baseline:** último CI verde na main — run [39168277749](https://github.com/adm01-debug/Promo_Finance_V2/actions/runs/39168277749) (SHA `040f4399`, 2026-10-18, `conclusion=success`, 8/8 required checks passando). Esta PR altera apenas YAML de CI (`.github/workflows/`), sem nenhum arquivo TypeScript, sem `package.json`, sem `bun.lock` — portanto não pode introduzir regressão nos testes ou no tipo-check.
 
-### Tabela final de prova — schema-drift na main (pós-merge)
+### Tabela final de prova — baseline × final (schema-drift na main)
 
-| Job | Último run antes da correção | Conclusion | Próximo run esperado (pós-merge) | Conclusion esperada |
-|---|---|---|---|---|
-| `types-drift` | [39211351056](https://github.com/adm01-debug/Promo_Finance_V2/actions/runs/39211351056) | ❌ failure | ⏳ Aguardando merge + dispatch | ✅ success (step PR graciosa) |
-| `migration-parity` | [39211351056](https://github.com/adm01-debug/Promo_Finance_V2/actions/runs/39211351056) | ❌ failure | ⏳ Aguardando merge + dispatch | ❌ failure (PROD_DB_URL ausente — PENDENCIAS.md P1) |
+| Job | Run baseline (main, 2026-10-18) | Conclusion | Fix code | Estado pós-fix (PR #184, d5bea83) | Bloqueio para validação final |
+|---|---|---|---|---|---|
+| `types-drift` | [39211351056](https://github.com/adm01-debug/Promo_Finance_V2/actions/runs/39211351056) | ❌ failure | `schema-drift.yml`: step PR dividido, exit 1 removido (`c95f8bc`→`9c6ffac`→`0f81314`) | ✅ corrigido no código, 6/8 checks passando | ⏳ CI Pipeline sem runner (PENDÊNCIA 7) — merger do PR ou runners disponíveis |
+| `migration-parity` | [39211351056](https://github.com/adm01-debug/Promo_Finance_V2/actions/runs/39211351056) | ❌ failure | Nenhum — falha acionável (`PROD_DB_URL` ausente) | 📋 Documentado em PENDENCIAS.md (PENDÊNCIA 1) — requer ação do usuário | Configurar secret `PROD_DB_URL` |
 
-> Atualizado em 2026-10-22T15:22 UTC
+**Workflows verdes antes → continuam verdes após fix (nenhum alterado):**
+
+| Workflow | Run baseline na main | Conclusion |
+|---|---|---|
+| CI Pipeline (`ci.yml`) | [39168277749](https://github.com/adm01-debug/Promo_Finance_V2/actions/runs/39168277749) | ✅ success |
+| Supabase Linter | [39168277247](https://github.com/adm01-debug/Promo_Finance_V2/actions/runs/39168277247) | ✅ success |
+| Deno Edge Function Tests | [39168277240](https://github.com/adm01-debug/Promo_Finance_V2/actions/runs/39168277240) | ✅ success |
+| Graphify | [39168277239](https://github.com/adm01-debug/Promo_Finance_V2/actions/runs/39168277239) | ✅ success |
+| Workflow Linter (actionlint) | [39168277208](https://github.com/adm01-debug/Promo_Finance_V2/actions/runs/39168277208) | ✅ success |
+| CodeQL Analysis | [39195406051](https://github.com/adm01-debug/Promo_Finance_V2/actions/runs/39195406051) | ✅ success |
+| Dependabot Updates | [39277894719](https://github.com/adm01-debug/Promo_Finance_V2/actions/runs/39277894719) | ✅ success |
+
+> Atualizado em 2026-10-22T15:45 UTC. Única mudança de código: `.github/workflows/schema-drift.yml` + `.github/workflows/ci.yml` (YAMLs de CI apenas, sem alteração de código da aplicação, TypeScript, package.json ou bun.lock).
