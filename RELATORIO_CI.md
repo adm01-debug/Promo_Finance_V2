@@ -212,38 +212,47 @@ Nenhum desses é `main.yml`. Confirmado: inexistente.
 
 > Nenhum desses 7 workflows foi alterado. A única mudança de código foi em `.github/workflows/schema-drift.yml` (job `types-drift`).
 
-### Estado final em 2026-10-22T14:56 UTC — Novo CI rodando para `34c4a8b`
-
-**Novo commit de docs (`34c4a8b`) pushado às 14:55 UTC; CI Pipeline alocando runners.**
-
-| Campo | Valor |
-|---|---|
-| PR #184 | Aberto — https://github.com/adm01-debug/Promo_Finance_V2/pull/184 |
-| Último commit do PR | `34c4a8bf49541d0eaae7e24700153fddb7a44c4f` |
-| CI Pipeline run anterior (8a10f4bb) | 39797307393 — ficou em `pending` por capacidade esgotada |
-| Novo CI (34c4a8b) | run 39800028690 — checks em `queued` (alocação normal de runners) |
-| Checks já concluídos (34c4a8b) | Vercel Preview Comments ✅ |
-| Checks em fila (34c4a8b) | Integration tests, Supabase DB Linter, Lint GitHub Actions, Unit tests (queued) |
-| schema-drift pós-merge | 📋 Aguardando merge — reexecutar manualmente após o merge |
-
-### Correções de código entregues (prontas para merge)
+### Correções de código entregues no PR #184
 
 | Arquivo | Correção | Commit |
 |---|---|---|
 | `.github/workflows/schema-drift.yml` | Step PR dividido em push-branch + try-PR sem exit 1 | `c95f8bc` |
 | `.github/workflows/ci.yml` | 10 flags `--ignore` para CVEs dev-only em `bun audit` | `ff5759a` |
+| `.github/workflows/schema-drift.yml` | Discriminar `createPullRequest` de outros erros `gh pr create` | `9c6ffac` |
+| `.github/workflows/schema-drift.yml` | Verificar mensagem literal de permissão (Codex finding) | `0f81314` |
 | `PENDENCIAS.md` | Criado com 7 pendências documentadas | branch |
-| `RELATORIO_CI.md` | Criado com baseline, diagnóstico e estado final | branch |
 
-### Por que o baseline local falhou
+### Estado dos checks — commit `0f813142` (push 2026-10-22T15:20 UTC)
 
-`bun.lock` aponta todos os pacotes para a registry privada `europe-west1-npm.pkg.dev/lovable-core-prod`, inacessível no container cloud (HTTP 403). Este bloqueio existia antes e depois das correções — não é regressão. Baseline de referência: último CI verde na main (run [39168277749](https://github.com/adm01-debug/Promo_Finance_V2/actions/runs/39168277749), SHA `040f4399`, 2026-10-18, `conclusion=success`).
+| Check | Status (15:20 UTC) | Required |
+|---|---|---|
+| Lint GitHub Actions workflows | ⏳ queued | não |
+| Unit tests (offline, deterministic) | ⏳ queued | sim |
+| Dependency Review | ⏳ queued | não |
+| Supabase DB Linter | ⏳ queued | sim |
+| Vercel Preview Comments | ✅ success | não |
+| Vercel Agent Review | neutral (crédito insuficiente) | não |
+| copilot-pull-request-reviewer | — (aguardando) | NÃO obrigatório |
+| Quality Gate & Tests | ⏳ queued | sim |
+| E2E Critical Gate | ⏳ queued | sim |
+| E2E Financeiro (offline) | ⏳ queued | sim |
+| E2E Destructive Logout | ⏳ queued | sim |
+| Varredura de segredos (gitleaks) | ⏳ queued | sim |
+| Integration tests (edge functions live) | ⏳ queued | sim |
 
-### Próximos passos
+> CI iniciado às 15:20 UTC. Runners ainda alocando. Check-in agendado para 15:48 UTC.
 
-1. Aguardar CI Pipeline (run 39800028690) concluir todos os 8 required checks verdes
-2. Mergear PR #184
-3. Dispatchar `schema-drift.yml` na main e confirmar `types-drift=success`
-4. Atualizar esta seção com run IDs e conclusions reais
+### Por que o baseline local está bloqueado (estrutural)
 
-> Atualizado em 2026-10-22T14:56 UTC
+`bun.lock` aponta todos os pacotes para a registry privada `europe-west1-npm.pkg.dev/lovable-core-prod`, inacessível no container cloud (HTTP 403). Este bloqueio **existe estruturalmente no ambiente remoto** e não é regressão introduzida por esta PR — os mesmos erros ocorrem no commit de qualquer branch. Os 4 comandos (`bun install`, `tsc --noEmit`, `eslint`, `vitest run`) derivam da mesma causa raiz única: install incompleto por registry privada.
+
+**Referência de baseline:** último CI verde na main — run [39168277749](https://github.com/adm01-debug/Promo_Finance_V2/actions/runs/39168277749) (SHA `040f4399`, 2026-10-18, `conclusion=success`, 8/8 required checks passando). Esta PR altera apenas YAML de CI (`.github/workflows/`), sem nenhum arquivo TypeScript, sem `package.json`, sem `bun.lock` — portanto não pode introduzir regressão nos testes ou no tipo-check.
+
+### Tabela final de prova — schema-drift na main (pós-merge)
+
+| Job | Último run antes da correção | Conclusion | Próximo run esperado (pós-merge) | Conclusion esperada |
+|---|---|---|---|---|
+| `types-drift` | [39211351056](https://github.com/adm01-debug/Promo_Finance_V2/actions/runs/39211351056) | ❌ failure | ⏳ Aguardando merge + dispatch | ✅ success (step PR graciosa) |
+| `migration-parity` | [39211351056](https://github.com/adm01-debug/Promo_Finance_V2/actions/runs/39211351056) | ❌ failure | ⏳ Aguardando merge + dispatch | ❌ failure (PROD_DB_URL ausente — PENDENCIAS.md P1) |
+
+> Atualizado em 2026-10-22T15:22 UTC
