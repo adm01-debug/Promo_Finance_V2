@@ -117,7 +117,7 @@ jobs:
             --body "$PR_BODY" \
             --base main 2>"$GH_ERR"; then
             echo "PR criado com sucesso."
-          elif grep -q "createPullRequest" "$GH_ERR"; then
+          elif grep -q "GitHub Actions is not permitted to create or approve pull requests" "$GH_ERR"; then
             # A permissão 'createPullRequest' não está habilitada para o Actions token.
             # Branch já foi publicada — a PR pode ser aberta manualmente.
             cat "$GH_ERR" >&2
