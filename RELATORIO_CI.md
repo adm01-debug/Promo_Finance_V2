@@ -176,3 +176,49 @@ Arquivo **não existe** no repositório. Inventário completo (16 workflows list
 `ci.yml`, `schema-drift.yml`, `supabase-linter.yml`, `deno-tests.yml`, `graphify.yml`, `actionlint.yml`, `codeql.yml`, `dependabot-updates`, `prod-migrate.yml`, `staging-migrate.yml`, `copilot` (agente dinâmico), `migration-ledger.yml`, `e2e-cloud-probe.yml`, `functions-deploy.yml`, `supabase-admin-ops.yml`, `dependency-review.yml`
 
 Nenhum desses é `main.yml`. Confirmado: inexistente.
+
+---
+
+## 8. TABELA DE PROVA (atualizada em 2026-10-22)
+
+### Baseline local (impossível no container cloud)
+
+| Comando | Resultado baseline | Resultado pós-fix |
+|---|---|---|
+| `bun install` | ❌ 403 registry privada `europe-west1-npm.pkg.dev` | ❌ Mesma causa (impossível no container cloud) |
+| `bun run type-check` | ❌ TS2688 vitest/globals — derivado do install | ❌ Derivado do install |
+| `bun run lint` | ❌ ERR_MODULE_NOT_FOUND eslint — derivado do install | ❌ Derivado do install |
+| `bun run test:run` | ❌ exit 1 — derivado do install | ❌ Derivado do install |
+
+> **Nota:** Baseline local bloqueado pela mesma causa raiz (registry privada inacessível) antes e depois. Nenhuma regressão introduzida — os erros são todos `403 registry` e derivados, não erros de código da aplicação. Referência de baseline: **último CI verde na main** — run [39168277749](https://github.com/adm01-debug/Promo_Finance_V2/actions/runs/39168277749) (SHA `040f4399`, 2026-10-18, conclusion=success).
+
+### Workflows em falha na main — estado antes × depois
+
+| Workflow | Último run na main (antes) | Conclusion | Correção aplicada | Validação pós-merge |
+|---|---|---|---|---|
+| `schema-drift.yml` — job `types-drift` | [39211351056](https://github.com/adm01-debug/Promo_Finance_V2/actions/runs/39211351056) | ❌ failure | Step dividido em dois (push-branch + try-PR sem exit 1) — PR #184 | ⏳ Aguardando merge do PR #184 e reexecução |
+| `schema-drift.yml` — job `migration-parity` | [39211351056](https://github.com/adm01-debug/Promo_Finance_V2/actions/runs/39211351056) | ❌ failure | Nenhuma — falha acionável por `PROD_DB_URL` em branco | 📋 PENDÊNCIAS.md — PENDÊNCIA 1 (secret ausente) |
+
+### Workflows verdes antes → continuam verdes após fix
+
+| Workflow | Run de referência na main | Conclusion |
+|---|---|---|
+| CI Pipeline (`ci.yml`) | [39168277749](https://github.com/adm01-debug/Promo_Finance_V2/actions/runs/39168277749) | ✅ success |
+| Supabase Linter | [39168277247](https://github.com/adm01-debug/Promo_Finance_V2/actions/runs/39168277247) | ✅ success |
+| Deno Edge Function Tests | [39168277240](https://github.com/adm01-debug/Promo_Finance_V2/actions/runs/39168277240) | ✅ success |
+| Graphify | [39168277239](https://github.com/adm01-debug/Promo_Finance_V2/actions/runs/39168277239) | ✅ success |
+| Workflow Linter (actionlint) | [39168277208](https://github.com/adm01-debug/Promo_Finance_V2/actions/runs/39168277208) | ✅ success |
+| CodeQL Analysis | [39195406051](https://github.com/adm01-debug/Promo_Finance_V2/actions/runs/39195406051) | ✅ success |
+| Dependabot Updates | [39277894719](https://github.com/adm01-debug/Promo_Finance_V2/actions/runs/39277894719) | ✅ success |
+
+> Nenhum desses 7 workflows foi alterado. A única mudança de código foi em `.github/workflows/schema-drift.yml` (job `types-drift`).
+
+### Atualização pós-merge (a preencher após merge do PR #184)
+
+| Campo | Valor |
+|---|---|
+| PR mergeado | #184 (⏳ aguardando CI verde) |
+| schema-drift pós-merge — run ID | ⏳ a confirmar |
+| schema-drift pós-merge — types-drift | ⏳ a confirmar (esperado: success) |
+| schema-drift pós-merge — migration-parity | ⏳ a confirmar (esperado: failure — PROD_DB_URL em branco) |
+| schema-drift pós-merge — conclusion geral | ⏳ a confirmar (esperado: failure — migration-parity ainda falha por secret ausente) |
