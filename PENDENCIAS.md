@@ -105,7 +105,7 @@ As guards já garantem `exit 0` mesmo sem os secrets abaixo. Eles apenas habilit
 ```bash
 # No seu computador, dentro da pasta do projeto:
 bun add dompurify@3.4.17
-git add package.json bun.lockb
+git add package.json bun.lock
 git commit -m "fix(deps): atualiza dompurify 3.4.16→3.4.17 (CVE CVSS 9.2)"
 git push origin main   # ou abrir PR se main for protegida
 ```

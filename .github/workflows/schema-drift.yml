@@ -188,7 +188,7 @@ jobs:
           # arquivos locais podem ter sufixo descritivo/UUID depois do timestamp.
           find supabase/migrations -maxdepth 1 -name '*.sql' -print0 \
             | xargs -0 -n1 basename \
-            | sed 's/\.sql$//' | sort -u \
+            | sed -E 's/^([0-9]+).*\.sql$/\1/' | sort -u \
             > /tmp/local_versions.txt
 
           comm -23 /tmp/remote_versions.txt /tmp/local_versions.txt > /tmp/remote_only.txt
