@@ -73,7 +73,6 @@ Nenhum erro de código da aplicação; o último CI verde em main (run 391682777
 | staging-migrate | `staging-migrate.yml` | Sem run recente na main | — | workflow_dispatch manual; veja PENDENCIAS.md |
 | Copilot | `dynamic/agents/copilot-pull-request-reviewer` | — | — | agente dinâmico; não tem falha persistente na main |
 | migration-ledger | `migration-ledger.yml` | Sem run recente na main | — | workflow_dispatch manual |
-| e2e-cloud-probe | `e2e-cloud-probe.yml` | Sem run recente na main | — | schedule/manual |
 | functions-deploy | `functions-deploy.yml` | Sem run recente na main | — | workflow_dispatch manual |
 | supabase-admin-ops | `supabase-admin-ops.yml` | Sem run recente na main | — | workflow_dispatch manual |
 | dependency-review | `dependency-review.yml` | Sem run recente na main | — | trigger: pull_request |
@@ -173,7 +172,7 @@ Processing Request (Linux) — terminated with multiple orphan process exits
 
 Arquivo **não existe** no repositório. Inventário completo (16 workflows listados em 2026-10-22):
 
-`ci.yml`, `schema-drift.yml`, `supabase-linter.yml`, `deno-tests.yml`, `graphify.yml`, `actionlint.yml`, `codeql.yml`, `dependabot-updates`, `prod-migrate.yml`, `staging-migrate.yml`, `copilot` (agente dinâmico), `migration-ledger.yml`, `e2e-cloud-probe.yml`, `functions-deploy.yml`, `supabase-admin-ops.yml`, `dependency-review.yml`
+`ci.yml`, `schema-drift.yml`, `supabase-linter.yml`, `deno-tests.yml`, `graphify.yml`, `actionlint.yml`, `codeql.yml`, `dependabot-updates`, `prod-migrate.yml`, `staging-migrate.yml`, `copilot` (agente dinâmico), `migration-ledger.yml`, `functions-deploy.yml`, `supabase-admin-ops.yml`, `dependency-review.yml`
 
 Nenhum desses é `main.yml`. Confirmado: inexistente.
 
@@ -220,10 +219,11 @@ Nenhum desses é `main.yml`. Confirmado: inexistente.
 | Campo | Valor |
 |---|---|
 | PR #184 | Aberto — https://github.com/adm01-debug/Promo_Finance_V2/pull/184 |
-| Último commit do PR | `17b34a8e24f4d783b9ea747168e5b43d5bb17eae` |
-| CI Pipeline run | 39796242886 — `status=queued` desde 14:30:31Z (nunca iniciou) |
-| Causa do bloqueio | Capacidade de runners do GitHub esgotada — mesmo após 14+ tentativas com commits diferentes entre 13:00–14:40 UTC |
-| Checks que passaram neste PR | Supabase DB Linter ✅, Vercel Preview Comments ✅, Dependency Review (in_progress) |
+| Último commit do PR | `8a10f4bb218ca490d43b11ef0b6042631906fc72` |
+| CI Pipeline run | 39797307393 — `status=pending` desde 14:37:38Z |
+| Causa do bloqueio | Capacidade de runners do GitHub esgotada; run para `8a10f4bb` em `pending` (aguardando alocação de runner) |
+| Checks que passaram neste PR (8a10f4bb) | Integration tests ✅, Unit tests ✅, Supabase DB Linter ✅, Vercel Preview Comments ✅, Lint GitHub Actions ✅, Dependency Review ✅ |
+| Checks pendentes | Quality Gate & Tests, E2E Critical Gate, E2E Financeiro, E2E Destructive Logout, Varredura de segredos (todos do CI Pipeline) |
 | schema-drift pós-merge | 📋 Aguardando merge — ver PENDÊNCIA 7 em PENDENCIAS.md |
 
 ### Correções de código entregues (prontas para merge)
@@ -241,8 +241,8 @@ Nenhum desses é `main.yml`. Confirmado: inexistente.
 
 ### Próximos passos (após runners se liberarem)
 
-1. Aguardar CI Pipeline run 39796242886 iniciar (ou novo push disparar novo run)
-2. Verificar 8 required checks verdes
+1. Aguardar CI Pipeline run 39797307393 (`pending`) iniciar e concluir
+2. Verificar 8 required checks verdes no PR #184
 3. Mergear PR #184
 4. Dispatchar `schema-drift.yml` na main e confirmar `types-drift=success`
 5. Atualizar esta seção com run IDs e conclusions reais

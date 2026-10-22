@@ -94,6 +94,7 @@ or approve pull requests (createPullRequest)
 | `STAGING_PROJECT_REF` | ID do projeto Supabase de staging |
 | `STAGING_ANON_KEY` | Supabase dashboard → API Keys |
 | `TEST_ADMIN_JWT` | JWT de usuário admin para testes |
+| `REQUIRED_SECRETS` | Variável de repositório (não secret) listando os secrets obrigatórios; adicionar em Settings → Variables → Actions |
 
 ---
 
