@@ -172,7 +172,9 @@ jobs:
         # GHSA-9jrq-w75r-8gcw: cross-origin script via custom middleware —
         #   exclusivo do servidor de dev; ausente em build/prod.
         # GHSA-rq7h-c2jc-7f22: arquivos fora de server.fs.allow — mesmo vetor.
-        # GHSA-vfpm-58rq-9qcg: primeiros 4 bytes via ?vite-wasm-instance — idem.
+        # GHSA-vfpm-58rq-9qcg: primeiros 4 bytes via ?vite-wasm-instance — E2E usa
+        #   servidor dev (host:'::'), mas runners GitHub Actions não têm ingresso
+        #   externo (NAT); sem vetor de ataque remoto real em CI.
         # vitest — infraestrutura de testes, não executada em runtime de prod.
         # GHSA-qxg6-89mg-rqv8: code injection via mock — afeta WebSocket do modo
         #   browser; este projeto usa Vitest em modo Node (bun run test:run).

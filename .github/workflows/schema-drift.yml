@@ -110,15 +110,17 @@ jobs:
           Gerado por \`.github/workflows/schema-drift.yml\`.
           EOF
           )"
+          GH_ERR=$(mktemp)
           if gh pr create \
             --head "$BRANCH" \
             --title "chore(db): tipos Supabase dessincronizados de prod" \
             --body "$PR_BODY" \
-            --base main; then
+            --base main 2>"$GH_ERR"; then
             echo "PR criado com sucesso."
-          else
+          elif grep -q "createPullRequest" "$GH_ERR"; then
             # A permissão 'createPullRequest' não está habilitada para o Actions token.
             # Branch já foi publicada — a PR pode ser aberta manualmente.
+            cat "$GH_ERR" >&2
             echo "::warning::Não foi possível criar PR automaticamente. Branch '$BRANCH' publicada."
             {
               echo "## ⚠️ Schema drift detectado — PR pendente de criação manual"
@@ -128,6 +130,9 @@ jobs:
               echo "**Ação necessária:** abra a PR manualmente ou habilite"
               echo "*Settings → Actions → General → Allow GitHub Actions to create and approve pull requests*."
             } >> "$GITHUB_STEP_SUMMARY"
+          else
+            cat "$GH_ERR" >&2
+            exit 1
           fi
 
   migration-parity:
