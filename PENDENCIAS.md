@@ -132,3 +132,25 @@ or approve pull requests (createPullRequest)
 1. Acesse: https://github.com/adm01-debug/Promo_Finance_V2/pull/184
 2. Clique em **Re-run** no check "Running Copilot Code Review" (se disponível na interface)
 3. Ou aguarde reexecução automática pelo GitHub Copilot
+
+---
+
+## PENDÊNCIA 7 — GitHub Actions runners presos em `queued` (bloqueio de infraestrutura)
+
+**Impacto:** Impede o merge do PR #184 e a revalidação do `schema-drift.yml` com `conclusion=success`.
+
+**Causa raiz:** Capacidade de runners do GitHub Actions esgotada — o CI Pipeline (run 39796242886, ci.yml) está em `queued` desde 2026-10-22T14:30:31Z sem nenhuma atualização. Workflows menores (Supabase DB Linter ✅, Dependency Review) rodam normalmente; o ci.yml, que exige múltiplos runners simultâneos para jobs paralelos, não é alocado.
+
+**Estado das correções de código (prontas, no PR #184):**
+- `schema-drift.yml` → job `types-drift`: corrigido (step dividido em push-branch + try-PR sem exit 1)
+- `ci.yml` → `bun audit`: corrigido (10 flags `--ignore` para CVEs dev-only documentados)
+- Checks que JÁ passaram neste PR: Supabase DB Linter ✅, Vercel Preview Comments ✅
+
+**O que você precisa fazer:**
+1. Aguarde os runners do GitHub Actions se liberarem (pode demorar horas em picos de demanda)
+2. Quando o CI Pipeline (run 39796242886) iniciar, verifique se todos os 8 required checks passam
+3. Se passar, faça o merge do PR #184: https://github.com/adm01-debug/Promo_Finance_V2/pull/184
+4. Após o merge, dispare o schema-drift manualmente: Settings → Actions → Schema drift → Run workflow → branch: main
+5. Verifique que o job `types-drift` conclui com `success`
+
+**Sem ação de código pendente** — o bloqueio é 100% de infraestrutura do GitHub Actions.

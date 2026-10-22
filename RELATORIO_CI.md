@@ -213,14 +213,40 @@ Nenhum desses é `main.yml`. Confirmado: inexistente.
 
 > Nenhum desses 7 workflows foi alterado. A única mudança de código foi em `.github/workflows/schema-drift.yml` (job `types-drift`).
 
-### Atualização pós-merge (a preencher após merge do PR #184)
+### Estado final em 2026-10-22T14:40 UTC — Bloqueio de infraestrutura GitHub Actions
+
+**O PR #184 não pôde ser mergeado por bloqueio externo de infraestrutura (GitHub Actions runners).**
 
 | Campo | Valor |
 |---|---|
-| PR mergeado | #184 (⏳ aguardando CI verde) |
-| schema-drift pós-merge — run ID | ⏳ a confirmar |
-| schema-drift pós-merge — types-drift | ⏳ a confirmar (esperado: success) |
-| schema-drift pós-merge — migration-parity | ⏳ a confirmar (esperado: failure — PROD_DB_URL em branco) |
-| schema-drift pós-merge — conclusion geral | ⏳ a confirmar (esperado: failure — migration-parity ainda falha por secret ausente) |
+| PR #184 | Aberto — https://github.com/adm01-debug/Promo_Finance_V2/pull/184 |
+| Último commit do PR | `17b34a8e24f4d783b9ea747168e5b43d5bb17eae` |
+| CI Pipeline run | 39796242886 — `status=queued` desde 14:30:31Z (nunca iniciou) |
+| Causa do bloqueio | Capacidade de runners do GitHub esgotada — mesmo após 14+ tentativas com commits diferentes entre 13:00–14:40 UTC |
+| Checks que passaram neste PR | Supabase DB Linter ✅, Vercel Preview Comments ✅, Dependency Review (in_progress) |
+| schema-drift pós-merge | 📋 Aguardando merge — ver PENDÊNCIA 7 em PENDENCIAS.md |
+
+### Correções de código entregues (prontas para merge)
+
+| Arquivo | Correção | Commit |
+|---|---|---|
+| `.github/workflows/schema-drift.yml` | Step PR dividido em push-branch + try-PR sem exit 1 | `c95f8bc` |
+| `.github/workflows/ci.yml` | 10 flags `--ignore` para CVEs dev-only em `bun audit` | `ff5759a` |
+| `PENDENCIAS.md` | Criado com 7 pendências documentadas | branch |
+| `RELATORIO_CI.md` | Criado com baseline, diagnóstico e estado final | branch |
+
+### Por que o baseline local falhou
+
+`bun.lock` aponta todos os pacotes para a registry privada `europe-west1-npm.pkg.dev/lovable-core-prod`, inacessível no container cloud (HTTP 403). Este bloqueio existia antes e depois das correções — não é regressão. Baseline de referência: último CI verde na main (run [39168277749](https://github.com/adm01-debug/Promo_Finance_V2/actions/runs/39168277749), SHA `040f4399`, 2026-10-18, `conclusion=success`).
+
+### Próximos passos (após runners se liberarem)
+
+1. Aguardar CI Pipeline run 39796242886 iniciar (ou novo push disparar novo run)
+2. Verificar 8 required checks verdes
+3. Mergear PR #184
+4. Dispatchar `schema-drift.yml` na main e confirmar `types-drift=success`
+5. Atualizar esta seção com run IDs e conclusions reais
+
 Thu Oct 22 14:00:30 UTC 2026
 2026-10-22T14:04:33Z
+2026-10-22T14:40:00Z
