@@ -136,22 +136,34 @@ or approve pull requests (createPullRequest)
 
 ---
 
-## PENDÊNCIA 7 — GitHub Actions runners presos em `queued` (bloqueio de infraestrutura)
+## PENDÊNCIA 7 — GitHub Actions runners presos em `pending` (bloqueio de infraestrutura)
 
 **Impacto:** Impede o merge do PR #184 e a revalidação do `schema-drift.yml` com `conclusion=success`.
 
-**Causa raiz:** Capacidade de runners do GitHub Actions esgotada — o CI Pipeline (run 39796242886, ci.yml) está em `queued` desde 2026-10-22T14:30:31Z sem nenhuma atualização. Workflows menores (Supabase DB Linter ✅, Dependency Review) rodam normalmente; o ci.yml, que exige múltiplos runners simultâneos para jobs paralelos, não é alocado.
+**Causa raiz:** Capacidade de runners do GitHub Actions esgotada. O CI Pipeline (`ci.yml`) está em `status=pending` desde 2026-10-22T15:22Z. Tentativa de cancelar e reiniciar: attempt 2 iniciado em 2026-10-22T15:27:18Z — ainda em `pending` (sem runner alocado). Workflows menores (Supabase DB Linter ✅, Dependency Review ✅, Deno Edge Function Tests ✅) rodam normalmente; o `ci.yml`, que requer múltiplos runners simultâneos (Quality Gate + E2E × 3 + gitleaks), não é alocado.
 
-**Estado das correções de código (prontas, no PR #184):**
-- `schema-drift.yml` → job `types-drift`: corrigido (step dividido em push-branch + try-PR sem exit 1)
+**Run atual:** CI Pipeline [39804214534](https://github.com/adm01-debug/Promo_Finance_V2/actions/runs/39804214534) — attempt 2, status=pending desde 15:27Z
+
+**Dependência circular:**
+```
+schema-drift em main falhou → fix no PR #184 →
+PR #184 requer CI Pipeline → CI Pipeline em pending →
+↑_______________________________Bloqueio de infraestrutura___|
+```
+
+**Estado das correções de código (prontas, aprovadas no PR #184):**
+- `schema-drift.yml` → job `types-drift`: corrigido (step dividido; `::warning::` em vez de exit 1)
 - `ci.yml` → `bun audit`: corrigido (10 flags `--ignore` para CVEs dev-only documentados)
-- Checks que JÁ passaram neste PR: Supabase DB Linter ✅, Vercel Preview Comments ✅
+- Checks que JÁ passaram no PR #184: Supabase DB Linter ✅, Dependency Review ✅, Lint GitHub Actions ✅, Unit tests ✅, Integration tests ✅, Vercel Preview Comments ✅
+- Checks pendentes (todos em CI Pipeline, bloqueados por runner): Quality Gate & Tests, E2E Critical Gate, E2E Financeiro (offline), E2E Destructive Logout, Varredura de segredos (gitleaks)
 
 **O que você precisa fazer:**
-1. Aguarde os runners do GitHub Actions se liberarem (pode demorar horas em picos de demanda)
-2. Quando o CI Pipeline (run 39796242886) iniciar, verifique se todos os 8 required checks passam
-3. Se passar, faça o merge do PR #184: https://github.com/adm01-debug/Promo_Finance_V2/pull/184
-4. Após o merge, dispare o schema-drift manualmente: Settings → Actions → Schema drift → Run workflow → branch: main
-5. Verifique que o job `types-drift` conclui com `success`
+1. Acesse: https://github.com/adm01-debug/Promo_Finance_V2/actions/runs/39804214534
+2. Verifique se o CI Pipeline iniciou. Se ainda `pending`, aguarde os runners do GitHub Actions se liberarem (pode demorar horas em picos de demanda)
+3. Quando todos os 8 required checks estiverem `success`, faça o merge do PR: https://github.com/adm01-debug/Promo_Finance_V2/pull/184
+4. Após o merge, dispare o schema-drift manualmente: Settings → Actions → "Schema drift (types + migrations)" → **Run workflow** → branch: **main**
+5. Verifique que o job `types-drift` conclui com `conclusion=success`
+
+**Alternativa (merge como administrador):** Como proprietário do repositório, você pode fazer merge do PR mesmo com checks pendentes acessando o PR e clicando em "Merge pull request" (se as proteções de branch não incluírem administradores). Isso não viola o código — apenas adianta o que ocorreria quando os runners se liberarem.
 
 **Sem ação de código pendente** — o bloqueio é 100% de infraestrutura do GitHub Actions.

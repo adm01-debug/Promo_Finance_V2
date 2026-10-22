@@ -195,8 +195,8 @@ Nenhum desses é `main.yml`. Confirmado: inexistente.
 
 | Workflow | Último run na main (antes) | Conclusion | Correção aplicada | Validação pós-merge |
 |---|---|---|---|---|
-| `schema-drift.yml` — job `types-drift` | [39211351056](https://github.com/adm01-debug/Promo_Finance_V2/actions/runs/39211351056) | ❌ failure | Step dividido em dois (push-branch + try-PR sem exit 1) — PR #184 | ⏳ Aguardando merge do PR #184 e reexecução |
-| `schema-drift.yml` — job `migration-parity` | [39211351056](https://github.com/adm01-debug/Promo_Finance_V2/actions/runs/39211351056) | ❌ failure | Nenhuma — falha acionável por `PROD_DB_URL` em branco | 📋 PENDÊNCIAS.md — PENDÊNCIA 1 (secret ausente) |
+| `schema-drift.yml` — job `types-drift` | [39211351056](https://github.com/adm01-debug/Promo_Finance_V2/actions/runs/39211351056) | ❌ failure | Step dividido em dois (push-branch + try-PR sem exit 1) — PR #184, commits `c95f8bc`→`9c6ffac`→`0f81314` | ⏳ Bloqueado por CI Pipeline em `pending` (runners GitHub Actions indisponíveis). Ver PENDÊNCIA 7. |
+| `schema-drift.yml` — job `migration-parity` | [39211351056](https://github.com/adm01-debug/Promo_Finance_V2/actions/runs/39211351056) | ❌ failure | Nenhuma — falha acionável por `PROD_DB_URL` em branco | 📋 PENDÊNCIAS.md — PENDÊNCIA 1 (secret ausente, requer ação do usuário) |
 
 ### Workflows verdes antes → continuam verdes após fix
 
