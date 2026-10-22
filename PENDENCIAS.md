@@ -5,30 +5,33 @@
 
 ---
 
-## ⚠️ BLOQUEADOR PRINCIPAL (impede conclusão=success do schema-drift na main)
+## ⚠️ DOIS BLOQUEADORES DISTINTOS para schema-drift.yml (um transitório, um definitivo)
 
 O único workflow com `conclusion=failure` na main é `schema-drift.yml` (run [39211351056](https://github.com/adm01-debug/Promo_Finance_V2/actions/runs/39211351056)).
 
-**Fix de código:** aplicado no PR [#184](https://github.com/adm01-debug/Promo_Finance_V2/pull/184), branch `claude/festive-maxwell-d32vus`, commit `2ecb305`.
+### BLOQUEIO A — Transitório: job `types-drift` (fix em PR #184)
 
-**Estado atual do CI no PR #184 (SHA 2ecb305) — atualizado 2026-10-22T15:50Z:**
+- **Causa raiz:** `exit 1` quando a permissão `createPullRequest` não está habilitada
+- **Correção aplicada:** step dividido em push-branch + try-PR com degradação graciosa (`::warning::` em vez de exit 1)
+- **Fix está em:** PR [#184](https://github.com/adm01-debug/Promo_Finance_V2/pull/184), commit `ff1a1da`
+- **Bloqueio para merge:** CI Pipeline ainda rodando no commit `ff1a1da`
+- **Ação automática:** trigger `trig_016VSox1LoTQBdTMAVxGHixr` às 16:00 UTC fará o merge quando todos os 8 checks passarem
+- **Alternativa manual:** acesse [PR #184](https://github.com/adm01-debug/Promo_Finance_V2/pull/184) e clique em "Merge pull request" quando todos os checks ficarem verdes
 
-| Required Check | Status |
-|---|---|
-| Quality Gate & Tests | ✅ success (15:41→15:49Z) |
-| E2E Critical Gate | ✅ success |
-| E2E Financeiro (offline) | ✅ success |
-| **E2E Destructive Logout** | ⏳ queued desde 15:49Z |
-| Varredura de segredos (gitleaks) | ✅ success |
-| Integration tests (edge functions live) | ✅ success |
-| Unit tests (offline, deterministic) | ✅ success |
-| Supabase DB Linter | ✅ success |
+### BLOQUEIO B — **DEFINITIVO** (requer ação sua): job `migration-parity`
 
-**7 de 8 required checks passando.** Falta apenas `E2E Destructive Logout` (queued, aguardando runner — iniciou após Quality Gate completar).
-
-**Ação automática agendada:** trigger `trig_016VSox1LoTQBdTMAVxGHixr` às 16:00 UTC verificará checks e fará merge automaticamente quando todos os 8 passarem.
-
-**Alternativa manual (se o trigger falhar):** acesse [PR #184](https://github.com/adm01-debug/Promo_Finance_V2/pull/184) e clique em "Merge pull request" quando o badge do E2E Destructive Logout ficar verde. Após o merge, dispare o schema-drift manualmente: Actions → "Schema drift" → Run workflow → branch: main.
+- **Causa raiz:** Secret `PROD_DB_URL` não configurado no repositório → `psql` falha na conexão
+- **Erro:** `psql: error: connection to server on socket "/var/run/postgresql/.s.PGSQL.5432" failed`
+- **Correção de código:** IMPOSSÍVEL sem expor o secret. O job precisa do secret para funcionar — é um guard-rail correto.
+- **IMPORTANTE:** Mesmo após o merge do PR #184 e re-execução do schema-drift, **`migration-parity` continuará falhando** até você configurar `PROD_DB_URL`
+- **Consequência:** `schema-drift.yml` na main terá `conclusion=failure` permanentemente até este secret ser adicionado
+- **O que você precisa fazer (passo a passo):**
+  1. Acesse: https://github.com/adm01-debug/Promo_Finance_V2/settings/secrets/actions
+  2. Clique em **New repository secret**
+  3. Nome: `PROD_DB_URL`
+  4. Valor: `postgresql://postgres:[SENHA]@db.bwwbeyolnnzppeuhgkcd.supabase.co:5432/postgres`
+     - Obtenha a senha em: https://supabase.com/dashboard/project/bwwbeyolnnzppeuhgkcd/settings/database
+  5. Após adicionar, dispare manualmente: Actions → "Schema drift (types + migrations)" → **Run workflow** → branch: **main**
 
 ---
 

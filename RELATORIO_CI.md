@@ -1,7 +1,8 @@
 # RELATÓRIO CI — Promo Finance V2
 
-> Gerado em: 2026-10-22 (atualizado 14:00 UTC)  
-> Branch de correção: `claude/festive-maxwell-d32vus`
+> Gerado em: 2026-10-22 (última atualização: 15:55 UTC)  
+> Branch de correção: `claude/festive-maxwell-d32vus`  
+> PR de correção: [#184](https://github.com/adm01-debug/Promo_Finance_V2/pull/184) (aguardando CI para merge)
 
 ---
 
@@ -193,10 +194,34 @@ Nenhum desses é `main.yml`. Confirmado: inexistente.
 
 ### Workflows em falha na main — estado antes × depois
 
-| Workflow | Último run na main (antes) | Conclusion | Correção aplicada | Validação pós-merge |
-|---|---|---|---|---|
-| `schema-drift.yml` — job `types-drift` | [39211351056](https://github.com/adm01-debug/Promo_Finance_V2/actions/runs/39211351056) | ❌ failure | Step dividido em dois (push-branch + try-PR sem exit 1) — PR #184, commits `c95f8bc`→`9c6ffac`→`0f81314` | ⏳ Bloqueado por CI Pipeline em `pending` (runners GitHub Actions indisponíveis). Ver PENDÊNCIA 7. |
-| `schema-drift.yml` — job `migration-parity` | [39211351056](https://github.com/adm01-debug/Promo_Finance_V2/actions/runs/39211351056) | ❌ failure | Nenhuma — falha acionável por `PROD_DB_URL` em branco | 📋 PENDÊNCIAS.md — PENDÊNCIA 1 (secret ausente, requer ação do usuário) |
+| Workflow | Último run na main (antes) | Conclusion | Causa raiz | Correção | Status atual |
+|---|---|---|---|---|---|
+| `schema-drift.yml` — job `types-drift` | [39211351056](https://github.com/adm01-debug/Promo_Finance_V2/actions/runs/39211351056) | ❌ failure | `exit 1` quando `createPullRequest` não habilitado | Step dividido: push-branch sempre executa; try-PR degrada para `::warning::` sem exit 1 — PR #184, commit `ff1a1da` | ⏳ Fix em PR #184 (mergeable, aguardando 8/8 CI checks). Após merge: próximo run do schema-drift validará. |
+| `schema-drift.yml` — job `migration-parity` | [39211351056](https://github.com/adm01-debug/Promo_Finance_V2/actions/runs/39211351056) | ❌ failure | `PROD_DB_URL` ausente (secret não configurado) — `psql` não conecta | **Bloqueio definitivo de configuração** — sem correção de código possível sem expor secret | 📋 PENDÊNCIA 1 em PENDENCIAS.md: usuário deve configurar secret `PROD_DB_URL` em Settings → Secrets → Actions. **Schema-drift.yml continuará com `conclusion=failure` até este secret ser adicionado**, independente do merge. |
+
+### Implicação para `schema-drift.yml` após o merge do PR #184
+
+Mesmo após o merge do PR #184 e re-execução do `schema-drift.yml` na main:
+- Job `types-drift` → ✅ **passará** (code fix aplicado)
+- Job `migration-parity` → ❌ **falhará** (PROD_DB_URL ausente — bloqueio definitivo, requer ação do usuário)
+- Workflow geral → ❌ `conclusion=failure` **até** `PROD_DB_URL` ser configurado
+
+**Portanto:** A condição de stop para `schema-drift.yml` = `conclusion=success` só pode ser satisfeita após o usuário configurar o secret `PROD_DB_URL` (PENDÊNCIA 1 em PENDENCIAS.md).
+
+### CI pipeline no PR #184 — progresso de checks (commit `ff1a1da`, 2026-10-22T15:55Z)
+
+| Required Check | Status |
+|---|---|
+| Unit tests (offline, deterministic) | ✅ success (deno-tests.yml, 15:53Z) |
+| Integration tests (edge functions live) | ✅ success (deno-tests.yml, 15:54Z) |
+| Supabase DB Linter | ⏳ queued |
+| Quality Gate & Tests | ⏳ aguardando ci.yml |
+| E2E Critical Gate | ⏳ aguardando ci.yml |
+| E2E Financeiro (offline) | ⏳ aguardando ci.yml |
+| E2E Destructive Logout | ⏳ aguardando ci.yml |
+| Varredura de segredos (gitleaks) | ⏳ aguardando ci.yml |
+
+> Nota: ci.yml ainda não iniciou para `ff1a1da`. Trigger automático às 16:00 UTC verificará e fará o merge quando todos passarem.
 
 ### Workflows verdes antes → continuam verdes após fix
 
