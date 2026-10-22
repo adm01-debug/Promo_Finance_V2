@@ -223,3 +223,4 @@ Nenhum desses é `main.yml`. Confirmado: inexistente.
 | schema-drift pós-merge — migration-parity | ⏳ a confirmar (esperado: failure — PROD_DB_URL em branco) |
 | schema-drift pós-merge — conclusion geral | ⏳ a confirmar (esperado: failure — migration-parity ainda falha por secret ausente) |
 Thu Oct 22 14:00:30 UTC 2026
+2026-10-22T14:04:33Z
