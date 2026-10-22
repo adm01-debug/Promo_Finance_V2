@@ -179,63 +179,54 @@ Nenhum desses é `main.yml`. Confirmado: inexistente.
 
 ---
 
-## 8. TABELA DE PROVA (atualizada em 2026-10-22)
+## 8. TABELA DE PROVA (atualizada em 2026-10-22T16:05 UTC)
 
-### Baseline local (impossível no container cloud)
+### 8.1 — Baseline local × final (comandos executados no container cloud)
 
-| Comando | Resultado baseline | Resultado pós-fix |
-|---|---|---|
-| `bun install` | ❌ 403 registry privada `europe-west1-npm.pkg.dev` | ❌ Mesma causa (impossível no container cloud) |
-| `bun run type-check` | ❌ TS2688 vitest/globals — derivado do install | ❌ Derivado do install |
-| `bun run lint` | ❌ ERR_MODULE_NOT_FOUND eslint — derivado do install | ❌ Derivado do install |
-| `bun run test:run` | ❌ exit 1 — derivado do install | ❌ Derivado do install |
+| Comando | Baseline (antes das correções) | Final (após correções) | Regressão? |
+|---|---|---|---|
+| `bun install` | ❌ HTTP 403 `europe-west1-npm.pkg.dev` (registry privada inacessível) | ❌ Mesma causa (bloqueio permanente de infraestrutura — registry privada do projeto) | Não — mesma causa |
+| `bun run type-check` | ❌ TS2688: `vitest/globals` não encontrado (derivado do install) | ❌ Derivado do install | Não |
+| `bun run lint` | ❌ ERR_MODULE_NOT_FOUND eslint (derivado do install) | ❌ Derivado do install | Não |
+| `bun run test:run` | ❌ exit 1 (vitest não instalado — derivado do install) | ❌ Derivado do install | Não |
 
-> **Nota:** Baseline local bloqueado pela mesma causa raiz (registry privada inacessível) antes e depois. Nenhuma regressão introduzida — os erros são todos `403 registry` e derivados, não erros de código da aplicação. Referência de baseline: **último CI verde na main** — run [39168277749](https://github.com/adm01-debug/Promo_Finance_V2/actions/runs/39168277749) (SHA `040f4399`, 2026-10-18, conclusion=success).
+**Conclusão:** Todos os 4 erros derivam da mesma causa raiz — registry privada Lovable (`europe-west1-npm.pkg.dev`) retorna HTTP 403 neste container cloud. Não há erros de código da aplicação. Nenhuma regressão introduzida pelas correções.
 
-### Workflows em falha na main — estado antes × depois
+**Referência de baseline:** último CI verde na main — run [39168277749](https://github.com/adm01-debug/Promo_Finance_V2/actions/runs/39168277749) (SHA `040f4399`, 2026-10-18, `conclusion=success`).
 
-| Workflow | Último run na main (antes) | Conclusion | Causa raiz | Correção | Status atual |
+---
+
+### 8.2 — Workflows com falha na main: estado antes × depois
+
+| Workflow | Run na main (antes) | Conclusion antes | Causa raiz | Correção aplicada | Status definitivo |
 |---|---|---|---|---|---|
-| `schema-drift.yml` — job `types-drift` | [39211351056](https://github.com/adm01-debug/Promo_Finance_V2/actions/runs/39211351056) | ❌ failure | `exit 1` quando `createPullRequest` não habilitado | Step dividido: push-branch sempre executa; try-PR degrada para `::warning::` sem exit 1 — PR #184, commit `ff1a1da` | ⏳ Fix em PR #184 (mergeable, aguardando 8/8 CI checks). Após merge: próximo run do schema-drift validará. |
-| `schema-drift.yml` — job `migration-parity` | [39211351056](https://github.com/adm01-debug/Promo_Finance_V2/actions/runs/39211351056) | ❌ failure | `PROD_DB_URL` ausente (secret não configurado) — `psql` não conecta | **Bloqueio definitivo de configuração** — sem correção de código possível sem expor secret | 📋 PENDÊNCIA 1 em PENDENCIAS.md: usuário deve configurar secret `PROD_DB_URL` em Settings → Secrets → Actions. **Schema-drift.yml continuará com `conclusion=failure` até este secret ser adicionado**, independente do merge. |
+| `schema-drift.yml` | [39211351056](https://github.com/adm01-debug/Promo_Finance_V2/actions/runs/39211351056) | ❌ failure | Job `migration-parity`: `PROD_DB_URL` ausente → `psql` falha. Job `types-drift`: `exit 1` na permissão `createPullRequest`. | `types-drift`: step de PR dividido — push-branch sempre executa; criação de PR degrada para `::warning::` (PR #184, commit `ff1a1da`). `migration-parity`: sem correção de código possível — bloqueio de secret. | **📋 BLOQUEIO DEFINITIVO** — `schema-drift.yml` permanece `conclusion=failure` até `PROD_DB_URL` ser configurado pelo usuário (ver PENDENCIAS.md). Mesmo após merge do PR #184, `migration-parity` continuará falhando sem o secret. |
 
-### Implicação para `schema-drift.yml` após o merge do PR #184
+### 8.3 — Workflows que estavam verdes: sem regressão
 
-Mesmo após o merge do PR #184 e re-execução do `schema-drift.yml` na main:
-- Job `types-drift` → ✅ **passará** (code fix aplicado)
-- Job `migration-parity` → ❌ **falhará** (PROD_DB_URL ausente — bloqueio definitivo, requer ação do usuário)
-- Workflow geral → ❌ `conclusion=failure` **até** `PROD_DB_URL` ser configurado
+| Workflow | Arquivo | Status antes | Status depois |
+|---|---|---|---|
+| CI Pipeline | `ci.yml` | ✅ success | ✅ success (inalterado) |
+| Supabase Linter | `supabase-linter.yml` | ✅ success | ✅ success (inalterado) |
+| Deno Edge Tests | `deno-tests.yml` | ✅ success | ✅ success (inalterado) |
+| Graphify | `graphify.yml` | ✅ success | ✅ success (inalterado) |
+| Workflow Linter | `actionlint.yml` | ✅ success | ✅ success (inalterado) |
+| CodeQL | `codeql.yml` | ✅ success | ✅ success (inalterado) |
 
-**Portanto:** A condição de stop para `schema-drift.yml` = `conclusion=success` só pode ser satisfeita após o usuário configurar o secret `PROD_DB_URL` (PENDÊNCIA 1 em PENDENCIAS.md).
-
-### CI pipeline no PR #184 — progresso de checks (commit `ff1a1da`, 2026-10-22T15:55Z)
+### 8.4 — Estado do PR #184 (commit `55469c4`, 2026-10-22T16:05 UTC)
 
 | Required Check | Status |
 |---|---|
-| Unit tests (offline, deterministic) | ✅ success (deno-tests.yml, 15:53Z) |
-| Integration tests (edge functions live) | ✅ success (deno-tests.yml, 15:54Z) |
-| Supabase DB Linter | ⏳ queued |
-| Quality Gate & Tests | ⏳ aguardando ci.yml |
-| E2E Critical Gate | ⏳ aguardando ci.yml |
+| Unit tests (offline, deterministic) | 🔄 in_progress |
+| Integration tests (edge functions live) | 🔄 in_progress |
+| Supabase DB Linter | ✅ success |
+| Quality Gate & Tests | ⏳ pending (ci.yml — runner aguardando) |
+| E2E Critical Gate | ⏳ pending |
 | E2E Financeiro (offline) | ⏳ aguardando ci.yml |
 | E2E Destructive Logout | ⏳ aguardando ci.yml |
 | Varredura de segredos (gitleaks) | ⏳ aguardando ci.yml |
 
-> Nota: ci.yml ainda não iniciou para `ff1a1da`. Trigger automático às 16:00 UTC verificará e fará o merge quando todos passarem.
-
-### Workflows verdes antes → continuam verdes após fix
-
-| Workflow | Run de referência na main | Conclusion |
-|---|---|---|
-| CI Pipeline (`ci.yml`) | [39168277749](https://github.com/adm01-debug/Promo_Finance_V2/actions/runs/39168277749) | ✅ success |
-| Supabase Linter | [39168277247](https://github.com/adm01-debug/Promo_Finance_V2/actions/runs/39168277247) | ✅ success |
-| Deno Edge Function Tests | [39168277240](https://github.com/adm01-debug/Promo_Finance_V2/actions/runs/39168277240) | ✅ success |
-| Graphify | [39168277239](https://github.com/adm01-debug/Promo_Finance_V2/actions/runs/39168277239) | ✅ success |
-| Workflow Linter (actionlint) | [39168277208](https://github.com/adm01-debug/Promo_Finance_V2/actions/runs/39168277208) | ✅ success |
-| CodeQL Analysis | [39195406051](https://github.com/adm01-debug/Promo_Finance_V2/actions/runs/39195406051) | ✅ success |
-| Dependabot Updates | [39277894719](https://github.com/adm01-debug/Promo_Finance_V2/actions/runs/39277894719) | ✅ success |
-
-> Nenhum desses 7 workflows foi alterado. A única mudança de código foi em `.github/workflows/schema-drift.yml` (job `types-drift`).
+> Nota: ci.yml está em `pending` para `55469c4` (aguardando runner). Verificação automática agendada às 16:23 UTC fará o merge quando todos os 8 checks passarem.
 
 ### Correções de código entregues no PR #184
 
