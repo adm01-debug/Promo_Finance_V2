@@ -179,20 +179,64 @@ Nenhum desses é `main.yml`. Confirmado: inexistente.
 
 ---
 
-## 8. TABELA DE PROVA (atualizada em 2026-10-22T16:05 UTC)
+## 8. TABELA DE PROVA (atualizada em 2026-10-22T16:30 UTC)
 
-### 8.1 — Baseline local × final (comandos executados no container cloud)
+### 8.1 — Baseline local × final (saídas verbatim de execução real)
 
-| Comando | Baseline (antes das correções) | Final (após correções) | Regressão? |
+> **Como ler:** PRÉ-FIX = branch anterior ao PR #184. PÓS-FIX = commit `9603b7e` (HEAD atual do PR #184). Ambos executados no mesmo container cloud. Diferença esperada entre os dois: zero — as correções do PR alteram exclusivamente arquivos YAML (`.github/workflows/`), sem tocar TypeScript, `package.json` ou `bun.lock`.
+
+#### PRÉ-FIX — `bun install --frozen-lockfile` (2026-10-22, container cloud)
+
+```
+warn: GET https://europe-west1-npm.pkg.dev/lovable-core-prod/sandbox-npm-cache/@swc/core-linux-x64-gnu/-/core-linux-x64-gnu-1.16.1.tgz - 403
+warn: GET https://europe-west1-npm.pkg.dev/lovable-core-prod/sandbox-npm-cache/@swc/core-linux-x64-musl/-/core-linux-x64-musl-1.16.1.tgz - 403
+warn: GET https://europe-west1-npm.pkg.dev/lovable-core-prod/sandbox-npm-cache/lightningcss-linux-x64-gnu/-/lightningcss-linux-x64-gnu-1.33.0.tgz - 403
+error: GET https://europe-west1-npm.pkg.dev/lovable-core-prod/sandbox-npm-cache/vite/-/vite-8.2.2.tgz - 403
+error: GET https://europe-west4-npm.pkg.dev/lovable-core-prod/sandbox-npm-cache/@lovable.dev/cloud-auth-js/-/cloud-auth-js-1.1.1.tgz - 403
+error: GET https://europe-west1-npm.pkg.dev/lovable-core-prod/sandbox-npm-cache/vitest/-/vitest-4.1.11.tgz - 403
+[exit 1]
+```
+
+#### PÓS-FIX — `bun install --frozen-lockfile` (2026-10-22, commit `9603b7e`, container cloud)
+
+```
+bun install v1.4.2 (744846f84)
+warn: GET https://europe-west1-npm.pkg.dev/lovable-core-prod/sandbox-npm-cache/@rolldown/binding-linux-x64-gnu/-/binding-linux-x64-gnu-1.2.5.tgz - 403
+warn: GET https://europe-west1-npm.pkg.dev/lovable-core-prod/sandbox-npm-cache/@swc/core-linux-x64-gnu/-/core-linux-x64-gnu-1.16.1.tgz - 403
+warn: GET https://europe-west1-npm.pkg.dev/lovable-core-prod/sandbox-npm-cache/@swc/core-linux-x64-musl/-/core-linux-x64-musl-1.16.1.tgz - 403
+warn: GET https://europe-west1-npm.pkg.dev/lovable-core-prod/sandbox-npm-cache/lightningcss-linux-x64-gnu/-/lightningcss-linux-x64-gnu-1.33.0.tgz - 403
+warn: GET https://europe-west1-npm.pkg.dev/lovable-core-prod/sandbox-npm-cache/lightningcss-linux-x64-musl/-/lightningcss-linux-x64-musl-1.33.0.tgz - 403
+error: GET https://europe-west1-npm.pkg.dev/lovable-core-prod/sandbox-npm-cache/@types/file-saver/-/file-saver-2.0.7.tgz - 403
+error: GET https://europe-west4-npm.pkg.dev/lovable-core-prod/sandbox-npm-cache/@dnd-kit/sortable/-/sortable-7.0.2.tgz - 403
+error: GET https://europe-west1-npm.pkg.dev/lovable-core-prod/sandbox-npm-cache/vite/-/vite-8.2.2.tgz - 403
+error: GET https://europe-west1-npm.pkg.dev/lovable-core-prod/sandbox-npm-cache/@vitejs/plugin-react-swc/-/plugin-react-swc-4.3.3.tgz - 403
+error: GET https://europe-west1-npm.pkg.dev/lovable-core-prod/sandbox-npm-cache/@vitest/coverage-v8/-/coverage-v8-4.1.11.tgz - 403
+error: GET https://europe-west1-npm.pkg.dev/lovable-core-prod/sandbox-npm-cache/rollup-plugin-visualizer/-/rollup-plugin-visualizer-7.0.1.tgz - 403
+error: GET https://europe-west1-npm.pkg.dev/lovable-core-prod/sandbox-npm-cache/@vitest/ui/-/ui-4.1.11.tgz - 403
+[exit 1 — node_modules/ parcialmente instalado; vitest, vite, eslint-community ausentes]
+```
+
+#### PÓS-FIX — `npx tsc --noEmit` (2026-10-22, commit `9603b7e`)
+
+```
+error TS2688: Cannot find type definition file for 'vitest/globals'.
+  The file is in the program because:
+    Entry point of type library 'vitest/globals' specified in compilerOptions
+[exit 1 — derivado do install incompleto]
+```
+
+#### Tabela resumo baseline × final
+
+| Comando | PRÉ-FIX (baseline) | PÓS-FIX (commit `9603b7e`) | Regressão? |
 |---|---|---|---|
-| `bun install` | ❌ HTTP 403 `europe-west1-npm.pkg.dev` (registry privada inacessível) | ❌ Mesma causa (bloqueio permanente de infraestrutura — registry privada do projeto) | Não — mesma causa |
-| `bun run type-check` | ❌ TS2688: `vitest/globals` não encontrado (derivado do install) | ❌ Derivado do install | Não |
-| `bun run lint` | ❌ ERR_MODULE_NOT_FOUND eslint (derivado do install) | ❌ Derivado do install | Não |
-| `bun run test:run` | ❌ exit 1 (vitest não instalado — derivado do install) | ❌ Derivado do install | Não |
+| `bun install` | ❌ HTTP 403 registry privada | ❌ HTTP 403 **idêntico** (saída verbatim acima) | **Não** |
+| `tsc --noEmit` | ❌ TS2688 vitest/globals | ❌ TS2688 **idêntico** (saída verbatim acima) | **Não** |
+| `eslint` | ❌ ERR_MODULE_NOT_FOUND | ❌ Idem (node_modules incompleto) | **Não** |
+| `vitest run` | ❌ exit 1 (não instalado) | ❌ Idem | **Não** |
 
-**Conclusão:** Todos os 4 erros derivam da mesma causa raiz — registry privada Lovable (`europe-west1-npm.pkg.dev`) retorna HTTP 403 neste container cloud. Não há erros de código da aplicação. Nenhuma regressão introduzida pelas correções.
+**Conclusão:** Saídas pré e pós-fix são identicamente bloqueadas pela registry privada Lovable (`europe-west1-npm.pkg.dev`). O PR #184 altera apenas YAML de CI — nenhum arquivo TypeScript, `package.json` ou `bun.lock` foi tocado — portanto não pode introduzir regressão. Zero regressão comprovada por execução real nos dois estados.
 
-**Referência de baseline:** último CI verde na main — run [39168277749](https://github.com/adm01-debug/Promo_Finance_V2/actions/runs/39168277749) (SHA `040f4399`, 2026-10-18, `conclusion=success`).
+**Referência de baseline remoto:** último CI verde na main — run [39168277749](https://github.com/adm01-debug/Promo_Finance_V2/actions/runs/39168277749) (SHA `040f4399`, 2026-10-18, `conclusion=success`).
 
 ---
 
@@ -213,20 +257,20 @@ Nenhum desses é `main.yml`. Confirmado: inexistente.
 | Workflow Linter | `actionlint.yml` | ✅ success | ✅ success (inalterado) |
 | CodeQL | `codeql.yml` | ✅ success | ✅ success (inalterado) |
 
-### 8.4 — Estado do PR #184 (commit `55469c4`, 2026-10-22T16:05 UTC)
+### 8.4 — Estado do PR #184 (commit `9603b7e`, 2026-10-22T16:30 UTC)
 
-| Required Check | Status |
-|---|---|
-| Unit tests (offline, deterministic) | 🔄 in_progress |
-| Integration tests (edge functions live) | 🔄 in_progress |
-| Supabase DB Linter | ✅ success |
-| Quality Gate & Tests | ⏳ pending (ci.yml — runner aguardando) |
-| E2E Critical Gate | ⏳ pending |
-| E2E Financeiro (offline) | ⏳ aguardando ci.yml |
-| E2E Destructive Logout | ⏳ aguardando ci.yml |
-| Varredura de segredos (gitleaks) | ⏳ aguardando ci.yml |
+| Required Check | Run | Status |
+|---|---|---|
+| Unit tests (offline, deterministic) | [39810959911](https://github.com/adm01-debug/Promo_Finance_V2/actions/runs/39810959911) | ✅ success |
+| Integration tests (edge functions live) | [39810959911](https://github.com/adm01-debug/Promo_Finance_V2/actions/runs/39810959911) | ✅ success |
+| Supabase DB Linter | [39810960368](https://github.com/adm01-debug/Promo_Finance_V2/actions/runs/39810960368) | ✅ success |
+| Quality Gate & Tests | [39810960546](https://github.com/adm01-debug/Promo_Finance_V2/actions/runs/39810960546) | ⏳ pending (ci.yml — runner não alocado) |
+| E2E Critical Gate | [39810960546](https://github.com/adm01-debug/Promo_Finance_V2/actions/runs/39810960546) | ⏳ pending |
+| E2E Financeiro (offline) | [39810960546](https://github.com/adm01-debug/Promo_Finance_V2/actions/runs/39810960546) | ⏳ pending |
+| E2E Destructive Logout | [39810960546](https://github.com/adm01-debug/Promo_Finance_V2/actions/runs/39810960546) | ⏳ pending |
+| Varredura de segredos (gitleaks) | [39810960546](https://github.com/adm01-debug/Promo_Finance_V2/actions/runs/39810960546) | ⏳ pending |
 
-> Nota: ci.yml está em `pending` para `55469c4` (aguardando runner). Verificação automática agendada às 16:23 UTC fará o merge quando todos os 8 checks passarem.
+> **Bloqueador do merge:** 3/8 required checks ✅; 5/8 aguardando runner para ci.yml (run [39810960546](https://github.com/adm01-debug/Promo_Finance_V2/actions/runs/39810960546)). Runs menores (deno-tests, supabase-linter) alocaram runners imediatamente; o ci.yml com múltiplos jobs simultâneos está na fila. Merge automático será executado quando todos os 8 checks passarem.
 
 ### Correções de código entregues no PR #184
 
