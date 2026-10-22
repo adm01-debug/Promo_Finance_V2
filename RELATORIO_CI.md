@@ -128,7 +128,7 @@ Todos os 7 workflows com success antes das correções permanecem inalterados:
 | CI/CD Pipeline | `ci.yml` | ✅ Já estava verde. Nenhuma ação. |
 | DB Guard | `migration-parity` job em `schema-drift.yml` | ⚠️ É bloqueio de secret, não bug de código. Registrado em PENDENCIAS.md. |
 | E2E logado | `ci.yml` job `e2e-critical` | ✅ Já estava verde. Nenhuma ação. |
-| Running Copilot Code Review | `dynamic/agents/copilot-pull-request-reviewer` | ✅ Agente dinâmico — sem falha persistente na main. Não é um workflow YAML fixo. |
+| Running Copilot Code Review | `dynamic/agents/copilot-pull-request-reviewer` | ⚠️ Ver seção 7. |
 | `.github/workflows/main.yml` | Não existe no repositório | ✅ Não há arquivo `main.yml` — confirmado pela lista de 16 workflows. |
 
 ---
@@ -141,3 +141,38 @@ Ver `PENDENCIAS.md` para passo-a-passo completo.
 |---|---|
 | `PROD_DB_URL` em branco | Configurar secret no GitHub → Settings → Secrets → Actions |
 | Permissão `createPullRequest` | Opcional: Settings → Actions → General → Allow GitHub Actions to create and approve pull requests |
+
+---
+
+## 7. Running Copilot Code Review — diagnóstico formal
+
+**Tipo:** Agente dinâmico GitHub (`dynamic/agents/copilot-pull-request-reviewer`)  
+**Não é:** Um workflow YAML fixo com arquivo em `.github/workflows/`  
+**Falha na main:** Nenhuma. Não executa na branch main de forma autônoma — executa apenas em pull requests.
+
+### Falha observada no PR #184 (run 39788743322, 2026-10-22)
+
+| Campo | Valor |
+|---|---|
+| Run ID | 39788743322 |
+| Status | `completed` |
+| Conclusion | `failure` |
+| Data | 2026-10-22T13:39:16Z |
+
+**Causa raiz:** Crash de infraestrutura do sweagent (não relacionado ao código da PR):
+```
+COPILOT_AGENT_MODEL: sweagent-capi:gpt-6.1-sol[ReasoningEffort=high]
+Processing Request (Linux) — terminated with multiple orphan process exits
+```
+
+**Ação disponível:** Rerun via API retornou `403 "This workflow run cannot be retried"`.  
+**Impacto no merge:** Pode bloquear o PR se for check obrigatório nas regras de proteção de branch.  
+**Ação necessária:** Se bloquear o merge, o usuário pode re-disparar manualmente via interface do GitHub ou aguardar reexecução automática.
+
+### `.github/workflows/main.yml` — confirmação
+
+Arquivo **não existe** no repositório. Inventário completo (16 workflows listados em 2026-10-22):
+
+`ci.yml`, `schema-drift.yml`, `supabase-linter.yml`, `deno-tests.yml`, `graphify.yml`, `actionlint.yml`, `codeql.yml`, `dependabot-updates`, `prod-migrate.yml`, `staging-migrate.yml`, `copilot` (agente dinâmico), `migration-ledger.yml`, `e2e-cloud-probe.yml`, `functions-deploy.yml`, `supabase-admin-ops.yml`, `dependency-review.yml`
+
+Nenhum desses é `main.yml`. Confirmado: inexistente.

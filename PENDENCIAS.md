@@ -111,6 +111,24 @@ or approve pull requests (createPullRequest)
 ## Workflows que NÃO precisam de ação
 
 - **`ci.yml`** — último run em main: SUCCESS (SHA `040f4399`, 2026-10-18). Nenhuma alteração necessária.
-- **`copilot-code-review`** — é um agente dinâmico do GitHub Copilot, não um workflow fixo com falha persistente em main.
-- **`.github/workflows/main.yml`** — não existe neste repositório.
+- **`.github/workflows/main.yml`** — não existe neste repositório (confirmado: lista de 16 workflows não contém `main.yml`).
 - **`prod-migrate.yml`** e **`staging-migrate.yml`** — falhas são intencionais (guard-rails). Sem alteração de código.
+
+---
+
+## PENDÊNCIA 6 — Running Copilot Code Review (falha de infraestrutura no PR #184)
+
+**Tipo:** Agente dinâmico GitHub (`dynamic/agents/copilot-pull-request-reviewer`)  
+**Não é** workflow YAML fixo. **Sem falha persistente na main.**
+
+**Falha observada no PR #184:**
+- Run ID: `39788743322` — `conclusion=failure` em 2026-10-22T13:39:16Z
+- Causa: crash de infraestrutura do sweagent (`gpt-6.1-sol[ReasoningEffort=high]`), não relacionado ao código desta PR
+- Rerun via API: `403 "This workflow run cannot be retried"` (integração de terceiros)
+
+**Impacto:** Se este check for obrigatório nas proteções de branch, bloqueará o merge do PR #184.
+
+**O que você precisa fazer (se o merge ficar bloqueado):**
+1. Acesse: https://github.com/adm01-debug/Promo_Finance_V2/pull/184
+2. Clique em **Re-run** no check "Running Copilot Code Review" (se disponível na interface)
+3. Ou aguarde reexecução automática pelo GitHub Copilot
