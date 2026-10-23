@@ -30,6 +30,16 @@ const containerVariants = {
 
 export { containerVariants };
 
+// ?redirect= é escrito por fluxos que exigem sessão antes de continuar
+// (ex.: /convite/:token vindo de AceitarConvite). Só aceita path interno:
+// '/' inicial, sem '//' (host implícito) e sem '\\' — browsers tratam
+// '/\\evil.com' como '//evil.com', abrindo open redirect.
+function redirectPosLogin(): string {
+  if (typeof window === 'undefined') return '/';
+  const r = new URLSearchParams(window.location.search).get('redirect') ?? '/';
+  return r.startsWith('/') && !r.startsWith('//') && !r.includes('\\') ? r : '/';
+}
+
 export function useAuthPage() {
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(false);
@@ -85,12 +95,13 @@ export function useAuthPage() {
 
   // Check if user is already logged in
   useEffect(() => {
+    const destino = redirectPosLogin();
     const checkUser = async () => {
       const {
         data: { session },
       } = await supabase.auth.getSession();
       if (session) {
-        navigate('/');
+        navigate(destino);
       }
     };
     checkUser();
@@ -99,7 +110,7 @@ export function useAuthPage() {
       data: { subscription },
     } = supabase.auth.onAuthStateChange((event, session) => {
       if (session) {
-        navigate('/');
+        navigate(destino);
       }
     });
 
@@ -340,7 +351,7 @@ export function useAuthPage() {
         email,
         password,
         options: {
-          emailRedirectTo: `${window.location.origin}/`,
+          emailRedirectTo: `${window.location.origin}${redirectPosLogin()}`,
           data: { full_name: fullName },
         },
       });
