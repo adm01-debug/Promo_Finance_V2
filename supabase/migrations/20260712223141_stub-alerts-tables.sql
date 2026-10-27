@@ -59,3 +59,6 @@ CREATE TABLE IF NOT EXISTS public.alert_configurations (
   empresa_id           uuid,
   UNIQUE (alert_type, channel)
 );
+
+ALTER TABLE public.alerts ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.alert_configurations ENABLE ROW LEVEL SECURITY;
