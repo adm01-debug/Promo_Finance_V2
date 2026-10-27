@@ -119,3 +119,12 @@ CREATE TABLE IF NOT EXISTS public.webhook_dlq (
   updated_at       timestamptz NOT NULL DEFAULT now(),
   CONSTRAINT webhook_dlq_pkey PRIMARY KEY (id)
 );
+
+ALTER TABLE public.ip_whitelist            ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.login_attempts          ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.password_reset_tokens   ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.security_audit_logs     ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.sso_login_attempts      ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.user_roles              ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.user_sessions           ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.webhook_dlq             ENABLE ROW LEVEL SECURITY;
