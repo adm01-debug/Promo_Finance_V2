@@ -1,6 +1,56 @@
 # PENDÊNCIAS — Promo Finance V2
 
-> Atualizado em: 2026-10-22T20:10 UTC  
+> Atualizado em: 2026-10-27T11:05 UTC  
+> Inventário novo: 3 workflows com `conclusion=failure` na última execução na main — **todos bloqueados externamente** (secrets/austes do GitHub), nenhum bug de código.
+
+---
+
+## INVENTÁRIO 2026-10-27 — workflows com falha na main
+
+| Workflow | Último run na main | Causa raiz | Bloqueio |
+|---|---|---|---|
+| `prod-migrate` | [38428567450](https://github.com/adm01-debug/Promo_Finance_V2/actions/runs/38428567450) ❌ | `PROD_DB_URL` vazio → guard-rail aborta corretamente (`PROD_DB_URL não pertence ao project-ref`) | **Secret ausente** — item 1 abaixo |
+| `staging-migrate` | [32836274535](https://github.com/adm01-debug/Promo_Finance_V2/actions/runs/32836274535) ❌ | `preflight falhou: env PROD_DB_URL ausente` | **Secret ausente** — itens 1-2 abaixo |
+| `npm_and_yarn in /. for zod` (Dependabot security) | [40492328336](https://github.com/adm01-debug/Promo_Finance_V2/actions/runs/40492328336) ❌ | `misconfigured_tooling`: updates de SEGURANÇA do Dependabot rodam ecossistema `npm_and_yarn`, que não suporta `bun.lock` | **Limitação GitHub** — item 3 abaixo |
+
+**Todos os outros 13 workflows na main estão verdes** (CI Pipeline, CodeQL, Deno Tests, Graphify, actionlint, Supabase Linter, Schema drift, Dependency Review, Migration Ledger, functions-deploy, admin-ops, e2e-cloud-probe, Copilot).
+
+---
+
+## 1. Secret `PROD_DB_URL` — destrava `prod-migrate` e `staging-migrate`
+
+O workflow está correto por design: sem a connection string do Postgres ele **deve** falhar (é proteção contra migração em banco errado). Para criar:
+
+1. Abra https://supabase.com/dashboard/project/bwwbeyolnnzppeuhgkcd → clique **Connect** (topo) → copie a linha **URI** (`postgresql://postgres:[senha]@db.bwwbeyolnnzppeuhgkcd.supabase.co:5432/postgres` — troque `[senha]` pela senha do banco).
+2. Abra https://github.com/adm01-debug/Promo_Finance_V2/settings/secrets/actions → **New repository secret** → Nome: `PROD_DB_URL` → cole a URI → **Add secret**.
+3. Me avise — eu disparo `prod-migrate` e `staging-migrate` e confirmo `conclusion=success`.
+
+## 2. Secrets de staging (só `staging-migrate`)
+
+Se o projeto de staging existir, criar também (mesmo caminho do item 1, passo 2): `STAGING_DB_URL`, `STAGING_PROJECT_REF`, `STAGING_ANON_KEY`, `TEST_ADMIN_JWT`. Sem projeto de staging, o workflow pode ficar desativado — diga se quer que eu o arquive.
+
+## 3. Dependabot security updates × `bun.lock` — não corrigível por código
+
+**Fato provado pelo log** (run 40492328336): o GitHub dispara updates de segurança (`npm_and_yarn in /. for zod`, `for dompurify`) usando o ecossistema `npm_and_yarn`, que aborta em `bun.lock` com `misconfigured_tooling`. O `.github/dependabot.yml` já está correto (`package-ecosystem: bun`) — mas essa configuração só vale para *version updates*; os *security updates* ignoram o arquivo e escolhem o ecossistema pelo manifesto (`package.json` → `npm_and_yarn`).
+
+**Efeito real:** cada advisory de dependência npm gera um job que falha e não produz PR — falha inofensiva, mas permanece na aba Actions como ❌.
+
+**Duas saídas (só você pode — precisa de admin no repo):**
+
+- **Opção A — desativar security updates** (recomendada; os avisos continuam visíveis em Security → Dependabot, só para de tentar abrir PR):
+  1. Abra https://github.com/adm01-debug/Promo_Finance_V2/settings/security_analysis
+  2. Em **Dependabot** → **Dependabot security updates** → clique **Disable**.
+- **Opção B — descartar os alerts específicos** (mantém o recurso ligado):
+  1. Abra https://github.com/adm01-debug/Promo_Finance_V2/security/dependabot
+  2. `GHSA-mrhx-c7xc-m3w5` (zod) → **Dismiss alert** → razão *"No bandwidth to fix / tolerable risk"* — a linha zod v3 não executa o motor `$ZodArray` v4 afetado (análise já feita no PR #173).
+  3. Repita para outros alerts npm que reaparecerem.
+
+**Por que não dá para "consertar" o zod bump:** o fix do GHSA exige zod ≥4.6.6 (major com API quebrada para os 24 arquivos v3 do repo) — upgrade major proibido sem necessidade provada, e a vuln é falso-positivo na linha v3.
+
+---
+
+## INVENTÁRIO ANTERIOR (2026-10-22) — histórico
+
 > Tarefa principal: **CONCLUÍDA** — todos os workflows com falha corrigidos e validados com `conclusion=success`
 
 ---
