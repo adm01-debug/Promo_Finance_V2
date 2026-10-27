@@ -180,9 +180,16 @@ jobs:
         #   browser; este projeto usa Vitest em modo Node (bun run test:run).
         # GHSA-xp26-3454-mjgp: backslash traversal no @vitest/mocker — Windows
         #   only; CI e prod são Linux.
+        # GHSA-mrhx-c7xc-m3w5 (zod <4.6.6): OOM por acúmulo de issues no
+        #   $ZodArray — engine do zod v4. O app usa a API clássica v3
+        #   (24 imports de 'zod', zero de 'zod/v4'/'zod/mini'): o motor v4
+        #   embutido no 3.25.x fica inerte. Fix só existe em 4.6.6 (major
+        #   com breaking changes — migração própria); o vetor além disso é
+        #   self-DoS no browser do próprio usuário, sem input remoto.
         run: >
           bun audit
           --ignore=GHSA-vfj7-8cjw-p6xm
+          --ignore=GHSA-mrhx-c7xc-m3w5
           --ignore=GHSA-rj75-hqrm-r3gf
           --ignore=GHSA-587h-7wmj-h5pm
           --ignore=GHSA-698v-4r3x-3vcv
