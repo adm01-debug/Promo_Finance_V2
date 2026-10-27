@@ -60,3 +60,27 @@ RETURNS jsonb LANGUAGE sql AS $$ SELECT '{}'::jsonb $$;
 
 CREATE OR REPLACE FUNCTION public.get_asaas_payment_stats(p_empresa_id uuid)
 RETURNS jsonb LANGUAGE sql AS $$ SELECT '{}'::jsonb $$;
+
+-- Revoke PUBLIC execute so anonymous callers cannot inherit access via PUBLIC.
+-- Migration 20260711145322 revokes from anon, but anon inherits from PUBLIC
+-- if PUBLIC still has EXECUTE.
+REVOKE EXECUTE ON FUNCTION public.run_daily_cleanup() FROM PUBLIC;
+REVOKE EXECUTE ON FUNCTION public.run_daily_cleanup_with_logging() FROM PUBLIC;
+REVOKE EXECUTE ON FUNCTION public.cleanup_expired_tokens() FROM PUBLIC;
+REVOKE EXECUTE ON FUNCTION public.cleanup_old_login_attempts() FROM PUBLIC;
+REVOKE EXECUTE ON FUNCTION public.cleanup_old_cron_logs() FROM PUBLIC;
+REVOKE EXECUTE ON FUNCTION public.get_cron_jobs() FROM PUBLIC;
+REVOKE EXECUTE ON FUNCTION public.get_cron_run_history() FROM PUBLIC;
+REVOKE EXECUTE ON FUNCTION public.get_cron_run_history(text, integer) FROM PUBLIC;
+REVOKE EXECUTE ON FUNCTION public.clear_login_attempts(text) FROM PUBLIC;
+REVOKE EXECUTE ON FUNCTION public.reset_failed_attempts(text) FROM PUBLIC;
+REVOKE EXECUTE ON FUNCTION public.increment_failed_attempts(text) FROM PUBLIC;
+REVOKE EXECUTE ON FUNCTION public.registrar_auditoria_config(text, uuid, jsonb) FROM PUBLIC;
+REVOKE EXECUTE ON FUNCTION public.log_audit(text, uuid, text, text, jsonb, jsonb) FROM PUBLIC;
+REVOKE EXECUTE ON FUNCTION public.export_asaas_audit_csv(uuid) FROM PUBLIC;
+REVOKE EXECUTE ON FUNCTION public.confirmar_conciliacao_manual(uuid, uuid, uuid, numeric) FROM PUBLIC;
+REVOKE EXECUTE ON FUNCTION public.desfazer_conciliacao_manual(uuid) FROM PUBLIC;
+REVOKE EXECUTE ON FUNCTION public.confirmar_envio_cobranca(uuid, text, text, boolean, text) FROM PUBLIC;
+REVOKE EXECUTE ON FUNCTION public.get_retencoes_pendentes_count(uuid) FROM PUBLIC;
+REVOKE EXECUTE ON FUNCTION public.processar_regua_cobranca(uuid, boolean) FROM PUBLIC;
+REVOKE EXECUTE ON FUNCTION public.get_asaas_payment_stats(uuid) FROM PUBLIC;
