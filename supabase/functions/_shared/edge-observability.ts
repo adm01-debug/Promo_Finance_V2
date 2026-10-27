@@ -122,7 +122,8 @@ export function capturarExcecaoSentry(
 function segundoPlano(p: Promise<void>): Promise<void> | void {
   try {
     const rt = (globalThis as Record<string, unknown>).EdgeRuntime as
-      { waitUntil?: (p: Promise<unknown>) => void } | undefined;
+      | { waitUntil?: (p: Promise<unknown>) => void }
+      | undefined;
     if (rt?.waitUntil) {
       rt.waitUntil(p);
       return;
