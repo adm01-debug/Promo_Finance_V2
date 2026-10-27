@@ -10,7 +10,12 @@ ALTER TABLE public.pix_templates
   ADD COLUMN IF NOT EXISTS tags TEXT[] NOT NULL DEFAULT '{}'::text[],
   ADD COLUMN IF NOT EXISTS ultimo_uso TIMESTAMPTZ,
   ADD COLUMN IF NOT EXISTS created_by UUID,
-  ADD COLUMN IF NOT EXISTS updated_at TIMESTAMPTZ NOT NULL DEFAULT now();
+  ADD COLUMN IF NOT EXISTS updated_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+  -- Colunas legadas: no replay fresco (tabela vem de 20260317 sem elas) o trigger
+  -- pix_template_sync_legacy referencia NEW.beneficiario_nome e NEW.tipo_chave; sem
+  -- ADD IF NOT EXISTS aqui, qualquer INSERT dispara "record NEW has no field".
+  ADD COLUMN IF NOT EXISTS beneficiario_nome TEXT,
+  ADD COLUMN IF NOT EXISTS tipo_chave TEXT;
 
 -- Campos legados deixam de ser obrigatórios (preenchidos por trigger)
 -- Colunas beneficiario_nome/cidade/tipo_chave só existem se a migration 20260518 criou

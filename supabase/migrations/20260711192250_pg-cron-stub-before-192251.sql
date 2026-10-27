@@ -63,4 +63,24 @@ BEGIN
     DELETE FROM cron.job WHERE jobname = p_name;
     SELECT true
   $f$;
+
+  -- cron.alter_job: atualiza campos de um job existente (chamado por várias migrations)
+  CREATE OR REPLACE FUNCTION cron.alter_job(
+    job_id   bigint,
+    schedule text    DEFAULT NULL,
+    command  text    DEFAULT NULL,
+    database text    DEFAULT NULL,
+    username text    DEFAULT NULL,
+    active   boolean DEFAULT NULL
+  ) RETURNS void LANGUAGE plpgsql AS $f$
+  BEGIN
+    UPDATE cron.job AS j SET
+      schedule = COALESCE($2, j.schedule),
+      command  = COALESCE($3, j.command),
+      database = COALESCE($4, j.database),
+      username = COALESCE($5, j.username),
+      active   = COALESCE($6, j.active)
+    WHERE j.jobid = $1;
+  END;
+  $f$;
 END $$;
