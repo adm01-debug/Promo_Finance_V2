@@ -2622,8 +2622,13 @@ CREATE OR REPLACE FUNCTION public.is_country_blocked(_country_code text) RETURNS
     LANGUAGE sql STABLE SECURITY DEFINER
     SET search_path TO 'public', 'pg_catalog'
     AS $$
-    SELECT false
-
+    SELECT EXISTS (
+        SELECT 1
+        FROM public.geo_blocks
+        WHERE country_code = _country_code
+          AND is_blocked = true
+          AND (expires_at IS NULL OR expires_at > now())
+    )
 $$;
 
 CREATE OR REPLACE FUNCTION public.is_ip_allowed_for_login(_ip inet) RETURNS boolean
