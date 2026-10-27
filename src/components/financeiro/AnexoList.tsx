@@ -26,8 +26,12 @@ export function AnexoList({ entidadeId, entidadeTipo, readonly = false }: AnexoL
         .from('anexos_financeiros')
         .select('*')
         .eq('entidade_id', entidadeId)
-        // Legado gravava singular ('conta_receber'); upload-anexo grava plural.
-        .in('entidade_tipo', [entidadeTipo, entidadeTipo.replace(/^contas_/, 'conta_')]);
+        // Legado gravava singular ('conta_receber', 'movimentacao');
+        // upload-anexo grava plural — cobre ambas as formas.
+        .in('entidade_tipo', [
+          entidadeTipo,
+          entidadeTipo.replace(/^contas_/, 'conta_').replace(/^movimentacoes$/, 'movimentacao'),
+        ]);
 
       if (error) throw error;
       return data || [];
@@ -129,17 +133,25 @@ export function AnexoList({ entidadeId, entidadeTipo, readonly = false }: AnexoL
     // perde; o opener é cortado manualmente logo abaixo.
     const abaNova = window.open('', '_blank');
     if (abaNova) abaNova.opener = null;
-    const { data, error } = await supabase.storage.from(BUCKET).createSignedUrl(caminho, 60);
-    if (error || !data?.signedUrl) {
+    try {
+      const { data, error } = await supabase.storage.from(BUCKET).createSignedUrl(caminho, 60);
+      if (error || !data?.signedUrl) {
+        abaNova?.close();
+        toast.error('Falha ao gerar link de download: ' + (error?.message ?? 'sem URL assinada'));
+        return;
+      }
+      if (abaNova) {
+        abaNova.location = data.signedUrl;
+      } else {
+        // Popup bloqueado — cai para a aba atual como último recurso.
+        window.location.assign(data.signedUrl);
+      }
+    } catch (err) {
+      // Erro não-StorageError (rede, SDK) — fecha a aba morta e avisa em vez
+      // de deixar about:blank aberto com rejeição não tratada.
       abaNova?.close();
-      toast.error('Falha ao gerar link de download: ' + (error?.message ?? 'sem URL assinada'));
-      return;
-    }
-    if (abaNova) {
-      abaNova.location = data.signedUrl;
-    } else {
-      // Popup bloqueado — cai para a aba atual como último recurso.
-      window.location.assign(data.signedUrl);
+      toast.error('Falha ao gerar link de download');
+      console.error('[AnexoList] createSignedUrl falhou:', err);
     }
   };
 
