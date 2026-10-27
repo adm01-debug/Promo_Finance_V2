@@ -25,7 +25,7 @@ O workflow está correto por design: sem a connection string do Postgres ele **d
 2. Abra https://github.com/adm01-debug/Promo_Finance_V2/settings/secrets/actions → **New repository secret** → Nome: `PROD_DB_URL` → cole a URI → **Add secret**.
 3. Me avise — eu disparo `prod-migrate` e `staging-migrate` e confirmo o resultado.
 
-**Atenção:** criar o secret **não garante** `conclusion=success`. Após validar a URL, o workflow roda um segundo gate (`Gate — divergência histórica do ledger`, `prod-migrate.yml` ~L97-130) que reprova se houver migration local pendente com versão anterior ao máximo do ledger remoto — nesse caso exige `supabase migration repair` antes. Eu confirmo o resultado real dos dois gates antes de fechar a pendência.
+**Atenção:** criar o secret **não garante** `conclusion=success`. Após validar a URL, o workflow roda um segundo gate (`Gate — divergência histórica do ledger`, `prod-migrate.yml` ~L97-130) que reprova se houver migration local pendente com versão anterior ao máximo do ledger remoto — nesse caso, **antes** do `migration repair`, rode `supabase migration list --db-url` e compare o schema (o repair só marca a versão como aplicada; se o DDL real divergir do que o arquivo criaria, o repair mascara a divergência). Eu confirmo o resultado real dos dois gates antes de fechar a pendência.
 
 ## 2. Secrets de staging (só `staging-migrate`)
 
@@ -33,14 +33,16 @@ O preflight de `scripts/staging-migrate.sh` (L70) exige **6 variáveis obrigató
 
 | Variável | Tipo | Obrigatória? | Onde obter |
 |---|---|---|---|
-| `PROD_DB_URL` | secret | sim | item 1 (também usada como guard-rail anti-prod) |
+| `PROD_DB_URL` | secret | sim | item 1 (usada no baseline-refresh para comparar com staging) |
 | `STAGING_DB_URL` | secret | sim | URI do Postgres do projeto de staging (Supabase → Connect → URI) |
 | `STAGING_PROJECT_REF` | secret | sim | ID do projeto Supabase de staging — o workflow lê só de `secrets` |
 | `STAGING_ANON_KEY` | secret | sim | Supabase dashboard → API Keys |
 | `SUPABASE_ACCESS_TOKEN` | secret | sim | https://supabase.com/dashboard/account/tokens |
-| `REQUIRED_SECRETS` | **variable** (não secret) | sim | CSV dos secrets que o deploy deve validar, ex.: `SUPABASE_URL,SUPABASE_ANON_KEY` |
+| `REQUIRED_SECRETS` | **variable** (não secret) | sim | CSV de secrets que devem existir no projeto staging (`supabase secrets list`), ex.: `LOVABLE_API_KEY,MAPBOX_TOKEN,RESEND_API_KEY` — use nomes reais do staging |
 | `TEST_ADMIN_JWT` | secret | não (opcional) | JWT de usuário admin para testes |
-| `PROD_PROJECT_REF` | variable | não (guard-rail) | `bwwbeyolnnzppeuhgkcd` |
+| `PROD_PROJECT_REF` | variable | não (mas recomendada) | `bwwbeyolnnzppeuhgkcd` — **é ela o guard-rail anti-prod**: se `STAGING_PROJECT_REF` igualar, o script aborta. Sem ela definida, o guarda não roda |
+
+**Cuidado:** nada impede `STAGING_DB_URL` de apontar para a URL de produção por engano — confira que a URI é do projeto de staging (ref diferente de `bwwbeyolnnzppeuhgkcd`). Em projetos sem add-on de IPv4, use a URI do **pooler de sessão** (mostrada no diálogo Connect), não a URI direta.
 
 Se não existir projeto de staging, diga e eu arquivo/desativo o workflow.
 
@@ -54,15 +56,16 @@ Se não existir projeto de staging, diga e eu arquivo/desativo o workflow.
 
 - **Opção A — descartar os alerts específicos** (recomendada — mantém a cobertura de segurança para futuras deps):
   1. Abra https://github.com/adm01-debug/Promo_Finance_V2/security/dependabot
-  2. `GHSA-mrhx-c7xc-m3w5` (zod) → **Dismiss alert** → razão *"No bandwidth to fix / tolerable risk"* — a linha zod v3 não executa o motor `$ZodArray` v4 afetado (análise já feita no PR #173).
-  3. Repita para outros alerts npm que reaparecerem.
+  2. **Triagem antes de descartar**: abra o alert e confirme que é biblioteca dev-time ou caminho não explorável no nosso uso — CVEs reais e exploráveis não devem ser descartadas, devem virar tarefa de fix.
+  3. `GHSA-mrhx-c7xc-m3w5` (zod) → o advisory cobre `< 4.6.6`, o que **inclui nossa zod@3.25.76** — não é falso positivo (a análise anterior do `$ZodArray` era de outro advisory). É exaustão de memória em validação de coleções grandes — risco real mas baixo (entrada controlada por usuários autenticados). Dismiss como *"Tolerable risk"*, ou melhor: abrir issue para upgrade do zod (ver nota abaixo).
+  4. Repita a triagem para outros alerts npm que reaparecerem.
 - **Opção B — desativar security updates globalmente** (pare os runs falhos de vez, mas **desliga PRs de correção automática para TODAS as dependências** — novas CVEs reais em outras libs deixam de gerar PR de correção):
   1. Abra https://github.com/adm01-debug/Promo_Finance_V2/settings/security_analysis
   2. Em **Dependabot** → **Dependabot security updates** → clique **Disable**.
 
 Recomendo a Opção A: resolve o zod hoje sem perder a rede de segurança para futuras vulnerabilidades. Se alerts de outras deps começarem a falhar do mesmo jeito e virar ruído recorrente, aí a Opção B faz sentido.
 
-**Por que não dá para "consertar" o zod bump:** o fix do GHSA exige zod ≥4.6.6 (major com API quebrada para os 24 arquivos v3 do repo) — upgrade major proibido sem necessidade provada, e a vuln é falso-positivo na linha v3.
+**Por que não dá para "consertar" o zod bump via Dependabot:** o fix do GHSA exige zod ≥4.6.6 — major com API quebrada para os ~24 arquivos que usam a API v3 (`.merge`, `.passthrough`, zod-error shapes). Upgrade major é projeto separado com plano de migração; enquanto isso, dismiss como tolerable risk é honesto (não falso positivo).
 
 ---
 
