@@ -38,7 +38,7 @@ O preflight de `scripts/staging-migrate.sh` (L70) exige **6 variáveis obrigató
 | `STAGING_PROJECT_REF` | secret | sim | ID do projeto Supabase de staging — o workflow lê só de `secrets` |
 | `STAGING_ANON_KEY` | secret | sim | Supabase dashboard → API Keys |
 | `SUPABASE_ACCESS_TOKEN` | secret | sim | https://supabase.com/dashboard/account/tokens |
-| `REQUIRED_SECRETS` | **variable** (não secret) | sim | CSV de secrets que devem existir no projeto staging (`supabase secrets list`), ex.: `LOVABLE_API_KEY,MAPBOX_ACCESS_TOKEN,RESEND_API_KEY` — use nomes reais do staging |
+| `REQUIRED_SECRETS` | **variable** (não secret) | sim, **mas deixe vazia se quiser a lista autoritativa** | CSV de secrets que devem existir no projeto staging (`supabase secrets list`). **Atenção:** um CSV parcial sobrescreve o fallback — `migrate-functions.sh` deriva automaticamente os **34 secrets `supabase_vault`+`required=true` do `env.manifest.json`** quando a var está vazia, o que é a lista correta. Se preencher, gere o CSV completo a partir do manifesto (não liste só 2-3 nomes, senão o gate valida só esses e o deploy pode sair verde com secrets faltando) |
 | `TEST_ADMIN_JWT` | secret | não (opcional) | JWT de usuário admin para testes |
 | `PROD_PROJECT_REF` | variable | não (mas recomendada) | `bwwbeyolnnzppeuhgkcd` — **é ela o guard-rail anti-prod**: se `STAGING_PROJECT_REF` igualar, o script aborta. Sem ela definida, o guarda não roda |
 
@@ -67,7 +67,7 @@ Se não existir projeto de staging, diga e eu arquivo/desativo o workflow.
 
 Recomendo a Opção A: para os runs que falham por alerts não exploráveis sem perder a rede de segurança para futuras vulnerabilidades — mas o alert do zod fica aberto até a mitigação real. Se alerts de outras deps começarem a falhar do mesmo jeito e virar ruído recorrente, aí a Opção B faz sentido.
 
-**Por que não dá para "consertar" o zod bump via Dependabot:** o fix do GHSA exige zod ≥4.6.6 — major com API quebrada para os ~24 arquivos que usam a API v3 (`.merge`, `.passthrough`, zod-error shapes). Upgrade major é projeto separado com plano de migração; até lá, a mitigação honesta é pre-validar `array.length`/tamanho do body nas edge functions que validam request bodies (`.max()` sozinho não basta no zod 3 — ele atravessa todos os elementos antes de checar o limite).
+**Por que não dá para "consertar" o zod bump via Dependabot:** o fix do GHSA exige zod ≥4.6.6 — major com API quebrada para os ~24 arquivos frontend que usam a API v3 (`.merge`, `.passthrough`, zod-error shapes). **E o bump do `package.json` sozinho não fecha a vuln**: o runtime vulnerável está nas edge functions — ~42 `index.ts` importam `https://deno.land/x/zod@v3.22.4/mod.ts` diretamente (incl. `conciliacao-ia`), mais o `_shared/zod.ts` que re-exporta essa versão remota. A correção completa precisa migrar todos os imports Deno remotos + o módulo compartilhado, não só os ~24 consumidores do pacote npm. Upgrade é projeto separado com plano de migração; até lá, a mitigação honesta é pre-validar `array.length`/tamanho do body nas edge functions que validam request bodies (`.max()` sozinho não basta no zod 3 — ele atravessa todos os elementos antes de checar o limite).
 
 ---
 
