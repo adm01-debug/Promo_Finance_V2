@@ -874,13 +874,10 @@ serve(
           error_message: mensagemErro(error),
           context: contextoErro(error),
         });
-        return new Response(
-          JSON.stringify({ success: false, message: 'Erro desconhecido' }),
-          {
-            status: 500,
-            headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-          }
-        );
+        return new Response(JSON.stringify({ success: false, message: 'Erro desconhecido' }), {
+          status: 500,
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        });
       }
     } finally {
       log.info('request', { duration_ms: Date.now() - _t0 });

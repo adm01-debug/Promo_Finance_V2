@@ -268,7 +268,10 @@ Deno.serve(
         });
         // Detalhe do erro fica no log/audit — ao cliente vai mensagem
         // genérica, sem internals do Bitrix24 (error_description etc.).
-        return res({ ok: false, error: 'sync_failed', details: 'Falha ao sincronizar com o Bitrix24' }, 500);
+        return res(
+          { ok: false, error: 'sync_failed', details: 'Falha ao sincronizar com o Bitrix24' },
+          500
+        );
       }
     } finally {
       log.info('request', { duration_ms: Date.now() - _t0 });
