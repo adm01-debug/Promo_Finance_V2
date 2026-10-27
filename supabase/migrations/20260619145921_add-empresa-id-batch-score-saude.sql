@@ -1,4 +1,4 @@
--- Shim batch: adiciona empresa_id às tabelas que precisam antes de 20260619145930
+-- Shim batch (v2 sem colisão): adiciona empresa_id às tabelas que precisam antes de 20260619145930
 -- que cria policies referenciando empresa_id nessas tabelas (42703)
 -- historico_score_saude criada em 20251220134032 sem empresa_id
 -- recomendacoes_metas_ia, alertas_preditivos, anomalias_detectadas, prejuizos_fiscais
