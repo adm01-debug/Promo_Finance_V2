@@ -82,7 +82,9 @@ Deno.test('falha lógica SSE gera um único request_error sem interromper o stre
         async start(controller) {
           const enc = new TextEncoder();
           controller.enqueue(enc.encode('data: {"progress":10}\n\n'));
-          await Promise.resolve(); // processamento que falha
+          // Macrotask: retoma depois de o wrapper devolver a Response
+          // espelhada — cobre a sinalização tardia do fluxo real.
+          await new Promise((resolve) => setTimeout(resolve, 0));
           controller.enqueue(enc.encode('data: {"error":"falhou"}\n\n'));
           ctx?.sinalizarFalha(new Error('falhou'));
           controller.close();
