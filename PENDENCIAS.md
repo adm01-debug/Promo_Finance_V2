@@ -29,18 +29,18 @@ O workflow está correto por design: sem a connection string do Postgres ele **d
 
 ## 2. Secrets de staging (só `staging-migrate`)
 
-O preflight de `scripts/staging-migrate.sh` (L62-72) exige **todas** estas variáveis — criar em https://github.com/adm01-debug/Promo_Finance_V2/settings/secrets/actions (e `vars` para `REQUIRED_SECRETS`):
+O preflight de `scripts/staging-migrate.sh` (L70) exige **6 variáveis obrigatórias**; a tabela lista também as 2 lidas de forma opcional pelo workflow — criar em https://github.com/adm01-debug/Promo_Finance_V2/settings/secrets/actions (e em **Variables** para `REQUIRED_SECRETS` e `PROD_PROJECT_REF`):
 
-| Variável | Tipo | Onde obter |
-|---|---|---|
-| `PROD_DB_URL` | secret | item 1 (também usada como guard-rail anti-prod) |
-| `STAGING_DB_URL` | secret | URI do Postgres do projeto de staging (Supabase → Connect → URI) |
-| `STAGING_PROJECT_REF` | secret/vars | ID do projeto Supabase de staging |
-| `STAGING_ANON_KEY` | secret | Supabase dashboard → API Keys |
-| `SUPABASE_ACCESS_TOKEN` | secret | https://supabase.com/dashboard/account/tokens |
-| `REQUIRED_SECRETS` | **variable** (não secret) | CSV dos secrets que o deploy deve validar, ex.: `SUPABASE_URL,SUPABASE_ANON_KEY` |
-| `TEST_ADMIN_JWT` | secret (opcional) | JWT de usuário admin para testes |
-| `PROD_PROJECT_REF` | variable | `bwwbeyolnnzppeuhgkcd` (guard-rail anti-prod) |
+| Variável | Tipo | Obrigatória? | Onde obter |
+|---|---|---|---|
+| `PROD_DB_URL` | secret | sim | item 1 (também usada como guard-rail anti-prod) |
+| `STAGING_DB_URL` | secret | sim | URI do Postgres do projeto de staging (Supabase → Connect → URI) |
+| `STAGING_PROJECT_REF` | secret | sim | ID do projeto Supabase de staging — o workflow lê só de `secrets` |
+| `STAGING_ANON_KEY` | secret | sim | Supabase dashboard → API Keys |
+| `SUPABASE_ACCESS_TOKEN` | secret | sim | https://supabase.com/dashboard/account/tokens |
+| `REQUIRED_SECRETS` | **variable** (não secret) | sim | CSV dos secrets que o deploy deve validar, ex.: `SUPABASE_URL,SUPABASE_ANON_KEY` |
+| `TEST_ADMIN_JWT` | secret | não (opcional) | JWT de usuário admin para testes |
+| `PROD_PROJECT_REF` | variable | não (guard-rail) | `bwwbeyolnnzppeuhgkcd` |
 
 Se não existir projeto de staging, diga e eu arquivo/desativo o workflow.
 
