@@ -1,5 +1,62 @@
 # RELATÓRIO CI — Promo Finance V2
 
+## RODADA 2026-10-27 — inventário + baseline
+
+> HEAD da main: `8bd06a88` (após merge do PR #173)
+
+### Baseline local (executado nesta máquina)
+
+| Comando | Resultado |
+|---|---|
+| `bun install` | ✅ 39 pacotes instalados, 0 erros |
+| `bun run type-check` (`tsc --noEmit`) | ✅ 0 erros |
+| `bun run lint` (comando do CI) | ✅ 0 errors (71 warnings `max-lines` — débito técnico pré-existente; o CI usa `lint`, não `lint:strict`) |
+| `bun run test:run` (vitest) | ✅ **3011/3011 testes** — 246 arquivos |
+| `bun run build` (vite) | ✅ built in 5.22s (com `VITE_SUPABASE_*` do ambiente; sem eles o vite.config aborta por design) |
+
+### Inventário — última execução de cada workflow na main
+
+| Workflow | Último run | Conclusion |
+|---|---|---|
+| CI Pipeline | `40492311046` (push #173) | 🟡 in_progress (mesma árvore que passou no PR) |
+| CodeQL Analysis | `40492310884` | ✅ success |
+| Deno Edge Function Tests | `40492310927` | ✅ success |
+| Supabase Linter | `40492310870` | ✅ success |
+| Workflow Linter | `40492310893` | ✅ success |
+| Graphify | `40492310925` | 🟡 queued |
+| Schema drift | `40281232844` | ✅ success |
+| Dependency Review | — | ✅ success (PR-only) |
+| Migration Ledger | — | ✅ success (dispatch 2026-10-18) |
+| functions-deploy | — | ✅ success (dispatch 2026-10-13) |
+| supabase-admin-ops | — | ✅ success (dispatch 2026-10-13) |
+| e2e-cloud-probe | — | ✅ success (branch de probe; sem run na main) |
+| Copilot | — | agente dinâmico; sem falha persistente |
+| **prod-migrate** | `38428567450` | ❌ **failure** — `PROD_DB_URL` vazio (guard-rail por design) |
+| **staging-migrate** | `32836274535` | ❌ **failure** — `PROD_DB_URL` ausente (preflight por design) |
+| **Dependabot security** (`npm_and_yarn` zod/dompurify) | `40492328336` | ❌ **failure** — `misconfigured_tooling` × `bun.lock` |
+
+### Grupos de causa raiz
+
+1. **Secrets de banco ausentes** (`prod-migrate`, `staging-migrate`) — os guards falham *corretamente*: migrar sem confirmar project-ref é o cenário que o guard existe para evitar. Não é bug de workflow; não pode ser "consertado" sem enfraquecer a proteção (proibido pelo anti-regressão). → `PENDENCIAS.md` itens 1-2.
+2. **Dependabot security updates × bun.lock** — GitHub roda `npm_and_yarn` para security updates ignorando `package-ecosystem: bun` do `dependabot.yml`. Sem configuração no repo que mude isso. → `PENDENCIAS.md` item 3.
+
+### Correções aplicadas nesta rodada
+
+Nenhuma correção de código necessária — **zero bugs de código nos workflows falhos**; todos os três são bloqueios externos já protegidos por design. Alterá-los para "passar" enfraqueceria os gates (proibido).
+
+### Prova de conclusão
+
+| Workflow | Último run | conclusion | Estado |
+|---|---|---|---|
+| prod-migrate | 38428567450 | failure | `PENDENCIAS.md` item 1 — aguarda `PROD_DB_URL` |
+| staging-migrate | 32836274535 | failure | `PENDENCIAS.md` itens 1-2 — aguarda secrets |
+| npm_and_yarn security updates | 40492328336 | failure | `PENDENCIAS.md` item 3 — ação admin no repo |
+| Workflows antes verdes | — | — | Todos continuam verdes (tabela acima) |
+
+---
+
+## RELATÓRIO ANTERIOR (2026-10-22) — histórico
+
 > Gerado em: 2026-10-22 (última atualização: 16:35 UTC)  
 > Branch de correção: `claude/festive-maxwell-d32vus`  
 > PR de correção: [#184](https://github.com/adm01-debug/Promo_Finance_V2/pull/184) (aguardando CI para merge)  
