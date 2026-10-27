@@ -4,7 +4,7 @@ import { z } from 'npm:zod@3.23.8';
 import { corsHeaders, corsHeadersPara } from '../_shared/cors.ts';
 import { createLogger } from '../_shared/observability.ts';
 import { mensagemErro, contextoErro } from '../_shared/erros.ts';
-import { withEdgeObservability } from '../_shared/edge-observability.ts';
+import { withEdgeObservability, segundoPlano } from '../_shared/edge-observability.ts';
 import { respostaIntegracaoDesativada } from '../_shared/resilience.ts';
 const log = createLogger('sync-profile-to-bitrix');
 
@@ -266,11 +266,16 @@ Deno.serve(
           new_data: { error: msg },
           details: 'Falha ao sincronizar perfil para Bitrix24',
         });
-        return res({ ok: false, error: 'sync_failed', details: msg }, 500);
+        // Detalhe do erro fica no log/audit — ao cliente vai mensagem
+        // genérica, sem internals do Bitrix24 (error_description etc.).
+        return res(
+          { ok: false, error: 'sync_failed', details: 'Falha ao sincronizar com o Bitrix24' },
+          500
+        );
       }
     } finally {
       log.info('request', { duration_ms: Date.now() - _t0 });
-      await log.flush();
+      await segundoPlano(log.flush());
     }
   })
 );

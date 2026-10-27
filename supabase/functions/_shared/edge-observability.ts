@@ -13,7 +13,16 @@
 
 import { createLogger, redigirTexto } from './observability.ts';
 
-type Handler = (req: Request) => Promise<Response> | Response;
+type Handler = (req: Request, ctx?: ObservabilityContext) => Promise<Response> | Response;
+
+// Canal produtor→wrapper: um handler SSE que já entregou um evento
+// `error` ao cliente fecha o stream limpo e o espelho veria desfecho
+// 'ok'. Sinalizando a falha aqui, o encerramento conta como
+// request_error — exatamente um evento de conclusão por requisição
+// (contrato de vw_edge_health), sem erro de transporte no cliente.
+export interface ObservabilityContext {
+  sinalizarFalha: (e: unknown) => void;
+}
 
 interface SentryTarget {
   url: string;
@@ -110,7 +119,7 @@ export function capturarExcecaoSentry(
 // Executa promessa sem bloquear a resposta quando o runtime expõe
 // EdgeRuntime.waitUntil (Supabase Edge); fora dele, aguarda — num runner
 // de teste/local, perder o flush significaria perder o dado.
-function segundoPlano(p: Promise<void>): Promise<void> | void {
+export function segundoPlano(p: Promise<void>): Promise<void> | void {
   try {
     const rt = (globalThis as Record<string, unknown>).EdgeRuntime as
       | { waitUntil?: (p: Promise<unknown>) => void }
@@ -170,7 +179,10 @@ function espelharStream(
   });
 }
 
-export function withEdgeObservability(functionName: string, handler: Handler): Handler {
+export function withEdgeObservability(
+  functionName: string,
+  handler: Handler
+): (req: Request) => Promise<Response> {
   return async (req: Request): Promise<Response> => {
     // Preflight CORS não é tráfego de negócio — medir ele inflaria rate e
     // misturaria durations de ~0ms no percentil. Passa direto.
@@ -193,13 +205,21 @@ export function withEdgeObservability(functionName: string, handler: Handler): H
       // handler um ID diverso do usado nos eventos request_end/error.
       const cabecalhos = new Headers(req.headers);
       cabecalhos.set('x-request-id', requestId);
-      const res = await handler(new Request(req, { headers: cabecalhos }));
+      let falhaSinalizada: unknown;
+      const ctx: ObservabilityContext = {
+        sinalizarFalha: (e: unknown) => {
+          falhaSinalizada = e;
+        },
+      };
+      const res = await handler(new Request(req, { headers: cabecalhos }), ctx);
       // Resposta SSE (text/event-stream) continua produzindo depois do
       // return — medir aqui registraria ~0ms e sucesso mesmo se o stream
       // falhar no meio. Encadeia um stream espelho que registra o fim real.
       if (res.headers.get('content-type')?.includes('text/event-stream') && res.body) {
         const corpoEspelhado = espelharStream(res.body, (desfecho, detalhe) => {
-          if (desfecho === 'error') {
+          const falhaLogica = desfecho === 'ok' && falhaSinalizada !== undefined;
+          if (falhaLogica) detalhe = falhaSinalizada;
+          if (desfecho === 'error' || falhaLogica) {
             log.error('request_error', {
               duration_ms: Date.now() - inicio,
               status_code: res.status,

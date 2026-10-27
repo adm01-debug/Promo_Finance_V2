@@ -4,7 +4,7 @@ import { Bitrix24SyncSchema, validatePayload, createErrorResponse } from '../_sh
 import { corsHeadersPara } from '../_shared/cors.ts';
 import { createLogger } from '../_shared/observability.ts';
 import { mensagemErro, contextoErro } from '../_shared/erros.ts';
-import { withEdgeObservability } from '../_shared/edge-observability.ts';
+import { withEdgeObservability, segundoPlano } from '../_shared/edge-observability.ts';
 import { respostaIntegracaoDesativada } from '../_shared/resilience.ts';
 const log = createLogger('bitrix24-sync');
 
@@ -153,10 +153,12 @@ async function testConnection(
     const result = await callBitrixAPI('profile', accessToken);
 
     if (result.error) {
-      return {
-        success: false,
-        message: `Erro de conexão: ${result.error_description || result.error}`,
-      };
+      log.error('[bitrix24-sync] testConnection falhou:', {
+        error_message: mensagemErro(result.error_description || result.error),
+      });
+      // Detalhe do Bitrix (error_description) fica no log — ao cliente
+      // vai mensagem genérica.
+      return { success: false, message: 'Erro de conexão com o Bitrix24' };
     }
 
     return {
@@ -165,7 +167,11 @@ async function testConnection(
       data: result.result,
     };
   } catch (error: any) {
-    return { success: false, message: `Erro: ${error?.message || 'Erro desconhecido'}` };
+    log.error('[bitrix24-sync] testConnection exception:', {
+      error_message: mensagemErro(error),
+      context: contextoErro(error),
+    });
+    return { success: false, message: 'Erro de conexão com o Bitrix24' };
   }
 }
 
@@ -315,7 +321,7 @@ async function syncDeals(
       success: false,
       processed,
       errors,
-      message: `Erro na sincronização: ${error?.message || 'Erro desconhecido'}`,
+      message: 'Erro na sincronização',
     };
   }
 }
@@ -442,7 +448,7 @@ async function syncContacts(
       success: false,
       processed,
       errors,
-      message: `Erro na sincronização: ${error?.message || 'Erro desconhecido'}`,
+      message: 'Erro na sincronização',
     };
   }
 }
@@ -559,7 +565,7 @@ async function syncCompanies(
       success: false,
       processed,
       errors,
-      message: `Erro na sincronização: ${error?.message || 'Erro desconhecido'}`,
+      message: 'Erro na sincronização',
     };
   }
 }
@@ -656,7 +662,7 @@ async function exportPaymentStatus(
       success: false,
       processed,
       errors,
-      message: `Erro na exportação: ${error?.message || 'Erro desconhecido'}`,
+      message: 'Erro na exportação',
     };
   }
 }
@@ -725,7 +731,9 @@ async function syncElisaoTask(
       })
       .eq('id', tarefaId);
 
-    return { success: false, message: error?.message || 'Erro na sincronização' };
+    // Detalhe do erro fica no log/DB — ao cliente vai mensagem genérica,
+    // sem internals do Bitrix24 (error_description, endpoints, parâmetros).
+    return { success: false, message: 'Erro na sincronização' };
   }
 }
 
@@ -786,7 +794,9 @@ async function syncBoleto(
       error_message: mensagemErro(error),
       context: contextoErro(error),
     });
-    return { success: false, message: error?.message || 'Erro na sincronização' };
+    // Detalhe do erro fica no log — ao cliente vai mensagem genérica,
+    // sem internals do Bitrix24 (error_description, endpoints, parâmetros).
+    return { success: false, message: 'Erro na sincronização' };
   }
 }
 
@@ -870,17 +880,14 @@ serve(
           error_message: mensagemErro(error),
           context: contextoErro(error),
         });
-        return new Response(
-          JSON.stringify({ success: false, message: error?.message || 'Erro desconhecido' }),
-          {
-            status: 500,
-            headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-          }
-        );
+        return new Response(JSON.stringify({ success: false, message: 'Erro desconhecido' }), {
+          status: 500,
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        });
       }
     } finally {
       log.info('request', { duration_ms: Date.now() - _t0 });
-      await log.flush();
+      await segundoPlano(log.flush());
     }
   })
 );
