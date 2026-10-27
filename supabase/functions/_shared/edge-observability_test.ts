@@ -75,16 +75,19 @@ Deno.test('falha lógica SSE gera um único request_error sem interromper o stre
     }
   };
   try {
-    const stream = new ReadableStream<Uint8Array>({
-      start(controller) {
-        const enc = new TextEncoder();
-        controller.enqueue(enc.encode('data: {"progress":10}\n\n'));
-        controller.enqueue(enc.encode('data: {"error":"falhou"}\n\n'));
-        controller.close();
-      },
-    });
+    // Fluxo real: a falha é sinalizada dentro do produtor, depois de
+    // operações assíncronas — não antes de o handler devolver a Response.
     const wrapped = withEdgeObservability('fn-sse-falha', (_req, ctx) => {
-      ctx?.sinalizarFalha(new Error('falhou'));
+      const stream = new ReadableStream<Uint8Array>({
+        async start(controller) {
+          const enc = new TextEncoder();
+          controller.enqueue(enc.encode('data: {"progress":10}\n\n'));
+          await Promise.resolve(); // processamento que falha
+          controller.enqueue(enc.encode('data: {"error":"falhou"}\n\n'));
+          ctx?.sinalizarFalha(new Error('falhou'));
+          controller.close();
+        },
+      });
       return new Response(stream, {
         status: 200,
         headers: { 'content-type': 'text/event-stream' },
