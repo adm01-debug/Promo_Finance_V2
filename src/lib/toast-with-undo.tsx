@@ -108,6 +108,6 @@ export function toastSuccessWithUndo({
       onUndo,
     });
   }
-  
+
   return toast.success(title, { description });
 }

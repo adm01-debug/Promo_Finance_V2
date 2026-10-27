@@ -1,7 +1,13 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 import type { RegimeAplicavel } from '@/lib/tributario/elisao';
 
 interface EmpresaOption {
@@ -15,32 +21,86 @@ interface ContextoFormProps {
   setEmpresaId: (v: string) => void;
   regimeAtual: RegimeAplicavel;
   setRegimeAtual: (v: RegimeAplicavel) => void;
-  pl: number; setPl: (v: number) => void;
-  lucro: number; setLucro: (v: number) => void;
-  importacao: number; setImportacao: (v: number) => void;
-  pd: number; setPd: (v: number) => void;
-  beneficioIcms: number; setBeneficioIcms: (v: number) => void;
-  dividendos: number; setDividendos: (v: number) => void;
-  uf: string; setUf: (v: string) => void;
-  lucrosAcumulados: number; setLucrosAcumulados: (v: number) => void;
-  creditosPisCofins: number; setCreditosPisCofins: (v: number) => void;
-  investimentoMaquinas: number; setInvestimentoMaquinas: (v: number) => void;
+  pl: number;
+  setPl: (v: number) => void;
+  lucro: number;
+  setLucro: (v: number) => void;
+  importacao: number;
+  setImportacao: (v: number) => void;
+  pd: number;
+  setPd: (v: number) => void;
+  beneficioIcms: number;
+  setBeneficioIcms: (v: number) => void;
+  dividendos: number;
+  setDividendos: (v: number) => void;
+  uf: string;
+  setUf: (v: string) => void;
+  lucrosAcumulados: number;
+  setLucrosAcumulados: (v: number) => void;
+  creditosPisCofins: number;
+  setCreditosPisCofins: (v: number) => void;
+  investimentoMaquinas: number;
+  setInvestimentoMaquinas: (v: number) => void;
 }
 
 /** UFs disponíveis para seleção da unidade principal. */
 const UFS = [
-  'AC','AL','AM','AP','BA','CE','DF','ES','GO','MA','MG','MS','MT','PA','PB','PE','PI',
-  'PR','RJ','RN','RO','RR','RS','SC','SE','SP','TO',
+  'AC',
+  'AL',
+  'AM',
+  'AP',
+  'BA',
+  'CE',
+  'DF',
+  'ES',
+  'GO',
+  'MA',
+  'MG',
+  'MS',
+  'MT',
+  'PA',
+  'PB',
+  'PE',
+  'PI',
+  'PR',
+  'RJ',
+  'RN',
+  'RO',
+  'RR',
+  'RS',
+  'SC',
+  'SE',
+  'SP',
+  'TO',
 ] as const;
 
 export function ContextoForm(props: ContextoFormProps) {
   const {
-    empresas, empresaId, setEmpresaId, regimeAtual, setRegimeAtual,
-    pl, setPl, lucro, setLucro, importacao, setImportacao,
-    pd, setPd, beneficioIcms, setBeneficioIcms, dividendos, setDividendos,
-    uf, setUf, lucrosAcumulados, setLucrosAcumulados,
-    creditosPisCofins, setCreditosPisCofins,
-    investimentoMaquinas, setInvestimentoMaquinas,
+    empresas,
+    empresaId,
+    setEmpresaId,
+    regimeAtual,
+    setRegimeAtual,
+    pl,
+    setPl,
+    lucro,
+    setLucro,
+    importacao,
+    setImportacao,
+    pd,
+    setPd,
+    beneficioIcms,
+    setBeneficioIcms,
+    dividendos,
+    setDividendos,
+    uf,
+    setUf,
+    lucrosAcumulados,
+    setLucrosAcumulados,
+    creditosPisCofins,
+    setCreditosPisCofins,
+    investimentoMaquinas,
+    setInvestimentoMaquinas,
   } = props;
 
   return (
@@ -55,10 +115,14 @@ export function ContextoForm(props: ContextoFormProps) {
         <div>
           <Label>Empresa</Label>
           <Select value={empresaId} onValueChange={setEmpresaId}>
-            <SelectTrigger><SelectValue placeholder="Selecione" /></SelectTrigger>
+            <SelectTrigger>
+              <SelectValue placeholder="Selecione" />
+            </SelectTrigger>
             <SelectContent>
               {empresas.map((e) => (
-                <SelectItem key={e.id} value={e.id}>{e.razao_social}</SelectItem>
+                <SelectItem key={e.id} value={e.id}>
+                  {e.razao_social}
+                </SelectItem>
               ))}
             </SelectContent>
           </Select>
@@ -66,7 +130,9 @@ export function ContextoForm(props: ContextoFormProps) {
         <div>
           <Label>Regime atual</Label>
           <Select value={regimeAtual} onValueChange={(v) => setRegimeAtual(v as RegimeAplicavel)}>
-            <SelectTrigger><SelectValue /></SelectTrigger>
+            <SelectTrigger>
+              <SelectValue />
+            </SelectTrigger>
             <SelectContent>
               <SelectItem value="simples">Simples Nacional</SelectItem>
               <SelectItem value="presumido">Lucro Presumido</SelectItem>
@@ -84,7 +150,11 @@ export function ContextoForm(props: ContextoFormProps) {
         </div>
         <div>
           <Label>Importação anual (R$)</Label>
-          <Input type="number" value={importacao} onChange={(e) => setImportacao(Number(e.target.value))} />
+          <Input
+            type="number"
+            value={importacao}
+            onChange={(e) => setImportacao(Number(e.target.value))}
+          />
         </div>
         <div>
           <Label>Despesas P&D (R$)</Label>
@@ -92,19 +162,31 @@ export function ContextoForm(props: ContextoFormProps) {
         </div>
         <div>
           <Label>Benefício ICMS anual (R$)</Label>
-          <Input type="number" value={beneficioIcms} onChange={(e) => setBeneficioIcms(Number(e.target.value))} />
+          <Input
+            type="number"
+            value={beneficioIcms}
+            onChange={(e) => setBeneficioIcms(Number(e.target.value))}
+          />
         </div>
         <div>
           <Label>Dividendos PF anuais (R$)</Label>
-          <Input type="number" value={dividendos} onChange={(e) => setDividendos(Number(e.target.value))} />
+          <Input
+            type="number"
+            value={dividendos}
+            onChange={(e) => setDividendos(Number(e.target.value))}
+          />
         </div>
         <div>
           <Label htmlFor="elisao-uf">UF da unidade principal</Label>
           <Select value={uf} onValueChange={setUf}>
-            <SelectTrigger id="elisao-uf"><SelectValue placeholder="Selecione a UF" /></SelectTrigger>
+            <SelectTrigger id="elisao-uf">
+              <SelectValue placeholder="Selecione a UF" />
+            </SelectTrigger>
             <SelectContent>
               {UFS.map((sigla) => (
-                <SelectItem key={sigla} value={sigla}>{sigla}</SelectItem>
+                <SelectItem key={sigla} value={sigla}>
+                  {sigla}
+                </SelectItem>
               ))}
             </SelectContent>
           </Select>
@@ -130,7 +212,9 @@ export function ContextoForm(props: ContextoFormProps) {
           />
         </div>
         <div>
-          <Label htmlFor="elisao-investimento-maquinas">Investimento em máquinas novas (R$/ano)</Label>
+          <Label htmlFor="elisao-investimento-maquinas">
+            Investimento em máquinas novas (R$/ano)
+          </Label>
           <Input
             id="elisao-investimento-maquinas"
             type="number"

@@ -136,7 +136,10 @@ export function ConciliacaoSplitDialog({
         const { error: rollbackError } = await supabase
           .from('conciliacoes_parciais')
           .delete()
-          .in('id', records.map((record) => record.id));
+          .in(
+            'id',
+            records.map((record) => record.id)
+          );
         if (rollbackError) {
           throw new Error('Falha ao atualizar a transação e ao reverter os vínculos parciais');
         }

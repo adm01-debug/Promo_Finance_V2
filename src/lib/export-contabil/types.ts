@@ -34,11 +34,24 @@ export interface AuditoriaCFCExportData {
   totalAnaliticas: number;
   comReferencial: number;
   semReferencial: number;
-  formatoInvalido: Array<{ codigo: string; descricao: string; codigo_referencial: string | null; natureza: string }>;
+  formatoInvalido: Array<{
+    codigo: string;
+    descricao: string;
+    codigo_referencial: string | null;
+    natureza: string;
+  }>;
   prefixoIncorreto: Array<{
-    conta: { codigo: string; descricao: string; codigo_referencial: string | null; natureza: string };
+    conta: {
+      codigo: string;
+      descricao: string;
+      codigo_referencial: string | null;
+      natureza: string;
+    };
     esperado: string[];
     sugestao: string | null;
   }>;
-  duplicidades: Array<{ codigo_referencial: string; contas: Array<{ codigo: string; descricao: string }> }>;
+  duplicidades: Array<{
+    codigo_referencial: string;
+    contas: Array<{ codigo: string; descricao: string }>;
+  }>;
 }

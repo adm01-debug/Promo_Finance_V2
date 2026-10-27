@@ -1,10 +1,6 @@
 import { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
-import {
-  Brain,
-  Loader2,
-  RefreshCw,
-} from 'lucide-react';
+import { Brain, Loader2, RefreshCw } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { supabase } from '@/integrations/supabase/client';
 import { format, differenceInDays, addDays } from 'date-fns';
@@ -48,22 +44,28 @@ interface ClienteMapCliente {
   nome_fantasia: string | null;
 }
 
-function calcularProbabilidadeAtraso(cliente: ClienteData, contasPendentes: ContaData[], historicoContas: HistoricoContaData[]): number {
+function calcularProbabilidadeAtraso(
+  cliente: ClienteData,
+  contasPendentes: ContaData[],
+  historicoContas: HistoricoContaData[]
+): number {
   let score = 0;
   const scoreCliente = cliente.score || 100;
   if (scoreCliente < 50) score += 30;
   else if (scoreCliente < 70) score += 20;
   else if (scoreCliente < 85) score += 10;
 
-  const contasVencidas = historicoContas.filter(c => c.status === 'vencido');
-  const taxaAtraso = historicoContas.length > 0
-    ? (contasVencidas.length / historicoContas.length) * 100
-    : 0;
+  const contasVencidas = historicoContas.filter((c) => c.status === 'vencido');
+  const taxaAtraso =
+    historicoContas.length > 0 ? (contasVencidas.length / historicoContas.length) * 100 : 0;
   if (taxaAtraso > 30) score += 40;
   else if (taxaAtraso > 15) score += 25;
   else if (taxaAtraso > 5) score += 10;
 
-  const totalPendente = contasPendentes.reduce((sum, c) => sum + c.valor - (c.valor_recebido || 0), 0);
+  const totalPendente = contasPendentes.reduce(
+    (sum, c) => sum + c.valor - (c.valor_recebido || 0),
+    0
+  );
   const limiteCredito = cliente.limite_credito || 10000;
   const utilizacao = (totalPendente / limiteCredito) * 100;
   if (utilizacao > 100) score += 20;
@@ -71,7 +73,7 @@ function calcularProbabilidadeAtraso(cliente: ClienteData, contasPendentes: Cont
   else if (utilizacao > 50) score += 5;
 
   const proximoVencimento = contasPendentes
-    .map(c => new Date(c.data_vencimento))
+    .map((c) => new Date(c.data_vencimento))
     .sort((a, b) => a.getTime() - b.getTime())[0];
 
   if (proximoVencimento) {
@@ -89,21 +91,28 @@ function determinarNivelRisco(probabilidade: number): 'alto' | 'medio' | 'baixo'
   return 'baixo';
 }
 
-function gerarFatoresRisco(cliente: ClienteData, contasPendentes: ContaData[], historicoContas: HistoricoContaData[]): string[] {
+function gerarFatoresRisco(
+  cliente: ClienteData,
+  contasPendentes: ContaData[],
+  historicoContas: HistoricoContaData[]
+): string[] {
   const fatores: string[] = [];
   if ((cliente.score || 100) < 70) {
     fatores.push(`Score baixo (${cliente.score || 0})`);
   }
-  const contasVencidas = historicoContas.filter(c => c.status === 'vencido');
+  const contasVencidas = historicoContas.filter((c) => c.status === 'vencido');
   if (contasVencidas.length > 0) {
     fatores.push(`${contasVencidas.length} atraso(s) no histórico`);
   }
-  const totalPendente = contasPendentes.reduce((sum, c) => sum + c.valor - (c.valor_recebido || 0), 0);
+  const totalPendente = contasPendentes.reduce(
+    (sum, c) => sum + c.valor - (c.valor_recebido || 0),
+    0
+  );
   if (totalPendente > (cliente.limite_credito || 10000)) {
     fatores.push('Limite de crédito excedido');
   }
   const proximoVencimento = contasPendentes
-    .map(c => new Date(c.data_vencimento))
+    .map((c) => new Date(c.data_vencimento))
     .sort((a, b) => a.getTime() - b.getTime())[0];
   if (proximoVencimento && differenceInDays(proximoVencimento, new Date()) <= 7) {
     fatores.push('Vencimento próximo');
@@ -113,7 +122,7 @@ function gerarFatoresRisco(cliente: ClienteData, contasPendentes: ContaData[], h
 
 function gerarAcaoSugerida(nivelRisco: 'alto' | 'medio' | 'baixo', fatores: string[]): string {
   if (nivelRisco === 'alto') {
-    if (fatores.some(f => f.includes('atraso'))) {
+    if (fatores.some((f) => f.includes('atraso'))) {
       return 'Entrar em contato imediatamente para negociação preventiva';
     }
     return 'Monitorar de perto e preparar régua de cobrança preventiva';
@@ -133,10 +142,12 @@ function useAnaliseInadimplencia() {
 
       const { data: contasPendentes } = await supabase
         .from('contas_receber')
-        .select(`
+        .select(
+          `
           id, valor, valor_recebido, data_vencimento, status, cliente_id, cliente_nome,
           clientes(id, razao_social, nome_fantasia, score, limite_credito, ramo_atividade)
-        `)
+        `
+        )
         .in('status', ['pendente', 'parcial'])
         .gte('data_vencimento', format(hoje, 'yyyy-MM-dd'))
         .lte('data_vencimento', format(em30Dias, 'yyyy-MM-dd'))
@@ -156,21 +167,35 @@ function useAnaliseInadimplencia() {
         };
       }
 
-      const clientesMap = new Map<string, {
-        cliente: ClienteMapCliente;
-        contas: ContaData[];
-      }>();
-      contasPendentes.forEach(conta => {
-        const clienteId = conta.cliente_id || conta.cliente_nome;
+      const clientesMap = new Map<
+        string,
+        {
+          cliente: ClienteMapCliente;
+          contas: ContaData[];
+        }
+      >();
+      contasPendentes.forEach((conta) => {
+        const clienteId = conta.cliente_id || conta.cliente_nome || 'sem-cliente';
         if (!clientesMap.has(clienteId)) {
           clientesMap.set(clienteId, {
-            cliente: conta.clientes || { score: null, limite_credito: null, ramo_atividade: null, razao_social: conta.cliente_nome, nome_fantasia: null },
+            cliente: conta.clientes || {
+              score: null,
+              limite_credito: null,
+              ramo_atividade: null,
+              razao_social: conta.cliente_nome,
+              nome_fantasia: null,
+            },
             contas: [],
           });
         }
         const entry = clientesMap.get(clienteId);
         if (entry) {
-          entry.contas.push(conta);
+          entry.contas.push({
+            valor: conta.valor,
+            valor_recebido: conta.valor_recebido,
+            status: conta.status ?? '',
+            data_vencimento: conta.data_vencimento,
+          });
         }
       });
 
@@ -183,10 +208,13 @@ function useAnaliseInadimplencia() {
           .eq('cliente_id', clienteId)
           .lt('data_vencimento', format(hoje, 'yyyy-MM-dd'));
 
-        const probabilidade = calcularProbabilidadeAtraso(cliente, contas, historico || []);
+        const historicoContas: HistoricoContaData[] = (historico ?? []).map((h) => ({
+          status: h.status ?? '',
+        }));
+        const probabilidade = calcularProbabilidadeAtraso(cliente, contas, historicoContas);
         const nivelRisco = determinarNivelRisco(probabilidade);
-        const fatoresRisco = gerarFatoresRisco(cliente, contas, historico || []);
-        
+        const fatoresRisco = gerarFatoresRisco(cliente, contas, historicoContas);
+
         // Refinamento por Ramo de Atividade (Engine 10/10)
         if (cliente.ramo_atividade && ['Construção', 'Varejo'].includes(cliente.ramo_atividade)) {
           fatoresRisco.push(`Setor de alto risco: ${cliente.ramo_atividade}`);
@@ -198,7 +226,10 @@ function useAnaliseInadimplencia() {
           data_vencimento: string;
         }
 
-        const totalPendente = contas.reduce((sum: number, c: ContaReceberData) => sum + c.valor - (c.valor_recebido || 0), 0);
+        const totalPendente = contas.reduce(
+          (sum: number, c: ContaReceberData) => sum + c.valor - (c.valor_recebido || 0),
+          0
+        );
         const proximoVencimento = contas
           .map((c: ContaReceberData) => new Date(c.data_vencimento))
           .sort((a: Date, b: Date) => a.getTime() - b.getTime())[0];
@@ -210,7 +241,7 @@ function useAnaliseInadimplencia() {
           score: cliente.score || 100,
           totalPendente,
           diasAteVencimento: proximoVencimento ? differenceInDays(proximoVencimento, hoje) : 0,
-          historicoAtrasos: (historico || []).filter(c => c.status === 'vencido').length,
+          historicoAtrasos: historicoContas.filter((c) => c.status === 'vencido').length,
           probabilidadeAtraso: probabilidade,
           nivelRisco,
           fatoresRisco,
@@ -220,9 +251,9 @@ function useAnaliseInadimplencia() {
 
       clientesAnalise.sort((a, b) => b.probabilidadeAtraso - a.probabilidadeAtraso);
 
-      const clientesAltoRisco = clientesAnalise.filter(c => c.nivelRisco === 'alto');
-      const clientesMedioRisco = clientesAnalise.filter(c => c.nivelRisco === 'medio');
-      const clientesBaixoRisco = clientesAnalise.filter(c => c.nivelRisco === 'baixo');
+      const clientesAltoRisco = clientesAnalise.filter((c) => c.nivelRisco === 'alto');
+      const clientesMedioRisco = clientesAnalise.filter((c) => c.nivelRisco === 'medio');
+      const clientesBaixoRisco = clientesAnalise.filter((c) => c.nivelRisco === 'baixo');
 
       return {
         clientes: clientesAnalise,
@@ -231,7 +262,8 @@ function useAnaliseInadimplencia() {
           clientesAltoRisco: clientesAltoRisco.length,
           clientesMedioRisco: clientesMedioRisco.length,
           clientesBaixoRisco: clientesBaixoRisco.length,
-          valorTotalRisco: clientesAltoRisco.reduce((sum, c) => sum + c.totalPendente, 0) +
+          valorTotalRisco:
+            clientesAltoRisco.reduce((sum, c) => sum + c.totalPendente, 0) +
             clientesMedioRisco.reduce((sum, c) => sum + c.totalPendente, 0) * 0.5,
         },
         geradoEm: new Date().toISOString(),
@@ -245,10 +277,11 @@ export function PrevisaoInadimplencia() {
   const [tabAtiva, setTabAtiva] = useState('todos');
   const { data, isLoading, refetch, isFetching } = useAnaliseInadimplencia();
 
-  const clientesFiltrados = data?.clientes.filter(c => {
-    if (tabAtiva === 'todos') return true;
-    return c.nivelRisco === tabAtiva;
-  }) || [];
+  const clientesFiltrados =
+    data?.clientes.filter((c) => {
+      if (tabAtiva === 'todos') return true;
+      return c.nivelRisco === tabAtiva;
+    }) || [];
 
   return (
     <div className="space-y-6">
@@ -259,9 +292,7 @@ export function PrevisaoInadimplencia() {
           </div>
           <div>
             <h2 className="text-lg font-semibold">Previsão de Inadimplência</h2>
-            <p className="text-sm text-muted-foreground">
-              Análise preditiva dos próximos 30 dias
-            </p>
+            <p className="text-sm text-muted-foreground">Análise preditiva dos próximos 30 dias</p>
           </div>
         </div>
         <Button variant="outline" size="sm" onClick={() => refetch()} disabled={isFetching}>

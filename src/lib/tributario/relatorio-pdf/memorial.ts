@@ -15,7 +15,7 @@ export interface DadosEmpresa {
 export function gerarPdfMemorialCalculo(
   resultado: ResultadoCalculadora,
   ativo: ResultadoRegime,
-  empresa: DadosEmpresa,
+  empresa: DadosEmpresa
 ): Blob {
   const doc = new jsPDF({ unit: 'mm', format: 'a4' });
 
@@ -96,7 +96,9 @@ export function gerarPdfMemorialCalculo(
       c.elegivel ? 'Sim' : 'Não',
       c.elegivel ? BRL(c.totalAPagar) : '—',
       c.elegivel ? `${c.cargaEfetiva.toFixed(2)}%` : '—',
-      c.regime === resultado.melhorCenario?.regime ? 'RECOMENDADO' : (c.motivoInelegibilidade ?? ''),
+      c.regime === resultado.melhorCenario?.regime
+        ? 'RECOMENDADO'
+        : (c.motivoInelegibilidade ?? ''),
     ]),
   });
 
@@ -109,7 +111,9 @@ export function gerarPdfMemorialCalculo(
     doc.setTextColor(70, 70, 70);
     doc.text(
       `Regime recomendado: ${resultado.melhorCenario.nome}. Economia estimada vs. pior cenário: ${BRL(resultado.economiaAnualVsPior)} por ano.`,
-      20, afterCmp + 18, { maxWidth: 170 },
+      20,
+      afterCmp + 18,
+      { maxWidth: 170 }
     );
   }
 
@@ -119,7 +123,11 @@ export function gerarPdfMemorialCalculo(
     doc.setPage(i);
     doc.setFontSize(7);
     doc.setTextColor(120, 120, 120);
-    doc.text(`Página ${i} de ${total} — documento auxiliar, não substitui apuração oficial.`, 20, 290);
+    doc.text(
+      `Página ${i} de ${total} — documento auxiliar, não substitui apuração oficial.`,
+      20,
+      290
+    );
   }
 
   return doc.output('blob');

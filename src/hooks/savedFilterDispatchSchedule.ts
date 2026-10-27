@@ -12,11 +12,11 @@
  *   se ainda não passou, senão amanhã). Sempre normalizado para o fuso local
  *   do navegador — combina com o que o usuário enxerga ao escolher.
  */
-import type { SubscriptionFrequencia } from "./useSavedFilterSubscriptions";
+import type { SubscriptionFrequencia } from './useSavedFilterSubscriptions';
 
 /** "HH:MM[:SS]" → [h, m]. Retorna [9,0] como fallback defensivo. */
 function parseHorario(horario: string): [number, number] {
-  const [hh = "9", mm = "0"] = horario.split(":");
+  const [hh = '9', mm = '0'] = horario.split(':');
   const h = Math.min(23, Math.max(0, Number.parseInt(hh, 10) || 0));
   const m = Math.min(59, Math.max(0, Number.parseInt(mm, 10) || 0));
   return [h, m];
@@ -25,13 +25,13 @@ function parseHorario(horario: string): [number, number] {
 export function computeNextDispatch(
   frequencia: SubscriptionFrequencia,
   horarioPreferido: string,
-  now: Date = new Date(),
+  now: Date = new Date()
 ): Date | null {
-  if (frequencia === "imediata") return null;
+  if (frequencia === 'imediata') return null;
 
   const [h, m] = parseHorario(horarioPreferido);
 
-  if (frequencia === "diaria") {
+  if (frequencia === 'diaria') {
     const target = new Date(now);
     target.setHours(h, m, 0, 0);
     if (target.getTime() <= now.getTime()) {
@@ -57,9 +57,9 @@ export function computeNextDispatch(
 export function shouldDispatchNow(
   frequencia: SubscriptionFrequencia,
   nextDispatchAt: string | null,
-  now: Date = new Date(),
+  now: Date = new Date()
 ): boolean {
-  if (frequencia === "imediata") return true;
+  if (frequencia === 'imediata') return true;
   if (!nextDispatchAt) return false;
   return new Date(nextDispatchAt).getTime() <= now.getTime();
 }
@@ -67,11 +67,11 @@ export function shouldDispatchNow(
 /** Rótulo curto da cadência para exibição na UI. */
 export function describeFrequencia(f: SubscriptionFrequencia): string {
   switch (f) {
-    case "imediata":
-      return "Imediata";
-    case "horaria":
-      return "A cada 1 hora";
-    case "diaria":
-      return "Diária";
+    case 'imediata':
+      return 'Imediata';
+    case 'horaria':
+      return 'A cada 1 hora';
+    case 'diaria':
+      return 'Diária';
   }
 }

@@ -1,7 +1,8 @@
-import { ReactNode } from 'react';
+import { ReactNode, useEffect, useId, useRef } from 'react';
 import { AlertTriangle, Info, CheckCircle, XCircle, Loader2, X } from 'lucide-react';
 import { Button } from './button';
 import { cn } from '@/lib/utils';
+import { isTopOpenDialog, registerOwnedEscapeHandler } from '@/lib/unsaved-guard';
 
 interface ConfirmDialogProps {
   // Support both naming conventions
@@ -82,18 +83,49 @@ export function ConfirmDialog({
     await onConfirm();
   };
 
+  const dialogRef = useRef<HTMLDivElement>(null);
+  const titleId = useId();
+
+  // Escape roteado pelo ModalHistoryManager chama este handler direto
+  // (registrado para o elemento) (só ele fecha, nunca um dialog de baixo); o listener no
+  // documento cobre o caso do gerenciador ausente (ex.: testes).
+  useEffect(() => {
+    if (!isOpen) return;
+    const el = dialogRef.current;
+    const onKeyDown = (e: KeyboardEvent) => {
+      if (e.key !== 'Escape' || isLoading) return;
+      // Só o dialog do topo fecha: um Escape chegando ao documento (topo
+      // Radix ou gerenciador ausente) não pode fechar os de baixo junto.
+      // A ordem de abertura decide — o DOM mente com o portal Radix.
+      if (!el || !isTopOpenDialog(el)) return;
+      handleClose();
+    };
+    const offOwned = el ? registerOwnedEscapeHandler(el, onKeyDown) : undefined;
+    document.addEventListener('keydown', onKeyDown);
+    return () => {
+      offOwned?.();
+      document.removeEventListener('keydown', onKeyDown);
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isOpen, isLoading]);
+
   if (!isOpen) return null;
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center">
       {/* Backdrop */}
-      <div
-        className="absolute inset-0 bg-black/50"
-        onClick={handleClose}
-      />
+      <div className="absolute inset-0 bg-black/50" onClick={handleClose} />
 
       {/* Dialog */}
-      <div className="relative bg-card rounded-lg shadow-xl w-full max-w-md mx-4 animate-in fade-in-0 zoom-in-95">
+      <div
+        ref={dialogRef}
+        role="dialog"
+        data-state="open"
+        data-escape-owned
+        aria-modal="true"
+        aria-labelledby={titleId}
+        className="relative bg-card rounded-lg shadow-xl w-full max-w-md mx-4 animate-in fade-in-0 zoom-in-95"
+      >
         {/* Close button */}
         <button
           onClick={handleClose}
@@ -106,40 +138,34 @@ export function ConfirmDialog({
         <div className="p-6">
           <div className="flex items-start gap-4">
             {/* Icon */}
-            <div className={cn('p-3 rounded-full', config.iconBg)}>
-              {icon || config.icon}
-            </div>
+            <div className={cn('p-3 rounded-full', config.iconBg)}>{icon || config.icon}</div>
 
             {/* Text */}
             <div className="flex-1 pt-1">
-              <h3 className="text-lg font-semibold text-foreground">
+              <h3 id={titleId} className="text-lg font-semibold text-foreground">
                 {title}
               </h3>
-              {description && (
-                <p className="mt-2 text-sm text-muted-foreground">
-                  {description}
-                </p>
-              )}
-              {children && (
-                <div className="mt-4">
-                  {children}
-                </div>
-              )}
+              {description && <p className="mt-2 text-sm text-muted-foreground">{description}</p>}
+              {children && <div className="mt-4">{children}</div>}
             </div>
           </div>
         </div>
 
         {/* Actions */}
         <div className="flex items-center justify-end gap-3 px-6 py-4 bg-muted/50 rounded-b-lg">
-          <Button
-            variant="outline"
-            onClick={handleClose}
-            disabled={isLoading}
-          >
+          <Button variant="outline" onClick={handleClose} disabled={isLoading}>
             {resolvedCancelText}
           </Button>
           <Button
-            variant={variant === 'danger' ? 'destructive' : variant === 'warning' ? 'warning' : variant === 'success' ? 'success' : 'default'}
+            variant={
+              variant === 'danger'
+                ? 'destructive'
+                : variant === 'warning'
+                  ? 'warning'
+                  : variant === 'success'
+                    ? 'success'
+                    : 'default'
+            }
             onClick={handleConfirm}
             disabled={isLoading}
           >

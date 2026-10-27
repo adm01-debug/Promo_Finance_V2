@@ -14,12 +14,18 @@ export function DescricaoCell({ conta }: { conta: ContaReceberWithRelations }) {
         </div>
         <div className="flex items-center gap-2">
           {conta.numero_documento && (
-            <Badge variant="outline" className="text-[9px] font-black uppercase px-1.5 py-0 rounded-md border-white/5 bg-card/5 text-muted-foreground/60 tracking-wider">
+            <Badge
+              variant="outline"
+              className="text-[9px] font-black uppercase px-1.5 py-0 rounded-md border-white/5 bg-card/5 text-muted-foreground/60 tracking-wider"
+            >
               DOC: {conta.numero_documento}
             </Badge>
           )}
           {conta.numero_parcela_atual && conta.total_parcelas && (
-            <Badge variant="outline" className="text-[9px] font-black uppercase px-1.5 py-0 rounded-md border-primary/20 bg-primary/5 text-primary tracking-wider">
+            <Badge
+              variant="outline"
+              className="text-[9px] font-black uppercase px-1.5 py-0 rounded-md border-primary/20 bg-primary/5 text-primary tracking-wider"
+            >
               {conta.numero_parcela_atual}/{conta.total_parcelas}
             </Badge>
           )}

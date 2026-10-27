@@ -10,7 +10,7 @@ Sistema financeiro corporativo multi-empresa: Contas a Pagar, Contas a Receber, 
 
 ## Como rodar localmente
 
-Pré-requisito: Node.js ≥ 18 (ou Bun ≥ 1.1, usado no CI).
+Pré-requisito: Node.js ≥ 18.18 (ou Bun ≥ 1.1, usado no CI).
 
 ```sh
 # 1. Clone e entre no diretório
@@ -31,16 +31,16 @@ O app fica disponível em `http://localhost:8080`.
 
 ## Scripts principais
 
-| Script | Descrição |
-| --- | --- |
-| `npm run dev` | Dev server com HMR (porta 8080) |
-| `npm run build` | Build de produção (`dist/`) |
-| `npm run lint` / `lint:fix` | ESLint (flat config) |
-| `npm run type-check` | `tsc --noEmit` |
-| `npm run test` / `test:run` | Suite Vitest (watch / single run) |
-| `npm run test:coverage` | Cobertura (v8) |
-| `npm run test:e2e` | Playwright E2E (sobe o dev server automaticamente) |
-| `npm run format` | Prettier em `src/` |
+| Script                      | Descrição                                          |
+| --------------------------- | -------------------------------------------------- |
+| `npm run dev`               | Dev server com HMR (porta 8080)                    |
+| `npm run build`             | Build de produção (`dist/`)                        |
+| `npm run lint` / `lint:fix` | ESLint (flat config)                               |
+| `npm run type-check`        | `tsc --noEmit`                                     |
+| `npm run test` / `test:run` | Suite Vitest (watch / single run)                  |
+| `npm run test:coverage`     | Cobertura (v8)                                     |
+| `npm run test:e2e`          | Playwright E2E (sobe o dev server automaticamente) |
+| `npm run format`            | Prettier em `src/`                                 |
 
 ## Banco de dados
 
@@ -53,7 +53,7 @@ As migrations vivem em `supabase/migrations/` (fonte da verdade do schema) e as 
 A arquitetura do projeto é baseada em princípios de **resiliência, telemetria e segurança multi-empresa**. Para entender os fluxos de dados, padrões de código e responsabilidades de cada camada, consulte a documentação técnica oficial:
 
 - **[Arquitetura Principal (Padrões e Camadas)](docs/ARCHITECTURE.md)**: visão geral da stack, decisões de design e fluxo ponta a ponta.
-- **[Auditoria Técnica e Resiliência](docs/TECHNICAL_AUDIT_RESILIENCE.md)**: telemetria (breadcrumbs), segurança de webhooks e isolamento organizacional.
+- **[Auditoria Técnica e Resiliência](docs/archive/TECHNICAL_AUDIT_RESILIENCE.md)**: telemetria (breadcrumbs), segurança de webhooks e isolamento organizacional.
 - **[Guia de Testes (Unitários e E2E)](docs/TESTING.md)**: como rodar e escrever testes.
 - **[Acessibilidade](docs/ACCESSIBILITY.md)**: padrões WCAG seguidos no frontend.
 - **[Graphify — integração e plano de 50 etapas](docs/GRAPHIFY_PLANO_50_ETAPAS.md)**: piloto local de análise estrutural, sem acesso ao banco ou IA externa.

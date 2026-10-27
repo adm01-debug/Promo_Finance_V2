@@ -108,7 +108,7 @@ function chave(codigoIbge: number, itemCodigo: string | null): string {
 /** Constrói a tabela efetiva de ISS municipal a partir dos registros do banco. */
 export function aplicarOverlayIss(
   registros: readonly RegistroIssMunicipalBanco[],
-  referencia: string = hojeIso(),
+  referencia: string = hojeIso()
 ): ResultadoOverlayIss {
   const porChave: Record<string, AliquotaIssResolvida> = {};
   const porNome: Record<string, number> = {};
@@ -122,18 +122,36 @@ export function aplicarOverlayIss(
     const municipio = registro?.municipio?.toString().trim() ?? null;
 
     if (!Number.isInteger(codigoIbge) || codigoIbge <= 0) {
-      rejeitadas.push({ codigoIbge: null, municipio, itemCodigo, motivo: 'codigo_ibge_invalido', valor: registro?.codigo_ibge ?? null });
+      rejeitadas.push({
+        codigoIbge: null,
+        municipio,
+        itemCodigo,
+        motivo: 'codigo_ibge_invalido',
+        valor: registro?.codigo_ibge ?? null,
+      });
       continue;
     }
     if (!municipio) {
-      rejeitadas.push({ codigoIbge, municipio, itemCodigo, motivo: 'municipio_invalido', valor: null });
+      rejeitadas.push({
+        codigoIbge,
+        municipio,
+        itemCodigo,
+        motivo: 'municipio_invalido',
+        valor: null,
+      });
       continue;
     }
 
     const de = registro.vigente_de ?? null;
     const ate = registro.vigente_ate ?? null;
     if ((de !== null && !ISO_DATA.test(de)) || (ate !== null && !ISO_DATA.test(ate))) {
-      rejeitadas.push({ codigoIbge, municipio, itemCodigo, motivo: 'vigencia_invalida', valor: de ?? ate });
+      rejeitadas.push({
+        codigoIbge,
+        municipio,
+        itemCodigo,
+        motivo: 'vigencia_invalida',
+        valor: de ?? ate,
+      });
       continue;
     }
     const vigente = (de === null || de <= referencia) && (ate === null || ate >= referencia);
@@ -141,17 +159,35 @@ export function aplicarOverlayIss(
 
     const aliquota = normalizarAliquotaIss(registro.aliquota);
     if (aliquota === null) {
-      rejeitadas.push({ codigoIbge, municipio, itemCodigo, motivo: 'aliquota_invalida', valor: registro.aliquota });
+      rejeitadas.push({
+        codigoIbge,
+        municipio,
+        itemCodigo,
+        motivo: 'aliquota_invalida',
+        valor: registro.aliquota,
+      });
       continue;
     }
     if (aliquota < ISS_ALIQUOTA_MINIMA || aliquota > ISS_ALIQUOTA_MAXIMA) {
-      rejeitadas.push({ codigoIbge, municipio, itemCodigo, motivo: 'fora_da_faixa_legal', valor: registro.aliquota });
+      rejeitadas.push({
+        codigoIbge,
+        municipio,
+        itemCodigo,
+        motivo: 'fora_da_faixa_legal',
+        valor: registro.aliquota,
+      });
       continue;
     }
 
     const k = chave(codigoIbge, itemCodigo);
     if (porChave[k]) {
-      rejeitadas.push({ codigoIbge, municipio, itemCodigo, motivo: 'duplicado', valor: registro.aliquota });
+      rejeitadas.push({
+        codigoIbge,
+        municipio,
+        itemCodigo,
+        motivo: 'duplicado',
+        valor: registro.aliquota,
+      });
       continue;
     }
 
@@ -187,7 +223,7 @@ export const TABELA_ISS_VAZIA: TabelaIssMunicipal = { porChave: {}, porNome: {} 
 export function resolverAliquotaIss(
   tabela: TabelaIssMunicipal,
   identificacao: { codigoIbge?: number | null; municipio?: string | null },
-  itemCodigo?: string | null,
+  itemCodigo?: string | null
 ): AliquotaIssResolvida | null {
   const codigoIbge =
     identificacao.codigoIbge && Number.isInteger(Number(identificacao.codigoIbge))
@@ -199,7 +235,9 @@ export function resolverAliquotaIss(
   if (codigoIbge === null) return null;
 
   const item = itemCodigo?.toString().trim() || null;
-  return tabela.porChave[chave(codigoIbge, item)] ?? tabela.porChave[chave(codigoIbge, null)] ?? null;
+  return (
+    tabela.porChave[chave(codigoIbge, item)] ?? tabela.porChave[chave(codigoIbge, null)] ?? null
+  );
 }
 
 /* ------------------------------------------------------------------ */
@@ -225,7 +263,7 @@ export function obterTabelaIssEfetiva(): TabelaIssMunicipal {
 /** Atalho de runtime usado pelo motor/UI para sugerir a alíquota municipal. */
 export function sugerirAliquotaMunicipal(
   identificacao: { codigoIbge?: number | null; municipio?: string | null },
-  itemCodigo?: string | null,
+  itemCodigo?: string | null
 ): AliquotaIssResolvida | null {
   return resolverAliquotaIss(tabelaEfetiva, identificacao, itemCodigo);
 }
@@ -252,7 +290,7 @@ const TOLERANCIA = 5e-5;
  */
 export function compararComSugestaoIss(
   aliquotaInformada: number,
-  sugestao: AliquotaIssResolvida | null,
+  sugestao: AliquotaIssResolvida | null
 ): ComparacaoSugestaoIss {
   if (!sugestao) return { status: 'sem_catalogo', sugestao: null, diferencaPp: 0 };
   if (!Number.isFinite(aliquotaInformada)) {

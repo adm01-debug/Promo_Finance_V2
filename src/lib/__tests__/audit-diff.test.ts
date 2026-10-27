@@ -1,9 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import {
-  computeDiff,
-  extractCamposChave,
-  isEmptyDiff,
-} from '../audit-diff';
+import { computeDiff, extractCamposChave, isEmptyDiff } from '../audit-diff';
 
 describe('audit-diff', () => {
   describe('computeDiff', () => {
@@ -44,7 +40,7 @@ describe('audit-diff', () => {
     it('ordena com chaves técnicas ao final', () => {
       const d = computeDiff(
         { id: '1', descricao: 'A', valor: 1 },
-        { id: '2', descricao: 'B', valor: 2 },
+        { id: '2', descricao: 'B', valor: 2 }
       );
       const keys = d.changed.map((f) => f.key);
       expect(keys.indexOf('id')).toBe(keys.length - 1);

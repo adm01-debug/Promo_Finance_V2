@@ -23,19 +23,29 @@ export function useBlingProdutoMutations() {
 
   const criarProduto = useMutation({
     mutationFn: (data: Record<string, unknown>) => blingAction('criar_produto', { data }),
-    onSuccess: () => { toast.success('Produto criado no Bling'); queryClient.invalidateQueries({ queryKey: ['bling-produtos'] }); },
+    onSuccess: () => {
+      toast.success('Produto criado no Bling');
+      queryClient.invalidateQueries({ queryKey: ['bling-produtos'] });
+    },
     onError: (err: Error) => toast.error(`Erro: ${err.message}`),
   });
 
   const atualizarProduto = useMutation({
-    mutationFn: ({ id, data }: { id: string; data: Record<string, unknown> }) => blingAction('atualizar_produto', { id, data }),
-    onSuccess: () => { toast.success('Produto atualizado'); queryClient.invalidateQueries({ queryKey: ['bling-produtos'] }); },
+    mutationFn: ({ id, data }: { id: string; data: Record<string, unknown> }) =>
+      blingAction('atualizar_produto', { id, data }),
+    onSuccess: () => {
+      toast.success('Produto atualizado');
+      queryClient.invalidateQueries({ queryKey: ['bling-produtos'] });
+    },
     onError: (err: Error) => toast.error(`Erro: ${err.message}`),
   });
 
   const excluirProdutos = useMutation({
     mutationFn: (ids: string[]) => blingAction('excluir_produtos', { ids }),
-    onSuccess: () => { toast.success('Produto(s) excluído(s)'); queryClient.invalidateQueries({ queryKey: ['bling-produtos'] }); },
+    onSuccess: () => {
+      toast.success('Produto(s) excluído(s)');
+      queryClient.invalidateQueries({ queryKey: ['bling-produtos'] });
+    },
     onError: (err: Error) => toast.error(`Erro: ${err.message}`),
   });
 
@@ -54,8 +64,12 @@ export function useBlingVariacoesMutations() {
   const queryClient = useQueryClient();
 
   const criarVariacoes = useMutation({
-    mutationFn: ({ id, data }: { id: string; data: Record<string, unknown> }) => blingAction('criar_variacoes', { id, data }),
-    onSuccess: () => { toast.success('Variações criadas'); queryClient.invalidateQueries({ queryKey: ['bling-variacoes'] }); },
+    mutationFn: ({ id, data }: { id: string; data: Record<string, unknown> }) =>
+      blingAction('criar_variacoes', { id, data }),
+    onSuccess: () => {
+      toast.success('Variações criadas');
+      queryClient.invalidateQueries({ queryKey: ['bling-variacoes'] });
+    },
     onError: (err: Error) => toast.error(`Erro: ${err.message}`),
   });
 

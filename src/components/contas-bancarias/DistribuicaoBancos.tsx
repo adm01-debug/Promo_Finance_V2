@@ -15,12 +15,16 @@ interface Props {
 export function DistribuicaoBancos({ contas, saldoTotal, showSaldos, getBancoInfo }: Props) {
   if (contas.length === 0) return null;
 
-  const grupos = contas.reduce((acc, c) => {
-    if (!acc[c.banco]) acc[c.banco] = { total: 0, count: 0 };
-    acc[c.banco].total += c.saldo_atual;
-    acc[c.banco].count += 1;
-    return acc;
-  }, {} as Record<string, { total: number; count: number }>);
+  const grupos = contas.reduce(
+    (acc, c) => {
+      const banco = c.banco ?? 'Outros';
+      if (!acc[banco]) acc[banco] = { total: 0, count: 0 };
+      acc[banco].total += c.saldo_atual;
+      acc[banco].count += 1;
+      return acc;
+    },
+    {} as Record<string, { total: number; count: number }>
+  );
 
   return (
     <Card>
@@ -38,7 +42,7 @@ export function DistribuicaoBancos({ contas, saldoTotal, showSaldos, getBancoInf
             const percentual = saldoTotal > 0 ? (data.total / saldoTotal) * 100 : 0;
             return (
               <div key={banco} className="flex items-center gap-4">
-                <div className={cn("p-2 rounded-lg", info.color)}>
+                <div className={cn('p-2 rounded-lg', info.color)}>
                   <BancoIcon className="h-4 w-4 text-white" />
                 </div>
                 <div className="flex-1">

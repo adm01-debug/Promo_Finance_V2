@@ -114,7 +114,7 @@ function scoreValido(valor: unknown): number | null {
  */
 export function montarComparativoTemporal(
   series: readonly SerieEmpresa[],
-  ultimasN = 12,
+  ultimasN = 12
 ): ComparativoTemporal {
   const janela = Math.max(1, Math.trunc(Number.isFinite(ultimasN) ? ultimasN : 12));
 
@@ -186,7 +186,7 @@ export function montarComparativoTemporal(
   const valores = seriesGrafico.flatMap((s) =>
     competencias
       .map((c) => normalizadas.find((n) => n.chave === s.chave)?.porCompetencia.get(c))
-      .filter((v): v is number => v !== undefined),
+      .filter((v): v is number => v !== undefined)
   );
 
   const minimo = valores.length > 0 ? Math.min(...valores) : 0;

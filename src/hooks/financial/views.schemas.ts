@@ -106,11 +106,7 @@ const STRICT = import.meta.env.DEV || import.meta.env.MODE === 'test';
  * - Em produção: descarta linhas inválidas, loga um resumo agregado e segue.
  * - Em dev/test: lança um erro descritivo para forçar correção do contrato.
  */
-export function parseRows<T>(
-  schema: z.ZodType<T>,
-  rows: unknown[],
-  view: string,
-): T[] {
+export function parseRows<T>(schema: z.ZodType<T>, rows: unknown[], view: string): T[] {
   const valid: T[] = [];
   const errors: Array<{ index: number; issues: string }> = [];
 
@@ -138,7 +134,7 @@ export function parseRows<T>(
     if (STRICT) {
       throw new Error(
         `[views.schemas] Contrato divergente em "${view}": ${errors.length}/${rows.length} linhas inválidas. ` +
-          `Primeiras falhas: ${JSON.stringify(summary.firstErrors)}`,
+          `Primeiras falhas: ${JSON.stringify(summary.firstErrors)}`
       );
     }
     logger.error('[views.schemas] Linhas inválidas descartadas', summary);
@@ -148,9 +144,17 @@ export function parseRows<T>(
 }
 
 export function parseContasReceberRows(rows: unknown[]): ContasReceberPainelRow[] {
-  return parseRows(contasReceberPainelRowSchema, rows, 'vw_contas_receber_painel') as ContasReceberPainelRow[];
+  return parseRows(
+    contasReceberPainelRowSchema,
+    rows,
+    'vw_contas_receber_painel'
+  ) as ContasReceberPainelRow[];
 }
 
 export function parseContasPagarRows(rows: unknown[]): ContasPagarPainelRow[] {
-  return parseRows(contasPagarPainelRowSchema, rows, 'vw_contas_pagar_painel') as ContasPagarPainelRow[];
+  return parseRows(
+    contasPagarPainelRowSchema,
+    rows,
+    'vw_contas_pagar_painel'
+  ) as ContasPagarPainelRow[];
 }

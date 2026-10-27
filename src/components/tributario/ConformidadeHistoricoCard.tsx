@@ -53,7 +53,8 @@ export function ConformidadeHistoricoCard({
   className,
 }: ConformidadeHistoricoCardProps) {
   const dados = useMemo(() => [...mediaMovel(analise.pontos, 3)], [analise.pontos]);
-  const Icone = analise.direcao === 'alta' ? TrendingUp : analise.direcao === 'queda' ? TrendingDown : Minus;
+  const Icone =
+    analise.direcao === 'alta' ? TrendingUp : analise.direcao === 'queda' ? TrendingDown : Minus;
 
   return (
     <Card className={cn('border-border', className)}>
@@ -95,7 +96,12 @@ export function ConformidadeHistoricoCard({
           </div>
           <div>
             <p className="text-xs text-muted-foreground">Tendência</p>
-            <p className={cn('flex items-center gap-1 text-2xl font-semibold', DIRECAO_CLASSE[analise.direcao])}>
+            <p
+              className={cn(
+                'flex items-center gap-1 text-2xl font-semibold',
+                DIRECAO_CLASSE[analise.direcao]
+              )}
+            >
               <Icone className="h-5 w-5" aria-hidden="true" />
               {analise.delta > 0 ? '+' : ''}
               {analise.delta.toLocaleString('pt-BR', { minimumFractionDigits: 1 })}
@@ -181,18 +187,22 @@ export function ConformidadeHistoricoCard({
             <p className="text-muted-foreground">
               Melhor competência:{' '}
               <span className="font-medium text-success">
-                {analise.melhor.competencia} ({analise.melhor.score}) · {NIVEL_LABEL[analise.melhor.nivel]}
+                {analise.melhor.competencia} ({analise.melhor.score}) ·{' '}
+                {NIVEL_LABEL[analise.melhor.nivel]}
               </span>
             </p>
             <p className="text-muted-foreground">
               Pior competência:{' '}
               <span className="font-medium text-destructive">
-                {analise.pior.competencia} ({analise.pior.score}) · {NIVEL_LABEL[analise.pior.nivel]}
+                {analise.pior.competencia} ({analise.pior.score}) ·{' '}
+                {NIVEL_LABEL[analise.pior.nivel]}
               </span>
             </p>
             <p className="text-muted-foreground">
               Sequência perfeita:{' '}
-              <span className="font-medium text-foreground">{analise.sequenciaPerfeita} mês(es)</span>
+              <span className="font-medium text-foreground">
+                {analise.sequenciaPerfeita} mês(es)
+              </span>
             </p>
           </div>
         ) : null}

@@ -1,4 +1,4 @@
-import { Loader2, AlertCircle } from "lucide-react";
+import { Loader2, AlertCircle } from 'lucide-react';
 import {
   Dialog,
   DialogContent,
@@ -6,11 +6,11 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from "@/components/ui/dialog";
-import { Checkbox } from "@/components/ui/checkbox";
-import { Button } from "@/components/ui/button";
-import { RoleCheckboxGroup } from "./RoleCheckboxGroup";
-import type { AppRole, SavedFilterRow } from "@/hooks/useSavedFilters";
+} from '@/components/ui/dialog';
+import { Checkbox } from '@/components/ui/checkbox';
+import { Button } from '@/components/ui/button';
+import { RoleCheckboxGroup } from './RoleCheckboxGroup';
+import type { AppRole, SavedFilterRow } from '@/hooks/useSavedFilters';
 
 interface ShareFilterDialogProps<T> {
   target: SavedFilterRow<T> | null;
@@ -43,8 +43,8 @@ export function ShareFilterDialog<T>({
         <DialogHeader>
           <DialogTitle>Compartilhar &quot;{target?.name}&quot;</DialogTitle>
           <DialogDescription>
-            Outros usuários da mesma empresa que tiverem o papel selecionado
-            poderão visualizar e duplicar este preset.
+            Outros usuários da mesma empresa que tiverem o papel selecionado poderão visualizar e
+            duplicar este preset.
           </DialogDescription>
         </DialogHeader>
         <div className="space-y-3 py-2">
@@ -61,9 +61,7 @@ export function ShareFilterDialog<T>({
                   Selecione uma empresa atual para poder compartilhar.
                 </p>
               )}
-              <p className="text-xs text-muted-foreground">
-                Papéis com acesso (vazio = todos):
-              </p>
+              <p className="text-xs text-muted-foreground">Papéis com acesso (vazio = todos):</p>
               <RoleCheckboxGroup idPrefix="share-role" roles={roles} onChange={onRolesChange} />
             </div>
           )}
@@ -88,7 +86,7 @@ export function ShareFilterDialog<T>({
                 Salvando…
               </>
             ) : (
-              "Salvar"
+              'Salvar'
             )}
           </Button>
         </DialogFooter>

@@ -1,12 +1,6 @@
 import { type FieldValues, type UseFormReturn } from 'react-hook-form';
 import { FieldLabel } from '@/components/ui/info-tooltip';
-import {
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from '@/components/ui/form';
+import { FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Textarea } from '@/components/ui/textarea';
 import { Switch } from '@/components/ui/switch';
 
@@ -22,9 +16,16 @@ export function FornecedorObservacoes({ form }: FornecedorObservacoesProps) {
         name="observacoes"
         render={({ field }) => (
           <FormItem>
-            <FieldLabel label="Observações" tooltip="Notas internas sobre condições de pagamento, prazos, etc." />
+            <FieldLabel
+              label="Observações"
+              tooltip="Notas internas sobre condições de pagamento, prazos, etc."
+            />
             <FormControl>
-              <Textarea {...field} placeholder="Observações adicionais (opcional)" className="min-h-[60px]" />
+              <Textarea
+                {...field}
+                placeholder="Observações adicionais (opcional)"
+                className="min-h-[60px]"
+              />
             </FormControl>
             <FormMessage />
           </FormItem>

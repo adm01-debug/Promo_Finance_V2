@@ -22,7 +22,7 @@ describe('detectarDeliberacaoLucros', () => {
   it('é aplicável dentro da janela com saldo e sem ata registrada', () => {
     const r = detectarDeliberacaoLucros(
       { ...base, lucros_acumulados_ate_2025: 2_000_000 },
-      dentroDaJanela,
+      dentroDaJanela
     );
     expect(r.aplicavel).toBe(true);
     expect(r.economia_estimada).toBeCloseTo(2_000_000 * ALIQUOTA_IRRF_DIVIDENDOS, 2);
@@ -31,7 +31,7 @@ describe('detectarDeliberacaoLucros', () => {
   it('não é aplicável após 31/12/2025', () => {
     const r = detectarDeliberacaoLucros(
       { ...base, lucros_acumulados_ate_2025: 2_000_000 },
-      foraDaJanela,
+      foraDaJanela
     );
     expect(r.aplicavel).toBe(false);
     expect(r.economia_estimada).toBe(0);
@@ -41,7 +41,7 @@ describe('detectarDeliberacaoLucros', () => {
   it('não é aplicável quando a ata já foi registrada', () => {
     const r = detectarDeliberacaoLucros(
       { ...base, lucros_acumulados_ate_2025: 500_000, deliberacao_lucros_registrada: true },
-      dentroDaJanela,
+      dentroDaJanela
     );
     expect(r.aplicavel).toBe(false);
   });

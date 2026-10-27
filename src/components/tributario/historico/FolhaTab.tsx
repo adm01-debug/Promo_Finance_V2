@@ -6,8 +6,21 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '@/components/ui/table';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 import { Plus, Trash2, Upload, Download } from 'lucide-react';
 import { useHistoricoFinanceiro } from '@/hooks/useHistoricoFinanceiro';
 import { formatCurrency } from '@/lib/formatters';
@@ -32,7 +45,7 @@ export function FolhaTab({ empresaId }: { empresaId: string }) {
   });
 
   const adicionar = () => {
-    const total = novo.total_folha || (novo.salarios + novo.pro_labore + novo.encargos);
+    const total = novo.total_folha || novo.salarios + novo.pro_labore + novo.encargos;
     if (total <= 0) {
       toast.error('Informe valores da folha');
       return;
@@ -53,7 +66,9 @@ export function FolhaTab({ empresaId }: { empresaId: string }) {
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
           <div>
             <CardTitle className="text-base">Folha de Pagamento Mensal</CardTitle>
-            <CardDescription>{folha.length} meses cadastrados (necessário para Fator R)</CardDescription>
+            <CardDescription>
+              {folha.length} meses cadastrados (necessário para Fator R)
+            </CardDescription>
           </div>
           <div className="flex gap-2">
             <Button
@@ -87,7 +102,10 @@ export function FolhaTab({ empresaId }: { empresaId: string }) {
           </div>
           <div>
             <Label className="text-xs">Mês</Label>
-            <Select value={String(novo.mes)} onValueChange={(v) => setNovo({ ...novo, mes: Number(v) })}>
+            <Select
+              value={String(novo.mes)}
+              onValueChange={(v) => setNovo({ ...novo, mes: Number(v) })}
+            >
               <SelectTrigger>
                 <SelectValue />
               </SelectTrigger>
@@ -168,7 +186,9 @@ export function FolhaTab({ empresaId }: { empresaId: string }) {
                     <TableCell className="text-right">{formatCurrency(f.salarios)}</TableCell>
                     <TableCell className="text-right">{formatCurrency(f.pro_labore)}</TableCell>
                     <TableCell className="text-right">{formatCurrency(f.encargos)}</TableCell>
-                    <TableCell className="text-right font-medium">{formatCurrency(f.total_folha)}</TableCell>
+                    <TableCell className="text-right font-medium">
+                      {formatCurrency(f.total_folha)}
+                    </TableCell>
                     <TableCell className="text-right">{f.numero_funcionarios ?? 0}</TableCell>
                     <TableCell>
                       <Button

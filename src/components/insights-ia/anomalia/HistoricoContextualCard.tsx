@@ -1,7 +1,15 @@
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid } from "recharts";
-import { TrendingUp } from "lucide-react";
-import type { PontoHistorico } from "@/hooks/useAnomaliaDetalhe";
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import {
+  LineChart,
+  Line,
+  XAxis,
+  YAxis,
+  Tooltip,
+  ResponsiveContainer,
+  CartesianGrid,
+} from 'recharts';
+import { TrendingUp } from 'lucide-react';
+import type { PontoHistorico } from '@/hooks/useAnomaliaDetalhe';
 
 export function HistoricoContextualCard({ pontos }: { pontos: PontoHistorico[] }) {
   return (
@@ -25,12 +33,12 @@ export function HistoricoContextualCard({ pontos }: { pontos: PontoHistorico[] }
                 <YAxis stroke="hsl(var(--muted-foreground))" fontSize={10} />
                 <Tooltip
                   contentStyle={{
-                    background: "hsl(var(--card))",
-                    border: "1px solid hsl(var(--border))",
+                    background: 'hsl(var(--card))',
+                    border: '1px solid hsl(var(--border))',
                     borderRadius: 8,
                   }}
                   formatter={(v: number) =>
-                    v.toLocaleString("pt-BR", { style: "currency", currency: "BRL" })
+                    v.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })
                   }
                 />
                 <Line

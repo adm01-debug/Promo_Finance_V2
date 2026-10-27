@@ -96,7 +96,7 @@ export default function ContasPagar() {
               id: c.id,
               descricao: c.descricao,
               valor: c.valor,
-              fornecedor_nome: c.fornecedor_nome,
+              fornecedor_nome: c.fornecedor_nome ?? undefined,
             }))}
         />
         <ExportMenu
@@ -250,7 +250,13 @@ export default function ContasPagar() {
           />
 
           <RegistrarPagamentoDialog
-            conta={logic.selectedConta}
+            conta={
+              logic.selectedConta && {
+                ...logic.selectedConta,
+                fornecedor_nome: logic.selectedConta.fornecedor_nome ?? '',
+                status: logic.selectedConta.status ?? '',
+              }
+            }
             open={logic.pagamentoDialogOpen}
             onOpenChange={logic.setPagamentoDialogOpen}
           />
@@ -258,7 +264,13 @@ export default function ContasPagar() {
           <SolicitarAprovacaoDialog
             open={logic.aprovacaoDialogOpen}
             onOpenChange={logic.setAprovacaoDialogOpen}
-            conta={logic.contaParaAprovacao}
+            conta={
+              logic.contaParaAprovacao && {
+                ...logic.contaParaAprovacao,
+                fornecedor_nome: logic.contaParaAprovacao.fornecedor_nome ?? '',
+                numero_documento: logic.contaParaAprovacao.numero_documento ?? undefined,
+              }
+            }
             observacoes={logic.observacoesAprovacao}
             onObservacoesChange={logic.setObservacoesAprovacao}
             onConfirm={logic.handleConfirmarSolicitacao}

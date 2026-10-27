@@ -74,8 +74,12 @@ describe('Card Composition', () => {
           <CardTitle>Title</CardTitle>
           <CardDescription>Description</CardDescription>
         </CardHeader>
-        <CardContent><p>Content</p></CardContent>
-        <CardFooter><button>Action</button></CardFooter>
+        <CardContent>
+          <p>Content</p>
+        </CardContent>
+        <CardFooter>
+          <button>Action</button>
+        </CardFooter>
       </Card>
     );
     expect(screen.getByText('Title')).toBeInTheDocument();

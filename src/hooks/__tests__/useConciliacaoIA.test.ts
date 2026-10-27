@@ -30,10 +30,24 @@ vi.mock('../useHistoricoConciliacaoIA', () => ({
 
 describe('useConciliacaoIA', () => {
   const mockTransacoes = [
-    { id: 't1', data: new Date('2025-05-01'), descricao: 'Venda A', valor: 100, tipo: 'C' as const },
+    {
+      id: 't1',
+      data: new Date('2025-05-01'),
+      descricao: 'Venda A',
+      valor: 100,
+      tipo: 'C' as const,
+    },
   ];
   const mockLancamentos = [
-    { id: 'l1', tipo: 'receber' as const, entidade: 'Cliente A', descricao: 'Venda A', valor: 100, dataVencimento: new Date('2025-05-01'), numeroDocumento: '123' },
+    {
+      id: 'l1',
+      tipo: 'receber' as const,
+      entidade: 'Cliente A',
+      descricao: 'Venda A',
+      valor: 100,
+      dataVencimento: new Date('2025-05-01'),
+      numeroDocumento: '123',
+    },
   ];
 
   beforeEach(() => {
@@ -42,7 +56,7 @@ describe('useConciliacaoIA', () => {
 
   it('deve retornar erro se não houver dados para análise', async () => {
     const { result } = renderHook(() => useConciliacaoIA());
-    
+
     await act(async () => {
       const matches = await result.current.analisarConciliacao([], []);
       expect(matches.size).toBe(0);
@@ -62,7 +76,7 @@ describe('useConciliacaoIA', () => {
             score: 0.95,
             confianca: 'alta',
             motivos: [{ tipo: 'valor', peso: 1, detalhe: 'Valores idênticos' }],
-          }
+          },
         ],
         processedAt: new Date().toISOString(),
       },
@@ -74,8 +88,11 @@ describe('useConciliacaoIA', () => {
     const { result } = renderHook(() => useConciliacaoIA());
 
     await act(async () => {
-      const matches = await result.current.analisarConciliacao(mockTransacoes as any, mockLancamentos as any);
-      
+      const matches = await result.current.analisarConciliacao(
+        mockTransacoes as any,
+        mockLancamentos as any
+      );
+
       expect(matches.size).toBe(1);
       expect(matches.get('t1')?.[0].score).toBe(0.95);
       expect(matches.get('t1')?.[0].lancamento).toBeDefined();
@@ -93,7 +110,10 @@ describe('useConciliacaoIA', () => {
     const { result } = renderHook(() => useConciliacaoIA());
 
     await act(async () => {
-      const matches = await result.current.analisarConciliacao(mockTransacoes as any, mockLancamentos as any);
+      const matches = await result.current.analisarConciliacao(
+        mockTransacoes as any,
+        mockLancamentos as any
+      );
       expect(matches.size).toBe(0);
     });
 
@@ -102,7 +122,7 @@ describe('useConciliacaoIA', () => {
 
   it('deve limpar os matches corretamente', () => {
     const { result } = renderHook(() => useConciliacaoIA());
-    
+
     act(() => {
       result.current.clearMatches();
     });

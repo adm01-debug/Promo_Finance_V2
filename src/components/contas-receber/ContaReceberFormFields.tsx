@@ -2,8 +2,19 @@ import { useMemo, useState } from 'react';
 import { UseFormReturn } from 'react-hook-form';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
-  Building2, Calendar, FileText, Tag, CreditCard, Banknote,
-  QrCode, Wallet, Link2, User, RefreshCw, Layers, Search
+  Building2,
+  Calendar,
+  FileText,
+  Tag,
+  CreditCard,
+  Banknote,
+  QrCode,
+  Wallet,
+  Link2,
+  User,
+  RefreshCw,
+  Layers,
+  Search,
 } from 'lucide-react';
 import { CategorizacaoIABadge } from './CategorizacaoIABadge';
 import { FieldLabel } from '@/components/ui/info-tooltip';
@@ -13,7 +24,13 @@ import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 import { cn } from '@/lib/utils';
 
 interface ContaReceberFormValues {
@@ -86,9 +103,12 @@ const tipoCobrancaOptions = [
 ];
 
 const frequenciaOptions = [
-  { value: 'semanal', label: 'Semanal' }, { value: 'quinzenal', label: 'Quinzenal' },
-  { value: 'mensal', label: 'Mensal' }, { value: 'bimestral', label: 'Bimestral' },
-  { value: 'trimestral', label: 'Trimestral' }, { value: 'semestral', label: 'Semestral' },
+  { value: 'semanal', label: 'Semanal' },
+  { value: 'quinzenal', label: 'Quinzenal' },
+  { value: 'mensal', label: 'Mensal' },
+  { value: 'bimestral', label: 'Bimestral' },
+  { value: 'trimestral', label: 'Trimestral' },
+  { value: 'semestral', label: 'Semestral' },
   { value: 'anual', label: 'Anual' },
 ];
 
@@ -107,18 +127,28 @@ interface Props {
 }
 
 export function ContaReceberFormFields({
-  form, isEditing, clientes, empresas, centrosCusto, contasBancarias, vendedores,
-  showClienteSelect, setShowClienteSelect, onClienteSelect, categorias = [],
+  form,
+  isEditing,
+  clientes,
+  empresas,
+  centrosCusto,
+  contasBancarias,
+  vendedores,
+  showClienteSelect,
+  setShowClienteSelect,
+  onClienteSelect,
+  categorias = [],
 }: Props) {
   const [clienteSearch, setClienteSearch] = useState('');
 
   const filteredClientes = useMemo(() => {
     if (!clienteSearch) return clientes;
     const lower = clienteSearch.toLowerCase();
-    return clientes.filter((c) =>
-      c.razao_social.toLowerCase().includes(lower) ||
-      (c.nome_fantasia && c.nome_fantasia.toLowerCase().includes(lower)) ||
-      (c.cnpj_cpf && (c.cnpj_cpf as string).includes(clienteSearch))
+    return clientes.filter(
+      (c) =>
+        c.razao_social.toLowerCase().includes(lower) ||
+        (c.nome_fantasia && c.nome_fantasia.toLowerCase().includes(lower)) ||
+        (c.cnpj_cpf && (c.cnpj_cpf as string).includes(clienteSearch))
     );
   }, [clientes, clienteSearch]);
 
@@ -135,28 +165,58 @@ export function ContaReceberFormFields({
       <div className="space-y-3">
         <div className="flex items-center justify-between">
           <FormLabel className="text-sm font-medium">Cliente</FormLabel>
-          <Button type="button" variant="ghost" size="sm" onClick={() => setShowClienteSelect(!showClienteSelect)} className="text-xs h-7">
+          <Button
+            type="button"
+            variant="ghost"
+            size="sm"
+            onClick={() => setShowClienteSelect(!showClienteSelect)}
+            className="text-xs h-7"
+          >
             {showClienteSelect ? 'Digitar manualmente' : 'Selecionar cadastrado'}
           </Button>
         </div>
         <AnimatePresence mode="wait">
           {showClienteSelect ? (
-            <motion.div key="select" initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }} className="space-y-2">
+            <motion.div
+              key="select"
+              initial={{ opacity: 0, y: -10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -10 }}
+              className="space-y-2"
+            >
               <div className="relative group">
                 <div className="absolute inset-0 bg-primary/5 rounded-xl -m-0.5 opacity-0 group-focus-within:opacity-100 transition-opacity blur-sm pointer-events-none" />
                 <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground transition-colors group-focus-within:text-primary" />
-                <Input placeholder="Buscar por nome, fantasia ou CNPJ..." value={clienteSearch} onChange={e => setClienteSearch(e.target.value)} className="pl-12 h-12 rounded-xl bg-card/5 border-white/10" />
+                <Input
+                  placeholder="Buscar por nome, fantasia ou CNPJ..."
+                  value={clienteSearch}
+                  onChange={(e) => setClienteSearch(e.target.value)}
+                  className="pl-12 h-12 rounded-xl bg-card/5 border-white/10"
+                />
               </div>
               <Select onValueChange={onClienteSelect} value={form.watch('cliente_id')}>
-                <SelectTrigger><SelectValue placeholder="Selecione um cliente" /></SelectTrigger>
+                <SelectTrigger>
+                  <SelectValue placeholder="Selecione um cliente" />
+                </SelectTrigger>
                 <SelectContent>
                   {filteredClientes.map((c) => (
                     <SelectItem key={c.id} value={c.id}>
                       <div className="flex items-center gap-2">
                         <span>{c.razao_social}</span>
-                        {c.nome_fantasia && <span className="text-xs text-muted-foreground">({c.nome_fantasia})</span>}
+                        {c.nome_fantasia && (
+                          <span className="text-xs text-muted-foreground">({c.nome_fantasia})</span>
+                        )}
                         {c.score && (
-                          <span className={cn("text-xs font-medium", c.score >= 800 ? "text-success" : c.score >= 600 ? "text-warning" : "text-destructive")}>
+                          <span
+                            className={cn(
+                              'text-xs font-medium',
+                              c.score >= 800
+                                ? 'text-success'
+                                : c.score >= 600
+                                  ? 'text-warning'
+                                  : 'text-destructive'
+                            )}
+                          >
                             Score: {c.score}
                           </span>
                         )}
@@ -167,12 +227,31 @@ export function ContaReceberFormFields({
               </Select>
             </motion.div>
           ) : (
-            <motion.div key="input" initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }}>
-              <FormField control={form.control} name="cliente_nome" render={({ field }) => (
-                <FormItem><FormControl>
-                  <div className="relative group"><User className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground group-focus-within:text-primary transition-colors" /><Input {...field} placeholder="Nome do cliente" className="pl-12 h-12 rounded-xl bg-card/5 border-white/10" /></div>
-                </FormControl><FormMessage /></FormItem>
-              )} />
+            <motion.div
+              key="input"
+              initial={{ opacity: 0, y: -10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -10 }}
+            >
+              <FormField
+                control={form.control}
+                name="cliente_nome"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormControl>
+                      <div className="relative group">
+                        <User className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground group-focus-within:text-primary transition-colors" />
+                        <Input
+                          {...field}
+                          placeholder="Nome do cliente"
+                          className="pl-12 h-12 rounded-xl bg-card/5 border-white/10"
+                        />
+                      </div>
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
             </motion.div>
           )}
         </AnimatePresence>
@@ -180,125 +259,263 @@ export function ContaReceberFormFields({
 
       {/* Empresa e Centro de Custo */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <FormField control={form.control} name="empresa_id" render={({ field }) => (
-          <FormItem>
-            <FieldLabel label="Empresa" required tooltip="Empresa que receberá este valor" />
-            <Select onValueChange={field.onChange} value={field.value}>
-              <FormControl><SelectTrigger><SelectValue placeholder="Selecione a empresa" /></SelectTrigger></FormControl>
-              <SelectContent>{empresas.map((e) => <SelectItem key={e.id} value={e.id}>{e.nome_fantasia || e.razao_social}</SelectItem>)}</SelectContent>
-            </Select><FormMessage />
-          </FormItem>
-        )} />
-        <FormField control={form.control} name="centro_custo_id" render={({ field }) => (
-          <FormItem>
-            <FieldLabel label="Centro de Custo" tooltip="Classificação para controle de receitas por área" />
-            <Select onValueChange={field.onChange} value={field.value}>
-              <FormControl><SelectTrigger><SelectValue placeholder="Selecione (opcional)" /></SelectTrigger></FormControl>
-              <SelectContent>{centrosCusto.map((cc) => <SelectItem key={cc.id} value={cc.id}>{cc.codigo} - {cc.nome}</SelectItem>)}</SelectContent>
-            </Select><FormMessage />
-          </FormItem>
-        )} />
+        <FormField
+          control={form.control}
+          name="empresa_id"
+          render={({ field }) => (
+            <FormItem>
+              <FieldLabel label="Empresa" required tooltip="Empresa que receberá este valor" />
+              <Select onValueChange={field.onChange} value={field.value}>
+                <FormControl>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Selecione a empresa" />
+                  </SelectTrigger>
+                </FormControl>
+                <SelectContent>
+                  {empresas.map((e) => (
+                    <SelectItem key={e.id} value={e.id}>
+                      {e.nome_fantasia || e.razao_social}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <FormField
+          control={form.control}
+          name="centro_custo_id"
+          render={({ field }) => (
+            <FormItem>
+              <FieldLabel
+                label="Centro de Custo"
+                tooltip="Classificação para controle de receitas por área"
+              />
+              <Select onValueChange={field.onChange} value={field.value}>
+                <FormControl>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Selecione (opcional)" />
+                  </SelectTrigger>
+                </FormControl>
+                <SelectContent>
+                  {centrosCusto.map((cc) => (
+                    <SelectItem key={cc.id} value={cc.id}>
+                      {cc.codigo} - {cc.nome}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
       </div>
-      
+
       {/* Categoria */}
-      <FormField control={form.control} name="categoria_id" render={({ field }) => (
-        <FormItem>
-          <div className="flex items-center justify-between">
-            <FieldLabel label="Categoria" tooltip="Classificação da receita para relatórios gerenciais" />
-            <CategorizacaoIABadge
-              despesa={{
-                descricao: form.watch('descricao') || '',
-                valor: form.watch('valor') || 0,
-                cliente_nome: form.watch('cliente_nome') || '',
-                data_vencimento: form.watch('data_vencimento') || '',
-              }}
-              categoriaAtual={categorias.find(c => c.id === field.value)?.nome}
-              onAplicar={(cat) => {
-                const matched = categorias.find(c => c.nome.toLowerCase() === cat.categoria.toLowerCase());
-                if (matched) form.setValue('categoria_id', matched.id);
-              }}
-            />
-          </div>
-          <Select onValueChange={field.onChange} value={field.value}>
-            <FormControl><SelectTrigger><SelectValue placeholder="Selecione a categoria" /></SelectTrigger></FormControl>
-            <SelectContent>
-              {categorias.map((c) => (
-                <SelectItem key={c.id} value={c.id}>{c.nome}</SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-          <FormMessage />
-        </FormItem>
-      )} />
+      <FormField
+        control={form.control}
+        name="categoria_id"
+        render={({ field }) => (
+          <FormItem>
+            <div className="flex items-center justify-between">
+              <FieldLabel
+                label="Categoria"
+                tooltip="Classificação da receita para relatórios gerenciais"
+              />
+              <CategorizacaoIABadge
+                despesa={{
+                  descricao: form.watch('descricao') || '',
+                  valor: form.watch('valor') || 0,
+                  cliente_nome: form.watch('cliente_nome') || '',
+                  data_vencimento: form.watch('data_vencimento') || '',
+                }}
+                categoriaAtual={categorias.find((c) => c.id === field.value)?.nome}
+                onAplicar={(cat) => {
+                  const matched = categorias.find(
+                    (c) => c.nome.toLowerCase() === cat.categoria.toLowerCase()
+                  );
+                  if (matched) form.setValue('categoria_id', matched.id);
+                }}
+              />
+            </div>
+            <Select onValueChange={field.onChange} value={field.value}>
+              <FormControl>
+                <SelectTrigger>
+                  <SelectValue placeholder="Selecione a categoria" />
+                </SelectTrigger>
+              </FormControl>
+              <SelectContent>
+                {categorias.map((c) => (
+                  <SelectItem key={c.id} value={c.id}>
+                    {c.nome}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            <FormMessage />
+          </FormItem>
+        )}
+      />
 
       {/* Vendedor */}
       {vendedores.length > 0 && (
-        <FormField control={form.control} name="vendedor_id" render={({ field }) => (
-          <FormItem>
-            <FieldLabel label="Vendedor" tooltip="Vendedor responsável por esta conta" />
-            <Select onValueChange={field.onChange} value={field.value || ''}>
-              <FormControl><SelectTrigger><SelectValue placeholder="Selecione um vendedor" /></SelectTrigger></FormControl>
-              <SelectContent>{vendedores.map((v) => <SelectItem key={v.id} value={v.id}>{v.nome}</SelectItem>)}</SelectContent>
-            </Select><FormMessage />
-          </FormItem>
-        )} />
+        <FormField
+          control={form.control}
+          name="vendedor_id"
+          render={({ field }) => (
+            <FormItem>
+              <FieldLabel label="Vendedor" tooltip="Vendedor responsável por esta conta" />
+              <Select onValueChange={field.onChange} value={field.value || ''}>
+                <FormControl>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Selecione um vendedor" />
+                  </SelectTrigger>
+                </FormControl>
+                <SelectContent>
+                  {vendedores.map((v) => (
+                    <SelectItem key={v.id} value={v.id}>
+                      {v.nome}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
       )}
 
       {/* Descrição */}
-      <FormField control={form.control} name="descricao" render={({ field }) => (
-        <FormItem>
-          <FieldLabel label="Descrição" required tooltip="Detalhamento do recebível" />
-          <FormControl>
-            <div className="relative group"><FileText className="absolute left-4 top-4 h-4 w-4 text-muted-foreground group-focus-within:text-primary transition-colors" /><Textarea {...field} placeholder="Descrição do recebível" className="pl-12 min-h-[100px] rounded-xl bg-card/5 border-white/10 p-4" /></div>
-          </FormControl><FormMessage />
-        </FormItem>
-      )} />
+      <FormField
+        control={form.control}
+        name="descricao"
+        render={({ field }) => (
+          <FormItem>
+            <FieldLabel label="Descrição" required tooltip="Detalhamento do recebível" />
+            <FormControl>
+              <div className="relative group">
+                <FileText className="absolute left-4 top-4 h-4 w-4 text-muted-foreground group-focus-within:text-primary transition-colors" />
+                <Textarea
+                  {...field}
+                  placeholder="Descrição do recebível"
+                  className="pl-12 min-h-[100px] rounded-xl bg-card/5 border-white/10 p-4"
+                />
+              </div>
+            </FormControl>
+            <FormMessage />
+          </FormItem>
+        )}
+      />
 
       {/* Valor e Tipo de Cobrança */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <FormField control={form.control} name="valor" render={({ field }) => (
-          <FormItem>
-            <FieldLabel label="Valor" required tooltip="Valor a receber em reais" />
-            <FormControl>
-              <div className="relative group">
-                <span className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground group-focus-within:text-primary transition-colors text-sm font-bold">R$</span>
-                <Input type="number" step="0.01" min="0" {...field} onChange={(e) => field.onChange(parseFloat(e.target.value) || 0)} placeholder="0,00" className="pl-12 h-12 rounded-xl bg-card/5 border-white/10 font-bold" />
+        <FormField
+          control={form.control}
+          name="valor"
+          render={({ field }) => (
+            <FormItem>
+              <FieldLabel label="Valor" required tooltip="Valor a receber em reais" />
+              <FormControl>
+                <div className="relative group">
+                  <span className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground group-focus-within:text-primary transition-colors text-sm font-bold">
+                    R$
+                  </span>
+                  <Input
+                    type="number"
+                    step="0.01"
+                    min="0"
+                    {...field}
+                    onChange={(e) => field.onChange(parseFloat(e.target.value) || 0)}
+                    placeholder="0,00"
+                    className="pl-12 h-12 rounded-xl bg-card/5 border-white/10 font-bold"
+                  />
+                </div>
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <FormField
+          control={form.control}
+          name="tipo_cobranca"
+          render={({ field }) => (
+            <FormItem>
+              <FieldLabel label="Tipo de Cobrança" tooltip="Forma como o cliente irá pagar" />
+              <div className="flex gap-2 flex-wrap">
+                {tipoCobrancaOptions.map((option) => {
+                  const Icon = option.icon;
+                  const isSelected = field.value === option.value;
+                  return (
+                    <Button
+                      key={option.value}
+                      type="button"
+                      variant={isSelected ? 'default' : 'outline'}
+                      size="sm"
+                      onClick={() => field.onChange(option.value)}
+                      className={cn(
+                        'h-10 px-4 rounded-xl gap-2 transition-all border-white/10',
+                        isSelected
+                          ? 'bg-primary text-primary-foreground shadow-lg shadow-primary/20'
+                          : 'bg-card/5 hover:bg-card/10 text-muted-foreground'
+                      )}
+                    >
+                      <Icon className="h-4 w-4" />{' '}
+                      <span className="text-[10px] font-black uppercase tracking-widest">
+                        {option.label}
+                      </span>
+                    </Button>
+                  );
+                })}
               </div>
-            </FormControl><FormMessage />
-          </FormItem>
-        )} />
-        <FormField control={form.control} name="tipo_cobranca" render={({ field }) => (
-          <FormItem>
-            <FieldLabel label="Tipo de Cobrança" tooltip="Forma como o cliente irá pagar" />
-            <div className="flex gap-2 flex-wrap">
-              {tipoCobrancaOptions.map((option) => {
-                const Icon = option.icon;
-                const isSelected = field.value === option.value;
-                return (
-                  <Button key={option.value} type="button" variant={isSelected ? 'default' : 'outline'} size="sm"
-                    onClick={() => field.onChange(option.value)}
-                    className={cn('h-10 px-4 rounded-xl gap-2 transition-all border-white/10', isSelected ? 'bg-primary text-primary-foreground shadow-lg shadow-primary/20' : 'bg-card/5 hover:bg-card/10 text-muted-foreground')}>
-                    <Icon className="h-4 w-4" /> <span className="text-[10px] font-black uppercase tracking-widest">{option.label}</span>
-                  </Button>
-                );
-              })}
-            </div><FormMessage />
-          </FormItem>
-        )} />
+              <FormMessage />
+            </FormItem>
+          )}
+        />
       </div>
 
       {/* Datas */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <FormField control={form.control} name="data_vencimento" render={({ field }) => (
-          <FormItem><FormLabel>Data de Vencimento *</FormLabel><FormControl>
-            <div className="relative group"><Calendar className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground group-focus-within:text-primary transition-colors" /><Input type="date" {...field} className="pl-12 h-12 rounded-xl bg-card/5 border-white/10" /></div>
-          </FormControl><FormMessage /></FormItem>
-        )} />
-        <FormField control={form.control} name="data_emissao" render={({ field }) => (
-          <FormItem><FormLabel>Data de Emissão</FormLabel><FormControl>
-            <div className="relative group"><Calendar className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground group-focus-within:text-primary transition-colors" /><Input type="date" {...field} className="pl-12 h-12 rounded-xl bg-card/5 border-white/10" /></div>
-          </FormControl><FormMessage /></FormItem>
-        )} />
+        <FormField
+          control={form.control}
+          name="data_vencimento"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Data de Vencimento *</FormLabel>
+              <FormControl>
+                <div className="relative group">
+                  <Calendar className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground group-focus-within:text-primary transition-colors" />
+                  <Input
+                    type="date"
+                    {...field}
+                    className="pl-12 h-12 rounded-xl bg-card/5 border-white/10"
+                  />
+                </div>
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <FormField
+          control={form.control}
+          name="data_emissao"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Data de Emissão</FormLabel>
+              <FormControl>
+                <div className="relative group">
+                  <Calendar className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground group-focus-within:text-primary transition-colors" />
+                  <Input
+                    type="date"
+                    {...field}
+                    className="pl-12 h-12 rounded-xl bg-card/5 border-white/10"
+                  />
+                </div>
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
       </div>
 
       {/* Recorrência + Parcelamento */}
@@ -306,31 +523,84 @@ export function ContaReceberFormFields({
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 p-4 rounded-lg border bg-muted/20">
           <div className="space-y-3">
             <div className="flex items-center gap-3">
-              <Switch checked={isRecorrente} onCheckedChange={v => { form.setValue('recorrente', v); if (v) form.setValue('parcelado', false); }} />
-              <Label className="flex items-center gap-2 text-sm cursor-pointer"><RefreshCw className="h-4 w-4 text-primary" /> Recorrente</Label>
+              <Switch
+                checked={isRecorrente}
+                onCheckedChange={(v) => {
+                  form.setValue('recorrente', v);
+                  if (v) form.setValue('parcelado', false);
+                }}
+              />
+              <Label className="flex items-center gap-2 text-sm cursor-pointer">
+                <RefreshCw className="h-4 w-4 text-primary" /> Recorrente
+              </Label>
             </div>
             {isRecorrente && (
-              <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }}>
-                <FormField control={form.control} name="frequencia_recorrencia" render={({ field }) => (
-                  <Select onValueChange={field.onChange} value={field.value || 'mensal'}>
-                    <SelectTrigger className="w-full"><SelectValue placeholder="Frequência" /></SelectTrigger>
-                    <SelectContent>{frequenciaOptions.map(f => <SelectItem key={f.value} value={f.value}>{f.label}</SelectItem>)}</SelectContent>
-                  </Select>
-                )} />
+              <motion.div
+                initial={{ opacity: 0, height: 0 }}
+                animate={{ opacity: 1, height: 'auto' }}
+              >
+                <FormField
+                  control={form.control}
+                  name="frequencia_recorrencia"
+                  render={({ field }) => (
+                    <Select onValueChange={field.onChange} value={field.value || 'mensal'}>
+                      <SelectTrigger className="w-full">
+                        <SelectValue placeholder="Frequência" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {frequenciaOptions.map((f) => (
+                          <SelectItem key={f.value} value={f.value}>
+                            {f.label}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  )}
+                />
               </motion.div>
             )}
           </div>
           <div className="space-y-3">
             <div className="flex items-center gap-3">
-              <Switch checked={isParcelado} onCheckedChange={v => { form.setValue('parcelado', v); if (v) form.setValue('recorrente', false); }} />
-              <Label className="flex items-center gap-2 text-sm cursor-pointer"><Layers className="h-4 w-4 text-secondary" /> Parcelar</Label>
+              <Switch
+                checked={isParcelado}
+                onCheckedChange={(v) => {
+                  form.setValue('parcelado', v);
+                  if (v) form.setValue('recorrente', false);
+                }}
+              />
+              <Label className="flex items-center gap-2 text-sm cursor-pointer">
+                <Layers className="h-4 w-4 text-secondary" /> Parcelar
+              </Label>
             </div>
             {isParcelado && (
-              <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} className="space-y-2">
-                <FormField control={form.control} name="numero_parcelas" render={({ field }) => (
-                  <Input type="number" min={2} max={120} value={field.value} onChange={e => field.onChange(parseInt(e.target.value) || 2)} placeholder="Nº parcelas" />
-                )} />
-                {(valorTotal ?? 0) > 0 && <p className="text-xs text-muted-foreground">{numParcelas}x de <span className="font-semibold text-foreground">R$ {valorParcela.toFixed(2)}</span></p>}
+              <motion.div
+                initial={{ opacity: 0, height: 0 }}
+                animate={{ opacity: 1, height: 'auto' }}
+                className="space-y-2"
+              >
+                <FormField
+                  control={form.control}
+                  name="numero_parcelas"
+                  render={({ field }) => (
+                    <Input
+                      type="number"
+                      min={2}
+                      max={120}
+                      value={field.value}
+                      onChange={(e) => field.onChange(parseInt(e.target.value) || 2)}
+                      placeholder="Nº parcelas"
+                    />
+                  )}
+                />
+                {(valorTotal ?? 0) > 0 && (
+                  <p className="text-xs text-muted-foreground">
+                    {numParcelas}x de{' '}
+                    <span className="font-semibold text-foreground">
+                      R$ {valorParcela.toFixed(2)}
+                    </span>
+                  </p>
+                )}
               </motion.div>
             )}
           </div>
@@ -339,50 +609,142 @@ export function ContaReceberFormFields({
 
       {/* Conta Bancária e Documento */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <FormField control={form.control} name="conta_bancaria_id" render={({ field }) => (
-          <FormItem><FormLabel>Conta Bancária</FormLabel>
-            <Select onValueChange={field.onChange} value={field.value}>
-              <FormControl><SelectTrigger><SelectValue placeholder="Selecione (opcional)" /></SelectTrigger></FormControl>
-              <SelectContent>{contasBancarias.map((cb) => <SelectItem key={cb.id} value={cb.id}>{cb.banco} - Ag: {cb.agencia} / CC: {cb.conta}</SelectItem>)}</SelectContent>
-            </Select><FormMessage />
-          </FormItem>
-        )} />
-        <FormField control={form.control} name="numero_documento" render={({ field }) => (
-          <FormItem><FormLabel>Número do Documento</FormLabel><FormControl>
-            <div className="relative group"><Tag className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground group-focus-within:text-primary transition-colors" /><Input {...field} placeholder="NF, Fatura, etc." className="pl-12 h-12 rounded-xl bg-card/5 border-white/10" /></div>
-          </FormControl><FormMessage /></FormItem>
-        )} />
+        <FormField
+          control={form.control}
+          name="conta_bancaria_id"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Conta Bancária</FormLabel>
+              <Select onValueChange={field.onChange} value={field.value}>
+                <FormControl>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Selecione (opcional)" />
+                  </SelectTrigger>
+                </FormControl>
+                <SelectContent>
+                  {contasBancarias.map((cb) => (
+                    <SelectItem key={cb.id} value={cb.id}>
+                      {cb.banco} - Ag: {cb.agencia} / CC: {cb.conta}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <FormField
+          control={form.control}
+          name="numero_documento"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Número do Documento</FormLabel>
+              <FormControl>
+                <div className="relative group">
+                  <Tag className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground group-focus-within:text-primary transition-colors" />
+                  <Input
+                    {...field}
+                    placeholder="NF, Fatura, etc."
+                    className="pl-12 h-12 rounded-xl bg-card/5 border-white/10"
+                  />
+                </div>
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
       </div>
 
       {/* Campos condicionais */}
       <AnimatePresence mode="wait">
         {tipoCobranca === 'boleto' && (
-          <motion.div key="boleto-fields" initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} exit={{ opacity: 0, height: 0 }} className="space-y-4">
-            <FormField control={form.control} name="codigo_barras" render={({ field }) => (
-              <FormItem><FormLabel>Linha Digitável</FormLabel><FormControl><Input {...field} placeholder="Digite a linha digitável" /></FormControl><FormMessage /></FormItem>
-            )} />
-            <FormField control={form.control} name="link_boleto" render={({ field }) => (
-              <FormItem><FormLabel>Link do Boleto</FormLabel><FormControl>
-                <div className="relative"><Link2 className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" /><Input {...field} placeholder="https://..." className="pl-10" /></div>
-              </FormControl><FormMessage /></FormItem>
-            )} />
+          <motion.div
+            key="boleto-fields"
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: 'auto' }}
+            exit={{ opacity: 0, height: 0 }}
+            className="space-y-4"
+          >
+            <FormField
+              control={form.control}
+              name="codigo_barras"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Linha Digitável</FormLabel>
+                  <FormControl>
+                    <Input {...field} placeholder="Digite a linha digitável" />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="link_boleto"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Link do Boleto</FormLabel>
+                  <FormControl>
+                    <div className="relative">
+                      <Link2 className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                      <Input {...field} placeholder="https://..." className="pl-10" />
+                    </div>
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
           </motion.div>
         )}
         {tipoCobranca === 'pix' && (
-          <motion.div key="pix-fields" initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} exit={{ opacity: 0, height: 0 }}>
-            <FormField control={form.control} name="chave_pix" render={({ field }) => (
-              <FormItem><FormLabel>Chave PIX</FormLabel><FormControl>
-                <div className="relative"><QrCode className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" /><Input {...field} placeholder="CPF, CNPJ, E-mail, Telefone ou Chave" className="pl-10" /></div>
-              </FormControl><FormMessage /></FormItem>
-            )} />
+          <motion.div
+            key="pix-fields"
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: 'auto' }}
+            exit={{ opacity: 0, height: 0 }}
+          >
+            <FormField
+              control={form.control}
+              name="chave_pix"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Chave PIX</FormLabel>
+                  <FormControl>
+                    <div className="relative">
+                      <QrCode className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                      <Input
+                        {...field}
+                        placeholder="CPF, CNPJ, E-mail, Telefone ou Chave"
+                        className="pl-10"
+                      />
+                    </div>
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
           </motion.div>
         )}
       </AnimatePresence>
 
       {/* Observações */}
-      <FormField control={form.control} name="observacoes" render={({ field }) => (
-        <FormItem><FormLabel>Observações</FormLabel><FormControl><Textarea {...field} placeholder="Observações adicionais (opcional)" className="min-h-[60px]" /></FormControl><FormMessage /></FormItem>
-      )} />
+      <FormField
+        control={form.control}
+        name="observacoes"
+        render={({ field }) => (
+          <FormItem>
+            <FormLabel>Observações</FormLabel>
+            <FormControl>
+              <Textarea
+                {...field}
+                placeholder="Observações adicionais (opcional)"
+                className="min-h-[60px]"
+              />
+            </FormControl>
+            <FormMessage />
+          </FormItem>
+        )}
+      />
     </>
   );
 }

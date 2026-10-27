@@ -1,7 +1,13 @@
 import { describe, it, expect } from 'vitest';
 import {
-  ANEXO_I, ANEXO_II, ANEXO_III, ANEXO_IV, ANEXO_V,
-  obterAnexo, identificarFaixa, LIMITE_SIMPLES_NACIONAL,
+  ANEXO_I,
+  ANEXO_II,
+  ANEXO_III,
+  ANEXO_IV,
+  ANEXO_V,
+  obterAnexo,
+  identificarFaixa,
+  LIMITE_SIMPLES_NACIONAL,
 } from '../aliquotas-simples';
 import type { AnexoSimples } from '../types';
 
@@ -11,7 +17,11 @@ describe('aliquotas-simples', () => {
   });
 
   it.each<[AnexoSimples, typeof ANEXO_I]>([
-    ['I', ANEXO_I], ['II', ANEXO_II], ['III', ANEXO_III], ['IV', ANEXO_IV], ['V', ANEXO_V],
+    ['I', ANEXO_I],
+    ['II', ANEXO_II],
+    ['III', ANEXO_III],
+    ['IV', ANEXO_IV],
+    ['V', ANEXO_V],
   ])('anexo %s tem 6 faixas contíguas terminando em 4.800.000', (nome, tabela) => {
     expect(tabela).toHaveLength(6);
     expect(tabela[0].rbt12_de).toBe(0);

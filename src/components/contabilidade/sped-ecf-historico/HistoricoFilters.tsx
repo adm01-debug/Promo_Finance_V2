@@ -1,7 +1,13 @@
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 import { Filter, Search, X } from 'lucide-react';
 
 export type StatusFilter = 'all' | 'liberada' | 'bloqueada' | 'transmitida';
@@ -22,8 +28,17 @@ interface Props {
 }
 
 export function HistoricoFilters({
-  anosDisponiveis, searchAno, setSearchAno, statusFilter, setStatusFilter,
-  validacaoFilter, setValidacaoFilter, filtrosAtivos, totalFiltrados, totalHistorico, onLimpar,
+  anosDisponiveis,
+  searchAno,
+  setSearchAno,
+  statusFilter,
+  setStatusFilter,
+  validacaoFilter,
+  setValidacaoFilter,
+  filtrosAtivos,
+  totalFiltrados,
+  totalHistorico,
+  onLimpar,
 }: Props) {
   return (
     <div
@@ -32,11 +47,17 @@ export function HistoricoFilters({
       className="flex flex-wrap items-end gap-2 rounded-lg border border-border/60 bg-muted/30 p-3"
     >
       <div className="flex flex-col gap-1">
-        <label htmlFor="ecf-hist-ano" className="text-[10px] uppercase tracking-wide text-muted-foreground font-medium">
+        <label
+          htmlFor="ecf-hist-ano"
+          className="text-[10px] uppercase tracking-wide text-muted-foreground font-medium"
+        >
           Ano-calendário
         </label>
         <div className="relative">
-          <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground" aria-hidden="true" />
+          <Search
+            className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground"
+            aria-hidden="true"
+          />
           <Input
             id="ecf-hist-ano"
             list="ecf-hist-ano-options"
@@ -47,15 +68,24 @@ export function HistoricoFilters({
             className="h-8 w-[140px] pl-8 text-xs"
           />
           <datalist id="ecf-hist-ano-options">
-            {anosDisponiveis.map((a) => <option key={a} value={a} />)}
+            {anosDisponiveis.map((a) => (
+              <option key={a} value={a} />
+            ))}
           </datalist>
         </div>
       </div>
 
       <div className="flex flex-col gap-1">
-        <label htmlFor="ecf-hist-status" className="text-[10px] uppercase tracking-wide text-muted-foreground font-medium">Status</label>
+        <label
+          htmlFor="ecf-hist-status"
+          className="text-[10px] uppercase tracking-wide text-muted-foreground font-medium"
+        >
+          Status
+        </label>
         <Select value={statusFilter} onValueChange={(v) => setStatusFilter(v as StatusFilter)}>
-          <SelectTrigger id="ecf-hist-status" className="h-8 w-[160px] text-xs"><SelectValue /></SelectTrigger>
+          <SelectTrigger id="ecf-hist-status" className="h-8 w-[160px] text-xs">
+            <SelectValue />
+          </SelectTrigger>
           <SelectContent>
             <SelectItem value="all">Todos os status</SelectItem>
             <SelectItem value="liberada">Liberada</SelectItem>
@@ -66,9 +96,19 @@ export function HistoricoFilters({
       </div>
 
       <div className="flex flex-col gap-1">
-        <label htmlFor="ecf-hist-validacao" className="text-[10px] uppercase tracking-wide text-muted-foreground font-medium">Validações</label>
-        <Select value={validacaoFilter} onValueChange={(v) => setValidacaoFilter(v as ValidacaoFilter)}>
-          <SelectTrigger id="ecf-hist-validacao" className="h-8 w-[180px] text-xs"><SelectValue /></SelectTrigger>
+        <label
+          htmlFor="ecf-hist-validacao"
+          className="text-[10px] uppercase tracking-wide text-muted-foreground font-medium"
+        >
+          Validações
+        </label>
+        <Select
+          value={validacaoFilter}
+          onValueChange={(v) => setValidacaoFilter(v as ValidacaoFilter)}
+        >
+          <SelectTrigger id="ecf-hist-validacao" className="h-8 w-[180px] text-xs">
+            <SelectValue />
+          </SelectTrigger>
           <SelectContent>
             <SelectItem value="all">Todas</SelectItem>
             <SelectItem value="com_erros">Com erros</SelectItem>
@@ -84,7 +124,13 @@ export function HistoricoFilters({
           {totalFiltrados} de {totalHistorico}
         </Badge>
         {filtrosAtivos > 0 && (
-          <Button size="sm" variant="ghost" onClick={onLimpar} className="h-8 gap-1 text-xs" aria-label={`Limpar ${filtrosAtivos} filtro(s)`}>
+          <Button
+            size="sm"
+            variant="ghost"
+            onClick={onLimpar}
+            className="h-8 gap-1 text-xs"
+            aria-label={`Limpar ${filtrosAtivos} filtro(s)`}
+          >
             <X className="h-3 w-3" />
             Limpar
           </Button>

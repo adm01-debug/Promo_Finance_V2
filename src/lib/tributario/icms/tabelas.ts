@@ -17,32 +17,32 @@ export const ORIGENS_IMPORTADAS: readonly OrigemMercadoria[] = [1, 2, 3, 6, 7, 8
  */
 export const ALIQUOTAS_UF: Record<UF, AliquotaUf> = {
   AC: { interna: 0.19, fcp: 0.02, regiao: 'N', nome: 'Acre' },
-  AL: { interna: 0.20, fcp: 0.01, regiao: 'NE', nome: 'Alagoas' },
-  AP: { interna: 0.18, fcp: 0.00, regiao: 'N', nome: 'Amapá' },
-  AM: { interna: 0.20, fcp: 0.02, regiao: 'N', nome: 'Amazonas' },
+  AL: { interna: 0.2, fcp: 0.01, regiao: 'NE', nome: 'Alagoas' },
+  AP: { interna: 0.18, fcp: 0.0, regiao: 'N', nome: 'Amapá' },
+  AM: { interna: 0.2, fcp: 0.02, regiao: 'N', nome: 'Amazonas' },
   BA: { interna: 0.205, fcp: 0.02, regiao: 'NE', nome: 'Bahia' },
-  CE: { interna: 0.20, fcp: 0.02, regiao: 'NE', nome: 'Ceará' },
-  DF: { interna: 0.20, fcp: 0.02, regiao: 'CO', nome: 'Distrito Federal' },
+  CE: { interna: 0.2, fcp: 0.02, regiao: 'NE', nome: 'Ceará' },
+  DF: { interna: 0.2, fcp: 0.02, regiao: 'CO', nome: 'Distrito Federal' },
   ES: { interna: 0.17, fcp: 0.02, regiao: 'SE', nome: 'Espírito Santo' },
   GO: { interna: 0.19, fcp: 0.02, regiao: 'CO', nome: 'Goiás' },
   MA: { interna: 0.23, fcp: 0.02, regiao: 'NE', nome: 'Maranhão' },
   MT: { interna: 0.17, fcp: 0.02, regiao: 'CO', nome: 'Mato Grosso' },
   MS: { interna: 0.17, fcp: 0.02, regiao: 'CO', nome: 'Mato Grosso do Sul' },
   MG: { interna: 0.18, fcp: 0.02, regiao: 'SE', nome: 'Minas Gerais' },
-  PA: { interna: 0.19, fcp: 0.00, regiao: 'N', nome: 'Pará' },
-  PB: { interna: 0.20, fcp: 0.02, regiao: 'NE', nome: 'Paraíba' },
+  PA: { interna: 0.19, fcp: 0.0, regiao: 'N', nome: 'Pará' },
+  PB: { interna: 0.2, fcp: 0.02, regiao: 'NE', nome: 'Paraíba' },
   PR: { interna: 0.195, fcp: 0.02, regiao: 'S', nome: 'Paraná' },
   PE: { interna: 0.205, fcp: 0.02, regiao: 'NE', nome: 'Pernambuco' },
   PI: { interna: 0.225, fcp: 0.02, regiao: 'NE', nome: 'Piauí' },
-  RJ: { interna: 0.20, fcp: 0.02, regiao: 'SE', nome: 'Rio de Janeiro' },
-  RN: { interna: 0.20, fcp: 0.02, regiao: 'NE', nome: 'Rio Grande do Norte' },
+  RJ: { interna: 0.2, fcp: 0.02, regiao: 'SE', nome: 'Rio de Janeiro' },
+  RN: { interna: 0.2, fcp: 0.02, regiao: 'NE', nome: 'Rio Grande do Norte' },
   RS: { interna: 0.17, fcp: 0.02, regiao: 'S', nome: 'Rio Grande do Sul' },
   RO: { interna: 0.195, fcp: 0.02, regiao: 'N', nome: 'Rondônia' },
-  RR: { interna: 0.20, fcp: 0.02, regiao: 'N', nome: 'Roraima' },
-  SC: { interna: 0.17, fcp: 0.00, regiao: 'S', nome: 'Santa Catarina' },
+  RR: { interna: 0.2, fcp: 0.02, regiao: 'N', nome: 'Roraima' },
+  SC: { interna: 0.17, fcp: 0.0, regiao: 'S', nome: 'Santa Catarina' },
   SP: { interna: 0.18, fcp: 0.02, regiao: 'SE', nome: 'São Paulo' },
-  SE: { interna: 0.20, fcp: 0.02, regiao: 'NE', nome: 'Sergipe' },
-  TO: { interna: 0.20, fcp: 0.02, regiao: 'N', nome: 'Tocantins' },
+  SE: { interna: 0.2, fcp: 0.02, regiao: 'NE', nome: 'Sergipe' },
+  TO: { interna: 0.2, fcp: 0.02, regiao: 'N', nome: 'Tocantins' },
 };
 
 export const UFS: UF[] = Object.keys(ALIQUOTAS_UF).sort() as UF[];
@@ -85,7 +85,6 @@ export function buscarUf(uf: UF): AliquotaUf {
   return item;
 }
 
-
 export function aliquotaInternaDe(uf: UF): number {
   return buscarUf(uf).interna;
 }
@@ -110,7 +109,7 @@ export function isImportada(origem?: OrigemMercadoria): boolean {
 export function resolverAliquotaInterestadual(
   ufOrigem: UF,
   ufDestino: UF,
-  origem?: OrigemMercadoria,
+  origem?: OrigemMercadoria
 ): number {
   if (ufOrigem === ufDestino) return aliquotaInternaDe(ufOrigem);
   if (isImportada(origem)) return ALIQUOTA_INTERESTADUAL_IMPORTADO;

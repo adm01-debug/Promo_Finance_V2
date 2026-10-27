@@ -34,7 +34,7 @@ export function useLocalStorage<T>(
       try {
         const valueToStore = value instanceof Function ? value(storedValue) : value;
         setStoredValue(valueToStore);
-        
+
         if (typeof window !== 'undefined') {
           window.localStorage.setItem(key, JSON.stringify(valueToStore));
           window.dispatchEvent(new StorageEvent('local-storage', { key }));
@@ -107,7 +107,7 @@ export function useSessionStorage<T>(
       try {
         const valueToStore = value instanceof Function ? value(storedValue) : value;
         setStoredValue(valueToStore);
-        
+
         if (typeof window !== 'undefined') {
           window.sessionStorage.setItem(key, JSON.stringify(valueToStore));
         }

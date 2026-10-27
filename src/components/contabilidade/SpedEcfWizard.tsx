@@ -65,7 +65,13 @@ export function SpedEcfWizard({ open, onOpenChange, empresaId, anoCalendario }: 
 
   const progresso = step === 1 ? 33 : step === 2 ? 66 : 100;
   const progressVariant: 'success' | 'warning' | 'danger' | 'default' =
-    step === 3 ? 'success' : step === 2 && erros > 0 ? 'danger' : step === 2 && avisos > 0 ? 'warning' : 'default';
+    step === 3
+      ? 'success'
+      : step === 2 && erros > 0
+        ? 'danger'
+        : step === 2 && avisos > 0
+          ? 'warning'
+          : 'default';
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>

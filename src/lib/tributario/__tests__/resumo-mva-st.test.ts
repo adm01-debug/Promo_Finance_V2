@@ -37,7 +37,7 @@ const ncms: RegistroProtocoloNcmBanco[] = CARGA.map(([id, codigo, ncm, mva]) => 
 }));
 
 const ufs: RegistroProtocoloUfBanco[] = ['p41', 'p85', 'p11'].flatMap((id) =>
-  UFS.map((uf) => ({ protocolo_id: id, uf, papel: 'AMBOS' })),
+  UFS.map((uf) => ({ protocolo_id: id, uf, papel: 'AMBOS' }))
 );
 
 describe('resumo de cobertura da carga real de protocolos', () => {

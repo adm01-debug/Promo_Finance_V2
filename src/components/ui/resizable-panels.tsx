@@ -95,7 +95,7 @@ export function PanelGroup({
 
     // Normalize to percentages
     if (totalDefault > 0) {
-      const normalized = defaultSizes.map(s => (s / totalDefault) * 100);
+      const normalized = defaultSizes.map((s) => (s / totalDefault) * 100);
       setSizes(normalized);
     } else {
       // Equal distribution
@@ -104,10 +104,13 @@ export function PanelGroup({
     }
   }, [sizes.length]);
 
-  const handleSizesChange = useCallback((newSizes: number[]) => {
-    setSizes(newSizes);
-    onResize?.(newSizes);
-  }, [onResize]);
+  const handleSizesChange = useCallback(
+    (newSizes: number[]) => {
+      setSizes(newSizes);
+      onResize?.(newSizes);
+    },
+    [onResize]
+  );
 
   return (
     <PanelGroupContext.Provider
@@ -190,11 +193,14 @@ export function ResizeHandle({ className, disabled = false }: ResizeHandleProps)
 
   const { direction, sizes, setSizes } = context;
 
-  const handleMouseDown = useCallback((e: React.MouseEvent) => {
-    if (disabled) return;
-    e.preventDefault();
-    setIsDragging(true);
-  }, [disabled]);
+  const handleMouseDown = useCallback(
+    (e: React.MouseEvent) => {
+      if (disabled) return;
+      e.preventDefault();
+      setIsDragging(true);
+    },
+    [disabled]
+  );
 
   useEffect(() => {
     if (!isDragging) return;
@@ -207,9 +213,10 @@ export function ResizeHandle({ className, disabled = false }: ResizeHandleProps)
       if (!parent) return;
 
       const rect = parent.getBoundingClientRect();
-      const position = direction === 'horizontal'
-        ? ((e.clientX - rect.left) / rect.width) * 100
-        : ((e.clientY - rect.top) / rect.height) * 100;
+      const position =
+        direction === 'horizontal'
+          ? ((e.clientX - rect.left) / rect.width) * 100
+          : ((e.clientY - rect.top) / rect.height) * 100;
 
       // Find which panel this handle is between
       const handles = Array.from(parent.querySelectorAll('[data-resize-handle]'));
@@ -264,9 +271,7 @@ export function ResizeHandle({ className, disabled = false }: ResizeHandleProps)
       onMouseDown={handleMouseDown}
       className={cn(
         'relative flex-shrink-0 select-none',
-        direction === 'horizontal'
-          ? 'w-1 cursor-col-resize'
-          : 'h-1 cursor-row-resize',
+        direction === 'horizontal' ? 'w-1 cursor-col-resize' : 'h-1 cursor-row-resize',
         'bg-border hover:bg-primary/50',
         isDragging && 'bg-primary',
         disabled && 'cursor-default bg-muted',
@@ -293,9 +298,7 @@ export function ResizeHandle({ className, disabled = false }: ResizeHandleProps)
       <div
         className={cn(
           'absolute',
-          direction === 'horizontal'
-            ? '-left-1 -right-1 inset-y-0'
-            : '-top-1 -bottom-1 inset-x-0'
+          direction === 'horizontal' ? '-left-1 -right-1 inset-y-0' : '-top-1 -bottom-1 inset-x-0'
         )}
       />
     </div>

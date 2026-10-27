@@ -59,16 +59,19 @@ export function normalizarItemIss(codigo: string): string {
  * 4. divergência de retenção no tomador (muda o sujeito passivo);
  * 5. piso/teto fora da faixa legal de 2% a 5%.
  */
-export function compararItensIssComCatalogo(
-  registros: readonly ItemIssBanco[],
-): DivergenciaIss[] {
+export function compararItensIssComCatalogo(registros: readonly ItemIssBanco[]): DivergenciaIss[] {
   const divergencias: DivergenciaIss[] = [];
   const porCodigo = new Map<string, ItemIssBanco>();
 
   for (const r of registros) {
     const codigo = normalizarItemIss(r.codigo);
     if (porCodigo.has(codigo)) {
-      divergencias.push({ item: codigo, campo: 'duplicado', valorCodigo: null, valorBanco: r.codigo });
+      divergencias.push({
+        item: codigo,
+        campo: 'duplicado',
+        valorCodigo: null,
+        valorBanco: r.codigo,
+      });
       continue;
     }
     porCodigo.set(codigo, r);
@@ -78,7 +81,12 @@ export function compararItensIssComCatalogo(
     const codigo = normalizarItemIss(esperado.item);
     const atual = porCodigo.get(codigo);
     if (!atual) {
-      divergencias.push({ item: codigo, campo: 'ausente', valorCodigo: esperado.descricao, valorBanco: null });
+      divergencias.push({
+        item: codigo,
+        campo: 'ausente',
+        valorCodigo: esperado.descricao,
+        valorBanco: null,
+      });
       continue;
     }
 
@@ -95,7 +103,12 @@ export function compararItensIssComCatalogo(
     const max = Number(atual.aliquota_maxima);
 
     if (!Number.isFinite(min) || min < ISS_PISO_LEGAL - EPSILON || min > ISS_TETO_LEGAL + EPSILON) {
-      divergencias.push({ item: codigo, campo: 'aliquota_minima', valorCodigo: ISS_PISO_LEGAL, valorBanco: min });
+      divergencias.push({
+        item: codigo,
+        campo: 'aliquota_minima',
+        valorCodigo: ISS_PISO_LEGAL,
+        valorBanco: min,
+      });
     }
     if (
       !Number.isFinite(max) ||
@@ -103,14 +116,24 @@ export function compararItensIssComCatalogo(
       max < ISS_PISO_LEGAL - EPSILON ||
       (Number.isFinite(min) && max < min && !iguais(max, min))
     ) {
-      divergencias.push({ item: codigo, campo: 'aliquota_maxima', valorCodigo: ISS_TETO_LEGAL, valorBanco: max });
+      divergencias.push({
+        item: codigo,
+        campo: 'aliquota_maxima',
+        valorCodigo: ISS_TETO_LEGAL,
+        valorBanco: max,
+      });
     }
   }
 
   const conhecidos = new Set(LISTA_LC116.map((i) => normalizarItemIss(i.item)));
   for (const codigo of porCodigo.keys()) {
     if (!conhecidos.has(codigo)) {
-      divergencias.push({ item: codigo, campo: 'excedente', valorCodigo: null, valorBanco: codigo });
+      divergencias.push({
+        item: codigo,
+        campo: 'excedente',
+        valorCodigo: null,
+        valorBanco: codigo,
+      });
     }
   }
 

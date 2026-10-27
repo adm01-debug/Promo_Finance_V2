@@ -1,15 +1,9 @@
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import { Progress } from "@/components/ui/progress";
-import { Separator } from "@/components/ui/separator";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
+import { Progress } from '@/components/ui/progress';
+import { Separator } from '@/components/ui/separator';
 import {
   AlertTriangle,
   CheckCircle2,
@@ -22,10 +16,10 @@ import {
   ShieldAlert,
   ShieldCheck,
   XCircle,
-} from "lucide-react";
-import { KpiBox } from "./verificar-integridade/KpiBox";
-import { LinhaResultado } from "./verificar-integridade/LinhaResultado";
-import { useIntegridadeVerifier } from "./verificar-integridade/useIntegridadeVerifier";
+} from 'lucide-react';
+import { KpiBox } from './verificar-integridade/KpiBox';
+import { LinhaResultado } from './verificar-integridade/LinhaResultado';
+import { useIntegridadeVerifier } from './verificar-integridade/useIntegridadeVerifier';
 
 export function VerificarIntegridadeTab() {
   const {
@@ -56,9 +50,8 @@ export function VerificarIntegridadeTab() {
             <ShieldCheck className="h-4 w-4" /> Verificar integridade do pacote
           </CardTitle>
           <CardDescription>
-            Recalcule o SHA-256 dos CSVs localmente (no seu navegador) e compare
-            com os hashes declarados no <code>manifest.json</code>. Nenhum
-            arquivo é enviado a nenhum servidor.
+            Recalcule o SHA-256 dos CSVs localmente (no seu navegador) e compare com os hashes
+            declarados no <code>manifest.json</code>. Nenhum arquivo é enviado a nenhum servidor.
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
@@ -71,9 +64,7 @@ export function VerificarIntegridadeTab() {
             >
               <FileArchive className="h-5 w-5" />
               <span className="text-sm font-medium">Carregar ZIP completo</span>
-              <span className="text-xs text-muted-foreground">
-                Lê manifest + CSVs
-              </span>
+              <span className="text-xs text-muted-foreground">Lê manifest + CSVs</span>
             </Button>
             <Button
               variant="outline"
@@ -83,9 +74,7 @@ export function VerificarIntegridadeTab() {
             >
               <FileJson className="h-5 w-5" />
               <span className="text-sm font-medium">Carregar manifest.json</span>
-              <span className="text-xs text-muted-foreground">
-                Apenas os hashes de referência
-              </span>
+              <span className="text-xs text-muted-foreground">Apenas os hashes de referência</span>
             </Button>
             <Button
               variant="outline"
@@ -96,7 +85,7 @@ export function VerificarIntegridadeTab() {
               <Files className="h-5 w-5" />
               <span className="text-sm font-medium">Adicionar CSVs</span>
               <span className="text-xs text-muted-foreground">
-                {manifest ? "Para conferir contra o manifest" : "Carregue o manifest primeiro"}
+                {manifest ? 'Para conferir contra o manifest' : 'Carregue o manifest primeiro'}
               </span>
             </Button>
           </div>
@@ -128,8 +117,7 @@ export function VerificarIntegridadeTab() {
             multiple
             className="hidden"
             onChange={(e) => {
-              if (e.target.files && e.target.files.length > 0)
-                handleArquivos(e.target.files);
+              if (e.target.files && e.target.files.length > 0) handleArquivos(e.target.files);
             }}
           />
 
@@ -138,7 +126,7 @@ export function VerificarIntegridadeTab() {
               <div className="flex flex-wrap items-center gap-2">
                 <Badge variant="secondary" className="gap-1">
                   <FileJson className="h-3 w-3" />
-                  {manifestNome ?? "manifest.json"}
+                  {manifestNome ?? 'manifest.json'}
                 </Badge>
                 <Badge variant="outline">
                   {Object.keys(manifest.arquivos).length} arquivo(s) declarado(s)
@@ -151,12 +139,10 @@ export function VerificarIntegridadeTab() {
                 )}
                 {manifest.gerado_em && (
                   <Badge variant="outline">
-                    Gerado em {new Date(manifest.gerado_em).toLocaleString("pt-BR")}
+                    Gerado em {new Date(manifest.gerado_em).toLocaleString('pt-BR')}
                   </Badge>
                 )}
-                {manifest.gerado_por && (
-                  <Badge variant="outline">por {manifest.gerado_por}</Badge>
-                )}
+                {manifest.gerado_por && <Badge variant="outline">por {manifest.gerado_por}</Badge>}
               </div>
             </div>
           )}
@@ -170,12 +156,7 @@ export function VerificarIntegridadeTab() {
               )}
               Verificar integridade
             </Button>
-            <Button
-              variant="ghost"
-              onClick={reset}
-              disabled={verificando}
-              className="gap-2"
-            >
+            <Button variant="ghost" onClick={reset} disabled={verificando} className="gap-2">
               <RotateCcw className="h-4 w-4" /> Limpar
             </Button>
           </div>
@@ -183,9 +164,7 @@ export function VerificarIntegridadeTab() {
           {verificando && (
             <div className="space-y-1">
               <Progress value={progresso} />
-              <p className="text-xs text-muted-foreground">
-                Calculando SHA-256… {progresso}%
-              </p>
+              <p className="text-xs text-muted-foreground">Calculando SHA-256… {progresso}%</p>
             </div>
           )}
         </CardContent>
@@ -204,21 +183,19 @@ export function VerificarIntegridadeTab() {
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
-            <Alert variant={integridadeOk ? "success" : "error"}>
+            <Alert variant={integridadeOk ? 'success' : 'error'}>
               {integridadeOk ? (
                 <CheckCircle2 className="h-4 w-4" />
               ) : (
                 <ShieldAlert className="h-4 w-4" />
               )}
               <AlertTitle>
-                {integridadeOk
-                  ? "Pacote íntegro"
-                  : "Foram encontradas divergências"}
+                {integridadeOk ? 'Pacote íntegro' : 'Foram encontradas divergências'}
               </AlertTitle>
               <AlertDescription>
                 {integridadeOk
-                  ? "Todos os arquivos declarados no manifest conferem com os hashes calculados."
-                  : "Ao menos um arquivo está ausente ou com hash diferente. Não confie nestes dados sem reemitir o pacote."}
+                  ? 'Todos os arquivos declarados no manifest conferem com os hashes calculados.'
+                  : 'Ao menos um arquivo está ausente ou com hash diferente. Não confie nestes dados sem reemitir o pacote.'}
               </AlertDescription>
             </Alert>
 

@@ -92,7 +92,7 @@ describe('preservação das regras jurídicas', () => {
       });
       expect(r.aplicadas).toHaveLength(0);
       expect(r.bloqueadas).toHaveLength(1);
-    },
+    }
   );
 });
 
@@ -101,18 +101,31 @@ describe('resolução em runtime', () => {
     const { indice } = aplicarOverlayMvaSt({ ncms: [NCM_AUTOPECA], ufs: UFS_PROTOCOLO });
     definirIndiceMvaStEfetivo(indice);
 
-    expect(resolverMvaSt({ ncm: '87082999', ufOrigem: 'SP', ufDestino: 'BA' }).encontrado).toBe(true);
+    expect(resolverMvaSt({ ncm: '87082999', ufOrigem: 'SP', ufDestino: 'BA' }).encontrado).toBe(
+      true
+    );
     // BA não é signatária como remetente nesse protocolo.
-    expect(resolverMvaSt({ ncm: '87082999', ufOrigem: 'BA', ufDestino: 'SP' }).encontrado).toBe(false);
+    expect(resolverMvaSt({ ncm: '87082999', ufOrigem: 'BA', ufDestino: 'SP' }).encontrado).toBe(
+      false
+    );
   });
 
   it('prevalece a maior MVA quando há protocolos concorrentes', () => {
     const { indice } = aplicarOverlayMvaSt({
       ncms: [
         NCM_AUTOPECA,
-        { ...NCM_AUTOPECA, protocolo_id: 'p2', protocolo_codigo: 'ICMS 97/2010', mva_original: 71.78 },
+        {
+          ...NCM_AUTOPECA,
+          protocolo_id: 'p2',
+          protocolo_codigo: 'ICMS 97/2010',
+          mva_original: 71.78,
+        },
       ],
-      ufs: [...UFS_PROTOCOLO, { protocolo_id: 'p2', uf: 'SP', papel: 'AMBOS' }, { protocolo_id: 'p2', uf: 'BA', papel: 'AMBOS' }],
+      ufs: [
+        ...UFS_PROTOCOLO,
+        { protocolo_id: 'p2', uf: 'SP', papel: 'AMBOS' },
+        { protocolo_id: 'p2', uf: 'BA', papel: 'AMBOS' },
+      ],
     });
     definirIndiceMvaStEfetivo(indice);
     const r = resolverMvaSt({ ncm: '87082999', ufOrigem: 'SP', ufDestino: 'BA' });
@@ -127,7 +140,10 @@ describe('motor de ICMS-ST com overlay', () => {
     definirIndiceMvaStEfetivo(indice);
 
     const r = calcularIcmsSt({
-      ufOrigem: 'SP', ufDestino: 'BA', valorProduto: 10_000, ncm: '87082999',
+      ufOrigem: 'SP',
+      ufDestino: 'BA',
+      valorProduto: 10_000,
+      ncm: '87082999',
     });
     expect(r.protocoloSt).toBe('ICMS 41/2008');
     expect(r.cestSt).toBe('01.049.00');
@@ -140,7 +156,11 @@ describe('motor de ICMS-ST com overlay', () => {
     definirIndiceMvaStEfetivo(indice);
 
     const r = calcularIcmsSt({
-      ufOrigem: 'SP', ufDestino: 'BA', valorProduto: 10_000, ncm: '87082999', mvaOriginal: 0.5,
+      ufOrigem: 'SP',
+      ufDestino: 'BA',
+      valorProduto: 10_000,
+      ncm: '87082999',
+      mvaOriginal: 0.5,
     });
     expect(r.mvaOriginal).toBeCloseTo(0.5, 6);
     expect(r.protocoloSt).toBeNull();
@@ -151,8 +171,14 @@ describe('motor de ICMS-ST com overlay', () => {
     definirIndiceMvaStEfetivo(indice);
 
     const r = calcularIcmsSt({
-      ufOrigem: 'SP', ufDestino: 'BA', valorProduto: 10_000, ncm: '87082999',
-      mvaOriginal: 0.4025, situacaoIcms: 'isenta', aplicarFcp: true, pmpf: 20_000,
+      ufOrigem: 'SP',
+      ufDestino: 'BA',
+      valorProduto: 10_000,
+      ncm: '87082999',
+      mvaOriginal: 0.4025,
+      situacaoIcms: 'isenta',
+      aplicarFcp: true,
+      pmpf: 20_000,
     });
     expect(r.stAfastadaPorRegraJuridica).toBe(true);
     expect(r.baseSt).toBe(0);
@@ -163,7 +189,10 @@ describe('motor de ICMS-ST com overlay', () => {
 
   it('mantém compatibilidade com chamadas sem NCM', () => {
     const r = calcularIcmsSt({
-      ufOrigem: 'SP', ufDestino: 'BA', valorProduto: 10_000, mvaOriginal: 0.4025,
+      ufOrigem: 'SP',
+      ufDestino: 'BA',
+      valorProduto: 10_000,
+      mvaOriginal: 0.4025,
     });
     expect(r.protocoloSt).toBeNull();
     expect(r.mvaOriginal).toBeCloseTo(0.4025, 6);

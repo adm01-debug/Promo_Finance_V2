@@ -1,29 +1,25 @@
-import { Bell, BellOff, Loader2 } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Label } from "@/components/ui/label";
-import { Input } from "@/components/ui/input";
-import { Switch } from "@/components/ui/switch";
-import { Checkbox } from "@/components/ui/checkbox";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
+import { Bell, BellOff, Loader2 } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { Label } from '@/components/ui/label';
+import { Input } from '@/components/ui/input';
+import { Switch } from '@/components/ui/switch';
+import { Checkbox } from '@/components/ui/checkbox';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select";
+} from '@/components/ui/select';
 import {
   SEVERIDADES_DISPONIVEIS,
   type SavedFilterSubscription,
   type SeveridadeAlerta,
   type SubscriptionFrequencia,
-} from "@/hooks/useSavedFilterSubscriptions";
-import { describeFrequencia } from "@/hooks/savedFilterDispatchSchedule";
-import { useState, useEffect } from "react";
+} from '@/hooks/useSavedFilterSubscriptions';
+import { describeFrequencia } from '@/hooks/savedFilterDispatchSchedule';
+import { useState, useEffect } from 'react';
 
 /**
  * Popover compacto para configurar uma assinatura de filtro salvo.
@@ -77,10 +73,10 @@ export interface SubscriptionPopoverProps {
 }
 
 const SEVERIDADE_LABEL: Record<SeveridadeAlerta, string> = {
-  baixa: "Baixa",
-  media: "Média",
-  alta: "Alta",
-  critica: "Crítica",
+  baixa: 'Baixa',
+  media: 'Média',
+  alta: 'Alta',
+  critica: 'Crítica',
 };
 
 export function SubscriptionPopover({
@@ -99,23 +95,19 @@ export function SubscriptionPopover({
   const [inapp, setInapp] = useState(subscription?.notify_inapp ?? true);
   const [push, setPush] = useState(subscription?.notify_push ?? false);
   const [email, setEmail] = useState(subscription?.notify_email ?? false);
-  const [freq, setFreq] = useState<SubscriptionFrequencia>(
-    subscription?.frequencia ?? "imediata",
-  );
+  const [freq, setFreq] = useState<SubscriptionFrequencia>(subscription?.frequencia ?? 'imediata');
   const [horario, setHorario] = useState(
-    (subscription?.horario_preferido ?? "09:00:00").slice(0, 5),
+    (subscription?.horario_preferido ?? '09:00:00').slice(0, 5)
   );
   const [sevsCriticas, setSevsCriticas] = useState<SeveridadeAlerta[]>(
-    subscription?.severidades_criticas ?? ["critica"],
+    subscription?.severidades_criticas ?? ['critica']
   );
   const [tiposAtivos, setTiposAtivos] = useState<string[]>(
-    subscription?.tipos_eventos_ativos ?? [],
+    subscription?.tipos_eventos_ativos ?? []
   );
-  const [rateLimitMax, setRateLimitMax] = useState<number>(
-    subscription?.rate_limit_max ?? 5,
-  );
+  const [rateLimitMax, setRateLimitMax] = useState<number>(subscription?.rate_limit_max ?? 5);
   const [rateLimitWindow, setRateLimitWindow] = useState<number>(
-    subscription?.rate_limit_window_min ?? 10,
+    subscription?.rate_limit_window_min ?? 10
   );
 
   // Sincroniza estado local quando o popover (re)abre ou subscription muda
@@ -124,9 +116,9 @@ export function SubscriptionPopover({
     setInapp(subscription?.notify_inapp ?? true);
     setPush(subscription?.notify_push ?? false);
     setEmail(subscription?.notify_email ?? false);
-    setFreq(subscription?.frequencia ?? "imediata");
-    setHorario((subscription?.horario_preferido ?? "09:00:00").slice(0, 5));
-    setSevsCriticas(subscription?.severidades_criticas ?? ["critica"]);
+    setFreq(subscription?.frequencia ?? 'imediata');
+    setHorario((subscription?.horario_preferido ?? '09:00:00').slice(0, 5));
+    setSevsCriticas(subscription?.severidades_criticas ?? ['critica']);
     setTiposAtivos(subscription?.tipos_eventos_ativos ?? []);
     setRateLimitMax(subscription?.rate_limit_max ?? 5);
     setRateLimitWindow(subscription?.rate_limit_window_min ?? 10);
@@ -136,12 +128,12 @@ export function SubscriptionPopover({
 
   const toggleSev = (sev: SeveridadeAlerta, checked: boolean) => {
     setSevsCriticas((prev) =>
-      checked ? Array.from(new Set([...prev, sev])) : prev.filter((s) => s !== sev),
+      checked ? Array.from(new Set([...prev, sev])) : prev.filter((s) => s !== sev)
     );
   };
   const toggleTipo = (tipo: string, checked: boolean) => {
     setTiposAtivos((prev) =>
-      checked ? Array.from(new Set([...prev, tipo])) : prev.filter((t) => t !== tipo),
+      checked ? Array.from(new Set([...prev, tipo])) : prev.filter((t) => t !== tipo)
     );
   };
 
@@ -149,10 +141,7 @@ export function SubscriptionPopover({
     if (push && !pushReady) await onEnablePush();
     // Clamp defensivo — espelha o trigger do banco para evitar erro 4xx.
     const safeMax = Math.min(100, Math.max(1, Math.round(rateLimitMax) || 5));
-    const safeWindow = Math.min(
-      1440,
-      Math.max(1, Math.round(rateLimitWindow) || 10),
-    );
+    const safeWindow = Math.min(1440, Math.max(1, Math.round(rateLimitWindow) || 10));
     const payload = {
       notifyInapp: inapp,
       notifyPush: push,
@@ -179,13 +168,13 @@ export function SubscriptionPopover({
           type="button"
           disabled={isBusy}
           className={
-            (active ? "text-primary" : "opacity-50 hover:opacity-100") +
-            " disabled:opacity-30 disabled:cursor-wait"
+            (active ? 'text-primary' : 'opacity-50 hover:opacity-100') +
+            ' disabled:opacity-30 disabled:cursor-wait'
           }
           title={
             active
               ? `Notificações: ${describeFrequencia(subscription!.frequencia)}`
-              : "Configurar notificações"
+              : 'Configurar notificações'
           }
           onClick={(e) => e.stopPropagation()}
         >
@@ -204,9 +193,7 @@ export function SubscriptionPopover({
         onClick={(e) => e.stopPropagation()}
       >
         <div className="space-y-1">
-          <p className="text-sm font-medium leading-tight">
-            Notificações para "{filterName}"
-          </p>
+          <p className="text-sm font-medium leading-tight">Notificações para "{filterName}"</p>
           <p className="text-xs text-muted-foreground">
             Defina canais, regras e cadência das alertas deste filtro.
           </p>
@@ -240,10 +227,7 @@ export function SubscriptionPopover({
           </p>
           <div className="grid grid-cols-2 gap-1.5 pt-1">
             {SEVERIDADES_DISPONIVEIS.map((sev) => (
-              <label
-                key={sev}
-                className="flex items-center gap-2 text-xs cursor-pointer"
-              >
+              <label key={sev} className="flex items-center gap-2 text-xs cursor-pointer">
                 <Checkbox
                   checked={sevsCriticas.includes(sev)}
                   onChange={(e) => toggleSev(sev, e.target.checked)}
@@ -262,10 +246,7 @@ export function SubscriptionPopover({
             </p>
             <div className="space-y-1.5 pt-1">
               {tiposEventosOpcoes.map((opt) => (
-                <label
-                  key={opt.value}
-                  className="flex items-center gap-2 text-xs cursor-pointer"
-                >
+                <label key={opt.value} className="flex items-center gap-2 text-xs cursor-pointer">
                   <Checkbox
                     checked={tiposAtivos.includes(opt.value)}
                     onChange={(e) => toggleTipo(opt.value, e.target.checked)}
@@ -279,10 +260,7 @@ export function SubscriptionPopover({
 
         <div className="space-y-1 border-t pt-3">
           <Label className="text-xs">Frequência</Label>
-          <Select
-            value={freq}
-            onValueChange={(v) => setFreq(v as SubscriptionFrequencia)}
-          >
+          <Select value={freq} onValueChange={(v) => setFreq(v as SubscriptionFrequencia)}>
             <SelectTrigger className="h-8 text-xs">
               <SelectValue />
             </SelectTrigger>
@@ -294,7 +272,7 @@ export function SubscriptionPopover({
           </Select>
         </div>
 
-        {freq !== "imediata" && (
+        {freq !== 'imediata' && (
           <div className="space-y-1">
             <Label htmlFor="sub-horario" className="text-xs">
               Horário preferido
@@ -307,9 +285,9 @@ export function SubscriptionPopover({
               className="h-8 text-xs"
             />
             <p className="text-[10px] text-muted-foreground">
-              {freq === "diaria"
-                ? "Resumo diário enviado nesse horário."
-                : "Minuto da hora cheia em que o resumo é enviado."}
+              {freq === 'diaria'
+                ? 'Resumo diário enviado nesse horário.'
+                : 'Minuto da hora cheia em que o resumo é enviado.'}
             </p>
           </div>
         )}
@@ -317,8 +295,8 @@ export function SubscriptionPopover({
         <div className="space-y-1 border-t pt-3">
           <Label className="text-xs font-medium">Anti-spam (rajadas)</Label>
           <p className="text-[10px] text-muted-foreground">
-            Em modo imediato, no máx. <b>{rateLimitMax}</b> notificações em{" "}
-            <b>{rateLimitWindow}</b> min. Excedente vira 1 resumo agrupado.
+            Em modo imediato, no máx. <b>{rateLimitMax}</b> notificações em <b>{rateLimitWindow}</b>{' '}
+            min. Excedente vira 1 resumo agrupado.
           </p>
           <div className="grid grid-cols-2 gap-2 pt-1">
             <div className="space-y-0.5">

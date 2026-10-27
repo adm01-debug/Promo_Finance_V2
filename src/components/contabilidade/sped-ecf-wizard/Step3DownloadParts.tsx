@@ -1,5 +1,13 @@
 import { motion } from 'framer-motion';
-import { AlertTriangle, ArrowUpRight, CheckCircle2, Link2, Loader2, Send, XCircle } from 'lucide-react';
+import {
+  AlertTriangle,
+  ArrowUpRight,
+  CheckCircle2,
+  Link2,
+  Loader2,
+  Send,
+  XCircle,
+} from 'lucide-react';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -19,14 +27,17 @@ export interface ChecklistAlertaItem {
   status: 'ok' | 'warn' | 'error';
 }
 
-export function CrossCheckCard({ linhas, alertas, onGoToAnchor }: {
+export function CrossCheckCard({
+  linhas,
+  alertas,
+  onGoToAnchor,
+}: {
   linhas: DivergRow[];
   alertas: ChecklistAlertaItem[];
   onGoToAnchor: GoToAnchorFn;
 }) {
   const totalDiverg =
-    linhas.filter((l) => l.tone === 'destructive' || l.tone === 'warning').length +
-    alertas.length;
+    linhas.filter((l) => l.tone === 'destructive' || l.tone === 'warning').length + alertas.length;
 
   return (
     <div className="rounded-xl border border-border/60 bg-card/60 backdrop-blur-sm p-5 space-y-3">
@@ -46,7 +57,7 @@ export function CrossCheckCard({ linhas, alertas, onGoToAnchor }: {
             'shrink-0 gap-1',
             totalDiverg === 0
               ? 'border-success/40 text-success bg-success/10'
-              : 'border-warning/40 text-warning bg-warning/10',
+              : 'border-warning/40 text-warning bg-warning/10'
           )}
         >
           {totalDiverg === 0 ? (
@@ -70,21 +81,24 @@ export function CrossCheckCard({ linhas, alertas, onGoToAnchor }: {
         </div>
         <div className="divide-y divide-border/50">
           {linhas.map((row) => {
-            const showJump =
-              (row.tone === 'destructive' || row.tone === 'warning') && !!row.anchor;
+            const showJump = (row.tone === 'destructive' || row.tone === 'warning') && !!row.anchor;
             return (
               <div
                 key={row.key}
                 className="grid grid-cols-12 gap-2 px-3 py-2.5 items-center text-xs"
               >
                 <div className="col-span-3 font-medium text-foreground">{row.label}</div>
-                <div className="col-span-4 font-mono text-foreground/90 break-all">{row.ecfValor}</div>
-                <div className="col-span-4 font-mono text-foreground/90 break-all">{row.ecdValor}</div>
+                <div className="col-span-4 font-mono text-foreground/90 break-all">
+                  {row.ecfValor}
+                </div>
+                <div className="col-span-4 font-mono text-foreground/90 break-all">
+                  {row.ecdValor}
+                </div>
                 <div className="col-span-1 flex justify-end">
                   <span
                     className={cn(
                       'inline-flex items-center justify-center rounded-md border px-1.5 py-0.5 text-[10px] font-medium',
-                      DIVERG_TONE_CLASSES[row.tone],
+                      DIVERG_TONE_CLASSES[row.tone]
                     )}
                   >
                     {row.tone === 'success' && 'OK'}
@@ -133,7 +147,7 @@ export function CrossCheckCard({ linhas, alertas, onGoToAnchor }: {
                     'shrink-0 h-5 px-1.5 text-[10px]',
                     c.status === 'error'
                       ? 'border-destructive/40 text-destructive bg-destructive/10'
-                      : 'border-warning/40 text-warning bg-warning/10',
+                      : 'border-warning/40 text-warning bg-warning/10'
                   )}
                 >
                   {c.status === 'error' ? 'erro' : 'aviso'}
@@ -228,7 +242,14 @@ export function ResultadoAlertas({ erros, avisos }: { erros: string[]; avisos: s
   );
 }
 
-export function RegistroRecibo({ bloqueado, erroCount, recibo, onReciboChange, onRegistrar, registrando }: {
+export function RegistroRecibo({
+  bloqueado,
+  erroCount,
+  recibo,
+  onReciboChange,
+  onRegistrar,
+  registrando,
+}: {
   bloqueado: boolean;
   erroCount: number;
   recibo: string;
@@ -277,11 +298,7 @@ export function RegistroRecibo({ bloqueado, erroCount, recibo, onReciboChange, o
             size="sm"
             className="hover-scale"
           >
-            {registrando ? (
-              <Loader2 className="h-4 w-4 animate-spin" />
-            ) : (
-              'Marcar como transmitido'
-            )}
+            {registrando ? <Loader2 className="h-4 w-4 animate-spin" /> : 'Marcar como transmitido'}
           </Button>
         </div>
       </div>

@@ -43,25 +43,21 @@ export default function AdminEdgeHealth() {
 
   useEffect(() => {
     if (!user) return;
-    supabase
-      .rpc('has_role', { _user_id: user.id, _role: 'admin' })
-      .then(({ data, error }) => {
-        if (error) {
-          logger.error('Erro ao verificar role admin', error);
-          setIsAdmin(false);
-          return;
-        }
-        setIsAdmin(!!data);
-        if (!data) navigate('/');
-      });
+    supabase.rpc('has_role', { _user_id: user.id, _role: 'admin' }).then(({ data, error }) => {
+      if (error) {
+        logger.error('Erro ao verificar role admin', error);
+        setIsAdmin(false);
+        return;
+      }
+      setIsAdmin(!!data);
+      if (!data) navigate('/');
+    });
   }, [user, navigate]);
 
   const { data: health, isLoading: loadingHealth } = useQuery({
     queryKey: ['edge-health'],
     queryFn: async () => {
-      const { data, error } = await supabase
-        .from('vw_edge_health' as never)
-        .select('*');
+      const { data, error } = await supabase.from('vw_edge_health' as never).select('*');
       if (error) throw error;
       return (data || []) as unknown as HealthRow[];
     },
@@ -98,17 +94,14 @@ export default function AdminEdgeHealth() {
 
   const totalCalls = (health || []).reduce((s, r) => s + r.total_calls, 0);
   const totalErrors = (health || []).reduce((s, r) => s + r.error_count, 0);
-  const overallErrorRate =
-    totalCalls > 0 ? ((totalErrors / totalCalls) * 100).toFixed(2) : '0.00';
+  const overallErrorRate = totalCalls > 0 ? ((totalErrors / totalCalls) * 100).toFixed(2) : '0.00';
   const maxP95 = Math.max(0, ...(health || []).map((r) => r.p95_ms ?? 0));
 
   return (
     <div className="container mx-auto p-6 space-y-6">
       <div>
         <h1 className="text-3xl font-bold tracking-tight">Saúde das Edge Functions</h1>
-        <p className="text-muted-foreground">
-          Métricas dos últimos 7 dias · atualizado a cada 30s
-        </p>
+        <p className="text-muted-foreground">Métricas dos últimos 7 dias · atualizado a cada 30s</p>
       </div>
 
       <div className="grid gap-4 md:grid-cols-3">

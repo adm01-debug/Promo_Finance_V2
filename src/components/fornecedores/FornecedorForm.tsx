@@ -9,12 +9,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { toast } from '@/hooks/use-toast';
 import { useConfetti } from '@/hooks/useConfetti';
 import { sounds } from '@/lib/sound-feedback';
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-} from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Form } from '@/components/ui/form';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
@@ -27,11 +22,20 @@ import { FornecedorObservacoes } from './form/FornecedorObservacoes';
 const fornecedorSchema = z.object({
   razao_social: z.string().min(2, 'Razão social é obrigatória').max(200, 'Nome muito longo'),
   nome_fantasia: z.string().max(200, 'Nome muito longo').optional(),
-  cnpj_cpf: z.string().max(18, 'CNPJ/CPF inválido').optional().refine(
-    (val) => !val || validateCnpjCpf(val).valid,
-    (val) => ({ message: val ? validateCnpjCpf(val).message : 'Documento inválido' })
-  ),
-  email: z.string().email('E-mail inválido').max(255, 'E-mail muito longo').optional().or(z.literal('')),
+  cnpj_cpf: z
+    .string()
+    .max(18, 'CNPJ/CPF inválido')
+    .optional()
+    .refine(
+      (val) => !val || validateCnpjCpf(val).valid,
+      (val) => ({ message: val ? validateCnpjCpf(val).message : 'Documento inválido' })
+    ),
+  email: z
+    .string()
+    .email('E-mail inválido')
+    .max(255, 'E-mail muito longo')
+    .optional()
+    .or(z.literal('')),
   telefone: z.string().max(20, 'Telefone muito longo').optional(),
   endereco: z.string().max(300, 'Endereço muito longo').optional(),
   cidade: z.string().max(100, 'Cidade muito longa').optional(),
@@ -130,7 +134,10 @@ export function FornecedorForm({ open, onOpenChange, fornecedor }: FornecedorFor
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['fornecedores'] });
       sounds.success();
-      customCelebration({ title: 'Fornecedor cadastrado!', description: 'Fornecedor adicionado com sucesso.' });
+      customCelebration({
+        title: 'Fornecedor cadastrado!',
+        description: 'Fornecedor adicionado com sucesso.',
+      });
       form.reset();
       onOpenChange(false);
     },
@@ -182,15 +189,23 @@ export function FornecedorForm({ open, onOpenChange, fornecedor }: FornecedorFor
 
   const isPending = createMutation.isPending || updateMutation.isPending;
 
+  // Os subcomponentes em ./form declaram o tipo apagado UseFormReturn<FieldValues>
+  // (padrão do RHF para props compartilhadas); em runtime recebem o mesmo form.
+  const formForFields = form as unknown as React.ComponentProps<
+    typeof FornecedorDadosBasicos
+  >['form'];
+
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2 text-xl font-display">
-            <div className={cn(
-              "h-10 w-10 rounded-xl flex items-center justify-center",
-              isEditing ? "bg-secondary/10" : "bg-warning/10"
-            )}>
+            <div
+              className={cn(
+                'h-10 w-10 rounded-xl flex items-center justify-center',
+                isEditing ? 'bg-secondary/10' : 'bg-warning/10'
+              )}
+            >
               {isEditing ? (
                 <Edit className="h-5 w-5 text-secondary" />
               ) : (
@@ -203,9 +218,9 @@ export function FornecedorForm({ open, onOpenChange, fornecedor }: FornecedorFor
 
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-            <FornecedorDadosBasicos form={form} />
-            <FornecedorContatoEndereco form={form} />
-            <FornecedorObservacoes form={form} />
+            <FornecedorDadosBasicos form={formForFields} />
+            <FornecedorContatoEndereco form={formForFields} />
+            <FornecedorObservacoes form={formForFields} />
 
             <div className="flex justify-end gap-3 pt-4 border-t">
               <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
@@ -217,10 +232,10 @@ export function FornecedorForm({ open, onOpenChange, fornecedor }: FornecedorFor
                 loadingText="Salvando..."
                 successText="Salvo!"
                 className={cn(
-                  "gap-2 shadow-lg",
+                  'gap-2 shadow-lg',
                   isEditing
-                    ? "bg-gradient-to-r from-secondary to-secondary/80 shadow-secondary/25"
-                    : "bg-gradient-to-r from-warning to-warning/80 shadow-warning/25 text-warning-foreground"
+                    ? 'bg-gradient-to-r from-secondary to-secondary/80 shadow-secondary/25'
+                    : 'bg-gradient-to-r from-warning to-warning/80 shadow-warning/25 text-warning-foreground'
                 )}
               >
                 {isEditing ? 'Salvar Alterações' : 'Cadastrar Fornecedor'}

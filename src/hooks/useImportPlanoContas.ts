@@ -48,7 +48,7 @@ export function useImportPlanoContas() {
       if (errExist) throw errExist;
 
       const idPorCodigo = new Map<string, string>(
-        (existentes ?? []).map((c: { id: string; codigo: string }) => [c.codigo, c.id]),
+        (existentes ?? []).map((c: { id: string; codigo: string }) => [c.codigo, c.id])
       );
 
       const total = input.contas.length;
@@ -62,7 +62,7 @@ export function useImportPlanoContas() {
 
         for (const conta of doNivel) {
           try {
-            const parentId = conta.codigo_pai ? idPorCodigo.get(conta.codigo_pai) ?? null : null;
+            const parentId = conta.codigo_pai ? (idPorCodigo.get(conta.codigo_pai) ?? null) : null;
             if (conta.codigo_pai && !parentId) {
               throw new Error(`Conta superior ${conta.codigo_pai} não foi persistida.`);
             }
@@ -118,7 +118,9 @@ export function useImportPlanoContas() {
       qc.invalidateQueries({ queryKey: ['plano-contas'] });
       const total = res.criadas + res.atualizadas;
       if (res.falhas.length === 0) {
-        toast.success(`Plano importado: ${res.criadas} criada(s), ${res.atualizadas} atualizada(s).`);
+        toast.success(
+          `Plano importado: ${res.criadas} criada(s), ${res.atualizadas} atualizada(s).`
+        );
       } else {
         toast.warning(`${total} conta(s) processada(s), ${res.falhas.length} falha(s).`);
       }

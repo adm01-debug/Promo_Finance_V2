@@ -1,6 +1,16 @@
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { Building2, Loader2, Mail, ArrowRight, KeyRound, X, AlertTriangle, RotateCw, LogIn } from 'lucide-react';
+import {
+  Building2,
+  Loader2,
+  Mail,
+  ArrowRight,
+  KeyRound,
+  X,
+  AlertTriangle,
+  RotateCw,
+  LogIn,
+} from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -49,15 +59,17 @@ export default function CorporateOnboarding() {
               </div>
               <CardTitle>Não foi possível iniciar o login SSO</CardTitle>
               <CardDescription>
-                Houve uma falha ao redirecionar para <strong>{ssoError.provider.nome}</strong>.
-                Você pode tentar novamente ou continuar com outro método.
+                Houve uma falha ao redirecionar para <strong>{ssoError.provider.nome}</strong>. Você
+                pode tentar novamente ou continuar com outro método.
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
               <Alert variant="error">
                 <AlertDescription className="text-sm">
                   <span className="flex items-center gap-2 font-medium mb-1">
-                    <span aria-hidden>{failedPreset?.logo ?? <KeyRound className="h-4 w-4" />}</span>
+                    <span aria-hidden>
+                      {failedPreset?.logo ?? <KeyRound className="h-4 w-4" />}
+                    </span>
                     {ssoError.provider.nome}
                   </span>
                   <span className="text-xs opacity-90 break-words">{ssoError.message}</span>

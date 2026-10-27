@@ -48,7 +48,12 @@ export function OrcamentoKPIs({ kpis }: { kpis: OrcamentoKPIsData }) {
             <DollarSign className="h-4 w-4 text-primary" />
             <span className="text-xs text-muted-foreground">Disponível</span>
           </div>
-          <p className={cn('text-lg font-bold', kpis.disponivel < 0 ? 'text-destructive' : 'text-success')}>
+          <p
+            className={cn(
+              'text-lg font-bold',
+              kpis.disponivel < 0 ? 'text-destructive' : 'text-success'
+            )}
+          >
             {formatCurrency(kpis.disponivel)}
           </p>
         </CardContent>

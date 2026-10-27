@@ -27,7 +27,7 @@ export function useDivergenciasConciliacao() {
 
       if (error) throw error;
       return data as Divergencia[];
-    }
+    },
   });
 
   const resolverDivergencia = useMutation({
@@ -42,7 +42,7 @@ export function useDivergenciasConciliacao() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['divergencias-conciliacao'] });
       toast.success('Divergência atualizada com sucesso');
-    }
+    },
   });
 
   return { divergencias, isLoading, resolverDivergencia };

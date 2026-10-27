@@ -49,24 +49,22 @@ export function useScimChecklist() {
           confirmed_at: confirmed ? new Date().toISOString() : null,
         },
       }));
-      const { error } = await supabase
-        .from('scim_setup_checklist')
-        .upsert(
-          {
-            user_id: user.id,
-            item_key: itemKey,
-            confirmed,
-            confirmed_at: confirmed ? new Date().toISOString() : null,
-          },
-          { onConflict: 'user_id,item_key' },
-        );
+      const { error } = await supabase.from('scim_setup_checklist').upsert(
+        {
+          user_id: user.id,
+          item_key: itemKey,
+          confirmed,
+          confirmed_at: confirmed ? new Date().toISOString() : null,
+        },
+        { onConflict: 'user_id,item_key' }
+      );
       if (error) {
         // Reverte em caso de erro
         await fetchItems();
       }
       setSaving(null);
     },
-    [user, fetchItems],
+    [user, fetchItems]
   );
 
   const isConfirmed = useCallback((key: string) => !!items[key]?.confirmed, [items]);

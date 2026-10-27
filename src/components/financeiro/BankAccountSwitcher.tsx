@@ -2,7 +2,14 @@ import { useState, useEffect } from 'react';
 import { Landmark, Check, ChevronsUpDown, Wallet } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
-import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from '@/components/ui/command';
+import {
+  Command,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+  CommandList,
+} from '@/components/ui/command';
 import { useBankAccounts } from '@/hooks/useBankAccounts';
 import { cn } from '@/lib/utils';
 import { toast } from 'sonner';
@@ -54,14 +61,18 @@ export function BankAccountSwitcher() {
     setCurrentBankAccountId(id);
     setCurrentId(id);
     setOpen(false);
-    
+
     // Sincronizar também o filtro de conta bancária nas páginas que usam estados locais
-    window.dispatchEvent(new CustomEvent('sync-financial-filters', { 
-      detail: { bankAccountId: id } 
-    }));
+    window.dispatchEvent(
+      new CustomEvent('sync-financial-filters', {
+        detail: { bankAccountId: id },
+      })
+    );
 
     toast.success('Conta bancária selecionada', {
-      description: id ? `Filtrando dados para a conta ${accounts.find(a => a.id === id)?.banco}` : 'Mostrando todas as contas',
+      description: id
+        ? `Filtrando dados para a conta ${accounts.find((a) => a.id === id)?.banco}`
+        : 'Mostrando todas as contas',
     });
   };
 
@@ -76,10 +87,16 @@ export function BankAccountSwitcher() {
             className="w-[240px] justify-between h-11 bg-card/5 border-border hover:bg-card/10 hover:border-white/20 transition-all rounded-xl backdrop-blur-sm group"
           >
             <div className="flex items-center gap-2 overflow-hidden">
-              <div className={cn(
-                "h-6 w-6 rounded-lg flex items-center justify-center shrink-0 transition-transform group-hover:scale-110",
-                current?.cor || "bg-primary/20 text-primary"
-              )} style={{ backgroundColor: current?.cor ? `${current.cor}20` : undefined, color: current?.cor }}>
+              <div
+                className={cn(
+                  'h-6 w-6 rounded-lg flex items-center justify-center shrink-0 transition-transform group-hover:scale-110',
+                  current?.cor || 'bg-primary/20 text-primary'
+                )}
+                style={{
+                  backgroundColor: current?.cor ? `${current.cor}20` : undefined,
+                  color: current?.cor,
+                }}
+              >
                 <Landmark className="h-3.5 w-3.5" />
               </div>
               <div className="flex flex-col items-start truncate">
@@ -96,9 +113,15 @@ export function BankAccountSwitcher() {
             <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50 transition-transform group-hover:translate-y-0.5" />
           </Button>
         </PopoverTrigger>
-        <PopoverContent className="w-[300px] p-0 bg-popover/95 border-border backdrop-blur-xl shadow-2xl rounded-2xl overflow-hidden" align="start">
+        <PopoverContent
+          className="w-[300px] p-0 bg-popover/95 border-border backdrop-blur-xl shadow-2xl rounded-2xl overflow-hidden"
+          align="start"
+        >
           <Command className="bg-transparent">
-            <CommandInput placeholder="Buscar conta..." className="h-12 border-none bg-transparent focus:ring-0" />
+            <CommandInput
+              placeholder="Buscar conta..."
+              className="h-12 border-none bg-transparent focus:ring-0"
+            />
             <CommandList className="max-h-[300px] overflow-y-auto">
               <CommandEmpty>Nenhuma conta encontrada.</CommandEmpty>
               <CommandGroup heading="Contas Ativas">
@@ -121,9 +144,12 @@ export function BankAccountSwitcher() {
                     className="flex items-center justify-between p-3 rounded-xl cursor-pointer hover:bg-card/5 transition-colors"
                   >
                     <div className="flex items-center gap-3 overflow-hidden">
-                      <div 
+                      <div
                         className="h-8 w-8 rounded-xl flex items-center justify-center shrink-0"
-                        style={{ backgroundColor: account.cor ? `${account.cor}20` : 'var(--acc-soft)', color: account.cor || 'var(--acc)' }}
+                        style={{
+                          backgroundColor: account.cor ? `${account.cor}20` : 'var(--acc-soft)',
+                          color: account.cor || 'var(--acc)',
+                        }}
                       >
                         <Landmark className="h-4 w-4" />
                       </div>
@@ -147,7 +173,12 @@ export function BankAccountSwitcher() {
           </Command>
           <div className="p-2 border-t border-white/5 bg-card/5 flex items-center justify-between">
             <span className="text-[10px] text-muted-foreground">Consolidado Bancário</span>
-            <Button variant="ghost" size="sm" className="h-7 text-[10px] hover:bg-card/10" onClick={() => window.location.href = '/contas-bancarias'}>
+            <Button
+              variant="ghost"
+              size="sm"
+              className="h-7 text-[10px] hover:bg-card/10"
+              onClick={() => (window.location.href = '/contas-bancarias')}
+            >
               Gerenciar Contas
             </Button>
           </div>

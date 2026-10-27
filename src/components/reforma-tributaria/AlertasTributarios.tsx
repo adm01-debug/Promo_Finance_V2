@@ -6,34 +6,55 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { 
-  Bell, CheckCircle2, AlertTriangle, AlertCircle, Info, Clock,
-  Calendar, RefreshCw, ExternalLink, BellRing,
+import {
+  Bell,
+  CheckCircle2,
+  AlertTriangle,
+  AlertCircle,
+  Info,
+  Clock,
+  Calendar,
+  RefreshCw,
+  ExternalLink,
+  BellRing,
 } from 'lucide-react';
 import { format, parseISO, differenceInDays } from 'date-fns';
-import useAlertasTributarios, { TipoAlerta, PrioridadeAlerta, ALERTA_CONFIG } from '@/hooks/useAlertasTributarios';
+import useAlertasTributarios, {
+  TipoAlerta,
+  PrioridadeAlerta,
+  ALERTA_CONFIG,
+} from '@/hooks/useAlertasTributarios';
 import { useAllEmpresas } from '@/hooks/useEmpresas';
 
-const PRIORIDADE_CONFIG: Record<PrioridadeAlerta, { cor: string; icone: React.ReactNode; label: string }> = {
-  critica: { 
-    cor: 'bg-destructive/10 text-destructive border-destructive/20', 
+const PRIORIDADE_CONFIG: Record<
+  PrioridadeAlerta,
+  { cor: string; icone: React.ReactNode; label: string }
+> = {
+  critica: {
+    cor: 'bg-destructive/10 text-destructive border-destructive/20',
     icone: <AlertCircle className="h-4 w-4" />,
     label: 'Crítico',
   },
-  alta: { 
-    cor: 'bg-warning/10 text-warning border-warning/20', 
+  alta: {
+    cor: 'bg-warning/10 text-warning border-warning/20',
     icone: <AlertTriangle className="h-4 w-4" />,
     label: 'Alta',
   },
-  media: { 
-    cor: 'bg-warning/5 text-warning border-warning/10', 
+  media: {
+    cor: 'bg-warning/5 text-warning border-warning/10',
     icone: <Clock className="h-4 w-4" />,
     label: 'Média',
   },
-  baixa: { 
-    cor: 'bg-primary/10 text-primary border-primary/20', 
+  baixa: {
+    cor: 'bg-primary/10 text-primary border-primary/20',
     icone: <Info className="h-4 w-4" />,
     label: 'Baixa',
   },
@@ -46,11 +67,15 @@ export function AlertasTributarios() {
 
   const { data: empresas = [] } = useAllEmpresas();
   const {
-    alertas, naoLidos, criticos, proximosVencimentos,
-    resolverAlerta, gerarAlertasAutomaticos,
+    alertas,
+    naoLidos,
+    criticos,
+    proximosVencimentos,
+    resolverAlerta,
+    gerarAlertasAutomaticos,
   } = useAlertasTributarios(empresaId || undefined);
 
-  const alertasFiltrados = alertas.filter(a => {
+  const alertasFiltrados = alertas.filter((a) => {
     if (filtroPrioridade !== 'todas' && a.prioridade !== filtroPrioridade) return false;
     if (filtroTipo !== 'todos' && a.tipo !== filtroTipo) return false;
     return true;
@@ -78,7 +103,9 @@ export function AlertasTributarios() {
               </div>
               <div>
                 <CardTitle>Alertas Tributários</CardTitle>
-                <CardDescription>Monitoramento em tempo real de prazos e compliance</CardDescription>
+                <CardDescription>
+                  Monitoramento em tempo real de prazos e compliance
+                </CardDescription>
               </div>
             </div>
             {criticos > 0 && (
@@ -93,17 +120,26 @@ export function AlertasTributarios() {
           <div className="flex flex-wrap gap-4 items-end">
             <div className="space-y-2 min-w-48">
               <Select value={empresaId} onValueChange={setEmpresaId}>
-                <SelectTrigger><SelectValue placeholder="Selecione a empresa" /></SelectTrigger>
+                <SelectTrigger>
+                  <SelectValue placeholder="Selecione a empresa" />
+                </SelectTrigger>
                 <SelectContent>
                   {empresas.map((emp) => (
-                    <SelectItem key={emp.id} value={emp.id}>{emp.razao_social}</SelectItem>
+                    <SelectItem key={emp.id} value={emp.id}>
+                      {emp.razao_social}
+                    </SelectItem>
                   ))}
                 </SelectContent>
               </Select>
             </div>
             <div className="space-y-2 min-w-32">
-              <Select value={filtroPrioridade} onValueChange={(v) => setFiltroPrioridade(v as PrioridadeAlerta | 'todas')}>
-                <SelectTrigger><SelectValue /></SelectTrigger>
+              <Select
+                value={filtroPrioridade}
+                onValueChange={(v) => setFiltroPrioridade(v as PrioridadeAlerta | 'todas')}
+              >
+                <SelectTrigger>
+                  <SelectValue />
+                </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="todas">Todas prioridades</SelectItem>
                   <SelectItem value="critica">Crítica</SelectItem>
@@ -114,18 +150,26 @@ export function AlertasTributarios() {
               </Select>
             </div>
             <div className="space-y-2 min-w-40">
-              <Select value={filtroTipo} onValueChange={(v) => setFiltroTipo(v as TipoAlerta | 'todos')}>
-                <SelectTrigger><SelectValue /></SelectTrigger>
+              <Select
+                value={filtroTipo}
+                onValueChange={(v) => setFiltroTipo(v as TipoAlerta | 'todos')}
+              >
+                <SelectTrigger>
+                  <SelectValue />
+                </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="todos">Todos tipos</SelectItem>
                   {Object.entries(ALERTA_CONFIG).map(([tipo, config]) => (
-                    <SelectItem key={tipo} value={tipo}>{config.label}</SelectItem>
+                    <SelectItem key={tipo} value={tipo}>
+                      {config.label}
+                    </SelectItem>
                   ))}
                 </SelectContent>
               </Select>
             </div>
             <Button variant="outline" onClick={handleGerarAlertas} disabled={!empresaId}>
-              <RefreshCw className="h-4 w-4 mr-2" />Verificar Pendências
+              <RefreshCw className="h-4 w-4 mr-2" />
+              Verificar Pendências
             </Button>
           </div>
         </CardContent>
@@ -155,7 +199,9 @@ export function AlertasTributarios() {
               </div>
               <div>
                 <p className="text-sm text-muted-foreground">Alta Prioridade</p>
-                <p className="text-2xl font-bold">{alertas.filter(a => a.prioridade === 'alta').length}</p>
+                <p className="text-2xl font-bold">
+                  {alertas.filter((a) => a.prioridade === 'alta').length}
+                </p>
               </div>
             </div>
           </CardContent>
@@ -184,11 +230,13 @@ export function AlertasTributarios() {
               <div>
                 <p className="text-sm text-muted-foreground">Próximos 7 dias</p>
                 <p className="text-2xl font-bold">
-                  {alertas.filter(a => {
-                    if (!a.data_vencimento) return false;
-                    const dias = differenceInDays(parseISO(a.data_vencimento), new Date());
-                    return dias >= 0 && dias <= 7;
-                  }).length}
+                  {
+                    alertas.filter((a) => {
+                      if (!a.data_vencimento) return false;
+                      const dias = differenceInDays(parseISO(a.data_vencimento), new Date());
+                      return dias >= 0 && dias <= 7;
+                    }).length
+                  }
                 </p>
               </div>
             </div>
@@ -215,7 +263,7 @@ export function AlertasTributarios() {
                   {alertasFiltrados.map((alerta, index) => {
                     const config = PRIORIDADE_CONFIG[alerta.prioridade];
                     const tipoConfig = ALERTA_CONFIG[alerta.tipo];
-                    const diasParaVencer = alerta.data_vencimento 
+                    const diasParaVencer = alerta.data_vencimento
                       ? differenceInDays(parseISO(alerta.data_vencimento), new Date())
                       : null;
 
@@ -234,8 +282,14 @@ export function AlertasTributarios() {
                             <div className="flex-1 min-w-0">
                               <div className="flex items-center gap-2 flex-wrap">
                                 <h4 className="font-medium">{alerta.titulo}</h4>
-                                <Badge variant="outline" className="text-xs">{tipoConfig.label}</Badge>
-                                {!alerta.lido && <Badge variant="secondary" className="text-xs">Novo</Badge>}
+                                <Badge variant="outline" className="text-xs">
+                                  {tipoConfig.label}
+                                </Badge>
+                                {!alerta.lido && (
+                                  <Badge variant="secondary" className="text-xs">
+                                    Novo
+                                  </Badge>
+                                )}
                               </div>
                               <p className="text-sm mt-1 opacity-80">{alerta.mensagem}</p>
                               <div className="flex items-center gap-4 mt-2 text-xs text-muted-foreground">
@@ -244,13 +298,20 @@ export function AlertasTributarios() {
                                     <Calendar className="h-3 w-3" />
                                     Vence: {format(parseISO(alerta.data_vencimento), 'dd/MM/yyyy')}
                                     {diasParaVencer !== null && diasParaVencer >= 0 && (
-                                      <span className={diasParaVencer <= 3 ? 'text-destructive font-medium' : ''}>
-                                        ({diasParaVencer === 0 ? 'Hoje!' : `${diasParaVencer} dias`})
+                                      <span
+                                        className={
+                                          diasParaVencer <= 3 ? 'text-destructive font-medium' : ''
+                                        }
+                                      >
+                                        ({diasParaVencer === 0 ? 'Hoje!' : `${diasParaVencer} dias`}
+                                        )
                                       </span>
                                     )}
                                   </span>
                                 )}
-                                {alerta.competencia && <span>Competência: {alerta.competencia}</span>}
+                                {alerta.competencia && (
+                                  <span>Competência: {alerta.competencia}</span>
+                                )}
                               </div>
                             </div>
                           </div>
@@ -258,11 +319,16 @@ export function AlertasTributarios() {
                             {alerta.acao_url && (
                               <Button size="sm" variant="outline" asChild>
                                 <a href={alerta.acao_url}>
-                                  <ExternalLink className="h-3 w-3 mr-1" />{alerta.acao_label || 'Ver'}
+                                  <ExternalLink className="h-3 w-3 mr-1" />
+                                  {alerta.acao_label || 'Ver'}
                                 </a>
                               </Button>
                             )}
-                            <Button size="sm" variant="ghost" onClick={() => resolverAlerta.mutate({ alertaId: alerta.id })}>
+                            <Button
+                              size="sm"
+                              variant="ghost"
+                              onClick={() => resolverAlerta.mutate({ alertaId: alerta.id })}
+                            >
                               <CheckCircle2 className="h-4 w-4" />
                             </Button>
                           </div>
@@ -282,7 +348,8 @@ export function AlertasTributarios() {
         <Card>
           <CardHeader className="pb-2">
             <CardTitle className="text-lg flex items-center gap-2">
-              <Clock className="h-5 w-5" />Próximos Vencimentos
+              <Clock className="h-5 w-5" />
+              Próximos Vencimentos
             </CardTitle>
           </CardHeader>
           <CardContent>
@@ -290,16 +357,27 @@ export function AlertasTributarios() {
               {proximosVencimentos.map((alerta) => {
                 const dias = differenceInDays(parseISO(alerta.data_vencimento!), new Date());
                 return (
-                  <div key={alerta.id} className={`p-3 rounded-lg border ${
-                    dias <= 1 ? 'bg-destructive/5 border-destructive/20' :
-                    dias <= 3 ? 'bg-warning/5 border-warning/20' :
-                    'bg-muted/50'
-                  }`}>
-                    <p className="text-xs text-muted-foreground">{ALERTA_CONFIG[alerta.tipo].label}</p>
-                    <p className="font-medium text-sm truncate" title={alerta.titulo}>{alerta.titulo}</p>
-                    <p className={`text-xs mt-1 font-medium ${
-                      dias <= 1 ? 'text-destructive' : dias <= 3 ? 'text-warning' : ''
-                    }`}>
+                  <div
+                    key={alerta.id}
+                    className={`p-3 rounded-lg border ${
+                      dias <= 1
+                        ? 'bg-destructive/5 border-destructive/20'
+                        : dias <= 3
+                          ? 'bg-warning/5 border-warning/20'
+                          : 'bg-muted/50'
+                    }`}
+                  >
+                    <p className="text-xs text-muted-foreground">
+                      {ALERTA_CONFIG[alerta.tipo].label}
+                    </p>
+                    <p className="font-medium text-sm truncate" title={alerta.titulo}>
+                      {alerta.titulo}
+                    </p>
+                    <p
+                      className={`text-xs mt-1 font-medium ${
+                        dias <= 1 ? 'text-destructive' : dias <= 3 ? 'text-warning' : ''
+                      }`}
+                    >
                       {dias === 0 ? 'Vence hoje!' : dias === 1 ? 'Vence amanhã' : `${dias} dias`}
                     </p>
                   </div>

@@ -8,10 +8,10 @@ export default function ComparativoRegimesPage() {
     <MainLayout>
       <div className="relative min-h-screen">
         <PageBackground />
-        
+
         <div className="container mx-auto p-6 relative z-10">
-          <PageHeader 
-            title="Comparativo de Regimes" 
+          <PageHeader
+            title="Comparativo de Regimes"
             subtitle="Simule a carga tributária entre Lucro Real, Presumido e o novo sistema IBS/CBS."
             badge="Planejamento Tributário"
             icon={Scale}
@@ -19,7 +19,7 @@ export default function ComparativoRegimesPage() {
             gradientVia="via-primary"
             gradientTo="to-blue-600"
           />
-          
+
           <ComparativoRegimesPanel />
         </div>
       </div>

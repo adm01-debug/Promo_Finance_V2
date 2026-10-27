@@ -71,11 +71,7 @@ interface UseLazyDataOptions<T> {
   delay?: number;
 }
 
-export function useLazyData<T>({
-  fetchFn,
-  enabled = true,
-  delay = 0,
-}: UseLazyDataOptions<T>) {
+export function useLazyData<T>({ fetchFn, enabled = true, delay = 0 }: UseLazyDataOptions<T>) {
   const [data, setData] = useState<T | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<Error | null>(null);

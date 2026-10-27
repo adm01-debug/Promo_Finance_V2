@@ -8,7 +8,12 @@ import {
   type PeriodoApuracao,
 } from '../irpj-csll';
 
-const ajuste = (id: string, tipo: AjusteLalur['tipo'], valor: number, alvo: AjusteLalur['alvo'] = 'ambos'): AjusteLalur => ({
+const ajuste = (
+  id: string,
+  tipo: AjusteLalur['tipo'],
+  valor: number,
+  alvo: AjusteLalur['alvo'] = 'ambos'
+): AjusteLalur => ({
   id,
   descricao: id,
   tipo,
@@ -79,7 +84,12 @@ describe('IRPJ/CSLL — Lucro Real', () => {
   it('aplica ajustes segregados por tributo', () => {
     const r = apurarIrpjCsll({
       forma: 'trimestral',
-      periodos: [periodo({ lucroLiquido: 100_000, ajustes: [ajuste('lei-do-bem', 'exclusao', 40_000, 'irpj')] })],
+      periodos: [
+        periodo({
+          lucroLiquido: 100_000,
+          ajustes: [ajuste('lei-do-bem', 'exclusao', 40_000, 'irpj')],
+        }),
+      ],
     });
     const p = r.periodos[0];
     expect(p.lucroReal).toBeCloseTo(60_000, 2);
@@ -190,7 +200,7 @@ describe('IRPJ/CSLL — simulação massiva de cenários', () => {
         receitaBruta: 500_000 + i * 10_000,
         percentualPresuncaoIrpj: 0.32,
         percentualPresuncaoCsll: 0.32,
-      }),
+      })
     );
     const r = apurarIrpjCsll({ forma: 'anual_estimativa', periodos });
     expect(r.periodos).toHaveLength(12);

@@ -8,12 +8,30 @@ import { Switch } from '@/components/ui/switch';
 import { Badge } from '@/components/ui/badge';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '@/components/ui/table';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 import { Info, Truck } from 'lucide-react';
 import {
-  ALIQUOTAS_UF, UFS, calcularDifal, calcularIcmsSt,
-  type OrigemMercadoria, type SituacaoIcmsSt, type UF,
+  ALIQUOTAS_UF,
+  UFS,
+  calcularDifal,
+  calcularIcmsSt,
+  type OrigemMercadoria,
+  type SituacaoIcmsSt,
+  type UF,
 } from '@/lib/tributario/icms';
 import { resolverMvaSt } from '@/lib/tributario/icms/overlay-mva';
 import { useCatalogosFiscais } from '@/hooks/useCatalogosFiscais';
@@ -42,14 +60,24 @@ const ORIGENS: { value: OrigemMercadoria; label: string }[] = [
   { value: 8, label: '8 — Nacional com conteúdo de importação > 70%' },
 ];
 
-function UfSelect({ id, value, onChange, label }: {
-  id: string; value: UF; onChange: (uf: UF) => void; label: string;
+function UfSelect({
+  id,
+  value,
+  onChange,
+  label,
+}: {
+  id: string;
+  value: UF;
+  onChange: (uf: UF) => void;
+  label: string;
 }) {
   return (
     <div className="space-y-2">
       <Label htmlFor={id}>{label}</Label>
       <Select value={value} onValueChange={(v) => onChange(v as UF)}>
-        <SelectTrigger id={id}><SelectValue /></SelectTrigger>
+        <SelectTrigger id={id}>
+          <SelectValue />
+        </SelectTrigger>
         <SelectContent>
           {UFS.map((uf) => (
             <SelectItem key={uf} value={uf}>
@@ -62,7 +90,11 @@ function UfSelect({ id, value, onChange, label }: {
   );
 }
 
-function MemoriaTable({ linhas }: { linhas: { rubrica: string; base: number; aliquota: number; valor: number; fundamento: string }[] }) {
+function MemoriaTable({
+  linhas,
+}: {
+  linhas: { rubrica: string; base: number; aliquota: number; valor: number; fundamento: string }[];
+}) {
   return (
     <div className="overflow-x-auto rounded-md border border-border">
       <Table>
@@ -112,18 +144,44 @@ function SubstituicaoTributaria() {
 
   const resolucao = useMemo(
     () => resolverMvaSt({ ncm, ufOrigem, ufDestino, situacao: situacaoIcms }),
-    [ncm, ufOrigem, ufDestino, situacaoIcms],
+    [ncm, ufOrigem, ufDestino, situacaoIcms]
   );
 
-  const r = useMemo(() => calcularIcmsSt({
-    ufOrigem, ufDestino, valorProduto, frete, ipi, descontos, origem,
-    // Com "usar protocolo" ligado e MVA resolvida, a MVA manual é omitida e o
-    // motor usa a do protocolo vigente.
-    mvaOriginal: usarProtocolo && resolucao.encontrado ? undefined : mvaOriginal,
-    ncm: ncm || undefined,
-    situacaoIcms,
-    pmpf: pmpf || undefined, aplicarFcp,
-  }), [ufOrigem, ufDestino, valorProduto, frete, ipi, descontos, mvaOriginal, origem, pmpf, aplicarFcp, ncm, situacaoIcms, usarProtocolo, resolucao.encontrado]);
+  const r = useMemo(
+    () =>
+      calcularIcmsSt({
+        ufOrigem,
+        ufDestino,
+        valorProduto,
+        frete,
+        ipi,
+        descontos,
+        origem,
+        // Com "usar protocolo" ligado e MVA resolvida, a MVA manual é omitida e o
+        // motor usa a do protocolo vigente.
+        mvaOriginal: usarProtocolo && resolucao.encontrado ? undefined : mvaOriginal,
+        ncm: ncm || undefined,
+        situacaoIcms,
+        pmpf: pmpf || undefined,
+        aplicarFcp,
+      }),
+    [
+      ufOrigem,
+      ufDestino,
+      valorProduto,
+      frete,
+      ipi,
+      descontos,
+      mvaOriginal,
+      origem,
+      pmpf,
+      aplicarFcp,
+      ncm,
+      situacaoIcms,
+      usarProtocolo,
+      resolucao.encontrado,
+    ]
+  );
 
   return (
     <div className="space-y-6">
@@ -131,36 +189,75 @@ function SubstituicaoTributaria() {
         <CardHeader>
           <CardTitle>Operação</CardTitle>
           <CardDescription>
-            MVA ajustada conforme o Convênio ICMS 52/2017; informe PMPF para substituir a MVA por pauta fiscal.
+            MVA ajustada conforme o Convênio ICMS 52/2017; informe PMPF para substituir a MVA por
+            pauta fiscal.
           </CardDescription>
         </CardHeader>
         <CardContent className="grid grid-cols-1 gap-4 md:grid-cols-3">
           <UfSelect id="st-origem" label="UF de origem" value={ufOrigem} onChange={setUfOrigem} />
-          <UfSelect id="st-destino" label="UF de destino" value={ufDestino} onChange={setUfDestino} />
+          <UfSelect
+            id="st-destino"
+            label="UF de destino"
+            value={ufDestino}
+            onChange={setUfDestino}
+          />
           <div className="space-y-2">
             <Label htmlFor="st-origem-merc">Origem da mercadoria (CST)</Label>
-            <Select value={String(origem)} onValueChange={(v) => setOrigem(Number(v) as OrigemMercadoria)}>
-              <SelectTrigger id="st-origem-merc"><SelectValue /></SelectTrigger>
+            <Select
+              value={String(origem)}
+              onValueChange={(v) => setOrigem(Number(v) as OrigemMercadoria)}
+            >
+              <SelectTrigger id="st-origem-merc">
+                <SelectValue />
+              </SelectTrigger>
               <SelectContent>
-                {ORIGENS.map((o) => <SelectItem key={o.value} value={String(o.value)}>{o.label}</SelectItem>)}
+                {ORIGENS.map((o) => (
+                  <SelectItem key={o.value} value={String(o.value)}>
+                    {o.label}
+                  </SelectItem>
+                ))}
               </SelectContent>
             </Select>
           </div>
           <div className="space-y-2">
             <Label htmlFor="st-valor">Valor dos produtos (R$)</Label>
-            <Input id="st-valor" type="number" min={0} value={valorProduto} onChange={(e) => setValorProduto(Number(e.target.value))} />
+            <Input
+              id="st-valor"
+              type="number"
+              min={0}
+              value={valorProduto}
+              onChange={(e) => setValorProduto(Number(e.target.value))}
+            />
           </div>
           <div className="space-y-2">
             <Label htmlFor="st-frete">Frete + despesas (R$)</Label>
-            <Input id="st-frete" type="number" min={0} value={frete} onChange={(e) => setFrete(Number(e.target.value))} />
+            <Input
+              id="st-frete"
+              type="number"
+              min={0}
+              value={frete}
+              onChange={(e) => setFrete(Number(e.target.value))}
+            />
           </div>
           <div className="space-y-2">
             <Label htmlFor="st-ipi">IPI destacado (R$)</Label>
-            <Input id="st-ipi" type="number" min={0} value={ipi} onChange={(e) => setIpi(Number(e.target.value))} />
+            <Input
+              id="st-ipi"
+              type="number"
+              min={0}
+              value={ipi}
+              onChange={(e) => setIpi(Number(e.target.value))}
+            />
           </div>
           <div className="space-y-2">
             <Label htmlFor="st-desc">Descontos incondicionais (R$)</Label>
-            <Input id="st-desc" type="number" min={0} value={descontos} onChange={(e) => setDescontos(Number(e.target.value))} />
+            <Input
+              id="st-desc"
+              type="number"
+              min={0}
+              value={descontos}
+              onChange={(e) => setDescontos(Number(e.target.value))}
+            />
           </div>
           <div className="space-y-2">
             <Label htmlFor="st-ncm">NCM (8 dígitos)</Label>
@@ -182,10 +279,19 @@ function SubstituicaoTributaria() {
           </div>
           <div className="space-y-2">
             <Label htmlFor="st-situacao">Situação do ICMS</Label>
-            <Select value={situacaoIcms} onValueChange={(v) => setSituacaoIcms(v as SituacaoIcmsSt)}>
-              <SelectTrigger id="st-situacao"><SelectValue /></SelectTrigger>
+            <Select
+              value={situacaoIcms}
+              onValueChange={(v) => setSituacaoIcms(v as SituacaoIcmsSt)}
+            >
+              <SelectTrigger id="st-situacao">
+                <SelectValue />
+              </SelectTrigger>
               <SelectContent>
-                {SITUACOES.map((s) => <SelectItem key={s.value} value={s.value}>{s.label}</SelectItem>)}
+                {SITUACOES.map((s) => (
+                  <SelectItem key={s.value} value={s.value}>
+                    {s.label}
+                  </SelectItem>
+                ))}
               </SelectContent>
             </Select>
           </div>
@@ -210,7 +316,13 @@ function SubstituicaoTributaria() {
           </div>
           <div className="space-y-2">
             <Label htmlFor="st-pmpf">PMPF / pauta (R$ — 0 desativa)</Label>
-            <Input id="st-pmpf" type="number" min={0} value={pmpf} onChange={(e) => setPmpf(Number(e.target.value))} />
+            <Input
+              id="st-pmpf"
+              type="number"
+              min={0}
+              value={pmpf}
+              onChange={(e) => setPmpf(Number(e.target.value))}
+            />
           </div>
           <div className="flex items-center justify-between rounded-md border border-border p-3 md:col-span-3">
             <Label htmlFor="st-fcp" className="cursor-pointer">
@@ -223,11 +335,35 @@ function SubstituicaoTributaria() {
 
       <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4">
         {[
-          { t: 'Alíquota interestadual', v: pct(r.aliquotaInterestadual), n: r.operacaoInterestadual ? 'RSF 22/1989 e 13/2012' : 'Operação interna' },
-          { t: 'MVA ajustada', v: r.usouPmpf ? '—' : pct(r.mvaAjustada), n: `MVA original ${pct(r.mvaOriginal)}` },
-          { t: 'Protocolo ST', v: r.protocoloSt ?? '—', n: r.stAfastadaPorRegraJuridica ? 'ST afastada por regra jurídica' : r.cestSt ? `CEST ${r.cestSt}` : 'MVA informada manualmente' },
-          { t: 'Base da ST', v: brl(r.baseSt), n: r.usouPmpf ? 'PMPF/pauta' : 'Base própria + IPI × (1 + MVA aj.)' },
-          { t: 'Total a recolher', v: brl(r.totalRecolher), n: `ST ${brl(r.icmsSt)} + FCP ${brl(r.fcpSt)}` },
+          {
+            t: 'Alíquota interestadual',
+            v: pct(r.aliquotaInterestadual),
+            n: r.operacaoInterestadual ? 'RSF 22/1989 e 13/2012' : 'Operação interna',
+          },
+          {
+            t: 'MVA ajustada',
+            v: r.usouPmpf ? '—' : pct(r.mvaAjustada),
+            n: `MVA original ${pct(r.mvaOriginal)}`,
+          },
+          {
+            t: 'Protocolo ST',
+            v: r.protocoloSt ?? '—',
+            n: r.stAfastadaPorRegraJuridica
+              ? 'ST afastada por regra jurídica'
+              : r.cestSt
+                ? `CEST ${r.cestSt}`
+                : 'MVA informada manualmente',
+          },
+          {
+            t: 'Base da ST',
+            v: brl(r.baseSt),
+            n: r.usouPmpf ? 'PMPF/pauta' : 'Base própria + IPI × (1 + MVA aj.)',
+          },
+          {
+            t: 'Total a recolher',
+            v: brl(r.totalRecolher),
+            n: `ST ${brl(r.icmsSt)} + FCP ${brl(r.fcpSt)}`,
+          },
         ].map((c) => (
           <Card key={c.t}>
             <CardHeader className="pb-2">
@@ -240,15 +376,22 @@ function SubstituicaoTributaria() {
       </div>
 
       {r.alertas.map((a) => (
-        <Alert key={a}><Info className="h-4 w-4" /><AlertDescription>{a}</AlertDescription></Alert>
+        <Alert key={a}>
+          <Info className="h-4 w-4" />
+          <AlertDescription>{a}</AlertDescription>
+        </Alert>
       ))}
 
       <Card>
         <CardHeader>
           <CardTitle>Memória de cálculo da ST</CardTitle>
-          <CardDescription>Valor total da nota ao adquirente: {brl(r.valorTotalNota)}</CardDescription>
+          <CardDescription>
+            Valor total da nota ao adquirente: {brl(r.valorTotalNota)}
+          </CardDescription>
         </CardHeader>
-        <CardContent><MemoriaTable linhas={r.linhas} /></CardContent>
+        <CardContent>
+          <MemoriaTable linhas={r.linhas} />
+        </CardContent>
       </Card>
     </div>
   );
@@ -262,9 +405,18 @@ function DiferencialAliquotas() {
   const [aplicarFcp, setAplicarFcp] = useState(true);
   const [origem, setOrigem] = useState<OrigemMercadoria>(0);
 
-  const r = useMemo(() => calcularDifal({
-    ufOrigem, ufDestino, valorOperacao, destinatarioContribuinte: contribuinte, aplicarFcp, origem,
-  }), [ufOrigem, ufDestino, valorOperacao, contribuinte, aplicarFcp, origem]);
+  const r = useMemo(
+    () =>
+      calcularDifal({
+        ufOrigem,
+        ufDestino,
+        valorOperacao,
+        destinatarioContribuinte: contribuinte,
+        aplicarFcp,
+        origem,
+      }),
+    [ufOrigem, ufDestino, valorOperacao, contribuinte, aplicarFcp, origem]
+  );
 
   return (
     <div className="space-y-6">
@@ -272,31 +424,56 @@ function DiferencialAliquotas() {
         <CardHeader>
           <CardTitle>Operação interestadual a consumidor final</CardTitle>
           <CardDescription>
-            Base dupla para não contribuinte (LC 190/2022, art. 13) e base única para contribuinte do ICMS.
+            Base dupla para não contribuinte (LC 190/2022, art. 13) e base única para contribuinte
+            do ICMS.
           </CardDescription>
         </CardHeader>
         <CardContent className="grid grid-cols-1 gap-4 md:grid-cols-3">
           <UfSelect id="df-origem" label="UF de origem" value={ufOrigem} onChange={setUfOrigem} />
-          <UfSelect id="df-destino" label="UF de destino" value={ufDestino} onChange={setUfDestino} />
+          <UfSelect
+            id="df-destino"
+            label="UF de destino"
+            value={ufDestino}
+            onChange={setUfDestino}
+          />
           <div className="space-y-2">
             <Label htmlFor="df-valor">Valor da operação (R$)</Label>
-            <Input id="df-valor" type="number" min={0} value={valorOperacao} onChange={(e) => setValorOperacao(Number(e.target.value))} />
+            <Input
+              id="df-valor"
+              type="number"
+              min={0}
+              value={valorOperacao}
+              onChange={(e) => setValorOperacao(Number(e.target.value))}
+            />
           </div>
           <div className="space-y-2">
             <Label htmlFor="df-origem-merc">Origem da mercadoria (CST)</Label>
-            <Select value={String(origem)} onValueChange={(v) => setOrigem(Number(v) as OrigemMercadoria)}>
-              <SelectTrigger id="df-origem-merc"><SelectValue /></SelectTrigger>
+            <Select
+              value={String(origem)}
+              onValueChange={(v) => setOrigem(Number(v) as OrigemMercadoria)}
+            >
+              <SelectTrigger id="df-origem-merc">
+                <SelectValue />
+              </SelectTrigger>
               <SelectContent>
-                {ORIGENS.map((o) => <SelectItem key={o.value} value={String(o.value)}>{o.label}</SelectItem>)}
+                {ORIGENS.map((o) => (
+                  <SelectItem key={o.value} value={String(o.value)}>
+                    {o.label}
+                  </SelectItem>
+                ))}
               </SelectContent>
             </Select>
           </div>
           <div className="flex items-center justify-between rounded-md border border-border p-3">
-            <Label htmlFor="df-contrib" className="cursor-pointer">Destinatário contribuinte do ICMS</Label>
+            <Label htmlFor="df-contrib" className="cursor-pointer">
+              Destinatário contribuinte do ICMS
+            </Label>
             <Switch id="df-contrib" checked={contribuinte} onCheckedChange={setContribuinte} />
           </div>
           <div className="flex items-center justify-between rounded-md border border-border p-3">
-            <Label htmlFor="df-fcp" className="cursor-pointer">Aplicar FCP ({pct(ALIQUOTAS_UF[ufDestino].fcp)})</Label>
+            <Label htmlFor="df-fcp" className="cursor-pointer">
+              Aplicar FCP ({pct(ALIQUOTAS_UF[ufDestino].fcp)})
+            </Label>
             <Switch id="df-fcp" checked={aplicarFcp} onCheckedChange={setAplicarFcp} />
           </div>
         </CardContent>
@@ -304,8 +481,16 @@ function DiferencialAliquotas() {
 
       <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4">
         {[
-          { t: 'Interestadual × interna', v: `${pct(r.aliquotaInterestadual)} → ${pct(r.aliquotaInternaDestino)}`, n: 'Alíquotas da operação' },
-          { t: 'Base de destino', v: brl(r.baseDestino), n: contribuinte ? 'Base única' : 'Base dupla (por dentro)' },
+          {
+            t: 'Interestadual × interna',
+            v: `${pct(r.aliquotaInterestadual)} → ${pct(r.aliquotaInternaDestino)}`,
+            n: 'Alíquotas da operação',
+          },
+          {
+            t: 'Base de destino',
+            v: brl(r.baseDestino),
+            n: contribuinte ? 'Base única' : 'Base dupla (por dentro)',
+          },
           { t: 'DIFAL', v: brl(r.difal), n: 'Devido à UF de destino' },
           { t: 'Total a recolher', v: brl(r.totalRecolher), n: `DIFAL + FCP ${brl(r.fcp)}` },
         ].map((c) => (
@@ -320,12 +505,19 @@ function DiferencialAliquotas() {
       </div>
 
       {r.alertas.map((a) => (
-        <Alert key={a}><Info className="h-4 w-4" /><AlertDescription>{a}</AlertDescription></Alert>
+        <Alert key={a}>
+          <Info className="h-4 w-4" />
+          <AlertDescription>{a}</AlertDescription>
+        </Alert>
       ))}
 
       <Card>
-        <CardHeader><CardTitle>Memória de cálculo do DIFAL</CardTitle></CardHeader>
-        <CardContent><MemoriaTable linhas={r.linhas} /></CardContent>
+        <CardHeader>
+          <CardTitle>Memória de cálculo do DIFAL</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <MemoriaTable linhas={r.linhas} />
+        </CardContent>
       </Card>
     </div>
   );
@@ -361,8 +553,12 @@ export default function IcmsStDifalPage() {
               <TabsTrigger value="difal">DIFAL</TabsTrigger>
               <TabsTrigger value="tabela">Tabela por UF</TabsTrigger>
             </TabsList>
-            <TabsContent value="st" className="mt-6"><SubstituicaoTributaria /></TabsContent>
-            <TabsContent value="difal" className="mt-6"><DiferencialAliquotas /></TabsContent>
+            <TabsContent value="st" className="mt-6">
+              <SubstituicaoTributaria />
+            </TabsContent>
+            <TabsContent value="difal" className="mt-6">
+              <DiferencialAliquotas />
+            </TabsContent>
             <TabsContent value="tabela" className="mt-6">
               <Card>
                 <CardHeader>
@@ -386,9 +582,15 @@ export default function IcmsStDifalPage() {
                           <TableRow key={uf}>
                             <TableCell className="font-medium">{uf}</TableCell>
                             <TableCell>{ALIQUOTAS_UF[uf].nome}</TableCell>
-                            <TableCell><Badge variant="outline">{ALIQUOTAS_UF[uf].regiao}</Badge></TableCell>
-                            <TableCell className="text-right tabular-nums">{pct(ALIQUOTAS_UF[uf].interna)}</TableCell>
-                            <TableCell className="text-right tabular-nums">{pct(ALIQUOTAS_UF[uf].fcp)}</TableCell>
+                            <TableCell>
+                              <Badge variant="outline">{ALIQUOTAS_UF[uf].regiao}</Badge>
+                            </TableCell>
+                            <TableCell className="text-right tabular-nums">
+                              {pct(ALIQUOTAS_UF[uf].interna)}
+                            </TableCell>
+                            <TableCell className="text-right tabular-nums">
+                              {pct(ALIQUOTAS_UF[uf].fcp)}
+                            </TableCell>
                           </TableRow>
                         ))}
                       </TableBody>

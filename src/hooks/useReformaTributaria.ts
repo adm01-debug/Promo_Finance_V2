@@ -6,6 +6,7 @@ import { useState, useMemo, useCallback, useEffect } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
+import { secureRandomInt } from '@/lib/secure-random';
 import {
   RegimeEspecial,
   CategoriaIS,
@@ -76,13 +77,13 @@ export function useReformaTributaria(empresaIdFiltro?: string) {
 
   const calcularTributos = useCallback(
     (dados: DadosOperacao): ResultadoCalculo => calcularTributosReforma(dados, anoReferencia),
-    [anoReferencia],
+    [anoReferencia]
   );
 
   const simularCenario = useCallback(
     (dados: DadosSimulacao, ano?: number): ResultadoSimulacao =>
       simularComparativo(dados, ano || anoReferencia),
-    [anoReferencia],
+    [anoReferencia]
   );
 
   // ========================
@@ -101,7 +102,7 @@ export function useReformaTributaria(empresaIdFiltro?: string) {
       let opsQuery = supabase
         .from('operacoes_tributaveis')
         .select(
-          'tipo_operacao, valor_operacao, base_calculo, cbs_valor, cbs_credito, ibs_valor, ibs_credito, is_valor, data_operacao',
+          'tipo_operacao, valor_operacao, base_calculo, cbs_valor, cbs_credito, ibs_valor, ibs_credito, is_valor, data_operacao'
         )
         .gte('data_operacao', inicioAno)
         .lte('data_operacao', fimAno);
@@ -113,7 +114,7 @@ export function useReformaTributaria(empresaIdFiltro?: string) {
       let apQuery = supabase
         .from('apuracoes_tributarias')
         .select(
-          'cbs_a_pagar, ibs_a_pagar, is_a_pagar, icms_residual, iss_residual, pis_residual, cofins_residual',
+          'cbs_a_pagar, ibs_a_pagar, is_a_pagar, icms_residual, iss_residual, pis_residual, cofins_residual'
         )
         .eq('ano', anoReferencia);
       if (empresaId) apQuery = apQuery.eq('empresa_id', empresaId);
@@ -158,18 +159,14 @@ export function useReformaTributaria(empresaIdFiltro?: string) {
           Number(a.iss_residual || 0) +
           Number(a.pis_residual || 0) +
           Number(a.cofins_residual || 0),
-        0,
+        0
       );
 
       // Saldo a pagar: prefere o cálculo da apuração; usa estimativa caso não haja apurações
       const cbsSaldoAPagar =
-        cbsAPagarApuracao > 0
-          ? cbsAPagarApuracao
-          : Math.max(0, cbsDebitosTotal - cbsCreditosTotal);
+        cbsAPagarApuracao > 0 ? cbsAPagarApuracao : Math.max(0, cbsDebitosTotal - cbsCreditosTotal);
       const ibsSaldoAPagar =
-        ibsAPagarApuracao > 0
-          ? ibsAPagarApuracao
-          : Math.max(0, ibsDebitosTotal - ibsCreditosTotal);
+        ibsAPagarApuracao > 0 ? ibsAPagarApuracao : Math.max(0, ibsDebitosTotal - ibsCreditosTotal);
       const impostoSeletivoTotal = isAPagarApuracao > 0 ? isAPagarApuracao : isTotal;
 
       const totalTributosNovos = cbsSaldoAPagar + ibsSaldoAPagar + impostoSeletivoTotal;
@@ -187,13 +184,11 @@ export function useReformaTributaria(empresaIdFiltro?: string) {
         cbsDebitosTotal,
         cbsCreditosTotal,
         cbsSaldoAPagar,
-        cbsTaxaEfetiva:
-          faturamentoTotal > 0 ? (cbsSaldoAPagar / faturamentoTotal) * 100 : 0,
+        cbsTaxaEfetiva: faturamentoTotal > 0 ? (cbsSaldoAPagar / faturamentoTotal) * 100 : 0,
         ibsDebitosTotal,
         ibsCreditosTotal,
         ibsSaldoAPagar,
-        ibsTaxaEfetiva:
-          faturamentoTotal > 0 ? (ibsSaldoAPagar / faturamentoTotal) * 100 : 0,
+        ibsTaxaEfetiva: faturamentoTotal > 0 ? (ibsSaldoAPagar / faturamentoTotal) * 100 : 0,
         impostoSeletivoTotal,
         valorRetidoSplitPayment: cbsSaldoAPagar + ibsSaldoAPagar,
         valorPagoPosSplit: 0,
@@ -201,8 +196,7 @@ export function useReformaTributaria(empresaIdFiltro?: string) {
         economiaGerada: 0,
         creditosAcumulados: cbsCreditosTotal + ibsCreditosTotal,
         creditosUtilizados:
-          Math.min(cbsCreditosTotal, cbsDebitosTotal) +
-          Math.min(ibsCreditosTotal, ibsDebitosTotal),
+          Math.min(cbsCreditosTotal, cbsDebitosTotal) + Math.min(ibsCreditosTotal, ibsDebitosTotal),
         creditosDisponiveis:
           Math.max(0, cbsCreditosTotal - cbsDebitosTotal) +
           Math.max(0, ibsCreditosTotal - ibsDebitosTotal),
@@ -219,12 +213,20 @@ export function useReformaTributaria(empresaIdFiltro?: string) {
   // ========================
 
   useEffect(() => {
+    // randomUUID só existe em contexto seguro — fora dele (WebView, HTTP
+    // via IP) cai para o helper inteiro sem quebrar o realtime.
+    const channelSuffix =
+      typeof crypto !== 'undefined' && typeof crypto.randomUUID === 'function'
+        ? crypto.randomUUID().split('-')[0]
+        : secureRandomInt(0, 0x100000000).toString(16).padStart(8, '0');
     const channel = supabase
-      .channel(`reforma-tributaria-realtime-${empresaId ?? 'all'}-${anoReferencia}-${Math.random().toString(36).slice(2, 8)}`)
+      .channel(
+        `reforma-tributaria-realtime-${empresaId ?? 'all'}-${anoReferencia}-${channelSuffix}`
+      )
       .on(
         'postgres_changes',
         { event: '*', schema: 'public', table: 'operacoes_tributaveis' },
-        () => queryClient.invalidateQueries({ queryKey: ['reforma-tributaria-metricas'] }),
+        () => queryClient.invalidateQueries({ queryKey: ['reforma-tributaria-metricas'] })
       )
       .on(
         'postgres_changes',
@@ -232,7 +234,7 @@ export function useReformaTributaria(empresaIdFiltro?: string) {
         () => {
           queryClient.invalidateQueries({ queryKey: ['reforma-tributaria-metricas'] });
           queryClient.invalidateQueries({ queryKey: ['apuracoes_tributarias'] });
-        },
+        }
       )
       .subscribe();
 
@@ -295,7 +297,7 @@ export function useReformaTributaria(empresaIdFiltro?: string) {
       creditosCBS: number,
       creditosIBS: number,
       debitosCBS: number,
-      debitosIBS: number,
+      debitosIBS: number
     ): SaldoCreditosTributarios => {
       const cbsUtilizado = Math.min(creditosCBS, debitosCBS);
       const ibsUtilizado = Math.min(creditosIBS, debitosIBS);
@@ -311,7 +313,7 @@ export function useReformaTributaria(empresaIdFiltro?: string) {
         creditosAVencer90Dias: 0,
       };
     },
-    [],
+    []
   );
 
   // ========================
@@ -320,12 +322,12 @@ export function useReformaTributaria(empresaIdFiltro?: string) {
 
   const getRegimeEspecialInfo = useCallback(
     (regime: RegimeEspecial) => REGIMES_ESPECIAIS.find((r) => r.regime === regime),
-    [],
+    []
   );
 
   const getImpostoSeletivoInfo = useCallback(
     (categoria: CategoriaIS) => CONFIGURACOES_IS.find((c) => c.categoria === categoria),
-    [],
+    []
   );
 
   return {

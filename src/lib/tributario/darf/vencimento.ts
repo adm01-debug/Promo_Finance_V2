@@ -61,7 +61,7 @@ export function selicAcumulada(
   vencimento: string,
   dataPagamento: string,
   selicMensal: Readonly<Record<string, number>> = {},
-  padrao = SELIC_PADRAO_MENSAL,
+  padrao = SELIC_PADRAO_MENSAL
 ): number {
   const compVenc = vencimento.slice(0, 7);
   const compPag = dataPagamento.slice(0, 7);
@@ -96,7 +96,7 @@ export function calcularAcrescimos(params: {
     vencimento,
     dataPagamento,
     selicMensal,
-    selicPadraoMensal ?? SELIC_PADRAO_MENSAL,
+    selicPadraoMensal ?? SELIC_PADRAO_MENSAL
   );
   return {
     diasAtraso: dias,

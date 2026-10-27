@@ -134,8 +134,7 @@ export function gerarCalendario(params: GerarCalendarioParams): ItemCalendario[]
 
     for (const competencia of competencias) {
       if (!/^\d{4}-\d{2}$/.test(competencia)) continue;
-      const chaveComp =
-        obrigacao.periodicidade === 'anual' ? competencia.slice(0, 4) : competencia;
+      const chaveComp = obrigacao.periodicidade === 'anual' ? competencia.slice(0, 4) : competencia;
       const chave = chaveItem(obrigacao.id, chaveComp);
       if (vistos.has(chave)) continue;
       vistos.add(chave);
@@ -154,7 +153,9 @@ export function gerarCalendario(params: GerarCalendarioParams): ItemCalendario[]
     }
   }
 
-  return itens.sort((a, b) => (a.prazo === b.prazo ? a.nome.localeCompare(b.nome) : a.prazo < b.prazo ? -1 : 1));
+  return itens.sort((a, b) =>
+    a.prazo === b.prazo ? a.nome.localeCompare(b.nome) : a.prazo < b.prazo ? -1 : 1
+  );
 }
 
 /**
@@ -236,7 +237,7 @@ export function exportarCalendarioCsv(itens: readonly ItemCalendario[]): string 
   const linhas = itens.map((i) =>
     [i.nome, i.orgao, i.competencia, i.prazo, i.situacao, i.diasRestantes, i.baseLegal]
       .map((c) => String(c).replace(/;/g, ','))
-      .join(';'),
+      .join(';')
   );
   return [head, ...linhas].join('\n');
 }

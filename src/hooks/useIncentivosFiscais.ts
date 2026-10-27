@@ -38,7 +38,11 @@ export function useIncentivosFiscais(empresaId?: string) {
   const queryClient = useQueryClient();
 
   // Buscar incentivos
-  const { data: incentivos, isLoading, error } = useQuery({
+  const {
+    data: incentivos,
+    isLoading,
+    error,
+  } = useQuery({
     queryKey: ['incentivos-fiscais', empresaId],
     queryFn: async () => {
       let query = supabase
@@ -53,7 +57,7 @@ export function useIncentivosFiscais(empresaId?: string) {
       const { data, error } = await query;
       if (error) throw error;
       return data as IncentivoFiscal[];
-    }
+    },
   });
 
   // Criar incentivo
@@ -78,7 +82,7 @@ export function useIncentivosFiscais(empresaId?: string) {
     },
     onError: (error: Error) => {
       toast.error('Erro ao cadastrar incentivo: ' + error.message);
-    }
+    },
   });
 
   // Atualizar incentivo
@@ -100,7 +104,7 @@ export function useIncentivosFiscais(empresaId?: string) {
     },
     onError: (error: Error) => {
       toast.error('Erro ao atualizar: ' + error.message);
-    }
+    },
   });
 
   // Suspender incentivo
@@ -119,7 +123,7 @@ export function useIncentivosFiscais(empresaId?: string) {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['incentivos-fiscais'] });
       toast.success('Incentivo suspenso');
-    }
+    },
   });
 
   // Reativar incentivo
@@ -138,33 +142,30 @@ export function useIncentivosFiscais(empresaId?: string) {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['incentivos-fiscais'] });
       toast.success('Incentivo reativado');
-    }
+    },
   });
 
   // Excluir incentivo
   const excluirIncentivo = useMutation({
     mutationFn: async (id: string) => {
-      const { error } = await supabase
-        .from('incentivos_fiscais')
-        .delete()
-        .eq('id', id);
+      const { error } = await supabase.from('incentivos_fiscais').delete().eq('id', id);
 
       if (error) throw error;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['incentivos-fiscais'] });
       toast.success('Incentivo excluído');
-    }
+    },
   });
 
   // Calcular economia com incentivos
   const calcularEconomia = (baseCalculo: number) => {
     if (!incentivos) return 0;
 
-    const incentivosAtivos = incentivos.filter(i => i.ativo);
+    const incentivosAtivos = incentivos.filter((i) => i.ativo);
     let economiaTotal = 0;
 
-    incentivosAtivos.forEach(incentivo => {
+    incentivosAtivos.forEach((incentivo) => {
       let economia = baseCalculo * (incentivo.limite_percentual / 100);
       if (incentivo.limite_valor && economia > incentivo.limite_valor) {
         economia = incentivo.limite_valor;
@@ -177,10 +178,14 @@ export function useIncentivosFiscais(empresaId?: string) {
 
   // Resumo dos incentivos
   const resumo = {
-    totalAtivos: incentivos?.filter(i => i.ativo).length || 0,
-    totalInativos: incentivos?.filter(i => !i.ativo).length || 0,
-    valorLimiteTotal: incentivos?.filter(i => i.ativo).reduce((acc, i) => acc + (i.limite_valor || 0), 0) || 0,
-    valorUtilizado: incentivos?.filter(i => i.ativo).reduce((acc, i) => acc + (i.valor_utilizado_ano || 0), 0) || 0,
+    totalAtivos: incentivos?.filter((i) => i.ativo).length || 0,
+    totalInativos: incentivos?.filter((i) => !i.ativo).length || 0,
+    valorLimiteTotal:
+      incentivos?.filter((i) => i.ativo).reduce((acc, i) => acc + (i.limite_valor || 0), 0) || 0,
+    valorUtilizado:
+      incentivos
+        ?.filter((i) => i.ativo)
+        .reduce((acc, i) => acc + (i.valor_utilizado_ano || 0), 0) || 0,
   };
 
   return {

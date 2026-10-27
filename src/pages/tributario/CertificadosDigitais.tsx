@@ -8,8 +8,8 @@ export default function CertificadosDigitais() {
         <div>
           <h1 className="text-2xl md:text-3xl font-bold">Certificados Digitais</h1>
           <p className="text-sm text-muted-foreground">
-            Gerencie os certificados A1 usados para comunicação com a SEFAZ e descoberta
-            automática de NF-e emitidas contra seus CNPJs.
+            Gerencie os certificados A1 usados para comunicação com a SEFAZ e descoberta automática
+            de NF-e emitidas contra seus CNPJs.
           </p>
         </div>
         <CertificadosDigitaisTab />

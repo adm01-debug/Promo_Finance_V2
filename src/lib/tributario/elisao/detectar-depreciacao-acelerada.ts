@@ -21,13 +21,11 @@ function isCnaeIndustrial(cnae?: string): boolean {
  * (valor do dinheiro no tempo), não como o valor cheio de 34% do investimento.
  */
 export function detectarDepreciacaoAcelerada(ctx: ContextoEmpresa): OportunidadeDetectada {
-  const industrial =
-    isCnaeIndustrial(ctx.cnae) || (ctx.percentual_industria ?? 0) >= 50;
+  const industrial = isCnaeIndustrial(ctx.cnae) || (ctx.percentual_industria ?? 0) >= 50;
   const investimento = Math.max(0, ctx.investimento_maquinas_anual ?? 0);
   const lucrativa = (ctx.lucro_liquido ?? 0) > 0;
 
-  const aplicavel =
-    ctx.regime_atual === 'real' && industrial && investimento > 0 && lucrativa;
+  const aplicavel = ctx.regime_atual === 'real' && industrial && investimento > 0 && lucrativa;
 
   // Dedução antecipada em relação ao regime normal (10 anos, 10% a.a.):
   // no 1º ano deduz-se 100% em vez de 10% → 90% do investimento antecipado.
@@ -41,9 +39,12 @@ export function detectarDepreciacaoAcelerada(ctx: ContextoEmpresa): Oportunidade
     : 0;
 
   const motivoNaoAplicavel = (() => {
-    if (ctx.regime_atual !== 'real') return 'Benefício restrito a empresas tributadas pelo Lucro Real.';
-    if (!industrial) return 'Benefício restrito a empresas industriais (CNAE de indústria de transformação).';
-    if (investimento <= 0) return 'Nenhum investimento em máquinas e equipamentos novos informado no período.';
+    if (ctx.regime_atual !== 'real')
+      return 'Benefício restrito a empresas tributadas pelo Lucro Real.';
+    if (!industrial)
+      return 'Benefício restrito a empresas industriais (CNAE de indústria de transformação).';
+    if (investimento <= 0)
+      return 'Nenhum investimento em máquinas e equipamentos novos informado no período.';
     return 'Sem lucro tributável no período, a dedução antecipada não gera economia imediata.';
   })();
 

@@ -1,26 +1,9 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
-import {
-  Alert,
-  AlertDescription,
-  AlertTitle,
-} from '@/components/ui/alert';
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from '@/components/ui/card';
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import {
-  AlertTriangle,
-  ArrowDownAZ,
-  ArrowUpAZ,
-  Play,
-  Plus,
-  Zap,
-} from 'lucide-react';
+import { AlertTriangle, ArrowDownAZ, ArrowUpAZ, Play, Plus, Zap } from 'lucide-react';
 import { LogsTable } from './contabilizacao-automatica/LogsTable';
 import { RegraFormDialog } from './contabilizacao-automatica/RegraFormDialog';
 import { RegrasTable } from './contabilizacao-automatica/RegrasTable';
@@ -57,18 +40,14 @@ export function ContabilizacaoAutomaticaTab({ empresaId }: { empresaId: string }
   }
 
   const regras = [...(regrasQuery.data ?? [])].sort((a, b) =>
-    sortOrder === 'asc' ? a.prioridade - b.prioridade : b.prioridade - a.prioridade,
+    sortOrder === 'asc' ? a.prioridade - b.prioridade : b.prioridade - a.prioridade
   );
   const contas = contasQuery.data ?? [];
   const categorias = categoriasQuery.data ?? [];
   const logs = logsQuery.data ?? [];
 
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 8 }}
-      animate={{ opacity: 1, y: 0 }}
-      className="space-y-6"
-    >
+    <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} className="space-y-6">
       <StatsCards logs={logs} />
 
       <Card>
@@ -79,8 +58,7 @@ export function ContabilizacaoAutomaticaTab({ empresaId }: { empresaId: string }
               Regras de Contabilização Automática
             </CardTitle>
             <CardDescription>
-              Cada evento financeiro dispara uma regra que gera lançamento em
-              partidas dobradas.
+              Cada evento financeiro dispara uma regra que gera lançamento em partidas dobradas.
             </CardDescription>
           </div>
           <div className="flex gap-2 items-center">

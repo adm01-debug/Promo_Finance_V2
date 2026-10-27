@@ -9,7 +9,13 @@ interface Props {
   formatDuration: (ms: number) => string;
 }
 
-export function TelemetriaStatsCards({ verySlow, slow, errors, avgDuration, formatDuration }: Props) {
+export function TelemetriaStatsCards({
+  verySlow,
+  slow,
+  errors,
+  avgDuration,
+  formatDuration,
+}: Props) {
   return (
     <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
       <Card>

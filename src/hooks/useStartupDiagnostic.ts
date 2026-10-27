@@ -19,9 +19,12 @@ export const useStartupDiagnostic = () => {
   const [isComplete, setIsComplete] = useState(false);
   const [hasError, setHasError] = useState(false);
 
-  const updateStatus = useCallback((id: string, status: DiagnosticResult['status'], message?: string) => {
-    setResults(prev => prev.map(r => r.id === id ? { ...r, status, message } : r));
-  }, []);
+  const updateStatus = useCallback(
+    (id: string, status: DiagnosticResult['status'], message?: string) => {
+      setResults((prev) => prev.map((r) => (r.id === id ? { ...r, status, message } : r)));
+    },
+    []
+  );
 
   const runDiagnostics = useCallback(async () => {
     setIsComplete(false);
@@ -30,7 +33,9 @@ export const useStartupDiagnostic = () => {
     // 0. Detect session up-front. Sem usuário autenticado, as policies RLS
     // bloqueiam diversos endpoints com 401 e poluem o console. Nesse caso
     // apenas validamos conectividade pública e marcamos os demais como ok.
-    const { data: { session } } = await supabase.auth.getSession();
+    const {
+      data: { session },
+    } = await supabase.auth.getSession();
     const isAuthenticated = !!session?.user;
 
     // 1. Connection Check
@@ -66,7 +71,6 @@ export const useStartupDiagnostic = () => {
       setHasError(true);
     }
 
-
     // 2. Tables Check — só roda autenticado (RLS bloqueia anônimos)
     updateStatus('tables', 'loading');
     if (!isAuthenticated) {
@@ -76,13 +80,25 @@ export const useStartupDiagnostic = () => {
         // active_tracking pertencia exclusivamente ao módulo de logística,
         // descomissionado em produção. Mantê-la aqui bloqueava a aplicação
         // inteira para sessões persistidas após o login.
-        const essentialTables = ['profiles', 'centros_custo', 'anomalias_detectadas', 'empresas'] as const;
-        type Essential = typeof essentialTables[number];
+        const essentialTables = [
+          'profiles',
+          'centros_custo',
+          'anomalias_detectadas',
+          'empresas',
+        ] as const;
+        type Essential = (typeof essentialTables)[number];
 
         const missingTables: string[] = [];
         for (const table of essentialTables) {
-          const { error: tableError } = await supabase.from(table as Essential).select('count', { count: 'exact', head: true }).limit(0);
-          if (tableError && (tableError.code === '42P01' || (tableError.message && tableError.message.includes('does not exist')))) {
+          const { error: tableError } = await supabase
+            .from(table as Essential)
+            .select('count', { count: 'exact', head: true })
+            .limit(0);
+          if (
+            tableError &&
+            (tableError.code === '42P01' ||
+              (tableError.message && tableError.message.includes('does not exist')))
+          ) {
             missingTables.push(table);
           }
         }
@@ -104,44 +120,51 @@ export const useStartupDiagnostic = () => {
     updateStatus('rpcs', 'loading');
     if (!isAuthenticated) {
       updateStatus('rpcs', 'success', 'Validação completa será feita após login.');
-    } else try {
-      const essentialRPCs = ['has_role', 'get_user_roles', 'get_user_permissions'] as const;
-      type EssentialRpc = typeof essentialRPCs[number];
-      const missingRPCs: string[] = [];
+    } else
+      try {
+        const essentialRPCs = ['has_role', 'get_user_roles', 'get_user_permissions'] as const;
+        type EssentialRpc = (typeof essentialRPCs)[number];
+        const missingRPCs: string[] = [];
 
-      for (const rpc of essentialRPCs) {
-        // Assinaturas: has_role(_user_id uuid, _role app_role);
-        // get_user_roles(user_id uuid); get_user_permissions(user_id uuid).
-        // Valor de role precisa existir no enum app_role ('admin','manager','operator','viewer').
-        const params: Record<string, string> =
-          rpc === 'has_role'
-            ? { _user_id: session!.user.id, _role: 'viewer' }
-            : { user_id: session!.user.id };
+        for (const rpc of essentialRPCs) {
+          // Assinaturas: has_role(_user_id uuid, _role app_role);
+          // get_user_roles(user_id uuid); get_user_permissions(user_id uuid).
+          // Valor de role precisa existir no enum app_role ('admin','manager','operator','viewer').
+          const params: Record<string, string> =
+            rpc === 'has_role'
+              ? { _user_id: session!.user.id, _role: 'viewer' }
+              : { user_id: session!.user.id };
 
-        // RPC name é dinâmico dentro de um subconjunto conhecido em types.ts.
-        const { error: rpcError } = await supabase.rpc(rpc as EssentialRpc, params as never);
-        if (rpcError && rpcError.message && rpcError.message.includes('function') && rpcError.message.includes('does not exist')) {
-          missingRPCs.push(rpc);
+          // RPC name é dinâmico dentro de um subconjunto conhecido em types.ts.
+          const { error: rpcError } = await supabase.rpc(rpc as EssentialRpc, params as never);
+          if (
+            rpcError &&
+            rpcError.message &&
+            rpcError.message.includes('function') &&
+            rpcError.message.includes('does not exist')
+          ) {
+            missingRPCs.push(rpc);
+          }
         }
-      }
 
-      if (missingRPCs.length > 0) {
-        updateStatus('rpcs', 'error', `Funções ausentes: ${missingRPCs.join(', ')}`);
+        if (missingRPCs.length > 0) {
+          updateStatus('rpcs', 'error', `Funções ausentes: ${missingRPCs.join(', ')}`);
+          setHasError(true);
+        } else {
+          updateStatus('rpcs', 'success');
+        }
+      } catch (error) {
+        logger.error('Diagnostic Error (rpcs):', error);
+        updateStatus('rpcs', 'error', 'Erro ao validar funções de sistema.');
         setHasError(true);
-      } else {
-
-        updateStatus('rpcs', 'success');
       }
-    } catch (error) {
-      logger.error('Diagnostic Error (rpcs):', error);
-      updateStatus('rpcs', 'error', 'Erro ao validar funções de sistema.');
-      setHasError(true);
-    }
 
     // 4. Auth Check
     updateStatus('auth', 'loading');
     try {
-      const { data: { session } } = await supabase.auth.getSession();
+      const {
+        data: { session },
+      } = await supabase.auth.getSession();
       updateStatus('auth', 'success', session ? 'Sessão ativa detectada' : 'Pronto para login');
     } catch (error) {
       logger.error('Diagnostic Error (auth):', error);

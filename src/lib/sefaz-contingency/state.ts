@@ -1,13 +1,18 @@
 import { logger } from '@/lib/logger';
 import type { ContingencyMode, ContingencyState, PendingNFe, SefazHealthStatus } from './types';
-import { getContingencyState, getSefazHealthStatus, saveContingencyState, updateSefazHealthStatus } from './storage';
+import {
+  getContingencyState,
+  getSefazHealthStatus,
+  saveContingencyState,
+  updateSefazHealthStatus,
+} from './storage';
 
 export function activateContingency(
   mode: ContingencyMode,
   reason: string,
   activatedBy: string,
   estimatedReturn?: Date,
-  autoActivated = false,
+  autoActivated = false
 ): ContingencyState {
   const state: ContingencyState = {
     ...getContingencyState(),
@@ -50,7 +55,7 @@ export function registerCommunicationFailure(): ContingencyState {
       'SEFAZ indisponível - múltiplas falhas de comunicação',
       'Sistema',
       undefined,
-      true,
+      true
     );
   }
 
@@ -65,7 +70,7 @@ export function registerCommunicationSuccess(): void {
 }
 
 export function addPendingNFe(
-  nfe: Omit<PendingNFe, 'status' | 'tentativas' | 'ultimaTentativa'>,
+  nfe: Omit<PendingNFe, 'status' | 'tentativas' | 'ultimaTentativa'>
 ): ContingencyState {
   const state = getContingencyState();
   state.pendingNFes.push({
@@ -81,7 +86,7 @@ export function addPendingNFe(
 
 export function updatePendingNFe(
   id: string,
-  updates: Partial<Pick<PendingNFe, 'status' | 'tentativas' | 'ultimaTentativa' | 'erro'>>,
+  updates: Partial<Pick<PendingNFe, 'status' | 'tentativas' | 'ultimaTentativa' | 'erro'>>
 ): ContingencyState {
   const state = getContingencyState();
   const nfeIndex = state.pendingNFes.findIndex((n) => n.id === id);

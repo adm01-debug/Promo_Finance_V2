@@ -1,6 +1,6 @@
 import { supabase } from '@/integrations/supabase/client';
 import { generateFluxoCaixaPDF } from '@/lib/pdf-generator';
-import { formatCurrency , todayISOLocal} from '@/lib/formatters';
+import { formatCurrency, todayISOLocal } from '@/lib/formatters';
 import { toast } from 'sonner';
 import type { ActionResult } from './types';
 
@@ -26,15 +26,15 @@ export async function gerarRelatorio(tipo: string): Promise<ActionResult> {
 
       const saldoInicial = saldos?.reduce((sum, c) => sum + Number(c.saldo_atual), 0) || 0;
       const fluxoPorData = new Map<string, { receitas: number; despesas: number }>();
-      
-      contasReceber?.forEach(c => {
+
+      contasReceber?.forEach((c) => {
         const data = c.data_vencimento;
         const atual = fluxoPorData.get(data) || { receitas: 0, despesas: 0 };
         atual.receitas += Number(c.valor);
         fluxoPorData.set(data, atual);
       });
 
-      contasPagar?.forEach(c => {
+      contasPagar?.forEach((c) => {
         const data = c.data_vencimento;
         const atual = fluxoPorData.get(data) || { receitas: 0, despesas: 0 };
         atual.despesas += Number(c.valor);
@@ -43,8 +43,8 @@ export async function gerarRelatorio(tipo: string): Promise<ActionResult> {
 
       const sortedDates = Array.from(fluxoPorData.keys()).sort();
       let saldoAcumulado = saldoInicial;
-      
-      const dados = sortedDates.map(data => {
+
+      const dados = sortedDates.map((data) => {
         const { receitas, despesas } = fluxoPorData.get(data)!;
         saldoAcumulado += receitas - despesas;
         return { data, receitas, despesas, saldo: saldoAcumulado };
@@ -71,7 +71,11 @@ export async function gerarRelatorio(tipo: string): Promise<ActionResult> {
       }
 
       const total = data.reduce((sum, c) => sum + Number(c.valor), 0);
-      return { success: true, message: `Relatório: ${data.length} contas a pagar pendentes, total de ${formatCurrency(total)}`, data };
+      return {
+        success: true,
+        message: `Relatório: ${data.length} contas a pagar pendentes, total de ${formatCurrency(total)}`,
+        data,
+      };
     }
 
     case 'contas_receber': {
@@ -86,7 +90,11 @@ export async function gerarRelatorio(tipo: string): Promise<ActionResult> {
       }
 
       const total = data.reduce((sum, c) => sum + Number(c.valor), 0);
-      return { success: true, message: `Relatório: ${data.length} contas a receber pendentes/vencidas, total de ${formatCurrency(total)}`, data };
+      return {
+        success: true,
+        message: `Relatório: ${data.length} contas a receber pendentes/vencidas, total de ${formatCurrency(total)}`,
+        data,
+      };
     }
 
     case 'inadimplencia': {
@@ -103,7 +111,11 @@ export async function gerarRelatorio(tipo: string): Promise<ActionResult> {
       }
 
       const total = data.reduce((sum, c) => sum + Number(c.valor), 0);
-      return { success: true, message: `Relatório de Inadimplência: ${data.length} títulos vencidos, total de ${formatCurrency(total)}`, data };
+      return {
+        success: true,
+        message: `Relatório de Inadimplência: ${data.length} títulos vencidos, total de ${formatCurrency(total)}`,
+        data,
+      };
     }
 
     default:

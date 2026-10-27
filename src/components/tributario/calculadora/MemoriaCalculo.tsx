@@ -27,11 +27,19 @@ export function MemoriaCalculo({ resultado }: { resultado: ResultadoRegime }) {
                   <td className="p-2 text-muted-foreground">{l.ordem}</td>
                   <td className="p-2">
                     <div className="font-medium">{l.descricao}</div>
-                    {l.observacao && <div className="text-[10px] text-muted-foreground">{l.observacao}</div>}
+                    {l.observacao && (
+                      <div className="text-[10px] text-muted-foreground">{l.observacao}</div>
+                    )}
                   </td>
-                  <td className="p-2 text-right tabular-nums">{l.base ? formatBRL(l.base) : '—'}</td>
-                  <td className="p-2 text-right tabular-nums">{l.aliquota != null ? formatPct(l.aliquota) : '—'}</td>
-                  <td className={`p-2 text-right tabular-nums ${l.valor < 0 ? 'text-destructive' : ''}`}>
+                  <td className="p-2 text-right tabular-nums">
+                    {l.base ? formatBRL(l.base) : '—'}
+                  </td>
+                  <td className="p-2 text-right tabular-nums">
+                    {l.aliquota != null ? formatPct(l.aliquota) : '—'}
+                  </td>
+                  <td
+                    className={`p-2 text-right tabular-nums ${l.valor < 0 ? 'text-destructive' : ''}`}
+                  >
                     {formatBRL(l.valor)}
                   </td>
                 </tr>

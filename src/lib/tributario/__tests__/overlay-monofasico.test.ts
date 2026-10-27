@@ -46,7 +46,11 @@ describe('aplicarOverlayMonofasico', () => {
       { codigo: '6912.00.00', monofasico_pis_cofins: false },
       { codigo: null, monofasico_pis_cofins: true },
     ]);
-    expect(r.rejeitadas.map((x) => x.motivo)).toEqual(['codigo_invalido', 'duplicado', 'codigo_invalido']);
+    expect(r.rejeitadas.map((x) => x.motivo)).toEqual([
+      'codigo_invalido',
+      'duplicado',
+      'codigo_invalido',
+    ]);
     expect(r.override['69120000']).toBe(true);
     expect(descreverRejeicoesMonofasico(r.rejeitadas)).toHaveLength(3);
   });

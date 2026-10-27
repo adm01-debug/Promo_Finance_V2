@@ -6,7 +6,11 @@ export function useExtratoBancario(contaBancariaId?: string) {
   return useQuery({
     queryKey: ['extrato-bancario', contaBancariaId],
     queryFn: async () => {
-      let query = supabase.from('extrato_bancario').select('*').order('data', { ascending: false }).limit(500);
+      let query = supabase
+        .from('extrato_bancario')
+        .select('*')
+        .order('data', { ascending: false })
+        .limit(500);
       if (contaBancariaId) query = query.eq('conta_bancaria_id', contaBancariaId);
       const { data, error } = await query;
       if (error) throw error;
@@ -19,7 +23,10 @@ export function useConciliacoes(empresaId?: string) {
   return useQuery({
     queryKey: ['conciliacoes', empresaId],
     queryFn: async () => {
-      let query = supabase.from('conciliacoes').select('*').order('created_at', { ascending: false });
+      let query = supabase
+        .from('conciliacoes')
+        .select('*')
+        .order('created_at', { ascending: false });
       if (empresaId) query = query.eq('empresa_id', empresaId);
       const { data, error } = await query;
       if (error) throw error;

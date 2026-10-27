@@ -27,7 +27,10 @@ export function RemoteBadge({ status }: { status?: DiagnosticState['remote'] }) 
       );
     case 'error':
       return (
-        <Badge variant="outline" className="gap-1 text-[10px] border-destructive/30 text-destructive">
+        <Badge
+          variant="outline"
+          className="gap-1 text-[10px] border-destructive/30 text-destructive"
+        >
           <XCircle className="h-3 w-3" /> Erro conta
         </Badge>
       );
@@ -51,7 +54,10 @@ export function LocalBadge({ status }: { status?: DiagnosticState['local'] }) {
       );
     case 'error':
       return (
-        <Badge variant="outline" className="gap-1 text-[10px] border-destructive/30 text-destructive">
+        <Badge
+          variant="outline"
+          className="gap-1 text-[10px] border-destructive/30 text-destructive"
+        >
           <XCircle className="h-3 w-3" /> Erro local
         </Badge>
       );

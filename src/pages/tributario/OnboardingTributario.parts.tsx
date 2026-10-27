@@ -29,7 +29,7 @@ export function StepIndicator({ current }: { current: Step }) {
                 ? 'bg-primary text-primary-foreground border-primary'
                 : current > s.n
                   ? 'bg-success/15 text-success border-success/30'
-                  : 'bg-muted/50 text-muted-foreground border-border',
+                  : 'bg-muted/50 text-muted-foreground border-border'
             )}
           >
             <span className="font-mono">{s.n}</span>
@@ -39,7 +39,7 @@ export function StepIndicator({ current }: { current: Step }) {
             <div
               className={cn(
                 'h-px flex-1 transition-colors min-w-[12px]',
-                current > s.n ? 'bg-success/40' : 'bg-border',
+                current > s.n ? 'bg-success/40' : 'bg-border'
               )}
             />
           )}
@@ -73,11 +73,7 @@ export function CnpjaPreview({
         <InfoRow label="CNAE principal" value={data.cnaePrincipal?.codigo || '—'} />
         <InfoRow
           label="Cidade/UF"
-          value={
-            data.endereco?.cidade
-              ? `${data.endereco.cidade}/${data.endereco.uf}`
-              : '—'
-          }
+          value={data.endereco?.cidade ? `${data.endereco.cidade}/${data.endereco.uf}` : '—'}
         />
         <InfoRow
           label="Capital social"
@@ -101,15 +97,7 @@ export function CnpjaPreview({
   );
 }
 
-export function InfoRow({
-  label,
-  value,
-  mono,
-}: {
-  label: string;
-  value: string;
-  mono?: boolean;
-}) {
+export function InfoRow({ label, value, mono }: { label: string; value: string; mono?: boolean }) {
   return (
     <div className="space-y-0.5">
       <p className="text-[10px] uppercase tracking-wider text-muted-foreground">{label}</p>
@@ -143,7 +131,8 @@ export function StepImportarHistorico({
             3. Importar histórico (opcional)
           </CardTitle>
           <CardDescription>
-            Para uma recomendação mais precisa, importe faturamento e folha. Você pode pular e fazer depois.
+            Para uma recomendação mais precisa, importe faturamento e folha. Você pode pular e fazer
+            depois.
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">

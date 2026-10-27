@@ -57,7 +57,7 @@ const Orcamentos = () => {
   const updateBudget = useUpdateBudget();
   const deleteBudget = useDeleteBudget();
 
-  const form = useZodForm({
+  const form = useZodForm<(typeof budgetSchema)['shape']>({
     schema: budgetSchema,
     initialValues: {
       category: '',

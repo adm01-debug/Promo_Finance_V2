@@ -42,7 +42,8 @@ export function usePrevisaoTributaria(empresaId?: string) {
         body: { empresa_id: empresaId, meses_historico: 12 },
       });
       if (error) {
-        if (error.message?.includes('429')) toast.error('Limite de IA excedido. Tente novamente em alguns instantes.');
+        if (error.message?.includes('429'))
+          toast.error('Limite de IA excedido. Tente novamente em alguns instantes.');
         else if (error.message?.includes('402')) toast.error('Créditos de IA esgotados.');
         throw error;
       }

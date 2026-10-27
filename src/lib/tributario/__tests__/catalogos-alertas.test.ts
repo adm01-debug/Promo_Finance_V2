@@ -11,12 +11,33 @@ import type {
 import type { AnexoSimples } from '../types';
 
 const REGIOES: Record<string, UfCatalogo['regiao']> = {
-  AC: 'NORTE', AM: 'NORTE', AP: 'NORTE', PA: 'NORTE', RO: 'NORTE', RR: 'NORTE', TO: 'NORTE',
-  AL: 'NORDESTE', BA: 'NORDESTE', CE: 'NORDESTE', MA: 'NORDESTE', PB: 'NORDESTE',
-  PE: 'NORDESTE', PI: 'NORDESTE', RN: 'NORDESTE', SE: 'NORDESTE',
-  DF: 'CENTRO_OESTE', GO: 'CENTRO_OESTE', MS: 'CENTRO_OESTE', MT: 'CENTRO_OESTE',
-  ES: 'SUDESTE', MG: 'SUDESTE', RJ: 'SUDESTE', SP: 'SUDESTE',
-  PR: 'SUL', RS: 'SUL', SC: 'SUL',
+  AC: 'NORTE',
+  AM: 'NORTE',
+  AP: 'NORTE',
+  PA: 'NORTE',
+  RO: 'NORTE',
+  RR: 'NORTE',
+  TO: 'NORTE',
+  AL: 'NORDESTE',
+  BA: 'NORDESTE',
+  CE: 'NORDESTE',
+  MA: 'NORDESTE',
+  PB: 'NORDESTE',
+  PE: 'NORDESTE',
+  PI: 'NORDESTE',
+  RN: 'NORDESTE',
+  SE: 'NORDESTE',
+  DF: 'CENTRO_OESTE',
+  GO: 'CENTRO_OESTE',
+  MS: 'CENTRO_OESTE',
+  MT: 'CENTRO_OESTE',
+  ES: 'SUDESTE',
+  MG: 'SUDESTE',
+  RJ: 'SUDESTE',
+  SP: 'SUDESTE',
+  PR: 'SUL',
+  RS: 'SUL',
+  SC: 'SUL',
 };
 
 function ufsCoerentes(): UfCatalogo[] {
@@ -65,7 +86,7 @@ function faixasCoerentes(): FaixaSimplesCatalogo[] {
       parcela_deduzir: f.pd,
       vigente_de: '2024-01-01',
       vigente_ate: null,
-    })),
+    }))
   );
 }
 
@@ -83,7 +104,7 @@ describe('alertas proativos de catálogos fiscais', () => {
 
   it('aponta o item e o campo divergentes de uma UF adulterada', () => {
     const adulteradas = ufs.map((u) =>
-      u.sigla === 'SP' ? { ...u, aliquota_interna_padrao: 0.25 } : u,
+      u.sigla === 'SP' ? { ...u, aliquota_interna_padrao: 0.25 } : u
     );
     const { alertas } = gerarAlertasCatalogos({
       ufs: adulteradas,
@@ -139,15 +160,15 @@ describe('alertas proativos de catálogos fiscais', () => {
     expect(resumo.alertas[0].severidade).toBe('critico');
     const primeiraAtencao = resumo.alertas.findIndex((a) => a.severidade === 'atencao');
     if (primeiraAtencao >= 0) {
-      expect(
-        resumo.alertas.slice(primeiraAtencao).every((a) => a.severidade === 'atencao'),
-      ).toBe(true);
+      expect(resumo.alertas.slice(primeiraAtencao).every((a) => a.severidade === 'atencao')).toBe(
+        true
+      );
     }
   });
 
   it('produz ids estáveis e únicos por alerta', () => {
     const adulteradas = ufs.map((u) =>
-      u.sigla === 'SP' ? { ...u, aliquota_interna_padrao: 0.25, aliquota_fcp: 0.04 } : u,
+      u.sigla === 'SP' ? { ...u, aliquota_interna_padrao: 0.25, aliquota_fcp: 0.04 } : u
     );
     const { alertas } = gerarAlertasCatalogos({ ufs: adulteradas, interestaduais, faixas });
     const ids = alertas.map((a) => a.id);

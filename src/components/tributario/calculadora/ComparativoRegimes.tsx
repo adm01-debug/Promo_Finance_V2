@@ -16,7 +16,10 @@ export function ComparativoRegimes({ resultado }: { resultado: ResultadoCalculad
         </CardTitle>
         {resultado.economiaAnualVsPior > 0 && (
           <p className="text-xs text-muted-foreground">
-            Economia potencial anual: <span className="font-semibold text-success">{formatBRL(resultado.economiaAnualVsPior)}</span>
+            Economia potencial anual:{' '}
+            <span className="font-semibold text-success">
+              {formatBRL(resultado.economiaAnualVsPior)}
+            </span>
           </p>
         )}
       </CardHeader>
@@ -29,7 +32,7 @@ export function ComparativoRegimes({ resultado }: { resultado: ResultadoCalculad
               className={cn(
                 'flex items-center justify-between rounded-md border p-3',
                 eh ? 'border-primary bg-primary/5' : 'border-border',
-                !c.elegivel && 'opacity-60',
+                !c.elegivel && 'opacity-60'
               )}
             >
               <div className="flex items-center gap-2">
@@ -37,7 +40,9 @@ export function ComparativoRegimes({ resultado }: { resultado: ResultadoCalculad
                 <div>
                   <p className="text-sm font-medium">{c.nome}</p>
                   <p className="text-[10px] text-muted-foreground">
-                    {c.elegivel ? `Carga: ${formatPct(c.cargaEfetiva / 100, 2)}` : c.motivoInelegibilidade}
+                    {c.elegivel
+                      ? `Carga: ${formatPct(c.cargaEfetiva / 100, 2)}`
+                      : c.motivoInelegibilidade}
                   </p>
                 </div>
               </div>

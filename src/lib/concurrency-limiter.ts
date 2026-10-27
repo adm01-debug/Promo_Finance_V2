@@ -76,8 +76,8 @@ export function createConcurrencyLimiter(initialLimit: number): ConcurrencyLimit
 export async function runWithConcurrency<T, R>(
   items: T[],
   limit: number | ConcurrencyLimiter,
-  fn: (item: T, index: number) => Promise<R>,
+  fn: (item: T, index: number) => Promise<R>
 ): Promise<PromiseSettledResult<R>[]> {
-  const limiter = typeof limit === "number" ? createConcurrencyLimiter(limit) : limit;
+  const limiter = typeof limit === 'number' ? createConcurrencyLimiter(limit) : limit;
   return Promise.allSettled(items.map((it, i) => limiter.run(() => fn(it, i))));
 }

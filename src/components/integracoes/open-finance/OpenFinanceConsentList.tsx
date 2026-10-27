@@ -41,7 +41,9 @@ const getStatusBadge = (status: string) => {
     case 'awaiting_authorization':
       return <Badge className="bg-warning/10 text-warning border-warning/20">Aguardando</Badge>;
     case 'revoked':
-      return <Badge className="bg-destructive/10 text-destructive border-destructive/20">Revogado</Badge>;
+      return (
+        <Badge className="bg-destructive/10 text-destructive border-destructive/20">Revogado</Badge>
+      );
     default:
       return <Badge variant="secondary">{status}</Badge>;
   }
@@ -108,7 +110,12 @@ export function OpenFinanceConsentList({
                     <ArrowRightLeft className="h-4 w-4" />
                     Extrato
                   </Button>
-                  <Button variant="default" size="sm" className="gap-1" onClick={() => onImport(consent)}>
+                  <Button
+                    variant="default"
+                    size="sm"
+                    className="gap-1"
+                    onClick={() => onImport(consent)}
+                  >
                     <Download className="h-4 w-4" />
                     Importar
                   </Button>
@@ -126,8 +133,8 @@ export function OpenFinanceConsentList({
                   <AlertDialogHeader>
                     <AlertDialogTitle>Revogar Consentimento</AlertDialogTitle>
                     <AlertDialogDescription>
-                      Tem certeza que deseja desconectar esta conta? Você precisará autorizar novamente para
-                      acessar os dados.
+                      Tem certeza que deseja desconectar esta conta? Você precisará autorizar
+                      novamente para acessar os dados.
                     </AlertDialogDescription>
                   </AlertDialogHeader>
                   <AlertDialogFooter>

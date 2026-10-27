@@ -21,7 +21,7 @@ function difere(a: number, b: number): boolean {
  * Retorna a lista de divergências (vazia quando há coerência total).
  */
 export function compararFaixasComCatalogo(
-  faixasBanco: readonly FaixaSimplesCatalogo[],
+  faixasBanco: readonly FaixaSimplesCatalogo[]
 ): DivergenciaCatalogo[] {
   const divergencias: DivergenciaCatalogo[] = [];
 
@@ -30,7 +30,7 @@ export function compararFaixasComCatalogo(
 
     for (const faixaCodigo of faixasCodigo) {
       const doBanco = faixasBanco.find(
-        (f) => f.anexo === anexo && Number(f.faixa) === faixaCodigo.faixa,
+        (f) => f.anexo === anexo && Number(f.faixa) === faixaCodigo.faixa
       );
 
       if (!doBanco) {
@@ -67,6 +67,6 @@ export function descreverDivergencias(divergencias: readonly DivergenciaCatalogo
   return divergencias.map((d) =>
     d.campo === 'ausente'
       ? `Anexo ${d.anexo} faixa ${d.faixa}: ausente no catálogo do banco`
-      : `Anexo ${d.anexo} faixa ${d.faixa} — ${d.campo}: código ${d.valorCodigo} ≠ banco ${d.valorBanco}`,
+      : `Anexo ${d.anexo} faixa ${d.faixa} — ${d.campo}: código ${d.valorCodigo} ≠ banco ${d.valorBanco}`
   );
 }

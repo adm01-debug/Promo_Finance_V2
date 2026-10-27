@@ -1,6 +1,15 @@
 import { useState, useRef, useEffect } from 'react';
 import { Calendar, ChevronDown, X } from 'lucide-react';
-import { format, startOfMonth, endOfMonth, subDays, subMonths, startOfYear, endOfYear, isValid } from 'date-fns';
+import {
+  format,
+  startOfMonth,
+  endOfMonth,
+  subDays,
+  subMonths,
+  startOfYear,
+  endOfYear,
+  isValid,
+} from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import { Button } from './button';
 import { cn } from '@/lib/utils';
@@ -150,11 +159,11 @@ export function DateRangePicker({
 
   const formatDateRange = () => {
     if (!value?.start && !value?.end) return placeholder;
-    
+
     const formatStr = 'dd/MM/yyyy';
     const startStr = value.start ? format(value.start, formatStr, { locale: ptBR }) : '';
     const endStr = value.end ? format(value.end, formatStr, { locale: ptBR }) : '';
-    
+
     if (startStr && endStr) {
       return `${startStr} - ${endStr}`;
     }
@@ -179,10 +188,7 @@ export function DateRangePicker({
       >
         <div className="flex items-center gap-2">
           <Calendar className="w-4 h-4 text-muted-foreground" />
-          <span className={cn(
-            'text-sm',
-            !value?.start && !value?.end && 'text-muted-foreground'
-          )}>
+          <span className={cn('text-sm', !value?.start && !value?.end && 'text-muted-foreground')}>
             {formatDateRange()}
           </span>
         </div>
@@ -199,10 +205,12 @@ export function DateRangePicker({
               <X className="w-4 h-4 text-muted-foreground" />
             </button>
           )}
-          <ChevronDown className={cn(
-            'w-4 h-4 text-muted-foreground transition-transform',
-            isOpen && 'rotate-180'
-          )} />
+          <ChevronDown
+            className={cn(
+              'w-4 h-4 text-muted-foreground transition-transform',
+              isOpen && 'rotate-180'
+            )}
+          />
         </div>
       </button>
 
@@ -256,7 +264,13 @@ export function DateRangePicker({
                     type="date"
                     value={tempRange.end ? format(tempRange.end, 'yyyy-MM-dd') : ''}
                     onChange={handleEndDateChange}
-                    min={tempRange.start ? format(tempRange.start, 'yyyy-MM-dd') : minDate ? format(minDate, 'yyyy-MM-dd') : undefined}
+                    min={
+                      tempRange.start
+                        ? format(tempRange.start, 'yyyy-MM-dd')
+                        : minDate
+                          ? format(minDate, 'yyyy-MM-dd')
+                          : undefined
+                    }
                     max={maxDate ? format(maxDate, 'yyyy-MM-dd') : undefined}
                     className="w-full px-3 py-2 border border-input rounded-lg bg-background text-foreground text-sm"
                   />
@@ -264,11 +278,7 @@ export function DateRangePicker({
               </div>
 
               <div className="flex justify-end gap-2 mt-4 pt-4 border-t border-border">
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => setIsOpen(false)}
-                >
+                <Button variant="outline" size="sm" onClick={() => setIsOpen(false)}>
                   Cancelar
                 </Button>
                 <Button

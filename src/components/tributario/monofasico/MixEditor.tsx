@@ -2,14 +2,27 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import {
-  Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
 } from '@/components/ui/select';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
 import { Plus, Trash2 } from 'lucide-react';
 import {
-  GRUPOS_MONOFASICOS, classificarNcmMonofasico,
-  type ItemMonofasico, type PosicaoCadeia,
+  GRUPOS_MONOFASICOS,
+  classificarNcmMonofasico,
+  type ItemMonofasico,
+  type PosicaoCadeia,
 } from '@/lib/tributario/monofasico';
 import { POSICOES } from './posicoes';
 
@@ -27,7 +40,11 @@ export function MixEditor({ itens, onChange }: MixEditorProps) {
     <div className="space-y-3">
       <datalist id="ncms-monofasicos">
         {GRUPOS_MONOFASICOS.flatMap((g) =>
-          g.ncms.map((n) => <option key={`${g.chave}-${n.ncm}`} value={n.ncm}>{n.descricao}</option>),
+          g.ncms.map((n) => (
+            <option key={`${g.chave}-${n.ncm}`} value={n.ncm}>
+              {n.descricao}
+            </option>
+          ))
         )}
       </datalist>
 
@@ -55,7 +72,9 @@ export function MixEditor({ itens, onChange }: MixEditorProps) {
               return (
                 <TableRow key={`linha-${i}`}>
                   <TableCell>
-                    <Label className="sr-only" htmlFor={`ncm-${i}`}>NCM do item {i + 1}</Label>
+                    <Label className="sr-only" htmlFor={`ncm-${i}`}>
+                      NCM do item {i + 1}
+                    </Label>
                     <Input
                       id={`ncm-${i}`}
                       list="ncms-monofasicos"
@@ -70,11 +89,15 @@ export function MixEditor({ itens, onChange }: MixEditorProps) {
                         {classificacao.grupo.nome}
                       </Badge>
                     ) : (
-                      <Badge variant="outline" className="text-muted-foreground">Não monofásico</Badge>
+                      <Badge variant="outline" className="text-muted-foreground">
+                        Não monofásico
+                      </Badge>
                     )}
                   </TableCell>
                   <TableCell>
-                    <Label className="sr-only" htmlFor={`receita-${i}`}>Receita do item {i + 1}</Label>
+                    <Label className="sr-only" htmlFor={`receita-${i}`}>
+                      Receita do item {i + 1}
+                    </Label>
                     <Input
                       id={`receita-${i}`}
                       type="number"
@@ -94,7 +117,9 @@ export function MixEditor({ itens, onChange }: MixEditorProps) {
                       </SelectTrigger>
                       <SelectContent>
                         {POSICOES.map((p) => (
-                          <SelectItem key={p.value} value={p.value}>{p.label}</SelectItem>
+                          <SelectItem key={p.value} value={p.value}>
+                            {p.label}
+                          </SelectItem>
                         ))}
                       </SelectContent>
                     </Select>

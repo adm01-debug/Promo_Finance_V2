@@ -20,12 +20,13 @@ import {
 import type { InputIss, LinhaMemoria, LocalIncidencia, ResultadoIss } from './types';
 
 const round2 = (v: number) => Math.round((v + Number.EPSILON) * 100) / 100;
-const nonNeg = (v: number | undefined) => (Number.isFinite(v) && (v as number) > 0 ? (v as number) : 0);
+const nonNeg = (v: number | undefined) =>
+  Number.isFinite(v) && (v as number) > 0 ? (v as number) : 0;
 
 /** Resolve o município competente segundo o art. 3º da LC 116/2003. */
 export function resolverMunicipioCompetente(
   local: LocalIncidencia,
-  input: Pick<InputIss, 'municipioPrestador' | 'municipioTomador' | 'municipioExecucao'>,
+  input: Pick<InputIss, 'municipioPrestador' | 'municipioTomador' | 'municipioExecucao'>
 ): string {
   switch (local) {
     case 'local_da_prestacao':
@@ -44,7 +45,7 @@ export function calcularIss(input: InputIss): ResultadoIss {
   const item = buscarItemLc116(input.itemLc116);
   if (!item) {
     throw new Error(
-      `Item ${input.itemLc116} não encontrado na lista anexa da LC 116/2003 embarcada.`,
+      `Item ${input.itemLc116} não encontrado na lista anexa da LC 116/2003 embarcada.`
     );
   }
 
@@ -60,7 +61,7 @@ export function calcularIss(input: InputIss): ResultadoIss {
     }
   } else if (materiais + subempreitadas > 0) {
     alertas.push(
-      `O item ${item.item} não admite dedução de materiais/subempreitadas na base do ISS (LC 116, art. 7º, §2º).`,
+      `O item ${item.item} não admite dedução de materiais/subempreitadas na base do ISS (LC 116, art. 7º, §2º).`
     );
   }
 
@@ -80,9 +81,12 @@ export function calcularIss(input: InputIss): ResultadoIss {
   const issDevido = round2(baseCalculo * aliquota);
   const municipioCompetente = resolverMunicipioCompetente(item.local, input);
 
-  if (item.local === 'estabelecimento_prestador' && input.municipioPrestador !== input.municipioTomador) {
+  if (
+    item.local === 'estabelecimento_prestador' &&
+    input.municipioPrestador !== input.municipioTomador
+  ) {
     alertas.push(
-      'Serviço tributado no estabelecimento prestador: eventual exigência pelo município do tomador é indevida (LC 116, art. 3º, caput).',
+      'Serviço tributado no estabelecimento prestador: eventual exigência pelo município do tomador é indevida (LC 116, art. 3º, caput).'
     );
   }
 
@@ -91,9 +95,10 @@ export function calcularIss(input: InputIss): ResultadoIss {
     base: valorServico,
     aliquota: 0,
     valor: baseCalculo,
-    fundamento: deducoes > 0
-      ? 'LC 116/2003, art. 7º, §2º, I — dedução de materiais e subempreitadas.'
-      : 'LC 116/2003, art. 7º — preço do serviço.',
+    fundamento:
+      deducoes > 0
+        ? 'LC 116/2003, art. 7º, §2º, I — dedução de materiais e subempreitadas.'
+        : 'LC 116/2003, art. 7º — preço do serviço.',
   });
   memoria.push({
     rubrica: `ISS — ${municipioCompetente}`,
@@ -126,7 +131,9 @@ export function calcularIss(input: InputIss): ResultadoIss {
   let inss = 0;
 
   if (simples) {
-    alertas.push('Prestador optante pelo Simples Nacional: dispensadas as retenções de IRRF e CSRF (IN RFB 2.110/2022 e Lei 10.833, art. 32).');
+    alertas.push(
+      'Prestador optante pelo Simples Nacional: dispensadas as retenções de IRRF e CSRF (IN RFB 2.110/2022 e Lei 10.833, art. 32).'
+    );
   } else if (tomadorPj) {
     if (item.irrfAliquota > 0) {
       const bruto = round2(valorServico * item.irrfAliquota);
@@ -137,10 +144,13 @@ export function calcularIss(input: InputIss): ResultadoIss {
           base: valorServico,
           aliquota: item.irrfAliquota,
           valor: -irrf,
-          fundamento: 'RIR/2018, arts. 714 e 716 — serviços profissionais e de natureza não profissional.',
+          fundamento:
+            'RIR/2018, arts. 714 e 716 — serviços profissionais e de natureza não profissional.',
         });
       } else {
-        alertas.push(`IRRF de ${bruto.toFixed(2)} dispensado por ser inferior a R$ 10,00 (RIR/2018, art. 785).`);
+        alertas.push(
+          `IRRF de ${bruto.toFixed(2)} dispensado por ser inferior a R$ 10,00 (RIR/2018, art. 785).`
+        );
       }
     }
 
@@ -156,7 +166,9 @@ export function calcularIss(input: InputIss): ResultadoIss {
         fundamento: 'Lei 10.833/2003, arts. 30 e 31, com a redação da Lei 13.137/2015.',
       });
     } else {
-      alertas.push(`Pagamento de até R$ ${CSRF_PISO_PAGAMENTO.toFixed(2)}: CSRF dispensada (Lei 10.833, art. 31, §3º).`);
+      alertas.push(
+        `Pagamento de até R$ ${CSRF_PISO_PAGAMENTO.toFixed(2)}: CSRF dispensada (Lei 10.833, art. 31, §3º).`
+      );
     }
   }
 

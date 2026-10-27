@@ -14,12 +14,33 @@ import type {
 import type { AnexoSimples } from '../types';
 
 const REGIOES: Record<string, UfCatalogo['regiao']> = {
-  AC: 'NORTE', AM: 'NORTE', AP: 'NORTE', PA: 'NORTE', RO: 'NORTE', RR: 'NORTE', TO: 'NORTE',
-  AL: 'NORDESTE', BA: 'NORDESTE', CE: 'NORDESTE', MA: 'NORDESTE', PB: 'NORDESTE',
-  PE: 'NORDESTE', PI: 'NORDESTE', RN: 'NORDESTE', SE: 'NORDESTE',
-  DF: 'CENTRO_OESTE', GO: 'CENTRO_OESTE', MS: 'CENTRO_OESTE', MT: 'CENTRO_OESTE',
-  ES: 'SUDESTE', MG: 'SUDESTE', RJ: 'SUDESTE', SP: 'SUDESTE',
-  PR: 'SUL', RS: 'SUL', SC: 'SUL',
+  AC: 'NORTE',
+  AM: 'NORTE',
+  AP: 'NORTE',
+  PA: 'NORTE',
+  RO: 'NORTE',
+  RR: 'NORTE',
+  TO: 'NORTE',
+  AL: 'NORDESTE',
+  BA: 'NORDESTE',
+  CE: 'NORDESTE',
+  MA: 'NORDESTE',
+  PB: 'NORDESTE',
+  PE: 'NORDESTE',
+  PI: 'NORDESTE',
+  RN: 'NORDESTE',
+  SE: 'NORDESTE',
+  DF: 'CENTRO_OESTE',
+  GO: 'CENTRO_OESTE',
+  MS: 'CENTRO_OESTE',
+  MT: 'CENTRO_OESTE',
+  ES: 'SUDESTE',
+  MG: 'SUDESTE',
+  RJ: 'SUDESTE',
+  SP: 'SUDESTE',
+  PR: 'SUL',
+  RS: 'SUL',
+  SC: 'SUL',
 };
 
 function ufsCoerentes(): UfCatalogo[] {
@@ -68,7 +89,7 @@ function faixasCoerentes(): FaixaSimplesCatalogo[] {
       parcela_deduzir: f.pd,
       vigente_de: '2024-01-01',
       vigente_ate: null,
-    })),
+    }))
   );
 }
 
@@ -135,7 +156,7 @@ describe('painel de catálogos fiscais', () => {
 
   it('prioriza "divergente" sobre "vazio" na situação geral', () => {
     const ufsDivergentes = ufs.map((u, i) =>
-      i === 0 ? { ...u, aliquota_interna_padrao: 0.99 } : u,
+      i === 0 ? { ...u, aliquota_interna_padrao: 0.99 } : u
     );
     const resumo = resumirPainelCatalogos({
       ufs: ufsDivergentes,
@@ -154,7 +175,9 @@ describe('painel de catálogos fiscais', () => {
   });
 
   it('detecta marcador possui_fcp inconsistente', () => {
-    const ufsQuebradas = ufs.map((u) => (u.sigla === 'SP' ? { ...u, possui_fcp: !u.possui_fcp } : u));
+    const ufsQuebradas = ufs.map((u) =>
+      u.sigla === 'SP' ? { ...u, possui_fcp: !u.possui_fcp } : u
+    );
     const resumo = resumirPainelCatalogos({ ufs: ufsQuebradas, interestaduais: inter, faixas });
     expect(resumo.catalogos[0].problemas.some((p) => p.startsWith('SP'))).toBe(true);
   });

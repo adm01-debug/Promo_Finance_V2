@@ -6,8 +6,21 @@ import { Button } from '@/components/ui/button';
 import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 import { toast } from 'sonner';
 import { Globe, Plus, Trash2, Loader2, Shield, AlertTriangle } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
@@ -105,15 +118,13 @@ export function GeoRestrictionPanel() {
   // Adicionar país
   const addCountryMutation = useMutation({
     mutationFn: async (countryCode: string) => {
-      const country = COUNTRIES.find(c => c.code === countryCode);
+      const country = COUNTRIES.find((c) => c.code === countryCode);
       if (!country) throw new Error('País não encontrado');
-      
-      const { error } = await supabase
-        .from('allowed_countries')
-        .insert({
-          country_code: country.code,
-          country_name: country.name,
-        });
+
+      const { error } = await supabase.from('allowed_countries').insert({
+        country_code: country.code,
+        country_name: country.name,
+      });
       if (error) throw error;
     },
     onSuccess: () => {
@@ -134,10 +145,7 @@ export function GeoRestrictionPanel() {
   // Remover país
   const removeCountryMutation = useMutation({
     mutationFn: async (id: string) => {
-      const { error } = await supabase
-        .from('allowed_countries')
-        .delete()
-        .eq('id', id);
+      const { error } = await supabase.from('allowed_countries').delete().eq('id', id);
       if (error) throw error;
     },
     onSuccess: () => {
@@ -151,7 +159,7 @@ export function GeoRestrictionPanel() {
 
   // Países disponíveis para adicionar (não estão na lista)
   const availableCountries = COUNTRIES.filter(
-    c => !countries?.some(ac => ac.country_code === c.code)
+    (c) => !countries?.some((ac) => ac.country_code === c.code)
   );
 
   if (loadingSettings || loadingCountries) {
@@ -201,9 +209,7 @@ export function GeoRestrictionPanel() {
           <div className="flex items-start gap-3 p-4 rounded-lg border border-warning/50 bg-warning/10">
             <AlertTriangle className="h-5 w-5 text-warning mt-0.5" />
             <div className="text-sm">
-              <p className="font-medium text-warning">
-                Bloqueio geográfico ativo
-              </p>
+              <p className="font-medium text-warning">Bloqueio geográfico ativo</p>
               <p className="text-warning/80">
                 Usuários fora dos países listados abaixo não conseguirão fazer login.
               </p>
@@ -236,9 +242,7 @@ export function GeoRestrictionPanel() {
                   className="flex items-center justify-between p-3 rounded-lg border bg-card"
                 >
                   <div className="flex items-center gap-3">
-                    <span className="text-2xl">
-                      {getFlagEmoji(country.country_code)}
-                    </span>
+                    <span className="text-2xl">{getFlagEmoji(country.country_code)}</span>
                     <div>
                       <p className="font-medium">{country.country_name}</p>
                       <p className="text-xs text-muted-foreground">
@@ -306,9 +310,7 @@ export function GeoRestrictionPanel() {
                 onClick={() => addCountryMutation.mutate(selectedCountry)}
                 disabled={!selectedCountry || addCountryMutation.isPending}
               >
-                {addCountryMutation.isPending && (
-                  <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                )}
+                {addCountryMutation.isPending && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
                 Adicionar
               </Button>
             </DialogFooter>
@@ -324,6 +326,6 @@ function getFlagEmoji(countryCode: string): string {
   const codePoints = countryCode
     .toUpperCase()
     .split('')
-    .map(char => 127397 + char.charCodeAt(0));
+    .map((char) => 127397 + char.charCodeAt(0));
   return String.fromCodePoint(...codePoints);
 }

@@ -1,13 +1,29 @@
 import { useState, useMemo } from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { Target, BarChart3, PieChart as PieChartIcon, Loader2, Filter, ArrowUpDown } from 'lucide-react';
+import {
+  Target,
+  BarChart3,
+  PieChart as PieChartIcon,
+  Loader2,
+  Filter,
+  ArrowUpDown,
+} from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { MainLayout } from '@/components/layout/MainLayout';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 import { InsightsIA } from '@/components/relatorios/InsightsIA';
 import { OrcamentoKPIs } from '@/components/orcamento/OrcamentoKPIs';
-import { OrcamentoCardsView, type CentroCustoComGastos } from '@/components/orcamento/OrcamentoCardsView';
+import {
+  OrcamentoCardsView,
+  type CentroCustoComGastos,
+} from '@/components/orcamento/OrcamentoCardsView';
 import { OrcamentoChartsView } from '@/components/orcamento/OrcamentoChartsView';
 
 export default function OrcamentoEvento() {
@@ -28,12 +44,12 @@ export default function OrcamentoEvento() {
       const receber = receberRes.data || [];
 
       return centros.map((cc): CentroCustoComGastos => {
-        const contasPagar = pagar.filter(p => p.centro_custo_id === cc.id);
-        const contasReceber = receber.filter(r => r.centro_custo_id === cc.id);
+        const contasPagar = pagar.filter((p) => p.centro_custo_id === cc.id);
+        const contasReceber = receber.filter((r) => r.centro_custo_id === cc.id);
 
         const gastoPagar = contasPagar.reduce((acc, c) => acc + (c.valor_pago || c.valor || 0), 0);
         const gastoReceber = contasReceber
-          .filter(c => c.status === 'pago')
+          .filter((c) => c.status === 'pago')
           .reduce((acc, c) => acc + (c.valor_recebido || c.valor || 0), 0);
 
         const totalGasto = gastoPagar;
@@ -42,7 +58,7 @@ export default function OrcamentoEvento() {
 
         return {
           id: cc.id,
-          codigo: cc.codigo,
+          codigo: cc.codigo ?? '',
           nome: cc.nome,
           tipo: cc.tipo,
           responsavel: cc.responsavel,
@@ -65,30 +81,41 @@ export default function OrcamentoEvento() {
     const totalOrcamento = centrosComGastos.reduce((a, c) => a + c.orcamento_previsto, 0);
     const totalGasto = centrosComGastos.reduce((a, c) => a + c.gasto_real_pagar, 0);
     const totalReceita = centrosComGastos.reduce((a, c) => a + c.gasto_real_receber, 0);
-    const estourados = centrosComGastos.filter(c => c.status === 'estouro').length;
-    const atencao = centrosComGastos.filter(c => c.status === 'atencao').length;
-    return { totalOrcamento, totalGasto, totalReceita, estourados, atencao, disponivel: totalOrcamento - totalGasto };
+    const estourados = centrosComGastos.filter((c) => c.status === 'estouro').length;
+    const atencao = centrosComGastos.filter((c) => c.status === 'atencao').length;
+    return {
+      totalOrcamento,
+      totalGasto,
+      totalReceita,
+      estourados,
+      atencao,
+      disponivel: totalOrcamento - totalGasto,
+    };
   }, [centrosComGastos]);
 
   const centrosFiltrados = useMemo(() => {
     if (!centrosComGastos) return [];
     let filtered = [...centrosComGastos];
     if (filtroStatus !== 'todos') {
-      filtered = filtered.filter(c => c.status === filtroStatus);
+      filtered = filtered.filter((c) => c.status === filtroStatus);
     }
     filtered.sort((a, b) => {
       switch (ordenacao) {
-        case 'percentual': return b.percentual_usado - a.percentual_usado;
-        case 'orcamento': return b.orcamento_previsto - a.orcamento_previsto;
-        case 'gasto': return b.gasto_real_pagar - a.gasto_real_pagar;
-        default: return a.nome.localeCompare(b.nome);
+        case 'percentual':
+          return b.percentual_usado - a.percentual_usado;
+        case 'orcamento':
+          return b.orcamento_previsto - a.orcamento_previsto;
+        case 'gasto':
+          return b.gasto_real_pagar - a.gasto_real_pagar;
+        default:
+          return a.nome.localeCompare(b.nome);
       }
     });
     return filtered;
   }, [centrosComGastos, filtroStatus, ordenacao]);
 
   const chartData = useMemo(() => {
-    return centrosFiltrados.map(c => ({
+    return centrosFiltrados.map((c) => ({
       nome: c.codigo,
       nomeCompleto: c.nome,
       orcamento: c.orcamento_previsto,
@@ -161,7 +188,7 @@ export default function OrcamentoEvento() {
               saldo_disponivel: kpis.disponivel,
               centros_estourados: kpis.estourados,
               centros_atencao: kpis.atencao,
-              detalhes: centrosComGastos.map(c => ({
+              detalhes: centrosComGastos.map((c) => ({
                 nome: c.nome,
                 orcamento: c.orcamento_previsto,
                 gasto: c.gasto_real_pagar,
@@ -176,8 +203,14 @@ export default function OrcamentoEvento() {
 
         <Tabs defaultValue="cards" className="space-y-4">
           <TabsList>
-            <TabsTrigger value="cards"><BarChart3 className="h-4 w-4 mr-2" />Cards</TabsTrigger>
-            <TabsTrigger value="grafico"><PieChartIcon className="h-4 w-4 mr-2" />Gráficos</TabsTrigger>
+            <TabsTrigger value="cards">
+              <BarChart3 className="h-4 w-4 mr-2" />
+              Cards
+            </TabsTrigger>
+            <TabsTrigger value="grafico">
+              <PieChartIcon className="h-4 w-4 mr-2" />
+              Gráficos
+            </TabsTrigger>
           </TabsList>
 
           <TabsContent value="cards">

@@ -121,7 +121,7 @@ export function ContaReceberDetailDrawer({
       const { data } = await supabase
         .from('anexos_financeiros')
         .select('*')
-        .eq('entidade_tipo', 'conta_receber')
+        .in('entidade_tipo', ['conta_receber', 'contas_receber'])
         .eq('entidade_id', conta.id)
         .order('created_at', { ascending: false });
       return data || [];
@@ -326,7 +326,9 @@ export function ContaReceberDetailDrawer({
                             type: string;
                             message: string;
                             timestamp: string;
-                            metadata?: { transacao_banco?: { descricao?: string; valor?: number } } | null;
+                            metadata?: {
+                              transacao_banco?: { descricao?: string; valor?: number };
+                            } | null;
                           }>
                         | undefined) ?? [])
                     : []

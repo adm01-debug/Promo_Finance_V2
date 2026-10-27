@@ -6,18 +6,38 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+} from '@/components/ui/dialog';
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
-import { MoreVertical, RefreshCw, Edit, Trash2, Settings2, FileText, type LucideIcon } from 'lucide-react';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
+import {
+  MoreVertical,
+  RefreshCw,
+  Edit,
+  Trash2,
+  Settings2,
+  FileText,
+  type LucideIcon,
+} from 'lucide-react';
 import { formatCurrency } from '@/lib/formatters';
 import { cn } from '@/lib/utils';
 import type { ContaBancaria } from '@/hooks/useFinancialData';
 
 const itemVariants = {
   hidden: { opacity: 0, y: 20 },
-  visible: { opacity: 1, y: 0 }
+  visible: { opacity: 1, y: 0 },
 };
 
 interface Props {
@@ -29,7 +49,14 @@ interface Props {
   onDelete: (conta: ContaBancaria) => void;
 }
 
-export function ContaBancariaCard({ conta, empresaNome, showSaldos, bancoIcon: BancoIcon, bancoColor, onDelete }: Props) {
+export function ContaBancariaCard({
+  conta,
+  empresaNome,
+  showSaldos,
+  bancoIcon: BancoIcon,
+  bancoColor,
+  onDelete,
+}: Props) {
   const [showMapping, setShowMapping] = useState(false);
   const [mapping, setMapping] = useState<Record<string, string>>(
     (conta as { mapeamento_extrato?: Record<string, string> }).mapeamento_extrato || {
@@ -37,7 +64,7 @@ export function ContaBancariaCard({ conta, empresaNome, showSaldos, bancoIcon: B
       descricao: 'Descrição',
       valor: 'Valor',
       tipo: 'Tipo',
-    },
+    }
   );
 
   const saveMapping = async () => {
@@ -45,7 +72,7 @@ export function ContaBancariaCard({ conta, empresaNome, showSaldos, bancoIcon: B
       .from('contas_bancarias')
       .update({ mapeamento_extrato: mapping } as never)
       .eq('id', conta.id);
-    
+
     if (error) toast.error('Erro ao salvar mapeamento');
     else {
       toast.success('Mapeamento salvo com sucesso');
@@ -53,36 +80,59 @@ export function ContaBancariaCard({ conta, empresaNome, showSaldos, bancoIcon: B
     }
   };
 
-  const percentualDisponivel = conta.saldo_atual > 0 ? (conta.saldo_disponivel / conta.saldo_atual) * 100 : 0;
+  const percentualDisponivel =
+    conta.saldo_atual > 0 ? ((conta.saldo_disponivel ?? 0) / conta.saldo_atual) * 100 : 0;
 
   return (
     <motion.div variants={itemVariants}>
-      <Card className={cn("relative overflow-hidden transition-all hover:shadow-lg", !conta.ativo && "opacity-60")}>
-        <div className={cn("absolute top-0 left-0 right-0 h-1", bancoColor)} />
+      <Card
+        className={cn(
+          'relative overflow-hidden transition-all hover:shadow-lg',
+          !conta.ativo && 'opacity-60'
+        )}
+      >
+        <div className={cn('absolute top-0 left-0 right-0 h-1', bancoColor)} />
         <CardHeader className="pb-2">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <div className={cn("p-2 rounded-lg", bancoColor)}>
+              <div className={cn('p-2 rounded-lg', bancoColor)}>
                 <BancoIcon className="h-5 w-5 text-white" />
               </div>
               <div>
                 <CardTitle className="text-lg">{conta.banco}</CardTitle>
-                <p className="text-xs text-muted-foreground">Ag: {conta.agencia} | Cc: {conta.conta}</p>
+                <p className="text-xs text-muted-foreground">
+                  Ag: {conta.agencia} | Cc: {conta.conta}
+                </p>
               </div>
             </div>
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="ghost" size="icon"><MoreVertical className="h-4 w-4" /></Button>
+                <Button variant="ghost" size="icon">
+                  <MoreVertical className="h-4 w-4" />
+                </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end">
-                <DropdownMenuItem><RefreshCw className="h-4 w-4 mr-2" />Sincronizar</DropdownMenuItem>
-                <DropdownMenuItem><Edit className="h-4 w-4 mr-2" />Editar</DropdownMenuItem>
+                <DropdownMenuItem>
+                  <RefreshCw className="h-4 w-4 mr-2" />
+                  Sincronizar
+                </DropdownMenuItem>
+                <DropdownMenuItem>
+                  <Edit className="h-4 w-4 mr-2" />
+                  Editar
+                </DropdownMenuItem>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem><Settings2 className="h-4 w-4 mr-2" />Regras de Conciliação</DropdownMenuItem>
-                <DropdownMenuItem onClick={() => setShowMapping(true)}><FileText className="h-4 w-4 mr-2" />Mapeamento de Extrato</DropdownMenuItem>
+                <DropdownMenuItem>
+                  <Settings2 className="h-4 w-4 mr-2" />
+                  Regras de Conciliação
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => setShowMapping(true)}>
+                  <FileText className="h-4 w-4 mr-2" />
+                  Mapeamento de Extrato
+                </DropdownMenuItem>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem className="text-destructive" onClick={() => onDelete(conta)}>
-                  <Trash2 className="h-4 w-4 mr-2" />Excluir
+                  <Trash2 className="h-4 w-4 mr-2" />
+                  Excluir
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
@@ -92,11 +142,16 @@ export function ContaBancariaCard({ conta, empresaNome, showSaldos, bancoIcon: B
           <div>
             <div className="flex items-center justify-between mb-1">
               <span className="text-sm text-muted-foreground">Saldo Atual</span>
-              <Badge variant={conta.ativo ? "default" : "secondary"}>
-                {conta.ativo ? "Ativa" : "Inativa"}
+              <Badge variant={conta.ativo ? 'default' : 'secondary'}>
+                {conta.ativo ? 'Ativa' : 'Inativa'}
               </Badge>
             </div>
-            <p className={cn("text-2xl font-bold", conta.saldo_atual >= 0 ? "text-foreground" : "text-destructive")}>
+            <p
+              className={cn(
+                'text-2xl font-bold',
+                conta.saldo_atual >= 0 ? 'text-foreground' : 'text-destructive'
+              )}
+            >
               {showSaldos ? formatCurrency(conta.saldo_atual) : '••••••'}
             </p>
           </div>
@@ -124,25 +179,41 @@ export function ContaBancariaCard({ conta, empresaNome, showSaldos, bancoIcon: B
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
                 <Label>Coluna Data</Label>
-                <Input value={mapping.data} onChange={e => setMapping({...mapping, data: e.target.value})} />
+                <Input
+                  value={mapping.data}
+                  onChange={(e) => setMapping({ ...mapping, data: e.target.value })}
+                />
               </div>
               <div className="space-y-2">
                 <Label>Coluna Descrição</Label>
-                <Input value={mapping.descricao} onChange={e => setMapping({...mapping, descricao: e.target.value})} />
+                <Input
+                  value={mapping.descricao}
+                  onChange={(e) => setMapping({ ...mapping, descricao: e.target.value })}
+                />
               </div>
               <div className="space-y-2">
                 <Label>Coluna Valor</Label>
-                <Input value={mapping.valor} onChange={e => setMapping({...mapping, valor: e.target.value})} />
+                <Input
+                  value={mapping.valor}
+                  onChange={(e) => setMapping({ ...mapping, valor: e.target.value })}
+                />
               </div>
               <div className="space-y-2">
                 <Label>Coluna Tipo (D/C)</Label>
-                <Input value={mapping.tipo} onChange={e => setMapping({...mapping, tipo: e.target.value})} />
+                <Input
+                  value={mapping.tipo}
+                  onChange={(e) => setMapping({ ...mapping, tipo: e.target.value })}
+                />
               </div>
             </div>
-            <p className="text-xs text-muted-foreground">Informe exatamente o nome do cabeçalho como aparece no seu arquivo CSV.</p>
+            <p className="text-xs text-muted-foreground">
+              Informe exatamente o nome do cabeçalho como aparece no seu arquivo CSV.
+            </p>
           </div>
           <DialogFooter>
-            <Button variant="outline" onClick={() => setShowMapping(false)}>Cancelar</Button>
+            <Button variant="outline" onClick={() => setShowMapping(false)}>
+              Cancelar
+            </Button>
             <Button onClick={saveMapping}>Salvar Mapeamento</Button>
           </DialogFooter>
         </DialogContent>

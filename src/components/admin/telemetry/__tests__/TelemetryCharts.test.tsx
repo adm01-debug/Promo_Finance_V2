@@ -2,10 +2,17 @@ import { describe, it, expect } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import { TelemetryCharts } from '../TelemetryCharts';
 
-function makeRow(overrides: Partial<{
-  id: string; operation: string; table_name: string | null;
-  rpc_name: string | null; duration_ms: number; severity: string; created_at: string;
-}> = {}) {
+function makeRow(
+  overrides: Partial<{
+    id: string;
+    operation: string;
+    table_name: string | null;
+    rpc_name: string | null;
+    duration_ms: number;
+    severity: string;
+    created_at: string;
+  }> = {}
+) {
   return {
     id: overrides.id ?? crypto.randomUUID(),
     operation: overrides.operation ?? 'SELECT',
@@ -70,9 +77,7 @@ describe('TelemetryCharts', () => {
   });
 
   it('prefers rpc_name over table_name in bar chart', () => {
-    const rows = [
-      makeRow({ rpc_name: 'get_totals', table_name: 'orders' }),
-    ];
+    const rows = [makeRow({ rpc_name: 'get_totals', table_name: 'orders' })];
     const { container } = render(<TelemetryCharts rows={rows} timeFilter="24h" />);
     expect(container.innerHTML).not.toBe('');
   });

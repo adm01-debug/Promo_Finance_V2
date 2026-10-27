@@ -1,8 +1,14 @@
 import { useState, useMemo } from 'react';
 import { useMutation } from '@tanstack/react-query';
 import { motion, AnimatePresence } from 'framer-motion';
-import { TrendingUp, TrendingDown, Target, Sparkles,
-  Loader2, AlertTriangle, Trophy,
+import {
+  TrendingUp,
+  TrendingDown,
+  Target,
+  Sparkles,
+  Loader2,
+  AlertTriangle,
+  Trophy,
 } from 'lucide-react';
 
 import { supabase } from '@/integrations/supabase/client';
@@ -58,11 +64,17 @@ export default function BenchmarkingSetorial() {
   const metricas = useMemo(() => {
     const totalReceitas = contasReceber.reduce((a, c) => a + (c.valor || 0), 0);
     const totalDespesas = contasPagar.reduce((a, c) => a + (c.valor || 0), 0);
-    const receitasRecebidas = contasReceber.filter(c => c.status === 'pago').reduce((a, c) => a + (c.valor_recebido || c.valor || 0), 0);
-    const despesasPagas = contasPagar.filter(c => c.status === 'pago').reduce((a, c) => a + (c.valor_pago || c.valor || 0), 0);
-    const inadimplentes = contasReceber.filter(c => c.status === 'vencido');
-    const taxaInadimplencia = contasReceber.length > 0 ? (inadimplentes.length / contasReceber.length) * 100 : 0;
-    const margemOperacional = totalReceitas > 0 ? ((totalReceitas - totalDespesas) / totalReceitas) * 100 : 0;
+    const receitasRecebidas = contasReceber
+      .filter((c) => c.status === 'pago')
+      .reduce((a, c) => a + (c.valor_recebido || c.valor || 0), 0);
+    const despesasPagas = contasPagar
+      .filter((c) => c.status === 'pago')
+      .reduce((a, c) => a + (c.valor_pago || c.valor || 0), 0);
+    const inadimplentes = contasReceber.filter((c) => c.status === 'vencido');
+    const taxaInadimplencia =
+      contasReceber.length > 0 ? (inadimplentes.length / contasReceber.length) * 100 : 0;
+    const margemOperacional =
+      totalReceitas > 0 ? ((totalReceitas - totalDespesas) / totalReceitas) * 100 : 0;
     const ticketMedio = contasReceber.length > 0 ? totalReceitas / contasReceber.length : 0;
     const totalInadimplencia = inadimplentes.reduce((a, c) => a + (c.valor || 0), 0);
 
@@ -74,8 +86,8 @@ export default function BenchmarkingSetorial() {
       margem_operacional: margemOperacional,
       taxa_inadimplencia: taxaInadimplencia,
       ticket_medio: ticketMedio,
-      total_clientes: new Set(contasReceber.map(c => c.cliente_nome)).size,
-      total_fornecedores: new Set(contasPagar.map(c => c.fornecedor_nome)).size,
+      total_clientes: new Set(contasReceber.map((c) => c.cliente_nome)).size,
+      total_fornecedores: new Set(contasPagar.map((c) => c.fornecedor_nome)).size,
       qtd_recebiveis: contasReceber.length,
       qtd_pagamentos: contasPagar.length,
       total_inadimplencia: totalInadimplencia,
@@ -126,7 +138,11 @@ export default function BenchmarkingSetorial() {
             ) : (
               <Sparkles className="h-5 w-5" />
             )}
-            {mutation.isPending ? 'Analisando mercado...' : result ? 'Reanalisar' : 'Analisar com IA'}
+            {mutation.isPending
+              ? 'Analisando mercado...'
+              : result
+                ? 'Reanalisar'
+                : 'Analisar com IA'}
           </Button>
         </div>
 
@@ -156,7 +172,12 @@ export default function BenchmarkingSetorial() {
                 <Target className="h-4 w-4 text-primary" />
                 <span className="text-xs text-muted-foreground">Margem</span>
               </div>
-              <p className={cn('text-lg font-bold', metricas.margem_operacional >= 0 ? 'text-success' : 'text-destructive')}>
+              <p
+                className={cn(
+                  'text-lg font-bold',
+                  metricas.margem_operacional >= 0 ? 'text-success' : 'text-destructive'
+                )}
+              >
                 {metricas.margem_operacional.toFixed(1)}%
               </p>
             </CardContent>
@@ -167,7 +188,12 @@ export default function BenchmarkingSetorial() {
                 <AlertTriangle className="h-4 w-4 text-warning" />
                 <span className="text-xs text-muted-foreground">Inadimplência</span>
               </div>
-              <p className={cn('text-lg font-bold', metricas.taxa_inadimplencia > 5 ? 'text-destructive' : 'text-success')}>
+              <p
+                className={cn(
+                  'text-lg font-bold',
+                  metricas.taxa_inadimplencia > 5 ? 'text-destructive' : 'text-success'
+                )}
+              >
                 {metricas.taxa_inadimplencia.toFixed(1)}%
               </p>
             </CardContent>
@@ -192,13 +218,18 @@ export default function BenchmarkingSetorial() {
                       </div>
                       <Progress value={result.score_geral} className="h-3 w-24" />
                       <Badge variant="outline" className="text-xs">
-                        {result.posicao_mercado === 'acima_media' ? '🏆 Acima da média' :
-                         result.posicao_mercado === 'na_media' ? '📊 Na média' : '⚠️ Abaixo da média'}
+                        {result.posicao_mercado === 'acima_media'
+                          ? '🏆 Acima da média'
+                          : result.posicao_mercado === 'na_media'
+                            ? '📊 Na média'
+                            : '⚠️ Abaixo da média'}
                       </Badge>
                     </div>
                     <Separator orientation="vertical" className="hidden md:block h-20" />
                     <div className="flex-1">
-                      <p className="text-sm text-foreground leading-relaxed">{result.resumo_executivo}</p>
+                      <p className="text-sm text-foreground leading-relaxed">
+                        {result.resumo_executivo}
+                      </p>
                     </div>
                   </div>
                 </CardContent>
@@ -219,8 +250,8 @@ export default function BenchmarkingSetorial() {
               <Trophy className="h-12 w-12 text-muted-foreground/40 mb-4" />
               <h3 className="text-lg font-semibold mb-2">Descubra sua posição no mercado</h3>
               <p className="text-sm text-muted-foreground max-w-md mb-6">
-                A IA irá analisar suas métricas financeiras e comparar com benchmarks
-                do setor de eventos, identificando pontos fortes, oportunidades e tendências.
+                A IA irá analisar suas métricas financeiras e comparar com benchmarks do setor de
+                eventos, identificando pontos fortes, oportunidades e tendências.
               </p>
               <Button onClick={() => mutation.mutate()} size="lg" className="gap-2">
                 <Sparkles className="h-5 w-5" />
@@ -234,7 +265,9 @@ export default function BenchmarkingSetorial() {
           <Card>
             <CardContent className="flex flex-col items-center justify-center py-16">
               <Loader2 className="h-10 w-10 animate-spin text-primary mb-4" />
-              <p className="text-sm text-muted-foreground">Analisando suas métricas vs mercado de eventos...</p>
+              <p className="text-sm text-muted-foreground">
+                Analisando suas métricas vs mercado de eventos...
+              </p>
             </CardContent>
           </Card>
         )}

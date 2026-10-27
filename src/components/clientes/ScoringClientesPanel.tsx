@@ -1,9 +1,15 @@
 import { useState } from 'react';
-import { 
-  TrendingUp, TrendingDown, Minus, 
-  RefreshCw, Shield, AlertTriangle, 
-  Users, Target,
-  ArrowUpRight, ArrowDownRight
+import {
+  TrendingUp,
+  TrendingDown,
+  Minus,
+  RefreshCw,
+  Shield,
+  AlertTriangle,
+  Users,
+  Target,
+  ArrowUpRight,
+  ArrowDownRight,
 } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -32,19 +38,14 @@ const CORES_RISCO: Record<string, string> = {
 };
 
 export function ScoringClientesPanel() {
-  const { 
-    clientesComScore, 
-    estatisticas, 
-    isLoading,
-    recalcularScore,
-    isRecalculando
-  } = useScoringClientes();
+  const { clientesComScore, estatisticas, isLoading, recalcularScore, isRecalculando } =
+    useScoringClientes();
 
   const [busca, setBusca] = useState('');
   const [filtroClassificacao, setFiltroClassificacao] = useState<string | null>(null);
   const [clienteSelecionado, setClienteSelecionado] = useState<ClienteScore | null>(null);
 
-  const clientesFiltrados = clientesComScore.filter(c => {
+  const clientesFiltrados = clientesComScore.filter((c) => {
     const matchBusca = c.clienteNome.toLowerCase().includes(busca.toLowerCase());
     const matchClassificacao = !filtroClassificacao || c.classificacao === filtroClassificacao;
     return matchBusca && matchClassificacao;
@@ -65,23 +66,27 @@ export function ScoringClientesPanel() {
     <div className="space-y-6">
       {/* Cards de Estatísticas */}
       <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
-        {(['A', 'B', 'C', 'D', 'E'] as const).map(classificacao => (
-          <Card 
+        {(['A', 'B', 'C', 'D', 'E'] as const).map((classificacao) => (
+          <Card
             key={classificacao}
             className={`cursor-pointer transition-all ${
               filtroClassificacao === classificacao ? 'ring-2 ring-primary' : 'hover:shadow-md'
             }`}
-            onClick={() => setFiltroClassificacao(
-              filtroClassificacao === classificacao ? null : classificacao
-            )}
+            onClick={() =>
+              setFiltroClassificacao(filtroClassificacao === classificacao ? null : classificacao)
+            }
           >
             <CardContent className="pt-4 pb-3">
               <div className="flex items-center justify-between">
-                <div className={`w-10 h-10 rounded-full ${CORES_CLASSIFICACAO[classificacao]} flex items-center justify-center text-white font-bold text-lg`}>
+                <div
+                  className={`w-10 h-10 rounded-full ${CORES_CLASSIFICACAO[classificacao]} flex items-center justify-center text-white font-bold text-lg`}
+                >
                   {classificacao}
                 </div>
                 <div className="text-right">
-                  <p className="text-2xl font-bold">{estatisticas.porClassificacao[classificacao]}</p>
+                  <p className="text-2xl font-bold">
+                    {estatisticas.porClassificacao[classificacao]}
+                  </p>
                   <p className="text-xs text-muted-foreground">clientes</p>
                 </div>
               </div>
@@ -112,14 +117,20 @@ export function ScoringClientesPanel() {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm text-muted-foreground">Clientes Risco Alto</p>
-                <p className="text-3xl font-bold text-destructive">{estatisticas.clientesRiscoAlto}</p>
+                <p className="text-3xl font-bold text-destructive">
+                  {estatisticas.clientesRiscoAlto}
+                </p>
               </div>
               <div className="p-3 rounded-full bg-destructive/10">
                 <AlertTriangle className="h-6 w-6 text-destructive" />
               </div>
             </div>
             <p className="text-xs text-muted-foreground mt-2">
-              {((estatisticas.clientesRiscoAlto / Math.max(1, estatisticas.totalClientes)) * 100).toFixed(1)}% do total
+              {(
+                (estatisticas.clientesRiscoAlto / Math.max(1, estatisticas.totalClientes)) *
+                100
+              ).toFixed(1)}
+              % do total
             </p>
           </CardContent>
         </Card>
@@ -151,7 +162,8 @@ export function ScoringClientesPanel() {
                   Ranking de Clientes
                 </CardTitle>
                 <CardDescription>
-                  {clientesFiltrados.length} clientes {filtroClassificacao ? `classificação ${filtroClassificacao}` : ''}
+                  {clientesFiltrados.length} clientes{' '}
+                  {filtroClassificacao ? `classificação ${filtroClassificacao}` : ''}
                 </CardDescription>
               </div>
               <Input
@@ -172,8 +184,8 @@ export function ScoringClientesPanel() {
                     animate={{ opacity: 1, x: 0 }}
                     transition={{ delay: idx * 0.02 }}
                     className={`p-3 rounded-lg border cursor-pointer transition-all ${
-                      clienteSelecionado?.clienteId === cliente.clienteId 
-                        ? 'border-primary bg-primary/5' 
+                      clienteSelecionado?.clienteId === cliente.clienteId
+                        ? 'border-primary bg-primary/5'
                         : 'hover:border-primary/50'
                     }`}
                     onClick={() => setClienteSelecionado(cliente)}
@@ -181,8 +193,12 @@ export function ScoringClientesPanel() {
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-3">
                         <div className="flex items-center gap-2">
-                          <span className="text-sm text-muted-foreground font-mono">#{idx + 1}</span>
-                          <div className={`w-8 h-8 rounded-full ${CORES_CLASSIFICACAO[cliente.classificacao]} flex items-center justify-center text-white font-bold text-sm`}>
+                          <span className="text-sm text-muted-foreground font-mono">
+                            #{idx + 1}
+                          </span>
+                          <div
+                            className={`w-8 h-8 rounded-full ${CORES_CLASSIFICACAO[cliente.classificacao]} flex items-center justify-center text-white font-bold text-sm`}
+                          >
                             {cliente.classificacao}
                           </div>
                         </div>
@@ -227,7 +243,9 @@ export function ScoringClientesPanel() {
             {clienteSelecionado ? (
               <div className="space-y-4">
                 <div className="text-center pb-4 border-b">
-                  <div className={`inline-flex w-16 h-16 rounded-full ${CORES_CLASSIFICACAO[clienteSelecionado.classificacao]} items-center justify-center text-white font-bold text-2xl mb-2`}>
+                  <div
+                    className={`inline-flex w-16 h-16 rounded-full ${CORES_CLASSIFICACAO[clienteSelecionado.classificacao]} items-center justify-center text-white font-bold text-2xl mb-2`}
+                  >
                     {clienteSelecionado.classificacao}
                   </div>
                   <h3 className="font-semibold">{clienteSelecionado.clienteNome}</h3>
@@ -246,18 +264,27 @@ export function ScoringClientesPanel() {
                           <div className="space-y-1">
                             <div className="flex items-center justify-between text-sm">
                               <span className="flex items-center gap-1">
-                                {fator.impacto === 'positivo' && <TrendingUp className="h-3 w-3 text-success" />}
-                                {fator.impacto === 'negativo' && <TrendingDown className="h-3 w-3 text-destructive" />}
-                                {fator.impacto === 'neutro' && <Minus className="h-3 w-3 text-muted-foreground" />}
+                                {fator.impacto === 'positivo' && (
+                                  <TrendingUp className="h-3 w-3 text-success" />
+                                )}
+                                {fator.impacto === 'negativo' && (
+                                  <TrendingDown className="h-3 w-3 text-destructive" />
+                                )}
+                                {fator.impacto === 'neutro' && (
+                                  <Minus className="h-3 w-3 text-muted-foreground" />
+                                )}
                                 {fator.nome}
                               </span>
                               <span className="font-semibold">{fator.valor}</span>
                             </div>
-                            <Progress 
-                              value={(fator.valor / 250) * 100} 
+                            <Progress
+                              value={(fator.valor / 250) * 100}
                               className={`h-1.5 ${
-                                fator.impacto === 'positivo' ? '[&>div]:bg-success' :
-                                fator.impacto === 'negativo' ? '[&>div]:bg-destructive' : ''
+                                fator.impacto === 'positivo'
+                                  ? '[&>div]:bg-success'
+                                  : fator.impacto === 'negativo'
+                                    ? '[&>div]:bg-destructive'
+                                    : ''
                               }`}
                             />
                           </div>
@@ -273,11 +300,13 @@ export function ScoringClientesPanel() {
                 <div className="pt-4 border-t space-y-3">
                   <div className="flex items-center justify-between">
                     <span className="text-sm text-muted-foreground">Limite Recomendado</span>
-                    <span className="font-bold text-lg">{formatCurrency(clienteSelecionado.limiteRecomendado)}</span>
+                    <span className="font-bold text-lg">
+                      {formatCurrency(clienteSelecionado.limiteRecomendado)}
+                    </span>
                   </div>
-                  
-                  <Button 
-                    className="w-full" 
+
+                  <Button
+                    className="w-full"
                     variant="outline"
                     onClick={() => recalcularScore(clienteSelecionado.clienteId)}
                     disabled={isRecalculando}

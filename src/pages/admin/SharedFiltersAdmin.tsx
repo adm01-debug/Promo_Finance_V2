@@ -1,22 +1,9 @@
 import { useMemo, useRef, useState } from 'react';
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
-import {
-  ArrowLeft,
-  Download,
-  Loader2,
-  RefreshCw,
-  Search,
-  Upload,
-} from 'lucide-react';
+import { ArrowLeft, Download, Loader2, RefreshCw, Search, Upload } from 'lucide-react';
 import { MainLayout } from '@/components/layout/MainLayout';
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from '@/components/ui/card';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { ScrollArea } from '@/components/ui/scroll-area';
@@ -53,9 +40,7 @@ export default function SharedFiltersAdmin() {
   } = useSharedFiltersAdmin({ user, currentEmpresaId });
 
   const exportableRows = useMemo(() => {
-    return currentEmpresaId
-      ? rows.filter((r) => r.empresa_id === currentEmpresaId)
-      : rows;
+    return currentEmpresaId ? rows.filter((r) => r.empresa_id === currentEmpresaId) : rows;
   }, [rows, currentEmpresaId]);
 
   function handlePickFile(file: File | null) {
@@ -66,7 +51,7 @@ export default function SharedFiltersAdmin() {
 
   const entityTypes = useMemo(
     () => Array.from(new Set(rows.map((r) => r.entity_type))).sort(),
-    [rows],
+    [rows]
   );
 
   const filtered = useMemo(() => {
@@ -92,10 +77,9 @@ export default function SharedFiltersAdmin() {
       total: rows.length,
       entidades: entityTypes.length,
       empresas: empresaIds.length,
-      sem_papeis: rows.filter((r) => (r.shared_with_roles ?? []).length === 0)
-        .length,
+      sem_papeis: rows.filter((r) => (r.shared_with_roles ?? []).length === 0).length,
     }),
-    [rows, entityTypes.length, empresaIds.length],
+    [rows, entityTypes.length, empresaIds.length]
   );
 
   if (!isAdmin) {
@@ -106,8 +90,7 @@ export default function SharedFiltersAdmin() {
             <CardHeader>
               <CardTitle>Acesso restrito</CardTitle>
               <CardDescription>
-                Apenas administradores podem gerenciar permissões de filtros
-                compartilhados.
+                Apenas administradores podem gerenciar permissões de filtros compartilhados.
               </CardDescription>
             </CardHeader>
           </Card>
@@ -136,8 +119,8 @@ export default function SharedFiltersAdmin() {
                 Permissões de filtros compartilhados
               </h1>
               <p className="text-sm text-muted-foreground">
-                Gerencie papéis com acesso a cada filtro salvo compartilhado e
-                revogue seletivamente quando necessário.
+                Gerencie papéis com acesso a cada filtro salvo compartilhado e revogue seletivamente
+                quando necessário.
               </p>
             </div>
           </div>
@@ -258,9 +241,7 @@ export default function SharedFiltersAdmin() {
                       key={row.id}
                       row={row}
                       owner={ownersMap[row.user_id]}
-                      empresa={
-                        row.empresa_id ? empresasMap[row.empresa_id] : undefined
-                      }
+                      empresa={row.empresa_id ? empresasMap[row.empresa_id] : undefined}
                       onToggleRole={(role) => {
                         const current = new Set(row.shared_with_roles);
                         if (current.has(role)) current.delete(role);

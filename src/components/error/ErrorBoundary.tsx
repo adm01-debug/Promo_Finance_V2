@@ -2,7 +2,7 @@ import React, { Component, ErrorInfo, ReactNode } from 'react';
 import { RefreshCw, Home, Bug, MessageCircle, Copy, Check, AlertTriangle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardFooter } from '@/components/ui/card';
-import { reportErrorToTracker, errorTracker } from '@/lib/error-tracking';
+import { reportErrorToTracker, errorTracker, redactPath } from '@/lib/error-tracking';
 import { reportError as reportToTelemetry } from '@/lib/telemetry';
 import { motion } from 'framer-motion';
 
@@ -33,13 +33,13 @@ export class ErrorBoundary extends Component<Props, State> {
 
   public componentDidCatch(error: Error, errorInfo: ErrorInfo) {
     this.setState({ errorInfo });
-    
+
     // Log to console in development
     console.error('ErrorBoundary caught an error:', error, errorInfo);
-    
+
     // Call optional error handler
     this.props.onError?.(error, errorInfo);
-    
+
     // Report to error tracking service
     reportErrorToTracker(error, errorInfo.componentStack || undefined);
 
@@ -50,7 +50,7 @@ export class ErrorBoundary extends Component<Props, State> {
       severity: 'critical',
       context: {
         name: error.name,
-        componentStack: errorInfo.componentStack?.slice(0, 2000),
+        componentStack: errorInfo.componentStack?.slice(0, 2000) ?? null,
         source: 'ErrorBoundary',
       },
     });
@@ -59,7 +59,8 @@ export class ErrorBoundary extends Component<Props, State> {
     errorTracker.addBreadcrumb({
       category: 'error-boundary',
       message: `Error caught: ${error.name}`,
-      data: { message: error.message }
+      // Mensagem de erro pode embutir o path atual (ex.: falha em /convite/:token).
+      data: { message: redactPath(error.message) },
     });
   }
 
@@ -83,7 +84,7 @@ Message: ${this.state.error.message}
 Stack: ${this.state.error.stack || 'N/A'}
 Component Stack: ${this.state.errorInfo?.componentStack || 'N/A'}
       `.trim();
-      
+
       await navigator.clipboard.writeText(errorText);
       this.setState({ copied: true });
       setTimeout(() => this.setState({ copied: false }), 2000);
@@ -101,10 +102,10 @@ Component Stack: ${this.state.errorInfo?.componentStack || 'N/A'}
           <Card className="max-w-lg w-full border-destructive/20 shadow-2xl overflow-hidden">
             {/* Gradiente decorativo no topo */}
             <div className="h-1 bg-gradient-to-r from-destructive via-warning to-destructive" />
-            
+
             <CardHeader className="text-center pb-2 pt-8">
               {/* Ilustração animada */}
-              <motion.div 
+              <motion.div
                 className="flex justify-center mb-4"
                 initial={{ scale: 0 }}
                 animate={{ scale: 1 }}
@@ -119,16 +120,14 @@ Component Stack: ${this.state.errorInfo?.componentStack || 'N/A'}
                   </motion.div>
                 </div>
               </motion.div>
-              
-              <h2 className="text-2xl font-bold text-foreground">
-                Ops! Algo deu errado
-              </h2>
+
+              <h2 className="text-2xl font-bold text-foreground">Ops! Algo deu errado</h2>
               <p className="text-muted-foreground mt-2 text-sm">
-                Encontramos um problema inesperado. Não se preocupe, 
-                nossos robôs já foram notificados!
+                Encontramos um problema inesperado. Não se preocupe, nossos robôs já foram
+                notificados!
               </p>
             </CardHeader>
-            
+
             <CardContent className="space-y-4">
               {process.env.NODE_ENV === 'development' && this.state.error && (
                 <div className="relative p-4 rounded-xl bg-muted/50 border border-border">
@@ -160,7 +159,7 @@ Component Stack: ${this.state.errorInfo?.componentStack || 'N/A'}
                   )}
                 </div>
               )}
-              
+
               {/* Sugestões */}
               <div className="flex flex-col gap-2 text-sm text-muted-foreground">
                 <p className="font-medium text-foreground">O que você pode tentar:</p>
@@ -171,34 +170,23 @@ Component Stack: ${this.state.errorInfo?.componentStack || 'N/A'}
                 </ul>
               </div>
             </CardContent>
-            
+
             <CardFooter className="flex flex-col gap-3 pt-2 pb-6">
               <div className="flex flex-col sm:flex-row gap-2 w-full">
-                <Button
-                  variant="outline"
-                  className="flex-1 gap-2"
-                  onClick={this.handleRetry}
-                >
+                <Button variant="outline" className="flex-1 gap-2" onClick={this.handleRetry}>
                   <RefreshCw className="h-4 w-4" />
                   Tentar Novamente
                 </Button>
-                <Button
-                  variant="outline"
-                  className="flex-1 gap-2"
-                  onClick={this.handleGoHome}
-                >
+                <Button variant="outline" className="flex-1 gap-2" onClick={this.handleGoHome}>
                   <Home className="h-4 w-4" />
                   Ir para Início
                 </Button>
               </div>
-              <Button
-                className="w-full gap-2"
-                onClick={this.handleReload}
-              >
+              <Button className="w-full gap-2" onClick={this.handleReload}>
                 <RefreshCw className="h-4 w-4" />
                 Recarregar Página
               </Button>
-              
+
               {/* Link de suporte */}
               <button
                 className="text-xs text-muted-foreground hover:text-primary transition-colors flex items-center gap-1 mx-auto mt-2"

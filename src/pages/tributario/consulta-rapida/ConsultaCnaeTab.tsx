@@ -34,7 +34,12 @@ export function ConsultaCnaeTab() {
         isLoading={query.isLoading}
         error={query.error}
         isEmpty={!query.isLoading && !cnae}
-        actions={<div className="flex items-center gap-1.5"><OfflineBadge data={query.data} /><MatchBadge match={query.data?.match} /></div>}
+        actions={
+          <div className="flex items-center gap-1.5">
+            <OfflineBadge data={query.data} />
+            <MatchBadge match={query.data?.match} />
+          </div>
+        }
       >
         <dl className="grid grid-cols-2 gap-4 text-sm lg:grid-cols-4">
           <div>

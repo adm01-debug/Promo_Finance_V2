@@ -69,7 +69,11 @@ Deno.test({
           );
 
           assertEquals(response.status, 200);
-          assertEquals(response.headers.get('Access-Control-Allow-Origin'), '*');
+          // A allowlist CORS devolve a origem primária para preflight sem Origin válido
+          assertEquals(
+            response.headers.get('Access-Control-Allow-Origin'),
+            'https://app.promo-finance.com'
+          );
           const headersPermitidos = response.headers.get('Access-Control-Allow-Headers') ?? '';
           assertStringIncludes(headersPermitidos, 'authorization');
           assertStringIncludes(headersPermitidos, 'x-request-id');

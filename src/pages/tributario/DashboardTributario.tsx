@@ -4,10 +4,33 @@ import { motion } from 'framer-motion';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 import { Skeleton } from '@/components/ui/skeleton';
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
-import { Scale, TrendingDown, Sparkles, Calendar, Heart, FileDown, Loader2, FileCode2 } from 'lucide-react';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from '@/components/ui/dialog';
+import {
+  Scale,
+  TrendingDown,
+  Sparkles,
+  Calendar,
+  Heart,
+  FileDown,
+  Loader2,
+  FileCode2,
+} from 'lucide-react';
 import { useAllEmpresas } from '@/hooks/useEmpresas';
 import { useDashboardTributario } from '@/hooks/useDashboardTributario';
 import { useRelatorioAnual } from '@/hooks/useRelatorioAnual';
@@ -78,10 +101,10 @@ export default function DashboardTributario() {
     <MainLayout>
       <div className="relative min-h-screen">
         <PageBackground />
-        
+
         <div className="container mx-auto p-4 sm:p-8 space-y-10 relative z-10">
-          <PageHeader 
-            title="Dashboard Tributário: Quantum-Sentinel" 
+          <PageHeader
+            title="Dashboard Tributário: Quantum-Sentinel"
             subtitle="Inteligência Neural · Reforma Tributária 2026-2033 · Elisão Preditiva"
             badge="Fiscal Control"
             icon={Scale}
@@ -96,12 +119,17 @@ export default function DashboardTributario() {
                 </SelectTrigger>
                 <SelectContent>
                   {empresas.map((e) => (
-                    <SelectItem key={e.id} value={e.id}>{e.razao_social}</SelectItem>
+                    <SelectItem key={e.id} value={e.id}>
+                      {e.razao_social}
+                    </SelectItem>
                   ))}
                 </SelectContent>
               </Select>
 
-              <Select value={String(periodo)} onValueChange={(v) => setPeriodo(Number(v) as Periodo)}>
+              <Select
+                value={String(periodo)}
+                onValueChange={(v) => setPeriodo(Number(v) as Periodo)}
+              >
                 <SelectTrigger className="w-full sm:w-32 h-10 rounded-xl bg-background/40">
                   <SelectValue />
                 </SelectTrigger>
@@ -114,12 +142,12 @@ export default function DashboardTributario() {
 
               {empresaSelecionada?.regime_tributario && (
                 <Badge variant="secondary" className="self-center h-8">
-                  {REGIME_LABEL[empresaSelecionada.regime_tributario] ?? empresaSelecionada.regime_tributario}
+                  {REGIME_LABEL[empresaSelecionada.regime_tributario] ??
+                    empresaSelecionada.regime_tributario}
                 </Badge>
               )}
 
               <SaudeCatalogosBadge className="self-center" />
-
 
               <Button
                 variant="outline"
@@ -134,13 +162,22 @@ export default function DashboardTributario() {
                 }
                 className="gap-2 h-10 rounded-xl"
               >
-                {exportarSped.isPending ? <Loader2 className="h-4 w-4 animate-spin" /> : <FileCode2 className="h-4 w-4" />}
+                {exportarSped.isPending ? (
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                ) : (
+                  <FileCode2 className="h-4 w-4" />
+                )}
                 SPED
               </Button>
 
               <Dialog open={relatorioOpen} onOpenChange={setRelatorioOpen}>
                 <DialogTrigger asChild>
-                  <Button variant="default" size="sm" disabled={!empresaId} className="gap-2 h-10 rounded-xl shadow-lg shadow-primary/20">
+                  <Button
+                    variant="default"
+                    size="sm"
+                    disabled={!empresaId}
+                    className="gap-2 h-10 rounded-xl shadow-lg shadow-primary/20"
+                  >
                     <FileDown className="h-4 w-4" /> Relatório Anual
                   </Button>
                 </DialogTrigger>
@@ -148,27 +185,41 @@ export default function DashboardTributario() {
                   <DialogHeader>
                     <DialogTitle>Gerar Relatório Anual Tributário</DialogTitle>
                     <DialogDescription>
-                      PDF executivo com sumário, apuração mensal, oportunidades de elisão e recomendações.
+                      PDF executivo com sumário, apuração mensal, oportunidades de elisão e
+                      recomendações.
                     </DialogDescription>
                   </DialogHeader>
                   <div className="space-y-3 py-2">
                     <label className="text-sm font-medium">Ano de referência</label>
-                    <Select value={String(anoRelatorio)} onValueChange={(v) => setAnoRelatorio(Number(v))}>
+                    <Select
+                      value={String(anoRelatorio)}
+                      onValueChange={(v) => setAnoRelatorio(Number(v))}
+                    >
                       <SelectTrigger>
                         <SelectValue />
                       </SelectTrigger>
                       <SelectContent>
                         {Array.from({ length: 3 }).map((_, i) => {
                           const y = new Date().getFullYear() - i;
-                          return <SelectItem key={y} value={String(y)}>{y}</SelectItem>;
+                          return (
+                            <SelectItem key={y} value={String(y)}>
+                              {y}
+                            </SelectItem>
+                          );
                         })}
                       </SelectContent>
                     </Select>
                   </div>
                   <DialogFooter>
-                    <Button variant="outline" onClick={() => setRelatorioOpen(false)}>Cancelar</Button>
+                    <Button variant="outline" onClick={() => setRelatorioOpen(false)}>
+                      Cancelar
+                    </Button>
                     <Button onClick={gerarPDF} disabled={loadingRelatorio} className="gap-2">
-                      {loadingRelatorio ? <Loader2 className="h-4 w-4 animate-spin" /> : <FileDown className="h-4 w-4" />}
+                      {loadingRelatorio ? (
+                        <Loader2 className="h-4 w-4 animate-spin" />
+                      ) : (
+                        <FileDown className="h-4 w-4" />
+                      )}
                       Baixar PDF
                     </Button>
                   </DialogFooter>
@@ -179,11 +230,15 @@ export default function DashboardTributario() {
 
           {!empresaId ? (
             <Card className="p-12 text-center border-dashed bg-background/20 backdrop-blur-xl border-white/10">
-              <p className="text-muted-foreground font-medium italic">Selecione uma empresa para visualizar o dashboard tributário neural</p>
+              <p className="text-muted-foreground font-medium italic">
+                Selecione uma empresa para visualizar o dashboard tributário neural
+              </p>
             </Card>
           ) : isLoading ? (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-              {Array.from({ length: 4 }).map((_, i) => <Skeleton key={i} className="h-28 rounded-xl" />)}
+              {Array.from({ length: 4 }).map((_, i) => (
+                <Skeleton key={i} className="h-28 rounded-xl" />
+              ))}
             </div>
           ) : (
             <>
@@ -194,16 +249,32 @@ export default function DashboardTributario() {
                 className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6"
               >
                 <motion.div variants={itemVariants}>
-                  <KpiCard icon={<TrendingDown className="h-4 w-4" />} label="Carga Tributária Efetiva" value={`${kpis.cargaEfetiva.toFixed(2)}%`} hint="Sobre faturamento" accent="primary" />
+                  <KpiCard
+                    icon={<TrendingDown className="h-4 w-4" />}
+                    label="Carga Tributária Efetiva"
+                    value={`${kpis.cargaEfetiva.toFixed(2)}%`}
+                    hint="Sobre faturamento"
+                    accent="primary"
+                  />
                 </motion.div>
                 <motion.div variants={itemVariants}>
-                  <KpiCard icon={<Sparkles className="h-4 w-4" />} label="Economia Estimada" value={formatCurrency(kpis.totalEconomizado)} hint="Estratégias de elisão" accent="success" />
+                  <KpiCard
+                    icon={<Sparkles className="h-4 w-4" />}
+                    label="Economia Estimada"
+                    value={formatCurrency(kpis.totalEconomizado)}
+                    hint="Estratégias de elisão"
+                    accent="success"
+                  />
                 </motion.div>
                 <motion.div variants={itemVariants}>
                   <KpiCard
                     icon={<Calendar className="h-4 w-4" />}
                     label="Próximo Vencimento"
-                    value={kpis.proximoVencimento?.data ? format(parseISO(kpis.proximoVencimento.data), 'dd/MM', { locale: ptBR }) : '—'}
+                    value={
+                      kpis.proximoVencimento?.data
+                        ? format(parseISO(kpis.proximoVencimento.data), 'dd/MM', { locale: ptBR })
+                        : '—'
+                    }
                     hint={kpis.proximoVencimento?.descricao ?? 'Sem vencimentos'}
                     accent="warning"
                   />
@@ -213,13 +284,30 @@ export default function DashboardTributario() {
                     icon={<Heart className="h-4 w-4" />}
                     label="Saúde Fiscal"
                     value={`${kpis.saudeFiscal}/100`}
-                    hint={kpis.saudeFiscal >= 80 ? 'Excelente' : kpis.saudeFiscal >= 60 ? 'Boa' : 'Atenção'}
-                    accent={kpis.saudeFiscal >= 80 ? 'success' : kpis.saudeFiscal >= 60 ? 'warning' : 'destructive'}
+                    hint={
+                      kpis.saudeFiscal >= 80
+                        ? 'Excelente'
+                        : kpis.saudeFiscal >= 60
+                          ? 'Boa'
+                          : 'Atenção'
+                    }
+                    accent={
+                      kpis.saudeFiscal >= 80
+                        ? 'success'
+                        : kpis.saudeFiscal >= 60
+                          ? 'warning'
+                          : 'destructive'
+                    }
                   />
                 </motion.div>
               </motion.div>
 
-              <motion.div variants={containerVariants} initial="hidden" animate="show" className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+              <motion.div
+                variants={containerVariants}
+                initial="hidden"
+                animate="show"
+                className="grid grid-cols-1 lg:grid-cols-3 gap-6"
+              >
                 <motion.div variants={itemVariants} className="lg:col-span-2">
                   <EvolucaoCargaChart serie={serie} />
                 </motion.div>
@@ -298,7 +386,9 @@ function KpiCard({ icon, label, value, hint, accent }: KpiProps) {
   return (
     <Card className="backdrop-blur-xl bg-background/40 border-white/10 hover-scale transition-all shadow-xl">
       <CardHeader className="flex flex-row items-center justify-between pb-2">
-        <CardTitle className="text-[10px] uppercase font-black tracking-widest text-muted-foreground/60">{label}</CardTitle>
+        <CardTitle className="text-[10px] uppercase font-black tracking-widest text-muted-foreground/60">
+          {label}
+        </CardTitle>
         <div className={`h-7 w-7 rounded-lg flex items-center justify-center ${accentMap[accent]}`}>
           {icon}
         </div>

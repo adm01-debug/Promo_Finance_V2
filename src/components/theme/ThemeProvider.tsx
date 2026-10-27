@@ -21,7 +21,9 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
     try {
       localStorage.setItem(STORAGE_KEY, theme);
       localStorage.setItem(BOOTSTRAP_KEY, '1');
-    } catch { /* storage indisponível — ignora */ }
+    } catch {
+      /* storage indisponível — ignora */
+    }
 
     const root = document.documentElement;
     root.classList.remove('light', 'dark');
@@ -44,7 +46,9 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
     try {
       localStorage.removeItem(STORAGE_KEY);
       localStorage.removeItem(BOOTSTRAP_KEY);
-    } catch { /* storage indisponível — ignora */ }
+    } catch {
+      /* storage indisponível — ignora */
+    }
     // Reaplica o padrão imediatamente (o effect grava o bootstrap novamente).
     setThemeState(DEFAULT_THEME);
   }, []);

@@ -23,10 +23,21 @@ interface ContasPagarFiltersProps {
   centrosCusto: CentroCusto[];
   countPendentesAprovacao: number;
   empresas: Array<{ id: string; razao_social: string; nome_fantasia: string | null }>;
-  contasBancarias: Array<{ id: string; banco: string | null; agencia: string | null; conta: string | null }>;
+  contasBancarias: Array<{
+    id: string;
+    banco: string | null;
+    agencia: string | null;
+    conta: string | null;
+  }>;
 }
 
 export const ContasPagarFilters: React.FC<ContasPagarFiltersProps> = (props) => {
   const { contasBancarias, ...rest } = props;
-  return <BaseFilters {...rest} contasBancarias={contasBancarias} />;
+  const normalized = contasBancarias.map((cb) => ({
+    ...cb,
+    banco: cb.banco ?? '',
+    agencia: cb.agencia ?? '',
+    conta: cb.conta ?? '',
+  }));
+  return <BaseFilters {...rest} contasBancarias={normalized} />;
 };

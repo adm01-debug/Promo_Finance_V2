@@ -5,12 +5,9 @@
 // ============================================
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.49.4';
 import { exigirChamadaInterna } from '../_shared/auth-guard.ts';
-
-const corsHeaders = {
-  'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Headers':
-    'authorization, x-client-info, apikey, content-type, x-cron-secret, x-internal-secret',
-};
+import { createLogger } from '../_shared/observability.ts';
+import { corsHeadersPara } from '../_shared/cors.ts';
+import { withEdgeObservability } from '../_shared/edge-observability.ts';
 
 const SIMPLES_SUBLIMITE = 4_800_000;
 const SIMPLES_LIMITE_ALERTA = SIMPLES_SUBLIMITE * 0.9;
@@ -33,8 +30,10 @@ interface AlertaInsert {
 
 // ─── Structured logging helper ───────────────────────────────────────────────
 type LogLevel = 'info' | 'warn' | 'error';
+const loggers = createLogger(FN_NAME);
+const LEVEL_FN = { info: 'info', warn: 'warn', error: 'error' } as const;
 function log(level: LogLevel, event: string, ctx: Record<string, unknown> = {}) {
-  console.log(JSON.stringify({ level, event, fn: FN_NAME, ts: new Date().toISOString(), ...ctx }));
+  loggers[LEVEL_FN[level]](event, { context: ctx });
 }
 
 // ─── Retry com exponential backoff (3 tentativas: 500ms, 1s, 2s) ─────────────
@@ -60,6 +59,8 @@ async function withRetry<T>(op: () => PromiseLike<T>, label: string, maxAttempts
 }
 
 export const handler = async (req: Request): Promise<Response> => {
+  const corsHeaders = corsHeadersPara(req);
+
   if (req.method === 'OPTIONS') return new Response('ok', { headers: corsHeaders });
 
   const auth = await exigirChamadaInterna(req, 'gerar_alertas_tributarios');
@@ -329,6 +330,7 @@ export const handler = async (req: Request): Promise<Response> => {
       /* observability nunca derruba */
     }
 
+    await loggers.flush();
     return new Response(
       JSON.stringify({
         ok: true,
@@ -361,6 +363,7 @@ export const handler = async (req: Request): Promise<Response> => {
       /* noop */
     }
 
+    await loggers.flush();
     return new Response(JSON.stringify({ ok: false, error: error_message }), {
       status: 500,
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
@@ -368,4 +371,4 @@ export const handler = async (req: Request): Promise<Response> => {
   }
 };
 
-if (import.meta.main) Deno.serve(handler);
+if (import.meta.main) Deno.serve(withEdgeObservability('gerar-alertas-tributarios', handler));

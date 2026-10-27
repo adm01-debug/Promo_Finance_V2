@@ -8,7 +8,10 @@ import {
   type NcmBanco,
 } from '@/lib/tributario/catalogos/coerencia-ncm';
 import { TIPI } from '@/lib/tributario/ipi-iss/tabelas';
-import { classificarNcmMonofasicoCanonico, normalizarNcm } from '@/lib/tributario/monofasico/classificar';
+import {
+  classificarNcmMonofasicoCanonico,
+  normalizarNcm,
+} from '@/lib/tributario/monofasico/classificar';
 
 /** Constrói o espelho perfeito da TIPI, como o banco deveria estar. */
 function catalogoEspelho(): NcmBanco[] {
@@ -64,7 +67,14 @@ describe('coerência NCM — detecção de drift', () => {
 
   it('detecta código fora do formato de 8 dígitos', () => {
     const d = compararNcmsComCatalogo([
-      { codigo: '123', descricao: 'x', aliquota_ipi: 0, monofasico_pis_cofins: false, sujeito_st: false, mva_padrao: null },
+      {
+        codigo: '123',
+        descricao: 'x',
+        aliquota_ipi: 0,
+        monofasico_pis_cofins: false,
+        sujeito_st: false,
+        mva_padrao: null,
+      },
     ]);
     expect(d.some((x) => x.campo === 'codigo_invalido')).toBe(true);
   });

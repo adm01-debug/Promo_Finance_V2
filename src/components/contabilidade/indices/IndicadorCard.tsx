@@ -28,7 +28,8 @@ const FAIXA_CLASS: Record<FaixaIndice, string> = {
 
 export function IndicadorCard({ indicador, anterior }: Props) {
   const delta = variacao(indicador.valor, anterior?.valor ?? null);
-  const DeltaIcon = delta === null || delta === 0 ? Minus : delta > 0 ? ArrowUpRight : ArrowDownRight;
+  const DeltaIcon =
+    delta === null || delta === 0 ? Minus : delta > 0 ? ArrowUpRight : ArrowDownRight;
 
   return (
     <Card className="rounded-2xl border-border/60 transition-colors hover:border-primary/40">
@@ -59,14 +60,17 @@ export function IndicadorCard({ indicador, anterior }: Props) {
         <p
           className={cn(
             'text-2xl font-black tracking-tight',
-            indicador.valor === null && 'text-muted-foreground',
+            indicador.valor === null && 'text-muted-foreground'
           )}
         >
           {formatarIndice(indicador.valor, indicador.formato)}
         </p>
 
         <div className="flex flex-wrap items-center gap-2">
-          <Badge variant="outline" className={cn('rounded-full text-[10px]', FAIXA_CLASS[indicador.faixa])}>
+          <Badge
+            variant="outline"
+            className={cn('rounded-full text-[10px]', FAIXA_CLASS[indicador.faixa])}
+          >
             {FAIXA_LABEL[indicador.faixa]}
           </Badge>
           {delta !== null && (

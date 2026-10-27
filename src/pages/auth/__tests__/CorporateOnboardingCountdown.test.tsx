@@ -90,7 +90,7 @@ vi.mock('framer-motion', () => ({
           delete (props as Record<string, unknown>).transition;
           return <div {...props}>{children}</div>;
         },
-    },
+    }
   ),
 }));
 
@@ -120,7 +120,7 @@ function renderPage() {
   return render(
     <MemoryRouter>
       <CorporateOnboarding />
-    </MemoryRouter>,
+    </MemoryRouter>
   );
 }
 
@@ -171,9 +171,7 @@ afterEach(() => {
 describe('/auth/corporate · bordas determinísticas do countdown (3s, ticks de 1000ms)', () => {
   it('cancelar imediatamente (0ms decorridos) impede o invoke mesmo após o tempo total passar', async () => {
     await startAutoRedirect();
-    fireEvent.click(
-      screen.getByRole('button', { name: /Cancelar redirecionamento e voltar/i }),
-    );
+    fireEvent.click(screen.getByRole('button', { name: /Cancelar redirecionamento e voltar/i }));
     await act(async () => {
       await vi.advanceTimersByTimeAsync(10_000);
     });
@@ -190,9 +188,7 @@ describe('/auth/corporate · bordas determinísticas do countdown (3s, ticks de 
     await act(async () => {
       await vi.advanceTimersByTimeAsync(100);
     });
-    fireEvent.click(
-      screen.getByRole('button', { name: /Cancelar redirecionamento e voltar/i }),
-    );
+    fireEvent.click(screen.getByRole('button', { name: /Cancelar redirecionamento e voltar/i }));
     await act(async () => {
       await vi.advanceTimersByTimeAsync(5_000);
     });
@@ -206,9 +202,7 @@ describe('/auth/corporate · bordas determinísticas do countdown (3s, ticks de 
     await act(async () => {
       await vi.advanceTimersByTimeAsync(2_800);
     });
-    fireEvent.click(
-      screen.getByRole('button', { name: /Cancelar redirecionamento e voltar/i }),
-    );
+    fireEvent.click(screen.getByRole('button', { name: /Cancelar redirecionamento e voltar/i }));
     // Avança o restante do tick + folga grande para garantir que nada agendado dispara.
     await act(async () => {
       await vi.advanceTimersByTimeAsync(2_000);
@@ -222,9 +216,7 @@ describe('/auth/corporate · bordas determinísticas do countdown (3s, ticks de 
     await act(async () => {
       await vi.advanceTimersByTimeAsync(2_999);
     });
-    fireEvent.click(
-      screen.getByRole('button', { name: /Cancelar redirecionamento e voltar/i }),
-    );
+    fireEvent.click(screen.getByRole('button', { name: /Cancelar redirecionamento e voltar/i }));
     await act(async () => {
       await vi.advanceTimersByTimeAsync(2_000);
     });
@@ -240,7 +232,7 @@ describe('/auth/corporate · bordas determinísticas do countdown (3s, ticks de 
     expect(hoisted.invokeMock).toHaveBeenCalledTimes(1);
     expect(hoisted.invokeMock).toHaveBeenCalledWith(
       'sso-initiate',
-      expect.objectContaining({ body: expect.objectContaining({ provider_id: 'prov-force' }) }),
+      expect.objectContaining({ body: expect.objectContaining({ provider_id: 'prov-force' }) })
     );
     // Flush das microtasks de triggerSso (await invoke → set window.location.href).
     await act(async () => {
@@ -255,7 +247,7 @@ describe('/auth/corporate · bordas determinísticas do countdown (3s, ticks de 
     hoisted.invokeMock.mockReturnValueOnce(
       new Promise((resolve) => {
         resolveInvoke = resolve;
-      }),
+      })
     );
 
     await startAutoRedirect();
@@ -266,9 +258,7 @@ describe('/auth/corporate · bordas determinísticas do countdown (3s, ticks de 
     expect(hoisted.invokeMock).toHaveBeenCalledTimes(1);
 
     // Cancela enquanto a Promise do invoke ainda está pendente.
-    fireEvent.click(
-      screen.getByRole('button', { name: /Cancelar redirecionamento e voltar/i }),
-    );
+    fireEvent.click(screen.getByRole('button', { name: /Cancelar redirecionamento e voltar/i }));
 
     // Resolve a chamada DEPOIS do cancelamento. cancelRef já está `true`,
     // então o componente NÃO deve navegar nem fazer setSsoError.
@@ -298,7 +288,7 @@ describe('/auth/corporate · bordas determinísticas do countdown (3s, ticks de 
     // Apenas um evento de cancelamento foi registrado (deduplicação no segundo é tolerada,
     // mas garantimos que ao menos um foi enviado e nenhum invoke disparou).
     const cancelledEvents = hoisted.logEventMock.mock.calls.filter(
-      (c) => (c[0] as { eventType: string }).eventType === 'auto_redirect_cancelled',
+      (c) => (c[0] as { eventType: string }).eventType === 'auto_redirect_cancelled'
     );
     expect(cancelledEvents.length).toBeGreaterThanOrEqual(1);
   });

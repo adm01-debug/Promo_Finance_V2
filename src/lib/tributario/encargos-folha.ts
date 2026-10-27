@@ -27,8 +27,12 @@ export function terceiros(p: ParametrosSimulacao): number {
  * coerência). Divisões ausentes usam o padrão 5,8% (FPAS 507).
  */
 export const TERCEIROS_POR_DIVISAO_CNAE: Readonly<Record<string, number>> = {
-  '01': 0.052, '02': 0.052, '03': 0.052,
-  '64': 0.052, '65': 0.052, '66': 0.052,
+  '01': 0.052,
+  '02': 0.052,
+  '03': 0.052,
+  '64': 0.052,
+  '65': 0.052,
+  '66': 0.052,
   '84': 0.025,
   '85': 0.027,
 };

@@ -14,7 +14,7 @@ describe('concurrency-limiter', () => {
         peak = Math.max(peak, inFlight);
         await wait(5);
         inFlight--;
-      }),
+      })
     );
     await Promise.all(tasks);
     expect(peak).toBeLessThanOrEqual(3);
@@ -32,7 +32,7 @@ describe('concurrency-limiter', () => {
         peak = Math.max(peak, running);
         await wait(20);
         running--;
-      }),
+      })
     );
     await wait(1);
     limiter.setLimit(4);
@@ -64,7 +64,7 @@ describe('concurrency-limiter', () => {
     await expect(
       limiter.run(async () => {
         throw new Error('x');
-      }),
+      })
     ).rejects.toThrow('x');
     expect(limiter.active()).toBe(0);
     // slot livre — próxima roda normal

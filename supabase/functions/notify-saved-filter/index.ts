@@ -9,14 +9,13 @@
 // - O histórico precisa ser inserido com service_role (RLS bloqueia inserts
 //   do cliente, para evitar spoof de notificações por outros usuários).
 // - A chave do Resend não pode vazar para o navegador.
-import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
-import { createClient } from "https://esm.sh/@supabase/supabase-js@2.49.4";
-
-const corsHeaders = {
-  "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers":
-    "authorization, x-client-info, apikey, content-type",
-};
+import { serve } from 'https://deno.land/std@0.190.0/http/server.ts';
+import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.49.4';
+import { corsHeadersPara } from '../_shared/cors.ts';
+import { createLogger } from '../_shared/observability.ts';
+import { mensagemErro, contextoErro } from '../_shared/erros.ts';
+import { withEdgeObservability } from '../_shared/edge-observability.ts';
+const log = createLogger('notify-saved-filter');
 
 interface NotifyRequest {
   /** Identificador da assinatura ou do filtro de origem (para auditoria). */
@@ -36,26 +35,27 @@ interface NotifyRequest {
 }
 
 const handler = async (req: Request): Promise<Response> => {
-  if (req.method === "OPTIONS") {
+  const corsHeaders = corsHeadersPara(req);
+  if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders });
   }
 
   try {
-    const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
-    const serviceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
-    const resendApiKey = Deno.env.get("RESEND_API_KEY");
+    const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
+    const serviceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
+    const resendApiKey = Deno.env.get('RESEND_API_KEY');
 
     // Valida JWT do chamador (verify_jwt = true por padrão no projeto;
     // ainda assim derivamos o userId a partir do header para evitar spoof).
-    const authHeader = req.headers.get("Authorization") ?? "";
+    const authHeader = req.headers.get('Authorization') ?? '';
     const userClient = createClient(supabaseUrl, serviceKey, {
       global: { headers: { Authorization: authHeader } },
     });
     const { data: userData, error: authError } = await userClient.auth.getUser();
     if (authError || !userData.user) {
-      return new Response(JSON.stringify({ error: "unauthenticated" }), {
+      return new Response(JSON.stringify({ error: 'unauthenticated' }), {
         status: 401,
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       });
     }
     const userId = userData.user.id;
@@ -64,22 +64,28 @@ const handler = async (req: Request): Promise<Response> => {
     const raw = await req.json();
     const { z } = await import('https://deno.land/x/zod@v3.22.4/mod.ts');
     const { validatePayload, createErrorResponse } = await import('../_shared/validation.ts');
-    const Schema = z.object({
-      sourceRef: z.string().optional(),
-      filterName: z.string().min(1),
-      title: z.string().min(1),
-      body: z.string(),
-      channels: z.object({ inapp: z.boolean().optional(), email: z.boolean().optional(), push: z.boolean().optional() }),
-      metadata: z.record(z.any()).optional(),
-      url: z.string().optional(),
-    }).passthrough();
+    const Schema = z
+      .object({
+        sourceRef: z.string().optional(),
+        filterName: z.string().min(1),
+        title: z.string().min(1),
+        body: z.string(),
+        channels: z.object({
+          inapp: z.boolean().optional(),
+          email: z.boolean().optional(),
+          push: z.boolean().optional(),
+        }),
+        metadata: z.record(z.any()).optional(),
+        url: z.string().optional(),
+      })
+      .passthrough();
     const parsed = validatePayload(Schema, raw, 'notify-saved-filter');
-    if (!parsed.success) return createErrorResponse(parsed.error, 400, parsed.details);
+    if (!parsed.success) return createErrorResponse(parsed.error, 400, parsed.details, req);
     const payload = parsed.data as NotifyRequest;
     if (!payload?.title || !payload?.filterName || !payload?.channels) {
-      return new Response(JSON.stringify({ error: "invalid_payload" }), {
+      return new Response(JSON.stringify({ error: 'invalid_payload' }), {
         status: 400,
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       });
     }
 
@@ -88,7 +94,7 @@ const handler = async (req: Request): Promise<Response> => {
 
     const baseRow = {
       user_id: userId,
-      source: "saved_filter_subscription",
+      source: 'saved_filter_subscription',
       source_ref: payload.sourceRef ?? null,
       title: payload.title,
       body: payload.body,
@@ -100,26 +106,28 @@ const handler = async (req: Request): Promise<Response> => {
     };
 
     // Cada canal vira uma linha — facilita filtros na UI ("ver só e-mails").
-    const insertRows: Array<typeof baseRow & { channel: string; status: string; error_message: string | null }> = [];
+    const insertRows: Array<
+      typeof baseRow & { channel: string; status: string; error_message: string | null }
+    > = [];
     if (payload.channels.inapp) {
-      insertRows.push({ ...baseRow, channel: "inapp", status: "sent", error_message: null });
+      insertRows.push({ ...baseRow, channel: 'inapp', status: 'sent', error_message: null });
     }
     if (payload.channels.push) {
-      insertRows.push({ ...baseRow, channel: "push", status: "sent", error_message: null });
+      insertRows.push({ ...baseRow, channel: 'push', status: 'sent', error_message: null });
     }
 
-    let emailStatus: "sent" | "failed" | "queued" = "queued";
+    let emailStatus: 'sent' | 'failed' | 'queued' = 'queued';
     let emailError: string | null = null;
 
     if (payload.channels.email) {
       if (!userEmail) {
-        emailStatus = "failed";
-        emailError = "Conta sem e-mail cadastrado";
+        emailStatus = 'failed';
+        emailError = 'Conta sem e-mail cadastrado';
       } else if (!resendApiKey) {
         // Sem Resend ainda registramos no histórico para o usuário ver
         // que o e-mail foi pulado e por quê.
-        emailStatus = "failed";
-        emailError = "RESEND_API_KEY não configurada";
+        emailStatus = 'failed';
+        emailError = 'RESEND_API_KEY não configurada';
       } else {
         try {
           const html = renderEmail({
@@ -128,44 +136,45 @@ const handler = async (req: Request): Promise<Response> => {
             filterName: payload.filterName,
             url: payload.url,
           });
-          const resp = await fetch("https://api.resend.com/emails", {
-            method: "POST",
+          const resp = await fetch('https://api.resend.com/emails', {
+            method: 'POST',
             headers: {
               Authorization: `Bearer ${resendApiKey}`,
-              "Content-Type": "application/json",
+              'Content-Type': 'application/json',
             },
             body: JSON.stringify({
-              from: "Alertas <onboarding@resend.dev>",
+              from: 'Alertas <onboarding@resend.dev>',
               to: [userEmail],
               subject: `[${payload.filterName}] ${payload.title}`,
               html,
             }),
           });
           if (!resp.ok) {
-            emailStatus = "failed";
+            emailStatus = 'failed';
             emailError = `Resend ${resp.status}: ${(await resp.text()).slice(0, 200)}`;
           } else {
-            emailStatus = "sent";
+            emailStatus = 'sent';
           }
         } catch (e) {
-          emailStatus = "failed";
+          emailStatus = 'failed';
           emailError = (e as Error).message.slice(0, 200);
         }
       }
       insertRows.push({
         ...baseRow,
-        channel: "email",
+        channel: 'email',
         status: emailStatus,
         error_message: emailError,
       });
     }
 
     if (insertRows.length > 0) {
-      const { error: insErr } = await admin
-        .from("notification_history")
-        .insert(insertRows);
+      const { error: insErr } = await admin.from('notification_history').insert(insertRows);
       if (insErr) {
-        console.error("[notify-saved-filter] insert history failed", insErr);
+        log.error('[notify-saved-filter] insert history failed', {
+          error_message: mensagemErro(insErr),
+          context: contextoErro(insErr),
+        });
       }
     }
 
@@ -175,24 +184,27 @@ const handler = async (req: Request): Promise<Response> => {
         recorded: insertRows.length,
         emailStatus: payload.channels.email ? emailStatus : null,
       }),
-      { headers: { ...corsHeaders, "Content-Type": "application/json" } },
+      { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     );
   } catch (e) {
-    console.error("[notify-saved-filter] erro", e);
+    log.error('[notify-saved-filter] erro', {
+      error_message: mensagemErro(e),
+      context: contextoErro(e),
+    });
     return new Response(JSON.stringify({ error: (e as Error).message }), {
       status: 500,
-      headers: { ...corsHeaders, "Content-Type": "application/json" },
+      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     });
   }
 };
 
 function escapeHtml(s: string): string {
   return s
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;")
-    .replace(/"/g, "&quot;")
-    .replace(/'/g, "&#39;");
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
 }
 
 function renderEmail(input: {
@@ -201,10 +213,13 @@ function renderEmail(input: {
   filterName: string;
   url?: string;
 }): string {
-  const lines = (input.body ?? "").split("\n").map((l) => escapeHtml(l)).join("<br/>");
+  const lines = (input.body ?? '')
+    .split('\n')
+    .map((l) => escapeHtml(l))
+    .join('<br/>');
   const cta = input.url
     ? `<a href="${escapeHtml(input.url)}" style="display:inline-block;background:#3b82f6;color:#fff;padding:12px 24px;text-decoration:none;border-radius:6px;margin-top:20px;">Ver no app</a>`
-    : "";
+    : '';
   return `
     <div style="font-family:Arial,sans-serif;max-width:600px;margin:0 auto;background:#ffffff;">
       <div style="background:linear-gradient(135deg,#3b82f6,#1d4ed8);padding:20px;text-align:center;">
@@ -222,4 +237,14 @@ function renderEmail(input: {
   `;
 }
 
-serve(handler);
+serve(
+  withEdgeObservability('notify-saved-filter', async (req) => {
+    const _t0 = Date.now();
+    try {
+      return await handler(req);
+    } finally {
+      log.info('request', { duration_ms: Date.now() - _t0 });
+      await log.flush();
+    }
+  })
+);

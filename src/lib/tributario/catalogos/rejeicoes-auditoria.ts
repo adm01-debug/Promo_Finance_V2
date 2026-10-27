@@ -226,9 +226,7 @@ export function resumirRejeicoes(linhas: RejeicaoAuditavel[]): ResumoRejeicoes {
  * protocolo). São falhas de CADASTRO que precisam da mesma trilha de correção,
  * por isso compartilham a tabela `overlay_rejeicoes_auditoria`.
  */
-export function coletarDriftMvaAuditavel(
-  alertas: readonly AlertaCatalogo[],
-): RejeicaoAuditavel[] {
+export function coletarDriftMvaAuditavel(alertas: readonly AlertaCatalogo[]): RejeicaoAuditavel[] {
   return coletarDriftCatalogoAuditavel(alertas).filter((l) => l.catalogo === 'mva_st');
 }
 
@@ -254,7 +252,7 @@ const BUCKET_POR_CATALOGO: Record<CatalogoId, CatalogoOverlay> = {
  * correção (`overlay_rejeicoes_auditoria`).
  */
 export function coletarDriftCatalogoAuditavel(
-  alertas: readonly AlertaCatalogo[],
+  alertas: readonly AlertaCatalogo[]
 ): RejeicaoAuditavel[] {
   return alertas
     .filter((a) => BUCKET_POR_CATALOGO[a.catalogo] !== undefined)

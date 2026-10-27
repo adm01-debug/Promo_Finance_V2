@@ -24,18 +24,31 @@
  */
 
 import { createClient, type SupabaseClient } from 'https://esm.sh/@supabase/supabase-js@2.49.4';
-import { corsHeaders } from './cors.ts';
+import { corsHeadersPara } from './cors.ts';
 
-/** Headers CORS acrescidos do header de segredo usado pelas automações. */
-export const corsHeadersComSegredo: Record<string, string> = {
-  ...corsHeaders,
-  'Access-Control-Allow-Headers': `${corsHeaders['Access-Control-Allow-Headers']}, x-cron-secret, x-internal-secret`,
-};
+/** Headers CORS por requisição — ecoa o Origin permitido (allowlist em cors.ts). */
+export function corsHeadersComSegredoPara(req: Request): Record<string, string> {
+  return corsHeadersPara(req);
+}
 
-function respostaErro(status: number, code: string, message: string): Response {
+/**
+ * @deprecated Mantido para compatibilidade — preferir `corsHeadersComSegredoPara(req)`,
+ * que ecoa o Origin permitido da requisição.
+ */
+export const corsHeadersComSegredo: Record<string, string> = corsHeadersPara(
+  new Request('https://edge.internal/')
+);
+
+function respostaErro(
+  req: Request | null | undefined,
+  status: number,
+  code: string,
+  message: string
+): Response {
+  const headers = req ? corsHeadersComSegredoPara(req) : corsHeadersComSegredo;
   return new Response(JSON.stringify({ error: code, message }), {
     status,
-    headers: { ...corsHeadersComSegredo, 'Content-Type': 'application/json' },
+    headers: { ...headers, 'Content-Type': 'application/json' },
   });
 }
 
@@ -56,7 +69,10 @@ function extrairBearer(req: Request): string | null {
  * Exportada para reuso por webhooks/funções que hoje comparam segredos com
  * `!==` (short-circuit, vazamento de timing) — ver E-020.
  */
-export function segredosIguais(a: string | null | undefined, b: string | null | undefined): boolean {
+export function segredosIguais(
+  a: string | null | undefined,
+  b: string | null | undefined
+): boolean {
   if (!a || !b || a.length !== b.length) return false;
   let diff = 0;
   for (let i = 0; i < a.length; i++) diff |= a.charCodeAt(i) ^ b.charCodeAt(i);
@@ -91,7 +107,7 @@ export async function exigirUsuario(req: Request): Promise<ResultadoGuard<Usuari
   if (!token || segredosIguais(token, anonKey)) {
     return {
       ok: false,
-      resposta: respostaErro(401, 'nao_autenticado', 'Sessão ausente ou inválida.'),
+      resposta: respostaErro(req, 401, 'nao_autenticado', 'Sessão ausente ou inválida.'),
     };
   }
 
@@ -104,7 +120,7 @@ export async function exigirUsuario(req: Request): Promise<ResultadoGuard<Usuari
   if (error || !data?.user) {
     return {
       ok: false,
-      resposta: respostaErro(401, 'nao_autenticado', 'Sessão ausente ou inválida.'),
+      resposta: respostaErro(req, 401, 'nao_autenticado', 'Sessão ausente ou inválida.'),
     };
   }
 
@@ -120,6 +136,34 @@ export async function exigirUsuario(req: Request): Promise<ResultadoGuard<Usuari
 }
 
 /**
+ * Decodifica o payload do JWT já validado pelo Auth (seguro porque
+ * `exigirUsuario` verificou a assinatura contra o serviço antes).
+ */
+function payloadJwt(token: string): Record<string, unknown> | null {
+  try {
+    const parte = token.split('.')[1];
+    if (!parte) return null;
+    return JSON.parse(atob(parte.replace(/-/g, '+').replace(/_/g, '/'))) as Record<string, unknown>;
+  } catch {
+    return null;
+  }
+}
+
+/**
+ * MFA para admin — opt-in via env `MFA_ADMIN_ENFORCED=true`.
+ * Quando ligado, sessões `aal1` (só senha) são rejeitadas em rotas de admin;
+ * o usuário precisa completar o desafio TOTP (`aal2`). Sem a env, o
+ * comportamento atual se mantém — ligar antes de todos os admins terem TOTP
+ * cadastrado trancaria o acesso.
+ */
+export function mfaAdminInsuficiente(papeis: readonly string[], token: string): boolean {
+  if (Deno.env.get('MFA_ADMIN_ENFORCED') !== 'true') return false;
+  if (!papeis.includes('admin')) return false;
+  const aal = payloadJwt(token)?.['aal'];
+  return aal !== 'aal2';
+}
+
+/**
  * Exige um papel específico (RBAC) além da autenticação.
  * Usa a função `has_role` do banco — a fonte de verdade — em vez de qualquer
  * claim vinda do cliente, que é manipulável.
@@ -131,6 +175,18 @@ export async function exigirPapel(
   const auth = await exigirUsuario(req);
   if (!auth.ok) return auth;
 
+  if (mfaAdminInsuficiente(papeis, auth.dados.token)) {
+    return {
+      ok: false,
+      resposta: respostaErro(
+        req,
+        403,
+        'mfa_requerido',
+        'Esta operação exige segundo fator (TOTP) ativo na sessão.'
+      ),
+    };
+  }
+
   const admin = clientDeServico();
   const { data, error } = await admin
     .from('user_roles')
@@ -141,7 +197,7 @@ export async function exigirPapel(
   if (error) {
     return {
       ok: false,
-      resposta: respostaErro(500, 'erro_autorizacao', 'Falha ao validar permissões.'),
+      resposta: respostaErro(req, 500, 'erro_autorizacao', 'Falha ao validar permissões.'),
     };
   }
 
@@ -155,7 +211,12 @@ export async function exigirPapel(
   if (!possui) {
     return {
       ok: false,
-      resposta: respostaErro(403, 'sem_permissao', 'Permissão insuficiente para esta operação.'),
+      resposta: respostaErro(
+        req,
+        403,
+        'sem_permissao',
+        'Permissão insuficiente para esta operação.'
+      ),
     };
   }
 
@@ -233,6 +294,7 @@ export async function exigirChamadaInterna(
   return {
     ok: false,
     resposta: respostaErro(
+      req,
       401,
       'chamada_nao_autorizada',
       'Endpoint restrito a automações internas.'
@@ -255,6 +317,34 @@ export async function exigirInternaOuUsuario(
   if (usuario.ok) return { ok: true, dados: { origem: 'usuario', userId: usuario.dados.userId } };
 
   return { ok: false, resposta: usuario.resposta };
+}
+
+/**
+ * Preâmbulo completo das funções disparadas por cron OU usuário com papel:
+ * valida interna/usuário, monta o client de serviço e, quando o chamador é
+ * usuário, exige um dos papéis aceitos. Devolve o client pronto para uso.
+ */
+export async function exigirInternaOuUsuarioComPapel(
+  req: Request,
+  papeis: readonly string[],
+  mensagemPapel: string
+): Promise<
+  ResultadoGuard<{ supabase: SupabaseClient; origem: 'interna' | 'usuario'; userId: string | null }>
+> {
+  const guard = await exigirInternaOuUsuario(req);
+  if (!guard.ok) return { ok: false, resposta: guard.resposta };
+
+  const supabase = createClient(
+    Deno.env.get('SUPABASE_URL')!,
+    Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!
+  );
+
+  if (guard.dados.origem === 'usuario' && guard.dados.userId) {
+    const acesso = await exigirAlgumPapel(supabase, req, guard.dados.userId, papeis, mensagemPapel);
+    if (acesso) return { ok: false, resposta: acesso };
+  }
+
+  return { ok: true, dados: { supabase, origem: guard.dados.origem, userId: guard.dados.userId } };
 }
 
 // ---------------------------------------------------------------------------
@@ -299,21 +389,27 @@ export async function empresasDoUsuario(userId: string): Promise<string[] | null
  */
 export async function exigirVinculoEmpresa(
   userId: string,
-  empresaId: string | null | undefined
+  empresaId: string | null | undefined,
+  req?: Request
 ): Promise<ResultadoGuard<{ empresaId: string; empresaIds: string[] }>> {
   const vinculadas = await empresasDoUsuario(userId);
 
   if (vinculadas === null) {
     return {
       ok: false,
-      resposta: respostaErro(500, 'erro_autorizacao', 'Falha ao validar vínculo de empresa.'),
+      resposta: respostaErro(req, 500, 'erro_autorizacao', 'Falha ao validar vínculo de empresa.'),
     };
   }
 
   if (vinculadas.length === 0) {
     return {
       ok: false,
-      resposta: respostaErro(403, 'sem_empresa', 'Usuário não está vinculado a nenhuma empresa.'),
+      resposta: respostaErro(
+        req,
+        403,
+        'sem_empresa',
+        'Usuário não está vinculado a nenhuma empresa.'
+      ),
     };
   }
 
@@ -324,6 +420,7 @@ export async function exigirVinculoEmpresa(
     return {
       ok: false,
       resposta: respostaErro(
+        req,
         400,
         'empresa_obrigatoria',
         'Informe empresa_id: o usuário está vinculado a mais de uma empresa.'
@@ -336,11 +433,124 @@ export async function exigirVinculoEmpresa(
     // de terceiro: não confirmamos a existência de tenants alheios.
     return {
       ok: false,
-      resposta: respostaErro(403, 'sem_permissao_empresa', 'Sem permissão para esta empresa.'),
+      resposta: respostaErro(req, 403, 'sem_permissao_empresa', 'Sem permissão para esta empresa.'),
     };
   }
 
   return { ok: true, dados: { empresaId, empresaIds: vinculadas } };
+}
+
+/**
+ * Guard de escopo para jobs/automações acionados por usuário: admin pode
+ * rodar para todas as empresas; não-admin precisa informar empresa_id e ter
+ * vínculo ativo com ela. Retorna a resposta de erro (403) ou null.
+ */
+export async function exigirAdminOuVinculo(
+  supabase: SupabaseClient,
+  req: Request,
+  userId: string,
+  empresaId: string | null | undefined
+): Promise<Response | null> {
+  const cors = corsHeadersPara(req);
+  // Consulta direta em vez de has_role: a RPC vigente só filtra is_active e
+  // manteria como admin uma atribuição com expires_at já vencido.
+  const { data: adminRows, error: adminErr } = await supabase
+    .from('user_roles')
+    .select('expires_at')
+    .eq('user_id', userId)
+    .eq('role', 'admin')
+    .eq('is_active', true);
+  if (adminErr) throw adminErr;
+  const isAdmin = (adminRows ?? []).some((linha: { expires_at?: string | null }) => {
+    if (!linha.expires_at) return true;
+    const expiraEm = Date.parse(linha.expires_at);
+    return Number.isFinite(expiraEm) && expiraEm > Date.now();
+  });
+  if (isAdmin) {
+    const token = extrairBearer(req);
+    if (token && mfaAdminInsuficiente(['admin'], token)) {
+      return new Response(
+        JSON.stringify({
+          error: 'mfa_requerido',
+          message: 'Esta operação exige segundo fator (TOTP) ativo na sessão.',
+        }),
+        { status: 403, headers: { ...cors, 'Content-Type': 'application/json' } }
+      );
+    }
+    return null;
+  }
+  if (!empresaId) {
+    return new Response(
+      JSON.stringify({ error: 'Apenas admin pode rodar para todas as empresas' }),
+      { status: 403, headers: { ...cors, 'Content-Type': 'application/json' } }
+    );
+  }
+  const { data: vinculo } = await supabase
+    .from('user_empresas')
+    .select('id')
+    .eq('user_id', userId)
+    .eq('empresa_id', empresaId)
+    .eq('ativo', true)
+    .maybeSingle();
+  if (!vinculo) {
+    return new Response(JSON.stringify({ error: 'Sem permissão para esta empresa' }), {
+      status: 403,
+      headers: { ...cors, 'Content-Type': 'application/json' },
+    });
+  }
+  return null;
+}
+
+/**
+ * Exige que o usuário possua ao menos um dos papéis em `user_roles` — para
+ * fluxos já autenticados (`guard.dados.origem === 'usuario'`) que consultam
+ * papéis com o client de serviço. Retorna a resposta de erro (403) ou null.
+ */
+export async function exigirAlgumPapel(
+  supabase: SupabaseClient,
+  req: Request,
+  userId: string,
+  papeis: readonly string[],
+  mensagem = 'Permissão insuficiente para esta operação'
+): Promise<Response | null> {
+  const { data: roles, error } = await supabase
+    .from('user_roles')
+    .select('role, expires_at')
+    .eq('user_id', userId)
+    .eq('is_active', true);
+  if (error) throw error;
+  const agora = Date.now();
+  const efetivos = (roles ?? [])
+    .filter((linha: { role: string; expires_at?: string | null }) => {
+      if (!papeis.includes(linha.role)) return false;
+      if (!linha.expires_at) return true;
+      const expiraEm = Date.parse(linha.expires_at);
+      return Number.isFinite(expiraEm) && expiraEm > agora;
+    })
+    .map((linha: { role: string }) => linha.role);
+  if (efetivos.length > 0) {
+    const token = extrairBearer(req);
+    // A verificação olha os papéis EFETIVOS do usuário, não a lista aceita:
+    // quem só tem 'financeiro' não pode ser barrado pelo MFA de admin quando
+    // o chamador passa ['admin', 'financeiro'].
+    if (token && mfaAdminInsuficiente(efetivos, token)) {
+      return new Response(
+        JSON.stringify({
+          error: 'mfa_requerido',
+          message: 'Esta operação exige segundo fator (TOTP) ativo na sessão.',
+        }),
+        {
+          status: 403,
+          headers: { ...corsHeadersPara(req), 'Content-Type': 'application/json' },
+        }
+      );
+    }
+    return null;
+  }
+  return new Response(JSON.stringify({ error: mensagem }), {
+    status: 403,
+    headers: { ...corsHeadersPara(req), 'Content-Type': 'application/json' },
+  });
 }
 
 /**
@@ -354,7 +564,7 @@ export async function exigirUsuarioComEmpresa(
   const auth = await exigirUsuario(req);
   if (!auth.ok) return auth;
 
-  const escopo = await exigirVinculoEmpresa(auth.dados.userId, empresaId);
+  const escopo = await exigirVinculoEmpresa(auth.dados.userId, empresaId, req);
   if (!escopo.ok) return escopo;
 
   return { ok: true, dados: { ...auth.dados, ...escopo.dados } };

@@ -122,7 +122,9 @@ export function PedidoCompraForm({ open, onOpenChange }: PedidoCompraFormProps) 
       onOpenChange(false);
       form.reset();
     } catch (error: unknown) {
-      toast.error('Erro ao criar pedido: ' + (error instanceof Error ? error.message : String(error)));
+      toast.error(
+        'Erro ao criar pedido: ' + (error instanceof Error ? error.message : String(error))
+      );
     }
   }
 

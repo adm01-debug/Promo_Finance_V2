@@ -17,10 +17,18 @@ export const GRUPOS_MONOFASICOS: GrupoMonofasico[] = [
     prefixos: ['2710', '2711'],
     ncms: [
       { ncm: '2710.12.4', descricao: 'Gasolina', industria: { pis: 0.0506, cofins: 0.2388 } },
-      { ncm: '2710.19.21', descricao: 'Querosene de aviação', industria: { pis: 0.05, cofins: 0.23 } },
+      {
+        ncm: '2710.19.21',
+        descricao: 'Querosene de aviação',
+        industria: { pis: 0.05, cofins: 0.23 },
+      },
       { ncm: '2710.19.32', descricao: 'Óleo diesel', industria: { pis: 0.0496, cofins: 0.2304 } },
       { ncm: '2711.19.10', descricao: 'GLP (botijão)', industria: { pis: 0.0506, cofins: 0.2388 } },
-      { ncm: '2207.20.10', descricao: 'Etanol anidro combustível', industria: { pis: 0.0356, cofins: 0.1654 } },
+      {
+        ncm: '2207.20.10',
+        descricao: 'Etanol anidro combustível',
+        industria: { pis: 0.0356, cofins: 0.1654 },
+      },
     ],
   },
   {
@@ -81,11 +89,27 @@ export const GRUPOS_MONOFASICOS: GrupoMonofasico[] = [
     prioridade: 10,
     prefixos: ['2201', '2202', '2203', '2204'],
     ncms: [
-      { ncm: '2201.10.00', descricao: 'Águas minerais', industria: { pis: 0.0265, cofins: 0.1223 } },
+      {
+        ncm: '2201.10.00',
+        descricao: 'Águas minerais',
+        industria: { pis: 0.0265, cofins: 0.1223 },
+      },
       { ncm: '2202.10.00', descricao: 'Refrigerantes', industria: { pis: 0.0265, cofins: 0.1223 } },
-      { ncm: '2202.99.00', descricao: 'Isotônicos e energéticos', industria: { pis: 0.0265, cofins: 0.1223 } },
-      { ncm: '2203.00.00', descricao: 'Cerveja de malte', industria: { pis: 0.0265, cofins: 0.1223 } },
-      { ncm: '2204.21.00', descricao: 'Vinho em garrafa', industria: { pis: 0.0265, cofins: 0.1223 } },
+      {
+        ncm: '2202.99.00',
+        descricao: 'Isotônicos e energéticos',
+        industria: { pis: 0.0265, cofins: 0.1223 },
+      },
+      {
+        ncm: '2203.00.00',
+        descricao: 'Cerveja de malte',
+        industria: { pis: 0.0265, cofins: 0.1223 },
+      },
+      {
+        ncm: '2204.21.00',
+        descricao: 'Vinho em garrafa',
+        industria: { pis: 0.0265, cofins: 0.1223 },
+      },
     ],
   },
   {
@@ -158,7 +182,7 @@ export const GRUPO_MONOFASICO_CATALOGO: GrupoMonofasico = {
 };
 
 export const GRUPOS_POR_CHAVE: Record<string, GrupoMonofasico> = Object.fromEntries(
-  GRUPOS_MONOFASICOS.map((g) => [g.chave, g]),
+  GRUPOS_MONOFASICOS.map((g) => [g.chave, g])
 );
 
 /** Alíquotas do regime normal (cumulativo/não cumulativo) para comparação. */

@@ -1,6 +1,6 @@
-@import "tailwindcss/base";
-@import "tailwindcss/components";
-@import "tailwindcss/utilities";
+@import 'tailwindcss/base';
+@import 'tailwindcss/components';
+@import 'tailwindcss/utilities';
 
 /* ============ Vela Design Tokens (Ported from Vela Template) ============ */
 :root {
@@ -47,7 +47,7 @@
   --radius-vela-xl: 20px;
 }
 
-:root[data-theme="light"],
+:root[data-theme='light'],
 .light {
   color-scheme: light;
 
@@ -141,8 +141,8 @@
    :root e .dark = Vela dark; .light = Vela light. */
 :root,
 .dark {
-  --font-body: "Plus Jakarta Sans", Inter, system-ui, sans-serif;
-  --font-heading: "Plus Jakarta Sans", Inter, system-ui, sans-serif;
+  --font-body: 'Plus Jakarta Sans', Inter, system-ui, sans-serif;
+  --font-heading: 'Plus Jakarta Sans', Inter, system-ui, sans-serif;
 
   --background: 230 25% 5%;
   --foreground: 230 33% 96%;
@@ -182,8 +182,8 @@
 }
 
 .light {
-  --font-body: "Plus Jakarta Sans", Inter, system-ui, sans-serif;
-  --font-heading: "Plus Jakarta Sans", Inter, system-ui, sans-serif;
+  --font-body: 'Plus Jakarta Sans', Inter, system-ui, sans-serif;
+  --font-heading: 'Plus Jakarta Sans', Inter, system-ui, sans-serif;
 
   --background: 223 27% 95%;
   --foreground: 225 21% 11%;
@@ -232,8 +232,15 @@
 
 @layer base {
   @keyframes pulse-subtle {
-    0%, 100% { opacity: 1; transform: scale(1); }
-    50% { opacity: 0.85; transform: scale(1.01); }
+    0%,
+    100% {
+      opacity: 1;
+      transform: scale(1);
+    }
+    50% {
+      opacity: 0.85;
+      transform: scale(1.01);
+    }
   }
   .animate-pulse-subtle {
     animation: pulse-subtle 3s cubic-bezier(0.4, 0, 0.6, 1) infinite;
@@ -242,51 +249,97 @@
 
 /* ============ Vela Keyframes (Motion) ============ */
 @keyframes velaUp {
-  from { opacity: 0; transform: translateY(8px); }
-  to { opacity: 1; transform: none; }
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
 }
 
 @keyframes velaPop {
-  from { opacity: 0; transform: translateY(6px) scale(0.98); }
-  to { opacity: 1; transform: none; }
+  from {
+    opacity: 0;
+    transform: translateY(6px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
 }
 
 @keyframes velaFade {
-  from { opacity: 0; }
-  to { opacity: 1; }
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
 }
 
 @keyframes velaSpin {
-  to { transform: rotate(360deg); }
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 @keyframes velaPulse {
-  0%, 100% { opacity: 0.35; transform: scale(0.8); }
-  50% { opacity: 1; transform: scale(1); }
+  0%,
+  100% {
+    opacity: 0.35;
+    transform: scale(0.8);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1);
+  }
 }
 
 @keyframes velaShimmer {
-  0%, 100% { opacity: 0.4; }
-  50% { opacity: 0.9; }
+  0%,
+  100% {
+    opacity: 0.4;
+  }
+  50% {
+    opacity: 0.9;
+  }
 }
 
 @keyframes velaRise {
-  from { opacity: 0; transform: translateY(12px); }
-  to { opacity: 1; transform: none; }
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
 }
 
 @keyframes velaDraw {
-  to { stroke-dashoffset: 0; }
+  to {
+    stroke-dashoffset: 0;
+  }
 }
 
 @keyframes velaGrowY {
-  from { transform: scaleY(0); }
-  to { transform: scaleY(1); }
+  from {
+    transform: scaleY(0);
+  }
+  to {
+    transform: scaleY(1);
+  }
 }
 
 @keyframes velaReveal {
-  from { clip-path: inset(0 100% 0 0); }
-  to { clip-path: inset(0 0 0 0); }
+  from {
+    clip-path: inset(0 100% 0 0);
+  }
+  to {
+    clip-path: inset(0 0 0 0);
+  }
 }
 
 /* Page entrance animations */
@@ -296,24 +349,52 @@
 .vela-page-enter > * {
   animation: velaRise 0.5s cubic-bezier(0.22, 0.61, 0.36, 1) both;
 }
-.vela-page-enter > *:nth-child(1) { animation-delay: 0.03s; }
-.vela-page-enter > *:nth-child(2) { animation-delay: 0.09s; }
-.vela-page-enter > *:nth-child(3) { animation-delay: 0.15s; }
-.vela-page-enter > *:nth-child(4) { animation-delay: 0.21s; }
-.vela-page-enter > *:nth-child(5) { animation-delay: 0.27s; }
-.vela-page-enter > *:nth-child(6) { animation-delay: 0.33s; }
-.vela-page-enter > *:nth-child(n + 7) { animation-delay: 0.38s; }
+.vela-page-enter > *:nth-child(1) {
+  animation-delay: 0.03s;
+}
+.vela-page-enter > *:nth-child(2) {
+  animation-delay: 0.09s;
+}
+.vela-page-enter > *:nth-child(3) {
+  animation-delay: 0.15s;
+}
+.vela-page-enter > *:nth-child(4) {
+  animation-delay: 0.21s;
+}
+.vela-page-enter > *:nth-child(5) {
+  animation-delay: 0.27s;
+}
+.vela-page-enter > *:nth-child(6) {
+  animation-delay: 0.33s;
+}
+.vela-page-enter > *:nth-child(n + 7) {
+  animation-delay: 0.38s;
+}
 /* Páginas com root único (padrão PFV2): as seções netas é que fazem o stagger */
 .vela-page-enter > *:only-child > * {
   animation: velaRise 0.5s cubic-bezier(0.22, 0.61, 0.36, 1) both;
 }
-.vela-page-enter > *:only-child > *:nth-child(1) { animation-delay: 0.06s; }
-.vela-page-enter > *:only-child > *:nth-child(2) { animation-delay: 0.12s; }
-.vela-page-enter > *:only-child > *:nth-child(3) { animation-delay: 0.18s; }
-.vela-page-enter > *:only-child > *:nth-child(4) { animation-delay: 0.24s; }
-.vela-page-enter > *:only-child > *:nth-child(5) { animation-delay: 0.30s; }
-.vela-page-enter > *:only-child > *:nth-child(6) { animation-delay: 0.36s; }
-.vela-page-enter > *:only-child > *:nth-child(n + 7) { animation-delay: 0.42s; }
+.vela-page-enter > *:only-child > *:nth-child(1) {
+  animation-delay: 0.06s;
+}
+.vela-page-enter > *:only-child > *:nth-child(2) {
+  animation-delay: 0.12s;
+}
+.vela-page-enter > *:only-child > *:nth-child(3) {
+  animation-delay: 0.18s;
+}
+.vela-page-enter > *:only-child > *:nth-child(4) {
+  animation-delay: 0.24s;
+}
+.vela-page-enter > *:only-child > *:nth-child(5) {
+  animation-delay: 0.3s;
+}
+.vela-page-enter > *:only-child > *:nth-child(6) {
+  animation-delay: 0.36s;
+}
+.vela-page-enter > *:only-child > *:nth-child(n + 7) {
+  animation-delay: 0.42s;
+}
 
 .vela-reveal {
   animation: velaReveal 0.9s cubic-bezier(0.65, 0, 0.35, 1) both;
@@ -342,7 +423,12 @@
   height: 112%;
   left: -16%;
   top: -30%;
-  background: radial-gradient(circle, rgba(96, 62, 190, 0.55) 0%, rgba(96, 62, 190, 0.2) 45%, transparent 70%);
+  background: radial-gradient(
+    circle,
+    rgba(96, 62, 190, 0.55) 0%,
+    rgba(96, 62, 190, 0.2) 45%,
+    transparent 70%
+  );
   animation: velaAur1 21s ease-in-out infinite alternate;
 }
 .vela-aur-2 {
@@ -350,7 +436,12 @@
   height: 122%;
   right: -22%;
   bottom: -38%;
-  background: radial-gradient(circle, rgba(70, 48, 155, 0.62) 0%, rgba(70, 48, 155, 0.24) 46%, transparent 71%);
+  background: radial-gradient(
+    circle,
+    rgba(70, 48, 155, 0.62) 0%,
+    rgba(70, 48, 155, 0.24) 46%,
+    transparent 71%
+  );
   animation: velaAur2 26s ease-in-out infinite alternate;
 }
 .vela-aur-3 {
@@ -370,23 +461,39 @@
   animation: velaAur4 24s ease-in-out infinite alternate;
 }
 @keyframes velaAur1 {
-  from { transform: translate(0, 0) scale(1); }
-  to { transform: translate(9%, 7%) scale(1.15); }
+  from {
+    transform: translate(0, 0) scale(1);
+  }
+  to {
+    transform: translate(9%, 7%) scale(1.15);
+  }
 }
 @keyframes velaAur2 {
-  from { transform: translate(0, 0) scale(1.07); }
-  to { transform: translate(-9%, -6%) scale(1); }
+  from {
+    transform: translate(0, 0) scale(1.07);
+  }
+  to {
+    transform: translate(-9%, -6%) scale(1);
+  }
 }
 @keyframes velaAur3 {
-  from { transform: translate(0, 0) scale(1); }
-  to { transform: translate(-13%, 10%) scale(1.22); }
+  from {
+    transform: translate(0, 0) scale(1);
+  }
+  to {
+    transform: translate(-13%, 10%) scale(1.22);
+  }
 }
 @keyframes velaAur4 {
-  from { transform: translate(0, 0) scale(0.92); }
-  to { transform: translate(11%, -9%) scale(1.14); }
+  from {
+    transform: translate(0, 0) scale(0.92);
+  }
+  to {
+    transform: translate(11%, -9%) scale(1.14);
+  }
 }
 .vela-aurora::after {
-  content: "";
+  content: '';
   position: absolute;
   inset: 0;
   background: radial-gradient(120% 95% at 50% 45%, transparent 52%, rgba(5, 6, 13, 0.58) 100%);

@@ -37,7 +37,7 @@ describe('Sublimite estadual e ISS retido no Simples Nacional', () => {
         aliquotaISS: 0.03,
       }),
       2026,
-      7,
+      7
     );
     expect(r.anexoAplicavel).toBe('III');
     expect(r.sublimiteExcedido).toBe(true);
@@ -45,7 +45,11 @@ describe('Sublimite estadual e ISS retido no Simples Nacional', () => {
   });
 
   it('respeita sublimite customizado do estado', () => {
-    const r = simularSimples(base({ faturamentoAnual: 2_000_000, sublimiteEstadual: 1_800_000 }), 2026, 7);
+    const r = simularSimples(
+      base({ faturamentoAnual: 2_000_000, sublimiteEstadual: 1_800_000 }),
+      2026,
+      7
+    );
     expect(r.sublimiteExcedido).toBe(true);
   });
 
@@ -72,7 +76,7 @@ describe('Sublimite estadual e ISS retido no Simples Nacional', () => {
         issRetidoFonte: 10_000_000,
       }),
       2026,
-      7,
+      7
     );
     expect(r.iss).toBeCloseTo(0, 6);
     expect(r.totalTributos).toBeGreaterThanOrEqual(0);
@@ -80,9 +84,9 @@ describe('Sublimite estadual e ISS retido no Simples Nacional', () => {
 
   it('simulação de centenas de cenários mantém invariantes', () => {
     for (let i = 0; i < 300; i++) {
-      const fat = 100_000 + (i * 15_000);
+      const fat = 100_000 + i * 15_000;
       if (fat > 4_800_000) break;
-      const serv = (i % 101);
+      const serv = i % 101;
       const r = simularSimples(
         base({
           faturamentoAnual: fat,
@@ -92,7 +96,7 @@ describe('Sublimite estadual e ISS retido no Simples Nacional', () => {
           issRetidoFonte: i * 10,
         }),
         2026,
-        7,
+        7
       );
       expect(Number.isFinite(r.totalTributos)).toBe(true);
       expect(r.totalTributos).toBeGreaterThanOrEqual(0);

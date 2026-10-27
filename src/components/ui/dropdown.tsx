@@ -70,7 +70,11 @@ export function DropdownTrigger({ children, asChild, className }: DropdownTrigge
   const handleClick = () => setIsOpen(!isOpen);
 
   if (asChild) {
-    return <div onClick={handleClick} className={className}>{children}</div>;
+    return (
+      <div onClick={handleClick} className={className}>
+        {children}
+      </div>
+    );
   }
 
   return (
@@ -103,7 +107,11 @@ interface DropdownContentProps {
 }
 
 export function DropdownContent({
-  children, align = 'start', side = 'bottom', sideOffset = 4, className,
+  children,
+  align = 'start',
+  side = 'bottom',
+  sideOffset = 4,
+  className,
 }: DropdownContentProps) {
   const { isOpen } = useDropdownContext();
   if (!isOpen) return null;
@@ -118,9 +126,14 @@ export function DropdownContent({
         'bg-popover border border-border',
         'shadow-lg',
         'animate-in fade-in-0 zoom-in-95 duration-150',
-        alignClasses[align], sideClasses[side], className
+        alignClasses[align],
+        sideClasses[side],
+        className
       )}
-      style={{ marginTop: side === 'bottom' ? sideOffset : undefined, marginBottom: side === 'top' ? sideOffset : undefined }}
+      style={{
+        marginTop: side === 'bottom' ? sideOffset : undefined,
+        marginBottom: side === 'top' ? sideOffset : undefined,
+      }}
     >
       <div className="py-1">{children}</div>
     </div>
@@ -139,10 +152,21 @@ interface DropdownItemProps {
 }
 
 export function DropdownItem({
-  children, onClick, disabled = false, destructive = false, icon, shortcut, className,
+  children,
+  onClick,
+  disabled = false,
+  destructive = false,
+  icon,
+  shortcut,
+  className,
 }: DropdownItemProps) {
   const { closeMenu } = useDropdownContext();
-  const handleClick = () => { if (!disabled) { onClick?.(); closeMenu(); } };
+  const handleClick = () => {
+    if (!disabled) {
+      onClick?.();
+      closeMenu();
+    }
+  };
 
   return (
     <button
@@ -173,11 +197,19 @@ export function DropdownSeparator({ className }: { className?: string }) {
 }
 
 // Dropdown Label
-interface DropdownLabelProps { children: ReactNode; className?: string; }
+interface DropdownLabelProps {
+  children: ReactNode;
+  className?: string;
+}
 
 export function DropdownLabel({ children, className }: DropdownLabelProps) {
   return (
-    <div className={cn('px-3 py-2 text-xs font-semibold text-muted-foreground uppercase tracking-wider', className)}>
+    <div
+      className={cn(
+        'px-3 py-2 text-xs font-semibold text-muted-foreground uppercase tracking-wider',
+        className
+      )}
+    >
       {children}
     </div>
   );
@@ -193,7 +225,11 @@ interface DropdownCheckboxItemProps {
 }
 
 export function DropdownCheckboxItem({
-  children, checked, onCheckedChange, disabled = false, className,
+  children,
+  checked,
+  onCheckedChange,
+  disabled = false,
+  className,
 }: DropdownCheckboxItemProps) {
   return (
     <button
@@ -212,9 +248,7 @@ export function DropdownCheckboxItem({
       <span
         className={cn(
           'w-4 h-4 flex items-center justify-center rounded border',
-          checked
-            ? 'bg-primary border-primary text-primary-foreground'
-            : 'border-border'
+          checked ? 'bg-primary border-primary text-primary-foreground' : 'border-border'
         )}
       >
         {checked && <Check className="w-3 h-3" />}
@@ -225,13 +259,21 @@ export function DropdownCheckboxItem({
 }
 
 // Dropdown Sub Menu
-interface DropdownSubProps { children: ReactNode; trigger: ReactNode; className?: string; }
+interface DropdownSubProps {
+  children: ReactNode;
+  trigger: ReactNode;
+  className?: string;
+}
 
 export function DropdownSub({ children, trigger, className }: DropdownSubProps) {
   const [isSubOpen, setIsSubOpen] = useState(false);
 
   return (
-    <div className="relative" onMouseEnter={() => setIsSubOpen(true)} onMouseLeave={() => setIsSubOpen(false)}>
+    <div
+      className="relative"
+      onMouseEnter={() => setIsSubOpen(true)}
+      onMouseLeave={() => setIsSubOpen(false)}
+    >
       <button
         type="button"
         className={cn(

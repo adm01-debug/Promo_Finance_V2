@@ -9,7 +9,12 @@ interface Props {
   criticos: number;
 }
 
-export function MetricasInsights({ taxaAproveitamentoCreditos, creditosDisponiveis, percentualMigracao, criticos }: Props) {
+export function MetricasInsights({
+  taxaAproveitamentoCreditos,
+  creditosDisponiveis,
+  percentualMigracao,
+  criticos,
+}: Props) {
   return (
     <Card>
       <CardHeader>
@@ -27,8 +32,8 @@ export function MetricasInsights({ taxaAproveitamentoCreditos, creditosDisponive
                 <div>
                   <p className="font-medium">Baixo aproveitamento de créditos</p>
                   <p className="text-sm text-muted-foreground">
-                    Apenas {taxaAproveitamentoCreditos.toFixed(1)}% dos créditos estão sendo utilizados. 
-                    Revise as entradas para maximizar o aproveitamento.
+                    Apenas {taxaAproveitamentoCreditos.toFixed(1)}% dos créditos estão sendo
+                    utilizados. Revise as entradas para maximizar o aproveitamento.
                   </p>
                 </div>
               </div>
@@ -41,7 +46,7 @@ export function MetricasInsights({ taxaAproveitamentoCreditos, creditosDisponive
                 <div>
                   <p className="font-medium">Créditos acumulados disponíveis</p>
                   <p className="text-sm text-muted-foreground">
-                    Você tem {formatCurrency(creditosDisponiveis)} em créditos disponíveis. 
+                    Você tem {formatCurrency(creditosDisponiveis)} em créditos disponíveis.
                     Considere utilizar para compensação.
                   </p>
                 </div>

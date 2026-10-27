@@ -73,7 +73,7 @@ export interface UseBulkActionsResult<T> {
   clearSelection: () => void;
   executeBulkAction: (
     action: (id: string) => Promise<void>,
-    options?: { showProgress?: boolean }
+    options?: { showProgress?: boolean; continueOnError?: boolean }
   ) => Promise<void>;
 }
 
@@ -182,7 +182,10 @@ export function useBulkActions<T extends { id: string }>({
 
   // Execute bulk action with progress (backwards compatible)
   const executeBulkAction = useCallback(
-    async (action: (id: string) => Promise<void>, options?: { showProgress?: boolean }) => {
+    async (
+      action: (id: string) => Promise<void>,
+      options?: { showProgress?: boolean; continueOnError?: boolean }
+    ) => {
       const selectedIdsList = Array.from(selectedIds);
       if (selectedIdsList.length === 0) return;
 
@@ -191,19 +194,31 @@ export function useBulkActions<T extends { id: string }>({
 
       let completed = 0;
       const total = selectedIdsList.length;
+      const falharam = new Set<string>();
 
       try {
         for (const id of selectedIdsList) {
-          await action(id);
-          completed++;
+          try {
+            await action(id);
+            completed++;
+          } catch (itemError) {
+            // Sem continueOnError o erro sobe e interrompe o lote no 1º item.
+            // Com ele, itens já gravados ficam válidos e as falhas são
+            // reportadas — evita o lote "meio aplicado" sem aviso.
+            if (!options?.continueOnError) throw itemError;
+            falharam.add(id);
+          }
           if (options?.showProgress) {
-            setProgress(Math.round((completed / total) * 100));
+            setProgress(Math.round(((completed + falharam.size) / total) * 100));
           }
         }
         setSelectedIds(new Set());
         toast({
-          title: successMessage,
-          description: `${total} item(s) processado(s)`,
+          title: falharam.size ? errorMessage : successMessage,
+          description: falharam.size
+            ? `${completed} de ${total} item(s) processado(s); ${falharam.size} falharam (conflito de versão ou erro). Recarregue e tente de novo.`
+            : `${total} item(s) processado(s)`,
+          variant: falharam.size ? 'destructive' : 'default',
         });
         onSuccess?.();
       } catch (error: unknown) {

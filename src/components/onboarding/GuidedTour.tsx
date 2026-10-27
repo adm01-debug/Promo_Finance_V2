@@ -17,7 +17,8 @@ const tourSteps: TourStep[] = [
   {
     target: '[data-tour="sidebar"]',
     title: 'Menu Organizado',
-    content: 'O menu foi reorganizado em grupos lógicos: Início, Inteligência, Financeiro, Documentos, Cadastros, Compliance e Sistema. Clique nas categorias para expandir.',
+    content:
+      'O menu foi reorganizado em grupos lógicos: Início, Inteligência, Financeiro, Documentos, Cadastros, Compliance e Sistema. Clique nas categorias para expandir.',
     position: 'right',
   },
   {
@@ -29,7 +30,8 @@ const tourSteps: TourStep[] = [
   {
     target: '[data-tour="notifications"]',
     title: 'Alertas Inteligentes',
-    content: 'Receba notificações de vencimentos, aprovações pendentes e insights financeiros importantes.',
+    content:
+      'Receba notificações de vencimentos, aprovações pendentes e insights financeiros importantes.',
     position: 'bottom',
   },
   {
@@ -56,10 +58,10 @@ export const GuidedTour = () => {
   // Check if should show tour
   useEffect(() => {
     if (!isHomePage) return;
-    
+
     const tourCompleted = localStorage.getItem(TOUR_COMPLETED_KEY);
     const tourDismissed = localStorage.getItem(TOUR_DISMISSED_KEY);
-    
+
     if (!tourCompleted && !tourDismissed) {
       // Show welcome after a short delay
       const timer = setTimeout(() => setShowWelcome(true), 2000);
@@ -70,10 +72,10 @@ export const GuidedTour = () => {
   // Update target element position
   const updateTargetPosition = useCallback(() => {
     if (!isActive) return;
-    
+
     const step = tourSteps[currentStep];
     const element = document.querySelector(step.target);
-    
+
     if (element) {
       const rect = element.getBoundingClientRect();
       setTargetRect(rect);
@@ -96,7 +98,7 @@ export const GuidedTour = () => {
   useEffect(() => {
     window.addEventListener('resize', updateTargetPosition);
     window.addEventListener('scroll', updateTargetPosition);
-    
+
     return () => {
       window.removeEventListener('resize', updateTargetPosition);
       window.removeEventListener('scroll', updateTargetPosition);
@@ -140,7 +142,7 @@ export const GuidedTour = () => {
 
   const getTooltipPosition = () => {
     if (!targetRect) return { top: '50%', left: '50%' };
-    
+
     const step = tourSteps[currentStep];
     const padding = 16;
     const tooltipWidth = 340;
@@ -150,34 +152,46 @@ export const GuidedTour = () => {
       case 'top':
         return {
           top: Math.max(padding, targetRect.top - tooltipHeight - padding),
-          left: Math.max(padding, Math.min(
-            targetRect.left + (targetRect.width / 2) - (tooltipWidth / 2),
-            window.innerWidth - tooltipWidth - padding
-          )),
+          left: Math.max(
+            padding,
+            Math.min(
+              targetRect.left + targetRect.width / 2 - tooltipWidth / 2,
+              window.innerWidth - tooltipWidth - padding
+            )
+          ),
         };
       case 'bottom':
         return {
           top: Math.min(targetRect.bottom + padding, window.innerHeight - tooltipHeight - padding),
-          left: Math.max(padding, Math.min(
-            targetRect.left + (targetRect.width / 2) - (tooltipWidth / 2),
-            window.innerWidth - tooltipWidth - padding
-          )),
+          left: Math.max(
+            padding,
+            Math.min(
+              targetRect.left + targetRect.width / 2 - tooltipWidth / 2,
+              window.innerWidth - tooltipWidth - padding
+            )
+          ),
         };
       case 'left':
         return {
-          top: Math.max(padding, Math.min(
-            targetRect.top + (targetRect.height / 2) - (tooltipHeight / 2),
-            window.innerHeight - tooltipHeight - padding
-          )),
+          top: Math.max(
+            padding,
+            Math.min(
+              targetRect.top + targetRect.height / 2 - tooltipHeight / 2,
+              window.innerHeight - tooltipHeight - padding
+            )
+          ),
           left: Math.max(padding, targetRect.left - tooltipWidth - padding),
         };
       case 'right':
       default:
         return {
-          top: Math.max(padding, Math.min(
-            targetRect.top + (targetRect.height / 2) - (tooltipHeight / 2),
-            window.innerHeight - tooltipHeight - padding
-          )),
+          top: Math.max(
+            padding,
+            Math.min(
+              targetRect.top + targetRect.height / 2 - tooltipHeight / 2,
+              window.innerHeight - tooltipHeight - padding
+            )
+          ),
           left: Math.min(targetRect.right + padding, window.innerWidth - tooltipWidth - padding),
         };
     }
@@ -215,29 +229,20 @@ export const GuidedTour = () => {
                 >
                   <Sparkles className="h-8 w-8 text-primary-foreground" />
                 </motion.div>
-                
-                <h2 className="text-2xl font-display font-bold">
-                  Bem-vindo ao Promo Finance!
-                </h2>
-                
+
+                <h2 className="text-2xl font-display font-bold">Bem-vindo ao Promo Finance!</h2>
+
                 <p className="text-muted-foreground">
-                  O sistema foi totalmente reorganizado para facilitar sua navegação.
-                  Quer conhecer as principais novidades?
+                  O sistema foi totalmente reorganizado para facilitar sua navegação. Quer conhecer
+                  as principais novidades?
                 </p>
 
                 <div className="flex gap-3 pt-4">
-                  <Button
-                    variant="outline"
-                    className="flex-1 gap-2"
-                    onClick={skipTour}
-                  >
+                  <Button variant="outline" className="flex-1 gap-2" onClick={skipTour}>
                     <SkipForward className="h-4 w-4" />
                     Pular
                   </Button>
-                  <Button
-                    className="flex-1 gap-2"
-                    onClick={startTour}
-                  >
+                  <Button className="flex-1 gap-2" onClick={startTour}>
                     <Sparkles className="h-4 w-4" />
                     Fazer Tour
                   </Button>
@@ -355,18 +360,14 @@ export const GuidedTour = () => {
                           idx === currentStep
                             ? 'bg-primary w-4'
                             : idx < currentStep
-                            ? 'bg-primary/50'
-                            : 'bg-muted'
+                              ? 'bg-primary/50'
+                              : 'bg-muted'
                         )}
                       />
                     ))}
                   </div>
 
-                  <Button
-                    size="sm"
-                    onClick={nextStep}
-                    className="gap-1"
-                  >
+                  <Button size="sm" onClick={nextStep} className="gap-1">
                     {currentStep === tourSteps.length - 1 ? (
                       <>
                         <CheckCircle2 className="h-4 w-4" />

@@ -41,8 +41,16 @@ describe('coerência de base entre periodicidade anual e trimestral', () => {
 
   it('lucro trimestral uniforme e sem prejuízo acumulado é neutro em CSLL', () => {
     const trimestres = [150_000, 150_000, 150_000, 150_000];
-    const anual = simularReal({ ...base, lucroTrimestral: trimestres, periodicidadeApuracao: 'anual' });
-    const trim = simularReal({ ...base, lucroTrimestral: trimestres, periodicidadeApuracao: 'trimestral' });
+    const anual = simularReal({
+      ...base,
+      lucroTrimestral: trimestres,
+      periodicidadeApuracao: 'anual',
+    });
+    const trim = simularReal({
+      ...base,
+      lucroTrimestral: trimestres,
+      periodicidadeApuracao: 'trimestral',
+    });
     expect(anual.csll).toBeCloseTo(trim.csll, 2);
   });
 
@@ -50,8 +58,16 @@ describe('coerência de base entre periodicidade anual e trimestral', () => {
     const random = rng(20260727);
     for (let i = 0; i < 400; i += 1) {
       const trimestres = Array.from({ length: 4 }, () => Math.round((random() - 0.15) * 1_500_000));
-      const anual = simularReal({ ...base, lucroTrimestral: trimestres, periodicidadeApuracao: 'anual' });
-      const trim = simularReal({ ...base, lucroTrimestral: trimestres, periodicidadeApuracao: 'trimestral' });
+      const anual = simularReal({
+        ...base,
+        lucroTrimestral: trimestres,
+        periodicidadeApuracao: 'anual',
+      });
+      const trim = simularReal({
+        ...base,
+        lucroTrimestral: trimestres,
+        periodicidadeApuracao: 'trimestral',
+      });
       const totalAnual = anual.irpj + anual.csll;
       const totalTrim = trim.irpj + trim.csll;
       // Tolerância de centavos para arredondamento de ponto flutuante.

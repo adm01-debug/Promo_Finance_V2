@@ -85,7 +85,7 @@ describe('projetarReforma — cálculos por ano', () => {
     const r = projetarReforma(params);
     expect(r.picoTributario).toBeDefined();
     expect(r.picoTributario.totalTributos).toBeGreaterThanOrEqual(
-      Math.max(...r.projecoes.map((p) => p.totalTributos)) - 0.01,
+      Math.max(...r.projecoes.map((p) => p.totalTributos)) - 0.01
     );
   });
 

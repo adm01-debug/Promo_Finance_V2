@@ -1,5 +1,12 @@
 import { ThumbsDown, ArrowRight, Loader2 } from 'lucide-react';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+  DialogFooter,
+} from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { MatchSugestaoIA } from '@/hooks/useConciliacaoIA';
@@ -20,9 +27,21 @@ interface RejeicaoDialogProps {
   isPending?: boolean;
 }
 
-export function RejeicaoDialog({ rejeicaoPendente, motivoRejeicao, onMotivoChange, onConfirmar, onCancelar, isPending }: RejeicaoDialogProps) {
+export function RejeicaoDialog({
+  rejeicaoPendente,
+  motivoRejeicao,
+  onMotivoChange,
+  onConfirmar,
+  onCancelar,
+  isPending,
+}: RejeicaoDialogProps) {
   return (
-    <Dialog open={!!rejeicaoPendente} onOpenChange={(o) => { if (!o && !isPending) onCancelar(); }}>
+    <Dialog
+      open={!!rejeicaoPendente}
+      onOpenChange={(o) => {
+        if (!o && !isPending) onCancelar();
+      }}
+    >
       <DialogContent>
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
@@ -33,7 +52,7 @@ export function RejeicaoDialog({ rejeicaoPendente, motivoRejeicao, onMotivoChang
             Ajude a melhorar a IA informando o motivo da rejeição (opcional)
           </DialogDescription>
         </DialogHeader>
-        
+
         {rejeicaoPendente && (
           <div className="space-y-4">
             <div className="p-3 rounded-lg bg-muted/50 border">
@@ -43,8 +62,8 @@ export function RejeicaoDialog({ rejeicaoPendente, motivoRejeicao, onMotivoChang
                 <span className="text-sm text-muted-foreground">
                   {rejeicaoPendente.sugestao.lancamento?.entidade}
                 </span>
-                <ScoreBadgeIA 
-                  score={rejeicaoPendente.sugestao.score} 
+                <ScoreBadgeIA
+                  score={rejeicaoPendente.sugestao.score}
                   confianca={rejeicaoPendente.sugestao.confianca}
                   size="sm"
                 />
@@ -71,7 +90,11 @@ export function RejeicaoDialog({ rejeicaoPendente, motivoRejeicao, onMotivoChang
             Cancelar
           </Button>
           <Button variant="destructive" onClick={onConfirmar} disabled={isPending}>
-            {isPending ? <Loader2 className="h-4 w-4 mr-2 animate-spin" /> : <ThumbsDown className="h-4 w-4 mr-2" />}
+            {isPending ? (
+              <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+            ) : (
+              <ThumbsDown className="h-4 w-4 mr-2" />
+            )}
             Rejeitar
           </Button>
         </DialogFooter>

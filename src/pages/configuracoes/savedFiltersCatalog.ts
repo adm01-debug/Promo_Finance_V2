@@ -139,11 +139,9 @@ export function guessLocalStorageKey(entityType: string): string {
  */
 export function buildAutoEntry(
   entityType: string,
-  opts: { localStorageKey?: string } = {},
+  opts: { localStorageKey?: string } = {}
 ): FilterCatalogEntry {
-  const label = entityType
-    .replace(/[-_]+/g, ' ')
-    .replace(/\b\w/g, (m) => m.toUpperCase());
+  const label = entityType.replace(/[-_]+/g, ' ').replace(/\b\w/g, (m) => m.toUpperCase());
   return {
     entityType,
     label,
@@ -194,22 +192,19 @@ export function discoverLocalStorageEntities(): Map<string, string> {
  */
 export function mergeWithDiscovered(
   remoteEntityTypes: string[],
-  localKeysByEntity: Map<string, string>,
+  localKeysByEntity: Map<string, string>
 ): FilterCatalogEntry[] {
   const known = new Set(SAVED_FILTERS_CATALOG.map((e) => e.entityType));
   const merged: FilterCatalogEntry[] = [...SAVED_FILTERS_CATALOG];
 
-  const candidates = new Set<string>([
-    ...remoteEntityTypes,
-    ...localKeysByEntity.keys(),
-  ]);
+  const candidates = new Set<string>([...remoteEntityTypes, ...localKeysByEntity.keys()]);
 
   for (const entityType of candidates) {
     if (known.has(entityType)) continue;
     merged.push(
       buildAutoEntry(entityType, {
         localStorageKey: localKeysByEntity.get(entityType),
-      }),
+      })
     );
     known.add(entityType);
   }

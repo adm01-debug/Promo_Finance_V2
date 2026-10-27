@@ -7,11 +7,21 @@ import { formatCurrency } from '@/lib/formatters';
 import type { TipoRetencao } from '@/hooks/useRetencoesFonte';
 
 const TIPO_LABELS: Record<TipoRetencao, string> = {
-  irrf: 'IRRF', csrf: 'CSRF', pis_cofins_csll: 'PIS/COFINS/CSLL',
-  inss: 'INSS', iss: 'ISS', cbs: 'CBS', ibs: 'IBS',
+  irrf: 'IRRF',
+  csrf: 'CSRF',
+  pis_cofins_csll: 'PIS/COFINS/CSLL',
+  inss: 'INSS',
+  iss: 'ISS',
+  cbs: 'CBS',
+  ibs: 'IBS',
 };
 
-interface ResumoDados { count: number; total: number; pendente: number; recolhido: number; }
+interface ResumoDados {
+  count: number;
+  total: number;
+  pendente: number;
+  recolhido: number;
+}
 
 interface Props {
   resumoPorTipo: Record<string, ResumoDados>;
@@ -41,12 +51,28 @@ export function ResumoPorTipoGrid({ resumoPorTipo, onGerarDARF }: Props) {
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-3">
-            <div className="flex justify-between"><span className="text-muted-foreground">Total:</span><span className="font-bold">{formatCurrency(dados.total)}</span></div>
-            <div className="flex justify-between text-sm"><span className="text-warning">Pendente:</span><span>{formatCurrency(dados.pendente)}</span></div>
-            <div className="flex justify-between text-sm"><span className="text-success">Recolhido:</span><span>{formatCurrency(dados.recolhido)}</span></div>
+            <div className="flex justify-between">
+              <span className="text-muted-foreground">Total:</span>
+              <span className="font-bold">{formatCurrency(dados.total)}</span>
+            </div>
+            <div className="flex justify-between text-sm">
+              <span className="text-warning">Pendente:</span>
+              <span>{formatCurrency(dados.pendente)}</span>
+            </div>
+            <div className="flex justify-between text-sm">
+              <span className="text-success">Recolhido:</span>
+              <span>{formatCurrency(dados.recolhido)}</span>
+            </div>
             <Separator />
-            <Button size="sm" className="w-full" variant="outline" onClick={() => onGerarDARF(tipo as TipoRetencao)} disabled={dados.pendente === 0}>
-              <FileText className="h-4 w-4 mr-2" />Gerar DARF
+            <Button
+              size="sm"
+              className="w-full"
+              variant="outline"
+              onClick={() => onGerarDARF(tipo as TipoRetencao)}
+              disabled={dados.pendente === 0}
+            >
+              <FileText className="h-4 w-4 mr-2" />
+              Gerar DARF
             </Button>
           </CardContent>
         </Card>

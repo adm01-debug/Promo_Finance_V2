@@ -17,7 +17,6 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { ScrollArea } from '@/components/ui/scroll-area';
 
-
 import { cn } from '@/lib/utils';
 import { formatCurrency } from '@/lib/formatters';
 import { useAlertasPreditivos } from '@/hooks/useAlertasPreditivos';
@@ -84,13 +83,16 @@ export function AlertasPreditivosPanel({
     });
   }, [alertas]);
 
-  const resumo = useMemo(() => ({
-    total: alertas.length,
-    alta: alertas.filter(a => a.prioridade === 'alta').length,
-    media: alertas.filter(a => a.prioridade === 'media').length,
-    baixa: alertas.filter(a => a.prioridade === 'baixa').length,
-    impactoTotal: alertas.reduce((acc, a) => acc + a.impactoEstimado, 0),
-  }), [alertas]);
+  const resumo = useMemo(
+    () => ({
+      total: alertas.length,
+      alta: alertas.filter((a) => a.prioridade === 'alta').length,
+      media: alertas.filter((a) => a.prioridade === 'media').length,
+      baixa: alertas.filter((a) => a.prioridade === 'baixa').length,
+      impactoTotal: alertas.reduce((acc, a) => acc + a.impactoEstimado, 0),
+    }),
+    [alertas]
+  );
 
   return (
     <Card className="border-none bg-background/20 backdrop-blur-3xl shadow-xl ring-1 ring-white/10 rounded-[2.5rem] overflow-hidden">
@@ -103,14 +105,11 @@ export function AlertasPreditivosPanel({
               </div>
               Matriz de Riscos Preditivos
             </CardTitle>
-            <CardDescription className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground/50">Previsões baseadas em padrões neurais</CardDescription>
+            <CardDescription className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground/50">
+              Previsões baseadas em padrões neurais
+            </CardDescription>
           </div>
-          <Button 
-            variant="outline" 
-            size="sm" 
-            onClick={handleReanalisar}
-            disabled={isAnalyzing}
-          >
+          <Button variant="outline" size="sm" onClick={handleReanalisar} disabled={isAnalyzing}>
             {isAnalyzing ? (
               <Loader2 className="h-4 w-4 animate-spin" />
             ) : (
@@ -135,7 +134,10 @@ export function AlertasPreditivosPanel({
               </Badge>
             </div>
             <div className="text-sm text-muted-foreground">
-              Impacto: <span className="font-medium text-foreground">{formatCurrency(resumo.impactoTotal)}</span>
+              Impacto:{' '}
+              <span className="font-medium text-foreground">
+                {formatCurrency(resumo.impactoTotal)}
+              </span>
             </div>
           </div>
         )}
@@ -154,17 +156,15 @@ export function AlertasPreditivosPanel({
           <div className="text-center py-8">
             <Zap className="h-12 w-12 text-success mx-auto mb-3" />
             <p className="font-medium">Tudo em ordem!</p>
-            <p className="text-sm text-muted-foreground">
-              Nenhum alerta preditivo no momento
-            </p>
+            <p className="text-sm text-muted-foreground">Nenhum alerta preditivo no momento</p>
           </div>
         ) : (
-          <ScrollArea className={cn("pr-2", defaultExpanded ? "h-[500px]" : "h-[300px]")}>
+          <ScrollArea className={cn('pr-2', defaultExpanded ? 'h-[500px]' : 'h-[300px]')}>
             <div className="space-y-3">
               <AnimatePresence>
                 {alertasOrdenados.map((alerta, index) => {
                   const Icon = ALERTA_ICONS[alerta.tipo];
-                  
+
                   return (
                     <motion.div
                       key={alerta.id}
@@ -173,35 +173,37 @@ export function AlertasPreditivosPanel({
                       exit={{ opacity: 0, x: 20 }}
                       transition={{ delay: index * 0.1 }}
                     >
-                      <div className={cn(
-                        "p-4 rounded-lg border transition-all hover:shadow-md",
-                        ALERTA_COLORS[alerta.prioridade]
-                      )}>
+                      <div
+                        className={cn(
+                          'p-4 rounded-lg border transition-all hover:shadow-md',
+                          ALERTA_COLORS[alerta.prioridade]
+                        )}
+                      >
                         <div className="flex items-start gap-3">
-                          <div className={cn(
-                            "h-10 w-10 rounded-lg flex items-center justify-center flex-shrink-0",
-                            alerta.prioridade === 'alta' && "bg-destructive/20 text-destructive",
-                            alerta.prioridade === 'media' && "bg-warning/20 text-warning",
-                            alerta.prioridade === 'baixa' && "bg-accent/20 text-accent-foreground",
-                          )}>
+                          <div
+                            className={cn(
+                              'h-10 w-10 rounded-lg flex items-center justify-center flex-shrink-0',
+                              alerta.prioridade === 'alta' && 'bg-destructive/20 text-destructive',
+                              alerta.prioridade === 'media' && 'bg-warning/20 text-warning',
+                              alerta.prioridade === 'baixa' && 'bg-accent/20 text-accent-foreground'
+                            )}
+                          >
                             <Icon className="h-5 w-5" />
                           </div>
-                          
+
                           <div className="flex-1 min-w-0">
                             <div className="flex items-center justify-between gap-2">
                               <h4 className="font-medium text-sm">{alerta.titulo}</h4>
-                              <Badge 
+                              <Badge
                                 variant={alerta.prioridade === 'alta' ? 'destructive' : 'outline'}
                                 className="text-xs"
                               >
                                 {alerta.probabilidade}% prob.
                               </Badge>
                             </div>
-                            
-                            <p className="text-sm text-muted-foreground mt-1">
-                              {alerta.descricao}
-                            </p>
-                            
+
+                            <p className="text-sm text-muted-foreground mt-1">{alerta.descricao}</p>
+
                             <div className="flex items-center gap-4 mt-2 text-xs text-muted-foreground">
                               <span className="flex items-center gap-1">
                                 <Clock className="h-3 w-3" />
@@ -215,7 +217,7 @@ export function AlertasPreditivosPanel({
                             {/* Sugestões */}
                             <div className="mt-3 space-y-1">
                               {alerta.sugestoes.slice(0, 2).map((sugestao, idx) => (
-                                <div 
+                                <div
                                   key={idx}
                                   className="flex items-center gap-2 text-xs text-muted-foreground"
                                 >

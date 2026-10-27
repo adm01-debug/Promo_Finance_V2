@@ -1,4 +1,3 @@
-
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useSimulacaoRegimes } from './useSimulacaoRegimes';
@@ -6,10 +5,10 @@ import { useOportunidadesElisao } from './useOportunidadesElisao';
 import useAlertasTributarios from './useAlertasTributarios';
 
 export interface DashboardKPIs {
-  cargaEfetiva: number;        // % sobre receita
-  totalEconomizado: number;    // R$ economia elisão
+  cargaEfetiva: number; // % sobre receita
+  totalEconomizado: number; // R$ economia elisão
   proximoVencimento: { data: string; descricao: string; valor: number } | null;
-  saudeFiscal: number;         // 0-100
+  saudeFiscal: number; // 0-100
 }
 
 export interface SerieMensal {
@@ -24,8 +23,14 @@ export interface SerieMensal {
 
 export function useDashboardTributario(empresaId?: string, periodoMeses: 3 | 6 | 12 = 12) {
   const { resultado: simulacao, parametros } = useSimulacaoRegimes({ empresaId });
-  const { relatorio: relatorioElisao, isLoading: loadingElisao } = useOportunidadesElisao({ empresaId });
-  const { alertas = [], proximosVencimentos = [], isLoading: loadingAlertas } = useAlertasTributarios(empresaId);
+  const { relatorio: relatorioElisao, isLoading: loadingElisao } = useOportunidadesElisao({
+    empresaId,
+  });
+  const {
+    alertas = [],
+    proximosVencimentos = [],
+    isLoading: loadingAlertas,
+  } = useAlertasTributarios(empresaId);
 
   // Série temporal a partir da view otimizada
   const { data: serie = [], isLoading: loadingSerie } = useQuery({
@@ -49,9 +54,7 @@ export function useDashboardTributario(empresaId?: string, periodoMeses: 3 | 6 |
   // KPIs derivados
   const faturamentoAnual = parametros?.faturamentoAnual ?? 0;
   const tributosTotais = serie.reduce((acc, s) => acc + Number(s.total_tributos || 0), 0);
-  const cargaEfetiva = faturamentoAnual > 0
-    ? (tributosTotais / faturamentoAnual) * 100
-    : 0;
+  const cargaEfetiva = faturamentoAnual > 0 ? (tributosTotais / faturamentoAnual) * 100 : 0;
 
   const totalEconomizado = relatorioElisao?.economia_total_estimada ?? 0;
 

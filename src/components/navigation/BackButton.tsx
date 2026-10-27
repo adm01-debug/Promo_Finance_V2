@@ -1,9 +1,11 @@
 import { forwardRef } from 'react';
-import { useNavigate, useLocation } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { ArrowLeft } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
+import { useSmartBack } from '@/hooks/useSmartBack';
+import { navigateWithUnsavedGuard } from '@/lib/unsaved-guard';
 import { cn } from '@/lib/utils';
 
 interface BackButtonProps {
@@ -21,40 +23,14 @@ interface BackButtonProps {
   variant?: 'ghost' | 'outline' | 'default';
 }
 
-// Map child routes to their parent for smart fallback
-const parentRouteMap: Record<string, string> = {
-  '/bi': '/',
-  '/fluxo-caixa': '/',
-  '/contas-pagar': '/',
-  '/contas-receber': '/',
-  '/cobrancas': '/',
-  '/boletos': '/',
-  '/conciliacao': '/',
-  '/notas-fiscais': '/',
-  '/relatorios': '/',
-  '/demonstrativos': '/',
-  '/clientes': '/',
-  '/fornecedores': '/',
-  '/empresas': '/',
-  '/centros-custo': '/',
-  '/contas-bancarias': '/',
-  '/pagamentos-recorrentes': '/',
-  '/reforma-tributaria': '/',
-  '/expert': '/',
-  '/configuracoes': '/',
-  '/seguranca': '/',
-  '/alertas': '/',
-  '/aprovacoes': '/',
-  '/usuarios': '/configuracoes',
-  '/pedidos': '/',
-  '/gestor-compras': '/',
-  '/catalogo': '/',
-};
-
 export const BackButton = forwardRef<HTMLButtonElement, BackButtonProps>(
-  ({ fallbackPath, label, showLabel = false, className, size = 'default', variant = 'ghost' }, ref) => {
-    const navigate = useNavigate();
+  (
+    { fallbackPath, label, showLabel = false, className, size = 'default', variant = 'ghost' },
+    ref
+  ) => {
     const location = useLocation();
+    const { goBack, backLabel } = useSmartBack('button');
+    const navigate = useNavigate();
 
     // Don't render on home page
     if (location.pathname === '/' || location.pathname === '/dashboard') {
@@ -63,22 +39,14 @@ export const BackButton = forwardRef<HTMLButtonElement, BackButtonProps>(
 
     const handleBack = () => {
       if (fallbackPath) {
-        navigate(fallbackPath);
+        // Destino explícito também respeita a guarda de alterações não salvas.
+        navigateWithUnsavedGuard(() => navigate(fallbackPath));
         return;
       }
-
-      // Try to use browser history first
-      if (window.history.length > 2) {
-        navigate(-1);
-        return;
-      }
-
-      // Fallback to parent route
-      const parentRoute = parentRouteMap[location.pathname] || '/';
-      navigate(parentRoute);
+      goBack();
     };
 
-    const tooltipLabel = label || 'Voltar';
+    const tooltipLabel = label || `Voltar para ${backLabel}`;
 
     const sizeClasses = {
       sm: 'h-7 w-7',
@@ -112,19 +80,18 @@ export const BackButton = forwardRef<HTMLButtonElement, BackButtonProps>(
               )}
               aria-label={tooltipLabel}
             >
-              <ArrowLeft className={cn(
-                iconSizes[size],
-                'transition-transform group-hover:-translate-x-0.5'
-              )} />
-              {showLabel && (
-                <span className="ml-1.5 text-sm">{tooltipLabel}</span>
-              )}
+              <ArrowLeft
+                className={cn(iconSizes[size], 'transition-transform group-hover:-translate-x-0.5')}
+              />
+              {showLabel && <span className="ml-1.5 text-sm">{tooltipLabel}</span>}
             </Button>
           </motion.div>
         </TooltipTrigger>
         {!showLabel && (
           <TooltipContent side="bottom">
-            <p>{tooltipLabel} <kbd className="ml-1 text-[10px] opacity-60">Alt+←</kbd></p>
+            <p>
+              {tooltipLabel} <kbd className="ml-1 text-[10px] opacity-60">Alt+←</kbd>
+            </p>
           </TooltipContent>
         )}
       </Tooltip>

@@ -1,6 +1,6 @@
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { RegrasConciliacaoPanel } from "@/components/conciliacao/RegrasConciliacaoPanel";
-import { Zap } from "lucide-react";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { RegrasConciliacaoPanel } from '@/components/conciliacao/RegrasConciliacaoPanel';
+import { Zap } from 'lucide-react';
 
 interface RegrasConciliacaoDialogProps {
   open: boolean;
@@ -17,12 +17,17 @@ export function RegrasConciliacaoDialog({ open, onOpenChange }: RegrasConciliaca
               <Zap className="h-6 w-6 text-warning" />
             </div>
             <div>
-              <DialogTitle className="text-2xl font-black">Regras de Conciliação Inteligente</DialogTitle>
-              <p className="text-sm text-muted-foreground mt-1">Configure o mapeamento automático de descrições bancárias para seus registros financeiros.</p>
+              <DialogTitle className="text-2xl font-black">
+                Regras de Conciliação Inteligente
+              </DialogTitle>
+              <p className="text-sm text-muted-foreground mt-1">
+                Configure o mapeamento automático de descrições bancárias para seus registros
+                financeiros.
+              </p>
             </div>
           </div>
         </DialogHeader>
-        
+
         <div className="flex-1 overflow-y-auto p-8 pt-0">
           <RegrasConciliacaoPanel />
         </div>

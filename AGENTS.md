@@ -48,7 +48,9 @@ git worktree prune
 
 ## PR Flow
 
-branch → commit (--no-verify) → push → PR via GitHub → CI → merge squash → delete branch.
+branch → commit → push → PR via GitHub → CI → merge squash → delete branch.
+Os hooks de husky (lint-staged + type-check/testes afetados) rodam em todo commit/push.
+`--no-verify` só em emergência documentada no PR, nunca no fluxo normal.
 Workers/editores NUNCA mexem em git/branches — só o orquestrador.
 
 ## Regras de trabalho

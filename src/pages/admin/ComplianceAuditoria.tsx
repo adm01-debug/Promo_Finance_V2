@@ -1,23 +1,31 @@
-import { useEffect } from "react";
-import { useSearchParams } from "react-router-dom";
-import { usePersistedState } from "@/lib/persisted-ui-state";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { ShieldCheck, Banknote, Receipt, Activity, ClipboardCheck, Package, Hash } from "lucide-react";
-import { MainLayout } from "@/components/layout/MainLayout";
-import { ComplianceKpis } from "@/components/compliance/ComplianceKpis";
-import { TrilhaFinanceiraTab } from "@/components/compliance/TrilhaFinanceiraTab";
-import { TrilhaTributariaTab } from "@/components/compliance/TrilhaTributariaTab";
-import { TrilhaSistemaTab } from "@/components/compliance/TrilhaSistemaTab";
-import { ConformidadeFiscalTab } from "@/components/compliance/ConformidadeFiscalTab";
-import { EvidenciasTab } from "@/components/compliance/EvidenciasTab";
-import { VerificarIntegridadeTab } from "@/components/compliance/VerificarIntegridadeTab";
-import { useRealtimeAuditToasts } from "@/hooks/useRealtimeAuditToasts";
+import { useEffect } from 'react';
+import { useSearchParams } from 'react-router-dom';
+import { usePersistedState } from '@/lib/persisted-ui-state';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import {
+  ShieldCheck,
+  Banknote,
+  Receipt,
+  Activity,
+  ClipboardCheck,
+  Package,
+  Hash,
+} from 'lucide-react';
+import { MainLayout } from '@/components/layout/MainLayout';
+import { ComplianceKpis } from '@/components/compliance/ComplianceKpis';
+import { TrilhaFinanceiraTab } from '@/components/compliance/TrilhaFinanceiraTab';
+import { TrilhaTributariaTab } from '@/components/compliance/TrilhaTributariaTab';
+import { TrilhaSistemaTab } from '@/components/compliance/TrilhaSistemaTab';
+import { ConformidadeFiscalTab } from '@/components/compliance/ConformidadeFiscalTab';
+import { EvidenciasTab } from '@/components/compliance/EvidenciasTab';
+import { VerificarIntegridadeTab } from '@/components/compliance/VerificarIntegridadeTab';
+import { useRealtimeAuditToasts } from '@/hooks/useRealtimeAuditToasts';
 
 export default function ComplianceAuditoria() {
   const [searchParams] = useSearchParams();
-  const [tab, setTab] = usePersistedState<string>("compliance-auditoria:tab", "financeira");
+  const [tab, setTab] = usePersistedState<string>('compliance-auditoria:tab', 'financeira');
   // URL ?tab=… vence sobre o último valor persistido (ex.: clique em toast realtime).
-  const urlTab = searchParams.get("tab");
+  const urlTab = searchParams.get('tab');
   useEffect(() => {
     if (urlTab && urlTab !== tab) setTab(urlTab);
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -25,9 +33,6 @@ export default function ComplianceAuditoria() {
 
   // Stream realtime audit toasts with deep-link to the right trilha
   useRealtimeAuditToasts();
-
-
-
 
   return (
     <MainLayout>
@@ -39,7 +44,8 @@ export default function ComplianceAuditoria() {
           <div>
             <h1 className="text-2xl font-bold font-display">Compliance & Auditoria</h1>
             <p className="text-sm text-muted-foreground">
-              Trilhas de auditoria financeira, tributária e de sistema · pacotes de evidências exportáveis
+              Trilhas de auditoria financeira, tributária e de sistema · pacotes de evidências
+              exportáveis
             </p>
           </div>
         </div>
@@ -74,12 +80,24 @@ export default function ComplianceAuditoria() {
             </TabsTrigger>
           </TabsList>
 
-          <TabsContent value="financeira"><TrilhaFinanceiraTab /></TabsContent>
-          <TabsContent value="tributaria"><TrilhaTributariaTab /></TabsContent>
-          <TabsContent value="sistema"><TrilhaSistemaTab /></TabsContent>
-          <TabsContent value="conformidade"><ConformidadeFiscalTab /></TabsContent>
-          <TabsContent value="evidencias"><EvidenciasTab /></TabsContent>
-          <TabsContent value="verificar"><VerificarIntegridadeTab /></TabsContent>
+          <TabsContent value="financeira">
+            <TrilhaFinanceiraTab />
+          </TabsContent>
+          <TabsContent value="tributaria">
+            <TrilhaTributariaTab />
+          </TabsContent>
+          <TabsContent value="sistema">
+            <TrilhaSistemaTab />
+          </TabsContent>
+          <TabsContent value="conformidade">
+            <ConformidadeFiscalTab />
+          </TabsContent>
+          <TabsContent value="evidencias">
+            <EvidenciasTab />
+          </TabsContent>
+          <TabsContent value="verificar">
+            <VerificarIntegridadeTab />
+          </TabsContent>
         </Tabs>
       </div>
     </MainLayout>

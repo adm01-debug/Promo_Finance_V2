@@ -9,10 +9,19 @@ const balanceteRowSchema = z.object({
   conta_id: z.string(),
   codigo: z.string(),
   nome: z.string(),
-  tipo: z.string().nullable().transform((v) => v ?? ''),
-  natureza: z.string().nullable().transform((v) => v ?? ''),
+  tipo: z
+    .string()
+    .nullable()
+    .transform((v) => v ?? ''),
+  natureza: z
+    .string()
+    .nullable()
+    .transform((v) => v ?? ''),
   nivel: z.coerce.number().int().min(1).catch(1),
-  aceita_lancamento: z.boolean().nullable().transform((v) => v ?? true),
+  aceita_lancamento: z
+    .boolean()
+    .nullable()
+    .transform((v) => v ?? true),
   saldo_anterior: numero,
   debitos: numero,
   creditos: numero,
@@ -66,7 +75,6 @@ export function useBalancete({ empresaId, dataInicio, dataFim, nivelMax }: UseBa
         creditos: r.creditos ?? 0,
         saldo_final: r.saldo_final ?? 0,
       }));
-
     },
   });
 }

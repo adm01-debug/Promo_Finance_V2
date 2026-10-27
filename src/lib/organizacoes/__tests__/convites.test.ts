@@ -17,7 +17,9 @@ import {
 
 const AGORA = new Date('2026-07-27T12:00:00.000Z');
 
-const convite = (over: Partial<{ email_convidado: string; expira_em: string; utilizado_em: string | null }> = {}) => ({
+const convite = (
+  over: Partial<{ email_convidado: string; expira_em: string; utilizado_em: string | null }> = {}
+) => ({
   email_convidado: 'pessoa@empresa.com',
   expira_em: '2026-08-01T12:00:00.000Z',
   utilizado_em: null,
@@ -63,14 +65,16 @@ describe('convites: normalização e validação de e-mail', () => {
     'rejeita %s',
     (email) => {
       expect(emailValido(email)).toBe(false);
-    },
+    }
   );
 });
 
 describe('convites: status e aceite', () => {
   it('classifica pendente, utilizado e expirado', () => {
     expect(statusConvite(convite(), AGORA)).toBe('PENDENTE');
-    expect(statusConvite(convite({ utilizado_em: '2026-07-01T00:00:00Z' }), AGORA)).toBe('UTILIZADO');
+    expect(statusConvite(convite({ utilizado_em: '2026-07-01T00:00:00Z' }), AGORA)).toBe(
+      'UTILIZADO'
+    );
     expect(statusConvite(convite({ expira_em: '2026-07-01T00:00:00Z' }), AGORA)).toBe('EXPIRADO');
   });
 

@@ -1,13 +1,5 @@
 import { useEffect, useState } from 'react';
-import {
-  AlertTriangle,
-  ArrowRightLeft,
-  CheckCircle2,
-  Layers,
-  Play,
-  X,
-  Zap,
-} from 'lucide-react';
+import { AlertTriangle, ArrowRightLeft, CheckCircle2, Layers, Play, X, Zap } from 'lucide-react';
 import {
   Dialog,
   DialogContent,
@@ -79,7 +71,7 @@ export function SimulacaoDialog({
     setDryRunBefore(null);
     mutation.mutate(
       { simForm, isLote, onBefore: setDryRunBefore },
-      { onSuccess: (data) => setSimResult(data) },
+      { onSuccess: (data) => setSimResult(data) }
     );
   };
 
@@ -114,9 +106,7 @@ export function SimulacaoDialog({
               <Label>Tipo de evento</Label>
               <Select
                 value={simForm.tipo_evento}
-                onValueChange={(v) =>
-                  setSimForm({ ...simForm, tipo_evento: v as TipoEvento })
-                }
+                onValueChange={(v) => setSimForm({ ...simForm, tipo_evento: v as TipoEvento })}
               >
                 <SelectTrigger>
                   <SelectValue />
@@ -135,9 +125,7 @@ export function SimulacaoDialog({
               <Input
                 type="number"
                 value={simForm.valor}
-                onChange={(e) =>
-                  setSimForm({ ...simForm, valor: Number(e.target.value) })
-                }
+                onChange={(e) => setSimForm({ ...simForm, valor: Number(e.target.value) })}
               />
             </div>
           </div>
@@ -146,9 +134,7 @@ export function SimulacaoDialog({
               <Label>Descrição</Label>
               <Input
                 value={simForm.descricao}
-                onChange={(e) =>
-                  setSimForm({ ...simForm, descricao: e.target.value })
-                }
+                onChange={(e) => setSimForm({ ...simForm, descricao: e.target.value })}
               />
             </div>
             <div className="space-y-2">
@@ -198,11 +184,7 @@ export function SimulacaoDialog({
           )}
 
           {simResult && simResult.type === 'single' && (
-            <SingleResultView
-              contas={contas}
-              before={dryRunBefore}
-              after={simResult.after}
-            />
+            <SingleResultView contas={contas} before={dryRunBefore} after={simResult.after} />
           )}
 
           {simResult && simResult.type === 'lote' && (
@@ -219,11 +201,7 @@ export function SimulacaoDialog({
           >
             Fechar
           </Button>
-          <Button
-            onClick={handleRun}
-            disabled={mutation.isPending}
-            className="gap-2"
-          >
+          <Button onClick={handleRun} disabled={mutation.isPending} className="gap-2">
             <Play className="h-4 w-4" />
             Executar teste
           </Button>
@@ -265,9 +243,7 @@ function SingleResultView({
             ) : (
               <div className="text-[10px] space-y-2">
                 <div className="flex justify-between items-center border-b border-muted pb-1 mb-1">
-                  <span className="font-bold text-muted-foreground">
-                    Lançamento Padrão
-                  </span>
+                  <span className="font-bold text-muted-foreground">Lançamento Padrão</span>
                   <Badge variant="outline" className="text-[8px] h-3 px-1">
                     ATIVO
                   </Badge>
@@ -311,9 +287,7 @@ function SingleResultView({
                   >
                     NOVO FLUXO
                   </Badge>
-                  <span className="font-bold text-emerald-700">
-                    R$ {after.valor?.toFixed(2)}
-                  </span>
+                  <span className="font-bold text-emerald-700">R$ {after.valor?.toFixed(2)}</span>
                 </div>
                 <div className="grid grid-cols-5 gap-1 font-mono">
                   <span className="col-span-1 text-emerald-600/70">D:</span>
@@ -346,13 +320,7 @@ function SingleResultView({
   );
 }
 
-function LoteResultView({
-  contas,
-  results,
-}: {
-  contas: PlanoConta[];
-  results: DryRunEntry[];
-}) {
+function LoteResultView({ contas, results }: { contas: PlanoConta[]; results: DryRunEntry[] }) {
   const sucessos = results.filter((r) => r.status === 'simulado').length;
   const semRegra = results.filter((r) => r.status === 'sem_regra').length;
   const falhas = results.filter((r) => !!r.error).length;
@@ -370,21 +338,15 @@ function LoteResultView({
       <div className="grid grid-cols-3 gap-3">
         <div className="bg-emerald-500/10 border border-emerald-500/20 p-3 rounded-lg text-center">
           <div className="text-lg font-bold text-emerald-700">{sucessos}</div>
-          <div className="text-[10px] uppercase text-emerald-600 font-bold">
-            Sucesso
-          </div>
+          <div className="text-[10px] uppercase text-emerald-600 font-bold">Sucesso</div>
         </div>
         <div className="bg-amber-500/10 border border-amber-500/20 p-3 rounded-lg text-center">
           <div className="text-lg font-bold text-amber-700">{semRegra}</div>
-          <div className="text-[10px] uppercase text-amber-600 font-bold">
-            Sem Regra
-          </div>
+          <div className="text-[10px] uppercase text-amber-600 font-bold">Sem Regra</div>
         </div>
         <div className="bg-destructive/10 border border-destructive/20 p-3 rounded-lg text-center">
           <div className="text-lg font-bold text-destructive">{falhas}</div>
-          <div className="text-[10px] uppercase text-destructive font-bold">
-            Falhas
-          </div>
+          <div className="text-[10px] uppercase text-destructive font-bold">Falhas</div>
         </div>
       </div>
 

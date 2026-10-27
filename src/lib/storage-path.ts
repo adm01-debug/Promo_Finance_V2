@@ -1,10 +1,10 @@
 /**
  * Caminho de um objeto no Supabase Storage a partir da URL persistida.
  *
- * `anexos_financeiros` não tem coluna `storage_path`: o delete do `AnexoList`
- * lia `anexo.storage_path`, campo inexistente, e acabava chamando
- * `remove([''])` — todo anexo apagado pela tela deixava o arquivo no bucket.
- * A URL gravada na linha é o único ponteiro que sobra para o objeto.
+ * Linhas antigas de `anexos_financeiros` não têm `storage_path` (a coluna
+ * foi criada depois): para elas, a URL gravada na linha é o único ponteiro
+ * para o objeto. Anexos novos guardam também o endereço interno
+ * `/<bucket>/<caminho>`, que este parser resolve da mesma forma.
  */
 export const BUCKET_FINANCEIRO = 'financeiro';
 

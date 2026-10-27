@@ -21,11 +21,7 @@ import {
 
 const mockedGetEventos = vi.mocked(getEventos);
 
-const mkEvento = (
-  tipo: string,
-  offsetMs = 0,
-  extras: Record<string, unknown> = {},
-): any => ({
+const mkEvento = (tipo: string, offsetMs = 0, extras: Record<string, unknown> = {}): any => ({
   id: `E-${Math.random()}`,
   timestamp: new Date(Date.now() - offsetMs),
   tipo,

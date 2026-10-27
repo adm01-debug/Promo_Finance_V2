@@ -8,14 +8,29 @@ import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
 import { Alert } from '@/components/ui/alert';
 import {
-  Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger,
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
 } from '@/components/ui/dialog';
 import {
-  Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
 } from '@/components/ui/select';
 import { Switch } from '@/components/ui/switch';
 import {
-  Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
 } from '@/components/ui/table';
 import { EmptyState } from '@/components/ui/empty-state';
 import { KeyRound, Loader2, Plus, ShieldCheck, Upload } from 'lucide-react';
@@ -27,6 +42,8 @@ import {
 import { useUserEmpresas } from '@/hooks/useUserEmpresas';
 import { getAllStates } from '@/lib/brazilian-validators/estados';
 import { formatCNPJ } from '@/lib/brazilian-validators/cnpj';
+import { validarMagicBytes } from '@/lib/magic-bytes';
+import { toast } from 'sonner';
 
 const DIAS_ALERTA_VENCIMENTO = 30;
 
@@ -38,7 +55,8 @@ function statusVencimento(validoAte: string): {
   const alvo = new Date(validoAte).getTime();
   const dias = Math.floor((alvo - Date.now()) / (1000 * 60 * 60 * 24));
   if (dias < 0) return { variant: 'destructive', label: 'Vencido', dias };
-  if (dias <= DIAS_ALERTA_VENCIMENTO) return { variant: 'destructive', label: `Vence em ${dias}d`, dias };
+  if (dias <= DIAS_ALERTA_VENCIMENTO)
+    return { variant: 'destructive', label: `Vence em ${dias}d`, dias };
   if (dias <= 60) return { variant: 'outline', label: `${dias}d restantes`, dias };
   return { variant: 'default', label: 'Vigente', dias };
 }
@@ -58,12 +76,15 @@ export function CertificadosDigitaisTab() {
 
   const empresas = useMemo(
     () => vinculos.map((v) => ({ id: v.empresa_id, label: v.empresa.razao_social })),
-    [vinculos],
+    [vinculos]
   );
 
   const vencendo = useMemo(
-    () => certificados.filter((c) => c.ativo && statusVencimento(c.valido_ate).dias <= DIAS_ALERTA_VENCIMENTO),
-    [certificados],
+    () =>
+      certificados.filter(
+        (c) => c.ativo && statusVencimento(c.valido_ate).dias <= DIAS_ALERTA_VENCIMENTO
+      ),
+    [certificados]
   );
 
   const resetForm = () => {
@@ -76,11 +97,18 @@ export function CertificadosDigitaisTab() {
 
   const handleSubmit = async () => {
     if (!empresaId || !file || !password) return;
+    const erroConteudo = await validarMagicBytes(file, ['.pfx', '.p12']);
+    if (erroConteudo) {
+      toast.error(erroConteudo);
+      return;
+    }
     try {
       await upload.mutateAsync({ empresa_id: empresaId, file, password, ambiente, uf });
       setDialogOpen(false);
       resetForm();
-    } catch { /* toast já disparado no hook */ }
+    } catch {
+      /* toast já disparado no hook */
+    }
   };
 
   return (
@@ -93,12 +121,21 @@ export function CertificadosDigitaisTab() {
               Certificados Digitais A1
             </CardTitle>
             <CardDescription>
-              Necessários para comunicação com a SEFAZ (descoberta automática de NF-e emitidas contra seus CNPJs).
+              Necessários para comunicação com a SEFAZ (descoberta automática de NF-e emitidas
+              contra seus CNPJs).
             </CardDescription>
           </div>
-          <Dialog open={dialogOpen} onOpenChange={(o) => { setDialogOpen(o); if (!o) resetForm(); }}>
+          <Dialog
+            open={dialogOpen}
+            onOpenChange={(o) => {
+              setDialogOpen(o);
+              if (!o) resetForm();
+            }}
+          >
             <DialogTrigger asChild>
-              <Button className="gap-2"><Plus className="h-4 w-4" /> Novo certificado</Button>
+              <Button className="gap-2">
+                <Plus className="h-4 w-4" /> Novo certificado
+              </Button>
             </DialogTrigger>
             <DialogContent className="sm:max-w-lg">
               <DialogHeader>
@@ -113,10 +150,14 @@ export function CertificadosDigitaisTab() {
                 <div className="space-y-1.5">
                   <Label>Empresa</Label>
                   <Select value={empresaId} onValueChange={setEmpresaId} disabled={loadingEmpresas}>
-                    <SelectTrigger><SelectValue placeholder="Selecionar empresa" /></SelectTrigger>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Selecionar empresa" />
+                    </SelectTrigger>
                     <SelectContent>
                       {empresas.map((e) => (
-                        <SelectItem key={e.id} value={e.id}>{e.label}</SelectItem>
+                        <SelectItem key={e.id} value={e.id}>
+                          {e.label}
+                        </SelectItem>
                       ))}
                     </SelectContent>
                   </Select>
@@ -126,18 +167,27 @@ export function CertificadosDigitaisTab() {
                   <div className="space-y-1.5">
                     <Label>UF</Label>
                     <Select value={uf} onValueChange={setUf}>
-                      <SelectTrigger><SelectValue /></SelectTrigger>
+                      <SelectTrigger>
+                        <SelectValue />
+                      </SelectTrigger>
                       <SelectContent className="max-h-72">
                         {getAllStates().map((s) => (
-                          <SelectItem key={s.abbr} value={s.abbr}>{s.abbr} — {s.name}</SelectItem>
+                          <SelectItem key={s.abbr} value={s.abbr}>
+                            {s.abbr} — {s.name}
+                          </SelectItem>
                         ))}
                       </SelectContent>
                     </Select>
                   </div>
                   <div className="space-y-1.5">
                     <Label>Ambiente SEFAZ</Label>
-                    <Select value={ambiente} onValueChange={(v) => setAmbiente(v as typeof ambiente)}>
-                      <SelectTrigger><SelectValue /></SelectTrigger>
+                    <Select
+                      value={ambiente}
+                      onValueChange={(v) => setAmbiente(v as typeof ambiente)}
+                    >
+                      <SelectTrigger>
+                        <SelectValue />
+                      </SelectTrigger>
                       <SelectContent>
                         <SelectItem value="homologacao">Homologação (testes)</SelectItem>
                         <SelectItem value="producao">Produção</SelectItem>
@@ -168,7 +218,11 @@ export function CertificadosDigitaisTab() {
               </div>
 
               <DialogFooter>
-                <Button variant="outline" onClick={() => setDialogOpen(false)} disabled={upload.isPending}>
+                <Button
+                  variant="outline"
+                  onClick={() => setDialogOpen(false)}
+                  disabled={upload.isPending}
+                >
                   Cancelar
                 </Button>
                 <Button
@@ -176,9 +230,15 @@ export function CertificadosDigitaisTab() {
                   disabled={!empresaId || !file || !password || upload.isPending}
                   className="gap-2"
                 >
-                  {upload.isPending
-                    ? <><Loader2 className="h-4 w-4 animate-spin" /> Validando…</>
-                    : <><Upload className="h-4 w-4" /> Enviar</>}
+                  {upload.isPending ? (
+                    <>
+                      <Loader2 className="h-4 w-4 animate-spin" /> Validando…
+                    </>
+                  ) : (
+                    <>
+                      <Upload className="h-4 w-4" /> Enviar
+                    </>
+                  )}
                 </Button>
               </DialogFooter>
             </DialogContent>
@@ -188,12 +248,11 @@ export function CertificadosDigitaisTab() {
         <CardContent className="space-y-4">
           {vencendo.length > 0 && (
             <Alert variant="warning" title="Atenção: certificados vencendo">
-              {vencendo.length} certificado(s) vencem em até {DIAS_ALERTA_VENCIMENTO} dias.
-              Renove com o AR ou autoridade certificadora antes do vencimento para evitar
-              interrupção na descoberta automática de NF-e.
+              {vencendo.length} certificado(s) vencem em até {DIAS_ALERTA_VENCIMENTO} dias. Renove
+              com o AR ou autoridade certificadora antes do vencimento para evitar interrupção na
+              descoberta automática de NF-e.
             </Alert>
           )}
-
 
           {loadingCerts ? (
             <div className="flex items-center justify-center py-10">

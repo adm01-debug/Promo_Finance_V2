@@ -16,53 +16,90 @@ export function useBlingFinanceiroMutations() {
 
   const criarContaReceber = useMutation({
     mutationFn: (data: Record<string, unknown>) => blingAction('criar_conta_receber', { data }),
-    onSuccess: () => { toast.success('Conta a receber criada no Bling'); queryClient.invalidateQueries({ queryKey: ['bling-financeiro'] }); },
+    onSuccess: () => {
+      toast.success('Conta a receber criada no Bling');
+      queryClient.invalidateQueries({ queryKey: ['bling-financeiro'] });
+    },
     onError: (err: Error) => toast.error(`Erro: ${err.message}`),
   });
 
   const criarContaPagar = useMutation({
     mutationFn: (data: Record<string, unknown>) => blingAction('criar_conta_pagar', { data }),
-    onSuccess: () => { toast.success('Conta a pagar criada no Bling'); queryClient.invalidateQueries({ queryKey: ['bling-financeiro'] }); },
+    onSuccess: () => {
+      toast.success('Conta a pagar criada no Bling');
+      queryClient.invalidateQueries({ queryKey: ['bling-financeiro'] });
+    },
     onError: (err: Error) => toast.error(`Erro: ${err.message}`),
   });
 
   const darBaixaReceber = useMutation({
-    mutationFn: ({ id, data }: { id: string; data: Record<string, unknown> }) => blingAction('baixa_conta_receber', { id, data }),
-    onSuccess: () => { toast.success('Baixa registrada no Bling'); queryClient.invalidateQueries({ queryKey: ['bling-financeiro'] }); },
+    mutationFn: ({ id, data }: { id: string; data: Record<string, unknown> }) =>
+      blingAction('baixa_conta_receber', { id, data }),
+    onSuccess: () => {
+      toast.success('Baixa registrada no Bling');
+      queryClient.invalidateQueries({ queryKey: ['bling-financeiro'] });
+    },
     onError: (err: Error) => toast.error(`Erro: ${err.message}`),
   });
 
   const darBaixaPagar = useMutation({
-    mutationFn: ({ id, data }: { id: string; data: Record<string, unknown> }) => blingAction('baixa_conta_pagar', { id, data }),
-    onSuccess: () => { toast.success('Baixa registrada no Bling'); queryClient.invalidateQueries({ queryKey: ['bling-financeiro'] }); },
+    mutationFn: ({ id, data }: { id: string; data: Record<string, unknown> }) =>
+      blingAction('baixa_conta_pagar', { id, data }),
+    onSuccess: () => {
+      toast.success('Baixa registrada no Bling');
+      queryClient.invalidateQueries({ queryKey: ['bling-financeiro'] });
+    },
     onError: (err: Error) => toast.error(`Erro: ${err.message}`),
   });
 
   const estornarBaixaReceber = useMutation({
-    mutationFn: ({ id, baixaId }: { id: string; baixaId: string }) => blingAction('estornar_baixa_receber', { id, baixaId }),
-    onSuccess: () => { toast.success('Baixa estornada'); queryClient.invalidateQueries({ queryKey: ['bling-financeiro'] }); },
+    mutationFn: ({ id, baixaId }: { id: string; baixaId: string }) =>
+      blingAction('estornar_baixa_receber', { id, baixaId }),
+    onSuccess: () => {
+      toast.success('Baixa estornada');
+      queryClient.invalidateQueries({ queryKey: ['bling-financeiro'] });
+    },
     onError: (err: Error) => toast.error(`Erro: ${err.message}`),
   });
 
   const estornarBaixaPagar = useMutation({
-    mutationFn: ({ id, baixaId }: { id: string; baixaId: string }) => blingAction('estornar_baixa_pagar', { id, baixaId }),
-    onSuccess: () => { toast.success('Baixa estornada'); queryClient.invalidateQueries({ queryKey: ['bling-financeiro'] }); },
+    mutationFn: ({ id, baixaId }: { id: string; baixaId: string }) =>
+      blingAction('estornar_baixa_pagar', { id, baixaId }),
+    onSuccess: () => {
+      toast.success('Baixa estornada');
+      queryClient.invalidateQueries({ queryKey: ['bling-financeiro'] });
+    },
     onError: (err: Error) => toast.error(`Erro: ${err.message}`),
   });
 
   const excluirContaReceber = useMutation({
     mutationFn: (id: string) => blingAction('excluir_conta_receber', { id }),
-    onSuccess: () => { toast.success('Conta excluída'); queryClient.invalidateQueries({ queryKey: ['bling-financeiro'] }); },
+    onSuccess: () => {
+      toast.success('Conta excluída');
+      queryClient.invalidateQueries({ queryKey: ['bling-financeiro'] });
+    },
     onError: (err: Error) => toast.error(`Erro: ${err.message}`),
   });
 
   const excluirContaPagar = useMutation({
     mutationFn: (id: string) => blingAction('excluir_conta_pagar', { id }),
-    onSuccess: () => { toast.success('Conta excluída'); queryClient.invalidateQueries({ queryKey: ['bling-financeiro'] }); },
+    onSuccess: () => {
+      toast.success('Conta excluída');
+      queryClient.invalidateQueries({ queryKey: ['bling-financeiro'] });
+    },
     onError: (err: Error) => toast.error(`Erro: ${err.message}`),
   });
 
-  return { criarContaReceber, criarContaPagar, darBaixaReceber, darBaixaPagar, estornarBaixaReceber, estornarBaixaPagar, excluirContaReceber, excluirContaPagar };
+  return {
+    criarContaReceber,
+    criarContaPagar,
+    darBaixaReceber,
+    darBaixaPagar,
+    estornarBaixaReceber,
+    estornarBaixaPagar,
+    excluirContaReceber,
+    excluirContaPagar,
+  };
 }
 
 export function useBlingBorderos(filtros?: Record<string, unknown>) {

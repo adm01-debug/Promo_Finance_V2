@@ -1,4 +1,4 @@
-import type { ScenarioResult } from "./types";
+import type { ScenarioResult } from './types';
 
 export interface Summary {
   total: number;
@@ -13,10 +13,10 @@ export interface Summary {
 }
 
 export function summarize(results: readonly ScenarioResult[]): Summary {
-  const byDomain: Summary["byDomain"] = {};
-  const byFault: Summary["byFault"] = {};
+  const byDomain: Summary['byDomain'] = {};
+  const byFault: Summary['byFault'] = {};
   const violationCount = new Map<string, number>();
-  const failedSeeds: Summary["failedSeeds"] = [];
+  const failedSeeds: Summary['failedSeeds'] = [];
   let totalDurationMs = 0;
   let failed = 0;
 
@@ -61,42 +61,42 @@ export function summarize(results: readonly ScenarioResult[]): Summary {
 
 export function toMarkdown(s: Summary): string {
   const lines: string[] = [];
-  lines.push("# Scenario Harness — Relatório");
-  lines.push("");
+  lines.push('# Scenario Harness — Relatório');
+  lines.push('');
   lines.push(`- **Total:** ${s.total}`);
   lines.push(`- **Passou:** ${s.passed}`);
   lines.push(`- **Falhou:** ${s.failed}`);
   lines.push(`- **Duração total:** ${s.totalDurationMs.toFixed(1)} ms`);
   lines.push(`- **Duração média:** ${s.avgDurationMs.toFixed(3)} ms/cenário`);
-  lines.push("");
-  lines.push("## Por domínio");
-  lines.push("");
-  lines.push("| Domínio | Total | Falhas |");
-  lines.push("|---|---:|---:|");
+  lines.push('');
+  lines.push('## Por domínio');
+  lines.push('');
+  lines.push('| Domínio | Total | Falhas |');
+  lines.push('|---|---:|---:|');
   for (const [k, v] of Object.entries(s.byDomain)) {
     lines.push(`| ${k} | ${v.total} | ${v.failed} |`);
   }
-  lines.push("");
-  lines.push("## Por falha injetada");
-  lines.push("");
-  lines.push("| Falha | Total | Falhas |");
-  lines.push("|---|---:|---:|");
+  lines.push('');
+  lines.push('## Por falha injetada');
+  lines.push('');
+  lines.push('| Falha | Total | Falhas |');
+  lines.push('|---|---:|---:|');
   for (const [k, v] of Object.entries(s.byFault)) {
     lines.push(`| ${k} | ${v.total} | ${v.failed} |`);
   }
   if (s.topViolations.length) {
-    lines.push("");
-    lines.push("## Top invariantes violados");
-    lines.push("");
+    lines.push('');
+    lines.push('## Top invariantes violados');
+    lines.push('');
     for (const v of s.topViolations) lines.push(`- \`${v.invariant}\` — ${v.count}`);
   }
   if (s.failedSeeds.length) {
-    lines.push("");
-    lines.push("## Seeds para reprodução");
-    lines.push("");
+    lines.push('');
+    lines.push('## Seeds para reprodução');
+    lines.push('');
     for (const f of s.failedSeeds) {
-      lines.push(`- ${f.id} — seed \`${f.seed}\` — [${f.invariants.join(", ")}]`);
+      lines.push(`- ${f.id} — seed \`${f.seed}\` — [${f.invariants.join(', ')}]`);
     }
   }
-  return lines.join("\n");
+  return lines.join('\n');
 }

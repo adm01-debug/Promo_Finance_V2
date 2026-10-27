@@ -47,19 +47,37 @@ import { DuplicateButton } from '@/components/common/DuplicateButton';
 import { toast } from 'sonner';
 
 interface ContaPagarView {
-  id: string; status: string | null; tipo_cobranca: string | null; data_vencimento: string; descricao: string;
-  fornecedor_nome: string | null; categoria: string | null; numero_documento: string | null; valor: number;
-  recorrente: boolean | null; centro_custo_nome?: string | null; centros_custo?: { nome?: string | null } | null;
-  aprovado_por: string | null; aprovado_em?: string | null;
+  id: string;
+  status: string | null;
+  tipo_cobranca: string | null;
+  data_vencimento: string;
+  descricao: string;
+  fornecedor_nome: string | null;
+  categoria: string | null;
+  numero_documento: string | null;
+  valor: number;
+  recorrente: boolean | null;
+  centro_custo_nome?: string | null;
+  centros_custo?: { nome?: string | null } | null;
+  aprovado_por: string | null;
+  aprovado_em?: string | null;
 }
 
 interface SolicitacaoAprovacaoHistorico {
-  id: string; status: string; solicitado_em: string | null; solicitado_por: string | null; aprovado_em?: string | null;
-  aprovado_por?: string | null; motivo_rejeicao?: string | null; observacoes?: string | null;
+  id: string;
+  status: string;
+  solicitado_em: string | null;
+  solicitado_por: string | null;
+  aprovado_em?: string | null;
+  aprovado_por?: string | null;
+  motivo_rejeicao?: string | null;
+  observacoes?: string | null;
 }
 
 interface ProfileMapItem {
-  id: string; full_name: string | null; email: string | null;
+  id: string;
+  full_name: string | null;
+  email: string | null;
 }
 
 const statusConfig: Record<
@@ -189,7 +207,7 @@ export const ContasPagarTableRow = memo(
                   id: conta.id,
                   descricao: conta.descricao,
                   valor: conta.valor,
-                  fornecedor_nome: conta.fornecedor_nome,
+                  fornecedor_nome: conta.fornecedor_nome ?? undefined,
                   data_vencimento: conta.data_vencimento,
                 }}
                 categoriaAtual={conta.categoria || undefined}
@@ -295,7 +313,11 @@ export const ContasPagarTableRow = memo(
             temSolicitacaoPendente={temSolicitacaoPendente}
             foiRejeitado={foiRejeitado}
             aguardandoSolicitacao={aguardandoSolicitacao}
-            historico={historico}
+            historico={historico.map((h) => ({
+              ...h,
+              solicitado_em: h.solicitado_em ?? '',
+              solicitado_por: h.solicitado_por ?? '',
+            }))}
             profilesMap={profilesMap}
             valorMinimoAprovacao={valorMinimoAprovacao}
             aprovado_por={conta.aprovado_por}

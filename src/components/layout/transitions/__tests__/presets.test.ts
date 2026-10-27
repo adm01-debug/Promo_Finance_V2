@@ -4,8 +4,19 @@ import type { TransitionName } from '../types';
 
 describe('resolvePreset', () => {
   const effects: TransitionName[] = [
-    'fade', 'blur-rise', 'slide-left', 'slide-right', 'slide-up', 'slide-down',
-    'zoom-in', 'zoom-out', 'flip-x', 'flip-y', 'parallax', 'scale', 'none',
+    'fade',
+    'blur-rise',
+    'slide-left',
+    'slide-right',
+    'slide-up',
+    'slide-down',
+    'zoom-in',
+    'zoom-out',
+    'flip-x',
+    'flip-y',
+    'parallax',
+    'scale',
+    'none',
   ];
 
   it.each(effects)('retorna variants completas para %s', (effect) => {

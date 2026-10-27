@@ -1,4 +1,4 @@
-import {todayISOLocal, toISOLocal } from '@/lib/formatters';
+import { todayISOLocal, toISOLocal } from '@/lib/formatters';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
@@ -32,9 +32,9 @@ export async function buscarAlertas(): Promise<Alerta[]> {
     id: alerta.id,
     tipo: alerta.tipo,
     titulo: alerta.titulo,
-    mensagem: alerta.mensagem,
+    mensagem: alerta.mensagem ?? '',
     prioridade: alerta.prioridade as PrioridadeAlerta,
-    lido: alerta.lido,
+    lido: alerta.lido ?? false,
     entidade_tipo: alerta.entidade_tipo,
     entidade_id: alerta.entidade_id,
     acao_url: alerta.acao_url,
@@ -67,10 +67,7 @@ export function useMarcarAlertaComoLido() {
 
   return useMutation({
     mutationFn: async (alertaId: string) => {
-      const { error } = await supabase
-        .from('alertas')
-        .update({ lido: true })
-        .eq('id', alertaId);
+      const { error } = await supabase.from('alertas').update({ lido: true }).eq('id', alertaId);
 
       if (error) throw error;
     },
@@ -90,10 +87,7 @@ export function useMarcarTodosAlertasComoLidos() {
 
   return useMutation({
     mutationFn: async () => {
-      const { error } = await supabase
-        .from('alertas')
-        .update({ lido: true })
-        .eq('lido', false);
+      const { error } = await supabase.from('alertas').update({ lido: true }).eq('lido', false);
 
       if (error) throw error;
     },
@@ -122,8 +116,10 @@ export function useCriarAlerta() {
       entidade_id?: string;
       acao_url?: string;
     }) => {
-      const { data: { user } } = await supabase.auth.getUser();
-      
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+
       const { data, error } = await supabase
         .from('alertas')
         .insert({

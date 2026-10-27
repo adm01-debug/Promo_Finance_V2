@@ -57,7 +57,35 @@ export function useConciliacaoPage() {
   const { confirmarConciliacao, salvarExtratoBanco, desfazerConciliacao } = useConciliacao();
 
   const lancamentosSistema = useMemo(
-    () => montarLancamentosSistema(contasPagar, contasReceber),
+    () =>
+      montarLancamentosSistema(
+        (contasPagar ?? []).map((cp) => ({
+          id: cp.id ?? '',
+          descricao: cp.descricao ?? '',
+          valor: cp.valor ?? 0,
+          valor_pago: cp.valor_pago,
+          data_vencimento: cp.data_vencimento ?? '',
+          fornecedor_nome: cp.fornecedor_nome ?? '',
+          status: cp.status ?? '',
+          numero_documento: cp.numero_documento,
+          fornecedor_razao_social: cp.fornecedor_razao_social,
+          fornecedor_nome_fantasia: cp.fornecedor_nome_fantasia,
+          centro_custo_nome: cp.centro_custo_nome,
+        })),
+        (contasReceber ?? []).map((cr) => ({
+          id: cr.id ?? '',
+          descricao: cr.descricao ?? '',
+          valor: cr.valor ?? 0,
+          valor_recebido: cr.valor_recebido,
+          data_vencimento: cr.data_vencimento ?? '',
+          cliente_nome: cr.cliente_nome ?? '',
+          status: cr.status ?? '',
+          numero_documento: cr.numero_documento,
+          cliente_razao_social: cr.cliente_razao_social,
+          cliente_nome_fantasia: cr.cliente_nome_fantasia,
+          centro_custo_nome: cr.centro_custo_nome,
+        }))
+      ),
     [contasPagar, contasReceber]
   );
 

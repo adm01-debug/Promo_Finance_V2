@@ -9,8 +9,21 @@ import { Badge } from '@/components/ui/badge';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '@/components/ui/table';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 import { CalendarCheck, Download, Info, Loader2 } from 'lucide-react';
 import { toast } from 'sonner';
 import { useEmpresaScope } from '@/contexts/useEmpresaScope';
@@ -37,13 +50,10 @@ import { ConformidadeCard } from '@/components/tributario/ConformidadeCard';
 import { ConformidadeHistoricoCard } from '@/components/tributario/ConformidadeHistoricoCard';
 import { ProjecaoConformidadeCard } from '@/components/tributario/ProjecaoConformidadeCard';
 
-import {
-  useSalvarConformidadeSnapshots,
-} from '@/hooks/useConformidadeSnapshots';
+import { useSalvarConformidadeSnapshots } from '@/hooks/useConformidadeSnapshots';
 import { brl, dataBR, SITUACAO_LABEL, SITUACAO_VARIANT } from './obrigacoes-helpers';
 import { CatalogoObrigacoesTable } from './CatalogoObrigacoesTable';
 import { SimuladorMultaCard } from './SimuladorMultaCard';
-
 
 export default function ObrigacoesAcessorias() {
   const hojeISO = new Date().toISOString().slice(0, 10);
@@ -127,9 +137,6 @@ export default function ObrigacoesAcessorias() {
     [itens, registrosConformidade]
   );
 
-
-
-
   const multa = useMemo(() => {
     try {
       return calcularMultaAtraso({
@@ -191,7 +198,6 @@ export default function ObrigacoesAcessorias() {
     );
   };
 
-
   const baixarCsv = () => {
     const blob = new Blob([exportarCalendarioCsv(itens)], { type: 'text/csv;charset=utf-8' });
     const url = URL.createObjectURL(blob);
@@ -245,16 +251,12 @@ export default function ObrigacoesAcessorias() {
 
           <ProjecaoConformidadeCard pontos={analiseHistorico.pontos} horizonte={3} />
 
-
-
-
-
-
-
           <Card>
             <CardHeader>
               <CardTitle>Parâmetros</CardTitle>
-              <CardDescription>Regime, competência de referência e data-base da análise.</CardDescription>
+              <CardDescription>
+                Regime, competência de referência e data-base da análise.
+              </CardDescription>
             </CardHeader>
             <CardContent className="grid gap-4 md:grid-cols-4">
               <div className="space-y-2">
@@ -282,7 +284,12 @@ export default function ObrigacoesAcessorias() {
               </div>
               <div className="space-y-2">
                 <Label htmlFor="hoje">Data-base</Label>
-                <Input id="hoje" type="date" value={hoje} onChange={(e) => setHoje(e.target.value)} />
+                <Input
+                  id="hoje"
+                  type="date"
+                  value={hoje}
+                  onChange={(e) => setHoje(e.target.value)}
+                />
               </div>
               <div className="flex items-end">
                 <Button variant="outline" onClick={baixarCsv} disabled={itens.length === 0}>
@@ -314,14 +321,17 @@ export default function ObrigacoesAcessorias() {
                     <Alert className="mb-4">
                       <Info className="h-4 w-4" />
                       <AlertDescription>
-                        Selecione uma empresa no seletor superior para registrar e consultar entregas.
+                        Selecione uma empresa no seletor superior para registrar e consultar
+                        entregas.
                       </AlertDescription>
                     </Alert>
                   )}
                   {itens.length === 0 ? (
                     <Alert>
                       <Info className="h-4 w-4" />
-                      <AlertDescription>Informe uma competência válida para gerar o calendário.</AlertDescription>
+                      <AlertDescription>
+                        Informe uma competência válida para gerar o calendário.
+                      </AlertDescription>
                     </Alert>
                   ) : (
                     <Table>
@@ -356,11 +366,15 @@ export default function ObrigacoesAcessorias() {
                                   />
                                 )}
                               </TableCell>
-                              <TableCell className="font-medium text-foreground">{item.nome}</TableCell>
+                              <TableCell className="font-medium text-foreground">
+                                {item.nome}
+                              </TableCell>
                               <TableCell className="text-muted-foreground">{item.orgao}</TableCell>
                               <TableCell>{item.competencia}</TableCell>
                               <TableCell>{dataBR(item.prazo)}</TableCell>
-                              <TableCell className="text-right tabular-nums">{item.diasRestantes}</TableCell>
+                              <TableCell className="text-right tabular-nums">
+                                {item.diasRestantes}
+                              </TableCell>
                               <TableCell>
                                 <Badge variant={SITUACAO_VARIANT[item.situacao]}>
                                   {SITUACAO_LABEL[item.situacao]}
@@ -370,7 +384,9 @@ export default function ObrigacoesAcessorias() {
                                 {registro?.data_entrega ? (
                                   <span>
                                     {dataBR(registro.data_entrega)}
-                                    {registro.valor_multa > 0 ? ` · multa ${brl(registro.valor_multa)}` : ''}
+                                    {registro.valor_multa > 0
+                                      ? ` · multa ${brl(registro.valor_multa)}`
+                                      : ''}
                                   </span>
                                 ) : (
                                   '—'
@@ -383,34 +399,35 @@ export default function ObrigacoesAcessorias() {
                     </Table>
                   )}
                 </CardContent>
-
               </Card>
             </TabsContent>
 
-<TabsContent value="catalogo" className="mt-4">
-  <Card>
-    <CardHeader>
-      <CardTitle>Catálogo de obrigações</CardTitle>
-      <CardDescription>Base legal, periodicidade e regra de multa por obrigação.</CardDescription>
-    </CardHeader>
-    <CardContent>
-      <CatalogoObrigacoesTable />
-    </CardContent>
-  </Card>
-</TabsContent>
+            <TabsContent value="catalogo" className="mt-4">
+              <Card>
+                <CardHeader>
+                  <CardTitle>Catálogo de obrigações</CardTitle>
+                  <CardDescription>
+                    Base legal, periodicidade e regra de multa por obrigação.
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <CatalogoObrigacoesTable />
+                </CardContent>
+              </Card>
+            </TabsContent>
 
-<TabsContent value="multa" className="mt-4">
-  <SimuladorMultaCard
-    multaObrigacao={multaObrigacao}
-    setMultaObrigacao={setMultaObrigacao}
-    multaPrazo={multaPrazo}
-    setMultaPrazo={setMultaPrazo}
-    multaEntrega={multaEntrega}
-    setMultaEntrega={setMultaEntrega}
-    setMultaBase={setMultaBase}
-    multa={multa}
-  />
-</TabsContent>
+            <TabsContent value="multa" className="mt-4">
+              <SimuladorMultaCard
+                multaObrigacao={multaObrigacao}
+                setMultaObrigacao={setMultaObrigacao}
+                multaPrazo={multaPrazo}
+                setMultaPrazo={setMultaPrazo}
+                multaEntrega={multaEntrega}
+                setMultaEntrega={setMultaEntrega}
+                setMultaBase={setMultaBase}
+                multa={multa}
+              />
+            </TabsContent>
           </Tabs>
         </div>
       </div>

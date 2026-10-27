@@ -13,7 +13,7 @@
  */
 
 // deno-lint-ignore-file no-explicit-any
-import { createClient, type SupabaseClient } from "npm:@supabase/supabase-js@2.49.4";
+import { createClient, type SupabaseClient } from 'npm:@supabase/supabase-js@2.49.4';
 // `node-forge` é carregado dinamicamente em `pfxToPem` para não exigir a
 // dependência em testes locais que só exercitam parsing/soap.
 
@@ -23,7 +23,7 @@ export interface CertificadoRow {
   cnpj: string;
   razao_social: string;
   uf: string;
-  ambiente: "homologacao" | "producao";
+  ambiente: 'homologacao' | 'producao';
   valido_de: string;
   valido_ate: string;
   pfx_storage_path: string;
@@ -35,59 +35,64 @@ export interface CertificadoPem {
   caPem: string | null;
   cnpj: string;
   uf: string;
-  ambiente: "homologacao" | "producao";
+  ambiente: 'homologacao' | 'producao';
   empresaId: string;
 }
 
 export function makeAdminClient(): SupabaseClient {
-  const url = Deno.env.get("SUPABASE_URL")!;
-  const key = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
+  const url = Deno.env.get('SUPABASE_URL')!;
+  const key = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
   return createClient(url, key, { auth: { persistSession: false } });
 }
 
-async function fetchPfxBytes(
-  admin: SupabaseClient,
-  storagePath: string,
-): Promise<Uint8Array> {
-  const { data, error } = await admin.storage.from("nfe-certificados").download(storagePath);
-  if (error || !data) throw new Error(`storage_download_failed: ${error?.message ?? "unknown"}`);
+async function fetchPfxBytes(admin: SupabaseClient, storagePath: string): Promise<Uint8Array> {
+  const { data, error } = await admin.storage.from('nfe-certificados').download(storagePath);
+  if (error || !data) {
+    throw new Error(`storage_download_failed: ${error?.message ?? 'unknown'}`);
+  }
   return new Uint8Array(await data.arrayBuffer());
 }
 
-async function fetchPfxPassword(
-  admin: SupabaseClient,
-  certId: string,
-): Promise<string> {
-  const masterKey = Deno.env.get("NFE_CERT_MASTER_KEY");
-  if (!masterKey) throw new Error("NFE_CERT_MASTER_KEY ausente");
-  const { data, error } = await admin.rpc("certificado_get_password", {
-    p_cert_id: certId,
-    p_master_key: masterKey,
-  });
-  if (error || typeof data !== "string" || !data) {
-    throw new Error(`password_decrypt_failed: ${error?.message ?? "empty"}`);
+async function fetchPfxPassword(admin: SupabaseClient, certId: string): Promise<string> {
+  const masterKey = Deno.env.get('NFE_CERT_MASTER_KEY');
+  if (!masterKey) throw new Error('NFE_CERT_MASTER_KEY ausente');
+  // Durante a rotação da master key (runbook ROTACAO_SECRETS),
+  // NFE_CERT_MASTER_KEY_PREV guarda a chave antiga enquanto as linhas ainda
+  // estão criptografadas com ela — tenta a atual primeiro e cai na anterior.
+  const chaves = [masterKey, Deno.env.get('NFE_CERT_MASTER_KEY_PREV')].filter(
+    (k): k is string => !!k
+  );
+  let ultimoErro = '';
+  for (const chave of chaves) {
+    const { data, error } = await admin.rpc('certificado_get_password', {
+      p_cert_id: certId,
+      p_master_key: chave,
+    });
+    if (!error && typeof data === 'string' && data) return data;
+    ultimoErro = error?.message ?? 'empty';
   }
-  return data;
+  throw new Error(`password_decrypt_failed: ${ultimoErro}`);
 }
 
 /** Converte bytes PFX + senha em PEM (cert + key). */
-export async function pfxToPem(pfxBytes: Uint8Array, password: string): Promise<{
+export async function pfxToPem(
+  pfxBytes: Uint8Array,
+  password: string
+): Promise<{
   certPem: string;
   keyPem: string;
   caPem: string | null;
 }> {
-  const forgeSpecifier = "npm:node-forge@1.3.1";
+  const forgeSpecifier = 'npm:node-forge@1.3.1';
   const forgeMod: any = await import(forgeSpecifier);
   const forge: any = forgeMod.default ?? forgeMod;
 
-
-
-  let binary = "";
+  let binary = '';
   const chunk = 0x8000;
   for (let i = 0; i < pfxBytes.length; i += chunk) {
     binary += String.fromCharCode.apply(
       null,
-      Array.from(pfxBytes.subarray(i, i + chunk)) as unknown as number[],
+      Array.from(pfxBytes.subarray(i, i + chunk)) as unknown as number[]
     );
   }
   const asn1 = forge.asn1.fromDer(binary);
@@ -100,7 +105,7 @@ export async function pfxToPem(pfxBytes: Uint8Array, password: string): Promise<
     [];
 
   if (certBags.length === 0 || keyBags.length === 0) {
-    throw new Error("pfx_missing_cert_or_key");
+    throw new Error('pfx_missing_cert_or_key');
   }
 
   const [leaf, ...rest] = certBags.map((b: any) => b.cert);
@@ -108,17 +113,15 @@ export async function pfxToPem(pfxBytes: Uint8Array, password: string): Promise<
 
   const certPem = forge.pki.certificateToPem(leaf);
   const keyPem = forge.pki.privateKeyToPem(key);
-  const caPem = rest.length > 0
-    ? rest.map((c: any) => forge.pki.certificateToPem(c)).join("")
-    : null;
+  const caPem =
+    rest.length > 0 ? rest.map((c: any) => forge.pki.certificateToPem(c)).join('') : null;
 
   return { certPem, keyPem, caPem };
 }
 
-
 export async function loadCertificado(
   admin: SupabaseClient,
-  cert: CertificadoRow,
+  cert: CertificadoRow
 ): Promise<CertificadoPem> {
   const [pfxBytes, password] = await Promise.all([
     fetchPfxBytes(admin, cert.pfx_storage_path),

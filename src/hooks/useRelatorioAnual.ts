@@ -13,10 +13,9 @@ export function useRelatorioAnual(empresaId?: string, ano?: number) {
     queryKey: ['relatorio-anual', empresaId, ano],
     queryFn: async () => {
       if (!empresaId || !ano) throw new Error('empresa e ano obrigatórios');
-      const { data, error } = await supabase.functions.invoke(
-        'gerar-relatorio-anual',
-        { body: { empresa_id: empresaId, ano } }
-      );
+      const { data, error } = await supabase.functions.invoke('gerar-relatorio-anual', {
+        body: { empresa_id: empresaId, ano },
+      });
       if (error) throw error;
       return data as RelatorioAnualPayload;
     },

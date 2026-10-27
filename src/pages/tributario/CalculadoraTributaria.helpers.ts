@@ -74,14 +74,31 @@ export const DEFAULT_INPUT: CampoInput = {
   reducaoReforma: 0,
 };
 
-export function buildInput(f: CampoInput, atividadeDerivada?: AtividadePresumido): InputCalculadora {
-  const receitas = { receitaBrutaAnual: f.receitaBrutaAnual, percentualServicos: f.percentualServicos };
-  const folha = { folhaAnual: f.folhaAnual, aliquotaRat: f.aliquotaRat, aliquotaTerceiros: f.aliquotaTerceiros };
-  const estadualMunicipal = { aliquotaIcms: f.aliquotaIcms, aliquotaIss: f.aliquotaIss, creditoIcmsCompras: f.creditoIcmsCompras };
+export function buildInput(
+  f: CampoInput,
+  atividadeDerivada?: AtividadePresumido
+): InputCalculadora {
+  const receitas = {
+    receitaBrutaAnual: f.receitaBrutaAnual,
+    percentualServicos: f.percentualServicos,
+  };
+  const folha = {
+    folhaAnual: f.folhaAnual,
+    aliquotaRat: f.aliquotaRat,
+    aliquotaTerceiros: f.aliquotaTerceiros,
+  };
+  const estadualMunicipal = {
+    aliquotaIcms: f.aliquotaIcms,
+    aliquotaIss: f.aliquotaIss,
+    creditoIcmsCompras: f.creditoIcmsCompras,
+  };
   const retencoes = { irrfSofrido: f.irrfSofrido, csrfSofrido: f.csrfSofrido };
   return {
     lucroReal: {
-      receitas, folha, estadualMunicipal, retencoes,
+      receitas,
+      folha,
+      estadualMunicipal,
+      retencoes,
       lucroContabil: f.lucroContabil,
       lalur: { adicoesOutras: f.adicoesLalur, exclusoesOutras: f.exclusoesLalur },
       prejuizoAcumulado: f.prejuizoAcumulado,
@@ -95,11 +112,17 @@ export function buildInput(f: CampoInput, atividadeDerivada?: AtividadePresumido
       modo: 'anual_estimativa',
     },
     lucroPresumido: {
-      receitas, folha, estadualMunicipal, retencoes,
+      receitas,
+      folha,
+      estadualMunicipal,
+      retencoes,
       atividade: atividadeDerivada ?? f.atividadePresumido,
     },
     simples: {
-      receitas, anexo: f.anexoSimples, rbt12: f.rbt12, folha12m: f.folha12m,
+      receitas,
+      anexo: f.anexoSimples,
+      rbt12: f.rbt12,
+      folha12m: f.folha12m,
     },
     reforma: {
       receitas,

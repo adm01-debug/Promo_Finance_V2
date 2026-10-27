@@ -145,9 +145,7 @@ export function useSearchInput(
 /**
  * Hook para detectar quando o usuário parou de digitar
  */
-export function useTypingDetection(
-  delay: number = 1000
-): {
+export function useTypingDetection(delay: number = 1000): {
   isTyping: boolean;
   onKeyPress: () => void;
 } {
@@ -251,7 +249,7 @@ export function useNumericInput(
 } {
   const { min, max, delay = 300 } = options;
   const [value, setValue] = useState(initialValue.toString());
-  
+
   const numericValue = useMemo(() => {
     const parsed = parseFloat(value.replace(',', '.'));
     return isNaN(parsed) ? 0 : parsed;

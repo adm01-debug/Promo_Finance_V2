@@ -59,7 +59,7 @@ describe('useAlertasTributariosCount', () => {
         'desvio_benchmark',
         'irpfm_2026',
         'tributario',
-      ]),
+      ])
     );
     expect(eqMock).toHaveBeenCalledWith('lido', false);
   });

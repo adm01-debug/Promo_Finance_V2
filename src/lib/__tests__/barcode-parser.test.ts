@@ -1,9 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import {
-  parseBoleto,
-  formatarLinhaDigitavel,
-  validarCodigoBarras,
-} from '../barcode-parser';
+import { parseBoleto, formatarLinhaDigitavel, validarCodigoBarras } from '../barcode-parser';
 
 describe('Barcode Parser', () => {
   // ========================

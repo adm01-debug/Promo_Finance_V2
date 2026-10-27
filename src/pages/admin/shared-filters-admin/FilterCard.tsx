@@ -31,17 +31,9 @@ interface FilterCardProps {
   busy: boolean;
 }
 
-export function FilterCard({
-  row,
-  owner,
-  empresa,
-  onToggleRole,
-  onRevoke,
-  busy,
-}: FilterCardProps) {
+export function FilterCard({ row, owner, empresa, onToggleRole, onRevoke, busy }: FilterCardProps) {
   const activeRoles = new Set(row.shared_with_roles);
-  const empresaLabel =
-    empresa?.nome_fantasia ?? empresa?.razao_social ?? row.empresa_id ?? '—';
+  const empresaLabel = empresa?.nome_fantasia ?? empresa?.razao_social ?? row.empresa_id ?? '—';
   const ownerLabel = owner?.full_name || owner?.email || row.user_id;
 
   return (
@@ -61,15 +53,13 @@ export function FilterCard({
           </div>
           <div className="mt-2 grid gap-1 text-xs text-muted-foreground">
             <div>
-              <span className="text-foreground font-medium">Dono:</span>{' '}
-              {ownerLabel}
+              <span className="text-foreground font-medium">Dono:</span> {ownerLabel}
               {owner?.email && owner.full_name ? (
                 <span className="opacity-70"> ({owner.email})</span>
               ) : null}
             </div>
             <div>
-              <span className="text-foreground font-medium">Empresa:</span>{' '}
-              {empresaLabel}
+              <span className="text-foreground font-medium">Empresa:</span> {empresaLabel}
             </div>
             <div>
               <span className="text-foreground font-medium">Atualizado em:</span>{' '}
@@ -95,16 +85,13 @@ export function FilterCard({
               <AlertDialogHeader>
                 <AlertDialogTitle>Revogar compartilhamento?</AlertDialogTitle>
                 <AlertDialogDescription>
-                  O filtro <strong>{row.name}</strong> deixará de ser
-                  compartilhado. O dono ainda pode usá-lo em sua biblioteca
-                  pessoal. Esta ação será registrada na auditoria.
+                  O filtro <strong>{row.name}</strong> deixará de ser compartilhado. O dono ainda
+                  pode usá-lo em sua biblioteca pessoal. Esta ação será registrada na auditoria.
                 </AlertDialogDescription>
               </AlertDialogHeader>
               <AlertDialogFooter>
                 <AlertDialogCancel>Cancelar</AlertDialogCancel>
-                <AlertDialogAction onClick={onRevoke}>
-                  Confirmar revogação
-                </AlertDialogAction>
+                <AlertDialogAction onClick={onRevoke}>Confirmar revogação</AlertDialogAction>
               </AlertDialogFooter>
             </AlertDialogContent>
           </AlertDialog>
@@ -118,10 +105,7 @@ export function FilterCard({
           <Users className="h-3 w-3" />
           Papéis com acesso
           {activeRoles.size === 0 && (
-            <Badge
-              variant="outline"
-              className="text-[10px] border-warning/40 text-warning"
-            >
+            <Badge variant="outline" className="text-[10px] border-warning/40 text-warning">
               Todos os papéis da empresa
             </Badge>
           )}

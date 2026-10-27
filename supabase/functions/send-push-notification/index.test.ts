@@ -21,15 +21,18 @@ Deno.test({
   sanitizeOps: false,
   sanitizeResources: false,
   async fn() {
-  configurarAmbiente();
-  try {
-    const response = await handler(new Request('http://localhost/send-push-notification', {
-      method: 'POST', body: JSON.stringify({ title: 'Teste', body: 'Teste' }),
-    }));
-    assertEquals(response.status, 401);
-  } finally {
-    restaurarAmbiente();
-  }
+    configurarAmbiente();
+    try {
+      const response = await handler(
+        new Request('http://localhost/send-push-notification', {
+          method: 'POST',
+          body: JSON.stringify({ title: 'Teste', body: 'Teste' }),
+        })
+      );
+      assertEquals(response.status, 401);
+    } finally {
+      restaurarAmbiente();
+    }
   },
 });
 
@@ -38,16 +41,21 @@ Deno.test({
   sanitizeOps: false,
   sanitizeResources: false,
   async fn() {
-  configurarAmbiente();
-  try {
-    const response = await handler(new Request('http://localhost/send-push-notification', {
-      method: 'POST',
-      headers: { Authorization: 'Bearer service-role-de-teste', 'Content-Type': 'application/json' },
-      body: JSON.stringify({ title: 'Teste', body: 'Teste' }),
-    }));
-    assertEquals(response.status, 422);
-  } finally {
-    restaurarAmbiente();
-  }
+    configurarAmbiente();
+    try {
+      const response = await handler(
+        new Request('http://localhost/send-push-notification', {
+          method: 'POST',
+          headers: {
+            Authorization: 'Bearer service-role-de-teste',
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ title: 'Teste', body: 'Teste' }),
+        })
+      );
+      assertEquals(response.status, 422);
+    } finally {
+      restaurarAmbiente();
+    }
   },
 });

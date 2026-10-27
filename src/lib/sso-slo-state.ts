@@ -11,10 +11,7 @@
  */
 const KEY = 'sso-slo-failure';
 
-export type SloFailureReason =
-  | 'provider_logout_failed'
-  | 'local_cleanup_failed'
-  | 'unknown';
+export type SloFailureReason = 'provider_logout_failed' | 'local_cleanup_failed' | 'unknown';
 
 export interface SloFailureSnapshot {
   reason: SloFailureReason;

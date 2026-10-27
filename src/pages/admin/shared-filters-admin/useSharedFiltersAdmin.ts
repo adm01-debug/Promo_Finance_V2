@@ -16,12 +16,7 @@ import {
   type AppRole as ValidatedAppRole,
 } from '@/hooks/savedFiltersValidation';
 import { logAudit } from './audit';
-import type {
-  AppRole,
-  EmpresaLite,
-  ProfileLite,
-  SharedFilterRow,
-} from './types';
+import type { AppRole, EmpresaLite, ProfileLite, SharedFilterRow } from './types';
 
 interface AuthLike {
   user: { id: string; email?: string | null } | null;
@@ -40,7 +35,7 @@ export function useSharedFiltersAdmin(auth: AuthLike) {
       const { data, error } = await supabaseDyn
         .from('saved_filters')
         .select(
-          'id,user_id,created_by,entity_type,name,filters,is_default,is_shared,empresa_id,shared_with_roles,created_at,updated_at',
+          'id,user_id,created_by,entity_type,name,filters,is_default,is_shared,empresa_id,shared_with_roles,created_at,updated_at'
         )
         .eq('is_shared', true)
         .order('updated_at', { ascending: false });
@@ -53,11 +48,11 @@ export function useSharedFiltersAdmin(auth: AuthLike) {
 
   const ownerIds = useMemo(
     () => Array.from(new Set(rows.map((r) => r.user_id).filter(Boolean))),
-    [rows],
+    [rows]
   );
   const empresaIds = useMemo(
     () => Array.from(new Set(rows.map((r) => r.empresa_id).filter(Boolean))) as string[],
-    [rows],
+    [rows]
   );
 
   const ownersQuery = useQuery({
@@ -95,10 +90,7 @@ export function useSharedFiltersAdmin(auth: AuthLike) {
   });
 
   const updateRoles = useMutation({
-    mutationFn: async (input: {
-      row: SharedFilterRow;
-      nextRoles: AppRole[];
-    }) => {
+    mutationFn: async (input: { row: SharedFilterRow; nextRoles: AppRole[] }) => {
       const { row, nextRoles } = input;
       const { error } = await supabaseDyn
         .from('saved_filters')
@@ -167,8 +159,7 @@ export function useSharedFiltersAdmin(auth: AuthLike) {
   const importBundle = useMutation({
     mutationFn: async (file: File) => {
       if (!user) throw new Error('Sessão expirada');
-      if (!currentEmpresaId)
-        throw new Error('Selecione uma empresa atual antes de importar.');
+      if (!currentEmpresaId) throw new Error('Selecione uma empresa atual antes de importar.');
 
       const text = await file.text();
       const bundle = parseBundle(text);
@@ -190,29 +181,25 @@ export function useSharedFiltersAdmin(auth: AuthLike) {
         } catch (e) {
           skipped++;
           reasons.push(
-            `${item.name}: ${
-              e instanceof SavedFilterSharingError ? e.message : 'validação falhou'
-            }`,
+            `${item.name}: ${e instanceof SavedFilterSharingError ? e.message : 'validação falhou'}`
           );
           continue;
         }
 
-        const { error } = await supabaseDyn
-          .from('saved_filters')
-          .upsert(
-            {
-              user_id: user.id,
-              created_by: user.id,
-              entity_type: item.entity_type,
-              name: item.name,
-              filters: item.filters as never,
-              is_default: false,
-              is_shared: true,
-              empresa_id: currentEmpresaId,
-              shared_with_roles: normalized.sharedWithRoles,
-            },
-            { onConflict: 'user_id,entity_type,name' },
-          );
+        const { error } = await supabaseDyn.from('saved_filters').upsert(
+          {
+            user_id: user.id,
+            created_by: user.id,
+            entity_type: item.entity_type,
+            name: item.name,
+            filters: item.filters as never,
+            is_default: false,
+            is_shared: true,
+            empresa_id: currentEmpresaId,
+            shared_with_roles: normalized.sharedWithRoles,
+          },
+          { onConflict: 'user_id,entity_type,name' }
+        );
         if (error) {
           skipped++;
           reasons.push(`${item.name}: ${error.message}`);
@@ -231,11 +218,10 @@ export function useSharedFiltersAdmin(auth: AuthLike) {
       return { inserted, skipped, total: bundle.items.length, reasons };
     },
     onSuccess: (r) => {
-      if (r.inserted > 0)
-        toast.success(`${r.inserted} filtro(s) importado(s) com sucesso`);
+      if (r.inserted > 0) toast.success(`${r.inserted} filtro(s) importado(s) com sucesso`);
       if (r.skipped > 0)
         toast.warning(
-          `${r.skipped} filtro(s) ignorado(s)${r.reasons[0] ? `: ${r.reasons[0]}` : ''}`,
+          `${r.skipped} filtro(s) ignorado(s)${r.reasons[0] ? `: ${r.reasons[0]}` : ''}`
         );
       qc.invalidateQueries({ queryKey });
     },

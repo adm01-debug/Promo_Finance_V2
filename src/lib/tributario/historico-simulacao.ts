@@ -53,7 +53,7 @@ function clamp(v: number, min: number, max: number): number {
 function serieMensal(
   valor: unknown,
   chaves: readonly string[],
-  opcionais: readonly string[] = [],
+  opcionais: readonly string[] = []
 ): Record<string, number>[] | null {
   if (!Array.isArray(valor) || valor.length === 0 || valor.length > 120) return null;
   const itens: Record<string, number>[] = [];
@@ -82,9 +82,7 @@ function serieMensal(
  * corrompido é descartado sem invalidar o registro inteiro, preservando a
  * reprodutibilidade do histórico.
  */
-export function normalizarParametrosSnapshot(
-  bruto: unknown,
-): Partial<ParametrosSimulacao> | null {
+export function normalizarParametrosSnapshot(bruto: unknown): Partial<ParametrosSimulacao> | null {
   if (!bruto || typeof bruto !== 'object' || Array.isArray(bruto)) return null;
   const registro = bruto as Record<string, unknown>;
   const faturamentoAnual = numeroFinito(registro.faturamentoAnual);
@@ -105,7 +103,10 @@ export function normalizarParametrosSnapshot(
     if (typeof v === 'string' && v.trim() !== '') saida[campo] = v.trim().slice(0, 120);
   }
 
-  if (registro.periodicidadeApuracao === 'anual' || registro.periodicidadeApuracao === 'trimestral') {
+  if (
+    registro.periodicidadeApuracao === 'anual' ||
+    registro.periodicidadeApuracao === 'trimestral'
+  ) {
     saida.periodicidadeApuracao = registro.periodicidadeApuracao;
   }
 
@@ -117,12 +118,17 @@ export function normalizarParametrosSnapshot(
   const faturamentoMensal = serieMensal(
     registro.faturamentoMensal,
     ['ano', 'mes', 'receita_bruta'],
-    ['receita_servicos', 'receita_revenda', 'receita_industria', 'receita_exportacao'],
+    ['receita_servicos', 'receita_revenda', 'receita_industria', 'receita_exportacao']
   );
   if (faturamentoMensal) saida.faturamentoMensal = faturamentoMensal;
 
   const folhaMensal = serieMensal(registro.folhaMensal, [
-    'ano', 'mes', 'salarios', 'pro_labore', 'encargos', 'total_folha',
+    'ano',
+    'mes',
+    'salarios',
+    'pro_labore',
+    'encargos',
+    'total_folha',
   ]);
   if (folhaMensal) saida.folhaMensal = folhaMensal;
 
@@ -171,7 +177,7 @@ const CAMPOS_OPCIONAIS_SNAPSHOT = [
  */
 export function mesclarSnapshotParametros(
   atual: ParametrosSimulacao,
-  snapshot: Partial<ParametrosSimulacao>,
+  snapshot: Partial<ParametrosSimulacao>
 ): ParametrosSimulacao {
   const mesclado: Record<string, unknown> = { ...atual, ...snapshot };
   for (const campo of CAMPOS_OPCIONAIS_SNAPSHOT) {
@@ -179,8 +185,6 @@ export function mesclarSnapshotParametros(
   }
   return mesclado as unknown as ParametrosSimulacao;
 }
-
-
 
 /** Filtra apenas os itens que satisfazem integralmente o contrato de ajuste. */
 export function normalizarAjustesAplicados(bruto: unknown): AjusteParametro[] {
@@ -216,13 +220,13 @@ export interface ItemAuditavel {
 
 /** Agrega os indicadores de qualidade do histórico para exibição resumida. */
 export function resumirAuditoriaHistorico(
-  itens: readonly ItemAuditavel[],
+  itens: readonly ItemAuditavel[]
 ): ResumoAuditoriaHistorico {
   const divergentes = itens.filter((i) => i.divergente).length;
   const motorDesatualizado = itens.filter((i) => i.motorDesatualizado).length;
   const comAjustes = itens.filter((i) => i.ajustesAplicados.length > 0).length;
   const comAjustesCriticos = itens.filter((i) =>
-    i.ajustesAplicados.some((a) => a.severidade === 'critico'),
+    i.ajustesAplicados.some((a) => a.severidade === 'critico')
   ).length;
 
   return {
@@ -247,7 +251,7 @@ export function snapshotComPendencia(item: ItemAuditavel): boolean {
  */
 export function filtrarHistorico<T extends ItemAuditavel>(
   itens: readonly T[],
-  somentePendencias: boolean,
+  somentePendencias: boolean
 ): T[] {
   return somentePendencias ? itens.filter(snapshotComPendencia) : [...itens];
 }
@@ -292,7 +296,7 @@ function descreverSituacao(item: ItemAuditavelExportavel): string {
  * moeda nem toca no DOM, para permanecer testável e independente de locale.
  */
 export function montarLinhasAuditoriaCsv(
-  itens: readonly ItemAuditavelExportavel[],
+  itens: readonly ItemAuditavelExportavel[]
 ): LinhaAuditoriaCsv[] {
   return itens.map((item) => ({
     data: item.data_simulacao ?? '',
@@ -336,7 +340,7 @@ export interface PaginaHistorico<T> {
 export function paginarHistorico<T>(
   itens: readonly T[],
   pagina: number,
-  tamanhoPagina: number,
+  tamanhoPagina: number
 ): PaginaHistorico<T> {
   const total = itens.length;
   const tamanho =
@@ -400,7 +404,7 @@ function pesoPendencia(item: ItemAuditavelOrdenavel): number {
  */
 export function ordenarHistorico<T extends ItemAuditavelOrdenavel>(
   itens: readonly T[],
-  ordenacao: OrdenacaoHistorico,
+  ordenacao: OrdenacaoHistorico
 ): T[] {
   const copia = [...itens];
   const porDataDesc = (a: T, b: T) => tempoDe(b.data_simulacao) - tempoDe(a.data_simulacao);
@@ -412,7 +416,7 @@ export function ordenarHistorico<T extends ItemAuditavelOrdenavel>(
       return copia.sort(
         (a, b) =>
           economiaDe(b.economia_anual_estimada) - economiaDe(a.economia_anual_estimada) ||
-          porDataDesc(a, b),
+          porDataDesc(a, b)
       );
     case 'pendencia':
       return copia.sort((a, b) => pesoPendencia(b) - pesoPendencia(a) || porDataDesc(a, b));

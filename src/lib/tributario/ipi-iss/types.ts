@@ -71,7 +71,10 @@ export interface ResultadoIpi {
 }
 
 /** Onde o ISS é devido para o item da lista (LC 116/2003, art. 3º). */
-export type LocalIncidencia = 'estabelecimento_prestador' | 'local_da_prestacao' | 'domicilio_tomador';
+export type LocalIncidencia =
+  | 'estabelecimento_prestador'
+  | 'local_da_prestacao'
+  | 'domicilio_tomador';
 
 export interface ItemLc116 {
   /** Item da lista anexa, ex.: '7.02'. */

@@ -54,7 +54,7 @@ describe('Drift guard: motor tributário front x Edge Function', () => {
     const b = normalizeSource(extractFunction(edgeSrc, nome));
     expect(
       b,
-      `Deriva detectada em "${nome}". Replique a alteração em supabase/functions/_shared/tributario-logic.ts e src/lib/tributario/shared-logic.ts.`,
+      `Deriva detectada em "${nome}". Replique a alteração em supabase/functions/_shared/tributario-logic.ts e src/lib/tributario/shared-logic.ts.`
     ).toBe(a);
   });
 

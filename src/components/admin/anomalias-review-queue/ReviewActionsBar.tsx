@@ -1,9 +1,9 @@
-import type { RefObject } from "react";
-import { CheckCircle2, Loader2, SkipForward, XCircle } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
-import { MIN_CONFIRMAR, MIN_FALSO_POSITIVO } from "./types";
+import type { RefObject } from 'react';
+import { CheckCircle2, Loader2, SkipForward, XCircle } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { Label } from '@/components/ui/label';
+import { Textarea } from '@/components/ui/textarea';
+import { MIN_CONFIRMAR, MIN_FALSO_POSITIVO } from './types';
 
 interface Props {
   comentario: string;
@@ -44,9 +44,9 @@ export function ReviewActionsBar({
     <>
       <div className="space-y-1.5">
         <Label htmlFor="comentario-revisao">
-          Comentário de revisão{" "}
+          Comentário de revisão{' '}
           <span className="text-muted-foreground font-normal">
-            (confirmar ≥ {MIN_CONFIRMAR} · falso positivo ≥ {MIN_FALSO_POSITIVO} —{" "}
+            (confirmar ≥ {MIN_CONFIRMAR} · falso positivo ≥ {MIN_FALSO_POSITIVO} —{' '}
             {comentarioLength})
           </span>
         </Label>
@@ -64,9 +64,9 @@ export function ReviewActionsBar({
           rows={3}
           maxLength={1000}
           aria-invalid={mostrarErroComentario}
-          aria-describedby={mostrarErroComentario ? "comentario-revisao-erro" : undefined}
+          aria-describedby={mostrarErroComentario ? 'comentario-revisao-erro' : undefined}
           className={
-            mostrarErroComentario ? "border-destructive focus-visible:ring-destructive" : ""
+            mostrarErroComentario ? 'border-destructive focus-visible:ring-destructive' : ''
           }
         />
         {mostrarErroComentario && erroComentario && (
@@ -82,7 +82,7 @@ export function ReviewActionsBar({
             <Loader2 className="h-4 w-4 animate-spin" />
           ) : (
             <SkipForward className="h-4 w-4" />
-          )}{" "}
+          )}{' '}
           Pular
         </Button>
         <Button
@@ -111,22 +111,22 @@ export function ReviewActionsBar({
             <Loader2 className="h-4 w-4 animate-spin" />
           ) : (
             <CheckCircle2 className="h-4 w-4" />
-          )}{" "}
+          )}{' '}
           Confirmar problema
         </Button>
       </div>
 
       <p className="text-[11px] text-muted-foreground text-right">
-        Atalhos:{" "}
-        <kbd className="px-1 py-0.5 rounded border bg-muted font-mono text-[10px]">Alt+C</kbd>{" "}
-        confirmar ·{" "}
-        <kbd className="px-1 py-0.5 rounded border bg-muted font-mono text-[10px]">Alt+F</kbd>{" "}
-        falso positivo ·{" "}
-        <kbd className="px-1 py-0.5 rounded border bg-muted font-mono text-[10px]">Alt+S</kbd>{" "}
-        pular ·{" "}
+        Atalhos:{' '}
+        <kbd className="px-1 py-0.5 rounded border bg-muted font-mono text-[10px]">Alt+C</kbd>{' '}
+        confirmar ·{' '}
+        <kbd className="px-1 py-0.5 rounded border bg-muted font-mono text-[10px]">Alt+F</kbd> falso
+        positivo ·{' '}
+        <kbd className="px-1 py-0.5 rounded border bg-muted font-mono text-[10px]">Alt+S</kbd> pular
+        ·{' '}
         <kbd className="px-1 py-0.5 rounded border bg-muted font-mono text-[10px]">
           Ctrl/Cmd+Enter
-        </kbd>{" "}
+        </kbd>{' '}
         confirmar
       </p>
     </>

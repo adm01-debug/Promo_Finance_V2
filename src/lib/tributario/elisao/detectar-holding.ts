@@ -10,7 +10,7 @@ export function detectarHolding(ctx: ContextoEmpresa): OportunidadeDetectada {
 
   // IRPFM (Lei 15.270/2025): alíquota progressiva sobre dividendos PF > R$ 50k/mês
   // Holding bem estruturada pode eliminar/diferir esse imposto
-  const irpfmEstimado = aplicavel ? Math.max(0, dividendos - TETO_DIVIDENDOS_IRPFM) * 0.10 : 0;
+  const irpfmEstimado = aplicavel ? Math.max(0, dividendos - TETO_DIVIDENDOS_IRPFM) * 0.1 : 0;
   const economiaEstimada = irpfmEstimado * 0.7; // assume 70% de eficiência
 
   return {
@@ -31,6 +31,7 @@ export function detectarHolding(ctx: ContextoEmpresa): OportunidadeDetectada {
       'Integralizar capital com bens (avaliar ITBI/ITCMD)',
       'Planejar distribuição via JCP + dividendos',
     ],
-    observacoes: 'IRPFM entra em vigor em 2026 (Lei 15.270/2025). Reestruturação ideal antes do prazo.',
+    observacoes:
+      'IRPFM entra em vigor em 2026 (Lei 15.270/2025). Reestruturação ideal antes do prazo.',
   };
 }

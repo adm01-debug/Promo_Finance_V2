@@ -90,7 +90,11 @@ function formatar(campo: keyof ParametrosSimulacao, valor: unknown): string {
   if (!Number.isFinite(n)) return String(valor);
   if (PERCENTUAIS_FRACIONARIOS.has(campo)) return `${(n * 100).toFixed(2)}%`;
   if (PERCENTUAIS_INTEIROS.has(campo)) return `${n.toFixed(2)}%`;
-  return n.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL', maximumFractionDigits: 0 });
+  return n.toLocaleString('pt-BR', {
+    style: 'currency',
+    currency: 'BRL',
+    maximumFractionDigits: 0,
+  });
 }
 
 /** Tolerância para evitar ruído por arredondamento de ponto flutuante. */

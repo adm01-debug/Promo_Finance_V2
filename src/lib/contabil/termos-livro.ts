@@ -46,8 +46,18 @@ const LABEL_LIVRO: Record<TipoLivro, string> = {
 };
 
 const MESES = [
-  'janeiro', 'fevereiro', 'março', 'abril', 'maio', 'junho',
-  'julho', 'agosto', 'setembro', 'outubro', 'novembro', 'dezembro',
+  'janeiro',
+  'fevereiro',
+  'março',
+  'abril',
+  'maio',
+  'junho',
+  'julho',
+  'agosto',
+  'setembro',
+  'outubro',
+  'novembro',
+  'dezembro',
 ];
 
 /** Converte `yyyy-MM-dd` em `dd/MM/yyyy` sem depender de fuso horário. */
@@ -97,12 +107,12 @@ export function buildTermoAbertura(p: TermoParams): string[] {
   return [
     `TERMO DE ABERTURA — ${label} Nº ${p.numeroLivro}`,
     '',
-    `Contém este livro ${p.totalPaginas} página(s), numeradas sequencialmente de 1 a ${p.totalPaginas}, `
-      + `todas rubricadas por meio eletrônico, e servirá como ${label.toLowerCase()} da empresa `
-      + `${identificacao(p)}.`,
+    `Contém este livro ${p.totalPaginas} página(s), numeradas sequencialmente de 1 a ${p.totalPaginas}, ` +
+      `todas rubricadas por meio eletrônico, e servirá como ${label.toLowerCase()} da empresa ` +
+      `${identificacao(p)}.`,
     '',
     `Período escriturado: de ${formatarDataIso(p.dataInicio)} a ${formatarDataIso(p.dataFim)}.`,
-    ...assinaturas(p).length ? ['', 'Responsáveis:', ...assinaturas(p)] : [],
+    ...(assinaturas(p).length ? ['', 'Responsáveis:', ...assinaturas(p)] : []),
   ];
 }
 
@@ -112,11 +122,11 @@ export function buildTermoEncerramento(p: TermoParams): string[] {
   return [
     `TERMO DE ENCERRAMENTO — ${label} Nº ${p.numeroLivro}`,
     '',
-    `Contém este livro ${p.totalPaginas} página(s), numeradas sequencialmente de 1 a ${p.totalPaginas}, `
-      + `e encerra a escrituração do ${label.toLowerCase()} da empresa ${identificacao(p)}, `
-      + `referente ao período de ${formatarDataIso(p.dataInicio)} a ${formatarDataIso(p.dataFim)}.`,
+    `Contém este livro ${p.totalPaginas} página(s), numeradas sequencialmente de 1 a ${p.totalPaginas}, ` +
+      `e encerra a escrituração do ${label.toLowerCase()} da empresa ${identificacao(p)}, ` +
+      `referente ao período de ${formatarDataIso(p.dataInicio)} a ${formatarDataIso(p.dataFim)}.`,
     '',
     `${p.municipio ? `${p.municipio}, ` : ''}${dataPorExtenso(p.dataFim)}.`,
-    ...assinaturas(p).length ? ['', 'Responsáveis:', ...assinaturas(p)] : [],
+    ...(assinaturas(p).length ? ['', 'Responsáveis:', ...assinaturas(p)] : []),
   ];
 }

@@ -2,7 +2,13 @@ import { Search, X } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 import type { StatusFilter, ValidacaoFilter } from './types';
 
 interface Props {
@@ -28,7 +34,9 @@ export function SpedFilterBar({
   return (
     <div className="flex flex-wrap items-end gap-3 rounded-2xl border border-white/10 bg-card/5 p-4 mb-2">
       <div className="space-y-1.5 flex-1 min-w-[140px]">
-        <Label className="text-[10px] font-black uppercase tracking-widest opacity-50 ml-1">Buscar Ano</Label>
+        <Label className="text-[10px] font-black uppercase tracking-widest opacity-50 ml-1">
+          Buscar Ano
+        </Label>
         <div className="relative">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground" />
           <Input
@@ -41,7 +49,9 @@ export function SpedFilterBar({
       </div>
 
       <div className="space-y-1.5 flex-1 min-w-[160px]">
-        <Label className="text-[10px] font-black uppercase tracking-widest opacity-50 ml-1">Status</Label>
+        <Label className="text-[10px] font-black uppercase tracking-widest opacity-50 ml-1">
+          Status
+        </Label>
         <Select value={statusFilter} onValueChange={(v) => onStatusFilterChange(v as StatusFilter)}>
           <SelectTrigger className="h-10 bg-black/20 border-white/5 rounded-xl text-xs">
             <SelectValue />
@@ -56,8 +66,13 @@ export function SpedFilterBar({
       </div>
 
       <div className="space-y-1.5 flex-1 min-w-[180px]">
-        <Label className="text-[10px] font-black uppercase tracking-widest opacity-50 ml-1">Validações</Label>
-        <Select value={validacaoFilter} onValueChange={(v) => onValidacaoFilterChange(v as ValidacaoFilter)}>
+        <Label className="text-[10px] font-black uppercase tracking-widest opacity-50 ml-1">
+          Validações
+        </Label>
+        <Select
+          value={validacaoFilter}
+          onValueChange={(v) => onValidacaoFilterChange(v as ValidacaoFilter)}
+        >
           <SelectTrigger className="h-10 bg-black/20 border-white/5 rounded-xl text-xs">
             <SelectValue />
           </SelectTrigger>

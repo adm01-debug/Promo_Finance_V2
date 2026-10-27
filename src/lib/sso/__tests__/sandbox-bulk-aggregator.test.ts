@@ -74,7 +74,11 @@ describe('aggregateBulk', () => {
       }),
       mkResult({
         outcome: 'seria_jit',
-        result: { success: true, errors: [], preview: mkPreview({ resolved_role: 'visualizador' }) },
+        result: {
+          success: true,
+          errors: [],
+          preview: mkPreview({ resolved_role: 'visualizador' }),
+        },
       }),
     ]);
     expect(agg.byRole).toEqual([
@@ -99,8 +103,8 @@ describe('aggregateBulk', () => {
         },
       }),
     ]);
-    const admins = agg.groupCoverage.find(g => g.idp_group === 'Admins');
-    const op = agg.groupCoverage.find(g => g.idp_group === 'Op');
+    const admins = agg.groupCoverage.find((g) => g.idp_group === 'Admins');
+    const op = agg.groupCoverage.find((g) => g.idp_group === 'Op');
     expect(admins?.matched_count).toBe(1);
     expect(op?.matched_count).toBe(0);
   });

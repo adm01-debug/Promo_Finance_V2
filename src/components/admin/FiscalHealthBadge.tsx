@@ -1,10 +1,10 @@
-import { useQuery } from "@tanstack/react-query";
-import { Link } from "react-router-dom";
-import { supabaseDyn } from "@/lib/supabase-dynamic";
-import { Badge } from "@/components/ui/badge";
-import { Skeleton } from "@/components/ui/skeleton";
-import { AlertTriangle, CheckCircle2, Scale, ShieldAlert } from "lucide-react";
-import { cn } from "@/lib/utils";
+import { useQuery } from '@tanstack/react-query';
+import { Link } from 'react-router-dom';
+import { supabaseDyn } from '@/lib/supabase-dynamic';
+import { Badge } from '@/components/ui/badge';
+import { Skeleton } from '@/components/ui/skeleton';
+import { AlertTriangle, CheckCircle2, Scale, ShieldAlert } from 'lucide-react';
+import { cn } from '@/lib/utils';
 
 /**
  * Resumo agregado retornado por `public.get_catalogos_tributarios_health`.
@@ -19,13 +19,13 @@ interface CatalogoHealthResumo {
   saudavel: boolean;
 }
 
-type Estado = "ok" | "warning" | "critical" | "unknown";
+type Estado = 'ok' | 'warning' | 'critical' | 'unknown';
 
 const ESTILO: Record<Estado, string> = {
-  ok: "border-success/30 bg-success/10 text-success",
-  warning: "border-warning/30 bg-warning/10 text-warning",
-  critical: "border-destructive/30 bg-destructive/10 text-destructive",
-  unknown: "border-border bg-muted text-muted-foreground",
+  ok: 'border-success/30 bg-success/10 text-success',
+  warning: 'border-warning/30 bg-warning/10 text-warning',
+  critical: 'border-destructive/30 bg-destructive/10 text-destructive',
+  unknown: 'border-border bg-muted text-muted-foreground',
 };
 
 const ICONE: Record<Estado, typeof Scale> = {
@@ -36,12 +36,12 @@ const ICONE: Record<Estado, typeof Scale> = {
 };
 
 function formatarData(iso: string | null): string {
-  if (!iso) return "sem verificação registrada";
-  return new Date(iso).toLocaleString("pt-BR", {
-    day: "2-digit",
-    month: "2-digit",
-    hour: "2-digit",
-    minute: "2-digit",
+  if (!iso) return 'sem verificação registrada';
+  return new Date(iso).toLocaleString('pt-BR', {
+    day: '2-digit',
+    month: '2-digit',
+    hour: '2-digit',
+    minute: '2-digit',
   });
 }
 
@@ -57,12 +57,9 @@ function formatarData(iso: string | null): string {
  */
 export function FiscalHealthBadge({ className }: { className?: string }) {
   const { data, isLoading, isError } = useQuery<CatalogoHealthResumo>({
-    queryKey: ["catalogos-tributarios-health", "resumo"],
+    queryKey: ['catalogos-tributarios-health', 'resumo'],
     queryFn: async () => {
-      const { data, error } = await supabaseDyn.rpc(
-        "get_catalogos_tributarios_health",
-        {},
-      );
+      const { data, error } = await supabaseDyn.rpc('get_catalogos_tributarios_health', {});
       if (error) throw error;
       return data as CatalogoHealthResumo;
     },
@@ -70,37 +67,33 @@ export function FiscalHealthBadge({ className }: { className?: string }) {
     retry: false,
   });
 
-  if (isLoading) return <Skeleton className={cn("h-9 w-64", className)} />;
+  if (isLoading) return <Skeleton className={cn('h-9 w-64', className)} />;
   // Sem permissão ou RPC indisponível: não poluímos o cabeçalho com erro.
   if (isError || !data) return null;
 
-  const estado: Estado = data.criticos > 0
-    ? "critical"
-    : data.avisos > 0
-      ? "warning"
-      : data.saudavel
-        ? "ok"
-        : "unknown";
+  const estado: Estado =
+    data.criticos > 0 ? 'critical' : data.avisos > 0 ? 'warning' : data.saudavel ? 'ok' : 'unknown';
 
   const Icone = ICONE[estado];
 
-  const rotulo = estado === "ok"
-    ? "Catálogos fiscais íntegros"
-    : estado === "critical"
-      ? `${data.criticos} invariante(s) crítica(s)`
-      : estado === "warning"
-        ? `${data.avisos} aviso(s) fiscais`
-        : "Saúde fiscal indeterminada";
+  const rotulo =
+    estado === 'ok'
+      ? 'Catálogos fiscais íntegros'
+      : estado === 'critical'
+        ? `${data.criticos} invariante(s) crítica(s)`
+        : estado === 'warning'
+          ? `${data.avisos} aviso(s) fiscais`
+          : 'Saúde fiscal indeterminada';
 
   return (
     <Link
       to="/admin/telemetria"
       aria-label={`Saúde fiscal: ${rotulo}. Abrir painel de telemetria.`}
       className={cn(
-        "inline-flex items-center gap-2 rounded-md border px-3 py-1.5 text-sm transition-colors",
-        "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring hover:opacity-90",
+        'inline-flex items-center gap-2 rounded-md border px-3 py-1.5 text-sm transition-colors',
+        'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring hover:opacity-90',
         ESTILO[estado],
-        className,
+        className
       )}
     >
       <Icone className="h-4 w-4 shrink-0" aria-hidden />

@@ -1,17 +1,17 @@
-import { Loader2, AlertCircle } from "lucide-react";
+import { Loader2, AlertCircle } from 'lucide-react';
 import {
   Dialog,
   DialogContent,
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Checkbox } from "@/components/ui/checkbox";
-import { Button } from "@/components/ui/button";
-import { RoleCheckboxGroup } from "./RoleCheckboxGroup";
-import type { AppRole } from "@/hooks/useSavedFilters";
+} from '@/components/ui/dialog';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Checkbox } from '@/components/ui/checkbox';
+import { Button } from '@/components/ui/button';
+import { RoleCheckboxGroup } from './RoleCheckboxGroup';
+import type { AppRole } from '@/hooks/useSavedFilters';
 
 interface SavePresetDialogProps {
   open: boolean;
@@ -120,7 +120,7 @@ export function SavePresetDialog({
                 Salvando…
               </>
             ) : (
-              "Salvar"
+              'Salvar'
             )}
           </Button>
         </DialogFooter>

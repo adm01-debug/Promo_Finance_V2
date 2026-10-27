@@ -1,5 +1,11 @@
 import { Brain, FileText, Target, Calendar, DollarSign, User, Sparkles } from 'lucide-react';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+} from '@/components/ui/dialog';
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
 import { cn } from '@/lib/utils';
@@ -15,7 +21,12 @@ interface DetalhesExpandidosDialogProps {
   sugestao: MatchSugestaoIA | null;
 }
 
-export function DetalhesExpandidosDialog({ open, onOpenChange, transacao, sugestao }: DetalhesExpandidosDialogProps) {
+export function DetalhesExpandidosDialog({
+  open,
+  onOpenChange,
+  transacao,
+  sugestao,
+}: DetalhesExpandidosDialogProps) {
   if (!transacao || !sugestao) return null;
 
   return (
@@ -26,9 +37,7 @@ export function DetalhesExpandidosDialog({ open, onOpenChange, transacao, sugest
             <Brain className="h-5 w-5 text-primary" />
             Detalhes do Match IA
           </DialogTitle>
-          <DialogDescription>
-            Análise detalhada da correspondência sugerida
-          </DialogDescription>
+          <DialogDescription>Análise detalhada da correspondência sugerida</DialogDescription>
         </DialogHeader>
 
         <div className="grid grid-cols-2 gap-6">
@@ -52,10 +61,12 @@ export function DetalhesExpandidosDialog({ open, onOpenChange, transacao, sugest
                 </div>
                 <div>
                   <p className="text-xs text-muted-foreground">Valor</p>
-                  <p className={cn(
-                    "font-bold flex items-center gap-1",
-                    transacao.tipo === 'credito' ? "text-success" : "text-destructive"
-                  )}>
+                  <p
+                    className={cn(
+                      'font-bold flex items-center gap-1',
+                      transacao.tipo === 'credito' ? 'text-success' : 'text-destructive'
+                    )}
+                  >
                     <DollarSign className="h-3 w-3" />
                     {formatCurrency(transacao.valor)}
                   </p>
@@ -92,7 +103,9 @@ export function DetalhesExpandidosDialog({ open, onOpenChange, transacao, sugest
                   <p className="text-xs text-muted-foreground">Vencimento</p>
                   <p className="font-medium flex items-center gap-1">
                     <Calendar className="h-3 w-3" />
-                    {sugestao.lancamento?.dataVencimento ? formatDate(sugestao.lancamento.dataVencimento) : '-'}
+                    {sugestao.lancamento?.dataVencimento
+                      ? formatDate(sugestao.lancamento.dataVencimento)
+                      : '-'}
                   </p>
                 </div>
                 <div>
@@ -138,7 +151,7 @@ export function DetalhesExpandidosDialog({ open, onOpenChange, transacao, sugest
 
           <div className="grid grid-cols-2 gap-2">
             {sugestao.motivos.map((motivo, idx) => (
-              <div 
+              <div
                 key={idx}
                 className="flex items-center justify-between p-2 rounded-lg bg-muted/50 border"
               >

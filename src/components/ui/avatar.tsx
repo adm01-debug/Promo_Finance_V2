@@ -78,15 +78,7 @@ function getColorFromName(name: string): string {
 }
 
 export const Avatar = React.forwardRef<HTMLDivElement, AvatarProps>(function Avatar(
-  {
-    src,
-    alt,
-    name,
-    size = 'md',
-    shape = 'circle',
-    status,
-    className,
-  },
+  { src, alt, name, size = 'md', shape = 'circle', status, className },
   ref
 ) {
   const [imageError, setImageError] = useState(false);
@@ -145,12 +137,7 @@ interface AvatarGroupProps {
   className?: string;
 }
 
-export function AvatarGroup({
-  avatars,
-  max = 5,
-  size = 'md',
-  className,
-}: AvatarGroupProps) {
+export function AvatarGroup({ avatars, max = 5, size = 'md', className }: AvatarGroupProps) {
   const visibleAvatars = avatars.slice(0, max);
   const remainingCount = avatars.length - max;
 
@@ -167,17 +154,9 @@ export function AvatarGroup({
       {visibleAvatars.map((avatar, index) => (
         <div
           key={index}
-          className={cn(
-            'ring-2 ring-background rounded-full',
-            index > 0 && overlapClasses[size]
-          )}
+          className={cn('ring-2 ring-background rounded-full', index > 0 && overlapClasses[size])}
         >
-          <Avatar
-            src={avatar.src}
-            name={avatar.name}
-            alt={avatar.alt}
-            size={size}
-          />
+          <Avatar src={avatar.src} name={avatar.name} alt={avatar.alt} size={size} />
         </div>
       ))}
 
@@ -220,21 +199,12 @@ export function AvatarWithName({
   };
 
   return (
-    <div
-      className={cn(
-        'flex items-center gap-3',
-        reverse && 'flex-row-reverse'
-      )}
-    >
+    <div className={cn('flex items-center gap-3', reverse && 'flex-row-reverse')}>
       <Avatar name={name} size={size} {...avatarProps} />
       <div className={reverse ? 'text-right' : ''}>
-        <p className={cn('font-medium text-foreground', textSizes[size].name)}>
-          {name}
-        </p>
+        <p className={cn('font-medium text-foreground', textSizes[size].name)}>{name}</p>
         {subtitle && (
-          <p className={cn('text-muted-foreground', textSizes[size].subtitle)}>
-            {subtitle}
-          </p>
+          <p className={cn('text-muted-foreground', textSizes[size].subtitle)}>{subtitle}</p>
         )}
       </div>
     </div>

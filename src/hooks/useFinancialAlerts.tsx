@@ -19,7 +19,7 @@ export function useFinancialAlerts() {
           event: 'INSERT',
           schema: 'public',
           table: 'logs_baixa_automatica',
-          filter: `empresa_id=eq.${currentEmpresaId}`
+          filter: `empresa_id=eq.${currentEmpresaId}`,
         },
         (payload) => {
           const log = payload.new;
@@ -30,8 +30,8 @@ export function useFinancialAlerts() {
               duration: 8000,
               action: {
                 label: 'Ver Log',
-                onClick: () => window.location.href = '/conciliacao'
-              }
+                onClick: () => (window.location.href = '/conciliacao'),
+              },
             });
           }
         }
@@ -47,7 +47,7 @@ export function useFinancialAlerts() {
           event: 'INSERT',
           schema: 'public',
           table: 'execucoes_regua_cobranca',
-          filter: `empresa_id=eq.${currentEmpresaId}`
+          filter: `empresa_id=eq.${currentEmpresaId}`,
         },
         (payload) => {
           const exec = payload.new;
@@ -58,8 +58,8 @@ export function useFinancialAlerts() {
               duration: 8000,
               action: {
                 label: 'Configurar',
-                onClick: () => window.location.href = '/cobrancas'
-              }
+                onClick: () => (window.location.href = '/cobrancas'),
+              },
             });
           }
         }

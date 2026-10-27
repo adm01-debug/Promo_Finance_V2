@@ -7,7 +7,12 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import {
-  Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
 } from '@/components/ui/table';
 import { FileText, Search, Download } from 'lucide-react';
 import { format, parseISO } from 'date-fns';
@@ -21,10 +26,12 @@ export function OperacoesLista() {
   const { operacoes } = useOperacoesTributaveis(empresaId);
   const [busca, setBusca] = useState('');
 
-  const operacoesFiltradas = operacoes?.filter(op => 
-    op.nome_contraparte?.toLowerCase().includes(busca.toLowerCase()) ||
-    op.documento_numero?.includes(busca)
-  ) || [];
+  const operacoesFiltradas =
+    operacoes?.filter(
+      (op) =>
+        op.nome_contraparte?.toLowerCase().includes(busca.toLowerCase()) ||
+        op.documento_numero?.includes(busca)
+    ) || [];
 
   return (
     <Card>
@@ -37,14 +44,16 @@ export function OperacoesLista() {
           <div className="flex gap-2">
             <div className="relative">
               <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
-              <Input 
-                placeholder="Buscar..." 
+              <Input
+                placeholder="Buscar..."
                 className="pl-8 w-[200px]"
                 value={busca}
-                onChange={e => setBusca(e.target.value)}
+                onChange={(e) => setBusca(e.target.value)}
               />
             </div>
-            <Button variant="outline" size="icon"><Download className="h-4 w-4" /></Button>
+            <Button variant="outline" size="icon">
+              <Download className="h-4 w-4" />
+            </Button>
           </div>
         </div>
       </CardHeader>
@@ -64,7 +73,7 @@ export function OperacoesLista() {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {operacoesFiltradas.slice(0, 50).map(op => (
+              {operacoesFiltradas.slice(0, 50).map((op) => (
                 <TableRow key={op.id}>
                   <TableCell>
                     <Badge variant={op.tipo_operacao.includes('venda') ? 'default' : 'secondary'}>
@@ -75,8 +84,12 @@ export function OperacoesLista() {
                   <TableCell>{op.nome_contraparte || '-'}</TableCell>
                   <TableCell>{format(parseISO(op.data_operacao), 'dd/MM/yy')}</TableCell>
                   <TableCell className="text-right">{formatCurrency(op.valor_operacao)}</TableCell>
-                  <TableCell className="text-right text-primary">{formatCurrency(op.cbs_valor)}</TableCell>
-                  <TableCell className="text-right text-success">{formatCurrency(op.ibs_valor)}</TableCell>
+                  <TableCell className="text-right text-primary">
+                    {formatCurrency(op.cbs_valor)}
+                  </TableCell>
+                  <TableCell className="text-right text-success">
+                    {formatCurrency(op.ibs_valor)}
+                  </TableCell>
                   <TableCell>
                     <Badge variant={op.status === 'processado' ? 'outline' : 'destructive'}>
                       {op.status}

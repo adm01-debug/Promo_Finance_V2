@@ -22,10 +22,15 @@ interface Props {
 
 export function SSOStepValidacao({ form, setForm, consistency, applyAutofix }: Props) {
   const [metadata, setMetadata] = useState<{
-    callback_url?: string; acs_url?: string; entity_id?: string; metadata_xml?: string;
+    callback_url?: string;
+    acs_url?: string;
+    entity_id?: string;
+    metadata_xml?: string;
   } | null>(null);
   const [testResult, setTestResult] = useState<{
-    valid: boolean; message: string; discovered?: Record<string, unknown>;
+    valid: boolean;
+    message: string;
+    discovered?: Record<string, unknown>;
   } | null>(null);
   const test = useTestSSOConfig();
   const genMeta = useGenerateSSOMetadata();
@@ -41,7 +46,7 @@ export function SSOStepValidacao({ form, setForm, consistency, applyAutofix }: P
     });
     setTestResult(r);
     if (r.valid && r.discovered) {
-      setForm(p => ({ ...p, ...r.discovered }));
+      setForm((p) => ({ ...p, ...r.discovered }));
     }
   };
 
@@ -70,7 +75,11 @@ export function SSOStepValidacao({ form, setForm, consistency, applyAutofix }: P
       {testResult && (
         <Alert variant={testResult.valid ? 'success' : 'error'}>
           <AlertDescription className="flex items-center gap-2">
-            {testResult.valid ? <Check className="h-4 w-4 text-success" /> : <X className="h-4 w-4" />}
+            {testResult.valid ? (
+              <Check className="h-4 w-4 text-success" />
+            ) : (
+              <X className="h-4 w-4" />
+            )}
             {testResult.message}
           </AlertDescription>
         </Alert>
@@ -84,7 +93,11 @@ export function SSOStepValidacao({ form, setForm, consistency, applyAutofix }: P
                 <Label className="text-xs">Callback / Redirect URI (cole no IdP)</Label>
                 <div className="flex gap-2 mt-1">
                   <Input readOnly value={metadata.callback_url} className="font-mono text-xs" />
-                  <Button size="icon" variant="outline" onClick={() => copy(metadata.callback_url, 'Callback URL')}>
+                  <Button
+                    size="icon"
+                    variant="outline"
+                    onClick={() => copy(metadata.callback_url ?? '', 'Callback URL')}
+                  >
                     <Copy className="h-4 w-4" />
                   </Button>
                 </div>
@@ -95,7 +108,11 @@ export function SSOStepValidacao({ form, setForm, consistency, applyAutofix }: P
                 <Label className="text-xs">ACS URL (Assertion Consumer Service)</Label>
                 <div className="flex gap-2 mt-1">
                   <Input readOnly value={metadata.acs_url} className="font-mono text-xs" />
-                  <Button size="icon" variant="outline" onClick={() => copy(metadata.acs_url, 'ACS URL')}>
+                  <Button
+                    size="icon"
+                    variant="outline"
+                    onClick={() => copy(metadata.acs_url ?? '', 'ACS URL')}
+                  >
                     <Copy className="h-4 w-4" />
                   </Button>
                 </div>
@@ -106,7 +123,11 @@ export function SSOStepValidacao({ form, setForm, consistency, applyAutofix }: P
                 <Label className="text-xs">Entity ID</Label>
                 <div className="flex gap-2 mt-1">
                   <Input readOnly value={metadata.entity_id} className="font-mono text-xs" />
-                  <Button size="icon" variant="outline" onClick={() => copy(metadata.entity_id, 'Entity ID')}>
+                  <Button
+                    size="icon"
+                    variant="outline"
+                    onClick={() => copy(metadata.entity_id ?? '', 'Entity ID')}
+                  >
                     <Copy className="h-4 w-4" />
                   </Button>
                 </div>
@@ -116,17 +137,29 @@ export function SSOStepValidacao({ form, setForm, consistency, applyAutofix }: P
               <div>
                 <div className="flex items-center justify-between mb-1">
                   <Label className="text-xs">SP Metadata XML</Label>
-                  <Button size="sm" variant="outline" onClick={() => {
-                    const blob = new Blob([metadata.metadata_xml], { type: 'application/xml' });
-                    const a = document.createElement('a');
-                    a.href = URL.createObjectURL(blob);
-                    a.download = `sp-metadata-${form.nome ?? 'sso'}.xml`;
-                    a.click();
-                  }}>
-                    <Download className="h-3 w-3 mr-1" />Baixar
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    onClick={() => {
+                      const blob = new Blob([metadata.metadata_xml ?? ''], {
+                        type: 'application/xml',
+                      });
+                      const a = document.createElement('a');
+                      a.href = URL.createObjectURL(blob);
+                      a.download = `sp-metadata-${form.nome ?? 'sso'}.xml`;
+                      a.click();
+                    }}
+                  >
+                    <Download className="h-3 w-3 mr-1" />
+                    Baixar
                   </Button>
                 </div>
-                <Textarea readOnly value={metadata.metadata_xml} rows={6} className="font-mono text-xs" />
+                <Textarea
+                  readOnly
+                  value={metadata.metadata_xml}
+                  rows={6}
+                  className="font-mono text-xs"
+                />
               </div>
             )}
           </CardContent>
@@ -143,9 +176,14 @@ export function SSOStepValidacao({ form, setForm, consistency, applyAutofix }: P
       <div className="flex items-center justify-between pt-2 border-t">
         <div>
           <Label>Ativar provedor agora</Label>
-          <p className="text-xs text-muted-foreground">Permite que usuários comecem a fazer login</p>
+          <p className="text-xs text-muted-foreground">
+            Permite que usuários comecem a fazer login
+          </p>
         </div>
-        <Switch checked={!!form.ativo} onCheckedChange={v => setForm(p => ({ ...p, ativo: v }))} />
+        <Switch
+          checked={!!form.ativo}
+          onCheckedChange={(v) => setForm((p) => ({ ...p, ativo: v }))}
+        />
       </div>
 
       <SSOConsistencyPanel

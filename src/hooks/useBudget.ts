@@ -30,7 +30,7 @@ export function useBudgets(period?: string) {
       if (period) {
         query = query.eq('period', period);
       }
-      const { data, error } = await query as { data: Budget[] | null, error: unknown };
+      const { data, error } = (await query) as { data: Budget[] | null; error: unknown };
       if (error) throw error;
       return data || [];
     },
@@ -42,17 +42,17 @@ export function useBudgetsWithSpent(period: string, companyId?: string) {
     queryKey: ['budgets-with-spent', period, companyId],
     queryFn: async () => {
       // 1. Fetch budgets for the period and company
-      let query = supabase
-        .from('budgets')
-        .select('*')
-        .eq('period', period);
-      
+      let query = supabase.from('budgets').select('*').eq('period', period);
+
       if (companyId) {
         query = query.eq('company_id', companyId);
       }
-      
-      const { data: budgets, error: budgetError } = await query as { data: Budget[] | null, error: unknown };
-      
+
+      const { data: budgets, error: budgetError } = (await query) as {
+        data: Budget[] | null;
+        error: unknown;
+      };
+
       if (budgetError) throw budgetError;
       if (!budgets) return [];
 
@@ -62,13 +62,21 @@ export function useBudgetsWithSpent(period: string, companyId?: string) {
         .select('valor_pago, categoria:categorias(nome)')
         .eq('status', 'pago')
         .gte('data_pagamento', `${period}-01`)
-        .lt('data_pagamento', period === '2026-12' ? '2027-01-01' : `${period.split('-')[0]}-${String(Number(period.split('-')[1]) + 1).padStart(2, '0')}-01`);
+        .lt(
+          'data_pagamento',
+          period === '2026-12'
+            ? '2027-01-01'
+            : `${period.split('-')[0]}-${String(Number(period.split('-')[1]) + 1).padStart(2, '0')}-01`
+        );
 
       if (companyId) {
         spentQuery = spentQuery.eq('empresa_id', companyId);
       }
 
-      const { data: spentData, error: spentError } = await spentQuery as { data: Array<Record<string, unknown>> | null, error: unknown };
+      const { data: spentData, error: spentError } = (await spentQuery) as {
+        data: Array<Record<string, unknown>> | null;
+        error: unknown;
+      };
 
       if (spentError) throw spentError;
 
@@ -81,15 +89,16 @@ export function useBudgetsWithSpent(period: string, companyId?: string) {
       });
 
       // Merge data
-      return budgets.map(budget => ({
+      return budgets.map((budget) => ({
         ...budget,
         actual_spent: spentByCategory[budget.category] || 0,
         remaining: budget.budgeted_amount - (spentByCategory[budget.category] || 0),
-        percent_used: budget.budgeted_amount > 0 
-          ? (spentByCategory[budget.category] || 0) / budget.budgeted_amount * 100 
-          : 0
+        percent_used:
+          budget.budgeted_amount > 0
+            ? ((spentByCategory[budget.category] || 0) / budget.budgeted_amount) * 100
+            : 0,
       }));
-    }
+    },
   });
 }
 
@@ -97,11 +106,7 @@ export function useCreateBudget() {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: async (input: BudgetInput) => {
-      const { data, error } = await supabase
-        .from('budgets')
-        .insert(input)
-        .select()
-        .single();
+      const { data, error } = await supabase.from('budgets').insert(input).select().single();
       if (error) throw error;
       return data;
     },
@@ -112,7 +117,7 @@ export function useCreateBudget() {
     },
     onError: (error: Error) => {
       toast.error(`Erro ao criar orçamento: ${error.message}`);
-    }
+    },
   });
 }
 
@@ -133,7 +138,7 @@ export function useUpdateBudget() {
       queryClient.invalidateQueries({ queryKey: ['budgets'] });
       queryClient.invalidateQueries({ queryKey: ['budgets-with-spent'] });
       toast.success('Orçamento atualizado!');
-    }
+    },
   });
 }
 
@@ -148,6 +153,6 @@ export function useDeleteBudget() {
       queryClient.invalidateQueries({ queryKey: ['budgets'] });
       queryClient.invalidateQueries({ queryKey: ['budgets-with-spent'] });
       toast.success('Orçamento excluído!');
-    }
+    },
   });
 }

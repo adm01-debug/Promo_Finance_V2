@@ -2,7 +2,13 @@ import { Search } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 import type { BalanceteFilters } from './types';
 
 interface Props {
@@ -17,7 +23,10 @@ export function BalanceteToolbar({ values, setField, countLabel }: Props) {
   return (
     <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-5 items-end">
       <div className="space-y-2">
-        <Label htmlFor="bal-inicio" className="text-[10px] font-black uppercase tracking-widest opacity-60">
+        <Label
+          htmlFor="bal-inicio"
+          className="text-[10px] font-black uppercase tracking-widest opacity-60"
+        >
           Data inicial
         </Label>
         <Input
@@ -30,7 +39,10 @@ export function BalanceteToolbar({ values, setField, countLabel }: Props) {
       </div>
 
       <div className="space-y-2">
-        <Label htmlFor="bal-fim" className="text-[10px] font-black uppercase tracking-widest opacity-60">
+        <Label
+          htmlFor="bal-fim"
+          className="text-[10px] font-black uppercase tracking-widest opacity-60"
+        >
           Data final
         </Label>
         <Input
@@ -43,7 +55,10 @@ export function BalanceteToolbar({ values, setField, countLabel }: Props) {
       </div>
 
       <div className="space-y-2">
-        <Label htmlFor="bal-nivel" className="text-[10px] font-black uppercase tracking-widest opacity-60">
+        <Label
+          htmlFor="bal-nivel"
+          className="text-[10px] font-black uppercase tracking-widest opacity-60"
+        >
           Nível máximo
         </Label>
         <Select value={values.nivelMax} onValueChange={(v) => setField('nivelMax', v)}>
@@ -61,11 +76,17 @@ export function BalanceteToolbar({ values, setField, countLabel }: Props) {
       </div>
 
       <div className="space-y-2">
-        <Label htmlFor="bal-busca" className="text-[10px] font-black uppercase tracking-widest opacity-60">
+        <Label
+          htmlFor="bal-busca"
+          className="text-[10px] font-black uppercase tracking-widest opacity-60"
+        >
           Buscar conta
         </Label>
         <div className="relative">
-          <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" aria-hidden />
+          <Search
+            className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground"
+            aria-hidden
+          />
           <Input
             id="bal-busca"
             value={values.busca}
@@ -83,9 +104,13 @@ export function BalanceteToolbar({ values, setField, countLabel }: Props) {
             checked={values.apenasComMovimento}
             onCheckedChange={(v) => setField('apenasComMovimento', v)}
           />
-          <Label htmlFor="bal-mov" className="text-xs font-semibold">Só com movimento</Label>
+          <Label htmlFor="bal-mov" className="text-xs font-semibold">
+            Só com movimento
+          </Label>
         </div>
-        <span className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">{countLabel}</span>
+        <span className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">
+          {countLabel}
+        </span>
       </div>
     </div>
   );

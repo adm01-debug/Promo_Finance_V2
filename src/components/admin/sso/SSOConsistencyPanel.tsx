@@ -24,7 +24,10 @@ const FILTER_CHIPS: Array<{ id: Filter; label: string }> = [
   { id: 'info', label: 'Infos' },
 ];
 
-const SEVERITY_META: Record<Severity, { icon: typeof AlertCircle; className: string; label: string }> = {
+const SEVERITY_META: Record<
+  Severity,
+  { icon: typeof AlertCircle; className: string; label: string }
+> = {
   error: { icon: AlertCircle, className: 'text-destructive', label: 'Erro' },
   warning: { icon: AlertTriangle, className: 'text-warning', label: 'Aviso' },
   info: { icon: Info, className: 'text-primary', label: 'Info' },
@@ -38,7 +41,14 @@ const SCOPE_LABEL: Record<string, string> = {
   global: 'Configuração geral',
 };
 
-export function SSOConsistencyPanel({ issues, errors, warnings, infos, onAutofix, className }: Props) {
+export function SSOConsistencyPanel({
+  issues,
+  errors,
+  warnings,
+  infos,
+  onAutofix,
+  className,
+}: Props) {
   const [filter, setFilter] = useState<Filter>('all');
 
   const filtered = useMemo(() => {
@@ -71,14 +81,35 @@ export function SSOConsistencyPanel({ issues, errors, warnings, infos, onAutofix
             Consistência da configuração
           </CardTitle>
           <div className="flex items-center gap-1.5">
-            <Badge variant="outline" className={cn('gap-1', errors.length ? 'border-destructive/40 text-destructive' : 'text-muted-foreground')}>
-              <AlertCircle className="h-3 w-3" />{errors.length} erros
+            <Badge
+              variant="outline"
+              className={cn(
+                'gap-1',
+                errors.length ? 'border-destructive/40 text-destructive' : 'text-muted-foreground'
+              )}
+            >
+              <AlertCircle className="h-3 w-3" />
+              {errors.length} erros
             </Badge>
-            <Badge variant="outline" className={cn('gap-1', warnings.length ? 'border-warning/40 text-warning' : 'text-muted-foreground')}>
-              <AlertTriangle className="h-3 w-3" />{warnings.length} avisos
+            <Badge
+              variant="outline"
+              className={cn(
+                'gap-1',
+                warnings.length ? 'border-warning/40 text-warning' : 'text-muted-foreground'
+              )}
+            >
+              <AlertTriangle className="h-3 w-3" />
+              {warnings.length} avisos
             </Badge>
-            <Badge variant="outline" className={cn('gap-1', infos.length ? 'border-primary/40 text-primary' : 'text-muted-foreground')}>
-              <Info className="h-3 w-3" />{infos.length} infos
+            <Badge
+              variant="outline"
+              className={cn(
+                'gap-1',
+                infos.length ? 'border-primary/40 text-primary' : 'text-muted-foreground'
+              )}
+            >
+              <Info className="h-3 w-3" />
+              {infos.length} infos
             </Badge>
           </div>
         </div>

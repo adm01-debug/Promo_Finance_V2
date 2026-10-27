@@ -62,10 +62,7 @@ export function useBankAccounts() {
   return useQuery({
     queryKey: QUERY_KEYS.all,
     queryFn: async (): Promise<BankAccount[]> => {
-      const { data, error } = await supabase
-        .from('contas_bancarias')
-        .select('*')
-        .order('banco');
+      const { data, error } = await supabase.from('contas_bancarias').select('*').order('banco');
 
       if (error) throw error;
       return (data || []) as BankAccount[];
@@ -120,7 +117,13 @@ export function useBankAccountMutations() {
   });
 
   const updateMutation = useMutation({
-    mutationFn: async ({ id, data: input }: { id: string; data: Partial<BankAccountInput> }): Promise<BankAccount> => {
+    mutationFn: async ({
+      id,
+      data: input,
+    }: {
+      id: string;
+      data: Partial<BankAccountInput>;
+    }): Promise<BankAccount> => {
       const { data, error } = await supabase
         .from('contas_bancarias')
         .update({ ...input, updated_at: new Date().toISOString() })
@@ -163,10 +166,7 @@ export function useBankAccountMutations() {
     create: createMutation.mutateAsync,
     update: updateMutation.mutateAsync,
     delete: deleteMutation.mutateAsync,
-    isLoading:
-      createMutation.isPending ||
-      updateMutation.isPending ||
-      deleteMutation.isPending,
+    isLoading: createMutation.isPending || updateMutation.isPending || deleteMutation.isPending,
   };
 }
 

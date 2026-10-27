@@ -1,8 +1,24 @@
 import { useEffect, useState } from 'react';
-import { Building2, Check, ChevronsUpDown, ArrowUpCircle, ArrowDownCircle, RefreshCcw, Receipt } from 'lucide-react';
+import {
+  Building2,
+  Check,
+  ChevronsUpDown,
+  ArrowUpCircle,
+  ArrowDownCircle,
+  RefreshCcw,
+  Receipt,
+} from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
-import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList, CommandSeparator } from '@/components/ui/command';
+import {
+  Command,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+  CommandList,
+  CommandSeparator,
+} from '@/components/ui/command';
 import { Badge } from '@/components/ui/badge';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 import { useUserEmpresas, getCurrentEmpresaId, setCurrentEmpresaId } from '@/hooks/useUserEmpresas';
@@ -11,16 +27,16 @@ import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 
-
-
 function getInitials(label: string): string {
-  return label
-    .replace(/[^A-Za-zÀ-ÿ0-9 ]/g, '')
-    .split(/\s+/)
-    .filter(Boolean)
-    .slice(0, 2)
-    .map((w) => w[0]?.toUpperCase() ?? '')
-    .join('') || '??';
+  return (
+    label
+      .replace(/[^A-Za-zÀ-ÿ0-9 ]/g, '')
+      .split(/\s+/)
+      .filter(Boolean)
+      .slice(0, 2)
+      .map((w) => w[0]?.toUpperCase() ?? '')
+      .join('') || '??'
+  );
 }
 
 export function EmpresaSwitcher() {
@@ -100,14 +116,14 @@ export function EmpresaSwitcher() {
                     'relative h-9 px-3 rounded-xl flex items-center gap-2 text-[10px] font-black transition-all duration-500 border group',
                     isActive
                       ? 'bg-primary text-primary-foreground border-primary shadow-[0_8px_20px_-4px_rgba(var(--primary),0.4)] scale-105 z-10'
-                      : 'bg-transparent text-foreground/40 border-transparent hover:bg-card/10 hover:text-white hover:border-white/10',
+                      : 'bg-transparent text-foreground/40 border-transparent hover:bg-card/10 hover:text-white hover:border-white/10'
                   )}
                 >
                   <span className="tracking-tighter uppercase whitespace-nowrap">
                     {getInitials(label)}
                   </span>
                   {isActive && (
-                    <motion.span 
+                    <motion.span
                       initial={{ width: 0, opacity: 0 }}
                       animate={{ width: 'auto', opacity: 1 }}
                       className="truncate max-w-[80px] font-bold"
@@ -120,7 +136,10 @@ export function EmpresaSwitcher() {
                   )}
                 </button>
               </TooltipTrigger>
-              <TooltipContent side="bottom" className="text-[10px] font-bold bg-background/95 backdrop-blur-md border-white/10">
+              <TooltipContent
+                side="bottom"
+                className="text-[10px] font-bold bg-background/95 backdrop-blur-md border-white/10"
+              >
                 <div className="flex flex-col gap-0.5">
                   <span className="text-foreground uppercase tracking-wider">{label}</span>
                   <span className="text-muted-foreground font-mono">{v.empresa.cnpj}</span>
@@ -132,7 +151,6 @@ export function EmpresaSwitcher() {
       </div>
 
       <div className="hidden lg:block w-px h-6 bg-card/10 mx-1" />
-
 
       {/* Dropdown completo (sempre visível) */}
       <Popover open={open} onOpenChange={setOpen}>
@@ -164,12 +182,16 @@ export function EmpresaSwitcher() {
             <CommandInput placeholder="Buscar empresa…" className="h-12" />
             <CommandList className="max-h-[500px]">
               <CommandEmpty>Nenhuma empresa encontrada.</CommandEmpty>
-              
+
               <CommandGroup heading="Acesso Rápido a Dashboards">
                 <div className="grid grid-cols-2 gap-1 p-2">
                   {[
                     { label: 'Contas a Pagar', icon: ArrowUpCircle, path: '/dashboard-pagar' },
-                    { label: 'Contas a Receber', icon: ArrowDownCircle, path: '/dashboard-receber' },
+                    {
+                      label: 'Contas a Receber',
+                      icon: ArrowDownCircle,
+                      path: '/dashboard-receber',
+                    },
                     { label: 'Conciliação', icon: RefreshCcw, path: '/dashboard-conciliacao' },
                     { label: 'Aging & Cobrança', icon: Receipt, path: '/dashboard-aging' },
                   ].map((dash) => (
@@ -181,7 +203,9 @@ export function EmpresaSwitcher() {
                       className="h-14 flex flex-col items-center justify-center gap-1 rounded-xl hover:bg-primary/10 hover:text-primary transition-all group"
                     >
                       <dash.icon className="h-4 w-4 transition-transform group-hover:scale-110" />
-                      <span className="text-[10px] font-bold uppercase tracking-tighter">{dash.label}</span>
+                      <span className="text-[10px] font-bold uppercase tracking-tighter">
+                        {dash.label}
+                      </span>
                     </Button>
                   ))}
                 </div>
@@ -197,19 +221,28 @@ export function EmpresaSwitcher() {
                     <CommandItem
                       key={v.empresa_id}
                       className={cn(
-                        "p-3 rounded-xl m-1 transition-all duration-300 cursor-pointer group",
-                        isActive ? "bg-primary/10" : "hover:bg-card/5"
+                        'p-3 rounded-xl m-1 transition-all duration-300 cursor-pointer group',
+                        isActive ? 'bg-primary/10' : 'hover:bg-card/5'
                       )}
                       onSelect={() => switchTo(v.empresa_id)}
                     >
-                      <div className={cn(
-                        "h-8 w-8 rounded-lg flex items-center justify-center mr-3 font-black text-xs transition-colors",
-                        isActive ? "bg-primary text-primary-foreground" : "bg-card/5 text-primary-foreground/40 group-hover:bg-card/10 group-hover:text-primary-foreground"
-                      )}>
+                      <div
+                        className={cn(
+                          'h-8 w-8 rounded-lg flex items-center justify-center mr-3 font-black text-xs transition-colors',
+                          isActive
+                            ? 'bg-primary text-primary-foreground'
+                            : 'bg-card/5 text-primary-foreground/40 group-hover:bg-card/10 group-hover:text-primary-foreground'
+                        )}
+                      >
                         {getInitials(label)}
                       </div>
                       <div className="flex-1 min-w-0">
-                        <div className={cn("truncate text-sm font-bold", isActive ? "text-primary" : "text-foreground")}>
+                        <div
+                          className={cn(
+                            'truncate text-sm font-bold',
+                            isActive ? 'text-primary' : 'text-foreground'
+                          )}
+                        >
                           {label}
                         </div>
                         <div className="text-[10px] text-muted-foreground font-mono opacity-60">
@@ -223,7 +256,6 @@ export function EmpresaSwitcher() {
               </CommandGroup>
             </CommandList>
           </Command>
-
         </PopoverContent>
       </Popover>
     </div>

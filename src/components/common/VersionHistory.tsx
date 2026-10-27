@@ -1,11 +1,11 @@
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
-import { 
-  Sheet, 
-  SheetContent, 
-  SheetHeader, 
-  SheetTitle, 
-  SheetDescription 
+import {
+  Sheet,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+  SheetDescription,
 } from '@/components/ui/sheet';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { History, User, Clock, ChevronRight } from 'lucide-react';
@@ -31,7 +31,7 @@ export function VersionHistory({ open, onOpenChange, recordId, tableName }: Vers
         .eq('table_name', tableName)
         .eq('record_id', recordId)
         .order('created_at', { ascending: false });
-      
+
       if (error) throw error;
       return data || [];
     },
@@ -52,15 +52,13 @@ export function VersionHistory({ open, onOpenChange, recordId, tableName }: Vers
             <History className="h-5 w-5 text-primary" />
             Histórico de Alterações
           </SheetTitle>
-          <SheetDescription>
-            Rastro de auditoria para o registro selecionado
-          </SheetDescription>
+          <SheetDescription>Rastro de auditoria para o registro selecionado</SheetDescription>
         </SheetHeader>
 
         <ScrollArea className="h-[calc(100vh-120px)] mt-6 pr-4">
           {isLoading ? (
             <div className="space-y-4">
-              {[1, 2, 3].map(i => (
+              {[1, 2, 3].map((i) => (
                 <Skeleton key={i} className="h-32 w-full rounded-xl" />
               ))}
             </div>
@@ -82,29 +80,38 @@ export function VersionHistory({ open, onOpenChange, recordId, tableName }: Vers
                         </Badge>
                         <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
                           <Clock className="h-3 w-3" />
-                          {format(new Date(log.created_at), "dd MMM, HH:mm", { locale: ptBR })}
+                          {format(new Date(log.created_at), 'dd MMM, HH:mm', { locale: ptBR })}
                         </div>
                       </div>
 
                       <div className="flex items-center gap-2 text-sm font-medium">
                         <User className="h-4 w-4 text-primary" />
-                        <span className="truncate">{log.user_email || 'Sistema / Automatizado'}</span>
+                        <span className="truncate">
+                          {log.user_email || 'Sistema / Automatizado'}
+                        </span>
                       </div>
 
                       {log.action === 'UPDATE' && log.new_data && log.old_data && (
                         <div className="space-y-2 mt-2">
-                          {Object.keys(log.new_data as object).map(key => {
+                          {Object.keys(log.new_data as object).map((key) => {
                             const oldData = log.old_data as Record<string, unknown>;
                             const newData = log.new_data as Record<string, unknown>;
                             const oldVal = oldData[key];
                             const newVal = newData[key];
                             if (oldVal === newVal) return null;
-                            
+
                             return (
-                              <div key={key} className="text-xs p-2 rounded bg-black/20 border border-white/5">
-                                <p className="font-bold text-primary mb-1 uppercase tracking-tighter">{key.replace(/_/g, ' ')}</p>
+                              <div
+                                key={key}
+                                className="text-xs p-2 rounded bg-black/20 border border-white/5"
+                              >
+                                <p className="font-bold text-primary mb-1 uppercase tracking-tighter">
+                                  {key.replace(/_/g, ' ')}
+                                </p>
                                 <div className="flex items-center gap-2 text-muted-foreground">
-                                  <span className="line-through opacity-50">{formatValue(oldVal)}</span>
+                                  <span className="line-through opacity-50">
+                                    {formatValue(oldVal)}
+                                  </span>
                                   <ChevronRight className="h-3 w-3" />
                                   <span className="text-foreground">{formatValue(newVal)}</span>
                                 </div>

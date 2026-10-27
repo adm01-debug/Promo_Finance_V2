@@ -37,7 +37,9 @@ export function saveAutoContingencyConfig(config: AutoContingencyConfig): void {
   }
 }
 
-export function addContingencyRule(rule: Omit<ContingencyRule, 'id' | 'createdAt'>): ContingencyRule {
+export function addContingencyRule(
+  rule: Omit<ContingencyRule, 'id' | 'createdAt'>
+): ContingencyRule {
   const config = getAutoContingencyConfig();
   const newRule: ContingencyRule = {
     ...rule,
@@ -97,7 +99,9 @@ export function evaluateContingencyRules(): {
     return { shouldActivate: false, triggeredRule: null, reason: '' };
   }
 
-  const enabledRules = config.rules.filter((r) => r.enabled).sort((a, b) => a.priority - b.priority);
+  const enabledRules = config.rules
+    .filter((r) => r.enabled)
+    .sort((a, b) => a.priority - b.priority);
 
   for (const rule of enabledRules) {
     let triggered = false;
@@ -165,7 +169,7 @@ export async function runAutoContingencyCheck(): Promise<{
       evaluation.reason,
       'Sistema (Automático)',
       undefined,
-      true,
+      true
     );
     return { action: 'activated', rule: evaluation.triggeredRule, newState };
   }

@@ -23,7 +23,7 @@ describe('validarConsistenciaNcmCst', () => {
   it('penaliza eletrônicos (8517) sem Substituição Tributária', () => {
     const r = validarConsistenciaNcmCst('85171100', '00');
     expect(r.score).toBe(85);
-    expect(r.divergencias.some(d => d.mensagem.includes('Substituição Tributária'))).toBe(true);
+    expect(r.divergencias.some((d) => d.mensagem.includes('Substituição Tributária'))).toBe(true);
   });
 
   it('aceita eletrônicos (8517) com CST de ST (60)', () => {
@@ -33,7 +33,7 @@ describe('validarConsistenciaNcmCst', () => {
   it('penaliza NCM com tamanho inválido', () => {
     const r = validarConsistenciaNcmCst('1234', '00');
     expect(r.score).toBe(90);
-    expect(r.divergencias.some(d => d.campo === 'NCM')).toBe(true);
+    expect(r.divergencias.some((d) => d.campo === 'NCM')).toBe(true);
   });
 
   it('acumula múltiplas divergências (monofásico + tamanho inválido)', () => {

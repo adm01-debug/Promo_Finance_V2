@@ -34,8 +34,8 @@ export function ProgressoMigracao({ percentual }: Props) {
               Migração para IBS/CBS
             </CardDescription>
           </div>
-          <Badge 
-            variant={percentual >= 100 ? "default" : "secondary"}
+          <Badge
+            variant={percentual >= 100 ? 'default' : 'secondary'}
             className="text-xs sm:text-sm px-2 sm:px-3 py-0.5 sm:py-1 self-start sm:self-auto flex-shrink-0"
           >
             {percentual.toFixed(0)}% migrado
@@ -51,16 +51,16 @@ export function ProgressoMigracao({ percentual }: Props) {
             transition={{ duration: 1, ease: 'easeOut' }}
             className="absolute inset-y-0 left-0 bg-gradient-to-r from-amber-500 via-primary to-emerald-500 rounded-full"
           />
-          
+
           {/* Efeito de brilho */}
           <motion.div
             initial={{ x: '-100%' }}
             animate={{ x: '200%' }}
-            transition={{ 
-              duration: 2, 
-              repeat: Infinity, 
+            transition={{
+              duration: 2,
+              repeat: Infinity,
               repeatDelay: 3,
-              ease: 'linear'
+              ease: 'linear',
             }}
             className="absolute inset-y-0 w-1/3 bg-gradient-to-r from-transparent via-white/30 to-transparent"
           />
@@ -71,11 +71,12 @@ export function ProgressoMigracao({ percentual }: Props) {
           <div className="flex justify-between">
             {MARCOS.map((marco, i) => {
               const isCompleted = percentual >= marco.percent;
-              const isCurrent = percentual >= marco.percent && 
+              const isCurrent =
+                percentual >= marco.percent &&
                 (i === MARCOS.length - 1 || percentual < MARCOS[i + 1].percent);
 
               return (
-                <div 
+                <div
                   key={marco.percent}
                   className="flex flex-col items-center"
                   style={{ flex: i === 0 ? 0 : 1 }}
@@ -85,11 +86,11 @@ export function ProgressoMigracao({ percentual }: Props) {
                     animate={{ scale: 1, opacity: 1 }}
                     transition={{ delay: 0.3 + i * 0.1 }}
                     className={cn(
-                      "w-5 h-5 sm:w-8 sm:h-8 rounded-full flex items-center justify-center border-2 transition-all duration-300",
-                      isCompleted 
-                        ? "bg-primary border-primary text-primary-foreground" 
-                        : "bg-muted border-muted-foreground/30 text-muted-foreground",
-                      isCurrent && "ring-2 sm:ring-4 ring-primary/20 animate-pulse"
+                      'w-5 h-5 sm:w-8 sm:h-8 rounded-full flex items-center justify-center border-2 transition-all duration-300',
+                      isCompleted
+                        ? 'bg-primary border-primary text-primary-foreground'
+                        : 'bg-muted border-muted-foreground/30 text-muted-foreground',
+                      isCurrent && 'ring-2 sm:ring-4 ring-primary/20 animate-pulse'
                     )}
                   >
                     {isCompleted ? (
@@ -98,10 +99,16 @@ export function ProgressoMigracao({ percentual }: Props) {
                       <span className="text-[8px] sm:text-xs font-medium">{i + 1}</span>
                     )}
                   </motion.div>
-                  <span className={cn(
-                    "mt-1 sm:mt-2 text-[10px] sm:text-xs font-medium",
-                    isCurrent ? "text-primary" : isCompleted ? "text-foreground" : "text-muted-foreground"
-                  )}>
+                  <span
+                    className={cn(
+                      'mt-1 sm:mt-2 text-[10px] sm:text-xs font-medium',
+                      isCurrent
+                        ? 'text-primary'
+                        : isCompleted
+                          ? 'text-foreground'
+                          : 'text-muted-foreground'
+                    )}
+                  >
                     {marco.year}
                   </span>
                   <span className="text-[8px] sm:text-[10px] text-muted-foreground hidden sm:block">

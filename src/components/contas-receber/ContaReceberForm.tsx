@@ -1,5 +1,5 @@
 import { todayISOLocal } from '@/lib/formatters';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef, type ComponentProps } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
@@ -20,6 +20,9 @@ import { toast } from '@/hooks/use-toast';
 import { useConfetti } from '@/hooks/useConfetti';
 import { sounds } from '@/lib/sound-feedback';
 import { logger } from '@/lib/logger';
+import { ConflitoVersaoError, updateComLockOtimista } from '@/lib/optimistic-lock';
+import { useUnsavedChangesGuard } from '@/components/navigation/unsaved-guard-context';
+import { navigateWithUnsavedGuard } from '@/lib/unsaved-guard';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Form } from '@/components/ui/form';
 import { Button } from '@/components/ui/button';
@@ -66,6 +69,7 @@ interface ContaReceber {
   categoria_id: string | null;
   conta_bancaria_id: string | null;
   tipo_cobranca: string;
+  updated_at: string;
 }
 
 interface ContaReceberFormProps {
@@ -79,6 +83,9 @@ export function ContaReceberForm({ open, onOpenChange, conta }: ContaReceberForm
   const queryClient = useQueryClient();
   const confetti = useConfetti();
   const [showClienteSelect, setShowClienteSelect] = useState(false);
+  // Versao fresca apos conflito: `conta` fica congelado no form; em
+  // ConflitoVersaoError recarregamos o updated_at para a proxima tentativa.
+  const [versaoEsperada, setVersaoEsperada] = useState<string | null>(null);
   const isEditing = !!conta;
 
   const { data: clientes = [] } = useClientes();
@@ -102,11 +109,33 @@ export function ContaReceberForm({ open, onOpenChange, conta }: ContaReceberForm
     },
   });
 
+  // Navegar fora com o form sujo pede confirmação ("Descartar alterações?")
+  useUnsavedChangesGuard(open && form.formState.isDirty);
+
+  // Fechar o Dialog (Escape, overlay, X, Cancelar) com o form sujo pede
+  // confirmação — sem isto o descarte era silencioso. Usa o AlertDialog
+  // global da guarda: um dialog próprio aqui abriria fora da camada do
+  // Radix (inacessível) e deixaria marcadores fora de ordem; a guarda
+  // já remove sentinela + marcadores em sequência antes de confirmar.
+  const requestClose = (next: boolean) => {
+    if (!next) {
+      navigateWithUnsavedGuard(() => onOpenChange(false));
+      return;
+    }
+    onOpenChange(next);
+  };
+
   const isParcelado = form.watch('parcelado');
   const numParcelas = form.watch('numero_parcelas') || 1;
 
+  const contaIdRef = useRef<string | null>(null);
+
   useEffect(() => {
+    // Callbacks assíncronos (refetch de conflito) conferem o id aqui antes de
+    // mexer no form — resposta tardia da conta A não pode pisar na conta B.
+    contaIdRef.current = conta?.id ?? null;
     if (conta && open) {
+      setVersaoEsperada(null);
       form.reset({
         cliente_id: conta.cliente_id || undefined,
         cliente_nome: conta.cliente_nome,
@@ -189,9 +218,11 @@ export function ContaReceberForm({ open, onOpenChange, conta }: ContaReceberForm
   const updateMutation = useMutation({
     mutationFn: async (data: ContaReceberFormData) => {
       if (!conta) throw new Error('Conta não encontrada');
-      const { error } = await supabase
-        .from('contas_receber')
-        .update({
+      const novaVersao = await updateComLockOtimista(
+        'contas_receber',
+        conta.id,
+        versaoEsperada ?? conta.updated_at,
+        {
           cliente_id: data.cliente_id || null,
           cliente_nome: data.cliente_nome,
           descricao: data.descricao,
@@ -207,22 +238,74 @@ export function ContaReceberForm({ open, onOpenChange, conta }: ContaReceberForm
           // TODO: colunas 'codigo_barras' e 'link_boleto' não existem em contas_receber no types.ts (removidas)
           chave_pix: data.chave_pix || null,
           observacoes: data.observacoes || null,
-        })
-        .eq('id', conta.id);
-      if (error) throw error;
+        }
+      );
+      // A próxima edição já parte da versão que este write gerou — sem isso,
+      // reabrir rápido usaria a versão pré-save e cairia em falso conflito.
+      setVersaoEsperada(novaVersao);
     },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['contas-receber'] });
+    onSuccess: async () => {
+      // Aguarda a recarga antes de fechar: reabrir o mesmo recebível com a
+      // lista velha forneceria o updated_at pré-save e o próximo envio
+      // cairia em falso conflito.
+      await queryClient.invalidateQueries({ queryKey: ['contas-receber'] });
       toast({ title: 'Conta atualizada', description: 'Alterações salvas.' });
       onOpenChange(false);
     },
     onError: (error: unknown) => {
       logger.error('Error updating conta receber:', error);
-      toast({
-        title: 'Erro ao atualizar',
-        description: 'Tente novamente.',
-        variant: 'destructive',
-      });
+      if (error instanceof ConflitoVersaoError) {
+        if (!conta) return;
+        queryClient.invalidateQueries({ queryKey: ['contas-receber'] });
+        const contaId = conta.id;
+        supabase
+          .from('contas_receber')
+          .select('*')
+          .eq('id', contaId)
+          .single()
+          .then(({ data: row, error: reloadErr }) => {
+            if (reloadErr || !row) {
+              toast({
+                title: 'Conta alterada por outra pessoa',
+                description:
+                  'Não consegui recarregar a versão atual — feche e reabra a conta antes de salvar de novo.',
+                variant: 'destructive',
+              });
+              return;
+            }
+            if (contaIdRef.current !== contaId) return;
+            setVersaoEsperada(row.updated_at);
+            // Recarrega os campos com a versão vigente — salvar de novo em
+            // cima dos valores antigos sobrescreveria a edição da outra pessoa.
+            form.reset({
+              cliente_id: row.cliente_id || undefined,
+              cliente_nome: row.cliente_nome || '',
+              descricao: row.descricao || '',
+              valor: row.valor ?? 0,
+              data_vencimento: row.data_vencimento || '',
+              data_emissao: row.data_emissao || '',
+              empresa_id: row.empresa_id ?? '',
+              centro_custo_id: row.centro_custo_id || undefined,
+              categoria_id: row.categoria_id || undefined,
+              conta_bancaria_id: row.conta_bancaria_id || undefined,
+              tipo_cobranca: row.tipo_cobranca as ContaReceberFormData['tipo_cobranca'],
+              numero_documento: row.numero_documento || undefined,
+              chave_pix: row.chave_pix || undefined,
+              observacoes: row.observacoes || undefined,
+            });
+            toast({
+              title: 'Conta alterada por outra pessoa',
+              description: 'Os dados foram recarregados — revise e salve novamente.',
+              variant: 'destructive',
+            });
+          });
+      } else {
+        toast({
+          title: 'Erro ao atualizar',
+          description: error instanceof Error ? error.message : 'Tente novamente.',
+          variant: 'destructive',
+        });
+      }
     },
   });
 
@@ -237,83 +320,85 @@ export function ContaReceberForm({ open, onOpenChange, conta }: ContaReceberForm
   const handleClienteSelect = (clienteId: string) => {
     const cliente = clientes.find((c) => c.id === clienteId);
     if (cliente) {
-      form.setValue('cliente_id', clienteId);
-      form.setValue('cliente_nome', cliente.razao_social);
+      form.setValue('cliente_id', clienteId, { shouldDirty: true });
+      form.setValue('cliente_nome', cliente.razao_social, { shouldDirty: true });
     }
   };
 
   const isPending = createMutation.isPending || updateMutation.isPending;
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
-        <DialogHeader>
-          <DialogTitle className="flex items-center gap-2 text-xl font-display">
-            <div
-              className={cn(
-                'h-10 w-10 rounded-xl flex items-center justify-center',
-                isEditing ? 'bg-secondary/10' : 'bg-success/10'
-              )}
-            >
-              {isEditing ? (
-                <Edit className="h-5 w-5 text-secondary" />
-              ) : (
-                <DollarSign className="h-5 w-5 text-success" />
-              )}
-            </div>
-            {isEditing ? 'Editar Conta a Receber' : 'Nova Conta a Receber'}
-          </DialogTitle>
-        </DialogHeader>
-        <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-            <div className="space-y-6 max-h-[50vh] overflow-y-auto pr-2 custom-scrollbar">
-              <ContaReceberFormFields
-                form={form}
-                isEditing={isEditing}
-                clientes={clientes}
-                empresas={empresas}
-                centrosCusto={centrosCusto}
-                contasBancarias={contasBancarias}
-                vendedores={vendedores}
-                showClienteSelect={showClienteSelect}
-                setShowClienteSelect={setShowClienteSelect}
-                onClienteSelect={handleClienteSelect}
-                categorias={categoriasReceita}
-              />
-
-              {isEditing && conta?.id && (
-                <div className="pt-6 border-t border-white/5">
-                  <AnexoList entidadeId={conta.id} entidadeTipo="contas_receber" />
-                </div>
-              )}
-            </div>
-
-            <div className="flex justify-end gap-3 pt-4 border-t">
-              <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
-                Cancelar
-              </Button>
-              <ActionButton
-                type="submit"
-                state={isPending ? 'loading' : 'idle'}
-                loadingText="Salvando..."
-                successText="Salvo!"
+    <>
+      <Dialog open={open} onOpenChange={requestClose}>
+        <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2 text-xl font-display">
+              <div
                 className={cn(
-                  'gap-2 shadow-lg',
-                  isEditing
-                    ? 'bg-gradient-to-r from-secondary to-secondary/80 shadow-secondary/25'
-                    : 'bg-gradient-to-r from-success to-success/80 shadow-success/25 text-success-foreground'
+                  'h-10 w-10 rounded-xl flex items-center justify-center',
+                  isEditing ? 'bg-secondary/10' : 'bg-success/10'
                 )}
               >
-                {isEditing
-                  ? 'Salvar Alterações'
-                  : isParcelado
-                    ? `Criar ${numParcelas} Parcelas`
-                    : 'Criar Conta'}
-              </ActionButton>
-            </div>
-          </form>
-        </Form>
-      </DialogContent>
-    </Dialog>
+                {isEditing ? (
+                  <Edit className="h-5 w-5 text-secondary" />
+                ) : (
+                  <DollarSign className="h-5 w-5 text-success" />
+                )}
+              </div>
+              {isEditing ? 'Editar Conta a Receber' : 'Nova Conta a Receber'}
+            </DialogTitle>
+          </DialogHeader>
+          <Form {...form}>
+            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+              <div className="space-y-6 max-h-[50vh] overflow-y-auto pr-2 custom-scrollbar">
+                <ContaReceberFormFields
+                  form={form as unknown as ComponentProps<typeof ContaReceberFormFields>['form']}
+                  isEditing={isEditing}
+                  clientes={clientes}
+                  empresas={empresas}
+                  centrosCusto={centrosCusto}
+                  contasBancarias={contasBancarias}
+                  vendedores={vendedores}
+                  showClienteSelect={showClienteSelect}
+                  setShowClienteSelect={setShowClienteSelect}
+                  onClienteSelect={handleClienteSelect}
+                  categorias={categoriasReceita}
+                />
+
+                {isEditing && conta?.id && (
+                  <div className="pt-6 border-t border-white/5">
+                    <AnexoList entidadeId={conta.id} entidadeTipo="contas_receber" />
+                  </div>
+                )}
+              </div>
+
+              <div className="flex justify-end gap-3 pt-4 border-t">
+                <Button type="button" variant="outline" onClick={() => requestClose(false)}>
+                  Cancelar
+                </Button>
+                <ActionButton
+                  type="submit"
+                  state={isPending ? 'loading' : 'idle'}
+                  loadingText="Salvando..."
+                  successText="Salvo!"
+                  className={cn(
+                    'gap-2 shadow-lg',
+                    isEditing
+                      ? 'bg-gradient-to-r from-secondary to-secondary/80 shadow-secondary/25'
+                      : 'bg-gradient-to-r from-success to-success/80 shadow-success/25 text-success-foreground'
+                  )}
+                >
+                  {isEditing
+                    ? 'Salvar Alterações'
+                    : isParcelado
+                      ? `Criar ${numParcelas} Parcelas`
+                      : 'Criar Conta'}
+                </ActionButton>
+              </div>
+            </form>
+          </Form>
+        </DialogContent>
+      </Dialog>
+    </>
   );
 }

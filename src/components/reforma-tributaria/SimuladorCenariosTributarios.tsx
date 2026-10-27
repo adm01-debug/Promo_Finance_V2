@@ -37,7 +37,7 @@ export function SimuladorCenariosTributarios() {
         temProdutosIS,
         categoriaIS: temProdutosIS ? categoriaIS : undefined,
       },
-      anoReferencia,
+      anoReferencia
     );
   }, [
     faturamentoAnual,

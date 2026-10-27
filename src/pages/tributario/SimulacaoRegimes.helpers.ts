@@ -19,4 +19,8 @@ export const COLUNAS_AUDITORIA: ExportColumn<LinhaAuditoriaCsv>[] = [
 ];
 
 export const corPorRegime = (r: RegimeTributario) =>
-  r === 'simples_nacional' ? 'hsl(160 84% 39%)' : r === 'lucro_presumido' ? 'hsl(258 90% 66%)' : 'hsl(217 91% 60%)';
+  r === 'simples_nacional'
+    ? 'hsl(160 84% 39%)'
+    : r === 'lucro_presumido'
+      ? 'hsl(258 90% 66%)'
+      : 'hsl(217 91% 60%)';

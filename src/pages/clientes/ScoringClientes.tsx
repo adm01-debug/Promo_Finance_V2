@@ -8,10 +8,10 @@ export default function ScoringClientesPage() {
     <MainLayout>
       <div className="relative min-h-screen">
         <PageBackground />
-        
+
         <div className="container mx-auto p-6 relative z-10">
-          <PageHeader 
-            title="Scoring & Risco" 
+          <PageHeader
+            title="Scoring & Risco"
             subtitle="Análise preditiva de crédito e risco de inadimplência baseada em comportamento neural."
             badge="IA de Crédito"
             icon={Target}
@@ -19,7 +19,7 @@ export default function ScoringClientesPage() {
             gradientVia="via-primary"
             gradientTo="to-rose-500"
           />
-          
+
           <ScoringClientesPanel />
         </div>
       </div>

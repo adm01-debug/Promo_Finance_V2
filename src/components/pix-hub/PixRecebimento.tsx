@@ -16,10 +16,14 @@ export function PixRecebimento() {
   const { data: empresas = [] } = useEmpresas();
   const empresaId = empresas?.[0]?.id;
   const { payments, loadingPayments } = useAsaas(empresaId);
-  
-  const [qrDialog, setQrDialog] = useState<{ asaasId: string; pixCola?: string | null; pixQr?: string | null } | null>(null);
 
-  const pixPayments = (payments || []).filter(p => p.tipo === 'pix');
+  const [qrDialog, setQrDialog] = useState<{
+    asaasId: string;
+    pixCola?: string | null;
+    pixQr?: string | null;
+  } | null>(null);
+
+  const pixPayments = (payments || []).filter((p) => p.tipo === 'pix');
 
   const copyToClipboard = (text: string) => {
     navigator.clipboard.writeText(text);
@@ -45,13 +49,15 @@ export function PixRecebimento() {
                 <QrCode className="h-5 w-5 text-primary" />
               </div>
               <div>
-                <p className="text-xs text-muted-foreground uppercase font-black">QR Code Estático</p>
+                <p className="text-xs text-muted-foreground uppercase font-black">
+                  QR Code Estático
+                </p>
                 <p className="text-sm font-medium mt-0.5">Disponível via Asaas</p>
               </div>
             </div>
           </CardContent>
         </Card>
-        
+
         <Card className="bg-blue-500/5 border-blue-500/10">
           <CardContent className="pt-6">
             <div className="flex items-center gap-3">
@@ -73,7 +79,9 @@ export function PixRecebimento() {
                 <RefreshCw className="h-5 w-5 text-success" />
               </div>
               <div>
-                <p className="text-xs text-muted-foreground uppercase font-black">Split Real-time</p>
+                <p className="text-xs text-muted-foreground uppercase font-black">
+                  Split Real-time
+                </p>
                 <p className="text-sm font-medium mt-0.5">Divisão automática IBS/CBS</p>
               </div>
             </div>
@@ -93,17 +101,26 @@ export function PixRecebimento() {
           {pixPayments.length === 0 ? (
             <div className="py-20 text-center space-y-4">
               <QrCode className="h-12 w-12 mx-auto text-muted-foreground/20" />
-              <p className="text-muted-foreground font-medium">Nenhuma cobrança PIX emitida recentemente.</p>
+              <p className="text-muted-foreground font-medium">
+                Nenhuma cobrança PIX emitida recentemente.
+              </p>
             </div>
           ) : (
             <div className="divide-y divide-white/5">
               {pixPayments.map((payment) => (
-                <div key={payment.id} className="flex items-center justify-between p-6 hover:bg-card/[0.02] transition-colors group">
+                <div
+                  key={payment.id}
+                  className="flex items-center justify-between p-6 hover:bg-card/[0.02] transition-colors group"
+                >
                   <div className="flex items-center gap-4">
-                    <div className={cn(
-                      "h-12 w-12 rounded-2xl flex items-center justify-center transition-transform group-hover:scale-110",
-                      payment.status === 'RECEIVED' || payment.status === 'CONFIRMED' ? "bg-success/10" : "bg-primary/10"
-                    )}>
+                    <div
+                      className={cn(
+                        'h-12 w-12 rounded-2xl flex items-center justify-center transition-transform group-hover:scale-110',
+                        payment.status === 'RECEIVED' || payment.status === 'CONFIRMED'
+                          ? 'bg-success/10'
+                          : 'bg-primary/10'
+                      )}
+                    >
                       {payment.status === 'RECEIVED' || payment.status === 'CONFIRMED' ? (
                         <CheckCircle2 className="h-6 w-6 text-success" />
                       ) : (
@@ -112,23 +129,35 @@ export function PixRecebimento() {
                     </div>
                     <div>
                       <div className="flex items-center gap-2">
-                        <span className="font-black text-sm">{payment.sacado_nome || 'Consumidor Final'}</span>
-                        <Badge variant="outline" className={cn(
-                          "text-[10px] uppercase font-black tracking-widest",
-                          payment.status === 'RECEIVED' || payment.status === 'CONFIRMED' ? "border-success/50 text-success bg-success/5" : "border-primary/50 text-primary bg-primary/5"
-                        )}>
+                        <span className="font-black text-sm">
+                          {payment.sacado_nome || 'Consumidor Final'}
+                        </span>
+                        <Badge
+                          variant="outline"
+                          className={cn(
+                            'text-[10px] uppercase font-black tracking-widest',
+                            payment.status === 'RECEIVED' || payment.status === 'CONFIRMED'
+                              ? 'border-success/50 text-success bg-success/5'
+                              : 'border-primary/50 text-primary bg-primary/5'
+                          )}
+                        >
                           {payment.status}
                         </Badge>
                         {payment.valor_liquido && payment.valor_liquido < payment.valor && (
                           <TooltipProvider>
                             <Tooltip>
                               <TooltipTrigger asChild>
-                                <Badge variant="secondary" className="h-5 px-1.5 bg-success/10 text-success border-none">
+                                <Badge
+                                  variant="secondary"
+                                  className="h-5 px-1.5 bg-success/10 text-success border-none"
+                                >
                                   <RefreshCw className="h-3 w-3" />
                                 </Badge>
                               </TooltipTrigger>
                               <TooltipContent>
-                                <p className="text-xs">Split Real-time Ativo: Tributos retidos na fonte.</p>
+                                <p className="text-xs">
+                                  Split Real-time Ativo: Tributos retidos na fonte.
+                                </p>
                               </TooltipContent>
                             </Tooltip>
                           </TooltipProvider>
@@ -139,38 +168,46 @@ export function PixRecebimento() {
                       </p>
                     </div>
                   </div>
-                  
+
                   <div className="flex items-center gap-6">
                     <div className="text-right">
-                      <p className="text-lg font-black tabular-nums text-success">{formatCurrency(payment.valor)}</p>
+                      <p className="text-lg font-black tabular-nums text-success">
+                        {formatCurrency(payment.valor)}
+                      </p>
                       {payment.valor_liquido && payment.valor_liquido < payment.valor && (
                         <p className="text-[10px] text-muted-foreground uppercase tracking-tighter">
                           Líquido: {formatCurrency(payment.valor_liquido)} (Split Retido)
                         </p>
                       )}
                       {!payment.valor_liquido && (
-                        <p className="text-[10px] text-muted-foreground uppercase tracking-tighter">Valor Nominal</p>
+                        <p className="text-[10px] text-muted-foreground uppercase tracking-tighter">
+                          Valor Nominal
+                        </p>
                       )}
                     </div>
-                    
+
                     <div className="flex items-center gap-2">
-                      <Button 
-                        variant="ghost" 
-                        size="icon" 
+                      <Button
+                        variant="ghost"
+                        size="icon"
                         className="h-10 w-10 rounded-xl hover:bg-primary/10 hover:text-primary transition-all"
-                        onClick={() => setQrDialog({ 
-                          asaasId: payment.asaas_id, 
-                          pixCola: payment.pix_copia_cola, 
-                          pixQr: payment.pix_qrcode 
-                        })}
+                        onClick={() =>
+                          setQrDialog({
+                            asaasId: payment.asaas_id,
+                            pixCola: payment.pix_copia_cola,
+                            pixQr: payment.pix_qrcode,
+                          })
+                        }
                       >
                         <QrCode className="h-5 w-5" />
                       </Button>
-                      <Button 
-                        variant="ghost" 
-                        size="icon" 
+                      <Button
+                        variant="ghost"
+                        size="icon"
                         className="h-10 w-10 rounded-xl hover:bg-blue-500/10 hover:text-blue-500 transition-all"
-                        onClick={() => payment.pix_copia_cola && copyToClipboard(payment.pix_copia_cola)}
+                        onClick={() =>
+                          payment.pix_copia_cola && copyToClipboard(payment.pix_copia_cola)
+                        }
                         disabled={!payment.pix_copia_cola}
                       >
                         <Copy className="h-5 w-5" />

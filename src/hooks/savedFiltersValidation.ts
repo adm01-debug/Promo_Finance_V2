@@ -12,17 +12,13 @@
  * Funções puras facilitam testes unitários e mantêm o hook fino.
  */
 
-export type AppRole =
-  | "admin"
-  | "financeiro"
-  | "operacional"
-  | "visualizador";
+export type AppRole = 'admin' | 'financeiro' | 'operacional' | 'visualizador';
 
 export const ALL_APP_ROLES: readonly AppRole[] = [
-  "admin",
-  "financeiro",
-  "operacional",
-  "visualizador",
+  'admin',
+  'financeiro',
+  'operacional',
+  'visualizador',
 ] as const;
 
 const APP_ROLE_SET: ReadonlySet<string> = new Set(ALL_APP_ROLES);
@@ -48,19 +44,19 @@ export class SavedFilterSharingError extends Error {
   constructor(
     message: string,
     public readonly code:
-      | "EMPRESA_REQUIRED"
-      | "INVALID_APP_ROLE"
-      | "ROLE_OUT_OF_TENANT"
-      | "TENANT_HAS_NO_ROLES",
+      | 'EMPRESA_REQUIRED'
+      | 'INVALID_APP_ROLE'
+      | 'ROLE_OUT_OF_TENANT'
+      | 'TENANT_HAS_NO_ROLES'
   ) {
     super(message);
-    this.name = "SavedFilterSharingError";
+    this.name = 'SavedFilterSharingError';
   }
 }
 
 /** Type-guard estrito para o enum AppRole. */
 export function isAppRole(value: unknown): value is AppRole {
-  return typeof value === "string" && APP_ROLE_SET.has(value);
+  return typeof value === 'string' && APP_ROLE_SET.has(value);
 }
 
 /**
@@ -71,7 +67,7 @@ export function normalizeRoles(roles: readonly string[]): string[] {
   const seen = new Set<string>();
   const out: string[] = [];
   for (const raw of roles) {
-    if (typeof raw !== "string") continue;
+    if (typeof raw !== 'string') continue;
     const v = raw.trim().toLowerCase();
     if (!v) continue;
     if (seen.has(v)) continue;
@@ -86,9 +82,7 @@ export function normalizeRoles(roles: readonly string[]): string[] {
  * Valida e normaliza um pedido de compartilhamento.
  * Lança SavedFilterSharingError com `code` específico em caso de violação.
  */
-export function validateSharing(
-  input: SharingValidationInput,
-): NormalizedSharing {
+export function validateSharing(input: SharingValidationInput): NormalizedSharing {
   // Caso 1: usuário desligou o compartilhamento — sempre válido,
   // forçamos a limpeza dos campos derivados.
   if (!input.isShared) {
@@ -101,8 +95,8 @@ export function validateSharing(
 
   if (!input.empresaId) {
     throw new SavedFilterSharingError(
-      "Selecione uma empresa atual para compartilhar o filtro.",
-      "EMPRESA_REQUIRED",
+      'Selecione uma empresa atual para compartilhar o filtro.',
+      'EMPRESA_REQUIRED'
     );
   }
 
@@ -114,8 +108,8 @@ export function validateSharing(
 
   if (tenantRoles.length === 0) {
     throw new SavedFilterSharingError(
-      "Esta empresa ainda não possui papéis ativos. Configure usuários antes de compartilhar filtros.",
-      "TENANT_HAS_NO_ROLES",
+      'Esta empresa ainda não possui papéis ativos. Configure usuários antes de compartilhar filtros.',
+      'TENANT_HAS_NO_ROLES'
     );
   }
 
@@ -125,13 +119,13 @@ export function validateSharing(
     if (!isAppRole(role)) {
       throw new SavedFilterSharingError(
         `Papel inválido: "${role}". Use apenas papéis suportados pelo sistema.`,
-        "INVALID_APP_ROLE",
+        'INVALID_APP_ROLE'
       );
     }
     if (!tenantSet.has(role)) {
       throw new SavedFilterSharingError(
         `O papel "${role}" não existe nesta empresa e não pode receber acesso ao filtro.`,
-        "ROLE_OUT_OF_TENANT",
+        'ROLE_OUT_OF_TENANT'
       );
     }
   }

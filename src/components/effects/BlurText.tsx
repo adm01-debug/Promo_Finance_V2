@@ -1,4 +1,4 @@
-import { motion } from 'framer-motion';
+import { motion, type Target, type TargetAndTransition } from 'framer-motion';
 import { useEffect, useRef, useState, useMemo, type CSSProperties } from 'react';
 
 interface Snapshot {
@@ -95,7 +95,11 @@ const BlurText = ({
   );
 
   return (
-    <p ref={ref} className={className} style={{ display: 'flex', flexWrap: 'wrap' } as CSSProperties}>
+    <p
+      ref={ref}
+      className={className}
+      style={{ display: 'flex', flexWrap: 'wrap' } as CSSProperties}
+    >
       {elements.map((segment, index) => {
         const animateKeyframes = buildKeyframes(fromSnapshot, toSnapshots);
 
@@ -110,8 +114,8 @@ const BlurText = ({
           <motion.span
             className="inline-block will-change-[transform,filter,opacity]"
             key={index}
-            initial={fromSnapshot}
-            animate={inView ? animateKeyframes : fromSnapshot}
+            initial={fromSnapshot as Target}
+            animate={(inView ? animateKeyframes : fromSnapshot) as TargetAndTransition}
             transition={spanTransition}
             onAnimationComplete={index === elements.length - 1 ? onAnimationComplete : undefined}
           >

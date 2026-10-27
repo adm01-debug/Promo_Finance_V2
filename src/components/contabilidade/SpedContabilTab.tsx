@@ -1,7 +1,13 @@
 import { motion } from 'framer-motion';
 import {
-  AlertTriangle, CheckCircle2, Clock, FileArchive, FileSearch, Loader2,
-  ShieldAlert, Wand2,
+  AlertTriangle,
+  CheckCircle2,
+  Clock,
+  FileArchive,
+  FileSearch,
+  Loader2,
+  ShieldAlert,
+  Wand2,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -40,7 +46,12 @@ export function SpedContabilTab({ tipo, empresaId }: Props) {
 
       {tipo === 'ECD' && empresaId && (
         <>
-          <SpedEcdWizard open={s.wizardOpen} onOpenChange={s.setWizardOpen} empresaId={empresaId} anoCalendario={s.ano} />
+          <SpedEcdWizard
+            open={s.wizardOpen}
+            onOpenChange={s.setWizardOpen}
+            empresaId={empresaId}
+            anoCalendario={s.ano}
+          />
           <SpedEcdPreviewDialog
             open={s.previewOpen}
             onOpenChange={s.setPreviewOpen}
@@ -51,28 +62,41 @@ export function SpedContabilTab({ tipo, empresaId }: Props) {
         </>
       )}
       {tipo === 'ECF' && empresaId && (
-        <SpedEcfWizard open={s.wizardOpen} onOpenChange={s.setWizardOpen} empresaId={empresaId} anoCalendario={s.ano} />
+        <SpedEcfWizard
+          open={s.wizardOpen}
+          onOpenChange={s.setWizardOpen}
+          empresaId={empresaId}
+          anoCalendario={s.ano}
+        />
       )}
 
       <ValidacoesPreSpedDialog
         open={!!s.validacoesArquivo}
-        onOpenChange={(v) => { if (!v) s.setValidacoesArquivo(null); }}
-        arquivo={s.validacoesArquivo ? {
-          tipo: s.validacoesArquivo.tipo as 'ECD' | 'ECF',
-          ano_calendario: s.validacoesArquivo.ano_calendario,
-          hash_sha256: s.validacoesArquivo.hash_sha256,
-          status: s.validacoesArquivo.status,
-          validacoes: s.validacoesArquivo.validacoes ?? { erros: [], avisos: [] },
-          cnpj: s.empresaDados?.cnpj,
-          razao_social: s.empresaDados?.razao_social,
-          periodo_inicio: s.validacoesArquivo.periodo_inicio,
-          periodo_fim: s.validacoesArquivo.periodo_fim,
-          gerado_por: s.validacoesArquivo.gerado_por,
-          created_at: s.validacoesArquivo.created_at,
-          total_lancamentos: s.validacoesArquivo.total_lancamentos,
-          total_linhas: s.validacoesArquivo.total_linhas,
-        } satisfies ValidacoesPreSpedArquivo : null}
-        onDownloadTxt={() => s.validacoesArquivo && s.handleDownload(s.validacoesArquivo.storage_path)}
+        onOpenChange={(v) => {
+          if (!v) s.setValidacoesArquivo(null);
+        }}
+        arquivo={
+          s.validacoesArquivo
+            ? ({
+                tipo: s.validacoesArquivo.tipo as 'ECD' | 'ECF',
+                ano_calendario: s.validacoesArquivo.ano_calendario,
+                hash_sha256: s.validacoesArquivo.hash_sha256,
+                status: s.validacoesArquivo.status,
+                validacoes: s.validacoesArquivo.validacoes ?? { erros: [], avisos: [] },
+                cnpj: s.empresaDados?.cnpj,
+                razao_social: s.empresaDados?.razao_social,
+                periodo_inicio: s.validacoesArquivo.periodo_inicio,
+                periodo_fim: s.validacoesArquivo.periodo_fim,
+                gerado_por: s.validacoesArquivo.gerado_por,
+                created_at: s.validacoesArquivo.created_at,
+                total_lancamentos: s.validacoesArquivo.total_lancamentos,
+                total_linhas: s.validacoesArquivo.total_linhas,
+              } satisfies ValidacoesPreSpedArquivo)
+            : null
+        }
+        onDownloadTxt={() =>
+          s.validacoesArquivo && s.handleDownload(s.validacoesArquivo.storage_path)
+        }
         onDownloadZip={() => s.validacoesArquivo && s.handleDownloadZip(s.validacoesArquivo)}
       />
 
@@ -101,9 +125,14 @@ export function SpedContabilTab({ tipo, empresaId }: Props) {
           <div className="grid gap-8 md:grid-cols-12 items-end">
             <div className="md:col-span-3 space-y-3">
               <div className="flex items-center justify-between">
-                <Label className="text-xs font-black uppercase tracking-[0.2em] text-muted-foreground/60">Ano-Calendário</Label>
+                <Label className="text-xs font-black uppercase tracking-[0.2em] text-muted-foreground/60">
+                  Ano-Calendário
+                </Label>
                 {s.rascunhoRestaurado && (
-                  <Badge variant="secondary" className="text-[10px] font-black uppercase bg-primary/10 text-primary border-none animate-pulse">
+                  <Badge
+                    variant="secondary"
+                    className="text-[10px] font-black uppercase bg-primary/10 text-primary border-none animate-pulse"
+                  >
                     Restaurado
                   </Badge>
                 )}
@@ -113,7 +142,7 @@ export function SpedContabilTab({ tipo, empresaId }: Props) {
                 min={2010}
                 max={new Date().getFullYear()}
                 value={s.ano}
-                onChange={e => s.setAno(Number(e.target.value))}
+                onChange={(e) => s.setAno(Number(e.target.value))}
                 className="h-14 bg-card/5 border-white/10 rounded-2xl font-black text-xl tracking-tighter focus:ring-primary/40 focus:border-primary transition-all text-center"
               />
             </div>
@@ -165,7 +194,8 @@ export function SpedContabilTab({ tipo, empresaId }: Props) {
                 s.exportStatus === 'queued' && 'border-white/10 bg-card/5 text-muted-foreground',
                 s.exportStatus === 'processing' && 'border-primary/20 bg-primary/5 text-primary',
                 s.exportStatus === 'done' && 'border-success/20 bg-success/5 text-success',
-                s.exportStatus === 'error' && 'border-destructive/20 bg-destructive/5 text-destructive',
+                s.exportStatus === 'error' &&
+                  'border-destructive/20 bg-destructive/5 text-destructive'
               )}
             >
               <div className="p-3 rounded-xl bg-current/10">
@@ -182,10 +212,14 @@ export function SpedContabilTab({ tipo, empresaId }: Props) {
                   {s.exportStatus === 'error' && `Falha na Geração do Arquivo`}
                 </p>
                 <p className="text-sm opacity-70">
-                  {s.exportStatus === 'queued' && 'Aguardando disponibilidade dos recursos computacionais.'}
-                  {s.exportStatus === 'processing' && 'Apurando saldos e formatando blocos regulatórios...'}
-                  {s.exportStatus === 'done' && 'O arquivo foi validado internamente e está pronto para download.'}
-                  {s.exportStatus === 'error' && 'Ocorreu um erro inesperado. Verifique os logs de auditoria.'}
+                  {s.exportStatus === 'queued' &&
+                    'Aguardando disponibilidade dos recursos computacionais.'}
+                  {s.exportStatus === 'processing' &&
+                    'Apurando saldos e formatando blocos regulatórios...'}
+                  {s.exportStatus === 'done' &&
+                    'O arquivo foi validado internamente e está pronto para download.'}
+                  {s.exportStatus === 'error' &&
+                    'Ocorreu um erro inesperado. Verifique os logs de auditoria.'}
                 </p>
               </div>
             </motion.div>
@@ -196,10 +230,15 @@ export function SpedContabilTab({ tipo, empresaId }: Props) {
               <ShieldAlert className="h-5 w-5" />
             </div>
             <div>
-              <p className="text-sm font-bold text-warning mb-1 uppercase tracking-tight">Importante: Validação Obrigatória</p>
+              <p className="text-sm font-bold text-warning mb-1 uppercase tracking-tight">
+                Importante: Validação Obrigatória
+              </p>
               <p className="text-sm text-muted-foreground leading-relaxed">
-                Este arquivo é gerado em conformidade com o Layout 9/10, porém deve ser <strong>obrigatoriamente validado no PVA oficial</strong> da Receita Federal antes de qualquer transmissão definitiva.
-                {tipo === 'ECF' && ' Lembre-se que a ECF exige a recuperação prévia da ECD do mesmo período.'}
+                Este arquivo é gerado em conformidade com o Layout 9/10, porém deve ser{' '}
+                <strong>obrigatoriamente validado no PVA oficial</strong> da Receita Federal antes
+                de qualquer transmissão definitiva.
+                {tipo === 'ECF' &&
+                  ' Lembre-se que a ECF exige a recuperação prévia da ECD do mesmo período.'}
               </p>
             </div>
           </div>
@@ -209,8 +248,12 @@ export function SpedContabilTab({ tipo, empresaId }: Props) {
       <Card className="border-none bg-background/20 backdrop-blur-3xl shadow-2xl rounded-[2.5rem] overflow-hidden ring-1 ring-white/10 relative mt-10">
         <CardHeader className="p-10 pb-6 relative z-10">
           <div>
-            <CardTitle className="text-3xl font-black tracking-tight">Histórico de Gerações</CardTitle>
-            <CardDescription className="text-sm font-medium opacity-60">Repositório de auditoria e compliance regulatório</CardDescription>
+            <CardTitle className="text-3xl font-black tracking-tight">
+              Histórico de Gerações
+            </CardTitle>
+            <CardDescription className="text-sm font-medium opacity-60">
+              Repositório de auditoria e compliance regulatório
+            </CardDescription>
           </div>
         </CardHeader>
         <CardContent className="space-y-4">
@@ -231,7 +274,10 @@ export function SpedContabilTab({ tipo, empresaId }: Props) {
             onToggleAudit={s.toggleAudit}
             onCopyHash={s.copyHash}
             onOpenValidacoes={s.setValidacoesArquivo}
-            onOpenTransmissao={(h) => { s.setTransmissaoArquivo(h); s.setReciboInput(''); }}
+            onOpenTransmissao={(h) => {
+              s.setTransmissaoArquivo(h);
+              s.setReciboInput('');
+            }}
             onClearFilters={clearFilters}
           />
         </CardContent>

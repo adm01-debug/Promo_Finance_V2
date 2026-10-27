@@ -3,13 +3,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
-import { 
-  Mail, 
-  Loader2,
-  ArrowLeft,
-  CheckCircle2,
-  KeyRound
-} from 'lucide-react';
+import { Mail, Loader2, ArrowLeft, CheckCircle2, KeyRound } from 'lucide-react';
 
 interface ForgotPasswordFormProps {
   email: string;
@@ -45,15 +39,15 @@ export function ForgotPasswordForm({
         >
           <CheckCircle2 className="h-8 w-8 text-success" />
         </motion.div>
-        
+
         <div className="space-y-2">
           <h3 className="text-xl font-semibold">Solicitação Enviada!</h3>
           <p className="text-muted-foreground text-sm">
-            Sua solicitação de reset de senha foi enviada para aprovação.
-            Você receberá um email assim que o gestor aprovar.
+            Sua solicitação de reset de senha foi enviada para aprovação. Você receberá um email
+            assim que o gestor aprovar.
           </p>
         </div>
-        
+
         <Button onClick={onBack} variant="outline" className="gap-2">
           <ArrowLeft className="h-4 w-4" />
           Voltar ao Login
@@ -74,9 +68,7 @@ export function ForgotPasswordForm({
           <KeyRound className="h-6 w-6 text-primary" />
         </motion.div>
         <CardTitle>Recuperar Senha</CardTitle>
-        <CardDescription>
-          Digite seu email para solicitar a recuperação de senha
-        </CardDescription>
+        <CardDescription>Digite seu email para solicitar a recuperação de senha</CardDescription>
       </CardHeader>
       <CardContent>
         <form onSubmit={onSubmit} className="space-y-4">
@@ -95,7 +87,7 @@ export function ForgotPasswordForm({
               />
             </div>
             {errors.email && (
-              <motion.p 
+              <motion.p
                 initial={{ opacity: 0, y: -10 }}
                 animate={{ opacity: 1, y: 0 }}
                 className="text-sm text-destructive"
@@ -105,12 +97,7 @@ export function ForgotPasswordForm({
             )}
           </div>
 
-          <Button 
-            type="submit" 
-            className="w-full gap-2" 
-            disabled={isLoading}
-            size="lg"
-          >
+          <Button type="submit" className="w-full gap-2" disabled={isLoading} size="lg">
             {isLoading ? (
               <Loader2 className="h-4 w-4 animate-spin" />
             ) : (
@@ -119,12 +106,7 @@ export function ForgotPasswordForm({
             Solicitar Recuperação
           </Button>
 
-          <Button 
-            type="button"
-            variant="ghost" 
-            className="w-full gap-2"
-            onClick={onBack}
-          >
+          <Button type="button" variant="ghost" className="w-full gap-2" onClick={onBack}>
             <ArrowLeft className="h-4 w-4" />
             Voltar ao Login
           </Button>

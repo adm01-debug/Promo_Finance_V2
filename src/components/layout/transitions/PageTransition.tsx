@@ -36,5 +36,5 @@ export const PageTransition = forwardRef<HTMLDivElement, PageTransitionProps>(
       return <div style={{ perspective: 1200 }}>{content}</div>;
     }
     return content;
-  },
+  }
 );

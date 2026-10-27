@@ -31,7 +31,10 @@ function escapeHtml(s: string) {
 function renderMarkdown(text: string): string {
   let html = escapeHtml(text);
   // Code blocks
-  html = html.replace(/```([\s\S]*?)```/g, '<pre class="bg-muted p-2 rounded text-xs overflow-x-auto"><code>$1</code></pre>');
+  html = html.replace(
+    /```([\s\S]*?)```/g,
+    '<pre class="bg-muted p-2 rounded text-xs overflow-x-auto"><code>$1</code></pre>'
+  );
   // Inline code
   html = html.replace(/`([^`]+)`/g, '<code class="bg-muted px-1 rounded text-xs">$1</code>');
   // Bold
@@ -227,10 +230,7 @@ export function CopilotTributarioFloat({ empresaId }: Props) {
           )}
 
           {messages.map((m, i) => (
-            <div
-              key={i}
-              className={`flex ${m.role === 'user' ? 'justify-end' : 'justify-start'}`}
-            >
+            <div key={i} className={`flex ${m.role === 'user' ? 'justify-end' : 'justify-start'}`}>
               <div
                 className={`max-w-[85%] rounded-2xl px-4 py-2 text-sm ${
                   m.role === 'user'

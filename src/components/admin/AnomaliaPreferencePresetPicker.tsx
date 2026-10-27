@@ -1,16 +1,12 @@
-import { useMemo } from "react";
-import { Badge } from "@/components/ui/badge";
-import { Sparkles, Check } from "lucide-react";
+import { useMemo } from 'react';
+import { Badge } from '@/components/ui/badge';
+import { Sparkles, Check } from 'lucide-react';
 import {
   ANOMALIA_PREFERENCE_PRESETS,
   presetMatches,
   type AnomaliaPreferencePreset,
-} from "./anomaliaPreferencePresets";
-import type {
-  Severidade,
-  ToastAcoes,
-  DrawerAcoes,
-} from "@/hooks/useAnomaliaPreferences";
+} from './anomaliaPreferencePresets';
+import type { Severidade, ToastAcoes, DrawerAcoes } from '@/hooks/useAnomaliaPreferences';
 
 interface Props {
   current: {
@@ -28,10 +24,8 @@ interface Props {
  */
 export function AnomaliaPreferencePresetPicker({ current, onApply }: Props) {
   const ativoId = useMemo(
-    () =>
-      ANOMALIA_PREFERENCE_PRESETS.find((p) => presetMatches(p, current))?.id ??
-      null,
-    [current],
+    () => ANOMALIA_PREFERENCE_PRESETS.find((p) => presetMatches(p, current))?.id ?? null,
+    [current]
   );
 
   return (
@@ -40,8 +34,8 @@ export function AnomaliaPreferencePresetPicker({ current, onApply }: Props) {
         <Sparkles className="h-4 w-4 text-primary" />
         <span className="text-sm font-medium">Presets rápidos</span>
         <span className="text-[11px] text-muted-foreground">
-          Aplica severidades, duração e ações em 1 clique. Não toca em soneca,
-          centros de custo ou tipos.
+          Aplica severidades, duração e ações em 1 clique. Não toca em soneca, centros de custo ou
+          tipos.
         </span>
       </div>
       <div className="grid gap-2 md:grid-cols-3">
@@ -53,17 +47,14 @@ export function AnomaliaPreferencePresetPicker({ current, onApply }: Props) {
               type="button"
               onClick={() => onApply(preset)}
               className={`text-left rounded-md border p-2.5 transition-colors hover:border-primary/60 hover:bg-primary/5 focus:outline-none focus:ring-2 focus:ring-ring ${
-                ativo ? "border-primary bg-primary/5" : ""
+                ativo ? 'border-primary bg-primary/5' : ''
               }`}
               aria-pressed={ativo}
             >
               <div className="flex items-center justify-between gap-2 mb-1">
                 <span className="text-sm font-semibold">{preset.nome}</span>
                 {ativo && (
-                  <Badge
-                    variant="secondary"
-                    className="text-[10px] gap-1 px-1.5"
-                  >
+                  <Badge variant="secondary" className="text-[10px] gap-1 px-1.5">
                     <Check className="h-3 w-3" /> ativo
                   </Badge>
                 )}
@@ -79,8 +70,7 @@ export function AnomaliaPreferencePresetPicker({ current, onApply }: Props) {
                   {preset.duracao}s
                 </Badge>
                 <Badge variant="outline" className="text-[10px]">
-                  {Object.values(preset.toastAcoes).filter(Boolean).length}{" "}
-                  ações toast
+                  {Object.values(preset.toastAcoes).filter(Boolean).length} ações toast
                 </Badge>
               </div>
             </button>

@@ -1,28 +1,32 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { 
-  ClipboardCheck, 
-  Plus, 
-  Calendar, 
-  User, 
-  CheckCircle2, 
-  Circle, 
-  Clock, 
-  AlertOctagon, 
+import {
+  ClipboardCheck,
+  Plus,
+  Calendar,
+  User,
+  CheckCircle2,
+  Circle,
+  Clock,
+  AlertOctagon,
   MoreVertical,
   Trash2,
-  Filter
+  Filter,
 } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
-import { 
-  DropdownMenu, 
-  DropdownMenuContent, 
-  DropdownMenuItem, 
-  DropdownMenuTrigger 
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { usePlanosAcao, useUpdatePlanoAcao, type PlanoAcao } from '@/hooks/useInteligenciaOperacional';
+import {
+  usePlanosAcao,
+  useUpdatePlanoAcao,
+  type PlanoAcao,
+} from '@/hooks/useInteligenciaOperacional';
 import { cn } from '@/lib/utils';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
@@ -46,10 +50,13 @@ export function PlanosAcaoPanel() {
   const updatePlano = useUpdatePlanoAcao();
   const [filtroStatus, setFiltroStatus] = useState<string | 'todos'>('todos');
 
-  const planosFiltrados = planos?.filter(p => filtroStatus === 'todos' || p.status === filtroStatus);
+  const planosFiltrados = planos?.filter(
+    (p) => filtroStatus === 'todos' || p.status === filtroStatus
+  );
 
   const handleToggleStatus = (id: string, currentStatus: string) => {
-    const nextStatus: PlanoAcao['status'] = currentStatus === 'concluido' ? 'pendente' : 'concluido';
+    const nextStatus: PlanoAcao['status'] =
+      currentStatus === 'concluido' ? 'pendente' : 'concluido';
     const progresso = nextStatus === 'concluido' ? 100 : 0;
     updatePlano.mutate({ id, status: nextStatus, progresso });
   };
@@ -64,33 +71,53 @@ export function PlanosAcaoPanel() {
             </div>
             <div>
               <CardTitle className="text-2xl font-black tracking-tight">Planos de Ação</CardTitle>
-              <CardDescription className="text-xs font-bold uppercase tracking-widest text-muted-foreground/50">Gestão de iniciativas estratégicas</CardDescription>
+              <CardDescription className="text-xs font-bold uppercase tracking-widest text-muted-foreground/50">
+                Gestão de iniciativas estratégicas
+              </CardDescription>
             </div>
           </div>
-          
+
           <div className="flex items-center gap-2">
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="outline" size="sm" className="rounded-xl border-white/10 bg-card/5 font-bold gap-2">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="rounded-xl border-white/10 bg-card/5 font-bold gap-2"
+                >
                   <Filter className="h-4 w-4" />
-                  {filtroStatus === 'todos' ? 'Todos' : STATUS_CONFIG[filtroStatus as keyof typeof STATUS_CONFIG].label}
+                  {filtroStatus === 'todos'
+                    ? 'Todos'
+                    : STATUS_CONFIG[filtroStatus as keyof typeof STATUS_CONFIG].label}
                 </Button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="rounded-xl border-white/10 bg-background/95 backdrop-blur-xl">
+              <DropdownMenuContent
+                align="end"
+                className="rounded-xl border-white/10 bg-background/95 backdrop-blur-xl"
+              >
                 <DropdownMenuItem onClick={() => setFiltroStatus('todos')}>Todos</DropdownMenuItem>
-                <DropdownMenuItem onClick={() => setFiltroStatus('pendente')}>Pendente</DropdownMenuItem>
-                <DropdownMenuItem onClick={() => setFiltroStatus('em_andamento')}>Em Andamento</DropdownMenuItem>
-                <DropdownMenuItem onClick={() => setFiltroStatus('concluido')}>Concluído</DropdownMenuItem>
+                <DropdownMenuItem onClick={() => setFiltroStatus('pendente')}>
+                  Pendente
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => setFiltroStatus('em_andamento')}>
+                  Em Andamento
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => setFiltroStatus('concluido')}>
+                  Concluído
+                </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
-            
-            <Button size="icon" className="h-10 w-10 rounded-xl bg-primary text-primary-foreground shadow-lg shadow-primary/20">
+
+            <Button
+              size="icon"
+              className="h-10 w-10 rounded-xl bg-primary text-primary-foreground shadow-lg shadow-primary/20"
+            >
               <Plus className="h-5 w-5" />
             </Button>
           </div>
         </div>
       </CardHeader>
-      
+
       <CardContent className="p-8 pt-6">
         <div className="space-y-4">
           <AnimatePresence mode="popLayout">
@@ -106,7 +133,7 @@ export function PlanosAcaoPanel() {
               planosFiltrados.map((plano, idx) => {
                 const prio = PRIORIDADE_CONFIG[plano.prioridade];
                 const PrioIcon = prio.icon;
-                
+
                 return (
                   <motion.div
                     key={plano.id}
@@ -114,14 +141,14 @@ export function PlanosAcaoPanel() {
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: idx * 0.05 }}
                     className={cn(
-                      "group relative p-5 rounded-2xl border border-white/5 bg-card/[0.03] transition-all hover:bg-card/[0.07]",
-                      plano.status === 'concluido' && "opacity-60"
+                      'group relative p-5 rounded-2xl border border-white/5 bg-card/[0.03] transition-all hover:bg-card/[0.07]',
+                      plano.status === 'concluido' && 'opacity-60'
                     )}
                   >
                     <div className="flex items-start gap-4">
-                      <Button 
-                        variant="ghost" 
-                        size="icon" 
+                      <Button
+                        variant="ghost"
+                        size="icon"
                         className="mt-1 h-6 w-6 rounded-full p-0 shrink-0"
                         onClick={() => handleToggleStatus(plano.id, plano.status)}
                       >
@@ -131,25 +158,32 @@ export function PlanosAcaoPanel() {
                           <Circle className="h-6 w-6 text-muted-foreground/30 group-hover:text-primary transition-colors" />
                         )}
                       </Button>
-                      
+
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center justify-between gap-2 mb-1">
-                          <h4 className={cn(
-                            "text-base font-bold tracking-tight truncate",
-                            plano.status === 'concluido' && "line-through"
-                          )}>
+                          <h4
+                            className={cn(
+                              'text-base font-bold tracking-tight truncate',
+                              plano.status === 'concluido' && 'line-through'
+                            )}
+                          >
                             {plano.titulo}
                           </h4>
-                          <div className={cn("px-2 py-0.5 rounded text-[10px] font-black uppercase tracking-widest flex items-center gap-1", prio.color)}>
+                          <div
+                            className={cn(
+                              'px-2 py-0.5 rounded text-[10px] font-black uppercase tracking-widest flex items-center gap-1',
+                              prio.color
+                            )}
+                          >
                             <PrioIcon className="h-3 w-3" />
                             {prio.label}
                           </div>
                         </div>
-                        
+
                         <p className="text-sm text-muted-foreground/70 mb-4 line-clamp-1">
                           {plano.descricao}
                         </p>
-                        
+
                         <div className="flex items-center gap-6 flex-wrap">
                           {plano.prazo && (
                             <div className="flex items-center gap-1.5 text-xs font-medium text-muted-foreground/50">
@@ -157,24 +191,30 @@ export function PlanosAcaoPanel() {
                               {format(new Date(plano.prazo), "dd 'de' MMM", { locale: ptBR })}
                             </div>
                           )}
-                          
+
                           {plano.responsavel && (
                             <div className="flex items-center gap-1.5 text-xs font-medium text-muted-foreground/50">
                               <User className="h-3.5 w-3.5" />
                               {plano.responsavel}
                             </div>
                           )}
-                          
+
                           <div className="flex-1 min-w-[120px] max-w-[200px] flex items-center gap-3 ml-auto">
                             <Progress value={plano.progresso} className="h-1.5 bg-card/5" />
-                            <span className="text-[10px] font-black text-primary w-8">{plano.progresso}%</span>
+                            <span className="text-[10px] font-black text-primary w-8">
+                              {plano.progresso}%
+                            </span>
                           </div>
                         </div>
                       </div>
-                      
+
                       <DropdownMenu>
                         <DropdownMenuTrigger asChild>
-                          <Button variant="ghost" size="icon" className="h-8 w-8 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity">
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            className="h-8 w-8 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity"
+                          >
                             <MoreVertical className="h-4 w-4" />
                           </Button>
                         </DropdownMenuTrigger>

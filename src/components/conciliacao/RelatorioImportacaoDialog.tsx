@@ -50,9 +50,8 @@ export function RelatorioImportacaoDialog({
 }: RelatorioImportacaoDialogProps) {
   if (!report) return null;
 
-  const percentualAuto = report.totalImportadas > 0
-    ? (report.autoConciliadas / report.totalImportadas) * 100
-    : 0;
+  const percentualAuto =
+    report.totalImportadas > 0 ? (report.autoConciliadas / report.totalImportadas) * 100 : 0;
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -139,7 +138,10 @@ export function RelatorioImportacaoDialog({
             <div className="flex items-start gap-2 p-3 rounded-lg bg-warning/10 border border-warning/30 text-sm">
               <AlertTriangle className="h-4 w-4 text-warning mt-0.5 shrink-0" />
               <p className="text-muted-foreground">
-                <strong className="text-warning">{report.totalDuplicadas} transação(ões) duplicada(s)</strong> foram ignoradas automaticamente.
+                <strong className="text-warning">
+                  {report.totalDuplicadas} transação(ões) duplicada(s)
+                </strong>{' '}
+                foram ignoradas automaticamente.
               </p>
             </div>
           )}
@@ -156,7 +158,9 @@ export function RelatorioImportacaoDialog({
                     <div key={transacao.id} className="flex items-center justify-between p-2">
                       <span className="truncate flex-1">{transacao.descricao}</span>
                       <ArrowRight className="h-3 w-3 mx-2 text-muted-foreground shrink-0" />
-                      <span className="truncate flex-1 text-right">{match.lancamento.entidade}</span>
+                      <span className="truncate flex-1 text-right">
+                        {match.lancamento.entidade}
+                      </span>
                       <Badge variant="outline" className="ml-2 shrink-0 text-success">
                         {match.score}%
                       </Badge>

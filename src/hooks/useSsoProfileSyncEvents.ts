@@ -1,10 +1,6 @@
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
-import type {
-  SsoSyncFieldKey,
-  SsoSyncChanges,
-  SsoSyncChangeDetail,
-} from './useLastSsoProfileSync';
+import type { SsoSyncFieldKey, SsoSyncChanges, SsoSyncChangeDetail } from './useLastSsoProfileSync';
 
 export interface SsoProfileSyncEvent {
   id: string;

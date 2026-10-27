@@ -13,17 +13,24 @@ interface BoletoBarcodeProps {
   numero: string;
 }
 
-function gerarCodigoBarras(banco: string, valor: number, vencimento: string, numero: string): string {
+function gerarCodigoBarras(
+  banco: string,
+  valor: number,
+  vencimento: string,
+  numero: string
+): string {
   // Simplified FEBRABAN barcode generation
   const codigoBanco = banco.padStart(3, '0').substring(0, 3);
   const moeda = '9'; // Real
   const fatorVencimento = calcularFatorVencimento(vencimento);
-  const valorFormatado = Math.round(valor * 100).toString().padStart(10, '0');
+  const valorFormatado = Math.round(valor * 100)
+    .toString()
+    .padStart(10, '0');
   const campoLivre = numero.replace(/\D/g, '').padStart(25, '0').substring(0, 25);
-  
+
   const semDV = codigoBanco + moeda + fatorVencimento + valorFormatado + campoLivre;
   const dv = calcularDV(semDV);
-  
+
   return codigoBanco + moeda + dv + fatorVencimento + valorFormatado + campoLivre;
 }
 
@@ -35,7 +42,7 @@ function calcularFatorVencimento(vencimento: string): string {
 }
 
 function calcularDV(codigo: string): string {
-  const pesos = [2,3,4,5,6,7,8,9];
+  const pesos = [2, 3, 4, 5, 6, 7, 8, 9];
   let soma = 0;
   const digits = codigo.split('').reverse();
   for (let i = 0; i < digits.length; i++) {
@@ -55,8 +62,8 @@ function gerarLinhaDigitavel(codigoBarras: string): string {
   const campo3 = codigoBarras.substring(34, 44);
   const campo4 = codigoBarras.substring(4, 5);
   const campo5 = codigoBarras.substring(5, 19);
-  
-  return `${campo1.substring(0,5)}.${campo1.substring(5)} ${campo2.substring(0,5)}.${campo2.substring(5)} ${campo3.substring(0,5)}.${campo3.substring(5)} ${campo4} ${campo5}`;
+
+  return `${campo1.substring(0, 5)}.${campo1.substring(5)} ${campo2.substring(0, 5)}.${campo2.substring(5)} ${campo3.substring(0, 5)}.${campo3.substring(5)} ${campo4} ${campo5}`;
 }
 
 export function BoletoBarcode({ banco, valor, vencimento, numero }: BoletoBarcodeProps) {
@@ -80,16 +87,24 @@ export function BoletoBarcode({ banco, valor, vencimento, numero }: BoletoBarcod
       <div className="flex items-center gap-2">
         <Barcode className="h-4 w-4 text-primary" />
         <span className="text-sm font-semibold">Dados do Boleto (FEBRABAN)</span>
-        <Badge variant="outline" className="text-xs">Auto-gerado</Badge>
+        <Badge variant="outline" className="text-xs">
+          Auto-gerado
+        </Badge>
       </div>
-      
+
       <div className="space-y-2">
         <div>
           <p className="text-xs text-muted-foreground mb-1">Código de Barras (44 dígitos)</p>
           <div className="flex items-center gap-2">
-            <code className="flex-1 text-xs font-mono bg-background p-2 rounded border break-all">{codigoBarras}</code>
+            <code className="flex-1 text-xs font-mono bg-background p-2 rounded border break-all">
+              {codigoBarras}
+            </code>
             <Button size="icon" variant="ghost" onClick={() => handleCopy(codigoBarras, 'barras')}>
-              {copied === 'barras' ? <Check className="h-4 w-4 text-success" /> : <Copy className="h-4 w-4" />}
+              {copied === 'barras' ? (
+                <Check className="h-4 w-4 text-success" />
+              ) : (
+                <Copy className="h-4 w-4" />
+              )}
             </Button>
           </div>
         </div>
@@ -97,9 +112,15 @@ export function BoletoBarcode({ banco, valor, vencimento, numero }: BoletoBarcod
         <div>
           <p className="text-xs text-muted-foreground mb-1">Linha Digitável</p>
           <div className="flex items-center gap-2">
-            <code className="flex-1 text-xs font-mono bg-background p-2 rounded border break-all">{linhaDigitavel}</code>
+            <code className="flex-1 text-xs font-mono bg-background p-2 rounded border break-all">
+              {linhaDigitavel}
+            </code>
             <Button size="icon" variant="ghost" onClick={() => handleCopy(linhaDigitavel, 'linha')}>
-              {copied === 'linha' ? <Check className="h-4 w-4 text-success" /> : <Copy className="h-4 w-4" />}
+              {copied === 'linha' ? (
+                <Check className="h-4 w-4 text-success" />
+              ) : (
+                <Copy className="h-4 w-4" />
+              )}
             </Button>
           </div>
         </div>
@@ -113,7 +134,7 @@ export function BoletoBarcode({ banco, valor, vencimento, numero }: BoletoBarcod
             className="bg-foreground"
             style={{
               width: parseInt(digit) % 2 === 0 ? '1px' : '2px',
-              height: `${30 + (parseInt(digit) * 3)}%`,
+              height: `${30 + parseInt(digit) * 3}%`,
             }}
           />
         ))}

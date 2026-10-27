@@ -63,16 +63,13 @@ export function RegrasTable({
 }: RegrasTableProps) {
   const [editingRegra, setEditingRegra] = useState<Regra | null>(null);
   const [originalRegra, setOriginalRegra] = useState<Regra | null>(null);
-  const [confirmDeleteRegraId, setConfirmDeleteRegraId] = useState<string | null>(
-    null,
-  );
+  const [confirmDeleteRegraId, setConfirmDeleteRegraId] = useState<string | null>(null);
 
   if (loading) return <Skeleton className="h-32 w-full" />;
   if (regras.length === 0) {
     return (
       <div className="text-sm text-muted-foreground text-center py-8">
-        Nenhuma regra cadastrada ainda. Crie a primeira para iniciar a
-        contabilização automática.
+        Nenhuma regra cadastrada ainda. Crie a primeira para iniciar a contabilização automática.
       </div>
     );
   }
@@ -118,9 +115,7 @@ export function RegrasTable({
                     <div className="flex items-center gap-1">
                       <Input
                         value={editingRegra.nome}
-                        onChange={(e) =>
-                          setEditingRegra({ ...editingRegra, nome: e.target.value })
-                        }
+                        onChange={(e) => setEditingRegra({ ...editingRegra, nome: e.target.value })}
                         className="h-8"
                       />
                       <Button
@@ -169,8 +164,7 @@ export function RegrasTable({
                       <Badge variant="outline">{r.tipo_evento}</Badge>
                       {r.categoria_id && (
                         <Badge variant="secondary" className="text-[9px] h-4">
-                          {categorias.find((c) => c.id === r.categoria_id)?.nome ||
-                            'Cat. externa'}
+                          {categorias.find((c) => c.id === r.categoria_id)?.nome || 'Cat. externa'}
                         </Badge>
                       )}
                     </div>
@@ -190,11 +184,7 @@ export function RegrasTable({
                         </SelectTrigger>
                         <SelectContent className="max-h-60">
                           {contas.map((c) => (
-                            <SelectItem
-                              key={c.id}
-                              value={c.id}
-                              className="text-xs"
-                            >
+                            <SelectItem key={c.id} value={c.id} className="text-xs">
                               {c.codigo} - {c.nome}
                             </SelectItem>
                           ))}
@@ -211,11 +201,7 @@ export function RegrasTable({
                         </SelectTrigger>
                         <SelectContent className="max-h-60">
                           {contas.map((c) => (
-                            <SelectItem
-                              key={c.id}
-                              value={c.id}
-                              className="text-xs"
-                            >
+                            <SelectItem key={c.id} value={c.id} className="text-xs">
                               {c.codigo} - {c.nome}
                             </SelectItem>
                           ))}
@@ -277,10 +263,7 @@ export function RegrasTable({
                   )}
                 </TableCell>
                 <TableCell className="text-center">
-                  <Switch
-                    checked={r.ativo}
-                    onCheckedChange={(v) => onToggleAtivo(r.id, v)}
-                  />
+                  <Switch checked={r.ativo} onCheckedChange={(v) => onToggleAtivo(r.id, v)} />
                 </TableCell>
                 <TableCell className="text-right">
                   <div className="flex justify-end gap-1">

@@ -1,16 +1,5 @@
-import {
-  useState,
-  useCallback,
-  createContext,
-  useContext,
-  ReactNode,
-} from 'react';
-import {
-  ChevronLeft,
-  ChevronRight,
-  Check,
-  Loader2,
-} from 'lucide-react';
+import { useState, useCallback, createContext, useContext, ReactNode } from 'react';
+import { ChevronLeft, ChevronRight, Check, Loader2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 
@@ -94,28 +83,37 @@ export function Wizard({
   const isFirstStep = currentStep === 0;
   const isLastStep = currentStep === steps.length - 1;
 
-  const isStepComplete = useCallback((step: number) => {
-    return completedSteps.has(step);
-  }, [completedSteps]);
+  const isStepComplete = useCallback(
+    (step: number) => {
+      return completedSteps.has(step);
+    },
+    [completedSteps]
+  );
 
-  const canNavigateTo = useCallback((step: number) => {
-    if (!linear) return true;
-    if (step <= currentStep) return true;
-    // Can only navigate forward if all previous steps are complete
-    for (let i = 0; i < step; i++) {
-      if (!completedSteps.has(i) && !steps[i].optional) {
-        return false;
+  const canNavigateTo = useCallback(
+    (step: number) => {
+      if (!linear) return true;
+      if (step <= currentStep) return true;
+      // Can only navigate forward if all previous steps are complete
+      for (let i = 0; i < step; i++) {
+        if (!completedSteps.has(i) && !steps[i].optional) {
+          return false;
+        }
       }
-    }
-    return true;
-  }, [linear, currentStep, completedSteps, steps]);
+      return true;
+    },
+    [linear, currentStep, completedSteps, steps]
+  );
 
-  const goToStep = useCallback((step: number) => {
-    if (step >= 0 && step < steps.length && canNavigateTo(step)) {
-      setCurrentStep(step);
-      onStepChange?.(step, data);
-    }
-  }, [steps.length, canNavigateTo, onStepChange, data]);
+  const goToStep = useCallback(
+    (step: number) => {
+      if (step >= 0 && step < steps.length && canNavigateTo(step)) {
+        setCurrentStep(step);
+        onStepChange?.(step, data);
+      }
+    },
+    [steps.length, canNavigateTo, onStepChange, data]
+  );
 
   const validateCurrentStep = useCallback(async (): Promise<boolean> => {
     const step = steps[currentStep];
@@ -137,29 +135,29 @@ export function Wizard({
     if (!isValid && !allowSkip) return;
 
     // Mark current step as complete
-    setCompletedSteps(prev => new Set([...prev, currentStep]));
+    setCompletedSteps((prev) => new Set([...prev, currentStep]));
 
     if (isLastStep) {
       await onComplete?.(data);
     } else {
-      setCurrentStep(prev => prev + 1);
+      setCurrentStep((prev) => prev + 1);
       onStepChange?.(currentStep + 1, data);
     }
   }, [currentStep, isLastStep, allowSkip, onComplete, onStepChange, data, validateCurrentStep]);
 
   const prevStep = useCallback(() => {
     if (!isFirstStep) {
-      setCurrentStep(prev => prev - 1);
+      setCurrentStep((prev) => prev - 1);
       onStepChange?.(currentStep - 1, data);
     }
   }, [isFirstStep, currentStep, onStepChange, data]);
 
   const setData = useCallback((key: string, value: unknown) => {
-    setDataState(prev => ({ ...prev, [key]: value }));
+    setDataState((prev) => ({ ...prev, [key]: value }));
   }, []);
 
   const setStepData = useCallback((newData: Record<string, unknown>) => {
-    setDataState(prev => ({ ...prev, ...newData }));
+    setDataState((prev) => ({ ...prev, ...newData }));
   }, []);
 
   const contextValue: WizardContextValue = {
@@ -180,9 +178,7 @@ export function Wizard({
 
   return (
     <WizardContext.Provider value={contextValue}>
-      <div className={cn('flex flex-col', className)}>
-        {children}
-      </div>
+      <div className={cn('flex flex-col', className)}>{children}</div>
     </WizardContext.Provider>
   );
 }
@@ -223,16 +219,16 @@ export function WizardHeader({ className }: { className?: string }) {
 
               {/* Step info */}
               <div className="ml-3 hidden sm:block">
-                <p className={cn(
-                  'text-sm font-medium',
-                  isActive ? 'text-primary' : 'text-foreground'
-                )}>
+                <p
+                  className={cn(
+                    'text-sm font-medium',
+                    isActive ? 'text-primary' : 'text-foreground'
+                  )}
+                >
                   {step.title}
                 </p>
                 {step.description && (
-                  <p className="text-xs text-muted-foreground">
-                    {step.description}
-                  </p>
+                  <p className="text-xs text-muted-foreground">{step.description}</p>
                 )}
               </div>
 
@@ -279,12 +275,14 @@ export function WizardVerticalHeader({ className }: { className?: string }) {
               !isClickable && 'opacity-50 cursor-not-allowed'
             )}
           >
-            <div className={cn(
-              'flex items-center justify-center w-8 h-8 rounded-full border-2 flex-shrink-0',
-              isActive && 'border-primary bg-primary text-primary-foreground',
-              isComplete && !isActive && 'border-success bg-success text-success-foreground',
-              !isActive && !isComplete && 'border-border text-muted-foreground'
-            )}>
+            <div
+              className={cn(
+                'flex items-center justify-center w-8 h-8 rounded-full border-2 flex-shrink-0',
+                isActive && 'border-primary bg-primary text-primary-foreground',
+                isComplete && !isActive && 'border-success bg-success text-success-foreground',
+                !isActive && !isComplete && 'border-border text-muted-foreground'
+              )}
+            >
               {isComplete && !isActive ? (
                 <Check className="w-4 h-4" />
               ) : (
@@ -292,16 +290,13 @@ export function WizardVerticalHeader({ className }: { className?: string }) {
               )}
             </div>
             <div>
-              <p className={cn(
-                'text-sm font-medium',
-                isActive ? 'text-primary' : 'text-foreground'
-              )}>
+              <p
+                className={cn('text-sm font-medium', isActive ? 'text-primary' : 'text-foreground')}
+              >
                 {step.title}
               </p>
               {step.description && (
-                <p className="text-xs text-muted-foreground mt-0.5">
-                  {step.description}
-                </p>
+                <p className="text-xs text-muted-foreground mt-0.5">{step.description}</p>
               )}
             </div>
           </button>
@@ -329,14 +324,7 @@ export function WizardNavigation({
   completeLabel = 'Concluir',
   showStepIndicator = true,
 }: WizardNavigationProps) {
-  const {
-    steps,
-    currentStep,
-    nextStep,
-    prevStep,
-    isFirstStep,
-    isLastStep,
-  } = useWizard();
+  const { steps, currentStep, nextStep, prevStep, isFirstStep, isLastStep } = useWizard();
 
   const [isLoading, setIsLoading] = useState(false);
 
@@ -350,12 +338,13 @@ export function WizardNavigation({
   };
 
   return (
-    <div className={cn('flex items-center justify-between mt-8 pt-6 border-t border-border', className)}>
-      <Button
-        variant="outline"
-        onClick={prevStep}
-        disabled={isFirstStep || isLoading}
-      >
+    <div
+      className={cn(
+        'flex items-center justify-between mt-8 pt-6 border-t border-border',
+        className
+      )}
+    >
+      <Button variant="outline" onClick={prevStep} disabled={isFirstStep || isLoading}>
         <ChevronLeft className="w-4 h-4 mr-1" />
         {prevLabel}
       </Button>
@@ -393,7 +382,9 @@ export function WizardProgress({ className }: { className?: string }) {
   return (
     <div className={cn('w-full', className)}>
       <div className="flex justify-between text-xs text-muted-foreground mb-1">
-        <span>Passo {currentStep + 1} de {steps.length}</span>
+        <span>
+          Passo {currentStep + 1} de {steps.length}
+        </span>
         <span>{Math.round(progress)}%</span>
       </div>
       <div className="h-2 bg-muted rounded-full overflow-hidden">

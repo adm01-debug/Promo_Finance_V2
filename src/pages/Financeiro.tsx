@@ -38,13 +38,28 @@ const itemVariants = {
 
 const quickLinks = [
   { label: 'Contas a Pagar', icon: ArrowUpCircle, href: '/contas-pagar', tone: 'text-destructive' },
-  { label: 'Contas a Receber', icon: ArrowDownCircle, href: '/contas-receber', tone: 'text-success' },
+  {
+    label: 'Contas a Receber',
+    icon: ArrowDownCircle,
+    href: '/contas-receber',
+    tone: 'text-success',
+  },
   { label: 'Movimentações', icon: Wallet, href: '/movimentacoes', tone: 'text-primary' },
   { label: 'Fluxo de Caixa', icon: BarChart3, href: '/fluxo-caixa', tone: 'text-info' },
   { label: 'Gestão de Cobrança', icon: Receipt, href: '/cobrancas', tone: 'text-warning' },
   { label: 'Tesouraria Multi-CNPJ', icon: Wallet, href: '/tesouraria', tone: 'text-info' },
-  { label: 'Simulador Antecipação', icon: Calculator, href: '/simulador-antecipacao', tone: 'text-primary' },
-  { label: 'Auditoria Duplicidade', icon: ShieldAlert, href: '/contas-pagar/bloqueios', tone: 'text-destructive' },
+  {
+    label: 'Simulador Antecipação',
+    icon: Calculator,
+    href: '/simulador-antecipacao',
+    tone: 'text-primary',
+  },
+  {
+    label: 'Auditoria Duplicidade',
+    icon: ShieldAlert,
+    href: '/contas-pagar/bloqueios',
+    tone: 'text-destructive',
+  },
   { label: 'Metas Financeiras', icon: Target, href: '/metas', tone: 'text-success' },
   { label: 'Gestão de Compras', icon: ShoppingCart, href: '/compras', tone: 'text-primary' },
 ];
@@ -60,7 +75,10 @@ export default function Financeiro() {
       .reduce((acc, c) => acc + (c.valor ?? 0), 0);
 
     const paidThisMonth = (contasPagar ?? [])
-      .filter((c) => c.status === 'pago' && c.data_pagamento?.startsWith(new Date().toISOString().slice(0, 7)))
+      .filter(
+        (c) =>
+          c.status === 'pago' && c.data_pagamento?.startsWith(new Date().toISOString().slice(0, 7))
+      )
       .reduce((acc, c) => acc + (c.valor_pago ?? c.valor ?? 0), 0);
 
     const toReceive = (contasReceber ?? [])
@@ -68,7 +86,11 @@ export default function Financeiro() {
       .reduce((acc, c) => acc + (c.valor ?? 0), 0);
 
     const receivedThisMonth = (contasReceber ?? [])
-      .filter((c) => c.status === 'recebido' && c.data_recebimento?.startsWith(new Date().toISOString().slice(0, 7)))
+      .filter(
+        (c) =>
+          c.status === 'recebido' &&
+          c.data_recebimento?.startsWith(new Date().toISOString().slice(0, 7))
+      )
       .reduce((acc, c) => acc + (c.valor_recebido ?? c.valor ?? 0), 0);
 
     return {
@@ -104,7 +126,10 @@ export default function Financeiro() {
         animate="visible"
         className="space-y-6"
       >
-        <motion.div variants={itemVariants} className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+        <motion.div
+          variants={itemVariants}
+          className="flex flex-col lg:flex-row lg:items-center justify-between gap-4"
+        >
           <div className="flex items-center gap-4">
             <div className="h-12 w-12 rounded-2xl bg-primary/10 flex items-center justify-center">
               <Wallet className="h-6 w-6 text-primary" />
@@ -330,8 +355,8 @@ function KpiCard({
     tone === 'destructive'
       ? 'bg-destructive/10 text-destructive'
       : tone === 'success'
-      ? 'bg-success/10 text-success'
-      : 'bg-muted text-muted-foreground';
+        ? 'bg-success/10 text-success'
+        : 'bg-muted text-muted-foreground';
   return (
     <Card className="stat-card h-full">
       <CardContent className="p-5">
@@ -344,7 +369,9 @@ function KpiCard({
               {loading ? '—' : formatCurrency(value)}
             </p>
           </div>
-          <div className={`h-12 w-12 rounded-xl flex items-center justify-center shrink-0 ${toneClass}`}>
+          <div
+            className={`h-12 w-12 rounded-xl flex items-center justify-center shrink-0 ${toneClass}`}
+          >
             <Icon className="h-6 w-6" />
           </div>
         </div>

@@ -1,6 +1,6 @@
-import { useMemo } from "react";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
+import { useMemo } from 'react';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
 import {
   AlertTriangle,
   Bell,
@@ -10,61 +10,54 @@ import {
   ExternalLink,
   FileSearch,
   X,
-} from "lucide-react";
-import type {
-  Severidade,
-  ToastAcoes,
-  DrawerAcoes,
-} from "@/hooks/useAnomaliaPreferences";
+} from 'lucide-react';
+import type { Severidade, ToastAcoes, DrawerAcoes } from '@/hooks/useAnomaliaPreferences';
 
-const SEVERIDADE_ORDEM: Severidade[] = ["critica", "alta", "media", "baixa"];
+const SEVERIDADE_ORDEM: Severidade[] = ['critica', 'alta', 'media', 'baixa'];
 
 const SEVERIDADE_META: Record<
   Severidade,
-  { label: string; badge: "destructive" | "secondary" | "outline"; tone: string }
+  { label: string; badge: 'destructive' | 'secondary' | 'outline'; tone: string }
 > = {
   critica: {
-    label: "Crítica",
-    badge: "destructive",
-    tone: "border-destructive/40 bg-destructive/10",
+    label: 'Crítica',
+    badge: 'destructive',
+    tone: 'border-destructive/40 bg-destructive/10',
   },
   alta: {
-    label: "Alta",
-    badge: "destructive",
-    tone: "border-warning/40 bg-warning/10",
+    label: 'Alta',
+    badge: 'destructive',
+    tone: 'border-warning/40 bg-warning/10',
   },
   media: {
-    label: "Média",
-    badge: "secondary",
-    tone: "border-secondary/40 bg-secondary/30",
+    label: 'Média',
+    badge: 'secondary',
+    tone: 'border-secondary/40 bg-secondary/30',
   },
   baixa: {
-    label: "Baixa",
-    badge: "outline",
-    tone: "border-muted bg-muted/40",
+    label: 'Baixa',
+    badge: 'outline',
+    tone: 'border-muted bg-muted/40',
   },
 };
 
 const EXEMPLOS: Record<Severidade, { titulo: string; mensagem: string }> = {
   critica: {
-    titulo: "Pagamento duplicado detectado",
-    mensagem:
-      "NF 1234 do fornecedor Acme paga 2x no dia 03/04 — divergência de R$ 12.450,00.",
+    titulo: 'Pagamento duplicado detectado',
+    mensagem: 'NF 1234 do fornecedor Acme paga 2x no dia 03/04 — divergência de R$ 12.450,00.',
   },
   alta: {
-    titulo: "Conta a pagar acima do esperado",
+    titulo: 'Conta a pagar acima do esperado',
     mensagem:
-      "Energia elétrica 38% acima da média trimestral — variação atípica para o centro de custo.",
+      'Energia elétrica 38% acima da média trimestral — variação atípica para o centro de custo.',
   },
   media: {
-    titulo: "Movimentação atípica na conta corrente",
-    mensagem:
-      "Saída de R$ 8.200,00 sem categoria definida — fora do padrão histórico.",
+    titulo: 'Movimentação atípica na conta corrente',
+    mensagem: 'Saída de R$ 8.200,00 sem categoria definida — fora do padrão histórico.',
   },
   baixa: {
-    titulo: "Conciliação atrasada",
-    mensagem:
-      "8 transações pendentes de conciliação há mais de 7 dias na conta Itaú.",
+    titulo: 'Conciliação atrasada',
+    mensagem: '8 transações pendentes de conciliação há mais de 7 dias na conta Itaú.',
   },
 };
 
@@ -75,10 +68,10 @@ interface ToastAcoesItem {
 }
 
 const TOAST_ACOES_LABEL: ToastAcoesItem[] = [
-  { key: "drill_down", label: "Drill-down", icon: FileSearch },
-  { key: "abrir_pagina", label: "Abrir página", icon: ExternalLink },
-  { key: "copiar_id", label: "Copiar ID", icon: Copy },
-  { key: "marcar_lida", label: "Marcar lida", icon: CheckCircle2 },
+  { key: 'drill_down', label: 'Drill-down', icon: FileSearch },
+  { key: 'abrir_pagina', label: 'Abrir página', icon: ExternalLink },
+  { key: 'copiar_id', label: 'Copiar ID', icon: Copy },
+  { key: 'marcar_lida', label: 'Marcar lida', icon: CheckCircle2 },
 ];
 
 interface DrawerAcoesItem {
@@ -88,10 +81,10 @@ interface DrawerAcoesItem {
 }
 
 const DRAWER_ACOES_LABEL: DrawerAcoesItem[] = [
-  { key: "abrir_entidade", label: "Abrir transação completa", icon: ExternalLink },
-  { key: "pagina_completa", label: "Página completa", icon: FileSearch },
-  { key: "copiar_id", label: "Copiar ID", icon: Copy },
-  { key: "marcar_lida", label: "Marcar lida", icon: CheckCircle2 },
+  { key: 'abrir_entidade', label: 'Abrir transação completa', icon: ExternalLink },
+  { key: 'pagina_completa', label: 'Página completa', icon: FileSearch },
+  { key: 'copiar_id', label: 'Copiar ID', icon: Copy },
+  { key: 'marcar_lida', label: 'Marcar lida', icon: CheckCircle2 },
 ];
 
 interface Props {
@@ -117,7 +110,7 @@ export function PreviewAnomaliaToastDrawer({
 }: Props) {
   const silenciado = useMemo(
     () => !!silenciarAte && new Date(silenciarAte) > new Date(),
-    [silenciarAte],
+    [silenciarAte]
   );
 
   // Severidade representativa para a prévia: a mais alta ativa, ou crítica se nenhuma.
@@ -125,7 +118,7 @@ export function PreviewAnomaliaToastDrawer({
     for (const sev of SEVERIDADE_ORDEM) {
       if (severidadesAtivas.includes(sev)) return sev;
     }
-    return "critica";
+    return 'critica';
   }, [severidadesAtivas]);
 
   const exemplo = EXEMPLOS[severidadeFoco];
@@ -160,21 +153,20 @@ export function PreviewAnomaliaToastDrawer({
           className="text-xs text-muted-foreground italic rounded-md border border-dashed p-3 text-center"
           role="status"
         >
-          Toasts desativados — você não receberá notificações realtime de novas
-          anomalias.
+          Toasts desativados — você não receberá notificações realtime de novas anomalias.
         </p>
       ) : silenciado ? (
         <p
           className="text-xs text-warning rounded-md border border-warning/40 bg-warning/10 p-3 text-center"
           role="status"
         >
-          Soneca ativa até{" "}
-          {new Date(silenciarAte!).toLocaleString("pt-BR", {
-            day: "2-digit",
-            month: "2-digit",
-            hour: "2-digit",
-            minute: "2-digit",
-          })}{" "}
+          Soneca ativa até{' '}
+          {new Date(silenciarAte!).toLocaleString('pt-BR', {
+            day: '2-digit',
+            month: '2-digit',
+            hour: '2-digit',
+            minute: '2-digit',
+          })}{' '}
           — toasts permanecerão suprimidos.
         </p>
       ) : severidadesAtivas.length === 0 ? (
@@ -203,9 +195,7 @@ export function PreviewAnomaliaToastDrawer({
                     <Badge variant={meta.badge} className="text-[10px] capitalize">
                       {meta.label}
                     </Badge>
-                    <span className="text-xs font-semibold truncate">
-                      {exemplo.titulo}
-                    </span>
+                    <span className="text-xs font-semibold truncate">{exemplo.titulo}</span>
                   </div>
                   <p className="text-[11px] text-muted-foreground line-clamp-2">
                     {exemplo.mensagem}
@@ -250,14 +240,14 @@ export function PreviewAnomaliaToastDrawer({
               </div>
               <div
                 className="absolute bottom-0 left-0 h-0.5 bg-primary/60 rounded-b"
-                style={{ width: "60%" }}
+                style={{ width: '60%' }}
                 aria-hidden
               />
             </div>
             <p className="text-[10px] text-muted-foreground">
-              Permanece visível por <span className="font-mono">{duracao}s</span>{" "}
-              · severidade exibida: <span className="capitalize">{meta.label}</span>{" "}
-              · {toastAcoesAtivas.length} ação(ões) configurada(s)
+              Permanece visível por <span className="font-mono">{duracao}s</span> · severidade
+              exibida: <span className="capitalize">{meta.label}</span> · {toastAcoesAtivas.length}{' '}
+              ação(ões) configurada(s)
             </p>
           </div>
 
@@ -276,7 +266,7 @@ export function PreviewAnomaliaToastDrawer({
                   {meta.label}
                 </Badge>
                 <Badge variant="outline" className="text-[10px]">
-                  {severidadeFoco === "critica" ? "Pagamento duplicado" : "Anomalia"}
+                  {severidadeFoco === 'critica' ? 'Pagamento duplicado' : 'Anomalia'}
                 </Badge>
               </div>
               <p className="text-xs font-semibold mb-1">{exemplo.titulo}</p>
@@ -325,10 +315,8 @@ export function PreviewAnomaliaToastDrawer({
           return (
             <Badge
               key={sev}
-              variant={ativo ? SEVERIDADE_META[sev].badge : "outline"}
-              className={`text-[10px] capitalize ${
-                ativo ? "" : "opacity-40 line-through"
-              }`}
+              variant={ativo ? SEVERIDADE_META[sev].badge : 'outline'}
+              className={`text-[10px] capitalize ${ativo ? '' : 'opacity-40 line-through'}`}
             >
               {SEVERIDADE_META[sev].label}
             </Badge>

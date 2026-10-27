@@ -1,6 +1,6 @@
 /**
  * Dashboard Skeleton - Loading state with cascading animation
- * 
+ *
  * Provides a beautiful loading experience for the dashboard
  */
 
@@ -22,8 +22,8 @@ const containerVariants = {
 
 const itemVariants = {
   hidden: { opacity: 0, y: 20 },
-  visible: { 
-    opacity: 1, 
+  visible: {
+    opacity: 1,
     y: 0,
     transition: {
       type: 'spring' as const,
@@ -34,28 +34,32 @@ const itemVariants = {
 } as const;
 
 // Shimmer effect component
-const ShimmerBar = forwardRef<HTMLDivElement, { className?: string }>(
-  ({ className }, ref) => {
-    return (
-      <div ref={ref} className={cn('relative overflow-hidden bg-muted rounded', className)}>
-        <motion.div
-          initial={{ x: '-100%' }}
-          animate={{ x: '100%' }}
-          transition={{
-            repeat: Infinity,
-            duration: 1.5,
-            ease: 'easeInOut',
-          }}
-          className="absolute inset-0 bg-gradient-to-r from-transparent via-background/50 to-transparent"
-        />
-      </div>
-    );
-  }
-);
+const ShimmerBar = forwardRef<HTMLDivElement, { className?: string }>(({ className }, ref) => {
+  return (
+    <div ref={ref} className={cn('relative overflow-hidden bg-muted rounded', className)}>
+      <motion.div
+        initial={{ x: '-100%' }}
+        animate={{ x: '100%' }}
+        transition={{
+          repeat: Infinity,
+          duration: 1.5,
+          ease: 'easeInOut',
+        }}
+        className="absolute inset-0 bg-gradient-to-r from-transparent via-background/50 to-transparent"
+      />
+    </div>
+  );
+});
 ShimmerBar.displayName = 'ShimmerBar';
 
 // KPI Card Skeleton
-function KPICardSkeleton({ index = 0, variant = 'primary' }: { index?: number; variant?: 'hero' | 'primary' | 'secondary' }) {
+function KPICardSkeleton({
+  index = 0,
+  variant = 'primary',
+}: {
+  index?: number;
+  variant?: 'hero' | 'primary' | 'secondary';
+}) {
   const sizes = {
     hero: { card: 'p-6 min-h-[180px]', value: 'h-12 w-40', title: 'h-4 w-24', icon: 'h-20 w-20' },
     primary: { card: 'p-5', value: 'h-8 w-32', title: 'h-4 w-20', icon: 'h-14 w-14' },
@@ -110,7 +114,7 @@ function ChartSkeleton({ height = 300 }: { height?: number }) {
                 <ShimmerBar key={i} className="h-3 w-10" />
               ))}
             </div>
-            
+
             {/* Chart area */}
             <div className="ml-14 h-full flex items-end gap-2 pb-8">
               {[...Array(12)].map((_, i) => (

@@ -32,11 +32,7 @@ import {
   useOrganizacoes,
   useRevogarConvite,
 } from '@/hooks/useOrganizacoes';
-import {
-  ROTULO_ORG_PAPEL,
-  resumirMembros,
-  type OrgPapel,
-} from '@/lib/organizacoes/convites';
+import { ROTULO_ORG_PAPEL, resumirMembros, type OrgPapel } from '@/lib/organizacoes/convites';
 import { ConvitesCard, MembrosCard } from './Organizacoes.parts';
 
 function mensagemErro(erro: unknown): string {
@@ -70,7 +66,7 @@ export default function Organizacoes() {
 
   const organizacaoAtual = useMemo(
     () => organizacoes.data?.find((org) => org.id === orgSelecionada) ?? null,
-    [organizacoes.data, orgSelecionada],
+    [organizacoes.data, orgSelecionada]
   );
 
   const resumo = useMemo(() => resumirMembros(membros.data ?? []), [membros.data]);
@@ -121,7 +117,7 @@ export default function Organizacoes() {
                         setOrgSelecionada(org.id);
                       },
                       onError: (erro) => toast.error(mensagemErro(erro)),
-                    },
+                    }
                   );
                 }}
               >
@@ -186,8 +182,8 @@ export default function Organizacoes() {
               {!organizacoes.isLoading && (organizacoes.data ?? []).length === 0 && (
                 <Alert>
                   <AlertDescription>
-                    Você ainda não participa de nenhuma organização. Crie a primeira acima ou
-                    aceite um convite recebido por e-mail.
+                    Você ainda não participa de nenhuma organização. Crie a primeira acima ou aceite
+                    um convite recebido por e-mail.
                   </AlertDescription>
                 </Alert>
               )}
@@ -226,7 +222,7 @@ export default function Organizacoes() {
                       toast.success(
                         convite.emailEnviado
                           ? `Convite enviado por e-mail para ${convite.email_convidado}.`
-                          : 'Convite gerado. Copie o link e envie ao convidado.',
+                          : 'Convite gerado. Copie o link e envie ao convidado.'
                       );
                       setNovoConvite({ email: '', papel: 'MEMBRO' });
                     },
@@ -256,7 +252,7 @@ export default function Organizacoes() {
                     {
                       onSuccess: () => toast.success('Papel atualizado.'),
                       onError: (erro) => toast.error(mensagemErro(erro)),
-                    },
+                    }
                   )
                 }
                 onToggleAtivo={(membro) =>
@@ -269,7 +265,7 @@ export default function Organizacoes() {
                     {
                       onSuccess: () => toast.success('Vínculo atualizado.'),
                       onError: (erro) => toast.error(mensagemErro(erro)),
-                    },
+                    }
                   )
                 }
               />

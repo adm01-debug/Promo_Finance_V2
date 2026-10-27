@@ -5,9 +5,21 @@ import type { ResumoMonofasico } from '@/lib/tributario/monofasico';
 import { csvEscape, downloadCSV } from '@/lib/export-contabil/utils';
 
 const TITULO = 'REGIME MONOFÁSICO DE PIS/COFINS';
-const CABECALHO = ['NCM', 'Descrição', 'Grupo', 'Posição', 'Receita', 'PIS', 'COFINS', 'Total', 'Economia', 'Base legal'];
+const CABECALHO = [
+  'NCM',
+  'Descrição',
+  'Grupo',
+  'Posição',
+  'Receita',
+  'PIS',
+  'COFINS',
+  'Total',
+  'Economia',
+  'Base legal',
+];
 
-const num = (v: number) => v.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+const num = (v: number) =>
+  v.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 
 function linhas(resumo: ResumoMonofasico) {
   return resumo.itens.map((i) => [
@@ -46,7 +58,9 @@ export function exportMonofasicoPDF(resumo: ResumoMonofasico, empresa?: string) 
   doc.setFontSize(13);
   doc.text(TITULO, 40, 40);
   doc.setFontSize(9);
-  cabecalhoContexto(resumo, empresa).slice(1).forEach((linha, i) => doc.text(linha, 40, 58 + i * 13));
+  cabecalhoContexto(resumo, empresa)
+    .slice(1)
+    .forEach((linha, i) => doc.text(linha, 40, 58 + i * 13));
 
   autoTable(doc, {
     startY: 110,

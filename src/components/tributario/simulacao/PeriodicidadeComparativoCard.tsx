@@ -21,7 +21,8 @@ export function PeriodicidadeComparativoCard({
   cenario,
   className,
 }: PeriodicidadeComparativoCardProps) {
-  const { periodicidadeApuracao, irpjCsllPeriodicidadeAlternativa, economiaPeriodicidade } = cenario;
+  const { periodicidadeApuracao, irpjCsllPeriodicidadeAlternativa, economiaPeriodicidade } =
+    cenario;
 
   // Só faz sentido no Lucro Real e quando o motor devolveu o comparativo.
   if (
@@ -67,7 +68,7 @@ export function PeriodicidadeComparativoCard({
                 key={o.chave}
                 className={cn(
                   'p-3 rounded border',
-                  ehRecomendada ? 'border-success bg-success/10' : 'border-border bg-muted/40',
+                  ehRecomendada ? 'border-success bg-success/10' : 'border-border bg-muted/40'
                 )}
               >
                 <div className="flex items-center justify-between gap-2">
@@ -96,9 +97,8 @@ export function PeriodicidadeComparativoCard({
           <Alert>
             <Info className="h-4 w-4" aria-hidden="true" />
             <AlertDescription>
-              As duas periodicidades resultam em carga de IRPJ+CSLL praticamente idêntica
-              (diferença inferior a R$ 1,00). Decida pelo critério de fluxo de caixa e esforço
-              acessório.
+              As duas periodicidades resultam em carga de IRPJ+CSLL praticamente idêntica (diferença
+              inferior a R$ 1,00). Decida pelo critério de fluxo de caixa e esforço acessório.
             </AlertDescription>
           </Alert>
         ) : (
@@ -119,8 +119,8 @@ export function PeriodicidadeComparativoCard({
                 <>
                   Migrar para a apuração <strong>{LABEL[recomendada].toLowerCase()}</strong>{' '}
                   reduziria o IRPJ+CSLL em <strong>{formatCurrency(delta)}</strong>. A opção é
-                  irretratável para todo o ano-calendário e deve ser manifestada no pagamento da
-                  1ª quota (Lei 9.430/96, art. 3º).
+                  irretratável para todo o ano-calendário e deve ser manifestada no pagamento da 1ª
+                  quota (Lei 9.430/96, art. 3º).
                 </>
               )}
             </AlertDescription>

@@ -17,7 +17,11 @@ vi.mock('@/integrations/supabase/client', () => ({
   },
 }));
 
-import { useFluxoCaixaKPIs, useFluxoCaixaProjetado, calcularProjecoesReais } from '../useFluxoCaixa';
+import {
+  useFluxoCaixaKPIs,
+  useFluxoCaixaProjetado,
+  calcularProjecoesReais,
+} from '../useFluxoCaixa';
 
 function wrapper({ children }: { children: React.ReactNode }) {
   const client = new QueryClient({ defaultOptions: { queries: { retry: false } } });
@@ -32,14 +36,26 @@ describe('useFluxoCaixaKPIs', () => {
       call++;
       if (call === 1) {
         // contas_bancarias.select(...).eq(...)
-        return { eq: eqMock.mockResolvedValueOnce({ data: [{ saldo_atual: 5000 }, { saldo_atual: 3000 }], error: null }) };
+        return {
+          eq: eqMock.mockResolvedValueOnce({
+            data: [{ saldo_atual: 5000 }, { saldo_atual: 3000 }],
+            error: null,
+          }),
+        };
       }
       if (call === 2) {
         // contas_receber.select(...).in(...)
-        return { in: inMock.mockResolvedValueOnce({ data: [{ valor: 1000, valor_recebido: 200 }], error: null }) };
+        return {
+          in: inMock.mockResolvedValueOnce({
+            data: [{ valor: 1000, valor_recebido: 200 }],
+            error: null,
+          }),
+        };
       }
       // contas_pagar.select(...).in(...)
-      return { in: inMock.mockResolvedValueOnce({ data: [{ valor: 600, valor_pago: 100 }], error: null }) };
+      return {
+        in: inMock.mockResolvedValueOnce({ data: [{ valor: 600, valor_pago: 100 }], error: null }),
+      };
     });
   });
 
@@ -60,7 +76,9 @@ describe('useFluxoCaixaProjetado', () => {
     selectMock.mockImplementation(() => {
       call++;
       if (call === 1) {
-        return { eq: vi.fn().mockResolvedValueOnce({ data: [{ saldo_atual: 10000 }], error: null }) };
+        return {
+          eq: vi.fn().mockResolvedValueOnce({ data: [{ saldo_atual: 10000 }], error: null }),
+        };
       }
       // receber & pagar
       return {

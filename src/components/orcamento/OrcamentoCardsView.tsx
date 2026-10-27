@@ -24,9 +24,27 @@ export interface CentroCustoComGastos {
 }
 
 const statusConfig = {
-  ok: { label: 'No Orçamento', icon: CheckCircle2, color: 'text-success', bg: 'bg-success/10', border: 'border-success/30' },
-  atencao: { label: 'Atenção', icon: AlertTriangle, color: 'text-warning', bg: 'bg-warning/10', border: 'border-warning/30' },
-  estouro: { label: 'Estourado', icon: TrendingDown, color: 'text-destructive', bg: 'bg-destructive/10', border: 'border-destructive/30' },
+  ok: {
+    label: 'No Orçamento',
+    icon: CheckCircle2,
+    color: 'text-success',
+    bg: 'bg-success/10',
+    border: 'border-success/30',
+  },
+  atencao: {
+    label: 'Atenção',
+    icon: AlertTriangle,
+    color: 'text-warning',
+    bg: 'bg-warning/10',
+    border: 'border-warning/30',
+  },
+  estouro: {
+    label: 'Estourado',
+    icon: TrendingDown,
+    color: 'text-destructive',
+    bg: 'bg-destructive/10',
+    border: 'border-destructive/30',
+  },
 };
 
 export function OrcamentoCardsView({ centros }: { centros: CentroCustoComGastos[] }) {
@@ -81,21 +99,35 @@ export function OrcamentoCardsView({ centros }: { centros: CentroCustoComGastos[
                 <div className="grid grid-cols-2 gap-2 text-xs">
                   <div className="p-2 rounded bg-muted/50">
                     <span className="text-muted-foreground block">Orçamento</span>
-                    <span className="font-semibold">{formatCurrency(centro.orcamento_previsto)}</span>
+                    <span className="font-semibold">
+                      {formatCurrency(centro.orcamento_previsto)}
+                    </span>
                   </div>
                   <div className="p-2 rounded bg-muted/50">
                     <span className="text-muted-foreground block">Gasto</span>
-                    <span className={cn('font-semibold', centro.status === 'estouro' && 'text-destructive')}>
+                    <span
+                      className={cn(
+                        'font-semibold',
+                        centro.status === 'estouro' && 'text-destructive'
+                      )}
+                    >
                       {formatCurrency(centro.gasto_real_pagar)}
                     </span>
                   </div>
                   <div className="p-2 rounded bg-muted/50">
                     <span className="text-muted-foreground block">Receita</span>
-                    <span className="font-semibold text-success">{formatCurrency(centro.gasto_real_receber)}</span>
+                    <span className="font-semibold text-success">
+                      {formatCurrency(centro.gasto_real_receber)}
+                    </span>
                   </div>
                   <div className="p-2 rounded bg-muted/50">
                     <span className="text-muted-foreground block">Margem</span>
-                    <span className={cn('font-semibold', centro.margem >= 0 ? 'text-success' : 'text-destructive')}>
+                    <span
+                      className={cn(
+                        'font-semibold',
+                        centro.margem >= 0 ? 'text-success' : 'text-destructive'
+                      )}
+                    >
                       {formatCurrency(centro.margem)}
                     </span>
                   </div>

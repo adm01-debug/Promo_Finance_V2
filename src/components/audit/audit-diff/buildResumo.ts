@@ -57,7 +57,8 @@ export function buildResumo({
     if (diff.changed.length > 0) {
       lines.push('');
       lines.push(`Alterações (${diff.changed.length}):`);
-      for (const f of diff.changed) lines.push(`  ~ ${f.key}: ${formatValue(f.before)} → ${formatValue(f.after)}`);
+      for (const f of diff.changed)
+        lines.push(`  ~ ${f.key}: ${formatValue(f.before)} → ${formatValue(f.after)}`);
     }
     if (diff.added.length > 0) {
       lines.push('');

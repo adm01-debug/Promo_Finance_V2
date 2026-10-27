@@ -15,6 +15,7 @@ Edge Functions** (que rodam com `service_role` e ignoram RLS) e **drift entre o 
 e o que o banco de produção realmente tem**.
 
 **5 maiores riscos:**
+
 1. **[P0]** IDOR em `asaas-proxy` — qualquer usuário financeiro/admin de qualquer empresa pode fazer PIX cash-out, cancelar/estornar cobranças de outras empresas.
 2. **[P0]** IDOR em `sefaz-manifestar` — qualquer usuário autenticado pode manifestar NFe de outra empresa, assinando com o certificado digital dela junto à SEFAZ.
 3. **[P0]** `service_role` JWT de um projeto Supabase de terceiro (`xyykivpcdbfukaongpbw`) ficou commitado no histórico git — ainda extraível, válida até 2036.
@@ -93,6 +94,7 @@ em 18 edge functions (ver A-039), jspdf 4.2.1, xlsx 0.20.3 (via CDN sheetjs), no
 ### Banco de dados
 
 #### A-001 · [P1] · banco — 2 migrations commitadas nunca foram aplicadas em produção: 4 RPCs financeiras/tributárias que o frontend chama não existem
+
 Evidência: `supabase_db_migrations` → max(version) aplicada = `20260912100000`. Os arquivos locais
 `supabase/migrations/20260913120000_corrige_credenciais_automacoes_internas.sql` e
 `supabase/migrations/20260913140000_rpcs_atomicas_fluxos_multi_passo.sql` são posteriores e não
@@ -106,6 +108,7 @@ financeiros/tributários centrais quebrados desde a publicação do frontend.
 Causa raiz: migration commitada no repositório mas nunca executada contra o projeto Supabase Cloud.
 
 #### A-002 · [P1] · banco — Triggers de notificação crítica (push e WhatsApp IA) não existem no banco
+
 Evidência: query em `pg_trigger` para `trg_notificar_alerta_critico_push` (deveria disparar em INSERT
 em `public.alertas`) e `on_whatsapp_message_inserted` (INSERT em `public.historico_cobranca_whatsapp`)
 retornou 0 linhas. `supabase_db_list_triggers` confirma que `alertas` só tem `trg_alertas_set_empresa`
@@ -117,6 +120,7 @@ disparam análise por IA — falha silenciosa contínua.
 Causa raiz: mesma migration não aplicada de A-001.
 
 #### A-003 · [P2] · banco — `notify_performance_alert_trigger` continua com credencial incorreta na versão viva
+
 Evidência: o trigger `performance_alerts_notify_trigger` existe e usa a versão de
 `20260905130000` (aplicada), não a versão corrigida de `20260913120000` (não aplicada). Comentário
 da migration não aplicada: `20260905130000` corrigiu URL/projeto da chave mas "o TIPO da credencial
@@ -126,6 +130,7 @@ Impacto: alertas `critical`/`warning` de performance continuam não notificados 
 Causa raiz: mesma migration não aplicada de A-001.
 
 #### A-004 · [P2] · banco — Gap de rastreamento entre 599 migrations locais e 357 linhas em `schema_migrations`
+
 Evidência: `ls supabase/migrations | wc -l` = 599. `supabase_migrations.schema_migrations` tem 357
 linhas, min(version)=20260518153051, max(version)=20260912100000. ~401 arquivos locais caem no
 intervalo coberto pela tabela de tracking contra só 357 linhas rastreadas — diferença de ~44 não
@@ -135,6 +140,7 @@ processo de deploy de migrations não é confiável.
 Causa raiz: não determinada a fundo (ver Não verificado).
 
 #### A-005 · [P3] · banco — Policy RLS morta em `integration_secrets`
+
 Evidência: `admin_only_integration_secrets` (PERMISSIVE, role=admin via `user_roles`) nunca é
 alcançada porque `integration_secrets_no_client_access` (RESTRICTIVE, `using(false)`) já bloqueia
 incondicionalmente o role `authenticated` (que é o role de conexão de qualquer usuário logado,
@@ -144,11 +150,13 @@ ela quebra o acesso do admin.
 Causa raiz: duas policies redundantes escritas em migrations diferentes sem revisão conjunta.
 
 #### A-006 · [P3] · banco — 24 pares de índices duplicados
+
 Evidência: `supabase_db_duplicate_indexes` retornou 24 pares — destaque `uq_index_usage_snapshots_snapshot_schema_index`/`index_usage_snapshots_unico` (2160 kB), `bloat_snapshots_snapshot_date_table_name_key`/`idx_bloat_snapshots_date_table` (1200 kB), `performance_alerts_source_alert_key_alert_hour_key`/`idx_perf_alerts_source_key` (656 kB), mais pares em `aliquotas_interestaduais`, `ncms`, `ufs`, `cnaes`, `faixas_simples_nacional`, `fechamentos_tributarios`, `conformidade_snapshots`, `entregas_obrigacoes`, `user_active_filters`, `webhooks_log`, `regras_roteamento_financeiro`, `relatorios_tributarios_agendados`, `protocolos_st_ncms/ufs`, `custom_oauth_providers`, `nfe_recebidas`.
 Impacto: ~4.3MB de overhead de disco/escrita duplicado nos 3 maiores pares, sem ganho de performance.
 Causa raiz: índices UNIQUE criados por constraint e por `CREATE INDEX` manual cobrindo as mesmas colunas em migrations diferentes.
 
 #### A-007 · [P3] · banco — Tabelas financeiras sem autovacuum, dead tuples proporcionalmente altos
+
 Evidência: `supabase_db_table_bloat` — `fornecedores` (90.9% dead, last_autovacuum=null),
 `centros_custo` (85.7%), `contas_bancarias` (84.6%), `conciliacoes` (75%), `lancamentos_contabeis`
 (56.3%), `solicitacoes_aprovacao` (77.8%).
@@ -157,6 +165,7 @@ volume crescer sem ajuste de `autovacuum_vacuum_scale_factor`, o bloat proporcio
 Causa raiz: threshold padrão de autovacuum não ajustado para tabelas pequenas/alta taxa de update.
 
 #### A-008 · [P3] · banco — Modelo de tenant inconsistente entre `clientes` e `fornecedores`
+
 Evidência: `fornecedores` não tem coluna `empresa_id`; suas 4 policies RLS são todas por
 `user_id = auth.uid()`. `clientes` tem policies por `user_id` E por `empresa_membro_ativo(empresa_id)`,
 dando acesso compartilhado dentro da mesma empresa.
@@ -167,6 +176,7 @@ Causa raiz: `fornecedores` não recebeu o mesmo hardening multi-tenant que `clie
 ### Backend / Edge Functions e fluxos críticos
 
 #### A-009 · [P0] · backend — IDOR cross-tenant em `asaas-proxy`: qualquer financeiro/admin move dinheiro e mexe em cobranças de outras empresas
+
 Evidência: `supabase/functions/asaas-proxy/index.ts:76-90` só checa role global (`admin`/`financeiro`
 em `user_roles`, sem `empresa_id`). Quase nenhuma action valida vínculo `user_empresas` com o recurso:
 `criar_cliente`(133-167)/`criar_cobranca`(217-322) inserem `empresa_id` arbitrário do body;
@@ -183,6 +193,7 @@ Causa raiz: autorização só por role global, sem reaproveitar `exigirVinculoEm
 `_shared/auth-guard.ts` e é usado corretamente em outras functions do mesmo repo).
 
 #### A-010 · [P0] · backend — `sefaz-manifestar` permite manifestar NFe de qualquer empresa, assinando com o certificado digital dela
+
 Evidência: `supabase/functions/sefaz-manifestar/index.ts:222-264` só exige sessão válida — sem
 consulta a `user_empresas`/`user_roles`. `executeManifestacao`(106-220) localiza a NFe só pelo
 `chave_acesso` do body(122-127), carrega o certificado A1 do CNPJ destinatário(130-138) e assina/envia
@@ -195,6 +206,7 @@ de NFe de empresa diferente da do chamador.
 Causa raiz: ausência do padrão `exigirVinculoEmpresa` já usado em `nfe-upload-certificado`.
 
 #### A-011 · [P1] · backend — `conciliacao-ia` sem autenticação e sem rate limit
+
 Evidência: `supabase/functions/conciliacao-ia/index.ts` — zero import de `auth-guard.ts`/
 `exigirUsuario` e zero `checkRateLimit` no arquivo inteiro; handler(89) só faz `req.json()` →
 `validateContract` → chama `ai.gateway.lovable.dev` com `LOVABLE_API_KEY`(151). Function irmã
@@ -205,6 +217,7 @@ Como explorar: `POST` direto ao endpoint público sem header Authorization, repe
 Causa raiz: guard de autenticação e rate limit não aplicados nesta function.
 
 #### A-012 · [P1] · backend — `bling-proxy` sem RBAC: qualquer usuário autenticado pode excluir produtos, cancelar NF-e, baixar/estornar contas
+
 Evidência: `supabase/functions/bling-proxy/index.ts:14-37` só verifica sessão válida — nenhuma
 consulta a `user_roles` no arquivo inteiro. O `switch`(57-290) expõe `excluir_produtos`,
 `excluir_contas_pagar/receber`, `cancelar_nfe`, `estornar_contas_nfe`, `baixa_conta_pagar`,
@@ -216,6 +229,7 @@ Como explorar: autenticar com qualquer usuário válido e chamar `action: "cance
 Causa raiz: guard de RBAC não implementado; só há verificação de autenticação.
 
 #### A-013 · [P1] · fluxo-crítico — `processar-fila-cobrancas` marca envio como sucesso mesmo quando falha (erro engolido)
+
 Evidência: `supabase/functions/processar-fila-cobrancas/index.ts:62-83` — para canais `email`/
 `whatsapp`, faz `await supabase.functions.invoke(...)` e em seguida `success = true`
 **incondicionalmente**, sem checar o `error` que `functions.invoke` devolve (a API não lança
@@ -226,6 +240,7 @@ removido da fila — a cobrança real nunca chega ao cliente e ninguém percebe.
 Causa raiz: falta checagem do campo `error` retornado por `supabase.functions.invoke`.
 
 #### A-014 · [P1] · fluxo-crítico — `executar-fechamento-tributario` não filtra por `empresa_id` no check de conciliação bancária
+
 Evidência: `supabase/functions/executar-fechamento-tributario/index.ts:160-165` conta
 `transacoes_bancarias` pendentes por período sem `.eq('empresa_id', body.empresa_id)` — diferente
 das outras 5 checagens da mesma function, que filtram corretamente.
@@ -236,6 +251,7 @@ mês pode ser fechado.
 Causa raiz: filtro de tenant esquecido nesta query específica.
 
 #### A-015 · [P1] · backend — `open-finance` (`import_transactions`) escreve em `transacoes_bancarias` de qualquer conta sem checar posse
+
 Evidência: `supabase/functions/open-finance/index.ts:451-520` recebe `contaBancariaId` do body e,
 com client `service_role` (sem RLS), faz select/insert em `transacoes_bancarias`/`contas_bancarias`
 filtrando só por `id`, nunca validando que a conta pertence a empresa do usuário (só valida sessão
@@ -246,6 +262,7 @@ a falha de isolamento será herdada quando a integração real for ligada.
 Causa raiz: ausência de `exigirVinculoEmpresa` antes do insert.
 
 #### A-016 · [P2] · backend — `gerar-pacote-evidencias` exporta dado financeiro/tributário/conformidade de qualquer empresa para role "admin" global
+
 Evidência: `supabase/functions/gerar-pacote-evidencias/index.ts:257-278` exige só
 `user_roles.role = 'admin'` (tabela sem `empresa_id`). Body aceita `empresa_id` livre(14); queries
 (144-151) usam esse valor direto com `service_role`, sem validar posse. Comentário do próprio código
@@ -258,6 +275,7 @@ Causa raiz: RBAC global (`user_roles` sem `empresa_id`) usado onde a function as
 empresa; pode ser intencional (admin de plataforma) mas não está documentado como exceção.
 
 #### A-017 · [P2] · integracoes — Fetch a Asaas/Bling sem timeout explícito
+
 Evidência: `asaas-proxy/index.ts:14-41` (`asaasFetch`) e `bling-proxy/index.ts:505-556`
 (`blingFetch`) usam retry+circuit breaker mas o `fetch()` não recebe `signal`/`AbortSignal.timeout`.
 `_shared/resilience.ts:120-138` define `withTimeout()` mas não tem nenhum chamador (`grep -rl` = 0)
@@ -268,6 +286,7 @@ plataforma, em vez de falhar rápido e liberar retry/circuit breaker.
 Causa raiz: utilitário `withTimeout` escrito mas nunca conectado aos dois proxies financeiros mais usados.
 
 #### A-018 · [P2] · integracoes — `processar-fila-cobrancas` não usa a RPC atômica (`FOR UPDATE SKIP LOCKED`) que já existe no banco
+
 Evidência: `processar-fila-cobrancas/index.ts:41-45` faz `SELECT ... WHERE status='pendente' LIMIT
 20` seguido de `UPDATE` por item, sem `FOR UPDATE SKIP LOCKED`. `supabase/migrations/20260317001356_*.sql:161-168`
 já define `public.processar_fila_cobrancas(p_limite)` com claim atômico exatamente para evitar essa
@@ -279,6 +298,7 @@ Como explorar: usuário financeiro aciona "processar fila" em duas abas quase si
 Causa raiz: RPC segura criada em migration mas a edge function nunca foi atualizada para usá-la.
 
 #### A-019 · [P2] · seguranca — `asaas-webhook`/`n8n-dispatch` usam comparação de token não constante-time
+
 Evidência: `asaas-webhook/index.ts:26` (`receivedToken !== WEBHOOK_TOKEN`) e
 `n8n-dispatch/index.ts:82` (`x-n8n-secret !== expected`) comparam string direta, ao contrário do
 padrão `segredosIguais`/`timingSafeEqual` usado em `_shared/auth-guard.ts`, `_shared/webhook-auth.ts`
@@ -288,6 +308,7 @@ inconsistência de padrão de segurança dentro do mesmo projeto.
 Causa raiz: essas duas functions não reusaram o helper compartilhado de comparação segura.
 
 #### A-020 · [P3] · backend — `calculo-iva` sem qualquer autenticação
+
 Evidência: `supabase/functions/calculo-iva/index.ts` inteiro sem guard de auth.
 Impacto: baixo — cálculo puro, não toca banco, não chama serviço pago.
 Causa raiz: guard de autenticação ausente, mas sem dado sensível nem custo externo em jogo.
@@ -295,6 +316,7 @@ Causa raiz: guard de autenticação ausente, mas sem dado sensível nem custo ex
 ### Frontend
 
 #### A-021 · [P1] · frontend — Erro ao criar/editar Conta a Pagar não aparece para o usuário
+
 Evidência: `src/hooks/financial/useContasPagar.ts:132-136` (`useCreateContaPagar.onError`) e
 `:153-157` (`useUpdateContaPagar.onError`) fazem só `logger.error(...)` + `sounds.error()`;
 `logger.error` é apenas `console.error` (`src/lib/logger.ts:28-32`), sem toast. Contraste:
@@ -306,6 +328,7 @@ Causa raiz: padrão `onError → toast.error` usado em praticamente todos os out
 mas esquecido especificamente nas mutations de criar/editar conta a pagar.
 
 #### A-022 · [P1] · frontend — Movimentações: tabela sem paginação nem virtualização, até 500 linhas renderizadas de uma vez
+
 Evidência: `src/hooks/useFinancialOperations.ts:41-64` (`useMovimentacoes`) usa `.limit(500)` sem
 paginação; `src/pages/Movimentacoes.tsx:141-190` renderiza `filtered.map(...)` direto em `<Table>`,
 sem `react-window`/paginação (diferente de `ContasPagarList`, que usa `FixedSizeList`).
@@ -314,6 +337,7 @@ degradação de performance numa tela financeira central.
 Causa raiz: página não reaproveitou o padrão de paginação/virtualização já existente em Contas a Pagar.
 
 #### A-023 · [P2] · frontend — Formatação de moeda duplicada fora de `formatCurrency`, sem guarda contra `undefined`
+
 Evidência: `src/lib/formatters.ts:22-28` já trata `null`/`undefined`/`NaN`. Vários módulos tributários
 redefinem localmente sem guarda: `IrpjCsllLucroReal.tsx:27`, `FolhaEncargos.tsx:18`,
 `PisCofinsCreditos.tsx:26`, `Monofasico.tsx:30`, `ObservabilidadeDigest.tsx:52` — todos
@@ -323,12 +347,14 @@ Impacto: se `v` vier `undefined`/`null` (comum em dados agregados de view ainda 
 Causa raiz: código duplicado em vez de importar o helper central já existente e testado.
 
 #### A-024 · [P3] · frontend — Botão "Novo Acordo Proativo" sem ação (beco sem saída)
+
 Evidência: `src/pages/Cobrancas.tsx:254-257` — botão sem `onClick`.
 Impacto: usuário clica e nada acontece; fluxo equivalente existe via `useAcordosParcelamento.ts` mas
 não está ligado nessa tela.
 Causa raiz: call-to-action deixado sem handler, provável placeholder esquecido.
 
 #### A-025 · [P3] · frontend — Estado `isDeleting` morto em Contas a Pagar
+
 Evidência: `src/hooks/useContasPagarLogic.ts:49` — `const [isDeleting] = useState(false)`, sem
 setter usado; passado para `ConfirmDialog isLoading={logic.isDeleting}` em `ContasPagar.tsx:241`.
 Impacto: nenhum funcional — spinner de "excluindo" nunca aparece porque o fluxo real usa toast com
@@ -338,6 +364,7 @@ Causa raiz: resquício de versão anterior do fluxo de delete.
 ### UX
 
 #### A-026 · [P1] · ux — Bulk "Cancelar" em Contas a Pagar/Receber sem confirmação (assimetria com o delete individual)
+
 Evidência: `ContasPagar.tsx:64-67` (`handleBulkCancel`) e `ContasReceber.tsx:90-93` passam o
 `onClick` direto para `BulkActionsBar`; `bulk-actions-bar.tsx:87-96` dispara a ação no primeiro
 clique, sem `AlertDialog` — diferente do delete individual (`ContasPagar.tsx:234-243`, `ConfirmDialog`).
@@ -347,6 +374,7 @@ Causa raiz: `BulkActionsBar` não suporta confirmação por ação; os dois flux
 reaproveitar `ConfirmDialog`.
 
 #### A-027 · [P1] · ux — Falha ao carregar Contas a Pagar aparece como "lista vazia", não como erro
+
 Evidência: `useContasPagarPaginated`(`useContasPagar.ts:94-107`) lança o erro sem captura local;
 `ContasPagar.tsx:172-186` só passa `isLoading`, nunca `isError`; `List.tsx:58-69` trata só
 loading/`length===0`, renderizando "Nenhuma conta a pagar cadastrada" em ambos os casos.
@@ -355,6 +383,7 @@ usuário não percebe erro e não tem botão de retry. Risco de achar que não h
 Causa raiz: nenhum estado de erro é propagado da query para a UI.
 
 #### A-028 · [P1] · ux — Conciliação bancária: lista principal sem loading state, estado de servidor copiado para `useState` local
+
 Evidência: `useConciliacaoPageState.ts:61-84` busca via `useEffect`→`carregarTransacoesBanco(...)`
 para `useState` local, sem expor `isLoading`; ao trocar de conta, `setTransacoes([])` é chamado de
 imediato(66). `Conciliacao.tsx:353-359` sempre renderiza "Nenhuma transação encontrada" quando
@@ -365,6 +394,7 @@ Causa raiz: estado de servidor replicado em `useState` local via `useEffect` em 
 (React Query), já usado no resto do app.
 
 #### A-029 · [P1] · ux/frontend — Portal do Cliente: autenticação fake em rota pública, com dados mock apresentados como reais
+
 Evidência: `src/App.tsx:178` — rota `/portal-cliente` pública (esperado, é portal externo).
 `PortalCliente.tsx:12-19` — `mockDocuments` hardcoded; `:52-53` — `onClick={() =>
 setIsAuthenticated(true)}` sem validar o `token` digitado (nenhuma chamada Supabase/edge function);
@@ -376,6 +406,7 @@ como "Portal Premium... com total segurança", engana qualquer cliente real que 
 Causa raiz: página parece protótipo nunca conectado a validação real, mas ficou na rota pública de produção.
 
 #### A-030 · [P2] · ux — Conciliação: "Ignorar Transação" (individual e em lote) sem confirmação
+
 Evidência: `Conciliacao.tsx:333-335` (individual) e `:378-381` (lote, `variant: 'destructive'`)
 chamam `handleIgnorar`/`handleBulkIgnorar` (`useConciliacaoPage.ts:272-286,313-326`) que fazem
 `update({conciliada:true, ...})` direto, sem `AlertDialog`.
@@ -386,9 +417,10 @@ Causa raiz: mesmo padrão de A-026 — ação ligada direto à mutação sem `Co
 ### Integrações e infra
 
 #### A-031 · [P2] · infra — Documentação de deploy conflita: `DEPLOYMENT.md` descreve Vercel como produção; `CLAUDE.md` diz Lovable Cloud
+
 Evidência: `docs/DEPLOYMENT.md:7-45` — "Deploy Vercel (produção)... merge em `main` dispara deploy
 automático", variáveis "no painel Vercel". `CLAUDE.md:39` — URL prod `app.promo-finance.com`,
-Deploy Lovable Cloud. `docs/AUDITORIA_TECNICA_EXAUSTIVA_2026-09-02*.md` confirmam Lovable Cloud como
+Deploy Lovable Cloud. `docs/**/AUDITORIA_TECNICA_EXAUSTIVA_2026-09-02*.md` confirmam Lovable Cloud como
 produção. `package.json` (`@lovable.dev/cloud-auth-js`, `lovable-tagger`) e `index.html` (og:image
 lovable.dev) apontam Lovable. `vercel.json` está totalmente configurado (CSP com
 `connect-src ... https://sandbox.asaas.com` — outro sinal de mistura de ambientes).
@@ -398,6 +430,7 @@ Causa raiz: documentação não sincronizada após migração de plataforma (ou 
 não desativado).
 
 #### A-032 · [P2] · infra — Gates de segurança do CI (RLS multi-tenant, privilégios) só rodam se `DATABASE_URL` estiver presente, e o job não falha se ausente
+
 Evidência: `.github/workflows/ci.yml` — steps de RLS/privilégios/retenção condicionados a
 `db_url_preflight.outputs.available == 'true'`; sem o secret, só roda um step que registra "gates
 inconclusivos" e **não falha o job**. Esses gates executam `supabase/tests/sql/rls_multi_empresa.sql`
@@ -409,6 +442,7 @@ anti-vazamento multi-tenant tenha rodado, sem sinalização de falha.
 Causa raiz: design "skip silencioso quando falta credencial" em vez de "falhar o job" para um gate crítico.
 
 #### A-033 · [P2] · infra — Observabilidade de erro no frontend é um stub "pronto para Sentry" nunca finalizado
+
 Evidência: `src/lib/error-tracking.ts:1-3` ("Ready for Sentry integration"), `:57-94`
 (`sentryTracker` só chama `window.Sentry.*` se existir, senão cai em `console.error`), `:128-133`
 (`initSentry` só loga em DEV). `package.json` não tem `@sentry/*`; `index.html` não carrega script Sentry.
@@ -417,6 +451,7 @@ usuário — sem canal centralizado de observação de erro de cliente.
 Causa raiz: integração planejada mas nunca finalizada (sem DSN/chave provisionada).
 
 #### A-034 · [P2] · infra — Backup/restore de produção: única evidência é uma linha de doc não testável
+
 Evidência: `docs/SECURITY.md:20` — "Backups diários", sem link/script/runbook. `scripts/data/rollback.sh`
 só reverte snapshot de uma migration run em **staging** (requer `STAGING_DB_URL`), não é
 backup/restore de produção. Nenhum script/runbook de restore de produção no repositório.
@@ -426,6 +461,7 @@ Causa raiz: política de backup, se existe, é gerida só pelo Supabase Cloud Da
 não documentada nem testada aqui.
 
 #### A-035 · [P3] · integracoes — `open-finance` cai em URL sandbox por default silencioso se a env var de produção não estiver setada
+
 Evidência: `open-finance/index.ts:31` — `OPEN_FINANCE_BASE_URL || "https://api.openbanking.org.br/sandbox"`,
 sem log de alerta quando cai no default.
 Impacto: se o secret de produção não estiver configurado, a função opera contra sandbox sem erro
@@ -435,6 +471,7 @@ Causa raiz: fallback "gracioso" sem alerta.
 ### Segurança transversal
 
 #### A-036 · [P0] · seguranca — `service_role` JWT de um projeto Supabase de terceiro commitado no histórico git, ainda recuperável
+
 Evidência: `gitleaks git --baseline-path .gitleaks-baseline.json` → 5 leaks fora do baseline. Commit
 `631944238f...`, `supabase/functions/compare-schemas/index.ts:19-20` (removido do HEAD atual pelo
 commit `7adc28a`, mas recuperável via `git show <commit>:<path>`): `extRef =
@@ -449,6 +486,7 @@ Causa raiz: credencial hardcoded no código-fonte "for audit purposes" (comentá
 commit), violando `SECURITY_RULES.md` (service_role nunca no código).
 
 #### A-037 · [P2] · seguranca — `anon key` de um projeto Supabase distinto (não o oficial) hardcoded em 3 migrations, ainda no HEAD
+
 Evidência: gitleaks (fora do baseline) em `supabase/migrations/20260712194415_*.sql:18`,
 `20260726180529_*.sql:11`, `20260728183119_*.sql:17` — JWT `role=anon`, `ref=lszcmoymovkpckehlagr`
 (≠ `bwwbeyolnnzppeuhgkcd`, o projeto oficial). As 3 migrations fazem `net.http_post` para
@@ -464,6 +502,7 @@ Ver também A-016 (`gerar-pacote-evidencias`, export cross-tenant) — já detal
 ### Qualidade e manutenção
 
 #### A-038 · [P1] · qualidade — INSERT em `boletos` referencia colunas que não existem na tabela viva
+
 Evidência: `src/hooks/useBoletos.ts:8-9,14,248-260` insere `asaas_id`/`external_provider` com cast
 `as unknown as BoletosInsert`. Confirmado ao vivo via `supabase_db_describe_table('boletos')`
 (projeto `bwwbeyolnnzppeuhgkcd`): a tabela tem 35 colunas, nenhuma chamada `asaas_id` ou `external_provider`.
@@ -474,6 +513,7 @@ Causa raiz: comentário do código presumia que as colunas só faltavam no `type
 verdade nunca existiram (ou foram removidas) na tabela viva — o cast mascarou o erro em compile-time.
 
 #### A-039 · [P2] · qualidade — Schema drift sistêmico: 43 TODOs (2026-08-14) documentam campos removidos silenciosamente de hooks financeiros
+
 Evidência: padrão `TODO(2026-08-14): ... não existe(m) em <tabela> (types.ts)` em 43 ocorrências —
 `useFinancialOperations.ts`, `useAprovacoes.ts`, `useRealtimeAnomalias.ts`, `useNegativacoes.ts`,
 `useOrganizacoes.ts`, `useScimTokens.ts`, `useConciliacaoPage.ts`, `useCreditosTributarios.ts`,
@@ -493,6 +533,7 @@ centrais sem regenerar `types.ts` nem revisar a camada de hooks ponta a ponta �
 remendo permanente.
 
 #### A-040 · [P2] · qualidade — `typescript-eslint` duplicado/desalinhado e classificado como dependência de produção
+
 Evidência: `package.json:120` tem `"typescript-eslint": "^8.33.0"` em `"dependencies"` (não
 devDependencies); `:140-141` declara `@typescript-eslint/eslint-plugin`/`parser` @8.33.0 em
 devDependencies. `bun.lock` resolve `typescript-eslint` trazendo consigo essas mesmas ferramentas em
@@ -502,6 +543,7 @@ de dev incorretamente classificada como dependência de produção.
 Causa raiz: migração incompleta do plugin standalone para o meta-pacote, sem limpar as entradas antigas.
 
 #### A-041 · [P3] · qualidade — `@supabase/supabase-js` divergente entre frontend (2.87.1) e edge functions (2.49.4, pinado em 18 funções)
+
 Evidência: `bun.lock` raiz resolve `2.87.1`; `grep -rhoE "npm:@supabase/supabase-js@[0-9.]+"
 supabase/functions` retorna 18 ocorrências, todas `2.49.4` (ex.: `sefaz-dfe-puxar/index.ts:20`,
 `nfe-upload-certificado/index.ts:6`, `sefaz-manifestar/index.ts:20`).
@@ -510,6 +552,7 @@ intermediárias não refletidos no backend).
 Causa raiz: pin manual de versão no cabeçalho `npm:` de cada função Deno, sem processo de atualização centralizado.
 
 #### A-042 · [P3] · qualidade — Três nomes de env var distintos para "URL base do app"
+
 Evidência: `APP_BASE_URL` (`enviar-convite-organizacao/index.ts:115`, `convidar-usuario/index.ts:172`),
 `APP_PUBLIC_URL` (`enviar-digest-conformidade/index.ts:359`, `relatorio-diario-anomalias/index.ts:121`),
 `PUBLIC_APP_URL` (`sso-callback/index.ts:8`). Todas em `env.manifest.json`, nenhuma em `.env.example`.
@@ -518,6 +561,7 @@ links de e-mail/callbacks OAuth.
 Causa raiz: ausência de constante única compartilhada; cada function leu sua própria env var ad-hoc.
 
 #### A-043 · [P3] · qualidade — `.env.example` desatualizado frente a `env.manifest.json` (11 variáveis reais faltando)
+
 Evidência: `APP_BASE_URL`, `APP_PUBLIC_URL`, `DENO_TESTING`, `EXTERNAL_SUPABASE_SERVICE_KEY`,
 `EXTERNAL_SUPABASE_URL`, `LOVABLE_API_KEY`, `PUBLIC_APP_URL`, `REGUA_CRON_SECRET`, `SUPABASE_DB_URL`,
 `SUPABASE_JWT_SECRET`, `VAPID_PUBLIC_KEY` são referenciadas em `Deno.env.get`/`import.meta.env` e
@@ -527,6 +571,7 @@ essas 11 vars para rodar cobrança/SSO/digest/comparação de schema localmente.
 Causa raiz: `env.manifest.json` é gerado por script; `.env.example` é mantido manualmente e ficou dessincronizado.
 
 #### A-044 · [P3] · backend — `n8n-callback` usa só segredo estático (sem HMAC), design aceitável mas inconsistente
+
 Evidência: `n8n-callback/index.ts:48-52,124-139` — `x-n8n-secret == N8N_CALLBACK_SECRET`, timing-safe,
 fail-closed (503 se ausente, 401 se inválido) — mas sem HMAC do corpo como os outros webhooks.
 Impacto: nível de proteção menor que HMAC (token estático replayável se vazado); aceitável para canal
@@ -595,7 +640,7 @@ de padrão com os demais webhooks do projeto.
 - Frontend: `src/App.tsx`, `src/config/env.ts`, `src/lib/{logger,formatters,error-tracking,queryClient}.ts`,
   `src/hooks/financial/{useContasPagar,useContasReceber}.ts`, `src/hooks/useConciliacaoPage*.ts`,
   `src/hooks/useFinancialOperations.ts`, `src/hooks/useBoletos.ts`, `src/pages/{ContasPagar,ContasReceber,
-  Conciliacao,Cobrancas,Movimentacoes,PortalCliente}.tsx`, `src/components/ui/bulk-actions-bar.tsx`, e
+Conciliacao,Cobrancas,Movimentacoes,PortalCliente}.tsx`, `src/components/ui/bulk-actions-bar.tsx`, e
   greps amplos por `VITE_`, `onError`, `console.log`, `TODO(2026-08-14)`, `@ts-ignore`/`@ts-expect-error`.
 - Infra: `.github/workflows/{ci,functions-deploy,staging-migrate}.yml`, `vercel.json`,
   `supabase/config.toml`, `docs/{DEPLOYMENT,SECURITY,HEALTHCHECK}.md`, `scripts/healthcheck/*`,

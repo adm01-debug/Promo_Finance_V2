@@ -2,14 +2,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { 
-  Monitor, 
-  Smartphone, 
-  Tablet, 
-  Trash2, 
-  Shield, 
-  ShieldOff
-} from 'lucide-react';
+import { Monitor, Smartphone, Tablet, Trash2, Shield, ShieldOff } from 'lucide-react';
 import { useDeviceDetection } from '@/hooks/useDeviceDetection';
 import { useAuth } from '@/hooks/useAuth';
 import { format } from 'date-fns';
@@ -59,24 +52,25 @@ export function KnownDevicesPanel() {
   const handleRemove = async (deviceId: string) => {
     const success = await removeDevice(deviceId);
     if (success) {
-      setDevices(devices.filter(d => d.id !== deviceId));
+      setDevices(devices.filter((d) => d.id !== deviceId));
     }
   };
 
   const handleTrust = async (deviceId: string, trusted: boolean) => {
     const success = await trustDevice(deviceId, trusted);
     if (success) {
-      setDevices(devices.map(d => 
-        d.id === deviceId ? { ...d, is_trusted: trusted } : d
-      ));
+      setDevices(devices.map((d) => (d.id === deviceId ? { ...d, is_trusted: trusted } : d)));
     }
   };
 
   const getDeviceIcon = (type: string | null) => {
     switch (type?.toLowerCase()) {
-      case 'mobile': return <Smartphone className="h-5 w-5" />;
-      case 'tablet': return <Tablet className="h-5 w-5" />;
-      default: return <Monitor className="h-5 w-5" />;
+      case 'mobile':
+        return <Smartphone className="h-5 w-5" />;
+      case 'tablet':
+        return <Tablet className="h-5 w-5" />;
+      default:
+        return <Monitor className="h-5 w-5" />;
     }
   };
 
@@ -88,7 +82,7 @@ export function KnownDevicesPanel() {
           <CardDescription>Carregando...</CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
-          {[1, 2].map(i => (
+          {[1, 2].map((i) => (
             <Skeleton key={i} className="h-20 w-full" />
           ))}
         </CardContent>
@@ -115,8 +109,8 @@ export function KnownDevicesPanel() {
         ) : (
           <div className="space-y-4">
             {devices.map((device) => (
-              <div 
-                key={device.id} 
+              <div
+                key={device.id}
                 className="flex items-center justify-between p-4 border rounded-lg bg-card"
               >
                 <div className="flex items-center gap-4">
@@ -126,7 +120,8 @@ export function KnownDevicesPanel() {
                   <div>
                     <div className="flex items-center gap-2">
                       <span className="font-medium">
-                        {device.browser || 'Navegador desconhecido'} - {device.os || 'SO desconhecido'}
+                        {device.browser || 'Navegador desconhecido'} -{' '}
+                        {device.os || 'SO desconhecido'}
                       </span>
                       {device.is_trusted && (
                         <Badge variant="secondary" className="text-xs">

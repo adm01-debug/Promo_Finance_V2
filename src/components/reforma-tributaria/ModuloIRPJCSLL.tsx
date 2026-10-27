@@ -6,9 +6,23 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Label } from '@/components/ui/label';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from '@/components/ui/dialog';
 import { IRPJCSLLCalculadora } from './irpj-csll/IRPJCSLLCalculadora';
 import { IRPJCSLLResumoCards } from './irpj-csll/IRPJCSLLResumoCards';
 import { IRPJCSLLApuracoesTable } from './irpj-csll/IRPJCSLLApuracoesTable';
@@ -18,11 +32,10 @@ import { Calculator, Plus } from 'lucide-react';
 import { useIRPJCSLL } from '@/hooks/useIRPJCSLL';
 import { useAllEmpresas } from '@/hooks/useEmpresas';
 
-
 export function ModuloIRPJCSLL() {
   const { data: empresas } = useAllEmpresas();
   const empresaId = empresas?.[0]?.id;
-  
+
   const {
     apuracoes,
     prejuizos,
@@ -55,16 +68,19 @@ export function ModuloIRPJCSLL() {
   // Apurações do ano
   const apuracoesAno = useMemo(() => {
     if (!apuracoes) return [];
-    return apuracoes.filter(a => a.ano === anoSelecionado);
+    return apuracoes.filter((a) => a.ano === anoSelecionado);
   }, [apuracoes, anoSelecionado]);
 
   // Totais do ano
   const totaisAno = useMemo(() => {
-    return apuracoesAno.reduce((acc, ap) => ({
-      irpj: acc.irpj + Number(ap.irpj_total),
-      csll: acc.csll + Number(ap.csll_total),
-      total: acc.total + Number(ap.total_tributos),
-    }), { irpj: 0, csll: 0, total: 0 });
+    return apuracoesAno.reduce(
+      (acc, ap) => ({
+        irpj: acc.irpj + Number(ap.irpj_total),
+        csll: acc.csll + Number(ap.csll_total),
+        total: acc.total + Number(ap.total_tributos),
+      }),
+      { irpj: 0, csll: 0, total: 0 }
+    );
   }, [apuracoesAno]);
 
   const handleCriarApuracao = async () => {
@@ -109,8 +125,12 @@ export function ModuloIRPJCSLL() {
     return (
       <div className="space-y-6">
         <div className="grid gap-4 md:grid-cols-4">
-          {[1, 2, 3, 4].map(i => (
-            <Card key={i}><CardContent className="pt-6"><Skeleton className="h-8 w-32" /></CardContent></Card>
+          {[1, 2, 3, 4].map((i) => (
+            <Card key={i}>
+              <CardContent className="pt-6">
+                <Skeleton className="h-8 w-32" />
+              </CardContent>
+            </Card>
           ))}
         </div>
       </div>
@@ -126,22 +146,30 @@ export function ModuloIRPJCSLL() {
             <Calculator className="h-5 w-5" />
             IRPJ/CSLL - Lucro Real
           </h3>
-          <p className="text-sm text-muted-foreground">
-            Apuração trimestral e anual com LALUR
-          </p>
+          <p className="text-sm text-muted-foreground">Apuração trimestral e anual com LALUR</p>
         </div>
         <div className="flex gap-2">
-          <Select value={String(anoSelecionado)} onValueChange={v => setAnoSelecionado(Number(v))}>
-            <SelectTrigger className="w-[100px]"><SelectValue /></SelectTrigger>
+          <Select
+            value={String(anoSelecionado)}
+            onValueChange={(v) => setAnoSelecionado(Number(v))}
+          >
+            <SelectTrigger className="w-[100px]">
+              <SelectValue />
+            </SelectTrigger>
             <SelectContent>
-              {[2023, 2024, 2025, 2026].map(a => (
-                <SelectItem key={a} value={String(a)}>{a}</SelectItem>
+              {[2023, 2024, 2025, 2026].map((a) => (
+                <SelectItem key={a} value={String(a)}>
+                  {a}
+                </SelectItem>
               ))}
             </SelectContent>
           </Select>
           <Dialog open={dialogAberto} onOpenChange={setDialogAberto}>
             <DialogTrigger asChild>
-              <Button><Plus className="h-4 w-4 mr-2" />Nova Apuração</Button>
+              <Button>
+                <Plus className="h-4 w-4 mr-2" />
+                Nova Apuração
+              </Button>
             </DialogTrigger>
             <DialogContent>
               <DialogHeader>
@@ -151,8 +179,15 @@ export function ModuloIRPJCSLL() {
               <div className="grid gap-4 py-4">
                 <div>
                   <Label>Tipo de Apuração</Label>
-                  <Select value={novaApuracao.tipo} onValueChange={(v: 'trimestral' | 'anual') => setNovaApuracao(p => ({ ...p, tipo: v }))}>
-                    <SelectTrigger><SelectValue /></SelectTrigger>
+                  <Select
+                    value={novaApuracao.tipo}
+                    onValueChange={(v: 'trimestral' | 'anual') =>
+                      setNovaApuracao((p) => ({ ...p, tipo: v }))
+                    }
+                  >
+                    <SelectTrigger>
+                      <SelectValue />
+                    </SelectTrigger>
                     <SelectContent>
                       <SelectItem value="trimestral">Trimestral</SelectItem>
                       <SelectItem value="anual">Anual (Balanço de Redução)</SelectItem>
@@ -162,11 +197,18 @@ export function ModuloIRPJCSLL() {
                 <div className="grid grid-cols-2 gap-4">
                   <div>
                     <Label>Ano</Label>
-                    <Select value={String(novaApuracao.ano)} onValueChange={v => setNovaApuracao(p => ({ ...p, ano: Number(v) }))}>
-                      <SelectTrigger><SelectValue /></SelectTrigger>
+                    <Select
+                      value={String(novaApuracao.ano)}
+                      onValueChange={(v) => setNovaApuracao((p) => ({ ...p, ano: Number(v) }))}
+                    >
+                      <SelectTrigger>
+                        <SelectValue />
+                      </SelectTrigger>
                       <SelectContent>
-                        {[2023, 2024, 2025, 2026].map(a => (
-                          <SelectItem key={a} value={String(a)}>{a}</SelectItem>
+                        {[2023, 2024, 2025, 2026].map((a) => (
+                          <SelectItem key={a} value={String(a)}>
+                            {a}
+                          </SelectItem>
                         ))}
                       </SelectContent>
                     </Select>
@@ -174,11 +216,20 @@ export function ModuloIRPJCSLL() {
                   {novaApuracao.tipo === 'trimestral' && (
                     <div>
                       <Label>Trimestre</Label>
-                      <Select value={String(novaApuracao.trimestre)} onValueChange={v => setNovaApuracao(p => ({ ...p, trimestre: Number(v) }))}>
-                        <SelectTrigger><SelectValue /></SelectTrigger>
+                      <Select
+                        value={String(novaApuracao.trimestre)}
+                        onValueChange={(v) =>
+                          setNovaApuracao((p) => ({ ...p, trimestre: Number(v) }))
+                        }
+                      >
+                        <SelectTrigger>
+                          <SelectValue />
+                        </SelectTrigger>
                         <SelectContent>
-                          {[1, 2, 3, 4].map(t => (
-                            <SelectItem key={t} value={String(t)}>{t}º Trimestre</SelectItem>
+                          {[1, 2, 3, 4].map((t) => (
+                            <SelectItem key={t} value={String(t)}>
+                              {t}º Trimestre
+                            </SelectItem>
                           ))}
                         </SelectContent>
                       </Select>
@@ -187,8 +238,12 @@ export function ModuloIRPJCSLL() {
                 </div>
               </div>
               <DialogFooter>
-                <Button variant="outline" onClick={() => setDialogAberto(false)}>Cancelar</Button>
-                <Button onClick={handleCriarApuracao} disabled={criarApuracao.isPending}>Criar</Button>
+                <Button variant="outline" onClick={() => setDialogAberto(false)}>
+                  Cancelar
+                </Button>
+                <Button onClick={handleCriarApuracao} disabled={criarApuracao.isPending}>
+                  Criar
+                </Button>
               </DialogFooter>
             </DialogContent>
           </Dialog>

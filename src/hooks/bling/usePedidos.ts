@@ -23,25 +23,39 @@ export function useBlingPedidoMutations() {
 
   const criarPedido = useMutation({
     mutationFn: (data: Record<string, unknown>) => blingAction('criar_pedido', { data }),
-    onSuccess: () => { toast.success('Pedido criado no Bling'); queryClient.invalidateQueries({ queryKey: ['bling-pedidos'] }); },
+    onSuccess: () => {
+      toast.success('Pedido criado no Bling');
+      queryClient.invalidateQueries({ queryKey: ['bling-pedidos'] });
+    },
     onError: (err: Error) => toast.error(`Erro: ${err.message}`),
   });
 
   const atualizarPedido = useMutation({
-    mutationFn: ({ id, data }: { id: string; data: Record<string, unknown> }) => blingAction('atualizar_pedido', { id, data }),
-    onSuccess: () => { toast.success('Pedido atualizado'); queryClient.invalidateQueries({ queryKey: ['bling-pedidos'] }); },
+    mutationFn: ({ id, data }: { id: string; data: Record<string, unknown> }) =>
+      blingAction('atualizar_pedido', { id, data }),
+    onSuccess: () => {
+      toast.success('Pedido atualizado');
+      queryClient.invalidateQueries({ queryKey: ['bling-pedidos'] });
+    },
     onError: (err: Error) => toast.error(`Erro: ${err.message}`),
   });
 
   const excluirPedidos = useMutation({
     mutationFn: (ids: string[]) => blingAction('excluir_pedidos', { ids }),
-    onSuccess: () => { toast.success('Pedido(s) excluído(s)'); queryClient.invalidateQueries({ queryKey: ['bling-pedidos'] }); },
+    onSuccess: () => {
+      toast.success('Pedido(s) excluído(s)');
+      queryClient.invalidateQueries({ queryKey: ['bling-pedidos'] });
+    },
     onError: (err: Error) => toast.error(`Erro: ${err.message}`),
   });
 
   const alterarSituacao = useMutation({
-    mutationFn: ({ id, idSituacao }: { id: string; idSituacao: number }) => blingAction('alterar_situacao_pedido', { id, idSituacao }),
-    onSuccess: () => { toast.success('Situação do pedido alterada'); queryClient.invalidateQueries({ queryKey: ['bling-pedidos'] }); },
+    mutationFn: ({ id, idSituacao }: { id: string; idSituacao: number }) =>
+      blingAction('alterar_situacao_pedido', { id, idSituacao }),
+    onSuccess: () => {
+      toast.success('Situação do pedido alterada');
+      queryClient.invalidateQueries({ queryKey: ['bling-pedidos'] });
+    },
     onError: (err: Error) => toast.error(`Erro: ${err.message}`),
   });
 
@@ -81,5 +95,16 @@ export function useBlingPedidoMutations() {
     onError: (err: Error) => toast.error(`Erro: ${err.message}`),
   });
 
-  return { criarPedido, atualizarPedido, excluirPedidos, alterarSituacao, gerarNFe, gerarNFCe, lancarEstoque, estornarEstoque, lancarContas, estornarContas };
+  return {
+    criarPedido,
+    atualizarPedido,
+    excluirPedidos,
+    alterarSituacao,
+    gerarNFe,
+    gerarNFCe,
+    lancarEstoque,
+    estornarEstoque,
+    lancarContas,
+    estornarContas,
+  };
 }

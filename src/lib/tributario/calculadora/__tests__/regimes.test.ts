@@ -21,7 +21,10 @@ describe('calcularLucroPresumido', () => {
   });
 
   it('rejeita receita > R$ 78 mi', () => {
-    const r = calcularLucroPresumido({ ...base, receitas: { receitaBrutaAnual: 80_000_000, percentualServicos: 0 } });
+    const r = calcularLucroPresumido({
+      ...base,
+      receitas: { receitaBrutaAnual: 80_000_000, percentualServicos: 0 },
+    });
     expect(r.elegivel).toBe(false);
   });
 
@@ -32,7 +35,12 @@ describe('calcularLucroPresumido', () => {
   });
 
   it('serviços presume 32%', () => {
-    const r = calcularLucroPresumido({ ...base, atividade: 'servicos_geral', receitas: { receitaBrutaAnual: 1_000_000, percentualServicos: 100 }, estadualMunicipal: { aliquotaIss: 0.05 } });
+    const r = calcularLucroPresumido({
+      ...base,
+      atividade: 'servicos_geral',
+      receitas: { receitaBrutaAnual: 1_000_000, percentualServicos: 100 },
+      estadualMunicipal: { aliquotaIss: 0.05 },
+    });
     // 1mi * 32% = 320k → 15% = 48k + adic (320k/4 - 60k)*4*10% = 8k
     expect(r.tributos.find((t) => t.nome === 'IRPJ')!.valor).toBeCloseTo(56_000, 0);
   });
@@ -64,7 +72,11 @@ describe('calcularSimplesNacional', () => {
   });
 
   it('sublimite alerta', () => {
-    const r = calcularSimplesNacional({ ...base, receitas: { receitaBrutaAnual: 4_000_000, percentualServicos: 0 }, rbt12: 4_000_000 });
+    const r = calcularSimplesNacional({
+      ...base,
+      receitas: { receitaBrutaAnual: 4_000_000, percentualServicos: 0 },
+      rbt12: 4_000_000,
+    });
     expect(r.alertas.some((a) => a.includes('sublimite'))).toBe(true);
   });
 });

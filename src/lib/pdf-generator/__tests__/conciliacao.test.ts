@@ -3,14 +3,17 @@ import { generateConciliacaoAuditPDF, type ConciliacaoAuditRow } from '../concil
 
 const writeMock = vi.fn();
 const closeMock = vi.fn();
+const printMock = vi.fn();
 const openMock = vi.fn();
 
 beforeEach(() => {
   writeMock.mockClear();
   closeMock.mockClear();
+  printMock.mockClear();
   openMock.mockClear();
   openMock.mockReturnValue({
     document: { write: writeMock, close: closeMock },
+    print: printMock,
   });
   vi.stubGlobal('open', openMock);
 });

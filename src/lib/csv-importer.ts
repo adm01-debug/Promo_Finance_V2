@@ -117,16 +117,19 @@ function normalizeHeader(h: string): string {
     .replace(/^_|_$/g, '');
 }
 
-export async function parseCsv<T>(
-  file: File,
-  kind: CsvKind,
-): Promise<CsvParseResult<T>> {
+export async function parseCsv<T>(file: File, kind: CsvKind): Promise<CsvParseResult<T>> {
   const { text, encoding } = await decodeFile(file);
   const lines = text.split(/\r?\n/).filter((l) => l.trim().length > 0);
   const errors: { line: number; message: string }[] = [];
 
   if (lines.length < 2) {
-    return { rows: [], errors: [{ line: 0, message: 'Arquivo vazio ou sem dados.' }], separator: ',', encoding, totalLines: 0 };
+    return {
+      rows: [],
+      errors: [{ line: 0, message: 'Arquivo vazio ou sem dados.' }],
+      separator: ',',
+      encoding,
+      totalLines: 0,
+    };
   }
 
   const sep = detectSeparator(lines[0]);
@@ -196,7 +199,10 @@ export async function parseCsv<T>(
         rows.push(row as unknown as T);
       }
     } catch (e) {
-      errors.push({ line: i + 1, message: e instanceof Error ? e.message : 'Erro ao processar linha' });
+      errors.push({
+        line: i + 1,
+        message: e instanceof Error ? e.message : 'Erro ao processar linha',
+      });
     }
   }
 
@@ -206,10 +212,7 @@ export async function parseCsv<T>(
 export function downloadCsvTemplate(kind: CsvKind) {
   const ano = new Date().getFullYear();
   const mes = new Date().getMonth() + 1;
-  const headers =
-    kind === 'faturamento'
-      ? HEADER_FATURAMENTO.join(';')
-      : HEADER_FOLHA.join(';');
+  const headers = kind === 'faturamento' ? HEADER_FATURAMENTO.join(';') : HEADER_FOLHA.join(';');
   const example =
     kind === 'faturamento'
       ? `${ano};${mes};100000,00;30000,00;50000,00;20000,00;0,00`

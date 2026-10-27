@@ -1,18 +1,17 @@
-import { useMemo } from "react";
-import { useQuery } from "@tanstack/react-query";
-import { supabaseDyn } from "@/lib/supabase-dynamic";
-import type { ChartDatum, SparklineDatum, WeeklyRow } from "./types";
+import { useMemo } from 'react';
+import { useQuery } from '@tanstack/react-query';
+import { supabaseDyn } from '@/lib/supabase-dynamic';
+import type { ChartDatum, SparklineDatum, WeeklyRow } from './types';
 
-type SeverityFilter = "all" | "critical" | "warning" | "info";
+type SeverityFilter = 'all' | 'critical' | 'warning' | 'info';
 
 export function useWeeklyTrendData(severityFilter: SeverityFilter) {
   const query = useQuery<WeeklyRow[]>({
-    queryKey: ["performance-alerts-weekly", 12],
+    queryKey: ['performance-alerts-weekly', 12],
     queryFn: async () => {
-      const { data, error } = await supabaseDyn.rpc<WeeklyRow[]>(
-        "get_performance_alerts_weekly",
-        { p_weeks: 12 },
-      );
+      const { data, error } = await supabaseDyn.rpc<WeeklyRow[]>('get_performance_alerts_weekly', {
+        p_weeks: 12,
+      });
       if (error) throw error;
       return (data as unknown as WeeklyRow[]) || [];
     },
@@ -28,25 +27,21 @@ export function useWeeklyTrendData(severityFilter: SeverityFilter) {
   }, [data]);
 
   const filteredData = useMemo(
-    () =>
-      severityFilter === "all"
-        ? data
-        : data.filter((r) => r.severity === severityFilter),
-    [data, severityFilter],
+    () => (severityFilter === 'all' ? data : data.filter((r) => r.severity === severityFilter)),
+    [data, severityFilter]
   );
 
   const chartData = useMemo<ChartDatum[]>(() => {
     const map = new Map<string, ChartDatum>();
     for (const r of filteredData) {
       const key = r.week_start;
-      const label = new Date(r.week_start).toLocaleDateString("pt-BR", {
-        day: "2-digit",
-        month: "2-digit",
+      const label = new Date(r.week_start).toLocaleDateString('pt-BR', {
+        day: '2-digit',
+        month: '2-digit',
       });
-      const entry =
-        map.get(key) ?? { week: label, weekKey: key, critical: 0, warning: 0, info: 0 };
-      if (r.severity === "critical") entry.critical += r.alert_count;
-      else if (r.severity === "warning") entry.warning += r.alert_count;
+      const entry = map.get(key) ?? { week: label, weekKey: key, critical: 0, warning: 0, info: 0 };
+      if (r.severity === 'critical') entry.critical += r.alert_count;
+      else if (r.severity === 'warning') entry.warning += r.alert_count;
       else entry.info += r.alert_count;
       map.set(key, entry);
     }
@@ -81,12 +76,8 @@ export function useWeeklyTrendData(severityFilter: SeverityFilter) {
   }, [filteredData]);
 
   const criticalTotal = useMemo(
-    () =>
-      data.reduce(
-        (acc, r) => (r.severity === "critical" ? acc + r.alert_count : acc),
-        0,
-      ),
-    [data],
+    () => data.reduce((acc, r) => (r.severity === 'critical' ? acc + r.alert_count : acc), 0),
+    [data]
   );
 
   return {

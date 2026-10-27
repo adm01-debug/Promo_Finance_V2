@@ -46,7 +46,7 @@ const baseSimples: ContextoEmpresa = {
   patrimonio_liquido: 300_000,
   lucro_liquido: 200_000,
   folha_total_anual: 400_000,
-  carga_tributaria_atual: 0.10,
+  carga_tributaria_atual: 0.1,
   cnae: '6201',
 };
 
@@ -133,7 +133,9 @@ describe('E2E orquestrador-elisao — edge cases', () => {
     const aplicaveis = r.oportunidades.filter((o) => o.aplicavel);
     expect(aplicaveis.length).toBeGreaterThanOrEqual(3);
     for (let i = 1; i < aplicaveis.length; i++) {
-      expect(aplicaveis[i - 1].economia_estimada).toBeGreaterThanOrEqual(aplicaveis[i].economia_estimada);
+      expect(aplicaveis[i - 1].economia_estimada).toBeGreaterThanOrEqual(
+        aplicaveis[i].economia_estimada
+      );
     }
   });
 
@@ -147,9 +149,11 @@ describe('E2E orquestrador-elisao — edge cases', () => {
 
   it('proximos_passos é sempre array não vazio para estratégias aplicáveis', () => {
     const r = analisarOportunidadesElisao(baseLucroReal);
-    r.oportunidades.filter((o) => o.aplicavel).forEach((o) => {
-      expect(o.proximos_passos.length).toBeGreaterThan(0);
-    });
+    r.oportunidades
+      .filter((o) => o.aplicavel)
+      .forEach((o) => {
+        expect(o.proximos_passos.length).toBeGreaterThan(0);
+      });
   });
 
   it('classificação de risco é estável dentro do enum permitido', () => {
@@ -162,8 +166,12 @@ describe('E2E orquestrador-elisao — edge cases', () => {
   it('mudança de regime altera o conjunto de aplicáveis', () => {
     const real = analisarOportunidadesElisao(baseLucroReal);
     const presumido = analisarOportunidadesElisao({ ...baseLucroReal, regime_atual: 'presumido' });
-    const aplicaveisReal = new Set(real.oportunidades.filter((o) => o.aplicavel).map((o) => o.estrategia));
-    const aplicaveisPres = new Set(presumido.oportunidades.filter((o) => o.aplicavel).map((o) => o.estrategia));
+    const aplicaveisReal = new Set(
+      real.oportunidades.filter((o) => o.aplicavel).map((o) => o.estrategia)
+    );
+    const aplicaveisPres = new Set(
+      presumido.oportunidades.filter((o) => o.aplicavel).map((o) => o.estrategia)
+    );
     // Estratégias exclusivas do Real (JCP, Lei do Bem, Subvenção ICMS) saem do conjunto de Presumido
     expect(aplicaveisReal.has('JCP')).toBe(true);
     expect(aplicaveisPres.has('JCP')).toBe(false);
@@ -171,7 +179,9 @@ describe('E2E orquestrador-elisao — edge cases', () => {
 
   it('soma da economia total = soma individual das aplicáveis (invariante)', () => {
     const r = analisarOportunidadesElisao(baseLucroReal);
-    const soma = r.oportunidades.filter((o) => o.aplicavel).reduce((a, o) => a + o.economia_estimada, 0);
+    const soma = r.oportunidades
+      .filter((o) => o.aplicavel)
+      .reduce((a, o) => a + o.economia_estimada, 0);
     expect(r.economia_total_estimada).toBe(soma);
   });
 });

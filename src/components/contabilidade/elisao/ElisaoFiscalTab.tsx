@@ -1,11 +1,11 @@
 import { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { 
-  TrendingDown, 
-  Target, 
-  BarChart4, 
-  ShieldCheck, 
-  Plus, 
+import {
+  TrendingDown,
+  Target,
+  BarChart4,
+  ShieldCheck,
+  Plus,
   Calculator,
   Zap,
   FileSearch,
@@ -13,7 +13,7 @@ import {
   FileDown,
   ChevronRight,
   CheckSquare,
-  Clock
+  Clock,
 } from 'lucide-react';
 import { supabaseDyn as supabase } from '@/lib/supabase-dynamic';
 
@@ -22,20 +22,38 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { 
-  Table, 
-  TableBody, 
-  TableCell, 
-  TableHead, 
-  TableHeader, 
-  TableRow 
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
 } from '@/components/ui/table';
 import { NovaSimulacaoElisaoDialog } from './NovaSimulacaoElisaoDialog';
 import { SimuladorTab } from './SimuladorTab';
 
-type SimulacaoElisao = { id: string; ano_base: number; updated_at: string; nome: string; };
-type AuditoriaLogElisao = { id: string; nota_fiscal_id: string; created_at: string; ncm?: string; elisao_regras_creditos?: { tipo_credito?: string } | null; metodologia_applied?: string; valor_credito_calculado: number; status_validacao?: string; };
-type TarefaElisao = { id: string; status?: string; tipo_oportunidade?: string; prazo: string; titulo?: string; descricao?: string; checklist?: Array<{ done?: boolean }>; valor_envolvido?: number; };
+type SimulacaoElisao = { id: string; ano_base: number; updated_at: string; nome: string };
+type AuditoriaLogElisao = {
+  id: string;
+  nota_fiscal_id: string;
+  created_at: string;
+  ncm?: string;
+  elisao_regras_creditos?: { tipo_credito?: string } | null;
+  metodologia_applied?: string;
+  valor_credito_calculado: number;
+  status_validacao?: string;
+};
+type TarefaElisao = {
+  id: string;
+  status?: string;
+  tipo_oportunidade?: string;
+  prazo: string;
+  titulo?: string;
+  descricao?: string;
+  checklist?: Array<{ done?: boolean }>;
+  valor_envolvido?: number;
+};
 
 interface ElisaoTabProps {
   empresaId: string;
@@ -56,7 +74,7 @@ export function ElisaoFiscalTab({ empresaId }: ElisaoTabProps) {
       if (error) throw error;
       return data as SimulacaoElisao[];
     },
-    enabled: !!empresaId
+    enabled: !!empresaId,
   });
 
   const { data: tarefas = [] } = useQuery({
@@ -70,7 +88,7 @@ export function ElisaoFiscalTab({ empresaId }: ElisaoTabProps) {
       if (error) throw error;
       return data as TarefaElisao[];
     },
-    enabled: !!empresaId
+    enabled: !!empresaId,
   });
 
   const { data: auditoriaLogs = [] } = useQuery({
@@ -84,7 +102,7 @@ export function ElisaoFiscalTab({ empresaId }: ElisaoTabProps) {
       if (error) throw error;
       return data as AuditoriaLogElisao[];
     },
-    enabled: !!empresaId
+    enabled: !!empresaId,
   });
 
   interface OportunidadeElisao {
@@ -96,9 +114,12 @@ export function ElisaoFiscalTab({ empresaId }: ElisaoTabProps) {
   const { data: oportunidades = [] } = useQuery<OportunidadeElisao[]>({
     queryKey: ['elisao_oportunidades_reais', empresaId],
     queryFn: async () => {
-      const { data, error } = await supabase.rpc<OportunidadeElisao[]>('calcular_potencial_elisao', {
-        p_empresa_id: empresaId,
-      });
+      const { data, error } = await supabase.rpc<OportunidadeElisao[]>(
+        'calcular_potencial_elisao',
+        {
+          p_empresa_id: empresaId,
+        }
+      );
       if (error) throw error;
       return data ?? [];
     },
@@ -117,13 +138,15 @@ export function ElisaoFiscalTab({ empresaId }: ElisaoTabProps) {
             <TrendingDown className="h-4 w-4 text-emerald-500" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-emerald-700">R$ {economiaTotal.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</div>
+            <div className="text-2xl font-bold text-emerald-700">
+              R$ {economiaTotal.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
+            </div>
             <p className="text-[10px] text-emerald-600/70 mt-1 flex items-center gap-1">
               <ShieldCheck className="h-3 w-3" /> Baseado em 12 meses de análise
             </p>
           </CardContent>
         </Card>
-        
+
         <Card className="bg-primary/5 border-primary/20">
           <CardHeader className="flex flex-row items-center justify-between pb-2">
             <CardTitle className="text-sm font-medium">Gap de Eficiência</CardTitle>
@@ -132,7 +155,9 @@ export function ElisaoFiscalTab({ empresaId }: ElisaoTabProps) {
           <CardContent>
             <div className="text-2xl font-bold text-primary">8.4%</div>
             <Progress value={8.4} className="h-1.5 mt-2" />
-            <p className="text-[10px] text-muted-foreground mt-1">Imposto pago acima do cenário otimizado</p>
+            <p className="text-[10px] text-muted-foreground mt-1">
+              Imposto pago acima do cenário otimizado
+            </p>
           </CardContent>
         </Card>
 
@@ -144,8 +169,12 @@ export function ElisaoFiscalTab({ empresaId }: ElisaoTabProps) {
           <CardContent>
             <div className="text-2xl font-bold">Lucro Presumido</div>
             <div className="flex gap-2 mt-1">
-              <Badge variant="outline" className="text-[9px]">PIS/COFINS Cumulativo</Badge>
-              <Badge variant="outline" className="text-[9px]">ICMS-ST</Badge>
+              <Badge variant="outline" className="text-[9px]">
+                PIS/COFINS Cumulativo
+              </Badge>
+              <Badge variant="outline" className="text-[9px]">
+                ICMS-ST
+              </Badge>
             </div>
           </CardContent>
         </Card>
@@ -181,7 +210,8 @@ export function ElisaoFiscalTab({ empresaId }: ElisaoTabProps) {
                     Auditoria de Elegibilidade de Créditos
                   </CardTitle>
                   <CardDescription>
-                    Rastreabilidade completa: Por que cada crédito foi sugerido e quais as evidências.
+                    Rastreabilidade completa: Por que cada crédito foi sugerido e quais as
+                    evidências.
                   </CardDescription>
                 </div>
                 <Button variant="outline" size="sm" className="gap-2">
@@ -203,7 +233,10 @@ export function ElisaoFiscalTab({ empresaId }: ElisaoTabProps) {
                     <TableBody>
                       {auditoriaLogs.length === 0 ? (
                         <TableRow>
-                          <TableCell colSpan={5} className="text-center py-12 text-muted-foreground">
+                          <TableCell
+                            colSpan={5}
+                            className="text-center py-12 text-muted-foreground"
+                          >
                             <FileSearch className="h-8 w-8 mx-auto mb-2 opacity-20" />
                             Aguardando processamento das notas fiscais para auditoria.
                           </TableCell>
@@ -213,26 +246,39 @@ export function ElisaoFiscalTab({ empresaId }: ElisaoTabProps) {
                           <TableRow key={log.id} className="group">
                             <TableCell>
                               <div className="flex flex-col">
-                                <span className="text-xs font-bold">NF #{log.nota_fiscal_id.slice(0, 8)}</span>
-                                <span className="text-[10px] text-muted-foreground">{new Date(log.created_at).toLocaleDateString()}</span>
+                                <span className="text-xs font-bold">
+                                  NF #{log.nota_fiscal_id.slice(0, 8)}
+                                </span>
+                                <span className="text-[10px] text-muted-foreground">
+                                  {new Date(log.created_at).toLocaleDateString()}
+                                </span>
                               </div>
                             </TableCell>
                             <TableCell>
                               <div className="flex flex-col">
                                 <span className="text-xs font-mono">{log.ncm}</span>
-                                <Badge variant="outline" className="text-[9px] w-fit h-4 px-1">{log.elisao_regras_creditos?.tipo_credito}</Badge>
+                                <Badge variant="outline" className="text-[9px] w-fit h-4 px-1">
+                                  {log.elisao_regras_creditos?.tipo_credito}
+                                </Badge>
                               </div>
                             </TableCell>
                             <TableCell className="max-w-[200px]">
                               <p className="text-[10px] line-clamp-2 italic text-muted-foreground">
-                                {log.metodologia_applied || "Baseado na Lei 10.147/00 para produtos monofásicos."}
+                                {log.metodologia_applied ||
+                                  'Baseado na Lei 10.147/00 para produtos monofásicos.'}
                               </p>
                             </TableCell>
                             <TableCell className="text-xs font-bold text-emerald-600">
                               R$ {log.valor_credito_calculado.toLocaleString('pt-BR')}
                             </TableCell>
                             <TableCell>
-                              <Badge className={log.status_validacao === 'elegivel' ? 'bg-emerald-100 text-emerald-800' : 'bg-amber-100 text-amber-800'}>
+                              <Badge
+                                className={
+                                  log.status_validacao === 'elegivel'
+                                    ? 'bg-emerald-100 text-emerald-800'
+                                    : 'bg-amber-100 text-amber-800'
+                                }
+                              >
                                 {log.status_validacao}
                               </Badge>
                             </TableCell>
@@ -258,11 +304,15 @@ export function ElisaoFiscalTab({ empresaId }: ElisaoTabProps) {
                   <div key={i} className="flex flex-col p-3 rounded-lg border bg-muted/20">
                     <div className="flex justify-between items-start mb-1">
                       <span className="text-xs font-bold">{op.tipo_oportunidade}</span>
-                      <span className="text-xs font-bold text-emerald-600">R$ {op.valor_estimado.toLocaleString('pt-BR')}</span>
+                      <span className="text-xs font-bold text-emerald-600">
+                        R$ {(op.valor_estimado ?? 0).toLocaleString('pt-BR')}
+                      </span>
                     </div>
                     <div className="text-[10px] text-muted-foreground mb-2">{op.descricao}</div>
                     <div className="flex items-center justify-between">
-                      <Badge variant="outline" className="text-[9px] font-mono">NCM {op.ncm_relacionado}</Badge>
+                      <Badge variant="outline" className="text-[9px] font-mono">
+                        NCM {op.ncm_relacionado}
+                      </Badge>
                       <Button variant="ghost" size="sm" className="h-6 text-[10px] gap-1">
                         Validar Notas <ChevronRight className="h-3 w-3" />
                       </Button>
@@ -279,7 +329,9 @@ export function ElisaoFiscalTab({ empresaId }: ElisaoTabProps) {
           <div className="flex justify-between items-center">
             <div>
               <h3 className="text-lg font-semibold">Régua de Acionáveis (Recovery)</h3>
-              <p className="text-sm text-muted-foreground">Transforme oportunidades em tarefas reais com prazos e responsáveis.</p>
+              <p className="text-sm text-muted-foreground">
+                Transforme oportunidades em tarefas reais com prazos e responsáveis.
+              </p>
             </div>
             <Button className="gap-2">
               <Plus className="h-4 w-4" /> Nova Tarefa
@@ -290,16 +342,24 @@ export function ElisaoFiscalTab({ empresaId }: ElisaoTabProps) {
             {tarefas.length === 0 ? (
               <div className="col-span-3 py-12 text-center border-2 border-dashed rounded-xl">
                 <CheckSquare className="h-12 w-12 text-muted-foreground/20 mx-auto mb-4" />
-                <h4 className="font-medium text-muted-foreground">Nenhuma tarefa de recuperação ativa</h4>
-                <p className="text-xs text-muted-foreground/60 max-w-xs mx-auto mt-1">Gere acionáveis a partir das oportunidades identificadas na auditoria.</p>
+                <h4 className="font-medium text-muted-foreground">
+                  Nenhuma tarefa de recuperação ativa
+                </h4>
+                <p className="text-xs text-muted-foreground/60 max-w-xs mx-auto mt-1">
+                  Gere acionáveis a partir das oportunidades identificadas na auditoria.
+                </p>
               </div>
             ) : (
               tarefas.map((task: TarefaElisao) => (
                 <Card key={task.id} className="relative overflow-hidden group">
-                  <div className={`absolute left-0 top-0 bottom-0 w-1 ${task.status === 'done' ? 'bg-emerald-500' : 'bg-amber-500'}`} />
+                  <div
+                    className={`absolute left-0 top-0 bottom-0 w-1 ${task.status === 'done' ? 'bg-emerald-500' : 'bg-amber-500'}`}
+                  />
                   <CardHeader className="pb-2">
                     <div className="flex justify-between items-start">
-                      <Badge variant="outline" className="text-[9px]">{task.tipo_oportunidade}</Badge>
+                      <Badge variant="outline" className="text-[9px]">
+                        {task.tipo_oportunidade}
+                      </Badge>
                       <div className="flex items-center gap-1 text-[10px] text-muted-foreground">
                         <Clock className="h-3 w-3" />
                         {new Date(task.prazo).toLocaleDateString()}
@@ -308,17 +368,41 @@ export function ElisaoFiscalTab({ empresaId }: ElisaoTabProps) {
                     <CardTitle className="text-sm mt-2">{task.titulo}</CardTitle>
                   </CardHeader>
                   <CardContent className="space-y-4">
-                    <p className="text-[11px] text-muted-foreground line-clamp-2">{task.descricao}</p>
+                    <p className="text-[11px] text-muted-foreground line-clamp-2">
+                      {task.descricao}
+                    </p>
                     <div className="space-y-2">
                       <div className="flex justify-between text-[10px] font-medium">
                         <span>Checklist de Recuperação</span>
-                        <span>{Array.isArray(task.checklist) ? task.checklist.filter((i) => i.done).length : 0}/{Array.isArray(task.checklist) ? task.checklist.length : 0}</span>
+                        <span>
+                          {Array.isArray(task.checklist)
+                            ? task.checklist.filter((i) => i.done).length
+                            : 0}
+                          /{Array.isArray(task.checklist) ? task.checklist.length : 0}
+                        </span>
                       </div>
-                      <Progress value={Array.isArray(task.checklist) ? (task.checklist.filter((i) => i.done).length / task.checklist.length) * 100 : 0} className="h-1" />
+                      <Progress
+                        value={
+                          Array.isArray(task.checklist)
+                            ? (task.checklist.filter((i) => i.done).length /
+                                task.checklist.length) *
+                              100
+                            : 0
+                        }
+                        className="h-1"
+                      />
                     </div>
                     <div className="flex justify-between items-center pt-2">
-                      <div className="text-[11px] font-bold text-emerald-600">R$ {task.valor_envolvido?.toLocaleString('pt-BR')}</div>
-                      <Button variant="ghost" size="sm" className="h-7 text-xs px-2 group-hover:bg-primary/10">Gerenciar</Button>
+                      <div className="text-[11px] font-bold text-emerald-600">
+                        R$ {task.valor_envolvido?.toLocaleString('pt-BR')}
+                      </div>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        className="h-7 text-xs px-2 group-hover:bg-primary/10"
+                      >
+                        Gerenciar
+                      </Button>
                     </div>
                   </CardContent>
                 </Card>

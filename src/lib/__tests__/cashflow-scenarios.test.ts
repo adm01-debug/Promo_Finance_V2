@@ -77,7 +77,7 @@ describe('Cashflow Scenarios Engine', () => {
         100000
       );
       const alertas = detectarAlertasRuptura(projecoes);
-      const rupturas = alertas.filter(a => a.tipo === 'ruptura');
+      const rupturas = alertas.filter((a) => a.tipo === 'ruptura');
       expect(rupturas.length).toBeGreaterThan(0);
     });
 
@@ -91,11 +91,18 @@ describe('Cashflow Scenarios Engine', () => {
     });
 
     it('classifica saldo entre os limites alto e médio como risco médio', () => {
-      const alertas = detectarAlertasRuptura({
-        otimista: [],
-        pessimista: [],
-        realista: [{ data: '2026-09-11', receitas: 0, despesas: 0, saldo: 75000, cenario: 'realista' }],
-      }, 0, 50000, 100000);
+      const alertas = detectarAlertasRuptura(
+        {
+          otimista: [],
+          pessimista: [],
+          realista: [
+            { data: '2026-09-11', receitas: 0, despesas: 0, saldo: 75000, cenario: 'realista' },
+          ],
+        },
+        0,
+        50000,
+        100000
+      );
       expect(alertas).toHaveLength(1);
       expect(alertas[0].tipo).toBe('risco_medio');
     });

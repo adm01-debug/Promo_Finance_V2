@@ -1,4 +1,4 @@
-import type { Anomalia } from "@/hooks/useAnomaliasDetectadas";
+import type { Anomalia } from '@/hooks/useAnomaliasDetectadas';
 
 export type { Anomalia };
 
@@ -9,12 +9,12 @@ export interface ReviewQueueProps {
    * Filtra a fila por severidade antes do snapshot. "todas" inclui todas.
    * Default: "todas".
    */
-  severidadeFilter?: Anomalia["severidade"] | "todas";
+  severidadeFilter?: Anomalia['severidade'] | 'todas';
 }
 
 export interface ConflitoBanner {
   anomaliaId: string;
-  severidade: Anomalia["severidade"];
+  severidade: Anomalia['severidade'];
   tipoLabel: string;
   descricao: string;
   statusLabel: string;
@@ -22,7 +22,7 @@ export interface ConflitoBanner {
   autorNome: string;
   autorEmail: string | null;
   resolvidaEm: string | null;
-  motivo: "ja_resolvida" | "removida";
+  motivo: 'ja_resolvida' | 'removida';
 }
 
 export interface ReviewStats {
@@ -32,10 +32,10 @@ export interface ReviewStats {
 }
 
 export interface ProgressoPorSeveridade {
-  total: Record<Anomalia["severidade"], number>;
-  revisado: Record<Anomalia["severidade"], number>;
+  total: Record<Anomalia['severidade'], number>;
+  revisado: Record<Anomalia['severidade'], number>;
 }
 
-export const SEVERIDADES = ["critica", "alta", "media", "baixa"] as const;
+export const SEVERIDADES = ['critica', 'alta', 'media', 'baixa'] as const;
 export const MIN_CONFIRMAR = 10;
 export const MIN_FALSO_POSITIVO = 15;

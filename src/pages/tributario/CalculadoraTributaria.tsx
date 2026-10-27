@@ -1,13 +1,23 @@
 import { useEffect, useMemo, useState } from 'react';
 import { Button } from '@/components/ui/button';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
 import { Calculator, Save, RefreshCw, FileDown, Database } from 'lucide-react';
 import { toast } from 'sonner';
 import { supabase } from '@/integrations/supabase/client';
 import { calcularTodosRegimes, type ResultadoRegime } from '@/lib/tributario/calculadora';
-import { derivarAtividadePresumido, normalizarCnae } from '@/lib/tributario/calculadora/atividade-cnae';
+import {
+  derivarAtividadePresumido,
+  normalizarCnae,
+  type AtividadeDerivada,
+} from '@/lib/tributario/calculadora/atividade-cnae';
 import { ResultadoBreakdown } from '@/components/tributario/calculadora/ResultadoBreakdown';
 import { MemoriaCalculo } from '@/components/tributario/calculadora/MemoriaCalculo';
 import { ComparativoRegimes } from '@/components/tributario/calculadora/ComparativoRegimes';
@@ -27,7 +37,10 @@ export default function CalculadoraTributaria() {
   const [empresaId, setEmpresaId] = useState<string | undefined>();
   const empresaSelecionada = empresas.find((e) => e.id === empresaId);
 
-  const { data: dadosReais, isFetching: fetchingReais } = useCalculadoraDadosReais(empresaId, usarDadosReais);
+  const { data: dadosReais, isFetching: fetchingReais } = useCalculadoraDadosReais(
+    empresaId,
+    usarDadosReais
+  );
 
   useEffect(() => {
     if (usarDadosReais && dadosReais) {
@@ -41,7 +54,7 @@ export default function CalculadoraTributaria() {
         folha12m: dadosReais.folha12m || p.folha12m,
       }));
       toast.success(
-        `Dados aplicados: ${dadosReais.amostragem.contasReceber} recebimentos, ${dadosReais.amostragem.folhaLinhas} folhas, ${dadosReais.amostragem.nfeRecebidas} NF-e`,
+        `Dados aplicados: ${dadosReais.amostragem.contasReceber} recebimentos, ${dadosReais.amostragem.folhaLinhas} folhas, ${dadosReais.amostragem.nfeRecebidas} NF-e`
       );
     }
   }, [usarDadosReais, dadosReais]);
@@ -55,36 +68,40 @@ export default function CalculadoraTributaria() {
   const cnaeEmpresa = empresaSelecionada?.cnae_principal ?? '';
   useEffect(() => {
     if (cnaeManual) return;
-    setForm((p) => (p.cnaePreponderante === cnaeEmpresa ? p : { ...p, cnaePreponderante: cnaeEmpresa }));
+    setForm((p) =>
+      p.cnaePreponderante === cnaeEmpresa ? p : { ...p, cnaePreponderante: cnaeEmpresa }
+    );
   }, [cnaeEmpresa, cnaeManual]);
 
-  const update = <K extends keyof CampoInput>(k: K, v: CampoInput[K]) => setForm((p) => ({ ...p, [k]: v }));
-
+  const update = <K extends keyof CampoInput>(k: K, v: CampoInput[K]) =>
+    setForm((p) => ({ ...p, [k]: v }));
 
   /**
    * Quando o CNAE preponderante é válido, a atividade presumida é derivada dele
    * (Lei 9.249/95, arts. 15 e 20), eliminando erro de seleção manual.
    */
   const atividadeDerivada = useMemo(
-    () => (normalizarCnae(form.cnaePreponderante) ? derivarAtividadePresumido(form.cnaePreponderante) : null),
-    [form.cnaePreponderante],
+    () =>
+      normalizarCnae(form.cnaePreponderante)
+        ? derivarAtividadePresumido(form.cnaePreponderante)
+        : null,
+    [form.cnaePreponderante]
   );
 
   const resultado = useMemo(
     () => calcularTodosRegimes(buildInput(form, atividadeDerivada?.atividade)),
-    [form, atividadeDerivada],
+    [form, atividadeDerivada]
   );
 
-  const resultadoAtivo: ResultadoRegime | undefined = resultado.cenarios.find(
-    (c) => c.regime === regimeSelecionado,
-  ) ?? resultado.cenarios[0];
+  const resultadoAtivo: ResultadoRegime | undefined =
+    resultado.cenarios.find((c) => c.regime === regimeSelecionado) ?? resultado.cenarios[0];
 
   function exportarPDF() {
     if (!resultadoAtivo) return;
     try {
       const blob = gerarPdfMemorialCalculo(resultado, resultadoAtivo, {
         nome: empresaSelecionada?.nome_fantasia ?? empresaSelecionada?.razao_social ?? 'Empresa',
-        cnpj: empresaSelecionada?.cnpj,
+        cnpj: empresaSelecionada?.cnpj ?? undefined,
         periodo: String(new Date().getFullYear()),
       });
       const url = URL.createObjectURL(blob);
@@ -103,23 +120,30 @@ export default function CalculadoraTributaria() {
     setSalvando(true);
     try {
       if (!empresaId) throw new Error('Selecione uma empresa antes de salvar o cenário');
-      const { data: { user } } = await supabase.auth.getUser();
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
       if (!user) throw new Error('Não autenticado');
 
       const cenariosResumo = resultado.cenarios.map((c) => ({
-        regime: c.regime, nome: c.nome, totalAPagar: c.totalAPagar, cargaEfetiva: c.cargaEfetiva,
+        regime: c.regime,
+        nome: c.nome,
+        totalAPagar: c.totalAPagar,
+        cargaEfetiva: c.cargaEfetiva,
       }));
       const { error } = await supabase.from('regimes_simulados').insert({
         empresa_id: empresaId,
         created_by: user.id,
         ano_referencia: new Date().getFullYear(),
         regime_atual: resultadoAtivo?.regime ?? 'lucro_real',
-        regime_recomendado: resultado.melhorCenario?.regime ?? (resultadoAtivo?.regime ?? 'lucro_real'),
+        regime_recomendado:
+          resultado.melhorCenario?.regime ?? resultadoAtivo?.regime ?? 'lucro_real',
         economia_anual_estimada: resultado.economiaAnualVsPior,
         rbt12: form.rbt12,
         folha_12m: form.folha12m,
         cenarios: cenariosResumo as unknown as import('@/integrations/supabase/types').Json,
-        alertas: (resultadoAtivo?.alertas ?? []) as unknown as import('@/integrations/supabase/types').Json,
+        alertas: (resultadoAtivo?.alertas ??
+          []) as unknown as import('@/integrations/supabase/types').Json,
         parametros: {
           tipo_calculo: 'calculadora',
           inputs_completos: form,
@@ -149,22 +173,31 @@ export default function CalculadoraTributaria() {
             <Calculator className="h-6 w-6 text-primary" /> Calculadora Tributária em Tempo Real
           </h1>
           <p className="text-sm text-muted-foreground">
-            Simule Lucro Real, Presumido, Simples Nacional e Reforma Tributária (CBS/IBS) simultaneamente. Recálculo instantâneo.
+            Simule Lucro Real, Presumido, Simples Nacional e Reforma Tributária (CBS/IBS)
+            simultaneamente. Recálculo instantâneo.
           </p>
         </div>
         <div className="flex flex-wrap gap-2 items-center">
           <Select value={empresaId} onValueChange={setEmpresaId}>
-            <SelectTrigger className="w-52 h-9"><SelectValue placeholder="Selecionar empresa" /></SelectTrigger>
+            <SelectTrigger className="w-52 h-9">
+              <SelectValue placeholder="Selecionar empresa" />
+            </SelectTrigger>
             <SelectContent>
               {empresas.map((e) => (
-                <SelectItem key={e.id} value={e.id}>{e.nome_fantasia ?? e.razao_social}</SelectItem>
+                <SelectItem key={e.id} value={e.id}>
+                  {e.nome_fantasia ?? e.razao_social}
+                </SelectItem>
               ))}
             </SelectContent>
           </Select>
           <div className="flex items-center gap-2 rounded-md border border-border px-3 py-1.5">
             <Database className="h-3.5 w-3.5 text-muted-foreground" />
             <Label className="text-xs">Usar dados reais</Label>
-            <Switch checked={usarDadosReais} onCheckedChange={setUsarDadosReais} disabled={!empresaId || fetchingReais} />
+            <Switch
+              checked={usarDadosReais}
+              onCheckedChange={setUsarDadosReais}
+              disabled={!empresaId || fetchingReais}
+            />
           </div>
           <Button variant="outline" size="sm" onClick={() => setForm(DEFAULT_INPUT)}>
             <RefreshCw className="h-4 w-4 mr-2" /> Resetar
@@ -187,7 +220,8 @@ export default function CalculadoraTributaria() {
           cnaeManual={cnaeManual}
           setCnaeManual={setCnaeManual}
           cnaeEmpresa={cnaeEmpresa}
-          atividadeDerivada={atividadeDerivada}
+          // ParametrosCard trata null internamente; seu prop type é mais estreito que o uso real.
+          atividadeDerivada={atividadeDerivada as AtividadeDerivada}
         />
 
         {/* RESULTADO */}

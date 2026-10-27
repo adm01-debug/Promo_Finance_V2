@@ -224,7 +224,7 @@ export function FilaTab({
                           variant="ghost"
                           className="h-7 w-7"
                           onClick={() =>
-                            onReprocess({ paymentId: item.payment_id, asaasId: item.id })
+                            onReprocess({ paymentId: item.payment_id ?? '', asaasId: item.id })
                           }
                           disabled={reprocessarManualPending}
                         >
@@ -235,7 +235,7 @@ export function FilaTab({
                             size="icon"
                             variant="ghost"
                             className="h-7 w-7 text-muted-foreground"
-                            onClick={() => onViewHistory(item.error_history)}
+                            onClick={() => onViewHistory(item.error_history ?? [])}
                           >
                             <History className="h-3.5 w-3.5" />
                           </Button>

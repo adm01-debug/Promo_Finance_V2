@@ -18,8 +18,16 @@ export function ResumosExecutivosTab() {
             <Sparkles className="h-4 w-4 text-primary" />
             Resumos Executivos Semanais (IA)
           </CardTitle>
-          <Button size="sm" onClick={() => gerarAgora.mutate(undefined)} disabled={gerarAgora.isPending}>
-            {gerarAgora.isPending ? <Loader2 className="h-4 w-4 mr-2 animate-spin" /> : <Sparkles className="h-4 w-4 mr-2" />}
+          <Button
+            size="sm"
+            onClick={() => gerarAgora.mutate(undefined)}
+            disabled={gerarAgora.isPending}
+          >
+            {gerarAgora.isPending ? (
+              <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+            ) : (
+              <Sparkles className="h-4 w-4 mr-2" />
+            )}
             Gerar agora
           </Button>
         </div>
@@ -35,7 +43,9 @@ export function ResumosExecutivosTab() {
               <div className="flex items-center justify-between flex-wrap gap-2">
                 <div className="flex items-center gap-2">
                   <FileText className="h-4 w-4 text-muted-foreground" />
-                  <span className="text-sm font-medium">{r.semana_inicio} → {r.semana_fim}</span>
+                  <span className="text-sm font-medium">
+                    {r.semana_inicio} → {r.semana_fim}
+                  </span>
                 </div>
                 <div className="flex items-center gap-2">
                   {r.enviado_em && (
@@ -43,7 +53,11 @@ export function ResumosExecutivosTab() {
                       <Mail className="h-3 w-3 mr-1" /> {r.destinatarios.length} destinatário(s)
                     </Badge>
                   )}
-                  <Button size="sm" variant="ghost" onClick={() => setAberto(aberto === r.id ? null : r.id)}>
+                  <Button
+                    size="sm"
+                    variant="ghost"
+                    onClick={() => setAberto(aberto === r.id ? null : r.id)}
+                  >
                     {aberto === r.id ? 'Fechar' : 'Ver resumo'}
                   </Button>
                 </div>

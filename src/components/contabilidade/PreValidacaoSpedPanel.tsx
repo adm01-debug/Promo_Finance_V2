@@ -1,8 +1,19 @@
 // Painel visual de pré-validação cruzada Razão × DRE para SPED ECD/ECF.
-import { 
-  AlertCircle, AlertTriangle, CheckCircle2, Info, Loader2, 
-  Activity, ArrowRightLeft, PieChart, ShieldAlert,
-  Search, ShieldCheck, Target, Layers, type LucideIcon
+import {
+  AlertCircle,
+  AlertTriangle,
+  CheckCircle2,
+  Info,
+  Loader2,
+  Activity,
+  ArrowRightLeft,
+  PieChart,
+  ShieldAlert,
+  Search,
+  ShieldCheck,
+  Target,
+  Layers,
+  type LucideIcon,
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
@@ -68,27 +79,48 @@ export function PreValidacaoSpedPanel({ resultado, className }: Props) {
   }
 
   return (
-    <Card className={cn("border-none bg-background/20 backdrop-blur-3xl shadow-2xl rounded-[2.5rem] overflow-hidden ring-1 ring-white/10", className)}>
+    <Card
+      className={cn(
+        'border-none bg-background/20 backdrop-blur-3xl shadow-2xl rounded-[2.5rem] overflow-hidden ring-1 ring-white/10',
+        className
+      )}
+    >
       <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-transparent pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
       <CardHeader className="p-8 pb-4 relative z-10">
         <div className="flex flex-wrap items-center justify-between gap-6">
           <div className="flex items-center gap-5">
-            <div className={cn(
-              "p-4 rounded-2xl shadow-xl transform group-hover:scale-110 transition-all duration-500",
-              podeGerar ? "bg-success/20 text-success" : "bg-card/5 text-primary-foreground/20"
-            )}>
-              {podeGerar ? <ShieldCheck className="h-8 w-8" /> : <ShieldAlert className="h-8 w-8" />}
+            <div
+              className={cn(
+                'p-4 rounded-2xl shadow-xl transform group-hover:scale-110 transition-all duration-500',
+                podeGerar ? 'bg-success/20 text-success' : 'bg-card/5 text-primary-foreground/20'
+              )}
+            >
+              {podeGerar ? (
+                <ShieldCheck className="h-8 w-8" />
+              ) : (
+                <ShieldAlert className="h-8 w-8" />
+              )}
             </div>
             <div>
-              <CardTitle className="text-2xl font-black tracking-tighter">Validations Analytics</CardTitle>
-              <CardDescription className="text-sm font-medium opacity-60">Pré-auditoria cruzada para transmissão SPED</CardDescription>
+              <CardTitle className="text-2xl font-black tracking-tighter">
+                Validations Analytics
+              </CardTitle>
+              <CardDescription className="text-sm font-medium opacity-60">
+                Pré-auditoria cruzada para transmissão SPED
+              </CardDescription>
             </div>
           </div>
           <div className="flex flex-wrap gap-3">
-            <Badge variant={totais.erros > 0 ? 'destructive' : 'secondary'} className="gap-2 h-8 px-4 rounded-full font-black text-[10px] uppercase tracking-widest border-none">
+            <Badge
+              variant={totais.erros > 0 ? 'destructive' : 'secondary'}
+              className="gap-2 h-8 px-4 rounded-full font-black text-[10px] uppercase tracking-widest border-none"
+            >
               <AlertCircle className="h-3 w-3" /> {totais.erros} Erros
             </Badge>
-            <Badge variant="secondary" className="gap-2 h-8 px-4 rounded-full font-black text-[10px] uppercase tracking-widest border-none bg-warning/20 text-warning">
+            <Badge
+              variant="secondary"
+              className="gap-2 h-8 px-4 rounded-full font-black text-[10px] uppercase tracking-widest border-none bg-warning/20 text-warning"
+            >
               <AlertTriangle className="h-3 w-3" /> {totais.avisos} Avisos
             </Badge>
           </div>
@@ -97,29 +129,37 @@ export function PreValidacaoSpedPanel({ resultado, className }: Props) {
       <CardContent className="p-8 pt-2 relative z-10 space-y-10">
         {/* Resumo numérico */}
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-          <ResumoBox label="Fatos Contábeis" value={resumo.totalLancamentos.toLocaleString('pt-BR')} icon={Activity} />
-          <ResumoBox label="Partidas (D/C)" value={resumo.totalPartidas.toLocaleString('pt-BR')} icon={ArrowRightLeft} />
+          <ResumoBox
+            label="Fatos Contábeis"
+            value={resumo.totalLancamentos.toLocaleString('pt-BR')}
+            icon={Activity}
+          />
+          <ResumoBox
+            label="Partidas (D/C)"
+            value={resumo.totalPartidas.toLocaleString('pt-BR')}
+            icon={ArrowRightLeft}
+          />
           <ResumoBox
             label="Inconsistência Razão"
             value={formatCurrency(resumo.diferencaRazao)}
             highlight={Math.abs(resumo.diferencaRazao) > 0.01}
             icon={Target}
           />
-          <ResumoBox 
-            label="Performance (DRE)" 
-            value={formatCurrency(resumo.lucroLiquido)} 
+          <ResumoBox
+            label="Performance (DRE)"
+            value={formatCurrency(resumo.lucroLiquido)}
             highlight={resumo.lucroLiquido < 0}
             icon={PieChart}
           />
-          <ResumoBox 
-            label="Débitos Totais" 
+          <ResumoBox
+            label="Débitos Totais"
             value={formatCurrency(resumo.debitoRazao)}
-            icon={Layers} 
+            icon={Layers}
           />
-          <ResumoBox 
-            label="Créditos Totais" 
+          <ResumoBox
+            label="Créditos Totais"
             value={formatCurrency(resumo.creditoRazao)}
-            icon={Layers} 
+            icon={Layers}
           />
           <ResumoBox
             label="Desbalanceados"
@@ -142,7 +182,8 @@ export function PreValidacaoSpedPanel({ resultado, className }: Props) {
             <CheckCircle2 className="h-4 w-4 text-success" />
             <AlertTitle>Tudo consistente</AlertTitle>
             <AlertDescription>
-              Razão fechado, DRE coerente e nenhum desvio detectado. Você pode prosseguir com a geração do SPED.
+              Razão fechado, DRE coerente e nenhum desvio detectado. Você pode prosseguir com a
+              geração do SPED.
             </AlertDescription>
           </Alert>
         ) : (
@@ -157,15 +198,25 @@ export function PreValidacaoSpedPanel({ resultado, className }: Props) {
                     initial={{ opacity: 0, x: -10 }}
                     animate={{ opacity: 1, x: 0 }}
                     transition={{ delay: idx * 0.05 }}
-                    className={cn('flex gap-4 rounded-[1.5rem] border p-5 text-xs shadow-lg backdrop-blur-md group/row', meta.tone)}
+                    className={cn(
+                      'flex gap-4 rounded-[1.5rem] border p-5 text-xs shadow-lg backdrop-blur-md group/row',
+                      meta.tone
+                    )}
                   >
-                    <div className={cn('p-2.5 rounded-xl h-fit shadow-inner', meta.bg, meta.iconClass)}>
+                    <div
+                      className={cn('p-2.5 rounded-xl h-fit shadow-inner', meta.bg, meta.iconClass)}
+                    >
                       <Icon className="h-5 w-5" aria-hidden />
                     </div>
                     <div className="flex-1 space-y-2">
                       <div className="flex flex-wrap items-center gap-3">
-                        <span className="font-black uppercase tracking-tight text-sm text-foreground/80">{a.titulo}</span>
-                        <Badge variant="outline" className="text-[9px] font-black uppercase border-white/10 bg-card/5 opacity-60">
+                        <span className="font-black uppercase tracking-tight text-sm text-foreground/80">
+                          {a.titulo}
+                        </span>
+                        <Badge
+                          variant="outline"
+                          className="text-[9px] font-black uppercase border-white/10 bg-card/5 opacity-60"
+                        >
                           {CATEGORIA_LABEL[a.categoria] ?? a.categoria}
                         </Badge>
                         <Badge
@@ -174,13 +225,15 @@ export function PreValidacaoSpedPanel({ resultado, className }: Props) {
                             'text-[9px] font-black uppercase border-none px-3 py-1 rounded-full',
                             a.severidade === 'error' && 'bg-destructive/20 text-destructive',
                             a.severidade === 'warning' && 'bg-warning/20 text-warning',
-                            a.severidade === 'info' && 'bg-primary/20 text-primary',
+                            a.severidade === 'info' && 'bg-primary/20 text-primary'
                           )}
                         >
                           {meta.label}
                         </Badge>
                       </div>
-                      <p className="text-muted-foreground font-medium leading-relaxed">{a.detalhe}</p>
+                      <p className="text-muted-foreground font-medium leading-relaxed">
+                        {a.detalhe}
+                      </p>
                     </div>
                   </motion.div>
                 );
@@ -194,8 +247,8 @@ export function PreValidacaoSpedPanel({ resultado, className }: Props) {
             <AlertCircle className="h-4 w-4" />
             <AlertTitle>Geração bloqueada por erros críticos</AlertTitle>
             <AlertDescription>
-              Resolva os {totais.erros} erro(s) acima — eles indicam dados incompletos ou inconsistentes que
-              invalidariam o SPED.
+              Resolva os {totais.erros} erro(s) acima — eles indicam dados incompletos ou
+              inconsistentes que invalidariam o SPED.
             </AlertDescription>
           </Alert>
         )}
@@ -204,19 +257,42 @@ export function PreValidacaoSpedPanel({ resultado, className }: Props) {
   );
 }
 
-function ResumoBox({ label, value, highlight, icon: Icon }: { label: string; value: string; highlight?: boolean; icon?: LucideIcon }) {
+function ResumoBox({
+  label,
+  value,
+  highlight,
+  icon: Icon,
+}: {
+  label: string;
+  value: string;
+  highlight?: boolean;
+  icon?: LucideIcon;
+}) {
   return (
     <div
       className={cn(
         'rounded-2xl border bg-card/[0.03] p-5 transition-all duration-500 hover:bg-card/[0.06] shadow-xl group/box relative overflow-hidden',
-        highlight ? 'border-destructive/40 bg-destructive/5 ring-1 ring-destructive/20' : 'border-white/5',
+        highlight
+          ? 'border-destructive/40 bg-destructive/5 ring-1 ring-destructive/20'
+          : 'border-white/5'
       )}
     >
       <div className="flex items-center justify-between mb-2">
-        <p className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground opacity-40 group-hover/box:text-primary transition-colors">{label}</p>
-        {Icon && <Icon className="h-3 w-3 opacity-20 group-hover/box:scale-110 transition-transform" />}
+        <p className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground opacity-40 group-hover/box:text-primary transition-colors">
+          {label}
+        </p>
+        {Icon && (
+          <Icon className="h-3 w-3 opacity-20 group-hover/box:scale-110 transition-transform" />
+        )}
       </div>
-      <p className={cn('font-black text-lg tracking-tighter tabular-nums', highlight ? 'text-destructive' : 'text-foreground/90')}>{value}</p>
+      <p
+        className={cn(
+          'font-black text-lg tracking-tighter tabular-nums',
+          highlight ? 'text-destructive' : 'text-foreground/90'
+        )}
+      >
+        {value}
+      </p>
     </div>
   );
 }

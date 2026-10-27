@@ -1,9 +1,21 @@
 import { describe, expect, it } from 'vitest';
 import {
-  ALIQUOTAS_UF, ALIQUOTA_INTERESTADUAL_GERAL, ALIQUOTA_INTERESTADUAL_IMPORTADO,
-  ALIQUOTA_INTERESTADUAL_REDUZIDA, UFS, aliquotaInternaDe, buscarUf, calcularDifal,
-  calcularIcmsSt, calcularMvaAjustada, fcpDe, isImportada, isUF,
-  resolverAliquotaInterestadual, round2, type UF,
+  ALIQUOTAS_UF,
+  ALIQUOTA_INTERESTADUAL_GERAL,
+  ALIQUOTA_INTERESTADUAL_IMPORTADO,
+  ALIQUOTA_INTERESTADUAL_REDUZIDA,
+  UFS,
+  aliquotaInternaDe,
+  buscarUf,
+  calcularDifal,
+  calcularIcmsSt,
+  calcularMvaAjustada,
+  fcpDe,
+  isImportada,
+  isUF,
+  resolverAliquotaInterestadual,
+  round2,
+  type UF,
 } from '../icms';
 
 describe('icms — tabelas e alíquotas interestaduais', () => {
@@ -61,7 +73,9 @@ describe('icms — tabelas e alíquotas interestaduais', () => {
           expect(nacional).toBe(ALIQUOTAS_UF[origem].interna);
           expect(importado).toBe(ALIQUOTAS_UF[origem].interna);
         } else {
-          expect([ALIQUOTA_INTERESTADUAL_REDUZIDA, ALIQUOTA_INTERESTADUAL_GERAL]).toContain(nacional);
+          expect([ALIQUOTA_INTERESTADUAL_REDUZIDA, ALIQUOTA_INTERESTADUAL_GERAL]).toContain(
+            nacional
+          );
           expect(importado).toBe(ALIQUOTA_INTERESTADUAL_IMPORTADO);
           // A interestadual nunca supera a interna de destino nas UFs modais.
           expect(nacional).toBeLessThanOrEqual(aliquotaInternaDe(destino));
@@ -75,33 +89,65 @@ describe('icms — tabelas e alíquotas interestaduais', () => {
 describe('icms — MVA ajustada', () => {
   it('aplica a fórmula do Convênio 52/2017', () => {
     // MVA 40% · inter 12% · interna 18% → [(1,40 × 0,88) / 0,82] − 1 = 0,502439…
-    const mva = calcularMvaAjustada({ mvaOriginal: 0.40, aliquotaInterestadual: 0.12, aliquotaInterna: 0.18 });
-    expect(mva).toBeCloseTo(0.5024390, 6);
+    const mva = calcularMvaAjustada({
+      mvaOriginal: 0.4,
+      aliquotaInterestadual: 0.12,
+      aliquotaInterna: 0.18,
+    });
+    expect(mva).toBeCloseTo(0.502439, 6);
   });
 
   it('converge para a MVA original quando as alíquotas se igualam', () => {
-    const mva = calcularMvaAjustada({ mvaOriginal: 0.3512, aliquotaInterestadual: 0.18, aliquotaInterna: 0.18 });
+    const mva = calcularMvaAjustada({
+      mvaOriginal: 0.3512,
+      aliquotaInterestadual: 0.18,
+      aliquotaInterna: 0.18,
+    });
     expect(mva).toBeCloseTo(0.3512, 8);
   });
 
   it('cresce quando a interestadual cai e nunca fica negativa', () => {
-    const a = calcularMvaAjustada({ mvaOriginal: 0.40, aliquotaInterestadual: 0.12, aliquotaInterna: 0.18 });
-    const b = calcularMvaAjustada({ mvaOriginal: 0.40, aliquotaInterestadual: 0.07, aliquotaInterna: 0.18 });
-    const c = calcularMvaAjustada({ mvaOriginal: 0.40, aliquotaInterestadual: 0.04, aliquotaInterna: 0.18 });
+    const a = calcularMvaAjustada({
+      mvaOriginal: 0.4,
+      aliquotaInterestadual: 0.12,
+      aliquotaInterna: 0.18,
+    });
+    const b = calcularMvaAjustada({
+      mvaOriginal: 0.4,
+      aliquotaInterestadual: 0.07,
+      aliquotaInterna: 0.18,
+    });
+    const c = calcularMvaAjustada({
+      mvaOriginal: 0.4,
+      aliquotaInterestadual: 0.04,
+      aliquotaInterna: 0.18,
+    });
     expect(b).toBeGreaterThan(a);
     expect(c).toBeGreaterThan(b);
-    expect(calcularMvaAjustada({ mvaOriginal: 0, aliquotaInterestadual: 0.18, aliquotaInterna: 0.07 })).toBe(0);
+    expect(
+      calcularMvaAjustada({ mvaOriginal: 0, aliquotaInterestadual: 0.18, aliquotaInterna: 0.07 })
+    ).toBe(0);
   });
 
   it('degrada com segurança em entradas patológicas', () => {
     // MVA inválida é tratada como zero; o ajuste de carga (0,88/0,82 − 1) permanece.
-    expect(calcularMvaAjustada({ mvaOriginal: Number.NaN, aliquotaInterestadual: 0.12, aliquotaInterna: 0.18 }))
-      .toBeCloseTo(0.0731707, 6);
-    expect(calcularMvaAjustada({ mvaOriginal: -1, aliquotaInterestadual: 0.12, aliquotaInterna: 0.18 }))
-      .toBeCloseTo(0.0731707, 6);
+    expect(
+      calcularMvaAjustada({
+        mvaOriginal: Number.NaN,
+        aliquotaInterestadual: 0.12,
+        aliquotaInterna: 0.18,
+      })
+    ).toBeCloseTo(0.0731707, 6);
+    expect(
+      calcularMvaAjustada({ mvaOriginal: -1, aliquotaInterestadual: 0.12, aliquotaInterna: 0.18 })
+    ).toBeCloseTo(0.0731707, 6);
 
-    expect(calcularMvaAjustada({ mvaOriginal: 0.4, aliquotaInterestadual: 0.12, aliquotaInterna: 1 })).toBeCloseTo(0.4, 8);
-    expect(calcularMvaAjustada({ mvaOriginal: 0.4, aliquotaInterestadual: 0.12, aliquotaInterna: 5 })).toBeCloseTo(0.4, 8);
+    expect(
+      calcularMvaAjustada({ mvaOriginal: 0.4, aliquotaInterestadual: 0.12, aliquotaInterna: 1 })
+    ).toBeCloseTo(0.4, 8);
+    expect(
+      calcularMvaAjustada({ mvaOriginal: 0.4, aliquotaInterestadual: 0.12, aliquotaInterna: 5 })
+    ).toBeCloseTo(0.4, 8);
   });
 
   it('arredonda de forma estável', () => {
@@ -115,7 +161,10 @@ describe('icms — MVA ajustada', () => {
 describe('icms — ICMS-ST', () => {
   it('apura o caso de referência SP → BA com MVA 40%', () => {
     const r = calcularIcmsSt({
-      ufOrigem: 'SP', ufDestino: 'BA', valorProduto: 10_000, mvaOriginal: 0.40,
+      ufOrigem: 'SP',
+      ufDestino: 'BA',
+      valorProduto: 10_000,
+      mvaOriginal: 0.4,
     });
     expect(r.aliquotaInterestadual).toBe(0.07);
     expect(r.icmsProprio).toBeCloseTo(700, 2);
@@ -128,8 +177,14 @@ describe('icms — ICMS-ST', () => {
 
   it('inclui frete, seguro, despesas e IPI corretamente nas bases', () => {
     const r = calcularIcmsSt({
-      ufOrigem: 'SP', ufDestino: 'MG', valorProduto: 10_000, frete: 500, seguro: 100,
-      outrasDespesas: 400, ipi: 1_000, mvaOriginal: 0.35,
+      ufOrigem: 'SP',
+      ufDestino: 'MG',
+      valorProduto: 10_000,
+      frete: 500,
+      seguro: 100,
+      outrasDespesas: 400,
+      ipi: 1_000,
+      mvaOriginal: 0.35,
     });
     // Base própria não inclui IPI; base ST inclui.
     expect(r.baseIcmsProprio).toBeCloseTo(11_000, 2);
@@ -139,7 +194,11 @@ describe('icms — ICMS-ST', () => {
 
   it('subtrai descontos incondicionais e alerta em desconto abusivo', () => {
     const r = calcularIcmsSt({
-      ufOrigem: 'SP', ufDestino: 'MG', valorProduto: 1_000, descontos: 5_000, mvaOriginal: 0.4,
+      ufOrigem: 'SP',
+      ufDestino: 'MG',
+      valorProduto: 1_000,
+      descontos: 5_000,
+      mvaOriginal: 0.4,
     });
     expect(r.baseIcmsProprio).toBe(0);
     expect(r.baseSt).toBe(0);
@@ -149,19 +208,32 @@ describe('icms — ICMS-ST', () => {
 
   it('usa PMPF quando informado, ignorando a MVA', () => {
     const r = calcularIcmsSt({
-      ufOrigem: 'SP', ufDestino: 'RJ', valorProduto: 10_000, mvaOriginal: 0.9, pmpf: 15_000,
+      ufOrigem: 'SP',
+      ufDestino: 'RJ',
+      valorProduto: 10_000,
+      mvaOriginal: 0.9,
+      pmpf: 15_000,
     });
     expect(r.usouPmpf).toBe(true);
     expect(r.baseSt).toBeCloseTo(15_000, 2);
-    expect(r.icmsSt).toBeCloseTo(round2(15_000 * 0.20) - r.icmsProprio, 2);
+    expect(r.icmsSt).toBeCloseTo(round2(15_000 * 0.2) - r.icmsProprio, 2);
     expect(r.alertas.some((a) => a.includes('PMPF'))).toBe(true);
   });
 
   it('aplica reduções de base próprias e da ST', () => {
-    const cheio = calcularIcmsSt({ ufOrigem: 'SP', ufDestino: 'MG', valorProduto: 10_000, mvaOriginal: 0.4 });
+    const cheio = calcularIcmsSt({
+      ufOrigem: 'SP',
+      ufDestino: 'MG',
+      valorProduto: 10_000,
+      mvaOriginal: 0.4,
+    });
     const reduzido = calcularIcmsSt({
-      ufOrigem: 'SP', ufDestino: 'MG', valorProduto: 10_000, mvaOriginal: 0.4,
-      reducaoBasePropria: 0.2867, reducaoBaseSt: 0.2867,
+      ufOrigem: 'SP',
+      ufDestino: 'MG',
+      valorProduto: 10_000,
+      mvaOriginal: 0.4,
+      reducaoBasePropria: 0.2867,
+      reducaoBaseSt: 0.2867,
     });
     expect(reduzido.baseIcmsProprio).toBeCloseTo(round2(10_000 * 0.7133), 2);
     expect(reduzido.baseSt).toBeLessThan(cheio.baseSt);
@@ -170,7 +242,11 @@ describe('icms — ICMS-ST', () => {
 
   it('calcula o FCP-ST sobre a base da ST quando habilitado', () => {
     const r = calcularIcmsSt({
-      ufOrigem: 'SP', ufDestino: 'RJ', valorProduto: 10_000, mvaOriginal: 0.4, aplicarFcp: true,
+      ufOrigem: 'SP',
+      ufDestino: 'RJ',
+      valorProduto: 10_000,
+      mvaOriginal: 0.4,
+      aplicarFcp: true,
     });
     expect(r.aliquotaFcp).toBe(fcpDe('RJ'));
     expect(r.fcpSt).toBeCloseTo(round2(r.baseSt * fcpDe('RJ')), 2);
@@ -180,17 +256,26 @@ describe('icms — ICMS-ST', () => {
 
   it('zera a ST quando a operação própria já supera a carga interna', () => {
     const r = calcularIcmsSt({
-      ufOrigem: 'SP', ufDestino: 'SC', valorProduto: 10_000, mvaOriginal: 0,
-      aliquotaInterestadual: 0.25, aliquotaInternaDestino: 0.17,
+      ufOrigem: 'SP',
+      ufDestino: 'SC',
+      valorProduto: 10_000,
+      mvaOriginal: 0,
+      aliquotaInterestadual: 0.25,
+      aliquotaInternaDestino: 0.17,
     });
     expect(r.icmsSt).toBe(0);
     expect(r.alertas.some((a) => a.includes('superior à interna'))).toBe(true);
   });
 
   it('trata operação interna sem ajuste de MVA', () => {
-    const r = calcularIcmsSt({ ufOrigem: 'SP', ufDestino: 'SP', valorProduto: 10_000, mvaOriginal: 0.40 });
+    const r = calcularIcmsSt({
+      ufOrigem: 'SP',
+      ufDestino: 'SP',
+      valorProduto: 10_000,
+      mvaOriginal: 0.4,
+    });
     expect(r.operacaoInterestadual).toBe(false);
-    expect(r.mvaAjustada).toBeCloseTo(0.40, 8);
+    expect(r.mvaAjustada).toBeCloseTo(0.4, 8);
     expect(r.aliquotaInterestadual).toBe(aliquotaInternaDe('SP'));
     expect(r.icmsSt).toBeCloseTo(round2(14_000 * 0.18) - 1_800, 2);
   });
@@ -207,7 +292,14 @@ describe('icms — ICMS-ST', () => {
     ];
     for (const caso of casos) {
       const r = calcularIcmsSt({ ufOrigem: 'SP', ufDestino: 'BA', ...caso });
-      for (const v of [r.baseIcmsProprio, r.icmsProprio, r.baseSt, r.icmsSt, r.totalRecolher, r.valorTotalNota]) {
+      for (const v of [
+        r.baseIcmsProprio,
+        r.icmsProprio,
+        r.baseSt,
+        r.icmsSt,
+        r.totalRecolher,
+        r.valorTotalNota,
+      ]) {
         expect(Number.isFinite(v)).toBe(true);
         expect(v).toBeGreaterThanOrEqual(0);
       }
@@ -227,7 +319,10 @@ describe('icms — DIFAL (EC 87/2015 e LC 190/2022)', () => {
 
   it('aplica base única para destinatário contribuinte', () => {
     const r = calcularDifal({
-      ufOrigem: 'SP', ufDestino: 'MG', valorOperacao: 1_000, destinatarioContribuinte: true,
+      ufOrigem: 'SP',
+      ufDestino: 'MG',
+      valorOperacao: 1_000,
+      destinatarioContribuinte: true,
     });
     expect(r.baseDestino).toBeCloseTo(1_000, 2);
     expect(r.difal).toBeCloseTo(60, 2); // (18% − 12%) × 1.000
@@ -238,7 +333,10 @@ describe('icms — DIFAL (EC 87/2015 e LC 190/2022)', () => {
       if (destino === 'SP') continue;
       const dupla = calcularDifal({ ufOrigem: 'SP', ufDestino: destino, valorOperacao: 5_000 });
       const unica = calcularDifal({
-        ufOrigem: 'SP', ufDestino: destino, valorOperacao: 5_000, destinatarioContribuinte: true,
+        ufOrigem: 'SP',
+        ufDestino: destino,
+        valorOperacao: 5_000,
+        destinatarioContribuinte: true,
       });
       expect(dupla.baseDestino).toBeGreaterThanOrEqual(unica.baseDestino - 0.01);
       expect(dupla.difal).toBeGreaterThanOrEqual(unica.difal - 0.01);
@@ -246,7 +344,12 @@ describe('icms — DIFAL (EC 87/2015 e LC 190/2022)', () => {
   });
 
   it('adiciona o FCP à parcela devida ao destino', () => {
-    const r = calcularDifal({ ufOrigem: 'SP', ufDestino: 'RJ', valorOperacao: 10_000, aplicarFcp: true });
+    const r = calcularDifal({
+      ufOrigem: 'SP',
+      ufDestino: 'RJ',
+      valorOperacao: 10_000,
+      aplicarFcp: true,
+    });
     expect(r.fcp).toBeCloseTo(round2(r.baseDestino * fcpDe('RJ')), 2);
     expect(r.totalRecolher).toBeCloseTo(round2(r.difal + r.fcp), 2);
   });
@@ -260,8 +363,12 @@ describe('icms — DIFAL (EC 87/2015 e LC 190/2022)', () => {
 
   it('zera quando a interna de destino é menor que a interestadual', () => {
     const r = calcularDifal({
-      ufOrigem: 'SP', ufDestino: 'SC', valorOperacao: 10_000,
-      aliquotaInterestadual: 0.20, aliquotaInternaDestino: 0.17, destinatarioContribuinte: true,
+      ufOrigem: 'SP',
+      ufDestino: 'SC',
+      valorOperacao: 10_000,
+      aliquotaInterestadual: 0.2,
+      aliquotaInternaDestino: 0.17,
+      destinatarioContribuinte: true,
     });
     expect(r.difal).toBe(0);
     expect(r.alertas.some((a) => a.includes('inferior à interestadual'))).toBe(true);
@@ -281,13 +388,25 @@ describe('icms — simulação exaustiva de cenários', () => {
         for (const mvaOriginal of mvas) {
           for (const valorProduto of valores) {
             const r = calcularIcmsSt({
-              ufOrigem, ufDestino, valorProduto, mvaOriginal,
-              frete: valorProduto * 0.02, ipi: valorProduto * 0.05, aplicarFcp: true,
+              ufOrigem,
+              ufDestino,
+              valorProduto,
+              mvaOriginal,
+              frete: valorProduto * 0.02,
+              ipi: valorProduto * 0.05,
+              aplicarFcp: true,
             });
             cenarios += 1;
 
             // 1. Sem NaN e sem valores negativos.
-            for (const v of [r.icmsProprio, r.baseSt, r.icmsSt, r.fcpSt, r.totalRecolher, r.valorTotalNota]) {
+            for (const v of [
+              r.icmsProprio,
+              r.baseSt,
+              r.icmsSt,
+              r.fcpSt,
+              r.totalRecolher,
+              r.valorTotalNota,
+            ]) {
               expect(Number.isFinite(v)).toBe(true);
               expect(v).toBeGreaterThanOrEqual(0);
             }
@@ -323,8 +442,11 @@ describe('icms — simulação exaustiva de cenários', () => {
       for (const ufDestino of destinos) {
         for (const contribuinte of [true, false]) {
           const r = calcularDifal({
-            ufOrigem, ufDestino, valorOperacao: 12_345.67,
-            destinatarioContribuinte: contribuinte, aplicarFcp: true,
+            ufOrigem,
+            ufDestino,
+            valorOperacao: 12_345.67,
+            destinatarioContribuinte: contribuinte,
+            aplicarFcp: true,
           });
           cenarios += 1;
           for (const v of [r.icmsOrigem, r.icmsDestino, r.difal, r.fcp, r.totalRecolher]) {

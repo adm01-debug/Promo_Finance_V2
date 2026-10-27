@@ -73,15 +73,26 @@ function gerar(perfil: Perfil, seed: number): AgregadosContabeis {
 
   switch (perfil) {
     case 'alavancada':
-      return { ...a, passivoCirculante: a.ativoTotal * 0.9, patrimonioLiquido: a.ativoTotal * 0.05 };
+      return {
+        ...a,
+        passivoCirculante: a.ativoTotal * 0.9,
+        patrimonioLiquido: a.ativoTotal * 0.05,
+      };
     case 'pl_negativo':
       return { ...a, patrimonioLiquido: -Math.abs(a.patrimonioLiquido) - 1 };
     case 'sem_movimento':
       return Object.fromEntries(
-        Object.entries(a).map(([k, val]) => [k, k === 'diasPeriodo' ? val : 0]),
+        Object.entries(a).map(([k, val]) => [k, k === 'diasPeriodo' ? val : 0])
       ) as unknown as AgregadosContabeis;
     case 'receita_zero':
-      return { ...a, receitaBruta: 0, deducoesReceita: 0, receitaLiquida: 0, cmv: 0, lucroLiquido: 0 };
+      return {
+        ...a,
+        receitaBruta: 0,
+        deducoesReceita: 0,
+        receitaLiquida: 0,
+        cmv: 0,
+        lucroLiquido: 0,
+      };
     case 'contas_ausentes':
       return { ...a, estoques: 0, clientes: 0, fornecedores: 0, imobilizado: 0 };
     case 'sinais_invertidos':
@@ -98,7 +109,7 @@ describe('simulação de índices contábeis', () => {
   const specs = Array.from({ length: CENARIOS }, (_, i) => ({
     id: `idx-${String(i).padStart(4, '0')}-${PERFIS[i % PERFIS.length]}`,
     perfil: PERFIS[i % PERFIS.length],
-    seed: ((1337 + i * 2654435761) >>> 0) || 1,
+    seed: (1337 + i * 2654435761) >>> 0 || 1,
   }));
 
   it(`executa ${CENARIOS} cenários sem NaN, Infinity ou exceção`, () => {
@@ -151,7 +162,8 @@ describe('simulação de índices contábeis', () => {
   it('reconcilia Ativo = Passivo + PL nos cenários balanceados', () => {
     for (const spec of specs.filter((s) => s.perfil === 'saudavel' || s.perfil === 'prejuizo')) {
       const a = gerar(spec.perfil, spec.seed);
-      const diff = a.ativoTotal - (a.passivoCirculante + a.passivoNaoCirculante + a.patrimonioLiquido);
+      const diff =
+        a.ativoTotal - (a.passivoCirculante + a.passivoNaoCirculante + a.patrimonioLiquido);
       expect(Math.abs(diff), spec.id).toBeLessThan(0.01);
     }
   });

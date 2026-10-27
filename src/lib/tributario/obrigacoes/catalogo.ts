@@ -8,7 +8,8 @@ export const OBRIGACOES: readonly Obrigacao[] = [
   {
     id: 'efd_contribuicoes',
     nome: 'EFD-Contribuições',
-    descricao: 'Escrituração digital de PIS/Pasep, COFINS e Contribuição Previdenciária sobre Receita Bruta.',
+    descricao:
+      'Escrituração digital de PIS/Pasep, COFINS e Contribuição Previdenciária sobre Receita Bruta.',
     orgao: 'RFB',
     periodicidade: 'mensal',
     regra: { tipo: 'enesimo_dia_util', n: 10, mesesApos: 2 },
@@ -98,7 +99,8 @@ export const OBRIGACOES: readonly Obrigacao[] = [
   {
     id: 'dirbi',
     nome: 'DIRBI',
-    descricao: 'Declaração de Incentivos, Renúncias, Benefícios e Imunidades de Natureza Tributária.',
+    descricao:
+      'Declaração de Incentivos, Renúncias, Benefícios e Imunidades de Natureza Tributária.',
     orgao: 'RFB',
     periodicidade: 'mensal',
     regra: { tipo: 'dia_fixo', dia: 20, mesesApos: 2 },

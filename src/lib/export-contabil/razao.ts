@@ -7,9 +7,7 @@ import { drawFooter, drawHeader, type DocWithAT } from './pdf-common';
 
 export function exportRazaoCSV(contas: RazaoContaExport[], ctx: PeriodoCtx) {
   const lines: string[] = headerLines('LIVRO RAZÃO', ctx);
-  lines.push(
-    ['Conta', 'Data', 'Histórico', 'Débito', 'Crédito', 'Saldo'].map(csvEscape).join(';'),
-  );
+  lines.push(['Conta', 'Data', 'Histórico', 'Débito', 'Crédito', 'Saldo'].map(csvEscape).join(';'));
   let gSaldoIni = 0;
   let gD = 0;
   let gC = 0;
@@ -22,7 +20,7 @@ export function exportRazaoCSV(contas: RazaoContaExport[], ctx: PeriodoCtx) {
     lines.push(
       [conta, '', 'SALDO INICIAL', '', '', saldo.toFixed(2).replace('.', ',')]
         .map(csvEscape)
-        .join(';'),
+        .join(';')
     );
     for (const m of g.movs) {
       saldo += m.debito - m.credito;
@@ -38,7 +36,7 @@ export function exportRazaoCSV(contas: RazaoContaExport[], ctx: PeriodoCtx) {
           saldo.toFixed(2).replace('.', ','),
         ]
           .map(csvEscape)
-          .join(';'),
+          .join(';')
       );
     }
     lines.push(
@@ -51,7 +49,7 @@ export function exportRazaoCSV(contas: RazaoContaExport[], ctx: PeriodoCtx) {
         saldo.toFixed(2).replace('.', ','),
       ]
         .map(csvEscape)
-        .join(';'),
+        .join(';')
     );
     lines.push('');
     gSaldoIni += g.saldo_inicial;
@@ -69,7 +67,7 @@ export function exportRazaoCSV(contas: RazaoContaExport[], ctx: PeriodoCtx) {
       gSaldoFim.toFixed(2).replace('.', ','),
     ]
       .map(csvEscape)
-      .join(';'),
+      .join(';')
   );
   downloadCSV(lines.join('\n'), buildFilename('livro-razao', ctx));
 }
@@ -88,9 +86,7 @@ export function exportRazaoPDF(contas: RazaoContaExport[], ctx: PeriodoCtx) {
     let saldo = g.saldo_inicial;
     let dT = 0;
     let cT = 0;
-    const body: (string | number)[][] = [
-      ['', 'SALDO INICIAL', '', '', formatCurrency(saldo)],
-    ];
+    const body: (string | number)[][] = [['', 'SALDO INICIAL', '', '', formatCurrency(saldo)]];
     for (const m of g.movs) {
       saldo += m.debito - m.credito;
       dT += m.debito;
@@ -119,7 +115,11 @@ export function exportRazaoPDF(contas: RazaoContaExport[], ctx: PeriodoCtx) {
       body,
       foot: [
         [
-          { content: 'TOTAIS DA CONTA', colSpan: 2, styles: { halign: 'right', fontStyle: 'bold' } },
+          {
+            content: 'TOTAIS DA CONTA',
+            colSpan: 2,
+            styles: { halign: 'right', fontStyle: 'bold' },
+          },
           { content: formatCurrency(dT), styles: { halign: 'right', fontStyle: 'bold' } },
           { content: formatCurrency(cT), styles: { halign: 'right', fontStyle: 'bold' } },
           { content: formatCurrency(saldo), styles: { halign: 'right', fontStyle: 'bold' } },

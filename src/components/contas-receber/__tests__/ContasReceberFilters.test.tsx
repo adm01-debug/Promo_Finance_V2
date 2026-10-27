@@ -64,9 +64,7 @@ describe('ContasReceberFilters', () => {
     });
 
     it('não renderiza select de empresa quando onEmpresaChange não é fornecido', () => {
-      render(
-        <ContasReceberFilters {...defaultProps} empresas={empresas} />
-      );
+      render(<ContasReceberFilters {...defaultProps} empresas={empresas} />);
       expect(screen.queryByText('Todas empresas')).not.toBeInTheDocument();
     });
   });
@@ -74,13 +72,7 @@ describe('ContasReceberFilters', () => {
   // ===== #32: Filtro por forma de pagamento =====
   describe('Gap #32 - Filtro forma pagamento', () => {
     it('renderiza select de forma quando onFormaChange é fornecido', () => {
-      render(
-        <ContasReceberFilters
-          {...defaultProps}
-          formaFilter="all"
-          onFormaChange={vi.fn()}
-        />
-      );
+      render(<ContasReceberFilters {...defaultProps} formaFilter="all" onFormaChange={vi.fn()} />);
       expect(screen.getByText('Todas formas')).toBeInTheDocument();
     });
 

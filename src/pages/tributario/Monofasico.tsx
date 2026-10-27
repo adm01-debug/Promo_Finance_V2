@@ -6,17 +6,27 @@ import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import {
-  Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
 } from '@/components/ui/select';
 import { Beaker, Download, FileText, Info } from 'lucide-react';
 import { MixEditor } from '@/components/tributario/monofasico/MixEditor';
 import { POSICOES } from '@/components/tributario/monofasico/posicoes';
 import { ResumoCards } from '@/components/tributario/monofasico/ResumoCards';
 import { DetalhamentoTable } from '@/components/tributario/monofasico/DetalhamentoTable';
-import { exportMonofasicoCSV, exportMonofasicoPDF } from '@/components/tributario/monofasico/exporters';
 import {
-  calcularMixMonofasico, calcularRecuperacaoRetroativa,
-  type ItemMonofasico, type PosicaoCadeia, type RegimeApuracaoPisCofins,
+  exportMonofasicoCSV,
+  exportMonofasicoPDF,
+} from '@/components/tributario/monofasico/exporters';
+import {
+  calcularMixMonofasico,
+  calcularRecuperacaoRetroativa,
+  type ItemMonofasico,
+  type PosicaoCadeia,
+  type RegimeApuracaoPisCofins,
 } from '@/lib/tributario/monofasico';
 import { formatCurrency } from '@/lib/formatters';
 
@@ -35,12 +45,12 @@ export default function MonofasicoPage() {
 
   const resumo = useMemo(
     () => calcularMixMonofasico(itens, posicaoPadrao, regime),
-    [itens, posicaoPadrao, regime],
+    [itens, posicaoPadrao, regime]
   );
 
   const recuperacao = useMemo(
     () => calcularRecuperacaoRetroativa(resumo.receitaMonofasica / 12, regime),
-    [resumo.receitaMonofasica, regime],
+    [resumo.receitaMonofasica, regime]
   );
 
   const temDados = resumo.itens.length > 0;
@@ -72,19 +82,37 @@ export default function MonofasicoPage() {
               <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
                 <div className="space-y-2">
                   <Label htmlFor="posicao-padrao">Posição padrão na cadeia</Label>
-                  <Select value={posicaoPadrao} onValueChange={(v) => setPosicaoPadrao(v as PosicaoCadeia)}>
-                    <SelectTrigger id="posicao-padrao"><SelectValue /></SelectTrigger>
+                  <Select
+                    value={posicaoPadrao}
+                    onValueChange={(v) => setPosicaoPadrao(v as PosicaoCadeia)}
+                  >
+                    <SelectTrigger id="posicao-padrao">
+                      <SelectValue />
+                    </SelectTrigger>
                     <SelectContent>
-                      {POSICOES.map((p) => <SelectItem key={p.value} value={p.value}>{p.label}</SelectItem>)}
+                      {POSICOES.map((p) => (
+                        <SelectItem key={p.value} value={p.value}>
+                          {p.label}
+                        </SelectItem>
+                      ))}
                     </SelectContent>
                   </Select>
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="regime">Regime de apuração</Label>
-                  <Select value={regime} onValueChange={(v) => setRegime(v as RegimeApuracaoPisCofins)}>
-                    <SelectTrigger id="regime"><SelectValue /></SelectTrigger>
+                  <Select
+                    value={regime}
+                    onValueChange={(v) => setRegime(v as RegimeApuracaoPisCofins)}
+                  >
+                    <SelectTrigger id="regime">
+                      <SelectValue />
+                    </SelectTrigger>
                     <SelectContent>
-                      {REGIMES.map((r) => <SelectItem key={r.value} value={r.value}>{r.label}</SelectItem>)}
+                      {REGIMES.map((r) => (
+                        <SelectItem key={r.value} value={r.value}>
+                          {r.label}
+                        </SelectItem>
+                      ))}
                     </SelectContent>
                   </Select>
                 </div>
@@ -107,13 +135,25 @@ export default function MonofasicoPage() {
             <CardHeader className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
               <div>
                 <CardTitle>Memória de cálculo</CardTitle>
-                <CardDescription>Detalhamento por NCM, alíquotas aplicadas e base legal.</CardDescription>
+                <CardDescription>
+                  Detalhamento por NCM, alíquotas aplicadas e base legal.
+                </CardDescription>
               </div>
               <div className="flex gap-2">
-                <Button variant="outline" size="sm" disabled={!temDados} onClick={() => exportMonofasicoCSV(resumo)}>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  disabled={!temDados}
+                  onClick={() => exportMonofasicoCSV(resumo)}
+                >
                   <Download className="mr-2 h-4 w-4" /> CSV
                 </Button>
-                <Button variant="outline" size="sm" disabled={!temDados} onClick={() => exportMonofasicoPDF(resumo)}>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  disabled={!temDados}
+                  onClick={() => exportMonofasicoPDF(resumo)}
+                >
                   <FileText className="mr-2 h-4 w-4" /> PDF
                 </Button>
               </div>
@@ -133,21 +173,27 @@ export default function MonofasicoPage() {
             <CardHeader>
               <CardTitle>Recuperação de indébito (5 anos)</CardTitle>
               <CardDescription>
-                Estimativa de PIS/COFINS pagos indevidamente sobre receita monofásica, limitada ao prazo
-                decadencial do art. 168 do CTN.
+                Estimativa de PIS/COFINS pagos indevidamente sobre receita monofásica, limitada ao
+                prazo decadencial do art. 168 do CTN.
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-2 text-sm">
               <p>
                 Crédito mensal médio:{' '}
-                <span className="font-semibold tabular-nums">{formatCurrency(recuperacao.creditoMensalMedio)}</span>
+                <span className="font-semibold tabular-nums">
+                  {formatCurrency(recuperacao.creditoMensalMedio)}
+                </span>
               </p>
               <p>
                 Total recuperável em {recuperacao.meses} meses:{' '}
-                <span className="font-semibold tabular-nums text-success">{formatCurrency(recuperacao.totalRecuperavel)}</span>
+                <span className="font-semibold tabular-nums text-success">
+                  {formatCurrency(recuperacao.totalRecuperavel)}
+                </span>
               </p>
               <ul className="list-inside list-disc text-muted-foreground">
-                {recuperacao.observacoes.map((o) => <li key={o}>{o}</li>)}
+                {recuperacao.observacoes.map((o) => (
+                  <li key={o}>{o}</li>
+                ))}
               </ul>
             </CardContent>
           </Card>

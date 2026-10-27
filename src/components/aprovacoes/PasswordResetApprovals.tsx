@@ -4,12 +4,12 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
-import { 
-  Dialog, 
-  DialogContent, 
-  DialogHeader, 
-  DialogTitle, 
-  DialogFooter 
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
 } from '@/components/ui/dialog';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
@@ -17,15 +17,7 @@ import { toast } from 'sonner';
 import { logger } from '@/lib/logger';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
-import { 
-  KeyRound, 
-  Check, 
-  X, 
-  Clock, 
-  Mail,
-  Loader2,
-  AlertCircle
-} from 'lucide-react';
+import { KeyRound, Check, X, Clock, Mail, Loader2, AlertCircle } from 'lucide-react';
 
 interface PasswordResetRequest {
   id: string;
@@ -55,7 +47,7 @@ export function PasswordResetApprovals() {
 
       if (error) throw error;
       return data as PasswordResetRequest[];
-    }
+    },
   });
 
   const approveMutation = useMutation({
@@ -66,19 +58,16 @@ export function PasswordResetApprovals() {
         .update({
           status: 'aprovado',
           aprovado_por: user?.id,
-          aprovado_em: new Date().toISOString()
+          aprovado_em: new Date().toISOString(),
         })
         .eq('id', request.id);
 
       if (updateError) throw updateError;
 
       // 2. Enviar email de reset via Supabase Auth
-      const { error: resetError } = await supabase.auth.resetPasswordForEmail(
-        request.user_email,
-        {
-          redirectTo: `${window.location.origin}/reset-password`,
-        }
-      );
+      const { error: resetError } = await supabase.auth.resetPasswordForEmail(request.user_email, {
+        redirectTo: `${window.location.origin}/reset-password`,
+      });
 
       if (resetError) throw resetError;
     },
@@ -89,7 +78,7 @@ export function PasswordResetApprovals() {
     onError: (error: unknown) => {
       logger.error('Erro ao aprovar reset de senha:', error);
       toast.error('Erro ao aprovar reset de senha');
-    }
+    },
   });
 
   const rejectMutation = useMutation({
@@ -100,7 +89,7 @@ export function PasswordResetApprovals() {
           status: 'rejeitado',
           motivo_rejeicao: reason,
           aprovado_por: user?.id,
-          aprovado_em: new Date().toISOString()
+          aprovado_em: new Date().toISOString(),
         })
         .eq('id', request.id);
 
@@ -116,7 +105,7 @@ export function PasswordResetApprovals() {
     onError: (error: unknown) => {
       logger.error('Erro ao rejeitar solicitação:', error);
       toast.error('Erro ao rejeitar solicitação');
-    }
+    },
   });
 
   const handleReject = (request: PasswordResetRequest) => {
@@ -182,7 +171,10 @@ export function PasswordResetApprovals() {
                     <div>
                       <p className="font-medium">{request.user_email}</p>
                       <p className="text-sm text-muted-foreground">
-                        Solicitado em {format(new Date(request.solicitado_em), "dd/MM/yyyy 'às' HH:mm", { locale: ptBR })}
+                        Solicitado em{' '}
+                        {format(new Date(request.solicitado_em), "dd/MM/yyyy 'às' HH:mm", {
+                          locale: ptBR,
+                        })}
                       </p>
                     </div>
                   </div>
@@ -227,7 +219,8 @@ export function PasswordResetApprovals() {
           </DialogHeader>
           <div className="space-y-4 py-4">
             <p className="text-sm text-muted-foreground">
-              Informe o motivo da rejeição para o email <strong>{selectedRequest?.user_email}</strong>
+              Informe o motivo da rejeição para o email{' '}
+              <strong>{selectedRequest?.user_email}</strong>
             </p>
             <Input
               placeholder="Motivo da rejeição..."
@@ -239,14 +232,12 @@ export function PasswordResetApprovals() {
             <Button variant="outline" onClick={() => setRejectDialogOpen(false)}>
               Cancelar
             </Button>
-            <Button 
-              variant="destructive" 
+            <Button
+              variant="destructive"
               onClick={confirmReject}
               disabled={rejectMutation.isPending}
             >
-              {rejectMutation.isPending ? (
-                <Loader2 className="h-4 w-4 animate-spin mr-1" />
-              ) : null}
+              {rejectMutation.isPending ? <Loader2 className="h-4 w-4 animate-spin mr-1" /> : null}
               Confirmar Rejeição
             </Button>
           </DialogFooter>

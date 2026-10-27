@@ -57,7 +57,12 @@ describe('calcularConformidade — casos unitários', () => {
 
   it('pontua 60% na entrega em atraso e conta pontualidade', () => {
     const registros: RegistroEntrega[] = [
-      { obrigacaoId: 'efd-contribuicoes', competencia: '2025-01', status: 'entregue', dataEntrega: '2025-03-20' },
+      {
+        obrigacaoId: 'efd-contribuicoes',
+        competencia: '2025-01',
+        status: 'entregue',
+        dataEntrega: '2025-03-20',
+      },
     ];
     const r = calcularConformidade([item({ situacao: 'vencida' })], registros);
     expect(r.score).toBe(60);
@@ -69,7 +74,14 @@ describe('calcularConformidade — casos unitários', () => {
   it('pontua 100% na entrega dentro do prazo', () => {
     const r = calcularConformidade(
       [item({ situacao: 'vencida' })],
-      [{ obrigacaoId: 'efd-contribuicoes', competencia: '2025-01', status: 'entregue', dataEntrega: '2025-03-10' }]
+      [
+        {
+          obrigacaoId: 'efd-contribuicoes',
+          competencia: '2025-01',
+          status: 'entregue',
+          dataEntrega: '2025-03-10',
+        },
+      ]
     );
     expect(r.score).toBe(100);
     expect(r.entreguesComAtraso).toBe(0);
@@ -89,7 +101,14 @@ describe('calcularConformidade — casos unitários', () => {
   it('conta retificada como entregue e respeita o atraso', () => {
     const r = calcularConformidade(
       [item({ situacao: 'vencida' })],
-      [{ obrigacaoId: 'efd-contribuicoes', competencia: '2025-01', status: 'retificada', dataEntrega: '2025-04-01' }]
+      [
+        {
+          obrigacaoId: 'efd-contribuicoes',
+          competencia: '2025-01',
+          status: 'retificada',
+          dataEntrega: '2025-04-01',
+        },
+      ]
     );
     expect(r.retificadas).toBe(1);
     expect(r.entregues).toBe(1);
@@ -115,8 +134,18 @@ describe('calcularConformidade — casos unitários', () => {
     const r = calcularConformidade(
       [item({ competencia: '2025-01' }), item({ competencia: '2025-02', prazo: '2025-04-14' })],
       [
-        { obrigacaoId: 'efd-contribuicoes', competencia: '2025-01', status: 'entregue', valorMulta: 1500.555 },
-        { obrigacaoId: 'efd-contribuicoes', competencia: '2025-02', status: 'entregue', valorMulta: -900 },
+        {
+          obrigacaoId: 'efd-contribuicoes',
+          competencia: '2025-01',
+          status: 'entregue',
+          valorMulta: 1500.555,
+        },
+        {
+          obrigacaoId: 'efd-contribuicoes',
+          competencia: '2025-02',
+          status: 'entregue',
+          valorMulta: -900,
+        },
       ]
     );
     expect(r.multaRegistrada).toBe(1500.56);
@@ -127,7 +156,12 @@ describe('calcularConformidade — casos unitários', () => {
       [item({ situacao: 'vencida' })],
       [
         { obrigacaoId: 'efd-contribuicoes', competencia: '2025-01', status: 'pendente' },
-        { obrigacaoId: 'efd-contribuicoes', competencia: '2025-01', status: 'entregue', dataEntrega: '2025-03-01' },
+        {
+          obrigacaoId: 'efd-contribuicoes',
+          competencia: '2025-01',
+          status: 'entregue',
+          dataEntrega: '2025-03-01',
+        },
       ]
     );
     expect(r.score).toBe(100);
@@ -167,7 +201,16 @@ describe('calcularConformidade — simulação combinatória', () => {
             cenarios += 1;
             const itens = [item({ situacao, orgao })];
             const registros: RegistroEntrega[] =
-              status === null ? [] : [{ obrigacaoId: 'efd-contribuicoes', competencia: '2025-01', status, dataEntrega }];
+              status === null
+                ? []
+                : [
+                    {
+                      obrigacaoId: 'efd-contribuicoes',
+                      competencia: '2025-01',
+                      status,
+                      dataEntrega,
+                    },
+                  ];
             const r = calcularConformidade(itens, registros);
 
             expect(r.total).toBe(1);
@@ -215,7 +258,12 @@ describe('calcularConformidade — simulação combinatória', () => {
     expect(competencias).toHaveLength(13);
 
     for (const regime of regimes) {
-      const itens = gerarCalendario({ competencias, regime, hoje: '2025-06-15', entregues: new Set() });
+      const itens = gerarCalendario({
+        competencias,
+        regime,
+        hoje: '2025-06-15',
+        entregues: new Set(),
+      });
       const semEntrega = calcularConformidade(itens);
       expect(semEntrega.total).toBe(itens.length);
       expect(semEntrega.score).toBeLessThanOrEqual(100);

@@ -2,29 +2,23 @@
  * Tipos compartilhados do harness de cenários.
  */
 
-export type Domain =
-  | "conciliacao"
-  | "webhooks"
-  | "cobranca"
-  | "anomalias"
-  | "nfe"
-  | "entregas";
+export type Domain = 'conciliacao' | 'webhooks' | 'cobranca' | 'anomalias' | 'nfe' | 'entregas';
 
 export type FaultKind =
-  | "none"
-  | "timeout"
-  | "flaky"
-  | "reorder"
-  | "duplicate"
-  | "latency"
-  | "partial_write"
-  | "nfe_gzip_corrupt"
-  | "nfe_nsu_gap"
-  | "nfe_soap_timeout"
-  | "entrega_driver_offline"
-  | "entrega_gps_lost"
-  | "entrega_pod_missing"
-  | "entrega_status_regressivo";
+  | 'none'
+  | 'timeout'
+  | 'flaky'
+  | 'reorder'
+  | 'duplicate'
+  | 'latency'
+  | 'partial_write'
+  | 'nfe_gzip_corrupt'
+  | 'nfe_nsu_gap'
+  | 'nfe_soap_timeout'
+  | 'entrega_driver_offline'
+  | 'entrega_gps_lost'
+  | 'entrega_pod_missing'
+  | 'entrega_status_regressivo';
 
 export interface FaultSpec {
   kind: FaultKind;
@@ -76,14 +70,14 @@ export interface ScenarioState {
 
   lancamentos: Array<{
     id: string;
-    tipo: "pagar" | "receber";
+    tipo: 'pagar' | 'receber';
     valor: number;
   }>;
 
   webhookEvents: Array<{
     id: string; // event_id
     paymentId: string;
-    tipo: "PAYMENT_CREATED" | "PAYMENT_CONFIRMED" | "PAYMENT_FAILED";
+    tipo: 'PAYMENT_CREATED' | 'PAYMENT_CONFIRMED' | 'PAYMENT_FAILED';
     processedAt: number; // ordem lógica de processamento
     /** contagem de vezes que o handler foi invocado com este event_id */
     invocations: number;
@@ -91,7 +85,7 @@ export interface ScenarioState {
 
   anomalias: Array<{
     id: string;
-    status: "nova" | "confirmada" | "falso_positivo";
+    status: 'nova' | 'confirmada' | 'falso_positivo';
     statusHistory: string[];
   }>;
 
@@ -116,7 +110,7 @@ export interface ScenarioState {
       xmlSalvo: boolean;
       /** Caminho no bucket `nfe-xml`: `{empresa_id}/{chave}.xml`. Presente quando xmlSalvo=true. */
       xmlPath?: string;
-      manifestacao: "pendente" | "ciencia" | "confirmada" | "desconhecida" | "nao_realizada";
+      manifestacao: 'pendente' | 'ciencia' | 'confirmada' | 'desconhecida' | 'nao_realizada';
       manifestacaoHistory: string[];
     }>;
     eventos: Array<{
@@ -128,7 +122,14 @@ export interface ScenarioState {
 
   entregas: Array<{
     orderId: string;
-    status: "pending" | "assigning" | "picked_up" | "in_progress" | "delivered" | "canceled" | "failed";
+    status:
+      | 'pending'
+      | 'assigning'
+      | 'picked_up'
+      | 'in_progress'
+      | 'delivered'
+      | 'canceled'
+      | 'failed';
     statusHistory: string[];
     driverId?: string;
     deliveredAt?: number;

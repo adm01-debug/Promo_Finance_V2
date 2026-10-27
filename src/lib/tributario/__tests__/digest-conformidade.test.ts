@@ -152,7 +152,7 @@ describe('digest de conformidade — 400 cenários pseudoaleatórios', () => {
       // 3) Ordenação entre blocos: severidade máxima não regride.
       for (let i = 1; i < d.blocos.length; i += 1) {
         expect(PESO[d.blocos[i - 1].severidadeMaxima]).toBeLessThanOrEqual(
-          PESO[d.blocos[i].severidadeMaxima],
+          PESO[d.blocos[i].severidadeMaxima]
         );
       }
 
@@ -160,13 +160,16 @@ describe('digest de conformidade — 400 cenários pseudoaleatórios', () => {
       for (const bloco of d.blocos) {
         for (let i = 1; i < bloco.alertas.length; i += 1) {
           expect(PESO[normalizarSeveridade(bloco.alertas[i - 1].severidade)]).toBeLessThanOrEqual(
-            PESO[normalizarSeveridade(bloco.alertas[i].severidade)],
+            PESO[normalizarSeveridade(bloco.alertas[i].severidade)]
           );
         }
         // 5) Total monetário do bloco é a soma dos valores finitos.
         const esperado =
           Math.round(
-            bloco.alertas.reduce((acc, a) => acc + (Number.isFinite(a.valor ?? 0) ? a.valor ?? 0 : 0), 0) * 100,
+            bloco.alertas.reduce(
+              (acc, a) => acc + (Number.isFinite(a.valor ?? 0) ? (a.valor ?? 0) : 0),
+              0
+            ) * 100
           ) / 100;
         expect(bloco.valorTotal).toBeCloseTo(esperado, 2);
       }
@@ -190,7 +193,7 @@ describe('digest de conformidade — 400 cenários pseudoaleatórios', () => {
       // 9) Severidade máxima global coincide com a pior severidade presente.
       const pior = alertas.reduce(
         (p, a) => Math.min(p, PESO[normalizarSeveridade(a.severidade)]),
-        3,
+        3
       );
       expect(PESO[d.severidadeMaxima ?? 'baixa']).toBe(pior);
 

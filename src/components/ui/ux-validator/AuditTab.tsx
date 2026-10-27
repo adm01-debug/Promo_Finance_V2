@@ -29,7 +29,9 @@ export function AuditTab() {
 
       <div className="space-y-6">
         <Card className="bg-primary/5 border-primary/20 premium-card">
-          <CardHeader><CardTitle className="text-foreground text-lg">Checklist de Auditoria</CardTitle></CardHeader>
+          <CardHeader>
+            <CardTitle className="text-foreground text-lg">Checklist de Auditoria</CardTitle>
+          </CardHeader>
           <CardContent className="space-y-4">
             <CheckItem checked label="Margens laterais (layout-container)" />
             <CheckItem checked label="Font Family 'Outfit' em Headings" />

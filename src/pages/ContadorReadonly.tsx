@@ -94,7 +94,8 @@ export default function ContadorReadonly() {
               {empresa?.razao_social}
             </CardTitle>
             <CardDescription>
-              {empresa?.nome_fantasia ? `${empresa.nome_fantasia} · ` : ''}CNPJ {empresa?.cnpj || '—'}
+              {empresa?.nome_fantasia ? `${empresa.nome_fantasia} · ` : ''}CNPJ{' '}
+              {empresa?.cnpj || '—'}
             </CardDescription>
           </CardHeader>
           <CardContent className="grid grid-cols-2 md:grid-cols-3 gap-4 text-sm">
@@ -107,7 +108,8 @@ export default function ContadorReadonly() {
           <CardHeader>
             <CardTitle className="text-base">Próximas evoluções</CardTitle>
             <CardDescription>
-              Próximas versões trarão obrigações acessórias, vencimentos e DARFs prontos para download.
+              Próximas versões trarão obrigações acessórias, vencimentos e DARFs prontos para
+              download.
             </CardDescription>
           </CardHeader>
         </Card>

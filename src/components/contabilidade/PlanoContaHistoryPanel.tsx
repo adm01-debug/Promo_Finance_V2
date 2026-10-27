@@ -181,14 +181,23 @@ export function PlanoContaHistoryPanel({ entries, isLoading, className }: Props)
                             className={cn(
                               'absolute -left-[22px] top-1 h-4 w-4 rounded-full border flex items-center justify-center',
                               meta.bg,
-                              meta.border,
+                              meta.border
                             )}
                           >
                             <Icon className={cn('h-2.5 w-2.5', meta.tone)} />
                           </span>
-                          <div className={cn('rounded-md border p-3 text-xs', meta.border, 'bg-muted/30')}>
+                          <div
+                            className={cn(
+                              'rounded-md border p-3 text-xs',
+                              meta.border,
+                              'bg-muted/30'
+                            )}
+                          >
                             <div className="flex flex-wrap items-baseline gap-x-3 gap-y-1">
-                              <Badge variant="outline" className={cn('text-[10px]', meta.tone, meta.border)}>
+                              <Badge
+                                variant="outline"
+                                className={cn('text-[10px]', meta.tone, meta.border)}
+                              >
                                 {meta.label}
                               </Badge>
                               <span className="flex items-center gap-1 text-muted-foreground">
@@ -201,15 +210,24 @@ export function PlanoContaHistoryPanel({ entries, isLoading, className }: Props)
                             </div>
 
                             {entry.details && (
-                              <p className="text-muted-foreground mt-2 leading-relaxed">{entry.details}</p>
+                              <p className="text-muted-foreground mt-2 leading-relaxed">
+                                {entry.details}
+                              </p>
                             )}
 
                             {diff.length > 0 && (
                               <ul className="mt-2 space-y-1">
                                 {diff.map((d) => (
-                                  <li key={d.campo} className="flex flex-wrap items-center gap-2 font-mono text-[11px]">
-                                    <span className="font-semibold text-foreground/80">{d.campo}:</span>
-                                    <span className="line-through text-muted-foreground">{fmtValor(d.antes)}</span>
+                                  <li
+                                    key={d.campo}
+                                    className="flex flex-wrap items-center gap-2 font-mono text-[11px]"
+                                  >
+                                    <span className="font-semibold text-foreground/80">
+                                      {d.campo}:
+                                    </span>
+                                    <span className="line-through text-muted-foreground">
+                                      {fmtValor(d.antes)}
+                                    </span>
                                     <ArrowRight className="h-3 w-3 text-muted-foreground" />
                                     <span className="text-primary">{fmtValor(d.depois)}</span>
                                   </li>
@@ -223,7 +241,10 @@ export function PlanoContaHistoryPanel({ entries, isLoading, className }: Props)
                                 <span className="text-foreground/80">
                                   {String((entry.new_data as Record<string, unknown>).codigo || '')}
                                 </span>{' '}
-                                — {String((entry.new_data as Record<string, unknown>).descricao || '')}
+                                —{' '}
+                                {String(
+                                  (entry.new_data as Record<string, unknown>).descricao || ''
+                                )}
                               </p>
                             )}
                           </div>

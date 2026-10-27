@@ -1,8 +1,8 @@
 import { motion, AnimatePresence } from 'framer-motion';
-import { 
-  AlertTriangle, 
-  AlertCircle, 
-  Info, 
+import {
+  AlertTriangle,
+  AlertCircle,
+  Info,
   TrendingDown,
   Calendar,
   Lightbulb,
@@ -69,9 +69,13 @@ export function AlertasRuptura({ alertas, onDismiss, onVerDetalhes }: AlertasRup
             <div className="h-10 w-10 sm:h-12 sm:w-12 rounded-full bg-success/10 flex items-center justify-center mb-2 sm:mb-3">
               <AlertCircle className="h-5 w-5 sm:h-6 sm:w-6 text-success" />
             </div>
-            <p className="text-xs sm:text-sm font-medium text-foreground">Nenhum alerta detectado</p>
+            <p className="text-xs sm:text-sm font-medium text-foreground">
+              Nenhum alerta detectado
+            </p>
             <p className="text-[10px] sm:text-xs text-muted-foreground mt-1">
-              <span className="hidden sm:inline">Seu fluxo de caixa está saudável em todos os cenários</span>
+              <span className="hidden sm:inline">
+                Seu fluxo de caixa está saudável em todos os cenários
+              </span>
               <span className="sm:hidden">Fluxo de caixa saudável</span>
             </p>
           </div>
@@ -81,25 +85,32 @@ export function AlertasRuptura({ alertas, onDismiss, onVerDetalhes }: AlertasRup
   }
 
   // Agrupar alertas por tipo
-  const alertasRuptura = alertas.filter(a => a.tipo === 'ruptura');
-  const alertasRiscoAlto = alertas.filter(a => a.tipo === 'risco_alto');
-  const outrosAlertas = alertas.filter(a => a.tipo !== 'ruptura' && a.tipo !== 'risco_alto');
+  const alertasRuptura = alertas.filter((a) => a.tipo === 'ruptura');
+  const alertasRiscoAlto = alertas.filter((a) => a.tipo === 'risco_alto');
+  const outrosAlertas = alertas.filter((a) => a.tipo !== 'ruptura' && a.tipo !== 'risco_alto');
 
   return (
-    <Card className={cn(
-      "card-elevated transition-all",
-      alertasRuptura.length > 0 && "border-destructive/50 shadow-destructive/10"
-    )}>
+    <Card
+      className={cn(
+        'card-elevated transition-all',
+        alertasRuptura.length > 0 && 'border-destructive/50 shadow-destructive/10'
+      )}
+    >
       <CardHeader className="pb-2 sm:pb-3 p-4 sm:p-6">
         <div className="flex items-center justify-between">
           <CardTitle className="text-base sm:text-lg font-display flex items-center gap-2">
-            <AlertTriangle className={cn(
-              "h-4 w-4 sm:h-5 sm:w-5",
-              alertasRuptura.length > 0 ? "text-destructive" : "text-primary"
-            )} />
+            <AlertTriangle
+              className={cn(
+                'h-4 w-4 sm:h-5 sm:w-5',
+                alertasRuptura.length > 0 ? 'text-destructive' : 'text-primary'
+              )}
+            />
             <span className="truncate">Alertas</span>
             {alertas.length > 0 && (
-              <Badge variant={alertasRuptura.length > 0 ? "destructive" : "secondary"} className="ml-1 sm:ml-2 text-[10px] sm:text-xs h-4 sm:h-5">
+              <Badge
+                variant={alertasRuptura.length > 0 ? 'destructive' : 'secondary'}
+                className="ml-1 sm:ml-2 text-[10px] sm:text-xs h-4 sm:h-5"
+              >
                 {alertas.length}
               </Badge>
             )}
@@ -120,7 +131,7 @@ export function AlertasRuptura({ alertas, onDismiss, onVerDetalhes }: AlertasRup
                   onVerDetalhes={onVerDetalhes}
                 />
               ))}
-              
+
               {/* Alertas de Risco Alto */}
               {alertasRiscoAlto.map((alerta, index) => (
                 <AlertaItem
@@ -131,7 +142,7 @@ export function AlertasRuptura({ alertas, onDismiss, onVerDetalhes }: AlertasRup
                   onVerDetalhes={onVerDetalhes}
                 />
               ))}
-              
+
               {/* Outros alertas */}
               {outrosAlertas.map((alerta, index) => (
                 <AlertaItem
@@ -170,47 +181,58 @@ function AlertaItem({ alerta, index, onDismiss, onVerDetalhes }: AlertaItemProps
       exit={{ opacity: 0, x: -100 }}
       transition={{ delay: index * 0.05 }}
       className={cn(
-        "relative p-2 sm:p-3 rounded-lg border transition-all hover:shadow-sm",
+        'relative p-2 sm:p-3 rounded-lg border transition-all hover:shadow-sm',
         config.bgClass
       )}
     >
       <div className="flex items-start gap-2 sm:gap-3">
-        <div className={cn("mt-0.5 hidden sm:block", config.iconClass)}>
+        <div className={cn('mt-0.5 hidden sm:block', config.iconClass)}>
           <Icon className="h-4 w-4 sm:h-5 sm:w-5" />
         </div>
-        
+
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-1 sm:gap-2 mb-1 flex-wrap">
-            <Badge variant={config.badgeVariant} className="text-[10px] sm:text-xs h-4 sm:h-5 px-1 sm:px-1.5">
+            <Badge
+              variant={config.badgeVariant}
+              className="text-[10px] sm:text-xs h-4 sm:h-5 px-1 sm:px-1.5"
+            >
               {config.label}
             </Badge>
-            <Badge variant="outline" className="text-[10px] sm:text-xs h-4 sm:h-5 px-1 sm:px-1.5 hidden sm:inline-flex" style={{ borderColor: cenarioConfig.cor, color: cenarioConfig.cor }}>
+            <Badge
+              variant="outline"
+              className="text-[10px] sm:text-xs h-4 sm:h-5 px-1 sm:px-1.5 hidden sm:inline-flex"
+              style={{ borderColor: cenarioConfig.cor, color: cenarioConfig.cor }}
+            >
               {cenarioConfig.nome}
             </Badge>
           </div>
-          
+
           <p className="text-xs sm:text-sm font-medium text-foreground line-clamp-2 sm:truncate">
             {alerta.mensagem}
           </p>
-          
+
           <div className="flex items-center gap-2 sm:gap-4 mt-1 sm:mt-2 text-[10px] sm:text-xs text-muted-foreground flex-wrap">
             <span className="flex items-center gap-0.5 sm:gap-1">
               <Calendar className="h-2.5 w-2.5 sm:h-3 sm:w-3" />
               {formatDate(alerta.data)}
             </span>
-            <span className={cn(
-              "font-medium",
-              alerta.saldoProjetado < 0 ? "text-destructive" : "text-foreground"
-            )}>
+            <span
+              className={cn(
+                'font-medium',
+                alerta.saldoProjetado < 0 ? 'text-destructive' : 'text-foreground'
+              )}
+            >
               {formatCurrency(alerta.saldoProjetado)}
             </span>
             <span className="text-warning">
-              {alerta.diasAteEvento === 0 ? 'Hoje' : 
-               alerta.diasAteEvento === 1 ? 'Amanhã' : 
-               `${alerta.diasAteEvento}d`}
+              {alerta.diasAteEvento === 0
+                ? 'Hoje'
+                : alerta.diasAteEvento === 1
+                  ? 'Amanhã'
+                  : `${alerta.diasAteEvento}d`}
             </span>
           </div>
-          
+
           {alerta.acaoSugerida && (
             <div className="hidden sm:flex items-center gap-1 mt-2 text-xs text-primary">
               <Lightbulb className="h-3 w-3" />

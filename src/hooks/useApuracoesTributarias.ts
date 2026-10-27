@@ -209,7 +209,7 @@ export function useApuracoesTributarias(empresaId?: string) {
         cofins_residual = 0;
 
       interface OperacaoData {
-        tipo_operacao: string;
+        tipo_operacao: string | null;
         cbs_valor: number | null;
         ibs_valor: number | null;
         is_valor: number | null;
@@ -222,11 +222,11 @@ export function useApuracoesTributarias(empresaId?: string) {
       }
 
       (operacoes || []).forEach((op: OperacaoData) => {
-        if (['venda', 'servico_prestado'].includes(op.tipo_operacao)) {
+        if (['venda', 'servico_prestado'].includes(op.tipo_operacao ?? '')) {
           cbs_debitos += Number(op.cbs_valor) || 0;
           ibs_debitos += Number(op.ibs_valor) || 0;
           is_debitos += Number(op.is_valor) || 0;
-        } else if (['compra', 'servico_tomado'].includes(op.tipo_operacao)) {
+        } else if (['compra', 'servico_tomado'].includes(op.tipo_operacao ?? '')) {
           cbs_creditos += Number(op.cbs_credito) || 0;
           ibs_creditos += Number(op.ibs_credito) || 0;
         }
@@ -314,7 +314,9 @@ export function useApuracoesTributarias(empresaId?: string) {
       // Não altere o status fiscal sem protocolo emitido pelo integrador.
       // O contrato SPED/eSocial ainda não está ligado a esta tela; marcá-la
       // como transmitida aqui criava uma evidência fiscal falsa.
-      throw new Error('Transmissão indisponível: integre e confirme o protocolo fiscal antes de marcar a apuração como transmitida.');
+      throw new Error(
+        'Transmissão indisponível: integre e confirme o protocolo fiscal antes de marcar a apuração como transmitida.'
+      );
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['apuracoes_tributarias'] });

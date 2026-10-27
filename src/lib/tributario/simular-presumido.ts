@@ -1,4 +1,3 @@
-
 import type { ParametrosSimulacao, ResultadoCenario } from './types';
 import { simularPresumido as simularPresumidoShared } from './shared-logic';
 

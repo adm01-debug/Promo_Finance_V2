@@ -1,13 +1,22 @@
 // MOTOR DE FOLHA — Apuração de encargos patronais com RAT ajustado pelo FAP.
 
 import {
-  ALIQUOTA_CPP, ALIQUOTA_FGTS, FAP_MAXIMO, FAP_MINIMO,
-  RAT_AJUSTADO_MAXIMO, RAT_AJUSTADO_MINIMO, buscarFpas, grauRiscoPorCnae,
+  ALIQUOTA_CPP,
+  ALIQUOTA_FGTS,
+  FAP_MAXIMO,
+  FAP_MINIMO,
+  RAT_AJUSTADO_MAXIMO,
+  RAT_AJUSTADO_MINIMO,
+  buscarFpas,
+  grauRiscoPorCnae,
 } from './tabelas';
 import {
   RAT_POR_GRAU,
-  type InputCprb, type InputEncargosPatronais, type LinhaEncargo,
-  type ResultadoCprb, type ResultadoEncargosPatronais,
+  type InputCprb,
+  type InputEncargosPatronais,
+  type LinhaEncargo,
+  type ResultadoCprb,
+  type ResultadoEncargosPatronais,
 } from './types';
 
 const sanitizar = (valor: number | undefined): number =>
@@ -30,7 +39,7 @@ export function calcularRatAjustado(ratNominal: number, fap?: number): number {
 /** Determina o RAT nominal a partir de override, grau de risco ou CNAE. */
 export function resolverRatNominal(
   input: Pick<InputEncargosPatronais, 'aliquotaRat' | 'grauRisco'>,
-  cnae?: string | null,
+  cnae?: string | null
 ): number {
   if (Number.isFinite(input.aliquotaRat) && (input.aliquotaRat as number) >= 0) {
     return input.aliquotaRat as number;
@@ -41,7 +50,7 @@ export function resolverRatNominal(
 
 export function calcularEncargosPatronais(
   input: InputEncargosPatronais,
-  cnae?: string | null,
+  cnae?: string | null
 ): ResultadoEncargosPatronais {
   const alertas: string[] = [];
   const linhas: LinhaEncargo[] = [];
@@ -57,9 +66,10 @@ export function calcularEncargosPatronais(
   const ratAjustado = calcularRatAjustado(ratNominal, input.fap);
 
   const fpas = buscarFpas(input.fpas);
-  const aliquotaTerceiros = Number.isFinite(input.aliquotaTerceiros) && (input.aliquotaTerceiros as number) >= 0
-    ? (input.aliquotaTerceiros as number)
-    : fpas.aliquotaTerceiros;
+  const aliquotaTerceiros =
+    Number.isFinite(input.aliquotaTerceiros) && (input.aliquotaTerceiros as number) >= 0
+      ? (input.aliquotaTerceiros as number)
+      : fpas.aliquotaTerceiros;
 
   const desobrigadoPatronal = Boolean(input.simplesNacional) || Boolean(input.imunePatronal);
 
@@ -71,52 +81,77 @@ export function calcularEncargosPatronais(
 
   if (!desobrigadoPatronal) {
     linhas.push({
-      rubrica: 'CPP (INSS patronal)', base: baseCpp, aliquota: ALIQUOTA_CPP, valor: cpp,
+      rubrica: 'CPP (INSS patronal)',
+      base: baseCpp,
+      aliquota: ALIQUOTA_CPP,
+      valor: cpp,
       fundamento: 'Lei 8.212/91, art. 22, I',
     });
     linhas.push({
       rubrica: `RAT ajustado (RAT ${(ratNominal * 100).toFixed(1)}% × FAP ${fap.toFixed(4)})`,
-      base: baseRatTerceiros, aliquota: ratAjustado, valor: rat,
+      base: baseRatTerceiros,
+      aliquota: ratAjustado,
+      valor: rat,
       fundamento: 'Lei 8.212/91, art. 22, II c/c Lei 10.666/03, art. 10',
     });
     linhas.push({
       rubrica: `Terceiros (FPAS ${fpas.fpas} — ${fpas.descricao})`,
-      base: baseRatTerceiros, aliquota: aliquotaTerceiros, valor: terceiros,
+      base: baseRatTerceiros,
+      aliquota: aliquotaTerceiros,
+      valor: terceiros,
       fundamento: 'IN RFB 2.110/2022, Anexo II',
     });
   } else {
     alertas.push(
       input.simplesNacional
         ? 'Optante do Simples Nacional (Anexos I a III): CPP e Terceiros já recolhidos no DAS.'
-        : 'Entidade imune/isenta: contribuição patronal não devida.',
+        : 'Entidade imune/isenta: contribuição patronal não devida.'
     );
   }
 
   if (incluirFgts) {
     linhas.push({
-      rubrica: 'FGTS', base: baseRatTerceiros, aliquota: ALIQUOTA_FGTS, valor: fgts,
+      rubrica: 'FGTS',
+      base: baseRatTerceiros,
+      aliquota: ALIQUOTA_FGTS,
+      valor: fgts,
       fundamento: 'Lei 8.036/90, art. 15',
     });
   }
 
   if (input.fap !== undefined && normalizarFap(input.fap) !== input.fap) {
-    alertas.push(`FAP informado (${input.fap}) fora do intervalo legal 0,5000–2,0000; ajustado para ${fap.toFixed(4)}.`);
+    alertas.push(
+      `FAP informado (${input.fap}) fora do intervalo legal 0,5000–2,0000; ajustado para ${fap.toFixed(4)}.`
+    );
   }
   if (proLabore > folhaTotal) {
     alertas.push('Pró-labore informado é maior que a folha total; base de RAT/Terceiros zerada.');
   }
   if (fap < 1 && !desobrigadoPatronal) {
-    alertas.push(`FAP bonificado (${fap.toFixed(4)}) reduz o RAT de ${(ratNominal * 100).toFixed(1)}% para ${(ratAjustado * 100).toFixed(3)}%.`);
+    alertas.push(
+      `FAP bonificado (${fap.toFixed(4)}) reduz o RAT de ${(ratNominal * 100).toFixed(1)}% para ${(ratAjustado * 100).toFixed(3)}%.`
+    );
   }
 
   const totalInss = arredondar(cpp + rat + terceiros);
   const totalEncargos = arredondar(totalInss + fgts);
 
   return {
-    baseCpp, baseRatTerceiros, ratNominal, fap, ratAjustado, aliquotaTerceiros,
-    cpp, rat, terceiros, fgts, totalInss, totalEncargos,
+    baseCpp,
+    baseRatTerceiros,
+    ratNominal,
+    fap,
+    ratAjustado,
+    aliquotaTerceiros,
+    cpp,
+    rat,
+    terceiros,
+    fgts,
+    totalInss,
+    totalEncargos,
     percentualSobreFolha: folhaTotal > 0 ? totalEncargos / folhaTotal : 0,
-    linhas, alertas,
+    linhas,
+    alertas,
   };
 }
 
@@ -124,7 +159,8 @@ export function calcularEncargosPatronais(
 export function compararDesoneracaoFolha(input: InputCprb): ResultadoCprb {
   const alertas: string[] = [];
   const receitaBruta = sanitizar(input.receitaBruta);
-  const aliquotaCprb = Number.isFinite(input.aliquotaCprb) && input.aliquotaCprb > 0 ? input.aliquotaCprb : 0;
+  const aliquotaCprb =
+    Number.isFinite(input.aliquotaCprb) && input.aliquotaCprb > 0 ? input.aliquotaCprb : 0;
 
   const onerado = calcularEncargosPatronais(input.encargos);
   const cprb = arredondar(receitaBruta * aliquotaCprb);
@@ -143,9 +179,14 @@ export function compararDesoneracaoFolha(input: InputCprb): ResultadoCprb {
   }
 
   return {
-    cprb, aliquotaCprb, receitaBruta,
+    cprb,
+    aliquotaCprb,
+    receitaBruta,
     cppFolha: onerado.cpp,
-    encargosRemanescentes, totalDesonerado, totalOnerado, economia,
+    encargosRemanescentes,
+    totalDesonerado,
+    totalOnerado,
+    economia,
     recomendacao: economia > 0 ? 'cprb' : 'folha',
     alertas,
   };

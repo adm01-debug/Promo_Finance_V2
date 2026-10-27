@@ -1,9 +1,33 @@
 import { useMemo } from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
-import { useEmpresas, useContasBancarias, useContasPagar, useContasReceber } from '@/hooks/useFinancialData';
+import {
+  useEmpresas,
+  useContasBancarias,
+  useContasPagar,
+  useContasReceber,
+} from '@/hooks/useFinancialData';
 import { formatCurrency } from '@/lib/formatters';
-import { Building2, TrendingUp, TrendingDown, Wallet, AlertTriangle, CheckCircle2 } from 'lucide-react';
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts';
+import {
+  Building2,
+  TrendingUp,
+  TrendingDown,
+  Wallet,
+  AlertTriangle,
+  CheckCircle2,
+} from 'lucide-react';
+import {
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  Legend,
+  ResponsiveContainer,
+  PieChart,
+  Pie,
+  Cell,
+} from 'recharts';
 import { cn } from '@/lib/utils';
 import { Skeleton } from '@/components/ui/skeleton';
 
@@ -28,13 +52,14 @@ export function ConsolidacaoMultiCNPJ() {
       const contasEmp = contas.filter((c) => c.empresa_id === emp.id);
       const saldo = contasEmp.reduce((s: number, c) => s + (c.saldo_atual || 0), 0);
       const totalPagar = pagar
-        .filter((p) => p.empresa_id === emp.id && ['pendente', 'vencido'].includes(p.status))
+        .filter((p) => p.empresa_id === emp.id && ['pendente', 'vencido'].includes(p.status ?? ''))
         .reduce((s: number, p) => s + (p.valor || 0), 0);
       const totalReceber = receber
-        .filter((r) => r.empresa_id === emp.id && ['pendente', 'vencido'].includes(r.status))
+        .filter((r) => r.empresa_id === emp.id && ['pendente', 'vencido'].includes(r.status ?? ''))
         .reduce((s: number, r) => s + (r.valor || 0), 0);
-      const vencidos = pagar.filter((p) => p.empresa_id === emp.id && p.status === 'vencido').length
-        + receber.filter((r) => r.empresa_id === emp.id && r.status === 'vencido').length;
+      const vencidos =
+        pagar.filter((p) => p.empresa_id === emp.id && p.status === 'vencido').length +
+        receber.filter((r) => r.empresa_id === emp.id && r.status === 'vencido').length;
 
       return {
         id: emp.id,
@@ -69,14 +94,14 @@ export function ConsolidacaoMultiCNPJ() {
     );
   }
 
-  const chartData = consolidado.porEmpresa.map(e => ({
+  const chartData = consolidado.porEmpresa.map((e) => ({
     nome: e.nome?.substring(0, 15) || 'N/A',
     Saldo: e.saldo,
     'A Receber': e.totalReceber,
     'A Pagar': e.totalPagar,
   }));
 
-  const pieData = consolidado.porEmpresa.map(e => ({
+  const pieData = consolidado.porEmpresa.map((e) => ({
     name: e.nome?.substring(0, 15) || 'N/A',
     value: Math.max(e.saldo, 0),
   }));
@@ -125,21 +150,35 @@ export function ConsolidacaoMultiCNPJ() {
             <CardContent className="space-y-2">
               <div className="flex justify-between text-sm">
                 <span className="text-muted-foreground">Saldo</span>
-                <span className={cn('font-bold tabular-nums', emp.saldo >= 0 ? 'text-foreground' : 'text-destructive')}>
+                <span
+                  className={cn(
+                    'font-bold tabular-nums',
+                    emp.saldo >= 0 ? 'text-foreground' : 'text-destructive'
+                  )}
+                >
                   {formatCurrency(emp.saldo)}
                 </span>
               </div>
               <div className="flex justify-between text-sm">
                 <span className="text-muted-foreground">A Receber</span>
-                <span className="font-medium text-emerald-600 tabular-nums">{formatCurrency(emp.totalReceber)}</span>
+                <span className="font-medium text-emerald-600 tabular-nums">
+                  {formatCurrency(emp.totalReceber)}
+                </span>
               </div>
               <div className="flex justify-between text-sm">
                 <span className="text-muted-foreground">A Pagar</span>
-                <span className="font-medium text-destructive tabular-nums">{formatCurrency(emp.totalPagar)}</span>
+                <span className="font-medium text-destructive tabular-nums">
+                  {formatCurrency(emp.totalPagar)}
+                </span>
               </div>
               <div className="pt-2 border-t border-border flex justify-between text-sm">
                 <span className="font-semibold text-muted-foreground">Líquido Projetado</span>
-                <span className={cn('font-bold tabular-nums', emp.liquido >= 0 ? 'text-primary' : 'text-destructive')}>
+                <span
+                  className={cn(
+                    'font-bold tabular-nums',
+                    emp.liquido >= 0 ? 'text-primary' : 'text-destructive'
+                  )}
+                >
                   {formatCurrency(emp.liquido)}
                 </span>
               </div>
@@ -165,12 +204,12 @@ export function ConsolidacaoMultiCNPJ() {
               <BarChart data={chartData}>
                 <CartesianGrid strokeDasharray="3 3" className="stroke-border" />
                 <XAxis dataKey="nome" tick={{ fontSize: 11 }} />
-                <YAxis tick={{ fontSize: 11 }} tickFormatter={(v) => `${(v/1000).toFixed(0)}k`} />
+                <YAxis tick={{ fontSize: 11 }} tickFormatter={(v) => `${(v / 1000).toFixed(0)}k`} />
                 <Tooltip formatter={(v: number) => formatCurrency(v)} />
                 <Legend />
-                <Bar dataKey="Saldo" fill="hsl(var(--primary))" radius={[4,4,0,0]} />
-                <Bar dataKey="A Receber" fill="hsl(142 76% 36%)" radius={[4,4,0,0]} />
-                <Bar dataKey="A Pagar" fill="hsl(var(--destructive))" radius={[4,4,0,0]} />
+                <Bar dataKey="Saldo" fill="hsl(var(--primary))" radius={[4, 4, 0, 0]} />
+                <Bar dataKey="A Receber" fill="hsl(142 76% 36%)" radius={[4, 4, 0, 0]} />
+                <Bar dataKey="A Pagar" fill="hsl(var(--destructive))" radius={[4, 4, 0, 0]} />
               </BarChart>
             </ResponsiveContainer>
           </CardContent>
@@ -183,7 +222,15 @@ export function ConsolidacaoMultiCNPJ() {
           <CardContent>
             <ResponsiveContainer width="100%" height={280}>
               <PieChart>
-                <Pie data={pieData} dataKey="value" nameKey="name" cx="50%" cy="50%" outerRadius={100} label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}>
+                <Pie
+                  data={pieData}
+                  dataKey="value"
+                  nameKey="name"
+                  cx="50%"
+                  cy="50%"
+                  outerRadius={100}
+                  label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
+                >
                   {pieData.map((_, i) => (
                     <Cell key={i} fill={CHART_COLORS[i % CHART_COLORS.length]} />
                   ))}
@@ -198,17 +245,39 @@ export function ConsolidacaoMultiCNPJ() {
   );
 }
 
-function KPICard({ icon: Icon, label, value, positive }: { icon: React.ElementType; label: string; value: string; positive: boolean }) {
+function KPICard({
+  icon: Icon,
+  label,
+  value,
+  positive,
+}: {
+  icon: React.ElementType;
+  label: string;
+  value: string;
+  positive: boolean;
+}) {
   return (
     <Card>
       <CardContent className="pt-4 pb-4">
         <div className="flex items-center gap-3">
-          <div className={cn('h-10 w-10 rounded-lg flex items-center justify-center', positive ? 'bg-primary/10' : 'bg-destructive/10')}>
+          <div
+            className={cn(
+              'h-10 w-10 rounded-lg flex items-center justify-center',
+              positive ? 'bg-primary/10' : 'bg-destructive/10'
+            )}
+          >
             <Icon className={cn('h-5 w-5', positive ? 'text-primary' : 'text-destructive')} />
           </div>
           <div>
             <p className="text-xs text-muted-foreground">{label}</p>
-            <p className={cn('text-lg font-bold tabular-nums', positive ? 'text-foreground' : 'text-destructive')}>{value}</p>
+            <p
+              className={cn(
+                'text-lg font-bold tabular-nums',
+                positive ? 'text-foreground' : 'text-destructive'
+              )}
+            >
+              {value}
+            </p>
           </div>
         </div>
       </CardContent>

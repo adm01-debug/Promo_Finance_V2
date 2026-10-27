@@ -6,6 +6,7 @@ import { STALE_TIMES } from '@/lib/queryClient';
 import { toast } from 'sonner';
 import { logger } from '@/lib/logger';
 import { sounds } from '@/lib/sound-feedback';
+import { ConflitoVersaoError, updateComLockOtimista } from '@/lib/optimistic-lock';
 import { sel, type StatusPagamento } from './types';
 import type { ContasPagarPainelRow } from './views.types';
 import { parseContasPagarRows } from './views.schemas';
@@ -142,18 +143,27 @@ export function useUpdateContaPagar() {
   return useMutation({
     mutationFn: async ({
       id,
+      expected_updated_at,
       ...data
-    }: { id: string } & Partial<Database['public']['Tables']['contas_pagar']['Update']>) => {
-      const { error } = await supabase.from('contas_pagar').update(data).eq('id', id);
-      if (error) throw error;
+    }: { id: string; expected_updated_at: string | null } & Partial<
+      Database['public']['Tables']['contas_pagar']['Update']
+    >) => {
+      return await updateComLockOtimista('contas_pagar', id, expected_updated_at, data);
     },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['contas-pagar'] });
+    onSuccess: async () => {
+      // Aguarda o refetch antes de liberar o UI: reabrir a conta com a lista
+      // ainda desatualizada mandaria a versão antiga e geraria falso conflito.
+      await queryClient.invalidateQueries({ queryKey: ['contas-pagar'] });
       sounds.success();
     },
     onError: (error: Error) => {
       logger.error('Error updating conta pagar:', error);
-      toast.error('Erro ao salvar conta a pagar');
+      if (error instanceof ConflitoVersaoError) {
+        toast.error('Esta conta foi alterada por outra pessoa. Revise e salve novamente.');
+        queryClient.invalidateQueries({ queryKey: ['contas-pagar'] });
+      } else {
+        toast.error(error.message || 'Erro ao salvar conta a pagar');
+      }
       sounds.error();
     },
   });

@@ -65,7 +65,7 @@ export const TETO_DIVIDENDOS_IRPFM = 600_000; // Lei 15.270/2025
 /** Encerramento da janela de deliberação de lucros isentos (Lei 15.270/2025). */
 export const DATA_LIMITE_DELIBERACAO_LUCROS = new Date('2025-12-31T23:59:59-03:00');
 /** IRRF sobre dividendos a partir de 2026 (Lei 15.270/2025). */
-export const ALIQUOTA_IRRF_DIVIDENDOS = 0.10;
+export const ALIQUOTA_IRRF_DIVIDENDOS = 0.1;
 /** Prazo prescricional para repetição/compensação de indébito (CTN art. 168). */
 export const ANOS_PRESCRICAO_CREDITO = 5;
 /** Proxy conservador de crédito anual de PIS/COFINS não aproveitado sobre a receita. */
@@ -79,6 +79,18 @@ export const REDUCAO_IRPJ_REGIONAL = 0.75;
 /** Custo de oportunidade anual do capital, usado em ganhos de antecipação. */
 export const CUSTO_OPORTUNIDADE_ANUAL = 0.12;
 /** UFs na área de atuação da SUDENE. */
-export const UFS_SUDENE: readonly string[] = ['AL', 'BA', 'CE', 'MA', 'PB', 'PE', 'PI', 'RN', 'SE', 'MG', 'ES'];
+export const UFS_SUDENE: readonly string[] = [
+  'AL',
+  'BA',
+  'CE',
+  'MA',
+  'PB',
+  'PE',
+  'PI',
+  'RN',
+  'SE',
+  'MG',
+  'ES',
+];
 /** UFs na Amazônia Legal (SUDAM). */
 export const UFS_SUDAM: readonly string[] = ['AC', 'AP', 'AM', 'MT', 'PA', 'RO', 'RR', 'TO', 'MA'];

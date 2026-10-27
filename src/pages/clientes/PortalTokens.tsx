@@ -3,7 +3,13 @@ import { MainLayout } from '@/components/layout/MainLayout';
 import { PageHeader, PageBackground } from '@/components/layout/PageHeader';
 import { useClientes } from '@/hooks/useFinancialData';
 import { useState } from 'react';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Users, Key } from 'lucide-react';
 
@@ -11,16 +17,16 @@ export default function PortalTokensPage() {
   const { data: clientes = [] } = useClientes();
   const [selectedClienteId, setSelectedClienteId] = useState<string | null>(null);
 
-  const selectedCliente = clientes.find(c => c.id === selectedClienteId);
+  const selectedCliente = clientes.find((c) => c.id === selectedClienteId);
 
   return (
     <MainLayout>
       <div className="relative min-h-screen">
         <PageBackground />
-        
+
         <div className="container mx-auto p-6 relative z-10">
-          <PageHeader 
-            title="Portal de Tokens" 
+          <PageHeader
+            title="Portal de Tokens"
             subtitle="Visão consolidada administrativa para gestão de acessos self-service de clientes."
             badge="Customer Access"
             icon={Key}
@@ -36,7 +42,9 @@ export default function PortalTokensPage() {
                   <Users className="h-5 w-5 text-primary" />
                   <div>
                     <CardTitle>Selecionar Cliente</CardTitle>
-                    <CardDescription>Escolha um cliente para gerenciar seus tokens de acesso</CardDescription>
+                    <CardDescription>
+                      Escolha um cliente para gerenciar seus tokens de acesso
+                    </CardDescription>
                   </div>
                 </div>
               </CardHeader>
@@ -57,9 +65,9 @@ export default function PortalTokensPage() {
             </Card>
 
             {selectedCliente ? (
-              <PortalClientePanel 
-                clienteId={selectedCliente.id} 
-                clienteEmail={selectedCliente.email || ''} 
+              <PortalClientePanel
+                clienteId={selectedCliente.id}
+                clienteEmail={selectedCliente.email || ''}
               />
             ) : (
               <div className="text-center py-12 border-2 border-dashed rounded-xl text-muted-foreground bg-background/20">

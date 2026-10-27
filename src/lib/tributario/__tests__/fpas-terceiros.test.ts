@@ -87,12 +87,28 @@ describe('Motor: CPP com terceiros derivados do CNAE', () => {
   });
 
   it('500 cenários: CPP sempre dentro dos limites legais', () => {
-    const cnaes = ['0111301', '1011201', '4120400', '4711302', '4930202', '6422100', '8513900', '8411600', '9999999', 'xx'];
+    const cnaes = [
+      '0111301',
+      '1011201',
+      '4120400',
+      '4711302',
+      '4930202',
+      '6422100',
+      '8513900',
+      '8411600',
+      '9999999',
+      'xx',
+    ];
     for (let i = 0; i < 500; i++) {
       const folha = Math.round(Math.random() * 3_000_000);
       const cnae = cnaes[i % cnaes.length];
       const rat = [0, 0.01, 0.02, 0.03, 0.06][i % 5];
-      const p = base({ folhaAnual: folha, cnaePrincipal: cnae, aliquotaRAT: rat, faturamentoAnual: 1_000_000 + i * 10_000 });
+      const p = base({
+        folhaAnual: folha,
+        cnaePrincipal: cnae,
+        aliquotaRAT: rat,
+        faturamentoAnual: 1_000_000 + i * 10_000,
+      });
       for (const r of [simularPresumido(p), simularReal(p)]) {
         expect(r.cpp).toBeGreaterThanOrEqual(folha * (0.2 + rat));
         expect(r.cpp).toBeLessThanOrEqual(folha * (0.2 + rat + 0.08) + 0.01);

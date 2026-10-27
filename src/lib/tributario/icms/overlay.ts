@@ -13,11 +13,7 @@ export interface RegistroUfBanco {
   aliquota_fcp?: number | string | null;
 }
 
-export type MotivoRejeicao =
-  | 'uf_desconhecida'
-  | 'interna_invalida'
-  | 'fcp_invalido'
-  | 'duplicado';
+export type MotivoRejeicao = 'uf_desconhecida' | 'interna_invalida' | 'fcp_invalido' | 'duplicado';
 
 export interface RejeicaoOverlay {
   sigla: string;
@@ -69,10 +65,10 @@ function arredondar(v: number): number {
  */
 export function aplicarOverlayUfs(
   registros: readonly RegistroUfBanco[],
-  base: Record<UF, AliquotaUf> = ALIQUOTAS_UF,
+  base: Record<UF, AliquotaUf> = ALIQUOTAS_UF
 ): ResultadoOverlay {
   const tabela = Object.fromEntries(
-    Object.entries(base).map(([uf, dados]) => [uf, { ...dados }]),
+    Object.entries(base).map(([uf, dados]) => [uf, { ...dados }])
   ) as Record<UF, AliquotaUf>;
 
   const aplicadas: AplicacaoOverlay[] = [];
@@ -83,7 +79,11 @@ export function aplicarOverlayUfs(
     const sigla = (registro?.sigla ?? '').toString().trim().toUpperCase();
 
     if (!isUF(sigla)) {
-      rejeitadas.push({ sigla, motivo: 'uf_desconhecida', valor: registro?.aliquota_interna_padrao ?? null });
+      rejeitadas.push({
+        sigla,
+        motivo: 'uf_desconhecida',
+        valor: registro?.aliquota_interna_padrao ?? null,
+      });
       continue;
     }
     if (vistos.has(sigla)) {
@@ -95,7 +95,11 @@ export function aplicarOverlayUfs(
     const uf = sigla as UF;
     const interna = normalizarAliquota(registro.aliquota_interna_padrao);
     if (interna === null || interna < INTERNA_MIN || interna > INTERNA_MAX) {
-      rejeitadas.push({ sigla, motivo: 'interna_invalida', valor: registro.aliquota_interna_padrao });
+      rejeitadas.push({
+        sigla,
+        motivo: 'interna_invalida',
+        valor: registro.aliquota_interna_padrao,
+      });
     } else {
       const atual = tabela[uf].interna;
       const novo = arredondar(interna);
@@ -126,10 +130,8 @@ export function aplicarOverlayUfs(
 /** UFs presentes no código e ausentes no catálogo do banco. */
 export function ufsAusentesNoBanco(
   registros: readonly RegistroUfBanco[],
-  base: Record<UF, AliquotaUf> = ALIQUOTAS_UF,
+  base: Record<UF, AliquotaUf> = ALIQUOTAS_UF
 ): UF[] {
-  const presentes = new Set(
-    registros.map((r) => (r?.sigla ?? '').toString().trim().toUpperCase()),
-  );
+  const presentes = new Set(registros.map((r) => (r?.sigla ?? '').toString().trim().toUpperCase()));
   return (Object.keys(base) as UF[]).filter((uf) => !presentes.has(uf)).sort();
 }

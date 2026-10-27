@@ -1,5 +1,15 @@
 import { useState } from 'react';
-import { Settings, Mail, MessageSquare, Phone, Smartphone, Clock, Edit2, Check, X } from 'lucide-react';
+import {
+  Settings,
+  Mail,
+  MessageSquare,
+  Phone,
+  Smartphone,
+  Clock,
+  Edit2,
+  Check,
+  X,
+} from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -7,10 +17,18 @@ import { Switch } from '@/components/ui/switch';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Textarea } from '@/components/ui/textarea';
-import { useReguaCobranca, useUpdateReguaCobranca, useTemplatesCobranca, useUpdateTemplate } from '@/hooks/useReguaCobranca';
+import {
+  useReguaCobranca,
+  useUpdateReguaCobranca,
+  useTemplatesCobranca,
+  useUpdateTemplate,
+} from '@/hooks/useReguaCobranca';
 
 const canalIcons: Record<string, React.ElementType> = {
-  email: Mail, whatsapp: MessageSquare, sms: Smartphone, telefone: Phone,
+  email: Mail,
+  whatsapp: MessageSquare,
+  sms: Smartphone,
+  telefone: Phone,
 };
 
 const etapaColors: Record<string, string> = {
@@ -29,7 +47,14 @@ export function ReguaCobrancaConfig() {
   const [editingTemplate, setEditingTemplate] = useState<string | null>(null);
   const [editCorpo, setEditCorpo] = useState('');
 
-  if (isLoading) return <div className="space-y-4">{Array.from({ length: 5 }).map((_, i) => <Skeleton key={i} className="h-20" />)}</div>;
+  if (isLoading)
+    return (
+      <div className="space-y-4">
+        {Array.from({ length: 5 }).map((_, i) => (
+          <Skeleton key={i} className="h-20" />
+        ))}
+      </div>
+    );
 
   return (
     <div className="space-y-6">
@@ -46,7 +71,10 @@ export function ReguaCobrancaConfig() {
         </CardHeader>
         <CardContent className="space-y-4">
           {regua?.map((etapa) => (
-            <div key={etapa.id} className={`p-4 rounded-lg border ${etapaColors[etapa.nome?.toLowerCase()] || 'border-border'}`}>
+            <div
+              key={etapa.id}
+              className={`p-4 rounded-lg border ${etapaColors[etapa.nome?.toLowerCase()] || 'border-border'}`}
+            >
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-3">
                   <div className="h-10 w-10 rounded-full bg-background flex items-center justify-center">
@@ -54,28 +82,39 @@ export function ReguaCobrancaConfig() {
                   </div>
                   <div>
                     <h4 className="font-semibold">{etapa.nome}</h4>
-                    <p className="text-sm text-muted-foreground">{etapa.descricao || `Dias gatilho: ${etapa.dias_gatilho}`}</p>
+                    <p className="text-sm text-muted-foreground">
+                      {etapa.descricao || `Dias gatilho: ${etapa.dias_gatilho}`}
+                    </p>
                   </div>
                 </div>
                 <div className="flex items-center gap-4">
                   <div className="flex gap-1">
                     {(etapa.canais || []).map((canal: string) => {
                       const Icon = canalIcons[canal] || Mail;
-                      return <Badge key={canal} variant="outline" className="gap-1"><Icon className="h-3 w-3" />{canal}</Badge>;
+                      return (
+                        <Badge key={canal} variant="outline" className="gap-1">
+                          <Icon className="h-3 w-3" />
+                          {canal}
+                        </Badge>
+                      );
                     })}
                   </div>
                   <div className="flex items-center gap-2">
                     <span className="text-xs text-muted-foreground">Auto</span>
                     <Switch
                       checked={etapa.auto_executar || false}
-                      onCheckedChange={(checked) => updateRegua.mutate({ id: etapa.id, auto_executar: checked })}
+                      onCheckedChange={(checked) =>
+                        updateRegua.mutate({ id: etapa.id, auto_executar: checked })
+                      }
                     />
                   </div>
                   <div className="flex items-center gap-2">
                     <span className="text-xs text-muted-foreground">Ativo</span>
                     <Switch
                       checked={etapa.ativo || false}
-                      onCheckedChange={(checked) => updateRegua.mutate({ id: etapa.id, ativo: checked })}
+                      onCheckedChange={(checked) =>
+                        updateRegua.mutate({ id: etapa.id, ativo: checked })
+                      }
                     />
                   </div>
                 </div>
@@ -107,57 +146,100 @@ export function ReguaCobrancaConfig() {
             </TabsList>
             {['preventiva', 'lembrete', 'cobranca', 'negociacao', 'juridico'].map((etapa) => (
               <TabsContent key={etapa} value={etapa} className="space-y-3">
-                {templates?.filter(t => t.etapa === etapa).map((template) => {
-                  const Icon = canalIcons[template.canal] || Mail;
-                  const isEditing = editingTemplate === template.id;
-                  return (
-                    <div key={template.id} className="p-4 rounded-lg border">
-                      <div className="flex items-center justify-between mb-2">
-                        <div className="flex items-center gap-2">
-                          <Icon className="h-4 w-4" />
-                          <span className="font-medium capitalize">{template.canal}</span>
-                          {template.padrao && <Badge variant="secondary" className="text-xs">Padrão</Badge>}
-                          <Badge variant="outline" className="text-xs">{template.tom}</Badge>
+                {templates
+                  ?.filter((t) => t.etapa === etapa)
+                  .map((template) => {
+                    const Icon = canalIcons[template.canal] || Mail;
+                    const isEditing = editingTemplate === template.id;
+                    return (
+                      <div key={template.id} className="p-4 rounded-lg border">
+                        <div className="flex items-center justify-between mb-2">
+                          <div className="flex items-center gap-2">
+                            <Icon className="h-4 w-4" />
+                            <span className="font-medium capitalize">{template.canal}</span>
+                            {template.padrao && (
+                              <Badge variant="secondary" className="text-xs">
+                                Padrão
+                              </Badge>
+                            )}
+                            <Badge variant="outline" className="text-xs">
+                              {template.tom}
+                            </Badge>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <Switch
+                              checked={template.ativo}
+                              onCheckedChange={(checked) =>
+                                updateTemplate.mutate({ id: template.id, ativo: checked })
+                              }
+                            />
+                            {isEditing ? (
+                              <>
+                                <Button
+                                  size="icon"
+                                  variant="ghost"
+                                  onClick={() => {
+                                    updateTemplate.mutate({ id: template.id, corpo: editCorpo });
+                                    setEditingTemplate(null);
+                                  }}
+                                >
+                                  <Check className="h-4 w-4 text-success" />
+                                </Button>
+                                <Button
+                                  size="icon"
+                                  variant="ghost"
+                                  onClick={() => setEditingTemplate(null)}
+                                >
+                                  <X className="h-4 w-4" />
+                                </Button>
+                              </>
+                            ) : (
+                              <Button
+                                size="icon"
+                                variant="ghost"
+                                onClick={() => {
+                                  setEditingTemplate(template.id);
+                                  setEditCorpo(template.corpo);
+                                }}
+                              >
+                                <Edit2 className="h-4 w-4" />
+                              </Button>
+                            )}
+                          </div>
                         </div>
-                        <div className="flex items-center gap-2">
-                          <Switch
-                            checked={template.ativo}
-                            onCheckedChange={(checked) => updateTemplate.mutate({ id: template.id, ativo: checked })}
+                        {template.assunto && (
+                          <p className="text-sm font-medium mb-1">Assunto: {template.assunto}</p>
+                        )}
+                        {isEditing ? (
+                          <Textarea
+                            value={editCorpo}
+                            onChange={(e) => setEditCorpo(e.target.value)}
+                            rows={4}
                           />
-                          {isEditing ? (
-                            <>
-                              <Button size="icon" variant="ghost" onClick={() => { updateTemplate.mutate({ id: template.id, corpo: editCorpo }); setEditingTemplate(null); }}>
-                                <Check className="h-4 w-4 text-success" />
-                              </Button>
-                              <Button size="icon" variant="ghost" onClick={() => setEditingTemplate(null)}>
-                                <X className="h-4 w-4" />
-                              </Button>
-                            </>
-                          ) : (
-                            <Button size="icon" variant="ghost" onClick={() => { setEditingTemplate(template.id); setEditCorpo(template.corpo); }}>
-                              <Edit2 className="h-4 w-4" />
-                            </Button>
+                        ) : (
+                          <p className="text-sm text-muted-foreground whitespace-pre-wrap">
+                            {template.corpo}
+                          </p>
+                        )}
+                        {template.variaveis_disponiveis &&
+                          template.variaveis_disponiveis.length > 0 && (
+                            <div className="flex flex-wrap gap-1 mt-2">
+                              {template.variaveis_disponiveis.map((v: string) => (
+                                <Badge
+                                  key={v}
+                                  variant="outline"
+                                  className="text-xs font-mono"
+                                >{`{{${v}}}`}</Badge>
+                              ))}
+                            </div>
                           )}
-                        </div>
                       </div>
-                      {template.assunto && <p className="text-sm font-medium mb-1">Assunto: {template.assunto}</p>}
-                      {isEditing ? (
-                        <Textarea value={editCorpo} onChange={(e) => setEditCorpo(e.target.value)} rows={4} />
-                      ) : (
-                        <p className="text-sm text-muted-foreground whitespace-pre-wrap">{template.corpo}</p>
-                      )}
-                      {template.variaveis_disponiveis && template.variaveis_disponiveis.length > 0 && (
-                        <div className="flex flex-wrap gap-1 mt-2">
-                          {template.variaveis_disponiveis.map((v: string) => (
-                            <Badge key={v} variant="outline" className="text-xs font-mono">{`{{${v}}}`}</Badge>
-                          ))}
-                        </div>
-                      )}
-                    </div>
-                  );
-                })}
-                {templates?.filter(t => t.etapa === etapa).length === 0 && (
-                  <p className="text-center text-muted-foreground py-8">Nenhum template para esta etapa</p>
+                    );
+                  })}
+                {templates?.filter((t) => t.etapa === etapa).length === 0 && (
+                  <p className="text-center text-muted-foreground py-8">
+                    Nenhum template para esta etapa
+                  </p>
                 )}
               </TabsContent>
             ))}

@@ -4,37 +4,93 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
-import { 
-  RefreshCw, Search, FileText, Send, Loader2, Package, 
-  DollarSign, Ban, Calendar, ExternalLink, CheckCircle2,
-  Clock, XCircle, AlertCircle, Download, FileCode, Mail,
-  Heart, Edit
+import {
+  RefreshCw,
+  Search,
+  FileText,
+  Send,
+  Loader2,
+  Package,
+  DollarSign,
+  Ban,
+  Calendar,
+  ExternalLink,
+  CheckCircle2,
+  Clock,
+  XCircle,
+  AlertCircle,
+  Download,
+  FileCode,
+  Mail,
+  Heart,
+  Edit,
 } from 'lucide-react';
 import { formatCurrency, formatDate } from '@/lib/formatters';
 import { useBlingNFe, BlingNFe } from '@/hooks/useBlingNFe';
 import { toast } from 'sonner';
 
 /** Gap #1: Correct Bling API v3 situation codes */
-const situacaoConfig: Record<number, { label: string; color: string; icon: typeof CheckCircle2 }> = {
-  1: { label: 'Em Digitação', color: 'bg-muted text-muted-foreground border-muted', icon: Edit },
-  2: { label: 'Validando', color: 'bg-warning/10 text-warning border-warning/20', icon: Clock },
-  3: { label: 'Aguardando', color: 'bg-warning/10 text-warning border-warning/20', icon: Clock },
-  4: { label: 'Validada', color: 'bg-primary/10 text-primary border-primary/20', icon: CheckCircle2 },
-  5: { label: 'Processando', color: 'bg-warning/10 text-warning border-warning/20', icon: Clock },
-  6: { label: 'Autorizada', color: 'bg-success/10 text-success border-success/20', icon: CheckCircle2 },
-  7: { label: 'Cancelada', color: 'bg-destructive/10 text-destructive border-destructive/20', icon: XCircle },
-  8: { label: 'Rejeitada', color: 'bg-destructive/10 text-destructive border-destructive/20', icon: AlertCircle },
-  9: { label: 'Denegada', color: 'bg-destructive/10 text-destructive border-destructive/20', icon: AlertCircle },
-  10: { label: 'Inutilizada', color: 'bg-muted text-muted-foreground border-muted', icon: Ban },
+const situacaoConfig: Record<number, { label: string; color: string; icon: typeof CheckCircle2 }> =
+  {
+    1: { label: 'Em Digitação', color: 'bg-muted text-muted-foreground border-muted', icon: Edit },
+    2: { label: 'Validando', color: 'bg-warning/10 text-warning border-warning/20', icon: Clock },
+    3: { label: 'Aguardando', color: 'bg-warning/10 text-warning border-warning/20', icon: Clock },
+    4: {
+      label: 'Validada',
+      color: 'bg-primary/10 text-primary border-primary/20',
+      icon: CheckCircle2,
+    },
+    5: { label: 'Processando', color: 'bg-warning/10 text-warning border-warning/20', icon: Clock },
+    6: {
+      label: 'Autorizada',
+      color: 'bg-success/10 text-success border-success/20',
+      icon: CheckCircle2,
+    },
+    7: {
+      label: 'Cancelada',
+      color: 'bg-destructive/10 text-destructive border-destructive/20',
+      icon: XCircle,
+    },
+    8: {
+      label: 'Rejeitada',
+      color: 'bg-destructive/10 text-destructive border-destructive/20',
+      icon: AlertCircle,
+    },
+    9: {
+      label: 'Denegada',
+      color: 'bg-destructive/10 text-destructive border-destructive/20',
+      icon: AlertCircle,
+    },
+    10: { label: 'Inutilizada', color: 'bg-muted text-muted-foreground border-muted', icon: Ban },
+  };
+
+const defaultSituacao = {
+  label: 'Desconhecida',
+  color: 'bg-muted text-muted-foreground',
+  icon: Clock,
 };
 
-const defaultSituacao = { label: 'Desconhecida', color: 'bg-muted text-muted-foreground', icon: Clock };
-
 export function BlingNFePanel() {
-  const { notas, loading, syncing, listarNFe, enviarSefaz, cancelarNFe, lancarEstoque, lancarContas, healthCheck } = useBlingNFe();
+  const {
+    notas,
+    loading,
+    syncing,
+    listarNFe,
+    enviarSefaz,
+    cancelarNFe,
+    lancarEstoque,
+    lancarContas,
+    healthCheck,
+  } = useBlingNFe();
   const [search, setSearch] = useState('');
   const [filtroSituacao, setFiltroSituacao] = useState('todos');
   const [filtroTipo, setFiltroTipo] = useState('todos');
@@ -46,7 +102,7 @@ export function BlingNFePanel() {
   useEffect(() => {
     listarNFe();
     // Gap #12: Health check on mount
-    healthCheck().then(r => setBlingHealthy(r.ok));
+    healthCheck().then((r) => setBlingHealthy(r.ok));
   }, [listarNFe, healthCheck]);
 
   /** Gap #8: Server-side filtering via API params */
@@ -59,30 +115,40 @@ export function BlingNFePanel() {
     listarNFe(filtros);
   };
 
-  const filtered = notas.filter(n => {
+  const filtered = notas.filter((n) => {
     if (!search) return true;
     const s = search.toLowerCase();
-    return n.numero.includes(s) || 
+    return (
+      n.numero.includes(s) ||
       n.contato?.nome?.toLowerCase().includes(s) ||
-      (n.chaveAcesso || '').includes(s);
+      (n.chaveAcesso || '').includes(s)
+    );
   });
 
-  const totalAutorizado = notas.filter(n => n.situacao === 6).reduce((s, n) => s + n.valorTotal, 0);
-  const totalPendente = notas.filter(n => [1, 4].includes(n.situacao)).reduce((s, n) => s + n.valorTotal, 0);
+  const totalAutorizado = notas
+    .filter((n) => n.situacao === 6)
+    .reduce((s, n) => s + n.valorTotal, 0);
+  const totalPendente = notas
+    .filter((n) => [1, 4].includes(n.situacao))
+    .reduce((s, n) => s + n.valorTotal, 0);
 
   /** Gap #10: email toggle */
   const handleEnviarSefaz = async (nota: BlingNFe) => {
     try {
       await enviarSefaz(nota.id, enviarEmail);
       await listarNFe();
-    } catch { /* handled in hook */ }
+    } catch {
+      /* handled in hook */
+    }
   };
 
   const handleCancelar = async (nota: BlingNFe) => {
     try {
       await cancelarNFe([nota.id]);
       await listarNFe();
-    } catch { /* handled in hook */ }
+    } catch {
+      /* handled in hook */
+    }
   };
 
   /** Gap #9: Download XML/DANFE */
@@ -101,7 +167,9 @@ export function BlingNFePanel() {
         <Card>
           <CardContent className="p-4">
             <div className="flex items-center gap-3">
-              <div className="p-2 rounded-lg bg-primary/10"><FileText className="h-5 w-5 text-primary" /></div>
+              <div className="p-2 rounded-lg bg-primary/10">
+                <FileText className="h-5 w-5 text-primary" />
+              </div>
               <div>
                 <p className="text-xs text-muted-foreground">Total Notas Bling</p>
                 <p className="text-xl font-bold">{notas.length}</p>
@@ -112,7 +180,9 @@ export function BlingNFePanel() {
         <Card>
           <CardContent className="p-4">
             <div className="flex items-center gap-3">
-              <div className="p-2 rounded-lg bg-success/10"><CheckCircle2 className="h-5 w-5 text-success" /></div>
+              <div className="p-2 rounded-lg bg-success/10">
+                <CheckCircle2 className="h-5 w-5 text-success" />
+              </div>
               <div>
                 <p className="text-xs text-muted-foreground">Autorizadas</p>
                 <p className="text-xl font-bold text-success">{formatCurrency(totalAutorizado)}</p>
@@ -123,7 +193,9 @@ export function BlingNFePanel() {
         <Card>
           <CardContent className="p-4">
             <div className="flex items-center gap-3">
-              <div className="p-2 rounded-lg bg-warning/10"><Clock className="h-5 w-5 text-warning" /></div>
+              <div className="p-2 rounded-lg bg-warning/10">
+                <Clock className="h-5 w-5 text-warning" />
+              </div>
               <div>
                 <p className="text-xs text-muted-foreground">Pendentes</p>
                 <p className="text-xl font-bold text-warning">{formatCurrency(totalPendente)}</p>
@@ -134,19 +206,29 @@ export function BlingNFePanel() {
         <Card>
           <CardContent className="p-4 space-y-2">
             <div className="flex items-center gap-2">
-              <Heart className={`h-4 w-4 ${blingHealthy === true ? 'text-success' : blingHealthy === false ? 'text-destructive' : 'text-muted-foreground'}`} />
+              <Heart
+                className={`h-4 w-4 ${blingHealthy === true ? 'text-success' : blingHealthy === false ? 'text-destructive' : 'text-muted-foreground'}`}
+              />
               <span className="text-xs text-muted-foreground">
-                {blingHealthy === true ? 'Bling conectado' : blingHealthy === false ? 'Bling offline' : 'Verificando...'}
+                {blingHealthy === true
+                  ? 'Bling conectado'
+                  : blingHealthy === false
+                    ? 'Bling offline'
+                    : 'Verificando...'}
               </span>
             </div>
-            <Button 
-              onClick={handleBuscar} 
+            <Button
+              onClick={handleBuscar}
               disabled={loading}
               className="w-full gap-2"
               variant="outline"
               size="sm"
             >
-              {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : <RefreshCw className="h-4 w-4" />}
+              {loading ? (
+                <Loader2 className="h-4 w-4 animate-spin" />
+              ) : (
+                <RefreshCw className="h-4 w-4" />
+              )}
               Sincronizar
             </Button>
           </CardContent>
@@ -163,7 +245,7 @@ export function BlingNFePanel() {
                 <Input
                   placeholder="Buscar por número, cliente ou chave..."
                   value={search}
-                  onChange={e => setSearch(e.target.value)}
+                  onChange={(e) => setSearch(e.target.value)}
                   className="pl-10"
                 />
               </div>
@@ -195,11 +277,19 @@ export function BlingNFePanel() {
             <div className="flex flex-col md:flex-row gap-4 items-end">
               <div className="flex-1">
                 <Label className="text-xs text-muted-foreground">Data Inicial</Label>
-                <Input type="date" value={dataInicial} onChange={e => setDataInicial(e.target.value)} />
+                <Input
+                  type="date"
+                  value={dataInicial}
+                  onChange={(e) => setDataInicial(e.target.value)}
+                />
               </div>
               <div className="flex-1">
                 <Label className="text-xs text-muted-foreground">Data Final</Label>
-                <Input type="date" value={dataFinal} onChange={e => setDataFinal(e.target.value)} />
+                <Input
+                  type="date"
+                  value={dataFinal}
+                  onChange={(e) => setDataFinal(e.target.value)}
+                />
               </div>
               {/* Gap #10: Email toggle */}
               <div className="flex items-center gap-2 shrink-0">
@@ -258,7 +348,9 @@ export function BlingNFePanel() {
                         <div className="min-w-0 flex-1">
                           <div className="flex items-center gap-2 flex-wrap">
                             <span className="font-semibold">NF-e #{nota.numero}</span>
-                            <span className="text-sm text-muted-foreground">Série {nota.serie}</span>
+                            <span className="text-sm text-muted-foreground">
+                              Série {nota.serie}
+                            </span>
                             <Badge variant="outline" className={config.color}>
                               <StatusIcon className="h-3 w-3 mr-1" />
                               {config.label}
@@ -268,7 +360,9 @@ export function BlingNFePanel() {
                             {nota.contato?.nome || 'Consumidor Final'}
                           </p>
                           {nota.chaveAcesso && (
-                            <p className="text-xs text-muted-foreground font-mono mt-1 truncate">{nota.chaveAcesso}</p>
+                            <p className="text-xs text-muted-foreground font-mono mt-1 truncate">
+                              {nota.chaveAcesso}
+                            </p>
                           )}
                         </div>
                       </div>
@@ -282,13 +376,23 @@ export function BlingNFePanel() {
                       <div className="flex gap-1 shrink-0 flex-wrap">
                         {/* Gap #9: XML Download */}
                         {nota.xml && (
-                          <Button variant="ghost" size="icon" onClick={() => handleDownload(nota.xml, 'XML')} title="Download XML">
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            onClick={() => handleDownload(nota.xml, 'XML')}
+                            title="Download XML"
+                          >
                             <FileCode className="h-4 w-4 text-muted-foreground" />
                           </Button>
                         )}
                         {/* Gap #9 & #17: DANFE/PDF Download */}
                         {(nota.linkDanfe || nota.linkPDF) && (
-                          <Button variant="ghost" size="icon" onClick={() => handleDownload(nota.linkDanfe || nota.linkPDF, 'DANFE')} title="Download DANFE/PDF">
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            onClick={() => handleDownload(nota.linkDanfe || nota.linkPDF, 'DANFE')}
+                            title="Download DANFE/PDF"
+                          >
                             <Download className="h-4 w-4 text-muted-foreground" />
                           </Button>
                         )}
@@ -304,10 +408,20 @@ export function BlingNFePanel() {
                             <Send className="h-4 w-4 text-primary" />
                           </Button>
                         )}
-                        <Button variant="ghost" size="icon" onClick={() => lancarEstoque(nota.id)} title="Lançar Estoque">
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          onClick={() => lancarEstoque(nota.id)}
+                          title="Lançar Estoque"
+                        >
                           <Package className="h-4 w-4" />
                         </Button>
-                        <Button variant="ghost" size="icon" onClick={() => lancarContas(nota.id)} title="Lançar Contas">
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          onClick={() => lancarContas(nota.id)}
+                          title="Lançar Contas"
+                        >
                           <DollarSign className="h-4 w-4" />
                         </Button>
                         {/* Cancel: only for autorizada(6) */}

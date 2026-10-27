@@ -29,7 +29,9 @@ export function headerLines(titulo: string, ctx: PeriodoCtx): string[] {
   const e = ctx.empresa;
   return [
     csvEscape(titulo),
-    csvEscape(`Empresa: ${e?.razao_social ?? '—'}${e?.nome_fantasia ? ` (${e.nome_fantasia})` : ''}`),
+    csvEscape(
+      `Empresa: ${e?.razao_social ?? '—'}${e?.nome_fantasia ? ` (${e.nome_fantasia})` : ''}`
+    ),
     csvEscape(`CNPJ: ${e?.cnpj ?? '—'}`),
     csvEscape(`Período: ${fmtDate(ctx.dataInicio)} a ${fmtDate(ctx.dataFim)}`),
     csvEscape(`Gerado em: ${format(new Date(), 'dd/MM/yyyy HH:mm')}`),

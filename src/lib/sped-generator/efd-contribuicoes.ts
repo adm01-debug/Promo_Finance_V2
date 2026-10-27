@@ -11,7 +11,7 @@ export function gerarEFD_Contribuicoes(
   empresa: DadosEmpresa,
   competencia: string,
   _operacoes: OperacaoTributavel[],
-  _creditos: CreditoTributario[],
+  _creditos: CreditoTributario[]
 ): string {
   const linhas: string[] = [];
   const [ano, mes] = competencia.split('-');
@@ -34,7 +34,7 @@ export function gerarEFD_Contribuicoes(
         '1',
         '1',
       ],
-    }),
+    })
   );
 
   linhas.push(gerarLinhaSPED({ tipo: '0001', campos: ['0'] }));

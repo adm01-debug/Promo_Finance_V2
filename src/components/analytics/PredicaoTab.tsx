@@ -1,22 +1,34 @@
-import { TabsContent } from "@/components/ui/tabs";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { Progress } from "@/components/ui/progress";
+import { TabsContent } from '@/components/ui/tabs';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
+import { Progress } from '@/components/ui/progress';
 import {
-  AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer
-} from "recharts";
+  AreaChart,
+  Area,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  ResponsiveContainer,
+} from 'recharts';
 import {
-  BrainCircuit, AlertTriangle, DollarSign, Clock, ArrowRight, TrendingUp, Sparkles
-} from "lucide-react";
-import { motion } from "framer-motion";
-import { formatCurrency, formatDate } from "@/lib/formatters";
-import type { PredicaoInadimplencia } from "@/hooks/useInadimplenciaSegmentada";
+  BrainCircuit,
+  AlertTriangle,
+  DollarSign,
+  Clock,
+  ArrowRight,
+  TrendingUp,
+  Sparkles,
+} from 'lucide-react';
+import { motion } from 'framer-motion';
+import { formatCurrency, formatDate } from '@/lib/formatters';
+import type { PredicaoInadimplencia } from '@/hooks/useInadimplenciaSegmentada';
 
 const priorityColors = {
-  critica: "bg-destructive/20 text-destructive border-destructive/30",
-  alta: "bg-warning/20 text-warning border-warning/30",
-  media: "bg-primary/20 text-primary border-primary/30",
-  baixa: "bg-success/20 text-success border-success/30",
+  critica: 'bg-destructive/20 text-destructive border-destructive/30',
+  alta: 'bg-warning/20 text-warning border-warning/30',
+  media: 'bg-primary/20 text-primary border-primary/30',
+  baixa: 'bg-success/20 text-success border-success/30',
 };
 
 interface Props {
@@ -35,24 +47,30 @@ export function PredicaoTab({ previsoes, taxaGeralRamo }: Props) {
                 <Sparkles className="h-5 w-5 text-primary" />
                 Alertas da Engine Preditiva
               </CardTitle>
-              <CardDescription>Ocorrências detectadas com alta probabilidade de inadimplência.</CardDescription>
+              <CardDescription>
+                Ocorrências detectadas com alta probabilidade de inadimplência.
+              </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
               {previsoes && previsoes.length > 0 ? (
                 previsoes.map((p, idx) => (
-                  <motion.div 
+                  <motion.div
                     key={p.id}
                     initial={{ opacity: 0, x: -10 }}
                     animate={{ opacity: 1, x: 0 }}
                     transition={{ delay: idx * 0.1 }}
                     className="flex items-start gap-4 p-4 rounded-xl border bg-card/50 hover:bg-card transition-all cursor-pointer group"
                   >
-                    <div className={`mt-1 p-2 rounded-lg ${priorityColors[p.prioridade as keyof typeof priorityColors] || priorityColors.media}`}>
+                    <div
+                      className={`mt-1 p-2 rounded-lg ${priorityColors[p.prioridade as keyof typeof priorityColors] || priorityColors.media}`}
+                    >
                       <AlertTriangle className="h-5 w-5" />
                     </div>
                     <div className="flex-1 space-y-1">
                       <div className="flex items-center justify-between">
-                        <h4 className="font-bold text-foreground group-hover:text-primary transition-colors">{p.titulo}</h4>
+                        <h4 className="font-bold text-foreground group-hover:text-primary transition-colors">
+                          {p.titulo}
+                        </h4>
                         <Badge variant="outline" className="text-[10px] font-bold uppercase">
                           Probabilidade: {p.probabilidade}%
                         </Badge>
@@ -75,8 +93,12 @@ export function PredicaoTab({ previsoes, taxaGeralRamo }: Props) {
               ) : (
                 <div className="py-12 text-center space-y-2">
                   <BrainCircuit className="h-12 w-12 mx-auto text-muted-foreground opacity-20" />
-                  <p className="text-muted-foreground font-medium">Nenhum alerta crítico no radar da IA no momento.</p>
-                  <p className="text-xs text-muted-foreground">A engine continua monitorando o comportamento dos clientes 24/7.</p>
+                  <p className="text-muted-foreground font-medium">
+                    Nenhum alerta crítico no radar da IA no momento.
+                  </p>
+                  <p className="text-xs text-muted-foreground">
+                    A engine continua monitorando o comportamento dos clientes 24/7.
+                  </p>
                 </div>
               )}
             </CardContent>
@@ -86,29 +108,44 @@ export function PredicaoTab({ previsoes, taxaGeralRamo }: Props) {
         <div className="space-y-4">
           <Card>
             <CardHeader>
-              <CardTitle className="text-sm font-bold uppercase tracking-wider text-muted-foreground">Tendência de Risco</CardTitle>
+              <CardTitle className="text-sm font-bold uppercase tracking-wider text-muted-foreground">
+                Tendência de Risco
+              </CardTitle>
             </CardHeader>
             <CardContent>
               <div className="h-[200px] w-full">
                 <ResponsiveContainer width="100%" height="100%">
-                  <AreaChart data={[
-                    { name: 'Jan', value: 12 },
-                    { name: 'Fev', value: 15 },
-                    { name: 'Mar', value: 10 },
-                    { name: 'Abr', value: 18 },
-                    { name: 'Mai', value: taxaGeralRamo },
-                  ]}>
+                  <AreaChart
+                    data={[
+                      { name: 'Jan', value: 12 },
+                      { name: 'Fev', value: 15 },
+                      { name: 'Mar', value: 10 },
+                      { name: 'Abr', value: 18 },
+                      { name: 'Mai', value: taxaGeralRamo },
+                    ]}
+                  >
                     <defs>
                       <linearGradient id="colorValue" x1="0" y1="0" x2="0" y2="1">
-                        <stop offset="5%" stopColor="hsl(var(--primary))" stopOpacity={0.3}/>
-                        <stop offset="95%" stopColor="hsl(var(--primary))" stopOpacity={0}/>
+                        <stop offset="5%" stopColor="hsl(var(--primary))" stopOpacity={0.3} />
+                        <stop offset="95%" stopColor="hsl(var(--primary))" stopOpacity={0} />
                       </linearGradient>
                     </defs>
-                    <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="hsl(var(--border))" />
+                    <CartesianGrid
+                      strokeDasharray="3 3"
+                      vertical={false}
+                      stroke="hsl(var(--border))"
+                    />
                     <XAxis dataKey="name" hide />
                     <YAxis hide domain={[0, 40]} />
                     <Tooltip />
-                    <Area type="monotone" dataKey="value" stroke="hsl(var(--primary))" fillOpacity={1} fill="url(#colorValue)" strokeWidth={3} />
+                    <Area
+                      type="monotone"
+                      dataKey="value"
+                      stroke="hsl(var(--primary))"
+                      fillOpacity={1}
+                      fill="url(#colorValue)"
+                      strokeWidth={3}
+                    />
                   </AreaChart>
                 </ResponsiveContainer>
               </div>
@@ -118,7 +155,9 @@ export function PredicaoTab({ previsoes, taxaGeralRamo }: Props) {
                   INSIGHT IA DO DIA
                 </h5>
                 <p className="text-[11px] leading-relaxed text-muted-foreground">
-                  O setor de "Construção Civil" apresentou um aumento de 15% na propensão de atraso para os próximos 15 dias. Recomenda-se reforçar a régua de cobrança preventiva para este grupo.
+                  O setor de "Construção Civil" apresentou um aumento de 15% na propensão de atraso
+                  para os próximos 15 dias. Recomenda-se reforçar a régua de cobrança preventiva
+                  para este grupo.
                 </p>
               </div>
             </CardContent>
@@ -126,7 +165,9 @@ export function PredicaoTab({ previsoes, taxaGeralRamo }: Props) {
 
           <Card>
             <CardHeader>
-              <CardTitle className="text-sm font-bold uppercase tracking-wider text-muted-foreground">Confiabilidade da Predição</CardTitle>
+              <CardTitle className="text-sm font-bold uppercase tracking-wider text-muted-foreground">
+                Confiabilidade da Predição
+              </CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="space-y-2">

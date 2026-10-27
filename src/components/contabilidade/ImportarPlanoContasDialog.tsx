@@ -75,7 +75,7 @@ export function ImportarPlanoContasDialog({ empresaId }: ImportarPlanoContasDial
             setProgresso(null);
           }
         },
-      },
+      }
     );
   };
 
@@ -122,7 +122,12 @@ export function ImportarPlanoContasDialog({ empresaId }: ImportarPlanoContasDial
                 e.target.value = '';
               }}
             />
-            <Button variant="secondary" size="sm" onClick={() => inputRef.current?.click()} className="gap-2">
+            <Button
+              variant="secondary"
+              size="sm"
+              onClick={() => inputRef.current?.click()}
+              className="gap-2"
+            >
               <Upload className="h-4 w-4" />
               Selecionar arquivo
             </Button>
@@ -135,12 +140,18 @@ export function ImportarPlanoContasDialog({ empresaId }: ImportarPlanoContasDial
           {preview && (
             <div className="space-y-3">
               <div className="flex flex-wrap gap-2">
-                <Badge variant="outline" className="gap-1 border-success/40 bg-success/10 text-success">
+                <Badge
+                  variant="outline"
+                  className="gap-1 border-success/40 bg-success/10 text-success"
+                >
                   <CheckCircle2 className="h-3 w-3" />
                   {preview.contas.length} conta(s) válida(s)
                 </Badge>
                 {preview.invalidas.length > 0 && (
-                  <Badge variant="outline" className="gap-1 border-destructive/40 bg-destructive/10 text-destructive">
+                  <Badge
+                    variant="outline"
+                    className="gap-1 border-destructive/40 bg-destructive/10 text-destructive"
+                  >
                     <FileWarning className="h-3 w-3" />
                     {preview.invalidas.length} linha(s) rejeitada(s)
                   </Badge>
@@ -171,7 +182,11 @@ export function ImportarPlanoContasDialog({ empresaId }: ImportarPlanoContasDial
                       >
                         {c.codigo}
                       </span>
-                      <span className={c.aceita_lancamento ? 'text-foreground' : 'font-semibold text-foreground'}>
+                      <span
+                        className={
+                          c.aceita_lancamento ? 'text-foreground' : 'font-semibold text-foreground'
+                        }
+                      >
                         {c.descricao}
                       </span>
                       <Badge variant="secondary" className="ml-auto text-[10px]">

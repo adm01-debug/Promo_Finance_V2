@@ -3,18 +3,13 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Sparkles, Check, Loader2, Tag, FolderOpen } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from '@/components/ui/popover';
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from '@/components/ui/tooltip';
-import { useCategorizacaoIA, CategoriaDetectada, DespesaParaCategorizar } from '@/hooks/useCategorizacaoIA';
+  useCategorizacaoIA,
+  CategoriaDetectada,
+  DespesaParaCategorizar,
+} from '@/hooks/useCategorizacaoIA';
 import { cn } from '@/lib/utils';
 
 interface CategorizacaoIABadgeProps {
@@ -61,10 +56,7 @@ export function CategorizacaoIABadge({
         <Button
           variant="ghost"
           size={size === 'sm' ? 'icon' : 'sm'}
-          className={cn(
-            'h-7 w-7 hover:bg-primary/10',
-            size === 'md' && 'h-8 w-8'
-          )}
+          className={cn('h-7 w-7 hover:bg-primary/10', size === 'md' && 'h-8 w-8')}
           onClick={() => {
             if (!sugestao) {
               handleAnalisar();
@@ -123,12 +115,12 @@ export function CategorizacaoIABadge({
                       {Math.round((sugestao.confianca || 0) * 100)}% confiança
                     </span>
                   </div>
-                  
+
                   <div className="flex items-center gap-2">
                     <FolderOpen className="h-4 w-4 text-primary" />
                     <span className="font-medium">{sugestao.categoria}</span>
                   </div>
-                  
+
                   {sugestao.subcategoria && (
                     <div className="text-sm text-muted-foreground pl-6">
                       → {sugestao.subcategoria}
@@ -154,19 +146,16 @@ export function CategorizacaoIABadge({
                   </div>
                 )}
 
-                {sugestao.descricao_padronizada && sugestao.descricao_padronizada !== despesa.descricao && (
-                  <div className="text-sm">
-                    <span className="text-muted-foreground">Descrição sugerida: </span>
-                    <span className="italic">{sugestao.descricao_padronizada}</span>
-                  </div>
-                )}
+                {sugestao.descricao_padronizada &&
+                  sugestao.descricao_padronizada !== despesa.descricao && (
+                    <div className="text-sm">
+                      <span className="text-muted-foreground">Descrição sugerida: </span>
+                      <span className="italic">{sugestao.descricao_padronizada}</span>
+                    </div>
+                  )}
 
                 <div className="flex gap-2 pt-2">
-                  <Button
-                    size="sm"
-                    className="flex-1"
-                    onClick={handleAplicar}
-                  >
+                  <Button size="sm" className="flex-1" onClick={handleAplicar}>
                     <Check className="h-4 w-4 mr-1" />
                     Aplicar
                   </Button>
@@ -209,10 +198,7 @@ interface CategorizacaoLoteButtonProps {
   onResultados?: (resultados: Map<string, CategoriaDetectada>) => void;
 }
 
-export function CategorizacaoLoteButton({
-  despesas,
-  onResultados,
-}: CategorizacaoLoteButtonProps) {
+export function CategorizacaoLoteButton({ despesas, onResultados }: CategorizacaoLoteButtonProps) {
   const { isAnalyzing, categorizarEmLote } = useCategorizacaoIA();
 
   const handleCategorizarLote = async () => {

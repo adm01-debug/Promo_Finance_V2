@@ -1,14 +1,13 @@
 import { describe, it, expect } from 'vitest';
-import { 
-  parseCurrency, 
-  sumCurrency, 
+import {
+  parseCurrency,
+  sumCurrency,
   compareCurrency,
   calculateInstallments,
   valueToCents,
 } from '../currency';
 
 describe('Currency Utilities - Robustness & Regression', () => {
-  
   describe('Floating Point Precision', () => {
     it('deve somar valores decimais corretamente evitando erros de precisão IEEE 754', () => {
       const values = [0.1, 0.2];
@@ -18,7 +17,7 @@ describe('Currency Utilities - Robustness & Regression', () => {
     });
 
     it('deve lidar com somas complexas com muitos decimais', () => {
-      const values = [10.25, 20.10, 30.05, 0.01];
+      const values = [10.25, 20.1, 30.05, 0.01];
       const sum = sumCurrency(values);
       expect(sum).toBe(60.41);
     });
@@ -76,7 +75,9 @@ describe('Currency Utilities - Robustness & Regression', () => {
 
     it('rejeita taxa de juros não finita ou negativa', () => {
       expect(() => calculateInstallments(1000, 3, Number.NaN)).toThrow(/interestRate/i);
-      expect(() => calculateInstallments(1000, 3, Number.POSITIVE_INFINITY)).toThrow(/interestRate/i);
+      expect(() => calculateInstallments(1000, 3, Number.POSITIVE_INFINITY)).toThrow(
+        /interestRate/i
+      );
       expect(() => calculateInstallments(1000, 3, -1)).toThrow(/interestRate/i);
     });
   });
@@ -85,7 +86,7 @@ describe('Currency Utilities - Robustness & Regression', () => {
     it('deve comparar valores monetários ignorando imprecisões mínimas', () => {
       expect(compareCurrency(0.1 + 0.2, 0.3)).toBe(0);
       expect(compareCurrency(100.05, 100.04)).toBe(1);
-      expect(compareCurrency(50.00, 60.00)).toBe(-1);
+      expect(compareCurrency(50.0, 60.0)).toBe(-1);
     });
   });
 });

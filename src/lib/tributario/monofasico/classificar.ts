@@ -46,7 +46,12 @@ export function classificarNcmMonofasicoCanonico(ncm: string): ClassificacaoMono
     for (const prefixo of grupo.prefixos) {
       const p = normalizarNcm(prefixo);
       if (p.length >= 4 && alvo.startsWith(p)) {
-        escolhido = melhor(escolhido, { grupo, item: null, digitos: p.length, origem: 'prefixo_grupo' });
+        escolhido = melhor(escolhido, {
+          grupo,
+          item: null,
+          digitos: p.length,
+          origem: 'prefixo_grupo',
+        });
       }
     }
   }
@@ -62,7 +67,6 @@ export function classificarNcmMonofasicoCanonico(ncm: string): ClassificacaoMono
     origem: escolhido.origem,
   };
 }
-
 
 /**
  * OVERRIDE DE RUNTIME — marcador monofásico vindo do catálogo `ncms` do banco.

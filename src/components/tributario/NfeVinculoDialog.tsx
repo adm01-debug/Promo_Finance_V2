@@ -13,11 +13,7 @@ import {
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
-import {
-  useSugestoesContaPagar,
-  useVincularNfe,
-  useCriarContaDaNfe,
-} from '@/hooks/useNfeVinculo';
+import { useSugestoesContaPagar, useVincularNfe, useCriarContaDaNfe } from '@/hooks/useNfeVinculo';
 
 const currency = new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' });
 
@@ -87,17 +83,21 @@ export function NfeVinculoDialog({ nfeId, nfeChave, onClose }: Props) {
                         )}
                       </div>
                       <div className="mt-1 text-xs text-muted-foreground">
-                        {s.fornecedor_nome ?? 'sem fornecedor'} · vence {s.data_vencimento} · {s.status}
+                        {s.fornecedor_nome ?? 'sem fornecedor'} · vence {s.data_vencimento} ·{' '}
+                        {s.status}
                       </div>
                     </div>
                     <div className="ml-4 flex items-center gap-3">
-                      <span className="tabular-nums font-medium">{currency.format(Number(s.valor))}</span>
+                      <span className="tabular-nums font-medium">
+                        {currency.format(Number(s.valor))}
+                      </span>
                       <Button
                         size="sm"
                         onClick={() => handleVincular(s.conta_pagar_id)}
                         disabled={vincular.isPending}
                       >
-                        {vincular.isPending && vincular.variables?.contaPagarId === s.conta_pagar_id ? (
+                        {vincular.isPending &&
+                        vincular.variables?.contaPagarId === s.conta_pagar_id ? (
                           <Loader2 className="mr-1 h-4 w-4 animate-spin" />
                         ) : null}
                         Vincular
@@ -115,7 +115,9 @@ export function NfeVinculoDialog({ nfeId, nfeChave, onClose }: Props) {
             </h3>
             <div className="flex items-end gap-3">
               <div className="flex-1">
-                <label className="text-xs text-muted-foreground">Vencimento (padrão: emissão + 30 dias)</label>
+                <label className="text-xs text-muted-foreground">
+                  Vencimento (padrão: emissão + 30 dias)
+                </label>
                 <Input type="date" value={venc} onChange={(e) => setVenc(e.target.value)} />
               </div>
               <Button onClick={handleCriar} disabled={criar.isPending}>
@@ -127,7 +129,9 @@ export function NfeVinculoDialog({ nfeId, nfeChave, onClose }: Props) {
         </div>
 
         <DialogFooter>
-          <Button variant="outline" onClick={onClose}>Fechar</Button>
+          <Button variant="outline" onClick={onClose}>
+            Fechar
+          </Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>

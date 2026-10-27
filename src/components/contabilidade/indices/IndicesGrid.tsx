@@ -25,17 +25,18 @@ export function IndicesGrid({ indices, anteriores, busca }: Props) {
           (i) =>
             i.rotulo.toLowerCase().includes(termo) ||
             i.chave.toLowerCase().includes(termo) ||
-            CATEGORIA_LABEL[i.categoria].toLowerCase().includes(termo),
+            CATEGORIA_LABEL[i.categoria].toLowerCase().includes(termo)
         )
       : indices;
-    return ORDEM.map((c) => ({ categoria: c, itens: filtrados.filter((i) => i.categoria === c) })).filter(
-      (g) => g.itens.length > 0,
-    );
+    return ORDEM.map((c) => ({
+      categoria: c,
+      itens: filtrados.filter((i) => i.categoria === c),
+    })).filter((g) => g.itens.length > 0);
   }, [indices, termo]);
 
   const anteriorPor = useMemo(
     () => new Map((anteriores ?? []).map((i) => [i.chave, i])),
-    [anteriores],
+    [anteriores]
   );
 
   if (porCategoria.length === 0) {
@@ -49,7 +50,11 @@ export function IndicesGrid({ indices, anteriores, busca }: Props) {
   return (
     <div className="space-y-8">
       {porCategoria.map((grupo) => (
-        <section key={grupo.categoria} aria-label={CATEGORIA_LABEL[grupo.categoria]} className="space-y-3">
+        <section
+          key={grupo.categoria}
+          aria-label={CATEGORIA_LABEL[grupo.categoria]}
+          className="space-y-3"
+        >
           <h3 className="text-[11px] font-black uppercase tracking-widest text-muted-foreground">
             {CATEGORIA_LABEL[grupo.categoria]}
           </h3>

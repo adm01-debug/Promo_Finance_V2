@@ -11,11 +11,14 @@ export type SoundType = 'success' | 'error' | 'notification' | 'click' | 'warnin
 export function useSoundFeedback() {
   const { play, config, toggle, setVolume } = useBaseSoundFeedback();
 
-  const playSound = useCallback((type: SoundType) => {
-    if (config.enabled) {
-      play(type);
-    }
-  }, [config.enabled, play]);
+  const playSound = useCallback(
+    (type: SoundType) => {
+      if (config.enabled) {
+        play(type);
+      }
+    },
+    [config.enabled, play]
+  );
 
   const playSuccess = useCallback(() => playSound('success'), [playSound]);
   const playError = useCallback(() => playSound('error'), [playSound]);

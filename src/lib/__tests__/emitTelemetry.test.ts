@@ -57,43 +57,71 @@ function buildTelemetryRecord(opts: TelemetryOpts) {
 
 describe('emitTelemetry: severity classification', () => {
   // Normal range
-  it('0ms → normal', () => expect(classifySeverity({ operation: 'SELECT', duration_ms: 0 })).toBe('normal'));
-  it('1ms → normal', () => expect(classifySeverity({ operation: 'SELECT', duration_ms: 1 })).toBe('normal'));
-  it('100ms → normal', () => expect(classifySeverity({ operation: 'SELECT', duration_ms: 100 })).toBe('normal'));
-  it('500ms → normal', () => expect(classifySeverity({ operation: 'SELECT', duration_ms: 500 })).toBe('normal'));
-  it('1000ms → normal', () => expect(classifySeverity({ operation: 'SELECT', duration_ms: 1000 })).toBe('normal'));
-  it('2000ms → normal', () => expect(classifySeverity({ operation: 'SELECT', duration_ms: 2000 })).toBe('normal'));
-  it('2999ms → normal', () => expect(classifySeverity({ operation: 'SELECT', duration_ms: 2999 })).toBe('normal'));
+  it('0ms → normal', () =>
+    expect(classifySeverity({ operation: 'SELECT', duration_ms: 0 })).toBe('normal'));
+  it('1ms → normal', () =>
+    expect(classifySeverity({ operation: 'SELECT', duration_ms: 1 })).toBe('normal'));
+  it('100ms → normal', () =>
+    expect(classifySeverity({ operation: 'SELECT', duration_ms: 100 })).toBe('normal'));
+  it('500ms → normal', () =>
+    expect(classifySeverity({ operation: 'SELECT', duration_ms: 500 })).toBe('normal'));
+  it('1000ms → normal', () =>
+    expect(classifySeverity({ operation: 'SELECT', duration_ms: 1000 })).toBe('normal'));
+  it('2000ms → normal', () =>
+    expect(classifySeverity({ operation: 'SELECT', duration_ms: 2000 })).toBe('normal'));
+  it('2999ms → normal', () =>
+    expect(classifySeverity({ operation: 'SELECT', duration_ms: 2999 })).toBe('normal'));
 
   // Slow range
-  it('3000ms → slow', () => expect(classifySeverity({ operation: 'SELECT', duration_ms: 3000 })).toBe('slow'));
-  it('3001ms → slow', () => expect(classifySeverity({ operation: 'SELECT', duration_ms: 3001 })).toBe('slow'));
-  it('4000ms → slow', () => expect(classifySeverity({ operation: 'SELECT', duration_ms: 4000 })).toBe('slow'));
-  it('5000ms → slow', () => expect(classifySeverity({ operation: 'SELECT', duration_ms: 5000 })).toBe('slow'));
-  it('6000ms → slow', () => expect(classifySeverity({ operation: 'SELECT', duration_ms: 6000 })).toBe('slow'));
-  it('7000ms → slow', () => expect(classifySeverity({ operation: 'SELECT', duration_ms: 7000 })).toBe('slow'));
-  it('7999ms → slow', () => expect(classifySeverity({ operation: 'SELECT', duration_ms: 7999 })).toBe('slow'));
+  it('3000ms → slow', () =>
+    expect(classifySeverity({ operation: 'SELECT', duration_ms: 3000 })).toBe('slow'));
+  it('3001ms → slow', () =>
+    expect(classifySeverity({ operation: 'SELECT', duration_ms: 3001 })).toBe('slow'));
+  it('4000ms → slow', () =>
+    expect(classifySeverity({ operation: 'SELECT', duration_ms: 4000 })).toBe('slow'));
+  it('5000ms → slow', () =>
+    expect(classifySeverity({ operation: 'SELECT', duration_ms: 5000 })).toBe('slow'));
+  it('6000ms → slow', () =>
+    expect(classifySeverity({ operation: 'SELECT', duration_ms: 6000 })).toBe('slow'));
+  it('7000ms → slow', () =>
+    expect(classifySeverity({ operation: 'SELECT', duration_ms: 7000 })).toBe('slow'));
+  it('7999ms → slow', () =>
+    expect(classifySeverity({ operation: 'SELECT', duration_ms: 7999 })).toBe('slow'));
 
   // Very slow range
-  it('8000ms → very_slow', () => expect(classifySeverity({ operation: 'SELECT', duration_ms: 8000 })).toBe('very_slow'));
-  it('8001ms → very_slow', () => expect(classifySeverity({ operation: 'SELECT', duration_ms: 8001 })).toBe('very_slow'));
-  it('10000ms → very_slow', () => expect(classifySeverity({ operation: 'SELECT', duration_ms: 10000 })).toBe('very_slow'));
-  it('30000ms → very_slow', () => expect(classifySeverity({ operation: 'SELECT', duration_ms: 30000 })).toBe('very_slow'));
-  it('60000ms → very_slow', () => expect(classifySeverity({ operation: 'SELECT', duration_ms: 60000 })).toBe('very_slow'));
-  it('999999ms → very_slow', () => expect(classifySeverity({ operation: 'SELECT', duration_ms: 999999 })).toBe('very_slow'));
+  it('8000ms → very_slow', () =>
+    expect(classifySeverity({ operation: 'SELECT', duration_ms: 8000 })).toBe('very_slow'));
+  it('8001ms → very_slow', () =>
+    expect(classifySeverity({ operation: 'SELECT', duration_ms: 8001 })).toBe('very_slow'));
+  it('10000ms → very_slow', () =>
+    expect(classifySeverity({ operation: 'SELECT', duration_ms: 10000 })).toBe('very_slow'));
+  it('30000ms → very_slow', () =>
+    expect(classifySeverity({ operation: 'SELECT', duration_ms: 30000 })).toBe('very_slow'));
+  it('60000ms → very_slow', () =>
+    expect(classifySeverity({ operation: 'SELECT', duration_ms: 60000 })).toBe('very_slow'));
+  it('999999ms → very_slow', () =>
+    expect(classifySeverity({ operation: 'SELECT', duration_ms: 999999 })).toBe('very_slow'));
 
   // Error always wins
   it('error overrides normal duration', () => {
-    expect(classifySeverity({ operation: 'SELECT', duration_ms: 100, error_message: 'fail' })).toBe('error');
+    expect(classifySeverity({ operation: 'SELECT', duration_ms: 100, error_message: 'fail' })).toBe(
+      'error'
+    );
   });
   it('error overrides slow duration', () => {
-    expect(classifySeverity({ operation: 'SELECT', duration_ms: 5000, error_message: 'timeout' })).toBe('error');
+    expect(
+      classifySeverity({ operation: 'SELECT', duration_ms: 5000, error_message: 'timeout' })
+    ).toBe('error');
   });
   it('error overrides very_slow duration', () => {
-    expect(classifySeverity({ operation: 'SELECT', duration_ms: 20000, error_message: 'crash' })).toBe('error');
+    expect(
+      classifySeverity({ operation: 'SELECT', duration_ms: 20000, error_message: 'crash' })
+    ).toBe('error');
   });
   it('empty string error_message → not error', () => {
-    expect(classifySeverity({ operation: 'SELECT', duration_ms: 100, error_message: '' })).toBe('normal');
+    expect(classifySeverity({ operation: 'SELECT', duration_ms: 100, error_message: '' })).toBe(
+      'normal'
+    );
   });
   it('undefined error_message → not error', () => {
     expect(classifySeverity({ operation: 'SELECT', duration_ms: 100 })).toBe('normal');
@@ -105,16 +133,32 @@ describe('emitTelemetry: severity classification', () => {
 // ══════════════════════════════════════════════════════════════════════════
 
 describe('emitTelemetry: shouldPersist', () => {
-  it('does not persist normal queries (0ms)', () => expect(shouldPersist({ operation: 'SELECT', duration_ms: 0 })).toBe(false));
-  it('does not persist normal queries (100ms)', () => expect(shouldPersist({ operation: 'SELECT', duration_ms: 100 })).toBe(false));
-  it('does not persist normal queries (2999ms)', () => expect(shouldPersist({ operation: 'SELECT', duration_ms: 2999 })).toBe(false));
-  it('persists slow queries (3000ms)', () => expect(shouldPersist({ operation: 'SELECT', duration_ms: 3000 })).toBe(true));
-  it('persists slow queries (5000ms)', () => expect(shouldPersist({ operation: 'SELECT', duration_ms: 5000 })).toBe(true));
-  it('persists very_slow queries (8000ms)', () => expect(shouldPersist({ operation: 'SELECT', duration_ms: 8000 })).toBe(true));
-  it('persists very_slow queries (20000ms)', () => expect(shouldPersist({ operation: 'SELECT', duration_ms: 20000 })).toBe(true));
-  it('persists error queries', () => expect(shouldPersist({ operation: 'SELECT', duration_ms: 50, error_message: 'fail' })).toBe(true));
-  it('persists error even at 0ms', () => expect(shouldPersist({ operation: 'SELECT', duration_ms: 0, error_message: 'err' })).toBe(true));
-  it('does not persist empty error + normal', () => expect(shouldPersist({ operation: 'SELECT', duration_ms: 100, error_message: '' })).toBe(false));
+  it('does not persist normal queries (0ms)', () =>
+    expect(shouldPersist({ operation: 'SELECT', duration_ms: 0 })).toBe(false));
+  it('does not persist normal queries (100ms)', () =>
+    expect(shouldPersist({ operation: 'SELECT', duration_ms: 100 })).toBe(false));
+  it('does not persist normal queries (2999ms)', () =>
+    expect(shouldPersist({ operation: 'SELECT', duration_ms: 2999 })).toBe(false));
+  it('persists slow queries (3000ms)', () =>
+    expect(shouldPersist({ operation: 'SELECT', duration_ms: 3000 })).toBe(true));
+  it('persists slow queries (5000ms)', () =>
+    expect(shouldPersist({ operation: 'SELECT', duration_ms: 5000 })).toBe(true));
+  it('persists very_slow queries (8000ms)', () =>
+    expect(shouldPersist({ operation: 'SELECT', duration_ms: 8000 })).toBe(true));
+  it('persists very_slow queries (20000ms)', () =>
+    expect(shouldPersist({ operation: 'SELECT', duration_ms: 20000 })).toBe(true));
+  it('persists error queries', () =>
+    expect(shouldPersist({ operation: 'SELECT', duration_ms: 50, error_message: 'fail' })).toBe(
+      true
+    ));
+  it('persists error even at 0ms', () =>
+    expect(shouldPersist({ operation: 'SELECT', duration_ms: 0, error_message: 'err' })).toBe(
+      true
+    ));
+  it('does not persist empty error + normal', () =>
+    expect(shouldPersist({ operation: 'SELECT', duration_ms: 100, error_message: '' })).toBe(
+      false
+    ));
 });
 
 // ══════════════════════════════════════════════════════════════════════════
@@ -184,7 +228,11 @@ describe('emitTelemetry: buildTelemetryRecord', () => {
   });
 
   it('preserves rpc_name', () => {
-    const r = buildTelemetryRecord({ operation: 'RPC', rpc_name: 'get_dashboard', duration_ms: 3500 });
+    const r = buildTelemetryRecord({
+      operation: 'RPC',
+      rpc_name: 'get_dashboard',
+      duration_ms: 3500,
+    });
     expect(r.rpc_name).toBe('get_dashboard');
   });
 
@@ -210,7 +258,7 @@ describe('emitTelemetry: buildTelemetryRecord', () => {
 
 describe('emitTelemetry: operation types', () => {
   const ops = ['SELECT', 'INSERT', 'UPDATE', 'DELETE', 'RPC', 'UPSERT'];
-  
+
   it.each(ops)('classifies %s with slow duration as slow', (op) => {
     expect(classifySeverity({ operation: op, duration_ms: 5000 })).toBe('slow');
   });
@@ -242,7 +290,9 @@ describe('emitTelemetry: external-data integration scenarios', () => {
       user_id: 'user-abc',
     });
     expect(r.severity).toBe('normal');
-    expect(shouldPersist({ ...r, duration_ms: 800 })).toBe(false);
+    expect(
+      shouldPersist({ operation: 'SELECT', table_name: 'companies (clientes)', duration_ms: 800 })
+    ).toBe(false);
   });
 
   it('clientes query success - slow', () => {
@@ -348,31 +398,49 @@ describe('emitTelemetry: external-data integration scenarios', () => {
 
 describe('emitTelemetry: boundary values', () => {
   // Duration boundaries
-  it('2999ms is last normal', () => expect(classifySeverity({ operation: 'S', duration_ms: 2999 })).toBe('normal'));
-  it('3000ms is first slow', () => expect(classifySeverity({ operation: 'S', duration_ms: 3000 })).toBe('slow'));
-  it('7999ms is last slow', () => expect(classifySeverity({ operation: 'S', duration_ms: 7999 })).toBe('slow'));
-  it('8000ms is first very_slow', () => expect(classifySeverity({ operation: 'S', duration_ms: 8000 })).toBe('very_slow'));
+  it('2999ms is last normal', () =>
+    expect(classifySeverity({ operation: 'S', duration_ms: 2999 })).toBe('normal'));
+  it('3000ms is first slow', () =>
+    expect(classifySeverity({ operation: 'S', duration_ms: 3000 })).toBe('slow'));
+  it('7999ms is last slow', () =>
+    expect(classifySeverity({ operation: 'S', duration_ms: 7999 })).toBe('slow'));
+  it('8000ms is first very_slow', () =>
+    expect(classifySeverity({ operation: 'S', duration_ms: 8000 })).toBe('very_slow'));
 
   // Edge: negative duration
-  it('negative duration → normal', () => expect(classifySeverity({ operation: 'S', duration_ms: -1 })).toBe('normal'));
+  it('negative duration → normal', () =>
+    expect(classifySeverity({ operation: 'S', duration_ms: -1 })).toBe('normal'));
 
   // Edge: extremely large duration
   it('MAX_SAFE_INTEGER duration → very_slow', () => {
-    expect(classifySeverity({ operation: 'S', duration_ms: Number.MAX_SAFE_INTEGER })).toBe('very_slow');
+    expect(classifySeverity({ operation: 'S', duration_ms: Number.MAX_SAFE_INTEGER })).toBe(
+      'very_slow'
+    );
   });
 
   // Error priority
   it('error at exactly 3000ms', () => {
-    expect(classifySeverity({ operation: 'S', duration_ms: 3000, error_message: 'x' })).toBe('error');
+    expect(classifySeverity({ operation: 'S', duration_ms: 3000, error_message: 'x' })).toBe(
+      'error'
+    );
   });
   it('error at exactly 8000ms', () => {
-    expect(classifySeverity({ operation: 'S', duration_ms: 8000, error_message: 'x' })).toBe('error');
+    expect(classifySeverity({ operation: 'S', duration_ms: 8000, error_message: 'x' })).toBe(
+      'error'
+    );
   });
 
   // Record count boundaries
-  it('record_count 0', () => expect(buildTelemetryRecord({ operation: 'S', duration_ms: 3000, record_count: 0 }).record_count).toBe(0));
-  it('record_count 1000', () => expect(buildTelemetryRecord({ operation: 'S', duration_ms: 3000, record_count: 1000 }).record_count).toBe(1000));
-  it('record_count undefined → null', () => expect(buildTelemetryRecord({ operation: 'S', duration_ms: 3000 }).record_count).toBeNull());
+  it('record_count 0', () =>
+    expect(
+      buildTelemetryRecord({ operation: 'S', duration_ms: 3000, record_count: 0 }).record_count
+    ).toBe(0));
+  it('record_count 1000', () =>
+    expect(
+      buildTelemetryRecord({ operation: 'S', duration_ms: 3000, record_count: 1000 }).record_count
+    ).toBe(1000));
+  it('record_count undefined → null', () =>
+    expect(buildTelemetryRecord({ operation: 'S', duration_ms: 3000 }).record_count).toBeNull());
 });
 
 // ══════════════════════════════════════════════════════════════════════════
@@ -382,7 +450,9 @@ describe('emitTelemetry: boundary values', () => {
 describe('emitTelemetry: stress / batch classification', () => {
   it('classifies 1000 fast queries as normal', () => {
     for (let i = 0; i < 1000; i++) {
-      expect(classifySeverity({ operation: 'SELECT', duration_ms: Math.floor(Math.random() * 3000) })).toBe('normal');
+      expect(
+        classifySeverity({ operation: 'SELECT', duration_ms: Math.floor(Math.random() * 3000) })
+      ).toBe('normal');
     }
   });
 
@@ -398,7 +468,9 @@ describe('emitTelemetry: stress / batch classification', () => {
   it('all error queries classified as error regardless of duration', () => {
     for (let i = 0; i < 200; i++) {
       const ms = Math.floor(Math.random() * 100000);
-      expect(classifySeverity({ operation: 'SELECT', duration_ms: ms, error_message: `err-${i}` })).toBe('error');
+      expect(
+        classifySeverity({ operation: 'SELECT', duration_ms: ms, error_message: `err-${i}` })
+      ).toBe('error');
     }
   });
 

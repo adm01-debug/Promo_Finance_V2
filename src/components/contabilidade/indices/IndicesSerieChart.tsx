@@ -1,6 +1,13 @@
 import { useMemo } from 'react';
 import {
-  CartesianGrid, Legend, Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis,
+  CartesianGrid,
+  Legend,
+  Line,
+  LineChart,
+  ResponsiveContainer,
+  Tooltip,
+  XAxis,
+  YAxis,
 } from 'recharts';
 import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -18,7 +25,13 @@ interface Props {
 
 const CORES = ['hsl(var(--primary))', 'hsl(var(--success))', 'hsl(var(--warning))'];
 
-export function IndicesSerieChart({ pontos, disponiveis, selecionados, onToggle, isLoading }: Props) {
+export function IndicesSerieChart({
+  pontos,
+  disponiveis,
+  selecionados,
+  onToggle,
+  isLoading,
+}: Props) {
   const dados = useMemo(
     () =>
       pontos.map((p) => {
@@ -28,7 +41,7 @@ export function IndicesSerieChart({ pontos, disponiveis, selecionados, onToggle,
         }
         return linha;
       }),
-    [pontos, selecionados],
+    [pontos, selecionados]
   );
 
   const rotulo = (chave: string) => disponiveis.find((i) => i.chave === chave)?.rotulo ?? chave;
@@ -39,10 +52,18 @@ export function IndicesSerieChart({ pontos, disponiveis, selecionados, onToggle,
         {disponiveis.map((i) => {
           const ativo = selecionados.includes(i.chave);
           return (
-            <button key={i.chave} type="button" onClick={() => onToggle(i.chave)} aria-pressed={ativo}>
+            <button
+              key={i.chave}
+              type="button"
+              onClick={() => onToggle(i.chave)}
+              aria-pressed={ativo}
+            >
               <Badge
                 variant={ativo ? 'default' : 'outline'}
-                className={cn('cursor-pointer rounded-full text-[11px]', !ativo && 'text-muted-foreground')}
+                className={cn(
+                  'cursor-pointer rounded-full text-[11px]',
+                  !ativo && 'text-muted-foreground'
+                )}
               >
                 {i.rotulo}
               </Badge>

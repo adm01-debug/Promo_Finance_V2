@@ -8,14 +8,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { logger } from '@/lib/logger';
-import { 
-  KeyRound, 
-  Loader2, 
-  CheckCircle2, 
-  Eye, 
-  EyeOff,
-  ShieldCheck
-} from 'lucide-react';
+import { KeyRound, Loader2, CheckCircle2, Eye, EyeOff, ShieldCheck } from 'lucide-react';
 
 export default function ResetPassword() {
   const navigate = useNavigate();
@@ -31,7 +24,9 @@ export default function ResetPassword() {
 
   useEffect(() => {
     // Listen for PASSWORD_RECOVERY event from the auth link
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((event) => {
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((event) => {
       if (event === 'PASSWORD_RECOVERY') {
         setIsValidSession(true);
         setCheckingSession(false);
@@ -126,8 +121,8 @@ export default function ResetPassword() {
             </div>
             <h3 className="text-xl font-semibold">Link Inválido ou Expirado</h3>
             <p className="text-muted-foreground text-sm">
-              Este link de recuperação de senha é inválido ou já expirou.
-              Solicite um novo reset de senha.
+              Este link de recuperação de senha é inválido ou já expirou. Solicite um novo reset de
+              senha.
             </p>
             <Button onClick={() => navigate('/auth')} className="w-full">
               Voltar ao Login
@@ -181,9 +176,7 @@ export default function ResetPassword() {
               <ShieldCheck className="h-6 w-6 text-primary" />
             </motion.div>
             <CardTitle>Redefinir Senha</CardTitle>
-            <CardDescription>
-              Digite sua nova senha abaixo
-            </CardDescription>
+            <CardDescription>Digite sua nova senha abaixo</CardDescription>
           </CardHeader>
           <CardContent>
             <form onSubmit={handleSubmit} className="space-y-4">
@@ -195,7 +188,10 @@ export default function ResetPassword() {
                     type={showPassword ? 'text' : 'password'}
                     placeholder="••••••••"
                     value={password}
-                    onChange={(e) => { setPassword(e.target.value); setErrors(prev => ({ ...prev, password: undefined })); }}
+                    onChange={(e) => {
+                      setPassword(e.target.value);
+                      setErrors((prev) => ({ ...prev, password: undefined }));
+                    }}
                     className="pr-10"
                     autoComplete="new-password"
                   />
@@ -208,7 +204,11 @@ export default function ResetPassword() {
                   </button>
                 </div>
                 {errors.password && (
-                  <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="text-sm text-destructive">
+                  <motion.p
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    className="text-sm text-destructive"
+                  >
                     {errors.password}
                   </motion.p>
                 )}
@@ -222,7 +222,10 @@ export default function ResetPassword() {
                     type={showConfirm ? 'text' : 'password'}
                     placeholder="••••••••"
                     value={confirmPassword}
-                    onChange={(e) => { setConfirmPassword(e.target.value); setErrors(prev => ({ ...prev, confirm: undefined })); }}
+                    onChange={(e) => {
+                      setConfirmPassword(e.target.value);
+                      setErrors((prev) => ({ ...prev, confirm: undefined }));
+                    }}
                     className="pr-10"
                     autoComplete="new-password"
                   />
@@ -235,7 +238,11 @@ export default function ResetPassword() {
                   </button>
                 </div>
                 {errors.confirm && (
-                  <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="text-sm text-destructive">
+                  <motion.p
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    className="text-sm text-destructive"
+                  >
                     {errors.confirm}
                   </motion.p>
                 )}
@@ -244,10 +251,16 @@ export default function ResetPassword() {
               <div className="text-xs text-muted-foreground space-y-1">
                 <p>A senha deve conter:</p>
                 <ul className="list-disc list-inside space-y-0.5">
-                  <li className={password.length >= 8 ? 'text-success' : ''}>Mínimo 8 caracteres</li>
-                  <li className={/[A-Z]/.test(password) ? 'text-success' : ''}>Uma letra maiúscula</li>
+                  <li className={password.length >= 8 ? 'text-success' : ''}>
+                    Mínimo 8 caracteres
+                  </li>
+                  <li className={/[A-Z]/.test(password) ? 'text-success' : ''}>
+                    Uma letra maiúscula
+                  </li>
                   <li className={/[0-9]/.test(password) ? 'text-success' : ''}>Um número</li>
-                  <li className={/[!@#$%^&*(),.?":{}|<>]/.test(password) ? 'text-success' : ''}>Um caractere especial</li>
+                  <li className={/[!@#$%^&*(),.?":{}|<>]/.test(password) ? 'text-success' : ''}>
+                    Um caractere especial
+                  </li>
                 </ul>
               </div>
 

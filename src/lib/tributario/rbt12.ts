@@ -5,7 +5,7 @@ import type { FaturamentoMes } from './types';
 
 /**
  * Calcula a Receita Bruta dos últimos 12 meses (RBT12).
- * 
+ *
  * Regras:
  * - Empresa com 12+ meses: soma dos 12 meses anteriores ao período de apuração
  * - Empresa com <13 meses (em início de atividade): proporcionalização
@@ -14,7 +14,7 @@ import type { FaturamentoMes } from './types';
 export function calcularRBT12(
   faturamentoHistorico: FaturamentoMes[],
   anoReferencia: number,
-  mesReferencia: number,
+  mesReferencia: number
 ): number {
   if (!faturamentoHistorico || faturamentoHistorico.length === 0) return 0;
 
@@ -49,10 +49,7 @@ export function calcularRBT12(
 /**
  * Calcula receita bruta acumulada no ano-calendário (RBA).
  */
-export function calcularRBA(
-  faturamentoHistorico: FaturamentoMes[],
-  ano: number,
-): number {
+export function calcularRBA(faturamentoHistorico: FaturamentoMes[], ano: number): number {
   return faturamentoHistorico
     .filter((f) => f.ano === ano)
     .reduce((acc, f) => acc + (f.receita_bruta || 0), 0);

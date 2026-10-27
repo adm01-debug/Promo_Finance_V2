@@ -10,7 +10,14 @@ interface Props {
   onCopyHash: () => void;
 }
 
-export function StatsHeader({ errosCount, avisosCount, hashCurto, hashFull, isCopied, onCopyHash }: Props) {
+export function StatsHeader({
+  errosCount,
+  avisosCount,
+  hashCurto,
+  hashFull,
+  isCopied,
+  onCopyHash,
+}: Props) {
   return (
     <div className="grid grid-cols-3 gap-4">
       <div className="rounded-[2rem] border border-white/5 bg-card/[0.02] p-6 text-center transition-all hover:bg-card/[0.04] shadow-2xl group/stat">

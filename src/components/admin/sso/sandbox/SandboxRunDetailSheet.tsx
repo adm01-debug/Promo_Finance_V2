@@ -1,4 +1,10 @@
-import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription } from '@/components/ui/sheet';
+import {
+  Sheet,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+  SheetDescription,
+} from '@/components/ui/sheet';
 import { Badge } from '@/components/ui/badge';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { format } from 'date-fns';
@@ -47,18 +53,20 @@ export function SandboxRunDetailSheet({ run, open, onOpenChange }: Props) {
             {evaluated.length > 0 && (
               <Section title={`Role mappings avaliados (${evaluated.length})`}>
                 <ul className="space-y-1 text-xs">
-                  {evaluated.map(m => (
+                  {evaluated.map((m) => (
                     <li
                       key={`${m.ordem}-${m.idp_group}`}
                       className={cn(
                         'flex items-center justify-between rounded-md border px-2 py-1.5',
-                        m.status === 'matched' && 'border-success/40 bg-success/5',
+                        m.status === 'matched' && 'border-success/40 bg-success/5'
                       )}
                     >
                       <span className="font-mono">
                         #{m.ordem + 1} {m.idp_group} → {m.app_role}
                       </span>
-                      <Badge variant="outline" className="text-[10px]">{m.status}</Badge>
+                      <Badge variant="outline" className="text-[10px]">
+                        {m.status}
+                      </Badge>
                     </li>
                   ))}
                 </ul>
@@ -70,7 +78,9 @@ export function SandboxRunDetailSheet({ run, open, onOpenChange }: Props) {
                 <p className="text-xs text-muted-foreground">Nenhum erro.</p>
               ) : (
                 <ul className="list-disc pl-4 text-xs text-destructive space-y-1">
-                  {run.result.errors.map((e, i) => <li key={i}>{e}</li>)}
+                  {run.result.errors.map((e, i) => (
+                    <li key={i}>{e}</li>
+                  ))}
                 </ul>
               )}
             </Section>

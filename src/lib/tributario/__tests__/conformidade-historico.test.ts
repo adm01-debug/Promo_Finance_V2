@@ -78,7 +78,10 @@ describe('construirHistorico', () => {
   });
 
   it('ignora competências com formato inválido', () => {
-    const serie = construirHistorico([item('x', '2025-13', 'vencida'), item('y', '2025-05', 'vencida')]);
+    const serie = construirHistorico([
+      item('x', '2025-13', 'vencida'),
+      item('y', '2025-05', 'vencida'),
+    ]);
     expect(serie).toHaveLength(1);
     expect(serie[0].competencia).toBe('2025-05');
   });
@@ -185,8 +188,20 @@ describe('analisarTendencia', () => {
   it('acumula multas de toda a série', () => {
     const itens = [item('a', '2025-01', 'vencida'), item('a', '2025-02', 'vencida')];
     const registros: RegistroEntrega[] = [
-      { obrigacaoId: 'a', competencia: '2025-01', status: 'entregue', dataEntrega: '2025-01-20', valorMulta: 100.5 },
-      { obrigacaoId: 'a', competencia: '2025-02', status: 'entregue', dataEntrega: '2025-02-20', valorMulta: 200.25 },
+      {
+        obrigacaoId: 'a',
+        competencia: '2025-01',
+        status: 'entregue',
+        dataEntrega: '2025-01-20',
+        valorMulta: 100.5,
+      },
+      {
+        obrigacaoId: 'a',
+        competencia: '2025-02',
+        status: 'entregue',
+        dataEntrega: '2025-02-20',
+        valorMulta: 200.25,
+      },
     ];
     expect(analisarTendencia(construirHistorico(itens, registros)).multaAcumulada).toBe(300.75);
   });
@@ -287,7 +302,10 @@ describe('simulação massiva — invariantes', () => {
       for (const orgao of ORGAOS.slice(0, 3)) {
         cenarios += 1;
         const competencia = comp(2025, mes);
-        const itens = [item('efd', competencia, 'vencida', orgao), item('dctf', competencia, 'vencida', orgao)];
+        const itens = [
+          item('efd', competencia, 'vencida', orgao),
+          item('dctf', competencia, 'vencida', orgao),
+        ];
         const semEntrega = construirHistorico(itens)[0].score;
         const comEntrega = construirHistorico(itens, [
           { obrigacaoId: 'efd', competencia, status: 'entregue', dataEntrega: `${competencia}-20` },

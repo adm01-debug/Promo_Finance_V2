@@ -1,233 +1,255 @@
-import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
-import { createClient } from "npm:@supabase/supabase-js@2.49.4";
-import { validateContract } from "../_shared/contract-validator.ts";
-import { z } from "https://deno.land/x/zod@v3.22.4/mod.ts";
-import { exigirVinculoEmpresa } from "../_shared/auth-guard.ts";
+import { serve } from 'https://deno.land/std@0.190.0/http/server.ts';
+import { createClient } from 'npm:@supabase/supabase-js@2.49.4';
+import { validateContract } from '../_shared/contract-validator.ts';
+import { z } from 'https://deno.land/x/zod@v3.22.4/mod.ts';
+import { exigirVinculoEmpresa } from '../_shared/auth-guard.ts';
+import { corsHeadersPara } from '../_shared/cors.ts';
+import { createLogger } from '../_shared/observability.ts';
+import { mensagemErro, contextoErro } from '../_shared/erros.ts';
+import { withEdgeObservability } from '../_shared/edge-observability.ts';
+import { respostaIntegracaoDesativada } from '../_shared/resilience.ts';
+const log = createLogger('open-finance');
 
 const _OFSchema = z.object({
   action: z.string().min(1),
   params: z.record(z.unknown()).optional(),
 });
 
-const corsHeaders = {
-  "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type, x-request-id",
-  "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
-};
-
 interface OpenFinanceRequest {
   action:
-    | "get_institutions"
-    | "create_consent"
-    | "get_accounts"
-    | "get_balances"
-    | "get_transactions"
-    | "import_transactions"
-    | "refresh_token"
-    | "revoke_consent";
+    | 'get_institutions'
+    | 'create_consent'
+    | 'get_accounts'
+    | 'get_balances'
+    | 'get_transactions'
+    | 'import_transactions'
+    | 'refresh_token'
+    | 'revoke_consent';
   params?: Record<string, any>;
 }
 
 // Open Finance Brasil API endpoints (sandbox)
-const OPEN_FINANCE_BASE_URL = Deno.env.get("OPEN_FINANCE_BASE_URL") || "https://api.openbanking.org.br/sandbox";
-const OPEN_FINANCE_CLIENT_ID = Deno.env.get("OPEN_FINANCE_CLIENT_ID");
-const OPEN_FINANCE_CLIENT_SECRET = Deno.env.get("OPEN_FINANCE_CLIENT_SECRET");
-const OPEN_FINANCE_REDIRECT_URI = Deno.env.get("OPEN_FINANCE_REDIRECT_URI");
+const OPEN_FINANCE_CLIENT_ID = Deno.env.get('OPEN_FINANCE_CLIENT_ID');
+const OPEN_FINANCE_REDIRECT_URI = Deno.env.get('OPEN_FINANCE_REDIRECT_URI');
 
-const SUPABASE_URL = Deno.env.get("SUPABASE_URL")!;
-const SUPABASE_SERVICE_ROLE_KEY = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
+const SUPABASE_URL = Deno.env.get('SUPABASE_URL')!;
+const SUPABASE_SERVICE_ROLE_KEY = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
 
-serve(async (req) => {
-  if (req.method === "OPTIONS") {
-    return new Response(null, { headers: corsHeaders });
-  }
-
-  try {
-    const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
-
-    // Get authorization header
-    const authHeader = req.headers.get("authorization");
-    if (!authHeader) {
-      return new Response(JSON.stringify({ error: "Authorization required" }), {
-        status: 401,
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
-      });
-    }
-
-    // Verify user
-    const token = authHeader.replace("Bearer ", "");
-    const {
-      data: { user },
-      error: authError,
-    } = await supabase.auth.getUser(token);
-
-    if (authError || !user) {
-      return new Response(JSON.stringify({ error: "Invalid token" }), {
-        status: 401,
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
-      });
-    }
-
-    const _raw = await req.json();
-    const _v = await validateContract(_OFSchema, _raw);
-    if (!_v.success) return _v.response;
-    const { action, params } = _v.data as unknown as OpenFinanceRequest;
-    console.log(`[open-finance] Action: ${action}, User: ${user.id}`);
-
-    let result;
-
-    switch (action) {
-      case "get_institutions":
-        result = await getParticipatingInstitutions();
-        break;
-
-      case "create_consent":
-        result = await createConsent(supabase, user.id, params);
-        break;
-
-      case "get_accounts":
-        result = await getAccounts(supabase, user.id, params?.consent_id);
-        break;
-
-      case "get_balances":
-        result = await getBalances(supabase, user.id, params?.consent_id, params?.account_id);
-        break;
-
-      case "get_transactions":
-        result = await getTransactions(
-          supabase,
-          user.id,
-          params?.consent_id,
-          params?.account_id,
-          params?.start_date,
-          params?.end_date
-        );
-        break;
-
-      case "import_transactions": {
-        const contaBancariaId = params?.conta_bancaria_id;
-        if (!contaBancariaId) {
-          throw new Error("ID da conta bancária do sistema é obrigatório");
-        }
-
-        // Etapa E-012 (PLANO_100.md): a conta bancária de destino não era validada
-        // contra o vínculo empresa↔usuário antes da gravação via service_role,
-        // permitindo IDOR entre tenants (A-015 em AUDITORIA.md).
-        const { data: contaBancariaAlvo, error: contaBancariaError } = await supabase
-          .from("contas_bancarias")
-          .select("empresa_id")
-          .eq("id", contaBancariaId)
-          .maybeSingle();
-        if (contaBancariaError || !contaBancariaAlvo?.empresa_id) {
-          return new Response(
-            JSON.stringify({ error: "Conta bancária não encontrada" }),
-            { status: 404, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-          );
-        }
-        const vinculo = await exigirVinculoEmpresa(user.id, contaBancariaAlvo.empresa_id);
-        if (!vinculo.ok) return vinculo.resposta;
-
-        result = await importTransactionsToSystem(
-          supabase,
-          user.id,
-          params?.consent_id,
-          params?.account_id,
-          contaBancariaId,
-          params?.start_date,
-          params?.end_date
-        );
-        break;
+serve(
+  withEdgeObservability('open-finance', async (req) => {
+    const _t0 = Date.now();
+    try {
+      const corsHeaders = corsHeadersPara(req);
+      if (req.method === 'OPTIONS') {
+        return new Response(null, { headers: corsHeaders });
       }
 
-      case "refresh_token":
-        result = await refreshAccessToken(supabase, user.id, params?.consent_id);
-        break;
+      try {
+        const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
 
-      case "revoke_consent":
-        result = await revokeConsent(supabase, user.id, params?.consent_id);
-        break;
+        // Get authorization header
+        const authHeader = req.headers.get('authorization');
+        if (!authHeader) {
+          return new Response(JSON.stringify({ error: 'Authorization required' }), {
+            status: 401,
+            headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+          });
+        }
 
-      default:
-        throw new Error(`Unknown action: ${action}`);
+        // Verify user
+        const token = authHeader.replace('Bearer ', '');
+        const {
+          data: { user },
+          error: authError,
+        } = await supabase.auth.getUser(token);
+
+        if (authError || !user) {
+          return new Response(JSON.stringify({ error: 'Invalid token' }), {
+            status: 401,
+            headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+          });
+        }
+
+        const _raw = await req.json();
+        const _v = await validateContract(_OFSchema, _raw);
+        if (!_v.success) return _v.response;
+        const { action, params } = _v.data as unknown as OpenFinanceRequest;
+
+        // Kill-switch depois de auth+schema para as ações sem recurso de empresa:
+        // import_transactions tem vínculo próprio (conta bancária) e checa lá dentro,
+        // senão um usuário sem escopo sobre a conta sondaria o estado do circuito.
+        // revoke_consent também fica de fora: só atualiza o status local do
+        // consentimento — bloquear a revogação num incidente violaria LGPD.
+        if (action !== 'import_transactions' && action !== 'revoke_consent') {
+          const inativa = respostaIntegracaoDesativada('open_finance', corsHeaders);
+          if (inativa) return inativa;
+        }
+        log.info(`[open-finance] Action: ${action}, User: ${user.id}`);
+
+        let result;
+
+        switch (action) {
+          case 'get_institutions':
+            result = await getParticipatingInstitutions();
+            break;
+
+          case 'create_consent':
+            result = await createConsent(supabase, user.id, params);
+            break;
+
+          case 'get_accounts':
+            result = await getAccounts(supabase, user.id, params?.consent_id);
+            break;
+
+          case 'get_balances':
+            result = await getBalances(supabase, user.id, params?.consent_id, params?.account_id);
+            break;
+
+          case 'get_transactions':
+            result = await getTransactions(
+              supabase,
+              user.id,
+              params?.consent_id,
+              params?.account_id,
+              params?.start_date,
+              params?.end_date
+            );
+            break;
+
+          case 'import_transactions': {
+            const contaBancariaId = params?.conta_bancaria_id;
+            if (!contaBancariaId) {
+              throw new Error('ID da conta bancária do sistema é obrigatório');
+            }
+
+            // Etapa E-012 (PLANO_100.md): a conta bancária de destino não era validada
+            // contra o vínculo empresa↔usuário antes da gravação via service_role,
+            // permitindo IDOR entre tenants (A-015 em AUDITORIA.md).
+            const { data: contaBancariaAlvo, error: contaBancariaError } = await supabase
+              .from('contas_bancarias')
+              .select('empresa_id')
+              .eq('id', contaBancariaId)
+              .maybeSingle();
+            if (contaBancariaError || !contaBancariaAlvo?.empresa_id) {
+              return new Response(JSON.stringify({ error: 'Conta bancária não encontrada' }), {
+                status: 404,
+                headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+              });
+            }
+            const vinculo = await exigirVinculoEmpresa(user.id, contaBancariaAlvo.empresa_id, req);
+            if (!vinculo.ok) return vinculo.resposta;
+
+            const inativaImport = respostaIntegracaoDesativada('open_finance', corsHeaders);
+            if (inativaImport) return inativaImport;
+
+            result = await importTransactionsToSystem(
+              supabase,
+              user.id,
+              params?.consent_id,
+              params?.account_id,
+              contaBancariaId,
+              params?.start_date,
+              params?.end_date
+            );
+            break;
+          }
+
+          case 'refresh_token':
+            result = await refreshAccessToken(supabase, user.id, params?.consent_id);
+            break;
+
+          case 'revoke_consent':
+            result = await revokeConsent(supabase, user.id, params?.consent_id);
+            break;
+
+          default:
+            throw new Error(`Unknown action: ${action}`);
+        }
+
+        return new Response(JSON.stringify(result), {
+          status: 200,
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        });
+      } catch (error: any) {
+        log.error('[open-finance] Error:', {
+          error_message: mensagemErro(error),
+          context: contextoErro(error),
+        });
+        return new Response(JSON.stringify({ error: error.message }), {
+          status: 500,
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        });
+      }
+    } finally {
+      log.info('request', { duration_ms: Date.now() - _t0 });
+      await log.flush();
     }
-
-    return new Response(JSON.stringify(result), {
-      status: 200,
-      headers: { ...corsHeaders, "Content-Type": "application/json" },
-    });
-  } catch (error: any) {
-    console.error("[open-finance] Error:", error);
-    return new Response(JSON.stringify({ error: error.message }), {
-      status: 500,
-      headers: { ...corsHeaders, "Content-Type": "application/json" },
-    });
-  }
-});
+  })
+);
 
 // Get list of participating institutions in Open Finance Brazil
 async function getParticipatingInstitutions(): Promise<any> {
-  console.log("[open-finance] Fetching participating institutions");
+  log.info('[open-finance] Fetching participating institutions');
 
   // This would call the Open Finance directory API
   // For now, return a simulated list of major Brazilian banks
-  const institutions = [
-    {
-      id: "bb",
-      name: "Banco do Brasil",
-      logo: "https://www.bb.com.br/docs/portal/img/logobb.png",
-      status: "active",
-      api_base_url: "https://openbanking.bb.com.br",
-    },
-    {
-      id: "itau",
-      name: "Itaú Unibanco",
-      logo: "https://www.itau.com.br/_arquivosestaticos/Itau/defaultTheme/img/logo-itau.png",
-      status: "active",
-      api_base_url: "https://secure.api.itau",
-    },
-    {
-      id: "bradesco",
-      name: "Bradesco",
-      logo: "https://banco.bradesco/assets/classic/img/logo-bradesco.png",
-      status: "active",
-      api_base_url: "https://openbanking.bradesco.com.br",
-    },
-    {
-      id: "santander",
-      name: "Santander Brasil",
-      logo: "https://www.santander.com.br/institucional/img/logo-santander.png",
-      status: "active",
-      api_base_url: "https://openbanking.santander.com.br",
-    },
-    {
-      id: "caixa",
-      name: "Caixa Econômica Federal",
-      logo: "https://www.caixa.gov.br/PublishingImages/marca-caixa.png",
-      status: "active",
-      api_base_url: "https://openbanking.caixa.gov.br",
-    },
-    {
-      id: "nubank",
-      name: "Nubank",
-      logo: "https://nubank.com.br/images/nu-icon.png",
-      status: "active",
-      api_base_url: "https://prod-global-webapp-proxy.nubank.com.br",
-    },
-    {
-      id: "inter",
-      name: "Banco Inter",
-      logo: "https://static.bancointer.com.br/images/logoInter.svg",
-      status: "active",
-      api_base_url: "https://openbanking.bancointer.com.br",
-    },
-    {
-      id: "c6bank",
-      name: "C6 Bank",
-      logo: "https://www.c6bank.com.br/assets/images/logo-c6bank.svg",
-      status: "active",
-      api_base_url: "https://openbanking.c6bank.com.br",
-    },
+  const INSTITUICOES: Array<[id: string, nome: string, logo: string, apiBase: string]> = [
+    [
+      'bb',
+      'Banco do Brasil',
+      'https://www.bb.com.br/docs/portal/img/logobb.png',
+      'https://openbanking.bb.com.br',
+    ],
+    [
+      'itau',
+      'Itaú Unibanco',
+      'https://www.itau.com.br/_arquivosestaticos/Itau/defaultTheme/img/logo-itau.png',
+      'https://secure.api.itau',
+    ],
+    [
+      'bradesco',
+      'Bradesco',
+      'https://banco.bradesco/assets/classic/img/logo-bradesco.png',
+      'https://openbanking.bradesco.com.br',
+    ],
+    [
+      'santander',
+      'Santander Brasil',
+      'https://www.santander.com.br/institucional/img/logo-santander.png',
+      'https://openbanking.santander.com.br',
+    ],
+    [
+      'caixa',
+      'Caixa Econômica Federal',
+      'https://www.caixa.gov.br/PublishingImages/marca-caixa.png',
+      'https://openbanking.caixa.gov.br',
+    ],
+    [
+      'nubank',
+      'Nubank',
+      'https://nubank.com.br/images/nu-icon.png',
+      'https://prod-global-webapp-proxy.nubank.com.br',
+    ],
+    [
+      'inter',
+      'Banco Inter',
+      'https://static.bancointer.com.br/images/logoInter.svg',
+      'https://openbanking.bancointer.com.br',
+    ],
+    [
+      'c6bank',
+      'C6 Bank',
+      'https://www.c6bank.com.br/assets/images/logo-c6bank.svg',
+      'https://openbanking.c6bank.com.br',
+    ],
   ];
+  const institutions = INSTITUICOES.map(([id, name, logo, api_base_url]) => ({
+    id,
+    name,
+    logo,
+    status: 'active',
+    api_base_url,
+  }));
 
   return {
     success: true,
@@ -244,14 +266,14 @@ async function createConsent(
 ): Promise<any> {
   const institutionId = params?.institution_id;
   const permissions = params?.permissions || [
-    "ACCOUNTS_READ",
-    "ACCOUNTS_BALANCES_READ",
-    "RESOURCES_READ",
-    "CREDIT_CARDS_ACCOUNTS_READ",
-    "CREDIT_CARDS_ACCOUNTS_BILLS_READ",
+    'ACCOUNTS_READ',
+    'ACCOUNTS_BALANCES_READ',
+    'RESOURCES_READ',
+    'CREDIT_CARDS_ACCOUNTS_READ',
+    'CREDIT_CARDS_ACCOUNTS_BILLS_READ',
   ];
 
-  console.log(`[open-finance] Creating consent for user ${userId} at institution ${institutionId}`);
+  log.info(`[open-finance] Creating consent for user ${userId} at institution ${institutionId}`);
 
   // In a real implementation, this would:
   // 1. Call the institution's consent API
@@ -264,12 +286,12 @@ async function createConsent(
   const expiresAt = new Date(Date.now() + 365 * 24 * 60 * 60 * 1000); // 1 year
 
   // Store consent in database
-  await supabase.from("open_finance_consents").insert({
+  await supabase.from('open_finance_consents').insert({
     id: consentId,
     user_id: userId,
     institution_id: institutionId,
     permissions: permissions,
-    status: "awaiting_authorization",
+    status: 'awaiting_authorization',
     expires_at: expiresAt.toISOString(),
   });
 
@@ -281,7 +303,7 @@ async function createConsent(
     consent_id: consentId,
     authorization_url: authUrl,
     expires_at: expiresAt.toISOString(),
-    message: "Redirecione o usuário para a URL de autorização",
+    message: 'Redirecione o usuário para a URL de autorização',
   };
 }
 
@@ -293,10 +315,10 @@ function buildAuthorizationUrl(
   // This would be the actual bank's authorization URL
   const baseUrl = `https://openbanking.example.com/authorize`;
   const params = new URLSearchParams({
-    client_id: OPEN_FINANCE_CLIENT_ID || "",
-    redirect_uri: OPEN_FINANCE_REDIRECT_URI || "",
-    response_type: "code",
-    scope: permissions.join(" "),
+    client_id: OPEN_FINANCE_CLIENT_ID || '',
+    redirect_uri: OPEN_FINANCE_REDIRECT_URI || '',
+    response_type: 'code',
+    scope: permissions.join(' '),
     state: consentId,
   });
 
@@ -304,25 +326,21 @@ function buildAuthorizationUrl(
 }
 
 // Get linked accounts
-async function getAccounts(
-  supabase: any,
-  userId: string,
-  consentId?: string
-): Promise<any> {
-  console.log(`[open-finance] Getting accounts for user ${userId}, consent ${consentId}`);
+async function getAccounts(supabase: any, userId: string, consentId?: string): Promise<any> {
+  log.info(`[open-finance] Getting accounts for user ${userId}, consent ${consentId}`);
 
   // Check consent is valid
   if (consentId) {
     const { data: consent } = await supabase
-      .from("open_finance_consents")
-      .select("*")
-      .eq("id", consentId)
-      .eq("user_id", userId)
-      .eq("status", "authorized")
+      .from('open_finance_consents')
+      .select('*')
+      .eq('id', consentId)
+      .eq('user_id', userId)
+      .eq('status', 'authorized')
       .single();
 
     if (!consent) {
-      throw new Error("Consentimento não encontrado ou não autorizado");
+      throw new Error('Consentimento não encontrado ou não autorizado');
     }
   }
 
@@ -330,27 +348,27 @@ async function getAccounts(
   // For demo, return simulated accounts
   const accounts = [
     {
-      id: "acc_001",
-      type: "CONTA_CORRENTE",
-      subtype: "INDIVIDUAL",
-      currency: "BRL",
-      accountNumber: "****1234",
-      branch: "0001",
+      id: 'acc_001',
+      type: 'CONTA_CORRENTE',
+      subtype: 'INDIVIDUAL',
+      currency: 'BRL',
+      accountNumber: '****1234',
+      branch: '0001',
       bank: {
-        code: "341",
-        name: "Itaú Unibanco",
+        code: '341',
+        name: 'Itaú Unibanco',
       },
     },
     {
-      id: "acc_002",
-      type: "CONTA_POUPANCA",
-      subtype: "INDIVIDUAL",
-      currency: "BRL",
-      accountNumber: "****5678",
-      branch: "0001",
+      id: 'acc_002',
+      type: 'CONTA_POUPANCA',
+      subtype: 'INDIVIDUAL',
+      currency: 'BRL',
+      accountNumber: '****5678',
+      branch: '0001',
       bank: {
-        code: "341",
-        name: "Itaú Unibanco",
+        code: '341',
+        name: 'Itaú Unibanco',
       },
     },
   ];
@@ -369,22 +387,22 @@ async function getBalances(
   consentId?: string,
   accountId?: string
 ): Promise<any> {
-  console.log(`[open-finance] Getting balances for account ${accountId}`);
+  log.info(`[open-finance] Getting balances for account ${accountId}`);
 
   // Simulated balances
   const balances = {
     account_id: accountId,
     available: {
-      amount: "245890.50",
-      currency: "BRL",
+      amount: '245890.50',
+      currency: 'BRL',
     },
     current: {
-      amount: "248500.00",
-      currency: "BRL",
+      amount: '248500.00',
+      currency: 'BRL',
     },
     blocked: {
-      amount: "2609.50",
-      currency: "BRL",
+      amount: '2609.50',
+      currency: 'BRL',
     },
     updated_at: new Date().toISOString(),
   };
@@ -404,7 +422,7 @@ async function getTransactions(
   startDate?: string,
   endDate?: string
 ): Promise<any> {
-  console.log(`[open-finance] Getting transactions for account ${accountId}`);
+  log.info(`[open-finance] Getting transactions for account ${accountId}`);
 
   const start = startDate || new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString();
   const end = endDate || new Date().toISOString();
@@ -412,54 +430,54 @@ async function getTransactions(
   // Simulated transactions
   const transactions = [
     {
-      id: "txn_001",
-      type: "PIX",
-      amount: "-1500.00",
-      currency: "BRL",
-      description: "PIX Enviado - FORNECEDOR LTDA",
-      category: "TRANSFER",
+      id: 'txn_001',
+      type: 'PIX',
+      amount: '-1500.00',
+      currency: 'BRL',
+      description: 'PIX Enviado - FORNECEDOR LTDA',
+      category: 'TRANSFER',
       date: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000).toISOString(),
-      status: "COMPLETED",
+      status: 'COMPLETED',
     },
     {
-      id: "txn_002",
-      type: "PIX",
-      amount: "5000.00",
-      currency: "BRL",
-      description: "PIX Recebido - CLIENTE ABC",
-      category: "TRANSFER",
+      id: 'txn_002',
+      type: 'PIX',
+      amount: '5000.00',
+      currency: 'BRL',
+      description: 'PIX Recebido - CLIENTE ABC',
+      category: 'TRANSFER',
       date: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString(),
-      status: "COMPLETED",
+      status: 'COMPLETED',
     },
     {
-      id: "txn_003",
-      type: "TED",
-      amount: "-8500.00",
-      currency: "BRL",
-      description: "TED - PAGTO FORNECEDOR",
-      category: "TRANSFER",
+      id: 'txn_003',
+      type: 'TED',
+      amount: '-8500.00',
+      currency: 'BRL',
+      description: 'TED - PAGTO FORNECEDOR',
+      category: 'TRANSFER',
       date: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000).toISOString(),
-      status: "COMPLETED",
+      status: 'COMPLETED',
     },
     {
-      id: "txn_004",
-      type: "BOLETO",
-      amount: "-2350.00",
-      currency: "BRL",
-      description: "PGTO BOLETO - ENERGIA ELETRICA",
-      category: "BILL_PAYMENT",
+      id: 'txn_004',
+      type: 'BOLETO',
+      amount: '-2350.00',
+      currency: 'BRL',
+      description: 'PGTO BOLETO - ENERGIA ELETRICA',
+      category: 'BILL_PAYMENT',
       date: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000).toISOString(),
-      status: "COMPLETED",
+      status: 'COMPLETED',
     },
     {
-      id: "txn_005",
-      type: "CREDIT",
-      amount: "12500.00",
-      currency: "BRL",
-      description: "DEP BOLETO - FATURA 12345",
-      category: "DEPOSIT",
+      id: 'txn_005',
+      type: 'CREDIT',
+      amount: '12500.00',
+      currency: 'BRL',
+      description: 'DEP BOLETO - FATURA 12345',
+      category: 'DEPOSIT',
       date: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString(),
-      status: "COMPLETED",
+      status: 'COMPLETED',
     },
   ];
 
@@ -481,10 +499,12 @@ async function importTransactionsToSystem(
   startDate?: string,
   endDate?: string
 ): Promise<any> {
-  console.log(`[open-finance] Importing transactions for account ${accountId} to conta_bancaria ${contaBancariaId}`);
+  log.info(
+    `[open-finance] Importing transactions for account ${accountId} to conta_bancaria ${contaBancariaId}`
+  );
 
   if (!contaBancariaId) {
-    throw new Error("ID da conta bancária do sistema é obrigatório");
+    throw new Error('ID da conta bancária do sistema é obrigatório');
   }
 
   // Get transactions from Open Finance
@@ -504,9 +524,9 @@ async function importTransactionsToSystem(
 
   // Get existing transactions to avoid duplicates
   const { data: existingTransactions } = await supabase
-    .from("transacoes_bancarias")
-    .select("descricao, data, valor")
-    .eq("conta_bancaria_id", contaBancariaId);
+    .from('transacoes_bancarias')
+    .select('descricao, data, valor')
+    .eq('conta_bancaria_id', contaBancariaId);
 
   const existingKeys = new Set(
     existingTransactions?.map((t: any) => `${t.descricao}-${t.data}-${t.valor}`) || []
@@ -514,30 +534,30 @@ async function importTransactionsToSystem(
 
   // Calculate running balance
   const { data: contaBancaria } = await supabase
-    .from("contas_bancarias")
-    .select("saldo_atual")
-    .eq("id", contaBancariaId)
+    .from('contas_bancarias')
+    .select('saldo_atual')
+    .eq('id', contaBancariaId)
     .single();
 
   let runningBalance = contaBancaria?.saldo_atual || 0;
 
   for (const txn of transactions) {
     const amount = parseFloat(txn.amount);
-    const txnDate = new Date(txn.date).toISOString().split("T")[0];
-    const tipo = amount >= 0 ? "receita" : "despesa";
+    const txnDate = new Date(txn.date).toISOString().split('T')[0];
+    const tipo = amount >= 0 ? 'receita' : 'despesa';
     const valorAbsoluto = Math.abs(amount);
 
     // Check for duplicates
     const key = `${txn.description}-${txnDate}-${valorAbsoluto}`;
     if (existingKeys.has(key)) {
-      console.log(`[open-finance] Skipping duplicate transaction: ${txn.description}`);
+      log.info(`[open-finance] Skipping duplicate transaction: ${txn.description}`);
       skipped++;
       continue;
     }
 
     try {
       // Insert transaction
-      const { error: insertError } = await supabase.from("transacoes_bancarias").insert({
+      const { error: insertError } = await supabase.from('transacoes_bancarias').insert({
         conta_bancaria_id: contaBancariaId,
         data: txnDate,
         descricao: txn.description,
@@ -548,7 +568,10 @@ async function importTransactionsToSystem(
       });
 
       if (insertError) {
-        console.error(`[open-finance] Error inserting transaction:`, insertError);
+        log.error(`[open-finance] Error inserting transaction:`, {
+          error_message: mensagemErro(insertError),
+          context: contextoErro(insertError),
+        });
         errors++;
       } else {
         imported++;
@@ -556,12 +579,17 @@ async function importTransactionsToSystem(
         existingKeys.add(key);
       }
     } catch (err) {
-      console.error(`[open-finance] Error processing transaction:`, err);
+      log.error(`[open-finance] Error processing transaction:`, {
+        error_message: mensagemErro(err),
+        context: contextoErro(err),
+      });
       errors++;
     }
   }
 
-  console.log(`[open-finance] Import complete: ${imported} imported, ${skipped} skipped, ${errors} errors`);
+  log.info(
+    `[open-finance] Import complete: ${imported} imported, ${skipped} skipped, ${errors} errors`
+  );
 
   return {
     success: true,
@@ -574,44 +602,36 @@ async function importTransactionsToSystem(
 }
 
 // Refresh access token
-async function refreshAccessToken(
-  supabase: any,
-  userId: string,
-  consentId?: string
-): Promise<any> {
-  console.log(`[open-finance] Refreshing token for consent ${consentId}`);
+async function refreshAccessToken(supabase: any, userId: string, consentId?: string): Promise<any> {
+  log.info(`[open-finance] Refreshing token for consent ${consentId}`);
 
   // In real implementation, call token refresh endpoint
   // Update stored tokens
 
   return {
     success: true,
-    message: "Token atualizado com sucesso",
+    message: 'Token atualizado com sucesso',
     expires_in: 3600,
   };
 }
 
 // Revoke consent
-async function revokeConsent(
-  supabase: any,
-  userId: string,
-  consentId?: string
-): Promise<any> {
-  console.log(`[open-finance] Revoking consent ${consentId}`);
+async function revokeConsent(supabase: any, userId: string, consentId?: string): Promise<any> {
+  log.info(`[open-finance] Revoking consent ${consentId}`);
 
   if (!consentId) {
-    throw new Error("Consent ID is required");
+    throw new Error('Consent ID is required');
   }
 
   // Update consent status
   await supabase
-    .from("open_finance_consents")
-    .update({ status: "revoked", revoked_at: new Date().toISOString() })
-    .eq("id", consentId)
-    .eq("user_id", userId);
+    .from('open_finance_consents')
+    .update({ status: 'revoked', revoked_at: new Date().toISOString() })
+    .eq('id', consentId)
+    .eq('user_id', userId);
 
   return {
     success: true,
-    message: "Consentimento revogado com sucesso",
+    message: 'Consentimento revogado com sucesso',
   };
 }

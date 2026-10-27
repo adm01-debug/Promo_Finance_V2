@@ -40,7 +40,7 @@ export const SearchInput = forwardRef<HTMLInputElement, SearchInputProps>(
       debounceMs = 300,
       isLoading = false,
       showClear = true,
-      size = 'md',
+      inputSize = 'md',
       className,
       placeholder = 'Buscar...',
       ...props
@@ -102,7 +102,7 @@ export const SearchInput = forwardRef<HTMLInputElement, SearchInputProps>(
       [handleClear, onSearch, value]
     );
 
-    const classes = sizeClasses[size];
+    const classes = sizeClasses[inputSize];
 
     return (
       <div className="relative">

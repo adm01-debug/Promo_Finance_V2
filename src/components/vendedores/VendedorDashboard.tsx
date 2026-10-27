@@ -14,42 +14,49 @@ export function VendedorDashboard() {
   const performance = useMemo(() => {
     if (!vendedores?.length || !contasReceber?.length) return [];
 
-    return vendedores.map(v => {
-      const clientesIds = new Set<string>();
-      contasReceber.forEach(cr => {
-        if (cr.cliente_id) clientesIds.add(cr.cliente_id);
-      });
+    return vendedores
+      .map((v) => {
+        const clientesIds = new Set<string>();
+        contasReceber.forEach((cr) => {
+          if (cr.cliente_id) clientesIds.add(cr.cliente_id);
+        });
 
-      // Sum all receivables for this vendedor (simplified: all receivables / vendedores count)
-      const totalFaturado = contasReceber
-        .filter(cr => cr.status === 'pago')
-        .reduce((acc, cr) => acc + (cr.valor_recebido || cr.valor), 0) / (vendedores.length || 1);
+        // Sum all receivables for this vendedor (simplified: all receivables / vendedores count)
+        const totalFaturado =
+          contasReceber
+            .filter((cr) => cr.status === 'pago')
+            .reduce((acc, cr) => acc + (cr.valor_recebido ?? cr.valor ?? 0), 0) /
+          (vendedores.length || 1);
 
-      const totalPendente = contasReceber
-        .filter(cr => cr.status === 'pendente' || cr.status === 'vencido')
-        .reduce((acc, cr) => acc + cr.valor, 0) / (vendedores.length || 1);
+        const totalPendente =
+          contasReceber
+            .filter((cr) => cr.status === 'pendente' || cr.status === 'vencido')
+            .reduce((acc, cr) => acc + (cr.valor ?? 0), 0) / (vendedores.length || 1);
 
-      const totalInadimplente = contasReceber
-        .filter(cr => cr.status === 'vencido')
-        .reduce((acc, cr) => acc + cr.valor, 0) / (vendedores.length || 1);
+        const totalInadimplente =
+          contasReceber
+            .filter((cr) => cr.status === 'vencido')
+            .reduce((acc, cr) => acc + (cr.valor ?? 0), 0) / (vendedores.length || 1);
 
-      const meta = v.meta_mensal || 0;
-      const percentualMeta = meta > 0 ? Math.min((totalFaturado / meta) * 100, 150) : 0;
-      const taxaInadimplencia = totalFaturado > 0 ? (totalInadimplente / (totalFaturado + totalPendente)) * 100 : 0;
+        const meta = v.meta_mensal || 0;
+        const percentualMeta = meta > 0 ? Math.min((totalFaturado / meta) * 100, 150) : 0;
+        const taxaInadimplencia =
+          totalFaturado > 0 ? (totalInadimplente / (totalFaturado + totalPendente)) * 100 : 0;
 
-      return {
-        id: v.id,
-        nome: v.nome,
-        email: v.email,
-        meta,
-        totalFaturado,
-        totalPendente,
-        totalInadimplente,
-        percentualMeta,
-        taxaInadimplencia,
-        numClientes: Math.ceil(clientesIds.size / (vendedores.length || 1)),
-      };
-    }).sort((a, b) => b.totalFaturado - a.totalFaturado);
+        return {
+          id: v.id,
+          nome: v.nome,
+          email: v.email,
+          meta,
+          totalFaturado,
+          totalPendente,
+          totalInadimplente,
+          percentualMeta,
+          taxaInadimplencia,
+          numClientes: Math.ceil(clientesIds.size / (vendedores.length || 1)),
+        };
+      })
+      .sort((a, b) => b.totalFaturado - a.totalFaturado);
   }, [vendedores, contasReceber]);
 
   if (!performance.length) {
@@ -86,7 +93,12 @@ export function VendedorDashboard() {
         <Card>
           <CardContent className="pt-4 text-center">
             <Target className="h-5 w-5 mx-auto mb-2 text-warning" />
-            <p className="text-2xl font-bold">{(performance.reduce((a, v) => a + v.percentualMeta, 0) / performance.length).toFixed(0)}%</p>
+            <p className="text-2xl font-bold">
+              {(performance.reduce((a, v) => a + v.percentualMeta, 0) / performance.length).toFixed(
+                0
+              )}
+              %
+            </p>
             <p className="text-xs text-muted-foreground">Média Atingimento Meta</p>
           </CardContent>
         </Card>
@@ -119,11 +131,17 @@ export function VendedorDashboard() {
             >
               <div className="flex items-center justify-between mb-3">
                 <div className="flex items-center gap-3">
-                  <div className={`h-8 w-8 rounded-full flex items-center justify-center font-bold text-sm ${
-                    index === 0 ? 'bg-primary/20 text-primary' :
-                    index === 1 ? 'bg-warning/20 text-warning' :
-                    index === 2 ? 'bg-accent/20 text-accent' : 'bg-muted text-muted-foreground'
-                  }`}>
+                  <div
+                    className={`h-8 w-8 rounded-full flex items-center justify-center font-bold text-sm ${
+                      index === 0
+                        ? 'bg-primary/20 text-primary'
+                        : index === 1
+                          ? 'bg-warning/20 text-warning'
+                          : index === 2
+                            ? 'bg-accent/20 text-accent'
+                            : 'bg-muted text-muted-foreground'
+                    }`}
+                  >
                     {index + 1}º
                   </div>
                   <div>
@@ -144,11 +162,15 @@ export function VendedorDashboard() {
                 </div>
                 <div>
                   <p className="text-xs text-muted-foreground">Inadimplência</p>
-                  <p className="font-medium text-sm text-destructive">{v.taxaInadimplencia.toFixed(1)}%</p>
+                  <p className="font-medium text-sm text-destructive">
+                    {v.taxaInadimplencia.toFixed(1)}%
+                  </p>
                 </div>
                 <div>
                   <p className="text-xs text-muted-foreground">Meta Mensal</p>
-                  <p className="font-medium text-sm">{v.meta > 0 ? formatCurrency(v.meta) : 'Não definida'}</p>
+                  <p className="font-medium text-sm">
+                    {v.meta > 0 ? formatCurrency(v.meta) : 'Não definida'}
+                  </p>
                 </div>
               </div>
 
@@ -156,7 +178,11 @@ export function VendedorDashboard() {
                 <div>
                   <div className="flex justify-between text-xs mb-1">
                     <span>Atingimento da meta</span>
-                    <span className={v.percentualMeta >= 100 ? 'text-success font-bold' : 'text-muted-foreground'}>
+                    <span
+                      className={
+                        v.percentualMeta >= 100 ? 'text-success font-bold' : 'text-muted-foreground'
+                      }
+                    >
                       {v.percentualMeta.toFixed(0)}%
                     </span>
                   </div>

@@ -36,7 +36,8 @@ function extrairContaOFX(content: string, avisos: string[]): ContaOFX {
 function extrairTransacoesOFX(content: string, avisos: string[]): TransacaoOFX[] {
   const transacoes: TransacaoOFX[] = [];
 
-  const stmtTrnRegex = /<STMTTRN>([\s\S]*?)<\/STMTTRN>|<STMTTRN>([\s\S]*?)(?=<STMTTRN>|<\/BANKTRANLIST>|$)/gi;
+  const stmtTrnRegex =
+    /<STMTTRN>([\s\S]*?)<\/STMTTRN>|<STMTTRN>([\s\S]*?)(?=<STMTTRN>|<\/BANKTRANLIST>|$)/gi;
   const matches = content.matchAll(stmtTrnRegex);
 
   for (const match of matches) {

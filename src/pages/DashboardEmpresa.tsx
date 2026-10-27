@@ -63,15 +63,41 @@ export default function DashboardEmpresa() {
   const empresa = empresas.find((e) => e.id === empresaId);
 
   const contasBancariasEmpresa = useMemo(
-    () => contasBancarias.filter((c) => c.empresa_id === empresaId),
+    () =>
+      contasBancarias
+        .filter((c) => c.empresa_id === empresaId)
+        .map((c) => ({
+          ...c,
+          banco: c.banco ?? '',
+          codigo_banco: c.codigo_banco ?? '',
+          agencia: c.agencia ?? '',
+          conta: c.conta ?? '',
+          saldo_disponivel: c.saldo_disponivel ?? 0,
+        })),
     [contasBancarias, empresaId]
   );
   const contasPagarEmpresa = useMemo(
-    () => contasPagar.filter((c) => c.empresa_id === empresaId),
+    () =>
+      contasPagar
+        .filter((c) => c.empresa_id === empresaId)
+        .map((c) => ({
+          ...c,
+          valor: c.valor ?? 0,
+          descricao: c.descricao ?? '',
+          fornecedor_nome: c.fornecedor_nome ?? 'Sem fornecedor',
+        })),
     [contasPagar, empresaId]
   );
   const contasReceberEmpresa = useMemo(
-    () => contasReceber.filter((c) => c.empresa_id === empresaId),
+    () =>
+      contasReceber
+        .filter((c) => c.empresa_id === empresaId)
+        .map((c) => ({
+          ...c,
+          valor: c.valor ?? 0,
+          descricao: c.descricao ?? '',
+          cliente_nome: c.cliente_nome ?? 'Sem cliente',
+        })),
     [contasReceber, empresaId]
   );
 
@@ -126,7 +152,7 @@ export default function DashboardEmpresa() {
 
   const fluxoCaixaProjetado = useMemo(() => {
     const dias = parseInt(periodoAnalise);
-    const result = [];
+    const result: { data: string; receitas: number; despesas: number; saldo: number }[] = [];
     let saldoAcumulado = saldoTotal;
     for (let i = 0; i < dias; i++) {
       const data = new Date(hoje);

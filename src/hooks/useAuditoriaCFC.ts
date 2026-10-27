@@ -69,7 +69,8 @@ export function useAuditoriaCFC(empresaId: string | undefined): AuditoriaCFCResu
     const score = Math.max(0, Math.min(100, 100 - penalidade));
 
     const problemasCriticos = formatoInvalido.length + duplicidades.length;
-    const totalProblemas = formatoInvalido.length + prefixoIncorreto.length + duplicidades.length + semRef.length;
+    const totalProblemas =
+      formatoInvalido.length + prefixoIncorreto.length + duplicidades.length + semRef.length;
 
     return {
       isLoading,

@@ -13,11 +13,7 @@ import { compararMvaComCatalogo, type EntradaCoerenciaMva } from './coerencia-mv
 import { compararNcmsComCatalogo, type NcmBanco } from './coerencia-ncm';
 import { compararUfsComCatalogo, validarMarcadorFcp } from './coerencia-ufs';
 import { validarInterestaduais } from './painel';
-import type {
-  AliquotaInterestadualCatalogo,
-  FaixaSimplesCatalogo,
-  UfCatalogo,
-} from './types';
+import type { AliquotaInterestadualCatalogo, FaixaSimplesCatalogo, UfCatalogo } from './types';
 
 /** Identificador estável do catálogo de origem do alerta. */
 export type CatalogoId =
@@ -111,7 +107,7 @@ function montar(
   campo: string,
   valorMotor: string | number | boolean | null,
   valorBanco: string | number | boolean | null,
-  mensagem?: string,
+  mensagem?: string
 ): AlertaCatalogo {
   return {
     id: `${catalogo}:${item}:${campo}`,
@@ -133,7 +129,11 @@ function montar(
  * estruturados. Usado pelas validações internas que já produzem texto
  * (marcador de FCP e cobertura interestadual).
  */
-function deTexto(catalogo: CatalogoId, campo: string, mensagens: readonly string[]): AlertaCatalogo[] {
+function deTexto(
+  catalogo: CatalogoId,
+  campo: string,
+  mensagens: readonly string[]
+): AlertaCatalogo[] {
   return mensagens.map((msg, indice) => {
     const separador = msg.indexOf(':');
     const temItem = separador > 0;
@@ -169,9 +169,7 @@ export interface EntradaAlertasCatalogos {
  * lastro versionado) e cada divergência campo a campo detectada pelas guardas
  * de coerência já existentes.
  */
-export function gerarAlertasCatalogos(
-  entrada: EntradaAlertasCatalogos,
-): ResumoAlertasCatalogos {
+export function gerarAlertasCatalogos(entrada: EntradaAlertasCatalogos): ResumoAlertasCatalogos {
   const { ufs, interestaduais, faixas, itensIss, ncms } = entrada;
   const alertas: AlertaCatalogo[] = [];
 
@@ -184,8 +182,8 @@ export function gerarAlertasCatalogos(
         'catalogo_vazio',
         null,
         0,
-        `${TITULOS_CATALOGO[catalogo]}: catálogo sem registros no banco — o motor opera apenas com as tabelas embarcadas`,
-      ),
+        `${TITULOS_CATALOGO[catalogo]}: catálogo sem registros no banco — o motor opera apenas com as tabelas embarcadas`
+      )
     );
     return true;
   };
@@ -204,8 +202,8 @@ export function gerarAlertasCatalogos(
             ? `${d.uf} — ausente: UF conhecida pelo motor não existe no catálogo do banco`
             : d.campo === 'excedente'
               ? `${d.uf} — excedente: UF presente no banco e desconhecida pelo motor`
-              : undefined,
-        ),
+              : undefined
+        )
       );
     }
     alertas.push(...deTexto('ufs', 'possui_fcp', validarMarcadorFcp(ufs)));
@@ -214,7 +212,7 @@ export function gerarAlertasCatalogos(
   // --- Alíquotas interestaduais -------------------------------------------
   if (!vazio('interestaduais', interestaduais.length)) {
     alertas.push(
-      ...deTexto('interestaduais', 'aliquota', validarInterestaduais(ufs, interestaduais)),
+      ...deTexto('interestaduais', 'aliquota', validarInterestaduais(ufs, interestaduais))
     );
   }
 
@@ -231,8 +229,8 @@ export function gerarAlertasCatalogos(
           d.valorBanco,
           d.campo === 'ausente'
             ? `${item} — ausente: faixa do motor não existe no catálogo do banco`
-            : undefined,
-        ),
+            : undefined
+        )
       );
     }
   }
@@ -253,7 +251,10 @@ export function gerarAlertasCatalogos(
 
   // --- Protocolos de ST (MVA) ---------------------------------------------
   if (entrada.mvaSt && !vazio('protocolos_st', entrada.mvaSt.vinculos.length)) {
-    for (const d of compararMvaComCatalogo({ ...entrada.mvaSt, ncms: entrada.mvaSt.ncms ?? ncms })) {
+    for (const d of compararMvaComCatalogo({
+      ...entrada.mvaSt,
+      ncms: entrada.mvaSt.ncms ?? ncms,
+    })) {
       alertas.push(
         montar(
           'protocolos_st',
@@ -265,8 +266,8 @@ export function gerarAlertasCatalogos(
             ? `${d.item} — sem_protocolo: NCM marcado como sujeito à ST sem vínculo de protocolo vigente`
             : d.campo === 'cobertura_parcial'
               ? `${d.item} — cobertura_parcial: ${d.valorBanco} de ${d.valorCodigo} UFs signatárias cadastradas`
-              : undefined,
-        ),
+              : undefined
+        )
       );
     }
   }

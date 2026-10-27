@@ -1,7 +1,13 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 import { Separator } from '@/components/ui/separator';
 import { Switch } from '@/components/ui/switch';
 import { Slider } from '@/components/ui/slider';
@@ -128,7 +134,10 @@ export function SimuladorInputForm(props: SimuladorInputFormProps) {
 
         <div className="space-y-2">
           <Label>Regime Especial</Label>
-          <Select value={regimeEspecial} onValueChange={(v) => setRegimeEspecial(v as RegimeEspecial)}>
+          <Select
+            value={regimeEspecial}
+            onValueChange={(v) => setRegimeEspecial(v as RegimeEspecial)}
+          >
             <SelectTrigger>
               <SelectValue />
             </SelectTrigger>
@@ -147,7 +156,9 @@ export function SimuladorInputForm(props: SimuladorInputFormProps) {
           <div className="flex items-center justify-between">
             <div>
               <Label>Produtos Sujeitos ao IS</Label>
-              <p className="text-xs text-muted-foreground">Imposto Seletivo sobre produtos nocivos</p>
+              <p className="text-xs text-muted-foreground">
+                Imposto Seletivo sobre produtos nocivos
+              </p>
             </div>
             <Switch checked={temProdutosIS} onCheckedChange={setTemProdutosIS} />
           </div>

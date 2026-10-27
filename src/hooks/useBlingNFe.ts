@@ -88,7 +88,9 @@ export interface BlingNFeCreatePayload {
 }
 
 async function callBlingProxy(action: string, params: Record<string, unknown> = {}) {
-  const { data: { session } } = await supabase.auth.getSession();
+  const {
+    data: { session },
+  } = await supabase.auth.getSession();
   if (!session) throw new Error('Não autenticado');
 
   const { data, error } = await supabase.functions.invoke('bling-proxy', {
@@ -99,13 +101,17 @@ async function callBlingProxy(action: string, params: Record<string, unknown> = 
     const msg = error.message || 'Erro ao comunicar com Bling';
     // Gap #13: friendly 403 scope error
     if (msg.includes('403') || msg.includes('Forbidden')) {
-      throw new Error('Sem permissão para esta ação no Bling. Verifique se o app OAuth possui o escopo necessário (ex: "98048 - Notas Fiscais").');
+      throw new Error(
+        'Sem permissão para esta ação no Bling. Verifique se o app OAuth possui o escopo necessário (ex: "98048 - Notas Fiscais").'
+      );
     }
     throw new Error(msg);
   }
   if (data?.error) {
     if (data.status === 403) {
-      throw new Error('Escopo OAuth insuficiente. Reconecte o Bling com as permissões de NF-e habilitadas.');
+      throw new Error(
+        'Escopo OAuth insuficiente. Reconecte o Bling com as permissões de NF-e habilitadas.'
+      );
     }
     throw new Error(typeof data.error === 'string' ? data.error : JSON.stringify(data.error));
   }
@@ -134,7 +140,8 @@ interface BlingNFeRawItem {
 }
 
 function mapNFeItem(item: BlingNFeRawItem): BlingNFe {
-  const situacaoId = typeof item.situacao === 'object' && item.situacao !== null ? item.situacao.id : undefined;
+  const situacaoId =
+    typeof item.situacao === 'object' && item.situacao !== null ? item.situacao.id : undefined;
   const situacao = situacaoId ?? (typeof item.situacao === 'number' ? item.situacao : 0);
   return {
     id: item.id,
@@ -145,16 +152,19 @@ function mapNFeItem(item: BlingNFeRawItem): BlingNFe {
     dataEmissao: item.dataEmissao || item.data || '',
     valorTotal: item.valorNota ?? item.totalNota ?? 0,
     chaveAcesso: item.chaveAcesso,
-    contato: item.contato ? {
-      id: item.contato.id,
-      nome: item.contato.nome,
-      cnpj: item.contato.numeroDocumento,
-    } : undefined,
-    naturezaOperacao: typeof item.naturezaOperacao === 'object' && item.naturezaOperacao
-      ? item.naturezaOperacao.descricao
-      : typeof item.naturezaOperacao === 'string'
-        ? item.naturezaOperacao
-        : undefined,
+    contato: item.contato
+      ? {
+          id: item.contato.id,
+          nome: item.contato.nome,
+          cnpj: item.contato.numeroDocumento,
+        }
+      : undefined,
+    naturezaOperacao:
+      typeof item.naturezaOperacao === 'object' && item.naturezaOperacao
+        ? item.naturezaOperacao.descricao
+        : typeof item.naturezaOperacao === 'string'
+          ? item.naturezaOperacao
+          : undefined,
     xml: item.xml,
     linkDanfe: item.linkDanfe || item.link_danfe,
     linkPDF: item.linkPDF || item.link_pdf || item.linkPdf,
@@ -207,7 +217,7 @@ export function useBlingNFe() {
       setTotalItems(allItems.length);
       return allItems;
     } catch (err: unknown) {
-      toast.error(`Erro ao listar NF-e: ${(err instanceof Error ? err.message : String(err))}`);
+      toast.error(`Erro ao listar NF-e: ${err instanceof Error ? err.message : String(err)}`);
       return [];
     } finally {
       setLoading(false);
@@ -222,7 +232,7 @@ export function useBlingNFe() {
       toast.success('NF-e criada no Bling com sucesso!');
       return data;
     } catch (err: unknown) {
-      toast.error(`Erro ao criar NF-e: ${(err instanceof Error ? err.message : String(err))}`);
+      toast.error(`Erro ao criar NF-e: ${err instanceof Error ? err.message : String(err)}`);
       throw err;
     } finally {
       setSyncing(false);
@@ -237,7 +247,9 @@ export function useBlingNFe() {
       toast.success('NF-e enviada para SEFAZ via Bling!');
       return data;
     } catch (err: unknown) {
-      toast.error(`Erro ao enviar NF-e para SEFAZ: ${(err instanceof Error ? err.message : String(err))}`);
+      toast.error(
+        `Erro ao enviar NF-e para SEFAZ: ${err instanceof Error ? err.message : String(err)}`
+      );
       throw err;
     } finally {
       setSyncing(false);
@@ -249,7 +261,7 @@ export function useBlingNFe() {
       const data = await callBlingProxy('buscar_nfe', { id: nfeId });
       return data?.data ? mapNFeItem(data.data) : null;
     } catch (err: unknown) {
-      toast.error(`Erro ao buscar NF-e: ${(err instanceof Error ? err.message : String(err))}`);
+      toast.error(`Erro ao buscar NF-e: ${err instanceof Error ? err.message : String(err)}`);
       return null;
     }
   }, []);
@@ -260,7 +272,7 @@ export function useBlingNFe() {
       await callBlingProxy('cancelar_nfe', { ids });
       toast.success('NF-e cancelada no Bling!');
     } catch (err: unknown) {
-      toast.error(`Erro ao cancelar NF-e: ${(err instanceof Error ? err.message : String(err))}`);
+      toast.error(`Erro ao cancelar NF-e: ${err instanceof Error ? err.message : String(err)}`);
       throw err;
     } finally {
       setSyncing(false);
@@ -272,7 +284,7 @@ export function useBlingNFe() {
       await callBlingProxy('lancar_estoque_nfe', { id: nfeId });
       toast.success('Estoque lançado!');
     } catch (err: unknown) {
-      toast.error(`Erro ao lançar estoque: ${(err instanceof Error ? err.message : String(err))}`);
+      toast.error(`Erro ao lançar estoque: ${err instanceof Error ? err.message : String(err)}`);
     }
   }, []);
 
@@ -281,7 +293,7 @@ export function useBlingNFe() {
       await callBlingProxy('lancar_contas_nfe', { id: nfeId });
       toast.success('Contas lançadas!');
     } catch (err: unknown) {
-      toast.error(`Erro ao lançar contas: ${(err instanceof Error ? err.message : String(err))}`);
+      toast.error(`Erro ao lançar contas: ${err instanceof Error ? err.message : String(err)}`);
     }
   }, []);
 
@@ -291,7 +303,7 @@ export function useBlingNFe() {
       await callBlingProxy('revogar_token');
       toast.success('Token Bling revogado com sucesso.');
     } catch (err: unknown) {
-      toast.error(`Erro ao revogar token: ${(err instanceof Error ? err.message : String(err))}`);
+      toast.error(`Erro ao revogar token: ${err instanceof Error ? err.message : String(err)}`);
     }
   }, []);
 
@@ -301,7 +313,7 @@ export function useBlingNFe() {
       const data = await callBlingProxy('dados_empresa');
       return { ok: true, empresa: data?.data };
     } catch (err: unknown) {
-      return { ok: false, error: (err instanceof Error ? err.message : String(err)) };
+      return { ok: false, error: err instanceof Error ? err.message : String(err) };
     }
   }, []);
 

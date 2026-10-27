@@ -3,11 +3,16 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Eye, Download, type LucideIcon } from 'lucide-react';
 
-interface Modelo { id: string; nome: string; categoria: string; icon: LucideIcon }
+interface Modelo {
+  id: string;
+  nome: string;
+  categoria: string;
+  icon: LucideIcon;
+}
 
 const itemVariants = {
   hidden: { opacity: 0, y: 10 },
-  visible: { opacity: 1, y: 0 }
+  visible: { opacity: 1, y: 0 },
 };
 
 export function RelatoriosModelos({ modelos }: { modelos: Modelo[] }) {

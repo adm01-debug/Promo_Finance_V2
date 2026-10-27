@@ -1,54 +1,75 @@
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Badge } from "@/components/ui/badge";
-import { Progress } from "@/components/ui/progress";
-import { Skeleton } from "@/components/ui/skeleton";
-import { 
-  BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
-  PieChart, Pie, Cell, Legend
-} from "recharts";
-import { 
-  Building2, Users, AlertTriangle, TrendingDown,
-  Target, BrainCircuit, Sparkles, DollarSign
-} from "lucide-react";
-import { motion } from "framer-motion";
-import { formatCurrency, formatPercentage } from "@/lib/formatters";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Badge } from '@/components/ui/badge';
+import { Progress } from '@/components/ui/progress';
+import { Skeleton } from '@/components/ui/skeleton';
+import {
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  ResponsiveContainer,
+  PieChart,
+  Pie,
+  Cell,
+  Legend,
+} from 'recharts';
+import {
+  Building2,
+  Users,
+  AlertTriangle,
+  TrendingDown,
+  Target,
+  BrainCircuit,
+  Sparkles,
+  DollarSign,
+} from 'lucide-react';
+import { motion } from 'framer-motion';
+import { formatCurrency, formatPercentage } from '@/lib/formatters';
 import {
   useInadimplenciaPorRamo,
   useInadimplenciaPorVendedor,
-  usePrevisoesInadimplencia
-} from "@/hooks/useInadimplenciaSegmentada";
-import { COLORS, getRiskColor, getRiskBg } from "./inadimplencia-config";
-import { PredicaoTab } from "./PredicaoTab";
+  usePrevisoesInadimplencia,
+} from '@/hooks/useInadimplenciaSegmentada';
+import { COLORS, getRiskColor, getRiskBg } from './inadimplencia-config';
+import { PredicaoTab } from './PredicaoTab';
 
 export function InadimplenciaSegmentada() {
   const { data: porRamo, isLoading: loadingRamo } = useInadimplenciaPorRamo();
   const { data: porVendedor, isLoading: loadingVendedor } = useInadimplenciaPorVendedor();
   const { data: previsoes, isLoading: loadingPrevisoes } = usePrevisoesInadimplencia();
 
-  const totaisRamo = porRamo?.reduce((acc, item) => ({
-    valor_total: acc.valor_total + item.valor_total,
-    valor_vencido: acc.valor_vencido + item.valor_vencido,
-    total_contas: acc.total_contas + item.total_contas,
-    total_vencido: acc.total_vencido + item.total_vencido,
-  }), { valor_total: 0, valor_vencido: 0, total_contas: 0, total_vencido: 0 });
+  const totaisRamo = porRamo?.reduce(
+    (acc, item) => ({
+      valor_total: acc.valor_total + item.valor_total,
+      valor_vencido: acc.valor_vencido + item.valor_vencido,
+      total_contas: acc.total_contas + item.total_contas,
+      total_vencido: acc.total_vencido + item.total_vencido,
+    }),
+    { valor_total: 0, valor_vencido: 0, total_contas: 0, total_vencido: 0 }
+  );
 
-  const taxaGeralRamo = totaisRamo && totaisRamo.total_contas > 0
-    ? (totaisRamo.total_vencido / totaisRamo.total_contas) * 100
-    : 0;
+  const taxaGeralRamo =
+    totaisRamo && totaisRamo.total_contas > 0
+      ? (totaisRamo.total_vencido / totaisRamo.total_contas) * 100
+      : 0;
 
-  const pieDataRamo = porRamo?.slice(0, 6).map((item, index) => ({
-    name: item.ramo,
-    value: item.valor_vencido,
-    fill: COLORS[index % COLORS.length],
-  })) || [];
+  const pieDataRamo =
+    porRamo?.slice(0, 6).map((item, index) => ({
+      name: item.ramo,
+      value: item.valor_vencido,
+      fill: COLORS[index % COLORS.length],
+    })) || [];
 
-  const barDataVendedor = porVendedor?.map(v => ({
-    nome: v.vendedor_nome.split(' ')[0],
-    taxa: v.taxa_inadimplencia,
-    meta: v.atingimento_meta,
-    valor_vencido: v.valor_vencido,
-  })) || [];
+  const barDataVendedor =
+    porVendedor?.map((v) => ({
+      nome: v.vendedor_nome.split(' ')[0],
+      taxa: v.taxa_inadimplencia,
+      meta: v.atingimento_meta,
+      valor_vencido: v.valor_vencido,
+    })) || [];
 
   if (loadingRamo || loadingVendedor || loadingPrevisoes) {
     return (
@@ -64,7 +85,9 @@ export function InadimplenciaSegmentada() {
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
           <h2 className="text-2xl font-bold tracking-tight">Análise Segmentada de Inadimplência</h2>
-          <p className="text-muted-foreground">Monitoramento segmentado e predições baseadas em IA.</p>
+          <p className="text-muted-foreground">
+            Monitoramento segmentado e predições baseadas em IA.
+          </p>
         </div>
         <div className="flex items-center gap-2 bg-primary/10 px-4 py-2 rounded-full border border-primary/20">
           <BrainCircuit className="h-5 w-5 text-primary animate-pulse" />
@@ -79,10 +102,14 @@ export function InadimplenciaSegmentada() {
             <CardContent className="pt-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-xs font-medium uppercase tracking-wider opacity-70">Taxa de Risco Atual</p>
+                  <p className="text-xs font-medium uppercase tracking-wider opacity-70">
+                    Taxa de Risco Atual
+                  </p>
                   <p className="text-3xl font-black">{formatPercentage(taxaGeralRamo)}</p>
                 </div>
-                <AlertTriangle className={`h-8 w-8 ${taxaGeralRamo > 15 ? 'text-warning' : 'text-success'}`} />
+                <AlertTriangle
+                  className={`h-8 w-8 ${taxaGeralRamo > 15 ? 'text-warning' : 'text-success'}`}
+                />
               </div>
               <div className="mt-4 flex items-center gap-1 text-xs font-semibold">
                 <TrendingDown className="h-3 w-3" />
@@ -92,49 +119,77 @@ export function InadimplenciaSegmentada() {
           </Card>
         </motion.div>
 
-        <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} transition={{ delay: 0.1 }}>
+        <motion.div
+          initial={{ opacity: 0, scale: 0.95 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ delay: 0.1 }}
+        >
           <Card className="border-none shadow-md bg-destructive/5">
             <CardContent className="pt-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">Exposição Vencida</p>
-                  <p className="text-3xl font-black text-destructive">{formatCurrency(totaisRamo?.valor_vencido || 0)}</p>
+                  <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">
+                    Exposição Vencida
+                  </p>
+                  <p className="text-3xl font-black text-destructive">
+                    {formatCurrency(totaisRamo?.valor_vencido || 0)}
+                  </p>
                 </div>
                 <DollarSign className="h-8 w-8 text-destructive opacity-30" />
               </div>
-              <p className="mt-4 text-xs font-medium text-muted-foreground">Impacto direto no Fluxo de Caixa</p>
+              <p className="mt-4 text-xs font-medium text-muted-foreground">
+                Impacto direto no Fluxo de Caixa
+              </p>
             </CardContent>
           </Card>
         </motion.div>
 
-        <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} transition={{ delay: 0.2 }}>
+        <motion.div
+          initial={{ opacity: 0, scale: 0.95 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ delay: 0.2 }}
+        >
           <Card className="border-none shadow-md bg-chart-1/5">
             <CardContent className="pt-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">Alvos de Recuperação</p>
-                  <p className="text-3xl font-black text-chart-1">{totaisRamo?.total_vencido || 0}</p>
+                  <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">
+                    Alvos de Recuperação
+                  </p>
+                  <p className="text-3xl font-black text-chart-1">
+                    {totaisRamo?.total_vencido || 0}
+                  </p>
                 </div>
                 <Target className="h-8 w-8 text-chart-1 opacity-30" />
               </div>
-              <p className="mt-4 text-xs font-medium text-muted-foreground">Títulos pendentes em negociação</p>
+              <p className="mt-4 text-xs font-medium text-muted-foreground">
+                Títulos pendentes em negociação
+              </p>
             </CardContent>
           </Card>
         </motion.div>
 
-        <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} transition={{ delay: 0.3 }}>
+        <motion.div
+          initial={{ opacity: 0, scale: 0.95 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ delay: 0.3 }}
+        >
           <Card className="border-none shadow-md bg-success/5">
             <CardContent className="pt-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">Previsão de Recebimento</p>
+                  <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">
+                    Previsão de Recebimento
+                  </p>
                   <p className="text-3xl font-black text-success">
                     {formatCurrency((totaisRamo?.valor_vencido || 0) * 0.72)}
                   </p>
                 </div>
                 <Sparkles className="h-8 w-8 text-success opacity-30" />
               </div>
-              <p className="mt-4 text-xs font-medium text-muted-foreground">Estimado via IA (72% de confiança)</p>
+              <p className="mt-4 text-xs font-medium text-muted-foreground">
+                Estimado via IA (72% de confiança)
+              </p>
             </CardContent>
           </Card>
         </motion.div>
@@ -177,7 +232,7 @@ export function InadimplenciaSegmentada() {
                         outerRadius={100}
                         paddingAngle={2}
                         dataKey="value"
-                        label={({ name, percent }) => 
+                        label={({ name, percent }) =>
                           `${name.substring(0, 10)}... ${(percent * 100).toFixed(0)}%`
                         }
                       >
@@ -185,7 +240,7 @@ export function InadimplenciaSegmentada() {
                           <Cell key={`cell-${index}`} fill={entry.fill} />
                         ))}
                       </Pie>
-                      <Tooltip 
+                      <Tooltip
                         formatter={(value: number) => formatCurrency(value)}
                         contentStyle={{
                           backgroundColor: 'hsl(var(--background))',
@@ -224,7 +279,14 @@ export function InadimplenciaSegmentada() {
                         </span>
                         <span className="font-medium">{ramo.ramo}</span>
                       </div>
-                      <Badge variant={getRiskColor(ramo.taxa_inadimplencia) as "destructive" | "warning" | "success"}>
+                      <Badge
+                        variant={
+                          getRiskColor(ramo.taxa_inadimplencia) as
+                            | 'destructive'
+                            | 'warning'
+                            | 'success'
+                        }
+                      >
                         {formatPercentage(ramo.taxa_inadimplencia)}
                       </Badge>
                     </div>
@@ -235,7 +297,9 @@ export function InadimplenciaSegmentada() {
                       </div>
                       <div>
                         <p className="text-muted-foreground">Contas</p>
-                        <p className="font-medium">{ramo.total_vencido}/{ramo.total_contas}</p>
+                        <p className="font-medium">
+                          {ramo.total_vencido}/{ramo.total_contas}
+                        </p>
                       </div>
                       <div>
                         <p className="text-muted-foreground">Atraso Médio</p>
@@ -263,10 +327,10 @@ export function InadimplenciaSegmentada() {
                       <CartesianGrid strokeDasharray="3 3" className="stroke-border" />
                       <XAxis type="number" domain={[0, 100]} tickFormatter={(v) => `${v}%`} />
                       <YAxis dataKey="nome" type="category" width={80} />
-                      <Tooltip 
+                      <Tooltip
                         formatter={(value: number, name: string) => [
                           `${value.toFixed(1)}%`,
-                          name === 'taxa' ? 'Inadimplência' : 'Meta Atingida'
+                          name === 'taxa' ? 'Inadimplência' : 'Meta Atingida',
                         ]}
                         contentStyle={{
                           backgroundColor: 'hsl(var(--background))',
@@ -275,8 +339,18 @@ export function InadimplenciaSegmentada() {
                         }}
                       />
                       <Legend />
-                      <Bar dataKey="taxa" name="Inadimplência" fill="hsl(var(--destructive))" radius={[0, 4, 4, 0]} />
-                      <Bar dataKey="meta" name="Meta Atingida" fill="hsl(var(--chart-2))" radius={[0, 4, 4, 0]} />
+                      <Bar
+                        dataKey="taxa"
+                        name="Inadimplência"
+                        fill="hsl(var(--destructive))"
+                        radius={[0, 4, 4, 0]}
+                      />
+                      <Bar
+                        dataKey="meta"
+                        name="Meta Atingida"
+                        fill="hsl(var(--chart-2))"
+                        radius={[0, 4, 4, 0]}
+                      />
                     </BarChart>
                   </ResponsiveContainer>
                 ) : (
@@ -308,7 +382,14 @@ export function InadimplenciaSegmentada() {
                         </div>
                         <span className="font-medium">{vendedor.vendedor_nome}</span>
                       </div>
-                      <Badge variant={getRiskColor(vendedor.taxa_inadimplencia) as "destructive" | "warning" | "success"}>
+                      <Badge
+                        variant={
+                          getRiskColor(vendedor.taxa_inadimplencia) as
+                            | 'destructive'
+                            | 'warning'
+                            | 'success'
+                        }
+                      >
                         {formatPercentage(vendedor.taxa_inadimplencia)}
                       </Badge>
                     </div>
@@ -316,9 +397,14 @@ export function InadimplenciaSegmentada() {
                     <div className="space-y-2">
                       <div className="flex items-center justify-between text-xs">
                         <span className="text-muted-foreground">Atingimento de Meta</span>
-                        <span className="font-semibold">{formatPercentage(vendedor.atingimento_meta)}</span>
+                        <span className="font-semibold">
+                          {formatPercentage(vendedor.atingimento_meta)}
+                        </span>
                       </div>
-                      <Progress value={Math.min(vendedor.atingimento_meta, 100)} className="h-1.5" />
+                      <Progress
+                        value={Math.min(vendedor.atingimento_meta, 100)}
+                        className="h-1.5"
+                      />
                       <div className="flex justify-between text-[10px] text-muted-foreground pt-1">
                         <span>Vencido: {formatCurrency(vendedor.valor_vencido)}</span>
                         <span>Atraso: {Math.round(vendedor.dias_atraso_medio)} dias</span>

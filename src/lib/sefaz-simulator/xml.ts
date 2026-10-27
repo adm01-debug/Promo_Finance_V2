@@ -1,11 +1,7 @@
 import type { NFEData } from './types';
 import { getCodigoUF } from './utils';
 
-export function gerarXMLAutorizado(
-  dados: NFEData,
-  chaveAcesso: string,
-  protocolo: string,
-): string {
+export function gerarXMLAutorizado(dados: NFEData, chaveAcesso: string, protocolo: string): string {
   const dataRecebimento = new Date().toISOString();
   const docLen = dados.destinatario.cpfCnpj.replace(/\D/g, '').length;
   const tag = docLen === 11 ? 'CPF' : 'CNPJ';
@@ -76,7 +72,7 @@ export function gerarXMLAutorizado(
             </ICMS00>
           </ICMS>
         </imposto>
-      </det>`,
+      </det>`
         )
         .join('')}
       <total>

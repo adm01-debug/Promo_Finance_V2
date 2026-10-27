@@ -158,8 +158,8 @@ export function exportarPdf({
       },
     });
     cursorY =
-      (doc as jsPDF & { lastAutoTable?: { finalY: number } }).lastAutoTable?.finalY + 6 ||
-      cursorY + 6;
+      ((doc as jsPDF & { lastAutoTable?: { finalY: number } }).lastAutoTable?.finalY ?? cursorY) +
+      6;
 
     if (apenasFiltrados) {
       doc.setFont('helvetica', 'italic');
@@ -202,11 +202,7 @@ export function exportarPdf({
           ],
           theme: 'striped',
           headStyles: {
-            fillColor: [
-              PDF_BRAND.foreground[0],
-              PDF_BRAND.foreground[1],
-              PDF_BRAND.foreground[2],
-            ],
+            fillColor: [PDF_BRAND.foreground[0], PDF_BRAND.foreground[1], PDF_BRAND.foreground[2]],
             textColor: [255, 255, 255],
             fontStyle: 'bold',
           },
@@ -220,9 +216,7 @@ export function exportarPdf({
     applyPdfLayout(doc, {
       titulo: `Validações SPED ${arquivo.tipo}`,
       subtitulo: `Ano-calendário ${arquivo.ano_calendario}${apenasFiltrados ? ' · filtrado' : ''}`,
-      rodapeInfo: arquivo.hash_sha256
-        ? `SHA-256 ${arquivo.hash_sha256.slice(0, 16)}…`
-        : undefined,
+      rodapeInfo: arquivo.hash_sha256 ? `SHA-256 ${arquivo.hash_sha256.slice(0, 16)}…` : undefined,
     });
 
     doc.save(`${baseFilename}${apenasFiltrados ? '-filtrado' : ''}.pdf`);

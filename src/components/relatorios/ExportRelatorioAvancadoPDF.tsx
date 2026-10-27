@@ -67,7 +67,11 @@ function addCorporateHeader(doc: jsPDF, empresa: string, titulo: string, periodo
   doc.setFontSize(9);
   doc.setFont('helvetica', 'normal');
   doc.setTextColor(100, 100, 100);
-  doc.text(`Empresa: ${empresa}  |  Período: ${periodo}  |  Gerado em: ${new Date().toLocaleString('pt-BR')}`, 14, 52);
+  doc.text(
+    `Empresa: ${empresa}  |  Período: ${periodo}  |  Gerado em: ${new Date().toLocaleString('pt-BR')}`,
+    14,
+    52
+  );
 
   doc.setDrawColor(220, 220, 220);
   doc.line(14, 56, w - 14, 56);
@@ -116,7 +120,7 @@ export function ExportRelatorioAvancadoPDF({
         autoTable(doc, {
           startY,
           head: [['Cliente', 'Até 30d', '31-60d', '61-90d', '+90d', 'Total']],
-          body: aging.map(a => [
+          body: aging.map((a) => [
             a.cliente,
             formatCurrency(a.ate30),
             formatCurrency(a.de31a60),
@@ -124,14 +128,16 @@ export function ExportRelatorioAvancadoPDF({
             formatCurrency(a.acima90),
             formatCurrency(a.total),
           ]),
-          foot: [[
-            'TOTAL',
-            formatCurrency(aging.reduce((s, a) => s + a.ate30, 0)),
-            formatCurrency(aging.reduce((s, a) => s + a.de31a60, 0)),
-            formatCurrency(aging.reduce((s, a) => s + a.de61a90, 0)),
-            formatCurrency(aging.reduce((s, a) => s + a.acima90, 0)),
-            formatCurrency(aging.reduce((s, a) => s + a.total, 0)),
-          ]],
+          foot: [
+            [
+              'TOTAL',
+              formatCurrency(aging.reduce((s, a) => s + a.ate30, 0)),
+              formatCurrency(aging.reduce((s, a) => s + a.de31a60, 0)),
+              formatCurrency(aging.reduce((s, a) => s + a.de61a90, 0)),
+              formatCurrency(aging.reduce((s, a) => s + a.acima90, 0)),
+              formatCurrency(aging.reduce((s, a) => s + a.total, 0)),
+            ],
+          ],
           styles: { fontSize: 8, cellPadding: 3 },
           headStyles: { fillColor: [30, 30, 30], textColor: 255, fontStyle: 'bold' },
           footStyles: { fillColor: [240, 240, 240], textColor: [30, 30, 30], fontStyle: 'bold' },
@@ -157,7 +163,7 @@ export function ExportRelatorioAvancadoPDF({
         autoTable(doc, {
           startY,
           head: [['Código', 'Descrição', 'Valor (R$)', 'AV (%)']],
-          body: linhasDRE.map(l => [
+          body: linhasDRE.map((l) => [
             l.codigo,
             (l.nivel > 0 ? '  '.repeat(l.nivel) : '') + l.descricao,
             formatCurrency(Math.abs(l.valor)),
@@ -186,7 +192,7 @@ export function ExportRelatorioAvancadoPDF({
         autoTable(doc, {
           startY,
           head: [['Data', 'Receitas', 'Despesas', 'Saldo Projetado']],
-          body: fluxoCaixa.map(f => [
+          body: fluxoCaixa.map((f) => [
             new Date(f.data).toLocaleDateString('pt-BR'),
             formatCurrency(f.receitas),
             formatCurrency(f.despesas),

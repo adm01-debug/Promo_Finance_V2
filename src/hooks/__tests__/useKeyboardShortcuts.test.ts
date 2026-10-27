@@ -86,7 +86,7 @@ describe('useKeyboardShortcuts', () => {
     renderHook(() => useKeyboardShortcuts());
 
     window.dispatchEvent(
-      new KeyboardEvent('keydown', { key: 'r', ctrlKey: true, shiftKey: true, bubbles: true }),
+      new KeyboardEvent('keydown', { key: 'r', ctrlKey: true, shiftKey: true, bubbles: true })
     );
 
     expect(toast.info).toHaveBeenCalledWith('Atualizando dados...');

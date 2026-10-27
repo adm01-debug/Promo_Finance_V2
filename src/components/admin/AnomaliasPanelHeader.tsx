@@ -1,15 +1,15 @@
-import { AlertTriangle, BellOff, ListChecks, RefreshCw } from "lucide-react";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import { CardTitle } from "@/components/ui/card";
+import { AlertTriangle, BellOff, ListChecks, RefreshCw } from 'lucide-react';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { CardTitle } from '@/components/ui/card';
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select";
-import type { Anomalia } from "@/hooks/useAnomaliasDetectadas";
+} from '@/components/ui/select';
+import type { Anomalia } from '@/hooks/useAnomaliasDetectadas';
 
 export interface PendentesPorSev {
   todas: number;
@@ -21,8 +21,8 @@ export interface PendentesPorSev {
 
 export interface AnomaliasPanelHeaderProps {
   criticasCount: number;
-  reviewSeveridade: Anomalia["severidade"] | "todas";
-  onReviewSeveridadeChange: (v: Anomalia["severidade"] | "todas") => void;
+  reviewSeveridade: Anomalia['severidade'] | 'todas';
+  onReviewSeveridadeChange: (v: Anomalia['severidade'] | 'todas') => void;
   pendentesPorSev: PendentesPorSev;
   onOpenReview: () => void;
   onOpenPrefs: () => void;
@@ -43,9 +43,7 @@ export function AnomaliasPanelHeader({
   activeRun,
 }: AnomaliasPanelHeaderProps) {
   const filaCount =
-    reviewSeveridade === "todas"
-      ? pendentesPorSev.todas
-      : pendentesPorSev[reviewSeveridade];
+    reviewSeveridade === 'todas' ? pendentesPorSev.todas : pendentesPorSev[reviewSeveridade];
 
   return (
     <div className="flex flex-row items-center justify-between gap-2 flex-wrap">
@@ -54,21 +52,17 @@ export function AnomaliasPanelHeader({
         Anomalias detectadas
         {criticasCount > 0 && (
           <Badge variant="destructive" className="ml-1" aria-live="polite">
-            {criticasCount} crítica{criticasCount > 1 ? "s" : ""}
+            {criticasCount} crítica{criticasCount > 1 ? 's' : ''}
           </Badge>
         )}
       </CardTitle>
       <div className="flex items-center gap-2 flex-wrap">
         <div className="flex items-center gap-1.5 rounded-md border bg-muted/30 px-2 py-1">
           <ListChecks className="h-3.5 w-3.5 text-muted-foreground" />
-          <span className="text-xs text-muted-foreground hidden sm:inline">
-            Revisar:
-          </span>
+          <span className="text-xs text-muted-foreground hidden sm:inline">Revisar:</span>
           <Select
             value={reviewSeveridade}
-            onValueChange={(v) =>
-              onReviewSeveridadeChange(v as Anomalia["severidade"] | "todas")
-            }
+            onValueChange={(v) => onReviewSeveridadeChange(v as Anomalia['severidade'] | 'todas')}
           >
             <SelectTrigger
               className="h-7 w-32 border-0 bg-transparent px-1 text-xs focus:ring-0"
@@ -94,12 +88,7 @@ export function AnomaliasPanelHeader({
             Iniciar
           </Button>
         </div>
-        <Button
-          size="sm"
-          variant="ghost"
-          onClick={onOpenPrefs}
-          title="Preferências de alerta"
-        >
+        <Button size="sm" variant="ghost" onClick={onOpenPrefs} title="Preferências de alerta">
           <BellOff className="h-3 w-3 mr-1" />
           Preferências
         </Button>
@@ -109,10 +98,8 @@ export function AnomaliasPanelHeader({
           onClick={onDetectar}
           disabled={disparando || !!activeRun}
         >
-          <RefreshCw
-            className={`h-3 w-3 mr-1 ${disparando || activeRun ? "animate-spin" : ""}`}
-          />
-          {activeRun ? "Detecção em andamento…" : "Detectar agora"}
+          <RefreshCw className={`h-3 w-3 mr-1 ${disparando || activeRun ? 'animate-spin' : ''}`} />
+          {activeRun ? 'Detecção em andamento…' : 'Detectar agora'}
         </Button>
       </div>
     </div>

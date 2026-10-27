@@ -5,7 +5,14 @@ import { toast } from 'sonner';
 import { logger } from '@/lib/logger';
 import type { Database } from '@/integrations/supabase/types';
 
-export type FrequenciaPagamento = 'semanal' | 'quinzenal' | 'mensal' | 'bimestral' | 'trimestral' | 'semestral' | 'anual';
+export type FrequenciaPagamento =
+  | 'semanal'
+  | 'quinzenal'
+  | 'mensal'
+  | 'bimestral'
+  | 'trimestral'
+  | 'semestral'
+  | 'anual';
 type TipoCobranca = Database['public']['Enums']['tipo_cobranca'];
 
 export interface PagamentoRecorrente {
@@ -52,7 +59,11 @@ export function usePagamentosRecorrentes() {
   const { user } = useAuth();
   const queryClient = useQueryClient();
 
-  const { data: pagamentosRecorrentes = [], isLoading, error } = useQuery({
+  const {
+    data: pagamentosRecorrentes = [],
+    isLoading,
+    error,
+  } = useQuery({
     queryKey: ['pagamentos-recorrentes'],
     queryFn: async () => {
       const { data, error } = await supabase
@@ -85,7 +96,7 @@ export function usePagamentosRecorrentes() {
         empresa_id: data.empresa_id,
         centro_custo_id: data.centro_custo_id || null,
         conta_bancaria_id: data.conta_bancaria_id || null,
-        tipo_cobranca: data.tipo_cobranca || 'transferencia' as TipoCobranca,
+        tipo_cobranca: data.tipo_cobranca || ('transferencia' as TipoCobranca),
         observacoes: data.observacoes || null,
         proxima_geracao: proximaGeracao,
         created_by: user.id,
@@ -111,7 +122,12 @@ export function usePagamentosRecorrentes() {
   });
 
   const updateMutation = useMutation({
-    mutationFn: async ({ id, ...data }: { id: string } & Partial<Omit<PagamentoRecorrente, 'id' | 'created_at' | 'updated_at' | 'created_by'>>) => {
+    mutationFn: async ({
+      id,
+      ...data
+    }: { id: string } & Partial<
+      Omit<PagamentoRecorrente, 'id' | 'created_at' | 'updated_at' | 'created_by'>
+    >) => {
       const { data: result, error } = await supabase
         .from('pagamentos_recorrentes')
         .update(data)
@@ -153,10 +169,7 @@ export function usePagamentosRecorrentes() {
 
   const deleteMutation = useMutation({
     mutationFn: async (id: string) => {
-      const { error } = await supabase
-        .from('pagamentos_recorrentes')
-        .delete()
-        .eq('id', id);
+      const { error } = await supabase.from('pagamentos_recorrentes').delete().eq('id', id);
 
       if (error) throw error;
     },
@@ -194,10 +207,10 @@ export function usePagamentosRecorrentes() {
   // Estatísticas
   const stats = {
     total: pagamentosRecorrentes.length,
-    ativos: pagamentosRecorrentes.filter(p => p.ativo).length,
-    pausados: pagamentosRecorrentes.filter(p => !p.ativo).length,
+    ativos: pagamentosRecorrentes.filter((p) => p.ativo).length,
+    pausados: pagamentosRecorrentes.filter((p) => !p.ativo).length,
     valorMensal: pagamentosRecorrentes
-      .filter(p => p.ativo)
+      .filter((p) => p.ativo)
       .reduce((acc, p) => {
         const multiplicador = {
           semanal: 4,
@@ -208,11 +221,13 @@ export function usePagamentosRecorrentes() {
           semestral: 0.17,
           anual: 0.08,
         };
-        return acc + (p.valor * (multiplicador[p.frequencia] || 1));
+        return acc + p.valor * (multiplicador[p.frequencia] || 1);
       }, 0),
     proximosVencimentos: pagamentosRecorrentes
-      .filter(p => p.ativo && p.proxima_geracao)
-      .sort((a, b) => new Date(a.proxima_geracao!).getTime() - new Date(b.proxima_geracao!).getTime())
+      .filter((p) => p.ativo && p.proxima_geracao)
+      .sort(
+        (a, b) => new Date(a.proxima_geracao!).getTime() - new Date(b.proxima_geracao!).getTime()
+      )
       .slice(0, 5),
   };
 

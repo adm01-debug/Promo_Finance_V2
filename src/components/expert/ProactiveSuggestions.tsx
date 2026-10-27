@@ -1,13 +1,13 @@
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { 
-  Lightbulb, 
-  TrendingDown, 
-  AlertTriangle, 
+import {
+  Lightbulb,
+  TrendingDown,
+  AlertTriangle,
   DollarSign,
   ChevronRight,
   X,
-  Sparkles
+  Sparkles,
 } from 'lucide-react';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -15,7 +15,7 @@ import { Badge } from '@/components/ui/badge';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { cn } from '@/lib/utils';
 import { supabase } from '@/integrations/supabase/client';
-import {formatCurrency, toISOLocal } from '@/lib/formatters';
+import { formatCurrency, toISOLocal } from '@/lib/formatters';
 import { logger } from '@/lib/logger';
 
 interface ProactiveSuggestion {
@@ -72,8 +72,10 @@ export function ProactiveSuggestions({ onSuggestionClick }: ProactiveSuggestions
 
       const saldoAtual = saldos?.reduce((sum, c) => sum + Number(c.saldo_atual), 0) || 0;
       const totalPagar = contasPagar?.reduce((sum, c) => sum + Number(c.valor), 0) || 0;
-      const totalReceber = contasReceber?.filter(c => c.status === 'pendente')
-        .reduce((sum, c) => sum + Number(c.valor), 0) || 0;
+      const totalReceber =
+        contasReceber
+          ?.filter((c) => c.status === 'pendente')
+          .reduce((sum, c) => sum + Number(c.valor), 0) || 0;
       const saldoProjetado = saldoAtual + totalReceber - totalPagar;
 
       if (saldoProjetado < 0) {
@@ -83,7 +85,8 @@ export function ProactiveSuggestions({ onSuggestionClick }: ProactiveSuggestions
           title: 'Risco de Saldo Negativo',
           description: `Saldo projetado para os próximos 30 dias é ${formatCurrency(saldoProjetado)}. Ação urgente necessária.`,
           impact: formatCurrency(Math.abs(saldoProjetado)),
-          action: 'Analise o fluxo de caixa e identifique possíveis antecipações de recebimento ou renegociações de pagamento.',
+          action:
+            'Analise o fluxo de caixa e identifique possíveis antecipações de recebimento ou renegociações de pagamento.',
           priority: 'critica',
         });
       } else if (saldoProjetado < saldoAtual * 0.3) {
@@ -97,11 +100,12 @@ export function ProactiveSuggestions({ onSuggestionClick }: ProactiveSuggestions
       }
 
       // 2. Verificar inadimplência
-      const totalVencido = contasReceber?.filter(c => c.status === 'vencido')
-        .reduce((sum, c) => sum + Number(c.valor), 0) || 0;
-      const taxaInadimplencia = totalReceber > 0 
-        ? (totalVencido / (totalReceber + totalVencido)) * 100 
-        : 0;
+      const totalVencido =
+        contasReceber
+          ?.filter((c) => c.status === 'vencido')
+          .reduce((sum, c) => sum + Number(c.valor), 0) || 0;
+      const taxaInadimplencia =
+        totalReceber > 0 ? (totalVencido / (totalReceber + totalVencido)) * 100 : 0;
 
       if (taxaInadimplencia > 10) {
         newSuggestions.push({
@@ -116,12 +120,16 @@ export function ProactiveSuggestions({ onSuggestionClick }: ProactiveSuggestions
       }
 
       // 3. Verificar concentração de vencimentos
-      const vencimentosProximos = contasPagar?.filter(c => {
-        const dataVenc = new Date(c.data_vencimento);
-        return dataVenc >= hoje && dataVenc <= em7Dias;
-      }) || [];
+      const vencimentosProximos =
+        contasPagar?.filter((c) => {
+          const dataVenc = new Date(c.data_vencimento);
+          return dataVenc >= hoje && dataVenc <= em7Dias;
+        }) || [];
 
-      const totalVencimentosProximos = vencimentosProximos.reduce((sum, c) => sum + Number(c.valor), 0);
+      const totalVencimentosProximos = vencimentosProximos.reduce(
+        (sum, c) => sum + Number(c.valor),
+        0
+      );
 
       if (vencimentosProximos.length >= 5 && totalVencimentosProximos > saldoAtual * 0.5) {
         newSuggestions.push({
@@ -162,7 +170,8 @@ export function ProactiveSuggestions({ onSuggestionClick }: ProactiveSuggestions
           id: 'oportunidade-antecipacao',
           type: 'oportunidade',
           title: 'Oportunidade de Desconto',
-          description: 'Saldo disponível permite antecipar pagamentos. Verifique fornecedores que oferecem desconto para pagamento antecipado.',
+          description:
+            'Saldo disponível permite antecipar pagamentos. Verifique fornecedores que oferecem desconto para pagamento antecipado.',
           action: 'Consulte os fornecedores sobre descontos disponíveis.',
           priority: 'baixa',
         });
@@ -184,7 +193,6 @@ export function ProactiveSuggestions({ onSuggestionClick }: ProactiveSuggestions
           priority: 'media',
         });
       }
-
     } catch (error: unknown) {
       logger.error('Error generating suggestions:', error);
     }
@@ -194,7 +202,7 @@ export function ProactiveSuggestions({ onSuggestionClick }: ProactiveSuggestions
   };
 
   const handleDismiss = (id: string) => {
-    setDismissedIds(prev => new Set([...prev, id]));
+    setDismissedIds((prev) => new Set([...prev, id]));
   };
 
   const handleAction = (suggestion: ProactiveSuggestion) => {
@@ -238,7 +246,7 @@ export function ProactiveSuggestions({ onSuggestionClick }: ProactiveSuggestions
     return variants[priority] || variants.media;
   };
 
-  const visibleSuggestions = suggestions.filter(s => !dismissedIds.has(s.id));
+  const visibleSuggestions = suggestions.filter((s) => !dismissedIds.has(s.id));
 
   if (isLoading) {
     return (
@@ -260,9 +268,11 @@ export function ProactiveSuggestions({ onSuggestionClick }: ProactiveSuggestions
       <div className="flex items-center gap-2 mb-3">
         <Sparkles className="h-4 w-4 text-primary" />
         <h3 className="text-sm font-semibold">Sugestões Proativas</h3>
-        <Badge variant="secondary" className="text-xs">IA</Badge>
+        <Badge variant="secondary" className="text-xs">
+          IA
+        </Badge>
       </div>
-      
+
       <ScrollArea className="max-h-48">
         <div className="space-y-2">
           <AnimatePresence>
@@ -277,11 +287,13 @@ export function ProactiveSuggestions({ onSuggestionClick }: ProactiveSuggestions
                   className="group relative bg-background rounded-lg p-3 border hover:border-primary/30 transition-colors"
                 >
                   <div className="flex items-start gap-3">
-                    <Icon className={cn("h-5 w-5 flex-shrink-0 mt-0.5", getColor(suggestion.type))} />
+                    <Icon
+                      className={cn('h-5 w-5 flex-shrink-0 mt-0.5', getColor(suggestion.type))}
+                    />
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2 mb-1">
                         <span className="text-sm font-medium">{suggestion.title}</span>
-                        <Badge className={cn("text-xs", getPriorityBadge(suggestion.priority))}>
+                        <Badge className={cn('text-xs', getPriorityBadge(suggestion.priority))}>
                           {suggestion.priority}
                         </Badge>
                       </div>

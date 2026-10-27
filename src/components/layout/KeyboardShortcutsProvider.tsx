@@ -8,6 +8,6 @@ interface KeyboardShortcutsProviderProps {
 export function KeyboardShortcutsProvider({ children }: KeyboardShortcutsProviderProps) {
   // Initialize keyboard shortcuts
   useKeyboardShortcuts();
-  
+
   return <>{children}</>;
 }

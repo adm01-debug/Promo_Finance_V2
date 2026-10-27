@@ -7,18 +7,25 @@
  * `claim_frontend_error_alerts`, que registra o disparo na MESMA transação —
  * portanto execuções concorrentes não geram alertas duplicados.
  */
-import { createClient } from "https://esm.sh/@supabase/supabase-js@2.49.4";
-import { corsHeaders } from "../_shared/validation.ts";
-import { exigirChamadaInterna } from "../_shared/auth-guard.ts";
+import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.49.4';
+import { corsHeaders } from '../_shared/validation.ts';
+import { exigirChamadaInterna } from '../_shared/auth-guard.ts';
 import { z } from '../_shared/zod.ts';
 import { createValidationErrorResponse } from '../_shared/contract-response.ts';
+import { corsHeadersPara } from '../_shared/cors.ts';
+import { createLogger } from '../_shared/observability.ts';
+import { mensagemErro } from '../_shared/erros.ts';
+import { withEdgeObservability } from '../_shared/edge-observability.ts';
+const log = createLogger('monitorar-erros-frontend');
 
-const BodySchema = z.object({
-  windowMinutes: z.union([z.number(), z.string().trim().min(1)]).optional(),
-  threshold: z.union([z.number(), z.string().trim().min(1)]).optional(),
-  cooldownMinutes: z.union([z.number(), z.string().trim().min(1)]).optional(),
-  limit: z.union([z.number(), z.string().trim().min(1)]).optional(),
-}).strict();
+const BodySchema = z
+  .object({
+    windowMinutes: z.union([z.number(), z.string().trim().min(1)]).optional(),
+    threshold: z.union([z.number(), z.string().trim().min(1)]).optional(),
+    cooldownMinutes: z.union([z.number(), z.string().trim().min(1)]).optional(),
+    limit: z.union([z.number(), z.string().trim().min(1)]).optional(),
+  })
+  .strict();
 
 interface AlertaErro {
   assinatura: string;
@@ -41,17 +48,17 @@ interface Config {
 
 /** Sanitiza números vindos do corpo da requisição, com clamp defensivo. */
 function num(value: unknown, fallback: number, min: number, max: number): number {
-  const parsed = typeof value === "number" ? value : Number(value);
+  const parsed = typeof value === 'number' ? value : Number(value);
   if (!Number.isFinite(parsed)) return fallback;
   return Math.min(max, Math.max(min, Math.trunc(parsed)));
 }
 
 function escapeHtml(input: string): string {
   return input
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;")
-    .replace(/"/g, "&quot;");
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;');
 }
 
 function montarHtml(alertas: AlertaErro[], cfg: Config): string {
@@ -60,14 +67,14 @@ function montarHtml(alertas: AlertaErro[], cfg: Config): string {
       (a) => `
         <tr>
           <td style="padding:8px;border-bottom:1px solid #e5e7eb;font-family:monospace;font-size:12px;">
-            ${a.is_nova ? "🆕 " : ""}${escapeHtml(a.assinatura)}
+            ${a.is_nova ? '🆕 ' : ''}${escapeHtml(a.assinatura)}
           </td>
           <td style="padding:8px;border-bottom:1px solid #e5e7eb;text-align:center;">${escapeHtml(a.severity)}</td>
           <td style="padding:8px;border-bottom:1px solid #e5e7eb;text-align:center;font-weight:bold;">${a.ocorrencias}</td>
           <td style="padding:8px;border-bottom:1px solid #e5e7eb;text-align:center;">${a.usuarios_afetados}</td>
-        </tr>`,
+        </tr>`
     )
-    .join("");
+    .join('');
 
   return `
     <div style="font-family:Arial,sans-serif;max-width:680px;margin:0 auto;">
@@ -97,142 +104,158 @@ function montarHtml(alertas: AlertaErro[], cfg: Config): string {
     </div>`;
 }
 
-Deno.serve(async (req: Request): Promise<Response> => {
-  if (req.method === "OPTIONS") {
-    return new Response(null, { headers: corsHeaders });
-  }
-
-  // [auth-guard] Worker interno de agregacao de erros: exige service role ou x-cron-secret.
-  const guard = await exigirChamadaInterna(req);
-  if (!guard.ok) return guard.resposta;
-
-
-  const jsonResponse = (body: unknown, status = 200) =>
-    new Response(JSON.stringify(body), {
-      status,
-      headers: { ...corsHeaders, "Content-Type": "application/json" },
-    });
-
-  try {
-    const supabase = createClient(
-      Deno.env.get("SUPABASE_URL")!,
-      Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!,
-    );
-
-    let raw: Record<string, unknown> = {};
+Deno.serve(
+  withEdgeObservability('monitorar-erros-frontend', async (req: Request): Promise<Response> => {
+    const _t0 = Date.now();
     try {
-      raw = (await req.json()) as Record<string, unknown>;
-    } catch {
-      raw = {};
-    }
-    const parsed = BodySchema.safeParse(raw);
-    if (!parsed.success) return createValidationErrorResponse(parsed.error, corsHeaders);
-    raw = parsed.data;
-
-    const cfg: Config = {
-      windowMinutes: num(raw.windowMinutes, 15, 1, 1440),
-      threshold: num(raw.threshold, 10, 1, 100000),
-      cooldownMinutes: num(raw.cooldownMinutes, 60, 0, 10080),
-      limit: num(raw.limit, 20, 1, 100),
-    };
-
-    const { data, error } = await supabase.rpc("claim_frontend_error_alerts", {
-      p_window_minutes: cfg.windowMinutes,
-      p_threshold: cfg.threshold,
-      p_cooldown_minutes: cfg.cooldownMinutes,
-      p_limit: cfg.limit,
-    });
-
-    if (error) {
-      console.error("Falha ao reivindicar alertas:", error.message);
-      return jsonResponse({ success: false, error: "falha ao consultar alertas" }, 500);
-    }
-
-    const alertas = (data ?? []) as AlertaErro[];
-    if (alertas.length === 0) {
-      return jsonResponse({ success: true, alertas: 0, message: "nenhum pico detectado" });
-    }
-
-    // Destinatários: administradores com e-mail cadastrado.
-    const { data: admins } = await supabase
-      .from("user_roles")
-      .select("user_id")
-      .eq("role", "admin");
-
-    const adminIds = (admins ?? []).map((a: { user_id: string }) => a.user_id);
-    let destinatarios: string[] = [];
-    if (adminIds.length > 0) {
-      const { data: perfis } = await supabase
-        .from("profiles")
-        .select("email")
-        .in("user_id", adminIds)
-        .not("email", "is", null);
-      destinatarios = (perfis ?? [])
-        .map((p: { email: string | null }) => p.email)
-        .filter((e): e is string => typeof e === "string" && e.includes("@"));
-    }
-
-    const canais: Record<string, string> = {};
-
-    // Slack (opcional)
-    const slackUrl = Deno.env.get("SLACK_WEBHOOK_URL");
-    if (slackUrl) {
-      try {
-        const texto = alertas
-          .map((a) => `• [${a.severity}] ${a.ocorrencias}x — ${a.assinatura}`)
-          .join("\n");
-        const resp = await fetch(slackUrl, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            text: `🚨 Pico de erros no frontend (janela ${cfg.windowMinutes}min)\n${texto}`,
-          }),
-        });
-        canais.slack = resp.ok ? "enviado" : `falha_${resp.status}`;
-      } catch (e) {
-        canais.slack = "falha";
-        console.error("Slack:", e instanceof Error ? e.message : String(e));
+      const corsHeaders = corsHeadersPara(req);
+      if (req.method === 'OPTIONS') {
+        return new Response(null, { headers: corsHeaders });
       }
-    } else {
-      canais.slack = "nao_configurado";
-    }
 
-    // E-mail (Resend)
-    const resendKey = Deno.env.get("RESEND_API_KEY");
-    if (resendKey && destinatarios.length > 0) {
-      try {
-        const resp = await fetch("https://api.resend.com/emails", {
-          method: "POST",
-          headers: {
-            Authorization: `Bearer ${resendKey}`,
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            from: "Monitoramento <onboarding@resend.dev>",
-            to: destinatarios,
-            subject: `🚨 ${alertas.length} pico(s) de erro no frontend`,
-            html: montarHtml(alertas, cfg),
-          }),
+      // [auth-guard] Worker interno de agregacao de erros: exige service role ou x-cron-secret.
+      const guard = await exigirChamadaInterna(req);
+      if (!guard.ok) return guard.resposta;
+
+      const jsonResponse = (body: unknown, status = 200) =>
+        new Response(JSON.stringify(body), {
+          status,
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
         });
-        canais.email = resp.ok ? "enviado" : `falha_${resp.status}`;
-        if (!resp.ok) console.error("Resend:", await resp.text());
-      } catch (e) {
-        canais.email = "falha";
-        console.error("Resend:", e instanceof Error ? e.message : String(e));
-      }
-    } else {
-      canais.email = resendKey ? "sem_destinatarios" : "nao_configurado";
-    }
 
-    return jsonResponse({
-      success: true,
-      alertas: alertas.length,
-      novas: alertas.filter((a) => a.is_nova).length,
-      canais,
-      config: cfg,
-    });
-  } catch (e) {
-    console.error("Erro inesperado:", e instanceof Error ? e.message : String(e));
-    return jsonResponse({ success: false, error: "erro interno" }, 500);
-  }
-});
+      try {
+        const supabase = createClient(
+          Deno.env.get('SUPABASE_URL')!,
+          Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!
+        );
+
+        let raw: Record<string, unknown> = {};
+        try {
+          raw = (await req.json()) as Record<string, unknown>;
+        } catch {
+          raw = {};
+        }
+        const parsed = BodySchema.safeParse(raw);
+        if (!parsed.success) return createValidationErrorResponse(parsed.error, corsHeaders);
+        raw = parsed.data;
+
+        const cfg: Config = {
+          windowMinutes: num(raw.windowMinutes, 15, 1, 1440),
+          threshold: num(raw.threshold, 10, 1, 100000),
+          cooldownMinutes: num(raw.cooldownMinutes, 60, 0, 10080),
+          limit: num(raw.limit, 20, 1, 100),
+        };
+
+        const { data, error } = await supabase.rpc('claim_frontend_error_alerts', {
+          p_window_minutes: cfg.windowMinutes,
+          p_threshold: cfg.threshold,
+          p_cooldown_minutes: cfg.cooldownMinutes,
+          p_limit: cfg.limit,
+        });
+
+        if (error) {
+          log.error('Falha ao reivindicar alertas:', {
+            error_message: mensagemErro(error.message),
+          });
+          return jsonResponse({ success: false, error: 'falha ao consultar alertas' }, 500);
+        }
+
+        const alertas = (data ?? []) as AlertaErro[];
+        if (alertas.length === 0) {
+          return jsonResponse({ success: true, alertas: 0, message: 'nenhum pico detectado' });
+        }
+
+        // Destinatários: administradores com e-mail cadastrado.
+        const { data: admins } = await supabase
+          .from('user_roles')
+          .select('user_id')
+          .eq('role', 'admin');
+
+        const adminIds = (admins ?? []).map((a: { user_id: string }) => a.user_id);
+        let destinatarios: string[] = [];
+        if (adminIds.length > 0) {
+          const { data: perfis } = await supabase
+            .from('profiles')
+            .select('email')
+            .in('user_id', adminIds)
+            .not('email', 'is', null);
+          destinatarios = (perfis ?? [])
+            .map((p: { email: string | null }) => p.email)
+            .filter((e): e is string => typeof e === 'string' && e.includes('@'));
+        }
+
+        const canais: Record<string, string> = {};
+
+        // Slack (opcional)
+        const slackUrl = Deno.env.get('SLACK_WEBHOOK_URL');
+        if (slackUrl) {
+          try {
+            const texto = alertas
+              .map((a) => `• [${a.severity}] ${a.ocorrencias}x — ${a.assinatura}`)
+              .join('\n');
+            const resp = await fetch(slackUrl, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                text: `🚨 Pico de erros no frontend (janela ${cfg.windowMinutes}min)\n${texto}`,
+              }),
+            });
+            canais.slack = resp.ok ? 'enviado' : `falha_${resp.status}`;
+          } catch (e) {
+            canais.slack = 'falha';
+            log.error('Slack:', {
+              error_message: mensagemErro(e instanceof Error ? e.message : String(e)),
+            });
+          }
+        } else {
+          canais.slack = 'nao_configurado';
+        }
+
+        // E-mail (Resend)
+        const resendKey = Deno.env.get('RESEND_API_KEY');
+        if (resendKey && destinatarios.length > 0) {
+          try {
+            const resp = await fetch('https://api.resend.com/emails', {
+              method: 'POST',
+              headers: {
+                Authorization: `Bearer ${resendKey}`,
+                'Content-Type': 'application/json',
+              },
+              body: JSON.stringify({
+                from: 'Monitoramento <onboarding@resend.dev>',
+                to: destinatarios,
+                subject: `🚨 ${alertas.length} pico(s) de erro no frontend`,
+                html: montarHtml(alertas, cfg),
+              }),
+            });
+            canais.email = resp.ok ? 'enviado' : `falha_${resp.status}`;
+            if (!resp.ok) log.error('Resend:', { error_message: mensagemErro(await resp.text()) });
+          } catch (e) {
+            canais.email = 'falha';
+            log.error('Resend:', {
+              error_message: mensagemErro(e instanceof Error ? e.message : String(e)),
+            });
+          }
+        } else {
+          canais.email = resendKey ? 'sem_destinatarios' : 'nao_configurado';
+        }
+
+        return jsonResponse({
+          success: true,
+          alertas: alertas.length,
+          novas: alertas.filter((a) => a.is_nova).length,
+          canais,
+          config: cfg,
+        });
+      } catch (e) {
+        log.error('Erro inesperado:', {
+          error_message: mensagemErro(e instanceof Error ? e.message : String(e)),
+        });
+        return jsonResponse({ success: false, error: 'erro interno' }, 500);
+      }
+    } finally {
+      log.info('request', { duration_ms: Date.now() - _t0 });
+      await log.flush();
+    }
+  })
+);

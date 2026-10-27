@@ -39,7 +39,9 @@ export function SimulacaoHeaderActions({
           disabled={!empresaId || isSincronizando}
           className="bg-primary/5 border-primary/20 hover:bg-primary/10"
         >
-          <Sparkles className={`h-4 w-4 mr-2 ${isSincronizando ? 'animate-pulse text-primary' : 'text-primary'}`} />
+          <Sparkles
+            className={`h-4 w-4 mr-2 ${isSincronizando ? 'animate-pulse text-primary' : 'text-primary'}`}
+          />
           {isSincronizando ? 'Analisando...' : 'IA Executive'}
         </Button>
       )}

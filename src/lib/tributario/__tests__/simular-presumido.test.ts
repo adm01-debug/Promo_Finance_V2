@@ -36,7 +36,7 @@ describe('simularPresumido', () => {
     const r = simularPresumido({ ...base, faturamentoAnual: 5_000_000, percentualServicos: 100 });
     // base = 5M * 0,32 = 1,6M; adicional = (1,6M - 240k) * 10% = 136.000
     const irpjBase = 1_600_000 * 0.15;
-    const adicional = (1_600_000 - 240_000) * 0.10;
+    const adicional = (1_600_000 - 240_000) * 0.1;
     expect(r.irpj).toBeCloseTo(irpjBase + adicional, 0);
   });
 

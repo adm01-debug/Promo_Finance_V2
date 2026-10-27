@@ -1,5 +1,13 @@
 import { useState } from 'react';
-import { Download, FileSpreadsheet, FileText, Loader2, CheckCircle2, Brain, List } from 'lucide-react';
+import {
+  Download,
+  FileSpreadsheet,
+  FileText,
+  Loader2,
+  CheckCircle2,
+  Brain,
+  List,
+} from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import {
   DropdownMenu,
@@ -79,12 +87,16 @@ export function ConciliacaoExport({ transacoes, stats, filters }: ConciliacaoExp
     const rows = data ?? [];
     if (rows.length === 0) return [];
 
-    const txIds = Array.from(new Set(rows.map((r) => r.transacao_bancaria_id).filter(Boolean) as string[]));
+    const txIds = Array.from(
+      new Set(rows.map((r) => r.transacao_bancaria_id).filter(Boolean) as string[])
+    );
     if (txIds.length === 0) return [];
 
     const { data: txs } = await supabase
       .from('transacoes_bancarias')
-      .select('id,descricao,valor,data,tipo,conciliada,compensacao_valor,compensacao_motivo,compensacao_classificacao,compensacao_regra')
+      .select(
+        'id,descricao,valor,data,tipo,conciliada,compensacao_valor,compensacao_motivo,compensacao_classificacao,compensacao_regra'
+      )
       .in('id', txIds);
     const txMap = new Map((txs ?? []).map((t) => [t.id, t]));
 
@@ -117,8 +129,12 @@ export function ConciliacaoExport({ transacoes, stats, filters }: ConciliacaoExp
     const total = rows.length;
     const conciliadas = rows.filter((r) => r.status === 'conciliada').length;
     const pendentes = total - conciliadas;
-    const valorConciliado = rows.filter((r) => r.status === 'conciliada').reduce((s, r) => s + Number(r.valor || 0), 0);
-    const valorPendente = rows.filter((r) => r.status !== 'conciliada').reduce((s, r) => s + Number(r.valor || 0), 0);
+    const valorConciliado = rows
+      .filter((r) => r.status === 'conciliada')
+      .reduce((s, r) => s + Number(r.valor || 0), 0);
+    const valorPendente = rows
+      .filter((r) => r.status !== 'conciliada')
+      .reduce((s, r) => s + Number(r.valor || 0), 0);
     return {
       total,
       conciliadas,
@@ -155,12 +171,22 @@ export function ConciliacaoExport({ transacoes, stats, filters }: ConciliacaoExp
       }
 
       const scopeLabel = SCOPE_LABEL[scope];
-      const filenameSuffix = scope === 'todas' ? 'todas' : scope === 'conciliadas' ? 'conciliadas' : 'feedback-ia';
+      const filenameSuffix =
+        scope === 'todas' ? 'todas' : scope === 'conciliadas' ? 'conciliadas' : 'feedback-ia';
 
       if (fmt === 'csv') {
         const headers = isFeedback
           ? ['Descrição', 'Data', 'Valor', 'Tipo', 'Status', 'Ação IA', 'Motivo Rejeição']
-          : ['Descrição', 'Data', 'Valor', 'Tipo', 'Status', 'Ajuste (R$)', 'Classificação', 'Regra Aplicada'];
+          : [
+              'Descrição',
+              'Data',
+              'Valor',
+              'Tipo',
+              'Status',
+              'Ajuste (R$)',
+              'Classificação',
+              'Regra Aplicada',
+            ];
 
         const dataRows = rows.map((r) => {
           const base = [
@@ -170,7 +196,7 @@ export function ConciliacaoExport({ transacoes, stats, filters }: ConciliacaoExp
             r.tipo === 'credito' ? 'Crédito' : 'Débito',
             r.status === 'conciliada' ? 'Conciliada' : 'Pendente',
           ];
-          
+
           if (isFeedback) {
             const fb = r as FeedbackRow;
             base.push(fb.acao_ia === 'aprovado' ? 'Aprovado' : 'Rejeitado');
@@ -222,8 +248,8 @@ export function ConciliacaoExport({ transacoes, stats, filters }: ConciliacaoExp
         doc.setFontSize(10);
         doc.text(`Escopo: ${scopeLabel}`, 14, 28);
         doc.text(`Gerado em: ${formatDate(new Date())}`, 14, 34);
-        
-        if (filters && Object.values(filters).some(v => v && v !== 'todos')) {
+
+        if (filters && Object.values(filters).some((v) => v && v !== 'todos')) {
           const filterDesc = Object.entries(filters)
             .filter(([_, v]) => v && v !== 'todos')
             .map(([k, v]) => `${k}: ${v}`)
@@ -249,7 +275,8 @@ export function ConciliacaoExport({ transacoes, stats, filters }: ConciliacaoExp
           headStyles: { fillColor: [59, 130, 246] },
         });
 
-        const finalY = (doc as unknown as { lastAutoTable?: { finalY: number } }).lastAutoTable?.finalY || 100;
+        const finalY =
+          (doc as unknown as { lastAutoTable?: { finalY: number } }).lastAutoTable?.finalY || 100;
         doc.setFontSize(12);
         doc.text('Transações e Compensações', 14, finalY + 12);
 
@@ -267,7 +294,7 @@ export function ConciliacaoExport({ transacoes, stats, filters }: ConciliacaoExp
               fb.tipo === 'credito' ? 'Crédito' : 'Débito',
               fb.status === 'conciliada' ? 'Conciliada' : 'Pendente',
               fb.acao_ia === 'aprovado' ? 'Aprovado' : 'Rejeitado',
-              (fb.motivo_rejeicao || '').slice(0, 40)
+              (fb.motivo_rejeicao || '').slice(0, 40),
             ];
           } else {
             const tx = r as TransacaoExport;
@@ -278,7 +305,7 @@ export function ConciliacaoExport({ transacoes, stats, filters }: ConciliacaoExp
               tx.status === 'conciliada' ? 'Conciliada' : 'Pendente',
               tx.compensacao_valor ? formatCurrency(tx.compensacao_valor) : '-',
               (tx.compensacao_regra || '').slice(0, 25),
-              tx.compensacao_evidencia_url ? 'Link disponível' : '-'
+              tx.compensacao_evidencia_url ? 'Link disponível' : '-',
             ];
           }
         });
@@ -291,7 +318,7 @@ export function ConciliacaoExport({ transacoes, stats, filters }: ConciliacaoExp
           headStyles: { fillColor: [59, 130, 246] },
           styles: { fontSize: 7, cellPadding: 2 },
           columnStyles: {
-            6: { textColor: [59, 130, 246] } // Blue for evidence link column
+            6: { textColor: [59, 130, 246] }, // Blue for evidence link column
           },
           didDrawCell: (data) => {
             if (!isFeedback && data.column.index === 6 && data.cell.text[0] === 'Link disponível') {
@@ -301,7 +328,7 @@ export function ConciliacaoExport({ transacoes, stats, filters }: ConciliacaoExp
                 // but we can add a text link manually if needed, however standard export is usually enough
               }
             }
-          }
+          },
         });
 
         doc.save(`conciliacao_${filenameSuffix}_${new Date().toISOString().slice(0, 10)}.pdf`);
@@ -336,7 +363,11 @@ export function ConciliacaoExport({ transacoes, stats, filters }: ConciliacaoExp
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <Button variant="outline" size="sm" className="gap-2" disabled={isExporting}>
-          {isExporting ? <Loader2 className="h-4 w-4 animate-spin" /> : <Download className="h-4 w-4" />}
+          {isExporting ? (
+            <Loader2 className="h-4 w-4 animate-spin" />
+          ) : (
+            <Download className="h-4 w-4" />
+          )}
           Exportar
         </Button>
       </DropdownMenuTrigger>

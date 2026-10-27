@@ -1,19 +1,19 @@
-import { useMemo, useState } from "react";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { supabaseDyn } from "@/lib/supabase-dynamic";
+import { useMemo, useState } from 'react';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { supabaseDyn } from '@/lib/supabase-dynamic';
 
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import { ShieldCheck, ShieldAlert, RefreshCw, CheckCircle2, AlertTriangle } from "lucide-react";
-import { toast } from "sonner";
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { ShieldCheck, ShieldAlert, RefreshCw, CheckCircle2, AlertTriangle } from 'lucide-react';
+import { toast } from 'sonner';
 
 /** Linha retornada por public.get_integrity_alerts (admin-only). */
 interface IntegrityAlertRow {
   id: string;
   domain: string;
   invariant: string;
-  severity: "critical" | "warning" | "info" | string;
+  severity: 'critical' | 'warning' | 'info' | string;
   affected_count: number | null;
   reason: string | null;
   sample_ids: string[] | null;
@@ -24,24 +24,24 @@ interface IntegrityAlertRow {
 }
 
 const DOMAIN_LABEL: Record<string, string> = {
-  entrega: "Entregas",
-  screening: "Triagem de motoristas",
-  financeiro: "Financeiro",
-  nfe: "NF-e (XML)",
-  nfe_sefaz: "SEFAZ DF-e",
+  entrega: 'Entregas',
+  screening: 'Triagem de motoristas',
+  financeiro: 'Financeiro',
+  nfe: 'NF-e (XML)',
+  nfe_sefaz: 'SEFAZ DF-e',
 };
 
 const SEVERITY_ORDER: Record<string, number> = { critical: 0, warning: 1, info: 2 };
 
 function severityBadge(severity: string) {
-  if (severity === "critical") {
+  if (severity === 'critical') {
     return (
       <Badge variant="destructive" className="text-[10px]">
         <ShieldAlert className="h-3 w-3 mr-1" /> Crítico
       </Badge>
     );
   }
-  if (severity === "warning") {
+  if (severity === 'warning') {
     return (
       <Badge variant="outline" className="text-[10px] border-amber-500/40 text-amber-600">
         <AlertTriangle className="h-3 w-3 mr-1" /> Atenção
@@ -64,10 +64,15 @@ export function IntegrityAlertsPanel() {
   const [somenteAbertos, setSomenteAbertos] = useState(true);
   const queryClient = useQueryClient();
 
-  const { data = [], isLoading, refetch, isRefetching } = useQuery<IntegrityAlertRow[]>({
-    queryKey: ["integrity-alerts", limit, somenteAbertos],
+  const {
+    data = [],
+    isLoading,
+    refetch,
+    isRefetching,
+  } = useQuery<IntegrityAlertRow[]>({
+    queryKey: ['integrity-alerts', limit, somenteAbertos],
     queryFn: async () => {
-      const { data, error } = await supabaseDyn.rpc<IntegrityAlertRow[]>("get_integrity_alerts", {
+      const { data, error } = await supabaseDyn.rpc<IntegrityAlertRow[]>('get_integrity_alerts', {
         p_limit: limit,
         p_incluir_resolvidos: !somenteAbertos,
       });
@@ -86,13 +91,13 @@ export function IntegrityAlertsPanel() {
     mutationFn: async (id: string) => {
       // RPC dedicada: a tabela não concede UPDATE a `authenticated`, então um
       // update direto seria filtrado pela RLS sem erro (falha silenciosa).
-      const { error } = await supabaseDyn.rpc("resolve_integrity_alert", { p_alert_id: id });
+      const { error } = await supabaseDyn.rpc('resolve_integrity_alert', { p_alert_id: id });
       if (error) throw error;
     },
 
     onSuccess: () => {
-      toast.success("Alerta marcado como resolvido");
-      queryClient.invalidateQueries({ queryKey: ["integrity-alerts"] });
+      toast.success('Alerta marcado como resolvido');
+      queryClient.invalidateQueries({ queryKey: ['integrity-alerts'] });
     },
     onError: (e: Error) => toast.error(`Falha ao resolver: ${e.message}`),
   });
@@ -100,8 +105,8 @@ export function IntegrityAlertsPanel() {
   const counts = useMemo(() => {
     const abertos = data.filter((d) => !d.resolved_at);
     return {
-      critical: abertos.filter((d) => d.severity === "critical").length,
-      warning: abertos.filter((d) => d.severity === "warning").length,
+      critical: abertos.filter((d) => d.severity === 'critical').length,
+      warning: abertos.filter((d) => d.severity === 'warning').length,
       resolvidos: data.filter((d) => d.resolved_at).length,
     };
   }, [data]);
@@ -117,7 +122,7 @@ export function IntegrityAlertsPanel() {
           <div className="flex flex-wrap items-center gap-1.5 mt-2">
             {counts.critical ? (
               <Badge variant="destructive" className="text-[10px]">
-                {counts.critical} crítico{counts.critical > 1 ? "s" : ""}
+                {counts.critical} crítico{counts.critical > 1 ? 's' : ''}
               </Badge>
             ) : null}
             {counts.warning ? (
@@ -128,20 +133,20 @@ export function IntegrityAlertsPanel() {
             {counts.resolvidos ? (
               <Badge variant="outline" className="text-[10px] border-green-500/40 text-green-600">
                 <CheckCircle2 className="h-3 w-3 mr-1" /> {counts.resolvidos} encerrado
-                {counts.resolvidos > 1 ? "s" : ""}
+                {counts.resolvidos > 1 ? 's' : ''}
               </Badge>
             ) : null}
           </div>
         </div>
         <div className="flex items-center gap-2">
           <Button
-            variant={somenteAbertos ? "outline" : "secondary"}
+            variant={somenteAbertos ? 'outline' : 'secondary'}
             size="sm"
             className="text-xs h-8"
             onClick={() => setSomenteAbertos((v) => !v)}
             aria-pressed={!somenteAbertos}
           >
-            {somenteAbertos ? "Mostrar encerrados" : "Ocultar encerrados"}
+            {somenteAbertos ? 'Mostrar encerrados' : 'Ocultar encerrados'}
           </Button>
           <select
             value={limit}
@@ -160,7 +165,7 @@ export function IntegrityAlertsPanel() {
             disabled={isRefetching}
             aria-label="Atualizar invariantes"
           >
-            <RefreshCw className={`h-3.5 w-3.5 ${isRefetching ? "animate-spin" : ""}`} />
+            <RefreshCw className={`h-3.5 w-3.5 ${isRefetching ? 'animate-spin' : ''}`} />
           </Button>
         </div>
       </CardHeader>
@@ -169,7 +174,7 @@ export function IntegrityAlertsPanel() {
           <p className="text-sm text-muted-foreground">Carregando invariantes…</p>
         ) : data.length === 0 ? (
           <p className="text-sm text-muted-foreground">
-            ✅ Nenhuma inconsistência {somenteAbertos ? "em aberto " : ""}no período.
+            ✅ Nenhuma inconsistência {somenteAbertos ? 'em aberto ' : ''}no período.
           </p>
         ) : (
           <div className="overflow-x-auto">
@@ -188,14 +193,14 @@ export function IntegrityAlertsPanel() {
                 {data.map((r) => (
                   <tr
                     key={r.id}
-                    className={`border-b border-muted/40 ${r.resolved_at ? "opacity-60" : ""}`}
+                    className={`border-b border-muted/40 ${r.resolved_at ? 'opacity-60' : ''}`}
                   >
                     <td className="py-2">
                       {r.resolved_at ? (
                         <Badge
                           variant="outline"
                           className="text-[10px] border-green-500/40 text-green-600"
-                          title={r.resolved_reason ?? "Encerrado"}
+                          title={r.resolved_reason ?? 'Encerrado'}
                         >
                           <CheckCircle2 className="h-3 w-3 mr-1" /> Encerrado
                         </Badge>
@@ -219,13 +224,13 @@ export function IntegrityAlertsPanel() {
                         </div>
                       ) : null}
                     </td>
-                    <td className="py-2 text-right tabular-nums">{r.affected_count ?? "—"}</td>
+                    <td className="py-2 text-right tabular-nums">{r.affected_count ?? '—'}</td>
                     <td className="py-2 text-right text-muted-foreground whitespace-nowrap">
-                      {new Date(r.alert_hour).toLocaleString("pt-BR", {
-                        day: "2-digit",
-                        month: "2-digit",
-                        hour: "2-digit",
-                        minute: "2-digit",
+                      {new Date(r.alert_hour).toLocaleString('pt-BR', {
+                        day: '2-digit',
+                        month: '2-digit',
+                        hour: '2-digit',
+                        minute: '2-digit',
                       })}
                     </td>
                     <td className="py-2 text-right">

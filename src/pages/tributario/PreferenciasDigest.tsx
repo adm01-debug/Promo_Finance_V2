@@ -29,7 +29,10 @@ import {
   useDigestPreferences,
   type DigestPreferenceInput,
 } from '@/hooks/useDigestPreferences';
-import type { FrequenciaDigest, SeveridadeDigest } from '@/lib/tributario/obrigacoes/preferencias-digest';
+import type {
+  FrequenciaDigest,
+  SeveridadeDigest,
+} from '@/lib/tributario/obrigacoes/preferencias-digest';
 
 const DIAS_SEMANA = [
   'Domingo',
@@ -101,234 +104,230 @@ export default function PreferenciasDigest() {
         />
 
         <div className="space-y-6 p-4 md:p-6">
-        {error && (
-          <Alert variant="error" className="mb-6">
-            <AlertTriangle className="h-4 w-4" />
-            <AlertDescription>{error.message}</AlertDescription>
-          </Alert>
-        )}
+          {error && (
+            <Alert variant="error" className="mb-6">
+              <AlertTriangle className="h-4 w-4" />
+              <AlertDescription>{error.message}</AlertDescription>
+            </Alert>
+          )}
 
-
-
-        {isLoading ? (
-          <div className="space-y-4">
-            <Skeleton className="h-40 w-full" />
-            <Skeleton className="h-64 w-full" />
-          </div>
-        ) : (
-          <div className="grid gap-6 lg:grid-cols-3">
-            <Card className="lg:col-span-2">
-              <CardHeader>
-                <CardTitle>Configuração de envio</CardTitle>
-                <CardDescription>
-                  As preferências valem apenas para você e não alteram os alertas do sistema.
-                </CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-6">
-                <div className="flex items-center justify-between rounded-lg border border-border p-4">
-                  <div>
-                    <Label htmlFor="digest-ativo" className="text-base">
-                      Receber o resumo por e-mail
-                    </Label>
-                    <p className="text-sm text-muted-foreground">
-                      Desative para pausar os envios sem perder a configuração.
-                    </p>
-                  </div>
-                  <Switch
-                    id="digest-ativo"
-                    checked={form.ativo}
-                    onCheckedChange={(v) => setForm((f) => ({ ...f, ativo: v }))}
-                  />
-                </div>
-
-                <div className="grid gap-4 md:grid-cols-2">
-                  <div className="space-y-2">
-                    <Label htmlFor="digest-frequencia">Frequência</Label>
-                    <Select
-                      value={form.frequencia}
-                      onValueChange={(v) =>
-                        setForm((f) => ({ ...f, frequencia: v as FrequenciaDigest }))
-                      }
-                    >
-                      <SelectTrigger id="digest-frequencia">
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {FREQUENCIAS.map((f) => (
-                          <SelectItem key={f.valor} value={f.valor}>
-                            {f.rotulo}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
+          {isLoading ? (
+            <div className="space-y-4">
+              <Skeleton className="h-40 w-full" />
+              <Skeleton className="h-64 w-full" />
+            </div>
+          ) : (
+            <div className="grid gap-6 lg:grid-cols-3">
+              <Card className="lg:col-span-2">
+                <CardHeader>
+                  <CardTitle>Configuração de envio</CardTitle>
+                  <CardDescription>
+                    As preferências valem apenas para você e não alteram os alertas do sistema.
+                  </CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-6">
+                  <div className="flex items-center justify-between rounded-lg border border-border p-4">
+                    <div>
+                      <Label htmlFor="digest-ativo" className="text-base">
+                        Receber o resumo por e-mail
+                      </Label>
+                      <p className="text-sm text-muted-foreground">
+                        Desative para pausar os envios sem perder a configuração.
+                      </p>
+                    </div>
+                    <Switch
+                      id="digest-ativo"
+                      checked={form.ativo}
+                      onCheckedChange={(v) => setForm((f) => ({ ...f, ativo: v }))}
+                    />
                   </div>
 
-                  <div className="space-y-2">
-                    <Label htmlFor="digest-hora">Horário de envio</Label>
-                    <Select
-                      value={String(form.hora_envio)}
-                      onValueChange={(v) => setForm((f) => ({ ...f, hora_envio: Number(v) }))}
-                    >
-                      <SelectTrigger id="digest-hora">
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {Array.from({ length: 24 }, (_, h) => (
-                          <SelectItem key={h} value={String(h)}>
-                            {String(h).padStart(2, '0')}:00
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </div>
-
-                  {form.frequencia === 'semanal' && (
+                  <div className="grid gap-4 md:grid-cols-2">
                     <div className="space-y-2">
-                      <Label htmlFor="digest-dia-semana">Dia da semana</Label>
+                      <Label htmlFor="digest-frequencia">Frequência</Label>
                       <Select
-                        value={String(form.dia_semana)}
-                        onValueChange={(v) => setForm((f) => ({ ...f, dia_semana: Number(v) }))}
+                        value={form.frequencia}
+                        onValueChange={(v) =>
+                          setForm((f) => ({ ...f, frequencia: v as FrequenciaDigest }))
+                        }
                       >
-                        <SelectTrigger id="digest-dia-semana">
+                        <SelectTrigger id="digest-frequencia">
                           <SelectValue />
                         </SelectTrigger>
                         <SelectContent>
-                          {DIAS_SEMANA.map((d, i) => (
-                            <SelectItem key={d} value={String(i)}>
-                              {d}
+                          {FREQUENCIAS.map((f) => (
+                            <SelectItem key={f.valor} value={f.valor}>
+                              {f.rotulo}
                             </SelectItem>
                           ))}
                         </SelectContent>
                       </Select>
                     </div>
-                  )}
 
-                  {form.frequencia === 'mensal' && (
                     <div className="space-y-2">
-                      <Label htmlFor="digest-dia-mes">Dia do mês</Label>
+                      <Label htmlFor="digest-hora">Horário de envio</Label>
                       <Select
-                        value={String(form.dia_mes)}
-                        onValueChange={(v) => setForm((f) => ({ ...f, dia_mes: Number(v) }))}
+                        value={String(form.hora_envio)}
+                        onValueChange={(v) => setForm((f) => ({ ...f, hora_envio: Number(v) }))}
                       >
-                        <SelectTrigger id="digest-dia-mes">
+                        <SelectTrigger id="digest-hora">
                           <SelectValue />
                         </SelectTrigger>
                         <SelectContent>
-                          {Array.from({ length: 28 }, (_, i) => (
-                            <SelectItem key={i + 1} value={String(i + 1)}>
-                              Dia {i + 1}
+                          {Array.from({ length: 24 }, (_, h) => (
+                            <SelectItem key={h} value={String(h)}>
+                              {String(h).padStart(2, '0')}:00
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
+
+                    {form.frequencia === 'semanal' && (
+                      <div className="space-y-2">
+                        <Label htmlFor="digest-dia-semana">Dia da semana</Label>
+                        <Select
+                          value={String(form.dia_semana)}
+                          onValueChange={(v) => setForm((f) => ({ ...f, dia_semana: Number(v) }))}
+                        >
+                          <SelectTrigger id="digest-dia-semana">
+                            <SelectValue />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {DIAS_SEMANA.map((d, i) => (
+                              <SelectItem key={d} value={String(i)}>
+                                {d}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                      </div>
+                    )}
+
+                    {form.frequencia === 'mensal' && (
+                      <div className="space-y-2">
+                        <Label htmlFor="digest-dia-mes">Dia do mês</Label>
+                        <Select
+                          value={String(form.dia_mes)}
+                          onValueChange={(v) => setForm((f) => ({ ...f, dia_mes: Number(v) }))}
+                        >
+                          <SelectTrigger id="digest-dia-mes">
+                            <SelectValue />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {Array.from({ length: 28 }, (_, i) => (
+                              <SelectItem key={i + 1} value={String(i + 1)}>
+                                Dia {i + 1}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                        <p className="text-xs text-muted-foreground">
+                          Limitado ao dia 28 para existir em todos os meses.
+                        </p>
+                      </div>
+                    )}
+
+                    <div className="space-y-2">
+                      <Label htmlFor="digest-severidade">Severidade mínima</Label>
+                      <Select
+                        value={form.severidade_minima}
+                        onValueChange={(v) =>
+                          setForm((f) => ({ ...f, severidade_minima: v as SeveridadeDigest }))
+                        }
+                      >
+                        <SelectTrigger id="digest-severidade">
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {SEVERIDADES.map((s) => (
+                            <SelectItem key={s.valor} value={s.valor}>
+                              {s.rotulo}
                             </SelectItem>
                           ))}
                         </SelectContent>
                       </Select>
                       <p className="text-xs text-muted-foreground">
-                        Limitado ao dia 28 para existir em todos os meses.
+                        {SEVERIDADES.find((s) => s.valor === form.severidade_minima)?.ajuda}
                       </p>
                     </div>
+
+                    <div className="space-y-2">
+                      <Label htmlFor="digest-max">Máximo de alertas por e-mail</Label>
+                      <Input
+                        id="digest-max"
+                        type="number"
+                        min={1}
+                        max={500}
+                        value={form.max_alertas}
+                        onChange={(e) =>
+                          setForm((f) => ({
+                            ...f,
+                            max_alertas: Math.min(500, Math.max(1, Number(e.target.value) || 1)),
+                          }))
+                        }
+                      />
+                    </div>
+
+                    <div className="space-y-2 md:col-span-2">
+                      <Label htmlFor="digest-email">E-mail alternativo (opcional)</Label>
+                      <Input
+                        id="digest-email"
+                        type="email"
+                        placeholder="contabilidade@empresa.com.br"
+                        value={form.email_alternativo ?? ''}
+                        onChange={(e) =>
+                          setForm((f) => ({ ...f, email_alternativo: e.target.value }))
+                        }
+                        aria-invalid={!emailOk}
+                      />
+                      {!emailOk && (
+                        <p className="text-xs text-destructive">Informe um e-mail válido.</p>
+                      )}
+                      <p className="text-xs text-muted-foreground">
+                        Se vazio, o resumo vai para o e-mail da sua conta.
+                      </p>
+                    </div>
+                  </div>
+
+                  <Button onClick={() => salvar(form)} disabled={isSaving || !emailOk}>
+                    <Save className="mr-2 h-4 w-4" />
+                    {isSaving ? 'Salvando...' : 'Salvar preferências'}
+                  </Button>
+                </CardContent>
+              </Card>
+
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <MailCheck className="h-5 w-5 text-primary" />
+                    Resumo
+                  </CardTitle>
+                  <CardDescription>Como ficará o seu envio</CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <p className="text-sm text-foreground">{resumo}</p>
+                  <div className="flex flex-wrap gap-2">
+                    <Badge variant={form.ativo ? 'default' : 'secondary'}>
+                      {form.ativo ? 'Ativo' : 'Pausado'}
+                    </Badge>
+                    <Badge variant="outline">{form.max_alertas} alertas no máximo</Badge>
+                  </div>
+                  {preferencia?.ultimo_envio_em && (
+                    <p className="text-xs text-muted-foreground">
+                      Último envio: {new Date(preferencia.ultimo_envio_em).toLocaleString('pt-BR')}
+                    </p>
                   )}
-
-                  <div className="space-y-2">
-                    <Label htmlFor="digest-severidade">Severidade mínima</Label>
-                    <Select
-                      value={form.severidade_minima}
-                      onValueChange={(v) =>
-                        setForm((f) => ({ ...f, severidade_minima: v as SeveridadeDigest }))
-                      }
-                    >
-                      <SelectTrigger id="digest-severidade">
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {SEVERIDADES.map((s) => (
-                          <SelectItem key={s.valor} value={s.valor}>
-                            {s.rotulo}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                    <p className="text-xs text-muted-foreground">
-                      {SEVERIDADES.find((s) => s.valor === form.severidade_minima)?.ajuda}
-                    </p>
-                  </div>
-
-                  <div className="space-y-2">
-                    <Label htmlFor="digest-max">Máximo de alertas por e-mail</Label>
-                    <Input
-                      id="digest-max"
-                      type="number"
-                      min={1}
-                      max={500}
-                      value={form.max_alertas}
-                      onChange={(e) =>
-                        setForm((f) => ({
-                          ...f,
-                          max_alertas: Math.min(500, Math.max(1, Number(e.target.value) || 1)),
-                        }))
-                      }
-                    />
-                  </div>
-
-                  <div className="space-y-2 md:col-span-2">
-                    <Label htmlFor="digest-email">E-mail alternativo (opcional)</Label>
-                    <Input
-                      id="digest-email"
-                      type="email"
-                      placeholder="contabilidade@empresa.com.br"
-                      value={form.email_alternativo ?? ''}
-                      onChange={(e) =>
-                        setForm((f) => ({ ...f, email_alternativo: e.target.value }))
-                      }
-                      aria-invalid={!emailOk}
-                    />
-                    {!emailOk && (
-                      <p className="text-xs text-destructive">Informe um e-mail válido.</p>
-                    )}
-                    <p className="text-xs text-muted-foreground">
-                      Se vazio, o resumo vai para o e-mail da sua conta.
-                    </p>
-                  </div>
-                </div>
-
-                <Button onClick={() => salvar(form)} disabled={isSaving || !emailOk}>
-                  <Save className="mr-2 h-4 w-4" />
-                  {isSaving ? 'Salvando...' : 'Salvar preferências'}
-                </Button>
-              </CardContent>
-            </Card>
-
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <MailCheck className="h-5 w-5 text-primary" />
-                  Resumo
-                </CardTitle>
-                <CardDescription>Como ficará o seu envio</CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <p className="text-sm text-foreground">{resumo}</p>
-                <div className="flex flex-wrap gap-2">
-                  <Badge variant={form.ativo ? 'default' : 'secondary'}>
-                    {form.ativo ? 'Ativo' : 'Pausado'}
-                  </Badge>
-                  <Badge variant="outline">{form.max_alertas} alertas no máximo</Badge>
-                </div>
-                {preferencia?.ultimo_envio_em && (
                   <p className="text-xs text-muted-foreground">
-                    Último envio:{' '}
-                    {new Date(preferencia.ultimo_envio_em).toLocaleString('pt-BR')}
+                    Envios idênticos consecutivos são suprimidos automaticamente para evitar
+                    repetição.
                   </p>
-                )}
-                <p className="text-xs text-muted-foreground">
-                  Envios idênticos consecutivos são suprimidos automaticamente para evitar
-                  repetição.
-                </p>
-              </CardContent>
-            </Card>
-          </div>
-        )}
+                </CardContent>
+              </Card>
+            </div>
+          )}
         </div>
       </div>
-
     </MainLayout>
   );
 }

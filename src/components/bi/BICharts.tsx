@@ -1,14 +1,39 @@
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Progress } from "@/components/ui/progress";
-import { Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
-  BarChart, Bar, PieChart, Pie, Cell, Line, Legend, ComposedChart
-} from "recharts";
-import { formatCurrency } from "@/lib/formatters";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Progress } from '@/components/ui/progress';
+import {
+  Area,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  ResponsiveContainer,
+  BarChart,
+  Bar,
+  PieChart,
+  Pie,
+  Cell,
+  Line,
+  Legend,
+  ComposedChart,
+} from 'recharts';
+import { formatCurrency } from '@/lib/formatters';
 
-const COLORS = ['hsl(var(--primary))', 'hsl(var(--chart-2))', 'hsl(var(--chart-3))', 'hsl(var(--chart-4))', 'hsl(var(--chart-5))'];
+const COLORS = [
+  'hsl(var(--primary))',
+  'hsl(var(--chart-2))',
+  'hsl(var(--chart-3))',
+  'hsl(var(--chart-4))',
+  'hsl(var(--chart-5))',
+];
 
 interface EvolucaoChartProps {
-  evolucaoMensal: Array<{ mes: string; receitas: number; despesas: number; lucro: number; margem: number }>;
+  evolucaoMensal: Array<{
+    mes: string;
+    receitas: number;
+    despesas: number;
+    lucro: number;
+    margem: number;
+  }>;
   statusReceber: Array<{ name: string; value: number; color: string }>;
 }
 
@@ -25,12 +50,41 @@ export function BIEvolucaoChart({ evolucaoMensal, statusReceber }: EvolucaoChart
             <ComposedChart data={evolucaoMensal}>
               <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
               <XAxis dataKey="mes" tick={{ fontSize: 12 }} stroke="hsl(var(--muted-foreground))" />
-              <YAxis tickFormatter={(v) => `${(v/1000).toFixed(0)}k`} tick={{ fontSize: 12 }} stroke="hsl(var(--muted-foreground))" />
-              <Tooltip formatter={(value: number) => formatCurrency(value)} contentStyle={{ backgroundColor: 'hsl(var(--card))', border: '1px solid hsl(var(--border))' }} />
+              <YAxis
+                tickFormatter={(v) => `${(v / 1000).toFixed(0)}k`}
+                tick={{ fontSize: 12 }}
+                stroke="hsl(var(--muted-foreground))"
+              />
+              <Tooltip
+                formatter={(value: number) => formatCurrency(value)}
+                contentStyle={{
+                  backgroundColor: 'hsl(var(--card))',
+                  border: '1px solid hsl(var(--border))',
+                }}
+              />
               <Legend />
-              <Area type="monotone" dataKey="receitas" name="Receitas" fill="hsl(var(--success) / 0.2)" stroke="hsl(var(--success))" />
-              <Area type="monotone" dataKey="despesas" name="Despesas" fill="hsl(var(--destructive) / 0.2)" stroke="hsl(var(--destructive))" />
-              <Line type="monotone" dataKey="lucro" name="Lucro" stroke="hsl(var(--primary))" strokeWidth={2} dot={{ r: 4 }} />
+              <Area
+                type="monotone"
+                dataKey="receitas"
+                name="Receitas"
+                fill="hsl(var(--success) / 0.2)"
+                stroke="hsl(var(--success))"
+              />
+              <Area
+                type="monotone"
+                dataKey="despesas"
+                name="Despesas"
+                fill="hsl(var(--destructive) / 0.2)"
+                stroke="hsl(var(--destructive))"
+              />
+              <Line
+                type="monotone"
+                dataKey="lucro"
+                name="Lucro"
+                stroke="hsl(var(--primary))"
+                strokeWidth={2}
+                dot={{ r: 4 }}
+              />
             </ComposedChart>
           </ResponsiveContainer>
         </CardContent>
@@ -44,7 +98,15 @@ export function BIEvolucaoChart({ evolucaoMensal, statusReceber }: EvolucaoChart
         <CardContent>
           <ResponsiveContainer width="100%" height={220}>
             <PieChart>
-              <Pie data={statusReceber} cx="50%" cy="50%" innerRadius={50} outerRadius={80} paddingAngle={4} dataKey="value">
+              <Pie
+                data={statusReceber}
+                cx="50%"
+                cy="50%"
+                innerRadius={50}
+                outerRadius={80}
+                paddingAngle={4}
+                dataKey="value"
+              >
                 {statusReceber.map((entry, index) => (
                   <Cell key={`cell-${index}`} fill={entry.color} />
                 ))}
@@ -56,7 +118,9 @@ export function BIEvolucaoChart({ evolucaoMensal, statusReceber }: EvolucaoChart
             {statusReceber.map((item, idx) => (
               <div key={idx} className="flex items-center gap-1.5 text-xs">
                 <div className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: item.color }} />
-                <span>{item.name}: {item.value}</span>
+                <span>
+                  {item.name}: {item.value}
+                </span>
               </div>
             ))}
           </div>
@@ -83,8 +147,18 @@ export function BIAgingChart({ agingReceber, topClientes }: AgingChartProps) {
           <ResponsiveContainer width="100%" height={300}>
             <BarChart data={agingReceber} layout="vertical">
               <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
-              <XAxis type="number" tickFormatter={(v) => `${(v/1000).toFixed(0)}k`} stroke="hsl(var(--muted-foreground))" />
-              <YAxis type="category" dataKey="faixa" width={80} tick={{ fontSize: 11 }} stroke="hsl(var(--muted-foreground))" />
+              <XAxis
+                type="number"
+                tickFormatter={(v) => `${(v / 1000).toFixed(0)}k`}
+                stroke="hsl(var(--muted-foreground))"
+              />
+              <YAxis
+                type="category"
+                dataKey="faixa"
+                width={80}
+                tick={{ fontSize: 11 }}
+                stroke="hsl(var(--muted-foreground))"
+              />
               <Tooltip formatter={(value: number) => formatCurrency(value)} />
               <Bar dataKey="valor" radius={[0, 4, 4, 0]}>
                 {agingReceber.map((entry, index) => (
@@ -141,8 +215,17 @@ export function BICentrosChart({ distribuicaoCentros }: CentrosChartProps) {
         <CardContent>
           <ResponsiveContainer width="100%" height={300}>
             <PieChart>
-              <Pie data={distribuicaoCentros} cx="50%" cy="50%" outerRadius={100} dataKey="valor"
-                label={({ nome, percent }) => `${nome.substring(0, 10)}... ${(percent * 100).toFixed(0)}%`} labelLine={false}>
+              <Pie
+                data={distribuicaoCentros}
+                cx="50%"
+                cy="50%"
+                outerRadius={100}
+                dataKey="valor"
+                label={({ nome, percent }) =>
+                  `${nome.substring(0, 10)}... ${(percent * 100).toFixed(0)}%`
+                }
+                labelLine={false}
+              >
                 {distribuicaoCentros.map((_, index) => (
                   <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                 ))}
@@ -165,7 +248,10 @@ export function BICentrosChart({ distribuicaoCentros }: CentrosChartProps) {
               const percent = total > 0 ? (centro.valor / total) * 100 : 0;
               return (
                 <div key={idx} className="flex items-center gap-3">
-                  <div className="w-3 h-3 rounded-full shrink-0" style={{ backgroundColor: COLORS[idx % COLORS.length] }} />
+                  <div
+                    className="w-3 h-3 rounded-full shrink-0"
+                    style={{ backgroundColor: COLORS[idx % COLORS.length] }}
+                  />
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center justify-between text-sm">
                       <span className="truncate">{centro.nome}</span>

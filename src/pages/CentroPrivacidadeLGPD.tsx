@@ -1,30 +1,18 @@
-import { useState } from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { Textarea } from "@/components/ui/textarea";
-import { Skeleton } from "@/components/ui/skeleton";
+import { useState } from 'react';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
+import { Textarea } from '@/components/ui/textarea';
+import { Skeleton } from '@/components/ui/skeleton';
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select";
-import {
-  Shield,
-  FileDown,
-  Eye,
-  Trash2,
-  Edit3,
-  UserX,
-  Loader2,
-  Download,
-} from "lucide-react";
-import {
-  useSolicitacoesLGPD,
-  type TipoSolicitacaoLGPD,
-} from "@/hooks/useSolicitacoesLGPD";
+} from '@/components/ui/select';
+import { Shield, FileDown, Eye, Trash2, Edit3, UserX, Loader2, Download } from 'lucide-react';
+import { useSolicitacoesLGPD, type TipoSolicitacaoLGPD } from '@/hooks/useSolicitacoesLGPD';
 
 const TIPOS: Array<{
   value: TipoSolicitacaoLGPD;
@@ -33,47 +21,47 @@ const TIPOS: Array<{
   desc: string;
 }> = [
   {
-    value: "acesso",
-    label: "Acesso aos dados",
+    value: 'acesso',
+    label: 'Acesso aos dados',
     icon: Eye,
-    desc: "Receba uma cópia de todos os dados pessoais que mantemos sobre você.",
+    desc: 'Receba uma cópia de todos os dados pessoais que mantemos sobre você.',
   },
   {
-    value: "portabilidade",
-    label: "Portabilidade",
+    value: 'portabilidade',
+    label: 'Portabilidade',
     icon: FileDown,
-    desc: "Exporte seus dados em formato CSV estruturado para uso em outro serviço.",
+    desc: 'Exporte seus dados em formato CSV estruturado para uso em outro serviço.',
   },
   {
-    value: "exclusao",
-    label: "Exclusão",
+    value: 'exclusao',
+    label: 'Exclusão',
     icon: Trash2,
-    desc: "Solicite a exclusão dos seus dados pessoais (anonimização irreversível).",
+    desc: 'Solicite a exclusão dos seus dados pessoais (anonimização irreversível).',
   },
   {
-    value: "retificacao",
-    label: "Retificação",
+    value: 'retificacao',
+    label: 'Retificação',
     icon: Edit3,
-    desc: "Corrija dados pessoais incorretos ou desatualizados.",
+    desc: 'Corrija dados pessoais incorretos ou desatualizados.',
   },
   {
-    value: "anonimizacao",
-    label: "Anonimização",
+    value: 'anonimizacao',
+    label: 'Anonimização',
     icon: UserX,
-    desc: "Mantenha o histórico mas remova identificadores pessoais.",
+    desc: 'Mantenha o histórico mas remova identificadores pessoais.',
   },
 ];
 
 function statusVariant(status: string) {
-  if (status === "atendida") return "default";
-  if (status === "rejeitada") return "destructive";
-  if (status === "em_analise") return "secondary";
-  return "outline";
+  if (status === 'atendida') return 'default';
+  if (status === 'rejeitada') return 'destructive';
+  if (status === 'em_analise') return 'secondary';
+  return 'outline';
 }
 
 export function CentroPrivacidadeLGPD() {
-  const [tipo, setTipo] = useState<TipoSolicitacaoLGPD>("acesso");
-  const [justificativa, setJustificativa] = useState("");
+  const [tipo, setTipo] = useState<TipoSolicitacaoLGPD>('acesso');
+  const [justificativa, setJustificativa] = useState('');
   const { data: solicitacoes, isLoading, criar, processar } = useSolicitacoesLGPD();
 
   const handleCriar = () => {
@@ -81,7 +69,7 @@ export function CentroPrivacidadeLGPD() {
       { tipo, justificativa: justificativa || undefined },
       {
         onSuccess: () => {
-          setJustificativa("");
+          setJustificativa('');
         },
       }
     );
@@ -92,9 +80,7 @@ export function CentroPrivacidadeLGPD() {
       <div className="flex items-center gap-3">
         <Shield className="h-8 w-8 text-primary" />
         <div>
-          <h1 className="text-3xl font-bold tracking-tight">
-            Centro de Privacidade
-          </h1>
+          <h1 className="text-3xl font-bold tracking-tight">Centro de Privacidade</h1>
           <p className="text-muted-foreground">
             Exerça seus direitos como titular de dados (LGPD - Lei 13.709/2018)
           </p>
@@ -138,9 +124,7 @@ export function CentroPrivacidadeLGPD() {
             </Select>
           </div>
           <div>
-            <label className="text-sm font-medium mb-1 block">
-              Justificativa (opcional)
-            </label>
+            <label className="text-sm font-medium mb-1 block">Justificativa (opcional)</label>
             <Textarea
               value={justificativa}
               onChange={(e) => setJustificativa(e.target.value)}
@@ -164,9 +148,7 @@ export function CentroPrivacidadeLGPD() {
           {isLoading ? (
             <Skeleton className="h-32 w-full" />
           ) : (solicitacoes ?? []).length === 0 ? (
-            <p className="text-sm text-muted-foreground">
-              Nenhuma solicitação registrada ainda.
-            </p>
+            <p className="text-sm text-muted-foreground">Nenhuma solicitação registrada ainda.</p>
           ) : (
             <div className="space-y-2">
               {(solicitacoes ?? []).map((s) => {
@@ -182,24 +164,20 @@ export function CentroPrivacidadeLGPD() {
                       <div>
                         <p className="text-sm font-medium">{tipoInfo?.label}</p>
                         <p className="text-xs text-muted-foreground">
-                          {new Date(s.created_at).toLocaleString("pt-BR")}
+                          {new Date(s.created_at).toLocaleString('pt-BR')}
                         </p>
                       </div>
                     </div>
                     <div className="flex items-center gap-2">
                       <Badge variant={statusVariant(s.status)}>{s.status}</Badge>
                       {s.url_dump && (
-                        <Button
-                          size="sm"
-                          variant="outline"
-                          asChild
-                        >
+                        <Button size="sm" variant="outline" asChild>
                           <a href={s.url_dump} target="_blank" rel="noopener noreferrer">
                             <Download className="h-3 w-3 mr-1" /> Dump
                           </a>
                         </Button>
                       )}
-                      {s.status === "aberta" && (
+                      {s.status === 'aberta' && (
                         <Button
                           size="sm"
                           variant="outline"
@@ -209,7 +187,7 @@ export function CentroPrivacidadeLGPD() {
                           {processar.isPending ? (
                             <Loader2 className="h-3 w-3 animate-spin" />
                           ) : (
-                            "Processar"
+                            'Processar'
                           )}
                         </Button>
                       )}

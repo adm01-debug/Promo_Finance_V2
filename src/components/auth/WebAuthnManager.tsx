@@ -42,7 +42,7 @@ export function WebAuthnManager() {
         .eq('user_id', user.id)
         .order('created_at', { ascending: false });
       if (error) throw error;
-      setCredentials(data || []);
+      setCredentials((data || []).map((c) => ({ ...c, device_name: c.device_name ?? '' })));
     } catch {
       // Table may not exist yet
       setCredentials([]);

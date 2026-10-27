@@ -3,6 +3,64 @@
 
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.49.4';
 
+// Redação de credenciais: valores de env que pareçam segredo são mascarados no
+// insert — um handler que logue um token por descuido não o espalha na tabela.
+// Recomputado a cada chamada: um segredo criado depois do boot (Deno.env.set)
+// também precisa ser mascarado nos registros seguintes.
+function segredos(): string[] {
+  try {
+    return Object.entries(Deno.env.toObject())
+      .filter(([k, v]) => /(KEY|SECRET|TOKEN|PASSWORD)/.test(k) && v.length >= 8)
+      .map(([, v]) => v);
+  } catch {
+    return [];
+  }
+}
+
+// Chaves cujo valor nunca vai para edge_function_logs: identificadores
+// pessoais e credenciais embutidos em context/metadata — mesma regra do
+// console-persist, porque a tabela libera leitura a todo admin sem escopo
+// de empresa. Valores financeiros ficam: são o propósito da trilha.
+const CHAVE_SENSIVEL =
+  /(cpf|cnpj|senha|password|token|secret|segredo|chave|cart[aã]o|cvv|iban|ag[eê]ncia|conta_banc[aá]ria|api_?key|certificate|certificado|private|email|authorization|bearer|jwt|session)/i;
+
+// PII em texto livre — mesmas regras do console-persist: e-mail/CPF/CNPJ
+// interpolados em mensagens (Sentry e edge_function_logs são legíveis por
+// admin) saem mascarados. Só formatos com separadores para não comer ids.
+const PII_TEXTO: Array<[RegExp, string]> = [
+  [/[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}/g, '[EMAIL]'],
+  [/\b\d{3}\.\d{3}\.\d{3}-\d{2}\b/g, '[CPF]'],
+  [/\b\d{2}\.\d{3}\.\d{3}\/\d{4}-\d{2}\b/g, '[CNPJ]'],
+];
+
+export function redigir(x: unknown): unknown {
+  if (typeof x === 'string') {
+    let out = x;
+    for (const segredo of segredos()) out = out.split(segredo).join('[REDACTED]');
+    for (const [re, rotulo] of PII_TEXTO) out = out.replace(re, rotulo);
+    return out;
+  }
+  if (Array.isArray(x)) return x.map(redigir);
+  if (x !== null && typeof x === 'object') {
+    const out: Record<string, unknown> = {};
+    for (const [k, v] of Object.entries(x as Record<string, unknown>)) {
+      out[k] = CHAVE_SENSIVEL.test(k) ? '[REDACTED]' : redigir(v);
+    }
+    return out;
+  }
+  return x;
+}
+
+// Versão de redigir para payloads que saem da tabela (Sentry, webhooks):
+// mesma substituição de valores de segredo e de PII, mas sem a regra de
+// chave sensível — strings completas, não objetos.
+export function redigirTexto(texto: string): string {
+  let out = texto;
+  for (const segredo of segredos()) out = out.split(segredo).join('[REDACTED]');
+  for (const [re, rotulo] of PII_TEXTO) out = out.replace(re, rotulo);
+  return out;
+}
+
 interface LogEntry {
   function_name: string;
   level: 'info' | 'warn' | 'error';
@@ -20,25 +78,31 @@ export interface EdgeLogger {
   flush: () => Promise<void>;
 }
 
-export function createLogger(functionName: string): EdgeLogger {
+// Instância vive no escopo do módulo e atravessa requisições do mesmo worker;
+// o teto evita crescimento ilimitado de memória quando a função nunca chama
+// flush(). Entradas descartadas continuam no stdout (console.log abaixo).
+const MAX_BUFFER = 500;
+
+export function createLogger(functionName: string, requestId?: string): EdgeLogger {
   const buffer: LogEntry[] = [];
   const startedAt = Date.now();
 
-  const push = (
-    level: 'info' | 'warn' | 'error',
-    event: string,
-    extra?: Partial<LogEntry>
-  ) => {
+  const push = (level: 'info' | 'warn' | 'error', event: string, extra?: Partial<LogEntry>) => {
     const entry: LogEntry = {
       function_name: functionName,
       level,
       event,
       ...extra,
     };
+    if (requestId) {
+      entry.context = { request_id: requestId, ...(extra?.context ?? {}) };
+    }
     buffer.push(entry);
-    // Console também (compatibilidade com supabase logs)
+    if (buffer.length > MAX_BUFFER) buffer.splice(0, buffer.length - MAX_BUFFER);
+    // Console também (compatibilidade com supabase logs) — com o mesmo
+    // redact da persistência: stdout vira log do dashboard do Supabase.
     try {
-      console.log(JSON.stringify({ ts: new Date().toISOString(), ...entry }));
+      console.log(JSON.stringify(redigir({ ts: new Date().toISOString(), ...entry })));
     } catch {
       console.log(`[${functionName}] ${level} ${event}`);
     }
@@ -49,16 +113,29 @@ export function createLogger(functionName: string): EdgeLogger {
     const url = Deno.env.get('SUPABASE_URL');
     const key = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY');
     if (!url || !key) return;
+    // A API pública do logger fala `context`, mas a coluna real da tabela é
+    // `metadata` — sem a tradução o PostgREST rejeita o lote inteiro.
+    const entries = buffer.splice(0, buffer.length);
+    const reenfileirar = (motivo: string) => {
+      // Falha transitória de banco/PostgREST: devolve o lote ao buffer
+      // para retry no próximo flush, como faz o console-persist.
+      buffer.unshift(...entries);
+      if (buffer.length > MAX_BUFFER) buffer.splice(0, buffer.length - MAX_BUFFER);
+      console.error(`[${functionName}] flush reenfileirou lote:`, motivo);
+    };
     try {
       const admin = createClient(url, key);
-      const rows = buffer.splice(0, buffer.length);
-      await admin.from('edge_function_logs').insert(rows);
+      const rows = entries.map(({ context, event, error_message, ...rest }) => ({
+        ...rest,
+        event: redigir(event) as string,
+        ...(error_message !== undefined ? { error_message: redigir(error_message) as string } : {}),
+        ...(context !== undefined ? { metadata: redigir(context) as Record<string, unknown> } : {}),
+      }));
+      const { error } = await admin.from('edge_function_logs').insert(rows);
+      if (error) reenfileirar(error.message);
     } catch (err) {
       // Nunca lançar — observabilidade não pode derrubar a função
-      console.error(
-        `[observability] flush failed for ${functionName}:`,
-        err instanceof Error ? err.message : String(err)
-      );
+      reenfileirar(err instanceof Error ? err.message : String(err));
     }
   };
 
@@ -68,7 +145,9 @@ export function createLogger(functionName: string): EdgeLogger {
     error: (event, extra) =>
       push('error', event, {
         ...extra,
-        duration_ms: extra?.duration_ms ?? Date.now() - startedAt,
+        // duration_ms só faz sentido para logger criado por requisição
+        // (requestId); em logger de módulo ele mediria a vida do worker.
+        duration_ms: extra?.duration_ms ?? (requestId ? Date.now() - startedAt : undefined),
       }),
     flush,
   };

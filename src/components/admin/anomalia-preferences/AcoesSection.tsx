@@ -1,6 +1,6 @@
-import { Label } from "@/components/ui/label";
-import { Checkbox } from "@/components/ui/checkbox";
-import { MousePointerClick } from "lucide-react";
+import { Label } from '@/components/ui/label';
+import { Checkbox } from '@/components/ui/checkbox';
+import { MousePointerClick } from 'lucide-react';
 
 interface Option<K extends string> {
   key: K;

@@ -27,12 +27,7 @@ interface CollapseProps {
   className?: string;
 }
 
-export function Collapse({
-  isOpen,
-  children,
-  duration = 200,
-  className,
-}: CollapseProps) {
+export function Collapse({ isOpen, children, duration = 200, className }: CollapseProps) {
   const contentRef = useRef<HTMLDivElement>(null);
   const [height, setHeight] = useState<number | 'auto'>(isOpen ? 'auto' : 0);
   const [isAnimating, setIsAnimating] = useState(false);
@@ -66,11 +61,7 @@ export function Collapse({
 
   return (
     <div
-      className={cn(
-        'overflow-hidden',
-        isAnimating && 'transition-[height]',
-        className
-      )}
+      className={cn('overflow-hidden', isAnimating && 'transition-[height]', className)}
       style={{
         height,
         transitionDuration: `${duration}ms`,
@@ -124,12 +115,7 @@ export function Collapsible({
   }, [isOpen, disabled, onToggle]);
 
   return (
-    <div
-      className={cn(
-        'border border-border rounded-lg overflow-hidden',
-        className
-      )}
-    >
+    <div className={cn('border border-border rounded-lg overflow-hidden', className)}>
       <button
         type="button"
         onClick={handleToggle}
@@ -145,9 +131,7 @@ export function Collapsible({
       >
         <div className="flex items-center gap-3">
           {icon && <span className="flex-shrink-0">{icon}</span>}
-          <span className="font-medium text-foreground">
-            {title}
-          </span>
+          <span className="font-medium text-foreground">{title}</span>
           {badge && <span>{badge}</span>}
         </div>
         <ChevronDown
@@ -259,11 +243,7 @@ interface FAQAccordionProps {
   className?: string;
 }
 
-export function FAQAccordion({
-  items,
-  allowMultiple = false,
-  className,
-}: FAQAccordionProps) {
+export function FAQAccordion({ items, allowMultiple = false, className }: FAQAccordionProps) {
   return (
     <Accordion allowMultiple={allowMultiple} className={className}>
       {items.map((item) => (
@@ -303,23 +283,12 @@ export function ExpandableCard({
   const [isExpanded, setIsExpanded] = useState(defaultExpanded);
 
   return (
-    <div
-      className={cn(
-        'bg-card rounded-xl border border-border overflow-hidden',
-        className
-      )}
-    >
+    <div className={cn('bg-card rounded-xl border border-border overflow-hidden', className)}>
       <div className="p-4">
         <div className="flex items-start justify-between">
           <div className="flex-1">
-            <h3 className="font-semibold text-foreground">
-              {title}
-            </h3>
-            {subtitle && (
-              <p className="mt-1 text-sm text-muted-foreground">
-                {subtitle}
-              </p>
-            )}
+            <h3 className="font-semibold text-foreground">{title}</h3>
+            {subtitle && <p className="mt-1 text-sm text-muted-foreground">{subtitle}</p>}
           </div>
           <div className="flex items-center gap-2">
             {actions}
@@ -336,9 +305,7 @@ export function ExpandableCard({
             </button>
           </div>
         </div>
-        {preview && !isExpanded && (
-          <div className="mt-3">{preview}</div>
-        )}
+        {preview && !isExpanded && <div className="mt-3">{preview}</div>}
       </div>
       <Collapse isOpen={isExpanded}>
         <div className="px-4 pb-4 pt-0">{children}</div>

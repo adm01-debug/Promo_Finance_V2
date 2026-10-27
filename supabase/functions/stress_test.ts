@@ -1,4 +1,4 @@
-import { runLoadTest } from "./_shared/load-tester.ts";
+import { runLoadTest } from './_shared/load-tester.ts';
 
 /**
  * Performance Stress Test for Asaas Proxy.
@@ -7,11 +7,11 @@ import { runLoadTest } from "./_shared/load-tester.ts";
 
 // This is meant to be run manually or in a specific performance pipeline
 if (import.meta.main) {
-  const SUPABASE_URL = Deno.env.get("SUPABASE_URL") || "http://localhost:54321";
-  const SERVICE_ROLE_KEY = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
+  const SUPABASE_URL = Deno.env.get('SUPABASE_URL') || 'http://localhost:54321';
+  const SERVICE_ROLE_KEY = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY');
 
   if (!SERVICE_ROLE_KEY) {
-    console.error("❌ SUPABASE_SERVICE_ROLE_KEY is required for load testing.");
+    console.error('❌ SUPABASE_SERVICE_ROLE_KEY is required for load testing.');
     Deno.exit(1);
   }
 
@@ -20,12 +20,12 @@ if (import.meta.main) {
     durationMs: 10000, // 10s
 
     headers: {
-      "Authorization": `Bearer ${SERVICE_ROLE_KEY}`
+      Authorization: `Bearer ${SERVICE_ROLE_KEY}`,
     },
     body: {
-      action: "list_payments",
-      data: {}
-    }
+      action: 'list_payments',
+      data: {},
+    },
   });
 
   if (results.failedRequests > 0) {

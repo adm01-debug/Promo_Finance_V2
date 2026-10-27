@@ -5,7 +5,7 @@ import type { DadosSimulacao, ResultadoSimulacao } from './types';
 /** Simula comparação entre sistema antigo e novo */
 export function simularComparativo(
   dados: DadosSimulacao,
-  anoSimulacao: number = 2033,
+  anoSimulacao: number = 2033
 ): ResultadoSimulacao {
   const observacoes: string[] = [];
 
@@ -83,7 +83,7 @@ export function simularComparativo(
 
   if (creditosTotalRecuperaveis > creditosAntigoTotal) {
     observacoes.push(
-      `Créditos recuperáveis aumentam em R$ ${(creditosTotalRecuperaveis - creditosAntigoTotal).toFixed(2)}`,
+      `Créditos recuperáveis aumentam em R$ ${(creditosTotalRecuperaveis - creditosAntigoTotal).toFixed(2)}`
     );
   }
 

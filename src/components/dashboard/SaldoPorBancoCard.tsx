@@ -15,7 +15,11 @@ const COLORS = [
 
 const itemVariants = {
   hidden: { opacity: 0, y: 20 },
-  visible: { opacity: 1, y: 0, transition: { type: 'spring' as const, stiffness: 300, damping: 24 } },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: { type: 'spring' as const, stiffness: 300, damping: 24 },
+  },
 } as const;
 
 interface SaldoPorBancoCardProps {
@@ -27,7 +31,10 @@ interface SaldoPorBancoCardProps {
   saldoTotal: number;
 }
 
-export function SaldoPorBancoCard({ contasBancariasFiltradas, saldoTotal }: SaldoPorBancoCardProps) {
+export function SaldoPorBancoCard({
+  contasBancariasFiltradas,
+  saldoTotal,
+}: SaldoPorBancoCardProps) {
   return (
     <motion.div variants={itemVariants}>
       <Card className="h-[400px] sm:h-[450px] md:h-[500px] overflow-hidden border-none bg-background/20 backdrop-blur-3xl shadow-xl ring-1 ring-white/10 rounded-[2.5rem]">
@@ -38,7 +45,9 @@ export function SaldoPorBancoCard({ contasBancariasFiltradas, saldoTotal }: Sald
             </div>
             <span className="truncate">Liquidity Distribution Node</span>
           </CardTitle>
-          <CardDescription className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground/50">Saldos Bancários em Tempo Real</CardDescription>
+          <CardDescription className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground/50">
+            Saldos Bancários em Tempo Real
+          </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4 sm:space-y-6 overflow-y-auto max-h-[250px] sm:max-h-[300px] md:max-h-[350px] p-6 sm:p-8 md:p-10 pt-0">
           {contasBancariasFiltradas.length === 0 ? (
@@ -68,10 +77,12 @@ export function SaldoPorBancoCard({ contasBancariasFiltradas, saldoTotal }: Sald
                           {banco.banco}
                         </span>
                       </div>
-                      <span className={cn(
-                        "text-xs sm:text-sm font-bold shrink-0 tabular-nums",
-                        banco.saldo_atual >= 0 ? 'text-foreground' : 'text-destructive'
-                      )}>
+                      <span
+                        className={cn(
+                          'text-xs sm:text-sm font-bold shrink-0 tabular-nums',
+                          banco.saldo_atual >= 0 ? 'text-foreground' : 'text-destructive'
+                        )}
+                      >
                         {formatCurrency(banco.saldo_atual)}
                       </span>
                     </div>
@@ -81,7 +92,9 @@ export function SaldoPorBancoCard({ contasBancariasFiltradas, saldoTotal }: Sald
               })}
               <div className="pt-3 border-t border-border">
                 <div className="flex items-center justify-between gap-2">
-                  <span className="text-xs sm:text-sm font-semibold text-muted-foreground">Total Consolidado</span>
+                  <span className="text-xs sm:text-sm font-semibold text-muted-foreground">
+                    Total Consolidado
+                  </span>
                   <span className="text-sm sm:text-base md:text-lg font-bold text-primary truncate tabular-nums">
                     {formatCurrency(saldoTotal)}
                   </span>

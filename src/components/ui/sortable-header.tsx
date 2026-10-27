@@ -22,12 +22,15 @@ export function SortableHeader({
   className,
 }: SortableHeaderProps) {
   const isActive = currentSort === sortKey;
-  
+
   return (
     <Button
       variant="ghost"
       size="sm"
-      className={cn("gap-1 -ml-3 h-8 text-caption text-muted-foreground/60 hover:text-foreground", className)}
+      className={cn(
+        'gap-1 -ml-3 h-8 text-caption text-muted-foreground/60 hover:text-foreground',
+        className
+      )}
       onClick={() => onSort(sortKey)}
     >
       {label}

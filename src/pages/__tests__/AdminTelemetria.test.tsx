@@ -1,5 +1,13 @@
 import { describe, it, expect } from 'vitest';
-import { computeStats, computeTopOffenders, formatDuration, formatTime, getTimeThreshold, makeRow, makeRows } from './admin-telemetria-test-utils';
+import {
+  computeStats,
+  computeTopOffenders,
+  formatDuration,
+  formatTime,
+  getTimeThreshold,
+  makeRow,
+  makeRows,
+} from './admin-telemetria-test-utils';
 
 // ══════════════════════════════════════════════════════════════════════════
 //  UNIT TESTS: formatDuration
@@ -130,10 +138,7 @@ describe('computeStats', () => {
   });
 
   it('calculates average duration', () => {
-    const rows = [
-      makeRow({ duration_ms: 1000 }),
-      makeRow({ duration_ms: 3000 }),
-    ];
+    const rows = [makeRow({ duration_ms: 1000 }), makeRow({ duration_ms: 3000 })];
     expect(computeStats(rows).avgDuration).toBe(2000);
   });
 
@@ -241,7 +246,7 @@ describe('computeTopOffenders', () => {
 
   it('limits to 8 entries', () => {
     const tables = 'ABCDEFGHIJ'.split('');
-    const rows = tables.flatMap(t => makeRows(2, { table_name: t }));
+    const rows = tables.flatMap((t) => makeRows(2, { table_name: t }));
     const result = computeTopOffenders(rows);
     expect(result.length).toBe(8);
   });
@@ -291,7 +296,7 @@ describe('computeTopOffenders', () => {
 
 describe('TelemetryRow data integrity', () => {
   it('makeRow generates unique IDs', () => {
-    const ids = new Set(makeRows(100).map(r => r.id));
+    const ids = new Set(makeRows(100).map((r) => r.id));
     expect(ids.size).toBe(100);
   });
 

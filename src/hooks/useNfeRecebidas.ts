@@ -76,9 +76,7 @@ export function useNfeRecebidas(filtros: NfeFiltros = {}) {
 }
 
 export async function getNfeXmlSignedUrl(xmlPath: string): Promise<string | null> {
-  const { data, error } = await supabase.storage
-    .from('nfe-xml')
-    .createSignedUrl(xmlPath, 300);
+  const { data, error } = await supabase.storage.from('nfe-xml').createSignedUrl(xmlPath, 300);
   if (error) return null;
   return data?.signedUrl ?? null;
 }

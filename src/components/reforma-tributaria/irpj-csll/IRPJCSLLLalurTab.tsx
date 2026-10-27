@@ -1,6 +1,13 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '@/components/ui/table';
 import { CheckCircle2, AlertTriangle } from 'lucide-react';
 import { formatCurrency } from '@/lib/formatters';
 
@@ -68,14 +75,24 @@ export function IRPJCSLLLalurTab({ prejuizos }: { prejuizos?: Prejuizo[] }) {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {prejuizos.map(p => (
+                {prejuizos.map((p) => (
                   <TableRow key={p.id}>
-                    <TableCell><Badge variant="outline">{p.tipo}</Badge></TableCell>
-                    <TableCell>{p.trimestre_origem ? `${p.trimestre_origem}T/${p.ano_origem}` : p.ano_origem}</TableCell>
+                    <TableCell>
+                      <Badge variant="outline">{p.tipo}</Badge>
+                    </TableCell>
+                    <TableCell>
+                      {p.trimestre_origem ? `${p.trimestre_origem}T/${p.ano_origem}` : p.ano_origem}
+                    </TableCell>
                     <TableCell className="text-right">{formatCurrency(p.valor_original)}</TableCell>
-                    <TableCell className="text-right text-muted-foreground">{formatCurrency(p.valor_compensado)}</TableCell>
-                    <TableCell className="text-right font-medium text-warning">{formatCurrency(p.saldo_disponivel)}</TableCell>
-                    <TableCell><Badge variant="secondary">{p.status}</Badge></TableCell>
+                    <TableCell className="text-right text-muted-foreground">
+                      {formatCurrency(p.valor_compensado)}
+                    </TableCell>
+                    <TableCell className="text-right font-medium text-warning">
+                      {formatCurrency(p.saldo_disponivel)}
+                    </TableCell>
+                    <TableCell>
+                      <Badge variant="secondary">{p.status}</Badge>
+                    </TableCell>
                   </TableRow>
                 ))}
               </TableBody>

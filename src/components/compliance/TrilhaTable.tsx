@@ -1,36 +1,50 @@
-import { useEffect, useState } from "react";
-import { useQuery } from "@tanstack/react-query";
-import { useSearchParams } from "react-router-dom";
-import { Card, CardContent } from "@/components/ui/card";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Button } from "@/components/ui/button";
-import { Skeleton } from "@/components/ui/skeleton";
-import { Eye, ChevronLeft, ChevronRight, Download, Loader2, FileSpreadsheet, FileText } from "lucide-react";
+import { useEffect, useState } from 'react';
+import { useQuery } from '@tanstack/react-query';
+import { useSearchParams } from 'react-router-dom';
+import { Card, CardContent } from '@/components/ui/card';
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '@/components/ui/table';
+import { Button } from '@/components/ui/button';
+import { Skeleton } from '@/components/ui/skeleton';
+import {
+  Eye,
+  ChevronLeft,
+  ChevronRight,
+  Download,
+  Loader2,
+  FileSpreadsheet,
+  FileText,
+} from 'lucide-react';
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { toast } from "sonner";
-import { supabaseDyn } from "@/lib/supabase-dynamic";
-import { AuditFiltersBar, type FiltrosState } from "./AuditFiltersBar";
-import { AuditDetailDialog } from "./AuditDetailDialog";
+} from '@/components/ui/dropdown-menu';
+import { toast } from 'sonner';
+import { supabaseDyn } from '@/lib/supabase-dynamic';
+import { AuditFiltersBar, type FiltrosState } from './AuditFiltersBar';
+import { AuditDetailDialog } from './AuditDetailDialog';
 import {
   useTrilhaAuditoria,
   fetchTrilhaCompleto,
   fetchUsuariosTrilha,
   type TrilhaTipo,
-} from "@/hooks/useTrilhaAuditoria";
-import { exportToCSV, exportToPDF, type ExportColumn } from "@/lib/export-utils";
+} from '@/hooks/useTrilhaAuditoria';
+import { exportToCSV, exportToPDF, type ExportColumn } from '@/lib/export-utils';
 
 const TIPO_TABLE: Record<TrilhaTipo, string> = {
-  financeira: "auditoria_financeira",
-  tributaria: "auditoria_tributaria",
-  sistema: "audit_logs",
-  conformidade: "verificacoes_conformidade",
+  financeira: 'auditoria_financeira',
+  tributaria: 'auditoria_tributaria',
+  sistema: 'audit_logs',
+  conformidade: 'verificacoes_conformidade',
 };
-
 
 interface ColunaDef {
   key: string;
@@ -46,23 +60,23 @@ interface Props {
 }
 
 const TIPO_LABEL: Record<TrilhaTipo, string> = {
-  financeira: "Financeira",
-  tributaria: "Tributária",
-  sistema: "Sistema",
-  conformidade: "Conformidade Fiscal",
+  financeira: 'Financeira',
+  tributaria: 'Tributária',
+  sistema: 'Sistema',
+  conformidade: 'Conformidade Fiscal',
 };
 
 export function TrilhaTable({ tipo, colunas, acoes, filename }: Props) {
   const [filtros, setFiltros] = useState<FiltrosState>({
-    inicio: "",
-    fim: "",
-    busca: "",
-    acao: "todas",
-    usuario: "",
+    inicio: '',
+    fim: '',
+    busca: '',
+    acao: 'todas',
+    usuario: '',
   });
   const [pagina, setPagina] = useState(1);
   const [detalhe, setDetalhe] = useState<Record<string, unknown> | null>(null);
-  const [exporting, setExporting] = useState<"csv" | "pdf" | null>(null);
+  const [exporting, setExporting] = useState<'csv' | 'pdf' | null>(null);
   const [searchParams, setSearchParams] = useSearchParams();
 
   const filtrosNorm = {
@@ -76,7 +90,7 @@ export function TrilhaTable({ tipo, colunas, acoes, filename }: Props) {
   const { data, isLoading } = useTrilhaAuditoria(tipo, { ...filtrosNorm, pagina });
 
   const { data: usuarios } = useQuery({
-    queryKey: ["trilha-usuarios", tipo],
+    queryKey: ['trilha-usuarios', tipo],
     queryFn: () => fetchUsuariosTrilha(tipo),
     staleTime: 5 * 60 * 1000,
   });
@@ -87,29 +101,27 @@ export function TrilhaTable({ tipo, colunas, acoes, filename }: Props) {
   // Deep-link: quando ?record=<id> e ?tab=<tipo> vierem da URL (ex.: clique
   // no toast em tempo real), localiza e abre o registro automaticamente.
   useEffect(() => {
-    const recordId = searchParams.get("record");
-    const tabParam = searchParams.get("tab");
+    const recordId = searchParams.get('record');
+    const tabParam = searchParams.get('tab');
     if (!recordId || tabParam !== tipo) return;
 
     let cancelled = false;
     (async () => {
-      const local = (data?.rows ?? []).find(
-        (r) => (r as { id?: string }).id === recordId,
-      );
+      const local = (data?.rows ?? []).find((r) => (r as { id?: string }).id === recordId);
       if (local) {
         setDetalhe(local);
       } else {
         const { data: row, error } = await supabaseDyn
           .from(TIPO_TABLE[tipo])
-          .select("*")
-          .eq("id", recordId)
+          .select('*')
+          .eq('id', recordId)
           .maybeSingle();
         if (cancelled) return;
         if (!error && row) setDetalhe(row as Record<string, unknown>);
-        else toast.error("Registro de auditoria não encontrado");
+        else toast.error('Registro de auditoria não encontrado');
       }
       const next = new URLSearchParams(searchParams);
-      next.delete("record");
+      next.delete('record');
       setSearchParams(next, { replace: true });
     })();
 
@@ -119,13 +131,17 @@ export function TrilhaTable({ tipo, colunas, acoes, filename }: Props) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [searchParams, tipo, data?.rows]);
 
-
   const construirLinhas = (rows: Record<string, unknown>[]) =>
     rows.map((r) => {
       const obj: Record<string, string> = {};
       colunas.forEach((c) => {
         const v = r[c.key];
-        obj[c.header] = v === null || v === undefined ? "" : typeof v === "object" ? JSON.stringify(v) : String(v);
+        obj[c.header] =
+          v === null || v === undefined
+            ? ''
+            : typeof v === 'object'
+              ? JSON.stringify(v)
+              : String(v);
       });
       return obj;
     });
@@ -135,33 +151,32 @@ export function TrilhaTable({ tipo, colunas, acoes, filename }: Props) {
     key: c.header,
   }));
 
-  const periodoSuffix =
-    filtros.inicio && filtros.fim ? `_${filtros.inicio}_${filtros.fim}` : "";
+  const periodoSuffix = filtros.inicio && filtros.fim ? `_${filtros.inicio}_${filtros.fim}` : '';
   const tituloPDF = `Trilha de Auditoria — ${TIPO_LABEL[tipo]}${
-    filtros.inicio && filtros.fim ? ` (${filtros.inicio} a ${filtros.fim})` : ""
+    filtros.inicio && filtros.fim ? ` (${filtros.inicio} a ${filtros.fim})` : ''
   }`;
 
-  const handleExport = async (formato: "csv" | "pdf") => {
+  const handleExport = async (formato: 'csv' | 'pdf') => {
     try {
       setExporting(formato);
       const { rows, truncado, cap } = await fetchTrilhaCompleto(tipo, filtrosNorm);
       if (rows.length === 0) {
-        toast.warning("Nada para exportar com os filtros atuais.");
+        toast.warning('Nada para exportar com os filtros atuais.');
         return;
       }
       const linhas = construirLinhas(rows);
       const nome = `${filename}${periodoSuffix}`;
-      if (formato === "csv") exportToCSV(linhas, colunasExport, nome);
+      if (formato === 'csv') exportToCSV(linhas, colunasExport, nome);
       else exportToPDF(linhas, colunasExport, tituloPDF);
       if (truncado) {
         toast.warning(
-          `Exportação limitada a ${cap.toLocaleString("pt-BR")} registros. Refine o período para incluir todos.`,
+          `Exportação limitada a ${cap.toLocaleString('pt-BR')} registros. Refine o período para incluir todos.`
         );
       } else {
-        toast.success(`${rows.length.toLocaleString("pt-BR")} registros exportados.`);
+        toast.success(`${rows.length.toLocaleString('pt-BR')} registros exportados.`);
       }
     } catch (e) {
-      toast.error("Falha ao exportar", { description: (e as Error).message });
+      toast.error('Falha ao exportar', { description: (e as Error).message });
     } finally {
       setExporting(null);
     }
@@ -174,13 +189,19 @@ export function TrilhaTable({ tipo, colunas, acoes, filename }: Props) {
 
   return (
     <div className="space-y-3">
-      <AuditFiltersBar value={filtros} onChange={setFiltros} acoes={acoes} usuarios={usuarios} storageKey={`trilha-${tipo}`} />
+      <AuditFiltersBar
+        value={filtros}
+        onChange={setFiltros}
+        acoes={acoes}
+        usuarios={usuarios}
+        storageKey={`trilha-${tipo}`}
+      />
 
       <Card>
         <CardContent className="p-0">
           <div className="flex items-center justify-between p-3 border-b">
             <span className="text-sm text-muted-foreground">
-              {isLoading ? "Carregando..." : `${total.toLocaleString("pt-BR")} eventos`}
+              {isLoading ? 'Carregando...' : `${total.toLocaleString('pt-BR')} eventos`}
             </span>
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
@@ -194,10 +215,10 @@ export function TrilhaTable({ tipo, colunas, acoes, filename }: Props) {
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end">
-                <DropdownMenuItem onClick={() => handleExport("csv")} className="gap-2">
+                <DropdownMenuItem onClick={() => handleExport('csv')} className="gap-2">
                   <FileSpreadsheet className="h-4 w-4" /> Exportar CSV
                 </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => handleExport("pdf")} className="gap-2">
+                <DropdownMenuItem onClick={() => handleExport('pdf')} className="gap-2">
                   <FileText className="h-4 w-4" /> Exportar PDF
                 </DropdownMenuItem>
               </DropdownMenuContent>
@@ -225,7 +246,7 @@ export function TrilhaTable({ tipo, colunas, acoes, filename }: Props) {
                   <TableRow key={(row.id as string) ?? i}>
                     {colunas.map((c) => (
                       <TableCell key={c.key} className="text-sm">
-                        {c.render ? c.render(row) : (row[c.key] as string) ?? "—"}
+                        {c.render ? c.render(row) : ((row[c.key] as string) ?? '—')}
                       </TableCell>
                     ))}
                     <TableCell>
@@ -237,7 +258,10 @@ export function TrilhaTable({ tipo, colunas, acoes, filename }: Props) {
                 ))}
                 {(!data?.rows || data.rows.length === 0) && (
                   <TableRow>
-                    <TableCell colSpan={colunas.length + 1} className="text-center py-8 text-muted-foreground">
+                    <TableCell
+                      colSpan={colunas.length + 1}
+                      className="text-center py-8 text-muted-foreground"
+                    >
                       Nenhum evento encontrado.
                     </TableCell>
                   </TableRow>
@@ -251,7 +275,12 @@ export function TrilhaTable({ tipo, colunas, acoes, filename }: Props) {
               Página {pagina} de {totalPaginas}
             </span>
             <div className="flex gap-1">
-              <Button size="sm" variant="outline" disabled={pagina <= 1} onClick={() => setPagina((p) => p - 1)}>
+              <Button
+                size="sm"
+                variant="outline"
+                disabled={pagina <= 1}
+                onClick={() => setPagina((p) => p - 1)}
+              >
                 <ChevronLeft className="h-3 w-3" />
               </Button>
               <Button
@@ -267,7 +296,11 @@ export function TrilhaTable({ tipo, colunas, acoes, filename }: Props) {
         </CardContent>
       </Card>
 
-      <AuditDetailDialog open={!!detalhe} onOpenChange={(v) => !v && setDetalhe(null)} registro={detalhe} />
+      <AuditDetailDialog
+        open={!!detalhe}
+        onOpenChange={(v) => !v && setDetalhe(null)}
+        registro={detalhe}
+      />
     </div>
   );
 }

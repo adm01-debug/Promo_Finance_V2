@@ -99,7 +99,7 @@ describe('useBulkActions', () => {
     const onSuccess = vi.fn();
     const handler = vi.fn().mockResolvedValue(undefined);
     const { result } = renderHook(() =>
-      useBulkActions({ ...props, onSuccess, successMessage: 'OK' }),
+      useBulkActions({ ...props, onSuccess, successMessage: 'OK' })
     );
 
     act(() => result.current.select('a'));
@@ -114,7 +114,7 @@ describe('useBulkActions', () => {
     expect(result.current.selectionCount).toBe(0);
     expect(onSuccess).toHaveBeenCalledTimes(1);
     expect(mockToast).toHaveBeenCalledWith(
-      expect.objectContaining({ title: 'OK', description: '2 item(s) processado(s)' }),
+      expect.objectContaining({ title: 'OK', description: '2 item(s) processado(s)' })
     );
     expect(result.current.isExecuting).toBe(false);
   });
@@ -135,7 +135,7 @@ describe('useBulkActions', () => {
     const onError = vi.fn();
     const handler = vi.fn().mockRejectedValue(new Error('falhou'));
     const { result } = renderHook(() =>
-      useBulkActions({ ...props, onError, errorMessage: 'ERRO' }),
+      useBulkActions({ ...props, onError, errorMessage: 'ERRO' })
     );
 
     act(() => result.current.select('a'));
@@ -147,15 +147,13 @@ describe('useBulkActions', () => {
     expect(onError).toHaveBeenCalledTimes(1);
     expect(onError).toHaveBeenCalledWith(expect.any(Error));
     expect(mockToast).toHaveBeenCalledWith(
-      expect.objectContaining({ title: 'ERRO', variant: 'destructive' }),
+      expect.objectContaining({ title: 'ERRO', variant: 'destructive' })
     );
     expect(result.current.isExecuting).toBe(false);
   });
 
   it('ação default delete chama supabase.from(table).delete().in(id, ids)', async () => {
-    const { result } = renderHook(() =>
-      useBulkActions({ ...props, tableName: 'contas_pagar' }),
-    );
+    const { result } = renderHook(() => useBulkActions({ ...props, tableName: 'contas_pagar' }));
 
     act(() => result.current.select('a'));
     act(() => result.current.select('b'));
@@ -177,9 +175,7 @@ describe('useBulkActions', () => {
   });
 
   it('ação default mark-done chama update({status:pago}).in(id, ids)', async () => {
-    const { result } = renderHook(() =>
-      useBulkActions({ ...props, tableName: 'boletos' }),
-    );
+    const { result } = renderHook(() => useBulkActions({ ...props, tableName: 'boletos' }));
 
     act(() => result.current.select('a'));
 
@@ -220,7 +216,7 @@ describe('useBulkActions', () => {
     expect(result.current.selectionCount).toBe(0);
     expect(result.current.progress).toBe(100);
     expect(mockToast).toHaveBeenCalledWith(
-      expect.objectContaining({ title: 'LOTE', description: '2 item(s) processado(s)' }),
+      expect.objectContaining({ title: 'LOTE', description: '2 item(s) processado(s)' })
     );
   });
 

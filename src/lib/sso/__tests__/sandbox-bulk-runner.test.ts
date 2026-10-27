@@ -68,7 +68,7 @@ describe('runBulk — classification', () => {
 
   it('classifica bloqueado quando domínio fora da allowlist', async () => {
     invokeMock.mockResolvedValue(
-      mkSimResult({ domain_allowed: false, domain: 'externo.com', would_jit_provision: false }),
+      mkSimResult({ domain_allowed: false, domain: 'externo.com', would_jit_provision: false })
     );
     const res = await runBulk([{ row: 1, claims: {} }], {});
     expect(res[0].outcome).toBe('bloqueado');
@@ -77,7 +77,10 @@ describe('runBulk — classification', () => {
 
   it('classifica bloqueado quando provision_blocked_reason está presente', async () => {
     invokeMock.mockResolvedValue(
-      mkSimResult({ would_jit_provision: false, provision_blocked_reason: 'auto_provision desativado' }),
+      mkSimResult({
+        would_jit_provision: false,
+        provision_blocked_reason: 'auto_provision desativado',
+      })
     );
     const res = await runBulk([{ row: 1, claims: {} }], {});
     expect(res[0].outcome).toBe('bloqueado');
@@ -117,7 +120,10 @@ describe('runBulk — concorrência e progresso', () => {
       active--;
       return mkSimResult();
     });
-    const users: BulkUserInput[] = Array.from({ length: 10 }, (_, i) => ({ row: i + 1, claims: {} }));
+    const users: BulkUserInput[] = Array.from({ length: 10 }, (_, i) => ({
+      row: i + 1,
+      claims: {},
+    }));
     await runBulk(users, {}, { concurrency: 3 });
     expect(maxActive).toBeLessThanOrEqual(3);
     expect(maxActive).toBeGreaterThan(1);
@@ -125,7 +131,10 @@ describe('runBulk — concorrência e progresso', () => {
 
   it('emite onProgress com done crescente até total', async () => {
     invokeMock.mockResolvedValue(mkSimResult());
-    const users: BulkUserInput[] = Array.from({ length: 5 }, (_, i) => ({ row: i + 1, claims: {} }));
+    const users: BulkUserInput[] = Array.from({ length: 5 }, (_, i) => ({
+      row: i + 1,
+      claims: {},
+    }));
     const progress: Array<[number, number]> = [];
     await runBulk(users, {}, { concurrency: 2, onProgress: (d, t) => progress.push([d, t]) });
     expect(progress.length).toBe(5);
@@ -138,7 +147,10 @@ describe('runBulk — concorrência e progresso', () => {
       await new Promise((r) => setTimeout(r, 5));
       return mkSimResult();
     });
-    const users: BulkUserInput[] = Array.from({ length: 20 }, (_, i) => ({ row: i + 1, claims: {} }));
+    const users: BulkUserInput[] = Array.from({ length: 20 }, (_, i) => ({
+      row: i + 1,
+      claims: {},
+    }));
     const p = runBulk(users, {}, { concurrency: 2, signal: ctrl.signal });
     setTimeout(() => ctrl.abort(), 8);
     const res = await p;

@@ -1,12 +1,35 @@
 import { useEffect, useMemo } from 'react';
 import { useSearchParams } from 'react-router-dom';
-import { BookOpen, FileText, Calculator, Building2, BookText, BookOpenCheck, BarChart3, AlertTriangle, Plug, History, ArrowRight, LayoutGrid, Pin, Zap, ShieldCheck, Gauge } from 'lucide-react';
+import {
+  BookOpen,
+  FileText,
+  Calculator,
+  Building2,
+  BookText,
+  BookOpenCheck,
+  BarChart3,
+  AlertTriangle,
+  Plug,
+  History,
+  ArrowRight,
+  LayoutGrid,
+  Pin,
+  Zap,
+  ShieldCheck,
+  Gauge,
+} from 'lucide-react';
 import { useLocalStorageState } from '@/hooks/useLocalStorageState';
 import { formatCNPJ } from '@/lib/brazilian-validators';
 import { motion } from 'framer-motion';
 import { MainLayout } from '@/components/layout/MainLayout';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
@@ -27,9 +50,22 @@ import { ElisaoFiscalTab } from '@/components/contabilidade/elisao/ElisaoFiscalT
 import { BalanceteTab } from '@/components/contabilidade/BalanceteTab';
 import { IndicesTab } from '@/components/contabilidade/IndicesTab';
 
-
-const VALID_TABS = ['inicio', 'plano', 'lancamentos', 'razao', 'balancete', 'indices', 'dre', 'auto', 'elisao', 'integracoes', 'auditoria', 'ecd', 'ecf'] as const;
-type TabId = typeof VALID_TABS[number];
+const VALID_TABS = [
+  'inicio',
+  'plano',
+  'lancamentos',
+  'razao',
+  'balancete',
+  'indices',
+  'dre',
+  'auto',
+  'elisao',
+  'integracoes',
+  'auditoria',
+  'ecd',
+  'ecf',
+] as const;
+type TabId = (typeof VALID_TABS)[number];
 
 const ANO_DEFAULT = new Date().getFullYear() - 1;
 
@@ -56,24 +92,25 @@ export default function Contabilidade() {
   const empresaUrl = searchParams.get('empresa') ?? '';
   const empresaId = empresaUrl || empresaPersistida;
   const anoParam = Number(searchParams.get('ano'));
-  const ano = Number.isFinite(anoParam) && anoParam >= 2010 && anoParam <= new Date().getFullYear()
-    ? anoParam
-    : ANO_DEFAULT;
+  const ano =
+    Number.isFinite(anoParam) && anoParam >= 2010 && anoParam <= new Date().getFullYear()
+      ? anoParam
+      : ANO_DEFAULT;
 
   const empresaAtiva = useMemo(
-    () => empresas.find(e => e.id === empresaId) ?? null,
-    [empresas, empresaId],
+    () => empresas.find((e) => e.id === empresaId) ?? null,
+    [empresas, empresaId]
   );
 
   const updateParam = (key: string, value: string | null) => {
     setSearchParams(
-      prev => {
+      (prev) => {
         const next = new URLSearchParams(prev);
         if (value === null || value === '') next.delete(key);
         else next.set(key, value);
         return next;
       },
-      { replace: true },
+      { replace: true }
     );
   };
 
@@ -87,7 +124,7 @@ export default function Contabilidade() {
   // Hidrata a URL com a empresa persistida quando ausente — garante que
   // wizard/downloads/validações fiquem amarrados ao mesmo CNPJ entre sessões
   useEffect(() => {
-    if (!empresaUrl && empresaPersistida && empresas.some(e => e.id === empresaPersistida)) {
+    if (!empresaUrl && empresaPersistida && empresas.some((e) => e.id === empresaPersistida)) {
       updateParam('empresa', empresaPersistida);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -103,7 +140,11 @@ export default function Contabilidade() {
 
   // Limpa persistência se a empresa não existe mais (RLS, exclusão, troca de tenant)
   useEffect(() => {
-    if (empresaPersistida && empresas.length > 0 && !empresas.some(e => e.id === empresaPersistida)) {
+    if (
+      empresaPersistida &&
+      empresas.length > 0 &&
+      !empresas.some((e) => e.id === empresaPersistida)
+    ) {
       resetEmpresaPersistida();
       updateParam('empresa', null);
     }
@@ -113,7 +154,7 @@ export default function Contabilidade() {
   // Histórico SPED para detectar se a ECD do ano selecionado já foi gerada (sincroniza badge da ECF)
   const { data: historico = [] } = useSpedContabilHistorico(empresaId);
   const temEcdNoAno = (historico as HistoricoMin[]).some(
-    h => h.tipo === 'ECD' && h.ano_calendario === ano && h.status !== 'rejeitado',
+    (h) => h.tipo === 'ECD' && h.ano_calendario === ano && h.status !== 'rejeitado'
   );
   const ecfPendente = !!empresaId && !temEcdNoAno;
 
@@ -126,17 +167,20 @@ export default function Contabilidade() {
               <BookOpen className="h-7 w-7 text-primary" />
               Contabilidade & SPED
             </h1>
-            <p className="text-muted-foreground">Plano de contas, lançamentos e geração de ECD/ECF</p>
+            <p className="text-muted-foreground">
+              Plano de contas, lançamentos e geração de ECD/ECF
+            </p>
           </div>
           <div className="flex flex-wrap items-end gap-3">
             <div className="space-y-1">
               <Label className="text-xs">Empresa</Label>
               <Select value={empresaId} onValueChange={setEmpresaId}>
                 <SelectTrigger className="w-[260px]">
-                  <Building2 className="mr-2 h-4 w-4" /><SelectValue placeholder="Selecione" />
+                  <Building2 className="mr-2 h-4 w-4" />
+                  <SelectValue placeholder="Selecione" />
                 </SelectTrigger>
                 <SelectContent>
-                  {empresas.map(e => (
+                  {empresas.map((e) => (
                     <SelectItem key={e.id} value={e.id}>
                       <div className="flex flex-col">
                         <span>{e.nome_fantasia || e.razao_social}</span>
@@ -165,7 +209,7 @@ export default function Contabilidade() {
                 min={2010}
                 max={new Date().getFullYear()}
                 value={ano}
-                onChange={e => setAno(Number(e.target.value))}
+                onChange={(e) => setAno(Number(e.target.value))}
                 className="w-[100px]"
               />
             </div>
@@ -174,19 +218,55 @@ export default function Contabilidade() {
 
         <Tabs value={tab} onValueChange={setTab} className="space-y-6">
           <TabsList className="grid w-full grid-cols-3 md:grid-cols-11">
-            <TabsTrigger value="inicio" className="gap-1.5"><LayoutGrid className="h-4 w-4" />Início</TabsTrigger>
-            <TabsTrigger value="plano" className="gap-1.5"><BookOpen className="h-4 w-4" />Plano</TabsTrigger>
-            <TabsTrigger value="lancamentos" className="gap-1.5"><Calculator className="h-4 w-4" />Lançamentos</TabsTrigger>
-            <TabsTrigger value="razao" className="gap-1.5"><BookText className="h-4 w-4" />Razão & Diário</TabsTrigger>
-            <TabsTrigger value="balancete" className="gap-1.5"><BookOpenCheck className="h-4 w-4" />Balancete</TabsTrigger>
-            <TabsTrigger value="indices" className="gap-1.5"><Gauge className="h-4 w-4" />Índices</TabsTrigger>
-            <TabsTrigger value="dre" className="gap-1.5"><BarChart3 className="h-4 w-4" />DRE & Balanço</TabsTrigger>
+            <TabsTrigger value="inicio" className="gap-1.5">
+              <LayoutGrid className="h-4 w-4" />
+              Início
+            </TabsTrigger>
+            <TabsTrigger value="plano" className="gap-1.5">
+              <BookOpen className="h-4 w-4" />
+              Plano
+            </TabsTrigger>
+            <TabsTrigger value="lancamentos" className="gap-1.5">
+              <Calculator className="h-4 w-4" />
+              Lançamentos
+            </TabsTrigger>
+            <TabsTrigger value="razao" className="gap-1.5">
+              <BookText className="h-4 w-4" />
+              Razão & Diário
+            </TabsTrigger>
+            <TabsTrigger value="balancete" className="gap-1.5">
+              <BookOpenCheck className="h-4 w-4" />
+              Balancete
+            </TabsTrigger>
+            <TabsTrigger value="indices" className="gap-1.5">
+              <Gauge className="h-4 w-4" />
+              Índices
+            </TabsTrigger>
+            <TabsTrigger value="dre" className="gap-1.5">
+              <BarChart3 className="h-4 w-4" />
+              DRE & Balanço
+            </TabsTrigger>
 
-            <TabsTrigger value="auto" className="gap-1.5"><Zap className="h-4 w-4" />Automático</TabsTrigger>
-            <TabsTrigger value="elisao" className="gap-1.5"><ShieldCheck className="h-4 w-4 text-emerald-500" />Elisão Fiscal</TabsTrigger>
-            <TabsTrigger value="integracoes" className="gap-1.5"><Plug className="h-4 w-4" />Integrações</TabsTrigger>
-            <TabsTrigger value="auditoria" className="gap-1.5"><History className="h-4 w-4" />Auditoria</TabsTrigger>
-            <TabsTrigger value="ecd" className="gap-1.5"><FileText className="h-4 w-4" />SPED ECD</TabsTrigger>
+            <TabsTrigger value="auto" className="gap-1.5">
+              <Zap className="h-4 w-4" />
+              Automático
+            </TabsTrigger>
+            <TabsTrigger value="elisao" className="gap-1.5">
+              <ShieldCheck className="h-4 w-4 text-emerald-500" />
+              Elisão Fiscal
+            </TabsTrigger>
+            <TabsTrigger value="integracoes" className="gap-1.5">
+              <Plug className="h-4 w-4" />
+              Integrações
+            </TabsTrigger>
+            <TabsTrigger value="auditoria" className="gap-1.5">
+              <History className="h-4 w-4" />
+              Auditoria
+            </TabsTrigger>
+            <TabsTrigger value="ecd" className="gap-1.5">
+              <FileText className="h-4 w-4" />
+              SPED ECD
+            </TabsTrigger>
             <TabsTrigger value="ecf" className="gap-1.5">
               <FileText className="h-4 w-4" />
               SPED ECF
@@ -218,19 +298,43 @@ export default function Contabilidade() {
               empresaSelecionada={!!empresaId}
             />
           </TabsContent>
-          <TabsContent value="plano"><PlanoContasTab empresaId={empresaId} /></TabsContent>
-          <TabsContent value="lancamentos"><LancamentosTab empresaId={empresaId} ano={ano} /></TabsContent>
-          <TabsContent value="razao"><RazaoDiarioTab empresaId={empresaId} ano={ano} /></TabsContent>
-          <TabsContent value="balancete"><BalanceteTab empresaId={empresaId} ano={ano} /></TabsContent>
-          <TabsContent value="indices"><IndicesTab empresaId={empresaId} ano={ano} /></TabsContent>
-          <TabsContent value="dre"><DreBalancoTab empresaId={empresaId} ano={ano} /></TabsContent>
+          <TabsContent value="plano">
+            <PlanoContasTab empresaId={empresaId} />
+          </TabsContent>
+          <TabsContent value="lancamentos">
+            <LancamentosTab empresaId={empresaId} ano={ano} />
+          </TabsContent>
+          <TabsContent value="razao">
+            <RazaoDiarioTab empresaId={empresaId} ano={ano} />
+          </TabsContent>
+          <TabsContent value="balancete">
+            <BalanceteTab empresaId={empresaId} ano={ano} />
+          </TabsContent>
+          <TabsContent value="indices">
+            <IndicesTab empresaId={empresaId} ano={ano} />
+          </TabsContent>
+          <TabsContent value="dre">
+            <DreBalancoTab empresaId={empresaId} ano={ano} />
+          </TabsContent>
 
-          <TabsContent value="auto"><ContabilizacaoAutomaticaTab empresaId={empresaId} /></TabsContent>
-          <TabsContent value="elisao"><ElisaoFiscalTab empresaId={empresaId} /></TabsContent>
-          <TabsContent value="integracoes"><VerificacaoIntegracoesPanel empresaId={empresaId} ano={ano} /></TabsContent>
-          <TabsContent value="auditoria"><AuditoriaLancamentosPanel empresaId={empresaId} ano={ano} /></TabsContent>
-          <TabsContent value="ecd"><SpedContabilTab tipo="ECD" empresaId={empresaId} /></TabsContent>
-          <TabsContent value="ecf"><SpedContabilTab tipo="ECF" empresaId={empresaId} /></TabsContent>
+          <TabsContent value="auto">
+            <ContabilizacaoAutomaticaTab empresaId={empresaId} />
+          </TabsContent>
+          <TabsContent value="elisao">
+            <ElisaoFiscalTab empresaId={empresaId} />
+          </TabsContent>
+          <TabsContent value="integracoes">
+            <VerificacaoIntegracoesPanel empresaId={empresaId} ano={ano} />
+          </TabsContent>
+          <TabsContent value="auditoria">
+            <AuditoriaLancamentosPanel empresaId={empresaId} ano={ano} />
+          </TabsContent>
+          <TabsContent value="ecd">
+            <SpedContabilTab tipo="ECD" empresaId={empresaId} />
+          </TabsContent>
+          <TabsContent value="ecf">
+            <SpedContabilTab tipo="ECF" empresaId={empresaId} />
+          </TabsContent>
         </Tabs>
       </div>
     </MainLayout>
@@ -246,16 +350,70 @@ interface HomeCard {
 }
 
 const HOME_CARDS: HomeCard[] = [
-  { id: 'plano', label: 'Plano de Contas', description: 'Estruture e mantenha o plano referencial CFC.', icon: BookOpen, accent: 'text-primary' },
-  { id: 'lancamentos', label: 'Lançamentos', description: 'Registre partidas dobradas no diário contábil.', icon: Calculator, accent: 'text-primary' },
-  { id: 'razao', label: 'Razão & Diário', description: 'Consulte movimentação por conta e por data.', icon: BookText, accent: 'text-primary' },
-  { id: 'balancete', label: 'Balancete', description: 'Saldo anterior, movimento e saldo final por conta.', icon: BookOpenCheck, accent: 'text-primary' },
-  { id: 'indices', label: 'Índices', description: 'Liquidez, endividamento, rentabilidade, prazos e estrutura.', icon: Gauge, accent: 'text-success' },
-  { id: 'dre', label: 'DRE & Balanço', description: 'Demonstrações apuradas pela escrituração contábil.', icon: BarChart3, accent: 'text-success' },
+  {
+    id: 'plano',
+    label: 'Plano de Contas',
+    description: 'Estruture e mantenha o plano referencial CFC.',
+    icon: BookOpen,
+    accent: 'text-primary',
+  },
+  {
+    id: 'lancamentos',
+    label: 'Lançamentos',
+    description: 'Registre partidas dobradas no diário contábil.',
+    icon: Calculator,
+    accent: 'text-primary',
+  },
+  {
+    id: 'razao',
+    label: 'Razão & Diário',
+    description: 'Consulte movimentação por conta e por data.',
+    icon: BookText,
+    accent: 'text-primary',
+  },
+  {
+    id: 'balancete',
+    label: 'Balancete',
+    description: 'Saldo anterior, movimento e saldo final por conta.',
+    icon: BookOpenCheck,
+    accent: 'text-primary',
+  },
+  {
+    id: 'indices',
+    label: 'Índices',
+    description: 'Liquidez, endividamento, rentabilidade, prazos e estrutura.',
+    icon: Gauge,
+    accent: 'text-success',
+  },
+  {
+    id: 'dre',
+    label: 'DRE & Balanço',
+    description: 'Demonstrações apuradas pela escrituração contábil.',
+    icon: BarChart3,
+    accent: 'text-success',
+  },
 
-  { id: 'ecd', label: 'SPED ECD', description: 'Geração e validação da Escrituração Contábil Digital.', icon: FileText, accent: 'text-warning' },
-  { id: 'ecf', label: 'SPED ECF', description: 'Escrituração Contábil Fiscal — depende da ECD do ano.', icon: FileText, accent: 'text-warning' },
-  { id: 'elisao', label: 'Elisão Fiscal', description: 'Simulação de regimes e redução estratégica de carga tributária.', icon: ShieldCheck, accent: 'text-emerald-500' },
+  {
+    id: 'ecd',
+    label: 'SPED ECD',
+    description: 'Geração e validação da Escrituração Contábil Digital.',
+    icon: FileText,
+    accent: 'text-warning',
+  },
+  {
+    id: 'ecf',
+    label: 'SPED ECF',
+    description: 'Escrituração Contábil Fiscal — depende da ECD do ano.',
+    icon: FileText,
+    accent: 'text-warning',
+  },
+  {
+    id: 'elisao',
+    label: 'Elisão Fiscal',
+    description: 'Simulação de regimes e redução estratégica de carga tributária.',
+    icon: ShieldCheck,
+    accent: 'text-emerald-500',
+  },
 ];
 
 interface ContabilidadeHomeProps {
@@ -265,12 +423,18 @@ interface ContabilidadeHomeProps {
   empresaSelecionada: boolean;
 }
 
-function ContabilidadeHome({ onSelect, ecfPendente, ano, empresaSelecionada }: ContabilidadeHomeProps) {
+function ContabilidadeHome({
+  onSelect,
+  ecfPendente,
+  ano,
+  empresaSelecionada,
+}: ContabilidadeHomeProps) {
   return (
     <div className="space-y-6">
       {!empresaSelecionada && (
         <div className="rounded-lg border border-warning/30 bg-warning/5 px-4 py-3 text-sm text-muted-foreground">
-          <strong className="text-warning">Selecione uma empresa</strong> no topo da página para habilitar a geração de SPED e relatórios contábeis específicos.
+          <strong className="text-warning">Selecione uma empresa</strong> no topo da página para
+          habilitar a geração de SPED e relatórios contábeis específicos.
         </div>
       )}
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
@@ -294,7 +458,10 @@ function ContabilidadeHome({ onSelect, ecfPendente, ano, empresaSelecionada }: C
                       <Icon className="h-5 w-5" />
                     </div>
                     {ecfBadge && (
-                      <Badge variant="outline" className="border-warning/40 bg-warning/10 text-warning gap-1 text-[10px]">
+                      <Badge
+                        variant="outline"
+                        className="border-warning/40 bg-warning/10 text-warning gap-1 text-[10px]"
+                      >
                         <AlertTriangle className="h-3 w-3" />
                         ECD {ano} pendente
                       </Badge>
@@ -331,7 +498,12 @@ function ContabilidadeHome({ onSelect, ecfPendente, ano, empresaSelecionada }: C
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <Button variant="outline" size="sm" onClick={() => onSelect('integracoes')} className="w-full">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => onSelect('integracoes')}
+              className="w-full"
+            >
               Ver integrações <ArrowRight className="ml-2 h-4 w-4" />
             </Button>
           </CardContent>
@@ -347,7 +519,12 @@ function ContabilidadeHome({ onSelect, ecfPendente, ano, empresaSelecionada }: C
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <Button variant="outline" size="sm" onClick={() => onSelect('auditoria')} className="w-full">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => onSelect('auditoria')}
+              className="w-full"
+            >
               Abrir auditoria <ArrowRight className="ml-2 h-4 w-4" />
             </Button>
           </CardContent>

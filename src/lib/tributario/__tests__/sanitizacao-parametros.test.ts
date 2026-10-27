@@ -35,7 +35,8 @@ describe('sanitizarParametros — domínio legal dos parâmetros', () => {
       percentualIndustria: 60,
       percentualRevenda: 60,
     });
-    const soma = (s.percentualServicos || 0) + (s.percentualIndustria || 0) + (s.percentualRevenda || 0);
+    const soma =
+      (s.percentualServicos || 0) + (s.percentualIndustria || 0) + (s.percentualRevenda || 0);
     expect(soma).toBeCloseTo(100, 6);
   });
 
@@ -56,7 +57,13 @@ describe('sanitizarParametros — domínio legal dos parâmetros', () => {
   });
 
   it('mantém alíquotas dentro de faixas plausíveis', () => {
-    const s = sanitizarParametros({ ...base, aliquotaICMS: 3, aliquotaISS: -1, aliquotaRAT: 0.9, aliquotaTerceiros: 5 });
+    const s = sanitizarParametros({
+      ...base,
+      aliquotaICMS: 3,
+      aliquotaISS: -1,
+      aliquotaRAT: 0.9,
+      aliquotaTerceiros: 5,
+    });
     expect(s.aliquotaICMS).toBe(1);
     expect(s.aliquotaISS).toBe(0);
     expect(s.aliquotaRAT).toBe(0.06);
@@ -64,7 +71,13 @@ describe('sanitizarParametros — domínio legal dos parâmetros', () => {
   });
 
   it('preserva parâmetros já válidos sem alteração numérica', () => {
-    const p: ParametrosSimulacao = { ...base, percentualServicos: 40, percentualIndustria: 30, percentualRevenda: 30, aliquotaICMS: 0.18 };
+    const p: ParametrosSimulacao = {
+      ...base,
+      percentualServicos: 40,
+      percentualIndustria: 30,
+      percentualRevenda: 30,
+      aliquotaICMS: 0.18,
+    };
     const s = sanitizarParametros(p);
     expect(s.percentualServicos).toBe(40);
     expect(s.percentualIndustria).toBe(30);
@@ -102,13 +115,20 @@ describe('Fuzzing: 1500 cenários adversariais não produzem tributo inválido',
       ];
       for (const [nome, res] of resultados) {
         const campos: Array<[string, number]> = [
-          ['irpj', res.irpj], ['csll', res.csll], ['pis', res.pis], ['cofins', res.cofins],
-          ['cpp', res.cpp], ['icms', res.icms], ['iss', res.iss],
-          ['total', res.totalTributos], ['carga', res.cargaEfetiva],
+          ['irpj', res.irpj],
+          ['csll', res.csll],
+          ['pis', res.pis],
+          ['cofins', res.cofins],
+          ['cpp', res.cpp],
+          ['icms', res.icms],
+          ['iss', res.iss],
+          ['total', res.totalTributos],
+          ['carga', res.cargaEfetiva],
         ];
         for (const [campo, valor] of campos) {
           if (!Number.isFinite(valor)) problemas.push(`${nome}.${campo} não-finito (#${i})`);
-          else if (valor < -1e-6) problemas.push(`${nome}.${campo}=${valor.toFixed(2)} negativo (#${i})`);
+          else if (valor < -1e-6)
+            problemas.push(`${nome}.${campo}=${valor.toFixed(2)} negativo (#${i})`);
         }
         // Nota: com alíquotas e folha extremas (fora de qualquer realidade fiscal)
         // a carga pode ultrapassar 100%; o invariante exigido aqui é apenas que ela
@@ -118,7 +138,6 @@ describe('Fuzzing: 1500 cenários adversariais não produzem tributo inválido',
     expect(problemas.slice(0, 10)).toEqual([]);
   });
 });
-
 
 describe('Fuzzing realista: carga efetiva permanece plausível', () => {
   it('carga efetiva <= 60% em 800 cenários com parâmetros de mercado', () => {

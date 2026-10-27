@@ -1,12 +1,28 @@
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '@/components/ui/table';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { formatCurrency, formatDate, getStatusLabel } from '@/lib/formatters';
-import { Building2, Mail, Phone, MapPin, Wallet, Clock, CheckCircle2, AlertCircle } from 'lucide-react';
+import {
+  Building2,
+  Mail,
+  Phone,
+  MapPin,
+  Wallet,
+  Clock,
+  CheckCircle2,
+  AlertCircle,
+} from 'lucide-react';
 import type { ExternalCliente } from '@/hooks/useFinancialData';
 
 interface FornecedorDetailDialogProps {
@@ -17,15 +33,24 @@ interface FornecedorDetailDialogProps {
 
 const getStatusColor = (status: string) => {
   switch (status) {
-    case 'pago': return 'bg-success/10 text-success border-success/20';
-    case 'pendente': return 'bg-warning/10 text-warning border-warning/20';
-    case 'vencido': return 'bg-destructive/10 text-destructive border-destructive/20';
-    case 'parcial': return 'bg-info/10 text-info border-info/20';
-    default: return 'bg-muted text-muted-foreground';
+    case 'pago':
+      return 'bg-success/10 text-success border-success/20';
+    case 'pendente':
+      return 'bg-warning/10 text-warning border-warning/20';
+    case 'vencido':
+      return 'bg-destructive/10 text-destructive border-destructive/20';
+    case 'parcial':
+      return 'bg-info/10 text-info border-info/20';
+    default:
+      return 'bg-muted text-muted-foreground';
   }
 };
 
-export function FornecedorDetailDialog({ fornecedor, open, onOpenChange }: FornecedorDetailDialogProps) {
+export function FornecedorDetailDialog({
+  fornecedor,
+  open,
+  onOpenChange,
+}: FornecedorDetailDialogProps) {
   const { data: contasPagar, isLoading } = useQuery({
     queryKey: ['contas-pagar-fornecedor', fornecedor?.id],
     queryFn: async () => {
@@ -46,8 +71,8 @@ export function FornecedorDetailDialog({ fornecedor, open, onOpenChange }: Forne
   const totalContas = contasPagar?.length || 0;
   const totalValor = contasPagar?.reduce((acc, c) => acc + Number(c.valor), 0) || 0;
   const totalPago = contasPagar?.reduce((acc, c) => acc + Number(c.valor_pago || 0), 0) || 0;
-  const contasPagas = contasPagar?.filter(c => c.status === 'pago').length || 0;
-  const contasVencidas = contasPagar?.filter(c => c.status === 'vencido').length || 0;
+  const contasPagas = contasPagar?.filter((c) => c.status === 'pago').length || 0;
+  const contasVencidas = contasPagar?.filter((c) => c.status === 'vencido').length || 0;
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -92,10 +117,11 @@ export function FornecedorDetailDialog({ fornecedor, open, onOpenChange }: Forne
             <Card className="bg-card/50">
               <CardContent className="p-4">
                 <div className="flex items-center gap-2 text-muted-foreground text-sm">
-                  <Clock className="h-4 w-4 text-warning" />
-                  A Pagar
+                  <Clock className="h-4 w-4 text-warning" />A Pagar
                 </div>
-                <p className="mt-1 font-semibold text-warning">{formatCurrency(totalValor - totalPago)}</p>
+                <p className="mt-1 font-semibold text-warning">
+                  {formatCurrency(totalValor - totalPago)}
+                </p>
               </CardContent>
             </Card>
           </div>
@@ -116,7 +142,11 @@ export function FornecedorDetailDialog({ fornecedor, open, onOpenChange }: Forne
               </div>
               <div className="flex items-center gap-2 col-span-2">
                 <MapPin className="h-4 w-4 text-muted-foreground" />
-                <span>{fornecedor.cidade && fornecedor.estado ? `${fornecedor.cidade}/${fornecedor.estado}` : '-'}</span>
+                <span>
+                  {fornecedor.cidade && fornecedor.estado
+                    ? `${fornecedor.cidade}/${fornecedor.estado}`
+                    : '-'}
+                </span>
               </div>
             </CardContent>
           </Card>
@@ -160,8 +190,8 @@ export function FornecedorDetailDialog({ fornecedor, open, onOpenChange }: Forne
                           <TableCell>{formatCurrency(conta.valor)}</TableCell>
                           <TableCell>{formatCurrency(conta.valor_pago || 0)}</TableCell>
                           <TableCell>
-                            <Badge className={getStatusColor(conta.status)}>
-                              {getStatusLabel(conta.status)}
+                            <Badge className={getStatusColor(conta.status ?? '')}>
+                              {getStatusLabel(conta.status ?? '')}
                             </Badge>
                           </TableCell>
                         </TableRow>

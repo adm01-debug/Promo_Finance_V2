@@ -4,7 +4,7 @@
 import { useState, useMemo, useCallback } from 'react';
 import { ALIQUOTAS_TRANSICAO } from '@/types/reforma-tributaria';
 
-export type CategoriaCashback = 
+export type CategoriaCashback =
   | 'cesta_basica'
   | 'energia_eletrica'
   | 'gas_cozinha'
@@ -44,7 +44,10 @@ export interface ResumoMensalCashback {
 }
 
 // Configurações de cashback por categoria (baseado na LC 214/2025)
-const CASHBACK_CONFIG: Record<CategoriaCashback, { nome: string; cbsPercent: number; ibsPercent: number }> = {
+const CASHBACK_CONFIG: Record<
+  CategoriaCashback,
+  { nome: string; cbsPercent: number; ibsPercent: number }
+> = {
   cesta_basica: { nome: 'Cesta Básica', cbsPercent: 100, ibsPercent: 100 },
   energia_eletrica: { nome: 'Energia Elétrica', cbsPercent: 100, ibsPercent: 50 },
   gas_cozinha: { nome: 'Gás de Cozinha', cbsPercent: 100, ibsPercent: 100 },
@@ -73,62 +76,67 @@ export function useCashbackSimulador() {
   const [itensConsumo, setItensConsumo] = useState<ItemConsumo[]>(CESTA_PADRAO);
   const [inscritoCadUnico, setInscritoCadUnico] = useState(true);
 
-  const aliquotas = useMemo(() => 
-    ALIQUOTAS_TRANSICAO.find(a => a.ano === ano) || ALIQUOTAS_TRANSICAO[0]
-  , [ano]);
+  const aliquotas = useMemo(
+    () => ALIQUOTAS_TRANSICAO.find((a) => a.ano === ano) || ALIQUOTAS_TRANSICAO[0],
+    [ano]
+  );
 
   // Verificar elegibilidade
   const elegivel = useMemo(() => {
     const salarioMinimo = 1412; // Valor 2024
     const limiteSalarios = 3;
-    return inscritoCadUnico && rendaFamiliar <= (salarioMinimo * limiteSalarios);
+    return inscritoCadUnico && rendaFamiliar <= salarioMinimo * limiteSalarios;
   }, [rendaFamiliar, inscritoCadUnico]);
 
   // Calcular cashback por categoria
-  const calcularCashbackCategoria = useCallback((categoria: CategoriaCashback, valor: number): ResultadoCashback => {
-    const config = CASHBACK_CONFIG[categoria];
-    
-    const cbsPago = valor * (aliquotas.cbs / 100);
-    const ibsPago = valor * (aliquotas.ibs / 100);
-    const totalTributos = cbsPago + ibsPago;
-    
-    const cashbackCBS = elegivel ? cbsPago * (config.cbsPercent / 100) : 0;
-    const cashbackIBS = elegivel ? ibsPago * (config.ibsPercent / 100) : 0;
-    const totalCashback = cashbackCBS + cashbackIBS;
-    
-    return {
-      categoria,
-      nome: config.nome,
-      valorConsumo: valor,
-      cbsPago,
-      ibsPago,
-      totalTributos,
-      cashbackCBS,
-      cashbackIBS,
-      totalCashback,
-      percentualDevolucao: totalTributos > 0 ? (totalCashback / totalTributos) * 100 : 0,
-    };
-  }, [aliquotas, elegivel]);
+  const calcularCashbackCategoria = useCallback(
+    (categoria: CategoriaCashback, valor: number): ResultadoCashback => {
+      const config = CASHBACK_CONFIG[categoria];
+
+      const cbsPago = valor * (aliquotas.cbs / 100);
+      const ibsPago = valor * (aliquotas.ibs / 100);
+      const totalTributos = cbsPago + ibsPago;
+
+      const cashbackCBS = elegivel ? cbsPago * (config.cbsPercent / 100) : 0;
+      const cashbackIBS = elegivel ? ibsPago * (config.ibsPercent / 100) : 0;
+      const totalCashback = cashbackCBS + cashbackIBS;
+
+      return {
+        categoria,
+        nome: config.nome,
+        valorConsumo: valor,
+        cbsPago,
+        ibsPago,
+        totalTributos,
+        cashbackCBS,
+        cashbackIBS,
+        totalCashback,
+        percentualDevolucao: totalTributos > 0 ? (totalCashback / totalTributos) * 100 : 0,
+      };
+    },
+    [aliquotas, elegivel]
+  );
 
   // Resumo mensal
   const resumoMensal = useMemo((): ResumoMensalCashback => {
     // Agrupar por categoria
-    const porCategoria = Object.keys(CASHBACK_CONFIG).map(cat => {
-      const categoria = cat as CategoriaCashback;
-      const totalCategoria = itensConsumo
-        .filter(i => i.categoria === categoria)
-        .reduce((acc, i) => acc + i.valorMensal, 0);
-      
-      return calcularCashbackCategoria(categoria, totalCategoria);
-    }).filter(r => r.valorConsumo > 0);
+    const porCategoria = Object.keys(CASHBACK_CONFIG)
+      .map((cat) => {
+        const categoria = cat as CategoriaCashback;
+        const totalCategoria = itensConsumo
+          .filter((i) => i.categoria === categoria)
+          .reduce((acc, i) => acc + i.valorMensal, 0);
+
+        return calcularCashbackCategoria(categoria, totalCategoria);
+      })
+      .filter((r) => r.valorConsumo > 0);
 
     const totalConsumo = porCategoria.reduce((acc, r) => acc + r.valorConsumo, 0);
     const totalTributosPagos = porCategoria.reduce((acc, r) => acc + r.totalTributos, 0);
     const totalCashback = porCategoria.reduce((acc, r) => acc + r.totalCashback, 0);
     const economiaEfetiva = totalCashback;
-    const percentualMedioDevolvido = totalTributosPagos > 0 
-      ? (totalCashback / totalTributosPagos) * 100 
-      : 0;
+    const percentualMedioDevolvido =
+      totalTributosPagos > 0 ? (totalCashback / totalTributosPagos) * 100 : 0;
 
     return {
       totalConsumo,
@@ -141,28 +149,29 @@ export function useCashbackSimulador() {
   }, [itensConsumo, calcularCashbackCategoria]);
 
   // Projeção anual
-  const projecaoAnual = useMemo(() => ({
-    totalConsumo: resumoMensal.totalConsumo * 12,
-    totalTributos: resumoMensal.totalTributosPagos * 12,
-    totalCashback: resumoMensal.totalCashback * 12,
-  }), [resumoMensal]);
+  const projecaoAnual = useMemo(
+    () => ({
+      totalConsumo: resumoMensal.totalConsumo * 12,
+      totalTributos: resumoMensal.totalTributosPagos * 12,
+      totalCashback: resumoMensal.totalCashback * 12,
+    }),
+    [resumoMensal]
+  );
 
   // Adicionar item de consumo
   const adicionarItem = (item: Omit<ItemConsumo, 'id'>) => {
     const novoItem = { ...item, id: Date.now().toString() };
-    setItensConsumo(prev => [...prev, novoItem]);
+    setItensConsumo((prev) => [...prev, novoItem]);
   };
 
   // Remover item
   const removerItem = (id: string) => {
-    setItensConsumo(prev => prev.filter(i => i.id !== id));
+    setItensConsumo((prev) => prev.filter((i) => i.id !== id));
   };
 
   // Atualizar item
   const atualizarItem = (id: string, updates: Partial<ItemConsumo>) => {
-    setItensConsumo(prev => 
-      prev.map(i => i.id === id ? { ...i, ...updates } : i)
-    );
+    setItensConsumo((prev) => prev.map((i) => (i.id === id ? { ...i, ...updates } : i)));
   };
 
   // Reset para cesta padrão

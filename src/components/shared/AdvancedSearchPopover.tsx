@@ -1,21 +1,17 @@
-import { useEffect, useMemo, useRef, useState } from "react";
-import { Search, X, Sparkles, ArrowRight } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Badge } from "@/components/ui/badge";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
+import { useEffect, useMemo, useRef, useState } from 'react';
+import { Search, X, Sparkles, ArrowRight } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Badge } from '@/components/ui/badge';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 
-export type SeverityKey = "critica" | "alta" | "media" | "baixa";
+export type SeverityKey = 'critica' | 'alta' | 'media' | 'baixa';
 
 export interface SeverityPreview {
   key: SeverityKey;
   label: string;
   count: number;
-  variant: "destructive" | "secondary" | "outline";
+  variant: 'destructive' | 'secondary' | 'outline';
 }
 
 export interface SearchSuggestion {
@@ -61,7 +57,7 @@ export function AdvancedSearchPopover({
   severityPreview,
   suggestions,
   scopeLabel,
-  placeholder = "Buscar por descrição, tipo, observação…",
+  placeholder = 'Buscar por descrição, tipo, observação…',
   triggerClassName,
 }: AdvancedSearchPopoverProps) {
   const [open, setOpen] = useState(false);
@@ -91,32 +87,28 @@ export function AdvancedSearchPopover({
   // Atalho global "/" abre o popover (ignora quando o foco está em campos editáveis)
   useEffect(() => {
     const onKeyDown = (e: KeyboardEvent) => {
-      if (e.key !== "/" || e.metaKey || e.ctrlKey || e.altKey) return;
+      if (e.key !== '/' || e.metaKey || e.ctrlKey || e.altKey) return;
       const target = e.target as HTMLElement | null;
       const tag = target?.tagName;
       const isEditable =
-        tag === "INPUT" ||
-        tag === "TEXTAREA" ||
-        tag === "SELECT" ||
+        tag === 'INPUT' ||
+        tag === 'TEXTAREA' ||
+        tag === 'SELECT' ||
         (target?.isContentEditable ?? false);
       if (isEditable) return;
       if (open) return;
       e.preventDefault();
       setOpen(true);
     };
-    window.addEventListener("keydown", onKeyDown);
-    return () => window.removeEventListener("keydown", onKeyDown);
+    window.addEventListener('keydown', onKeyDown);
+    return () => window.removeEventListener('keydown', onKeyDown);
   }, [open]);
 
   const filteredSuggestions = useMemo(() => {
     const q = draft.trim().toLowerCase();
     if (!q) return suggestions.slice(0, 8);
     return suggestions
-      .filter(
-        (s) =>
-          s.label.toLowerCase().includes(q) ||
-          s.value.toLowerCase().includes(q),
-      )
+      .filter((s) => s.label.toLowerCase().includes(q) || s.value.toLowerCase().includes(q))
       .slice(0, 8);
   }, [suggestions, draft]);
 
@@ -129,7 +121,7 @@ export function AdvancedSearchPopover({
           ref={triggerRef}
           variant="outline"
           size="sm"
-          className={`gap-1.5 ${triggerClassName ?? ""}`}
+          className={`gap-1.5 ${triggerClassName ?? ''}`}
           aria-label="Abrir busca avançada (atalho: /)"
           aria-keyshortcuts="/"
           title="Buscar (atalho: /)"
@@ -162,18 +154,18 @@ export function AdvancedSearchPopover({
               className="pl-8 pr-8 h-9"
               aria-keyshortcuts="Escape"
               onKeyDown={(e) => {
-                if (e.key === "Enter") {
+                if (e.key === 'Enter') {
                   onApply(draft);
                   setOpen(false);
                   // devolve o foco ao trigger para preservar o fluxo de teclado
                   setTimeout(() => triggerRef.current?.focus(), 0);
-                } else if (e.key === "Escape") {
+                } else if (e.key === 'Escape') {
                   e.preventDefault();
                   e.stopPropagation();
                   if (draft.length > 0) {
                     // 1º Esc: limpa o termo e mantém o foco no input
-                    setDraft("");
-                    onApply("");
+                    setDraft('');
+                    onApply('');
                     requestAnimationFrame(() => inputRef.current?.focus());
                   } else {
                     // 2º Esc (input vazio): fecha e devolve foco ao trigger
@@ -186,7 +178,7 @@ export function AdvancedSearchPopover({
             {draft && (
               <button
                 type="button"
-                onClick={() => setDraft("")}
+                onClick={() => setDraft('')}
                 className="absolute right-2 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
                 aria-label="Limpar termo"
               >
@@ -194,9 +186,7 @@ export function AdvancedSearchPopover({
               </button>
             )}
           </div>
-          {scopeLabel && (
-            <p className="text-[11px] text-muted-foreground">{scopeLabel}</p>
-          )}
+          {scopeLabel && <p className="text-[11px] text-muted-foreground">{scopeLabel}</p>}
         </div>
 
         {/* Prévia de resultados */}
@@ -206,15 +196,15 @@ export function AdvancedSearchPopover({
               Prévia de resultados
             </span>
             <span className="text-xs font-semibold tabular-nums">
-              {totalPreview} {totalPreview === 1 ? "item" : "itens"}
+              {totalPreview} {totalPreview === 1 ? 'item' : 'itens'}
             </span>
           </div>
           <div className="flex flex-wrap gap-1.5">
             {severityPreview.map((s) => (
               <Badge
                 key={s.key}
-                variant={s.count > 0 ? s.variant : "outline"}
-                className={`text-[10px] gap-1 ${s.count === 0 ? "opacity-50" : ""}`}
+                variant={s.count > 0 ? s.variant : 'outline'}
+                className={`text-[10px] gap-1 ${s.count === 0 ? 'opacity-50' : ''}`}
               >
                 <span className="capitalize">{s.label}</span>
                 <span className="tabular-nums font-semibold">{s.count}</span>
@@ -244,15 +234,12 @@ export function AdvancedSearchPopover({
                     }}
                   >
                     {s.group && (
-                      <Badge
-                        variant="outline"
-                        className="text-[9px] px-1 py-0 h-4 shrink-0"
-                      >
+                      <Badge variant="outline" className="text-[9px] px-1 py-0 h-4 shrink-0">
                         {s.group}
                       </Badge>
                     )}
                     <span className="truncate flex-1">{s.label}</span>
-                    {typeof s.count === "number" && (
+                    {typeof s.count === 'number' && (
                       <span className="text-[10px] text-muted-foreground tabular-nums">
                         {s.count}
                       </span>

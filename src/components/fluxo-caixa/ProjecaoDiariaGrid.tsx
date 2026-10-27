@@ -22,7 +22,11 @@ interface ProjecaoDiariaGridProps {
 
 const itemVariants = {
   hidden: { opacity: 0, y: 20 },
-  visible: { opacity: 1, y: 0, transition: { type: 'spring' as const, stiffness: 300, damping: 24 } },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: { type: 'spring' as const, stiffness: 300, damping: 24 },
+  },
 } as const;
 
 export const ProjecaoDiariaGrid = memo(function ProjecaoDiariaGrid({
@@ -37,7 +41,10 @@ export const ProjecaoDiariaGrid = memo(function ProjecaoDiariaGrid({
           <CardTitle className="text-base sm:text-lg font-display flex items-center gap-2">
             <Calendar className="h-4 w-4 sm:h-5 sm:w-5 text-primary" />
             <span className="truncate">
-              <span className="hidden sm:inline">Projeção Diária - Cenário {cenarioAtivo.charAt(0).toUpperCase() + cenarioAtivo.slice(1)}</span>
+              <span className="hidden sm:inline">
+                Projeção Diária - Cenário{' '}
+                {cenarioAtivo.charAt(0).toUpperCase() + cenarioAtivo.slice(1)}
+              </span>
               <span className="sm:hidden">Projeção Diária</span>
             </span>
           </CardTitle>
@@ -61,7 +68,7 @@ export const ProjecaoDiariaGrid = memo(function ProjecaoDiariaGrid({
                 const isPositivo = liquido >= 0;
                 const isCritico = dia.saldo < 50000; // Alinhado com AlertasRuptura
                 const isRuptura = dia.saldo <= 0;
-                
+
                 return (
                   <motion.div
                     key={dia.data}
@@ -69,44 +76,69 @@ export const ProjecaoDiariaGrid = memo(function ProjecaoDiariaGrid({
                     animate={{ opacity: 1, scale: 1 }}
                     transition={{ delay: index * 0.02 }}
                     className={cn(
-                      "p-2 sm:p-3 rounded-lg sm:rounded-xl border transition-all hover:shadow-md",
-                      isRuptura ? "bg-destructive/10 border-destructive/40 shadow-sm" :
-                      isCritico ? "bg-warning/10 border-warning/30" :
-                      isPositivo ? "bg-success/5 border-success/20" : "bg-destructive/5 border-destructive/20"
+                      'p-2 sm:p-3 rounded-lg sm:rounded-xl border transition-all hover:shadow-md',
+                      isRuptura
+                        ? 'bg-destructive/10 border-destructive/40 shadow-sm'
+                        : isCritico
+                          ? 'bg-warning/10 border-warning/30'
+                          : isPositivo
+                            ? 'bg-success/5 border-success/20'
+                            : 'bg-destructive/5 border-destructive/20'
                     )}
                   >
                     <div className="flex items-center justify-between mb-1 sm:mb-2">
                       <span className="text-[10px] sm:text-xs text-muted-foreground font-medium truncate">
-                        {new Date(dia.data).toLocaleDateString('pt-BR', { weekday: 'short', day: '2-digit' })}
+                        {new Date(dia.data).toLocaleDateString('pt-BR', {
+                          weekday: 'short',
+                          day: '2-digit',
+                        })}
                       </span>
                     </div>
-                    <Badge variant="outline" className={cn(
-                      "text-[9px] sm:text-xs h-4 sm:h-5 px-1 sm:px-1.5 w-full justify-center mb-1 sm:mb-2 border-none font-bold", 
-                      isPositivo ? "text-success bg-success/10" : "text-destructive bg-destructive/10"
-                    )}>
-                      {isPositivo ? '+' : ''}{formatCurrency(liquido).replace('R$', '').trim()}
+                    <Badge
+                      variant="outline"
+                      className={cn(
+                        'text-[9px] sm:text-xs h-4 sm:h-5 px-1 sm:px-1.5 w-full justify-center mb-1 sm:mb-2 border-none font-bold',
+                        isPositivo
+                          ? 'text-success bg-success/10'
+                          : 'text-destructive bg-destructive/10'
+                      )}
+                    >
+                      {isPositivo ? '+' : ''}
+                      {formatCurrency(liquido).replace('R$', '').trim()}
                     </Badge>
                     <div className="space-y-0.5 sm:space-y-1">
                       <div className="flex justify-between text-[9px] sm:text-[10px]">
                         <span className="text-muted-foreground">In:</span>
-                        <span className="text-success font-medium">+{formatCurrency(dia.receitas).replace('R$', '').trim()}</span>
+                        <span className="text-success font-medium">
+                          +{formatCurrency(dia.receitas).replace('R$', '').trim()}
+                        </span>
                       </div>
                       <div className="flex justify-between text-[9px] sm:text-[10px]">
                         <span className="text-muted-foreground">Out:</span>
-                        <span className="text-destructive font-medium">-{formatCurrency(dia.despesas).replace('R$', '').trim()}</span>
+                        <span className="text-destructive font-medium">
+                          -{formatCurrency(dia.despesas).replace('R$', '').trim()}
+                        </span>
                       </div>
                     </div>
                     <div className="mt-1 sm:mt-2 pt-1 sm:pt-2 border-t border-border/50">
-                      <p className={cn(
-                        "text-[10px] sm:text-sm font-bold truncate text-center",
-                        isRuptura ? "text-destructive" :
-                        isCritico ? "text-warning" : "text-foreground"
-                      )}>
+                      <p
+                        className={cn(
+                          'text-[10px] sm:text-sm font-bold truncate text-center',
+                          isRuptura
+                            ? 'text-destructive'
+                            : isCritico
+                              ? 'text-warning'
+                              : 'text-foreground'
+                        )}
+                      >
                         {formatCurrency(dia.saldo)}
                       </p>
                     </div>
                     {isRuptura && (
-                      <Badge variant="destructive" className="mt-1 sm:mt-1.5 w-full justify-center text-[8px] sm:text-[10px] h-3.5 sm:h-4.5 px-0.5 animate-pulse">
+                      <Badge
+                        variant="destructive"
+                        className="mt-1 sm:mt-1.5 w-full justify-center text-[8px] sm:text-[10px] h-3.5 sm:h-4.5 px-0.5 animate-pulse"
+                      >
                         <AlertTriangle className="h-2 w-2 sm:h-2.5 sm:w-2.5 mr-0.5" />
                         <span>RUPTURA</span>
                       </Badge>

@@ -44,7 +44,9 @@ export function StepConvidarContador({ empresaId, onConcluir, onPular }: Props) 
       if (error) throw error;
       if (!data?.success) throw new Error(data?.error || 'Falha ao convidar');
       setEnviado(true);
-      toast.success(data.email_sent ? 'Convite enviado por e-mail' : 'Convite criado (e-mail não enviado)');
+      toast.success(
+        data.email_sent ? 'Convite enviado por e-mail' : 'Convite criado (e-mail não enviado)'
+      );
     } catch (err) {
       toast.error(err instanceof Error ? err.message : 'Erro ao enviar convite');
     } finally {
@@ -60,7 +62,8 @@ export function StepConvidarContador({ empresaId, onConcluir, onPular }: Props) 
           4. Convidar contador (opcional)
         </CardTitle>
         <CardDescription>
-          Envie um link de acesso somente leitura para o seu contador acompanhar a empresa. Validade de 30 dias.
+          Envie um link de acesso somente leitura para o seu contador acompanhar a empresa. Validade
+          de 30 dias.
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-4">
@@ -94,7 +97,8 @@ export function StepConvidarContador({ empresaId, onConcluir, onPular }: Props) 
             <div>
               <p className="font-medium text-success">Convite enviado</p>
               <p className="text-muted-foreground text-xs">
-                O contador receberá o link em {email}. Você pode revogar o acesso depois em Configurações.
+                O contador receberá o link em {email}. Você pode revogar o acesso depois em
+                Configurações.
               </p>
             </div>
           </div>
@@ -107,7 +111,11 @@ export function StepConvidarContador({ empresaId, onConcluir, onPular }: Props) 
           <div className="flex gap-2">
             {!enviado ? (
               <Button onClick={handleEnviar} disabled={enviando || !email}>
-                {enviando ? <Loader2 className="h-4 w-4 animate-spin" /> : <Mail className="h-4 w-4" />}
+                {enviando ? (
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                ) : (
+                  <Mail className="h-4 w-4" />
+                )}
                 Enviar convite
               </Button>
             ) : (

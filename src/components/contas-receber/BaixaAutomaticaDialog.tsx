@@ -104,7 +104,7 @@ export function BaixaAutomaticaDialog({
         matched.push({
           transacao: t,
           contaId: match.id,
-          cliente: match.cliente_nome,
+          cliente: match.cliente_nome ?? '',
           vencimento: match.data_vencimento,
           valor: match.valor,
           confianca: 'alta',

@@ -1,6 +1,7 @@
-import { ReactNode, useEffect, useCallback } from 'react';
+import { ReactNode, useEffect, useCallback, useRef } from 'react';
 import { X } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { isTopOpenDialog, registerOwnedEscapeHandler } from '@/lib/unsaved-guard';
 import { Button } from './button';
 
 interface ModalProps {
@@ -47,16 +48,30 @@ export function Modal({
     [closeOnEscape, onClose]
   );
 
+  const dialogRef = useRef<HTMLDivElement>(null);
+
+  // Escape roteado pelo ModalHistoryManager chama este handler direto
+  // (registrado para o elemento) (só ele fecha, nunca um dialog de baixo); o listener no
+  // documento cobre o caso do gerenciador ausente (ex.: testes).
   useEffect(() => {
     if (isOpen) {
-      document.addEventListener('keydown', handleEscape);
+      const el = dialogRef.current;
+      const onEscape = (e: KeyboardEvent) => {
+        // Só o dialog do topo fecha: um Escape chegando ao documento
+        // (topo Radix ou gerenciador ausente) não fecha os de baixo.
+        // A ordem de abertura decide — o DOM mente com o portal Radix.
+        if (!el || !isTopOpenDialog(el)) return;
+        handleEscape(e);
+      };
+      const offOwned = el ? registerOwnedEscapeHandler(el, onEscape) : undefined;
+      document.addEventListener('keydown', onEscape);
       document.body.style.overflow = 'hidden';
+      return () => {
+        offOwned?.();
+        document.removeEventListener('keydown', onEscape);
+        document.body.style.overflow = 'unset';
+      };
     }
-
-    return () => {
-      document.removeEventListener('keydown', handleEscape);
-      document.body.style.overflow = 'unset';
-    };
   }, [isOpen, handleEscape]);
 
   if (!isOpen) return null;
@@ -72,7 +87,12 @@ export function Modal({
 
       {/* Modal */}
       <div
+        ref={dialogRef}
         role="dialog"
+        // Só conta como dialog fechável no histórico se Escape o fecha —
+        // o ModalHistoryManager usa Escape para consumir o marcador.
+        data-state={closeOnEscape ? 'open' : 'closed'}
+        data-escape-owned={closeOnEscape ? '' : undefined}
         aria-modal="true"
         aria-labelledby={title ? 'modal-title' : undefined}
         aria-describedby={description ? 'modal-description' : undefined}
@@ -88,18 +108,12 @@ export function Modal({
           <div className="flex items-center justify-between p-4 border-b border-border">
             <div>
               {title && (
-                <h2
-                  id="modal-title"
-                  className="text-lg font-semibold text-foreground"
-                >
+                <h2 id="modal-title" className="text-lg font-semibold text-foreground">
                   {title}
                 </h2>
               )}
               {description && (
-                <p
-                  id="modal-description"
-                  className="mt-1 text-sm text-muted-foreground"
-                >
+                <p id="modal-description" className="mt-1 text-sm text-muted-foreground">
                   {description}
                 </p>
               )}
@@ -156,7 +170,8 @@ export function ConfirmModal({
   variant = 'danger',
   isLoading = false,
 }: ConfirmModalProps) {
-  const confirmVariant = variant === 'danger' ? 'destructive' : variant === 'warning' ? 'warning' : 'default';
+  const confirmVariant =
+    variant === 'danger' ? 'destructive' : variant === 'warning' ? 'warning' : 'default';
 
   return (
     <Modal
@@ -169,7 +184,8 @@ export function ConfirmModal({
           <Button variant="outline" onClick={onClose} disabled={isLoading}>
             {cancelText}
           </Button>
-          <Button variant={confirmVariant} onClick={onConfirm} disabled={isLoading}>{isLoading ? 'Processando...' : ''}
+          <Button variant={confirmVariant} onClick={onConfirm} disabled={isLoading}>
+            {isLoading ? 'Processando...' : ''}
             {confirmText}
           </Button>
         </>

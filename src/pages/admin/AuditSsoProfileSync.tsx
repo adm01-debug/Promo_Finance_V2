@@ -10,22 +10,11 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { Input } from '@/components/ui/input';
-import {
-  Table,
-  TableBody,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from '@/components/ui/table';
+import { Table, TableBody, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Skeleton } from '@/components/ui/skeleton';
-import {
-  RefreshCcw,
-  ShieldCheck,
-} from 'lucide-react';
+import { RefreshCcw, ShieldCheck } from 'lucide-react';
 import { subDays } from 'date-fns';
-import {
-  useSsoProfileSyncEvents,
-} from '@/hooks/useSsoProfileSyncEvents';
+import { useSsoProfileSyncEvents } from '@/hooks/useSsoProfileSyncEvents';
 import { type SsoSyncFieldKey } from '@/hooks/useLastSsoProfileSync';
 import { useSSOJitEvents } from '@/hooks/useSSOJitEvents';
 import {
@@ -67,10 +56,7 @@ export default function AuditSsoProfileSync() {
   const isFetching = psFetching || jitFetching;
 
   const allUnified = useMemo<UnifiedEvent[]>(() => {
-    const merged = [
-      ...psEvents.map(mapProfileSync),
-      ...jitEvents.map(mapJit),
-    ];
+    const merged = [...psEvents.map(mapProfileSync), ...jitEvents.map(mapJit)];
     merged.sort((a, b) => b.created_at.localeCompare(a.created_at));
     return merged;
   }, [psEvents, jitEvents]);
@@ -164,7 +150,10 @@ export default function AuditSsoProfileSync() {
             <div className="flex flex-wrap gap-3 items-end">
               <div>
                 <label className="text-xs text-muted-foreground block mb-1">Tipo de evento</label>
-                <Select value={kindFilter} onValueChange={(v) => setKindFilter(v as EventKindFilter)}>
+                <Select
+                  value={kindFilter}
+                  onValueChange={(v) => setKindFilter(v as EventKindFilter)}
+                >
                   <SelectTrigger className="w-56">
                     <SelectValue />
                   </SelectTrigger>

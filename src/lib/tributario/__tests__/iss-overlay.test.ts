@@ -44,7 +44,10 @@ describe('normalização', () => {
 
 describe('aplicarOverlayIss — faixa legal LC 116', () => {
   it('aceita alíquotas entre 2% e 5%', () => {
-    const r = aplicarOverlayIss([SP({ aliquota: 0.02 }), SP({ codigo_ibge: 3304557, municipio: 'Rio de Janeiro', uf: 'RJ', aliquota: 5 })]);
+    const r = aplicarOverlayIss([
+      SP({ aliquota: 0.02 }),
+      SP({ codigo_ibge: 3304557, municipio: 'Rio de Janeiro', uf: 'RJ', aliquota: 5 }),
+    ]);
     expect(r.aceitas).toHaveLength(2);
     expect(r.rejeitadas).toHaveLength(0);
     expect(r.municipiosCobertos).toBe(2);
@@ -63,7 +66,10 @@ describe('aplicarOverlayIss — faixa legal LC 116', () => {
 
   it('rejeita código IBGE e município inválidos', () => {
     const r = aplicarOverlayIss([SP({ codigo_ibge: 'x' }), SP({ municipio: '   ' })]);
-    expect(r.rejeitadas.map((x) => x.motivo)).toEqual(['codigo_ibge_invalido', 'municipio_invalido']);
+    expect(r.rejeitadas.map((x) => x.motivo)).toEqual([
+      'codigo_ibge_invalido',
+      'municipio_invalido',
+    ]);
   });
 
   it('rejeita duplicidade na mesma chave município+item', () => {

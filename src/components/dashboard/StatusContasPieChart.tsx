@@ -5,10 +5,18 @@ import { Tooltip, ResponsiveContainer, PieChart, Pie, Cell, Legend } from 'recha
 
 const itemVariants = {
   hidden: { opacity: 0, y: 20 },
-  visible: { opacity: 1, y: 0, transition: { type: 'spring' as const, stiffness: 300, damping: 24 } },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: { type: 'spring' as const, stiffness: 300, damping: 24 },
+  },
 } as const;
 
-interface StatusData { name: string; value: number; fill: string }
+interface StatusData {
+  name: string;
+  value: number;
+  fill: string;
+}
 
 interface StatusContasPieChartProps {
   statusContasPagar: StatusData[];
@@ -28,7 +36,10 @@ function CustomTooltip({ active, payload }: { active?: boolean; payload?: Status
   return (
     <div className="bg-popover/95 backdrop-blur-md border border-border/60 rounded-xl p-3.5 shadow-xl text-xs space-y-1.5 min-w-[160px]">
       <div className="flex items-center gap-2">
-        <div className="h-3 w-3 rounded-full ring-1 ring-white/10" style={{ background: data.payload.fill }} />
+        <div
+          className="h-3 w-3 rounded-full ring-1 ring-white/10"
+          style={{ background: data.payload.fill }}
+        />
         <span className="font-semibold text-foreground">{data.name}</span>
       </div>
       <div className="flex justify-between items-center pt-1 border-t border-border/40">
@@ -48,8 +59,12 @@ function CenterLabel({ viewBox, total }: { viewBox?: { cx: number; cy: number };
   const { cx, cy } = viewBox;
   return (
     <text x={cx} y={cy} textAnchor="middle" dominantBaseline="central">
-      <tspan x={cx} dy="-8" className="fill-foreground text-2xl font-bold">{total}</tspan>
-      <tspan x={cx} dy="20" className="fill-muted-foreground text-[10px]">total</tspan>
+      <tspan x={cx} dy="-8" className="fill-foreground text-2xl font-bold">
+        {total}
+      </tspan>
+      <tspan x={cx} dy="20" className="fill-muted-foreground text-[10px]">
+        total
+      </tspan>
     </text>
   );
 }
@@ -67,7 +82,9 @@ export function StatusContasPieChart({ statusContasPagar }: StatusContasPieChart
             </div>
             Payable Liquidity Matrix
           </CardTitle>
-          <CardDescription className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground/50">Distribuição Neural de Status</CardDescription>
+          <CardDescription className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground/50">
+            Distribuição Neural de Status
+          </CardDescription>
         </CardHeader>
         <CardContent className="h-[360px]">
           <ResponsiveContainer width="100%" height="100%">
@@ -92,7 +109,9 @@ export function StatusContasPieChart({ statusContasPagar }: StatusContasPieChart
               <Tooltip content={<CustomTooltip />} />
               <Legend
                 wrapperStyle={{ fontSize: '11px' }}
-                formatter={(value: string) => <span className="text-muted-foreground text-xs">{value}</span>}
+                formatter={(value: string) => (
+                  <span className="text-muted-foreground text-xs">{value}</span>
+                )}
               />
             </PieChart>
           </ResponsiveContainer>

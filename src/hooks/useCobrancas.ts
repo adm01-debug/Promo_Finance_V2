@@ -244,7 +244,7 @@ export function useTopDevedores(limit: number = 10) {
         if (!acc[key]) {
           acc[key] = {
             cliente_id: conta.cliente_id,
-            cliente_nome: conta.cliente_nome,
+            cliente_nome: conta.cliente_nome ?? '',
             valor_total: 0,
             dias_atraso: 0,
             score: conta.clientes?.score || null,

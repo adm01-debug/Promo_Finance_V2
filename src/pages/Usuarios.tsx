@@ -4,14 +4,37 @@ import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
 import { MainLayout } from '@/components/layout/MainLayout';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 import { Input } from '@/components/ui/input';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { toast } from 'sonner';
-import { Users, Shield, Search, UserCog, Crown, Briefcase, Eye, Settings, UserPlus } from 'lucide-react';
+import {
+  Users,
+  Shield,
+  Search,
+  UserCog,
+  Crown,
+  Briefcase,
+  Eye,
+  Settings,
+  UserPlus,
+} from 'lucide-react';
 import { logger } from '@/lib/logger';
 import { TableShimmerSkeleton } from '@/components/ui/loading-skeleton';
 import { format } from 'date-fns';
@@ -31,10 +54,26 @@ interface UserWithRole {
 }
 
 const roleConfig: Record<AppRole, { label: string; color: string; icon: React.ReactNode }> = {
-  admin: { label: 'Administrador', color: 'bg-primary/10 text-primary border-primary/20', icon: <Crown className="h-3 w-3" /> },
-  financeiro: { label: 'Financeiro', color: 'bg-success/10 text-success border-success/20', icon: <Briefcase className="h-3 w-3" /> },
-  operacional: { label: 'Operacional', color: 'bg-accent/10 text-accent border-accent/20', icon: <Settings className="h-3 w-3" /> },
-  visualizador: { label: 'Visualizador', color: 'bg-muted text-muted-foreground border-border', icon: <Eye className="h-3 w-3" /> },
+  admin: {
+    label: 'Administrador',
+    color: 'bg-primary/10 text-primary border-primary/20',
+    icon: <Crown className="h-3 w-3" />,
+  },
+  financeiro: {
+    label: 'Financeiro',
+    color: 'bg-success/10 text-success border-success/20',
+    icon: <Briefcase className="h-3 w-3" />,
+  },
+  operacional: {
+    label: 'Operacional',
+    color: 'bg-accent/10 text-accent border-accent/20',
+    icon: <Settings className="h-3 w-3" />,
+  },
+  visualizador: {
+    label: 'Visualizador',
+    color: 'bg-muted text-muted-foreground border-border',
+    icon: <Eye className="h-3 w-3" />,
+  },
 };
 
 export default function Usuarios() {
@@ -59,9 +98,9 @@ export default function Usuarios() {
 
       if (rolesError) throw rolesError;
 
-      const rolesMap = new Map(roles?.map(r => [r.user_id, r.role as AppRole]));
+      const rolesMap = new Map(roles?.map((r) => [r.user_id, r.role as AppRole]));
 
-      return profiles?.map(profile => ({
+      return profiles?.map((profile) => ({
         ...profile,
         role: rolesMap.get(profile.id) || null,
       })) as UserWithRole[];
@@ -99,16 +138,17 @@ export default function Usuarios() {
     },
   });
 
-  const filteredUsers = users?.filter(u => 
-    u.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    u.full_name?.toLowerCase().includes(searchTerm.toLowerCase())
+  const filteredUsers = users?.filter(
+    (u) =>
+      u.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      u.full_name?.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   const stats = {
     total: users?.length || 0,
-    admins: users?.filter(u => u.role === 'admin').length || 0,
-    financeiro: users?.filter(u => u.role === 'financeiro').length || 0,
-    operacional: users?.filter(u => u.role === 'operacional').length || 0,
+    admins: users?.filter((u) => u.role === 'admin').length || 0,
+    financeiro: users?.filter((u) => u.role === 'financeiro').length || 0,
+    operacional: users?.filter((u) => u.role === 'operacional').length || 0,
   };
 
   return (
@@ -117,7 +157,9 @@ export default function Usuarios() {
         <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
           <div>
             <h1 className="text-3xl font-bold tracking-tight">Gerenciamento de Usuários</h1>
-            <p className="text-muted-foreground">Gerencie os perfis e permissões dos usuários do sistema</p>
+            <p className="text-muted-foreground">
+              Gerencie os perfis e permissões dos usuários do sistema
+            </p>
           </div>
           <Button onClick={() => setConviteOpen(true)} className="gap-2">
             <UserPlus className="h-4 w-4" />
@@ -244,15 +286,22 @@ export default function Usuarios() {
                                 <div>
                                   <p className="font-medium">{userItem.full_name || 'Sem nome'}</p>
                                   {userItem.id === user?.id && (
-                                    <Badge variant="outline" className="text-xs">Você</Badge>
+                                    <Badge variant="outline" className="text-xs">
+                                      Você
+                                    </Badge>
                                   )}
                                 </div>
                               </div>
                             </TableCell>
-                            <TableCell className="text-muted-foreground">{userItem.email}</TableCell>
+                            <TableCell className="text-muted-foreground">
+                              {userItem.email}
+                            </TableCell>
                             <TableCell>
                               {userItem.role ? (
-                                <Badge variant="outline" className={`${roleConfig[userItem.role].color} gap-1`}>
+                                <Badge
+                                  variant="outline"
+                                  className={`${roleConfig[userItem.role].color} gap-1`}
+                                >
                                   {roleConfig[userItem.role].icon}
                                   {roleConfig[userItem.role].label}
                                 </Badge>
@@ -263,12 +312,19 @@ export default function Usuarios() {
                               )}
                             </TableCell>
                             <TableCell className="text-muted-foreground">
-                              {format(new Date(userItem.created_at), "dd 'de' MMM, yyyy", { locale: ptBR })}
+                              {format(new Date(userItem.created_at), "dd 'de' MMM, yyyy", {
+                                locale: ptBR,
+                              })}
                             </TableCell>
                             <TableCell className="text-right">
                               <Select
                                 value={userItem.role || ''}
-                                onValueChange={(value) => updateRoleMutation.mutate({ userId: userItem.id, newRole: value as AppRole })}
+                                onValueChange={(value) =>
+                                  updateRoleMutation.mutate({
+                                    userId: userItem.id,
+                                    newRole: value as AppRole,
+                                  })
+                                }
                                 disabled={userItem.id === user?.id}
                               >
                                 <SelectTrigger className="w-40 ml-auto">
@@ -286,7 +342,10 @@ export default function Usuarios() {
                         ))}
                         {filteredUsers?.length === 0 && (
                           <TableRow>
-                            <TableCell colSpan={5} className="text-center py-8 text-muted-foreground">
+                            <TableCell
+                              colSpan={5}
+                              className="text-center py-8 text-muted-foreground"
+                            >
                               Nenhum usuário encontrado
                             </TableCell>
                           </TableRow>

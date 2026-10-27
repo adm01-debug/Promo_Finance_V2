@@ -1,16 +1,28 @@
 import { useState } from 'react';
 import { ArrowRight, DollarSign, Loader2, Send, Building2 } from 'lucide-react';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+} from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
 import { useContasBancarias } from '@/hooks/useFinancialData';
 import { useCreateTransferencia } from '@/hooks/useFinancialOperations';
-import { formatCurrency , todayISOLocal} from '@/lib/formatters';
+import { formatCurrency, todayISOLocal } from '@/lib/formatters';
 import { toast } from 'sonner';
 
 interface TransferenciaDialogProps {
@@ -21,15 +33,15 @@ interface TransferenciaDialogProps {
 export function TransferenciaDialog({ open, onOpenChange }: TransferenciaDialogProps) {
   const { data: contas = [] } = useContasBancarias();
   const createTransferencia = useCreateTransferencia();
-  
+
   const [contaOrigem, setContaOrigem] = useState('');
   const [contaDestino, setContaDestino] = useState('');
   const [valor, setValor] = useState('');
   const [descricao, setDescricao] = useState('');
 
-  const contasAtivas = contas.filter(c => c.ativo);
-  const origem = contasAtivas.find(c => c.id === contaOrigem);
-  const destino = contasAtivas.find(c => c.id === contaDestino);
+  const contasAtivas = contas.filter((c) => c.ativo);
+  const origem = contasAtivas.find((c) => c.id === contaOrigem);
+  const destino = contasAtivas.find((c) => c.id === contaDestino);
   const valorNum = parseFloat(valor) || 0;
 
   const handleSubmit = () => {
@@ -93,12 +105,16 @@ export function TransferenciaDialog({ open, onOpenChange }: TransferenciaDialogP
                 <SelectValue placeholder="Selecione a conta de origem" />
               </SelectTrigger>
               <SelectContent>
-                {contasAtivas.map(c => (
+                {contasAtivas.map((c) => (
                   <SelectItem key={c.id} value={c.id}>
                     <div className="flex items-center gap-2">
                       <Building2 className="h-3 w-3" />
-                      <span>{c.banco} — {c.conta}</span>
-                      <Badge variant="outline" className="text-xs">{formatCurrency(c.saldo_atual)}</Badge>
+                      <span>
+                        {c.banco} — {c.conta}
+                      </span>
+                      <Badge variant="outline" className="text-xs">
+                        {formatCurrency(c.saldo_atual)}
+                      </Badge>
                     </div>
                   </SelectItem>
                 ))}
@@ -119,15 +135,21 @@ export function TransferenciaDialog({ open, onOpenChange }: TransferenciaDialogP
                 <SelectValue placeholder="Selecione a conta de destino" />
               </SelectTrigger>
               <SelectContent>
-                {contasAtivas.filter(c => c.id !== contaOrigem).map(c => (
-                  <SelectItem key={c.id} value={c.id}>
-                    <div className="flex items-center gap-2">
-                      <Building2 className="h-3 w-3" />
-                      <span>{c.banco} — {c.conta}</span>
-                      <Badge variant="outline" className="text-xs">{formatCurrency(c.saldo_atual)}</Badge>
-                    </div>
-                  </SelectItem>
-                ))}
+                {contasAtivas
+                  .filter((c) => c.id !== contaOrigem)
+                  .map((c) => (
+                    <SelectItem key={c.id} value={c.id}>
+                      <div className="flex items-center gap-2">
+                        <Building2 className="h-3 w-3" />
+                        <span>
+                          {c.banco} — {c.conta}
+                        </span>
+                        <Badge variant="outline" className="text-xs">
+                          {formatCurrency(c.saldo_atual)}
+                        </Badge>
+                      </div>
+                    </SelectItem>
+                  ))}
               </SelectContent>
             </Select>
           </div>
@@ -143,35 +165,57 @@ export function TransferenciaDialog({ open, onOpenChange }: TransferenciaDialogP
                 type="number"
                 step="0.01"
                 value={valor}
-                onChange={e => setValor(e.target.value)}
+                onChange={(e) => setValor(e.target.value)}
                 className="pl-10"
                 placeholder="0,00"
               />
             </div>
             {origem && valorNum > origem.saldo_atual && (
-              <p className="text-xs text-destructive mt-1">Saldo insuficiente. Disponível: {formatCurrency(origem.saldo_atual)}</p>
+              <p className="text-xs text-destructive mt-1">
+                Saldo insuficiente. Disponível: {formatCurrency(origem.saldo_atual)}
+              </p>
             )}
           </div>
 
           <div>
             <Label>Descrição (opcional)</Label>
-            <Textarea value={descricao} onChange={e => setDescricao(e.target.value)} placeholder="Motivo da transferência..." rows={2} />
+            <Textarea
+              value={descricao}
+              onChange={(e) => setDescricao(e.target.value)}
+              placeholder="Motivo da transferência..."
+              rows={2}
+            />
           </div>
 
           {/* Preview */}
           {contaOrigem && contaDestino && valorNum > 0 && (
             <div className="p-3 rounded-lg bg-primary/5 border border-primary/20 text-sm">
               <p className="font-medium text-primary mb-1">Resumo da Transferência</p>
-              <p><span className="text-muted-foreground">De:</span> {origem?.banco} ({origem?.conta})</p>
-              <p><span className="text-muted-foreground">Para:</span> {destino?.banco} ({destino?.conta})</p>
+              <p>
+                <span className="text-muted-foreground">De:</span> {origem?.banco} ({origem?.conta})
+              </p>
+              <p>
+                <span className="text-muted-foreground">Para:</span> {destino?.banco} (
+                {destino?.conta})
+              </p>
               <p className="font-bold mt-1">Valor: {formatCurrency(valorNum)}</p>
             </div>
           )}
 
           <div className="flex justify-end gap-2">
-            <Button variant="outline" onClick={() => onOpenChange(false)}>Cancelar</Button>
-            <Button onClick={handleSubmit} disabled={createTransferencia.isPending} className="gap-2">
-              {createTransferencia.isPending ? <Loader2 className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />}
+            <Button variant="outline" onClick={() => onOpenChange(false)}>
+              Cancelar
+            </Button>
+            <Button
+              onClick={handleSubmit}
+              disabled={createTransferencia.isPending}
+              className="gap-2"
+            >
+              {createTransferencia.isPending ? (
+                <Loader2 className="h-4 w-4 animate-spin" />
+              ) : (
+                <Send className="h-4 w-4" />
+              )}
               Transferir
             </Button>
           </div>

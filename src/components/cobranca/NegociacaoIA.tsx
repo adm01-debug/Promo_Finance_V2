@@ -42,26 +42,31 @@ interface NegociacaoIAProps {
   onPropostaAceita?: (proposta: PropostaNegociacao) => void;
 }
 
-export function NegociacaoIA({ contasVencidas = [], clienteNome, onPropostaAceita }: NegociacaoIAProps) {
+export function NegociacaoIA({
+  contasVencidas = [],
+  clienteNome,
+  onPropostaAceita,
+}: NegociacaoIAProps) {
   const [mensagens, setMensagens] = useState<Mensagem[]>([]);
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
 
   const valorTotal = contasVencidas.reduce((sum, c) => sum + c.valor, 0);
-  const diasMedioAtraso = contasVencidas.length > 0 
-    ? Math.round(contasVencidas.reduce((sum, c) => sum + c.diasAtraso, 0) / contasVencidas.length)
-    : 0;
+  const diasMedioAtraso =
+    contasVencidas.length > 0
+      ? Math.round(contasVencidas.reduce((sum, c) => sum + c.diasAtraso, 0) / contasVencidas.length)
+      : 0;
 
   const gerarPropostasIA = async (mensagemUsuario: string) => {
     setIsLoading(true);
-    
+
     const contexto = `
 Cliente: ${clienteNome || 'Cliente'}
 Valor total em atraso: ${formatCurrency(valorTotal)}
 Número de títulos: ${contasVencidas.length}
 Dias médio de atraso: ${diasMedioAtraso} dias
-Títulos: ${contasVencidas.map(c => `${c.cliente_nome} - ${formatCurrency(c.valor)} (${c.diasAtraso} dias)`).join(', ')}
+Títulos: ${contasVencidas.map((c) => `${c.cliente_nome} - ${formatCurrency(c.valor)} (${c.diasAtraso} dias)`).join(', ')}
 
 Você é um especialista em negociação de dívidas. Analise a situação e sugira propostas de acordo considerando:
 1. Descontos progressivos baseados no tempo de atraso
@@ -77,19 +82,24 @@ Pergunta do usuário: ${mensagemUsuario}
       const { data, error } = await supabase.functions.invoke('expert-agent', {
         body: {
           messages: [
-            { role: 'system', content: 'Você é um especialista em negociação de dívidas corporativas. Seja objetivo e proponha soluções práticas.' },
-            { role: 'user', content: contexto }
-          ]
-        }
+            {
+              role: 'system',
+              content:
+                'Você é um especialista em negociação de dívidas corporativas. Seja objetivo e proponha soluções práticas.',
+            },
+            { role: 'user', content: contexto },
+          ],
+        },
       });
 
       if (error) throw error;
 
-      const respostaIA = data?.message || data?.response || 'Não foi possível gerar propostas no momento.';
-      
+      const respostaIA =
+        data?.message || data?.response || 'Não foi possível gerar propostas no momento.';
+
       // Gerar propostas baseadas na análise
       const propostas: PropostaNegociacao[] = [];
-      
+
       // Proposta 1: Desconto à vista
       if (diasMedioAtraso > 30) {
         const descontoPercent = Math.min(15, Math.floor(diasMedioAtraso / 10));
@@ -99,7 +109,7 @@ Pergunta do usuário: ${mensagemUsuario}
           valorOriginal: valorTotal,
           valorProposto: valorTotal * (1 - descontoPercent / 100),
           condicoes: ['Pagamento em até 48h', 'Quitação total da dívida'],
-          economia: valorTotal * (descontoPercent / 100)
+          economia: valorTotal * (descontoPercent / 100),
         });
       }
 
@@ -113,9 +123,9 @@ Pergunta do usuário: ${mensagemUsuario}
         condicoes: [
           `${numParcelas} parcelas de ${formatCurrency(valorTotal / numParcelas)}`,
           'Entrada de 10%',
-          'Vencimento todo dia 10'
+          'Vencimento todo dia 10',
         ],
-        economia: 0
+        economia: 0,
       });
 
       // Proposta 3: Misto
@@ -127,9 +137,9 @@ Pergunta do usuário: ${mensagemUsuario}
         condicoes: [
           'Entrada de 30%',
           `${Math.ceil(numParcelas / 2)}x restante`,
-          '8% de desconto no total'
+          '8% de desconto no total',
         ],
-        economia: valorTotal * 0.08
+        economia: valorTotal * 0.08,
       });
 
       return { resposta: respostaIA, propostas };
@@ -148,10 +158,10 @@ Pergunta do usuário: ${mensagemUsuario}
     const msgUsuario: Mensagem = {
       id: crypto.randomUUID(),
       role: 'user',
-      content: input
+      content: input,
     };
 
-    setMensagens(prev => [...prev, msgUsuario]);
+    setMensagens((prev) => [...prev, msgUsuario]);
     setInput('');
 
     const { resposta, propostas } = await gerarPropostasIA(input);
@@ -160,10 +170,10 @@ Pergunta do usuário: ${mensagemUsuario}
       id: crypto.randomUUID(),
       role: 'assistant',
       content: resposta,
-      propostas
+      propostas,
     };
 
-    setMensagens(prev => [...prev, msgAssistente]);
+    setMensagens((prev) => [...prev, msgAssistente]);
   };
 
   const iniciarNegociacao = async () => {
@@ -172,7 +182,7 @@ Pergunta do usuário: ${mensagemUsuario}
       const msgInicial: Mensagem = {
         id: crypto.randomUUID(),
         role: 'assistant',
-        content: `Olá! Sou o assistente de negociação. Vejo que ${clienteNome || 'o cliente'} possui ${contasVencidas.length} título(s) em atraso totalizando ${formatCurrency(valorTotal)}. Como posso ajudar a encontrar a melhor solução?`
+        content: `Olá! Sou o assistente de negociação. Vejo que ${clienteNome || 'o cliente'} possui ${contasVencidas.length} título(s) em atraso totalizando ${formatCurrency(valorTotal)}. Como posso ajudar a encontrar a melhor solução?`,
       };
       setMensagens([msgInicial]);
     }
@@ -180,11 +190,7 @@ Pergunta do usuário: ${mensagemUsuario}
 
   if (!isOpen) {
     return (
-      <Button 
-        onClick={iniciarNegociacao}
-        className="gap-2"
-        variant="outline"
-      >
+      <Button onClick={iniciarNegociacao} className="gap-2" variant="outline">
         <Bot className="h-4 w-4" />
         Negociação Assistida por IA
       </Button>
@@ -201,27 +207,19 @@ Pergunta do usuário: ${mensagemUsuario}
             </div>
             <div>
               <CardTitle className="text-lg">Negociação Inteligente</CardTitle>
-              <CardDescription>
-                Assistente IA para acordos de dívidas
-              </CardDescription>
+              <CardDescription>Assistente IA para acordos de dívidas</CardDescription>
             </div>
           </div>
           <Button variant="ghost" size="icon" onClick={() => setIsOpen(false)}>
             <X className="h-4 w-4" />
           </Button>
         </div>
-        
+
         {/* Resumo */}
         <div className="flex gap-3 mt-3">
-          <Badge variant="secondary">
-            {contasVencidas.length} título(s)
-          </Badge>
-          <Badge variant="destructive">
-            {formatCurrency(valorTotal)} em atraso
-          </Badge>
-          <Badge variant="outline">
-            ~{diasMedioAtraso} dias média
-          </Badge>
+          <Badge variant="secondary">{contasVencidas.length} título(s)</Badge>
+          <Badge variant="destructive">{formatCurrency(valorTotal)} em atraso</Badge>
+          <Badge variant="outline">~{diasMedioAtraso} dias média</Badge>
         </div>
       </CardHeader>
 
@@ -237,11 +235,11 @@ Pergunta do usuário: ${mensagemUsuario}
                 animate={{ opacity: 1, y: 0 }}
                 className={`mb-4 ${msg.role === 'user' ? 'text-right' : ''}`}
               >
-                <div className={`inline-block max-w-[85%] p-3 rounded-lg ${
-                  msg.role === 'user' 
-                    ? 'bg-primary text-primary-foreground' 
-                    : 'bg-muted'
-                }`}>
+                <div
+                  className={`inline-block max-w-[85%] p-3 rounded-lg ${
+                    msg.role === 'user' ? 'bg-primary text-primary-foreground' : 'bg-muted'
+                  }`}
+                >
                   <p className="text-sm whitespace-pre-wrap">{msg.content}</p>
                 </div>
 
@@ -257,11 +255,18 @@ Pergunta do usuário: ${mensagemUsuario}
                         className="p-3 rounded-lg border bg-card text-left"
                       >
                         <div className="flex items-center justify-between mb-2">
-                          <Badge variant={
-                            proposta.tipo === 'desconto' ? 'default' :
-                            proposta.tipo === 'parcelamento' ? 'secondary' : 'outline'
-                          }>
-                            {proposta.tipo === 'desconto' && <TrendingDown className="h-3 w-3 mr-1" />}
+                          <Badge
+                            variant={
+                              proposta.tipo === 'desconto'
+                                ? 'default'
+                                : proposta.tipo === 'parcelamento'
+                                  ? 'secondary'
+                                  : 'outline'
+                            }
+                          >
+                            {proposta.tipo === 'desconto' && (
+                              <TrendingDown className="h-3 w-3 mr-1" />
+                            )}
                             {proposta.descricao}
                           </Badge>
                           {proposta.economia > 0 && (
@@ -270,7 +275,7 @@ Pergunta do usuário: ${mensagemUsuario}
                             </span>
                           )}
                         </div>
-                        
+
                         <div className="flex items-center gap-2 mb-2">
                           <span className="text-sm text-muted-foreground line-through">
                             {formatCurrency(proposta.valorOriginal)}
@@ -286,8 +291,8 @@ Pergunta do usuário: ${mensagemUsuario}
                           ))}
                         </ul>
 
-                        <Button 
-                          size="sm" 
+                        <Button
+                          size="sm"
                           className="w-full"
                           onClick={() => {
                             onPropostaAceita?.(proposta);
@@ -328,7 +333,11 @@ Pergunta do usuário: ${mensagemUsuario}
             disabled={isLoading}
           />
           <Button onClick={enviarMensagem} disabled={isLoading || !input.trim()}>
-            {isLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />}
+            {isLoading ? (
+              <Loader2 className="h-4 w-4 animate-spin" />
+            ) : (
+              <Send className="h-4 w-4" />
+            )}
           </Button>
         </div>
       </CardContent>

@@ -34,10 +34,22 @@ describe('anomalia-routes', () => {
       expect(getEntidadeListInfo('outra_coisa')).toBeNull();
     });
     it('retorna label + url para tipos conhecidos', () => {
-      expect(getEntidadeListInfo('movimentacao')).toEqual({ url: '/movimentacoes', label: 'Movimentações' });
-      expect(getEntidadeListInfo('conta_pagar')).toEqual({ url: '/contas-pagar', label: 'Contas a pagar' });
-      expect(getEntidadeListInfo('conta_receber')).toEqual({ url: '/contas-receber', label: 'Contas a receber' });
-      expect(getEntidadeListInfo('transacao_bancaria')).toEqual({ url: '/conciliacao', label: 'Conciliação bancária' });
+      expect(getEntidadeListInfo('movimentacao')).toEqual({
+        url: '/movimentacoes',
+        label: 'Movimentações',
+      });
+      expect(getEntidadeListInfo('conta_pagar')).toEqual({
+        url: '/contas-pagar',
+        label: 'Contas a pagar',
+      });
+      expect(getEntidadeListInfo('conta_receber')).toEqual({
+        url: '/contas-receber',
+        label: 'Contas a receber',
+      });
+      expect(getEntidadeListInfo('transacao_bancaria')).toEqual({
+        url: '/conciliacao',
+        label: 'Conciliação bancária',
+      });
     });
   });
 

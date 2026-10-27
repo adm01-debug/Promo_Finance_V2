@@ -26,7 +26,7 @@ export function ProjectedCashFlowChart({
   saldoAtual,
 }: ProjectedCashFlowChartProps) {
   const chartData = useMemo(() => {
-    const data = [];
+    const data: { name: string; receber: number; pagar: number; saldo: number }[] = [];
     const today = startOfDay(new Date());
     let cumulativeSaldo = saldoAtual;
 

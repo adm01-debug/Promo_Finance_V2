@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import { useForm } from 'react-hook-form';
+import { useForm, type FieldValues, type UseFormReturn } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
@@ -12,15 +12,8 @@ import { toast } from '@/hooks/use-toast';
 import { useConfetti } from '@/hooks/useConfetti';
 import { logger } from '@/lib/logger';
 import { sounds } from '@/lib/sound-feedback';
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-} from '@/components/ui/dialog';
-import {
-  Form,
-} from '@/components/ui/form';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Form } from '@/components/ui/form';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { validateCnpjCpf } from '@/lib/masks';
@@ -28,11 +21,20 @@ import { validateCnpjCpf } from '@/lib/masks';
 const clienteSchema = z.object({
   razao_social: z.string().min(2, 'Razão social é obrigatória').max(200, 'Nome muito longo'),
   nome_fantasia: z.string().max(200, 'Nome muito longo').optional(),
-  cnpj_cpf: z.string().max(18, 'CNPJ/CPF inválido').optional().refine(
-    (val) => !val || validateCnpjCpf(val).valid,
-    (val) => ({ message: val ? validateCnpjCpf(val).message : 'Documento inválido' })
-  ),
-  email: z.string().email('E-mail inválido').max(255, 'E-mail muito longo').optional().or(z.literal('')),
+  cnpj_cpf: z
+    .string()
+    .max(18, 'CNPJ/CPF inválido')
+    .optional()
+    .refine(
+      (val) => !val || validateCnpjCpf(val).valid,
+      (val) => ({ message: val ? validateCnpjCpf(val).message : 'Documento inválido' })
+    ),
+  email: z
+    .string()
+    .email('E-mail inválido')
+    .max(255, 'E-mail muito longo')
+    .optional()
+    .or(z.literal('')),
   telefone: z.string().max(20, 'Telefone muito longo').optional(),
   endereco: z.string().max(300, 'Endereço muito longo').optional(),
   cidade: z.string().max(100, 'Cidade muito longa').optional(),
@@ -87,11 +89,11 @@ export function ClienteForm({ open, onOpenChange, cliente }: ClienteFormProps) {
       cidade: '',
       estado: '',
       contato: '',
-        limite_credito: 0,
-        ramo_atividade: '',
-        observacoes: '',
-        ativo: true,
-      },
+      limite_credito: 0,
+      ramo_atividade: '',
+      observacoes: '',
+      ativo: true,
+    },
   });
 
   useEffect(() => {
@@ -155,7 +157,10 @@ export function ClienteForm({ open, onOpenChange, cliente }: ClienteFormProps) {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['clientes'] });
       sounds.success();
-      customCelebration({ title: 'Cliente cadastrado!', description: 'Cliente adicionado com sucesso.' });
+      customCelebration({
+        title: 'Cliente cadastrado!',
+        description: 'Cliente adicionado com sucesso.',
+      });
       form.reset();
       onOpenChange(false);
     },
@@ -230,10 +235,12 @@ export function ClienteForm({ open, onOpenChange, cliente }: ClienteFormProps) {
       <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2 text-xl font-display">
-            <div className={cn(
-              "h-10 w-10 rounded-xl flex items-center justify-center",
-              isEditing ? "bg-secondary/10" : "bg-primary/10"
-            )}>
+            <div
+              className={cn(
+                'h-10 w-10 rounded-xl flex items-center justify-center',
+                isEditing ? 'bg-secondary/10' : 'bg-primary/10'
+              )}
+            >
               {isEditing ? (
                 <Edit className="h-5 w-5 text-secondary" />
               ) : (
@@ -246,7 +253,7 @@ export function ClienteForm({ open, onOpenChange, cliente }: ClienteFormProps) {
 
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-            <ClienteFormFields form={form} />
+            <ClienteFormFields form={form as unknown as UseFormReturn<FieldValues>} />
 
             {/* Actions */}
             <div className="flex justify-end gap-3 pt-4 border-t">
@@ -259,10 +266,10 @@ export function ClienteForm({ open, onOpenChange, cliente }: ClienteFormProps) {
                 loadingText="Salvando..."
                 successText="Salvo!"
                 className={cn(
-                  "gap-2 shadow-lg",
-                  isEditing 
-                    ? "bg-gradient-to-r from-secondary to-secondary/80 shadow-secondary/25" 
-                    : "bg-gradient-to-r from-primary to-primary/80 shadow-primary/25"
+                  'gap-2 shadow-lg',
+                  isEditing
+                    ? 'bg-gradient-to-r from-secondary to-secondary/80 shadow-secondary/25'
+                    : 'bg-gradient-to-r from-primary to-primary/80 shadow-primary/25'
                 )}
               >
                 {isEditing ? 'Salvar Alterações' : 'Cadastrar Cliente'}

@@ -30,16 +30,17 @@ type TokenEntry = {
 
 function readCssTokens(): TokenEntry[] {
   const seen = new Map<string, string>();
-  const styles = [
-    getComputedStyle(document.documentElement),
-    getComputedStyle(document.body),
-  ];
+  const styles = [getComputedStyle(document.documentElement), getComputedStyle(document.body)];
 
   // Percorre stylesheets para extrair *nomes* de tokens declarados — o
   // getComputedStyle sozinho não enumera custom properties.
   for (const sheet of Array.from(document.styleSheets)) {
     let rules: CSSRuleList | null = null;
-    try { rules = sheet.cssRules; } catch { continue; /* cross-origin */ }
+    try {
+      rules = sheet.cssRules;
+    } catch {
+      continue; /* cross-origin */
+    }
     if (!rules) continue;
 
     for (const rule of Array.from(rules)) {
@@ -49,8 +50,8 @@ function readCssTokens(): TokenEntry[] {
         if (!prop.startsWith('--')) continue;
         if (seen.has(prop)) continue;
         // Pega o valor efetivo (respeita cascata/tema aplicado).
-        const value = styles[0].getPropertyValue(prop).trim()
-          || styles[1].getPropertyValue(prop).trim();
+        const value =
+          styles[0].getPropertyValue(prop).trim() || styles[1].getPropertyValue(prop).trim();
         if (value) seen.set(prop, value);
       }
     }
@@ -96,7 +97,9 @@ export default function ThemeDiagnosticsPage() {
   const filtered = useMemo(() => {
     const q = filter.trim().toLowerCase();
     if (!q) return tokens;
-    return tokens.filter((t) => t.name.toLowerCase().includes(q) || t.value.toLowerCase().includes(q));
+    return tokens.filter(
+      (t) => t.name.toLowerCase().includes(q) || t.value.toLowerCase().includes(q)
+    );
   }, [tokens, filter]);
 
   const grouped = useMemo(() => {
@@ -108,7 +111,7 @@ export default function ThemeDiagnosticsPage() {
   const copyToken = useCallback((name: string) => {
     navigator.clipboard.writeText(`var(${name})`).then(
       () => toast.success(`Copiado: var(${name})`),
-      () => toast.error('Falha ao copiar'),
+      () => toast.error('Falha ao copiar')
     );
   }, []);
 
@@ -120,18 +123,32 @@ export default function ThemeDiagnosticsPage() {
             <h1 className="text-3xl font-bold tracking-tight">Diagnóstico de Tema</h1>
             <p className="text-muted-foreground text-sm mt-1">
               Tokens CSS lidos em tempo real. Tema ativo:{' '}
-              <Badge variant="outline" className="ml-1">{theme}</Badge>
+              <Badge variant="outline" className="ml-1">
+                {theme}
+              </Badge>
               <span className="ml-2 text-xs">({isDark ? 'dark' : 'light'})</span>
             </p>
           </div>
           <div className="flex flex-wrap gap-2">
-            <Button size="sm" variant={theme === 'light' ? 'default' : 'outline'} onClick={() => setTheme('light')}>
+            <Button
+              size="sm"
+              variant={theme === 'light' ? 'default' : 'outline'}
+              onClick={() => setTheme('light')}
+            >
               <Sun className="h-4 w-4 mr-1.5" /> Claro
             </Button>
-            <Button size="sm" variant={theme === 'dark' ? 'default' : 'outline'} onClick={() => setTheme('dark')}>
+            <Button
+              size="sm"
+              variant={theme === 'dark' ? 'default' : 'outline'}
+              onClick={() => setTheme('dark')}
+            >
               <Moon className="h-4 w-4 mr-1.5" /> Escuro
             </Button>
-            <Button size="sm" variant={theme === 'system' ? 'default' : 'outline'} onClick={() => setTheme('system')}>
+            <Button
+              size="sm"
+              variant={theme === 'system' ? 'default' : 'outline'}
+              onClick={() => setTheme('system')}
+            >
               <Monitor className="h-4 w-4 mr-1.5" /> Sistema
             </Button>
             <Button size="sm" variant="ghost" onClick={resetTheme} title="Restaurar padrão">
@@ -180,7 +197,10 @@ export default function ThemeDiagnosticsPage() {
                         <code className="text-xs font-mono text-foreground truncate">{t.name}</code>
                         <Copy className="h-3 w-3 text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity" />
                       </div>
-                      <div className="text-[10px] font-mono text-muted-foreground truncate" title={t.value}>
+                      <div
+                        className="text-[10px] font-mono text-muted-foreground truncate"
+                        title={t.value}
+                      >
                         {t.value}
                       </div>
                     </div>
@@ -200,13 +220,18 @@ export default function ThemeDiagnosticsPage() {
                   className="w-full flex items-center justify-between gap-4 px-4 py-2 text-left hover:bg-muted/50 transition-colors"
                 >
                   <code className="text-xs font-mono">{t.name}</code>
-                  <code className="text-xs font-mono text-muted-foreground truncate max-w-[60%]" title={t.value}>
+                  <code
+                    className="text-xs font-mono text-muted-foreground truncate max-w-[60%]"
+                    title={t.value}
+                  >
                     {t.value}
                   </code>
                 </button>
               ))}
               {grouped.others.length === 0 && (
-                <p className="p-4 text-sm text-muted-foreground">Nenhum token não-cor no filtro atual.</p>
+                <p className="p-4 text-sm text-muted-foreground">
+                  Nenhum token não-cor no filtro atual.
+                </p>
               )}
             </div>
           </TabsContent>
@@ -214,10 +239,16 @@ export default function ThemeDiagnosticsPage() {
           <TabsContent value="samples" className="mt-4">
             <div className="grid gap-4 md:grid-cols-2">
               <Card>
-                <CardHeader><CardTitle className="text-sm">Superfícies</CardTitle></CardHeader>
+                <CardHeader>
+                  <CardTitle className="text-sm">Superfícies</CardTitle>
+                </CardHeader>
                 <CardContent className="space-y-2">
-                  <div className="p-3 rounded bg-background border border-border">bg-background</div>
-                  <div className="p-3 rounded bg-card border border-border text-card-foreground">bg-card</div>
+                  <div className="p-3 rounded bg-background border border-border">
+                    bg-background
+                  </div>
+                  <div className="p-3 rounded bg-card border border-border text-card-foreground">
+                    bg-card
+                  </div>
                   <div className="p-3 rounded bg-muted text-muted-foreground">bg-muted</div>
                   <div className="p-3 rounded bg-popover border border-border">bg-popover</div>
                   <div className="p-3 rounded bg-accent text-accent-foreground">bg-accent</div>
@@ -225,20 +256,30 @@ export default function ThemeDiagnosticsPage() {
               </Card>
 
               <Card>
-                <CardHeader><CardTitle className="text-sm">Estados semânticos</CardTitle></CardHeader>
+                <CardHeader>
+                  <CardTitle className="text-sm">Estados semânticos</CardTitle>
+                </CardHeader>
                 <CardContent className="flex flex-wrap gap-2">
                   <Badge>Padrão</Badge>
                   <Badge variant="secondary">Secondary</Badge>
                   <Badge variant="outline">Outline</Badge>
                   <Badge variant="destructive">Destructive</Badge>
-                  <span className="px-2 py-1 rounded text-xs bg-success text-success-foreground">success</span>
-                  <span className="px-2 py-1 rounded text-xs bg-warning text-warning-foreground">warning</span>
-                  <span className="px-2 py-1 rounded text-xs bg-info text-info-foreground">info</span>
+                  <span className="px-2 py-1 rounded text-xs bg-success text-success-foreground">
+                    success
+                  </span>
+                  <span className="px-2 py-1 rounded text-xs bg-warning text-warning-foreground">
+                    warning
+                  </span>
+                  <span className="px-2 py-1 rounded text-xs bg-info text-info-foreground">
+                    info
+                  </span>
                 </CardContent>
               </Card>
 
               <Card>
-                <CardHeader><CardTitle className="text-sm">Botões</CardTitle></CardHeader>
+                <CardHeader>
+                  <CardTitle className="text-sm">Botões</CardTitle>
+                </CardHeader>
                 <CardContent className="flex flex-wrap gap-2">
                   <Button>Default</Button>
                   <Button variant="secondary">Secondary</Button>
@@ -250,7 +291,9 @@ export default function ThemeDiagnosticsPage() {
               </Card>
 
               <Card>
-                <CardHeader><CardTitle className="text-sm">Inputs & tipografia</CardTitle></CardHeader>
+                <CardHeader>
+                  <CardTitle className="text-sm">Inputs & tipografia</CardTitle>
+                </CardHeader>
                 <CardContent className="space-y-3">
                   <Input placeholder="Digite algo…" />
                   <div>

@@ -37,7 +37,11 @@ export interface ImportCheckpoint {
   clear: () => void;
 }
 
-export function createImportCheckpoint(key: string, total: number, ttlMs = DEFAULT_TTL_MS): ImportCheckpoint {
+export function createImportCheckpoint(
+  key: string,
+  total: number,
+  ttlMs = DEFAULT_TTL_MS
+): ImportCheckpoint {
   const storageKey = PREFIX + key;
   const set = loadInto(storageKey, total, ttlMs);
 
@@ -79,9 +83,10 @@ export function createImportCheckpoint(key: string, total: number, ttlMs = DEFAU
  * existência de um progresso retomável e oferecer a opção ao usuário antes
  * de começar (ex.: "Retomar 320 de 1.000 já importados").
  */
-export function peekImportCheckpoint(key: string, ttlMs = DEFAULT_TTL_MS):
-  | { refs: string[]; total: number; updatedAt: number }
-  | null {
+export function peekImportCheckpoint(
+  key: string,
+  ttlMs = DEFAULT_TTL_MS
+): { refs: string[]; total: number; updatedAt: number } | null {
   if (typeof window === 'undefined') return null;
   try {
     const raw = window.localStorage.getItem(PREFIX + key);

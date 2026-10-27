@@ -35,13 +35,16 @@ export function exportarDRE(format: 'pdf' | 'json', dre: DreData, ctx: ExportCon
   const filename = `DRE-${ctx.empresaTitulo}-${ctx.ano}-${ctx.mes + 1}-${ctx.fonte}`;
 
   if (format === 'json') {
-    downloadJson({
-      empresa: { nome: ctx.empresaTitulo, cnpj: ctx.empresaCnpj || '—' },
-      periodo: { ano: ctx.ano, mes: ctx.mes + 1 },
-      fonte: ctx.fonte,
-      totais: { receitas: dre.receitaBruta, resultado: dre.lucroLiquido },
-      linhas: dre.linhas,
-    }, filename);
+    downloadJson(
+      {
+        empresa: { nome: ctx.empresaTitulo, cnpj: ctx.empresaCnpj || '—' },
+        periodo: { ano: ctx.ano, mes: ctx.mes + 1 },
+        fonte: ctx.fonte,
+        totais: { receitas: dre.receitaBruta, resultado: dre.lucroLiquido },
+        linhas: dre.linhas,
+      },
+      filename
+    );
     toast.success('DRE exportada em JSON');
     return;
   }
@@ -59,7 +62,12 @@ export function exportarDRE(format: 'pdf' | 'json', dre: DreData, ctx: ExportCon
   doc.setFontSize(7);
   doc.setTextColor(PDF_BRAND.muted[0], PDF_BRAND.muted[1], PDF_BRAND.muted[2]);
   doc.text('LUCRO/PREJUÍZO LÍQUIDO DO PERÍODO', margins.left + 5, cursorY + 7);
-  doc.text(`FONTE: ${ctx.fonte.toUpperCase()} / EMPRESA: ${ctx.empresaTitulo.toUpperCase()}`, pageWidth - margins.right - 5, cursorY + 7, { align: 'right' });
+  doc.text(
+    `FONTE: ${ctx.fonte.toUpperCase()} / EMPRESA: ${ctx.empresaTitulo.toUpperCase()}`,
+    pageWidth - margins.right - 5,
+    cursorY + 7,
+    { align: 'right' }
+  );
 
   const positive = dre.lucroLiquido >= 0;
   doc.setFontSize(16);
@@ -67,7 +75,7 @@ export function exportarDRE(format: 'pdf' | 'json', dre: DreData, ctx: ExportCon
   doc.setTextColor(
     positive ? PDF_BRAND.success[0] : PDF_BRAND.destructive[0],
     positive ? PDF_BRAND.success[1] : PDF_BRAND.destructive[1],
-    positive ? PDF_BRAND.success[2] : PDF_BRAND.destructive[2],
+    positive ? PDF_BRAND.success[2] : PDF_BRAND.destructive[2]
   );
   doc.text(formatCurrency(dre.lucroLiquido), margins.left + 5, cursorY + 15);
 
@@ -75,14 +83,25 @@ export function exportarDRE(format: 'pdf' | 'json', dre: DreData, ctx: ExportCon
   doc.setFontSize(8);
   doc.setFont('helvetica', 'normal');
   doc.setTextColor(PDF_BRAND.muted[0], PDF_BRAND.muted[1], PDF_BRAND.muted[2]);
-  doc.text(`MARGEM LÍQUIDA: ${margemLiq}%`, pageWidth - margins.right - 5, cursorY + 15, { align: 'right' });
+  doc.text(`MARGEM LÍQUIDA: ${margemLiq}%`, pageWidth - margins.right - 5, cursorY + 15, {
+    align: 'right',
+  });
 
   cursorY += 28;
 
   const rows = dre.linhas.map((l) => [
-    { content: l.descricao, styles: { paddingLeft: l.nivel * 4, fontStyle: l.nivel === 0 ? 'bold' : 'normal' } },
-    { content: formatCurrency(l.valor), styles: { halign: 'right', fontStyle: l.nivel === 0 ? 'bold' : 'normal' } },
-    { content: `${l.percentual.toFixed(1)}%`, styles: { halign: 'right', textColor: PDF_BRAND.muted } },
+    {
+      content: l.descricao,
+      styles: { paddingLeft: l.nivel * 4, fontStyle: l.nivel === 0 ? 'bold' : 'normal' },
+    },
+    {
+      content: formatCurrency(l.valor),
+      styles: { halign: 'right', fontStyle: l.nivel === 0 ? 'bold' : 'normal' },
+    },
+    {
+      content: `${l.percentual.toFixed(1)}%`,
+      styles: { halign: 'right', textColor: PDF_BRAND.muted },
+    },
   ]);
 
   autoTable(doc, {
@@ -114,12 +133,15 @@ export function exportarBalanco(format: 'pdf' | 'json', balanco: BalancoData, ct
   const filename = `Balanco-${ctx.empresaTitulo}-${ctx.ano}-${ctx.mes + 1}-${ctx.fonte}`;
 
   if (format === 'json') {
-    downloadJson({
-      empresa: { nome: ctx.empresaTitulo, cnpj: ctx.empresaCnpj || '—' },
-      periodo: { ano: ctx.ano, mes: ctx.mes + 1 },
-      fonte: ctx.fonte,
-      balanco,
-    }, filename);
+    downloadJson(
+      {
+        empresa: { nome: ctx.empresaTitulo, cnpj: ctx.empresaCnpj || '—' },
+        periodo: { ano: ctx.ano, mes: ctx.mes + 1 },
+        fonte: ctx.fonte,
+        balanco,
+      },
+      filename
+    );
     toast.success('Balanço exportado em JSON');
     return;
   }
@@ -135,7 +157,7 @@ export function exportarBalanco(format: 'pdf' | 'json', balanco: BalancoData, ct
   doc.setDrawColor(
     equilibrado ? PDF_BRAND.success[0] : PDF_BRAND.destructive[0],
     equilibrado ? PDF_BRAND.success[1] : PDF_BRAND.destructive[1],
-    equilibrado ? PDF_BRAND.success[2] : PDF_BRAND.destructive[2],
+    equilibrado ? PDF_BRAND.success[2] : PDF_BRAND.destructive[2]
   );
   doc.roundedRect(margins.left, cursorY, totalW, 12, 1.5, 1.5, 'FD');
 
@@ -143,7 +165,7 @@ export function exportarBalanco(format: 'pdf' | 'json', balanco: BalancoData, ct
   doc.setTextColor(
     equilibrado ? PDF_BRAND.success[0] : PDF_BRAND.destructive[0],
     equilibrado ? PDF_BRAND.success[1] : PDF_BRAND.destructive[1],
-    equilibrado ? PDF_BRAND.success[2] : PDF_BRAND.destructive[2],
+    equilibrado ? PDF_BRAND.success[2] : PDF_BRAND.destructive[2]
   );
   doc.setFont('helvetica', 'bold');
   doc.text(
@@ -151,18 +173,30 @@ export function exportarBalanco(format: 'pdf' | 'json', balanco: BalancoData, ct
       ? 'SITUAÇÃO PATRIMONIAL: BALANÇO CONSOLIDADO'
       : `DIVERGÊNCIA IDENTIFICADA: ${formatCurrency(balanco.totalAtivo - balanco.totalPassivo)}`,
     margins.left + 5,
-    cursorY + 7.5,
+    cursorY + 7.5
   );
   cursorY += 18;
 
   const rowsAtivo = balanco.ativo.map((a) => [
-    { content: a.descricao, styles: { paddingLeft: a.nivel * 3, fontStyle: a.nivel === 0 ? 'bold' : 'normal' } },
-    { content: formatCurrency(a.valor), styles: { halign: 'right', fontStyle: a.nivel === 0 ? 'bold' : 'normal' } },
+    {
+      content: a.descricao,
+      styles: { paddingLeft: a.nivel * 3, fontStyle: a.nivel === 0 ? 'bold' : 'normal' },
+    },
+    {
+      content: formatCurrency(a.valor),
+      styles: { halign: 'right', fontStyle: a.nivel === 0 ? 'bold' : 'normal' },
+    },
   ]);
 
   const rowsPassivo = balanco.passivo.map((p) => [
-    { content: p.descricao, styles: { paddingLeft: p.nivel * 3, fontStyle: p.nivel === 0 ? 'bold' : 'normal' } },
-    { content: formatCurrency(p.valor), styles: { halign: 'right', fontStyle: p.nivel === 0 ? 'bold' : 'normal' } },
+    {
+      content: p.descricao,
+      styles: { paddingLeft: p.nivel * 3, fontStyle: p.nivel === 0 ? 'bold' : 'normal' },
+    },
+    {
+      content: formatCurrency(p.valor),
+      styles: { halign: 'right', fontStyle: p.nivel === 0 ? 'bold' : 'normal' },
+    },
   ]);
 
   autoTable(doc, {

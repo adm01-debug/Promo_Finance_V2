@@ -1,15 +1,15 @@
-import { useLocation, Link } from "react-router-dom";
-import { useEffect } from "react";
-import { motion } from "framer-motion";
-import { Home, ArrowLeft, Search } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { logger } from "@/lib/logger";
+import { useLocation, Link } from 'react-router-dom';
+import { useEffect } from 'react';
+import { motion } from 'framer-motion';
+import { Home, ArrowLeft, Search } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { logger } from '@/lib/logger';
 
 const NotFound = () => {
   const location = useLocation();
 
   useEffect(() => {
-    logger.error("404 Error: User attempted to access non-existent route:", location.pathname);
+    logger.error('404 Error: User attempted to access non-existent route:', location.pathname);
   }, [location.pathname]);
 
   return (
@@ -24,7 +24,7 @@ const NotFound = () => {
         <motion.div
           initial={{ scale: 0.8 }}
           animate={{ scale: 1 }}
-          transition={{ delay: 0.2, type: "spring", stiffness: 200 }}
+          transition={{ delay: 0.2, type: 'spring', stiffness: 200 }}
           className="mb-8"
         >
           <div className="relative">
@@ -38,18 +38,12 @@ const NotFound = () => {
         </motion.div>
 
         {/* Message */}
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.3 }}
-        >
+        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.3 }}>
           <h1 className="text-2xl font-bold mb-2">Página não encontrada</h1>
           <p className="text-muted-foreground mb-6">
             A página que você está procurando não existe ou foi movida.
             <br />
-            <span className="text-sm font-mono text-muted-foreground/70">
-              {location.pathname}
-            </span>
+            <span className="text-sm font-mono text-muted-foreground/70">{location.pathname}</span>
           </p>
         </motion.div>
 

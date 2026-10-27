@@ -1,8 +1,8 @@
-import { motion } from "framer-motion";
-import { Card } from "@/components/ui/card";
-import { Coins, ShieldAlert, TrendingUp, User } from "lucide-react";
-import { formatCurrency } from "@/lib/formatters";
-import { itemVariants } from "./types";
+import { motion } from 'framer-motion';
+import { Card } from '@/components/ui/card';
+import { Coins, ShieldAlert, TrendingUp, User } from 'lucide-react';
+import { formatCurrency } from '@/lib/formatters';
+import { itemVariants } from './types';
 
 interface StatsCardsProps {
   totalValue: number;
@@ -19,7 +19,9 @@ export function StatsCards({ totalValue, totalCount, periodo, topSupplier }: Sta
           <Coins className="h-16 w-16 text-primary" />
         </div>
         <div className="space-y-2 relative z-10">
-          <p className="text-[10px] uppercase font-black tracking-widest text-primary/70">Total Economizado</p>
+          <p className="text-[10px] uppercase font-black tracking-widest text-primary/70">
+            Total Economizado
+          </p>
           <h3 className="text-4xl font-black tracking-tighter">{formatCurrency(totalValue)}</h3>
           <div className="flex items-center gap-2 text-[10px] font-bold text-success">
             <TrendingUp className="h-3 w-3" />
@@ -33,12 +35,17 @@ export function StatsCards({ totalValue, totalCount, periodo, topSupplier }: Sta
           <ShieldAlert className="h-16 w-16 text-foreground" />
         </div>
         <div className="space-y-2 relative z-10">
-          <p className="text-[10px] uppercase font-black tracking-widest text-muted-foreground">Bloqueios Realizados</p>
+          <p className="text-[10px] uppercase font-black tracking-widest text-muted-foreground">
+            Bloqueios Realizados
+          </p>
           <h3 className="text-4xl font-black tracking-tighter">
-            {totalCount} <span className="text-sm font-medium text-muted-foreground tracking-normal">tentativas</span>
+            {totalCount}{' '}
+            <span className="text-sm font-medium text-muted-foreground tracking-normal">
+              tentativas
+            </span>
           </h3>
           <p className="text-[10px] font-medium text-muted-foreground/60 italic">
-            Últimas {periodo === "all" ? "total" : periodo}
+            Últimas {periodo === 'all' ? 'total' : periodo}
           </p>
         </div>
       </Card>
@@ -48,10 +55,14 @@ export function StatsCards({ totalValue, totalCount, periodo, topSupplier }: Sta
           <User className="h-16 w-16 text-foreground" />
         </div>
         <div className="space-y-2 relative z-10">
-          <p className="text-[10px] uppercase font-black tracking-widest text-muted-foreground">Fornecedor Crítico</p>
-          <h3 className="text-2xl font-black tracking-tighter truncate">{topSupplier ? topSupplier[0] : "Nenhum"}</h3>
+          <p className="text-[10px] uppercase font-black tracking-widest text-muted-foreground">
+            Fornecedor Crítico
+          </p>
+          <h3 className="text-2xl font-black tracking-tighter truncate">
+            {topSupplier ? topSupplier[0] : 'Nenhum'}
+          </h3>
           <p className="text-[10px] font-bold text-muted-foreground/60">
-            {topSupplier ? `${topSupplier[1]} bloqueios detectados` : "Sem recorrências"}
+            {topSupplier ? `${topSupplier[1]} bloqueios detectados` : 'Sem recorrências'}
           </p>
         </div>
       </Card>

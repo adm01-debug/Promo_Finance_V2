@@ -49,12 +49,12 @@ export function FilterPreviewChips({
     ...pinnedSummary.map((f) =>
       f.isActive && f.value !== undefined
         ? `${f.label}: ${formatFilterValue(f.value)}.`
-        : `${f.label}: vazio.`,
+        : `${f.label}: vazio.`
     ),
     activeFilters.length > 0
       ? `Filtros: ${activeFilters
           .map((f) =>
-            f.value !== undefined ? `${f.label} ${formatFilterValue(f.value)}` : f.label,
+            f.value !== undefined ? `${f.label} ${formatFilterValue(f.value)}` : f.label
           )
           .join('; ')}.`
       : 'Nenhum filtro ativo.',
@@ -70,9 +70,7 @@ export function FilterPreviewChips({
         {pinnedSummary.map((f) => (
           <div key={`a11y-pin-${f.label}`}>
             <dt>{f.label}</dt>
-            <dd>
-              {f.isActive && f.value !== undefined ? formatFilterValue(f.value) : 'vazio'}
-            </dd>
+            <dd>{f.isActive && f.value !== undefined ? formatFilterValue(f.value) : 'vazio'}</dd>
           </div>
         ))}
         {activeFilters.map((f, i) => (
@@ -93,11 +91,7 @@ export function FilterPreviewChips({
         >
           {pinnedSummary.map((f) => (
             <div key={f.label} className="contents">
-              <span
-                className={`${
-                  dense ? 'text-[11px]' : 'text-xs'
-                } font-medium text-foreground`}
-              >
+              <span className={`${dense ? 'text-[11px]' : 'text-xs'} font-medium text-foreground`}>
                 {f.label}
               </span>
               <span

@@ -1,4 +1,11 @@
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+  DialogFooter,
+} from '@/components/ui/dialog';
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
@@ -44,7 +51,9 @@ export function SpedTransmissaoDialog({
           />
         </div>
         <DialogFooter>
-          <Button variant="outline" onClick={onCancel}>Cancelar</Button>
+          <Button variant="outline" onClick={onCancel}>
+            Cancelar
+          </Button>
           <Button onClick={onConfirm} disabled={!reciboInput.trim() || pending}>
             Marcar como transmitido
           </Button>

@@ -53,4 +53,3 @@ export async function logUserAction({
     logger.error('[logUserAction] failed to log action', { actionType, e });
   }
 }
-

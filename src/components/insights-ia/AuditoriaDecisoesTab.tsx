@@ -93,9 +93,7 @@ export function AuditoriaDecisoesTab() {
                     </div>
                     {h.motivos && h.motivos.length > 0 && (
                       <div className="mt-2">
-                        <p className="text-xs font-medium text-muted-foreground mb-1">
-                          Motivos
-                        </p>
+                        <p className="text-xs font-medium text-muted-foreground mb-1">Motivos</p>
                         <div className="flex flex-wrap gap-1">
                           {h.motivos.map((m, idx) => (
                             <Badge key={idx} variant="secondary" className="text-xs">
@@ -107,9 +105,7 @@ export function AuditoriaDecisoesTab() {
                     )}
                     {h.analise_ia && (
                       <div className="mt-2 rounded bg-muted/40 p-2">
-                        <p className="text-xs font-medium text-muted-foreground mb-1">
-                          Análise IA
-                        </p>
+                        <p className="text-xs font-medium text-muted-foreground mb-1">Análise IA</p>
                         <p className="text-xs">{h.analise_ia}</p>
                       </div>
                     )}

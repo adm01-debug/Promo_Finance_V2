@@ -19,18 +19,24 @@ export function useHistoricoBoletos() {
     queryFn: async () => {
       const { data, error } = await supabase
         .from('historico_cobrancas_boletos')
-        .select(`
+        .select(
+          `
           *,
           boletos!inner (
             numero,
             sacado_nome
           )
-        `)
+        `
+        )
         .order('created_at', { ascending: false });
 
       if (error) throw error;
 
-      return ((data ?? []) as unknown as Array<{ boletos?: { numero?: string; sacado_nome?: string } } & Record<string, unknown>>).map((item) => ({
+      return (
+        (data ?? []) as unknown as Array<
+          { boletos?: { numero?: string; sacado_nome?: string } } & Record<string, unknown>
+        >
+      ).map((item) => ({
         ...item,
         boleto_numero: item.boletos?.numero,
         sacado_nome: item.boletos?.sacado_nome,

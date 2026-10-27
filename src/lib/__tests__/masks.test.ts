@@ -1,12 +1,23 @@
 import { describe, it, expect } from 'vitest';
-import { maskCnpjCpf, applyCnpjMask, applyPhoneMask, applyCepMask, maskPhone, unmask, validateCPF, validateCNPJ, validateCnpjCpf } from '../masks';
+import {
+  maskCnpjCpf,
+  applyCnpjMask,
+  applyPhoneMask,
+  applyCepMask,
+  maskPhone,
+  unmask,
+  validateCPF,
+  validateCNPJ,
+  validateCnpjCpf,
+} from '../masks';
 
 // ============================
 // maskCnpjCpf
 // ============================
 describe('maskCnpjCpf', () => {
   it('aplica máscara CPF parcial', () => expect(maskCnpjCpf('123456')).toBe('123.456'));
-  it('aplica máscara CPF completo', () => expect(maskCnpjCpf('12345678901')).toBe('123.456.789-01'));
+  it('aplica máscara CPF completo', () =>
+    expect(maskCnpjCpf('12345678901')).toBe('123.456.789-01'));
   it('aplica máscara CNPJ', () => expect(maskCnpjCpf('12345678000195')).toBe('12.345.678/0001-95'));
   it('aplica máscara CNPJ parcial', () => expect(maskCnpjCpf('12345678')).toBe('123.456.78'));
   it('vazio retorna vazio', () => expect(maskCnpjCpf('')).toBe(''));
@@ -16,8 +27,10 @@ describe('maskCnpjCpf', () => {
 // applyCnpjMask
 // ============================
 describe('applyCnpjMask', () => {
-  it('aplica máscara CNPJ', () => expect(applyCnpjMask('12345678000195')).toBe('12.345.678/0001-95'));
-  it('limita a 14 dígitos', () => expect(applyCnpjMask('123456780001951234').replace(/\D/g, '').length).toBeLessThanOrEqual(14));
+  it('aplica máscara CNPJ', () =>
+    expect(applyCnpjMask('12345678000195')).toBe('12.345.678/0001-95'));
+  it('limita a 14 dígitos', () =>
+    expect(applyCnpjMask('123456780001951234').replace(/\D/g, '').length).toBeLessThanOrEqual(14));
 });
 
 // ============================
@@ -28,7 +41,8 @@ describe('maskPhone', () => {
   it('fixo', () => expect(maskPhone('1133445566')).toBe('(11) 3344-5566'));
   it('parcial', () => expect(maskPhone('119')).toBe('(11) 9'));
   it('vazio', () => expect(maskPhone('')).toBe(''));
-  it('limita a 11 dígitos', () => expect(maskPhone('119998877661234').replace(/\D/g, '').length).toBeLessThanOrEqual(11));
+  it('limita a 11 dígitos', () =>
+    expect(maskPhone('119998877661234').replace(/\D/g, '').length).toBeLessThanOrEqual(11));
 });
 
 describe('applyPhoneMask', () => {
@@ -41,7 +55,8 @@ describe('applyPhoneMask', () => {
 describe('applyCepMask', () => {
   it('aplica máscara CEP', () => expect(applyCepMask('01310100')).toBe('01310-100'));
   it('parcial', () => expect(applyCepMask('013')).toBe('013'));
-  it('limita a 8 dígitos', () => expect(applyCepMask('0131010099').replace(/\D/g, '').length).toBeLessThanOrEqual(8));
+  it('limita a 8 dígitos', () =>
+    expect(applyCepMask('0131010099').replace(/\D/g, '').length).toBeLessThanOrEqual(8));
 });
 
 // ============================

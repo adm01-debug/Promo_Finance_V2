@@ -59,10 +59,15 @@ export function useAuditoriaLancamentos(params: UseAuditoriaLancamentosParams) {
         const novos = (r.dados_novos || {}) as Record<string, unknown>;
         const antigos = (r.dados_antigos || {}) as Record<string, unknown>;
         const src = Object.keys(novos).length ? novos : antigos;
-        
+
         // Resolve o nome do usuário a partir da join
-        const userProfile = r.usuario as unknown as { full_name: string | null; email: string | null } | null;
-        const usuarioNome = userProfile ? (userProfile.full_name || userProfile.email || 'Sistema') : 'Sistema';
+        const userProfile = r.usuario as unknown as {
+          full_name: string | null;
+          email: string | null;
+        } | null;
+        const usuarioNome = userProfile
+          ? userProfile.full_name || userProfile.email || 'Sistema'
+          : 'Sistema';
 
         return {
           ...r,
@@ -91,7 +96,7 @@ export function useAuditoriaLancamentos(params: UseAuditoriaLancamentosParams) {
           (r) =>
             r.historico?.toLowerCase().includes(s) ||
             String(r.numero_lancamento ?? '').includes(s) ||
-            r.registro_id?.toLowerCase().includes(s),
+            r.registro_id?.toLowerCase().includes(s)
         );
       }
 

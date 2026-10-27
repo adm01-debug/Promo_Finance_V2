@@ -1,9 +1,5 @@
-import type {
-  Severidade,
-  ToastAcoes,
-  DrawerAcoes,
-} from "@/hooks/useAnomaliaPreferences";
-import { TOAST_DURACAO_DEFAULT } from "@/hooks/useAnomaliaPreferences";
+import type { Severidade, ToastAcoes, DrawerAcoes } from '@/hooks/useAnomaliaPreferences';
+import { TOAST_DURACAO_DEFAULT } from '@/hooks/useAnomaliaPreferences';
 
 export interface AnomaliaPreferencePreset {
   id: string;
@@ -21,11 +17,11 @@ export interface AnomaliaPreferencePreset {
  */
 export const ANOMALIA_PREFERENCE_PRESETS: AnomaliaPreferencePreset[] = [
   {
-    id: "operacao",
-    nome: "Operação",
+    id: 'operacao',
+    nome: 'Operação',
     descricao:
-      "Foco em ação rápida no dia a dia: só severidades altas, toast curto, drill-down direto.",
-    severidades: ["critica", "alta"],
+      'Foco em ação rápida no dia a dia: só severidades altas, toast curto, drill-down direto.',
+    severidades: ['critica', 'alta'],
     duracao: 8,
     toastAcoes: {
       drill_down: true,
@@ -41,11 +37,11 @@ export const ANOMALIA_PREFERENCE_PRESETS: AnomaliaPreferencePreset[] = [
     },
   },
   {
-    id: "gestao",
-    nome: "Gestão",
+    id: 'gestao',
+    nome: 'Gestão',
     descricao:
-      "Visão tática: inclui média severidade, duração padrão, navegação para páginas completas.",
-    severidades: ["critica", "alta", "media"],
+      'Visão tática: inclui média severidade, duração padrão, navegação para páginas completas.',
+    severidades: ['critica', 'alta', 'media'],
     duracao: TOAST_DURACAO_DEFAULT,
     toastAcoes: {
       drill_down: true,
@@ -61,11 +57,11 @@ export const ANOMALIA_PREFERENCE_PRESETS: AnomaliaPreferencePreset[] = [
     },
   },
   {
-    id: "auditoria",
-    nome: "Auditoria",
+    id: 'auditoria',
+    nome: 'Auditoria',
     descricao:
-      "Cobertura total: todas as severidades, toast longo, todas as ações inclusive copiar ID.",
-    severidades: ["critica", "alta", "media", "baixa"],
+      'Cobertura total: todas as severidades, toast longo, todas as ações inclusive copiar ID.',
+    severidades: ['critica', 'alta', 'media', 'baixa'],
     duracao: 20,
     toastAcoes: {
       drill_down: true,
@@ -90,7 +86,7 @@ export function presetMatches(
     duracao: number;
     toastAcoes: ToastAcoes;
     drawerAcoes: DrawerAcoes;
-  },
+  }
 ): boolean {
   if (preset.duracao !== current.duracao) return false;
 
@@ -99,12 +95,10 @@ export function presetMatches(
   if (a.length !== b.length || a.some((v, i) => v !== b[i])) return false;
 
   const tKeys = Object.keys(preset.toastAcoes) as Array<keyof ToastAcoes>;
-  if (tKeys.some((k) => preset.toastAcoes[k] !== current.toastAcoes[k]))
-    return false;
+  if (tKeys.some((k) => preset.toastAcoes[k] !== current.toastAcoes[k])) return false;
 
   const dKeys = Object.keys(preset.drawerAcoes) as Array<keyof DrawerAcoes>;
-  if (dKeys.some((k) => preset.drawerAcoes[k] !== current.drawerAcoes[k]))
-    return false;
+  if (dKeys.some((k) => preset.drawerAcoes[k] !== current.drawerAcoes[k])) return false;
 
   return true;
 }

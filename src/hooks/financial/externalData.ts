@@ -8,7 +8,7 @@ const EXTERNAL_DATA_NOT_CONFIGURED_MESSAGES = new Set([
 ]);
 
 export function isExternalDataNotConfigured(
-  payload: ExternalListResponse<unknown> | null | undefined,
+  payload: ExternalListResponse<unknown> | null | undefined
 ) {
   if (!payload) return false;
   return (
@@ -45,19 +45,17 @@ export async function fetchExternalData<T>(params: {
         Authorization: `Bearer ${session.access_token}`,
         apikey: env.SUPABASE_PUBLISHABLE_KEY,
       },
-    },
+    }
   );
 
-  const payload = (await response.json().catch(() => null)) as
-    | ExternalListResponse<T>
-    | null;
+  const payload = (await response.json().catch(() => null)) as ExternalListResponse<T> | null;
 
   if (!response.ok) {
     if (isExternalDataNotConfigured(payload)) {
       return { data: [], total: 0, total_pages: 0, fallback: true };
     }
     throw new Error(
-      payload?.message || payload?.error || `Erro ao buscar ${params.tabela} externos`,
+      payload?.message || payload?.error || `Erro ao buscar ${params.tabela} externos`
     );
   }
 

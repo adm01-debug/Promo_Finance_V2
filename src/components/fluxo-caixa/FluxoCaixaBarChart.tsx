@@ -3,14 +3,14 @@ import { motion } from 'framer-motion';
 import { BarChart3, Loader2 } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { formatCurrency } from '@/lib/formatters';
-import { 
-  ResponsiveContainer, 
+import {
+  ResponsiveContainer,
   ComposedChart,
   Bar,
   Line,
-  XAxis, 
-  YAxis, 
-  Tooltip, 
+  XAxis,
+  YAxis,
+  Tooltip,
   CartesianGrid,
   Legend,
 } from 'recharts';
@@ -31,7 +31,11 @@ interface FluxoCaixaBarChartProps {
 
 const itemVariants = {
   hidden: { opacity: 0, y: 20 },
-  visible: { opacity: 1, y: 0, transition: { type: 'spring' as const, stiffness: 300, damping: 24 } },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: { type: 'spring' as const, stiffness: 300, damping: 24 },
+  },
 } as const;
 
 export const FluxoCaixaBarChart = memo(function FluxoCaixaBarChart({
@@ -45,7 +49,8 @@ export const FluxoCaixaBarChart = memo(function FluxoCaixaBarChart({
         <CardHeader className="pb-2">
           <CardTitle className="text-lg font-display flex items-center gap-2">
             <BarChart3 className="h-5 w-5 text-primary" />
-            Entradas vs Saídas - Cenário {cenarioAtivo.charAt(0).toUpperCase() + cenarioAtivo.slice(1)}
+            Entradas vs Saídas - Cenário{' '}
+            {cenarioAtivo.charAt(0).toUpperCase() + cenarioAtivo.slice(1)}
           </CardTitle>
         </CardHeader>
         <CardContent className="h-[320px]">
@@ -57,17 +62,13 @@ export const FluxoCaixaBarChart = memo(function FluxoCaixaBarChart({
             <ResponsiveContainer width="100%" height="100%">
               <ComposedChart data={barData}>
                 <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
-                <XAxis 
-                  dataKey="data" 
-                  stroke="hsl(var(--muted-foreground))" 
-                  fontSize={12} 
+                <XAxis dataKey="data" stroke="hsl(var(--muted-foreground))" fontSize={12} />
+                <YAxis
+                  tickFormatter={(v) => `${(v / 1000).toFixed(0)}K`}
+                  stroke="hsl(var(--muted-foreground))"
+                  fontSize={12}
                 />
-                <YAxis 
-                  tickFormatter={(v) => `${(v/1000).toFixed(0)}K`} 
-                  stroke="hsl(var(--muted-foreground))" 
-                  fontSize={12} 
-                />
-                <Tooltip 
+                <Tooltip
                   formatter={(v: number) => formatCurrency(v)}
                   contentStyle={{
                     background: 'hsl(var(--card))',
@@ -76,9 +77,26 @@ export const FluxoCaixaBarChart = memo(function FluxoCaixaBarChart({
                   }}
                 />
                 <Legend />
-                <Bar dataKey="receitas" fill="hsl(150, 70%, 32%)" name="Receitas" radius={[4, 4, 0, 0]} />
-                <Bar dataKey="despesas" fill="hsl(0, 78%, 45%)" name="Despesas" radius={[4, 4, 0, 0]} />
-                <Line type="monotone" dataKey="liquido" stroke="hsl(24, 95%, 46%)" strokeWidth={2} name="Líquido" dot={false} />
+                <Bar
+                  dataKey="receitas"
+                  fill="hsl(150, 70%, 32%)"
+                  name="Receitas"
+                  radius={[4, 4, 0, 0]}
+                />
+                <Bar
+                  dataKey="despesas"
+                  fill="hsl(0, 78%, 45%)"
+                  name="Despesas"
+                  radius={[4, 4, 0, 0]}
+                />
+                <Line
+                  type="monotone"
+                  dataKey="liquido"
+                  stroke="hsl(24, 95%, 46%)"
+                  strokeWidth={2}
+                  name="Líquido"
+                  dot={false}
+                />
               </ComposedChart>
             </ResponsiveContainer>
           )}

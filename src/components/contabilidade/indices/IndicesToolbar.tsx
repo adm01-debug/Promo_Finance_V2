@@ -14,7 +14,10 @@ export function IndicesToolbar({ values, setField, countLabel }: Props) {
   return (
     <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4 items-end">
       <div className="space-y-2">
-        <Label htmlFor="idx-inicio" className="text-[10px] font-black uppercase tracking-widest opacity-60">
+        <Label
+          htmlFor="idx-inicio"
+          className="text-[10px] font-black uppercase tracking-widest opacity-60"
+        >
           Data inicial
         </Label>
         <Input
@@ -27,7 +30,10 @@ export function IndicesToolbar({ values, setField, countLabel }: Props) {
       </div>
 
       <div className="space-y-2">
-        <Label htmlFor="idx-fim" className="text-[10px] font-black uppercase tracking-widest opacity-60">
+        <Label
+          htmlFor="idx-fim"
+          className="text-[10px] font-black uppercase tracking-widest opacity-60"
+        >
           Data final
         </Label>
         <Input
@@ -40,11 +46,17 @@ export function IndicesToolbar({ values, setField, countLabel }: Props) {
       </div>
 
       <div className="space-y-2">
-        <Label htmlFor="idx-busca" className="text-[10px] font-black uppercase tracking-widest opacity-60">
+        <Label
+          htmlFor="idx-busca"
+          className="text-[10px] font-black uppercase tracking-widest opacity-60"
+        >
           Buscar indicador
         </Label>
         <div className="relative">
-          <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 opacity-50" aria-hidden />
+          <Search
+            className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 opacity-50"
+            aria-hidden
+          />
           <Input
             id="idx-busca"
             value={values.busca}

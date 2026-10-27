@@ -1,20 +1,23 @@
-import { useState, ReactNode } from 'react';
+import { useEffect, useRef, useState, ReactNode } from 'react';
 import { cn } from '@/lib/utils';
-import {
-  AlertTriangle,
-  Trash2,
-  CheckCircle,
-  Info,
-  HelpCircle,
-  X,
-} from 'lucide-react';
+import { AlertTriangle, Trash2, CheckCircle, Info, HelpCircle, X } from 'lucide-react';
 import { Button } from './button';
+import { isTopOpenDialog, registerOwnedEscapeHandler } from '@/lib/unsaved-guard';
 
 // Types
 
 export type ConfirmationType = 'danger' | 'warning' | 'success' | 'info' | 'question';
 
-type ButtonVariant = 'default' | 'destructive' | 'ghost' | 'link' | 'outline' | 'premium' | 'secondary' | 'success' | 'warning';
+type ButtonVariant =
+  | 'default'
+  | 'destructive'
+  | 'ghost'
+  | 'link'
+  | 'outline'
+  | 'premium'
+  | 'secondary'
+  | 'success'
+  | 'warning';
 
 interface ConfirmationDialogProps {
   isOpen: boolean;
@@ -92,6 +95,30 @@ export function ConfirmationDialog({
   const config = typeConfig[type];
   const Icon = config.icon;
 
+  const dialogRef = useRef<HTMLDivElement>(null);
+
+  // Escape roteado pelo ModalHistoryManager chama este handler direto
+  // (registrado para o elemento) (só ele fecha, nunca um dialog de baixo); o listener no
+  // documento cobre o caso do gerenciador ausente (ex.: testes).
+  useEffect(() => {
+    if (!isOpen) return;
+    const el = dialogRef.current;
+    const onKeyDown = (e: KeyboardEvent) => {
+      if (e.key !== 'Escape' || loading || isLoading) return;
+      // Só o dialog do topo fecha: um Escape chegando ao documento (topo
+      // Radix ou gerenciador ausente) não pode fechar os de baixo junto.
+      // A ordem de abertura decide — o DOM mente com o portal Radix.
+      if (!el || !isTopOpenDialog(el)) return;
+      onClose();
+    };
+    const offOwned = el ? registerOwnedEscapeHandler(el, onKeyDown) : undefined;
+    document.addEventListener('keydown', onKeyDown);
+    return () => {
+      offOwned?.();
+      document.removeEventListener('keydown', onKeyDown);
+    };
+  }, [isOpen, loading, isLoading, onClose]);
+
   const handleConfirm = async () => {
     try {
       setLoading(true);
@@ -124,7 +151,10 @@ export function ConfirmationDialog({
           'w-full max-w-md p-6 bg-card rounded-lg shadow-xl',
           className
         )}
+        ref={dialogRef}
         role="dialog"
+        data-state="open"
+        data-escape-owned
         aria-modal="true"
         aria-labelledby="confirmation-title"
         aria-describedby="confirmation-message"
@@ -146,10 +176,7 @@ export function ConfirmationDialog({
         {/* Icon */}
         <div className="flex justify-center mb-4">
           <div
-            className={cn(
-              'flex items-center justify-center w-12 h-12 rounded-full',
-              config.iconBg
-            )}
+            className={cn('flex items-center justify-center w-12 h-12 rounded-full', config.iconBg)}
           >
             {icon || <Icon className={cn('h-6 w-6', config.iconColor)} />}
           </div>
@@ -157,28 +184,17 @@ export function ConfirmationDialog({
 
         {/* Content */}
         <div className="text-center">
-          <h3
-            id="confirmation-title"
-            className="text-lg font-semibold text-foreground mb-2"
-          >
+          <h3 id="confirmation-title" className="text-lg font-semibold text-foreground mb-2">
             {title}
           </h3>
-          <div
-            id="confirmation-message"
-            className="text-sm text-muted-foreground"
-          >
+          <div id="confirmation-message" className="text-sm text-muted-foreground">
             {message}
           </div>
         </div>
 
         {/* Actions */}
         <div className="flex gap-3 mt-6">
-          <Button
-            variant="outline"
-            onClick={onClose}
-            disabled={isProcessing}
-            className="flex-1"
-          >
+          <Button variant="outline" onClick={onClose} disabled={isProcessing} className="flex-1">
             {cancelText}
           </Button>
           <Button

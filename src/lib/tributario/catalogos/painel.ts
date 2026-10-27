@@ -10,17 +10,9 @@ import {
   descreverDivergenciasIss,
   type ItemIssBanco,
 } from './coerencia-iss';
-import {
-  compararNcmsComCatalogo,
-  descreverDivergenciasNcm,
-  type NcmBanco,
-} from './coerencia-ncm';
+import { compararNcmsComCatalogo, descreverDivergenciasNcm, type NcmBanco } from './coerencia-ncm';
 import { compararUfsComCatalogo, validarMarcadorFcp } from './coerencia-ufs';
-import type {
-  AliquotaInterestadualCatalogo,
-  FaixaSimplesCatalogo,
-  UfCatalogo,
-} from './types';
+import type { AliquotaInterestadualCatalogo, FaixaSimplesCatalogo, UfCatalogo } from './types';
 
 /** Situação consolidada de um catálogo no painel. */
 export type SituacaoCatalogo = 'ok' | 'divergente' | 'vazio';
@@ -61,10 +53,7 @@ const iguais = (a: number, b: number) => Math.abs(a - b) <= EPSILON;
  * 7% de Sul/Sudeste (exceto ES) para Norte/Nordeste/Centro-Oeste e ES;
  * 12% nos demais casos entre contribuintes.
  */
-export function aliquotaInterestadualEsperada(
-  origem: UfCatalogo,
-  destino: UfCatalogo,
-): number {
+export function aliquotaInterestadualEsperada(origem: UfCatalogo, destino: UfCatalogo): number {
   const origemPrivilegiada = ORIGENS_SETE_PORCENTO.has(origem.regiao) && origem.sigla !== 'ES';
   const destinoBeneficiado = REGIOES_SETE_PORCENTO.has(destino.regiao) || destino.sigla === 'ES';
   return origemPrivilegiada && destinoBeneficiado ? 0.07 : 0.12;
@@ -76,7 +65,7 @@ export function aliquotaInterestadualEsperada(
  */
 export function validarInterestaduais(
   ufs: readonly UfCatalogo[],
-  aliquotas: readonly AliquotaInterestadualCatalogo[],
+  aliquotas: readonly AliquotaInterestadualCatalogo[]
 ): string[] {
   const problemas: string[] = [];
   const porSigla = new Map(ufs.map((u) => [u.sigla, u]));
@@ -114,7 +103,7 @@ export function validarInterestaduais(
 
   if (ufs.length === UFS_ESPERADAS && aliquotas.length !== PARES_INTERESTADUAIS_ESPERADOS) {
     problemas.push(
-      `Cobertura incompleta: ${aliquotas.length} pares carregados, ${PARES_INTERESTADUAIS_ESPERADOS} esperados`,
+      `Cobertura incompleta: ${aliquotas.length} pares carregados, ${PARES_INTERESTADUAIS_ESPERADOS} esperados`
     );
   }
 
@@ -146,7 +135,7 @@ export function resumirPainelCatalogos(entrada: {
         ? `${d.uf}: ausente no catálogo do banco`
         : d.campo === 'excedente'
           ? `${d.uf}: presente no banco mas desconhecida pelo motor`
-          : `${d.uf} — ${d.campo}: motor ${d.valorCodigo} ≠ banco ${d.valorBanco}`,
+          : `${d.uf} — ${d.campo}: motor ${d.valorCodigo} ≠ banco ${d.valorBanco}`
     ),
     ...validarMarcadorFcp(ufs),
   ];
@@ -210,7 +199,7 @@ export function resumirPainelCatalogos(entrada: {
 
   const situacaoGeral = catalogos.reduce<SituacaoCatalogo>(
     (pior, c) => (PESO_SITUACAO[c.situacao] > PESO_SITUACAO[pior] ? c.situacao : pior),
-    'ok',
+    'ok'
   );
 
   return {

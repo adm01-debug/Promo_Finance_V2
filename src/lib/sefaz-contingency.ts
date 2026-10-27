@@ -1,10 +1,7 @@
 // Barrel de compatibilidade — API pública preservada via re-exports.
 // Implementação decomposta em src/lib/sefaz-contingency/*.
 export * from './sefaz-contingency/types';
-export {
-  TIPO_EMISSAO,
-  MOTIVOS_CONTINGENCIA,
-} from './sefaz-contingency/constants';
+export { TIPO_EMISSAO, MOTIVOS_CONTINGENCIA } from './sefaz-contingency/constants';
 export {
   getContingencyState,
   getSefazHealthStatus,

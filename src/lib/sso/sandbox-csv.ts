@@ -13,17 +13,27 @@ function splitLine(line: string, delim: string): string[] {
   for (let i = 0; i < line.length; i++) {
     const ch = line[i];
     if (inQuotes) {
-      if (ch === '"' && line[i + 1] === '"') { cur += '"'; i++; }
-      else if (ch === '"') { inQuotes = false; }
-      else { cur += ch; }
+      if (ch === '"' && line[i + 1] === '"') {
+        cur += '"';
+        i++;
+      } else if (ch === '"') {
+        inQuotes = false;
+      } else {
+        cur += ch;
+      }
     } else {
-      if (ch === '"') { inQuotes = true; }
-      else if (ch === delim) { out.push(cur); cur = ''; }
-      else { cur += ch; }
+      if (ch === '"') {
+        inQuotes = true;
+      } else if (ch === delim) {
+        out.push(cur);
+        cur = '';
+      } else {
+        cur += ch;
+      }
     }
   }
   out.push(cur);
-  return out.map(s => s.trim());
+  return out.map((s) => s.trim());
 }
 
 function detectDelimiter(headerLine: string): string {
@@ -42,14 +52,14 @@ export function parseBulkCsv(text: string): ParsedCsv {
 
   // Remove BOM
   const clean = text.replace(/^\uFEFF/, '');
-  const lines = clean.split(/\r?\n/).filter(l => l.trim().length > 0);
+  const lines = clean.split(/\r?\n/).filter((l) => l.trim().length > 0);
   if (lines.length < 1) {
     errors.push({ line: 0, message: 'CSV vazio' });
     return { users, errors };
   }
 
   const delim = detectDelimiter(lines[0]);
-  const headers = splitLine(lines[0], delim).map(h => h.toLowerCase());
+  const headers = splitLine(lines[0], delim).map((h) => h.toLowerCase());
   if (!headers.includes('email')) {
     errors.push({ line: 1, message: 'Cabeçalho deve conter coluna "email"' });
     return { users, errors };
@@ -68,7 +78,12 @@ export function parseBulkCsv(text: string): ParsedCsv {
     headers.forEach((h, idx) => {
       const val = cols[idx];
       if (h === 'groups') {
-        claims[h] = val ? val.split('|').map(g => g.trim()).filter(Boolean) : [];
+        claims[h] = val
+          ? val
+              .split('|')
+              .map((g) => g.trim())
+              .filter(Boolean)
+          : [];
       } else if (val === '') {
         claims[h] = '';
       } else {
@@ -126,8 +141,17 @@ function csvEscape(v: unknown): string {
  * Exporta resultado do lote como CSV UTF-8 com BOM (compatível com Excel pt-BR).
  */
 export function exportBulkResultsCsv(results: BulkResult[]): string {
-  const headers = ['linha', 'email_mascarado', 'dominio', 'grupos', 'papel_resolvido', 'grupo_casado', 'outcome', 'motivo'];
-  const rows = results.map(r => {
+  const headers = [
+    'linha',
+    'email_mascarado',
+    'dominio',
+    'grupos',
+    'papel_resolvido',
+    'grupo_casado',
+    'outcome',
+    'motivo',
+  ];
+  const rows = results.map((r) => {
     const p = r.result?.preview;
     const emailRaw = p?.email ?? (r.claims.email as string | undefined) ?? '';
     return [
@@ -141,7 +165,7 @@ export function exportBulkResultsCsv(results: BulkResult[]): string {
       r.reason ?? '',
     ];
   });
-  const lines = [headers.join(';'), ...rows.map(r => r.map(csvEscape).join(';'))];
+  const lines = [headers.join(';'), ...rows.map((r) => r.map(csvEscape).join(';'))];
   return '\uFEFF' + lines.join('\r\n');
 }
 
@@ -167,7 +191,11 @@ export const BULK_EXAMPLE_USERS = [
   { email: 'op2@empresa.com.br', name: 'Diego Operação', groups: ['Operacional', 'Todos'] },
   { email: 'fin1@empresa.com.br', name: 'Eva Financeiro', groups: ['Admins-Financeiro', 'Todos'] },
   { email: 'visitante@empresa.com.br', name: 'Fábio Visitante', groups: [] },
-  { email: 'multi@empresa.com.br', name: 'Gabi Multi', groups: ['Operacional', 'Admins-Financeiro'] },
+  {
+    email: 'multi@empresa.com.br',
+    name: 'Gabi Multi',
+    groups: ['Operacional', 'Admins-Financeiro'],
+  },
   { email: 'externo@gmail.com', name: 'Hugo Externo', groups: ['Operacional'] },
   { email: 'ContatO@EMPRESA.COM.BR', name: 'Iara Caixa Mista', groups: ['Operacional'] },
   { email: 'malformado-sem-arroba', name: 'João Bug', groups: ['Operacional'] },

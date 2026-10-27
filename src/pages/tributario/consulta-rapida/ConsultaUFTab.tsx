@@ -3,7 +3,11 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
 import {
-  Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
 } from '@/components/ui/select';
 import { useConsultaUF } from '@/hooks/useConsultaTributaria';
 import { MatchBadge } from './MatchBadge';
@@ -35,19 +39,34 @@ export function ConsultaUFTab() {
         <div className="space-y-1.5">
           <Label htmlFor="uf-origem">UF de origem</Label>
           <Select value={uf} onValueChange={setUf}>
-            <SelectTrigger id="uf-origem"><SelectValue placeholder="UF" /></SelectTrigger>
+            <SelectTrigger id="uf-origem">
+              <SelectValue placeholder="UF" />
+            </SelectTrigger>
             <SelectContent>
-              {UFS.map((u) => <SelectItem key={u} value={u}>{u}</SelectItem>)}
+              {UFS.map((u) => (
+                <SelectItem key={u} value={u}>
+                  {u}
+                </SelectItem>
+              ))}
             </SelectContent>
           </Select>
         </div>
         <div className="space-y-1.5">
           <Label htmlFor="uf-destino">UF de destino (opcional)</Label>
-          <Select value={ufDestino || '__none'} onValueChange={(v) => setUfDestino(v === '__none' ? '' : v)}>
-            <SelectTrigger id="uf-destino"><SelectValue placeholder="Nenhuma" /></SelectTrigger>
+          <Select
+            value={ufDestino || '__none'}
+            onValueChange={(v) => setUfDestino(v === '__none' ? '' : v)}
+          >
+            <SelectTrigger id="uf-destino">
+              <SelectValue placeholder="Nenhuma" />
+            </SelectTrigger>
             <SelectContent>
               <SelectItem value="__none">Nenhuma</SelectItem>
-              {UFS.map((u) => <SelectItem key={u} value={u}>{u}</SelectItem>)}
+              {UFS.map((u) => (
+                <SelectItem key={u} value={u}>
+                  {u}
+                </SelectItem>
+              ))}
             </SelectContent>
           </Select>
         </div>
@@ -77,7 +96,12 @@ export function ConsultaUFTab() {
         isLoading={query.isLoading}
         error={query.error}
         isEmpty={!query.isLoading && !d}
-        actions={<div className="flex items-center gap-1.5"><OfflineBadge data={d} /><MatchBadge match={d?.match} /></div>}
+        actions={
+          <div className="flex items-center gap-1.5">
+            <OfflineBadge data={d} />
+            <MatchBadge match={d?.match} />
+          </div>
+        }
       >
         <dl className="grid grid-cols-1 gap-3 text-sm sm:grid-cols-3">
           <div>
@@ -103,7 +127,9 @@ export function ConsultaUFTab() {
         {d?.categorias_disponiveis?.length ? (
           <div className="mt-3 flex flex-wrap gap-1.5">
             {d.categorias_disponiveis.map((c) => (
-              <Badge key={c} variant="outline" className="font-normal">{c}</Badge>
+              <Badge key={c} variant="outline" className="font-normal">
+                {c}
+              </Badge>
             ))}
           </div>
         ) : null}

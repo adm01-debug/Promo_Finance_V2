@@ -70,11 +70,46 @@ describe('coletarDriftCatalogoAuditavel', () => {
   it('mapeia o drift de todos os catálogos para os buckets persistidos', () => {
     const linhas = coletarDriftCatalogoAuditavel([
       { id: '1', catalogo: 'ufs', severidade: 'critico', item: 'SP', campo: 'aliquota', ...base },
-      { id: '2', catalogo: 'interestaduais', severidade: 'critico', item: 'SP→RJ', campo: 'aliquota', ...base },
-      { id: '3', catalogo: 'faixas_simples', severidade: 'atencao', item: 'I-3', campo: 'deducao', ...base },
-      { id: '4', catalogo: 'itens_iss', severidade: 'critico', item: '1.05', campo: 'retencao', ...base },
-      { id: '5', catalogo: 'ncms', severidade: 'critico', item: '12345678', campo: 'ausente', ...base },
-      { id: '6', catalogo: 'protocolos_st', severidade: 'critico', item: 'P-1#123', campo: 'ausente', ...base },
+      {
+        id: '2',
+        catalogo: 'interestaduais',
+        severidade: 'critico',
+        item: 'SP→RJ',
+        campo: 'aliquota',
+        ...base,
+      },
+      {
+        id: '3',
+        catalogo: 'faixas_simples',
+        severidade: 'atencao',
+        item: 'I-3',
+        campo: 'deducao',
+        ...base,
+      },
+      {
+        id: '4',
+        catalogo: 'itens_iss',
+        severidade: 'critico',
+        item: '1.05',
+        campo: 'retencao',
+        ...base,
+      },
+      {
+        id: '5',
+        catalogo: 'ncms',
+        severidade: 'critico',
+        item: '12345678',
+        campo: 'ausente',
+        ...base,
+      },
+      {
+        id: '6',
+        catalogo: 'protocolos_st',
+        severidade: 'critico',
+        item: 'P-1#123',
+        campo: 'ausente',
+        ...base,
+      },
     ]);
 
     expect(linhas.map((l) => l.catalogo)).toEqual([
@@ -92,7 +127,14 @@ describe('coletarDriftCatalogoAuditavel', () => {
   it('mantém coletarDriftMvaAuditavel restrito ao catálogo de protocolos', () => {
     const alertas = [
       { id: '1', catalogo: 'ufs', severidade: 'critico', item: 'SP', campo: 'aliquota', ...base },
-      { id: '2', catalogo: 'protocolos_st', severidade: 'critico', item: 'P-1', campo: 'ausente', ...base },
+      {
+        id: '2',
+        catalogo: 'protocolos_st',
+        severidade: 'critico',
+        item: 'P-1',
+        campo: 'ausente',
+        ...base,
+      },
     ] as const;
     const linhas = coletarDriftMvaAuditavel([...alertas]);
     expect(linhas).toHaveLength(1);

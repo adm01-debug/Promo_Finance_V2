@@ -1,6 +1,6 @@
 /**
  * RESILIENCE UTILITY
- * 
+ *
  * Provides patterns for building robust Edge Functions:
  * - Exponential Backoff Retries
  * - Circuit Breaker (Memory-based for Edge, or DB-synced if needed)
@@ -18,10 +18,7 @@ export interface RetryOptions {
 /**
  * Executes a function with exponential backoff retries.
  */
-export async function withRetry<T>(
-  fn: () => Promise<T>,
-  options: RetryOptions = {}
-): Promise<T> {
+export async function withRetry<T>(fn: () => Promise<T>, options: RetryOptions = {}): Promise<T> {
   const {
     maxRetries = 3,
     initialDelay = 500,
@@ -38,7 +35,7 @@ export async function withRetry<T>(
       return await fn();
     } catch (error) {
       lastError = error instanceof Error ? error : new Error(String(error));
-      
+
       // Check if it's a fetch response error with a status code
       if (error instanceof Response) {
         if (!retryOnStatuses.includes(error.status)) {
@@ -48,7 +45,10 @@ export async function withRetry<T>(
 
       if (attempt === maxRetries) break;
 
-      console.warn(`[Resilience] Attempt ${attempt + 1} failed. Retrying in ${delay}ms...`, lastError.message);
+      console.warn(
+        `[Resilience] Attempt ${attempt + 1} failed. Retrying in ${delay}ms...`,
+        lastError.message
+      );
       await new Promise((resolve) => setTimeout(resolve, delay));
       delay = Math.min(delay * factor, maxDelay);
     }
@@ -64,8 +64,11 @@ export async function withRetry<T>(
  * 2. (Optional) Could be expanded to use a shared state in KV/DB.
  */
 class CircuitBreaker {
-  private static states: Map<string, { failures: number; lastFailure: number; status: 'CLOSED' | 'OPEN' | 'HALF_OPEN' }> = new Map();
-  
+  private static states: Map<
+    string,
+    { failures: number; lastFailure: number; status: 'CLOSED' | 'OPEN' | 'HALF_OPEN' }
+  > = new Map();
+
   private readonly threshold = 5;
   private readonly resetTimeout = 30000; // 30s
 
@@ -113,6 +116,44 @@ class CircuitBreaker {
 }
 
 export const createCircuitBreaker = (serviceName: string) => new CircuitBreaker(serviceName);
+
+/**
+ * Kill-switch de integração: `INTEGRACOES_DESATIVADAS` (env, lista separada
+ * por vírgula) desliga uma integração externa sem redeploy — o proxy responde
+ * 503 imediato em vez de chamar o parceiro. Uso operacional: incidente no
+ * Asaas/Bling/etc ou mitigação durante manutenção do lado deles.
+ */
+export function integracaoDesativada(servico: string): boolean {
+  const lista = (Deno.env.get('INTEGRACOES_DESATIVADAS') ?? '')
+    .split(',')
+    .map((s) => s.trim().toLowerCase())
+    .filter(Boolean);
+  return lista.includes(servico.trim().toLowerCase());
+}
+
+/**
+ * Resposta 503 padronizada quando a integração está no kill-switch.
+ * Retorna `null` quando o serviço está ativo — uso:
+ * `const inativa = respostaIntegracaoDesativada('asaas', corsHeaders);
+ *  if (inativa) return inativa;`
+ */
+export function respostaIntegracaoDesativada(
+  servico: string,
+  cors: Record<string, string>
+): Response | null {
+  if (!integracaoDesativada(servico)) return null;
+  console.warn(`[Resilience] '${servico}' rejeitada: presente em INTEGRACOES_DESATIVADAS`);
+  return new Response(
+    JSON.stringify({
+      error: 'integracao_desativada',
+      message: `A integração '${servico}' está temporariamente desativada.`,
+    }),
+    {
+      status: 503,
+      headers: { ...cors, 'Content-Type': 'application/json' },
+    }
+  );
+}
 
 /**
  * Executes a function with a timeout.

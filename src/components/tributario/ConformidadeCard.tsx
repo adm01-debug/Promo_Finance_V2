@@ -25,7 +25,10 @@ const NIVEL_CLASSE: Record<NivelConformidade, string> = {
   critico: 'text-destructive',
 };
 
-const NIVEL_VARIANT: Record<NivelConformidade, 'default' | 'secondary' | 'destructive' | 'outline'> = {
+const NIVEL_VARIANT: Record<
+  NivelConformidade,
+  'default' | 'secondary' | 'destructive' | 'outline'
+> = {
   excelente: 'secondary',
   bom: 'secondary',
   atencao: 'default',
@@ -46,8 +49,8 @@ export function ConformidadeCard({ resultado, className }: ConformidadeCardProps
           <Badge variant={NIVEL_VARIANT[resultado.nivel]}>{NIVEL_LABEL[resultado.nivel]}</Badge>
         </div>
         <CardDescription>
-          Ponderação das obrigações do período: vencidas sem entrega zeram o item, entregas em atraso
-          pontuam 60%.
+          Ponderação das obrigações do período: vencidas sem entrega zeram o item, entregas em
+          atraso pontuam 60%.
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-4">

@@ -26,7 +26,12 @@ const INITIAL_STEPS: ValidationStep[] = [
   { id: 'conciliacao', name: 'Conciliação Bancária', path: '/conciliacao', status: 'pending' },
   { id: 'config', name: 'Configurações', path: '/configuracoes', status: 'pending' },
   { id: 'telemetria', name: 'Telemetria Admin', path: '/admin/telemetria', status: 'pending' },
-  { id: 'assinatura', name: 'Assinaturas Digitais', path: '/assinatura-digital', status: 'pending' },
+  {
+    id: 'assinatura',
+    name: 'Assinaturas Digitais',
+    path: '/assinatura-digital',
+    status: 'pending',
+  },
   { id: 'reforma', name: 'Reforma Tributária', path: '/reforma-tributaria', status: 'pending' },
   { id: 'seguranca', name: 'Segurança & Logs', path: '/seguranca', status: 'pending' },
 ];
@@ -126,7 +131,9 @@ export const VisualValidator = () => {
     const updatedSteps = [...validationSteps];
     for (let i = 0; i < updatedSteps.length; i++) {
       const step = updatedSteps[i];
-      setValidationSteps((prev) => prev.map((s) => (s.id === step.id ? { ...s, status: 'pending' } : s)));
+      setValidationSteps((prev) =>
+        prev.map((s) => (s.id === step.id ? { ...s, status: 'pending' } : s))
+      );
 
       const stepScreenshots: Record<string, string> = {};
       let totalDiff = 0;
@@ -147,12 +154,18 @@ export const VisualValidator = () => {
         }
       }
 
-      setValidationSteps((prev) => prev.map((s) => (s.id === step.id ? {
-        ...s,
-        status: totalDiff > 5 ? 'error' : 'success',
-        diffScore: totalDiff / 3,
-        screenshots: stepScreenshots,
-      } : s)));
+      setValidationSteps((prev) =>
+        prev.map((s) =>
+          s.id === step.id
+            ? {
+                ...s,
+                status: totalDiff > 5 ? 'error' : 'success',
+                diffScore: totalDiff / 3,
+                screenshots: stepScreenshots,
+              }
+            : s
+        )
+      );
     }
 
     document.body.removeChild(iframe);
@@ -182,8 +195,15 @@ export const VisualValidator = () => {
 
   return (
     <>
-      <motion.div className="fixed bottom-6 left-6 z-[60]" initial={{ scale: 0 }} animate={{ scale: 1 }}>
-        <Button onClick={() => setIsOpen(true)} className="h-14 w-14 rounded-full shadow-2xl bg-black text-foreground hover:bg-zinc-900 border border-border premium-button">
+      <motion.div
+        className="fixed bottom-6 left-6 z-[60]"
+        initial={{ scale: 0 }}
+        animate={{ scale: 1 }}
+      >
+        <Button
+          onClick={() => setIsOpen(true)}
+          className="h-14 w-14 rounded-full shadow-2xl bg-black text-foreground hover:bg-zinc-900 border border-border premium-button"
+        >
           <Zap className="h-6 w-6" />
         </Button>
       </motion.div>
@@ -192,11 +212,15 @@ export const VisualValidator = () => {
         {isOpen && (
           <motion.div
             className="fixed inset-0 z-[100] bg-black/40 backdrop-blur-md flex items-center justify-center p-4 md:p-8"
-            initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
           >
             <motion.div
               className="bg-popover border border-border rounded-2xl w-full max-w-6xl h-[90vh] shadow-3xl overflow-hidden flex flex-col"
-              initial={{ scale: 0.9, y: 20 }} animate={{ scale: 1, y: 0 }} exit={{ scale: 0.9, y: 20 }}
+              initial={{ scale: 0.9, y: 20 }}
+              animate={{ scale: 1, y: 0 }}
+              exit={{ scale: 0.9, y: 20 }}
             >
               <div className="p-6 border-b border-white/5 flex items-center justify-between bg-zinc-900/50">
                 <div className="flex items-center gap-4">
@@ -204,19 +228,43 @@ export const VisualValidator = () => {
                     <CheckCircle2 className="h-5 w-5" />
                   </div>
                   <div>
-                    <h2 className="text-xl font-black text-foreground tracking-tight">UX Quality Assurance</h2>
-                    <p className="text-xs text-foreground/40 font-medium uppercase tracking-widest">Validação Pixel-Perfect & Auditoria</p>
+                    <h2 className="text-xl font-black text-foreground tracking-tight">
+                      UX Quality Assurance
+                    </h2>
+                    <p className="text-xs text-foreground/40 font-medium uppercase tracking-widest">
+                      Validação Pixel-Perfect & Auditoria
+                    </p>
                   </div>
                 </div>
-                <Button variant="ghost" size="icon" onClick={() => setIsOpen(false)} className="text-foreground/40 hover:text-foreground hover:bg-card/5">
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={() => setIsOpen(false)}
+                  className="text-foreground/40 hover:text-foreground hover:bg-card/5"
+                >
                   <X className="h-5 w-5" />
                 </Button>
               </div>
 
               <div className="px-6 py-2 border-b border-white/5 bg-zinc-900/30 flex items-center gap-2">
-                <TabButton active={activeTab === 'regression'} onClick={() => setActiveTab('regression')} icon={Camera} label="Regressão Visual" />
-                <TabButton active={activeTab === 'audit'} onClick={() => setActiveTab('audit')} icon={Ruler} label="Auditoria Design" />
-                <TabButton active={activeTab === 'breakpoints'} onClick={() => setActiveTab('breakpoints')} icon={Smartphone} label="Breakpoints" />
+                <TabButton
+                  active={activeTab === 'regression'}
+                  onClick={() => setActiveTab('regression')}
+                  icon={Camera}
+                  label="Regressão Visual"
+                />
+                <TabButton
+                  active={activeTab === 'audit'}
+                  onClick={() => setActiveTab('audit')}
+                  icon={Ruler}
+                  label="Auditoria Design"
+                />
+                <TabButton
+                  active={activeTab === 'breakpoints'}
+                  onClick={() => setActiveTab('breakpoints')}
+                  icon={Smartphone}
+                  label="Breakpoints"
+                />
               </div>
 
               <div className="flex-1 overflow-hidden flex">
@@ -226,10 +274,14 @@ export const VisualValidator = () => {
                       referenceImage={referenceImage}
                       currentScreenshot={currentScreenshot}
                       diffImage={diffImage}
-                      viewMode={viewMode} setViewMode={setViewMode}
-                      overlayOpacity={overlayOpacity} setOverlayOpacity={setOverlayOpacity}
-                      heatmapIntensity={heatmapIntensity} setHeatmapIntensity={setHeatmapIntensity}
-                      splitPosition={splitPosition} setSplitPosition={setSplitPosition}
+                      viewMode={viewMode}
+                      setViewMode={setViewMode}
+                      overlayOpacity={overlayOpacity}
+                      setOverlayOpacity={setOverlayOpacity}
+                      heatmapIntensity={heatmapIntensity}
+                      setHeatmapIntensity={setHeatmapIntensity}
+                      splitPosition={splitPosition}
+                      setSplitPosition={setSplitPosition}
                       isProcessing={isProcessing}
                       onCapture={handleCapture}
                       onFileChange={handleFileChange}
@@ -249,9 +301,14 @@ export const VisualValidator = () => {
               </div>
 
               <div className="p-6 border-t border-white/5 flex items-center justify-between bg-zinc-900/50">
-                <p className="text-caption text-primary">Status: Sistema em Conformidade Total (100%)</p>
+                <p className="text-caption text-primary">
+                  Status: Sistema em Conformidade Total (100%)
+                </p>
                 <div className="flex items-center gap-3">
-                  <Button variant="outline" className="text-xs h-9 bg-transparent border-border text-foreground/60 hover:text-foreground">
+                  <Button
+                    variant="outline"
+                    className="text-xs h-9 bg-transparent border-border text-foreground/60 hover:text-foreground"
+                  >
                     Exportar Relatório PDF
                   </Button>
                   <Button className="text-xs h-9 font-bold bg-primary hover:bg-primary/90">
@@ -265,7 +322,9 @@ export const VisualValidator = () => {
       </AnimatePresence>
 
       <AnimatePresence>
-        {showReport && <ReportModal validationSteps={validationSteps} onClose={() => setShowReport(false)} />}
+        {showReport && (
+          <ReportModal validationSteps={validationSteps} onClose={() => setShowReport(false)} />
+        )}
       </AnimatePresence>
     </>
   );

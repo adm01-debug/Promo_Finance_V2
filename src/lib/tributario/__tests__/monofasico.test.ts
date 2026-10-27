@@ -56,7 +56,11 @@ describe('classificarNcmMonofasico', () => {
 
 describe('calcularItemMonofasico', () => {
   it('farmácia revendendo medicamento: PIS/COFINS zero', () => {
-    const r = calcularItemMonofasico({ ncm: '3004.10.00', receita: 1_000_000 }, 'varejo', 'presumido');
+    const r = calcularItemMonofasico(
+      { ncm: '3004.10.00', receita: 1_000_000 },
+      'varejo',
+      'presumido'
+    );
     expect(r.monofasico).toBe(true);
     expect(r.pis).toBe(0);
     expect(r.cofins).toBe(0);
@@ -64,7 +68,11 @@ describe('calcularItemMonofasico', () => {
   });
 
   it('indústria de contraceptivo: 2,10% PIS + 9,80% COFINS', () => {
-    const r = calcularItemMonofasico({ ncm: '3006.60.00', receita: 1_000_000 }, 'industria', 'real');
+    const r = calcularItemMonofasico(
+      { ncm: '3006.60.00', receita: 1_000_000 },
+      'industria',
+      'real'
+    );
     expect(r.pis).toBe(21_000);
     expect(r.cofins).toBe(98_000);
     expect(r.total).toBe(119_000);
@@ -76,12 +84,20 @@ describe('calcularItemMonofasico', () => {
   });
 
   it('distribuidora de perfume: zero', () => {
-    const r = calcularItemMonofasico({ ncm: '3303.00.10', receita: 2_000_000 }, 'distribuidor', 'presumido');
+    const r = calcularItemMonofasico(
+      { ncm: '3303.00.10', receita: 2_000_000 },
+      'distribuidor',
+      'presumido'
+    );
     expect(r.total).toBe(0);
   });
 
   it('NCM não monofásico aplica regime presumido normal (3,65%)', () => {
-    const r = calcularItemMonofasico({ ncm: '6912.00.00', receita: 100_000 }, 'industria', 'presumido');
+    const r = calcularItemMonofasico(
+      { ncm: '6912.00.00', receita: 100_000 },
+      'industria',
+      'presumido'
+    );
     expect(r.monofasico).toBe(false);
     expect(r.total).toBe(3_650);
     expect(r.economia).toBe(0);
@@ -96,19 +112,27 @@ describe('calcularItemMonofasico', () => {
     const r = calcularItemMonofasico(
       { ncm: '2203.00.00', receita: 1000, posicao: 'inexistente' as never },
       'varejo',
-      'presumido',
+      'presumido'
     );
     expect(r.alerta).toContain('inválida');
     expect(r.total).toBe(0);
   });
 
   it('receita negativa ou inválida é tratada como zero', () => {
-    expect(calcularItemMonofasico({ ncm: '2203.00.00', receita: -50 }, 'industria', 'real').total).toBe(0);
-    expect(calcularItemMonofasico({ ncm: '2203.00.00', receita: NaN }, 'industria', 'real').total).toBe(0);
+    expect(
+      calcularItemMonofasico({ ncm: '2203.00.00', receita: -50 }, 'industria', 'real').total
+    ).toBe(0);
+    expect(
+      calcularItemMonofasico({ ncm: '2203.00.00', receita: NaN }, 'industria', 'real').total
+    ).toBe(0);
   });
 
   it('grupo sem alíquota de indústria alerta em vez de lançar erro', () => {
-    const r = calcularItemMonofasico({ ncm: '2710.19.99', receita: 1000 }, 'industria', 'presumido');
+    const r = calcularItemMonofasico(
+      { ncm: '2710.19.99', receita: 1000 },
+      'industria',
+      'presumido'
+    );
     expect(r.monofasico).toBe(true);
     expect(r.alerta).toContain('sem alíquota de indústria');
   });
@@ -122,7 +146,7 @@ describe('calcularMixMonofasico', () => {
         { ncm: '6912.00.00', receita: 500_000 },
       ],
       'varejo',
-      'presumido',
+      'presumido'
     );
     expect(resumo.receitaTotal).toBe(1_500_000);
     expect(resumo.receitaMonofasica).toBe(1_000_000);
@@ -139,15 +163,22 @@ describe('calcularMixMonofasico', () => {
   });
 
   it('Simples Nacional alerta sobre segregação no PGDAS-D', () => {
-    const resumo = calcularMixMonofasico([{ ncm: '2203.00.00', receita: 100_000 }], 'varejo', 'simples');
+    const resumo = calcularMixMonofasico(
+      [{ ncm: '2203.00.00', receita: 100_000 }],
+      'varejo',
+      'simples'
+    );
     expect(resumo.alertas.join(' ')).toContain('PGDAS-D');
   });
 
   it('nenhum valor retorna NaN ou Infinity', () => {
     const resumo = calcularMixMonofasico(
-      [{ ncm: '', receita: 0 }, { ncm: '3004.10.00', receita: Number.POSITIVE_INFINITY }],
+      [
+        { ncm: '', receita: 0 },
+        { ncm: '3004.10.00', receita: Number.POSITIVE_INFINITY },
+      ],
       'varejo',
-      'real',
+      'real'
     );
     for (const v of [resumo.receitaTotal, resumo.totalMonofasico, resumo.economiaAnual]) {
       expect(Number.isFinite(v)).toBe(true);
@@ -182,12 +213,17 @@ describe('integração com o motor de Lucro Presumido', () => {
       ...base,
       receitas: {
         ...base.receitas,
-        monofasico: { posicaoPadrao: 'varejo', itens: [{ ncm: '3004.10.00', receita: 10_000_000 }] },
+        monofasico: {
+          posicaoPadrao: 'varejo',
+          itens: [{ ncm: '3004.10.00', receita: 10_000_000 }],
+        },
       },
     });
 
     const pisCofins = (r: typeof semMono) =>
-      r.tributos.filter((t) => t.nome === 'PIS' || t.nome === 'COFINS').reduce((s, t) => s + t.valor, 0);
+      r.tributos
+        .filter((t) => t.nome === 'PIS' || t.nome === 'COFINS')
+        .reduce((s, t) => s + t.valor, 0);
 
     expect(pisCofins(semMono)).toBeCloseTo(365_000, 2);
     expect(pisCofins(comMono)).toBe(0);
@@ -199,7 +235,10 @@ describe('integração com o motor de Lucro Presumido', () => {
       ...base,
       receitas: {
         ...base.receitas,
-        monofasico: { posicaoPadrao: 'varejo', itens: [{ ncm: '3004.10.00', receita: 99_000_000 }] },
+        monofasico: {
+          posicaoPadrao: 'varejo',
+          itens: [{ ncm: '3004.10.00', receita: 99_000_000 }],
+        },
       },
     });
     for (const t of r.tributos) expect(t.valor).toBeGreaterThanOrEqual(0);

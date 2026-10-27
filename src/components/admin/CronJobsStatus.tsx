@@ -26,13 +26,20 @@ const TRIBUTARIO_JOB = 'gerar-alertas-tributarios-diario';
 export function CronJobsStatus() {
   const { isAdmin } = useAuth();
 
-  const { data: history, isLoading, error } = useQuery({
+  const {
+    data: history,
+    isLoading,
+    error,
+  } = useQuery({
     queryKey: ['cron-run-history', TRIBUTARIO_JOB],
     queryFn: async () => {
-      const { data, error } = await supabase.rpc('get_cron_run_history' as never, {
-        p_job_name: TRIBUTARIO_JOB,
-        p_limit: 10,
-      } as never);
+      const { data, error } = await supabase.rpc(
+        'get_cron_run_history' as never,
+        {
+          p_job_name: TRIBUTARIO_JOB,
+          p_limit: 10,
+        } as never
+      );
       if (error) throw error;
       return (data ?? []) as unknown as CronRun[];
     },
@@ -45,14 +52,10 @@ export function CronJobsStatus() {
 
   const ultima = history?.[0];
   const sucessos24h = (history ?? []).filter(
-    (r) =>
-      r.status === 'succeeded' &&
-      new Date(r.start_time).getTime() > Date.now() - 24 * 3600_000,
+    (r) => r.status === 'succeeded' && new Date(r.start_time).getTime() > Date.now() - 24 * 3600_000
   ).length;
   const falhas24h = (history ?? []).filter(
-    (r) =>
-      r.status === 'failed' &&
-      new Date(r.start_time).getTime() > Date.now() - 24 * 3600_000,
+    (r) => r.status === 'failed' && new Date(r.start_time).getTime() > Date.now() - 24 * 3600_000
   ).length;
 
   return (

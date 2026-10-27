@@ -52,7 +52,7 @@ export function useAuditoriaCompliance(empresaId?: string) {
       const { data, error } = await query;
       if (error) throw error;
       return data || [];
-    }
+    },
   });
 
   const { data: apuracoes } = useQuery({
@@ -65,7 +65,7 @@ export function useAuditoriaCompliance(empresaId?: string) {
       const { data, error } = await query;
       if (error) throw error;
       return data || [];
-    }
+    },
   });
 
   const { data: creditos } = useQuery({
@@ -78,7 +78,7 @@ export function useAuditoriaCompliance(empresaId?: string) {
       const { data, error } = await query;
       if (error) throw error;
       return data || [];
-    }
+    },
   });
 
   // Executar auditoria completa
@@ -86,12 +86,12 @@ export function useAuditoriaCompliance(empresaId?: string) {
     setIsExecutando(true);
     const novosAchamentos: AchamentoAuditoria[] = [];
     const ano = new Date().getFullYear();
-    const aliquotas = ALIQUOTAS_TRANSICAO.find(a => a.ano === ano) || ALIQUOTAS_TRANSICAO[0];
+    const aliquotas = ALIQUOTAS_TRANSICAO.find((a) => a.ano === ano) || ALIQUOTAS_TRANSICAO[0];
 
     try {
       // 1. Verificar NF-e sem tributos calculados
-      notasFiscais?.forEach(nf => {
-        if (nf.valor_total > 0 && (!nf.valor_icms || nf.valor_icms === 0)) {
+      notasFiscais?.forEach((nf) => {
+        if ((nf.valor_total ?? 0) > 0 && (!nf.valor_icms || nf.valor_icms === 0)) {
           novosAchamentos.push({
             id: `nf-sem-tributos-${nf.id}`,
             categoria: 'fiscal',
@@ -110,10 +110,12 @@ export function useAuditoriaCompliance(empresaId?: string) {
       });
 
       // 2. Verificar apurações sem transmissão
-      apuracoes?.forEach(ap => {
+      apuracoes?.forEach((ap) => {
         const competencia = new Date(ap.competencia + '-01');
         const hoje = new Date();
-        const diasDesdeCompetencia = Math.floor((hoje.getTime() - competencia.getTime()) / (1000 * 60 * 60 * 24));
+        const diasDesdeCompetencia = Math.floor(
+          (hoje.getTime() - competencia.getTime()) / (1000 * 60 * 60 * 24)
+        );
 
         if (ap.status !== 'transmitido' && diasDesdeCompetencia > 30) {
           novosAchamentos.push({
@@ -125,7 +127,7 @@ export function useAuditoriaCompliance(empresaId?: string) {
             severidade: 'critico',
             status: 'pendente',
             recomendacao: 'Transmitir apuração imediatamente',
-            impactoFinanceiro: (ap.total_geral || 0) * 0.20,
+            impactoFinanceiro: (ap.total_geral || 0) * 0.2,
             entidadeId: ap.id,
             entidadeTipo: 'apuracao',
             fundamentoLegal: 'Art. 44 da Lei 9.430/96',
@@ -135,12 +137,14 @@ export function useAuditoriaCompliance(empresaId?: string) {
       });
 
       // 3. Verificar créditos próximos a expirar
-      creditos?.forEach(cr => {
+      creditos?.forEach((cr) => {
         const dataOrigem = new Date(cr.data_origem);
         const dataExpiracao = new Date(dataOrigem);
         dataExpiracao.setMonth(dataExpiracao.getMonth() + 60);
         const hoje = new Date();
-        const diasParaExpirar = Math.floor((dataExpiracao.getTime() - hoje.getTime()) / (1000 * 60 * 60 * 24));
+        const diasParaExpirar = Math.floor(
+          (dataExpiracao.getTime() - hoje.getTime()) / (1000 * 60 * 60 * 24)
+        );
 
         if (diasParaExpirar < 90 && diasParaExpirar > 0 && cr.status === 'disponivel') {
           novosAchamentos.push({
@@ -161,8 +165,8 @@ export function useAuditoriaCompliance(empresaId?: string) {
       });
 
       // 4. Verificar NF-e sem crédito gerado
-      notasFiscais?.forEach(nf => {
-        const creditoAssociado = creditos?.find(c => c.nota_fiscal_id === nf.id);
+      notasFiscais?.forEach((nf) => {
+        const creditoAssociado = creditos?.find((c) => c.nota_fiscal_id === nf.id);
         if (!creditoAssociado && nf.valor_total && nf.valor_total > 1000) {
           novosAchamentos.push({
             id: `nf-sem-credito-${nf.id}`,
@@ -193,10 +197,9 @@ export function useAuditoriaCompliance(empresaId?: string) {
 
   // Resolver achamento
   const resolverAchamento = (id: string) => {
-    setAchamentos(prev => 
-      prev.map(a => a.id === id 
-        ? { ...a, status: 'resolvido' as const, dataResolucao: new Date() } 
-        : a
+    setAchamentos((prev) =>
+      prev.map((a) =>
+        a.id === id ? { ...a, status: 'resolvido' as const, dataResolucao: new Date() } : a
       )
     );
     toast.success('Achamento marcado como resolvido');
@@ -204,25 +207,22 @@ export function useAuditoriaCompliance(empresaId?: string) {
 
   // Ignorar achamento
   const ignorarAchamento = (id: string) => {
-    setAchamentos(prev => 
-      prev.map(a => a.id === id 
-        ? { ...a, status: 'ignorado' as const } 
-        : a
-      )
+    setAchamentos((prev) =>
+      prev.map((a) => (a.id === id ? { ...a, status: 'ignorado' as const } : a))
     );
   };
 
   // Resumo
   const resumo = useMemo((): ResumoAuditoria => {
-    const criticos = achamentos.filter(a => a.severidade === 'critico').length;
-    const erros = achamentos.filter(a => a.severidade === 'erro').length;
-    const avisos = achamentos.filter(a => a.severidade === 'aviso').length;
-    const info = achamentos.filter(a => a.severidade === 'info').length;
-    const pendentes = achamentos.filter(a => a.status === 'pendente').length;
-    const resolvidos = achamentos.filter(a => a.status === 'resolvido').length;
+    const criticos = achamentos.filter((a) => a.severidade === 'critico').length;
+    const erros = achamentos.filter((a) => a.severidade === 'erro').length;
+    const avisos = achamentos.filter((a) => a.severidade === 'aviso').length;
+    const info = achamentos.filter((a) => a.severidade === 'info').length;
+    const pendentes = achamentos.filter((a) => a.status === 'pendente').length;
+    const resolvidos = achamentos.filter((a) => a.status === 'resolvido').length;
     const impacto = achamentos.reduce((acc, a) => acc + (a.impactoFinanceiro || 0), 0);
 
-    const penalidade = (criticos * 25) + (erros * 10) + (avisos * 5);
+    const penalidade = criticos * 25 + erros * 10 + avisos * 5;
     const score = Math.max(0, 100 - penalidade);
 
     return {

@@ -19,7 +19,7 @@ import { DATA_LIMITE_DELIBERACAO_LUCROS, ALIQUOTA_IRRF_DIVIDENDOS } from './type
  */
 export function detectarDeliberacaoLucros(
   ctx: ContextoEmpresa,
-  referencia: Date = new Date(),
+  referencia: Date = new Date()
 ): OportunidadeDetectada {
   const janelaAberta = referencia.getTime() <= DATA_LIMITE_DELIBERACAO_LUCROS.getTime();
   const saldo = Math.max(0, ctx.lucros_acumulados_ate_2025 ?? 0);

@@ -1,6 +1,6 @@
 export const compareImages = (
   img1Data: string,
-  img2Data: string,
+  img2Data: string
 ): Promise<{ heatmap: string; diffScore: number }> => {
   return new Promise((resolve) => {
     const img1 = new Image();

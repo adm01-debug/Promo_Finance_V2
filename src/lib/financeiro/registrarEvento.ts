@@ -33,7 +33,7 @@ export interface RegistrarEventoResult {
  */
 export async function registrarEventoFinanceiro(
   destino: EventoContaTipo,
-  params: RegistrarEventoParams,
+  params: RegistrarEventoParams
 ): Promise<RegistrarEventoResult> {
   const { contaId, tipo, mensagem, metadata } = params;
 
@@ -74,7 +74,7 @@ export async function registrarEventoFinanceiro(
  */
 export async function registrarEventoFinanceiroOrThrow(
   destino: EventoContaTipo,
-  params: RegistrarEventoParams,
+  params: RegistrarEventoParams
 ): Promise<void> {
   const result = await registrarEventoFinanceiro(destino, params);
   if (!result.ok) {

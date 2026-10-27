@@ -1,20 +1,20 @@
-import { useEffect, useMemo, useState } from "react";
-import { Link } from "react-router-dom";
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { supabase } from "@/integrations/supabase/client";
-import { supabaseDyn } from "@/lib/supabase-dynamic";
-import { useAuth } from "@/hooks/useAuth";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { useEffect, useMemo, useState } from 'react';
+import { Link } from 'react-router-dom';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { supabase } from '@/integrations/supabase/client';
+import { supabaseDyn } from '@/lib/supabase-dynamic';
+import { useAuth } from '@/hooks/useAuth';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select";
+} from '@/components/ui/select';
 import {
   Bell,
   Mail,
@@ -24,16 +24,16 @@ import {
   Filter as FilterIcon,
   ExternalLink,
   Calendar,
-} from "lucide-react";
-import { toast } from "sonner";
-import { format, formatDistanceToNow } from "date-fns";
-import { ptBR } from "date-fns/locale";
-import { findCatalogEntry } from "./savedFiltersCatalog";
+} from 'lucide-react';
+import { toast } from 'sonner';
+import { format, formatDistanceToNow } from 'date-fns';
+import { ptBR } from 'date-fns/locale';
+import { findCatalogEntry } from './savedFiltersCatalog';
 
 /** Fallback de rotas para entity_types fora do catálogo. */
 const ENTITY_TYPE_ROUTES: Record<string, string> = {
-  anomalias_detectadas: "/admin/insights-ia",
-  conciliacao_transacoes: "/conciliacao",
+  anomalias_detectadas: '/admin/insights-ia',
+  conciliacao_transacoes: '/conciliacao',
 };
 
 function getModuleRoute(entityType: string | null | undefined): string | null {
@@ -41,14 +41,14 @@ function getModuleRoute(entityType: string | null | undefined): string | null {
   return findCatalogEntry(entityType)?.route ?? ENTITY_TYPE_ROUTES[entityType] ?? null;
 }
 
-type Channel = "inapp" | "push" | "email";
+type Channel = 'inapp' | 'push' | 'email';
 
 interface NotificationRow {
   id: string;
   title: string;
   body: string | null;
   channel: Channel;
-  status: "sent" | "failed" | "queued";
+  status: 'sent' | 'failed' | 'queued';
   error_message: string | null;
   metadata:
     | (Record<string, unknown> & {
@@ -65,29 +65,29 @@ interface NotificationRow {
 }
 
 const CHANNEL_LABEL: Record<Channel, { label: string; icon: typeof Bell }> = {
-  inapp: { label: "No app", icon: Bell },
-  push: { label: "Push", icon: Smartphone },
-  email: { label: "E-mail", icon: Mail },
+  inapp: { label: 'No app', icon: Bell },
+  push: { label: 'Push', icon: Smartphone },
+  email: { label: 'E-mail', icon: Mail },
 };
 
 export default function HistoricoNotificacoes() {
   const { user } = useAuth();
   const qc = useQueryClient();
-  const [filter, setFilter] = useState<"all" | Channel>("all");
-  const [filterName, setFilterName] = useState<string>("all");
+  const [filter, setFilter] = useState<'all' | Channel>('all');
+  const [filterName, setFilterName] = useState<string>('all');
 
-  const queryKey = ["notification-history", user?.id, filter];
+  const queryKey = ['notification-history', user?.id, filter];
 
   const { data, isLoading } = useQuery({
     queryKey,
     enabled: !!user,
     queryFn: async (): Promise<NotificationRow[]> => {
       let q = supabaseDyn
-        .from<NotificationRow>("notification_history")
-        .select("*")
-        .order("created_at", { ascending: false })
+        .from<NotificationRow>('notification_history')
+        .select('*')
+        .order('created_at', { ascending: false })
         .limit(200);
-      if (filter !== "all") q = q.eq("channel", filter);
+      if (filter !== 'all') q = q.eq('channel', filter);
       const { data, error } = await q;
       if (error) throw error;
       return (data ?? []) as NotificationRow[];
@@ -100,14 +100,14 @@ export default function HistoricoNotificacoes() {
     const ch = supabase
       .channel(`notification-history:${user.id}-${Math.random().toString(36).slice(2, 8)}`)
       .on(
-        "postgres_changes",
+        'postgres_changes',
         {
-          event: "INSERT",
-          schema: "public",
-          table: "notification_history",
+          event: 'INSERT',
+          schema: 'public',
+          table: 'notification_history',
           filter: `user_id=eq.${user.id}`,
         },
-        () => qc.invalidateQueries({ queryKey: ["notification-history", user.id] }),
+        () => qc.invalidateQueries({ queryKey: ['notification-history', user.id] })
       )
       .subscribe();
     return () => {
@@ -118,12 +118,12 @@ export default function HistoricoNotificacoes() {
   const markRead = useMutation({
     mutationFn: async (id: string) => {
       const { error } = await supabaseDyn
-        .from("notification_history")
+        .from('notification_history')
         .update({ read_at: new Date().toISOString() })
-        .eq("id", id);
+        .eq('id', id);
       if (error) throw error;
     },
-    onSuccess: () => qc.invalidateQueries({ queryKey: ["notification-history", user?.id] }),
+    onSuccess: () => qc.invalidateQueries({ queryKey: ['notification-history', user?.id] }),
     onError: (e: Error) => toast.error(`Erro: ${e.message}`),
   });
 
@@ -131,15 +131,15 @@ export default function HistoricoNotificacoes() {
     mutationFn: async () => {
       if (!user) return;
       const { error } = await supabaseDyn
-        .from("notification_history")
+        .from('notification_history')
         .update({ read_at: new Date().toISOString() })
-        .eq("user_id", user.id)
-        .is("read_at", null);
+        .eq('user_id', user.id)
+        .is('read_at', null);
       if (error) throw error;
     },
     onSuccess: () => {
-      toast.success("Todas marcadas como lidas");
-      qc.invalidateQueries({ queryKey: ["notification-history", user?.id] });
+      toast.success('Todas marcadas como lidas');
+      qc.invalidateQueries({ queryKey: ['notification-history', user?.id] });
     },
     onError: (e: Error) => toast.error(`Erro: ${e.message}`),
   });
@@ -149,8 +149,8 @@ export default function HistoricoNotificacoes() {
     return {
       total: list.length,
       unread: list.filter((n) => !n.read_at).length,
-      email: list.filter((n) => n.channel === "email").length,
-      failed: list.filter((n) => n.status === "failed").length,
+      email: list.filter((n) => n.channel === 'email').length,
+      failed: list.filter((n) => n.status === 'failed').length,
     };
   }, [data]);
 
@@ -166,7 +166,7 @@ export default function HistoricoNotificacoes() {
 
   const visibleRows = useMemo(() => {
     const rows = data ?? [];
-    if (filterName === "all") return rows;
+    if (filterName === 'all') return rows;
     return rows.filter((n) => n.metadata?.filterName === filterName);
   }, [data, filterName]);
 
@@ -237,8 +237,8 @@ export default function HistoricoNotificacoes() {
           )}
           {!isLoading && visibleRows.length === 0 && (
             <p className="text-sm text-muted-foreground py-6 text-center">
-              {filterName === "all"
-                ? "Nenhuma notificação por aqui ainda."
+              {filterName === 'all'
+                ? 'Nenhuma notificação por aqui ainda.'
                 : `Nenhuma notificação para o filtro "${filterName}".`}
             </p>
           )}
@@ -247,20 +247,17 @@ export default function HistoricoNotificacoes() {
             const unread = !n.read_at;
             const filterLabel = n.metadata?.filterName ?? null;
             const entityType = n.metadata?.entityType ?? null;
-            const explicitUrl =
-              typeof n.metadata?.url === "string" ? n.metadata!.url : null;
+            const explicitUrl = typeof n.metadata?.url === 'string' ? n.metadata!.url : null;
             const targetUrl = explicitUrl ?? getModuleRoute(entityType);
             const reason = n.metadata?.reason ?? null;
             const matchCount =
-              typeof n.metadata?.matchCount === "number"
-                ? n.metadata!.matchCount
-                : null;
+              typeof n.metadata?.matchCount === 'number' ? n.metadata!.matchCount : null;
             return (
               <div
                 key={n.id}
                 className={
-                  "flex items-start gap-3 p-3 rounded-lg border " +
-                  (unread ? "bg-primary/5 border-primary/30" : "bg-card")
+                  'flex items-start gap-3 p-3 rounded-lg border ' +
+                  (unread ? 'bg-primary/5 border-primary/30' : 'bg-card')
                 }
               >
                 <div className="p-2 rounded-md bg-muted">
@@ -285,10 +282,10 @@ export default function HistoricoNotificacoes() {
                     )}
                     {matchCount !== null && (
                       <Badge variant="outline" className="text-[10px]">
-                        {matchCount} novo{matchCount === 1 ? "" : "s"}
+                        {matchCount} novo{matchCount === 1 ? '' : 's'}
                       </Badge>
                     )}
-                    {n.status === "failed" && (
+                    {n.status === 'failed' && (
                       <Badge variant="destructive" className="text-[10px]">
                         Falhou
                       </Badge>
@@ -305,18 +302,17 @@ export default function HistoricoNotificacoes() {
                     </p>
                   )}
                   {n.error_message && (
-                    <p className="text-[11px] text-destructive mt-1">
-                      {n.error_message}
-                    </p>
+                    <p className="text-[11px] text-destructive mt-1">{n.error_message}</p>
                   )}
                   <div className="flex items-center gap-3 mt-1.5 flex-wrap">
                     <span className="text-[11px] text-muted-foreground flex items-center gap-1">
                       <Calendar className="h-3 w-3" />
-                      {format(new Date(n.created_at), "dd/MM/yyyy HH:mm", {
+                      {format(new Date(n.created_at), 'dd/MM/yyyy HH:mm', {
                         locale: ptBR,
                       })}
                       <span className="text-muted-foreground/60">
-                        · {formatDistanceToNow(new Date(n.created_at), {
+                        ·{' '}
+                        {formatDistanceToNow(new Date(n.created_at), {
                           addSuffix: true,
                           locale: ptBR,
                         })}
@@ -361,20 +357,12 @@ export default function HistoricoNotificacoes() {
   );
 }
 
-function StatCard({
-  label,
-  value,
-  accent,
-}: {
-  label: string;
-  value: number;
-  accent?: string;
-}) {
+function StatCard({ label, value, accent }: { label: string; value: number; accent?: string }) {
   return (
     <Card>
       <CardContent className="p-4">
         <p className="text-xs text-muted-foreground">{label}</p>
-        <p className={"text-2xl font-bold " + (accent ?? "")}>{value}</p>
+        <p className={'text-2xl font-bold ' + (accent ?? '')}>{value}</p>
       </CardContent>
     </Card>
   );

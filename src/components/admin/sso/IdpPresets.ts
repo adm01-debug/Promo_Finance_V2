@@ -18,7 +18,8 @@ export const IDP_PRESETS: IdpPreset[] = [
     tipo: 'oidc',
     logo: '🔷',
     cor: 'hsl(210 100% 50%)',
-    discovery_url_template: 'https://login.microsoftonline.com/{TENANT_ID}/v2.0/.well-known/openid-configuration',
+    discovery_url_template:
+      'https://login.microsoftonline.com/{TENANT_ID}/v2.0/.well-known/openid-configuration',
     docs_url: 'https://learn.microsoft.com/azure/active-directory/develop/v2-protocols-oidc',
     scopes: ['openid', 'profile', 'email', 'User.Read'],
     claim_mapping: { email: 'preferred_username', full_name: 'name', groups: 'groups' },

@@ -4,27 +4,27 @@ import {
   DialogDescription,
   DialogHeader,
   DialogTitle,
-} from "@/components/ui/dialog";
-import { Button } from "@/components/ui/button";
-import { ExternalLink, ListChecks, ScrollText } from "lucide-react";
-import { Link } from "react-router-dom";
-import { AnomaliaDetailCard } from "./anomalias-review-queue/AnomaliaDetailCard";
-import { ConflitoBannerCard } from "./anomalias-review-queue/ConflitoBannerCard";
+} from '@/components/ui/dialog';
+import { Button } from '@/components/ui/button';
+import { ExternalLink, ListChecks, ScrollText } from 'lucide-react';
+import { Link } from 'react-router-dom';
+import { AnomaliaDetailCard } from './anomalias-review-queue/AnomaliaDetailCard';
+import { ConflitoBannerCard } from './anomalias-review-queue/ConflitoBannerCard';
 import {
   EmptyState,
   LoadingState,
   SummaryState,
   TransitionState,
-} from "./anomalias-review-queue/QueueStates";
-import { QueueProgressHeader } from "./anomalias-review-queue/QueueProgressHeader";
-import { ReviewActionsBar } from "./anomalias-review-queue/ReviewActionsBar";
-import { useReviewQueue } from "./anomalias-review-queue/useReviewQueue";
-import type { ReviewQueueProps } from "./anomalias-review-queue/types";
+} from './anomalias-review-queue/QueueStates';
+import { QueueProgressHeader } from './anomalias-review-queue/QueueProgressHeader';
+import { ReviewActionsBar } from './anomalias-review-queue/ReviewActionsBar';
+import { useReviewQueue } from './anomalias-review-queue/useReviewQueue';
+import type { ReviewQueueProps } from './anomalias-review-queue/types';
 
 export function AnomaliasReviewQueue({
   open,
   onOpenChange,
-  severidadeFilter = "todas",
+  severidadeFilter = 'todas',
 }: ReviewQueueProps) {
   const q = useReviewQueue({ open, severidadeFilter });
 
@@ -98,8 +98,8 @@ export function AnomaliasReviewQueue({
               validoFalsoPositivo={q.validoFalsoPositivo}
               isPending={q.isPending}
               recarregando={q.recarregando}
-              onConfirmar={() => void q.handleAcao("confirmada")}
-              onFalsoPositivo={() => void q.handleAcao("falso_positivo")}
+              onConfirmar={() => void q.handleAcao('confirmada')}
+              onFalsoPositivo={() => void q.handleAcao('falso_positivo')}
               onPular={() => void q.handlePular()}
             />
           </div>

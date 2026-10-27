@@ -1,19 +1,19 @@
-import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { supabase } from "@/integrations/supabase/client";
-import { supabaseDyn } from "@/lib/supabase-dynamic";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import { AlertTriangle, RefreshCw, ShieldAlert, Info, Radio, CheckCircle2 } from "lucide-react";
-import { useEffect, useRef, useState } from "react";
-import { toast } from "sonner";
+import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { supabase } from '@/integrations/supabase/client';
+import { supabaseDyn } from '@/lib/supabase-dynamic';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { AlertTriangle, RefreshCw, ShieldAlert, Info, Radio, CheckCircle2 } from 'lucide-react';
+import { useEffect, useRef, useState } from 'react';
+import { toast } from 'sonner';
 
 interface AlertRow {
   id: string;
   source: string;
   alert_key: string;
   alert_hour: string;
-  severity: "critical" | "warning" | "info" | string;
+  severity: 'critical' | 'warning' | 'info' | string;
   reason: string | null;
   current_value: number | null;
   baseline_value: number | null;
@@ -27,13 +27,12 @@ interface AlertRow {
   resolved_reason: string | null;
 }
 
-
 const SEVERITY_ORDER: Record<string, number> = { critical: 0, warning: 1, info: 2 };
 
 const SOURCE_LABELS: Record<string, string> = {
-  pg_stat_statements: "pg_stat",
-  query_telemetry: "telemetry",
-  cron: "automação",
+  pg_stat_statements: 'pg_stat',
+  query_telemetry: 'telemetry',
+  cron: 'automação',
 };
 
 function sourceLabel(source: string): string {
@@ -45,25 +44,24 @@ function sourceLabel(source: string): string {
  * latência (ms), enquanto alertas de automação medem ocorrências ou horas.
  */
 function formatMetric(source: string, alertKey: string, value: number | null): string {
-  if (value == null) return "—";
-  if (source !== "cron") return `${Math.round(value)}ms`;
-  if (alertKey.startsWith("job_stale:")) return `${Number(value).toFixed(1)}h`;
-  if (alertKey.startsWith("job_failed:")) return `${Math.round(value)}x`;
+  if (value == null) return '—';
+  if (source !== 'cron') return `${Math.round(value)}ms`;
+  if (alertKey.startsWith('job_stale:')) return `${Number(value).toFixed(1)}h`;
+  if (alertKey.startsWith('job_failed:')) return `${Math.round(value)}x`;
   // Escalonamento de integridade: o valor é a quantidade de alertas críticos
   // abertos há mais de 24h aguardando tratamento.
-  if (alertKey === "integrity_stale_critical") return `${Math.round(value)} alerta(s)`;
-  return "—";
+  if (alertKey === 'integrity_stale_critical') return `${Math.round(value)} alerta(s)`;
+  return '—';
 }
 
-
 function severityBadge(sev: string) {
-  if (sev === "critical")
+  if (sev === 'critical')
     return (
       <Badge className="bg-destructive/15 text-destructive border-destructive/30 text-[10px]">
         <ShieldAlert className="h-3 w-3 mr-1" /> Crítico
       </Badge>
     );
-  if (sev === "warning")
+  if (sev === 'warning')
     return (
       <Badge className="bg-yellow-500/15 text-yellow-600 border-yellow-500/30 text-[10px]">
         <AlertTriangle className="h-3 w-3 mr-1" /> Aviso
@@ -82,10 +80,15 @@ export function PerformanceAlertsPanel() {
   const [realtimeOn, setRealtimeOn] = useState(false);
   const queryClient = useQueryClient();
 
-  const { data = [], isLoading, refetch, isRefetching } = useQuery<AlertRow[]>({
-    queryKey: ["performance-alerts", days, incluirResolvidos],
+  const {
+    data = [],
+    isLoading,
+    refetch,
+    isRefetching,
+  } = useQuery<AlertRow[]>({
+    queryKey: ['performance-alerts', days, incluirResolvidos],
     queryFn: async () => {
-      const { data, error } = await supabaseDyn.rpc<AlertRow[]>("get_performance_alerts", {
+      const { data, error } = await supabaseDyn.rpc<AlertRow[]>('get_performance_alerts', {
         p_days: days,
         p_severity: null,
         p_source: null,
@@ -103,7 +106,6 @@ export function PerformanceAlertsPanel() {
     staleTime: 30_000,
   });
 
-
   // Toast on new critical alerts (dedup by id across refetches)
   const seenIds = useRef<Set<string> | null>(null);
   useEffect(() => {
@@ -115,7 +117,7 @@ export function PerformanceAlertsPanel() {
     }
     // Alerta já encerrado é histórico: nunca deve gerar notificação.
     const fresh = data.filter(
-      (a) => a.severity === "critical" && !a.resolved_at && !seenIds.current!.has(a.id),
+      (a) => a.severity === 'critical' && !a.resolved_at && !seenIds.current!.has(a.id)
     );
 
     fresh.forEach((a) => {
@@ -134,34 +136,33 @@ export function PerformanceAlertsPanel() {
     const channel = supabase
       .channel(`performance-alerts-realtime-${Math.random().toString(36).slice(2, 8)}`)
       .on(
-        "postgres_changes",
-        { event: "INSERT", schema: "public", table: "performance_alerts" },
+        'postgres_changes',
+        { event: 'INSERT', schema: 'public', table: 'performance_alerts' },
         (payload) => {
           const row = payload.new as Partial<AlertRow>;
-          if (row?.severity === "critical") {
-            toast.error("🚨 Regressão crítica em tempo real", {
-              description: row.reason || row.alert_key || "Nova regressão detectada",
+          if (row?.severity === 'critical') {
+            toast.error('🚨 Regressão crítica em tempo real', {
+              description: row.reason || row.alert_key || 'Nova regressão detectada',
               duration: 12_000,
             });
-          } else if (row?.severity === "warning") {
-            toast.warning("⚠️ Novo aviso de performance", {
-              description: row.reason || row.alert_key || "Aviso detectado",
+          } else if (row?.severity === 'warning') {
+            toast.warning('⚠️ Novo aviso de performance', {
+              description: row.reason || row.alert_key || 'Aviso detectado',
               duration: 6_000,
             });
           }
           if (row?.id) seenIds.current?.add(row.id);
-          queryClient.invalidateQueries({ queryKey: ["performance-alerts"] });
-        },
+          queryClient.invalidateQueries({ queryKey: ['performance-alerts'] });
+        }
       )
       .subscribe((status) => {
-        setRealtimeOn(status === "SUBSCRIBED");
+        setRealtimeOn(status === 'SUBSCRIBED');
       });
 
     return () => {
       supabase.removeChannel(channel);
     };
   }, [queryClient]);
-
 
   // Os contadores refletem apenas incidentes abertos — encerrados não pesam no topo.
   const counts = data.reduce(
@@ -173,9 +174,8 @@ export function PerformanceAlertsPanel() {
       acc[r.severity] = (acc[r.severity] || 0) + 1;
       return acc;
     },
-    {} as Record<string, number>,
+    {} as Record<string, number>
   );
-
 
   return (
     <Card>
@@ -185,21 +185,21 @@ export function PerformanceAlertsPanel() {
           <CardTitle className="text-base">Alertas de Performance</CardTitle>
           <Badge
             variant="outline"
-            className={`text-[10px] gap-1 ${realtimeOn ? "border-green-500/40 text-green-600" : "border-muted text-muted-foreground"}`}
-            title={realtimeOn ? "Realtime conectado" : "Realtime desconectado"}
+            className={`text-[10px] gap-1 ${realtimeOn ? 'border-green-500/40 text-green-600' : 'border-muted text-muted-foreground'}`}
+            title={realtimeOn ? 'Realtime conectado' : 'Realtime desconectado'}
           >
-            <Radio className={`h-3 w-3 ${realtimeOn ? "animate-pulse" : ""}`} />
-            {realtimeOn ? "Live" : "Offline"}
+            <Radio className={`h-3 w-3 ${realtimeOn ? 'animate-pulse' : ''}`} />
+            {realtimeOn ? 'Live' : 'Offline'}
           </Badge>
           <div className="flex gap-1 ml-2">
             {counts.critical ? (
               <Badge variant="destructive" className="text-[10px]">
-                {counts.critical} crítico{counts.critical > 1 ? "s" : ""}
+                {counts.critical} crítico{counts.critical > 1 ? 's' : ''}
               </Badge>
             ) : null}
             {counts.warning ? (
               <Badge className="bg-yellow-500/20 text-yellow-700 border-yellow-500/30 text-[10px]">
-                {counts.warning} aviso{counts.warning > 1 ? "s" : ""}
+                {counts.warning} aviso{counts.warning > 1 ? 's' : ''}
               </Badge>
             ) : null}
             {counts.info ? (
@@ -208,25 +208,22 @@ export function PerformanceAlertsPanel() {
               </Badge>
             ) : null}
             {counts.resolvidos ? (
-              <Badge
-                variant="outline"
-                className="text-[10px] border-green-500/40 text-green-600"
-              >
+              <Badge variant="outline" className="text-[10px] border-green-500/40 text-green-600">
                 <CheckCircle2 className="h-3 w-3 mr-1" /> {counts.resolvidos} encerrado
-                {counts.resolvidos > 1 ? "s" : ""}
+                {counts.resolvidos > 1 ? 's' : ''}
               </Badge>
             ) : null}
           </div>
         </div>
         <div className="flex items-center gap-2">
           <Button
-            variant={incluirResolvidos ? "secondary" : "outline"}
+            variant={incluirResolvidos ? 'secondary' : 'outline'}
             size="sm"
             className="text-xs h-8"
             onClick={() => setIncluirResolvidos((v) => !v)}
             aria-pressed={incluirResolvidos}
           >
-            {incluirResolvidos ? "Ocultar encerrados" : "Mostrar encerrados"}
+            {incluirResolvidos ? 'Ocultar encerrados' : 'Mostrar encerrados'}
           </Button>
           <select
             value={days}
@@ -246,19 +243,17 @@ export function PerformanceAlertsPanel() {
             disabled={isRefetching}
             aria-label="Atualizar alertas"
           >
-            <RefreshCw className={`h-3.5 w-3.5 ${isRefetching ? "animate-spin" : ""}`} />
+            <RefreshCw className={`h-3.5 w-3.5 ${isRefetching ? 'animate-spin' : ''}`} />
           </Button>
         </div>
-
       </CardHeader>
       <CardContent>
         {isLoading ? (
           <p className="text-sm text-muted-foreground">Carregando alertas...</p>
         ) : data.length === 0 ? (
           <p className="text-sm text-muted-foreground">
-            ✅ Nenhum alerta {incluirResolvidos ? "" : "em aberto "}no período.
+            ✅ Nenhum alerta {incluirResolvidos ? '' : 'em aberto '}no período.
           </p>
-
         ) : (
           <div className="overflow-x-auto">
             <table className="w-full text-xs">
@@ -278,7 +273,7 @@ export function PerformanceAlertsPanel() {
                 {data.slice(0, 100).map((r, idx) => (
                   <tr
                     key={`${r.source}-${r.alert_key}-${idx}`}
-                    className={`border-b border-muted/40 ${r.resolved_at ? "opacity-60" : ""}`}
+                    className={`border-b border-muted/40 ${r.resolved_at ? 'opacity-60' : ''}`}
                   >
                     <td className="py-2">
                       {r.resolved_at ? (
@@ -292,11 +287,9 @@ export function PerformanceAlertsPanel() {
                         severityBadge(r.severity)
                       )}
                     </td>
-                    <td className="py-2 text-muted-foreground">
-                      {sourceLabel(r.source)}
-                    </td>
+                    <td className="py-2 text-muted-foreground">{sourceLabel(r.source)}</td>
                     <td className="py-2 max-w-md">
-                      <div className="truncate" title={r.reason || ""}>
+                      <div className="truncate" title={r.reason || ''}>
                         {r.reason || r.alert_key}
                       </div>
                       {r.resolved_reason ? (
@@ -324,10 +317,17 @@ export function PerformanceAlertsPanel() {
                       {formatMetric(r.source, r.alert_key, r.baseline_value)}
                     </td>
                     <td className="py-2 text-right tabular-nums">
-                      {r.ratio != null ? `${Number(r.ratio).toFixed(2)}x` : "—"}
+                      {r.ratio != null ? `${Number(r.ratio).toFixed(2)}x` : '—'}
                     </td>
-                    <td className="py-2 text-right tabular-nums">{r.sample_count ?? "—"}</td>
-                    <td className="py-2 text-right tabular-nums text-muted-foreground text-[10px]">{new Date(r.created_at).toLocaleString("pt-BR", { day: "2-digit", month: "2-digit", hour: "2-digit", minute: "2-digit" })}</td>
+                    <td className="py-2 text-right tabular-nums">{r.sample_count ?? '—'}</td>
+                    <td className="py-2 text-right tabular-nums text-muted-foreground text-[10px]">
+                      {new Date(r.created_at).toLocaleString('pt-BR', {
+                        day: '2-digit',
+                        month: '2-digit',
+                        hour: '2-digit',
+                        minute: '2-digit',
+                      })}
+                    </td>
                   </tr>
                 ))}
               </tbody>

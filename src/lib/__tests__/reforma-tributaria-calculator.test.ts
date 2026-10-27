@@ -181,7 +181,7 @@ describe('Reforma Tributária Calculator', () => {
     it('detalhamento contém informações úteis', () => {
       const r = calcularTributosReforma(dadosVenda, 2033);
       expect(r.detalhamento.length).toBeGreaterThan(0);
-      expect(r.detalhamento.some(d => d.includes('Base de cálculo'))).toBe(true);
+      expect(r.detalhamento.some((d) => d.includes('Base de cálculo'))).toBe(true);
     });
 
     it('IBS dividido 75% estadual 25% municipal', () => {
@@ -202,20 +202,37 @@ describe('Reforma Tributária Calculator', () => {
   // ========================
   describe('calcularCreditos', () => {
     it('calcula créditos CBS e IBS', () => {
-      const r = calcularCreditos({ valorAquisicao: 50000, tipoOperacao: 'compra', anoReferencia: 2033 });
+      const r = calcularCreditos({
+        valorAquisicao: 50000,
+        tipoOperacao: 'compra',
+        anoReferencia: 2033,
+      });
       expect(r.creditoCBS).toBeGreaterThan(0);
       expect(r.creditoIBS).toBeGreaterThan(0);
       expect(r.creditoTotal).toBe(r.creditoCBS + r.creditoIBS);
     });
 
     it('não-cumulatividade plena ativa', () => {
-      const r = calcularCreditos({ valorAquisicao: 50000, tipoOperacao: 'compra', anoReferencia: 2033 });
+      const r = calcularCreditos({
+        valorAquisicao: 50000,
+        tipoOperacao: 'compra',
+        anoReferencia: 2033,
+      });
       expect(r.naoCumulatividadePlena).toBe(true);
     });
 
     it('regime especial pode reduzir crédito', () => {
-      const normal = calcularCreditos({ valorAquisicao: 50000, tipoOperacao: 'compra', anoReferencia: 2033 });
-      const regime = calcularCreditos({ valorAquisicao: 50000, tipoOperacao: 'compra', regimeEspecial: 'servicos_financeiros', anoReferencia: 2033 });
+      const normal = calcularCreditos({
+        valorAquisicao: 50000,
+        tipoOperacao: 'compra',
+        anoReferencia: 2033,
+      });
+      const regime = calcularCreditos({
+        valorAquisicao: 50000,
+        tipoOperacao: 'compra',
+        regimeEspecial: 'servicos_financeiros',
+        anoReferencia: 2033,
+      });
       expect(regime.creditoTotal).toBeLessThanOrEqual(normal.creditoTotal);
     });
   });
@@ -246,7 +263,10 @@ describe('Reforma Tributária Calculator', () => {
 
     it('carga percentual calculada sobre faturamento', () => {
       const r = simularComparativo(dados, 2033);
-      expect(r.cargaAntigaPercentual).toBeCloseTo((r.totalAntigo / dados.faturamentoAnual) * 100, 2);
+      expect(r.cargaAntigaPercentual).toBeCloseTo(
+        (r.totalAntigo / dados.faturamentoAnual) * 100,
+        2
+      );
       expect(r.cargaNovaPercentual).toBeCloseTo((r.totalNovo / dados.faturamentoAnual) * 100, 2);
     });
 

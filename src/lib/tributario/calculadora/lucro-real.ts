@@ -1,9 +1,7 @@
 // LUCRO REAL — Cálculo detalhado com LALUR, compensação de prejuízo, PIS/COFINS não-cumulativo,
 // CPP com RAT+Terceiros, ICMS/ISS com créditos, retenções.
 
-import type {
-  InputLucroReal, ResultadoRegime, LinhaMemoria, TributoDetalhe,
-} from './types';
+import type { InputLucroReal, ResultadoRegime, LinhaMemoria, TributoDetalhe } from './types';
 import { calcularMixMonofasico } from '../monofasico';
 import { calcularEncargosPatronais } from '../folha';
 
@@ -20,7 +18,7 @@ export function calcularLucroReal(input: InputLucroReal): ResultadoRegime {
   const receitaBruta = input.receitas.receitaBrutaAnual;
   const receitaLiquida = Math.max(
     0,
-    receitaBruta - (input.receitas.devolucoes ?? 0) - (input.receitas.descontosIncondicionais ?? 0),
+    receitaBruta - (input.receitas.devolucoes ?? 0) - (input.receitas.descontosIncondicionais ?? 0)
   );
 
   // === LALUR Parte A ===
@@ -62,7 +60,7 @@ export function calcularLucroReal(input: InputLucroReal): ResultadoRegime {
     });
     if (compensacao < prejuizo) {
       alertas.push(
-        `Prejuízo remanescente após compensação: R$ ${(prejuizo - compensacao).toFixed(2)}`,
+        `Prejuízo remanescente após compensação: R$ ${(prejuizo - compensacao).toFixed(2)}`
       );
     }
   }
@@ -74,16 +72,23 @@ export function calcularLucroReal(input: InputLucroReal): ResultadoRegime {
   const limiteAdicional =
     input.modo === 'trimestral' ? LIMITE_ADICIONAL_TRIMESTRAL : LIMITE_ADICIONAL_ANUAL;
   const excedente = Math.max(0, lucroReal - limiteAdicional);
-  const irpjAdicional = excedente * 0.10;
+  const irpjAdicional = excedente * 0.1;
   const irpj = irpjBase + irpjAdicional;
 
   push(memoria, {
-    grupo: 'IRPJ', descricao: 'IRPJ 15% × base', base: lucroReal, aliquota: 0.15, valor: irpjBase,
+    grupo: 'IRPJ',
+    descricao: 'IRPJ 15% × base',
+    base: lucroReal,
+    aliquota: 0.15,
+    valor: irpjBase,
   });
   if (irpjAdicional > 0) {
     push(memoria, {
-      grupo: 'IRPJ', descricao: `Adicional 10% sobre excedente a R$ ${limiteAdicional.toLocaleString('pt-BR')}`,
-      base: excedente, aliquota: 0.10, valor: irpjAdicional,
+      grupo: 'IRPJ',
+      descricao: `Adicional 10% sobre excedente a R$ ${limiteAdicional.toLocaleString('pt-BR')}`,
+      base: excedente,
+      aliquota: 0.1,
+      valor: irpjAdicional,
     });
   }
 
@@ -93,21 +98,28 @@ export function calcularLucroReal(input: InputLucroReal): ResultadoRegime {
   push(memoria, {
     grupo: 'CSLL',
     descricao: `CSLL ${(csllAliq * 100).toFixed(0)}% × base`,
-    base: lucroReal, aliquota: csllAliq, valor: csll,
+    base: lucroReal,
+    aliquota: csllAliq,
+    valor: csll,
   });
 
   // === PIS/COFINS não-cumulativo (com segregação de receita monofásica) ===
   const c = input.creditosPisCofins;
   const baseCreditos =
-    (c.insumos ?? 0) + (c.energiaEletrica ?? 0) + (c.alugueisPj ?? 0) +
-    (c.depreciacao ?? 0) + (c.fretesVenda ?? 0) + (c.devolucoesVenda ?? 0) +
-    (c.arrendamentoMercantil ?? 0) + (c.outros ?? 0);
+    (c.insumos ?? 0) +
+    (c.energiaEletrica ?? 0) +
+    (c.alugueisPj ?? 0) +
+    (c.depreciacao ?? 0) +
+    (c.fretesVenda ?? 0) +
+    (c.devolucoesVenda ?? 0) +
+    (c.arrendamentoMercantil ?? 0) +
+    (c.outros ?? 0);
 
   const mono = input.receitas.monofasico?.itens?.length
     ? calcularMixMonofasico(
         input.receitas.monofasico.itens,
         input.receitas.monofasico.posicaoPadrao ?? 'revenda',
-        'real',
+        'real'
       )
     : null;
   const receitaMonofasica = Math.min(mono?.receitaMonofasica ?? 0, receitaLiquida);
@@ -122,55 +134,85 @@ export function calcularLucroReal(input: InputLucroReal): ResultadoRegime {
 
   if (receitaMonofasica > 0) {
     push(memoria, {
-      grupo: 'PIS/COFINS', descricao: '(−) Receita monofásica excluída da base não cumulativa',
+      grupo: 'PIS/COFINS',
+      descricao: '(−) Receita monofásica excluída da base não cumulativa',
       valor: -receitaMonofasica,
       observacao: 'Revenda de monofásico não gera débito nem crédito (Lei 10.865/04, art. 21)',
     });
   }
   push(memoria, {
-    grupo: 'PIS', descricao: 'PIS débito 1,65%', base: baseNormalPisCofins, aliquota: 0.0165, valor: pisDebito,
+    grupo: 'PIS',
+    descricao: 'PIS débito 1,65%',
+    base: baseNormalPisCofins,
+    aliquota: 0.0165,
+    valor: pisDebito,
   });
   push(memoria, {
-    grupo: 'PIS', descricao: '(−) Créditos PIS 1,65%', base: baseCreditos, aliquota: 0.0165, valor: -pisCredito,
+    grupo: 'PIS',
+    descricao: '(−) Créditos PIS 1,65%',
+    base: baseCreditos,
+    aliquota: 0.0165,
+    valor: -pisCredito,
     observacao: 'Insumos, energia, aluguéis PJ, depreciação, fretes na venda',
   });
   push(memoria, { grupo: 'PIS', descricao: '= PIS a recolher', valor: pis });
   push(memoria, {
-    grupo: 'COFINS', descricao: 'COFINS débito 7,6%', base: baseNormalPisCofins, aliquota: 0.076, valor: cofinsDebito,
+    grupo: 'COFINS',
+    descricao: 'COFINS débito 7,6%',
+    base: baseNormalPisCofins,
+    aliquota: 0.076,
+    valor: cofinsDebito,
   });
   push(memoria, {
-    grupo: 'COFINS', descricao: '(−) Créditos COFINS 7,6%', base: baseCreditos, aliquota: 0.076, valor: -cofinsCredito,
+    grupo: 'COFINS',
+    descricao: '(−) Créditos COFINS 7,6%',
+    base: baseCreditos,
+    aliquota: 0.076,
+    valor: -cofinsCredito,
   });
   push(memoria, { grupo: 'COFINS', descricao: '= COFINS a recolher', valor: cofins });
   if (mono && mono.totalMonofasico > 0) {
-    push(memoria, { grupo: 'PIS', descricao: 'PIS monofásico (etapa concentrada)', base: receitaMonofasica, valor: mono.pisMonofasico });
-    push(memoria, { grupo: 'COFINS', descricao: 'COFINS monofásico (etapa concentrada)', base: receitaMonofasica, valor: mono.cofinsMonofasico });
+    push(memoria, {
+      grupo: 'PIS',
+      descricao: 'PIS monofásico (etapa concentrada)',
+      base: receitaMonofasica,
+      valor: mono.pisMonofasico,
+    });
+    push(memoria, {
+      grupo: 'COFINS',
+      descricao: 'COFINS monofásico (etapa concentrada)',
+      base: receitaMonofasica,
+      valor: mono.cofinsMonofasico,
+    });
   }
   if (mono) alertas.push(...mono.alertas);
 
-
   // === CPP (INSS patronal com RAT ajustado pelo FAP e Terceiros por FPAS) ===
-  const encargos = calcularEncargosPatronais({
-    folha: input.folha.folhaAnual,
-    proLabore: input.folha.proLabore,
-    aliquotaRat: input.folha.aliquotaRat,
-    aliquotaTerceiros: input.folha.aliquotaTerceiros,
-    grauRisco: input.folha.grauRisco,
-    fap: input.folha.fap,
-    fpas: input.folha.fpas,
-    incluirFgts: false,
-  }, input.folha.cnae);
+  const encargos = calcularEncargosPatronais(
+    {
+      folha: input.folha.folhaAnual,
+      proLabore: input.folha.proLabore,
+      aliquotaRat: input.folha.aliquotaRat,
+      aliquotaTerceiros: input.folha.aliquotaTerceiros,
+      grauRisco: input.folha.grauRisco,
+      fap: input.folha.fap,
+      fpas: input.folha.fpas,
+      incluirFgts: false,
+    },
+    input.folha.cnae
+  );
   const cpp = encargos.totalInss;
   const cppAliq = input.folha.folhaAnual > 0 ? cpp / input.folha.folhaAnual : 0;
   for (const linha of encargos.linhas) {
     push(memoria, {
       grupo: 'CPP',
       descricao: `${linha.rubrica} — ${linha.fundamento}`,
-      base: linha.base, aliquota: linha.aliquota, valor: linha.valor,
+      base: linha.base,
+      aliquota: linha.aliquota,
+      valor: linha.valor,
     });
   }
   alertas.push(...encargos.alertas);
-
 
   // === ICMS ===
   const em = input.estadualMunicipal;
@@ -183,10 +225,14 @@ export function calcularLucroReal(input: InputLucroReal): ResultadoRegime {
   const icms = Math.max(0, icmsDebito - icmsCredito) + (em.icmsSt ?? 0) + (em.difal ?? 0);
   if (receitaMercadorias > 0) {
     push(memoria, {
-      grupo: 'ICMS', descricao: `ICMS ${(icmsAliq * 100).toFixed(2)}% × mercadorias`,
-      base: receitaMercadorias, aliquota: icmsAliq, valor: icmsDebito,
+      grupo: 'ICMS',
+      descricao: `ICMS ${(icmsAliq * 100).toFixed(2)}% × mercadorias`,
+      base: receitaMercadorias,
+      aliquota: icmsAliq,
+      valor: icmsDebito,
     });
-    if (icmsCredito > 0) push(memoria, { grupo: 'ICMS', descricao: '(−) Créditos ICMS', valor: -icmsCredito });
+    if (icmsCredito > 0)
+      push(memoria, { grupo: 'ICMS', descricao: '(−) Créditos ICMS', valor: -icmsCredito });
     if (em.icmsSt) push(memoria, { grupo: 'ICMS', descricao: 'ICMS-ST', valor: em.icmsSt });
     if (em.difal) push(memoria, { grupo: 'ICMS', descricao: 'DIFAL', valor: em.difal });
   }
@@ -196,8 +242,11 @@ export function calcularLucroReal(input: InputLucroReal): ResultadoRegime {
   const iss = receitaServicos * issAliq;
   if (receitaServicos > 0) {
     push(memoria, {
-      grupo: 'ISS', descricao: `ISS ${(issAliq * 100).toFixed(2)}% × serviços`,
-      base: receitaServicos, aliquota: issAliq, valor: iss,
+      grupo: 'ISS',
+      descricao: `ISS ${(issAliq * 100).toFixed(2)}% × serviços`,
+      base: receitaServicos,
+      aliquota: issAliq,
+      valor: iss,
     });
   }
 
@@ -214,25 +263,76 @@ export function calcularLucroReal(input: InputLucroReal): ResultadoRegime {
   }
 
   const tributos: TributoDetalhe[] = [
-    { nome: 'IRPJ', valor: irpj, base: lucroReal, aliquotaEfetiva: lucroReal > 0 ? irpj / lucroReal : 0, formula: '15% base + 10% excedente' },
-    { nome: 'CSLL', valor: csll, base: lucroReal, aliquotaEfetiva: csllAliq, formula: `${(csllAliq * 100).toFixed(0)}% base` },
-    { nome: 'PIS', valor: pis, base: receitaLiquida, aliquotaEfetiva: receitaLiquida > 0 ? pis / receitaLiquida : 0, formula: '1,65% débito − 1,65% créditos' },
-    { nome: 'COFINS', valor: cofins, base: receitaLiquida, aliquotaEfetiva: receitaLiquida > 0 ? cofins / receitaLiquida : 0, formula: '7,6% débito − 7,6% créditos' },
-    { nome: 'CPP', valor: cpp, base: input.folha.folhaAnual, aliquotaEfetiva: cppAliq, formula: `${(cppAliq * 100).toFixed(1)}% folha` },
-    { nome: 'ICMS', valor: icms, base: receitaMercadorias, aliquotaEfetiva: receitaMercadorias > 0 ? icms / receitaMercadorias : 0, formula: `${(icmsAliq * 100).toFixed(2)}% mercadorias − créditos` },
-    { nome: 'ISS', valor: iss, base: receitaServicos, aliquotaEfetiva: issAliq, formula: `${(issAliq * 100).toFixed(2)}% serviços` },
+    {
+      nome: 'IRPJ',
+      valor: irpj,
+      base: lucroReal,
+      aliquotaEfetiva: lucroReal > 0 ? irpj / lucroReal : 0,
+      formula: '15% base + 10% excedente',
+    },
+    {
+      nome: 'CSLL',
+      valor: csll,
+      base: lucroReal,
+      aliquotaEfetiva: csllAliq,
+      formula: `${(csllAliq * 100).toFixed(0)}% base`,
+    },
+    {
+      nome: 'PIS',
+      valor: pis,
+      base: receitaLiquida,
+      aliquotaEfetiva: receitaLiquida > 0 ? pis / receitaLiquida : 0,
+      formula: '1,65% débito − 1,65% créditos',
+    },
+    {
+      nome: 'COFINS',
+      valor: cofins,
+      base: receitaLiquida,
+      aliquotaEfetiva: receitaLiquida > 0 ? cofins / receitaLiquida : 0,
+      formula: '7,6% débito − 7,6% créditos',
+    },
+    {
+      nome: 'CPP',
+      valor: cpp,
+      base: input.folha.folhaAnual,
+      aliquotaEfetiva: cppAliq,
+      formula: `${(cppAliq * 100).toFixed(1)}% folha`,
+    },
+    {
+      nome: 'ICMS',
+      valor: icms,
+      base: receitaMercadorias,
+      aliquotaEfetiva: receitaMercadorias > 0 ? icms / receitaMercadorias : 0,
+      formula: `${(icmsAliq * 100).toFixed(2)}% mercadorias − créditos`,
+    },
+    {
+      nome: 'ISS',
+      valor: iss,
+      base: receitaServicos,
+      aliquotaEfetiva: issAliq,
+      formula: `${(issAliq * 100).toFixed(2)}% serviços`,
+    },
   ];
 
   const totalTributos = tributos.reduce((s, t) => s + t.valor, 0);
   const totalAPagar = Math.max(0, totalTributos - retencoes);
   push(memoria, { grupo: 'TOTAL', descricao: 'Total de tributos', valor: totalTributos });
-  push(memoria, { grupo: 'TOTAL', descricao: 'Total a pagar (após retenções)', valor: totalAPagar });
+  push(memoria, {
+    grupo: 'TOTAL',
+    descricao: 'Total a pagar (após retenções)',
+    valor: totalAPagar,
+  });
 
   // Alertas de otimização
   const margem = receitaBruta > 0 ? (input.lucroContabil / receitaBruta) * 100 : 0;
-  if (margem > 32) alertas.push('Margem > 32%: Lucro Presumido tende a ser mais vantajoso — verifique.');
-  if (baseCreditos < receitaLiquida * 0.3) alertas.push('Créditos PIS/COFINS abaixo de 30% da receita — revise apropriação.');
-  if (prejuizo > 0 && compensacao === 0) alertas.push('Há prejuízo acumulado mas lucro real ≤ 0 — sem base para compensar neste período.');
+  if (margem > 32)
+    alertas.push('Margem > 32%: Lucro Presumido tende a ser mais vantajoso — verifique.');
+  if (baseCreditos < receitaLiquida * 0.3)
+    alertas.push('Créditos PIS/COFINS abaixo de 30% da receita — revise apropriação.');
+  if (prejuizo > 0 && compensacao === 0)
+    alertas.push(
+      'Há prejuízo acumulado mas lucro real ≤ 0 — sem base para compensar neste período.'
+    );
 
   return {
     regime: 'lucro_real',

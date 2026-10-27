@@ -81,26 +81,28 @@ export function useComparativoRegimes() {
   });
 
   const calcularLucroReal = (params: ParametrosSimulacao): ResultadoRegime => {
-    const aliquotas = ALIQUOTAS_TRANSICAO.find(a => a.ano === params.ano) || ALIQUOTAS_TRANSICAO[0];
-    
+    const aliquotas =
+      ALIQUOTAS_TRANSICAO.find((a) => a.ano === params.ano) || ALIQUOTAS_TRANSICAO[0];
+
     // Base de cálculo do IRPJ/CSLL = Lucro Contábil
-    const lucroContabil = params.faturamentoAnual - params.despesasOperacionais - params.folhaPagamento;
+    const lucroContabil =
+      params.faturamentoAnual - params.despesasOperacionais - params.folhaPagamento;
     const baseCalculoIR = Math.max(0, lucroContabil);
-    
+
     // IRPJ: 15% + adicional 10% sobre excedente de R$ 240.000/ano
     const irpjNormal = baseCalculoIR * 0.15;
-    const irpjAdicional = Math.max(0, baseCalculoIR - 240000) * 0.10;
+    const irpjAdicional = Math.max(0, baseCalculoIR - 240000) * 0.1;
     const irpj = irpjNormal + irpjAdicional;
-    
+
     // CSLL: 9%
     const csll = baseCalculoIR * 0.09;
-    
+
     // PIS/COFINS não-cumulativo (até 2026) - depois migra para CBS
     const pisAntigo = params.faturamentoAnual * 0.0165;
     const cofinsAntigo = params.faturamentoAnual * 0.076;
     const creditosPisCofins = (params.comprasCredito + params.servicosCredito) * 0.0925;
     const pisCofinsLiquido = Math.max(0, pisAntigo + cofinsAntigo - creditosPisCofins);
-    
+
     // CBS/IBS (novos tributos)
     const cbsBruto = params.faturamentoAnual * (aliquotas.cbs / 100);
     const ibsBruto = params.faturamentoAnual * (aliquotas.ibs / 100);
@@ -108,19 +110,19 @@ export function useComparativoRegimes() {
     const creditosIBS = (params.comprasCredito + params.servicosCredito) * (aliquotas.ibs / 100);
     const cbs = Math.max(0, cbsBruto - creditosCBS);
     const ibs = Math.max(0, ibsBruto - creditosIBS);
-    
+
     // ICMS/ISS residuais (período de transição)
     const faturamentoMercadorias = params.faturamentoAnual * (1 - params.percentualServicos / 100);
     const faturamentoServicos = params.faturamentoAnual * (params.percentualServicos / 100);
     const icmsResidual = faturamentoMercadorias * 0.18 * (aliquotas.icmsResidual / 100);
     const issResidual = faturamentoServicos * 0.05 * (aliquotas.issResidual / 100);
-    
+
     // CPP: 20% sobre folha
-    const cpp = params.folhaPagamento * 0.20;
-    
+    const cpp = params.folhaPagamento * 0.2;
+
     // Créditos totais recuperáveis
     const creditosRecuperaveis = creditosCBS + creditosIBS + creditosPisCofins;
-    
+
     // Total de tributos
     const pis = pisCofinsLiquido * (aliquotas.pisResidual / 100);
     const cofins = 0; // Já incluído no PIS/COFINS combinado acima
@@ -152,41 +154,42 @@ export function useComparativoRegimes() {
   };
 
   const calcularLucroPresumido = (params: ParametrosSimulacao): ResultadoRegime => {
-    const aliquotas = ALIQUOTAS_TRANSICAO.find(a => a.ano === params.ano) || ALIQUOTAS_TRANSICAO[0];
-    
+    const aliquotas =
+      ALIQUOTAS_TRANSICAO.find((a) => a.ano === params.ano) || ALIQUOTAS_TRANSICAO[0];
+
     // Presunção de lucro: 8% comércio/indústria, 32% serviços
     const faturamentoMercadorias = params.faturamentoAnual * (1 - params.percentualServicos / 100);
     const faturamentoServicos = params.faturamentoAnual * (params.percentualServicos / 100);
-    
+
     const basePresumidaMerc = faturamentoMercadorias * 0.08;
     const basePresumidaServ = faturamentoServicos * 0.32;
     const baseCalculoIR = basePresumidaMerc + basePresumidaServ;
-    
+
     // IRPJ: 15% + adicional
     const irpjNormal = baseCalculoIR * 0.15;
-    const irpjAdicional = Math.max(0, baseCalculoIR - 240000) * 0.10;
+    const irpjAdicional = Math.max(0, baseCalculoIR - 240000) * 0.1;
     const irpj = irpjNormal + irpjAdicional;
-    
+
     // CSLL: Base diferente (12% merc, 32% serv)
     const baseCSLLMerc = faturamentoMercadorias * 0.12;
     const baseCSLLServ = faturamentoServicos * 0.32;
     const csll = (baseCSLLMerc + baseCSLLServ) * 0.09;
-    
+
     // PIS/COFINS cumulativo
     const pis = params.faturamentoAnual * 0.0065 * (aliquotas.pisResidual / 100);
     const cofins = params.faturamentoAnual * 0.03 * (aliquotas.cofinsResidual / 100);
-    
+
     // CBS/IBS - SEM direito a crédito no presumido
     const cbs = params.faturamentoAnual * (aliquotas.cbs / 100);
     const ibs = params.faturamentoAnual * (aliquotas.ibs / 100);
-    
+
     // ICMS/ISS
     const icms = faturamentoMercadorias * 0.18 * (aliquotas.icmsResidual / 100);
     const iss = faturamentoServicos * 0.05 * (aliquotas.issResidual / 100);
-    
+
     // CPP
-    const cpp = params.folhaPagamento * 0.20;
-    
+    const cpp = params.folhaPagamento * 0.2;
+
     const totalTributos = irpj + csll + pis + cofins + cbs + ibs + icms + iss + cpp;
     const cargaEfetiva = (totalTributos / params.faturamentoAnual) * 100;
 
@@ -236,9 +239,13 @@ export function useComparativoRegimes() {
     }
 
     const anexo = params.atividadePrincipal === 'servicos' ? SIMPLES_ANEXO_III : SIMPLES_ANEXO_I;
-    const faixaAtual = anexo.find(f => params.faturamentoAnual <= f.ate) || anexo[anexo.length - 1];
-    
-    const aliquotaEfetiva = ((params.faturamentoAnual * faixaAtual.aliquota / 100) - faixaAtual.deducao) / params.faturamentoAnual * 100;
+    const faixaAtual =
+      anexo.find((f) => params.faturamentoAnual <= f.ate) || anexo[anexo.length - 1];
+
+    const aliquotaEfetiva =
+      (((params.faturamentoAnual * faixaAtual.aliquota) / 100 - faixaAtual.deducao) /
+        params.faturamentoAnual) *
+      100;
     const totalTributos = params.faturamentoAnual * (aliquotaEfetiva / 100);
 
     return {
@@ -271,15 +278,15 @@ export function useComparativoRegimes() {
     const simplesNacional = calcularSimplesNacional(parametros);
 
     const resultados = [lucroReal, lucroPresumido, simplesNacional];
-    const regimesValidos = resultados.filter(r => r.totalTributos > 0);
-    const melhorOpcao = regimesValidos.reduce((prev, curr) => 
+    const regimesValidos = resultados.filter((r) => r.totalTributos > 0);
+    const melhorOpcao = regimesValidos.reduce((prev, curr) =>
       curr.totalTributos < prev.totalTributos ? curr : prev
     );
-    
-    const piorOpcao = regimesValidos.reduce((prev, curr) => 
+
+    const piorOpcao = regimesValidos.reduce((prev, curr) =>
       curr.totalTributos > prev.totalTributos ? curr : prev
     );
-    
+
     const economiaMelhorOpcao = piorOpcao.totalTributos - melhorOpcao.totalTributos;
 
     return {

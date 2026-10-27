@@ -77,8 +77,11 @@ export function SecurityStatusBanner() {
         <div className="flex items-start gap-2 rounded-md border border-info/40 bg-info/5 p-3 text-xs text-muted-foreground">
           <Info className="h-4 w-4 shrink-0 text-info mt-0.5" aria-hidden />
           <span>
-            Consulte <code className="rounded bg-muted px-1">mem://security/manual-configuration-requirements</code>
-            {' '}para o histórico completo de decisões de segurança.
+            Consulte{' '}
+            <code className="rounded bg-muted px-1">
+              mem://security/manual-configuration-requirements
+            </code>{' '}
+            para o histórico completo de decisões de segurança.
           </span>
         </div>
       </CardContent>

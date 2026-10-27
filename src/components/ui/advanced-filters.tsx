@@ -6,11 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Calendar } from '@/components/ui/calendar';
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from '@/components/ui/popover';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import {
   Select,
   SelectContent,
@@ -74,28 +70,23 @@ export function AdvancedFiltersPopover({
     filters.tipoCobranca,
     filters.empresaId,
     filters.contaBancariaId,
-  ].filter(f => !!f && f !== 'all').length;
+  ].filter((f) => !!f && f !== 'all').length;
 
   const handleClearFilters = () => {
     onFiltersChange({});
   };
 
-  const updateFilter = <K extends keyof AdvancedFilters>(
-    key: K,
-    value: AdvancedFilters[K]
-  ) => {
+  const updateFilter = <K extends keyof AdvancedFilters>(key: K, value: AdvancedFilters[K]) => {
     onFiltersChange({ ...filters, [key]: value });
   };
 
   return (
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
-        <Button variant="outline" size="icon" className={cn("relative", className)}>
+        <Button variant="outline" size="icon" className={cn('relative', className)}>
           <CalendarIcon className="h-4 w-4" />
           {activeFiltersCount > 0 && (
-            <Badge 
-              className="absolute -top-2 -right-2 h-5 w-5 p-0 flex items-center justify-center text-[10px] bg-primary text-primary-foreground"
-            >
+            <Badge className="absolute -top-2 -right-2 h-5 w-5 p-0 flex items-center justify-center text-[10px] bg-primary text-primary-foreground">
               {activeFiltersCount}
             </Badge>
           )}
@@ -105,8 +96,8 @@ export function AdvancedFiltersPopover({
         <div className="space-y-4">
           <div className="flex items-center justify-between">
             <h4 className="font-semibold text-sm">Filtros Avançados</h4>
-            {activeFiltersCount > 0 && (
-              controller ? (
+            {activeFiltersCount > 0 &&
+              (controller ? (
                 <ClearFiltersButton
                   controller={controller}
                   entityLabel="filtros avançados"
@@ -115,13 +106,41 @@ export function AdvancedFiltersPopover({
                   label="Limpar tudo"
                   className="h-7 text-xs text-muted-foreground"
                   describeFilters={(v) => [
-                    { label: 'De', value: v.dataVencimentoInicio as unknown as string, isActive: !!v.dataVencimentoInicio },
-                    { label: 'Até', value: v.dataVencimentoFim as unknown as string, isActive: !!v.dataVencimentoFim },
-                    { label: 'Mínimo', value: v.valorMinimo as unknown as number, isActive: v.valorMinimo != null },
-                    { label: 'Máximo', value: v.valorMaximo as unknown as number, isActive: v.valorMaximo != null },
-                    { label: 'Tipo', value: v.tipoCobranca as unknown as string, isActive: !!v.tipoCobranca && v.tipoCobranca !== 'all' },
-                    { label: 'Empresa', value: v.empresaId as unknown as string, isActive: !!v.empresaId && v.empresaId !== 'all' },
-                    { label: 'Conta', value: v.contaBancariaId as unknown as string, isActive: !!v.contaBancariaId && v.contaBancariaId !== 'all' },
+                    {
+                      label: 'De',
+                      value: v.dataVencimentoInicio as unknown as string,
+                      isActive: !!v.dataVencimentoInicio,
+                    },
+                    {
+                      label: 'Até',
+                      value: v.dataVencimentoFim as unknown as string,
+                      isActive: !!v.dataVencimentoFim,
+                    },
+                    {
+                      label: 'Mínimo',
+                      value: v.valorMinimo as unknown as number,
+                      isActive: v.valorMinimo != null,
+                    },
+                    {
+                      label: 'Máximo',
+                      value: v.valorMaximo as unknown as number,
+                      isActive: v.valorMaximo != null,
+                    },
+                    {
+                      label: 'Tipo',
+                      value: v.tipoCobranca as unknown as string,
+                      isActive: !!v.tipoCobranca && v.tipoCobranca !== 'all',
+                    },
+                    {
+                      label: 'Empresa',
+                      value: v.empresaId as unknown as string,
+                      isActive: !!v.empresaId && v.empresaId !== 'all',
+                    },
+                    {
+                      label: 'Conta',
+                      value: v.contaBancariaId as unknown as string,
+                      isActive: !!v.contaBancariaId && v.contaBancariaId !== 'all',
+                    },
                   ]}
                 />
               ) : (
@@ -134,15 +153,16 @@ export function AdvancedFiltersPopover({
                   <RotateCcw className="h-3 w-3" />
                   Limpar
                 </Button>
-              )
-            )}
+              ))}
           </div>
 
           <Separator />
 
           {/* Período de Vencimento */}
           <div className="space-y-2">
-            <Label className="text-xs font-medium text-muted-foreground">Período de Vencimento</Label>
+            <Label className="text-xs font-medium text-muted-foreground">
+              Período de Vencimento
+            </Label>
             <div className="grid grid-cols-2 gap-2">
               <Popover>
                 <PopoverTrigger asChild>
@@ -150,17 +170,20 @@ export function AdvancedFiltersPopover({
                     variant="outline"
                     size="sm"
                     className={cn(
-                      "w-full justify-start text-left font-normal h-9 text-xs",
-                      !filters.dataVencimentoInicio && "text-muted-foreground"
+                      'w-full justify-start text-left font-normal h-9 text-xs',
+                      !filters.dataVencimentoInicio && 'text-muted-foreground'
                     )}
                   >
                     <CalendarIcon className="mr-1 h-3 w-3" />
                     {filters.dataVencimentoInicio
-                      ? format(filters.dataVencimentoInicio, "dd/MM/yy", { locale: ptBR })
-                      : "De"}
+                      ? format(filters.dataVencimentoInicio, 'dd/MM/yy', { locale: ptBR })
+                      : 'De'}
                   </Button>
                 </PopoverTrigger>
-                <PopoverContent className="w-auto p-0 bg-popover border border-border z-[60]" align="start">
+                <PopoverContent
+                  className="w-auto p-0 bg-popover border border-border z-[60]"
+                  align="start"
+                >
                   <Calendar
                     mode="single"
                     selected={filters.dataVencimentoInicio}
@@ -176,17 +199,20 @@ export function AdvancedFiltersPopover({
                     variant="outline"
                     size="sm"
                     className={cn(
-                      "w-full justify-start text-left font-normal h-9 text-xs",
-                      !filters.dataVencimentoFim && "text-muted-foreground"
+                      'w-full justify-start text-left font-normal h-9 text-xs',
+                      !filters.dataVencimentoFim && 'text-muted-foreground'
                     )}
                   >
                     <CalendarIcon className="mr-1 h-3 w-3" />
                     {filters.dataVencimentoFim
-                      ? format(filters.dataVencimentoFim, "dd/MM/yy", { locale: ptBR })
-                      : "Até"}
+                      ? format(filters.dataVencimentoFim, 'dd/MM/yy', { locale: ptBR })
+                      : 'Até'}
                   </Button>
                 </PopoverTrigger>
-                <PopoverContent className="w-auto p-0 bg-popover border border-border z-[60]" align="start">
+                <PopoverContent
+                  className="w-auto p-0 bg-popover border border-border z-[60]"
+                  align="start"
+                >
                   <Calendar
                     mode="single"
                     selected={filters.dataVencimentoFim}
@@ -208,14 +234,18 @@ export function AdvancedFiltersPopover({
                 placeholder="Mínimo"
                 className="h-9 text-xs"
                 value={filters.valorMinimo || ''}
-                onChange={(e) => updateFilter('valorMinimo', e.target.value ? Number(e.target.value) : undefined)}
+                onChange={(e) =>
+                  updateFilter('valorMinimo', e.target.value ? Number(e.target.value) : undefined)
+                }
               />
               <Input
                 type="number"
                 placeholder="Máximo"
                 className="h-9 text-xs"
                 value={filters.valorMaximo || ''}
-                onChange={(e) => updateFilter('valorMaximo', e.target.value ? Number(e.target.value) : undefined)}
+                onChange={(e) =>
+                  updateFilter('valorMaximo', e.target.value ? Number(e.target.value) : undefined)
+                }
               />
             </div>
           </div>
@@ -225,7 +255,9 @@ export function AdvancedFiltersPopover({
             <Label className="text-xs font-medium text-muted-foreground">Tipo de Cobrança</Label>
             <Select
               value={filters.tipoCobranca || 'all'}
-              onValueChange={(value) => updateFilter('tipoCobranca', value === 'all' ? undefined : value)}
+              onValueChange={(value) =>
+                updateFilter('tipoCobranca', value === 'all' ? undefined : value)
+              }
             >
               <SelectTrigger className="h-9 text-xs">
                 <SelectValue placeholder="Todos os tipos" />
@@ -294,7 +326,7 @@ export function AdvancedFiltersPopover({
               <div className="flex flex-wrap gap-1">
                 {filters.dataVencimentoInicio && (
                   <Badge variant="secondary" className="text-[10px] gap-1 h-5">
-                    De: {format(filters.dataVencimentoInicio, "dd/MM", { locale: ptBR })}
+                    De: {format(filters.dataVencimentoInicio, 'dd/MM', { locale: ptBR })}
                     <X
                       className="h-2.5 w-2.5 cursor-pointer"
                       onClick={() => updateFilter('dataVencimentoInicio', undefined)}
@@ -303,7 +335,7 @@ export function AdvancedFiltersPopover({
                 )}
                 {filters.dataVencimentoFim && (
                   <Badge variant="secondary" className="text-[10px] gap-1 h-5">
-                    Até: {format(filters.dataVencimentoFim, "dd/MM", { locale: ptBR })}
+                    Até: {format(filters.dataVencimentoFim, 'dd/MM', { locale: ptBR })}
                     <X
                       className="h-2.5 w-2.5 cursor-pointer"
                       onClick={() => updateFilter('dataVencimentoFim', undefined)}
@@ -330,7 +362,7 @@ export function AdvancedFiltersPopover({
                 )}
                 {filters.tipoCobranca && filters.tipoCobranca !== 'all' && (
                   <Badge variant="secondary" className="text-[10px] gap-1 h-5">
-                    {tiposCobranca.find(t => t.value === filters.tipoCobranca)?.label}
+                    {tiposCobranca.find((t) => t.value === filters.tipoCobranca)?.label}
                     <X
                       className="h-2.5 w-2.5 cursor-pointer"
                       onClick={() => updateFilter('tipoCobranca', undefined)}
@@ -339,7 +371,7 @@ export function AdvancedFiltersPopover({
                 )}
                 {filters.empresaId && filters.empresaId !== 'all' && (
                   <Badge variant="secondary" className="text-[10px] gap-1 h-5">
-                    {empresas.find(e => e.value === filters.empresaId)?.label || 'Empresa'}
+                    {empresas.find((e) => e.value === filters.empresaId)?.label || 'Empresa'}
                     <X
                       className="h-2.5 w-2.5 cursor-pointer"
                       onClick={() => updateFilter('empresaId', undefined)}
@@ -348,7 +380,8 @@ export function AdvancedFiltersPopover({
                 )}
                 {filters.contaBancariaId && filters.contaBancariaId !== 'all' && (
                   <Badge variant="secondary" className="text-[10px] gap-1 h-5">
-                    {contasBancarias.find(cb => cb.value === filters.contaBancariaId)?.label || 'Conta'}
+                    {contasBancarias.find((cb) => cb.value === filters.contaBancariaId)?.label ||
+                      'Conta'}
                     <X
                       className="h-2.5 w-2.5 cursor-pointer"
                       onClick={() => updateFilter('contaBancariaId', undefined)}

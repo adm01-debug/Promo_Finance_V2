@@ -19,7 +19,10 @@ interface AssinaturaDigitalProps {
   onAssinaturaConcluida?: (signatarios: Signatario[]) => void;
 }
 
-export function AssinaturaDigital({ documentoNome = 'Documento', onAssinaturaConcluida }: AssinaturaDigitalProps) {
+export function AssinaturaDigital({
+  documentoNome = 'Documento',
+  onAssinaturaConcluida,
+}: AssinaturaDigitalProps) {
   const [signatarios, setSignatarios] = useState<Signatario[]>([]);
   const [novoNome, setNovoNome] = useState('');
   const [novoEmail, setNovoEmail] = useState('');
@@ -30,13 +33,13 @@ export function AssinaturaDigital({ documentoNome = 'Documento', onAssinaturaCon
       toast.error('Preencha nome e email');
       return;
     }
-    setSignatarios(prev => [...prev, { nome: novoNome, email: novoEmail, status: 'pendente' }]);
+    setSignatarios((prev) => [...prev, { nome: novoNome, email: novoEmail, status: 'pendente' }]);
     setNovoNome('');
     setNovoEmail('');
   };
 
   const removerSignatario = (email: string) => {
-    setSignatarios(prev => prev.filter(s => s.email !== email));
+    setSignatarios((prev) => prev.filter((s) => s.email !== email));
   };
 
   const enviarParaAssinatura = async () => {
@@ -46,7 +49,7 @@ export function AssinaturaDigital({ documentoNome = 'Documento', onAssinaturaCon
     }
     setEnviando(true);
     // Simulação de envio
-    await new Promise(r => setTimeout(r, 1500));
+    await new Promise((r) => setTimeout(r, 1500));
     toast.success('Documento enviado para assinatura!');
     setEnviando(false);
     onAssinaturaConcluida?.(signatarios);
@@ -67,16 +70,31 @@ export function AssinaturaDigital({ documentoNome = 'Documento', onAssinaturaCon
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-2">
-          <Input placeholder="Nome" value={novoNome} onChange={e => setNovoNome(e.target.value)} />
-          <Input placeholder="Email" type="email" value={novoEmail} onChange={e => setNovoEmail(e.target.value)} />
-          <Button onClick={adicionarSignatario} variant="outline">Adicionar</Button>
+          <Input
+            placeholder="Nome"
+            value={novoNome}
+            onChange={(e) => setNovoNome(e.target.value)}
+          />
+          <Input
+            placeholder="Email"
+            type="email"
+            value={novoEmail}
+            onChange={(e) => setNovoEmail(e.target.value)}
+          />
+          <Button onClick={adicionarSignatario} variant="outline">
+            Adicionar
+          </Button>
         </div>
 
         {signatarios.length > 0 && (
           <div className="space-y-2">
             {signatarios.map((sig) => (
-              <motion.div key={sig.email} initial={{ opacity: 0 }} animate={{ opacity: 1 }}
-                className="flex items-center justify-between p-2 rounded border">
+              <motion.div
+                key={sig.email}
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                className="flex items-center justify-between p-2 rounded border"
+              >
                 <div>
                   <p className="text-sm font-medium">{sig.nome}</p>
                   <p className="text-xs text-muted-foreground">{sig.email}</p>
@@ -96,7 +114,11 @@ export function AssinaturaDigital({ documentoNome = 'Documento', onAssinaturaCon
           </div>
         )}
 
-        <Button onClick={enviarParaAssinatura} disabled={enviando || signatarios.length === 0} className="w-full">
+        <Button
+          onClick={enviarParaAssinatura}
+          disabled={enviando || signatarios.length === 0}
+          className="w-full"
+        >
           <Send className="h-4 w-4 mr-2" />
           {enviando ? 'Enviando...' : 'Enviar para Assinatura'}
         </Button>

@@ -1,12 +1,5 @@
 // Tipos do módulo de contingência SEFAZ
-export type ContingencyMode =
-  | 'normal'
-  | 'SCAN'
-  | 'DPEC'
-  | 'FSDA'
-  | 'SVCAN'
-  | 'SVCRS'
-  | 'offline';
+export type ContingencyMode = 'normal' | 'SCAN' | 'DPEC' | 'FSDA' | 'SVCAN' | 'SVCRS' | 'offline';
 
 export interface ContingencyState {
   mode: ContingencyMode;

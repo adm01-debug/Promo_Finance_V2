@@ -1,9 +1,9 @@
-import { Label } from "@/components/ui/label";
-import { Badge } from "@/components/ui/badge";
-import { Checkbox } from "@/components/ui/checkbox";
-import { ScrollArea } from "@/components/ui/scroll-area";
-import { X } from "lucide-react";
-import { TIPOS } from "./constants";
+import { Label } from '@/components/ui/label';
+import { Badge } from '@/components/ui/badge';
+import { Checkbox } from '@/components/ui/checkbox';
+import { ScrollArea } from '@/components/ui/scroll-area';
+import { X } from 'lucide-react';
+import { TIPOS } from './constants';
 
 interface CentroCusto {
   id: string;
@@ -56,9 +56,7 @@ export function SilenciamentoSection({
                 <Checkbox
                   checked={ccs.includes(cc.id)}
                   onChange={(e) =>
-                    onCcsChange(
-                      e.target.checked ? [...ccs, cc.id] : ccs.filter((x) => x !== cc.id),
-                    )
+                    onCcsChange(e.target.checked ? [...ccs, cc.id] : ccs.filter((x) => x !== cc.id))
                   }
                 />
                 {cc.nome}
@@ -80,9 +78,7 @@ export function SilenciamentoSection({
                 checked={tipos.includes(t.value)}
                 onChange={(e) =>
                   onTiposChange(
-                    e.target.checked
-                      ? [...tipos, t.value]
-                      : tipos.filter((x) => x !== t.value),
+                    e.target.checked ? [...tipos, t.value] : tipos.filter((x) => x !== t.value)
                   )
                 }
               />

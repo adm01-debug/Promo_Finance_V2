@@ -27,7 +27,13 @@ interface Props {
   onDownloadZip: () => void;
 }
 
-export function ValidacoesPreSpedDialog({ open, onOpenChange, arquivo, onDownloadTxt, onDownloadZip }: Props) {
+export function ValidacoesPreSpedDialog({
+  open,
+  onOpenChange,
+  arquivo,
+  onDownloadTxt,
+  onDownloadZip,
+}: Props) {
   const [busca, setBusca] = useState('');
   const [expandedCats, setExpandedCats] = useState<Set<string>>(new Set());
   const [isAiCorrecting, setIsAiCorrecting] = useState(false);
@@ -109,7 +115,8 @@ export function ValidacoesPreSpedDialog({ open, onOpenChange, arquivo, onDownloa
   const baseFilename = `validacoes-sped-${arquivo.tipo.toLowerCase()}-${arquivo.ano_calendario}-${new Date().toISOString().slice(0, 10)}`;
 
   const temFiltro = termo.length > 0;
-  const podeExportarFiltrado = temFiltro && (errosFiltrados.length > 0 || avisosFiltrados.length > 0);
+  const podeExportarFiltrado =
+    temFiltro && (errosFiltrados.length > 0 || avisosFiltrados.length > 0);
 
   const exportArgsBase = {
     arquivo,
@@ -149,7 +156,11 @@ export function ValidacoesPreSpedDialog({ open, onOpenChange, arquivo, onDownloa
         />
 
         {bloqueado && (
-          <Alert variant="error" className="bg-destructive/5 border-destructive/20 shadow-sm" data-testid="banner-bloqueio">
+          <Alert
+            variant="error"
+            className="bg-destructive/5 border-destructive/20 shadow-sm"
+            data-testid="banner-bloqueio"
+          >
             <XCircle className="h-4 w-4 text-destructive" />
             <AlertTitle className="font-bold text-destructive">
               {isRejeitado ? 'ARQUIVO REJEITADO PELA TRANSMISSÃO' : 'DOWNLOAD BLOQUEADO'}

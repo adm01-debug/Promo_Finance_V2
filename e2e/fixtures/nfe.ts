@@ -185,7 +185,12 @@ export function fakePfxFile(name = 'certificado.pfx') {
   return {
     name,
     mimeType: 'application/x-pkcs12',
-    buffer: Buffer.from('fake-pfx-bytes-for-e2e-only'),
+    // Começa com sequência DER (0x30 0x82) para passar no gate de magic bytes;
+    // o conteúdo continua falso — a edge é mockada no teste.
+    buffer: Buffer.concat([
+      Buffer.from([0x30, 0x82, 0x0b, 0xa0]),
+      Buffer.from('fake-pfx-bytes-for-e2e-only'),
+    ]),
   };
 }
 

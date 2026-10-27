@@ -31,17 +31,25 @@ export function broadcastSsoSlo(providerNome: string): number {
       bc.postMessage(payload);
       // Close on next tick so the message is flushed.
       setTimeout(() => {
-        try { bc.close(); } catch { /* noop */ }
+        try {
+          bc.close();
+        } catch {
+          /* noop */
+        }
       }, 0);
     }
-  } catch { /* fall through to storage fallback */ }
+  } catch {
+    /* fall through to storage fallback */
+  }
 
   // Fallback: storage event sentinel (also fires in other tabs of same origin)
   try {
     window.localStorage.setItem(STORAGE_SENTINEL_KEY, JSON.stringify(payload));
     // Remove immediately so a subsequent broadcast with same payload still triggers.
     window.localStorage.removeItem(STORAGE_SENTINEL_KEY);
-  } catch { /* noop */ }
+  } catch {
+    /* noop */
+  }
 
   return payload.ts;
 }
@@ -58,20 +66,32 @@ export function subscribeSsoSlo(handler: (msg: SsoSyncMessage) => void): () => v
       bc = new BroadcastChannel(CHANNEL_NAME);
       bc.addEventListener('message', onMessage);
     }
-  } catch { /* noop */ }
+  } catch {
+    /* noop */
+  }
 
   const onStorage = (ev: StorageEvent) => {
     if (ev.key !== STORAGE_SENTINEL_KEY || !ev.newValue) return;
     try {
       const parsed = JSON.parse(ev.newValue) as SsoSyncMessage;
       if (parsed.type === 'sso-slo-initiated') handler(parsed);
-    } catch { /* ignore malformed payload */ }
+    } catch {
+      /* ignore malformed payload */
+    }
   };
   window.addEventListener('storage', onStorage);
 
   return () => {
-    try { bc?.removeEventListener('message', onMessage); } catch { /* noop */ }
-    try { bc?.close(); } catch { /* noop */ }
+    try {
+      bc?.removeEventListener('message', onMessage);
+    } catch {
+      /* noop */
+    }
+    try {
+      bc?.close();
+    } catch {
+      /* noop */
+    }
     window.removeEventListener('storage', onStorage);
   };
 }

@@ -29,7 +29,7 @@ export function StatusCell({ conta }: { conta: ContaReceberWithRelations }) {
           variant="outline"
           className={cn(
             'gap-1.5 px-3 py-1 rounded-lg border-none font-black text-[10px] uppercase tracking-widest',
-            status?.color,
+            status?.color
           )}
         >
           {StatusIcon && <StatusIcon className="h-3.5 w-3.5" />} {status?.label || conta.status}
@@ -40,7 +40,7 @@ export function StatusCell({ conta }: { conta: ContaReceberWithRelations }) {
               variant="outline"
               className={cn(
                 'gap-1 px-1.5 py-0 h-4 rounded-md border-none font-black text-[8px] uppercase tracking-wider opacity-60',
-                tipo.color,
+                tipo.color
               )}
             >
               <TipoIcon className="h-2 w-2" /> {tipo.label}
@@ -51,7 +51,7 @@ export function StatusCell({ conta }: { conta: ContaReceberWithRelations }) {
               variant="outline"
               className={cn(
                 'gap-1 px-1.5 py-0 h-4 rounded-md border-none font-black text-[8px] uppercase tracking-wider',
-                etapaColors[etapa] || '',
+                etapaColors[etapa] || ''
               )}
             >
               <EtapaIcon className="h-2 w-2" /> {getEtapaCobrancaLabel(etapa)}
@@ -86,7 +86,12 @@ export function ScoreCell({ conta }: { conta: ContaReceberWithRelations }) {
   return (
     <TableCell className="p-6">
       <div className="flex flex-col items-center">
-        <div className={cn('text-lg font-black tabular-nums tracking-tighter leading-none', getScoreColor(clienteData.score))}>
+        <div
+          className={cn(
+            'text-lg font-black tabular-nums tracking-tighter leading-none',
+            getScoreColor(clienteData.score)
+          )}
+        >
           {clienteData.score}
         </div>
         <span className="text-[8px] font-black uppercase tracking-[0.2em] text-muted-foreground/40 mt-1">

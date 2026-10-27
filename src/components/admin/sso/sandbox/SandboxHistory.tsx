@@ -4,13 +4,30 @@ import { ptBR } from 'date-fns/locale';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '@/components/ui/table';
 import { Checkbox } from '@/components/ui/checkbox';
 import { History, Repeat, Eye, Trash2, GitCompare, Filter, Search, Loader2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useSSOProviders } from '@/hooks/useSSO';
-import { useSSOSandboxRuns, useDeleteSSOSandboxRun, type SandboxRun } from '@/hooks/useSSOSandboxRuns';
+import {
+  useSSOSandboxRuns,
+  useDeleteSSOSandboxRun,
+  type SandboxRun,
+} from '@/hooks/useSSOSandboxRuns';
 import { OUTCOME_META, type SandboxOutcome } from './outcome';
 import { SandboxRunDetailSheet } from './SandboxRunDetailSheet';
 import { SandboxCompareDialog } from './SandboxCompareDialog';
@@ -46,18 +63,15 @@ export function SandboxHistory({ onReplay }: Props) {
   });
   const deleteMut = useDeleteSSOSandboxRun();
 
-  const selectedRuns = useMemo(
-    () => runs.filter(r => selected.includes(r.id)),
-    [runs, selected]
-  );
+  const selectedRuns = useMemo(() => runs.filter((r) => selected.includes(r.id)), [runs, selected]);
 
   const toggleSelect = (id: string, checked: boolean) => {
-    setSelected(prev => {
+    setSelected((prev) => {
       if (checked) {
         if (prev.length >= 2) return [prev[1], id];
         return [...prev, id];
       }
-      return prev.filter(x => x !== id);
+      return prev.filter((x) => x !== id);
     });
   };
 
@@ -69,7 +83,7 @@ export function SandboxHistory({ onReplay }: Props) {
   const handleDelete = async (id: string) => {
     try {
       await deleteMut.mutateAsync(id);
-      setSelected(prev => prev.filter(x => x !== id));
+      setSelected((prev) => prev.filter((x) => x !== id));
       toast.success('Simulação removida');
     } catch (e) {
       toast.error('Erro ao remover', { description: e instanceof Error ? e.message : 'Erro' });
@@ -89,25 +103,30 @@ export function SandboxHistory({ onReplay }: Props) {
           <Search className="absolute left-2 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground" />
           <Input
             value={emailQuery}
-            onChange={e => setEmailQuery(e.target.value)}
+            onChange={(e) => setEmailQuery(e.target.value)}
             placeholder="Buscar por email..."
             className="h-9 pl-7 text-sm"
           />
         </div>
-        <Select value={providerId || 'all'} onValueChange={v => setProviderId(v === 'all' ? '' : v)}>
+        <Select
+          value={providerId || 'all'}
+          onValueChange={(v) => setProviderId(v === 'all' ? '' : v)}
+        >
           <SelectTrigger className="h-9 w-[200px]">
             <SelectValue placeholder="Todos os providers" />
           </SelectTrigger>
           <SelectContent>
             <SelectItem value="all">Todos os providers</SelectItem>
-            {providers.map(p => (
-              <SelectItem key={p.id} value={p.id}>{p.nome}</SelectItem>
+            {providers.map((p) => (
+              <SelectItem key={p.id} value={p.id}>
+                {p.nome}
+              </SelectItem>
             ))}
           </SelectContent>
         </Select>
         <div className="flex items-center gap-1">
           <Filter className="h-3.5 w-3.5 text-muted-foreground" />
-          {OUTCOMES.map(o => (
+          {OUTCOMES.map((o) => (
             <Button
               key={o.id}
               size="sm"
@@ -125,7 +144,9 @@ export function SandboxHistory({ onReplay }: Props) {
           </Button>
         )}
         {selectedRuns.length > 0 && selectedRuns.length < 2 && (
-          <Badge variant="outline" className="ml-auto">Selecione mais 1 para comparar</Badge>
+          <Badge variant="outline" className="ml-auto">
+            Selecione mais 1 para comparar
+          </Badge>
         )}
       </div>
 
@@ -154,7 +175,7 @@ export function SandboxHistory({ onReplay }: Props) {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {runs.map(run => {
+              {runs.map((run) => {
                 const meta = OUTCOME_META[run.outcome];
                 const isSel = selected.includes(run.id);
                 return (
@@ -166,9 +187,13 @@ export function SandboxHistory({ onReplay }: Props) {
                       />
                     </TableCell>
                     <TableCell className="text-xs whitespace-nowrap">
-                      {format(new Date(run.created_at), "dd/MM HH:mm", { locale: ptBR })}
+                      {format(new Date(run.created_at), 'dd/MM HH:mm', { locale: ptBR })}
                     </TableCell>
-                    <TableCell className="text-xs">{run.provider_nome ?? <span className="text-muted-foreground italic">manual</span>}</TableCell>
+                    <TableCell className="text-xs">
+                      {run.provider_nome ?? (
+                        <span className="text-muted-foreground italic">manual</span>
+                      )}
+                    </TableCell>
                     <TableCell className="text-xs font-mono">{run.email_masked ?? '—'}</TableCell>
                     <TableCell>
                       <Badge variant="outline" className={cn('text-[10px]', meta.className)}>
@@ -176,17 +201,39 @@ export function SandboxHistory({ onReplay }: Props) {
                       </Badge>
                     </TableCell>
                     <TableCell className="text-xs font-mono">{run.resolved_role ?? '—'}</TableCell>
-                    <TableCell className="text-xs font-mono">{run.matched_group ?? <span className="text-muted-foreground">default</span>}</TableCell>
-                    <TableCell className="text-xs text-muted-foreground">{run.created_by_email ?? '—'}</TableCell>
+                    <TableCell className="text-xs font-mono">
+                      {run.matched_group ?? <span className="text-muted-foreground">default</span>}
+                    </TableCell>
+                    <TableCell className="text-xs text-muted-foreground">
+                      {run.created_by_email ?? '—'}
+                    </TableCell>
                     <TableCell>
                       <div className="flex items-center justify-end gap-1">
-                        <Button size="icon" variant="ghost" className="h-7 w-7" onClick={() => setDetailRun(run)} title="Ver detalhes">
+                        <Button
+                          size="icon"
+                          variant="ghost"
+                          className="h-7 w-7"
+                          onClick={() => setDetailRun(run)}
+                          title="Ver detalhes"
+                        >
                           <Eye className="h-3.5 w-3.5" />
                         </Button>
-                        <Button size="icon" variant="ghost" className="h-7 w-7" onClick={() => handleReplay(run)} title="Reproduzir">
+                        <Button
+                          size="icon"
+                          variant="ghost"
+                          className="h-7 w-7"
+                          onClick={() => handleReplay(run)}
+                          title="Reproduzir"
+                        >
                           <Repeat className="h-3.5 w-3.5" />
                         </Button>
-                        <Button size="icon" variant="ghost" className="h-7 w-7 text-destructive" onClick={() => setDeleteTargetId(run.id)} title="Excluir">
+                        <Button
+                          size="icon"
+                          variant="ghost"
+                          className="h-7 w-7 text-destructive"
+                          onClick={() => setDeleteTargetId(run.id)}
+                          title="Excluir"
+                        >
                           <Trash2 className="h-3.5 w-3.5" />
                         </Button>
                       </div>
@@ -204,11 +251,7 @@ export function SandboxHistory({ onReplay }: Props) {
         open={!!detailRun}
         onOpenChange={(o) => !o && setDetailRun(null)}
       />
-      <SandboxCompareDialog
-        runs={selectedRuns}
-        open={compareOpen}
-        onOpenChange={setCompareOpen}
-      />
+      <SandboxCompareDialog runs={selectedRuns} open={compareOpen} onOpenChange={setCompareOpen} />
       <ConfirmDialog
         open={!!deleteTargetId}
         onOpenChange={(o) => !o && setDeleteTargetId(null)}

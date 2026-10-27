@@ -1,10 +1,13 @@
-
 // Chama a Edge Function `decidir-regime` (orquestração server-side).
 // Persiste em regimes_simulados e retorna resultado completo.
 import { useMutation } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
-import type { ResultadoDecisao, RegimeTributario, ParametrosSimulacao } from '@/lib/tributario/types';
+import type {
+  ResultadoDecisao,
+  RegimeTributario,
+  ParametrosSimulacao,
+} from '@/lib/tributario/types';
 
 export interface DecidirRegimeServerInput {
   empresaId: string;

@@ -66,8 +66,14 @@ export function resumirOverlayMvaSt(overlay: ResultadoOverlayMva): ResumoMvaSt {
 
     for (const e of entradas) {
       ncms.add(e.ncm);
-      e.origens.forEach((uf) => { origens.add(uf); cobertas.add(uf); });
-      e.destinos.forEach((uf) => { destinos.add(uf); cobertas.add(uf); });
+      e.origens.forEach((uf) => {
+        origens.add(uf);
+        cobertas.add(uf);
+      });
+      e.destinos.forEach((uf) => {
+        destinos.add(uf);
+        cobertas.add(uf);
+      });
       mvaMinima = Math.min(mvaMinima, e.mvaOriginal);
       mvaMaxima = Math.max(mvaMaxima, e.mvaOriginal);
     }
@@ -90,9 +96,12 @@ export function resumirOverlayMvaSt(overlay: ResultadoOverlayMva): ResumoMvaSt {
   const ncmsDistintos = new Set(overlay.aplicadas.map((e) => e.ncm));
   const ufsSemCobertura = UFS.filter((uf) => !cobertas.has(uf));
 
-  const situacao: ResumoMvaSt['situacao'] = protocolos.length === 0
-    ? 'vazio'
-    : (overlay.rejeitadas.length > 0 || ufsSemCobertura.length > 0 ? 'parcial' : 'ok');
+  const situacao: ResumoMvaSt['situacao'] =
+    protocolos.length === 0
+      ? 'vazio'
+      : overlay.rejeitadas.length > 0 || ufsSemCobertura.length > 0
+        ? 'parcial'
+        : 'ok';
 
   return {
     protocolos,

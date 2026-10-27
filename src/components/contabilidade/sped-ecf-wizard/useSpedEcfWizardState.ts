@@ -40,7 +40,7 @@ export function useSpedEcfWizardState(params: {
     () => () => {
       if (copyTimer.current) clearTimeout(copyTimer.current);
     },
-    [],
+    []
   );
 
   // Hidrata rascunho (step + recibo) ao abrir
@@ -75,7 +75,7 @@ export function useSpedEcfWizardState(params: {
     try {
       window.localStorage.setItem(
         WIZARD_DRAFT_KEY(empresaId, anoCalendario),
-        JSON.stringify({ step, recibo, ts: Date.now() }),
+        JSON.stringify({ step, recibo, ts: Date.now() })
       );
     } catch {
       /* noop */

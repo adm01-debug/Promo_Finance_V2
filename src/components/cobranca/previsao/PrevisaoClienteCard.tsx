@@ -34,7 +34,12 @@ export interface ClienteRisco {
 function getRiscoConfig(nivel: 'alto' | 'medio' | 'baixo') {
   switch (nivel) {
     case 'alto':
-      return { color: 'text-destructive', bg: 'bg-destructive/10', icon: AlertTriangle, label: 'Alto Risco' };
+      return {
+        color: 'text-destructive',
+        bg: 'bg-destructive/10',
+        icon: AlertTriangle,
+        label: 'Alto Risco',
+      };
     case 'medio':
       return { color: 'text-warning', bg: 'bg-warning/10', icon: Target, label: 'Médio Risco' };
     case 'baixo':
@@ -45,26 +50,21 @@ function getRiscoConfig(nivel: 'alto' | 'medio' | 'baixo') {
 export function PrevisaoClienteCard({ cliente }: { cliente: ClienteRisco }) {
   const [showWhatsApp, setShowWhatsApp] = useState(false);
   const config = getRiscoConfig(cliente.nivelRisco);
-  
+
   return (
     <>
       <motion.div
         key={cliente.id}
         initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
-        className={cn(
-          "p-4 rounded-lg border transition-colors hover:bg-accent/50",
-          config.bg
-        )}
+        className={cn('p-4 rounded-lg border transition-colors hover:bg-accent/50', config.bg)}
       >
         <div className="flex items-start justify-between gap-4">
           <div className="flex-1 min-w-0">
             <div className="flex items-center gap-2 mb-1">
-              <config.icon className={cn("h-4 w-4", config.color)} />
-              <span className="font-medium truncate">
-                {cliente.nomeFantasia || cliente.nome}
-              </span>
-              <Badge variant="outline" className={cn("text-xs", config.color)}>
+              <config.icon className={cn('h-4 w-4', config.color)} />
+              <span className="font-medium truncate">{cliente.nomeFantasia || cliente.nome}</span>
+              <Badge variant="outline" className={cn('text-xs', config.color)}>
                 {cliente.probabilidadeAtraso.toFixed(0)}% risco
               </Badge>
             </div>
@@ -92,9 +92,7 @@ export function PrevisaoClienteCard({ cliente }: { cliente: ClienteRisco }) {
               ))}
             </div>
 
-            <p className="text-xs text-primary font-medium">
-              💡 {cliente.acaoSugerida}
-            </p>
+            <p className="text-xs text-primary font-medium">💡 {cliente.acaoSugerida}</p>
           </div>
 
           <div className="flex flex-col items-end gap-2">
@@ -111,7 +109,7 @@ export function PrevisaoClienteCard({ cliente }: { cliente: ClienteRisco }) {
         </div>
       </motion.div>
 
-      <WhatsAppHistoryIA 
+      <WhatsAppHistoryIA
         clienteId={cliente.id}
         clienteNome={cliente.nomeFantasia || cliente.nome}
         open={showWhatsApp}

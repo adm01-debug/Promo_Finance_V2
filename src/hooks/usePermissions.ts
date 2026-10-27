@@ -39,7 +39,7 @@ export function usePermissions() {
 
       // If admin, has all permissions
       if (isAdmin) {
-        setUserPermissions(allPermissions?.map(p => p.name) || []);
+        setUserPermissions(allPermissions?.map((p) => p.name) || []);
         return;
       }
 
@@ -59,11 +59,12 @@ export function usePermissions() {
           permission_id: string;
           permissions: { name: string } | null;
         }
-        
-        const permNames = (rolePerms as RolePermissionResult[])
-          ?.map((rp) => rp.permissions?.name)
-          .filter(Boolean) || [];
-        
+
+        const permNames =
+          (rolePerms as RolePermissionResult[])
+            ?.map((rp) => rp.permissions?.name)
+            .filter((n): n is string => Boolean(n)) || [];
+
         setUserPermissions(permNames);
       }
     } catch (error: unknown) {
@@ -77,26 +78,38 @@ export function usePermissions() {
     fetchPermissions();
   }, [fetchPermissions]);
 
-  const hasPermission = useCallback((permissionName: string): boolean => {
-    if (isAdmin) return true;
-    return userPermissions.includes(permissionName);
-  }, [userPermissions, isAdmin]);
+  const hasPermission = useCallback(
+    (permissionName: string): boolean => {
+      if (isAdmin) return true;
+      return userPermissions.includes(permissionName);
+    },
+    [userPermissions, isAdmin]
+  );
 
-  const hasAnyPermission = useCallback((permissionNames: string[]): boolean => {
-    if (isAdmin) return true;
-    return permissionNames.some(p => userPermissions.includes(p));
-  }, [userPermissions, isAdmin]);
+  const hasAnyPermission = useCallback(
+    (permissionNames: string[]): boolean => {
+      if (isAdmin) return true;
+      return permissionNames.some((p) => userPermissions.includes(p));
+    },
+    [userPermissions, isAdmin]
+  );
 
-  const hasAllPermissions = useCallback((permissionNames: string[]): boolean => {
-    if (isAdmin) return true;
-    return permissionNames.every(p => userPermissions.includes(p));
-  }, [userPermissions, isAdmin]);
+  const hasAllPermissions = useCallback(
+    (permissionNames: string[]): boolean => {
+      if (isAdmin) return true;
+      return permissionNames.every((p) => userPermissions.includes(p));
+    },
+    [userPermissions, isAdmin]
+  );
 
-  const getPermissionsByModule = useCallback((module: string): Permission[] => {
-    return permissions.filter(p => p.module === module);
-  }, [permissions]);
+  const getPermissionsByModule = useCallback(
+    (module: string): Permission[] => {
+      return permissions.filter((p) => p.module === module);
+    },
+    [permissions]
+  );
 
-  const modules = [...new Set(permissions.map(p => p.module))];
+  const modules = [...new Set(permissions.map((p) => p.module))];
 
   return {
     permissions,

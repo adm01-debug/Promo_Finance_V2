@@ -19,7 +19,7 @@ describe('analisarOportunidadesElisao', () => {
     expect(result.total_oportunidades).toBe(13);
     expect(result.total_aplicaveis).toBeGreaterThanOrEqual(2); // Pelo menos JCP e Lei do Bem
     expect(result.economia_total_estimada).toBeGreaterThan(0);
-    
+
     // Deve estar ranqueado por economia decrescente
     for (let i = 0; i < result.oportunidades.length - 1; i++) {
       expect(result.oportunidades[i].economia_estimada).toBeGreaterThanOrEqual(
@@ -33,7 +33,7 @@ describe('analisarOportunidadesElisao', () => {
       empresa_id: 'new_emp',
       regime_atual: 'simples',
       rbt12: 0,
-      faturamento_anual: 0
+      faturamento_anual: 0,
     };
 
     const result = analisarOportunidadesElisao(ctx);

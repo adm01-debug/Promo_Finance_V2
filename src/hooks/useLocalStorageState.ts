@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from 'react';
 
 /**
  * Hook tipado para persistir estado de UI no localStorage.
@@ -12,7 +12,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
  */
 export function useLocalStorageState<T>(
   key: string,
-  initialValue: T,
+  initialValue: T
 ): [T, (value: T | ((prev: T) => T)) => void, () => void] {
   const initialRef = useRef(initialValue);
   const [value, setValue] = useState<T>(initialValue);
@@ -20,7 +20,7 @@ export function useLocalStorageState<T>(
 
   // Hidrata do localStorage no mount
   useEffect(() => {
-    if (typeof window === "undefined") return;
+    if (typeof window === 'undefined') return;
     try {
       const raw = window.localStorage.getItem(key);
       if (raw !== null) {
@@ -36,7 +36,7 @@ export function useLocalStorageState<T>(
   // Persiste alterações
   useEffect(() => {
     if (!hydrated.current) return;
-    if (typeof window === "undefined") return;
+    if (typeof window === 'undefined') return;
     try {
       window.localStorage.setItem(key, JSON.stringify(value));
     } catch {
@@ -46,7 +46,7 @@ export function useLocalStorageState<T>(
 
   // Sincroniza entre abas
   useEffect(() => {
-    if (typeof window === "undefined") return;
+    if (typeof window === 'undefined') return;
     const handler = (e: StorageEvent) => {
       if (e.key !== key || e.newValue === null) return;
       try {
@@ -55,13 +55,13 @@ export function useLocalStorageState<T>(
         // ignora
       }
     };
-    window.addEventListener("storage", handler);
-    return () => window.removeEventListener("storage", handler);
+    window.addEventListener('storage', handler);
+    return () => window.removeEventListener('storage', handler);
   }, [key]);
 
   const reset = useCallback(() => {
     setValue(initialRef.current);
-    if (typeof window !== "undefined") {
+    if (typeof window !== 'undefined') {
       try {
         window.localStorage.removeItem(key);
       } catch {

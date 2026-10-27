@@ -22,7 +22,7 @@ const positivo = (v: number): number => (Number.isFinite(v) && v > 0 ? v : 0);
 function somaAjustes(
   ajustes: readonly AjusteLalur[],
   tipo: AjusteLalur['tipo'],
-  tributo: 'irpj' | 'csll',
+  tributo: 'irpj' | 'csll'
 ): number {
   return ajustes
     .filter((a) => a.tipo === tipo && (a.alvo === 'ambos' || a.alvo === tributo))
@@ -85,8 +85,16 @@ export function apurarIrpjCsll(params: ParametrosApuracao): ResultadoApuracao {
       fundamento: 'RIR/2018 art. 258',
     });
     if (!usaEstimativa) {
-      memoria.push({ rubrica: '(+) Adições (LALUR A)', valor: round2(adIrpj), fundamento: 'RIR/2018 art. 260' });
-      memoria.push({ rubrica: '(−) Exclusões (LALUR A)', valor: round2(exIrpj), fundamento: 'RIR/2018 art. 261' });
+      memoria.push({
+        rubrica: '(+) Adições (LALUR A)',
+        valor: round2(adIrpj),
+        fundamento: 'RIR/2018 art. 260',
+      });
+      memoria.push({
+        rubrica: '(−) Exclusões (LALUR A)',
+        valor: round2(exIrpj),
+        fundamento: 'RIR/2018 art. 261',
+      });
     } else {
       memoria.push({
         rubrica: 'Base estimada (receita × presunção)',
@@ -120,7 +128,7 @@ export function apurarIrpjCsll(params: ParametrosApuracao): ResultadoApuracao {
       }
     } else if (saldo.prejuizoFiscal > 0) {
       alertas.push(
-        `${p.rotulo}: estimativa mensal não admite compensação de prejuízo — o saldo será utilizado no ajuste anual.`,
+        `${p.rotulo}: estimativa mensal não admite compensação de prejuízo — o saldo será utilizado no ajuste anual.`
       );
     }
 
@@ -132,19 +140,31 @@ export function apurarIrpjCsll(params: ParametrosApuracao): ResultadoApuracao {
     const irpjDevido = round2(irpjBase + irpjAdicional);
     const csllDevida = round2(baseCsll * ALIQUOTA_CSLL);
 
-    memoria.push({ rubrica: 'IRPJ 15%', valor: irpjBase, aliquota: ALIQUOTA_IRPJ, fundamento: 'RIR/2018 art. 623' });
+    memoria.push({
+      rubrica: 'IRPJ 15%',
+      valor: irpjBase,
+      aliquota: ALIQUOTA_IRPJ,
+      fundamento: 'RIR/2018 art. 623',
+    });
     memoria.push({
       rubrica: `Adicional 10% (excedente a ${(LIMITE_ADICIONAL_MENSAL * meses).toLocaleString('pt-BR')})`,
       valor: irpjAdicional,
       aliquota: ALIQUOTA_ADICIONAL_IRPJ,
       fundamento: 'RIR/2018 art. 624',
     });
-    memoria.push({ rubrica: 'CSLL 9%', valor: csllDevida, aliquota: ALIQUOTA_CSLL, fundamento: 'Lei 7.689/88 art. 3º' });
+    memoria.push({
+      rubrica: 'CSLL 9%',
+      valor: csllDevida,
+      aliquota: ALIQUOTA_CSLL,
+      fundamento: 'Lei 7.689/88 art. 3º',
+    });
 
     const irpjCompensado = round2(Math.min(positivo(p.irrfCompensavel ?? 0), irpjDevido));
     const csllCompensada = round2(Math.min(positivo(p.csllRetidaCompensavel ?? 0), csllDevida));
     if (positivo(p.irrfCompensavel ?? 0) > irpjCompensado) {
-      alertas.push(`${p.rotulo}: IRRF retido excede o IRPJ devido — saldo negativo passível de restituição/PER-DCOMP.`);
+      alertas.push(
+        `${p.rotulo}: IRRF retido excede o IRPJ devido — saldo negativo passível de restituição/PER-DCOMP.`
+      );
     }
 
     const prejuizoGerado = round2(positivo(-lucroRealBruto));

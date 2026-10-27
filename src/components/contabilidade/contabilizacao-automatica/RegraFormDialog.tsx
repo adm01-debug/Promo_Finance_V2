@@ -72,9 +72,7 @@ export function RegraFormDialog({
               <Label>Tipo de evento</Label>
               <Select
                 value={form.tipo_evento}
-                onValueChange={(v) =>
-                  setForm({ ...form, tipo_evento: v as TipoEvento })
-                }
+                onValueChange={(v) => setForm({ ...form, tipo_evento: v as TipoEvento })}
               >
                 <SelectTrigger>
                   <SelectValue />
@@ -92,9 +90,7 @@ export function RegraFormDialog({
               <Label>Categoria (Filtro)</Label>
               <Select
                 value={form.categoria_id || 'all'}
-                onValueChange={(v) =>
-                  setForm({ ...form, categoria_id: v === 'all' ? null : v })
-                }
+                onValueChange={(v) => setForm({ ...form, categoria_id: v === 'all' ? null : v })}
               >
                 <SelectTrigger>
                   <SelectValue placeholder="Todas" />
@@ -152,9 +148,7 @@ export function RegraFormDialog({
             <Label>Histórico (template)</Label>
             <Input
               value={form.historico_template}
-              onChange={(e) =>
-                setForm({ ...form, historico_template: e.target.value })
-              }
+              onChange={(e) => setForm({ ...form, historico_template: e.target.value })}
               placeholder="Use {descricao}, {valor}, {data}"
             />
           </div>
@@ -163,9 +157,7 @@ export function RegraFormDialog({
             <Input
               type="number"
               value={form.prioridade}
-              onChange={(e) =>
-                setForm({ ...form, prioridade: Number(e.target.value) || 100 })
-              }
+              onChange={(e) => setForm({ ...form, prioridade: Number(e.target.value) || 100 })}
             />
           </div>
         </div>

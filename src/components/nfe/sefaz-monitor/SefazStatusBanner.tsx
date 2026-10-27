@@ -9,7 +9,13 @@ import { formatDateTime } from '@/lib/formatters';
 import type { SefazHealthStatus, ContingencyState } from '@/lib/sefaz-contingency';
 
 const itemVariants = { hidden: { opacity: 0, y: 20 }, visible: { opacity: 1, y: 0 } };
-const pulseVariants = { pulse: { scale: [1, 1.05, 1], opacity: [1, 0.8, 1], transition: { duration: 2, repeat: Infinity, ease: "easeInOut" as const } } };
+const pulseVariants = {
+  pulse: {
+    scale: [1, 1.05, 1],
+    opacity: [1, 0.8, 1],
+    transition: { duration: 2, repeat: Infinity, ease: 'easeInOut' as const },
+  },
+};
 
 const getStatusColor = (online: boolean, latency: number) => {
   if (!online) return 'text-destructive';
@@ -32,7 +38,14 @@ interface Props {
   onCheck: () => void;
 }
 
-export function SefazStatusBanner({ health, contingencyState, autoMonitor, setAutoMonitor, isChecking, onCheck }: Props) {
+export function SefazStatusBanner({
+  health,
+  contingencyState,
+  autoMonitor,
+  setAutoMonitor,
+  isChecking,
+  onCheck,
+}: Props) {
   const isContingencyActive = contingencyState.mode !== 'normal';
 
   return (
@@ -41,35 +54,63 @@ export function SefazStatusBanner({ health, contingencyState, autoMonitor, setAu
         <CardContent className="p-6">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-6">
-              <motion.div variants={pulseVariants} animate={health.online ? "pulse" : undefined}
-                className={`relative p-4 rounded-2xl ${health.online ? 'bg-success/20' : 'bg-destructive/20'}`}>
-                {health.online ? <Wifi className="h-10 w-10 text-success" /> : <WifiOff className="h-10 w-10 text-destructive" />}
+              <motion.div
+                variants={pulseVariants}
+                animate={health.online ? 'pulse' : undefined}
+                className={`relative p-4 rounded-2xl ${health.online ? 'bg-success/20' : 'bg-destructive/20'}`}
+              >
+                {health.online ? (
+                  <Wifi className="h-10 w-10 text-success" />
+                ) : (
+                  <WifiOff className="h-10 w-10 text-destructive" />
+                )}
                 {health.online && (
-                  <motion.div className="absolute inset-0 rounded-2xl border-2 border-success/50"
+                  <motion.div
+                    className="absolute inset-0 rounded-2xl border-2 border-success/50"
                     animate={{ scale: [1, 1.2, 1], opacity: [0.5, 0, 0.5] }}
-                    transition={{ duration: 2, repeat: Infinity, ease: "easeOut" }} />
+                    transition={{ duration: 2, repeat: Infinity, ease: 'easeOut' }}
+                  />
                 )}
               </motion.div>
               <div>
                 <div className="flex items-center gap-3">
-                  <h2 className="text-2xl font-bold">SEFAZ {health.online ? 'Online' : 'Offline'}</h2>
-                  <Badge variant="outline" className={getStatusColor(health.online, health.latency)}>
-                    {health.online ? health.latency > 3000 ? 'Lento' : health.latency > 1500 ? 'Normal' : 'Rápido' : 'Indisponível'}
+                  <h2 className="text-2xl font-bold">
+                    SEFAZ {health.online ? 'Online' : 'Offline'}
+                  </h2>
+                  <Badge
+                    variant="outline"
+                    className={getStatusColor(health.online, health.latency)}
+                  >
+                    {health.online
+                      ? health.latency > 3000
+                        ? 'Lento'
+                        : health.latency > 1500
+                          ? 'Normal'
+                          : 'Rápido'
+                      : 'Indisponível'}
                   </Badge>
                   {isContingencyActive && (
-                    <Badge variant="destructive" className="gap-1"><AlertTriangle className="h-3 w-3" />Contingência Ativa</Badge>
+                    <Badge variant="destructive" className="gap-1">
+                      <AlertTriangle className="h-3 w-3" />
+                      Contingência Ativa
+                    </Badge>
                   )}
                 </div>
-                <p className="text-muted-foreground mt-1">Última verificação: {formatDateTime(health.lastCheck.toISOString())}</p>
+                <p className="text-muted-foreground mt-1">
+                  Última verificação: {formatDateTime(health.lastCheck.toISOString())}
+                </p>
               </div>
             </div>
             <div className="flex items-center gap-4">
               <div className="flex items-center gap-2">
                 <Switch id="auto-monitor" checked={autoMonitor} onCheckedChange={setAutoMonitor} />
-                <Label htmlFor="auto-monitor" className="text-sm">Auto</Label>
+                <Label htmlFor="auto-monitor" className="text-sm">
+                  Auto
+                </Label>
               </div>
               <Button variant="outline" onClick={onCheck} disabled={isChecking} className="gap-2">
-                <RefreshCw className={`h-4 w-4 ${isChecking ? 'animate-spin' : ''}`} />Verificar Agora
+                <RefreshCw className={`h-4 w-4 ${isChecking ? 'animate-spin' : ''}`} />
+                Verificar Agora
               </Button>
             </div>
           </div>

@@ -9,7 +9,10 @@ import { formatCurrency } from '@/lib/formatters';
 import { cn } from '@/lib/utils';
 import { ExportDemonstrativoPDF } from '@/components/demonstrativos/ExportDemonstrativoPDF';
 import { ContasNaoClassificadasDialog } from '@/components/demonstrativos/ContasNaoClassificadasDialog';
-import { useDemonstrativosContabeis, type FonteDemonstrativo } from '@/hooks/useDemonstrativosContabeis';
+import {
+  useDemonstrativosContabeis,
+  type FonteDemonstrativo,
+} from '@/hooks/useDemonstrativosContabeis';
 
 interface DREStatementProps {
   periodo: string;
@@ -19,20 +22,38 @@ interface DREStatementProps {
   fonte?: FonteDemonstrativo;
 }
 
-export const DREStatement = ({ periodo, mes, ano, empresaId, fonte = 'competencia' }: DREStatementProps) => {
+export const DREStatement = ({
+  periodo,
+  mes,
+  ano,
+  empresaId,
+  fonte = 'competencia',
+}: DREStatementProps) => {
   const { dre, origem, isLoading } = useDemonstrativosContabeis({ empresaId, ano, mes, fonte });
   const [naoClassOpen, setNaoClassOpen] = useState(false);
   const naoClassificadas = dre.naoClassificadas || [];
   const temNaoClass = naoClassificadas.length > 0;
 
-  const meses = ['Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho',
-    'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'];
+  const meses = [
+    'Janeiro',
+    'Fevereiro',
+    'Março',
+    'Abril',
+    'Maio',
+    'Junho',
+    'Julho',
+    'Agosto',
+    'Setembro',
+    'Outubro',
+    'Novembro',
+    'Dezembro',
+  ];
 
   return (
     <Card className="border-none bg-card/[0.02] backdrop-blur-3xl shadow-[0_48px_96px_-24px_rgba(0,0,0,0.6)] rounded-[3rem] overflow-hidden ring-1 ring-white/10 relative group/card">
       {/* Decorative gradient overlay */}
       <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-purple-500/5 pointer-events-none" />
-      
+
       <CardHeader className="p-10 pb-6 relative z-10">
         <div className="flex items-center justify-between flex-wrap gap-8">
           <div className="space-y-2">
@@ -50,29 +71,36 @@ export const DREStatement = ({ periodo, mes, ano, empresaId, fonte = 'competenci
               </div>
             </div>
           </div>
-          
+
           <div className="flex items-center gap-6 flex-wrap bg-card/[0.03] p-3.5 rounded-[2.5rem] border border-white/10 backdrop-blur-md shadow-2xl ring-1 ring-white/10">
             <div className="flex items-center gap-3 px-6 py-2 rounded-[1.5rem] bg-card/5 border border-white/10">
               <span className="text-xs font-bold uppercase tracking-widest opacity-50">Regime</span>
-              <Badge variant="outline" className="text-[10px] font-black py-0.5 px-2 rounded-md border-primary/40 bg-primary/10 text-primary uppercase">
+              <Badge
+                variant="outline"
+                className="text-[10px] font-black py-0.5 px-2 rounded-md border-primary/40 bg-primary/10 text-primary uppercase"
+              >
                 {origem === 'competencia' ? 'Competência' : 'Caixa'}
               </Badge>
             </div>
 
-            <div className={cn(
-              "flex flex-col px-10 py-3.5 rounded-[2rem] border transition-all duration-700 shadow-2xl min-w-[240px]",
-              dre.lucroLiquido >= 0 
-                ? "bg-success/10 border-success/30 text-success shadow-success/10 ring-1 ring-success/20" 
-                : "bg-destructive/10 border-destructive/30 text-destructive shadow-destructive/10 ring-1 ring-destructive/20"
-            )}>
+            <div
+              className={cn(
+                'flex flex-col px-10 py-3.5 rounded-[2rem] border transition-all duration-700 shadow-2xl min-w-[240px]',
+                dre.lucroLiquido >= 0
+                  ? 'bg-success/10 border-success/30 text-success shadow-success/10 ring-1 ring-success/20'
+                  : 'bg-destructive/10 border-destructive/30 text-destructive shadow-destructive/10 ring-1 ring-destructive/20'
+              )}
+            >
               <span className="text-[10px] font-black uppercase tracking-widest opacity-70 mb-0.5">
-                {dre.lucroLiquido >= 0 ? 'Resultado Líquido (Lucro)' : 'Resultado Líquido (Prejuízo)'}
+                {dre.lucroLiquido >= 0
+                  ? 'Resultado Líquido (Lucro)'
+                  : 'Resultado Líquido (Prejuízo)'}
               </span>
               <span className="text-2xl font-black tabular-nums tracking-tighter">
                 {formatCurrency(Math.abs(dre.lucroLiquido))}
               </span>
             </div>
-            
+
             <div className="flex items-center gap-2 pl-2">
               {temNaoClass && origem === 'competencia' && (
                 <Button
@@ -101,7 +129,7 @@ export const DREStatement = ({ periodo, mes, ano, empresaId, fonte = 'competenci
 
       <CardContent className="p-10 pt-2 relative z-10">
         {temNaoClass && origem === 'competencia' && (
-          <motion.div 
+          <motion.div
             initial={{ opacity: 0, y: -20 }}
             animate={{ opacity: 1, y: 0 }}
             className="mb-8 overflow-hidden rounded-[2rem] border border-warning/20 bg-warning/5 p-6 backdrop-blur-sm"
@@ -114,7 +142,9 @@ export const DREStatement = ({ periodo, mes, ano, empresaId, fonte = 'competenci
                 <div>
                   <h4 className="font-bold text-warning">Contas Pendentes</h4>
                   <p className="text-sm text-muted-foreground">
-                    Existem <strong className="text-warning">{naoClassificadas.length} contas</strong> aguardando classificação para maior precisão.
+                    Existem{' '}
+                    <strong className="text-warning">{naoClassificadas.length} contas</strong>{' '}
+                    aguardando classificação para maior precisão.
                   </p>
                 </div>
               </div>
@@ -141,10 +171,18 @@ export const DREStatement = ({ periodo, mes, ano, empresaId, fonte = 'competenci
               <table className="w-full border-collapse">
                 <thead>
                   <tr className="bg-card/[0.02] border-b border-white/5">
-                    <th className="text-left p-6 font-black text-[10px] uppercase tracking-[0.2em] text-muted-foreground/60">Ref.</th>
-                    <th className="text-left p-6 font-black text-[10px] uppercase tracking-[0.2em] text-muted-foreground/60">Descrição Detalhada</th>
-                    <th className="text-right p-6 font-black text-[10px] uppercase tracking-[0.2em] text-muted-foreground/60">Valor Realizado</th>
-                    <th className="text-right p-6 font-black text-[10px] uppercase tracking-[0.2em] text-muted-foreground/60">Análise (AV)</th>
+                    <th className="text-left p-6 font-black text-[10px] uppercase tracking-[0.2em] text-muted-foreground/60">
+                      Ref.
+                    </th>
+                    <th className="text-left p-6 font-black text-[10px] uppercase tracking-[0.2em] text-muted-foreground/60">
+                      Descrição Detalhada
+                    </th>
+                    <th className="text-right p-6 font-black text-[10px] uppercase tracking-[0.2em] text-muted-foreground/60">
+                      Valor Realizado
+                    </th>
+                    <th className="text-right p-6 font-black text-[10px] uppercase tracking-[0.2em] text-muted-foreground/60">
+                      Análise (AV)
+                    </th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-white/5">
@@ -153,40 +191,54 @@ export const DREStatement = ({ periodo, mes, ano, empresaId, fonte = 'competenci
                       key={linha.codigo}
                       initial={{ opacity: 0, y: 10 }}
                       animate={{ opacity: 1, y: 0 }}
-                      transition={{ 
+                      transition={{
                         delay: index * 0.01,
                         duration: 0.5,
-                        ease: [0.23, 1, 0.32, 1]
+                        ease: [0.23, 1, 0.32, 1],
                       }}
                       className={cn(
-                        "group transition-all duration-300 hover:bg-card/[0.03]",
-                        linha.nivel === 0 ? "bg-card/[0.02] font-black" : "font-medium",
-                        linha.codigo === '11' ? "bg-primary/5 border-l-4 border-l-primary" : "",
-                        linha.codigo === '99' ? "bg-warning/5 border-l-4 border-l-warning" : ""
+                        'group transition-all duration-300 hover:bg-card/[0.03]',
+                        linha.nivel === 0 ? 'bg-card/[0.02] font-black' : 'font-medium',
+                        linha.codigo === '11' ? 'bg-primary/5 border-l-4 border-l-primary' : '',
+                        linha.codigo === '99' ? 'bg-warning/5 border-l-4 border-l-warning' : ''
                       )}
                     >
                       <td className="p-6 text-[11px] font-mono text-muted-foreground/40 group-hover:text-primary transition-colors">
                         {linha.codigo}
                       </td>
-                      <td className={cn(
-                        "p-6 text-sm tracking-tight transition-all",
-                        linha.nivel === 1 ? "pl-14 opacity-80" : "text-base",
-                        linha.nivel === 0 ? "text-foreground" : "text-muted-foreground"
-                      )}>
+                      <td
+                        className={cn(
+                          'p-6 text-sm tracking-tight transition-all',
+                          linha.nivel === 1 ? 'pl-14 opacity-80' : 'text-base',
+                          linha.nivel === 0 ? 'text-foreground' : 'text-muted-foreground'
+                        )}
+                      >
                         {linha.descricao}
                       </td>
-                      <td className={cn(
-                        "p-6 text-right tabular-nums font-bold text-base",
-                        linha.valor > 0 ? "text-success" : linha.valor < 0 ? "text-destructive" : "text-muted-foreground"
-                      )}>
+                      <td
+                        className={cn(
+                          'p-6 text-right tabular-nums font-bold text-base',
+                          linha.valor > 0
+                            ? 'text-success'
+                            : linha.valor < 0
+                              ? 'text-destructive'
+                              : 'text-muted-foreground'
+                        )}
+                      >
                         <div className="flex items-center justify-end gap-3">
                           {formatCurrency(Math.abs(linha.valor))}
                           {linha.valor !== 0 && (
-                            <div className={cn(
-                              "p-1 rounded-md bg-current/10 transition-transform group-hover:scale-110",
-                              linha.valor > 0 ? "text-success" : "text-destructive"
-                            )}>
-                              {linha.valor > 0 ? <TrendingUp className="h-3.5 w-3.5" /> : <TrendingDown className="h-3.5 w-3.5" />}
+                            <div
+                              className={cn(
+                                'p-1 rounded-md bg-current/10 transition-transform group-hover:scale-110',
+                                linha.valor > 0 ? 'text-success' : 'text-destructive'
+                              )}
+                            >
+                              {linha.valor > 0 ? (
+                                <TrendingUp className="h-3.5 w-3.5" />
+                              ) : (
+                                <TrendingDown className="h-3.5 w-3.5" />
+                              )}
                             </div>
                           )}
                         </div>
@@ -194,13 +246,13 @@ export const DREStatement = ({ periodo, mes, ano, empresaId, fonte = 'competenci
                       <td className="p-6 text-right">
                         <div className="flex items-center justify-end gap-3">
                           <div className="w-16 h-1.5 rounded-full bg-card/5 overflow-hidden">
-                            <motion.div 
+                            <motion.div
                               initial={{ width: 0 }}
                               animate={{ width: `${Math.min(linha.percentual, 100)}%` }}
                               transition={{ duration: 1, delay: 0.5 + index * 0.01 }}
                               className={cn(
-                                "h-full rounded-full",
-                                linha.valor >= 0 ? "bg-primary" : "bg-destructive"
+                                'h-full rounded-full',
+                                linha.valor >= 0 ? 'bg-primary' : 'bg-destructive'
                               )}
                             />
                           </div>
@@ -222,8 +274,11 @@ export const DREStatement = ({ periodo, mes, ano, empresaId, fonte = 'competenci
             <Settings2 className="h-4 w-4 text-muted-foreground" />
           </div>
           <p className="text-xs text-muted-foreground leading-relaxed">
-            <strong className="text-foreground">Nota Metodológica:</strong> AV (Análise Vertical) representa o peso relativo de cada linha sobre a Receita Bruta. 
-            {origem === 'competencia' ? ' Dados baseados em lançamentos contábeis oficiais.' : ' Valores estimados via fluxo de caixa operacional.'}
+            <strong className="text-foreground">Nota Metodológica:</strong> AV (Análise Vertical)
+            representa o peso relativo de cada linha sobre a Receita Bruta.
+            {origem === 'competencia'
+              ? ' Dados baseados em lançamentos contábeis oficiais.'
+              : ' Valores estimados via fluxo de caixa operacional.'}
           </p>
         </div>
       </CardContent>

@@ -1,13 +1,13 @@
 // COMPONENT: AssistenteFechamentoMensal (P10)
-import { useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
-import { CheckCircle2, XCircle, AlertTriangle, Loader2, Lock, ShieldAlert } from "lucide-react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { Textarea } from "@/components/ui/textarea";
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import { useFechamentoTributario } from "@/hooks/useFechamentoTributario";
+import { useState } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { CheckCircle2, XCircle, AlertTriangle, Loader2, Lock, ShieldAlert } from 'lucide-react';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
+import { Textarea } from '@/components/ui/textarea';
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
+import { useFechamentoTributario } from '@/hooks/useFechamentoTributario';
 
 interface Props {
   empresaId: string;
@@ -25,23 +25,27 @@ interface CheckItem {
 }
 
 export function AssistenteFechamentoMensal({ empresaId, ano, mes, isAdmin }: Props) {
-  const { fechamento, executar, executando, ultimoResultado } = useFechamentoTributario(empresaId, ano, mes);
-  const [observacoes, setObservacoes] = useState("");
-  const [justificativa, setJustificativa] = useState("");
+  const { fechamento, executar, executando, ultimoResultado } = useFechamentoTributario(
+    empresaId,
+    ano,
+    mes
+  );
+  const [observacoes, setObservacoes] = useState('');
+  const [justificativa, setJustificativa] = useState('');
   const [showForce, setShowForce] = useState(false);
 
   const fechamentoData = (fechamento ?? null) as Record<string, unknown> | null;
-  const checks: CheckItem[] = (ultimoResultado?.checks
-    ?? (fechamentoData?.checklist as CheckItem[] | undefined)
-    ?? []);
+  const checks: CheckItem[] =
+    ultimoResultado?.checks ?? (fechamentoData?.checklist as CheckItem[] | undefined) ?? [];
   const status = ultimoResultado?.status ?? (fechamentoData?.status as string | undefined);
-  const isFechado = status === "fechado";
+  const isFechado = status === 'fechado';
   const criticalFails = checks.filter((c) => c.critical && !c.ok);
 
   const handleExecutar = async (forcar = false) => {
     await executar({
       empresa_id: empresaId,
-      ano, mes,
+      ano,
+      mes,
       observacoes: observacoes || undefined,
       forcar,
       justificativa: forcar ? justificativa : undefined,
@@ -53,13 +57,13 @@ export function AssistenteFechamentoMensal({ empresaId, ano, mes, isAdmin }: Pro
     <Card className="border-none bg-background/20 backdrop-blur-3xl shadow-xl ring-1 ring-white/10 rounded-[2.5rem] overflow-hidden">
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
-          {isFechado ? <Lock className="h-5 w-5 text-success" /> : <ShieldAlert className="h-5 w-5 text-primary" />}
-          Assistente de Fechamento Mensal — {String(mes).padStart(2, "0")}/{ano}
-          {status && (
-            <Badge variant={isFechado ? "default" : "secondary"}>
-              {status}
-            </Badge>
+          {isFechado ? (
+            <Lock className="h-5 w-5 text-success" />
+          ) : (
+            <ShieldAlert className="h-5 w-5 text-primary" />
           )}
+          Assistente de Fechamento Mensal — {String(mes).padStart(2, '0')}/{ano}
+          {status && <Badge variant={isFechado ? 'default' : 'secondary'}>{status}</Badge>}
         </CardTitle>
       </CardHeader>
       <CardContent className="space-y-4">
@@ -74,17 +78,21 @@ export function AssistenteFechamentoMensal({ empresaId, ano, mes, isAdmin }: Pro
                   transition={{ delay: i * 0.05 }}
                   className="flex items-start gap-3 p-3 rounded-md border bg-card"
                 >
-                  {c.ok
-                    ? <CheckCircle2 className="h-5 w-5 text-success shrink-0 mt-0.5" />
-                    : c.critical
-                      ? <XCircle className="h-5 w-5 text-destructive shrink-0 mt-0.5" />
-                      : <AlertTriangle className="h-5 w-5 text-warning shrink-0 mt-0.5" />}
+                  {c.ok ? (
+                    <CheckCircle2 className="h-5 w-5 text-success shrink-0 mt-0.5" />
+                  ) : c.critical ? (
+                    <XCircle className="h-5 w-5 text-destructive shrink-0 mt-0.5" />
+                  ) : (
+                    <AlertTriangle className="h-5 w-5 text-warning shrink-0 mt-0.5" />
+                  )}
                   <div className="flex-1">
                     <div className="font-medium text-sm">{c.label}</div>
                     <div className="text-xs text-muted-foreground">{c.detail}</div>
                   </div>
                   {c.critical && !c.ok && (
-                    <Badge variant="destructive" className="text-xs">crítico</Badge>
+                    <Badge variant="destructive" className="text-xs">
+                      crítico
+                    </Badge>
                   )}
                 </motion.div>
               ))}
@@ -149,10 +157,15 @@ export function AssistenteFechamentoMensal({ empresaId, ano, mes, isAdmin }: Pro
             <CheckCircle2 className="h-4 w-4" />
             <AlertTitle>Período fechado</AlertTitle>
             <AlertDescription>
-              Score conformidade:{" "}
+              Score conformidade:{' '}
               <strong>{Number(fechamentoData?.score_conformidade ?? 0).toFixed(0)}/100</strong>
-              {" • "}Total apurado:{" "}
-              <strong>R$ {Number(fechamentoData?.total_apurado ?? 0).toLocaleString("pt-BR", { minimumFractionDigits: 2 })}</strong>
+              {' • '}Total apurado:{' '}
+              <strong>
+                R${' '}
+                {Number(fechamentoData?.total_apurado ?? 0).toLocaleString('pt-BR', {
+                  minimumFractionDigits: 2,
+                })}
+              </strong>
             </AlertDescription>
           </Alert>
         )}

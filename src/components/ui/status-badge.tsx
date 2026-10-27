@@ -6,13 +6,13 @@ import { motion } from 'framer-motion';
 import { Check, Clock, AlertTriangle, X, Loader2, Pause, Play, LucideIcon } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
-type StatusType = 
-  | 'success' 
-  | 'pending' 
-  | 'warning' 
-  | 'error' 
-  | 'loading' 
-  | 'paused' 
+type StatusType =
+  | 'success'
+  | 'pending'
+  | 'warning'
+  | 'error'
+  | 'loading'
+  | 'paused'
   | 'active'
   | 'inactive'
   | 'paid'
@@ -28,13 +28,16 @@ interface StatusBadgeProps {
   pulse?: boolean;
 }
 
-const statusConfig: Record<StatusType, {
-  icon: LucideIcon;
-  label: string;
-  bgColor: string;
-  textColor: string;
-  iconColor: string;
-}> = {
+const statusConfig: Record<
+  StatusType,
+  {
+    icon: LucideIcon;
+    label: string;
+    bgColor: string;
+    textColor: string;
+    iconColor: string;
+  }
+> = {
   success: {
     icon: Check,
     label: 'Concluído',
@@ -152,22 +155,13 @@ export function StatusBadge({
       )}
     >
       {showIcon && (
-        <Icon 
-          className={cn(
-            iconSizes[size],
-            config.iconColor,
-            isLoading && 'animate-spin'
-          )} 
-        />
+        <Icon className={cn(iconSizes[size], config.iconColor, isLoading && 'animate-spin')} />
       )}
       <span>{displayLabel}</span>
-      
+
       {pulse && !isLoading && (
         <motion.span
-          className={cn(
-            'absolute inset-0 rounded-full',
-            config.bgColor
-          )}
+          className={cn('absolute inset-0 rounded-full', config.bgColor)}
           animate={{
             scale: [1, 1.1],
             opacity: [0.5, 0],
@@ -211,31 +205,16 @@ const dotColors: Record<StatusType, string> = {
   partial: 'bg-secondary',
 };
 
-export function StatusDot({
-  status,
-  className,
-  size = 'md',
-  pulse = true,
-}: StatusDotProps) {
+export function StatusDot({ status, className, size = 'md', pulse = true }: StatusDotProps) {
   const color = dotColors[status];
   const isLoading = status === 'loading';
 
   return (
     <span className={cn('relative inline-flex', className)}>
-      <span 
-        className={cn(
-          'rounded-full',
-          dotSizes[size],
-          color,
-          isLoading && 'animate-pulse'
-        )} 
-      />
+      <span className={cn('rounded-full', dotSizes[size], color, isLoading && 'animate-pulse')} />
       {pulse && !isLoading && (
         <motion.span
-          className={cn(
-            'absolute inset-0 rounded-full',
-            color
-          )}
+          className={cn('absolute inset-0 rounded-full', color)}
           animate={{
             scale: [1, 2],
             opacity: [0.5, 0],

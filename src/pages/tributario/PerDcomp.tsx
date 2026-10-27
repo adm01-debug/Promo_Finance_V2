@@ -11,10 +11,10 @@ export default function PerDcompPage() {
     <MainLayout>
       <div className="relative min-h-screen">
         <PageBackground />
-        
+
         <div className="container mx-auto p-6 relative z-10">
-          <PageHeader 
-            title="Per/Dcomp" 
+          <PageHeader
+            title="Per/Dcomp"
             subtitle="Pedidos de Restituição, Ressarcimento e Declaração de Compensação de tributos federais."
             badge="Cash Management"
             icon={Calculator}
@@ -22,7 +22,7 @@ export default function PerDcompPage() {
             gradientVia="via-primary"
             gradientTo="to-emerald-500"
           />
-          
+
           <PerDcompPanel empresaId={currentEmpresaId || ''} />
         </div>
       </div>

@@ -1,4 +1,3 @@
-
 import type { ParametrosSimulacao, ResultadoCenario, AnexoSimples } from './types';
 import { simularSimples as simularSimplesShared } from './shared-logic';
 
@@ -13,12 +12,12 @@ export interface OpcoesSimples {
  */
 export function simularSimples(
   params: ParametrosSimulacao,
-  opcoes: OpcoesSimples,
+  opcoes: OpcoesSimples
 ): ResultadoCenario {
   return simularSimplesShared(
     params,
     opcoes.anoReferencia,
     opcoes.mesReferencia,
-    opcoes.forcarAnexo,
+    opcoes.forcarAnexo
   );
 }

@@ -74,7 +74,9 @@ export default function OportunidadesElisao() {
         </div>
         <Button
           onClick={() => persistirOportunidades.mutate()}
-          disabled={!empresaId || persistirOportunidades.isPending || relatorio.total_aplicaveis === 0}
+          disabled={
+            !empresaId || persistirOportunidades.isPending || relatorio.total_aplicaveis === 0
+          }
         >
           <Save className="h-4 w-4 mr-2" />
           Salvar análise
@@ -87,16 +89,26 @@ export default function OportunidadesElisao() {
         setEmpresaId={setEmpresaId}
         regimeAtual={regimeAtual}
         setRegimeAtual={setRegimeAtual}
-        pl={pl} setPl={setPl}
-        lucro={lucro} setLucro={setLucro}
-        importacao={importacao} setImportacao={setImportacao}
-        pd={pd} setPd={setPd}
-        beneficioIcms={beneficioIcms} setBeneficioIcms={setBeneficioIcms}
-        dividendos={dividendos} setDividendos={setDividendos}
-        uf={uf} setUf={setUf}
-        lucrosAcumulados={lucrosAcumulados} setLucrosAcumulados={setLucrosAcumulados}
-        creditosPisCofins={creditosPisCofins} setCreditosPisCofins={setCreditosPisCofins}
-        investimentoMaquinas={investimentoMaquinas} setInvestimentoMaquinas={setInvestimentoMaquinas}
+        pl={pl}
+        setPl={setPl}
+        lucro={lucro}
+        setLucro={setLucro}
+        importacao={importacao}
+        setImportacao={setImportacao}
+        pd={pd}
+        setPd={setPd}
+        beneficioIcms={beneficioIcms}
+        setBeneficioIcms={setBeneficioIcms}
+        dividendos={dividendos}
+        setDividendos={setDividendos}
+        uf={uf}
+        setUf={setUf}
+        lucrosAcumulados={lucrosAcumulados}
+        setLucrosAcumulados={setLucrosAcumulados}
+        creditosPisCofins={creditosPisCofins}
+        setCreditosPisCofins={setCreditosPisCofins}
+        investimentoMaquinas={investimentoMaquinas}
+        setInvestimentoMaquinas={setInvestimentoMaquinas}
       />
 
       {!temHistoricoSuficiente && empresaId && (
@@ -104,7 +116,8 @@ export default function OportunidadesElisao() {
           <AlertTriangle className="h-4 w-4" />
           <AlertTitle>Histórico financeiro incompleto</AlertTitle>
           <AlertDescription>
-            Cadastre 12 meses de faturamento e folha em "Histórico Tributário" para análise mais precisa.
+            Cadastre 12 meses de faturamento e folha em "Histórico Tributário" para análise mais
+            precisa.
           </AlertDescription>
         </Alert>
       )}

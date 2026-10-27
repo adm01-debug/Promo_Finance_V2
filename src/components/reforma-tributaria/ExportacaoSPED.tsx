@@ -7,20 +7,25 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Progress } from '@/components/ui/progress';
-import { 
-  FileText, 
-  Download, 
-  CheckCircle2,
-  FileSpreadsheet,
-  Settings,
-} from 'lucide-react';
+import { FileText, Download, CheckCircle2, FileSpreadsheet, Settings } from 'lucide-react';
 import { format } from 'date-fns';
 import { toast } from 'sonner';
 import { logger } from '@/lib/logger';
-import { gerarEFD_IBS_CBS, gerarEFD_Contribuicoes, downloadArquivoSPED, validarArquivoSPED } from '@/lib/sped-generator';
+import {
+  gerarEFD_IBS_CBS,
+  gerarEFD_Contribuicoes,
+  downloadArquivoSPED,
+  validarArquivoSPED,
+} from '@/lib/sped-generator';
 import { useAllEmpresas } from '@/hooks/useEmpresas';
 import { useOperacoesTributaveis } from '@/hooks/useOperacoesTributaveis';
 import { useCreditosTributarios } from '@/hooks/useCreditosTributarios';
@@ -29,27 +34,27 @@ import { useApuracoesTributarias } from '@/hooks/useApuracoesTributarias';
 type TipoArquivo = 'efd-ibs-cbs' | 'efd-contribuicoes' | 'dctf' | 'per-dcomp';
 
 const TIPOS_ARQUIVO = [
-  { 
-    id: 'efd-ibs-cbs' as TipoArquivo, 
-    nome: 'EFD-IBS/CBS', 
+  {
+    id: 'efd-ibs-cbs' as TipoArquivo,
+    nome: 'EFD-IBS/CBS',
     descricao: 'Escrituração Fiscal Digital dos novos tributos',
     disponivel: true,
   },
-  { 
-    id: 'efd-contribuicoes' as TipoArquivo, 
-    nome: 'EFD-Contribuições', 
+  {
+    id: 'efd-contribuicoes' as TipoArquivo,
+    nome: 'EFD-Contribuições',
     descricao: 'PIS/COFINS (tributos residuais)',
     disponivel: true,
   },
-  { 
-    id: 'dctf' as TipoArquivo, 
-    nome: 'DCTF', 
+  {
+    id: 'dctf' as TipoArquivo,
+    nome: 'DCTF',
     descricao: 'Declaração de Débitos e Créditos',
     disponivel: false,
   },
-  { 
-    id: 'per-dcomp' as TipoArquivo, 
-    nome: 'PER/DCOMP', 
+  {
+    id: 'per-dcomp' as TipoArquivo,
+    nome: 'PER/DCOMP',
     descricao: 'Pedido de Restituição/Compensação',
     disponivel: false,
   },
@@ -71,12 +76,17 @@ export function ExportacaoSPED({ empresaId: initialEmpresaId }: Props) {
   const { creditos = [] } = useCreditosTributarios(empresaId || undefined);
   const { apuracoes = [] } = useApuracoesTributarias(empresaId || undefined);
 
-  const empresaSelecionada = empresas.find(e => e.id === empresaId);
-  const apuracaoCompetencia = apuracoes.find(a => a.competencia === competencia);
+  const empresaSelecionada = empresas.find((e) => e.id === empresaId);
+  const apuracaoCompetencia = apuracoes.find((a) => a.competencia === competencia);
 
   const handleGerarArquivo = async () => {
     if (!empresaSelecionada) {
       toast.error('Selecione uma empresa');
+      return;
+    }
+
+    if (!empresaSelecionada.cnpj) {
+      toast.error('Empresa selecionada não possui CNPJ cadastrado');
       return;
     }
 
@@ -85,7 +95,7 @@ export function ExportacaoSPED({ empresaId: initialEmpresaId }: Props) {
 
     try {
       // Simular processamento
-      await new Promise(r => setTimeout(r, 500));
+      await new Promise((r) => setTimeout(r, 500));
       setProgresso(30);
 
       const dadosEmpresa = {
@@ -96,13 +106,13 @@ export function ExportacaoSPED({ empresaId: initialEmpresaId }: Props) {
       };
 
       // Filtrar operações da competência
-      const operacoesCompetencia = operacoes.filter(op => {
+      const operacoesCompetencia = operacoes.filter((op) => {
         const dataOp = op.data_operacao.substring(0, 7);
         return dataOp === competencia;
       });
 
       // Filtrar créditos da competência
-      const creditosCompetencia = creditos.filter(c => c.competencia_origem === competencia);
+      const creditosCompetencia = creditos.filter((c) => c.competencia_origem === competencia);
 
       setProgresso(60);
 
@@ -125,7 +135,7 @@ export function ExportacaoSPED({ empresaId: initialEmpresaId }: Props) {
         conteudo = gerarEFD_IBS_CBS(
           dadosEmpresa,
           competencia,
-          operacoesCompetencia.map(op => ({
+          operacoesCompetencia.map((op) => ({
             ...op,
             cbs_aliquota: op.cbs_aliquota || 0,
             cbs_valor: op.cbs_valor || 0,
@@ -134,7 +144,7 @@ export function ExportacaoSPED({ empresaId: initialEmpresaId }: Props) {
             is_aliquota: op.is_aliquota || 0,
             is_valor: op.is_valor || 0,
           })),
-          creditosCompetencia.map(c => ({
+          creditosCompetencia.map((c) => ({
             ...c,
             aliquota: c.aliquota || 0,
           })),
@@ -146,7 +156,7 @@ export function ExportacaoSPED({ empresaId: initialEmpresaId }: Props) {
         conteudo = gerarEFD_Contribuicoes(
           dadosEmpresa,
           competencia,
-          operacoesCompetencia.map(op => ({
+          operacoesCompetencia.map((op) => ({
             ...op,
             cbs_aliquota: op.cbs_aliquota || 0,
             cbs_valor: op.cbs_valor || 0,
@@ -155,7 +165,7 @@ export function ExportacaoSPED({ empresaId: initialEmpresaId }: Props) {
             is_aliquota: op.is_aliquota || 0,
             is_valor: op.is_valor || 0,
           })),
-          creditosCompetencia.map(c => ({
+          creditosCompetencia.map((c) => ({
             ...c,
             aliquota: c.aliquota || 0,
           }))
@@ -168,7 +178,7 @@ export function ExportacaoSPED({ empresaId: initialEmpresaId }: Props) {
 
       // Validar arquivo
       const validacao = validarArquivoSPED(conteudo);
-      
+
       if (!validacao.valido) {
         toast.warning('Arquivo gerado com avisos', {
           description: validacao.erros.join('; '),
@@ -237,7 +247,7 @@ export function ExportacaoSPED({ empresaId: initialEmpresaId }: Props) {
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  {TIPOS_ARQUIVO.filter(t => t.disponivel).map((tipo) => (
+                  {TIPOS_ARQUIVO.filter((t) => t.disponivel).map((tipo) => (
                     <SelectItem key={tipo.id} value={tipo.id}>
                       {tipo.nome}
                     </SelectItem>
@@ -256,13 +266,13 @@ export function ExportacaoSPED({ empresaId: initialEmpresaId }: Props) {
                   <div>
                     <span className="text-muted-foreground">Operações:</span>
                     <span className="ml-2 font-medium">
-                      {operacoes.filter(o => o.data_operacao.startsWith(competencia)).length}
+                      {operacoes.filter((o) => o.data_operacao.startsWith(competencia)).length}
                     </span>
                   </div>
                   <div>
                     <span className="text-muted-foreground">Créditos:</span>
                     <span className="ml-2 font-medium">
-                      {creditos.filter(c => c.competencia_origem === competencia).length}
+                      {creditos.filter((c) => c.competencia_origem === competencia).length}
                     </span>
                   </div>
                   <div>
@@ -286,11 +296,7 @@ export function ExportacaoSPED({ empresaId: initialEmpresaId }: Props) {
             </div>
           )}
 
-          <Button
-            onClick={handleGerarArquivo}
-            disabled={!empresaId || gerando}
-            className="w-full"
-          >
+          <Button onClick={handleGerarArquivo} disabled={!empresaId || gerando} className="w-full">
             <Download className="h-4 w-4 mr-2" />
             Gerar e Baixar Arquivo SPED
           </Button>
@@ -300,8 +306,8 @@ export function ExportacaoSPED({ empresaId: initialEmpresaId }: Props) {
       {/* Tipos de arquivo disponíveis */}
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
         {TIPOS_ARQUIVO.map((tipo) => (
-          <Card 
-            key={tipo.id} 
+          <Card
+            key={tipo.id}
             className={`cursor-pointer transition-all ${
               tipoArquivo === tipo.id ? 'ring-2 ring-primary' : ''
             } ${!tipo.disponivel ? 'opacity-50' : ''}`}
@@ -311,9 +317,7 @@ export function ExportacaoSPED({ empresaId: initialEmpresaId }: Props) {
               <div className="flex items-start justify-between">
                 <div>
                   <h3 className="font-semibold">{tipo.nome}</h3>
-                  <p className="text-sm text-muted-foreground mt-1">
-                    {tipo.descricao}
-                  </p>
+                  <p className="text-sm text-muted-foreground mt-1">{tipo.descricao}</p>
                 </div>
                 {tipo.disponivel ? (
                   <CheckCircle2 className="h-5 w-5 text-success" />

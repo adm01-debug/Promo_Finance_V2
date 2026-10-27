@@ -9,7 +9,13 @@ import {
 } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 
 export interface ContaBancariaOpenFinance {
   id: string;
@@ -110,7 +116,11 @@ export function OpenFinanceImportDialog({
           <Button variant="outline" onClick={() => onOpenChange(false)}>
             Cancelar
           </Button>
-          <Button onClick={onImport} disabled={!selectedContaBancaria || importing} className="gap-2">
+          <Button
+            onClick={onImport}
+            disabled={!selectedContaBancaria || importing}
+            className="gap-2"
+          >
             {importing ? (
               <>
                 <Loader2 className="h-4 w-4 animate-spin" />

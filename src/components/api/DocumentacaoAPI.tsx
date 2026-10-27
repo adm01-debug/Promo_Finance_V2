@@ -57,7 +57,9 @@ export function DocumentacaoAPI() {
             <Key className="h-4 w-4" />
             <span className="font-mono text-sm">API Key: ••••••••••••</span>
           </div>
-          <Button variant="outline" size="sm">Gerar Nova Chave</Button>
+          <Button variant="outline" size="sm">
+            Gerar Nova Chave
+          </Button>
         </div>
 
         <Tabs defaultValue="endpoints">
@@ -70,9 +72,7 @@ export function DocumentacaoAPI() {
             {endpoints.map((ep, idx) => (
               <div key={idx} className="flex items-center justify-between p-3 rounded border">
                 <div className="flex items-center gap-3">
-                  <Badge variant={ep.method === 'GET' ? 'secondary' : 'default'}>
-                    {ep.method}
-                  </Badge>
+                  <Badge variant={ep.method === 'GET' ? 'secondary' : 'default'}>{ep.method}</Badge>
                   <code className="text-sm font-mono">{ep.path}</code>
                 </div>
                 <span className="text-sm text-muted-foreground">{ep.desc}</span>
@@ -84,8 +84,16 @@ export function DocumentacaoAPI() {
             <div>
               <div className="flex items-center justify-between mb-2">
                 <span className="text-sm font-medium">Request</span>
-                <Button size="sm" variant="ghost" onClick={() => copyToClipboard(exemploRequest, 'req')}>
-                  {copied === 'req' ? <CheckCircle className="h-4 w-4" /> : <Copy className="h-4 w-4" />}
+                <Button
+                  size="sm"
+                  variant="ghost"
+                  onClick={() => copyToClipboard(exemploRequest, 'req')}
+                >
+                  {copied === 'req' ? (
+                    <CheckCircle className="h-4 w-4" />
+                  ) : (
+                    <Copy className="h-4 w-4" />
+                  )}
                 </Button>
               </div>
               <pre className="p-3 rounded bg-muted text-xs overflow-x-auto">{exemploRequest}</pre>
@@ -93,8 +101,16 @@ export function DocumentacaoAPI() {
             <div>
               <div className="flex items-center justify-between mb-2">
                 <span className="text-sm font-medium">Response</span>
-                <Button size="sm" variant="ghost" onClick={() => copyToClipboard(exemploResponse, 'res')}>
-                  {copied === 'res' ? <CheckCircle className="h-4 w-4" /> : <Copy className="h-4 w-4" />}
+                <Button
+                  size="sm"
+                  variant="ghost"
+                  onClick={() => copyToClipboard(exemploResponse, 'res')}
+                >
+                  {copied === 'res' ? (
+                    <CheckCircle className="h-4 w-4" />
+                  ) : (
+                    <Copy className="h-4 w-4" />
+                  )}
                 </Button>
               </div>
               <pre className="p-3 rounded bg-muted text-xs overflow-x-auto">{exemploResponse}</pre>

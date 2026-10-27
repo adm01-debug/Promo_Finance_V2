@@ -1,6 +1,6 @@
 // HOOK: useDRETributaria (P10)
-import { useQuery } from "@tanstack/react-query";
-import { supabase } from "@/integrations/supabase/client";
+import { useQuery } from '@tanstack/react-query';
+import { supabase } from '@/integrations/supabase/client';
 
 export interface DRETributaria {
   periodo: string;
@@ -31,13 +31,12 @@ export interface DRETributaria {
 
 export function useDRETributaria(empresaId?: string, periodo?: string) {
   return useQuery({
-    queryKey: ["dre-tributaria", empresaId, periodo],
+    queryKey: ['dre-tributaria', empresaId, periodo],
     queryFn: async () => {
       if (!empresaId || !periodo) return null;
-      const { data, error } = await supabase.functions.invoke(
-        "gerar-dre-tributaria",
-        { body: { empresa_id: empresaId, periodo } },
-      );
+      const { data, error } = await supabase.functions.invoke('gerar-dre-tributaria', {
+        body: { empresa_id: empresaId, periodo },
+      });
       if (error) throw error;
       return (data as { dre?: DRETributaria } | null)?.dre ?? null;
     },

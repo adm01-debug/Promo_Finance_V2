@@ -7,19 +7,32 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '@/components/ui/table';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from '@/components/ui/dialog';
 import { Separator } from '@/components/ui/separator';
-import { 
-  CreditCard, 
-  Split, 
-  CheckCircle2, 
-  Clock,
-  DollarSign,
-  Calculator,
-  Plus,
-} from 'lucide-react';
+import { CreditCard, Split, CheckCircle2, Clock, DollarSign, Calculator, Plus } from 'lucide-react';
 import { format, parseISO } from 'date-fns';
 import { formatCurrency } from '@/lib/formatters';
 import useSplitPayment from '@/hooks/useSplitPayment';
@@ -38,13 +51,8 @@ export function SplitPaymentPanel() {
   const [valorSimulacao, setValorSimulacao] = useState(10000);
 
   const { data: empresas = [] } = useAllEmpresas();
-  const {
-    transacoes,
-    estatisticas,
-    calcularSplit,
-    registrarTransacao,
-    confirmarProcessamento,
-  } = useSplitPayment(empresaId || undefined);
+  const { transacoes, estatisticas, calcularSplit, registrarTransacao, confirmarProcessamento } =
+    useSplitPayment(empresaId || undefined);
 
   const simulacao = calcularSplit(valorSimulacao);
 
@@ -134,7 +142,9 @@ export function SplitPaymentPanel() {
                     <Separator />
                     <div className="flex justify-between font-medium">
                       <span>Total Retido:</span>
-                      <span className="text-destructive">{formatCurrency(simulacao.totalRetido)}</span>
+                      <span className="text-destructive">
+                        {formatCurrency(simulacao.totalRetido)}
+                      </span>
                     </div>
                     <div className="flex justify-between font-bold text-lg">
                       <span>Valor Líquido Vendedor:</span>
@@ -157,9 +167,7 @@ export function SplitPaymentPanel() {
                   <Button variant="outline" onClick={() => setDialogOpen(false)}>
                     Fechar
                   </Button>
-                  <Button onClick={handleRegistrar}>
-                    Registrar Transação
-                  </Button>
+                  <Button onClick={handleRegistrar}>Registrar Transação</Button>
                 </DialogFooter>
               </DialogContent>
             </Dialog>
@@ -188,7 +196,9 @@ export function SplitPaymentPanel() {
                   <DollarSign className="h-8 w-8 text-success" />
                   <div>
                     <p className="text-sm text-muted-foreground">Volume Operado</p>
-                    <p className="text-2xl font-bold">{formatCurrency(estatisticas.valorTotalOperacoes)}</p>
+                    <p className="text-2xl font-bold">
+                      {formatCurrency(estatisticas.valorTotalOperacoes)}
+                    </p>
                   </div>
                 </div>
               </CardContent>
@@ -200,7 +210,9 @@ export function SplitPaymentPanel() {
                   <Calculator className="h-8 w-8 text-destructive" />
                   <div>
                     <p className="text-sm text-muted-foreground">Tributos Retidos</p>
-                    <p className="text-2xl font-bold">{formatCurrency(estatisticas.totalTributosRetidos)}</p>
+                    <p className="text-2xl font-bold">
+                      {formatCurrency(estatisticas.totalTributosRetidos)}
+                    </p>
                   </div>
                 </div>
               </CardContent>
@@ -265,7 +277,11 @@ export function SplitPaymentPanel() {
                           {format(parseISO(transacao.created_at), 'dd/MM/yyyy')}
                         </TableCell>
                         <TableCell>
-                          <Badge className={STATUS_COLORS[transacao.status as keyof typeof STATUS_COLORS]}>
+                          <Badge
+                            className={
+                              STATUS_COLORS[transacao.status as keyof typeof STATUS_COLORS]
+                            }
+                          >
                             {transacao.status}
                           </Badge>
                         </TableCell>

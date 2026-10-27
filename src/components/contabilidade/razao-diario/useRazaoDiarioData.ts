@@ -14,7 +14,14 @@ interface Params {
   busca: string;
 }
 
-export function useRazaoDiarioData({ empresaId, ano, dataInicio, dataFim, contaId, busca }: Params) {
+export function useRazaoDiarioData({
+  empresaId,
+  ano,
+  dataInicio,
+  dataFim,
+  contaId,
+  busca,
+}: Params) {
   const { data: lancs = [], isLoading } = useLancamentosContabeis(empresaId, ano);
   const { data: plano = [] } = usePlanoContas(empresaId);
   const { data: empresas = [] } = useEmpresas();
@@ -59,22 +66,24 @@ export function useRazaoDiarioData({ empresaId, ano, dataInicio, dataFim, contaI
       const d = new Date(`${p.data}T00:00:00`);
       if (d < ini || d > fim) return false;
       if (contaId !== 'todas' && p.conta_id !== contaId) return false;
-      if (term && !`${p.historico} ${p.conta_codigo} ${p.conta_nome}`.toLowerCase().includes(term)) return false;
+      if (term && !`${p.historico} ${p.conta_codigo} ${p.conta_nome}`.toLowerCase().includes(term))
+        return false;
       return true;
     });
   }, [todasPartidas, dataInicio, dataFim, contaId, busca]);
 
   const diario = useMemo(
     () => [...partidasFiltradas].sort((a, b) => a.data.localeCompare(b.data)),
-    [partidasFiltradas],
+    [partidasFiltradas]
   );
 
   const totaisDiario = useMemo(
-    () => diario.reduce(
-      (acc, p) => ({ debito: acc.debito + p.debito, credito: acc.credito + p.credito }),
-      { debito: 0, credito: 0 },
-    ),
-    [diario],
+    () =>
+      diario.reduce(
+        (acc, p) => ({ debito: acc.debito + p.debito, credito: acc.credito + p.credito }),
+        { debito: 0, credito: 0 }
+      ),
+    [diario]
   );
 
   const razao = useMemo<RazaoGrupo[]>(() => {
@@ -84,7 +93,10 @@ export function useRazaoDiarioData({ empresaId, ano, dataInicio, dataFim, contaI
       if (contaId !== 'todas' && p.conta_id !== contaId) continue;
       const d = new Date(`${p.data}T00:00:00`);
       if (d < ini) {
-        saldoInicialMap.set(p.conta_id, (saldoInicialMap.get(p.conta_id) || 0) + p.debito - p.credito);
+        saldoInicialMap.set(
+          p.conta_id,
+          (saldoInicialMap.get(p.conta_id) || 0) + p.debito - p.credito
+        );
       }
     }
     const grupos = new Map<string, RazaoGrupo>();

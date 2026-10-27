@@ -1,6 +1,11 @@
 import { useMemo, useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
-import { useEmpresas, useContasBancarias, useContasPagar, useContasReceber } from '@/hooks/useFinancialData';
+import {
+  useEmpresas,
+  useContasBancarias,
+  useContasPagar,
+  useContasReceber,
+} from '@/hooks/useFinancialData';
 import { formatCurrency } from '@/lib/formatters';
 import { cn } from '@/lib/utils';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -8,7 +13,13 @@ import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { Progress } from '@/components/ui/progress';
 import { AlertTriangle, Landmark, Search, TrendingUp, TrendingDown } from 'lucide-react';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 import { ProjectedCashFlowChart } from './ProjectedCashFlowChart';
 
 const SALDO_MINIMO_ALERTA = 1000;
@@ -26,12 +37,16 @@ export function TesourariaCentralizada() {
 
   const contasFiltradas = useMemo(() => {
     let lista = contas.map((c) => {
-      const emp = empresas.find(e => e.id === c.empresa_id);
+      const emp = empresas.find((e) => e.id === c.empresa_id);
       const pagarPendente = pagar
-        .filter((p) => p.conta_bancaria_id === c.id && ['pendente', 'vencido'].includes(p.status))
+        .filter(
+          (p) => p.conta_bancaria_id === c.id && ['pendente', 'vencido'].includes(p.status ?? '')
+        )
         .reduce((s: number, p) => s + (p.valor || 0), 0);
       const receberPendente = receber
-        .filter((r) => r.conta_bancaria_id === c.id && ['pendente', 'vencido'].includes(r.status))
+        .filter(
+          (r) => r.conta_bancaria_id === c.id && ['pendente', 'vencido'].includes(r.status ?? '')
+        )
         .reduce((s: number, r) => s + (r.valor || 0), 0);
 
       return {
@@ -46,18 +61,20 @@ export function TesourariaCentralizada() {
     });
 
     if (filtroEmpresa !== 'all') {
-      lista = lista.filter(c => c.empresa_id === filtroEmpresa);
+      lista = lista.filter((c) => c.empresa_id === filtroEmpresa);
     }
     if (busca) {
       const b = busca.toLowerCase();
-      lista = lista.filter(c => c.banco.toLowerCase().includes(b) || c.empresaNome.toLowerCase().includes(b));
+      lista = lista.filter(
+        (c) => (c.banco ?? '').toLowerCase().includes(b) || c.empresaNome.toLowerCase().includes(b)
+      );
     }
 
     return lista.sort((a, b) => b.saldo_atual - a.saldo_atual);
   }, [contas, empresas, pagar, receber, filtroEmpresa, busca]);
 
   const saldoTotal = contasFiltradas.reduce((s, c) => s + (c.saldo_atual || 0), 0);
-  const contasAlerta = contasFiltradas.filter(c => c.alertaBaixo).length;
+  const contasAlerta = contasFiltradas.filter((c) => c.alertaBaixo).length;
 
   if (isLoading) {
     return <Skeleton className="h-96 rounded-xl" />;
@@ -73,14 +90,21 @@ export function TesourariaCentralizada() {
           </SelectTrigger>
           <SelectContent>
             <SelectItem value="all">Todas as empresas</SelectItem>
-            {empresas.map(e => (
-              <SelectItem key={e.id} value={e.id}>{e.nome_fantasia || e.razao_social}</SelectItem>
+            {empresas.map((e) => (
+              <SelectItem key={e.id} value={e.id}>
+                {e.nome_fantasia || e.razao_social}
+              </SelectItem>
             ))}
           </SelectContent>
         </Select>
         <div className="relative flex-1">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-          <Input placeholder="Buscar banco..." value={busca} onChange={e => setBusca(e.target.value)} className="pl-9" />
+          <Input
+            placeholder="Buscar banco..."
+            value={busca}
+            onChange={(e) => setBusca(e.target.value)}
+            className="pl-9"
+          />
         </div>
       </div>
 
@@ -123,7 +147,7 @@ export function TesourariaCentralizada() {
 
       {/* Account Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
-        {contasFiltradas.map(conta => {
+        {contasFiltradas.map((conta) => {
           const pct = saldoTotal > 0 ? ((conta.saldo_atual || 0) / saldoTotal) * 100 : 0;
           return (
             <Card key={conta.id} className={cn(conta.alertaBaixo && 'border-destructive/40')}>
@@ -134,7 +158,9 @@ export function TesourariaCentralizada() {
                     {conta.banco}
                   </CardTitle>
                   {conta.alertaBaixo && (
-                    <Badge variant="destructive" className="text-[10px]">Saldo Baixo</Badge>
+                    <Badge variant="destructive" className="text-[10px]">
+                      Saldo Baixo
+                    </Badge>
                   )}
                 </div>
                 <CardDescription className="text-xs">
@@ -144,7 +170,12 @@ export function TesourariaCentralizada() {
               <CardContent className="space-y-3">
                 <div className="flex justify-between">
                   <span className="text-muted-foreground text-sm">Saldo Atual</span>
-                  <span className={cn('font-bold tabular-nums', conta.saldo_atual >= 0 ? 'text-foreground' : 'text-destructive')}>
+                  <span
+                    className={cn(
+                      'font-bold tabular-nums',
+                      conta.saldo_atual >= 0 ? 'text-foreground' : 'text-destructive'
+                    )}
+                  >
                     {formatCurrency(conta.saldo_atual || 0)}
                   </span>
                 </div>
@@ -163,7 +194,12 @@ export function TesourariaCentralizada() {
                 </div>
                 <div className="pt-2 border-t border-border flex justify-between text-sm">
                   <span className="text-muted-foreground font-medium">Projetado</span>
-                  <span className={cn('font-bold tabular-nums', conta.saldoProjetado >= 0 ? 'text-primary' : 'text-destructive')}>
+                  <span
+                    className={cn(
+                      'font-bold tabular-nums',
+                      conta.saldoProjetado >= 0 ? 'text-primary' : 'text-destructive'
+                    )}
+                  >
                     {formatCurrency(conta.saldoProjetado)}
                   </span>
                 </div>

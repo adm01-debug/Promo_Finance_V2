@@ -59,11 +59,11 @@ export interface AliquotaInterna {
 export function escolherAliquotaInterna<T extends AliquotaInterna>(
   internas: readonly T[],
   categoria?: string | null,
-  uf?: string | null,
+  uf?: string | null
 ): { escolhida: T | null; match: MatchInfo } {
   const alvo = categoria?.toUpperCase() ?? null;
   const exata = alvo
-    ? internas.find((i) => (i.categoria_produto ?? '').toUpperCase() === alvo) ?? null
+    ? (internas.find((i) => (i.categoria_produto ?? '').toUpperCase() === alvo) ?? null)
     : null;
   if (exata) return { escolhida: exata, match: { estrategia: 'categoria_exata', exato: true } };
 
@@ -76,13 +76,18 @@ export function escolherAliquotaInterna<T extends AliquotaInterna>(
       match: {
         estrategia: 'fallback_categoria_geral',
         exato: false,
-        detalhe: alvo ? `Categoria "${alvo}" não cadastrada para ${uf ?? '—'}` : 'Categoria não informada',
+        detalhe: alvo
+          ? `Categoria "${alvo}" não cadastrada para ${uf ?? '—'}`
+          : 'Categoria não informada',
       },
     };
   }
 
   if (internas.length > 0) {
-    return { escolhida: internas[0], match: { estrategia: 'fallback_primeira_disponivel', exato: false } };
+    return {
+      escolhida: internas[0],
+      match: { estrategia: 'fallback_primeira_disponivel', exato: false },
+    };
   }
   return { escolhida: null, match: { estrategia: 'sem_correspondencia', exato: false } };
 }
@@ -95,11 +100,11 @@ export function escolherAliquotaInterna<T extends AliquotaInterna>(
 export function classificarCenarioST<T extends { protocolo?: { ufs?: { uf: string }[] } | null }>(
   vinculos: readonly T[],
   ufsAlvo: readonly string[],
-  estrategiaBase: 'exato' | 'fallback_prefixo',
+  estrategiaBase: 'exato' | 'fallback_prefixo'
 ): { vinculos: T[]; estrategia: string } {
   if (ufsAlvo.length === 0) return { vinculos: [...vinculos], estrategia: estrategiaBase };
   const filtrados = vinculos.filter((v) =>
-    (v.protocolo?.ufs ?? []).some((u) => ufsAlvo.includes(u.uf)),
+    (v.protocolo?.ufs ?? []).some((u) => ufsAlvo.includes(u.uf))
   );
   if (filtrados.length > 0) return { vinculos: filtrados, estrategia: estrategiaBase };
   if (vinculos.length > 0) return { vinculos: [...vinculos], estrategia: 'fallback_sem_adesao_uf' };

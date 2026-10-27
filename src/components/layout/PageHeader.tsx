@@ -25,9 +25,9 @@ export const PageHeader = ({
   subtitle,
   badge,
   icon: Icon,
-  gradientFrom = "from-primary",
-  gradientVia = "via-blue-500",
-  gradientTo = "to-purple-600",
+  gradientFrom = 'from-primary',
+  gradientVia = 'via-blue-500',
+  gradientTo = 'to-purple-600',
   children,
   actions,
   className,
@@ -35,11 +35,14 @@ export const PageHeader = ({
   showUxValidator = false,
 }: PageHeaderProps) => {
   return (
-    <motion.div 
+    <motion.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ type: 'spring', stiffness: 300, damping: 24 }}
-      className={cn("flex flex-col lg:flex-row lg:items-end justify-between gap-8 pt-4 mb-12", className)}
+      className={cn(
+        'flex flex-col lg:flex-row lg:items-end justify-between gap-8 pt-4 mb-12',
+        className
+      )}
     >
       <div className="space-y-4">
         {badge && (
@@ -55,15 +58,27 @@ export const PageHeader = ({
             </div>
           )}
           <h1 className="text-display">
-            {title.split(' ').map((word, i, arr) => (
+            {title.split(' ').map((word, i, arr) =>
               i === arr.length - 1 ? (
-                <span key={i} className={cn("text-transparent bg-clip-text bg-gradient-to-r", gradientFrom, gradientVia, gradientTo)}>
-                  {" "}{word}
+                <span
+                  key={i}
+                  className={cn(
+                    'text-transparent bg-clip-text bg-gradient-to-r',
+                    gradientFrom,
+                    gradientVia,
+                    gradientTo
+                  )}
+                >
+                  {' '}
+                  {word}
                 </span>
               ) : (
-                <span key={i}>{i > 0 && " "}{word}</span>
+                <span key={i}>
+                  {i > 0 && ' '}
+                  {word}
+                </span>
               )
-            ))}
+            )}
           </h1>
         </div>
         {subtitle && (
@@ -81,11 +96,7 @@ export const PageHeader = ({
         )}
         {showUxValidator && <VisualValidator />}
         {children}
-        {actions && (
-          <div className="flex items-center gap-3">
-            {actions}
-          </div>
-        )}
+        {actions && <div className="flex items-center gap-3">{actions}</div>}
       </div>
     </motion.div>
   );
@@ -94,7 +105,13 @@ export const PageHeader = ({
 export const PageBackground = () => (
   <div className="absolute inset-0 overflow-hidden pointer-events-none">
     <div className="absolute top-[-5%] right-[-10%] w-[60%] h-[60%] rounded-full bg-primary/5 blur-[120px] animate-pulse" />
-    <div className="absolute bottom-[10%] left-[-5%] w-[45%] h-[45%] rounded-full bg-blue-600/5 blur-[100px] animate-pulse" style={{ animationDelay: '3s' }} />
-    <div className="absolute middle-0 left-[20%] w-[40%] h-[40%] rounded-full bg-emerald-500/5 blur-[130px] animate-pulse" style={{ animationDelay: '1s' }} />
+    <div
+      className="absolute bottom-[10%] left-[-5%] w-[45%] h-[45%] rounded-full bg-blue-600/5 blur-[100px] animate-pulse"
+      style={{ animationDelay: '3s' }}
+    />
+    <div
+      className="absolute middle-0 left-[20%] w-[40%] h-[40%] rounded-full bg-emerald-500/5 blur-[130px] animate-pulse"
+      style={{ animationDelay: '1s' }}
+    />
   </div>
 );

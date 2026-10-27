@@ -11,7 +11,7 @@ export function converterContasPagarParaLancamentos(
     status: string;
     numero_documento?: string | null;
     fornecedores?: { razao_social: string; nome_fantasia?: string | null } | null;
-  }>,
+  }>
 ): LancamentoSistema[] {
   return contasPagar.map((cp) => ({
     id: cp.id,
@@ -37,13 +37,14 @@ export function converterContasReceberParaLancamentos(
     status: string;
     numero_documento?: string | null;
     clientes?: { razao_social: string; nome_fantasia?: string | null } | null;
-  }>,
+  }>
 ): LancamentoSistema[] {
   return contasReceber.map((cr) => ({
     id: cr.id,
     tipo: 'receber' as const,
     descricao: cr.descricao,
-    valor: cr.status === 'parcial' ? Math.max(0, cr.valor - Number(cr.valor_recebido || 0)) : cr.valor,
+    valor:
+      cr.status === 'parcial' ? Math.max(0, cr.valor - Number(cr.valor_recebido || 0)) : cr.valor,
     dataVencimento: new Date(cr.data_vencimento),
     entidade: cr.cliente_nome,
     entidadeNome: cr.clientes?.nome_fantasia || cr.clientes?.razao_social,

@@ -1,11 +1,11 @@
-import { useQuery } from "@tanstack/react-query";
-import { supabase } from "@/integrations/supabase/client";
-import { Badge } from "@/components/ui/badge";
-import { ScrollArea } from "@/components/ui/scroll-area";
-import { Clock, History, Bell, ExternalLink } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { dispatchOpenAnomaliaDrawer } from "@/lib/anomalia-routes";
-import { useAuth } from "@/hooks/useAuth";
+import { useQuery } from '@tanstack/react-query';
+import { supabase } from '@/integrations/supabase/client';
+import { Badge } from '@/components/ui/badge';
+import { ScrollArea } from '@/components/ui/scroll-area';
+import { Clock, History, Bell, ExternalLink } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { dispatchOpenAnomaliaDrawer } from '@/lib/anomalia-routes';
+import { useAuth } from '@/hooks/useAuth';
 
 interface ToastEvento {
   id: string;
@@ -21,26 +21,23 @@ interface ToastEvento {
 }
 
 const ACAO_LABEL: Record<string, string> = {
-  drill_down: "Drill-down",
-  abrir_pagina: "Abrir página",
-  copiar_id: "Copiar ID",
-  marcar_lida: "Marcar lida",
+  drill_down: 'Drill-down',
+  abrir_pagina: 'Abrir página',
+  copiar_id: 'Copiar ID',
+  marcar_lida: 'Marcar lida',
 };
 
-const SEV_VARIANT: Record<
-  string,
-  "destructive" | "secondary" | "outline"
-> = {
-  critica: "destructive",
-  alta: "destructive",
-  media: "secondary",
-  baixa: "outline",
+const SEV_VARIANT: Record<string, 'destructive' | 'secondary' | 'outline'> = {
+  critica: 'destructive',
+  alta: 'destructive',
+  media: 'secondary',
+  baixa: 'outline',
 };
 
 function relativo(iso: string): string {
   const diff = Date.now() - new Date(iso).getTime();
   const min = Math.floor(diff / 60000);
-  if (min < 1) return "agora";
+  if (min < 1) return 'agora';
   if (min < 60) return `${min} min atrás`;
   const h = Math.floor(min / 60);
   if (h < 24) return `${h} h atrás`;
@@ -57,16 +54,16 @@ export function AnomaliaToastHistorico() {
   const { user } = useAuth();
 
   const { data: eventos = [], isLoading } = useQuery({
-    queryKey: ["anomalia-toast-eventos", user?.id],
+    queryKey: ['anomalia-toast-eventos', user?.id],
     enabled: !!user?.id,
     staleTime: 30_000,
     queryFn: async (): Promise<ToastEvento[]> => {
       const { data, error } = await supabase
-        .from("anomalia_toast_eventos")
+        .from('anomalia_toast_eventos')
         .select(
-          "id, anomalia_id, severidade, tipo_anomalia, titulo, descricao, centro_custo_nome, acoes_disponiveis, duracao_segundos, dispatched_at",
+          'id, anomalia_id, severidade, tipo_anomalia, titulo, descricao, centro_custo_nome, acoes_disponiveis, duracao_segundos, dispatched_at'
         )
-        .order("dispatched_at", { ascending: false })
+        .order('dispatched_at', { ascending: false })
         .limit(50);
       if (error) throw error;
       return (data ?? []) as ToastEvento[];
@@ -79,19 +76,16 @@ export function AnomaliaToastHistorico() {
         <History className="h-4 w-4 text-primary" />
         <span className="text-sm font-medium">Histórico de toasts</span>
         <span className="text-[11px] text-muted-foreground">
-          Últimos 50 toasts disparados — severidade, ações disponíveis e
-          duração.
+          Últimos 50 toasts disparados — severidade, ações disponíveis e duração.
         </span>
       </div>
 
       {isLoading ? (
-        <p className="text-xs text-muted-foreground py-3 text-center">
-          Carregando…
-        </p>
+        <p className="text-xs text-muted-foreground py-3 text-center">Carregando…</p>
       ) : eventos.length === 0 ? (
         <p className="text-xs text-muted-foreground italic py-3 text-center border border-dashed rounded">
-          Nenhum toast disparado ainda — quando uma nova anomalia chegar e suas
-          preferências permitirem, aparecerá aqui.
+          Nenhum toast disparado ainda — quando uma nova anomalia chegar e suas preferências
+          permitirem, aparecerá aqui.
         </p>
       ) : (
         <ScrollArea className="h-64 rounded border">
@@ -102,14 +96,12 @@ export function AnomaliaToastHistorico() {
                   <div className="min-w-0 flex-1">
                     <div className="flex items-center gap-1.5 flex-wrap">
                       <Badge
-                        variant={SEV_VARIANT[ev.severidade] ?? "outline"}
+                        variant={SEV_VARIANT[ev.severidade] ?? 'outline'}
                         className="text-[10px] capitalize"
                       >
                         {ev.severidade}
                       </Badge>
-                      <span className="text-xs font-semibold truncate">
-                        {ev.titulo}
-                      </span>
+                      <span className="text-xs font-semibold truncate">{ev.titulo}</span>
                     </div>
                     {ev.descricao && (
                       <p className="text-[11px] text-muted-foreground line-clamp-2 mt-0.5">
@@ -148,11 +140,7 @@ export function AnomaliaToastHistorico() {
                 {ev.acoes_disponiveis.length > 0 ? (
                   <div className="flex flex-wrap gap-1 pt-0.5">
                     {ev.acoes_disponiveis.map((a) => (
-                      <Badge
-                        key={a}
-                        variant="outline"
-                        className="text-[10px] font-normal"
-                      >
+                      <Badge key={a} variant="outline" className="text-[10px] font-normal">
                         {ACAO_LABEL[a] ?? a}
                       </Badge>
                     ))}

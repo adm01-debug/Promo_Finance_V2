@@ -2,6 +2,7 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { renderHook } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
 import { useKeyboardNavigation } from '../useKeyboardNavigation';
+import { recordNavEntry, resetNavStack } from '@/lib/navigation';
 
 const mockNavigate = vi.fn();
 vi.mock('react-router-dom', async () => {
@@ -19,17 +20,23 @@ function wrapper({ children }: { children: React.ReactNode }) {
 describe('useKeyboardNavigation', () => {
   beforeEach(() => {
     vi.clearAllMocks();
-    Object.defineProperty(window, 'history', {
-      value: { length: 5 },
-      writable: true,
-    });
+    resetNavStack();
   });
 
-  it('navigates back on Alt+ArrowLeft', () => {
+  it('navigates back to in-app entry on Alt+ArrowLeft', () => {
+    recordNavEntry({ key: 'a', pathname: '/', search: '' }, 'PUSH');
+    recordNavEntry({ key: 'b', pathname: '/contas-receber', search: '' }, 'PUSH');
     renderHook(() => useKeyboardNavigation(), { wrapper });
     const event = new KeyboardEvent('keydown', { key: 'ArrowLeft', altKey: true, bubbles: true });
     window.dispatchEvent(event);
     expect(mockNavigate).toHaveBeenCalledWith(-1);
+  });
+
+  it('goes up to parent route on Alt+ArrowLeft without in-app history', () => {
+    renderHook(() => useKeyboardNavigation(), { wrapper });
+    const event = new KeyboardEvent('keydown', { key: 'ArrowLeft', altKey: true, bubbles: true });
+    window.dispatchEvent(event);
+    expect(mockNavigate).toHaveBeenCalledWith('/', { replace: true });
   });
 
   it('navigates forward on Alt+ArrowRight', () => {
@@ -51,7 +58,7 @@ describe('useKeyboardNavigation', () => {
     const input = document.createElement('input');
     document.body.appendChild(input);
     input.focus();
-    
+
     const event = new KeyboardEvent('keydown', {
       key: 'ArrowLeft',
       altKey: true,
@@ -59,7 +66,7 @@ describe('useKeyboardNavigation', () => {
     });
     Object.defineProperty(event, 'target', { value: input });
     input.dispatchEvent(event);
-    
+
     // Should not have been called because target is input
     expect(mockNavigate).not.toHaveBeenCalled();
     document.body.removeChild(input);

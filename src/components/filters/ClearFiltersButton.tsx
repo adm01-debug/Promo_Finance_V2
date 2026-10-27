@@ -40,7 +40,6 @@ interface ClearFiltersButtonProps<T extends Record<string, unknown>> {
 
 // Formatação centralizada em `@/lib/format-filter-value`.
 
-
 export function ClearFiltersButton<T extends Record<string, unknown>>({
   controller,
   entityLabel,
@@ -58,10 +57,7 @@ export function ClearFiltersButton<T extends Record<string, unknown>>({
     () => describeFilters(controller.values),
     [controller.values, describeFilters]
   );
-  const activeFilters = useMemo(
-    () => allFilters.filter((f) => f.isActive),
-    [allFilters]
-  );
+  const activeFilters = useMemo(() => allFilters.filter((f) => f.isActive), [allFilters]);
 
   /**
    * Resumo fixo: para cada nome em `pinnedFields`, pega o filtro descrito
@@ -70,9 +66,7 @@ export function ClearFiltersButton<T extends Record<string, unknown>>({
    */
   const pinnedSummary = useMemo(() => {
     return pinnedFields.map((name) => {
-      const match = allFilters.find(
-        (f) => f.label.toLowerCase() === name.toLowerCase(),
-      );
+      const match = allFilters.find((f) => f.label.toLowerCase() === name.toLowerCase());
       return {
         label: name,
         value: match?.value,
@@ -102,14 +96,12 @@ export function ClearFiltersButton<T extends Record<string, unknown>>({
         ...pinnedSummary.map((f) =>
           f.isActive && f.value !== undefined
             ? `${f.label}: ${formatFilterValue(f.value)}.`
-            : `${f.label}: vazio.`,
+            : `${f.label}: vazio.`
         ),
         activeFilters.length > 0
           ? `Filtros ativos: ${activeFilters
               .map((f) =>
-                f.value !== undefined
-                  ? `${f.label} ${formatFilterValue(f.value)}`
-                  : f.label,
+                f.value !== undefined ? `${f.label} ${formatFilterValue(f.value)}` : f.label
               )
               .join('; ')}.`
           : 'Nenhum filtro ativo.',
@@ -138,7 +130,6 @@ export function ClearFiltersButton<T extends Record<string, unknown>>({
           </p>
         </div>
       );
-
 
       toastWithUndo({
         title: `Filtros de ${entityLabel} limpos`,

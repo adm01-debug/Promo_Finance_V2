@@ -110,9 +110,14 @@ on:
           - webhook-replay
           - webhook-retry-worker
           - webhook-simulator
+          - upload-anexo
           - whatsapp-ai-analyzer
           - whatsapp-ia-proativo
           - whatsapp-webhook
+      deploy_all:
+        description: 'Implantar TODAS as functions com index.ts (ignora function_name)'
+        type: boolean
+        default: false
 
 permissions:
   contents: read
@@ -128,11 +133,12 @@ jobs:
     # protegida/canônica, nunca de uma ref enviada para revisão.
     if: github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
-    timeout-minutes: 15
-    environment: production
+    timeout-minutes: 120
+    environment: Production-Ops
     env:
       SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
       SUPABASE_PROJECT_REF: ${{ vars.VITE_SUPABASE_PROJECT_ID }}
+      REQUIRED_SECRETS: ${{ vars.REQUIRED_SECRETS }}
 
     steps:
       - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
@@ -140,7 +146,7 @@ jobs:
           persist-credentials: false
 
       - name: Preparar Supabase CLI
-        uses: supabase/setup-cli@1dedf2c611547ede7232d26866dd3c56ab903bbb # v1
+        uses: supabase/setup-cli@45a513f8c64c0bc8e0e3dfe572b5c95be85f6359 # v3.0.1
         with:
           version: 2.22.6
 
@@ -150,15 +156,29 @@ jobs:
           bash scripts/ci/require-env.sh \
             --label "Deploy de Edge Function no canônico" \
             SUPABASE_ACCESS_TOKEN SUPABASE_PROJECT_REF
+          CANONICO="bwwbeyolnnzppeuhgkcd"
+          if [ "$SUPABASE_PROJECT_REF" != "$CANONICO" ]; then
+            echo "::error::vars.VITE_SUPABASE_PROJECT_ID ('$SUPABASE_PROJECT_REF') não é o canônico — deploy abortado"
+            exit 1
+          fi
           python3 scripts/security/test-supabase-config.py
           bash scripts/security/test-functions-deploy.sh
 
       - name: Implantar somente a função aprovada
+        if: ${{ !inputs.deploy_all }}
         env:
           FUNCTION_NAME: ${{ inputs.function_name }}
         run: |
           set -euo pipefail
           bash scripts/migrate-functions.sh --only "$FUNCTION_NAME"
+
+      - name: Implantar todas as functions com index.ts
+        if: ${{ inputs.deploy_all }}
+        env:
+          STOP_ON_FAIL: "1"
+        run: |
+          set -euo pipefail
+          bash scripts/migrate-functions.sh
 
       - name: Registrar evidência do deploy
         if: always()

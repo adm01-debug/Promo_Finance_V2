@@ -115,10 +115,10 @@ export function useCreditosTributarios(empresaId?: string) {
 
       interface CreditoData {
         tipo_tributo: string;
-        valor_credito: number;
-        valor_utilizado: number | null;
-        saldo_disponivel: number | null;
         status: string | null;
+        valor_credito: number | null;
+        valor_utilizado: number | null;
+        saldo_disponivel: number;
       }
 
       (data || []).forEach((c: CreditoData) => {
@@ -267,8 +267,11 @@ export function useCreditosTributarios(empresaId?: string) {
 
       if (nfError) throw nfError;
 
+      // data_emissao é NOT NULL em NF-e emitida; normalizamos uma vez.
+      const dataEmissao = nf.data_emissao ?? '';
+
       // Determinar alíquotas baseado no ano
-      const ano = new Date(nf.data_emissao).getFullYear();
+      const ano = new Date(dataEmissao).getFullYear();
       let aliquotaCBS = 0,
         aliquotaIBS = 0;
 
@@ -281,7 +284,27 @@ export function useCreditosTributarios(empresaId?: string) {
       const creditoCBS = valorBase * aliquotaCBS;
       const creditoIBS = valorBase * aliquotaIBS;
 
-      const creditos = [];
+      // Shape completo do crédito gerado; campos fora do schema canônico de
+      // creditos_tributarios (tipo_credito, documento_*, valor_base, aliquota)
+      // são extras tolerados pelo PostgREST no insert em massa.
+      interface CreditoGerado {
+        empresa_id: string;
+        tipo_tributo: 'CBS' | 'IBS';
+        tipo_credito: string;
+        documento_tipo: string;
+        documento_numero: string | null;
+        documento_chave: string | null;
+        nota_fiscal_id: string;
+        valor_base: number;
+        aliquota: number;
+        valor_credito: number;
+        data_origem: string;
+        competencia_origem: string;
+        status: string;
+        valor_utilizado: number;
+        saldo_disponivel: number;
+      }
+      const creditos: CreditoGerado[] = [];
 
       if (creditoCBS > 0) {
         creditos.push({
@@ -295,8 +318,8 @@ export function useCreditosTributarios(empresaId?: string) {
           valor_base: valorBase,
           aliquota: aliquotaCBS,
           valor_credito: creditoCBS,
-          data_origem: nf.data_emissao,
-          competencia_origem: nf.data_emissao.slice(0, 7) + '-01',
+          data_origem: dataEmissao,
+          competencia_origem: dataEmissao.slice(0, 7) + '-01',
           status: 'disponivel',
           valor_utilizado: 0,
           saldo_disponivel: creditoCBS,
@@ -315,8 +338,8 @@ export function useCreditosTributarios(empresaId?: string) {
           valor_base: valorBase,
           aliquota: aliquotaIBS,
           valor_credito: creditoIBS,
-          data_origem: nf.data_emissao,
-          competencia_origem: nf.data_emissao.slice(0, 7) + '-01',
+          data_origem: dataEmissao,
+          competencia_origem: dataEmissao.slice(0, 7) + '-01',
           status: 'disponivel',
           valor_utilizado: 0,
           saldo_disponivel: creditoIBS,

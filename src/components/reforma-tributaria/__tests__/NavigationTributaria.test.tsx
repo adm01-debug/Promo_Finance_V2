@@ -82,7 +82,7 @@ describe('NavigationTributaria', () => {
     it('aba ativa tem fundo primário', () => {
       render(<NavigationTributaria {...defaultProps} activeTab="visao-geral" />);
       const dashboard = screen.getAllByText('Dashboard');
-      const activeButton = dashboard.find(el => 
+      const activeButton = dashboard.find((el) =>
         el.closest('button')?.className.includes('bg-primary')
       );
       expect(activeButton).toBeTruthy();

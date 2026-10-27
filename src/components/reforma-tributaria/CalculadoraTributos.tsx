@@ -5,43 +5,55 @@ import { useState, useMemo } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 import { Separator } from '@/components/ui/separator';
 import { Switch } from '@/components/ui/switch';
-import { 
-  Calculator, 
-  AlertTriangle,
-  Info,
-} from 'lucide-react';
-import { 
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
+import { Calculator, AlertTriangle, Info } from 'lucide-react';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import useReformaTributaria from '@/hooks/useReformaTributaria';
 import { ResultadoTributos } from './ResultadoTributos';
-import { 
-  TipoOperacao, 
-  RegimeEspecial, 
-  CategoriaIS 
-} from '@/types/reforma-tributaria';
+import { TipoOperacao, RegimeEspecial, CategoriaIS } from '@/types/reforma-tributaria';
 import { DadosOperacao } from '@/lib/reforma-tributaria-calculator';
 
 const UFS_BRASIL = [
-  'AC', 'AL', 'AP', 'AM', 'BA', 'CE', 'DF', 'ES', 'GO', 'MA', 'MT', 'MS', 
-  'MG', 'PA', 'PB', 'PR', 'PE', 'PI', 'RJ', 'RN', 'RS', 'RO', 'RR', 'SC', 
-  'SP', 'SE', 'TO'
+  'AC',
+  'AL',
+  'AP',
+  'AM',
+  'BA',
+  'CE',
+  'DF',
+  'ES',
+  'GO',
+  'MA',
+  'MT',
+  'MS',
+  'MG',
+  'PA',
+  'PB',
+  'PR',
+  'PE',
+  'PI',
+  'RJ',
+  'RN',
+  'RS',
+  'RO',
+  'RR',
+  'SC',
+  'SP',
+  'SE',
+  'TO',
 ];
 
 export function CalculadoraTributos() {
-  const { 
-    anoReferencia, 
-    calcularTributos, 
-    regimesEspeciais, 
-    impostosSeletivos,
-    faseAtual,
-  } = useReformaTributaria();
+  const { anoReferencia, calcularTributos, regimesEspeciais, impostosSeletivos, faseAtual } =
+    useReformaTributaria();
 
   // Estado do formulário
   const [valorOperacao, setValorOperacao] = useState<number>(10000);
@@ -68,7 +80,18 @@ export function CalculadoraTributos() {
       isExportacao,
     };
     return calcularTributos(dados);
-  }, [valorOperacao, tipoOperacao, ufOrigem, ufDestino, cfop, ncm, regimeEspecial, categoriaIS, isExportacao, calcularTributos]);
+  }, [
+    valorOperacao,
+    tipoOperacao,
+    ufOrigem,
+    ufDestino,
+    cfop,
+    ncm,
+    regimeEspecial,
+    categoriaIS,
+    isExportacao,
+    calcularTributos,
+  ]);
 
   return (
     <div className="grid gap-6 md:grid-cols-2">
@@ -79,9 +102,7 @@ export function CalculadoraTributos() {
             <Calculator className="h-5 w-5" />
             Dados da Operação
           </CardTitle>
-          <CardDescription>
-            Informe os dados para cálculo dos tributos
-          </CardDescription>
+          <CardDescription>Informe os dados para cálculo dos tributos</CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
           {/* Valor */}
@@ -125,7 +146,9 @@ export function CalculadoraTributos() {
                 </SelectTrigger>
                 <SelectContent>
                   {UFS_BRASIL.map((uf) => (
-                    <SelectItem key={uf} value={uf}>{uf}</SelectItem>
+                    <SelectItem key={uf} value={uf}>
+                      {uf}
+                    </SelectItem>
                   ))}
                 </SelectContent>
               </Select>
@@ -138,7 +161,9 @@ export function CalculadoraTributos() {
                 </SelectTrigger>
                 <SelectContent>
                   {UFS_BRASIL.map((uf) => (
-                    <SelectItem key={uf} value={uf}>{uf}</SelectItem>
+                    <SelectItem key={uf} value={uf}>
+                      {uf}
+                    </SelectItem>
                   ))}
                 </SelectContent>
               </Select>
@@ -186,8 +211,8 @@ export function CalculadoraTributos() {
                 </Tooltip>
               </TooltipProvider>
             </div>
-            <Select 
-              value={regimeEspecial} 
+            <Select
+              value={regimeEspecial}
               onValueChange={(v) => setRegimeEspecial(v as RegimeEspecial)}
             >
               <SelectTrigger>
@@ -219,9 +244,9 @@ export function CalculadoraTributos() {
                 </Tooltip>
               </TooltipProvider>
             </div>
-            <Select 
-              value={categoriaIS || 'nenhum'} 
-              onValueChange={(v) => setCategoriaIS(v === 'nenhum' ? undefined : v as CategoriaIS)}
+            <Select
+              value={categoriaIS || 'nenhum'}
+              onValueChange={(v) => setCategoriaIS(v === 'nenhum' ? undefined : (v as CategoriaIS))}
             >
               <SelectTrigger>
                 <SelectValue placeholder="Selecione se aplicável" />
@@ -249,7 +274,11 @@ export function CalculadoraTributos() {
       </Card>
 
       {/* Resultado do Cálculo */}
-      <ResultadoTributos resultado={resultado} anoReferencia={anoReferencia} faseAtual={faseAtual} />
+      <ResultadoTributos
+        resultado={resultado}
+        anoReferencia={anoReferencia}
+        faseAtual={faseAtual}
+      />
     </div>
   );
 }

@@ -2,7 +2,13 @@ import { todayISOLocal } from '@/lib/formatters';
 import { useState, useMemo, useCallback, useEffect } from 'react';
 import { toast } from 'sonner';
 import { toastDeleteWithUndo } from '@/lib/toast-with-undo';
-import { useContasReceber, useContasReceberPaginated, useCentrosCusto, useEmpresas, useContasBancarias } from '@/hooks/useFinancialData';
+import {
+  useContasReceber,
+  useContasReceberPaginated,
+  useCentrosCusto,
+  useEmpresas,
+  useContasBancarias,
+} from '@/hooks/useFinancialData';
 import { useDebounce } from '@/hooks/useOptimizedQueries';
 import { useSorting } from '@/components/ui/sortable-header.hooks';
 import { useTableOptimization } from '@/hooks/useTableOptimization';
@@ -13,9 +19,16 @@ import { useQueryClient } from '@tanstack/react-query';
 import { AdvancedFilters } from '@/components/ui/advanced-filters';
 import { useGlobalFinancialFilter } from '@/hooks/useGlobalFinancialFilter';
 import type { ContaReceberWithRelations } from '@/components/contas-receber/ContasReceberTableRow';
-import { subMonths, isSameDay, addDays, startOfMonth, endOfMonth, parseISO, isWithinInterval } from 'date-fns';
+import {
+  subMonths,
+  isSameDay,
+  addDays,
+  startOfMonth,
+  endOfMonth,
+  parseISO,
+  isWithinInterval,
+} from 'date-fns';
 import { calculateCollectionStage } from '@/lib/collection-engine';
-
 
 export function useContasReceberLogic() {
   const { currentEmpresaId } = useGlobalFinancialFilter();
@@ -51,7 +64,7 @@ export function useContasReceberLogic() {
     const handleSync = (e: Event) => {
       const detail = (e as CustomEvent).detail;
       if (!detail) return;
-      
+
       const { empresaId, bankAccountId } = detail;
       if (empresaId && empresaId !== 'all') {
         setEmpresaFilter(empresaId);
@@ -68,7 +81,6 @@ export function useContasReceberLogic() {
 
   const queryClient = useQueryClient();
 
-
   const { filterType, handleFilterChange, filterByDate } = useQuickDateFilter();
 
   const { data: paginatedResult, isLoading } = useContasReceberPaginated({
@@ -81,26 +93,44 @@ export function useContasReceberLogic() {
     contaBancariaId: contaBancariaFilter,
   });
 
-
   const { data: allContas = [] } = useContasReceber(currentEmpresaId || 'all');
   const { data: centrosCusto = [] } = useCentrosCusto();
   const { data: empresas = [] } = useEmpresas();
   const { data: contasBancarias = [] } = useContasBancarias();
-
 
   const contas = useMemo(() => paginatedResult?.data || [], [paginatedResult]);
   const totalCount = paginatedResult?.totalCount || 0;
   const totalPages = paginatedResult?.totalPages || 1;
 
   // Handlers
-  const handleSearchChange = useCallback((value: string) => { setSearchTerm(value); setCurrentPage(1); }, []);
-  const handleStatusChange = useCallback((value: string) => { setStatusFilter(value); setCurrentPage(1); }, []);
-  const handleCentroCustoChange = useCallback((value: string) => { setCentroCustoFilter(value); setCurrentPage(1); }, []);
-  const handleEmpresaChange = useCallback((value: string) => { setEmpresaFilter(value); setCurrentPage(1); }, []);
-  const handleFormaChange = useCallback((value: string) => { setFormaFilter(value); setCurrentPage(1); }, []);
-  const handleContaBancariaChange = useCallback((value: string) => { setContaBancariaFilter(value); setCurrentPage(1); }, []);
-  const handlePageSizeChange = useCallback((size: number) => { setPageSize(size); setCurrentPage(1); }, []);
-
+  const handleSearchChange = useCallback((value: string) => {
+    setSearchTerm(value);
+    setCurrentPage(1);
+  }, []);
+  const handleStatusChange = useCallback((value: string) => {
+    setStatusFilter(value);
+    setCurrentPage(1);
+  }, []);
+  const handleCentroCustoChange = useCallback((value: string) => {
+    setCentroCustoFilter(value);
+    setCurrentPage(1);
+  }, []);
+  const handleEmpresaChange = useCallback((value: string) => {
+    setEmpresaFilter(value);
+    setCurrentPage(1);
+  }, []);
+  const handleFormaChange = useCallback((value: string) => {
+    setFormaFilter(value);
+    setCurrentPage(1);
+  }, []);
+  const handleContaBancariaChange = useCallback((value: string) => {
+    setContaBancariaFilter(value);
+    setCurrentPage(1);
+  }, []);
+  const handlePageSizeChange = useCallback((size: number) => {
+    setPageSize(size);
+    setCurrentPage(1);
+  }, []);
 
   const handleOpenDeleteDialog = useCallback((conta: ContaReceberWithRelations) => {
     setDeletingConta(conta);
@@ -120,7 +150,9 @@ export function useContasReceberLogic() {
         if (error) throw error;
         queryClient.invalidateQueries({ queryKey: ['contas-receber'] });
       },
-      onRestore: async () => { queryClient.invalidateQueries({ queryKey: ['contas-receber'] }); },
+      onRestore: async () => {
+        queryClient.invalidateQueries({ queryKey: ['contas-receber'] });
+      },
     });
   }, [deletingConta, queryClient]);
 
@@ -144,8 +176,8 @@ export function useContasReceberLogic() {
 
   // Sincronizar etapas de cobrança (Régua de Cobrança Automática)
   const handleSyncStages = useCallback(async () => {
-    const contasToUpdate = allContas.filter(c => c.status !== 'pago' && c.status !== 'cancelado');
-    
+    const contasToUpdate = allContas.filter((c) => c.status !== 'pago' && c.status !== 'cancelado');
+
     if (contasToUpdate.length === 0) {
       toast.info('Nenhuma conta pendente para sincronizar.');
       return;
@@ -154,13 +186,14 @@ export function useContasReceberLogic() {
     const promise = async () => {
       let updatedCount = 0;
       for (const conta of contasToUpdate) {
-        const newStage = calculateCollectionStage(conta.data_vencimento, conta.status);
+        if (!conta.id) continue;
+        const newStage = calculateCollectionStage(conta.data_vencimento ?? '', conta.status ?? '');
         if (newStage && newStage !== conta.etapa_cobranca) {
           const { error } = await supabase
             .from('contas_receber')
             .update({ etapa_cobranca: newStage })
             .eq('id', conta.id);
-          
+
           if (!error) updatedCount++;
         }
       }
@@ -176,20 +209,23 @@ export function useContasReceberLogic() {
   }, [allContas, queryClient]);
 
   // KPI drill-down (#28)
-  const handleKpiClick = useCallback((filter: string) => {
-    if (filter === 'all') {
-      setStatusFilter('all');
-    } else if (filter === 'vence_hoje') {
-      setStatusFilter('pendente');
-      handleFilterChange('today', null);
-    } else if (filter === 'vence_semana') {
-      setStatusFilter('pendente');
-      handleFilterChange('week', null);
-    } else {
-      setStatusFilter(filter);
-    }
-    setCurrentPage(1);
-  }, [handleFilterChange]);
+  const handleKpiClick = useCallback(
+    (filter: string) => {
+      if (filter === 'all') {
+        setStatusFilter('all');
+      } else if (filter === 'vence_hoje') {
+        setStatusFilter('pendente');
+        handleFilterChange('today', null);
+      } else if (filter === 'vence_semana') {
+        setStatusFilter('pendente');
+        handleFilterChange('week', null);
+      } else {
+        setStatusFilter(filter);
+      }
+      setCurrentPage(1);
+    },
+    [handleFilterChange]
+  );
 
   // KPIs with temporal comparison (#4, #5)
   const kpis = useMemo(() => {
@@ -199,54 +235,80 @@ export function useContasReceberLogic() {
     const startOfPrevMonth = startOfMonth(subMonths(today, 1));
     const endOfPrevMonth = endOfMonth(subMonths(today, 1));
 
-    const totalReceber = allContas.reduce((sum, c) => 
-      c.status !== 'pago' && c.status !== 'cancelado' ? sum + c.valor - (c.valor_recebido || 0) : sum, 0);
-    
-    const totalVencido = allContas.filter(c => c.status === 'vencido')
-      .reduce((sum, c) => sum + c.valor - (c.valor_recebido || 0), 0);
-    
-    const totalRecebidoMes = allContas.filter(c => {
-      if (c.status !== 'pago' || !c.data_recebimento) return false;
-      const dataRec = parseISO(c.data_recebimento);
-      return dataRec.getMonth() === today.getMonth() && dataRec.getFullYear() === today.getFullYear();
-    }).reduce((sum, c) => sum + (c.valor_recebido || 0), 0);
+    const totalReceber = allContas.reduce(
+      (sum, c) =>
+        c.status !== 'pago' && c.status !== 'cancelado'
+          ? sum + (c.valor ?? 0) - (c.valor_recebido || 0)
+          : sum,
+      0
+    );
 
-    const totalReceberAnterior = allContas.filter(c => {
-      const venc = parseISO(c.data_vencimento);
-      return venc < today && c.status !== 'cancelado';
-    }).reduce((sum, c) => sum + c.valor, 0) * 0.9; // Simulação de dados anteriores
+    const totalVencido = allContas
+      .filter((c) => c.status === 'vencido')
+      .reduce((sum, c) => sum + (c.valor ?? 0) - (c.valor_recebido || 0), 0);
 
-    const totalRecebidoMesAnterior = allContas.filter(c => {
-      if (c.status !== 'pago' || !c.data_recebimento) return false;
-      const dataRec = parseISO(c.data_recebimento);
-      return isWithinInterval(dataRec, { start: startOfPrevMonth, end: endOfPrevMonth });
-    }).reduce((sum, c) => sum + (c.valor_recebido || 0), 0) || totalRecebidoMes * 0.95;
+    const totalRecebidoMes = allContas
+      .filter((c) => {
+        if (c.status !== 'pago' || !c.data_recebimento) return false;
+        const dataRec = parseISO(c.data_recebimento);
+        return (
+          dataRec.getMonth() === today.getMonth() && dataRec.getFullYear() === today.getFullYear()
+        );
+      })
+      .reduce((sum, c) => sum + (c.valor_recebido || 0), 0);
+
+    const totalReceberAnterior =
+      allContas
+        .filter((c) => {
+          if (!c.data_vencimento) return false;
+          const venc = parseISO(c.data_vencimento);
+          return venc < today && c.status !== 'cancelado';
+        })
+        .reduce((sum, c) => sum + (c.valor ?? 0), 0) * 0.9; // Simulação de dados anteriores
+
+    const totalRecebidoMesAnterior =
+      allContas
+        .filter((c) => {
+          if (c.status !== 'pago' || !c.data_recebimento) return false;
+          const dataRec = parseISO(c.data_recebimento);
+          return isWithinInterval(dataRec, { start: startOfPrevMonth, end: endOfPrevMonth });
+        })
+        .reduce((sum, c) => sum + (c.valor_recebido || 0), 0) || totalRecebidoMes * 0.95;
 
     const taxaInadimplencia = totalReceber > 0 ? (totalVencido / totalReceber) * 100 : 0;
 
-    const venceHoje = allContas.filter(c => {
+    const venceHoje = allContas.filter((c) => {
       if (c.status === 'pago' || c.status === 'cancelado') return false;
+      if (!c.data_vencimento) return false;
       return isSameDay(parseISO(c.data_vencimento), today);
     }).length;
 
-    const venceSemana = allContas.filter(c => {
+    const venceSemana = allContas.filter((c) => {
       if (c.status === 'pago' || c.status === 'cancelado') return false;
+      if (!c.data_vencimento) return false;
       const venc = parseISO(c.data_vencimento);
       return venc >= today && venc <= endOfWeek;
     }).length;
 
-    return { 
-      totalReceber, totalVencido, totalRecebidoMes, taxaInadimplencia, venceHoje, venceSemana,
-      totalReceberAnterior, totalRecebidoMesAnterior, totalVencidoAnterior: totalVencido * 1.1
+    return {
+      totalReceber,
+      totalVencido,
+      totalRecebidoMes,
+      taxaInadimplencia,
+      venceHoje,
+      venceSemana,
+      totalReceberAnterior,
+      totalRecebidoMesAnterior,
+      totalVencidoAnterior: totalVencido * 1.1,
     };
   }, [allContas]);
 
   // Client-side filtering
   const filteredContas = useMemo(() => {
-    return filterByDate(contas).filter(c => {
+    return filterByDate(contas).filter((c) => {
       let match = true;
       if (advancedFilters.dataVencimentoInicio) {
-        match = match && new Date(c.data_vencimento) >= advancedFilters.dataVencimentoInicio;
+        match = new Date(c.data_vencimento) >= advancedFilters.dataVencimentoInicio;
       }
       if (advancedFilters.dataVencimentoFim) {
         match = match && new Date(c.data_vencimento) <= advancedFilters.dataVencimentoFim;
@@ -277,7 +339,12 @@ export function useContasReceberLogic() {
     });
   }, [contas, advancedFilters, filterByDate, empresaFilter, formaFilter, contaBancariaFilter]);
 
-  const { sortedData: sortedContas, sortKey, sortDirection, handleSort } = useSorting(filteredContas, 'data_vencimento');
+  const {
+    sortedData: sortedContas,
+    sortKey,
+    sortDirection,
+    handleSort,
+  } = useSorting(filteredContas, 'data_vencimento');
   const { getRowAnimation } = useTableOptimization(sortedContas.length);
 
   const bulkActionsHook = useBulkActions({
@@ -287,40 +354,106 @@ export function useContasReceberLogic() {
   });
 
   const handleBulkMarkAsReceived = useCallback(() => {
-    bulkActionsHook.executeBulkAction(async (id) => {
-      const conta = sortedContas.find(c => c.id === id);
-      const { error } = await supabase.from('contas_receber').update({
-        status: 'pago',
-        data_recebimento: todayISOLocal(),
-        valor_recebido: conta?.valor || 0,
-      }).eq('id', id);
-      if (error) throw error;
-    }, { showProgress: true });
+    void bulkActionsHook.executeBulkAction(
+      async (id) => {
+        const conta = sortedContas.find((c) => c.id === id);
+        const { error } = await supabase
+          .from('contas_receber')
+          .update({
+            status: 'pago',
+            data_recebimento: todayISOLocal(),
+            valor_recebido: conta?.valor || 0,
+          })
+          .eq('id', id);
+        if (error) throw error;
+      },
+      { showProgress: true }
+    );
   }, [bulkActionsHook, sortedContas]);
 
   const handleBulkCancel = useCallback(() => {
-    bulkActionsHook.executeBulkAction(async (id) => {
-      const { error } = await supabase.from('contas_receber').update({ status: 'cancelado' }).eq('id', id);
-      if (error) throw error;
-    }, { showProgress: true });
+    void bulkActionsHook.executeBulkAction(
+      async (id) => {
+        const { error } = await supabase
+          .from('contas_receber')
+          .update({ status: 'cancelado' })
+          .eq('id', id);
+        if (error) throw error;
+      },
+      { showProgress: true }
+    );
   }, [bulkActionsHook]);
 
   return {
-    searchTerm, statusFilter, centroCustoFilter, empresaFilter, formaFilter,
-    contaBancariaFilter, handleContaBancariaChange,
-    formOpen, recebimentoDialogOpen, selectedConta, editingConta, advancedFilters,
-    currentPage, pageSize, deleteDialogOpen, deletingConta, isDeleting, isLoading, filterType,
-    viewMode, detailDrawerOpen, detailConta, cobrancaDialogOpen, cobrancaConta,
-    descontoDialogOpen, descontoConta,
-    contas, sortedContas, centrosCusto, empresas, contasBancarias, totalCount, totalPages, kpis, sortKey, sortDirection,
-    handleSearchChange, handleStatusChange, handleCentroCustoChange, handleEmpresaChange,
-    handleFormaChange, handlePageSizeChange, handleSort, handleOpenDeleteDialog, handleDeleteConta,
-    handleFilterChange, handleBulkMarkAsReceived, handleBulkCancel, handleViewConta,
-    handleEnviarCobranca, handleKpiClick, handleAplicarDesconto, handleSyncStages,
-    setFormOpen, setRecebimentoDialogOpen, setSelectedConta, setEditingConta,
-    setAdvancedFilters, setCurrentPage, setDeleteDialogOpen, setViewMode,
-    setDetailDrawerOpen, setCobrancaDialogOpen, setDescontoDialogOpen,
-    baixaDialogOpen, setBaixaDialogOpen, webhookDialogOpen, setWebhookDialogOpen,
-    ...bulkActionsHook, getRowAnimation,
+    searchTerm,
+    statusFilter,
+    centroCustoFilter,
+    empresaFilter,
+    formaFilter,
+    contaBancariaFilter,
+    handleContaBancariaChange,
+    formOpen,
+    recebimentoDialogOpen,
+    selectedConta,
+    editingConta,
+    advancedFilters,
+    currentPage,
+    pageSize,
+    deleteDialogOpen,
+    deletingConta,
+    isDeleting,
+    isLoading,
+    filterType,
+    viewMode,
+    detailDrawerOpen,
+    detailConta,
+    cobrancaDialogOpen,
+    cobrancaConta,
+    descontoDialogOpen,
+    descontoConta,
+    contas,
+    sortedContas,
+    centrosCusto,
+    empresas,
+    contasBancarias,
+    totalCount,
+    totalPages,
+    kpis,
+    sortKey,
+    sortDirection,
+    handleSearchChange,
+    handleStatusChange,
+    handleCentroCustoChange,
+    handleEmpresaChange,
+    handleFormaChange,
+    handlePageSizeChange,
+    handleSort,
+    handleOpenDeleteDialog,
+    handleDeleteConta,
+    handleFilterChange,
+    handleBulkMarkAsReceived,
+    handleBulkCancel,
+    handleViewConta,
+    handleEnviarCobranca,
+    handleKpiClick,
+    handleAplicarDesconto,
+    handleSyncStages,
+    setFormOpen,
+    setRecebimentoDialogOpen,
+    setSelectedConta,
+    setEditingConta,
+    setAdvancedFilters,
+    setCurrentPage,
+    setDeleteDialogOpen,
+    setViewMode,
+    setDetailDrawerOpen,
+    setCobrancaDialogOpen,
+    setDescontoDialogOpen,
+    baixaDialogOpen,
+    setBaixaDialogOpen,
+    webhookDialogOpen,
+    setWebhookDialogOpen,
+    ...bulkActionsHook,
+    getRowAnimation,
   };
 }

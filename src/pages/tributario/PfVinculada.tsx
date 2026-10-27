@@ -15,12 +15,16 @@ import {
   IRPFM_LIMITE_ISENCAO_MENSAL,
 } from '@/lib/tributario';
 import { formatCurrency } from '@/lib/formatters';
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog';
 
-const MESES = [
-  'Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun',
-  'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez',
-];
+const MESES = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'];
 
 interface LinhaMes {
   dividendos: number;
@@ -29,7 +33,7 @@ interface LinhaMes {
 
 export default function PfVinculada() {
   const [linhas, setLinhas] = useState<LinhaMes[]>(
-    Array.from({ length: 12 }, () => ({ dividendos: 0, irrf: 0 })),
+    Array.from({ length: 12 }, () => ({ dividendos: 0, irrf: 0 }))
   );
   const [proLaboreMensal, setProLaboreMensal] = useState(0);
   const [uniformeOpen, setUniformeOpen] = useState(false);
@@ -37,7 +41,7 @@ export default function PfVinculada() {
 
   const resultado = useMemo(() => {
     return calcularIRPFMAnual(
-      linhas.map((l) => ({ dividendosMensais: l.dividendos, irrfRetido: l.irrf })),
+      linhas.map((l) => ({ dividendosMensais: l.dividendos, irrfRetido: l.irrf }))
     );
   }, [linhas]);
 
@@ -53,7 +57,7 @@ export default function PfVinculada() {
     // Cenário B: reduz dividendos no valor do pró-labore proposto
     const novoMensal = Math.max(0, totalDist / 12 - proLaboreMensal);
     const cenarioB = calcularIRPFMAnual(
-      Array.from({ length: 12 }, () => ({ dividendosMensais: novoMensal })),
+      Array.from({ length: 12 }, () => ({ dividendosMensais: novoMensal }))
     );
     // Pró-labore: ~27,5% IRRF + 11% INSS (teto) — estimativa simplificada
     const cargaProLabore = proLaboreAnual * 0.275 + Math.min(proLaboreAnual, 7507.49 * 12) * 0.11;
@@ -101,14 +105,13 @@ export default function PfVinculada() {
 
   return (
     <>
-
-
       <div className="container mx-auto p-6 space-y-6">
         <header>
           <h1 className="text-3xl font-bold tracking-tight">PF Vinculada — IRPFM</h1>
           <p className="text-sm text-muted-foreground mt-1">
-            Imposto Mínimo PF sobre dividendos &gt; R$ {IRPFM_LIMITE_ISENCAO_MENSAL.toLocaleString('pt-BR')}/mês.
-            Vigência: 2026 (Lei 15.270/2025).
+            Imposto Mínimo PF sobre dividendos &gt; R${' '}
+            {IRPFM_LIMITE_ISENCAO_MENSAL.toLocaleString('pt-BR')}/mês. Vigência: 2026 (Lei
+            15.270/2025).
           </p>
         </header>
 
@@ -116,8 +119,8 @@ export default function PfVinculada() {
           <Info className="h-4 w-4" aria-hidden />
           <AlertTitle>Como funciona o IRPFM</AlertTitle>
           <AlertDescription>
-            Aplica-se alíquota progressiva (5%, 7,5% ou 10%) sobre o valor que exceder R$ 50.000 mensais
-            em dividendos recebidos por pessoa física. IRRF já retido na fonte é abatido.
+            Aplica-se alíquota progressiva (5%, 7,5% ou 10%) sobre o valor que exceder R$ 50.000
+            mensais em dividendos recebidos por pessoa física. IRRF já retido na fonte é abatido.
           </AlertDescription>
         </Alert>
 
@@ -224,7 +227,8 @@ export default function PfVinculada() {
               Comparativo: dividendos vs. pró-labore
             </CardTitle>
             <CardDescription>
-              Simule mover parte da remuneração para pró-labore (com INSS+IRRF) para escapar da faixa do IRPFM.
+              Simule mover parte da remuneração para pró-labore (com INSS+IRRF) para escapar da
+              faixa do IRPFM.
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
@@ -252,7 +256,9 @@ export default function PfVinculada() {
               </div>
 
               <div className="rounded-lg border p-4 space-y-1">
-                <div className="text-xs text-muted-foreground">Cenário B — pró-labore + dividendos</div>
+                <div className="text-xs text-muted-foreground">
+                  Cenário B — pró-labore + dividendos
+                </div>
                 <div className="text-2xl font-bold">
                   {formatCurrency(comparativo.totalCenarioBImposto)}
                 </div>
@@ -263,7 +269,9 @@ export default function PfVinculada() {
 
               <div
                 className={`rounded-lg border p-4 space-y-1 ${
-                  comparativo.diferenca > 0 ? 'border-success bg-success/5' : 'border-warning bg-warning/5'
+                  comparativo.diferenca > 0
+                    ? 'border-success bg-success/5'
+                    : 'border-warning bg-warning/5'
                 }`}
               >
                 <div className="text-xs text-muted-foreground flex items-center gap-1">
@@ -287,8 +295,9 @@ export default function PfVinculada() {
             <Alert>
               <Info className="h-4 w-4" aria-hidden />
               <AlertDescription className="text-xs">
-                Estimativa simplificada do pró-labore: 27,5% IRRF + 11% INSS (limitado ao teto previdenciário).
-                Considere também encargos patronais (~20% INSS) ao planejar a mudança.
+                Estimativa simplificada do pró-labore: 27,5% IRRF + 11% INSS (limitado ao teto
+                previdenciário). Considere também encargos patronais (~20% INSS) ao planejar a
+                mudança.
               </AlertDescription>
             </Alert>
           </CardContent>
@@ -298,7 +307,9 @@ export default function PfVinculada() {
         <DialogContent className="max-w-sm">
           <DialogHeader>
             <DialogTitle>Preencher 12 meses</DialogTitle>
-            <DialogDescription>Valor mensal de dividendos a aplicar nos 12 meses (R$)?</DialogDescription>
+            <DialogDescription>
+              Valor mensal de dividendos a aplicar nos 12 meses (R$)?
+            </DialogDescription>
           </DialogHeader>
           <Input
             type="number"
@@ -307,10 +318,14 @@ export default function PfVinculada() {
             autoFocus
             value={uniformeValor}
             onChange={(e) => setUniformeValor(e.target.value)}
-            onKeyDown={(e) => { if (e.key === 'Enter') confirmUniforme(); }}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter') confirmUniforme();
+            }}
           />
           <DialogFooter>
-            <Button variant="outline" onClick={() => setUniformeOpen(false)}>Cancelar</Button>
+            <Button variant="outline" onClick={() => setUniformeOpen(false)}>
+              Cancelar
+            </Button>
             <Button onClick={confirmUniforme}>Aplicar</Button>
           </DialogFooter>
         </DialogContent>

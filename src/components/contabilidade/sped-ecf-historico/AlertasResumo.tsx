@@ -31,7 +31,9 @@ export function AlertasResumo({ resumo, onOpenErros, onFilterBloqueadas }: Props
             <p className="text-xs">
               Ano(s) afetado(s):{' '}
               <span className="font-medium">
-                {Array.from(resumo.anosBloq).sort((a, b) => b - a).join(', ')}
+                {Array.from(resumo.anosBloq)
+                  .sort((a, b) => b - a)
+                  .join(', ')}
               </span>
               . O download do TXT/ZIP fica indisponível enquanto houver erros pendentes.
             </p>
@@ -42,7 +44,10 @@ export function AlertasResumo({ resumo, onOpenErros, onFilterBloqueadas }: Props
                   size="sm"
                   variant="outline"
                   className="h-7 gap-1 text-xs"
-                  onClick={() => { onFilterBloqueadas(); onOpenErros(row); }}
+                  onClick={() => {
+                    onFilterBloqueadas();
+                    onOpenErros(row);
+                  }}
                   aria-label={`Ver ${erros} erro(s) da ECF ${row.ano_calendario}`}
                 >
                   <AlertTriangle className="h-3 w-3" />
@@ -50,7 +55,9 @@ export function AlertasResumo({ resumo, onOpenErros, onFilterBloqueadas }: Props
                 </Button>
               ))}
               {resumo.bloqueadas.length > 4 && (
-                <Badge variant="outline" className="text-[10px]">+{resumo.bloqueadas.length - 4}</Badge>
+                <Badge variant="outline" className="text-[10px]">
+                  +{resumo.bloqueadas.length - 4}
+                </Badge>
               )}
             </div>
           </AlertDescription>
@@ -66,7 +73,9 @@ export function AlertasResumo({ resumo, onOpenErros, onFilterBloqueadas }: Props
             <p className="text-xs">
               Ano(s) com cross-check pendente:{' '}
               <span className="font-medium">
-                {Array.from(resumo.anosDiv).sort((a, b) => b - a).join(', ')}
+                {Array.from(resumo.anosDiv)
+                  .sort((a, b) => b - a)
+                  .join(', ')}
               </span>
               . Verifique hash, recibo e saldos K355 × L100 antes de transmitir.
             </p>
@@ -85,7 +94,9 @@ export function AlertasResumo({ resumo, onOpenErros, onFilterBloqueadas }: Props
                 </Button>
               ))}
               {resumo.divergencias.length > 4 && (
-                <Badge variant="outline" className="text-[10px] border-warning/40">+{resumo.divergencias.length - 4}</Badge>
+                <Badge variant="outline" className="text-[10px] border-warning/40">
+                  +{resumo.divergencias.length - 4}
+                </Badge>
               )}
             </div>
           </AlertDescription>

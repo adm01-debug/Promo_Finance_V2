@@ -3,7 +3,10 @@ import type { ResultadoImportacao, TransacaoOFX } from './types';
 import { parseCSVLine, parseData } from './utils';
 
 function parseValorCsv(valorRaw: string): number {
-  const cleaned = valorRaw.trim().replace(/^R\$\s*/i, '').replace(/\s/g, '');
+  const cleaned = valorRaw
+    .trim()
+    .replace(/^R\$\s*/i, '')
+    .replace(/\s/g, '');
   let normalized: string;
   if (/^-?(?:\d+|\d{1,3}(?:\.\d{3})+)(?:,\d+)?$/.test(cleaned)) {
     normalized = cleaned.replace(/\./g, '').replace(',', '.');
@@ -22,7 +25,7 @@ function parseValorCsv(valorRaw: string): number {
 export function parseCSV(
   content: string,
   fileName: string,
-  mapeamento?: Record<string, string>,
+  mapeamento?: Record<string, string>
 ): ResultadoImportacao {
   const avisos: string[] = [];
 
@@ -40,9 +43,7 @@ export function parseCSV(
     const firstLine = lines[0];
     const delimiter = firstLine.includes(';') ? ';' : ',';
 
-    const headers = firstLine
-      .split(delimiter)
-      .map((h) => h.trim().toLowerCase().replace(/"/g, ''));
+    const headers = firstLine.split(delimiter).map((h) => h.trim().toLowerCase().replace(/"/g, ''));
 
     const getIndex = (key: string, defaults: string[]) => {
       if (mapeamento?.[key]) {
@@ -51,7 +52,7 @@ export function parseCSV(
         if (idx !== -1) return idx;
 
         const fallbackIdx = headers.findIndex(
-          (h) => h.includes(mappedHeader) || mappedHeader.includes(h),
+          (h) => h.includes(mappedHeader) || mappedHeader.includes(h)
         );
         if (fallbackIdx !== -1) return fallbackIdx;
       }
@@ -59,12 +60,20 @@ export function parseCSV(
     };
 
     const dataIdx = getIndex('data', ['data', 'date', 'dt']);
-    const descricaoIdx = getIndex('descricao', ['descri', 'historic', 'memo', 'description', 'detalhe']);
+    const descricaoIdx = getIndex('descricao', [
+      'descri',
+      'historic',
+      'memo',
+      'description',
+      'detalhe',
+    ]);
     const valorIdx = getIndex('valor', ['valor', 'value', 'amount', 'quantia', 'total']);
     const tipoIdx = getIndex('tipo', ['tipo', 'type', 'dc', 'd/c', 'natureza']);
 
     if (dataIdx === -1 || valorIdx === -1) {
-      avisos.push('Colunas de data ou valor não identificadas claramente. Tentando colunas padrão.');
+      avisos.push(
+        'Colunas de data ou valor não identificadas claramente. Tentando colunas padrão.'
+      );
     }
 
     const transacoes: TransacaoOFX[] = [];
@@ -110,7 +119,7 @@ export function parseCSV(
         });
       } catch (_error: unknown) {
         avisos.push(
-          `Linha ${i + 1} ignorada: erro ao processar dados (${_error instanceof Error ? _error.message : 'formato inválido'})`,
+          `Linha ${i + 1} ignorada: erro ao processar dados (${_error instanceof Error ? _error.message : 'formato inválido'})`
         );
       }
     }

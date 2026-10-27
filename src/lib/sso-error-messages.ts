@@ -70,8 +70,7 @@ export const SSO_ERROR_MESSAGES: Record<SsoErrorCode, SsoErrorMessage> = {
   },
   unauthorized: {
     title: 'Sessão expirada ou inválida',
-    description:
-      'O servidor não conseguiu validar sua sessão para processar o logout no provedor.',
+    description: 'O servidor não conseguiu validar sua sessão para processar o logout no provedor.',
     hint: 'Reinicie a revogação local — sua sessão provavelmente já foi encerrada do lado do servidor.',
   },
   rate_limited: {
@@ -108,19 +107,36 @@ export function inferSsoErrorCode(rawMessage: string | null | undefined): SsoErr
   if (!rawMessage) return 'unknown';
   const m = rawMessage.toLowerCase();
 
-  if (m.includes('provider_not_found') || m.includes('provedor não encontrado') || m.includes('not found')) {
+  if (
+    m.includes('provider_not_found') ||
+    m.includes('provedor não encontrado') ||
+    m.includes('not found')
+  ) {
     return 'provider_not_found';
   }
   if (m.includes('disabled') || m.includes('desativado') || m.includes('inactive')) {
     return 'provider_disabled';
   }
-  if (m.includes('end_session_endpoint') || m.includes('endpoint_missing') || m.includes('sem end_session')) {
+  if (
+    m.includes('end_session_endpoint') ||
+    m.includes('endpoint_missing') ||
+    m.includes('sem end_session')
+  ) {
     return 'endpoint_missing';
   }
-  if (m.includes('invalid_provider_config') || m.includes('client_id') || m.includes('invalid config')) {
+  if (
+    m.includes('invalid_provider_config') ||
+    m.includes('client_id') ||
+    m.includes('invalid config')
+  ) {
     return 'invalid_provider_config';
   }
-  if (m.includes('failed to fetch') || m.includes('network') || m.includes('econnrefused') || m.includes('rede')) {
+  if (
+    m.includes('failed to fetch') ||
+    m.includes('network') ||
+    m.includes('econnrefused') ||
+    m.includes('rede')
+  ) {
     return 'network_error';
   }
   if (m.includes('timeout') || m.includes('timed out') || m.includes('tempo esgotado')) {

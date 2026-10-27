@@ -1,19 +1,20 @@
-import * as React from "react";
-import { type VariantProps } from "class-variance-authority";
-import { motion, AnimatePresence } from "framer-motion";
-import { X } from "lucide-react";
-import { cn } from "@/lib/utils";
+import * as React from 'react';
+import { type VariantProps } from 'class-variance-authority';
+import { motion, AnimatePresence } from 'framer-motion';
+import { X } from 'lucide-react';
+import { cn } from '@/lib/utils';
 
-import { badgeVariants } from "./badge.variants";
+import { badgeVariants } from './badge.variants';
 
-export interface BadgeProps extends React.HTMLAttributes<HTMLDivElement>, VariantProps<typeof badgeVariants> {
+export interface BadgeProps
+  extends React.HTMLAttributes<HTMLDivElement>, VariantProps<typeof badgeVariants> {
   removable?: boolean;
   onRemove?: () => void;
 }
 
 function Badge({ className, variant, removable, onRemove, children, ...props }: BadgeProps) {
   return (
-    <div className={cn(badgeVariants({ variant }), removable && "pr-1", className)} {...props}>
+    <div className={cn(badgeVariants({ variant }), removable && 'pr-1', className)} {...props}>
       {children}
       {removable && onRemove && (
         <button
@@ -21,7 +22,7 @@ function Badge({ className, variant, removable, onRemove, children, ...props }: 
             e.stopPropagation();
             onRemove();
           }}
-            className="ml-1 p-0.5 rounded-full hover:bg-muted transition-colors"
+          className="ml-1 p-0.5 rounded-full hover:bg-muted transition-colors"
         >
           <X className="h-3 w-3" />
         </button>
@@ -52,7 +53,7 @@ function NotificationBadge({
   className,
   children,
   position = 'top-right',
-  pulse = false
+  pulse = false,
 }: NotificationBadgeProps) {
   const showBadge = dot || count > 0 || (count === 0 && showZero);
   const displayCount = count > maxCount ? `${maxCount}+` : count;
@@ -72,7 +73,7 @@ function NotificationBadge({
   };
 
   return (
-    <div className={cn("relative inline-flex", className)}>
+    <div className={cn('relative inline-flex', className)}>
       {children}
       <AnimatePresence>
         {showBadge && (
@@ -82,11 +83,13 @@ function NotificationBadge({
             exit={{ scale: 0, opacity: 0 }}
             transition={{ type: 'spring', stiffness: 500, damping: 25 }}
             className={cn(
-              "absolute flex items-center justify-center",
-              dot ? "h-2.5 w-2.5 rounded-full" : "min-w-[18px] h-[18px] px-1 rounded-full text-[10px] font-bold",
+              'absolute flex items-center justify-center',
+              dot
+                ? 'h-2.5 w-2.5 rounded-full'
+                : 'min-w-[18px] h-[18px] px-1 rounded-full text-[10px] font-bold',
               colorStyles[color],
               positionStyles[position],
-              pulse && "animate-pulse"
+              pulse && 'animate-pulse'
             )}
           >
             {!dot && (
@@ -101,8 +104,10 @@ function NotificationBadge({
               </motion.span>
             )}
             {pulse && (
-              <span className="absolute inset-0 rounded-full animate-ping opacity-75" 
-                    style={{ backgroundColor: 'inherit' }} />
+              <span
+                className="absolute inset-0 rounded-full animate-ping opacity-75"
+                style={{ backgroundColor: 'inherit' }}
+              />
             )}
           </motion.span>
         )}
@@ -132,22 +137,23 @@ function StatusBadge({ status, label, showDot = true, className }: StatusBadgePr
   const displayLabel = label || config.label;
 
   return (
-    <span className={cn(
-      "inline-flex items-center gap-1.5 text-xs font-medium text-muted-foreground",
-      className
-    )}>
+    <span
+      className={cn(
+        'inline-flex items-center gap-1.5 text-xs font-medium text-muted-foreground',
+        className
+      )}
+    >
       {showDot && (
         <span className="relative flex h-2 w-2">
           {config.dotPulse && (
-            <span className={cn(
-              "absolute inline-flex h-full w-full rounded-full opacity-75 animate-ping",
-              config.color
-            )} />
+            <span
+              className={cn(
+                'absolute inline-flex h-full w-full rounded-full opacity-75 animate-ping',
+                config.color
+              )}
+            />
           )}
-          <span className={cn(
-            "relative inline-flex rounded-full h-2 w-2",
-            config.color
-          )} />
+          <span className={cn('relative inline-flex rounded-full h-2 w-2', config.color)} />
         </span>
       )}
       {displayLabel}
@@ -169,10 +175,8 @@ function CountBadge({ count, className, variant = 'default' }: CountBadgeProps) 
       initial={{ scale: 0.8 }}
       animate={{ scale: 1 }}
       className={cn(
-        "inline-flex items-center justify-center min-w-[20px] h-5 px-1.5 rounded-full text-xs font-medium",
-        variant === 'default' 
-          ? "bg-primary/10 text-primary" 
-          : "bg-muted text-muted-foreground",
+        'inline-flex items-center justify-center min-w-[20px] h-5 px-1.5 rounded-full text-xs font-medium',
+        variant === 'default' ? 'bg-primary/10 text-primary' : 'bg-muted text-muted-foreground',
         className
       )}
     >
@@ -193,8 +197,8 @@ function NewBadge({ className }: NewBadgeProps) {
       animate={{ scale: 1, rotate: 0 }}
       transition={{ type: 'spring', stiffness: 400 }}
       className={cn(
-        "inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider",
-        "bg-gradient-to-r from-primary to-primary/80 text-primary-foreground",
+        'inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider',
+        'bg-gradient-to-r from-primary to-primary/80 text-primary-foreground',
         className
       )}
     >
@@ -203,10 +207,4 @@ function NewBadge({ className }: NewBadgeProps) {
   );
 }
 
-export { 
-  Badge, 
-  NotificationBadge,
-  StatusBadge,
-  CountBadge,
-  NewBadge
-};
+export { Badge, NotificationBadge, StatusBadge, CountBadge, NewBadge };

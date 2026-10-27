@@ -29,7 +29,9 @@ describe('normalizarParametrosSnapshot — contrato', () => {
   });
 
   it('coage faturamento anual persistido como string numérica', () => {
-    expect(normalizarParametrosSnapshot({ faturamentoAnual: '850000' })?.faturamentoAnual).toBe(850_000);
+    expect(normalizarParametrosSnapshot({ faturamentoAnual: '850000' })?.faturamentoAnual).toBe(
+      850_000
+    );
   });
 
   it('limita percentuais e alíquotas às faixas legais', () => {
@@ -62,10 +64,14 @@ describe('normalizarParametrosSnapshot — contrato', () => {
   });
 
   it('aceita apenas periodicidade válida', () => {
-    expect(normalizarParametrosSnapshot({ faturamentoAnual: 1, periodicidadeApuracao: 'mensal' })
-      ?.periodicidadeApuracao).toBeUndefined();
-    expect(normalizarParametrosSnapshot({ faturamentoAnual: 1, periodicidadeApuracao: 'trimestral' })
-      ?.periodicidadeApuracao).toBe('trimestral');
+    expect(
+      normalizarParametrosSnapshot({ faturamentoAnual: 1, periodicidadeApuracao: 'mensal' })
+        ?.periodicidadeApuracao
+    ).toBeUndefined();
+    expect(
+      normalizarParametrosSnapshot({ faturamentoAnual: 1, periodicidadeApuracao: 'trimestral' })
+        ?.periodicidadeApuracao
+    ).toBe('trimestral');
   });
 
   it('preserva série de faturamento bem-formada, inclusive campos opcionais', () => {
@@ -86,13 +92,13 @@ describe('normalizarParametrosSnapshot — contrato', () => {
       normalizarParametrosSnapshot({
         faturamentoAnual: 1,
         faturamentoMensal: [{ ano: 2025, mes: 13, receita_bruta: 1 }],
-      })?.faturamentoMensal,
+      })?.faturamentoMensal
     ).toBeUndefined();
     expect(
       normalizarParametrosSnapshot({
         faturamentoAnual: 1,
         faturamentoMensal: [{ ano: 2025, mes: 1 }],
-      })?.faturamentoMensal,
+      })?.faturamentoMensal
     ).toBeUndefined();
   });
 
@@ -116,17 +122,47 @@ describe('normalizarParametrosSnapshot — contrato', () => {
 
 describe('normalizarParametrosSnapshot — fuzzing de 600 payloads corrompidos', () => {
   const lixo = [
-    undefined, null, NaN, Infinity, -Infinity, 'abc', '', '  ', [], {}, true, false,
-    -1, 1e21, '12,5', '99', { a: 1 },
+    undefined,
+    null,
+    NaN,
+    Infinity,
+    -Infinity,
+    'abc',
+    '',
+    '  ',
+    [],
+    {},
+    true,
+    false,
+    -1,
+    1e21,
+    '12,5',
+    '99',
+    { a: 1 },
   ];
 
   it('nunca lança e sempre produz entrada aceita pelo motor', () => {
     const campos = [
-      'folhaAnual', 'margemLucro', 'percentualServicos', 'percentualIndustria',
-      'percentualRevenda', 'comprasComCredito', 'despesasOperacionais', 'aliquotaICMS',
-      'aliquotaISS', 'aliquotaRAT', 'aliquotaTerceiros', 'presuncaoIrpjServicos',
-      'presuncaoCsllServicos', 'prejuizoFiscalAcumulado', 'baseNegativaCsllAcumulada',
-      'periodicidadeApuracao', 'lucroTrimestral', 'faturamentoMensal', 'folhaMensal', 'uf',
+      'folhaAnual',
+      'margemLucro',
+      'percentualServicos',
+      'percentualIndustria',
+      'percentualRevenda',
+      'comprasComCredito',
+      'despesasOperacionais',
+      'aliquotaICMS',
+      'aliquotaISS',
+      'aliquotaRAT',
+      'aliquotaTerceiros',
+      'presuncaoIrpjServicos',
+      'presuncaoCsllServicos',
+      'prejuizoFiscalAcumulado',
+      'baseNegativaCsllAcumulada',
+      'periodicidadeApuracao',
+      'lucroTrimestral',
+      'faturamentoMensal',
+      'folhaMensal',
+      'uf',
     ];
     let aceitos = 0;
     for (let i = 0; i < 600; i++) {

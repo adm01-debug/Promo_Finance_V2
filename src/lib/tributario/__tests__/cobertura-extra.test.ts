@@ -4,11 +4,7 @@
 // rbt12 e simular-simples (linhas/branches que ainda não estavam exercitadas).
 // ============================================
 import { describe, it, expect } from 'vitest';
-import {
-  calcularFolha12m,
-  calcularFatorR,
-  determinarAnexoPorFatorR,
-} from '../fator-r';
+import { calcularFolha12m, calcularFatorR, determinarAnexoPorFatorR } from '../fator-r';
 import {
   obterAnexo,
   identificarFaixa,
@@ -32,7 +28,10 @@ describe('fator-r — calcularFolha12m', () => {
     const hist: FolhaMes[] = Array.from({ length: 12 }, (_, i) => ({
       ano: 2024,
       mes: i + 1,
-      salarios: 8000, pro_labore: 1000, encargos: 1000, total_folha: 10_000,
+      salarios: 8000,
+      pro_labore: 1000,
+      encargos: 1000,
+      total_folha: 10_000,
     }));
     expect(calcularFolha12m(hist, 2025, 1)).toBe(120_000);
   });
@@ -48,7 +47,14 @@ describe('fator-r — calcularFolha12m', () => {
 
   it('ignora meses futuros em relação à referência', () => {
     const hist: FolhaMes[] = [
-      { ano: 2025, mes: 5, salarios: 80000, pro_labore: 10000, encargos: 9999, total_folha: 99_999 }, // futuro
+      {
+        ano: 2025,
+        mes: 5,
+        salarios: 80000,
+        pro_labore: 10000,
+        encargos: 9999,
+        total_folha: 99_999,
+      }, // futuro
       { ano: 2024, mes: 12, salarios: 800, pro_labore: 100, encargos: 100, total_folha: 1_000 },
     ];
     // só o de dez/2024 conta → 1k * 12
@@ -155,7 +161,7 @@ describe('simular-simples — caminhos com histórico e forcarAnexo', () => {
         percentualServicos: 0,
         faturamentoMensal,
       },
-      opcoes,
+      opcoes
     );
     expect(r.elegivel).toBe(true);
     expect(r.rbt12).toBe(600_000);
@@ -172,7 +178,7 @@ describe('simular-simples — caminhos com histórico e forcarAnexo', () => {
         percentualServicos: 0,
         faturamentoMensal,
       },
-      opcoes,
+      opcoes
     );
     expect(r.elegivel).toBe(true);
     expect(r.rbt12).toBe(480_000);
@@ -187,7 +193,7 @@ describe('simular-simples — caminhos com histórico e forcarAnexo', () => {
         percentualServicos: 100,
         folhaAnual: 50_000,
       },
-      { ...opcoes, forcarAnexo: 'II' },
+      { ...opcoes, forcarAnexo: 'II' }
     );
     expect(r.elegivel).toBe(true);
     expect(r.anexoAplicavel).toBe('II');
@@ -197,7 +203,10 @@ describe('simular-simples — caminhos com histórico e forcarAnexo', () => {
     const folhaMensal: FolhaMes[] = Array.from({ length: 12 }, (_, i) => ({
       ano: 2024,
       mes: i + 1,
-      salarios: 16000, pro_labore: 2000, encargos: 2000, total_folha: 20_000, // 240k/ano
+      salarios: 16000,
+      pro_labore: 2000,
+      encargos: 2000,
+      total_folha: 20_000, // 240k/ano
     }));
     const r = simularSimples(
       {
@@ -206,7 +215,7 @@ describe('simular-simples — caminhos com histórico e forcarAnexo', () => {
         percentualServicos: 100, // serviços → fator R aplica
         folhaMensal,
       },
-      opcoes,
+      opcoes
     );
     // 240k folha / 600k RBT12 = 0,40 → Anexo III
     expect(r.anexoAplicavel).toBe('III');
@@ -216,7 +225,7 @@ describe('simular-simples — caminhos com histórico e forcarAnexo', () => {
   it('observação de atividade comercial quando %serviços ≤ 50', () => {
     const r = simularSimples(
       { faturamentoAnual: 300_000, margemLucro: 10, percentualServicos: 30 },
-      opcoes,
+      opcoes
     );
     expect(r.anexoAplicavel).toBe('I');
     expect(r.observacoes?.some((o) => o.toLowerCase().includes('com'))).toBe(true);

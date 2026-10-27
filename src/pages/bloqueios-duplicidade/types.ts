@@ -29,12 +29,12 @@ export interface BloqueiosFilters {
 }
 
 export const emptyFilters: BloqueiosFilters = {
-  fornecedor: "",
-  documento: "",
-  valor: "",
-  periodo: "all",
-  empresa_id: "all",
-  competencia: "",
+  fornecedor: '',
+  documento: '',
+  valor: '',
+  periodo: 'all',
+  empresa_id: 'all',
+  competencia: '',
 };
 
 export const containerVariants = {

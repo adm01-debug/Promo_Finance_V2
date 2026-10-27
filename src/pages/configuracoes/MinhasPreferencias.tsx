@@ -12,25 +12,15 @@ import {
   Star,
 } from 'lucide-react';
 import { MainLayout } from '@/components/layout/MainLayout';
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from '@/components/ui/card';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import {
-  TooltipProvider,
-} from '@/components/ui/tooltip';
+import { TooltipProvider } from '@/components/ui/tooltip';
 import { supabaseDyn } from '@/lib/supabase-dynamic';
 import { useAuth } from '@/hooks/useAuth';
 import { toast } from 'sonner';
-import {
-  SAVED_FILTERS_CATALOG,
-} from './savedFiltersCatalog';
+import { SAVED_FILTERS_CATALOG } from './savedFiltersCatalog';
 import { ModuleSection, type ModuleGroup, type PreferenciaRow } from './MinhasPreferencias.parts';
 
 export default function MinhasPreferencias() {
@@ -39,7 +29,12 @@ export default function MinhasPreferencias() {
   const [search, setSearch] = useState('');
   const queryKey = ['minhas-preferencias', user?.id] as const;
 
-  const { data: rows = [], isLoading, isFetching, refetch } = useQuery({
+  const {
+    data: rows = [],
+    isLoading,
+    isFetching,
+    refetch,
+  } = useQuery({
     queryKey,
     enabled: !!user?.id,
     queryFn: async (): Promise<PreferenciaRow[]> => {
@@ -47,7 +42,7 @@ export default function MinhasPreferencias() {
       const { data, error } = await supabaseDyn
         .from('saved_filters')
         .select(
-          'id,user_id,entity_type,name,filters,is_default,is_shared,empresa_id,shared_with_roles,updated_at',
+          'id,user_id,entity_type,name,filters,is_default,is_shared,empresa_id,shared_with_roles,updated_at'
         )
         .eq('user_id', user.id)
         .order('entity_type', { ascending: true })
@@ -92,10 +87,7 @@ export default function MinhasPreferencias() {
 
   const remove = useMutation({
     mutationFn: async (row: PreferenciaRow) => {
-      const { error } = await supabaseDyn
-        .from('saved_filters')
-        .delete()
-        .eq('id', row.id);
+      const { error } = await supabaseDyn.from('saved_filters').delete().eq('id', row.id);
       if (error) throw new Error(error.message);
     },
     onSuccess: () => {
@@ -110,9 +102,7 @@ export default function MinhasPreferencias() {
     const q = search.trim().toLowerCase();
     const filtered = q
       ? rows.filter(
-          (r) =>
-            r.name.toLowerCase().includes(q) ||
-            r.entity_type.toLowerCase().includes(q),
+          (r) => r.name.toLowerCase().includes(q) || r.entity_type.toLowerCase().includes(q)
         )
       : rows;
 
@@ -181,7 +171,8 @@ export default function MinhasPreferencias() {
                   Minhas preferências
                 </h1>
                 <p className="text-sm text-muted-foreground">
-                  Veja e ajuste os presets de filtros e colunas que sincronizam entre seus dispositivos.
+                  Veja e ajuste os presets de filtros e colunas que sincronizam entre seus
+                  dispositivos.
                 </p>
               </div>
             </div>
@@ -245,7 +236,8 @@ export default function MinhasPreferencias() {
             <CardHeader>
               <CardTitle className="text-base">Presets por módulo</CardTitle>
               <CardDescription>
-                Cada preset guarda filtros, ordenação e colunas visíveis. O preset marcado como padrão é aplicado automaticamente ao abrir a tela.
+                Cada preset guarda filtros, ordenação e colunas visíveis. O preset marcado como
+                padrão é aplicado automaticamente ao abrir a tela.
               </CardDescription>
             </CardHeader>
             <CardContent>
@@ -275,10 +267,10 @@ export default function MinhasPreferencias() {
                         onDelete={(r) => remove.mutate(r)}
                         busyId={
                           setDefault.isPending || stopSharing.isPending || remove.isPending
-                            ? (setDefault.variables as PreferenciaRow | undefined)?.id ??
+                            ? ((setDefault.variables as PreferenciaRow | undefined)?.id ??
                               (stopSharing.variables as PreferenciaRow | undefined)?.id ??
                               (remove.variables as PreferenciaRow | undefined)?.id ??
-                              null
+                              null)
                             : null
                         }
                       />

@@ -46,7 +46,7 @@ export function ReguaCobrancaVisual({ etapas, getEtapaCount }: Props) {
                     animate={{ opacity: 1, scale: 1 }}
                     transition={{ delay: index * 0.1 }}
                     className={cn(
-                      "flex flex-col items-center p-4 rounded-xl border min-w-[140px] transition-all hover:shadow-md cursor-pointer relative",
+                      'flex flex-col items-center p-4 rounded-xl border min-w-[140px] transition-all hover:shadow-md cursor-pointer relative',
                       etapa.cor
                     )}
                   >
@@ -59,8 +59,12 @@ export function ReguaCobrancaVisual({ etapas, getEtapaCount }: Props) {
                       <EtapaIcon className="h-6 w-6" />
                     </div>
                     <h4 className="font-semibold text-sm">{etapa.nome}</h4>
-                    <p className="text-xs text-muted-foreground mt-1 text-center">{etapa.descricao}</p>
-                    <Badge variant="outline" className="mt-2 text-xs">{etapa.canal}</Badge>
+                    <p className="text-xs text-muted-foreground mt-1 text-center">
+                      {etapa.descricao}
+                    </p>
+                    <Badge variant="outline" className="mt-2 text-xs">
+                      {etapa.canal}
+                    </Badge>
                   </motion.div>
                   {index < etapas.length - 1 && (
                     <div className="w-8 h-0.5 bg-border mx-2 hidden lg:block" />

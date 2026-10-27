@@ -20,13 +20,16 @@ export function calcularTodosRegimes(input: InputCalculadora): ResultadoCalculad
   if (input.reforma) cenarios.push(calcularReformaTributaria(input.reforma));
 
   const elegiveis = cenarios.filter((c) => c.elegivel && c.regime !== 'reforma');
-  const melhorCenario = elegiveis.length > 0
-    ? elegiveis.reduce((a, b) => (a.totalAPagar <= b.totalAPagar ? a : b))
-    : null;
-  const piorCenario = elegiveis.length > 0
-    ? elegiveis.reduce((a, b) => (a.totalAPagar >= b.totalAPagar ? a : b))
-    : null;
-  const economiaAnualVsPior = melhorCenario && piorCenario ? piorCenario.totalAPagar - melhorCenario.totalAPagar : 0;
+  const melhorCenario =
+    elegiveis.length > 0
+      ? elegiveis.reduce((a, b) => (a.totalAPagar <= b.totalAPagar ? a : b))
+      : null;
+  const piorCenario =
+    elegiveis.length > 0
+      ? elegiveis.reduce((a, b) => (a.totalAPagar >= b.totalAPagar ? a : b))
+      : null;
+  const economiaAnualVsPior =
+    melhorCenario && piorCenario ? piorCenario.totalAPagar - melhorCenario.totalAPagar : 0;
 
   return {
     input,

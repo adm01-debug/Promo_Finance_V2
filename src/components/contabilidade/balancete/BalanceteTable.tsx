@@ -1,7 +1,18 @@
 import { cn } from '@/lib/utils';
 import { formatCurrency } from '@/lib/formatters';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { splitSaldo, type BalanceteRow, type BalanceteTotais } from '@/lib/contabil/balancete-utils';
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '@/components/ui/table';
+import {
+  splitSaldo,
+  type BalanceteRow,
+  type BalanceteTotais,
+} from '@/lib/contabil/balancete-utils';
 
 interface Props {
   rows: BalanceteRow[];
@@ -11,7 +22,11 @@ interface Props {
 
 function Valor({ value, muted }: { value: number; muted?: boolean }) {
   if (!value) return <span className="text-muted-foreground/50">—</span>;
-  return <span className={cn('tabular-nums', muted && 'text-muted-foreground')}>{formatCurrency(value)}</span>;
+  return (
+    <span className={cn('tabular-nums', muted && 'text-muted-foreground')}>
+      {formatCurrency(value)}
+    </span>
+  );
 }
 
 export function BalanceteTable({ rows, totais, onSelectConta }: Props) {
@@ -45,7 +60,7 @@ export function BalanceteTable({ rows, totais, onSelectConta }: Props) {
                 key={r.conta_id}
                 className={cn(
                   sintetica && 'bg-muted/20 font-semibold',
-                  onSelectConta && r.aceita_lancamento && 'cursor-pointer hover:bg-accent/40',
+                  onSelectConta && r.aceita_lancamento && 'cursor-pointer hover:bg-accent/40'
                 )}
                 onClick={() => r.aceita_lancamento && onSelectConta?.(r)}
               >
@@ -53,24 +68,44 @@ export function BalanceteTable({ rows, totais, onSelectConta }: Props) {
                 <TableCell style={{ paddingLeft: `${Math.max(0, r.nivel - 1) * 12 + 16}px` }}>
                   {r.nome}
                 </TableCell>
-                <TableCell className="text-right"><Valor value={r.saldo_anterior} muted /></TableCell>
-                <TableCell className="text-right"><Valor value={r.debitos} /></TableCell>
-                <TableCell className="text-right"><Valor value={r.creditos} /></TableCell>
-                <TableCell className="text-right"><Valor value={saldo.devedor} /></TableCell>
-                <TableCell className="text-right"><Valor value={saldo.credor} /></TableCell>
+                <TableCell className="text-right">
+                  <Valor value={r.saldo_anterior} muted />
+                </TableCell>
+                <TableCell className="text-right">
+                  <Valor value={r.debitos} />
+                </TableCell>
+                <TableCell className="text-right">
+                  <Valor value={r.creditos} />
+                </TableCell>
+                <TableCell className="text-right">
+                  <Valor value={saldo.devedor} />
+                </TableCell>
+                <TableCell className="text-right">
+                  <Valor value={saldo.credor} />
+                </TableCell>
               </TableRow>
             );
           })}
         </TableBody>
         <tfoot>
-          <TableRow className={cn('border-t-2', totais.balanceado ? 'bg-muted/50' : 'bg-destructive/10')}>
+          <TableRow
+            className={cn('border-t-2', totais.balanceado ? 'bg-muted/50' : 'bg-destructive/10')}
+          >
             <TableCell colSpan={3} className="font-black uppercase text-[11px] tracking-widest">
               Totais ({totais.contas} contas analíticas)
             </TableCell>
-            <TableCell className="text-right font-bold tabular-nums">{formatCurrency(totais.debitos)}</TableCell>
-            <TableCell className="text-right font-bold tabular-nums">{formatCurrency(totais.creditos)}</TableCell>
-            <TableCell className="text-right font-bold tabular-nums">{formatCurrency(totais.saldoDevedor)}</TableCell>
-            <TableCell className="text-right font-bold tabular-nums">{formatCurrency(totais.saldoCredor)}</TableCell>
+            <TableCell className="text-right font-bold tabular-nums">
+              {formatCurrency(totais.debitos)}
+            </TableCell>
+            <TableCell className="text-right font-bold tabular-nums">
+              {formatCurrency(totais.creditos)}
+            </TableCell>
+            <TableCell className="text-right font-bold tabular-nums">
+              {formatCurrency(totais.saldoDevedor)}
+            </TableCell>
+            <TableCell className="text-right font-bold tabular-nums">
+              {formatCurrency(totais.saldoCredor)}
+            </TableCell>
           </TableRow>
           {!totais.balanceado && (
             <TableRow className="bg-destructive/10">

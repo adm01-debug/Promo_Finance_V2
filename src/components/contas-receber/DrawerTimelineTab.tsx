@@ -1,4 +1,12 @@
-import { History, MessageCircle, FileText, CheckCircle2, Zap, ArrowRightLeft, type LucideIcon } from 'lucide-react';
+import {
+  History,
+  MessageCircle,
+  FileText,
+  CheckCircle2,
+  Zap,
+  ArrowRightLeft,
+  type LucideIcon,
+} from 'lucide-react';
 import { formatDateTime, formatCurrency } from '@/lib/formatters';
 import { cn } from '@/lib/utils';
 
@@ -8,7 +16,7 @@ const operacaoLabels: Record<string, string> = {
   DELETE: 'Exclusão',
 };
 
-const eventConfig: Record<string, { icon: LucideIcon, color: string, label: string }> = {
+const eventConfig: Record<string, { icon: LucideIcon; color: string; label: string }> = {
   criacao: { icon: FileText, color: 'text-blue-400', label: 'Criação' },
   status_change: { icon: ArrowRightLeft, color: 'text-warning', label: 'Mudança de Status' },
   baixa_automatica: { icon: Zap, color: 'text-primary', label: 'Baixa Automática' },
@@ -31,13 +39,23 @@ interface EventItem {
   metadata?: { transacao_banco?: { descricao?: string; valor?: number } } | null;
 }
 
-export function DrawerTimelineTab({ auditHistory, events = [] }: { auditHistory: AuditItem[], events?: EventItem[] }) {
+export function DrawerTimelineTab({
+  auditHistory,
+  events = [],
+}: {
+  auditHistory: AuditItem[];
+  events?: EventItem[];
+}) {
   type TimelineItem =
     | (AuditItem & { type: 'audit'; sortDate: Date })
     | (EventItem & { type: 'event'; sortDate: Date });
   const allItems: TimelineItem[] = [
-    ...auditHistory.map(a => ({ ...a, type: 'audit' as const, sortDate: new Date(a.created_at) })),
-    ...events.map(e => ({ ...e, type: 'event' as const, sortDate: new Date(e.timestamp) })),
+    ...auditHistory.map((a) => ({
+      ...a,
+      type: 'audit' as const,
+      sortDate: new Date(a.created_at),
+    })),
+    ...events.map((e) => ({ ...e, type: 'event' as const, sortDate: new Date(e.timestamp) })),
   ].sort((a, b) => b.sortDate.getTime() - a.sortDate.getTime());
 
   if (allItems.length === 0) {
@@ -60,17 +78,25 @@ export function DrawerTimelineTab({ auditHistory, events = [] }: { auditHistory:
                 <div className="absolute left-6 top-1 h-2 w-2 rounded-full bg-card/20 border border-background z-10" />
                 <div className="text-sm">
                   <div className="flex items-center gap-2">
-                    <p className="font-bold text-muted-foreground/60 text-[10px] uppercase tracking-widest">{operacaoLabels[item.operacao] || item.operacao}</p>
-                    <span className="text-[10px] text-muted-foreground/40">• {formatDateTime(item.created_at)}</span>
+                    <p className="font-bold text-muted-foreground/60 text-[10px] uppercase tracking-widest">
+                      {operacaoLabels[item.operacao] || item.operacao}
+                    </p>
+                    <span className="text-[10px] text-muted-foreground/40">
+                      • {formatDateTime(item.created_at)}
+                    </span>
                   </div>
                   {item.dados_novos && item.operacao === 'UPDATE' && (
                     <div className="mt-1 p-2 rounded-lg bg-card/5 border border-white/5 text-[10px] space-y-0.5">
-                      {Object.entries(item.dados_novos).slice(0, 3).map(([key, val]) => (
-                        <div key={key} className="flex gap-2">
-                          <span className="text-muted-foreground uppercase font-black opacity-40">{key}:</span>
-                          <span className="truncate">{String(val)}</span>
-                        </div>
-                      ))}
+                      {Object.entries(item.dados_novos)
+                        .slice(0, 3)
+                        .map(([key, val]) => (
+                          <div key={key} className="flex gap-2">
+                            <span className="text-muted-foreground uppercase font-black opacity-40">
+                              {key}:
+                            </span>
+                            <span className="truncate">{String(val)}</span>
+                          </div>
+                        ))}
                     </div>
                   )}
                 </div>
@@ -78,26 +104,52 @@ export function DrawerTimelineTab({ auditHistory, events = [] }: { auditHistory:
             );
           }
 
-          const config = eventConfig[item.type] || { icon: History, color: 'text-muted-foreground', label: item.type };
+          const config = eventConfig[item.type] || {
+            icon: History,
+            color: 'text-muted-foreground',
+            label: item.type,
+          };
           const Icon = config.icon;
 
           return (
             <div key={item.id} className="relative pl-14">
-              <div className={cn("absolute left-4 top-0 h-7 w-7 rounded-lg border border-white/10 flex items-center justify-center bg-background z-10 shadow-xl", config.color)}>
+              <div
+                className={cn(
+                  'absolute left-4 top-0 h-7 w-7 rounded-lg border border-white/10 flex items-center justify-center bg-background z-10 shadow-xl',
+                  config.color
+                )}
+              >
                 <Icon className="h-4 w-4" />
               </div>
               <div className="text-sm">
                 <div className="flex items-center gap-2">
-                  <p className={cn("font-black text-[10px] uppercase tracking-[0.15em]", config.color)}>{config.label}</p>
-                  <span className="text-[10px] text-muted-foreground/40">• {formatDateTime(item.timestamp)}</span>
+                  <p
+                    className={cn(
+                      'font-black text-[10px] uppercase tracking-[0.15em]',
+                      config.color
+                    )}
+                  >
+                    {config.label}
+                  </p>
+                  <span className="text-[10px] text-muted-foreground/40">
+                    • {formatDateTime(item.timestamp)}
+                  </span>
                 </div>
-                <p className="text-foreground/80 font-medium mt-1 leading-relaxed">{item.message}</p>
+                <p className="text-foreground/80 font-medium mt-1 leading-relaxed">
+                  {item.message}
+                </p>
                 {item.metadata?.transacao_banco && (
                   <div className="mt-2 p-3 rounded-xl bg-primary/5 border border-primary/10 text-[10px] space-y-1">
-                    <p className="font-black text-primary uppercase tracking-widest opacity-60">Evidência Bancária</p>
+                    <p className="font-black text-primary uppercase tracking-widest opacity-60">
+                      Evidência Bancária
+                    </p>
                     <div className="flex justify-between">
-                      <span className="text-foreground/60">{item.metadata.transacao_banco.descricao}</span>
-                      <span className="font-black text-foreground">{formatCurrency(item.metadata.transacao_banco.valor)}</span>
+                      <span className="text-foreground/60">
+                        {item.metadata.transacao_banco.descricao}
+                      </span>
+                      <span className="font-black text-foreground">
+                        {formatCurrency(item.metadata.transacao_banco.valor)}
+                      </span>
                     </div>
                   </div>
                 )}

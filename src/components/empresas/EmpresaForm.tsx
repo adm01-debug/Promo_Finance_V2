@@ -5,13 +5,30 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 import { Loader2 } from 'lucide-react';
 import { useCriarEmpresa, useAtualizarEmpresa, type Empresa } from '@/hooks/useEmpresas';
 import { applyCnpjMask, applyPhoneMask, applyCepMask } from '@/lib/masks';
-import { paraPercentual, paraFracao, applyCnaeMask, ESTADOS, empresaSchema, type EmpresaFormData } from './empresa-form-model';
+import {
+  paraPercentual,
+  paraFracao,
+  applyCnaeMask,
+  ESTADOS,
+  empresaSchema,
+  type EmpresaFormData,
+} from './empresa-form-model';
 import { useCelebrations } from '@/components/wrappers/CelebrationActions';
-import { TABELA_FPAS, resolverFpasPorCnae, buscarFpas } from '@/lib/tributario/folha/fpas-terceiros';
+import {
+  TABELA_FPAS,
+  resolverFpasPorCnae,
+  buscarFpas,
+} from '@/lib/tributario/folha/fpas-terceiros';
 import { useResolucaoCnae } from '@/hooks/useCnaes';
 import { CnaeCatalogoInfo } from './CnaeCatalogoInfo';
 
@@ -53,7 +70,6 @@ export function EmpresaForm({ empresa, onSuccess, onCancel }: EmpresaFormProps) 
       codigo_fpas: '',
       aliquota_rat: 2,
       aliquota_terceiros: 5.8,
-
     },
   });
 
@@ -205,7 +221,9 @@ export function EmpresaForm({ empresa, onSuccess, onCancel }: EmpresaFormProps) 
             placeholder="000.000.000.000"
             disabled={isLoading}
           />
-          {errors.inscricao_estadual && <p className="text-sm text-destructive">{errors.inscricao_estadual.message}</p>}
+          {errors.inscricao_estadual && (
+            <p className="text-sm text-destructive">{errors.inscricao_estadual.message}</p>
+          )}
         </div>
       </div>
 
@@ -217,7 +235,9 @@ export function EmpresaForm({ empresa, onSuccess, onCancel }: EmpresaFormProps) 
           placeholder="Razão Social da Empresa LTDA"
           disabled={isLoading}
         />
-        {errors.razao_social && <p className="text-sm text-destructive">{errors.razao_social.message}</p>}
+        {errors.razao_social && (
+          <p className="text-sm text-destructive">{errors.razao_social.message}</p>
+        )}
       </div>
 
       <div className="space-y-2">
@@ -228,7 +248,9 @@ export function EmpresaForm({ empresa, onSuccess, onCancel }: EmpresaFormProps) 
           placeholder="Nome Fantasia"
           disabled={isLoading}
         />
-        {errors.nome_fantasia && <p className="text-sm text-destructive">{errors.nome_fantasia.message}</p>}
+        {errors.nome_fantasia && (
+          <p className="text-sm text-destructive">{errors.nome_fantasia.message}</p>
+        )}
       </div>
 
       <div className="grid grid-cols-2 gap-4">
@@ -271,12 +293,7 @@ export function EmpresaForm({ empresa, onSuccess, onCancel }: EmpresaFormProps) 
       <div className="grid grid-cols-3 gap-4">
         <div className="space-y-2">
           <Label htmlFor="cidade">Cidade</Label>
-          <Input
-            id="cidade"
-            {...register('cidade')}
-            placeholder="Cidade"
-            disabled={isLoading}
-          />
+          <Input id="cidade" {...register('cidade')} placeholder="Cidade" disabled={isLoading} />
           {errors.cidade && <p className="text-sm text-destructive">{errors.cidade.message}</p>}
         </div>
         <div className="space-y-2">
@@ -291,7 +308,9 @@ export function EmpresaForm({ empresa, onSuccess, onCancel }: EmpresaFormProps) 
             </SelectTrigger>
             <SelectContent>
               {ESTADOS.map((uf) => (
-                <SelectItem key={uf} value={uf}>{uf}</SelectItem>
+                <SelectItem key={uf} value={uf}>
+                  {uf}
+                </SelectItem>
               ))}
             </SelectContent>
           </Select>
@@ -314,9 +333,12 @@ export function EmpresaForm({ empresa, onSuccess, onCancel }: EmpresaFormProps) 
       {/* Parâmetros de folha (eSocial / FPAS) — usados pelo motor tributário */}
       <div className="space-y-4 pt-4 border-t">
         <div>
-          <h3 className="text-sm font-semibold text-foreground">Parâmetros de Folha (eSocial / FPAS)</h3>
+          <h3 className="text-sm font-semibold text-foreground">
+            Parâmetros de Folha (eSocial / FPAS)
+          </h3>
           <p className="text-xs text-muted-foreground">
-            Utilizados no cálculo de encargos patronais (CPP 20% + RAT/FAP + Terceiros) nas simulações de regime.
+            Utilizados no cálculo de encargos patronais (CPP 20% + RAT/FAP + Terceiros) nas
+            simulações de regime.
           </p>
         </div>
 
@@ -337,17 +359,14 @@ export function EmpresaForm({ empresa, onSuccess, onCancel }: EmpresaFormProps) 
                 : 'Informe o CNAE para derivar o FPAS automaticamente.'}
             </p>
             <CnaeCatalogoInfo resolucao={resolucaoCnae} digitos={cnaeDigitos.length} />
-            {errors.cnae_principal && <p className="text-sm text-destructive">{errors.cnae_principal.message}</p>}
-
+            {errors.cnae_principal && (
+              <p className="text-sm text-destructive">{errors.cnae_principal.message}</p>
+            )}
           </div>
 
           <div className="space-y-2">
             <Label htmlFor="codigo_fpas">Código FPAS</Label>
-            <Select
-              value={fpasValue || ''}
-              onValueChange={handleFpasChange}
-              disabled={isLoading}
-            >
+            <Select value={fpasValue || ''} onValueChange={handleFpasChange} disabled={isLoading}>
               <SelectTrigger id="codigo_fpas">
                 <SelectValue placeholder="Selecione o FPAS" />
               </SelectTrigger>
@@ -359,7 +378,9 @@ export function EmpresaForm({ empresa, onSuccess, onCancel }: EmpresaFormProps) 
                 ))}
               </SelectContent>
             </Select>
-            {errors.codigo_fpas && <p className="text-sm text-destructive">{errors.codigo_fpas.message}</p>}
+            {errors.codigo_fpas && (
+              <p className="text-sm text-destructive">{errors.codigo_fpas.message}</p>
+            )}
           </div>
         </div>
 
@@ -376,8 +397,12 @@ export function EmpresaForm({ empresa, onSuccess, onCancel }: EmpresaFormProps) 
               placeholder="2"
               disabled={isLoading}
             />
-            <p className="text-xs text-muted-foreground">RAT 1%, 2% ou 3% ajustado pelo FAP (0,5 a 2,0) — limite 6%.</p>
-            {errors.aliquota_rat && <p className="text-sm text-destructive">{errors.aliquota_rat.message}</p>}
+            <p className="text-xs text-muted-foreground">
+              RAT 1%, 2% ou 3% ajustado pelo FAP (0,5 a 2,0) — limite 6%.
+            </p>
+            {errors.aliquota_rat && (
+              <p className="text-sm text-destructive">{errors.aliquota_rat.message}</p>
+            )}
           </div>
 
           <div className="space-y-2">
@@ -392,8 +417,12 @@ export function EmpresaForm({ empresa, onSuccess, onCancel }: EmpresaFormProps) 
               placeholder="5.8"
               disabled={isLoading}
             />
-            <p className="text-xs text-muted-foreground">Salário-educação, INCRA, Sistema S conforme o código FPAS.</p>
-            {errors.aliquota_terceiros && <p className="text-sm text-destructive">{errors.aliquota_terceiros.message}</p>}
+            <p className="text-xs text-muted-foreground">
+              Salário-educação, INCRA, Sistema S conforme o código FPAS.
+            </p>
+            {errors.aliquota_terceiros && (
+              <p className="text-sm text-destructive">{errors.aliquota_terceiros.message}</p>
+            )}
           </div>
         </div>
       </div>

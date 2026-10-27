@@ -14,7 +14,7 @@ export function isValidFileType(file: File, acceptedTypes: string[]): boolean {
   if (acceptedTypes.length === 0) return true;
   const fileType = file.type;
   const fileExtension = '.' + getFileExtension(file.name).toLowerCase();
-  return acceptedTypes.some(type => {
+  return acceptedTypes.some((type) => {
     if (type.startsWith('.')) return fileExtension === type.toLowerCase();
     if (type.endsWith('/*')) return fileType.startsWith(type.slice(0, -1));
     return fileType === type;

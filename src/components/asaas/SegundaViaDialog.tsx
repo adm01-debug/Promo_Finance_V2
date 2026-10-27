@@ -2,7 +2,13 @@ import { todayISOLocal } from '@/lib/formatters';
 // DIALOG: Segunda Via Boleto ASAAS
 
 import { useState } from 'react';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+} from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -34,7 +40,9 @@ export function SegundaViaDialog({ open, onOpenChange, asaasId, empresaId }: Pro
       });
       setNovaData('');
       onOpenChange(false);
-    } catch { /* hook handles */ }
+    } catch {
+      /* hook handles */
+    }
   };
 
   return (
@@ -50,11 +58,22 @@ export function SegundaViaDialog({ open, onOpenChange, asaasId, empresaId }: Pro
         <div className="space-y-4 mt-2">
           <div className="space-y-2">
             <Label>Nova data de vencimento *</Label>
-            <Input type="date" value={novaData} onChange={e => setNovaData(e.target.value)} min={todayISOLocal()} />
+            <Input
+              type="date"
+              value={novaData}
+              onChange={(e) => setNovaData(e.target.value)}
+              min={todayISOLocal()}
+            />
           </div>
-          <Button className="w-full" onClick={handleGerar} disabled={segundaViaBoleto.isPending || !novaData}>
+          <Button
+            className="w-full"
+            onClick={handleGerar}
+            disabled={segundaViaBoleto.isPending || !novaData}
+          >
             {segundaViaBoleto.isPending ? (
-              <><Loader2 className="h-4 w-4 mr-2 animate-spin" /> Gerando...</>
+              <>
+                <Loader2 className="h-4 w-4 mr-2 animate-spin" /> Gerando...
+              </>
             ) : (
               <>Gerar Segunda Via</>
             )}

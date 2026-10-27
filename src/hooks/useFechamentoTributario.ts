@@ -1,7 +1,7 @@
 // HOOK: useFechamentoTributario (P10)
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { supabase } from "@/integrations/supabase/client";
-import { useToast } from "@/hooks/use-toast";
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { supabase } from '@/integrations/supabase/client';
+import { useToast } from '@/hooks/use-toast';
 
 export interface FechamentoCheck {
   id: string;
@@ -13,7 +13,7 @@ export interface FechamentoCheck {
 
 export interface FechamentoResultado {
   success: boolean;
-  status: "em_revisao" | "fechado";
+  status: 'em_revisao' | 'fechado';
   fechamento: Record<string, unknown> | null;
   checks: FechamentoCheck[];
   critical_fails?: FechamentoCheck[];
@@ -27,15 +27,15 @@ export function useFechamentoTributario(empresaId?: string, ano?: number, mes?: 
   const { toast } = useToast();
 
   const fechamentoQuery = useQuery({
-    queryKey: ["fechamento-tributario", empresaId, ano, mes],
+    queryKey: ['fechamento-tributario', empresaId, ano, mes],
     queryFn: async () => {
       if (!empresaId || !ano || !mes) return null;
       const { data, error } = await supabase
-        .from("fechamentos_tributarios" as never)
-        .select("*")
-        .eq("empresa_id", empresaId)
-        .eq("ano", ano)
-        .eq("mes", mes)
+        .from('fechamentos_tributarios' as never)
+        .select('*')
+        .eq('empresa_id', empresaId)
+        .eq('ano', ano)
+        .eq('mes', mes)
         .maybeSingle();
       if (error) throw error;
       return data;
@@ -52,30 +52,29 @@ export function useFechamentoTributario(empresaId?: string, ano?: number, mes?: 
       justificativa?: string;
       observacoes?: string;
     }) => {
-      const { data, error } = await supabase.functions.invoke(
-        "executar-fechamento-tributario",
-        { body: payload },
-      );
+      const { data, error } = await supabase.functions.invoke('executar-fechamento-tributario', {
+        body: payload,
+      });
       if (error) throw error;
       return data as FechamentoResultado;
     },
     onSuccess: (res) => {
-      qc.invalidateQueries({ queryKey: ["fechamento-tributario"] });
-      if (res.status === "fechado") {
-        toast({ title: "Fechamento concluído", description: "Período fechado com sucesso." });
+      qc.invalidateQueries({ queryKey: ['fechamento-tributario'] });
+      if (res.status === 'fechado') {
+        toast({ title: 'Fechamento concluído', description: 'Período fechado com sucesso.' });
       } else {
         toast({
-          title: "Fechamento em revisão",
-          description: res.message ?? "Etapas críticas pendentes.",
-          variant: "destructive",
+          title: 'Fechamento em revisão',
+          description: res.message ?? 'Etapas críticas pendentes.',
+          variant: 'destructive',
         });
       }
     },
     onError: (err: Error) => {
       toast({
-        title: "Erro no fechamento",
+        title: 'Erro no fechamento',
         description: err.message,
-        variant: "destructive",
+        variant: 'destructive',
       });
     },
   });

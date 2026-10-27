@@ -19,13 +19,19 @@ interface Props {
 
 export function ComparativoRegimesPanel({ empresaId }: Props = {}) {
   const { parametros, setParametros, resultado } = useComparativoRegimes();
-  const { data: regimesEspeciais, isLoading: loadingRegimes } = useRegimesEspeciaisEmpresa(empresaId);
+  const { data: regimesEspeciais, isLoading: loadingRegimes } =
+    useRegimesEspeciaisEmpresa(empresaId);
   const updateRegime = useUpdateRegimeEspecial();
 
-  const chartData = resultado.resultados.map(r => ({
+  const chartData = resultado.resultados.map((r) => ({
     name: r.nome,
     valor: r.totalTributos,
-    color: r.regime === 'lucro_real' ? 'hsl(217, 91%, 60%)' : r.regime === 'lucro_presumido' ? 'hsl(258, 90%, 66%)' : 'hsl(160, 84%, 39%)'
+    color:
+      r.regime === 'lucro_real'
+        ? 'hsl(217, 91%, 60%)'
+        : r.regime === 'lucro_presumido'
+          ? 'hsl(258, 90%, 66%)'
+          : 'hsl(160, 84%, 39%)',
   }));
 
   return (
@@ -45,7 +51,9 @@ export function ComparativoRegimesPanel({ empresaId }: Props = {}) {
               <Input
                 type="number"
                 value={parametros.faturamentoAnual}
-                onChange={e => setParametros(p => ({ ...p, faturamentoAnual: Number(e.target.value) }))}
+                onChange={(e) =>
+                  setParametros((p) => ({ ...p, faturamentoAnual: Number(e.target.value) }))
+                }
               />
             </div>
             <div className="space-y-2">
@@ -53,7 +61,9 @@ export function ComparativoRegimesPanel({ empresaId }: Props = {}) {
               <Input
                 type="number"
                 value={parametros.folhaPagamento}
-                onChange={e => setParametros(p => ({ ...p, folhaPagamento: Number(e.target.value) }))}
+                onChange={(e) =>
+                  setParametros((p) => ({ ...p, folhaPagamento: Number(e.target.value) }))
+                }
               />
             </div>
             <div className="space-y-2">
@@ -61,7 +71,9 @@ export function ComparativoRegimesPanel({ empresaId }: Props = {}) {
               <Input
                 type="number"
                 value={parametros.despesasOperacionais}
-                onChange={e => setParametros(p => ({ ...p, despesasOperacionais: Number(e.target.value) }))}
+                onChange={(e) =>
+                  setParametros((p) => ({ ...p, despesasOperacionais: Number(e.target.value) }))
+                }
               />
             </div>
             <div className="space-y-2">
@@ -69,7 +81,9 @@ export function ComparativoRegimesPanel({ empresaId }: Props = {}) {
               <Input
                 type="number"
                 value={parametros.comprasCredito}
-                onChange={e => setParametros(p => ({ ...p, comprasCredito: Number(e.target.value) }))}
+                onChange={(e) =>
+                  setParametros((p) => ({ ...p, comprasCredito: Number(e.target.value) }))
+                }
               />
             </div>
           </CardContent>
@@ -82,7 +96,9 @@ export function ComparativoRegimesPanel({ empresaId }: Props = {}) {
               <div>
                 <p className="text-sm text-muted-foreground">Regime Mais Vantajoso</p>
                 <p className="text-2xl font-bold text-success">{resultado.melhorOpcao.nome}</p>
-                <p className="text-sm text-success/80">Economia: {formatCurrency(resultado.economiaMelhorOpcao)}/ano</p>
+                <p className="text-sm text-success/80">
+                  Economia: {formatCurrency(resultado.economiaMelhorOpcao)}/ano
+                </p>
               </div>
             </CardContent>
           </Card>
@@ -96,7 +112,7 @@ export function ComparativoRegimesPanel({ empresaId }: Props = {}) {
                 <ResponsiveContainer width="100%" height="100%">
                   <BarChart data={chartData} layout="vertical">
                     <CartesianGrid strokeDasharray="3 3" />
-                    <XAxis type="number" tickFormatter={v => `R$ ${(v/1000).toFixed(0)}k`} />
+                    <XAxis type="number" tickFormatter={(v) => `R$ ${(v / 1000).toFixed(0)}k`} />
                     <YAxis type="category" dataKey="name" width={120} />
                     <Bar dataKey="valor" radius={[0, 4, 4, 0]}>
                       {chartData.map((entry, index) => (
@@ -115,8 +131,11 @@ export function ComparativoRegimesPanel({ empresaId }: Props = {}) {
               <TabsTrigger value="presumido">Presumido</TabsTrigger>
               <TabsTrigger value="simples">Simples</TabsTrigger>
             </TabsList>
-            {resultado.resultados.map(r => (
-              <TabsContent key={r.regime} value={r.regime.replace('lucro_', '').replace('_nacional', '')}>
+            {resultado.resultados.map((r) => (
+              <TabsContent
+                key={r.regime}
+                value={r.regime.replace('lucro_', '').replace('_nacional', '')}
+              >
                 <Card>
                   <CardContent className="pt-6 grid gap-4 md:grid-cols-2">
                     <div className="p-3 rounded bg-muted">
@@ -154,11 +173,18 @@ export function ComparativoRegimesPanel({ empresaId }: Props = {}) {
             </CardHeader>
             <CardContent>
               {loadingRegimes ? (
-                <div className="space-y-3">{Array.from({ length: 3 }).map((_, i) => <Skeleton key={i} className="h-14" />)}</div>
+                <div className="space-y-3">
+                  {Array.from({ length: 3 }).map((_, i) => (
+                    <Skeleton key={i} className="h-14" />
+                  ))}
+                </div>
               ) : regimesEspeciais && regimesEspeciais.length > 0 ? (
                 <div className="space-y-3">
                   {regimesEspeciais.map((regime) => (
-                    <div key={regime.id} className="flex items-center justify-between p-3 rounded-lg border">
+                    <div
+                      key={regime.id}
+                      className="flex items-center justify-between p-3 rounded-lg border"
+                    >
                       <div>
                         <p className="font-medium text-sm">{regime.regime_nome}</p>
                         <p className="text-xs text-muted-foreground">
@@ -171,8 +197,10 @@ export function ComparativoRegimesPanel({ empresaId }: Props = {}) {
                           {regime.ativo ? 'Ativo' : 'Inativo'}
                         </Badge>
                         <Switch
-                          checked={regime.ativo}
-                          onCheckedChange={(checked) => updateRegime.mutate({ id: regime.id, ativo: checked })}
+                          checked={regime.ativo ?? false}
+                          onCheckedChange={(checked) =>
+                            updateRegime.mutate({ id: regime.id, ativo: checked })
+                          }
                         />
                       </div>
                     </div>

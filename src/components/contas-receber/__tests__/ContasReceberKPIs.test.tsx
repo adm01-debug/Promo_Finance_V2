@@ -5,7 +5,17 @@ import { ContasReceberKPIs } from '../ContasReceberKPIs';
 // Mock framer-motion
 vi.mock('framer-motion', () => ({
   motion: {
-    div: ({ children, whileHover: _whileHover, whileTap: _whileTap, initial: _initial, animate: _animate, transition: _transition, ...props }: React.HTMLAttributes<HTMLDivElement> & Record<string, unknown>) => <div {...props}>{children}</div>,
+    div: ({
+      children,
+      whileHover: _whileHover,
+      whileTap: _whileTap,
+      initial: _initial,
+      animate: _animate,
+      transition: _transition,
+      ...props
+    }: React.HTMLAttributes<HTMLDivElement> & Record<string, unknown>) => (
+      <div {...props}>{children}</div>
+    ),
   },
   AnimatePresence: ({ children }: any) => <>{children}</>,
 }));
@@ -34,11 +44,7 @@ describe('ContasReceberKPIs', () => {
 
     it('exibe variação negativa corretamente', () => {
       render(
-        <ContasReceberKPIs
-          {...defaultProps}
-          totalReceber={30000}
-          totalReceberAnterior={50000}
-        />
+        <ContasReceberKPIs {...defaultProps} totalReceber={30000} totalReceberAnterior={50000} />
       );
       expect(screen.getByText(/vs mês anterior/i)).toBeInTheDocument();
     });
@@ -49,21 +55,13 @@ describe('ContasReceberKPIs', () => {
     });
 
     it('não exibe variação quando anterior é zero', () => {
-      render(
-        <ContasReceberKPIs
-          {...defaultProps}
-          totalReceberAnterior={0}
-        />
-      );
+      render(<ContasReceberKPIs {...defaultProps} totalReceberAnterior={0} />);
       expect(screen.queryByText(/vs mês anterior/i)).not.toBeInTheDocument();
     });
 
     it('variação do vencido inverte cores (positivo=ruim)', () => {
       const { container } = render(
-        <ContasReceberKPIs
-          {...defaultProps}
-          totalVencidoAnterior={5000}
-        />
+        <ContasReceberKPIs {...defaultProps} totalVencidoAnterior={5000} />
       );
       // Vencido subiu = ruim = deve ter text-destructive
       const variationElements = container.querySelectorAll('[class*="text-destructive"]');

@@ -23,7 +23,10 @@ export function SsoLoginButtons({ email }: { email: string }) {
 
   useEffect(() => {
     const dom = email.split('@')[1]?.toLowerCase().trim();
-    if (!dom || dom.length < 3) { setProviders([]); return; }
+    if (!dom || dom.length < 3) {
+      setProviders([]);
+      return;
+    }
     (async () => {
       const { data } = await supabase.rpc('resolve_sso_providers_for_domain', { p_domain: dom });
       setProviders((data ?? []) as Provider[]);
@@ -49,9 +52,11 @@ export function SsoLoginButtons({ email }: { email: string }) {
 
   return (
     <div className="space-y-2 mt-4 pt-4 border-t">
-      <p className="text-xs text-center text-muted-foreground uppercase tracking-wide">Login corporativo</p>
-      {providers.map(p => {
-        const preset = IDP_PRESETS.find(x => x.id === p.preset);
+      <p className="text-xs text-center text-muted-foreground uppercase tracking-wide">
+        Login corporativo
+      </p>
+      {providers.map((p) => {
+        const preset = IDP_PRESETS.find((x) => x.id === p.preset);
         return (
           <Button
             key={p.id}
@@ -62,9 +67,11 @@ export function SsoLoginButtons({ email }: { email: string }) {
             disabled={!!loading}
             aria-label={`Entrar com ${p.nome}`}
           >
-            {loading === p.id
-              ? <Loader2 className="h-4 w-4 animate-spin" />
-              : <span className="text-base">{preset?.logo ?? <KeyRound className="h-4 w-4" />}</span>}
+            {loading === p.id ? (
+              <Loader2 className="h-4 w-4 animate-spin" />
+            ) : (
+              <span className="text-base">{preset?.logo ?? <KeyRound className="h-4 w-4" />}</span>
+            )}
             Entrar com {p.nome}
           </Button>
         );

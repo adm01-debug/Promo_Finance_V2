@@ -42,7 +42,11 @@ export function parseExcel(content: ArrayBuffer, fileName: string): ResultadoImp
         const valor =
           typeof row[valorIdx] === 'number'
             ? (row[valorIdx] as number)
-            : parseFloat(String(row[valorIdx]).replace(/[^\d,.-]/g, '').replace(',', '.'));
+            : parseFloat(
+                String(row[valorIdx])
+                  .replace(/[^\d,.-]/g, '')
+                  .replace(',', '.')
+              );
 
         const tipo: 'credito' | 'debito' = valor >= 0 ? 'credito' : 'debito';
         const descricao = String(row[descIdx] || 'Transação Excel');

@@ -101,7 +101,7 @@ export default function AuditoriaOverlay() {
         rejeicoes: detectadas,
       });
       toast.success(
-        `Auditoria atualizada: ${r.inseridos} nova(s), ${r.atualizados} reincidente(s).`,
+        `Auditoria atualizada: ${r.inseridos} nova(s), ${r.atualizados} reincidente(s).`
       );
     } catch {
       toast.error('Não foi possível registrar as rejeições. Verifique suas permissões.');
@@ -150,7 +150,9 @@ export default function AuditoriaOverlay() {
                   onClick={() => void catalogos.refetch()}
                   disabled={catalogos.isFetching}
                 >
-                  <RefreshCw className={`mr-2 h-4 w-4 ${catalogos.isFetching ? 'animate-spin' : ''}`} />
+                  <RefreshCw
+                    className={`mr-2 h-4 w-4 ${catalogos.isFetching ? 'animate-spin' : ''}`}
+                  />
                   Reanalisar
                 </Button>
                 <Button
@@ -180,9 +182,7 @@ export default function AuditoriaOverlay() {
                   <Metric titulo="Atenção" valor={resumo.atencao} tom="warning" />
                   <Metric
                     titulo="Catálogos afetados"
-                    valor={
-                      Object.values(resumo.porCatalogo).filter((n) => n > 0).length
-                    }
+                    valor={Object.values(resumo.porCatalogo).filter((n) => n > 0).length}
                   />
                 </div>
               )}
@@ -275,21 +275,29 @@ export default function AuditoriaOverlay() {
                       {lista.map((r) => (
                         <TableRow key={r.id} className={r.resolvido_em ? 'opacity-60' : undefined}>
                           <TableCell>
-                            <Badge variant="outline">{ROTULO_CATALOGO[r.catalogo] ?? r.catalogo}</Badge>
+                            <Badge variant="outline">
+                              {ROTULO_CATALOGO[r.catalogo] ?? r.catalogo}
+                            </Badge>
                           </TableCell>
                           <TableCell className="font-medium">
                             {r.identificador}
                             {r.descricao && (
-                              <span className="block text-xs text-muted-foreground">{r.descricao}</span>
+                              <span className="block text-xs text-muted-foreground">
+                                {r.descricao}
+                              </span>
                             )}
                           </TableCell>
                           <TableCell className="font-mono text-xs">{r.campo}</TableCell>
                           <TableCell>
-                            <Badge variant={r.severidade === 'critico' ? 'destructive' : 'secondary'}>
+                            <Badge
+                              variant={r.severidade === 'critico' ? 'destructive' : 'secondary'}
+                            >
                               {descreverMotivo(r.motivo)}
                             </Badge>
                           </TableCell>
-                          <TableCell className="font-mono text-xs">{r.valor_recebido ?? '—'}</TableCell>
+                          <TableCell className="font-mono text-xs">
+                            {r.valor_recebido ?? '—'}
+                          </TableCell>
                           <TableCell className="text-right">{r.ocorrencias}</TableCell>
                           <TableCell className="text-xs text-muted-foreground">
                             {dataHora(r.ultima_deteccao)}

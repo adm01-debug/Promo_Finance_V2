@@ -11,7 +11,7 @@ import { toast } from '@/hooks/use-toast';
 import { toastReceiptSuccess } from '@/lib/toast-confetti';
 import { sounds } from '@/lib/sound-feedback';
 import { haptic } from '@/lib/haptic-feedback';
-import { formatCurrency , todayISOLocal} from '@/lib/formatters';
+import { formatCurrency, todayISOLocal } from '@/lib/formatters';
 import { logger } from '@/lib/logger';
 import {
   Dialog,
@@ -71,7 +71,11 @@ const tiposRecebimento = [
   { value: 'parcial', label: 'Recebimento Parcial', icon: Wallet },
 ];
 
-export function RegistrarRecebimentoDialog({ conta, open, onOpenChange }: RegistrarRecebimentoDialogProps) {
+export function RegistrarRecebimentoDialog({
+  conta,
+  open,
+  onOpenChange,
+}: RegistrarRecebimentoDialogProps) {
   const queryClient = useQueryClient();
   const [tipoRecebimento, setTipoRecebimento] = useState<'total' | 'parcial'>('total');
   const { data: contasBancarias = [] } = useContasBancarias();
@@ -115,7 +119,7 @@ export function RegistrarRecebimentoDialog({ conta, open, onOpenChange }: Regist
           data_recebimento: data.data_recebimento,
           conta_bancaria_id: data.conta_bancaria_id || null,
           status: isRecebidoTotal ? 'pago' : 'parcial',
-          observacoes: data.observacoes 
+          observacoes: data.observacoes
             ? `${conta.descricao ? conta.descricao + ' | ' : ''}Recebimento: ${data.observacoes}`
             : undefined,
         })
@@ -125,19 +129,17 @@ export function RegistrarRecebimentoDialog({ conta, open, onOpenChange }: Regist
 
       // 2. Automated Matching: Register in bank transaction if bank account is selected
       if (data.conta_bancaria_id) {
-        const { error: matchError } = await supabase
-          .from('transacoes_bancarias')
-          .insert({
-            conta_bancaria_id: data.conta_bancaria_id,
-            data: data.data_recebimento,
-            descricao: `BAIXA AUT: ${conta.cliente_nome} - ${conta.descricao}`,
-            valor: data.valor_recebido,
-            tipo: 'receita',
-            conciliada: true,
-            status: 'confirmado',
-            data_confirmacao: new Date().toISOString(),
-          });
-        
+        const { error: matchError } = await supabase.from('transacoes_bancarias').insert({
+          conta_bancaria_id: data.conta_bancaria_id,
+          data: data.data_recebimento,
+          descricao: `BAIXA AUT: ${conta.cliente_nome} - ${conta.descricao}`,
+          valor: data.valor_recebido,
+          tipo: 'receita',
+          conciliada: true,
+          status: 'confirmado',
+          data_confirmacao: new Date().toISOString(),
+        });
+
         if (matchError) logger.warn('Erro ao criar evidência de conciliação:', matchError);
       }
     },
@@ -198,7 +200,9 @@ export function RegistrarRecebimentoDialog({ conta, open, onOpenChange }: Regist
                 <>
                   <div className="flex items-center justify-between text-sm mt-1">
                     <span>Já Recebido:</span>
-                    <span className="text-success font-medium">{formatCurrency(conta.valor_recebido || 0)}</span>
+                    <span className="text-success font-medium">
+                      {formatCurrency(conta.valor_recebido || 0)}
+                    </span>
                   </div>
                   <Progress value={percentualRecebido} className="h-2 mt-2" />
                 </>
@@ -261,7 +265,9 @@ export function RegistrarRecebimentoDialog({ conta, open, onOpenChange }: Regist
                   <FormLabel>Valor do Recebimento *</FormLabel>
                   <FormControl>
                     <div className="relative group">
-                      <span className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground group-focus-within:text-primary transition-colors text-sm font-bold">R$</span>
+                      <span className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground group-focus-within:text-primary transition-colors text-sm font-bold">
+                        R$
+                      </span>
                       <Input
                         type="number"
                         step="0.01"
@@ -289,7 +295,11 @@ export function RegistrarRecebimentoDialog({ conta, open, onOpenChange }: Regist
                   <FormControl>
                     <div className="relative">
                       <Calendar className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground group-focus-within:text-primary transition-colors" />
-                      <Input type="date" {...field} className="pl-12 h-12 rounded-xl bg-card/5 border-white/10" />
+                      <Input
+                        type="date"
+                        {...field}
+                        className="pl-12 h-12 rounded-xl bg-card/5 border-white/10"
+                      />
                     </div>
                   </FormControl>
                   <FormMessage />
@@ -331,7 +341,11 @@ export function RegistrarRecebimentoDialog({ conta, open, onOpenChange }: Regist
                 <FormItem>
                   <FormLabel>Observações</FormLabel>
                   <FormControl>
-                    <Textarea {...field} placeholder="Observações do recebimento (opcional)" className="min-h-[60px]" />
+                    <Textarea
+                      {...field}
+                      placeholder="Observações do recebimento (opcional)"
+                      className="min-h-[60px]"
+                    />
                   </FormControl>
                   <FormMessage />
                 </FormItem>

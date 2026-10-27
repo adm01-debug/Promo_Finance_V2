@@ -168,11 +168,13 @@ export function useHistoricoConciliacaoIA() {
 
   // Função para aprovar em lote
   const aprovarEmLote = useMutation({
-    mutationFn: async (matches: Array<{ 
-      transacaoId: string;
-      transacaoDescricao: string;
-      sugestao: MatchSugestaoIA 
-    }>) => {
+    mutationFn: async (
+      matches: Array<{
+        transacaoId: string;
+        transacaoDescricao: string;
+        sugestao: MatchSugestaoIA;
+      }>
+    ) => {
       const results: { success: number; failed: number } = { success: 0, failed: 0 };
 
       for (const match of matches) {
@@ -212,7 +214,7 @@ export function useHistoricoConciliacaoIA() {
     onSuccess: (results) => {
       if (results.success > 0) {
         toast.success(`${results.success} conciliações aprovadas em lote`, {
-          description: results.failed > 0 ? `${results.failed} falharam` : undefined
+          description: results.failed > 0 ? `${results.failed} falharam` : undefined,
         });
       }
       queryClient.invalidateQueries({ queryKey: ['historico-conciliacao-ia'] });
@@ -222,14 +224,15 @@ export function useHistoricoConciliacaoIA() {
 
   // Estatísticas do histórico
   const estatisticasHistorico = {
-    totalAprovados: historico.filter(h => h.acao === 'aprovado').length,
-    totalRejeitados: historico.filter(h => h.acao === 'rejeitado').length,
-    altaConfianca: historico.filter(h => h.confianca === 'alta').length,
-    mediaConfianca: historico.filter(h => h.confianca === 'media').length,
-    baixaConfianca: historico.filter(h => h.confianca === 'baixa').length,
-    scoreMedia: historico.length > 0 
-      ? Math.round(historico.reduce((acc, h) => acc + h.score_ia, 0) / historico.length)
-      : 0,
+    totalAprovados: historico.filter((h) => h.acao === 'aprovado').length,
+    totalRejeitados: historico.filter((h) => h.acao === 'rejeitado').length,
+    altaConfianca: historico.filter((h) => h.confianca === 'alta').length,
+    mediaConfianca: historico.filter((h) => h.confianca === 'media').length,
+    baixaConfianca: historico.filter((h) => h.confianca === 'baixa').length,
+    scoreMedia:
+      historico.length > 0
+        ? Math.round(historico.reduce((acc, h) => acc + h.score_ia, 0) / historico.length)
+        : 0,
   };
 
   return {

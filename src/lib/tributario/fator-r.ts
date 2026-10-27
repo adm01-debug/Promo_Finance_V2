@@ -6,10 +6,10 @@ import type { AnexoSimples } from './types';
 
 /**
  * Calcula o Fator R = Folha de pagamento (12m) / RBT12
- * 
+ *
  * Se Fator R ≥ 0,28 → Anexo III (alíquotas menores)
  * Se Fator R < 0,28 → Anexo V (alíquotas maiores)
- * 
+ *
  * Aplicável apenas para atividades de serviço listadas no §5º-M.
  */
 export function calcularFatorR(folha12m: number, rbt12: number): number {
@@ -23,7 +23,7 @@ export function calcularFatorR(folha12m: number, rbt12: number): number {
 export function calcularFolha12m(
   folhaHistorico: FolhaMes[],
   anoReferencia: number,
-  mesReferencia: number,
+  mesReferencia: number
 ): number {
   if (!folhaHistorico || folhaHistorico.length === 0) return 0;
 

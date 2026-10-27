@@ -20,11 +20,7 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
-import {
-  ROTULO_ORG_PAPEL,
-  statusConvite,
-  type OrgPapel,
-} from '@/lib/organizacoes/convites';
+import { ROTULO_ORG_PAPEL, statusConvite, type OrgPapel } from '@/lib/organizacoes/convites';
 import type { ConviteOrganizacao, MembroOrganizacao } from '@/hooks/useOrganizacoes';
 
 const PAPEIS_CONVIDAVEIS: OrgPapel[] = ['ADMIN', 'MEMBRO', 'LEITOR'];
@@ -82,9 +78,7 @@ export function ConvitesCard({
             <Label htmlFor="convite-papel">Papel</Label>
             <Select
               value={novoConvite.papel}
-              onValueChange={(valor) =>
-                onNovoConviteChange({ papel: valor as OrgPapel })
-              }
+              onValueChange={(valor) => onNovoConviteChange({ papel: valor as OrgPapel })}
             >
               <SelectTrigger id="convite-papel">
                 <SelectValue />
@@ -142,11 +136,7 @@ export function ConvitesCard({
                         <Copy className="mr-1 h-3 w-3" /> Link
                       </Button>
                     )}
-                    <Button
-                      size="sm"
-                      variant="ghost"
-                      onClick={() => onRevogar(convite.id)}
-                    >
+                    <Button size="sm" variant="ghost" onClick={() => onRevogar(convite.id)}>
                       Revogar
                     </Button>
                   </TableCell>
@@ -184,9 +174,7 @@ export function MembrosCard({
     <Card>
       <CardHeader>
         <CardTitle>Membros</CardTitle>
-        <CardDescription>
-          A organização precisa manter ao menos um gestor ativo.
-        </CardDescription>
+        <CardDescription>A organização precisa manter ao menos um gestor ativo.</CardDescription>
       </CardHeader>
       <CardContent>
         <Table>
@@ -211,25 +199,17 @@ export function MembrosCard({
                   <Select
                     value={membro.papel_na_org}
                     disabled={!ehResponsavel || membro.papel_na_org === 'RESPONSAVEL'}
-                    onValueChange={(valor) =>
-                      onAtualizarPapel(membro, valor as OrgPapel)
-                    }
+                    onValueChange={(valor) => onAtualizarPapel(membro, valor as OrgPapel)}
                   >
                     <SelectTrigger>
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
-                      {(['RESPONSAVEL', ...PAPEIS_CONVIDAVEIS] as OrgPapel[]).map(
-                        (papel) => (
-                          <SelectItem
-                            key={papel}
-                            value={papel}
-                            disabled={papel === 'RESPONSAVEL'}
-                          >
-                            {ROTULO_ORG_PAPEL[papel]}
-                          </SelectItem>
-                        ),
-                      )}
+                      {(['RESPONSAVEL', ...PAPEIS_CONVIDAVEIS] as OrgPapel[]).map((papel) => (
+                        <SelectItem key={papel} value={papel} disabled={papel === 'RESPONSAVEL'}>
+                          {ROTULO_ORG_PAPEL[papel]}
+                        </SelectItem>
+                      ))}
                     </SelectContent>
                   </Select>
                 </TableCell>

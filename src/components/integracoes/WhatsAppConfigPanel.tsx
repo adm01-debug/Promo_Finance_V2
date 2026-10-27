@@ -27,15 +27,17 @@ export function WhatsAppConfigPanel() {
           action: 'test',
           data: {
             telefone: testNumber,
-            mensagem: '✅ Teste de integração WhatsApp Business - Promo Finance'
-          }
-        }
+            mensagem: '✅ Teste de integração WhatsApp Business - Promo Finance',
+          },
+        },
       });
       if (error) throw error;
       toast.success('Mensagem de teste enviada!');
       setConfigured(true);
     } catch (err) {
-      toast.error(err instanceof Error ? err.message : 'Falha no envio. Verifique as configurações.');
+      toast.error(
+        err instanceof Error ? err.message : 'Falha no envio. Verifique as configurações.'
+      );
     } finally {
       setTesting(false);
     }
@@ -48,7 +50,9 @@ export function WhatsAppConfigPanel() {
           <MessageSquare className="h-5 w-5 text-green-500" />
           WhatsApp Business API
         </CardTitle>
-        <CardDescription>Configure a integração com WhatsApp para cobranças automáticas</CardDescription>
+        <CardDescription>
+          Configure a integração com WhatsApp para cobranças automáticas
+        </CardDescription>
       </CardHeader>
       <CardContent className="space-y-6">
         {/* Status */}
@@ -56,7 +60,9 @@ export function WhatsAppConfigPanel() {
           {configured ? (
             <>
               <CheckCircle2 className="h-5 w-5 text-success" />
-              <span className="text-sm font-medium text-success">Integração configurada e funcionando</span>
+              <span className="text-sm font-medium text-success">
+                Integração configurada e funcionando
+              </span>
             </>
           ) : (
             <>
@@ -83,11 +89,20 @@ export function WhatsAppConfigPanel() {
         <div className="space-y-3">
           <div>
             <Label>Phone Number ID (Meta)</Label>
-            <Input value={phoneId} onChange={e => setPhoneId(e.target.value)} placeholder="Ex: 123456789012345" />
+            <Input
+              value={phoneId}
+              onChange={(e) => setPhoneId(e.target.value)}
+              placeholder="Ex: 123456789012345"
+            />
           </div>
           <div>
             <Label>Access Token</Label>
-            <Input type="password" value={accessToken} onChange={e => setAccessToken(e.target.value)} placeholder="Token permanente do Meta Business" />
+            <Input
+              type="password"
+              value={accessToken}
+              onChange={(e) => setAccessToken(e.target.value)}
+              placeholder="Token permanente do Meta Business"
+            />
           </div>
         </div>
 
@@ -98,7 +113,11 @@ export function WhatsAppConfigPanel() {
           <h4 className="text-sm font-semibold">Testar Envio</h4>
           <div className="flex gap-2">
             <div className="flex-1">
-              <Input value={testNumber} onChange={e => setTestNumber(e.target.value)} placeholder="5511999999999" />
+              <Input
+                value={testNumber}
+                onChange={(e) => setTestNumber(e.target.value)}
+                placeholder="5511999999999"
+              />
             </div>
             <Button onClick={handleTestSend} disabled={testing} className="gap-2">
               <Send className="h-4 w-4" />
@@ -110,13 +129,17 @@ export function WhatsAppConfigPanel() {
         {/* Dica */}
         <div className="p-3 rounded-lg bg-primary/5 border border-primary/10">
           <p className="text-xs text-muted-foreground">
-            <strong>Nota:</strong> As secrets WHATSAPP_PHONE_ID e WHATSAPP_ACCESS_TOKEN devem ser configuradas
-            nas variáveis de ambiente do backend para que o envio funcione em produção.
+            <strong>Nota:</strong> As secrets WHATSAPP_PHONE_ID e WHATSAPP_ACCESS_TOKEN devem ser
+            configuradas nas variáveis de ambiente do backend para que o envio funcione em produção.
           </p>
         </div>
 
         <Button variant="outline" className="gap-2" asChild>
-          <a href="https://developers.facebook.com/docs/whatsapp/cloud-api/get-started" target="_blank" rel="noopener noreferrer">
+          <a
+            href="https://developers.facebook.com/docs/whatsapp/cloud-api/get-started"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
             <ExternalLink className="h-4 w-4" /> Documentação Meta WhatsApp API
           </a>
         </Button>

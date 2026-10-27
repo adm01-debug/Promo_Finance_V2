@@ -166,7 +166,7 @@ export function parsePlanoContasCsv(texto: string): PlanoContasParseResult {
   };
 
   const faltantes = HEADER_OBRIGATORIO.filter((h) =>
-    h === 'descricao' ? idx.descricao === -1 : idx[h] === -1,
+    h === 'descricao' ? idx.descricao === -1 : idx[h] === -1
   );
   if (faltantes.length > 0) {
     throw new Error(`Cabeçalho inválido — colunas obrigatórias ausentes: ${faltantes.join(', ')}.`);
@@ -188,11 +188,19 @@ export function parsePlanoContasCsv(texto: string): PlanoContasParseResult {
       continue;
     }
     if (!codigoValido(codigo)) {
-      invalidas.push({ linha, codigo, erro: 'Código deve conter apenas números separados por ponto (ex.: 1.1.01).' });
+      invalidas.push({
+        linha,
+        codigo,
+        erro: 'Código deve conter apenas números separados por ponto (ex.: 1.1.01).',
+      });
       continue;
     }
     if (vistos.has(codigo)) {
-      invalidas.push({ linha, codigo, erro: `Código duplicado — já informado na linha ${vistos.get(codigo)}.` });
+      invalidas.push({
+        linha,
+        codigo,
+        erro: `Código duplicado — já informado na linha ${vistos.get(codigo)}.`,
+      });
       continue;
     }
     if (!descricao) {
@@ -202,7 +210,11 @@ export function parsePlanoContasCsv(texto: string): PlanoContasParseResult {
 
     const tipo = parseTipo(cols[idx.tipo] ?? '');
     if (!tipo) {
-      invalidas.push({ linha, codigo, erro: `Tipo inválido — use um de: ${TIPOS_CONTA.join(', ')}.` });
+      invalidas.push({
+        linha,
+        codigo,
+        erro: `Tipo inválido — use um de: ${TIPOS_CONTA.join(', ')}.`,
+      });
       continue;
     }
 
@@ -224,7 +236,9 @@ export function parsePlanoContasCsv(texto: string): PlanoContasParseResult {
       codigo_referencial:
         idx.codigo_referencial >= 0 ? (cols[idx.codigo_referencial] || '').trim() || null : null,
       aceita_lancamento:
-        idx.aceita_lancamento >= 0 ? (parseBooleano(cols[idx.aceita_lancamento] ?? '') ?? true) : true,
+        idx.aceita_lancamento >= 0
+          ? (parseBooleano(cols[idx.aceita_lancamento] ?? '') ?? true)
+          : true,
     });
   }
 
@@ -249,7 +263,7 @@ export function parsePlanoContasCsv(texto: string): PlanoContasParseResult {
 
   // Contas com filhas são sintéticas — não aceitam lançamento direto.
   const paisComFilhas = new Set(
-    validas.map((c) => c.codigo_pai).filter((c): c is string => c !== null),
+    validas.map((c) => c.codigo_pai).filter((c): c is string => c !== null)
   );
   for (const conta of validas) {
     if (paisComFilhas.has(conta.codigo)) conta.aceita_lancamento = false;

@@ -23,12 +23,8 @@ export function useInsightsIAKpis() {
           .select('id, severidade, status, dados', { count: 'exact' })
           .gte('detectada_em', desde24h)
           .eq('status', 'nova'),
-        supabase
-          .from('feedback_conciliacao_ia')
-          .select('acao'),
-        supabase
-          .from('regras_conciliacao')
-          .select('id, ativo, vezes_aplicada'),
+        supabase.from('feedback_conciliacao_ia').select('acao'),
+        supabase.from('regras_conciliacao').select('id, ativo, vezes_aplicada'),
       ]);
 
       const anomalias = anomaliasRes.data ?? [];

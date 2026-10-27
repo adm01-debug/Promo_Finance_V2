@@ -50,10 +50,16 @@ export function DocumentAnalyzer({ onAnalysisComplete }: DocumentAnalyzerProps) 
   };
 
   const processFiles = async (files: File[]) => {
-    const validTypes = ['application/pdf', 'text/csv', 'application/vnd.ms-excel', 
-                       'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-                       'text/plain', 'image/png', 'image/jpeg'];
-    
+    const validTypes = [
+      'application/pdf',
+      'text/csv',
+      'application/vnd.ms-excel',
+      'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+      'text/plain',
+      'image/png',
+      'image/jpeg',
+    ];
+
     for (const file of files) {
       if (!validTypes.includes(file.type)) {
         toast.error(`Tipo de arquivo não suportado: ${file.name}`);
@@ -67,41 +73,40 @@ export function DocumentAnalyzer({ onAnalysisComplete }: DocumentAnalyzerProps) 
         status: 'uploading',
       };
 
-      setDocuments(prev => [...prev, doc]);
+      setDocuments((prev) => [...prev, doc]);
 
       try {
         // Convert file to base64
         const base64 = await fileToBase64(file);
-        
-        setDocuments(prev => 
-          prev.map(d => d.name === file.name ? { ...d, status: 'analyzing' } : d)
+
+        setDocuments((prev) =>
+          prev.map((d) => (d.name === file.name ? { ...d, status: 'analyzing' } : d))
         );
 
         // Send to edge function for analysis
         const { data, error } = await supabase.functions.invoke('analyze-document', {
-          body: { 
+          body: {
             fileName: file.name,
             fileType: file.type,
             fileContent: base64,
-          }
+          },
         });
 
         if (error) throw error;
 
         const analysis = data.analysis || 'Análise concluída sem resultados específicos.';
-        
-        setDocuments(prev => 
-          prev.map(d => d.name === file.name ? { ...d, status: 'complete', analysis } : d)
+
+        setDocuments((prev) =>
+          prev.map((d) => (d.name === file.name ? { ...d, status: 'complete', analysis } : d))
         );
 
         // Notify parent with analysis
         onAnalysisComplete(`📄 **Análise do documento "${file.name}":**\n\n${analysis}`);
         toast.success(`Documento "${file.name}" analisado com sucesso!`);
-
       } catch (error: unknown) {
         logger.error('Error analyzing document:', error);
-        setDocuments(prev => 
-          prev.map(d => d.name === file.name ? { ...d, status: 'error' } : d)
+        setDocuments((prev) =>
+          prev.map((d) => (d.name === file.name ? { ...d, status: 'error' } : d))
         );
         toast.error(`Erro ao analisar "${file.name}"`);
       }
@@ -118,12 +123,12 @@ export function DocumentAnalyzer({ onAnalysisComplete }: DocumentAnalyzerProps) 
         const base64 = result.split(',')[1];
         resolve(base64);
       };
-      reader.onerror = error => reject(error);
+      reader.onerror = (error) => reject(error);
     });
   };
 
   const removeDocument = (name: string) => {
-    setDocuments(prev => prev.filter(d => d.name !== name));
+    setDocuments((prev) => prev.filter((d) => d.name !== name));
   };
 
   const formatFileSize = (bytes: number) => {
@@ -166,19 +171,17 @@ export function DocumentAnalyzer({ onAnalysisComplete }: DocumentAnalyzerProps) 
         onDrop={handleDrop}
         onClick={() => fileInputRef.current?.click()}
         className={cn(
-          "border-2 border-dashed rounded-lg p-4 text-center cursor-pointer transition-all",
-          isDragging 
-            ? "border-primary bg-primary/5" 
-            : "border-border hover:border-primary/50 hover:bg-muted/50"
+          'border-2 border-dashed rounded-lg p-4 text-center cursor-pointer transition-all',
+          isDragging
+            ? 'border-primary bg-primary/5'
+            : 'border-border hover:border-primary/50 hover:bg-muted/50'
         )}
       >
         <FileUp className="h-8 w-8 mx-auto mb-2 text-muted-foreground" />
         <p className="text-sm text-muted-foreground">
           Arraste documentos aqui ou clique para selecionar
         </p>
-        <p className="text-xs text-muted-foreground mt-1">
-          PDF, Excel, CSV, imagens (até 10MB)
-        </p>
+        <p className="text-xs text-muted-foreground mt-1">PDF, Excel, CSV, imagens (até 10MB)</p>
         <input
           ref={fileInputRef}
           type="file"

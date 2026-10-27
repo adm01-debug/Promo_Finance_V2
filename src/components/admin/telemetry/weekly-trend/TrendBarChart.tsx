@@ -1,9 +1,16 @@
-import { forwardRef } from "react";
+import { forwardRef } from 'react';
 import {
-  ResponsiveContainer, BarChart, Bar, XAxis, YAxis,
-  CartesianGrid, Tooltip, Legend, ReferenceLine,
-} from "recharts";
-import type { ChartDatum } from "./types";
+  ResponsiveContainer,
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  Legend,
+  ReferenceLine,
+} from 'recharts';
+import type { ChartDatum } from './types';
 
 interface Props {
   data: ChartDatum[];
@@ -22,19 +29,19 @@ export const TrendBarChart = forwardRef<HTMLDivElement, Props>(
             const payload = e?.activePayload?.[0]?.payload;
             if (payload?.weekKey) onSelectWeek(payload.weekKey);
           }}
-          style={{ cursor: "pointer" }}
+          style={{ cursor: 'pointer' }}
         >
           <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--muted))" opacity={0.4} />
-          <XAxis dataKey="week" tick={{ fontSize: 11, fill: "hsl(var(--muted-foreground))" }} />
-          <YAxis tick={{ fontSize: 11, fill: "hsl(var(--muted-foreground))" }} />
+          <XAxis dataKey="week" tick={{ fontSize: 11, fill: 'hsl(var(--muted-foreground))' }} />
+          <YAxis tick={{ fontSize: 11, fill: 'hsl(var(--muted-foreground))' }} />
           <Tooltip
             contentStyle={{
-              background: "hsl(var(--popover))",
-              border: "1px solid hsl(var(--border))",
+              background: 'hsl(var(--popover))',
+              border: '1px solid hsl(var(--border))',
               borderRadius: 6,
               fontSize: 12,
             }}
-            labelStyle={{ color: "hsl(var(--foreground))" }}
+            labelStyle={{ color: 'hsl(var(--foreground))' }}
           />
           <Legend wrapperStyle={{ fontSize: 11 }} />
           <Bar dataKey="critical" name="Crítico" stackId="a" fill="hsl(var(--destructive))" />
@@ -47,8 +54,8 @@ export const TrendBarChart = forwardRef<HTMLDivElement, Props>(
               strokeDasharray="4 4"
               label={{
                 value: `média ${baseline.toFixed(1)}`,
-                position: "insideTopRight",
-                fill: "hsl(var(--primary))",
+                position: 'insideTopRight',
+                fill: 'hsl(var(--primary))',
                 fontSize: 10,
               }}
             />
@@ -56,6 +63,6 @@ export const TrendBarChart = forwardRef<HTMLDivElement, Props>(
         </BarChart>
       </ResponsiveContainer>
     </div>
-  ),
+  )
 );
-TrendBarChart.displayName = "TrendBarChart";
+TrendBarChart.displayName = 'TrendBarChart';

@@ -30,14 +30,20 @@ const makeWrapper = () => {
 // Builder thenable: todos os métodos retornam o próprio builder (encadeamento),
 // e o await no builder final resolve com { data, error }.
 const buildChain = (resultado: { data: unknown; error: unknown } = { data: null, error: null }) => {
-  const builder: Record<string, unknown> & PromiseLike<{ data: unknown; error: unknown }> = {
+  const builder = {
     eq: vi.fn(),
     order: vi.fn(),
     select: vi.fn(),
     maybeSingle: vi.fn(),
     single: vi.fn(),
-    then: (onFulfilled?: (v: { data: unknown; error: unknown }) => unknown) =>
-      Promise.resolve(resultado).then(onFulfilled),
+    then: ((
+      onFulfilled?: ((v: { data: unknown; error: unknown }) => unknown) | null,
+      onRejected?: ((r: unknown) => unknown) | null
+    ) =>
+      Promise.resolve(resultado).then(onFulfilled as never, onRejected as never)) as PromiseLike<{
+      data: unknown;
+      error: unknown;
+    }>['then'],
   };
   builder.eq.mockReturnValue(builder);
   builder.order.mockReturnValue(builder);

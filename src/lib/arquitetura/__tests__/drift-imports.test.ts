@@ -48,7 +48,9 @@ describe('analisador de imports — primitivas', () => {
 
   it('resolve alias @/ e caminhos relativos, ignorando pacotes externos', () => {
     expect(resolverEspecificador('src/pages/X.tsx', '@/lib/y')).toBe('src/lib/y');
-    expect(resolverEspecificador('src/lib/tributario/a/b.ts', '../c/d')).toBe('src/lib/tributario/c/d');
+    expect(resolverEspecificador('src/lib/tributario/a/b.ts', '../c/d')).toBe(
+      'src/lib/tributario/c/d'
+    );
     expect(resolverEspecificador('src/lib/a.ts', 'react')).toBeNull();
     expect(resolverEspecificador('src/lib/a.ts', 'https://esm.sh/zod')).toBeNull();
   });
@@ -69,7 +71,7 @@ describe('conformidade do grafo real com o manifesto', () => {
 
   it('não possui dependências entre módulos fora do manifesto', () => {
     const resumo = drift.naoDeclaradas.map(
-      (a) => `${a.de} -> ${a.para} (${a.arquivo} importa "${a.especificador}")`,
+      (a) => `${a.de} -> ${a.para} (${a.arquivo} importa "${a.especificador}")`
     );
     expect(resumo).toEqual([]);
   });

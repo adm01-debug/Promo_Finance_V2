@@ -11,7 +11,7 @@ export { parseExcel } from './xlsx';
 export function parseExtratoBancario(
   content: string,
   fileName: string,
-  mapeamento?: Record<string, string>,
+  mapeamento?: Record<string, string>
 ): ResultadoImportacao {
   const extension = fileName.toLowerCase().split('.').pop();
   const contentUpper = content.toUpperCase();

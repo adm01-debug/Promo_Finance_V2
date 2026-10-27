@@ -41,13 +41,17 @@ describe('KPIComparativo', () => {
 
   describe('Modo invertido', () => {
     it('variação negativa fica verde quando invertido', () => {
-      const { container } = render(<KPIComparativo valorAtual={80} valorAnterior={100} invertido />);
+      const { container } = render(
+        <KPIComparativo valorAtual={80} valorAnterior={100} invertido />
+      );
       const wrapper = container.firstChild as HTMLElement;
       expect(wrapper.className).toContain('text-success');
     });
 
     it('variação positiva fica vermelha quando invertido', () => {
-      const { container } = render(<KPIComparativo valorAtual={120} valorAnterior={100} invertido />);
+      const { container } = render(
+        <KPIComparativo valorAtual={120} valorAnterior={100} invertido />
+      );
       const wrapper = container.firstChild as HTMLElement;
       expect(wrapper.className).toContain('text-destructive');
     });
@@ -72,7 +76,9 @@ describe('KPIComparativo', () => {
 
   describe('className', () => {
     it('aplica className adicional', () => {
-      const { container } = render(<KPIComparativo valorAtual={120} valorAnterior={100} className="ml-2" />);
+      const { container } = render(
+        <KPIComparativo valorAtual={120} valorAnterior={100} className="ml-2" />
+      );
       const wrapper = container.firstChild as HTMLElement;
       expect(wrapper.className).toContain('ml-2');
     });

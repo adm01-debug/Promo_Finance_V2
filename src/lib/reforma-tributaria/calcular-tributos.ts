@@ -11,7 +11,7 @@ import type { DadosOperacao, ResultadoCalculo } from './types';
 /** Calcula todos os tributos da Reforma Tributária */
 export function calcularTributosReforma(
   dados: DadosOperacao,
-  anoReferencia: number = new Date().getFullYear(),
+  anoReferencia: number = new Date().getFullYear()
 ): ResultadoCalculo {
   const detalhamento: string[] = [];
   const aliquotasTransicao = obterAliquotasTransicao(anoReferencia);
@@ -98,8 +98,7 @@ export function calcularTributosReforma(
       ? valorBase * (aliquotaISSBase / 100) * (aliquotasTransicao.issResidual / 100)
       : 0;
 
-  const pisResidual =
-    valorBase * (aliquotaPISBase / 100) * (aliquotasTransicao.pisResidual / 100);
+  const pisResidual = valorBase * (aliquotaPISBase / 100) * (aliquotasTransicao.pisResidual / 100);
   const cofinsResidual =
     valorBase * (aliquotaCOFINSBase / 100) * (aliquotasTransicao.cofinsResidual / 100);
 
@@ -109,7 +108,7 @@ export function calcularTributosReforma(
     detalhamento.push(`Tributos residuais (transição): R$ ${totalTributosAntigos.toFixed(2)}`);
     if (aliquotasTransicao.icmsResidual > 0) {
       detalhamento.push(
-        `  - ICMS residual (${aliquotasTransicao.icmsResidual}%): R$ ${icmsResidual.toFixed(2)}`,
+        `  - ICMS residual (${aliquotasTransicao.icmsResidual}%): R$ ${icmsResidual.toFixed(2)}`
       );
     }
     if (aliquotasTransicao.pisResidual > 0) {

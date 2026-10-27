@@ -40,7 +40,8 @@ interface SingleResult<Row = Record<string, unknown>> {
   error: { message: string; code?: string } | null;
 }
 
-interface SelectBuilder<Row = Record<string, unknown>> extends Filter<SelectBuilder<Row>>, Promise<QueryResult<Row>> {
+interface SelectBuilder<Row = Record<string, unknown>>
+  extends Filter<SelectBuilder<Row>>, Promise<QueryResult<Row>> {
   order: (col: string, opts?: { ascending?: boolean; nullsFirst?: boolean }) => SelectBuilder<Row>;
   limit: (n: number) => SelectBuilder<Row>;
   range: (from: number, to: number) => SelectBuilder<Row>;
@@ -48,22 +49,32 @@ interface SelectBuilder<Row = Record<string, unknown>> extends Filter<SelectBuil
   maybeSingle: () => Promise<SingleResult<Row>>;
 }
 
-interface MutationBuilder<Row = Record<string, unknown>> extends Filter<MutationBuilder<Row>>, Promise<QueryResult<Row>> {
+interface MutationBuilder<Row = Record<string, unknown>>
+  extends Filter<MutationBuilder<Row>>, Promise<QueryResult<Row>> {
   select: (cols?: string) => SelectBuilder<Row>;
   single: () => Promise<SingleResult<Row>>;
 }
 
 interface TableBuilder<Row = Record<string, unknown>> {
-  select: (cols?: string, opts?: { count?: 'exact' | 'planned' | 'estimated'; head?: boolean }) => SelectBuilder<Row>;
+  select: (
+    cols?: string,
+    opts?: { count?: 'exact' | 'planned' | 'estimated'; head?: boolean }
+  ) => SelectBuilder<Row>;
   insert: (row: Partial<Row> | Partial<Row>[]) => MutationBuilder<Row>;
   update: (row: Partial<Row>) => MutationBuilder<Row>;
-  upsert: (row: Partial<Row> | Partial<Row>[], opts?: { onConflict?: string; ignoreDuplicates?: boolean }) => MutationBuilder<Row>;
+  upsert: (
+    row: Partial<Row> | Partial<Row>[],
+    opts?: { onConflict?: string; ignoreDuplicates?: boolean }
+  ) => MutationBuilder<Row>;
   delete: () => MutationBuilder<Row>;
 }
 
 export interface SupabaseDyn {
   from: <Row = Record<string, unknown>>(table: string) => TableBuilder<Row>;
-  rpc: <T = unknown>(fn: string, args?: Record<string, unknown>) => Promise<{ data: T | null; error: { message: string } | null }>;
+  rpc: <T = unknown>(
+    fn: string,
+    args?: Record<string, unknown>
+  ) => Promise<{ data: T | null; error: { message: string } | null }>;
 }
 
 // Cast único e localizado. Todas as chamadas a tabelas fora do schema tipado

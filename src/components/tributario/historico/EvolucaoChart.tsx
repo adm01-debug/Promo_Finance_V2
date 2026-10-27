@@ -14,7 +14,20 @@ import {
 } from 'recharts';
 import { formatCurrency } from '@/lib/formatters';
 
-const MESES_CURTOS = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'];
+const MESES_CURTOS = [
+  'Jan',
+  'Fev',
+  'Mar',
+  'Abr',
+  'Mai',
+  'Jun',
+  'Jul',
+  'Ago',
+  'Set',
+  'Out',
+  'Nov',
+  'Dez',
+];
 
 export interface EvolucaoPoint {
   ano: number;
@@ -62,7 +75,10 @@ export function EvolucaoChart({ titulo, descricao, pontos, corHsl = 'var(--prima
                 </linearGradient>
               </defs>
               <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
-              <XAxis dataKey="label" tick={{ fontSize: 11, fill: 'hsl(var(--muted-foreground))' }} />
+              <XAxis
+                dataKey="label"
+                tick={{ fontSize: 11, fill: 'hsl(var(--muted-foreground))' }}
+              />
               <YAxis
                 tick={{ fontSize: 11, fill: 'hsl(var(--muted-foreground))' }}
                 tickFormatter={(v) => {

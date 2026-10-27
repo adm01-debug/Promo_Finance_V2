@@ -1,5 +1,14 @@
 import { useState, useRef } from 'react';
-import { Camera, FileUp, Loader2, CheckCircle, AlertTriangle, X, FileText, Receipt } from 'lucide-react';
+import {
+  Camera,
+  FileUp,
+  Loader2,
+  CheckCircle,
+  AlertTriangle,
+  X,
+  FileText,
+  Receipt,
+} from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
@@ -77,10 +86,9 @@ export function ComprovanteOCR({ onDadosExtraidos, onVincularPagamento }: Compro
 
   const extrairDadosDoTexto = (analise: string): DadosExtraidos => {
     const dados: DadosExtraidos = {};
-    
+
     // Extrair valor
-    const valorMatch = analise.match(/R\$\s*([\d.,]+)/i) || 
-                       analise.match(/valor[:\s]*([\d.,]+)/i);
+    const valorMatch = analise.match(/R\$\s*([\d.,]+)/i) || analise.match(/valor[:\s]*([\d.,]+)/i);
     if (valorMatch) {
       dados.valor = parseFloat(valorMatch[1].replace(/\./g, '').replace(',', '.'));
     }
@@ -101,8 +109,8 @@ export function ComprovanteOCR({ onDadosExtraidos, onVincularPagamento }: Compro
     else dados.tipo = 'Comprovante';
 
     // Extrair autenticação
-    const autMatch = analise.match(/autenticação[:\s]*([A-Z0-9]+)/i) ||
-                     analise.match(/código[:\s]*([A-Z0-9]+)/i);
+    const autMatch =
+      analise.match(/autenticação[:\s]*([A-Z0-9]+)/i) || analise.match(/código[:\s]*([A-Z0-9]+)/i);
     if (autMatch) {
       dados.autenticacao = autMatch[1];
     }
@@ -112,7 +120,7 @@ export function ComprovanteOCR({ onDadosExtraidos, onVincularPagamento }: Compro
 
   const processFiles = async (files: File[]) => {
     const validTypes = ['image/png', 'image/jpeg', 'image/jpg', 'application/pdf'];
-    
+
     for (const file of files) {
       if (!validTypes.includes(file.type)) {
         toast.error(`Tipo não suportado: ${file.name}. Use PNG, JPG ou PDF.`);
@@ -126,52 +134,53 @@ export function ComprovanteOCR({ onDadosExtraidos, onVincularPagamento }: Compro
         status: 'uploading',
       };
 
-      setComprovantes(prev => [...prev, comprovante]);
+      setComprovantes((prev) => [...prev, comprovante]);
 
       try {
         const base64 = await fileToBase64(file);
-        
-        setComprovantes(prev => 
-          prev.map(c => c.id === id ? { ...c, status: 'analyzing' } : c)
+
+        setComprovantes((prev) =>
+          prev.map((c) => (c.id === id ? { ...c, status: 'analyzing' } : c))
         );
 
         const { data, error } = await supabase.functions.invoke('analyze-document', {
-          body: { 
+          body: {
             fileName: file.name,
             fileType: file.type,
             fileContent: base64,
-          }
+          },
         });
 
         if (error) throw error;
 
         const analise = data.analysis || '';
         const dadosExtraidos = extrairDadosDoTexto(analise);
-        
-        setComprovantes(prev => 
-          prev.map(c => c.id === id ? { 
-            ...c, 
-            status: 'complete', 
-            dadosExtraidos,
-            analiseCompleta: analise
-          } : c)
+
+        setComprovantes((prev) =>
+          prev.map((c) =>
+            c.id === id
+              ? {
+                  ...c,
+                  status: 'complete',
+                  dadosExtraidos,
+                  analiseCompleta: analise,
+                }
+              : c
+          )
         );
 
         onDadosExtraidos?.(dadosExtraidos, analise);
         toast.success(`Comprovante analisado com sucesso!`);
-
       } catch (error: unknown) {
         logger.error('Erro ao analisar comprovante:', error);
-        setComprovantes(prev => 
-          prev.map(c => c.id === id ? { ...c, status: 'error' } : c)
-        );
+        setComprovantes((prev) => prev.map((c) => (c.id === id ? { ...c, status: 'error' } : c)));
         toast.error(`Erro ao analisar "${file.name}"`);
       }
     }
   };
 
   const removeComprovante = (id: string) => {
-    setComprovantes(prev => prev.filter(c => c.id !== id));
+    setComprovantes((prev) => prev.filter((c) => c.id !== id));
   };
 
   const getStatusIcon = (status: ComprovanteAnalisado['status']) => {
@@ -204,29 +213,21 @@ export function ComprovanteOCR({ onDadosExtraidos, onVincularPagamento }: Compro
           onDragLeave={handleDragLeave}
           onDrop={handleDrop}
           className={cn(
-            "border-2 border-dashed rounded-lg p-6 text-center transition-all",
-            isDragging 
-              ? "border-primary bg-primary/5" 
-              : "border-border hover:border-primary/50"
+            'border-2 border-dashed rounded-lg p-6 text-center transition-all',
+            isDragging ? 'border-primary bg-primary/5' : 'border-border hover:border-primary/50'
           )}
         >
           <Receipt className="h-10 w-10 mx-auto mb-3 text-muted-foreground" />
           <p className="text-sm text-muted-foreground mb-4">
             Arraste comprovantes aqui ou use os botões abaixo
           </p>
-          
+
           <div className="flex justify-center gap-3">
-            <Button
-              variant="outline"
-              onClick={() => cameraInputRef.current?.click()}
-            >
+            <Button variant="outline" onClick={() => cameraInputRef.current?.click()}>
               <Camera className="h-4 w-4 mr-2" />
               Câmera
             </Button>
-            <Button
-              variant="outline"
-              onClick={() => fileInputRef.current?.click()}
-            >
+            <Button variant="outline" onClick={() => fileInputRef.current?.click()}>
               <FileUp className="h-4 w-4 mr-2" />
               Arquivo
             </Button>
@@ -257,7 +258,7 @@ export function ComprovanteOCR({ onDadosExtraidos, onVincularPagamento }: Compro
               <Card key={comp.id} className="p-4">
                 <div className="flex items-start gap-3">
                   <FileText className="h-5 w-5 text-muted-foreground mt-0.5" />
-                  
+
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2 mb-1">
                       <p className="text-sm font-medium truncate">{comp.name}</p>
@@ -265,9 +266,9 @@ export function ComprovanteOCR({ onDadosExtraidos, onVincularPagamento }: Compro
                     </div>
 
                     {(comp.status === 'uploading' || comp.status === 'analyzing') && (
-                      <Progress 
-                        className="h-1.5 mt-2" 
-                        value={comp.status === 'uploading' ? 30 : 70} 
+                      <Progress
+                        className="h-1.5 mt-2"
+                        value={comp.status === 'uploading' ? 30 : 70}
                       />
                     )}
 
@@ -275,9 +276,7 @@ export function ComprovanteOCR({ onDadosExtraidos, onVincularPagamento }: Compro
                       <div className="mt-3 space-y-2">
                         <div className="flex flex-wrap gap-2">
                           {comp.dadosExtraidos.tipo && (
-                            <Badge variant="secondary">
-                              {comp.dadosExtraidos.tipo}
-                            </Badge>
+                            <Badge variant="secondary">{comp.dadosExtraidos.tipo}</Badge>
                           )}
                           {comp.dadosExtraidos.valor && (
                             <Badge variant="default" className="bg-success">
@@ -285,9 +284,7 @@ export function ComprovanteOCR({ onDadosExtraidos, onVincularPagamento }: Compro
                             </Badge>
                           )}
                           {comp.dadosExtraidos.data && (
-                            <Badge variant="outline">
-                              {formatDate(comp.dadosExtraidos.data)}
-                            </Badge>
+                            <Badge variant="outline">{formatDate(comp.dadosExtraidos.data)}</Badge>
                           )}
                         </div>
 
@@ -317,11 +314,7 @@ export function ComprovanteOCR({ onDadosExtraidos, onVincularPagamento }: Compro
                     )}
                   </div>
 
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => removeComprovante(comp.id)}
-                  >
+                  <Button variant="ghost" size="sm" onClick={() => removeComprovante(comp.id)}>
                     <X className="h-4 w-4" />
                   </Button>
                 </div>

@@ -42,7 +42,8 @@ export interface DivergenciaNcm {
 export const MVA_MAXIMO = 3;
 
 const EPSILON = 1e-9;
-const difere = (a: number, b: number) => !Number.isFinite(a) || !Number.isFinite(b) || Math.abs(a - b) > EPSILON;
+const difere = (a: number, b: number) =>
+  !Number.isFinite(a) || !Number.isFinite(b) || Math.abs(a - b) > EPSILON;
 
 /**
  * Compara o catálogo `ncms` do banco com as tabelas embarcadas no motor.
@@ -58,9 +59,7 @@ const difere = (a: number, b: number) => !Number.isFinite(a) || !Number.isFinite
  * NCMs presentes no banco e desconhecidos pela TIPI **não** são divergência:
  * o catálogo pode legitimamente cobrir mais posições que o recorte do motor.
  */
-export function compararNcmsComCatalogo(
-  registros: readonly NcmBanco[],
-): DivergenciaNcm[] {
+export function compararNcmsComCatalogo(registros: readonly NcmBanco[]): DivergenciaNcm[] {
   const divergencias: DivergenciaNcm[] = [];
   const porCodigo = new Map<string, NcmBanco>();
 
@@ -76,7 +75,12 @@ export function compararNcmsComCatalogo(
       continue;
     }
     if (porCodigo.has(codigo)) {
-      divergencias.push({ ncm: codigo, campo: 'duplicado', valorCodigo: null, valorBanco: r.codigo });
+      divergencias.push({
+        ncm: codigo,
+        campo: 'duplicado',
+        valorCodigo: null,
+        valorBanco: r.codigo,
+      });
       continue;
     }
     porCodigo.set(codigo, r);
@@ -87,7 +91,12 @@ export function compararNcmsComCatalogo(
     const codigo = normalizarNcm(item.ncm);
     const atual = porCodigo.get(codigo);
     if (!atual) {
-      divergencias.push({ ncm: codigo, campo: 'ausente', valorCodigo: item.descricao, valorBanco: null });
+      divergencias.push({
+        ncm: codigo,
+        campo: 'ausente',
+        valorCodigo: item.descricao,
+        valorBanco: null,
+      });
       continue;
     }
     const doBanco = Number(atual.aliquota_ipi);
@@ -117,7 +126,12 @@ export function compararNcmsComCatalogo(
     if (registro.sujeito_st) {
       const mva = registro.mva_padrao === null ? null : Number(registro.mva_padrao);
       if (mva === null || !Number.isFinite(mva) || mva <= 0 || mva > MVA_MAXIMO) {
-        divergencias.push({ ncm: codigo, campo: 'mva_padrao', valorCodigo: MVA_MAXIMO, valorBanco: mva });
+        divergencias.push({
+          ncm: codigo,
+          campo: 'mva_padrao',
+          valorCodigo: MVA_MAXIMO,
+          valorBanco: mva,
+        });
       }
     }
   }

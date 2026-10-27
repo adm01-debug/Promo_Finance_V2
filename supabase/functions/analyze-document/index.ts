@@ -8,8 +8,14 @@ import {
 } from '../_shared/validation.ts';
 import { checkRateLimit, rateLimitResponse } from '../_shared/rate-limit.ts';
 import { exigirUsuario } from '../_shared/auth-guard.ts';
+import { corsHeadersPara } from '../_shared/cors.ts';
+import { createLogger } from '../_shared/observability.ts';
+import { mensagemErro, contextoErro } from '../_shared/erros.ts';
+import { withEdgeObservability } from '../_shared/edge-observability.ts';
+const log = createLogger('analyze-document');
 
 export const handler = async (req: Request): Promise<Response> => {
+  const corsHeaders = corsHeadersPara(req);
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders });
   }
@@ -38,7 +44,7 @@ export const handler = async (req: Request): Promise<Response> => {
     const validation = validatePayload(AnalyzeDocumentSchema, body);
 
     if (!validation.success) {
-      return createErrorResponse(validation.error, 400, validation.details);
+      return createErrorResponse(validation.error, 400, validation.details, req);
     }
 
     const { fileName, fileType, fileContent } = validation.data;
@@ -49,7 +55,9 @@ export const handler = async (req: Request): Promise<Response> => {
       throw new Error('LOVABLE_API_KEY is not configured');
     }
 
-    console.log(`Analyzing document: ${fileName} (${fileType})`);
+    // fileName vem do cliente e pode conter PII em texto livre — fora do
+    // evento persistido; o tipo MIME já diz o que precisamos saber.
+    log.info(`Analyzing document (${fileType})`);
 
     // Determine analysis prompt based on file type
     let analysisPrompt = `Analise o seguinte documento financeiro e extraia as informações relevantes:
@@ -108,7 +116,10 @@ Formate a resposta de forma clara e estruturada em português brasileiro.`,
           textContent = textContent.substring(0, 10000) + '\n\n[... conteúdo truncado ...]';
         }
       } catch (e: unknown) {
-        console.error('Erro ao decodificar arquivo:', e);
+        log.error('Erro ao decodificar arquivo:', {
+          error_message: mensagemErro(e),
+          context: contextoErro(e),
+        });
         textContent = '[Não foi possível decodificar o conteúdo do arquivo]';
       }
 
@@ -153,7 +164,7 @@ ${textContent}
 
     if (!response.ok) {
       const errorText = await response.text();
-      console.error('AI gateway error:', response.status, errorText);
+      log.error('AI gateway error:', { context: { args: [response.status, errorText] } });
       throw new Error('Erro ao analisar documento');
     }
 
@@ -161,7 +172,7 @@ ${textContent}
     const analysis =
       data.choices?.[0]?.message?.content || 'Não foi possível analisar o documento.';
 
-    console.log('Document analysis complete');
+    log.info('Document analysis complete');
 
     return new Response(
       JSON.stringify({
@@ -173,7 +184,10 @@ ${textContent}
       { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     );
   } catch (error) {
-    console.error('Document analysis error:', error);
+    log.error('Document analysis error:', {
+      error_message: mensagemErro(error),
+      context: contextoErro(error),
+    });
     return new Response(
       JSON.stringify({
         error: error instanceof Error ? error.message : 'Erro desconhecido',
@@ -185,5 +199,15 @@ ${textContent}
 };
 
 if (import.meta.main) {
-  serve(handler);
+  serve(
+    withEdgeObservability('analyze-document', async (req) => {
+      const _t0 = Date.now();
+      try {
+        return await handler(req);
+      } finally {
+        log.info('request', { duration_ms: Date.now() - _t0 });
+        await log.flush();
+      }
+    })
+  );
 }

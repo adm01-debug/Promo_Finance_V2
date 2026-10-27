@@ -12,7 +12,15 @@ interface NumberFieldProps {
   className?: string;
 }
 
-export function NumberField({ label, value, onChange, suffix, hint, step = 100, className }: NumberFieldProps) {
+export function NumberField({
+  label,
+  value,
+  onChange,
+  suffix,
+  hint,
+  step = 100,
+  className,
+}: NumberFieldProps) {
   return (
     <div className={cn('space-y-1', className)}>
       <Label className="text-xs text-muted-foreground">{label}</Label>

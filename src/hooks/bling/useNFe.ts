@@ -23,19 +23,29 @@ export function useBlingNFeMutations() {
 
   const criarNFe = useMutation({
     mutationFn: (data: Record<string, unknown>) => blingAction('criar_nfe', { data }),
-    onSuccess: () => { toast.success('NF-e criada no Bling'); queryClient.invalidateQueries({ queryKey: ['bling-nfe'] }); },
+    onSuccess: () => {
+      toast.success('NF-e criada no Bling');
+      queryClient.invalidateQueries({ queryKey: ['bling-nfe'] });
+    },
     onError: (err: Error) => toast.error(`Erro: ${err.message}`),
   });
 
   const enviarSefaz = useMutation({
-    mutationFn: ({ id, enviarEmail }: { id: string; enviarEmail?: boolean }) => blingAction('enviar_nfe_sefaz', { id, enviarEmail }),
-    onSuccess: () => { toast.success('NF-e enviada ao SEFAZ'); queryClient.invalidateQueries({ queryKey: ['bling-nfe'] }); },
+    mutationFn: ({ id, enviarEmail }: { id: string; enviarEmail?: boolean }) =>
+      blingAction('enviar_nfe_sefaz', { id, enviarEmail }),
+    onSuccess: () => {
+      toast.success('NF-e enviada ao SEFAZ');
+      queryClient.invalidateQueries({ queryKey: ['bling-nfe'] });
+    },
     onError: (err: Error) => toast.error(`Erro: ${err.message}`),
   });
 
   const cancelarNFe = useMutation({
     mutationFn: (ids: string[]) => blingAction('cancelar_nfe', { ids }),
-    onSuccess: () => { toast.success('NF-e cancelada'); queryClient.invalidateQueries({ queryKey: ['bling-nfe'] }); },
+    onSuccess: () => {
+      toast.success('NF-e cancelada');
+      queryClient.invalidateQueries({ queryKey: ['bling-nfe'] });
+    },
     onError: (err: Error) => toast.error(`Erro: ${err.message}`),
   });
 
@@ -63,5 +73,13 @@ export function useBlingNFeMutations() {
     onError: (err: Error) => toast.error(`Erro: ${err.message}`),
   });
 
-  return { criarNFe, enviarSefaz, cancelarNFe, lancarEstoqueNFe, lancarContasNFe, estornarEstoqueNFe, estornarContasNFe };
+  return {
+    criarNFe,
+    enviarSefaz,
+    cancelarNFe,
+    lancarEstoqueNFe,
+    lancarContasNFe,
+    estornarEstoqueNFe,
+    estornarContasNFe,
+  };
 }

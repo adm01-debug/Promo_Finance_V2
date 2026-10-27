@@ -57,7 +57,9 @@ export function calcularIRPFMMensal(params: ParametrosIRPFM): ResultadoIRPFM {
   ];
 
   if (baseTotal <= IRPFM_LIMITE_ISENCAO_MENSAL) {
-    observacoes.push(`Recebimento dentro do limite de isenção (R$ ${IRPFM_LIMITE_ISENCAO_MENSAL.toLocaleString('pt-BR')}/mês).`);
+    observacoes.push(
+      `Recebimento dentro do limite de isenção (R$ ${IRPFM_LIMITE_ISENCAO_MENSAL.toLocaleString('pt-BR')}/mês).`
+    );
     return {
       baseCalculo: 0,
       aliquotaEfetiva: 0,
@@ -71,13 +73,18 @@ export function calcularIRPFMMensal(params: ParametrosIRPFM): ResultadoIRPFM {
   const excedente = baseTotal - IRPFM_LIMITE_ISENCAO_MENSAL;
 
   // Encontra a faixa aplicável sobre o excedente
-  const faixa = TABELA_IRPFM.slice(1).find((f) => excedente <= f.ate) ?? TABELA_IRPFM[TABELA_IRPFM.length - 1];
+  const faixa =
+    TABELA_IRPFM.slice(1).find((f) => excedente <= f.ate) ?? TABELA_IRPFM[TABELA_IRPFM.length - 1];
   const imposto = excedente * faixa.aliquota;
   const liquido = Math.max(0, imposto - irrf);
 
-  observacoes.push(`Excedente sobre o limite: R$ ${excedente.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}.`);
+  observacoes.push(
+    `Excedente sobre o limite: R$ ${excedente.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}.`
+  );
   if (irrf > 0) {
-    observacoes.push(`IRRF abatido: R$ ${irrf.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}.`);
+    observacoes.push(
+      `IRRF abatido: R$ ${irrf.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}.`
+    );
   }
 
   return {
@@ -101,18 +108,23 @@ export function calcularIRPFMAnual(meses: ParametrosIRPFM[]): {
   alertas: string[];
 } {
   const detalhe = (meses ?? []).map((m) => calcularIRPFMMensal(m));
-  const totalDividendos = (meses ?? []).reduce((acc, m) => acc + (Number(m.dividendosMensais) || 0), 0);
+  const totalDividendos = (meses ?? []).reduce(
+    (acc, m) => acc + (Number(m.dividendosMensais) || 0),
+    0
+  );
   const totalImposto = detalhe.reduce((acc, r) => acc + r.impostoMinimo, 0);
   const totalLiquido = detalhe.reduce((acc, r) => acc + r.impostoLiquido, 0);
 
   const alertas: string[] = [];
   if (totalDividendos > IRPFM_LIMITE_ANUAL_BASE) {
     alertas.push(
-      `Volume anual de dividendos (R$ ${totalDividendos.toLocaleString('pt-BR')}) ultrapassa R$ ${IRPFM_LIMITE_ANUAL_BASE.toLocaleString('pt-BR')} — avaliar Holding Patrimonial para mitigar IRPFM.`,
+      `Volume anual de dividendos (R$ ${totalDividendos.toLocaleString('pt-BR')}) ultrapassa R$ ${IRPFM_LIMITE_ANUAL_BASE.toLocaleString('pt-BR')} — avaliar Holding Patrimonial para mitigar IRPFM.`
     );
   }
   if (totalImposto > 0) {
-    alertas.push(`Imposto mínimo estimado em R$ ${totalImposto.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}/ano (Lei 15.270/2025).`);
+    alertas.push(
+      `Imposto mínimo estimado em R$ ${totalImposto.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}/ano (Lei 15.270/2025).`
+    );
   }
 
   return { totalDividendos, totalImposto, totalLiquido, detalhePorMes: detalhe, alertas };

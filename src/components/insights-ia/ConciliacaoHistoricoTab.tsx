@@ -3,14 +3,17 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Input } from '@/components/ui/input';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 import { CheckCircle2, XCircle, Search, History } from 'lucide-react';
 import { useHistoricoConciliacaoIA } from '@/hooks/useHistoricoConciliacaoIA';
 import { formatDate } from '@/lib/formatters';
-import {
-  ViewExportButton,
-  type ViewExportColumn,
-} from '@/components/shared/ViewExportButton';
+import { ViewExportButton, type ViewExportColumn } from '@/components/shared/ViewExportButton';
 
 export function ConciliacaoHistoricoTab() {
   const { feedback, isLoadingFeedback } = useHistoricoConciliacaoIA();
@@ -44,7 +47,7 @@ export function ConciliacaoHistoricoTab() {
       { key: 'lancamento', header: 'Lançamento', accessor: (r) => r.lancamento_descricao ?? '' },
       { key: 'motivo', header: 'Motivo rejeição', accessor: (r) => r.motivo_rejeicao ?? '' },
     ],
-    [],
+    []
   );
 
   const exportMeta = useMemo(
@@ -55,7 +58,7 @@ export function ConciliacaoHistoricoTab() {
         Busca: busca || '—',
       },
     }),
-    [filtro, busca],
+    [filtro, busca]
   );
 
   return (

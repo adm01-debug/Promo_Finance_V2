@@ -66,13 +66,13 @@ export function BulkActionsBar({
           animate={{ opacity: 1, y: 0 }}
           exit={{ opacity: 0, y: 20 }}
           className={cn(
-            "fixed z-50",
+            'fixed z-50',
             // Desktop: centered at bottom
-            "md:bottom-6 md:left-1/2 md:-translate-x-1/2",
+            'md:bottom-6 md:left-1/2 md:-translate-x-1/2',
             // Mobile: full width at bottom with safe area
-            "bottom-20 left-4 right-4 md:left-auto md:right-auto",
-            "bg-popover border shadow-lg rounded-xl p-3",
-            "flex flex-col md:flex-row items-stretch md:items-center gap-3",
+            'bottom-20 left-4 right-4 md:left-auto md:right-auto',
+            'bg-popover border shadow-lg rounded-xl p-3',
+            'flex flex-col md:flex-row items-stretch md:items-center gap-3',
             className
           )}
         >
@@ -84,7 +84,7 @@ export function BulkActionsBar({
                 {selectedCount} {selectedCount === 1 ? 'item' : 'itens'}
               </span>
             </div>
-            
+
             {/* Clear button - visible on mobile header */}
             <Button
               variant="ghost"
@@ -145,7 +145,9 @@ export function BulkActionsBar({
       )}
       <ConfirmDialog
         open={pendingAction !== null}
-        onOpenChange={(open) => { if (!open) setPendingAction(null); }}
+        onOpenChange={(open) => {
+          if (!open) setPendingAction(null);
+        }}
         title={pendingAction?.confirm?.title ?? ''}
         description={pendingAction?.confirm?.description}
         confirmLabel={pendingAction?.confirm?.confirmLabel ?? 'Confirmar'}

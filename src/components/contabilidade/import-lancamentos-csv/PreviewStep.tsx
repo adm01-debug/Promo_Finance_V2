@@ -5,9 +5,21 @@ import { DialogFooter } from '@/components/ui/dialog';
 import { Card, CardContent } from '@/components/ui/card';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Badge } from '@/components/ui/badge';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '@/components/ui/table';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from '@/components/ui/accordion';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import { clearImportCheckpoint } from '@/lib/import-checkpoint';
 import type { CsvLancParseResult, ParsedLancamento } from '@/lib/lancamentos-csv-importer';
@@ -31,8 +43,18 @@ interface Props {
 }
 
 export function PreviewStep({
-  file, parseResult, lancamentosImportaveis, totalDebito, lancsForaDoAno, ano,
-  podeImportar, retomada, checkpointKey, onReset, onDescartarCheckpoint, onImport,
+  file,
+  parseResult,
+  lancamentosImportaveis,
+  totalDebito,
+  lancsForaDoAno,
+  ano,
+  podeImportar,
+  retomada,
+  checkpointKey,
+  onReset,
+  onDescartarCheckpoint,
+  onImport,
 }: Props) {
   const aplicaveis = retomada
     ? lancamentosImportaveis.filter((l) => retomada.refsConfirmadas.has(l.ref)).length
@@ -46,10 +68,16 @@ export function PreviewStep({
           <FileText className="h-4 w-4 text-muted-foreground" />
           <span className="font-medium">{file?.name}</span>
           <span className="text-muted-foreground">({file ? formatFileSize(file.size) : ''})</span>
-          <Badge variant="outline" className="text-xs">{parseResult.encoding}</Badge>
-          <Badge variant="outline" className="text-xs">sep: {parseResult.separator === '\t' ? 'TAB' : `"${parseResult.separator}"`}</Badge>
+          <Badge variant="outline" className="text-xs">
+            {parseResult.encoding}
+          </Badge>
+          <Badge variant="outline" className="text-xs">
+            sep: {parseResult.separator === '\t' ? 'TAB' : `"${parseResult.separator}"`}
+          </Badge>
         </div>
-        <Button variant="ghost" size="sm" onClick={onReset}>Trocar arquivo</Button>
+        <Button variant="ghost" size="sm" onClick={onReset}>
+          Trocar arquivo
+        </Button>
       </div>
 
       <div className="grid grid-cols-2 md:grid-cols-5 gap-2">
@@ -57,19 +85,32 @@ export function PreviewStep({
           { label: 'Lançamentos', value: parseResult.lancamentos.length },
           { label: 'Partidas', value: parseResult.totalPartidas },
           { label: 'Total D = C', value: formatCurrency(totalDebito), mono: true },
-          { label: 'Erros', value: parseResult.errors.length, tone: parseResult.errors.length > 0 ? 'destructive' : 'success' },
-          { label: 'Avisos', value: parseResult.warnings.length, tone: parseResult.warnings.length > 0 ? 'warning' : 'muted' },
+          {
+            label: 'Erros',
+            value: parseResult.errors.length,
+            tone: parseResult.errors.length > 0 ? 'destructive' : 'success',
+          },
+          {
+            label: 'Avisos',
+            value: parseResult.warnings.length,
+            tone: parseResult.warnings.length > 0 ? 'warning' : 'muted',
+          },
         ].map((c, i) => (
-          <Card key={i} className="bg-card/[0.03] border-white/10 rounded-2xl shadow-xl hover:bg-card/[0.05] transition-colors">
+          <Card
+            key={i}
+            className="bg-card/[0.03] border-white/10 rounded-2xl shadow-xl hover:bg-card/[0.05] transition-colors"
+          >
             <CardContent className="p-4 text-center">
               <div className="text-xs text-muted-foreground">{c.label}</div>
-              <div className={cn(
-                c.mono ? 'text-sm font-mono font-bold' : 'text-xl font-bold',
-                c.tone === 'destructive' && 'text-destructive',
-                c.tone === 'success' && 'text-success',
-                c.tone === 'warning' && 'text-warning',
-                c.tone === 'muted' && 'text-muted-foreground',
-              )}>
+              <div
+                className={cn(
+                  c.mono ? 'text-sm font-mono font-bold' : 'text-xl font-bold',
+                  c.tone === 'destructive' && 'text-destructive',
+                  c.tone === 'success' && 'text-success',
+                  c.tone === 'warning' && 'text-warning',
+                  c.tone === 'muted' && 'text-muted-foreground'
+                )}
+              >
                 {c.value}
               </div>
             </CardContent>
@@ -83,17 +124,22 @@ export function PreviewStep({
           <AlertTitle className="text-xs">Importação anterior detectada</AlertTitle>
           <AlertDescription className="text-xs space-y-2">
             <div>
-              Encontramos <b>{aplicaveis}</b> de <b>{lancamentosImportaveis.length}</b> lançamento(s)
-              {' '}já importados em uma execução anterior deste arquivo
-              {' '}(checkpoint salvo em {format(new Date(retomada.updatedAt), "dd/MM/yyyy 'às' HH:mm")}).
-              {' '}Ao importar, eles serão <b>pulados automaticamente</b>.
+              Encontramos <b>{aplicaveis}</b> de <b>{lancamentosImportaveis.length}</b>{' '}
+              lançamento(s) já importados em uma execução anterior deste arquivo (checkpoint salvo
+              em {format(new Date(retomada.updatedAt), "dd/MM/yyyy 'às' HH:mm")}). Ao importar, eles
+              serão <b>pulados automaticamente</b>.
             </div>
             <div className="flex gap-2">
               <Button
                 size="sm"
                 variant="outline"
                 className="h-7 text-xs"
-                onClick={() => { if (checkpointKey) { clearImportCheckpoint(checkpointKey); onDescartarCheckpoint(); } }}
+                onClick={() => {
+                  if (checkpointKey) {
+                    clearImportCheckpoint(checkpointKey);
+                    onDescartarCheckpoint();
+                  }
+                }}
               >
                 Começar do zero (descartar checkpoint)
               </Button>
@@ -106,7 +152,8 @@ export function PreviewStep({
         <Alert>
           <AlertTriangle className="h-4 w-4" />
           <AlertDescription className="text-xs">
-            {lancsForaDoAno} lançamento(s) fora do ano-calendário corrente ({ano}). Serão importados mesmo assim.
+            {lancsForaDoAno} lançamento(s) fora do ano-calendário corrente ({ano}). Serão importados
+            mesmo assim.
           </AlertDescription>
         </Alert>
       )}
@@ -117,7 +164,8 @@ export function PreviewStep({
             <AccordionItem value="errors">
               <AccordionTrigger className="text-destructive hover:text-destructive">
                 <span className="flex items-center gap-2">
-                  <XCircle className="h-4 w-4" />{parseResult.errors.length} erro(s) bloqueante(s)
+                  <XCircle className="h-4 w-4" />
+                  {parseResult.errors.length} erro(s) bloqueante(s)
                 </span>
               </AccordionTrigger>
               <AccordionContent>
@@ -127,7 +175,8 @@ export function PreviewStep({
                       <li key={i} className="text-destructive">
                         <span className="font-semibold">L{e.line}</span>
                         {e.ref && <span className="text-muted-foreground"> [ref:{e.ref}]</span>}
-                        {' — '}{e.message}
+                        {' — '}
+                        {e.message}
                       </li>
                     ))}
                   </ul>
@@ -139,7 +188,8 @@ export function PreviewStep({
             <AccordionItem value="warnings">
               <AccordionTrigger className="text-warning hover:text-warning">
                 <span className="flex items-center gap-2">
-                  <AlertTriangle className="h-4 w-4" />{parseResult.warnings.length} aviso(s)
+                  <AlertTriangle className="h-4 w-4" />
+                  {parseResult.warnings.length} aviso(s)
                 </span>
               </AccordionTrigger>
               <AccordionContent>
@@ -149,7 +199,8 @@ export function PreviewStep({
                       <li key={i} className="text-warning">
                         <span className="font-semibold">L{w.line}</span>
                         {w.ref && <span className="text-muted-foreground"> [ref:{w.ref}]</span>}
-                        {' — '}{w.message}
+                        {' — '}
+                        {w.message}
                       </li>
                     ))}
                   </ul>
@@ -184,7 +235,8 @@ export function PreviewStep({
                   const warningsDoLanc = parseResult.warnings.filter((w) => w.ref === l.ref);
                   const ok = l.balanceado && l.partidas.length >= 2 && errosDoLanc.length === 0;
                   const dif = l.total_debito - l.total_credito;
-                  const temDetalhes = errosDoLanc.length > 0 || warningsDoLanc.length > 0 || l.partidas.length > 0;
+                  const temDetalhes =
+                    errosDoLanc.length > 0 || warningsDoLanc.length > 0 || l.partidas.length > 0;
                   return (
                     <Collapsible key={l.ref} asChild>
                       <>
@@ -199,21 +251,44 @@ export function PreviewStep({
                             )}
                           </TableCell>
                           <TableCell>
-                            {ok ? <CheckCircle2 className="h-4 w-4 text-success" /> : <XCircle className="h-4 w-4 text-destructive" />}
+                            {ok ? (
+                              <CheckCircle2 className="h-4 w-4 text-success" />
+                            ) : (
+                              <XCircle className="h-4 w-4 text-destructive" />
+                            )}
                           </TableCell>
                           <TableCell className="font-mono text-xs">{l.ref}</TableCell>
-                          <TableCell className="text-xs">{l.data ? format(new Date(l.data + 'T00:00:00'), 'dd/MM/yyyy') : '—'}</TableCell>
-                          <TableCell className="text-xs max-w-[200px] truncate">{l.historico || '—'}</TableCell>
+                          <TableCell className="text-xs">
+                            {l.data ? format(new Date(l.data + 'T00:00:00'), 'dd/MM/yyyy') : '—'}
+                          </TableCell>
+                          <TableCell className="text-xs max-w-[200px] truncate">
+                            {l.historico || '—'}
+                          </TableCell>
                           <TableCell className="text-right text-xs">{l.partidas.length}</TableCell>
-                          <TableCell className="text-right font-mono text-xs">{formatCurrency(l.total_debito)}</TableCell>
-                          <TableCell className="text-right font-mono text-xs">{formatCurrency(l.total_credito)}</TableCell>
-                          <TableCell className={cn('text-right font-mono text-xs', Math.abs(dif) > 0.005 ? 'text-destructive font-semibold' : 'text-muted-foreground')}>
+                          <TableCell className="text-right font-mono text-xs">
+                            {formatCurrency(l.total_debito)}
+                          </TableCell>
+                          <TableCell className="text-right font-mono text-xs">
+                            {formatCurrency(l.total_credito)}
+                          </TableCell>
+                          <TableCell
+                            className={cn(
+                              'text-right font-mono text-xs',
+                              Math.abs(dif) > 0.005
+                                ? 'text-destructive font-semibold'
+                                : 'text-muted-foreground'
+                            )}
+                          >
                             {formatCurrency(dif)}
                           </TableCell>
                           <TableCell className="text-right">
-                            {errosDoLanc.length > 0
-                              ? <Badge variant="destructive" className="text-xs">{errosDoLanc.length}</Badge>
-                              : <span className="text-xs text-muted-foreground">0</span>}
+                            {errosDoLanc.length > 0 ? (
+                              <Badge variant="destructive" className="text-xs">
+                                {errosDoLanc.length}
+                              </Badge>
+                            ) : (
+                              <span className="text-xs text-muted-foreground">0</span>
+                            )}
                           </TableCell>
                         </TableRow>
                         <CollapsibleContent asChild>
@@ -228,7 +303,8 @@ export function PreviewStep({
                                     <ul className="text-xs space-y-0.5 font-mono pl-4">
                                       {errosDoLanc.map((e, i) => (
                                         <li key={i} className="text-destructive">
-                                          <span className="font-semibold">Linha {e.line}</span> — {e.message}
+                                          <span className="font-semibold">Linha {e.line}</span> —{' '}
+                                          {e.message}
                                         </li>
                                       ))}
                                     </ul>
@@ -242,7 +318,8 @@ export function PreviewStep({
                                     <ul className="text-xs space-y-0.5 font-mono pl-4">
                                       {warningsDoLanc.map((w, i) => (
                                         <li key={i} className="text-warning">
-                                          <span className="font-semibold">Linha {w.line}</span> — {w.message}
+                                          <span className="font-semibold">Linha {w.line}</span> —{' '}
+                                          {w.message}
                                         </li>
                                       ))}
                                     </ul>
@@ -250,7 +327,9 @@ export function PreviewStep({
                                 )}
                                 {l.partidas.length > 0 && (
                                   <div>
-                                    <p className="text-xs font-semibold text-muted-foreground mb-1">Partidas ({l.partidas.length})</p>
+                                    <p className="text-xs font-semibold text-muted-foreground mb-1">
+                                      Partidas ({l.partidas.length})
+                                    </p>
                                     <div className="border rounded bg-background">
                                       <Table>
                                         <TableHeader>
@@ -258,22 +337,35 @@ export function PreviewStep({
                                             <TableHead className="h-7 text-xs">Linha</TableHead>
                                             <TableHead className="h-7 text-xs">Conta</TableHead>
                                             <TableHead className="h-7 text-xs">Tipo</TableHead>
-                                            <TableHead className="h-7 text-xs text-right">Valor</TableHead>
+                                            <TableHead className="h-7 text-xs text-right">
+                                              Valor
+                                            </TableHead>
                                             <TableHead className="h-7 text-xs">Histórico</TableHead>
                                           </TableRow>
                                         </TableHeader>
                                         <TableBody>
                                           {l.partidas.map((p, i) => (
                                             <TableRow key={i}>
-                                              <TableCell className="py-1 text-xs font-mono">L{p.linha}</TableCell>
-                                              <TableCell className="py-1 text-xs font-mono">{p.conta_codigo}</TableCell>
+                                              <TableCell className="py-1 text-xs font-mono">
+                                                L{p.linha}
+                                              </TableCell>
+                                              <TableCell className="py-1 text-xs font-mono">
+                                                {p.conta_codigo}
+                                              </TableCell>
                                               <TableCell className="py-1 text-xs">
-                                                <Badge variant={p.tipo === 'D' ? 'default' : 'secondary'} className="text-[10px] px-1.5">
+                                                <Badge
+                                                  variant={p.tipo === 'D' ? 'default' : 'secondary'}
+                                                  className="text-[10px] px-1.5"
+                                                >
                                                   {p.tipo}
                                                 </Badge>
                                               </TableCell>
-                                              <TableCell className="py-1 text-xs font-mono text-right">{formatCurrency(p.valor)}</TableCell>
-                                              <TableCell className="py-1 text-xs text-muted-foreground truncate max-w-[200px]">{p.historico_complementar || '—'}</TableCell>
+                                              <TableCell className="py-1 text-xs font-mono text-right">
+                                                {formatCurrency(p.valor)}
+                                              </TableCell>
+                                              <TableCell className="py-1 text-xs text-muted-foreground truncate max-w-[200px]">
+                                                {p.historico_complementar || '—'}
+                                              </TableCell>
                                             </TableRow>
                                           ))}
                                         </TableBody>
@@ -301,7 +393,9 @@ export function PreviewStep({
       )}
 
       <DialogFooter className="gap-2">
-        <Button variant="outline" onClick={onReset}>Cancelar</Button>
+        <Button variant="outline" onClick={onReset}>
+          Cancelar
+        </Button>
         <Button onClick={onImport} disabled={!podeImportar}>
           <Upload className="h-4 w-4 mr-2" />
           {aplicaveis > 0

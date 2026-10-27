@@ -12,8 +12,8 @@
  *    de destino (já fazemos isso via `validateSharing`, em useSavedFilters).
  */
 
-import type { AppRole } from "@/hooks/savedFiltersValidation";
-import { ALL_APP_ROLES } from "@/hooks/savedFiltersValidation";
+import type { AppRole } from '@/hooks/savedFiltersValidation';
+import { ALL_APP_ROLES } from '@/hooks/savedFiltersValidation';
 
 export const SHARED_FILTERS_BUNDLE_VERSION = 1 as const;
 
@@ -37,7 +37,7 @@ export interface SharedFilterBundle {
 const APP_ROLE_SET = new Set<string>(ALL_APP_ROLES);
 
 function isAppRole(value: unknown): value is AppRole {
-  return typeof value === "string" && APP_ROLE_SET.has(value);
+  return typeof value === 'string' && APP_ROLE_SET.has(value);
 }
 
 function sanitizeRoles(input: unknown): AppRole[] {
@@ -81,14 +81,10 @@ export function buildBundle(params: {
 export class SharedFilterBundleParseError extends Error {
   constructor(
     message: string,
-    public readonly code:
-      | "INVALID_JSON"
-      | "INVALID_SHAPE"
-      | "UNSUPPORTED_VERSION"
-      | "EMPTY_ITEMS",
+    public readonly code: 'INVALID_JSON' | 'INVALID_SHAPE' | 'UNSUPPORTED_VERSION' | 'EMPTY_ITEMS'
   ) {
     super(message);
-    this.name = "SharedFilterBundleParseError";
+    this.name = 'SharedFilterBundleParseError';
   }
 }
 
@@ -101,61 +97,55 @@ export function parseBundle(raw: string): SharedFilterBundle {
   try {
     parsed = JSON.parse(raw);
   } catch {
-    throw new SharedFilterBundleParseError(
-      "Arquivo inválido: não é um JSON.",
-      "INVALID_JSON",
-    );
+    throw new SharedFilterBundleParseError('Arquivo inválido: não é um JSON.', 'INVALID_JSON');
   }
-  if (!parsed || typeof parsed !== "object") {
+  if (!parsed || typeof parsed !== 'object') {
     throw new SharedFilterBundleParseError(
-      "Arquivo inválido: estrutura inesperada.",
-      "INVALID_SHAPE",
+      'Arquivo inválido: estrutura inesperada.',
+      'INVALID_SHAPE'
     );
   }
   const obj = parsed as Record<string, unknown>;
   if (obj.schemaVersion !== SHARED_FILTERS_BUNDLE_VERSION) {
     throw new SharedFilterBundleParseError(
       `Versão do bundle não suportada (esperado v${SHARED_FILTERS_BUNDLE_VERSION}).`,
-      "UNSUPPORTED_VERSION",
+      'UNSUPPORTED_VERSION'
     );
   }
   if (!Array.isArray(obj.items)) {
     throw new SharedFilterBundleParseError(
       "Arquivo inválido: campo 'items' ausente.",
-      "INVALID_SHAPE",
+      'INVALID_SHAPE'
     );
   }
   const items: SharedFilterBundleItem[] = [];
   for (const it of obj.items) {
-    if (!it || typeof it !== "object") continue;
+    if (!it || typeof it !== 'object') continue;
     const i = it as Record<string, unknown>;
-    if (typeof i.entity_type !== "string" || typeof i.name !== "string") continue;
+    if (typeof i.entity_type !== 'string' || typeof i.name !== 'string') continue;
     items.push({
       entity_type: i.entity_type.trim(),
       name: i.name.trim(),
       filters: i.filters ?? {},
       shared_with_roles: sanitizeRoles(i.shared_with_roles),
-      source_owner_email:
-        typeof i.source_owner_email === "string" ? i.source_owner_email : null,
+      source_owner_email: typeof i.source_owner_email === 'string' ? i.source_owner_email : null,
     });
   }
   if (items.length === 0) {
     throw new SharedFilterBundleParseError(
-      "O arquivo não contém filtros válidos para importar.",
-      "EMPTY_ITEMS",
+      'O arquivo não contém filtros válidos para importar.',
+      'EMPTY_ITEMS'
     );
   }
   return {
     schemaVersion: SHARED_FILTERS_BUNDLE_VERSION,
-    exportedAt: typeof obj.exportedAt === "string" ? obj.exportedAt : new Date().toISOString(),
+    exportedAt: typeof obj.exportedAt === 'string' ? obj.exportedAt : new Date().toISOString(),
     exportedBy:
-      obj.exportedBy && typeof obj.exportedBy === "object"
-        ? (obj.exportedBy as SharedFilterBundle["exportedBy"])
+      obj.exportedBy && typeof obj.exportedBy === 'object'
+        ? (obj.exportedBy as SharedFilterBundle['exportedBy'])
         : null,
     exportedFromEmpresaId:
-      typeof obj.exportedFromEmpresaId === "string"
-        ? obj.exportedFromEmpresaId
-        : null,
+      typeof obj.exportedFromEmpresaId === 'string' ? obj.exportedFromEmpresaId : null,
     items,
   };
 }
@@ -163,10 +153,10 @@ export function parseBundle(raw: string): SharedFilterBundle {
 /** Dispara download do bundle como arquivo .json no navegador. */
 export function downloadBundle(bundle: SharedFilterBundle, filename?: string) {
   const blob = new Blob([JSON.stringify(bundle, null, 2)], {
-    type: "application/json",
+    type: 'application/json',
   });
   const url = URL.createObjectURL(blob);
-  const a = document.createElement("a");
+  const a = document.createElement('a');
   const stamp = new Date().toISOString().slice(0, 10);
   a.href = url;
   a.download = filename ?? `filtros-compartilhados-${stamp}.json`;

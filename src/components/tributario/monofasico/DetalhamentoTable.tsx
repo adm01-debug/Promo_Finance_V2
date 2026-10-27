@@ -1,4 +1,11 @@
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
 import type { ResultadoItemMonofasico } from '@/lib/tributario/monofasico';
 
@@ -36,21 +43,31 @@ export function DetalhamentoTable({ itens }: DetalhamentoTableProps) {
               <TableCell className="max-w-[220px] truncate">{item.descricao}</TableCell>
               <TableCell>
                 {item.monofasico ? (
-                  <Badge variant="outline" className="border-success/40 text-success">{item.grupoNome}</Badge>
+                  <Badge variant="outline" className="border-success/40 text-success">
+                    {item.grupoNome}
+                  </Badge>
                 ) : (
-                  <Badge variant="outline" className="text-muted-foreground">Regime normal</Badge>
+                  <Badge variant="outline" className="text-muted-foreground">
+                    Regime normal
+                  </Badge>
                 )}
               </TableCell>
               <TableCell className="text-right tabular-nums">{brl(item.receita)}</TableCell>
               <TableCell className="text-right tabular-nums">
                 {brl(item.pis)}
-                <span className="ml-1 text-xs text-muted-foreground">({pct(item.aliquotaPis)})</span>
+                <span className="ml-1 text-xs text-muted-foreground">
+                  ({pct(item.aliquotaPis)})
+                </span>
               </TableCell>
               <TableCell className="text-right tabular-nums">
                 {brl(item.cofins)}
-                <span className="ml-1 text-xs text-muted-foreground">({pct(item.aliquotaCofins)})</span>
+                <span className="ml-1 text-xs text-muted-foreground">
+                  ({pct(item.aliquotaCofins)})
+                </span>
               </TableCell>
-              <TableCell className="text-right font-medium tabular-nums">{brl(item.total)}</TableCell>
+              <TableCell className="text-right font-medium tabular-nums">
+                {brl(item.total)}
+              </TableCell>
               <TableCell className="text-right tabular-nums text-success">
                 {item.economia > 0 ? brl(item.economia) : '—'}
               </TableCell>

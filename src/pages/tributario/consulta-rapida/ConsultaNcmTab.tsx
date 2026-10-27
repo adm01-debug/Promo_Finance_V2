@@ -4,10 +4,19 @@ import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
 import { Switch } from '@/components/ui/switch';
 import {
-  Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
 } from '@/components/ui/select';
 import {
-  Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
 } from '@/components/ui/table';
 import { useConsultaNCM } from '@/hooks/useConsultaTributaria';
 import { MatchBadge } from './MatchBadge';
@@ -53,20 +62,35 @@ export function ConsultaNcmTab() {
         <div className="space-y-1.5">
           <Label htmlFor="ncm-uf">UF de origem</Label>
           <Select value={uf || '__none'} onValueChange={(v) => setUf(v === '__none' ? '' : v)}>
-            <SelectTrigger id="ncm-uf"><SelectValue placeholder="Nenhuma" /></SelectTrigger>
+            <SelectTrigger id="ncm-uf">
+              <SelectValue placeholder="Nenhuma" />
+            </SelectTrigger>
             <SelectContent>
               <SelectItem value="__none">Nenhuma</SelectItem>
-              {UFS.map((u) => <SelectItem key={u} value={u}>{u}</SelectItem>)}
+              {UFS.map((u) => (
+                <SelectItem key={u} value={u}>
+                  {u}
+                </SelectItem>
+              ))}
             </SelectContent>
           </Select>
         </div>
         <div className="space-y-1.5">
           <Label htmlFor="ncm-uf-destino">UF de destino</Label>
-          <Select value={ufDestino || '__none'} onValueChange={(v) => setUfDestino(v === '__none' ? '' : v)}>
-            <SelectTrigger id="ncm-uf-destino"><SelectValue placeholder="Nenhuma" /></SelectTrigger>
+          <Select
+            value={ufDestino || '__none'}
+            onValueChange={(v) => setUfDestino(v === '__none' ? '' : v)}
+          >
+            <SelectTrigger id="ncm-uf-destino">
+              <SelectValue placeholder="Nenhuma" />
+            </SelectTrigger>
             <SelectContent>
               <SelectItem value="__none">Nenhuma</SelectItem>
-              {UFS.map((u) => <SelectItem key={u} value={u}>{u}</SelectItem>)}
+              {UFS.map((u) => (
+                <SelectItem key={u} value={u}>
+                  {u}
+                </SelectItem>
+              ))}
             </SelectContent>
           </Select>
         </div>
@@ -118,7 +142,12 @@ export function ConsultaNcmTab() {
           isLoading={query.isLoading}
           error={query.error}
           isEmpty={!query.isLoading && !ncm}
-          actions={<div className="flex items-center gap-1.5"><OfflineBadge data={d} /><MatchBadge match={d?.match} /></div>}
+          actions={
+            <div className="flex items-center gap-1.5">
+              <OfflineBadge data={d} />
+              <MatchBadge match={d?.match} />
+            </div>
+          }
         >
           <dl className="grid grid-cols-2 gap-4 text-sm lg:grid-cols-4">
             <div>
@@ -135,7 +164,9 @@ export function ConsultaNcmTab() {
             </div>
             <div>
               <dt className="text-muted-foreground">MVA sugerida</dt>
-              <dd className="font-semibold">{pct(d?.cenario_st?.mva_sugerida ?? ncm?.mva_padrao)}</dd>
+              <dd className="font-semibold">
+                {pct(d?.cenario_st?.mva_sugerida ?? ncm?.mva_padrao)}
+              </dd>
             </div>
           </dl>
           <div className="mt-4 flex flex-wrap gap-1.5">

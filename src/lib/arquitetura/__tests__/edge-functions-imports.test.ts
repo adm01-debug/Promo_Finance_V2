@@ -59,23 +59,22 @@ describe('Edge Functions — conformidade de imports Deno', () => {
 
   it('usa uma única versão canônica de @supabase/supabase-js', () => {
     const versoes = new Set(
-      IMPORTS.map(({ especificador }) =>
-        especificador.match(/@supabase\/supabase-js@([\d.]+)/)?.[1],
-      ).filter((v): v is string => Boolean(v)),
+      IMPORTS.map(
+        ({ especificador }) => especificador.match(/@supabase\/supabase-js@([\d.]+)/)?.[1]
+      ).filter((v): v is string => Boolean(v))
     );
     expect(
       [...versoes],
-      'versões divergentes do supabase-js causam comportamento inconsistente entre funções',
+      'versões divergentes do supabase-js causam comportamento inconsistente entre funções'
     ).toEqual([VERSAO_CANONICA_SUPABASE_JS]);
   });
 
   it('não importa @supabase/supabase-js sem versão fixada', () => {
     const flutuantes = IMPORTS.filter(({ especificador }) =>
-      /@supabase\/supabase-js(?![@\d])/.test(especificador),
+      /@supabase\/supabase-js(?![@\d])/.test(especificador)
     );
     expect(flutuantes.map((i) => `${i.arquivo} -> ${i.especificador}`)).toEqual([]);
   });
-
 
   it('não usa o alias "@/" do frontend dentro das funções', () => {
     const invalidos = IMPORTS.filter(({ especificador }) => especificador.startsWith('@/'));
@@ -85,7 +84,7 @@ describe('Edge Functions — conformidade de imports Deno', () => {
   it('fixa versão em todo especificador npm:', () => {
     const semVersao = IMPORTS.filter(
       ({ especificador }) =>
-        especificador.startsWith('npm:') && !/@[\d]+(\.[\d]+)*(\/|$)/.test(especificador.slice(4)),
+        especificador.startsWith('npm:') && !/@[\d]+(\.[\d]+)*(\/|$)/.test(especificador.slice(4))
     );
     expect(semVersao.map((i) => `${i.arquivo} -> ${i.especificador}`)).toEqual([]);
   });
@@ -93,14 +92,14 @@ describe('Edge Functions — conformidade de imports Deno', () => {
   it('fixa versão em todo especificador https:// (deno.land / esm.sh)', () => {
     const semVersao = IMPORTS.filter(
       ({ especificador }) =>
-        especificador.startsWith('https://') && !/@v?[\d]+(\.[\d]+)*/.test(especificador),
+        especificador.startsWith('https://') && !/@v?[\d]+(\.[\d]+)*/.test(especificador)
     );
     expect(semVersao.map((i) => `${i.arquivo} -> ${i.especificador}`)).toEqual([]);
   });
 
   it('todo import relativo aponta para arquivo com extensão .ts', () => {
     const semExtensao = IMPORTS.filter(
-      ({ especificador }) => especificador.startsWith('.') && !especificador.endsWith('.ts'),
+      ({ especificador }) => especificador.startsWith('.') && !especificador.endsWith('.ts')
     );
     expect(semExtensao.map((i) => `${i.arquivo} -> ${i.especificador}`)).toEqual([]);
   });

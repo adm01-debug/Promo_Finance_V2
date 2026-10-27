@@ -74,11 +74,7 @@ export function RankBadge({
   const sizeStyles = sizeConfig[size];
   const Icon = config.icon;
 
-  const TrendIcon = showTrend === 'up' 
-    ? TrendingUp 
-    : showTrend === 'down' 
-      ? TrendingDown 
-      : Minus;
+  const TrendIcon = showTrend === 'up' ? TrendingUp : showTrend === 'down' ? TrendingDown : Minus;
 
   const content = (
     <span
@@ -92,16 +88,16 @@ export function RankBadge({
     >
       {showIcon && <Icon className={cn(sizeStyles.icon, 'shrink-0')} />}
       <span>{label || config.label}</span>
-      {value && (
-        <span className="font-bold ml-0.5">{value}</span>
-      )}
+      {value && <span className="font-bold ml-0.5">{value}</span>}
       {showTrend && (
-        <TrendIcon className={cn(
-          sizeStyles.icon,
-          'shrink-0 ml-0.5',
-          showTrend === 'up' && 'text-success',
-          showTrend === 'down' && 'text-destructive',
-        )} />
+        <TrendIcon
+          className={cn(
+            sizeStyles.icon,
+            'shrink-0 ml-0.5',
+            showTrend === 'up' && 'text-success',
+            showTrend === 'down' && 'text-destructive'
+          )}
+        />
       )}
     </span>
   );
@@ -141,7 +137,7 @@ export function PositionBadge({
   className,
 }: PositionBadgeProps) {
   const rank = getRankFromPosition(position);
-  
+
   return (
     <RankBadge
       rank={rank}
@@ -188,11 +184,10 @@ export function FinancialRankBadge({
 }: FinancialRankBadgeProps) {
   const thresholds = financialThresholds[type];
   const rank = getRankFromScore(value, thresholds);
-  
-  const formattedValue = type === 'receita' 
-    ? `R$ ${(value / 1000).toFixed(0)}k`
-    : `${value.toFixed(1)}%`;
-  
+
+  const formattedValue =
+    type === 'receita' ? `R$ ${(value / 1000).toFixed(0)}k` : `${value.toFixed(1)}%`;
+
   return (
     <RankBadge
       rank={rank}

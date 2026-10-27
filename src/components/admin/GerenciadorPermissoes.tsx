@@ -9,25 +9,20 @@ import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 import { toast } from 'sonner';
 import { logger } from '@/lib/logger';
-import { 
-  Shield, 
-  Users, 
-  FileText, 
-  BarChart3, 
-  Settings, 
+import {
+  Shield,
+  Users,
+  FileText,
+  BarChart3,
+  Settings,
   Receipt,
   Save,
   Loader2,
   CheckCircle2,
   XCircle,
-  Info
+  Info,
 } from 'lucide-react';
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from '@/components/ui/tooltip';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 
 interface Permission {
   id: string;
@@ -39,11 +34,11 @@ interface Permission {
 interface RolePermission {
   id: string;
   role: string;
-  permission_id: string;
+  permission_id: string | null;
 }
 
 const ROLES = ['admin', 'financeiro', 'operacional', 'visualizador'] as const;
-type Role = typeof ROLES[number];
+type Role = (typeof ROLES)[number];
 
 const ROLE_LABELS: Record<Role, string> = {
   admin: 'Administrador',
@@ -114,17 +109,19 @@ export function GerenciadorPermissoes() {
     if (pendingChanges.has(key)) {
       return pendingChanges.get(key)!;
     }
-    return rolePermissions.some(rp => rp.role === role && rp.permission_id === permissionId);
+    return rolePermissions.some((rp) => rp.role === role && rp.permission_id === permissionId);
   };
 
   const togglePermission = (role: Role, permissionId: string) => {
     const key = `${role}-${permissionId}`;
     const currentValue = hasPermission(role, permissionId);
-    
-    setPendingChanges(prev => {
+
+    setPendingChanges((prev) => {
       const newMap = new Map(prev);
-      const originalValue = rolePermissions.some(rp => rp.role === role && rp.permission_id === permissionId);
-      
+      const originalValue = rolePermissions.some(
+        (rp) => rp.role === role && rp.permission_id === permissionId
+      );
+
       if (currentValue === originalValue) {
         // Adding a change
         newMap.set(key, !currentValue);
@@ -132,7 +129,7 @@ export function GerenciadorPermissoes() {
         // Reverting to original
         newMap.delete(key);
       }
-      
+
       return newMap;
     });
   };
@@ -151,7 +148,7 @@ export function GerenciadorPermissoes() {
           toAdd.push({ role: role as Role, permission_id: permissionId });
         } else {
           const existing = rolePermissions.find(
-            rp => rp.role === role && rp.permission_id === permissionId
+            (rp) => rp.role === role && rp.permission_id === permissionId
           );
           if (existing) {
             toRemove.push(existing.id);
@@ -161,18 +158,13 @@ export function GerenciadorPermissoes() {
 
       // Execute removals
       if (toRemove.length > 0) {
-        const { error } = await supabase
-          .from('role_permissions')
-          .delete()
-          .in('id', toRemove);
+        const { error } = await supabase.from('role_permissions').delete().in('id', toRemove);
         if (error) throw error;
       }
 
       // Execute additions
       if (toAdd.length > 0) {
-        const { error } = await supabase
-          .from('role_permissions')
-          .insert(toAdd);
+        const { error } = await supabase.from('role_permissions').insert(toAdd);
         if (error) throw error;
       }
 
@@ -192,15 +184,15 @@ export function GerenciadorPermissoes() {
   };
 
   const getModules = (): string[] => {
-    return [...new Set(permissions.map(p => p.module))];
+    return [...new Set(permissions.map((p) => p.module))];
   };
 
   const getPermissionsByModule = (module: string): Permission[] => {
-    return permissions.filter(p => p.module === module);
+    return permissions.filter((p) => p.module === module);
   };
 
   const getRolePermissionCount = (role: Role): number => {
-    return permissions.filter(p => hasPermission(role, p.id)).length;
+    return permissions.filter((p) => hasPermission(role, p.id)).length;
   };
 
   if (isLoading) {
@@ -211,7 +203,7 @@ export function GerenciadorPermissoes() {
           <Skeleton className="h-4 w-72" />
         </CardHeader>
         <CardContent className="space-y-4">
-          {[1, 2, 3].map(i => (
+          {[1, 2, 3].map((i) => (
             <Skeleton key={i} className="h-24 w-full" />
           ))}
         </CardContent>
@@ -229,12 +221,10 @@ export function GerenciadorPermissoes() {
             </div>
             <div>
               <CardTitle>Gerenciador de Permissões</CardTitle>
-              <CardDescription>
-                Configure as permissões de cada perfil de usuário
-              </CardDescription>
+              <CardDescription>Configure as permissões de cada perfil de usuário</CardDescription>
             </div>
           </div>
-          
+
           <AnimatePresence>
             {pendingChanges.size > 0 && (
               <motion.div
@@ -246,20 +236,11 @@ export function GerenciadorPermissoes() {
                 <Badge variant="outline" className="gap-1">
                   {pendingChanges.size} alteração{pendingChanges.size > 1 ? 'ões' : ''}
                 </Badge>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={discardChanges}
-                  disabled={isSaving}
-                >
+                <Button variant="outline" size="sm" onClick={discardChanges} disabled={isSaving}>
                   <XCircle className="h-4 w-4 mr-1" />
                   Descartar
                 </Button>
-                <Button
-                  size="sm"
-                  onClick={saveChanges}
-                  disabled={isSaving}
-                >
+                <Button size="sm" onClick={saveChanges} disabled={isSaving}>
                   {isSaving ? (
                     <Loader2 className="h-4 w-4 mr-1 animate-spin" />
                   ) : (
@@ -272,11 +253,11 @@ export function GerenciadorPermissoes() {
           </AnimatePresence>
         </div>
       </CardHeader>
-      
+
       <CardContent>
         <Tabs value={activeRole} onValueChange={(v) => setActiveRole(v as Role)}>
           <TabsList className="grid w-full grid-cols-4 mb-6">
-            {ROLES.map(role => (
+            {ROLES.map((role) => (
               <TabsTrigger key={role} value={role} className="gap-2">
                 <span className="hidden sm:inline">{ROLE_LABELS[role]}</span>
                 <span className="sm:hidden">{role.slice(0, 3).toUpperCase()}</span>
@@ -287,19 +268,17 @@ export function GerenciadorPermissoes() {
             ))}
           </TabsList>
 
-          {ROLES.map(role => (
+          {ROLES.map((role) => (
             <TabsContent key={role} value={role} className="space-y-4">
               <div className="flex items-center gap-2 mb-4">
-                <Badge className={ROLE_COLORS[role]}>
-                  {ROLE_LABELS[role]}
-                </Badge>
+                <Badge className={ROLE_COLORS[role]}>{ROLE_LABELS[role]}</Badge>
                 <span className="text-sm text-muted-foreground">
                   {getRolePermissionCount(role)} de {permissions.length} permissões ativas
                 </span>
               </div>
 
               <div className="grid gap-4">
-                {getModules().map(module => (
+                {getModules().map((module) => (
                   <motion.div
                     key={module}
                     initial={{ opacity: 0, y: 10 }}
@@ -312,13 +291,16 @@ export function GerenciadorPermissoes() {
                       </div>
                       <h4 className="font-medium">{MODULE_LABELS[module] || module}</h4>
                       <Badge variant="outline" className="ml-auto text-xs">
-                        {getPermissionsByModule(module).filter(p => hasPermission(role, p.id)).length}/
-                        {getPermissionsByModule(module).length}
+                        {
+                          getPermissionsByModule(module).filter((p) => hasPermission(role, p.id))
+                            .length
+                        }
+                        /{getPermissionsByModule(module).length}
                       </Badge>
                     </div>
 
                     <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-3">
-                      {getPermissionsByModule(module).map(permission => {
+                      {getPermissionsByModule(module).map((permission) => {
                         const isChecked = hasPermission(role, permission.id);
                         const key = `${role}-${permission.id}`;
                         const hasChange = pendingChanges.has(key);
@@ -381,7 +363,10 @@ export function GerenciadorPermissoes() {
               {role === 'admin' && (
                 <div className="flex items-center gap-2 p-3 bg-muted/50 rounded-lg text-sm text-muted-foreground">
                   <Info className="h-4 w-4" />
-                  <span>Administradores têm acesso total ao sistema. As permissões não podem ser alteradas.</span>
+                  <span>
+                    Administradores têm acesso total ao sistema. As permissões não podem ser
+                    alteradas.
+                  </span>
                 </div>
               )}
             </TabsContent>

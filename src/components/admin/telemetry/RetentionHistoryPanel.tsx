@@ -1,12 +1,12 @@
-import { useMemo, useState } from "react";
-import { useQuery } from "@tanstack/react-query";
-import { supabaseDyn } from "@/lib/supabase-dynamic";
+import { useMemo, useState } from 'react';
+import { useQuery } from '@tanstack/react-query';
+import { supabaseDyn } from '@/lib/supabase-dynamic';
 
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
-import { Database, RefreshCw, Trash2, AlertTriangle, CheckCircle2 } from "lucide-react";
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
+import { Database, RefreshCw, Trash2, AlertTriangle, CheckCircle2 } from 'lucide-react';
 
 /** Linha retornada por public.get_retention_history (admin-only). */
 interface RetentionRunRow {
@@ -25,16 +25,16 @@ interface RetentionRunRow {
 const JANELAS = [7, 30, 90] as const;
 
 function formatarData(iso: string): string {
-  return new Date(iso).toLocaleString("pt-BR", {
-    day: "2-digit",
-    month: "2-digit",
-    hour: "2-digit",
-    minute: "2-digit",
+  return new Date(iso).toLocaleString('pt-BR', {
+    day: '2-digit',
+    month: '2-digit',
+    hour: '2-digit',
+    minute: '2-digit',
   });
 }
 
 function formatarDuracao(ms: number | null): string {
-  if (ms == null) return "—";
+  if (ms == null) return '—';
   if (ms < 1000) return `${ms}ms`;
   return `${(ms / 1000).toFixed(1)}s`;
 }
@@ -47,10 +47,15 @@ function formatarDuracao(ms: number | null): string {
 export function RetentionHistoryPanel() {
   const [dias, setDias] = useState<number>(30);
 
-  const { data = [], isLoading, refetch, isRefetching } = useQuery<RetentionRunRow[]>({
-    queryKey: ["retention-history", dias],
+  const {
+    data = [],
+    isLoading,
+    refetch,
+    isRefetching,
+  } = useQuery<RetentionRunRow[]>({
+    queryKey: ['retention-history', dias],
     queryFn: async () => {
-      const { data, error } = await supabaseDyn.rpc<RetentionRunRow[]>("get_retention_history", {
+      const { data, error } = await supabaseDyn.rpc<RetentionRunRow[]>('get_retention_history', {
         p_days: dias,
       });
       if (error) throw error;
@@ -96,7 +101,7 @@ export function RetentionHistoryPanel() {
             <Button
               key={j}
               size="sm"
-              variant={dias === j ? "secondary" : "ghost"}
+              variant={dias === j ? 'secondary' : 'ghost'}
               className="h-7 px-2 text-xs"
               onClick={() => setDias(j)}
             >
@@ -111,7 +116,7 @@ export function RetentionHistoryPanel() {
             disabled={isRefetching}
             aria-label="Recarregar histórico de retenção"
           >
-            <RefreshCw className={`h-3.5 w-3.5 ${isRefetching ? "animate-spin" : ""}`} />
+            <RefreshCw className={`h-3.5 w-3.5 ${isRefetching ? 'animate-spin' : ''}`} />
           </Button>
         </div>
       </CardHeader>
@@ -121,7 +126,7 @@ export function RetentionHistoryPanel() {
           <div className="rounded-md border border-border bg-muted/30 p-3">
             <p className="text-[11px] uppercase text-muted-foreground">Linhas purgadas</p>
             <p className="text-lg font-semibold text-foreground">
-              {resumo.totalLinhas.toLocaleString("pt-BR")}
+              {resumo.totalLinhas.toLocaleString('pt-BR')}
             </p>
           </div>
           <div className="rounded-md border border-border bg-muted/30 p-3">
@@ -151,7 +156,7 @@ export function RetentionHistoryPanel() {
                   {resumo.ranking.map(([tabela, linhas]) => (
                     <Badge key={tabela} variant="outline" className="text-[10px] font-normal">
                       <Trash2 className="mr-1 h-3 w-3" />
-                      {tabela}: {linhas.toLocaleString("pt-BR")}
+                      {tabela}: {linhas.toLocaleString('pt-BR')}
                     </Badge>
                   ))}
                 </div>
@@ -162,7 +167,7 @@ export function RetentionHistoryPanel() {
               <TooltipProvider>
                 {data.map((run) => {
                   const tabelas = Object.entries(run.per_table ?? {}).filter(
-                    ([, v]) => Number(v) > 0,
+                    ([, v]) => Number(v) > 0
                   );
                   return (
                     <div
@@ -189,17 +194,17 @@ export function RetentionHistoryPanel() {
                           {run.error_message
                             ? run.error_message
                             : tabelas.length === 0
-                              ? "Nada a purgar nesta execução"
+                              ? 'Nada a purgar nesta execução'
                               : tabelas
-                                  .map(([t, v]) => `${t}: ${Number(v).toLocaleString("pt-BR")}`)
-                                  .join(" · ")}
+                                  .map(([t, v]) => `${t}: ${Number(v).toLocaleString('pt-BR')}`)
+                                  .join(' · ')}
                         </p>
                       </div>
                       <Tooltip>
                         <TooltipTrigger asChild>
                           <div className="shrink-0 text-right">
                             <p className="text-xs font-semibold text-foreground">
-                              {Number(run.total_deleted).toLocaleString("pt-BR")}
+                              {Number(run.total_deleted).toLocaleString('pt-BR')}
                             </p>
                             <p className="text-[10px] text-muted-foreground">
                               {formatarDuracao(run.duration_ms)}
@@ -208,10 +213,10 @@ export function RetentionHistoryPanel() {
                         </TooltipTrigger>
                         <TooltipContent>
                           <p className="text-xs">
-                            {Number(run.total_deleted).toLocaleString("pt-BR")} linha(s) removida(s)
+                            {Number(run.total_deleted).toLocaleString('pt-BR')} linha(s) removida(s)
                             {run.partitions_dropped > 0
                               ? ` · ${run.partitions_dropped} partição(ões) descartada(s)`
-                              : ""}
+                              : ''}
                           </p>
                         </TooltipContent>
                       </Tooltip>

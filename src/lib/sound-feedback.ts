@@ -1,7 +1,7 @@
 // Sistema de feedback sonoro para eventos importantes
 // Sons são opcionais e podem ser desabilitados pelo usuário
 
-type SoundType = 
+type SoundType =
   | 'success'
   | 'error'
   | 'warning'
@@ -72,8 +72,8 @@ const SOUND_FREQUENCIES: Record<SoundType, number[]> = {
   error: [311.13, 293.66], // Eb4, D4 - Dissonant
   warning: [440, 493.88], // A4, B4 - Rising
   notification: [587.33, 659.25], // D5, E5 - Ding dong
-  payment: [523.25, 659.25, 783.99, 1046.50], // C major arpeggio
-  goal: [523.25, 587.33, 659.25, 783.99, 1046.50], // Celebration arpeggio
+  payment: [523.25, 659.25, 783.99, 1046.5], // C major arpeggio
+  goal: [523.25, 587.33, 659.25, 783.99, 1046.5], // Celebration arpeggio
   message: [880], // A5 - Single ping
   click: [1200], // High tick
 };
@@ -95,10 +95,11 @@ let audioContext: AudioContext | null = null;
 
 function getAudioContext(): AudioContext | null {
   if (typeof window === 'undefined') return null;
-  
+
   if (!audioContext) {
     try {
-      const AudioContextClass = window.AudioContext || 
+      const AudioContextClass =
+        window.AudioContext ||
         (window as unknown as { webkitAudioContext: typeof AudioContext }).webkitAudioContext;
       audioContext = new AudioContextClass();
     } catch {
@@ -106,47 +107,47 @@ function getAudioContext(): AudioContext | null {
       return null;
     }
   }
-  
+
   // Resume if suspended (autoplay policy)
   if (audioContext.state === 'suspended') {
     audioContext.resume();
   }
-  
+
   return audioContext;
 }
 
 // Tocar um som
 export function playSound(type: SoundType) {
   const config = getConfig();
-  
+
   if (!config.enabled) return;
-  
+
   const ctx = getAudioContext();
   if (!ctx) return;
-  
+
   const frequencies = SOUND_FREQUENCIES[type];
   const duration = SOUND_DURATIONS[type];
   const now = ctx.currentTime;
-  
+
   frequencies.forEach((freq, index) => {
     const oscillator = ctx.createOscillator();
     const gainNode = ctx.createGain();
-    
+
     oscillator.connect(gainNode);
     gainNode.connect(ctx.destination);
-    
+
     // Tipo de onda baseado no som
     oscillator.type = type === 'click' ? 'square' : 'sine';
     oscillator.frequency.value = freq;
-    
+
     // Envelope de volume
-    const startTime = now + (index * duration);
+    const startTime = now + index * duration;
     const endTime = startTime + duration;
-    
+
     gainNode.gain.setValueAtTime(0, startTime);
     gainNode.gain.linearRampToValueAtTime(config.volume * 0.3, startTime + 0.01);
     gainNode.gain.exponentialRampToValueAtTime(0.001, endTime);
-    
+
     oscillator.start(startTime);
     oscillator.stop(endTime + 0.1);
   });
@@ -169,23 +170,23 @@ import { useCallback, useState, useEffect } from 'react';
 
 export function useSoundFeedback() {
   const [config, setConfig] = useState<SoundConfig>(DEFAULT_CONFIG);
-  
+
   useEffect(() => {
     setConfig(getConfig());
   }, []);
-  
+
   const toggle = useCallback((enabled?: boolean) => {
     const newEnabled = toggleSounds(enabled);
-    setConfig(prev => ({ ...prev, enabled: newEnabled }));
+    setConfig((prev) => ({ ...prev, enabled: newEnabled }));
     return newEnabled;
   }, []);
-  
+
   const changeVolume = useCallback((volume: number) => {
     const newVolume = setVolume(volume);
-    setConfig(prev => ({ ...prev, volume: newVolume }));
+    setConfig((prev) => ({ ...prev, volume: newVolume }));
     return newVolume;
   }, []);
-  
+
   return {
     config,
     toggle,

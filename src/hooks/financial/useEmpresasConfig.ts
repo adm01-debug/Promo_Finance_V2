@@ -31,11 +31,7 @@ export function useCentrosCusto(empresaId?: string) {
   return useQuery({
     queryKey: ['centros-custo', empresaId || 'all'],
     queryFn: async () => {
-      let query = supabase
-        .from('centros_custo')
-        .select('*')
-        .eq('ativo', true)
-        .order('nome');
+      let query = supabase.from('centros_custo').select('*').eq('ativo', true).order('nome');
 
       if (empresaId && empresaId !== 'all') {
         query = query.eq('empresa_id', empresaId);
@@ -76,7 +72,7 @@ export function useContasBancarias(empresaId?: string) {
             Authorization: `Bearer ${session.access_token}`,
             apikey: env.SUPABASE_PUBLISHABLE_KEY,
           },
-        },
+        }
       );
 
       if (!response.ok) throw new Error('Erro ao buscar contas bancárias');

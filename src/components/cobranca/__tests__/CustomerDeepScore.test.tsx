@@ -9,7 +9,9 @@ describe('CustomerDeepScore', () => {
     expect(screen.getAllByText('Não consultado')).toHaveLength(2);
     expect(screen.getAllByText('Integração não configurada')).toHaveLength(2);
     expect(screen.getByText(/Sem consulta registrada/)).toBeInTheDocument();
-    expect(screen.getByText('Ainda não há análise comportamental disponível para este cliente.')).toBeInTheDocument();
+    expect(
+      screen.getByText('Ainda não há análise comportamental disponível para este cliente.')
+    ).toBeInTheDocument();
     expect(screen.queryByText('+5 pts este mês')).not.toBeInTheDocument();
   });
 
@@ -21,7 +23,7 @@ describe('CustomerDeepScore', () => {
         boaVistaScore={740}
         riscoComportamental="Histórico validado pela integração."
         lastUpdate="10/09/2026"
-      />,
+      />
     );
 
     expect(screen.getByText('810')).toBeInTheDocument();

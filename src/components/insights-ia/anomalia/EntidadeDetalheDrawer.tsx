@@ -1,19 +1,13 @@
-import { useLocalStorageState } from "@/hooks/useLocalStorageState";
-import { Link } from "react-router-dom";
-import {
-  Sheet,
-  SheetContent,
-  SheetHeader,
-  SheetTitle,
-  SheetFooter,
-} from "@/components/ui/sheet";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { ScrollArea } from "@/components/ui/scroll-area";
-import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { ExternalLink, X, Database, Copy, LayoutGrid, FileJson } from "lucide-react";
-import { toast } from "sonner";
-import type { EntidadeRelacionada } from "@/hooks/useAnomaliaDetalhe";
+import { useLocalStorageState } from '@/hooks/useLocalStorageState';
+import { Link } from 'react-router-dom';
+import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetFooter } from '@/components/ui/sheet';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
+import { ScrollArea } from '@/components/ui/scroll-area';
+import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { ExternalLink, X, Database, Copy, LayoutGrid, FileJson } from 'lucide-react';
+import { toast } from 'sonner';
+import type { EntidadeRelacionada } from '@/hooks/useAnomaliaDetalhe';
 
 interface Props {
   open: boolean;
@@ -22,44 +16,44 @@ interface Props {
 }
 
 const ENTIDADE_LABEL: Record<string, string> = {
-  movimentacao: "Movimentação",
-  conta_pagar: "Conta a pagar",
-  conta_receber: "Conta a receber",
-  transacao_bancaria: "Transação bancária",
+  movimentacao: 'Movimentação',
+  conta_pagar: 'Conta a pagar',
+  conta_receber: 'Conta a receber',
+  transacao_bancaria: 'Transação bancária',
 };
 
 /** Campos-chave priorizados para a visão resumida (chips). */
 const KEY_FIELDS = [
-  "id",
-  "descricao",
-  "valor",
-  "data",
-  "data_movimentacao",
-  "data_vencimento",
-  "vencimento",
-  "status",
-  "fornecedor_nome",
-  "cliente_nome",
-  "categoria",
-  "tipo",
+  'id',
+  'descricao',
+  'valor',
+  'data',
+  'data_movimentacao',
+  'data_vencimento',
+  'vencimento',
+  'status',
+  'fornecedor_nome',
+  'cliente_nome',
+  'categoria',
+  'tipo',
 ];
 
-type ViewMode = "resumo" | "completo";
+type ViewMode = 'resumo' | 'completo';
 
 function formatValue(v: unknown): string {
-  if (v === null || v === undefined) return "—";
-  if (typeof v === "object") return JSON.stringify(v, null, 2);
+  if (v === null || v === undefined) return '—';
+  if (typeof v === 'object') return JSON.stringify(v, null, 2);
   return String(v);
 }
 
 function formatChip(k: string, v: unknown): string {
-  if (v === null || v === undefined) return "—";
-  if (typeof v === "number" && (k.includes("valor") || k.includes("preco"))) {
-    return v.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
+  if (v === null || v === undefined) return '—';
+  if (typeof v === 'number' && (k.includes('valor') || k.includes('preco'))) {
+    return v.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
   }
-  if (typeof v === "string" && /^\d{4}-\d{2}-\d{2}/.test(v)) {
+  if (typeof v === 'string' && /^\d{4}-\d{2}-\d{2}/.test(v)) {
     const d = new Date(v);
-    if (!Number.isNaN(d.getTime())) return d.toLocaleDateString("pt-BR");
+    if (!Number.isNaN(d.getTime())) return d.toLocaleDateString('pt-BR');
   }
   return formatValue(v);
 }
@@ -68,21 +62,18 @@ export function EntidadeDetalheDrawer({ open, onOpenChange, entidade }: Props) {
   const label = ENTIDADE_LABEL[entidade.tipo] ?? entidade.tipo;
   const registro = entidade.registro ?? {};
   const entries = Object.entries(registro);
-  const [view, setView] = useLocalStorageState<ViewMode>(
-    "audit:entidade-drawer:view",
-    "resumo",
-  );
+  const [view, setView] = useLocalStorageState<ViewMode>('audit:entidade-drawer:view', 'resumo');
 
   const keyEntries = KEY_FIELDS.map((k) => [k, registro[k]] as const).filter(
-    ([, v]) => v !== undefined && v !== null && v !== "",
+    ([, v]) => v !== undefined && v !== null && v !== ''
   );
 
   const handleCopyJson = async () => {
     try {
       await navigator.clipboard.writeText(JSON.stringify(registro, null, 2));
-      toast.success("Registro copiado");
+      toast.success('Registro copiado');
     } catch {
-      toast.error("Não foi possível copiar");
+      toast.error('Não foi possível copiar');
     }
   };
 
@@ -100,11 +91,7 @@ export function EntidadeDetalheDrawer({ open, onOpenChange, entidade }: Props) {
         </SheetHeader>
 
         {entidade.encontrada && entries.length > 0 && (
-          <Tabs
-            value={view}
-            onValueChange={(v) => setView(v as ViewMode)}
-            className="mt-2"
-          >
+          <Tabs value={view} onValueChange={(v) => setView(v as ViewMode)} className="mt-2">
             <TabsList className="grid w-full grid-cols-2">
               <TabsTrigger value="resumo" className="gap-1.5" aria-label="Visualização resumida">
                 <LayoutGrid className="h-3.5 w-3.5" aria-hidden="true" /> Resumo
@@ -125,7 +112,7 @@ export function EntidadeDetalheDrawer({ open, onOpenChange, entidade }: Props) {
             <p className="text-sm text-muted-foreground text-center">
               Sem campos disponíveis para exibição.
             </p>
-          ) : view === "resumo" ? (
+          ) : view === 'resumo' ? (
             <div className="space-y-4">
               {keyEntries.length === 0 ? (
                 <p className="text-sm text-muted-foreground text-center">
@@ -141,9 +128,7 @@ export function EntidadeDetalheDrawer({ open, onOpenChange, entidade }: Props) {
                       <span className="text-[10px] font-medium uppercase tracking-wide text-muted-foreground">
                         {k}
                       </span>
-                      <span className="text-xs font-medium tabular-nums">
-                        {formatChip(k, v)}
-                      </span>
+                      <span className="text-xs font-medium tabular-nums">{formatChip(k, v)}</span>
                     </div>
                   ))}
                 </div>
@@ -156,8 +141,8 @@ export function EntidadeDetalheDrawer({ open, onOpenChange, entidade }: Props) {
             <div className="space-y-4">
               <dl className="grid grid-cols-1 gap-2">
                 {entries.map(([k, v]) => {
-                  const isMono = k === "id" || k.endsWith("_id") || k === "uuid";
-                  const isNumeric = typeof v === "number";
+                  const isMono = k === 'id' || k.endsWith('_id') || k === 'uuid';
+                  const isNumeric = typeof v === 'number';
                   return (
                     <div
                       key={k}
@@ -169,10 +154,10 @@ export function EntidadeDetalheDrawer({ open, onOpenChange, entidade }: Props) {
                       <dd
                         className={
                           isMono
-                            ? "font-mono text-xs break-all whitespace-pre-wrap"
+                            ? 'font-mono text-xs break-all whitespace-pre-wrap'
                             : isNumeric
-                            ? "text-xs tabular-nums break-all whitespace-pre-wrap"
-                            : "text-xs break-all whitespace-pre-wrap"
+                              ? 'text-xs tabular-nums break-all whitespace-pre-wrap'
+                              : 'text-xs break-all whitespace-pre-wrap'
                         }
                       >
                         {formatValue(v)}

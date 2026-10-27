@@ -23,9 +23,7 @@ function difere(a: number, b: number): boolean {
  * Compara as UFs do catálogo com as alíquotas modais do motor.
  * Detecta ausências, excedentes e divergências de alíquota interna/FCP.
  */
-export function compararUfsComCatalogo(
-  ufsBanco: readonly UfCatalogo[],
-): DivergenciaUf[] {
+export function compararUfsComCatalogo(ufsBanco: readonly UfCatalogo[]): DivergenciaUf[] {
   const divergencias: DivergenciaUf[] = [];
   const siglasCodigo = Object.keys(ALIQUOTAS_UF) as UF[];
 

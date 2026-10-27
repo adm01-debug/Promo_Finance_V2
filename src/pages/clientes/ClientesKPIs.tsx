@@ -56,7 +56,9 @@ export function ClientesKPIs({ totalClientes, clientesAtivos, limiteTotal }: Pro
             <div className="flex items-start justify-between">
               <div>
                 <p className="text-sm font-medium text-muted-foreground">Limite Total</p>
-                <p className="text-2xl font-bold font-display mt-1">{formatCurrency(limiteTotal)}</p>
+                <p className="text-2xl font-bold font-display mt-1">
+                  {formatCurrency(limiteTotal)}
+                </p>
               </div>
               <div className="h-12 w-12 rounded-xl bg-secondary/10 text-secondary flex items-center justify-center transition-transform group-hover:scale-110">
                 <Building2 className="h-6 w-6" />

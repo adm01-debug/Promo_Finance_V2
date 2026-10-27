@@ -3,6 +3,7 @@ import { render, screen, fireEvent } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
 import { BackButton } from '../BackButton';
 import { TooltipProvider } from '@/components/ui/tooltip';
+import { recordNavEntry, resetNavStack } from '@/lib/navigation';
 
 const mockNavigate = vi.fn();
 vi.mock('react-router-dom', async () => {
@@ -24,10 +25,7 @@ function renderWithRouter(ui: React.ReactElement, initialRoute = '/contas-recebe
 describe('BackButton', () => {
   beforeEach(() => {
     vi.clearAllMocks();
-    Object.defineProperty(window, 'history', {
-      value: { length: 1 },
-      writable: true,
-    });
+    resetNavStack();
   });
 
   it('renders on non-home pages', () => {
@@ -51,18 +49,17 @@ describe('BackButton', () => {
     expect(mockNavigate).toHaveBeenCalledWith('/empresas');
   });
 
-  it('navigates to parent route when history is short', () => {
+  it('navigates to parent route without in-app history', () => {
     renderWithRouter(<BackButton />, '/usuarios');
     fireEvent.click(screen.getByRole('button', { name: /voltar/i }));
-    // With history.length <= 2, should fallback to parent route
-    expect(mockNavigate).toHaveBeenCalledWith('/configuracoes');
+    // Sem entrada in-app anterior, sobe para a rota-pai (nunca sai do app)
+    expect(mockNavigate).toHaveBeenCalledWith('/configuracoes', { replace: true });
   });
 
-  it('uses browser history when available', () => {
-    Object.defineProperty(window, 'history', {
-      value: { length: 5 },
-      writable: true,
-    });
+  it('uses in-app history stack when available', () => {
+    recordNavEntry({ key: 'a', pathname: '/', search: '' }, 'PUSH');
+    recordNavEntry({ key: 'b', pathname: '/contas-pagar', search: '' }, 'PUSH');
+    recordNavEntry({ key: 'c', pathname: '/contas-receber', search: '' }, 'PUSH');
     renderWithRouter(<BackButton />);
     fireEvent.click(screen.getByRole('button', { name: /voltar/i }));
     expect(mockNavigate).toHaveBeenCalledWith(-1);
@@ -80,7 +77,9 @@ describe('BackButton', () => {
 
     rerender(
       <MemoryRouter initialEntries={['/contas-receber']}>
-        <TooltipProvider><BackButton size="lg" /></TooltipProvider>
+        <TooltipProvider>
+          <BackButton size="lg" />
+        </TooltipProvider>
       </MemoryRouter>
     );
     expect(screen.getByRole('button', { name: /voltar/i })).toBeInTheDocument();
@@ -88,7 +87,10 @@ describe('BackButton', () => {
 
   it('has proper aria-label for accessibility', () => {
     renderWithRouter(<BackButton />);
-    expect(screen.getByRole('button', { name: /voltar/i })).toHaveAttribute('aria-label', 'Voltar');
+    expect(screen.getByRole('button', { name: /voltar/i })).toHaveAttribute(
+      'aria-label',
+      'Voltar para Dashboard'
+    );
   });
 
   it('applies custom className', () => {
@@ -100,6 +102,6 @@ describe('BackButton', () => {
   it('falls back to "/" for unknown routes', () => {
     renderWithRouter(<BackButton />, '/some-unknown-route');
     fireEvent.click(screen.getByRole('button', { name: /voltar/i }));
-    expect(mockNavigate).toHaveBeenCalledWith('/');
+    expect(mockNavigate).toHaveBeenCalledWith('/', { replace: true });
   });
 });

@@ -1,7 +1,17 @@
 import { CheckCircle2, XCircle } from 'lucide-react';
 import type { ReactNode } from 'react';
 
-export function Step({ ok, title, detail, icon }: { ok: boolean; title: string; detail: string; icon?: ReactNode }) {
+export function Step({
+  ok,
+  title,
+  detail,
+  icon,
+}: {
+  ok: boolean;
+  title: string;
+  detail: string;
+  icon?: ReactNode;
+}) {
   return (
     <div className="flex items-start gap-3 rounded-lg border p-3">
       <div className={ok ? 'text-success' : 'text-destructive'}>

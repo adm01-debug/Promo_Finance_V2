@@ -52,7 +52,11 @@ function detectSeparator(sample: string): string {
 
 function parseNumber(raw: string | undefined): number {
   if (!raw) return 0;
-  const cleaned = raw.trim().replace(/\s/g, '').replace(/R\$/gi, '').replace(/[^\d,.-]/g, '');
+  const cleaned = raw
+    .trim()
+    .replace(/\s/g, '')
+    .replace(/R\$/gi, '')
+    .replace(/[^\d,.-]/g, '');
   if (!cleaned) return 0;
   if (cleaned.includes(',') && cleaned.lastIndexOf(',') > cleaned.lastIndexOf('.')) {
     return Number(cleaned.replace(/\./g, '').replace(',', '.'));
@@ -67,16 +71,29 @@ function splitCsvLine(line: string, sep: string): string[] {
   for (let i = 0; i < line.length; i++) {
     const ch = line[i];
     if (ch === '"') {
-      if (inQuotes && line[i + 1] === '"') { cur += '"'; i++; } else { inQuotes = !inQuotes; }
-    } else if (ch === sep && !inQuotes) { out.push(cur); cur = ''; }
-    else cur += ch;
+      if (inQuotes && line[i + 1] === '"') {
+        cur += '"';
+        i++;
+      } else {
+        inQuotes = !inQuotes;
+      }
+    } else if (ch === sep && !inQuotes) {
+      out.push(cur);
+      cur = '';
+    } else cur += ch;
   }
   out.push(cur);
   return out.map((c) => c.trim());
 }
 
 function normalizeHeader(h: string): string {
-  return h.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-z0-9_]/g, '_').replace(/_+/g, '_').replace(/^_|_$/g, '');
+  return h
+    .toLowerCase()
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .replace(/[^a-z0-9_]/g, '_')
+    .replace(/_+/g, '_')
+    .replace(/^_|_$/g, '');
 }
 
 function parseDate(raw: string): string | null {
@@ -101,7 +118,7 @@ function parseDate(raw: string): string | null {
 
 export async function parseLancamentosCsv(
   file: File,
-  planoContas: PlanoContaRow[],
+  planoContas: PlanoContaRow[]
 ): Promise<CsvLancParseResult> {
   const { text, encoding } = await decodeFile(file);
   const lines = text.split(/\r?\n/).filter((l) => l.trim().length > 0);
@@ -109,7 +126,15 @@ export async function parseLancamentosCsv(
   const warnings: CsvLancParseResult['warnings'] = [];
 
   if (lines.length < 2) {
-    return { lancamentos: [], errors: [{ line: 0, message: 'Arquivo vazio ou sem dados.' }], warnings, separator: ';', encoding, totalLines: 0, totalPartidas: 0 };
+    return {
+      lancamentos: [],
+      errors: [{ line: 0, message: 'Arquivo vazio ou sem dados.' }],
+      warnings,
+      separator: ';',
+      encoding,
+      totalLines: 0,
+      totalPartidas: 0,
+    };
   }
 
   const sep = detectSeparator(lines[0]);
@@ -119,8 +144,19 @@ export async function parseLancamentosCsv(
 
   const missing = HEADER_REQUIRED.filter((c) => colIdx[c] === -1);
   if (missing.length > 0) {
-    errors.push({ line: 1, message: `Colunas obrigatórias faltando: ${missing.join(', ')}. Esperado: ${HEADER_REQUIRED.join(', ')}` });
-    return { lancamentos: [], errors, warnings, separator: sep, encoding, totalLines: lines.length - 1, totalPartidas: 0 };
+    errors.push({
+      line: 1,
+      message: `Colunas obrigatórias faltando: ${missing.join(', ')}. Esperado: ${HEADER_REQUIRED.join(', ')}`,
+    });
+    return {
+      lancamentos: [],
+      errors,
+      warnings,
+      separator: sep,
+      encoding,
+      totalLines: lines.length - 1,
+      totalPartidas: 0,
+    };
   }
 
   // Index plano de contas por código (apenas analíticas usáveis)
@@ -153,33 +189,79 @@ export async function parseLancamentosCsv(
     const conta_codigo = (cols[colIdx.conta_codigo] || '').trim();
     const tipoRaw = (cols[colIdx.tipo] || '').trim().toUpperCase();
     const valor = parseNumber(cols[colIdx.valor]);
-    const hc = colIdx.historico_complementar >= 0 ? (cols[colIdx.historico_complementar] || '').trim() : '';
+    const hc =
+      colIdx.historico_complementar >= 0 ? (cols[colIdx.historico_complementar] || '').trim() : '';
 
     let valid = true;
-    if (!ref) { errors.push({ line: lineNum, message: '`lancamento_ref` vazio' }); valid = false; }
+    if (!ref) {
+      errors.push({ line: lineNum, message: '`lancamento_ref` vazio' });
+      valid = false;
+    }
     const dataIso = parseDate(dataRaw);
-    if (!dataIso) { errors.push({ line: lineNum, ref, message: `Data inválida: "${dataRaw}" (use YYYY-MM-DD ou DD/MM/YYYY)` }); valid = false; }
-    if (!historico) { errors.push({ line: lineNum, ref, message: 'Histórico vazio' }); valid = false; }
-    const tipo: 'D' | 'C' | null = tipoRaw === 'D' || tipoRaw === 'DEBITO' || tipoRaw === 'DÉBITO' ? 'D'
-      : tipoRaw === 'C' || tipoRaw === 'CREDITO' || tipoRaw === 'CRÉDITO' ? 'C' : null;
-    if (!tipo) { errors.push({ line: lineNum, ref, message: `Tipo inválido: "${tipoRaw}" (use D ou C)` }); valid = false; }
-    if (!(valor > 0)) { errors.push({ line: lineNum, ref, message: `Valor inválido: "${cols[colIdx.valor]}"` }); valid = false; }
+    if (!dataIso) {
+      errors.push({
+        line: lineNum,
+        ref,
+        message: `Data inválida: "${dataRaw}" (use YYYY-MM-DD ou DD/MM/YYYY)`,
+      });
+      valid = false;
+    }
+    if (!historico) {
+      errors.push({ line: lineNum, ref, message: 'Histórico vazio' });
+      valid = false;
+    }
+    const tipo: 'D' | 'C' | null =
+      tipoRaw === 'D' || tipoRaw === 'DEBITO' || tipoRaw === 'DÉBITO'
+        ? 'D'
+        : tipoRaw === 'C' || tipoRaw === 'CREDITO' || tipoRaw === 'CRÉDITO'
+          ? 'C'
+          : null;
+    if (!tipo) {
+      errors.push({ line: lineNum, ref, message: `Tipo inválido: "${tipoRaw}" (use D ou C)` });
+      valid = false;
+    }
+    if (!(valor > 0)) {
+      errors.push({ line: lineNum, ref, message: `Valor inválido: "${cols[colIdx.valor]}"` });
+      valid = false;
+    }
 
     let conta: PlanoContaRow | undefined;
     if (conta_codigo) {
       conta = planoMap.get(conta_codigo);
-      if (!conta) { errors.push({ line: lineNum, ref, message: `Conta "${conta_codigo}" não existe no plano da empresa` }); valid = false; }
-      else if (conta.tipo !== 'analitica') {
-        errors.push({ line: lineNum, ref, message: `Conta "${conta_codigo}" é sintética; use uma conta analítica` });
+      if (!conta) {
+        errors.push({
+          line: lineNum,
+          ref,
+          message: `Conta "${conta_codigo}" não existe no plano da empresa`,
+        });
+        valid = false;
+      } else if (conta.tipo !== 'analitica') {
+        errors.push({
+          line: lineNum,
+          ref,
+          message: `Conta "${conta_codigo}" é sintética; use uma conta analítica`,
+        });
         valid = false;
       } else if (conta.ativo === false) {
         warnings.push({ line: lineNum, ref, message: `Conta "${conta_codigo}" está inativa` });
       }
     } else {
-      errors.push({ line: lineNum, ref, message: 'Código da conta vazio' }); valid = false;
+      errors.push({ line: lineNum, ref, message: 'Código da conta vazio' });
+      valid = false;
     }
 
-    rawRows.push({ line: lineNum, ref, data: dataIso, historico, conta_codigo, tipo, valor, historico_complementar: hc || undefined, conta, valid });
+    rawRows.push({
+      line: lineNum,
+      ref,
+      data: dataIso,
+      historico,
+      conta_codigo,
+      tipo,
+      valor,
+      historico_complementar: hc || undefined,
+      conta,
+      valid,
+    });
   }
 
   // Agrupa por ref
@@ -199,12 +281,20 @@ export async function parseLancamentosCsv(
     // Datas divergentes
     const datasUnicas = new Set(validRows.map((r) => r.data!));
     if (datasUnicas.size > 1) {
-      warnings.push({ line: rows[0].line, ref, message: `Datas divergentes no grupo (${[...datasUnicas].join(', ')}); usando a primeira` });
+      warnings.push({
+        line: rows[0].line,
+        ref,
+        message: `Datas divergentes no grupo (${[...datasUnicas].join(', ')}); usando a primeira`,
+      });
     }
     // Históricos divergentes
     const histUnicos = new Set(validRows.map((r) => r.historico));
     if (histUnicos.size > 1) {
-      warnings.push({ line: rows[0].line, ref, message: 'Históricos divergentes no grupo; usando o primeiro' });
+      warnings.push({
+        line: rows[0].line,
+        ref,
+        message: 'Históricos divergentes no grupo; usando o primeiro',
+      });
     }
 
     const partidas: ParsedPartida[] = validRows.map((r) => ({
@@ -221,7 +311,11 @@ export async function parseLancamentosCsv(
     const balanceado = Math.abs(total_debito - total_credito) < 0.01 && total_debito > 0;
 
     if (allValid && partidas.length < 2) {
-      errors.push({ line: rows[0].line, ref, message: `Lançamento "${ref}" tem menos de 2 partidas` });
+      errors.push({
+        line: rows[0].line,
+        ref,
+        message: `Lançamento "${ref}" tem menos de 2 partidas`,
+      });
     }
     if (allValid && partidas.length >= 2 && !balanceado) {
       errors.push({

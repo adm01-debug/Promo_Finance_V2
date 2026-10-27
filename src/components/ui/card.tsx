@@ -1,7 +1,7 @@
-import * as React from "react";
-import { motion, useMotionValue, useSpring, useTransform } from "framer-motion";
+import * as React from 'react';
+import { motion, useMotionValue, useSpring, useTransform } from 'framer-motion';
 
-import { cn } from "@/lib/utils";
+import { cn } from '@/lib/utils';
 
 // CARD BASE
 
@@ -10,67 +10,82 @@ const Card = React.forwardRef<HTMLDivElement, React.HTMLAttributes<HTMLDivElemen
     <div
       ref={ref}
       className={cn(
-        "rounded-xl border border-border bg-card text-card-foreground shadow-sm transition-all duration-200 overflow-hidden", 
+        'rounded-xl border border-border bg-card text-card-foreground shadow-sm transition-all duration-200 overflow-hidden',
 
         className
       )}
       {...props}
     />
-  ),
+  )
 );
-Card.displayName = "Card";
+Card.displayName = 'Card';
 
 const CardHeader = React.forwardRef<HTMLDivElement, React.HTMLAttributes<HTMLDivElement>>(
   ({ className, ...props }, ref) => (
-    <div ref={ref} className={cn("flex flex-col space-y-1.5 p-6", className)} {...props} />
-  ),
+    <div ref={ref} className={cn('flex flex-col space-y-1.5 p-6', className)} {...props} />
+  )
 );
-CardHeader.displayName = "CardHeader";
+CardHeader.displayName = 'CardHeader';
 
 const CardTitle = React.forwardRef<HTMLParagraphElement, React.HTMLAttributes<HTMLHeadingElement>>(
   ({ className, ...props }, ref) => (
-    <h3 ref={ref} className={cn("text-xl font-semibold leading-none tracking-tight", className)} {...props} />
-  ),
+    <h3
+      ref={ref}
+      className={cn('text-xl font-semibold leading-none tracking-tight', className)}
+      {...props}
+    />
+  )
 );
-CardTitle.displayName = "CardTitle";
+CardTitle.displayName = 'CardTitle';
 
-const CardDescription = React.forwardRef<HTMLParagraphElement, React.HTMLAttributes<HTMLParagraphElement>>(
-  ({ className, ...props }, ref) => (
-    <p ref={ref} className={cn("text-sm text-muted-foreground/70 font-medium", className)} {...props} />
-  ),
-);
-CardDescription.displayName = "CardDescription";
+const CardDescription = React.forwardRef<
+  HTMLParagraphElement,
+  React.HTMLAttributes<HTMLParagraphElement>
+>(({ className, ...props }, ref) => (
+  <p
+    ref={ref}
+    className={cn('text-sm text-muted-foreground/70 font-medium', className)}
+    {...props}
+  />
+));
+CardDescription.displayName = 'CardDescription';
 
 const CardContent = React.forwardRef<HTMLDivElement, React.HTMLAttributes<HTMLDivElement>>(
-  ({ className, ...props }, ref) => <div ref={ref} className={cn("p-6 pt-0", className)} {...props} />,
+  ({ className, ...props }, ref) => (
+    <div ref={ref} className={cn('p-6 pt-0', className)} {...props} />
+  )
 );
-CardContent.displayName = "CardContent";
+CardContent.displayName = 'CardContent';
 
 const CardFooter = React.forwardRef<HTMLDivElement, React.HTMLAttributes<HTMLDivElement>>(
   ({ className, ...props }, ref) => (
-    <div ref={ref} className={cn("flex items-center p-4 pt-0 sm:p-6 sm:pt-0", className)} {...props} />
-  ),
+    <div
+      ref={ref}
+      className={cn('flex items-center p-4 pt-0 sm:p-6 sm:pt-0', className)}
+      {...props}
+    />
+  )
 );
-CardFooter.displayName = "CardFooter";
+CardFooter.displayName = 'CardFooter';
 
 // INTERACTIVE CARD - Com hover effects
 
 interface InteractiveCardProps extends React.HTMLAttributes<HTMLDivElement> {
-  hoverEffect?: "lift" | "glow" | "border" | "scale" | "tilt";
+  hoverEffect?: 'lift' | 'glow' | 'border' | 'scale' | 'tilt';
   clickable?: boolean;
 }
 
 const InteractiveCard = React.forwardRef<HTMLDivElement, InteractiveCardProps>(
-  ({ className, hoverEffect = "lift", clickable = true, children, ...props }, ref) => {
+  ({ className, hoverEffect = 'lift', clickable = true, children, ...props }, ref) => {
     const effects = {
-      lift: "hover:-translate-y-1 hover:shadow-lg",
-      glow: "hover:shadow-lg hover:shadow-primary/20 hover:border-primary/50",
-      border: "hover:border-primary",
-      scale: "hover:scale-[1.02]",
-      tilt: "", // Handled by motion
+      lift: 'hover:-translate-y-1 hover:shadow-lg',
+      glow: 'hover:shadow-lg hover:shadow-primary/20 hover:border-primary/50',
+      border: 'hover:border-primary',
+      scale: 'hover:scale-[1.02]',
+      tilt: '', // Handled by motion
     };
 
-    if (hoverEffect === "tilt") {
+    if (hoverEffect === 'tilt') {
       return (
         <TiltCard ref={ref} className={className} clickable={clickable} {...props}>
           {children}
@@ -82,19 +97,19 @@ const InteractiveCard = React.forwardRef<HTMLDivElement, InteractiveCardProps>(
       <div
         ref={ref}
         className={cn(
-          "rounded-lg border bg-card text-card-foreground shadow-sm transition-all duration-300",
+          'rounded-lg border bg-card text-card-foreground shadow-sm transition-all duration-300',
           effects[hoverEffect],
-          clickable && "cursor-pointer",
-          className,
+          clickable && 'cursor-pointer',
+          className
         )}
         {...props}
       >
         {children}
       </div>
     );
-  },
+  }
 );
-InteractiveCard.displayName = "InteractiveCard";
+InteractiveCard.displayName = 'InteractiveCard';
 
 // TILT CARD - Efeito 3D
 
@@ -111,8 +126,16 @@ const TiltCard = React.forwardRef<HTMLDivElement, TiltCardProps>(
     const mouseXSpring = useSpring(x);
     const mouseYSpring = useSpring(y);
 
-    const rotateX = useTransform(mouseYSpring, [-0.5, 0.5], [`${tiltAmount}deg`, `-${tiltAmount}deg`]);
-    const rotateY = useTransform(mouseXSpring, [-0.5, 0.5], [`-${tiltAmount}deg`, `${tiltAmount}deg`]);
+    const rotateX = useTransform(
+      mouseYSpring,
+      [-0.5, 0.5],
+      [`${tiltAmount}deg`, `-${tiltAmount}deg`]
+    );
+    const rotateY = useTransform(
+      mouseXSpring,
+      [-0.5, 0.5],
+      [`-${tiltAmount}deg`, `${tiltAmount}deg`]
+    );
 
     const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
       const rect = e.currentTarget.getBoundingClientRect();
@@ -140,20 +163,20 @@ const TiltCard = React.forwardRef<HTMLDivElement, TiltCardProps>(
         style={{
           rotateY,
           rotateX,
-          transformStyle: "preserve-3d",
+          transformStyle: 'preserve-3d',
         }}
         className={cn(
-          "rounded-lg border bg-card text-card-foreground shadow-sm",
-          clickable && "cursor-pointer",
-          className,
+          'rounded-lg border bg-card text-card-foreground shadow-sm',
+          clickable && 'cursor-pointer',
+          className
         )}
       >
-        <div style={{ transform: "translateZ(20px)" }}>{children}</div>
+        <div style={{ transform: 'translateZ(20px)' }}>{children}</div>
       </motion.div>
     );
-  },
+  }
 );
-TiltCard.displayName = "TiltCard";
+TiltCard.displayName = 'TiltCard';
 
 // FLIP CARD - Cartão com frente e verso
 
@@ -169,7 +192,7 @@ const FlipCard = ({ front, back, className, flipOnHover = true }: FlipCardProps)
 
   return (
     <div
-      className={cn("perspective-1000 cursor-pointer", className)}
+      className={cn('perspective-1000 cursor-pointer', className)}
       onClick={() => !flipOnHover && setIsFlipped(!isFlipped)}
       onMouseEnter={() => flipOnHover && setIsFlipped(true)}
       onMouseLeave={() => flipOnHover && setIsFlipped(false)}
@@ -178,18 +201,18 @@ const FlipCard = ({ front, back, className, flipOnHover = true }: FlipCardProps)
         className="relative w-full h-full"
         initial={false}
         animate={{ rotateY: isFlipped ? 180 : 0 }}
-        transition={{ duration: 0.6, type: "spring", stiffness: 100 }}
-        style={{ transformStyle: "preserve-3d" }}
+        transition={{ duration: 0.6, type: 'spring', stiffness: 100 }}
+        style={{ transformStyle: 'preserve-3d' }}
       >
         <div
           className="absolute inset-0 rounded-lg border bg-card text-card-foreground shadow-sm backface-hidden"
-          style={{ backfaceVisibility: "hidden" }}
+          style={{ backfaceVisibility: 'hidden' }}
         >
           {front}
         </div>
         <div
           className="absolute inset-0 rounded-lg border bg-card text-card-foreground shadow-sm"
-          style={{ backfaceVisibility: "hidden", transform: "rotateY(180deg)" }}
+          style={{ backfaceVisibility: 'hidden', transform: 'rotateY(180deg)' }}
         >
           {back}
         </div>
@@ -201,37 +224,37 @@ const FlipCard = ({ front, back, className, flipOnHover = true }: FlipCardProps)
 // GRADIENT CARD
 
 interface GradientCardProps extends React.HTMLAttributes<HTMLDivElement> {
-  gradient?: "primary" | "success" | "warning" | "danger" | "rainbow";
+  gradient?: 'primary' | 'success' | 'warning' | 'danger' | 'rainbow';
   animated?: boolean;
 }
 
 const GradientCard = React.forwardRef<HTMLDivElement, GradientCardProps>(
-  ({ className, gradient = "primary", animated = false, children, ...props }, ref) => {
+  ({ className, gradient = 'primary', animated = false, children, ...props }, ref) => {
     const gradients = {
-      primary: "from-primary/20 to-primary/5",
-      success: "from-green-500/20 to-green-500/5",
-      warning: "from-yellow-500/20 to-yellow-500/5",
-      danger: "from-destructive/20 to-destructive/5",
-      rainbow: "from-pink-500/20 via-purple-500/20 to-blue-500/20",
+      primary: 'from-primary/20 to-primary/5',
+      success: 'from-green-500/20 to-green-500/5',
+      warning: 'from-yellow-500/20 to-yellow-500/5',
+      danger: 'from-destructive/20 to-destructive/5',
+      rainbow: 'from-pink-500/20 via-purple-500/20 to-blue-500/20',
     };
 
     return (
       <div
         ref={ref}
         className={cn(
-          "rounded-lg border bg-gradient-to-br text-card-foreground shadow-sm",
+          'rounded-lg border bg-gradient-to-br text-card-foreground shadow-sm',
           gradients[gradient],
-          animated && "animate-gradient-x bg-[length:200%_200%]",
-          className,
+          animated && 'animate-gradient-x bg-[length:200%_200%]',
+          className
         )}
         {...props}
       >
         {children}
       </div>
     );
-  },
+  }
 );
-GradientCard.displayName = "GradientCard";
+GradientCard.displayName = 'GradientCard';
 
 // SPOTLIGHT CARD - Efeito de spotlight no hover
 
@@ -240,7 +263,7 @@ interface SpotlightCardProps extends React.HTMLAttributes<HTMLDivElement> {
 }
 
 const SpotlightCard = React.forwardRef<HTMLDivElement, SpotlightCardProps>(
-  ({ className, spotlightColor = "hsl(var(--primary))", children, ...props }, _ref) => {
+  ({ className, spotlightColor = 'hsl(var(--primary))', children, ...props }, _ref) => {
     const divRef = React.useRef<HTMLDivElement>(null);
     const [position, setPosition] = React.useState({ x: 0, y: 0 });
     const [opacity, setOpacity] = React.useState(0);
@@ -258,8 +281,8 @@ const SpotlightCard = React.forwardRef<HTMLDivElement, SpotlightCardProps>(
         onMouseEnter={() => setOpacity(1)}
         onMouseLeave={() => setOpacity(0)}
         className={cn(
-          "relative overflow-hidden rounded-lg border bg-card text-card-foreground shadow-sm",
-          className,
+          'relative overflow-hidden rounded-lg border bg-card text-card-foreground shadow-sm',
+          className
         )}
         {...props}
       >
@@ -273,9 +296,9 @@ const SpotlightCard = React.forwardRef<HTMLDivElement, SpotlightCardProps>(
         {children}
       </div>
     );
-  },
+  }
 );
-SpotlightCard.displayName = "SpotlightCard";
+SpotlightCard.displayName = 'SpotlightCard';
 
 // ANIMATED CARD STACK
 
@@ -288,7 +311,7 @@ const CardStack = ({ cards, className }: CardStackProps) => {
   const [activeIndex, setActiveIndex] = React.useState(0);
 
   return (
-    <div className={cn("relative h-64", className)}>
+    <div className={cn('relative h-64', className)}>
       {cards.map((card, index) => {
         const isActive = index === activeIndex;
         const offset = index - activeIndex;
@@ -305,8 +328,8 @@ const CardStack = ({ cards, className }: CardStackProps) => {
             }}
             onClick={() => setActiveIndex(index)}
             className={cn(
-              "absolute inset-0 rounded-lg border bg-card text-card-foreground shadow-sm cursor-pointer",
-              isActive && "shadow-lg",
+              'absolute inset-0 rounded-lg border bg-card text-card-foreground shadow-sm cursor-pointer',
+              isActive && 'shadow-lg'
             )}
             style={{ originY: 0 }}
           >
@@ -334,7 +357,7 @@ interface StatsCardProps {
 
 const StatsCard = ({ title, value, description, icon, trend, className }: StatsCardProps) => {
   return (
-    <InteractiveCard hoverEffect="lift" className={cn("p-6", className)}>
+    <InteractiveCard hoverEffect="lift" className={cn('p-6', className)}>
       <div className="flex items-start justify-between">
         <div className="space-y-2">
           <p className="text-sm font-medium text-muted-foreground">{title}</p>
@@ -345,28 +368,22 @@ const StatsCard = ({ title, value, description, icon, trend, className }: StatsC
           >
             {value}
           </motion.p>
-          {description && (
-            <p className="text-xs text-muted-foreground">{description}</p>
-          )}
+          {description && <p className="text-xs text-muted-foreground">{description}</p>}
           {trend && (
             <motion.div
               initial={{ opacity: 0, x: -10 }}
               animate={{ opacity: 1, x: 0 }}
               className={cn(
-                "inline-flex items-center gap-1 text-xs font-medium",
-                trend.isPositive ? "text-success" : "text-destructive",
+                'inline-flex items-center gap-1 text-xs font-medium',
+                trend.isPositive ? 'text-success' : 'text-destructive'
               )}
             >
-              <span>{trend.isPositive ? "↑" : "↓"}</span>
+              <span>{trend.isPositive ? '↑' : '↓'}</span>
               <span>{Math.abs(trend.value)}%</span>
             </motion.div>
           )}
         </div>
-        {icon && (
-          <div className="p-2 rounded-full bg-primary/10 text-primary">
-            {icon}
-          </div>
-        )}
+        {icon && <div className="p-2 rounded-full bg-primary/10 text-primary">{icon}</div>}
       </div>
     </InteractiveCard>
   );

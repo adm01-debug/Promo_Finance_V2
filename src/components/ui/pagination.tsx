@@ -73,10 +73,7 @@ export function Pagination({
   const visiblePages = getVisiblePages();
 
   return (
-    <nav
-      className={cn('flex items-center gap-1', className)}
-      aria-label="Pagination"
-    >
+    <nav className={cn('flex items-center gap-1', className)} aria-label="Pagination">
       {/* First page */}
       {showFirstLast && (
         <Button
@@ -109,10 +106,7 @@ export function Pagination({
           {visiblePages.map((page, index) => {
             if (page === 'ellipsis') {
               return (
-                <span
-                  key={`ellipsis-${index}`}
-                  className="px-2 text-muted-foreground"
-                >
+                <span key={`ellipsis-${index}`} className="px-2 text-muted-foreground">
                   ...
                 </span>
               );
@@ -126,10 +120,7 @@ export function Pagination({
                 variant={isActive ? 'default' : 'outline'}
                 size="icon"
                 onClick={() => onPageChange(page)}
-                className={cn(
-                  sizeClasses[size],
-                  isActive && 'pointer-events-none'
-                )}
+                className={cn(sizeClasses[size], isActive && 'pointer-events-none')}
                 aria-label={`Página ${page}`}
                 aria-current={isActive ? 'page' : undefined}
               >
@@ -189,14 +180,11 @@ export function PaginationWithInfo({
   return (
     <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
       <p className="text-sm text-muted-foreground">
-        Mostrando <span className="font-medium text-foreground">{startItem}</span>
-        {' '}-{' '}
-        <span className="font-medium text-foreground">{endItem}</span>
-        {' '}de{' '}
-        <span className="font-medium text-foreground">{totalItems}</span>
-        {' '}resultados
+        Mostrando <span className="font-medium text-foreground">{startItem}</span> -{' '}
+        <span className="font-medium text-foreground">{endItem}</span> de{' '}
+        <span className="font-medium text-foreground">{totalItems}</span> resultados
       </p>
-      
+
       <Pagination
         currentPage={currentPage}
         totalPages={totalPages}
@@ -222,9 +210,7 @@ export function PaginationWithPageSize({
   return (
     <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
       <div className="flex items-center gap-2">
-        <span className="text-sm text-muted-foreground">
-          Itens por página:
-        </span>
+        <span className="text-sm text-muted-foreground">Itens por página:</span>
         <select
           value={pageSize}
           onChange={(e) => onPageSizeChange?.(Number(e.target.value))}
@@ -237,7 +223,7 @@ export function PaginationWithPageSize({
           ))}
         </select>
       </div>
-      
+
       <PaginationWithInfo pageSize={pageSize} {...props} />
     </div>
   );

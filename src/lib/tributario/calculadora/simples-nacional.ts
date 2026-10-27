@@ -1,23 +1,39 @@
 // SIMPLES NACIONAL — reutiliza aliquotas-simples + Fator R
 
 import type { InputSimples, ResultadoRegime, LinhaMemoria, TributoDetalhe } from './types';
-import { ANEXO_I, ANEXO_II, ANEXO_III, ANEXO_IV, ANEXO_V, type FaixaSimples } from '../aliquotas-simples';
+import {
+  ANEXO_I,
+  ANEXO_II,
+  ANEXO_III,
+  ANEXO_IV,
+  ANEXO_V,
+  type FaixaSimples,
+} from '../aliquotas-simples';
 
 const LIMITE_ANUAL = 4_800_000;
 const SUBLIMITE_PADRAO = 3_600_000;
 const FATOR_R_CORTE = 0.28;
 
 const ANEXOS: Record<string, FaixaSimples[]> = {
-  I: ANEXO_I, II: ANEXO_II, III: ANEXO_III, IV: ANEXO_IV, V: ANEXO_V,
+  I: ANEXO_I,
+  II: ANEXO_II,
+  III: ANEXO_III,
+  IV: ANEXO_IV,
+  V: ANEXO_V,
 };
 
 function push(mem: LinhaMemoria[], linha: Omit<LinhaMemoria, 'ordem'>) {
   mem.push({ ordem: mem.length + 1, ...linha });
 }
 
-function calcularAliquotaEfetiva(rbt12: number, faixas: FaixaSimples[]): { aliq: number; faixa: FaixaSimples } {
-  const faixa = faixas.find((f) => rbt12 >= f.rbt12_de && rbt12 <= f.rbt12_ate) ?? faixas[faixas.length - 1];
-  const aliq = rbt12 > 0 ? Math.max(0, (rbt12 * faixa.aliquota - faixa.pd) / rbt12) : faixa.aliquota;
+function calcularAliquotaEfetiva(
+  rbt12: number,
+  faixas: FaixaSimples[]
+): { aliq: number; faixa: FaixaSimples } {
+  const faixa =
+    faixas.find((f) => rbt12 >= f.rbt12_de && rbt12 <= f.rbt12_ate) ?? faixas[faixas.length - 1];
+  const aliq =
+    rbt12 > 0 ? Math.max(0, (rbt12 * faixa.aliquota - faixa.pd) / rbt12) : faixa.aliquota;
   return { aliq, faixa };
 }
 
@@ -28,10 +44,17 @@ export function calcularSimplesNacional(input: InputSimples): ResultadoRegime {
 
   if (input.rbt12 > LIMITE_ANUAL) {
     return {
-      regime: 'simples_nacional', nome: 'Simples Nacional', elegivel: false,
+      regime: 'simples_nacional',
+      nome: 'Simples Nacional',
+      elegivel: false,
       motivoInelegibilidade: `RBT12 > R$ ${LIMITE_ANUAL.toLocaleString('pt-BR')}`,
-      tributos: [], retencoesCompensadas: 0, totalTributos: 0, totalAPagar: 0,
-      receitaBase: receitaBruta, cargaEfetiva: 0, memoria: [],
+      tributos: [],
+      retencoesCompensadas: 0,
+      totalTributos: 0,
+      totalAPagar: 0,
+      receitaBase: receitaBruta,
+      cargaEfetiva: 0,
+      memoria: [],
       alertas: ['Exclusão obrigatória do Simples.'],
     };
   }
@@ -62,14 +85,18 @@ export function calcularSimplesNacional(input: InputSimples): ResultadoRegime {
     valor: 0,
   });
   push(memoria, {
-    grupo: 'Simples', descricao: `Alíquota efetiva`, base: receitaBruta, aliquota: aliq, valor: das,
+    grupo: 'Simples',
+    descricao: `Alíquota efetiva`,
+    base: receitaBruta,
+    aliquota: aliq,
+    valor: das,
   });
 
   // Sublimite estadual — acima disso, ICMS/ISS saem do DAS
   const sublimite = input.ufSublimite ?? SUBLIMITE_PADRAO;
   if (input.rbt12 > sublimite) {
     alertas.push(
-      `RBT12 (R$ ${input.rbt12.toLocaleString('pt-BR')}) > sublimite (R$ ${sublimite.toLocaleString('pt-BR')}): ICMS/ISS fora do DAS — recolher em separado.`,
+      `RBT12 (R$ ${input.rbt12.toLocaleString('pt-BR')}) > sublimite (R$ ${sublimite.toLocaleString('pt-BR')}): ICMS/ISS fora do DAS — recolher em separado.`
     );
   }
   if (input.rbt12 > LIMITE_ANUAL * 0.9) {
@@ -77,15 +104,26 @@ export function calcularSimplesNacional(input: InputSimples): ResultadoRegime {
   }
 
   const tributos: TributoDetalhe[] = [
-    { nome: 'DAS', valor: das, base: receitaBruta, aliquotaEfetiva: aliq, formula: `Anexo ${anexoEfetivo} — [(RBT12 × alíq nominal − PD) / RBT12] × receita` },
+    {
+      nome: 'DAS',
+      valor: das,
+      base: receitaBruta,
+      aliquotaEfetiva: aliq,
+      formula: `Anexo ${anexoEfetivo} — [(RBT12 × alíq nominal − PD) / RBT12] × receita`,
+    },
   ];
 
   return {
-    regime: 'simples_nacional', nome: 'Simples Nacional', elegivel: true,
-    tributos, retencoesCompensadas: 0,
-    totalTributos: das, totalAPagar: das,
+    regime: 'simples_nacional',
+    nome: 'Simples Nacional',
+    elegivel: true,
+    tributos,
+    retencoesCompensadas: 0,
+    totalTributos: das,
+    totalAPagar: das,
     receitaBase: receitaBruta,
     cargaEfetiva: receitaBruta > 0 ? (das / receitaBruta) * 100 : 0,
-    memoria, alertas,
+    memoria,
+    alertas,
   };
 }

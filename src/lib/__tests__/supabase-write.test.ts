@@ -80,13 +80,13 @@ describe('mustSucceed', () => {
   });
 
   it('traduz PGRST204 — o incidente que originou o módulo', async () => {
-    const erro = await mustSucceed(
+    const erro = (await mustSucceed(
       comoBuilder({
         data: null,
         error: erroPg('PGRST204', "Could not find the 'aprovado_em' column"),
       }),
       'registrar o aprovador'
-    ).catch((e: unknown) => e as SupabaseWriteError);
+    ).catch((e: unknown) => e as SupabaseWriteError)) as SupabaseWriteError;
 
     expect(erro).toBeInstanceOf(SupabaseWriteError);
     expect(erro.isSchemaError).toBe(true);
@@ -94,10 +94,10 @@ describe('mustSucceed', () => {
   });
 
   it('classifica bloqueio de RLS como erro de permissão', async () => {
-    const erro = await mustSucceed(
+    const erro = (await mustSucceed(
       comoBuilder({ data: null, error: erroPg('42501') }),
       'inserir a transação'
-    ).catch((e: unknown) => e as SupabaseWriteError);
+    ).catch((e: unknown) => e as SupabaseWriteError)) as SupabaseWriteError;
 
     expect(erro.isPermissionError).toBe(true);
     expect(erro.isSchemaError).toBe(false);
@@ -122,20 +122,20 @@ describe('mustSucceed', () => {
 
 describe('mustSucceed com exigirLinhas', () => {
   it('falha quando o update não atingiu nenhuma linha (array vazio)', async () => {
-    const erro = await mustSucceed(comoBuilder({ data: [], error: null }), 'quitar o acordo', {
+    const erro = (await mustSucceed(comoBuilder({ data: [], error: null }), 'quitar o acordo', {
       exigirLinhas: true,
-    }).catch((e: unknown) => e as SupabaseWriteError);
+    }).catch((e: unknown) => e as SupabaseWriteError)) as SupabaseWriteError;
 
     expect(erro.isNenhumaLinha).toBe(true);
     expect(erro.message).toBe('Falha ao quitar o acordo: nenhuma linha foi afetada.');
   });
 
   it('falha quando count é 0', async () => {
-    const erro = await mustSucceed(
+    const erro = (await mustSucceed(
       comoBuilder({ data: null, error: null, count: 0 }),
       'marcar como recolhido',
       { exigirLinhas: true }
-    ).catch((e: unknown) => e as SupabaseWriteError);
+    ).catch((e: unknown) => e as SupabaseWriteError)) as SupabaseWriteError;
 
     expect(erro.code).toBe('NENHUMA_LINHA');
   });
@@ -158,9 +158,9 @@ describe('mustSucceed com exigirLinhas', () => {
     // Update sem .select() e sem count: não há como saber se atingiu linha.
     // Dar por verificado aqui seria recriar exatamente o fail-open que o
     // módulo existe para eliminar.
-    const erro = await mustSucceed(comoBuilder({ data: null, error: null }), 'conciliar', {
+    const erro = (await mustSucceed(comoBuilder({ data: null, error: null }), 'conciliar', {
       exigirLinhas: true,
-    }).catch((e: unknown) => e as SupabaseWriteError);
+    }).catch((e: unknown) => e as SupabaseWriteError)) as SupabaseWriteError;
 
     expect(erro.code).toBe('CONTAGEM_INDISPONIVEL');
     expect(erro.message).toContain(".select('id')");
@@ -170,11 +170,11 @@ describe('mustSucceed com exigirLinhas', () => {
     // O caso que motivou o número: `update().in('id', [a, b, c])` em que só
     // duas linhas estão no escopo da empresa devolve `error: null` e duas
     // linhas. Sem comparar com o esperado, a terceira fica para trás calada.
-    const erro = await mustSucceed(
+    const erro = (await mustSucceed(
       comoBuilder({ data: [{ id: 'a' }, { id: 'b' }], error: null }),
       'marcar as retenções como recolhidas',
       { exigirLinhas: 3 }
-    ).catch((e: unknown) => e as SupabaseWriteError);
+    ).catch((e: unknown) => e as SupabaseWriteError)) as SupabaseWriteError;
 
     expect(erro.isLinhasParciais).toBe(true);
     expect(erro.message).toBe(
@@ -191,17 +191,17 @@ describe('mustSucceed com exigirLinhas', () => {
   });
 
   it('lote vazio ainda cai em NENHUMA_LINHA, não em parcial', async () => {
-    const erro = await mustSucceed(comoBuilder({ data: [], error: null }), 'marcar retenções', {
+    const erro = (await mustSucceed(comoBuilder({ data: [], error: null }), 'marcar retenções', {
       exigirLinhas: 2,
-    }).catch((e: unknown) => e as SupabaseWriteError);
+    }).catch((e: unknown) => e as SupabaseWriteError)) as SupabaseWriteError;
 
     expect(erro.code).toBe('NENHUMA_LINHA');
   });
 
   it('recusa exigirLinhas: 0 — verificação que não verifica nada é enfeite', async () => {
-    const erro = await mustSucceed(comoBuilder({ data: [], error: null }), 'marcar retenções', {
+    const erro = (await mustSucceed(comoBuilder({ data: [], error: null }), 'marcar retenções', {
       exigirLinhas: 0,
-    }).catch((e: unknown) => e as SupabaseWriteError);
+    }).catch((e: unknown) => e as SupabaseWriteError)) as SupabaseWriteError;
 
     expect(erro.code).toBe('CONTAGEM_INVALIDA');
   });

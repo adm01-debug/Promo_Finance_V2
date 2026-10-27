@@ -7,12 +7,7 @@ export const ROLE_LABEL: Record<AppRole, string> = {
   visualizador: 'Visualizador',
 };
 
-export const ROLE_OPTIONS: AppRole[] = [
-  'admin',
-  'financeiro',
-  'operacional',
-  'visualizador',
-];
+export const ROLE_OPTIONS: AppRole[] = ['admin', 'financeiro', 'operacional', 'visualizador'];
 
 export interface SharedFilterRow {
   id: string;

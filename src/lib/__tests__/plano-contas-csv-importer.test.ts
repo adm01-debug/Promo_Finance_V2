@@ -38,7 +38,7 @@ describe('parsePlanoContasCsv — cabeçalho e formato', () => {
 describe('parsePlanoContasCsv — normalização de valores', () => {
   it('normaliza tipo com acento, plural e maiúsculas', () => {
     const r = parsePlanoContasCsv(
-      `${HEADER}\n4;Receitas;RECEITAS;credora\n5;Custos;Custos;devedora\n3;PL;patrimônio liquido;credora`,
+      `${HEADER}\n4;Receitas;RECEITAS;credora\n5;Custos;Custos;devedora\n3;PL;patrimônio liquido;credora`
     );
     expect(r.contas.map((c) => c.tipo)).toEqual(['patrimonio_liquido', 'receita', 'custo']);
   });
@@ -61,7 +61,7 @@ describe('parsePlanoContasCsv — normalização de valores', () => {
 describe('parsePlanoContasCsv — validação de código', () => {
   it('rejeita código ausente, malformado e duplicado', () => {
     const r = parsePlanoContasCsv(
-      `${HEADER}\n;Sem codigo;ativo;devedora\n1.A;Letra;ativo;devedora\n1;Ativo;ativo;devedora\n1;Repetido;ativo;devedora`,
+      `${HEADER}\n;Sem codigo;ativo;devedora\n1.A;Letra;ativo;devedora\n1;Ativo;ativo;devedora\n1;Repetido;ativo;devedora`
     );
     expect(r.contas).toHaveLength(1);
     expect(r.invalidas).toHaveLength(3);
@@ -95,7 +95,9 @@ describe('parsePlanoContasCsv — hierarquia', () => {
   });
 
   it('ordena por código hierárquico, não alfabeticamente', () => {
-    const r = parsePlanoContasCsv(`${HEADER}\n1.10;Dez;ativo;devedora\n1;Raiz;ativo;devedora\n1.2;Dois;ativo;devedora`);
+    const r = parsePlanoContasCsv(
+      `${HEADER}\n1.10;Dez;ativo;devedora\n1;Raiz;ativo;devedora\n1.2;Dois;ativo;devedora`
+    );
     expect(r.contas.map((c) => c.codigo)).toEqual(['1', '1.2', '1.10']);
   });
 
@@ -113,7 +115,7 @@ describe('parsePlanoContasCsv — hierarquia', () => {
 
   it('respeita aceita_lancamento explícito em contas analíticas', () => {
     const r = parsePlanoContasCsv(
-      `${HEADER};aceita_lancamento\n1;ATIVO;ativo;devedora;sim\n1.1;Caixa;ativo;devedora;nao`,
+      `${HEADER};aceita_lancamento\n1;ATIVO;ativo;devedora;sim\n1.1;Caixa;ativo;devedora;nao`
     );
     // "1" tem filha → forçado a false mesmo declarado "sim"
     expect(r.contas.find((c) => c.codigo === '1')?.aceita_lancamento).toBe(false);

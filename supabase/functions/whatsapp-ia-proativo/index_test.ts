@@ -1,4 +1,8 @@
-import { assertEquals, assertStringIncludes } from 'https://deno.land/std@0.224.0/assert/mod.ts';
+import {
+  assert,
+  assertEquals,
+  assertStringIncludes,
+} from 'https://deno.land/std@0.224.0/assert/mod.ts';
 import { createHandler, type WhatsappIaProativoDependencies } from './index.ts';
 
 type Counters = {
@@ -182,20 +186,23 @@ async function withAuthEnvironment(run: () => Promise<void>): Promise<void> {
   }
 }
 
-Deno.test('whatsapp-ia-proativo: OPTIONS preserva CORS sem autenticar', async () => {
-  const calls = counters();
-  const handler = createHandler(dependencies(calls));
-  const response = await handler(
-    new Request('http://localhost/whatsapp-ia-proativo', { method: 'OPTIONS' })
-  );
+Deno.test(
+  'whatsapp-ia-proativo: OPTIONS preserva CORS sem autenticar e sem segredos no preflight',
+  async () => {
+    const calls = counters();
+    const handler = createHandler(dependencies(calls));
+    const response = await handler(
+      new Request('http://localhost/whatsapp-ia-proativo', { method: 'OPTIONS' })
+    );
 
-  assertEquals(response.status, 200);
-  assertEquals(calls, { ai: 0, auth: 0, client: 0, rateLimit: 0 });
-  assertStringIncludes(
-    response.headers.get('access-control-allow-headers') ?? '',
-    'x-internal-secret'
-  );
-});
+    assertEquals(response.status, 200);
+    assertEquals(calls, { ai: 0, auth: 0, client: 0, rateLimit: 0 });
+    assert(
+      !response.headers.get('access-control-allow-headers')?.includes('x-internal-secret'),
+      'preflight não deve anunciar x-internal-secret'
+    );
+  }
+);
 
 Deno.test('whatsapp-ia-proativo: chamada sem autenticação falha antes de IA e banco', async () => {
   await withAuthEnvironment(async () => {
@@ -260,7 +267,11 @@ Deno.test(
       (await response.json()).whatsapp_link,
       'https://wa.me/5511999999999?text=mensagem%20de%20teste'
     );
-    assertEquals(response.headers.get('access-control-allow-origin'), '*');
+    // A allowlist CORS devolve a origem primária para requisições sem Origin
+    assertEquals(
+      response.headers.get('access-control-allow-origin'),
+      'https://app.promo-finance.com'
+    );
     assertEquals(calls, { ai: 0, auth: 1, client: 1, rateLimit: 1 });
   }
 );

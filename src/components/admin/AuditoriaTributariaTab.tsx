@@ -6,7 +6,13 @@ import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 import { Download, Search, ShieldCheck } from 'lucide-react';
 import { toast } from 'sonner';
 
@@ -61,7 +67,8 @@ export function AuditoriaTributariaTab() {
       if (filtroAcao !== 'todas' && r.acao !== filtroAcao) return false;
       if (filtroEntidade !== 'todas' && r.entidade_tipo !== filtroEntidade) return false;
       if (buscaLower) {
-        const hay = `${r.user_nome ?? ''} ${r.user_email ?? ''} ${r.empresa_nome ?? ''} ${r.entidade_tipo}`.toLowerCase();
+        const hay =
+          `${r.user_nome ?? ''} ${r.user_email ?? ''} ${r.empresa_nome ?? ''} ${r.entidade_tipo}`.toLowerCase();
         if (!hay.includes(buscaLower)) return false;
       }
       return true;

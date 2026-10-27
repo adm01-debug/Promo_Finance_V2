@@ -88,10 +88,10 @@ describe('cálculo de prazos — simulação massiva', () => {
   it('EFD-Contribuições vence no 10º dia útil do 2º mês subsequente', () => {
     const efd = buscarObrigacao('efd_contribuicoes')!;
     expect(calcularPrazo(efd, '2026-01')).toBe(
-      enesimoDiaUtil(2026, 3, 10).toISOString().slice(0, 10),
+      enesimoDiaUtil(2026, 3, 10).toISOString().slice(0, 10)
     );
     expect(calcularPrazo(efd, '2026-11')).toBe(
-      enesimoDiaUtil(2027, 1, 10).toISOString().slice(0, 10),
+      enesimoDiaUtil(2027, 1, 10).toISOString().slice(0, 10)
     );
   });
 
@@ -109,10 +109,10 @@ describe('cálculo de prazos — simulação massiva', () => {
 
   it('ECD e ECF usam último dia útil de maio/julho do ano seguinte', () => {
     expect(calcularPrazo(buscarObrigacao('ecd')!, '2025')).toBe(
-      ultimoDiaUtil(2026, 5).toISOString().slice(0, 10),
+      ultimoDiaUtil(2026, 5).toISOString().slice(0, 10)
     );
     expect(calcularPrazo(buscarObrigacao('ecf')!, '2025')).toBe(
-      ultimoDiaUtil(2026, 7).toISOString().slice(0, 10),
+      ultimoDiaUtil(2026, 7).toISOString().slice(0, 10)
     );
   });
 
@@ -268,9 +268,7 @@ describe('multa por atraso na entrega', () => {
       const atrasoB = atrasoA + 1 + Math.floor(rnd() * 300);
       const prazo = '2026-02-13';
       const entrega = (dias: number) =>
-        new Date(Date.parse(`${prazo}T00:00:00Z`) + dias * 86_400_000)
-          .toISOString()
-          .slice(0, 10);
+        new Date(Date.parse(`${prazo}T00:00:00Z`) + dias * 86_400_000).toISOString().slice(0, 10);
 
       const a = calcularMultaAtraso({
         obrigacaoId: obrigacao.id,
@@ -290,7 +288,7 @@ describe('multa por atraso na entrega', () => {
       expect(a.percentual).toBeLessThanOrEqual(obrigacao.multaTeto);
       if (obrigacao.multaMensal > 0 && base > 0) {
         expect(a.valorDevido).toBeGreaterThanOrEqual(
-          Math.min(obrigacao.multaMinima, obrigacao.multaTeto * base) - 0.01,
+          Math.min(obrigacao.multaMinima, obrigacao.multaTeto * base) - 0.01
         );
       }
       expect(Number.isFinite(a.valorDevido)).toBe(true);
@@ -299,7 +297,11 @@ describe('multa por atraso na entrega', () => {
 
   it('rejeita obrigação inexistente', () => {
     expect(() =>
-      calcularMultaAtraso({ obrigacaoId: 'inexistente', prazo: '2026-01-01', dataEntrega: '2026-02-01' }),
+      calcularMultaAtraso({
+        obrigacaoId: 'inexistente',
+        prazo: '2026-01-01',
+        dataEntrega: '2026-02-01',
+      })
     ).toThrow();
   });
 });

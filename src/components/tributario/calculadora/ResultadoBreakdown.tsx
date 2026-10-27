@@ -32,7 +32,9 @@ export function ResultadoBreakdown({ resultado }: Props) {
         <CardHeader className="pb-3">
           <CardTitle className="flex items-center justify-between text-base">
             {resultado.nome}
-            <Badge variant="outline">{formatPct(resultado.cargaEfetiva / 100, 2)} carga efetiva</Badge>
+            <Badge variant="outline">
+              {formatPct(resultado.cargaEfetiva / 100, 2)} carga efetiva
+            </Badge>
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-3">
@@ -43,30 +45,37 @@ export function ResultadoBreakdown({ resultado }: Props) {
             </div>
             <div className="rounded-md bg-primary/10 p-3">
               <p className="text-xs text-muted-foreground">Total a pagar</p>
-              <p className="text-lg font-semibold text-primary">{formatBRL(resultado.totalAPagar)}</p>
+              <p className="text-lg font-semibold text-primary">
+                {formatBRL(resultado.totalAPagar)}
+              </p>
             </div>
           </div>
           <TooltipProvider delayDuration={100}>
             <div className="space-y-2">
-              {resultado.tributos.filter((t) => t.valor > 0).map((t) => (
-                <div key={t.nome} className="flex items-center justify-between rounded-md border border-border p-2 text-sm">
-                  <div className="flex items-center gap-2">
-                    <span className="font-medium">{t.nome}</span>
-                    <Tooltip>
-                      <TooltipTrigger asChild>
-                        <Info className="h-3 w-3 text-muted-foreground cursor-help" />
-                      </TooltipTrigger>
-                      <TooltipContent side="right">
-                        <p className="text-xs">{t.formula}</p>
-                      </TooltipContent>
-                    </Tooltip>
-                    <span className="text-xs text-muted-foreground">
-                      ({formatPct(t.aliquotaEfetiva)})
-                    </span>
+              {resultado.tributos
+                .filter((t) => t.valor > 0)
+                .map((t) => (
+                  <div
+                    key={t.nome}
+                    className="flex items-center justify-between rounded-md border border-border p-2 text-sm"
+                  >
+                    <div className="flex items-center gap-2">
+                      <span className="font-medium">{t.nome}</span>
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <Info className="h-3 w-3 text-muted-foreground cursor-help" />
+                        </TooltipTrigger>
+                        <TooltipContent side="right">
+                          <p className="text-xs">{t.formula}</p>
+                        </TooltipContent>
+                      </Tooltip>
+                      <span className="text-xs text-muted-foreground">
+                        ({formatPct(t.aliquotaEfetiva)})
+                      </span>
+                    </div>
+                    <span className="tabular-nums">{formatBRL(t.valor)}</span>
                   </div>
-                  <span className="tabular-nums">{formatBRL(t.valor)}</span>
-                </div>
-              ))}
+                ))}
             </div>
           </TooltipProvider>
         </CardContent>
@@ -81,7 +90,9 @@ export function ResultadoBreakdown({ resultado }: Props) {
           </CardHeader>
           <CardContent>
             <ul className="space-y-1 text-xs text-muted-foreground list-disc pl-4">
-              {resultado.alertas.map((a, i) => <li key={i}>{a}</li>)}
+              {resultado.alertas.map((a, i) => (
+                <li key={i}>{a}</li>
+              ))}
             </ul>
           </CardContent>
         </Card>

@@ -22,11 +22,14 @@ export function MatrizCNPJBanco() {
     const bancos = Array.from(bancosSet.entries()).map(([nome, codigo]) => ({ nome, codigo }));
 
     // Build matrix
-    const matrizData: Record<string, Record<string, { saldo: number; receber: number; pagar: number; contas: number }>> = {};
-    
+    const matrizData: Record<
+      string,
+      Record<string, { saldo: number; receber: number; pagar: number; contas: number }>
+    > = {};
+
     empresas.forEach((emp) => {
       matrizData[emp.id] = {};
-      bancos.forEach(b => {
+      bancos.forEach((b) => {
         matrizData[emp.id][b.nome] = { saldo: 0, receber: 0, pagar: 0, contas: 0 };
       });
     });
@@ -40,14 +43,20 @@ export function MatrizCNPJBanco() {
 
     // Totals per bank
     const totaisBanco: Record<string, number> = {};
-    bancos.forEach(b => {
-      totaisBanco[b.nome] = empresas.reduce((s, emp) => s + (matrizData[emp.id]?.[b.nome]?.saldo || 0), 0);
+    bancos.forEach((b) => {
+      totaisBanco[b.nome] = empresas.reduce(
+        (s, emp) => s + (matrizData[emp.id]?.[b.nome]?.saldo || 0),
+        0
+      );
     });
 
     // Totals per empresa
     const totaisEmpresa: Record<string, number> = {};
-    empresas.forEach(emp => {
-      totaisEmpresa[emp.id] = bancos.reduce((s, b) => s + (matrizData[emp.id]?.[b.nome]?.saldo || 0), 0);
+    empresas.forEach((emp) => {
+      totaisEmpresa[emp.id] = bancos.reduce(
+        (s, b) => s + (matrizData[emp.id]?.[b.nome]?.saldo || 0),
+        0
+      );
     });
 
     const totalGeral = Object.values(totaisEmpresa).reduce((s, v) => s + v, 0);
@@ -84,8 +93,11 @@ export function MatrizCNPJBanco() {
               <th className="text-left py-3 px-2 font-semibold text-muted-foreground sticky left-0 bg-card z-10 min-w-[180px]">
                 Empresa / CNPJ
               </th>
-              {bancos.map(b => (
-                <th key={b.nome} className="text-right py-3 px-3 font-semibold text-muted-foreground min-w-[130px]">
+              {bancos.map((b) => (
+                <th
+                  key={b.nome}
+                  className="text-right py-3 px-3 font-semibold text-muted-foreground min-w-[130px]"
+                >
                   <div className="flex flex-col items-end">
                     <span>{b.nome}</span>
                     <span className="text-xs font-normal">{b.codigo}</span>
@@ -99,14 +111,22 @@ export function MatrizCNPJBanco() {
           </thead>
           <tbody>
             {empresas.map((emp, idx) => (
-              <tr key={emp.id} className={cn('border-b border-border/50 hover:bg-muted/30 transition-colors', idx % 2 === 0 && 'bg-muted/10')}>
+              <tr
+                key={emp.id}
+                className={cn(
+                  'border-b border-border/50 hover:bg-muted/30 transition-colors',
+                  idx % 2 === 0 && 'bg-muted/10'
+                )}
+              >
                 <td className="py-3 px-2 sticky left-0 bg-card z-10">
                   <div>
-                    <span className="font-medium text-foreground">{emp.nome_fantasia || emp.razao_social}</span>
+                    <span className="font-medium text-foreground">
+                      {emp.nome_fantasia || emp.razao_social}
+                    </span>
                     <p className="text-xs text-muted-foreground font-mono">{emp.cnpj || '—'}</p>
                   </div>
                 </td>
-                {bancos.map(b => {
+                {bancos.map((b) => {
                   const cell = matrizData[emp.id]?.[b.nome];
                   const hasAccount = cell && cell.contas > 0;
                   return (
@@ -115,7 +135,12 @@ export function MatrizCNPJBanco() {
                         <Tooltip>
                           <TooltipTrigger asChild>
                             <div className="cursor-default">
-                              <span className={cn('font-bold tabular-nums', cell.saldo >= 0 ? 'text-foreground' : 'text-destructive')}>
+                              <span
+                                className={cn(
+                                  'font-bold tabular-nums',
+                                  cell.saldo >= 0 ? 'text-foreground' : 'text-destructive'
+                                )}
+                              >
                                 {formatCurrency(cell.saldo)}
                               </span>
                               <div className="flex items-center justify-end gap-1 mt-0.5">
@@ -137,7 +162,12 @@ export function MatrizCNPJBanco() {
                   );
                 })}
                 <td className="text-right py-3 px-3 border-l border-border">
-                  <span className={cn('font-bold tabular-nums text-base', totaisEmpresa[emp.id] >= 0 ? 'text-primary' : 'text-destructive')}>
+                  <span
+                    className={cn(
+                      'font-bold tabular-nums text-base',
+                      totaisEmpresa[emp.id] >= 0 ? 'text-primary' : 'text-destructive'
+                    )}
+                  >
                     {formatCurrency(totaisEmpresa[emp.id] || 0)}
                   </span>
                 </td>
@@ -149,15 +179,25 @@ export function MatrizCNPJBanco() {
               <td className="py-3 px-2 font-bold text-foreground sticky left-0 bg-muted/20 z-10">
                 Total por Banco
               </td>
-              {bancos.map(b => (
+              {bancos.map((b) => (
                 <td key={b.nome} className="text-right py-3 px-3">
-                  <span className={cn('font-bold tabular-nums', totaisBanco[b.nome] >= 0 ? 'text-foreground' : 'text-destructive')}>
+                  <span
+                    className={cn(
+                      'font-bold tabular-nums',
+                      totaisBanco[b.nome] >= 0 ? 'text-foreground' : 'text-destructive'
+                    )}
+                  >
                     {formatCurrency(totaisBanco[b.nome] || 0)}
                   </span>
                 </td>
               ))}
               <td className="text-right py-3 px-3 border-l border-border">
-                <span className={cn('font-extrabold tabular-nums text-lg', totalGeral >= 0 ? 'text-primary' : 'text-destructive')}>
+                <span
+                  className={cn(
+                    'font-extrabold tabular-nums text-lg',
+                    totalGeral >= 0 ? 'text-primary' : 'text-destructive'
+                  )}
+                >
                   {formatCurrency(totalGeral)}
                 </span>
               </td>

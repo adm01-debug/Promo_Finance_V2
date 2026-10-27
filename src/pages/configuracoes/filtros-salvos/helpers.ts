@@ -7,7 +7,8 @@ export function readLocalState(key?: string): {
   tsIso: string | null;
   status: 'ok' | 'empty' | 'error';
 } {
-  if (!key || typeof window === 'undefined') return { keys: [], ts: null, tsIso: null, status: 'empty' };
+  if (!key || typeof window === 'undefined')
+    return { keys: [], ts: null, tsIso: null, status: 'empty' };
   try {
     const raw = window.localStorage.getItem(key);
     if (!raw) return { keys: [], ts: null, tsIso: null, status: 'empty' };
@@ -28,28 +29,32 @@ export function readLocalState(key?: string): {
  * para reconciliar — quem está mais novo "vence" a próxima hidratação.
  */
 export function computeDivergence(d?: DiagnosticState): Divergence {
-  if (!d || d.remote === 'loading' || d.syncing) return { direction: 'unknown', reason: 'Carregando…' };
+  if (!d || d.remote === 'loading' || d.syncing)
+    return { direction: 'unknown', reason: 'Carregando…' };
   if (d.remote === 'error') return { direction: 'unknown', reason: 'Erro ao ler conta' };
 
   const hasRemote = d.remote === 'ok';
   const hasLocal = d.local === 'ok';
 
   if (!hasRemote && !hasLocal) return { direction: 'none', reason: 'Sem filtros salvos' };
-  if (hasRemote && !hasLocal) return { direction: 'remote-only', reason: 'Existe na conta, ausente neste dispositivo' };
-  if (!hasRemote && hasLocal) return { direction: 'local-only', reason: 'Existe no dispositivo, ausente na conta' };
+  if (hasRemote && !hasLocal)
+    return { direction: 'remote-only', reason: 'Existe na conta, ausente neste dispositivo' };
+  if (!hasRemote && hasLocal)
+    return { direction: 'local-only', reason: 'Existe no dispositivo, ausente na conta' };
 
   const remoteSet = new Set(d.remoteKeys);
   const localSet = new Set(d.localKeys);
-  const sameKeys =
-    remoteSet.size === localSet.size && [...remoteSet].every((k) => localSet.has(k));
+  const sameKeys = remoteSet.size === localSet.size && [...remoteSet].every((k) => localSet.has(k));
 
   const rT = d.remoteUpdatedAtIso ? Date.parse(d.remoteUpdatedAtIso) : NaN;
   const lT = d.localUpdatedAtIso ? Date.parse(d.localUpdatedAtIso) : NaN;
 
   if (Number.isFinite(rT) && Number.isFinite(lT)) {
     const diff = rT - lT;
-    if (Math.abs(diff) < 2000 && sameKeys) return { direction: 'in-sync', reason: 'Conta e dispositivo idênticos' };
-    if (diff > 0) return { direction: 'remote-newer', reason: 'Conta mais recente que dispositivo' };
+    if (Math.abs(diff) < 2000 && sameKeys)
+      return { direction: 'in-sync', reason: 'Conta e dispositivo idênticos' };
+    if (diff > 0)
+      return { direction: 'remote-newer', reason: 'Conta mais recente que dispositivo' };
     if (diff < 0) return { direction: 'local-newer', reason: 'Dispositivo mais recente que conta' };
   }
 

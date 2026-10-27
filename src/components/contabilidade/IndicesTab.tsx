@@ -5,8 +5,12 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 import {
-  DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel,
-  DropdownMenuSeparator, DropdownMenuTrigger,
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { useLocalStorageState } from '@/hooks/useLocalStorageState';
 import { useEmpresas } from '@/hooks/useFinancialData';
@@ -26,13 +30,16 @@ interface Props {
 export function IndicesTab({ empresaId, ano }: Props) {
   const { data: empresas = [] } = useEmpresas();
 
-  const [filters, setFilters] = useLocalStorageState<IndicesFilters>('contabilidade:indices-filtros', {
-    dataInicio: `${ano}-01-01`,
-    dataFim: `${ano}-12-31`,
-    compararAnterior: true,
-    busca: '',
-    serie: ['liquidez_corrente', 'margem_liquida'],
-  });
+  const [filters, setFilters] = useLocalStorageState<IndicesFilters>(
+    'contabilidade:indices-filtros',
+    {
+      dataInicio: `${ano}-01-01`,
+      dataFim: `${ano}-12-31`,
+      compararAnterior: true,
+      busca: '',
+      serie: ['liquidez_corrente', 'margem_liquida'],
+    }
+  );
 
   const setField = <K extends keyof IndicesFilters>(key: K, value: IndicesFilters[K]) =>
     setFilters({ ...filters, [key]: value });
@@ -63,7 +70,7 @@ export function IndicesTab({ empresaId, ano }: Props) {
     const atual = filters.serie;
     setField(
       'serie',
-      atual.includes(chave) ? atual.filter((c) => c !== chave) : [...atual, chave].slice(-3),
+      atual.includes(chave) ? atual.filter((c) => c !== chave) : [...atual, chave].slice(-3)
     );
   };
 
@@ -72,7 +79,11 @@ export function IndicesTab({ empresaId, ano }: Props) {
       toast.warning('Nada para exportar.');
       return;
     }
-    const ctx = { empresa: empresaHeader, dataInicio: filters.dataInicio, dataFim: filters.dataFim };
+    const ctx = {
+      empresa: empresaHeader,
+      dataInicio: filters.dataInicio,
+      dataFim: filters.dataFim,
+    };
     if (formato === 'csv') exportIndicesCSV(indices, data?.anteriores ?? null, ctx);
     else exportIndicesPDF(indices, data?.anteriores ?? null, ctx);
     toast.success(`Índices exportados (${indices.length} indicadores).`);
@@ -158,7 +169,9 @@ export function IndicesTab({ empresaId, ano }: Props) {
       <Card className="rounded-3xl">
         <CardHeader>
           <CardTitle className="text-base">Série histórica mensal</CardTitle>
-          <CardDescription>Até três indicadores simultâneos dentro do período selecionado.</CardDescription>
+          <CardDescription>
+            Até três indicadores simultâneos dentro do período selecionado.
+          </CardDescription>
         </CardHeader>
         <CardContent>
           <IndicesSerieChart

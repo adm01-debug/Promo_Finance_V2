@@ -8,7 +8,7 @@ import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Skeleton } from '@/components/ui/skeleton';
-import { 
+import {
   Table,
   TableBody,
   TableCell,
@@ -16,20 +16,20 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
-import { 
-  DollarSign, 
-  TrendingUp, 
+import {
+  DollarSign,
+  TrendingUp,
   Receipt,
   CheckCircle2,
   Download,
   Plus,
   AlertCircle,
 } from 'lucide-react';
-import { 
-  PieChart, 
-  Pie, 
-  Cell, 
-  ResponsiveContainer, 
+import {
+  PieChart,
+  Pie,
+  Cell,
+  ResponsiveContainer,
   Tooltip,
   BarChart,
   Bar,
@@ -49,12 +49,9 @@ const COLORS = ['hsl(var(--primary))', 'hsl(var(--chart-2))', 'hsl(var(--muted-f
 export function GestorCreditosTributarios() {
   const { data: empresas } = useAllEmpresas();
   const empresaId = empresas?.[0]?.id;
-  
-  const { 
-    creditos, 
-    isLoading, 
-  } = useCreditosTributarios(empresaId);
-  
+
+  const { creditos, isLoading } = useCreditosTributarios(empresaId);
+
   const [filtroTipo, setFiltroTipo] = useState<'todos' | 'CBS' | 'IBS'>('todos');
 
   // Resumo calculado dos créditos reais
@@ -73,8 +70,8 @@ export function GestorCreditosTributarios() {
       };
     }
 
-    const cbsCreditos = creditos.filter(c => c.tipo_tributo === 'CBS');
-    const ibsCreditos = creditos.filter(c => c.tipo_tributo === 'IBS');
+    const cbsCreditos = creditos.filter((c) => c.tipo_tributo === 'CBS');
+    const ibsCreditos = creditos.filter((c) => c.tipo_tributo === 'IBS');
 
     const cbsTotal = cbsCreditos.reduce((acc, c) => acc + Number(c.valor_credito), 0);
     const cbsUtilizado = cbsCreditos.reduce((acc, c) => acc + Number(c.valor_utilizado), 0);
@@ -90,24 +87,27 @@ export function GestorCreditosTributarios() {
       ibsDisponivel: ibsTotal - ibsUtilizado,
       total: cbsTotal + ibsTotal,
       totalUtilizado: cbsUtilizado + ibsUtilizado,
-      totalDisponivel: (cbsTotal - cbsUtilizado) + (ibsTotal - ibsUtilizado),
+      totalDisponivel: cbsTotal - cbsUtilizado + (ibsTotal - ibsUtilizado),
     };
   }, [creditos]);
 
   // Dados para gráfico de pizza
-  const dadosDistribuicao = useMemo(() => [
-    { name: 'CBS Disponível', value: resumo.cbsDisponivel },
-    { name: 'IBS Disponível', value: resumo.ibsDisponivel },
-    { name: 'Utilizados', value: resumo.totalUtilizado },
-  ], [resumo]);
+  const dadosDistribuicao = useMemo(
+    () => [
+      { name: 'CBS Disponível', value: resumo.cbsDisponivel },
+      { name: 'IBS Disponível', value: resumo.ibsDisponivel },
+      { name: 'Utilizados', value: resumo.totalUtilizado },
+    ],
+    [resumo]
+  );
 
   // Dados para gráfico de barras mensal (agrupa créditos por mês)
   const dadosMensal = useMemo(() => {
     if (!creditos || creditos.length === 0) return [];
-    
+
     const porMes: Record<string, { mes: string; cbsCreditos: number; ibsCreditos: number }> = {};
-    
-    creditos.forEach(c => {
+
+    creditos.forEach((c) => {
       const mes = format(parseISO(c.data_origem), 'MMM', { locale: ptBR });
       if (!porMes[mes]) {
         porMes[mes] = { mes, cbsCreditos: 0, ibsCreditos: 0 };
@@ -118,30 +118,42 @@ export function GestorCreditosTributarios() {
         porMes[mes].ibsCreditos += Number(c.valor_credito);
       }
     });
-    
+
     return Object.values(porMes).slice(-6);
   }, [creditos]);
 
   // Filtrar créditos
   const creditosFiltrados = useMemo(() => {
     if (!creditos) return [];
-    return filtroTipo === 'todos' 
-      ? creditos 
-      : creditos.filter(c => c.tipo_tributo === filtroTipo);
+    return filtroTipo === 'todos'
+      ? creditos
+      : creditos.filter((c) => c.tipo_tributo === filtroTipo);
   }, [creditos, filtroTipo]);
 
   const getStatusBadge = (status: string) => {
     switch (status) {
       case 'disponivel':
-        return <Badge variant="default" className="bg-success">Disponível</Badge>;
+        return (
+          <Badge variant="default" className="bg-success">
+            Disponível
+          </Badge>
+        );
       case 'utilizado':
         return <Badge variant="secondary">Utilizado</Badge>;
       case 'expirado':
         return <Badge variant="destructive">Expirado</Badge>;
       case 'estornado':
-        return <Badge variant="outline" className="border-warning text-warning">Estornado</Badge>;
+        return (
+          <Badge variant="outline" className="border-warning text-warning">
+            Estornado
+          </Badge>
+        );
       case 'compensado':
-        return <Badge variant="outline" className="border-primary text-primary">Compensado</Badge>;
+        return (
+          <Badge variant="outline" className="border-primary text-primary">
+            Compensado
+          </Badge>
+        );
       default:
         return <Badge variant="outline">{status}</Badge>;
     }
@@ -151,7 +163,7 @@ export function GestorCreditosTributarios() {
     return (
       <div className="space-y-6">
         <div className="grid gap-4 md:grid-cols-4">
-          {[1, 2, 3, 4].map(i => (
+          {[1, 2, 3, 4].map((i) => (
             <Card key={i}>
               <CardHeader className="pb-2">
                 <Skeleton className="h-4 w-24" />
@@ -192,8 +204,8 @@ export function GestorCreditosTributarios() {
             <div className="text-2xl font-bold text-success">
               {formatCurrency(resumo.totalDisponivel)}
             </div>
-            <Progress 
-              value={resumo.total > 0 ? (resumo.totalDisponivel / resumo.total) * 100 : 0} 
+            <Progress
+              value={resumo.total > 0 ? (resumo.totalDisponivel / resumo.total) * 100 : 0}
               className="mt-2"
             />
           </CardContent>
@@ -209,7 +221,8 @@ export function GestorCreditosTributarios() {
               {formatCurrency(resumo.cbsDisponivel)}
             </div>
             <p className="text-xs text-muted-foreground">
-              {resumo.cbsTotal > 0 ? ((resumo.cbsUtilizado / resumo.cbsTotal) * 100).toFixed(0) : 0}% utilizado
+              {resumo.cbsTotal > 0 ? ((resumo.cbsUtilizado / resumo.cbsTotal) * 100).toFixed(0) : 0}
+              % utilizado
             </p>
           </CardContent>
         </Card>
@@ -224,7 +237,8 @@ export function GestorCreditosTributarios() {
               {formatCurrency(resumo.ibsDisponivel)}
             </div>
             <p className="text-xs text-muted-foreground">
-              {resumo.ibsTotal > 0 ? ((resumo.ibsUtilizado / resumo.ibsTotal) * 100).toFixed(0) : 0}% utilizado
+              {resumo.ibsTotal > 0 ? ((resumo.ibsUtilizado / resumo.ibsTotal) * 100).toFixed(0) : 0}
+              % utilizado
             </p>
           </CardContent>
         </Card>
@@ -246,7 +260,9 @@ export function GestorCreditosTributarios() {
                     cx="50%"
                     cy="50%"
                     labelLine={false}
-                    label={({ name, percent }) => `${name.split(' ')[0]} ${(percent * 100).toFixed(0)}%`}
+                    label={({ name, percent }) =>
+                      `${name.split(' ')[0]} ${(percent * 100).toFixed(0)}%`
+                    }
                     outerRadius={80}
                     dataKey="value"
                   >
@@ -354,7 +370,9 @@ export function GestorCreditosTributarios() {
                       {formatCurrency(credito.valor_utilizado)}
                     </TableCell>
                     <TableCell className="text-right font-medium text-success">
-                      {formatCurrency(Number(credito.valor_credito) - Number(credito.valor_utilizado))}
+                      {formatCurrency(
+                        Number(credito.valor_credito) - Number(credito.valor_utilizado)
+                      )}
                     </TableCell>
                     <TableCell>{getStatusBadge(credito.status)}</TableCell>
                   </TableRow>
@@ -365,7 +383,9 @@ export function GestorCreditosTributarios() {
             <div className="flex flex-col items-center justify-center py-12 text-muted-foreground">
               <Receipt className="h-16 w-16 mb-4 opacity-50" />
               <p className="text-lg font-medium mb-2">Nenhum crédito encontrado</p>
-              <p className="text-sm mb-4">Os créditos serão gerados automaticamente a partir das NF-e de compra</p>
+              <p className="text-sm mb-4">
+                Os créditos serão gerados automaticamente a partir das NF-e de compra
+              </p>
               <Button variant="outline" size="sm">
                 <Plus className="h-4 w-4 mr-2" />
                 Registrar Crédito Manual
@@ -388,7 +408,8 @@ export function GestorCreditosTributarios() {
             <div className="p-4 bg-muted/50 rounded-lg">
               <h4 className="font-medium mb-2">Crédito Integral</h4>
               <p className="text-sm text-muted-foreground">
-                Todo IBS e CBS pago nas aquisições gera crédito, sem restrições por tipo de bem ou serviço.
+                Todo IBS e CBS pago nas aquisições gera crédito, sem restrições por tipo de bem ou
+                serviço.
               </p>
             </div>
             <div className="p-4 bg-muted/50 rounded-lg">

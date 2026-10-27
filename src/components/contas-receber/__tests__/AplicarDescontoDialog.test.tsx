@@ -19,7 +19,9 @@ vi.mock('sonner', () => ({
 }));
 
 const wrapper = ({ children }: { children: React.ReactNode }) => {
-  const qc = new QueryClient({ defaultOptions: { queries: { retry: false }, mutations: { retry: false } } });
+  const qc = new QueryClient({
+    defaultOptions: { queries: { retry: false }, mutations: { retry: false } },
+  });
   return <QueryClientProvider client={qc}>{children}</QueryClientProvider>;
 };
 
@@ -35,29 +37,40 @@ describe('AplicarDescontoDialog', () => {
   // ===== #12: Nota de crédito/desconto =====
   describe('Gap #12 - Aplicar desconto', () => {
     it('renderiza dialog quando open=true', () => {
-      render(<AplicarDescontoDialog conta={conta} open={true} onOpenChange={vi.fn()} />, { wrapper });
+      render(<AplicarDescontoDialog conta={conta} open={true} onOpenChange={vi.fn()} />, {
+        wrapper,
+      });
       expect(screen.getAllByText(/Aplicar Desconto/).length).toBeGreaterThanOrEqual(1);
     });
 
     it('não renderiza quando conta é null', () => {
-      const { container } = render(<AplicarDescontoDialog conta={null} open={true} onOpenChange={vi.fn()} />, { wrapper });
+      const { container } = render(
+        <AplicarDescontoDialog conta={null} open={true} onOpenChange={vi.fn()} />,
+        { wrapper }
+      );
       expect(container.innerHTML).toBe('');
     });
 
     it('exibe informações da conta', () => {
-      render(<AplicarDescontoDialog conta={conta} open={true} onOpenChange={vi.fn()} />, { wrapper });
+      render(<AplicarDescontoDialog conta={conta} open={true} onOpenChange={vi.fn()} />, {
+        wrapper,
+      });
       expect(screen.getByText('Cliente Teste')).toBeInTheDocument();
       expect(screen.getByText(/Serviço mensal/)).toBeInTheDocument();
     });
 
     it('toggle entre valor fixo e percentual', () => {
-      render(<AplicarDescontoDialog conta={conta} open={true} onOpenChange={vi.fn()} />, { wrapper });
+      render(<AplicarDescontoDialog conta={conta} open={true} onOpenChange={vi.fn()} />, {
+        wrapper,
+      });
       expect(screen.getByText('Valor fixo')).toBeInTheDocument();
       expect(screen.getByText('Percentual')).toBeInTheDocument();
     });
 
     it('calcula desconto percentual corretamente', () => {
-      render(<AplicarDescontoDialog conta={conta} open={true} onOpenChange={vi.fn()} />, { wrapper });
+      render(<AplicarDescontoDialog conta={conta} open={true} onOpenChange={vi.fn()} />, {
+        wrapper,
+      });
       fireEvent.click(screen.getByText('Percentual'));
       const input = screen.getByRole('spinbutton');
       fireEvent.change(input, { target: { value: '10' } });
@@ -66,32 +79,42 @@ describe('AplicarDescontoDialog', () => {
     });
 
     it('calcula desconto valor fixo corretamente', () => {
-      render(<AplicarDescontoDialog conta={conta} open={true} onOpenChange={vi.fn()} />, { wrapper });
+      render(<AplicarDescontoDialog conta={conta} open={true} onOpenChange={vi.fn()} />, {
+        wrapper,
+      });
       const input = screen.getByRole('spinbutton');
       fireEvent.change(input, { target: { value: '200' } });
       expect(screen.getByText(/Valor original/)).toBeInTheDocument();
     });
 
     it('exibe preview de desconto e valor final', () => {
-      render(<AplicarDescontoDialog conta={conta} open={true} onOpenChange={vi.fn()} />, { wrapper });
+      render(<AplicarDescontoDialog conta={conta} open={true} onOpenChange={vi.fn()} />, {
+        wrapper,
+      });
       expect(screen.getByText('Valor original')).toBeInTheDocument();
       expect(screen.getByText('Desconto')).toBeInTheDocument();
       expect(screen.getByText('Valor final')).toBeInTheDocument();
     });
 
     it('campo motivo é opcional', () => {
-      render(<AplicarDescontoDialog conta={conta} open={true} onOpenChange={vi.fn()} />, { wrapper });
+      render(<AplicarDescontoDialog conta={conta} open={true} onOpenChange={vi.fn()} />, {
+        wrapper,
+      });
       expect(screen.getByPlaceholderText(/pagamento antecipado/i)).toBeInTheDocument();
     });
 
     it('botão Aplicar desabilitado quando desconto é zero', () => {
-      render(<AplicarDescontoDialog conta={conta} open={true} onOpenChange={vi.fn()} />, { wrapper });
+      render(<AplicarDescontoDialog conta={conta} open={true} onOpenChange={vi.fn()} />, {
+        wrapper,
+      });
       const applyBtn = screen.getByRole('button', { name: /Aplicar Desconto/i });
       expect(applyBtn).toBeDisabled();
     });
 
     it('botão Aplicar habilitado quando desconto > 0', () => {
-      render(<AplicarDescontoDialog conta={conta} open={true} onOpenChange={vi.fn()} />, { wrapper });
+      render(<AplicarDescontoDialog conta={conta} open={true} onOpenChange={vi.fn()} />, {
+        wrapper,
+      });
       const input = screen.getByRole('spinbutton');
       fireEvent.change(input, { target: { value: '50' } });
       const applyBtn = screen.getByRole('button', { name: /Aplicar Desconto/i });
@@ -99,7 +122,9 @@ describe('AplicarDescontoDialog', () => {
     });
 
     it('botão Aplicar desabilitado quando desconto > valor', () => {
-      render(<AplicarDescontoDialog conta={conta} open={true} onOpenChange={vi.fn()} />, { wrapper });
+      render(<AplicarDescontoDialog conta={conta} open={true} onOpenChange={vi.fn()} />, {
+        wrapper,
+      });
       const input = screen.getByRole('spinbutton');
       fireEvent.change(input, { target: { value: '1500' } });
       const applyBtn = screen.getByRole('button', { name: /Aplicar Desconto/i });
@@ -108,7 +133,9 @@ describe('AplicarDescontoDialog', () => {
 
     it('fecha ao clicar cancelar', () => {
       const onOpenChange = vi.fn();
-      render(<AplicarDescontoDialog conta={conta} open={true} onOpenChange={onOpenChange} />, { wrapper });
+      render(<AplicarDescontoDialog conta={conta} open={true} onOpenChange={onOpenChange} />, {
+        wrapper,
+      });
       fireEvent.click(screen.getByText('Cancelar'));
       expect(onOpenChange).toHaveBeenCalledWith(false);
     });

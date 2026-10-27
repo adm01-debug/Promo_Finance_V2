@@ -56,8 +56,14 @@ interface LancamentoInline {
 
 const TOLERANCIA = 0.01;
 
-export function usePreValidacaoSped(empresaId: string | undefined, anoCalendario: number): PreValidacaoResult {
-  const { data: lancs = [], isLoading: loadingLancs } = useLancamentosContabeis(empresaId, anoCalendario);
+export function usePreValidacaoSped(
+  empresaId: string | undefined,
+  anoCalendario: number
+): PreValidacaoResult {
+  const { data: lancs = [], isLoading: loadingLancs } = useLancamentosContabeis(
+    empresaId,
+    anoCalendario
+  );
   // DRE acumulada do exercício (usa mes=11 = dezembro como fim do período).
   const dre = useDemonstrativosContabeis({
     empresaId: empresaId || 'todas',
@@ -146,7 +152,8 @@ export function usePreValidacaoSped(empresaId: string | undefined, anoCalendario
         severidade: 'error',
         categoria: 'razao',
         titulo: `${lancNaoBalanceados} lançamento(s) não balanceado(s)`,
-        detalhe: 'Cada lançamento contábil precisa ter Σ Débitos = Σ Créditos. Corrija antes de transmitir o SPED.',
+        detalhe:
+          'Cada lançamento contábil precisa ter Σ Débitos = Σ Créditos. Corrija antes de transmitir o SPED.',
         valor: lancNaoBalanceados,
       });
     }
@@ -200,7 +207,8 @@ export function usePreValidacaoSped(empresaId: string | undefined, anoCalendario
           severidade: 'warning',
           categoria: 'dre',
           titulo: 'DRE sem receitas no período',
-          detalhe: 'Não foram detectadas contas de receita (tipo=receita ou código 3.x) com movimento. Confirme se a apuração está completa.',
+          detalhe:
+            'Não foram detectadas contas de receita (tipo=receita ou código 3.x) com movimento. Confirme se a apuração está completa.',
         });
       }
 
@@ -260,7 +268,8 @@ export function usePreValidacaoSped(empresaId: string | undefined, anoCalendario
           severidade: 'error',
           categoria: 'cfc',
           titulo: `${cfc.formatoInvalido.length} código(s) referencial(is) com formato inválido`,
-          detalhe: 'Códigos fora do padrão CFC (N.NN.NN.NN[.NNN]) causam rejeição na Receita. Use o botão "Auditar CFC" no Plano de Contas.',
+          detalhe:
+            'Códigos fora do padrão CFC (N.NN.NN.NN[.NNN]) causam rejeição na Receita. Use o botão "Auditar CFC" no Plano de Contas.',
           valor: cfc.formatoInvalido.length,
         });
       }
@@ -270,7 +279,8 @@ export function usePreValidacaoSped(empresaId: string | undefined, anoCalendario
           severidade: 'error',
           categoria: 'cfc',
           titulo: `${cfc.duplicidades.length} código(s) referencial(is) duplicado(s)`,
-          detalhe: 'O mesmo código CFC não pode ser usado em mais de uma conta analítica da mesma empresa.',
+          detalhe:
+            'O mesmo código CFC não pode ser usado em mais de uma conta analítica da mesma empresa.',
           valor: cfc.duplicidades.length,
         });
       }
@@ -280,7 +290,8 @@ export function usePreValidacaoSped(empresaId: string | undefined, anoCalendario
           severidade: 'warning',
           categoria: 'cfc',
           titulo: `${cfc.prefixoIncorreto.length} código(s) com prefixo incompatível com a natureza`,
-          detalhe: 'Ex.: conta de receita com código começando em 1 (ativo). Pode causar inconsistências na ECF.',
+          detalhe:
+            'Ex.: conta de receita com código começando em 1 (ativo). Pode causar inconsistências na ECF.',
         });
       }
       if (cfc.semReferencial > 0) {

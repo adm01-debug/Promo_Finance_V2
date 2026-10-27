@@ -1,19 +1,36 @@
-import { Sparkles, ArrowRight, RefreshCw, Loader2, AlertOctagon, AlertTriangle, Info, CheckCircle2 } from "lucide-react";
-import { Link } from "react-router-dom";
-import { motion } from "framer-motion";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { Skeleton } from "@/components/ui/skeleton";
-import { useAcoesRecomendadas, type AcaoRecomendada } from "@/hooks/useAcoesRecomendadas";
-import { formatCurrency } from "@/lib/formatters";
-import { cn } from "@/lib/utils";
+import {
+  Sparkles,
+  ArrowRight,
+  RefreshCw,
+  Loader2,
+  AlertOctagon,
+  AlertTriangle,
+  Info,
+  CheckCircle2,
+} from 'lucide-react';
+import { Link } from 'react-router-dom';
+import { motion } from 'framer-motion';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
+import { Skeleton } from '@/components/ui/skeleton';
+import { useAcoesRecomendadas, type AcaoRecomendada } from '@/hooks/useAcoesRecomendadas';
+import { formatCurrency } from '@/lib/formatters';
+import { cn } from '@/lib/utils';
 
-const URGENCIA_CONFIG: Record<AcaoRecomendada["urgencia"], { label: string; icon: React.ElementType; variant: "default" | "secondary" | "destructive" | "outline"; color: string }> = {
-  critica: { label: "Crítica", icon: AlertOctagon, variant: "destructive", color: "text-rose-600" },
-  alta: { label: "Alta", icon: AlertTriangle, variant: "destructive", color: "text-rose-600" },
-  media: { label: "Média", icon: Info, variant: "secondary", color: "text-amber-600" },
-  baixa: { label: "Baixa", icon: CheckCircle2, variant: "outline", color: "text-muted-foreground" },
+const URGENCIA_CONFIG: Record<
+  AcaoRecomendada['urgencia'],
+  {
+    label: string;
+    icon: React.ElementType;
+    variant: 'default' | 'secondary' | 'destructive' | 'outline';
+    color: string;
+  }
+> = {
+  critica: { label: 'Crítica', icon: AlertOctagon, variant: 'destructive', color: 'text-rose-600' },
+  alta: { label: 'Alta', icon: AlertTriangle, variant: 'destructive', color: 'text-rose-600' },
+  media: { label: 'Média', icon: Info, variant: 'secondary', color: 'text-amber-600' },
+  baixa: { label: 'Baixa', icon: CheckCircle2, variant: 'outline', color: 'text-muted-foreground' },
 };
 
 interface Props {
@@ -24,7 +41,10 @@ export function CentroAcoesInteligentes({ empresaId }: Props) {
   const { data: acoes, isLoading, regenerar } = useAcoesRecomendadas(empresaId);
 
   return (
-    <Card id="action-matrix" className="border border-border bg-card shadow-sm rounded-xl overflow-hidden group scroll-mt-24">
+    <Card
+      id="action-matrix"
+      className="border border-border bg-card shadow-sm rounded-xl overflow-hidden group scroll-mt-24"
+    >
       <CardHeader className="flex flex-row items-center justify-between gap-6 p-6 pb-4">
         <div className="flex items-center gap-4">
           <div className="h-10 w-10 rounded-lg bg-blue-50 flex items-center justify-center border border-blue-100 text-primary group-hover:scale-105 transition-all">
@@ -77,13 +97,14 @@ export function CentroAcoesInteligentes({ empresaId }: Props) {
             {acoes.map((acao, idx) => {
               const cfg = URGENCIA_CONFIG[acao.urgencia];
               const UrgIcon = cfg.icon;
-              const impactoLabel = acao.impacto_estimado != null
-                ? acao.impacto_tipo === "reais"
-                  ? formatCurrency(acao.impacto_estimado)
-                  : acao.impacto_tipo === "percentual"
-                  ? `${acao.impacto_estimado.toFixed(1)}%`
-                  : `+${acao.impacto_estimado.toFixed(0)} pts`
-                : null;
+              const impactoLabel =
+                acao.impacto_estimado != null
+                  ? acao.impacto_tipo === 'reais'
+                    ? formatCurrency(acao.impacto_estimado)
+                    : acao.impacto_tipo === 'percentual'
+                      ? `${acao.impacto_estimado.toFixed(1)}%`
+                      : `+${acao.impacto_estimado.toFixed(0)} pts`
+                  : null;
 
               return (
                 <motion.li
@@ -95,17 +116,28 @@ export function CentroAcoesInteligentes({ empresaId }: Props) {
                 >
                   <div className="flex items-start justify-between gap-4">
                     <div className="flex items-start gap-3 min-w-0 flex-1">
-                      <div className={cn("p-1.5 rounded-md bg-card border border-border mt-0.5", cfg.color)}>
+                      <div
+                        className={cn(
+                          'p-1.5 rounded-md bg-card border border-border mt-0.5',
+                          cfg.color
+                        )}
+                      >
                         <UrgIcon className="h-3.5 w-3.5" />
                       </div>
                       <div className="min-w-0 flex-1">
                         <div className="flex items-center gap-2 flex-wrap mb-1">
                           <span className="text-sm font-bold text-foreground">{acao.titulo}</span>
-                          <Badge variant={cfg.variant} className="text-[9px] font-bold px-1.5 h-auto rounded-sm border-none uppercase">
+                          <Badge
+                            variant={cfg.variant}
+                            className="text-[9px] font-bold px-1.5 h-auto rounded-sm border-none uppercase"
+                          >
                             {cfg.label}
                           </Badge>
                           {impactoLabel && (
-                            <Badge variant="outline" className="text-[9px] font-bold bg-blue-50 text-primary border-none uppercase">
+                            <Badge
+                              variant="outline"
+                              className="text-[9px] font-bold bg-blue-50 text-primary border-none uppercase"
+                            >
                               {impactoLabel}
                             </Badge>
                           )}
@@ -116,7 +148,11 @@ export function CentroAcoesInteligentes({ empresaId }: Props) {
                       </div>
                     </div>
                     {acao.link_resolucao && (
-                      <Button asChild size="sm" className="h-8 rounded-md bg-primary text-primary-foreground font-bold px-4 text-xs shrink-0">
+                      <Button
+                        asChild
+                        size="sm"
+                        className="h-8 rounded-md bg-primary text-primary-foreground font-bold px-4 text-xs shrink-0"
+                      >
                         <Link to={acao.link_resolucao}>
                           Resolver <ArrowRight className="ml-1.5 h-3 w-3" />
                         </Link>

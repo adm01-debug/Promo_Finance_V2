@@ -32,12 +32,17 @@ export function useManifestarNfe() {
 
   return useMutation<ManifestarResponse, Error, ManifestarPayload>({
     mutationFn: async (payload) => {
-      if (payload.tipo === '210240' && (!payload.justificativa || payload.justificativa.trim().length < 15)) {
-        throw new Error('A justificativa deve ter no mínimo 15 caracteres para Operação Não Realizada.');
+      if (
+        payload.tipo === '210240' &&
+        (!payload.justificativa || payload.justificativa.trim().length < 15)
+      ) {
+        throw new Error(
+          'A justificativa deve ter no mínimo 15 caracteres para Operação Não Realizada.'
+        );
       }
       const { data, error } = await supabase.functions.invoke<ManifestarResponse>(
         'sefaz-manifestar',
-        { body: payload },
+        { body: payload }
       );
       if (error) throw error;
       if (!data) throw new Error('Resposta vazia da SEFAZ.');

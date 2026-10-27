@@ -28,9 +28,15 @@ export default function ConsultaRapidaFiscal() {
               <TabsTrigger value="cnae">CNAE</TabsTrigger>
               <TabsTrigger value="ncm">NCM</TabsTrigger>
             </TabsList>
-            <TabsContent value="uf"><ConsultaUFTab /></TabsContent>
-            <TabsContent value="cnae"><ConsultaCnaeTab /></TabsContent>
-            <TabsContent value="ncm"><ConsultaNcmTab /></TabsContent>
+            <TabsContent value="uf">
+              <ConsultaUFTab />
+            </TabsContent>
+            <TabsContent value="cnae">
+              <ConsultaCnaeTab />
+            </TabsContent>
+            <TabsContent value="ncm">
+              <ConsultaNcmTab />
+            </TabsContent>
           </Tabs>
         </div>
       </div>

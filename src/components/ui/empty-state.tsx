@@ -25,16 +25,16 @@ interface EmptyStateProps {
 function EmptyIllustration({ type }: { type: string }) {
   const illustrations: Record<string, React.ReactNode> = {
     search: (
-      <motion.div 
+      <motion.div
         className="relative"
         initial={{ scale: 0.8, opacity: 0 }}
         animate={{ scale: 1, opacity: 1 }}
         transition={{ type: 'spring', stiffness: 200 }}
       >
         <motion.div
-          animate={{ 
+          animate={{
             rotate: [0, -10, 10, 0],
-            y: [0, -5, 0]
+            y: [0, -5, 0],
           }}
           transition={{ repeat: Infinity, duration: 3, ease: 'easeInOut' }}
           className="relative"
@@ -96,10 +96,7 @@ function EmptyIllustration({ type }: { type: string }) {
       </motion.div>
     ),
     folder: (
-      <motion.div
-        initial={{ scale: 0.8, opacity: 0 }}
-        animate={{ scale: 1, opacity: 1 }}
-      >
+      <motion.div initial={{ scale: 0.8, opacity: 0 }} animate={{ scale: 1, opacity: 1 }}>
         <motion.div
           animate={{ rotateY: [0, 10, 0] }}
           transition={{ repeat: Infinity, duration: 3 }}
@@ -112,14 +109,8 @@ function EmptyIllustration({ type }: { type: string }) {
       </motion.div>
     ),
     inbox: (
-      <motion.div
-        initial={{ scale: 0.8, opacity: 0 }}
-        animate={{ scale: 1, opacity: 1 }}
-      >
-        <motion.div
-          animate={{ y: [0, -5, 0] }}
-          transition={{ repeat: Infinity, duration: 2 }}
-        >
+      <motion.div initial={{ scale: 0.8, opacity: 0 }} animate={{ scale: 1, opacity: 1 }}>
+        <motion.div animate={{ y: [0, -5, 0] }} transition={{ repeat: Infinity, duration: 2 }}>
           <div className="h-16 w-16 rounded-2xl bg-gradient-to-br from-primary/20 to-primary/5 flex items-center justify-center">
             <Inbox className="h-8 w-8 text-primary" />
           </div>
@@ -131,40 +122,33 @@ function EmptyIllustration({ type }: { type: string }) {
   return illustrations[type] || illustrations.empty;
 }
 
-export function EmptyState({ 
-  icon: Icon, 
-  title, 
-  description, 
-  action, 
+export function EmptyState({
+  icon: Icon,
+  title,
+  description,
+  action,
   secondaryAction,
   className,
   variant = 'default',
-  illustration = 'none'
+  illustration = 'none',
 }: EmptyStateProps) {
-  
   if (variant === 'inline') {
     return (
-      <motion.div 
+      <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         className={cn(
-          "flex items-center gap-3 p-4 rounded-lg bg-muted/30 border border-dashed",
+          'flex items-center gap-3 p-4 rounded-lg bg-muted/30 border border-dashed',
           className
         )}
       >
         {Icon && <Icon className="h-5 w-5 text-muted-foreground flex-shrink-0" />}
         <div className="flex-1 min-w-0">
           <p className="text-sm font-medium text-foreground">{title}</p>
-          {description && (
-            <p className="text-xs text-muted-foreground mt-0.5">{description}</p>
-          )}
+          {description && <p className="text-xs text-muted-foreground mt-0.5">{description}</p>}
         </div>
         {action && (
-          <Button 
-            size="sm" 
-            variant={action.variant || 'ghost'}
-            onClick={action.onClick}
-          >
+          <Button size="sm" variant={action.variant || 'ghost'} onClick={action.onClick}>
             {action.label}
           </Button>
         )}
@@ -174,10 +158,10 @@ export function EmptyState({
 
   if (variant === 'compact') {
     return (
-      <motion.div 
+      <motion.div
         initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
-        className={cn("flex flex-col items-center justify-center py-8 px-4 text-center", className)}
+        className={cn('flex flex-col items-center justify-center py-8 px-4 text-center', className)}
       >
         {Icon && (
           <div className="mb-3 p-2 rounded-full bg-muted">
@@ -189,10 +173,10 @@ export function EmptyState({
           <p className="text-xs text-muted-foreground mt-1 max-w-[200px]">{description}</p>
         )}
         {action && (
-          <Button 
-            size="sm" 
+          <Button
+            size="sm"
             variant={action.variant || 'outline'}
-            onClick={action.onClick} 
+            onClick={action.onClick}
             className="mt-3"
           >
             {action.label}
@@ -204,28 +188,30 @@ export function EmptyState({
 
   if (variant === 'card') {
     return (
-      <motion.div 
+      <motion.div
         initial={{ opacity: 0, scale: 0.95 }}
         animate={{ opacity: 1, scale: 1 }}
         className={cn(
-          "flex flex-col items-center justify-center py-12 px-6 text-center rounded-xl border bg-card/50",
+          'flex flex-col items-center justify-center py-12 px-6 text-center rounded-xl border bg-card/50',
           className
         )}
       >
         {illustration !== 'none' ? (
           <EmptyIllustration type={illustration} />
-        ) : Icon && (
-          <motion.div 
-            initial={{ scale: 0 }}
-            animate={{ scale: 1 }}
-            transition={{ type: 'spring', delay: 0.1 }}
-            className="p-4 rounded-full bg-muted"
-          >
-            <Icon className="h-8 w-8 text-muted-foreground" />
-          </motion.div>
+        ) : (
+          Icon && (
+            <motion.div
+              initial={{ scale: 0 }}
+              animate={{ scale: 1 }}
+              transition={{ type: 'spring', delay: 0.1 }}
+              className="p-4 rounded-full bg-muted"
+            >
+              <Icon className="h-8 w-8 text-muted-foreground" />
+            </motion.div>
+          )
         )}
-        
-        <motion.h3 
+
+        <motion.h3
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.15 }}
@@ -233,9 +219,9 @@ export function EmptyState({
         >
           {title}
         </motion.h3>
-        
+
         {description && (
-          <motion.p 
+          <motion.p
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.2 }}
@@ -244,9 +230,9 @@ export function EmptyState({
             {description}
           </motion.p>
         )}
-        
+
         {(action || secondaryAction) && (
-          <motion.div 
+          <motion.div
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.25 }}
@@ -270,25 +256,27 @@ export function EmptyState({
 
   // Default variant
   return (
-    <motion.div 
+    <motion.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
-      className={cn("flex flex-col items-center justify-center py-12 px-4 text-center", className)}
+      className={cn('flex flex-col items-center justify-center py-12 px-4 text-center', className)}
     >
       {illustration !== 'none' ? (
         <EmptyIllustration type={illustration} />
-      ) : Icon && (
-        <motion.div 
-          initial={{ scale: 0 }}
-          animate={{ scale: 1 }}
-          transition={{ type: 'spring', delay: 0.1 }}
-          className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-muted"
-        >
-          <Icon className="h-8 w-8 text-muted-foreground" />
-        </motion.div>
+      ) : (
+        Icon && (
+          <motion.div
+            initial={{ scale: 0 }}
+            animate={{ scale: 1 }}
+            transition={{ type: 'spring', delay: 0.1 }}
+            className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-muted"
+          >
+            <Icon className="h-8 w-8 text-muted-foreground" />
+          </motion.div>
+        )
       )}
-      
-      <motion.h3 
+
+      <motion.h3
         initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.15 }}
@@ -296,9 +284,9 @@ export function EmptyState({
       >
         {title}
       </motion.h3>
-      
+
       {description && (
-        <motion.p 
+        <motion.p
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.2 }}
@@ -307,9 +295,9 @@ export function EmptyState({
           {description}
         </motion.p>
       )}
-      
+
       {(action || secondaryAction) && (
-        <motion.div 
+        <motion.div
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.25 }}
@@ -343,17 +331,21 @@ export function ErrorState({
   title = 'Algo deu errado',
   description = 'Ocorreu um erro ao carregar os dados. Tente novamente.',
   onRetry,
-  className
+  className,
 }: ErrorStateProps) {
   return (
     <EmptyState
       illustration="error"
       title={title}
       description={description}
-      action={onRetry ? {
-        label: 'Tentar novamente',
-        onClick: onRetry,
-      } : undefined}
+      action={
+        onRetry
+          ? {
+              label: 'Tentar novamente',
+              onClick: onRetry,
+            }
+          : undefined
+      }
       variant="card"
       className={className}
     />
@@ -367,21 +359,21 @@ interface NoResultsProps {
   className?: string;
 }
 
-export function NoResults({
-  query,
-  onClear,
-  className
-}: NoResultsProps) {
+export function NoResults({ query, onClear, className }: NoResultsProps) {
   return (
     <EmptyState
       illustration="search"
       title={query ? `Nenhum resultado para "${query}"` : 'Nenhum resultado encontrado'}
       description="Tente ajustar sua busca ou filtros"
-      action={onClear ? {
-        label: 'Limpar busca',
-        onClick: onClear,
-        variant: 'outline'
-      } : undefined}
+      action={
+        onClear
+          ? {
+              label: 'Limpar busca',
+              onClick: onClear,
+              variant: 'outline',
+            }
+          : undefined
+      }
       variant="default"
       className={className}
     />
@@ -402,17 +394,21 @@ export function EmptyTableState({
   description = 'Adicione novos registros para começar.',
   onAdd,
   addLabel = 'Adicionar',
-  className
+  className,
 }: EmptyTableProps) {
   return (
     <EmptyState
       illustration="empty"
       title={title}
       description={description}
-      action={onAdd ? {
-        label: addLabel,
-        onClick: onAdd,
-      } : undefined}
+      action={
+        onAdd
+          ? {
+              label: addLabel,
+              onClick: onAdd,
+            }
+          : undefined
+      }
       variant="compact"
       className={className}
     />
@@ -423,8 +419,12 @@ export function EmptyTableState({
 export function NoDataState({
   title = 'Nenhum dado disponível',
   description = 'Não há dados para exibir no momento.',
-  className
-}: { title?: string; description?: string; className?: string }) {
+  className,
+}: {
+  title?: string;
+  description?: string;
+  className?: string;
+}) {
   return (
     <EmptyState
       illustration="empty"

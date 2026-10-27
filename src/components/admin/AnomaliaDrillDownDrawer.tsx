@@ -1,28 +1,22 @@
-import { useEffect, useState } from "react";
-import {
-  Sheet,
-  SheetContent,
-  SheetHeader,
-  SheetTitle,
-  SheetFooter,
-} from "@/components/ui/sheet";
-import { Button } from "@/components/ui/button";
-import { Skeleton } from "@/components/ui/skeleton";
-import { ExternalLink, X, Microscope, Copy, CheckCheck } from "lucide-react";
-import { Link } from "react-router-dom";
-import { toast } from "sonner";
-import { supabase } from "@/integrations/supabase/client";
-import { useQueryClient } from "@tanstack/react-query";
-import { useAnomaliaDetalhe } from "@/hooks/useAnomaliaDetalhe";
-import { useRefetchAnomaliasOnFocus } from "@/hooks/useRefetchAnomaliasOnFocus";
-import { useAnomaliaPreferences } from "@/hooks/useAnomaliaPreferences";
-import { useLogAudit } from "@/hooks/useAuditLog";
-import { AnomaliaHeader } from "@/components/insights-ia/anomalia/AnomaliaHeader";
-import { EntidadeRelacionadaCard } from "@/components/insights-ia/anomalia/EntidadeRelacionadaCard";
-import { AcoesSugeridasCard } from "@/components/insights-ia/anomalia/AcoesSugeridasCard";
-import { AnomaliaHistoricoSection } from "@/components/admin/AnomaliaHistoricoSection";
-import { AnomaliaBreadcrumb } from "@/components/insights-ia/anomalia/AnomaliaBreadcrumb";
-import { ANOMALIA_DRAWER_EVENT, getEntidadeUrl } from "@/lib/anomalia-routes";
+import { useEffect, useState } from 'react';
+import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetFooter } from '@/components/ui/sheet';
+import { Button } from '@/components/ui/button';
+import { Skeleton } from '@/components/ui/skeleton';
+import { ExternalLink, X, Microscope, Copy, CheckCheck } from 'lucide-react';
+import { Link } from 'react-router-dom';
+import { toast } from 'sonner';
+import { supabase } from '@/integrations/supabase/client';
+import { useQueryClient } from '@tanstack/react-query';
+import { useAnomaliaDetalhe } from '@/hooks/useAnomaliaDetalhe';
+import { useRefetchAnomaliasOnFocus } from '@/hooks/useRefetchAnomaliasOnFocus';
+import { useAnomaliaPreferences } from '@/hooks/useAnomaliaPreferences';
+import { useLogAudit } from '@/hooks/useAuditLog';
+import { AnomaliaHeader } from '@/components/insights-ia/anomalia/AnomaliaHeader';
+import { EntidadeRelacionadaCard } from '@/components/insights-ia/anomalia/EntidadeRelacionadaCard';
+import { AcoesSugeridasCard } from '@/components/insights-ia/anomalia/AcoesSugeridasCard';
+import { AnomaliaHistoricoSection } from '@/components/admin/AnomaliaHistoricoSection';
+import { AnomaliaBreadcrumb } from '@/components/insights-ia/anomalia/AnomaliaBreadcrumb';
+import { ANOMALIA_DRAWER_EVENT, getEntidadeUrl } from '@/lib/anomalia-routes';
 
 /**
  * Lateral drawer that opens via the global `open-anomalia-drawer` event.
@@ -41,29 +35,29 @@ export function AnomaliaDrillDownDrawer() {
   useEffect(() => {
     if (!data?.anomalia) return;
     const a = data.anomalia;
-    if (a.status !== "nova") return;
+    if (a.status !== 'nova') return;
     if (autoPromovidos.has(a.id)) return;
     autoPromovidos.add(a.id);
 
     (async () => {
       const { data: updated, error: err } = await supabase
-        .from("anomalias_detectadas")
-        .update({ status: "investigando" })
-        .eq("id", a.id)
-        .eq("status", "nova")
-        .select("id")
+        .from('anomalias_detectadas')
+        .update({ status: 'investigando' })
+        .eq('id', a.id)
+        .eq('status', 'nova')
+        .select('id')
         .maybeSingle();
       if (err || !updated) return;
       await audit
         .mutateAsync({
-          action: "UPDATE",
-          tableName: "anomalias_detectadas",
+          action: 'UPDATE',
+          tableName: 'anomalias_detectadas',
           recordId: a.id,
-          details: "AUTO_REVIEW_OPEN: status nova → investigando ao abrir drawer",
+          details: 'AUTO_REVIEW_OPEN: status nova → investigando ao abrir drawer',
         })
         .catch(() => undefined);
-      queryClient.invalidateQueries({ queryKey: ["anomalias-detectadas"] });
-      queryClient.invalidateQueries({ queryKey: ["anomalia-detalhe", a.id] });
+      queryClient.invalidateQueries({ queryKey: ['anomalias-detectadas'] });
+      queryClient.invalidateQueries({ queryKey: ['anomalia-detalhe', a.id] });
     })();
   }, [data?.anomalia, audit, queryClient, autoPromovidos]);
 
@@ -73,11 +67,7 @@ export function AnomaliaDrillDownDrawer() {
       if (detail?.id) setOpenId(detail.id);
     }
     window.addEventListener(ANOMALIA_DRAWER_EVENT, handler as EventListener);
-    return () =>
-      window.removeEventListener(
-        ANOMALIA_DRAWER_EVENT,
-        handler as EventListener,
-      );
+    return () => window.removeEventListener(ANOMALIA_DRAWER_EVENT, handler as EventListener);
   }, []);
 
   const close = () => setOpenId(null);
@@ -93,25 +83,25 @@ export function AnomaliaDrillDownDrawer() {
     if (!openId) return;
     try {
       await navigator.clipboard.writeText(openId);
-      toast.success("ID copiado");
+      toast.success('ID copiado');
     } catch {
-      toast.error("Não foi possível copiar");
+      toast.error('Não foi possível copiar');
     }
   };
 
   const handleMarcarLida = async () => {
     if (!openId) return;
     const { error: err } = await supabase
-      .from("anomalias_detectadas")
-      .update({ status: "investigando" })
-      .eq("id", openId)
-      .eq("status", "nova");
+      .from('anomalias_detectadas')
+      .update({ status: 'investigando' })
+      .eq('id', openId)
+      .eq('status', 'nova');
     if (err) {
-      toast.error("Falha ao marcar como lida");
+      toast.error('Falha ao marcar como lida');
       return;
     }
-    toast.success("Marcada como lida");
-    queryClient.invalidateQueries({ queryKey: ["anomalias-detectadas"] });
+    toast.success('Marcada como lida');
+    queryClient.invalidateQueries({ queryKey: ['anomalias-detectadas'] });
   };
 
   return (
@@ -137,10 +127,7 @@ export function AnomaliaDrillDownDrawer() {
             </p>
           ) : (
             <>
-              <AnomaliaBreadcrumb
-                entidadeTipo={data.anomalia.entidade_tipo}
-                onNavigate={close}
-              />
+              <AnomaliaBreadcrumb entidadeTipo={data.anomalia.entidade_tipo} onNavigate={close} />
               <AnomaliaHeader anomalia={data.anomalia} />
               <EntidadeRelacionadaCard entidade={data.entidade} />
               {acoes.abrir_entidade && data.entidade.encontrada && (
@@ -149,7 +136,7 @@ export function AnomaliaDrillDownDrawer() {
                     to={getEntidadeUrl(
                       data.anomalia.entidade_tipo,
                       data.anomalia.entidade_id,
-                      data.anomalia.id,
+                      data.anomalia.id
                     )}
                     onClick={close}
                   >

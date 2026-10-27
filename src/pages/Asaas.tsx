@@ -10,6 +10,7 @@ import { EmptyState } from '@/components/ui/empty-state';
 import { ConfirmationDialog } from '@/components/ui/confirmation-dialog';
 import { CreditCard, Plus } from 'lucide-react';
 import { useAsaas, type AsaasPayment } from '@/hooks/useAsaas';
+import { useUrlTab } from '@/hooks/useUrlTab';
 import { useAllEmpresas } from '@/hooks/useEmpresas';
 import { supabase } from '@/integrations/supabase/client';
 import { NovaCobrancaDialog } from '@/components/asaas/NovaCobrancaDialog';
@@ -39,21 +40,46 @@ import {
   QueueHistoryDialog,
 } from './Asaas.parts';
 
+const ASAAS_TABS = [
+  'cobrancas',
+  'assinaturas',
+  'links',
+  'extrato',
+  'transfers',
+  'webhooks',
+  'fila',
+  'config',
+] as const;
+
 export default function Asaas() {
+  const [tab, setTab] = useUrlTab('cobrancas', ASAAS_TABS);
   const { data: empresas, isLoading: loadingEmpresas } = useAllEmpresas();
   const empresaId = empresas?.[0]?.id;
   const {
-    payments, loadingPayments, stats,
-    cancelarCobranca, consultarSaldo,
-    obterComprovante, auditTrail,
+    payments,
+    loadingPayments,
+    stats,
+    cancelarCobranca,
+    consultarSaldo,
+    obterComprovante,
+    auditTrail,
     detailStats,
-    config, salvarConfig,
-    syncQueue, loadingQueue, reprocessarManual,
-    exportarAuditoria, exportarAuditoriaPDF, queueStats, simularBackoff,
+    config,
+    salvarConfig,
+    syncQueue,
+    loadingQueue,
+    reprocessarManual,
+    exportarAuditoria,
+    exportarAuditoriaPDF,
+    queueStats,
+    simularBackoff,
   } = useAsaas(empresaId);
 
   // Reprocess dialog state (global — shared between Fila e Cobranças)
-  const [reprocessDialog, setReprocessDialog] = useState<{ paymentId: string; asaasId: string } | null>(null);
+  const [reprocessDialog, setReprocessDialog] = useState<{
+    paymentId: string;
+    asaasId: string;
+  } | null>(null);
   const [reprocessReason, setReprocessReason] = useState('');
 
   // Dialog states
@@ -65,13 +91,21 @@ export default function Asaas() {
   const [cancelConfirm, setCancelConfirm] = useState<string | null>(null);
 
   // Payment action dialogs
-  const [pixQrDialog, setPixQrDialog] = useState<{ asaasId: string; pixCola?: string | null; pixQr?: string | null } | null>(null);
-  const [estornoDialog, setEstornoDialog] = useState<{ asaasId: string; valor: number } | null>(null);
+  const [pixQrDialog, setPixQrDialog] = useState<{
+    asaasId: string;
+    pixCola?: string | null;
+    pixQr?: string | null;
+  } | null>(null);
+  const [estornoDialog, setEstornoDialog] = useState<{ asaasId: string; valor: number } | null>(
+    null
+  );
   const [segundaViaDialog, setSegundaViaDialog] = useState<string | null>(null);
   const [selectedPaymentAudit, setSelectedPaymentAudit] = useState<string | null>(null);
   const [selectedBoletoPreview, setSelectedBoletoPreview] = useState<AsaasPayment | null>(null);
   const [selectedAnticipationId, setSelectedAnticipationId] = useState<string | null>(null);
-  const [selectedQueueHistory, setSelectedQueueHistory] = useState<Record<string, unknown>[] | null>(null);
+  const [selectedQueueHistory, setSelectedQueueHistory] = useState<
+    Record<string, unknown>[] | null
+  >(null);
 
   const [saldo, setSaldo] = useState<{ balance: number; totalPending: number } | null>(null);
   const [loadingSaldo, setLoadingSaldo] = useState(false);
@@ -82,14 +116,20 @@ export default function Asaas() {
     try {
       const result = await consultarSaldo.mutateAsync();
       setSaldo(result);
-    } catch { /* handled */ } finally {
+    } catch {
+      /* handled */
+    } finally {
       setLoadingSaldo(false);
     }
   };
 
   const handleCancelar = async () => {
     if (!cancelConfirm) return;
-    try { await cancelarCobranca.mutateAsync(cancelConfirm); } catch { /* handled */ }
+    try {
+      await cancelarCobranca.mutateAsync(cancelConfirm);
+    } catch {
+      /* handled */
+    }
     setCancelConfirm(null);
   };
 
@@ -108,7 +148,9 @@ export default function Asaas() {
 
   const handleReprocessar = async () => {
     if (!reprocessDialog) return;
-    const { data: { user } } = await supabase.auth.getUser();
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
     if (!user) {
       toast.error('Usuário não autenticado');
       return;
@@ -121,7 +163,9 @@ export default function Asaas() {
       });
       setReprocessDialog(null);
       setReprocessReason('');
-    } catch { /* handled */ }
+    } catch {
+      /* handled */
+    }
   };
 
   if (loadingEmpresas) {
@@ -130,7 +174,9 @@ export default function Asaas() {
         <div className="space-y-6">
           <Skeleton className="h-8 w-64" />
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-            {[1, 2, 3, 4].map(i => <Skeleton key={i} className="h-24" />)}
+            {[1, 2, 3, 4].map((i) => (
+              <Skeleton key={i} className="h-24" />
+            ))}
           </div>
         </div>
       </MainLayout>
@@ -140,7 +186,11 @@ export default function Asaas() {
   if (!empresaId) {
     return (
       <MainLayout>
-        <EmptyState icon={CreditCard} title="Nenhuma empresa cadastrada" description="Cadastre uma empresa antes de emitir cobranças ASAAS" />
+        <EmptyState
+          icon={CreditCard}
+          title="Nenhuma empresa cadastrada"
+          description="Cadastre uma empresa antes de emitir cobranças ASAAS"
+        />
       </MainLayout>
     );
   }
@@ -165,7 +215,7 @@ export default function Asaas() {
         </div>
 
         {/* Main Tabs */}
-        <Tabs defaultValue="cobrancas" className="space-y-4">
+        <Tabs value={tab} onValueChange={setTab} className="space-y-4">
           <TabsList>
             <TabsTrigger value="cobrancas">Cobranças</TabsTrigger>
             <TabsTrigger value="assinaturas">Assinaturas</TabsTrigger>
@@ -247,10 +297,32 @@ export default function Asaas() {
 
       {/* Dialogs */}
       <NovaCobrancaDialog open={dialogOpen} onOpenChange={setDialogOpen} empresaId={empresaId} />
-      <TransferenciaPixDialog open={pixTransferOpen} onOpenChange={setPixTransferOpen} empresaId={empresaId} />
-      <ClientesAsaasDialog open={clientesOpen} onOpenChange={setClientesOpen} empresaId={empresaId} />
-      <AssinaturaDialog open={assinaturaOpen} onOpenChange={(v) => { setAssinaturaOpen(v); if (!v) setRefreshKey(k => k + 1); }} empresaId={empresaId} />
-      <LinkPagamentoDialog open={linkPagamentoOpen} onOpenChange={(v) => { setLinkPagamentoOpen(v); if (!v) setRefreshKey(k => k + 1); }} empresaId={empresaId} />
+      <TransferenciaPixDialog
+        open={pixTransferOpen}
+        onOpenChange={setPixTransferOpen}
+        empresaId={empresaId}
+      />
+      <ClientesAsaasDialog
+        open={clientesOpen}
+        onOpenChange={setClientesOpen}
+        empresaId={empresaId}
+      />
+      <AssinaturaDialog
+        open={assinaturaOpen}
+        onOpenChange={(v) => {
+          setAssinaturaOpen(v);
+          if (!v) setRefreshKey((k) => k + 1);
+        }}
+        empresaId={empresaId}
+      />
+      <LinkPagamentoDialog
+        open={linkPagamentoOpen}
+        onOpenChange={(v) => {
+          setLinkPagamentoOpen(v);
+          if (!v) setRefreshKey((k) => k + 1);
+        }}
+        empresaId={empresaId}
+      />
 
       <AuditTrailDialog
         isOpen={!!selectedPaymentAudit}

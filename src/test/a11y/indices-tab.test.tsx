@@ -31,9 +31,7 @@ const indices = calcularIndices({
 
 describe('A11y — aba Índices contábeis', () => {
   it('grade de indicadores não possui violações', async () => {
-    const { container } = render(
-      <IndicesGrid indices={indices} anteriores={null} busca="" />,
-    );
+    const { container } = render(<IndicesGrid indices={indices} anteriores={null} busca="" />);
     const results = await axe(container, axeConfig);
     expect(results).toHaveNoViolations();
   });
@@ -50,7 +48,7 @@ describe('A11y — aba Índices contábeis', () => {
         }}
         setField={() => undefined}
         countLabel="20 de 21 com base contábil"
-      />,
+      />
     );
     const results = await axe(container, axeConfig);
     expect(results).toHaveNoViolations();

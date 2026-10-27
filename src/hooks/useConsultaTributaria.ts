@@ -2,7 +2,6 @@ import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { chaveConsulta, lerConsulta, salvarConsulta } from '@/lib/offline/fiscal-cache';
 
-
 /** Estratégia de correspondência devolvida pelo endpoint (exata ou fallback). */
 export interface MatchInfo {
   estrategia: string;
@@ -136,14 +135,17 @@ export function useConsultaTributaria<T>(params: ConsultaParams | null, enabled 
   });
 }
 
-
-export const useConsultaUF = (uf?: string, extras?: { uf_destino?: string; categoria?: string; municipio?: number }) =>
-  useConsultaTributaria<ConsultaUFResult>(uf ? { recurso: 'uf', uf, ...extras } : null);
+export const useConsultaUF = (
+  uf?: string,
+  extras?: { uf_destino?: string; categoria?: string; municipio?: number }
+) => useConsultaTributaria<ConsultaUFResult>(uf ? { recurso: 'uf', uf, ...extras } : null);
 
 export const useConsultaCNAE = (codigo?: string) =>
-  useConsultaTributaria<ConsultaCNAEResult>(codigo && codigo.length >= 2 ? { recurso: 'cnae', codigo } : null);
+  useConsultaTributaria<ConsultaCNAEResult>(
+    codigo && codigo.length >= 2 ? { recurso: 'cnae', codigo } : null
+  );
 
 export const useConsultaNCM = (
   codigo?: string,
-  extras?: { uf?: string; uf_destino?: string; monofasico?: boolean; st?: boolean; limite?: number },
+  extras?: { uf?: string; uf_destino?: string; monofasico?: boolean; st?: boolean; limite?: number }
 ) => useConsultaTributaria<ConsultaNCMResult>({ recurso: 'ncm', codigo, ...extras });

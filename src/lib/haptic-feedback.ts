@@ -1,6 +1,6 @@
 /**
  * Haptic Feedback - Touch feedback for mobile devices
- * 
+ *
  * Provides haptic/vibration feedback for touch interactions
  */
 
@@ -25,7 +25,7 @@ const patterns: Record<HapticPattern, number | number[]> = {
  */
 export function haptic(pattern: HapticPattern = 'light'): void {
   if (!supportsVibration) return;
-  
+
   try {
     navigator.vibrate(patterns[pattern]);
   } catch (_error: unknown) {
@@ -38,7 +38,7 @@ export function haptic(pattern: HapticPattern = 'light'): void {
  */
 export function stopHaptic(): void {
   if (!supportsVibration) return;
-  
+
   try {
     navigator.vibrate(0);
   } catch (_error: unknown) {

@@ -11,10 +11,10 @@ export default function RelatoriosContabeisPage() {
     <MainLayout>
       <div className="relative min-h-screen">
         <PageBackground />
-        
+
         <div className="container mx-auto p-6 relative z-10">
-          <PageHeader 
-            title="Relatórios Contábeis" 
+          <PageHeader
+            title="Relatórios Contábeis"
             subtitle="Demonstrativos de resultados, balancetes e fluxos de caixa com visão tributária."
             badge="Business Intelligence"
             icon={FileBarChart}
@@ -22,7 +22,7 @@ export default function RelatoriosContabeisPage() {
             gradientVia="via-primary"
             gradientTo="to-blue-500"
           />
-          
+
           <RelatoriosContabeisTributarios empresaId={currentEmpresaId || ''} />
         </div>
       </div>

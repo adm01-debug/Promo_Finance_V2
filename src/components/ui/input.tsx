@@ -1,52 +1,55 @@
-import * as React from "react";
-import { motion, AnimatePresence } from "framer-motion";
-import { Eye, EyeOff, Search, X, Check, AlertCircle, Loader2 } from "lucide-react";
+import * as React from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { Eye, EyeOff, Search, X, Check, AlertCircle, Loader2 } from 'lucide-react';
 
-import { cn } from "@/lib/utils";
+import { cn } from '@/lib/utils';
 
-export interface InputProps extends React.ComponentProps<"input"> {
-  variant?: "default" | "filled" | "underline";
-  inputSize?: "sm" | "md" | "lg";
+export interface InputProps extends React.ComponentProps<'input'> {
+  variant?: 'default' | 'filled' | 'underline';
+  inputSize?: 'sm' | 'md' | 'lg';
   error?: boolean;
   success?: boolean;
 }
 
 const Input = React.forwardRef<HTMLInputElement, InputProps>(
-  ({ className, type, variant = "default", inputSize = "md", error, success, ...props }, ref) => {
+  ({ className, type, variant = 'default', inputSize = 'md', error, success, ...props }, ref) => {
     const variants = {
-      default: "border border-white/20 bg-card/50 backdrop-blur-sm rounded-xl shadow-sm focus-within:bg-background focus-within:border-primary/40 focus-within:ring-4 focus-within:ring-primary/5 transition-all duration-300 dark:bg-zinc-900/50 dark:border-white/5",
-      filled: "border-0 bg-muted/30 rounded-xl hover:bg-muted/50 focus-within:bg-background/80 shadow-inner transition-all",
-      underline: "border-0 border-b-2 border-white/10 rounded-none bg-transparent px-0 focus-within:border-primary transition-all duration-300",
+      default:
+        'border border-white/20 bg-card/50 backdrop-blur-sm rounded-xl shadow-sm focus-within:bg-background focus-within:border-primary/40 focus-within:ring-4 focus-within:ring-primary/5 transition-all duration-300 dark:bg-zinc-900/50 dark:border-white/5',
+      filled:
+        'border-0 bg-muted/30 rounded-xl hover:bg-muted/50 focus-within:bg-background/80 shadow-inner transition-all',
+      underline:
+        'border-0 border-b-2 border-white/10 rounded-none bg-transparent px-0 focus-within:border-primary transition-all duration-300',
     };
 
     const sizes = {
-      sm: "h-9 text-xs px-3",
-      md: "h-12 text-sm px-4",
-      lg: "h-14 text-base px-6",
+      sm: 'h-9 text-xs px-3',
+      md: 'h-12 text-sm px-4',
+      lg: 'h-14 text-base px-6',
     };
 
     return (
       <input
         type={type}
         className={cn(
-          "flex w-full py-2 ring-offset-background transition-all duration-200",
-          "file:border-0 file:bg-transparent file:text-sm file:font-medium file:text-foreground",
-          "placeholder:text-muted-foreground",
-          "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
-          "disabled:cursor-not-allowed disabled:opacity-50",
+          'flex w-full py-2 ring-offset-background transition-all duration-200',
+          'file:border-0 file:bg-transparent file:text-sm file:font-medium file:text-foreground',
+          'placeholder:text-muted-foreground',
+          'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2',
+          'disabled:cursor-not-allowed disabled:opacity-50',
           variants[variant],
           sizes[inputSize],
-          error && "border-destructive focus-visible:ring-destructive",
-          success && "border-success focus-visible:ring-success",
-          className,
+          error && 'border-destructive focus-visible:ring-destructive',
+          success && 'border-success focus-visible:ring-success',
+          className
         )}
         ref={ref}
         {...props}
       />
     );
-  },
+  }
 );
-Input.displayName = "Input";
+Input.displayName = 'Input';
 
 // FLOATING LABEL INPUT
 
@@ -77,7 +80,7 @@ const FloatingLabelInput = React.forwardRef<HTMLInputElement, FloatingLabelInput
         <Input
           id={id}
           ref={ref}
-          className={cn("peer pt-5", className)}
+          className={cn('peer pt-5', className)}
           onFocus={handleFocus}
           onBlur={handleBlur}
           onChange={handleChange}
@@ -91,29 +94,31 @@ const FloatingLabelInput = React.forwardRef<HTMLInputElement, FloatingLabelInput
           animate={{
             y: isFloating ? -8 : 0,
             scale: isFloating ? 0.75 : 1,
-            color: isFocused 
-              ? error ? "hsl(var(--destructive))" 
-              : success ? "hsl(var(--success))" 
-              : "hsl(var(--primary))"
-              : "hsl(var(--muted-foreground))",
+            color: isFocused
+              ? error
+                ? 'hsl(var(--destructive))'
+                : success
+                  ? 'hsl(var(--success))'
+                  : 'hsl(var(--primary))'
+              : 'hsl(var(--muted-foreground))',
           }}
           transition={{ duration: 0.2 }}
           className={cn(
-            "absolute left-3 top-1/2 -translate-y-1/2 origin-left pointer-events-none",
-            "text-sm transition-colors",
+            'absolute left-3 top-1/2 -translate-y-1/2 origin-left pointer-events-none',
+            'text-sm transition-colors'
           )}
         >
           {label}
         </motion.label>
       </div>
     );
-  },
+  }
 );
-FloatingLabelInput.displayName = "FloatingLabelInput";
+FloatingLabelInput.displayName = 'FloatingLabelInput';
 
 // PASSWORD INPUT
 
-interface PasswordInputProps extends Omit<InputProps, "type"> {
+interface PasswordInputProps extends Omit<InputProps, 'type'> {
   showStrength?: boolean;
 }
 
@@ -139,15 +144,21 @@ const PasswordInput = React.forwardRef<HTMLInputElement, PasswordInputProps>(
       props.onChange?.(e);
     };
 
-    const strengthColors = ["bg-destructive", "bg-warning", "bg-warning", "bg-success/70", "bg-success"];
-    const strengthLabels = ["Muito fraca", "Fraca", "Média", "Forte", "Muito forte"];
+    const strengthColors = [
+      'bg-destructive',
+      'bg-warning',
+      'bg-warning',
+      'bg-success/70',
+      'bg-success',
+    ];
+    const strengthLabels = ['Muito fraca', 'Fraca', 'Média', 'Forte', 'Muito forte'];
 
     return (
       <div className="space-y-2">
         <div className="relative">
           <Input
-            type={showPassword ? "text" : "password"}
-            className={cn("pr-10", className)}
+            type={showPassword ? 'text' : 'password'}
+            className={cn('pr-10', className)}
             ref={ref}
             onChange={handleChange}
             {...props}
@@ -159,7 +170,7 @@ const PasswordInput = React.forwardRef<HTMLInputElement, PasswordInputProps>(
           >
             <AnimatePresence mode="wait" initial={false}>
               <motion.div
-                key={showPassword ? "eye-off" : "eye"}
+                key={showPassword ? 'eye-off' : 'eye'}
                 initial={{ opacity: 0, scale: 0.8 }}
                 animate={{ opacity: 1, scale: 1 }}
                 exit={{ opacity: 0, scale: 0.8 }}
@@ -173,7 +184,7 @@ const PasswordInput = React.forwardRef<HTMLInputElement, PasswordInputProps>(
         {showStrength && props.value && (
           <motion.div
             initial={{ opacity: 0, height: 0 }}
-            animate={{ opacity: 1, height: "auto" }}
+            animate={{ opacity: 1, height: 'auto' }}
             exit={{ opacity: 0, height: 0 }}
             className="space-y-1"
           >
@@ -182,8 +193,8 @@ const PasswordInput = React.forwardRef<HTMLInputElement, PasswordInputProps>(
                 <motion.div
                   key={i}
                   className={cn(
-                    "h-1 flex-1 rounded-full bg-muted",
-                    i < strength && strengthColors[strength - 1],
+                    'h-1 flex-1 rounded-full bg-muted',
+                    i < strength && strengthColors[strength - 1]
                   )}
                   initial={{ scaleX: 0 }}
                   animate={{ scaleX: i < strength ? 1 : 0.5 }}
@@ -192,19 +203,19 @@ const PasswordInput = React.forwardRef<HTMLInputElement, PasswordInputProps>(
               ))}
             </div>
             <p className="text-xs text-muted-foreground">
-              {strength > 0 ? strengthLabels[strength - 1] : "Digite uma senha"}
+              {strength > 0 ? strengthLabels[strength - 1] : 'Digite uma senha'}
             </p>
           </motion.div>
         )}
       </div>
     );
-  },
+  }
 );
-PasswordInput.displayName = "PasswordInput";
+PasswordInput.displayName = 'PasswordInput';
 
 // SEARCH INPUT
 
-interface SearchInputProps extends Omit<InputProps, "type"> {
+interface SearchInputProps extends Omit<InputProps, 'type'> {
   onClear?: () => void;
   loading?: boolean;
 }
@@ -218,7 +229,7 @@ const SearchInput = React.forwardRef<HTMLInputElement, SearchInputProps>(
         <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
         <Input
           type="search"
-          className={cn("pl-10 pr-10", className)}
+          className={cn('pl-10 pr-10', className)}
           ref={ref}
           value={value}
           {...props}
@@ -233,29 +244,25 @@ const SearchInput = React.forwardRef<HTMLInputElement, SearchInputProps>(
               onClick={loading ? undefined : onClear}
               className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
             >
-              {loading ? (
-                <Loader2 className="h-4 w-4 animate-spin" />
-              ) : (
-                <X className="h-4 w-4" />
-              )}
+              {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : <X className="h-4 w-4" />}
             </motion.button>
           )}
         </AnimatePresence>
       </div>
     );
-  },
+  }
 );
-SearchInput.displayName = "SearchInput";
+SearchInput.displayName = 'SearchInput';
 
 // INPUT WITH VALIDATION
 
 interface ValidatedInputProps extends InputProps {
-  validationState?: "idle" | "validating" | "valid" | "invalid";
+  validationState?: 'idle' | 'validating' | 'valid' | 'invalid';
   validationMessage?: string;
 }
 
 const ValidatedInput = React.forwardRef<HTMLInputElement, ValidatedInputProps>(
-  ({ className, validationState = "idle", validationMessage, ...props }, ref) => {
+  ({ className, validationState = 'idle', validationMessage, ...props }, ref) => {
     const icons = {
       idle: null,
       validating: <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />,
@@ -267,10 +274,10 @@ const ValidatedInput = React.forwardRef<HTMLInputElement, ValidatedInputProps>(
       <div className="space-y-1">
         <div className="relative">
           <Input
-            className={cn("pr-10", className)}
+            className={cn('pr-10', className)}
             ref={ref}
-            error={validationState === "invalid"}
-            success={validationState === "valid"}
+            error={validationState === 'invalid'}
+            success={validationState === 'valid'}
             {...props}
           />
           <AnimatePresence mode="wait">
@@ -288,15 +295,15 @@ const ValidatedInput = React.forwardRef<HTMLInputElement, ValidatedInputProps>(
           </AnimatePresence>
         </div>
         <AnimatePresence>
-          {validationMessage && validationState !== "idle" && (
+          {validationMessage && validationState !== 'idle' && (
             <motion.p
               initial={{ opacity: 0, y: -5, height: 0 }}
-              animate={{ opacity: 1, y: 0, height: "auto" }}
+              animate={{ opacity: 1, y: 0, height: 'auto' }}
               exit={{ opacity: 0, y: -5, height: 0 }}
               className={cn(
-                "text-xs",
-                validationState === "invalid" && "text-destructive",
-                validationState === "valid" && "text-success",
+                'text-xs',
+                validationState === 'invalid' && 'text-destructive',
+                validationState === 'valid' && 'text-success'
               )}
             >
               {validationMessage}
@@ -305,9 +312,9 @@ const ValidatedInput = React.forwardRef<HTMLInputElement, ValidatedInputProps>(
         </AnimatePresence>
       </div>
     );
-  },
+  }
 );
-ValidatedInput.displayName = "ValidatedInput";
+ValidatedInput.displayName = 'ValidatedInput';
 
 // INPUT GROUP
 
@@ -318,7 +325,7 @@ interface InputGroupProps {
 
 const InputGroup = ({ children, className }: InputGroupProps) => {
   return (
-    <div className={cn("flex", className)}>
+    <div className={cn('flex', className)}>
       {React.Children.map(children, (child, index) => {
         if (!React.isValidElement(child)) return child;
         const isFirst = index === 0;
@@ -326,8 +333,8 @@ const InputGroup = ({ children, className }: InputGroupProps) => {
         return React.cloneElement(child as React.ReactElement<{ className?: string }>, {
           className: cn(
             (child as React.ReactElement<{ className?: string }>).props.className,
-            !isFirst && "rounded-l-none border-l-0",
-            !isLast && "rounded-r-none",
+            !isFirst && 'rounded-l-none border-l-0',
+            !isLast && 'rounded-r-none'
           ),
         });
       })}
@@ -339,17 +346,17 @@ const InputGroup = ({ children, className }: InputGroupProps) => {
 
 interface InputAddonProps {
   children: React.ReactNode;
-  position?: "left" | "right";
+  position?: 'left' | 'right';
   className?: string;
 }
 
-const InputAddon = ({ children, position = "left", className }: InputAddonProps) => {
+const InputAddon = ({ children, position = 'left', className }: InputAddonProps) => {
   return (
     <div
       className={cn(
-        "flex items-center justify-center px-3 border border-input bg-muted text-muted-foreground text-sm",
-        position === "left" ? "rounded-l-md border-r-0" : "rounded-r-md border-l-0",
-        className,
+        'flex items-center justify-center px-3 border border-input bg-muted text-muted-foreground text-sm',
+        position === 'left' ? 'rounded-l-md border-r-0' : 'rounded-r-md border-l-0',
+        className
       )}
     >
       {children}

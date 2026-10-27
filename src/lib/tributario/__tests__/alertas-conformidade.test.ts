@@ -16,7 +16,11 @@ import type { PontoHistorico } from '@/lib/tributario/obrigacoes/historico';
 import { classificarConformidade } from '@/lib/tributario/obrigacoes/conformidade';
 import { avaliarAlertasConformidade as avaliarEdge } from '../../../../supabase/functions/_shared/obrigacoes/alertas.ts';
 
-function ponto(competencia: string, score: number, extra: Partial<PontoHistorico> = {}): PontoHistorico {
+function ponto(
+  competencia: string,
+  score: number,
+  extra: Partial<PontoHistorico> = {}
+): PontoHistorico {
   return {
     competencia,
     score,
@@ -55,7 +59,9 @@ describe('avaliarAlertasConformidade — regras isoladas', () => {
 
   it('respeita a fronteira exata do limiar (85 não alerta, 84.9 alerta)', () => {
     expect(avaliarAlertasConformidade([ponto('2026-03', 85)])).toEqual([]);
-    expect(avaliarAlertasConformidade([ponto('2026-03', 84.9)]).map((a) => a.tipo)).toEqual(['score_baixo']);
+    expect(avaliarAlertasConformidade([ponto('2026-03', 84.9)]).map((a) => a.tipo)).toEqual([
+      'score_baixo',
+    ]);
   });
 
   it('detecta queda abrupta apenas a partir do limiar', () => {
@@ -70,11 +76,23 @@ describe('avaliarAlertasConformidade — regras isoladas', () => {
   });
 
   it('detecta tendência negativa com 3 quedas consecutivas', () => {
-    const serie = [ponto('2026-01', 100), ponto('2026-02', 99), ponto('2026-03', 98), ponto('2026-04', 97)];
+    const serie = [
+      ponto('2026-01', 100),
+      ponto('2026-02', 99),
+      ponto('2026-03', 98),
+      ponto('2026-04', 97),
+    ];
     expect(avaliarAlertasConformidade(serie).map((a) => a.tipo)).toContain('tendencia_negativa');
 
-    const comRepique = [ponto('2026-01', 100), ponto('2026-02', 99), ponto('2026-03', 99), ponto('2026-04', 98)];
-    expect(avaliarAlertasConformidade(comRepique).map((a) => a.tipo)).not.toContain('tendencia_negativa');
+    const comRepique = [
+      ponto('2026-01', 100),
+      ponto('2026-02', 99),
+      ponto('2026-03', 99),
+      ponto('2026-04', 98),
+    ];
+    expect(avaliarAlertasConformidade(comRepique).map((a) => a.tipo)).not.toContain(
+      'tendencia_negativa'
+    );
   });
 
   it('alerta obrigações vencidas e escala em 3+', () => {
@@ -87,7 +105,7 @@ describe('avaliarAlertasConformidade — regras isoladas', () => {
 
   it('acumula multas somente na janela configurada', () => {
     const serie = Array.from({ length: 10 }, (_, i) =>
-      ponto(`2026-${String(i + 1).padStart(2, '0')}`, 100, { multaRegistrada: i < 4 ? 900 : 0 }),
+      ponto(`2026-${String(i + 1).padStart(2, '0')}`, 100, { multaRegistrada: i < 4 ? 900 : 0 })
     );
     // As multas estão fora da janela dos 6 últimos meses.
     expect(avaliarAlertasConformidade(serie).map((a) => a.tipo)).not.toContain('multa_acumulada');
@@ -181,7 +199,10 @@ describe('simulação combinatória (centenas de séries)', () => {
   it('é idempotente: reavaliar a mesma série produz chaves idênticas', () => {
     for (let i = 0; i < 200; i += 1) {
       const serie = Array.from({ length: 6 }, (_, k) =>
-        ponto(comp(k), (i * 7 + k * 13) % 101, { vencidasPendentes: (i + k) % 4, multaRegistrada: (i % 5) * 300 }),
+        ponto(comp(k), (i * 7 + k * 13) % 101, {
+          vencidasPendentes: (i + k) % 4,
+          multaRegistrada: (i % 5) * 300,
+        })
       );
       const a = avaliarAlertasConformidade(serie).map((x) => x.chave);
       const b = avaliarAlertasConformidade(serie).map((x) => x.chave);

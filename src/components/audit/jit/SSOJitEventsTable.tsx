@@ -1,8 +1,21 @@
 import { useState } from 'react';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from '@/components/ui/dialog';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { Eye, ExternalLink, User, Clock } from 'lucide-react';
@@ -91,7 +104,10 @@ export function SSOJitEventsTable({ events }: Props) {
                 </TableCell>
                 <TableCell>
                   {matched ? (
-                    <Badge variant="outline" className="bg-success/10 text-success border-success/20">
+                    <Badge
+                      variant="outline"
+                      className="bg-success/10 text-success border-success/20"
+                    >
                       grupo: {matched}
                     </Badge>
                   ) : (
@@ -145,7 +161,10 @@ export function SSOJitEventsTable({ events }: Props) {
                               </div>
                               <div>
                                 <p className="text-muted-foreground">Data</p>
-                                <p>{formatDate(e.created_at)} {format(new Date(e.created_at), 'HH:mm:ss')}</p>
+                                <p>
+                                  {formatDate(e.created_at)}{' '}
+                                  {format(new Date(e.created_at), 'HH:mm:ss')}
+                                </p>
                               </div>
                               <div>
                                 <p className="text-muted-foreground">Via</p>
@@ -168,7 +187,13 @@ export function SSOJitEventsTable({ events }: Props) {
                         </ScrollArea>
                       </DialogContent>
                     </Dialog>
-                    <Button asChild variant="ghost" size="icon" className="h-8 w-8" title="Ver no log completo">
+                    <Button
+                      asChild
+                      variant="ghost"
+                      size="icon"
+                      className="h-8 w-8"
+                      title="Ver no log completo"
+                    >
                       <Link to={`/audit-logs`}>
                         <ExternalLink className="h-4 w-4" />
                       </Link>

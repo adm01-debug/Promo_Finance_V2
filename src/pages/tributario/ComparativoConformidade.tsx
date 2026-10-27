@@ -57,13 +57,15 @@ const brl = (v: number) => v.toLocaleString('pt-BR', { style: 'currency', curren
 const competenciaBR = (c: string | null) =>
   c && c.length === 7 ? `${c.slice(5)}/${c.slice(0, 4)}` : '—';
 
-const NIVEL_VARIANT: Record<NivelConformidade, 'default' | 'secondary' | 'destructive' | 'outline'> =
-  {
-    excelente: 'default',
-    bom: 'secondary',
-    atencao: 'outline',
-    critico: 'destructive',
-  };
+const NIVEL_VARIANT: Record<
+  NivelConformidade,
+  'default' | 'secondary' | 'destructive' | 'outline'
+> = {
+  excelente: 'default',
+  bom: 'secondary',
+  atencao: 'outline',
+  critico: 'destructive',
+};
 
 const DIRECAO_CLASSE: Record<DirecaoTendencia, string> = {
   alta: 'text-success',
@@ -112,7 +114,9 @@ function LinhaRanking({ linha }: { readonly linha: LinhaComparativo }) {
       <TableCell className="text-right tabular-nums">
         <span className={cn('inline-flex items-center gap-1', DIRECAO_CLASSE[linha.direcao])}>
           <IconeDirecao direcao={linha.direcao} />
-          {linha.scoreAnterior === null ? '—' : `${linha.delta > 0 ? '+' : ''}${linha.delta.toFixed(1)}`}
+          {linha.scoreAnterior === null
+            ? '—'
+            : `${linha.delta > 0 ? '+' : ''}${linha.delta.toFixed(1)}`}
         </span>
       </TableCell>
       <TableCell className="text-right tabular-nums">

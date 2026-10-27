@@ -21,15 +21,17 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from '@/components/ui/popover';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Calendar } from '@/components/ui/calendar';
 import { cn } from '@/lib/utils';
 import { usePagamentosRecorrentes } from '@/hooks/usePagamentosRecorrentes';
-import { formSchema, frequenciaOptions, tipoCobrancaOptions, type FormValues, type TipoCobranca } from './pagamento-recorrente-model';
+import {
+  formSchema,
+  frequenciaOptions,
+  tipoCobrancaOptions,
+  type FormValues,
+  type TipoCobranca,
+} from './pagamento-recorrente-model';
 import { useAllEmpresas } from '@/hooks/useEmpresas';
 import { useAllCentrosCusto } from '@/hooks/useCentrosCusto';
 import { useConfetti } from '@/hooks/useConfetti';
@@ -64,26 +66,32 @@ export function PagamentoRecorrenteForm({ onSuccess, onCancel }: PagamentoRecorr
   });
 
   const onSubmit = (values: FormValues) => {
-    createPagamentoRecorrente({
-      descricao: values.descricao,
-      fornecedor_nome: values.fornecedor_nome,
-      valor: values.valor,
-      dia_vencimento: values.dia_vencimento,
-      frequencia: values.frequencia,
-      data_inicio: format(values.data_inicio, 'yyyy-MM-dd'),
-      data_fim: values.data_fim ? format(values.data_fim, 'yyyy-MM-dd') : null,
-      empresa_id: values.empresa_id,
-      centro_custo_id: values.centro_custo_id,
-      tipo_cobranca: values.tipo_cobranca as TipoCobranca,
-      observacoes: values.observacoes,
-    }, {
-      onSuccess: () => {
-        sounds.success();
-        customCelebration({ title: 'Pagamento recorrente criado!', description: 'Agendado com sucesso.' });
-        form.reset();
-        onSuccess?.();
+    createPagamentoRecorrente(
+      {
+        descricao: values.descricao,
+        fornecedor_nome: values.fornecedor_nome,
+        valor: values.valor,
+        dia_vencimento: values.dia_vencimento,
+        frequencia: values.frequencia,
+        data_inicio: format(values.data_inicio, 'yyyy-MM-dd'),
+        data_fim: values.data_fim ? format(values.data_fim, 'yyyy-MM-dd') : null,
+        empresa_id: values.empresa_id,
+        centro_custo_id: values.centro_custo_id,
+        tipo_cobranca: values.tipo_cobranca as TipoCobranca,
+        observacoes: values.observacoes,
       },
-    });
+      {
+        onSuccess: () => {
+          sounds.success();
+          customCelebration({
+            title: 'Pagamento recorrente criado!',
+            description: 'Agendado com sucesso.',
+          });
+          form.reset();
+          onSuccess?.();
+        },
+      }
+    );
   };
 
   return (
@@ -205,11 +213,7 @@ export function PagamentoRecorrenteForm({ onSuccess, onCancel }: PagamentoRecorr
                           !field.value && 'text-muted-foreground'
                         )}
                       >
-                        {field.value ? (
-                          format(field.value, 'dd/MM/yyyy')
-                        ) : (
-                          <span>Selecione</span>
-                        )}
+                        {field.value ? format(field.value, 'dd/MM/yyyy') : <span>Selecione</span>}
                         <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
                       </Button>
                     </FormControl>
@@ -244,11 +248,7 @@ export function PagamentoRecorrenteForm({ onSuccess, onCancel }: PagamentoRecorr
                           !field.value && 'text-muted-foreground'
                         )}
                       >
-                        {field.value ? (
-                          format(field.value, 'dd/MM/yyyy')
-                        ) : (
-                          <span>Sem término</span>
-                        )}
+                        {field.value ? format(field.value, 'dd/MM/yyyy') : <span>Sem término</span>}
                         <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
                       </Button>
                     </FormControl>

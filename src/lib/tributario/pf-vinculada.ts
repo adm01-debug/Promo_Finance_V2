@@ -123,7 +123,7 @@ export function calcularAliquotaIrpfm(rendaTotalAnual: number): number {
 function gerarAlertasPF(
   proLaboreMensal: number,
   dividendosMensais: number,
-  rendaTotalAnual: number,
+  rendaTotalAnual: number
 ): AlertaPF[] {
   const alertas: AlertaPF[] = [];
 
@@ -233,7 +233,7 @@ export function simularPessoaFisica(params: ParametrosSimulacaoPF): ResultadoSim
  */
 export function otimizarProLabore(
   params: ParametrosSimulacaoPF,
-  passo = 1_000,
+  passo = 1_000
 ): { melhorProLaboreMensal: number; melhorCarga: number; cargaAtual: number; economia: number } {
   const proLaboreMensal = sanitizar(params.proLaboreMensal);
   const dividendosMensais = sanitizar(params.dividendosMensais);

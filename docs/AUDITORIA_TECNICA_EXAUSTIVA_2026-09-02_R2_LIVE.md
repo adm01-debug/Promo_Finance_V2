@@ -1,7 +1,7 @@
 # Auditoria Técnica Exaustiva R2 (validação live) — Promo Finance V2
 
 > Data: 2026-09-02 (noite) · Branch: `claude/auditoria-tecnica-sistema-9c0mnw`
-> Base: `main@87fcc12` · Re-auditoria da `docs/AUDITORIA_TECNICA_EXAUSTIVA_2026-09-02.md` (PR #54, mesma data, 100% estática)
+> Base: `main@87fcc12` · Re-auditoria da `docs/archive/AUDITORIA_TECNICA_EXAUSTIVA_2026-09-02.md` (PR #54, mesma data, 100% estática)
 > Método: toda alegação da auditoria R1 foi **re-verificada com execução real** (pipeline local completo, GitHub API, worker MCP, invocação de Edge Functions em produção) ou marcada como não-auditável com o motivo exato.
 
 ---
@@ -285,7 +285,7 @@ Isto **fecha a lacuna da R1** ("16 edge functions não auditadas individualmente
 Reconstrução completa das migrations que tocam `increment_failed_attempts`/`reset_failed_attempts`/`get_lockout_details`/`login_attempts`. **O lockout não funciona em NENHUM dos dois cenários de ACL possíveis**:
 
 - **Cenário migrations-aplicadas** (`20260711182305` revogou EXECUTE de PUBLIC/anon/authenticated e concedeu só a service_role; nenhum DROP posterior — ACL preservada, com postflight de `20260831153000` provando): as 3 chamadas do front (`Auth.hooks.ts:164/218/229`) falham com `42501` **silencioso** (o `error` é descartado nas 3) → contador nunca sobe, gate nunca bloqueia.
-- **Cenário banco-real-divergente** (os lints `0028/0029` citados em `AUDITORIA_BACKEND_SENIOR.md` só disparam quando anon/authenticated executam): o lockout "funciona", mas vira **arma** — `increment_failed_attempts(email)` com a anon key trava a conta de terceiros (DoS), `get_lockout_details` permite **enumeração de usuários**, e `reset_failed_attempts` deixa o atacante **zerar o próprio contador** (brute-force ilimitado). Agravante: até `20260831` o corpo usava `ON CONFLICT (email)` sem índice único → `42P10`.
+- **Cenário banco-real-divergente** (os lints `0028/0029` citados em `archive/AUDITORIA_BACKEND_SENIOR.md` só disparam quando anon/authenticated executam): o lockout "funciona", mas vira **arma** — `increment_failed_attempts(email)` com a anon key trava a conta de terceiros (DoS), `get_lockout_details` permite **enumeração de usuários**, e `reset_failed_attempts` deixa o atacante **zerar o próprio contador** (brute-force ilimitado). Agravante: até `20260831` o corpo usava `ON CONFLICT (email)` sem índice único → `42P10`.
 
 Extras de drift/documentação: a coluna `login_attempts.email` **não é criada por nenhuma migration do repo** (1ª referência em `20260518175808`), e `docs/SECURITY_DEFINER_ATTESTATION.md` afirma uma validação `has_role('admin')` em `get_lockout_details` que **não existe no corpo**. Patch definitivo (Sprint 1): Auth Hook `password_verification_attempt` server-side + migration idempotente re-afirmando a ACL + `has_role` real no `get_lockout_details` + checar `error` nas chamadas.
 

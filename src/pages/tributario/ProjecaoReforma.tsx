@@ -4,7 +4,13 @@ import { useMemo, useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 import { Badge } from '@/components/ui/badge';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { TrendingUp, AlertTriangle, ScrollText } from 'lucide-react';
@@ -66,7 +72,8 @@ export default function ProjecaoReforma() {
           Projeção Reforma Tributária 2026-2033
         </h1>
         <p className="text-muted-foreground mt-1">
-          Simule o impacto da transição CBS/IBS na sua carga tributária ano a ano (EC 132/2023 + LC 214/2025).
+          Simule o impacto da transição CBS/IBS na sua carga tributária ano a ano (EC 132/2023 + LC
+          214/2025).
         </p>
       </div>
 
@@ -130,11 +137,18 @@ export default function ProjecaoReforma() {
           </div>
           <div className="space-y-2 md:col-span-3">
             <Label>Setor</Label>
-            <Select value={params.setor} onValueChange={(v) => update('setor', v as ParametrosProjecao['setor'])}>
-              <SelectTrigger><SelectValue /></SelectTrigger>
+            <Select
+              value={params.setor}
+              onValueChange={(v) => update('setor', v as ParametrosProjecao['setor'])}
+            >
+              <SelectTrigger>
+                <SelectValue />
+              </SelectTrigger>
               <SelectContent>
                 {SETORES.map((s) => (
-                  <SelectItem key={s.value} value={s.value}>{s.label}</SelectItem>
+                  <SelectItem key={s.value} value={s.value}>
+                    {s.label}
+                  </SelectItem>
                 ))}
               </SelectContent>
             </Select>
@@ -145,29 +159,41 @@ export default function ProjecaoReforma() {
       {/* KPIs */}
       <div className="grid gap-4 md:grid-cols-3">
         <Card>
-          <CardHeader className="pb-2"><CardDescription>Carga atual (2025)</CardDescription></CardHeader>
+          <CardHeader className="pb-2">
+            <CardDescription>Carga atual (2025)</CardDescription>
+          </CardHeader>
           <CardContent>
             <div className="text-3xl font-bold">{projecao.cargaAtual.toFixed(2)}%</div>
             <p className="text-xs text-muted-foreground mt-1">PIS+COFINS + ICMS + ISS</p>
           </CardContent>
         </Card>
         <Card>
-          <CardHeader className="pb-2"><CardDescription>Pico tributário (transição)</CardDescription></CardHeader>
+          <CardHeader className="pb-2">
+            <CardDescription>Pico tributário (transição)</CardDescription>
+          </CardHeader>
           <CardContent>
-            <div className="text-3xl font-bold text-warning">{projecao.picoTributario.cargaEfetiva.toFixed(2)}%</div>
+            <div className="text-3xl font-bold text-warning">
+              {projecao.picoTributario.cargaEfetiva.toFixed(2)}%
+            </div>
             <p className="text-xs text-muted-foreground mt-1">
               Ano {projecao.picoTributario.ano} — {projecao.picoTributario.fase}
             </p>
           </CardContent>
         </Card>
         <Card>
-          <CardHeader className="pb-2"><CardDescription>Economia/Custo acumulado 2026-2033</CardDescription></CardHeader>
+          <CardHeader className="pb-2">
+            <CardDescription>Economia/Custo acumulado 2026-2033</CardDescription>
+          </CardHeader>
           <CardContent>
-            <div className={`text-3xl font-bold ${projecao.economiaAcumulada >= 0 ? 'text-success' : 'text-destructive'}`}>
+            <div
+              className={`text-3xl font-bold ${projecao.economiaAcumulada >= 0 ? 'text-success' : 'text-destructive'}`}
+            >
               {formatCurrency(projecao.economiaAcumulada)}
             </div>
             <p className="text-xs text-muted-foreground mt-1">
-              {projecao.economiaAcumulada >= 0 ? 'Economia projetada' : 'Aumento de carga projetado'}
+              {projecao.economiaAcumulada >= 0
+                ? 'Economia projetada'
+                : 'Aumento de carga projetado'}
             </p>
           </CardContent>
         </Card>
@@ -179,8 +205,9 @@ export default function ProjecaoReforma() {
           <AlertTriangle className="h-4 w-4" />
           <AlertTitle>Pico de carga em {projecao.picoTributario.ano}</AlertTitle>
           <AlertDescription>
-            A carga sobe <strong>{projecao.picoTributario.variacaoVsAtual.toFixed(2)} p.p.</strong> em relação a 2025.
-            Avalie créditos plenos de CBS/IBS, regimes especiais ou reorganização societária.
+            A carga sobe <strong>{projecao.picoTributario.variacaoVsAtual.toFixed(2)} p.p.</strong>{' '}
+            em relação a 2025. Avalie créditos plenos de CBS/IBS, regimes especiais ou reorganização
+            societária.
           </AlertDescription>
         </Alert>
       )}
@@ -200,10 +227,25 @@ export default function ProjecaoReforma() {
               <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
               <XAxis dataKey="ano" stroke="hsl(var(--muted-foreground))" />
               <YAxis stroke="hsl(var(--muted-foreground))" unit="%" />
-              <Tooltip contentStyle={{ background: 'hsl(var(--card))', border: '1px solid hsl(var(--border))' }} />
+              <Tooltip
+                contentStyle={{
+                  background: 'hsl(var(--card))',
+                  border: '1px solid hsl(var(--border))',
+                }}
+              />
               <Legend />
-              <Line type="monotone" dataKey="Carga Atual" stroke="hsl(var(--muted-foreground))" strokeDasharray="5 5" />
-              <Line type="monotone" dataKey="Carga Projetada" stroke="hsl(var(--primary))" strokeWidth={3} />
+              <Line
+                type="monotone"
+                dataKey="Carga Atual"
+                stroke="hsl(var(--muted-foreground))"
+                strokeDasharray="5 5"
+              />
+              <Line
+                type="monotone"
+                dataKey="Carga Projetada"
+                stroke="hsl(var(--primary))"
+                strokeWidth={3}
+              />
             </LineChart>
           </ResponsiveContainer>
         </CardContent>
@@ -224,11 +266,34 @@ export default function ProjecaoReforma() {
               <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
               <XAxis dataKey="ano" stroke="hsl(var(--muted-foreground))" />
               <YAxis stroke="hsl(var(--muted-foreground))" unit="%" />
-              <Tooltip contentStyle={{ background: 'hsl(var(--card))', border: '1px solid hsl(var(--border))' }} />
+              <Tooltip
+                contentStyle={{
+                  background: 'hsl(var(--card))',
+                  border: '1px solid hsl(var(--border))',
+                }}
+              />
               <Legend />
-              <Area type="monotone" dataKey="CBS" stackId="1" stroke="hsl(var(--cbs, 217 91% 60%))" fill="hsl(var(--cbs, 217 91% 60%))" />
-              <Area type="monotone" dataKey="IBS" stackId="1" stroke="hsl(var(--ibs, 258 90% 66%))" fill="hsl(var(--ibs, 258 90% 66%))" />
-              <Area type="monotone" dataKey="Antigos" stackId="1" stroke="hsl(var(--muted-foreground))" fill="hsl(var(--muted))" />
+              <Area
+                type="monotone"
+                dataKey="CBS"
+                stackId="1"
+                stroke="hsl(var(--cbs, 217 91% 60%))"
+                fill="hsl(var(--cbs, 217 91% 60%))"
+              />
+              <Area
+                type="monotone"
+                dataKey="IBS"
+                stackId="1"
+                stroke="hsl(var(--ibs, 258 90% 66%))"
+                fill="hsl(var(--ibs, 258 90% 66%))"
+              />
+              <Area
+                type="monotone"
+                dataKey="Antigos"
+                stackId="1"
+                stroke="hsl(var(--muted-foreground))"
+                fill="hsl(var(--muted))"
+              />
             </AreaChart>
           </ResponsiveContainer>
         </CardContent>
@@ -269,7 +334,8 @@ export default function ProjecaoReforma() {
                   <td className="text-right">{p.cargaEfetiva.toFixed(2)}%</td>
                   <td className="text-right">
                     <Badge variant={p.variacaoVsAtual > 0 ? 'destructive' : 'secondary'}>
-                      {p.variacaoVsAtual > 0 ? '+' : ''}{p.variacaoVsAtual.toFixed(2)} p.p.
+                      {p.variacaoVsAtual > 0 ? '+' : ''}
+                      {p.variacaoVsAtual.toFixed(2)} p.p.
                     </Badge>
                   </td>
                 </tr>
@@ -283,9 +349,9 @@ export default function ProjecaoReforma() {
         <ScrollText className="h-4 w-4" />
         <AlertTitle>Base legal</AlertTitle>
         <AlertDescription className="text-xs">
-          EC 132/2023 (Reforma Tributária) • LC 214/2025 (regras CBS/IBS) • Cronograma de transição definido pelo
-          Comitê Gestor do IBS. Setores beneficiados (saúde, educação, agro, transporte coletivo) recebem redução
-          de 60% sobre a alíquota padrão.
+          EC 132/2023 (Reforma Tributária) • LC 214/2025 (regras CBS/IBS) • Cronograma de transição
+          definido pelo Comitê Gestor do IBS. Setores beneficiados (saúde, educação, agro,
+          transporte coletivo) recebem redução de 60% sobre a alíquota padrão.
         </AlertDescription>
       </Alert>
     </div>

@@ -1,10 +1,14 @@
 // Edge: calcular-slo-metrics-diario
 // Agrega métricas das últimas 24h e persiste snapshot em slo_metrics_diarias.
-import { createClient } from "https://esm.sh/@supabase/supabase-js@2.49.4";
-import { corsHeadersComSegredo, exigirChamadaInterna } from "../_shared/auth-guard.ts";
+import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.49.4';
+import { corsHeadersComSegredoPara, exigirChamadaInterna } from '../_shared/auth-guard.ts';
+import { createLogger } from '../_shared/observability.ts';
+import { mensagemErro, contextoErro } from '../_shared/erros.ts';
+import { withEdgeObservability } from '../_shared/edge-observability.ts';
+const log = createLogger('calcular-slo-metrics-diario');
 
-const SUPABASE_URL = Deno.env.get("SUPABASE_URL")!;
-const SUPABASE_SERVICE_ROLE_KEY = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
+const SUPABASE_URL = Deno.env.get('SUPABASE_URL')!;
+const SUPABASE_SERVICE_ROLE_KEY = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
 
 function percentile(arr: number[], p: number): number {
   if (!arr.length) return 0;
@@ -14,8 +18,8 @@ function percentile(arr: number[], p: number): number {
 }
 
 export const handler = async (req: Request) => {
-  if (req.method === "OPTIONS") {
-    return new Response("ok", { headers: corsHeadersComSegredo });
+  if (req.method === 'OPTIONS') {
+    return new Response('ok', { headers: corsHeadersComSegredoPara(req) });
   }
 
   const guard = await exigirChamadaInterna(req);
@@ -27,7 +31,7 @@ export const handler = async (req: Request) => {
     const hoje = new Date().toISOString().slice(0, 10);
 
     // Edge health view (já existe)
-    const { data: edgeHealth } = await sb.from("vw_edge_health" as never).select("*");
+    const { data: edgeHealth } = await sb.from('vw_edge_health' as never).select('*');
     const edges = (edgeHealth ?? []) as any[];
     const totalReq = edges.reduce((s, r) => s + Number(r.total_calls || 0), 0);
     const totalErr = edges.reduce((s, r) => s + Number(r.error_count || 0), 0);
@@ -38,11 +42,14 @@ export const handler = async (req: Request) => {
     const p99 = percentile(latencias, 99);
 
     // Cron history últimas 24h
-    const { data: cronHist } = await (sb as any).rpc("get_cron_run_history", { p_limit: 500 });
-    const cronRecent = ((cronHist ?? []) as any[]).filter((r) => r.start_time && new Date(r.start_time).toISOString() >= since);
-    const cronOk = cronRecent.filter((r) => r.status === "succeeded").length;
-    const cronFail = cronRecent.filter((r) => r.status === "failed").length;
-    const uptime = cronRecent.length > 0 ? Number(((cronOk / cronRecent.length) * 100).toFixed(2)) : 100;
+    const { data: cronHist } = await (sb as any).rpc('get_cron_run_history', { p_limit: 500 });
+    const cronRecent = ((cronHist ?? []) as any[]).filter(
+      (r) => r.start_time && new Date(r.start_time).toISOString() >= since
+    );
+    const cronOk = cronRecent.filter((r) => r.status === 'succeeded').length;
+    const cronFail = cronRecent.filter((r) => r.status === 'failed').length;
+    const uptime =
+      cronRecent.length > 0 ? Number(((cronOk / cronRecent.length) * 100).toFixed(2)) : 100;
 
     const edgesHealth: Record<string, any> = {};
     for (const r of edges) {
@@ -53,7 +60,7 @@ export const handler = async (req: Request) => {
       };
     }
 
-    const { error } = await sb.from("slo_metrics_diarias" as never).upsert({
+    const { error } = await sb.from('slo_metrics_diarias' as never).upsert({
       data: hoje,
       total_requisicoes: totalReq,
       latencia_p50_ms: p50,
@@ -71,21 +78,44 @@ export const handler = async (req: Request) => {
 
     // Retenção 90 dias
     const cutoff = new Date(Date.now() - 90 * 24 * 60 * 60 * 1000).toISOString().slice(0, 10);
-    await sb.from("slo_metrics_diarias" as never).delete().lt("data", cutoff);
+    await sb
+      .from('slo_metrics_diarias' as never)
+      .delete()
+      .lt('data', cutoff);
 
     return new Response(
-      JSON.stringify({ ok: true, data: hoje, total_requisicoes: totalReq, p95, taxa_erro_pct: taxaErro, uptime_pct: uptime }),
-      { headers: { ...corsHeadersComSegredo, "Content-Type": "application/json" } },
+      JSON.stringify({
+        ok: true,
+        data: hoje,
+        total_requisicoes: totalReq,
+        p95,
+        taxa_erro_pct: taxaErro,
+        uptime_pct: uptime,
+      }),
+      { headers: { ...corsHeadersComSegredoPara(req), 'Content-Type': 'application/json' } }
     );
   } catch (e) {
-    console.error("calcular-slo-metrics-diario:", e);
+    log.error('calcular-slo-metrics-diario:', {
+      error_message: mensagemErro(e),
+      context: contextoErro(e),
+    });
     return new Response(JSON.stringify({ error: (e as Error).message }), {
       status: 500,
-      headers: { ...corsHeadersComSegredo, "Content-Type": "application/json" },
+      headers: { ...corsHeadersComSegredoPara(req), 'Content-Type': 'application/json' },
     });
   }
 };
 
 if (import.meta.main) {
-  Deno.serve(handler);
+  Deno.serve(
+    withEdgeObservability('calcular-slo-metrics-diario', async (req) => {
+      const _t0 = Date.now();
+      try {
+        return await handler(req);
+      } finally {
+        log.info('request', { duration_ms: Date.now() - _t0 });
+        await log.flush();
+      }
+    })
+  );
 }

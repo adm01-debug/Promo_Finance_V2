@@ -36,8 +36,8 @@ export function InsightsIAKpis() {
         data.taxaAcertoIA >= 80
           ? 'text-success'
           : data.taxaAcertoIA >= 60
-          ? 'text-warning'
-          : 'text-destructive',
+            ? 'text-warning'
+            : 'text-destructive',
       bgColor: 'bg-accent/10',
     },
     {
@@ -68,9 +68,7 @@ export function InsightsIAKpis() {
                 <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
                   {c.label}
                 </p>
-                <p className={cn('text-2xl font-bold font-display mt-1', c.color)}>
-                  {c.value}
-                </p>
+                <p className={cn('text-2xl font-bold font-display mt-1', c.color)}>{c.value}</p>
                 <p className="text-xs text-muted-foreground mt-1.5 truncate">{c.sub}</p>
               </div>
               <div

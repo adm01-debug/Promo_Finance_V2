@@ -11,10 +11,10 @@ export default function ConciliacaoTributariaPage() {
     <MainLayout>
       <div className="relative min-h-screen">
         <PageBackground />
-        
+
         <div className="container mx-auto p-6 relative z-10">
-          <PageHeader 
-            title="Conciliação Tributária" 
+          <PageHeader
+            title="Conciliação Tributária"
             subtitle="Detecção automática de divergências entre registros contábeis e obrigações fiscais."
             badge="Divergência Zero"
             icon={RefreshCcw}
@@ -22,7 +22,7 @@ export default function ConciliacaoTributariaPage() {
             gradientVia="via-primary"
             gradientTo="to-orange-600"
           />
-          
+
           <ConciliacaoTributariaPanel empresaId={currentEmpresaId ?? undefined} />
         </div>
       </div>

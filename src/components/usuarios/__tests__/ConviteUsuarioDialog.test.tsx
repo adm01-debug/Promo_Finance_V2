@@ -38,9 +38,12 @@ describe('ConviteUsuarioDialog', () => {
         body: { email: 'novo.usuario@empresa.test', role: 'visualizador' },
       });
     });
-    expect(toast.success).toHaveBeenCalledWith('Convite criado', expect.objectContaining({
-      description: expect.stringContaining('serviço de autenticação'),
-    }));
+    expect(toast.success).toHaveBeenCalledWith(
+      'Convite criado',
+      expect.objectContaining({
+        description: expect.stringContaining('serviço de autenticação'),
+      })
+    );
     expect(onOpenChange).toHaveBeenCalledWith(false);
   });
 

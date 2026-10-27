@@ -40,7 +40,11 @@ describe('diagnosticarParametros', () => {
   });
 
   it('classifica valores negativos e NaN como críticos', () => {
-    const ajustes = diagnosticarParametros({ ...base, folhaAnual: -100, comprasComCredito: Number.NaN });
+    const ajustes = diagnosticarParametros({
+      ...base,
+      folhaAnual: -100,
+      comprasComCredito: Number.NaN,
+    });
     expect(ajustes.find((a) => a.campo === 'folhaAnual')?.severidade).toBe('critico');
     expect(ajustes.find((a) => a.campo === 'comprasComCredito')?.severidade).toBe('critico');
   });
@@ -59,9 +63,11 @@ describe('diagnosticarParametros', () => {
       percentualIndustria: 50,
       percentualRevenda: 50,
     });
-    expect(ajustes.map((a) => a.campo).sort()).toEqual(
-      ['percentualIndustria', 'percentualRevenda', 'percentualServicos'],
-    );
+    expect(ajustes.map((a) => a.campo).sort()).toEqual([
+      'percentualIndustria',
+      'percentualRevenda',
+      'percentualServicos',
+    ]);
   });
 
   it('é determinístico e nunca lança em 500 cenários adversariais', () => {

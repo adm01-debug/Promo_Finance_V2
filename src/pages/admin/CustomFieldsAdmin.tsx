@@ -1,35 +1,44 @@
 import React, { useState } from 'react';
 import { MainLayout } from '@/components/layout/MainLayout';
 import { PageHeader, PageBackground } from '@/components/layout/PageHeader';
-import { 
-  Settings2, 
-  Plus, 
-  Trash2, 
-  Settings
-} from 'lucide-react';
+import { Settings2, Plus, Trash2, Settings } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { 
-  Dialog, 
-  DialogContent, 
-  DialogHeader, 
-  DialogTitle, 
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '@/components/ui/table';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
   DialogFooter,
-  DialogDescription
+  DialogDescription,
 } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { 
-  Select, 
-  SelectContent, 
-  SelectItem, 
-  SelectTrigger, 
-  SelectValue 
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
 } from '@/components/ui/select';
 import { Checkbox } from '@/components/ui/checkbox';
-import { useCustomFieldDefinitions, useSaveCustomFieldDefinition, useDeleteCustomFieldDefinition, type CustomFieldDefinition, type EntityType, type FieldType } from '@/hooks/useCustomFields';
+import {
+  useCustomFieldDefinitions,
+  useSaveCustomFieldDefinition,
+  useDeleteCustomFieldDefinition,
+  type CustomFieldDefinition,
+  type EntityType,
+  type FieldType,
+} from '@/hooks/useCustomFields';
 import { useAuth } from '@/hooks/useAuth';
 
 const ENTITY_TYPES: { value: EntityType; label: string }[] = [
@@ -50,7 +59,10 @@ const FIELD_TYPES: { value: FieldType; label: string }[] = [
 
 export default function CustomFieldsAdmin() {
   const { currentEmpresaId } = useAuth();
-  const { data: definitions = [], isLoading } = useCustomFieldDefinitions(undefined, currentEmpresaId || undefined);
+  const { data: definitions = [], isLoading } = useCustomFieldDefinitions(
+    undefined,
+    currentEmpresaId || undefined
+  );
   const saveDefinition = useSaveCustomFieldDefinition();
   const deleteDefinition = useDeleteCustomFieldDefinition();
 
@@ -68,14 +80,17 @@ export default function CustomFieldsAdmin() {
 
   const handleSave = async () => {
     if (!formData.name || !formData.label || !currentEmpresaId) return;
-    
+
     try {
       await saveDefinition.mutateAsync({
         id: editingId || undefined,
         ...formData,
         name: formData.name.toLowerCase().replace(/\s+/g, '_'),
-        options: formData.field_type === 'select' ? formData.options.split(',').map(s => s.trim()) : null,
-        empresa_id: currentEmpresaId
+        options:
+          formData.field_type === 'select'
+            ? formData.options.split(',').map((s) => s.trim())
+            : null,
+        empresa_id: currentEmpresaId,
       });
       setIsDialogOpen(false);
       resetForm();
@@ -115,10 +130,10 @@ export default function CustomFieldsAdmin() {
     <MainLayout>
       <div className="relative min-h-screen">
         <PageBackground />
-        
+
         <div className="container mx-auto p-6 relative z-10 space-y-8">
-          <PageHeader 
-            title="Campos Customizados" 
+          <PageHeader
+            title="Campos Customizados"
             subtitle="Adicione campos extras aos seus registros sem a necessidade de desenvolvedores."
             badge="Personalização Enterprise"
             icon={Settings2}
@@ -126,7 +141,13 @@ export default function CustomFieldsAdmin() {
             gradientVia="via-primary"
             gradientTo="to-indigo-500"
           >
-            <Button onClick={() => { resetForm(); setIsDialogOpen(true); }} className="bg-primary hover:bg-primary/90 gap-2">
+            <Button
+              onClick={() => {
+                resetForm();
+                setIsDialogOpen(true);
+              }}
+              className="bg-primary hover:bg-primary/90 gap-2"
+            >
               <Plus className="h-4 w-4" />
               Novo Campo
             </Button>
@@ -137,7 +158,8 @@ export default function CustomFieldsAdmin() {
               <CardHeader>
                 <CardTitle className="text-foreground">Dicionário de Dados Customizados</CardTitle>
                 <CardDescription>
-                  Estes campos aparecerão automaticamente nos formulários de criação e edição das entidades selecionadas.
+                  Estes campos aparecerão automaticamente nos formulários de criação e edição das
+                  entidades selecionadas.
                 </CardDescription>
               </CardHeader>
               <CardContent>
@@ -154,35 +176,67 @@ export default function CustomFieldsAdmin() {
                   </TableHeader>
                   <TableBody>
                     {isLoading ? (
-                      <TableRow><TableCell colSpan={6} className="text-center py-8 text-foreground/40">Carregando...</TableCell></TableRow>
+                      <TableRow>
+                        <TableCell colSpan={6} className="text-center py-8 text-foreground/40">
+                          Carregando...
+                        </TableCell>
+                      </TableRow>
                     ) : definitions.length === 0 ? (
-                      <TableRow><TableCell colSpan={6} className="text-center py-12 text-foreground/20">Nenhum campo customizado definido.</TableCell></TableRow>
+                      <TableRow>
+                        <TableCell colSpan={6} className="text-center py-12 text-foreground/20">
+                          Nenhum campo customizado definido.
+                        </TableCell>
+                      </TableRow>
                     ) : (
                       definitions.map((def) => (
-                        <TableRow key={def.id} className="border-white/5 hover:bg-card/5 transition-colors">
+                        <TableRow
+                          key={def.id}
+                          className="border-white/5 hover:bg-card/5 transition-colors"
+                        >
                           <TableCell>
-                            <Badge variant="outline" className="bg-primary/10 text-primary border-primary/20">
-                              {ENTITY_TYPES.find(e => e.value === def.entity_type)?.label || def.entity_type}
+                            <Badge
+                              variant="outline"
+                              className="bg-primary/10 text-primary border-primary/20"
+                            >
+                              {ENTITY_TYPES.find((e) => e.value === def.entity_type)?.label ||
+                                def.entity_type}
                             </Badge>
                           </TableCell>
                           <TableCell className="font-bold text-foreground">{def.label}</TableCell>
-                          <TableCell><code className="text-xs text-foreground/40">{def.name}</code></TableCell>
+                          <TableCell>
+                            <code className="text-xs text-foreground/40">{def.name}</code>
+                          </TableCell>
                           <TableCell className="text-foreground/60">
-                            {FIELD_TYPES.find(f => f.value === def.field_type)?.label || def.field_type}
+                            {FIELD_TYPES.find((f) => f.value === def.field_type)?.label ||
+                              def.field_type}
                           </TableCell>
                           <TableCell>
                             {def.required ? (
-                              <Badge className="bg-destructive/10 text-destructive border-destructive/20">Sim</Badge>
+                              <Badge className="bg-destructive/10 text-destructive border-destructive/20">
+                                Sim
+                              </Badge>
                             ) : (
-                              <Badge variant="outline" className="text-foreground/20">Não</Badge>
+                              <Badge variant="outline" className="text-foreground/20">
+                                Não
+                              </Badge>
                             )}
                           </TableCell>
                           <TableCell className="text-right">
                             <div className="flex justify-end gap-2">
-                              <Button variant="ghost" size="icon" className="text-foreground/20 hover:text-foreground" onClick={() => handleEdit(def)}>
+                              <Button
+                                variant="ghost"
+                                size="icon"
+                                className="text-foreground/20 hover:text-foreground"
+                                onClick={() => handleEdit(def)}
+                              >
                                 <Settings className="h-4 w-4" />
                               </Button>
-                              <Button variant="ghost" size="icon" className="text-foreground/20 hover:text-destructive" onClick={() => deleteDefinition.mutate(def.id)}>
+                              <Button
+                                variant="ghost"
+                                size="icon"
+                                className="text-foreground/20 hover:text-destructive"
+                                onClick={() => deleteDefinition.mutate(def.id)}
+                              >
                                 <Trash2 className="h-4 w-4" />
                               </Button>
                             </div>
@@ -210,8 +264,8 @@ export default function CustomFieldsAdmin() {
           <div className="space-y-4 py-4">
             <div className="space-y-2">
               <Label>Entidade de Destino</Label>
-              <Select 
-                value={formData.entity_type} 
+              <Select
+                value={formData.entity_type}
                 onValueChange={(val: EntityType) => setFormData({ ...formData, entity_type: val })}
               >
                 <SelectTrigger className="bg-card/5 border-border">
@@ -219,7 +273,9 @@ export default function CustomFieldsAdmin() {
                 </SelectTrigger>
                 <SelectContent className="bg-popover border-border text-foreground">
                   {ENTITY_TYPES.map((type) => (
-                    <SelectItem key={type.value} value={type.value}>{type.label}</SelectItem>
+                    <SelectItem key={type.value} value={type.value}>
+                      {type.label}
+                    </SelectItem>
                   ))}
                 </SelectContent>
               </Select>
@@ -228,8 +284,8 @@ export default function CustomFieldsAdmin() {
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
                 <Label>Label (Exibição)</Label>
-                <Input 
-                  value={formData.label} 
+                <Input
+                  value={formData.label}
                   onChange={(e) => setFormData({ ...formData, label: e.target.value })}
                   placeholder="Ex: Cor Favorita"
                   className="bg-card/5 border-border"
@@ -237,8 +293,8 @@ export default function CustomFieldsAdmin() {
               </div>
               <div className="space-y-2">
                 <Label>Nome Técnico (DB)</Label>
-                <Input 
-                  value={formData.name} 
+                <Input
+                  value={formData.name}
                   onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                   placeholder="Ex: cor_favorita"
                   disabled={!!editingId}
@@ -249,8 +305,8 @@ export default function CustomFieldsAdmin() {
 
             <div className="space-y-2">
               <Label>Tipo de Dado</Label>
-              <Select 
-                value={formData.field_type} 
+              <Select
+                value={formData.field_type}
                 onValueChange={(val: FieldType) => setFormData({ ...formData, field_type: val })}
               >
                 <SelectTrigger className="bg-card/5 border-border">
@@ -258,7 +314,9 @@ export default function CustomFieldsAdmin() {
                 </SelectTrigger>
                 <SelectContent className="bg-popover border-border text-foreground">
                   {FIELD_TYPES.map((type) => (
-                    <SelectItem key={type.value} value={type.value}>{type.label}</SelectItem>
+                    <SelectItem key={type.value} value={type.value}>
+                      {type.label}
+                    </SelectItem>
                   ))}
                 </SelectContent>
               </Select>
@@ -267,8 +325,8 @@ export default function CustomFieldsAdmin() {
             {formData.field_type === 'select' && (
               <div className="space-y-2">
                 <Label>Opções (separadas por vírgula)</Label>
-                <Input 
-                  value={formData.options} 
+                <Input
+                  value={formData.options}
                   onChange={(e) => setFormData({ ...formData, options: e.target.value })}
                   placeholder="Azul, Verde, Vermelho"
                   className="bg-card/5 border-border"
@@ -278,8 +336,8 @@ export default function CustomFieldsAdmin() {
 
             <div className="space-y-2">
               <Label>Placeholder / Dica</Label>
-              <Input 
-                value={formData.placeholder} 
+              <Input
+                value={formData.placeholder}
                 onChange={(e) => setFormData({ ...formData, placeholder: e.target.value })}
                 placeholder="Dica para o usuário"
                 className="bg-card/5 border-border"
@@ -287,8 +345,8 @@ export default function CustomFieldsAdmin() {
             </div>
 
             <div className="flex items-center space-x-2 pt-2">
-              <Checkbox 
-                id="required" 
+              <Checkbox
+                id="required"
                 checked={formData.required}
                 onChange={(e) => setFormData({ ...formData, required: e.target.checked })}
               />
@@ -297,7 +355,13 @@ export default function CustomFieldsAdmin() {
           </div>
 
           <DialogFooter>
-            <Button variant="ghost" onClick={() => setIsDialogOpen(false)} className="text-foreground/40">Cancelar</Button>
+            <Button
+              variant="ghost"
+              onClick={() => setIsDialogOpen(false)}
+              className="text-foreground/40"
+            >
+              Cancelar
+            </Button>
             <Button onClick={handleSave} className="bg-primary">
               {editingId ? 'Salvar Alterações' : 'Criar Campo'}
             </Button>

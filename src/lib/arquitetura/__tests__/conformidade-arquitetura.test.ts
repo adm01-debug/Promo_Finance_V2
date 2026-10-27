@@ -95,7 +95,7 @@ describe('estrutura real do repositório', () => {
     '%s possui o caminho declarado %s',
     (_id, caminho) => {
       expect(fs.existsSync(path.join(RAIZ, caminho))).toBe(true);
-    },
+    }
   );
 });
 
@@ -115,7 +115,7 @@ describe('pureza do núcleo de domínio fiscal', () => {
           if (ADAPTERS_AUTORIZADOS.includes(arquivo)) continue;
           for (const dep of importsDe(arquivo)) {
             const proibido = IMPORTS_PROIBIDOS_NO_NUCLEO.some(
-              (p) => dep === p || dep.startsWith(`${p}/`),
+              (p) => dep === p || dep.startsWith(`${p}/`)
             );
             if (proibido) violacoes.push(`${modulo.id} :: ${arquivo} importa "${dep}"`);
           }
@@ -130,7 +130,7 @@ describe('pureza do núcleo de domínio fiscal', () => {
     for (const adapter of ADAPTERS_AUTORIZADOS) {
       expect(fs.existsSync(path.join(RAIZ, adapter))).toBe(true);
       const pertence = modulosPuros.some((m) =>
-        m.caminhos.some((c) => adapter === c || adapter.startsWith(`${c}/`)),
+        m.caminhos.some((c) => adapter === c || adapter.startsWith(`${c}/`))
       );
       expect(pertence, `${adapter} não pertence a nenhum módulo puro`).toBe(true);
     }

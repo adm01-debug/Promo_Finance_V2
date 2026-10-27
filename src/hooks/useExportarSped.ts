@@ -11,7 +11,13 @@ export function useExportarSped() {
       });
       if (error) throw error;
       if (data?.error) throw new Error(data.error);
-      return data as { url: string; file_name: string; total_linhas: number; periodo: string; observacao: string };
+      return data as {
+        url: string;
+        file_name: string;
+        total_linhas: number;
+        periodo: string;
+        observacao: string;
+      };
     },
     onSuccess: (data) => {
       toast.success(`SPED gerado (${data.total_linhas} linhas)`);

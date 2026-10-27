@@ -14,12 +14,10 @@
 
 async function streamThrough(
   input: Uint8Array,
-  transform: TransformStream<BufferSource, Uint8Array>,
+  transform: TransformStream<BufferSource, Uint8Array>
 ): Promise<Uint8Array> {
   const blob = new Blob([input as BlobPart]);
-  const stream = (blob.stream() as unknown as ReadableStream<BufferSource>).pipeThrough(
-    transform,
-  );
+  const stream = (blob.stream() as unknown as ReadableStream<BufferSource>).pipeThrough(transform);
   const chunks: Uint8Array[] = [];
   const reader = stream.getReader();
   for (;;) {
@@ -39,12 +37,12 @@ async function streamThrough(
 }
 
 function bytesToBase64(bytes: Uint8Array): string {
-  let binary = "";
+  let binary = '';
   const chunk = 0x8000;
   for (let i = 0; i < bytes.length; i += chunk) {
     binary += String.fromCharCode.apply(
       null,
-      Array.from(bytes.subarray(i, i + chunk)) as unknown as number[],
+      Array.from(bytes.subarray(i, i + chunk)) as unknown as number[]
     );
   }
   // deno-lint-ignore no-deprecated-deno-api
@@ -52,7 +50,7 @@ function bytesToBase64(bytes: Uint8Array): string {
 }
 
 function base64ToBytes(b64: string): Uint8Array {
-  const bin = atob(b64.replace(/\s+/g, ""));
+  const bin = atob(b64.replace(/\s+/g, ''));
   const out = new Uint8Array(bin.length);
   for (let i = 0; i < bin.length; i++) out[i] = bin.charCodeAt(i);
   return out;
@@ -60,14 +58,14 @@ function base64ToBytes(b64: string): Uint8Array {
 
 export async function gzipBase64(xml: string): Promise<string> {
   const bytes = new TextEncoder().encode(xml);
-  const compressed = await streamThrough(bytes, new CompressionStream("gzip"));
+  const compressed = await streamThrough(bytes, new CompressionStream('gzip'));
   return bytesToBase64(compressed);
 }
 
 export async function gunzipBase64(b64: string): Promise<string> {
   const bytes = base64ToBytes(b64);
-  const decompressed = await streamThrough(bytes, new DecompressionStream("gzip"));
-  return new TextDecoder("utf-8").decode(decompressed);
+  const decompressed = await streamThrough(bytes, new DecompressionStream('gzip'));
+  return new TextDecoder('utf-8').decode(decompressed);
 }
 
 /**

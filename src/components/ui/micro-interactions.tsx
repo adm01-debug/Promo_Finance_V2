@@ -13,9 +13,9 @@ interface AnimatedCounterProps {
   formatter?: (value: number) => string;
 }
 
-export function AnimatedCounter({ 
-  value, 
-  duration = 1000, 
+export function AnimatedCounter({
+  value,
+  duration = 1000,
   className,
   formatter = (v) => v.toLocaleString('pt-BR'),
 }: AnimatedCounterProps) {
@@ -23,12 +23,12 @@ export function AnimatedCounter({
   // Ref espelha o valor exibido para a animacao iniciar do valor atual sem
   // depender de displayValue (que mudaria a cada frame e reiniciaria o efeito).
   const displayValueRef = React.useRef(0);
-  
+
   React.useEffect(() => {
     const startTime = Date.now();
     const startValue = displayValueRef.current;
     const diff = value - startValue;
-    
+
     const animate = () => {
       const elapsed = Date.now() - startTime;
       const progress = Math.min(elapsed / duration, 1);
@@ -36,13 +36,13 @@ export function AnimatedCounter({
       const nextValue = Math.round(startValue + diff * eased);
       displayValueRef.current = nextValue;
       setDisplayValue(nextValue);
-      
+
       if (progress < 1) requestAnimationFrame(animate);
     };
-    
+
     requestAnimationFrame(animate);
   }, [value, duration]);
-  
+
   return <span className={className}>{formatter(displayValue)}</span>;
 }
 
@@ -60,21 +60,32 @@ export function PulseDot({ color = 'success', size = 'md', className }: PulseDot
     destructive: 'bg-destructive',
     primary: 'bg-primary',
   };
-  
+
   const sizes = { sm: 'h-2 w-2', md: 'h-3 w-3', lg: 'h-4 w-4' };
-  
+
   return (
-    <span className={cn("relative flex", sizes[size], className)}>
-      <span className={cn("animate-ping absolute inline-flex h-full w-full rounded-full opacity-75", colors[color])} />
-      <span className={cn("relative inline-flex rounded-full h-full w-full", colors[color])} />
+    <span className={cn('relative flex', sizes[size], className)}>
+      <span
+        className={cn(
+          'animate-ping absolute inline-flex h-full w-full rounded-full opacity-75',
+          colors[color]
+        )}
+      />
+      <span className={cn('relative inline-flex rounded-full h-full w-full', colors[color])} />
     </span>
   );
 }
 
 // SHIMMER EFFECT
-export function Shimmer({ children, className }: { children: React.ReactNode; className?: string }) {
+export function Shimmer({
+  children,
+  className,
+}: {
+  children: React.ReactNode;
+  className?: string;
+}) {
   return (
-    <div className={cn("relative overflow-hidden", className)}>
+    <div className={cn('relative overflow-hidden', className)}>
       {children}
       <div className="absolute inset-0 -translate-x-full animate-shimmer bg-gradient-to-r from-transparent via-white/10 to-transparent" />
     </div>
@@ -99,15 +110,22 @@ export function SuccessCheck({ show }: { show: boolean }) {
             animate="visible"
           >
             <motion.circle
-              cx="26" cy="26" r="25"
-              fill="none" stroke="currentColor" strokeWidth="2"
+              cx="26"
+              cy="26"
+              r="25"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
               initial={{ pathLength: 0 }}
               animate={{ pathLength: 1 }}
-              transition={{ duration: 0.5, ease: "easeOut" }}
+              transition={{ duration: 0.5, ease: 'easeOut' }}
             />
             <motion.path
-              fill="none" stroke="currentColor" strokeWidth="3"
-              strokeLinecap="round" strokeLinejoin="round"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="3"
+              strokeLinecap="round"
+              strokeLinejoin="round"
               d="M14.1 27.2l7.1 7.2 16.7-16.8"
               initial={{ pathLength: 0 }}
               animate={{ pathLength: 1 }}
@@ -121,7 +139,13 @@ export function SuccessCheck({ show }: { show: boolean }) {
 }
 
 // HOVER LIFT
-export function HoverLift({ children, className }: { children: React.ReactNode; className?: string }) {
+export function HoverLift({
+  children,
+  className,
+}: {
+  children: React.ReactNode;
+  className?: string;
+}) {
   return (
     <motion.div
       className={className}
@@ -140,7 +164,11 @@ interface StaggerContainerProps {
   staggerDelay?: number;
 }
 
-export function StaggerContainer({ children, className, staggerDelay = 0.05 }: StaggerContainerProps) {
+export function StaggerContainer({
+  children,
+  className,
+  staggerDelay = 0.05,
+}: StaggerContainerProps) {
   return (
     <motion.div
       className={className}
@@ -156,7 +184,13 @@ export function StaggerContainer({ children, className, staggerDelay = 0.05 }: S
   );
 }
 
-export function StaggerItem({ children, className }: { children: React.ReactNode; className?: string }) {
+export function StaggerItem({
+  children,
+  className,
+}: {
+  children: React.ReactNode;
+  className?: string;
+}) {
   return (
     <motion.div
       className={className}
@@ -184,7 +218,7 @@ export function EmptyState({ icon, title, description, action, className }: Empt
     <motion.div
       initial={{ opacity: 0, scale: 0.95 }}
       animate={{ opacity: 1, scale: 1 }}
-      className={cn("flex flex-col items-center justify-center py-12 px-4 text-center", className)}
+      className={cn('flex flex-col items-center justify-center py-12 px-4 text-center', className)}
     >
       <motion.div
         initial={{ scale: 0 }}
@@ -204,27 +238,34 @@ export function EmptyState({ icon, title, description, action, className }: Empt
 // FLOATING CELEBRATION ICONS
 const celebrationIcons = [Sparkles, PartyPopper, Zap, Heart, Star, Trophy, Target];
 
-export function FloatingCelebration({ children, trigger }: { children: React.ReactNode; trigger: boolean }) {
+export function FloatingCelebration({
+  children,
+  trigger,
+}: {
+  children: React.ReactNode;
+  trigger: boolean;
+}) {
   return (
     <div className="relative inline-block">
       {children}
       <AnimatePresence>
-        {trigger && celebrationIcons.map((Icon, i) => (
-          <motion.div
-            key={i}
-            initial={{ opacity: 0, scale: 0, x: 0, y: 0 }}
-            animate={{ 
-              opacity: [0, 1, 1, 0],
-              scale: [0, 1.2, 1, 0.8],
-              x: (Math.random() - 0.5) * 100,
-              y: -50 - Math.random() * 50,
-            }}
-            transition={{ duration: 1, delay: i * 0.1, ease: 'easeOut' }}
-            className="absolute top-0 left-1/2 -translate-x-1/2 text-primary pointer-events-none"
-          >
-            <Icon className="h-4 w-4" />
-          </motion.div>
-        ))}
+        {trigger &&
+          celebrationIcons.map((Icon, i) => (
+            <motion.div
+              key={i}
+              initial={{ opacity: 0, scale: 0, x: 0, y: 0 }}
+              animate={{
+                opacity: [0, 1, 1, 0],
+                scale: [0, 1.2, 1, 0.8],
+                x: (Math.random() - 0.5) * 100,
+                y: -50 - Math.random() * 50,
+              }}
+              transition={{ duration: 1, delay: i * 0.1, ease: 'easeOut' }}
+              className="absolute top-0 left-1/2 -translate-x-1/2 text-primary pointer-events-none"
+            >
+              <Icon className="h-4 w-4" />
+            </motion.div>
+          ))}
       </AnimatePresence>
     </div>
   );
@@ -249,7 +290,13 @@ export function LoadingDots({ color = 'currentColor' }: { color?: string }) {
 }
 
 // RIPPLE EFFECT
-export function Ripple({ className, color = 'rgba(255, 255, 255, 0.3)' }: { className?: string; color?: string }) {
+export function Ripple({
+  className,
+  color = 'rgba(255, 255, 255, 0.3)',
+}: {
+  className?: string;
+  color?: string;
+}) {
   return (
     <motion.span
       initial={{ scale: 0, opacity: 0.5 }}
@@ -291,7 +338,10 @@ export function InteractiveButton({
   const animations = {
     scale: { whileHover: { scale: 1.02 }, whileTap: { scale: 0.98 } },
     bounce: { whileHover: { y: -2 }, whileTap: { y: 1, scale: 0.98 } },
-    glow: { whileHover: { scale: 1.02, boxShadow: '0 0 20px hsl(217 91% 60% / 0.5)' }, whileTap: { scale: 0.98 } },
+    glow: {
+      whileHover: { scale: 1.02, boxShadow: '0 0 20px hsl(217 91% 60% / 0.5)' },
+      whileTap: { scale: 0.98 },
+    },
   };
 
   return (

@@ -3,11 +3,27 @@
 
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { 
-  LayoutDashboard, Calculator, FileText, Shield, BarChart3, 
-  Settings, ChevronDown, ChevronRight, Zap, TrendingUp,
-  Receipt, Clock, AlertTriangle, Download, Scale, Wallet,
-  FileUp, Gift, CheckCircle, Calendar
+import {
+  LayoutDashboard,
+  Calculator,
+  FileText,
+  Shield,
+  BarChart3,
+  Settings,
+  ChevronDown,
+  ChevronRight,
+  Zap,
+  TrendingUp,
+  Receipt,
+  Clock,
+  AlertTriangle,
+  Download,
+  Scale,
+  Wallet,
+  FileUp,
+  Gift,
+  CheckCircle,
+  Calendar,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
@@ -38,7 +54,7 @@ const getNavGroups = (alertasCriticos: number): NavGroup[] => [
       { id: 'visao-geral', label: 'Dashboard', icon: LayoutDashboard },
       { id: 'metricas', label: 'Métricas', icon: BarChart3 },
       { id: 'cronograma', label: 'Cronograma', icon: Calendar },
-    ]
+    ],
   },
   {
     id: 'operacional',
@@ -51,7 +67,7 @@ const getNavGroups = (alertasCriticos: number): NavGroup[] => [
       { id: 'creditos', label: 'Créditos', icon: TrendingUp },
       { id: 'retencoes', label: 'Retenções', icon: Receipt },
       { id: 'irpj-csll', label: 'IRPJ/CSLL', icon: FileText },
-    ]
+    ],
   },
   {
     id: 'compliance',
@@ -63,8 +79,14 @@ const getNavGroups = (alertasCriticos: number): NavGroup[] => [
       { id: 'auditoria', label: 'Auditoria', icon: Shield },
       { id: 'conciliacao', label: 'Conciliação', icon: CheckCircle },
       { id: 'fechamento-mensal', label: 'Fechamento Mensal', icon: Clock },
-      { id: 'alertas', label: 'Alertas', icon: AlertTriangle, badge: alertasCriticos > 0 ? String(alertasCriticos) : undefined, badgeVariant: 'destructive' as const },
-    ]
+      {
+        id: 'alertas',
+        label: 'Alertas',
+        icon: AlertTriangle,
+        badge: alertasCriticos > 0 ? String(alertasCriticos) : undefined,
+        badgeVariant: 'destructive' as const,
+      },
+    ],
   },
   {
     id: 'simuladores',
@@ -76,7 +98,7 @@ const getNavGroups = (alertasCriticos: number): NavGroup[] => [
       { id: 'simulador', label: 'Cenários', icon: Zap },
       { id: 'comparativo', label: 'Comparativo', icon: Scale },
       { id: 'cashback', label: 'Cashback', icon: Wallet },
-    ]
+    ],
   },
   {
     id: 'exportacao',
@@ -88,7 +110,7 @@ const getNavGroups = (alertasCriticos: number): NavGroup[] => [
       { id: 'per-dcomp', label: 'PER/DCOMP', icon: FileText },
       { id: 'split-payment', label: 'Split Payment', icon: Zap },
       { id: 'relatorios', label: 'Relatórios', icon: BarChart3 },
-    ]
+    ],
   },
   {
     id: 'configuracoes',
@@ -98,7 +120,7 @@ const getNavGroups = (alertasCriticos: number): NavGroup[] => [
     items: [
       { id: 'incentivos', label: 'Incentivos Fiscais', icon: Gift },
       { id: 'importacao-xml', label: 'Importar XML', icon: FileUp },
-    ]
+    ],
   },
 ];
 
@@ -112,7 +134,7 @@ export function NavigationTributaria({ activeTab, onTabChange, alertasCriticos =
   const [expandedGroup, setExpandedGroup] = useState<string | null>(() => {
     // Encontra o grupo que contém a aba ativa
     for (const group of getNavGroups(alertasCriticos)) {
-      if (group.items.some(item => item.id === activeTab)) {
+      if (group.items.some((item) => item.id === activeTab)) {
         return group.id;
       }
     }
@@ -125,7 +147,7 @@ export function NavigationTributaria({ activeTab, onTabChange, alertasCriticos =
 
   const getActiveGroup = () => {
     for (const group of getNavGroups(alertasCriticos)) {
-      if (group.items.some(item => item.id === activeTab)) {
+      if (group.items.some((item) => item.id === activeTab)) {
         return group.id;
       }
     }
@@ -146,20 +168,19 @@ export function NavigationTributaria({ activeTab, onTabChange, alertasCriticos =
           return (
             <div key={group.id} className="relative">
               <Button
-                variant={isActive ? "default" : "ghost"}
+                variant={isActive ? 'default' : 'ghost'}
                 size="sm"
-                className={cn(
-                  "gap-2 transition-all duration-200",
-                  isActive && "shadow-md"
-                )}
+                className={cn('gap-2 transition-all duration-200', isActive && 'shadow-md')}
                 onClick={() => handleGroupClick(group.id)}
               >
-                <Icon className={cn("h-4 w-4", !isActive && group.color)} />
+                <Icon className={cn('h-4 w-4', !isActive && group.color)} />
                 <span>{group.label}</span>
-                <ChevronDown className={cn(
-                  "h-3 w-3 transition-transform duration-200",
-                  isExpanded && "rotate-180"
-                )} />
+                <ChevronDown
+                  className={cn(
+                    'h-3 w-3 transition-transform duration-200',
+                    isExpanded && 'rotate-180'
+                  )}
+                />
               </Button>
 
               {/* Dropdown */}
@@ -184,21 +205,21 @@ export function NavigationTributaria({ activeTab, onTabChange, alertasCriticos =
                             setExpandedGroup(null);
                           }}
                           className={cn(
-                            "w-full flex items-center gap-3 px-3 py-2 rounded-md text-sm transition-colors",
-                            isItemActive 
-                              ? "bg-primary text-primary-foreground" 
-                              : "hover:bg-muted"
+                            'w-full flex items-center gap-3 px-3 py-2 rounded-md text-sm transition-colors',
+                            isItemActive ? 'bg-primary text-primary-foreground' : 'hover:bg-muted'
                           )}
                         >
                           <ItemIcon className="h-4 w-4" />
                           <span className="flex-1 text-left">{item.label}</span>
                           {item.badge && (
-                            <span className={cn(
-                              "text-xs px-1.5 py-0.5 rounded-full font-medium",
-                              item.badgeVariant === 'destructive' 
-                                ? "bg-destructive text-destructive-foreground" 
-                                : "bg-secondary text-secondary-foreground"
-                            )}>
+                            <span
+                              className={cn(
+                                'text-xs px-1.5 py-0.5 rounded-full font-medium',
+                                item.badgeVariant === 'destructive'
+                                  ? 'bg-destructive text-destructive-foreground'
+                                  : 'bg-secondary text-secondary-foreground'
+                              )}
+                            >
                               {item.badge}
                             </span>
                           )}
@@ -225,16 +246,18 @@ export function NavigationTributaria({ activeTab, onTabChange, alertasCriticos =
               <button
                 onClick={() => handleGroupClick(group.id)}
                 className={cn(
-                  "w-full flex items-center gap-2 sm:gap-3 px-2.5 sm:px-3 py-2 sm:py-2.5 rounded-lg text-xs sm:text-sm font-medium transition-colors min-h-[40px]",
-                  isActive ? "bg-primary/10 text-primary" : "hover:bg-muted"
+                  'w-full flex items-center gap-2 sm:gap-3 px-2.5 sm:px-3 py-2 sm:py-2.5 rounded-lg text-xs sm:text-sm font-medium transition-colors min-h-[40px]',
+                  isActive ? 'bg-primary/10 text-primary' : 'hover:bg-muted'
                 )}
               >
-                <Icon className={cn("h-3.5 w-3.5 sm:h-4 sm:w-4 flex-shrink-0", group.color)} />
+                <Icon className={cn('h-3.5 w-3.5 sm:h-4 sm:w-4 flex-shrink-0', group.color)} />
                 <span className="flex-1 text-left truncate">{group.label}</span>
-                <ChevronRight className={cn(
-                  "h-3.5 w-3.5 sm:h-4 sm:w-4 transition-transform duration-200 flex-shrink-0",
-                  isExpanded && "rotate-90"
-                )} />
+                <ChevronRight
+                  className={cn(
+                    'h-3.5 w-3.5 sm:h-4 sm:w-4 transition-transform duration-200 flex-shrink-0',
+                    isExpanded && 'rotate-90'
+                  )}
+                />
               </button>
 
               <AnimatePresence>
@@ -256,21 +279,23 @@ export function NavigationTributaria({ activeTab, onTabChange, alertasCriticos =
                             key={item.id}
                             onClick={() => onTabChange(item.id)}
                             className={cn(
-                              "w-full flex items-center gap-2 sm:gap-3 px-2.5 sm:px-3 py-1.5 sm:py-2 rounded-md text-xs sm:text-sm transition-colors min-h-[36px]",
-                              isItemActive 
-                                ? "bg-primary text-primary-foreground" 
-                                : "hover:bg-muted text-muted-foreground"
+                              'w-full flex items-center gap-2 sm:gap-3 px-2.5 sm:px-3 py-1.5 sm:py-2 rounded-md text-xs sm:text-sm transition-colors min-h-[36px]',
+                              isItemActive
+                                ? 'bg-primary text-primary-foreground'
+                                : 'hover:bg-muted text-muted-foreground'
                             )}
                           >
                             <ItemIcon className="h-3.5 w-3.5 sm:h-4 sm:w-4 flex-shrink-0" />
                             <span className="flex-1 text-left truncate">{item.label}</span>
                             {item.badge && (
-                              <span className={cn(
-                                "text-[10px] sm:text-xs px-1 sm:px-1.5 py-0.5 rounded-full font-medium flex-shrink-0",
-                                item.badgeVariant === 'destructive' 
-                                  ? "bg-destructive text-destructive-foreground" 
-                                  : "bg-secondary text-secondary-foreground"
-                              )}>
+                              <span
+                                className={cn(
+                                  'text-[10px] sm:text-xs px-1 sm:px-1.5 py-0.5 rounded-full font-medium flex-shrink-0',
+                                  item.badgeVariant === 'destructive'
+                                    ? 'bg-destructive text-destructive-foreground'
+                                    : 'bg-secondary text-secondary-foreground'
+                                )}
+                              >
                                 {item.badge}
                               </span>
                             )}

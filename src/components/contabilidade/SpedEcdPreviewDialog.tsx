@@ -71,28 +71,25 @@ export function SpedEcdPreviewDialog({
   const totalErros = erros.length + (auditoriaCFC.problemasCriticos || 0);
   const totalAvisos = avisos.length;
   const podeGerar =
-    !!data &&
-    totalErros === 0 &&
-    preValidacao.podeGerar &&
-    auditoriaCFC.problemasCriticos === 0;
+    !!data && totalErros === 0 && preValidacao.podeGerar && auditoriaCFC.problemasCriticos === 0;
 
-  const statusGlobal: 'ok' | 'warn' | 'error' = totalErros > 0
-    ? 'error'
-    : totalAvisos > 0
-      ? 'warn'
-      : 'ok';
+  const statusGlobal: 'ok' | 'warn' | 'error' =
+    totalErros > 0 ? 'error' : totalAvisos > 0 ? 'warn' : 'ok';
 
-  const StatusIcon = statusGlobal === 'ok' ? CheckCircle2 : statusGlobal === 'warn' ? AlertTriangle : XCircle;
-  const statusLabel = statusGlobal === 'ok'
-    ? 'Pronto para gerar'
-    : statusGlobal === 'warn'
-      ? 'Pronto com avisos'
-      : 'Geração bloqueada';
-  const statusTone = statusGlobal === 'ok'
-    ? 'bg-success/10 text-success border-success/30'
-    : statusGlobal === 'warn'
-      ? 'bg-warning/10 text-warning border-warning/30'
-      : 'bg-destructive/10 text-destructive border-destructive/30';
+  const StatusIcon =
+    statusGlobal === 'ok' ? CheckCircle2 : statusGlobal === 'warn' ? AlertTriangle : XCircle;
+  const statusLabel =
+    statusGlobal === 'ok'
+      ? 'Pronto para gerar'
+      : statusGlobal === 'warn'
+        ? 'Pronto com avisos'
+        : 'Geração bloqueada';
+  const statusTone =
+    statusGlobal === 'ok'
+      ? 'bg-success/10 text-success border-success/30'
+      : statusGlobal === 'warn'
+        ? 'bg-warning/10 text-warning border-warning/30'
+        : 'bg-destructive/10 text-destructive border-destructive/30';
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -116,12 +113,7 @@ export function SpedEcdPreviewDialog({
         {!validar.isPending && data && (
           <div className="space-y-4">
             {/* Banner de status global */}
-            <div
-              className={cn(
-                'rounded-lg border p-4 flex items-start gap-3',
-                statusTone,
-              )}
-            >
+            <div className={cn('rounded-lg border p-4 flex items-start gap-3', statusTone)}>
               <StatusIcon className="h-5 w-5 mt-0.5 shrink-0" />
               <div className="flex-1 min-w-0">
                 <p className="font-semibold">{statusLabel}</p>
@@ -175,7 +167,9 @@ export function SpedEcdPreviewDialog({
                         <ul className="space-y-1 text-sm">
                           {erros.map((e, i) => (
                             <li key={i} className="flex gap-2">
-                              <Badge variant="destructive" className="h-5 px-1.5 shrink-0">{i + 1}</Badge>
+                              <Badge variant="destructive" className="h-5 px-1.5 shrink-0">
+                                {i + 1}
+                              </Badge>
                               <span className="text-foreground">{e}</span>
                             </li>
                           ))}
@@ -196,7 +190,10 @@ export function SpedEcdPreviewDialog({
                         <ul className="space-y-1 text-sm">
                           {avisos.map((a, i) => (
                             <li key={i} className="flex gap-2">
-                              <Badge variant="outline" className="h-5 px-1.5 shrink-0 border-warning/40 text-warning">
+                              <Badge
+                                variant="outline"
+                                className="h-5 px-1.5 shrink-0 border-warning/40 text-warning"
+                              >
                                 {i + 1}
                               </Badge>
                               <span className="text-foreground">{a}</span>
@@ -222,8 +219,8 @@ export function SpedEcdPreviewDialog({
 
             {auditoriaCFC.problemasCriticos > 0 && (
               <Alert variant="error" title="Códigos referenciais CFC com problemas">
-                {auditoriaCFC.problemasCriticos} problema(s) crítico(s) detectado(s) no plano de contas.
-                Audite o plano antes de gerar o SPED.
+                {auditoriaCFC.problemasCriticos} problema(s) crítico(s) detectado(s) no plano de
+                contas. Audite o plano antes de gerar o SPED.
               </Alert>
             )}
 

@@ -13,7 +13,8 @@ export function extrairOffline(data: unknown): OfflineMeta | null {
   const meta = (data as { _offline?: unknown })._offline;
   if (!meta || typeof meta !== 'object') return null;
   const { origem, gravadoEm } = meta as Partial<OfflineMeta>;
-  if (origem !== 'cache' || typeof gravadoEm !== 'number' || !Number.isFinite(gravadoEm)) return null;
+  if (origem !== 'cache' || typeof gravadoEm !== 'number' || !Number.isFinite(gravadoEm))
+    return null;
   return { origem, gravadoEm };
 }
 

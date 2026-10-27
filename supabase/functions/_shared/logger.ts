@@ -1,9 +1,9 @@
 export enum LogLevel {
-  DEBUG = "DEBUG",
-  INFO = "INFO",
-  WARN = "WARN",
-  ERROR = "ERROR",
-  CRITICAL = "CRITICAL"
+  DEBUG = 'DEBUG',
+  INFO = 'INFO',
+  WARN = 'WARN',
+  ERROR = 'ERROR',
+  CRITICAL = 'CRITICAL',
 }
 
 /**
@@ -14,6 +14,11 @@ export enum LogLevel {
  *   const logger = createLogger('minha-funcao', requestId);
  *   logger.info('processando pedido', { orderId });
  */
+// Redação unificada: mesmas regras do observability.ts (chaves sensíveis,
+// PII em texto e segredos de env) — logs desta classe não podem desviar de
+// CPF/CNPJ/token mesmo quando o call-site interpola o valor na mensagem.
+import { redigir } from './observability.ts';
+
 export class Logger {
   private functionName: string;
   private requestId?: string;
@@ -37,9 +42,9 @@ export class Logger {
       level,
       function: this.functionName,
       request_id: this.requestId,
-      message,
-      ...this.defaultContext,
-      ...context
+      message: redigir(message),
+      ...(redigir(this.defaultContext) as Record<string, unknown>),
+      ...(context ? (redigir(context) as Record<string, unknown>) : {}),
     };
 
     if (level === LogLevel.ERROR || level === LogLevel.CRITICAL) {
@@ -49,13 +54,21 @@ export class Logger {
     }
   }
 
-
-  debug(message: string, context?: Record<string, unknown>) { this.log(LogLevel.DEBUG, message, context); }
-  info(message: string, context?: Record<string, unknown>) { this.log(LogLevel.INFO, message, context); }
-  warn(message: string, context?: Record<string, unknown>) { this.log(LogLevel.WARN, message, context); }
-  error(message: string, context?: Record<string, unknown>) { this.log(LogLevel.ERROR, message, context); }
-  critical(message: string, context?: Record<string, unknown>) { this.log(LogLevel.CRITICAL, message, context); }
+  debug(message: string, context?: Record<string, unknown>) {
+    this.log(LogLevel.DEBUG, message, context);
+  }
+  info(message: string, context?: Record<string, unknown>) {
+    this.log(LogLevel.INFO, message, context);
+  }
+  warn(message: string, context?: Record<string, unknown>) {
+    this.log(LogLevel.WARN, message, context);
+  }
+  error(message: string, context?: Record<string, unknown>) {
+    this.log(LogLevel.ERROR, message, context);
+  }
+  critical(message: string, context?: Record<string, unknown>) {
+    this.log(LogLevel.CRITICAL, message, context);
+  }
 }
 
-export const createLogger = (name: string, requestId?: string) =>
-  new Logger(name, requestId);
+export const createLogger = (name: string, requestId?: string) => new Logger(name, requestId);

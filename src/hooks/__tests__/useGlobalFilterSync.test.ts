@@ -18,7 +18,10 @@ describe('useGlobalFilterSync', () => {
   it('deve registrar o listener de evento ao montar', () => {
     const addEventListenerSpy = vi.spyOn(window, 'addEventListener');
     renderHook(() => useGlobalFilterSync());
-    expect(addEventListenerSpy).toHaveBeenCalledWith('current-empresa-changed', expect.any(Function));
+    expect(addEventListenerSpy).toHaveBeenCalledWith(
+      'current-empresa-changed',
+      expect.any(Function)
+    );
   });
 
   it('deve disparar toast quando o evento current-empresa-changed ocorre', () => {
@@ -27,9 +30,12 @@ describe('useGlobalFilterSync', () => {
     const event = new CustomEvent('current-empresa-changed', { detail: 'empresa-123' });
     window.dispatchEvent(event);
 
-    expect(toast.info).toHaveBeenCalledWith('Filtros sincronizados', expect.objectContaining({
-      description: expect.stringContaining('empresa'),
-    }));
+    expect(toast.info).toHaveBeenCalledWith(
+      'Filtros sincronizados',
+      expect.objectContaining({
+        description: expect.stringContaining('empresa'),
+      })
+    );
   });
 
   it('não deve disparar se o detalhe do evento estiver vazio', () => {
@@ -45,6 +51,9 @@ describe('useGlobalFilterSync', () => {
     const removeEventListenerSpy = vi.spyOn(window, 'removeEventListener');
     const { unmount } = renderHook(() => useGlobalFilterSync());
     unmount();
-    expect(removeEventListenerSpy).toHaveBeenCalledWith('current-empresa-changed', expect.any(Function));
+    expect(removeEventListenerSpy).toHaveBeenCalledWith(
+      'current-empresa-changed',
+      expect.any(Function)
+    );
   });
 });

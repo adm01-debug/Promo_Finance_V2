@@ -8,20 +8,28 @@ const adminAutenticado = {
   clientDoUsuario: {} as never,
 };
 
-function criarDeps(opcoes: {
-  autenticado?: boolean;
-  existente?: boolean;
-  erroConsulta?: boolean;
-  erroConvite?: boolean;
-  erroRemocao?: boolean;
-  erroPapel?: boolean;
-  limitado?: boolean;
-} = {}) {
-  const eventos = { convite: 0, remocao: 0, insercoes: [] as Record<string, unknown>[], compensacoes: 0 };
+function criarDeps(
+  opcoes: {
+    autenticado?: boolean;
+    existente?: boolean;
+    erroConsulta?: boolean;
+    erroConvite?: boolean;
+    erroRemocao?: boolean;
+    erroPapel?: boolean;
+    limitado?: boolean;
+  } = {}
+) {
+  const eventos = {
+    convite: 0,
+    remocao: 0,
+    insercoes: [] as Record<string, unknown>[],
+    compensacoes: 0,
+  };
   const deps: DependenciasConviteUsuario = {
-    exigirPapel: async () => opcoes.autenticado === false
-      ? { ok: false, resposta: new Response(null, { status: 403 }) }
-      : { ok: true, dados: adminAutenticado },
+    exigirPapel: async () =>
+      opcoes.autenticado === false
+        ? { ok: false, resposta: new Response(null, { status: 403 }) }
+        : { ok: true, dados: adminAutenticado },
     appBaseUrl: () => 'https://app.promofinance.test/caminho-inseguro',
     registrarErro: () => undefined,
     verificarRateLimit: async () => ({
@@ -44,21 +52,31 @@ function criarDeps(opcoes: {
         eq: async () => ({ data: null, error: opcoes.erroRemocao ? { message: 'falha' } : null }),
         insert: async (registro: Record<string, unknown>) => {
           eventos.insercoes.push(registro);
-          return { data: opcoes.erroPapel ? null : { id: 'papel-1' }, error: opcoes.erroPapel ? { message: 'falha' } : null };
+          return {
+            data: opcoes.erroPapel ? null : { id: 'papel-1' },
+            error: opcoes.erroPapel ? { message: 'falha' } : null,
+          };
         },
       };
       return {
-        from: (tabela: 'profiles' | 'user_roles') => tabela === 'profiles' ? perfil : papeis,
-        auth: { admin: {
-          inviteUserByEmail: async () => {
-            eventos.convite += 1;
-            return { data: opcoes.erroConvite ? null : { user: { id: '22222222-2222-4222-8222-222222222222' } }, error: opcoes.erroConvite ? { message: 'falha' } : null };
+        from: (tabela: 'profiles' | 'user_roles') => (tabela === 'profiles' ? perfil : papeis),
+        auth: {
+          admin: {
+            inviteUserByEmail: async () => {
+              eventos.convite += 1;
+              return {
+                data: opcoes.erroConvite
+                  ? null
+                  : { user: { id: '22222222-2222-4222-8222-222222222222' } },
+                error: opcoes.erroConvite ? { message: 'falha' } : null,
+              };
+            },
+            deleteUser: async () => {
+              eventos.compensacoes += 1;
+              return { data: null, error: null };
+            },
           },
-          deleteUser: async () => {
-            eventos.compensacoes += 1;
-            return { data: null, error: null };
-          },
-        } },
+        },
       } as never;
     },
   };
@@ -77,7 +95,10 @@ const corpoValido = { email: 'Novo.Usuario@Empresa.Test', role: 'financeiro' };
 
 Deno.test('convite de usuário: preflight não exige autenticação', async () => {
   const { deps } = criarDeps({ autenticado: false });
-  assertEquals((await createHandler(deps)(new Request('http://localhost', { method: 'OPTIONS' }))).status, 204);
+  assertEquals(
+    (await createHandler(deps)(new Request('http://localhost', { method: 'OPTIONS' }))).status,
+    204
+  );
 });
 
 Deno.test('convite de usuário: anônimo não alcança Auth nem banco', async () => {
@@ -89,7 +110,10 @@ Deno.test('convite de usuário: anônimo não alcança Auth nem banco', async ()
 
 Deno.test('convite de usuário: payload inválido não cria convite', async () => {
   const { deps, eventos } = criarDeps();
-  assertEquals((await createHandler(deps)(requisicao({ email: 'invalido', role: 'root' }))).status, 400);
+  assertEquals(
+    (await createHandler(deps)(requisicao({ email: 'invalido', role: 'root' }))).status,
+    400
+  );
   assertEquals(eventos.convite, 0);
 });
 
@@ -128,13 +152,15 @@ Deno.test('convite de usuário: persiste apenas o papel solicitado após o convi
     role: 'financeiro',
     email_status: 'solicitado_ao_auth',
   });
-  assertEquals(eventos.insercoes, [{
-    user_id: '22222222-2222-4222-8222-222222222222',
-    role: 'financeiro',
-    assigned_by: '11111111-1111-4111-8111-111111111111',
-    is_active: true,
-    notes: 'Papel atribuído no convite administrativo.',
-  }]);
+  assertEquals(eventos.insercoes, [
+    {
+      user_id: '22222222-2222-4222-8222-222222222222',
+      role: 'financeiro',
+      assigned_by: '11111111-1111-4111-8111-111111111111',
+      is_active: true,
+      notes: 'Papel atribuído no convite administrativo.',
+    },
+  ]);
 });
 
 Deno.test('convite de usuário: falha ao atribuir papel compensa a conta recém-criada', async () => {

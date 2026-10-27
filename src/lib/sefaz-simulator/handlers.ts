@@ -20,8 +20,7 @@ async function processarAutorizacao(request: SefazRequest): Promise<SefazRespons
     return {
       success: false,
       cStat: validacao.cStat || '225',
-      xMotivo:
-        SEFAZ_STATUS[validacao.cStat as keyof typeof SEFAZ_STATUS] || validacao.errors[0],
+      xMotivo: SEFAZ_STATUS[validacao.cStat as keyof typeof SEFAZ_STATUS] || validacao.errors[0],
       errors: validacao.errors,
     };
   }

@@ -226,8 +226,8 @@ export function ExportDemonstrativoPDF(props: ExportDemonstrativoPDFProps) {
           margin: margins,
         });
         cursorY =
-          (doc as unknown as { lastAutoTable?: { finalY: number } }).lastAutoTable?.finalY + 4 ||
-          cursorY + 4;
+          ((doc as unknown as { lastAutoTable?: { finalY: number } }).lastAutoTable?.finalY ??
+            cursorY) + 4;
       }
 
       // Main table

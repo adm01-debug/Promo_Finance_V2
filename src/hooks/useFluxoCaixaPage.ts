@@ -6,9 +6,9 @@ import {
   AlertaRuptura,
 } from '@/lib/cashflow-scenarios';
 import {
-  useFluxoCaixaKPIs, 
-  useFluxoCaixaProjetado, 
-  calcularProjecoesReais 
+  useFluxoCaixaKPIs,
+  useFluxoCaixaProjetado,
+  calcularProjecoesReais,
 } from '@/hooks/useFluxoCaixa';
 import { useQuickDateFilter } from '@/components/ui/quick-date-filters.hooks';
 
@@ -23,13 +23,17 @@ export function useFluxoCaixaPage() {
   const [periodo, setPeriodo] = useState('30d');
   const [cenarioAtivo, setCenarioAtivo] = useState<CenarioTipo>('realista');
   const [alertasDismissed, setAlertasDismissed] = useState<string[]>([]);
-  
+
   const { filterType, handleFilterChange } = useQuickDateFilter();
-  
+
   const dias = periodoDias[periodo] || 30;
-  
+
   const { data: kpis, isLoading: loadingKpis, refetch: refetchKpis } = useFluxoCaixaKPIs();
-  const { data: fluxoProjetado, isLoading: loadingFluxo, refetch: refetchFluxo } = useFluxoCaixaProjetado(dias);
+  const {
+    data: fluxoProjetado,
+    isLoading: loadingFluxo,
+    refetch: refetchFluxo,
+  } = useFluxoCaixaProjetado(dias);
 
   const saldoInicial = kpis?.saldoTotal || 0;
 
@@ -61,7 +65,7 @@ export function useFluxoCaixaPage() {
   const alertas = useMemo(() => {
     if (!projecoes.realista.length) return [];
     const todosAlertas = detectarAlertasRuptura(projecoes, 0, 50000, 100000);
-    return todosAlertas.filter(a => !alertasDismissed.includes(a.id));
+    return todosAlertas.filter((a) => !alertasDismissed.includes(a.id));
   }, [projecoes, alertasDismissed]);
 
   // Dados do cenário ativo
@@ -75,17 +79,19 @@ export function useFluxoCaixaPage() {
   const variacao = saldoFinal - saldoInicial;
 
   // Dados para gráfico de barras
-  const barData = useMemo(() => 
-    dadosCenarioAtivo.map(f => ({
-      ...f,
-      data: f.data.slice(5),
-      liquido: f.receitas - f.despesas,
-    })), [dadosCenarioAtivo]
+  const barData = useMemo(
+    () =>
+      dadosCenarioAtivo.map((f) => ({
+        ...f,
+        data: f.data.slice(5),
+        liquido: f.receitas - f.despesas,
+      })),
+    [dadosCenarioAtivo]
   );
 
   // Handlers
   const handleDismissAlerta = useCallback((id: string) => {
-    setAlertasDismissed(prev => [...prev, id]);
+    setAlertasDismissed((prev) => [...prev, id]);
   }, []);
 
   const handleVerDetalhesAlerta = useCallback((alerta: AlertaRuptura) => {
@@ -107,7 +113,7 @@ export function useFluxoCaixaPage() {
     setCenarioAtivo,
     filterType,
     handleFilterChange,
-    
+
     // Data
     kpis,
     projecoes,
@@ -122,12 +128,12 @@ export function useFluxoCaixaPage() {
     variacao,
     barData,
     dias,
-    
+
     // Loading
     isLoading,
     loadingKpis,
     loadingFluxo,
-    
+
     // Handlers
     handleDismissAlerta,
     handleVerDetalhesAlerta,

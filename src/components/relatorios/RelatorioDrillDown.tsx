@@ -2,10 +2,7 @@ import { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { format, startOfMonth, endOfMonth, subMonths } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
-import { 
-  Calendar,
-  ArrowLeft
-} from 'lucide-react';
+import { Calendar, ArrowLeft } from 'lucide-react';
 import { AnimatePresence } from 'framer-motion';
 import { supabase } from '@/integrations/supabase/client';
 
@@ -56,10 +53,16 @@ export function RelatorioDrillDown() {
       ]);
 
       const totalReceitas = receitas.data?.reduce((acc, r) => acc + r.valor, 0) || 0;
-      const receitasRecebidas = receitas.data?.filter(r => r.status === 'pago').reduce((acc, r) => acc + (r.valor_recebido || r.valor), 0) || 0;
-      
+      const receitasRecebidas =
+        receitas.data
+          ?.filter((r) => r.status === 'pago')
+          .reduce((acc, r) => acc + (r.valor_recebido || r.valor), 0) || 0;
+
       const totalDespesas = despesas.data?.reduce((acc, d) => acc + d.valor, 0) || 0;
-      const despesasPagas = despesas.data?.filter(d => d.status === 'pago').reduce((acc, d) => acc + (d.valor_pago || d.valor), 0) || 0;
+      const despesasPagas =
+        despesas.data
+          ?.filter((d) => d.status === 'pago')
+          .reduce((acc, d) => acc + (d.valor_pago || d.valor), 0) || 0;
 
       return {
         receitas: {
@@ -86,7 +89,7 @@ export function RelatorioDrillDown() {
     queryKey: ['drill-empresas', periodo, drillState.categoria],
     queryFn: async () => {
       const tabela = drillState.categoria === 'receitas' ? 'contas_receber' : 'contas_pagar';
-      
+
       const { data: empresas } = await supabase
         .from('empresas')
         .select('id, razao_social, nome_fantasia');
@@ -107,24 +110,29 @@ export function RelatorioDrillDown() {
         valor_pago?: number;
       }
 
-      const porEmpresa = empresas?.map(emp => {
-        const contasEmpresa = (contas as ContaRecord[]).filter(c => c.empresa_id === emp.id);
-        const total = contasEmpresa.reduce((acc, c) => acc + (c.valor || 0), 0);
-        const valorField = drillState.categoria === 'receitas' ? 'valor_recebido' : 'valor_pago';
-        const realizado = contasEmpresa
-          .filter(c => c.status === 'pago')
-          .reduce((acc, c) => acc + ((c[valorField as keyof ContaRecord] as number) || c.valor || 0), 0);
+      const porEmpresa = empresas
+        ?.map((emp) => {
+          const contasEmpresa = (contas as ContaRecord[]).filter((c) => c.empresa_id === emp.id);
+          const total = contasEmpresa.reduce((acc, c) => acc + (c.valor || 0), 0);
+          const valorField = drillState.categoria === 'receitas' ? 'valor_recebido' : 'valor_pago';
+          const realizado = contasEmpresa
+            .filter((c) => c.status === 'pago')
+            .reduce(
+              (acc, c) => acc + ((c[valorField as keyof ContaRecord] as number) || c.valor || 0),
+              0
+            );
 
-        return {
-          id: emp.id,
-          nome: emp.nome_fantasia || emp.razao_social,
-          total,
-          realizado,
-          pendente: total - realizado,
-          count: contasEmpresa.length,
-          percentual: total > 0 ? (realizado / total) * 100 : 0,
-        };
-      }).filter(e => e.total > 0);
+          return {
+            id: emp.id,
+            nome: emp.nome_fantasia || emp.razao_social,
+            total,
+            realizado,
+            pendente: total - realizado,
+            count: contasEmpresa.length,
+            percentual: total > 0 ? (realizado / total) * 100 : 0,
+          };
+        })
+        .filter((e) => e.total > 0);
 
       return porEmpresa?.sort((a, b) => b.total - a.total) || [];
     },
@@ -137,7 +145,7 @@ export function RelatorioDrillDown() {
     queryFn: async () => {
       const tabela = drillState.categoria === 'receitas' ? 'contas_receber' : 'contas_pagar';
       const nomeField = drillState.categoria === 'receitas' ? 'cliente_nome' : 'fornecedor_nome';
-      
+
       const { data } = await supabase
         .from(tabela)
         .select('*')
@@ -146,30 +154,32 @@ export function RelatorioDrillDown() {
         .lte('data_vencimento', format(dataFim, 'yyyy-MM-dd'))
         .order('data_vencimento');
 
-      return data?.map(item => {
-        const itemRecord = item as Record<string, unknown>;
-        return {
-          id: item.id,
-          descricao: item.descricao,
-          entidade: itemRecord[nomeField] as string,
-          valor: item.valor,
-          vencimento: item.data_vencimento,
-          status: item.status,
-        };
-      }) || [];
+      return (
+        data?.map((item) => {
+          const itemRecord = item as Record<string, unknown>;
+          return {
+            id: item.id,
+            descricao: item.descricao,
+            entidade: itemRecord[nomeField] as string,
+            valor: item.valor,
+            vencimento: item.data_vencimento,
+            status: item.status ?? '',
+          };
+        }) || []
+      );
     },
     enabled: drillState.level === 'detalhes' && !!drillState.empresaId,
   });
 
   const handleDrill = (newState: Partial<DrillState>) => {
-    setDrillState(prev => ({ ...prev, ...newState }));
+    setDrillState((prev) => ({ ...prev, ...newState }));
   };
 
   const handleBack = () => {
     if (drillState.level === 'detalhes') {
-      setDrillState(prev => ({ ...prev, level: 'empresa', empresaId: undefined }));
+      setDrillState((prev) => ({ ...prev, level: 'empresa', empresaId: undefined }));
     } else if (drillState.level === 'empresa') {
-      setDrillState(prev => ({ ...prev, level: 'resumo', categoria: undefined }));
+      setDrillState((prev) => ({ ...prev, level: 'resumo', categoria: undefined }));
     }
   };
 
@@ -196,7 +206,8 @@ export function RelatorioDrillDown() {
               <CardTitle>Análise Detalhada</CardTitle>
               <CardDescription>
                 {drillState.level === 'resumo' && 'Clique em uma categoria para ver detalhes'}
-                {drillState.level === 'empresa' && `${drillState.categoria === 'receitas' ? 'Receitas' : 'Despesas'} por empresa`}
+                {drillState.level === 'empresa' &&
+                  `${drillState.categoria === 'receitas' ? 'Receitas' : 'Despesas'} por empresa`}
                 {drillState.level === 'detalhes' && `Detalhes - ${drillState.empresaNome}`}
               </CardDescription>
             </div>
@@ -207,7 +218,7 @@ export function RelatorioDrillDown() {
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
-              {periodoOptions.map(opt => (
+              {periodoOptions.map((opt) => (
                 <SelectItem key={opt.value} value={opt.value}>
                   {opt.label}
                 </SelectItem>
@@ -233,7 +244,9 @@ export function RelatorioDrillDown() {
             <EmpresasDrillLevel
               empresasData={empresasData}
               isLoadingEmpresas={isLoadingEmpresas}
-              onSelectEmpresa={(empresaId, empresaNome) => handleDrill({ level: 'detalhes', empresaId, empresaNome })}
+              onSelectEmpresa={(empresaId, empresaNome) =>
+                handleDrill({ level: 'detalhes', empresaId, empresaNome })
+              }
             />
           )}
 

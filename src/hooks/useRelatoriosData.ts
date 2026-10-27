@@ -1,4 +1,3 @@
-
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import type { Json } from '@/integrations/supabase/types';
@@ -46,38 +45,38 @@ export function useComparativoPeriodos(meses: number = 6, empresaId?: string) {
       for (let i = mesesParam - 1; i >= 0; i--) {
         const mesAtual = subMonths(hoje, i);
         const mesAnterior = subMonths(mesAtual, 12); // Mesmo mês do ano anterior
-        
+
         const inicioAtual = startOfMonth(mesAtual);
         const fimAtual = endOfMonth(mesAtual);
         const inicioAnterior = startOfMonth(mesAnterior);
         const fimAnterior = endOfMonth(mesAnterior);
 
-        let queryAtual = supabase.from('contas_receber')
-            .select('valor_recebido')
-            .gte('data_recebimento', inicioAtual.toISOString())
-            .lte('data_recebimento', fimAtual.toISOString())
-            .eq('status', 'pago');
+        let queryAtual = supabase
+          .from('contas_receber')
+          .select('valor_recebido')
+          .gte('data_recebimento', inicioAtual.toISOString())
+          .lte('data_recebimento', fimAtual.toISOString())
+          .eq('status', 'pago');
 
-        let queryAnterior = supabase.from('contas_receber')
-            .select('valor_recebido')
-            .gte('data_recebimento', inicioAnterior.toISOString())
-            .lte('data_recebimento', fimAnterior.toISOString())
-            .eq('status', 'pago');
+        let queryAnterior = supabase
+          .from('contas_receber')
+          .select('valor_recebido')
+          .gte('data_recebimento', inicioAnterior.toISOString())
+          .lte('data_recebimento', fimAnterior.toISOString())
+          .eq('status', 'pago');
 
         if (empresaIdParam && empresaIdParam !== 'all') {
           queryAtual = queryAtual.eq('empresa_id', empresaIdParam);
           queryAnterior = queryAnterior.eq('empresa_id', empresaIdParam);
         }
 
-        const [receitasAtuais, receitasAnteriores] = await Promise.all([
-          queryAtual,
-          queryAnterior,
-        ]);
+        const [receitasAtuais, receitasAnteriores] = await Promise.all([queryAtual, queryAnterior]);
 
         resultados.push({
           mes: format(mesAtual, 'MMM'),
           atual: receitasAtuais.data?.reduce((sum, c) => sum + (c.valor_recebido || 0), 0) || 0,
-          anterior: receitasAnteriores.data?.reduce((sum, c) => sum + (c.valor_recebido || 0), 0) || 0,
+          anterior:
+            receitasAnteriores.data?.reduce((sum, c) => sum + (c.valor_recebido || 0), 0) || 0,
         });
       }
 
@@ -100,29 +99,29 @@ export function useFluxoMensal(meses: number = 6, empresaId?: string) {
         const fim = endOfMonth(data);
         const mesNome = format(data, 'MMM');
 
-        let queryReceitas = supabase.from('contas_receber')
-            .select('valor_recebido')
-            .gte('data_recebimento', inicio.toISOString())
-            .lte('data_recebimento', fim.toISOString())
-            .eq('status', 'pago');
+        let queryReceitas = supabase
+          .from('contas_receber')
+          .select('valor_recebido')
+          .gte('data_recebimento', inicio.toISOString())
+          .lte('data_recebimento', fim.toISOString())
+          .eq('status', 'pago');
 
-        let queryDespesas = supabase.from('contas_pagar')
-            .select('valor_pago')
-            .gte('data_pagamento', inicio.toISOString())
-            .lte('data_pagamento', fim.toISOString())
-            .eq('status', 'pago');
+        let queryDespesas = supabase
+          .from('contas_pagar')
+          .select('valor_pago')
+          .gte('data_pagamento', inicio.toISOString())
+          .lte('data_pagamento', fim.toISOString())
+          .eq('status', 'pago');
 
         if (empresaIdParam && empresaIdParam !== 'all') {
           queryReceitas = queryReceitas.eq('empresa_id', empresaIdParam);
           queryDespesas = queryDespesas.eq('empresa_id', empresaIdParam);
         }
 
-        const [receitas, despesas] = await Promise.all([
-          queryReceitas,
-          queryDespesas,
-        ]);
+        const [receitas, despesas] = await Promise.all([queryReceitas, queryDespesas]);
 
-        const totalReceitas = receitas.data?.reduce((sum, c) => sum + (c.valor_recebido || 0), 0) || 0;
+        const totalReceitas =
+          receitas.data?.reduce((sum, c) => sum + (c.valor_recebido || 0), 0) || 0;
         const totalDespesas = despesas.data?.reduce((sum, c) => sum + (c.valor_pago || 0), 0) || 0;
 
         resultados.push({
@@ -158,7 +157,10 @@ export function useDespesasPorCategoria(empresaId?: string) {
 
       // Aggregate by category
       const categorias: Record<string, number> = {};
-      type LinhaContaPagar = { centros_custo?: { nome?: string | null } | null; valor_pago?: number | null };
+      type LinhaContaPagar = {
+        centros_custo?: { nome?: string | null } | null;
+        valor_pago?: number | null;
+      };
       ((data || []) as LinhaContaPagar[]).forEach((c) => {
         const centroCusto = c.centros_custo;
         const nome = centroCusto?.nome || 'Outros';
@@ -197,8 +199,9 @@ export function useReceitasPorCliente(limit: number = 6, empresaId?: string) {
 
       // Aggregate by client
       const clientes: Record<string, number> = {};
-      (data || []).forEach(c => {
-        clientes[c.cliente_nome] = (clientes[c.cliente_nome] || 0) + (c.valor_recebido || 0);
+      (data || []).forEach((c) => {
+        const nome = c.cliente_nome ?? 'Sem nome';
+        clientes[nome] = (clientes[nome] || 0) + (c.valor_recebido || 0);
       });
 
       const total = Object.values(clientes).reduce((sum, v) => sum + v, 0);
@@ -215,10 +218,13 @@ export function useReceitasPorCliente(limit: number = 6, empresaId?: string) {
       if (sorted.length <= limitParam) return sorted;
 
       const topClientes = sorted.slice(0, limitParam - 1);
-      const outros = sorted.slice(limitParam - 1).reduce(
-        (acc, c) => ({ cliente: 'Outros', valor: acc.valor + c.valor, percentual: 0 }),
-        { cliente: 'Outros', valor: 0, percentual: 0 }
-      );
+      const outros = sorted
+        .slice(limitParam - 1)
+        .reduce((acc, c) => ({ cliente: 'Outros', valor: acc.valor + c.valor, percentual: 0 }), {
+          cliente: 'Outros',
+          valor: 0,
+          percentual: 0,
+        });
       outros.percentual = total > 0 ? (outros.valor / total) * 100 : 0;
 
       return [...topClientes, outros];
@@ -240,26 +246,25 @@ export function useInadimplenciaPorMes(meses: number = 6, empresaId?: string) {
         const fim = endOfMonth(data);
         const mesNome = format(data, 'MMM');
 
-        let queryTotal = supabase.from('contas_receber')
-            .select('valor')
-            .gte('data_vencimento', inicio.toISOString())
-            .lte('data_vencimento', fim.toISOString());
+        let queryTotal = supabase
+          .from('contas_receber')
+          .select('valor')
+          .gte('data_vencimento', inicio.toISOString())
+          .lte('data_vencimento', fim.toISOString());
 
-        let queryVencidos = supabase.from('contas_receber')
-            .select('valor')
-            .gte('data_vencimento', inicio.toISOString())
-            .lte('data_vencimento', fim.toISOString())
-            .eq('status', 'vencido');
+        let queryVencidos = supabase
+          .from('contas_receber')
+          .select('valor')
+          .gte('data_vencimento', inicio.toISOString())
+          .lte('data_vencimento', fim.toISOString())
+          .eq('status', 'vencido');
 
         if (empresaIdParam && empresaIdParam !== 'all') {
           queryTotal = queryTotal.eq('empresa_id', empresaIdParam);
           queryVencidos = queryVencidos.eq('empresa_id', empresaIdParam);
         }
 
-        const [total, vencidos] = await Promise.all([
-          queryTotal,
-          queryVencidos,
-        ]);
+        const [total, vencidos] = await Promise.all([queryTotal, queryVencidos]);
 
         const totalValor = total.data?.reduce((sum, c) => sum + c.valor, 0) || 0;
         const valorVencido = vencidos.data?.reduce((sum, c) => sum + c.valor, 0) || 0;
@@ -281,15 +286,22 @@ export function useRelatorioKPIs(periodoInicio: string, periodoFim: string, empr
   return useQuery({
     queryKey: ['relatorio-kpis', periodoInicio, periodoFim, empresaId],
     queryFn: async ({ queryKey }) => {
-      const [_, periodoInicioParam, periodoFimParam, empresaIdParam] = queryKey as [string, string, string, string | undefined];
-      
-      let queryReceitas = supabase.from('contas_receber')
+      const [_, periodoInicioParam, periodoFimParam, empresaIdParam] = queryKey as [
+        string,
+        string,
+        string,
+        string | undefined,
+      ];
+
+      let queryReceitas = supabase
+        .from('contas_receber')
         .select('valor_recebido')
         .gte('data_recebimento', periodoInicioParam)
         .lte('data_recebimento', periodoFimParam)
         .eq('status', 'pago');
 
-      let queryDespesas = supabase.from('contas_pagar')
+      let queryDespesas = supabase
+        .from('contas_pagar')
         .select('valor_pago')
         .gte('data_pagamento', periodoInicioParam)
         .lte('data_pagamento', periodoFimParam)
@@ -300,12 +312,10 @@ export function useRelatorioKPIs(periodoInicio: string, periodoFim: string, empr
         queryDespesas = queryDespesas.eq('empresa_id', empresaIdParam);
       }
 
-      const [receitas, despesas] = await Promise.all([
-        queryReceitas,
-        queryDespesas,
-      ]);
+      const [receitas, despesas] = await Promise.all([queryReceitas, queryDespesas]);
 
-      const totalReceitas = receitas.data?.reduce((sum, c) => sum + (c.valor_recebido || 0), 0) || 0;
+      const totalReceitas =
+        receitas.data?.reduce((sum, c) => sum + (c.valor_recebido || 0), 0) || 0;
       const totalDespesas = despesas.data?.reduce((sum, c) => sum + (c.valor_pago || 0), 0) || 0;
 
       return {
@@ -339,45 +349,59 @@ export function useResumosSemanais() {
         .order('semana_inicio', { ascending: false });
 
       if (error) throw error;
-      return data || [];
+      return (data || []).map((r) => ({
+        ...r,
+        empresa_id: r.empresa_id ?? '',
+        created_at: r.created_at ?? '',
+      }));
     },
   });
 }
 
-export function useRelatorioDetalhado(periodoInicio: string, periodoFim: string, empresaId?: string) {
+export function useRelatorioDetalhado(
+  periodoInicio: string,
+  periodoFim: string,
+  empresaId?: string
+) {
   return useQuery({
     queryKey: ['relatorio-detalhado', periodoInicio, periodoFim, empresaId],
     queryFn: async () => {
       const [receber, pagar] = await Promise.all([
-        supabase.from('contas_receber')
-          .select('id, data_vencimento, data_recebimento, cliente_nome, valor, valor_recebido, status, centros_custo(nome)')
+        supabase
+          .from('contas_receber')
+          .select(
+            'id, data_vencimento, data_recebimento, cliente_nome, valor, valor_recebido, status, centros_custo(nome)'
+          )
           .or(`data_vencimento.gte.${periodoInicio},data_recebimento.gte.${periodoInicio}`)
           .or(`data_vencimento.lte.${periodoFim},data_recebimento.lte.${periodoFim}`),
-        supabase.from('contas_pagar')
-          .select('id, data_vencimento, data_pagamento, fornecedor_nome, valor, valor_pago, status, centros_custo(nome)')
+        supabase
+          .from('contas_pagar')
+          .select(
+            'id, data_vencimento, data_pagamento, fornecedor_nome, valor, valor_pago, status, centros_custo(nome)'
+          )
           .or(`data_vencimento.gte.${periodoInicio},data_pagamento.gte.${periodoInicio}`)
-          .or(`data_vencimento.lte.${periodoFim},data_pagamento.lte.${periodoFim}`)
+          .or(`data_vencimento.lte.${periodoFim},data_pagamento.lte.${periodoFim}`),
       ]);
 
       const transacoes = [
-        ...(receber.data || []).map(r => ({
+        ...(receber.data || []).map((r) => ({
           id: r.id,
           data: r.data_recebimento || r.data_vencimento,
           descricao: r.cliente_nome,
           categoria: (r.centros_custo as { nome?: string } | null)?.nome || 'Sem Categoria',
           tipo: 'Receita',
           valor: r.valor,
-          status: r.status === 'pago' ? 'Conciliado' : 'Pendente'
+          status: r.status === 'pago' ? 'Conciliado' : 'Pendente',
         })),
-        ...(pagar.data || []).map(p => ({
+        ...(pagar.data || []).map((p) => ({
           id: p.id,
           data: p.data_pagamento || p.data_vencimento,
           descricao: p.fornecedor_nome,
           categoria: (p.centros_custo as { nome?: string } | null)?.nome || 'Sem Categoria',
           tipo: 'Despesa',
           valor: p.valor,
-          status: p.status === 'pago' ? 'Conciliado' : 'Pendente'
-        }))
+          status: p.status === 'pago' ? 'Conciliado' : 'Pendente',
+        })),
       ];
 
       if (empresaId && empresaId !== 'all') {
@@ -386,6 +410,6 @@ export function useRelatorioDetalhado(periodoInicio: string, periodoFim: string,
       }
 
       return transacoes.sort((a, b) => new Date(b.data).getTime() - new Date(a.data).getTime());
-    }
+    },
   });
 }

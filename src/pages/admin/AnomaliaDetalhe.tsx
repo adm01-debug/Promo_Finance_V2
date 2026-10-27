@@ -1,29 +1,29 @@
-import { useEffect, useState } from "react";
-import { useParams, Link, useNavigate } from "react-router-dom";
-import { MainLayout } from "@/components/layout/MainLayout";
-import { Skeleton } from "@/components/ui/skeleton";
-import { Button } from "@/components/ui/button";
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import { ArrowLeft, AlertTriangle, Clock, RefreshCw, WifiOff } from "lucide-react";
-import { useAnomaliaDetalhe } from "@/hooks/useAnomaliaDetalhe";
-import { useRefetchAnomaliasOnFocus } from "@/hooks/useRefetchAnomaliasOnFocus";
-import { AnomaliaHeader } from "@/components/insights-ia/anomalia/AnomaliaHeader";
-import { EntidadeRelacionadaCard } from "@/components/insights-ia/anomalia/EntidadeRelacionadaCard";
-import { HistoricoContextualCard } from "@/components/insights-ia/anomalia/HistoricoContextualCard";
-import { DetectoresContribuintesCard } from "@/components/insights-ia/anomalia/DetectoresContribuintesCard";
-import { AnomaliasRelacionadasCard } from "@/components/insights-ia/anomalia/AnomaliasRelacionadasCard";
-import { AcoesSugeridasCard } from "@/components/insights-ia/anomalia/AcoesSugeridasCard";
-import { AnomaliaHistoricoSection } from "@/components/admin/AnomaliaHistoricoSection";
-import { ExportarEvidenciasButton } from "@/components/insights-ia/anomalia/ExportarEvidenciasButton";
-import { AnomaliaBreadcrumb } from "@/components/insights-ia/anomalia/AnomaliaBreadcrumb";
+import { useEffect, useState } from 'react';
+import { useParams, Link, useNavigate } from 'react-router-dom';
+import { MainLayout } from '@/components/layout/MainLayout';
+import { Skeleton } from '@/components/ui/skeleton';
+import { Button } from '@/components/ui/button';
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
+import { ArrowLeft, AlertTriangle, Clock, RefreshCw, WifiOff } from 'lucide-react';
+import { useAnomaliaDetalhe } from '@/hooks/useAnomaliaDetalhe';
+import { useRefetchAnomaliasOnFocus } from '@/hooks/useRefetchAnomaliasOnFocus';
+import { AnomaliaHeader } from '@/components/insights-ia/anomalia/AnomaliaHeader';
+import { EntidadeRelacionadaCard } from '@/components/insights-ia/anomalia/EntidadeRelacionadaCard';
+import { HistoricoContextualCard } from '@/components/insights-ia/anomalia/HistoricoContextualCard';
+import { DetectoresContribuintesCard } from '@/components/insights-ia/anomalia/DetectoresContribuintesCard';
+import { AnomaliasRelacionadasCard } from '@/components/insights-ia/anomalia/AnomaliasRelacionadasCard';
+import { AcoesSugeridasCard } from '@/components/insights-ia/anomalia/AcoesSugeridasCard';
+import { AnomaliaHistoricoSection } from '@/components/admin/AnomaliaHistoricoSection';
+import { ExportarEvidenciasButton } from '@/components/insights-ia/anomalia/ExportarEvidenciasButton';
+import { AnomaliaBreadcrumb } from '@/components/insights-ia/anomalia/AnomaliaBreadcrumb';
 
 const SLOW_THRESHOLD_MS = 2_500;
 const VERY_SLOW_THRESHOLD_MS = 8_000;
-export const ANOMALIAS_PANEL_RETURN_KEY = "anomalias-panel:last-search";
+export const ANOMALIAS_PANEL_RETURN_KEY = 'anomalias-panel:last-search';
 
 function buildVoltarUrl(): string {
-  if (typeof window === "undefined") return "/admin/insights-ia";
-  const search = window.sessionStorage.getItem(ANOMALIAS_PANEL_RETURN_KEY) ?? "";
+  if (typeof window === 'undefined') return '/admin/insights-ia';
+  const search = window.sessionStorage.getItem(ANOMALIAS_PANEL_RETURN_KEY) ?? '';
   return `/admin/insights-ia${search}`;
 }
 
@@ -79,11 +79,7 @@ export default function AnomaliaDetalhe() {
                 relacionadas={data.relacionadas}
               />
             )}
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => navigate(voltarUrl)}
-            >
+            <Button variant="outline" size="sm" onClick={() => navigate(voltarUrl)}>
               <ArrowLeft className="h-4 w-4 mr-1" /> Voltar para a lista
             </Button>
           </div>
@@ -141,7 +137,7 @@ export default function AnomaliaDetalhe() {
               <p>
                 {error instanceof Error
                   ? error.message
-                  : "A anomalia não foi encontrada ou você não tem permissão para vê-la."}
+                  : 'A anomalia não foi encontrada ou você não tem permissão para vê-la.'}
               </p>
               <div className="flex gap-2 pt-1">
                 <Button size="sm" variant="outline" onClick={() => refetch()}>

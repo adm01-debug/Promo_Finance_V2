@@ -21,7 +21,7 @@ export interface ConciliacaoAuditFiltros {
 
 export function generateConciliacaoAuditPDF(
   dados: ConciliacaoAuditRow[],
-  filtros: ConciliacaoAuditFiltros,
+  filtros: ConciliacaoAuditFiltros
 ): void {
   const w = openPrintWindow();
   if (!w) return;
@@ -40,7 +40,7 @@ export function generateConciliacaoAuditPDF(
       <td class="text-xs">${d.regra}</td>
       <td class="text-center">${d.evidencia_url ? '<span class="text-blue-600">Sim</span>' : '<span class="text-gray-400">Não</span>'}</td>
     </tr>
-  `,
+  `
     )
     .join('');
 
@@ -90,7 +90,6 @@ export function generateConciliacaoAuditPDF(
         <tbody>${rows}</tbody>
       </table>
 
-      <script>window.onload = function() { window.print(); };</script>
     </body>
     </html>
   `;

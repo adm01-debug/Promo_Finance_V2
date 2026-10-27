@@ -8,11 +8,7 @@ import { useManagedFilters } from '@/hooks/useManagedFilters';
 import { ClearFiltersButton } from '@/components/filters/ClearFiltersButton';
 import { EmptyState } from '@/components/ui/micro-interactions';
 import { useDebounce } from '@/hooks/useOptimizedQueries';
-import {
-  Plus,
-  Users,
-  Trophy,
-} from 'lucide-react';
+import { Plus, Users, Trophy } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import {
   Table,
@@ -90,7 +86,7 @@ export default function Clientes() {
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
   const queryClient = useQueryClient();
-  
+
   const { data: paginatedResult, isLoading } = useClientesPaginated({
     page: currentPage,
     pageSize,
@@ -101,42 +97,64 @@ export default function Clientes() {
   });
 
   const { data: allClientes = [] } = useClientes();
-  const clientes = useMemo(() => paginatedResult?.data || [], [paginatedResult]);
+  const clientes = useMemo<ExternalCliente[]>(
+    () =>
+      (paginatedResult?.data || []).map((c) => ({
+        ...c,
+        razao_social: c.razao_social ?? '',
+        nome_fantasia: c.nome_fantasia ?? '',
+        cnpj_cpf: c.cnpj_cpf ?? '',
+        nome: c.nome ?? '',
+        ativo: c.ativo ?? false,
+        created_at: c.created_at ?? '',
+        updated_at: c.updated_at ?? '',
+      })),
+    [paginatedResult]
+  );
   const totalCount = paginatedResult?.totalCount || 0;
   const totalPages = paginatedResult?.totalPages || 1;
 
   const estados = useMemo(() => {
-    const unique = [...new Set(clientes.map(c => c.estado).filter(Boolean))];
+    const unique = [...new Set(clientes.map((c) => c.estado).filter(Boolean))];
     return unique.sort() as string[];
   }, [clientes]);
 
   const filteredClientes = useMemo(() => {
-    return clientes.filter(c => {
-      const matchesSearch = 
+    return clientes.filter((c) => {
+      const matchesSearch =
         c.razao_social.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        (c.nome_fantasia?.toLowerCase().includes(searchTerm.toLowerCase())) ||
-        (c.cnpj_cpf?.includes(searchTerm)) ||
-        (c.email?.toLowerCase().includes(searchTerm.toLowerCase()));
-      
-      const matchesStatus = statusFilter === 'all' || (statusFilter === 'ativo' && c.ativo) || (statusFilter === 'inativo' && !c.ativo);
+        c.nome_fantasia?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        c.cnpj_cpf?.includes(searchTerm) ||
+        c.email?.toLowerCase().includes(searchTerm.toLowerCase());
+
+      const matchesStatus =
+        statusFilter === 'all' ||
+        (statusFilter === 'ativo' && c.ativo) ||
+        (statusFilter === 'inativo' && !c.ativo);
       const matchesEstado = estadoFilter === 'all' || c.estado === estadoFilter;
       const matchesScore = (() => {
         if (scoreFilter === 'all') return true;
         const score = c.score || 0;
         switch (scoreFilter) {
-          case 'excelente': return score >= 800;
-          case 'bom': return score >= 600 && score < 800;
-          case 'regular': return score >= 400 && score < 600;
-          case 'critico': return score < 400;
-          default: return true;
+          case 'excelente':
+            return score >= 800;
+          case 'bom':
+            return score >= 600 && score < 800;
+          case 'regular':
+            return score >= 400 && score < 600;
+          case 'critico':
+            return score < 400;
+          default:
+            return true;
         }
       })();
-      
+
       return matchesSearch && matchesStatus && matchesEstado && matchesScore;
     });
   }, [clientes, searchTerm, statusFilter, estadoFilter, scoreFilter]);
 
-  const hasActiveFilters = statusFilter !== 'all' || estadoFilter !== 'all' || scoreFilter !== 'all';
+  const hasActiveFilters =
+    statusFilter !== 'all' || estadoFilter !== 'all' || scoreFilter !== 'all';
   const clearFilters = () => {
     setSearchTerm('');
     setCurrentPage(1);
@@ -148,13 +166,16 @@ export default function Clientes() {
   };
 
   const totalClientes = allClientes.length;
-  const clientesAtivos = allClientes.filter(c => c.ativo).length;
+  const clientesAtivos = allClientes.filter((c) => c.ativo).length;
   const limiteTotal = allClientes.reduce((sum, c) => sum + (c.limite_credito || 0), 0);
 
   const handleDelete = async () => {
     if (!deletingCliente) return;
     setIsDeleting(true);
-    const { error } = await supabase.from('clientes').update({ ativo: false }).eq('id', deletingCliente.id);
+    const { error } = await supabase
+      .from('clientes')
+      .update({ ativo: false })
+      .eq('id', deletingCliente.id);
     if (error) {
       setIsDeleting(false);
       return;
@@ -167,13 +188,21 @@ export default function Clientes() {
 
   return (
     <MainLayout>
-      <Tabs defaultValue={window.location.hash === '#scoring' ? 'scoring' : 'lista'} className="w-full">
+      <Tabs
+        defaultValue={window.location.hash === '#scoring' ? 'scoring' : 'lista'}
+        className="w-full"
+      >
         <div className="relative min-h-screen">
           <PageBackground />
-          
-          <motion.div variants={containerVariants} initial="hidden" animate="visible" className="relative z-10 space-y-12">
-            <PageHeader 
-              title="Gestão de Clientes" 
+
+          <motion.div
+            variants={containerVariants}
+            initial="hidden"
+            animate="visible"
+            className="relative z-10 space-y-12"
+          >
+            <PageHeader
+              title="Gestão de Clientes"
               subtitle="Análise de perfil, scoring de crédito e automação de cobranças neurais."
               badge="Customer Intelligence"
               icon={Users}
@@ -183,8 +212,20 @@ export default function Clientes() {
               actions={
                 <div className="flex items-center gap-3">
                   <TabsList className="bg-primary/10 border-primary/20 h-10 px-1 rounded-xl glass-effect">
-                    <TabsTrigger value="lista" className="rounded-lg font-bold px-4" onClick={() => window.history.replaceState(null, '', '/clientes')}>Lista Geral</TabsTrigger>
-                    <TabsTrigger value="scoring" className="rounded-lg font-bold px-4" onClick={() => window.history.replaceState(null, '', '/clientes#scoring')}>Scoring & Risco</TabsTrigger>
+                    <TabsTrigger
+                      value="lista"
+                      className="rounded-lg font-bold px-4"
+                      onClick={() => window.history.replaceState(null, '', '/clientes')}
+                    >
+                      Lista Geral
+                    </TabsTrigger>
+                    <TabsTrigger
+                      value="scoring"
+                      className="rounded-lg font-bold px-4"
+                      onClick={() => window.history.replaceState(null, '', '/clientes#scoring')}
+                    >
+                      Scoring & Risco
+                    </TabsTrigger>
                   </TabsList>
                   <div className="h-8 w-px bg-card/10 mx-1" />
                   <ExportMenu
@@ -193,8 +234,8 @@ export default function Clientes() {
                     filename="clientes"
                     title="Relatório de Clientes"
                   />
-                  <Button 
-                    size="lg" 
+                  <Button
+                    size="lg"
                     className="premium-button"
                     onClick={() => {
                       setEditingCliente(null);
@@ -208,7 +249,11 @@ export default function Clientes() {
             />
 
             <TabsContent value="lista" className="space-y-6 m-0 border-none p-0">
-              <ClientesKPIs totalClientes={totalClientes} clientesAtivos={clientesAtivos} limiteTotal={limiteTotal} />
+              <ClientesKPIs
+                totalClientes={totalClientes}
+                clientesAtivos={clientesAtivos}
+                limiteTotal={limiteTotal}
+              />
               <ClientesFiltersPanel
                 searchTerm={searchTerm}
                 statusFilter={statusFilter}
@@ -241,14 +286,18 @@ export default function Clientes() {
                 <StandardTableCard
                   isLoading={isLoading}
                   pageSize={pageSize}
-                  pagination={totalCount > 0 ? {
-                    currentPage,
-                    totalPages,
-                    pageSize,
-                    totalItems: totalCount,
-                    onPageChange: setCurrentPage,
-                    onPageSizeChange: handlePageSizeChange
-                  } : undefined}
+                  pagination={
+                    totalCount > 0
+                      ? {
+                          currentPage,
+                          totalPages,
+                          pageSize,
+                          totalItems: totalCount,
+                          onPageChange: setCurrentPage,
+                          onPageSizeChange: handlePageSizeChange,
+                        }
+                      : undefined
+                  }
                 >
                   <Table>
                     <TableHeader>
@@ -271,19 +320,36 @@ export default function Clientes() {
                       {clientes.length === 0 ? (
                         <TableRow>
                           <TableCell colSpan={7} className="p-0">
-                            <EmptyState 
+                            <EmptyState
                               icon={<Users className="h-8 w-8 text-muted-foreground" />}
-                              title={clientes.length === 0 ? 'Nenhum cliente cadastrado' : 'Nenhum cliente encontrado'}
-                              description={clientes.length === 0 ? 'Comece adicionando seu primeiro cliente' : 'Tente ajustar os filtros de busca'}
+                              title={
+                                clientes.length === 0
+                                  ? 'Nenhum cliente cadastrado'
+                                  : 'Nenhum cliente encontrado'
+                              }
+                              description={
+                                clientes.length === 0
+                                  ? 'Comece adicionando seu primeiro cliente'
+                                  : 'Tente ajustar os filtros de busca'
+                              }
                             />
                           </TableCell>
                         </TableRow>
                       ) : (
                         <ClientesTableBody
                           clientes={clientes}
-                          onView={(c) => { setViewingCliente(c); setDetailOpen(true); }}
-                          onEdit={(c) => { setEditingCliente(c); setFormOpen(true); }}
-                          onDelete={(c) => { setDeletingCliente(c); setDeleteDialogOpen(true); }}
+                          onView={(c) => {
+                            setViewingCliente(c);
+                            setDetailOpen(true);
+                          }}
+                          onEdit={(c) => {
+                            setEditingCliente(c);
+                            setFormOpen(true);
+                          }}
+                          onDelete={(c) => {
+                            setDeletingCliente(c);
+                            setDeleteDialogOpen(true);
+                          }}
                         />
                       )}
                     </TableBody>
@@ -301,8 +367,8 @@ export default function Clientes() {
         </div>
       </Tabs>
 
-      <ClienteForm 
-        open={formOpen} 
+      <ClienteForm
+        open={formOpen}
         onOpenChange={(open) => {
           setFormOpen(open);
           if (!open) setEditingCliente(null);

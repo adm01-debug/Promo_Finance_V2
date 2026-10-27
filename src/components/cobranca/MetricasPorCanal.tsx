@@ -31,55 +31,62 @@ export function MetricasPorCanal({ metricas = [] }: { metricas?: MetricaCanal[] 
         <CardContent>
           {metricas.length === 0 ? (
             <p className="rounded-xl border border-dashed p-4 text-sm text-muted-foreground">
-              Métricas por canal indisponíveis até que os registros de entrega, leitura e pagamento sejam reconciliados no banco.
+              Métricas por canal indisponíveis até que os registros de entrega, leitura e pagamento
+              sejam reconciliados no banco.
             </p>
           ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-            {metricas.map((canal, index) => (
-              <motion.div
-                key={canal.canal}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: index * 0.1 }}
-                className="p-4 rounded-xl border border-border hover:border-primary/30 transition-colors"
-              >
-                <div className="flex items-center gap-2 mb-3">
-                  {canal.canal === 'Email' && <Mail className="h-5 w-5 text-secondary" />}
-                  {canal.canal === 'WhatsApp' && <MessageSquare className="h-5 w-5 text-success" />}
-                  {canal.canal === 'SMS' && <Smartphone className="h-5 w-5 text-warning" />}
-                  {canal.canal === 'Telefone' && <Phone className="h-5 w-5 text-primary" />}
-                  <span className="font-semibold">{canal.canal}</span>
-                </div>
-                <div className="space-y-2">
-                  <div className="flex justify-between text-sm">
-                    <span className="text-muted-foreground">Enviados</span>
-                    <span className="font-medium">{canal.enviados}</span>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+              {metricas.map((canal, index) => (
+                <motion.div
+                  key={canal.canal}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: index * 0.1 }}
+                  className="p-4 rounded-xl border border-border hover:border-primary/30 transition-colors"
+                >
+                  <div className="flex items-center gap-2 mb-3">
+                    {canal.canal === 'Email' && <Mail className="h-5 w-5 text-secondary" />}
+                    {canal.canal === 'WhatsApp' && (
+                      <MessageSquare className="h-5 w-5 text-success" />
+                    )}
+                    {canal.canal === 'SMS' && <Smartphone className="h-5 w-5 text-warning" />}
+                    {canal.canal === 'Telefone' && <Phone className="h-5 w-5 text-primary" />}
+                    <span className="font-semibold">{canal.canal}</span>
                   </div>
-                  <div className="flex justify-between text-sm">
-                    <span className="text-muted-foreground">Abertos</span>
-                    <span className="font-medium">{canal.abertos}</span>
-                  </div>
-                  <div className="flex justify-between text-sm">
-                    <span className="text-muted-foreground">Pagos</span>
-                    <span className="font-medium text-success">{canal.pagos}</span>
-                  </div>
-                  <div className="pt-2 border-t border-border">
-                    <div className="flex justify-between items-center">
-                      <span className="text-sm text-muted-foreground">Conversão</span>
-                      <Badge className={cn(
-                        canal.taxaConversao >= 50 ? "bg-success text-success-foreground" :
-                        canal.taxaConversao >= 35 ? "bg-warning text-warning-foreground" :
-                        "bg-destructive text-destructive-foreground"
-                      )}>
-                        {canal.taxaConversao}%
-                      </Badge>
+                  <div className="space-y-2">
+                    <div className="flex justify-between text-sm">
+                      <span className="text-muted-foreground">Enviados</span>
+                      <span className="font-medium">{canal.enviados}</span>
                     </div>
-                    <Progress value={canal.taxaConversao} className="h-1.5 mt-2" />
+                    <div className="flex justify-between text-sm">
+                      <span className="text-muted-foreground">Abertos</span>
+                      <span className="font-medium">{canal.abertos}</span>
+                    </div>
+                    <div className="flex justify-between text-sm">
+                      <span className="text-muted-foreground">Pagos</span>
+                      <span className="font-medium text-success">{canal.pagos}</span>
+                    </div>
+                    <div className="pt-2 border-t border-border">
+                      <div className="flex justify-between items-center">
+                        <span className="text-sm text-muted-foreground">Conversão</span>
+                        <Badge
+                          className={cn(
+                            canal.taxaConversao >= 50
+                              ? 'bg-success text-success-foreground'
+                              : canal.taxaConversao >= 35
+                                ? 'bg-warning text-warning-foreground'
+                                : 'bg-destructive text-destructive-foreground'
+                          )}
+                        >
+                          {canal.taxaConversao}%
+                        </Badge>
+                      </div>
+                      <Progress value={canal.taxaConversao} className="h-1.5 mt-2" />
+                    </div>
                   </div>
-                </div>
-              </motion.div>
-            ))}
-          </div>
+                </motion.div>
+              ))}
+            </div>
           )}
         </CardContent>
       </Card>

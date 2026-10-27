@@ -97,7 +97,7 @@ vi.mock('framer-motion', () => ({
           delete (props as Record<string, unknown>).transition;
           return <div {...props}>{children}</div>;
         },
-    },
+    }
   ),
 }));
 
@@ -118,9 +118,9 @@ function setResolver(partial: Partial<ResolverState>) {
 
 function renderPage() {
   return render(
-    <MemoryRouter future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
+    <MemoryRouter>
       <CorporateOnboarding />
-    </MemoryRouter>,
+    </MemoryRouter>
   );
 }
 
@@ -185,14 +185,12 @@ describe('/auth/corporate — CorporateOnboarding', () => {
     renderPage();
     await submitEmail('foo@desconhecido.com');
 
-    expect(
-      await screen.findByText(/Nenhum provedor SSO encontrado para/i),
-    ).toBeInTheDocument();
+    expect(await screen.findByText(/Nenhum provedor SSO encontrado para/i)).toBeInTheDocument();
     expect(invokeMock).not.toHaveBeenCalled();
 
     fireEvent.click(screen.getByRole('button', { name: /Continuar com senha/i }));
     expect(mockNavigate).toHaveBeenCalledWith(
-      `/auth?email=${encodeURIComponent('foo@desconhecido.com')}`,
+      `/auth?email=${encodeURIComponent('foo@desconhecido.com')}`
     );
 
     const events = logEventMock.mock.calls.map((c) => c[0].eventType);
@@ -246,7 +244,7 @@ describe('/auth/corporate — CorporateOnboarding', () => {
 
       expect(await screen.findByText(/Redirecionando para Acme SSO/i)).toBeInTheDocument();
       expect(
-        screen.getByRole('button', { name: /Cancelar redirecionamento e voltar/i }),
+        screen.getByRole('button', { name: /Cancelar redirecionamento e voltar/i })
       ).toBeInTheDocument();
 
       // Avança o countdown (3 ticks de 1s) deixando os useEffects rodarem
@@ -259,7 +257,7 @@ describe('/auth/corporate — CorporateOnboarding', () => {
       await waitFor(() => expect(invokeMock).toHaveBeenCalled());
       expect(invokeMock).toHaveBeenCalledWith(
         'sso-initiate',
-        expect.objectContaining({ body: expect.objectContaining({ provider_id: 'prov-force' }) }),
+        expect.objectContaining({ body: expect.objectContaining({ provider_id: 'prov-force' }) })
       );
       await waitFor(() => expect(hrefStore).toBe('https://idp.acme/auto'));
 
@@ -287,9 +285,7 @@ describe('/auth/corporate — CorporateOnboarding', () => {
       });
       fireEvent.click(cancelBtn);
 
-      expect(
-        await screen.findByText(/Redirecionamento automático cancelado/i),
-      ).toBeInTheDocument();
+      expect(await screen.findByText(/Redirecionamento automático cancelado/i)).toBeInTheDocument();
       expect(screen.getByRole('button', { name: /Entrar com Acme SSO/i })).toBeInTheDocument();
 
       // Mesmo passando o tempo do countdown, nada é invocado
@@ -315,16 +311,12 @@ describe('/auth/corporate — CorporateOnboarding', () => {
       fireEvent.click(await screen.findByRole('button', { name: /Entrar com Acme SSO/i }));
     });
 
-    expect(
-      await screen.findByText(/Não foi possível iniciar o login SSO/i),
-    ).toBeInTheDocument();
+    expect(await screen.findByText(/Não foi possível iniciar o login SSO/i)).toBeInTheDocument();
     expect(screen.getByText(/IdP indisponível/i)).toBeInTheDocument();
     expect(screen.getByRole('button', { name: /Tentar novamente/i })).toBeInTheDocument();
 
     fireEvent.click(screen.getByRole('button', { name: /Continuar com senha/i }));
-    expect(mockNavigate).toHaveBeenCalledWith(
-      `/auth?email=${encodeURIComponent('dave@acme.com')}`,
-    );
+    expect(mockNavigate).toHaveBeenCalledWith(`/auth?email=${encodeURIComponent('dave@acme.com')}`);
 
     const events = logEventMock.mock.calls.map((c) => c[0].eventType);
     expect(events).toContain('redirect_failed');

@@ -50,7 +50,7 @@ export function useComparativoConformidade(
   limitePorEmpresa = 12
 ) {
   const ids = useMemo(
-    () => [...new Set(empresas.map((e) => e.id))].sort(),
+    () => [...new Set(empresas.map((e) => e.id))].sort((a, b) => a.localeCompare(b)),
     [empresas]
   );
 
@@ -103,7 +103,7 @@ export function useComparativoConformidade(
 
   const comparativo: ResultadoComparativo = useMemo(
     () => compararConformidade(series, competenciaReferencia),
-    [series, competenciaReferencia],
+    [series, competenciaReferencia]
   );
 
   return {

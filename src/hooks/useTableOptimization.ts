@@ -20,7 +20,7 @@ interface TableOptimizationConfig {
 /**
  * Hook to optimize table rendering based on dataset size
  * Returns configuration for animations and virtualization
- * 
+ *
  * @param dataLength - Number of items in the dataset
  * @param options - Optional configuration overrides
  */
@@ -33,7 +33,7 @@ export function useTableOptimization(
 ): TableOptimizationConfig {
   const animationThreshold = options?.animationThreshold ?? 20;
   const virtualizationThreshold = options?.virtualizationThreshold ?? 50;
-  
+
   return useMemo(() => {
     const shouldAnimate = dataLength <= animationThreshold;
     const shouldVirtualize = dataLength > virtualizationThreshold;

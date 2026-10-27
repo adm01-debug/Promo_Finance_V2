@@ -8,8 +8,21 @@ import { Switch } from '@/components/ui/switch';
 import { Badge } from '@/components/ui/badge';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '@/components/ui/table';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 import { Button } from '@/components/ui/button';
 import { Factory, Info } from 'lucide-react';
 import { useCatalogoIssMunicipal } from '@/hooks/useCatalogoIssMunicipal';
@@ -53,7 +66,9 @@ function MemoriaTable({ linhas }: { linhas: LinhaMemoria[] }) {
             <TableRow key={`${l.rubrica}-${i}`}>
               <TableCell>{l.rubrica}</TableCell>
               <TableCell className="text-right tabular-nums">{brl(l.base)}</TableCell>
-              <TableCell className="text-right tabular-nums">{l.aliquota ? pct(l.aliquota) : '—'}</TableCell>
+              <TableCell className="text-right tabular-nums">
+                {l.aliquota ? pct(l.aliquota) : '—'}
+              </TableCell>
               <TableCell className="text-right font-medium tabular-nums">{brl(l.valor)}</TableCell>
               <TableCell className="text-xs text-muted-foreground">{l.fundamento}</TableCell>
             </TableRow>
@@ -78,8 +93,18 @@ function Alertas({ alertas }: { alertas: string[] }) {
   );
 }
 
-function NumberField({ id, label, value, onChange, step }: {
-  id: string; label: string; value: number; onChange: (v: number) => void; step?: string;
+function NumberField({
+  id,
+  label,
+  value,
+  onChange,
+  step,
+}: {
+  id: string;
+  label: string;
+  value: number;
+  onChange: (v: number) => void;
+  step?: string;
 }) {
   return (
     <div className="space-y-2">
@@ -104,10 +129,19 @@ function IpiSimulador() {
   const [credito, setCredito] = useState(0);
   const [contribuinte, setContribuinte] = useState(true);
 
-  const r = useMemo(() => calcularIpi({
-    ncm, valorProduto, frete, outrasDespesas: outras,
-    descontosIncondicionais: descontos, creditoEntradas: credito, contribuinte,
-  }), [ncm, valorProduto, frete, outras, descontos, credito, contribuinte]);
+  const r = useMemo(
+    () =>
+      calcularIpi({
+        ncm,
+        valorProduto,
+        frete,
+        outrasDespesas: outras,
+        descontosIncondicionais: descontos,
+        creditoEntradas: credito,
+        contribuinte,
+      }),
+    [ncm, valorProduto, frete, outras, descontos, credito, contribuinte]
+  );
 
   return (
     <div className="space-y-6">
@@ -122,7 +156,9 @@ function IpiSimulador() {
           <div className="space-y-2 md:col-span-2">
             <Label htmlFor="ipi-ncm">NCM (TIPI)</Label>
             <Select value={ncm} onValueChange={setNcm}>
-              <SelectTrigger id="ipi-ncm"><SelectValue /></SelectTrigger>
+              <SelectTrigger id="ipi-ncm">
+                <SelectValue />
+              </SelectTrigger>
               <SelectContent>
                 {TIPI.map((t) => (
                   <SelectItem key={t.ncm} value={t.ncm}>
@@ -136,36 +172,84 @@ function IpiSimulador() {
             <Switch id="ipi-contrib" checked={contribuinte} onCheckedChange={setContribuinte} />
             <Label htmlFor="ipi-contrib">Industrial ou equiparado</Label>
           </div>
-          <NumberField id="ipi-valor" label="Valor dos produtos" value={valorProduto} onChange={setValorProduto} />
+          <NumberField
+            id="ipi-valor"
+            label="Valor dos produtos"
+            value={valorProduto}
+            onChange={setValorProduto}
+          />
           <NumberField id="ipi-frete" label="Frete" value={frete} onChange={setFrete} />
-          <NumberField id="ipi-outras" label="Outras despesas" value={outras} onChange={setOutras} />
-          <NumberField id="ipi-desc" label="Descontos incondicionais" value={descontos} onChange={setDescontos} />
-          <NumberField id="ipi-credito" label="Crédito de entradas" value={credito} onChange={setCredito} />
+          <NumberField
+            id="ipi-outras"
+            label="Outras despesas"
+            value={outras}
+            onChange={setOutras}
+          />
+          <NumberField
+            id="ipi-desc"
+            label="Descontos incondicionais"
+            value={descontos}
+            onChange={setDescontos}
+          />
+          <NumberField
+            id="ipi-credito"
+            label="Crédito de entradas"
+            value={credito}
+            onChange={setCredito}
+          />
         </CardContent>
       </Card>
 
       <div className="grid grid-cols-1 gap-4 md:grid-cols-4">
-        <Card><CardHeader className="pb-2"><CardDescription>Base de cálculo</CardDescription></CardHeader>
-          <CardContent><p className="text-2xl font-semibold tabular-nums">{brl(r.baseCalculo)}</p></CardContent></Card>
-        <Card><CardHeader className="pb-2"><CardDescription>IPI devido</CardDescription></CardHeader>
+        <Card>
+          <CardHeader className="pb-2">
+            <CardDescription>Base de cálculo</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <p className="text-2xl font-semibold tabular-nums">{brl(r.baseCalculo)}</p>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardHeader className="pb-2">
+            <CardDescription>IPI devido</CardDescription>
+          </CardHeader>
           <CardContent>
             <p className="text-2xl font-semibold tabular-nums">{brl(r.ipiDevido)}</p>
-            <Badge variant="secondary" className="mt-2">{r.situacao.replace(/_/g, ' ')} · {pct(r.aliquota)}</Badge>
-          </CardContent></Card>
-        <Card><CardHeader className="pb-2"><CardDescription>Saldo apurado</CardDescription></CardHeader>
+            <Badge variant="secondary" className="mt-2">
+              {r.situacao.replace(/_/g, ' ')} · {pct(r.aliquota)}
+            </Badge>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardHeader className="pb-2">
+            <CardDescription>Saldo apurado</CardDescription>
+          </CardHeader>
           <CardContent>
-            <p className={`text-2xl font-semibold tabular-nums ${r.saldoApurado < 0 ? 'text-success' : 'text-foreground'}`}>
+            <p
+              className={`text-2xl font-semibold tabular-nums ${r.saldoApurado < 0 ? 'text-success' : 'text-foreground'}`}
+            >
               {brl(r.saldoApurado)}
             </p>
-          </CardContent></Card>
-        <Card><CardHeader className="pb-2"><CardDescription>Total da nota</CardDescription></CardHeader>
-          <CardContent><p className="text-2xl font-semibold tabular-nums">{brl(r.valorTotalNota)}</p></CardContent></Card>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardHeader className="pb-2">
+            <CardDescription>Total da nota</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <p className="text-2xl font-semibold tabular-nums">{brl(r.valorTotalNota)}</p>
+          </CardContent>
+        </Card>
       </div>
 
       <Alertas alertas={r.alertas} />
       <Card>
-        <CardHeader><CardTitle>Memória de cálculo</CardTitle></CardHeader>
-        <CardContent><MemoriaTable linhas={r.memoria} /></CardContent>
+        <CardHeader>
+          <CardTitle>Memória de cálculo</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <MemoriaTable linhas={r.memoria} />
+        </CardContent>
       </Card>
     </div>
   );
@@ -185,12 +269,33 @@ function IssSimulador() {
 
   const { data: catalogoIss } = useCatalogoIssMunicipal();
 
-  const r = useMemo(() => calcularIss({
-    itemLc116: item, valorServico, materiais, subempreitadas,
-    aliquotaMunicipal: aliquota / 100,
-    municipioPrestador: prestador, municipioTomador: tomador, municipioExecucao: execucao,
-    tomadorPessoaJuridica: tomadorPj, prestadorSimplesNacional: simples,
-  }), [item, valorServico, materiais, subempreitadas, aliquota, prestador, tomador, execucao, tomadorPj, simples]);
+  const r = useMemo(
+    () =>
+      calcularIss({
+        itemLc116: item,
+        valorServico,
+        materiais,
+        subempreitadas,
+        aliquotaMunicipal: aliquota / 100,
+        municipioPrestador: prestador,
+        municipioTomador: tomador,
+        municipioExecucao: execucao,
+        tomadorPessoaJuridica: tomadorPj,
+        prestadorSimplesNacional: simples,
+      }),
+    [
+      item,
+      valorServico,
+      materiais,
+      subempreitadas,
+      aliquota,
+      prestador,
+      tomador,
+      execucao,
+      tomadorPj,
+      simples,
+    ]
+  );
 
   // A sugestão segue o município COMPETENTE (LC 116, art. 3º), não o prestador.
   const comparacao = useMemo(() => {
@@ -205,28 +310,53 @@ function IssSimulador() {
         <CardHeader>
           <CardTitle>Prestação de serviço</CardTitle>
           <CardDescription>
-            Competência definida pelo art. 3º da LC 116/2003; retenções federais pela Lei 10.833/2003 e RIR/2018.
+            Competência definida pelo art. 3º da LC 116/2003; retenções federais pela Lei
+            10.833/2003 e RIR/2018.
           </CardDescription>
         </CardHeader>
         <CardContent className="grid grid-cols-1 gap-4 md:grid-cols-3">
           <div className="space-y-2 md:col-span-3">
             <Label htmlFor="iss-item">Item da lista (LC 116/2003)</Label>
             <Select value={item} onValueChange={setItem}>
-              <SelectTrigger id="iss-item"><SelectValue /></SelectTrigger>
+              <SelectTrigger id="iss-item">
+                <SelectValue />
+              </SelectTrigger>
               <SelectContent>
                 {LISTA_LC116.map((i) => (
-                  <SelectItem key={i.item} value={i.item}>{i.item} — {i.descricao}</SelectItem>
+                  <SelectItem key={i.item} value={i.item}>
+                    {i.item} — {i.descricao}
+                  </SelectItem>
                 ))}
               </SelectContent>
             </Select>
           </div>
-          <NumberField id="iss-valor" label="Valor do serviço" value={valorServico} onChange={setValorServico} />
+          <NumberField
+            id="iss-valor"
+            label="Valor do serviço"
+            value={valorServico}
+            onChange={setValorServico}
+          />
           <NumberField id="iss-mat" label="Materiais" value={materiais} onChange={setMateriais} />
-          <NumberField id="iss-sub" label="Subempreitadas" value={subempreitadas} onChange={setSubempreitadas} />
-          <NumberField id="iss-aliq" label="Alíquota municipal (%)" value={aliquota} onChange={setAliquota} step="0.01" />
+          <NumberField
+            id="iss-sub"
+            label="Subempreitadas"
+            value={subempreitadas}
+            onChange={setSubempreitadas}
+          />
+          <NumberField
+            id="iss-aliq"
+            label="Alíquota municipal (%)"
+            value={aliquota}
+            onChange={setAliquota}
+            step="0.01"
+          />
           <div className="space-y-2">
             <Label htmlFor="iss-prest">Município do prestador</Label>
-            <Input id="iss-prest" value={prestador} onChange={(e) => setPrestador(e.target.value)} />
+            <Input
+              id="iss-prest"
+              value={prestador}
+              onChange={(e) => setPrestador(e.target.value)}
+            />
           </div>
           <div className="space-y-2">
             <Label htmlFor="iss-tom">Município do tomador</Label>
@@ -248,17 +378,45 @@ function IssSimulador() {
       </Card>
 
       <div className="grid grid-cols-1 gap-4 md:grid-cols-4">
-        <Card><CardHeader className="pb-2"><CardDescription>Base de cálculo</CardDescription></CardHeader>
-          <CardContent><p className="text-2xl font-semibold tabular-nums">{brl(r.baseCalculo)}</p></CardContent></Card>
-        <Card><CardHeader className="pb-2"><CardDescription>ISS devido</CardDescription></CardHeader>
+        <Card>
+          <CardHeader className="pb-2">
+            <CardDescription>Base de cálculo</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <p className="text-2xl font-semibold tabular-nums">{brl(r.baseCalculo)}</p>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardHeader className="pb-2">
+            <CardDescription>ISS devido</CardDescription>
+          </CardHeader>
           <CardContent>
             <p className="text-2xl font-semibold tabular-nums">{brl(r.issDevido)}</p>
-            <Badge variant="secondary" className="mt-2">{pct(r.aliquota)}</Badge>
-          </CardContent></Card>
-        <Card><CardHeader className="pb-2"><CardDescription>Total retido</CardDescription></CardHeader>
-          <CardContent><p className="text-2xl font-semibold tabular-nums text-warning">{brl(r.retencoes.total)}</p></CardContent></Card>
-        <Card><CardHeader className="pb-2"><CardDescription>Líquido a receber</CardDescription></CardHeader>
-          <CardContent><p className="text-2xl font-semibold tabular-nums text-success">{brl(r.valorLiquidoRecebido)}</p></CardContent></Card>
+            <Badge variant="secondary" className="mt-2">
+              {pct(r.aliquota)}
+            </Badge>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardHeader className="pb-2">
+            <CardDescription>Total retido</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <p className="text-2xl font-semibold tabular-nums text-warning">
+              {brl(r.retencoes.total)}
+            </p>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardHeader className="pb-2">
+            <CardDescription>Líquido a receber</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <p className="text-2xl font-semibold tabular-nums text-success">
+              {brl(r.valorLiquidoRecebido)}
+            </p>
+          </CardContent>
+        </Card>
       </div>
 
       <Card>
@@ -293,7 +451,9 @@ function IssSimulador() {
               <Button
                 size="sm"
                 variant="secondary"
-                onClick={() => setAliquota(Number((comparacao.sugestao!.aliquota * 100).toFixed(4)))}
+                onClick={() =>
+                  setAliquota(Number((comparacao.sugestao!.aliquota * 100).toFixed(4)))
+                }
               >
                 Aplicar alíquota do catálogo
               </Button>
@@ -304,8 +464,12 @@ function IssSimulador() {
 
       <Alertas alertas={r.alertas} />
       <Card>
-        <CardHeader><CardTitle>Memória de cálculo e retenções</CardTitle></CardHeader>
-        <CardContent><MemoriaTable linhas={r.memoria} /></CardContent>
+        <CardHeader>
+          <CardTitle>Memória de cálculo e retenções</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <MemoriaTable linhas={r.memoria} />
+        </CardContent>
       </Card>
     </div>
   );
@@ -336,7 +500,9 @@ function TabelasConsulta() {
                     <TableCell className="tabular-nums">{t.ncm}</TableCell>
                     <TableCell>{t.descricao}</TableCell>
                     <TableCell className="text-right tabular-nums">{pct(t.aliquota)}</TableCell>
-                    <TableCell><Badge variant="outline">{t.situacao.replace(/_/g, ' ')}</Badge></TableCell>
+                    <TableCell>
+                      <Badge variant="outline">{t.situacao.replace(/_/g, ' ')}</Badge>
+                    </TableCell>
                   </TableRow>
                 ))}
               </TableBody>
@@ -367,9 +533,15 @@ function TabelasConsulta() {
                   <TableRow key={i.item}>
                     <TableCell className="tabular-nums">{i.item}</TableCell>
                     <TableCell>{i.descricao}</TableCell>
-                    <TableCell className="text-xs text-muted-foreground">{LOCAL_LABEL[i.local]}</TableCell>
-                    <TableCell className="text-right tabular-nums">{i.irrfAliquota ? pct(i.irrfAliquota) : '—'}</TableCell>
-                    <TableCell>{i.retencaoInss11 ? <Badge variant="destructive">Sim</Badge> : '—'}</TableCell>
+                    <TableCell className="text-xs text-muted-foreground">
+                      {LOCAL_LABEL[i.local]}
+                    </TableCell>
+                    <TableCell className="text-right tabular-nums">
+                      {i.irrfAliquota ? pct(i.irrfAliquota) : '—'}
+                    </TableCell>
+                    <TableCell>
+                      {i.retencaoInss11 ? <Badge variant="destructive">Sim</Badge> : '—'}
+                    </TableCell>
                   </TableRow>
                 ))}
               </TableBody>
@@ -402,13 +574,18 @@ export default function IpiIss() {
               <TabsTrigger value="iss">ISS e retenções</TabsTrigger>
               <TabsTrigger value="tabelas">Tabelas</TabsTrigger>
             </TabsList>
-            <TabsContent value="ipi"><IpiSimulador /></TabsContent>
-            <TabsContent value="iss"><IssSimulador /></TabsContent>
-            <TabsContent value="tabelas"><TabelasConsulta /></TabsContent>
+            <TabsContent value="ipi">
+              <IpiSimulador />
+            </TabsContent>
+            <TabsContent value="iss">
+              <IssSimulador />
+            </TabsContent>
+            <TabsContent value="tabelas">
+              <TabelasConsulta />
+            </TabsContent>
           </Tabs>
         </div>
       </div>
     </MainLayout>
   );
 }
-

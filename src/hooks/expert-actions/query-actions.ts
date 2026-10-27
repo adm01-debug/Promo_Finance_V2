@@ -39,7 +39,7 @@ export async function consultarCliente(nome: string): Promise<ActionResult> {
 
   const clienteMap = new Map<string, { nome: string; contas: typeof contasReceber }>();
   (contasReceber || []).forEach((c) => {
-    const key = c.cliente_id || c.cliente_nome;
+    const key = c.cliente_id || c.cliente_nome || 'desconhecido';
     const existing = clienteMap.get(key);
     if (existing) {
       existing.contas!.push(c);
@@ -76,7 +76,7 @@ export async function consultarFornecedor(nome: string): Promise<ActionResult> {
 
   const fornecedorMap = new Map<string, { nome: string; contas: typeof contasPagar }>();
   (contasPagar || []).forEach((c) => {
-    const key = c.fornecedor_id || c.fornecedor_nome;
+    const key = c.fornecedor_id || c.fornecedor_nome || 'desconhecido';
     const existing = fornecedorMap.get(key);
     if (existing) {
       existing.contas!.push(c);

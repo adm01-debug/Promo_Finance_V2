@@ -1,13 +1,6 @@
-import {
-  Bookmark,
-  Save,
-  ChevronDown,
-  Cloud,
-  RotateCcw,
-  Loader2,
-} from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
+import { Bookmark, Save, ChevronDown, Cloud, RotateCcw, Loader2 } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -15,10 +8,10 @@ import {
   DropdownMenuTrigger,
   DropdownMenuSeparator,
   DropdownMenuLabel,
-} from "@/components/ui/dropdown-menu";
-import type { SavedFilterRow } from "@/hooks/useSavedFilters";
-import type { useSavedFilterSubscriptions } from "@/hooks/useSavedFilterSubscriptions";
-import { PresetListItem } from "./PresetListItem";
+} from '@/components/ui/dropdown-menu';
+import type { SavedFilterRow } from '@/hooks/useSavedFilters';
+import type { useSavedFilterSubscriptions } from '@/hooks/useSavedFilterSubscriptions';
+import { PresetListItem } from './PresetListItem';
 
 type SubsApi = ReturnType<typeof useSavedFilterSubscriptions>;
 
@@ -99,7 +92,7 @@ export function PresetsDropdownMenu<T>({
           ) : (
             <Bookmark className="h-3.5 w-3.5" />
           )}
-          {activePreset ? activePreset.name : "Presets"}
+          {activePreset ? activePreset.name : 'Presets'}
           {isModified && (
             <Badge variant="secondary" className="text-[10px] h-4 px-1">
               modificado
@@ -111,9 +104,7 @@ export function PresetsDropdownMenu<T>({
       <DropdownMenuContent align="start" className="w-80">
         <DropdownMenuLabel className="text-xs flex items-center gap-1.5">
           Filtros salvos
-          {presetsLoading && (
-            <Loader2 className="h-3 w-3 animate-spin text-muted-foreground" />
-          )}
+          {presetsLoading && <Loader2 className="h-3 w-3 animate-spin text-muted-foreground" />}
         </DropdownMenuLabel>
         {presetsLoading ? (
           <div className="px-2 py-3 text-xs text-muted-foreground flex items-center justify-center gap-2">
@@ -193,9 +184,7 @@ export function PresetsDropdownMenu<T>({
           disabled={!canRestore || anyMutationPending}
         >
           <RotateCcw className="h-3.5 w-3.5 mr-2" />
-          {defaultFilter
-            ? `Restaurar padrão (${defaultFilter.name})`
-            : "Restaurar estado inicial"}
+          {defaultFilter ? `Restaurar padrão (${defaultFilter.name})` : 'Restaurar estado inicial'}
         </DropdownMenuItem>
         <DropdownMenuSeparator />
         <div
@@ -203,10 +192,7 @@ export function PresetsDropdownMenu<T>({
           role="note"
         >
           <Cloud className="h-3 w-3 mt-0.5 shrink-0 text-primary" />
-          <span>
-            Sincronizado com sua conta — disponível em qualquer navegador
-            após login.
-          </span>
+          <span>Sincronizado com sua conta — disponível em qualquer navegador após login.</span>
         </div>
       </DropdownMenuContent>
     </DropdownMenu>

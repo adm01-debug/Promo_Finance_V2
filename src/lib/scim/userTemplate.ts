@@ -46,7 +46,10 @@ export interface BuildResult {
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 /** Sanitiza e ajusta o input antes de validar. Retorna o input ajustado + lista de ajustes aplicados. */
-function preAdjust(input: Partial<ScimUserInput>): { adjusted: ScimUserInput; adjustments: string[] } {
+function preAdjust(input: Partial<ScimUserInput>): {
+  adjusted: ScimUserInput;
+  adjustments: string[];
+} {
   const adjustments: string[] = [];
 
   let userName = (input.userName ?? '').trim();
@@ -55,8 +58,10 @@ function preAdjust(input: Partial<ScimUserInput>): { adjusted: ScimUserInput; ad
   let workEmail = input.workEmail?.trim();
   const active = input.active ?? true;
 
-  if (userName && userName !== input.userName) adjustments.push('userName: removidos espaços ao redor');
-  if (externalId && externalId !== input.externalId) adjustments.push('externalId: removidos espaços ao redor');
+  if (userName && userName !== input.userName)
+    adjustments.push('userName: removidos espaços ao redor');
+  if (externalId && externalId !== input.externalId)
+    adjustments.push('externalId: removidos espaços ao redor');
 
   // Lowercase para userName/email (padrão SCIM e maioria dos IdPs)
   if (userName && userName !== userName.toLowerCase()) {
@@ -77,7 +82,9 @@ function preAdjust(input: Partial<ScimUserInput>): { adjusted: ScimUserInput; ad
   // Auto-preenchimento: se externalId vazio, derivar do userName (estável o suficiente para preview)
   if (!externalId && userName) {
     externalId = userName;
-    adjustments.push('externalId: preenchido automaticamente a partir de userName (substitua pelo objectId real)');
+    adjustments.push(
+      'externalId: preenchido automaticamente a partir de userName (substitua pelo objectId real)'
+    );
   }
 
   return {
@@ -100,15 +107,27 @@ function validate(input: ScimUserInput): ValidationIssue[] {
   }
 
   if (!input.externalId) {
-    issues.push({ field: 'externalId', level: 'error', message: 'externalId é obrigatório (use objectId / user.id).' });
+    issues.push({
+      field: 'externalId',
+      level: 'error',
+      message: 'externalId é obrigatório (use objectId / user.id).',
+    });
   }
 
   if (typeof input.active !== 'boolean') {
-    issues.push({ field: 'active', level: 'error', message: 'active deve ser boolean (true/false).' });
+    issues.push({
+      field: 'active',
+      level: 'error',
+      message: 'active deve ser boolean (true/false).',
+    });
   }
 
   if (input.workEmail && !EMAIL_RE.test(input.workEmail)) {
-    issues.push({ field: 'workEmail', level: 'error', message: 'emails[work].value não é um e-mail válido.' });
+    issues.push({
+      field: 'workEmail',
+      level: 'error',
+      message: 'emails[work].value não é um e-mail válido.',
+    });
   }
 
   return issues;

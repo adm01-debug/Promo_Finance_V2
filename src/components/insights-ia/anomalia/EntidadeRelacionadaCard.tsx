@@ -1,12 +1,12 @@
-import { useState } from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { ExternalLink, Database, Eye } from "lucide-react";
-import { Link } from "react-router-dom";
-import type { EntidadeRelacionada } from "@/hooks/useAnomaliaDetalhe";
-import { EntidadeDetalheDrawer } from "./EntidadeDetalheDrawer";
+import { useState } from 'react';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { ExternalLink, Database, Eye } from 'lucide-react';
+import { Link } from 'react-router-dom';
+import type { EntidadeRelacionada } from '@/hooks/useAnomaliaDetalhe';
+import { EntidadeDetalheDrawer } from './EntidadeDetalheDrawer';
 
-const MONO_KEYS = new Set(["id", "uuid", "external_id", "bitrix_id"]);
+const MONO_KEYS = new Set(['id', 'uuid', 'external_id', 'bitrix_id']);
 
 export function EntidadeRelacionadaCard({ entidade }: { entidade: EntidadeRelacionada }) {
   const [drawerOpen, setDrawerOpen] = useState(false);
@@ -24,17 +24,15 @@ export function EntidadeRelacionadaCard({ entidade }: { entidade: EntidadeRelaci
         </CardHeader>
         <CardContent className="space-y-4">
           {!entidade.encontrada ? (
-            <p className="text-sm text-muted-foreground">
-              Registro não localizado ou já removido.
-            </p>
+            <p className="text-sm text-muted-foreground">Registro não localizado ou já removido.</p>
           ) : (
             <>
               <dl className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                 {Object.entries(entidade.registro ?? {})
-                  .filter(([k]) => !["created_at", "updated_at"].includes(k))
+                  .filter(([k]) => !['created_at', 'updated_at'].includes(k))
                   .slice(0, 10)
                   .map(([k, v]) => {
-                    const isMono = MONO_KEYS.has(k) || k.endsWith("_id");
+                    const isMono = MONO_KEYS.has(k) || k.endsWith('_id');
                     return (
                       <div key={k} className="space-y-1 border border-border rounded-md p-3">
                         <dt className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
@@ -42,16 +40,14 @@ export function EntidadeRelacionadaCard({ entidade }: { entidade: EntidadeRelaci
                         </dt>
                         <dd
                           className={
-                            isMono
-                              ? "font-mono text-xs truncate"
-                              : "text-xs tabular-nums truncate"
+                            isMono ? 'font-mono text-xs truncate' : 'text-xs tabular-nums truncate'
                           }
                         >
                           {v === null || v === undefined
-                            ? "—"
-                            : typeof v === "object"
-                            ? JSON.stringify(v)
-                            : String(v)}
+                            ? '—'
+                            : typeof v === 'object'
+                              ? JSON.stringify(v)
+                              : String(v)}
                         </dd>
                       </div>
                     );
@@ -76,7 +72,8 @@ export function EntidadeRelacionadaCard({ entidade }: { entidade: EntidadeRelaci
                     title="Abrir tela completa"
                   >
                     <Link to={entidade.rotaUI}>
-                      <ExternalLink className="h-3 w-3 mr-1" aria-hidden="true" /> Abrir tela completa
+                      <ExternalLink className="h-3 w-3 mr-1" aria-hidden="true" /> Abrir tela
+                      completa
                     </Link>
                   </Button>
                 )}
@@ -86,11 +83,7 @@ export function EntidadeRelacionadaCard({ entidade }: { entidade: EntidadeRelaci
         </CardContent>
       </Card>
 
-      <EntidadeDetalheDrawer
-        open={drawerOpen}
-        onOpenChange={setDrawerOpen}
-        entidade={entidade}
-      />
+      <EntidadeDetalheDrawer open={drawerOpen} onOpenChange={setDrawerOpen} entidade={entidade} />
     </>
   );
 }

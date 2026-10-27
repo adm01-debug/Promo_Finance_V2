@@ -49,7 +49,7 @@ export function useFrontendErrorGroups(win: ErrorWindow, severity: string | null
     queryFn: async (): Promise<FrontendErrorGroup[]> => {
       const { data, error } = await supabase.rpc('get_frontend_error_groups', {
         p_desde: windowToIso(win),
-        p_severity: severity,
+        p_severity: severity ?? undefined,
         p_limit: 100,
       });
       if (error) throw error;
@@ -101,7 +101,7 @@ export function useFrontendErrorAlertState() {
       const { data, error } = await supabase
         .from('frontend_error_alert_state')
         .select(
-          'assinatura, severity, exemplo_mensagem, primeiro_alerta_em, ultimo_alerta_em, ocorrencias_no_ultimo_alerta, alertas_enviados, silenciado_ate',
+          'assinatura, severity, exemplo_mensagem, primeiro_alerta_em, ultimo_alerta_em, ocorrencias_no_ultimo_alerta, alertas_enviados, silenciado_ate'
         )
         .order('ultimo_alerta_em', { ascending: false })
         .limit(50);
@@ -129,7 +129,7 @@ export function useSilenciarAlertaErro() {
       const { data, error } = await supabase.rpc('silenciar_alerta_erro_frontend', {
         p_assinatura: params.assinatura,
         p_horas: params.horas,
-        p_motivo: params.motivo ?? null,
+        p_motivo: params.motivo,
       });
       if (error) throw error;
       return data as unknown as FrontendErrorAlertState;
@@ -141,7 +141,7 @@ export function useSilenciarAlertaErro() {
       toast.success(
         vars.horas > 0
           ? `Alertas silenciados por ${vars.horas}h.`
-          : 'Alertas reativados para esta assinatura.',
+          : 'Alertas reativados para esta assinatura.'
       );
     },
     onError: (err: unknown) => {
@@ -187,4 +187,3 @@ export function useSilenciamentosExpirando(horas = 72) {
     refetchOnWindowFocus: false,
   });
 }
-

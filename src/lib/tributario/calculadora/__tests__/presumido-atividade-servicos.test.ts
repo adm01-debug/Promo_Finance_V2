@@ -13,7 +13,7 @@ import type { AtividadePresumido, InputLucroPresumido } from '../types';
 function montar(
   atividade: AtividadePresumido,
   percentualServicos: number,
-  receitaBrutaAnual = 3_000_000,
+  receitaBrutaAnual = 3_000_000
 ): InputLucroPresumido {
   return {
     receitas: { receitaBrutaAnual, percentualServicos },
@@ -24,8 +24,13 @@ function montar(
 }
 
 const ATIVIDADES: AtividadePresumido[] = [
-  'comercio', 'industria', 'servicos_geral', 'servicos_profissionais',
-  'transporte_cargas', 'transporte_passageiros', 'servicos_hospitalares',
+  'comercio',
+  'industria',
+  'servicos_geral',
+  'servicos_profissionais',
+  'transporte_cargas',
+  'transporte_passageiros',
+  'servicos_hospitalares',
 ];
 
 // [presuncaoIrpj, presuncaoCsll] esperada sobre 100% de serviços
@@ -74,8 +79,10 @@ describe('presunção da parcela de serviços por atividade', () => {
       aliquotaIrpjPresuncao: 0.32,
       aliquotaCsllPresuncao: 0.32,
     });
-    expect(r.tributos.find((t) => t.nome === 'IRPJ')!.valor)
-      .toBeCloseTo(irpjEsperado(receita * 0.32), 2);
+    expect(r.tributos.find((t) => t.nome === 'IRPJ')!.valor).toBeCloseTo(
+      irpjEsperado(receita * 0.32),
+      2
+    );
   });
 
   it('não superestima transporte de cargas frente a serviços gerais', () => {

@@ -24,7 +24,11 @@ const containerVariants = {
 
 const itemVariants = {
   hidden: { opacity: 0, y: 20 },
-  visible: { opacity: 1, y: 0, transition: { type: 'spring' as const, stiffness: 300, damping: 24 } },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: { type: 'spring' as const, stiffness: 300, damping: 24 },
+  },
 } as const;
 
 export default function FluxoCaixa() {
@@ -58,7 +62,12 @@ export default function FluxoCaixa() {
 
   return (
     <MainLayout>
-      <motion.div variants={containerVariants} initial="hidden" animate="visible" className="space-y-4 sm:space-y-5 lg:space-y-6">
+      <motion.div
+        variants={containerVariants}
+        initial="hidden"
+        animate="visible"
+        className="space-y-4 sm:space-y-5 lg:space-y-6"
+      >
         <FluxoCaixaHeader
           periodo={periodo}
           onPeriodoChange={setPeriodo}
@@ -69,16 +78,15 @@ export default function FluxoCaixa() {
         />
 
         <motion.div variants={itemVariants}>
-          <QuickDateFilters
-            value={filterType}
-            onChange={handleFilterChange}
-            extended
-          />
+          <QuickDateFilters value={filterType} onChange={handleFilterChange} extended />
         </motion.div>
 
-        <motion.div variants={itemVariants} className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between sm:gap-4">
-          <CenarioSelector 
-            cenarioAtivo={cenarioAtivo} 
+        <motion.div
+          variants={itemVariants}
+          className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between sm:gap-4"
+        >
+          <CenarioSelector
+            cenarioAtivo={cenarioAtivo}
             onCenarioChange={setCenarioAtivo}
             metricas={metricasCenarios}
           />
@@ -101,7 +109,7 @@ export default function FluxoCaixa() {
         />
 
         <motion.div variants={itemVariants}>
-          <ResumosCenarios 
+          <ResumosCenarios
             metricas={metricasCenarios}
             saldoAtual={kpis?.saldoTotal || 0}
             cenarioAtivo={cenarioAtivo}
@@ -116,7 +124,7 @@ export default function FluxoCaixa() {
                 <Loader2 className="h-6 w-6 sm:h-8 sm:w-8 animate-spin text-muted-foreground" />
               </Card>
             ) : (
-              <GraficoCenarios 
+              <GraficoCenarios
                 projecoes={projecoes}
                 cenarioDestaque={cenarioAtivo}
                 limiteRuptura={0}
@@ -126,7 +134,7 @@ export default function FluxoCaixa() {
           </motion.div>
 
           <motion.div variants={itemVariants}>
-            <AlertasRuptura 
+            <AlertasRuptura
               alertas={alertas}
               onDismiss={handleDismissAlerta}
               onVerDetalhes={handleVerDetalhesAlerta}
@@ -134,11 +142,7 @@ export default function FluxoCaixa() {
           </motion.div>
         </div>
 
-        <FluxoCaixaBarChart
-          barData={barData}
-          cenarioAtivo={cenarioAtivo}
-          isLoading={isLoading}
-        />
+        <FluxoCaixaBarChart barData={barData} cenarioAtivo={cenarioAtivo} isLoading={isLoading} />
 
         <ProjecaoDiariaGrid
           dados={dadosCenarioAtivo}
@@ -148,7 +152,7 @@ export default function FluxoCaixa() {
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-5 lg:gap-6">
           <motion.div variants={itemVariants} className="lg:col-span-1">
-            <IndicadorCobertura 
+            <IndicadorCobertura
               saldoAtual={kpis?.saldoTotal || 0}
               despesaMediaDiaria={totalDespesas / (dias || 1)}
               isLoading={loadingKpis}

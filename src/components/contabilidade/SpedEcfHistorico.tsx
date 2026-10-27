@@ -8,7 +8,11 @@ import { supabase } from '@/integrations/supabase/client';
 import { baixarSpedZip } from '@/lib/sped-zip';
 import { toast } from 'sonner';
 import { AlertasResumo, type ResumoAlertas } from './sped-ecf-historico/AlertasResumo';
-import { HistoricoFilters, type StatusFilter, type ValidacaoFilter } from './sped-ecf-historico/HistoricoFilters';
+import {
+  HistoricoFilters,
+  type StatusFilter,
+  type ValidacaoFilter,
+} from './sped-ecf-historico/HistoricoFilters';
 import { HistoricoRow } from './sped-ecf-historico/HistoricoRow';
 import { ValidacoesDialog } from './sped-ecf-historico/ValidacoesDialog';
 
@@ -29,7 +33,9 @@ export function SpedEcfHistorico({ empresaId }: Props) {
     try {
       const saved = window.localStorage.getItem(`sped-ecf-audit:expanded:${empresaId || '_'}`);
       return saved ? new Set(JSON.parse(saved)) : new Set();
-    } catch { return new Set(); }
+    } catch {
+      return new Set();
+    }
   });
 
   useEffect(() => {
@@ -37,22 +43,25 @@ export function SpedEcfHistorico({ empresaId }: Props) {
     try {
       window.localStorage.setItem(
         `sped-ecf-audit:expanded:${empresaId || '_'}`,
-        JSON.stringify(Array.from(expandedAudit)),
+        JSON.stringify(Array.from(expandedAudit))
       );
-    } catch { /* noop */ }
+    } catch {
+      /* noop */
+    }
   }, [expandedAudit, empresaId]);
 
   const toggleAudit = (id: string) => {
     setExpandedAudit((prev) => {
       const next = new Set(prev);
-      if (next.has(id)) next.delete(id); else next.add(id);
+      if (next.has(id)) next.delete(id);
+      else next.add(id);
       return next;
     });
   };
 
   const anosDisponiveis = useMemo(
     () => Array.from(new Set(historico.map((h) => h.ano_calendario))).sort((a, b) => b - a),
-    [historico],
+    [historico]
   );
 
   const resumoAlertas = useMemo<ResumoAlertas>(() => {
@@ -90,7 +99,8 @@ export function SpedEcfHistorico({ empresaId }: Props) {
       if (statusFilter === 'liberada' && !liberada) return false;
       if (validacaoFilter === 'com_erros' && erros.length === 0) return false;
       if (validacaoFilter === 'com_avisos' && avisos.length === 0) return false;
-      if (validacaoFilter === 'sem_alertas' && (erros.length > 0 || avisos.length > 0)) return false;
+      if (validacaoFilter === 'sem_alertas' && (erros.length > 0 || avisos.length > 0))
+        return false;
       return true;
     });
   }, [historico, searchAno, statusFilter, validacaoFilter]);
@@ -110,7 +120,10 @@ export function SpedEcfHistorico({ empresaId }: Props) {
     const { data, error } = await supabase.storage
       .from('relatorios-tributarios')
       .createSignedUrl(h.storage_path, 60 * 60);
-    if (error || !data) { toast.error('Falha ao gerar link'); return; }
+    if (error || !data) {
+      toast.error('Falha ao gerar link');
+      return;
+    }
     window.open(data.signedUrl, '_blank');
   };
 
@@ -118,14 +131,20 @@ export function SpedEcfHistorico({ empresaId }: Props) {
     const { data, error } = await supabase.storage
       .from('relatorios-tributarios')
       .createSignedUrl(h.storage_path, 60 * 60);
-    if (error || !data) { toast.error('Falha ao gerar link'); return; }
+    if (error || !data) {
+      toast.error('Falha ao gerar link');
+      return;
+    }
     const fileName = h.storage_path.split('/').pop() || `ECF-${h.ano_calendario}.txt`;
     try {
       await baixarSpedZip({
-        txtUrl: data.signedUrl, fileName, hash: h.hash_sha256 || 'N/A',
+        txtUrl: data.signedUrl,
+        fileName,
+        hash: h.hash_sha256 || 'N/A',
         empresa: { razao_social: h.razao_social, cnpj: h.cnpj },
         periodo: { inicio: `${h.ano_calendario}-01-01`, fim: `${h.ano_calendario}-12-31` },
-        totalLinhas: h.total_linhas ?? 0, totalLancamentos: h.total_lancamentos ?? 0,
+        totalLinhas: h.total_linhas ?? 0,
+        totalLancamentos: h.total_lancamentos ?? 0,
         tipo: 'ECF',
       });
       toast.success('ZIP baixado');
@@ -174,8 +193,12 @@ export function SpedEcfHistorico({ empresaId }: Props) {
           ) : filtrados.length === 0 ? (
             <div className="flex flex-col items-center gap-2 py-8 text-center">
               <Filter className="h-8 w-8 text-muted-foreground" aria-hidden="true" />
-              <p className="text-sm text-muted-foreground">Nenhum arquivo encontrado com os filtros aplicados.</p>
-              <Button size="sm" variant="link" onClick={limparFiltros}>Limpar filtros</Button>
+              <p className="text-sm text-muted-foreground">
+                Nenhum arquivo encontrado com os filtros aplicados.
+              </p>
+              <Button size="sm" variant="link" onClick={limparFiltros}>
+                Limpar filtros
+              </Button>
             </div>
           ) : (
             <Table>

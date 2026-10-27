@@ -2,8 +2,12 @@
 import { describe, it, expect } from 'vitest';
 import { calcularTodosRegimes, type InputCalculadora } from '@/lib/tributario/calculadora';
 
-function rand(min: number, max: number) { return min + Math.random() * (max - min); }
-function pick<T>(arr: T[]): T { return arr[Math.floor(Math.random() * arr.length)]; }
+function rand(min: number, max: number) {
+  return min + Math.random() * (max - min);
+}
+function pick<T>(arr: T[]): T {
+  return arr[Math.floor(Math.random() * arr.length)];
+}
 
 function gerarCenario(): InputCalculadora {
   const receita = rand(100_000, 50_000_000);
@@ -15,7 +19,9 @@ function gerarCenario(): InputCalculadora {
   const em = { aliquotaIcms: 0.18, aliquotaIss: 0.05, creditoIcmsCompras: creditos * 0.3 };
   return {
     lucroReal: {
-      receitas, folha: folhaCfg, estadualMunicipal: em,
+      receitas,
+      folha: folhaCfg,
+      estadualMunicipal: em,
       lucroContabil: rand(-100_000, receita * 0.4),
       lalur: { adicoesOutras: rand(0, 50_000), exclusoesOutras: rand(0, 30_000) },
       prejuizoAcumulado: rand(0, 500_000),
@@ -24,7 +30,9 @@ function gerarCenario(): InputCalculadora {
       modo: 'anual_estimativa',
     },
     lucroPresumido: {
-      receitas, folha: folhaCfg, estadualMunicipal: em,
+      receitas,
+      folha: folhaCfg,
+      estadualMunicipal: em,
       atividade: pick(['comercio', 'industria', 'servicos_geral', 'transporte_cargas'] as const),
     },
     simples: {
@@ -73,7 +81,8 @@ describe('Harness — 200 cenários aleatórios da Calculadora', () => {
 
     // 8. Presumido inelegível se receita > 78mi
     const p = r.cenarios.find((c) => c.regime === 'lucro_presumido')!;
-    if (input.lucroPresumido!.receitas.receitaBrutaAnual > 78_000_000) expect(p.elegivel).toBe(false);
+    if (input.lucroPresumido!.receitas.receitaBrutaAnual > 78_000_000)
+      expect(p.elegivel).toBe(false);
 
     // 9. Melhor cenário existe se há pelo menos 1 elegível
     const elegiveis = r.cenarios.filter((c) => c.elegivel && c.regime !== 'reforma');

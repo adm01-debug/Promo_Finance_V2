@@ -1,5 +1,5 @@
-import { useQuery } from "@tanstack/react-query";
-import { supabase } from "@/integrations/supabase/client";
+import { useQuery } from '@tanstack/react-query';
+import { supabase } from '@/integrations/supabase/client';
 
 export interface ReaberturaInfo {
   ultima_reabertura: string;
@@ -18,23 +18,26 @@ export interface ReaberturaInfo {
  */
 export function useAnomaliasReabertasIndex() {
   return useQuery({
-    queryKey: ["anomalias-reabertas-index"],
+    queryKey: ['anomalias-reabertas-index'],
     staleTime: 30_000,
     refetchInterval: 60_000,
     queryFn: async (): Promise<Map<string, ReaberturaInfo>> => {
       const { data, error } = await supabase
-        .from("audit_logs")
-        .select("record_id, created_at, details")
-        .eq("table_name", "anomalias_detectadas")
-        .or("details.ilike.REOPEN:%,details.ilike.REOPEN_BATCH%")
-        .order("created_at", { ascending: false })
+        .from('audit_logs')
+        .select('record_id, created_at, details')
+        .eq('table_name', 'anomalias_detectadas')
+        .or('details.ilike.REOPEN:%,details.ilike.REOPEN_BATCH%')
+        .order('created_at', { ascending: false })
         .limit(2000);
       if (error) throw error;
 
       const map = new Map<string, ReaberturaInfo>();
       for (const row of data ?? []) {
         if (!row.record_id) continue;
-        const ids = row.record_id.split(",").map((s) => s.trim()).filter(Boolean);
+        const ids = row.record_id
+          .split(',')
+          .map((s) => s.trim())
+          .filter(Boolean);
         for (const id of ids) {
           const prev = map.get(id);
           if (!prev) {

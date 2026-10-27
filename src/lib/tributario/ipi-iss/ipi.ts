@@ -9,10 +9,17 @@ import { buscarTipi, normalizarNcm } from './tabelas';
 import type { InputIpi, LinhaMemoria, ResultadoIpi, SituacaoIpi } from './types';
 
 const round2 = (v: number) => Math.round((v + Number.EPSILON) * 100) / 100;
-const nonNeg = (v: number | undefined) => (Number.isFinite(v) && (v as number) > 0 ? (v as number) : 0);
+const nonNeg = (v: number | undefined) =>
+  Number.isFinite(v) && (v as number) > 0 ? (v as number) : 0;
 
 /** Situações em que não há débito de IPI, ainda que exista base contábil. */
-const SEM_DEBITO: readonly SituacaoIpi[] = ['isenta', 'nao_tributada', 'aliquota_zero', 'suspensa', 'imune'];
+const SEM_DEBITO: readonly SituacaoIpi[] = [
+  'isenta',
+  'nao_tributada',
+  'aliquota_zero',
+  'suspensa',
+  'imune',
+];
 
 export function calcularIpi(input: InputIpi): ResultadoIpi {
   const alertas: string[] = [];
@@ -27,7 +34,9 @@ export function calcularIpi(input: InputIpi): ResultadoIpi {
 
   const tipi = input.ncm ? buscarTipi(input.ncm) : undefined;
   if (input.ncm && !tipi) {
-    alertas.push(`NCM ${normalizarNcm(input.ncm)} não catalogado na TIPI embarcada — informe a alíquota manualmente.`);
+    alertas.push(
+      `NCM ${normalizarNcm(input.ncm)} não catalogado na TIPI embarcada — informe a alíquota manualmente.`
+    );
   }
 
   let situacao: SituacaoIpi = input.situacao ?? tipi?.situacao ?? 'tributada';
@@ -40,7 +49,9 @@ export function calcularIpi(input: InputIpi): ResultadoIpi {
 
   if (!contribuinte) {
     situacao = 'nao_tributada';
-    alertas.push('Estabelecimento não industrial nem equiparado: não é contribuinte do IPI (RIPI, art. 24).');
+    alertas.push(
+      'Estabelecimento não industrial nem equiparado: não é contribuinte do IPI (RIPI, art. 24).'
+    );
   }
 
   if (situacao === 'tributada' && aliquota === 0) {
@@ -66,7 +77,8 @@ export function calcularIpi(input: InputIpi): ResultadoIpi {
     base: baseCalculo,
     aliquota: 0,
     valor: baseCalculo,
-    fundamento: 'RIPI/2010, art. 190 — valor da operação, incluídos frete, seguro e demais despesas acessórias.',
+    fundamento:
+      'RIPI/2010, art. 190 — valor da operação, incluídos frete, seguro e demais despesas acessórias.',
   });
   memoria.push({
     rubrica: `IPI (${situacao})`,
@@ -87,12 +99,16 @@ export function calcularIpi(input: InputIpi): ResultadoIpi {
     });
   }
   if (semDebito && creditoEntradas > 0 && situacao !== 'imune') {
-    alertas.push('Saída sem débito com crédito na entrada: verifique a necessidade de estorno (RIPI, art. 254).');
+    alertas.push(
+      'Saída sem débito com crédito na entrada: verifique a necessidade de estorno (RIPI, art. 254).'
+    );
   }
 
   const saldoApurado = round2(ipiDevido - creditoEntradas);
   if (saldoApurado < 0) {
-    alertas.push('Saldo credor de IPI apurado — transportar para o período seguinte (RIPI, art. 256).');
+    alertas.push(
+      'Saldo credor de IPI apurado — transportar para o período seguinte (RIPI, art. 256).'
+    );
   }
 
   const valorTotalNota = round2(valorProduto + frete + seguro + outras - descontos + ipiDevido);

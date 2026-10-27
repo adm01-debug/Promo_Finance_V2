@@ -35,16 +35,17 @@ export function computeOutcome(result: SandboxResult): SandboxOutcome {
   const p = result.preview;
   if (!p.email) return 'sem_email';
   const blocked =
-    !p.domain_allowed ||
-    !!p.provision_blocked_reason ||
-    (result.errors?.length ?? 0) > 0;
+    !p.domain_allowed || !!p.provision_blocked_reason || (result.errors?.length ?? 0) > 0;
   if (blocked) return 'bloqueado';
   if (p.user_exists) return 'usuario_existente';
   if (p.would_jit_provision) return 'seria_jit';
   return 'bloqueado';
 }
 
-export const OUTCOME_META: Record<SandboxOutcome, { label: string; className: string; emoji: string }> = {
+export const OUTCOME_META: Record<
+  SandboxOutcome,
+  { label: string; className: string; emoji: string }
+> = {
   bloqueado: {
     label: 'Bloqueado',
     className: 'border-destructive/40 text-destructive bg-destructive/5',

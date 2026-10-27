@@ -1,18 +1,19 @@
-import { useMemo, useState } from "react";
-import { useQuery } from "@tanstack/react-query";
-import { supabaseDyn } from "@/lib/supabase-dynamic";
+import { useMemo, useState } from 'react';
+import { useQuery } from '@tanstack/react-query';
+import { supabaseDyn } from '@/lib/supabase-dynamic';
 
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
-import { ShieldCheck, RefreshCw, AlertTriangle, Clock, Infinity as InfinityIcon } from "lucide-react";
+  ShieldCheck,
+  RefreshCw,
+  AlertTriangle,
+  Clock,
+  Infinity as InfinityIcon,
+} from 'lucide-react';
 
 /** Linha retornada por public.get_retencao_politicas_status (admin-only). */
 export interface RetencaoPoliticaStatus {
@@ -32,28 +33,28 @@ export interface RetencaoPoliticaStatus {
   atualizado_em: string | null;
 }
 
-type Filtro = "todas" | "sem_politica" | "vencidas" | "isentas";
+type Filtro = 'todas' | 'sem_politica' | 'vencidas' | 'isentas';
 
 const FILTROS: ReadonlyArray<{ id: Filtro; label: string }> = [
-  { id: "todas", label: "Todas" },
-  { id: "sem_politica", label: "Sem política" },
-  { id: "vencidas", label: "Com pendência" },
-  { id: "isentas", label: "Isentas" },
+  { id: 'todas', label: 'Todas' },
+  { id: 'sem_politica', label: 'Sem política' },
+  { id: 'vencidas', label: 'Com pendência' },
+  { id: 'isentas', label: 'Isentas' },
 ];
 
 function formatarNumero(valor: number | null): string {
-  return valor == null ? "—" : valor.toLocaleString("pt-BR");
+  return valor == null ? '—' : valor.toLocaleString('pt-BR');
 }
 
 function formatarTTL(linha: RetencaoPoliticaStatus): string {
-  if (!linha.tem_politica) return "não definido";
-  if (linha.dias == null) return "guarda indefinida";
+  if (!linha.tem_politica) return 'não definido';
+  if (linha.dias == null) return 'guarda indefinida';
   if (linha.dias >= 365) return `${Math.round(linha.dias / 365)} ano(s)`;
   return `${linha.dias} dias`;
 }
 
 function nomeCurto(tabela: string): string {
-  return tabela.replace(/^public\./, "");
+  return tabela.replace(/^public\./, '');
 }
 
 /**
@@ -64,8 +65,8 @@ function nomeCurto(tabela: string): string {
  * envolvidas têm RLS restritiva e contagens diretas do cliente retornariam zero.
  */
 export function RetentionPoliciesPanel() {
-  const [filtro, setFiltro] = useState<Filtro>("todas");
-  const [busca, setBusca] = useState("");
+  const [filtro, setFiltro] = useState<Filtro>('todas');
+  const [busca, setBusca] = useState('');
 
   const {
     data = [],
@@ -74,10 +75,10 @@ export function RetentionPoliciesPanel() {
     refetch,
     isRefetching,
   } = useQuery<RetencaoPoliticaStatus[]>({
-    queryKey: ["retencao-politicas-status"],
+    queryKey: ['retencao-politicas-status'],
     queryFn: async () => {
       const { data, error } = await supabaseDyn.rpc<RetencaoPoliticaStatus[]>(
-        "get_retencao_politicas_status",
+        'get_retencao_politicas_status'
       );
       if (error) throw error;
       return data ?? [];
@@ -98,10 +99,10 @@ export function RetentionPoliciesPanel() {
     const termo = busca.trim().toLowerCase();
     return data
       .filter((l) => {
-        if (filtro === "sem_politica" && l.tem_politica) return false;
-        if (filtro === "vencidas" && (l.linhas_vencidas ?? 0) === 0) return false;
-        if (filtro === "isentas" && !l.isenta) return false;
-        return termo === "" || l.tabela.toLowerCase().includes(termo);
+        if (filtro === 'sem_politica' && l.tem_politica) return false;
+        if (filtro === 'vencidas' && (l.linhas_vencidas ?? 0) === 0) return false;
+        if (filtro === 'isentas' && !l.isenta) return false;
+        return termo === '' || l.tabela.toLowerCase().includes(termo);
       })
       .sort((a, b) => {
         // Prioriza risco: sem política → pendências → volume.
@@ -136,7 +137,7 @@ export function RetentionPoliciesPanel() {
           disabled={isRefetching}
           aria-label="Recarregar políticas de retenção"
         >
-          <RefreshCw className={`h-3.5 w-3.5 ${isRefetching ? "animate-spin" : ""}`} />
+          <RefreshCw className={`h-3.5 w-3.5 ${isRefetching ? 'animate-spin' : ''}`} />
         </Button>
       </CardHeader>
 
@@ -170,7 +171,7 @@ export function RetentionPoliciesPanel() {
               <Button
                 key={f.id}
                 size="sm"
-                variant={filtro === f.id ? "secondary" : "ghost"}
+                variant={filtro === f.id ? 'secondary' : 'ghost'}
                 className="h-7 px-2 text-xs"
                 onClick={() => setFiltro(f.id)}
               >
@@ -218,7 +219,7 @@ export function RetentionPoliciesPanel() {
                           {nomeCurto(l.tabela)}
                         </span>
                         <Badge
-                          variant={l.tem_politica ? "outline" : "destructive"}
+                          variant={l.tem_politica ? 'outline' : 'destructive'}
                           className="text-[10px] font-normal"
                         >
                           {formatarTTL(l)}
@@ -233,8 +234,8 @@ export function RetentionPoliciesPanel() {
                         {l.motivo
                           ? l.motivo
                           : l.coluna
-                            ? `coluna ${l.coluna}${l.filtro ? ` · filtro ${l.filtro}` : ""}`
-                            : "sem coluna temporal configurada"}
+                            ? `coluna ${l.coluna}${l.filtro ? ` · filtro ${l.filtro}` : ''}`
+                            : 'sem coluna temporal configurada'}
                       </p>
                     </div>
 
@@ -245,11 +246,9 @@ export function RetentionPoliciesPanel() {
                             {formatarNumero(l.total_linhas)}
                           </p>
                           <p
-                            className={`text-[10px] ${pendencia ? "text-destructive" : "text-muted-foreground"}`}
+                            className={`text-[10px] ${pendencia ? 'text-destructive' : 'text-muted-foreground'}`}
                           >
-                            {pendencia
-                              ? `${formatarNumero(l.linhas_vencidas)} vencidos`
-                              : "em dia"}
+                            {pendencia ? `${formatarNumero(l.linhas_vencidas)} vencidos` : 'em dia'}
                           </p>
                         </div>
                       </TooltipTrigger>
@@ -257,8 +256,8 @@ export function RetentionPoliciesPanel() {
                         <p className="text-xs">
                           {formatarNumero(l.total_linhas)} registro(s)
                           {l.registro_mais_antigo
-                            ? ` · mais antigo em ${new Date(l.registro_mais_antigo).toLocaleDateString("pt-BR")}`
-                            : ""}
+                            ? ` · mais antigo em ${new Date(l.registro_mais_antigo).toLocaleDateString('pt-BR')}`
+                            : ''}
                         </p>
                       </TooltipContent>
                     </Tooltip>

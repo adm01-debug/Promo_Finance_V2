@@ -6,7 +6,9 @@ import type { ReactNode } from 'react';
 const queryResult = vi.fn();
 
 vi.mock('@/integrations/supabase/client', () => ({
-  supabase: { from: () => ({ select: () => ({ eq: () => ({ eq: () => ({ order: queryResult }) }) }) }) },
+  supabase: {
+    from: () => ({ select: () => ({ eq: () => ({ eq: () => ({ order: queryResult }) }) }) }),
+  },
 }));
 vi.mock('./useAuth', () => ({ useAuth: () => ({ user: { id: 'user-1' } }) }));
 

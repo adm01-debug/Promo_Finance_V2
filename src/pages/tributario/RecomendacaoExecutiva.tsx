@@ -7,9 +7,26 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 import { Separator } from '@/components/ui/separator';
-import { Award, TrendingDown, AlertTriangle, FileText, ArrowRight, CheckCircle2, Scale, Send, Loader2, Sparkles } from 'lucide-react';
+import {
+  Award,
+  TrendingDown,
+  AlertTriangle,
+  FileText,
+  ArrowRight,
+  CheckCircle2,
+  Scale,
+  Send,
+  Loader2,
+  Sparkles,
+} from 'lucide-react';
 import { useSimulacaoRegimes } from '@/hooks/useSimulacaoRegimes';
 import { useAllEmpresas } from '@/hooks/useEmpresas';
 import { useGerarPdfTributario, useEnviarBitrix24Tributario } from '@/hooks/usePdfTributario';
@@ -111,7 +128,9 @@ export default function RecomendacaoExecutiva() {
             </label>
             <Select
               value={regimeAtual ?? 'none'}
-              onValueChange={(v) => setRegimeAtual(v === 'none' ? undefined : (v as RegimeTributario))}
+              onValueChange={(v) =>
+                setRegimeAtual(v === 'none' ? undefined : (v as RegimeTributario))
+              }
             >
               <SelectTrigger id="regime-atual">
                 <SelectValue />
@@ -135,18 +154,26 @@ export default function RecomendacaoExecutiva() {
               <div className="flex items-center gap-2 mb-2">
                 <Badge variant="default">Regime recomendado</Badge>
                 {isRecomendacaoIA && (
-                  <Badge variant="outline" className="bg-primary/5 text-primary border-primary/20 animate-pulse">
+                  <Badge
+                    variant="outline"
+                    className="bg-primary/5 text-primary border-primary/20 animate-pulse"
+                  >
                     <Sparkles className="h-3 w-3 mr-1" /> IA
                   </Badge>
                 )}
                 {resultado.fromCache && (
-                  <Badge variant="outline" className="text-muted-foreground border-muted-foreground/20">
+                  <Badge
+                    variant="outline"
+                    className="text-muted-foreground border-muted-foreground/20"
+                  >
                     Cached
                   </Badge>
                 )}
               </div>
               <CardTitle className="text-3xl">{resultado.recomendado.nome}</CardTitle>
-              <CardDescription className="mt-2 text-base">{resultado.justificativaIA || resultado.justificativa}</CardDescription>
+              <CardDescription className="mt-2 text-base">
+                {resultado.justificativaIA || resultado.justificativa}
+              </CardDescription>
             </div>
             <div className="text-right">
               <p className="text-sm text-muted-foreground">Carga tributária estimada</p>
@@ -167,7 +194,10 @@ export default function RecomendacaoExecutiva() {
               <AlertDescription>
                 Migrar do regime atual ({REGIME_LABEL[regimeAtual!]}) para{' '}
                 <strong>{resultado.recomendado.nome}</strong> geraria economia anual de{' '}
-                <strong className="text-success">{formatBRL(resultado.economiaAnualVsAtual)}</strong>.
+                <strong className="text-success">
+                  {formatBRL(resultado.economiaAnualVsAtual)}
+                </strong>
+                .
               </AlertDescription>
             </Alert>
           </CardContent>
@@ -239,7 +269,7 @@ export default function RecomendacaoExecutiva() {
                             <dd>{formatBRL(cenario.csll)}</dd>
                           </div>
                         )}
-                        {(cenario.pis + cenario.cofins) > 0 && (
+                        {cenario.pis + cenario.cofins > 0 && (
                           <div className="flex justify-between">
                             <dt className="text-muted-foreground">PIS/COFINS</dt>
                             <dd>{formatBRL(cenario.pis + cenario.cofins)}</dd>
@@ -267,13 +297,15 @@ export default function RecomendacaoExecutiva() {
                       {cenario.anexoAplicavel && (
                         <p className="text-xs text-muted-foreground pt-2 border-t">
                           Anexo {cenario.anexoAplicavel}
-                          {cenario.fatorR !== undefined && ` · Fator R: ${(cenario.fatorR * 100).toFixed(1)}%`}
+                          {cenario.fatorR !== undefined &&
+                            ` · Fator R: ${(cenario.fatorR * 100).toFixed(1)}%`}
                         </p>
                       )}
                     </>
                   ) : (
                     <p className="text-sm text-muted-foreground">
-                      {cenario.motivoInelegibilidade ?? 'Regime não aplicável aos parâmetros informados.'}
+                      {cenario.motivoInelegibilidade ??
+                        'Regime não aplicável aos parâmetros informados.'}
                     </p>
                   )}
                 </CardContent>

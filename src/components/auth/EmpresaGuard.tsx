@@ -36,7 +36,13 @@ export function EmpresaGuard({ children }: EmpresaGuardProps) {
 
   // 0 vínculos → bloquear (única razão válida)
   if (vinculos.length === 0) {
-    return <EmpresaSelectionGate onSelected={() => { /* re-render automático via query */ }} />;
+    return (
+      <EmpresaSelectionGate
+        onSelected={() => {
+          /* re-render automático via query */
+        }}
+      />
+    );
   }
 
   // 1+ vínculos → segue para o app, com escopo gerenciado pelo provider

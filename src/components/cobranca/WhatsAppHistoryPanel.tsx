@@ -1,4 +1,13 @@
-import { MessageSquare, CheckCircle2, Clock, XCircle, Phone, BrainCircuit, AlertCircle, ArrowRightCircle } from 'lucide-react';
+import {
+  MessageSquare,
+  CheckCircle2,
+  Clock,
+  XCircle,
+  Phone,
+  BrainCircuit,
+  AlertCircle,
+  ArrowRightCircle,
+} from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -55,7 +64,11 @@ export function WhatsAppHistoryPanel() {
       </CardHeader>
       <CardContent>
         {isLoading ? (
-          <div className="space-y-3">{Array.from({ length: 5 }).map((_, i) => <Skeleton key={i} className="h-20" />)}</div>
+          <div className="space-y-3">
+            {Array.from({ length: 5 }).map((_, i) => (
+              <Skeleton key={i} className="h-20" />
+            ))}
+          </div>
         ) : !historico || historico.length === 0 ? (
           <div className="text-center py-12 text-muted-foreground">
             <MessageSquare className="h-12 w-12 mx-auto mb-2 opacity-30" />
@@ -69,7 +82,10 @@ export function WhatsAppHistoryPanel() {
               const sentimentClass = sentimentColors[item.ia_sentimento?.toLowerCase() || 'neutro'];
 
               return (
-                <div key={item.id} className="group relative flex flex-col p-4 rounded-xl border bg-card hover:border-primary/30 transition-all hover:shadow-md">
+                <div
+                  key={item.id}
+                  className="group relative flex flex-col p-4 rounded-xl border bg-card hover:border-primary/30 transition-all hover:shadow-md"
+                >
                   <div className="flex items-start justify-between mb-2">
                     <div className="flex items-center gap-3">
                       <div className={`p-2 rounded-full ${config.color} bg-current/5`}>
@@ -82,12 +98,17 @@ export function WhatsAppHistoryPanel() {
                             {item.telefone}
                           </p>
                           {item.ia_sentimento && (
-                            <Badge variant="outline" className={`text-[10px] uppercase font-bold px-1.5 py-0 ${sentimentClass}`}>
+                            <Badge
+                              variant="outline"
+                              className={`text-[10px] uppercase font-bold px-1.5 py-0 ${sentimentClass}`}
+                            >
                               {item.ia_sentimento}
                             </Badge>
                           )}
                         </div>
-                        <p className="text-xs text-muted-foreground">{formatDate(item.created_at)}</p>
+                        <p className="text-xs text-muted-foreground">
+                          {formatDate(item.created_at)}
+                        </p>
                       </div>
                     </div>
                     <Badge variant="secondary" className="text-[10px] h-5">
@@ -96,7 +117,9 @@ export function WhatsAppHistoryPanel() {
                   </div>
 
                   <div className="mt-1 bg-muted/30 p-2.5 rounded-lg border border-dashed">
-                    <p className="text-sm italic text-foreground/80 leading-relaxed">"{item.mensagem}"</p>
+                    <p className="text-sm italic text-foreground/80 leading-relaxed">
+                      "{item.mensagem}"
+                    </p>
                   </div>
 
                   {(item.ia_resumo || item.ia_proxima_acao) && (
@@ -107,7 +130,9 @@ export function WhatsAppHistoryPanel() {
                             <BrainCircuit className="h-3 w-3" />
                             Insight da IA
                           </div>
-                          <p className="text-xs text-muted-foreground line-clamp-2">{item.ia_resumo}</p>
+                          <p className="text-xs text-muted-foreground line-clamp-2">
+                            {item.ia_resumo}
+                          </p>
                         </div>
                       )}
                       {item.ia_proxima_acao && (

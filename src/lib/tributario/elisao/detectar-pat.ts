@@ -10,7 +10,7 @@ export function detectarPAT(ctx: ContextoEmpresa): OportunidadeDetectada {
 
   // PAT: dedução de até 4% do IRPJ devido (não da base, do imposto!)
   const irpjBase = lucro * 0.15; // IRPJ 15%
-  const irpjAdicional = Math.max(0, (lucro - 240_000) * 0.10);
+  const irpjAdicional = Math.max(0, (lucro - 240_000) * 0.1);
   const irpjTotal = irpjBase + irpjAdicional;
   const economiaEstimada = aplicavel ? irpjTotal * 0.04 : 0;
 

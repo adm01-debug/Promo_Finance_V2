@@ -24,11 +24,11 @@ export function EmpresaSelectionGate({ onSelected }: EmpresaSelectionGateProps) 
 
   const sorted = useMemo(
     () => [...vinculos].sort((a, b) => Number(b.is_default) - Number(a.is_default)),
-    [vinculos],
+    [vinculos]
   );
 
   const [selectedId, setSelectedId] = useState<string | null>(
-    () => sorted.find((v) => v.is_default)?.id ?? sorted[0]?.id ?? null,
+    () => sorted.find((v) => v.is_default)?.id ?? sorted[0]?.id ?? null
   );
   const [setAsDefault, setSetAsDefault] = useState(false);
   const [submitting, setSubmitting] = useState(false);
@@ -64,8 +64,8 @@ export function EmpresaSelectionGate({ onSelected }: EmpresaSelectionGateProps) 
                 {isLoading
                   ? 'Carregando vínculos…'
                   : vinculos.length === 0
-                  ? 'Nenhum vínculo ativo encontrado'
-                  : `Você está vinculado a ${vinculos.length} ${vinculos.length === 1 ? 'empresa' : 'empresas'}`}
+                    ? 'Nenhum vínculo ativo encontrado'
+                    : `Você está vinculado a ${vinculos.length} ${vinculos.length === 1 ? 'empresa' : 'empresas'}`}
               </CardDescription>
             </div>
           </div>
@@ -101,12 +101,7 @@ export function EmpresaSelectionGate({ onSelected }: EmpresaSelectionGateProps) 
               )}
 
               <div className="flex items-center justify-between pt-2 border-t">
-                <Button
-                  variant="ghost"
-                  onClick={signOut}
-                  disabled={submitting}
-                  className="gap-2"
-                >
+                <Button variant="ghost" onClick={signOut} disabled={submitting} className="gap-2">
                   <LogOut className="h-4 w-4" />
                   Sair
                 </Button>
@@ -152,14 +147,16 @@ function EmpresaCard({
         'w-full text-left rounded-lg border p-4 transition-all',
         'hover:border-primary/60 hover:bg-accent/40',
         'focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2',
-        selected ? 'border-primary bg-primary/5 shadow-sm' : 'border-border bg-card',
+        selected ? 'border-primary bg-primary/5 shadow-sm' : 'border-border bg-card'
       )}
     >
       <div className="flex items-start gap-3">
         <div
           className={cn(
             'mt-0.5 h-5 w-5 rounded-full border-2 flex items-center justify-center shrink-0',
-            selected ? 'border-primary bg-primary text-primary-foreground' : 'border-muted-foreground/40',
+            selected
+              ? 'border-primary bg-primary text-primary-foreground'
+              : 'border-muted-foreground/40'
           )}
         >
           {selected && <Check className="h-3 w-3" strokeWidth={3} />}
@@ -168,7 +165,9 @@ function EmpresaCard({
           <div className="flex items-center gap-2 flex-wrap">
             <span className="font-medium truncate">{nome}</span>
             {vinculo.is_default && (
-              <Badge variant="secondary" className="text-[10px] uppercase">Padrão</Badge>
+              <Badge variant="secondary" className="text-[10px] uppercase">
+                Padrão
+              </Badge>
             )}
           </div>
           {vinculo.empresa.razao_social !== nome && (
@@ -177,9 +176,13 @@ function EmpresaCard({
           <div className="mt-1 flex items-center gap-2 text-xs text-muted-foreground">
             <span>CNPJ {vinculo.empresa.cnpj}</span>
             <span>·</span>
-            <Badge variant="outline" className="text-[10px] uppercase">{vinculo.role}</Badge>
+            <Badge variant="outline" className="text-[10px] uppercase">
+              {vinculo.role}
+            </Badge>
             {vinculo.provisioned_via === 'sso' && (
-              <Badge variant="outline" className="text-[10px] uppercase">SSO</Badge>
+              <Badge variant="outline" className="text-[10px] uppercase">
+                SSO
+              </Badge>
             )}
           </div>
         </div>
@@ -197,8 +200,8 @@ function NoVinculosState({ onSignOut }: { onSignOut: () => void }) {
       <div className="space-y-1">
         <h3 className="font-medium">Nenhuma empresa vinculada</h3>
         <p className="text-sm text-muted-foreground max-w-md mx-auto">
-          Sua conta ainda não possui vínculo com nenhuma empresa. Solicite ao administrador
-          da sua organização para liberar o acesso.
+          Sua conta ainda não possui vínculo com nenhuma empresa. Solicite ao administrador da sua
+          organização para liberar o acesso.
         </p>
       </div>
       <Button variant="outline" onClick={onSignOut} className="gap-2">

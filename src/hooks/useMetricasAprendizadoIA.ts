@@ -85,7 +85,7 @@ export function useMetricasAprendizadoIA() {
       // Série temporal semanal
       const semanasMap = new Map<string, { aprovados: number; rejeitados: number }>();
       for (const f of feedbacks) {
-        const semana = startOfWeek(new Date(f.created_at));
+        const semana = startOfWeek(new Date(f.created_at ?? 0));
         const cur = semanasMap.get(semana) ?? { aprovados: 0, rejeitados: 0 };
         if (f.acao === 'aprovado') cur.aprovados++;
         else if (f.acao === 'rejeitado') cur.rejeitados++;
@@ -106,7 +106,9 @@ export function useMetricasAprendizadoIA() {
 
       // Distribuição confiança
       const confMap: Record<'alta' | 'media' | 'baixa', number> = {
-        alta: 0, media: 0, baixa: 0,
+        alta: 0,
+        media: 0,
+        baixa: 0,
       };
       for (const h of historico) {
         const c = h.confianca as 'alta' | 'media' | 'baixa' | null;
@@ -119,7 +121,7 @@ export function useMetricasAprendizadoIA() {
       // Heatmap anomalias
       const heatMap = new Map<string, number>();
       for (const a of anomalias) {
-        const semana = startOfWeek(new Date(a.detectada_em));
+        const semana = startOfWeek(new Date(a.detectada_em ?? 0));
         const key = `${semana}|${a.tipo_anomalia}`;
         heatMap.set(key, (heatMap.get(key) ?? 0) + 1);
       }

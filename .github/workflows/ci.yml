@@ -55,7 +55,10 @@ jobs:
         # substituição de entradas históricas por novas supressões.
         run: |
           set -euo pipefail
-          git fetch --depth=1 origin main 2>/dev/null || true
+          # Fetch sem --depth: --depth=1 trunca a main local e quebra o
+          # git merge-base do step de varredura (BASE vazio → varredura do
+          # histórico inteiro → achados antigos fora do baseline).
+          git fetch origin main 2>/dev/null || true
           if git show origin/main:.gitleaks-baseline.json >/dev/null 2>&1; then
             # Extrai e ordena fingerprints de ambas as versões
             jq -r '.[].Fingerprint' .gitleaks-baseline.json | sort > /tmp/pr_fps.txt
@@ -85,7 +88,20 @@ jobs:
         # histórico inteiro do repo), evitando falsos positivos de commits
         # já presentes em main antes desta PR existir.
         run: |
-          BASE=$(git merge-base origin/main HEAD 2>/dev/null || echo "")
+          # HEAD é o merge ref do PR (refs/pull/N/merge): o 1º pai é a main na
+          # época do merge — escopo determinístico que não depende do estado
+          # local de origin/main.
+          if git rev-parse --verify -q HEAD^2 >/dev/null 2>&1; then
+            BASE=$(git rev-parse HEAD^1)
+          elif [ "${{ github.event_name }}" = "push" ] && [ -n "${{ github.event.before }}" ] && [ "${{ github.event.before }}" != "0000000000000000000000000000000000000000" ]; then
+            # Em push, origin/main já aponta para o HEAD novo: merge-base
+            # devolve o próprio HEAD e `HEAD..HEAD` varreria zero commits.
+            # O `before` do evento é o sha anterior de main — o escopo certo.
+            # (SHA todo-zero = primeiro push que cria a branch: sem base.)
+            BASE="${{ github.event.before }}"
+          else
+            BASE=$(git merge-base origin/main HEAD 2>/dev/null || echo "")
+          fi
           if [ -n "$BASE" ]; then
             LOG_OPTS="${BASE}..HEAD"
           else
@@ -102,7 +118,7 @@ jobs:
       - name: Publicar SARIF no Code Scanning
         # Envia para GitHub Security → Code scanning alerts (sempre, mesmo sem achados)
         if: always()
-        uses: github/codeql-action/upload-sarif@1190a975f95ce23525efb6a3fc21ea29567c1b52 # v3
+        uses: github/codeql-action/upload-sarif@2892aa5e19bbd11bc0cff5427e3b750a04d9e3c2 # v4.38.2
         with:
           sarif_file: gitleaks.sarif
           category: gitleaks
@@ -124,6 +140,9 @@ jobs:
     steps:
       - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
         with:
+          # fetch-depth completo: o gate de formato precisa do merge-base
+          # com a branch de destino da PR.
+          fetch-depth: 0
           persist-credentials: false
       # Etapa 27: composite action elimina bloco bun+cache repetido 5x.
       - uses: ./.github/actions/setup-bun
@@ -132,7 +151,54 @@ jobs:
         # Bloqueante: vulnerabilidades conhecidas em dependências diretas
         # devem ser corrigidas antes do merge, não apenas registradas.
         # Em caso de falsa positivo documentado, use `bun audit --ignore`.
-        run: bun audit
+        # GHSA-vfj7-8cjw-p6xm (braces <=3.0.3): sem release corrigida —
+        # 3.0.3 é a última publicada. Só entra via micromatch de
+        # tailwindcss/lint-staged, ferramentas de build/dev cujos padrões
+        # glob são os nossos, não input de usuário — DoS por padrão
+        # aninhado não se aplica. Revisitar quando sair braces 3.0.4+.
+        # GHSA-rj75-hqrm-r3gf (postcss-selector-parser <7.1.6): sem patch
+        # na linha 6.x, travada por tailwindcss@3/postcss-nested (^6).
+        # O próprio advisory diz que uso em build-time sobre seletores
+        # confiáveis não é afetado — só fere quem parseia seletor de
+        # terceiros em runtime. Revisitar na migração para tailwind 4.
+        # launch-editor — dev tool exclusivo: abre arquivos em editor local.
+        # GHSA-587h-7wmj-h5pm: fs.existsSync() bypass via NTFS — Windows only;
+        #   CI e prod rodam em Linux. Sem vetor em ambiente Unix.
+        # GHSA-698v-4r3x-3vcv: escapeCmdArgs omite % — Windows only; idem.
+        # GHSA-r825-w8mm-5pxw: CLI flag por path crafted — Windows/dev only;
+        #   não executado em CI nem em prod.
+        # vite — servidor de desenvolvimento apenas (`vite dev`). Prod usa
+        # Vercel (build estático); CI executa somente `vite build`.
+        # GHSA-9jrq-w75r-8gcw: cross-origin script via custom middleware —
+        #   exclusivo do servidor de dev; ausente em build/prod.
+        # GHSA-rq7h-c2jc-7f22: arquivos fora de server.fs.allow — mesmo vetor.
+        # GHSA-vfpm-58rq-9qcg: primeiros 4 bytes via ?vite-wasm-instance — E2E usa
+        #   servidor dev (host:'::'), mas runners GitHub Actions não têm ingresso
+        #   externo (NAT); sem vetor de ataque remoto real em CI.
+        # vitest — infraestrutura de testes, não executada em runtime de prod.
+        # GHSA-qxg6-89mg-rqv8: code injection via mock — afeta WebSocket do modo
+        #   browser; este projeto usa Vitest em modo Node (bun run test:run).
+        # GHSA-xp26-3454-mjgp: backslash traversal no @vitest/mocker — Windows
+        #   only; CI e prod são Linux.
+        # GHSA-mrhx-c7xc-m3w5 (zod <4.6.6): OOM por acúmulo de issues no
+        #   $ZodArray — engine do zod v4. O app usa a API clássica v3
+        #   (24 imports de 'zod', zero de 'zod/v4'/'zod/mini'): o motor v4
+        #   embutido no 3.25.x fica inerte. Fix só existe em 4.6.6 (major
+        #   com breaking changes — migração própria); o vetor além disso é
+        #   self-DoS no browser do próprio usuário, sem input remoto.
+        run: >
+          bun audit
+          --ignore=GHSA-vfj7-8cjw-p6xm
+          --ignore=GHSA-mrhx-c7xc-m3w5
+          --ignore=GHSA-rj75-hqrm-r3gf
+          --ignore=GHSA-587h-7wmj-h5pm
+          --ignore=GHSA-698v-4r3x-3vcv
+          --ignore=GHSA-r825-w8mm-5pxw
+          --ignore=GHSA-9jrq-w75r-8gcw
+          --ignore=GHSA-rq7h-c2jc-7f22
+          --ignore=GHSA-vfpm-58rq-9qcg
+          --ignore=GHSA-qxg6-89mg-rqv8
+          --ignore=GHSA-xp26-3454-mjgp
 
       - name: External secret isolation guard
         # Impede que EXTERNAL_SUPABASE_SERVICE_ROLE_KEY seja lido fora da
@@ -166,12 +232,19 @@ jobs:
         # falso positivo ou drift de ACL/assinatura fora do contrato revisado.
         run: node scripts/security/test-lint-function-repairs.mjs
 
-      - name: Format check
-        # Etapa 45: format:check garante que todo código committed segue o Prettier.
-        # Husky só formata o staged; este gate pega o diff inteiro da PR.
-        # TODO: remover continue-on-error após PR de formatação global (#prettier-pass).
-        continue-on-error: true
-        run: bun run format:check
+      - name: Format check (arquivos alterados)
+        # Gate incremental, no espírito do "baseline só encolhe": exige Prettier
+        # nos arquivos alterados pela PR em vez de exigir a formatação global,
+        # que ainda é dívida histórica. Assim a superfície formatada cresce
+        # monotonicamente a cada PR sem um diff gigante de uma vez.
+        run: |
+          BASE=$(git merge-base origin/main HEAD)
+          FILES=$(git diff --name-only --diff-filter=ACMR "$BASE" HEAD -- 'src/**/*.ts' 'src/**/*.tsx' 'src/**/*.css' 'src/**/*.json' 'supabase/functions/**/*.ts')
+          if [ -n "$FILES" ]; then
+            echo "$FILES" | xargs bunx prettier --check
+          else
+            echo "Nenhum arquivo formatável alterado — gate aprovado."
+          fi
 
       - name: Lint check
         # Etapa 46: bloqueia erros de lint.
@@ -254,7 +327,10 @@ jobs:
             echo
           } >> "$GITHUB_STEP_SUMMARY"
 
+      # Runs de dependabot não recebem secrets (design do GitHub): sem o
+      # guard o preflight morre no env-check e derruba o job inteiro.
       - name: Preflight do gate Runtime RPC
+        if: ${{ github.actor != 'dependabot[bot]' }}
         env:
           SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
           SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
@@ -266,6 +342,7 @@ jobs:
             SUPABASE_URL SUPABASE_ANON_KEY E2E_USER_EMAIL E2E_USER_PASSWORD
 
       - name: Runtime RPC privilege matrix (anon / authenticated)
+        if: ${{ github.actor != 'dependabot[bot]' }}
         # Invoca cada RPC sensível via /rest/v1/rpc/<fn> como anon e usuário
         # autenticado. O papel service_role é validado apenas pelo gate SQL,
         # sem expor sua chave a um probe HTTP de produção.
@@ -305,6 +382,11 @@ jobs:
 
       - name: Type check
         run: bun run type-check
+
+      - name: Ratchet strictNullChecks (baseline só encolhe)
+        # O tsconfig principal já roda strict global (PR #141); este gate
+        # continua valendo como proteção contra regressão do overlay.
+        run: bun run type-check:strict
 
       - name: Type check da infraestrutura de teste
         # `tsc --noEmit` cobre só `src/`. O Playwright transpila as specs com
@@ -346,15 +428,17 @@ jobs:
       - name: Build check
         run: bun run build
         env:
-          VITE_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL }}
-          VITE_SUPABASE_PROJECT_ID: ${{ secrets.VITE_SUPABASE_PROJECT_ID }}
-          VITE_SUPABASE_PUBLISHABLE_KEY: ${{ secrets.VITE_SUPABASE_PUBLISHABLE_KEY }}
+          # Runs de dependabot não recebem secrets — fallbacks não-sensíveis
+          # (URL/ref são públicos; a key é placeholder só p/ o assert do build).
+          VITE_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL || 'https://bwwbeyolnnzppeuhgkcd.supabase.co' }}
+          VITE_SUPABASE_PROJECT_ID: ${{ secrets.VITE_SUPABASE_PROJECT_ID || 'bwwbeyolnnzppeuhgkcd' }}
+          VITE_SUPABASE_PUBLISHABLE_KEY: ${{ secrets.VITE_SUPABASE_PUBLISHABLE_KEY || 'sb_publishable_dependabot_build_only' }}
 
       - name: Gate de tamanho de bundle (etapa 50)
         # Impede regressão silenciosa de bundle: nenhum chunk JS individual
         # pode ultrapassar 600 KB (gzip off). Chunks grandes degradam LCP e
         # indicam import acidental de dep pesada. Ajuste o threshold em
-        # scripts/ci/bundle-size-threshold.json se uma dep legítima exigir.
+        # THRESHOLD_KB abaixo se uma dep legítima exigir.
         run: |
           set -euo pipefail
           THRESHOLD_KB=600
@@ -406,6 +490,8 @@ jobs:
   # ---------------------------------------------------------------------------
   e2e-critical:
     name: E2E Critical Gate
+    # Secrets withheld em runs de dependabot — o job falharia no env-check.
+    if: github.actor != 'dependabot[bot]'
     runs-on: ubuntu-latest
     timeout-minutes: 25
 
@@ -456,6 +542,7 @@ jobs:
   # ---------------------------------------------------------------------------
   e2e-destructive:
     name: E2E Destructive Logout
+    if: github.actor != 'dependabot[bot]'
     needs: [quality-gate, e2e-critical]
     runs-on: ubuntu-latest
     timeout-minutes: 15
@@ -543,7 +630,7 @@ jobs:
   # ---------------------------------------------------------------------------
   e2e-quarantine:
     name: E2E Quarantine (non-blocking)
-    if: ${{ always() }}
+    if: ${{ always() && github.actor != 'dependabot[bot]' }}
     needs: [quality-gate, e2e-critical, e2e-destructive, e2e-financeiro]
     runs-on: ubuntu-latest
     timeout-minutes: 30
