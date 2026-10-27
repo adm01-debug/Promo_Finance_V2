@@ -44,6 +44,8 @@ O preflight de `scripts/staging-migrate.sh` (L70) exige **6 variáveis obrigató
 
 **Cuidado:** nada impede `STAGING_DB_URL` de apontar para a URL de produção por engano — confira que a URI é do projeto de staging (ref diferente de `bwwbeyolnnzppeuhgkcd`). Em projetos sem add-on de IPv4, use a URI do **pooler de sessão** (mostrada no diálogo Connect), não a URI direta.
 
+**Healthchecks parcialmente `unverified` (não falham o job, mas não validam):** o script encaminha `STAGING_SERVICE_ROLE_KEY` ao healthcheck (`staging-migrate.sh` ~L218) e os probes de webhook leem tokens de `scripts/healthcheck/baseline/expected-webhooks.json` (`ASAAS_WEBHOOK_TOKEN`, `BITRIX24_WEBHOOK_SECRET`, etc.) — mas o workflow não exporta nenhum deles. Para validação completa, criar esses secrets e adicioná-los ao bloco `env:` de `staging-migrate.yml`; sem isso, os checks autenticados reportam `unverified` em vez de pass/fail.
+
 Se não existir projeto de staging, diga e eu arquivo/desativo o workflow.
 
 ## 3. Dependabot security updates × `bun.lock` — não corrigível por código
@@ -57,7 +59,7 @@ Se não existir projeto de staging, diga e eu arquivo/desativo o workflow.
 - **Opção A — descartar apenas os alerts não exploráveis; deixar o zod aberto** (recomendada — mantém a cobertura de segurança para futuras deps):
   1. Abra https://github.com/adm01-debug/Promo_Finance_V2/security/dependabot
   2. **Triagem antes de descartar**: abra o alert e confirme que é biblioteca dev-time ou caminho não explorável no nosso uso — CVEs reais e exploráveis não devem ser descartadas, devem virar tarefa de fix.
-  3. `GHSA-mrhx-c7xc-m3w5` (zod) → o advisory cobre `< 4.6.6`, o que **inclui nossa zod@3.25.76** — não é falso positivo (a análise anterior do `$ZodArray` era de outro advisory). E é **realmente alcançável**: o cadastro em `/auth` é público (`supabase.auth.signUp`) e `conciliacao-ia` valida três arrays sem `.max()` antes de processar a requisição — um usuário auto-registrado consegue provocar exatamente a exaustão de memória do advisory. **Deixar o alert aberto** e corrigir de verdade: mitigação barata — limites `.max()` nas coleções dos schemas zod que validam request bodies nas edge functions (começar por `conciliacao-ia`); correção completa — upgrade do zod (ver nota abaixo).
+  3. `GHSA-mrhx-c7xc-m3w5` (zod) → o advisory cobre `< 4.6.6`, o que **inclui nossa zod@3.25.76** — não é falso positivo (a análise anterior do `$ZodArray` era de outro advisory). E é **realmente alcançável**: o cadastro em `/auth` é público (`supabase.auth.signUp`) e `conciliacao-ia` valida três arrays sem `.max()` antes de processar a requisição — um usuário auto-registrado consegue provocar exatamente a exaustão de memória do advisory. **Deixar o alert aberto** e corrigir de verdade: mitigação honesta em zod 3 — checar `array.length` (ou o tamanho do body) **antes** de chamar o schema zod, porque o zod 3.22.4 percorre e valida todos os elementos antes de aplicar `.max()` (o patch upstream é exclusivo do v4 — `.max()` sozinho NÃO fecha o DoS); correção completa — upgrade do zod (ver nota abaixo).
   4. Repita a triagem para outros alerts npm que reaparecerem.
 - **Opção B — desativar security updates globalmente** (pare os runs falhos de vez, mas **desliga PRs de correção automática para TODAS as dependências** — novas CVEs reais em outras libs deixam de gerar PR de correção):
   1. Abra https://github.com/adm01-debug/Promo_Finance_V2/settings/security_analysis
@@ -65,7 +67,7 @@ Se não existir projeto de staging, diga e eu arquivo/desativo o workflow.
 
 Recomendo a Opção A: para os runs que falham por alerts não exploráveis sem perder a rede de segurança para futuras vulnerabilidades — mas o alert do zod fica aberto até a mitigação real. Se alerts de outras deps começarem a falhar do mesmo jeito e virar ruído recorrente, aí a Opção B faz sentido.
 
-**Por que não dá para "consertar" o zod bump via Dependabot:** o fix do GHSA exige zod ≥4.6.6 — major com API quebrada para os ~24 arquivos que usam a API v3 (`.merge`, `.passthrough`, zod-error shapes). Upgrade major é projeto separado com plano de migração; até lá, a mitigação honesta é limitar o tamanho das coleções nos schemas zod que validam request bodies.
+**Por que não dá para "consertar" o zod bump via Dependabot:** o fix do GHSA exige zod ≥4.6.6 — major com API quebrada para os ~24 arquivos que usam a API v3 (`.merge`, `.passthrough`, zod-error shapes). Upgrade major é projeto separado com plano de migração; até lá, a mitigação honesta é pre-validar `array.length`/tamanho do body nas edge functions que validam request bodies (`.max()` sozinho não basta no zod 3 — ele atravessa todos os elementos antes de checar o limite).
 
 ---
 
