@@ -279,7 +279,7 @@ async function autenticar(req: Request) {
 }
 
 serve(
-  withEdgeObservability('gerar-pacote-evidencias', async (req) => {
+  withEdgeObservability('gerar-pacote-evidencias', async (req, ctx) => {
     const _t0 = Date.now();
     try {
       const corsHeaders = corsHeadersPara(req);
@@ -365,7 +365,12 @@ serve(
               const result = await processarPacote(body, auth.user, auth.admin, send as Emit);
               send({ done: true, payload: result });
             } catch (e) {
+              // O evento vai antes de qualquer persistência: se o Supabase
+              // estiver indisponível, o cliente não fica esperando o flush.
+              // sinalizarFalha faz o wrapper contar request_error no fim do
+              // stream — um único evento de conclusão (contrato vw_edge_health).
               send({ error: e instanceof Error ? e.message : 'unknown' });
+              ctx?.sinalizarFalha(e);
             } finally {
               controller.close();
             }
