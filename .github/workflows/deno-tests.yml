@@ -159,7 +159,7 @@ jobs:
 
       - name: Preflight da integração live
         # Runs de dependabot não recebem secrets — pular o par live.
-        if: ${{ github.actor != 'dependabot[bot]' }}
+        if: ${{ github.actor != 'dependabot[bot]' && !github.event.pull_request.head.repo.fork }}
         env:
           VITE_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL }}
           VITE_SUPABASE_PUBLISHABLE_KEY: ${{ secrets.VITE_SUPABASE_PUBLISHABLE_KEY }}
@@ -169,7 +169,7 @@ jobs:
             VITE_SUPABASE_URL VITE_SUPABASE_PUBLISHABLE_KEY
 
       - name: Run integration tests against deployed edge functions
-        if: ${{ github.actor != 'dependabot[bot]' }}
+        if: ${{ github.actor != 'dependabot[bot]' && !github.event.pull_request.head.repo.fork }}
         env:
           VITE_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL }}
           VITE_SUPABASE_PUBLISHABLE_KEY: ${{ secrets.VITE_SUPABASE_PUBLISHABLE_KEY }}

@@ -330,7 +330,7 @@ jobs:
       # Runs de dependabot não recebem secrets (design do GitHub): sem o
       # guard o preflight morre no env-check e derruba o job inteiro.
       - name: Preflight do gate Runtime RPC
-        if: ${{ github.actor != 'dependabot[bot]' }}
+        if: ${{ github.actor != 'dependabot[bot]' && !github.event.pull_request.head.repo.fork }}
         env:
           SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
           SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
@@ -342,7 +342,7 @@ jobs:
             SUPABASE_URL SUPABASE_ANON_KEY E2E_USER_EMAIL E2E_USER_PASSWORD
 
       - name: Runtime RPC privilege matrix (anon / authenticated)
-        if: ${{ github.actor != 'dependabot[bot]' }}
+        if: ${{ github.actor != 'dependabot[bot]' && !github.event.pull_request.head.repo.fork }}
         # Invoca cada RPC sensível via /rest/v1/rpc/<fn> como anon e usuário
         # autenticado. O papel service_role é validado apenas pelo gate SQL,
         # sem expor sua chave a um probe HTTP de produção.
@@ -491,7 +491,7 @@ jobs:
   e2e-critical:
     name: E2E Critical Gate
     # Secrets withheld em runs de dependabot — o job falharia no env-check.
-    if: github.actor != 'dependabot[bot]'
+    if: github.actor != 'dependabot[bot]' && !github.event.pull_request.head.repo.fork
     runs-on: ubuntu-latest
     timeout-minutes: 25
 
@@ -542,7 +542,7 @@ jobs:
   # ---------------------------------------------------------------------------
   e2e-destructive:
     name: E2E Destructive Logout
-    if: github.actor != 'dependabot[bot]'
+    if: github.actor != 'dependabot[bot]' && !github.event.pull_request.head.repo.fork
     needs: [quality-gate, e2e-critical]
     runs-on: ubuntu-latest
     timeout-minutes: 15
@@ -630,7 +630,7 @@ jobs:
   # ---------------------------------------------------------------------------
   e2e-quarantine:
     name: E2E Quarantine (non-blocking)
-    if: ${{ always() && github.actor != 'dependabot[bot]' }}
+    if: ${{ always() && github.actor != 'dependabot[bot]' && !github.event.pull_request.head.repo.fork }}
     needs: [quality-gate, e2e-critical, e2e-destructive, e2e-financeiro]
     runs-on: ubuntu-latest
     timeout-minutes: 30

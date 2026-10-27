@@ -16,6 +16,7 @@ import { PWAInstallBanner } from '@/components/pwa/PWAInstallBanner';
 import { MobileBottomNav } from './sidebar/MobileBottomNav';
 import { MobileSidebarDrawer } from './sidebar/MobileSidebarDrawer';
 import { MobileHeader } from './MobileHeader';
+import { SkipLinks } from '@/components/accessibility/SkipLinks';
 import { useSwipeBack } from '@/hooks/useSwipeBack';
 import { useKeyboardNavigation } from '@/hooks/useKeyboardNavigation';
 import { CopilotGlobalFloat } from '@/components/copilot/CopilotGlobalFloat';
@@ -42,6 +43,10 @@ export const MainLayout = ({ children }: MainLayoutProps) => {
 
   return (
     <div className="min-h-screen bg-background text-foreground font-sans antialiased">
+      {/* Skip links só existem onde as âncoras existem (#main-nav no sidebar,
+          #main-content abaixo) — nas páginas públicas eram âncoras mortas. */}
+      <SkipLinks />
+
       {/* Banner de instalação PWA (só aparece se beforeinstallprompt disparou) */}
       <PWAInstallBanner />
 

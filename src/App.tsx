@@ -11,7 +11,6 @@ import { DataPrefetcher } from '@/components/providers/DataPrefetcher';
 import { NavigationTracker } from '@/components/providers/NavigationTracker';
 import { ErrorBoundary } from '@/components/error/ErrorBoundary';
 import { PageLoading } from '@/components/ui/loading-skeleton';
-import { SkipLinks } from '@/components/accessibility/SkipLinks';
 import { MotionConfig } from 'framer-motion';
 import { ProtectedRoute } from '@/components/auth/ProtectedRoute';
 import { CommandPalette } from '@/components/command-palette/CommandPalette';
@@ -163,7 +162,6 @@ function AppRoutes() {
     <KeyboardShortcutsProvider>
       <DataPrefetcher>
         <NavigationTracker />
-        <SkipLinks />
         <CommandPalette />
         <Toaster richColors closeButton position="top-right" />
         {new URLSearchParams(window.location.search).has('visualDebug') && <VisualValidator />}
