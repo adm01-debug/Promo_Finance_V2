@@ -1,6 +1,10 @@
 -- Shim: cria tabelas de segurança antes de 20260711164724
 -- que faz FORCE ROW LEVEL SECURITY em todas (42P01 — ip_whitelist not exist)
 -- Tabelas criadas fora do sistema de migrations em produção; Preview não as tem.
+
+-- user_roles usa DEFAULT 'viewer'; 'viewer' só entra no enum em 20260712223143.
+-- Adicionamos aqui para evitar erro na criação da tabela em replay de Preview.
+DO $$ BEGIN ALTER TYPE public.app_role ADD VALUE IF NOT EXISTS 'viewer'; EXCEPTION WHEN duplicate_object THEN NULL; END $$;
 CREATE TABLE IF NOT EXISTS public.ip_whitelist (
   id               uuid        NOT NULL DEFAULT gen_random_uuid(),
   ip_address       inet        NOT NULL,
