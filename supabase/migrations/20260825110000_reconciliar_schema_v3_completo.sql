@@ -1098,16 +1098,26 @@ CREATE OR REPLACE FUNCTION public.empresa_acessivel(_empresa_id uuid) RETURNS bo
     LANGUAGE sql STABLE SECURITY DEFINER
     SET search_path TO 'public'
     AS $$
-    SELECT false
-
+  SELECT _empresa_id IS NOT NULL
+     AND EXISTS (
+       SELECT 1 FROM public.user_empresas ue
+       WHERE ue.empresa_id = _empresa_id
+         AND ue.user_id = (SELECT auth.uid())
+         AND ue.ativo = true
+     )
 $$;
 
 CREATE OR REPLACE FUNCTION public.empresa_membro_ativo(_empresa_id uuid) RETURNS boolean
     LANGUAGE sql STABLE SECURITY DEFINER
     SET search_path TO 'public'
     AS $$
-    SELECT false
-
+  SELECT _empresa_id IS NOT NULL
+     AND EXISTS (
+       SELECT 1 FROM public.user_empresas ue
+       WHERE ue.empresa_id = _empresa_id
+         AND ue.user_id = (SELECT auth.uid())
+         AND ue.ativo = true
+     )
 $$;
 
 -- same name, different sig — drop first
@@ -1375,24 +1385,159 @@ CREATE OR REPLACE FUNCTION public.fn_balancete(p_empresa_id uuid, p_data_inicio 
     LANGUAGE sql STABLE
     SET search_path TO 'public'
     AS $$
-    SELECT NULL::uuid, NULL::text, NULL::text, NULL::text, NULL::text, NULL::integer, NULL::boolean, NULL::numeric, NULL::numeric, NULL::numeric, NULL::numeric WHERE false
-
+  WITH RECURSIVE mov AS (
+    SELECT
+      p.conta_id AS c_id,
+      SUM(CASE WHEN l.data_lancamento < p_data_inicio
+               THEN CASE WHEN p.tipo = 'D' THEN p.valor ELSE -p.valor END
+               ELSE 0 END) AS saldo_anterior,
+      SUM(CASE WHEN l.data_lancamento >= p_data_inicio AND l.data_lancamento <= p_data_fim AND p.tipo = 'D'
+               THEN p.valor ELSE 0 END) AS debitos,
+      SUM(CASE WHEN l.data_lancamento >= p_data_inicio AND l.data_lancamento <= p_data_fim AND p.tipo = 'C'
+               THEN p.valor ELSE 0 END) AS creditos
+    FROM public.partidas_contabeis p
+    JOIN public.lancamentos_contabeis l ON l.id = p.lancamento_id
+    WHERE l.empresa_id = p_empresa_id
+      AND l.data_lancamento <= p_data_fim
+      AND COALESCE(l.status, 'ativo') <> 'cancelado'
+    GROUP BY p.conta_id
+  ),
+  closure AS (
+    SELECT pc.id AS ancestor_id, pc.id AS descendant_id
+    FROM public.plano_contas pc
+    WHERE pc.empresa_id = p_empresa_id
+    UNION ALL
+    SELECT c.ancestor_id, pc.id
+    FROM closure c
+    JOIN public.plano_contas pc ON pc.parent_id = c.descendant_id
+    WHERE pc.empresa_id = p_empresa_id
+  )
+  SELECT
+    pc.id,
+    pc.codigo,
+    pc.nome,
+    pc.tipo,
+    pc.natureza,
+    COALESCE(pc.nivel, 1)::integer,
+    COALESCE(pc.aceita_lancamento, true),
+    COALESCE(SUM(m.saldo_anterior), 0)::numeric,
+    COALESCE(SUM(m.debitos), 0)::numeric,
+    COALESCE(SUM(m.creditos), 0)::numeric,
+    (COALESCE(SUM(m.saldo_anterior), 0) + COALESCE(SUM(m.debitos), 0) - COALESCE(SUM(m.creditos), 0))::numeric
+  FROM public.plano_contas pc
+  JOIN closure cl ON cl.ancestor_id = pc.id
+  LEFT JOIN mov m ON m.c_id = cl.descendant_id
+  WHERE pc.empresa_id = p_empresa_id
+    AND COALESCE(pc.ativo, true) = true
+    AND (p_nivel_max IS NULL OR COALESCE(pc.nivel, 1) <= p_nivel_max)
+  GROUP BY pc.id, pc.codigo, pc.nome, pc.tipo, pc.natureza, pc.nivel, pc.aceita_lancamento
+  ORDER BY pc.codigo;
 $$;
 
 CREATE OR REPLACE FUNCTION public.fn_indices_contabeis(p_empresa_id uuid, p_data_inicio date, p_data_fim date) RETURNS TABLE(ativo_total numeric, ativo_circulante numeric, ativo_nao_circulante numeric, realizavel_lp numeric, imobilizado numeric, disponibilidades numeric, clientes numeric, estoques numeric, passivo_circulante numeric, passivo_nao_circulante numeric, fornecedores numeric, patrimonio_liquido numeric, receita_bruta numeric, deducoes_receita numeric, receita_liquida numeric, cmv numeric, lucro_liquido numeric, dias_periodo integer)
     LANGUAGE sql STABLE
     SET search_path TO 'public'
     AS $$
-    SELECT NULL::numeric, NULL::numeric, NULL::numeric, NULL::numeric, NULL::numeric, NULL::numeric, NULL::numeric, NULL::numeric, NULL::numeric, NULL::numeric, NULL::numeric, NULL::numeric, NULL::numeric, NULL::numeric, NULL::numeric, NULL::numeric, NULL::numeric, NULL::integer WHERE false
-
+  WITH bal AS (
+    SELECT
+      b.saldo_final,
+      b.debitos,
+      b.creditos,
+      b.aceita_lancamento,
+      public.fn_norm_conta_codigo(COALESCE(NULLIF(pc.codigo_referencial, ''), b.codigo)) AS k
+    FROM public.fn_balancete(p_empresa_id, p_data_inicio, p_data_fim) b
+    JOIN public.plano_contas pc ON pc.id = b.conta_id
+    WHERE b.aceita_lancamento
+  ),
+  agg AS (
+    SELECT
+      SUM(CASE WHEN k LIKE '01%'     THEN saldo_final ELSE 0 END) AS ativo_total,
+      SUM(CASE WHEN k LIKE '0101%'   THEN saldo_final ELSE 0 END) AS ativo_circulante,
+      SUM(CASE WHEN k LIKE '0102%'   THEN saldo_final ELSE 0 END) AS ativo_nao_circulante,
+      SUM(CASE WHEN k LIKE '010201%' THEN saldo_final ELSE 0 END) AS realizavel_lp,
+      SUM(CASE WHEN k LIKE '010203%' THEN saldo_final ELSE 0 END) AS imobilizado,
+      SUM(CASE WHEN k LIKE '010101%' OR k LIKE '010102%' THEN saldo_final ELSE 0 END) AS disponibilidades,
+      SUM(CASE WHEN k LIKE '010103%' THEN saldo_final ELSE 0 END) AS clientes,
+      SUM(CASE WHEN k LIKE '010104%' THEN saldo_final ELSE 0 END) AS estoques,
+      SUM(CASE WHEN k LIKE '0201%'   THEN -saldo_final ELSE 0 END) AS passivo_circulante,
+      SUM(CASE WHEN k LIKE '0202%'   THEN -saldo_final ELSE 0 END) AS passivo_nao_circulante,
+      SUM(CASE WHEN k LIKE '020101%' THEN -saldo_final ELSE 0 END) AS fornecedores,
+      SUM(CASE WHEN k LIKE '0203%'   THEN -saldo_final ELSE 0 END) AS patrimonio_liquido,
+      SUM(CASE WHEN k LIKE '0301%'   THEN (creditos - debitos) ELSE 0 END) AS receita_bruta,
+      SUM(CASE WHEN k LIKE '0302%'   THEN (debitos - creditos) ELSE 0 END) AS deducoes_receita,
+      SUM(CASE WHEN k LIKE '0303%'   THEN (debitos - creditos) ELSE 0 END) AS cmv,
+      SUM(CASE WHEN k LIKE '03%'     THEN (creditos - debitos) ELSE 0 END) AS lucro_liquido
+    FROM bal
+  )
+  SELECT
+    COALESCE(ativo_total, 0)::numeric,
+    COALESCE(ativo_circulante, 0)::numeric,
+    COALESCE(ativo_nao_circulante, 0)::numeric,
+    COALESCE(realizavel_lp, 0)::numeric,
+    COALESCE(imobilizado, 0)::numeric,
+    COALESCE(disponibilidades, 0)::numeric,
+    COALESCE(clientes, 0)::numeric,
+    COALESCE(estoques, 0)::numeric,
+    COALESCE(passivo_circulante, 0)::numeric,
+    COALESCE(passivo_nao_circulante, 0)::numeric,
+    COALESCE(fornecedores, 0)::numeric,
+    COALESCE(patrimonio_liquido, 0)::numeric,
+    COALESCE(receita_bruta, 0)::numeric,
+    COALESCE(deducoes_receita, 0)::numeric,
+    (COALESCE(receita_bruta, 0) - COALESCE(deducoes_receita, 0))::numeric,
+    COALESCE(cmv, 0)::numeric,
+    COALESCE(lucro_liquido, 0)::numeric,
+    GREATEST((p_data_fim - p_data_inicio) + 1, 1)::integer
+  FROM agg;
 $$;
 
 CREATE OR REPLACE FUNCTION public.fn_livro_razao(p_empresa_id uuid, p_data_inicio date, p_data_fim date, p_conta_id uuid DEFAULT NULL::uuid) RETURNS TABLE(conta_id uuid, codigo text, nome text, saldo_anterior numeric, lancamento_id uuid, data_lancamento date, numero_lancamento bigint, historico text, debito numeric, credito numeric, saldo_corrido numeric)
     LANGUAGE sql STABLE
     SET search_path TO 'public'
     AS $$
-    SELECT NULL::uuid, NULL::text, NULL::text, NULL::numeric, NULL::uuid, NULL::date, NULL::bigint, NULL::text, NULL::numeric, NULL::numeric, NULL::numeric WHERE false
-
+  WITH base AS (
+    SELECT
+      p.conta_id AS c_id,
+      pc.codigo AS c_codigo,
+      pc.nome AS c_nome,
+      l.id AS l_id,
+      l.data_lancamento AS l_data,
+      l.numero_lancamento AS l_numero,
+      COALESCE(l.historico, COALESCE(p.historico_complementar, '')) AS l_hist,
+      CASE WHEN p.tipo = 'D' THEN p.valor ELSE 0 END AS deb,
+      CASE WHEN p.tipo = 'C' THEN p.valor ELSE 0 END AS cred,
+      (l.data_lancamento < p_data_inicio) AS anterior,
+      COALESCE(p.ordem, 0) AS p_ordem
+    FROM public.partidas_contabeis p
+    JOIN public.lancamentos_contabeis l ON l.id = p.lancamento_id
+    JOIN public.plano_contas pc ON pc.id = p.conta_id
+    WHERE l.empresa_id = p_empresa_id
+      AND l.data_lancamento <= p_data_fim
+      AND COALESCE(l.status, 'ativo') <> 'cancelado'
+      AND (p_conta_id IS NULL OR p.conta_id = p_conta_id)
+  ),
+  ant AS (
+    SELECT c_id, COALESCE(SUM(deb - cred), 0) AS saldo_anterior
+    FROM base WHERE anterior GROUP BY c_id
+  )
+  SELECT
+    b.c_id,
+    b.c_codigo,
+    b.c_nome,
+    COALESCE(a.saldo_anterior, 0)::numeric,
+    b.l_id,
+    b.l_data,
+    b.l_numero,
+    b.l_hist,
+    b.deb::numeric,
+    b.cred::numeric,
+    (COALESCE(a.saldo_anterior, 0) + SUM(b.deb - b.cred) OVER (
+        PARTITION BY b.c_id ORDER BY b.l_data, b.l_numero NULLS LAST, b.p_ordem, b.l_id
+        ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW))::numeric
+  FROM base b
+  LEFT JOIN ant a ON a.c_id = b.c_id
+  WHERE NOT b.anterior
+  ORDER BY b.c_codigo, b.l_data, b.l_numero NULLS LAST, b.p_ordem;
 $$;
 
 CREATE OR REPLACE FUNCTION public.fn_norm_conta_codigo(p_codigo text) RETURNS text
@@ -3589,8 +3734,14 @@ CREATE OR REPLACE FUNCTION public.resolve_sso_providers_for_domain(p_domain text
     LANGUAGE sql STABLE SECURITY DEFINER
     SET search_path TO 'public', 'pg_catalog'
     AS $$
-    SELECT NULL::uuid, NULL::text, NULL::text, NULL::text, NULL::boolean, NULL::integer WHERE false
-
+  SELECT sp.id, sp.nome, sp.tipo, sp.preset, sp.force_sso_for_domains, sp.ordem
+  FROM public.sso_providers sp
+  WHERE sp.ativo = true
+    AND length(trim(coalesce(p_domain, ''))) BETWEEN 3 AND 253
+    AND trim(lower(p_domain)) = ANY (
+      SELECT lower(domain) FROM unnest(sp.allowed_domains) AS domain
+    )
+  ORDER BY sp.ordem ASC, sp.nome ASC;
 $$;
 
 CREATE OR REPLACE FUNCTION public.run_observability_rpc(_function_name text) RETURNS void
