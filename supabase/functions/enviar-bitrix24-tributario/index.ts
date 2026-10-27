@@ -176,7 +176,7 @@ Deno.serve(
         status_code: 200,
         context: { dealId, empresaId: body.empresaId },
       });
-      segundoPlano(logger.flush());
+      await segundoPlano(logger.flush());
       return new Response(JSON.stringify({ success: true, dealId, dealUrl }), {
         status: 200,
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
@@ -188,7 +188,7 @@ Deno.serve(
         status_code: 500,
         error_message: msg,
       });
-      segundoPlano(logger.flush());
+      await segundoPlano(logger.flush());
       // Detalhe do erro (inclui error_description do Bitrix24) fica só no
       // log — ao cliente vai mensagem genérica, sem internals de terceiros.
       return new Response(JSON.stringify({ error: 'Erro ao comunicar com o Bitrix24' }), {

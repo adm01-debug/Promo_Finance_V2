@@ -275,7 +275,7 @@ Deno.serve(
       }
     } finally {
       log.info('request', { duration_ms: Date.now() - _t0 });
-      segundoPlano(log.flush());
+      await segundoPlano(log.flush());
     }
   })
 );

@@ -233,7 +233,7 @@ Deno.serve(
       log.error('[sincronizar-anomalia-bitrix24] error', {
         error_message: mensagemErro(msg),
       });
-      segundoPlano(log.flush());
+      await segundoPlano(log.flush());
       // Detalhe do erro (inclui error_description do Bitrix24) fica só no
       // log — ao cliente vai mensagem genérica, sem internals de terceiros.
       return new Response(JSON.stringify({ error: 'Erro ao comunicar com o Bitrix24' }), {
