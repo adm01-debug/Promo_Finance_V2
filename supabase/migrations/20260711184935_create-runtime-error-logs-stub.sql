@@ -25,3 +25,5 @@ CREATE TABLE IF NOT EXISTS public.runtime_error_logs (
   created_at       timestamptz NOT NULL DEFAULT now(),
   CONSTRAINT runtime_error_logs_pkey PRIMARY KEY (id)
 );
+
+ALTER TABLE public.runtime_error_logs ENABLE ROW LEVEL SECURITY;

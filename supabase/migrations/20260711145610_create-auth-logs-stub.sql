@@ -13,3 +13,5 @@ CREATE TABLE IF NOT EXISTS public.auth_logs (
   created_at     timestamptz DEFAULT now(),
   CONSTRAINT auth_logs_pkey PRIMARY KEY (id)
 );
+
+ALTER TABLE public.auth_logs ENABLE ROW LEVEL SECURITY;

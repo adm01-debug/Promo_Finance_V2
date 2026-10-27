@@ -12,3 +12,5 @@ CREATE TABLE IF NOT EXISTS public.webhook_events (
   received_at      timestamptz NOT NULL DEFAULT now(),
   CONSTRAINT webhook_events_pkey PRIMARY KEY (id)
 );
+
+ALTER TABLE public.webhook_events ENABLE ROW LEVEL SECURITY;
