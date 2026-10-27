@@ -4,7 +4,7 @@ import { z } from 'npm:zod@3.23.8';
 import { corsHeaders, corsHeadersPara } from '../_shared/cors.ts';
 import { createLogger } from '../_shared/observability.ts';
 import { mensagemErro, contextoErro } from '../_shared/erros.ts';
-import { withEdgeObservability } from '../_shared/edge-observability.ts';
+import { withEdgeObservability, segundoPlano } from '../_shared/edge-observability.ts';
 import { respostaIntegracaoDesativada } from '../_shared/resilience.ts';
 const log = createLogger('sync-profile-to-bitrix');
 
@@ -275,7 +275,7 @@ Deno.serve(
       }
     } finally {
       log.info('request', { duration_ms: Date.now() - _t0 });
-      await log.flush();
+      segundoPlano(log.flush());
     }
   })
 );

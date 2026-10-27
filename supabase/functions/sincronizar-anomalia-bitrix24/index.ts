@@ -4,7 +4,7 @@ import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.49.4';
 import { validateContract } from '../_shared/contract-validator.ts';
 import { z } from 'https://deno.land/x/zod@v3.22.4/mod.ts';
 import { corsHeadersPara } from '../_shared/cors.ts';
-import { withEdgeObservability } from '../_shared/edge-observability.ts';
+import { withEdgeObservability, segundoPlano } from '../_shared/edge-observability.ts';
 import { respostaIntegracaoDesativada } from '../_shared/resilience.ts';
 import { createLogger } from '../_shared/observability.ts';
 import { mensagemErro } from '../_shared/erros.ts';
@@ -233,7 +233,7 @@ Deno.serve(
       log.error('[sincronizar-anomalia-bitrix24] error', {
         error_message: mensagemErro(msg),
       });
-      await log.flush();
+      segundoPlano(log.flush());
       // Detalhe do erro (inclui error_description do Bitrix24) fica só no
       // log — ao cliente vai mensagem genérica, sem internals de terceiros.
       return new Response(JSON.stringify({ error: 'Erro ao comunicar com o Bitrix24' }), {

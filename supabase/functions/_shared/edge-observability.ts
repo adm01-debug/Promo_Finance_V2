@@ -119,7 +119,7 @@ export function capturarExcecaoSentry(
 // Executa promessa sem bloquear a resposta quando o runtime expõe
 // EdgeRuntime.waitUntil (Supabase Edge); fora dele, aguarda — num runner
 // de teste/local, perder o flush significaria perder o dado.
-function segundoPlano(p: Promise<void>): Promise<void> | void {
+export function segundoPlano(p: Promise<void>): Promise<void> | void {
   try {
     const rt = (globalThis as Record<string, unknown>).EdgeRuntime as
       | { waitUntil?: (p: Promise<unknown>) => void }

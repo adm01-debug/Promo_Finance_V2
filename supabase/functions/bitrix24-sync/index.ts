@@ -4,7 +4,7 @@ import { Bitrix24SyncSchema, validatePayload, createErrorResponse } from '../_sh
 import { corsHeadersPara } from '../_shared/cors.ts';
 import { createLogger } from '../_shared/observability.ts';
 import { mensagemErro, contextoErro } from '../_shared/erros.ts';
-import { withEdgeObservability } from '../_shared/edge-observability.ts';
+import { withEdgeObservability, segundoPlano } from '../_shared/edge-observability.ts';
 import { respostaIntegracaoDesativada } from '../_shared/resilience.ts';
 const log = createLogger('bitrix24-sync');
 
@@ -887,7 +887,7 @@ serve(
       }
     } finally {
       log.info('request', { duration_ms: Date.now() - _t0 });
-      await log.flush();
+      segundoPlano(log.flush());
     }
   })
 );

@@ -7,7 +7,7 @@ import { z } from 'https://deno.land/x/zod@v3.22.4/mod.ts';
 import { corsHeadersPara } from '../_shared/cors.ts';
 
 import { getRequestId } from '../_shared/correlation.ts';
-import { withEdgeObservability } from '../_shared/edge-observability.ts';
+import { withEdgeObservability, segundoPlano } from '../_shared/edge-observability.ts';
 import { respostaIntegracaoDesativada } from '../_shared/resilience.ts';
 const _BxTribSchema = z.object({
   empresaId: z.string().uuid(),
@@ -176,7 +176,7 @@ Deno.serve(
         status_code: 200,
         context: { dealId, empresaId: body.empresaId },
       });
-      await logger.flush();
+      segundoPlano(logger.flush());
       return new Response(JSON.stringify({ success: true, dealId, dealUrl }), {
         status: 200,
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
@@ -188,7 +188,7 @@ Deno.serve(
         status_code: 500,
         error_message: msg,
       });
-      await logger.flush();
+      segundoPlano(logger.flush());
       // Detalhe do erro (inclui error_description do Bitrix24) fica só no
       // log — ao cliente vai mensagem genérica, sem internals de terceiros.
       return new Response(JSON.stringify({ error: 'Erro ao comunicar com o Bitrix24' }), {
