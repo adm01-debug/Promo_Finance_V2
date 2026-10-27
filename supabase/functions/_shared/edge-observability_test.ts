@@ -63,6 +63,44 @@ Deno.test('resposta SSE entrega o stream completo sem bloquear', async () => {
   assertEquals(await res.text(), 'data: 1\n\ndata: 2\n\n');
 });
 
+Deno.test('falha lógica SSE gera um único request_error sem interromper o stream', async () => {
+  const eventos: string[] = [];
+  const logOriginal = console.log;
+  console.log = (s: unknown) => {
+    try {
+      const j = JSON.parse(String(s));
+      if (j.event === 'request_end' || j.event === 'request_error') eventos.push(j.event);
+    } catch {
+      /* ignora */
+    }
+  };
+  try {
+    const stream = new ReadableStream<Uint8Array>({
+      start(controller) {
+        const enc = new TextEncoder();
+        controller.enqueue(enc.encode('data: {"progress":10}\n\n'));
+        controller.enqueue(enc.encode('data: {"error":"falhou"}\n\n'));
+        controller.close();
+      },
+    });
+    const wrapped = withEdgeObservability('fn-sse-falha', (_req, ctx) => {
+      ctx?.sinalizarFalha(new Error('falhou'));
+      return new Response(stream, {
+        status: 200,
+        headers: { 'content-type': 'text/event-stream' },
+      });
+    });
+    const res = await wrapped(new Request('https://x/fn'));
+    assertEquals(res.status, 200);
+    // O cliente recebe o stream inteiro, incluindo o evento de erro.
+    assertEquals(await res.text(), 'data: {"progress":10}\n\ndata: {"error":"falhou"}\n\n');
+    // Encerramento conta exatamente um request_error — nunca ok + erro.
+    assertEquals(eventos, ['request_error']);
+  } finally {
+    console.log = logOriginal;
+  }
+});
+
 Deno.test('requestId prefere x-request-id e cai para x-correlation-id', async () => {
   let visto: string | undefined;
   // createLogger injeta request_id no context — espia pelo console do logger.
