@@ -2694,7 +2694,12 @@ CREATE OR REPLACE FUNCTION public.is_org_responsavel(_org_id uuid, _user_id uuid
     LANGUAGE sql STABLE SECURITY DEFINER
     SET search_path TO 'public', 'pg_catalog'
     AS $$
-  SELECT EXISTS (SELECT 1 FROM public.organizacoes WHERE id = _org_id AND responsavel_id = _user_id)
+  SELECT CASE
+    WHEN auth.uid() IS NULL THEN
+      EXISTS (SELECT 1 FROM public.organizacoes WHERE id = _org_id AND responsavel_id = _user_id)
+    ELSE
+      EXISTS (SELECT 1 FROM public.organizacoes WHERE id = _org_id AND responsavel_id = _user_id AND responsavel_id = auth.uid())
+  END
 $$;
 
 CREATE OR REPLACE FUNCTION public.is_token_valid(p_token_hash text) RETURNS TABLE(is_valid boolean, user_id uuid, expires_in_seconds integer)
