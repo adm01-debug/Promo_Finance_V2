@@ -102,17 +102,29 @@ Deno.serve(
       // Idempotente: reaproveita o vínculo existente em vez de duplicar.
       const { data: existente } = await admin
         .from('organizacao_membros')
-        .select('id')
+        .select('id, papel_na_org')
         .eq('organizacao_id', convite.organizacao_id)
         .eq('usuario_id', user.id)
         .maybeSingle();
 
       const agora = new Date().toISOString();
 
+      // Um convite só pode subir o papel de quem já é membro — aceitar um
+      // convite MEMBRO/LEITOR não pode rebaixar um ADMIN/RESPONSAVEL,
+      // senão o dono da org contornaria a guarda de último gestor
+      // (permiteRebaixarOuRemover) emitindo convite para um colega gestor.
+      const PESO: Record<string, number> = { LEITOR: 1, MEMBRO: 2, ADMIN: 3, RESPONSAVEL: 4 };
+      let papelFinal = convite.papel_proposto;
+
       if (existente) {
+        const papelAtual = String(existente.papel_na_org ?? '');
+        papelFinal =
+          (PESO[convite.papel_proposto] ?? 0) > (PESO[papelAtual] ?? 0)
+            ? convite.papel_proposto
+            : (papelAtual as typeof papelFinal);
         const { error } = await admin
           .from('organizacao_membros')
-          .update({ papel_na_org: convite.papel_proposto, ativo: true, aceito_em: agora })
+          .update({ papel_na_org: papelFinal, ativo: true, aceito_em: agora })
           .eq('id', existente.id);
         if (error) return res({ error: 'Falha ao ativar vínculo' }, 500);
       } else {
@@ -132,7 +144,7 @@ Deno.serve(
       return res({
         organizacao_id: organizacao.id,
         organizacao_nome: organizacao.nome,
-        papel: convite.papel_proposto as OrgPapel,
+        papel: papelFinal as OrgPapel,
       });
     } catch (_err) {
       return res({ error: 'Erro interno ao processar convite' }, 500);
