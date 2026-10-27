@@ -6,6 +6,10 @@ import { z } from 'https://deno.land/x/zod@v3.22.4/mod.ts';
 import { corsHeadersPara } from '../_shared/cors.ts';
 import { withEdgeObservability } from '../_shared/edge-observability.ts';
 import { respostaIntegracaoDesativada } from '../_shared/resilience.ts';
+import { createLogger } from '../_shared/observability.ts';
+import { mensagemErro } from '../_shared/erros.ts';
+
+const log = createLogger('sincronizar-anomalia-bitrix24');
 
 const _SyncAnomSchema = z
   .object({
@@ -226,7 +230,13 @@ Deno.serve(
       });
     } catch (err) {
       const msg = err instanceof Error ? err.message : 'Erro desconhecido';
-      return new Response(JSON.stringify({ error: msg }), {
+      log.error('[sincronizar-anomalia-bitrix24] error', {
+        error_message: mensagemErro(msg),
+      });
+      await log.flush();
+      // Detalhe do erro (inclui error_description do Bitrix24) fica só no
+      // log — ao cliente vai mensagem genérica, sem internals de terceiros.
+      return new Response(JSON.stringify({ error: 'Erro ao comunicar com o Bitrix24' }), {
         status: 500,
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       });

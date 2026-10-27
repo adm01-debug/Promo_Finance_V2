@@ -725,7 +725,9 @@ async function syncElisaoTask(
       })
       .eq('id', tarefaId);
 
-    return { success: false, message: error?.message || 'Erro na sincronização' };
+    // Detalhe do erro fica no log/DB — ao cliente vai mensagem genérica,
+    // sem internals do Bitrix24 (error_description, endpoints, parâmetros).
+    return { success: false, message: 'Erro na sincronização' };
   }
 }
 
@@ -786,7 +788,9 @@ async function syncBoleto(
       error_message: mensagemErro(error),
       context: contextoErro(error),
     });
-    return { success: false, message: error?.message || 'Erro na sincronização' };
+    // Detalhe do erro fica no log — ao cliente vai mensagem genérica,
+    // sem internals do Bitrix24 (error_description, endpoints, parâmetros).
+    return { success: false, message: 'Erro na sincronização' };
   }
 }
 
@@ -871,7 +875,7 @@ serve(
           context: contextoErro(error),
         });
         return new Response(
-          JSON.stringify({ success: false, message: error?.message || 'Erro desconhecido' }),
+          JSON.stringify({ success: false, message: 'Erro desconhecido' }),
           {
             status: 500,
             headers: { ...corsHeaders, 'Content-Type': 'application/json' },

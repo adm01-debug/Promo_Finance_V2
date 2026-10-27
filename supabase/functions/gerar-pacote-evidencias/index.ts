@@ -365,7 +365,18 @@ serve(
               const result = await processarPacote(body, auth.user, auth.admin, send as Emit);
               send({ done: true, payload: result });
             } catch (e) {
-              send({ error: e instanceof Error ? e.message : 'unknown' });
+              // Falha de processamento com stream encerrado limpo: sem este
+              // request_error o espelho do wrapper vê desfecho 'ok' e a taxa
+              // de erro RED não conta a falha (o cliente já recebeu o evento
+              // `error`, então controller.error mudaria a semântica do stream).
+              const msg = e instanceof Error ? e.message : 'unknown';
+              log.error('request_error', {
+                status_code: 200,
+                error_message: mensagemErro(msg),
+                context: { stream: true, desfecho: 'error', producer_catch: true },
+              });
+              await log.flush();
+              send({ error: msg });
             } finally {
               controller.close();
             }

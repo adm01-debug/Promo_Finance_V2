@@ -229,7 +229,9 @@ Deno.serve(
         error_message: msg,
       });
       await logger.flush();
-      return new Response(JSON.stringify({ error: msg }), {
+      // Detalhe do erro (inclui error_description do Bitrix24) fica só no
+      // log — ao cliente vai mensagem genérica, sem internals de terceiros.
+      return new Response(JSON.stringify({ error: 'Erro ao comunicar com o Bitrix24' }), {
         status: 500,
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       });
