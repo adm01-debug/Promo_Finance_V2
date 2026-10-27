@@ -18,7 +18,7 @@ BEGIN
   -- Tentar instalar a extensão com schema limpo
   BEGIN
     CREATE EXTENSION pg_cron;
-    -- Sucesso: a migration seguinte vê pg_cron em pg_extension → IF NOT EXISTS = no-op
+    -- Sucesso: a migration seguinte và pg_cron em pg_extension → IF NOT EXISTS = no-op
     RETURN;
   EXCEPTION WHEN OTHERS THEN
     NULL; -- pg_cron não instalável neste ambiente, continua para stubs
@@ -38,6 +38,19 @@ BEGIN
     username text      NOT NULL DEFAULT current_user,
     active   boolean   NOT NULL DEFAULT true,
     jobname  text      UNIQUE
+  );
+
+  CREATE TABLE IF NOT EXISTS cron.job_run_details (
+    jobid          bigint,
+    runid          bigint PRIMARY KEY,
+    job_pid        integer,
+    database       text,
+    username       text,
+    command        text,
+    status         text,
+    return_message text,
+    start_time     timestamptz,
+    end_time       timestamptz
   );
 
   CREATE OR REPLACE FUNCTION cron.schedule(
