@@ -27,7 +27,7 @@ CREATE TABLE IF NOT EXISTS public.alerts (
   is_dismissed boolean DEFAULT false,
   metadata    jsonb DEFAULT '{}',
   created_at  timestamptz NOT NULL DEFAULT now(),
-  empresa_id  uuid
+  empresa_id  uuid REFERENCES public.empresas(id) ON DELETE RESTRICT
 );
 
 CREATE TABLE IF NOT EXISTS public.alert_configurations (
@@ -56,7 +56,7 @@ CREATE TABLE IF NOT EXISTS public.alert_configurations (
   n8n_webhook_url      text,
   conditions           jsonb,
   created_by           text,
-  empresa_id           uuid,
+  empresa_id           uuid REFERENCES public.empresas(id) ON DELETE RESTRICT,
   UNIQUE (alert_type, channel)
 );
 
