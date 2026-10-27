@@ -118,7 +118,7 @@ jobs:
       - name: Publicar SARIF no Code Scanning
         # Envia para GitHub Security → Code scanning alerts (sempre, mesmo sem achados)
         if: always()
-        uses: github/codeql-action/upload-sarif@1190a975f95ce23525efb6a3fc21ea29567c1b52 # v3
+        uses: github/codeql-action/upload-sarif@2892aa5e19bbd11bc0cff5427e3b750a04d9e3c2 # v4.38.2
         with:
           sarif_file: gitleaks.sarif
           category: gitleaks
@@ -161,7 +161,44 @@ jobs:
         # O próprio advisory diz que uso em build-time sobre seletores
         # confiáveis não é afetado — só fere quem parseia seletor de
         # terceiros em runtime. Revisitar na migração para tailwind 4.
-        run: bun audit --ignore=GHSA-vfj7-8cjw-p6xm --ignore=GHSA-rj75-hqrm-r3gf
+        # launch-editor — dev tool exclusivo: abre arquivos em editor local.
+        # GHSA-587h-7wmj-h5pm: fs.existsSync() bypass via NTFS — Windows only;
+        #   CI e prod rodam em Linux. Sem vetor em ambiente Unix.
+        # GHSA-698v-4r3x-3vcv: escapeCmdArgs omite % — Windows only; idem.
+        # GHSA-r825-w8mm-5pxw: CLI flag por path crafted — Windows/dev only;
+        #   não executado em CI nem em prod.
+        # vite — servidor de desenvolvimento apenas (`vite dev`). Prod usa
+        # Vercel (build estático); CI executa somente `vite build`.
+        # GHSA-9jrq-w75r-8gcw: cross-origin script via custom middleware —
+        #   exclusivo do servidor de dev; ausente em build/prod.
+        # GHSA-rq7h-c2jc-7f22: arquivos fora de server.fs.allow — mesmo vetor.
+        # GHSA-vfpm-58rq-9qcg: primeiros 4 bytes via ?vite-wasm-instance — E2E usa
+        #   servidor dev (host:'::'), mas runners GitHub Actions não têm ingresso
+        #   externo (NAT); sem vetor de ataque remoto real em CI.
+        # vitest — infraestrutura de testes, não executada em runtime de prod.
+        # GHSA-qxg6-89mg-rqv8: code injection via mock — afeta WebSocket do modo
+        #   browser; este projeto usa Vitest em modo Node (bun run test:run).
+        # GHSA-xp26-3454-mjgp: backslash traversal no @vitest/mocker — Windows
+        #   only; CI e prod são Linux.
+        # GHSA-mrhx-c7xc-m3w5 (zod <4.6.6): OOM por acúmulo de issues no
+        #   $ZodArray — engine do zod v4. O app usa a API clássica v3
+        #   (24 imports de 'zod', zero de 'zod/v4'/'zod/mini'): o motor v4
+        #   embutido no 3.25.x fica inerte. Fix só existe em 4.6.6 (major
+        #   com breaking changes — migração própria); o vetor além disso é
+        #   self-DoS no browser do próprio usuário, sem input remoto.
+        run: >
+          bun audit
+          --ignore=GHSA-vfj7-8cjw-p6xm
+          --ignore=GHSA-mrhx-c7xc-m3w5
+          --ignore=GHSA-rj75-hqrm-r3gf
+          --ignore=GHSA-587h-7wmj-h5pm
+          --ignore=GHSA-698v-4r3x-3vcv
+          --ignore=GHSA-r825-w8mm-5pxw
+          --ignore=GHSA-9jrq-w75r-8gcw
+          --ignore=GHSA-rq7h-c2jc-7f22
+          --ignore=GHSA-vfpm-58rq-9qcg
+          --ignore=GHSA-qxg6-89mg-rqv8
+          --ignore=GHSA-xp26-3454-mjgp
 
       - name: External secret isolation guard
         # Impede que EXTERNAL_SUPABASE_SERVICE_ROLE_KEY seja lido fora da
@@ -290,7 +327,10 @@ jobs:
             echo
           } >> "$GITHUB_STEP_SUMMARY"
 
+      # Runs de dependabot não recebem secrets (design do GitHub): sem o
+      # guard o preflight morre no env-check e derruba o job inteiro.
       - name: Preflight do gate Runtime RPC
+        if: ${{ github.actor != 'dependabot[bot]' }}
         env:
           SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
           SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
@@ -302,6 +342,7 @@ jobs:
             SUPABASE_URL SUPABASE_ANON_KEY E2E_USER_EMAIL E2E_USER_PASSWORD
 
       - name: Runtime RPC privilege matrix (anon / authenticated)
+        if: ${{ github.actor != 'dependabot[bot]' }}
         # Invoca cada RPC sensível via /rest/v1/rpc/<fn> como anon e usuário
         # autenticado. O papel service_role é validado apenas pelo gate SQL,
         # sem expor sua chave a um probe HTTP de produção.
@@ -387,9 +428,11 @@ jobs:
       - name: Build check
         run: bun run build
         env:
-          VITE_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL }}
-          VITE_SUPABASE_PROJECT_ID: ${{ secrets.VITE_SUPABASE_PROJECT_ID }}
-          VITE_SUPABASE_PUBLISHABLE_KEY: ${{ secrets.VITE_SUPABASE_PUBLISHABLE_KEY }}
+          # Runs de dependabot não recebem secrets — fallbacks não-sensíveis
+          # (URL/ref são públicos; a key é placeholder só p/ o assert do build).
+          VITE_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL || 'https://bwwbeyolnnzppeuhgkcd.supabase.co' }}
+          VITE_SUPABASE_PROJECT_ID: ${{ secrets.VITE_SUPABASE_PROJECT_ID || 'bwwbeyolnnzppeuhgkcd' }}
+          VITE_SUPABASE_PUBLISHABLE_KEY: ${{ secrets.VITE_SUPABASE_PUBLISHABLE_KEY || 'sb_publishable_dependabot_build_only' }}
 
       - name: Gate de tamanho de bundle (etapa 50)
         # Impede regressão silenciosa de bundle: nenhum chunk JS individual
@@ -447,6 +490,8 @@ jobs:
   # ---------------------------------------------------------------------------
   e2e-critical:
     name: E2E Critical Gate
+    # Secrets withheld em runs de dependabot — o job falharia no env-check.
+    if: github.actor != 'dependabot[bot]'
     runs-on: ubuntu-latest
     timeout-minutes: 25
 
@@ -497,6 +542,7 @@ jobs:
   # ---------------------------------------------------------------------------
   e2e-destructive:
     name: E2E Destructive Logout
+    if: github.actor != 'dependabot[bot]'
     needs: [quality-gate, e2e-critical]
     runs-on: ubuntu-latest
     timeout-minutes: 15
@@ -584,7 +630,7 @@ jobs:
   # ---------------------------------------------------------------------------
   e2e-quarantine:
     name: E2E Quarantine (non-blocking)
-    if: ${{ always() }}
+    if: ${{ always() && github.actor != 'dependabot[bot]' }}
     needs: [quality-gate, e2e-critical, e2e-destructive, e2e-financeiro]
     runs-on: ubuntu-latest
     timeout-minutes: 30

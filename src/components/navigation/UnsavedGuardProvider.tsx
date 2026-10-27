@@ -72,6 +72,10 @@ export function UnsavedGuardProvider({ children }: { children: React.ReactNode }
   }, []);
 
   const requestLeave = useCallback((proceed: () => void) => {
+    // Um novo pedido de saída substitui o anterior — o pop aguardado do
+    // pedido antigo nunca chega, então a flag precisa abrir para o novo
+    // fluxo não prender o Voltar em forward() perpétuo.
+    awaitingPopRef.current = false;
     setPendingLeave(() => proceed);
   }, []);
 
@@ -173,20 +177,26 @@ export function UnsavedGuardProvider({ children }: { children: React.ReactNode }
         // no-op e o form segue montado e sujo — rearma a sentinela,
         // senão a próxima saída descartaria as edições sem aviso.
         window.setTimeout(() => {
-          if (window.history.state === before && dirtyRef.current && !sentinelActiveRef.current) {
-            window.history.pushState(artificialHistoryState(SENTINEL), '');
-            dropForwardEntries();
-            sentinelActiveRef.current = true;
-            // O back() foi no-op e o dialog continua montado sem
-            // marcador (o pop planejado o consumiu) — recria-o.
-            requestMarkerResync();
+          // Só decide no timeout quando o back() foi no-op de fato (state
+          // inalterado). Se o state mudou, o popstate do back() real pode
+          // ainda estar a caminho sob jank — zerar a flag aqui faria ele
+          // cair no ramo normal e reabrir o diálogo; quem limpa nesse caso
+          // é o próprio popstate (ou o efeito de localização abaixo).
+          if (window.history.state !== before) return;
+          leavingOwnPopRef.current = false;
+          if (dirtyRef.current && !sentinelActiveRef.current) {
+            // O back() foi no-op (aba nova sem entrada anterior): o usuário
+            // já confirmou sair — navega para a home como destino de
+            // fallback em vez de rearmar e deixar "Descartar e sair" sem
+            // efeito nenhum.
+            navigate('/', { replace: true });
           }
         }, 150);
       });
     };
     window.addEventListener('popstate', onPopState);
     return () => window.removeEventListener('popstate', onPopState);
-  }, []);
+  }, [navigate]);
 
   // Confirmação nativa ao fechar/recarregar a aba.
   useEffect(() => {
@@ -216,6 +226,9 @@ export function UnsavedGuardProvider({ children }: { children: React.ReactNode }
       return;
     }
     lastPathnameRef.current = location.pathname;
+    // A página trocou de verdade: um popstate tardio do nosso back() de
+    // saída não pode mais ser confundido com nova tentativa de sair.
+    leavingOwnPopRef.current = false;
     if (dirtyRef.current) {
       dirtyRef.current = false;
       sentinelActiveRef.current = false;
@@ -270,7 +283,11 @@ export function UnsavedGuardProvider({ children }: { children: React.ReactNode }
     // forward() sem pedir confirmação de novo.
     if (awaitingPopRef.current) {
       awaitingPopRef.current = false;
-      if (dirtyRef.current) {
+      // O efeito de localização pode já ter rearmado a sentinela (o pop do
+      // Voltar emite location nova na mesma rota): repushar aqui empilharia
+      // uma sentinela duplicada e o próximo Voltar cairia no early-return
+      // de "pop até a sentinela" sem diálogo — um back morto por cancel.
+      if (dirtyRef.current && !sentinelActiveRef.current && !window.history.state?.[SENTINEL]) {
         window.history.pushState(artificialHistoryState(SENTINEL), '');
         dropForwardEntries();
         sentinelActiveRef.current = true;

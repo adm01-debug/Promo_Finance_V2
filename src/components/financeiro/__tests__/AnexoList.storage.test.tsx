@@ -74,7 +74,7 @@ function montaCliente(respostas: Record<string, Resultado[]>) {
     consumidas[tabela] = (consumidas[tabela] ?? 0) + 1;
     const resultado = fila[i];
     const chain: Record<string, unknown> = {};
-    for (const metodo of ['select', 'insert', 'delete', 'eq']) {
+    for (const metodo of ['select', 'insert', 'delete', 'eq', 'in']) {
       chain[metodo] = vi.fn(() => {
         if (['insert', 'delete'].includes(metodo)) escritas.push({ tabela, metodo });
         return chain;

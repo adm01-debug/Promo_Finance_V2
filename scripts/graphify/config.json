@@ -1,5 +1,5 @@
 {
-  "version": "0.9.56",
+  "version": "0.9.91",
   "profiles": {
     "pilot": {
       "maxFiles": 50,
@@ -120,10 +120,7 @@
       "maxFiles": 500,
       "maxBytes": 7340032,
       "timeoutSeconds": 600,
-      "files": [
-        "src/pages/ReformaTributaria.tsx",
-        "src/hooks/useReformaTributaria.ts"
-      ],
+      "files": ["src/pages/ReformaTributaria.tsx", "src/hooks/useReformaTributaria.ts"],
       "includePrefixes": [
         "src/pages/tributario/",
         "src/components/tributario/",

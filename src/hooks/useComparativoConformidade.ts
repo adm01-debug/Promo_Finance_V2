@@ -49,7 +49,10 @@ export function useComparativoConformidade(
   competenciaReferencia?: string,
   limitePorEmpresa = 12
 ) {
-  const ids = useMemo(() => [...new Set(empresas.map((e) => e.id))].sort(), [empresas]);
+  const ids = useMemo(
+    () => [...new Set(empresas.map((e) => e.id))].sort((a, b) => a.localeCompare(b)),
+    [empresas]
+  );
 
   const query = useQuery({
     queryKey: ['conformidade-comparativo', ids, limitePorEmpresa],

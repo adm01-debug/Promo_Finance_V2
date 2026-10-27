@@ -1,6 +1,6 @@
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.49.4';
 import { corsHeadersPara } from '../_shared/cors.ts';
-import { createLogger } from '../_shared/observability.ts';
+import { createLogger, redigirTexto } from '../_shared/observability.ts';
 import { mensagemErro, contextoErro } from '../_shared/erros.ts';
 import { withEdgeObservability } from '../_shared/edge-observability.ts';
 const log = createLogger('external-data');
@@ -24,6 +24,9 @@ async function emitTelemetry(opts: {
   empresa_id?: string;
 }) {
   let severity = 'normal';
+  // error_message pode vir do client e carregar texto livre (PII/segredo
+  // interpolado) — redige uma vez e usa a versão segura no log e no insert.
+  const errorMessage = opts.error_message ? redigirTexto(opts.error_message) : undefined;
   if (opts.error_message) {
     severity = 'error';
   } else if (opts.duration_ms >= VERY_SLOW_QUERY_THRESHOLD_MS) {
@@ -54,7 +57,7 @@ async function emitTelemetry(opts: {
   } else if (severity === 'slow') {
     log.warn(`⚠️ SLOW QUERY: ${line}`);
   } else if (severity === 'error') {
-    log.error(`${line} error=${opts.error_message}`);
+    log.error(`${line} error=${errorMessage}`);
   } else {
     log.info('log_console', { context: { args: [line] } });
   }
@@ -81,7 +84,7 @@ async function emitTelemetry(opts: {
         query_offset: opts.query_offset ?? null,
         count_mode: opts.count_mode ?? null,
         severity,
-        error_message: opts.error_message || null,
+        error_message: errorMessage || null,
         user_id: opts.user_id || null,
         empresa_id: opts.empresa_id || null,
       })

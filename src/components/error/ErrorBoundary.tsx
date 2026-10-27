@@ -2,7 +2,7 @@ import React, { Component, ErrorInfo, ReactNode } from 'react';
 import { RefreshCw, Home, Bug, MessageCircle, Copy, Check, AlertTriangle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardFooter } from '@/components/ui/card';
-import { reportErrorToTracker, errorTracker } from '@/lib/error-tracking';
+import { reportErrorToTracker, errorTracker, redactPath } from '@/lib/error-tracking';
 import { reportError as reportToTelemetry } from '@/lib/telemetry';
 import { motion } from 'framer-motion';
 
@@ -59,7 +59,8 @@ export class ErrorBoundary extends Component<Props, State> {
     errorTracker.addBreadcrumb({
       category: 'error-boundary',
       message: `Error caught: ${error.name}`,
-      data: { message: error.message },
+      // Mensagem de erro pode embutir o path atual (ex.: falha em /convite/:token).
+      data: { message: redactPath(error.message) },
     });
   }
 

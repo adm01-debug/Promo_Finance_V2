@@ -38,12 +38,24 @@ jobs:
           persist-credentials: false
 
       - name: Setup Supabase CLI
-        uses: supabase/setup-cli@1dedf2c611547ede7232d26866dd3c56ab903bbb # v1
+        uses: supabase/setup-cli@45a513f8c64c0bc8e0e3dfe572b5c95be85f6359 # v3.0.1
         with:
           version: 2.22.6
 
       - name: Regenerar tipos do schema de prod
         run: |
+          # Sem SUPABASE_ACCESS_TOKEN ou PROD_PROJECT_REF, emite aviso e sai com sucesso —
+          # verificação não pode ser realizada sem credenciais e ID do projeto.
+          if [ -z "${SUPABASE_ACCESS_TOKEN:-}" ] || [ -z "${PROD_PROJECT_REF:-}" ]; then
+            echo "::warning::SUPABASE_ACCESS_TOKEN ou PROD_PROJECT_REF não configurado — verificação de drift de tipos ignorada."
+            {
+              echo "## ⚠️ Drift de tipos não verificado — secret/var ausente"
+              echo
+              echo "Configure \`SUPABASE_ACCESS_TOKEN\` (secret) e \`PROD_PROJECT_REF\` (var) em"
+              echo "**Settings → Secrets and variables → Actions** para habilitar esta verificação automática."
+            } >> "$GITHUB_STEP_SUMMARY"
+            exit 0
+          fi
           supabase gen types typescript \
             --project-id "$PROD_PROJECT_REF" \
             --schema public \
@@ -60,11 +72,12 @@ jobs:
             echo "drift=true" >> "$GITHUB_OUTPUT"
           fi
 
-      - name: Abrir PR de drift
+      - name: Publicar branch e tentar abrir PR de drift
         if: steps.drift.outputs.drift == 'true'
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
+          set -euo pipefail
           BRANCH="chore/db-types-drift-$(date +%Y%m%d)"
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
@@ -83,25 +96,56 @@ jobs:
           else
             git push "$REMOTE" "$BRANCH"
           fi
+          echo "branch_name=$BRANCH" >> "$GITHUB_ENV"
+          echo "branch_pushed=true" >> "$GITHUB_ENV"
+
+      - name: Abrir PR de drift (requer permissão createPullRequest)
+        if: steps.drift.outputs.drift == 'true' && env.branch_pushed == 'true'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          BRANCH: ${{ env.branch_name }}
+        run: |
+          set -uo pipefail
           # Reusa a PR já aberta no mesmo dia em vez de falhar na criação.
           if gh pr view "$BRANCH" --json number >/dev/null 2>&1; then
             echo "PR da branch $BRANCH já existe — apenas os commits foram atualizados."
             exit 0
           fi
-          gh pr create \
-            --head "$BRANCH" \
-            --title "chore(db): tipos Supabase dessincronizados de prod" \
-            --body "$(cat <<'EOF'
-          Regeneração automática semanal detectou que `src/integrations/supabase/types.ts`
-          diverge do schema de prod (`bwwbeyolnnzppeuhgkcd`).
+          PR_BODY="$(cat <<'EOF'
+          Regeneração automática semanal detectou que \`src/integrations/supabase/types.ts\`
+          diverge do schema de prod (\`bwwbeyolnnzppeuhgkcd\`).
 
           Causa provável: DDL aplicada fora do fluxo de migrations ou migration
           aplicada sem regerar os tipos. Revisar o diff e mergear — tipos
           desatualizados escondem colunas renomeadas/removidas do TypeScript.
 
-          Gerado por `.github/workflows/schema-drift.yml`.
+          Gerado por \`.github/workflows/schema-drift.yml\`.
           EOF
-          )" --base main
+          )"
+          GH_ERR=$(mktemp)
+          if gh pr create \
+            --head "$BRANCH" \
+            --title "chore(db): tipos Supabase dessincronizados de prod" \
+            --body "$PR_BODY" \
+            --base main 2>"$GH_ERR"; then
+            echo "PR criado com sucesso."
+          elif grep -q "GitHub Actions is not permitted to create or approve pull requests" "$GH_ERR"; then
+            # A permissão 'createPullRequest' não está habilitada para o Actions token.
+            # Branch já foi publicada — a PR pode ser aberta manualmente.
+            cat "$GH_ERR" >&2
+            echo "::warning::Não foi possível criar PR automaticamente. Branch '$BRANCH' publicada."
+            {
+              echo "## ⚠️ Schema drift detectado — PR pendente de criação manual"
+              echo
+              echo "Branch \`$BRANCH\` publicada com os tipos regenerados."
+              echo
+              echo "**Ação necessária:** abra a PR manualmente ou habilite"
+              echo "*Settings → Actions → General → Allow GitHub Actions to create and approve pull requests*."
+            } >> "$GITHUB_STEP_SUMMARY"
+          else
+            cat "$GH_ERR" >&2
+            exit 1
+          fi
 
   migration-parity:
     name: Paridade migrations locais ↔ aplicadas em prod
@@ -124,6 +168,18 @@ jobs:
 
       - name: Comparar versões
         run: |
+          # Sem PROD_DB_URL, emite aviso e sai com sucesso — checagem não pode
+          # ser realizada sem credenciais de prod.
+          if [ -z "${PROD_DB_URL:-}" ]; then
+            echo "::warning::PROD_DB_URL não configurado — paridade de migrations não verificada."
+            {
+              echo "## ⚠️ Paridade de migrations não verificada — secret PROD_DB_URL ausente"
+              echo
+              echo "Configure \`PROD_DB_URL\` em **Settings → Secrets → Actions → New repository secret**"
+              echo "para habilitar esta verificação automática."
+            } >> "$GITHUB_STEP_SUMMARY"
+            exit 0
+          fi
           psql "$PROD_DB_URL" -At \
             -c "select version from supabase_migrations.schema_migrations order by version" \
             > /tmp/remote_versions.txt

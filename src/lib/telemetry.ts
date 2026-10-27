@@ -10,6 +10,7 @@
 import { supabase } from '@/integrations/supabase/client';
 import type { Json } from '@/integrations/supabase/types';
 import { logger } from '@/lib/logger';
+import { redactPath } from '@/lib/error-tracking';
 import { env } from '@/config/env';
 import { onCLS, onINP, onLCP, onFCP, onTTFB, Metric } from 'web-vitals';
 
@@ -19,8 +20,45 @@ type BreadcrumbData = Record<string, Json> | undefined;
 const breadcrumbs: Array<{ message: string; timestamp: string; data?: BreadcrumbData }> = [];
 const MAX_BREADCRUMBS = 20;
 
+// Chaves de breadcrumb que carregam URL/path — redigidas na entrada para
+// o token de /convite|contador/ nunca chegar a frontend_error_logs.metadata
+// quando um componente futuro navegar a partir de rota sensível.
+const BREADCRUMB_URL_KEYS = /^(from|to|path|pathname|url|href|search|query|redirect|route|state)$/i;
+
+// redactPath decodifica %2F, remove query/hash e cobre URLs absolutas —
+// pathSemSegredo só olha pathname relativo e deixaria
+// 'https://app/convite/<token>' passar cru.
+function sanitizeBreadcrumbValue(v: Json): Json {
+  if (typeof v === 'string') return redactPath(v);
+  if (Array.isArray(v)) return v.map(sanitizeBreadcrumbValue);
+  if (v !== null && typeof v === 'object') return sanitizeBreadcrumbData(v as BreadcrumbData) ?? v;
+  return v;
+}
+
+// Chaves fora da lista ainda podem conter containers com campos de URL
+// aninhados ({context:{url:'/convite/…'}}) — recursão só em containers;
+// strings comuns ficam intactas (redigir tudo apagaria texto legítimo).
+function sanitizeBreadcrumbNested(v: Json): Json {
+  if (Array.isArray(v)) return v.map(sanitizeBreadcrumbNested);
+  if (v !== null && typeof v === 'object') return sanitizeBreadcrumbData(v as BreadcrumbData) ?? v;
+  return v;
+}
+
+export function sanitizeBreadcrumbData(data: BreadcrumbData): BreadcrumbData {
+  if (!data) return data;
+  const out: Record<string, Json> = {};
+  for (const [k, v] of Object.entries(data)) {
+    out[k] = BREADCRUMB_URL_KEYS.test(k) ? sanitizeBreadcrumbValue(v) : sanitizeBreadcrumbNested(v);
+  }
+  return out;
+}
+
 export function addBreadcrumb(message: string, data?: BreadcrumbData) {
-  breadcrumbs.push({ message, data, timestamp: new Date().toISOString() });
+  breadcrumbs.push({
+    message,
+    data: sanitizeBreadcrumbData(data),
+    timestamp: new Date().toISOString(),
+  });
   if (breadcrumbs.length > MAX_BREADCRUMBS) breadcrumbs.shift();
 }
 
@@ -51,12 +89,35 @@ const MAX_QUEUE = 50;
 const FLUSH_DEBOUNCE_MS = 2000;
 let flushTimer: ReturnType<typeof setTimeout> | null = null;
 
+// URLs persistidas vão sem query/hash: parâmetros carregam segredos de
+// fluxo (tokens de convite, magic links) que não devem pousar em
+// frontend_error_logs/frontend_performance_logs.
+// Rotas que embutem segredo no path. O React Router casa case-insensitive
+// e tolera trailing slash/sub-path — prefixo + toLowerCase cobre todos os
+// casos (mesma regra de isSensitiveRoute em src/lib/navigation.ts).
+const SENSITIVE_PATH_PREFIXES = ['/convite/', '/contador/'];
+
+function pathSemSegredo(pathname: string): string {
+  const lower = pathname.toLowerCase();
+  const prefixo = SENSITIVE_PATH_PREFIXES.find((p) => lower.startsWith(p));
+  return prefixo ? pathname.slice(0, prefixo.length) + '[redacted]' : pathname;
+}
+
+function urlSanitizada(urlCompleta: string): string {
+  try {
+    const u = new URL(urlCompleta);
+    return u.origin + pathSemSegredo(u.pathname);
+  } catch {
+    return window.location.origin + pathSemSegredo(window.location.pathname);
+  }
+}
+
 function buildErrorRows(userId: string | null, batch: TelemetryPayload[]) {
   return batch.map((p) => ({
     user_id: userId,
-    error_message: p.message.slice(0, 2000),
+    error_message: redactPath(p.message).slice(0, 2000),
     error_stack: p.stack?.slice(0, 8000) ?? null,
-    url: p.url ?? window.location.href,
+    url: urlSanitizada(p.url ?? window.location.href),
     user_agent: p.user_agent ?? navigator.userAgent,
     severity: p.severity ?? 'error',
     metadata: { ...(p.context ?? {}), breadcrumbs: p.breadcrumbs },
@@ -69,7 +130,7 @@ function buildPerfRows(userId: string | null, batch: Metric[]) {
     metric_name: m.name,
     value: m.value,
     rating: m.rating,
-    url: window.location.href,
+    url: urlSanitizada(window.location.href),
     user_agent: navigator.userAgent,
     navigation_type: (m as Metric & { navigationType?: string }).navigationType || 'navigate',
   }));
@@ -199,7 +260,7 @@ export function initTelemetry(): void {
     reportError({
       message: event.message || 'Unknown error',
       stack: event.error?.stack,
-      url: event.filename || window.location.href,
+      url: event.filename || urlSanitizada(window.location.href),
       severity: 'error',
       context: { lineno: event.lineno, colno: event.colno },
     });

@@ -6,16 +6,16 @@ Referência viva dos 8 workflows ativos. Atualizada em 2026-09-27.
 
 ## Visão geral
 
-| Arquivo | Trigger | Gate obrigatório? | Duração típica |
-| ------- | ------- | ----------------- | -------------- |
-| `ci.yml` | push + PR → `main` | Sim (7 checks) | ~12 min |
-| `deno-tests.yml` | push `main` + PR → `main` | Sim (unit-tests) | ~8 min |
-| `supabase-linter.yml` | push/PR que toca banco | Sim (adicionado ao required) | ~5 min |
-| `codeql.yml` | push `main` + PR → `main` + schedule semanal | Não (SARIF → Security tab) | ~15 min |
-| `dependency-review.yml` | PR → `main` | Não (informativo) | ~1 min |
-| `functions-deploy.yml` | `workflow_dispatch` (somente `main`) | N/A (manual) | ~5 min |
-| `staging-migrate.yml` | `workflow_dispatch` | N/A (manual) | ~10 min |
-| `graphify.yml` | push `main` + schedule semanal | Não | ~5 min |
+| Arquivo                 | Trigger                                      | Gate obrigatório?            | Duração típica |
+| ----------------------- | -------------------------------------------- | ---------------------------- | -------------- |
+| `ci.yml`                | push + PR → `main`                           | Sim (7 checks)               | ~12 min        |
+| `deno-tests.yml`        | push `main` + PR → `main`                    | Sim (unit-tests)             | ~8 min         |
+| `supabase-linter.yml`   | push/PR que toca banco                       | Sim (adicionado ao required) | ~5 min         |
+| `codeql.yml`            | push `main` + PR → `main` + schedule semanal | Não (SARIF → Security tab)   | ~15 min        |
+| `dependency-review.yml` | PR → `main`                                  | Não (informativo)            | ~1 min         |
+| `functions-deploy.yml`  | `workflow_dispatch` (somente `main`)         | N/A (manual)                 | ~5 min         |
+| `staging-migrate.yml`   | `workflow_dispatch`                          | N/A (manual)                 | ~10 min        |
+| `graphify.yml`          | push `main` + schedule semanal               | Não                          | ~5 min         |
 
 ---
 
@@ -23,24 +23,24 @@ Referência viva dos 8 workflows ativos. Atualizada em 2026-09-27.
 
 ### Required checks (branch protection de `main`)
 
-| Check | Job | O que valida |
-| ----- | --- | ------------ |
-| `Quality Gate & Tests` | `quality-gate` | lint, type-check, unit tests, cobertura, build, gates de banco |
-| `E2E Critical Gate` | `e2e-critical` | telas críticas (autenticação, RBAC, pagamentos) |
-| `E2E Destructive Logout` | `e2e-destructive` | fluxos de logout e revogação de sessão |
-| `E2E Financeiro (offline)` | `e2e-financeiro` | telas financeiras sem dependência de prod |
-| `Varredura de segredos (gitleaks)` | `secret-scan` | segredos commitados |
-| `Supabase DB Linter` | `supabase-linter` job do `supabase-linter.yml` | RLS, GRANTs, policies |
-| `Unit tests (offline, deterministic)` | `unit-tests` do `deno-tests.yml` | lógica Deno isolada |
+| Check                                 | Job                                            | O que valida                                                   |
+| ------------------------------------- | ---------------------------------------------- | -------------------------------------------------------------- |
+| `Quality Gate & Tests`                | `quality-gate`                                 | lint, type-check, unit tests, cobertura, build, gates de banco |
+| `E2E Critical Gate`                   | `e2e-critical`                                 | telas críticas (autenticação, RBAC, pagamentos)                |
+| `E2E Destructive Logout`              | `e2e-destructive`                              | fluxos de logout e revogação de sessão                         |
+| `E2E Financeiro (offline)`            | `e2e-financeiro`                               | telas financeiras sem dependência de prod                      |
+| `Varredura de segredos (gitleaks)`    | `secret-scan`                                  | segredos commitados                                            |
+| `Supabase DB Linter`                  | `supabase-linter` job do `supabase-linter.yml` | RLS, GRANTs, policies                                          |
+| `Unit tests (offline, deterministic)` | `unit-tests` do `deno-tests.yml`               | lógica Deno isolada                                            |
 
 ### Secrets necessários
 
-| Secret | Usado por | Onde definir |
-| ------ | --------- | ------------ |
-| `SUPABASE_ACCESS_TOKEN` | `quality-gate`, `supabase-linter`, `functions-deploy` | Environment `Production` |
-| `DATABASE_URL` | gates de banco em `quality-gate` | Repo secret |
-| `VITE_SUPABASE_URL` | `integration-tests` em `deno-tests.yml` | Repo secret |
-| `VITE_SUPABASE_PUBLISHABLE_KEY` | `integration-tests` em `deno-tests.yml` | Repo secret |
+| Secret                          | Usado por                                             | Onde definir             |
+| ------------------------------- | ----------------------------------------------------- | ------------------------ |
+| `SUPABASE_ACCESS_TOKEN`         | `quality-gate`, `supabase-linter`, `functions-deploy` | Environment `Production` |
+| `DATABASE_URL`                  | gates de banco em `quality-gate`                      | Repo secret              |
+| `VITE_SUPABASE_URL`             | `integration-tests` em `deno-tests.yml`               | Repo secret              |
+| `VITE_SUPABASE_PUBLISHABLE_KEY` | `integration-tests` em `deno-tests.yml`               | Repo secret              |
 
 Se `DATABASE_URL` estiver ausente, os 4 gates de banco registram um aviso e
 `quality-gate` passa mesmo assim (comportamento documentado, não recomendado —
@@ -120,8 +120,8 @@ Todas as actions são pinadas por SHA de commit (não por tag mutável):
 ```yaml
 uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
 uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6 # v2
-uses: supabase/setup-cli@1dedf2c611547ede7232d26866dd3c56ab903bbb # v1
-uses: github/codeql-action/init@28deaed4a8e2e5ec09e15a4fe47ffc84ca4faeff # v3.28.1
+uses: supabase/setup-cli@45a513f8c64c0bc8e0e3dfe572b5c95be85f6359 # v3.0.1
+uses: github/codeql-action/init@2892aa5e19bbd11bc0cff5427e3b750a04d9e3c2 # v4.38.2
 ```
 
 Versão do Bun gerenciada em `.bun-version` (atualmente `1.3.11`).

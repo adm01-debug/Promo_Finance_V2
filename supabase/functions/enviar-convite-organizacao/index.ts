@@ -89,15 +89,14 @@ Deno.serve(
         const { data: convite, error: conviteError } = await admin
           .from('convites')
           .select(
-            'id, organizacao_id, email_convidado, papel_proposto, token, expira_em, aceito_em, revogado_em'
+            'id, organizacao_id, email_convidado, papel_proposto, token, expira_em, utilizado_em'
           )
           .eq('id', convite_id)
           .maybeSingle();
 
         if (conviteError) return res({ error: 'Falha ao carregar convite.' }, 500);
         if (!convite) return res({ error: 'Convite não encontrado.' }, 404);
-        if (convite.revogado_em) return res({ error: 'Convite revogado.' }, 409);
-        if (convite.aceito_em) return res({ error: 'Convite já aceito.' }, 409);
+        if (convite.utilizado_em) return res({ error: 'Convite já aceito.' }, 409);
         if (new Date(convite.expira_em).getTime() <= Date.now()) {
           return res({ error: 'Convite expirado.' }, 409);
         }
@@ -127,8 +126,42 @@ Deno.serve(
         }
 
         const resendKey = Deno.env.get('RESEND_API_KEY');
-        const baseUrl = (origin ?? getAppBaseUrl()).replace(/\/+$/, '');
-        const link = `${baseUrl}/convite/${convite.token}`;
+        // `origin` do cliente só vale se for https no mesmo host do app —
+        // um gestor não pode apontar o botão 'Aceitar convite' do e-mail
+        // para um domínio externo ou esquema em claro (http/ftp/ws/file)
+        // carregando o token real do convite. O retorno usa u.origin
+        // normalizado, nunca a string crua (path/query do chamador fora).
+        const baseUrl = (() => {
+          const appUrl = (() => {
+            try {
+              return new URL(getAppBaseUrl());
+            } catch {
+              return null;
+            }
+          })();
+          if (!appUrl) return null;
+          // A base configurada no servidor também precisa ser https (ou
+          // localhost em dev) — um APP_*_URL em http mandaria o token do
+          // convite por link em claro no e-mail.
+          if (appUrl.protocol !== 'https:' && appUrl.hostname !== 'localhost') return null;
+          try {
+            if (origin) {
+              const u = new URL(origin);
+              const esquemaOk = u.protocol === 'https:' || u.hostname === 'localhost';
+              if (esquemaOk && u.host === appUrl.host) return u.origin;
+            }
+          } catch {
+            // origem inválida — ignora e usa a base do app
+          }
+          return appUrl.origin;
+        })();
+        if (!baseUrl) {
+          // APP_BASE_URL/APP_PUBLIC_URL/PUBLIC_APP_URL vazio ou inválido
+          // produziria um link relativo morto no e-mail — falha ruidosa.
+          console.error('[enviar-convite-organizacao] base URL do app não configurada');
+          return res({ error: 'URL pública do app não configurada no servidor.' }, 500);
+        }
+        const link = `${baseUrl.replace(/\/+$/, '')}/convite/${convite.token}`;
 
         if (!resendKey) {
           // Modo simulado: não falha o fluxo de criação do convite.
