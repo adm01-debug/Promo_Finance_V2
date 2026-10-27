@@ -22,4 +22,19 @@ describe('isSidebarNavItemActive', () => {
       isSidebarNavItemActive('/inteligencia', { pathname: '/inteligencia', hash: '#qualquer' })
     ).toBe(true);
   });
+
+  it('mantém o item-pai ativo em rotas filhas (detalhe/edição)', () => {
+    expect(
+      isSidebarNavItemActive('/contas-pagar', { pathname: '/contas-pagar/123', hash: '' })
+    ).toBe(true);
+    expect(isSidebarNavItemActive('/contas-pagar', { pathname: '/contas-receber', hash: '' })).toBe(
+      false
+    );
+  });
+
+  it('não marca tudo com href só-âncora ou raiz', () => {
+    expect(isSidebarNavItemActive('#topo', { pathname: '/inteligencia', hash: '' })).toBe(false);
+    expect(isSidebarNavItemActive('/', { pathname: '/inteligencia', hash: '' })).toBe(false);
+    expect(isSidebarNavItemActive('/', { pathname: '/', hash: '' })).toBe(true);
+  });
 });
