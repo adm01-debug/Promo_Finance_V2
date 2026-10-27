@@ -57,4 +57,10 @@ BEGIN
     DELETE FROM cron.job WHERE jobid = p_jobid;
     SELECT true
   $f$;
+
+  CREATE OR REPLACE FUNCTION cron.unschedule(p_name text)
+  RETURNS boolean LANGUAGE sql AS $f$
+    DELETE FROM cron.job WHERE jobname = p_name;
+    SELECT true
+  $f$;
 END $$;
