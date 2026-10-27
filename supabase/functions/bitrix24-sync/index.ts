@@ -153,10 +153,12 @@ async function testConnection(
     const result = await callBitrixAPI('profile', accessToken);
 
     if (result.error) {
-      return {
-        success: false,
-        message: `Erro de conexão: ${result.error_description || result.error}`,
-      };
+      log.error('[bitrix24-sync] testConnection falhou:', {
+        error_message: mensagemErro(result.error_description || result.error),
+      });
+      // Detalhe do Bitrix (error_description) fica no log — ao cliente
+      // vai mensagem genérica.
+      return { success: false, message: 'Erro de conexão com o Bitrix24' };
     }
 
     return {
@@ -165,7 +167,11 @@ async function testConnection(
       data: result.result,
     };
   } catch (error: any) {
-    return { success: false, message: `Erro: ${error?.message || 'Erro desconhecido'}` };
+    log.error('[bitrix24-sync] testConnection exception:', {
+      error_message: mensagemErro(error),
+      context: contextoErro(error),
+    });
+    return { success: false, message: 'Erro de conexão com o Bitrix24' };
   }
 }
 
@@ -315,7 +321,7 @@ async function syncDeals(
       success: false,
       processed,
       errors,
-      message: `Erro na sincronização: ${error?.message || 'Erro desconhecido'}`,
+      message: 'Erro na sincronização',
     };
   }
 }
@@ -442,7 +448,7 @@ async function syncContacts(
       success: false,
       processed,
       errors,
-      message: `Erro na sincronização: ${error?.message || 'Erro desconhecido'}`,
+      message: 'Erro na sincronização',
     };
   }
 }
@@ -559,7 +565,7 @@ async function syncCompanies(
       success: false,
       processed,
       errors,
-      message: `Erro na sincronização: ${error?.message || 'Erro desconhecido'}`,
+      message: 'Erro na sincronização',
     };
   }
 }
@@ -656,7 +662,7 @@ async function exportPaymentStatus(
       success: false,
       processed,
       errors,
-      message: `Erro na exportação: ${error?.message || 'Erro desconhecido'}`,
+      message: 'Erro na exportação',
     };
   }
 }

@@ -279,7 +279,7 @@ async function autenticar(req: Request) {
 }
 
 serve(
-  withEdgeObservability('gerar-pacote-evidencias', async (req) => {
+  withEdgeObservability('gerar-pacote-evidencias', async (req, ctx) => {
     const _t0 = Date.now();
     try {
       const corsHeaders = corsHeadersPara(req);
@@ -365,18 +365,12 @@ serve(
               const result = await processarPacote(body, auth.user, auth.admin, send as Emit);
               send({ done: true, payload: result });
             } catch (e) {
-              // Falha de processamento com stream encerrado limpo: sem este
-              // request_error o espelho do wrapper vê desfecho 'ok' e a taxa
-              // de erro RED não conta a falha (o cliente já recebeu o evento
-              // `error`, então controller.error mudaria a semântica do stream).
-              const msg = e instanceof Error ? e.message : 'unknown';
-              log.error('request_error', {
-                status_code: 200,
-                error_message: mensagemErro(msg),
-                context: { stream: true, desfecho: 'error', producer_catch: true },
-              });
-              await log.flush();
-              send({ error: msg });
+              // O evento vai antes de qualquer persistência: se o Supabase
+              // estiver indisponível, o cliente não fica esperando o flush.
+              // sinalizarFalha faz o wrapper contar request_error no fim do
+              // stream — um único evento de conclusão (contrato vw_edge_health).
+              send({ error: e instanceof Error ? e.message : 'unknown' });
+              ctx?.sinalizarFalha(e);
             } finally {
               controller.close();
             }
