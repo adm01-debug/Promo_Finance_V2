@@ -63,6 +63,49 @@ Deno.test('resposta SSE entrega o stream completo sem bloquear', async () => {
   assertEquals(await res.text(), 'data: 1\n\ndata: 2\n\n');
 });
 
+Deno.test('falha lógica SSE gera um único request_error sem interromper o stream', async () => {
+  const eventos: string[] = [];
+  const logOriginal = console.log;
+  console.log = (s: unknown) => {
+    try {
+      const j = JSON.parse(String(s));
+      if (j.event === 'request_end' || j.event === 'request_error') eventos.push(j.event);
+    } catch {
+      /* ignora */
+    }
+  };
+  try {
+    // Fluxo real: a falha é sinalizada dentro do produtor, depois de
+    // operações assíncronas — não antes de o handler devolver a Response.
+    const wrapped = withEdgeObservability('fn-sse-falha', (_req, ctx) => {
+      const stream = new ReadableStream<Uint8Array>({
+        async start(controller) {
+          const enc = new TextEncoder();
+          controller.enqueue(enc.encode('data: {"progress":10}\n\n'));
+          // Macrotask: retoma depois de o wrapper devolver a Response
+          // espelhada — cobre a sinalização tardia do fluxo real.
+          await new Promise((resolve) => setTimeout(resolve, 0));
+          controller.enqueue(enc.encode('data: {"error":"falhou"}\n\n'));
+          ctx?.sinalizarFalha(new Error('falhou'));
+          controller.close();
+        },
+      });
+      return new Response(stream, {
+        status: 200,
+        headers: { 'content-type': 'text/event-stream' },
+      });
+    });
+    const res = await wrapped(new Request('https://x/fn'));
+    assertEquals(res.status, 200);
+    // O cliente recebe o stream inteiro, incluindo o evento de erro.
+    assertEquals(await res.text(), 'data: {"progress":10}\n\ndata: {"error":"falhou"}\n\n');
+    // Encerramento conta exatamente um request_error — nunca ok + erro.
+    assertEquals(eventos, ['request_error']);
+  } finally {
+    console.log = logOriginal;
+  }
+});
+
 Deno.test('requestId prefere x-request-id e cai para x-correlation-id', async () => {
   let visto: string | undefined;
   // createLogger injeta request_id no context — espia pelo console do logger.
