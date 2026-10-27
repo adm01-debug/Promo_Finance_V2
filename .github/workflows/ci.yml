@@ -161,7 +161,37 @@ jobs:
         # O próprio advisory diz que uso em build-time sobre seletores
         # confiáveis não é afetado — só fere quem parseia seletor de
         # terceiros em runtime. Revisitar na migração para tailwind 4.
-        run: bun audit --ignore=GHSA-vfj7-8cjw-p6xm --ignore=GHSA-rj75-hqrm-r3gf
+        # launch-editor — dev tool exclusivo: abre arquivos em editor local.
+        # GHSA-587h-7wmj-h5pm: fs.existsSync() bypass via NTFS — Windows only;
+        #   CI e prod rodam em Linux. Sem vetor em ambiente Unix.
+        # GHSA-698v-4r3x-3vcv: escapeCmdArgs omite % — Windows only; idem.
+        # GHSA-r825-w8mm-5pxw: CLI flag por path crafted — Windows/dev only;
+        #   não executado em CI nem em prod.
+        # vite — servidor de desenvolvimento apenas (`vite dev`). Prod usa
+        # Vercel (build estático); CI executa somente `vite build`.
+        # GHSA-9jrq-w75r-8gcw: cross-origin script via custom middleware —
+        #   exclusivo do servidor de dev; ausente em build/prod.
+        # GHSA-rq7h-c2jc-7f22: arquivos fora de server.fs.allow — mesmo vetor.
+        # GHSA-vfpm-58rq-9qcg: primeiros 4 bytes via ?vite-wasm-instance — E2E usa
+        #   servidor dev (host:'::'), mas runners GitHub Actions não têm ingresso
+        #   externo (NAT); sem vetor de ataque remoto real em CI.
+        # vitest — infraestrutura de testes, não executada em runtime de prod.
+        # GHSA-qxg6-89mg-rqv8: code injection via mock — afeta WebSocket do modo
+        #   browser; este projeto usa Vitest em modo Node (bun run test:run).
+        # GHSA-xp26-3454-mjgp: backslash traversal no @vitest/mocker — Windows
+        #   only; CI e prod são Linux.
+        run: >
+          bun audit
+          --ignore=GHSA-vfj7-8cjw-p6xm
+          --ignore=GHSA-rj75-hqrm-r3gf
+          --ignore=GHSA-587h-7wmj-h5pm
+          --ignore=GHSA-698v-4r3x-3vcv
+          --ignore=GHSA-r825-w8mm-5pxw
+          --ignore=GHSA-9jrq-w75r-8gcw
+          --ignore=GHSA-rq7h-c2jc-7f22
+          --ignore=GHSA-vfpm-58rq-9qcg
+          --ignore=GHSA-qxg6-89mg-rqv8
+          --ignore=GHSA-xp26-3454-mjgp
 
       - name: External secret isolation guard
         # Impede que EXTERNAL_SUPABASE_SERVICE_ROLE_KEY seja lido fora da
