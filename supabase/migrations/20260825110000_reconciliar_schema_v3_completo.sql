@@ -2652,32 +2652,49 @@ CREATE OR REPLACE FUNCTION public.is_ip_whitelisted(_ip_address inet) RETURNS bo
     LANGUAGE sql STABLE SECURITY DEFINER
     SET search_path TO 'public', 'pg_catalog'
     AS $$
-    SELECT false
-
+    SELECT EXISTS (
+        SELECT 1
+        FROM public.ip_whitelist
+        WHERE is_active = true
+          AND (ip_address = _ip_address OR _ip_address << cidr_range::inet)
+    )
 $$;
 
 CREATE OR REPLACE FUNCTION public.is_known_device(_user_id uuid, _fingerprint text) RETURNS boolean
     LANGUAGE sql STABLE SECURITY DEFINER
     SET search_path TO 'public', 'pg_catalog'
     AS $$
-    SELECT false
-
+    SELECT EXISTS (
+        SELECT 1
+        FROM public.user_devices
+        WHERE user_id = _user_id
+          AND device_fingerprint = _fingerprint
+    )
 $$;
 
 CREATE OR REPLACE FUNCTION public.is_org_membro(_org_id uuid, _user_id uuid) RETURNS boolean
     LANGUAGE sql STABLE SECURITY DEFINER
     SET search_path TO 'public', 'pg_catalog'
     AS $$
-    SELECT false
-
+  SELECT
+    CASE
+      -- contexto de backend (service_role / jobs): auth.uid() é NULL
+      WHEN (SELECT auth.uid()) IS NULL THEN TRUE
+      WHEN _user_id = (SELECT auth.uid()) THEN TRUE
+      WHEN public.has_role((SELECT auth.uid()), 'admin'::public.app_role) THEN TRUE
+      ELSE FALSE
+    END
+    AND EXISTS (
+      SELECT 1 FROM public.organizacao_membros
+      WHERE organizacao_id = _org_id AND usuario_id = _user_id AND ativo
+    )
 $$;
 
 CREATE OR REPLACE FUNCTION public.is_org_responsavel(_org_id uuid, _user_id uuid) RETURNS boolean
     LANGUAGE sql STABLE SECURITY DEFINER
     SET search_path TO 'public', 'pg_catalog'
     AS $$
-    SELECT false
-
+  SELECT EXISTS (SELECT 1 FROM public.organizacoes WHERE id = _org_id AND responsavel_id = _user_id)
 $$;
 
 CREATE OR REPLACE FUNCTION public.is_token_valid(p_token_hash text) RETURNS TABLE(is_valid boolean, user_id uuid, expires_in_seconds integer)
