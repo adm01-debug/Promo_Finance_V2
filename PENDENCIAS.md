@@ -38,7 +38,7 @@ O preflight de `scripts/staging-migrate.sh` (L70) exige **6 variáveis obrigató
 | `STAGING_PROJECT_REF` | secret | sim | ID do projeto Supabase de staging — o workflow lê só de `secrets` |
 | `STAGING_ANON_KEY` | secret | sim | Supabase dashboard → API Keys |
 | `SUPABASE_ACCESS_TOKEN` | secret | sim | https://supabase.com/dashboard/account/tokens |
-| `REQUIRED_SECRETS` | **variable** (não secret) | sim | CSV de secrets que devem existir no projeto staging (`supabase secrets list`), ex.: `LOVABLE_API_KEY,MAPBOX_TOKEN,RESEND_API_KEY` — use nomes reais do staging |
+| `REQUIRED_SECRETS` | **variable** (não secret) | sim | CSV de secrets que devem existir no projeto staging (`supabase secrets list`), ex.: `LOVABLE_API_KEY,MAPBOX_ACCESS_TOKEN,RESEND_API_KEY` — use nomes reais do staging |
 | `TEST_ADMIN_JWT` | secret | não (opcional) | JWT de usuário admin para testes |
 | `PROD_PROJECT_REF` | variable | não (mas recomendada) | `bwwbeyolnnzppeuhgkcd` — **é ela o guard-rail anti-prod**: se `STAGING_PROJECT_REF` igualar, o script aborta. Sem ela definida, o guarda não roda |
 
