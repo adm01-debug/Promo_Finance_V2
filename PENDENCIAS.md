@@ -13,7 +13,7 @@
 | `staging-migrate` | [32836274535](https://github.com/adm01-debug/Promo_Finance_V2/actions/runs/32836274535) ❌ | `preflight falhou: env PROD_DB_URL ausente` | **Secret ausente** — itens 1-2 abaixo |
 | `npm_and_yarn in /. for zod` (Dependabot security) | [40492328336](https://github.com/adm01-debug/Promo_Finance_V2/actions/runs/40492328336) ❌ | `misconfigured_tooling`: updates de SEGURANÇA do Dependabot rodam ecossistema `npm_and_yarn`, que não suporta `bun.lock` | **Limitação GitHub** — item 3 abaixo |
 
-**Todos os outros 13 workflows na main estão verdes** (CI Pipeline, CodeQL, Deno Tests, Graphify, actionlint, Supabase Linter, Schema drift, Dependency Review, Migration Ledger, functions-deploy, admin-ops, e2e-cloud-probe, Copilot).
+**Todos os outros 13 workflows na main estão verdes** (CI Pipeline, CodeQL, Deno Tests, Graphify, actionlint, Supabase Linter, Schema drift, Dependency Review, Migration Ledger, functions-deploy, admin-ops, e2e-cloud-probe, Copilot) — CI Pipeline e Graphify confirmados `success` em 2026-10-27T11:2x (estavam in_progress/queued no momento do inventário).
 
 ---
 
@@ -23,11 +23,36 @@ O workflow está correto por design: sem a connection string do Postgres ele **d
 
 1. Abra https://supabase.com/dashboard/project/bwwbeyolnnzppeuhgkcd → clique **Connect** (topo) → copie a linha **URI** (`postgresql://postgres:[senha]@db.bwwbeyolnnzppeuhgkcd.supabase.co:5432/postgres` — troque `[senha]` pela senha do banco).
 2. Abra https://github.com/adm01-debug/Promo_Finance_V2/settings/secrets/actions → **New repository secret** → Nome: `PROD_DB_URL` → cole a URI → **Add secret**.
-3. Me avise — eu disparo `prod-migrate` e `staging-migrate` e confirmo `conclusion=success`.
+3. Me avise — eu disparo `prod-migrate` e `staging-migrate` e confirmo o resultado.
+
+**Atenção:** criar o secret **não garante** `conclusion=success`. Após validar a URL, o workflow roda um segundo gate (`Gate — divergência histórica do ledger`, `prod-migrate.yml` ~L97-130) que reprova se houver migration local pendente com versão anterior ao máximo do ledger remoto — nesse caso, **antes** do `migration repair`, rode `supabase migration list --db-url` e compare o schema (o repair só marca a versão como aplicada; se o DDL real divergir do que o arquivo criaria, o repair mascara a divergência). Eu confirmo o resultado real dos dois gates antes de fechar a pendência.
 
 ## 2. Secrets de staging (só `staging-migrate`)
 
-Se o projeto de staging existir, criar também (mesmo caminho do item 1, passo 2): `STAGING_DB_URL`, `STAGING_PROJECT_REF`, `STAGING_ANON_KEY`, `TEST_ADMIN_JWT`. Sem projeto de staging, o workflow pode ficar desativado — diga se quer que eu o arquive.
+O preflight de `scripts/staging-migrate.sh` (L70) exige **6 variáveis obrigatórias**; a tabela lista também as 2 lidas de forma opcional pelo workflow — criar em https://github.com/adm01-debug/Promo_Finance_V2/settings/secrets/actions (e em **Variables** para `REQUIRED_SECRETS` e `PROD_PROJECT_REF`):
+
+| Variável | Tipo | Obrigatória? | Onde obter |
+|---|---|---|---|
+| `PROD_DB_URL` | secret | sim | item 1 (usada no baseline-refresh para comparar com staging) |
+| `STAGING_DB_URL` | secret | sim | URI do Postgres do projeto de staging (Supabase → Connect → URI) |
+| `STAGING_PROJECT_REF` | secret | sim | ID do projeto Supabase de staging — o workflow lê só de `secrets` |
+| `STAGING_ANON_KEY` | secret | sim | Supabase dashboard → API Keys |
+| `SUPABASE_ACCESS_TOKEN` | secret | sim | https://supabase.com/dashboard/account/tokens |
+| `REQUIRED_SECRETS` | **variable** (não secret) | sim | CSV de secrets que devem existir no projeto staging (`supabase secrets list`). **Não pode ficar vazia** (o preflight `require_env` aborta antes do fallback de `migrate-functions.sh`) — mas um CSV parcial também é ruim: sobrescreve o fallback do manifesto e o gate validaria só os nomes listados. Preencha com a **lista completa derivada do manifesto** (comando logo abaixo da tabela) |
+| `TEST_ADMIN_JWT` | secret | não (opcional) | JWT de usuário admin para testes |
+| `PROD_PROJECT_REF` | variable | não (mas recomendada) | `bwwbeyolnnzppeuhgkcd` — **é ela o guard-rail anti-prod**: se `STAGING_PROJECT_REF` igualar, o script aborta. Sem ela definida, o guarda não roda |
+
+Gerar o CSV de `REQUIRED_SECRETS` a partir do manifesto (roda na raiz do repo, gera os 34 nomes `supabase_vault`+`required=true` — cole a saída na variable):
+
+```sh
+jq -r '[.vars[] | select(.dest=="supabase_vault" and .required==true and (.name|startswith("SUPABASE_")|not)) | .name] | join(",")' env.manifest.json
+```
+
+**Cuidado:** nada impede `STAGING_DB_URL` de apontar para a URL de produção por engano — confira que a URI é do projeto de staging (ref diferente de `bwwbeyolnnzppeuhgkcd`). Em projetos sem add-on de IPv4, use a URI do **pooler de sessão** (mostrada no diálogo Connect), não a URI direta.
+
+**Healthchecks parcialmente `unverified` (não falham o job, mas não validam):** o script encaminha `STAGING_SERVICE_ROLE_KEY` ao healthcheck (`staging-migrate.sh` ~L218) e os probes de webhook leem tokens de `scripts/healthcheck/baseline/expected-webhooks.json` (`ASAAS_WEBHOOK_TOKEN`, `BITRIX24_WEBHOOK_SECRET`, etc.) — mas o workflow não exporta nenhum deles. Para validação completa, criar esses secrets e adicioná-los ao bloco `env:` de `staging-migrate.yml`; sem isso, os checks autenticados reportam `unverified` em vez de pass/fail.
+
+Se não existir projeto de staging, diga e eu arquivo/desativo o workflow.
 
 ## 3. Dependabot security updates × `bun.lock` — não corrigível por código
 
@@ -37,15 +62,18 @@ Se o projeto de staging existir, criar também (mesmo caminho do item 1, passo 2
 
 **Duas saídas (só você pode — precisa de admin no repo):**
 
-- **Opção A — desativar security updates** (recomendada; os avisos continuam visíveis em Security → Dependabot, só para de tentar abrir PR):
+- **Opção A — descartar apenas os alerts não exploráveis; deixar o zod aberto** (recomendada — mantém a cobertura de segurança para futuras deps):
+  1. Abra https://github.com/adm01-debug/Promo_Finance_V2/security/dependabot
+  2. **Triagem antes de descartar**: abra o alert e confirme que é biblioteca dev-time ou caminho não explorável no nosso uso — CVEs reais e exploráveis não devem ser descartadas, devem virar tarefa de fix.
+  3. `GHSA-mrhx-c7xc-m3w5` (zod) → o advisory cobre `< 4.6.6`, o que **inclui nossa zod@3.25.76** — não é falso positivo (a análise anterior do `$ZodArray` era de outro advisory). E é **realmente alcançável**: o cadastro em `/auth` é público (`supabase.auth.signUp`) e `conciliacao-ia` valida três arrays sem `.max()` antes de processar a requisição — um usuário auto-registrado consegue provocar exatamente a exaustão de memória do advisory. **Deixar o alert aberto** e corrigir de verdade: mitigação honesta em zod 3 — checar `array.length` (ou o tamanho do body) **antes** de chamar o schema zod, porque o zod 3.22.4 percorre e valida todos os elementos antes de aplicar `.max()` (o patch upstream é exclusivo do v4 — `.max()` sozinho NÃO fecha o DoS); correção completa — upgrade do zod (ver nota abaixo).
+  4. Repita a triagem para outros alerts npm que reaparecerem.
+- **Opção B — desativar security updates globalmente** (pare os runs falhos de vez, mas **desliga PRs de correção automática para TODAS as dependências** — novas CVEs reais em outras libs deixam de gerar PR de correção):
   1. Abra https://github.com/adm01-debug/Promo_Finance_V2/settings/security_analysis
   2. Em **Dependabot** → **Dependabot security updates** → clique **Disable**.
-- **Opção B — descartar os alerts específicos** (mantém o recurso ligado):
-  1. Abra https://github.com/adm01-debug/Promo_Finance_V2/security/dependabot
-  2. `GHSA-mrhx-c7xc-m3w5` (zod) → **Dismiss alert** → razão *"No bandwidth to fix / tolerable risk"* — a linha zod v3 não executa o motor `$ZodArray` v4 afetado (análise já feita no PR #173).
-  3. Repita para outros alerts npm que reaparecerem.
 
-**Por que não dá para "consertar" o zod bump:** o fix do GHSA exige zod ≥4.6.6 (major com API quebrada para os 24 arquivos v3 do repo) — upgrade major proibido sem necessidade provada, e a vuln é falso-positivo na linha v3.
+Recomendo a Opção A: para os runs que falham por alerts não exploráveis sem perder a rede de segurança para futuras vulnerabilidades — mas o alert do zod fica aberto até a mitigação real. Se alerts de outras deps começarem a falhar do mesmo jeito e virar ruído recorrente, aí a Opção B faz sentido.
+
+**Por que não dá para "consertar" o zod bump via Dependabot:** o fix do GHSA exige zod ≥4.6.6 — major com API quebrada para os ~24 arquivos frontend que usam a API v3 (`.merge`, `.passthrough`, zod-error shapes). **E o bump do `package.json` sozinho não fecha a vuln**: o runtime vulnerável está nas edge functions — ~42 `index.ts` importam `https://deno.land/x/zod@v3.22.4/mod.ts` diretamente (incl. `conciliacao-ia`), mais o `_shared/zod.ts` que re-exporta essa versão remota. A correção completa precisa migrar todos os imports Deno remotos + o módulo compartilhado, não só os ~24 consumidores do pacote npm. Upgrade é projeto separado com plano de migração; até lá, a mitigação honesta é pre-validar `array.length`/tamanho do body nas edge functions que validam request bodies (`.max()` sozinho não basta no zod 3 — ele atravessa todos os elementos antes de checar o limite).
 
 ---
 
