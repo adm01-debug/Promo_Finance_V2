@@ -278,6 +278,58 @@ describe('registrarPagamento', () => {
     );
   });
 
+  it('retry após falha parcial reutiliza a cota já consumida — não o nominal', async () => {
+    // Regressão (Devin Review): tentativa 1 quitou cr-1 (recebeu a cota 300,
+    // gravada em metadata.acordo_rateio) e falhou em cr-2. No retry, se cr-1
+    // pesasse pelo nominal (500), a cota de cr-2 caía para 225 em vez dos 300
+    // calculados na 1ª tentativa — 75 do pagamento ficavam sem alocação.
+    const { result, escritas } = await montaHook({
+      acordos_parcelamento: [
+        { data: [], error: null },
+        {
+          data: [{ id: 'ac-1', contas_receber_ids: ['cr-1', 'cr-2'], valor_total_acordo: 600 }],
+          error: null,
+        },
+      ],
+      parcelas_acordo: filaParcelas({
+        data: [{ status: 'pago' }],
+        error: null,
+      }),
+      contas_receber: [
+        {
+          data: [
+            {
+              id: 'cr-1',
+              valor: 500,
+              valor_recebido: 500,
+              status: 'recebido',
+              metadata: { acordo_rateio: { acordo_id: 'ac-1', quota: 300 } },
+            },
+            { id: 'cr-2', valor: 300, valor_recebido: 0, status: 'em_acordo', metadata: null },
+          ],
+          error: null,
+        },
+        { data: null, error: null },
+      ],
+    });
+
+    act(() => result.current.registrarPagamento(PAGAMENTO));
+
+    await waitFor(() =>
+      expect(escritas.some((e) => e.tabela === 'contas_receber' && e.metodo === 'update')).toBe(
+        true
+      )
+    );
+
+    const updates = escritas.filter((e) => e.tabela === 'contas_receber' && e.metodo === 'update');
+    expect(updates).toHaveLength(1);
+    const payload = updates[0].payload as { valor_recebido?: number; metadata?: unknown };
+    expect(payload.valor_recebido).toBe(300);
+    expect(payload.metadata).toMatchObject({
+      acordo_rateio: { acordo_id: 'ac-1', quota: 300 },
+    });
+  });
+
   it('quita o acordo sem quebrar quando contas_receber_ids vem vazio/nulo', async () => {
     const { result, escritas } = await montaHook({
       acordos_parcelamento: [

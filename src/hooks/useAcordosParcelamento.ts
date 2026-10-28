@@ -240,7 +240,7 @@ export function useAcordosParcelamento() {
           const contasAcordo = await mustSucceed(
             supabase
               .from('contas_receber')
-              .select('id, valor, valor_recebido, status')
+              .select('id, valor, valor_recebido, status, metadata')
               .in('id', contasParaQuitar),
             'ler as contas vinculadas ao acordo'
           );
@@ -261,12 +261,30 @@ export function useAcordosParcelamento() {
           // em_acordo = saldo devedor (valor - valor_recebido: parciais
           // anteriores já reduzem a parte do acordo); de quem já saiu
           // (paga fora, cancelada) = nominal, que RESERVA sua cota
-          // contratada em vez de redistribuí-la às demais.
-          const pesos = lista.map((c) =>
-            c.status === 'em_acordo'
-              ? Math.max((c.valor || 0) - (c.valor_recebido || 0), 0)
-              : Math.max(c.valor || 0, 0)
-          );
+          // contratada em vez de redistribuí-la às demais. Conta que já
+          // recebeu cota DESTE acordo numa tentativa anterior (marcada em
+          // metadata.acordo_rateio) reserva exatamente a cota consumida —
+          // sem o marcador o retry pesaria pelo nominal e roubaria cota
+          // das contas ainda pendentes.
+          const pesos = lista.map((c) => {
+            if (c.status === 'em_acordo')
+              return Math.max((c.valor || 0) - (c.valor_recebido || 0), 0);
+            const meta =
+              c.metadata && typeof c.metadata === 'object' && !Array.isArray(c.metadata)
+                ? (c.metadata as Record<string, unknown>)
+                : null;
+            const rateio = meta?.acordo_rateio;
+            if (
+              rateio &&
+              typeof rateio === 'object' &&
+              !Array.isArray(rateio) &&
+              (rateio as Record<string, unknown>).acordo_id === acordoId &&
+              typeof (rateio as Record<string, unknown>).quota === 'number'
+            ) {
+              return (rateio as Record<string, unknown>).quota as number;
+            }
+            return Math.max(c.valor || 0, 0);
+          });
           const totalPeso = pesos.reduce((s, p) => s + p, 0);
           const totalPago = acordoParaQuitar.valor_total_acordo ?? totalPeso;
           let distribuido = 0;
@@ -296,6 +314,15 @@ export function useAcordosParcelamento() {
                     status: 'recebido',
                     data_recebimento: hoje,
                     valor_recebido: (c.valor_recebido || 0) + quota,
+                    // Cota gravada no próprio registro: num retry, o peso
+                    // dela é a cota já consumida (não o nominal), então o
+                    // rateio sai idêntico ao da 1ª tentativa.
+                    metadata: {
+                      ...(c.metadata && typeof c.metadata === 'object' && !Array.isArray(c.metadata)
+                        ? (c.metadata as Record<string, unknown>)
+                        : {}),
+                      acordo_rateio: { acordo_id: acordoId, quota },
+                    },
                   })
                   .eq('id', c.id)
                   // A conta pode ter saído do acordo entre a leitura e a
