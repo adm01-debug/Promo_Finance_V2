@@ -161,9 +161,9 @@ describe('registrarPagamento', () => {
     // valor_recebido recebe a cota pro-rata do valor_total_acordo (o que foi
     // pago de fato: 640 × 500/800 = 400) — nunca o nominal, senão o desconto
     // do acordo apareceria como caixa recebido nos KPIs.
-    expect(
-      (escritaContasReceber?.payload as { valor_recebido?: number })?.valor_recebido
-    ).toBe(400);
+    expect((escritaContasReceber?.payload as { valor_recebido?: number })?.valor_recebido).toBe(
+      400
+    );
   });
 
   it('rateia pelo saldo devedor quando há pagamento parcial anterior', async () => {
@@ -203,12 +203,8 @@ describe('registrarPagamento', () => {
       )
     );
 
-    const updates = escritas.filter(
-      (e) => e.tabela === 'contas_receber' && e.metodo === 'update'
-    );
-    const recebidos = updates.map(
-      (e) => (e.payload as { valor_recebido?: number }).valor_recebido
-    );
+    const updates = escritas.filter((e) => e.tabela === 'contas_receber' && e.metodo === 'update');
+    const recebidos = updates.map((e) => (e.payload as { valor_recebido?: number }).valor_recebido);
     expect(recebidos).toEqual([500, 300]);
   });
 
