@@ -176,7 +176,9 @@ export function useContasReceberLogic() {
 
   // Sincronizar etapas de cobrança (Régua de Cobrança Automática)
   const handleSyncStages = useCallback(async () => {
-    const contasToUpdate = allContas.filter((c) => c.status !== 'pago' && c.status !== 'recebido' && c.status !== 'cancelado');
+    const contasToUpdate = allContas.filter(
+      (c) => c.status !== 'pago' && c.status !== 'recebido' && c.status !== 'cancelado'
+    );
 
     if (contasToUpdate.length === 0) {
       toast.info('Nenhuma conta pendente para sincronizar.');
