@@ -59,45 +59,51 @@ LANGUAGE plpgsql
 SECURITY DEFINER
 SET search_path = public
 AS $$
-DECLARE
-  r record;
 BEGIN
+  -- Só linhas ativas (deleted_at IS NULL) movem saldo: exclusão lógica
+  -- (useDeleteMovimentacao preenche deleted_at) equivale a estorno.
   IF TG_OP = 'UPDATE' THEN
-    -- desfaz o efeito da linha antiga e reaplica o da nova
-    IF OLD.tipo = 'entrada' THEN
+    -- reverte o efeito da versão anterior (se estava ativa)
+    IF OLD.deleted_at IS NULL AND OLD.tipo = 'entrada' THEN
       UPDATE contas_bancarias SET saldo_atual = COALESCE(saldo_atual, 0) - OLD.valor
         WHERE id = OLD.conta_bancaria_id;
-    ELSIF OLD.tipo = 'saida' THEN
+    ELSIF OLD.deleted_at IS NULL AND OLD.tipo = 'saida' THEN
       UPDATE contas_bancarias SET saldo_atual = COALESCE(saldo_atual, 0) + OLD.valor
         WHERE id = OLD.conta_bancaria_id;
     END IF;
-    r := NEW;
-  ELSIF TG_OP = 'DELETE' THEN
-    r := OLD;
-  ELSE
-    r := NEW;
+    -- reaplica o efeito da versão nova (se ativa)
+    IF NEW.deleted_at IS NULL AND NEW.tipo = 'entrada' THEN
+      UPDATE contas_bancarias SET saldo_atual = COALESCE(saldo_atual, 0) + NEW.valor
+        WHERE id = NEW.conta_bancaria_id;
+    ELSIF NEW.deleted_at IS NULL AND NEW.tipo = 'saida' THEN
+      UPDATE contas_bancarias SET saldo_atual = COALESCE(saldo_atual, 0) - NEW.valor
+        WHERE id = NEW.conta_bancaria_id;
+    END IF;
+    RETURN NEW;
   END IF;
 
   IF TG_OP = 'DELETE' THEN
-    IF OLD.tipo = 'entrada' THEN
+    -- reversão só se a linha deletada estava ativa (evita dupla reversão
+    -- no hard-delete de uma linha já soft-deleted)
+    IF OLD.deleted_at IS NULL AND OLD.tipo = 'entrada' THEN
       UPDATE contas_bancarias SET saldo_atual = COALESCE(saldo_atual, 0) - OLD.valor
         WHERE id = OLD.conta_bancaria_id;
-    ELSIF OLD.tipo = 'saida' THEN
+    ELSIF OLD.deleted_at IS NULL AND OLD.tipo = 'saida' THEN
       UPDATE contas_bancarias SET saldo_atual = COALESCE(saldo_atual, 0) + OLD.valor
         WHERE id = OLD.conta_bancaria_id;
     END IF;
     RETURN OLD;
   END IF;
 
-  IF r.tipo = 'entrada' THEN
-    UPDATE contas_bancarias SET saldo_atual = COALESCE(saldo_atual, 0) + r.valor
-      WHERE id = r.conta_bancaria_id;
-  ELSIF r.tipo = 'saida' THEN
-    UPDATE contas_bancarias SET saldo_atual = COALESCE(saldo_atual, 0) - r.valor
-      WHERE id = r.conta_bancaria_id;
+  -- INSERT
+  IF NEW.deleted_at IS NULL AND NEW.tipo = 'entrada' THEN
+    UPDATE contas_bancarias SET saldo_atual = COALESCE(saldo_atual, 0) + NEW.valor
+      WHERE id = NEW.conta_bancaria_id;
+  ELSIF NEW.deleted_at IS NULL AND NEW.tipo = 'saida' THEN
+    UPDATE contas_bancarias SET saldo_atual = COALESCE(saldo_atual, 0) - NEW.valor
+      WHERE id = NEW.conta_bancaria_id;
   END IF;
-
-  RETURN COALESCE(NEW, OLD);
+  RETURN NEW;
 END;
 $$;
 
@@ -185,9 +191,16 @@ BEGIN
      WHERE t.status = ''realizado''
        AND NOT EXISTS (
          SELECT 1 FROM movimentacoes m
-         WHERE m.transferencia_id = t.id AND m.tipo = ''saida''
+         WHERE m.tipo = ''saida''
+           AND (m.transferencia_id = t.id
+             -- defensivo: saída legada sem vínculo (mesma conta+valor+data)
+             -- conta como efeito já aplicado, evitando débito em dobro
+             OR (m.transferencia_id IS NULL
+               AND m.conta_bancaria_id = %s
+               AND m.valor = t.valor
+               AND m.data_movimentacao = t.data_transferencia))
        )',
-    v_expr
+    v_expr, v_expr
   );
 
   INSERT INTO movimentacoes (empresa_id, conta_bancaria_id, tipo, descricao, valor, data_movimentacao, transferencia_id, origem)
@@ -196,7 +209,12 @@ BEGIN
   WHERE t.status = 'realizado'
     AND NOT EXISTS (
       SELECT 1 FROM movimentacoes m
-      WHERE m.transferencia_id = t.id AND m.tipo = 'entrada'
+      WHERE m.tipo = 'entrada'
+        AND (m.transferencia_id = t.id
+          OR (m.transferencia_id IS NULL
+            AND m.conta_bancaria_id = t.conta_destino_id
+            AND m.valor = t.valor
+            AND m.data_movimentacao = t.data_transferencia))
     );
 END $$;
 
