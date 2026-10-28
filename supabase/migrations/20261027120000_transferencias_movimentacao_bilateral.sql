@@ -51,7 +51,8 @@ ALTER TABLE public.movimentacoes
 --     contas_receber/notas_fiscais; o schema real de prod usa user_id e não
 --     tem created_by. O frontend envia só user_id — num banco de replay a
 --     restrição derrubaria todo INSERT. Normaliza: relaxa o NOT NULL onde
---     a coluna legada existir (em prod é no-op).
+--     a coluna legada existir e dá DEFAULT auth.uid() para preservar a
+--     autoria exibida pelas views (em prod é no-op).
 DO $$
 BEGIN
   IF EXISTS (
@@ -60,6 +61,10 @@ BEGIN
       AND column_name = 'created_by'
   ) THEN
     ALTER TABLE public.contas_pagar ALTER COLUMN created_by DROP NOT NULL;
+    ALTER TABLE public.contas_pagar ALTER COLUMN created_by SET DEFAULT auth.uid();
+    -- preenche a coluna legada com o autor real quando o insert vier com user_id
+    UPDATE public.contas_pagar SET created_by = user_id
+      WHERE created_by IS NULL AND user_id IS NOT NULL;
   END IF;
   IF EXISTS (
     SELECT 1 FROM information_schema.columns
@@ -67,6 +72,9 @@ BEGIN
       AND column_name = 'created_by'
   ) THEN
     ALTER TABLE public.contas_receber ALTER COLUMN created_by DROP NOT NULL;
+    ALTER TABLE public.contas_receber ALTER COLUMN created_by SET DEFAULT auth.uid();
+    UPDATE public.contas_receber SET created_by = user_id
+      WHERE created_by IS NULL AND user_id IS NOT NULL;
   END IF;
   IF EXISTS (
     SELECT 1 FROM information_schema.columns
@@ -74,6 +82,7 @@ BEGIN
       AND column_name = 'created_by'
   ) THEN
     ALTER TABLE public.notas_fiscais ALTER COLUMN created_by DROP NOT NULL;
+    ALTER TABLE public.notas_fiscais ALTER COLUMN created_by SET DEFAULT auth.uid();
   END IF;
 END $$;
 
@@ -187,6 +196,18 @@ BEGIN
        )
     THEN
       RAISE EXCEPTION 'contas de origem/destino devem pertencer à mesma empresa da transferência';
+    END IF;
+
+    -- Defesa cross-tenant 2: o próprio empresa_id é forjável — a policy de
+    -- INSERT valida só papel. Quando a chamada é de usuário autenticado
+    -- (PostgREST), exige que a empresa seja acessível a ele; service role /
+    -- migrations (auth.uid() IS NULL) não passam por essa porta e seguem
+    -- livres. empresa_acessivel cobre admin + membership em user_empresas.
+    IF auth.uid() IS NOT NULL
+       AND to_regprocedure('public.empresa_acessivel(uuid)') IS NOT NULL
+       AND NOT public.empresa_acessivel(NEW.empresa_id)
+    THEN
+      RAISE EXCEPTION 'empresa_id deve pertencer a uma empresa acessível ao usuário';
     END IF;
 
     INSERT INTO movimentacoes (empresa_id, conta_bancaria_id, tipo, descricao, valor, data_movimentacao, transferencia_id, created_by, origem)
