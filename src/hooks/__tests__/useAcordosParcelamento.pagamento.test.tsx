@@ -128,11 +128,17 @@ describe('registrarPagamento', () => {
         data: [{ status: 'pago' }, { status: 'pago' }],
         error: null,
       }),
-      // 1ª chamada: select id+valor+valor_recebido das contas a quitar; as
-      // demais são os updates linha a linha (valor_recebido é por linha —
-      // não dá para ratear num update em massa via PostgREST).
+      // 1ª chamada: select do conjunto contratado (id+valor+valor_recebido+
+      // status); as demais são os updates linha a linha (valor_recebido é
+      // por linha — não dá para ratear num update em massa via PostgREST).
       contas_receber: [
-        { data: [{ id: 'cr-1', valor: 500 }, { id: 'cr-2', valor: 300 }], error: null },
+        {
+          data: [
+            { id: 'cr-1', valor: 500, valor_recebido: 0, status: 'em_acordo' },
+            { id: 'cr-2', valor: 300, valor_recebido: 0, status: 'em_acordo' },
+          ],
+          error: null,
+        },
         { data: null, error: null },
       ],
     });
@@ -158,6 +164,52 @@ describe('registrarPagamento', () => {
     expect(
       (escritaContasReceber?.payload as { valor_recebido?: number })?.valor_recebido
     ).toBe(400);
+  });
+
+  it('rateia pelo saldo devedor quando há pagamento parcial anterior', async () => {
+    // Regressão: pesos pelo nominal inflavam a cota de quem já recebeu
+    // parte — conta de 500 com 200 recebidos (saldo 300) e conta de 300
+    // (saldo 300), acordo de 600: cada uma recebe sua cota de 300, e os
+    // recebidos finais são 500 e 300, não 575 e 225.
+    const { result, escritas } = await montaHook({
+      acordos_parcelamento: [
+        { data: [], error: null },
+        {
+          data: [{ id: 'ac-1', contas_receber_ids: ['cr-1', 'cr-2'], valor_total_acordo: 600 }],
+          error: null,
+        },
+      ],
+      parcelas_acordo: filaParcelas({
+        data: [{ status: 'pago' }],
+        error: null,
+      }),
+      contas_receber: [
+        {
+          data: [
+            { id: 'cr-1', valor: 500, valor_recebido: 200, status: 'em_acordo' },
+            { id: 'cr-2', valor: 300, valor_recebido: 0, status: 'em_acordo' },
+          ],
+          error: null,
+        },
+        { data: null, error: null },
+      ],
+    });
+
+    act(() => result.current.registrarPagamento(PAGAMENTO));
+
+    await waitFor(() =>
+      expect(escritas.some((e) => e.tabela === 'contas_receber' && e.metodo === 'update')).toBe(
+        true
+      )
+    );
+
+    const updates = escritas.filter(
+      (e) => e.tabela === 'contas_receber' && e.metodo === 'update'
+    );
+    const recebidos = updates.map(
+      (e) => (e.payload as { valor_recebido?: number }).valor_recebido
+    );
+    expect(recebidos).toEqual([500, 300]);
   });
 
   it('quita o acordo sem quebrar quando contas_receber_ids vem vazio/nulo', async () => {
