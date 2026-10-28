@@ -218,7 +218,7 @@ export function useAcordosParcelamento() {
             .from('acordos_parcelamento')
             .update({ status: 'quitado' })
             .eq('id', acordoId)
-            .select('id, contas_receber_ids'),
+            .select('id, contas_receber_ids, valor_total_acordo'),
           'quitar o acordo de parcelamento',
           { exigirLinhas: true }
         );
@@ -230,25 +230,46 @@ export function useAcordosParcelamento() {
         if (contasParaQuitar.length > 0) {
           const hoje = new Date().toISOString().slice(0, 10);
           // valor_recebido é por linha e o PostgREST não aceita expressão
-          // (valor_recebido = valor) em update em massa: lemos os valores e
-          // atualizamos uma a uma. Sem ele, KPIs de "recebido" somam zero
-          // para contas quitadas via acordo.
+          // em update em massa: lemos as contas e atualizamos uma a uma.
           const { data: contasAcordo, error: selError } = await supabase
             .from('contas_receber')
-            .select('id, valor')
+            .select('id, valor, valor_recebido')
             .in('id', contasParaQuitar)
             .eq('status', 'em_acordo');
 
           if (selError) {
             logger.error('Erro ao ler contas do acordo quitado:', selError);
           } else {
+            // O que entrou em caixa é o total das parcelas (valor_total_acordo,
+            // já líquido de desconto e com juros) — rateado pro-rata pelo valor
+            // nominal de cada conta. Gravar o nominal inflaria o recebido com
+            // o desconto concedido no acordo.
+            const lista = contasAcordo ?? [];
+            const totalFace = lista.reduce((s, c) => s + (c.valor || 0), 0);
+            const totalPago = acordoQuitado.valor_total_acordo ?? totalFace;
+            let distribuido = 0;
             const resultados = await Promise.all(
-              (contasAcordo ?? []).map((c) =>
-                supabase
+              lista.map((c, i) => {
+                const quota =
+                  totalFace > 0
+                    ? i === lista.length - 1
+                      ? totalPago - distribuido
+                      : Math.round(((c.valor || 0) / totalFace) * totalPago * 100) / 100
+                    : c.valor || 0;
+                distribuido += quota;
+                return supabase
                   .from('contas_receber')
-                  .update({ status: 'recebido', data_recebimento: hoje, valor_recebido: c.valor })
+                  .update({
+                    status: 'recebido',
+                    data_recebimento: hoje,
+                    valor_recebido: (c.valor_recebido || 0) + quota,
+                  })
                   .eq('id', c.id)
-              )
+                  // A conta pode ter saído do acordo entre a leitura e a
+                  // escrita — a condição vai na própria escrita para não
+                  // reabrir um cancelado/quitado por outro caminho.
+                  .eq('status', 'em_acordo');
+              })
             );
             const quitarError = resultados.find((r) => r.error)?.error;
             if (quitarError)
@@ -261,6 +282,9 @@ export function useAcordosParcelamento() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['acordos-parcelamento'] });
+      // Quitação regrava contas_receber (status/valor_recebido) — sem
+      // invalidar, KPIs e listas exibem saldo anterior à quitação.
+      queryClient.invalidateQueries({ queryKey: ['contas-receber'] });
       toast.success('Pagamento registrado!');
     },
     onError: (error: unknown) => {
