@@ -43,9 +43,10 @@ export const MainLayout = ({ children }: MainLayoutProps) => {
 
   return (
     <div className="min-h-screen bg-background text-foreground font-sans antialiased">
-      {/* Skip links só existem onde as âncoras existem (#main-nav no sidebar,
-          #main-content abaixo) — nas páginas públicas eram âncoras mortas. */}
-      <SkipLinks />
+      {/* Skip links só existem onde as âncoras existem: #main-nav está no
+          sidebar desktop; no mobile o nav do drawer só monta aberto, então o
+          alvo é a bottom nav sempre montada (#mobile-bottom-nav). */}
+      <SkipLinks navTarget={isMobile ? '#mobile-bottom-nav' : '#main-nav'} />
 
       {/* Banner de instalação PWA (só aparece se beforeinstallprompt disparou) */}
       <PWAInstallBanner />
