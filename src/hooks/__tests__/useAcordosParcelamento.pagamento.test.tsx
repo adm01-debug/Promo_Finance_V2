@@ -332,6 +332,60 @@ describe('registrarPagamento', () => {
     });
   });
 
+  it('rateio em centavos nunca excede o total pago pelo acordo', async () => {
+    // Regressão (Devin Review): 4 contas de R$0,01 com acordo de R$0,02 —
+    // arredondar cada cota intermediária para cima gravava R$0,03. Com
+    // floor em centavos, a soma nunca passa de R$0,02.
+    const { result, escritas } = await montaHook({
+      acordos_parcelamento: [
+        { data: [], error: null },
+        {
+          data: [
+            {
+              id: 'ac-1',
+              contas_receber_ids: ['c1', 'c2', 'c3', 'c4'],
+              valor_total_acordo: 0.02,
+            },
+          ],
+          error: null,
+        },
+      ],
+      parcelas_acordo: filaParcelas({
+        data: [{ status: 'pago' }],
+        error: null,
+      }),
+      contas_receber: [
+        {
+          data: [
+            { id: 'c1', valor: 0.01, valor_recebido: 0, status: 'em_acordo' },
+            { id: 'c2', valor: 0.01, valor_recebido: 0, status: 'em_acordo' },
+            { id: 'c3', valor: 0.01, valor_recebido: 0, status: 'em_acordo' },
+            { id: 'c4', valor: 0.01, valor_recebido: 0, status: 'em_acordo' },
+          ],
+          error: null,
+        },
+        { data: null, error: null },
+      ],
+    });
+
+    act(() => result.current.registrarPagamento(PAGAMENTO));
+
+    await waitFor(() =>
+      expect(escritas.some((e) => e.tabela === 'contas_receber' && e.metodo === 'update')).toBe(
+        true
+      )
+    );
+
+    const updates = escritas.filter((e) => e.tabela === 'contas_receber' && e.metodo === 'update');
+    const recebidos = updates.map(
+      (e) => (e.payload as { valor_recebido?: number }).valor_recebido ?? 0
+    );
+    // Nenhuma conta recebe além do próprio valor (0,01) e a soma nunca
+    // excede o pago (0,02) — o centavo sem saldo elegível fica não-alocado.
+    expect(Math.max(...recebidos)).toBeLessThanOrEqual(0.01);
+    expect(recebidos.reduce((s, v) => s + v, 0)).toBeLessThanOrEqual(0.02);
+  });
+
   it('quita o acordo sem quebrar quando contas_receber_ids vem vazio/nulo', async () => {
     const { result, escritas } = await montaHook({
       acordos_parcelamento: [

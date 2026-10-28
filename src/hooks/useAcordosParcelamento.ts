@@ -292,22 +292,40 @@ export function useAcordosParcelamento() {
           // soma dos pesos — fallback do comportamento anterior.
           const totalPago = acordoParaQuitar.valor_total_acordo ?? jaDistribuido + totalPeso;
           const restante = Math.max(totalPago - jaDistribuido, 0);
-          let ultimoComPeso = -1;
-          for (let i = 0; i < pesos.length; i++) {
-            if (pesos[i] > 0) ultimoComPeso = i;
-          }
-          let distribuido = 0;
-          const quotas = lista.map((_, i) => {
-            if (marcadores[i] !== null) return marcadores[i] as number;
-            const quota =
-              totalPeso > 0
-                ? i === ultimoComPeso
-                  ? Math.max(restante - distribuido, 0)
-                  : Math.round((pesos[i] / totalPeso) * restante * 100) / 100
-                : 0;
-            distribuido += quota;
-            return quota;
+          // Rateio em centavos inteiros com floor + teto pelo próprio
+          // peso (saldo devedor/cota contratada): arredondar cada cota
+          // intermediária para cima poderia somar mais que o pago
+          // (4×R$0,01 com acordo de R$0,02 gravaria R$0,03), e despejar o
+          // resíduo inteiro na última conta inflaria valor_recebido além
+          // do valor da dívida. O resíduo vai um centavo por vez para
+          // quem ainda tem capacidade; o que sobrar sem saldo elegível
+          // fica não-alocado — melhor que registrar recebimento acima
+          // do valor da dívida.
+          const restanteCents = Math.round(restante * 100);
+          const quotasCents = lista.map((_, i) => {
+            if (marcadores[i] !== null) return -1;
+            if (totalPeso > 0 && pesos[i] > 0) {
+              return Math.min(
+                Math.floor((restanteCents * pesos[i]) / totalPeso),
+                Math.round(pesos[i] * 100)
+              );
+            }
+            return 0;
           });
+          let distribuidoCents = quotasCents.reduce((s, q) => s + Math.max(q, 0), 0);
+          for (let i = 0; i < quotasCents.length && distribuidoCents < restanteCents; i++) {
+            if (quotasCents[i] >= 0 && pesos[i] > 0) {
+              const extra = Math.min(
+                Math.round(pesos[i] * 100) - quotasCents[i],
+                restanteCents - distribuidoCents
+              );
+              quotasCents[i] += extra;
+              distribuidoCents += extra;
+            }
+          }
+          const quotas = lista.map((_, i) =>
+            quotasCents[i] < 0 ? (marcadores[i] as number) : quotasCents[i] / 100
+          );
           if (lista.some((c) => c.status !== 'em_acordo')) {
             logger.warn(
               'Quitação encontrou contas fora de em_acordo — cotas contratadas não redistribuídas'
