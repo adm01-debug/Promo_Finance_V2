@@ -335,9 +335,13 @@ BEGIN
 
     -- 2. Busca a conta contábil vinculada à categoria da movimentação
     -- Se não houver categoria direta, tenta buscar via plano_conta_id da movimentação
+    -- to_jsonb: categoria_id/plano_conta_id existem no schema versionado mas
+    -- não no canônico de prod (types.ts) — sem a leitura defensiva qualquer
+    -- INSERT em movimentacoes quebraria com "record NEW has no field" num
+    -- banco onde essas colunas nunca existiram.
     SELECT COALESCE(
-        (SELECT plano_conta_id FROM public.categorias WHERE id = NEW.categoria_id),
-        NEW.plano_conta_id
+        (SELECT plano_conta_id FROM public.categorias WHERE id = (to_jsonb(NEW)->>'categoria_id')::uuid),
+        (to_jsonb(NEW)->>'plano_conta_id')::uuid
     ) INTO v_conta_contabil_id;
 
     -- 3. Busca a conta contábil vinculada à conta bancária (Ativo Circulante - Disponibilidades)

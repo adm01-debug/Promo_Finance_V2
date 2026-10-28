@@ -257,7 +257,10 @@ export function useContasReceberLogic() {
           dataRec.getMonth() === today.getMonth() && dataRec.getFullYear() === today.getFullYear()
         );
       })
-      .reduce((sum, c) => sum + (c.valor_recebido || 0), 0);
+      // valor_recebido || valor: contas quitadas sem valor_recebido gravado
+      // (ex.: quitação via acordo em dados legados) entram como recebidas
+      // pelo valor total — convenção já usada em Financeiro/BI/Dashboards.
+      .reduce((sum, c) => sum + (c.valor_recebido || c.valor || 0), 0);
 
     const totalReceberAnterior =
       allContas
@@ -275,7 +278,7 @@ export function useContasReceberLogic() {
           const dataRec = parseISO(c.data_recebimento);
           return isWithinInterval(dataRec, { start: startOfPrevMonth, end: endOfPrevMonth });
         })
-        .reduce((sum, c) => sum + (c.valor_recebido || 0), 0) || totalRecebidoMes * 0.95;
+        .reduce((sum, c) => sum + (c.valor_recebido || c.valor || 0), 0) || totalRecebidoMes * 0.95;
 
     const taxaInadimplencia = totalReceber > 0 ? (totalVencido / totalReceber) * 100 : 0;
 

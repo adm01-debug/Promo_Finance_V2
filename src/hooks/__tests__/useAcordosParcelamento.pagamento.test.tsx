@@ -124,6 +124,13 @@ describe('registrarPagamento', () => {
         data: [{ status: 'pago' }, { status: 'pago' }],
         error: null,
       }),
+      // 1ª chamada: select id+valor das contas a quitar; as demais são os
+      // updates linha a linha (valor_recebido é por linha — não dá para
+      // expressar `valor_recebido = valor` num update em massa via PostgREST).
+      contas_receber: [
+        { data: [{ id: 'cr-1', valor: 500 }, { id: 'cr-2', valor: 300 }], error: null },
+        { data: null, error: null },
+      ],
     });
 
     act(() => result.current.registrarPagamento(PAGAMENTO));
@@ -141,6 +148,11 @@ describe('registrarPagamento', () => {
     expect(
       (escritaContasReceber?.payload as { data_recebimento?: string })?.data_recebimento
     ).toMatch(/^\d{4}-\d{2}-\d{2}$/);
+    // Quitada = recebida pelo valor total da conta; sem valor_recebido os
+    // KPIs de recebido somariam zero para contas quitadas via acordo.
+    expect(
+      (escritaContasReceber?.payload as { valor_recebido?: number })?.valor_recebido
+    ).toBe(500);
   });
 
   it('quita o acordo sem quebrar quando contas_receber_ids vem vazio/nulo', async () => {

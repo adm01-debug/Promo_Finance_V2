@@ -228,14 +228,32 @@ export function useAcordosParcelamento() {
         // relatórios que filtram por status = 'recebido' nunca veem o valor.
         const contasParaQuitar = acordoQuitado.contas_receber_ids ?? [];
         if (contasParaQuitar.length > 0) {
-          const { error: quitarError } = await supabase
+          const hoje = new Date().toISOString().slice(0, 10);
+          // valor_recebido é por linha e o PostgREST não aceita expressão
+          // (valor_recebido = valor) em update em massa: lemos os valores e
+          // atualizamos uma a uma. Sem ele, KPIs de "recebido" somam zero
+          // para contas quitadas via acordo.
+          const { data: contasAcordo, error: selError } = await supabase
             .from('contas_receber')
-            .update({ status: 'recebido', data_recebimento: new Date().toISOString().slice(0, 10) })
+            .select('id, valor')
             .in('id', contasParaQuitar)
             .eq('status', 'em_acordo');
 
-          if (quitarError)
-            logger.error('Erro ao marcar contas do acordo quitado como recebidas:', quitarError);
+          if (selError) {
+            logger.error('Erro ao ler contas do acordo quitado:', selError);
+          } else {
+            const resultados = await Promise.all(
+              (contasAcordo ?? []).map((c) =>
+                supabase
+                  .from('contas_receber')
+                  .update({ status: 'recebido', data_recebimento: hoje, valor_recebido: c.valor })
+                  .eq('id', c.id)
+              )
+            );
+            const quitarError = resultados.find((r) => r.error)?.error;
+            if (quitarError)
+              logger.error('Erro ao marcar contas do acordo quitado como recebidas:', quitarError);
+          }
         }
       }
 
