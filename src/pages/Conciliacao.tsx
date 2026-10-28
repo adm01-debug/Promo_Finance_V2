@@ -710,6 +710,7 @@ export default function Conciliacao() {
         report={importReport}
         onIrParaConciliacao={() => {
           setShowReportDialog(false);
+          setMainTab('conciliacao');
           setStatusTab('pendentes');
         }}
       />
