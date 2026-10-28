@@ -147,7 +147,7 @@ export function useContasPagarLogic() {
     () =>
       new Map(
         solicitacoesAprovacao
-          .filter((s) => s.status === 'pendente' || s.status === 'rejeitada')
+          .filter((s) => s.status === 'pendente' || s.status === 'rejeitado')
           .map((s) => [s.conta_pagar_id, s.status])
       ),
     [solicitacoesAprovacao]
@@ -246,7 +246,7 @@ export function useContasPagarLogic() {
     } else if (aprovacaoFilter === 'aprovado') {
       matchesAprovacao = !!c.aprovado_por;
     } else if (aprovacaoFilter === 'rejeitado') {
-      matchesAprovacao = aprovacaoStatusMap.get(c.id) === 'rejeitada';
+      matchesAprovacao = aprovacaoStatusMap.get(c.id) === 'rejeitado';
     }
 
     let matchesAdvanced = true;
@@ -508,7 +508,7 @@ export function useContasPagarLogic() {
     const aprovacaoStatus = aprovacaoStatusMap.get(conta.id);
     const estaAprovado = !!conta.aprovado_por;
     const temSolicitacaoPendente = aprovacaoStatus === 'pendente';
-    const foiRejeitado = aprovacaoStatus === 'rejeitada';
+    const foiRejeitado = aprovacaoStatus === 'rejeitado';
     const aguardandoSolicitacao =
       precisaAprovacao &&
       !estaAprovado &&

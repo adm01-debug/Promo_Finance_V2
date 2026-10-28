@@ -237,7 +237,7 @@ export function useContasReceberLogic() {
 
     const totalReceber = allContas.reduce(
       (sum, c) =>
-        c.status !== 'pago' && c.status !== 'cancelado'
+        c.status !== 'pago' && c.status !== 'recebido' && c.status !== 'cancelado'
           ? sum + (c.valor ?? 0) - (c.valor_recebido || 0)
           : sum,
       0
@@ -249,7 +249,7 @@ export function useContasReceberLogic() {
 
     const totalRecebidoMes = allContas
       .filter((c) => {
-        if (c.status !== 'pago' || !c.data_recebimento) return false;
+        if ((c.status !== 'pago' && c.status !== 'recebido') || !c.data_recebimento) return false;
         const dataRec = parseISO(c.data_recebimento);
         return (
           dataRec.getMonth() === today.getMonth() && dataRec.getFullYear() === today.getFullYear()
@@ -269,7 +269,7 @@ export function useContasReceberLogic() {
     const totalRecebidoMesAnterior =
       allContas
         .filter((c) => {
-          if (c.status !== 'pago' || !c.data_recebimento) return false;
+          if ((c.status !== 'pago' && c.status !== 'recebido') || !c.data_recebimento) return false;
           const dataRec = parseISO(c.data_recebimento);
           return isWithinInterval(dataRec, { start: startOfPrevMonth, end: endOfPrevMonth });
         })
