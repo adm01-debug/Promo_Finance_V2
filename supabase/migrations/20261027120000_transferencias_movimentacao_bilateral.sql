@@ -191,16 +191,12 @@ BEGIN
      WHERE t.status = ''realizado''
        AND NOT EXISTS (
          SELECT 1 FROM movimentacoes m
-         WHERE m.tipo = ''saida''
-           AND (m.transferencia_id = t.id
-             -- defensivo: saída legada sem vínculo (mesma conta+valor+data)
-             -- conta como efeito já aplicado, evitando débito em dobro
-             OR (m.transferencia_id IS NULL
-               AND m.conta_bancaria_id = %s
-               AND m.valor = t.valor
-               AND m.data_movimentacao = t.data_transferencia))
+         WHERE m.transferencia_id = t.id AND m.tipo = ''saida''
+           -- linha excluída não conta como efeito aplicado: se o par foi
+           -- estornado mas a transferência segue ''realizado'', recria
+           AND m.deleted_at IS NULL
        )',
-    v_expr, v_expr
+    v_expr
   );
 
   INSERT INTO movimentacoes (empresa_id, conta_bancaria_id, tipo, descricao, valor, data_movimentacao, transferencia_id, origem)
@@ -209,12 +205,8 @@ BEGIN
   WHERE t.status = 'realizado'
     AND NOT EXISTS (
       SELECT 1 FROM movimentacoes m
-      WHERE m.tipo = 'entrada'
-        AND (m.transferencia_id = t.id
-          OR (m.transferencia_id IS NULL
-            AND m.conta_bancaria_id = t.conta_destino_id
-            AND m.valor = t.valor
-            AND m.data_movimentacao = t.data_transferencia))
+      WHERE m.transferencia_id = t.id AND m.tipo = 'entrada'
+        AND m.deleted_at IS NULL
     );
 END $$;
 
