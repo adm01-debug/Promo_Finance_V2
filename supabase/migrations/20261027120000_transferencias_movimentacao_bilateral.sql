@@ -200,12 +200,15 @@ BEGIN
 
     -- Defesa cross-tenant 2: o próprio empresa_id é forjável — a policy de
     -- INSERT valida só papel. Quando a chamada é de usuário autenticado
-    -- (PostgREST), exige que a empresa seja acessível a ele; service role /
-    -- migrations (auth.uid() IS NULL) não passam por essa porta e seguem
-    -- livres. empresa_acessivel cobre admin + membership em user_empresas.
+    -- (PostgREST), exige que a empresa seja acessível a ele OU que ele seja
+    -- admin global (mesma exceção da policy "Empresa-based access" de
+    -- transferencias). Service role / migrations (auth.uid() IS NULL) não
+    -- passam por essa porta e seguem livres.
     IF auth.uid() IS NOT NULL
        AND to_regprocedure('public.empresa_acessivel(uuid)') IS NOT NULL
+       AND to_regprocedure('public.has_role(uuid,app_role)') IS NOT NULL
        AND NOT public.empresa_acessivel(NEW.empresa_id)
+       AND NOT public.has_role(auth.uid(), 'admin'::app_role)
     THEN
       RAISE EXCEPTION 'empresa_id deve pertencer a uma empresa acessível ao usuário';
     END IF;
