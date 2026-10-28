@@ -257,43 +257,53 @@ export function useAcordosParcelamento() {
             );
           }
           // O que entrou em caixa é o total das parcelas (valor_total_acordo,
-          // já líquido de desconto e com juros). Peso de quem segue em
-          // em_acordo = saldo devedor (valor - valor_recebido: parciais
-          // anteriores já reduzem a parte do acordo); de quem já saiu
-          // (paga fora, cancelada) = nominal, que RESERVA sua cota
-          // contratada em vez de redistribuí-la às demais. Conta que já
-          // recebeu cota DESTE acordo numa tentativa anterior (marcada em
-          // metadata.acordo_rateio) reserva exatamente a cota consumida —
-          // sem o marcador o retry pesaria pelo nominal e roubaria cota
-          // das contas ainda pendentes.
-          const pesos = lista.map((c) => {
-            if (c.status === 'em_acordo')
-              return Math.max((c.valor || 0) - (c.valor_recebido || 0), 0);
+          // já líquido de desconto e com juros). Conta que já recebeu cota
+          // DESTE acordo numa tentativa anterior (marcada em
+          // metadata.acordo_rateio) tem a cota FIXA — ela sai do rateio e é
+          // subtraída do total; sem isso o retry recalcularia cotas
+          // diferentes e a soma registrada divergiria do pago. Das demais:
+          // quem segue em_acordo pesa pelo saldo devedor (parciais
+          // anteriores já reduzem a parte do acordo); quem saiu por outro
+          // caminho (paga fora, cancelada) pesa pelo nominal, RESERVANDO
+          // sua cota contratada no denominador sem receber escrita.
+          const marcadores = lista.map((c) => {
             const meta =
               c.metadata && typeof c.metadata === 'object' && !Array.isArray(c.metadata)
                 ? (c.metadata as Record<string, unknown>)
                 : null;
             const rateio = meta?.acordo_rateio;
-            if (
-              rateio &&
+            return rateio &&
               typeof rateio === 'object' &&
               !Array.isArray(rateio) &&
               (rateio as Record<string, unknown>).acordo_id === acordoId &&
               typeof (rateio as Record<string, unknown>).quota === 'number'
-            ) {
-              return (rateio as Record<string, unknown>).quota as number;
-            }
-            return Math.max(c.valor || 0, 0);
+              ? ((rateio as Record<string, unknown>).quota as number)
+              : null;
+          });
+          const jaDistribuido = marcadores.reduce<number>((s, q) => s + (q ?? 0), 0);
+          const pesos = lista.map((c, i) => {
+            if (marcadores[i] !== null) return 0;
+            return c.status === 'em_acordo'
+              ? Math.max((c.valor || 0) - (c.valor_recebido || 0), 0)
+              : Math.max(c.valor || 0, 0);
           });
           const totalPeso = pesos.reduce((s, p) => s + p, 0);
-          const totalPago = acordoParaQuitar.valor_total_acordo ?? totalPeso;
+          // Sem valor_total_acordo no registro, o total a distribuir é a
+          // soma dos pesos — fallback do comportamento anterior.
+          const totalPago = acordoParaQuitar.valor_total_acordo ?? jaDistribuido + totalPeso;
+          const restante = Math.max(totalPago - jaDistribuido, 0);
+          let ultimoComPeso = -1;
+          for (let i = 0; i < pesos.length; i++) {
+            if (pesos[i] > 0) ultimoComPeso = i;
+          }
           let distribuido = 0;
           const quotas = lista.map((_, i) => {
+            if (marcadores[i] !== null) return marcadores[i] as number;
             const quota =
               totalPeso > 0
-                ? i === lista.length - 1
-                  ? totalPago - distribuido
-                  : Math.round((pesos[i] / totalPeso) * totalPago * 100) / 100
+                ? i === ultimoComPeso
+                  ? Math.max(restante - distribuido, 0)
+                  : Math.round((pesos[i] / totalPeso) * restante * 100) / 100
                 : 0;
             distribuido += quota;
             return quota;

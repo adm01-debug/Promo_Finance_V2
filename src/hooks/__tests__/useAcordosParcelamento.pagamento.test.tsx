@@ -278,16 +278,18 @@ describe('registrarPagamento', () => {
     );
   });
 
-  it('retry após falha parcial reutiliza a cota já consumida — não o nominal', async () => {
-    // Regressão (Devin Review): tentativa 1 quitou cr-1 (recebeu a cota 300,
-    // gravada em metadata.acordo_rateio) e falhou em cr-2. No retry, se cr-1
-    // pesasse pelo nominal (500), a cota de cr-2 caía para 225 em vez dos 300
-    // calculados na 1ª tentativa — 75 do pagamento ficavam sem alocação.
+  it('retry após falha parcial rateia só o restante — não recalcula o total', async () => {
+    // Regressão (Devin Review): contas de 500 e 300 em acordo de 640 —
+    // tentativa 1 atribuiu 400 e 240, quitou cr-1 (cota gravada em
+    // metadata.acordo_rateio) e falhou em cr-2. Se o retry recalcular o
+    // rateio sobre o total com o marcador no denominador, cr-2 recebe
+    // ~274 e a soma registrada (674) passa dos 640 pagos. O correto é
+    // ratear apenas o restante: 640 − 400 = 240 para cr-2.
     const { result, escritas } = await montaHook({
       acordos_parcelamento: [
         { data: [], error: null },
         {
-          data: [{ id: 'ac-1', contas_receber_ids: ['cr-1', 'cr-2'], valor_total_acordo: 600 }],
+          data: [{ id: 'ac-1', contas_receber_ids: ['cr-1', 'cr-2'], valor_total_acordo: 640 }],
           error: null,
         },
       ],
@@ -303,7 +305,7 @@ describe('registrarPagamento', () => {
               valor: 500,
               valor_recebido: 500,
               status: 'recebido',
-              metadata: { acordo_rateio: { acordo_id: 'ac-1', quota: 300 } },
+              metadata: { acordo_rateio: { acordo_id: 'ac-1', quota: 400 } },
             },
             { id: 'cr-2', valor: 300, valor_recebido: 0, status: 'em_acordo', metadata: null },
           ],
@@ -324,9 +326,9 @@ describe('registrarPagamento', () => {
     const updates = escritas.filter((e) => e.tabela === 'contas_receber' && e.metodo === 'update');
     expect(updates).toHaveLength(1);
     const payload = updates[0].payload as { valor_recebido?: number; metadata?: unknown };
-    expect(payload.valor_recebido).toBe(300);
+    expect(payload.valor_recebido).toBe(240);
     expect(payload.metadata).toMatchObject({
-      acordo_rateio: { acordo_id: 'ac-1', quota: 300 },
+      acordo_rateio: { acordo_id: 'ac-1', quota: 240 },
     });
   });
 
