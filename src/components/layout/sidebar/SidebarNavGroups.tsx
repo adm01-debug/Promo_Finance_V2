@@ -52,7 +52,7 @@ import { useRealtimeAnomalias } from '@/hooks/useRealtimeAnomalias';
 import { useWhatsAppUnreadCount } from '@/hooks/useWhatsAppUnreadCount';
 import { useAuth } from '@/hooks/useAuth';
 import { useTranslation } from 'react-i18next';
-import { isSidebarNavItemActive } from './sidebarNavState';
+import { isSidebarNavItemActive, sidebarNavItemAriaCurrent } from './sidebarNavState';
 import { fiscalNavGroup } from './sidebarFiscalNavGroup';
 import type { NavGroup, NavItem } from './sidebarNav.types';
 
@@ -251,9 +251,9 @@ export const SidebarNavGroups = ({ collapsed }: SidebarNavGroupsProps) => {
     const content = (
       <Link
         to={item.href}
-        // Link âncora da mesma página é 'location', não 'page' — senão
-        // o item-pai e a âncora anunciam duas páginas atuais (WCAG).
-        aria-current={isActive ? (item.href.includes('#') ? 'location' : 'page') : undefined}
+        // 'page' só no match exato; pai ativo por prefixo e âncoras viram
+        // 'location' — senão dois itens anunciam "página atual" (WCAG).
+        aria-current={sidebarNavItemAriaCurrent(item.href, location)}
         className={cn(
           'flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all duration-200 group relative text-[13px] font-medium tracking-tight',
           isActive

@@ -98,9 +98,17 @@ let flushTimer: ReturnType<typeof setTimeout> | null = null;
 const SENSITIVE_PATH_PREFIXES = ['/convite/', '/contador/'];
 
 function pathSemSegredo(pathname: string): string {
-  const lower = pathname.toLowerCase();
+  // pathname do URL() mantém %-encoding: '/convite%2F<token>' não casa o
+  // prefixo cru — decodifica antes de comparar (mesma premissa do redactPath).
+  let decodificado = pathname;
+  try {
+    decodificado = decodeURIComponent(pathname);
+  } catch {
+    // pathname mal encodado — compara com o texto cru
+  }
+  const lower = decodificado.toLowerCase();
   const prefixo = SENSITIVE_PATH_PREFIXES.find((p) => lower.startsWith(p));
-  return prefixo ? pathname.slice(0, prefixo.length) + '[redacted]' : pathname;
+  return prefixo ? decodificado.slice(0, prefixo.length) + '[redacted]' : decodificado;
 }
 
 function urlSanitizada(urlCompleta: string): string {
