@@ -170,6 +170,10 @@ CREATE TRIGGER trg_transferencia_movimentacao
 --    onde estava quebrado o par inteiro falta. Insere o lado ausente por
 --    transferência — o gatilho de saldo (seção 3) corrige saldo_atual ao
 --    inserir. Idempotente pelo NOT EXISTS por (transferencia_id, tipo).
+--    NOTA: se em prod existirem movimentações de transferência sem
+--    transferencia_id que já afetaram o saldo, conferir antes de aplicar —
+--    não há evidência inequívoca de pertencimento para adotá-las sem risco
+--    de confundir movimentações manuais coincidentes.
 DO $$
 DECLARE
   v_expr text;
