@@ -206,9 +206,11 @@ BEGIN
     -- passam por essa porta e seguem livres.
     IF auth.uid() IS NOT NULL
        AND to_regprocedure('public.empresa_acessivel(uuid)') IS NOT NULL
-       AND to_regprocedure('public.has_role(uuid,app_role)') IS NOT NULL
        AND NOT public.empresa_acessivel(NEW.empresa_id)
-       AND NOT public.has_role(auth.uid(), 'admin'::app_role)
+       AND NOT (
+         to_regprocedure('public.has_role(uuid,app_role)') IS NOT NULL
+         AND public.has_role(auth.uid(), 'admin'::app_role)
+       )
     THEN
       RAISE EXCEPTION 'empresa_id deve pertencer a uma empresa acessível ao usuário';
     END IF;
