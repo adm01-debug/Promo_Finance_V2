@@ -176,7 +176,7 @@ export function useContasReceberLogic() {
 
   // Sincronizar etapas de cobrança (Régua de Cobrança Automática)
   const handleSyncStages = useCallback(async () => {
-    const contasToUpdate = allContas.filter((c) => c.status !== 'pago' && c.status !== 'cancelado');
+    const contasToUpdate = allContas.filter((c) => c.status !== 'pago' && c.status !== 'recebido' && c.status !== 'cancelado');
 
     if (contasToUpdate.length === 0) {
       toast.info('Nenhuma conta pendente para sincronizar.');
@@ -278,13 +278,13 @@ export function useContasReceberLogic() {
     const taxaInadimplencia = totalReceber > 0 ? (totalVencido / totalReceber) * 100 : 0;
 
     const venceHoje = allContas.filter((c) => {
-      if (c.status === 'pago' || c.status === 'cancelado') return false;
+      if (c.status === 'pago' || c.status === 'recebido' || c.status === 'cancelado') return false;
       if (!c.data_vencimento) return false;
       return isSameDay(parseISO(c.data_vencimento), today);
     }).length;
 
     const venceSemana = allContas.filter((c) => {
-      if (c.status === 'pago' || c.status === 'cancelado') return false;
+      if (c.status === 'pago' || c.status === 'recebido' || c.status === 'cancelado') return false;
       if (!c.data_vencimento) return false;
       const venc = parseISO(c.data_vencimento);
       return venc >= today && venc <= endOfWeek;

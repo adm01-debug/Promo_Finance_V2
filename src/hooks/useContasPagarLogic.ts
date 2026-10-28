@@ -145,11 +145,15 @@ export function useContasPagarLogic() {
   const profilesMap = useMemo(() => new Map(profiles.map((p) => [p.id, p])), [profiles]);
   const aprovacaoStatusMap = useMemo(
     () =>
-      new Map(
-        solicitacoesAprovacao
-          .filter((s) => s.status === 'pendente' || s.status === 'rejeitado')
-          .map((s) => [s.conta_pagar_id, s.status])
-      ),
+      // ordenação vem DESC por solicitado_em — manter a primeira (mais
+      // recente) solicitação relevante por conta; uma rejeição antiga não
+      // pode sobrescrever um reenvio pendente.
+      solicitacoesAprovacao
+        .filter((s) => s.status === 'pendente' || s.status === 'rejeitado')
+        .reduce((acc, s) => {
+          if (!acc.has(s.conta_pagar_id)) acc.set(s.conta_pagar_id, s.status);
+          return acc;
+        }, new Map<string | null, string | null>()),
     [solicitacoesAprovacao]
   );
   const historicoAprovacaoPorConta = useMemo(
