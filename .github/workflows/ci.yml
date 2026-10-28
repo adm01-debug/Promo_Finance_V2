@@ -186,9 +186,16 @@ jobs:
         #   embutido no 3.25.x fica inerte. Fix só existe em 4.6.6 (major
         #   com breaking changes — migração própria); o vetor além disso é
         #   self-DoS no browser do próprio usuário, sem input remoto.
+        # GHSA-gcqx-w48m-w2h4 (deepmerge >=4.2.0 <=4.3.1): sem release
+        # corrigida — 4.3.1 é a última publicada. Só entra via react-floater
+        # do react-joyride (tour de onboarding): o mergeObject mescla
+        # configurações de tour definidas em código, nunca input de
+        # usuário — prototype poisoning exige chaves controladas por
+        # atacante. Revisitar quando sair deepmerge >4.3.1.
         run: >
           bun audit
           --ignore=GHSA-vfj7-8cjw-p6xm
+          --ignore=GHSA-gcqx-w48m-w2h4
           --ignore=GHSA-mrhx-c7xc-m3w5
           --ignore=GHSA-rj75-hqrm-r3gf
           --ignore=GHSA-587h-7wmj-h5pm

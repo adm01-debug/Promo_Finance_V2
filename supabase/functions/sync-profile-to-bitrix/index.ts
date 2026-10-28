@@ -260,7 +260,9 @@ Deno.serve(
         // Best-effort: estamos no catch — se o Supabase também falhar aqui,
         // o insert não pode derrubar a resposta de erro ao cliente.
         try {
-          await admin.from('audit_logs').insert({
+          // PostgREST devolve { error } sem lançar — checar o retorno,
+          // não só o catch (senão falha de auditoria passa muda).
+          const { error: auditError } = await admin.from('audit_logs').insert({
             user_id: user.id,
             user_email: emailLower,
             action: 'UPDATE',
@@ -269,6 +271,11 @@ Deno.serve(
             new_data: { error: msg },
             details: 'Falha ao sincronizar perfil para Bitrix24',
           });
+          if (auditError) {
+            log.error('[sync-profile-to-bitrix] audit insert falhou:', {
+              error_message: mensagemErro(auditError),
+            });
+          }
         } catch (auditErr) {
           log.error('[sync-profile-to-bitrix] audit insert falhou:', {
             error_message: mensagemErro(auditErr),
