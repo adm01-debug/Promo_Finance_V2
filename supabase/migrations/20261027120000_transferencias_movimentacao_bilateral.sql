@@ -101,22 +101,32 @@ AS $$
 BEGIN
   -- Só linhas ativas (deleted_at IS NULL) movem saldo: exclusão lógica
   -- (useDeleteMovimentacao preenche deleted_at) equivale a estorno.
+  -- Todo UPDATE de saldo exige conta da MESMA empresa da movimentação:
+  -- conta_bancaria_id é forjável via PostgREST (a policy de movimentacoes
+  -- valida só o empresa_id da própria linha) e este gatilho é SECURITY
+  -- DEFINER — sem o escopo, uma movimentação apontando para conta de
+  -- outro tenant moveria o saldo alheio ignorando a RLS. IS NOT DISTINCT
+  -- FROM preserva o par NULL↔NULL de dados legados.
   IF TG_OP = 'UPDATE' THEN
     -- reverte o efeito da versão anterior (se estava ativa)
     IF OLD.deleted_at IS NULL AND OLD.tipo = 'entrada' THEN
       UPDATE contas_bancarias SET saldo_atual = COALESCE(saldo_atual, 0) - OLD.valor
-        WHERE id = OLD.conta_bancaria_id;
+        WHERE id = OLD.conta_bancaria_id
+          AND empresa_id IS NOT DISTINCT FROM OLD.empresa_id;
     ELSIF OLD.deleted_at IS NULL AND OLD.tipo = 'saida' THEN
       UPDATE contas_bancarias SET saldo_atual = COALESCE(saldo_atual, 0) + OLD.valor
-        WHERE id = OLD.conta_bancaria_id;
+        WHERE id = OLD.conta_bancaria_id
+          AND empresa_id IS NOT DISTINCT FROM OLD.empresa_id;
     END IF;
     -- reaplica o efeito da versão nova (se ativa)
     IF NEW.deleted_at IS NULL AND NEW.tipo = 'entrada' THEN
       UPDATE contas_bancarias SET saldo_atual = COALESCE(saldo_atual, 0) + NEW.valor
-        WHERE id = NEW.conta_bancaria_id;
+        WHERE id = NEW.conta_bancaria_id
+          AND empresa_id IS NOT DISTINCT FROM NEW.empresa_id;
     ELSIF NEW.deleted_at IS NULL AND NEW.tipo = 'saida' THEN
       UPDATE contas_bancarias SET saldo_atual = COALESCE(saldo_atual, 0) - NEW.valor
-        WHERE id = NEW.conta_bancaria_id;
+        WHERE id = NEW.conta_bancaria_id
+          AND empresa_id IS NOT DISTINCT FROM NEW.empresa_id;
     END IF;
     RETURN NEW;
   END IF;
@@ -126,10 +136,12 @@ BEGIN
     -- no hard-delete de uma linha já soft-deleted)
     IF OLD.deleted_at IS NULL AND OLD.tipo = 'entrada' THEN
       UPDATE contas_bancarias SET saldo_atual = COALESCE(saldo_atual, 0) - OLD.valor
-        WHERE id = OLD.conta_bancaria_id;
+        WHERE id = OLD.conta_bancaria_id
+          AND empresa_id IS NOT DISTINCT FROM OLD.empresa_id;
     ELSIF OLD.deleted_at IS NULL AND OLD.tipo = 'saida' THEN
       UPDATE contas_bancarias SET saldo_atual = COALESCE(saldo_atual, 0) + OLD.valor
-        WHERE id = OLD.conta_bancaria_id;
+        WHERE id = OLD.conta_bancaria_id
+          AND empresa_id IS NOT DISTINCT FROM OLD.empresa_id;
     END IF;
     RETURN OLD;
   END IF;
@@ -137,10 +149,12 @@ BEGIN
   -- INSERT
   IF NEW.deleted_at IS NULL AND NEW.tipo = 'entrada' THEN
     UPDATE contas_bancarias SET saldo_atual = COALESCE(saldo_atual, 0) + NEW.valor
-      WHERE id = NEW.conta_bancaria_id;
+      WHERE id = NEW.conta_bancaria_id
+        AND empresa_id IS NOT DISTINCT FROM NEW.empresa_id;
   ELSIF NEW.deleted_at IS NULL AND NEW.tipo = 'saida' THEN
     UPDATE contas_bancarias SET saldo_atual = COALESCE(saldo_atual, 0) - NEW.valor
-      WHERE id = NEW.conta_bancaria_id;
+      WHERE id = NEW.conta_bancaria_id
+        AND empresa_id IS NOT DISTINCT FROM NEW.empresa_id;
   END IF;
   RETURN NEW;
 END;
@@ -272,9 +286,10 @@ BEGIN
        AND NOT EXISTS (
          SELECT 1 FROM movimentacoes m
          WHERE m.transferencia_id = t.id AND m.tipo = ''saida''
-           -- linha excluída não conta como efeito aplicado: se o par foi
-           -- estornado mas a transferência segue ''realizado'', recria
-           AND m.deleted_at IS NULL
+           -- linha soft-deleted TAMBÉM conta como efeito aplicado: o
+           -- gatilho de saldo anterior só reagia a INSERT/DELETE, então
+           -- um delete lógico legado nunca devolveu o saldo à origem —
+           -- recriar a saída debitaria a conta uma segunda vez
        )',
     v_expr
   );
@@ -286,7 +301,8 @@ BEGIN
     AND NOT EXISTS (
       SELECT 1 FROM movimentacoes m
       WHERE m.transferencia_id = t.id AND m.tipo = 'entrada'
-        AND m.deleted_at IS NULL
+        -- idem à saída: entrada soft-deleted já creditou o destino no
+        -- regime antigo e o crédito nunca foi revertido
     );
 END $$;
 

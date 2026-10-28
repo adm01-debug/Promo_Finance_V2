@@ -208,6 +208,76 @@ describe('registrarPagamento', () => {
     expect(recebidos).toEqual([500, 300]);
   });
 
+  it('aborta a quitação quando uma conta contratada não volta do select', async () => {
+    // Regressão: conta ausente (exclusão física ou RLS) tinha a cota
+    // redistribuída às demais, inflando valor_recebido. Agora aborta e o
+    // acordo segue 'ativo' — nenhum update de quitação deve sair.
+    const { result, escritas } = await montaHook({
+      acordos_parcelamento: [
+        { data: [], error: null },
+        {
+          data: [{ id: 'ac-1', contas_receber_ids: ['cr-1', 'cr-2'], valor_total_acordo: 640 }],
+          error: null,
+        },
+      ],
+      parcelas_acordo: filaParcelas({
+        data: [{ status: 'pago' }],
+        error: null,
+      }),
+      contas_receber: [
+        {
+          data: [{ id: 'cr-1', valor: 500, valor_recebido: 0, status: 'em_acordo' }],
+          error: null,
+        },
+      ],
+    });
+
+    act(() => result.current.registrarPagamento(PAGAMENTO));
+
+    await waitFor(() => expect(toastErro).toHaveBeenCalled());
+    expect(toastSucesso).not.toHaveBeenCalled();
+    expect(escritas.some((e) => e.tabela === 'contas_receber' && e.metodo === 'update')).toBe(
+      false
+    );
+    expect(escritas.some((e) => e.tabela === 'acordos_parcelamento' && e.metodo === 'update')).toBe(
+      false
+    );
+  });
+
+  it('propaga falha de escrita em contas_receber sem quitar o acordo', async () => {
+    // Regressão: update falho era só logado e a mutação seguia para o
+    // toast de sucesso com quitação parcial. Agora o erro propaga e o
+    // acordo não é marcado 'quitado' — o retry é idempotente.
+    const { result, escritas } = await montaHook({
+      acordos_parcelamento: [
+        { data: [], error: null },
+        {
+          data: [{ id: 'ac-1', contas_receber_ids: ['cr-1'], valor_total_acordo: 500 }],
+          error: null,
+        },
+      ],
+      parcelas_acordo: filaParcelas({
+        data: [{ status: 'pago' }],
+        error: null,
+      }),
+      contas_receber: [
+        {
+          data: [{ id: 'cr-1', valor: 500, valor_recebido: 0, status: 'em_acordo' }],
+          error: null,
+        },
+        { data: null, error: { code: '42501', message: 'sem permissão' } },
+      ],
+    });
+
+    act(() => result.current.registrarPagamento(PAGAMENTO));
+
+    await waitFor(() => expect(toastErro).toHaveBeenCalled());
+    expect(toastSucesso).not.toHaveBeenCalled();
+    expect(escritas.some((e) => e.tabela === 'acordos_parcelamento' && e.metodo === 'update')).toBe(
+      false
+    );
+  });
+
   it('quita o acordo sem quebrar quando contas_receber_ids vem vazio/nulo', async () => {
     const { result, escritas } = await montaHook({
       acordos_parcelamento: [

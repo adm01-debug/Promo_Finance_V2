@@ -213,88 +213,116 @@ export function useAcordosParcelamento() {
       const todasPagas = parcelas.length > 0 && parcelas.every((p) => p.status === 'pago');
 
       if (todasPagas) {
-        const [acordoQuitado] = await mustSucceed(
+        // Lê o acordo SEM alterar: as contas vinculadas são atualizadas
+        // primeiro e o status='quitado' grava por último — uma falha no
+        // meio deixa o acordo 'ativo' e a tentativa pode ser refeita com
+        // segurança (os updates por linha são idempotentes via
+        // status='em_acordo').
+        const [acordoParaQuitar] = await mustSucceed(
           supabase
             .from('acordos_parcelamento')
-            .update({ status: 'quitado' })
-            .eq('id', acordoId)
-            .select('id, contas_receber_ids, valor_total_acordo'),
-          'quitar o acordo de parcelamento',
+            .select('id, contas_receber_ids, valor_total_acordo')
+            .eq('id', acordoId),
+          'ler o acordo de parcelamento',
           { exigirLinhas: true }
         );
 
         // Acordo quitado: as contas originais saem de "em_acordo" e passam a
         // refletir o pagamento — senão ficam em_acordo pra sempre e telas/
         // relatórios que filtram por status = 'recebido' nunca veem o valor.
-        const contasParaQuitar = acordoQuitado.contas_receber_ids ?? [];
+        const contasParaQuitar = acordoParaQuitar.contas_receber_ids ?? [];
         if (contasParaQuitar.length > 0) {
           const hoje = new Date().toISOString().slice(0, 10);
           // valor_recebido é por linha e o PostgREST não aceita expressão
           // em update em massa: lemos as contas e atualizamos uma a uma.
           // O select cobre o conjunto CONTRATADO (sem filtro de status): a
           // alocação precisa dos pesos de todas as contas vinculadas.
-          const { data: contasAcordo, error: selError } = await supabase
-            .from('contas_receber')
-            .select('id, valor, valor_recebido, status')
-            .in('id', contasParaQuitar);
+          const contasAcordo = await mustSucceed(
+            supabase
+              .from('contas_receber')
+              .select('id, valor, valor_recebido, status')
+              .in('id', contasParaQuitar),
+            'ler as contas vinculadas ao acordo'
+          );
 
-          if (selError) {
-            logger.error('Erro ao ler contas do acordo quitado:', selError);
-          } else {
-            const lista = contasAcordo ?? [];
-            // O que entrou em caixa é o total das parcelas (valor_total_acordo,
-            // já líquido de desconto e com juros). Peso de quem segue em
-            // em_acordo = saldo devedor (valor - valor_recebido: parciais
-            // anteriores já reduzem a parte do acordo); de quem já saiu
-            // (paga fora, cancelada) = nominal, que RESERVA sua cota
-            // contratada em vez de redistribuí-la às demais.
-            const pesos = lista.map((c) =>
-              c.status === 'em_acordo'
-                ? Math.max((c.valor || 0) - (c.valor_recebido || 0), 0)
-                : Math.max(c.valor || 0, 0)
+          const lista = contasAcordo ?? [];
+          // Uma ID contratada que não volta do select (exclusão física ou
+          // RLS) não tem como reservar cota — seu peso é desconhecido.
+          // Distribuir o valor_total_acordo só entre as presentes inflaria
+          // o valor_recebido delas; melhor abortar e deixar o acordo
+          // 'ativo' para correção manual da causa.
+          if (lista.length !== contasParaQuitar.length) {
+            throw new Error(
+              'Uma ou mais contas vinculadas ao acordo não foram encontradas; quitação abortada para não redistribuir cotas'
             );
-            const totalPeso = pesos.reduce((s, p) => s + p, 0);
-            const totalPago = acordoQuitado.valor_total_acordo ?? totalPeso;
-            let distribuido = 0;
-            const quotas = lista.map((_, i) => {
-              const quota =
-                totalPeso > 0
-                  ? i === lista.length - 1
-                    ? totalPago - distribuido
-                    : Math.round((pesos[i] / totalPeso) * totalPago * 100) / 100
-                  : 0;
-              distribuido += quota;
-              return quota;
-            });
-            if (lista.some((c) => c.status !== 'em_acordo')) {
-              logger.warn(
-                'Quitação encontrou contas fora de em_acordo — cotas contratadas não redistribuídas'
-              );
-            }
-            const resultados = await Promise.all(
-              lista
-                .map((c, i) => ({ c, quota: quotas[i] }))
-                .filter(({ c }) => c.status === 'em_acordo')
-                .map(({ c, quota }) =>
-                  supabase
-                    .from('contas_receber')
-                    .update({
-                      status: 'recebido',
-                      data_recebimento: hoje,
-                      valor_recebido: (c.valor_recebido || 0) + quota,
-                    })
-                    .eq('id', c.id)
-                    // A conta pode ter saído do acordo entre a leitura e a
-                    // escrita — a condição vai na própria escrita para não
-                    // reabrir um cancelado/quitado por outro caminho.
-                    .eq('status', 'em_acordo')
-                )
+          }
+          // O que entrou em caixa é o total das parcelas (valor_total_acordo,
+          // já líquido de desconto e com juros). Peso de quem segue em
+          // em_acordo = saldo devedor (valor - valor_recebido: parciais
+          // anteriores já reduzem a parte do acordo); de quem já saiu
+          // (paga fora, cancelada) = nominal, que RESERVA sua cota
+          // contratada em vez de redistribuí-la às demais.
+          const pesos = lista.map((c) =>
+            c.status === 'em_acordo'
+              ? Math.max((c.valor || 0) - (c.valor_recebido || 0), 0)
+              : Math.max(c.valor || 0, 0)
+          );
+          const totalPeso = pesos.reduce((s, p) => s + p, 0);
+          const totalPago = acordoParaQuitar.valor_total_acordo ?? totalPeso;
+          let distribuido = 0;
+          const quotas = lista.map((_, i) => {
+            const quota =
+              totalPeso > 0
+                ? i === lista.length - 1
+                  ? totalPago - distribuido
+                  : Math.round((pesos[i] / totalPeso) * totalPago * 100) / 100
+                : 0;
+            distribuido += quota;
+            return quota;
+          });
+          if (lista.some((c) => c.status !== 'em_acordo')) {
+            logger.warn(
+              'Quitação encontrou contas fora de em_acordo — cotas contratadas não redistribuídas'
             );
-            const quitarError = resultados.find((r) => r.error)?.error;
-            if (quitarError)
-              logger.error('Erro ao marcar contas do acordo quitado como recebidas:', quitarError);
+          }
+          const resultados = await Promise.all(
+            lista
+              .map((c, i) => ({ c, quota: quotas[i] }))
+              .filter(({ c }) => c.status === 'em_acordo')
+              .map(({ c, quota }) =>
+                supabase
+                  .from('contas_receber')
+                  .update({
+                    status: 'recebido',
+                    data_recebimento: hoje,
+                    valor_recebido: (c.valor_recebido || 0) + quota,
+                  })
+                  .eq('id', c.id)
+                  // A conta pode ter saído do acordo entre a leitura e a
+                  // escrita — a condição vai na própria escrita para não
+                  // reabrir um cancelado/quitado por outro caminho.
+                  .eq('status', 'em_acordo')
+              )
+          );
+          // Erro de escrita PROPAGA: quitação parcialmente persistida não
+          // pode virar toast de sucesso — o acordo segue 'ativo' e o retry
+          // é idempotente (contas já recebidas saem do filtro em_acordo).
+          const quitarError = resultados.find((r) => r.error)?.error;
+          if (quitarError) {
+            logger.error('Erro ao marcar contas do acordo quitado como recebidas:', quitarError);
+            throw quitarError;
           }
         }
+
+        await mustSucceed(
+          supabase
+            .from('acordos_parcelamento')
+            .update({ status: 'quitado' })
+            .eq('id', acordoId)
+            .select('id'),
+          'quitar o acordo de parcelamento',
+          { exigirLinhas: true }
+        );
       }
 
       return data;
