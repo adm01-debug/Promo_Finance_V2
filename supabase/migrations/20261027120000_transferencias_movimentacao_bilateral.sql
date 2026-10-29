@@ -139,22 +139,25 @@ BEGIN
   -- Só linhas ativas (deleted_at IS NULL) movem saldo: exclusão lógica
   -- (useDeleteMovimentacao preenche deleted_at) equivale a estorno.
   IF TG_OP = 'UPDATE' THEN
-    -- reverte o efeito da versão anterior (se estava ativa)
-    IF OLD.deleted_at IS NULL AND OLD.tipo = 'entrada' THEN
+    -- reverte o efeito da versão anterior quando ela contribuía ao saldo:
+    -- ativa (deleted_at NULL) OU soft-deletada antes do corte (o gatilho
+    -- anterior não observava UPDATE de deleted_at, logo o efeito segue no
+    -- saldo — restaurar uma linha legada sem esta reversão o duplicaria).
+    IF (OLD.deleted_at IS NULL OR OLD.deleted_at < %L::timestamptz) AND OLD.tipo = 'entrada' THEN
       UPDATE contas_bancarias SET saldo_atual = COALESCE(saldo_atual, 0) - OLD.valor
         WHERE id = OLD.conta_bancaria_id
           AND empresa_id IS NOT DISTINCT FROM OLD.empresa_id;
-    ELSIF OLD.deleted_at IS NULL AND OLD.tipo = 'saida' THEN
+    ELSIF (OLD.deleted_at IS NULL OR OLD.deleted_at < %L::timestamptz) AND OLD.tipo = 'saida' THEN
       UPDATE contas_bancarias SET saldo_atual = COALESCE(saldo_atual, 0) + OLD.valor
         WHERE id = OLD.conta_bancaria_id
           AND empresa_id IS NOT DISTINCT FROM OLD.empresa_id;
     END IF;
-    -- reaplica o efeito da versão nova (se ativa)
-    IF NEW.deleted_at IS NULL AND NEW.tipo = 'entrada' THEN
+    -- reaplica o efeito da versão nova enquanto ela contribuir ao saldo
+    IF (NEW.deleted_at IS NULL OR NEW.deleted_at < %L::timestamptz) AND NEW.tipo = 'entrada' THEN
       UPDATE contas_bancarias SET saldo_atual = COALESCE(saldo_atual, 0) + NEW.valor
         WHERE id = NEW.conta_bancaria_id
           AND empresa_id IS NOT DISTINCT FROM NEW.empresa_id;
-    ELSIF NEW.deleted_at IS NULL AND NEW.tipo = 'saida' THEN
+    ELSIF (NEW.deleted_at IS NULL OR NEW.deleted_at < %L::timestamptz) AND NEW.tipo = 'saida' THEN
       UPDATE contas_bancarias SET saldo_atual = COALESCE(saldo_atual, 0) - NEW.valor
         WHERE id = NEW.conta_bancaria_id
           AND empresa_id IS NOT DISTINCT FROM NEW.empresa_id;
@@ -166,7 +169,8 @@ BEGIN
     -- marca no histórico identifica o que ESTA transição cancelou —
     -- assim a restauração reconfirma apenas esses, sem promover rascunho
     -- incompleto nem ressuscitar cancelamento anterior.
-    IF OLD.deleted_at IS NULL AND NEW.deleted_at IS NOT NULL THEN
+    IF NEW.deleted_at IS NOT NULL
+       AND (OLD.deleted_at IS NULL OR OLD.deleted_at < %L::timestamptz) THEN
       UPDATE public.lancamentos_contabeis
          SET status = 'cancelado',
              historico = historico || ' [estornado pela exclusão da movimentação]'
@@ -216,7 +220,7 @@ BEGIN
   RETURN NEW;
 END;
 $body$;
-  $f$, v_corte, v_corte);
+  $f$, v_corte, v_corte, v_corte, v_corte, v_corte, v_corte, v_corte);
   -- persiste o corte para reaplicações futuras (ver DECLARE acima)
   EXECUTE format('COMMENT ON FUNCTION public.fn_saldo_movimentacao() IS %L', v_corte);
 END
@@ -435,8 +439,11 @@ BEGIN
              THEN 'confirmado' ELSE 'rascunho' END
     ) RETURNING id INTO v_lancamento_id;
 
-    -- 4. Cria as partidas dobradas (Débito e Crédito)
-    IF NEW.tipo = 'entrada' THEN
+    -- 4. Cria as partidas dobradas (Débito e Crédito) — só quando as duas
+    -- contrapartidas foram resolvidas (lançamento 'confirmado'). Um
+    -- 'rascunho' com partida única entra nos demonstrativos (que somam
+    -- partidas_contabeis sem filtrar status) e desequilibra o balanço.
+    IF NEW.tipo = 'entrada' AND v_conta_contabil_id IS NOT NULL AND v_conta_bancaria_contabil_id IS NOT NULL THEN
         -- Entrada de dinheiro: Débito no Banco, Crédito na Categoria (Receita)
         -- Partida 1: Débito (D) no Banco
         IF v_conta_bancaria_contabil_id IS NOT NULL THEN
@@ -450,7 +457,7 @@ BEGIN
             VALUES (v_lancamento_id, v_conta_contabil_id, 'C', NEW.valor, 'Receita reconhecida');
         END IF;
 
-    ELSIF NEW.tipo = 'saida' THEN
+    ELSIF NEW.tipo = 'saida' AND v_conta_contabil_id IS NOT NULL AND v_conta_bancaria_contabil_id IS NOT NULL THEN
         -- Saída de dinheiro: Débito na Categoria (Despesa), Crédito no Banco
         -- Partida 1: Débito (D) na Conta de Despesa/Pagar
         IF v_conta_contabil_id IS NOT NULL THEN
@@ -482,6 +489,11 @@ $$ LANGUAGE plpgsql SECURITY DEFINER;
 --    (INSERT/DELETE originais incluídos) aborte com campo inexistente.
 ALTER TABLE public.movimentacoes ADD COLUMN IF NOT EXISTS conta_pagar_id uuid;
 ALTER TABLE public.movimentacoes ADD COLUMN IF NOT EXISTS conta_receber_id uuid;
+-- idem nas colunas que o sync escreve nos títulos (drift canônico)
+ALTER TABLE public.contas_pagar ADD COLUMN IF NOT EXISTS valor_pago numeric;
+ALTER TABLE public.contas_pagar ADD COLUMN IF NOT EXISTS data_pagamento date;
+ALTER TABLE public.contas_receber ADD COLUMN IF NOT EXISTS valor_recebido numeric;
+ALTER TABLE public.contas_receber ADD COLUMN IF NOT EXISTS data_recebimento date;
 
 CREATE OR REPLACE FUNCTION public.fn_sync_valor_pago_movimentacao()
 RETURNS TRIGGER
@@ -493,75 +505,80 @@ DECLARE
   v_total NUMERIC;
   v_valor_conta NUMERIC;
   v_empresa UUID;
-  v_cp_id UUID;
-  v_cr_id UUID;
+  v_cp_ids UUID[];
+  v_cr_ids UUID[];
+  v_id UUID;
 BEGIN
   -- Tenant: conta_pagar_id/conta_receber_id podem apontar para título de
   -- outra empresa e o UPDATE SECURITY DEFINER ignoraria a RLS — valida a
   -- empresa do vínculo antes de tocar no título (mesma regra da seção 3).
   -- NEW é indefinido em DELETE e OLD em INSERT — qualquer referência
-  -- cruzada aborta o gatilho, então tudo é resolvido por TG_OP.
+  -- cruzada aborta o gatilho, então tudo é resolvido por TG_OP. Em UPDATE
+  -- os DOIS lados do vínculo são recomputados: trocar conta_pagar_id de A
+  -- para B devolve o valor a A e credita B.
   IF TG_OP = 'DELETE' THEN
     v_empresa := OLD.empresa_id;
-    v_cp_id := OLD.conta_pagar_id;
-    v_cr_id := OLD.conta_receber_id;
+    v_cp_ids := ARRAY[OLD.conta_pagar_id];
+    v_cr_ids := ARRAY[OLD.conta_receber_id];
+  ELSIF TG_OP = 'UPDATE' THEN
+    v_empresa := NEW.empresa_id;
+    v_cp_ids := ARRAY[OLD.conta_pagar_id, NEW.conta_pagar_id];
+    v_cr_ids := ARRAY[OLD.conta_receber_id, NEW.conta_receber_id];
   ELSE
     v_empresa := NEW.empresa_id;
-    v_cp_id := NEW.conta_pagar_id;
-    v_cr_id := NEW.conta_receber_id;
+    v_cp_ids := ARRAY[NEW.conta_pagar_id];
+    v_cr_ids := ARRAY[NEW.conta_receber_id];
   END IF;
 
   -- Atualizar valor_pago em contas_pagar
-  IF v_cp_id IS NOT NULL THEN
-    BEGIN
-      IF NOT EXISTS (
-        SELECT 1 FROM contas_pagar WHERE id = v_cp_id AND empresa_id = v_empresa
-      ) THEN
-        RAISE EXCEPTION 'movimentacao vinculada a conta_pagar de outra empresa (%)', v_empresa;
-      END IF;
+  FOREACH v_id IN ARRAY v_cp_ids LOOP
+    CONTINUE WHEN v_id IS NULL;
+    IF NOT EXISTS (
+      SELECT 1 FROM contas_pagar WHERE id = v_id AND empresa_id = v_empresa
+    ) THEN
+      RAISE EXCEPTION 'movimentacao vinculada a conta_pagar de outra empresa (%)', v_empresa;
+    END IF;
 
-      SELECT COALESCE(SUM(valor), 0) INTO v_total
-      FROM movimentacoes WHERE conta_pagar_id = v_cp_id AND deleted_at IS NULL;
+    SELECT COALESCE(SUM(valor), 0) INTO v_total
+    FROM movimentacoes WHERE conta_pagar_id = v_id AND deleted_at IS NULL;
 
-      SELECT valor INTO v_valor_conta FROM contas_pagar WHERE id = v_cp_id;
+    SELECT valor INTO v_valor_conta FROM contas_pagar WHERE id = v_id;
 
-      UPDATE contas_pagar SET
-        valor_pago = v_total,
-        status = CASE
-          WHEN v_total >= v_valor_conta THEN 'pago'::status_pagamento
-          WHEN v_total > 0 THEN 'parcial'::status_pagamento
-          ELSE 'pendente'::status_pagamento
-        END,
-        data_pagamento = CASE WHEN v_total >= v_valor_conta THEN CURRENT_DATE ELSE NULL END
-      WHERE id = v_cp_id;
-    END;
-  END IF;
+    UPDATE contas_pagar SET
+      valor_pago = v_total,
+      status = CASE
+        WHEN v_total >= v_valor_conta THEN 'pago'
+        WHEN v_total > 0 THEN 'parcial'
+        ELSE 'pendente'
+      END,
+      data_pagamento = CASE WHEN v_total >= v_valor_conta THEN CURRENT_DATE ELSE NULL END
+    WHERE id = v_id;
+  END LOOP;
 
   -- Atualizar valor_recebido em contas_receber
-  IF v_cr_id IS NOT NULL THEN
-    BEGIN
-      IF NOT EXISTS (
-        SELECT 1 FROM contas_receber WHERE id = v_cr_id AND empresa_id = v_empresa
-      ) THEN
-        RAISE EXCEPTION 'movimentacao vinculada a conta_receber de outra empresa (%)', v_empresa;
-      END IF;
+  FOREACH v_id IN ARRAY v_cr_ids LOOP
+    CONTINUE WHEN v_id IS NULL;
+    IF NOT EXISTS (
+      SELECT 1 FROM contas_receber WHERE id = v_id AND empresa_id = v_empresa
+    ) THEN
+      RAISE EXCEPTION 'movimentacao vinculada a conta_receber de outra empresa (%)', v_empresa;
+    END IF;
 
-      SELECT COALESCE(SUM(valor), 0) INTO v_total
-      FROM movimentacoes WHERE conta_receber_id = v_cr_id AND deleted_at IS NULL;
+    SELECT COALESCE(SUM(valor), 0) INTO v_total
+    FROM movimentacoes WHERE conta_receber_id = v_id AND deleted_at IS NULL;
 
-      SELECT valor INTO v_valor_conta FROM contas_receber WHERE id = v_cr_id;
+    SELECT valor INTO v_valor_conta FROM contas_receber WHERE id = v_id;
 
-      UPDATE contas_receber SET
-        valor_recebido = v_total,
-        status = CASE
-          WHEN v_total >= v_valor_conta THEN 'pago'::status_pagamento
-          WHEN v_total > 0 THEN 'parcial'::status_pagamento
-          ELSE 'pendente'::status_pagamento
-        END,
-        data_recebimento = CASE WHEN v_total >= v_valor_conta THEN CURRENT_DATE ELSE NULL END
-      WHERE id = v_cr_id;
-    END;
-  END IF;
+    UPDATE contas_receber SET
+      valor_recebido = v_total,
+      status = CASE
+        WHEN v_total >= v_valor_conta THEN 'pago'
+        WHEN v_total > 0 THEN 'parcial'
+        ELSE 'pendente'
+      END,
+      data_recebimento = CASE WHEN v_total >= v_valor_conta THEN CURRENT_DATE ELSE NULL END
+    WHERE id = v_id;
+  END LOOP;
 
   RETURN COALESCE(NEW, OLD);
 END;
@@ -569,8 +586,23 @@ $$;
 
 DROP TRIGGER IF EXISTS trg_sync_valor_pago ON public.movimentacoes;
 CREATE TRIGGER trg_sync_valor_pago
-  AFTER INSERT OR DELETE OR UPDATE OF deleted_at ON public.movimentacoes
+  AFTER INSERT OR DELETE OR UPDATE OF deleted_at, conta_pagar_id, conta_receber_id
+  ON public.movimentacoes
   FOR EACH ROW EXECUTE FUNCTION fn_sync_valor_pago_movimentacao();
+
+--    user_id NOT NULL DEFAULT auth.uid() (schema alternativo): a sessão
+--    de migration não tem JWT e o backfill contábil abortaria na primeira
+--    linha. O DEFAULT segue preenchendo inserts via API; só a restrição sai.
+DO $$
+BEGIN
+  IF EXISTS (
+    SELECT 1 FROM information_schema.columns
+    WHERE table_schema = 'public' AND table_name = 'lancamentos_contabeis'
+      AND column_name = 'user_id'
+  ) THEN
+    ALTER TABLE public.lancamentos_contabeis ALTER COLUMN user_id DROP NOT NULL;
+  END IF;
+END $$;
 
 -- 6) Backfill das transferências concluídas históricas: onde o trigger
 --    antigo funcionava só a 'saida' foi gravada (destino nunca creditado);
