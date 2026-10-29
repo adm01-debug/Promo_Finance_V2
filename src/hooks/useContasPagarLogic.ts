@@ -143,19 +143,22 @@ export function useContasPagarLogic() {
 
   // Maps
   const profilesMap = useMemo(() => new Map(profiles.map((p) => [p.id, p])), [profiles]);
-  const aprovacaoStatusMap = useMemo(
-    () =>
-      // ordenação vem DESC por solicitado_em — manter a primeira (mais
-      // recente) solicitação relevante por conta; uma rejeição antiga não
-      // pode sobrescrever um reenvio pendente.
-      solicitacoesAprovacao
-        .filter((s) => s.status === 'pendente' || s.status === 'rejeitado')
-        .reduce((acc, s) => {
-          if (!acc.has(s.conta_pagar_id)) acc.set(s.conta_pagar_id, s.status);
-          return acc;
-        }, new Map<string | null, string | null>()),
-    [solicitacoesAprovacao]
-  );
+  const aprovacaoStatusMap = useMemo(() => {
+    // ordenação vem DESC por solicitado_em — a primeira ocorrência de cada
+    // conta é a solicitação MAIS RECENTE. Filtrar por status antes do
+    // reduce devolveria uma rejeição velha mesmo quando o reenvio foi
+    // aprovado (a conta apareceria rejeitada E aprovada ao mesmo tempo).
+    // Escolhe a mais recente primeiro; só pendente/rejeitado representam
+    // a conta no mapa.
+    const maisRecente = new Map<string | null, string | null>();
+    for (const s of solicitacoesAprovacao) {
+      if (!maisRecente.has(s.conta_pagar_id)) maisRecente.set(s.conta_pagar_id, s.status);
+    }
+    for (const [contaId, status] of maisRecente) {
+      if (status !== 'pendente' && status !== 'rejeitado') maisRecente.delete(contaId);
+    }
+    return maisRecente;
+  }, [solicitacoesAprovacao]);
   const historicoAprovacaoPorConta = useMemo(
     () =>
       solicitacoesAprovacao.reduce((acc, s) => {

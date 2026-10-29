@@ -228,7 +228,7 @@ function calcularHistorico(contas: ContaReceberScoring[]): DadosHistorico {
   const valorTotal = contas.reduce((s, c) => s + (c.valor || 0), 0);
   const valorPago = contas
     .filter((c) => c.status === 'pago')
-    .reduce((s, c) => s + (c.valor_recebido || c.valor || 0), 0);
+    .reduce((s, c) => s + (c.valor_recebido ?? c.valor ?? 0), 0);
 
   const primeiraCompra = contas.length > 0 ? new Date(contas[contas.length - 1].created_at) : hoje;
   const tempoRelacionamento = Math.max(1, differenceInDays(hoje, primeiraCompra) / 30);

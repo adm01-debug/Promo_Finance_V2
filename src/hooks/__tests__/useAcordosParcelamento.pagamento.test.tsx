@@ -139,7 +139,7 @@ describe('registrarPagamento', () => {
           ],
           error: null,
         },
-        { data: null, error: null },
+        { data: [{ id: 'cr-ok' }], error: null },
       ],
     });
 
@@ -191,7 +191,7 @@ describe('registrarPagamento', () => {
           ],
           error: null,
         },
-        { data: null, error: null },
+        { data: [{ id: 'cr-ok' }], error: null },
       ],
     });
 
@@ -311,7 +311,7 @@ describe('registrarPagamento', () => {
           ],
           error: null,
         },
-        { data: null, error: null },
+        { data: [{ id: 'cr-ok' }], error: null },
       ],
     });
 
@@ -364,7 +364,7 @@ describe('registrarPagamento', () => {
           ],
           error: null,
         },
-        { data: null, error: null },
+        { data: [{ id: 'cr-ok' }], error: null },
       ],
     });
 
@@ -414,7 +414,7 @@ describe('registrarPagamento', () => {
           ],
           error: null,
         },
-        { data: null, error: null },
+        { data: [{ id: 'cr-ok' }], error: null },
       ],
     });
 
@@ -462,7 +462,7 @@ describe('registrarPagamento', () => {
           ],
           error: null,
         },
-        { data: null, error: null },
+        { data: [{ id: 'cr-ok' }], error: null },
       ],
     });
 

@@ -219,7 +219,7 @@ export default function DashboardEmpresa() {
         tipo: 'receber' as const,
         descricao: c.descricao,
         nome: c.cliente_nome,
-        valor: c.valor_recebido || c.valor,
+        valor: c.valor_recebido ?? c.valor,
         data: c.data_recebimento!,
       }));
     const pagarRecentes = contasPagarEmpresa

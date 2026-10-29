@@ -199,17 +199,27 @@ BEGIN
     -- papel do usuário; sem esta checagem um cliente poderia apontar
     -- conta_origem_id/conta_destino_id de OUTRA empresa e o gatilho
     -- SECURITY DEFINER mexeria no saldo dela ignorando a RLS.
-    IF v_origem IS NULL OR v_destino IS NULL
+    IF v_origem IS NULL
        OR NOT EXISTS (
          SELECT 1 FROM contas_bancarias cb
          WHERE cb.id = v_origem AND cb.empresa_id IS NOT DISTINCT FROM NEW.empresa_id
        )
-       OR NOT EXISTS (
+    THEN
+      RAISE EXCEPTION 'conta de origem deve pertencer à mesma empresa da transferência';
+    END IF;
+
+    -- Saídas externas (pix/ted/boleto_pagamento) usam favorecido externo e
+    -- deixam conta_destino_id NULL — a tabela os representa com destino
+    -- opcional. O destino interno só é validado quando informado;
+    -- exigi-lo abortaria toda transferência externa, que antes criava
+    -- apenas a movimentação de saída.
+    IF v_destino IS NOT NULL
+       AND NOT EXISTS (
          SELECT 1 FROM contas_bancarias cb
          WHERE cb.id = v_destino AND cb.empresa_id IS NOT DISTINCT FROM NEW.empresa_id
        )
     THEN
-      RAISE EXCEPTION 'contas de origem/destino devem pertencer à mesma empresa da transferência';
+      RAISE EXCEPTION 'conta de destino deve pertencer à mesma empresa da transferência';
     END IF;
 
     -- Defesa cross-tenant 2: o próprio empresa_id é forjável — a policy de
@@ -233,8 +243,12 @@ BEGIN
     VALUES (NEW.empresa_id, v_origem, 'saida', NEW.descricao, NEW.valor, NEW.data_transferencia, NEW.id, v_autor, 'transferencia')
     RETURNING id INTO v_mov_saida_id;
 
-    INSERT INTO movimentacoes (empresa_id, conta_bancaria_id, tipo, descricao, valor, data_movimentacao, transferencia_id, created_by, origem)
-    VALUES (NEW.empresa_id, v_destino, 'entrada', NEW.descricao, NEW.valor, NEW.data_transferencia, NEW.id, v_autor, 'transferencia');
+    -- Destino interno ausente = saída externa (pix/ted/boleto_pagamento):
+    -- só a saída é gravada, como no regime anterior.
+    IF v_destino IS NOT NULL THEN
+      INSERT INTO movimentacoes (empresa_id, conta_bancaria_id, tipo, descricao, valor, data_movimentacao, transferencia_id, created_by, origem)
+      VALUES (NEW.empresa_id, v_destino, 'entrada', NEW.descricao, NEW.valor, NEW.data_transferencia, NEW.id, v_autor, 'transferencia');
+    END IF;
 
     UPDATE transferencias SET movimentacao_id = v_mov_saida_id WHERE id = NEW.id;
   END IF;
@@ -253,65 +267,16 @@ CREATE TRIGGER trg_transferencia_movimentacao
   AFTER INSERT OR UPDATE ON public.transferencias
   FOR EACH ROW EXECUTE FUNCTION public.fn_transferencia_movimentacao();
 
--- 5) Backfill das transferências concluídas históricas: onde o trigger
---    antigo funcionava só a 'saida' foi gravada (destino nunca creditado);
---    onde estava quebrado o par inteiro falta. Insere o lado ausente por
---    transferência — o gatilho de saldo (seção 3) corrige saldo_atual ao
---    inserir. Idempotente pelo NOT EXISTS por (transferencia_id, tipo).
---    Cobre 'realizado' (CHECK canônico) e 'concluido' (estado de drift do
---    schema alternativo, onde a UI gravava esse status).
---    NOTA: se em prod existirem movimentações de transferência sem
---    transferencia_id que já afetaram o saldo, conferir antes de aplicar —
---    não há evidência inequívoca de pertencimento para adotá-las sem risco
---    de confundir movimentações manuais coincidentes.
-DO $$
-DECLARE
-  v_expr text;
-BEGIN
-  IF EXISTS (
-    SELECT 1 FROM information_schema.columns
-    WHERE table_schema = 'public' AND table_name = 'transferencias'
-      AND column_name = 'conta_bancaria_id'
-  ) THEN
-    v_expr := 'COALESCE(t.conta_origem_id, t.conta_bancaria_id)';
-  ELSE
-    v_expr := 't.conta_origem_id';
-  END IF;
-
-  EXECUTE format(
-    'INSERT INTO movimentacoes (empresa_id, conta_bancaria_id, tipo, descricao, valor, data_movimentacao, transferencia_id, origem)
-     SELECT t.empresa_id, %s, ''saida'', t.descricao, t.valor, t.data_transferencia, t.id, ''transferencia''
-     FROM transferencias t
-     WHERE t.status IN (''realizado'', ''concluido'')
-       AND NOT EXISTS (
-         SELECT 1 FROM movimentacoes m
-         WHERE m.transferencia_id = t.id AND m.tipo = ''saida''
-           -- linha soft-deleted TAMBÉM conta como efeito aplicado: o
-           -- gatilho de saldo anterior só reagia a INSERT/DELETE, então
-           -- um delete lógico legado nunca devolveu o saldo à origem —
-           -- recriar a saída debitaria a conta uma segunda vez
-       )',
-    v_expr
-  );
-
-  INSERT INTO movimentacoes (empresa_id, conta_bancaria_id, tipo, descricao, valor, data_movimentacao, transferencia_id, origem)
-  SELECT t.empresa_id, t.conta_destino_id, 'entrada', t.descricao, t.valor, t.data_transferencia, t.id, 'transferencia'
-  FROM transferencias t
-  WHERE t.status IN ('realizado', 'concluido')
-    AND NOT EXISTS (
-      SELECT 1 FROM movimentacoes m
-      WHERE m.transferencia_id = t.id AND m.tipo = 'entrada'
-        -- idem à saída: entrada soft-deleted já creditou o destino no
-        -- regime antigo e o crédito nunca foi revertido
-    );
-END $$;
-
--- 6) Lançamento contábil automático: exclui origem='transferencia' — o par
+-- 5) Lançamento contábil automático: exclui origem='transferencia' — o par
 --    bilateral movimenta saldo entre bancos da mesma empresa, não é receita
 --    nem despesa; sem a guarda cada transferência geraria D+C espúrios.
 --    A função é recriada com o mesmo corpo da migration original +
 --    early return; se o gatilho trigger_gerar_contabilidade existir no
 --    banco, passa a usar este corpo.
+--    ORDEM IMPORTA: precisa vir ANTES do backfill (seção 6) — onde o
+--    gatilho já existir, inserts de backfill disparariam a versão antiga
+--    (sem a guarda) e gerariam lançamentos D+C para cada lado, além de
+--    poderem quebrar num schema sem categoria_id/plano_conta_id.
 CREATE OR REPLACE FUNCTION public.gerar_lancamento_contabil_automatico()
 RETURNS TRIGGER AS $$
 DECLARE
@@ -397,15 +362,73 @@ BEGIN
         END IF;
 
         -- Partida 2: Crédito (C) no Banco
-        IF v_conta_bancaria_contabil_id IS NOT NULL THEN
+        IF v_conta_contabil_id IS NOT NULL THEN
             INSERT INTO public.partidas_contabeis (lancamento_id, conta_id, tipo, valor, historico_complementar)
-            VALUES (v_lancamento_id, v_conta_bancaria_contabil_id, 'C', NEW.valor, 'Saída de conta bancária');
+            VALUES (v_lancamento_id, v_conta_contabil_id, 'C', NEW.valor, 'Saída de conta bancária');
         END IF;
     END IF;
 
     RETURN NEW;
 END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;
+
+-- 6) Backfill das transferências concluídas históricas: onde o trigger
+--    antigo funcionava só a 'saida' foi gravada (destino nunca creditado);
+--    onde estava quebrado o par inteiro falta. Insere o lado ausente por
+--    transferência — o gatilho de saldo (seção 3) corrige saldo_atual ao
+--    inserir. Idempotente pelo NOT EXISTS por (transferencia_id, tipo).
+--    Cobre 'realizado' (CHECK canônico) e 'concluido' (estado de drift do
+--    schema alternativo, onde a UI gravava esse status).
+--    Saídas externas (conta_destino_id NULL) recebem só a 'saida' — mesma
+--    regra do gatilho (seção 4).
+--    NOTA: se em prod existirem movimentações de transferência sem
+--    transferencia_id que já afetaram o saldo, conferir antes de aplicar —
+--    não há evidência inequívoca de pertencimento para adotá-las sem risco
+--    de confundir movimentações manuais coincidentes.
+DO $$
+DECLARE
+  v_expr text;
+BEGIN
+  IF EXISTS (
+    SELECT 1 FROM information_schema.columns
+    WHERE table_schema = 'public' AND table_name = 'transferencias'
+      AND column_name = 'conta_bancaria_id'
+  ) THEN
+    v_expr := 'COALESCE(t.conta_origem_id, t.conta_bancaria_id)';
+  ELSE
+    v_expr := 't.conta_origem_id';
+  END IF;
+
+  EXECUTE format(
+    'INSERT INTO movimentacoes (empresa_id, conta_bancaria_id, tipo, descricao, valor, data_movimentacao, transferencia_id, origem)
+     SELECT t.empresa_id, %s, ''saida'', t.descricao, t.valor, t.data_transferencia, t.id, ''transferencia''
+     FROM transferencias t
+     WHERE t.status IN (''realizado'', ''concluido'')
+       AND %s IS NOT NULL
+       AND NOT EXISTS (
+         SELECT 1 FROM movimentacoes m
+         WHERE m.transferencia_id = t.id AND m.tipo = ''saida''
+           -- linha soft-deleted TAMBÉM conta como efeito aplicado: o
+           -- gatilho de saldo anterior só reagia a INSERT/DELETE, então
+           -- um delete lógico legado nunca devolveu o saldo à origem —
+           -- recriar a saída debitaria a conta uma segunda vez
+       )',
+    v_expr,
+    v_expr
+  );
+
+  INSERT INTO movimentacoes (empresa_id, conta_bancaria_id, tipo, descricao, valor, data_movimentacao, transferencia_id, origem)
+  SELECT t.empresa_id, t.conta_destino_id, 'entrada', t.descricao, t.valor, t.data_transferencia, t.id, 'transferencia'
+  FROM transferencias t
+  WHERE t.status IN ('realizado', 'concluido')
+    AND t.conta_destino_id IS NOT NULL
+    AND NOT EXISTS (
+      SELECT 1 FROM movimentacoes m
+      WHERE m.transferencia_id = t.id AND m.tipo = 'entrada'
+        -- idem à saída: entrada soft-deleted já creditou o destino no
+        -- regime antigo e o crédito nunca foi revertido
+    );
+END $$;
 
 -- 7) Agregações de receita/despesa excluem transferências internas.
 CREATE OR REPLACE FUNCTION obter_totais_movimentacoes(

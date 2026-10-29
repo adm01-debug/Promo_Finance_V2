@@ -66,7 +66,7 @@ export default function BenchmarkingSetorial() {
     const totalDespesas = contasPagar.reduce((a, c) => a + (c.valor || 0), 0);
     const receitasRecebidas = contasReceber
       .filter((c) => c.status === 'pago')
-      .reduce((a, c) => a + (c.valor_recebido || c.valor || 0), 0);
+      .reduce((a, c) => a + (c.valor_recebido ?? c.valor ?? 0), 0);
     const despesasPagas = contasPagar
       .filter((c) => c.status === 'pago')
       .reduce((a, c) => a + (c.valor_pago || c.valor || 0), 0);

@@ -63,7 +63,7 @@ export const FluxoCaixaContabil = ({ mes, ano, empresaId }: FluxoCaixaContabilPr
 
     // ATIVIDADES OPERACIONAIS
     const recebimentoClientes = recebimentosPeriodo.reduce(
-      (acc, r) => acc + (r.valor_recebido || r.valor || 0),
+      (acc, r) => acc + (r.valor_recebido ?? r.valor ?? 0),
       0
     );
 

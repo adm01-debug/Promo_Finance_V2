@@ -381,6 +381,7 @@ export function useAcordosParcelamento() {
                   // escrita — a condição vai na própria escrita para não
                   // reabrir um cancelado/quitado por outro caminho.
                   .eq('status', 'em_acordo')
+                  .select('id')
               )
           );
           // Erro de escrita PROPAGA: quitação parcialmente persistida não
@@ -390,6 +391,16 @@ export function useAcordosParcelamento() {
           if (quitarError) {
             logger.error('Erro ao marcar contas do acordo quitado como recebidas:', quitarError);
             throw quitarError;
+          }
+          // Zero linhas afetadas = a conta saiu de em_acordo entre o SELECT
+          // e o UPDATE (corrida) — trata como conflito e aborta antes de
+          // quitar, senão a cota dela ficaria sem registro.
+          if (resultados.some((r) => !r.data || r.data.length === 0)) {
+            const conflito = new Error(
+              'Uma conta saiu de em_acordo durante a quitação — retry seguro'
+            );
+            logger.error('Conflito de quitação do acordo de parcelamento:', conflito);
+            throw conflito;
           }
         }
 

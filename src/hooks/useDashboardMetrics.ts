@@ -264,7 +264,7 @@ export function useDashboardMetrics(filters: DashboardFilters) {
       current.receita += conta.valor ?? 0;
 
       if (conta.status === 'pago') {
-        current.pagos += conta.valor_recebido || conta.valor || 0;
+        current.pagos += conta.valor_recebido ?? conta.valor ?? 0;
       } else if (conta.status !== 'cancelado') {
         current.pendentes += (conta.valor ?? 0) - (conta.valor_recebido || 0);
       }

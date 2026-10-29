@@ -142,7 +142,7 @@ export function useCobrancaKPIs() {
         0
       );
       const totalRecuperado = (recuperadas || []).reduce(
-        (sum, c) => sum + (c.valor_recebido || c.valor),
+        (sum, c) => sum + (c.valor_recebido ?? c.valor),
         0
       );
       const qtdVencidas = vencidas?.length || 0;

@@ -56,7 +56,7 @@ export function RelatorioDrillDown() {
       const receitasRecebidas =
         receitas.data
           ?.filter((r) => r.status === 'pago')
-          .reduce((acc, r) => acc + (r.valor_recebido || r.valor), 0) || 0;
+          .reduce((acc, r) => acc + (r.valor_recebido ?? r.valor), 0) || 0;
 
       const totalDespesas = despesas.data?.reduce((acc, d) => acc + d.valor, 0) || 0;
       const despesasPagas =
