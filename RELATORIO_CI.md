@@ -1,5 +1,67 @@
 # RELATÓRIO CI — Promo Finance V2
 
+## CICLO 2026-10-29T22:00 UTC — fix/ci-workflows (documentação + prova de correção)
+
+> **Tipo de alteração:** documentação exclusivamente (PENDENCIAS.md + RELATORIO_CI.md)  
+> **TypeScript alterados:** 0 | **Dependências:** 0 | **Testes alterados:** 0  
+> **Branch:** `fix/ci-workflows` → `main`  
+> **Contexto:** Runners GitHub indisponíveis desde ~20:07Z (outage). Todos os checks ficaram `queued`.
+> Runs force-cancelados: `40954107694`, `40954107686`, `40954107714`, `40954107791`, `40954125258`.
+> Esta branch reúne a prova final após o outage de runners.
+
+### Baseline local — diagnóstico desta sessão cloud
+
+| Ferramenta | Resultado | Causa |
+| --- | --- | --- |
+| `bun install --frozen-lockfile` | ❌ 403 | Registry privado `europe-west4-npm.pkg.dev/lovable-core-prod/sandbox-npm-cache` inacessível nesta sessão |
+| `tsc --noEmit` | ❌ **1 erro** `TS2688: vitest/globals` | `node_modules/vitest` instalado mas tipos ausentes (pacote nativo `@vitest/coverage-v8` não baixou por 403); **NÃO é erro de código** |
+| `eslint` | ❌ crash | `node_modules/@eslint-community/eslint-utils/index.js` ausente (dir criado mas conteúdo bloqueado por 403); **NÃO é erro de código** |
+| `vitest run` | ❌ binary ausente | `.bin/vitest` não gerado (deps nativas `@swc/core-linux-x64-gnu`, `@rolldown/binding-linux-x64-gnu` bloqueadas por 403) |
+| Arquivos alterados vs main | ✅ **APENAS PENDENCIAS.md + RELATORIO_CI.md** | `git diff main...HEAD --name-only` confirma: 0 arquivos TypeScript, 0 testes, 0 deps |
+
+**Conclusão:** os erros acima são 100% causados por node_modules parcialmente instalado nesta sessão
+cloud — NÃO por mudanças de código. Comprovação: `git diff main...HEAD --name-only` = `PENDENCIAS.md`
+e `RELATORIO_CI.md` (apenas documentação). O CI do GitHub Actions usa seus próprios runners com acesso
+completo ao registry e valida a suíte real.
+
+**O baseline de referência é o da RODADA 2026-10-29 11:13 (SHA `cce6b36`, sessão anterior com
+node_modules completo):**
+
+| Métrica | Baseline 29/10 11:13 | Válido? | Motivo |
+| --- | --- | --- | --- |
+| Testes passando | **3023** (246 arq.) | ✅ Sim | 0 arquivos de teste alterados entre `cce6b36` e HEAD |
+| Erros TypeScript | **0** | ✅ Sim | 0 arquivos `.ts`/`.tsx` alterados |
+| Erros lint | **0** | ✅ Sim | 0 arquivos de código alterados |
+| Build Vite | OK | ✅ Sim | 0 arquivos de código alterados |
+
+### Tabela Baseline × Final — fix/ci-workflows
+
+| Métrica | Base `4078e81` (main) | Head `fix/ci-workflows` | Variação |
+| --- | --- | --- | --- |
+| Arquivos TypeScript alterados | — | **0** | **Nenhum** |
+| Dependências alteradas | — | **0** | **Nenhum** |
+| Testes alterados | — | **0** | **Nenhum** |
+| Testes passando | 3023 (baseline 11:13, inalterado) | 3023 (CI confirma quando verde) | **0 regressão** |
+| Erros TypeScript | 0 | 0 (nenhum código alterado) | 0 |
+| Erros lint | 0 | 0 (nenhum código alterado) | 0 |
+| Workflows failure documentados | 4 entradas | **4 entradas** | 0 |
+
+### Histórico de retriggers — outage GitHub (29/10 20:07Z–22:00Z+)
+
+| Tentativa | Run ID | SHA | Registrado | Status | Ação |
+| --- | --- | --- | --- | --- | --- |
+| 1 | [40948786385](https://github.com/adm01-debug/Promo_Finance_V2/actions/runs/40948786385) | `10c7d456` | 20:07Z | queued stuck | force-cancelado |
+| 2 | [40950408941](https://github.com/adm01-debug/Promo_Finance_V2/actions/runs/40950408941) | `8e87a8a` | 20:45Z | pending (0 jobs) | force-cancelado |
+| 3 | [40951672291](https://github.com/adm01-debug/Promo_Finance_V2/actions/runs/40951672291) | `cf07dd2` | 20:45Z | queued 25 min | force-cancelado |
+| 4 | [40952564856](https://github.com/adm01-debug/Promo_Finance_V2/actions/runs/40952564856) | `bb0db6e6` | 20:50Z | queued 30 min | force-cancelado |
+| 5 | [40953372282](https://github.com/adm01-debug/Promo_Finance_V2/actions/runs/40953372282) | `53a1e26b` | 20:56Z | queued | force-cancelado |
+| 6 | [40954107694](https://github.com/adm01-debug/Promo_Finance_V2/actions/runs/40954107694) | `edba6e4` | 21:01Z | queued 1h+ | force-cancelado |
+| **7** | aguardando | `fix/ci-workflows` | ~22:00Z | **em andamento** | — |
+
+Causa raiz: GitHub runners indisponíveis (outage). Não controlável por este lado.
+
+---
+
 ## CICLO 2026-10-29T20:24 UTC — PR #200 (documentação — inventário de pendências)
 
 > **Tipo de alteração:** documentação exclusivamente (PENDENCIAS.md + RELATORIO_CI.md)  
