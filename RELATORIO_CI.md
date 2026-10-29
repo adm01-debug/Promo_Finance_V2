@@ -40,7 +40,11 @@ Resultado verificado antes do merge — ver [PR #200](https://github.com/adm01-d
 >
 > **Retrigger CI 2026-10-29T21:10 UTC:** Run `40951672291` ficou em `queued` por mais de 25 min
 > (runs `40946487209` e `40946127050` de outras branches force-cancelados; runners GitHub indisponíveis).
-> Run force-cancelado. Este commit retrigga novamente o CI Pipeline.
+> Run force-cancelado. Este commit retriggou novamente o CI Pipeline.
+>
+> **Retrigger CI 2026-10-29T21:20 UTC:** Runs `40952564856`, `40952564840`, `40952564854`, `40952564825`
+> ficaram em `queued` por mais de 30 min (nenhum run `in_progress` no repositório — GitHub runners indisponíveis).
+> Runs force-cancelados. Este commit retrigga o CI Pipeline (4ª tentativa).
 
 ---
 
