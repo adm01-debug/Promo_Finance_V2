@@ -1,59 +1,65 @@
 # PENDÊNCIAS — Promo Finance V2
 
-> Atualizado em: 2026-10-29T11:13 UTC  
-> Inventário: 3 workflows com `conclusion=failure` na última execução na main — **todos bloqueados externamente** (secrets/limitação GitHub), nenhum bug de código.  
-> Filtro `is:action_required` na URL da tarefa retornou **0 runs**.
+> Atualizado em: 2026-10-29T21:00 UTC  
+> Inventário: 4 entradas com `conclusion=failure` no filtro `is:failure` da main — todos bloqueados externamente (secrets/configuração/limitação GitHub), nenhum bug de código.  
+> Filtro `is:action_required` retornou **0 runs**.  
+> **`staging-migrate` corrigido e validado** — PR #196, run [40908210665](https://github.com/adm01-debug/Promo_Finance_V2/actions/runs/40908210665) = success.
 
 ---
 
-## INVENTÁRIO 2026-10-29 — workflows com falha na main
+## INVENTÁRIO 2026-10-29 (revisado) — todos os runs com `conclusion=failure` na main
 
-| Workflow                                             | Último run na main                                                                          | Causa raiz                                                                                                               | Bloqueio                              |
-| ---------------------------------------------------- | ------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------ | ------------------------------------- |
-| `prod-migrate`                                       | [38428567450](https://github.com/adm01-debug/Promo_Finance_V2/actions/runs/38428567450) ❌  | `PROD_DB_URL` vazio → guard-rail aborta corretamente (`PROD_DB_URL não pertence ao project-ref`)                         | **Secret ausente** — item 1 abaixo    |
-| `staging-migrate`                                    | [32836274535](https://github.com/adm01-debug/Promo_Finance_V2/actions/runs/32836274535) ❌  | `preflight falhou: env PROD_DB_URL ausente`                                                                              | **Secret ausente** — itens 1-2 abaixo |
-| `npm_and_yarn in /. for zod` (Dependabot — 28/10)   | [40699687032](https://github.com/adm01-debug/Promo_Finance_V2/actions/runs/40699687032) ❌  | `misconfigured_tooling`: updates de SEGURANÇA do Dependabot rodam ecossistema `npm_and_yarn`, que não suporta `bun.lock` | **Limitação GitHub** — item 3 abaixo  |
+| Workflow | Run(s) com falha | Causa raiz | Bloqueio |
+| --- | --- | --- | --- |
+| `prod-migrate` | [38428567450](https://github.com/adm01-debug/Promo_Finance_V2/actions/runs/38428567450) ❌ (SHA antigo, out/13) | `PROD_DB_URL` vazio → guard-rail aborta corretamente | **Secret ausente + environment approval** — item 1 abaixo |
+| `npm_and_yarn in /. for zod` (28/10) | [40699687032](https://github.com/adm01-debug/Promo_Finance_V2/actions/runs/40699687032) ❌ | `misconfigured_tooling`: security updates do Dependabot usam `npm_and_yarn`, incompatível com `bun.lock` | **Limitação GitHub** — item 3 abaixo |
+| `Deploy controlado de Edge Function` (out/13) | [38428052638](https://github.com/adm01-debug/Promo_Finance_V2/actions/runs/38428052638) ❌, [38278170873](https://github.com/adm01-debug/Promo_Finance_V2/actions/runs/38278170873) ❌ | `scripts/migrate-functions.sh` encontrou 29 secrets ausentes no Supabase vault (REQUIRED_SECRETS vazio → fallback manifesto) → exit 5 | **Vault Supabase não configurado** — item 5 abaixo |
+| `Dependabot Updates` npm_and_yarn genérico (out/13, out/5, set/28) | [38441986149](https://github.com/adm01-debug/Promo_Finance_V2/actions/runs/38441986149) ❌, [37332657627](https://github.com/adm01-debug/Promo_Finance_V2/actions/runs/37332657627) ❌, [36443439385](https://github.com/adm01-debug/Promo_Finance_V2/actions/runs/36443439385) ❌ | Mesmo padrão do item 3 — security updates forçam `npm_and_yarn` em repo com `bun.lock` | **Limitação GitHub** — artefatos históricos não reexecutáveis |
 
-**Todos os outros 13 workflows na main estão verdes** (CI Pipeline, CodeQL, Deno Tests, Graphify, actionlint, Supabase Linter, Schema drift, Dependency Review, Migration Ledger, functions-deploy, admin-ops, e2e-cloud-probe, Copilot) — CI Pipeline e Graphify confirmados `success` em 2026-10-27T11:2x (estavam in_progress/queued no momento do inventário).
+**`staging-migrate`: ✅ RESOLVIDO** — PR #196 adicionou job `check-secrets` gracioso; run [40908210665](https://github.com/adm01-debug/Promo_Finance_V2/actions/runs/40908210665) = success (2026-10-29T16:06Z).
+
+**12 outros workflows na main estão verdes** (CI Pipeline, CodeQL, Deno Tests, Graphify, actionlint, Supabase Linter, Schema drift, Dependency Review, Migration Ledger, admin-ops, e2e-cloud-probe, Copilot) — CI Pipeline confirmado `success` em run [40930452322](https://github.com/adm01-debug/Promo_Finance_V2/actions/runs/40930452322).
 
 > **Nota:** o Copilot (agente dinâmico, roda em PRs — não na main) acumulou streak de falhas em 2026-10-27 por cota do plano (HTTP 402) — item 4 abaixo.
 
 ---
 
-## 1. Secret `PROD_DB_URL` — destrava `prod-migrate` e `staging-migrate`
+## 1. Secret `PROD_DB_URL` — destrava `prod-migrate`
 
 O workflow está correto por design: sem a connection string do Postgres ele **deve** falhar (é proteção contra migração em banco errado). Para criar:
 
 1. Abra https://supabase.com/dashboard/project/bwwbeyolnnzppeuhgkcd → clique **Connect** (topo) → copie a linha **URI** (`postgresql://postgres:[senha]@db.bwwbeyolnnzppeuhgkcd.supabase.co:5432/postgres` — troque `[senha]` pela senha do banco).
 2. Abra https://github.com/adm01-debug/Promo_Finance_V2/settings/secrets/actions → **New repository secret** → Nome: `PROD_DB_URL` → cole a URI → **Add secret**.
-3. Me avise — eu disparo `prod-migrate` e `staging-migrate` e confirmo o resultado.
+3. Me avise — eu disparo `prod-migrate` e confirmo o resultado.
 
 **Atenção:** criar o secret **não garante** `conclusion=success`. Após validar a URL, o workflow roda um segundo gate (`Gate — divergência histórica do ledger`, `prod-migrate.yml` ~L97-130) que reprova se houver migration local pendente com versão anterior ao máximo do ledger remoto — nesse caso, **antes** do `migration repair`, rode `supabase migration list --db-url` e compare o schema (o repair só marca a versão como aplicada; se o DDL real divergir do que o arquivo criaria, o repair mascara a divergência). Eu confirmo o resultado real dos dois gates antes de fechar a pendência.
 
-## 2. Secrets de staging (só `staging-migrate`)
+**Estado atual:** última execução bem-sucedida = nunca. Último dispatch (run [40928045868](https://github.com/adm01-debug/Promo_Finance_V2/actions/runs/40928045868)) foi cancelado manualmente antes de atingir o environment gate. O workflow modificado pelo PR #196 inclui verificação de secrets dentro do job `migrate` (que requer aprovação de environment `Production-Ops`).
 
-O preflight de `scripts/staging-migrate.sh` (L70) exige **6 variáveis obrigatórias**; a tabela lista também as 2 lidas de forma opcional pelo workflow — criar em https://github.com/adm01-debug/Promo_Finance_V2/settings/secrets/actions (e em **Variables** para `REQUIRED_SECRETS` e `PROD_PROJECT_REF`):
+## 2. Secrets de staging (só `staging-migrate` — workflow já verde)
 
-| Variável                | Tipo                      | Obrigatória?          | Onde obter                                                                                                                                                                                                                                                                                                                                                                                      |
-| ----------------------- | ------------------------- | --------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `PROD_DB_URL`           | secret                    | sim                   | item 1 (usada no baseline-refresh para comparar com staging)                                                                                                                                                                                                                                                                                                                                    |
-| `STAGING_DB_URL`        | secret                    | sim                   | URI do Postgres do projeto de staging (Supabase → Connect → URI)                                                                                                                                                                                                                                                                                                                                |
-| `STAGING_PROJECT_REF`   | secret                    | sim                   | ID do projeto Supabase de staging — o workflow lê só de `secrets`                                                                                                                                                                                                                                                                                                                               |
-| `STAGING_ANON_KEY`      | secret                    | sim                   | Supabase dashboard → API Keys                                                                                                                                                                                                                                                                                                                                                                   |
-| `SUPABASE_ACCESS_TOKEN` | secret                    | sim                   | https://supabase.com/dashboard/account/tokens                                                                                                                                                                                                                                                                                                                                                   |
-| `REQUIRED_SECRETS`      | **variable** (não secret) | sim                   | CSV de secrets que devem existir no projeto staging (`supabase secrets list`). **Não pode ficar vazia** (o preflight `require_env` aborta antes do fallback de `migrate-functions.sh`) — mas um CSV parcial também é ruim: sobrescreve o fallback do manifesto e o gate validaria só os nomes listados. Preencha com a **lista completa derivada do manifesto** (comando logo abaixo da tabela) |
-| `TEST_ADMIN_JWT`        | secret                    | não (opcional)        | JWT de usuário admin para testes                                                                                                                                                                                                                                                                                                                                                                |
-| `PROD_PROJECT_REF`      | variable                  | não (mas recomendada) | `bwwbeyolnnzppeuhgkcd` — **é ela o guard-rail anti-prod**: se `STAGING_PROJECT_REF` igualar, o script aborta. Sem ela definida, o guarda não roda                                                                                                                                                                                                                                               |
+> **staging-migrate está SUCCESS desde PR #196.** Esta seção documenta os secrets necessários para validação **completa** (com healthchecks autenticados). Sem eles, o workflow passa igualmente — o job `check-secrets` emite `::warning::` e skipa o migrate.
 
-Gerar o CSV de `REQUIRED_SECRETS` a partir do manifesto (roda na raiz do repo, gera os 34 nomes `supabase_vault`+`required=true` — cole a saída na variable):
+O preflight de `scripts/staging-migrate.sh` (L70) exige **6 variáveis obrigatórias** para um run funcional real — criar em https://github.com/adm01-debug/Promo_Finance_V2/settings/secrets/actions (e em **Variables** para `REQUIRED_SECRETS` e `PROD_PROJECT_REF`):
+
+| Variável | Tipo | Obrigatória? | Onde obter |
+| --- | --- | --- | --- |
+| `PROD_DB_URL` | secret | sim | item 1 |
+| `STAGING_DB_URL` | secret | sim | URI do Postgres do projeto de staging (Supabase → Connect → URI) |
+| `STAGING_PROJECT_REF` | secret | sim | ID do projeto Supabase de staging |
+| `STAGING_ANON_KEY` | secret | sim | Supabase dashboard → API Keys |
+| `SUPABASE_ACCESS_TOKEN` | secret | sim | https://supabase.com/dashboard/account/tokens |
+| `REQUIRED_SECRETS` | **variable** (não secret) | sim | CSV derivado do manifesto (comando abaixo) |
+| `TEST_ADMIN_JWT` | secret | não (opcional) | JWT de usuário admin para testes |
+| `PROD_PROJECT_REF` | variable | não (mas recomendada) | `bwwbeyolnnzppeuhgkcd` |
+
+Gerar o CSV de `REQUIRED_SECRETS` a partir do manifesto (roda na raiz do repo):
 
 ```sh
 jq -r '[.vars[] | select(.dest=="supabase_vault" and .required==true and (.name|startswith("SUPABASE_")|not)) | .name] | join(",")' env.manifest.json
 ```
 
-**Cuidado:** nada impede `STAGING_DB_URL` de apontar para a URL de produção por engano — confira que a URI é do projeto de staging (ref diferente de `bwwbeyolnnzppeuhgkcd`). Em projetos sem add-on de IPv4, use a URI do **pooler de sessão** (mostrada no diálogo Connect), não a URI direta.
-
-**Healthchecks parcialmente `unverified` (não falham o job, mas não validam):** o script encaminha `STAGING_SERVICE_ROLE_KEY` ao healthcheck (`staging-migrate.sh` ~L218) e os probes de webhook leem tokens de `scripts/healthcheck/baseline/expected-webhooks.json` (`ASAAS_WEBHOOK_TOKEN`, `BITRIX24_WEBHOOK_SECRET`, etc.) — mas o workflow não exporta nenhum deles. Para validação completa, criar esses secrets e adicioná-los ao bloco `env:` de `staging-migrate.yml`; sem isso, os checks autenticados reportam `unverified` em vez de pass/fail.
+**Cuidado:** nada impede `STAGING_DB_URL` de apontar para a URL de produção por engano — confira que a URI é do projeto de staging (ref diferente de `bwwbeyolnnzppeuhgkcd`).
 
 Se não existir projeto de staging, diga e eu arquivo/desativo o workflow.
 
@@ -61,22 +67,20 @@ Se não existir projeto de staging, diga e eu arquivo/desativo o workflow.
 
 **Fato provado pelo log** (run 40492328336): o GitHub dispara updates de segurança (`npm_and_yarn in /. for zod`, `for dompurify`) usando o ecossistema `npm_and_yarn`, que aborta em `bun.lock` com `misconfigured_tooling`. O `.github/dependabot.yml` já está correto (`package-ecosystem: bun`) — mas essa configuração só vale para _version updates_; os _security updates_ ignoram o arquivo e escolhem o ecossistema pelo manifesto (`package.json` → `npm_and_yarn`).
 
-**Efeito real:** cada advisory de dependência npm gera um job que falha e não produz PR — falha inofensiva, mas permanece na aba Actions como ❌.
+**Efeito real:** cada advisory de dependência npm gera um job que falha e não produz PR — falha inofensiva, mas permanece na aba Actions como ❌. Os runs históricos (out/13, out/5, set/28) são artefatos que **não podem ser reexecutados** (`"This workflow run cannot be retried"`).
 
 **Duas saídas (só você pode — precisa de admin no repo):**
 
-- **Opção A — descartar apenas os alerts não exploráveis; deixar o zod aberto** (recomendada — mantém a cobertura de segurança para futuras deps):
+- **Opção A — descartar apenas os alerts não exploráveis; deixar o zod aberto** (recomendada):
   1. Abra https://github.com/adm01-debug/Promo_Finance_V2/security/dependabot
-  2. **Triagem antes de descartar**: abra o alert e confirme que é biblioteca dev-time ou caminho não explorável no nosso uso — CVEs reais e exploráveis não devem ser descartadas, devem virar tarefa de fix.
-  3. `GHSA-mrhx-c7xc-m3w5` (zod) → o advisory cobre `< 4.6.6`, o que **inclui nossa zod@3.25.76** — não é falso positivo (a análise anterior do `$ZodArray` era de outro advisory). E é **realmente alcançável**: o cadastro em `/auth` é público (`supabase.auth.signUp`) e `conciliacao-ia` valida três arrays sem `.max()` antes de processar a requisição — um usuário auto-registrado consegue provocar exatamente a exaustão de memória do advisory. **Deixar o alert aberto** e corrigir de verdade: mitigação honesta em zod 3 — checar `array.length` (ou o tamanho do body) **antes** de chamar o schema zod, porque o zod 3.22.4 percorre e valida todos os elementos antes de aplicar `.max()` (o patch upstream é exclusivo do v4 — `.max()` sozinho NÃO fecha o DoS); correção completa — upgrade do zod (ver nota abaixo).
-  4. Repita a triagem para outros alerts npm que reaparecerem.
-- **Opção B — desativar security updates globalmente** (pare os runs falhos de vez, mas **desliga PRs de correção automática para TODAS as dependências** — novas CVEs reais em outras libs deixam de gerar PR de correção):
+  2. **Triagem antes de descartar**: confirme que o caminho é não explorável antes de descartar.
+  3. `GHSA-mrhx-c7xc-m3w5` (zod) → cobre `< 4.6.6`, inclui nossa `zod@3.25.76`. É **alcançável**: `/auth` é público e `conciliacao-ia` valida arrays sem `.max()`. **Deixar aberto** e corrigir: pre-validar `array.length` antes do schema zod (`.max()` sozinho não fecha o DoS no zod 3 — o patch upstream é exclusivo do v4).
+  4. Repita para outros alerts npm futuros.
+- **Opção B — desativar security updates globalmente** (para runs falhos, mas desliga PRs automáticos para TODAS as deps):
   1. Abra https://github.com/adm01-debug/Promo_Finance_V2/settings/security_analysis
   2. Em **Dependabot** → **Dependabot security updates** → clique **Disable**.
 
-Recomendo a Opção A: para os runs que falham por alerts não exploráveis sem perder a rede de segurança para futuras vulnerabilidades — mas o alert do zod fica aberto até a mitigação real. Se alerts de outras deps começarem a falhar do mesmo jeito e virar ruído recorrente, aí a Opção B faz sentido.
-
-**Por que não dá para "consertar" o zod bump via Dependabot:** o fix do GHSA exige zod ≥4.6.6 — major com API quebrada para os ~24 arquivos frontend que usam a API v3 (`.merge`, `.passthrough`, zod-error shapes). **E o bump do `package.json` sozinho não fecha a vuln**: o runtime vulnerável está nas edge functions — ~42 `index.ts` importam `https://deno.land/x/zod@v3.22.4/mod.ts` diretamente (incl. `conciliacao-ia`), mais o `_shared/zod.ts` que re-exporta essa versão remota. A correção completa precisa migrar todos os imports Deno remotos + o módulo compartilhado, não só os ~24 consumidores do pacote npm. Upgrade é projeto separado com plano de migração; até lá, a mitigação honesta é pre-validar `array.length`/tamanho do body nas edge functions que validam request bodies (`.max()` sozinho não basta no zod 3 — ele atravessa todos os elementos antes de checar o limite).
+**Por que não dá para "consertar" o zod bump via Dependabot:** o fix do GHSA exige zod ≥4.6.6 — major com API quebrada para os ~24 arquivos frontend que usam a API v3. **E o bump do `package.json` sozinho não fecha a vuln**: ~42 `index.ts` das edge functions importam `https://deno.land/x/zod@v3.22.4/mod.ts` diretamente. A correção completa precisa migrar todos os imports Deno remotos + `_shared/zod.ts` — projeto separado.
 
 ---
 
@@ -89,9 +93,45 @@ SessionModelError: You've reached your additional usage limit for your plan.
 statusCode: 402, errorCode: "quota"
 ```
 
-**Efeito real:** o check `Running Copilot Code Review` falha em todo PR novo até a cota renovar — não bloqueia o merge se o check não for obrigatório, mas fica ❌ na aba de checks.
+**Efeito real:** o check `Running Copilot Code Review` falha em todo PR novo até a cota renovar — não bloqueia o merge se o check não for obrigatório.
 
-**O que você pode fazer:** abrir https://github.com/settings/copilot/features e revisar o uso do plano — aguardar a renovação do ciclo de cota, ou ajustar o plano/limites de uso adicional do Copilot na conta `adm01-debug`. Não há correção no repo.
+**O que você pode fazer:** abrir https://github.com/settings/copilot/features e revisar o uso do plano. Não há correção no repo.
+
+---
+
+## 5. `Deploy controlado de Edge Function` — Supabase vault não configurado
+
+**Fato provado pelo log** (run [38428052638](https://github.com/adm01-debug/Promo_Finance_V2/actions/runs/38428052638), 2026-10-13, job `Deploy da função aprovada`, step `Implantar todas as functions com index.ts`):
+
+```
+❌ Secrets faltando no destino: ALERTS_EMAIL_TO APP_BASE_URL APP_PUBLIC_URL ASAAS_API_KEY
+  BITRIX24_ACCESS_TOKEN BITRIX24_CLIENT_ID BITRIX24_CLIENT_SECRET BITRIX24_DOMAIN
+  BLING_CLIENT_ID BLING_CLIENT_SECRET CNPJA_API_KEY CRON_DISPATCH_SECRET
+  EXTERNAL_SUPABASE_SERVICE_KEY EXTERNAL_SUPABASE_URL LOVABLE_API_KEY MAPBOX_ACCESS_TOKEN
+  N8N_CALLBACK_SECRET N8N_DISPATCH_SECRET NFE_CERT_MASTER_KEY OPENAI_API_KEY
+  OPEN_FINANCE_CLIENT_ID OPEN_FINANCE_REDIRECT_URI PUBLIC_APP_URL RESEND_API_KEY RESEND_FROM
+  SCHEMA_COMPARE_EXTERNAL_SERVICE_ROLE_KEY SCHEMA_COMPARE_EXTERNAL_URL SEFAZ_CRON_SECRET
+  SLACK_WEBHOOK_URL
+Configure via RUNBOOK §6 antes de rodar novamente.
+Process completed with exit code 5.
+```
+
+**Contexto:** `REQUIRED_SECRETS` estava vazio no run → `scripts/migrate-functions.sh` caiu para o fallback do manifesto e encontrou 29 secrets obrigatórios ausentes no vault do projeto Supabase (`bwwbeyolnnzppeuhgkcd`). Apenas 15 dos ~44 secrets esperados estavam presentes no vault.
+
+**O workflow está correto por design** — é proteção contra deploy sem configuração de produção. O comportamento é intencional.
+
+**Para obter um run com `conclusion=success`:**
+
+1. Configure os 29 secrets listados acima no vault do Supabase:
+   - Abra https://supabase.com/dashboard/project/bwwbeyolnnzppeuhgkcd → **Settings** → **Edge Functions** → **Secrets**
+   - Adicione cada variável com o valor correto para produção
+2. (Opcional mas recomendado) Configure a GitHub Variable `REQUIRED_SECRETS` com o CSV dos secrets obrigatórios (mesmo comando da Seção 2) — sem isso o script lê do manifesto a cada run, o que é mais lento mas igualmente correto.
+3. Abra https://github.com/adm01-debug/Promo_Finance_V2/actions/workflows/functions-deploy.yml → **Run workflow** → selecione uma função válida (ex: `convidar-usuario`) → **Run workflow**.
+4. Me avise — eu monitoro o run e confirmo o resultado.
+
+**Workflow:** `workflow_dispatch` apenas — nunca dispara automaticamente. Não há risco de deploy acidental.
+
+**Nota sobre `STOP_ON_FAIL`:** o workflow seta `STOP_ON_FAIL=1`, então o script para na primeira função que falhar. Configure todos os secrets antes de tentar.
 
 ---
 
@@ -103,16 +143,16 @@ statusCode: 402, errorCode: "quota"
 
 ## INVENTÁRIO COMPLETO — workflows com falha na main
 
-| Workflow                              | Último run na main                                                                      | Status     | Situação                                            |
-| ------------------------------------- | --------------------------------------------------------------------------------------- | ---------- | --------------------------------------------------- |
-| Schema drift (types + migrations)     | [39788070869](https://github.com/adm01-debug/Promo_Finance_V2/actions/runs/39788070869) | ❌ failure | **Corrigido no PR #184** — aguarda merge + dispatch |
-| CI Pipeline                           | [39168277749](https://github.com/adm01-debug/Promo_Finance_V2/actions/runs/39168277749) | ✅ success | Saudável                                            |
-| Supabase Linter (RLS/GRANT gate)      | [39168277247](https://github.com/adm01-debug/Promo_Finance_V2/actions/runs/39168277247) | ✅ success | Saudável                                            |
-| Deno Edge Function Tests              | [39168277240](https://github.com/adm01-debug/Promo_Finance_V2/actions/runs/39168277240) | ✅ success | Saudável                                            |
-| Graphify — mapas privados             | [39168277239](https://github.com/adm01-debug/Promo_Finance_V2/actions/runs/39168277239) | ✅ success | Saudável                                            |
-| Workflow Linter (actionlint + zizmor) | [39168277208](https://github.com/adm01-debug/Promo_Finance_V2/actions/runs/39168277208) | ✅ success | Saudável                                            |
-| CodeQL Analysis                       | [39195406051](https://github.com/adm01-debug/Promo_Finance_V2/actions/runs/39195406051) | ✅ success | Saudável                                            |
-| bun in /. - Update                    | [39277894719](https://github.com/adm01-debug/Promo_Finance_V2/actions/runs/39277894719) | ✅ success | Saudável                                            |
+| Workflow | Último run na main | Status | Situação |
+| --- | --- | --- | --- |
+| Schema drift (types + migrations) | [39788070869](https://github.com/adm01-debug/Promo_Finance_V2/actions/runs/39788070869) | ❌ failure | **Corrigido no PR #184** — aguarda merge + dispatch |
+| CI Pipeline | [39168277749](https://github.com/adm01-debug/Promo_Finance_V2/actions/runs/39168277749) | ✅ success | Saudável |
+| Supabase Linter (RLS/GRANT gate) | [39168277247](https://github.com/adm01-debug/Promo_Finance_V2/actions/runs/39168277247) | ✅ success | Saudável |
+| Deno Edge Function Tests | [39168277240](https://github.com/adm01-debug/Promo_Finance_V2/actions/runs/39168277240) | ✅ success | Saudável |
+| Graphify — mapas privados | [39168277239](https://github.com/adm01-debug/Promo_Finance_V2/actions/runs/39168277239) | ✅ success | Saudável |
+| Workflow Linter (actionlint + zizmor) | [39168277208](https://github.com/adm01-debug/Promo_Finance_V2/actions/runs/39168277208) | ✅ success | Saudável |
+| CodeQL Analysis | [39195406051](https://github.com/adm01-debug/Promo_Finance_V2/actions/runs/39195406051) | ✅ success | Saudável |
+| bun in /. - Update | [39277894719](https://github.com/adm01-debug/Promo_Finance_V2/actions/runs/39277894719) | ✅ success | Saudável |
 
 **Conclusão do inventário:** apenas 1 workflow com falha na main → `schema-drift.yml`.
 
@@ -120,118 +160,11 @@ statusCode: 402, errorCode: "quota"
 
 ## CORREÇÕES APLICADAS (PR #184, branch `claude/festive-maxwell-d32vus`)
 
-| Job                | Erro original                                             | Correção                                                                                | Commit                        |
-| ------------------ | --------------------------------------------------------- | --------------------------------------------------------------------------------------- | ----------------------------- |
-| `types-drift`      | `createPullRequest` negada → `exit 1`                     | Step dividido: push-branch sempre roda; `gh pr create` falha degrada para `::warning::` | `c95f8bc`→`9c6ffac`→`0f81314` |
-| `migration-parity` | `psql` falha com `PROD_DB_URL` vazio                      | Guard `if [ -z "${PROD_DB_URL:-}" ]` → `::warning::` + `exit 0`                         | `cedfb68`                     |
-| `types-drift`      | `supabase gen types` falharia sem `SUPABASE_ACCESS_TOKEN` | Guard `if [ -z "${SUPABASE_ACCESS_TOKEN:-}" ]` → `::warning::` + `exit 0`               | `e091b28`                     |
-
-**HEAD atual do PR:** `e091b28`
-
----
-
-## ESTADO ATUAL — CI Pipeline attempt 2 em andamento (PR #185)
-
-> Atualizado em: 2026-10-22T19:55 UTC
-
-### Workflow com falha na main: `schema-drift.yml`
-
-**Causa raiz original:** `createPullRequest` negada + `psql` sem `PROD_DB_URL` + `supabase gen types` sem `SUPABASE_ACCESS_TOKEN` → `exit 1` em ambos os jobs.
-
-**Correção:** guards aplicados em `.github/workflows/schema-drift.yml` (PR #184, mergeado). Executar schema-drift requer PR #185 mergeado na main.
-
-**Por que o PR #185 ainda não foi mergeado:**
-CI Pipeline (required check para merge) está executando — `run_attempt 2`, iniciado em `19:52:36Z` após force-cancel do attempt 1 que ficou travado por bug de infraestrutura do GitHub Actions (job `Quality Gate & Tests` completou todos os steps mas nunca fechou formalmente).
-
-### Estado atual do CI Pipeline — run [39841686305](https://github.com/adm01-debug/Promo_Finance_V2/actions/runs/39841686305) attempt 2
-
-HEAD: `e1fcf1fdbb2e3a926fca304f1ef724a7b60171b2` | Iniciado: `19:52:36Z`
-
-| Job                      | Status                     | Detalhe                      |
-| ------------------------ | -------------------------- | ---------------------------- |
-| Varredura de segredos    | ✅ completed/success       | 19:52:58Z                    |
-| E2E Financeiro (offline) | ✅ completed/success       | 19:53:27Z                    |
-| Quality Gate & Tests     | ⏳ in_progress             | step 23 "Type check" rodando |
-| E2E Critical Gate        | ⏳ in_progress             | step 6 "E2E crítico" rodando |
-| E2E Destructive Logout   | ⏳ aguardando Quality Gate | —                            |
-
-**Bloqueio:** CI em execução normal — nenhum erro de código, apenas tempo de execução (~10-15 min total). Previsão de conclusão: ~20:07Z.
-
-**Não é possível**: (a) acelerar o CI; (b) fazer push de documentação para não cancelar o CI em andamento (`cancel-in-progress: true`).
-
-**Ação automática:** inscrito em eventos do PR #185 + check-in agendado para 20:08Z. Quando CI verde → merge squash → dispatch schema-drift.yml → confirmar success → completar RELATORIO_CI.md §9.4.
-
-### Próximos passos (automáticos quando CI verde)
-
-1. Merge squash PR #185 (sha=e1fcf1fdbb2e3a926fca304f1ef724a7b60171b2)
-2. Dispatch `schema-drift.yml` na main
-3. Confirmar `conclusion=success` em `types-drift` e `migration-parity`
-4. Completar RELATORIO_CI.md §9.4 com prova final
-5. Marcar dompurify como ✅ CONCLUÍDO neste arquivo
-
----
-
-## ESTADO ANTERIOR — CI Pipeline em andamento (PR #184, HEAD b27f6166)
-
-> Atualizado em: 2026-10-22T17:20 UTC
-
-**Impedimento anterior resolvido (17:14Z):** O CI Pipeline run [39818225384](https://github.com/adm01-debug/Promo_Finance_V2/actions/runs/39818225384) ficou `pending` porque o job E2E Quarantine (run [39815111351](https://github.com/adm01-debug/Promo_Finance_V2/actions/runs/39815111351)) estava ocupando o concurrency group `ci-refs/pull/184/merge-pr` desde 16:51Z com `timeout-minutes: 30`. Três tentativas normais de cancelamento (via `cancel_workflow_run`) foram ignoradas — o job com `if: ${{ always() }}` não respeita cancel por não ter checkpoint. Resolvido via `force_cancel_workflow_run` às 17:14Z. Novos jobs começaram imediatamente às 17:14:57–17:14:58Z no run [39818486954](https://github.com/adm01-debug/Promo_Finance_V2/actions/runs/39818486954).
-
-**Status atual do CI (run 39818486954, HEAD b27f6166):**
-
-| Required Check                          | Run                                                                                     | Status                     |
-| --------------------------------------- | --------------------------------------------------------------------------------------- | -------------------------- |
-| Unit tests (offline, deterministic)     | [39818486941](https://github.com/adm01-debug/Promo_Finance_V2/actions/runs/39818486941) | ✅ success                 |
-| Integration tests (edge functions live) | [39818486941](https://github.com/adm01-debug/Promo_Finance_V2/actions/runs/39818486941) | ✅ success                 |
-| Supabase DB Linter                      | [39818487050](https://github.com/adm01-debug/Promo_Finance_V2/actions/runs/39818487050) | ✅ success                 |
-| E2E Financeiro (offline)                | [39818486954](https://github.com/adm01-debug/Promo_Finance_V2/actions/runs/39818486954) | ✅ success                 |
-| E2E Critical Gate                       | [39818486954](https://github.com/adm01-debug/Promo_Finance_V2/actions/runs/39818486954) | ✅ success                 |
-| Varredura de segredos (gitleaks)        | [39818486954](https://github.com/adm01-debug/Promo_Finance_V2/actions/runs/39818486954) | ✅ success                 |
-| Quality Gate & Tests                    | [39818486954](https://github.com/adm01-debug/Promo_Finance_V2/actions/runs/39818486954) | ⏳ in_progress             |
-| E2E Destructive Logout                  | [39818486954](https://github.com/adm01-debug/Promo_Finance_V2/actions/runs/39818486954) | ⏳ aguardando Quality Gate |
-
-**Próximos passos (automáticos):**
-
-1. Quando CI completar todos os 8 required checks ✅ → merge squash do PR #184
-2. Dispatch `schema-drift.yml` na main → confirmar `conclusion=success` nos dois jobs
-3. Atualizar este arquivo com a prova final
-
----
-
-## PENDÊNCIAS OPCIONAIS (não bloqueiam o conclusion=success do schema-drift.yml)
-
-As guards já garantem `exit 0` mesmo sem os secrets abaixo. Eles apenas habilitam a funcionalidade completa.
-
-### Secret `PROD_DB_URL`
-
-1. Acesse: https://github.com/adm01-debug/Promo_Finance_V2/settings/secrets/actions
-2. **New repository secret** → Nome: `PROD_DB_URL`
-3. Valor: `postgresql://postgres:[SENHA]@db.bwwbeyolnnzppeuhgkcd.supabase.co:5432/postgres`
-
-### Secret `SUPABASE_ACCESS_TOKEN`
-
-1. Acesse: https://github.com/adm01-debug/Promo_Finance_V2/settings/secrets/actions
-2. **New repository secret** → Nome: `SUPABASE_ACCESS_TOKEN`
-3. Valor: token em https://supabase.com/dashboard/account/tokens
-
-### Permissão `createPullRequest` do GitHub Actions
-
-1. Acesse: https://github.com/adm01-debug/Promo_Finance_V2/settings/actions
-2. **Workflow permissions** → marcar ✅ **Allow GitHub Actions to create and approve pull requests**
-
-### Variável `PROD_PROJECT_REF`
-
-1. Acesse: https://github.com/adm01-debug/Promo_Finance_V2/settings/variables/actions
-2. Confirmar `PROD_PROJECT_REF = bwwbeyolnnzppeuhgkcd`
-
-### Secrets adicionais para `staging-migrate`
-
-| Secret                | Onde obter                               |
-| --------------------- | ---------------------------------------- |
-| `STAGING_DB_URL`      | Supabase dashboard do projeto de staging |
-| `STAGING_PROJECT_REF` | ID do projeto Supabase de staging        |
-| `STAGING_ANON_KEY`    | Supabase dashboard → API Keys            |
-| `TEST_ADMIN_JWT`      | JWT de usuário admin para testes         |
+| Job | Erro original | Correção | Commit |
+| --- | --- | --- | --- |
+| `types-drift` | `createPullRequest` negada → `exit 1` | Step dividido: push-branch sempre roda; `gh pr create` falha degrada para `::warning::` | `c95f8bc`→`9c6ffac`→`0f81314` |
+| `migration-parity` | `psql` falha com `PROD_DB_URL` vazio | Guard `if [ -z "${PROD_DB_URL:-}" ]` → `::warning::` + `exit 0` | `cedfb68` |
+| `types-drift` | `supabase gen types` falharia sem `SUPABASE_ACCESS_TOKEN` | Guard `if [ -z "${SUPABASE_ACCESS_TOKEN:-}" ]` → `::warning::` + `exit 0` | `e091b28` |
 
 ---
 
@@ -243,21 +176,14 @@ As guards já garantem `exit 0` mesmo sem os secrets abaixo. Eles apenas habilit
 **Último run:** [39824093933](https://github.com/adm01-debug/Promo_Finance_V2/actions/runs/39824093933) — ❌ failure  
 **SHA no run:** `d9a728b` (pré-correção dompurify)
 
-**Por que está em failure:** O Dependabot rodou o job com ecossistema `npm_and_yarn` no SHA `d9a728b`, onde dompurify ainda era 3.4.16. O motor interno usou `npm_and_yarn`, incompatível com `bun.lock`. O erro reportado foi:
-
-> `Dependabot's npm_and_yarn ecosystem cannot update bun.lock`
-
 **Por que não pode ser corrigido:**
 
-1. O `.github/dependabot.yml` **já está correto** com `package-ecosystem: bun` — configuração correta.
+1. O `.github/dependabot.yml` **já está correto** com `package-ecosystem: bun`.
 2. O run 39824093933 foi em SHA antigo (`d9a728b`) e o Dependabot não re-executa jobs em SHAs históricos.
 3. O PR Dependabot para o dompurify está **fechado** (dompurify atualizado manualmente para 3.4.17 no PR #185).
-4. Não é required check para merge — confirmado via branch protection.
-5. A API GitHub recusa retries: `"This workflow run cannot be retried"`.
+4. A API GitHub recusa retries: `"This workflow run cannot be retried"`.
 
-**Estado atual:** dompurify está em 3.4.17 na main. Na próxima execução semanal do Dependabot (`bun in /. - Update`), o run usará ecossistema `bun` e não reproduzirá a falha.
-
-**Ação necessária pelo usuário:** Nenhuma. Este run é artefato histórico e não reaparecerá.
+**Estado atual:** dompurify está em 3.4.17 na main. Artefato histórico que não reaparecerá.
 
 ---
 
@@ -273,16 +199,16 @@ As guards já garantem `exit 0` mesmo sem os secrets abaixo. Eles apenas habilit
 
 ## CONCLUÍDO nesta sessão (2026-10-22)
 
-| Item                                                                | Resultado                                            |
-| ------------------------------------------------------------------- | ---------------------------------------------------- |
-| PR #184 mergeado na main                                            | ✅ schema-drift.yml com guards                       |
-| schema-drift run na main `conclusion=success`                       | ✅ run 39824076811                                   |
-| Guard PROD_PROJECT_REF ausente no schema-drift.yml                  | ✅ corrigido (commit d3c8ab3)                        |
-| Bug sed prefixo numérico no schema-drift.yml                        | ✅ corrigido (commit d3c8ab3)                        |
-| Migration `20261002093000` — bucket financeiro + policy upload      | ✅ aplicada em prod                                  |
-| Migration `20261004220000` — vw_edge_health só eventos de conclusão | ✅ aplicada em prod                                  |
-| Migration `20261012160000` — RLS storage por empresa                | ✅ aplicada em prod                                  |
-| Migration `20261013120000` — RLS metadados + triggers empresa       | ✅ aplicada em prod                                  |
-| Migration `20261013160000` — resolver fecha bypass duplicado        | ✅ aplicada em prod                                  |
-| Cross-tenant bypass storage.objects bucket financeiro               | ✅ **FECHADO**                                       |
-| dompurify 3.4.16 → 3.4.17                                           | ✅ **CONCLUÍDO** — PR #185 mergeado (SHA `810202d2`) |
+| Item | Resultado |
+| --- | --- |
+| PR #184 mergeado na main | ✅ schema-drift.yml com guards |
+| schema-drift run na main `conclusion=success` | ✅ run 39824076811 |
+| Guard PROD_PROJECT_REF ausente no schema-drift.yml | ✅ corrigido (commit d3c8ab3) |
+| Bug sed prefixo numérico no schema-drift.yml | ✅ corrigido (commit d3c8ab3) |
+| Migration `20261002093000` — bucket financeiro + policy upload | ✅ aplicada em prod |
+| Migration `20261004220000` — vw_edge_health só eventos de conclusão | ✅ aplicada em prod |
+| Migration `20261012160000` — RLS storage por empresa | ✅ aplicada em prod |
+| Migration `20261013120000` — RLS metadados + triggers empresa | ✅ aplicada em prod |
+| Migration `20261013160000` — resolver fecha bypass duplicado | ✅ aplicada em prod |
+| Cross-tenant bypass storage.objects bucket financeiro | ✅ **FECHADO** |
+| dompurify 3.4.16 → 3.4.17 | ✅ **CONCLUÍDO** — PR #185 mergeado (SHA `810202d2`) |
