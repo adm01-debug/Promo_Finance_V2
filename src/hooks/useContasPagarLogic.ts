@@ -518,9 +518,10 @@ export function useContasPagarLogic() {
   const getApprovalStatus = (conta: ContaPagarType) => {
     const precisaAprovacao = requerAprovacao(conta.valor);
     const aprovacaoStatus = aprovacaoStatusMap.get(conta.id);
-    // solicitação aprovada conta como aprovação mesmo quando o legado
-    // não preencheu aprovado_por na própria conta
-    const estaAprovado = !!conta.aprovado_por || aprovacaoStatus === 'aprovado';
+    // Mesma precedência do diálogo: a solicitação mais recente decide —
+    // pendente/rejeitada revoga uma aprovação antiga gravada na conta;
+    // sem solicitação, vale o estado legado de aprovado_por.
+    const estaAprovado = aprovacaoStatus ? aprovacaoStatus === 'aprovado' : !!conta.aprovado_por;
     const temSolicitacaoPendente = aprovacaoStatus === 'pendente';
     const foiRejeitado = aprovacaoStatus === 'rejeitado';
     const aguardandoSolicitacao =
