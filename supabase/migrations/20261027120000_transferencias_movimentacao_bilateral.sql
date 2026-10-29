@@ -504,39 +504,40 @@ AS $$
 DECLARE
   v_total NUMERIC;
   v_valor_conta NUMERIC;
-  v_empresa UUID;
-  v_cp_ids UUID[];
-  v_cr_ids UUID[];
+  v_cp_pairs UUID[][];
+  v_cr_pairs UUID[][];
+  v_pair UUID[];
   v_id UUID;
+  v_emp UUID;
 BEGIN
   -- Tenant: conta_pagar_id/conta_receber_id podem apontar para título de
   -- outra empresa e o UPDATE SECURITY DEFINER ignoraria a RLS — valida a
   -- empresa do vínculo antes de tocar no título (mesma regra da seção 3).
   -- NEW é indefinido em DELETE e OLD em INSERT — qualquer referência
-  -- cruzada aborta o gatilho, então tudo é resolvido por TG_OP. Em UPDATE
-  -- os DOIS lados do vínculo são recomputados: trocar conta_pagar_id de A
-  -- para B devolve o valor a A e credita B.
+  -- cruzada aborta o gatilho, então tudo é resolvido por TG_OP. Cada vínculo
+  -- carrega a empresa do seu lado: num UPDATE que transfere a movimentação
+  -- entre empresas junto com o título, o vínculo antigo valida contra
+  -- OLD.empresa_id e o novo contra NEW.empresa_id.
   IF TG_OP = 'DELETE' THEN
-    v_empresa := OLD.empresa_id;
-    v_cp_ids := ARRAY[OLD.conta_pagar_id];
-    v_cr_ids := ARRAY[OLD.conta_receber_id];
+    v_cp_pairs := ARRAY[[OLD.conta_pagar_id, OLD.empresa_id]];
+    v_cr_pairs := ARRAY[[OLD.conta_receber_id, OLD.empresa_id]];
   ELSIF TG_OP = 'UPDATE' THEN
-    v_empresa := NEW.empresa_id;
-    v_cp_ids := ARRAY[OLD.conta_pagar_id, NEW.conta_pagar_id];
-    v_cr_ids := ARRAY[OLD.conta_receber_id, NEW.conta_receber_id];
+    v_cp_pairs := ARRAY[[OLD.conta_pagar_id, OLD.empresa_id], [NEW.conta_pagar_id, NEW.empresa_id]];
+    v_cr_pairs := ARRAY[[OLD.conta_receber_id, OLD.empresa_id], [NEW.conta_receber_id, NEW.empresa_id]];
   ELSE
-    v_empresa := NEW.empresa_id;
-    v_cp_ids := ARRAY[NEW.conta_pagar_id];
-    v_cr_ids := ARRAY[NEW.conta_receber_id];
+    v_cp_pairs := ARRAY[[NEW.conta_pagar_id, NEW.empresa_id]];
+    v_cr_pairs := ARRAY[[NEW.conta_receber_id, NEW.empresa_id]];
   END IF;
 
   -- Atualizar valor_pago em contas_pagar
-  FOREACH v_id IN ARRAY v_cp_ids LOOP
+  FOREACH v_pair SLICE 1 IN ARRAY v_cp_pairs LOOP
+    v_id := v_pair[1];
+    v_emp := v_pair[2];
     CONTINUE WHEN v_id IS NULL;
     IF NOT EXISTS (
-      SELECT 1 FROM contas_pagar WHERE id = v_id AND empresa_id = v_empresa
+      SELECT 1 FROM contas_pagar WHERE id = v_id AND empresa_id = v_emp
     ) THEN
-      RAISE EXCEPTION 'movimentacao vinculada a conta_pagar de outra empresa (%)', v_empresa;
+      RAISE EXCEPTION 'movimentacao vinculada a conta_pagar de outra empresa (%)', v_emp;
     END IF;
 
     SELECT COALESCE(SUM(valor), 0) INTO v_total
@@ -556,12 +557,14 @@ BEGIN
   END LOOP;
 
   -- Atualizar valor_recebido em contas_receber
-  FOREACH v_id IN ARRAY v_cr_ids LOOP
+  FOREACH v_pair SLICE 1 IN ARRAY v_cr_pairs LOOP
+    v_id := v_pair[1];
+    v_emp := v_pair[2];
     CONTINUE WHEN v_id IS NULL;
     IF NOT EXISTS (
-      SELECT 1 FROM contas_receber WHERE id = v_id AND empresa_id = v_empresa
+      SELECT 1 FROM contas_receber WHERE id = v_id AND empresa_id = v_emp
     ) THEN
-      RAISE EXCEPTION 'movimentacao vinculada a conta_receber de outra empresa (%)', v_empresa;
+      RAISE EXCEPTION 'movimentacao vinculada a conta_receber de outra empresa (%)', v_emp;
     END IF;
 
     SELECT COALESCE(SUM(valor), 0) INTO v_total
@@ -589,6 +592,19 @@ CREATE TRIGGER trg_sync_valor_pago
   AFTER INSERT OR DELETE OR UPDATE OF deleted_at, conta_pagar_id, conta_receber_id
   ON public.movimentacoes
   FOR EACH ROW EXECUTE FUNCTION fn_sync_valor_pago_movimentacao();
+
+--    Saneamento histórico: rascunhos criados antes da guarda podem ter uma
+--    partida única que segue desequilibrando os demonstrativos — remove as
+--    partidas de lançamentos 'rascunho' cujo D-C não fecha a zero.
+DELETE FROM public.partidas_contabeis p
+USING public.lancamentos_contabeis l
+WHERE p.lancamento_id = l.id
+  AND l.status = 'rascunho'
+  AND COALESCE((
+        SELECT SUM(CASE WHEN p2.tipo = 'D' THEN p2.valor ELSE -p2.valor END)
+        FROM public.partidas_contabeis p2
+        WHERE p2.lancamento_id = l.id
+      ), 0) <> 0;
 
 --    user_id NOT NULL DEFAULT auth.uid() (schema alternativo): a sessão
 --    de migration não tem JWT e o backfill contábil abortaria na primeira
