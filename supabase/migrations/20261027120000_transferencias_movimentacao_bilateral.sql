@@ -441,6 +441,18 @@ BEGIN
         -- idem à saída: entrada soft-deleted já creditou o destino no
         -- regime antigo e o crédito nunca foi revertido
     );
+
+  -- Saídas externas já registradas com o marcador interno (trigger desta
+  -- migration aplicado antes da correção, ou réplica parcial): o NOT EXISTS
+  -- acima as pula, então corrige o marcador in-place — sem reescrever saldo
+  -- (o efeito já aconteceu) e sem gerar lançamento duplicado.
+  UPDATE movimentacoes m
+  SET origem = 'transferencia_externa'
+  FROM transferencias t
+  WHERE m.transferencia_id = t.id
+    AND m.tipo = 'saida'
+    AND t.conta_destino_id IS NULL
+    AND m.origem = 'transferencia';
 END $$;
 
 -- 7) Agregações de receita/despesa excluem transferências internas.

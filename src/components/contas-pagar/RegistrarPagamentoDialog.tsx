@@ -99,6 +99,7 @@ export function RegistrarPagamentoDialog({
     data: solicitacaoPendente,
     isPending: carregandoSolicitacao,
     isError: erroSolicitacao,
+    refetch: recarregarSolicitacao,
   } = useQuery({
     queryKey: ['solicitacao-pendente', conta?.id],
     queryFn: async () => {
@@ -123,11 +124,13 @@ export function RegistrarPagamentoDialog({
   // Enquanto a consulta não resolve (carregando ou erro), trata como
   // bloqueado — liberar antes traria de volta o legado e permitiria pagar
   // sob uma rejeição/pendência que ainda não apareceu.
+  const consultaSolicitacaoNaoResolvida =
+    requerAprovacao && (carregandoSolicitacao || erroSolicitacao);
   const estaAprovado = useMemo(() => {
-    if (requerAprovacao && (carregandoSolicitacao || erroSolicitacao)) return false;
+    if (consultaSolicitacaoNaoResolvida) return false;
     if (solicitacaoPendente != null) return solicitacaoPendente.status === 'aprovado';
     return conta?.aprovado_por != null && conta?.aprovado_em != null;
-  }, [conta, solicitacaoPendente, requerAprovacao, carregandoSolicitacao, erroSolicitacao]);
+  }, [conta, solicitacaoPendente, consultaSolicitacaoNaoResolvida]);
 
   const aprovacaoBloqueada = requerAprovacao && !estaAprovado;
   const temSolicitacaoPendente = solicitacaoPendente?.status === 'pendente';
@@ -406,7 +409,21 @@ export function RegistrarPagamentoDialog({
               </Button>
 
               {/* Show "Request Approval" button if approval is required but not granted */}
-              {aprovacaoBloqueada && !temSolicitacaoPendente ? (
+              {/* Consulta sem resposta: nem paga nem solicita — um pedido novo
+                  prevaleceria sobre uma aprovação vigente ainda não carregada.
+                  Em erro, oferece nova tentativa explícita. */}
+              {requerAprovacao && erroSolicitacao ? (
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() => recarregarSolicitacao()}
+                  className="gap-2"
+                >
+                  Tentar novamente
+                </Button>
+              ) : aprovacaoBloqueada &&
+                !temSolicitacaoPendente &&
+                !consultaSolicitacaoNaoResolvida ? (
                 <Button
                   type="button"
                   onClick={handleSolicitarAprovacao}
