@@ -1,7 +1,8 @@
 # PENDÊNCIAS — Promo Finance V2
 
-> Atualizado em: 2026-10-29T21:00 UTC  
+> Atualizado em: 2026-10-29T22:00 UTC  
 > Inventário: 4 entradas com `conclusion=failure` no filtro `is:failure` da main — todos bloqueados externamente (secrets/configuração/limitação GitHub), nenhum bug de código.  
+> §6: bloqueios de infraestrutura desta sessão cloud (runners GitHub outage + registry privado 403) documentados.  
 > Filtro `is:action_required` retornou **0 runs**.  
 > **`staging-migrate` corrigido e validado** — PR #196, run [40908210665](https://github.com/adm01-debug/Promo_Finance_V2/actions/runs/40908210665) = success.
 
@@ -132,6 +133,61 @@ Process completed with exit code 5.
 **Workflow:** `workflow_dispatch` apenas — nunca dispara automaticamente. Não há risco de deploy acidental.
 
 **Nota sobre `STOP_ON_FAIL`:** o workflow seta `STOP_ON_FAIL=1`, então o script para na primeira função que falhar. Configure todos os secrets antes de tentar.
+
+---
+
+## 6. Bloqueios de infraestrutura desta sessão cloud (29/10 — auto-resolvem)
+
+### 6a. Outage GitHub runners — PR #201 / fix/ci-workflows
+
+**Fato:** desde ~20:07Z de 29/10/2026, os runners GitHub Actions estão indisponíveis. Todos os checks do PR #201 (SHA `58c3eda`) ficam em `status: queued` indefinidamente.
+
+**Prova:** 7 tentativas de retrigger entre 20:07Z e 22:00Z+ — nenhum run saiu do `queued`. 0 runs `in_progress` em todo o repositório durante o período.
+
+**Workflows afetados:** CI Pipeline, Unit tests, E2E Critical Gate, Supabase DB Linter, Dependency Review, Varredura de segredos.
+
+**O que bloqueia:**
+- Merge do PR #201 (8 required checks com `enforce_admins: true`)
+- Prova de `conclusion=success` na branch `fix/ci-workflows`
+- Verificação de workflows pós-merge na main
+
+**Ação requerida do usuário:** nenhuma. O outage é da infraestrutura GitHub e se resolve sozinho. Quando os runners voltarem, a task agendada (`trig_018xoLTL8zbQW65JoykR9Vy5`, 21:55Z) ou os eventos de CI do PR #201 vão mergear automaticamente.
+
+**Task agendada ativa:** `trig_018xoLTL8zbQW65JoykR9Vy5` — dispara às 21:55Z; verifica checks do SHA `58c3edab28d0931a7752ef6571c68d1218c671de`; faz merge squash do PR #201 quando todos os 8 checks = `success`.
+
+---
+
+### 6b. Registry npm privado 403 — baseline local impossível
+
+**Fato:** o registry `europe-west4-npm.pkg.dev/lovable-core-prod/sandbox-npm-cache` retorna HTTP 403 neste container cloud. Todos os pacotes que passam por esse registry falham na instalação.
+
+**Pacotes críticos ausentes:**
+- `@vitest/coverage-v8` (e bindings nativos `@swc/core-linux-x64-gnu`, `@rolldown/binding-linux-x64-gnu`) → `.bin/vitest` ausente → `bun run test:run` falha
+- `@eslint-community/eslint-utils` (arquivo `index.js` ausente) → eslint crasha com `Cannot find module`
+
+**Efeito em tsc:** `tsc --noEmit` retorna 1 erro (`TS2688: Cannot find type definition file for 'vitest/globals'`) — NÃO é erro de código, é ausência do pacote `vitest` em `node_modules`.
+
+**Prova de que não é regressão:** `git diff origin/main...HEAD --name-only` = apenas `PENDENCIAS.md` e `RELATORIO_CI.md` (zero arquivos TypeScript, zero testes, zero deps alterados).
+
+**Baseline de referência:** sessão de 29/10 11:13 (SHA `cce6b36`, node_modules completo):
+- 3023 testes passando (246 arquivos)
+- 0 erros TypeScript
+- 0 erros lint
+- Build Vite OK (~5.75s)
+
+**O que bloqueia:** execução do baseline local (install/build/lint/typecheck/tests) neste container.
+
+**Ação requerida do usuário:** para executar o baseline localmente na sua máquina:
+```sh
+git clone https://github.com/adm01-debug/Promo_Finance_V2
+git checkout fix/ci-workflows
+bun install
+bun run type-check   # deve: 0 erros
+bun run lint:strict  # deve: 0 erros
+bun run test:run     # deve: 3023 testes passando
+bun run build        # deve: OK
+```
+Alternativamente, quando o CI do PR #201 passar (item 6a acima), o GitHub Actions validate automaticamente o baseline com node_modules completo — equivalente a rodar local.
 
 ---
 
