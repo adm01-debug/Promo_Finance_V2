@@ -55,6 +55,55 @@ Nenhuma correção de código necessária — **zero bugs de código nos workflo
 
 ---
 
+## RODADA 2026-10-29 — Inventário + baseline corrigido (Cline)
+
+> HEAD da main: `a284d35a` (PR #194 — fix(financeiro))  
+> Medido após `bun install --frozen-lockfile` atualizado (342 pacotes, `@sentry/react` instalado).
+
+### Baseline local — 29/10/2026 11:13 (correto)
+
+| Comando                        | Resultado | Detalhes                                        |
+| ------------------------------ | --------- | ----------------------------------------------- |
+| `bun install --frozen-lockfile`| ✅ exit 0 | 342 pacotes, 6.16 s                             |
+| `bun run build`                | ✅ exit 0 | `built in 5.75s`                                |
+| `bun run lint`                 | ✅ exit 0 | 0 erros, **74 warnings** (max-lines)            |
+| `bun run type-check` (tsconfig raiz) | ✅ exit 0 | `tsc --noEmit` — 0 erros                 |
+| `bun run type-check:e2e`       | ✅ exit 0 | `tsc -p tsconfig.e2e.json` — 0 erros           |
+| `bun run type-check:strict`    | ✅ exit 0 | strictNullChecks: 0 erros vs 0 no baseline      |
+| `bun run test:run`             | ✅ exit 0 | **246 arquivos, 3023 testes passando** (47.06s) |
+
+### Inventário — última execução de cada workflow na main (29/10/2026)
+
+| Workflow                      | Último run                                                                                | Conclusão                                          |
+| ----------------------------- | ----------------------------------------------------------------------------------------- | -------------------------------------------------- |
+| CI Pipeline                   | [#40818988751](https://github.com/adm01-debug/Promo_Finance_V2/actions/runs/40818988751) | ✅ success                                         |
+| Deno Edge Function Tests      | [#40818988757](https://github.com/adm01-debug/Promo_Finance_V2/actions/runs/40818988757) | ✅ success                                         |
+| Supabase Linter               | [#40818988788](https://github.com/adm01-debug/Promo_Finance_V2/actions/runs/40818988788) | ✅ success                                         |
+| Graphify                      | [#40818988873](https://github.com/adm01-debug/Promo_Finance_V2/actions/runs/40818988873) | ✅ success                                         |
+| CodeQL Analysis               | [#40818988904](https://github.com/adm01-debug/Promo_Finance_V2/actions/runs/40818988904) | ✅ success                                         |
+| actionlint                    | [#40699661171](https://github.com/adm01-debug/Promo_Finance_V2/actions/runs/40699661171) | ✅ success                                         |
+| Schema drift                  | [#40281232844](https://github.com/adm01-debug/Promo_Finance_V2/actions/runs/40281232844) | ✅ success                                         |
+| functions-deploy              | [#38428554013](https://github.com/adm01-debug/Promo_Finance_V2/actions/runs/38428554013) | ✅ success                                         |
+| supabase-admin-ops            | [#38429016227](https://github.com/adm01-debug/Promo_Finance_V2/actions/runs/38429016227) | ✅ success                                         |
+| **staging-migrate**           | [#32836274535](https://github.com/adm01-debug/Promo_Finance_V2/actions/runs/32836274535) | ❌ failure — secret `PROD_DB_URL` ausente          |
+| **prod-migrate**              | [#38428567450](https://github.com/adm01-debug/Promo_Finance_V2/actions/runs/38428567450) | ❌ failure — secret `PROD_DB_URL` ausente          |
+| **Dependabot npm_and_yarn zod** | [#40699687032](https://github.com/adm01-debug/Promo_Finance_V2/actions/runs/40699687032) | ❌ failure — `bun.lock` + motor npm_and_yarn      |
+| Dependency Review             | sem runs                                                                                  | — (só PRs)                                        |
+| e2e-cloud-probe               | sem runs na main                                                                          | — (sem run automatizado)                           |
+| `action_required`             | 0 runs                                                                                    | — (filtro da URL retornou vazio)                  |
+
+### Diagnóstico de falhas
+
+Todos os 3 workflows em falha têm bloqueio externo — **zero bugs de código**:
+
+1. **`staging-migrate`** — preflight aborta por `PROD_DB_URL` ausente. Registrado em `PENDENCIAS.md` item 1.
+2. **`prod-migrate`** — guard-rail de segurança aborta por `PROD_DB_URL` vazio. Registrado em `PENDENCIAS.md` item 1.
+3. **Dependabot `npm_and_yarn`** — motor do GitHub usa `npm_and_yarn` para security updates, incompatível com `bun.lock`. Registrado em `PENDENCIAS.md` item 3.
+
+Enfraquecer qualquer um desses gates é proibido pelas regras de anti-regressão.
+
+---
+
 ## RELATÓRIO ANTERIOR (2026-10-22) — histórico
 
 > Gerado em: 2026-10-22 (última atualização: 16:35 UTC)  
