@@ -240,3 +240,4 @@ para merge automático + prova final quando CI ficar verde.
 | schema-drift | [39824076811](https://github.com/adm01-debug/Promo_Finance_V2/actions/runs/39824076811) | ✅ success | pós-PR #184 |
 | CI Pipeline | [39870765555](https://github.com/adm01-debug/Promo_Finance_V2/actions/runs/39870765555) | ✅ success | pós-PR #185 |
 | Deno Edge Function Tests | [39870765572](https://github.com/adm01-debug/Promo_Finance_V2/actions/runs/39870765572) | ✅ success | pós-PR #185 |
+Thu Oct 29 21:25:08 UTC 2026
