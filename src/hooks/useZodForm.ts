@@ -84,7 +84,7 @@ export function useZodForm<T extends z.ZodRawShape>(
         return undefined;
       } catch (err) {
         if (err instanceof z.ZodError) {
-          return err.errors[0]?.message;
+          return err.issues[0]?.message;
         }
         return 'Erro de validação';
       }
@@ -100,7 +100,7 @@ export function useZodForm<T extends z.ZodRawShape>(
     }
 
     const newErrors: FormErrors<FormData> = {};
-    result.error.errors.forEach((err) => {
+    result.error.issues.forEach((err) => {
       const path = err.path[0] as keyof FormData;
       if (!newErrors[path]) {
         newErrors[path] = err.message;
