@@ -50,6 +50,7 @@ import { InadimplenciaSegmentada } from '@/components/analytics/InadimplenciaSeg
 import { BenchmarkingSetorial } from '@/components/analytics/BenchmarkingSetorial';
 import { HistoricoAnalisesPreditivasPanel } from '@/components/analytics/HistoricoAnalisesPreditivasPanel';
 import { BIDrillDown } from '@/components/bi/BIDrillDown';
+import { valorRecebidoEfetivo } from '@/lib/financeiro/valor-recebido-efetivo';
 
 const containerVariants = {
   hidden: { opacity: 0 },
@@ -122,7 +123,7 @@ export default function BI() {
   const kpis = useMemo(() => {
     const saldoTotal = filteredContas.reduce((acc, c) => acc + (c.saldo_atual || 0), 0);
     const totalReceber = filteredReceber
-      .filter((c) => c.status !== 'pago' && c.status !== 'cancelado')
+      .filter((c) => c.status !== 'pago' && c.status !== 'recebido' && c.status !== 'cancelado')
       .reduce((acc, c) => acc + c.valor, 0);
     const totalPagar = filteredPagar
       .filter((c) => c.status !== 'pago' && c.status !== 'cancelado')
@@ -133,11 +134,11 @@ export default function BI() {
     const receitaMes = filteredReceber
       .filter(
         (c) =>
-          c.status === 'pago' &&
+          (c.status === 'pago' || c.status === 'recebido') &&
           c.data_recebimento &&
           new Date(c.data_recebimento).getMonth() === new Date().getMonth()
       )
-      .reduce((acc, c) => acc + (c.valor_recebido || c.valor), 0);
+      .reduce((acc, c) => acc + valorRecebidoEfetivo(c), 0);
     const despesaMes = filteredPagar
       .filter(
         (c) =>
@@ -152,11 +153,11 @@ export default function BI() {
     const receitaMesAnterior = filteredReceber
       .filter(
         (c) =>
-          c.status === 'pago' &&
+          (c.status === 'pago' || c.status === 'recebido') &&
           c.data_recebimento &&
           new Date(c.data_recebimento).getMonth() === lastMonth.getMonth()
       )
-      .reduce((acc, c) => acc + (c.valor_recebido || c.valor), 0);
+      .reduce((acc, c) => acc + valorRecebidoEfetivo(c), 0);
     const variacaoReceita =
       receitaMesAnterior > 0 ? ((receitaMes - receitaMesAnterior) / receitaMesAnterior) * 100 : 0;
     return {
@@ -193,12 +194,12 @@ export default function BI() {
         const receitas = filteredReceber
           .filter(
             (c) =>
-              c.status === 'pago' &&
+              (c.status === 'pago' || c.status === 'recebido') &&
               c.data_recebimento &&
               new Date(c.data_recebimento) >= inicio &&
               new Date(c.data_recebimento) <= fim
           )
-          .reduce((acc, c) => acc + (c.valor_recebido || c.valor), 0);
+          .reduce((acc, c) => acc + valorRecebidoEfetivo(c), 0);
         const despesas = filteredPagar
           .filter(
             (c) =>
@@ -226,12 +227,12 @@ export default function BI() {
         const receitas = filteredReceber
           .filter(
             (c) =>
-              c.status === 'pago' &&
+              (c.status === 'pago' || c.status === 'recebido') &&
               c.data_recebimento &&
               new Date(c.data_recebimento) >= inicio &&
               new Date(c.data_recebimento) <= fim
           )
-          .reduce((acc, c) => acc + (c.valor_recebido || c.valor), 0);
+          .reduce((acc, c) => acc + valorRecebidoEfetivo(c), 0);
         const despesas = filteredPagar
           .filter(
             (c) =>
@@ -254,13 +255,17 @@ export default function BI() {
   }, [filteredReceber, filteredPagar, periodo, usarPeriodoCustom, dataInicio, dataFim]);
 
   const statusReceber = useMemo(() => {
-    const statusCount = { pago: 0, pendente: 0, vencido: 0, parcial: 0 };
+    const statusCount = { pago: 0, recebido: 0, pendente: 0, vencido: 0, parcial: 0 };
     filteredReceber.forEach((c) => {
       if (statusCount[c.status as keyof typeof statusCount] !== undefined)
         statusCount[c.status as keyof typeof statusCount]++;
     });
     return [
-      { name: 'Pago', value: statusCount.pago, color: 'hsl(var(--success))' },
+      {
+        name: 'Pago',
+        value: statusCount.pago + statusCount.recebido,
+        color: 'hsl(var(--success))',
+      },
       { name: 'Pendente', value: statusCount.pendente, color: 'hsl(var(--warning))' },
       { name: 'Vencido', value: statusCount.vencido, color: 'hsl(var(--destructive))' },
       { name: 'Parcial', value: statusCount.parcial, color: 'hsl(var(--chart-4))' },
@@ -271,7 +276,7 @@ export default function BI() {
     const hoje = new Date();
     const aging = { aVencer: 0, ate30: 0, ate60: 0, ate90: 0, mais90: 0 };
     filteredReceber
-      .filter((c) => c.status !== 'pago' && c.status !== 'cancelado')
+      .filter((c) => c.status !== 'pago' && c.status !== 'recebido' && c.status !== 'cancelado')
       .forEach((c) => {
         if (!c.data_vencimento) return;
         const dias = differenceInDays(hoje, new Date(c.data_vencimento));
@@ -293,10 +298,10 @@ export default function BI() {
   const topClientes = useMemo(() => {
     const clienteMap = new Map<string, number>();
     filteredReceber
-      .filter((c) => c.status === 'pago')
+      .filter((c) => c.status === 'pago' || c.status === 'recebido')
       .forEach((c) => {
         const nome = c.cliente_nome || 'Sem cliente';
-        clienteMap.set(nome, (clienteMap.get(nome) || 0) + (c.valor_recebido || c.valor));
+        clienteMap.set(nome, (clienteMap.get(nome) || 0) + valorRecebidoEfetivo(c));
       });
     return Array.from(clienteMap.entries())
       .map(([nome, valor]) => ({ nome, valor }))
@@ -327,14 +332,14 @@ export default function BI() {
         const ep = contasPagar.filter((c) => c.empresa_id === empresa.id);
         const ec = contasBancarias.filter((c) => c.empresa_id === empresa.id);
         const receitas = er
-          .filter((c) => c.status === 'pago')
-          .reduce((acc, c) => acc + (c.valor_recebido || c.valor), 0);
+          .filter((c) => c.status === 'pago' || c.status === 'recebido')
+          .reduce((acc, c) => acc + valorRecebidoEfetivo(c), 0);
         const despesas = ep
           .filter((c) => c.status === 'pago')
           .reduce((acc, c) => acc + (c.valor_pago || c.valor), 0);
         const saldo = ec.reduce((acc, c) => acc + c.saldo_atual, 0);
         const aReceber = er
-          .filter((c) => c.status !== 'pago' && c.status !== 'cancelado')
+          .filter((c) => c.status !== 'pago' && c.status !== 'recebido' && c.status !== 'cancelado')
           .reduce((acc, c) => acc + c.valor, 0);
         const aPagar = ep
           .filter((c) => c.status !== 'pago' && c.status !== 'cancelado')
@@ -346,10 +351,8 @@ export default function BI() {
         const lucro = receitas - despesas;
         const margem = receitas > 0 ? (lucro / receitas) * 100 : 0;
         const liquidez = aPagar > 0 ? saldo / aPagar : 0;
-        const ticketMedio =
-          er.filter((c) => c.status === 'pago').length > 0
-            ? receitas / er.filter((c) => c.status === 'pago').length
-            : 0;
+        const quitadas = er.filter((c) => c.status === 'pago' || c.status === 'recebido').length;
+        const ticketMedio = quitadas > 0 ? receitas / quitadas : 0;
         return {
           id: empresa.id,
           nome: empresa.nome_fantasia || empresa.razao_social,

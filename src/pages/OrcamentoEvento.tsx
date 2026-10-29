@@ -25,6 +25,7 @@ import {
   type CentroCustoComGastos,
 } from '@/components/orcamento/OrcamentoCardsView';
 import { OrcamentoChartsView } from '@/components/orcamento/OrcamentoChartsView';
+import { valorRecebidoEfetivo } from '@/lib/financeiro/valor-recebido-efetivo';
 
 export default function OrcamentoEvento() {
   const [filtroStatus, setFiltroStatus] = useState<string>('todos');
@@ -36,7 +37,9 @@ export default function OrcamentoEvento() {
       const [centrosRes, pagarRes, receberRes] = await Promise.all([
         supabase.from('centros_custo').select('*').eq('ativo', true).order('nome'),
         supabase.from('contas_pagar').select('centro_custo_id, valor, valor_pago, status'),
-        supabase.from('contas_receber').select('centro_custo_id, valor, valor_recebido, status'),
+        supabase
+          .from('contas_receber')
+          .select('centro_custo_id, valor, valor_recebido, status, metadata'),
       ]);
 
       const centros = centrosRes.data || [];
@@ -50,7 +53,7 @@ export default function OrcamentoEvento() {
         const gastoPagar = contasPagar.reduce((acc, c) => acc + (c.valor_pago || c.valor || 0), 0);
         const gastoReceber = contasReceber
           .filter((c) => c.status === 'pago')
-          .reduce((acc, c) => acc + (c.valor_recebido || c.valor || 0), 0);
+          .reduce((acc, c) => acc + valorRecebidoEfetivo(c), 0);
 
         const totalGasto = gastoPagar;
         const orcamento = cc.orcamento_previsto || 0;

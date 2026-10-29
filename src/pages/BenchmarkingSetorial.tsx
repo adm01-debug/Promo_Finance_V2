@@ -24,6 +24,7 @@ import { cn } from '@/lib/utils';
 import { BenchmarkResultTabs } from './benchmarking/BenchmarkResultTabs';
 import { BenchmarkingConcorrentes } from './benchmarking/BenchmarkingConcorrentes';
 import { toast } from 'sonner';
+import { valorRecebidoEfetivo } from '@/lib/financeiro/valor-recebido-efetivo';
 
 interface Benchmark {
   metrica: string;
@@ -66,7 +67,7 @@ export default function BenchmarkingSetorial() {
     const totalDespesas = contasPagar.reduce((a, c) => a + (c.valor || 0), 0);
     const receitasRecebidas = contasReceber
       .filter((c) => c.status === 'pago')
-      .reduce((a, c) => a + (c.valor_recebido || c.valor || 0), 0);
+      .reduce((a, c) => a + valorRecebidoEfetivo(c), 0);
     const despesasPagas = contasPagar
       .filter((c) => c.status === 'pago')
       .reduce((a, c) => a + (c.valor_pago || c.valor || 0), 0);

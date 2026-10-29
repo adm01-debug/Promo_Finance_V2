@@ -143,15 +143,27 @@ export function useContasPagarLogic() {
 
   // Maps
   const profilesMap = useMemo(() => new Map(profiles.map((p) => [p.id, p])), [profiles]);
-  const aprovacaoStatusMap = useMemo(
-    () =>
-      new Map(
-        solicitacoesAprovacao
-          .filter((s) => s.status === 'pendente' || s.status === 'rejeitada')
-          .map((s) => [s.conta_pagar_id, s.status])
-      ),
-    [solicitacoesAprovacao]
-  );
+  const aprovacaoStatusMap = useMemo(() => {
+    // ordenação vem DESC por solicitado_em — a primeira ocorrência de cada
+    // conta é a solicitação MAIS RECENTE. Filtrar por status antes do
+    // reduce devolveria uma rejeição velha mesmo quando o reenvio foi
+    // aprovado (a conta apareceria rejeitada E aprovada ao mesmo tempo).
+    // Escolhe a mais recente primeiro; só pendente/rejeitado representam
+    // a conta no mapa.
+    const maisRecente = new Map<string | null, string | null>();
+    for (const s of solicitacoesAprovacao) {
+      if (!maisRecente.has(s.conta_pagar_id)) maisRecente.set(s.conta_pagar_id, s.status);
+    }
+    // 'aprovado' também fica no mapa: cobre legados cuja solicitação foi
+    // aprovada mas aprovado_por na conta nunca foi preenchido — sem isso a
+    // tela voltaria a pedir aprovação de uma conta já decidida.
+    for (const [contaId, status] of maisRecente) {
+      if (status !== 'pendente' && status !== 'rejeitado' && status !== 'aprovado') {
+        maisRecente.delete(contaId);
+      }
+    }
+    return maisRecente;
+  }, [solicitacoesAprovacao]);
   const historicoAprovacaoPorConta = useMemo(
     () =>
       solicitacoesAprovacao.reduce((acc, s) => {
@@ -244,9 +256,12 @@ export function useContasPagarLogic() {
         c.status !== 'pago' &&
         c.status !== 'cancelado';
     } else if (aprovacaoFilter === 'aprovado') {
-      matchesAprovacao = !!c.aprovado_por;
+      // mesma precedência de getApprovalStatus: a solicitação mais recente
+      // decide; sem ela, vale o aprovado_por legado na conta
+      const status = aprovacaoStatusMap.get(c.id);
+      matchesAprovacao = status ? status === 'aprovado' : !!c.aprovado_por;
     } else if (aprovacaoFilter === 'rejeitado') {
-      matchesAprovacao = aprovacaoStatusMap.get(c.id) === 'rejeitada';
+      matchesAprovacao = aprovacaoStatusMap.get(c.id) === 'rejeitado';
     }
 
     let matchesAdvanced = true;
@@ -506,9 +521,12 @@ export function useContasPagarLogic() {
   const getApprovalStatus = (conta: ContaPagarType) => {
     const precisaAprovacao = requerAprovacao(conta.valor);
     const aprovacaoStatus = aprovacaoStatusMap.get(conta.id);
-    const estaAprovado = !!conta.aprovado_por;
+    // Mesma precedência do diálogo: a solicitação mais recente decide —
+    // pendente/rejeitada revoga uma aprovação antiga gravada na conta;
+    // sem solicitação, vale o estado legado de aprovado_por.
+    const estaAprovado = aprovacaoStatus ? aprovacaoStatus === 'aprovado' : !!conta.aprovado_por;
     const temSolicitacaoPendente = aprovacaoStatus === 'pendente';
-    const foiRejeitado = aprovacaoStatus === 'rejeitada';
+    const foiRejeitado = aprovacaoStatus === 'rejeitado';
     const aguardandoSolicitacao =
       precisaAprovacao &&
       !estaAprovado &&

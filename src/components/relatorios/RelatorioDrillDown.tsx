@@ -17,6 +17,7 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { ResumoDrillLevel, EmpresasDrillLevel, DetalhesDrillLevel } from './RelatorioDrillLevels';
+import { valorRecebidoEfetivo } from '@/lib/financeiro/valor-recebido-efetivo';
 
 type DrillLevel = 'resumo' | 'categoria' | 'empresa' | 'detalhes';
 
@@ -42,7 +43,7 @@ export function RelatorioDrillDown() {
       const [receitas, despesas] = await Promise.all([
         supabase
           .from('contas_receber')
-          .select('valor, valor_recebido, status')
+          .select('valor, valor_recebido, status, metadata')
           .gte('data_vencimento', format(dataInicio, 'yyyy-MM-dd'))
           .lte('data_vencimento', format(dataFim, 'yyyy-MM-dd')),
         supabase
@@ -56,7 +57,7 @@ export function RelatorioDrillDown() {
       const receitasRecebidas =
         receitas.data
           ?.filter((r) => r.status === 'pago')
-          .reduce((acc, r) => acc + (r.valor_recebido || r.valor), 0) || 0;
+          .reduce((acc, r) => acc + valorRecebidoEfetivo(r), 0) || 0;
 
       const totalDespesas = despesas.data?.reduce((acc, d) => acc + d.valor, 0) || 0;
       const despesasPagas =
@@ -108,17 +109,19 @@ export function RelatorioDrillDown() {
         status: string;
         valor_recebido?: number;
         valor_pago?: number;
+        metadata?: unknown;
       }
 
       const porEmpresa = empresas
         ?.map((emp) => {
           const contasEmpresa = (contas as ContaRecord[]).filter((c) => c.empresa_id === emp.id);
           const total = contasEmpresa.reduce((acc, c) => acc + (c.valor || 0), 0);
-          const valorField = drillState.categoria === 'receitas' ? 'valor_recebido' : 'valor_pago';
+          const isReceitas = drillState.categoria === 'receitas';
           const realizado = contasEmpresa
             .filter((c) => c.status === 'pago')
             .reduce(
-              (acc, c) => acc + ((c[valorField as keyof ContaRecord] as number) || c.valor || 0),
+              (acc, c) =>
+                acc + (isReceitas ? valorRecebidoEfetivo(c) : c.valor_pago || c.valor || 0),
               0
             );
 

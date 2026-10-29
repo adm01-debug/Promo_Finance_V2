@@ -29,6 +29,7 @@ import {
   isWithinInterval,
 } from 'date-fns';
 import { calculateCollectionStage } from '@/lib/collection-engine';
+import { valorRecebidoEfetivo } from '@/lib/financeiro/valor-recebido-efetivo';
 
 export function useContasReceberLogic() {
   const { currentEmpresaId } = useGlobalFinancialFilter();
@@ -176,7 +177,9 @@ export function useContasReceberLogic() {
 
   // Sincronizar etapas de cobrança (Régua de Cobrança Automática)
   const handleSyncStages = useCallback(async () => {
-    const contasToUpdate = allContas.filter((c) => c.status !== 'pago' && c.status !== 'cancelado');
+    const contasToUpdate = allContas.filter(
+      (c) => c.status !== 'pago' && c.status !== 'recebido' && c.status !== 'cancelado'
+    );
 
     if (contasToUpdate.length === 0) {
       toast.info('Nenhuma conta pendente para sincronizar.');
@@ -237,7 +240,7 @@ export function useContasReceberLogic() {
 
     const totalReceber = allContas.reduce(
       (sum, c) =>
-        c.status !== 'pago' && c.status !== 'cancelado'
+        c.status !== 'pago' && c.status !== 'recebido' && c.status !== 'cancelado'
           ? sum + (c.valor ?? 0) - (c.valor_recebido || 0)
           : sum,
       0
@@ -249,13 +252,16 @@ export function useContasReceberLogic() {
 
     const totalRecebidoMes = allContas
       .filter((c) => {
-        if (c.status !== 'pago' || !c.data_recebimento) return false;
+        if ((c.status !== 'pago' && c.status !== 'recebido') || !c.data_recebimento) return false;
         const dataRec = parseISO(c.data_recebimento);
         return (
           dataRec.getMonth() === today.getMonth() && dataRec.getFullYear() === today.getFullYear()
         );
       })
-      .reduce((sum, c) => sum + (c.valor_recebido || 0), 0);
+      // valor_recebido || valor: contas quitadas sem valor_recebido gravado
+      // (ex.: quitação via acordo em dados legados) entram como recebidas
+      // pelo valor total — convenção já usada em Financeiro/BI/Dashboards.
+      .reduce((sum, c) => sum + valorRecebidoEfetivo(c), 0);
 
     const totalReceberAnterior =
       allContas
@@ -269,22 +275,22 @@ export function useContasReceberLogic() {
     const totalRecebidoMesAnterior =
       allContas
         .filter((c) => {
-          if (c.status !== 'pago' || !c.data_recebimento) return false;
+          if ((c.status !== 'pago' && c.status !== 'recebido') || !c.data_recebimento) return false;
           const dataRec = parseISO(c.data_recebimento);
           return isWithinInterval(dataRec, { start: startOfPrevMonth, end: endOfPrevMonth });
         })
-        .reduce((sum, c) => sum + (c.valor_recebido || 0), 0) || totalRecebidoMes * 0.95;
+        .reduce((sum, c) => sum + valorRecebidoEfetivo(c), 0) || totalRecebidoMes * 0.95;
 
     const taxaInadimplencia = totalReceber > 0 ? (totalVencido / totalReceber) * 100 : 0;
 
     const venceHoje = allContas.filter((c) => {
-      if (c.status === 'pago' || c.status === 'cancelado') return false;
+      if (c.status === 'pago' || c.status === 'recebido' || c.status === 'cancelado') return false;
       if (!c.data_vencimento) return false;
       return isSameDay(parseISO(c.data_vencimento), today);
     }).length;
 
     const venceSemana = allContas.filter((c) => {
-      if (c.status === 'pago' || c.status === 'cancelado') return false;
+      if (c.status === 'pago' || c.status === 'recebido' || c.status === 'cancelado') return false;
       if (!c.data_vencimento) return false;
       const venc = parseISO(c.data_vencimento);
       return venc >= today && venc <= endOfWeek;
