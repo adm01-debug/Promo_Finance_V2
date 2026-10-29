@@ -166,9 +166,13 @@ CREATE TRIGGER trg_saldo_movimentacao
   FOR EACH ROW EXECUTE FUNCTION public.fn_saldo_movimentacao();
 
 -- 4) Trigger bilateral de transferência: 'saida' na origem + 'entrada' no
---    destino, marcadas origem='transferencia'; trg_saldo_movimentacao move
---    os saldos. Cancelamento (status='cancelado') remove o par — o gatilho
---    de saldo reverte os efeitos automaticamente.
+--    destino; trg_saldo_movimentacao move os saldos. Bilateral interna usa
+--    origem='transferencia' (excluída dos totais/lançamentos — não é receita
+--    nem despesa). Saída externa (conta_destino_id NULL: pix/ted/boleto para
+--    favorecido fora) usa origem='transferencia_externa': é saída real de
+--    caixa e PRECISA aparecer nos totais e gerar lançamento contábil.
+--    Cancelamento (status='cancelado') remove o par — o gatilho de saldo
+--    reverte os efeitos automaticamente.
 CREATE OR REPLACE FUNCTION public.fn_transferencia_movimentacao()
 RETURNS TRIGGER
 LANGUAGE plpgsql
@@ -239,8 +243,11 @@ BEGIN
       RAISE EXCEPTION 'empresa_id deve pertencer a uma empresa acessível ao usuário';
     END IF;
 
+    -- destino NULL = saída para favorecido externo: marcador próprio para
+    -- não sumir dos totais nem do razão (ver seção 5).
     INSERT INTO movimentacoes (empresa_id, conta_bancaria_id, tipo, descricao, valor, data_movimentacao, transferencia_id, created_by, origem)
-    VALUES (NEW.empresa_id, v_origem, 'saida', NEW.descricao, NEW.valor, NEW.data_transferencia, NEW.id, v_autor, 'transferencia')
+    VALUES (NEW.empresa_id, v_origem, 'saida', NEW.descricao, NEW.valor, NEW.data_transferencia, NEW.id, v_autor,
+            CASE WHEN v_destino IS NULL THEN 'transferencia_externa' ELSE 'transferencia' END)
     RETURNING id INTO v_mov_saida_id;
 
     -- Destino interno ausente = saída externa (pix/ted/boleto_pagamento):
@@ -270,6 +277,8 @@ CREATE TRIGGER trg_transferencia_movimentacao
 -- 5) Lançamento contábil automático: exclui origem='transferencia' — o par
 --    bilateral movimenta saldo entre bancos da mesma empresa, não é receita
 --    nem despesa; sem a guarda cada transferência geraria D+C espúrios.
+--    'transferencia_externa' NÃO entra na guarda: saída para favorecido
+--    externo é despesa real e gera partida normalmente.
 --    A função é recriada com o mesmo corpo da migration original +
 --    early return; se o gatilho trigger_gerar_contabilidade existir no
 --    banco, passa a usar este corpo.
@@ -382,7 +391,8 @@ $$ LANGUAGE plpgsql SECURITY DEFINER;
 --    Cobre 'realizado' (CHECK canônico) e 'concluido' (estado de drift do
 --    schema alternativo, onde a UI gravava esse status).
 --    Saídas externas (conta_destino_id NULL) recebem só a 'saida' — mesma
---    regra do gatilho (seção 4).
+--    regra do gatilho (seção 4) — e ficam com origem='transferencia_externa'
+--    para não desaparecerem dos totais/lançamentos.
 --    NOTA: se em prod existirem movimentações de transferência sem
 --    transferencia_id que já afetaram o saldo, conferir antes de aplicar —
 --    não há evidência inequívoca de pertencimento para adotá-las sem risco
@@ -403,7 +413,8 @@ BEGIN
 
   EXECUTE format(
     'INSERT INTO movimentacoes (empresa_id, conta_bancaria_id, tipo, descricao, valor, data_movimentacao, transferencia_id, origem)
-     SELECT t.empresa_id, %s, ''saida'', t.descricao, t.valor, t.data_transferencia, t.id, ''transferencia''
+     SELECT t.empresa_id, %s, ''saida'', t.descricao, t.valor, t.data_transferencia, t.id,
+            CASE WHEN t.conta_destino_id IS NULL THEN ''transferencia_externa'' ELSE ''transferencia'' END
      FROM transferencias t
      WHERE t.status IN (''realizado'', ''concluido'')
        AND %s IS NOT NULL
@@ -458,4 +469,34 @@ AS $$
 $$;
 
 COMMENT ON FUNCTION obter_totais_movimentacoes IS
-  'Agregação server-side dos totais de Movimentações (Entradas/Saídas/Saldo). Exclui origem=transferencia: transferências internas movimentam saldo, não são receita/despesa. SECURITY INVOKER: respeita a RLS de movimentacoes por empresa.';
+  'Agregação server-side dos totais de Movimentações (Entradas/Saídas/Saldo). Exclui origem=transferencia: transferências internas movimentam saldo, não são receita/despesa. origem=transferencia_externa é contada normalmente (saída real a favorecido externo). SECURITY INVOKER: respeita a RLS de movimentacoes por empresa.';
+
+-- 8) Integridade do marcador `origem`: origem='transferencia' esconde a
+--    movimentação de obter_totais_movimentacoes e do lançamento contábil, e
+--    a coluna é gravável pelo cliente via RLS — um usuário autenticado
+--    poderia suprimir uma saída/entrada dos relatórios forjando o marcador.
+--    Só os gatilhos SECURITY DEFINER (rodam como o owner, não como papel de
+--    API) podem gravá-lo: escrita direta de authenticated/anon é rebaixada
+--    para 'manual', mantendo a movimentação visível e contabilizada.
+CREATE OR REPLACE FUNCTION public.fn_movimentacao_origem_guard()
+RETURNS TRIGGER
+LANGUAGE plpgsql
+SET search_path = public
+AS $$
+BEGIN
+  IF NEW.origem = 'transferencia'
+     AND current_user IN ('authenticated', 'anon')
+  THEN
+    NEW.origem := 'manual';
+  END IF;
+  RETURN NEW;
+END;
+$$;
+
+-- UPDATE OF origem: só dispara quando o cliente altera a coluna — um
+-- soft-delete (deleted_at) em movimentação legítima de transferência não
+-- toca origem e preserva o marcador.
+DROP TRIGGER IF EXISTS trg_movimentacao_origem_guard ON public.movimentacoes;
+CREATE TRIGGER trg_movimentacao_origem_guard
+  BEFORE INSERT OR UPDATE OF origem ON public.movimentacoes
+  FOR EACH ROW EXECUTE FUNCTION public.fn_movimentacao_origem_guard();

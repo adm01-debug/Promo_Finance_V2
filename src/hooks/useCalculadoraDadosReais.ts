@@ -46,8 +46,17 @@ export function useCalculadoraDadosReais(empresaId: string | undefined, enabled 
           .gte('data_emissao', dozeIso),
       ]);
 
+      // Receita efetivamente recebida: só títulos liquidados usam o helper
+      // (nele 0 sem marcador de acordo = legado "não gravado" → nominal).
+      // Títulos em aberto/vencidos/contribuem só pelo que já foi recebido —
+      // o helper transformaria o DEFAULT 0 em nominal e pendência viraria
+      // receita no rbt12/faixas.
       const receitaBrutaAnual = (receber.data ?? []).reduce(
-        (s, r) => s + Number(valorRecebidoEfetivo(r)),
+        (s, r) =>
+          s +
+          (r.status === 'pago' || r.status === 'recebido'
+            ? Number(valorRecebidoEfetivo(r))
+            : Number(r.valor_recebido ?? 0)),
         0
       );
 

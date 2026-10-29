@@ -95,7 +95,11 @@ export function RegistrarPagamentoDialog({
   }, [conta, configAprovacao]);
 
   // Check if there's a pending approval request
-  const { data: solicitacaoPendente } = useQuery({
+  const {
+    data: solicitacaoPendente,
+    isPending: carregandoSolicitacao,
+    isError: erroSolicitacao,
+  } = useQuery({
     queryKey: ['solicitacao-pendente', conta?.id],
     queryFn: async () => {
       if (!conta) return null;
@@ -116,10 +120,14 @@ export function RegistrarPagamentoDialog({
   // A solicitação MAIS RECENTE decide: se houver uma, ela prevalece sobre
   // os campos da conta (uma rejeição nova revoga uma aprovação antiga);
   // sem solicitação, vale o estado legado gravado na própria conta.
+  // Enquanto a consulta não resolve (carregando ou erro), trata como
+  // bloqueado — liberar antes traria de volta o legado e permitiria pagar
+  // sob uma rejeição/pendência que ainda não apareceu.
   const estaAprovado = useMemo(() => {
+    if (requerAprovacao && (carregandoSolicitacao || erroSolicitacao)) return false;
     if (solicitacaoPendente != null) return solicitacaoPendente.status === 'aprovado';
     return conta?.aprovado_por != null && conta?.aprovado_em != null;
-  }, [conta, solicitacaoPendente]);
+  }, [conta, solicitacaoPendente, requerAprovacao, carregandoSolicitacao, erroSolicitacao]);
 
   const aprovacaoBloqueada = requerAprovacao && !estaAprovado;
   const temSolicitacaoPendente = solicitacaoPendente?.status === 'pendente';
