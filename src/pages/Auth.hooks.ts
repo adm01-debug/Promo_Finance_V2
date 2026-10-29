@@ -190,7 +190,7 @@ export function useAuthPage() {
         emailSchema.parse(email);
       } catch (error: unknown) {
         if (error instanceof z.ZodError) {
-          newErrors.email = error.errors[0].message;
+          newErrors.email = error.issues[0].message;
         }
       }
 
@@ -198,7 +198,7 @@ export function useAuthPage() {
         (isSignUp ? registrationPasswordSchema : loginPasswordSchema).parse(password);
       } catch (error: unknown) {
         if (error instanceof z.ZodError) {
-          newErrors.password = error.errors[0].message;
+          newErrors.password = error.issues[0].message;
         }
       }
 
@@ -379,7 +379,7 @@ export function useAuthPage() {
       emailSchema.parse(email);
     } catch (error: unknown) {
       if (error instanceof z.ZodError) {
-        setErrors({ email: error.errors[0].message });
+        setErrors({ email: error.issues[0].message });
         return;
       }
     }

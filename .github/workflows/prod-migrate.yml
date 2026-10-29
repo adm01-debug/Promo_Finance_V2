@@ -33,13 +33,41 @@ permissions:
   contents: read
 
 jobs:
+  # Guard de pré-requisito: verifica secrets e confirmação ANTES de pedir
+  # aprovação no environment Production-Ops — evita reservar um slot de
+  # aprovação quando os secrets não estão configurados.
+  check-secrets:
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main'
+    outputs:
+      ready: ${{ steps.check.outputs.ready }}
+    steps:
+      - name: Verificar secrets e confirmação
+        id: check
+        env:
+          HAS_PROD_DB_URL: ${{ secrets.PROD_DB_URL != '' }}
+          HAS_SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN != '' }}
+        run: |
+          MISSING=()
+          [ "$HAS_PROD_DB_URL" = "false" ]           && MISSING+=("PROD_DB_URL")
+          [ "$HAS_SUPABASE_ACCESS_TOKEN" = "false" ] && MISSING+=("SUPABASE_ACCESS_TOKEN")
+
+          if [ ${#MISSING[@]} -gt 0 ]; then
+            echo "::warning::Secrets ausentes: ${MISSING[*]}"
+            echo "::warning::Configure os secrets em Settings → Secrets → Actions antes de rodar prod-migrate."
+            echo "ready=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "ready=true" >> "$GITHUB_OUTPUT"
+          fi
+
   migrate:
+    needs: check-secrets
+    if: needs.check-secrets.outputs.ready == 'true'
     runs-on: ubuntu-latest
     timeout-minutes: 20
     # Ref guard: workflow_dispatch pode ser disparado de qualquer branch;
     # aplicar migrations de uma ref não integrada em PROD não é permitido
     # (mesmo padrão de functions-deploy.yml).
-    if: github.ref == 'refs/heads/main'
     # Gate de aprovação: o job só inicia depois que um reviewer aprova
     # no Environment "Production-Ops" (proteção do repo).
     environment: Production-Ops
