@@ -493,17 +493,26 @@ DECLARE
   v_total NUMERIC;
   v_valor_conta NUMERIC;
   v_empresa UUID;
+  v_cp_id UUID;
+  v_cr_id UUID;
 BEGIN
   -- Tenant: conta_pagar_id/conta_receber_id podem apontar para título de
   -- outra empresa e o UPDATE SECURITY DEFINER ignoraria a RLS — valida a
   -- empresa do vínculo antes de tocar no título (mesma regra da seção 3).
-  v_empresa := COALESCE(NEW.empresa_id, OLD.empresa_id);
+  -- NEW é indefinido em DELETE e OLD em INSERT — qualquer referência
+  -- cruzada aborta o gatilho, então tudo é resolvido por TG_OP.
+  IF TG_OP = 'DELETE' THEN
+    v_empresa := OLD.empresa_id;
+    v_cp_id := OLD.conta_pagar_id;
+    v_cr_id := OLD.conta_receber_id;
+  ELSE
+    v_empresa := NEW.empresa_id;
+    v_cp_id := NEW.conta_pagar_id;
+    v_cr_id := NEW.conta_receber_id;
+  END IF;
 
   -- Atualizar valor_pago em contas_pagar
-  IF (TG_OP IN ('INSERT', 'UPDATE') AND NEW.conta_pagar_id IS NOT NULL) OR
-     (TG_OP = 'DELETE' AND OLD.conta_pagar_id IS NOT NULL) THEN
-    DECLARE
-      v_cp_id UUID := COALESCE(NEW.conta_pagar_id, OLD.conta_pagar_id);
+  IF v_cp_id IS NOT NULL THEN
     BEGIN
       IF NOT EXISTS (
         SELECT 1 FROM contas_pagar WHERE id = v_cp_id AND empresa_id = v_empresa
@@ -529,10 +538,7 @@ BEGIN
   END IF;
 
   -- Atualizar valor_recebido em contas_receber
-  IF (TG_OP IN ('INSERT', 'UPDATE') AND NEW.conta_receber_id IS NOT NULL) OR
-     (TG_OP = 'DELETE' AND OLD.conta_receber_id IS NOT NULL) THEN
-    DECLARE
-      v_cr_id UUID := COALESCE(NEW.conta_receber_id, OLD.conta_receber_id);
+  IF v_cr_id IS NOT NULL THEN
     BEGIN
       IF NOT EXISTS (
         SELECT 1 FROM contas_receber WHERE id = v_cr_id AND empresa_id = v_empresa
