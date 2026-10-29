@@ -25,10 +25,14 @@ const clienteSchema = z.object({
     .string()
     .max(18, 'CNPJ/CPF inválido')
     .optional()
-    .refine(
-      (val) => !val || validateCnpjCpf(val).valid,
-      { message: 'CNPJ/CPF inválido' }
-    ),
+    .superRefine((val, ctx) => {
+      if (val) {
+        const result = validateCnpjCpf(val);
+        if (!result.valid) {
+          ctx.addIssue({ code: 'custom', message: result.message ?? 'CNPJ/CPF inválido' });
+        }
+      }
+    }),
   email: z
     .string()
     .email('E-mail inválido')
