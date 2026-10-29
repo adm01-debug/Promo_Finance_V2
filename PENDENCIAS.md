@@ -1,17 +1,18 @@
 # PENDÊNCIAS — Promo Finance V2
 
-> Atualizado em: 2026-10-27T11:05 UTC  
-> Inventário novo: 3 workflows com `conclusion=failure` na última execução na main — **todos bloqueados externamente** (secrets/austes do GitHub), nenhum bug de código.
+> Atualizado em: 2026-10-29T11:13 UTC  
+> Inventário: 3 workflows com `conclusion=failure` na última execução na main — **todos bloqueados externamente** (secrets/limitação GitHub), nenhum bug de código.  
+> Filtro `is:action_required` na URL da tarefa retornou **0 runs**.
 
 ---
 
-## INVENTÁRIO 2026-10-27 — workflows com falha na main
+## INVENTÁRIO 2026-10-29 — workflows com falha na main
 
-| Workflow                                           | Último run na main                                                                         | Causa raiz                                                                                                               | Bloqueio                              |
-| -------------------------------------------------- | ------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------ | ------------------------------------- |
-| `prod-migrate`                                     | [38428567450](https://github.com/adm01-debug/Promo_Finance_V2/actions/runs/38428567450) ❌ | `PROD_DB_URL` vazio → guard-rail aborta corretamente (`PROD_DB_URL não pertence ao project-ref`)                         | **Secret ausente** — item 1 abaixo    |
-| `staging-migrate`                                  | [32836274535](https://github.com/adm01-debug/Promo_Finance_V2/actions/runs/32836274535) ❌ | `preflight falhou: env PROD_DB_URL ausente`                                                                              | **Secret ausente** — itens 1-2 abaixo |
-| `npm_and_yarn in /. for zod` (Dependabot security) | [40492328336](https://github.com/adm01-debug/Promo_Finance_V2/actions/runs/40492328336) ❌ | `misconfigured_tooling`: updates de SEGURANÇA do Dependabot rodam ecossistema `npm_and_yarn`, que não suporta `bun.lock` | **Limitação GitHub** — item 3 abaixo  |
+| Workflow                                             | Último run na main                                                                          | Causa raiz                                                                                                               | Bloqueio                              |
+| ---------------------------------------------------- | ------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------ | ------------------------------------- |
+| `prod-migrate`                                       | [38428567450](https://github.com/adm01-debug/Promo_Finance_V2/actions/runs/38428567450) ❌  | `PROD_DB_URL` vazio → guard-rail aborta corretamente (`PROD_DB_URL não pertence ao project-ref`)                         | **Secret ausente** — item 1 abaixo    |
+| `staging-migrate`                                    | [32836274535](https://github.com/adm01-debug/Promo_Finance_V2/actions/runs/32836274535) ❌  | `preflight falhou: env PROD_DB_URL ausente`                                                                              | **Secret ausente** — itens 1-2 abaixo |
+| `npm_and_yarn in /. for zod` (Dependabot — 28/10)   | [40699687032](https://github.com/adm01-debug/Promo_Finance_V2/actions/runs/40699687032) ❌  | `misconfigured_tooling`: updates de SEGURANÇA do Dependabot rodam ecossistema `npm_and_yarn`, que não suporta `bun.lock` | **Limitação GitHub** — item 3 abaixo  |
 
 **Todos os outros 13 workflows na main estão verdes** (CI Pipeline, CodeQL, Deno Tests, Graphify, actionlint, Supabase Linter, Schema drift, Dependency Review, Migration Ledger, functions-deploy, admin-ops, e2e-cloud-probe, Copilot) — CI Pipeline e Graphify confirmados `success` em 2026-10-27T11:2x (estavam in_progress/queued no momento do inventário).
 
