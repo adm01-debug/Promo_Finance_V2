@@ -56,7 +56,8 @@ node_modules completo):**
 | 4 | [40952564856](https://github.com/adm01-debug/Promo_Finance_V2/actions/runs/40952564856) | `bb0db6e6` | 20:50Z | queued 30 min | force-cancelado |
 | 5 | [40953372282](https://github.com/adm01-debug/Promo_Finance_V2/actions/runs/40953372282) | `53a1e26b` | 20:56Z | queued | force-cancelado |
 | 6 | [40954107694](https://github.com/adm01-debug/Promo_Finance_V2/actions/runs/40954107694) | `edba6e4` | 21:01Z | queued 1h+ | force-cancelado |
-| **7** | aguardando | `fix/ci-workflows` | ~22:00Z | **em andamento** | — |
+| **7** | [40955475493](https://github.com/adm01-debug/Promo_Finance_V2/actions/runs/40955475493) [40955475571](https://github.com/adm01-debug/Promo_Finance_V2/actions/runs/40955475571) [40955475459](https://github.com/adm01-debug/Promo_Finance_V2/actions/runs/40955475459) | `d61ab81` | 21:10Z | queued 1h+ | force-cancelado |
+| **8** | aguardando | `fix/ci-workflows` | ~23:00Z | **em andamento** | — |
 
 Causa raiz: GitHub runners indisponíveis (outage). Não controlável por este lado.
 
