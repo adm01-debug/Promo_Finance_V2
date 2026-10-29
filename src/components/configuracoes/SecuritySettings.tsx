@@ -198,7 +198,7 @@ export function SecuritySettings() {
       addIpMutation.mutate();
     } catch (error: unknown) {
       if (error instanceof z.ZodError) {
-        setIpError(error.errors[0].message);
+        setIpError(error.issues[0].message);
       }
     }
   };

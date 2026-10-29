@@ -27,7 +27,7 @@ const clienteSchema = z.object({
     .optional()
     .refine(
       (val) => !val || validateCnpjCpf(val).valid,
-      (val) => ({ message: val ? validateCnpjCpf(val).message : 'Documento inválido' })
+      { message: 'CNPJ/CPF inválido' }
     ),
   email: z
     .string()
