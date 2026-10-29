@@ -477,6 +477,12 @@ $$ LANGUAGE plpgsql SECURITY DEFINER;
 --    já filtra deleted_at IS NULL, basta o gatilho observar a transição
 --    de deleted_at e a função aceitar TG_OP='UPDATE' — a recomputação
 --    cobre os dois sentidos (excluir remove o valor; restaurar devolve).
+--    Drift: o canônico não declara conta_pagar_id/conta_receber_id em
+--    movimentacoes — normaliza para que nenhum dos ramos da função
+--    (INSERT/DELETE originais incluídos) aborte com campo inexistente.
+ALTER TABLE public.movimentacoes ADD COLUMN IF NOT EXISTS conta_pagar_id uuid;
+ALTER TABLE public.movimentacoes ADD COLUMN IF NOT EXISTS conta_receber_id uuid;
+
 CREATE OR REPLACE FUNCTION public.fn_sync_valor_pago_movimentacao()
 RETURNS TRIGGER
 LANGUAGE plpgsql
@@ -713,9 +719,11 @@ BEGIN
       -- do cancelamento, que remove linhas por transferencia_id.
       NEW.origem := OLD.origem;
       NEW.transferencia_id := OLD.transferencia_id;
-    ELSIF TG_OP = 'INSERT' AND NEW.transferencia_id IS NOT NULL THEN
+    ELSIF TG_OP IN ('INSERT', 'UPDATE') AND NEW.transferencia_id IS NOT NULL THEN
       -- o único escritor legítimo do vínculo é o gatilho de
-      -- transferências (definer): vínculo forjado pelo cliente é anulado.
+      -- transferências (definer): vínculo forjado pelo cliente é anulado
+      -- — também em UPDATE de linha não vinculada (o cancelamento da
+      -- transferência apagaria a movimentação forjada e estornaria saldo).
       NEW.transferencia_id := NULL;
     END IF;
     IF NEW.origem IN ('transferencia', 'transferencia_externa')
