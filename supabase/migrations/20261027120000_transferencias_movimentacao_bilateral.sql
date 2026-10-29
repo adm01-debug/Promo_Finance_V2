@@ -411,6 +411,21 @@ BEGIN
     v_expr := 't.conta_origem_id';
   END IF;
 
+  -- Saídas externas vivas já gravadas com o marcador interno (versão
+  -- anterior do gatilho desta migration): DELETE primeiro e o INSERT abaixo
+  -- as recria pelo caminho canônico — id novo, origem='transferencia_externa'
+  -- e, o mais importante, o lançamento contábil que um UPDATE não
+  -- dispararia (trigger_gerar_contabilidade só reage a INSERT).
+  -- Saldo: o DELETE reverte o débito via trg_saldo_movimentacao e o
+  -- re-INSERT o reaplica — efeito líquido zero.
+  DELETE FROM movimentacoes m
+  USING transferencias t
+  WHERE m.transferencia_id = t.id
+    AND m.tipo = 'saida'
+    AND t.conta_destino_id IS NULL
+    AND m.origem = 'transferencia'
+    AND m.deleted_at IS NULL;
+
   EXECUTE format(
     'INSERT INTO movimentacoes (empresa_id, conta_bancaria_id, tipo, descricao, valor, data_movimentacao, transferencia_id, origem)
      SELECT t.empresa_id, %s, ''saida'', t.descricao, t.valor, t.data_transferencia, t.id,
@@ -442,17 +457,29 @@ BEGIN
         -- regime antigo e o crédito nunca foi revertido
     );
 
-  -- Saídas externas já registradas com o marcador interno (trigger desta
-  -- migration aplicado antes da correção, ou réplica parcial): o NOT EXISTS
-  -- acima as pula, então corrige o marcador in-place — sem reescrever saldo
-  -- (o efeito já aconteceu) e sem gerar lançamento duplicado.
+  -- Reponta transferencias.movimentacao_id das saídas recriadas acima (o id
+  -- antigo foi removido no DELETE; convenção: aponta para a 'saida').
+  UPDATE transferencias t
+  SET movimentacao_id = m.id
+  FROM movimentacoes m
+  WHERE m.transferencia_id = t.id
+    AND m.tipo = 'saida'
+    AND m.deleted_at IS NULL
+    AND t.conta_destino_id IS NULL
+    AND (t.movimentacao_id IS NULL
+         OR NOT EXISTS (SELECT 1 FROM movimentacoes x WHERE x.id = t.movimentacao_id));
+
+  -- Saídas externas soft-deleted com o marcador interno: sem efeito de saldo
+  -- a corrigir e sem lançamento a criar (deletadas não contabilizam) — só
+  -- ajusta o marcador in-place.
   UPDATE movimentacoes m
   SET origem = 'transferencia_externa'
   FROM transferencias t
   WHERE m.transferencia_id = t.id
     AND m.tipo = 'saida'
     AND t.conta_destino_id IS NULL
-    AND m.origem = 'transferencia';
+    AND m.origem = 'transferencia'
+    AND m.deleted_at IS NOT NULL;
 END $$;
 
 -- 7) Agregações de receita/despesa excluem transferências internas.
