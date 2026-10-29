@@ -1,11 +1,12 @@
 # PENDÊNCIAS — Promo Finance V2
 
-> Atualizado em: 2026-10-29T23:00 UTC  
-> Inventário: 4 entradas com `conclusion=failure` no filtro `is:failure` — todos bloqueados externamente (secrets/configuração/limitação GitHub/cota de plano), nenhum bug de código.  
-> §6: bloqueios de infraestrutura desta sessão cloud (runners GitHub outage + registry privado 403) documentados.  
+> Atualizado em: 2026-10-29T22:10 UTC  
+> §7: mapeamento exato dos 4 runs com `conclusion=failure` no filtro `is:failure` — motivo por run, confirmado via API.  
+> §6: bloqueios de infraestrutura desta sessão cloud (runners GitHub outage + registry privado 403).  
 > Filtro `is:action_required` retornou **0 runs**.  
 > **`staging-migrate` corrigido e validado** — PR #196, run [40908210665](https://github.com/adm01-debug/Promo_Finance_V2/actions/runs/40908210665) = success.  
-> **CI Pipeline na main:** último run [40930452322](https://github.com/adm01-debug/Promo_Finance_V2/actions/runs/40930452322) = `success` ✅ (3023 testes, 0 erros TS, 29/10 17:46Z).
+> **CI Pipeline na main:** último run [40930452322](https://github.com/adm01-debug/Promo_Finance_V2/actions/runs/40930452322) = `success` ✅ (3023 testes, 0 erros TS, 29/10 18:24Z).  
+> **Dependabot na main:** último run [40906950367](https://github.com/adm01-debug/Promo_Finance_V2/actions/runs/40906950367) = `success` ✅ (ecossistema `bun`, 29/10 15:58Z).
 
 ---
 
@@ -134,6 +135,23 @@ Process completed with exit code 5.
 **Workflow:** `workflow_dispatch` apenas — nunca dispara automaticamente. Não há risco de deploy acidental.
 
 **Nota sobre `STOP_ON_FAIL`:** o workflow seta `STOP_ON_FAIL=1`, então o script para na primeira função que falhar. Configure todos os secrets antes de tentar.
+
+---
+
+## 7. Mapeamento completo: todos os 4 runs com `conclusion=failure` em `is:failure`
+
+> Auditoria via API em 29/10/2026 22:00Z. Critério: "só conta como falha o workflow cuja ÚLTIMA execução na main falhou."
+
+| # | Run ID | Workflow | Branch | Motivo exato da falha | Disposição final |
+| --- | --- | --- | --- | --- | --- |
+| **1** | [40602778736](https://github.com/adm01-debug/Promo_Finance_V2/actions/runs/40602778736) (27/10 23:32Z) | CI Pipeline (`ci.yml`, wf 278349764) | `main` | Falha transitória em 27/10 — superada por push do PR #197 | ✅ **SUPERSEDIDA:** última run na main = [40930452322](https://github.com/adm01-debug/Promo_Finance_V2/actions/runs/40930452322) = **`conclusion=success`** (29/10 18:24Z, SHA `4078e811`, 3023 testes, 0 erros TS). Confirmado via API. |
+| **2** | [40699687032](https://github.com/adm01-debug/Promo_Finance_V2/actions/runs/40699687032) (28/10 13:47Z) | Dependabot dynamic (`dynamic/dependabot/dependabot-updates`, wf 341256029) | `main` | `misconfigured_tooling`: GitHub dispara security updates com ecossistema `npm_and_yarn`, incompatível com `bun.lock` (§3 abaixo) | ✅ **SUPERSEDIDA:** última run na main = [40906950367](https://github.com/adm01-debug/Promo_Finance_V2/actions/runs/40906950367) = **`conclusion=success`** (29/10 15:58Z, SHA `75a83a6b`, ecossistema `bun`). Confirmado via API. |
+| **3** | [40951684882](https://github.com/adm01-debug/Promo_Finance_V2/actions/runs/40951684882) (29/10 20:44Z) | Running Copilot Code Review (`dynamic/agents/copilot-pull-request-reviewer`, wf 285213480) | `docs/ci-functions-deploy-pendencia` **(branch de PR, não main)** | `SessionModelError: You've reached your additional usage limit for your plan. statusCode: 402, errorCode: "quota"` — cota do GitHub Copilot esgotada | 📋 **Bloqueio de billing (§4):** não é bug de código; não roda em main; não é required check. Correção: revisar plano em https://github.com/settings/copilot/features. |
+| **4** | [40905204150](https://github.com/adm01-debug/Promo_Finance_V2/actions/runs/40905204150) (29/10 15:48Z) | Dependency Review (`dependency-review.yml`, wf 368593893) | `fix/hermes-h286236-ci-green` **(branch de PR #196, não main)** | `Dependency review detected vulnerable packages: package.json » zod@^3.25.76 – GHSA-mrhx-c7xc-m3w5 (high severity)` — PR #196 bumped zod 3.22→3.25.76 | 📋 **Bloqueio de CVE documentado (§3):** Dependency Review só corre em `pull_request`, nunca em push de main. PR #196 foi mergeado (não é required check). Fix do CVE exige migração para zod v4 com breaking changes (§3). |
+
+**RESULTADO:** 0 workflows têm a ÚLTIMA execução completada na `main` com `conclusion=failure`.
+- Entradas 1 e 2 foram SUPERSEDIDAS por runs de success mais recentes na main (confirmado via API nesta sessão).
+- Entradas 3 e 4 são runs em branches de PR — NUNCA rodam em push de main.
 
 ---
 
