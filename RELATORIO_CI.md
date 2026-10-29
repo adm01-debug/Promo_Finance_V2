@@ -55,6 +55,41 @@ Nenhuma correção de código necessária — **zero bugs de código nos workflo
 
 ---
 
+## RODADA 2026-10-29 — Atualização de inventário (Cline)
+
+> HEAD da main: `a284d35a` (PR #194 — fix(financeiro))
+
+### Baseline local — 29/10/2026 10:52
+
+| Comando              | Resultado | Detalhes                                        |
+| -------------------- | --------- | ----------------------------------------------- |
+| `bun run build`      | ✅ exit 0 | `built in 5.29s`                                |
+| `bun run type-check` | ✅ exit 0 | `tsc --noEmit` — 0 erros                        |
+| `bun run lint`       | ✅ exit 0 | 0 erros, 3 warnings (max-lines)                 |
+| `bun run test:run`   | ✅ exit 0 | **240 arquivos, 2956 testes passando** (39.34s) |
+
+### Inventário — última execução de cada workflow na main (29/10/2026)
+
+| Workflow                 | Último run                                                                               | Conclusão                          |
+| ------------------------ | ---------------------------------------------------------------------------------------- | ---------------------------------- |
+| CI Pipeline              | [#40818988751](https://github.com/adm01-debug/Promo_Finance_V2/actions/runs/40818988751) | ✅ success                         |
+| Deno Edge Function Tests | [#40818988757](https://github.com/adm01-debug/Promo_Finance_V2/actions/runs/40818988757) | ✅ success                         |
+| Supabase Linter          | [#40818988788](https://github.com/adm01-debug/Promo_Finance_V2/actions/runs/40818988788) | ✅ success                         |
+| Graphify                 | [#40818988873](https://github.com/adm01-debug/Promo_Finance_V2/actions/runs/40818988873) | ✅ success                         |
+| CodeQL Analysis          | [#40818988904](https://github.com/adm01-debug/Promo_Finance_V2/actions/runs/40818988904) | ✅ success                         |
+| actionlint               | [#40699661171](https://github.com/adm01-debug/Promo_Finance_V2/actions/runs/40699661171) | ✅ success                         |
+| Schema drift             | [#40281232844](https://github.com/adm01-debug/Promo_Finance_V2/actions/runs/40281232844) | ✅ success                         |
+| functions-deploy         | [#38428554013](https://github.com/adm01-debug/Promo_Finance_V2/actions/runs/38428554013) | ✅ success                         |
+| supabase-admin-ops       | [#38429016227](https://github.com/adm01-debug/Promo_Finance_V2/actions/runs/38429016227) | ✅ success                         |
+| **staging-migrate**      | [#32836274535](https://github.com/adm01-debug/Promo_Finance_V2/actions/runs/32836274535) | ❌ failure — `PROD_DB_URL` ausente |
+| **prod-migrate**         | [#38428567450](https://github.com/adm01-debug/Promo_Finance_V2/actions/runs/38428567450) | ❌ failure — `PROD_DB_URL` ausente |
+| Dependency Review        | sem runs                                                                                 | — (só PRs)                         |
+| e2e-cloud-probe          | sem runs recentes                                                                        | —                                  |
+
+**Diagnóstico:** Mesmas causas raiz da rodada 2026-10-27. Sem regressão. Não houve mudança de código nesta sessão. As falhas persistem aguardando configuração de secrets pelo proprietário.
+
+---
+
 ## RELATÓRIO ANTERIOR (2026-10-22) — histórico
 
 > Gerado em: 2026-10-22 (última atualização: 16:35 UTC)  
