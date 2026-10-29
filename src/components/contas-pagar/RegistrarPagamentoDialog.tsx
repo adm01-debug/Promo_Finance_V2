@@ -113,11 +113,12 @@ export function RegistrarPagamentoDialog({
     enabled: !!conta && requerAprovacao,
   });
 
-  // solicitação aprovada conta como aprovação mesmo quando o legado
-  // não preencheu aprovado_por/aprovado_em na própria conta
+  // A solicitação MAIS RECENTE decide: se houver uma, ela prevalece sobre
+  // os campos da conta (uma rejeição nova revoga uma aprovação antiga);
+  // sem solicitação, vale o estado legado gravado na própria conta.
   const estaAprovado = useMemo(() => {
-    const aprovadoNaConta = conta?.aprovado_por != null && conta?.aprovado_em != null;
-    return aprovadoNaConta || solicitacaoPendente?.status === 'aprovado';
+    if (solicitacaoPendente != null) return solicitacaoPendente.status === 'aprovado';
+    return conta?.aprovado_por != null && conta?.aprovado_em != null;
   }, [conta, solicitacaoPendente]);
 
   const aprovacaoBloqueada = requerAprovacao && !estaAprovado;

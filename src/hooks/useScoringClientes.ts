@@ -44,6 +44,7 @@ interface ContaReceberScoring {
   valor: number;
   valor_recebido?: number | null;
   created_at: string;
+  metadata?: unknown;
 }
 
 // Pesos do modelo de ML simplificado
@@ -92,6 +93,7 @@ export function useScoringClientes() {
         valor: c.valor,
         valor_recebido: c.valor_recebido,
         created_at: c.created_at ?? '',
+        metadata: c.metadata,
       }));
 
       // Calcular score para cada cliente
