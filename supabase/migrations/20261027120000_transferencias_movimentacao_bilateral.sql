@@ -92,21 +92,41 @@ END $$;
 --    fica equivalente). INSERT/UPDATE/DELETE mantêm o saldo consistente —
 --    o cancelamento de transferência remove o par de movimentações, então
 --    DELETE precisa reverter o efeito.
+--    A função é gerada via format() para embutir o instante de criação do
+--    gatilho: é o que separa um soft-delete LEGADO (regime antigo não
+--    observava UPDATE de deleted_at — nunca estornou; o hard-delete é a
+--    última chance de devolver o saldo) de um soft-delete NOVO (já
+--    estornado pelo ramo UPDATE — reverter de novo duplicaria o crédito).
+DO $cria_fn_saldo$
+BEGIN
+  EXECUTE format($f$
 CREATE OR REPLACE FUNCTION public.fn_saldo_movimentacao()
 RETURNS TRIGGER
 LANGUAGE plpgsql
 SECURITY DEFINER
 SET search_path = public
-AS $$
+AS $body$
 BEGIN
-  -- Só linhas ativas (deleted_at IS NULL) movem saldo: exclusão lógica
-  -- (useDeleteMovimentacao preenche deleted_at) equivale a estorno.
-  -- Todo UPDATE de saldo exige conta da MESMA empresa da movimentação:
   -- conta_bancaria_id é forjável via PostgREST (a policy de movimentacoes
   -- valida só o empresa_id da própria linha) e este gatilho é SECURITY
-  -- DEFINER — sem o escopo, uma movimentação apontando para conta de
-  -- outro tenant moveria o saldo alheio ignorando a RLS. IS NOT DISTINCT
-  -- FROM preserva o par NULL↔NULL de dados legados.
+  -- DEFINER: sem esta rejeição, uma movimentação apontando para conta de
+  -- OUTRO tenant passaria a constar nos totais e no lançamento contábil
+  -- sem ter movido saldo algum (o UPDATE escopado abaixo só afetaria 0
+  -- linhas). Abortar a escrita é o único comportamento consistente.
+  -- IS NOT DISTINCT FROM preserva o par NULL↔NULL de dados legados.
+  IF (TG_OP = 'INSERT' OR TG_OP = 'UPDATE')
+     AND NEW.conta_bancaria_id IS NOT NULL
+     AND NOT EXISTS (
+       SELECT 1 FROM contas_bancarias cb
+       WHERE cb.id = NEW.conta_bancaria_id
+         AND cb.empresa_id IS NOT DISTINCT FROM NEW.empresa_id
+     )
+  THEN
+    RAISE EXCEPTION 'conta_bancaria_id deve pertencer à mesma empresa da movimentação';
+  END IF;
+
+  -- Só linhas ativas (deleted_at IS NULL) movem saldo: exclusão lógica
+  -- (useDeleteMovimentacao preenche deleted_at) equivale a estorno.
   IF TG_OP = 'UPDATE' THEN
     -- reverte o efeito da versão anterior (se estava ativa)
     IF OLD.deleted_at IS NULL AND OLD.tipo = 'entrada' THEN
@@ -132,13 +152,16 @@ BEGIN
   END IF;
 
   IF TG_OP = 'DELETE' THEN
-    -- reversão só se a linha deletada estava ativa (evita dupla reversão
-    -- no hard-delete de uma linha já soft-deleted)
-    IF OLD.deleted_at IS NULL AND OLD.tipo = 'entrada' THEN
+    -- Reversão quando a linha estava ativa OU quando o soft-delete é mais
+    -- antigo que este gatilho (o literal embutido = instante da migration): o regime
+    -- anterior não observava UPDATE de deleted_at, então essas linhas
+    -- nunca estornaram o efeito — sem a reversão o débito ficaria preso
+    -- para sempre (p.ex. cancelamento de transferência que remove o par).
+    IF (OLD.deleted_at IS NULL OR OLD.deleted_at < %L::timestamptz) AND OLD.tipo = 'entrada' THEN
       UPDATE contas_bancarias SET saldo_atual = COALESCE(saldo_atual, 0) - OLD.valor
         WHERE id = OLD.conta_bancaria_id
           AND empresa_id IS NOT DISTINCT FROM OLD.empresa_id;
-    ELSIF OLD.deleted_at IS NULL AND OLD.tipo = 'saida' THEN
+    ELSIF (OLD.deleted_at IS NULL OR OLD.deleted_at < %L::timestamptz) AND OLD.tipo = 'saida' THEN
       UPDATE contas_bancarias SET saldo_atual = COALESCE(saldo_atual, 0) + OLD.valor
         WHERE id = OLD.conta_bancaria_id
           AND empresa_id IS NOT DISTINCT FROM OLD.empresa_id;
@@ -158,7 +181,10 @@ BEGIN
   END IF;
   RETURN NEW;
 END;
-$$;
+$body$;
+  $f$, statement_timestamp(), statement_timestamp());
+END
+$cria_fn_saldo$;
 
 DROP TRIGGER IF EXISTS trg_saldo_movimentacao ON public.movimentacoes;
 CREATE TRIGGER trg_saldo_movimentacao
@@ -261,6 +287,18 @@ BEGIN
   END IF;
 
   IF TG_OP = 'UPDATE' AND NEW.status = 'cancelado' AND OLD.status IN ('realizado', 'concluido') THEN
+    -- Estorna o lançamento da saída externa ANTES de remover a movimentação:
+    -- lancamentos_contabeis referencia a movimentação por origem_id sem FK
+    -- em cascata e o gatilho contábil só reage a INSERT — sem este passo a
+    -- despesa e o crédito bancário ficariam confirmados no razão após o
+    -- cancelamento.
+    UPDATE public.lancamentos_contabeis
+       SET status = 'cancelado'
+     WHERE origem = 'financeiro_movimentacao'
+       AND origem_id IN (
+         SELECT id FROM public.movimentacoes WHERE transferencia_id = NEW.id
+       )
+       AND status IS DISTINCT FROM 'cancelado';
     DELETE FROM movimentacoes WHERE transferencia_id = NEW.id;
     UPDATE transferencias SET movimentacao_id = NULL WHERE id = NEW.id;
   END IF;
@@ -304,7 +342,36 @@ BEGIN
     v_empresa_id := NEW.empresa_id;
     v_historico := 'Lançamento Automático: ' || COALESCE(NEW.descricao, 'Movimentação ' || NEW.id);
 
-    -- 1. Cria o cabeçalho do lançamento contábil
+    -- 1. Resolve as contrapartidas ANTES do cabeçalho: sem as duas pontas
+    -- o lançamento sairia 'confirmado' com uma partida só e desequilibraria
+    -- o balancete — sai como 'rascunho' até a conta de despesa existir
+    -- (saída externa de transferência não carrega categoria_id).
+    -- Busca a conta contábil vinculada à categoria da movimentação
+    -- Se não houver categoria direta, tenta buscar via plano_conta_id da movimentação
+    -- to_jsonb: categoria_id/plano_conta_id existem no schema versionado mas
+    -- não no canônico de prod (types.ts) — sem a leitura defensiva qualquer
+    -- INSERT em movimentacoes quebraria com "record NEW has no field" num
+    -- banco onde essas colunas nunca existiram.
+    SELECT COALESCE(
+        (SELECT plano_conta_id FROM public.categorias WHERE id = (to_jsonb(NEW)->>'categoria_id')::uuid),
+        (to_jsonb(NEW)->>'plano_conta_id')::uuid
+    ) INTO v_conta_contabil_id;
+
+    -- Busca a conta contábil vinculada à conta bancária (Ativo Circulante - Disponibilidades)
+    SELECT plano_conta_id INTO v_conta_bancaria_contabil_id
+    FROM public.contas_bancarias
+    WHERE id = NEW.conta_bancaria_id;
+
+    -- Se não encontrar conta bancária vinculada, usa uma conta padrão de 'Caixa/Bancos' se existir
+    IF v_conta_bancaria_contabil_id IS NULL THEN
+        SELECT id INTO v_conta_bancaria_contabil_id
+        FROM public.plano_contas
+        WHERE empresa_id = v_empresa_id AND (codigo LIKE '1.1.1%' OR descricao ILIKE '%Banco%')
+        LIMIT 1;
+    END IF;
+
+    -- 2. Cria o cabeçalho — 'rascunho' quando falta contrapartida (partida
+    -- única não é lançamento balanceado e não pode confirmar no razão).
     INSERT INTO public.lancamentos_contabeis (
         empresa_id,
         data_lancamento,
@@ -320,32 +387,9 @@ BEGIN
         'financeiro_movimentacao',
         NEW.id,
         NEW.valor,
-        'confirmado'
+        CASE WHEN v_conta_contabil_id IS NOT NULL AND v_conta_bancaria_contabil_id IS NOT NULL
+             THEN 'confirmado' ELSE 'rascunho' END
     ) RETURNING id INTO v_lancamento_id;
-
-    -- 2. Busca a conta contábil vinculada à categoria da movimentação
-    -- Se não houver categoria direta, tenta buscar via plano_conta_id da movimentação
-    -- to_jsonb: categoria_id/plano_conta_id existem no schema versionado mas
-    -- não no canônico de prod (types.ts) — sem a leitura defensiva qualquer
-    -- INSERT em movimentacoes quebraria com "record NEW has no field" num
-    -- banco onde essas colunas nunca existiram.
-    SELECT COALESCE(
-        (SELECT plano_conta_id FROM public.categorias WHERE id = (to_jsonb(NEW)->>'categoria_id')::uuid),
-        (to_jsonb(NEW)->>'plano_conta_id')::uuid
-    ) INTO v_conta_contabil_id;
-
-    -- 3. Busca a conta contábil vinculada à conta bancária (Ativo Circulante - Disponibilidades)
-    SELECT plano_conta_id INTO v_conta_bancaria_contabil_id
-    FROM public.contas_bancarias
-    WHERE id = NEW.conta_bancaria_id;
-
-    -- Se não encontrar conta bancária vinculada, usa uma conta padrão de 'Caixa/Bancos' se existir
-    IF v_conta_bancaria_contabil_id IS NULL THEN
-        SELECT id INTO v_conta_bancaria_contabil_id
-        FROM public.plano_contas
-        WHERE empresa_id = v_empresa_id AND (codigo LIKE '1.1.1%' OR descricao ILIKE '%Banco%')
-        LIMIT 1;
-    END IF;
 
     -- 4. Cria as partidas dobradas (Débito e Crédito)
     IF NEW.tipo = 'entrada' THEN
@@ -540,10 +584,18 @@ LANGUAGE plpgsql
 SET search_path = public
 AS $$
 BEGIN
-  IF NEW.origem = 'transferencia'
-     AND current_user IN ('authenticated', 'anon')
-  THEN
-    NEW.origem := 'manual';
+  -- Linhas vinculadas a transferência: o marcador é do sistema em AMBAS as
+  -- direções — o cliente não pode forjar 'transferencia' (sumiria dos
+  -- totais/razão) nem rebaixar para 'manual' (o par interno voltaria a
+  -- contar como receita/despesa sem lançamento novo, já que o gatilho
+  -- contábil só reage a INSERT). Fora disso, forjar os marcadores em
+  -- INSERT/UPDATE comum é igualmente rebaixado.
+  IF current_user IN ('authenticated', 'anon') THEN
+    IF TG_OP = 'UPDATE' AND OLD.transferencia_id IS NOT NULL THEN
+      NEW.origem := OLD.origem;
+    ELSIF NEW.origem IN ('transferencia', 'transferencia_externa') THEN
+      NEW.origem := 'manual';
+    END IF;
   END IF;
   RETURN NEW;
 END;
