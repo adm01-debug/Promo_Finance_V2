@@ -65,6 +65,17 @@ jobs:
         with:
           version: 2.22.6
 
+      - name: Verificar secrets obrigatórios
+        run: |
+          MISSING=()
+          [ -z "${PROD_DB_URL:-}" ]           && MISSING+=("PROD_DB_URL")
+          [ -z "${SUPABASE_ACCESS_TOKEN:-}" ] && MISSING+=("SUPABASE_ACCESS_TOKEN")
+          if [ ${#MISSING[@]} -gt 0 ]; then
+            echo "::error::Secrets ausentes: ${MISSING[*]}"
+            echo "::error::Configure em Settings → Environments → Production-Ops → Secrets antes de rodar prod-migrate."
+            exit 1
+          fi
+
       - name: Guard-rails de confirmação
         env:
           CONFIRMADO: ${{ inputs.confirmar_project_ref }}
