@@ -418,13 +418,23 @@ BEGIN
   -- dispararia (trigger_gerar_contabilidade só reage a INSERT).
   -- Saldo: o DELETE reverte o débito via trg_saldo_movimentacao e o
   -- re-INSERT o reaplica — efeito líquido zero.
+  -- Restrições do DELETE: (a) mesmo recorte de status do INSERT abaixo —
+  -- uma saída de transferência 'estornado'/'erro' não seria recriada e o
+  -- saldo ficaria inflado; (b) sem lançamento existente — recriar uma saída
+  -- já contabilizada duplicaria a despesa no razão (lancamentos_contabeis
+  -- guarda a movimentação em origem_id, sem FK em cascata).
   DELETE FROM movimentacoes m
   USING transferencias t
   WHERE m.transferencia_id = t.id
     AND m.tipo = 'saida'
     AND t.conta_destino_id IS NULL
+    AND t.status IN ('realizado', 'concluido')
     AND m.origem = 'transferencia'
-    AND m.deleted_at IS NULL;
+    AND m.deleted_at IS NULL
+    AND NOT EXISTS (
+      SELECT 1 FROM lancamentos_contabeis l
+      WHERE l.origem = 'financeiro_movimentacao' AND l.origem_id = m.id
+    );
 
   EXECUTE format(
     'INSERT INTO movimentacoes (empresa_id, conta_bancaria_id, tipo, descricao, valor, data_movimentacao, transferencia_id, origem)
@@ -469,9 +479,12 @@ BEGIN
     AND (t.movimentacao_id IS NULL
          OR NOT EXISTS (SELECT 1 FROM movimentacoes x WHERE x.id = t.movimentacao_id));
 
-  -- Saídas externas soft-deleted com o marcador interno: sem efeito de saldo
-  -- a corrigir e sem lançamento a criar (deletadas não contabilizam) — só
-  -- ajusta o marcador in-place.
+  -- Remarca in-place quem não pode ser recriado: saídas soft-deleted
+  -- (deletadas não contabilizam — só corrige o marcador) e saídas que JÁ
+  -- têm lançamento contábil (o lançamento fica vinculado ao mesmo id —
+  -- recriar duplicaria a despesa). Saídas de transferências em outros
+  -- status ('estornado', 'erro', ...) ficam intocadas: recriá-las mudaria
+  -- saldo/totais de operações não concluídas.
   UPDATE movimentacoes m
   SET origem = 'transferencia_externa'
   FROM transferencias t
@@ -479,7 +492,11 @@ BEGIN
     AND m.tipo = 'saida'
     AND t.conta_destino_id IS NULL
     AND m.origem = 'transferencia'
-    AND m.deleted_at IS NOT NULL;
+    AND (m.deleted_at IS NOT NULL
+         OR EXISTS (
+           SELECT 1 FROM lancamentos_contabeis l
+           WHERE l.origem = 'financeiro_movimentacao' AND l.origem_id = m.id
+         ));
 END $$;
 
 -- 7) Agregações de receita/despesa excluem transferências internas.
