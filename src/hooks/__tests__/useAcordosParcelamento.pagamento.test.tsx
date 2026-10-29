@@ -370,20 +370,64 @@ describe('registrarPagamento', () => {
 
     act(() => result.current.registrarPagamento(PAGAMENTO));
 
-    await waitFor(() =>
-      expect(escritas.some((e) => e.tabela === 'contas_receber' && e.metodo === 'update')).toBe(
-        true
-      )
+    await waitFor(() => expect(toastSucesso).toHaveBeenCalled());
+
+    const updates = escritas.filter((e) => e.tabela === 'contas_receber' && e.metodo === 'update');
+    expect(updates).toHaveLength(4);
+    const recebidos = updates.map(
+      (e) => (e.payload as { valor_recebido?: number }).valor_recebido ?? 0
     );
+    // Nenhuma conta recebe além do próprio valor (0,01), a soma é
+    // exatamente o pago (0,02) e nenhum centavo fica sem registro.
+    expect(Math.max(...recebidos)).toBeLessThanOrEqual(0.01);
+    expect(recebidos.reduce((s, v) => s + v, 0)).toBeCloseTo(0.02, 2);
+  });
+
+  it('juros do acordo acima do principal são registrados, não descartados', async () => {
+    // Regressão (Devin Review): 2 contas de 100 em acordo de 220 (juros
+    // de 20). Teto por saldo sozinho alocava só 200 e os 20 de juros
+    // sumiam do registro mesmo com acordo quitado. O excedente vai para
+    // a última conta com peso — valor_recebido > valor é receita real.
+    const { result, escritas } = await montaHook({
+      acordos_parcelamento: [
+        { data: [], error: null },
+        {
+          data: [
+            {
+              id: 'ac-1',
+              contas_receber_ids: ['c1', 'c2'],
+              valor_total_acordo: 220,
+            },
+          ],
+          error: null,
+        },
+      ],
+      parcelas_acordo: filaParcelas({
+        data: [{ status: 'pago' }],
+        error: null,
+      }),
+      contas_receber: [
+        {
+          data: [
+            { id: 'c1', valor: 100, valor_recebido: 0, status: 'em_acordo' },
+            { id: 'c2', valor: 100, valor_recebido: 0, status: 'em_acordo' },
+          ],
+          error: null,
+        },
+        { data: null, error: null },
+      ],
+    });
+
+    act(() => result.current.registrarPagamento(PAGAMENTO));
+
+    await waitFor(() => expect(toastSucesso).toHaveBeenCalled());
 
     const updates = escritas.filter((e) => e.tabela === 'contas_receber' && e.metodo === 'update');
     const recebidos = updates.map(
       (e) => (e.payload as { valor_recebido?: number }).valor_recebido ?? 0
     );
-    // Nenhuma conta recebe além do próprio valor (0,01) e a soma nunca
-    // excede o pago (0,02) — o centavo sem saldo elegível fica não-alocado.
-    expect(Math.max(...recebidos)).toBeLessThanOrEqual(0.01);
-    expect(recebidos.reduce((s, v) => s + v, 0)).toBeLessThanOrEqual(0.02);
+    expect(recebidos.reduce((s, v) => s + v, 0)).toBeCloseTo(220, 2);
+    expect(recebidos).toEqual([100, 120]);
   });
 
   it('quita o acordo sem quebrar quando contas_receber_ids vem vazio/nulo', async () => {

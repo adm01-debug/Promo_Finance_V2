@@ -295,12 +295,14 @@ export function useAcordosParcelamento() {
           // Rateio em centavos inteiros com floor + teto pelo próprio
           // peso (saldo devedor/cota contratada): arredondar cada cota
           // intermediária para cima poderia somar mais que o pago
-          // (4×R$0,01 com acordo de R$0,02 gravaria R$0,03), e despejar o
-          // resíduo inteiro na última conta inflaria valor_recebido além
-          // do valor da dívida. O resíduo vai um centavo por vez para
-          // quem ainda tem capacidade; o que sobrar sem saldo elegível
-          // fica não-alocado — melhor que registrar recebimento acima
-          // do valor da dívida.
+          // (4×R$0,01 com acordo de R$0,02 gravaria R$0,03). O resíduo
+          // vai um centavo por vez para quem ainda tem capacidade; o que
+          // sobrar ALÉM de toda capacidade (acordo com juros acima do
+          // principal) fica na última conta com peso — valor_recebido
+          // maior que valor é receita real (juros) e a convenção
+          // `valor_recebido || valor` dos KPIs a trata como dinheiro
+          // recebido; descartá-lo faria o caixa registrar menos do que
+          // entrou.
           const restanteCents = Math.round(restante * 100);
           const quotasCents = lista.map((_, i) => {
             if (marcadores[i] !== null) return -1;
@@ -321,6 +323,16 @@ export function useAcordosParcelamento() {
               );
               quotasCents[i] += extra;
               distribuidoCents += extra;
+            }
+          }
+          // Excedente sem capacidade (juros acima do principal) vai para
+          // a última conta com peso — registra o dinheiro que entrou.
+          if (distribuidoCents < restanteCents) {
+            for (let i = quotasCents.length - 1; i >= 0; i--) {
+              if (quotasCents[i] >= 0 && pesos[i] > 0) {
+                quotasCents[i] += restanteCents - distribuidoCents;
+                break;
+              }
             }
           }
           const quotas = lista.map((_, i) =>
