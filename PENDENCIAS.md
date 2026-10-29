@@ -145,11 +145,11 @@ Process completed with exit code 5.
 
 **Prova:** 10 tentativas de retrigger entre 20:07Z e 23:00Z+. Nenhum run saiu do `queued` ou `pending`. Em nenhum momento havia runs `in_progress` em todo o repositório (verificado repetidamente via API). O outage não é concorrência — é ausência de runners GitHub-hosted para `ubuntu-latest`.
 
-**Runs force-cancelados (em ordem):** 40948786385, 40950408941, 40951672291, 40952564856, 40953372282, 40954107694, 40955475493/571/459, 40956070815, 40957664056.
+**Runs force-cancelados (em ordem):** 40948786385, 40950408941, 40951672291, 40952564856, 40953372282, 40954107694, 40955475493/571/459, 40956070815, 40957664056, 40960022534/22475 (22:35Z — tentativa 11).
 
 **Run "ghost" identificado e removido:** run 40954848504 estava `in_progress` (iniciado em 21:06:08Z) mas nunca avançou — ocupava o concurrency group `ci-refs/pull/201/merge-pr` de forma espúria. Force-cancelado. Após o cancel, o run seguinte (40957664056) saiu de `pending` para `queued` com 4 jobs criados — mas permaneceu com `runner_id=0` (sem runner atribuído) até ser force-cancelado também.
 
-**Workflows afetados pelo outage:** CI Pipeline, E2E Financeiro, E2E Critical Gate, Quality Gate & Tests, Varredura de segredos (gitleaks) — todos os 4 jobs do run 40957664056 ficaram em `queued` por 1h+ sem runner.
+**Workflows afetados pelo outage:** CI Pipeline, Deno Edge Function Tests — confirmados em `queued` 1h+ sem runner em SHA `38a0e08` (21:42Z). Outage passou de seletivo (só CI Pipeline) a total (todos os workflows `ubuntu-latest`).
 
 **O que bloqueia (agora):**
 - Merge do PR #201 (8 required checks com `enforce_admins: true`)

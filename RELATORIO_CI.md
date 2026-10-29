@@ -75,7 +75,8 @@ node_modules completo):**
 | **7** | [40955475493](https://github.com/adm01-debug/Promo_Finance_V2/actions/runs/40955475493) [40955475571](https://github.com/adm01-debug/Promo_Finance_V2/actions/runs/40955475571) [40955475459](https://github.com/adm01-debug/Promo_Finance_V2/actions/runs/40955475459) | `d61ab81` | 21:10Z | queued 1h+ | force-cancelado |
 | **8** | [40956070815](https://github.com/adm01-debug/Promo_Finance_V2/actions/runs/40956070815) | `9dc8311` | 21:14Z | pending 2h+ (0 jobs, concorrência ghost) | force-cancelado (run ghost 40954848504 bloqueava concurrency group) |
 | **9** | [40957664056](https://github.com/adm01-debug/Promo_Finance_V2/actions/runs/40957664056) | `07cd007` | 21:33Z | queued 1h+ (runner_id=0, sem runner atribuído) | force-cancelado |
-| **10** | este commit | `fix/ci-workflows` | 2026-10-29T23:00Z+ | **em andamento** | — |
+| **10** | [40960022534](https://github.com/adm01-debug/Promo_Finance_V2/actions/runs/40960022534) [40960022475](https://github.com/adm01-debug/Promo_Finance_V2/actions/runs/40960022475) | `38a0e08` | 21:42Z | queued 53 min (runner_id=0, outage total — Deno Tests tb stuck) | force-cancelado 22:35Z |
+| **11** | este commit | `fix/ci-workflows` | 2026-10-29T22:35Z | **em andamento** | — |
 
 Causa raiz: GitHub runners indisponíveis (outage). Não controlável por este lado.
 
