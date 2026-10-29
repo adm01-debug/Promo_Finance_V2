@@ -644,3 +644,33 @@ DROP TRIGGER IF EXISTS trg_movimentacao_origem_guard ON public.movimentacoes;
 CREATE TRIGGER trg_movimentacao_origem_guard
   BEFORE INSERT OR UPDATE OF origem ON public.movimentacoes
   FOR EACH ROW EXECUTE FUNCTION public.fn_movimentacao_origem_guard();
+
+-- 9) A marca '[estornado pela exclusão da movimentação]' no historico do
+--    lançamento autoriza a restauração a reconfirmá-lo — mas só vale se o
+--    estorno automático continuar vigente. Um contador que revisar o
+--    lançamento e mudar o status por decisão própria (rascunho, re-
+--    cancelar, re-confirmar manualmente) invalida a marca: removemos o
+--    texto para que uma restauração posterior não sobrescreva a decisão.
+--    A distinção é por papel: o estorno/restauração rodam dentro de
+--    fn_saldo_movimentacao (SECURITY DEFINER → current_user = owner),
+--    enquanto a revisão manual chega via PostgREST como authenticated/anon.
+CREATE OR REPLACE FUNCTION public.fn_lancamento_estorno_marker()
+RETURNS TRIGGER
+LANGUAGE plpgsql
+SET search_path = public
+AS $$
+BEGIN
+  IF NEW.status IS DISTINCT FROM OLD.status
+     AND current_user IN ('authenticated', 'anon')
+     AND position('[estornado pela exclusão da movimentação]' in NEW.historico) > 0
+  THEN
+    NEW.historico := replace(NEW.historico, ' [estornado pela exclusão da movimentação]', '');
+  END IF;
+  RETURN NEW;
+END;
+$$;
+
+DROP TRIGGER IF EXISTS trg_lancamento_estorno_marker ON public.lancamentos_contabeis;
+CREATE TRIGGER trg_lancamento_estorno_marker
+  BEFORE UPDATE OF status ON public.lancamentos_contabeis
+  FOR EACH ROW EXECUTE FUNCTION public.fn_lancamento_estorno_marker();
