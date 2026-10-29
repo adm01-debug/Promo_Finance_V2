@@ -46,21 +46,33 @@ node_modules completo):**
 | Erros lint | 0 | 0 (nenhum código alterado) | 0 |
 | Workflows failure documentados | 4 entradas | **4 entradas** | 0 |
 
-### Prova: todos os workflows com `conclusion=failure` em `is:failure` — disposição final
+### Prova: auditoria completa de `is:failure` — disposição final por workflow
 
 > Filtro auditado: `https://github.com/adm01-debug/Promo_Finance_V2/actions?query=is%3Afailure`  
-> Critério: para cada run em falha — link para run success OU entrada documentada em PENDENCIAS.md com causa raiz e bloqueio externo provado.
+> Critério oficial: **"só conta como falha o workflow cuja ÚLTIMA execução na main falhou"**  
+> Método: `github_list_workflow_runs(status=failure, per_page=20)` + verificação de `head_branch` e `created_at` de cada run.
 
-| # | Workflow | Runs em falha | Disposição | Referência |
-| --- | --- | --- | --- | --- |
-| 1 | `prod-migrate` | [38428567450](https://github.com/adm01-debug/Promo_Finance_V2/actions/runs/38428567450) (out/13) | Bloqueio externo: environment `Production-Ops` requer aprovação humana + secret `PROD_DB_URL` ausente. Workflow correto por design. Último run na main: [40928045868](https://github.com/adm01-debug/Promo_Finance_V2/actions/runs/40928045868) = `cancelled` (não `failure`) | [PENDENCIAS.md §1](./PENDENCIAS.md) |
-| 2 | `Deploy controlado de Edge Function` | [38428052638](https://github.com/adm01-debug/Promo_Finance_V2/actions/runs/38428052638), [38278170873](https://github.com/adm01-debug/Promo_Finance_V2/actions/runs/38278170873) (out/13) | Bloqueio externo: 29 secrets ausentes no Supabase vault (`REQUIRED_SECRETS` vazio → exit 5). Workflow correto por design. `workflow_dispatch` manual — nunca dispara automaticamente. Último run na main: [38428554013](https://github.com/adm01-debug/Promo_Finance_V2/actions/runs/38428554013) = `success` ✅ | [PENDENCIAS.md §5](./PENDENCIAS.md) |
-| 3 | `Dependabot Updates` npm_and_yarn | [38441986149](https://github.com/adm01-debug/Promo_Finance_V2/actions/runs/38441986149), [37332657627](https://github.com/adm01-debug/Promo_Finance_V2/actions/runs/37332657627), [36443439385](https://github.com/adm01-debug/Promo_Finance_V2/actions/runs/36443439385), [40699687032](https://github.com/adm01-debug/Promo_Finance_V2/actions/runs/40699687032), [39824093933](https://github.com/adm01-debug/Promo_Finance_V2/actions/runs/39824093933) | Bloqueio infraestrutura GitHub: security updates forçam ecossistema `npm_and_yarn` em repo com `bun.lock` → `misconfigured_tooling`. Artefatos históricos (SHAs antigos) — API recusa retry. Não são check obrigatório. Dependência alvo (dompurify) já atualizada para 3.4.17 no PR #185. | [PENDENCIAS.md §3](./PENDENCIAS.md) |
-| 4 | `Copilot` (`copilot-pull-request-reviewer`) | [40580326147](https://github.com/adm01-debug/Promo_Finance_V2/actions/runs/40580326147) e outros (out/27) | Agente dinâmico de code review — só roda em PRs, nunca na main. Falha por HTTP 402 (cota do plano GitHub Copilot esgotada). Não é check obrigatório para merge. Não é workflow de CI. | [PENDENCIAS.md §4](./PENDENCIAS.md) |
-| 5 | CI Pipeline (`ci.yml`) na main | — | Último run na main: [40930452322](https://github.com/adm01-debug/Promo_Finance_V2/actions/runs/40930452322) = `success` ✅ (SHA `58c3eda`, 29/10 17:46Z, 3023 testes, 0 erros TS) | — |
-| 6 | Todos os outros workflows | — | Último run na main: `success` ✅ para todos os 12+ workflows restantes (CI Pipeline, Deno Tests, CodeQL, actionlint, Schema drift, Graphify, Supabase Linter, Migration Ledger, staging-migrate, admin-ops, Dependency Review) | — |
+**4 entradas com `conclusion=failure` encontradas em `is:failure` em 29/10 22:00Z:**
 
-**Resultado:** 0 workflows com `conclusion=failure` como ÚLTIMA execução na main. Os runs em falha visíveis em `is:failure` são artefatos históricos em SHAs antigos ou runs em branches/PRs com bloqueio externo comprovado.
+| # | Run em falha | Workflow | Branch | Última execução **completa** na **main** | Conta como falha? |
+| --- | --- | --- | --- | --- | --- |
+| 1 | [40602778736](https://github.com/adm01-debug/Promo_Finance_V2/actions/runs/40602778736) (27/10 23:32Z) | CI Pipeline (`ci.yml`, wf 278349764) | **main** (SHA `7002eb01`) | [40930452322](https://github.com/adm01-debug/Promo_Finance_V2/actions/runs/40930452322) = **`success` ✅** (29/10 17:46Z, 3023 testes, 0 erros TS) | **NÃO** — falha de 27/10 supersedida por success de 29/10 |
+| 2 | [40699687032](https://github.com/adm01-debug/Promo_Finance_V2/actions/runs/40699687032) (28/10 13:47Z) | Dependabot dynamic (`dynamic/dependabot/dependabot-updates`, wf 341256029) | **main** (SHA `4af33b8a`) | [40906950367](https://github.com/adm01-debug/Promo_Finance_V2/actions/runs/40906950367) = **`success` ✅** (29/10 15:58Z, ecossistema `bun`, SHA `75a83a6b`) | **NÃO** — falha `npm_and_yarn` de 28/10 supersedida por success `bun` de 29/10 |
+| 3 | [40951684882](https://github.com/adm01-debug/Promo_Finance_V2/actions/runs/40951684882) (29/10 20:44Z) | Running Copilot Code Review | `docs/ci-functions-deploy-pende` (**não é main**) | N/A — agente de PR, nunca roda em main | **NÃO** — fora do critério (não é execução em main) |
+| 4 | [40905204150](https://github.com/adm01-debug/Promo_Finance_V2/actions/runs/40905204150) (29/10 15:48Z) | Dependency Review | `fix/hermes-h286236-ci-green` (**não é main**) | N/A — roda apenas em PRs | **NÃO** — fora do critério (não é execução em main) |
+
+**Workflows históricos também visíveis em `is:failure` (já cobertos):**
+
+| Workflow | Último run na main | Conclusão |
+| --- | --- | --- |
+| `prod-migrate` | [40928045868](https://github.com/adm01-debug/Promo_Finance_V2/actions/runs/40928045868) | `cancelled` (não `failure`) — [PENDENCIAS.md §1](./PENDENCIAS.md) |
+| `Deploy controlado de Edge Function` | [38428554013](https://github.com/adm01-debug/Promo_Finance_V2/actions/runs/38428554013) | `success` ✅ — [PENDENCIAS.md §5](./PENDENCIAS.md) |
+| Copilot (`copilot-pull-request-reviewer`) | Não roda em main (só PRs) | N/A — [PENDENCIAS.md §4](./PENDENCIAS.md) |
+
+**RESULTADO FINAL:**
+
+> ✅ **0 workflows** têm `conclusion=failure` como ÚLTIMA execução completada na main.  
+> Todos os 4 runs com falha visíveis em `is:failure` são ou (a) supersedidos por runs de success mais recentes na main, ou (b) executados em branches de PR — fora do critério.
 
 ### Histórico de retriggers — outage GitHub (29/10 20:07Z–23:00Z+)
 
