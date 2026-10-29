@@ -28,7 +28,7 @@ export function StepConvidarContador({ empresaId, onConcluir, onPular }: Props) 
   const handleEnviar = async () => {
     const parsed = Schema.safeParse({ email, nome });
     if (!parsed.success) {
-      toast.error(parsed.error.issues[0].message);
+      toast.error(parsed.error.errors[0].message);
       return;
     }
     setEnviando(true);

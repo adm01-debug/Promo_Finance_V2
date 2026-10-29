@@ -9,7 +9,7 @@ import type { ContasReceberPainelRow, ContasPagarPainelRow } from './views.types
 const nStr = z.string().nullable().optional().default(null);
 const nNum = z.number().nullable().optional().default(null);
 const nBool = z.boolean().nullable().optional().default(null);
-const nMeta = z.record(z.string(), z.unknown()).nullable().optional().default(null);
+const nMeta = z.record(z.unknown()).nullable().optional().default(null);
 
 export const contasReceberPainelRowSchema = z
   .object({
