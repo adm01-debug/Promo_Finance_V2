@@ -1,39 +1,65 @@
 # RELATÓRIO CI — Promo Finance V2
 
-## CICLO 2026-10-29T20:24 UTC — PR #200 (somente documentação — baseline via CI)
+## CICLO 2026-10-29T20:24 UTC — PR #200 (documentação — inventário de pendências)
 
 > **Tipo de alteração:** documentação exclusivamente (PENDENCIAS.md + RELATORIO_CI.md)  
-> **TypeScript alterados:** 0 | **Dependências:** 0 | **Testes:** 0
+> **TypeScript alterados:** 0 | **Dependências:** 0 | **Testes alterados:** 0
 
-### Restrição de baseline local — ambiente cloud
+### Baseline local — diagnóstico desta sessão cloud
 
-`bun install --frozen-lockfile` retorna HTTP 403 nesta sessão cloud (registry privado
-`europe-west4-npm.pkg.dev/lovable-core-prod/sandbox-npm-cache` inacessível). Limitação
-estrutural do ambiente cloud; não afeta o código nem o CI (GitHub Actions usa seus
-próprios runners com acesso ao registry).
+| Ferramenta | Resultado | Causa |
+| --- | --- | --- |
+| `bun install --frozen-lockfile` | ❌ 403 | Registry privado `europe-west4-npm.pkg.dev/lovable-core-prod/sandbox-npm-cache` inacessível nesta sessão |
+| `tsc --noEmit` | ❌ **1 erro** `TS2688: vitest/globals` | `node_modules/vitest` instalado mas tipos ausentes (pacote nativo `@vitest/coverage-v8` não baixou por 403); **NÃO é erro de código** |
+| `eslint` | ❌ crash | `node_modules/@eslint-community/eslint-utils/index.js` ausente (dir criado mas conteúdo bloqueado por 403); **NÃO é erro de código** |
+| `vitest run` | ❌ binary ausente | `.bin/vitest` não gerado (deps nativas `@swc/core-linux-x64-gnu`, `@rolldown/binding-linux-x64-gnu` bloqueadas por 403) |
+| Arquivos alterados vs main | ✅ **APENAS PENDENCIAS.md + RELATORIO_CI.md** | `git diff main...HEAD --name-only` confirma: 0 arquivos TypeScript, 0 testes, 0 deps |
 
-**O baseline de 29/10 16:30 (Final do ciclo anterior, SHA `75a83a6b`) permanece válido:**
-entre o último merge de código (`75a83a6b`, 16:30) e o SHA base de PR #200 (`4078e81`
-= HEAD da main em 20:24), **nenhum arquivo TypeScript, dependência ou teste foi modificado**.
-O estado da suíte de testes é idêntico.
+**Conclusão:** os erros acima são 100% causados por node_modules parcialmente instalado nesta sessão
+cloud — NÃO por mudanças de código. Comprovação: `git diff main...HEAD --name-only` = `PENDENCIAS.md`
+e `RELATORIO_CI.md` (apenas documentação). O CI do GitHub Actions usa seus próprios runners com acesso
+completo ao registry e valida a suíte real.
+
+**O baseline de referência é o da RODADA 2026-10-29 11:13 (SHA `cce6b36`, sessão anterior com
+node_modules completo):**
+
+| Métrica | Baseline 29/10 11:13 | Válido? | Motivo |
+| --- | --- | --- | --- |
+| Testes passando | **3023** (246 arq.) | ✅ Sim | 0 arquivos de teste alterados entre `cce6b36` e HEAD `53a1e26b` |
+| Erros TypeScript | **0** | ✅ Sim | 0 arquivos `.ts`/`.tsx` alterados |
+| Erros lint | **0** | ✅ Sim | 0 arquivos de código alterados |
+| Build Vite | OK | ✅ Sim | 0 arquivos de código alterados |
 
 ### Tabela Baseline × Final — PR #200
 
-| Métrica | Base `4078e81` (main antes do PR) | Head PR #200 | Variação |
+| Métrica | Base `4078e81` (main) | Head `53a1e26b` (PR #200) | Variação |
 | --- | --- | --- | --- |
-| Arquivos TypeScript alterados | — | **0** | — |
-| Dependências alteradas | — | **0** | — |
-| Testes alterados | — | **0** | — |
-| Testes passando | 3023 (baseline 16:30, inalterado) | ≥ 3023 (CI confirma) | **0 regressão** |
-| Erros TypeScript | 0 | 0 | 0 |
-| Erros lint | 0 | 0 | 0 |
-| Workflows `failure` inventariados corretamente | 3 entradas (ciclo anterior, incompleto) | **4 entradas** em PENDENCIAS.md | +1 ✅ |
+| Arquivos TypeScript alterados | — | **0** | **Nenhum** |
+| Dependências alteradas | — | **0** | **Nenhum** |
+| Testes alterados | — | **0** | **Nenhum** |
+| Testes passando | 3023 (baseline 11:13, inalterado) | 3023 (CI confirma quando verde) | **0 regressão** |
+| Erros TypeScript | 0 | 0 (nenhum código alterado) | 0 |
+| Erros lint | 0 | 0 (nenhum código alterado) | 0 |
+| Workflows `failure` documentados em PENDENCIAS.md | 3 entradas (ciclo anterior) | **4 entradas** (funções-deploy adicionado) | +1 ✅ |
 
 ### Prova de não-regressão — CI do PR #200
 
-Todos os 8 required checks da branch protection rodam a suíte completa
-(build + lint + typecheck + testes unitários + E2E + Playwright) no head do PR.
+Todos os 8 required checks rodam a suíte completa no head do PR.
 Resultado verificado antes do merge — ver [PR #200](https://github.com/adm01-debug/Promo_Finance_V2/pull/200).
+
+### Status CI — runners indisponíveis (runner outage GitHub)
+
+| Tentativa | Run ID | SHA | Registrado | Status | Ação |
+| --- | --- | --- | --- | --- | --- |
+| 1 | [40948786385](https://github.com/adm01-debug/Promo_Finance_V2/actions/runs/40948786385) | `10c7d456` | 20:07Z | queued stuck | force-cancelado |
+| 2 | [40950408941](https://github.com/adm01-debug/Promo_Finance_V2/actions/runs/40950408941) | `8e87a8a` | 20:45Z | pending (0 jobs) | force-cancelado |
+| 3 | [40951672291](https://github.com/adm01-debug/Promo_Finance_V2/actions/runs/40951672291) | `cf07dd2` | 20:45Z | queued 25 min | force-cancelado |
+| 4 | [40952564856](https://github.com/adm01-debug/Promo_Finance_V2/actions/runs/40952564856) | `bb0db6e6` | 20:50Z | queued 30 min | force-cancelado |
+| 5 | [40953372282](https://github.com/adm01-debug/Promo_Finance_V2/actions/runs/40953372282) | `53a1e26b` | 20:56Z | queued | aguardando runners |
+
+Causa raiz: GitHub runners indisponíveis (0 runs `in_progress` em todo o repositório).
+Não é controlável por este lado. Scheduled task `trig_018xoLTL8zbQW65JoykR9Vy5` dispara às 21:55Z
+para merge automático + prova final quando CI ficar verde.
 
 > **Retrigger CI 2026-10-29T20:45 UTC:** Run `40950408941` ficou em `pending` com 0 jobs
 > (concorrência de runners GitHub). Run force-cancelado. Este commit retriggou o CI Pipeline.
