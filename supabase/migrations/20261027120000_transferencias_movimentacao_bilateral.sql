@@ -360,6 +360,14 @@ CREATE TRIGGER trg_transferencia_movimentacao
 --    gatilho já existir, inserts de backfill disparariam a versão antiga
 --    (sem a guarda) e gerariam lançamentos D+C para cada lado, além de
 --    poderem quebrar num schema sem categoria_id/plano_conta_id.
+--
+--    Drift de schema: o canônico (types.ts) não declara origem_id em
+--    lancamentos_contabeis — num banco assim o INSERT da função e as
+--    consultas do backfill/cancelamento que usam l.origem_id quebrariam
+--    na aplicação. Normaliza a coluna antes de qualquer uso.
+ALTER TABLE public.lancamentos_contabeis ADD COLUMN IF NOT EXISTS origem text;
+ALTER TABLE public.lancamentos_contabeis ADD COLUMN IF NOT EXISTS origem_id uuid;
+
 CREATE OR REPLACE FUNCTION public.gerar_lancamento_contabil_automatico()
 RETURNS TRIGGER AS $$
 DECLARE
@@ -462,6 +470,77 @@ BEGIN
     RETURN NEW;
 END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;
+
+-- 5b) trg_sync_valor_pago (20260317000928) só reagia a INSERT/DELETE: o
+--    soft-delete via deleted_at estorna o saldo (seção 3) mas deixava
+--    valor_pago/valor_recebido e o status do título quitados. Como o SUM
+--    já filtra deleted_at IS NULL, basta o gatilho observar a transição
+--    de deleted_at e a função aceitar TG_OP='UPDATE' — a recomputação
+--    cobre os dois sentidos (excluir remove o valor; restaurar devolve).
+CREATE OR REPLACE FUNCTION public.fn_sync_valor_pago_movimentacao()
+RETURNS TRIGGER
+LANGUAGE plpgsql
+SECURITY DEFINER
+SET search_path = public
+AS $$
+DECLARE
+  v_total NUMERIC;
+  v_valor_conta NUMERIC;
+BEGIN
+  -- Atualizar valor_pago em contas_pagar
+  IF (TG_OP IN ('INSERT', 'UPDATE') AND NEW.conta_pagar_id IS NOT NULL) OR
+     (TG_OP = 'DELETE' AND OLD.conta_pagar_id IS NOT NULL) THEN
+    DECLARE
+      v_cp_id UUID := COALESCE(NEW.conta_pagar_id, OLD.conta_pagar_id);
+    BEGIN
+      SELECT COALESCE(SUM(valor), 0) INTO v_total
+      FROM movimentacoes WHERE conta_pagar_id = v_cp_id AND deleted_at IS NULL;
+
+      SELECT valor INTO v_valor_conta FROM contas_pagar WHERE id = v_cp_id;
+
+      UPDATE contas_pagar SET
+        valor_pago = v_total,
+        status = CASE
+          WHEN v_total >= v_valor_conta THEN 'pago'::status_pagamento
+          WHEN v_total > 0 THEN 'parcial'::status_pagamento
+          ELSE 'pendente'::status_pagamento
+        END,
+        data_pagamento = CASE WHEN v_total >= v_valor_conta THEN CURRENT_DATE ELSE NULL END
+      WHERE id = v_cp_id;
+    END;
+  END IF;
+
+  -- Atualizar valor_recebido em contas_receber
+  IF (TG_OP IN ('INSERT', 'UPDATE') AND NEW.conta_receber_id IS NOT NULL) OR
+     (TG_OP = 'DELETE' AND OLD.conta_receber_id IS NOT NULL) THEN
+    DECLARE
+      v_cr_id UUID := COALESCE(NEW.conta_receber_id, OLD.conta_receber_id);
+    BEGIN
+      SELECT COALESCE(SUM(valor), 0) INTO v_total
+      FROM movimentacoes WHERE conta_receber_id = v_cr_id AND deleted_at IS NULL;
+
+      SELECT valor INTO v_valor_conta FROM contas_receber WHERE id = v_cr_id;
+
+      UPDATE contas_receber SET
+        valor_recebido = v_total,
+        status = CASE
+          WHEN v_total >= v_valor_conta THEN 'pago'::status_pagamento
+          WHEN v_total > 0 THEN 'parcial'::status_pagamento
+          ELSE 'pendente'::status_pagamento
+        END,
+        data_recebimento = CASE WHEN v_total >= v_valor_conta THEN CURRENT_DATE ELSE NULL END
+      WHERE id = v_cr_id;
+    END;
+  END IF;
+
+  RETURN COALESCE(NEW, OLD);
+END;
+$$;
+
+DROP TRIGGER IF EXISTS trg_sync_valor_pago ON public.movimentacoes;
+CREATE TRIGGER trg_sync_valor_pago
+  AFTER INSERT OR DELETE OR UPDATE OF deleted_at ON public.movimentacoes
+  FOR EACH ROW EXECUTE FUNCTION fn_sync_valor_pago_movimentacao();
 
 -- 6) Backfill das transferências concluídas históricas: onde o trigger
 --    antigo funcionava só a 'saida' foi gravada (destino nunca creditado);
@@ -628,8 +707,19 @@ BEGIN
   -- INSERT/UPDATE comum é igualmente rebaixado.
   IF current_user IN ('authenticated', 'anon') THEN
     IF TG_OP = 'UPDATE' AND OLD.transferencia_id IS NOT NULL THEN
+      -- vínculo imutável: sem isto o cliente poderia NULLar
+      -- transferencia_id numa 1ª requisição (fora do UPDATE OF origem) e
+      -- rebaixar o marcador na 2ª — a perna inflaria totais e escaparia
+      -- do cancelamento, que remove linhas por transferencia_id.
       NEW.origem := OLD.origem;
-    ELSIF NEW.origem IN ('transferencia', 'transferencia_externa') THEN
+      NEW.transferencia_id := OLD.transferencia_id;
+    ELSIF TG_OP = 'INSERT' AND NEW.transferencia_id IS NOT NULL THEN
+      -- o único escritor legítimo do vínculo é o gatilho de
+      -- transferências (definer): vínculo forjado pelo cliente é anulado.
+      NEW.transferencia_id := NULL;
+    END IF;
+    IF NEW.origem IN ('transferencia', 'transferencia_externa')
+       AND (TG_OP = 'INSERT' OR OLD.transferencia_id IS NULL) THEN
       NEW.origem := 'manual';
     END IF;
   END IF;
@@ -637,12 +727,12 @@ BEGIN
 END;
 $$;
 
--- UPDATE OF origem: só dispara quando o cliente altera a coluna — um
--- soft-delete (deleted_at) em movimentação legítima de transferência não
--- toca origem e preserva o marcador.
+-- UPDATE OF origem, transferencia_id: cobre alteração do marcador e do
+-- vínculo — um soft-delete (deleted_at) em movimentação legítima de
+-- transferência não dispara e preserva ambos.
 DROP TRIGGER IF EXISTS trg_movimentacao_origem_guard ON public.movimentacoes;
 CREATE TRIGGER trg_movimentacao_origem_guard
-  BEFORE INSERT OR UPDATE OF origem ON public.movimentacoes
+  BEFORE INSERT OR UPDATE OF origem, transferencia_id ON public.movimentacoes
   FOR EACH ROW EXECUTE FUNCTION public.fn_movimentacao_origem_guard();
 
 -- 9) A marca '[estornado pela exclusão da movimentação]' no historico do
