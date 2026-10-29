@@ -98,7 +98,18 @@ END $$;
 --    última chance de devolver o saldo) de um soft-delete NOVO (já
 --    estornado pelo ramo UPDATE — reverter de novo duplicaria o crédito).
 DO $cria_fn_saldo$
+DECLARE
+  v_corte text;
 BEGIN
+  -- Corte estável entre reaplicações: guardado no COMMENT da própria
+  -- função na 1ª instalação. Se o corte fosse regenerado a cada execução,
+  -- um soft-delete feito sob o NOVO gatilho seria classificado como
+  -- legado numa reaplicação e teria o saldo estornado duas vezes.
+  SELECT obj_description(to_regprocedure('public.fn_saldo_movimentacao()')::oid, 'pg_proc')
+    INTO v_corte;
+  IF v_corte IS NULL OR v_corte !~ '^[0-9]{4}-[0-9]{2}-[0-9]{2}' THEN
+    v_corte := statement_timestamp()::text;
+  END IF;
   EXECUTE format($f$
 CREATE OR REPLACE FUNCTION public.fn_saldo_movimentacao()
 RETURNS TRIGGER
@@ -148,6 +159,23 @@ BEGIN
         WHERE id = NEW.conta_bancaria_id
           AND empresa_id IS NOT DISTINCT FROM NEW.empresa_id;
     END IF;
+    -- Estorno contábil do soft-delete: o gatilho contábil só reage a
+    -- INSERT — sem este passo o valor volta à conta mas a receita/despesa
+    -- fica confirmada no razão. Restauração reconfirma o que foi
+    -- cancelado pelo caminho inverso.
+    IF OLD.deleted_at IS NULL AND NEW.deleted_at IS NOT NULL THEN
+      UPDATE public.lancamentos_contabeis
+         SET status = 'cancelado'
+       WHERE origem = 'financeiro_movimentacao'
+         AND origem_id = NEW.id
+         AND status IS DISTINCT FROM 'cancelado';
+    ELSIF OLD.deleted_at IS NOT NULL AND NEW.deleted_at IS NULL THEN
+      UPDATE public.lancamentos_contabeis
+         SET status = 'confirmado'
+       WHERE origem = 'financeiro_movimentacao'
+         AND origem_id = NEW.id
+         AND status = 'cancelado';
+    END IF;
     RETURN NEW;
   END IF;
 
@@ -182,7 +210,9 @@ BEGIN
   RETURN NEW;
 END;
 $body$;
-  $f$, statement_timestamp(), statement_timestamp());
+  $f$, v_corte, v_corte);
+  -- persiste o corte para reaplicações futuras (ver DECLARE acima)
+  EXECUTE format('COMMENT ON FUNCTION public.fn_saldo_movimentacao() IS %L', v_corte);
 END
 $cria_fn_saldo$;
 
