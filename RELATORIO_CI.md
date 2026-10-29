@@ -35,8 +35,12 @@ Todos os 8 required checks da branch protection rodam a suíte completa
 (build + lint + typecheck + testes unitários + E2E + Playwright) no head do PR.
 Resultado verificado antes do merge — ver [PR #200](https://github.com/adm01-debug/Promo_Finance_V2/pull/200).
 
-> **Retrigger CI 2026-10-29T21:xx UTC:** Run `40950408941` ficou em `pending` com 0 jobs
-> (concorrência de runners GitHub). Run force-cancelado. Este commit retrigga o CI Pipeline.
+> **Retrigger CI 2026-10-29T20:45 UTC:** Run `40950408941` ficou em `pending` com 0 jobs
+> (concorrência de runners GitHub). Run force-cancelado. Este commit retriggou o CI Pipeline.
+>
+> **Retrigger CI 2026-10-29T21:10 UTC:** Run `40951672291` ficou em `queued` por mais de 25 min
+> (runs `40946487209` e `40946127050` de outras branches force-cancelados; runners GitHub indisponíveis).
+> Run force-cancelado. Este commit retrigga novamente o CI Pipeline.
 
 ---
 
