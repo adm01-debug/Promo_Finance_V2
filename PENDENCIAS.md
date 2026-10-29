@@ -1,6 +1,6 @@
 # PENDÊNCIAS — Promo Finance V2
 
-> Atualizado em: 2026-10-29T22:21 UTC  
+> Atualizado em: 2026-10-29T22:23 UTC  
 > §7: mapeamento exato dos 4 runs com `conclusion=failure` no filtro `is:failure` — motivo por run, confirmado via API.  
 > §6: bloqueios de infraestrutura desta sessão cloud (runners GitHub outage + registry privado 403).  
 > Filtro `is:action_required` retornou **0 runs**.  
@@ -204,7 +204,7 @@ git clone https://github.com/adm01-debug/Promo_Finance_V2
 git checkout fix/ci-workflows
 bun install
 bun run type-check   # deve: 0 erros
-bun run lint:strict  # deve: 0 erros
+bun run lint         # deve: 0 erros (o CI usa `bun run lint`; `lint:strict` adiciona --max-warnings 0 e falha com os 74 warnings preexistentes)
 bun run test:run     # deve: 3023 testes passando
 bun run build        # deve: OK
 ```
