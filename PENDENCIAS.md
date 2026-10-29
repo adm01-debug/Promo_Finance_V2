@@ -129,7 +129,7 @@ Process completed with exit code 5.
    - Abra https://supabase.com/dashboard/project/bwwbeyolnnzppeuhgkcd → **Settings** → **Edge Functions** → **Secrets**
    - Adicione cada variável com o valor correto para produção
 2. (Opcional mas recomendado) Configure a GitHub Variable `REQUIRED_SECRETS` com o CSV dos secrets obrigatórios (mesmo comando da Seção 2) — sem isso o script lê do manifesto a cada run, o que é mais lento mas igualmente correto.
-3. Abra https://github.com/adm01-debug/Promo_Finance_V2/actions/workflows/functions-deploy.yml → **Run workflow** → selecione uma função válida (ex: `convidar-usuario`) → **Run workflow**.
+3. Abra https://github.com/adm01-debug/Promo_Finance_V2/actions/workflows/functions-deploy.yml → **Run workflow** → deixe `deploy_all=true` (padrão recomendado para validar todos os secrets do manifesto) → **Run workflow**. Usar uma função individual com `deploy_all=false` não valida os demais secrets obrigatórios e não reproduz a falha original em lote.
 4. Me avise — eu monitoro o run e confirmo o resultado.
 
 **Workflow:** `workflow_dispatch` apenas — nunca dispara automaticamente. Não há risco de deploy acidental.

@@ -24,15 +24,14 @@ cloud — NÃO por mudanças de código. Comprovação: `git diff main...HEAD --
 e `RELATORIO_CI.md` (apenas documentação). O CI do GitHub Actions usa seus próprios runners com acesso
 completo ao registry e valida a suíte real.
 
-**O baseline de referência é o da RODADA 2026-10-29 11:13 (SHA `cce6b36`, sessão anterior com
-node_modules completo):**
+**O baseline de referência é o CI run confirmado na main: run [40930452322](https://github.com/adm01-debug/Promo_Finance_V2/actions/runs/40930452322) (SHA `4078e811`, 29/10 18:24Z, 3023 testes, 0 erros TS).** O SHA `cce6b36` foi uma medição local anterior; o run 40930452322 (posterior) é a fonte de verdade mais recente e inclui as mudanças do PR #196 (zod, ClienteForm.tsx, FornecedorForm.tsx):
 
-| Métrica | Baseline 29/10 11:13 | Válido? | Motivo |
+| Métrica | Baseline (run 40930452322 em main) | Válido para esta branch? | Motivo |
 | --- | --- | --- | --- |
-| Testes passando | **3023** (246 arq.) | ✅ Sim | 0 arquivos de teste alterados entre `cce6b36` e HEAD |
-| Erros TypeScript | **0** | ✅ Sim | 0 arquivos `.ts`/`.tsx` alterados |
-| Erros lint | **0** | ✅ Sim | 0 arquivos de código alterados |
-| Build Vite | OK | ✅ Sim | 0 arquivos de código alterados |
+| Testes passando | **3023** (246 arq.) | ✅ Sim | `git diff main...HEAD --name-only` = apenas `PENDENCIAS.md` + `RELATORIO_CI.md`; 0 arquivos de teste alterados nesta branch |
+| Erros TypeScript | **0** | ✅ Sim | 0 arquivos `.ts`/`.tsx` nesta branch (confirmado pela última execução na main) |
+| Erros lint | **0** | ✅ Sim | 0 arquivos de código nesta branch |
+| Build Vite | OK | ✅ Sim | 0 arquivos de código nesta branch |
 
 ### Tabela Baseline × Final — fix/ci-workflows
 
