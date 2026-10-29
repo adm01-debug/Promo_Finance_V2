@@ -161,20 +161,26 @@ BEGIN
     END IF;
     -- Estorno contábil do soft-delete: o gatilho contábil só reage a
     -- INSERT — sem este passo o valor volta à conta mas a receita/despesa
-    -- fica confirmada no razão. Restauração reconfirma o que foi
-    -- cancelado pelo caminho inverso.
+    -- fica confirmada no razão. Só lançamentos 'confirmado' são estornados
+    -- ('rascunho' continua rascunho, 'cancelado' continua cancelado) e a
+    -- marca no histórico identifica o que ESTA transição cancelou —
+    -- assim a restauração reconfirma apenas esses, sem promover rascunho
+    -- incompleto nem ressuscitar cancelamento anterior.
     IF OLD.deleted_at IS NULL AND NEW.deleted_at IS NOT NULL THEN
       UPDATE public.lancamentos_contabeis
-         SET status = 'cancelado'
+         SET status = 'cancelado',
+             historico = historico || ' [estornado pela exclusão da movimentação]'
        WHERE origem = 'financeiro_movimentacao'
          AND origem_id = NEW.id
-         AND status IS DISTINCT FROM 'cancelado';
+         AND status = 'confirmado';
     ELSIF OLD.deleted_at IS NOT NULL AND NEW.deleted_at IS NULL THEN
       UPDATE public.lancamentos_contabeis
-         SET status = 'confirmado'
+         SET status = 'confirmado',
+             historico = replace(historico, ' [estornado pela exclusão da movimentação]', '')
        WHERE origem = 'financeiro_movimentacao'
          AND origem_id = NEW.id
-         AND status = 'cancelado';
+         AND status = 'cancelado'
+         AND historico LIKE '%[estornado pela exclusão da movimentação]%';
     END IF;
     RETURN NEW;
   END IF;
