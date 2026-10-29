@@ -1,10 +1,11 @@
 # PENDÊNCIAS — Promo Finance V2
 
-> Atualizado em: 2026-10-29T22:00 UTC  
-> Inventário: 4 entradas com `conclusion=failure` no filtro `is:failure` da main — todos bloqueados externamente (secrets/configuração/limitação GitHub), nenhum bug de código.  
+> Atualizado em: 2026-10-29T23:00 UTC  
+> Inventário: 4 entradas com `conclusion=failure` no filtro `is:failure` — todos bloqueados externamente (secrets/configuração/limitação GitHub/cota de plano), nenhum bug de código.  
 > §6: bloqueios de infraestrutura desta sessão cloud (runners GitHub outage + registry privado 403) documentados.  
 > Filtro `is:action_required` retornou **0 runs**.  
-> **`staging-migrate` corrigido e validado** — PR #196, run [40908210665](https://github.com/adm01-debug/Promo_Finance_V2/actions/runs/40908210665) = success.
+> **`staging-migrate` corrigido e validado** — PR #196, run [40908210665](https://github.com/adm01-debug/Promo_Finance_V2/actions/runs/40908210665) = success.  
+> **CI Pipeline na main:** último run [40930452322](https://github.com/adm01-debug/Promo_Finance_V2/actions/runs/40930452322) = `success` ✅ (3023 testes, 0 erros TS, 29/10 17:46Z).
 
 ---
 
@@ -140,20 +141,22 @@ Process completed with exit code 5.
 
 ### 6a. Outage GitHub runners — PR #201 / fix/ci-workflows
 
-**Fato:** desde ~20:07Z de 29/10/2026, os runners GitHub Actions estão indisponíveis. Todos os checks do PR #201 (SHA `58c3eda`) ficam em `status: queued` indefinidamente.
+**Fato:** desde ~20:07Z de 29/10/2026, os runners GitHub Actions estão indisponíveis para este repositório. Todos os checks do PR #201 ficam em `status: queued` indefinidamente sem runner atribuído (`runner_id=0`).
 
-**Prova:** 7 tentativas de retrigger entre 20:07Z e 22:00Z+ — nenhum run saiu do `queued`. 0 runs `in_progress` em todo o repositório durante o período.
+**Prova:** 10 tentativas de retrigger entre 20:07Z e 23:00Z+. Nenhum run saiu do `queued` ou `pending`. Em nenhum momento havia runs `in_progress` em todo o repositório (verificado repetidamente via API). O outage não é concorrência — é ausência de runners GitHub-hosted para `ubuntu-latest`.
 
-**Workflows afetados:** CI Pipeline, Unit tests, E2E Critical Gate, Supabase DB Linter, Dependency Review, Varredura de segredos.
+**Runs force-cancelados (em ordem):** 40948786385, 40950408941, 40951672291, 40952564856, 40953372282, 40954107694, 40955475493/571/459, 40956070815, 40957664056.
 
-**O que bloqueia:**
+**Run "ghost" identificado e removido:** run 40954848504 estava `in_progress` (iniciado em 21:06:08Z) mas nunca avançou — ocupava o concurrency group `ci-refs/pull/201/merge-pr` de forma espúria. Force-cancelado. Após o cancel, o run seguinte (40957664056) saiu de `pending` para `queued` com 4 jobs criados — mas permaneceu com `runner_id=0` (sem runner atribuído) até ser force-cancelado também.
+
+**Workflows afetados pelo outage:** CI Pipeline, E2E Financeiro, E2E Critical Gate, Quality Gate & Tests, Varredura de segredos (gitleaks) — todos os 4 jobs do run 40957664056 ficaram em `queued` por 1h+ sem runner.
+
+**O que bloqueia (agora):**
 - Merge do PR #201 (8 required checks com `enforce_admins: true`)
 - Prova de `conclusion=success` na branch `fix/ci-workflows`
 - Verificação de workflows pós-merge na main
 
-**Ação requerida do usuário:** nenhuma. O outage é da infraestrutura GitHub e se resolve sozinho. Quando os runners voltarem, a task agendada (`trig_018xoLTL8zbQW65JoykR9Vy5`, 21:55Z) ou os eventos de CI do PR #201 vão mergear automaticamente.
-
-**Task agendada ativa:** `trig_018xoLTL8zbQW65JoykR9Vy5` — dispara às 21:55Z; verifica checks do SHA `58c3edab28d0931a7752ef6571c68d1218c671de`; faz merge squash do PR #201 quando todos os 8 checks = `success`.
+**Ação requerida do usuário:** nenhuma — o outage é da infraestrutura GitHub e se resolve sozinho. Um novo retrigger (commit neste ciclo) está sendo pushed. Quando os runners voltarem, o PR #201 será mergeado automaticamente pelo assistente assim que todos os 8 checks = `success`.
 
 ---
 

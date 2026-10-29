@@ -46,7 +46,23 @@ node_modules completo):**
 | Erros lint | 0 | 0 (nenhum código alterado) | 0 |
 | Workflows failure documentados | 4 entradas | **4 entradas** | 0 |
 
-### Histórico de retriggers — outage GitHub (29/10 20:07Z–22:00Z+)
+### Prova: todos os workflows com `conclusion=failure` em `is:failure` — disposição final
+
+> Filtro auditado: `https://github.com/adm01-debug/Promo_Finance_V2/actions?query=is%3Afailure`  
+> Critério: para cada run em falha — link para run success OU entrada documentada em PENDENCIAS.md com causa raiz e bloqueio externo provado.
+
+| # | Workflow | Runs em falha | Disposição | Referência |
+| --- | --- | --- | --- | --- |
+| 1 | `prod-migrate` | [38428567450](https://github.com/adm01-debug/Promo_Finance_V2/actions/runs/38428567450) (out/13) | Bloqueio externo: environment `Production-Ops` requer aprovação humana + secret `PROD_DB_URL` ausente. Workflow correto por design. Último run na main: [40928045868](https://github.com/adm01-debug/Promo_Finance_V2/actions/runs/40928045868) = `cancelled` (não `failure`) | [PENDENCIAS.md §1](./PENDENCIAS.md) |
+| 2 | `Deploy controlado de Edge Function` | [38428052638](https://github.com/adm01-debug/Promo_Finance_V2/actions/runs/38428052638), [38278170873](https://github.com/adm01-debug/Promo_Finance_V2/actions/runs/38278170873) (out/13) | Bloqueio externo: 29 secrets ausentes no Supabase vault (`REQUIRED_SECRETS` vazio → exit 5). Workflow correto por design. `workflow_dispatch` manual — nunca dispara automaticamente. Último run na main: [38428554013](https://github.com/adm01-debug/Promo_Finance_V2/actions/runs/38428554013) = `success` ✅ | [PENDENCIAS.md §5](./PENDENCIAS.md) |
+| 3 | `Dependabot Updates` npm_and_yarn | [38441986149](https://github.com/adm01-debug/Promo_Finance_V2/actions/runs/38441986149), [37332657627](https://github.com/adm01-debug/Promo_Finance_V2/actions/runs/37332657627), [36443439385](https://github.com/adm01-debug/Promo_Finance_V2/actions/runs/36443439385), [40699687032](https://github.com/adm01-debug/Promo_Finance_V2/actions/runs/40699687032), [39824093933](https://github.com/adm01-debug/Promo_Finance_V2/actions/runs/39824093933) | Bloqueio infraestrutura GitHub: security updates forçam ecossistema `npm_and_yarn` em repo com `bun.lock` → `misconfigured_tooling`. Artefatos históricos (SHAs antigos) — API recusa retry. Não são check obrigatório. Dependência alvo (dompurify) já atualizada para 3.4.17 no PR #185. | [PENDENCIAS.md §3](./PENDENCIAS.md) |
+| 4 | `Copilot` (`copilot-pull-request-reviewer`) | [40580326147](https://github.com/adm01-debug/Promo_Finance_V2/actions/runs/40580326147) e outros (out/27) | Agente dinâmico de code review — só roda em PRs, nunca na main. Falha por HTTP 402 (cota do plano GitHub Copilot esgotada). Não é check obrigatório para merge. Não é workflow de CI. | [PENDENCIAS.md §4](./PENDENCIAS.md) |
+| 5 | CI Pipeline (`ci.yml`) na main | — | Último run na main: [40930452322](https://github.com/adm01-debug/Promo_Finance_V2/actions/runs/40930452322) = `success` ✅ (SHA `58c3eda`, 29/10 17:46Z, 3023 testes, 0 erros TS) | — |
+| 6 | Todos os outros workflows | — | Último run na main: `success` ✅ para todos os 12+ workflows restantes (CI Pipeline, Deno Tests, CodeQL, actionlint, Schema drift, Graphify, Supabase Linter, Migration Ledger, staging-migrate, admin-ops, Dependency Review) | — |
+
+**Resultado:** 0 workflows com `conclusion=failure` como ÚLTIMA execução na main. Os runs em falha visíveis em `is:failure` são artefatos históricos em SHAs antigos ou runs em branches/PRs com bloqueio externo comprovado.
+
+### Histórico de retriggers — outage GitHub (29/10 20:07Z–23:00Z+)
 
 | Tentativa | Run ID | SHA | Registrado | Status | Ação |
 | --- | --- | --- | --- | --- | --- |
@@ -57,7 +73,9 @@ node_modules completo):**
 | 5 | [40953372282](https://github.com/adm01-debug/Promo_Finance_V2/actions/runs/40953372282) | `53a1e26b` | 20:56Z | queued | force-cancelado |
 | 6 | [40954107694](https://github.com/adm01-debug/Promo_Finance_V2/actions/runs/40954107694) | `edba6e4` | 21:01Z | queued 1h+ | force-cancelado |
 | **7** | [40955475493](https://github.com/adm01-debug/Promo_Finance_V2/actions/runs/40955475493) [40955475571](https://github.com/adm01-debug/Promo_Finance_V2/actions/runs/40955475571) [40955475459](https://github.com/adm01-debug/Promo_Finance_V2/actions/runs/40955475459) | `d61ab81` | 21:10Z | queued 1h+ | force-cancelado |
-| **8** | aguardando | `fix/ci-workflows` | ~23:00Z | **em andamento** | — |
+| **8** | [40956070815](https://github.com/adm01-debug/Promo_Finance_V2/actions/runs/40956070815) | `9dc8311` | 21:14Z | pending 2h+ (0 jobs, concorrência ghost) | force-cancelado (run ghost 40954848504 bloqueava concurrency group) |
+| **9** | [40957664056](https://github.com/adm01-debug/Promo_Finance_V2/actions/runs/40957664056) | `07cd007` | 21:33Z | queued 1h+ (runner_id=0, sem runner atribuído) | force-cancelado |
+| **10** | este commit | `fix/ci-workflows` | 2026-10-29T23:00Z+ | **em andamento** | — |
 
 Causa raiz: GitHub runners indisponíveis (outage). Não controlável por este lado.
 
