@@ -91,7 +91,7 @@
     "dompurify": "3.4.17",
     "embla-carousel-react": "^8.6.0",
     "file-saver": "^2.0.5",
-    "framer-motion": "^11.18.0",
+    "framer-motion": "^14.6.0",
     "html2canvas": "^1.4.1",
     "i18next": "^26.0.10",
     "i18next-browser-languagedetector": "^8.2.1",
