@@ -24,7 +24,43 @@ permissions:
   contents: read
 
 jobs:
+  # Guard de pré-requisito: sucede (com aviso) quando os secrets não estão
+  # configurados, evitando um failure permanente na página de Actions.
+  # O job migrate só roda quando todos os secrets necessários estão presentes.
+  check-secrets:
+    runs-on: ubuntu-latest
+    outputs:
+      ready: ${{ steps.check.outputs.ready }}
+    steps:
+      - name: Verificar secrets obrigatórios
+        id: check
+        env:
+          HAS_STAGING_DB_URL: ${{ secrets.STAGING_DB_URL != '' }}
+          HAS_PROD_DB_URL: ${{ secrets.PROD_DB_URL != '' }}
+          HAS_STAGING_PROJECT_REF: ${{ secrets.STAGING_PROJECT_REF != '' }}
+          HAS_STAGING_ANON_KEY: ${{ secrets.STAGING_ANON_KEY != '' }}
+          HAS_SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN != '' }}
+          HAS_TEST_ADMIN_JWT: ${{ secrets.TEST_ADMIN_JWT != '' }}
+        run: |
+          MISSING=()
+          [ "$HAS_STAGING_DB_URL" = "false" ]         && MISSING+=("STAGING_DB_URL")
+          [ "$HAS_PROD_DB_URL" = "false" ]            && MISSING+=("PROD_DB_URL")
+          [ "$HAS_STAGING_PROJECT_REF" = "false" ]    && MISSING+=("STAGING_PROJECT_REF")
+          [ "$HAS_STAGING_ANON_KEY" = "false" ]       && MISSING+=("STAGING_ANON_KEY")
+          [ "$HAS_SUPABASE_ACCESS_TOKEN" = "false" ]  && MISSING+=("SUPABASE_ACCESS_TOKEN")
+          [ "$HAS_TEST_ADMIN_JWT" = "false" ]         && MISSING+=("TEST_ADMIN_JWT")
+
+          if [ ${#MISSING[@]} -gt 0 ]; then
+            echo "::warning::Secrets ausentes: ${MISSING[*]}"
+            echo "::warning::Configure os secrets em Settings → Secrets → Actions antes de rodar staging-migrate."
+            echo "ready=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "ready=true" >> "$GITHUB_OUTPUT"
+          fi
+
   migrate:
+    needs: check-secrets
+    if: needs.check-secrets.outputs.ready == 'true'
     runs-on: ubuntu-latest
     timeout-minutes: 30
     env:
