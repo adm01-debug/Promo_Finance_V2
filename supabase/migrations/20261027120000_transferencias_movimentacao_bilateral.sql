@@ -180,7 +180,7 @@ BEGIN
        WHERE origem = 'financeiro_movimentacao'
          AND origem_id = NEW.id
          AND status = 'cancelado'
-         AND historico LIKE '%[estornado pela exclusão da movimentação]%';
+         AND historico LIKE '%%[estornado pela exclusão da movimentação]%%';
     END IF;
     RETURN NEW;
   END IF;
