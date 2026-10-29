@@ -174,7 +174,7 @@ export function CommandPalette() {
             title: 'Alertas Preditivos',
             subtitle: 'Gestão proativa de riscos',
             icon: Brain,
-            action: () => navigate('/#alertas-preditivos'),
+            action: () => navigate('/inteligencia#alertas-preditivos'),
             keywords: ['risco', 'alerta', 'preditivo', 'ia'],
           },
         ],
