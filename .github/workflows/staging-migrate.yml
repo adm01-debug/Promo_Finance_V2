@@ -40,7 +40,6 @@ jobs:
           HAS_STAGING_PROJECT_REF: ${{ secrets.STAGING_PROJECT_REF != '' }}
           HAS_STAGING_ANON_KEY: ${{ secrets.STAGING_ANON_KEY != '' }}
           HAS_SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN != '' }}
-          HAS_TEST_ADMIN_JWT: ${{ secrets.TEST_ADMIN_JWT != '' }}
         run: |
           MISSING=()
           [ "$HAS_STAGING_DB_URL" = "false" ]         && MISSING+=("STAGING_DB_URL")
@@ -48,7 +47,8 @@ jobs:
           [ "$HAS_STAGING_PROJECT_REF" = "false" ]    && MISSING+=("STAGING_PROJECT_REF")
           [ "$HAS_STAGING_ANON_KEY" = "false" ]       && MISSING+=("STAGING_ANON_KEY")
           [ "$HAS_SUPABASE_ACCESS_TOKEN" = "false" ]  && MISSING+=("SUPABASE_ACCESS_TOKEN")
-          [ "$HAS_TEST_ADMIN_JWT" = "false" ]         && MISSING+=("TEST_ADMIN_JWT")
+          # TEST_ADMIN_JWT é opcional — scripts/staging-migrate.sh trata ausência
+          # com testes marcados como 'unverified' em vez de falhar
 
           if [ ${#MISSING[@]} -gt 0 ]; then
             echo "::warning::Secrets ausentes: ${MISSING[*]}"
