@@ -492,13 +492,25 @@ AS $$
 DECLARE
   v_total NUMERIC;
   v_valor_conta NUMERIC;
+  v_empresa UUID;
 BEGIN
+  -- Tenant: conta_pagar_id/conta_receber_id podem apontar para título de
+  -- outra empresa e o UPDATE SECURITY DEFINER ignoraria a RLS — valida a
+  -- empresa do vínculo antes de tocar no título (mesma regra da seção 3).
+  v_empresa := COALESCE(NEW.empresa_id, OLD.empresa_id);
+
   -- Atualizar valor_pago em contas_pagar
   IF (TG_OP IN ('INSERT', 'UPDATE') AND NEW.conta_pagar_id IS NOT NULL) OR
      (TG_OP = 'DELETE' AND OLD.conta_pagar_id IS NOT NULL) THEN
     DECLARE
       v_cp_id UUID := COALESCE(NEW.conta_pagar_id, OLD.conta_pagar_id);
     BEGIN
+      IF NOT EXISTS (
+        SELECT 1 FROM contas_pagar WHERE id = v_cp_id AND empresa_id = v_empresa
+      ) THEN
+        RAISE EXCEPTION 'movimentacao vinculada a conta_pagar de outra empresa (%)', v_empresa;
+      END IF;
+
       SELECT COALESCE(SUM(valor), 0) INTO v_total
       FROM movimentacoes WHERE conta_pagar_id = v_cp_id AND deleted_at IS NULL;
 
@@ -522,6 +534,12 @@ BEGIN
     DECLARE
       v_cr_id UUID := COALESCE(NEW.conta_receber_id, OLD.conta_receber_id);
     BEGIN
+      IF NOT EXISTS (
+        SELECT 1 FROM contas_receber WHERE id = v_cr_id AND empresa_id = v_empresa
+      ) THEN
+        RAISE EXCEPTION 'movimentacao vinculada a conta_receber de outra empresa (%)', v_empresa;
+      END IF;
+
       SELECT COALESCE(SUM(valor), 0) INTO v_total
       FROM movimentacoes WHERE conta_receber_id = v_cr_id AND deleted_at IS NULL;
 
