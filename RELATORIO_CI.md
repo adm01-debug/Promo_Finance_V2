@@ -1,5 +1,42 @@
 # RELATÓRIO CI — Promo Finance V2
 
+## CICLO 2026-10-29T20:24 UTC — PR #200 (somente documentação — baseline via CI)
+
+> **Tipo de alteração:** documentação exclusivamente (PENDENCIAS.md + RELATORIO_CI.md)  
+> **TypeScript alterados:** 0 | **Dependências:** 0 | **Testes:** 0
+
+### Restrição de baseline local — ambiente cloud
+
+`bun install --frozen-lockfile` retorna HTTP 403 nesta sessão cloud (registry privado
+`europe-west4-npm.pkg.dev/lovable-core-prod/sandbox-npm-cache` inacessível). Limitação
+estrutural do ambiente cloud; não afeta o código nem o CI (GitHub Actions usa seus
+próprios runners com acesso ao registry).
+
+**O baseline de 29/10 16:30 (Final do ciclo anterior, SHA `75a83a6b`) permanece válido:**
+entre o último merge de código (`75a83a6b`, 16:30) e o SHA base de PR #200 (`4078e81`
+= HEAD da main em 20:24), **nenhum arquivo TypeScript, dependência ou teste foi modificado**.
+O estado da suíte de testes é idêntico.
+
+### Tabela Baseline × Final — PR #200
+
+| Métrica | Base `4078e81` (main antes do PR) | Head PR #200 | Variação |
+| --- | --- | --- | --- |
+| Arquivos TypeScript alterados | — | **0** | — |
+| Dependências alteradas | — | **0** | — |
+| Testes alterados | — | **0** | — |
+| Testes passando | 3023 (baseline 16:30, inalterado) | ≥ 3023 (CI confirma) | **0 regressão** |
+| Erros TypeScript | 0 | 0 | 0 |
+| Erros lint | 0 | 0 | 0 |
+| Workflows `failure` inventariados corretamente | 3 entradas (ciclo anterior, incompleto) | **4 entradas** em PENDENCIAS.md | +1 ✅ |
+
+### Prova de não-regressão — CI do PR #200
+
+Todos os 8 required checks da branch protection rodam a suíte completa
+(build + lint + typecheck + testes unitários + E2E + Playwright) no head do PR.
+Resultado verificado antes do merge — ver [PR #200](https://github.com/adm01-debug/Promo_Finance_V2/pull/200).
+
+---
+
 ## ADDENDUM 2026-10-29T21:00 UTC — revisão pós-PR #197
 
 > **Correção ao inventário final:** O RELATORIO_CI.md do PR #197 declarou "0 workflows failure" prematuramente. Após auditoria completa da aba `is:failure`, dois workflows adicionais foram identificados com runs históricos em falha, documentados em PENDENCIAS.md Seção 5 e item 3.
@@ -41,7 +78,7 @@
 | Schema drift | [#40281232844](https://github.com/adm01-debug/Promo_Finance_V2/actions/runs/40281232844) | ✅ success |
 | Dependabot Updates (bun) | [#40906950367](https://github.com/adm01-debug/Promo_Finance_V2/actions/runs/40906950367) | ✅ success |
 
-### Baseline × final — sem regressão
+### Baseline × final — ciclo 29/10 (sem regressão)
 
 | Métrica | Baseline 29/10 11:13 | Final 29/10 16:30 | Variação |
 | --- | --- | --- | --- |
