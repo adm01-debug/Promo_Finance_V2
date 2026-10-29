@@ -88,9 +88,13 @@ completo ao registry e valida a suíte real.
 | **9** | [40957664056](https://github.com/adm01-debug/Promo_Finance_V2/actions/runs/40957664056) | `07cd007` | 21:33Z | queued 1h+ (runner_id=0, sem runner atribuído) | force-cancelado |
 | **10** | [40960022534](https://github.com/adm01-debug/Promo_Finance_V2/actions/runs/40960022534) [40960022475](https://github.com/adm01-debug/Promo_Finance_V2/actions/runs/40960022475) | `38a0e08` | 21:42Z | queued 53 min (runner_id=0, outage total — Deno Tests tb stuck) | force-cancelado 22:35Z |
 | **11** | [40961109511](https://github.com/adm01-debug/Promo_Finance_V2/actions/runs/40961109511) | `c4952c4` | 21:50Z | queued (runner_id=0, outage total) | cancelado por novo push em 22:01Z |
-| **12** | [40962486203](https://github.com/adm01-debug/Promo_Finance_V2/actions/runs/40962486203) | `c75620c` | 22:01Z | **queued** (runner_id=0, outage persiste) | — |
+| **12** | [40962486203](https://github.com/adm01-debug/Promo_Finance_V2/actions/runs/40962486203) | `c75620c` | 22:01Z | **queued** (runner_id=0, outage persiste) | force-cancelado |
+| **13–16** | (runs queued/cancelados) | `0b1c083`→`21361e1`→`f4c4f22` | 22:05–22:23Z | queued (outage persiste; Codex findings corrigidos) | force-cancelados |
+| **17** | [40965587142](https://github.com/adm01-debug/Promo_Finance_V2/actions/runs/40965587142) | `0398333` | 22:24Z | **queued** (runner_id=0, outage continua) | aguardando runners |
+| **18** | (novo run esperado) | `c433b87` | ≈22:50Z | merge main (PR #198 deps) — branch atualizada; novo CI disparado | tentativa ativa |
 
-Causa raiz: GitHub runners indisponíveis (outage). Não controlável por este lado.
+Causa raiz: GitHub runners indisponíveis (outage). Não controlável por este lado.  
+**PR #198** (lote deps + grupo radix) mergeado em main em 21:38Z durante o outage. Branch atualizada em 22:50Z via merge commit `c433b87`.
 
 ---
 

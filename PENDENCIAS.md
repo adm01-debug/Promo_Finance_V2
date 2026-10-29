@@ -1,6 +1,6 @@
 # PENDÊNCIAS — Promo Finance V2
 
-> Atualizado em: 2026-10-29T22:23 UTC  
+> Atualizado em: 2026-10-29T22:50 UTC  
 > §7: mapeamento exato dos 4 runs com `conclusion=failure` no filtro `is:failure` — motivo por run, confirmado via API.  
 > §6: bloqueios de infraestrutura desta sessão cloud (runners GitHub outage + registry privado 403).  
 > Filtro `is:action_required` retornou **0 runs**.  
