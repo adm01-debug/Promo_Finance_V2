@@ -276,7 +276,7 @@ export default function BI() {
     const hoje = new Date();
     const aging = { aVencer: 0, ate30: 0, ate60: 0, ate90: 0, mais90: 0 };
     filteredReceber
-      .filter((c) => c.status !== 'pago' && c.status !== 'cancelado')
+      .filter((c) => c.status !== 'pago' && c.status !== 'recebido' && c.status !== 'cancelado')
       .forEach((c) => {
         if (!c.data_vencimento) return;
         const dias = differenceInDays(hoje, new Date(c.data_vencimento));
@@ -298,7 +298,7 @@ export default function BI() {
   const topClientes = useMemo(() => {
     const clienteMap = new Map<string, number>();
     filteredReceber
-      .filter((c) => c.status === 'pago')
+      .filter((c) => c.status === 'pago' || c.status === 'recebido')
       .forEach((c) => {
         const nome = c.cliente_nome || 'Sem cliente';
         clienteMap.set(nome, (clienteMap.get(nome) || 0) + valorRecebidoEfetivo(c));
@@ -332,14 +332,14 @@ export default function BI() {
         const ep = contasPagar.filter((c) => c.empresa_id === empresa.id);
         const ec = contasBancarias.filter((c) => c.empresa_id === empresa.id);
         const receitas = er
-          .filter((c) => c.status === 'pago')
+          .filter((c) => c.status === 'pago' || c.status === 'recebido')
           .reduce((acc, c) => acc + valorRecebidoEfetivo(c), 0);
         const despesas = ep
           .filter((c) => c.status === 'pago')
           .reduce((acc, c) => acc + (c.valor_pago || c.valor), 0);
         const saldo = ec.reduce((acc, c) => acc + c.saldo_atual, 0);
         const aReceber = er
-          .filter((c) => c.status !== 'pago' && c.status !== 'cancelado')
+          .filter((c) => c.status !== 'pago' && c.status !== 'recebido' && c.status !== 'cancelado')
           .reduce((acc, c) => acc + c.valor, 0);
         const aPagar = ep
           .filter((c) => c.status !== 'pago' && c.status !== 'cancelado')
@@ -351,10 +351,8 @@ export default function BI() {
         const lucro = receitas - despesas;
         const margem = receitas > 0 ? (lucro / receitas) * 100 : 0;
         const liquidez = aPagar > 0 ? saldo / aPagar : 0;
-        const ticketMedio =
-          er.filter((c) => c.status === 'pago').length > 0
-            ? receitas / er.filter((c) => c.status === 'pago').length
-            : 0;
+        const quitadas = er.filter((c) => c.status === 'pago' || c.status === 'recebido').length;
+        const ticketMedio = quitadas > 0 ? receitas / quitadas : 0;
         return {
           id: empresa.id,
           nome: empresa.nome_fantasia || empresa.razao_social,
