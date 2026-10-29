@@ -256,7 +256,10 @@ export function useContasPagarLogic() {
         c.status !== 'pago' &&
         c.status !== 'cancelado';
     } else if (aprovacaoFilter === 'aprovado') {
-      matchesAprovacao = !!c.aprovado_por;
+      // mesma precedência de getApprovalStatus: a solicitação mais recente
+      // decide; sem ela, vale o aprovado_por legado na conta
+      const status = aprovacaoStatusMap.get(c.id);
+      matchesAprovacao = status ? status === 'aprovado' : !!c.aprovado_por;
     } else if (aprovacaoFilter === 'rejeitado') {
       matchesAprovacao = aprovacaoStatusMap.get(c.id) === 'rejeitado';
     }
