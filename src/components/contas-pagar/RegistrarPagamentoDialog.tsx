@@ -94,10 +94,6 @@ export function RegistrarPagamentoDialog({
     return conta.valor >= configAprovacao.valor_minimo_aprovacao;
   }, [conta, configAprovacao]);
 
-  const estaAprovado = useMemo(() => {
-    return conta?.aprovado_por != null && conta?.aprovado_em != null;
-  }, [conta]);
-
   // Check if there's a pending approval request
   const { data: solicitacaoPendente } = useQuery({
     queryKey: ['solicitacao-pendente', conta?.id],
@@ -116,6 +112,13 @@ export function RegistrarPagamentoDialog({
     },
     enabled: !!conta && requerAprovacao,
   });
+
+  // solicitação aprovada conta como aprovação mesmo quando o legado
+  // não preencheu aprovado_por/aprovado_em na própria conta
+  const estaAprovado = useMemo(() => {
+    const aprovadoNaConta = conta?.aprovado_por != null && conta?.aprovado_em != null;
+    return aprovadoNaConta || solicitacaoPendente?.status === 'aprovado';
+  }, [conta, solicitacaoPendente]);
 
   const aprovacaoBloqueada = requerAprovacao && !estaAprovado;
   const temSolicitacaoPendente = solicitacaoPendente?.status === 'pendente';

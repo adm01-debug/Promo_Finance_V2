@@ -37,7 +37,9 @@ export default function OrcamentoEvento() {
       const [centrosRes, pagarRes, receberRes] = await Promise.all([
         supabase.from('centros_custo').select('*').eq('ativo', true).order('nome'),
         supabase.from('contas_pagar').select('centro_custo_id, valor, valor_pago, status'),
-        supabase.from('contas_receber').select('centro_custo_id, valor, valor_recebido, status'),
+        supabase
+          .from('contas_receber')
+          .select('centro_custo_id, valor, valor_recebido, status, metadata'),
       ]);
 
       const centros = centrosRes.data || [];

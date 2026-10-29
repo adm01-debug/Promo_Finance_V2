@@ -31,7 +31,7 @@ export function useCalculadoraDadosReais(empresaId: string | undefined, enabled 
       const [receber, folha, nfe] = await Promise.all([
         supabase
           .from('contas_receber')
-          .select('valor, valor_recebido, data_emissao, status')
+          .select('valor, valor_recebido, data_emissao, status, metadata')
           .eq('empresa_id', empresaId!)
           .gte('data_emissao', dozeIso),
         supabase

@@ -121,7 +121,7 @@ export function useCobrancaKPIs() {
       // Buscar contas recuperadas (pagas nos últimos 30 dias que estavam vencidas)
       let recuperadasQuery = supabase
         .from('contas_receber')
-        .select('id, valor, valor_recebido, data_recebimento, data_vencimento')
+        .select('id, valor, valor_recebido, data_recebimento, data_vencimento, metadata')
         .eq('status', 'pago')
         .gte('data_recebimento', trintaDiasAtras);
 

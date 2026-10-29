@@ -78,7 +78,7 @@ export function useScoringClientes() {
       const { data: contasReceber, error: contasError } = await supabase
         .from('contas_receber')
         .select(
-          'cliente_id, valor, valor_recebido, data_vencimento, data_recebimento, status, created_at'
+          'cliente_id, valor, valor_recebido, data_vencimento, data_recebimento, status, created_at, metadata'
         )
         .order('created_at', { ascending: false });
 
