@@ -17,6 +17,7 @@ import type {
   DemonstrativosResult,
   DRELinha,
 } from '@/lib/contabilidade/demonstrativos-competencia';
+import { valorRecebidoEfetivo } from '@/lib/financeiro/valor-recebido-efetivo';
 
 // ----------- Hook principal -----------
 export function useDemonstrativosContabeis(params: {
@@ -95,7 +96,7 @@ export function useDemonstrativosContabeis(params: {
       return dentro && empOk && cp.status === 'pago';
     });
 
-    const receitaBruta = recebimentos.reduce((a, r) => a + (r.valor_recebido ?? r.valor ?? 0), 0);
+    const receitaBruta = recebimentos.reduce((a, r) => a + (valorRecebidoEfetivo(r)), 0);
     const deducoes = receitaBruta * 0.0925;
     const receitaLiquida = receitaBruta - deducoes;
     const cmv = pagamentos

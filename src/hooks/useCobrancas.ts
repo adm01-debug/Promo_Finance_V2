@@ -3,6 +3,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { differenceInDays, parseISO, subDays } from 'date-fns';
 import { useAuth } from '@/hooks/useAuth';
+import { valorRecebidoEfetivo } from '@/lib/financeiro/valor-recebido-efetivo';
 
 export interface ContaVencida {
   id: string;
@@ -142,7 +143,7 @@ export function useCobrancaKPIs() {
         0
       );
       const totalRecuperado = (recuperadas || []).reduce(
-        (sum, c) => sum + (c.valor_recebido ?? c.valor),
+        (sum, c) => sum + valorRecebidoEfetivo(c),
         0
       );
       const qtdVencidas = vencidas?.length || 0;

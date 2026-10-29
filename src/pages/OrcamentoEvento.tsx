@@ -25,6 +25,7 @@ import {
   type CentroCustoComGastos,
 } from '@/components/orcamento/OrcamentoCardsView';
 import { OrcamentoChartsView } from '@/components/orcamento/OrcamentoChartsView';
+import { valorRecebidoEfetivo } from '@/lib/financeiro/valor-recebido-efetivo';
 
 export default function OrcamentoEvento() {
   const [filtroStatus, setFiltroStatus] = useState<string>('todos');
@@ -50,7 +51,7 @@ export default function OrcamentoEvento() {
         const gastoPagar = contasPagar.reduce((acc, c) => acc + (c.valor_pago || c.valor || 0), 0);
         const gastoReceber = contasReceber
           .filter((c) => c.status === 'pago')
-          .reduce((acc, c) => acc + (c.valor_recebido ?? c.valor ?? 0), 0);
+          .reduce((acc, c) => acc + valorRecebidoEfetivo(c), 0);
 
         const totalGasto = gastoPagar;
         const orcamento = cc.orcamento_previsto || 0;

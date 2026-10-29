@@ -1,5 +1,6 @@
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
+import { valorRecebidoEfetivo } from '@/lib/financeiro/valor-recebido-efetivo';
 
 export interface DadosReaisAgregados {
   receitaBrutaAnual: number;
@@ -46,7 +47,7 @@ export function useCalculadoraDadosReais(empresaId: string | undefined, enabled 
       ]);
 
       const receitaBrutaAnual = (receber.data ?? []).reduce(
-        (s, r) => s + Number(r.valor_recebido ?? r.valor ?? 0),
+        (s, r) => s + Number(valorRecebidoEfetivo(r)),
         0
       );
 

@@ -362,9 +362,11 @@ BEGIN
         END IF;
 
         -- Partida 2: Crédito (C) no Banco
-        IF v_conta_contabil_id IS NOT NULL THEN
+        -- Correção sobre o corpo original: creditava a categoria, D e C
+        -- ficavam na mesma conta e o razão bancário nunca caía.
+        IF v_conta_bancaria_contabil_id IS NOT NULL THEN
             INSERT INTO public.partidas_contabeis (lancamento_id, conta_id, tipo, valor, historico_complementar)
-            VALUES (v_lancamento_id, v_conta_contabil_id, 'C', NEW.valor, 'Saída de conta bancária');
+            VALUES (v_lancamento_id, v_conta_bancaria_contabil_id, 'C', NEW.valor, 'Saída de conta bancária');
         END IF;
     END IF;
 

@@ -17,6 +17,7 @@ import { useBoletos } from '@/hooks/useBoletos';
 import { useCobrancaKPIs } from '@/hooks/useCobrancas';
 import { useAuth } from '@/hooks/useAuth';
 import { toISOLocal } from '@/lib/formatters';
+import { valorRecebidoEfetivo } from '@/lib/financeiro/valor-recebido-efetivo';
 
 export interface DashboardFilters {
   empresaFilter: string;
@@ -264,7 +265,7 @@ export function useDashboardMetrics(filters: DashboardFilters) {
       current.receita += conta.valor ?? 0;
 
       if (conta.status === 'pago') {
-        current.pagos += conta.valor_recebido ?? conta.valor ?? 0;
+        current.pagos += valorRecebidoEfetivo(conta);
       } else if (conta.status !== 'cancelado') {
         current.pendentes += (conta.valor ?? 0) - (conta.valor_recebido || 0);
       }

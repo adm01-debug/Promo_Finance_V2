@@ -154,8 +154,13 @@ export function useContasPagarLogic() {
     for (const s of solicitacoesAprovacao) {
       if (!maisRecente.has(s.conta_pagar_id)) maisRecente.set(s.conta_pagar_id, s.status);
     }
+    // 'aprovado' também fica no mapa: cobre legados cuja solicitação foi
+    // aprovada mas aprovado_por na conta nunca foi preenchido — sem isso a
+    // tela voltaria a pedir aprovação de uma conta já decidida.
     for (const [contaId, status] of maisRecente) {
-      if (status !== 'pendente' && status !== 'rejeitado') maisRecente.delete(contaId);
+      if (status !== 'pendente' && status !== 'rejeitado' && status !== 'aprovado') {
+        maisRecente.delete(contaId);
+      }
     }
     return maisRecente;
   }, [solicitacoesAprovacao]);
@@ -513,7 +518,9 @@ export function useContasPagarLogic() {
   const getApprovalStatus = (conta: ContaPagarType) => {
     const precisaAprovacao = requerAprovacao(conta.valor);
     const aprovacaoStatus = aprovacaoStatusMap.get(conta.id);
-    const estaAprovado = !!conta.aprovado_por;
+    // solicitação aprovada conta como aprovação mesmo quando o legado
+    // não preencheu aprovado_por na própria conta
+    const estaAprovado = !!conta.aprovado_por || aprovacaoStatus === 'aprovado';
     const temSolicitacaoPendente = aprovacaoStatus === 'pendente';
     const foiRejeitado = aprovacaoStatus === 'rejeitado';
     const aguardandoSolicitacao =

@@ -50,6 +50,7 @@ import { InadimplenciaSegmentada } from '@/components/analytics/InadimplenciaSeg
 import { BenchmarkingSetorial } from '@/components/analytics/BenchmarkingSetorial';
 import { HistoricoAnalisesPreditivasPanel } from '@/components/analytics/HistoricoAnalisesPreditivasPanel';
 import { BIDrillDown } from '@/components/bi/BIDrillDown';
+import { valorRecebidoEfetivo } from '@/lib/financeiro/valor-recebido-efetivo';
 
 const containerVariants = {
   hidden: { opacity: 0 },
@@ -137,7 +138,7 @@ export default function BI() {
           c.data_recebimento &&
           new Date(c.data_recebimento).getMonth() === new Date().getMonth()
       )
-      .reduce((acc, c) => acc + (c.valor_recebido ?? c.valor), 0);
+      .reduce((acc, c) => acc + valorRecebidoEfetivo(c), 0);
     const despesaMes = filteredPagar
       .filter(
         (c) =>
@@ -156,7 +157,7 @@ export default function BI() {
           c.data_recebimento &&
           new Date(c.data_recebimento).getMonth() === lastMonth.getMonth()
       )
-      .reduce((acc, c) => acc + (c.valor_recebido ?? c.valor), 0);
+      .reduce((acc, c) => acc + valorRecebidoEfetivo(c), 0);
     const variacaoReceita =
       receitaMesAnterior > 0 ? ((receitaMes - receitaMesAnterior) / receitaMesAnterior) * 100 : 0;
     return {
@@ -198,7 +199,7 @@ export default function BI() {
               new Date(c.data_recebimento) >= inicio &&
               new Date(c.data_recebimento) <= fim
           )
-          .reduce((acc, c) => acc + (c.valor_recebido ?? c.valor), 0);
+          .reduce((acc, c) => acc + valorRecebidoEfetivo(c), 0);
         const despesas = filteredPagar
           .filter(
             (c) =>
@@ -231,7 +232,7 @@ export default function BI() {
               new Date(c.data_recebimento) >= inicio &&
               new Date(c.data_recebimento) <= fim
           )
-          .reduce((acc, c) => acc + (c.valor_recebido ?? c.valor), 0);
+          .reduce((acc, c) => acc + valorRecebidoEfetivo(c), 0);
         const despesas = filteredPagar
           .filter(
             (c) =>
@@ -296,7 +297,7 @@ export default function BI() {
       .filter((c) => c.status === 'pago')
       .forEach((c) => {
         const nome = c.cliente_nome || 'Sem cliente';
-        clienteMap.set(nome, (clienteMap.get(nome) || 0) + (c.valor_recebido ?? c.valor));
+        clienteMap.set(nome, (clienteMap.get(nome) || 0) + valorRecebidoEfetivo(c));
       });
     return Array.from(clienteMap.entries())
       .map(([nome, valor]) => ({ nome, valor }))
@@ -328,7 +329,7 @@ export default function BI() {
         const ec = contasBancarias.filter((c) => c.empresa_id === empresa.id);
         const receitas = er
           .filter((c) => c.status === 'pago')
-          .reduce((acc, c) => acc + (c.valor_recebido ?? c.valor), 0);
+          .reduce((acc, c) => acc + valorRecebidoEfetivo(c), 0);
         const despesas = ep
           .filter((c) => c.status === 'pago')
           .reduce((acc, c) => acc + (c.valor_pago || c.valor), 0);

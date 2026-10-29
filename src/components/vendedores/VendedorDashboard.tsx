@@ -6,6 +6,7 @@ import { Progress } from '@/components/ui/progress';
 import { useVendedores } from '@/hooks/useVendedores';
 import { useContasReceber } from '@/hooks/useFinancialData';
 import { formatCurrency } from '@/lib/formatters';
+import { valorRecebidoEfetivo } from '@/lib/financeiro/valor-recebido-efetivo';
 
 export function VendedorDashboard() {
   const { data: vendedores } = useVendedores();
@@ -25,8 +26,7 @@ export function VendedorDashboard() {
         const totalFaturado =
           contasReceber
             .filter((cr) => cr.status === 'pago')
-            .reduce((acc, cr) => acc + (cr.valor_recebido ?? cr.valor ?? 0), 0) /
-          (vendedores.length || 1);
+            .reduce((acc, cr) => acc + valorRecebidoEfetivo(cr), 0) / (vendedores.length || 1);
 
         const totalPendente =
           contasReceber

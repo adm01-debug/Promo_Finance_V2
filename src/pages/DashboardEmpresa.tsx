@@ -25,6 +25,7 @@ import { EmpresaChartsSection } from '@/components/dashboard-empresa/EmpresaChar
 import { EmpresaDrillDownSection } from '@/components/dashboard-empresa/EmpresaDrillDown';
 import { useAuth } from '@/hooks/useAuth';
 import { toISOLocal } from '@/lib/formatters';
+import { valorRecebidoEfetivo } from '@/lib/financeiro/valor-recebido-efetivo';
 
 const containerVariants = {
   hidden: { opacity: 0 },
@@ -219,7 +220,7 @@ export default function DashboardEmpresa() {
         tipo: 'receber' as const,
         descricao: c.descricao,
         nome: c.cliente_nome,
-        valor: c.valor_recebido ?? c.valor,
+        valor: valorRecebidoEfetivo(c),
         data: c.data_recebimento!,
       }));
     const pagarRecentes = contasPagarEmpresa

@@ -17,6 +17,7 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { ResumoDrillLevel, EmpresasDrillLevel, DetalhesDrillLevel } from './RelatorioDrillLevels';
+import { valorRecebidoEfetivo } from '@/lib/financeiro/valor-recebido-efetivo';
 
 type DrillLevel = 'resumo' | 'categoria' | 'empresa' | 'detalhes';
 
@@ -56,7 +57,7 @@ export function RelatorioDrillDown() {
       const receitasRecebidas =
         receitas.data
           ?.filter((r) => r.status === 'pago')
-          .reduce((acc, r) => acc + (r.valor_recebido ?? r.valor), 0) || 0;
+          .reduce((acc, r) => acc + valorRecebidoEfetivo(r), 0) || 0;
 
       const totalDespesas = despesas.data?.reduce((acc, d) => acc + d.valor, 0) || 0;
       const despesasPagas =
