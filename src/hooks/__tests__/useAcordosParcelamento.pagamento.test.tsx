@@ -430,6 +430,51 @@ describe('registrarPagamento', () => {
     expect(recebidos).toEqual([100, 120]);
   });
 
+  it('excedente de juros vai para conta elegível quando a última saiu do acordo', async () => {
+    // Regressão (Devin Review): 2 contas de 100 em acordo de 220, mas c2
+    // já foi paga FORA do acordo (recebido, sem marcador). Excedente
+    // atribuído a ela nunca seria escrito (filtro em_acordo) e os 20 de
+    // juros sumiriam. Agora o excedente vai para a última elegível: c1
+    // registra 120 (100 principal + 20 juros); c2 fica intacta.
+    const { result, escritas } = await montaHook({
+      acordos_parcelamento: [
+        { data: [], error: null },
+        {
+          data: [
+            {
+              id: 'ac-1',
+              contas_receber_ids: ['c1', 'c2'],
+              valor_total_acordo: 220,
+            },
+          ],
+          error: null,
+        },
+      ],
+      parcelas_acordo: filaParcelas({
+        data: [{ status: 'pago' }],
+        error: null,
+      }),
+      contas_receber: [
+        {
+          data: [
+            { id: 'c1', valor: 100, valor_recebido: 0, status: 'em_acordo' },
+            { id: 'c2', valor: 100, valor_recebido: 100, status: 'recebido' },
+          ],
+          error: null,
+        },
+        { data: null, error: null },
+      ],
+    });
+
+    act(() => result.current.registrarPagamento(PAGAMENTO));
+
+    await waitFor(() => expect(toastSucesso).toHaveBeenCalled());
+
+    const updates = escritas.filter((e) => e.tabela === 'contas_receber' && e.metodo === 'update');
+    expect(updates).toHaveLength(1);
+    expect((updates[0].payload as { valor_recebido?: number }).valor_recebido).toBe(120);
+  });
+
   it('quita o acordo sem quebrar quando contas_receber_ids vem vazio/nulo', async () => {
     const { result, escritas } = await montaHook({
       acordos_parcelamento: [

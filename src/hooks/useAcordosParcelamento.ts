@@ -315,8 +315,13 @@ export function useAcordosParcelamento() {
             return 0;
           });
           let distribuidoCents = quotasCents.reduce((s, q) => s + Math.max(q, 0), 0);
+          // Resíduo e excedente só podem ir para contas elegíveis —
+          // em_acordo e sem marcador: são as únicas que recebem escrita
+          // (.eq('status', 'em_acordo')). Cota atribuída a conta que saiu
+          // do acordo por outro caminho sumiria do registro.
+          const elegivel = (i: number) => marcadores[i] === null && lista[i].status === 'em_acordo';
           for (let i = 0; i < quotasCents.length && distribuidoCents < restanteCents; i++) {
-            if (quotasCents[i] >= 0 && pesos[i] > 0) {
+            if (elegivel(i) && pesos[i] > 0) {
               const extra = Math.min(
                 Math.round(pesos[i] * 100) - quotasCents[i],
                 restanteCents - distribuidoCents
@@ -326,14 +331,21 @@ export function useAcordosParcelamento() {
             }
           }
           // Excedente sem capacidade (juros acima do principal) vai para
-          // a última conta com peso — registra o dinheiro que entrou.
+          // a última conta elegível — registra o dinheiro que entrou.
           if (distribuidoCents < restanteCents) {
+            let alvo = -1;
             for (let i = quotasCents.length - 1; i >= 0; i--) {
-              if (quotasCents[i] >= 0 && pesos[i] > 0) {
-                quotasCents[i] += restanteCents - distribuidoCents;
+              if (elegivel(i)) {
+                alvo = i;
                 break;
               }
             }
+            if (alvo < 0) {
+              throw new Error(
+                'Sem conta elegível para registrar o excedente da quitação do acordo'
+              );
+            }
+            quotasCents[alvo] += restanteCents - distribuidoCents;
           }
           const quotas = lista.map((_, i) =>
             quotasCents[i] < 0 ? (marcadores[i] as number) : quotasCents[i] / 100
