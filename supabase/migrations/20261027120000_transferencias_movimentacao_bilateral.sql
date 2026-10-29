@@ -595,10 +595,15 @@ CREATE TRIGGER trg_sync_valor_pago
 
 --    Saneamento histórico: rascunhos criados antes da guarda podem ter uma
 --    partida única que segue desequilibrando os demonstrativos — remove as
---    partidas de lançamentos 'rascunho' cujo D-C não fecha a zero.
+--    partidas de lançamentos 'rascunho' cujo D-C não fecha a zero. Escopo
+--    restrito a origem='financeiro_movimentacao' (lançamento automático de
+--    movimentação, formato legado conhecido): rascunhos manuais em
+--    elaboração nunca são tocados.
 DELETE FROM public.partidas_contabeis p
 USING public.lancamentos_contabeis l
 WHERE p.lancamento_id = l.id
+  AND l.origem = 'financeiro_movimentacao'
+  AND l.origem_id IS NOT NULL
   AND l.status = 'rascunho'
   AND COALESCE((
         SELECT SUM(CASE WHEN p2.tipo = 'D' THEN p2.valor ELSE -p2.valor END)
