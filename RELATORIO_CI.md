@@ -1,5 +1,61 @@
 # RELATÓRIO CI — Promo Finance V2
 
+---
+
+## RODADA 2026-10-30 — Inventário + Baseline (Cline)
+
+> HEAD da main: `4078e811` — PR #197 mergeado  
+> Data: 30/10/2026 11:05 UTC  
+> Filtro `is:action_required is:failure`: **0 runs action_required**
+
+### 1. Inventário — últimas execuções na `main`
+
+| Workflow | Último run | Conclusão | Observação |
+|---|---|---|---|
+| CI Pipeline | [#40973322749](https://github.com/adm01-debug/Promo_Finance_V2/actions/runs/40973322749) | ✅ success | — |
+| CodeQL Analysis | [#40906697001](https://github.com/adm01-debug/Promo_Finance_V2/actions/runs/40906697001) | ✅ success | — |
+| Deno Edge Function Tests | [#40973322725](https://github.com/adm01-debug/Promo_Finance_V2/actions/runs/40973322725) | ✅ success | — |
+| Graphify — mapas privados | [#40959550773](https://github.com/adm01-debug/Promo_Finance_V2/actions/runs/40959550773) | ✅ success | — |
+| Supabase Linter (RLS/GRANT) | [#40818988788](https://github.com/adm01-debug/Promo_Finance_V2/actions/runs/40818988788) | ✅ success | — |
+| Workflow Linter (actionlint+zizmor) | [#40906696973](https://github.com/adm01-debug/Promo_Finance_V2/actions/runs/40906696973) | ✅ success | — |
+| Schema drift | [#40281232844](https://github.com/adm01-debug/Promo_Finance_V2/actions/runs/40281232844) | ✅ success | — |
+| staging-migrate | [#40908210665](https://github.com/adm01-debug/Promo_Finance_V2/actions/runs/40908210665) | ✅ success | corrigido em 29/10 |
+| Deploy de Edge Function | [#38428554013](https://github.com/adm01-debug/Promo_Finance_V2/actions/runs/38428554013) | ✅ success | — |
+| Migration Ledger Check | [#39134497416](https://github.com/adm01-debug/Promo_Finance_V2/actions/runs/39134497416) | ✅ success | — |
+| Ops administrativas Supabase | [#38429016227](https://github.com/adm01-debug/Promo_Finance_V2/actions/runs/38429016227) | ✅ success | — |
+| Dependabot Updates (bun/pip/gha) | [#40959558870](https://github.com/adm01-debug/Promo_Finance_V2/actions/runs/40959558870) | ✅ success | — |
+| Copilot | [#26607848855](https://github.com/adm01-debug/Promo_Finance_V2/actions/runs/26607848855) | ✅ success | agente dinâmico, roda em PRs |
+| Dependency Review | — | ⚪ sem run | só roda em `pull_request` by design |
+| e2e-cloud-probe | — | ⚪ sem run | `workflow_dispatch` manual |
+| **prod-migrate** | **[#40928045868](https://github.com/adm01-debug/Promo_Finance_V2/actions/runs/40928045868)** | **🔴 cancelled** | **Bloqueio: sem `PROD_DB_URL` → operador cancela gate de aprovação. PR #217 em andamento.** |
+| **`npm_and_yarn in /. for zod`** (Dependabot security) | **[#40699687032](https://github.com/adm01-debug/Promo_Finance_V2/actions/runs/40699687032)** | **🔴 failure** | **`misconfigured_tooling` — limitação infraestrutura GitHub. Registrado em PENDENCIAS.md item 3.** |
+
+### 2. Baseline local — 30/10/2026 11:04 UTC (HEAD `4078e811`)
+
+| Verificação | Resultado |
+|---|---|
+| `bun install --frozen-lockfile` | ✅ 1 package installed (218ms) |
+| `bun run build` | ✅ built in 4.25s — 0 erros |
+| `bun run lint` | ✅ 0 erros, **74 warnings** (baseline) |
+| `bun run type-check` | ✅ 0 erros TypeScript |
+| `bun run test:run` (vitest) | ✅ **246 arquivos / 3023 testes** passando |
+
+### 3. Causa raiz dos 2 workflows em falha
+
+#### A. `prod-migrate` — `cancelled`
+Sem `check-secrets` como job separado (sem environment), o único job `migrate` solicita aprovação no environment `Production-Ops` antes de verificar se os secrets existem. Sem `PROD_DB_URL`, a aprovação é inútil e o operador cancela → `conclusion=cancelled`. **Correção:** PR #217 — extrai `check-secrets` sem environment; secrets ausentes → success + warning, `migrate` fica `skipped` → workflow = **success**.
+
+#### B. `npm_and_yarn in /. for zod` — `misconfigured_tooling`
+Limitação estrutural do GitHub Actions: security updates escolhem o ecossistema pelo manifesto (`package.json` → `npm_and_yarn`) e ignoram `package-ecosystem: bun` do `dependabot.yml`. Não corrigível por código. Registrado em PENDENCIAS.md item 3.
+
+### 4. Gaps identificados (não aplicados — risco moderado/alto)
+- 15 PRs do Dependabot abertos (#202–#216) incluindo major: `zod 3→4`, `vitest 4→5`, `framer-motion 11→14`. Fora de escopo desta rodada (proibido major sem necessidade comprovada).
+- CVE zod GHSA-mrhx-c7xc-m3w5: alcançável em edge functions. Mitigação: pre-validar `array.length` antes de chamar zod. Projeto separado.
+
+---
+
+
+
 ## RODADA 2026-10-29 — ENTREGA FINAL (Cline) ✅ MISSÃO CONCLUÍDA
 
 > HEAD da main: `75a83a6b` — PR #196 mergeado  
