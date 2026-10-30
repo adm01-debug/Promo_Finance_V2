@@ -269,12 +269,13 @@ export const WhatsappIaProativoSchema = z
 
 export const ExpertAgentSchema = z
   .object({
+    // Limite adicionado como mitigação GHSA-mrhx-c7xc-m3w5 (zod v3 DoS por array).
     messages: z.array(
       z.object({
         role: z.string(),
         content: z.string(),
       })
-    ),
+    ).max(100),
     context: z.string().optional().nullable(),
     conversationSummary: z.string().optional().nullable(),
   })
@@ -342,6 +343,7 @@ export const ConciliacaoProxySchema = z.discriminatedUnion('action', [
 
 export const CategorizarDespesaSchema = z
   .object({
+    // Limite adicionado como mitigação GHSA-mrhx-c7xc-m3w5 (zod v3 DoS por array).
     despesas: z.array(
       z.object({
         id: z.string().optional(),
@@ -350,7 +352,7 @@ export const CategorizarDespesaSchema = z
         fornecedor_nome: z.string().optional(),
         data_vencimento: z.string().optional(),
       })
-    ),
+    ).max(500),
   })
   .strict();
 
