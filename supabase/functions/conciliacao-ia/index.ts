@@ -28,10 +28,12 @@ const LancamentoSistemaSchema = z.object({
   documento: z.string().optional(),
 });
 
+// Limites adicionados como mitigação GHSA-mrhx-c7xc-m3w5 (zod v3 DoS por array).
+// Extrato mensal típico < 300 lançamentos; feedback histórico raramente > 50.
 const ConciliacaoInputSchema = z.object({
-  transacoes: z.array(TransacaoExtratoSchema),
-  lancamentos: z.array(LancamentoSistemaSchema),
-  historicoFeedback: z.array(z.any()).optional(),
+  transacoes: z.array(TransacaoExtratoSchema).max(500),
+  lancamentos: z.array(LancamentoSistemaSchema).max(500),
+  historicoFeedback: z.array(z.any()).max(200).optional(),
 });
 
 type TransacaoExtrato = z.infer<typeof TransacaoExtratoSchema>;
