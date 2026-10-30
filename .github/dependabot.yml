@@ -23,6 +23,12 @@ updates:
     # Sem groups por dependency-type: o ecossistema bun não suporta esse
     # critério (só bundler/composer/mix/maven/npm/pip) — ver dependabot
     # options reference.
+    # Grupo por padrão de nome (suportado no bun): os bumps do Radix vinham
+    # em PRs separados que conflitavam entre si no bun.lock após cada merge.
+    groups:
+      radix-ui:
+        patterns:
+          - "@radix-ui/*"
 
   # Versões das GitHub Actions usadas nos workflows
   - package-ecosystem: github-actions
