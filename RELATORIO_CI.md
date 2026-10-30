@@ -11,10 +11,9 @@
 
 | Workflow | Último run | Conclusão | Resultado |
 |---|---|---|---|
-| CI Pipeline | [#41050585991](https://github.com/adm01-debug/Promo_Finance_V2/actions/runs/41050585991) | 🔄 in_progress (pós-#218) | aguardando |
-| CI Pipeline (pré-#218) | [#41047527591](https://github.com/adm01-debug/Promo_Finance_V2/actions/runs/41047527591) | ✅ success | todos os 5 jobs ✅ |
+| CI Pipeline | [#41056071204](https://github.com/adm01-debug/Promo_Finance_V2/actions/runs/41056071204) | ✅ success | todos os 6 jobs ✅ (pós-#219) |
 | CodeQL Analysis | [#40906697001](https://github.com/adm01-debug/Promo_Finance_V2/actions/runs/40906697001) | ✅ success | verde |
-| Deno Edge Function Tests | [#40973322725](https://github.com/adm01-debug/Promo_Finance_V2/actions/runs/40973322725) | ✅ success | verde |
+| Deno Edge Function Tests | [#41056071263](https://github.com/adm01-debug/Promo_Finance_V2/actions/runs/41056071263) | ✅ success | verde (pós-#219) |
 | Graphify — mapas privados | [#40959550773](https://github.com/adm01-debug/Promo_Finance_V2/actions/runs/40959550773) | ✅ success | verde |
 | Supabase Linter (RLS/GRANT) | [#40818988788](https://github.com/adm01-debug/Promo_Finance_V2/actions/runs/40818988788) | ✅ success | verde |
 | Workflow Linter (actionlint+zizmor) | [#40906696973](https://github.com/adm01-debug/Promo_Finance_V2/actions/runs/40906696973) | ✅ success | verde |
