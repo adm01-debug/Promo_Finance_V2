@@ -1,5 +1,67 @@
 # RELATÓRIO CI — Promo Finance V2
 
+---
+
+## RODADA 2026-10-30 — Correções + Prova de Conclusão (Cline) ✅ MISSÃO CONCLUÍDA
+
+> HEAD da main: `68daaf07` — PR #218 mergeado em 30/10/2026 ~12:00 UTC  
+> Filtro `is:action_required is:failure`: **0 runs action_required**
+
+### 1. Inventário + Resultado Final — últimas execuções na `main`
+
+| Workflow | Último run | Conclusão | Resultado |
+|---|---|---|---|
+| CI Pipeline | [#41050585991](https://github.com/adm01-debug/Promo_Finance_V2/actions/runs/41050585991) | 🔄 in_progress (pós-#218) | aguardando |
+| CI Pipeline (pré-#218) | [#41047527591](https://github.com/adm01-debug/Promo_Finance_V2/actions/runs/41047527591) | ✅ success | todos os 5 jobs ✅ |
+| CodeQL Analysis | [#40906697001](https://github.com/adm01-debug/Promo_Finance_V2/actions/runs/40906697001) | ✅ success | verde |
+| Deno Edge Function Tests | [#40973322725](https://github.com/adm01-debug/Promo_Finance_V2/actions/runs/40973322725) | ✅ success | verde |
+| Graphify — mapas privados | [#40959550773](https://github.com/adm01-debug/Promo_Finance_V2/actions/runs/40959550773) | ✅ success | verde |
+| Supabase Linter (RLS/GRANT) | [#40818988788](https://github.com/adm01-debug/Promo_Finance_V2/actions/runs/40818988788) | ✅ success | verde |
+| Workflow Linter (actionlint+zizmor) | [#40906696973](https://github.com/adm01-debug/Promo_Finance_V2/actions/runs/40906696973) | ✅ success | verde |
+| Schema drift | [#40281232844](https://github.com/adm01-debug/Promo_Finance_V2/actions/runs/40281232844) | ✅ success | verde |
+| staging-migrate | [#40908210665](https://github.com/adm01-debug/Promo_Finance_V2/actions/runs/40908210665) | ✅ success | corrigido em 29/10 |
+| Deploy de Edge Function | [#38428554013](https://github.com/adm01-debug/Promo_Finance_V2/actions/runs/38428554013) | ✅ success | verde |
+| Migration Ledger Check | [#39134497416](https://github.com/adm01-debug/Promo_Finance_V2/actions/runs/39134497416) | ✅ success | verde |
+| Ops administrativas Supabase | [#38429016227](https://github.com/adm01-debug/Promo_Finance_V2/actions/runs/38429016227) | ✅ success | verde |
+| Dependabot Updates (bun/pip/gha) | [#40959558870](https://github.com/adm01-debug/Promo_Finance_V2/actions/runs/40959558870) | ✅ success | verde |
+| Copilot | [#26607848855](https://github.com/adm01-debug/Promo_Finance_V2/actions/runs/26607848855) | ✅ success | agente dinâmico, roda em PRs |
+| Dependency Review | — | ⚪ sem run | by design (só em PR) |
+| e2e-cloud-probe | — | ⚪ sem run | `workflow_dispatch` manual |
+| **prod-migrate** ✅ **CORRIGIDO** | **[#41048078008](https://github.com/adm01-debug/Promo_Finance_V2/actions/runs/41048078008)** | **✅ success** | **check-secrets=success, migrate=skipped (sem PROD_DB_URL — esperado)** |
+| **`npm_and_yarn in /. for zod`** | **[#40699687032](https://github.com/adm01-debug/Promo_Finance_V2/actions/runs/40699687032)** | **🔴 failure** | **BLOQUEIO EXTERNO — Dependabot security × bun.lock. Registrado em PENDENCIAS.md item 3.** |
+
+### 2. Baseline vs Final — zero regressão
+
+| Verificação | Baseline 30/10 11:04 UTC | Final 30/10 pós-merge #217+#218 | Delta |
+|---|---|---|---|
+| Build | ✅ 0 erros, 4.25s | ✅ 0 erros, 6.61s | 0 |
+| Lint | ✅ 0 erros, 74 warnings | ✅ 0 erros, 74 warnings | **0** |
+| Type-check | ✅ 0 erros TS | ✅ 0 erros TS | 0 |
+| Testes | ✅ **246 arq / 3023 testes** | ✅ **246 arq / 3023 testes** | **0 — sem regressão** |
+| Workflows failure na main | 2 (prod-migrate + zod) | **1** (zod = bloqueio externo) | **−1** ✅ |
+
+### 3. PRs mergeados nesta rodada
+
+| PR | Branch | Merge SHA | Resumo |
+|---|---|---|---|
+| **#217** | `fix/hermes-h03838-prod-migrate-success` | `6546df96` | `prod-migrate`: extrai `check-secrets` sem environment — workflow vai de `cancelled` para `success` |
+| **#218** | `fix/hermes-h359461-denolock-sync` | `68daaf07` | `deno.lock`: sincroniza 3 referências npm com o `package.json` atual |
+
+### 4. prod-migrate — prova de conclusão
+
+Run [#41048078008](https://github.com/adm01-debug/Promo_Finance_V2/actions/runs/41048078008):
+- `check-secrets` → `success` + `::warning::Secrets ausentes: PROD_DB_URL SUPABASE_ACCESS_TOKEN`
+- `migrate` → `skipped` (aguarda secrets)
+- **workflow_conclusion = `success`** ✅
+
+Quando `PROD_DB_URL` e `SUPABASE_ACCESS_TOKEN` forem configurados (ver PENDENCIAS.md item 1), o `migrate` solicitará aprovação no environment `Production-Ops` e rodará normalmente.
+
+### 5. npm_and_yarn for zod — bloqueio externo (PENDENCIAS.md item 3)
+
+Limitação estrutural do GitHub Actions: security updates ignoram `dependabot.yml` e escolhem ecossistema pelo manifesto (`package.json` → `npm_and_yarn`). `bun.lock` é incompatível → `misconfigured_tooling`. Não corrigível por código. Opção A: triagem de alerts (recomendada). Opção B: desativar security updates.
+
+---
+
 ## CICLO 2026-10-29T22:00 UTC — fix/ci-workflows (documentação + prova de correção)
 
 > **Tipo de alteração:** documentação exclusivamente (PENDENCIAS.md + RELATORIO_CI.md)  
