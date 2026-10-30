@@ -10,19 +10,54 @@ ALTER TABLE public.pix_templates
   ADD COLUMN IF NOT EXISTS tags TEXT[] NOT NULL DEFAULT '{}'::text[],
   ADD COLUMN IF NOT EXISTS ultimo_uso TIMESTAMPTZ,
   ADD COLUMN IF NOT EXISTS created_by UUID,
-  ADD COLUMN IF NOT EXISTS updated_at TIMESTAMPTZ NOT NULL DEFAULT now();
+  ADD COLUMN IF NOT EXISTS updated_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+  -- Colunas legadas: no replay fresco (tabela vem de 20260317 sem elas) o trigger
+  -- pix_template_sync_legacy referencia NEW.beneficiario_nome e NEW.tipo_chave; sem
+  -- ADD IF NOT EXISTS aqui, qualquer INSERT dispara "record NEW has no field".
+  ADD COLUMN IF NOT EXISTS beneficiario_nome TEXT,
+  ADD COLUMN IF NOT EXISTS tipo_chave TEXT;
 
 -- Campos legados deixam de ser obrigatórios (preenchidos por trigger)
+-- Colunas beneficiario_nome/cidade/tipo_chave só existem se a migration 20260518 criou
+-- a tabela (schema antigo). No replay fresco a tabela vem de 20260317 sem essas colunas.
+DO $$
+BEGIN
+  IF EXISTS (
+    SELECT 1 FROM information_schema.columns
+    WHERE table_schema = 'public' AND table_name = 'pix_templates' AND column_name = 'beneficiario_nome'
+  ) THEN
+    ALTER TABLE public.pix_templates ALTER COLUMN beneficiario_nome DROP NOT NULL;
+  END IF;
+  IF EXISTS (
+    SELECT 1 FROM information_schema.columns
+    WHERE table_schema = 'public' AND table_name = 'pix_templates' AND column_name = 'cidade'
+  ) THEN
+    ALTER TABLE public.pix_templates ALTER COLUMN cidade DROP NOT NULL;
+  END IF;
+  IF EXISTS (
+    SELECT 1 FROM information_schema.columns
+    WHERE table_schema = 'public' AND table_name = 'pix_templates' AND column_name = 'tipo_chave'
+  ) THEN
+    ALTER TABLE public.pix_templates ALTER COLUMN tipo_chave DROP NOT NULL;
+  END IF;
+  ALTER TABLE public.pix_templates ALTER COLUMN created_at SET NOT NULL;
+END $$;
+
+DO $$
+BEGIN
+  IF (
+    SELECT COUNT(*) FROM information_schema.columns
+    WHERE table_schema = 'public' AND table_name = 'pix_templates'
+      AND column_name IN ('beneficiario_nome', 'tipo_chave')
+  ) = 2 THEN
+    UPDATE public.pix_templates
+       SET favorecido_nome = COALESCE(favorecido_nome, beneficiario_nome),
+           tipo_chave_pix = COALESCE(tipo_chave_pix, tipo_chave);
+  END IF;
+END $$;
+
 ALTER TABLE public.pix_templates
-  ALTER COLUMN beneficiario_nome DROP NOT NULL,
-  ALTER COLUMN cidade DROP NOT NULL,
-  ALTER COLUMN tipo_chave DROP NOT NULL,
-  ALTER COLUMN created_at SET NOT NULL;
-
-UPDATE public.pix_templates
-   SET favorecido_nome = COALESCE(favorecido_nome, beneficiario_nome),
-       tipo_chave_pix = COALESCE(tipo_chave_pix, tipo_chave);
-
+  DROP CONSTRAINT IF EXISTS pix_templates_valor_padrao_nao_negativo;
 ALTER TABLE public.pix_templates
   ADD CONSTRAINT pix_templates_valor_padrao_nao_negativo CHECK (valor_padrao >= 0);
 
@@ -43,10 +78,12 @@ BEGIN
 END;
 $$;
 
+DROP TRIGGER IF EXISTS trg_pix_template_sync_legacy ON public.pix_templates;
 CREATE TRIGGER trg_pix_template_sync_legacy
   BEFORE INSERT OR UPDATE ON public.pix_templates
   FOR EACH ROW EXECUTE FUNCTION public.pix_template_sync_legacy();
 
+DROP TRIGGER IF EXISTS trg_pix_templates_updated_at ON public.pix_templates;
 CREATE TRIGGER trg_pix_templates_updated_at
   BEFORE UPDATE ON public.pix_templates
   FOR EACH ROW EXECUTE FUNCTION public.handle_updated_at();

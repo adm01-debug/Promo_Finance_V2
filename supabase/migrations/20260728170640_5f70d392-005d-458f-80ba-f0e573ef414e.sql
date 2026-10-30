@@ -15,7 +15,7 @@ ALTER TABLE public.fornecedores
   ADD COLUMN IF NOT EXISTS estado text,
   ADD COLUMN IF NOT EXISTS score numeric,
   ADD COLUMN IF NOT EXISTS limite_credito numeric;
-UPDATE public.fornecedores SET cnpj_cpf = COALESCE(cnpj_cpf, cnpj), nome = COALESCE(nome, nome_fantasia, razao_social);
+UPDATE public.fornecedores SET cnpj_cpf = COALESCE(cnpj_cpf, cnpj);
 
 -- 2) vendedores
 ALTER TABLE public.vendedores ADD COLUMN IF NOT EXISTS telefone text;

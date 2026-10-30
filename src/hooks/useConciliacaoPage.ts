@@ -271,24 +271,16 @@ export function useConciliacaoPage() {
     [transacoes]
   );
 
+  // Chamado pelo ConciliacaoManualDialog após confirmarConciliacao.mutateAsync
+  // já ter rodado com sucesso dentro do diálogo. Só atualiza estado local.
   const handleManualSuccess = useCallback(
-    async (transacaoId: string, lancamentoId: string, tipo: 'pagar' | 'receber') => {
-      // Invariante de integridade: idêntica a `handleConfirmarMatch`.
-      try {
-        await confirmarConciliacao.mutateAsync({
-          transacaoId,
-          contaPagarId: tipo === 'pagar' ? lancamentoId : undefined,
-          contaReceberId: tipo === 'receber' ? lancamentoId : undefined,
-        });
-        setTransacoes((prev) =>
-          prev.map((t) => (t.id === transacaoId ? { ...t, conciliada: true } : t))
-        );
-        setTransacoesImportadas((prev) => prev.filter((t) => t.id !== transacaoId));
-      } catch {
-        // Estado local preservado: transação continua pendente para reprocessamento.
-      }
+    (transacaoId: string, _lancamentoId: string, _tipo: 'pagar' | 'receber') => {
+      setTransacoes((prev) =>
+        prev.map((t) => (t.id === transacaoId ? { ...t, conciliada: true } : t))
+      );
+      setTransacoesImportadas((prev) => prev.filter((t) => t.id !== transacaoId));
     },
-    [confirmarConciliacao, setTransacoes]
+    [setTransacoes]
   );
 
   const handleConciliar = useCallback((transacao: TransacaoExtrato) => {

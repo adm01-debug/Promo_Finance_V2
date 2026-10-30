@@ -25,12 +25,14 @@ GRANT SELECT, UPDATE ON public.convites_contador TO authenticated;
 GRANT ALL ON public.convites_contador TO service_role;
 ALTER TABLE public.convites_contador ENABLE ROW LEVEL SECURITY;
 
+DROP POLICY IF EXISTS "convites_contador_select" ON public.convites_contador;
 CREATE POLICY "convites_contador_select" ON public.convites_contador
   FOR SELECT TO authenticated
   USING (
     public.empresa_acessivel(empresa_id)
     AND (public.has_role(auth.uid(), 'admin') OR public.has_role(auth.uid(), 'financeiro'))
   );
+DROP POLICY IF EXISTS "convites_contador_revogar" ON public.convites_contador;
 CREATE POLICY "convites_contador_revogar" ON public.convites_contador
   FOR UPDATE TO authenticated
   USING (
@@ -42,6 +44,7 @@ CREATE POLICY "convites_contador_revogar" ON public.convites_contador
     AND (public.has_role(auth.uid(), 'admin') OR public.has_role(auth.uid(), 'financeiro'))
   );
 
+DROP TRIGGER IF EXISTS trg_convites_contador_updated_at ON public.convites_contador;
 CREATE TRIGGER trg_convites_contador_updated_at
   BEFORE UPDATE ON public.convites_contador
   FOR EACH ROW EXECUTE FUNCTION public.handle_updated_at();
@@ -72,6 +75,7 @@ GRANT SELECT ON public.execucoes_regua_cobranca TO authenticated;
 GRANT ALL ON public.execucoes_regua_cobranca TO service_role;
 ALTER TABLE public.execucoes_regua_cobranca ENABLE ROW LEVEL SECURITY;
 
+DROP POLICY IF EXISTS "execucoes_regua_select" ON public.execucoes_regua_cobranca;
 CREATE POLICY "execucoes_regua_select" ON public.execucoes_regua_cobranca
   FOR SELECT TO authenticated USING (public.empresa_acessivel(empresa_id));
 
@@ -92,6 +96,7 @@ GRANT SELECT ON public.asaas_credit_risk_analysis TO authenticated;
 GRANT ALL ON public.asaas_credit_risk_analysis TO service_role;
 ALTER TABLE public.asaas_credit_risk_analysis ENABLE ROW LEVEL SECURITY;
 
+DROP POLICY IF EXISTS "credit_risk_select" ON public.asaas_credit_risk_analysis;
 CREATE POLICY "credit_risk_select" ON public.asaas_credit_risk_analysis
   FOR SELECT TO authenticated
   USING (EXISTS (
