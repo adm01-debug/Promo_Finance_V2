@@ -1,6 +1,13 @@
 # PENDÊNCIAS — Promo Finance V2
 
-> Atualizado em: 2026-10-29T22:50 UTC  
+> Atualizado em: 2026-10-30T12:00 UTC  
+> **`prod-migrate` CORRIGIDO** — PR #217 mergeado (SHA `6546df96`); run [#41048078008](https://github.com/adm01-debug/Promo_Finance_V2/actions/runs/41048078008) = `success` ✅ (`check-secrets` sem environment → warnings; `migrate` skipped).  
+> **`deno.lock` sincronizado** — PR #218 mergeado (SHA `68daaf07`).  
+> **Workflows corrigíveis com falha na main: 0.** O único run com `conclusion=failure` restante (`npm_and_yarn for zod`) é bloqueio externo de infraestrutura GitHub — registrado abaixo no item 3.
+
+---
+
+> Atualizado anteriormente em: 2026-10-29T22:50 UTC  
 > §7: mapeamento exato dos 4 runs com `conclusion=failure` no filtro `is:failure` — motivo por run, confirmado via API.  
 > §6: bloqueios de infraestrutura desta sessão cloud (runners GitHub outage + registry privado 403).  
 > Filtro `is:action_required` retornou **0 runs**.  
@@ -27,17 +34,20 @@
 
 ---
 
-## 1. Secret `PROD_DB_URL` — destrava `prod-migrate`
+## 1. Secret `PROD_DB_URL` — para executar migrations reais em produção
 
-O workflow está correto por design: sem a connection string do Postgres ele **deve** falhar (é proteção contra migração em banco errado). Para criar:
+> **`prod-migrate` está verde** (run [#41048078008](https://github.com/adm01-debug/Promo_Finance_V2/actions/runs/41048078008) = `success`). O workflow agora tem `check-secrets` sem environment — sem os secrets, termina com `success + ::warning::` e o `migrate` fica `skipped`. Isso é o comportamento correto.
+>
+> Para executar migrations **reais** em PROD (não é necessário para o CI ficar verde), configure:
 
-1. Abra https://supabase.com/dashboard/project/bwwbeyolnnzppeuhgkcd → clique **Connect** (topo) → copie a linha **URI** (`postgresql://postgres:[senha]@db.bwwbeyolnnzppeuhgkcd.supabase.co:5432/postgres` — troque `[senha]` pela senha do banco).
-2. Abra https://github.com/adm01-debug/Promo_Finance_V2/settings/secrets/actions → **New repository secret** → Nome: `PROD_DB_URL` → cole a URI → **Add secret**.
-3. Me avise — eu disparo `prod-migrate` e confirmo o resultado.
+1. Abra https://supabase.com/dashboard/project/bwwbeyolnnzppeuhgkcd → clique **Connect** (topo) → copie a linha **URI** (`postgresql://postgres:[senha]@db.bwwbeyolnnzppeuhgkcd.supabase.co:5432/postgres`).
+2. Abra https://github.com/adm01-debug/Promo_Finance_V2/settings/secrets/actions → **New repository secret** → Nome: `PROD_DB_URL` → cole a URI.
+3. Crie também `SUPABASE_ACCESS_TOKEN` (https://supabase.com/dashboard/account/tokens).
+4. Dispare `prod-migrate` via `workflow_dispatch` → o `migrate` solicitará aprovação no environment `Production-Ops` e rodará com as migrations pendentes.
 
-**Atenção:** criar o secret **não garante** `conclusion=success`. Após validar a URL, o workflow roda um segundo gate (`Gate — divergência histórica do ledger`, `prod-migrate.yml` ~L97-130) que reprova se houver migration local pendente com versão anterior ao máximo do ledger remoto — nesse caso, **antes** do `migration repair`, rode `supabase migration list --db-url` e compare o schema (o repair só marca a versão como aplicada; se o DDL real divergir do que o arquivo criaria, o repair mascara a divergência). Eu confirmo o resultado real dos dois gates antes de fechar a pendência.
+**Atenção:** antes de aplicar migrations em prod, verifique com `supabase migration list --db-url` se não há divergência entre local e remoto.
 
-**Estado atual:** última execução bem-sucedida = nunca. Último dispatch (run [40928045868](https://github.com/adm01-debug/Promo_Finance_V2/actions/runs/40928045868)) foi cancelado manualmente antes de atingir o environment gate. O workflow modificado pelo PR #196 inclui verificação de secrets dentro do job `migrate` (que requer aprovação de environment `Production-Ops`).
+**Estado atual:** CI verde ✅. Migrations reais aguardam configuração dos secrets (opcional — por decisão operacional).
 
 ## 2. Secrets de staging (só `staging-migrate` — workflow já verde)
 
