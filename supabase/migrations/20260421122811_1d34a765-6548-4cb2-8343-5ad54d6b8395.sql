@@ -1,3 +1,4 @@
+-- Guarda idempotente: safe para re-executar
 -- Tabela de pacotes de evidências exportados
 CREATE TABLE public.evidencias_pacotes (
   id UUID NOT NULL DEFAULT gen_random_uuid() PRIMARY KEY,
