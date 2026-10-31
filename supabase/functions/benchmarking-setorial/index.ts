@@ -1,5 +1,5 @@
 import { serve } from 'https://deno.land/std@0.168.0/http/server.ts';
-import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.49.4';
+import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.118.0';
 import {
   BenchmarkingSetorialSchema,
   corsHeaders,
@@ -65,38 +65,13 @@ Responda EXCLUSIVAMENTE com JSON válido (sem markdown):
 {
   "score_geral": 0-100,
   "posicao_mercado": "acima_media|na_media|abaixo_media",
-  "benchmarks": [
-    {
-      "metrica": "Nome da métrica",
-      "valor_empresa": "valor formatado",
-      "media_setor": "valor médio do setor",
-      "melhor_setor": "top 25% do setor",
-      "posicao": "acima|na_media|abaixo",
-      "diferenca_percentual": numero,
-      "recomendacao": "Ação específica para melhorar"
-    }
-  ],
-  "pontos_fortes": ["lista de 2-3 pontos fortes"],
-  "pontos_fracos": ["lista de 2-3 pontos de melhoria"],
-  "oportunidades": [
-    {
-      "titulo": "Oportunidade identificada",
-      "descricao": "Detalhes com números",
-      "impacto_estimado": "R$ estimativa ou % melhoria",
-      "prazo": "curto|medio|longo"
-    }
-  ],
-  "tendencias_setor": ["2-3 tendências relevantes do setor de eventos"],
+  "benchmarks": [],
+  "pontos_fortes": [],
+  "pontos_fracos": [],
+  "oportunidades": [],
+  "tendencias_setor": [],
   "resumo_executivo": "Parágrafo com análise consolidada"
-}
-
-Use referências reais do mercado brasileiro de eventos. Métricas importantes:
-- Margem operacional (média setor eventos: 12-18%)
-- Índice de inadimplência (aceitável: até 5%)
-- Prazo médio recebimento vs pagamento
-- Custos fixos vs variáveis
-- Taxa de recorrência de clientes
-- Ticket médio por evento`;
+}`;
 
     const response = await fetch('https://ai.gateway.lovable.dev/v1/chat/completions', {
       method: 'POST',
@@ -107,32 +82,15 @@ Use referências reais do mercado brasileiro de eventos. Métricas importantes:
       body: JSON.stringify({
         model: 'google/gemini-3-flash-preview',
         messages: [
-          {
-            role: 'system',
-            content:
-              'Você é um analista financeiro sênior especializado em benchmarking setorial. Responda sempre com JSON válido.',
-          },
+          { role: 'system', content: 'Você é um analista financeiro sênior especializado em benchmarking setorial. Responda sempre com JSON válido.' },
           { role: 'user', content: prompt },
         ],
       }),
     });
 
     if (!response.ok) {
-      if (response.status === 429) {
-        return new Response(
-          JSON.stringify({ error: 'Rate limit. Tente novamente em alguns segundos.' }),
-          {
-            status: 429,
-            headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-          }
-        );
-      }
-      if (response.status === 402) {
-        return new Response(JSON.stringify({ error: 'Créditos insuficientes.' }), {
-          status: 402,
-          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-        });
-      }
+      if (response.status === 429) return new Response(JSON.stringify({ error: 'Rate limit. Tente novamente em alguns segundos.' }), { status: 429, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
+      if (response.status === 402) return new Response(JSON.stringify({ error: 'Créditos insuficientes.' }), { status: 402, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
       throw new Error(`AI gateway error: ${response.status}`);
     }
 
@@ -144,15 +102,7 @@ Use referências reais do mercado brasileiro de eventos. Métricas importantes:
       const jsonMatch = content.match(/\{[\s\S]*\}/);
       parsed = JSON.parse(jsonMatch ? jsonMatch[0] : content);
     } catch {
-      parsed = {
-        score_geral: 50,
-        resumo_executivo: content.substring(0, 500),
-        benchmarks: [],
-        pontos_fortes: [],
-        pontos_fracos: [],
-        oportunidades: [],
-        tendencias_setor: [],
-      };
+      parsed = { score_geral: 50, resumo_executivo: content.substring(0, 500), benchmarks: [], pontos_fortes: [], pontos_fracos: [], oportunidades: [], tendencias_setor: [] };
     }
 
     return new Response(JSON.stringify(parsed), {
