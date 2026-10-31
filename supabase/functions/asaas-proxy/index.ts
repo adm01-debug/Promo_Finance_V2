@@ -17,6 +17,7 @@ import { corsHeadersPara } from '../_shared/cors.ts';
 import { createLogger } from '../_shared/observability.ts';
 import { mensagemErro, contextoErro } from '../_shared/erros.ts';
 import { withEdgeObservability } from '../_shared/edge-observability.ts';
+import { checkRateLimit, rateLimitResponse } from '../_shared/rate-limit.ts';
 const log = createLogger('asaas-proxy');
 
 const ASAAS_BASE_URL = 'https://api.asaas.com/v3';
@@ -111,6 +112,11 @@ export const handler = async (req: Request) => {
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       });
     }
+
+    // Rate limit: 30 req/min — proxy para API externa paga (ASAAS)
+    const _ip = req.headers.get('x-forwarded-for')?.split(',')[0]?.trim() ?? 'unknown';
+    const _rl = await checkRateLimit(supabase, { endpoint: 'asaas-proxy', ip: _ip, limit: 30 });
+    if (!_rl.allowed) return rateLimitResponse(_rl, corsHeaders);
 
     const rawBody = await req.json();
     const validation = validatePayload(AsaasProxySchema, rawBody, 'asaas-proxy');
