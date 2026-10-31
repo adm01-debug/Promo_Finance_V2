@@ -1,5 +1,5 @@
 // Edge: copilot-tributario — chat IA streaming SSE com tool calling
-import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.49.4';
+import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.118.0';
 import { createLogger } from '../_shared/observability.ts';
 import { z } from 'https://deno.land/x/zod@v3.22.4/mod.ts';
 import { validateContract } from '../_shared/contract-validator.ts';
@@ -50,7 +50,6 @@ Deno.serve(
     const t0 = Date.now();
 
     try {
-      // Auth manual
       const authHeader = req.headers.get('authorization');
       if (!authHeader) {
         return new Response(JSON.stringify({ error: 'Não autorizado' }), {
@@ -74,7 +73,6 @@ Deno.serve(
         });
       }
 
-      // RBAC
       const admin = createClient(supaUrl, serviceKey);
       const { data: roleData } = await admin
         .from('user_roles')
@@ -97,7 +95,6 @@ Deno.serve(
       const messages = validation.data.messages;
       const empresaId = validation.data.empresa_id;
 
-      // Contexto rico opcional
       let contextoSistema = '';
       if (empresaId) {
         const { data: empresa } = await admin
@@ -158,7 +155,6 @@ Deno.serve(
       }
 
       log.info('stream_started', { duration_ms: Date.now() - t0 });
-      // Flush log assíncrono — não bloqueia stream
       log.flush().catch(() => {});
 
       return new Response(aiResp.body, {

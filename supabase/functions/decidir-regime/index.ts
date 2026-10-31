@@ -1,4 +1,4 @@
-import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.49.4';
+import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.118.0';
 import { createLogger } from '../_shared/observability.ts';
 import { corsHeadersPara } from '../_shared/cors.ts';
 import {
@@ -50,7 +50,6 @@ function decidirRegimeInternal(
   };
 }
 
-/** Converte para número finito ou `undefined` (aceita string numérica de legado). */
 function numeroFinito(v: unknown): number | undefined {
   if (typeof v === 'number') return Number.isFinite(v) ? v : undefined;
   if (typeof v === 'string' && v.trim() !== '') {
@@ -64,7 +63,6 @@ function clamp(v: number, min: number, max: number) {
   return Math.min(Math.max(v, min), max);
 }
 
-/** Campos numéricos aceitos no override, com faixa legal de saneamento. */
 const CAMPOS_NUMERICOS: Record<string, [number, number]> = {
   percentualIndustria: [0, 100],
   percentualRevenda: [0, 100],
@@ -81,11 +79,6 @@ const CAMPOS_NUMERICOS: Record<string, [number, number]> = {
   baseNegativaCsllAcumulada: [0, Number.MAX_SAFE_INTEGER],
 };
 
-/**
- * Normaliza `parametrosOverride` preservando os campos avançados do motor
- * (periodicidade, prejuízos, alíquotas, presunções) que antes eram descartados,
- * causando divergência entre o cálculo do cliente e o do servidor.
- */
 function normalizarOverride(raw: unknown): Partial<ParametrosSimulacao> {
   const out: Record<string, unknown> = {};
   if (!raw || typeof raw !== 'object') return out;
@@ -129,7 +122,6 @@ Deno.serve(
         });
       }
 
-      // Cliente vinculado ao JWT do chamador: valida a identidade de verdade.
       const sbUser = createClient(
         Deno.env.get('SUPABASE_URL')!,
         Deno.env.get('SUPABASE_ANON_KEY')!,
@@ -178,7 +170,6 @@ Deno.serve(
         persist = true,
       } = parsed.data as Record<string, any>;
 
-      // Autorização multi-tenant: a leitura passa pelo RLS do próprio usuário.
       const { data: empresaPermitida, error: empresaError } = await sbUser
         .from('empresas')
         .select('id')
@@ -197,7 +188,6 @@ Deno.serve(
       const ano = anoReferencia ?? hoje.getFullYear();
       const mes = mesReferencia ?? hoje.getMonth() + 1;
 
-      // Buscar dados reais da empresa para a simulação
       const [faturamentoResult, folhaResult] = await Promise.all([
         sb
           .from('faturamento_mensal')
@@ -255,7 +245,6 @@ Deno.serve(
         despesasOperacionais: numeroFinito(parametrosOverride?.despesasOperacionais) ?? 0,
       };
 
-      // CACHE LOOKUP
       const cacheable =
         persist && (!parametrosOverride || Object.keys(parametrosOverride).length === 0);
       if (cacheable) {
@@ -270,7 +259,6 @@ Deno.serve(
         if (cacheReadError)
           throw new Error(`Falha ao consultar cache tributario: ${cacheReadError.message}`);
         if (cached?.decisao) {
-          // Log cache hit in audit trail
           const { error: auditError } = await sb.from('tax_audit_trail').insert({
             user_id: userId,
             empresa_id: empresaId,
@@ -294,16 +282,11 @@ Deno.serve(
 
       const resultado = decidirRegimeInternal(params, ano, mes, regimeAtual);
 
-      // AI Justification logic kept...
       let justificativaIA = null;
       try {
         const LOVABLE_API_KEY = Deno.env.get('LOVABLE_API_KEY');
         if (LOVABLE_API_KEY) {
-          const prompt = `Analise os cenários tributários abaixo e forneça uma recomendação executiva curta (máx 3 frases) em português:
-        ${JSON.stringify(resultado.cenarios)}
-        
-        Regime Recomendado: ${resultado.recomendado.nome}
-        Economia Estimada: R$ ${resultado.economiaAnualVsAtual || 0}`;
+          const prompt = `Analise os cenários tributários abaixo e forneça uma recomendação executiva curta (máx 3 frases) em português:\n        ${JSON.stringify(resultado.cenarios)}\n        \n        Regime Recomendado: ${resultado.recomendado.nome}\n        Economia Estimada: R$ ${resultado.economiaAnualVsAtual || 0}`;
 
           const aiResponse = await fetch('https://ai.gateway.lovable.dev/v1/chat/completions', {
             method: 'POST',
@@ -332,7 +315,6 @@ Deno.serve(
       const finalResponse = { ...resultado, justificativaIA, params };
 
       if (persist) {
-        // A operacao so e confirmada depois que sua trilha obrigatoria foi gravada.
         const { error: auditError } = await sb.from('tax_audit_trail').insert({
           user_id: userId,
           empresa_id: empresaId,
@@ -365,8 +347,6 @@ Deno.serve(
         }
       }
 
-      // flush antes do retorno normal — um ai_error ou cache warn no buffer
-      // deste logger não seria persistido pelo wrapper (instância distinta).
       await logger.flush();
       return new Response(JSON.stringify(finalResponse), {
         status: 200,
