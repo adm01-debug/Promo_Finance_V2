@@ -1,7 +1,7 @@
 // Logger estruturado não-bloqueante para Edge Functions
 // Faz buffer em memória e flush async para tabela edge_function_logs
 
-import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.49.4';
+import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.118.0';
 
 // Redação de credenciais: valores de env que pareçam segredo são mascarados no
 // insert — um handler que logue um token por descuido não o espalha na tabela.

@@ -23,7 +23,7 @@
  * equivalente a não autenticar nada.
  */
 
-import { createClient, type SupabaseClient } from 'https://esm.sh/@supabase/supabase-js@2.49.4';
+import { createClient, type SupabaseClient } from 'https://esm.sh/@supabase/supabase-js@2.118.0';
 import { corsHeadersPara } from './cors.ts';
 
 /** Headers CORS por requisição — ecoa o Origin permitido (allowlist em cors.ts). */
@@ -102,7 +102,7 @@ export async function exigirUsuario(req: Request): Promise<ResultadoGuard<Usuari
   const anonKey = Deno.env.get('SUPABASE_ANON_KEY') ?? '';
   const url = Deno.env.get('SUPABASE_URL') ?? '';
 
-  // O anon key também chega como Bearer quando o usuário está deslogado.
+  // O anon key também chega como ****** o usuário está deslogado.
   // Tratamos isso como "sem sessão" e não como tentativa de fraude.
   if (!token || segredosIguais(token, anonKey)) {
     return {
@@ -112,7 +112,7 @@ export async function exigirUsuario(req: Request): Promise<ResultadoGuard<Usuari
   }
 
   const client = createClient(url, anonKey, {
-    global: { headers: { Authorization: `Bearer ${token}` } },
+    global: { headers: { Authorization: `****** } },
     auth: { persistSession: false, autoRefreshToken: false },
   });
 

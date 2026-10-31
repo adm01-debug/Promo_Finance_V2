@@ -1,5 +1,5 @@
 import { z } from './zod.ts';
-import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.49.4';
+import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.118.0';
 import { createLogger, LogLevel } from './logger.ts';
 import { createValidationErrorResponse } from './contract-response.ts';
 import { corsHeaders, corsHeadersPara } from './cors.ts';

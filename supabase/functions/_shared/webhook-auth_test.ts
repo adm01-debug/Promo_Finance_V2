@@ -1,5 +1,5 @@
 import { assertEquals } from 'https://deno.land/std@0.224.0/assert/mod.ts';
-import type { SupabaseClient } from 'https://esm.sh/@supabase/supabase-js@2.49.4';
+import type { SupabaseClient } from 'https://esm.sh/@supabase/supabase-js@2.118.0';
 import { authenticateWebhook } from './webhook-auth.ts';
 import { corsHeaders } from './cors.ts';
 

@@ -16,7 +16,7 @@
  * configurado a função FALHA FECHADA (503) — nunca aceita tráfego anônimo.
  */
 
-import type { SupabaseClient } from 'https://esm.sh/@supabase/supabase-js@2.49.4';
+import type { SupabaseClient } from 'https://esm.sh/@supabase/supabase-js@2.118.0';
 
 /** Headers de assinatura conhecidos por provedor (ordem de preferência). */
 const SIGNATURE_HEADERS: Record<string, readonly string[]> = {
