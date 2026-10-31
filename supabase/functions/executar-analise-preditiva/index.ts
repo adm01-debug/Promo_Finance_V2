@@ -1,5 +1,5 @@
 import { serve } from 'https://deno.land/std@0.168.0/http/server.ts';
-import { createClient, type SupabaseClient } from 'https://esm.sh/@supabase/supabase-js@2.49.4';
+import { createClient, type SupabaseClient } from 'https://esm.sh/@supabase/supabase-js@2.118.0';
 import { exigirChamadaInterna } from '../_shared/auth-guard.ts';
 import { corsHeadersPara } from '../_shared/cors.ts';
 import { getRequestId, correlationHeaders } from '../_shared/correlation.ts';
@@ -16,21 +16,12 @@ interface ResultadoEmpresa {
   recomendacoes_geradas: number;
 }
 
-/**
- * Roda a análise preditiva de UMA empresa.
- *
- * Antes esta lógica vivia direto no handler e lia as tabelas financeiras sem
- * `empresa_id`, com client service-role (que ignora RLS): o resultado misturava
- * todos os tenants num único registro — que ainda por cima era gravado com
- * `empresa_id` nulo. Cada execução agora é fechada em um tenant.
- */
 async function analisarEmpresa(
   supabase: SupabaseClient,
   empresaId: string,
   LOVABLE_API_KEY: string,
   requestId: string
 ): Promise<ResultadoEmpresa> {
-  // Buscar dados financeiros para análise
   const hoje = new Date();
   const tresMesesAtras = new Date(hoje);
   tresMesesAtras.setMonth(tresMesesAtras.getMonth() - 3);
@@ -70,7 +61,6 @@ async function analisarEmpresa(
     },
   });
 
-  // Preparar contexto para a IA
   const hojeStr = hoje.toISOString().split('T')[0];
 
   const recebiveisData = contasReceber.data.map((cr) => ({
@@ -96,7 +86,6 @@ async function analisarEmpresa(
     limite_credito: c.limite_credito,
   }));
 
-  // Agrupar transações por mês
   const transacoesPorMes = (transacoes.data || []).reduce(
     (acc: Record<string, { receitas: number; despesas: number }>, t) => {
       const mes = t.data.substring(0, 7);
@@ -111,7 +100,6 @@ async function analisarEmpresa(
     {}
   );
 
-  // Dados de metas para recomendações
   const metasData = (metas.data || []).map((m) => ({
     tipo: m.tipo,
     titulo: m.titulo,
@@ -225,7 +213,6 @@ IMPORTANTE: Use valores numéricos reais. Responda APENAS com JSON válido.`;
 
   log.info('[executar-analise-preditiva] Análise recebida, salvando...');
 
-  // Salvar análise preditiva
   const { data: analiseRecord, error: analiseError } = await supabase
     .from('historico_analises_preditivas')
     .insert({
@@ -252,7 +239,6 @@ IMPORTANTE: Use valores numéricos reais. Responda APENAS com JSON válido.`;
     });
   }
 
-  // Salvar score de saúde
   const { error: scoreError } = await supabase.from('historico_score_saude').insert({
     empresa_id: empresaId,
     score: analise.score_saude_financeira || 50,
@@ -267,7 +253,6 @@ IMPORTANTE: Use valores numéricos reais. Responda APENAS com JSON válido.`;
     });
   }
 
-  // Salvar alertas preditivos
   const alertasParaSalvar = (analise.alertas || []).map((alerta: any) => ({
     empresa_id: empresaId,
     tipo: alerta.tipo || 'tendencia_negativa',
@@ -297,13 +282,9 @@ IMPORTANTE: Use valores numéricos reais. Responda APENAS com JSON válido.`;
       log.info(`[executar-analise-preditiva] ${alertasParaSalvar.length} alertas salvos`);
     }
 
-    // Enviar push notifications para alertas críticos
     const alertasCriticos = alertasParaSalvar.filter(
       (a: any) => a.prioridade === 'critica' || a.prioridade === 'alta'
     );
-    // `send-push-notification` recusa chamada interna sem `userId` (422) para
-    // não virar broadcast global — sem destinatário explícito estes pushes nunca
-    // eram entregues. Endereçamos os usuários vinculados a esta empresa.
     const { data: vinculos } = await supabase
       .from('user_empresas')
       .select('user_id')
@@ -335,7 +316,6 @@ IMPORTANTE: Use valores numéricos reais. Responda APENAS com JSON válido.`;
     }
   }
 
-  // Salvar recomendações de metas
   const recomendacoesParaSalvar = (analise.recomendacoes_metas || []).map((rec: any) => ({
     empresa_id: empresaId,
     tipo_meta: rec.tipo_meta,
@@ -406,8 +386,6 @@ export const handler = async (req: Request): Promise<Response> => {
     const empresaIds = (empresas ?? []).map((e: { id: string }) => e.id);
     log.info(`[executar-analise-preditiva] ${empresaIds.length} empresas ativas`);
 
-    // Uma empresa que falhe não pode derrubar as demais: o job é agendado e
-    // precisa entregar o máximo possível por execução.
     const resultados: ResultadoEmpresa[] = [];
     const falhas: { empresa_id: string; erro: string }[] = [];
     for (const empresaId of empresaIds) {
