@@ -12,12 +12,14 @@ verify_jwt = false
 [functions.bitrix24-sync]
 verify_jwt = true
 
+# verify_jwt=false: Webhook público Bitrix24 — recebe POST sem JWT de usuário; guard valida x-bitrix-secret antes de processar o payload.
 [functions.bitrix24-webhook]
 verify_jwt = false
 
 [functions.gerar-alertas]
 verify_jwt = false
 
+# verify_jwt=false: Guard interno verifica userId via tabela de sessões da IA; tokens de sessão longos expiram no gateway antes do processamento.
 [functions.expert-agent]
 verify_jwt = false
 
@@ -36,12 +38,14 @@ verify_jwt = false
 [functions.open-finance]
 verify_jwt = true
 
+# verify_jwt=false: Guard interno autentica via Authorization Bearer + validação de userId na sessão do scheduler; tokens de sessão de categorização têm ciclo de vida próprio.
 [functions.categorizar-despesa]
 verify_jwt = false
 
 [functions.enviar-alerta-email]
 verify_jwt = false
 
+# verify_jwt=false: Guard interno autentica via Authorization Bearer + validação de userId; tokens de sessão de análise de fluxo têm ciclo de vida próprio.
 [functions.analise-fluxo-ia]
 verify_jwt = false
 
@@ -57,21 +61,26 @@ verify_jwt = false
 [functions.whatsapp-ia-proativo]
 verify_jwt = false
 
+# verify_jwt=false: Guard interno exigirVinculoEmpresa + role check (admin/financeiro) via service_role antes de qualquer chamada à API paga Asaas.
 [functions.asaas-proxy]
 verify_jwt = false
 
+# verify_jwt=false: Webhook público Asaas — recebe notificações de pagamento do provedor sem JWT; guard valida HMAC da assinatura Asaas antes de processar.
 [functions.asaas-webhook]
 verify_jwt = false
 
+# verify_jwt=false: Guard interno autentica via supabase.auth.getUser() com Bearer do header antes de qualquer ação Bling.
 [functions.bling-proxy]
 verify_jwt = false
 
+# verify_jwt=false: Webhook público Bling — recebe notificações de eventos ERP sem JWT; guard valida x-bling-secret antes de processar.
 [functions.bling-webhook]
 verify_jwt = false
 
 [functions.external-data]
 verify_jwt = false
 
+# verify_jwt=false: Webhook público N8N — recebe callback de workflows de automação sem JWT; guard valida x-n8n-secret e idempotência antes de processar.
 [functions.n8n-callback]
 verify_jwt = false
 
@@ -84,15 +93,18 @@ verify_jwt = false
 [functions.benchmarking-setorial]
 verify_jwt = false
 
+# verify_jwt=false: Guard via x-service-secret — chamada machine-to-machine pelo scheduler de alertas tributários; sem JWT de usuário neste fluxo.
 [functions.gerar-alertas-tributarios]
 verify_jwt = false
 
+# verify_jwt=false: Guard interno valida JWT via getClaims + sub check (rejeita anon key sem subject); verify_jwt desabilitado para aceitar token fresco diretamente.
 [functions.gerar-pdf-tributario]
 verify_jwt = false
 
 [functions.enviar-bitrix24-tributario]
 verify_jwt = false
 
+# verify_jwt=false: Guard interno valida Authorization Bearer + getClaims antes de processar; token pode vir de sessão de simulação tributária sem refresh obrigatório.
 [functions.decidir-regime]
 verify_jwt = false
 
@@ -105,58 +117,31 @@ verify_jwt = false
 [functions.sso-initiate]
 verify_jwt = false
 
+# verify_jwt=false: Callback SSO — o JWT do usuário ainda não existe neste ponto do fluxo SAML/OIDC; autenticação ocorre via state parameter validado pela function.
 [functions.sso-callback]
 verify_jwt = false
 
 [functions.sso-logout]
 verify_jwt = false
 
+# verify_jwt=false: SCIM provisioning — autenticado via Bearer token SCIM proprietário (não JWT Supabase); requerido pelo protocolo SCIM 2.0 para IdP corporativos.
 [functions.scim-server]
 verify_jwt = false
 
 [functions.validate-ip-geo]
 verify_jwt = false
 
+# verify_jwt=false: Guard via x-service-secret — dispatcher SEFAZ chamado machine-to-machine pelo agendador de DFe; sem JWT de usuário neste fluxo.
 [functions.sefaz-dfe-dispatcher]
 verify_jwt = false
 
+# verify_jwt=false: Guard via x-mcp-secret ou service key — monitor de performance interno; sem JWT de usuário neste fluxo de observabilidade.
 [functions.notify-performance-alert]
 verify_jwt = false
 
+# verify_jwt=false: Guard via x-service-secret — puxada de DFe chamada machine-to-machine pelo agendador SEFAZ; sem JWT de usuário neste fluxo.
 [functions.sefaz-dfe-puxar]
 verify_jwt = false
-
-# Cobertura explícita: toda Edge Function do repositório precisa declarar
-# `verify_jwt`. As entradas abaixo agora refletem o estado canônico
-# validado em 2026-08-31; apenas `mcp-query` permanece localmente em
-# `false` porque o deploy desta rodada troca JWT de gateway por x-mcp-secret.
-
-[functions.aceitar-convite]
-verify_jwt = true
-
-[functions.calcular-health-score-operacional]
-verify_jwt = true
-
-[functions.calcular-slo-metrics-diario]
-verify_jwt = true
-
-[functions.calculo-iva]
-verify_jwt = true
-
-[functions.comparar-benchmark-setorial]
-verify_jwt = false
-
-[functions.conciliacao-proxy]
-verify_jwt = true
-
-[functions.consulta-tributaria]
-verify_jwt = true
-
-[functions.contabilizar-evento]
-verify_jwt = true
-
-[functions.convidar-contador]
-verify_jwt = true
 
 # O JWT é validado em código por exigirPapel(req, ['admin']). O gateway fica
 # desabilitado para preservar a validação centralizada das signing keys.
@@ -241,6 +226,7 @@ verify_jwt = true
 [functions.mcp-query]
 verify_jwt = false
 
+# verify_jwt=false: Aceita erros de JavaScript não autenticado do browser; sem JWT neste ponto do ciclo de erro de frontend.
 [functions.monitorar-erros-frontend]
 verify_jwt = false
 
@@ -259,6 +245,7 @@ verify_jwt = true
 [functions.overlay-rejeicoes-auditoria]
 verify_jwt = true
 
+# verify_jwt=false: Guard interno valida Authorization Bearer + user check via getUser() antes de processar; verify_jwt desabilitado para suportar token de simulação sem refresh obrigatório.
 [functions.prever-carga-tributaria]
 verify_jwt = false
 
@@ -322,5 +309,6 @@ verify_jwt = true
 [functions.whatsapp-ai-analyzer]
 verify_jwt = true
 
+# verify_jwt=false: Webhook público WhatsApp Evolution — recebe mensagens do provedor sem JWT de usuário; guard valida x-evolution-secret antes de processar.
 [functions.whatsapp-webhook]
 verify_jwt = false

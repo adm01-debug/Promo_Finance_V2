@@ -17,6 +17,7 @@ import { corsHeadersPara } from '../_shared/cors.ts';
 import { createLogger } from '../_shared/observability.ts';
 import { mensagemErro, contextoErro } from '../_shared/erros.ts';
 import { withEdgeObservability } from '../_shared/edge-observability.ts';
+import { checkRateLimit, rateLimitResponse } from '../_shared/rate-limit.ts';
 const log = createLogger('asaas-proxy');
 
 const ASAAS_BASE_URL = 'https://api.asaas.com/v3';
@@ -112,6 +113,12 @@ export const handler = async (req: Request) => {
       });
     }
 
+    // Step 36 — Rate limit uniforme: 30 req/min por IP (mesmo padrão de categorizar-despesa)
+    const ip = req.headers.get('x-forwarded-for') ?? req.headers.get('x-real-ip') ?? 'unknown';
+    const userAgent = req.headers.get('user-agent') ?? '';
+    const rl = await checkRateLimit(supabase, { endpoint: 'asaas-proxy', ip, limit: 30, windowSeconds: 60, userAgent });
+    if (!rl.allowed) return rateLimitResponse(rl, corsHeaders);
+
     const rawBody = await req.json();
     const validation = validatePayload(AsaasProxySchema, rawBody, 'asaas-proxy');
 
@@ -121,17 +128,6 @@ export const handler = async (req: Request) => {
 
     const { action, data } = validation.data;
 
-    // Ações globais (sem empresa) não passam por verificação de vínculo —
-    // para elas o papel admin/financeiro já é a autorização completa, e o
-    // kill-switch acontece aqui. As demais descobrem a desativação só depois
-    // do vínculo de empresa (ver exigirEmpresaDoRecurso e as listagens com
-    // filtro pós-fetch), para não vazar o estado a quem não tem acesso.
-    // cancelar_assinatura entra aqui porque a empresa só é resolvida depois
-    // de um GET prévio ao Asaas — sem este check a chamada alcançaria o
-    // gateway durante o incidente que o switch deveria isolar.
-    // O kill-switch roda DEPOIS do vínculo empresa↔usuário: um 503 aqui
-    // vazaria o estado da integração para quem tem papel mas não acesso
-    // ao recurso da empresa em questão.
     const ACOES_SEM_ESCOPO_EMPRESA = new Set([
       'consultar_saldo',
       'processar_fila_sincronizacao',
@@ -139,10 +135,6 @@ export const handler = async (req: Request) => {
       'analisar_risco_cliente',
       'cancelar_assinatura',
     ]);
-    // Ações que não tocam a API do Asaas (só dados locais/espelhos) não são
-    // derrubadas pelo kill-switch — desativar a integração não pode impedir
-    // simulação de backoff, análise de risco e a conciliação de dados já
-    // persistidos.
     const ACOES_LOCAIS = new Set([
       'simular_backoff',
       'analisar_risco_cliente',
@@ -155,8 +147,6 @@ export const handler = async (req: Request) => {
       if (inativaGlobal) return inativaGlobal;
     }
 
-    // A chave só é exigida para ações que realmente chamam a API — as
-    // locais (simulação, risco, conciliação) funcionam mesmo sem ela.
     const ASAAS_API_KEY = Deno.env.get('ASAAS_API_KEY') ?? '';
     if (!ASAAS_API_KEY && checaSwitch) {
       throw new Error('Integração ASAAS indisponível');
@@ -184,11 +174,6 @@ export const handler = async (req: Request) => {
       return null;
     };
 
-    // Vínculo de tenant (achado A-009): asaas-proxy roda com service_role e
-    // até aqui só provava "é financeiro/admin de ALGUMA empresa", nunca "é
-    // financeiro/admin DAQUELA empresa dona do recurso". As ações que movem
-    // dinheiro ou tocam cobrança/cliente exigem empresa_id validado contra
-    // user_empresas antes de qualquer chamada à API do Asaas.
     const empresaDoPagamento = async (asaasId: string): Promise<string | null> => {
       const { data: pagamento } = await supabase
         .from('asaas_payments')
@@ -225,8 +210,6 @@ export const handler = async (req: Request) => {
       if (!empresaId) return err('Recurso não encontrado', 404);
       const vinculo = await exigirVinculoEmpresa(user.id, empresaId, req);
       if (!vinculo.ok) return vinculo.resposta;
-      // Kill-switch pós-escopo: só quem tem vínculo com a empresa do recurso
-      // descobre que a integração está desativada.
       return checaSwitch ? respostaIntegracaoDesativada('asaas', corsHeaders) : null;
     };
 
@@ -298,7 +281,6 @@ export const handler = async (req: Request) => {
         const errRespEdit = checkErrors(result);
         if (errRespEdit) return errRespEdit;
 
-        // Sync local DB
         const dbUpdate: any = {};
         if (data.nome) dbUpdate.nome = data.nome;
         if (data.email) dbUpdate.email = data.email;
@@ -375,16 +357,14 @@ export const handler = async (req: Request) => {
           value: data.valor,
           dueDate: data.data_vencimento,
           description: data.descricao,
-          externalReference: data.conta_receber_id, // Link with internal ID
+          externalReference: data.conta_receber_id,
         };
 
-        // Parcelamento
         if (data.parcelas && data.parcelas > 1) {
           payload.installmentCount = data.parcelas;
           payload.installmentValue = data.valor_parcela || data.valor / data.parcelas;
         }
 
-        // Cartão de crédito
         if (data.tipo === 'credit_card' && data.cartao) {
           payload.creditCard = {
             holderName: data.cartao.holder_name,
@@ -402,7 +382,6 @@ export const handler = async (req: Request) => {
           };
         }
 
-        // Multas e Juros Padrão do Config
         const { data: config } = await supabase
           .from('asaas_config')
           .select('*')
@@ -423,7 +402,6 @@ export const handler = async (req: Request) => {
           };
         }
 
-        // Notificações
         if (data.desativar_notificacoes) {
           payload.postalService = false;
         }
@@ -511,7 +489,6 @@ export const handler = async (req: Request) => {
         break;
       }
 
-      // ===== ESTORNO =====
       case 'estornar_cobranca': {
         if (!data?.asaas_id) return err('asaas_id é obrigatório');
         const vinculoErrEstornar = await exigirEmpresaDoRecurso(
@@ -519,7 +496,7 @@ export const handler = async (req: Request) => {
         );
         if (vinculoErrEstornar) return vinculoErrEstornar;
         const refundPayload: any = {};
-        if (data.valor) refundPayload.value = data.valor; // estorno parcial
+        if (data.valor) refundPayload.value = data.valor;
         if (data.descricao) refundPayload.description = data.descricao;
 
         result = await asaasFetch(`/payments/${data.asaas_id}/refund`, ASAAS_API_KEY, {
@@ -536,7 +513,6 @@ export const handler = async (req: Request) => {
         break;
       }
 
-      // ===== SEGUNDA VIA =====
       case 'segunda_via_boleto': {
         if (!data?.asaas_id || !data?.nova_data_vencimento)
           return err('asaas_id e nova_data_vencimento são obrigatórios');
@@ -551,7 +527,6 @@ export const handler = async (req: Request) => {
         const errSegunda = checkErrors(result);
         if (errSegunda) return errSegunda;
 
-        // Fetch new identification field
         const newBoleto = await asaasFetch(
           `/payments/${data.asaas_id}/identificationField`,
           ASAAS_API_KEY
@@ -569,7 +544,6 @@ export const handler = async (req: Request) => {
         break;
       }
 
-      // ===== PIX QR CODE =====
       case 'pix_qrcode': {
         if (!data?.asaas_id) return err('asaas_id é obrigatório');
         const vinculoErrPixQr = await exigirEmpresaDoRecurso(
@@ -580,7 +554,6 @@ export const handler = async (req: Request) => {
         break;
       }
 
-      // ===== LINHA DIGITÁVEL =====
       case 'boleto_linha_digitavel': {
         if (!data?.asaas_id) return err('asaas_id é obrigatório');
         const vinculoErrLinhaDigitavel = await exigirEmpresaDoRecurso(
@@ -591,7 +564,6 @@ export const handler = async (req: Request) => {
         break;
       }
 
-      // ===== ASSINATURAS (RECORRÊNCIA) =====
       case 'criar_assinatura': {
         if (!data?.asaas_customer_id || !data?.valor || !data?.ciclo)
           return err('asaas_customer_id, valor e ciclo são obrigatórios');
@@ -644,10 +616,6 @@ export const handler = async (req: Request) => {
         if (data?.offset) params.set('offset', data.offset || '0');
         if (data?.limit) params.set('limit', data.limit || '20');
         result = await asaasFetch(`/subscriptions?${params}`, ASAAS_API_KEY);
-        // Sem customer explicito (ja validado por exigirEmpresaDoRecurso acima), a
-        // conta ASAAS e compartilhada entre empresas e o endpoint devolve TODAS as
-        // assinaturas -- precisa filtrar pos-fetch pelo mesmo cruzamento local que
-        // listar_clientes ja usa (asaas_customers.asaas_id -> empresa_id).
         if (escopoListarAssinaturas && escopoListarAssinaturas.ok && Array.isArray(result?.data)) {
           const customerIdsAssinaturas = Array.from(
             new Set(result.data.map((sub: { customer?: string }) => sub.customer).filter(Boolean))
@@ -694,14 +662,12 @@ export const handler = async (req: Request) => {
         break;
       }
 
-      // ===== TRANSFERÊNCIAS PIX =====
       case 'transferir_pix': {
         if (!data?.valor || !data?.chave_pix || !data?.idempotency_key || !data?.empresa_id)
           return err('empresa_id, valor, chave_pix e idempotency_key são obrigatórios');
         const vinculoErrPix = await exigirEmpresaDoRecurso(data.empresa_id);
         if (vinculoErrPix) return vinculoErrPix;
 
-        // Verificar se já existe uma transferência com esta chave de idempotência
         const { data: existing } = await supabase
           .from('asaas_transfers')
           .select('*')
@@ -746,9 +712,8 @@ export const handler = async (req: Request) => {
               context: contextoErro(dbError),
             });
 
-          // Registrar na auditoria
           await supabase.from('asaas_audit_trail').insert({
-            payment_id: null, // transfers don't have a payment_id link here, but we could use metadata if needed
+            payment_id: null,
             action: 'PIX_CASHOUT_CREATED',
             details: { asaas_id: result.id, valor: data.valor, chave: data.chave_pix },
             user_id: user.id,
@@ -778,7 +743,6 @@ export const handler = async (req: Request) => {
         break;
       }
 
-      // ===== SALDO =====
       case 'consultar_saldo': {
         const guardSaldo = await exigirPapel(req, ['admin', 'admin_global', 'financeiro']);
         if (!guardSaldo.ok) return guardSaldo.resposta;
@@ -786,7 +750,6 @@ export const handler = async (req: Request) => {
         break;
       }
 
-      // ===== EXTRATO =====
       case 'extrato': {
         const escopoExtrato = await exigirVinculoEmpresa(user.id, data?.empresa_id, req);
         if (!escopoExtrato.ok) return escopoExtrato.resposta;
@@ -815,10 +778,6 @@ export const handler = async (req: Request) => {
               ])
             );
           }
-          // Só expõe movimentações vinculadas a um pagamento de empresa que o
-          // usuário tem acesso: o extrato é da conta Asaas inteira (compartilhada
-          // entre empresas), e itens sem paymentId (tarifas, transferências) não
-          // têm dono rastreável localmente, então são excluídos por segurança.
           result.data = result.data.filter((mov: { paymentId?: string }) => {
             if (!mov.paymentId) return false;
             const empresaMov = empresaPorPaymentId.get(mov.paymentId);
@@ -828,7 +787,6 @@ export const handler = async (req: Request) => {
         break;
       }
 
-      // ===== NOTIFICAÇÕES =====
       case 'listar_notificacoes_cobranca': {
         if (!data?.asaas_id) return err('asaas_id é obrigatório');
         const vinculoErrNotificacoesCobranca = await exigirEmpresaDoRecurso(
@@ -839,11 +797,8 @@ export const handler = async (req: Request) => {
         break;
       }
 
-      // ===== LINKS DE PAGAMENTO =====
       case 'criar_link_pagamento': {
         if (!data?.nome || !data?.valor) return err('nome e valor são obrigatórios');
-        // Asaas não amarra paymentLinks a empresa — sem empresa_id aqui não há
-        // como listar_links_pagamento filtrar depois (espelho local abaixo).
         if (!data?.empresa_id) return err('empresa_id é obrigatório');
         const vinculoErrCriarLink = await exigirEmpresaDoRecurso(data.empresa_id);
         if (vinculoErrCriarLink) return vinculoErrCriarLink;
@@ -924,11 +879,6 @@ export const handler = async (req: Request) => {
 
       case 'excluir_link_pagamento': {
         if (!data?.id) return err('id é obrigatório');
-        // Valida contra o DONO real do link no espelho local (asaas_payment_links),
-        // nunca contra um empresa_id enviado pelo cliente: um empresa_id próprio
-        // do chamador sempre passaria em exigirEmpresaDoRecurso mesmo apontando
-        // para um link de outra empresa (IDOR). Link sem espelho (criado antes
-        // desta tabela existir, ou cujo insert de espelho falhou) nega por padrão.
         const empresaLinkExcluir = await empresaDoLinkPagamento(data.id);
         const vinculoErrExcluirLink = await exigirEmpresaDoRecurso(empresaLinkExcluir);
         if (vinculoErrExcluirLink) return vinculoErrExcluirLink;
@@ -943,7 +893,6 @@ export const handler = async (req: Request) => {
         break;
       }
 
-      // ===== ANTECIPAÇÃO DE RECEBÍVEIS =====
       case 'solicitar_antecipacao': {
         if (!data?.payment_id) return err('payment_id é obrigatório');
         const vinculoErrSolicitarAntecipacao = await exigirEmpresaDoRecurso(
@@ -1021,7 +970,6 @@ export const handler = async (req: Request) => {
           await empresaDoPagamento(data.asaas_id)
         );
         if (vinculoErrObterComprovante) return vinculoErrObterComprovante;
-        // Retorna a URL de download do comprovante
         result = await asaasFetch(
           `/payments/${data.asaas_id}/confirmedBillingReceipt`,
           ASAAS_API_KEY
@@ -1062,7 +1010,6 @@ export const handler = async (req: Request) => {
           .update({ status: 'completed' })
           .eq('payment_id', data.payment_id);
 
-        // Registrar auditoria se houver motivo (reprocessamento manual)
         if (data?.reason) {
           await supabase.from('asaas_audit_trail').insert({
             payment_id: data.payment_id,
@@ -1123,14 +1070,12 @@ export const handler = async (req: Request) => {
             results.push({ id: item.id, status: 'COMPLETED' });
           } catch (e: any) {
             const nextRetry = new Date();
-            // Cálculo com Backoff configurado: intervalo_base * (multiplicador ^ tentativas)
             const minutesToAdd = baseInterval * Math.pow(multiplier, item.attempts);
             nextRetry.setMinutes(nextRetry.getMinutes() + minutesToAdd);
 
             const newAttempts = item.attempts + 1;
             const maxAttempts = item.max_attempts || config?.retry_limit || 5;
 
-            // Histórico de erro serializado
             const newError = {
               timestamp: new Date().toISOString(),
               message: e.message,
@@ -1153,7 +1098,6 @@ export const handler = async (req: Request) => {
             results.push({ id: item.id, status: 'FAILED' });
           }
         }
-        // Verificar se houve muitas falhas na última hora para disparar alerta
         const { count: failureCount } = await supabase
           .from('asaas_sync_queue')
           .select('*', { count: 'exact', head: true })
@@ -1162,7 +1106,6 @@ export const handler = async (req: Request) => {
 
         const threshold = config?.failure_threshold || 5;
         if (failureCount && failureCount >= threshold) {
-          // Disparar Alerta Email
           if (config?.alert_email_enabled && config?.alert_email_address) {
             await supabase.functions.invoke('enviar-alerta-email', {
               body: {
@@ -1171,13 +1114,12 @@ export const handler = async (req: Request) => {
                 dados: {
                   titulo: 'Limite de falhas na sincronização Asaas atingido',
                   mensagem: `Foram detectadas ${failureCount} falhas na fila de retentativas na última hora. O limite configurado é de ${threshold}.`,
-                  urlAcao: `${supabaseUrl.replace('.supabase.co', '.lovable.app')}/asaas`, // Ajuste para URL real se necessário
+                  urlAcao: `${supabaseUrl.replace('.supabase.co', '.lovable.app')}/asaas`,
                 },
               },
             });
           }
 
-          // Disparar Alerta WhatsApp
           if (config?.alert_whatsapp_enabled && config?.alert_whatsapp_number) {
             await supabase.functions.invoke('whatsapp-ia-proativo', {
               body: {
@@ -1193,7 +1135,6 @@ export const handler = async (req: Request) => {
       }
 
       case 'simular_backoff': {
-        // Rotina de simulação para testar política de backoff
         const { data: config } = await supabase
           .from('asaas_config')
           .select('*')
@@ -1212,7 +1153,6 @@ export const handler = async (req: Request) => {
           });
         }
 
-        // Criar um registro na auditoria sobre a simulação
         await supabase.from('asaas_audit_trail').insert({
           action: 'BACKOFF_SIMULATION',
           details: {
@@ -1330,9 +1270,6 @@ export const handler = async (req: Request) => {
         );
         if (vinculoErrConciliacao) return vinculoErrConciliacao;
 
-        // Atualização transacional: sugestão + conta a receber. As duas
-        // escritas ocorrem sob service_role para eliminar a necessidade de
-        // GRANT/RLS extras ao usuário autenticado.
         const { error: sugErr } = await supabase
           .from('asaas_reconciliation_suggestions')
           .update({
