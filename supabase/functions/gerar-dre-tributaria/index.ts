@@ -1,7 +1,7 @@
 // Edge: gerar-dre-tributaria — versão determinística (stub)
 // Substitui a versão com Lovable AI Gateway.
 // Calcula DRE com decomposição fiscal: CBS+IBS+PIS+COFINS+ICMS+ISS+IRPJ+CSLL.
-import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.49.4';
+import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.118.0';
 import { respostaPreflight, jsonComCors } from '../_shared/cors.ts';
 import { exigirUsuario } from '../_shared/auth-guard.ts';
 import { z } from '../_shared/zod.ts';
