@@ -24,6 +24,7 @@ import { z } from '../_shared/zod.ts';
 import { avaliarSqlMcp } from './sql-policy.ts';
 import { corsHeaders as CORS, corsHeadersPara } from '../_shared/cors.ts';
 import { withEdgeObservability } from '../_shared/edge-observability.ts';
+import { timingSafeEqual } from '../_shared/string-utils.ts';
 
 export type SqlClient = {
   unsafe(query: string): Promise<unknown[]>;
@@ -169,17 +170,6 @@ function runtimeValue(override: string | null | undefined, envName: string): str
   return Deno.env.get(envName) ?? null;
 }
 
-function timingSafeEqual(left: string | null, right: string): boolean {
-  const encoder = new TextEncoder();
-  const a = encoder.encode(left ?? '');
-  const b = encoder.encode(right);
-  const max = Math.max(a.length, b.length);
-  let diff = a.length ^ b.length;
-  for (let i = 0; i < max; i++) {
-    diff |= (a[i] ?? 0) ^ (b[i] ?? 0);
-  }
-  return diff === 0;
-}
 
 function medirBytes(texto: string): number {
   return new TextEncoder().encode(texto).byteLength;
