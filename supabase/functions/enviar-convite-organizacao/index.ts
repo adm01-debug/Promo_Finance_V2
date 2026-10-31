@@ -8,7 +8,7 @@
 //  - O token do convite nunca é lido do corpo da requisição: é carregado
 //    do banco a partir do convite_id, evitando enumeração/forjamento.
 // ============================================
-import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.49.4';
+import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.118.0';
 import { z } from '../_shared/zod.ts';
 import { getAppBaseUrl } from '../_shared/app-url.ts';
 import { corsHeaders, corsHeadersPara } from '../_shared/cors.ts';
@@ -126,11 +126,6 @@ Deno.serve(
         }
 
         const resendKey = Deno.env.get('RESEND_API_KEY');
-        // `origin` do cliente só vale se for https no mesmo host do app —
-        // um gestor não pode apontar o botão 'Aceitar convite' do e-mail
-        // para um domínio externo ou esquema em claro (http/ftp/ws/file)
-        // carregando o token real do convite. O retorno usa u.origin
-        // normalizado, nunca a string crua (path/query do chamador fora).
         const baseUrl = (() => {
           const appUrl = (() => {
             try {
@@ -140,9 +135,6 @@ Deno.serve(
             }
           })();
           if (!appUrl) return null;
-          // A base configurada no servidor também precisa ser https (ou
-          // localhost em dev) — um APP_*_URL em http mandaria o token do
-          // convite por link em claro no e-mail.
           if (appUrl.protocol !== 'https:' && appUrl.hostname !== 'localhost') return null;
           try {
             if (origin) {
@@ -156,15 +148,12 @@ Deno.serve(
           return appUrl.origin;
         })();
         if (!baseUrl) {
-          // APP_BASE_URL/APP_PUBLIC_URL/PUBLIC_APP_URL vazio ou inválido
-          // produziria um link relativo morto no e-mail — falha ruidosa.
           console.error('[enviar-convite-organizacao] base URL do app não configurada');
           return res({ error: 'URL pública do app não configurada no servidor.' }, 500);
         }
         const link = `${baseUrl.replace(/\/+$/, '')}/convite/${convite.token}`;
 
         if (!resendKey) {
-          // Modo simulado: não falha o fluxo de criação do convite.
           return res({ enviado: false, motivo: 'email_nao_configurado', link });
         }
 
