@@ -4,6 +4,7 @@ import path from 'path';
 import { componentTagger } from 'lovable-tagger';
 import { visualizer } from 'rollup-plugin-visualizer';
 import dyadComponentTagger from '@dyad-sh/react-vite-component-tagger';
+import { sentryVitePlugin } from '@sentry/vite-plugin';
 
 /**
  * Valida que as variáveis VITE_SUPABASE_* estão presentes em builds de produção.
@@ -64,6 +65,19 @@ export default defineConfig(({ mode }) => {
           brotliSize: true,
           template: 'treemap',
           open: false,
+        }),
+      // Publica source maps e associa release no Sentry.
+      // Ativo somente quando SENTRY_AUTH_TOKEN está presente — build local sem token passa normalmente.
+      // Para ativar: adicione o secret SENTRY_AUTH_TOKEN nas configurações do repositório GitHub
+      // (Settings → Secrets and variables → Actions) com o token de ingest da organização Sentry.
+      process.env.SENTRY_AUTH_TOKEN &&
+        sentryVitePlugin({
+          sourcemaps: {
+            filesToDeleteAfterUpload: ['./dist/**/*.map'],
+          },
+          release: {
+            name: process.env.VITE_APP_VERSION ?? process.env.COMMIT_SHA ?? 'dev',
+          },
         }),
     ].filter(Boolean),
     resolve: {
