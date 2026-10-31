@@ -16,6 +16,7 @@ import { corsHeadersPara } from '../_shared/cors.ts';
 import { createLogger } from '../_shared/observability.ts';
 import { mensagemErro, contextoErro } from '../_shared/erros.ts';
 import { withEdgeObservability } from '../_shared/edge-observability.ts';
+import { checkRateLimit, rateLimitResponse } from '../_shared/rate-limit.ts';
 const log = createLogger('bling-proxy');
 
 const BLING_API_BASE = 'https://api.bling.com.br/Api/v3';
@@ -51,6 +52,12 @@ Deno.serve(
         if (userError || !user) {
           return jsonResponse({ error: 'Unauthorized' }, 401, corsHeaders);
         }
+
+        // Rate limit: 30 req/min — proxy para API externa paga (Bling ERP)
+        const _rlSvc = createClient(supabaseUrl, Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!);
+        const _ip = req.headers.get('x-forwarded-for')?.split(',')[0]?.trim() ?? 'unknown';
+        const _rl = await checkRateLimit(_rlSvc, { endpoint: 'bling-proxy', ip: _ip, limit: 30 });
+        if (!_rl.allowed) return rateLimitResponse(_rl, corsHeaders);
 
         const userId = user.id;
         const rawBody = await req.json();
