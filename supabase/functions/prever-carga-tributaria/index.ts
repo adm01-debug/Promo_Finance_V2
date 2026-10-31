@@ -3,7 +3,7 @@
 // Mantém o MESMO contrato consumido por usePrevisaoTributaria.ts:
 //   { empresa_id, gerado_em, historico_meses, previsao_base[], cenario_conservador_total,
 //     cenario_agressivo_total, acoes_recomendadas[], resumo_executivo }
-import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.49.4';
+import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.118.0';
 import { respostaPreflight, jsonComCors } from '../_shared/cors.ts';
 import { z } from '../_shared/zod.ts';
 import { exigirInternaOuUsuario } from '../_shared/auth-guard.ts';
