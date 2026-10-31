@@ -129,6 +129,7 @@ export const ALLOWED_LITERAL_TRUE_POLICIES = Object.freeze([
   allowPolicy("ufs", "ufs_select_authenticated", "SELECT", "authenticated"),
   allowPolicy("elisao_regras_creditos", "regras_creditos_leitura", "SELECT", "authenticated"),
   allowPolicy("asaas_payment_links", "Service role full access asaas_payment_links", "ALL", "service_role"),
+  allowPolicy("estrategias_elisao_catalogo", "estrategias_elisao_catalogo_select", "SELECT", "authenticated"),
 ]);
 
 export const ALLOWED_ANON_WRITE_GRANTS = Object.freeze([
