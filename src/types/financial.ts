@@ -188,7 +188,7 @@ export interface TopDevedor {
   cliente: string;
   valor: number;
   diasAtraso: number;
-  score: number;
+  score: number;  conta_ids: string[];
 }
 
 export interface DistribuicaoCentroCusto {
