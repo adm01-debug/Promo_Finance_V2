@@ -324,3 +324,9 @@ verify_jwt = true
 
 [functions.whatsapp-webhook]
 verify_jwt = false
+
+# Job interno disparado pelo pg_cron a cada 30 min — sem JWT de usuário.
+# A autenticação é feita via x-cron-secret validado em código
+# contra a chave 'monitor_health_cron' em integration_secrets.
+[functions.monitor-health]
+verify_jwt = false
