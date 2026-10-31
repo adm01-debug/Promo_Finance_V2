@@ -7,6 +7,7 @@ import { corsHeadersPara } from '../_shared/cors.ts';
 import { createLogger } from '../_shared/observability.ts';
 import { mensagemErro, contextoErro } from '../_shared/erros.ts';
 import { withEdgeObservability } from '../_shared/edge-observability.ts';
+import { checkRateLimit, rateLimitResponse } from '../_shared/rate-limit.ts';
 const log = createLogger('copilot-global');
 
 const CopilotGlobalBodySchema = z.object({
@@ -190,6 +191,11 @@ Deno.serve(
             headers: corsHeaders,
           });
         }
+
+        // Rate limit: 30 req/min — IA com custo por chamada
+        const _ip = req.headers.get('x-forwarded-for')?.split(',')[0]?.trim() ?? 'unknown';
+        const _rl = await checkRateLimit(sbAdmin, { endpoint: 'copilot-global', ip: _ip, limit: 30 });
+        if (!_rl.allowed) return rateLimitResponse(_rl, corsHeaders);
 
         const rawBody = await req.json().catch(() => ({}));
         const validation = await validateContract(CopilotGlobalBodySchema, rawBody);
