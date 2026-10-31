@@ -2,7 +2,7 @@
 // Edge Function: convidar-contador
 // Gera token assinado para acesso read-only e envia e-mail via Resend
 // ============================================
-import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.49.4';
+import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.118.0';
 import { z } from 'https://esm.sh/zod@3.23.8';
 import { create as createJwt, getNumericDate } from 'https://deno.land/x/djwt@v3.0.2/mod.ts';
 import { createLogger } from '../_shared/observability.ts';
@@ -56,10 +56,6 @@ Deno.serve(
       const SUPABASE_URL = Deno.env.get('SUPABASE_URL')!;
       const ANON = Deno.env.get('SUPABASE_ANON_KEY')!;
       const SERVICE = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
-      // SUPABASE_* não pode ser cadastrado como secret custom em edge fns —
-      // CONTADOR_INVITE_SECRET é a chave dedicada (rotacionável). A primeira
-      // candidata NÃO-VAZIA assina: um secret cadastrado vazio não pode
-      // sequestrar a cadeia de fallback.
       const JWT_SECRET =
         [Deno.env.get('CONTADOR_INVITE_SECRET'), Deno.env.get('SUPABASE_JWT_SECRET'), SERVICE].find(
           (v): v is string => typeof v === 'string' && v.length > 0
@@ -100,9 +96,6 @@ Deno.serve(
 
       const admin = createClient(SUPABASE_URL, SERVICE);
 
-      // Sem esta checagem, qualquer usuário autenticado do sistema (mesmo de
-      // outra empresa) podia convidar um "contador" com acesso read-only de
-      // 30 dias para QUALQUER empresa, bastando informar o empresa_id (IDOR).
       const { data: vinculo } = await admin
         .from('user_empresas')
         .select('role')
@@ -115,7 +108,6 @@ Deno.serve(
         return res({ error: 'Sem permissão para convidar contador nesta empresa' }, 403);
       }
 
-      // Gera token aleatório de 32 bytes (URL-safe)
       const rawBytes = new Uint8Array(32);
       crypto.getRandomValues(rawBytes);
       const rawToken = btoa(String.fromCharCode(...rawBytes))
@@ -123,7 +115,6 @@ Deno.serve(
         .replace(/\//g, '_')
         .replace(/=+$/, '');
 
-      // JWT assinado contém payload, mas o que vai por e-mail é o rawToken
       const expiresAt = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000);
       const key = await importHmacKey(JWT_SECRET);
       const signedJwt = await createJwt(
@@ -157,7 +148,6 @@ Deno.serve(
         return res({ error: 'Falha ao registrar convite' }, 500);
       }
 
-      // Envia e-mail via Resend (gateway connector)
       const RESEND_API_KEY = Deno.env.get('RESEND_API_KEY');
       const LOVABLE_API_KEY = Deno.env.get('LOVABLE_API_KEY');
       const link = `${origin ?? 'https://app.lovable.app'}/contador/${signedJwt}`;

@@ -1,6 +1,6 @@
 // Edge: copilot-global
 // Assistente IA contextual para todas as páginas. SSE streaming via Lovable AI Gateway.
-import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.49.4';
+import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.118.0';
 import { z } from 'https://deno.land/x/zod@v3.22.4/mod.ts';
 import { validateContract } from '../_shared/contract-validator.ts';
 import { corsHeadersPara } from '../_shared/cors.ts';
@@ -172,12 +172,7 @@ Deno.serve(
             headers: corsHeaders,
           });
 
-        // RBAC
         const sbAdmin = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
-        // Usuário pode ter múltiplos papéis ativos simultâneos (UNIQUE é
-        // user_id+role, não user_id sozinho) — .maybeSingle() sem filtrar por
-        // role quebrava (>1 linha) para esses usuários, negando acesso mesmo
-        // com papel permitido. Filtra pelos papéis aceitos e checa existência.
         const { data: roleRows } = await sbAdmin
           .from('user_roles')
           .select('role')
@@ -203,7 +198,6 @@ Deno.serve(
           ...messages,
         ];
 
-        // Loop tool calls (até 3 iterações)
         let workingMessages = fullMessages;
         for (let iter = 0; iter < 3; iter++) {
           const resp = await fetch('https://ai.gateway.lovable.dev/v1/chat/completions', {
@@ -250,11 +244,6 @@ Deno.serve(
           if (msg.tool_calls?.length) {
             workingMessages = [...workingMessages, msg];
             for (const tc of msg.tool_calls) {
-              // sbUser (RLS ligada ao JWT real do chamador) — nunca sbAdmin aqui:
-              // as tools agregam contas_pagar/contas_receber/acoes_recomendadas/
-              // health_scores_operacionais, todas escopadas por empresa via RLS;
-              // service-role vazaria dados de TODAS as empresas para qualquer
-              // usuário com um dos papéis permitidos.
               const result = await executeTool(tc.function.name, sbUser, userData.user.id);
               workingMessages.push({
                 role: 'tool',
@@ -262,10 +251,9 @@ Deno.serve(
                 content: JSON.stringify(result),
               });
             }
-            continue; // próximo iter
+            continue;
           }
 
-          // Resposta final → stream simulado em uma única mensagem
           const final = msg.content ?? '';
           const stream = new ReadableStream({
             start(controller) {
