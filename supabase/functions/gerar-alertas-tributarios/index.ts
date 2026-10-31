@@ -3,7 +3,7 @@
 // Detecta sublimite Simples, Fator R, vencimentos, desvios setoriais, IRPFM
 // Hardened: structured logging, retry com exponential backoff, top-level try/catch
 // ============================================
-import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.49.4';
+import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.118.0';
 import { exigirChamadaInterna } from '../_shared/auth-guard.ts';
 import { createLogger } from '../_shared/observability.ts';
 import { corsHeadersPara } from '../_shared/cors.ts';
@@ -28,7 +28,7 @@ interface AlertaInsert {
   acao_label?: string | null;
 }
 
-// ─── Structured logging helper ───────────────────────────────────────────────
+// ─── Structured logging helper ─────────────────────────────────────────────
 type LogLevel = 'info' | 'warn' | 'error';
 const loggers = createLogger(FN_NAME);
 const LEVEL_FN = { info: 'info', warn: 'warn', error: 'error' } as const;
@@ -36,7 +36,7 @@ function log(level: LogLevel, event: string, ctx: Record<string, unknown> = {}) 
   loggers[LEVEL_FN[level]](event, { context: ctx });
 }
 
-// ─── Retry com exponential backoff (3 tentativas: 500ms, 1s, 2s) ─────────────
+// ─── Retry com exponential backoff (3 tentativas: 500ms, 1s, 2s) ─────────────────
 async function withRetry<T>(op: () => PromiseLike<T>, label: string, maxAttempts = 3): Promise<T> {
   let lastErr: unknown;
   for (let attempt = 1; attempt <= maxAttempts; attempt++) {
