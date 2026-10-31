@@ -2,7 +2,7 @@
 // Valida o token opaco de convite e efetiva o vínculo do usuário autenticado
 // com a organização. Precisa de service role porque o convidado ainda não
 // possui vínculo (e portanto não passa nas policies de RLS de leitura).
-import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.49.4';
+import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.118.0';
 import { z } from '../_shared/zod.ts';
 import { corsHeaders, corsHeadersPara } from '../_shared/cors.ts';
 import { withEdgeObservability } from '../_shared/edge-observability.ts';
