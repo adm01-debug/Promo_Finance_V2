@@ -11,7 +11,7 @@
 // qual fallback foi aplicado (prefixo hierárquico do NCM/CNAE, categoria padrão
 // da UF, etc.). Nunca retornamos 404 silencioso: devolvemos o melhor candidato
 // disponível e sinalizamos a estratégia usada, para o motor tributário decidir.
-import { createClient, type SupabaseClient } from 'https://esm.sh/@supabase/supabase-js@2.49.4';
+import { createClient, type SupabaseClient } from 'https://esm.sh/@supabase/supabase-js@2.118.0';
 import { z } from '../_shared/zod.ts';
 import { corsHeaders, corsHeadersPara } from '../_shared/cors.ts';
 import {
@@ -228,7 +228,7 @@ async function consultarCNAE(
 }
 
 // ---------------------------------------------------------------------------
-// Recurso: NCM (+ cenário de ST e filtro monofásico)
+// Recurso: NCM (+ cenário de ST e filtro monofásico)
 // ---------------------------------------------------------------------------
 type NcmRow = {
   codigo: string;
@@ -287,7 +287,7 @@ async function consultarNCM(
   p: Params,
   res: (payload: unknown, status?: number) => Response
 ) {
-  // Modo listagem: sem código, apenas filtros (monofásico / ST).
+  // Modo listagem: sem código, apenas filtros (monofásico / ST).
   if (!p.codigo) {
     let query = db.from('ncms').select(NCM_SELECT).order('codigo').limit(p.limite);
     if (p.monofasico !== undefined) query = query.eq('monofasico_pis_cofins', p.monofasico);
