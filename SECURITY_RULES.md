@@ -43,3 +43,37 @@ Regras de segurança do projeto promo-finance-v2 (SPA React + Supabase). Este ar
 - RLS ativa nas tabelas novas; policies testadas com roles anon/authenticated.
 - Nenhuma key/secret no diff (ex.: `grep -rn service_role src/`).
 - Nenhum fetch direto com credenciais; dados de servidor via React Query com client Supabase anon.
+
+---
+
+## Modelo de Admin: Global (Platform-Level)
+
+**Decisão (2026-10-31):** O papel `admin_global` é um papel de **plataforma**, não por empresa.
+
+### Implicações
+
+- Um usuário com papel `admin_global` tem acesso irrestrito a todas as empresas e todos os dados.
+- As 19 tabelas com policies do padrão `_admin_all` **não filtram por `empresa_id`** para admins.
+- Isso é intencional: o admin é um papel operacional de suporte à plataforma.
+
+### Tabelas com bypass de RLS para admin (`_admin_all`)
+
+Verifique via: `SELECT tablename, policyname FROM pg_policies WHERE policyname LIKE '%admin_all%' ORDER BY tablename;`
+
+### Restrições operacionais
+
+- O papel `admin_global` **não deve ser concedido a usuários de clientes**.
+- Qualquer concessão desse papel deve ser auditada e registrada.
+- A função `has_role(uid, 'admin')` retorna `true` para `admin_global`, sem filtro de empresa.
+
+### Alternativa não escolhida
+
+A opção alternativa (admin por empresa) foi avaliada e descartada. Implementá-la exigiria:
+- Adicionar `empresa_id` ao parâmetro de `has_role()`
+- Migrar as 19 policies `_admin_all` para cruzar papel + vínculo de empresa
+- Impacto: todas as operações de suporte multiempresa precisariam de múltiplos tokens
+
+### Referências
+
+- PLANO_50.md step 20: decisão do modelo de admin
+- PR #95: exceção de escopo global em `gerar-pacote-evidencias`
