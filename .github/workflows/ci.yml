@@ -192,10 +192,12 @@ jobs:
         # configurações de tour definidas em código, nunca input de
         # usuário — prototype poisoning exige chaves controladas por
         # atacante. Revisitar quando sair deepmerge >4.3.1.
-        # GHSA-g3hv-75wg-m249 (minimatch <3.0.5): ReDoS via padrão aninhado —
-        #   via eslint/tailwindcss, build-time only. Sem input de usuário em runtime.
-        # GHSA-3g3m-2fjr-6pw4 (glob <7.2.3/8.1.0): ReDoS via padrão aninhado —
-        #   via tailwindcss, build-time only. Sem vetor em runtime de produção.
+        # GHSA-g3hv-75wg-m249 (minimatch <11.0.1): DoS por amplificação de
+        # globparts — entra via eslint/tailwindcss (devDependency). Não exposto
+        # em runtime de produção. Fix requer bump major de eslint/tailwind.
+        # GHSA-3g3m-2fjr-6pw4 (glob >=9.0.0 <=14.0.1): AbortSignal bypass —
+        # entra via eslint (devDependency). Não exposto em runtime. Fix requer
+        # bump de glob para >=15.0.0 (breaking changes no consumer).
         run: >
           bun audit
           --ignore=GHSA-vfj7-8cjw-p6xm
@@ -735,6 +737,6 @@ jobs:
       - name: Trigger Simulation Audit
         run: |
           curl -fsS -X POST "${{ secrets.SUPABASE_URL }}/functions/v1/webhook-simulator" \
-            -H "Authorization: ****** secrets.SUPABASE_SERVICE_ROLE_KEY }}" \
+            -H "Authorization: Bearer ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}" \
             -H "Content-Type: application/json" \
             -d '{"target_function": "asaas-webhook", "scenarios_count": 100, "mode": "stress"}'
