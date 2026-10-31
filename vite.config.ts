@@ -4,6 +4,7 @@ import path from 'path';
 import { componentTagger } from 'lovable-tagger';
 import { visualizer } from 'rollup-plugin-visualizer';
 import dyadComponentTagger from '@dyad-sh/react-vite-component-tagger';
+import { sentryVitePlugin } from '@sentry/vite-plugin';
 
 /**
  * Valida que as variáveis VITE_SUPABASE_* estão presentes em builds de produção.
@@ -11,8 +12,6 @@ import dyadComponentTagger from '@dyad-sh/react-vite-component-tagger';
  */
 function assertSupabaseEnv(mode: string, env: Record<string, string>) {
   if (mode !== 'production') return;
-  // Lê as vars frontend obrigatórias do manifesto (env.manifest.json).
-  // Atualizar: node scripts/generate-env-manifest.mjs
   const manifestVars: { name: string; scope: string; required: boolean }[] = (() => {
     try {
       // eslint-disable-next-line @typescript-eslint/no-var-requires
@@ -38,14 +37,6 @@ function assertSupabaseEnv(mode: string, env: Record<string, string>) {
   }
 }
 
-/**
- * Performance: build configurado para SPA grande (100+ rotas).
- * - SWC + Oxc minify para builds rápidos
- * - manualChunks por vendor para cache HTTP estável
- * - reportCompressedSize:false economiza ~30-50% no tempo de build
- * - assetsInlineLimit baixo evita inflar HTML/CSS com base64
- * - sourcemaps ocultos para diagnóstico sem expor referências no bundle
- */
 export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, process.cwd(), '');
   assertSupabaseEnv(mode, env);
@@ -54,9 +45,6 @@ export default defineConfig(({ mode }) => {
       dyadComponentTagger(),
       react(),
       mode === 'development' && componentTagger(),
-      // Analisador de bundle sob demanda: `ANALYZE=1 bun run build`
-      // Gera dist/stats.html com treemap gzip/brotli para identificar
-      // chunks acima de 200KB e candidatos a code-splitting.
       process.env.ANALYZE === '1' &&
         visualizer({
           filename: 'dist/stats.html',
@@ -64,6 +52,19 @@ export default defineConfig(({ mode }) => {
           brotliSize: true,
           template: 'treemap',
           open: false,
+        }),
+      // Publica source maps e associa release no Sentry.
+      // Ativo somente quando SENTRY_AUTH_TOKEN está presente — build local sem token passa normalmente.
+      // Para ativar: adicione o secret SENTRY_AUTH_TOKEN nas configurações do repositório GitHub
+      // (Settings → Secrets and variables → Actions) com o token de ingest da organização Sentry.
+      process.env.SENTRY_AUTH_TOKEN &&
+        sentryVitePlugin({
+          sourcemaps: {
+            filesToDeleteAfterUpload: ['./dist/**/*.map'],
+          },
+          release: {
+            name: process.env.VITE_APP_VERSION ?? process.env.COMMIT_SHA ?? 'dev',
+          },
         }),
     ].filter(Boolean),
     resolve: {
@@ -86,8 +87,6 @@ export default defineConfig(({ mode }) => {
     build: {
       rolldownOptions: {
         output: {
-          // Vite 8/Rolldown aceita apenas a variante em função. A tabela mantém
-          // os mesmos agrupamentos estáveis usados para cache de fornecedores.
           manualChunks(id) {
             const chunks: Record<string, string[]> = {
               'react-vendor': ['react', 'react-dom', 'react-router-dom'],
