@@ -1,6 +1,6 @@
 // Edge Function: enviar-bitrix24-tributario
 // Cria Deal no Bitrix24 + anexa PDF tributário + comentário com resumo
-import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.49.4';
+import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.118.0';
 import { createLogger } from '../_shared/observability.ts';
 import { validateContract } from '../_shared/contract-validator.ts';
 import { z } from 'https://deno.land/x/zod@v3.22.4/mod.ts';
@@ -88,8 +88,6 @@ Deno.serve(
       });
       const token = authHeader.replace('Bearer ', '');
       const { data: claimsData, error: claimsErr } = await supabaseAuth.auth.getClaims(token);
-      // Exigir `sub`: a anon key (pública) também é um JWT válido do projeto,
-      // mas não carrega subject — sem esta checagem ela passaria o guard.
       if (claimsErr || !claimsData?.claims?.sub) {
         return new Response(JSON.stringify({ error: 'Unauthorized' }), {
           status: 401,
@@ -123,8 +121,6 @@ Deno.serve(
         });
       }
 
-      // Depois da autorização por empresa — um usuário sem vínculo recebe 403 e
-      // não o 503 que vazaria a configuração interna do kill-switch.
       const inativa = respostaIntegracaoDesativada('bitrix24', corsHeaders);
       if (inativa) return inativa;
 
@@ -138,7 +134,6 @@ Deno.serve(
       let dealId = body.dealId;
 
       if (!dealId) {
-        // Cria novo Deal
         const dealRes = (await bitrixCall('crm.deal.add', {
           fields: {
             TITLE: titulo,
@@ -150,7 +145,6 @@ Deno.serve(
         })) as { result?: number };
         dealId = String(dealRes.result ?? '');
       } else {
-        // Atualiza Deal existente
         await bitrixCall('crm.deal.update', {
           id: dealId,
           fields: {
@@ -160,7 +154,6 @@ Deno.serve(
         });
       }
 
-      // Adiciona timeline comment com link do PDF
       await bitrixCall('crm.timeline.comment.add', {
         fields: {
           ENTITY_ID: dealId,
@@ -189,8 +182,6 @@ Deno.serve(
         error_message: msg,
       });
       await segundoPlano(logger.flush());
-      // Detalhe do erro (inclui error_description do Bitrix24) fica só no
-      // log — ao cliente vai mensagem genérica, sem internals de terceiros.
       return new Response(JSON.stringify({ error: 'Erro ao comunicar com o Bitrix24' }), {
         status: 500,
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
