@@ -1,5 +1,5 @@
 import { serve } from 'https://deno.land/std@0.168.0/http/server.ts';
-import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.49.4';
+import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.118.0';
 import { ExpertAgentSchema, validatePayload, createErrorResponse } from '../_shared/validation.ts';
 import { checkRateLimit, rateLimitResponse } from '../_shared/rate-limit.ts';
 import { exigirUsuario } from '../_shared/auth-guard.ts';
@@ -162,12 +162,7 @@ export const handler = async (req: Request) => {
       enhancedSystemPrompt += `\n\n## Contexto Financeiro Atual:\n${context}`;
 
       // Analisar contexto para sugestões proativas
-      enhancedSystemPrompt += `\n\n## Instruções de Análise Proativa:
-Baseado nos dados financeiros acima, você DEVE:
-1. Identificar qualquer situação de risco (saldo negativo, alta inadimplência, vencimentos concentrados)
-2. Sugerir ações preventivas quando apropriado
-3. Destacar oportunidades de otimização financeira
-4. Alertar sobre clientes/fornecedores que precisam de atenção especial`;
+      enhancedSystemPrompt += `\n\n## Instruções de Análise Proativa:\nBaseado nos dados financeiros acima, você DEVE:\n1. Identificar qualquer situação de risco (saldo negativo, alta inadimplência, vencimentos concentrados)\n2. Sugerir ações preventivas quando apropriado\n3. Destacar oportunidades de otimização financeira\n4. Alertar sobre clientes/fornecedores que precisam de atenção especial`;
     }
 
     log.info('Starting EXPERT agent request with', {
