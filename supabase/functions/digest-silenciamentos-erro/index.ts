@@ -11,7 +11,7 @@
  * devolve as linhas e serializa execuções concorrentes com LOCK — dois
  * disparos simultâneos do cron produzem no máximo um envio.
  */
-import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.49.4';
+import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.118.0';
 import { exigirChamadaInterna } from '../_shared/auth-guard.ts';
 import { z } from '../_shared/zod.ts';
 import { createValidationErrorResponse } from '../_shared/contract-response.ts';
