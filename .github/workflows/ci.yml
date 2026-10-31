@@ -1,4 +1,4 @@
-name: CI Pipeline
+﻿name: CI Pipeline
 
 on:
   push:
@@ -333,6 +333,7 @@ jobs:
             echo "- Motivo: secret \`DATABASE_URL\` ausente. Nenhum desses gates deve ser interpretado como aprovado."
             echo
           } >> "$GITHUB_STEP_SUMMARY"
+          echo "::warning::DATABASE_URL não configurado — gates RLS multi-empresa, privileges e catálogos tributários NÃO executaram nesta run. CI passou incompleto."
 
       # Runs de dependabot não recebem secrets (design do GitHub): sem o
       # guard o preflight morre no env-check e derruba o job inteiro.
@@ -732,3 +733,5 @@ jobs:
             -H "Authorization: Bearer ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}" \
             -H "Content-Type: application/json" \
             -d '{"target_function": "asaas-webhook", "scenarios_count": 100, "mode": "stress"}'
+
+
