@@ -3,7 +3,7 @@
 // (conta_pagar / conta_receber / movimentacao) gerando um lançamento
 // contábil em partidas dobradas.
 
-import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.49.4';
+import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.118.0';
 import { corsHeadersPara } from '../_shared/cors.ts';
 import { withEdgeObservability } from '../_shared/edge-observability.ts';
 import {
