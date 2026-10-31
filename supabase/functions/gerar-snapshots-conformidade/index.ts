@@ -11,7 +11,7 @@
  *  - header `x-cron-secret` igual ao service role (uso interno do pg_cron);
  *  - JWT de usuário com papel `admin`.
  */
-import { createClient } from 'npm:@supabase/supabase-js@2.49.4';
+import { createClient } from 'npm:@supabase/supabase-js@2.118.0';
 import { corsHeaders } from '../_shared/cors.ts';
 import { z } from '../_shared/zod.ts';
 
@@ -227,7 +227,7 @@ Deno.serve(
             const alertas = avaliarAlertasConformidade(serie);
             if (alertas.length > 0) {
               const tipos = alertas.map((a) => `${PREFIXO_ALERTA}:${a.chave}`);
-              // Deduplicação idempotente: `tipo` carrega a chave determinística.
+              // Deduplicao idempotente: `tipo` carrega a chave determinística.
               const { data: existentes, error: exErr } = await admin
                 .from('alertas_tributarios')
                 .select('tipo')
