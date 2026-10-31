@@ -3,7 +3,7 @@
 // extrai CNPJ + validade, salva o .pfx no bucket privado `nfe-certificados` e
 // persiste os metadados criptografados via RPC certificado_upsert.
 
-import { createClient } from 'npm:@supabase/supabase-js@2.49.4';
+import { createClient } from 'npm:@supabase/supabase-js@2.118.0';
 import forge from 'npm:node-forge@1.3.1';
 import { z } from 'npm:zod@3.23.8';
 import { validateContract } from '../_shared/contract-validator.ts';
@@ -27,12 +27,9 @@ function log(...args: unknown[]) {
 }
 
 function extractCnpjFromSubject(subject: forge.pki.Certificate['subject']): string | null {
-  // OID 2.16.76.1.3.3 = CNPJ da pessoa jurídica (ICP-Brasil)
   const cn = subject.getField('CN')?.value ?? '';
   const match = cn.match(/(\d{14})/);
   if (match) return match[1];
-
-  // Fallback: procurar em SubjectAltName via extensions (feito fora)
   return null;
 }
 
@@ -68,7 +65,6 @@ Deno.serve(
         });
       }
 
-      // Cliente com o JWT do usuário para checar role
       const userClient = createClient(SUPABASE_URL, Deno.env.get('SUPABASE_ANON_KEY')!, {
         global: { headers: { Authorization: authHeader } },
       });
@@ -93,8 +89,6 @@ Deno.serve(
         });
       }
 
-      // Admin confirmado — a troca do certificado que assina NF-e exige
-      // segundo fator quando MFA_ADMIN_ENFORCED está ligado (sessão aal2).
       if (mfaAdminInsuficiente(['admin'], authHeader.slice(7))) {
         return new Response(
           JSON.stringify({
@@ -112,14 +106,9 @@ Deno.serve(
       }
       const { empresa_id, pfx_base64, password, ambiente, uf } = parsed.data;
 
-      // `has_role('admin')` acima é GLOBAL: prova que o usuário é admin em alguma
-      // empresa, não nesta. Sem o vínculo explícito, o admin da empresa A poderia
-      // sobrescrever o certificado A1 e a senha da empresa B — a credencial que
-      // assina NF-e perante a SEFAZ.
       const escopo = await exigirVinculoEmpresa(user.id, empresa_id, req);
       if (!escopo.ok) return escopo.resposta;
 
-      // Decodifica o .pfx
       let pfxBytes: Uint8Array;
       try {
         pfxBytes = Uint8Array.from(atob(pfx_base64), (c) => c.charCodeAt(0));
@@ -130,7 +119,6 @@ Deno.serve(
         });
       }
 
-      // Parseia com node-forge
       let cnpj = '';
       let razaoSocial = '';
       let validoDe: string | null = null;
@@ -151,7 +139,6 @@ Deno.serve(
         const cnpjMatch = cn.match(/(\d{14})/);
         if (cnpjMatch) cnpj = cnpjMatch[1];
         if (!cnpj) {
-          // procurar OID 2.16.76.1.3.3 nas extensões
           const altExt = cert.getExtension(
             'subjectAltName'
           ) as forge.pki.SubjectAltNameExtension | null;
@@ -186,7 +173,6 @@ Deno.serve(
         });
       }
 
-      // Upload do .pfx no bucket privado
       const storagePath = `${empresa_id}/${cnpj}-${ambiente}.pfx`;
       const { error: upErr } = await service.storage
         .from('nfe-certificados')
@@ -205,7 +191,6 @@ Deno.serve(
         );
       }
 
-      // Persiste via RPC (criptografa a senha com pgp_sym_encrypt)
       const { data: certId, error: rpcErr } = await service.rpc('certificado_upsert', {
         p_empresa_id: empresa_id,
         p_cnpj: cnpj,
@@ -230,7 +215,6 @@ Deno.serve(
         );
       }
 
-      // Inicializa cursor de NSU se não existir
       await service
         .from('sefaz_dfe_cursor')
         .upsert(
@@ -238,9 +222,6 @@ Deno.serve(
           { onConflict: 'cnpj,ambiente', ignoreDuplicates: true }
         );
 
-      // context estruturado — serializar o objeto na mensagem achataria a
-      // chave `cnpj` em texto livre e o redigir não a mascararia (o padrão
-      // textual só cobre CNPJ pontuado).
       logger.info('success', { context: { cnpj, ambiente, duration_ms: Date.now() - t0 } });
 
       return new Response(

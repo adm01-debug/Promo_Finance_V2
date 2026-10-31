@@ -1,13 +1,10 @@
-import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.49.4';
+import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.118.0';
 import { createErrorResponse, validatePayload } from '../_shared/validation.ts';
 import { z } from 'https://deno.land/x/zod@v3.22.4/mod.ts';
 import { buildEcdLinhas, type EcdConta, type EcdEmpresa, type EcdLancamento } from './layout.ts';
 import { corsHeadersPara } from '../_shared/cors.ts';
 import { withEdgeObservability } from '../_shared/edge-observability.ts';
 
-// Os tipos de dados vêm de `layout.ts` — única definição da forma dos
-// registros ECD, compartilhada entre o fetch (aqui) e a montagem pura das
-// linhas (lá), para as duas nunca divergirem silenciosamente.
 type Empresa = EcdEmpresa;
 type Conta = EcdConta;
 type Lancamento = EcdLancamento;
@@ -96,9 +93,6 @@ Deno.serve(
         );
       }
 
-      // financeiro sem vínculo ativo com a empresa pedia ECD de QUALQUER
-      // empresa via empresa_id arbitrário (achado do cubic-dev-ai); admin
-      // mantém acesso global, igual ao resto do sistema.
       if (!(roles || []).some((r: { role: string }) => r.role === 'admin')) {
         const { data: vinculo } = await supabase
           .from('user_empresas')
@@ -147,7 +141,6 @@ Deno.serve(
         .order('data_lancamento');
       const lancamentos = (lancsRaw || []) as unknown as Lancamento[];
 
-      // ===== Checklist =====
       const checklist: ChecklistItem[] = [];
 
       checklist.push({
@@ -263,7 +256,6 @@ Deno.serve(
         );
       }
 
-      // ===== Bloqueio se houver erros =====
       if (erros.length > 0) {
         return new Response(
           JSON.stringify({
@@ -275,13 +267,6 @@ Deno.serve(
         );
       }
 
-      // ===== Geração TXT =====
-      // Montagem pura em `layout.ts`, testada com golden file + invariantes
-      // (Etapa 40). Duas correções ali em relação à versão anterior, que
-      // montava tudo inline aqui: `I051` passa a vir logo após o `I050` da
-      // mesma conta (era emitido num segundo loop, associando-o ao ÚLTIMO
-      // `I050` do arquivo), e o bloco 9900 lista os tipos de registro
-      // realmente emitidos em vez de uma lista `['0','I','J']` cravada.
       const linhas = buildEcdLinhas({
         empresa,
         plano,

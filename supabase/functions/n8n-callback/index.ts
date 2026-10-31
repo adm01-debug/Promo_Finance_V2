@@ -1,7 +1,7 @@
 // n8n-callback — recebe callbacks do n8n para materializar ações no banco.
 // Autenticado por segredo compartilhado timing-safe antes de body/DB.
 
-import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.49.4';
+import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.118.0';
 import { createErrorResponse, validatePayload } from '../_shared/validation.ts';
 import { z } from 'https://deno.land/x/zod@v3.22.4/mod.ts';
 import { corsHeaders, corsHeadersPara } from '../_shared/cors.ts';
