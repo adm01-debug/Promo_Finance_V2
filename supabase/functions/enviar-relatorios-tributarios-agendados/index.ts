@@ -2,7 +2,7 @@
 // EDGE FUNCTION: enviar-relatorios-tributarios-agendados (P7)
 // Cron diário 06:00 — drena agendamentos vencidos, gera PDF e envia por e-mail.
 // ============================================
-import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.49.4';
+import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.118.0';
 import { PDFDocument, StandardFonts, rgb } from 'https://esm.sh/pdf-lib@1.17.1';
 import { createLogger } from '../_shared/observability.ts';
 import { exigirChamadaInterna } from '../_shared/auth-guard.ts';
@@ -156,10 +156,6 @@ Deno.serve(
           const nomeEmp = empresa?.razao_social ?? 'Empresa';
 
           const pdfBytes = await gerarPdf(relatorio as Record<string, unknown>, nomeEmp, ag.ano);
-          // Prefixo precisa começar com empresa_id — é o que a policy de
-          // SELECT/DELETE do bucket relatorios-tributarios checa via
-          // split_part(name,'/',1) (achado do coderabbitai: "agendados/..."
-          // na frente fazia esse split retornar "agendados", não empresa_id).
           const path = `${ag.empresa_id}/agendados/${ag.ano}/${Date.now()}.pdf`;
 
           const { error: upErr } = await sb.storage
