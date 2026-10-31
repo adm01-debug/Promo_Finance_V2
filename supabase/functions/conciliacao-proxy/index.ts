@@ -1,7 +1,5 @@
 // Edge Function proxy autenticado para RPCs de conciliação (SECURITY DEFINER).
-// Frontend não chama mais RPCs diretamente: valida JWT e usa service_role.
-// Auditoria: logs estruturados + persistência em audit_logs por chamada.
-import { createClient, type SupabaseClient } from 'npm:@supabase/supabase-js@2.49.4';
+import { createClient, type SupabaseClient } from 'npm:@supabase/supabase-js@2.118.0';
 import { auditedRpc, beginAudit, finalizeAudit, withCorrelation } from '../_shared/proxy-audit.ts';
 import { VALIDATION_ERROR_CODE, normalizeValidationFields } from '../_shared/contract-response.ts';
 import { ConciliacaoProxySchema, validatePayload } from '../_shared/validation.ts';
@@ -20,98 +18,31 @@ export function createHandler(deps: HandlerDeps) {
   return async (req: Request): Promise<Response> => {
     const corsHeaders = corsHeadersPara(req);
     if (req.method === 'OPTIONS') return new Response('ok', { headers: corsHeaders });
-
     const ctx = beginAudit('conciliacao-proxy', req);
-    const json = (status: number, body: unknown, extra: Record<string, unknown> = {}) => {
-      finalizeAudit(ctx, status, extra);
-      return new Response(JSON.stringify(body), {
-        status,
-        headers: withCorrelation(ctx, { ...corsHeaders, 'Content-Type': 'application/json' }),
-      });
-    };
-
+    const json = (status: number, body: unknown, extra: Record<string, unknown> = {}) => { finalizeAudit(ctx, status, extra); return new Response(JSON.stringify(body), { status, headers: withCorrelation(ctx, { ...corsHeaders, 'Content-Type': 'application/json' }) }); };
     if (req.method !== 'POST') return json(405, { error: 'Method not allowed' });
-
     const authHeader = req.headers.get('Authorization');
-    if (!authHeader?.startsWith('Bearer ')) {
-      ctx.logger.warn('missing bearer token');
-      return json(401, { error: 'Unauthorized' }, { reason: 'missing_token' });
-    }
-
+    if (!authHeader?.startsWith('Bearer ')) { ctx.logger.warn('missing bearer token'); return json(401, { error: 'Unauthorized' }, { reason: 'missing_token' }); }
     const { userId } = await deps.verifyJwt(authHeader.replace('Bearer ', ''));
-    if (!userId) {
-      ctx.logger.warn('invalid jwt');
-      return json(401, { error: 'Unauthorized' }, { reason: 'invalid_jwt' });
-    }
+    if (!userId) { ctx.logger.warn('invalid jwt'); return json(401, { error: 'Unauthorized' }, { reason: 'invalid_jwt' }); }
     ctx.userId = userId;
-
     let raw: unknown;
-    try {
-      raw = await req.json();
-    } catch {
-      return json(400, { error: 'Invalid JSON' }, { reason: 'invalid_json' });
-    }
-
+    try { raw = await req.json(); } catch { return json(400, { error: 'Invalid JSON' }, { reason: 'invalid_json' }); }
     const parsed = validatePayload(ConciliacaoProxySchema, raw, 'conciliacao-proxy');
-    if (!parsed.success) {
-      // 422 com o envelope `{code, message, fields}`, igual às demais funções.
-      // `createValidationErrorResponse` monta a própria `Response` e perderia o
-      // header de correlação e o `finalizeAudit` do `json()` local, então o
-      // corpo é montado com os mesmos helpers e sai pelo caminho auditado.
-      return json(
-        422,
-        {
-          code: VALIDATION_ERROR_CODE,
-          message: 'Payload inválido',
-          fields: normalizeValidationFields(parsed.details ?? parsed.error),
-        },
-        { reason: 'schema_violation' }
-      );
-    }
+    if (!parsed.success) return json(422, { code: VALIDATION_ERROR_CODE, message: 'Payload inválido', fields: normalizeValidationFields(parsed.details ?? parsed.error) }, { reason: 'schema_violation' });
     const payload: Action = parsed.data;
-
     try {
       if (payload.action === 'confirmar') {
         const ajuste = Number.isFinite(payload.ajusteCentavos) ? Number(payload.ajusteCentavos) : 0;
-
-        // Overload de 6 argumentos: aplica os metadados de compensação dentro da
-        // mesma transação que confirma a conciliação. Antes o cliente fazia esse
-        // UPDATE depois, numa segunda requisição — se ela falhasse, a transação
-        // ficava confirmada sem nenhum registro do porquê do ajuste.
-        await auditedRpc(
-          ctx,
-          deps.admin,
-          'confirmar_conciliacao_manual',
-          {
-            p_transacao_id: payload.transacaoId,
-            p_user_id: userId,
-            p_conta_pagar_id: payload.contaPagarId ?? null,
-            p_conta_receber_id: payload.contaReceberId ?? null,
-            p_ajuste_centavos: ajuste,
-            p_metadados: payload.metadados ?? {},
-          },
-          'confirmar'
-        );
+        await auditedRpc(ctx, deps.admin, 'confirmar_conciliacao_manual', { p_transacao_id: payload.transacaoId, p_user_id: userId, p_conta_pagar_id: payload.contaPagarId ?? null, p_conta_receber_id: payload.contaReceberId ?? null, p_ajuste_centavos: ajuste, p_metadados: payload.metadados ?? {} }, 'confirmar');
         return json(200, { ok: true }, { action: 'confirmar' });
       }
       if (payload.action === 'desfazer') {
-        await auditedRpc(
-          ctx,
-          deps.admin,
-          'desfazer_conciliacao_manual',
-          {
-            p_transacao_id: payload.transacaoId,
-            p_user_id: userId,
-          },
-          'desfazer'
-        );
+        await auditedRpc(ctx, deps.admin, 'desfazer_conciliacao_manual', { p_transacao_id: payload.transacaoId, p_user_id: userId }, 'desfazer');
         return json(200, { ok: true }, { action: 'desfazer' });
       }
       return json(400, { error: 'Ação desconhecida' }, { reason: 'unknown_action' });
-    } catch (e) {
-      const msg = e instanceof Error ? e.message : String(e);
-      return json(400, { error: msg }, { reason: 'rpc_error' });
-    }
+    } catch (e) { return json(400, { error: e instanceof Error ? e.message : String(e) }, { reason: 'rpc_error' }); }
   };
 }
 

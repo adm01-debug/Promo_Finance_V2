@@ -1,9 +1,6 @@
 // Recebe eventos do gate de CI (falhas da matriz de privilégios RPC) e
 // persiste em `public.ci_security_gate_events` via service_role.
-// Autenticado por segredo compartilhado (x-ci-gate-secret) com comparação
-// timing-safe e fail-closed quando a configuração estiver ausente.
-
-import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.49.4';
+import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.118.0';
 import { validateContract } from '../_shared/contract-validator.ts';
 import { z } from 'https://deno.land/x/zod@v3.22.4/mod.ts';
 import { corsHeaders, corsHeadersPara } from '../_shared/cors.ts';
@@ -17,22 +14,18 @@ const bodySchema = z.object({
   git_ref: z.string().optional(),
   workflow_run_url: z.string().optional(),
   migration_revision: z.string().optional(),
-  failures: z
-    .array(
-      z.object({
-        matrix: z.string().optional(),
-        function_name: z.string().optional(),
-        role_tested: z.enum(['anon', 'authenticated', 'service_role']),
-        expected_state: z.enum(['allow', 'deny']),
-        observed_status: z.number().int().optional(),
-        observed_code: z.string().nullable().optional(),
-        observed_message: z.string().nullable().optional(),
-        exception_notes: z.string().nullable().optional(),
-        severity: z.enum(['info', 'warning', 'error', 'critical']).optional(),
-        raw: z.record(z.unknown()).optional(),
-      })
-    )
-    .max(500),
+  failures: z.array(z.object({
+    matrix: z.string().optional(),
+    function_name: z.string().optional(),
+    role_tested: z.enum(['anon', 'authenticated', 'service_role']),
+    expected_state: z.enum(['allow', 'deny']),
+    observed_status: z.number().int().optional(),
+    observed_code: z.string().nullable().optional(),
+    observed_message: z.string().nullable().optional(),
+    exception_notes: z.string().nullable().optional(),
+    severity: z.enum(['info', 'warning', 'error', 'critical']).optional(),
+    raw: z.record(z.unknown()).optional(),
+  })).max(500),
 });
 
 type FailurePayload = z.infer<typeof bodySchema>['failures'][number];
@@ -41,9 +34,7 @@ type RequestBody = z.infer<typeof bodySchema>;
 export interface HandlerDeps {
   getEnv: (name: string) => string | undefined;
   readJson: (req: Request) => Promise<unknown>;
-  insertRows: (
-    rows: Record<string, unknown>[]
-  ) => Promise<{ error: { message: string } | null; count: number | null }>;
+  insertRows: (rows: Record<string, unknown>[]) => Promise<{ error: { message: string } | null; count: number | null }>;
 }
 
 export function createHandler(deps: HandlerDeps) {
@@ -52,98 +43,43 @@ export function createHandler(deps: HandlerDeps) {
     const res = (a: unknown, b = 200) => json(a, b, corsHeaders);
     if (req.method === 'OPTIONS') return new Response(null, { headers: corsHeaders });
     if (req.method !== 'POST') return res({ error: 'method_not_allowed' }, 405);
-
-    const secretAuth = authorizeSharedSecret(
-      deps.getEnv('CI_GATE_LOG_SECRET'),
-      req.headers.get('x-ci-gate-secret')
-    );
+    const secretAuth = authorizeSharedSecret(deps.getEnv('CI_GATE_LOG_SECRET'), req.headers.get('x-ci-gate-secret'));
     if (!secretAuth.ok) return secretAuth.response;
-
     let raw: unknown;
-    try {
-      raw = await deps.readJson(req);
-    } catch {
-      return res({ error: 'invalid_json' }, 400);
-    }
-
+    try { raw = await deps.readJson(req); } catch { return res({ error: 'invalid_json' }, 400); }
     const validation = await validateContract(bodySchema, raw);
     if (!validation.success) return withCors(validation.response);
     const body: RequestBody = validation.data;
-
-    if (body.failures.length === 0) {
-      return res({ inserted: 0, skipped: 'no_failures' }, 200);
-    }
-
+    if (body.failures.length === 0) return res({ inserted: 0, skipped: 'no_failures' }, 200);
     const rows = body.failures.map((failure) => mapFailure(body, failure));
     const { error, count } = await deps.insertRows(rows);
-
-    if (error) {
-      log.error('insert_failed', {
-        error_message: mensagemErro(error),
-        context: contextoErro(error),
-      });
-      return res({ error: 'insert_failed', details: error.message }, 500);
-    }
-
+    if (error) { log.error('insert_failed', { error_message: mensagemErro(error), context: contextoErro(error) }); return res({ error: 'insert_failed', details: error.message }, 500); }
     return res({ inserted: count ?? rows.length }, 201);
   };
 }
 
 function mapFailure(body: RequestBody, failure: FailurePayload): Record<string, unknown> {
-  return {
-    matrix: String(failure.matrix ?? 'unknown'),
-    function_name: String(failure.function_name ?? 'unknown'),
-    role_tested: failure.role_tested,
-    expected_state: failure.expected_state,
-    observed_status: failure.observed_status ?? null,
-    observed_code: failure.observed_code ?? null,
-    observed_message: failure.observed_message ?? null,
-    migration_revision: body.migration_revision ?? null,
-    git_sha: body.git_sha ?? null,
-    git_ref: body.git_ref ?? null,
-    workflow_run_url: body.workflow_run_url ?? null,
-    exception_notes: failure.exception_notes ?? null,
-    severity: failure.severity ?? 'error',
-    raw: failure.raw ?? null,
-  };
+  return { matrix: String(failure.matrix ?? 'unknown'), function_name: String(failure.function_name ?? 'unknown'), role_tested: failure.role_tested, expected_state: failure.expected_state, observed_status: failure.observed_status ?? null, observed_code: failure.observed_code ?? null, observed_message: failure.observed_message ?? null, migration_revision: body.migration_revision ?? null, git_sha: body.git_sha ?? null, git_ref: body.git_ref ?? null, workflow_run_url: body.workflow_run_url ?? null, exception_notes: failure.exception_notes ?? null, severity: failure.severity ?? 'error', raw: failure.raw ?? null };
 }
 
-function authorizeSharedSecret(
-  expected: string | undefined,
-  provided: string | null
-): { ok: true } | { ok: false; response: Response } {
+function authorizeSharedSecret(expected: string | undefined, provided: string | null): { ok: true } | { ok: false; response: Response } {
   const normalizedExpected = expected?.trim();
-  if (!normalizedExpected) {
-    return { ok: false, response: json({ error: 'secret_not_configured' }, 503) };
-  }
-
+  if (!normalizedExpected) return { ok: false, response: json({ error: 'secret_not_configured' }, 503) };
   const normalizedProvided = provided?.trim();
-  if (!normalizedProvided || !timingSafeEqual(normalizedExpected, normalizedProvided)) {
-    return { ok: false, response: json({ error: 'unauthorized' }, 401) };
-  }
-
+  if (!normalizedProvided || !timingSafeEqual(normalizedExpected, normalizedProvided)) return { ok: false, response: json({ error: 'unauthorized' }, 401) };
   return { ok: true };
 }
 
 function defaultDeps(): HandlerDeps {
   const url = Deno.env.get('SUPABASE_URL')!;
   const key = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
-  const admin = createClient(url, key, {
-    auth: { persistSession: false, autoRefreshToken: false },
-  });
-
+  const admin = createClient(url, key, { auth: { persistSession: false, autoRefreshToken: false } });
   return {
     getEnv: (name) => Deno.env.get(name),
     readJson: (req) => req.json(),
     insertRows: async (rows) => {
-      const { error, count } = await admin
-        .from('ci_security_gate_events')
-        .insert(rows, { count: 'exact' });
-
-      return {
-        error: error ? { message: error.message } : null,
-        count: count ?? null,
-      };
+      const { error, count } = await admin.from('ci_security_gate_events').insert(rows, { count: 'exact' });
+      return { error: error ? { message: error.message } : null, count: count ?? null };
     },
   };
 }
@@ -151,22 +87,11 @@ function defaultDeps(): HandlerDeps {
 function withCors(response: Response): Response {
   const headers = new Headers(response.headers);
   for (const [key, value] of Object.entries(corsHeaders)) headers.set(key, value);
-  return new Response(response.body, {
-    status: response.status,
-    statusText: response.statusText,
-    headers,
-  });
+  return new Response(response.body, { status: response.status, statusText: response.statusText, headers });
 }
 
-function json(
-  payload: unknown,
-  status = 200,
-  headers: Record<string, string> = corsHeaders
-): Response {
-  return new Response(JSON.stringify(payload), {
-    status,
-    headers: { ...headers, 'Content-Type': 'application/json' },
-  });
+function json(payload: unknown, status = 200, headers: Record<string, string> = corsHeaders): Response {
+  return new Response(JSON.stringify(payload), { status, headers: { ...headers, 'Content-Type': 'application/json' } });
 }
 
 function timingSafeEqual(a: string, b: string): boolean {
@@ -178,15 +103,9 @@ function timingSafeEqual(a: string, b: string): boolean {
 
 if (!Deno.env.get('DENO_TESTING')) {
   const handler = createHandler(defaultDeps());
-  Deno.serve(
-    withEdgeObservability('ci-security-gate-log', async (req) => {
-      const _t0 = Date.now();
-      try {
-        return await handler(req);
-      } finally {
-        log.info('request', { duration_ms: Date.now() - _t0 });
-        await log.flush();
-      }
-    })
-  );
+  Deno.serve(withEdgeObservability('ci-security-gate-log', async (req) => {
+    const _t0 = Date.now();
+    try { return await handler(req); }
+    finally { log.info('request', { duration_ms: Date.now() - _t0 }); await log.flush(); }
+  }));
 }
