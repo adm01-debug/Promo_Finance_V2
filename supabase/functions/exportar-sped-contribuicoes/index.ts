@@ -1,5 +1,5 @@
 // Edge: exportar-sped-contribuicoes — gera TXT EFD-Contribuições preliminar
-import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.49.4';
+import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.118.0';
 import { createErrorResponse, validatePayload } from '../_shared/validation.ts';
 import { z } from 'https://deno.land/x/zod@v3.22.4/mod.ts';
 import { createLogger } from '../_shared/observability.ts';
@@ -121,13 +121,6 @@ Deno.serve(
 
       const cnpjLimpo = (empresa.cnpj ?? '').replace(/\D/g, '');
 
-      // Montagem pura em `layout.ts`, testada com golden file + invariantes
-      // (Etapa 40). Três correções ali em relação à versão anterior, que
-      // montava tudo inline aqui com `.join('|')` cru: `M990` passa a contar
-      // o bloco M de verdade (era cravado em `5`, certo só quando `M100`
-      // condicional está presente — sem ele o bloco tem 4 registros); e o
-      // bloco 9900 passa a existir (o arquivo não tinha NENHUM registro
-      // `9900`) com `9990` refletindo essa contagem real (era cravado em `2`).
       const linhas = buildEfdContribuicoesLinhas({ empresa, apuracao, ano, mes });
 
       const conteudo = linhas.join('\r\n') + '\r\n';
