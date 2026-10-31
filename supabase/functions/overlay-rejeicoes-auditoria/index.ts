@@ -8,7 +8,7 @@
 //
 // Autenticação: JWT validado em código (verify_jwt = false é o padrão do
 // deploy). Escrita exige papel admin ou manager, checado no servidor.
-import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.49.4';
+import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.118.0';
 import { z } from '../_shared/zod.ts';
 import { corsHeaders, corsHeadersPara } from '../_shared/cors.ts';
 import { createLogger } from '../_shared/observability.ts';

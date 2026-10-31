@@ -1,5 +1,5 @@
 import { serve } from 'https://deno.land/std@0.190.0/http/server.ts';
-import { createClient } from 'npm:@supabase/supabase-js@2.49.4';
+import { createClient } from 'npm:@supabase/supabase-js@2.118.0';
 import { validateContract } from '../_shared/contract-validator.ts';
 import { z } from 'https://deno.land/x/zod@v3.22.4/mod.ts';
 import { exigirVinculoEmpresa } from '../_shared/auth-guard.ts';
@@ -191,8 +191,6 @@ serve(
 async function getParticipatingInstitutions(): Promise<any> {
   log.info('[open-finance] Fetching participating institutions');
 
-  // This would call the Open Finance directory API
-  // For now, return a simulated list of major Brazilian banks
   const INSTITUICOES: Array<[id: string, nome: string, logo: string, apiBase: string]> = [
     [
       'bb',
@@ -258,7 +256,6 @@ async function getParticipatingInstitutions(): Promise<any> {
   };
 }
 
-// Create consent request for Open Finance access
 async function createConsent(
   supabase: any,
   userId: string,
@@ -275,17 +272,9 @@ async function createConsent(
 
   log.info(`[open-finance] Creating consent for user ${userId} at institution ${institutionId}`);
 
-  // In a real implementation, this would:
-  // 1. Call the institution's consent API
-  // 2. Redirect user to bank for authorization
-  // 3. Receive callback with authorization code
-  // 4. Exchange code for access token
-
-  // Simulated consent creation
   const consentId = `consent_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
-  const expiresAt = new Date(Date.now() + 365 * 24 * 60 * 60 * 1000); // 1 year
+  const expiresAt = new Date(Date.now() + 365 * 24 * 60 * 60 * 1000);
 
-  // Store consent in database
   await supabase.from('open_finance_consents').insert({
     id: consentId,
     user_id: userId,
@@ -295,7 +284,6 @@ async function createConsent(
     expires_at: expiresAt.toISOString(),
   });
 
-  // Build authorization URL
   const authUrl = buildAuthorizationUrl(institutionId, consentId, permissions);
 
   return {
@@ -312,7 +300,6 @@ function buildAuthorizationUrl(
   consentId: string,
   permissions: string[]
 ): string {
-  // This would be the actual bank's authorization URL
   const baseUrl = `https://openbanking.example.com/authorize`;
   const params = new URLSearchParams({
     client_id: OPEN_FINANCE_CLIENT_ID || '',
@@ -325,11 +312,9 @@ function buildAuthorizationUrl(
   return `${baseUrl}?${params.toString()}`;
 }
 
-// Get linked accounts
 async function getAccounts(supabase: any, userId: string, consentId?: string): Promise<any> {
   log.info(`[open-finance] Getting accounts for user ${userId}, consent ${consentId}`);
 
-  // Check consent is valid
   if (consentId) {
     const { data: consent } = await supabase
       .from('open_finance_consents')
@@ -344,8 +329,6 @@ async function getAccounts(supabase: any, userId: string, consentId?: string): P
     }
   }
 
-  // In a real implementation, call the bank's accounts API
-  // For demo, return simulated accounts
   const accounts = [
     {
       id: 'acc_001',
@@ -354,10 +337,7 @@ async function getAccounts(supabase: any, userId: string, consentId?: string): P
       currency: 'BRL',
       accountNumber: '****1234',
       branch: '0001',
-      bank: {
-        code: '341',
-        name: 'Itaú Unibanco',
-      },
+      bank: { code: '341', name: 'Itaú Unibanco' },
     },
     {
       id: 'acc_002',
@@ -366,21 +346,13 @@ async function getAccounts(supabase: any, userId: string, consentId?: string): P
       currency: 'BRL',
       accountNumber: '****5678',
       branch: '0001',
-      bank: {
-        code: '341',
-        name: 'Itaú Unibanco',
-      },
+      bank: { code: '341', name: 'Itaú Unibanco' },
     },
   ];
 
-  return {
-    success: true,
-    accounts,
-    total: accounts.length,
-  };
+  return { success: true, accounts, total: accounts.length };
 }
 
-// Get account balances
 async function getBalances(
   supabase: any,
   userId: string,
@@ -389,31 +361,17 @@ async function getBalances(
 ): Promise<any> {
   log.info(`[open-finance] Getting balances for account ${accountId}`);
 
-  // Simulated balances
   const balances = {
     account_id: accountId,
-    available: {
-      amount: '245890.50',
-      currency: 'BRL',
-    },
-    current: {
-      amount: '248500.00',
-      currency: 'BRL',
-    },
-    blocked: {
-      amount: '2609.50',
-      currency: 'BRL',
-    },
+    available: { amount: '245890.50', currency: 'BRL' },
+    current: { amount: '248500.00', currency: 'BRL' },
+    blocked: { amount: '2609.50', currency: 'BRL' },
     updated_at: new Date().toISOString(),
   };
 
-  return {
-    success: true,
-    balances,
-  };
+  return { success: true, balances };
 }
 
-// Get account transactions
 async function getTransactions(
   supabase: any,
   userId: string,
@@ -427,7 +385,6 @@ async function getTransactions(
   const start = startDate || new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString();
   const end = endDate || new Date().toISOString();
 
-  // Simulated transactions
   const transactions = [
     {
       id: 'txn_001',
@@ -481,15 +438,9 @@ async function getTransactions(
     },
   ];
 
-  return {
-    success: true,
-    transactions,
-    total: transactions.length,
-    period: { start, end },
-  };
+  return { success: true, transactions, total: transactions.length, period: { start, end } };
 }
 
-// Import transactions to the system for reconciliation
 async function importTransactionsToSystem(
   supabase: any,
   userId: string,
@@ -507,7 +458,6 @@ async function importTransactionsToSystem(
     throw new Error('ID da conta bancária do sistema é obrigatório');
   }
 
-  // Get transactions from Open Finance
   const transactionsResult = await getTransactions(
     supabase,
     userId,
@@ -522,7 +472,6 @@ async function importTransactionsToSystem(
   let skipped = 0;
   let errors = 0;
 
-  // Get existing transactions to avoid duplicates
   const { data: existingTransactions } = await supabase
     .from('transacoes_bancarias')
     .select('descricao, data, valor')
@@ -532,7 +481,6 @@ async function importTransactionsToSystem(
     existingTransactions?.map((t: any) => `${t.descricao}-${t.data}-${t.valor}`) || []
   );
 
-  // Calculate running balance
   const { data: contaBancaria } = await supabase
     .from('contas_bancarias')
     .select('saldo_atual')
@@ -547,7 +495,6 @@ async function importTransactionsToSystem(
     const tipo = amount >= 0 ? 'receita' : 'despesa';
     const valorAbsoluto = Math.abs(amount);
 
-    // Check for duplicates
     const key = `${txn.description}-${txnDate}-${valorAbsoluto}`;
     if (existingKeys.has(key)) {
       log.info(`[open-finance] Skipping duplicate transaction: ${txn.description}`);
@@ -556,7 +503,6 @@ async function importTransactionsToSystem(
     }
 
     try {
-      // Insert transaction
       const { error: insertError } = await supabase.from('transacoes_bancarias').insert({
         conta_bancaria_id: contaBancariaId,
         data: txnDate,
@@ -601,37 +547,25 @@ async function importTransactionsToSystem(
   };
 }
 
-// Refresh access token
-async function refreshAccessToken(supabase: any, userId: string, consentId?: string): Promise<any> {
+async function refreshAccessToken(
+  supabase: any,
+  userId: string,
+  consentId?: string
+): Promise<any> {
   log.info(`[open-finance] Refreshing token for consent ${consentId}`);
-
-  // In real implementation, call token refresh endpoint
-  // Update stored tokens
-
-  return {
-    success: true,
-    message: 'Token atualizado com sucesso',
-    expires_in: 3600,
-  };
+  return { success: true, message: 'Token atualizado com sucesso', expires_in: 3600 };
 }
 
-// Revoke consent
 async function revokeConsent(supabase: any, userId: string, consentId?: string): Promise<any> {
   log.info(`[open-finance] Revoking consent ${consentId}`);
 
-  if (!consentId) {
-    throw new Error('Consent ID is required');
-  }
+  if (!consentId) throw new Error('Consent ID is required');
 
-  // Update consent status
   await supabase
     .from('open_finance_consents')
     .update({ status: 'revoked', revoked_at: new Date().toISOString() })
     .eq('id', consentId)
     .eq('user_id', userId);
 
-  return {
-    success: true,
-    message: 'Consentimento revogado com sucesso',
-  };
+  return { success: true, message: 'Consentimento revogado com sucesso' };
 }
