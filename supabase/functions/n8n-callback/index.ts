@@ -122,7 +122,11 @@ async function authorizeHmacOrSharedSecret(
         false,
         ['sign']
       );
-      const sigBuffer = await crypto.subtle.sign('HMAC', keyMaterial, body as unknown as BufferSource);
+      const sigBuffer = await crypto.subtle.sign(
+        'HMAC',
+        keyMaterial,
+        body as unknown as BufferSource
+      );
       const computedHex = Array.from(new Uint8Array(sigBuffer))
         .map((b) => b.toString(16).padStart(2, '0'))
         .join('');
