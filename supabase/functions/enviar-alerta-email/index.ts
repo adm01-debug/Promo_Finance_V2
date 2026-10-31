@@ -1,5 +1,5 @@
 import { serve } from 'https://deno.land/std@0.190.0/http/server.ts';
-import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.49.4';
+import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.118.0';
 import { exigirChamadaInterna } from '../_shared/auth-guard.ts';
 import {
   corsHeaders as baseCorsHeaders,
@@ -40,15 +40,11 @@ export const handler = async (req: Request): Promise<Response> => {
     }
     const { tipo, destinatario, dados } = validation.data;
 
-    // Destinatário (e-mail) fica fora do evento: edge_function_logs é lida por
-    // admin global e o texto livre não passa pela redação de chaves sensíveis.
     log.info(`Processando alerta do tipo: ${tipo}`);
 
-    // Verificar se Resend está configurado
     if (!resendApiKey) {
       log.info('RESEND_API_KEY não configurada - simulando envio');
 
-      // Registrar o alerta no banco mesmo sem enviar email
       await supabase.from('alertas').insert({
         tipo: tipo,
         titulo: dados.titulo,
@@ -67,7 +63,6 @@ export const handler = async (req: Request): Promise<Response> => {
       );
     }
 
-    // Templates de email por tipo
     const templates: Record<string, { subject: string; html: string }> = {
       vencimento: {
         subject: `⏰ Alerta de Vencimento: ${dados.titulo}`,
@@ -165,7 +160,6 @@ export const handler = async (req: Request): Promise<Response> => {
 
     const template = templates[tipo] || templates.vencimento;
 
-    // Enviar email via Resend
     const response = await fetch('https://api.resend.com/emails', {
       method: 'POST',
       headers: {
@@ -187,7 +181,6 @@ export const handler = async (req: Request): Promise<Response> => {
       throw new Error(result.message || 'Erro ao enviar email');
     }
 
-    // Registrar o alerta no banco
     await supabase.from('alertas').insert({
       tipo: tipo,
       titulo: dados.titulo,
