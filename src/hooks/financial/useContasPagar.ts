@@ -116,11 +116,12 @@ export function useCreateContaPagar() {
       } = await supabase.auth.getSession();
       if (!session) throw new Error('Não autenticado');
 
-      // created_by nao existe no schema tipado (drift conhecido); cast de fronteira preserva o payload runtime.
+      // user_id é a coluna real em produção (created_by nunca existiu — CP-01);
+      // cast de fronteira porque o schema tipado está defasado.
       const { error } = await supabase.from('contas_pagar').insert([
         {
           ...data,
-          created_by: session.user.id,
+          user_id: session.user.id,
           status: data.status || 'pendente',
         } as unknown as Database['public']['Tables']['contas_pagar']['Insert'],
       ]);

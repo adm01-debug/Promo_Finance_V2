@@ -708,7 +708,11 @@ export default function Conciliacao() {
         open={showReportDialog}
         onOpenChange={setShowReportDialog}
         report={importReport}
-        onIrParaConciliacao={() => {}}
+        onIrParaConciliacao={() => {
+          setShowReportDialog(false);
+          setMainTab('conciliacao');
+          setStatusTab('pendentes');
+        }}
       />
       <ConciliacaoIgnorarDialogs
         ignorarDialogOpen={ignorarDialogOpen}

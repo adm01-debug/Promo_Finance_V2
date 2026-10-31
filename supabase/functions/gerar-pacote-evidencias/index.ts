@@ -6,7 +6,7 @@ import { z } from 'https://deno.land/x/zod@v3.22.4/mod.ts';
 import { corsHeadersPara } from '../_shared/cors.ts';
 import { createLogger } from '../_shared/observability.ts';
 import { mensagemErro, contextoErro } from '../_shared/erros.ts';
-import { withEdgeObservability } from '../_shared/edge-observability.ts';
+import { withEdgeObservability, segundoPlano } from '../_shared/edge-observability.ts';
 const log = createLogger('gerar-pacote-evidencias');
 
 const _EvidBodySchema = z.object({
@@ -245,7 +245,9 @@ Windows: Get-FileHash trilha-financeira.csv -Algorithm SHA256
   if (auditErr) {
     // Não bloqueia a geração — apenas loga, sinaliza ao cliente e segue
     log.error('audit_logs insert falhou:', { error_message: mensagemErro(auditErr.message) });
-    audit_warning = `Pacote gerado, mas a trilha de auditoria não foi registrada: ${auditErr.message}`;
+    // Detalhe do auditErr fica no log acima — ao cliente só o fato,
+    // sem internals do PostgREST (mensagens podem conter detalhes do banco).
+    audit_warning = 'Pacote gerado, mas a trilha de auditoria não foi registrada.';
     send('registrar', 'Registrando pacote', 'concluído (sem audit log)');
   } else {
     send('registrar', 'Registrando pacote', 'concluído');
@@ -369,7 +371,7 @@ serve(
               // estiver indisponível, o cliente não fica esperando o flush.
               // sinalizarFalha faz o wrapper contar request_error no fim do
               // stream — um único evento de conclusão (contrato vw_edge_health).
-              send({ error: e instanceof Error ? e.message : 'unknown' });
+              send({ error: 'Erro ao gerar o pacote de evidências' });
               ctx?.sinalizarFalha(e);
             } finally {
               controller.close();
@@ -398,14 +400,14 @@ serve(
           error_message: mensagemErro(e),
           context: contextoErro(e),
         });
-        return new Response(JSON.stringify({ error: e instanceof Error ? e.message : 'unknown' }), {
+        return new Response(JSON.stringify({ error: 'Erro ao gerar o pacote de evidências' }), {
           status: 500,
           headers: { ...corsHeaders, 'Content-Type': 'application/json' },
         });
       }
     } finally {
       log.info('request', { duration_ms: Date.now() - _t0 });
-      await log.flush();
+      await segundoPlano(log.flush());
     }
   })
 );

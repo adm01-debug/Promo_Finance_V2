@@ -6,6 +6,7 @@ import { Badge } from '@/components/ui/badge';
 import { useContasPagar, useContasReceber, useContasBancarias } from '@/hooks/useFinancialData';
 import { formatCurrency } from '@/lib/formatters';
 import { cn } from '@/lib/utils';
+import { valorRecebidoEfetivo } from '@/lib/financeiro/valor-recebido-efetivo';
 
 interface FluxoCaixaContabilProps {
   periodo: string;
@@ -63,7 +64,7 @@ export const FluxoCaixaContabil = ({ mes, ano, empresaId }: FluxoCaixaContabilPr
 
     // ATIVIDADES OPERACIONAIS
     const recebimentoClientes = recebimentosPeriodo.reduce(
-      (acc, r) => acc + (r.valor_recebido || r.valor || 0),
+      (acc, r) => acc + valorRecebidoEfetivo(r),
       0
     );
 

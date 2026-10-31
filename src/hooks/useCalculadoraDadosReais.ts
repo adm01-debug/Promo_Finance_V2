@@ -1,5 +1,6 @@
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
+import { valorRecebidoEfetivo } from '@/lib/financeiro/valor-recebido-efetivo';
 
 export interface DadosReaisAgregados {
   receitaBrutaAnual: number;
@@ -30,7 +31,7 @@ export function useCalculadoraDadosReais(empresaId: string | undefined, enabled 
       const [receber, folha, nfe] = await Promise.all([
         supabase
           .from('contas_receber')
-          .select('valor, valor_recebido, data_emissao, status')
+          .select('valor, valor_recebido, data_emissao, status, metadata')
           .eq('empresa_id', empresaId!)
           .gte('data_emissao', dozeIso),
         supabase
@@ -45,8 +46,17 @@ export function useCalculadoraDadosReais(empresaId: string | undefined, enabled 
           .gte('data_emissao', dozeIso),
       ]);
 
+      // Receita efetivamente recebida: só títulos liquidados usam o helper
+      // (nele 0 sem marcador de acordo = legado "não gravado" → nominal).
+      // Títulos em aberto/vencidos/contribuem só pelo que já foi recebido —
+      // o helper transformaria o DEFAULT 0 em nominal e pendência viraria
+      // receita no rbt12/faixas.
       const receitaBrutaAnual = (receber.data ?? []).reduce(
-        (s, r) => s + Number(r.valor_recebido ?? r.valor ?? 0),
+        (s, r) =>
+          s +
+          (r.status === 'pago' || r.status === 'recebido'
+            ? Number(valorRecebidoEfetivo(r))
+            : Number(r.valor_recebido ?? 0)),
         0
       );
 

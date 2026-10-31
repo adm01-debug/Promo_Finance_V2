@@ -28,6 +28,7 @@ export const MobileBottomNav = ({ onMenuClick }: MobileBottomNavProps) => {
 
   return (
     <nav
+      id="mobile-bottom-nav"
       aria-label="Navegação inferior"
       className="fixed bottom-0 left-0 right-0 z-50 bg-background/40 backdrop-blur-3xl border-t border-white/10 md:hidden pb-[env(safe-area-inset-bottom)] shadow-[0_-20px_50px_rgba(0,0,0,0.3)] ring-1 ring-white/5"
     >

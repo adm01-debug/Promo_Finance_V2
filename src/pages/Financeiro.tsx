@@ -25,6 +25,7 @@ import { formatCurrency, formatDate } from '@/lib/formatters';
 import { useContasPagar } from '@/hooks/financial/useContasPagar';
 import { useContasReceber } from '@/hooks/financial/useContasReceber';
 import { useBoletos } from '@/hooks/useBoletos';
+import { valorRecebidoEfetivo } from '@/lib/financeiro/valor-recebido-efetivo';
 
 const containerVariants = {
   hidden: { opacity: 0 },
@@ -91,7 +92,7 @@ export default function Financeiro() {
           c.status === 'recebido' &&
           c.data_recebimento?.startsWith(new Date().toISOString().slice(0, 7))
       )
-      .reduce((acc, c) => acc + (c.valor_recebido ?? c.valor ?? 0), 0);
+      .reduce((acc, c) => acc + valorRecebidoEfetivo(c), 0);
 
     return {
       toPay,

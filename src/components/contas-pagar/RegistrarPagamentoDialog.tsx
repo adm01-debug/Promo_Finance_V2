@@ -94,12 +94,13 @@ export function RegistrarPagamentoDialog({
     return conta.valor >= configAprovacao.valor_minimo_aprovacao;
   }, [conta, configAprovacao]);
 
-  const estaAprovado = useMemo(() => {
-    return conta?.aprovado_por != null && conta?.aprovado_em != null;
-  }, [conta]);
-
   // Check if there's a pending approval request
-  const { data: solicitacaoPendente } = useQuery({
+  const {
+    data: solicitacaoPendente,
+    isPending: carregandoSolicitacao,
+    isError: erroSolicitacao,
+    refetch: recarregarSolicitacao,
+  } = useQuery({
     queryKey: ['solicitacao-pendente', conta?.id],
     queryFn: async () => {
       if (!conta) return null;
@@ -116,6 +117,20 @@ export function RegistrarPagamentoDialog({
     },
     enabled: !!conta && requerAprovacao,
   });
+
+  // A solicitação MAIS RECENTE decide: se houver uma, ela prevalece sobre
+  // os campos da conta (uma rejeição nova revoga uma aprovação antiga);
+  // sem solicitação, vale o estado legado gravado na própria conta.
+  // Enquanto a consulta não resolve (carregando ou erro), trata como
+  // bloqueado — liberar antes traria de volta o legado e permitiria pagar
+  // sob uma rejeição/pendência que ainda não apareceu.
+  const consultaSolicitacaoNaoResolvida =
+    requerAprovacao && (carregandoSolicitacao || erroSolicitacao);
+  const estaAprovado = useMemo(() => {
+    if (consultaSolicitacaoNaoResolvida) return false;
+    if (solicitacaoPendente != null) return solicitacaoPendente.status === 'aprovado';
+    return conta?.aprovado_por != null && conta?.aprovado_em != null;
+  }, [conta, solicitacaoPendente, consultaSolicitacaoNaoResolvida]);
 
   const aprovacaoBloqueada = requerAprovacao && !estaAprovado;
   const temSolicitacaoPendente = solicitacaoPendente?.status === 'pendente';
@@ -394,7 +409,21 @@ export function RegistrarPagamentoDialog({
               </Button>
 
               {/* Show "Request Approval" button if approval is required but not granted */}
-              {aprovacaoBloqueada && !temSolicitacaoPendente ? (
+              {/* Consulta sem resposta: nem paga nem solicita — um pedido novo
+                  prevaleceria sobre uma aprovação vigente ainda não carregada.
+                  Em erro, oferece nova tentativa explícita. */}
+              {requerAprovacao && erroSolicitacao ? (
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() => recarregarSolicitacao()}
+                  className="gap-2"
+                >
+                  Tentar novamente
+                </Button>
+              ) : aprovacaoBloqueada &&
+                !temSolicitacaoPendente &&
+                !consultaSolicitacaoNaoResolvida ? (
                 <Button
                   type="button"
                   onClick={handleSolicitarAprovacao}

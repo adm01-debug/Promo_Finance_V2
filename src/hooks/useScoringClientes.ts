@@ -3,6 +3,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
 import { toast } from 'sonner';
 import { differenceInDays, subMonths } from 'date-fns';
+import { valorRecebidoEfetivo } from '@/lib/financeiro/valor-recebido-efetivo';
 
 export interface ClienteScore {
   clienteId: string;
@@ -43,6 +44,7 @@ interface ContaReceberScoring {
   valor: number;
   valor_recebido?: number | null;
   created_at: string;
+  metadata?: unknown;
 }
 
 // Pesos do modelo de ML simplificado
@@ -77,7 +79,7 @@ export function useScoringClientes() {
       const { data: contasReceber, error: contasError } = await supabase
         .from('contas_receber')
         .select(
-          'cliente_id, valor, valor_recebido, data_vencimento, data_recebimento, status, created_at'
+          'cliente_id, valor, valor_recebido, data_vencimento, data_recebimento, status, created_at, metadata'
         )
         .order('created_at', { ascending: false });
 
@@ -91,6 +93,7 @@ export function useScoringClientes() {
         valor: c.valor,
         valor_recebido: c.valor_recebido,
         created_at: c.created_at ?? '',
+        metadata: c.metadata,
       }));
 
       // Calcular score para cada cliente
@@ -228,7 +231,7 @@ function calcularHistorico(contas: ContaReceberScoring[]): DadosHistorico {
   const valorTotal = contas.reduce((s, c) => s + (c.valor || 0), 0);
   const valorPago = contas
     .filter((c) => c.status === 'pago')
-    .reduce((s, c) => s + (c.valor_recebido || c.valor || 0), 0);
+    .reduce((s, c) => s + valorRecebidoEfetivo(c), 0);
 
   const primeiraCompra = contas.length > 0 ? new Date(contas[contas.length - 1].created_at) : hoje;
   const tempoRelacionamento = Math.max(1, differenceInDays(hoje, primeiraCompra) / 30);

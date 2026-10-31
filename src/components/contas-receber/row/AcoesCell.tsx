@@ -47,7 +47,8 @@ export function AcoesCell({
   onAplicarDesconto,
 }: AcoesCellProps) {
   const [historyOpen, setHistoryOpen] = useState(false);
-  const notClosed = conta.status !== 'pago' && conta.status !== 'cancelado';
+  const notClosed =
+    conta.status !== 'pago' && conta.status !== 'recebido' && conta.status !== 'cancelado';
 
   return (
     <TableCell className="p-6">

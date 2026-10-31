@@ -185,7 +185,7 @@ Deno.serve(
         const contactId = await findBitrixContactByEmail(emailLower);
         if (!contactId) {
           // Log e retorno graceful — não criamos contato automaticamente.
-          await admin.from('audit_logs').insert({
+          const { error: auditError } = await admin.from('audit_logs').insert({
             user_id: user.id,
             user_email: emailLower,
             action: 'UPDATE',
@@ -197,6 +197,11 @@ Deno.serve(
             },
             details: 'Bitrix24: contato não encontrado por email',
           });
+          if (auditError) {
+            log.error('[sync-profile-to-bitrix] audit insert falhou:', {
+              error_message: mensagemErro(auditError),
+            });
+          }
           return res({ ok: false, error: 'bitrix_contact_not_found' }, 404);
         }
 
@@ -231,7 +236,7 @@ Deno.serve(
           fields,
         });
 
-        await admin.from('audit_logs').insert({
+        const { error: auditError } = await admin.from('audit_logs').insert({
           user_id: user.id,
           user_email: emailLower,
           action: 'UPDATE',
@@ -245,6 +250,11 @@ Deno.serve(
           },
           details: 'Sincronização avatar/telefone do perfil para Bitrix24',
         });
+        if (auditError) {
+          log.error('[sync-profile-to-bitrix] audit insert falhou:', {
+            error_message: mensagemErro(auditError),
+          });
+        }
 
         return res({
           ok: true,
@@ -257,15 +267,30 @@ Deno.serve(
           error_message: mensagemErro(msg),
           context: contextoErro(msg),
         });
-        await admin.from('audit_logs').insert({
-          user_id: user.id,
-          user_email: emailLower,
-          action: 'UPDATE',
-          table_name: 'bitrix_profile_sync',
-          record_id: null,
-          new_data: { error: msg },
-          details: 'Falha ao sincronizar perfil para Bitrix24',
-        });
+        // Best-effort: estamos no catch — se o Supabase também falhar aqui,
+        // o insert não pode derrubar a resposta de erro ao cliente.
+        try {
+          // PostgREST devolve { error } sem lançar — checar o retorno,
+          // não só o catch (senão falha de auditoria passa muda).
+          const { error: auditError } = await admin.from('audit_logs').insert({
+            user_id: user.id,
+            user_email: emailLower,
+            action: 'UPDATE',
+            table_name: 'bitrix_profile_sync',
+            record_id: null,
+            new_data: { error: msg },
+            details: 'Falha ao sincronizar perfil para Bitrix24',
+          });
+          if (auditError) {
+            log.error('[sync-profile-to-bitrix] audit insert falhou:', {
+              error_message: mensagemErro(auditError),
+            });
+          }
+        } catch (auditErr) {
+          log.error('[sync-profile-to-bitrix] audit insert falhou:', {
+            error_message: mensagemErro(auditErr),
+          });
+        }
         // Detalhe do erro fica no log/audit — ao cliente vai mensagem
         // genérica, sem internals do Bitrix24 (error_description etc.).
         return res(

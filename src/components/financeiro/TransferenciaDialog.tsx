@@ -76,7 +76,7 @@ export function TransferenciaDialog({ open, onOpenChange }: TransferenciaDialogP
         valor: data.valor,
         data_transferencia: data.data_transferencia,
         descricao: data.descricao,
-        status: 'concluido',
+        status: 'realizado',
       });
 
       if (error) throw error;
