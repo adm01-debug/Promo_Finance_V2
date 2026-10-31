@@ -48,6 +48,12 @@ serve(
         const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
         const supabase = createClient(supabaseUrl, supabaseServiceKey);
 
+        // Rate limit: 30 req/min — custo por chamada à IA
+        const _ip = req.headers.get('x-forwarded-for')?.split(',')[0]?.trim() ?? 'unknown';
+        const { checkRateLimit, rateLimitResponse: rlResponse } = await import('../_shared/rate-limit.ts');
+        const _rl = await checkRateLimit(supabase, { endpoint: 'analise-preditiva', ip: _ip, limit: 30 });
+        if (!_rl.allowed) return rlResponse(_rl, corsHeaders);
+
         // Buscar dados financeiros para análise
         const hoje = new Date();
         const tresMesesAtras = new Date(hoje);
