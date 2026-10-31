@@ -1,4 +1,4 @@
-import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.49.4';
+import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.118.0';
 import { corsHeadersPara } from '../_shared/cors.ts';
 import { clientDeServico, exigirUsuario } from '../_shared/auth-guard.ts';
 import { withEdgeObservability } from '../_shared/edge-observability.ts';
@@ -24,8 +24,6 @@ Deno.serve(
 
     const usuario = await exigirUsuario(req);
     if (!usuario.ok) {
-      // Probe público: roda os mesmos checks, mas devolve só o status agregado —
-      // o monitor externo detecta indisponibilidade sem ver o contorno da infra.
       const url = Deno.env.get('SUPABASE_URL');
       const key = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY');
       if (!url || !key) return json({ status: 'ok', timestamp: new Date().toISOString() });
@@ -54,11 +52,6 @@ Deno.serve(
         ping('https://api.bling.com.br/Api/v3/ping'),
       ]);
       const falhou = dbErr || asaasRes !== 'operational' || blingRes !== 'operational';
-      // Semântica de liveness: 503 só quando o app não consegue servir (banco
-      // fora). APIs externas degradadas não mudam o HTTP — o corpo agregado
-      // continua marcando 'outage' para monitores que o leem. O esqueleto de
-      // services (só status agregado, sem internals) mantém a StatusPage
-      // funcionando para visitantes anônimos da rota pública /status.
       return json(
         {
           status: falhou ? 'outage' : 'ok',
@@ -98,8 +91,6 @@ Deno.serve(
     const db = services.database as { status: string };
     const apis = services.external_apis as Record<string, { status: string }>;
 
-    // Ping externo com prazo: uma API que segura a conexão aberta não pode
-    // travar o painel de status — estoura em 'outage' após o timeout.
     const ping = async (url: string): Promise<string> => {
       try {
         const res = await fetch(url, { signal: AbortSignal.timeout(3000) });

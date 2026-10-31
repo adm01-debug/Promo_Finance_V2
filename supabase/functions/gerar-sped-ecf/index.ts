@@ -1,4 +1,4 @@
-import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.49.4';
+import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.118.0';
 import { createErrorResponse, validatePayload } from '../_shared/validation.ts';
 import { z } from 'https://deno.land/x/zod@v3.22.4/mod.ts';
 import { buildEcfLinhas, calcularApuracaoEcf } from './layout.ts';
@@ -89,9 +89,6 @@ Deno.serve(
         );
       }
 
-      // financeiro sem vínculo ativo com a empresa pedia ECF de QUALQUER
-      // empresa via empresa_id arbitrário (achado do cubic-dev-ai); admin
-      // mantém acesso global, igual ao resto do sistema.
       if (!(roles || []).some((r: { role: string }) => r.role === 'admin')) {
         const { data: vinculo } = await supabase
           .from('user_empresas')
@@ -167,11 +164,6 @@ Deno.serve(
       const idToCodigo = new Map(plano.map((c) => [c.id, c.codigo]));
       const naturezaDe = (cid: string) => plano.find((c) => c.id === cid)?.natureza;
 
-      // `receitas`/`despesas` só alimentam o checklist abaixo (mensagem e
-      // status). A apuração de fato (lucro_liquido/base_irpj/irpj/csll) vem
-      // de `calcularApuracaoEcf`, em `layout.ts` — mesma função que
-      // `buildEcfLinhas` usa internamente para montar M300/N500/N620/N650,
-      // para as duas nunca divergirem.
       const receitas = lancamentos
         .flatMap((l) => l.partidas)
         .filter((p) => naturezaDe(p.conta_id) === 'receita')
@@ -235,7 +227,6 @@ Deno.serve(
           : 'Sem movimento de receita/despesa no período',
       });
 
-      // K355 vs L100 cross-check (saldo patrimonial)
       let k355Total = 0,
         l100Total = 0;
       for (const c of plano.filter((p) =>
@@ -300,11 +291,6 @@ Deno.serve(
         );
       }
 
-      // ===== Geração TXT =====
-      // Montagem pura em `layout.ts`, testada com golden file + invariantes
-      // (Etapa 40). Única correção ali: o bloco 9900 lista os tipos de
-      // registro realmente emitidos em vez de uma lista
-      // `['0','C','J','K','L','M','N']` cravada.
       const linhas = buildEcfLinhas({
         empresa,
         plano,

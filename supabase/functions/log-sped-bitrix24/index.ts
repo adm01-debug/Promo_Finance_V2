@@ -1,7 +1,7 @@
 // Edge Function: log-sped-bitrix24
 // Registra no Bitrix24 (timeline + status do deal) o resultado de cada geração SPED ECF/ECD,
 // informando se foi BLOQUEADA ou GERADA e a quantidade de erros/avisos retornados.
-import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.49.4';
+import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.118.0';
 import { createErrorResponse, validatePayload } from '../_shared/validation.ts';
 import { z } from 'https://deno.land/x/zod@v3.22.4/mod.ts';
 import { createLogger } from '../_shared/observability.ts';
@@ -160,7 +160,6 @@ Deno.serve(
         })) as { result?: number };
         dealId = String(dealRes.result ?? '');
       } else {
-        // Atualiza status do deal existente
         await bitrixCall('crm.deal.update', {
           id: dealId,
           fields: {
@@ -175,7 +174,6 @@ Deno.serve(
         });
       }
 
-      // Sempre adiciona timeline com o resumo desta geração
       await bitrixCall('crm.timeline.comment.add', {
         fields: {
           ENTITY_ID: dealId,
@@ -184,7 +182,6 @@ Deno.serve(
         },
       });
 
-      // Persiste log local em audit_logs (best-effort)
       const supabaseService = createClient(
         supabaseUrl,
         Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? anonKey
@@ -229,8 +226,6 @@ Deno.serve(
         error_message: msg,
       });
       await segundoPlano(logger.flush());
-      // Detalhe do erro (inclui error_description do Bitrix24) fica só no
-      // log — ao cliente vai mensagem genérica, sem internals de terceiros.
       return new Response(JSON.stringify({ error: 'Erro ao comunicar com o Bitrix24' }), {
         status: 500,
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
