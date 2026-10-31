@@ -8,6 +8,7 @@ import { corsHeaders, corsHeadersPara } from '../_shared/cors.ts';
 import { createLogger } from '../_shared/observability.ts';
 import { mensagemErro, contextoErro } from '../_shared/erros.ts';
 import { withEdgeObservability } from '../_shared/edge-observability.ts';
+import { captureException } from '../_shared/sentry.ts';
 const log = createLogger('n8n-callback');
 
 const schema = z
@@ -73,6 +74,7 @@ export function createHandler(deps: HandlerDeps) {
         error_message: mensagemErro(msg),
         context: contextoErro(msg),
       });
+      await captureException(error, { function: 'n8n-callback' });
       return res({ error: msg }, 500);
     }
   };

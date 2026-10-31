@@ -1,0 +1,40 @@
+# Workflow temporário: gera bun.lock atualizado com @sentry/vite-plugin.
+# Será removido antes do merge.
+name: "Tmp – Atualizar bun.lock"
+
+on:
+  push:
+    branches: [Github_Copilotfix-sentry-bun-lock]
+
+permissions:
+  contents: write
+
+jobs:
+  update-lockfile:
+    runs-on: ubuntu-latest
+    # Não re-executar quando o próprio bot commitar o lockfile
+    if: github.actor != 'github-actions[bot]'
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          ref: Github_Copilotfix-sentry-bun-lock
+
+      - uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6 # v2
+        with:
+          bun-version-file: .bun-version
+
+      - name: Instalar dependências (sem frozen-lockfile)
+        run: bun install --ignore-scripts
+
+      - name: Commitar bun.lock atualizado
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          if git diff --quiet bun.lock; then
+            echo "bun.lock não mudou — nenhum commit necessário"
+          else
+            git add bun.lock
+            git commit -m "chore: atualiza bun.lock com @sentry/vite-plugin@2.22.x"
+            git push
+          fi
