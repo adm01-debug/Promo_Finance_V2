@@ -5,7 +5,11 @@ BEGIN;
 
 DROP FUNCTION IF EXISTS public.check_integrity_invariants();
 DROP FUNCTION IF EXISTS public.get_active_uapi_token();
-DROP TRIGGER IF EXISTS on_order_status_change_sync_bitrix24 ON public.lalamove_orders;
+DO $$ BEGIN
+  IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_schema='public' AND table_name='lalamove_orders') THEN
+    DROP TRIGGER IF EXISTS on_order_status_change_sync_bitrix24 ON public.lalamove_orders;
+  END IF;
+END $$;
 DROP FUNCTION IF EXISTS public.trigger_bitrix24_sync();
 
 ALTER TABLE IF EXISTS public.alerts

@@ -67,6 +67,8 @@ ALTER TABLE public.profiles ADD COLUMN IF NOT EXISTS email TEXT;
 ALTER TABLE public.profiles ALTER COLUMN role SET DEFAULT 'visualizador';
 
 -- RPCs for automation
+-- Fix Preview replay: drop antes de mudar return type TABLE→JSONB (42P13)
+DROP FUNCTION IF EXISTS public.get_cron_jobs();
 CREATE OR REPLACE FUNCTION public.get_cron_jobs()
 RETURNS JSONB AS $$
 BEGIN
