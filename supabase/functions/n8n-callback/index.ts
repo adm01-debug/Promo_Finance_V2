@@ -1,5 +1,7 @@
 // n8n-callback — recebe callbacks do n8n para materializar ações no banco.
-// Autenticado por segredo compartilhado timing-safe antes de body/DB.
+// Autenticado por HMAC-SHA256 do body (x-n8n-signature: sha256=<hex>),
+// com fallback transitório para segredo estático (x-n8n-secret) durante
+// migração do N8N. Remover o fallback após migração concluída.
 
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.49.4';
 import { createErrorResponse, validatePayload } from '../_shared/validation.ts';
@@ -26,7 +28,8 @@ const ALLOWED_ALERT_SEVERITY = new Set(['info', 'warning', 'critical', 'low', 'm
 
 export interface HandlerDeps {
   getEnv: (name: string) => string | undefined;
-  readJson: (req: Request) => Promise<unknown>;
+  /** Lê o body bruto como bytes — necessário para HMAC e depois JSON.parse. */
+  readBytes: (req: Request) => Promise<Uint8Array>;
   admin: {
     from: (table: string) => {
       insert: (row: Record<string, unknown>) => {
@@ -46,15 +49,26 @@ export function createHandler(deps: HandlerDeps) {
     if (req.method === 'OPTIONS') return new Response(null, { headers: corsHeaders });
     if (req.method !== 'POST') return res({ error: 'method_not_allowed' }, 405);
 
-    const secretAuth = authorizeSharedSecret(
-      deps.getEnv('N8N_CALLBACK_SECRET'),
+    // Ler body bruto para HMAC; re-usar para JSON.parse sem consumir o stream duas vezes
+    let rawBytes: Uint8Array;
+    try {
+      rawBytes = await deps.readBytes(req);
+    } catch {
+      return res({ error: 'invalid_body' }, 400);
+    }
+
+    const secret = deps.getEnv('N8N_CALLBACK_SECRET');
+    const authResult = await authorizeHmacOrSharedSecret(
+      secret,
+      rawBytes,
+      req.headers.get('x-n8n-signature'),
       req.headers.get('x-n8n-secret')
     );
-    if (!secretAuth.ok) return secretAuth.response;
+    if (!authResult.ok) return authResult.response;
 
     let raw: unknown;
     try {
-      raw = await deps.readJson(req);
+      raw = JSON.parse(new TextDecoder().decode(rawBytes));
     } catch {
       return res({ error: 'invalid_json' }, 400);
     }
@@ -78,6 +92,66 @@ export function createHandler(deps: HandlerDeps) {
   };
 }
 
+/**
+ * Verifica HMAC-SHA256 do body com N8N_CALLBACK_SECRET.
+ * Header esperado: `x-n8n-signature: sha256=<hex>`.
+ *
+ * Fallback (compatibilidade transitória): se x-n8n-signature estiver ausente,
+ * aceita x-n8n-secret com comparação timing-safe, emitindo aviso de migração.
+ * Remover o bloco de fallback após o N8N ser atualizado para enviar HMAC.
+ */
+async function authorizeHmacOrSharedSecret(
+  secret: string | undefined,
+  body: Uint8Array,
+  hmacHeader: string | null,
+  staticHeader: string | null
+): Promise<{ ok: true } | { ok: false; response: Response }> {
+  const normalizedSecret = secret?.trim();
+  if (!normalizedSecret) {
+    return { ok: false, response: json({ error: 'secret_not_configured' }, 503) };
+  }
+
+  // --- Tentativa 1: HMAC-SHA256 via x-n8n-signature ---
+  if (hmacHeader) {
+    const expectedHex = hmacHeader.startsWith('sha256=') ? hmacHeader.slice(7) : hmacHeader;
+    try {
+      const keyMaterial = await crypto.subtle.importKey(
+        'raw',
+        new TextEncoder().encode(normalizedSecret),
+        { name: 'HMAC', hash: 'SHA-256' },
+        false,
+        ['sign']
+      );
+      const sigBuffer = await crypto.subtle.sign(
+        'HMAC',
+        keyMaterial,
+        body as unknown as BufferSource
+      );
+      const computedHex = Array.from(new Uint8Array(sigBuffer))
+        .map((b) => b.toString(16).padStart(2, '0'))
+        .join('');
+      if (!timingSafeEqual(computedHex, expectedHex)) {
+        return { ok: false, response: json({ error: 'unauthorized' }, 401) };
+      }
+      return { ok: true };
+    } catch {
+      return { ok: false, response: json({ error: 'hmac_verification_failed' }, 401) };
+    }
+  }
+
+  // --- Fallback: segredo estático x-n8n-secret (modo de migração) ---
+  const normalizedStatic = staticHeader?.trim();
+  if (normalizedStatic && timingSafeEqual(normalizedSecret, normalizedStatic)) {
+    console.warn(
+      '[n8n-callback] Autenticação via segredo estático (x-n8n-secret). ' +
+        'Configure o N8N para enviar x-n8n-signature: sha256=<HMAC-SHA256> e remova este fallback.'
+    );
+    return { ok: true };
+  }
+
+  return { ok: false, response: json({ error: 'unauthorized' }, 401) };
+}
+
 async function executeAction(admin: HandlerDeps['admin'], body: CallbackBody): Promise<unknown> {
   const payload = body.payload;
 
@@ -92,9 +166,8 @@ async function executeAction(admin: HandlerDeps['admin'], body: CallbackBody): P
     case 'create_alert': {
       const severity = (asString(payload.severity) ?? 'warning').toLowerCase();
       if (!ALLOWED_ALERT_SEVERITY.has(severity)) {
-        throw new Error(`severity inválida: ${severity}`);
+        throw new Error(`severity invalida: ${severity}`);
       }
-
       return await insertSingle(admin, 'alerts', {
         type: asString(payload.type) ?? asString(payload.alert_type) ?? 'n8n_generated',
         severity,
@@ -121,26 +194,8 @@ async function insertSingle(
   row: Record<string, unknown>
 ): Promise<unknown> {
   const { data, error } = await admin.from(table).insert(row).select().single();
-
   if (error) throw error;
   return data;
-}
-
-function authorizeSharedSecret(
-  expected: string | undefined,
-  provided: string | null
-): { ok: true } | { ok: false; response: Response } {
-  const normalizedExpected = expected?.trim();
-  if (!normalizedExpected) {
-    return { ok: false, response: json({ error: 'secret_not_configured' }, 503) };
-  }
-
-  const normalizedProvided = provided?.trim();
-  if (!normalizedProvided || !timingSafeEqual(normalizedExpected, normalizedProvided)) {
-    return { ok: false, response: json({ error: 'unauthorized' }, 401) };
-  }
-
-  return { ok: true };
 }
 
 function asString(value: unknown): string | null {
@@ -152,10 +207,9 @@ function defaultDeps(): HandlerDeps {
     Deno.env.get('SUPABASE_URL')!,
     Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!
   );
-
   return {
     getEnv: (name) => Deno.env.get(name),
-    readJson: (req) => req.json(),
+    readBytes: async (req) => new Uint8Array(await req.arrayBuffer()),
     admin,
   };
 }
