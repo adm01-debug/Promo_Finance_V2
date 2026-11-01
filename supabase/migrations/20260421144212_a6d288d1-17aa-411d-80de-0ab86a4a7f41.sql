@@ -1,3 +1,4 @@
+-- Guarda idempotente: safe para re-executar
 -- 1. Preferências de alerta de anomalias por usuário
 CREATE TABLE public.user_anomalia_preferences (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -52,7 +53,7 @@ CREATE INDEX IF NOT EXISTS idx_anomalias_centro_custo
 -- adicionada por uma migration posterior, mesmo com este arquivo tendo timestamp
 -- mais antigo. Em producao a coluna ja existe e o backfill roda normalmente (efeito
 -- identico); sem esta guarda, o Preview falha com
--- “column cp.centro_custo_id does not exist”.
+-- "column cp.centro_custo_id does not exist".
 DO $$
 BEGIN
   IF EXISTS (
