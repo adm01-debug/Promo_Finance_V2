@@ -271,24 +271,19 @@ export function useConciliacaoPage() {
     [transacoes]
   );
 
+  // Callback `onSuccess` do ConciliacaoManualDialog: o diálogo JÁ persistiu a
+  // conciliação (confirmarConciliacao.mutateAsync, com ajusteCentavos) e só
+  // chama isto depois do sucesso. Confirmar de novo aqui gravava a mesma
+  // conciliação duas vezes (sem o ajuste de centavos) e repetia toast/confete.
+  // Por isso só atualiza o estado local.
   const handleManualSuccess = useCallback(
-    async (transacaoId: string, lancamentoId: string, tipo: 'pagar' | 'receber') => {
-      // Invariante de integridade: idêntica a `handleConfirmarMatch`.
-      try {
-        await confirmarConciliacao.mutateAsync({
-          transacaoId,
-          contaPagarId: tipo === 'pagar' ? lancamentoId : undefined,
-          contaReceberId: tipo === 'receber' ? lancamentoId : undefined,
-        });
-        setTransacoes((prev) =>
-          prev.map((t) => (t.id === transacaoId ? { ...t, conciliada: true } : t))
-        );
-        setTransacoesImportadas((prev) => prev.filter((t) => t.id !== transacaoId));
-      } catch {
-        // Estado local preservado: transação continua pendente para reprocessamento.
-      }
+    (transacaoId: string, _lancamentoId: string, _tipo: 'pagar' | 'receber') => {
+      setTransacoes((prev) =>
+        prev.map((t) => (t.id === transacaoId ? { ...t, conciliada: true } : t))
+      );
+      setTransacoesImportadas((prev) => prev.filter((t) => t.id !== transacaoId));
     },
-    [confirmarConciliacao, setTransacoes]
+    [setTransacoes]
   );
 
   const handleConciliar = useCallback((transacao: TransacaoExtrato) => {
