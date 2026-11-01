@@ -12,7 +12,7 @@ import {
   withTimeout,
 } from '../_shared/resilience.ts';
 import { extrairAnaliseRisco, faixaDoScore } from './credit-risk.ts';
-import { exigirVinculoEmpresa } from '../_shared/auth-guard.ts';
+import { exigirVinculoEmpresa, exigirPapel } from '../_shared/auth-guard.ts';
 import { corsHeadersPara } from '../_shared/cors.ts';
 import { createLogger } from '../_shared/observability.ts';
 import { mensagemErro, contextoErro } from '../_shared/erros.ts';
@@ -744,6 +744,8 @@ export const handler = async (req: Request) => {
       }
 
       case 'consultar_saldo': {
+        const guardSaldo = await exigirPapel(req, ['admin', 'admin_global', 'financeiro']);
+        if (!guardSaldo.ok) return guardSaldo.resposta;
         result = await asaasFetch('/finance/balance', ASAAS_API_KEY);
         break;
       }
