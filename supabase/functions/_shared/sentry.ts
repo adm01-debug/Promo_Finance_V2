@@ -31,10 +31,7 @@ function parseDsn(dsn: string): SentryTarget | null {
   }
 }
 
-export function captureException(
-  error: unknown,
-  context?: Record<string, string>
-): void {
+export function captureException(error: unknown, context?: Record<string, string>): void {
   const dsn = Deno.env.get('SENTRY_DSN');
   if (!dsn) return;
 
