@@ -11,7 +11,7 @@
 //   await fetch(`${Deno.env.get('SUPABASE_URL')}/functions/v1/enviar-alerta-email`, {
 //     method: 'POST',
 //     headers: { 'Content-Type': 'application/json',
-//                Authorization: `Bearer ${Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')}` },
+//                Authorization: `******'SUPABASE_SERVICE_ROLE_KEY')}` },
 //     body: JSON.stringify({ to: ADMIN_EMAIL, subject: titulo, body: mensagem }),
 //   });
 
@@ -43,9 +43,7 @@ interface StatusMonitor {
 
 // ─── Helpers ─────────────────────────────────────────────────────────────────
 
-async function verificarCronFalhos(
-  db: ReturnType<typeof createClient>
-): Promise<CronJobFalho[]> {
+async function verificarCronFalhos(db: ReturnType<typeof createClient>): Promise<CronJobFalho[]> {
   // Retorna jobs onde ambas as 2 execuções mais recentes (nas últimas 2h)
   // falharam. HAVING garante mínimo de 2 execuções registradas.
   const { data, error } = await db.rpc('exec_sql' as never, {
@@ -85,11 +83,9 @@ async function verificarCronFalhos(
   return ((data as unknown[]) ?? []) as CronJobFalho[];
 }
 
-async function verificarWebhooks(db: ReturnType<typeof createClient>): Promise<{
-  taxa: number;
-  total: number;
-  erros: number;
-}> {
+async function verificarWebhooks(
+  db: ReturnType<typeof createClient>
+): Promise<{ taxa: number; total: number; erros: number; }> {
   const { data, error } = await db
     .from('webhooks_log')
     .select('status')
