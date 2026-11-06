@@ -31,6 +31,7 @@ CREATE TABLE IF NOT EXISTS public.protestos (
 -- 3. Views
 
 -- vw_webhooks_recentes
+DROP VIEW IF EXISTS public.vw_webhooks_recentes;
 CREATE OR REPLACE VIEW public.vw_webhooks_recentes AS
 SELECT 
     event_type,
@@ -41,6 +42,7 @@ FROM public.webhooks_log
 GROUP BY event_type, status;
 
 -- vw_metricas_cobranca
+DROP VIEW IF EXISTS public.vw_metricas_cobranca;
 CREATE OR REPLACE VIEW public.vw_metricas_cobranca AS
 SELECT 
     status,
@@ -51,6 +53,7 @@ FROM public.fila_cobrancas
 GROUP BY status, canal;
 
 -- vw_fluxo_caixa_diario
+DROP VIEW IF EXISTS public.vw_fluxo_caixa_diario;
 CREATE OR REPLACE VIEW public.vw_fluxo_caixa_diario AS
 SELECT 
     data_vencimento as data,
@@ -67,6 +70,7 @@ FROM public.contas_pagar
 GROUP BY data_vencimento;
 
 -- vw_saldos_contas
+DROP VIEW IF EXISTS public.vw_saldos_contas;
 CREATE OR REPLACE VIEW public.vw_saldos_contas AS
 SELECT 
     'Mock Bank' as banco,

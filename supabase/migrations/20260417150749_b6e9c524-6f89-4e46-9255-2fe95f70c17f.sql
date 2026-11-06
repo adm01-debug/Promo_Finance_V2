@@ -137,7 +137,7 @@ CREATE TRIGGER update_regimes_simulados_updated_at
   FOR EACH ROW EXECUTE FUNCTION public.update_updated_at_column();
 
 -- 4. Oportunidades de elisão fiscal
-CREATE TABLE public.oportunidades_elisao (
+CREATE TABLE IF NOT EXISTS public.oportunidades_elisao (
   id UUID NOT NULL DEFAULT gen_random_uuid() PRIMARY KEY,
   empresa_id UUID NOT NULL REFERENCES public.empresas(id) ON DELETE CASCADE,
   estrategia TEXT NOT NULL,

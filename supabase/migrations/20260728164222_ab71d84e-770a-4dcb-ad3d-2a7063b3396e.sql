@@ -22,8 +22,10 @@ GRANT SELECT, INSERT, UPDATE, DELETE ON public.regras_contabilizacao_automatica 
 GRANT ALL ON public.regras_contabilizacao_automatica TO service_role;
 ALTER TABLE public.regras_contabilizacao_automatica ENABLE ROW LEVEL SECURITY;
 
+DROP POLICY IF EXISTS "regras_contab_select" ON public.regras_contabilizacao_automatica;
 CREATE POLICY "regras_contab_select" ON public.regras_contabilizacao_automatica
   FOR SELECT TO authenticated USING (public.empresa_acessivel(empresa_id));
+DROP POLICY IF EXISTS "regras_contab_write" ON public.regras_contabilizacao_automatica;
 CREATE POLICY "regras_contab_write" ON public.regras_contabilizacao_automatica
   FOR ALL TO authenticated
   USING (
@@ -35,6 +37,7 @@ CREATE POLICY "regras_contab_write" ON public.regras_contabilizacao_automatica
     AND (public.has_role(auth.uid(), 'admin') OR public.has_role(auth.uid(), 'financeiro') OR public.has_role(auth.uid(), 'contador'))
   );
 
+DROP TRIGGER IF EXISTS trg_regras_contab_updated_at ON public.regras_contabilizacao_automatica;
 CREATE TRIGGER trg_regras_contab_updated_at
   BEFORE UPDATE ON public.regras_contabilizacao_automatica
   FOR EACH ROW EXECUTE FUNCTION public.handle_updated_at();
@@ -62,5 +65,6 @@ GRANT SELECT ON public.eventos_contabilizacao_log TO authenticated;
 GRANT ALL ON public.eventos_contabilizacao_log TO service_role;
 ALTER TABLE public.eventos_contabilizacao_log ENABLE ROW LEVEL SECURITY;
 
+DROP POLICY IF EXISTS "eventos_contab_select" ON public.eventos_contabilizacao_log;
 CREATE POLICY "eventos_contab_select" ON public.eventos_contabilizacao_log
   FOR SELECT TO authenticated USING (public.empresa_acessivel(empresa_id));

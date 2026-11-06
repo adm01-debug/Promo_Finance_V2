@@ -29,15 +29,19 @@ GRANT SELECT, INSERT, UPDATE ON public.fechamentos_tributarios TO authenticated;
 GRANT ALL ON public.fechamentos_tributarios TO service_role;
 ALTER TABLE public.fechamentos_tributarios ENABLE ROW LEVEL SECURITY;
 
+DROP POLICY IF EXISTS "fechamentos_select" ON public.fechamentos_tributarios;
 CREATE POLICY "fechamentos_select" ON public.fechamentos_tributarios
   FOR SELECT TO authenticated USING (public.empresa_acessivel(empresa_id));
+DROP POLICY IF EXISTS "fechamentos_insert" ON public.fechamentos_tributarios;
 CREATE POLICY "fechamentos_insert" ON public.fechamentos_tributarios
   FOR INSERT TO authenticated WITH CHECK (public.empresa_acessivel(empresa_id));
+DROP POLICY IF EXISTS "fechamentos_update" ON public.fechamentos_tributarios;
 CREATE POLICY "fechamentos_update" ON public.fechamentos_tributarios
   FOR UPDATE TO authenticated
   USING (public.empresa_acessivel(empresa_id))
   WITH CHECK (public.empresa_acessivel(empresa_id));
 
+DROP TRIGGER IF EXISTS trg_fechamentos_updated_at ON public.fechamentos_tributarios;
 CREATE TRIGGER trg_fechamentos_updated_at
   BEFORE UPDATE ON public.fechamentos_tributarios
   FOR EACH ROW EXECUTE FUNCTION public.handle_updated_at();
@@ -63,6 +67,7 @@ GRANT SELECT ON public.auditoria_tributaria TO authenticated;
 GRANT ALL ON public.auditoria_tributaria TO service_role;
 ALTER TABLE public.auditoria_tributaria ENABLE ROW LEVEL SECURITY;
 
+DROP POLICY IF EXISTS "auditoria_trib_select_admin" ON public.auditoria_tributaria;
 CREATE POLICY "auditoria_trib_select_admin" ON public.auditoria_tributaria
   FOR SELECT TO authenticated USING (public.has_role(auth.uid(), 'admin'));
 
@@ -110,6 +115,7 @@ GRANT SELECT ON public.tax_audit_trail TO authenticated;
 GRANT ALL ON public.tax_audit_trail TO service_role;
 ALTER TABLE public.tax_audit_trail ENABLE ROW LEVEL SECURITY;
 
+DROP POLICY IF EXISTS "tax_audit_select" ON public.tax_audit_trail;
 CREATE POLICY "tax_audit_select" ON public.tax_audit_trail
   FOR SELECT TO authenticated
   USING (public.has_role(auth.uid(), 'admin') OR (empresa_id IS NOT NULL AND public.empresa_acessivel(empresa_id)));
@@ -132,9 +138,11 @@ GRANT SELECT ON public.regime_decision_cache TO authenticated;
 GRANT ALL ON public.regime_decision_cache TO service_role;
 ALTER TABLE public.regime_decision_cache ENABLE ROW LEVEL SECURITY;
 
+DROP POLICY IF EXISTS "regime_cache_select" ON public.regime_decision_cache;
 CREATE POLICY "regime_cache_select" ON public.regime_decision_cache
   FOR SELECT TO authenticated USING (public.empresa_acessivel(empresa_id));
 
+DROP TRIGGER IF EXISTS trg_regime_cache_updated_at ON public.regime_decision_cache;
 CREATE TRIGGER trg_regime_cache_updated_at
   BEFORE UPDATE ON public.regime_decision_cache
   FOR EACH ROW EXECUTE FUNCTION public.handle_updated_at();
@@ -162,11 +170,13 @@ GRANT SELECT, INSERT, UPDATE, DELETE ON public.relatorios_tributarios_agendados 
 GRANT ALL ON public.relatorios_tributarios_agendados TO service_role;
 ALTER TABLE public.relatorios_tributarios_agendados ENABLE ROW LEVEL SECURITY;
 
+DROP POLICY IF EXISTS "rel_trib_agend_all" ON public.relatorios_tributarios_agendados;
 CREATE POLICY "rel_trib_agend_all" ON public.relatorios_tributarios_agendados
   FOR ALL TO authenticated
   USING (public.empresa_acessivel(empresa_id))
   WITH CHECK (public.empresa_acessivel(empresa_id));
 
+DROP TRIGGER IF EXISTS trg_rel_trib_agend_updated_at ON public.relatorios_tributarios_agendados;
 CREATE TRIGGER trg_rel_trib_agend_updated_at
   BEFORE UPDATE ON public.relatorios_tributarios_agendados
   FOR EACH ROW EXECUTE FUNCTION public.handle_updated_at();
