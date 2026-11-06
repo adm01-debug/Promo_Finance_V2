@@ -16,6 +16,7 @@ import { corsHeadersPara } from '../_shared/cors.ts';
 import { createLogger } from '../_shared/observability.ts';
 import { mensagemErro, contextoErro } from '../_shared/erros.ts';
 import { withEdgeObservability } from '../_shared/edge-observability.ts';
+import { checkRateLimit, rateLimitResponse } from '../_shared/rate-limit.ts';
 const log = createLogger('bling-proxy');
 
 const BLING_API_BASE = 'https://api.bling.com.br/Api/v3';
@@ -53,11 +54,18 @@ Deno.serve(
         }
 
         const userId = user.id;
+        // Step 36 — Rate limit uniforme: 30 req/min por IP (mesmo padrão de categorizar-despesa)
+        const ip = req.headers.get('x-forwarded-for') ?? req.headers.get('x-real-ip') ?? 'unknown';
+        const userAgent = req.headers.get('user-agent') ?? '';
+        const rlClient = createClient(supabaseUrl, Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!);
+        const rl = await checkRateLimit(rlClient, { endpoint: 'bling-proxy', ip, limit: 30, windowSeconds: 60, userAgent });
+        if (!rl.allowed) return rateLimitResponse(rl, corsHeaders);
         const rawBody = await req.json();
         const validation = validatePayload(BlingProxySchema, rawBody, 'bling-proxy');
         if (!validation.success) {
           return createErrorResponse(validation.error, 400, validation.details, req);
         }
+
         const { action, ...params } = validation.data;
 
         // Etapa E-007 (PLANO_100.md): acoes destrutivas do Bling exigiam apenas sessao
