@@ -1,5 +1,9 @@
 # CLAUDE.md — PROMO FINANCE V2
 
+> Regras de trabalho do dono (como trabalhar, Git, PR, comunicação): `AGENTS.md`, importado abaixo.
+
+@AGENTS.md
+
 > Sistema financeiro corporativo multi-empresa da Promo Brindes.
 > Contas a Pagar/Receber, Conciliacao, Tributario, NF-e/SEFAZ, Cobranca, IA.
 
