@@ -1,7 +1,7 @@
 // Envia notificação (Slack e/ou e-mail via Resend) para alertas críticos de performance.
 // Chamado por automações internas autenticadas via service_role ou x-cron-secret.
 
-import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.49.4';
+import { createClient } from 'npm:@supabase/supabase-js@2.49.4';
 import { exigirChamadaInterna, type ChamadaInterna } from '../_shared/auth-guard.ts';
 import { createErrorResponse, validatePayload } from '../_shared/validation.ts';
 import { z } from 'https://deno.land/x/zod@v3.22.4/mod.ts';
