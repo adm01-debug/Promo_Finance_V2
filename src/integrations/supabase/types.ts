@@ -3833,6 +3833,7 @@ export type Database = {
       boletos: {
         Row: {
           agencia: string | null;
+          asaas_id: string | null;
           banco: string | null;
           banco_nome: string | null;
           bitrix_id: string | null;
@@ -3852,6 +3853,7 @@ export type Database = {
           descricao: string | null;
           empresa_id: string | null;
           eventos_pagamento: Json | null;
+          external_provider: string | null;
           id: string;
           juros_multa: number | null;
           linha_digitavel: string | null;
@@ -3871,6 +3873,7 @@ export type Database = {
         };
         Insert: {
           agencia?: string | null;
+          asaas_id?: string | null;
           banco?: string | null;
           banco_nome?: string | null;
           bitrix_id?: string | null;
@@ -3890,6 +3893,7 @@ export type Database = {
           descricao?: string | null;
           empresa_id?: string | null;
           eventos_pagamento?: Json | null;
+          external_provider?: string | null;
           id?: string;
           juros_multa?: number | null;
           linha_digitavel?: string | null;
@@ -3909,6 +3913,7 @@ export type Database = {
         };
         Update: {
           agencia?: string | null;
+          asaas_id?: string | null;
           banco?: string | null;
           banco_nome?: string | null;
           bitrix_id?: string | null;
@@ -3928,6 +3933,7 @@ export type Database = {
           descricao?: string | null;
           empresa_id?: string | null;
           eventos_pagamento?: Json | null;
+          external_provider?: string | null;
           id?: string;
           juros_multa?: number | null;
           linha_digitavel?: string | null;
