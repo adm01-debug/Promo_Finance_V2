@@ -50,7 +50,7 @@ function sentryTarget(): SentryTarget | null {
 }
 
 // Converte stack do V8/Deno ("at fn (file:///x.ts:1:2)") em frames Sentry.
-function framesDo(stack: string | undefined) {
+export function framesDo(stack: string | undefined) {
   if (!stack) return undefined;
   const frames = stack
     .split('\n')
