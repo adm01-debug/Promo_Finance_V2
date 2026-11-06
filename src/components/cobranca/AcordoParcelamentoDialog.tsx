@@ -5,6 +5,7 @@ import { z } from 'zod';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import {
+  AlertTriangle,
   Calculator,
   CalendarIcon,
   FileText,
@@ -170,6 +171,16 @@ export function AcordoParcelamentoDialog({
 
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+            {contasReceberId.length === 0 && clienteNome.length > 0 && (
+              <div className="rounded-md border border-yellow-200 bg-yellow-50 p-3 text-sm text-yellow-800 flex items-start gap-2">
+                <AlertTriangle className="h-4 w-4 mt-0.5 shrink-0" />
+                <span>
+                  Nenhuma conta a receber vinculada. O status das contas não será atualizado
+                  automaticamente ao criar o acordo.
+                </span>
+              </div>
+            )}
+
             {/* Dados do Cliente */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <FormField
