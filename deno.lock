@@ -150,7 +150,7 @@
         "npm:@dnd-kit/sortable@7",
         "npm:@dnd-kit/utilities@^3.2.2",
         "npm:@dyad-sh/react-vite-component-tagger@0.9",
-        "npm:@hookform/resolvers@^3.3.2",
+        "npm:@hookform/resolvers@3.10.0",
         "npm:@lovable.dev/cloud-auth-js@1",
         "npm:@playwright/test@^1.58.2",
         "npm:@radix-ui/react-accordion@^1.1.2",
@@ -208,7 +208,7 @@
         "npm:cmdk@^1.1.1",
         "npm:cross-env@^10.1.0",
         "npm:date-fns@^2.30.0",
-        "npm:dompurify@3.4.16",
+        "npm:dompurify@3.4.17",
         "npm:embla-carousel-react@^8.6.0",
         "npm:esbuild@~0.28.2",
         "npm:eslint-config-prettier@^9.1.0",
@@ -263,7 +263,7 @@
         "npm:vitest-axe@0.1",
         "npm:vitest@^4.1.11",
         "npm:web-vitals@^3.5.0",
-        "npm:zod@^3.22.4"
+        "npm:zod@^3.25.76"
       ]
     }
   }
