@@ -31,15 +31,10 @@ describe('useConciliacaoPage — confirmação e conciliação manual', () => {
     expect(result.current.transacoes[0].conciliada).toBe(true);
   });
 
-  it('persiste conta a receber no fluxo manual', async () => {
-    vi.mocked(mocks.mutations.confirmarConciliacao.mutateAsync).mockResolvedValue(undefined);
+  it('fluxo manual: o diálogo já persistiu — handleManualSuccess NÃO confirma de novo, só atualiza o estado', async () => {
     const { result } = await mountWithRows([linha('tx-b', 'receita')]);
     await act(async () => result.current.handleManualSuccess('tx-b', 'lanc-r', 'receber'));
-    expect(mocks.mutations.confirmarConciliacao.mutateAsync).toHaveBeenCalledWith({
-      transacaoId: 'tx-b',
-      contaReceberId: 'lanc-r',
-      contaPagarId: undefined,
-    });
+    expect(mocks.mutations.confirmarConciliacao.mutateAsync).not.toHaveBeenCalled();
     expect(result.current.transacoes[0].conciliada).toBe(true);
   });
 
@@ -49,7 +44,6 @@ describe('useConciliacaoPage — confirmação e conciliação manual', () => {
     );
     const { result } = await mountWithRows([linha('tx-fail', 'despesa')]);
     await act(async () => result.current.handleConfirmarMatch('tx-fail', 'lanc-x', 'pagar'));
-    await act(async () => result.current.handleManualSuccess('tx-fail', 'lanc-x', 'pagar'));
     expect(result.current.transacoes[0].conciliada).toBe(false);
   });
 });
