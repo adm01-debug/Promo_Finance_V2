@@ -12,7 +12,7 @@ import {
   withTimeout,
 } from '../_shared/resilience.ts';
 import { extrairAnaliseRisco, faixaDoScore } from './credit-risk.ts';
-import { exigirVinculoEmpresa } from '../_shared/auth-guard.ts';
+import { exigirVinculoEmpresa, exigirPapel } from '../_shared/auth-guard.ts';
 import { corsHeadersPara } from '../_shared/cors.ts';
 import { createLogger } from '../_shared/observability.ts';
 import { mensagemErro, contextoErro } from '../_shared/erros.ts';
@@ -116,7 +116,13 @@ export const handler = async (req: Request) => {
     // Step 36 — Rate limit uniforme: 30 req/min por IP (mesmo padrão de categorizar-despesa)
     const ip = req.headers.get('x-forwarded-for') ?? req.headers.get('x-real-ip') ?? 'unknown';
     const userAgent = req.headers.get('user-agent') ?? '';
-    const rl = await checkRateLimit(supabase, { endpoint: 'asaas-proxy', ip, limit: 30, windowSeconds: 60, userAgent });
+    const rl = await checkRateLimit(supabase, {
+      endpoint: 'asaas-proxy',
+      ip,
+      limit: 30,
+      windowSeconds: 60,
+      userAgent,
+    });
     if (!rl.allowed) return rateLimitResponse(rl, corsHeaders);
 
     const rawBody = await req.json();
@@ -744,6 +750,8 @@ export const handler = async (req: Request) => {
       }
 
       case 'consultar_saldo': {
+        const guardSaldo = await exigirPapel(req, ['admin', 'admin_global', 'financeiro']);
+        if (!guardSaldo.ok) return guardSaldo.resposta;
         result = await asaasFetch('/finance/balance', ASAAS_API_KEY);
         break;
       }
