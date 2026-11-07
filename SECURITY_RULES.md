@@ -27,14 +27,15 @@ Regras de segurança do projeto promo-finance-v2 (SPA React + Supabase). Este ar
 
 ## Modelo de Admin
 
-O papel `admin_global` (ou `admin` em contexto de plataforma) é **irrestrito e não escopado por empresa**.
+O papel real no banco é **`admin`** (tabela `user_roles`; ex.: adm01@promobrindes.com.br e ti@promobrindes.com.br têm `role = 'admin'` nos `profiles`). Não existe um papel `admin_global` — qualquer menção a ele em código ou docs é permissão inefetiva e deve ser removida.
 
 **Decisão do Step 20 (PR #226):**
 - Existe um papel de "admin de plataforma" que pode operar em qualquer empresa do sistema, sem restrição por `empresa_id` ou `user_empresas`.
 - Esse modelo é intencional: o admin gerencia toda a plataforma, não apenas empresas às quais está vinculado.
-- Queries e policies que usam `auth.uid()` normalmente retornam dados apenas da empresa vinculada ao usuário — o `admin_global` é a exceção documentada.
-- **Implicação:** toda nova funcionalidade que use o papel `admin_global` deve ser explicitamente revisada para garantir que o escopo irrestrito é o comportamento desejado e que não há vazamento de dados entre clientes finais.
-- Não tratar a ausência de `exigirVinculoEmpresa` para `admin_global` como achado de segurança em auditorias — é decisão de produto documentada aqui.
+- Queries e policies que usam `auth.uid()` normalmente retornam dados apenas da empresa vinculada ao usuário — o papel `admin` é a exceção documentada (guards usam `exigirPapel(['admin'])`, cuja fonte de verdade é a `user_roles` via `has_role`).
+- **Implicação:** toda nova funcionalidade que conceda papel irrestrito ao `admin` deve ser explicitamente revisada para garantir que o escopo irrestrito é o comportamento desejado e que não há vazamento de dados entre clientes finais.
+- Não tratar a ausência de `exigirVinculoEmpresa` para `admin` como achado de segurança em auditorias — é decisão de produto documentada aqui.
+- Acesso é **tenant-scoped**: usuários comuns (não `admin`) só acessam empresas às quais estão vinculados em `user_empresas`, conforme políticas RLS. Não existe acesso irrestrito por padrão.
 
 ## Padrões obrigatórios para Views
 
@@ -98,4 +99,4 @@ Toda nova function com `verify_jwt = false` deve ser adicionada à tabela acima 
 - Nenhum fetch direto com credenciais; dados de servidor via React Query com client Supabase anon.
 - **Views novas:** `WITH (security_invoker = true)` presente em toda view que expõe dado multi-empresa.
 - **Edge Functions novas com `verify_jwt = false`:** guarda própria implementada (HMAC, CRON_SECRET ou `exigirUsuario`) **e** função adicionada à tabela de exceções em `## Padrões obrigatórios para Edge Functions` neste arquivo.
-- **Uso de `admin_global`:** confirmar que o escopo irrestrito é intencional e documentado.
+- **Uso do papel `admin`:** confirmar que o escopo irrestrito é intencional e documentado; não referenciar `admin_global` (papel inexistente).
