@@ -15,22 +15,33 @@
 #                                                           # `supabase_vault` required=true do env.manifest.json
 #   FUNCTIONS_DIR=supabase/functions                        # default
 #   STOP_ON_FAIL=1                                          # aborta no 1º deploy que falhar
+#   POST_DEPLOY_CHECK=0                                     # desliga a verificação pós-deploy (default ligada)
+#   EDGE_SMOKE=0                                            # desliga o edge smoke (default ligado)
+#   EDGE_SMOKE_BASE_URL=https://<ref>.supabase.co/functions/v1  # override da base p/ smoke
+#   HEALTH_CHECK_WAIT=1                                     # aguarda 5 min antes do health check
 #
-# Saída: /tmp/deploy-log-YYYYMMDD-HHMM.jsonl
+# Saída: /tmp/deploy-log-YYYYMMDD-HHMM.jsonl (redigido; sem credenciais)
+#        /tmp/verify-remote-$$.json e /tmp/edge-smoke-$$.json (atestações)
 
 set -euo pipefail
 
 DRY_RUN=0
 ONLY=""
+POST_DEPLOY_CHECK="${POST_DEPLOY_CHECK:-1}"
+EDGE_SMOKE="${EDGE_SMOKE:-1}"
+HEALTH_CHECK_WAIT="${HEALTH_CHECK_WAIT:-0}"
 FUNCTIONS_DIR="${FUNCTIONS_DIR:-supabase/functions}"
 CONFIG_TOML="supabase/config.toml"
+EDGE_DEPLOY_DIR="$(cd "$(dirname "$0")" && pwd)/edge-deploy"
 
 while [[ $# -gt 0 ]]; do
   case "$1" in
     --dry-run) DRY_RUN=1; shift ;;
     --only) ONLY="$2"; shift 2 ;;
+    --no-post-deploy-check) POST_DEPLOY_CHECK=0; shift ;;
+    --no-smoke) EDGE_SMOKE=0; shift ;;
     -h|--help)
-      sed -n '2,20p' "$0"; exit 0 ;;
+      sed -n '2,28p' "$0"; exit 0 ;;
     *) echo "Argumento desconhecido: $1" >&2; exit 2 ;;
   esac
 done
@@ -254,7 +265,104 @@ for fn in "${FNS[@]}"; do
   rm -f /tmp/deploy-out-$$.log
 done
 
-# --- Resumo -----------------------------------------------------------------
+# --- Verificação pós-deploy (aditiva; não altera a ordem do deploy) --------
+# Liga por padrão; desliga com POST_DEPLOY_CHECK=0 / --no-post-deploy-check.
+# Cada etapa degrada sozinha (::warning::) — nenhuma delas derruba o deploy:
+# a falha de pós-verificação FICA registrada no log e no resumo, mas o pipeline
+# continua, mantendo o comportamento histórico do `[[ $FAIL -eq 0 ]]`.
+if [[ $DRY_RUN -eq 0 && $POST_DEPLOY_CHECK -eq 1 && $FAIL -eq 0 ]]; then
+  echo ""
+  echo "==================== PÓS-DEPLOY ===================="
+  smokecheck=0; hcheck=0; vcheck=0
+
+  # 1. Edge smoke: OPTIONS/POST anônimo contra o gateway — prova real de
+  #    disponibilidade e CORS, sem depender de credencial extra.
+  if [[ $EDGE_SMOKE -eq 1 && -n "${EDGE_SMOKE_BASE_URL:-}" ]]; then
+    SMOKE_LIST="/tmp/functions-list-$$.json"
+    # Lista plana contendo name + verify_jwt, extraída do config.toml (mesma
+    # política fail-closed do loop de deploy).
+    jq -n --argjson fns "$(for fn in "${FNS[@]}"; do
+      vj="$(verify_jwt_for "$fn")"
+      if [[ -z "$vj" || ( "$vj" != "true" && "$vj" != "false" ) ]]; then
+        echo "{\"name\":\"$fn\",\"verify_jwt\":true}"  # conservador p/ smoke
+      else
+        echo "{\"name\":\"$fn\",\"verify_jwt\":$( [[ "$vj" == "true" ]] && echo true || echo false )}"
+      fi
+    done | jq -s .)" '{functions: ($fns)}' > "$SMOKE_LIST"
+    if node "$EDGE_DEPLOY_DIR/smoke-functions.mjs" \
+        --base-url "$EDGE_SMOKE_BASE_URL" \
+        --config-toml "$CONFIG_TOML" \
+        --functions-list "$SMOKE_LIST" \
+        --git-sha "${GITHUB_SHA:-local}" \
+        --run-id "${GITHUB_RUN_ID:-0}" \
+        --output "/tmp/edge-smoke-$$.json" \
+        --retries 2 2>&1 | sed 's/^/   [smoke] /'; then
+      smokecheck=1
+    else
+      echo "   ⚠️  edge smoke com falhas — ver /tmp/edge-smoke-$$.json" >&2
+    fi
+    rm -f "$SMOKE_LIST"
+  fi
+
+  # 2. Health check (Management API). Degrada para ::warning:: se a
+  #    observabilidade estiver indisponível; só vira ::error:: com 5xx alto.
+  if command -v node >/dev/null 2>&1; then
+    HEALTH_ARGS=(--project-ref "$SUPABASE_PROJECT_REF" --no-wait)
+    [[ $HEALTH_CHECK_WAIT -eq 1 ]] && HEALTH_ARGS=(--project-ref "$SUPABASE_PROJECT_REF")
+    if node "$EDGE_DEPLOY_DIR/health-check.mjs" "${HEALTH_ARGS[@]}" 2>&1 | sed 's/^/   [health] /'; then
+      hcheck=1
+    else
+      echo "   ⚠️  health-check com falhas — ver resumo" >&2
+    fi
+  fi
+
+  # 3. Verify-remote: inventário `supabase functions list --output json`
+  #    (READ-ONLY; jamais usado para escrever) contra a lista alvo.
+  if command -v jq >/dev/null 2>&1; then
+    REMOTE_LIST="/tmp/remote-functions-$$.json"
+    if supabase functions list --project-ref "$SUPABASE_PROJECT_REF" --output json > "$REMOTE_LIST" 2>/dev/null; then
+      EXPECTED="/tmp/expected-functions-$$.json"
+      printf '%s\n' "${FNS[@]}" | jq -R . | jq -s '{functions: map({name: .})}' > "$EXPECTED"
+      OUTPUT="/tmp/verify-remote-$$.json"
+      if node "$EDGE_DEPLOY_DIR/verify-remote.mjs" \
+          --expected "$EXPECTED" \
+          --remote "$REMOTE_LIST" \
+          --git-sha "${GITHUB_SHA:-local}" \
+          --run-id "${GITHUB_RUN_ID:-0}" \
+          --output "$OUTPUT" 2>&1 | sed 's/^/   [remote] /'; then
+        vcheck=1
+      else
+        echo "   ⚠️  verify-remote reportou funções ausentes do remoto — ver $OUTPUT" >&2
+      fi
+      rm -f "$EXPECTED" "$OUTPUT"
+    else
+      echo "   ⚠️  'supabase functions list' falhou — verify-remote ignorado" >&2
+    fi
+    rm -f "$REMOTE_LIST"
+  fi
+
+  echo "   Pós-deploy: smoke=$smokecheck health=$hcheck remote=$vcheck"
+  log_event "post_deploy_check" "-" "done" \
+    "$(jq -cn --argjson s "$smokecheck" --argjson h "$hcheck" --argjson r "$vcheck" \
+      '{smoke:$s, health:$h, remote:$r, redacted:true}')"
+fi
+
+  # --- Redação final do log (sempre; nunca credencial no artifact) ------------
+  # O JSONL ($LOG) é o único registro que vai ao artifact; o stdout do deploy é
+  # efêmero (o loop remove /tmp/deploy-out-$$.log a cada iteração). O log_event
+  # acima exporta `error` com tail do stdout — redigir garante que nada disso
+  # carregue `access_token`. REDIGIR_LOG_BASE=dirname obriga o confinamento do
+  # redigir-log.mjs a aceitar /tmp: fora do CI a base padrão é o cwd e um
+  # caminho absoluto seria rejeitado. Em dry-run o log existe desde a linha TS
+  # (sem eventos) — a redação é idempotente.
+  if [[ -f "$LOG" ]]; then
+    REDIGIR_LOG_BASE="$(dirname "$LOG")" node "$EDGE_DEPLOY_DIR/redigir-log.mjs" "$LOG" \
+        --segredo-env=SUPABASE_ACCESS_TOKEN >/dev/null 2>&1 \
+      && echo "🔒 Log de deploy redigido (nada de credenciais no artifact)." \
+      || echo "   ⚠️  Redação do log não aplicada — confira o artifact." >&2
+  fi
+
+  # --- Resumo -----------------------------------------------------------------
 echo ""
 echo "==================== RESUMO ===================="
 echo "Total:   $TOTAL"
