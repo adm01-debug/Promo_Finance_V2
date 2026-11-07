@@ -1,10 +1,10 @@
 # AGENTS.md — Promo_Finance_V2
 
-Regras do dono para todo agente de IA; em conflito com `docs/`/README/relatórios, vence este arquivo. Sempre PT-BR. `docs/agentes/` = referência, ler só quando indicado.
+Regras do dono para todo agente de IA; em conflito com `docs/`/README/relatórios, vence este arquivo. Sempre PT-BR. `docs/agentes/`: ler quando indicado.
 
 ## 1. Contexto, stack, IDs
 
-- Financeiro multi-empresa da Promo Brindes, ~80% pronto, em manutenção. Módulos, integrações e as 105 Edge Functions: `docs/agentes/sistema.md` (ler ao mexer em função ou integração).
+- Financeiro multi-empresa da Promo Brindes, ~80% pronto, em manutenção. Módulos, integrações, 105 Edge Functions, URLs e IDs completos: `docs/agentes/sistema.md` (ler ao mexer em função/integração ou precisar de URL/ID).
 - O dono não é dev: decide negócio, o agente executa. Princípio: qualidade + velocidade — máximo de tarefas com êxito total pelo caminho mais rápido e barato em tokens (decide ferramenta, leitura, diff e resposta).
 - Vite 6, React 18, TypeScript, Tailwind, shadcn/ui, TanStack Query; Supabase Cloud (Postgres, RLS, Auth, Edge Functions Deno); Vercel (time `juca1`): merge em `main` = produção.
 - Supabase OFICIAL `bwwbeyolnnzppeuhgkcd` (MCP `SUPABASE - PROMO FINANCE V2 - MCP`); fora do projeto: VPS AtomicaBR e `pgxfvjmuubtbowutlide` (só leitura).
@@ -42,13 +42,13 @@ Regras do dono para todo agente de IA; em conflito com `docs/`/README/relatório
 - CI: actions pinadas por SHA (não tag); secrets de produção só no environment `Production`.
 - Sem credencial em código, nem em teste; `EXTERNAL_SUPABASE_SERVICE_ROLE_KEY` só na função `external-data`; nunca imprimir/commitar `.git-credentials`, `.env.local`, tokens, chaves de API, service_role keys.
 
-## 6. Git (vários agentes em paralelo)
+## 6. Git
 
-Escrita no GitHub (`adm01-debug`): MCP `GITHUB - MCP - FOREVER` (o padrão dá 403; `git push`/`gh` só em repo fonte autorizada da sessão). Fluxo completo e worktree: `docs/agentes/fluxo-git.md` (ler antes da primeira branch).
+Escrita no GitHub (`adm01-debug`): MCP `GITHUB - MCP - FOREVER` (o padrão dá 403; `git push`/`gh` só em repo fonte autorizada da sessão). Fluxo completo: `docs/agentes/fluxo-git.md` (ler antes da primeira branch).
 
 1. Nunca commite em `main`; nunca reaproveite branch nem escreva em branch alheia (só leitura, sem exceção). Branch própria em worktree isolado, de `main` atualizado: `claude/<tipo>-<slug>-<AAMMDD-HHMM>` (`fix`|`feat`|`chore`|`infra`); sem carimbo não é aceito. Uma tarefa = uma branch = uma PR.
 2. Antes de começar, liste PRs abertas (`github_graphql`, não `github_list_pull_requests`); PR aberta nos mesmos arquivos → pare e avise. Antes de push, confirme que o último commit é seu.
-3. Commits curtos em PT-BR com prefixo `fix:`/`feat:`/`chore:`/`infra:`, 1 atômico se possível. Hooks husky rodam em commit/push; `--no-verify` só em emergência documentada na PR. Só o orquestrador mexe em git.
+3. Commits curtos em PT-BR com prefixo `fix:`/`feat:`/`chore:`/`infra:` (convenção; não há commitlint), 1 atômico se possível. Hooks husky rodam em commit/push; `--no-verify` só em emergência documentada na PR. Só o orquestrador mexe em git.
 4. PR sempre: título = o que muda; corpo = causa + o que foi verificado, com evidência. Reporte no fim: link + estado (mergeada / aguardando o dono / CI vermelha e por quê).
 5. Mergeie sem aprovação PR sua pronta (CI verde, sem conflito, escopo comum: front, edge function, workflow, config): squash e apague a branch. Merge = produção: confira o deploy; CI vermelha → leia a falha antes de patch, corrija em branch nova.
 6. Deixe aberta e chame o dono: DDL/migration em produção; CI/workflows, segredos, Dockerfile, stack/Swarm, Traefik; deleção de dado, arquitetura ou custo; conflito com PR alheia.
@@ -57,11 +57,11 @@ Escrita no GitHub (`adm01-debug`): MCP `GITHUB - MCP - FOREVER` (o padrão dá 4
 ## 7. Comunicação
 
 - Resultado primeiro, só o que muda decisão do dono. Sem introdução, recapitulação, resumo, "vou fazer X", narração, hedging, disclaimer, desculpa, lição de moral, cortesia de fechamento. O que mudou e o efeito no negócio; técnica só se perguntarem.
-- Proporcional: fix de 3 linhas = 5 linhas de resposta; não despeje log/arquivo/tool, cite a linha que importa; caminhos, comandos e links completos. Destrutivo: uma linha ("isso apaga X, sem volta — confirma?").
+- Proporcional: fix de 3 linhas = 5 linhas de resposta; não despeje log/arquivo/tool, cite a linha que importa; caminhos, comandos e links completos. Destrutivo: uma linha ("apaga X, sem volta — confirma?").
 - Não pergunte "quer que eu faça?" após pedido; sem plano de 12 fases para fix de 20 linhas; sem passo manual quando há MCP (nem pedir ao dono revisar diff, rodar comando ou testar).
 - Feche toda execução com exatamente 3 "Próximos passos" (`N. [título] — [por quê] · [onde]`), por impacto, do que viu nesta sessão, executáveis via MCP, em linguagem de negócio; é um menu (`1`, `1 e 3`, `APROVADO 2`, "todos" = executar na ordem sem reconfirmar). Regras: `docs/agentes/proximos-passos.md` (ler antes da primeira entrega).
 
 ## 8. Graphify
 
-- Com `graphify-out/graph.json`: `graphify query "<pergunta>"` para o código, `path`/`explain` para relações; `GRAPH_REPORT.md` só para revisão ampla. Após mudar código, `graphify update .` (AST, sem custo); grafo atrás do HEAD → auto-sync N8N em 15 min.
-- Piloto privado (`npm run graphify:pilot`): saída em `graphify-out/piloto-*/`, só grafo com `evidencia.json` validado, sem contornar o wrapper (`update`/`extract`, hooks, LLM, MCP público, banco). Preservar `src/lib/arquitetura/`; nó isolado ≠ lixo, AST não prova RLS. Mais: `docs/agentes/graphify.md`.
+- Grafo upstream (`graphify-out/graph.json`): `graphify query "<pergunta>"` para o código, `path`/`explain` para relações. Só nele: `graphify update .` após mudar código (AST); grafo atrás do HEAD → auto-sync N8N em 15 min.
+- Wrapper do piloto (`npm run graphify:pilot` → `graphify-out/piloto-*/`): só grafo com `evidencia.json` validado; nunca `update .`/`extract .`, hooks, LLM, MCP público ou banco por fora dele. Preservar `src/lib/arquitetura/`; nó isolado ≠ lixo, AST não prova RLS. `docs/agentes/graphify.md`: ler antes de consultar/validar o grafo.

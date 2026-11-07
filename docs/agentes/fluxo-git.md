@@ -69,10 +69,23 @@ git worktree remove "$WORKSPACE" --force
 git worktree prune
 ```
 
-Fluxo da PR: branch → commit → push → PR via GitHub → CI → merge squash → delete branch.
-Hooks husky (`.husky/pre-commit`: lint-staged + gitleaks; `.husky/pre-push`: type-check + testes
-afetados) rodam em todo commit/push. `--no-verify` só em emergência documentada na PR, nunca no
-fluxo normal. Workers/editores NUNCA mexem em git/branches — só o orquestrador.
+**Convenção nova (introduzida na PR #252, não vinha do roteiro antigo):** a pasta base
+`$HOME/claude-worktrees/<repo>-<ID>`. O roteiro original usava
+`HERMES_BRANCH_ID="h$(date +%s | tail -c 7)"`, branch `fix/hermes-${HERMES_BRANCH_ID}-<descricao>`
+e `WORKSPACE="$HOME/hermes-workspaces/chat-${HERMES_BRANCH_ID}"` (caminho ainda citado em
+`docs/runbooks/HOTFIX.md`). O que esta versão mantém do original: id único por sessão no caminho,
+verificação de isolamento e cleanup. O que mudou: nome da branch segue a regra 4; `git fetch origin
+main` + `worktree add … origin/main` foram acrescentados para cumprir "branch nova a partir de `main`
+atualizado" (regra 4) — não constavam literalmente no roteiro antigo. O Hermes pode seguir em
+`$HOME/hermes-workspaces/chat-${ID}`.
 
-Histórico: o roteiro Hermes original usava `HERMES_BRANCH_ID="h$(date +%s | tail -c 7)"` e
-`fix/hermes-${HERMES_BRANCH_ID}-<descricao>`; esse prefixo foi substituído pelo padrão da regra 4.
+Fluxo da PR: branch → commit → push → PR via GitHub → CI → merge squash → delete branch.
+Hooks husky (`.husky/pre-commit`: lint-staged + gitleaks, se instalado — sem gitleaks o hook avisa
+e segue; `.husky/pre-push`: type-check + testes afetados) rodam em todo commit/push quando o husky
+está instalado (`npm install` roda `prepare: husky`). `--no-verify` só em emergência documentada na
+PR, nunca no fluxo normal. Workers/editores NUNCA mexem em git/branches — só o orquestrador.
+
+Prefixos de commit (`fix:`, `feat:`, `chore:`, `infra:`) são convenção do texto-mestre: o repo
+**não tem commitlint** (sem config, sem dependência, sem hook `commit-msg`, sem check no CI), logo
+nenhum prefixo é validado. `infra:` não aparece nos últimos 200 commits de `main` (fix 89, feat 32,
+docs 29, chore 24); se o dono quiser validação, é decisão a tomar.

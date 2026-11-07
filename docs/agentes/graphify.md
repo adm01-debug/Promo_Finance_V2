@@ -1,7 +1,7 @@
 # Graphify — referência para agentes
 
 > Ler quando for consultar, atualizar ou validar o grafo de código. Resumo operacional em
-> `AGENTS.md`, seção 9. Skill: `.claude/skills/graphify/SKILL.md`.
+> `AGENTS.md`, seção 8. Skill: `.claude/skills/graphify/SKILL.md`.
 
 ## Grafo de conhecimento (`graphify-out/`)
 
