@@ -3,7 +3,7 @@
 // Detecta sublimite Simples, Fator R, vencimentos, desvios setoriais, IRPFM
 // Hardened: structured logging, retry com exponential backoff, top-level try/catch
 // ============================================
-import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.49.4';
+import { createClient } from 'npm:@supabase/supabase-js@2.49.4';
 import { exigirChamadaInterna } from '../_shared/auth-guard.ts';
 import { createLogger } from '../_shared/observability.ts';
 import { corsHeadersPara } from '../_shared/cors.ts';

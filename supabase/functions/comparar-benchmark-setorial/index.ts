@@ -1,7 +1,7 @@
 // Edge: comparar-benchmark-setorial — versão determinística (stub)
 // Substitui a versão que dependia de LOVABLE_API_KEY (ausente neste projeto).
 // Calcula carga tributária 12m da empresa vs benchmarks por regime tributário.
-import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.49.4';
+import { createClient } from 'npm:@supabase/supabase-js@2.49.4';
 import { respostaPreflight, jsonComCors } from '../_shared/cors.ts';
 import { z } from '../_shared/zod.ts';
 import { exigirInternaOuUsuario } from '../_shared/auth-guard.ts';

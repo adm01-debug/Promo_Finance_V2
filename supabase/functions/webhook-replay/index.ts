@@ -1,5 +1,5 @@
 // Endpoint admin para replay manual de webhooks (por ID) ou em lote (por origem/status).
-import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.49.4';
+import { createClient } from 'npm:@supabase/supabase-js@2.49.4';
 import { corsHeaders, createErrorResponse } from '../_shared/validation.ts';
 import { createLogger } from '../_shared/logger.ts';
 import { z } from '../_shared/zod.ts';
