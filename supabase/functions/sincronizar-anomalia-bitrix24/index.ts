@@ -1,6 +1,6 @@
 // Edge Function: sincronizar-anomalia-bitrix24
 // Cria/atualiza uma Tarefa no Bitrix24 quando uma anomalia é revisada
-import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.49.4';
+import { createClient } from 'npm:@supabase/supabase-js@2.49.4';
 import { validateContract } from '../_shared/contract-validator.ts';
 import { z } from 'https://deno.land/x/zod@v3.22.4/mod.ts';
 import { corsHeadersPara } from '../_shared/cors.ts';

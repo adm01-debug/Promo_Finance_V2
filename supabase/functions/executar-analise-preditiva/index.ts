@@ -1,5 +1,5 @@
 import { serve } from 'https://deno.land/std@0.168.0/http/server.ts';
-import { createClient, type SupabaseClient } from 'https://esm.sh/@supabase/supabase-js@2.49.4';
+import { createClient, type SupabaseClient } from 'npm:@supabase/supabase-js@2.49.4';
 import { exigirChamadaInterna } from '../_shared/auth-guard.ts';
 import { corsHeadersPara } from '../_shared/cors.ts';
 import { getRequestId, correlationHeaders } from '../_shared/correlation.ts';
