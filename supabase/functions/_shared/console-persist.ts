@@ -18,7 +18,7 @@
  * - no-op em DENO_TESTING e quando SUPABASE_URL/SERVICE_ROLE_KEY ausentes.
  */
 
-import { createClient, type SupabaseClient } from 'https://esm.sh/@supabase/supabase-js@2.49.4';
+import { createClient, type SupabaseClient } from 'npm:@supabase/supabase-js@2.49.4';
 
 interface ConsoleLogRow {
   function_name: string;

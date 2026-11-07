@@ -3,7 +3,7 @@
 // Autenticado por segredo compartilhado (x-ci-gate-secret) com comparação
 // timing-safe e fail-closed quando a configuração estiver ausente.
 
-import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.49.4';
+import { createClient } from 'npm:@supabase/supabase-js@2.49.4';
 import { validateContract } from '../_shared/contract-validator.ts';
 import { z } from 'https://deno.land/x/zod@v3.22.4/mod.ts';
 import { corsHeaders, corsHeadersPara } from '../_shared/cors.ts';

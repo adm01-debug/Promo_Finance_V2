@@ -1,4 +1,4 @@
-import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.49.4';
+import { createClient } from 'npm:@supabase/supabase-js@2.49.4';
 import { corsHeadersPara } from '../_shared/cors.ts';
 import { clientDeServico, exigirUsuario } from '../_shared/auth-guard.ts';
 import { withEdgeObservability } from '../_shared/edge-observability.ts';

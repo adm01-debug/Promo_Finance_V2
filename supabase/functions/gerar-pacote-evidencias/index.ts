@@ -1,6 +1,6 @@
 import { serve } from 'https://deno.land/std@0.168.0/http/server.ts';
-import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.49.4';
-import JSZip from 'https://esm.sh/jszip@3.10.1';
+import { createClient } from 'npm:@supabase/supabase-js@2.49.4';
+import JSZip from 'npm:jszip@3.10.1';
 import { validateContract } from '../_shared/contract-validator.ts';
 import { z } from 'https://deno.land/x/zod@v3.22.4/mod.ts';
 import { corsHeadersPara } from '../_shared/cors.ts';
