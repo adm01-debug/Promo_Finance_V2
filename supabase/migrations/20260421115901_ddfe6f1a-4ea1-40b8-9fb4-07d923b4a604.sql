@@ -1,4 +1,4 @@
-
+-- Guarda idempotente: safe para re-executar
 -- Enum tipo SSO
 DO $$ BEGIN
   CREATE TYPE public.sso_tipo AS ENUM ('oidc', 'saml');

@@ -1,3 +1,4 @@
+-- Guarda idempotente: safe para re-executar
 -- 1) Multi-empresa: vínculo usuário ↔ empresa com papel por empresa
 CREATE TABLE public.user_empresas (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
