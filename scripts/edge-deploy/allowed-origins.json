@@ -1,0 +1,17 @@
+{
+  "_comentario": "Origens exatas canônicas do CORS das Edge Functions do Promo_Finance_V2. Mantida em sincronia com ORIGENS_PADRAO em supabase/functions/_shared/cors.ts. O smoke usa esta lista para o preflight positivo; as de dev valem para ambiente local, não para o smoke de produção.",
+  "exact": [
+    "https://app.promo-finance.com"
+  ],
+  "dev": [
+    "http://localhost:8080",
+    "http://localhost:5173",
+    "http://localhost:4173",
+    "http://localhost:3000",
+    "http://127.0.0.1:8080",
+    "http://127.0.0.1:5173",
+    "http://127.0.0.1:4173",
+    "http://127.0.0.1:3000"
+  ],
+  "denied_example": "https://edge-smoke.invalid"
+}
