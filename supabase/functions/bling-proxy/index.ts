@@ -58,7 +58,13 @@ Deno.serve(
         const ip = req.headers.get('x-forwarded-for') ?? req.headers.get('x-real-ip') ?? 'unknown';
         const userAgent = req.headers.get('user-agent') ?? '';
         const rlClient = createClient(supabaseUrl, Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!);
-        const rl = await checkRateLimit(rlClient, { endpoint: 'bling-proxy', ip, limit: 30, windowSeconds: 60, userAgent });
+        const rl = await checkRateLimit(rlClient, {
+          endpoint: 'bling-proxy',
+          ip,
+          limit: 30,
+          windowSeconds: 60,
+          userAgent,
+        });
         if (!rl.allowed) return rateLimitResponse(rl, corsHeaders);
         const rawBody = await req.json();
         const validation = validatePayload(BlingProxySchema, rawBody, 'bling-proxy');
