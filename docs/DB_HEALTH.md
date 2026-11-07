@@ -38,12 +38,19 @@ FROM (
   WHERE tc.constraint_type = 'FOREIGN KEY'
     AND tc.table_schema = 'public'
     AND NOT EXISTS (
+      -- Só conta como suportada se a coluna for CHAVE LÍDER do índice
+      -- (indkey[0]) — coluna em INCLUDE ou em posição não-líder não serve
+      -- de suporte para o plano de consulta da FK.
       SELECT 1
       FROM pg_index i
-      JOIN pg_attribute a ON a.attrelid = i.indrelid
-        AND a.attnum = ANY(i.indkey)
       WHERE i.indrelid = (tc.table_schema || '.' || tc.table_name)::regclass
-        AND a.attname = kcu.column_name
+        AND i.indkey[0] = (
+          SELECT a.attnum
+          FROM pg_attribute a
+          WHERE a.attrelid = i.indrelid
+            AND a.attname = kcu.column_name
+            AND NOT a.attisdropped
+        )
     )
 ) x;
 ```
@@ -78,9 +85,12 @@ FROM pg_class c
 JOIN pg_namespace n ON n.oid = c.relnamespace
 WHERE c.relkind = 'v'
   AND n.nspname = 'public'
-  AND (
-    c.reloptions IS NULL
-    OR NOT array_to_string(c.reloptions, ',') LIKE '%security_invoker=true%'
+  AND NOT EXISTS (
+    -- Mesmo critério do gate_30_views_inseguras: reloptions pode vir em
+    -- minúsculas (security_invoker=on) ou com o formato storage (…=true).
+    SELECT 1
+    FROM unnest(coalesce(c.reloptions, '{}'::text[])) o
+    WHERE lower(o) IN ('security_invoker=on', 'security_invoker=true')
   );
 ```
 
@@ -140,12 +150,19 @@ SELECT
   j.jobname,
   count(*)         AS total_falhas,
   max(d.end_time)  AS ultima_falha,
-  max(d.return_message) AS ultimo_erro
+  -- return_message da execução mais recente (a que realmente falhou por último);
+  -- o MAX(return_message) global poderia trazer erro de outra execução do job.
+  (SELECT d2.return_message
+   FROM cron.job_run_details d2
+   WHERE d2.jobid = d.jobid
+     AND d2.status = 'failed'
+   ORDER BY d2.end_time DESC
+   LIMIT 1) AS ultimo_erro
 FROM cron.job_run_details d
 JOIN cron.job j ON j.jobid = d.jobid
 WHERE d.status = 'failed'
   AND d.end_time > now() - INTERVAL '24 hours'
-GROUP BY j.jobname
+GROUP BY j.jobname, d.jobid
 ORDER BY ultima_falha DESC;
 ```
 
@@ -178,40 +195,40 @@ SELECT
 
 Números medidos antes da execução do PLANO_50 (baseline ~2026-09-01).
 
-| Métrica | Antes do plano | Fonte |
-|---|---|---|
-| FK sem índice | ~47 | AUDITORIA_TECNICA_EXAUSTIVA_2026-09-02_R2_LIVE.md |
-| Índices sem uso | ~38 | pg_stat_user_indexes (baseline) |
-| Views sem security_invoker | ~12 | hardening P14 (pré-P15) |
-| Tabelas RLS sem policy | ~5 | RLS_MATRIZ_NEGATIVA.md |
-| Migrations aplicadas | ~500 | schema_migrations |
-| Cron jobs com falha/24h | 1+ (Step 09) | cron.job_run_details |
-| Edge Functions sem guard | ~15 | auditoria manual |
+| Métrica                    | Antes do plano | Fonte                                             |
+| -------------------------- | -------------- | ------------------------------------------------- |
+| FK sem índice              | ~47            | AUDITORIA_TECNICA_EXAUSTIVA_2026-09-02_R2_LIVE.md |
+| Índices sem uso            | ~38            | pg_stat_user_indexes (baseline)                   |
+| Views sem security_invoker | ~12            | hardening P14 (pré-P15)                           |
+| Tabelas RLS sem policy     | ~5             | RLS_MATRIZ_NEGATIVA.md                            |
+| Migrations aplicadas       | ~500           | schema_migrations                                 |
+| Cron jobs com falha/24h    | 1+ (Step 09)   | cron.job_run_details                              |
+| Edge Functions sem guard   | ~15            | auditoria manual                                  |
 
 ---
 
 ## Tabela Antes × Depois (impacto do PLANO_50)
 
-| # | Métrica | Antes | Depois (meta) | Step que corrige | Query |
-|---|---|---|---|---|---|
-| 1 | FK sem índice | ~47 | **0** | Bloco C (19-23) | Query 1 |
-| 2 | Índices sem uso | ~38 | **< 10** | Step 17 | Query 2 |
-| 3 | Views sem security_invoker | ~12 | **0** | Step 18 | Query 3 |
-| 4 | Tabelas RLS sem policy | ~5 | **0** | Steps 12-16 | Query 4 |
-| 5 | Migrations aplicadas | ~500 | **573+** (plano completo) | Todas as migrations | Query 5 |
-| 6 | Cron jobs com falha/24h | 1+ | **0** | Steps 09, 46 | Query 6 |
-| 7 | Edge Functions sem guard | ~15 | **0** | Bloco D (33-48) | Query 7 |
+| #   | Métrica                    | Antes | Depois (meta)             | Step que corrige    | Query   |
+| --- | -------------------------- | ----- | ------------------------- | ------------------- | ------- |
+| 1   | FK sem índice              | ~47   | **0**                     | Bloco C (19-23)     | Query 1 |
+| 2   | Índices sem uso            | ~38   | **< 10**                  | Step 17             | Query 2 |
+| 3   | Views sem security_invoker | ~12   | **0**                     | Step 18             | Query 3 |
+| 4   | Tabelas RLS sem policy     | ~5    | **0**                     | Steps 12-16         | Query 4 |
+| 5   | Migrations aplicadas       | ~500  | **573+** (plano completo) | Todas as migrations | Query 5 |
+| 6   | Cron jobs com falha/24h    | 1+    | **0**                     | Steps 09, 46        | Query 6 |
+| 7   | Edge Functions sem guard   | ~15   | **0**                     | Bloco D (33-48)     | Query 7 |
 
 ---
 
 ## Interpretação dos resultados
 
-| Resultado | Significado | Ação |
-|---|---|---|
-| = valor esperado | ✅ Saudável | Nenhuma |
-| Ligeiramente acima | ⚠️ Atenção | Investigar causa; pode ser migração nova ainda não rastreada |
-| Muito acima do esperado | 🔴 Regressão | Abrir issue com label `db-health` e referenciar esta query |
-| Query falha com erro | ❌ Schema mudou | Atualizar a query e reavaliar baseline |
+| Resultado               | Significado     | Ação                                                         |
+| ----------------------- | --------------- | ------------------------------------------------------------ |
+| = valor esperado        | ✅ Saudável     | Nenhuma                                                      |
+| Ligeiramente acima      | ⚠️ Atenção      | Investigar causa; pode ser migração nova ainda não rastreada |
+| Muito acima do esperado | 🔴 Regressão    | Abrir issue com label `db-health` e referenciar esta query   |
+| Query falha com erro    | ❌ Schema mudou | Atualizar a query e reavaliar baseline                       |
 
 ### Frequência recomendada de execução
 
@@ -221,4 +238,4 @@ Números medidos antes da execução do PLANO_50 (baseline ~2026-09-01).
 
 ---
 
-*Gerado em 2026-11-01 — Step 47 do PLANO_50.*
+_Gerado em 2026-11-01 — Step 47 do PLANO_50._
