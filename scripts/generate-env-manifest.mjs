@@ -87,6 +87,8 @@ const opcionais = new Set([
   'DENO_TESTING',
   'EDGE_SENTRY_DSN',
   'SENTRY_DSN',
+  // fallback 'production' em _shared/sentry.ts
+  'SENTRY_ENVIRONMENT',
 ]);
 const edge = [...edgeSet].sort().map(name => ({
   name, scope: 'edge', required: !autoProvided.has(name) && !opcionais.has(name),
