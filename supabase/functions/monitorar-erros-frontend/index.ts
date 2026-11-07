@@ -7,7 +7,7 @@
  * `claim_frontend_error_alerts`, que registra o disparo na MESMA transação —
  * portanto execuções concorrentes não geram alertas duplicados.
  */
-import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.49.4';
+import { createClient } from 'npm:@supabase/supabase-js@2.49.4';
 import { corsHeaders } from '../_shared/validation.ts';
 import { exigirChamadaInterna } from '../_shared/auth-guard.ts';
 import { z } from '../_shared/zod.ts';

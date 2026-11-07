@@ -1,4 +1,4 @@
-import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.49.4';
+import { createClient } from 'npm:@supabase/supabase-js@2.49.4';
 
 /**
  * Script de validação de contrato para a Edge Function external-data.

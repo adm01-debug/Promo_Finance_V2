@@ -11,7 +11,7 @@
 //
 // verify_jwt = false — chamada antes do login. Não retorna dados sensíveis.
 
-import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.49.4';
+import { createClient } from 'npm:@supabase/supabase-js@2.49.4';
 import { validateContract } from '../_shared/contract-validator.ts';
 import { checkRateLimit, rateLimitResponse } from '../_shared/rate-limit.ts';
 import { z } from 'https://deno.land/x/zod@v3.22.4/mod.ts';

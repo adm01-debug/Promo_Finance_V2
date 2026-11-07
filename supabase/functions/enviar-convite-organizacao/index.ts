@@ -8,7 +8,7 @@
 //  - O token do convite nunca é lido do corpo da requisição: é carregado
 //    do banco a partir do convite_id, evitando enumeração/forjamento.
 // ============================================
-import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.49.4';
+import { createClient } from 'npm:@supabase/supabase-js@2.49.4';
 import { z } from '../_shared/zod.ts';
 import { getAppBaseUrl } from '../_shared/app-url.ts';
 import { corsHeaders, corsHeadersPara } from '../_shared/cors.ts';
