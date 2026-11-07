@@ -48,9 +48,11 @@ commitar em `main`; mergear o que está na regra 8.
 em branches e em arquivos de trabalho.
 
 ```bash
-# 1. Nome único (carimbo obrigatório)
-BRANCH="claude/<tipo>-<slug>-$(date +%y%m%d-%H%M)"
-WORKSPACE="$HOME/claude-worktrees/$(basename "$PWD")"   # Hermes: $HOME/hermes-workspaces/chat-<id>
+# 1. Identificador único da sessão: entra na branch E no diretório do worktree,
+#    senão dois agentes no mesmo checkout caem na mesma pasta.
+ID="$(date +%y%m%d-%H%M)"
+BRANCH="claude/<tipo>-<slug>-${ID}"
+WORKSPACE="$HOME/claude-worktrees/$(basename "$PWD")-${ID}"   # Hermes: $HOME/hermes-workspaces/chat-${ID}
 
 # 2. Criar worktree a partir de main atualizado
 git fetch origin main
