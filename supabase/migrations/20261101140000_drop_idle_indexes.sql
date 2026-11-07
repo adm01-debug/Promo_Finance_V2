@@ -31,7 +31,7 @@ DROP INDEX IF EXISTS public.idx_allowed_ips_created_at;
 DROP INDEX IF EXISTS public.idx_anexos_financeiros_entidade;
 DROP INDEX IF EXISTS public.idx_anexos_financeiros_storage_path;
 DROP INDEX IF EXISTS public.idx_anomalia_toast_eventos_anomalia_id_fk;
-DROP INDEX EXISTS public.idx_anomalias_novas;
+DROP INDEX IF EXISTS public.idx_anomalias_novas;
 DROP INDEX IF EXISTS public.idx_apuracoes_irpj_csll_empresa_id_fk;
 DROP INDEX IF EXISTS public.idx_asaas_audit_trail_asaas_payment_id_fk;
 DROP INDEX IF EXISTS public.idx_credit_risk_cliente;
