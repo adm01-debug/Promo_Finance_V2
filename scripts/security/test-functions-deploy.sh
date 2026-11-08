@@ -16,11 +16,18 @@ MOCK
 chmod +x "$TMP_DIR/bin/supabase"
 
 cd "$ROOT"
+# --no-post-deploy-check: este teste trava o contrato de ARGUMENTOS do deploy —
+# especificamente o `--no-verify-jwt` por função, derivado do config.toml. O bloco
+# de verificação pós-deploy emite uma terceira chamada da CLI (`functions list`,
+# read-only) que não faz parte desse contrato; a lógica dela é coberta por
+# scripts/edge-deploy/verify-remote.unit.mjs. Sem a flag, o teste passaria a
+# falhar por contar uma chamada que ele não se propõe a verificar.
 PATH="$TMP_DIR/bin:$PATH" \
 SUPABASE_TEST_CAPTURE="$CAPTURE" \
 SUPABASE_ACCESS_TOKEN="sbp_teste" \
 SUPABASE_PROJECT_REF="projeto_teste" \
 bash scripts/migrate-functions.sh \
+  --no-post-deploy-check \
   --only "detectar-anomalias-financeiras,compare-schemas" >/dev/null
 
 mapfile -t calls < "$CAPTURE"
