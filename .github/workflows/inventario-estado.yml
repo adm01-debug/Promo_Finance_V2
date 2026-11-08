@@ -85,6 +85,7 @@ jobs:
     needs: testes
     runs-on: ubuntu-latest
     timeout-minutes: 20
+    environment: Production # gate de ambiente para o job que lê SUPABASE_ACCESS_TOKEN (acesso de leitura ao banco oficial)
     permissions:
       contents: write # push na branch gerada `inventario`
     steps:
