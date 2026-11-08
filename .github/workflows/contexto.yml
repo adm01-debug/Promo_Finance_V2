@@ -343,9 +343,22 @@ jobs:
       - name: Guard — nenhum segredo na saída
         if: env.SNAPSHOT_SKIPPED != '1'
         run: |
-          if grep -rIEl 'eyJ[A-Za-z0-9_-]{10,}\.[A-Za-z0-9_-]{10,}\.[A-Za-z0-9_-]{10,}|sb_(secret|publishable)_[A-Za-z0-9_-]{8,}|postgres(ql)?://[^ ]*:[^ @]+@' "$SNAPSHOT_DIR"; then
-            echo "::error::Possível segredo detectado no snapshot — publicação abortada"; exit 1
+          # Marcador de redação não é segredo: [REDACTED], [YOUR-PASSWORD], *** e $VAR reprovavam o job
+          # com a saída já limpa. O scrub() do snapshot.py redige a senha de qualquer DSN antes daqui.
+          PADROES='eyJ[A-Za-z0-9_-]{10,}\.[A-Za-z0-9_-]{10,}\.[A-Za-z0-9_-]{10,}'
+          PADROES="$PADROES"'|sb_(secret|publishable)_[A-Za-z0-9_-]{8,}'
+          PADROES="$PADROES"'|[a-z][a-z0-9+.-]*://[^:/?#@[:space:]]+:[^@[:space:]]+@'
+          MARCADORES=':(\[REDACTED[^]]*\]|\[YOUR-[^]]*\]|\*{3,}|\$\{?[A-Za-z_][A-Za-z0-9_]*\}?)@'
+          achados="$(grep -rIEo "$PADROES" "$SNAPSHOT_DIR" | grep -vE "$MARCADORES" || true)"
+          if [ -n "$achados" ]; then
+            echo "::error::Possível segredo detectado no snapshot — publicação abortada"
+            # Nunca imprime o valor: só arquivo, tipo e tamanho do trecho, para dar o que investigar.
+            printf '%s\n' "$achados" | awk -F: '{ arq = $1; $1 = ""; t = substr($0, 2);
+              tipo = (t ~ /^eyJ/) ? "jwt" : (t ~ /^sb_/) ? "chave-supabase" : "dsn-com-credencial";
+              print "  " arq " -> " tipo " (" length(t) " chars)" }' | sort -u
+            exit 1
           fi
+          echo "Guard: nenhum padrão de credencial na saída."
 
       - name: Reportar seções com erro (não falha o job)
         if: always() && env.SNAPSHOT_SKIPPED != '1'

@@ -967,5 +967,35 @@ class SnapshotErrorRedactionTests(SnapshotFixture):
         self.assertNotIn("SenhaSuperSecreta123", snapshot.ERRORS[0]["error"])
 
 
+class SnapshotDsnScrubTests(SnapshotFixture):
+    """Credencial embutida em DSN não pode sair na coleta, venha de onde vier."""
+
+    def test_senha_de_dsn_e_redigida_mantendo_usuario_e_host(self):
+        scrub = self.snapshot.scrub
+        saida = scrub("postgresql://postgres.abc:SenhaReal123@aws-0-us-east-1.pooler.supabase.com:5432/postgres")
+        self.assertNotIn("SenhaReal123", saida)
+        self.assertIn("postgres.abc", saida)
+        self.assertIn("aws-0-us-east-1.pooler.supabase.com", saida)
+
+    def test_outros_esquemas_tambem(self):
+        scrub = self.snapshot.scrub
+        for dsn in ("redis://user:p4ssw0rd-secreta@cache:6379/0",
+                    "amqp://fila:OutraSenha99@broker:5672/vhost"):
+            self.assertNotIn("Senha", scrub(dsn).replace("[REDACTED]", ""))
+            self.assertNotIn("p4ssw0rd-secreta", scrub(dsn))
+
+    def test_url_sem_credencial_fica_intacta(self):
+        scrub = self.snapshot.scrub
+        for url in ("https://api.exemplo.com/v1/coisa",
+                    "https://bwwbeyolnnzppeuhgkcd.supabase.co/functions/v1/health"):
+            self.assertEqual(scrub(url), url)
+
+    def test_redact_por_chave_continua_valendo(self):
+        redact = self.snapshot.redact
+        saida = redact({"connection_string": "postgresql://u:senha@h:5432/db", "db_host": "h"})
+        self.assertEqual(saida["connection_string"], "[REDACTED]")
+        self.assertEqual(saida["db_host"], "h")
+
+
 if __name__ == "__main__":
     unittest.main()
