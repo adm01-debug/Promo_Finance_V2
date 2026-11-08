@@ -33,46 +33,53 @@ const sub = createClient(url, anon, { auth: { persistSession: false } });
 const admin = createClient(url, service, { auth: { persistSession: false } });
 
 async function testTable(table, buildRow) {
-  return await new Promise((resolve) => {
-    let received = null;
-    const t0 = Date.now();
-    const channel = sub
-      .channel(`hc-${table}-${RUN_ID}`)
-      .on('postgres_changes', { event: 'INSERT', schema: 'public', table }, (payload) => {
-        const r = payload?.new || {};
-        const marker =
-          r?.raw_payload?.healthcheck_run_id ??
-          r?.metadata?.healthcheck_run_id ??
-          null;
-        if (marker === RUN_ID && !received) {
-          received = Date.now();
-        }
-      })
-      .subscribe();
+  let received = null;
+  const t0 = Date.now();
+  const channel = sub
+    .channel(`hc-${table}-${RUN_ID}`)
+    .on('postgres_changes', { event: 'INSERT', schema: 'public', table }, (payload) => {
+      const r = payload?.new || {};
+      const marker =
+        r?.raw_payload?.healthcheck_run_id ??
+        r?.metadata?.healthcheck_run_id ??
+        null;
+      if (marker === RUN_ID && !received) {
+        received = Date.now();
+      }
+    })
+    .subscribe();
 
-    // aguarda subscribe
-    await new Promise(r => setTimeout(r, 800));
-
-    const row = buildRow();
-    const { error } = await admin.from(table).insert(row).select('id').single();
-    if (error) {
-      emit(table, 'fail', `insert error: ${error.message}`);
-      await sub.removeChannel(channel);
-      return resolve();
-    }
-
-    const timeout = 5000;
-    const start = Date.now();
-    while (!received && Date.now() - start < timeout) {
-      await new Promise(r => setTimeout(r, 100));
-    }
-
-    if (received) emit(table, 'pass', 'evento recebido', received - t0);
-    else          emit(table, 'fail', `timeout ${timeout}ms sem evento`);
-
-    await sub.removeChannel(channel);
-    resolve();
+  // Aguarda estado SUBSCRIBED (ou timeout de 3 s) sem await dentro de callback
+  await new Promise(r => {
+    let done = false;
+    const tid = setTimeout(() => { done = true; r(); }, 3000);
+    const checkState = setInterval(() => {
+      if (done) { clearInterval(checkState); return; }
+      const state = channel.state;
+      if (state === 'joined' || state === 'SUBSCRIBED') {
+        clearTimeout(tid); clearInterval(checkState); r();
+      }
+    }, 100);
   });
+
+  const row = buildRow();
+  const { error } = await admin.from(table).insert(row).select('id').single();
+  if (error) {
+    emit(table, 'fail', `insert error: ${error.message}`);
+    await sub.removeChannel(channel);
+    return;
+  }
+
+  const timeout = 5000;
+  const start = Date.now();
+  while (!received && Date.now() - start < timeout) {
+    await new Promise(r => setTimeout(r, 100));
+  }
+
+  if (received) emit(table, 'pass', 'evento recebido', received - t0);
+  else          emit(table, 'fail', `timeout ${timeout}ms sem evento`);
+
+  await sub.removeChannel(channel);
 }
 
 try {

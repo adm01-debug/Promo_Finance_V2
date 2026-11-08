@@ -40,7 +40,9 @@ run_sql() {
     -v allow_public="$allowed" \
     -v expected_policies="$policies" \
     -v expected_crons="$crons" \
-    -f "$file" 2>&1 | while IFS=$'\t' read -r ass st exp act detail; do
+    -f "$file" 2>&1 | while IFS='' read -r raw_line; do
+      # Separa em até 5 campos pelo primeiro \t para suportar `detail` com tabs.
+      IFS=$'\t' read -r ass st exp act detail <<< "$raw_line"
       [ -z "$ass" ] && continue
       emit "$step" "$ass" "$st" "$exp" "$act" "$detail"
     done

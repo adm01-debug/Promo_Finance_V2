@@ -157,7 +157,10 @@ export function evaluate(role: Role, fn: string, result: RpcCallResult): boolean
   // alvo, evitando aprovar 403 genérico emitido já dentro do corpo.
   if (result.status !== 403 || result.code !== "42501") return false;
   const normalized = (result.message ?? "").toLowerCase();
-  return normalized.includes(`permission denied for function ${fn.toLowerCase()}`);
+  // Postgres pode emitir o nome com ou sem aspas duplas: fn ou "fn"
+  const bare = fn.toLowerCase();
+  return normalized.includes(`permission denied for function ${bare}`) ||
+         normalized.includes(`permission denied for function "${bare}"`);
 }
 
 
