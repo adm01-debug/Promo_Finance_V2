@@ -97,6 +97,10 @@ const BASE = process.env.CLAUDE_MD_BASE || 'HEAD';
 const atual = bytesAtuais();
 const base = bytesNaBase(BASE);
 
+if (!base) {
+  console.log(`::warning::shrink check pulado: ref base '${BASE}' nao encontrada (checkout raso ou ref inexistente).`);
+}
+
 if (base) {
   const ratio = atual / base.total;
   if (ratio < 1 - SHRINK_THRESHOLD) {
