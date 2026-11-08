@@ -95,7 +95,7 @@ for (let c = 0; c < CENARIOS; c += 1) {
     `#${c}: motivos fora de ordem decrescente`,
   );
   check(
-    destinos.reduce((s, d) => s + d.enviados + d.falhas, 0) === resumo.total - resumo.ignorados,
+    destinos.reduce((s, d) => s + d.enviados + d.falhas, 0) === resumo.total - resumo.ignorados - (resumo.simulados ?? 0),
     `#${c}: destinatários não fecham`,
   );
   check(falhasLista.length === Math.min(20, resumo.falhas), `#${c}: quantidade de falhas listadas incorreta`);

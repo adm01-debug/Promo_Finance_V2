@@ -20,13 +20,13 @@ def line_of(text, position):
 
 
 def extract_imports(relative, text):
-    found, occupied = [], set()
+    found, occupied_ranges = [], []
     for kind, pattern in IMPORT_PATTERNS:
         for match in pattern.finditer(text):
-            span = range(match.start(), match.end())
-            if any(position in occupied for position in span):
+            ms, me = match.start(), match.end()
+            if any(ms < e and me > s for s, e in occupied_ranges):
                 continue
-            occupied.update(span)
+            occupied_ranges.append((ms, me))
             found.append({
                 "kind": kind,
                 "specifier": match.group(2),
