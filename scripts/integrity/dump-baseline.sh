@@ -26,7 +26,7 @@ SQL
 
 # --- expected-policies.json (contagem por tabela) --------------------------
 psql "$PROD_DB_URL" -v ON_ERROR_STOP=1 -A -t <<'SQL' > "$OUT/expected-policies.json"
-SELECT jsonb_object_agg(tablename, cnt)::text FROM (
+SELECT COALESCE(jsonb_object_agg(tablename, cnt), '{}'::jsonb)::text FROM (
   SELECT tablename, count(*) AS cnt FROM pg_policies
   WHERE schemaname='public' GROUP BY tablename
 ) t;
