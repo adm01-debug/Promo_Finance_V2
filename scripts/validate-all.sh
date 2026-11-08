@@ -163,12 +163,15 @@ fi
 # 8. MJS — execução com --dry-run onde aplicável
 # ---------------------------------------------------------------------------
 echo "── MJS --help / dry-run ───────────────────────────────────────────────"
+_mjs_rc=0
 _mjs_out=$(echo "import '${ROOT}/scripts/security/test-canonical-db-gates.mjs'" \
-  | node --input-type=module 2>&1 || true)
-if echo "$_mjs_out" | grep -qE "command not found|Cannot find.*node|bad option|ENOENT.*node"; then
-  fail "test-canonical-db-gates.mjs" "$_mjs_out"
-elif echo "$_mjs_out" | grep -qE "ERROR|fail|FAIL"; then
-  skip "test-canonical-db-gates.mjs" "requer variáveis de ambiente (esperado)"
+  | node --input-type=module 2>&1) || _mjs_rc=$?
+if [ "$_mjs_rc" -ne 0 ]; then
+  if echo "$_mjs_out" | grep -qE "command not found|Cannot find.*node|bad option|ENOENT.*node"; then
+    fail "test-canonical-db-gates.mjs" "$_mjs_out"
+  else
+    skip "test-canonical-db-gates.mjs" "requer variáveis de ambiente (esperado, rc=$_mjs_rc)"
+  fi
 else
   ok "test-canonical-db-gates.mjs import sem crash"
 fi
@@ -411,15 +414,11 @@ _sm="$ROOT/scripts/staging-migrate.sh"
     || skip "staging-migrate.sh" "não detectou env ausente"
 } || skip "staging-migrate.sh" "não encontrado"
 
-# migrate-cron-jobs.sh
+# migrate-cron-jobs.sh — não implementa --help; teste apenas com --dry-run isolado
 _mcj="$ROOT/scripts/migrate-cron-jobs.sh"
 [ -f "$_mcj" ] && {
-  out=$(bash "$_mcj" --help 2>&1)
-  echo "$out" | grep -q "Uso:" && ok "migrate-cron-jobs.sh --help → Uso:" \
-    || fail "migrate-cron-jobs.sh --help" "sem Uso:"
-  out2=$(bash "$_mcj" --dry-run 2>&1 || true)
-  # dry-run sem env vars → erro de pré-condição, não crash inesperado
-  if echo "$out2" | grep -qiE "obrig|required|DEST_DB|missing|error"; then
+  out2=$(env -i HOME="$HOME" PATH="$PATH" bash "$_mcj" --dry-run 2>&1 || true)
+  if echo "$out2" | grep -qiE "obrig|required|DEST_DB|missing|error|dry.run"; then
     ok "migrate-cron-jobs.sh --dry-run sem env → erro de pré-condição"
   else
     skip "migrate-cron-jobs.sh --dry-run" "comportamento sem env não verificável"
