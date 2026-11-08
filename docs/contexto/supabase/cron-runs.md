@@ -16,9 +16,9 @@
 
 | início (UTC) | status | duração (s) | mensagem |
 |---|---|---|---|
+| 2026-11-08 20:00:00 | succeeded | 0.50 | 1 row |
 | 2026-11-08 19:00:00 | succeeded | 0.28 | 1 row |
 | 2026-11-08 18:00:00 | succeeded | 0.33 | 1 row |
-| 2026-11-08 17:00:00 | succeeded | 0.23 | 1 row |
 
 
 ## 4 · cleanup-cron-logs
@@ -68,18 +68,18 @@
 
 | início (UTC) | status | duração (s) | mensagem |
 |---|---|---|---|
+| 2026-11-08 20:00:00 | succeeded | 0.56 | 1 row |
+| 2026-11-08 19:30:00 | succeeded | 0.18 | 1 row |
 | 2026-11-08 19:00:00 | succeeded | 0.34 | 1 row |
-| 2026-11-08 18:30:00 | succeeded | 0.21 | 1 row |
-| 2026-11-08 18:00:00 | succeeded | 0.49 | 1 row |
 
 
 ## 12 · integrity-invariants-hourly
 
 | início (UTC) | status | duração (s) | mensagem |
 |---|---|---|---|
+| 2026-11-08 19:45:00 | succeeded | 0.01 | 1 row |
 | 2026-11-08 18:45:00 | succeeded | 0.01 | 1 row |
 | 2026-11-08 17:45:00 | succeeded | 0.01 | 1 row |
-| 2026-11-08 16:45:00 | succeeded | 0.01 | 1 row |
 
 
 ## 13 · maintain-monthly-partitions
@@ -193,18 +193,18 @@ _nenhum_
 
 | início (UTC) | status | duração (s) | mensagem |
 |---|---|---|---|
-| 2026-11-08 19:15:00 | succeeded | 0.06 | 1 row |
-| 2026-11-08 19:00:00 | succeeded | 0.06 | 1 row |
-| 2026-11-08 18:45:00 | succeeded | 0.03 | 1 row |
+| 2026-11-08 20:00:00 | succeeded | 0.03 | 1 row |
+| 2026-11-08 19:45:00 | succeeded | 0.01 | 1 row |
+| 2026-11-08 19:30:00 | succeeded | 0.06 | 1 row |
 
 
 ## 33 · webhook-retry-worker-1min
 
 | início (UTC) | status | duração (s) | mensagem |
 |---|---|---|---|
-| 2026-11-08 19:24:00 | succeeded | 0.04 | 1 row |
-| 2026-11-08 19:23:00 | succeeded | 0.04 | 1 row |
-| 2026-11-08 19:22:00 | succeeded | 0.05 | 1 row |
+| 2026-11-08 20:04:00 | succeeded | 0.06 | 1 row |
+| 2026-11-08 20:03:00 | succeeded | 0.02 | 1 row |
+| 2026-11-08 20:02:00 | succeeded | 0.06 | 1 row |
 
 
 ## 34 · auditar-acessos-cross-tenant
@@ -229,18 +229,18 @@ _nenhum_
 
 | início (UTC) | status | duração (s) | mensagem |
 |---|---|---|---|
+| 2026-11-08 20:00:00 | succeeded | 0.05 | 1 row |
+| 2026-11-08 19:30:00 | succeeded | 0.03 | 1 row |
 | 2026-11-08 19:00:00 | succeeded | 0.04 | 1 row |
-| 2026-11-08 18:30:00 | succeeded | 0.06 | 1 row |
-| 2026-11-08 18:00:00 | succeeded | 0.10 | 1 row |
 
 
 ## 37 · evaluate-delivery-alerts-every-min
 
 | início (UTC) | status | duração (s) | mensagem |
 |---|---|---|---|
-| 2026-11-08 19:24:00 | succeeded | 0.01 | 1 row |
-| 2026-11-08 19:23:00 | succeeded | 0.03 | 1 row |
-| 2026-11-08 19:22:00 | succeeded | 0.04 | 1 row |
+| 2026-11-08 20:04:00 | succeeded | 0.05 | 1 row |
+| 2026-11-08 20:03:00 | succeeded | 0.02 | 1 row |
+| 2026-11-08 20:02:00 | succeeded | 0.05 | 1 row |
 
 
 ## 40 · gerar-snapshots-conformidade-mensal
@@ -261,6 +261,6 @@ _nenhum_
 
 | início (UTC) | status | duração (s) | mensagem |
 |---|---|---|---|
+| 2026-11-08 19:30:00 | failed | 0.01 | ERROR:  Secret "anon_key" ausente no Vault. Crie-o em Project Settings > Vault com a anon key de bwwbeyolnnzppeuhgkcd. CONTEXT:  PL/pgSQL function chave_anon_vault() line 11 at RAISE SQL statement "SELECT net.http_post(     url := 'https://bwwbeyolnnzppeuhgkcd.supabase.co/functions/v1/enviar-digest- |
 | 2026-11-08 18:30:00 | failed | 0.02 | ERROR:  Secret "anon_key" ausente no Vault. Crie-o em Project Settings > Vault com a anon key de bwwbeyolnnzppeuhgkcd. CONTEXT:  PL/pgSQL function chave_anon_vault() line 11 at RAISE SQL statement "SELECT net.http_post(     url := 'https://bwwbeyolnnzppeuhgkcd.supabase.co/functions/v1/enviar-digest- |
 | 2026-11-08 17:30:00 | failed | 0.02 | ERROR:  Secret "anon_key" ausente no Vault. Crie-o em Project Settings > Vault com a anon key de bwwbeyolnnzppeuhgkcd. CONTEXT:  PL/pgSQL function chave_anon_vault() line 11 at RAISE SQL statement "SELECT net.http_post(     url := 'https://bwwbeyolnnzppeuhgkcd.supabase.co/functions/v1/enviar-digest- |
-| 2026-11-08 16:30:00 | failed | 0.04 | ERROR:  Secret "anon_key" ausente no Vault. Crie-o em Project Settings > Vault com a anon key de bwwbeyolnnzppeuhgkcd. CONTEXT:  PL/pgSQL function chave_anon_vault() line 11 at RAISE SQL statement "SELECT net.http_post(     url := 'https://bwwbeyolnnzppeuhgkcd.supabase.co/functions/v1/enviar-digest- |

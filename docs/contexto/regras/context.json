@@ -1,10 +1,10 @@
 {
  "meta": {
-  "sha": "b0d9ddb12f4508f2fdff34e314a777708e36eae8",
+  "sha": "cab8834c5ff015ec6cad0ca5bec2e1bb9bb4186c",
   "branch": "main",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
-  "generated_at": "2026-11-08 18:05 UTC",
-  "files_total": 3433,
+  "generated_at": "2026-11-08 20:02 UTC",
+  "files_total": 3438,
   "code_files": 3155,
   "code_lines": 452675
  },
@@ -228311,10 +228311,26 @@
   }
  },
  "git": {
-  "sha": "b0d9ddb12f4508f2fdff34e314a777708e36eae8",
+  "sha": "cab8834c5ff015ec6cad0ca5bec2e1bb9bb4186c",
   "branch": "main",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
   "commits": [
+   {
+    "sha": "cab8834",
+    "date": "2026-11-08",
+    "author": "adm01-debug",
+    "subject": "chore: instruções enxutas para agentes (#252)",
+    "files": [
+     ".github/copilot-instructions.md",
+     "AGENTS.md",
+     "CLAUDE.md",
+     "docs/agentes/definicao-de-pronto.md",
+     "docs/agentes/fluxo-git.md",
+     "docs/agentes/graphify.md",
+     "docs/agentes/proximos-passos.md",
+     "docs/agentes/sistema.md"
+    ]
+   },
    {
     "sha": "b0d9ddb",
     "date": "2026-11-08",
@@ -228740,22 +228756,9 @@
      "src/hooks/__tests__/useConciliacaoPage.mutations.test.tsx",
      "src/hooks/useConciliacaoPage.ts"
     ]
-   },
-   {
-    "sha": "4078e81",
-    "date": "2026-10-29",
-    "author": "adm01-debug",
-    "subject": "docs(ci): entrega final 29/10/2026 — todos os workflows corrigidos e validados (#197)",
-    "files": [
-     "RELATORIO_CI.md"
-    ]
    }
   ],
   "hot_files": [
-   [
-    "RELATORIO_CI.md",
-    4
-   ],
    [
     "scripts/security/test-canonical-db-gates.mjs",
     3
@@ -228771,6 +228774,18 @@
    [
     "PENDENCIAS.md",
     3
+   ],
+   [
+    "RELATORIO_CI.md",
+    3
+   ],
+   [
+    "AGENTS.md",
+    2
+   ],
+   [
+    "CLAUDE.md",
+    2
    ],
    [
     ".github/workflows/contexto.yml",
@@ -228821,15 +228836,7 @@
     2
    ],
    [
-    ".github/workflows/README.md",
-    1
-   ],
-   [
-    "ai-context.config.json",
-    1
-   ],
-   [
-    "docs/contexto/regras/manual/README.md",
+    ".github/copilot-instructions.md",
     1
    ]
   ]

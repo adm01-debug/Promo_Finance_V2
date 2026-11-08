@@ -2,11 +2,16 @@
  "aviso": "GERADO AUTOMATICAMENTE por scripts/ai-context/gerar.mjs — não editar à mão; será sobrescrito.",
  "format_version": 2,
  "git": {
-  "commit": "b0d9ddb12f4508f2fdff34e314a777708e36eae8",
+  "commit": "cab8834c5ff015ec6cad0ca5bec2e1bb9bb4186c",
   "branch": "main",
-  "data_commit": "2026-11-08T15:04:48-03:00",
+  "data_commit": "2026-11-08T16:47:28-03:00",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
   "ultimos_commits": [
+   {
+    "sha": "cab8834",
+    "data": "2026-11-08",
+    "assunto": "chore: instruções enxutas para agentes (#252)"
+   },
    {
     "sha": "b0d9ddb",
     "data": "2026-11-08",
@@ -126,14 +131,9 @@
     "sha": "68daaf0",
     "data": "2026-10-30",
     "assunto": "chore(ci): sincronizar deno.lock com versões do package.json (#218)"
-   },
-   {
-    "sha": "6546df9",
-    "data": "2026-10-30",
-    "assunto": "fix(ci): prod-migrate — check-secrets sem environment antes do migrate (#217)"
    }
   ],
-  "arquivos_mudados_7d": 160,
+  "arquivos_mudados_7d": 166,
   "pastas_mais_mudadas_30d": [
    {
     "pasta": "supabase/functions/_shared",
@@ -301,7 +301,7 @@
   "autores_30d": [
    {
     "autor": "adm01-debug",
-    "commits": 34
+    "commits": 35
    },
    {
     "autor": "devin-ai-integration[bot]",
@@ -318,7 +318,7 @@
   ]
  },
  "contagens": {
-  "arquivos_total": 3391,
+  "arquivos_total": 3396,
   "arquivos_codigo": 2148,
   "linhas_codigo": 399671,
   "rotas": 128,
@@ -335,7 +335,7 @@
   "testes": 356,
   "workflows": 14,
   "scripts": 79,
-  "docs_md": 123
+  "docs_md": 128
  },
  "por_pasta": {
   "e2e/alertas-preditivos.e2e.ts": {

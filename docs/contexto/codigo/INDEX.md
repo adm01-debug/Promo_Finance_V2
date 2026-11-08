@@ -1,7 +1,7 @@
 # Contexto do projeto para agentes de IA
 
 GERADO AUTOMATICAMENTE por scripts/ai-context/gerar.mjs — não editar à mão; será sobrescrito.
-Publicado pelo workflow .github/workflows/contexto.yml em docs/contexto/codigo/ da branch gerada `contexto`. Índice único em docs/contexto/00-INDEX.md. Ler: git fetch origin contexto && git show origin/contexto:docs/contexto/00-INDEX.md Gere local com `node scripts/ai-context/gerar.mjs`. Commit-base: `b0d9ddb12f4508f2fdff34e314a777708e36eae8` (2026-11-08T15:04:48-03:00).
+Publicado pelo workflow .github/workflows/contexto.yml em docs/contexto/codigo/ da branch gerada `contexto`. Índice único em docs/contexto/00-INDEX.md. Ler: git fetch origin contexto && git show origin/contexto:docs/contexto/00-INDEX.md Gere local com `node scripts/ai-context/gerar.mjs`. Commit-base: `cab8834c5ff015ec6cad0ca5bec2e1bb9bb4186c` (2026-11-08T16:47:28-03:00).
 
 ## Como usar (leia antes de planejar ou executar qualquer tarefa)
 1. **Tela/rota/menu** → `rotas.json` (url/vista/menu → arquivo → hooks → tabelas → edges; `rotas_http_backend` para APIs) e `modulos.json` (módulo inteiro + dependências entre módulos).
@@ -14,7 +14,7 @@ Publicado pelo workflow .github/workflows/contexto.yml em docs/contexto/codigo/ 
 Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua tarefa; não carregue tudo.
 
 ## Stack
-- linguagens: TypeScript (2104), SQL (1006), Markdown (123), JSON (29), Python (28), Shell (23), YAML (20), JavaScript (18)
+- linguagens: TypeScript (2104), SQL (1006), Markdown (128), JSON (29), Python (28), Shell (23), YAML (20), JavaScript (18)
 - linguagem_principal: TypeScript
 - framework: React
 - backend_http: n/d
@@ -34,7 +34,7 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 ## Números
 | item | qtd |
 |---|---|
-| arquivos_total | 3391 |
+| arquivos_total | 3396 |
 | arquivos_codigo | 2148 |
 | linhas_codigo | 399671 |
 | rotas | 128 |
@@ -51,7 +51,7 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 | testes | 356 |
 | workflows | 14 |
 | scripts | 79 |
-| docs_md | 123 |
+| docs_md | 128 |
 
 ## Onde ficam as coisas
 - telas: src/pages (125)
@@ -516,12 +516,12 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 
 ## Documentos (raiz e docs/)
 - `.github/PULL_REQUEST_TEMPLATE.md` (22 linhas)
-- `.github/copilot-instructions.md` — Instruções para o GitHub Copilot — Promo Finance V2 (47 linhas)
-- `AGENTS.md` — AGENTS.md — Promo_Finance_V2 (237 linhas)
+- `.github/copilot-instructions.md` (2 linhas)
+- `AGENTS.md` — AGENTS.md — Promo_Finance_V2 (68 linhas)
 - `AI_RULES.md` — AI_RULES (79 linhas)
 - `AUDITORIA.md` — AUDITORIA — Promo Finance V2 (648 linhas)
 - `CHANGELOG.md` — Changelog (114 linhas)
-- `CLAUDE.md` — CLAUDE.md — PROMO FINANCE V2 (96 linhas)
+- `CLAUDE.md` (2 linhas)
 - `CONTRIBUTING.md` — 🤝 Guia de Contribuição (290 linhas)
 - `ESTADO_ATUAL.md` — ESTADO ATUAL DO SISTEMA — Promo Finance v2 (779 linhas)
 - `EXECAO_RESTYLE_METRONIC_V9.md` — EXCEÇÃO FORMAL: Epic de Restyle Metronic v9 (119 linhas)
@@ -583,10 +583,11 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 - `docs/VALIDACAO_EXAUSTIVA_R2_2026-09-03.md` — Validação Exaustiva R2 — 2026-09-03 (183 linhas)
 - `docs/VALIDACAO_SEGURANCA_GATEWAY_2026-08-27.md` — Validação de segurança dos gateways — 2026-08-27 (50 linhas)
 - `docs/testing-architecture.md` — Freight Quest Testing Architecture (39 linhas)
-- subpastas de docs/: docs/archive (9), docs/guides (9), docs/execucao-cline (5), docs/runbooks (5), docs/contexto (2), docs/migracao (2), docs/adr (1), docs/evidencias (1)
+- subpastas de docs/: docs/archive (9), docs/guides (9), docs/agentes (5), docs/execucao-cline (5), docs/runbooks (5), docs/contexto (2), docs/migracao (2), docs/adr (1), docs/evidencias (1)
 - CHANGELOG topo: [Unreleased]
 
 ## Últimos commits
+- 2026-11-08 `cab8834` chore: instruções enxutas para agentes (#252)
 - 2026-11-08 `b0d9ddb` fix(contexto): guard de segredo reprovava a coleta do banco com a saída já redigida (#261)
 - 2026-11-08 `794478e` feat(contexto): sistema autônomo de contexto do estado real para agentes de IA (#260)
 - 2026-11-08 `d06af85` fix: corrigir 26 bugs em scripts (ci, healthcheck, security, graphify, data) (#258)
@@ -601,7 +602,6 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 - 2026-11-06 `d4c1e0e` Merge branch 'main' into fix/conciliacao-manual-dupla-confirmacao
 - 2026-11-06 `4df9b8e` docs: grafo de arquitetura manual e template de re-auditoria (Steps 49+50) (#242)
 - 2026-11-06 `dca65c5` fix(n8n-callback): BufferSource + readBytes + prettier
-- 2026-11-02 `3285b4f` chore: AGENTS.md com o texto-mestre adm01-debug (seções 1-7) (#250)
 
 ## Arquivos deste diretório
 - `docs/contexto/codigo/rotas.json`
