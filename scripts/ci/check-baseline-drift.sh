@@ -137,7 +137,7 @@ FROM information_schema.role_table_grants
 WHERE table_schema='public' AND grantee='anon'
   AND (privilege_type <> 'SELECT' OR table_name NOT IN (SELECT tbl FROM allowed));
 SQL
-ANON_BAD="$(psql "$PROD_DB_URL" -A -t -v "allowed_json=$ALLOWED_JSON" -f "$_anon_sql")"
+ANON_BAD="$(psql "$PROD_DB_URL" -A -t -v ON_ERROR_STOP=1 -v "allowed_json=$ALLOWED_JSON" -f "$_anon_sql")"
 rm -f "$_anon_sql"
 [ -n "$ANON_BAD" ] && fail "grants indevidos para anon: $ANON_BAD" \
                    || ok "anon sem privilégios fora da allowlist"

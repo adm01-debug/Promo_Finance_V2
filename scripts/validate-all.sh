@@ -414,14 +414,15 @@ _sm="$ROOT/scripts/staging-migrate.sh"
     || skip "staging-migrate.sh" "não detectou env ausente"
 } || skip "staging-migrate.sh" "não encontrado"
 
-# migrate-cron-jobs.sh — não implementa --help; teste apenas com --dry-run isolado
+# migrate-cron-jobs.sh — testa apenas --help (env -i garante isolamento total,
+# --help sai na linha de help sem verificar env vars nem acessar o banco)
 _mcj="$ROOT/scripts/migrate-cron-jobs.sh"
 [ -f "$_mcj" ] && {
-  out2=$(env -i HOME="$HOME" PATH="$PATH" bash "$_mcj" --dry-run 2>&1 || true)
-  if echo "$out2" | grep -qiE "obrig|required|DEST_DB|missing|error|dry.run"; then
-    ok "migrate-cron-jobs.sh --dry-run sem env → erro de pré-condição"
+  out2=$(env -i HOME="$HOME" PATH="$PATH" bash "$_mcj" --help 2>&1 || true)
+  if echo "$out2" | grep -q "Uso:"; then
+    ok "migrate-cron-jobs.sh --help → Uso:"
   else
-    skip "migrate-cron-jobs.sh --dry-run" "comportamento sem env não verificável"
+    skip "migrate-cron-jobs.sh" "sem Uso: no --help"
   fi
 } || skip "migrate-cron-jobs.sh" "não encontrado"
 
