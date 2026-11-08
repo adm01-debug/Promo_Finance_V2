@@ -172,7 +172,8 @@ export function lerUrls(raiz) {
     const caminho = (pedaco.match(/path(?:=|:\s*)["']([^"']+)["']/) || [])[1];
     const redireciona = (pedaco.match(/<Navigate\s+to=["']([^"']+)["']/) || [])[1] ?? null;
     const componente = [...pedaco.matchAll(/<([A-Z]\w*)/g)].map((m) => m[1])
-      .find((n) => !['ProtectedRoute', 'Navigate', 'Route', 'Suspense', 'ErrorBoundary'].includes(n)) ?? null;
+      .filter((n) => !['ProtectedRoute', 'Navigate', 'Route', 'Suspense', 'ErrorBoundary', 'MainLayout'].includes(n))
+      .pop() ?? null;
     const papeis = ((pedaco.match(/requiredRoles=\{\[([^\]]*)\]\}/) || [])[1] || '')
       .match(/['"]([^'"]+)['"]/g)?.map((s) => s.slice(1, -1)) ?? [];
     const alvo = componente && lazy[componente] ? resolverImport(raiz, abs, lazy[componente]) : null;
