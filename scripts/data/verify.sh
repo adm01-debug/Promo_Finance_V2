@@ -70,7 +70,7 @@ for line in "${ROWS[@]}"; do
   fi
 done
 
-# FKs órfãos (rápido): valida constraints em staging
+# FKs órfão (rápido): valida constraints em staging
 BAD_FK=$(psql "$STAGING_DB_URL" -Atc "
   SELECT count(*)
     FROM pg_constraint c
@@ -88,3 +88,4 @@ else
 fi
 
 exit "$FAILS"
+
