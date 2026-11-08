@@ -19,7 +19,7 @@
  *     admin de auth respondem 403/vazio silenciosamente.
  */
 
-import * as postgresModule from 'https://esm.sh/postgres@3.4.5?target=denonext';
+import * as postgresModule from 'npm:postgres@3.4.5';
 import { z } from '../_shared/zod.ts';
 import { avaliarSqlMcp } from './sql-policy.ts';
 import { corsHeaders as CORS, corsHeadersPara } from '../_shared/cors.ts';

@@ -1,8 +1,8 @@
 // Edge Function: gerar-pdf-tributario
 // Gera PDF executivo com recomendação tributária e faz upload no bucket
-import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.49.4';
-import { jsPDF } from 'https://esm.sh/jspdf@2.5.1';
-import autoTable from 'https://esm.sh/jspdf-autotable@3.8.2';
+import { createClient } from 'npm:@supabase/supabase-js@2.49.4';
+import { jsPDF } from 'npm:jspdf@2.5.1';
+import autoTable from 'npm:jspdf-autotable@3.8.2';
 import { createLogger } from '../_shared/observability.ts';
 import { z } from 'https://deno.land/x/zod@v3.22.4/mod.ts';
 import { validateContract } from '../_shared/contract-validator.ts';

@@ -1,6 +1,6 @@
 // Edge: calcular-slo-metrics-diario
 // Agrega métricas das últimas 24h e persiste snapshot em slo_metrics_diarias.
-import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.49.4';
+import { createClient } from 'npm:@supabase/supabase-js@2.49.4';
 import { corsHeadersComSegredoPara, exigirChamadaInterna } from '../_shared/auth-guard.ts';
 import { createLogger } from '../_shared/observability.ts';
 import { mensagemErro, contextoErro } from '../_shared/erros.ts';

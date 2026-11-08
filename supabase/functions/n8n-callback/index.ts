@@ -3,13 +3,14 @@
 // com fallback transitório para segredo estático (x-n8n-secret) durante
 // migração do N8N. Remover o fallback após migração concluída.
 
-import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.49.4';
+import { createClient } from 'npm:@supabase/supabase-js@2.49.4';
 import { createErrorResponse, validatePayload } from '../_shared/validation.ts';
 import { z } from 'https://deno.land/x/zod@v3.22.4/mod.ts';
 import { corsHeaders, corsHeadersPara } from '../_shared/cors.ts';
 import { createLogger } from '../_shared/observability.ts';
 import { mensagemErro, contextoErro } from '../_shared/erros.ts';
 import { withEdgeObservability } from '../_shared/edge-observability.ts';
+import { captureException } from '../_shared/sentry.ts';
 const log = createLogger('n8n-callback');
 
 const schema = z
@@ -87,6 +88,7 @@ export function createHandler(deps: HandlerDeps) {
         error_message: mensagemErro(msg),
         context: contextoErro(msg),
       });
+      captureException(error, { function: 'n8n-callback' });
       return res({ error: msg }, 500);
     }
   };

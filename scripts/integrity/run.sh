@@ -8,6 +8,16 @@ set -euo pipefail
 DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 BASELINE="$DIR/baseline"
 JSON_ONLY=0
+if [ "${1:-}" = "--help" ] || [ "${1:-}" = "-h" ]; then
+  echo "Uso: $(basename "$0") [--json-only] [-h|--help]"
+  echo ""
+  echo "Opcoes:"
+  echo "  --json-only   Emite apenas JSONL em stdout (sem cabeçalho humano)"
+  echo "  -h, --help    Exibe esta ajuda"
+  echo ""
+  echo "Env obrigatório: STAGING_DB_URL, STAGING_PROJECT_REF, STAGING_ANON_KEY"
+  exit 0
+fi
 [ "${1:-}" = "--json-only" ] && JSON_ONLY=1
 
 : "${STAGING_DB_URL:?STAGING_DB_URL obrigatório}"
@@ -40,7 +50,9 @@ run_sql() {
     -v allow_public="$allowed" \
     -v expected_policies="$policies" \
     -v expected_crons="$crons" \
-    -f "$file" 2>&1 | while IFS=$'\t' read -r ass st exp act detail; do
+    -f "$file" 2>&1 | while IFS='' read -r raw_line; do
+      # Separa em até 5 campos pelo primeiro \t para suportar `detail` com tabs.
+      IFS=$'\t' read -r ass st exp act detail <<< "$raw_line"
       [ -z "$ass" ] && continue
       emit "$step" "$ass" "$st" "$exp" "$act" "$detail"
     done
