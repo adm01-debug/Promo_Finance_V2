@@ -1225,6 +1225,11 @@ def build_dataflow(code: dict[str, dict], feats: dict, schema: dict) -> dict:
     env_usage, rpc_usage, invoke_usage, storage_usage, ext_usage, realtime = (defaultdict(set) for _ in range(6))
     dyn = []
     for r, info in code.items():
+        # Referência de teste/ferramenta não é consumidor da aplicação: sem este filtro as strings
+        # sintéticas das suítes (ghost_table, ghost-edge, ghost_rpc) viram "inconsistência" publicada
+        # no 11-GLOSSARIO-E-LACUNAS.md. Os arquivos seguem no inventário e na extração de regras.
+        if info["is_test"] or not is_app_code(r):
+            continue
         for t in info["tables"]:
             for op in t["op"].split(","):
                 table_usage[t["table"]][op].add(r)

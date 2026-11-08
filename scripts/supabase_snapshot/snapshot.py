@@ -179,7 +179,11 @@ def prepare_output_directory() -> None:
 
 
 def record_error(section: str, err: Exception | str) -> None:
+    # scrub() aqui também: subprocess.TimeoutExpired traz o comando inteiro na mensagem, e o
+    # comando de pg_dump/gen_types inclui DB_URL com a senha. Sem isto a credencial ia para
+    # errors.md, snapshot.json e manifest.json, além do log.
     text = str(err).strip().splitlines()[0] if str(err).strip() else repr(err)
+    text = scrub(text)
     ERRORS.append({"section": section, "error": text[:500]})
     log(f"ERRO em {section}: {text[:300]}")
 
@@ -377,8 +381,11 @@ def section(name: str, volatile: bool = False):
 
 @section("server")
 def get_server(conn):
+    # reset_val, não setting: o coletor altera statement_timeout/lock_timeout/read_only na própria
+    # sessão, então `setting` devolveria o valor do coletor (90s) como se fosse o do banco.
+    # reset_val é o valor configurado, ao qual um RESET voltaria. Para os demais parâmetros são iguais.
     rows = q(conn, """
-        SELECT name, setting FROM pg_settings
+        SELECT name, COALESCE(NULLIF(reset_val, ''), setting) AS setting FROM pg_settings
         WHERE name IN ('server_version','max_connections','timezone','statement_timeout','idle_in_transaction_session_timeout',
                        'shared_buffers','work_mem','maintenance_work_mem','max_wal_size','log_min_duration_statement',
                        'default_transaction_isolation','wal_level','max_worker_processes','max_parallel_workers')

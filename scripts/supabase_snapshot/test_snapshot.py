@@ -942,5 +942,30 @@ class SnapshotApiCarryOverTests(SnapshotFixture):
         self.assertTrue(orfa.is_dir(), "falha sem histórico apagou diretório publicado")
 
 
+class SnapshotErrorRedactionTests(SnapshotFixture):
+    """Mensagem de erro de subprocesso não pode levar a senha do DSN para a saída."""
+
+    DSN = "postgresql://postgres.ref:SenhaSuperSecreta123@aws-0-x.pooler.supabase.com:5432/postgres"
+
+    def test_timeout_de_subprocesso_nao_grava_a_senha(self):
+        snapshot = self.snapshot
+        snapshot.ERRORS.clear()
+        erro = snapshot.subprocess.TimeoutExpired(cmd=["pg_dump", "--schema-only", self.DSN], timeout=600)
+        with contextlib.redirect_stdout(io.StringIO()) as saida:
+            snapshot.record_error("pg_dump", erro)
+        gravado = snapshot.ERRORS[0]["error"]
+        self.assertNotIn("SenhaSuperSecreta123", gravado)
+        self.assertNotIn("SenhaSuperSecreta123", saida.getvalue())
+        # o resto da mensagem continua útil para diagnóstico
+        self.assertIn("pg_dump", gravado)
+
+    def test_erro_em_texto_tambem_e_redigido(self):
+        snapshot = self.snapshot
+        snapshot.ERRORS.clear()
+        with contextlib.redirect_stdout(io.StringIO()):
+            snapshot.record_error("gen_types", f"falhou ao conectar em {self.DSN}")
+        self.assertNotIn("SenhaSuperSecreta123", snapshot.ERRORS[0]["error"])
+
+
 if __name__ == "__main__":
     unittest.main()
