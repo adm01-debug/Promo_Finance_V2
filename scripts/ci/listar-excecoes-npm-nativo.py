@@ -63,9 +63,14 @@ def main() -> int:
             if not spec.startswith("."):
                 continue
             alvo = os.path.normpath(os.path.join(os.path.dirname(caminho), spec))
-            if not alvo.endswith(".ts"):
-                alvo += ".ts"
-            if os.path.isfile(alvo):
+            # Resolve extensão ou index.ts quando spec é diretório
+            candidates = [alvo + ".ts", alvo + ".tsx", os.path.join(alvo, "index.ts"), os.path.join(alvo, "index.tsx")]
+            if not alvo.endswith((".ts", ".tsx")):
+                for c in candidates:
+                    if os.path.isfile(c):
+                        locais.add(c)
+                        break
+            elif os.path.isfile(alvo):
                 locais.add(alvo)
         deps[caminho] = locais
 

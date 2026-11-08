@@ -45,10 +45,14 @@ for arquivo in "${alvos[@]}"; do
 done
 
 echo "▶ Type-check de ${#alvos[@]} arquivos críticos alterados nesta trilha…"
-# Evita absorver o package.json da aplicação React e depender de node_modules.
-# O gate passa a validar apenas o grafo Deno das Edge Functions, inclusive em
-# um checkout limpo do runner.
-deno check --no-config --no-lock "${alvos[@]}"
+# --no-config evita carregar o deno.json da raiz (que tem nodeModulesDir=auto),
+# mantendo o gate isolado das dependências do frontend React.
+# O import map das Edge Functions é passado explicitamente via --import-map.
+IMPORT_MAP=""
+[ -f "supabase/functions/import_map.json" ] && IMPORT_MAP="--import-map=supabase/functions/import_map.json"
+
+# shellcheck disable=SC2086
+deno check --no-config --no-lock $IMPORT_MAP "${alvos[@]}"
 
 echo
 echo "✅ Gate Deno do escopo endurecido aprovado."

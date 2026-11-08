@@ -56,6 +56,9 @@ atualizar > "$ATUAL"
 TOTAL_ATUAL=$(wc -l < "$ATUAL")
 TOTAL_BASELINE=$(wc -l < "$BASELINE")
 
+if ! sort -c "$BASELINE" 2>/dev/null; then
+  sort -u "$BASELINE" -o "$BASELINE"
+fi
 comm -23 "$ATUAL" "$BASELINE" > "$NOVOS"
 NOVOS_COUNT=$(wc -l < "$NOVOS")
 

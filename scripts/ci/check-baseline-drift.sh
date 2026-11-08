@@ -14,6 +14,18 @@
 # Exit: 0 sem drift | 1 drift detectado | 2 pré-condição ausente
 set -euo pipefail
 
+if [[ "${1:-}" == "-h" || "${1:-}" == "--help" ]]; then
+  echo "Uso: $(basename "$0") [-h|--help]"
+  echo ""
+  echo "Opcoes:"
+  echo "  -h, --help   Exibe esta ajuda"
+  echo ""
+  echo "Gate #26 — Detecta drift de schema/policies vs. baseline versionado."
+  echo "Env obrigatório: PROD_DB_URL"
+  echo "Env opcional:    DRIFT_TOLERANCE (default: 0)"
+  exit 0
+fi
+
 DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)/integrity"
 BASELINE="$DIR/baseline"
 TOL="${DRIFT_TOLERANCE:-0}"
@@ -114,14 +126,19 @@ VIEWS_BAD="$(psql "$PROD_DB_URL" -A -t -c "
 [ -n "$VIEWS_BAD" ] && fail "views sem security_invoker: $VIEWS_BAD" \
                     || ok "todas as views com security_invoker"
 
-ANON_BAD="$(psql "$PROD_DB_URL" -A -t -c "
-  WITH allowed AS (
-    SELECT jsonb_array_elements_text('$(cat "$BASELINE/allowed-public-tables.json")'::jsonb) AS tbl
-  )
-  SELECT COALESCE(string_agg(DISTINCT table_name || ':' || privilege_type, ','), '')
-  FROM information_schema.role_table_grants
-  WHERE table_schema='public' AND grantee='anon'
-    AND (privilege_type <> 'SELECT' OR table_name NOT IN (SELECT tbl FROM allowed));")"
+ALLOWED_JSON="$(cat "$BASELINE/allowed-public-tables.json")"
+_anon_sql=$(mktemp)
+cat > "$_anon_sql" <<'SQL'
+WITH allowed AS (
+  SELECT jsonb_array_elements_text(:'allowed_json'::jsonb) AS tbl
+)
+SELECT COALESCE(string_agg(DISTINCT table_name || ':' || privilege_type, ','), '')
+FROM information_schema.role_table_grants
+WHERE table_schema='public' AND grantee='anon'
+  AND (privilege_type <> 'SELECT' OR table_name NOT IN (SELECT tbl FROM allowed));
+SQL
+ANON_BAD="$(psql "$PROD_DB_URL" -A -t -v ON_ERROR_STOP=1 -v "allowed_json=$ALLOWED_JSON" -f "$_anon_sql")"
+rm -f "$_anon_sql"
 [ -n "$ANON_BAD" ] && fail "grants indevidos para anon: $ANON_BAD" \
                    || ok "anon sem privilégios fora da allowlist"
 
