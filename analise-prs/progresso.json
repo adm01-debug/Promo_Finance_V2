@@ -1,13 +1,16 @@
 {
   "baseline_main_sha": "c6eb99b275e1270cf99f1216e808c120f7cf58a2",
-  "atualizado_em": "2026-11-08T21:16:00Z",
-  "ciclo_atual": "monitorando CI das PRs criadas nesta sessao (#266-#272); nenhuma mergeada ainda",
-  "prs_mergeadas": [],
-  "prs_em_andamento": [266, 267, 268, 269, 270, 271, 272],
+  "atualizado_em": "2026-11-08T22:24:00Z",
+  "ciclo_atual": "2 de 7 PRs em andamento mergeadas; aguardando CI das 5 restantes apos update_pr_branch",
+  "prs_mergeadas": [
+    {"n": 268, "sha": "d8804a2000192594419275bc94da6e44fbf6e211", "supersede": 214},
+    {"n": 266, "sha": "6a925600f36f44488dc07b79e063f3dd67e5d30b", "supersede": 209}
+  ],
+  "prs_em_andamento": [267, 269, 270, 271, 272, 273],
   "prs_aguardando_humano": [131, 203, 204, 205, 206, 211, 212, 234, 235, 238, 243, 253, 255, 256, 263, 265],
   "prs_bloqueadas_ambiente": [208, 210, 216],
   "prs_nao_iniciadas": [175],
   "prs_supersedidas": [209, 213, 214, 215, 254, 257, 264],
-  "proxima_acao": "repetir github_graphql para #267-#272 a cada ciclo de wakeup; squash merge quando mergeStateStatus=CLEAN; depois tratar #266 (draft->ready, merge main, CI)",
-  "causa_raiz_atraso_ci": "job e2e-destructive em .github/workflows/ci.yml tem needs:[quality-gate, e2e-critical] e so dispara depois que ambos terminam (ja aconteceu nas PRs 266-273); o atraso restante e fila de runners GitHub-hosted da conta (nao e falha nem erro de config) -- confirmado lendo ci.yml e cruzando com github_list_workflow_runs"
+  "proxima_acao": "repetir github_graphql para #267,#269-#273 a cada ciclo de wakeup; squash merge quando mergeStateStatus=CLEAN",
+  "causa_raiz_atraso_ci": "job e2e-destructive em .github/workflows/ci.yml tem needs:[quality-gate, e2e-critical] e so dispara depois que ambos terminam; o atraso restante e fila de runners GitHub-hosted da conta (nao e falha nem erro de config) -- confirmado lendo ci.yml e cruzando com github_list_workflow_runs. Cada merge faz main avancar e as demais branches voltam a BEHIND, exigindo novo update_pr_branch e reiniciando o CI delas do zero."
 }
