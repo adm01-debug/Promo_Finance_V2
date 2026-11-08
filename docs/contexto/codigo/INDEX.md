@@ -1,7 +1,7 @@
 # Contexto do projeto para agentes de IA
 
 GERADO AUTOMATICAMENTE por scripts/ai-context/gerar.mjs — não editar à mão; será sobrescrito.
-Publicado pelo workflow .github/workflows/contexto.yml em docs/contexto/codigo/ da branch gerada `contexto`. Índice único em docs/contexto/00-INDEX.md. Ler: git fetch origin contexto && git show origin/contexto:docs/contexto/00-INDEX.md Gere local com `node scripts/ai-context/gerar.mjs`. Commit-base: `cab8834c5ff015ec6cad0ca5bec2e1bb9bb4186c` (2026-11-08T16:47:28-03:00).
+Publicado pelo workflow .github/workflows/contexto.yml em docs/contexto/codigo/ da branch gerada `contexto`. Índice único em docs/contexto/00-INDEX.md. Ler: git fetch origin contexto && git show origin/contexto:docs/contexto/00-INDEX.md Gere local com `node scripts/ai-context/gerar.mjs`. Commit-base: `c6eb99b275e1270cf99f1216e808c120f7cf58a2` (2026-11-08T17:37:35-03:00).
 
 ## Como usar (leia antes de planejar ou executar qualquer tarefa)
 1. **Tela/rota/menu** → `rotas.json` (url/vista/menu → arquivo → hooks → tabelas → edges; `rotas_http_backend` para APIs) e `modulos.json` (módulo inteiro + dependências entre módulos).
@@ -36,7 +36,7 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 |---|---|
 | arquivos_total | 3396 |
 | arquivos_codigo | 2148 |
-| linhas_codigo | 399671 |
+| linhas_codigo | 399679 |
 | rotas | 128 |
 | rotas_http_backend | 12 |
 | vistas_por_id | 0 |
@@ -587,6 +587,7 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 - CHANGELOG topo: [Unreleased]
 
 ## Últimos commits
+- 2026-11-08 `c6eb99b` fix(contexto): grants timeout, custom_hostname 400 e refresh diário (#262)
 - 2026-11-08 `cab8834` chore: instruções enxutas para agentes (#252)
 - 2026-11-08 `b0d9ddb` fix(contexto): guard de segredo reprovava a coleta do banco com a saída já redigida (#261)
 - 2026-11-08 `794478e` feat(contexto): sistema autônomo de contexto do estado real para agentes de IA (#260)
@@ -601,7 +602,6 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 - 2026-11-06 `8244796` Merge pull request #199 from adm01-debug/fix/conciliacao-manual-dupla-confirmacao
 - 2026-11-06 `d4c1e0e` Merge branch 'main' into fix/conciliacao-manual-dupla-confirmacao
 - 2026-11-06 `4df9b8e` docs: grafo de arquitetura manual e template de re-auditoria (Steps 49+50) (#242)
-- 2026-11-06 `dca65c5` fix(n8n-callback): BufferSource + readBytes + prettier
 
 ## Arquivos deste diretório
 - `docs/contexto/codigo/rotas.json`

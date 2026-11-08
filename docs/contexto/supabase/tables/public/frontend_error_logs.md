@@ -85,4 +85,7 @@
 
 ## Grants
 
-_nenhum_
+| role | privilégios |
+|---|---|
+| anon | INSERT |
+| service_role | DELETE, INSERT, REFERENCES, SELECT, TRIGGER, TRUNCATE, UPDATE |

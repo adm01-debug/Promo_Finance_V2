@@ -824,7 +824,7 @@
   {
    "arquivo": "scripts/supabase_snapshot/snapshot.py",
    "descricao": "Somente leitura no banco (sessão read-only, statement_timeout, lock_timeout). Nunca grava linhas de tabelas, valores de segredos, chaves, senhas ou DSN.",
-   "linhas": 1816,
+   "linhas": 1824,
    "env": [],
    "npm_scripts": [],
    "workflows": [
