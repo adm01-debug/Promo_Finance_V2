@@ -44,7 +44,7 @@ Regras do dono para todo agente de IA; em conflito com `docs/`/README/relatório
 
 ## 6. Git
 
-Escrita no GitHub (`adm01-debug`): MCP `GITHUB - MCP - FOREVER` (o padrão dá 403; `git push`/`gh` só em repo fonte autorizada da sessão). Fluxo completo: `docs/agentes/fluxo-git.md` (ler antes da primeira branch).
+Escrita no GitHub (`adm01-debug`): MCP `GITHUB - MCP - FOREVER` (o padrão dá 403; `git push`/`gh` só em repo fonte autorizada da sessão). Fluxo completo: `docs/agentes/fluxo-git.md` (ler antes da primeira branch). Perímetro, branch protection e workflows: `docs/agentes/github-ci.md` (ler ao mexer em settings ou `.github/workflows/`). Deploy e Vercel: `docs/agentes/vercel-deploy.md` (ler ao confirmar deploy ou mexer em env/domínio). Onde fica cada coisa: `docs/agentes/mapa-repo.md` (ler antes de buscar por texto).
 
 1. Nunca commite em `main`; nunca reaproveite branch nem escreva em branch alheia (só leitura, sem exceção). Branch própria em worktree isolado, de `main` atualizado: `claude/<tipo>-<slug>-<AAMMDD-HHMM>` (`fix`|`feat`|`chore`|`infra`); sem carimbo não é aceito. Uma tarefa = uma branch = uma PR.
 2. Antes de começar, liste PRs abertas (`github_graphql`, não `github_list_pull_requests`); PR aberta nos mesmos arquivos → pare e avise. Antes de push, confirme que o último commit é seu.
