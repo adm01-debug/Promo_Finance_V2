@@ -18,7 +18,7 @@ fi
 
 ROOT="$(cd "$(dirname "$0")/../.." && pwd)"
 FUNCS_DIR="$ROOT/supabase/functions"
-BASELINE_FILE="$ROOT/scripts/security/zod-coverage.baseline"
+BASELINE_FILE="${BASELINE_FILE:-$ROOT/scripts/security/zod-coverage.baseline}"
 
 missing=()
 total=0
