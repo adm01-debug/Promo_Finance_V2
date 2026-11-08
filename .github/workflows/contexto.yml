@@ -140,14 +140,8 @@ jobs:
             last_codigo="$(git show "FETCH_HEAD:$CONTEXTO_DIR/codigo/manifest.json" 2>/dev/null | python3 -c 'import json,sys; print(json.load(sys.stdin).get("commit",""))' 2>/dev/null || echo "")"
             last_regras="$(git show "FETCH_HEAD:$CONTEXTO_DIR/regras/manifest.json" 2>/dev/null | python3 -c 'import json,sys; print(json.load(sys.stdin).get("commit",""))' 2>/dev/null || echo "")"
             # idade em horas desde a última coleta publicada (campo gerado_em ou generated_at)
-            idade_codigo_h="$(git show "FETCH_HEAD:$CONTEXTO_DIR/codigo/manifest.json" 2>/dev/null | python3 -c \
-              'import json,sys,datetime; d=json.load(sys.stdin); s=d.get("gerado_em","") or d.get("generated_at","");
-print(int((datetime.datetime.now(datetime.timezone.utc)-datetime.datetime.fromisoformat(s.replace("Z","+00:00"))).total_seconds()/3600) if s else 9999)' \
-              2>/dev/null || echo 9999)"
-            idade_regras_h="$(git show "FETCH_HEAD:$CONTEXTO_DIR/regras/manifest.json" 2>/dev/null | python3 -c \
-              'import json,sys,datetime; d=json.load(sys.stdin); s=d.get("gerado_em","") or d.get("generated_at","");
-print(int((datetime.datetime.now(datetime.timezone.utc)-datetime.datetime.fromisoformat(s.replace("Z","+00:00"))).total_seconds()/3600) if s else 9999)' \
-              2>/dev/null || echo 9999)"
+            idade_codigo_h="$(git show "FETCH_HEAD:$CONTEXTO_DIR/codigo/manifest.json" 2>/dev/null | python3 -c 'import json,sys,datetime as dt; d=json.load(sys.stdin); s=d.get("gerado_em","") or d.get("generated_at",""); print(int((dt.datetime.now(dt.timezone.utc)-dt.datetime.fromisoformat(s.replace("Z","+00:00"))).total_seconds()/3600) if s else 9999)' 2>/dev/null || echo 9999)"
+            idade_regras_h="$(git show "FETCH_HEAD:$CONTEXTO_DIR/regras/manifest.json" 2>/dev/null | python3 -c 'import json,sys,datetime as dt; d=json.load(sys.stdin); s=d.get("gerado_em","") or d.get("generated_at",""); print(int((dt.datetime.now(dt.timezone.utc)-dt.datetime.fromisoformat(s.replace("Z","+00:00"))).total_seconds()/3600) if s else 9999)' 2>/dev/null || echo 9999)"
           fi
           codigo=true; regras=true
           if [ "$EVENT_NAME" = "schedule" ] && [ "$FORCE" != "true" ]; then
