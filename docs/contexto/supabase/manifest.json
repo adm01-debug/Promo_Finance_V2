@@ -1,0 +1,17 @@
+{
+  "carried": [],
+  "entrada": "README.md",
+  "erros": [
+    {
+      "error": "canceling statement due to statement timeout",
+      "section": "grants"
+    },
+    {
+      "error": "HTTP 400 em /projects/bwwbeyolnnzppeuhgkcd/custom-hostname",
+      "section": "api.custom_hostname"
+    }
+  ],
+  "gerado_em": "2026-11-08T18:17:53Z",
+  "gerador": "scripts/supabase_snapshot/snapshot.py",
+  "produtor": "supabase-snapshot"
+}

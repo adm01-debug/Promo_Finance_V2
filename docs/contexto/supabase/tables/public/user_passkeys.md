@@ -1,0 +1,130 @@
+# public.user_passkeys
+
+| propriedade | valor |
+|---|---|
+| tipo | table |
+| owner | postgres |
+| RLS habilitado | sim |
+| RLS forçado (owner) | não |
+| policies | 7 |
+| realtime (publication) | não |
+| replica identity | default |
+| vem de extensão | não |
+
+
+## Colunas
+
+| # | coluna | tipo | nullable | default | identity/generated | comentário |
+|---|---|---|---|---|---|---|
+| 1 | `id` | `uuid` | não | `gen_random_uuid()` |  |  |
+| 2 | `user_id` | `uuid` | não |  |  |  |
+| 3 | `credential_id` | `text` | não |  |  |  |
+| 4 | `public_key` | `text` | não |  |  |  |
+| 5 | `counter` | `bigint` | não | `0` |  |  |
+| 6 | `device_type` | `text` | sim |  |  |  |
+| 7 | `backed_up` | `boolean` | sim | `false` |  |  |
+| 8 | `transports` | `text[]` | sim |  |  |  |
+| 9 | `friendly_name` | `text` | sim |  |  |  |
+| 10 | `created_at` | `timestamp with time zone` | não | `now()` |  |  |
+| 11 | `last_used_at` | `timestamp with time zone` | sim |  |  |  |
+
+
+## Constraints
+
+| nome | tipo | definição | on delete | on update | validada |
+|---|---|---|---|---|---|
+| user_passkeys_credential_id_key | UNIQUE | `UNIQUE (credential_id)` |  |  | sim |
+| user_passkeys_pkey | PRIMARY KEY | `PRIMARY KEY (id)` |  |  | sim |
+| user_passkeys_user_id_fkey | FOREIGN KEY | `FOREIGN KEY (user_id) REFERENCES auth.users(id) ON DELETE CASCADE` | CASCADE | NO ACTION | sim |
+
+
+## Índices
+
+| nome | método | colunas | único | válido | predicado | definição |
+|---|---|---|---|---|---|---|
+| idx_user_passkeys_user_id | btree | user_id | não | sim |  | `CREATE INDEX idx_user_passkeys_user_id ON public.user_passkeys USING btree (user_id)` |
+| user_passkeys_credential_id_key | btree | credential_id | sim | sim |  | `CREATE UNIQUE INDEX user_passkeys_credential_id_key ON public.user_passkeys USING btree (credential_id)` |
+| user_passkeys_pkey | btree | id | sim | sim |  | `CREATE UNIQUE INDEX user_passkeys_pkey ON public.user_passkeys USING btree (id)` |
+
+
+## Policies (RLS)
+
+### `Users can delete own passkeys`
+
+| campo | valor |
+|---|---|
+| comando | DELETE |
+| tipo | PERMISSIVE |
+| roles | authenticated |
+| USING | `(( SELECT auth.uid() AS uid) = user_id)` |
+| WITH CHECK |  |
+
+### `Users can delete their passkeys`
+
+| campo | valor |
+|---|---|
+| comando | DELETE |
+| tipo | PERMISSIVE |
+| roles | authenticated |
+| USING | `((( SELECT auth.uid() AS uid) = user_id) OR has_role(( SELECT auth.uid() AS uid), 'admin'::app_role))` |
+| WITH CHECK |  |
+
+### `Users can insert own passkeys`
+
+| campo | valor |
+|---|---|
+| comando | INSERT |
+| tipo | PERMISSIVE |
+| roles | authenticated |
+| USING |  |
+| WITH CHECK | `(( SELECT auth.uid() AS uid) = user_id)` |
+
+### `Users can insert their passkeys`
+
+| campo | valor |
+|---|---|
+| comando | INSERT |
+| tipo | PERMISSIVE |
+| roles | authenticated |
+| USING |  |
+| WITH CHECK | `(( SELECT auth.uid() AS uid) = user_id)` |
+
+### `Users can update own passkeys`
+
+| campo | valor |
+|---|---|
+| comando | UPDATE |
+| tipo | PERMISSIVE |
+| roles | authenticated |
+| USING | `(( SELECT auth.uid() AS uid) = user_id)` |
+| WITH CHECK | `(( SELECT auth.uid() AS uid) = user_id)` |
+
+### `Users can update their passkeys`
+
+| campo | valor |
+|---|---|
+| comando | UPDATE |
+| tipo | PERMISSIVE |
+| roles | authenticated |
+| USING | `(( SELECT auth.uid() AS uid) = user_id)` |
+| WITH CHECK |  |
+
+### `Users can view own passkeys`
+
+| campo | valor |
+|---|---|
+| comando | SELECT |
+| tipo | PERMISSIVE |
+| roles | authenticated |
+| USING | `(( SELECT auth.uid() AS uid) = user_id)` |
+| WITH CHECK |  |
+
+
+## Triggers
+
+_nenhum_
+
+
+## Grants
+
+_nenhum_

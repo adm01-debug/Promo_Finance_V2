@@ -1,0 +1,21 @@
+-- Step 18: security_invoker = true em todas as views regulares
+-- Garante que RLS é aplicado com as permissões do usuário chamador, não do owner
+ALTER VIEW extratos_bancarios_importados SET (security_invoker = true);
+ALTER VIEW v_sefaz_observability SET (security_invoker = true);
+ALTER VIEW v_table_bloat SET (security_invoker = true);
+ALTER VIEW vw_auditoria_tributaria_recente SET (security_invoker = true);
+ALTER VIEW vw_contas_pagar_painel SET (security_invoker = true);
+ALTER VIEW vw_contas_receber_painel SET (security_invoker = true);
+ALTER VIEW vw_dre_mensal SET (security_invoker = true);
+ALTER VIEW vw_dso_aging SET (security_invoker = true);
+ALTER VIEW vw_edge_health SET (security_invoker = true);
+ALTER VIEW vw_fluxo_caixa SET (security_invoker = true);
+ALTER VIEW vw_fluxo_caixa_diario SET (security_invoker = true);
+ALTER VIEW vw_gastos_centro_custo SET (security_invoker = true);
+ALTER VIEW vw_metricas_cobranca SET (security_invoker = true);
+ALTER VIEW vw_rpc_hotspots SET (security_invoker = true);
+ALTER VIEW vw_rpc_slow_calls SET (security_invoker = true);
+ALTER VIEW vw_saldos_contas SET (security_invoker = true);
+ALTER VIEW vw_transferencias_painel SET (security_invoker = true);
+ALTER VIEW vw_tributario_dashboard SET (security_invoker = true);
+ALTER VIEW vw_webhooks_recentes SET (security_invoker = true);

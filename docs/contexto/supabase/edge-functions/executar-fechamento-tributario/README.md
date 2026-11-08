@@ -1,0 +1,12 @@
+# Edge Function `executar-fechamento-tributario`
+
+| campo | valor |
+|---|---|
+| nome | executar-fechamento-tributario |
+| status | ACTIVE |
+| versão | 13 |
+| verify_jwt | sim |
+| entrypoint | file:///home/joaquim_ataides/hermes-workspaces/chat-c696391/supabase/functions/executar-fechamento-tributario/index.ts |
+| import_map |  |
+| URL | https://bwwbeyolnnzppeuhgkcd.supabase.co/functions/v1/executar-fechamento-tributario |
+| fonte no repo | `supabase/functions/executar-fechamento-tributario/` |

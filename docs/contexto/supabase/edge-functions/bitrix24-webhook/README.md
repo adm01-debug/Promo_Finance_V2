@@ -1,0 +1,12 @@
+# Edge Function `bitrix24-webhook`
+
+| campo | valor |
+|---|---|
+| nome | bitrix24-webhook |
+| status | ACTIVE |
+| versão | 16 |
+| verify_jwt | não |
+| entrypoint | file:///home/joaquim_ataides/hermes-workspaces/chat-c696391/supabase/functions/bitrix24-webhook/index.ts |
+| import_map |  |
+| URL | https://bwwbeyolnnzppeuhgkcd.supabase.co/functions/v1/bitrix24-webhook |
+| fonte no repo | `supabase/functions/bitrix24-webhook/` |

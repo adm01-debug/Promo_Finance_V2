@@ -1,0 +1,12 @@
+# Edge Function `sso-initiate`
+
+| campo | valor |
+|---|---|
+| nome | sso-initiate |
+| status | ACTIVE |
+| versão | 13 |
+| verify_jwt | não |
+| entrypoint | file:///home/joaquim_ataides/hermes-workspaces/chat-c696391/supabase/functions/sso-initiate/index.ts |
+| import_map |  |
+| URL | https://bwwbeyolnnzppeuhgkcd.supabase.co/functions/v1/sso-initiate |
+| fonte no repo | `supabase/functions/sso-initiate/` |

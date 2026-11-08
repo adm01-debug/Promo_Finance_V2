@@ -1,0 +1,12 @@
+# Edge Function `n8n-dispatch`
+
+| campo | valor |
+|---|---|
+| nome | n8n-dispatch |
+| status | ACTIVE |
+| versão | 13 |
+| verify_jwt | sim |
+| entrypoint | file:///home/joaquim_ataides/hermes-workspaces/chat-c696391/supabase/functions/n8n-dispatch/index.ts |
+| import_map |  |
+| URL | https://bwwbeyolnnzppeuhgkcd.supabase.co/functions/v1/n8n-dispatch |
+| fonte no repo | `supabase/functions/n8n-dispatch/` |
