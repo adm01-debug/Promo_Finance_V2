@@ -609,21 +609,29 @@ def get_sequences(conn):
 @section("grants")
 def get_grants(conn):
     sys_roles = ", ".join("'" + r + "'" for r in sorted(SYSTEM_ROLES))
-    tables = q(conn, f"""
-        SELECT table_schema AS schema, table_name AS "table", grantee,
-               string_agg(privilege_type, ', ' ORDER BY privilege_type) AS privileges
-        FROM information_schema.role_table_grants
-        WHERE grantee NOT IN ({sys_roles}) AND ({excluded_sql('table_schema')} OR table_schema IN ('storage'))
-        GROUP BY 1, 2, 3 ORDER BY 1, 2, 3""")
-    columns = q(conn, f"""
-        SELECT table_schema AS schema, table_name AS "table", column_name AS "column", grantee,
-               string_agg(privilege_type, ', ' ORDER BY privilege_type) AS privileges
-        FROM information_schema.column_privileges cp
-        WHERE grantee NOT IN ({sys_roles}) AND {excluded_sql('table_schema')}
-          AND NOT EXISTS (SELECT 1 FROM information_schema.role_table_grants g
-                          WHERE g.table_schema = cp.table_schema AND g.table_name = cp.table_name
-                            AND g.grantee = cp.grantee AND g.privilege_type = cp.privilege_type)
-        GROUP BY 1, 2, 3, 4 ORDER BY 1, 2, 3, 4""")
+    # Busca schemas pelo catálogo (pg_namespace, O(1)) antes de consultar information_schema,
+    # evitando a varredura completa de role_table_grants que estoura statement_timeout em projetos grandes.
+    target = [r["nspname"] for r in q(conn, f"""
+        SELECT nspname FROM pg_namespace
+        WHERE ({excluded_sql('nspname')} OR nspname = 'storage') ORDER BY 1""")]
+    tables: list[dict] = []
+    columns: list[dict] = []
+    for schema in target:
+        tables.extend(q(conn, f"""
+            SELECT table_schema AS schema, table_name AS "table", grantee,
+                   string_agg(privilege_type, ', ' ORDER BY privilege_type) AS privileges
+            FROM information_schema.role_table_grants
+            WHERE grantee NOT IN ({sys_roles}) AND table_schema = %s
+            GROUP BY 1, 2, 3 ORDER BY 1, 2, 3""", (schema,)))
+        columns.extend(q(conn, f"""
+            SELECT table_schema AS schema, table_name AS "table", column_name AS "column", grantee,
+                   string_agg(privilege_type, ', ' ORDER BY privilege_type) AS privileges
+            FROM information_schema.column_privileges cp
+            WHERE grantee NOT IN ({sys_roles}) AND table_schema = %s
+              AND NOT EXISTS (SELECT 1 FROM information_schema.role_table_grants g
+                              WHERE g.table_schema = cp.table_schema AND g.table_name = cp.table_name
+                                AND g.grantee = cp.grantee AND g.privilege_type = cp.privilege_type)
+            GROUP BY 1, 2, 3, 4 ORDER BY 1, 2, 3, 4""", (schema,)))
     sequences = q(conn, f"""
         SELECT n.nspname AS schema, c.relname AS sequence, r.rolname AS grantee,
                concat_ws(', ', CASE WHEN has_sequence_privilege(r.oid, c.oid, 'USAGE') THEN 'USAGE' END,
@@ -937,7 +945,7 @@ def api_section(name: str, path: str, transform=lambda x: x, optional: bool = Fa
         log(f"api {name}: ok")
         return data
     except urllib.error.HTTPError as e:
-        if optional and e.code in (403, 404):
+        if optional and e.code in (400, 403, 404):
             log(f"api {name}: indisponível ({e.code}), ignorado")
             return None
         record_error(f"api.{name}", f"HTTP {e.code} em {path}")
