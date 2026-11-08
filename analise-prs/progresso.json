@@ -1,0 +1,12 @@
+{
+  "baseline_main_sha": "c6eb99b275e1270cf99f1216e808c120f7cf58a2",
+  "atualizado_em": "2026-11-08T21:16:00Z",
+  "ciclo_atual": "monitorando CI das PRs criadas nesta sessao (#266-#272); nenhuma mergeada ainda",
+  "prs_mergeadas": [],
+  "prs_em_andamento": [266, 267, 268, 269, 270, 271, 272],
+  "prs_aguardando_humano": [131, 203, 204, 205, 206, 234, 235, 238, 243, 255, 256, 263, 265],
+  "prs_bloqueadas_ambiente": [208, 210, 216],
+  "prs_nao_iniciadas": [175, 211, 212, 253],
+  "prs_supersedidas": [209, 213, 214, 215, 254, 257, 264],
+  "proxima_acao": "repetir github_graphql para #267-#272 a cada ciclo de wakeup; squash merge quando mergeStateStatus=CLEAN; depois tratar #266 (draft->ready, merge main, CI)"
+}
