@@ -38,35 +38,50 @@ while IFS= read -r -d '' f; do
 done < <(find "$ROOT/scripts" -name "*.py" -print0)
 
 # ---------------------------------------------------------------------------
-# 3. TypeScript type-check (somente arquivos editados nesta sessão)
+# 3. TypeScript type-check via bun run type-check (usa tsconfig do projeto)
 # ---------------------------------------------------------------------------
-echo "── TypeScript (tsc --noEmit) ──────────────────────────────────────────"
-TS_FILES=(
-  scripts/ci/audit-env.ts
-  scripts/ci/listar-specs-quarentena.ts
-  scripts/gerar-grafo-arquitetura.ts
-  scripts/run-scenarios.ts
-  scripts/simular-observabilidade-digest.ts
-  scripts/stress-test.ts
-  scripts/security/test-anon-surface.ts
-  scripts/security/test-rpc-runtime.ts
-)
-if command -v npx &>/dev/null && [ -f "$ROOT/tsconfig.json" ]; then
-  for f in "${TS_FILES[@]}"; do
+echo "── TypeScript (bun run type-check) ───────────────────────────────────"
+if command -v bun &>/dev/null && [ -f "$ROOT/package.json" ]; then
+  # Captura erros pré-existentes em main para distinguir dos nossos
+  tsc_out=$(cd "$ROOT" && bun run type-check 2>&1 || true)
+  new_errs=$(echo "$tsc_out" | grep "error TS" | grep -vF "Cannot find type definition file for '@testing-library/jest-dom'" | grep -vF "Cannot find type definition file for 'vitest/globals'" || true)
+  if [ -z "$new_errs" ]; then
+    ok "bun run type-check (0 erros novos; 2 erros pré-existentes em @testing-library/jest-dom e vitest/globals ignorados)"
+  else
+    fail "bun run type-check" "$new_errs"
+  fi
+else
+  skip "type-check" "bun não disponível"
+fi
+
+# ---------------------------------------------------------------------------
+# 3b. Python unit tests (unittest discover)
+# ---------------------------------------------------------------------------
+echo "── Python unit tests ─────────────────────────────────────────────────"
+if python3 -c "import unittest" 2>/dev/null; then
+  py_tests=(
+    scripts/graphify/test_typescript_imports.py
+    scripts/graphify/test_sql_inventory.py
+    scripts/graphify/test_graph_quality.py
+    scripts/graphify/test_benchmark.py
+    scripts/graphify/test_run.py
+    scripts/graphify/test_code_references.py
+    scripts/graphify/test_edge_inventory.py
+    scripts/graphify/test_profiles.py
+    scripts/graphify/test_requirements_lock.py
+  )
+  for f in "${py_tests[@]}"; do
     fp="$ROOT/$f"
-    [ -f "$fp" ] || { skip "$f" "arquivo não encontrado"; continue; }
-    if npx tsc --noEmit --skipLibCheck --target ES2020 --moduleResolution bundler \
-         --module ESNext --allowImportingTsExtensions --esModuleInterop \
-         "$fp" 2>/tmp/tsc_err; then
-      ok "tsc $f"
+    [ -f "$fp" ] || { skip "$f" "não encontrado"; continue; }
+    if out=$(python3 "$fp" 2>&1) && echo "$out" | grep -qE "^OK$|^OK "; then
+      ran=$(echo "$out" | grep "Ran" | head -1)
+      ok "$(basename $f): $ran"
     else
-      # Erros de tipos do projeto herdados (não introduzidos por nós) são esperados
-      lines=$(grep -c "error TS" /tmp/tsc_err 2>/dev/null || echo 0)
-      skip "$f" "$lines erros TS (podem ser herdados do projeto)"
+      fail "$(basename $f)" "$(echo "$out" | tail -5)"
     fi
   done
 else
-  skip "tsc" "npx ou tsconfig.json não disponível"
+  skip "python unit tests" "python3 não disponível"
 fi
 
 # ---------------------------------------------------------------------------
