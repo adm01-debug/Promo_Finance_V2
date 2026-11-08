@@ -1,15 +1,15 @@
 {
  "meta": {
-  "sha": "d8804a2000192594419275bc94da6e44fbf6e211",
+  "sha": "6a925600f36f44488dc07b79e063f3dd67e5d30b",
   "branch": "main",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
-  "generated_at": "2026-11-08 23:22 UTC",
+  "generated_at": "2026-11-08 23:50 UTC",
   "files_total": 3438,
   "code_files": 3155,
-  "code_lines": 452683
+  "code_lines": 452691
  },
  "version": "1.3.2",
- "facts_hash": "2c9f4fd4c1eb0a6a",
+ "facts_hash": "78822b1c37cd6290",
  "stack": {
   "frameworks": [
    "React + Vite",
@@ -63373,7 +63373,7 @@
   {
    "module": "src/components",
    "files": 872,
-   "lines": 159211,
+   "lines": 159215,
    "tables": [
     "acordos_parcelamento",
     "alertas",
@@ -64175,7 +64175,7 @@
   {
    "module": "src/pages",
    "files": 211,
-   "lines": 44684,
+   "lines": 44688,
    "tables": [
     "audit_logs",
     "bloqueios_duplicidade",
@@ -180408,7 +180408,7 @@
   },
   "src/components/relatorios/RelatoriosKpis.tsx": {
    "path": "src/components/relatorios/RelatoriosKpis.tsx",
-   "lines": 173,
+   "lines": 177,
    "exports": [
     "function RelatoriosKpiCards"
    ],
@@ -207409,7 +207409,7 @@
   },
   "src/pages/Alertas.tsx": {
    "path": "src/pages/Alertas.tsx",
-   "lines": 382,
+   "lines": 386,
    "exports": [
     "function Alertas"
    ],
@@ -228311,10 +228311,24 @@
   }
  },
  "git": {
-  "sha": "d8804a2000192594419275bc94da6e44fbf6e211",
+  "sha": "6a925600f36f44488dc07b79e063f3dd67e5d30b",
   "branch": "main",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
   "commits": [
+   {
+    "sha": "6a92560",
+    "date": "2026-11-08",
+    "author": "adm01-debug",
+    "subject": "fix: erros TypeScript framer-motion 14.x — supersede #209 (#266)",
+    "files": [
+     "bun.lock",
+     "package.json",
+     "src/components/alertas/AlertaComponents.tsx",
+     "src/components/relatorios/RelatoriosKpis.tsx",
+     "src/pages/Alertas.tsx",
+     "src/pages/Empresas.tsx"
+    ]
+   },
    {
     "sha": "d8804a2",
     "date": "2026-11-08",
@@ -228748,16 +228762,17 @@
      "PENDENCIAS.md",
      "RELATORIO_CI.md"
     ]
-   },
-   {
-    "sha": "b902e29",
-    "date": "2026-10-29",
-    "author": "adm01-debug",
-    "subject": "Merge branch 'main' into fix/conciliacao-manual-dupla-confirmacao",
-    "files": []
    }
   ],
   "hot_files": [
+   [
+    "bun.lock",
+    3
+   ],
+   [
+    "package.json",
+    3
+   ],
    [
     ".github/workflows/contexto.yml",
     3
@@ -228781,14 +228796,6 @@
    [
     "RELATORIO_CI.md",
     3
-   ],
-   [
-    "bun.lock",
-    2
-   ],
-   [
-    "package.json",
-    2
    ],
    [
     "scripts/supabase_snapshot/snapshot.py",

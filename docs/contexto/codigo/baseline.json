@@ -2,11 +2,16 @@
  "aviso": "GERADO AUTOMATICAMENTE por scripts/ai-context/gerar.mjs — não editar à mão; será sobrescrito.",
  "format_version": 2,
  "git": {
-  "commit": "d8804a2000192594419275bc94da6e44fbf6e211",
+  "commit": "6a925600f36f44488dc07b79e063f3dd67e5d30b",
   "branch": "main",
-  "data_commit": "2026-11-08T18:18:19-03:00",
+  "data_commit": "2026-11-08T19:25:03-03:00",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
   "ultimos_commits": [
+   {
+    "sha": "6a92560",
+    "data": "2026-11-08",
+    "assunto": "fix: erros TypeScript framer-motion 14.x — supersede #209 (#266)"
+   },
    {
     "sha": "d8804a2",
     "data": "2026-11-08",
@@ -126,14 +131,9 @@
     "sha": "8172bc7",
     "data": "2026-10-30",
     "assunto": "fix(security): .max() nos arrays de edge functions — mitigação GHSA-mrhx-c7xc-m3w5 (#221)"
-   },
-   {
-    "sha": "885dd88",
-    "data": "2026-10-30",
-    "assunto": "docs(ci): inventário final 30/10 — CI pós-#219 confirmado success (#220)"
    }
   ],
-  "arquivos_mudados_7d": 166,
+  "arquivos_mudados_7d": 170,
   "pastas_mais_mudadas_30d": [
    {
     "pasta": "supabase/functions/_shared",
@@ -144,6 +144,10 @@
     "mudancas": 13
    },
    {
+    "pasta": "bun.lock",
+    "mudancas": 12
+   },
+   {
     "pasta": "PENDENCIAS.md",
     "mudancas": 11
    },
@@ -152,7 +156,7 @@
     "mudancas": 11
    },
    {
-    "pasta": "bun.lock",
+    "pasta": "package.json",
     "mudancas": 11
    },
    {
@@ -161,10 +165,6 @@
    },
    {
     "pasta": ".github/workflows/ci.yml",
-    "mudancas": 10
-   },
-   {
-    "pasta": "package.json",
     "mudancas": 10
    },
    {
@@ -199,14 +199,14 @@
   "arquivos_mais_mudados_90d": [
    {
     "arquivo": "package.json",
-    "mudancas": 28
-   },
-   {
-    "arquivo": ".github/workflows/ci.yml",
-    "mudancas": 21
+    "mudancas": 29
    },
    {
     "arquivo": "bun.lock",
+    "mudancas": 22
+   },
+   {
+    "arquivo": ".github/workflows/ci.yml",
     "mudancas": 21
    },
    {
@@ -301,7 +301,7 @@
   "autores_30d": [
    {
     "autor": "adm01-debug",
-    "commits": 37
+    "commits": 38
    },
    {
     "autor": "devin-ai-integration[bot]",
@@ -320,7 +320,7 @@
  "contagens": {
   "arquivos_total": 3396,
   "arquivos_codigo": 2148,
-  "linhas_codigo": 399679,
+  "linhas_codigo": 399687,
   "rotas": 128,
   "rotas_http_backend": 12,
   "vistas_por_id": 0,
@@ -568,7 +568,7 @@
   },
   "src/components": {
    "arquivos": 872,
-   "linhas": 159211
+   "linhas": 159215
   },
   "src/config": {
    "arquivos": 1,
@@ -600,7 +600,7 @@
   },
   "src/pages": {
    "arquivos": 211,
-   "linhas": 44684
+   "linhas": 44688
   },
   "src/test": {
    "arquivos": 21,

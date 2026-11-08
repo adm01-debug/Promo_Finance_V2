@@ -5150,7 +5150,7 @@
    "modulo": "components/relatorios",
    "arquivos": 20,
    "testes": 0,
-   "linhas": 3794,
+   "linhas": 3798,
    "itens_menu": [],
    "telas": [],
    "rotas_http": [],
@@ -9288,7 +9288,7 @@
    "modulo": "pages",
    "arquivos": 75,
    "testes": 1,
-   "linhas": 18930,
+   "linhas": 18934,
    "itens_menu": [
     "Alertas",
     "Alertas do Sistema",

@@ -8979,7 +8979,7 @@
     "RelatoriosKpiCards"
    ],
    "export_default": null,
-   "linhas": 173,
+   "linhas": 177,
    "dominio": "components/relatorios",
    "hooks_locais": [],
    "tabelas": [],
@@ -12129,7 +12129,7 @@
     "Alertas"
    ],
    "export_default": "Alertas",
-   "linhas": 382,
+   "linhas": 386,
    "dominio": "pages",
    "hooks_locais": [
     "useAlertas",
