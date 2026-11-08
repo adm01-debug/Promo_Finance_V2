@@ -28,9 +28,13 @@ type Var = { name: string; scope: string; required: boolean; dest: string };
 
 // ---------- helpers ----------
 async function get(url: string, headers: Record<string, string>): Promise<unknown> {
-  const r = await fetch(url, { headers });
-  if (!r.ok) return null;
-  return r.json();
+  try {
+    const r = await fetch(url, { headers });
+    if (!r.ok) return null;
+    return r.json();
+  } catch {
+    return null;
+  }
 }
 
 // ---------- leitura dos destinos ----------
@@ -79,7 +83,7 @@ const [vercelEnvs, supabaseSecrets, githubSecrets, githubVariables] = await Prom
   fetchGithubVariables(),
 ]);
 
-const vars: Var[] = manifest.vars;
+const vars: Var[] = manifest.vars ?? [];
 let failures = 0;
 
 console.log(`\n🔍 audit-env — ${vars.length} vars no manifesto\n`);
