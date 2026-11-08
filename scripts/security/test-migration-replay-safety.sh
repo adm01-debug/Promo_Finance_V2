@@ -1,6 +1,17 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
+if [[ "${1:-}" == "-h" || "${1:-}" == "--help" ]]; then
+  echo "Uso: $(basename "$0") [-h|--help]"
+  echo ""
+  echo "Opcoes:"
+  echo "  -h, --help   Exibe esta ajuda"
+  echo ""
+  echo "Verifica segurança de replay das migrations (padrões proibidos em DDL)."
+  echo "Não requer banco de dados — analisa arquivos locais em supabase/migrations/."
+  exit 0
+fi
+
 repo_root="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
 cd "$repo_root"
 

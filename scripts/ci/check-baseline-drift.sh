@@ -14,6 +14,18 @@
 # Exit: 0 sem drift | 1 drift detectado | 2 pré-condição ausente
 set -euo pipefail
 
+if [[ "${1:-}" == "-h" || "${1:-}" == "--help" ]]; then
+  echo "Uso: $(basename "$0") [-h|--help]"
+  echo ""
+  echo "Opcoes:"
+  echo "  -h, --help   Exibe esta ajuda"
+  echo ""
+  echo "Gate #26 — Detecta drift de schema/policies vs. baseline versionado."
+  echo "Env obrigatório: PROD_DB_URL"
+  echo "Env opcional:    DRIFT_TOLERANCE (default: 0)"
+  exit 0
+fi
+
 DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)/integrity"
 BASELINE="$DIR/baseline"
 TOL="${DRIFT_TOLERANCE:-0}"

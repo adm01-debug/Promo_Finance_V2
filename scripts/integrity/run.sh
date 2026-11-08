@@ -8,6 +8,16 @@ set -euo pipefail
 DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 BASELINE="$DIR/baseline"
 JSON_ONLY=0
+if [ "${1:-}" = "--help" ] || [ "${1:-}" = "-h" ]; then
+  echo "Uso: $(basename "$0") [--json-only] [-h|--help]"
+  echo ""
+  echo "Opcoes:"
+  echo "  --json-only   Emite apenas JSONL em stdout (sem cabeçalho humano)"
+  echo "  -h, --help    Exibe esta ajuda"
+  echo ""
+  echo "Env obrigatório: STAGING_DB_URL, STAGING_PROJECT_REF, STAGING_ANON_KEY"
+  exit 0
+fi
 [ "${1:-}" = "--json-only" ] && JSON_ONLY=1
 
 : "${STAGING_DB_URL:?STAGING_DB_URL obrigatório}"

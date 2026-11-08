@@ -5,6 +5,17 @@
 # do baseline registrado em scripts/security/zod-coverage.baseline.
 set -euo pipefail
 
+if [[ "${1:-}" == "-h" || "${1:-}" == "--help" ]]; then
+  echo "Uso: $(basename "$0") [-h|--help]"
+  echo ""
+  echo "Opcoes:"
+  echo "  -h, --help   Exibe esta ajuda"
+  echo ""
+  echo "Verifica cobertura Zod nas Edge Functions. Falha se regredir abaixo do baseline."
+  echo "Env opcional: BASELINE_FILE (default: scripts/security/zod-coverage.baseline)"
+  exit 0
+fi
+
 ROOT="$(cd "$(dirname "$0")/../.." && pwd)"
 FUNCS_DIR="$ROOT/supabase/functions"
 BASELINE_FILE="$ROOT/scripts/security/zod-coverage.baseline"

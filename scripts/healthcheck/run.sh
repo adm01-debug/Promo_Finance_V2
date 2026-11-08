@@ -32,7 +32,16 @@ while [ $# -gt 0 ]; do
     --json-only) JSON_ONLY=1 ;;
     --skip) shift; [ $# -gt 0 ] && SKIP+=("$1") ;;
     --skip=*) SKIP+=("${1#--skip=}") ;;
-    -h|--help) sed -n '2,20p' "$0"; exit 0 ;;
+    -h|--help)
+      echo "Uso: $(basename "$0") [--json-only] [--skip <check>] [-h|--help]"
+      echo ""
+      echo "Opcoes:"
+      echo "  --json-only        Emite apenas JSONL em stdout (sem cabeçalho humano)"
+      echo "  --skip <check>     Pula um check específico (webhooks|crons|realtime|events)"
+      echo "  -h, --help         Exibe esta ajuda"
+      echo ""
+      echo "Env obrigatório: STAGING_DB_URL, STAGING_PROJECT_REF, STAGING_ANON_KEY"
+      exit 0 ;;
   esac
   shift
 done

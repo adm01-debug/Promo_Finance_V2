@@ -8,6 +8,15 @@ RUN_ID=""
 while [ $# -gt 0 ]; do
   case "$1" in
     --run-id) RUN_ID="$2"; shift 2 ;;
+    -h|--help)
+      echo "Uso: $(basename "$0") --run-id <uuid>"
+      echo ""
+      echo "Opcoes:"
+      echo "  --run-id <uuid>    UUID da execução de cópia a validar (obrigatório)"
+      echo "  -h, --help         Exibe esta ajuda"
+      echo ""
+      echo "Env obrigatório: PROD_DB_URL, STAGING_DB_URL"
+      exit 0 ;;
     *) echo "flag desconhecida: $1" >&2; exit 2 ;;
   esac
 done

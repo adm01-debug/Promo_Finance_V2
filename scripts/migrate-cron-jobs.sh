@@ -12,6 +12,17 @@
 
 set -euo pipefail
 
+if [[ "${1:-}" == "-h" || "${1:-}" == "--help" ]]; then
+  echo "Uso: $(basename "$0") [--dry-run] [-h|--help]"
+  echo ""
+  echo "Opcoes:"
+  echo "  --dry-run    Simula execução sem aplicar mudanças no banco"
+  echo "  -h, --help   Exibe esta ajuda"
+  echo ""
+  echo "Env obrigatório: DEST_DB_URL, PROJECT_REF, ANON_KEY"
+  exit 0
+fi
+
 DRY_RUN=0
 [[ "${1:-}" == "--dry-run" ]] && DRY_RUN=1
 
