@@ -21,7 +21,7 @@ function arg(name: string, fallback?: string): string | undefined {
 const count = Number(arg("count", "500"));
 const seed = Number(arg("seed", "42"));
 const domainArg = arg("domain", "all");
-const out = arg("out", "/mnt/documents/scenarios-report.md")!;
+const out = arg("out", "./scenarios-report.md")!;
 
 const ALL: Domain[] = ["conciliacao", "webhooks", "cobranca", "anomalias"];
 const domains: Domain[] =

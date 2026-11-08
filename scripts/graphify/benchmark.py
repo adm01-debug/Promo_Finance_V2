@@ -23,8 +23,11 @@ def source_hits(graph, term):
 
 
 def rg_hits(root, term, files):
-    result = subprocess.run(["rg", "-l", "-F", "--", term, *files], cwd=root,
-                            capture_output=True, text=True)
+    try:
+        result = subprocess.run(["rg", "-l", "-F", "--", term, *files], cwd=root,
+                                capture_output=True, text=True)
+    except FileNotFoundError:
+        raise FileNotFoundError("ripgrep ('rg') não está instalado — instale com 'apt install ripgrep' ou 'brew install ripgrep'")
     if result.returncode not in (0, 1):
         raise subprocess.CalledProcessError(result.returncode, result.args)
     return sorted(line for line in result.stdout.splitlines() if line)

@@ -2,7 +2,7 @@
 // POST { event_type, risk_score?, payload, entity_id? }
 // Busca configs em n8n_workflow_configs (enabled + faixa de risco compatível),
 // envia webhook a cada uma com retry/backoff e loga em n8n_dispatch_logs.
-import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.49.4';
+import { createClient } from 'npm:@supabase/supabase-js@2.49.4';
 import { segredosIguais } from '../_shared/auth-guard.ts';
 import { corsHeadersPara } from '../_shared/cors.ts';
 import { createLogger } from '../_shared/observability.ts';

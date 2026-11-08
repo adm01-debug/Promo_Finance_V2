@@ -17,15 +17,19 @@ const scanDir = (dir, results = { classes: new Set(), fonts: [], colors: [] }) =
     } else if (file.endsWith('.tsx') || file.endsWith('.ts')) {
       const content = fs.readFileSync(filePath, 'utf-8');
       
-      // Look for tailwind classes (simplified regex)
-      const classNameMatches = content.match(/className=["']([^"']+)["']/g);
-      if (classNameMatches) {
-        classNameMatches.forEach(match => {
-          const classes = match.replace(/className=["']|["']/g, '').split(' ');
-          classes.forEach(c => {
-            if (c.trim()) results.classes.add(c.trim());
-          });
-        });
+      // Extract className from: "...", '...', template literals `...`, cva(...), cn(...)
+      const patterns = [
+        /className=["']([^"']+)["']/g,
+        /className=\{`([^`]+)`\}/g,
+        /\bcva\(["']([^"']+)["']/g,
+        /\bcn\(["']([^"']+)["']/g,
+      ];
+      for (const re of patterns) {
+        let m;
+        re.lastIndex = 0;
+        while ((m = re.exec(content)) !== null) {
+          m[1].split(/\s+/).forEach(c => { if (c.trim()) results.classes.add(c.trim()); });
+        }
       }
     }
   });

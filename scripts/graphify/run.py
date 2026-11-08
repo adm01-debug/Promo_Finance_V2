@@ -213,7 +213,8 @@ def analyze(root, config, files):
             f"> {evidence['raw']['unresolved_edges']} referências sem destino no corpus bruto; consultar ../diagnostico.json.\n"
             "> Não executar a sugestão genérica `graphify update .`: repetir o comando do perfil.\n\n"
         )
-        report.write_text(warning + report.read_text())
+        existing = report.read_text() if report.exists() else ""
+        report.write_text(warning + existing)
         print(json.dumps(evidence["graph"], ensure_ascii=False))
         print(f"Referências sem destino no corpus bruto: {evidence['raw']['unresolved_edges']}; consulte o diagnóstico.")
         print(f"Grafo: {graph_path}\nEvidência: {manifest}")
