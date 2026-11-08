@@ -122,6 +122,9 @@ async function readBody(res: Response): Promise<unknown> {
 }
 
 function isDenied(status: number, code?: string): boolean {
+  // 400 com PGRST100/PGRST102 = PostgREST rejeita a requisição por schema mismatch,
+  // o que também indica bloqueio efectivo para o papel anônimo.
+  if (status === 400 && code != null && /^PGRST1/.test(code)) return true;
   return status === 401 || status === 403 || (status === 404 && code === "PGRST202");
 }
 
