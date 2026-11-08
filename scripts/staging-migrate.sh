@@ -43,7 +43,20 @@ for arg in "$@"; do
     --skip-schema) SKIP_SCHEMA=1 ;;
     --skip-functions) SKIP_FUNCTIONS=1 ;;
     --skip-crons) SKIP_CRONS=1 ;;
-    -h|--help) sed -n '2,20p' "$0"; exit 0 ;;
+    -h|--help)
+      echo "Uso: $(basename "$0") [--dry-run] [--skip-baseline] [--only-integrity] [-h|--help]"
+      echo ""
+      echo "Opcoes:"
+      echo "  --dry-run           Todas as etapas em preview (sem escrever em staging)"
+      echo "  --skip-baseline     Usa scripts/integrity/baseline/ já commitado"
+      echo "  --only-integrity    Pula fases 3–6 e roda apenas integrity + summary"
+      echo "  --skip-schema       Não aplica migrations nem pós-schema"
+      echo "  --skip-functions    Não faz deploy das Edge Functions"
+      echo "  --skip-crons        Não recria/valida cron jobs"
+      echo "  -h, --help          Exibe esta ajuda"
+      echo ""
+      echo "Env obrigatório: PROD_DB_URL, STAGING_DB_URL, STAGING_PROJECT_REF, STAGING_ANON_KEY, SUPABASE_ACCESS_TOKEN, REQUIRED_SECRETS"
+      exit 0 ;;
     *) echo "Flag desconhecida: $arg" >&2; exit 2 ;;
   esac
 done
@@ -152,9 +165,9 @@ run_crons() {
   log_step "crons" "start"
   local args=()
   [ "$DRY_RUN" -eq 1 ] && args+=(--dry-run)
-  SUPABASE_PROJECT_REF="$STAGING_PROJECT_REF" \
-  SUPABASE_ANON_KEY="$STAGING_ANON_KEY" \
-  STAGING_DB_URL="$STAGING_DB_URL" \
+  PROJECT_REF="$STAGING_PROJECT_REF" \
+  ANON_KEY="$STAGING_ANON_KEY" \
+  DEST_DB_URL="$STAGING_DB_URL" \
     bash "$ROOT/scripts/migrate-cron-jobs.sh" "${args[@]}" \
     || die "crons" "migrate-cron-jobs falhou"
   log_step "crons" "ok"

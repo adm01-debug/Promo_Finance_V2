@@ -172,12 +172,13 @@ def dependencies_in_file(relative, text):
 
 
 def inventory(root=ROOT):
-    files = sorted(MIGRATIONS.glob("*.sql"))
+    migrations = Path(root) / "supabase" / "migrations"
+    files = sorted(migrations.glob("*.sql"))
     if not files:
         raise ValueError("Nenhuma migration SQL encontrada.")
     objects, dependencies, hashes, credential_like = [], [], {}, []
     for path in files:
-        relative = path.relative_to(root).as_posix()
+        relative = path.relative_to(Path(root)).as_posix()
         content = path.read_bytes()
         text = content.decode("utf-8")
         if "\0" in text:
