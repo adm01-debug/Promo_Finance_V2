@@ -1033,7 +1033,9 @@ def run_pg_dump() -> str | None:
              if not ln.startswith(("-- Dumped from", "-- Dumped by", "\\restrict", "\\unrestrict"))]
     text = re.sub(r"\n{3,}", "\n\n", "\n".join(lines))
     log(f"pg_dump: ok ({len(text)} bytes)")
-    return text
+    # scrub() também aqui: corpo de função ou default com credencial embutida iria inteiro
+    # para schema.sql, que é saída versionada. A coleta via q() já redige; o dump não redigia.
+    return scrub(text)
 
 
 def run_gen_types() -> str | None:

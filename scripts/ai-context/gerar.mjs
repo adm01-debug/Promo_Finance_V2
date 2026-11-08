@@ -36,6 +36,7 @@ const MAX_FILE_BYTES = (CFG.maxFileMB || 8) * 1024 * 1024;
 // Rodapé do INDEX.md: onde este contexto é publicado. Genérico por padrão; cada repo descreve o seu
 // workflow/branch em ai-context.config.json → "publicacao" (ou env AI_CONTEXT_PUBLICACAO).
 const PUBLICACAO = process.env.AI_CONTEXT_PUBLICACAO || CFG.publicacao || 'Publicado pelo workflow de contexto do repositório (ver .github/workflows).';
+const GRAFO_COMO_GERAR = process.env.AI_CONTEXT_GRAFO_COMO_GERAR || CFG.grafoComoGerar || 'uvx --from "graphifyy[sql]" graphify update .  (ou: bun run graph:update); saída em graphify-out/ — graph.json e graph.html NÃO são versionados (dezenas de MB); use `graphify query/path/explain` localmente';
 const exists = (p) => fs.existsSync(abs(p));
 const readText = (p) => { try { const a = path.isAbsolute(p) ? p : abs(p); if (fs.statSync(a).size > MAX_FILE_BYTES) return ''; return fs.readFileSync(a, 'utf8'); } catch { return ''; } };
 const readJson = (p) => { try { return JSON.parse(readText(p).replace(/^﻿/, '')); } catch { return null; } };
@@ -719,7 +720,10 @@ const grafoArestas = Object.fromEntries(prodFiles.filter((f) => importsOf(f).len
 const graphify = secao('graphify', () => {
   const gdir = CFG.graphifyDir || 'graphify-out';
   const gjson = `${gdir}/graph.json`;
-  const base = { presente: false, como_gerar: 'uvx --from "graphifyy[sql]" graphify update .  (ou: bun run graph:update); saída em graphify-out/ — graph.json e graph.html NÃO são versionados (dezenas de MB); use `graphify query/path/explain` localmente', relatorio: FILESET.has(`${gdir}/GRAPH_REPORT.md`) ? `${gdir}/GRAPH_REPORT.md` : null };
+  // O comando sugerido é política do repo: ai-context.config.json → "grafoComoGerar"
+  // (env AI_CONTEXT_GRAFO_COMO_GERAR tem precedência). Repo que proíbe `graphify update .`
+  // declara ali o fluxo autorizado; sem config, segue o padrão do pacote.
+  const base = { presente: false, como_gerar: GRAFO_COMO_GERAR, relatorio: FILESET.has(`${gdir}/GRAPH_REPORT.md`) ? `${gdir}/GRAPH_REPORT.md` : null };
   if (!fs.existsSync(abs(gjson))) return base;
   const stat = fs.statSync(abs(gjson)); if (stat.size > 400 * 1024 * 1024) return { ...base, presente: true, erro: `graph.json com ${Math.round(stat.size / 1048576)} MB — acima do limite de leitura` };
   const g = JSON.parse(fs.readFileSync(abs(gjson), 'utf8'));

@@ -747,7 +747,7 @@ def parse_sql_schema(root: Path, files: list[Path]) -> dict:
         key=lambda f: rel(f, root))
     schema: dict = {"tables": {}, "policies": [], "triggers": [], "functions": {}, "enums": {}, "indexes": [], "cron_jobs": [],
                     "views": {}, "sources": [rel(f, root) for f in sql_files], "rls": {}, "grants": [], "raises": [],
-                    "seed": [], "comments": {}, "types_file": ""}
+                    "seed": [], "comments": {}, "types_file": "", "policies_dinamicas": []}
     T = schema["tables"]
     for f in sql_files:
         src = rel(f, root)
@@ -765,6 +765,21 @@ def parse_sql_schema(root: Path, files: list[Path]) -> dict:
             schema["comments"][f"{kind.lower()}:{tgt}"] = comment.replace("''", "'")
         for st in split_sql_statements(txt_nc):
             low = st.lower().lstrip()
+            # ---- políticas criadas por SQL dinâmico (DO $$ ... EXECUTE format('CREATE POLICY ...'))
+            # Não são reconstruíveis estaticamente: registramos para a matriz avisar em vez de
+            # publicar permissão incompleta como se fosse completa.
+            if low.startswith("do ") or low.startswith("do$") or low.startswith("do\n"):
+                if re.search(r"create\s+policy", st, re.I):
+                    # Candidatos vêm de literais ARRAY[...]; só entram os que são tabela de verdade
+                    # no schema reconstruído — sem isso entram expressões de policy e nomes de role.
+                    candidatos = set()
+                    for bloco in re.findall(r"array\s*\[([^\]]*)\]", st, re.I | re.S):
+                        for item in re.findall(r"'([a-z_][a-z0-9_]{0,62})'", bloco, re.I):
+                            candidatos.add(item.lower())
+                    conhecidas = {c for c in candidatos
+                                  if any(k == c or k.endswith(f".{c}") for k in T)}
+                    schema["policies_dinamicas"].append({"src": src, "tabelas": sorted(conhecidas)})
+                continue
             # ---- CREATE TABLE
             m = SQL_CREATE_TABLE_RE.match(st)
             if m:
@@ -1902,6 +1917,20 @@ def render_access(meta, access, schema) -> str:
         rows.append([f"`{t}`", row["rls"], cell(row["SELECT"]), cell(row["INSERT"]), cell(row["UPDATE"]), cell(row["DELETE"])])
     s += md_table(["Tabela", "RLS", "SELECT", "INSERT", "UPDATE", "DELETE"], rows)
     s += "\n> `—` com RLS ligado = ninguém além de service_role. `sem RLS` = qualquer chave anon lê/escreve tudo.\n"
+    dinamicas = schema.get("policies_dinamicas") or []
+    if dinamicas:
+        afetadas = sorted({t for d in dinamicas for t in d["tabelas"]})
+        s += ("\n> **NÃO VERIFICADO — a matriz acima está incompleta.** Algumas migrations criam políticas por SQL\n"
+              "> dinâmico (`DO $$ ... EXECUTE format('CREATE POLICY ...')`), que não é reconstruível estaticamente:\n"
+              "> as linhas destas tabelas podem omitir políticas que existem no banco. Confirme no snapshot do\n"
+              "> banco real (`docs/contexto/supabase/`), que é o dono deste fato, antes de concluir que um perfil\n"
+              "> não tem acesso.\n>\n")
+        if afetadas:
+            s += "> Tabelas afetadas: " + ", ".join(f"`{t}`" for t in afetadas) + "\n>\n"
+        else:
+            s += "> Tabelas afetadas: não extraíveis do bloco (sem literal `ARRAY[...]`).\n>\n"
+        origens = sorted({d["src"] for d in dinamicas})
+        s += "> Origem: " + ", ".join(f"`{o}`" for o in origens) + "\n"
     sr = access["service_role_files"]
     s += f"\n## Onde o RLS é IGNORADO (service_role) — {len(sr)} arquivo(s)\n\n" + ("".join(f"- `{f}`\n" for f in sr[:150]) + (f"- … +{len(sr) - 150} (lista completa em `context.json`)\n" if len(sr) > 150 else "") or "_nenhum arquivo usa service_role_\n")
     s += "\n## Funções SQL `SECURITY DEFINER` (rodam com privilégio do dono, ignoram RLS)\n\n" + ("".join(f"- `{f}`\n" for f in access["security_definer_fns"]) or "_nenhuma_\n")
