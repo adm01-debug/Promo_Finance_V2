@@ -25,7 +25,7 @@ const itemVariants = {
     opacity: 1,
     y: 0,
     scale: 1,
-    transition: { type: 'spring', stiffness: 300, damping: 24 },
+    transition: { type: 'spring' as const, stiffness: 300, damping: 24 },
   },
 };
 
@@ -44,7 +44,7 @@ export function AlertaKPICard({
     <motion.div
       variants={itemVariants}
       whileHover={{ y: -2, scale: 1.02 }}
-      transition={{ type: 'spring', stiffness: 400 }}
+      transition={{ type: 'spring' as const, stiffness: 400 }}
     >
       <div
         className={cn(
