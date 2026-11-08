@@ -35,7 +35,7 @@ Bancos que NÃO são deste projeto: Supabase self-hosted VPS AtomicaBR; `pgxfvjm
 | Deploy   | Vercel (time `juca1`) — merge em `main` dispara deploy automático |
 | URL prod | https://app.promo-finance.com                                     |
 
-## Edge Functions (105 funções Deno — principais abaixo)
+## Edge Functions (109 funções Deno — principais abaixo)
 
 - **Financeiro:** categorizar-despesa, conciliacao-ia, executar-regua-cobranca, processar-fila-cobrancas
 - **Tributário:** calculo-iva, decidir-regime, executar-fechamento-tributario, gerar-dre-tributaria,
