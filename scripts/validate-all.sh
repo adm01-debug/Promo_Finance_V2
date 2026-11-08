@@ -43,12 +43,15 @@ done < <(find "$ROOT/scripts" -name "*.py" -print0)
 echo "── TypeScript (bun run type-check) ───────────────────────────────────"
 if command -v bun &>/dev/null && [ -f "$ROOT/package.json" ]; then
   # Captura erros pré-existentes em main para distinguir dos nossos
-  tsc_out=$(cd "$ROOT" && bun run type-check 2>&1 || true)
+  tsc_rc=0
+  tsc_out=$(cd "$ROOT" && bun run type-check 2>&1) || tsc_rc=$?
   new_errs=$(echo "$tsc_out" | grep "error TS" | grep -vF "Cannot find type definition file for '@testing-library/jest-dom'" | grep -vF "Cannot find type definition file for 'vitest/globals'" || true)
-  if [ -z "$new_errs" ]; then
-    ok "bun run type-check (0 erros novos; 2 erros pré-existentes em @testing-library/jest-dom e vitest/globals ignorados)"
-  else
+  if [ -n "$new_errs" ]; then
     fail "bun run type-check" "$new_errs"
+  elif [ "$tsc_rc" -ne 0 ] && ! echo "$tsc_out" | grep -q "error TS"; then
+    fail "bun run type-check" "exit $tsc_rc sem diagnóstico: $(echo "$tsc_out" | head -3)"
+  else
+    ok "bun run type-check (0 erros novos; erros pré-existentes em @testing-library/jest-dom e vitest/globals ignorados)"
   fi
 else
   skip "type-check" "bun não disponível"
@@ -70,6 +73,9 @@ if python3 -c "import unittest" 2>/dev/null; then
     scripts/graphify/test_profiles.py
     scripts/graphify/test_requirements_lock.py
     scripts/graphify/test_scenarios.py
+    scripts/admin/test_supabase_admin_ops_scenarios.py
+    scripts/data/test_verify_scenarios.py
+    scripts/integrity/test_dump_baseline_scenarios.py
   )
   for f in "${py_tests[@]}"; do
     fp="$ROOT/$f"
@@ -106,7 +112,6 @@ help_scripts=(
   scripts/ci/check-baseline-drift.sh
   scripts/data/verify.sh
   scripts/staging-migrate.sh
-  scripts/migrate-cron-jobs.sh
   scripts/security/export-function-privileges.sh
   scripts/security/zod-coverage.sh
   scripts/security/test-migration-replay-safety.sh
@@ -158,8 +163,11 @@ fi
 # 8. MJS — execução com --dry-run onde aplicável
 # ---------------------------------------------------------------------------
 echo "── MJS --help / dry-run ───────────────────────────────────────────────"
-if node --input-type=module <(echo "import '${ROOT}/scripts/security/test-canonical-db-gates.mjs'" \
-  ) 2>&1 | grep -qE "ERROR|fail|FAIL"; then
+_mjs_out=$(echo "import '${ROOT}/scripts/security/test-canonical-db-gates.mjs'" \
+  | node --input-type=module 2>&1 || true)
+if echo "$_mjs_out" | grep -qE "command not found|Cannot find.*node|bad option|ENOENT.*node"; then
+  fail "test-canonical-db-gates.mjs" "$_mjs_out"
+elif echo "$_mjs_out" | grep -qE "ERROR|fail|FAIL"; then
   skip "test-canonical-db-gates.mjs" "requer variáveis de ambiente (esperado)"
 else
   ok "test-canonical-db-gates.mjs import sem crash"
@@ -394,11 +402,11 @@ echo "── Cenários scripts auxiliares ────────────�
 # staging-migrate.sh
 _sm="$ROOT/scripts/staging-migrate.sh"
 [ -f "$_sm" ] && {
-  out=$(bash "$_sm" --help 2>&1)
+  out=$(env -i HOME="$HOME" PATH="$PATH" bash "$_sm" --help 2>&1 || true)
   echo "$out" | grep -q "Uso:" && ok "staging-migrate.sh --help → Uso:" \
     || fail "staging-migrate.sh --help" "sem Uso:"
-  # Sem env vars → falha, não silencia
-  set +e; bash "$_sm" >/dev/null 2>&1; rc=$?; set -e
+  # Sem env vars (isolado) → falha, não silencia
+  set +e; env -i HOME="$HOME" PATH="$PATH" bash "$_sm" >/dev/null 2>&1; rc=$?; set -e
   [ "$rc" -ne 0 ] && ok "staging-migrate.sh sem env → exit!=0" \
     || skip "staging-migrate.sh" "não detectou env ausente"
 } || skip "staging-migrate.sh" "não encontrado"

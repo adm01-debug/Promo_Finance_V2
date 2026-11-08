@@ -127,14 +127,18 @@ VIEWS_BAD="$(psql "$PROD_DB_URL" -A -t -c "
                     || ok "todas as views com security_invoker"
 
 ALLOWED_JSON="$(cat "$BASELINE/allowed-public-tables.json")"
-ANON_BAD="$(psql "$PROD_DB_URL" -A -t -v "allowed_json=$ALLOWED_JSON" -c "
-  WITH allowed AS (
-    SELECT jsonb_array_elements_text(:'allowed_json'::jsonb) AS tbl
-  )
-  SELECT COALESCE(string_agg(DISTINCT table_name || ':' || privilege_type, ','), '')
-  FROM information_schema.role_table_grants
-  WHERE table_schema='public' AND grantee='anon'
-    AND (privilege_type <> 'SELECT' OR table_name NOT IN (SELECT tbl FROM allowed));")"
+_anon_sql=$(mktemp)
+cat > "$_anon_sql" <<'SQL'
+WITH allowed AS (
+  SELECT jsonb_array_elements_text(:'allowed_json'::jsonb) AS tbl
+)
+SELECT COALESCE(string_agg(DISTINCT table_name || ':' || privilege_type, ','), '')
+FROM information_schema.role_table_grants
+WHERE table_schema='public' AND grantee='anon'
+  AND (privilege_type <> 'SELECT' OR table_name NOT IN (SELECT tbl FROM allowed));
+SQL
+ANON_BAD="$(psql "$PROD_DB_URL" -A -t -v "allowed_json=$ALLOWED_JSON" -f "$_anon_sql")"
+rm -f "$_anon_sql"
 [ -n "$ANON_BAD" ] && fail "grants indevidos para anon: $ANON_BAD" \
                    || ok "anon sem privilégios fora da allowlist"
 

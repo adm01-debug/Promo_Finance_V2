@@ -35,7 +35,7 @@ class TestDumpBaselineSyntax(unittest.TestCase):
     # C5: variável OUT derivada de DIR (path relativo ao script)
     def test_c5_out_relative_to_script_dir(self):
         content = SCRIPT.read_text()
-        self.assertIn('DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")', content)
+        self.assertIn('DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")"', content)
         self.assertIn('OUT="$DIR/baseline"', content)
 
 

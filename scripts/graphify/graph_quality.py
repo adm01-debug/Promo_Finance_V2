@@ -142,7 +142,7 @@ def query_graph(graph, term, max_nodes=20):
         for target, edge in adjacency.get(current, []):
             if target not in seen and target not in queue:
                 queue.append(target)
-            edge_key = (edge.get("source"), edge.get("target"), edge.get("kind"))
+            edge_key = (edge.get("source"), edge.get("target"), edge.get("relation"))
             if edge_key not in selected_edge_keys:
                 selected_edge_keys.add(edge_key)
                 selected_edges.append(edge)
