@@ -8,25 +8,31 @@
 
 | Veredito | Qtd | PRs |
 |---|---|---|
-| EM_ANDAMENTO (minhas, criadas nesta sessão para supersedir PRs com BEHIND/conflito/CI vermelho) | 7 | #266, #267, #268, #269, #270, #271, #272 |
-| SUPERSEDIDA (PR de terceiro cujo conteúdo já está coberto por uma EM_ANDAMENTO) | 7 | #209, #213, #214, #215, #254, #257, #264 |
+| MERGEADA (minhas, fecharam supersede de PR com BEHIND/conflito/CI vermelho) | 2 | #266, #268 |
+| EM_ANDAMENTO (minhas, aguardando CI para merge) | 5 | #267, #269, #270, #271, #272 (+ #273 documentação) |
+| SUPERSEDIDA (PR de terceiro cujo conteúdo já está coberto por uma minha) | 6 | #213, #214, #215, #254, #257, #264 |
+| FECHADA EXTERNAMENTE (não por esta sessão) | 1 | #209 (fechada após #266 mergear equivalente; provável auto-close do dependabot) |
 | AGUARDANDO_HUMANO | 16 | #131, #203, #204, #205, #206, #211, #212, #234, #235, #238, #243, #253, #255, #256, #263, #265 |
 | BLOQUEADA (bun.lock em conflito; registro npm indisponível nesta sessão cloud) | 3 | #208, #210, #216 |
 | NAO_INICIADA | 1 | #175 |
 
-(7+7+16+3+1 = 34, bate com o total.)
+(2+5+6+1+16+3+1 = 34, bate com o total. #273 é PR de documentação própria desta sessão, fora da contagem original.)
+
+## MERGEADAS
+
+- **#266** (supersede #209, fix framer-motion 14.x) → squash-merge em main, SHA `6a925600f36f44488dc07b79e063f3dd67e5d30b`. Correção: fix de tipos do framer-motion (`type: 'spring' as const`, `ease: [...] as [number,number,number,number]`) + conversão draft→ready via GraphQL `markPullRequestReadyForReview`. Checks obrigatórios 100% SUCCESS antes do merge.
+  - **Gap pós-merge encontrado e corrigido:** `src/components/ui/micro-interactions.tsx` tinha o mesmo padrão `type: 'spring'` inline em `StaggerItem`/`EmptyState` sem o fix — corrigido na PR **#278** (`claude/fix-micro-interactions-spring-261108-2353`), aberta e aguardando CI.
+- **#268** (supersede #214, bump eslint-config-prettier 9→10) → squash-merge em main, SHA `d8804a2000192594419275bc94da6e44fbf6e211`. Checks obrigatórios 100% SUCCESS antes do merge. Auditoria pós-merge: pacote bumpado não é referenciado em `eslint.config.js` (dependência órfã pré-existente) — sem risco de quebra.
 
 ## EM_ANDAMENTO (progresso ao vivo)
 
-Todas são branches `claude/fix-pr<n>-...` criadas nesta sessão a partir da PR original + merge de `main`, para sair do estado BEHIND. Nenhuma tem check vermelho; todas aguardam a fila de Actions (CI serializado) esvaziar. Squash merge assim que `mergeStateStatus=CLEAN`.
+Todas são branches `claude/fix-pr<n>-...` criadas nesta sessão a partir da PR original + merge de `main`, para sair do estado BEHIND. Nenhuma tem check vermelho confirmado como causado por ela própria; todas aguardam a fila de Actions (contenção de jobs concorrentes da conta, não config/código) esvaziar. Squash merge assim que `mergeStateStatus=CLEAN`.
 
-- **#267** supersede #213 (dnd-kit): 23/26 checks SUCCESS.
-- **#268** supersede #214 (eslint-config-prettier): 21/26 checks SUCCESS.
-- **#269** supersede #215 (eslint-plugin-react-refresh): fila.
-- **#270** supersede #254 (TS2345 gerar-pacote-evidencias): fila.
-- **#271** supersede #257 (monitor-health review #240): fila.
-- **#272** supersede #264 (docs/agentes): fila.
-- **#266** supersede #209 (framer-motion 14.x): draft, corrigido erro de TS + formatação prettier (commit `cf4c10045f224dd995e9d2b3a9574913a707d0fd`), aguardando CI deste commit antes de converter para ready e atualizar com main.
+- **#267** supersede #213 (dnd-kit): checks em fila, sem vermelho.
+- **#269** supersede #215 (eslint-plugin-react-refresh): checks em fila, sem vermelho.
+- **#270** supersede #254 (TS2345 gerar-pacote-evidencias): teve falha pontual em "Zod coverage gate" apontando `whatsapp-ia-proativo` sem validação — **investigado e descartado como falha desta PR**: o diff de #270 não toca esse arquivo, e o arquivo já tem `validatePayload` importado/chamado no SHA exato que falhou (confirmado lendo o blob via API). Aparenta flake do gate; rerun solicitado, bloqueado por a run ainda estar em andamento — repetir quando terminar.
+- **#271** supersede #257 (monitor-health review #240): checks em fila, sem vermelho.
+- **#272** supersede #264 (docs/agentes): checks em fila, sem vermelho.
 
 ## AGUARDANDO_HUMANO (não mergear — motivo, com evidência)
 
@@ -43,16 +49,32 @@ Todas são branches `claude/fix-pr<n>-...` criadas nesta sessão a partir da PR 
 
 ## BLOQUEADAS (ambiente desta sessão não permite corrigir)
 
-- **#208** (radix-ui), **#210** (@sentry/react), **#216** (vitest 4→5) — `bun.lock` em conflito (DIRTY). Corrigir exige `bun install` para regenerar o lockfile, mas o registro npm está bloqueado nesta sessão cloud (`ProxyConnectFailed 403` no proxy de rede). NÃO VERIFICADO se um ambiente com acesso a npm resolveria — presumido pela mensagem de erro do proxy.
+- **#208** (radix-ui), **#210** (@sentry/react), **#216** (vitest 4→5) — `bun.lock` em conflito (DIRTY). Corrigir exige `bun install` para regenerar o lockfile, mas o registro npm está bloqueado nesta sessão cloud (`ProxyConnectFailed 403` no proxy de rede, confirmado novamente durante a auditoria de validação ao tentar rodar type-check local). NÃO VERIFICADO se um ambiente com acesso a npm resolveria.
 
 ## NÃO INICIADA
 
 - **#175** (recharts 2.15.4→3.10.1) — diff confirmado: recharts 3.x adiciona `@reduxjs/toolkit`, `react-redux`, `immer`, `redux`, `redux-thunk` como novas dependências transitivas e troca `victory-vendor` 36→37; API de eixos/legendas também mudou no v3 (breaking upstream conhecido). Precisa validar os componentes de gráfico do app manualmente antes de mergear — evidência levantada, mas migração em si não iniciada por falta de tempo nesta sessão (bloqueada pela fila de CI no momento).
 
+## FECHADA EXTERNAMENTE
+
+- **#209** (framer-motion 11→14, supersedida por #266) — estava registrada como BEHIND/MERGEABLE na análise original; reconsulta via API mostrou `state: CLOSED`. Fechamento não foi feito por esta sessão (nenhuma chamada de `close_issue`/edição foi emitida para #209) — provável auto-close do Dependabot ao detectar que a mudança equivalente já entrou via #266.
+
+## Auditoria de validação pós-merge (5 agentes especializados, 2026-11-08 23:00–23:55Z)
+
+A pedido do dono, após os primeiros 2 merges, 5 agentes em paralelo auditaram exaustivamente o que já foi implementado nesta sessão:
+
+1. **PR #266 (framer-motion):** GAP real encontrado (`micro-interactions.tsx`) e corrigido na PR #278.
+2. **PR #268 (eslint-config-prettier):** confirmado sem gaps.
+3. **Inventário `analise-prs/`:** 3 divergências de documentação (status de #209, textos desatualizados de #266/#268, contagem de `prs_em_andamento`) — corrigidas nesta atualização.
+4. **Causa raiz da fila de CI:** confirmada e agravada — contenção de jobs concorrentes da conta inteira, não isolada a este ciclo; outras sessões continuam adicionando carga.
+5. **Compliance Fluxo Git:** compliance total — nenhum workflow tocado, nenhum padrão de afrouxamento, autoria de commits consistente, nenhuma PR alheia alterada.
+
+Durante a auditoria, uma falha real de CI na PR #270 ("Zod coverage gate") foi investigada e determinada como não causada por essa PR (ver seção EM_ANDAMENTO acima).
+
 ## Prova de que nada foi afrouxado
 
-Nenhum commit desta sessão tocou `.github/workflows/`, removeu/pulou teste, usou `.skip`/`.only`, `eslint-disable`, `@ts-ignore`/`any` para calar erro, ou ampliou baseline/allowlist. As correções em #266-#272 foram: merge de `main` na branch (resolve BEHIND), formatação prettier e fix de tipos do framer-motion (`type: 'spring' as const`, `ease: [...] as [number,number,number,number]`). Diffs mínimos, sem refatoração.
+Nenhum commit desta sessão tocou `.github/workflows/`, removeu/pulou teste, usou `.skip`/`.only`, `eslint-disable`, `@ts-ignore`/`any` para calar erro, ou ampliou baseline/allowlist. As correções em #266-#272 e #278 foram: merge de `main` na branch (resolve BEHIND), formatação prettier, fix de tipos do framer-motion. Diffs mínimos, sem refatoração.
 
 ## Nenhuma PR alheia foi fechada, editada ou comentada
 
-Todas as PRs de terceiros (dependabot: #175, #203-#216; e PRs de outras sessões: #131, #234, #235, #238, #243, #253, #255, #256, #263, #265) permanecem como estavam — apenas lidas via API.
+Todas as PRs de terceiros (dependabot: #175, #203-#216; e PRs de outras sessões: #131, #234, #235, #238, #243, #253, #255, #256, #263, #265) permanecem como estavam — apenas lidas via API. #209 foi fechada por ação externa, não por esta sessão (confirmado: nenhuma chamada de fechamento foi emitida para ela).

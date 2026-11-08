@@ -1,7 +1,7 @@
 {
   "baseline_main_sha": "c6eb99b275e1270cf99f1216e808c120f7cf58a2",
-  "atualizado_em": "2026-11-08T22:24:00Z",
-  "ciclo_atual": "2 de 7 PRs em andamento mergeadas; aguardando CI das 5 restantes apos update_pr_branch",
+  "atualizado_em": "2026-11-08T23:55:00Z",
+  "ciclo_atual": "2 de 6 PRs em andamento mergeadas (#266, #268); aguardando fila de CI (limite de jobs concorrentes da conta) para as 4 restantes (#267,#269,#270,#271) + #272 + #273",
   "prs_mergeadas": [
     {"n": 268, "sha": "d8804a2000192594419275bc94da6e44fbf6e211", "supersede": 214},
     {"n": 266, "sha": "6a925600f36f44488dc07b79e063f3dd67e5d30b", "supersede": 209}
@@ -10,7 +10,44 @@
   "prs_aguardando_humano": [131, 203, 204, 205, 206, 211, 212, 234, 235, 238, 243, 253, 255, 256, 263, 265],
   "prs_bloqueadas_ambiente": [208, 210, 216],
   "prs_nao_iniciadas": [175],
-  "prs_supersedidas": [209, 213, 214, 215, 254, 257, 264],
-  "proxima_acao": "repetir github_graphql para #267,#269-#273 a cada ciclo de wakeup; squash merge quando mergeStateStatus=CLEAN",
-  "causa_raiz_atraso_ci": "job e2e-destructive em .github/workflows/ci.yml tem needs:[quality-gate, e2e-critical] e so dispara depois que ambos terminam; o atraso restante e fila de runners GitHub-hosted da conta (nao e falha nem erro de config) -- confirmado lendo ci.yml e cruzando com github_list_workflow_runs. Cada merge faz main avancar e as demais branches voltam a BEHIND, exigindo novo update_pr_branch e reiniciando o CI delas do zero."
+  "prs_supersedidas": [213, 214, 215, 254, 257, 264],
+  "prs_fechadas_externamente": [{"n": 209, "motivo": "fechada por ação externa (provável dependabot auto-close ao detectar #266 já mergeada); não fechada por esta sessão"}],
+  "proxima_acao": "repetir github_graphql para #267,#269-#273 a cada ciclo de wakeup; squash merge quando mergeStateStatus=CLEAN; acompanhar PR #278 (fix adicional encontrado na auditoria de validação, ver abaixo)",
+  "causa_raiz_atraso_ci": "job e2e-destructive em .github/workflows/ci.yml tem needs:[quality-gate, e2e-critical] e so dispara depois que ambos terminam; concurrency do ci.yml e por-PR (nao serializa entre PRs diferentes, confirmado lendo o workflow). Causa real confirmada via github_list_workflow_runs: 45-50 runs simultaneos em queued ha 80-90+ minutos, incluindo o push do proprio merge em main e branches de OUTRAS sessoes (dependabot, claude/feat-*) competindo pelo mesmo teto de jobs concorrentes da conta. NAO VERIFICADO o numero exato do limite do plano (sem acesso a billing API).",
+  "auditoria_validacao_pos_merge": {
+    "realizada_em": "2026-11-08T23:00-23:55Z",
+    "metodo": "5 agentes especializados em paralelo, cada um auditando uma dimensao diferente via MCP GITHUB-FOREVER (somente leitura) + verificacao manual de evidencia",
+    "achados": [
+      {
+        "tema": "PR #266 (framer-motion)",
+        "veredito": "GAP ENCONTRADO E CORRIGIDO",
+        "detalhe": "micro-interactions.tsx (StaggerItem, EmptyState) tinha o mesmo padrao 'type: spring' inline que exigiu as const em AlertaComponents.tsx mas nao recebeu o fix. Corrigido na PR #278 (claude/fix-micro-interactions-spring-261108-2353). bun run type-check NAO VERIFICADO: registro npm bloqueado nesta sessao (ProxyConnectFailed 403)."
+      },
+      {
+        "tema": "PR #268 (eslint-config-prettier)",
+        "veredito": "CONFIRMADO SEM GAPS",
+        "detalhe": "Pacote bumpado nao e referenciado em eslint.config.js (dependencia orfa pre-existente, fora do escopo do bump). Sem risco de quebra."
+      },
+      {
+        "tema": "Inventario analise-prs/",
+        "veredito": "DIVERGENCIAS DE DOCUMENTACAO CORRIGIDAS",
+        "detalhe": "#209 estava registrada como aberta, na realidade foi fechada externamente. RELATORIO_PRS.md estava descrevendo #266/#268 como ainda em CI quando ja estavam mergeadas. Corrigido nesta atualizacao."
+      },
+      {
+        "tema": "Causa raiz da fila de CI",
+        "veredito": "CONFIRMADA E AGRAVADA",
+        "detalhe": "Nao e isolada as 6 PRs do ciclo: o proprio push de merge em main tem CI Pipeline em queued desde 22:25Z (82+ min). Outras sessoes (dependabot, claude/feat-settings-guard, claude/feat-fila-merge-pr-branch, etc.) seguem adicionando carga nova. Contencao de conta inteira, nao so deste ciclo."
+      },
+      {
+        "tema": "Compliance Fluxo Git (regra 8)",
+        "veredito": "COMPLIANCE TOTAL",
+        "detalhe": "Nenhum merge tocou .github/workflows/. Nenhum padrao proibido (.skip, @ts-ignore, eslint-disable, any de calar erro, baseline ampliado) nos diffs de #266/#268. Autoria de commits consistente em todas as 6 branches em andamento. Nenhuma PR alheia fechada/editada/comentada por esta sessao."
+      }
+    ],
+    "falha_real_detectada_e_investigada": {
+      "pr": 270,
+      "check": "Quality Gate & Tests / Zod coverage gate (edge functions)",
+      "resultado": "NAO E DESTA PR -- diff de #270 so toca gerar-pacote-evidencias/index.ts (fixes de tipo); o arquivo apontado como sem Zod (whatsapp-ia-proativo) JA TEM validatePayload importado e chamado no SHA exato que falhou (confirmado lendo o blob via API). Aparenta ser flake/falso-positivo do gate nessa execucao. Rerun solicitado mas bloqueado (workflow run ainda em andamento); repetir quando a run terminar."
+    }
+  }
 }
