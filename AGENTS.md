@@ -39,7 +39,7 @@ Regras do dono para todo agente de IA; em conflito com `docs/`/README/relatório
 
 - Componentes em `src/components/`, preferindo shadcn/ui existentes; queries via TanStack Query (não fetch direto); `src/integrations/supabase/types.ts` é gerado, não editar; sem `any` implícito nem `// @ts-ignore` sem justificativa documentada.
 - Edge Function nova: `validatePayload` com Zod (gate no CI); `verify_jwt` ligado (desligar só com justificativa em comentário); imports `npm:`/`jsr:`, sem CDN externo.
-- CI: actions pinadas por SHA (não tag); secrets de produção só no environment `Production`.
+- CI: actions por tag aceitas (`sha_pinning_required=false` — ver `docs/agentes/github-ci.md`); secrets de produção só no environment `Production`.
 - Sem credencial em código, nem em teste; `EXTERNAL_SUPABASE_SERVICE_ROLE_KEY` só na função `external-data`; nunca imprimir/commitar `.git-credentials`, `.env.local`, tokens, chaves de API, service_role keys.
 
 ## 6. Git

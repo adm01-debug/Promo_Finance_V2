@@ -21,13 +21,13 @@
 | Onde | O que tem |
 |---|---|
 | `src/` | front Vite + React: `components/`, `hooks/`, `pages/`, `contexts/`, `lib/`, `config/` (inclui `env.ts`, que lê as vars de `env.manifest.json`), `integrations/` (cliente Supabase, `types.ts` gerado), `types/` |
-| `supabase/functions/` | 105 Edge Functions Deno, 1 pasta por função; catálogo em `docs/EDGE_FUNCTIONS_CATALOG.md` |
+| `supabase/functions/` | 109 Edge Functions Deno, 1 pasta por função; catálogo em `docs/EDGE_FUNCTIONS_CATALOG.md` |
 | `supabase/migrations/` | arquivos `.sql`, timestamp `YYYYMMDDHHmmss` estritamente crescente |
 | `supabase/tests/` | testes de banco |
 | `supabase/config.toml` | `project_id` + `verify_jwt` por função |
 | `env.manifest.json` | inventário gerado e autoritativo de env vars (`scope`, `dest`, `consumers`) — gerado por `scripts/generate-env-manifest.mjs`, não editar à mão |
 | `scripts/security/` | gates de CI (Zod coverage, canonical DB gates, migration replay safety, Supabase config, deploy de functions) |
-| `scripts/ci/` | guards do CI (`check-claude-md-integrity.mjs`, baselines de typecheck) |
+| `scripts/ci/` | guards do CI (`check-claude-md-integrity.mjs` *(ver PR aberta #263)*, baselines de typecheck) |
 | `scripts/ai-context/` | gerador de `docs/contexto/codigo/` (branch `contexto`) |
 | `scripts/supabase_snapshot/` | gerador de `docs/contexto/supabase/` (snapshot do banco oficial ao vivo) |
 | `scripts/regras_negocio/` | gerador de `docs/contexto/regras/` (regras de negócio; `manual/` é a parte editada por humano) |
@@ -44,7 +44,7 @@ Bun é o gerenciador (`bun.lock`; sem `package-lock.json`).
 - Guards de segurança antes do PR: `bash scripts/check-external-secret-isolation.sh`,
   `bash scripts/security/zod-coverage.sh`, `node --test scripts/security/test-canonical-db-gates.test.mjs`
   — os mesmos que rodam no job `quality-gate` do CI.
-- Guard de integridade das instruções: `node scripts/ci/check-claude-md-integrity.mjs`.
+- Guard de integridade das instruções: `node scripts/ci/check-claude-md-integrity.mjs` *(disponível após merge do PR #263)*.
 
 ## Grafo de código (graphify)
 
