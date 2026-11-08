@@ -32,6 +32,9 @@ import re
 import sys
 import urllib.error
 import urllib.request
+from pathlib import Path
+
+_REPO_ROOT = Path(__file__).resolve().parents[2]
 
 API = "https://api.supabase.com/v1"
 TOKEN = os.environ.get("SUPABASE_ACCESS_TOKEN", "")
@@ -110,7 +113,7 @@ def want_verify_jwt():
     """verify_jwt esperado por função, lido do supabase/config.toml."""
     out = {}
     fn = None
-    with open("supabase/config.toml", encoding="utf-8") as f:
+    with open(_REPO_ROOT / "supabase" / "config.toml", encoding="utf-8") as f:
         for line in f:
             line = line.strip()
             m = re.match(r"\[functions\.(.+)\]", line)

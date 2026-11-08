@@ -78,3 +78,24 @@ curl -sS "https://$SUPABASE_PROJECT_REF.supabase.co/functions/v1/cnpja-lookup" \
 - `generate-design-audit.js` — relatório de tokens semânticos vs. cores hard-coded
 - `generate-simulation-report.ts` — geração de relatório de simulações tributárias
 - `stress-test.ts` — cenários de carga para endpoints críticos
+
+## Contexto para agentes de IA (branch `contexto`)
+
+Três produtores independentes mantêm o retrato do estado real do projeto, publicado pelo workflow
+[`contexto.yml`](../.github/workflows/contexto.yml) na branch gerada **`contexto`** (nunca na `main`):
+
+| Pasta | Produtor | Fonte de verdade |
+| --- | --- | --- |
+| `ai-context/` | `gerar.mjs` (Node, zero deps) | código em `main`: rotas, módulos, hooks, edge functions, grafo, testes, convenções |
+| `supabase_snapshot/` | `snapshot.py` (psycopg) | banco OFICIAL `bwwbeyolnnzppeuhgkcd` ao vivo: tabelas, RLS, funções, triggers, cron, lints |
+| `regras_negocio/` | `generate.py` + `indice.py` | regras de negócio: RLS por operação, estados, validações, fórmulas, lacunas e `docs/contexto/regras/manual/` |
+
+Ler o resultado sem trocar de branch:
+
+```sh
+git fetch origin contexto
+git show origin/contexto:docs/contexto/00-INDEX.md
+```
+
+Cada pasta tem README próprio com variáveis, secrets e testes. Regras humanas (prioridade máxima)
+ficam em `docs/contexto/regras/manual/*.md` na `main`.

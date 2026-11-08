@@ -59,4 +59,11 @@ combined_part*.sql
 supabase/.temp/
 # Graphify: corpus, grafos e evidências privadas; nenhuma publicação automática.
 graphify-out/
-scripts/graphify/__pycache__/
+scripts/**/__pycache__/
+security-audit/
+
+# gerado pelo contexto.yml na branch contexto (nunca em main); manual/ e texto humano e fica em main
+docs/contexto/*
+!docs/contexto/regras/
+docs/contexto/regras/*
+!docs/contexto/regras/manual/

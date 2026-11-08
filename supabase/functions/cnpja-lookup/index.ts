@@ -2,7 +2,7 @@
 // Consulta dados cadastrais e tributários de CNPJ via API CNPJá Plus.
 // P3: cache persistente em cnpja_cache + rate limit por usuário.
 
-import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.49.4';
+import { createClient } from 'npm:@supabase/supabase-js@2.49.4';
 import { createLogger } from '../_shared/observability.ts';
 import {
   CnpjaLookupSchema,
