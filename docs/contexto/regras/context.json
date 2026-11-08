@@ -1,9 +1,9 @@
 {
  "meta": {
-  "sha": "c6eb99b275e1270cf99f1216e808c120f7cf58a2",
+  "sha": "d8804a2000192594419275bc94da6e44fbf6e211",
   "branch": "main",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
-  "generated_at": "2026-11-08 21:56 UTC",
+  "generated_at": "2026-11-08 23:22 UTC",
   "files_total": 3438,
   "code_files": 3155,
   "code_lines": 452683
@@ -228311,10 +228311,20 @@
   }
  },
  "git": {
-  "sha": "c6eb99b275e1270cf99f1216e808c120f7cf58a2",
+  "sha": "d8804a2000192594419275bc94da6e44fbf6e211",
   "branch": "main",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
   "commits": [
+   {
+    "sha": "d8804a2",
+    "date": "2026-11-08",
+    "author": "adm01-debug",
+    "subject": "chore(deps-dev): bump eslint-config-prettier from 9.1.2 to 10.1.8 (#268)",
+    "files": [
+     "bun.lock",
+     "package.json"
+    ]
+   },
    {
     "sha": "c6eb99b",
     "date": "2026-11-08",
@@ -228745,17 +228755,6 @@
     "author": "adm01-debug",
     "subject": "Merge branch 'main' into fix/conciliacao-manual-dupla-confirmacao",
     "files": []
-   },
-   {
-    "sha": "acfac28",
-    "date": "2026-10-29",
-    "author": "adm01-debug",
-    "subject": "chore(deps): lote único de dependências + grupo radix no dependabot (#198)",
-    "files": [
-     ".github/dependabot.yml",
-     "bun.lock",
-     "package.json"
-    ]
    }
   ],
   "hot_files": [
@@ -228784,6 +228783,14 @@
     3
    ],
    [
+    "bun.lock",
+    2
+   ],
+   [
+    "package.json",
+    2
+   ],
+   [
     "scripts/supabase_snapshot/snapshot.py",
     2
    ],
@@ -228809,14 +228816,6 @@
    ],
    [
     "supabase/config.toml",
-    2
-   ],
-   [
-    "bun.lock",
-    2
-   ],
-   [
-    "package.json",
     2
    ],
    [

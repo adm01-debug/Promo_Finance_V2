@@ -58,11 +58,11 @@
  "commits": {
   "convencao": "conventional commits (observado)",
   "exemplos": [
+   "chore(deps-dev): bump eslint-config-prettier from 9.1.2 to 10.1.8 (#268)",
    "fix(contexto): grants timeout, custom_hostname 400 e refresh diário (#262)",
    "chore: instruções enxutas para agentes (#252)",
    "fix(contexto): guard de segredo reprovava a coleta do banco com a saída já redigida (#261)",
-   "feat(contexto): sistema autônomo de contexto do estado real para agentes de IA (#260)",
-   "fix: corrigir 26 bugs em scripts (ci, healthcheck, security, graphify, data) (#258)"
+   "feat(contexto): sistema autônomo de contexto do estado real para agentes de IA (#260)"
   ]
  },
  "pr_template": ".github/PULL_REQUEST_TEMPLATE.md",
