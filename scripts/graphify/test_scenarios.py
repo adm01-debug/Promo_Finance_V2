@@ -102,6 +102,20 @@ class TestRgHitsScenarios(unittest.TestCase):
         # sorted() mantém duplicatas; comportamento esperado é incluir ambas
         self.assertIn("a.ts", result)
 
+    # C15: SIGTERM (exit 143) → propaga CalledProcessError (sinal inesperado)
+    def test_c15_exit143_sigterm_raises_error(self):
+        rv = self._rv(143, "", "killed")
+        with unittest.mock.patch.object(benchmark.subprocess, "run", return_value=rv):
+            with self.assertRaises(subprocess.CalledProcessError):
+                benchmark.rg_hits(".", "term", ["x.ts"])
+
+    # C16: stdout com apenas newlines → retorna lista vazia
+    def test_c16_stdout_only_newlines_returns_empty(self):
+        rv = self._rv(0, "\n\n\n")
+        with unittest.mock.patch.object(benchmark.subprocess, "run", return_value=rv):
+            result = benchmark.rg_hits(".", "term", ["x.ts"])
+        self.assertEqual(result, [])
+
 
 class TestRgHitsCommandArgs(unittest.TestCase):
     """C11-C14: valida os argumentos exatos passados ao rg"""
