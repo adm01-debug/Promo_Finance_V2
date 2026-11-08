@@ -1,0 +1,396 @@
+{
+ "aviso": "GERADO AUTOMATICAMENTE por scripts/ai-context/gerar.mjs — não editar à mão; será sobrescrito.",
+ "format_version": 2,
+ "nos": 1798,
+ "arestas": 7910,
+ "hubs": [
+  {
+   "arquivo": "src/components/ui/button.tsx",
+   "importado_por": 505
+  },
+  {
+   "arquivo": "src/components/ui/card.tsx",
+   "importado_por": 451
+  },
+  {
+   "arquivo": "src/components/ui/badge.tsx",
+   "importado_por": 429
+  },
+  {
+   "arquivo": "src/integrations/supabase/client.ts",
+   "importado_por": 310
+  },
+  {
+   "arquivo": "src/lib/utils.ts",
+   "importado_por": 300
+  },
+  {
+   "arquivo": "src/lib/formatters.ts",
+   "importado_por": 282
+  },
+  {
+   "arquivo": "src/components/ui/input.tsx",
+   "importado_por": 210
+  },
+  {
+   "arquivo": "src/components/ui/select.tsx",
+   "importado_por": 161
+  },
+  {
+   "arquivo": "src/components/ui/label.tsx",
+   "importado_por": 159
+  },
+  {
+   "arquivo": "src/components/ui/dialog.tsx",
+   "importado_por": 134
+  },
+  {
+   "arquivo": "src/components/ui/skeleton.tsx",
+   "importado_por": 125
+  },
+  {
+   "arquivo": "src/components/ui/table.tsx",
+   "importado_por": 121
+  },
+  {
+   "arquivo": "supabase/functions/_shared/edge-observability.ts",
+   "importado_por": 108
+  },
+  {
+   "arquivo": "supabase/functions/_shared/cors.ts",
+   "importado_por": 106
+  },
+  {
+   "arquivo": "src/hooks/useAuth.tsx",
+   "importado_por": 100
+  },
+  {
+   "arquivo": "src/lib/logger.ts",
+   "importado_por": 91
+  },
+  {
+   "arquivo": "src/components/layout/MainLayout.tsx",
+   "importado_por": 89
+  },
+  {
+   "arquivo": "src/components/ui/tabs.tsx",
+   "importado_por": 88
+  },
+  {
+   "arquivo": "src/components/ui/progress.tsx",
+   "importado_por": 79
+  },
+  {
+   "arquivo": "src/components/ui/alert.tsx",
+   "importado_por": 78
+  },
+  {
+   "arquivo": "supabase/functions/_shared/observability.ts",
+   "importado_por": 74
+  },
+  {
+   "arquivo": "src/components/ui/scroll-area.tsx",
+   "importado_por": 73
+  },
+  {
+   "arquivo": "src/components/ui/switch.tsx",
+   "importado_por": 68
+  },
+  {
+   "arquivo": "src/components/ui/tooltip.tsx",
+   "importado_por": 56
+  },
+  {
+   "arquivo": "supabase/functions/_shared/auth-guard.ts",
+   "importado_por": 52
+  },
+  {
+   "arquivo": "supabase/functions/_shared/erros.ts",
+   "importado_por": 50
+  },
+  {
+   "arquivo": "src/components/ui/separator.tsx",
+   "importado_por": 49
+  },
+  {
+   "arquivo": "src/hooks/useFinancialData.ts",
+   "importado_por": 49
+  },
+  {
+   "arquivo": "supabase/functions/_shared/validation.ts",
+   "importado_por": 48
+  },
+  {
+   "arquivo": "src/components/ui/textarea.tsx",
+   "importado_por": 45
+  },
+  {
+   "arquivo": "src/components/ui/dropdown-menu.tsx",
+   "importado_por": 44
+  },
+  {
+   "arquivo": "src/components/layout/PageHeader.tsx",
+   "importado_por": 43
+  },
+  {
+   "arquivo": "src/integrations/supabase/types.ts",
+   "importado_por": 34
+  },
+  {
+   "arquivo": "src/lib/supabase-dynamic.ts",
+   "importado_por": 32
+  },
+  {
+   "arquivo": "src/lib/tributario/types.ts",
+   "importado_por": 31
+  },
+  {
+   "arquivo": "src/components/ui/checkbox.tsx",
+   "importado_por": 29
+  },
+  {
+   "arquivo": "supabase/functions/_shared/zod.ts",
+   "importado_por": 28
+  },
+  {
+   "arquivo": "supabase/functions/_shared/contract-validator.ts",
+   "importado_por": 25
+  },
+  {
+   "arquivo": "src/hooks/useEmpresas.ts",
+   "importado_por": 24
+  },
+  {
+   "arquivo": "src/hooks/use-toast.ts",
+   "importado_por": 23
+  }
+ ],
+ "ciclos": {
+  "total": 6,
+  "maiores": [
+   {
+    "tamanho": 4,
+    "arquivos": [
+     "src/lib/tributario/apuracao.ts",
+     "src/lib/tributario/encargos-folha.ts",
+     "src/lib/tributario/parametros.ts",
+     "src/lib/tributario/shared-logic.ts"
+    ]
+   },
+   {
+    "tamanho": 2,
+    "arquivos": [
+     "src/components/shared/ColumnVisibilityMenu.tsx",
+     "src/components/shared/ColumnVisibilityMenu.utils.ts"
+    ]
+   },
+   {
+    "tamanho": 2,
+    "arquivos": [
+     "src/components/ui/rank-badge.tsx",
+     "src/components/ui/rank-badge.utils.ts"
+    ]
+   },
+   {
+    "tamanho": 2,
+    "arquivos": [
+     "src/hooks/anomaliaPreferencesValidation.ts",
+     "src/hooks/useAnomaliaPreferences.ts"
+    ]
+   },
+   {
+    "tamanho": 2,
+    "arquivos": [
+     "src/hooks/useConciliacaoIA.ts",
+     "src/hooks/useHistoricoConciliacaoIA.ts"
+    ]
+   },
+   {
+    "tamanho": 2,
+    "arquivos": [
+     "src/integrations/supabase/client.ts",
+     "src/lib/telemetry.ts"
+    ]
+   }
+  ]
+ },
+ "orfaos": [
+  "public/sw-push.js",
+  "public/sw.js",
+  "src/components/admin/FiscalHealthBadge.tsx",
+  "src/components/admin/telemetry/AcessosSuspeitosPanel.tsx",
+  "src/components/admin/telemetry/CatalogosTributariosHealthPanel.tsx",
+  "src/components/admin/telemetry/CatalogosTributariosHistoryPanel.tsx",
+  "src/components/admin/telemetry/CoberturaFiscalUFPanel.tsx",
+  "src/components/auth/PermissionGate.hoc.tsx",
+  "src/components/charts/RechartsExample.tsx",
+  "src/components/cobranca/PrevisaoInadimplencia.tsx",
+  "src/components/contabilidade/SpedEcdDownloadStep.tsx",
+  "src/components/empresa/EmpresaActionPicker.tsx",
+  "src/components/integracoes/BitrixWebhookPanel.tsx",
+  "src/components/layout/EmpresaSwitcher.tsx",
+  "src/components/layout/page-transition.constants.ts",
+  "src/components/nfe/SefazStatusPanel.tsx",
+  "src/components/quick-create/QuickCreateModal.hooks.tsx",
+  "src/components/reforma-tributaria/KPIComparativo.tsx",
+  "src/components/tributario/calculadora/schemas.ts",
+  "src/components/tributario/pf/ResultadoPf.tsx",
+  "src/components/ui/action-button.hooks.ts",
+  "src/components/ui/aspect-ratio.tsx",
+  "src/components/ui/carousel.tsx",
+  "src/components/ui/chart.tsx",
+  "src/components/ui/collapse.tsx",
+  "src/components/ui/command.hooks.ts",
+  "src/components/ui/confirmation-dialog.hooks.tsx",
+  "src/components/ui/context-menu.tsx",
+  "src/components/ui/currency-input.tsx",
+  "src/components/ui/data-grid.tsx",
+  "src/components/ui/data-table.tsx",
+  "src/components/ui/date-range-picker.tsx",
+  "src/components/ui/drawer.tsx",
+  "src/components/ui/dropdown.tsx",
+  "src/components/ui/file-upload.tsx",
+  "src/components/ui/hover-card.tsx",
+  "src/components/ui/input-otp.tsx",
+  "src/components/ui/lazy-load.utils.tsx",
+  "src/components/ui/menubar.tsx",
+  "src/components/ui/modal.tsx",
+  "src/components/ui/navigation-menu.tsx",
+  "src/components/ui/pagination.tsx",
+  "src/components/ui/phone-input.tsx",
+  "src/components/ui/radio.tsx",
+  "src/components/ui/resizable-panels.tsx",
+  "src/components/ui/resizable.tsx",
+  "src/components/ui/rich-text-editor.tsx",
+  "src/components/ui/search-input.tsx",
+  "src/components/ui/sidebar.tsx",
+  "src/components/ui/sonner.tsx",
+  "src/components/ui/split-button.tsx",
+  "src/components/ui/status-badge.tsx",
+  "src/components/ui/tag-input.tsx",
+  "src/components/ui/tree-view.tsx",
+  "src/components/ui/wizard.tsx",
+  "src/hooks/useGlobalFilterSync.ts",
+  "src/hooks/usePrefetchRoutes.tsx",
+  "src/lib/arquitetura/escopo-empresa.ts",
+  "supabase/functions/analise-fluxo-ia/auth_test.ts",
+  "supabase/functions/asaas-proxy/test_plan.ts",
+  "supabase/functions/conciliacao-proxy/index_test.ts",
+  "supabase/functions/exportar-sped-contribuicoes/layout_test.ts",
+  "supabase/functions/external-data/validate_contract.ts",
+  "supabase/functions/fuzz_test.ts",
+  "supabase/functions/gerar-sped-ecd/layout_test.ts",
+  "supabase/functions/gerar-sped-ecf/layout_test.ts",
+  "supabase/functions/mcp-query/index_test.ts",
+  "supabase/functions/mcp-query/sql-policy_test.ts",
+  "supabase/functions/nfe-vinculo-proxy/index_test.ts",
+  "supabase/functions/sefaz-dfe-dispatcher/policy_test.ts",
+  "supabase/functions/sso-test-login/mocks.ts",
+  "supabase/functions/stress_test.ts",
+  "supabase/functions/webhook-simulator/contract_test.ts",
+  "supabase/functions/whatsapp-ia-proativo/index_test.ts"
+ ],
+ "modulos_mais_acoplados": [
+  {
+   "modulo": "lib",
+   "depende_de": 13,
+   "importado_por": 83
+  },
+  {
+   "modulo": "hooks",
+   "depende_de": 22,
+   "importado_por": 65
+  },
+  {
+   "modulo": "components/ui",
+   "depende_de": 4,
+   "importado_por": 82
+  },
+  {
+   "modulo": "pages",
+   "depende_de": 72,
+   "importado_por": 2
+  },
+  {
+   "modulo": "integrations/supabase",
+   "depende_de": 2,
+   "importado_por": 51
+  },
+  {
+   "modulo": "components/layout",
+   "depende_de": 14,
+   "importado_por": 6
+  },
+  {
+   "modulo": "components/admin",
+   "depende_de": 9,
+   "importado_por": 7
+  },
+  {
+   "modulo": "components/contas-pagar",
+   "depende_de": 11,
+   "importado_por": 2
+  },
+  {
+   "modulo": "components/contas-receber",
+   "depende_de": 11,
+   "importado_por": 2
+  },
+  {
+   "modulo": "pages/admin",
+   "depende_de": 13,
+   "importado_por": 0
+  },
+  {
+   "modulo": "components/shared",
+   "depende_de": 3,
+   "importado_por": 9
+  },
+  {
+   "modulo": "components/tributario",
+   "depende_de": 9,
+   "importado_por": 3
+  },
+  {
+   "modulo": "components/conciliacao",
+   "depende_de": 7,
+   "importado_por": 4
+  },
+  {
+   "modulo": "components/contabilidade",
+   "depende_de": 10,
+   "importado_por": 1
+  },
+  {
+   "modulo": "config",
+   "depende_de": 0,
+   "importado_por": 11
+  },
+  {
+   "modulo": "pages/tributario",
+   "depende_de": 11,
+   "importado_por": 0
+  },
+  {
+   "modulo": "components/auth",
+   "depende_de": 7,
+   "importado_por": 2
+  },
+  {
+   "modulo": "components/dashboard",
+   "depende_de": 8,
+   "importado_por": 1
+  },
+  {
+   "modulo": "components/reforma-tributaria",
+   "depende_de": 6,
+   "importado_por": 3
+  },
+  {
+   "modulo": "components/empresas",
+   "depende_de": 5,
+   "importado_por": 3
+  }
+ ],
+ "arestas_em": "docs/contexto/codigo/grafo-arestas.json"
+}

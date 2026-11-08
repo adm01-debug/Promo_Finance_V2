@@ -1,0 +1,3881 @@
+{
+ "aviso": "GERADO AUTOMATICAMENTE por scripts/ai-context/gerar.mjs — não editar à mão; será sobrescrito.",
+ "format_version": 2,
+ "frameworks": [
+  "vitest",
+  "playwright"
+ ],
+ "total": 356,
+ "por_tipo": {
+  "e2e": 35,
+  "pytest": 15,
+  "unit": 300
+ },
+ "onde_ficam": [
+  {
+   "padrao": "co-localizado (__tests__)",
+   "arquivos": 239
+  },
+  {
+   "padrao": "co-localizado (*.test)",
+   "arquivos": 40
+  },
+  {
+   "padrao": "outro",
+   "arquivos": 37
+  },
+  {
+   "padrao": "e2e/",
+   "arquivos": 34
+  }
+ ],
+ "arquivos": [
+  {
+   "arquivo": "e2e/alertas-preditivos.e2e.ts",
+   "tipo": "e2e",
+   "linhas": 9,
+   "testa": [],
+   "casos": 1
+  },
+  {
+   "arquivo": "e2e/aprovacoes.e2e.ts",
+   "tipo": "e2e",
+   "linhas": 9,
+   "testa": [],
+   "casos": 1
+  },
+  {
+   "arquivo": "e2e/auth/admin-rbac.e2e.ts",
+   "tipo": "e2e",
+   "linhas": 125,
+   "testa": [],
+   "casos": 5
+  },
+  {
+   "arquivo": "e2e/auth/auth.setup.ts",
+   "tipo": "e2e",
+   "linhas": 53,
+   "testa": [],
+   "casos": 0
+  },
+  {
+   "arquivo": "e2e/auth/login.e2e.ts",
+   "tipo": "e2e",
+   "linhas": 181,
+   "testa": [],
+   "casos": 14
+  },
+  {
+   "arquivo": "e2e/auth/logout-real.e2e.ts",
+   "tipo": "e2e",
+   "linhas": 82,
+   "testa": [],
+   "casos": 2
+  },
+  {
+   "arquivo": "e2e/auth/permissions.e2e.ts",
+   "tipo": "e2e",
+   "linhas": 40,
+   "testa": [],
+   "casos": 3
+  },
+  {
+   "arquivo": "e2e/calculadora-tributaria.e2e.ts",
+   "tipo": "e2e",
+   "linhas": 31,
+   "testa": [],
+   "casos": 2
+  },
+  {
+   "arquivo": "e2e/conciliacao.e2e.ts",
+   "tipo": "e2e",
+   "linhas": 145,
+   "testa": [],
+   "casos": 3
+  },
+  {
+   "arquivo": "e2e/contas-pagar.e2e.ts",
+   "tipo": "e2e",
+   "linhas": 290,
+   "testa": [],
+   "casos": 17
+  },
+  {
+   "arquivo": "e2e/dashboard.e2e.ts",
+   "tipo": "e2e",
+   "linhas": 74,
+   "testa": [],
+   "casos": 9
+  },
+  {
+   "arquivo": "e2e/error-states.e2e.ts",
+   "tipo": "e2e",
+   "linhas": 38,
+   "testa": [],
+   "casos": 3
+  },
+  {
+   "arquivo": "e2e/financeiro/conciliacao-offline.e2e.ts",
+   "tipo": "e2e",
+   "linhas": 195,
+   "testa": [],
+   "casos": 3
+  },
+  {
+   "arquivo": "e2e/financeiro/contas-pagar-offline.e2e.ts",
+   "tipo": "e2e",
+   "linhas": 129,
+   "testa": [],
+   "casos": 6
+  },
+  {
+   "arquivo": "e2e/fixtures.ts",
+   "tipo": "e2e",
+   "linhas": 350,
+   "testa": [],
+   "casos": 0
+  },
+  {
+   "arquivo": "e2e/fixtures/edge.ts",
+   "tipo": "e2e",
+   "linhas": 50,
+   "testa": [],
+   "casos": 0
+  },
+  {
+   "arquivo": "e2e/fixtures/financeiro.ts",
+   "tipo": "e2e",
+   "linhas": 313,
+   "testa": [],
+   "casos": 0
+  },
+  {
+   "arquivo": "e2e/fixtures/nfe.ts",
+   "tipo": "e2e",
+   "linhas": 234,
+   "testa": [],
+   "casos": 0
+  },
+  {
+   "arquivo": "e2e/fixtures/sessao.ts",
+   "tipo": "e2e",
+   "linhas": 243,
+   "testa": [],
+   "casos": 0
+  },
+  {
+   "arquivo": "e2e/importacao-xml.e2e.ts",
+   "tipo": "e2e",
+   "linhas": 9,
+   "testa": [],
+   "casos": 1
+  },
+  {
+   "arquivo": "e2e/lgpd-privacidade.e2e.ts",
+   "tipo": "e2e",
+   "linhas": 9,
+   "testa": [],
+   "casos": 1
+  },
+  {
+   "arquivo": "e2e/nfe-fluxo-falhas.e2e.ts",
+   "tipo": "e2e",
+   "linhas": 144,
+   "testa": [],
+   "casos": 3
+  },
+  {
+   "arquivo": "e2e/nfe-fluxo.e2e.ts",
+   "tipo": "e2e",
+   "linhas": 152,
+   "testa": [],
+   "casos": 2
+  },
+  {
+   "arquivo": "e2e/onboarding-tributario.e2e.ts",
+   "tipo": "e2e",
+   "linhas": 9,
+   "testa": [],
+   "casos": 1
+  },
+  {
+   "arquivo": "e2e/proxies-sessao-expirada.e2e.ts",
+   "tipo": "e2e",
+   "linhas": 174,
+   "testa": [],
+   "casos": 2
+  },
+  {
+   "arquivo": "e2e/regua-cobranca.e2e.ts",
+   "tipo": "e2e",
+   "linhas": 29,
+   "testa": [],
+   "casos": 1
+  },
+  {
+   "arquivo": "e2e/relatorios.e2e.ts",
+   "tipo": "e2e",
+   "linhas": 315,
+   "testa": [],
+   "casos": 19
+  },
+  {
+   "arquivo": "e2e/sefaz-observabilidade.e2e.ts",
+   "tipo": "e2e",
+   "linhas": 39,
+   "testa": [],
+   "casos": 4
+  },
+  {
+   "arquivo": "e2e/sped-wizard.e2e.ts",
+   "tipo": "e2e",
+   "linhas": 9,
+   "testa": [],
+   "casos": 1
+  },
+  {
+   "arquivo": "e2e/split-payment.e2e.ts",
+   "tipo": "e2e",
+   "linhas": 24,
+   "testa": [],
+   "casos": 1
+  },
+  {
+   "arquivo": "e2e/sre-command-center.e2e.ts",
+   "tipo": "e2e",
+   "linhas": 9,
+   "testa": [],
+   "casos": 1
+  },
+  {
+   "arquivo": "e2e/system/stability.e2e.ts",
+   "tipo": "e2e",
+   "linhas": 28,
+   "testa": [],
+   "casos": 2
+  },
+  {
+   "arquivo": "e2e/tributario-dashboard.e2e.ts",
+   "tipo": "e2e",
+   "linhas": 9,
+   "testa": [],
+   "casos": 1
+  },
+  {
+   "arquivo": "e2e/visual-theme.e2e.ts",
+   "tipo": "e2e",
+   "linhas": 159,
+   "testa": [],
+   "casos": 3
+  },
+  {
+   "arquivo": "scripts/admin/test_supabase_admin_ops_scenarios.py",
+   "tipo": "pytest",
+   "linhas": 263,
+   "testa": [],
+   "casos": 0
+  },
+  {
+   "arquivo": "scripts/ai-context/gerar.unit.mjs",
+   "tipo": "unit",
+   "linhas": 361,
+   "testa": [
+    "src/components/auth/ProtectedRoute.tsx"
+   ],
+   "casos": 18
+  },
+  {
+   "arquivo": "scripts/data/test_verify_scenarios.py",
+   "tipo": "pytest",
+   "linhas": 292,
+   "testa": [],
+   "casos": 0
+  },
+  {
+   "arquivo": "scripts/graphify/test_benchmark.py",
+   "tipo": "pytest",
+   "linhas": 79,
+   "testa": [],
+   "casos": 0
+  },
+  {
+   "arquivo": "scripts/graphify/test_code_references.py",
+   "tipo": "pytest",
+   "linhas": 56,
+   "testa": [],
+   "casos": 0
+  },
+  {
+   "arquivo": "scripts/graphify/test_edge_inventory.py",
+   "tipo": "pytest",
+   "linhas": 55,
+   "testa": [],
+   "casos": 0
+  },
+  {
+   "arquivo": "scripts/graphify/test_graph_quality.py",
+   "tipo": "pytest",
+   "linhas": 129,
+   "testa": [],
+   "casos": 0
+  },
+  {
+   "arquivo": "scripts/graphify/test_profiles.py",
+   "tipo": "pytest",
+   "linhas": 56,
+   "testa": [],
+   "casos": 0
+  },
+  {
+   "arquivo": "scripts/graphify/test_requirements_lock.py",
+   "tipo": "pytest",
+   "linhas": 33,
+   "testa": [],
+   "casos": 0
+  },
+  {
+   "arquivo": "scripts/graphify/test_run.py",
+   "tipo": "pytest",
+   "linhas": 235,
+   "testa": [],
+   "casos": 0
+  },
+  {
+   "arquivo": "scripts/graphify/test_scenarios.py",
+   "tipo": "pytest",
+   "linhas": 161,
+   "testa": [],
+   "casos": 0
+  },
+  {
+   "arquivo": "scripts/graphify/test_sql_inventory.py",
+   "tipo": "pytest",
+   "linhas": 107,
+   "testa": [],
+   "casos": 0
+  },
+  {
+   "arquivo": "scripts/graphify/test_typescript_imports.py",
+   "tipo": "pytest",
+   "linhas": 60,
+   "testa": [],
+   "casos": 0
+  },
+  {
+   "arquivo": "scripts/integrity/test_dump_baseline_scenarios.py",
+   "tipo": "pytest",
+   "linhas": 202,
+   "testa": [],
+   "casos": 0
+  },
+  {
+   "arquivo": "scripts/regras_negocio/test_generate.py",
+   "tipo": "pytest",
+   "linhas": 164,
+   "testa": [],
+   "casos": 0
+  },
+  {
+   "arquivo": "scripts/security/test-canonical-db-gates.test.mjs",
+   "tipo": "unit",
+   "linhas": 258,
+   "testa": [
+    "scripts/security/test-canonical-db-gates.mjs"
+   ],
+   "casos": 12
+  },
+  {
+   "arquivo": "scripts/security/test-rpc-runtime.evaluate.test.ts",
+   "tipo": "unit",
+   "linhas": 51,
+   "testa": [
+    "scripts/security/test-rpc-runtime.ts"
+   ],
+   "casos": 4
+  },
+  {
+   "arquivo": "scripts/supabase_snapshot/test_snapshot.py",
+   "tipo": "pytest",
+   "linhas": 972,
+   "testa": [],
+   "casos": 0
+  },
+  {
+   "arquivo": "src/__tests__/validators.test.ts",
+   "tipo": "unit",
+   "linhas": 45,
+   "testa": [
+    "src/lib/validators.ts"
+   ],
+   "casos": 5
+  },
+  {
+   "arquivo": "src/components/__tests__/regression-fixes.test.tsx",
+   "tipo": "unit",
+   "linhas": 61,
+   "testa": [
+    "src/components/empresas/EmpresaCardView.tsx",
+    "src/components/layout/PageHeader.tsx"
+   ],
+   "casos": 3
+  },
+  {
+   "arquivo": "src/components/admin/anomalias-review-queue/__tests__/useReviewQueue.idempotency.test.tsx",
+   "tipo": "unit",
+   "linhas": 287,
+   "testa": [
+    "src/components/admin/anomalias-review-queue/useReviewQueue.ts"
+   ],
+   "casos": 7
+  },
+  {
+   "arquivo": "src/components/admin/telemetry/__tests__/IntegrityAlertsPanel.test.tsx",
+   "tipo": "unit",
+   "linhas": 97,
+   "testa": [
+    "src/components/admin/telemetry/IntegrityAlertsPanel.tsx"
+   ],
+   "casos": 2
+  },
+  {
+   "arquivo": "src/components/admin/telemetry/__tests__/performance-alerts-deeplink.test.ts",
+   "tipo": "unit",
+   "linhas": 101,
+   "testa": [
+    "src/components/admin/telemetry/performance-alerts-deeplink.ts"
+   ],
+   "casos": 15
+  },
+  {
+   "arquivo": "src/components/admin/telemetry/__tests__/RetentionPoliciesPanel.test.tsx",
+   "tipo": "unit",
+   "linhas": 113,
+   "testa": [
+    "src/components/admin/telemetry/RetentionPoliciesPanel.tsx"
+   ],
+   "casos": 4
+  },
+  {
+   "arquivo": "src/components/admin/telemetry/__tests__/TelemetryCharts.test.tsx",
+   "tipo": "unit",
+   "linhas": 85,
+   "testa": [
+    "src/components/admin/telemetry/TelemetryCharts.tsx"
+   ],
+   "casos": 8
+  },
+  {
+   "arquivo": "src/components/cobranca/__tests__/CustomerDeepScore.test.tsx",
+   "tipo": "unit",
+   "linhas": 35,
+   "testa": [
+    "src/components/cobranca/CustomerDeepScore.tsx"
+   ],
+   "casos": 2
+  },
+  {
+   "arquivo": "src/components/cobranca/__tests__/MetricasPorCanal.test.tsx",
+   "tipo": "unit",
+   "linhas": 31,
+   "testa": [
+    "src/components/cobranca/MetricasPorCanal.tsx"
+   ],
+   "casos": 2
+  },
+  {
+   "arquivo": "src/components/cobranca/__tests__/ReguaCobrancaConfig.test.tsx",
+   "tipo": "unit",
+   "linhas": 117,
+   "testa": [
+    "src/components/cobranca/ReguaCobrancaConfig.tsx"
+   ],
+   "casos": 7
+  },
+  {
+   "arquivo": "src/components/command-palette/commandPaletteManagement.test.ts",
+   "tipo": "unit",
+   "linhas": 21,
+   "testa": [
+    "src/components/command-palette/commandPaletteManagement.ts"
+   ],
+   "casos": 1
+  },
+  {
+   "arquivo": "src/components/common/StartupDiagnostic.test.tsx",
+   "tipo": "unit",
+   "linhas": 51,
+   "testa": [
+    "src/components/common/StartupDiagnostic.tsx"
+   ],
+   "casos": 2
+  },
+  {
+   "arquivo": "src/components/contabilidade/__tests__/ValidacoesPreSpedDialog.test.tsx",
+   "tipo": "unit",
+   "linhas": 144,
+   "testa": [
+    "src/components/contabilidade/ValidacoesPreSpedDialog.tsx"
+   ],
+   "casos": 4
+  },
+  {
+   "arquivo": "src/components/contas-receber/__tests__/AplicarDescontoDialog.test.tsx",
+   "tipo": "unit",
+   "linhas": 144,
+   "testa": [
+    "src/components/contas-receber/AplicarDescontoDialog.tsx"
+   ],
+   "casos": 12
+  },
+  {
+   "arquivo": "src/components/contas-receber/__tests__/ContasReceberFilters.test.tsx",
+   "tipo": "unit",
+   "linhas": 101,
+   "testa": [
+    "src/components/contas-receber/ContasReceberFilters.tsx"
+   ],
+   "casos": 10
+  },
+  {
+   "arquivo": "src/components/contas-receber/__tests__/ContasReceberKanban.test.tsx",
+   "tipo": "unit",
+   "linhas": 133,
+   "testa": [
+    "src/components/contas-receber/ContasReceberKanban.tsx",
+    "src/components/contas-receber/ContasReceberTableRow.tsx"
+   ],
+   "casos": 10
+  },
+  {
+   "arquivo": "src/components/contas-receber/__tests__/ContasReceberKPIs.test.tsx",
+   "tipo": "unit",
+   "linhas": 193,
+   "testa": [
+    "src/components/contas-receber/ContasReceberKPIs.tsx"
+   ],
+   "casos": 23
+  },
+  {
+   "arquivo": "src/components/contas-receber/__tests__/ContasReceberTableRow.test.tsx",
+   "tipo": "unit",
+   "linhas": 419,
+   "testa": [
+    "src/components/contas-receber/ContasReceberTableRow.tsx",
+    "src/components/ui/table.tsx"
+   ],
+   "casos": 47
+  },
+  {
+   "arquivo": "src/components/contas-receber/__tests__/EnviarCobrancaDialog.test.tsx",
+   "tipo": "unit",
+   "linhas": 115,
+   "testa": [
+    "src/components/contas-receber/EnviarCobrancaDialog.tsx"
+   ],
+   "casos": 13
+  },
+  {
+   "arquivo": "src/components/financeiro/__tests__/AnexoList.storage.test.tsx",
+   "tipo": "unit",
+   "linhas": 232,
+   "testa": [
+    "src/components/financeiro/AnexoList.tsx"
+   ],
+   "casos": 6
+  },
+  {
+   "arquivo": "src/components/layout/sidebar/sidebarNavState.test.ts",
+   "tipo": "unit",
+   "linhas": 80,
+   "testa": [
+    "src/components/layout/sidebar/sidebarNavState.ts"
+   ],
+   "casos": 7
+  },
+  {
+   "arquivo": "src/components/layout/transitions/__tests__/presets.test.ts",
+   "tipo": "unit",
+   "linhas": 55,
+   "testa": [
+    "src/components/layout/transitions/presets.ts",
+    "src/components/layout/transitions/types.ts"
+   ],
+   "casos": 6
+  },
+  {
+   "arquivo": "src/components/navigation/__tests__/BackButton.test.tsx",
+   "tipo": "unit",
+   "linhas": 108,
+   "testa": [
+    "src/components/navigation/BackButton.tsx",
+    "src/components/ui/tooltip.tsx",
+    "src/lib/navigation.ts"
+   ],
+   "casos": 11
+  },
+  {
+   "arquivo": "src/components/reforma-tributaria/__tests__/AnimatedCounter.test.tsx",
+   "tipo": "unit",
+   "linhas": 67,
+   "testa": [
+    "src/components/reforma-tributaria/AnimatedCounter.tsx"
+   ],
+   "casos": 8
+  },
+  {
+   "arquivo": "src/components/reforma-tributaria/__tests__/EmptyStateTributario.test.tsx",
+   "tipo": "unit",
+   "linhas": 125,
+   "testa": [
+    "src/components/reforma-tributaria/EmptyStateTributario.tsx"
+   ],
+   "casos": 19
+  },
+  {
+   "arquivo": "src/components/reforma-tributaria/__tests__/GlossarioTooltip.test.tsx",
+   "tipo": "unit",
+   "linhas": 108,
+   "testa": [
+    "src/components/reforma-tributaria/GlossarioTooltip.tsx"
+   ],
+   "casos": 17
+  },
+  {
+   "arquivo": "src/components/reforma-tributaria/__tests__/HeroKPIs.test.tsx",
+   "tipo": "unit",
+   "linhas": 137,
+   "testa": [
+    "src/components/reforma-tributaria/HeroKPIs.tsx"
+   ],
+   "casos": 18
+  },
+  {
+   "arquivo": "src/components/reforma-tributaria/__tests__/KPIComparativo.test.tsx",
+   "tipo": "unit",
+   "linhas": 87,
+   "testa": [
+    "src/components/reforma-tributaria/KPIComparativo.tsx"
+   ],
+   "casos": 12
+  },
+  {
+   "arquivo": "src/components/reforma-tributaria/__tests__/NavigationTributaria.test.tsx",
+   "tipo": "unit",
+   "linhas": 92,
+   "testa": [
+    "src/components/reforma-tributaria/NavigationTributaria.tsx"
+   ],
+   "casos": 9
+  },
+  {
+   "arquivo": "src/components/ui/__tests__/alert.test.tsx",
+   "tipo": "unit",
+   "linhas": 78,
+   "testa": [
+    "src/components/ui/alert.tsx"
+   ],
+   "casos": 13
+  },
+  {
+   "arquivo": "src/components/ui/__tests__/badge.test.tsx",
+   "tipo": "unit",
+   "linhas": 76,
+   "testa": [
+    "src/components/ui/badge.tsx"
+   ],
+   "casos": 12
+  },
+  {
+   "arquivo": "src/components/ui/__tests__/button.test.tsx",
+   "tipo": "unit",
+   "linhas": 78,
+   "testa": [
+    "src/components/ui/button.tsx"
+   ],
+   "casos": 14
+  },
+  {
+   "arquivo": "src/components/ui/__tests__/card.test.tsx",
+   "tipo": "unit",
+   "linhas": 91,
+   "testa": [
+    "src/components/ui/card.tsx"
+   ],
+   "casos": 11
+  },
+  {
+   "arquivo": "src/components/ui/__tests__/input.test.tsx",
+   "tipo": "unit",
+   "linhas": 79,
+   "testa": [
+    "src/components/ui/input.tsx"
+   ],
+   "casos": 14
+  },
+  {
+   "arquivo": "src/components/usuarios/__tests__/ConviteUsuarioDialog.test.tsx",
+   "tipo": "unit",
+   "linhas": 63,
+   "testa": [
+    "src/components/usuarios/ConviteUsuarioDialog.tsx"
+   ],
+   "casos": 2
+  },
+  {
+   "arquivo": "src/contexts/__tests__/EmpresaScopeContext.test.tsx",
+   "tipo": "unit",
+   "linhas": 105,
+   "testa": [
+    "src/contexts/EmpresaScopeContext.tsx",
+    "src/contexts/useEmpresaScope.ts"
+   ],
+   "casos": 2
+  },
+  {
+   "arquivo": "src/hooks/__tests__/anomaliaPreferencesValidation.test.ts",
+   "tipo": "unit",
+   "linhas": 224,
+   "testa": [
+    "src/hooks/anomaliaPreferencesValidation.ts",
+    "src/hooks/useAnomaliaPreferences.ts"
+   ],
+   "casos": 21
+  },
+  {
+   "arquivo": "src/hooks/__tests__/savedFilterDedup.test.ts",
+   "tipo": "unit",
+   "linhas": 182,
+   "testa": [
+    "src/hooks/savedFilterDedup.ts"
+   ],
+   "casos": 13
+  },
+  {
+   "arquivo": "src/hooks/__tests__/savedFiltersValidation.test.ts",
+   "tipo": "unit",
+   "linhas": 151,
+   "testa": [
+    "src/hooks/savedFiltersValidation.ts"
+   ],
+   "casos": 13
+  },
+  {
+   "arquivo": "src/hooks/__tests__/tenant-mutations.test.tsx",
+   "tipo": "unit",
+   "linhas": 163,
+   "testa": [
+    "src/hooks/useCategorias.ts",
+    "src/hooks/useCentrosCusto.ts"
+   ],
+   "casos": 5
+  },
+  {
+   "arquivo": "src/hooks/__tests__/use-conciliacao-test-utils.tsx",
+   "tipo": "unit",
+   "linhas": 73,
+   "testa": [
+    "src/lib/ofx-parser.ts"
+   ],
+   "casos": 0
+  },
+  {
+   "arquivo": "src/hooks/__tests__/use-toast.test.ts",
+   "tipo": "unit",
+   "linhas": 97,
+   "testa": [
+    "src/hooks/use-toast.ts"
+   ],
+   "casos": 8
+  },
+  {
+   "arquivo": "src/hooks/__tests__/useAcordosParcelamento.pagamento.test.tsx",
+   "tipo": "unit",
+   "linhas": 622,
+   "testa": [
+    "src/hooks/useAcordosParcelamento.ts"
+   ],
+   "casos": 18
+  },
+  {
+   "arquivo": "src/hooks/__tests__/useAlertasPreditivos.test.ts",
+   "tipo": "unit",
+   "linhas": 122,
+   "testa": [
+    "src/hooks/useAlertasPreditivos.ts"
+   ],
+   "casos": 5
+  },
+  {
+   "arquivo": "src/hooks/__tests__/useAlertasTributariosCount.test.ts",
+   "tipo": "unit",
+   "linhas": 73,
+   "testa": [
+    "src/hooks/useAlertasTributariosCount.ts"
+   ],
+   "casos": 4
+  },
+  {
+   "arquivo": "src/hooks/__tests__/useAprovacoes.test.tsx",
+   "tipo": "unit",
+   "linhas": 98,
+   "testa": [
+    "src/hooks/useAprovacoes.ts"
+   ],
+   "casos": 2
+  },
+  {
+   "arquivo": "src/hooks/__tests__/useBulkActions.test.ts",
+   "tipo": "unit",
+   "linhas": 235,
+   "testa": [
+    "src/hooks/useBulkActions.ts"
+   ],
+   "casos": 11
+  },
+  {
+   "arquivo": "src/hooks/__tests__/useCashbackSimulador.test.ts",
+   "tipo": "unit",
+   "linhas": 128,
+   "testa": [
+    "src/hooks/useCashbackSimulador.ts"
+   ],
+   "casos": 8
+  },
+  {
+   "arquivo": "src/hooks/__tests__/useCertificadosDigitais.upload.test.tsx",
+   "tipo": "unit",
+   "linhas": 154,
+   "testa": [
+    "src/hooks/useCertificadosDigitais.ts"
+   ],
+   "casos": 5
+  },
+  {
+   "arquivo": "src/hooks/__tests__/useConciliacao.confirmar.test.tsx",
+   "tipo": "unit",
+   "linhas": 197,
+   "testa": [
+    "src/hooks/useConciliacao.ts"
+   ],
+   "casos": 5
+  },
+  {
+   "arquivo": "src/hooks/__tests__/useConciliacaoIA.test.ts",
+   "tipo": "unit",
+   "linhas": 134,
+   "testa": [
+    "src/hooks/useConciliacaoIA.ts",
+    "src/integrations/supabase/client.ts"
+   ],
+   "casos": 4
+  },
+  {
+   "arquivo": "src/hooks/__tests__/useConciliacaoPage.importacao.test.tsx",
+   "tipo": "unit",
+   "linhas": 189,
+   "testa": [
+    "src/hooks/useConciliacaoPage.ts"
+   ],
+   "casos": 10
+  },
+  {
+   "arquivo": "src/hooks/__tests__/useConciliacaoPage.mutations.test.tsx",
+   "tipo": "unit",
+   "linhas": 101,
+   "testa": [
+    "src/hooks/useConciliacaoPage.ts"
+   ],
+   "casos": 8
+  },
+  {
+   "arquivo": "src/hooks/__tests__/useConciliacaoPage.test-harness.tsx",
+   "tipo": "unit",
+   "linhas": 160,
+   "testa": [],
+   "casos": 0
+  },
+  {
+   "arquivo": "src/hooks/__tests__/useConciliacaoPage.test.tsx",
+   "tipo": "unit",
+   "linhas": 161,
+   "testa": [
+    "src/hooks/useConciliacaoPage.ts"
+   ],
+   "casos": 8
+  },
+  {
+   "arquivo": "src/hooks/__tests__/useConciliacaoPageState.test.tsx",
+   "tipo": "unit",
+   "linhas": 116,
+   "testa": [
+    "src/hooks/conciliacaoPage.types.ts",
+    "src/hooks/useConciliacaoPageState.ts"
+   ],
+   "casos": 4
+  },
+  {
+   "arquivo": "src/hooks/__tests__/useConsultaTributaria.test.tsx",
+   "tipo": "unit",
+   "linhas": 96,
+   "testa": [
+    "src/hooks/useConsultaTributaria.ts"
+   ],
+   "casos": 7
+  },
+  {
+   "arquivo": "src/hooks/__tests__/useContasReceberLogic.test.ts",
+   "tipo": "unit",
+   "linhas": 275,
+   "testa": [],
+   "casos": 21
+  },
+  {
+   "arquivo": "src/hooks/__tests__/useContratos.test.tsx",
+   "tipo": "unit",
+   "linhas": 204,
+   "testa": [
+    "src/hooks/useContratos.ts"
+   ],
+   "casos": 7
+  },
+  {
+   "arquivo": "src/hooks/__tests__/useDashboardMetrics.test.ts",
+   "tipo": "unit",
+   "linhas": 206,
+   "testa": [
+    "src/hooks/useDashboardMetrics.ts"
+   ],
+   "casos": 8
+  },
+  {
+   "arquivo": "src/hooks/__tests__/useFluxoCaixa.test.ts",
+   "tipo": "unit",
+   "linhas": 114,
+   "testa": [
+    "src/hooks/useFluxoCaixa.ts"
+   ],
+   "casos": 3
+  },
+  {
+   "arquivo": "src/hooks/__tests__/useGlobalFilterSync.test.ts",
+   "tipo": "unit",
+   "linhas": 60,
+   "testa": [
+    "src/hooks/useGlobalFilterSync.ts"
+   ],
+   "casos": 4
+  },
+  {
+   "arquivo": "src/hooks/__tests__/useImportacaoXMLNFe.creditos.test.tsx",
+   "tipo": "unit",
+   "linhas": 228,
+   "testa": [
+    "src/hooks/useImportacaoXMLNFe.ts"
+   ],
+   "casos": 6
+  },
+  {
+   "arquivo": "src/hooks/__tests__/useIndicesContabeis.test.ts",
+   "tipo": "unit",
+   "linhas": 68,
+   "testa": [
+    "src/hooks/useIndicesContabeis.ts"
+   ],
+   "casos": 10
+  },
+  {
+   "arquivo": "src/hooks/__tests__/useKeyboardNavigation.test.tsx",
+   "tipo": "unit",
+   "linhas": 92,
+   "testa": [
+    "src/hooks/useKeyboardNavigation.ts",
+    "src/lib/navigation.ts"
+   ],
+   "casos": 7
+  },
+  {
+   "arquivo": "src/hooks/__tests__/useKeyboardShortcuts.test.ts",
+   "tipo": "unit",
+   "linhas": 103,
+   "testa": [
+    "src/hooks/useKeyboardShortcuts.ts"
+   ],
+   "casos": 7
+  },
+  {
+   "arquivo": "src/hooks/__tests__/useLancamentosContabeis.rollback.test.tsx",
+   "tipo": "unit",
+   "linhas": 160,
+   "testa": [
+    "src/hooks/useLancamentosContabeis.ts",
+    "src/lib/lancamentos-csv-importer.ts"
+   ],
+   "casos": 5
+  },
+  {
+   "arquivo": "src/hooks/__tests__/useNfeVinculo.sugestoes.test.tsx",
+   "tipo": "unit",
+   "linhas": 74,
+   "testa": [
+    "src/hooks/useNfeVinculo.ts"
+   ],
+   "casos": 4
+  },
+  {
+   "arquivo": "src/hooks/__tests__/useOrganizacoes.test.tsx",
+   "tipo": "unit",
+   "linhas": 99,
+   "testa": [
+    "src/hooks/useOrganizacoes.ts"
+   ],
+   "casos": 3
+  },
+  {
+   "arquivo": "src/hooks/__tests__/useQueuedMessage.test.tsx",
+   "tipo": "unit",
+   "linhas": 25,
+   "testa": [
+    "src/hooks/useQueuedMessage.ts"
+   ],
+   "casos": 1
+  },
+  {
+   "arquivo": "src/hooks/__tests__/useRegrasConciliacao.test.ts",
+   "tipo": "unit",
+   "linhas": 114,
+   "testa": [
+    "src/hooks/useRegrasConciliacao.ts"
+   ],
+   "casos": 8
+  },
+  {
+   "arquivo": "src/hooks/__tests__/useRetencoesFonte.darf.test.tsx",
+   "tipo": "unit",
+   "linhas": 268,
+   "testa": [
+    "src/hooks/useRetencoesFonte.ts"
+   ],
+   "casos": 8
+  },
+  {
+   "arquivo": "src/hooks/__tests__/useSsoDomainResolver.test.tsx",
+   "tipo": "unit",
+   "linhas": 81,
+   "testa": [
+    "src/hooks/useSsoDomainResolver.ts"
+   ],
+   "casos": 3
+  },
+  {
+   "arquivo": "src/hooks/__tests__/useUrlTab.test.tsx",
+   "tipo": "unit",
+   "linhas": 53,
+   "testa": [
+    "src/hooks/useUrlTab.ts"
+   ],
+   "casos": 4
+  },
+  {
+   "arquivo": "src/hooks/expert-actions/__tests__/financial-actions.aprovacao.test.ts",
+   "tipo": "unit",
+   "linhas": 188,
+   "testa": [
+    "src/hooks/expert-actions/financial-actions.ts"
+   ],
+   "casos": 7
+  },
+  {
+   "arquivo": "src/hooks/expert-actions/financial-actions.test.ts",
+   "tipo": "unit",
+   "linhas": 25,
+   "testa": [
+    "src/hooks/expert-actions/financial-actions.ts"
+   ],
+   "casos": 1
+  },
+  {
+   "arquivo": "src/hooks/financial/__tests__/useContasReceberPagar.test.tsx",
+   "tipo": "unit",
+   "linhas": 301,
+   "testa": [
+    "src/hooks/financial/useContasPagar.ts",
+    "src/hooks/financial/useContasReceber.ts",
+    "src/hooks/financial/views.types.ts"
+   ],
+   "casos": 10
+  },
+  {
+   "arquivo": "src/hooks/financial/__tests__/views.schemas.test.ts",
+   "tipo": "unit",
+   "linhas": 52,
+   "testa": [
+    "src/hooks/financial/views.schemas.ts"
+   ],
+   "casos": 6
+  },
+  {
+   "arquivo": "src/hooks/useApiKeys.test.ts",
+   "tipo": "unit",
+   "linhas": 35,
+   "testa": [
+    "src/hooks/useApiKeys.ts"
+   ],
+   "casos": 1
+  },
+  {
+   "arquivo": "src/hooks/useBoletos.validation.test.ts",
+   "tipo": "unit",
+   "linhas": 29,
+   "testa": [
+    "src/hooks/useBoletos.ts"
+   ],
+   "casos": 3
+  },
+  {
+   "arquivo": "src/hooks/usePerDcomp.safety.test.ts",
+   "tipo": "unit",
+   "linhas": 22,
+   "testa": [
+    "src/hooks/usePerDcomp.ts"
+   ],
+   "casos": 1
+  },
+  {
+   "arquivo": "src/hooks/useSelectiveEmpresaInvalidation.test.tsx",
+   "tipo": "unit",
+   "linhas": 153,
+   "testa": [
+    "src/hooks/useSelectiveEmpresaInvalidation.ts"
+   ],
+   "casos": 8
+  },
+  {
+   "arquivo": "src/hooks/useSimulacaoRegimes.spec.tsx",
+   "tipo": "unit",
+   "linhas": 105,
+   "testa": [
+    "src/hooks/useSimulacaoRegimes.ts"
+   ],
+   "casos": 2
+  },
+  {
+   "arquivo": "src/hooks/useUserEmpresas.test.tsx",
+   "tipo": "unit",
+   "linhas": 31,
+   "testa": [
+    "src/hooks/useUserEmpresas.ts"
+   ],
+   "casos": 1
+  },
+  {
+   "arquivo": "src/hooks/useWebAuthn.safety.test.tsx",
+   "tipo": "unit",
+   "linhas": 34,
+   "testa": [
+    "src/hooks/useWebAuthn.ts"
+   ],
+   "casos": 1
+  },
+  {
+   "arquivo": "src/lib/__tests__/adaptive-chunk.test.ts",
+   "tipo": "unit",
+   "linhas": 83,
+   "testa": [
+    "src/lib/adaptive-chunk.ts"
+   ],
+   "casos": 6
+  },
+  {
+   "arquivo": "src/lib/__tests__/anomalia-routes.test.ts",
+   "tipo": "unit",
+   "linhas": 70,
+   "testa": [
+    "src/lib/anomalia-routes.ts"
+   ],
+   "casos": 6
+  },
+  {
+   "arquivo": "src/lib/__tests__/audit-diff.test.ts",
+   "tipo": "unit",
+   "linhas": 83,
+   "testa": [
+    "src/lib/audit-diff.ts"
+   ],
+   "casos": 10
+  },
+  {
+   "arquivo": "src/lib/__tests__/audit-priority.test.ts",
+   "tipo": "unit",
+   "linhas": 127,
+   "testa": [
+    "src/lib/audit-priority.ts"
+   ],
+   "casos": 14
+  },
+  {
+   "arquivo": "src/lib/__tests__/barcode-parser.test.ts",
+   "tipo": "unit",
+   "linhas": 103,
+   "testa": [
+    "src/lib/barcode-parser.ts"
+   ],
+   "casos": 15
+  },
+  {
+   "arquivo": "src/lib/__tests__/brazilian-validators.regression.test.ts",
+   "tipo": "unit",
+   "linhas": 37,
+   "testa": [
+    "src/lib/brazilian-validators.ts"
+   ],
+   "casos": 2
+  },
+  {
+   "arquivo": "src/lib/__tests__/brazilian-validators.test.ts",
+   "tipo": "unit",
+   "linhas": 176,
+   "testa": [
+    "src/lib/brazilian-validators.ts"
+   ],
+   "casos": 59
+  },
+  {
+   "arquivo": "src/lib/__tests__/cashflow-scenarios.test.ts",
+   "tipo": "unit",
+   "linhas": 177,
+   "testa": [
+    "src/lib/cashflow-scenarios.ts"
+   ],
+   "casos": 18
+  },
+  {
+   "arquivo": "src/lib/__tests__/cfc-validator.test.ts",
+   "tipo": "unit",
+   "linhas": 106,
+   "testa": [
+    "src/hooks/usePlanoContas.ts",
+    "src/lib/cfc-validator.ts"
+   ],
+   "casos": 12
+  },
+  {
+   "arquivo": "src/lib/__tests__/collection-engine.test.ts",
+   "tipo": "unit",
+   "linhas": 97,
+   "testa": [
+    "src/lib/collection-engine.ts"
+   ],
+   "casos": 12
+  },
+  {
+   "arquivo": "src/lib/__tests__/conciliacao-complex-e2e.test.ts",
+   "tipo": "unit",
+   "linhas": 88,
+   "testa": [
+    "src/lib/ofx-parser.ts",
+    "src/lib/transaction-matcher.ts"
+   ],
+   "casos": 3
+  },
+  {
+   "arquivo": "src/lib/__tests__/conciliacao-e2e.test.ts",
+   "tipo": "unit",
+   "linhas": 118,
+   "testa": [
+    "src/lib/ofx-parser.ts",
+    "src/lib/transaction-matcher.ts"
+   ],
+   "casos": 4
+  },
+  {
+   "arquivo": "src/lib/__tests__/concurrency-limiter.test.ts",
+   "tipo": "unit",
+   "linhas": 74,
+   "testa": [
+    "src/lib/concurrency-limiter.ts"
+   ],
+   "casos": 5
+  },
+  {
+   "arquivo": "src/lib/__tests__/correlation-id.test.ts",
+   "tipo": "unit",
+   "linhas": 82,
+   "testa": [
+    "src/lib/correlation-id.ts"
+   ],
+   "casos": 10
+  },
+  {
+   "arquivo": "src/lib/__tests__/csv-importer.test.ts",
+   "tipo": "unit",
+   "linhas": 218,
+   "testa": [
+    "src/lib/csv-importer.ts"
+   ],
+   "casos": 14
+  },
+  {
+   "arquivo": "src/lib/__tests__/currency.test.ts",
+   "tipo": "unit",
+   "linhas": 93,
+   "testa": [
+    "src/lib/currency.ts"
+   ],
+   "casos": 12
+  },
+  {
+   "arquivo": "src/lib/__tests__/edge-function-error.test.ts",
+   "tipo": "unit",
+   "linhas": 150,
+   "testa": [
+    "src/lib/edge-function-error.ts"
+   ],
+   "casos": 11
+  },
+  {
+   "arquivo": "src/lib/__tests__/edge-functions.security.test.ts",
+   "tipo": "unit",
+   "linhas": 96,
+   "testa": [],
+   "casos": 7
+  },
+  {
+   "arquivo": "src/lib/__tests__/emitTelemetry.test.ts",
+   "tipo": "unit",
+   "linhas": 502,
+   "testa": [],
+   "casos": 72
+  },
+  {
+   "arquivo": "src/lib/__tests__/eslint-no-floating-supabase-write.test.ts",
+   "tipo": "unit",
+   "linhas": 139,
+   "testa": [
+    "eslint-rules/no-floating-supabase-write.js"
+   ],
+   "casos": 0
+  },
+  {
+   "arquivo": "src/lib/__tests__/filterHydrationTelemetry.test.ts",
+   "tipo": "unit",
+   "linhas": 194,
+   "testa": [
+    "src/lib/filterHydrationTelemetry.ts"
+   ],
+   "casos": 11
+  },
+  {
+   "arquivo": "src/lib/__tests__/format-filter-value.test.ts",
+   "tipo": "unit",
+   "linhas": 61,
+   "testa": [
+    "src/lib/format-filter-value.ts"
+   ],
+   "casos": 9
+  },
+  {
+   "arquivo": "src/lib/__tests__/formatters.test.ts",
+   "tipo": "unit",
+   "linhas": 353,
+   "testa": [
+    "src/lib/formatters.ts"
+   ],
+   "casos": 90
+  },
+  {
+   "arquivo": "src/lib/__tests__/import-checkpoint.test.ts",
+   "tipo": "unit",
+   "linhas": 230,
+   "testa": [
+    "src/lib/import-checkpoint.ts"
+   ],
+   "casos": 20
+  },
+  {
+   "arquivo": "src/lib/__tests__/ip-mask.test.ts",
+   "tipo": "unit",
+   "linhas": 39,
+   "testa": [
+    "src/lib/ip-mask.ts"
+   ],
+   "casos": 7
+  },
+  {
+   "arquivo": "src/lib/__tests__/magic-bytes.test.ts",
+   "tipo": "unit",
+   "linhas": 132,
+   "testa": [
+    "src/lib/magic-bytes.ts"
+   ],
+   "casos": 11
+  },
+  {
+   "arquivo": "src/lib/__tests__/masks.test.ts",
+   "tipo": "unit",
+   "linhas": 118,
+   "testa": [
+    "src/lib/masks.ts"
+   ],
+   "casos": 29
+  },
+  {
+   "arquivo": "src/lib/__tests__/navigation.test.ts",
+   "tipo": "unit",
+   "linhas": 140,
+   "testa": [
+    "src/lib/navigation.ts"
+   ],
+   "casos": 17
+  },
+  {
+   "arquivo": "src/lib/__tests__/ofx-parser.test.ts",
+   "tipo": "unit",
+   "linhas": 212,
+   "testa": [
+    "src/lib/ofx-parser.ts",
+    "src/lib/ofx-parser/utils.ts"
+   ],
+   "casos": 19
+  },
+  {
+   "arquivo": "src/lib/__tests__/optimistic-lock.test.ts",
+   "tipo": "unit",
+   "linhas": 151,
+   "testa": [
+    "src/lib/optimistic-lock.ts"
+   ],
+   "casos": 6
+  },
+  {
+   "arquivo": "src/lib/__tests__/plano-contas-csv-importer.test.ts",
+   "tipo": "unit",
+   "linhas": 168,
+   "testa": [
+    "src/lib/plano-contas-csv-importer.ts"
+   ],
+   "casos": 22
+  },
+  {
+   "arquivo": "src/lib/__tests__/privacy-redact.test.ts",
+   "tipo": "unit",
+   "linhas": 78,
+   "testa": [
+    "src/lib/error-tracking.ts",
+    "src/lib/telemetry.ts"
+   ],
+   "casos": 6
+  },
+  {
+   "arquivo": "src/lib/__tests__/reforma-tributaria-calculator.test.ts",
+   "tipo": "unit",
+   "linhas": 280,
+   "testa": [
+    "src/lib/reforma-tributaria-calculator.ts"
+   ],
+   "casos": 38
+  },
+  {
+   "arquivo": "src/lib/__tests__/reforma-tributaria-types.regression.test.ts",
+   "tipo": "unit",
+   "linhas": 17,
+   "testa": [
+    "src/types/reforma-tributaria.ts"
+   ],
+   "casos": 1
+  },
+  {
+   "arquivo": "src/lib/__tests__/relatorio-pdf.regression.test.ts",
+   "tipo": "unit",
+   "linhas": 11,
+   "testa": [
+    "src/lib/tributario/relatorio-pdf.ts"
+   ],
+   "casos": 1
+  },
+  {
+   "arquivo": "src/lib/__tests__/secure-random.test.ts",
+   "tipo": "unit",
+   "linhas": 34,
+   "testa": [
+    "src/lib/secure-random.ts"
+   ],
+   "casos": 4
+  },
+  {
+   "arquivo": "src/lib/__tests__/sefaz-contingency-state.test.ts",
+   "tipo": "unit",
+   "linhas": 141,
+   "testa": [
+    "src/lib/sefaz-contingency/state.ts",
+    "src/lib/sefaz-contingency/storage.ts"
+   ],
+   "casos": 8
+  },
+  {
+   "arquivo": "src/lib/__tests__/sefaz-rejection-monitor.test.ts",
+   "tipo": "unit",
+   "linhas": 159,
+   "testa": [
+    "src/lib/sefaz-event-logger.ts",
+    "src/lib/sefaz-rejection-monitor.ts"
+   ],
+   "casos": 11
+  },
+  {
+   "arquivo": "src/lib/__tests__/sefaz-simulator.regression.test.ts",
+   "tipo": "unit",
+   "linhas": 10,
+   "testa": [
+    "src/lib/sefaz-simulator.ts"
+   ],
+   "casos": 1
+  },
+  {
+   "arquivo": "src/lib/__tests__/sharedFiltersExport.test.ts",
+   "tipo": "unit",
+   "linhas": 110,
+   "testa": [
+    "src/lib/sharedFiltersExport.ts"
+   ],
+   "casos": 7
+  },
+  {
+   "arquivo": "src/lib/__tests__/sped-generator.regression.test.ts",
+   "tipo": "unit",
+   "linhas": 18,
+   "testa": [
+    "src/lib/sped-generator.ts"
+   ],
+   "casos": 2
+  },
+  {
+   "arquivo": "src/lib/__tests__/sped-generator.test.ts",
+   "tipo": "unit",
+   "linhas": 151,
+   "testa": [
+    "src/lib/sped-generator.ts"
+   ],
+   "casos": 12
+  },
+  {
+   "arquivo": "src/lib/__tests__/sso-error-messages.test.ts",
+   "tipo": "unit",
+   "linhas": 59,
+   "testa": [
+    "src/lib/sso-error-messages.ts"
+   ],
+   "casos": 2
+  },
+  {
+   "arquivo": "src/lib/__tests__/sso-slo-state.test.ts",
+   "tipo": "unit",
+   "linhas": 110,
+   "testa": [
+    "src/lib/sso-slo-state.ts"
+   ],
+   "casos": 9
+  },
+  {
+   "arquivo": "src/lib/__tests__/storage-path.test.ts",
+   "tipo": "unit",
+   "linhas": 54,
+   "testa": [
+    "src/lib/storage-path.ts"
+   ],
+   "casos": 8
+  },
+  {
+   "arquivo": "src/lib/__tests__/supabase-write.test.ts",
+   "tipo": "unit",
+   "linhas": 269,
+   "testa": [
+    "src/lib/supabase-write.ts"
+   ],
+   "casos": 23
+  },
+  {
+   "arquivo": "src/lib/__tests__/transaction-matcher-multi.test.ts",
+   "tipo": "unit",
+   "linhas": 143,
+   "testa": [
+    "src/lib/ofx-parser.ts",
+    "src/lib/transaction-matcher.ts"
+   ],
+   "casos": 7
+  },
+  {
+   "arquivo": "src/lib/__tests__/transaction-matcher.regression.test.ts",
+   "tipo": "unit",
+   "linhas": 15,
+   "testa": [
+    "src/lib/transaction-matcher.ts"
+   ],
+   "casos": 1
+  },
+  {
+   "arquivo": "src/lib/__tests__/transaction-matcher.test.ts",
+   "tipo": "unit",
+   "linhas": 140,
+   "testa": [
+    "src/lib/ofx-parser.ts",
+    "src/lib/transaction-matcher.ts"
+   ],
+   "casos": 6
+  },
+  {
+   "arquivo": "src/lib/__tests__/utils.test.ts",
+   "tipo": "unit",
+   "linhas": 16,
+   "testa": [
+    "src/lib/utils.ts"
+   ],
+   "casos": 6
+  },
+  {
+   "arquivo": "src/lib/arquitetura/__tests__/conformidade-arquitetura.test.ts",
+   "tipo": "unit",
+   "linhas": 139,
+   "testa": [
+    "src/lib/arquitetura/modulos.ts"
+   ],
+   "casos": 13
+  },
+  {
+   "arquivo": "src/lib/arquitetura/__tests__/drift-imports.test.ts",
+   "tipo": "unit",
+   "linhas": 105,
+   "testa": [
+    "src/lib/arquitetura/analisador-imports.ts",
+    "src/lib/arquitetura/modulos.ts"
+   ],
+   "casos": 9
+  },
+  {
+   "arquivo": "src/lib/arquitetura/__tests__/edge-functions-imports.test.ts",
+   "tipo": "unit",
+   "linhas": 107,
+   "testa": [],
+   "casos": 10
+  },
+  {
+   "arquivo": "src/lib/arquitetura/__tests__/escopo-querykey.test.ts",
+   "tipo": "unit",
+   "linhas": 134,
+   "testa": [
+    "src/lib/arquitetura/escopo-empresa.ts"
+   ],
+   "casos": 13
+  },
+  {
+   "arquivo": "src/lib/arquitetura/__tests__/snapshot-grafo.test.ts",
+   "tipo": "unit",
+   "linhas": 40,
+   "testa": [
+    "src/lib/arquitetura/analisador-imports.ts",
+    "src/lib/arquitetura/grafo-observado.json"
+   ],
+   "casos": 3
+  },
+  {
+   "arquivo": "src/lib/compras/__tests__/pedidos.test.ts",
+   "tipo": "unit",
+   "linhas": 31,
+   "testa": [
+    "src/lib/compras/pedidos.ts"
+   ],
+   "casos": 2
+  },
+  {
+   "arquivo": "src/lib/contabil/__tests__/balancete-utils.test.ts",
+   "tipo": "unit",
+   "linhas": 119,
+   "testa": [
+    "src/lib/contabil/balancete-utils.ts"
+   ],
+   "casos": 13
+  },
+  {
+   "arquivo": "src/lib/contabil/__tests__/indices.test.ts",
+   "tipo": "unit",
+   "linhas": 156,
+   "testa": [
+    "src/lib/contabil/indices.ts"
+   ],
+   "casos": 44
+  },
+  {
+   "arquivo": "src/lib/contabil/__tests__/termos-livro.test.ts",
+   "tipo": "unit",
+   "linhas": 92,
+   "testa": [
+    "src/lib/contabil/termos-livro.ts"
+   ],
+   "casos": 10
+  },
+  {
+   "arquivo": "src/lib/navigation-intent.test.ts",
+   "tipo": "unit",
+   "linhas": 12,
+   "testa": [
+    "src/lib/navigation-intent.ts"
+   ],
+   "casos": 1
+  },
+  {
+   "arquivo": "src/lib/offline/__tests__/fiscal-cache.test.ts",
+   "tipo": "unit",
+   "linhas": 23,
+   "testa": [
+    "src/lib/offline/fiscal-cache.ts"
+   ],
+   "casos": 2
+  },
+  {
+   "arquivo": "src/lib/organizacoes/__tests__/convites.test.ts",
+   "tipo": "unit",
+   "linhas": 196,
+   "testa": [
+    "src/lib/organizacoes/convites.ts"
+   ],
+   "casos": 21
+  },
+  {
+   "arquivo": "src/lib/pdf-generator/__tests__/conciliacao.test.ts",
+   "tipo": "unit",
+   "linhas": 95,
+   "testa": [
+    "src/lib/pdf-generator/conciliacao.ts"
+   ],
+   "casos": 6
+  },
+  {
+   "arquivo": "src/lib/queryClient.retry.test.ts",
+   "tipo": "unit",
+   "linhas": 41,
+   "testa": [
+    "src/lib/queryClient.ts"
+   ],
+   "casos": 3
+  },
+  {
+   "arquivo": "src/lib/sso/__tests__/consistency.test.ts",
+   "tipo": "unit",
+   "linhas": 151,
+   "testa": [
+    "src/lib/sso/consistency.ts"
+   ],
+   "casos": 19
+  },
+  {
+   "arquivo": "src/lib/sso/__tests__/sandbox-bulk-aggregator.test.ts",
+   "tipo": "unit",
+   "linhas": 120,
+   "testa": [
+    "src/lib/sso/sandbox-bulk-aggregator.ts",
+    "src/lib/sso/sandbox-bulk-runner.ts"
+   ],
+   "casos": 5
+  },
+  {
+   "arquivo": "src/lib/sso/__tests__/sandbox-bulk-runner.test.ts",
+   "tipo": "unit",
+   "linhas": 167,
+   "testa": [
+    "src/integrations/supabase/client.ts",
+    "src/lib/sso/sandbox-bulk-runner.ts"
+   ],
+   "casos": 12
+  },
+  {
+   "arquivo": "src/lib/sso/__tests__/sandbox-csv.test.ts",
+   "tipo": "unit",
+   "linhas": 100,
+   "testa": [
+    "src/lib/sso/sandbox-bulk-runner.ts",
+    "src/lib/sso/sandbox-csv.ts"
+   ],
+   "casos": 9
+  },
+  {
+   "arquivo": "src/lib/transaction-matcher/converters.test.ts",
+   "tipo": "unit",
+   "linhas": 53,
+   "testa": [
+    "src/lib/transaction-matcher/converters.ts"
+   ],
+   "casos": 3
+  },
+  {
+   "arquivo": "src/lib/tributario/__tests__/alertas-conformidade.test.ts",
+   "tipo": "unit",
+   "linhas": 213,
+   "testa": [
+    "src/lib/tributario/obrigacoes/alertas.ts",
+    "src/lib/tributario/obrigacoes/conformidade.ts",
+    "src/lib/tributario/obrigacoes/historico.ts",
+    "supabase/functions/_shared/obrigacoes/alertas.ts"
+   ],
+   "casos": 12
+  },
+  {
+   "arquivo": "src/lib/tributario/__tests__/aliquotas-simples.test.ts",
+   "tipo": "unit",
+   "linhas": 56,
+   "testa": [
+    "src/lib/tributario/aliquotas-simples.ts",
+    "src/lib/tributario/types.ts"
+   ],
+   "casos": 5
+  },
+  {
+   "arquivo": "src/lib/tributario/__tests__/catalogos-alertas.test.ts",
+   "tipo": "unit",
+   "linhas": 178,
+   "testa": [
+    "src/lib/tributario/aliquotas-simples.ts",
+    "src/lib/tributario/catalogos/alertas.ts",
+    "src/lib/tributario/catalogos/painel.ts",
+    "src/lib/tributario/catalogos/types.ts",
+    "src/lib/tributario/icms/tabelas.ts",
+    "src/lib/tributario/types.ts"
+   ],
+   "casos": 7
+  },
+  {
+   "arquivo": "src/lib/tributario/__tests__/catalogos-coerencia-iss.test.ts",
+   "tipo": "unit",
+   "linhas": 128,
+   "testa": [
+    "src/lib/tributario/catalogos/coerencia-iss.ts",
+    "src/lib/tributario/ipi-iss/tabelas.ts"
+   ],
+   "casos": 13
+  },
+  {
+   "arquivo": "src/lib/tributario/__tests__/catalogos-coerencia-mva.test.ts",
+   "tipo": "unit",
+   "linhas": 211,
+   "testa": [
+    "src/lib/tributario/catalogos/alertas.ts",
+    "src/lib/tributario/catalogos/coerencia-mva.ts",
+    "src/lib/tributario/catalogos/coerencia-ncm.ts",
+    "src/lib/tributario/catalogos/rejeicoes-auditoria.ts",
+    "src/lib/tributario/icms/overlay-mva.ts",
+    "src/lib/tributario/icms/tabelas.ts"
+   ],
+   "casos": 11
+  },
+  {
+   "arquivo": "src/lib/tributario/__tests__/catalogos-coerencia-ncm.test.ts",
+   "tipo": "unit",
+   "linhas": 134,
+   "testa": [
+    "src/lib/tributario/catalogos/coerencia-ncm.ts",
+    "src/lib/tributario/ipi-iss/tabelas.ts",
+    "src/lib/tributario/monofasico/classificar.ts"
+   ],
+   "casos": 9
+  },
+  {
+   "arquivo": "src/lib/tributario/__tests__/catalogos-coerencia-ufs.test.ts",
+   "tipo": "unit",
+   "linhas": 90,
+   "testa": [
+    "src/lib/tributario/catalogos/coerencia-ufs.ts",
+    "src/lib/tributario/catalogos/types.ts",
+    "src/lib/tributario/icms/tabelas.ts",
+    "src/lib/tributario/icms/types.ts"
+   ],
+   "casos": 9
+  },
+  {
+   "arquivo": "src/lib/tributario/__tests__/catalogos-coerencia.test.ts",
+   "tipo": "unit",
+   "linhas": 85,
+   "testa": [
+    "src/lib/tributario/aliquotas-simples.ts",
+    "src/lib/tributario/catalogos/coerencia.ts",
+    "src/lib/tributario/catalogos/types.ts",
+    "src/lib/tributario/types.ts"
+   ],
+   "casos": 8
+  },
+  {
+   "arquivo": "src/lib/tributario/__tests__/catalogos-painel.test.ts",
+   "tipo": "unit",
+   "linhas": 185,
+   "testa": [
+    "src/lib/tributario/aliquotas-simples.ts",
+    "src/lib/tributario/catalogos/painel.ts",
+    "src/lib/tributario/catalogos/types.ts",
+    "src/lib/tributario/icms/tabelas.ts",
+    "src/lib/tributario/types.ts"
+   ],
+   "casos": 10
+  },
+  {
+   "arquivo": "src/lib/tributario/__tests__/catalogos-saude.test.ts",
+   "tipo": "unit",
+   "linhas": 48,
+   "testa": [
+    "src/lib/tributario/catalogos/alertas.ts",
+    "src/lib/tributario/catalogos/saude.ts"
+   ],
+   "casos": 4
+  },
+  {
+   "arquivo": "src/lib/tributario/__tests__/catalogos-vigencia.test.ts",
+   "tipo": "unit",
+   "linhas": 23,
+   "testa": [
+    "src/lib/tributario/catalogos/repositorio.ts"
+   ],
+   "casos": 3
+  },
+  {
+   "arquivo": "src/lib/tributario/__tests__/cobertura-extra.test.ts",
+   "tipo": "unit",
+   "linhas": 234,
+   "testa": [
+    "src/lib/tributario/aliquotas-simples.ts",
+    "src/lib/tributario/fator-r.ts",
+    "src/lib/tributario/rbt12.ts",
+    "src/lib/tributario/simular-simples.ts",
+    "src/lib/tributario/types.ts"
+   ],
+   "casos": 21
+  },
+  {
+   "arquivo": "src/lib/tributario/__tests__/coerencia-tabelas-simples.test.ts",
+   "tipo": "unit",
+   "linhas": 153,
+   "testa": [
+    "src/lib/tributario/aliquotas-simples.ts",
+    "src/lib/tributario/shared-logic.ts",
+    "src/lib/tributario/types.ts"
+   ],
+   "casos": 6
+  },
+  {
+   "arquivo": "src/lib/tributario/__tests__/comparativo-conformidade.test.ts",
+   "tipo": "unit",
+   "linhas": 256,
+   "testa": [
+    "src/lib/tributario/obrigacoes/comparativo.ts",
+    "src/lib/tributario/obrigacoes/conformidade.ts",
+    "src/lib/tributario/obrigacoes/historico.ts"
+   ],
+   "casos": 13
+  },
+  {
+   "arquivo": "src/lib/tributario/__tests__/conformidade-fiscal.test.ts",
+   "tipo": "unit",
+   "linhas": 284,
+   "testa": [
+    "src/lib/tributario/obrigacoes/index.ts"
+   ],
+   "casos": 16
+  },
+  {
+   "arquivo": "src/lib/tributario/__tests__/conformidade-historico.test.ts",
+   "tipo": "unit",
+   "linhas": 393,
+   "testa": [
+    "src/lib/tributario/obrigacoes/conformidade.ts",
+    "src/lib/tributario/obrigacoes/historico.ts",
+    "src/lib/tributario/obrigacoes/types.ts"
+   ],
+   "casos": 21
+  },
+  {
+   "arquivo": "src/lib/tributario/__tests__/cpp-anexo-iv.test.ts",
+   "tipo": "unit",
+   "linhas": 87,
+   "testa": [
+    "src/lib/tributario/shared-logic.ts"
+   ],
+   "casos": 5
+  },
+  {
+   "arquivo": "src/lib/tributario/__tests__/darf-consolidacao.test.ts",
+   "tipo": "unit",
+   "linhas": 262,
+   "testa": [
+    "src/lib/tributario/darf/index.ts"
+   ],
+   "casos": 18
+  },
+  {
+   "arquivo": "src/lib/tributario/__tests__/decidir-regime.test.ts",
+   "tipo": "unit",
+   "linhas": 80,
+   "testa": [
+    "src/lib/tributario/decidir-regime.ts",
+    "src/lib/tributario/types.ts"
+   ],
+   "casos": 9
+  },
+  {
+   "arquivo": "src/lib/tributario/__tests__/diagnostico-parametros.test.ts",
+   "tipo": "unit",
+   "linhas": 100,
+   "testa": [
+    "src/lib/tributario/diagnostico-parametros.ts",
+    "src/lib/tributario/shared-logic.ts"
+   ],
+   "casos": 7
+  },
+  {
+   "arquivo": "src/lib/tributario/__tests__/digest-conformidade.test.ts",
+   "tipo": "unit",
+   "linhas": 238,
+   "testa": [
+    "src/lib/tributario/obrigacoes/digest.ts"
+   ],
+   "casos": 10
+  },
+  {
+   "arquivo": "src/lib/tributario/__tests__/drift-guard-motor.test.ts",
+   "tipo": "unit",
+   "linhas": 90,
+   "testa": [],
+   "casos": 3
+  },
+  {
+   "arquivo": "src/lib/tributario/__tests__/drift-guard-obrigacoes.test.ts",
+   "tipo": "unit",
+   "linhas": 112,
+   "testa": [],
+   "casos": 3
+  },
+  {
+   "arquivo": "src/lib/tributario/__tests__/fator-r.test.ts",
+   "tipo": "unit",
+   "linhas": 23,
+   "testa": [
+    "src/lib/tributario/fator-r.ts"
+   ],
+   "casos": 3
+  },
+  {
+   "arquivo": "src/lib/tributario/__tests__/folha-encargos.test.ts",
+   "tipo": "unit",
+   "linhas": 302,
+   "testa": [
+    "src/lib/tributario/calculadora/lucro-presumido.ts",
+    "src/lib/tributario/calculadora/lucro-real.ts",
+    "src/lib/tributario/folha/index.ts"
+   ],
+   "casos": 22
+  },
+  {
+   "arquivo": "src/lib/tributario/__tests__/fpas-terceiros.test.ts",
+   "tipo": "unit",
+   "linhas": 121,
+   "testa": [
+    "src/lib/tributario/folha/fpas-terceiros.ts",
+    "src/lib/tributario/shared-logic.ts"
+   ],
+   "casos": 9
+  },
+  {
+   "arquivo": "src/lib/tributario/__tests__/historico-simulacao.test.ts",
+   "tipo": "unit",
+   "linhas": 301,
+   "testa": [
+    "src/lib/tributario/diagnostico-parametros.ts",
+    "src/lib/tributario/historico-simulacao.ts"
+   ],
+   "casos": 25
+  },
+  {
+   "arquivo": "src/lib/tributario/__tests__/icms-nao-cumulativo.test.ts",
+   "tipo": "unit",
+   "linhas": 139,
+   "testa": [
+    "src/lib/tributario/shared-logic.ts"
+   ],
+   "casos": 10
+  },
+  {
+   "arquivo": "src/lib/tributario/__tests__/icms-overlay-mva-fuzz.test.ts",
+   "tipo": "unit",
+   "linhas": 331,
+   "testa": [
+    "src/lib/tributario/icms/overlay-mva.ts",
+    "src/lib/tributario/icms/st.ts",
+    "src/lib/tributario/icms/tabelas.ts",
+    "src/lib/tributario/icms/types.ts"
+   ],
+   "casos": 4
+  },
+  {
+   "arquivo": "src/lib/tributario/__tests__/icms-overlay-mva.test.ts",
+   "tipo": "unit",
+   "linhas": 202,
+   "testa": [
+    "src/lib/tributario/icms/overlay-mva.ts",
+    "src/lib/tributario/icms/st.ts"
+   ],
+   "casos": 12
+  },
+  {
+   "arquivo": "src/lib/tributario/__tests__/icms-overlay-runtime.test.ts",
+   "tipo": "unit",
+   "linhas": 64,
+   "testa": [
+    "src/lib/tributario/icms/overlay.ts",
+    "src/lib/tributario/icms/st.ts",
+    "src/lib/tributario/icms/tabelas.ts"
+   ],
+   "casos": 5
+  },
+  {
+   "arquivo": "src/lib/tributario/__tests__/icms-overlay.test.ts",
+   "tipo": "unit",
+   "linhas": 102,
+   "testa": [
+    "src/lib/tributario/icms/overlay.ts",
+    "src/lib/tributario/icms/tabelas.ts",
+    "src/lib/tributario/icms/types.ts"
+   ],
+   "casos": 9
+  },
+  {
+   "arquivo": "src/lib/tributario/__tests__/icms-st-difal.test.ts",
+   "tipo": "unit",
+   "linhas": 465,
+   "testa": [
+    "src/lib/tributario/icms/index.ts"
+   ],
+   "casos": 29
+  },
+  {
+   "arquivo": "src/lib/tributario/__tests__/imunidade-exportacao.test.ts",
+   "tipo": "unit",
+   "linhas": 160,
+   "testa": [
+    "src/lib/tributario/shared-logic.ts",
+    "src/lib/tributario/types.ts"
+   ],
+   "casos": 10
+  },
+  {
+   "arquivo": "src/lib/tributario/__tests__/ipi-iss.test.ts",
+   "tipo": "unit",
+   "linhas": 310,
+   "testa": [
+    "src/lib/tributario/ipi-iss/index.ts"
+   ],
+   "casos": 23
+  },
+  {
+   "arquivo": "src/lib/tributario/__tests__/irpfm.test.ts",
+   "tipo": "unit",
+   "linhas": 45,
+   "testa": [
+    "src/lib/tributario/irpfm.ts"
+   ],
+   "casos": 6
+  },
+  {
+   "arquivo": "src/lib/tributario/__tests__/irpj-csll.test.ts",
+   "tipo": "unit",
+   "linhas": 226,
+   "testa": [
+    "src/lib/tributario/irpj-csll/index.ts"
+   ],
+   "casos": 13
+  },
+  {
+   "arquivo": "src/lib/tributario/__tests__/iss-overlay.test.ts",
+   "tipo": "unit",
+   "linhas": 165,
+   "testa": [
+    "src/lib/tributario/ipi-iss/overlay-iss.ts"
+   ],
+   "casos": 21
+  },
+  {
+   "arquivo": "src/lib/tributario/__tests__/monofasico.test.ts",
+   "tipo": "unit",
+   "linhas": 247,
+   "testa": [
+    "src/lib/tributario/calculadora/lucro-presumido.ts",
+    "src/lib/tributario/monofasico/index.ts"
+   ],
+   "casos": 25
+  },
+  {
+   "arquivo": "src/lib/tributario/__tests__/motor.test.ts",
+   "tipo": "unit",
+   "linhas": 196,
+   "testa": [
+    "src/lib/tributario/aliquotas-simples.ts",
+    "src/lib/tributario/decidir-regime.ts",
+    "src/lib/tributario/fator-r.ts",
+    "src/lib/tributario/rbt12.ts",
+    "src/lib/tributario/simular-presumido.ts",
+    "src/lib/tributario/simular-real.ts",
+    "src/lib/tributario/simular-simples.ts"
+   ],
+   "casos": 22
+  },
+  {
+   "arquivo": "src/lib/tributario/__tests__/obrigacoes-acessorias.test.ts",
+   "tipo": "unit",
+   "linhas": 323,
+   "testa": [
+    "src/lib/tributario/darf/tabelas.ts",
+    "src/lib/tributario/obrigacoes/index.ts"
+   ],
+   "casos": 26
+  },
+  {
+   "arquivo": "src/lib/tributario/__tests__/orquestrador-elisao.test.ts",
+   "tipo": "unit",
+   "linhas": 64,
+   "testa": [
+    "src/lib/tributario/elisao/orquestrador-elisao.ts",
+    "src/lib/tributario/elisao/types.ts"
+   ],
+   "casos": 5
+  },
+  {
+   "arquivo": "src/lib/tributario/__tests__/overlay-monofasico.test.ts",
+   "tipo": "unit",
+   "linhas": 112,
+   "testa": [
+    "src/lib/tributario/monofasico/calcular.ts",
+    "src/lib/tributario/monofasico/classificar.ts",
+    "src/lib/tributario/monofasico/overlay-monofasico.ts"
+   ],
+   "casos": 12
+  },
+  {
+   "arquivo": "src/lib/tributario/__tests__/overlay-ncm.test.ts",
+   "tipo": "unit",
+   "linhas": 246,
+   "testa": [
+    "src/lib/tributario/ipi-iss/overlay-ncm.ts",
+    "src/lib/tributario/ipi-iss/tabelas.ts"
+   ],
+   "casos": 18
+  },
+  {
+   "arquivo": "src/lib/tributario/__tests__/paridade-motor-edge.test.ts",
+   "tipo": "unit",
+   "linhas": 203,
+   "testa": [
+    "src/lib/tributario/shared-logic.ts",
+    "src/lib/tributario/types.ts",
+    "supabase/functions/_shared/tributario-logic.ts"
+   ],
+   "casos": 6
+  },
+  {
+   "arquivo": "src/lib/tributario/__tests__/paridade-obrigacoes-edge.test.ts",
+   "tipo": "unit",
+   "linhas": 105,
+   "testa": [
+    "src/lib/tributario/obrigacoes/calendario.ts",
+    "src/lib/tributario/obrigacoes/catalogo.ts",
+    "src/lib/tributario/obrigacoes/conformidade.ts",
+    "src/lib/tributario/obrigacoes/types.ts",
+    "supabase/functions/_shared/obrigacoes/calendario.ts",
+    "supabase/functions/_shared/obrigacoes/catalogo.ts",
+    "supabase/functions/_shared/obrigacoes/conformidade.ts"
+   ],
+   "casos": 4
+  },
+  {
+   "arquivo": "src/lib/tributario/__tests__/periodicidade-apuracao.test.ts",
+   "tipo": "unit",
+   "linhas": 170,
+   "testa": [
+    "src/lib/tributario/shared-logic.ts"
+   ],
+   "casos": 18
+  },
+  {
+   "arquivo": "src/lib/tributario/__tests__/periodicidade-coerencia.test.ts",
+   "tipo": "unit",
+   "linhas": 103,
+   "testa": [
+    "src/lib/tributario/shared-logic.ts",
+    "src/lib/tributario/types.ts"
+   ],
+   "casos": 5
+  },
+  {
+   "arquivo": "src/lib/tributario/__tests__/pf-vinculada.test.ts",
+   "tipo": "unit",
+   "linhas": 99,
+   "testa": [
+    "src/lib/tributario/pf-vinculada.ts"
+   ],
+   "casos": 13
+  },
+  {
+   "arquivo": "src/lib/tributario/__tests__/pis-cofins-creditos.test.ts",
+   "tipo": "unit",
+   "linhas": 238,
+   "testa": [
+    "src/lib/tributario/pis-cofins/index.ts"
+   ],
+   "casos": 19
+  },
+  {
+   "arquivo": "src/lib/tributario/__tests__/prejuizo-fiscal-trava-30.test.ts",
+   "tipo": "unit",
+   "linhas": 85,
+   "testa": [
+    "src/lib/tributario/shared-logic.ts",
+    "src/lib/tributario/types.ts"
+   ],
+   "casos": 7
+  },
+  {
+   "arquivo": "src/lib/tributario/__tests__/presuncao-atividade.test.ts",
+   "tipo": "unit",
+   "linhas": 77,
+   "testa": [
+    "src/lib/tributario/shared-logic.ts"
+   ],
+   "casos": 6
+  },
+  {
+   "arquivo": "src/lib/tributario/__tests__/projecao-reforma-transicao.test.ts",
+   "tipo": "unit",
+   "linhas": 98,
+   "testa": [
+    "src/lib/tributario/projecao-reforma.ts"
+   ],
+   "casos": 11
+  },
+  {
+   "arquivo": "src/lib/tributario/__tests__/projecao-reforma.test.ts",
+   "tipo": "unit",
+   "linhas": 71,
+   "testa": [
+    "src/lib/tributario/projecao-reforma.ts"
+   ],
+   "casos": 5
+  },
+  {
+   "arquivo": "src/lib/tributario/__tests__/rbt12.test.ts",
+   "tipo": "unit",
+   "linhas": 55,
+   "testa": [
+    "src/lib/tributario/rbt12.ts",
+    "src/lib/tributario/types.ts"
+   ],
+   "casos": 4
+  },
+  {
+   "arquivo": "src/lib/tributario/__tests__/recomendar-empresa.test.ts",
+   "tipo": "unit",
+   "linhas": 86,
+   "testa": [
+    "src/lib/tributario/recomendar-empresa.ts"
+   ],
+   "casos": 8
+  },
+  {
+   "arquivo": "src/lib/tributario/__tests__/rejeicoes-auditoria.test.ts",
+   "tipo": "unit",
+   "linhas": 162,
+   "testa": [
+    "src/lib/tributario/catalogos/rejeicoes-auditoria.ts"
+   ],
+   "casos": 6
+  },
+  {
+   "arquivo": "src/lib/tributario/__tests__/restauracao-snapshot.test.ts",
+   "tipo": "unit",
+   "linhas": 108,
+   "testa": [
+    "src/lib/tributario/historico-simulacao.ts",
+    "src/lib/tributario/types.ts"
+   ],
+   "casos": 4
+  },
+  {
+   "arquivo": "src/lib/tributario/__tests__/resumo-mva-st.test.ts",
+   "tipo": "unit",
+   "linhas": 91,
+   "testa": [
+    "src/lib/tributario/catalogos/resumo-mva.ts",
+    "src/lib/tributario/icms/overlay-mva.ts",
+    "src/lib/tributario/icms/tabelas.ts"
+   ],
+   "casos": 5
+  },
+  {
+   "arquivo": "src/lib/tributario/__tests__/robustness-consistency.test.ts",
+   "tipo": "unit",
+   "linhas": 134,
+   "testa": [
+    "src/lib/tributario/aliquotas-simples.ts",
+    "src/lib/tributario/decidir-regime.ts",
+    "src/lib/tributario/simular-presumido.ts",
+    "src/lib/tributario/simular-real.ts",
+    "src/lib/tributario/simular-simples.ts"
+   ],
+   "casos": 11
+  },
+  {
+   "arquivo": "src/lib/tributario/__tests__/sanitizacao-parametros.test.ts",
+   "tipo": "unit",
+   "linhas": 172,
+   "testa": [
+    "src/lib/tributario/shared-logic.ts"
+   ],
+   "casos": 7
+  },
+  {
+   "arquivo": "src/lib/tributario/__tests__/serie-comparativa.test.ts",
+   "tipo": "unit",
+   "linhas": 209,
+   "testa": [
+    "src/lib/tributario/obrigacoes/index.ts"
+   ],
+   "casos": 9
+  },
+  {
+   "arquivo": "src/lib/tributario/__tests__/simular-presumido.test.ts",
+   "tipo": "unit",
+   "linhas": 72,
+   "testa": [
+    "src/lib/tributario/simular-presumido.ts"
+   ],
+   "casos": 8
+  },
+  {
+   "arquivo": "src/lib/tributario/__tests__/simular-real.test.ts",
+   "tipo": "unit",
+   "linhas": 88,
+   "testa": [
+    "src/lib/tributario/simular-real.ts"
+   ],
+   "casos": 13
+  },
+  {
+   "arquivo": "src/lib/tributario/__tests__/simular-simples.test.ts",
+   "tipo": "unit",
+   "linhas": 87,
+   "testa": [
+    "src/lib/tributario/simular-simples.ts"
+   ],
+   "casos": 6
+  },
+  {
+   "arquivo": "src/lib/tributario/__tests__/snapshot-normalizacao.test.ts",
+   "tipo": "unit",
+   "linhas": 187,
+   "testa": [
+    "src/lib/tributario/decidir-regime.ts",
+    "src/lib/tributario/historico-simulacao.ts",
+    "src/lib/tributario/types.ts"
+   ],
+   "casos": 11
+  },
+  {
+   "arquivo": "src/lib/tributario/__tests__/sublimite-iss-retido.test.ts",
+   "tipo": "unit",
+   "linhas": 109,
+   "testa": [
+    "src/lib/tributario/shared-logic.ts"
+   ],
+   "casos": 7
+  },
+  {
+   "arquivo": "src/lib/tributario/__tests__/validador-ncm-cst.test.ts",
+   "tipo": "unit",
+   "linhas": 54,
+   "testa": [
+    "src/lib/tributario/validador-ncm-cst.ts"
+   ],
+   "casos": 9
+  },
+  {
+   "arquivo": "src/lib/tributario/__tests__/versao.test.ts",
+   "tipo": "unit",
+   "linhas": 49,
+   "testa": [
+    "src/lib/tributario/versao.ts"
+   ],
+   "casos": 6
+  },
+  {
+   "arquivo": "src/lib/tributario/calculadora/__tests__/atividade-cnae.test.ts",
+   "tipo": "unit",
+   "linhas": 97,
+   "testa": [
+    "src/lib/tributario/calculadora/atividade-cnae.ts",
+    "src/lib/tributario/calculadora/lucro-presumido.ts",
+    "src/lib/tributario/calculadora/types.ts"
+   ],
+   "casos": 8
+  },
+  {
+   "arquivo": "src/lib/tributario/calculadora/__tests__/harness-cenarios.test.ts",
+   "tipo": "unit",
+   "linhas": 95,
+   "testa": [
+    "src/lib/tributario/calculadora/index.ts"
+   ],
+   "casos": 1
+  },
+  {
+   "arquivo": "src/lib/tributario/calculadora/__tests__/lucro-real.test.ts",
+   "tipo": "unit",
+   "linhas": 81,
+   "testa": [
+    "src/lib/tributario/calculadora/lucro-real.ts",
+    "src/lib/tributario/calculadora/types.ts"
+   ],
+   "casos": 10
+  },
+  {
+   "arquivo": "src/lib/tributario/calculadora/__tests__/presumido-atividade-servicos.test.ts",
+   "tipo": "unit",
+   "linhas": 121,
+   "testa": [
+    "src/lib/tributario/calculadora/lucro-presumido.ts",
+    "src/lib/tributario/calculadora/types.ts"
+   ],
+   "casos": 5
+  },
+  {
+   "arquivo": "src/lib/tributario/calculadora/__tests__/regimes.test.ts",
+   "tipo": "unit",
+   "linhas": 114,
+   "testa": [
+    "src/lib/tributario/calculadora/lucro-presumido.ts",
+    "src/lib/tributario/calculadora/reforma-tributaria.ts",
+    "src/lib/tributario/calculadora/simples-nacional.ts"
+   ],
+   "casos": 12
+  },
+  {
+   "arquivo": "src/lib/tributario/elisao/__tests__/detectar-jcp.test.ts",
+   "tipo": "unit",
+   "linhas": 194,
+   "testa": [
+    "src/lib/tributario/elisao/detectar-jcp.ts",
+    "src/lib/tributario/elisao/types.ts"
+   ],
+   "casos": 18
+  },
+  {
+   "arquivo": "src/lib/tributario/elisao/__tests__/novas-estrategias.test.ts",
+   "tipo": "unit",
+   "linhas": 169,
+   "testa": [
+    "src/lib/tributario/elisao/detectar-deliberacao-lucros.ts",
+    "src/lib/tributario/elisao/detectar-depreciacao-acelerada.ts",
+    "src/lib/tributario/elisao/detectar-recuperacao-pis-cofins.ts",
+    "src/lib/tributario/elisao/detectar-sudene-sudam.ts",
+    "src/lib/tributario/elisao/orquestrador-elisao.ts",
+    "src/lib/tributario/elisao/types.ts"
+   ],
+   "casos": 17
+  },
+  {
+   "arquivo": "src/lib/tributario/elisao/__tests__/orquestrador-elisao.e2e.test.ts",
+   "tipo": "e2e",
+   "linhas": 188,
+   "testa": [
+    "src/lib/tributario/elisao/orquestrador-elisao.ts",
+    "src/lib/tributario/elisao/types.ts"
+   ],
+   "casos": 15
+  },
+  {
+   "arquivo": "src/lib/tributario/elisao/__tests__/orquestrador-elisao.test.ts",
+   "tipo": "unit",
+   "linhas": 44,
+   "testa": [
+    "src/lib/tributario/elisao/orquestrador-elisao.ts",
+    "src/lib/tributario/elisao/types.ts"
+   ],
+   "casos": 2
+  },
+  {
+   "arquivo": "src/pages/__tests__/admin-telemetria-logica.test.ts",
+   "tipo": "unit",
+   "linhas": 331,
+   "testa": [],
+   "casos": 43
+  },
+  {
+   "arquivo": "src/pages/__tests__/admin-telemetria-test-utils.ts",
+   "tipo": "unit",
+   "linhas": 102,
+   "testa": [],
+   "casos": 0
+  },
+  {
+   "arquivo": "src/pages/__tests__/AdminTelemetria.test.tsx",
+   "tipo": "unit",
+   "linhas": 356,
+   "testa": [],
+   "casos": 62
+  },
+  {
+   "arquivo": "src/pages/AsaasQueueHistoryDialog.test.ts",
+   "tipo": "unit",
+   "linhas": 14,
+   "testa": [
+    "src/pages/asaasQueueHistory.helpers.ts"
+   ],
+   "casos": 2
+  },
+  {
+   "arquivo": "src/pages/auth/__tests__/CorporateOnboarding.test.tsx",
+   "tipo": "unit",
+   "linhas": 326,
+   "testa": [
+    "src/pages/auth/CorporateOnboarding.tsx"
+   ],
+   "casos": 6
+  },
+  {
+   "arquivo": "src/pages/auth/__tests__/CorporateOnboardingAudit.test.tsx",
+   "tipo": "unit",
+   "linhas": 338,
+   "testa": [
+    "src/pages/auth/CorporateOnboarding.tsx"
+   ],
+   "casos": 7
+  },
+  {
+   "arquivo": "src/pages/auth/__tests__/CorporateOnboardingCountdown.test.tsx",
+   "tipo": "unit",
+   "linhas": 296,
+   "testa": [
+    "src/pages/auth/CorporateOnboarding.tsx"
+   ],
+   "casos": 7
+  },
+  {
+   "arquivo": "src/pages/auth/__tests__/CorporateOnboardingUi.test.tsx",
+   "tipo": "unit",
+   "linhas": 296,
+   "testa": [
+    "src/pages/auth/CorporateOnboarding.tsx"
+   ],
+   "casos": 8
+  },
+  {
+   "arquivo": "src/pages/tributario/consulta-rapida/__tests__/OfflineBadge.test.ts",
+   "tipo": "unit",
+   "linhas": 36,
+   "testa": [
+    "src/pages/tributario/consulta-rapida/offlineMeta.ts"
+   ],
+   "casos": 5
+  },
+  {
+   "arquivo": "src/pages/tributario/consulta-rapida/__tests__/shared.test.ts",
+   "tipo": "unit",
+   "linhas": 33,
+   "testa": [
+    "src/pages/tributario/consulta-rapida/format.ts",
+    "src/pages/tributario/consulta-rapida/shared.tsx"
+   ],
+   "casos": 5
+  },
+  {
+   "arquivo": "src/test/a11y/critical-pages.test.tsx",
+   "tipo": "unit",
+   "linhas": 49,
+   "testa": [
+    "src/components/accessibility/SkipLinks.tsx",
+    "src/components/ui/button.tsx",
+    "src/components/ui/input.tsx",
+    "src/components/ui/label.tsx"
+   ],
+   "casos": 3
+  },
+  {
+   "arquivo": "src/test/a11y/indices-tab.test.tsx",
+   "tipo": "unit",
+   "linhas": 57,
+   "testa": [
+    "src/components/contabilidade/indices/IndicesGrid.tsx",
+    "src/components/contabilidade/indices/IndicesToolbar.tsx",
+    "src/lib/contabil/indices.ts"
+   ],
+   "casos": 2
+  },
+  {
+   "arquivo": "src/test/scenarios/__tests__/faults.spec.ts",
+   "tipo": "unit",
+   "linhas": 41,
+   "testa": [],
+   "casos": 5
+  },
+  {
+   "arquivo": "src/test/scenarios/__tests__/indices-simulation.spec.ts",
+   "tipo": "unit",
+   "linhas": 177,
+   "testa": [
+    "src/lib/contabil/indices.ts"
+   ],
+   "casos": 5
+  },
+  {
+   "arquivo": "src/test/scenarios/__tests__/invariants.spec.ts",
+   "tipo": "unit",
+   "linhas": 89,
+   "testa": [],
+   "casos": 8
+  },
+  {
+   "arquivo": "src/test/scenarios/__tests__/nfe-puxador-faults.spec.ts",
+   "tipo": "unit",
+   "linhas": 48,
+   "testa": [],
+   "casos": 2
+  },
+  {
+   "arquivo": "src/test/scenarios/__tests__/scenarios.spec.ts",
+   "tipo": "unit",
+   "linhas": 25,
+   "testa": [],
+   "casos": 1
+  },
+  {
+   "arquivo": "src/test/scenarios/faults.ts",
+   "tipo": "unit",
+   "linhas": 61,
+   "testa": [],
+   "casos": 0
+  },
+  {
+   "arquivo": "src/test/scenarios/fixtures/anomalias.ts",
+   "tipo": "unit",
+   "linhas": 26,
+   "testa": [],
+   "casos": 0
+  },
+  {
+   "arquivo": "src/test/scenarios/fixtures/cobranca.ts",
+   "tipo": "unit",
+   "linhas": 35,
+   "testa": [],
+   "casos": 0
+  },
+  {
+   "arquivo": "src/test/scenarios/fixtures/conciliacao.ts",
+   "tipo": "unit",
+   "linhas": 45,
+   "testa": [],
+   "casos": 0
+  },
+  {
+   "arquivo": "src/test/scenarios/fixtures/nfe.ts",
+   "tipo": "unit",
+   "linhas": 94,
+   "testa": [],
+   "casos": 0
+  },
+  {
+   "arquivo": "src/test/scenarios/fixtures/webhooks.ts",
+   "tipo": "unit",
+   "linhas": 45,
+   "testa": [],
+   "casos": 0
+  },
+  {
+   "arquivo": "src/test/scenarios/generator.ts",
+   "tipo": "unit",
+   "linhas": 71,
+   "testa": [],
+   "casos": 0
+  },
+  {
+   "arquivo": "src/test/scenarios/invariants.ts",
+   "tipo": "unit",
+   "linhas": 369,
+   "testa": [],
+   "casos": 1
+  },
+  {
+   "arquivo": "src/test/scenarios/report.ts",
+   "tipo": "unit",
+   "linhas": 103,
+   "testa": [],
+   "casos": 0
+  },
+  {
+   "arquivo": "src/test/scenarios/rng.ts",
+   "tipo": "unit",
+   "linhas": 36,
+   "testa": [],
+   "casos": 0
+  },
+  {
+   "arquivo": "src/test/scenarios/runner.ts",
+   "tipo": "unit",
+   "linhas": 457,
+   "testa": [],
+   "casos": 0
+  },
+  {
+   "arquivo": "src/test/scenarios/types.ts",
+   "tipo": "unit",
+   "linhas": 141,
+   "testa": [],
+   "casos": 0
+  },
+  {
+   "arquivo": "src/test/setup.ts",
+   "tipo": "unit",
+   "linhas": 89,
+   "testa": [],
+   "casos": 0
+  },
+  {
+   "arquivo": "src/test/utils/source-drift.ts",
+   "tipo": "unit",
+   "linhas": 68,
+   "testa": [],
+   "casos": 0
+  },
+  {
+   "arquivo": "supabase/functions/_shared/sefaz/__mocks__/soap-mock_test.ts",
+   "tipo": "unit",
+   "linhas": 170,
+   "testa": [
+    "supabase/functions/_shared/sefaz/gunzip.ts"
+   ],
+   "casos": 9
+  },
+  {
+   "arquivo": "supabase/functions/_shared/sefaz/__mocks__/soap-mock.ts",
+   "tipo": "unit",
+   "linhas": 311,
+   "testa": [
+    "supabase/functions/_shared/sefaz/gunzip.ts"
+   ],
+   "casos": 0
+  },
+  {
+   "arquivo": "supabase/functions/_shared/sefaz/__tests__/manifestacao_test.ts",
+   "tipo": "unit",
+   "linhas": 97,
+   "testa": [
+    "supabase/functions/_shared/sefaz/manifestacao.ts"
+   ],
+   "casos": 6
+  },
+  {
+   "arquivo": "supabase/functions/api-keys-manage/index.test.ts",
+   "tipo": "unit",
+   "linhas": 144,
+   "testa": [
+    "supabase/functions/api-keys-manage/index.ts"
+   ],
+   "casos": 8
+  },
+  {
+   "arquivo": "supabase/functions/asaas-proxy/credit-risk.test.ts",
+   "tipo": "unit",
+   "linhas": 23,
+   "testa": [
+    "supabase/functions/asaas-proxy/credit-risk.ts"
+   ],
+   "casos": 3
+  },
+  {
+   "arquivo": "supabase/functions/asaas-proxy/index.test.ts",
+   "tipo": "unit",
+   "linhas": 133,
+   "testa": [
+    "supabase/functions/asaas-proxy/index.ts"
+   ],
+   "casos": 3
+  },
+  {
+   "arquivo": "supabase/functions/asaas-webhook/index.test.ts",
+   "tipo": "unit",
+   "linhas": 78,
+   "testa": [
+    "supabase/functions/asaas-webhook/index.ts"
+   ],
+   "casos": 2
+  },
+  {
+   "arquivo": "supabase/functions/bitrix24-webhook/index.test.ts",
+   "tipo": "unit",
+   "linhas": 80,
+   "testa": [
+    "supabase/functions/bitrix24-webhook/index.ts"
+   ],
+   "casos": 2
+  },
+  {
+   "arquivo": "supabase/functions/bling-webhook/index.test.ts",
+   "tipo": "unit",
+   "linhas": 274,
+   "testa": [
+    "supabase/functions/bling-webhook/index.ts"
+   ],
+   "casos": 8
+  },
+  {
+   "arquivo": "supabase/functions/ci-security-gate-log/index.test.ts",
+   "tipo": "unit",
+   "linhas": 129,
+   "testa": [
+    "supabase/functions/ci-security-gate-log/index.ts"
+   ],
+   "casos": 5
+  },
+  {
+   "arquivo": "supabase/functions/consulta-tributaria/index.test.ts",
+   "tipo": "unit",
+   "linhas": 111,
+   "testa": [
+    "supabase/functions/consulta-tributaria/helpers.ts"
+   ],
+   "casos": 12
+  },
+  {
+   "arquivo": "supabase/functions/convidar-usuario/index.test.ts",
+   "tipo": "unit",
+   "linhas": 178,
+   "testa": [
+    "supabase/functions/convidar-usuario/index.ts"
+   ],
+   "casos": 10
+  },
+  {
+   "arquivo": "supabase/functions/enviar-alerta-email/index.test.ts",
+   "tipo": "unit",
+   "linhas": 82,
+   "testa": [
+    "supabase/functions/enviar-alerta-email/index.ts"
+   ],
+   "casos": 3
+  },
+  {
+   "arquivo": "supabase/functions/executar-analise-preditiva/index.test.ts",
+   "tipo": "unit",
+   "linhas": 82,
+   "testa": [
+    "supabase/functions/executar-analise-preditiva/index.ts"
+   ],
+   "casos": 3
+  },
+  {
+   "arquivo": "supabase/functions/executar-regua-cobranca/domain.test.ts",
+   "tipo": "unit",
+   "linhas": 22,
+   "testa": [
+    "supabase/functions/executar-regua-cobranca/domain.ts"
+   ],
+   "casos": 3
+  },
+  {
+   "arquivo": "supabase/functions/exportar-sped-contribuicoes/__fixtures__/efd-contribuicoes-fixture.ts",
+   "tipo": "unit",
+   "linhas": 38,
+   "testa": [
+    "supabase/functions/exportar-sped-contribuicoes/layout.ts"
+   ],
+   "casos": 0
+  },
+  {
+   "arquivo": "supabase/functions/gerar-alertas-tributarios/index.test.ts",
+   "tipo": "unit",
+   "linhas": 82,
+   "testa": [
+    "supabase/functions/gerar-alertas-tributarios/index.ts"
+   ],
+   "casos": 3
+  },
+  {
+   "arquivo": "supabase/functions/gerar-sped-ecd/__fixtures__/ecd-fixture.ts",
+   "tipo": "unit",
+   "linhas": 114,
+   "testa": [
+    "supabase/functions/gerar-sped-ecd/layout.ts"
+   ],
+   "casos": 0
+  },
+  {
+   "arquivo": "supabase/functions/gerar-sped-ecf/__fixtures__/ecf-fixture.ts",
+   "tipo": "unit",
+   "linhas": 112,
+   "testa": [
+    "supabase/functions/gerar-sped-ecf/layout.ts"
+   ],
+   "casos": 0
+  },
+  {
+   "arquivo": "supabase/functions/n8n-callback/index.test.ts",
+   "tipo": "unit",
+   "linhas": 128,
+   "testa": [
+    "supabase/functions/n8n-callback/index.ts"
+   ],
+   "casos": 5
+  },
+  {
+   "arquivo": "supabase/functions/notify-performance-alert/index.test.ts",
+   "tipo": "unit",
+   "linhas": 151,
+   "testa": [
+    "supabase/functions/notify-performance-alert/index.ts"
+   ],
+   "casos": 5
+  },
+  {
+   "arquivo": "supabase/functions/sefaz-dfe-puxar/__tests__/integration_test.ts",
+   "tipo": "unit",
+   "linhas": 272,
+   "testa": [
+    "supabase/functions/_shared/sefaz/pfx.ts",
+    "supabase/functions/sefaz-dfe-puxar/index.ts"
+   ],
+   "casos": 4
+  },
+  {
+   "arquivo": "supabase/functions/sefaz-dfe-puxar/__tests__/parser_test.ts",
+   "tipo": "unit",
+   "linhas": 35,
+   "testa": [
+    "supabase/functions/_shared/sefaz/parser.ts"
+   ],
+   "casos": 3
+  },
+  {
+   "arquivo": "supabase/functions/sefaz-dfe-puxar/__tests__/puller_test.ts",
+   "tipo": "unit",
+   "linhas": 96,
+   "testa": [
+    "supabase/functions/_shared/sefaz/gunzip.ts",
+    "supabase/functions/sefaz-dfe-puxar/index.ts"
+   ],
+   "casos": 2
+  },
+  {
+   "arquivo": "supabase/functions/sefaz-dfe-puxar/__tests__/soap_test.ts",
+   "tipo": "unit",
+   "linhas": 48,
+   "testa": [
+    "supabase/functions/_shared/sefaz/soap.ts"
+   ],
+   "casos": 4
+  },
+  {
+   "arquivo": "supabase/functions/sefaz-dfe-puxar/__tests__/telemetry_concurrency_test.ts",
+   "tipo": "unit",
+   "linhas": 370,
+   "testa": [
+    "supabase/functions/_shared/sefaz/pfx.ts",
+    "supabase/functions/sefaz-dfe-puxar/index.ts"
+   ],
+   "casos": 5
+  },
+  {
+   "arquivo": "supabase/functions/sefaz-manifestar/__tests__/payload_test.ts",
+   "tipo": "unit",
+   "linhas": 353,
+   "testa": [
+    "supabase/functions/_shared/sefaz/manifestacao.ts",
+    "supabase/functions/sefaz-manifestar/index.ts"
+   ],
+   "casos": 9
+  },
+  {
+   "arquivo": "supabase/functions/send-push-notification/index.test.ts",
+   "tipo": "unit",
+   "linhas": 62,
+   "testa": [
+    "supabase/functions/send-push-notification/index.ts"
+   ],
+   "casos": 2
+  },
+  {
+   "arquivo": "supabase/functions/sso-callback/build-profile-sync-delta.test.ts",
+   "tipo": "unit",
+   "linhas": 144,
+   "testa": [
+    "supabase/functions/sso-callback/profile-sync-delta.ts"
+   ],
+   "casos": 10
+  },
+  {
+   "arquivo": "supabase/functions/sso-callback/claims.test.ts",
+   "tipo": "unit",
+   "linhas": 257,
+   "testa": [
+    "supabase/functions/sso-callback/claims.ts"
+   ],
+   "casos": 31
+  },
+  {
+   "arquivo": "supabase/functions/sso-test-login/index.test.ts",
+   "tipo": "unit",
+   "linhas": 258,
+   "testa": [],
+   "casos": 4
+  },
+  {
+   "arquivo": "supabase/functions/sso-test-login/pipeline.test.ts",
+   "tipo": "unit",
+   "linhas": 333,
+   "testa": [
+    "supabase/functions/sso-test-login/mocks.ts",
+    "supabase/functions/sso-test-login/pipeline.ts"
+   ],
+   "casos": 14
+  },
+  {
+   "arquivo": "supabase/functions/whatsapp-webhook/index.test.ts",
+   "tipo": "unit",
+   "linhas": 80,
+   "testa": [
+    "supabase/functions/whatsapp-webhook/index.ts"
+   ],
+   "casos": 2
+  },
+  {
+   "arquivo": "supabase/tests/test_harness_v2.js",
+   "tipo": "unit",
+   "linhas": 797,
+   "testa": [],
+   "casos": 0
+  },
+  {
+   "arquivo": "supabase/tests/test_harness.js",
+   "tipo": "unit",
+   "linhas": 454,
+   "testa": [],
+   "casos": 0
+  }
+ ],
+ "sql": [
+  "supabase/tests/sql/catalogos_tributarios.test.sql",
+  "supabase/tests/sql/infra.test.sql",
+  "supabase/tests/sql/integrity_cycle.test.sql",
+  "supabase/tests/sql/lint_function_repairs.test.sql",
+  "supabase/tests/sql/overloads.test.sql",
+  "supabase/tests/sql/rls_multi_empresa.sql"
+ ],
+ "cobertura_por_arquivo": {
+  "eslint-rules/no-floating-supabase-write.js": 1,
+  "scripts/security/test-canonical-db-gates.mjs": 1,
+  "scripts/security/test-rpc-runtime.ts": 1,
+  "src/components/accessibility/SkipLinks.tsx": 1,
+  "src/components/admin/anomalias-review-queue/useReviewQueue.ts": 1,
+  "src/components/admin/telemetry/IntegrityAlertsPanel.tsx": 1,
+  "src/components/admin/telemetry/RetentionPoliciesPanel.tsx": 1,
+  "src/components/admin/telemetry/TelemetryCharts.tsx": 1,
+  "src/components/admin/telemetry/performance-alerts-deeplink.ts": 1,
+  "src/components/auth/ProtectedRoute.tsx": 1,
+  "src/components/cobranca/CustomerDeepScore.tsx": 1,
+  "src/components/cobranca/MetricasPorCanal.tsx": 1,
+  "src/components/cobranca/ReguaCobrancaConfig.tsx": 1,
+  "src/components/command-palette/commandPaletteManagement.ts": 1,
+  "src/components/common/StartupDiagnostic.tsx": 1,
+  "src/components/contabilidade/ValidacoesPreSpedDialog.tsx": 1,
+  "src/components/contabilidade/indices/IndicesGrid.tsx": 1,
+  "src/components/contabilidade/indices/IndicesToolbar.tsx": 1,
+  "src/components/contas-receber/AplicarDescontoDialog.tsx": 1,
+  "src/components/contas-receber/ContasReceberFilters.tsx": 1,
+  "src/components/contas-receber/ContasReceberKPIs.tsx": 1,
+  "src/components/contas-receber/ContasReceberKanban.tsx": 1,
+  "src/components/contas-receber/ContasReceberTableRow.tsx": 2,
+  "src/components/contas-receber/EnviarCobrancaDialog.tsx": 1,
+  "src/components/empresas/EmpresaCardView.tsx": 1,
+  "src/components/financeiro/AnexoList.tsx": 1,
+  "src/components/layout/PageHeader.tsx": 1,
+  "src/components/layout/sidebar/sidebarNavState.ts": 1,
+  "src/components/layout/transitions/presets.ts": 1,
+  "src/components/layout/transitions/types.ts": 1,
+  "src/components/navigation/BackButton.tsx": 1,
+  "src/components/reforma-tributaria/AnimatedCounter.tsx": 1,
+  "src/components/reforma-tributaria/EmptyStateTributario.tsx": 1,
+  "src/components/reforma-tributaria/GlossarioTooltip.tsx": 1,
+  "src/components/reforma-tributaria/HeroKPIs.tsx": 1,
+  "src/components/reforma-tributaria/KPIComparativo.tsx": 1,
+  "src/components/reforma-tributaria/NavigationTributaria.tsx": 1,
+  "src/components/ui/alert.tsx": 1,
+  "src/components/ui/badge.tsx": 1,
+  "src/components/ui/button.tsx": 2,
+  "src/components/ui/card.tsx": 1,
+  "src/components/ui/input.tsx": 2,
+  "src/components/ui/label.tsx": 1,
+  "src/components/ui/table.tsx": 1,
+  "src/components/ui/tooltip.tsx": 1,
+  "src/components/usuarios/ConviteUsuarioDialog.tsx": 1,
+  "src/contexts/EmpresaScopeContext.tsx": 1,
+  "src/contexts/useEmpresaScope.ts": 1,
+  "src/hooks/anomaliaPreferencesValidation.ts": 1,
+  "src/hooks/conciliacaoPage.types.ts": 1,
+  "src/hooks/expert-actions/financial-actions.ts": 2,
+  "src/hooks/financial/useContasPagar.ts": 1,
+  "src/hooks/financial/useContasReceber.ts": 1,
+  "src/hooks/financial/views.schemas.ts": 1,
+  "src/hooks/financial/views.types.ts": 1,
+  "src/hooks/savedFilterDedup.ts": 1,
+  "src/hooks/savedFiltersValidation.ts": 1,
+  "src/hooks/use-toast.ts": 1,
+  "src/hooks/useAcordosParcelamento.ts": 1,
+  "src/hooks/useAlertasPreditivos.ts": 1,
+  "src/hooks/useAlertasTributariosCount.ts": 1,
+  "src/hooks/useAnomaliaPreferences.ts": 1,
+  "src/hooks/useApiKeys.ts": 1,
+  "src/hooks/useAprovacoes.ts": 1,
+  "src/hooks/useBoletos.ts": 1,
+  "src/hooks/useBulkActions.ts": 1,
+  "src/hooks/useCashbackSimulador.ts": 1,
+  "src/hooks/useCategorias.ts": 1,
+  "src/hooks/useCentrosCusto.ts": 1,
+  "src/hooks/useCertificadosDigitais.ts": 1,
+  "src/hooks/useConciliacao.ts": 1,
+  "src/hooks/useConciliacaoIA.ts": 1,
+  "src/hooks/useConciliacaoPage.ts": 3,
+  "src/hooks/useConciliacaoPageState.ts": 1,
+  "src/hooks/useConsultaTributaria.ts": 1,
+  "src/hooks/useContratos.ts": 1,
+  "src/hooks/useDashboardMetrics.ts": 1,
+  "src/hooks/useFluxoCaixa.ts": 1,
+  "src/hooks/useGlobalFilterSync.ts": 1,
+  "src/hooks/useImportacaoXMLNFe.ts": 1,
+  "src/hooks/useIndicesContabeis.ts": 1,
+  "src/hooks/useKeyboardNavigation.ts": 1,
+  "src/hooks/useKeyboardShortcuts.ts": 1,
+  "src/hooks/useLancamentosContabeis.ts": 1,
+  "src/hooks/useNfeVinculo.ts": 1,
+  "src/hooks/useOrganizacoes.ts": 1,
+  "src/hooks/usePerDcomp.ts": 1,
+  "src/hooks/usePlanoContas.ts": 1,
+  "src/hooks/useQueuedMessage.ts": 1,
+  "src/hooks/useRegrasConciliacao.ts": 1,
+  "src/hooks/useRetencoesFonte.ts": 1,
+  "src/hooks/useSelectiveEmpresaInvalidation.ts": 1,
+  "src/hooks/useSimulacaoRegimes.ts": 1,
+  "src/hooks/useSsoDomainResolver.ts": 1,
+  "src/hooks/useUrlTab.ts": 1,
+  "src/hooks/useUserEmpresas.ts": 1,
+  "src/hooks/useWebAuthn.ts": 1,
+  "src/integrations/supabase/client.ts": 2,
+  "src/lib/adaptive-chunk.ts": 1,
+  "src/lib/anomalia-routes.ts": 1,
+  "src/lib/arquitetura/analisador-imports.ts": 2,
+  "src/lib/arquitetura/escopo-empresa.ts": 1,
+  "src/lib/arquitetura/grafo-observado.json": 1,
+  "src/lib/arquitetura/modulos.ts": 2,
+  "src/lib/audit-diff.ts": 1,
+  "src/lib/audit-priority.ts": 1,
+  "src/lib/barcode-parser.ts": 1,
+  "src/lib/brazilian-validators.ts": 2,
+  "src/lib/cashflow-scenarios.ts": 1,
+  "src/lib/cfc-validator.ts": 1,
+  "src/lib/collection-engine.ts": 1,
+  "src/lib/compras/pedidos.ts": 1,
+  "src/lib/concurrency-limiter.ts": 1,
+  "src/lib/contabil/balancete-utils.ts": 1,
+  "src/lib/contabil/indices.ts": 3,
+  "src/lib/contabil/termos-livro.ts": 1,
+  "src/lib/correlation-id.ts": 1,
+  "src/lib/csv-importer.ts": 1,
+  "src/lib/currency.ts": 1,
+  "src/lib/edge-function-error.ts": 1,
+  "src/lib/error-tracking.ts": 1,
+  "src/lib/filterHydrationTelemetry.ts": 1,
+  "src/lib/format-filter-value.ts": 1,
+  "src/lib/formatters.ts": 1,
+  "src/lib/import-checkpoint.ts": 1,
+  "src/lib/ip-mask.ts": 1,
+  "src/lib/lancamentos-csv-importer.ts": 1,
+  "src/lib/magic-bytes.ts": 1,
+  "src/lib/masks.ts": 1,
+  "src/lib/navigation-intent.ts": 1,
+  "src/lib/navigation.ts": 3,
+  "src/lib/offline/fiscal-cache.ts": 1,
+  "src/lib/ofx-parser.ts": 6,
+  "src/lib/ofx-parser/utils.ts": 1,
+  "src/lib/optimistic-lock.ts": 1,
+  "src/lib/organizacoes/convites.ts": 1,
+  "src/lib/pdf-generator/conciliacao.ts": 1,
+  "src/lib/plano-contas-csv-importer.ts": 1,
+  "src/lib/queryClient.ts": 1,
+  "src/lib/reforma-tributaria-calculator.ts": 1,
+  "src/lib/secure-random.ts": 1,
+  "src/lib/sefaz-contingency/state.ts": 1,
+  "src/lib/sefaz-contingency/storage.ts": 1,
+  "src/lib/sefaz-event-logger.ts": 1,
+  "src/lib/sefaz-rejection-monitor.ts": 1,
+  "src/lib/sefaz-simulator.ts": 1,
+  "src/lib/sharedFiltersExport.ts": 1,
+  "src/lib/sped-generator.ts": 2,
+  "src/lib/sso-error-messages.ts": 1,
+  "src/lib/sso-slo-state.ts": 1,
+  "src/lib/sso/consistency.ts": 1,
+  "src/lib/sso/sandbox-bulk-aggregator.ts": 1,
+  "src/lib/sso/sandbox-bulk-runner.ts": 3,
+  "src/lib/sso/sandbox-csv.ts": 1,
+  "src/lib/storage-path.ts": 1,
+  "src/lib/supabase-write.ts": 1,
+  "src/lib/telemetry.ts": 1,
+  "src/lib/transaction-matcher.ts": 5,
+  "src/lib/transaction-matcher/converters.ts": 1,
+  "src/lib/tributario/aliquotas-simples.ts": 8,
+  "src/lib/tributario/calculadora/atividade-cnae.ts": 1,
+  "src/lib/tributario/calculadora/index.ts": 1,
+  "src/lib/tributario/calculadora/lucro-presumido.ts": 5,
+  "src/lib/tributario/calculadora/lucro-real.ts": 2,
+  "src/lib/tributario/calculadora/reforma-tributaria.ts": 1,
+  "src/lib/tributario/calculadora/simples-nacional.ts": 1,
+  "src/lib/tributario/calculadora/types.ts": 3,
+  "src/lib/tributario/catalogos/alertas.ts": 3,
+  "src/lib/tributario/catalogos/coerencia-iss.ts": 1,
+  "src/lib/tributario/catalogos/coerencia-mva.ts": 1,
+  "src/lib/tributario/catalogos/coerencia-ncm.ts": 2,
+  "src/lib/tributario/catalogos/coerencia-ufs.ts": 1,
+  "src/lib/tributario/catalogos/coerencia.ts": 1,
+  "src/lib/tributario/catalogos/painel.ts": 2,
+  "src/lib/tributario/catalogos/rejeicoes-auditoria.ts": 2,
+  "src/lib/tributario/catalogos/repositorio.ts": 1,
+  "src/lib/tributario/catalogos/resumo-mva.ts": 1,
+  "src/lib/tributario/catalogos/saude.ts": 1,
+  "src/lib/tributario/catalogos/types.ts": 4,
+  "src/lib/tributario/darf/index.ts": 1,
+  "src/lib/tributario/darf/tabelas.ts": 1,
+  "src/lib/tributario/decidir-regime.ts": 4,
+  "src/lib/tributario/diagnostico-parametros.ts": 2,
+  "src/lib/tributario/elisao/detectar-deliberacao-lucros.ts": 1,
+  "src/lib/tributario/elisao/detectar-depreciacao-acelerada.ts": 1,
+  "src/lib/tributario/elisao/detectar-jcp.ts": 1,
+  "src/lib/tributario/elisao/detectar-recuperacao-pis-cofins.ts": 1,
+  "src/lib/tributario/elisao/detectar-sudene-sudam.ts": 1,
+  "src/lib/tributario/elisao/orquestrador-elisao.ts": 4,
+  "src/lib/tributario/elisao/types.ts": 5,
+  "src/lib/tributario/fator-r.ts": 3,
+  "src/lib/tributario/folha/fpas-terceiros.ts": 1,
+  "src/lib/tributario/folha/index.ts": 1,
+  "src/lib/tributario/historico-simulacao.ts": 3,
+  "src/lib/tributario/icms/index.ts": 1,
+  "src/lib/tributario/icms/overlay-mva.ts": 4,
+  "src/lib/tributario/icms/overlay.ts": 2,
+  "src/lib/tributario/icms/st.ts": 3,
+  "src/lib/tributario/icms/tabelas.ts": 8,
+  "src/lib/tributario/icms/types.ts": 3,
+  "src/lib/tributario/ipi-iss/index.ts": 1,
+  "src/lib/tributario/ipi-iss/overlay-iss.ts": 1,
+  "src/lib/tributario/ipi-iss/overlay-ncm.ts": 1,
+  "src/lib/tributario/ipi-iss/tabelas.ts": 3,
+  "src/lib/tributario/irpfm.ts": 1,
+  "src/lib/tributario/irpj-csll/index.ts": 1,
+  "src/lib/tributario/monofasico/calcular.ts": 1,
+  "src/lib/tributario/monofasico/classificar.ts": 2,
+  "src/lib/tributario/monofasico/index.ts": 1,
+  "src/lib/tributario/monofasico/overlay-monofasico.ts": 1,
+  "src/lib/tributario/obrigacoes/alertas.ts": 1,
+  "src/lib/tributario/obrigacoes/calendario.ts": 1,
+  "src/lib/tributario/obrigacoes/catalogo.ts": 1,
+  "src/lib/tributario/obrigacoes/comparativo.ts": 1,
+  "src/lib/tributario/obrigacoes/conformidade.ts": 4,
+  "src/lib/tributario/obrigacoes/digest.ts": 1,
+  "src/lib/tributario/obrigacoes/historico.ts": 3,
+  "src/lib/tributario/obrigacoes/index.ts": 3,
+  "src/lib/tributario/obrigacoes/types.ts": 2,
+  "src/lib/tributario/pf-vinculada.ts": 1,
+  "src/lib/tributario/pis-cofins/index.ts": 1,
+  "src/lib/tributario/projecao-reforma.ts": 2,
+  "src/lib/tributario/rbt12.ts": 3,
+  "src/lib/tributario/recomendar-empresa.ts": 1,
+  "src/lib/tributario/relatorio-pdf.ts": 1,
+  "src/lib/tributario/shared-logic.ts": 13,
+  "src/lib/tributario/simular-presumido.ts": 3,
+  "src/lib/tributario/simular-real.ts": 3,
+  "src/lib/tributario/simular-simples.ts": 4,
+  "src/lib/tributario/types.ts": 14,
+  "src/lib/tributario/validador-ncm-cst.ts": 1,
+  "src/lib/tributario/versao.ts": 1,
+  "src/lib/utils.ts": 1,
+  "src/lib/validators.ts": 1,
+  "src/pages/asaasQueueHistory.helpers.ts": 1,
+  "src/pages/auth/CorporateOnboarding.tsx": 4,
+  "src/pages/tributario/consulta-rapida/format.ts": 1,
+  "src/pages/tributario/consulta-rapida/offlineMeta.ts": 1,
+  "src/pages/tributario/consulta-rapida/shared.tsx": 1,
+  "src/types/reforma-tributaria.ts": 1,
+  "supabase/functions/_shared/obrigacoes/alertas.ts": 1,
+  "supabase/functions/_shared/obrigacoes/calendario.ts": 1,
+  "supabase/functions/_shared/obrigacoes/catalogo.ts": 1,
+  "supabase/functions/_shared/obrigacoes/conformidade.ts": 1,
+  "supabase/functions/_shared/sefaz/gunzip.ts": 3,
+  "supabase/functions/_shared/sefaz/manifestacao.ts": 2,
+  "supabase/functions/_shared/sefaz/parser.ts": 1,
+  "supabase/functions/_shared/sefaz/pfx.ts": 2,
+  "supabase/functions/_shared/sefaz/soap.ts": 1,
+  "supabase/functions/_shared/tributario-logic.ts": 1,
+  "supabase/functions/api-keys-manage/index.ts": 1,
+  "supabase/functions/asaas-proxy/credit-risk.ts": 1,
+  "supabase/functions/asaas-proxy/index.ts": 1,
+  "supabase/functions/asaas-webhook/index.ts": 1,
+  "supabase/functions/bitrix24-webhook/index.ts": 1,
+  "supabase/functions/bling-webhook/index.ts": 1,
+  "supabase/functions/ci-security-gate-log/index.ts": 1,
+  "supabase/functions/consulta-tributaria/helpers.ts": 1,
+  "supabase/functions/convidar-usuario/index.ts": 1,
+  "supabase/functions/enviar-alerta-email/index.ts": 1,
+  "supabase/functions/executar-analise-preditiva/index.ts": 1,
+  "supabase/functions/executar-regua-cobranca/domain.ts": 1,
+  "supabase/functions/exportar-sped-contribuicoes/layout.ts": 1,
+  "supabase/functions/gerar-alertas-tributarios/index.ts": 1,
+  "supabase/functions/gerar-sped-ecd/layout.ts": 1,
+  "supabase/functions/gerar-sped-ecf/layout.ts": 1,
+  "supabase/functions/n8n-callback/index.ts": 1,
+  "supabase/functions/notify-performance-alert/index.ts": 1,
+  "supabase/functions/sefaz-dfe-puxar/index.ts": 3,
+  "supabase/functions/sefaz-manifestar/index.ts": 1,
+  "supabase/functions/send-push-notification/index.ts": 1,
+  "supabase/functions/sso-callback/claims.ts": 1,
+  "supabase/functions/sso-callback/profile-sync-delta.ts": 1,
+  "supabase/functions/sso-test-login/mocks.ts": 1,
+  "supabase/functions/sso-test-login/pipeline.ts": 1,
+  "supabase/functions/whatsapp-webhook/index.ts": 1
+ },
+ "sem_teste": {
+  "telas": [
+   "src/pages/AdminEdgeHealth.tsx",
+   "src/pages/AdminSystemHealth.tsx",
+   "src/pages/AdminTelemetria.tsx",
+   "src/pages/Alertas.tsx",
+   "src/pages/Aprovacoes.tsx",
+   "src/pages/Asaas.tsx",
+   "src/pages/AssinaturaDigital.tsx",
+   "src/pages/AuditLogs.tsx",
+   "src/pages/Auth.tsx",
+   "src/pages/BI.tsx",
+   "src/pages/BenchmarkingSetorial.tsx",
+   "src/pages/Bitrix24.tsx",
+   "src/pages/Bling.tsx",
+   "src/pages/BloqueiosDuplicidade.tsx",
+   "src/pages/Boletos.tsx",
+   "src/pages/Categorias.tsx",
+   "src/pages/CentroCustos.tsx",
+   "src/pages/CentroPrivacidadeLGPD.tsx",
+   "src/pages/Clientes.tsx",
+   "src/pages/Cobrancas.tsx",
+   "src/pages/Compras.tsx",
+   "src/pages/ComprovanteOCR.tsx",
+   "src/pages/Conciliacao.tsx",
+   "src/pages/Configuracoes.tsx",
+   "src/pages/Contabilidade.tsx",
+   "src/pages/ContadorReadonly.tsx",
+   "src/pages/ContasBancarias.tsx",
+   "src/pages/ContasPagar.tsx",
+   "src/pages/ContasReceber.tsx",
+   "src/pages/Contratos.tsx",
+   "src/pages/DashboardEmpresa.tsx",
+   "src/pages/DashboardReceber.tsx",
+   "src/pages/Demonstrativos.tsx",
+   "src/pages/Empresas.tsx",
+   "src/pages/Expert.tsx",
+   "src/pages/Financeiro.tsx",
+   "src/pages/FluxoCaixa.tsx",
+   "src/pages/Fornecedores.tsx",
+   "src/pages/Index.tsx",
+   "src/pages/Integracoes.tsx",
+   "src/pages/InteligenciaOperacional.tsx",
+   "src/pages/MetasFinanceiras.tsx",
+   "src/pages/MeuPerfil.tsx",
+   "src/pages/Movimentacoes.tsx",
+   "src/pages/NotFound.tsx",
+   "src/pages/NotasFiscais.tsx",
+   "src/pages/OrcamentoEvento.tsx",
+   "src/pages/Orcamentos.tsx",
+   "src/pages/PagamentosRecorrentes.tsx",
+   "src/pages/PixHub.tsx",
+   "src/pages/ReformaTributaria.tsx",
+   "src/pages/Relatorios.tsx",
+   "src/pages/ResetPassword.tsx",
+   "src/pages/Seguranca.tsx",
+   "src/pages/SimuladorAntecipacao.tsx",
+   "src/pages/StatusPage.tsx",
+   "src/pages/StyleGuide.tsx",
+   "src/pages/Tesouraria.tsx",
+   "src/pages/ThemeDiagnostics.tsx",
+   "src/pages/Usuarios.tsx",
+   "src/pages/Vendedores.tsx",
+   "src/pages/admin/AdminBloatMonitor.tsx",
+   "src/pages/admin/AnomaliaDetalhe.tsx",
+   "src/pages/admin/ApiManagement.tsx",
+   "src/pages/admin/AuditSsoProfileSync.tsx",
+   "src/pages/admin/AuditoriaIA.tsx",
+   "src/pages/admin/ComplianceAuditoria.tsx",
+   "src/pages/admin/CustomFieldsAdmin.tsx",
+   "src/pages/admin/InsightsIA.tsx",
+   "src/pages/admin/SRECommandCenter.tsx",
+   "src/pages/admin/SSOAdmin.tsx",
+   "src/pages/admin/SSOJitEvents.tsx",
+   "src/pages/admin/ScimAudit.tsx",
+   "src/pages/admin/SharedFiltersAdmin.tsx",
+   "src/pages/admin/SsoEvents.tsx",
+   "src/pages/clientes/PortalTokens.tsx",
+   "src/pages/clientes/ScoringClientes.tsx",
+   "src/pages/configuracoes/FiltrosSalvos.tsx",
+   "src/pages/configuracoes/HistoricoNotificacoes.tsx",
+   "src/pages/configuracoes/MinhasPreferencias.tsx",
+   "src/pages/configuracoes/SinoNotificacoesFiltros.tsx",
+   "src/pages/design-system-debug.tsx",
+   "src/pages/dev/Especimes.tsx",
+   "src/pages/organizacoes/AceitarConvite.tsx",
+   "src/pages/organizacoes/Organizacoes.tsx",
+   "src/pages/tributario/ArquiteturaModular.tsx",
+   "src/pages/tributario/AuditoriaCompliance.tsx",
+   "src/pages/tributario/AuditoriaOverlay.tsx",
+   "src/pages/tributario/CalculadoraTributaria.tsx",
+   "src/pages/tributario/CashbackSimulador.tsx",
+   "src/pages/tributario/CatalogosFiscais.tsx",
+   "src/pages/tributario/CertificadosDigitais.tsx",
+   "src/pages/tributario/ComparativoConformidade.tsx",
+   "src/pages/tributario/ComparativoRegimes.tsx",
+   "src/pages/tributario/ConciliacaoTributaria.tsx",
+   "src/pages/tributario/DarfConsolidado.tsx",
+   "src/pages/tributario/DashboardTributario.tsx",
+   "src/pages/tributario/FechamentoMensal.tsx",
+   "src/pages/tributario/FolhaEncargos.tsx",
+   "src/pages/tributario/GlossarioTributario.tsx",
+   "src/pages/tributario/HistoricoFinanceiro.tsx",
+   "src/pages/tributario/IcmsStDifal.tsx",
+   "src/pages/tributario/ImportacaoXML.tsx",
+   "src/pages/tributario/IncentivosFiscais.tsx",
+   "src/pages/tributario/IpiIss.tsx",
+   "src/pages/tributario/IrpjCsllLucroReal.tsx",
+   "src/pages/tributario/Monofasico.tsx",
+   "src/pages/tributario/NfeRecebidas.tsx",
+   "src/pages/tributario/ObrigacoesAcessorias.tsx",
+   "src/pages/tributario/ObservabilidadeDigest.tsx",
+   "src/pages/tributario/OnboardingTributario.tsx",
+   "src/pages/tributario/OportunidadesElisao.tsx",
+   "src/pages/tributario/PerDcomp.tsx",
+   "src/pages/tributario/PfVinculada.tsx",
+   "src/pages/tributario/PisCofinsCreditos.tsx",
+   "src/pages/tributario/PreferenciasDigest.tsx",
+   "src/pages/tributario/ProjecaoReforma.tsx",
+   "src/pages/tributario/RecomendacaoExecutiva.tsx",
+   "src/pages/tributario/RelatoriosContabeis.tsx",
+   "src/pages/tributario/RetencoesFonte.tsx",
+   "src/pages/tributario/SefazObservabilidade.tsx",
+   "src/pages/tributario/SimulacaoRegimes.tsx",
+   "src/pages/tributario/SpedExport.tsx",
+   "src/pages/tributario/SplitPayment.tsx"
+  ],
+  "hooks": [
+   "scripts/ai-context/cenarios.mjs",
+   "src/components/admin/anomalia-preferences/useSaveAnomaliaPreferences.ts",
+   "src/components/admin/anomalias-review-queue/atalhos.ts",
+   "src/components/admin/anomalias-review-queue/conflito.ts",
+   "src/components/admin/anomalias-review-queue/retry.ts",
+   "src/components/admin/telemetry/weekly-trend/useWeeklyTrendData.ts",
+   "src/components/admin/useAnomaliasPanelDerivations.ts",
+   "src/components/compliance/verificar-integridade/useIntegridadeVerifier.ts",
+   "src/components/contabilidade/contabilizacao-automatica/useContabilizacaoMutations.ts",
+   "src/components/contabilidade/contabilizacao-automatica/useContabilizacaoQueries.ts",
+   "src/components/contabilidade/razao-diario/useRazaoDiarioData.ts",
+   "src/components/contabilidade/sped-contabil/useSpedContabilState.ts",
+   "src/components/contabilidade/sped-ecf-wizard/useSpedEcfWizardState.ts",
+   "src/components/layout/page-transition.constants.ts",
+   "src/components/layout/transitions/index.ts",
+   "src/components/layout/transitions/TransitionContext.ts",
+   "src/components/layout/transitions/useTransition.ts",
+   "src/components/navigation/unsaved-guard-context.ts",
+   "src/components/quick-create/QuickCreateModal.hooks.tsx",
+   "src/components/theme/ThemeContext.ts",
+   "src/components/ui/action-button.hooks.ts",
+   "src/components/ui/command.hooks.ts",
+   "src/components/ui/confirmation-dialog.hooks.tsx",
+   "src/components/ui/lazy-load.utils.tsx",
+   "src/components/ui/quick-date-filters.hooks.ts",
+   "src/components/ui/sortable-header.hooks.ts",
+   "src/components/wrappers/CelebrationActions.tsx",
+   "src/hooks/bling/useContatos.ts",
+   "src/hooks/bling/useEstoque.ts",
+   "src/hooks/bling/useFinanceiro.ts",
+   "src/hooks/bling/useLogistica.ts",
+   "src/hooks/bling/useNFe.ts",
+   "src/hooks/bling/useOAuth.ts",
+   "src/hooks/bling/usePedidos.ts",
+   "src/hooks/bling/useProdutos.ts",
+   "src/hooks/bling/useSyncLogs.ts",
+   "src/hooks/financial/useClientesFornecedores.ts",
+   "src/hooks/financial/useDashboardKPIs.ts",
+   "src/hooks/financial/useEmpresasConfig.ts",
+   "src/hooks/financial/useTotaisFinanceiros.ts",
+   "src/hooks/saved-filter-alerts/useEntitySavedFilterAlerts.ts",
+   "src/hooks/use-mobile.tsx",
+   "src/hooks/useAcoesRecomendadas.ts",
+   "src/hooks/useAlertas.ts",
+   "src/hooks/useAlertasTributarios.ts",
+   "src/hooks/useAnomaliaAuditHistory.ts",
+   "src/hooks/useAnomaliaDetalhe.ts",
+   "src/hooks/useAnomaliaDetectionRun.ts",
+   "src/hooks/useAnomaliasCriticasCount.ts",
+   "src/hooks/useAnomaliasDetectadas.ts",
+   "src/hooks/useAnomaliasReabertasIndex.ts",
+   "src/hooks/useAprovacoesPendentesCount.ts",
+   "src/hooks/useApuracoesTributarias.ts",
+   "src/hooks/useAsaas.ts",
+   "src/hooks/useAuditLog.ts",
+   "src/hooks/useAuditoriaCFC.ts",
+   "src/hooks/useAuditoriaCompliance.ts",
+   "src/hooks/useAuditoriaIA.ts",
+   "src/hooks/useAuditoriaLancamentos.ts",
+   "src/hooks/useAuth.tsx",
+   "src/hooks/useAuthValidation.ts",
+   "src/hooks/useBalancete.ts",
+   "src/hooks/useBankAccounts.ts",
+   "src/hooks/useBenchmarkSetorial.ts",
+   "src/hooks/useBitrix24.ts",
+   "src/hooks/useBling.ts",
+   "src/hooks/useBlingNFe.ts",
+   "src/hooks/useBudget.ts",
+   "src/hooks/useCalculadoraDadosReais.ts",
+   "src/hooks/useCatalogoIssMunicipal.ts",
+   "src/hooks/useCatalogosFiscais.ts",
+   "src/hooks/useCategorizacaoIA.ts",
+   "src/hooks/useCnaes.ts",
+   "src/hooks/useCnpjaLookup.ts",
+   "src/hooks/useCobrancas.ts",
+   "src/hooks/useComparativoConformidade.ts",
+   "src/hooks/useComparativoRegimes.ts",
+   "src/hooks/useComplianceKpis.ts",
+   "src/hooks/useConciliacaoAudit.ts",
+   "src/hooks/useConciliacaoIgnorarActions.ts",
+   "src/hooks/useConciliacaoRetroativa.ts",
+   "src/hooks/useConciliacaoTributaria.ts",
+   "src/hooks/useConfetti.ts",
+   "src/hooks/useConformidadeFiscal.ts",
+   "src/hooks/useConformidadeSnapshots.ts",
+   "src/hooks/useContasPagarLogic.ts",
+   "src/hooks/useContasReceberLogic.ts",
+   "src/hooks/useCountUp.ts",
+   "src/hooks/useCreditosTributarios.ts",
+   "src/hooks/useCustomFields.ts",
+   "src/hooks/useDashboardConfig.ts",
+   "src/hooks/useDashboardTributario.ts",
+   "src/hooks/useDebounce.ts",
+   "src/hooks/useDecidirRegimeServer.ts",
+   "src/hooks/useDemonstrativosContabeis.ts",
+   "src/hooks/useDeviceDetection.ts",
+   "src/hooks/useDigestEnviosLog.ts",
+   "src/hooks/useDigestPreferences.ts",
+   "src/hooks/useDivergenciasConciliacao.ts",
+   "src/hooks/useDRETributaria.ts",
+   "src/hooks/useEmpresas.ts",
+   "src/hooks/useEntregasObrigacoes.ts",
+   "src/hooks/useEvidenciasPack.ts",
+   "src/hooks/useExpertActions.ts",
+   "src/hooks/useExpertContext.ts",
+   "src/hooks/useExpertConversations.ts",
+   "src/hooks/useExportarSped.ts",
+   "src/hooks/useExtratoWebhooks.ts",
+   "src/hooks/useFechamentoTributario.ts",
+   "src/hooks/useFilterPresets.ts",
+   "src/hooks/useFinancialAlerts.tsx",
+   "src/hooks/useFinancialData.ts",
+   "src/hooks/useFinancialOperations.ts",
+   "src/hooks/useFluxoCaixaPage.ts",
+   "src/hooks/useFrontendErrorLogs.ts",
+   "src/hooks/useGerarEvidenciasStream.ts",
+   "src/hooks/useGlobalFinancialFilter.ts",
+   "src/hooks/useHealthScoreOperacional.ts",
+   "src/hooks/useHeatmapTributario.ts",
+   "src/hooks/useHighlightFromUrl.ts",
+   "src/hooks/useHistoricoBoletos.ts",
+   "src/hooks/useHistoricoConciliacaoIA.ts",
+   "src/hooks/useHistoricoFinanceiro.ts",
+   "src/hooks/useImportPlanoContas.ts",
+   "src/hooks/useInadimplenciaSegmentada.ts",
+   "src/hooks/useIncentivosFiscais.ts",
+   "src/hooks/useInsightsIA.ts",
+   "src/hooks/useInstallPrompt.ts",
+   "src/hooks/useInteligenciaOperacional.ts",
+   "src/hooks/useIpMaskPreference.ts",
+   "src/hooks/useIRPJCSLL.ts",
+   "src/hooks/useLastSsoProfileSync.ts",
+   "src/hooks/useLocalStorage.ts",
+   "src/hooks/useLocalStorageState.ts",
+   "src/hooks/useManagedFilters.ts",
+   "src/hooks/useManifestarNfe.ts",
+   "src/hooks/useMetasFinanceiras.ts",
+   "src/hooks/useMetricasAprendizadoIA.ts",
+   "src/hooks/useMFA.ts",
+   "src/hooks/useNegativacoes.ts",
+   "src/hooks/useNetworkStatus.ts",
+   "src/hooks/useNfeRecebidas.ts",
+   "src/hooks/useOnboardingProgress.ts",
+   "src/hooks/useOpenFinance.ts",
+   "src/hooks/useOperacoesTributaveis.ts",
+   "src/hooks/useOportunidadesElisao.ts",
+   "src/hooks/useOptimizedQueries.ts",
+   "src/hooks/useOverlayRejeicoesAuditoria.ts",
+   "src/hooks/usePagamentosRecorrentes.ts",
+   "src/hooks/usePdfTributario.ts",
+   "src/hooks/usePermissions.ts",
+   "src/hooks/usePixTemplates.ts",
+   "src/hooks/usePlanoContaHistory.ts",
+   "src/hooks/usePortalCliente.ts",
+   "src/hooks/usePrefetchRoutes.ts",
+   "src/hooks/usePrefetchRoutes.tsx",
+   "src/hooks/usePreValidacaoSped.ts",
+   "src/hooks/usePrevisaoTributaria.ts",
+   "src/hooks/useProcessarNFOCR.ts",
+   "src/hooks/useProfilesByIds.ts",
+   "src/hooks/useProtestos.ts",
+   "src/hooks/usePushNotifications.ts",
+   "src/hooks/useRateLimitLogs.ts",
+   "src/hooks/useRealtimeAlertas.ts",
+   "src/hooks/useRealtimeAnomalias.ts",
+   "src/hooks/useRealtimeAuditToasts.ts",
+   "src/hooks/useRecentItems.ts",
+   "src/hooks/useRefetchAnomaliasOnFocus.ts",
+   "src/hooks/useReformaTributaria.ts",
+   "src/hooks/useRegimesEspeciais.ts",
+   "src/hooks/useReguaCobranca.ts",
+   "src/hooks/useRelatorioAnual.ts",
+   "src/hooks/useRelatoriosAgendados.ts",
+   "src/hooks/useRelatoriosData.ts",
+   "src/hooks/useRelatoriosTributariosAgendados.ts",
+   "src/hooks/useResumosExecutivos.ts",
+   "src/hooks/useSavedFilterAlerts.ts",
+   "src/hooks/useSavedFilters.ts",
+   "src/hooks/useSavedFilterSubscriptions.ts",
+   "src/hooks/useScimChecklist.ts",
+   "src/hooks/useScimTokens.ts",
+   "src/hooks/useScoringClientes.ts",
+   "src/hooks/useSecurityAlerts.ts",
+   "src/hooks/useSefazObservability.ts",
+   "src/hooks/useSessions.ts",
+   "src/hooks/useSincronizarAnomaliaBitrix.ts",
+   "src/hooks/useSLOMetrics.ts",
+   "src/hooks/useSmartBack.ts",
+   "src/hooks/useSolicitacoesLGPD.ts",
+   "src/hooks/useSoundFeedback.ts",
+   "src/hooks/useSpedContabil.ts",
+   "src/hooks/useSpedEcfHistorico.ts",
+   "src/hooks/useSplitPayment.ts",
+   "src/hooks/useSSO.ts",
+   "src/hooks/useSSOConsistency.ts",
+   "src/hooks/useSSOJitEvents.ts",
+   "src/hooks/useSsoOnboardingAudit.ts",
+   "src/hooks/useSsoProfileSyncEvents.ts",
+   "src/hooks/useSSOSandboxRuns.ts",
+   "src/hooks/useStartupDiagnostic.ts",
+   "src/hooks/useSwipeBack.ts",
+   "src/hooks/useTableOptimization.ts",
+   "src/hooks/useTrilhaAuditoria.ts",
+   "src/hooks/useUserDemonstrativoPreferences.ts",
+   "src/hooks/useVendedores.ts",
+   "src/hooks/useVerificacaoIntegracoes.ts",
+   "src/hooks/useViews.ts",
+   "src/hooks/useVirtualRows.ts",
+   "src/hooks/useWebPushSubscription.ts",
+   "src/hooks/useWhatsAppCobrancaHistory.ts",
+   "src/hooks/useWhatsAppIA.ts",
+   "src/hooks/useWhatsAppUnreadCount.ts",
+   "src/hooks/useZodForm.ts",
+   "src/lib/haptic-feedback.ts",
+   "src/lib/persisted-ui-state.ts",
+   "src/lib/sound-feedback.ts",
+   "src/pages/admin/shared-filters-admin/useSharedFiltersAdmin.ts",
+   "src/pages/Auth.hooks.ts",
+   "src/pages/auth/CorporateOnboarding.hook.ts",
+   "src/pages/bloqueios-duplicidade/useBloqueiosData.ts",
+   "src/pages/configuracoes/filtros-salvos/useFiltrosSalvosDiagnostics.ts"
+  ],
+  "edges": [
+   "aceitar-convite",
+   "analise-fluxo-ia",
+   "analise-preditiva",
+   "analyze-document",
+   "benchmarking-setorial",
+   "bitrix24-sync",
+   "bling-proxy",
+   "calcular-health-score-operacional",
+   "calcular-slo-metrics-diario",
+   "calculo-iva",
+   "categorizar-despesa",
+   "cnpja-lookup",
+   "comparar-benchmark-setorial",
+   "compare-schemas",
+   "conciliacao-ia",
+   "conciliacao-proxy",
+   "contabilizar-evento",
+   "convidar-contador",
+   "copilot-global",
+   "copilot-tributario",
+   "detectar-anomalias-financeiras",
+   "digest-silenciamentos-erro",
+   "enviar-bitrix24-tributario",
+   "enviar-convite-organizacao",
+   "enviar-digest-conformidade",
+   "enviar-relatorios-tributarios-agendados",
+   "executar-fechamento-tributario",
+   "executar-relatorios",
+   "expert-agent",
+   "external-data",
+   "gerar-acoes-recomendadas",
+   "gerar-alertas",
+   "gerar-alertas-dispatcher",
+   "gerar-dre-tributaria",
+   "gerar-heatmap-tributario",
+   "gerar-pacote-evidencias",
+   "gerar-pdf-tributario",
+   "gerar-relatorio-anual",
+   "gerar-resumo-executivo-semanal",
+   "gerar-resumo-financeiro-diario",
+   "gerar-snapshots-conformidade",
+   "get-mapbox-token",
+   "get-vapid-key",
+   "health",
+   "insights-relatorio",
+   "log-sped-bitrix24",
+   "mcp-query",
+   "monitor-health",
+   "monitorar-erros-frontend",
+   "n8n-dispatch",
+   "nfe-upload-certificado",
+   "nfe-vinculo-proxy",
+   "notify-saved-filter",
+   "open-finance",
+   "overlay-rejeicoes-auditoria",
+   "prever-carga-tributaria",
+   "processar-fila-cobrancas",
+   "processar-nf-ocr",
+   "processar-solicitacao-lgpd",
+   "relatorio-diario-anomalias",
+   "scim-server",
+   "sefaz-dfe-dispatcher",
+   "send-device-alert",
+   "sincronizar-anomalia-bitrix24",
+   "sso-generate-metadata",
+   "sso-initiate",
+   "sso-logout",
+   "sso-validate-config",
+   "sync-profile-to-bitrix",
+   "upload-anexo",
+   "validar-token-contador",
+   "validate-ip-geo",
+   "verificar-conformidade-fiscal",
+   "webhook-replay",
+   "webhook-retry-worker",
+   "webhook-simulator",
+   "whatsapp-ai-analyzer",
+   "whatsapp-ia-proativo"
+  ],
+  "servicos": []
+ }
+}

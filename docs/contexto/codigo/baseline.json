@@ -1,0 +1,1317 @@
+{
+ "aviso": "GERADO AUTOMATICAMENTE por scripts/ai-context/gerar.mjs — não editar à mão; será sobrescrito.",
+ "format_version": 2,
+ "git": {
+  "commit": "794478effc87c0718867f47942a5afaaecdd41cb",
+  "branch": "main",
+  "data_commit": "2026-11-08T14:09:27-03:00",
+  "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
+  "ultimos_commits": [
+   {
+    "sha": "794478e",
+    "data": "2026-11-08",
+    "assunto": "feat(contexto): sistema autônomo de contexto do estado real para agentes de IA (#260)"
+   },
+   {
+    "sha": "d06af85",
+    "data": "2026-11-08",
+    "assunto": "fix: corrigir 26 bugs em scripts (ci, healthcheck, security, graphify, data) (#258)"
+   },
+   {
+    "sha": "dd48a93",
+    "data": "2026-11-07",
+    "assunto": "feat: [STEPS 46+47] monitor-health cron + painel DB_HEALTH.md (#240)"
+   },
+   {
+    "sha": "dc39f52",
+    "data": "2026-11-07",
+    "assunto": "fix: sentry.ts — host DSN, redação de dados e parseDsn seguro [substitui #246] (#248)"
+   },
+   {
+    "sha": "32a5e79",
+    "data": "2026-11-07",
+    "assunto": "infra: migra imports esm.sh para npm: pinados nas edge functions (#251)"
+   },
+   {
+    "sha": "6bedb92",
+    "data": "2026-11-06",
+    "assunto": "fix: atualiza lock graphifyy 0.9.97 com pyyaml (#249)"
+   },
+   {
+    "sha": "58f58a2",
+    "data": "2026-11-06",
+    "assunto": "docs(auditoria): Fase 2 — auditorias-anteriores.md reconciliadas com main (#222)"
+   },
+   {
+    "sha": "c464deb",
+    "data": "2026-11-06",
+    "assunto": "feat(seguranca+ux): steps 25+26+30+32 — acordo real, URL, asaas-proxy, calculo-iva (#237)"
+   },
+   {
+    "sha": "fab4030",
+    "data": "2026-11-06",
+    "assunto": "chore(deps): bump actions/setup-python from 7.0.0 to 7.1.0 (#207)"
+   },
+   {
+    "sha": "8244796",
+    "data": "2026-11-06",
+    "assunto": "Merge pull request #199 from adm01-debug/fix/conciliacao-manual-dupla-confirmacao"
+   },
+   {
+    "sha": "d4c1e0e",
+    "data": "2026-11-06",
+    "assunto": "Merge branch 'main' into fix/conciliacao-manual-dupla-confirmacao"
+   },
+   {
+    "sha": "4df9b8e",
+    "data": "2026-11-06",
+    "assunto": "docs: grafo de arquitetura manual e template de re-auditoria (Steps 49+50) (#242)"
+   },
+   {
+    "sha": "dca65c5",
+    "data": "2026-11-06",
+    "assunto": "fix(n8n-callback): BufferSource + readBytes + prettier"
+   },
+   {
+    "sha": "3285b4f",
+    "data": "2026-11-02",
+    "assunto": "chore: AGENTS.md com o texto-mestre adm01-debug (seções 1-7) (#250)"
+   },
+   {
+    "sha": "309ee32",
+    "data": "2026-11-01",
+    "assunto": "fix: boletos asaas_id types + migrations steps 10+20 (rebuid sem conflito) (#247)"
+   },
+   {
+    "sha": "629439c",
+    "data": "2026-10-31",
+    "assunto": "feat: steps 24, 31, 36 — totais movimentações, auditoria verify_jwt, rate limit uniforme"
+   },
+   {
+    "sha": "1c0ccea",
+    "data": "2026-10-31",
+    "assunto": "chore(ci): adiciona estrategias_elisao_catalogo ao baseline literal-true [DB Linter] (#245)"
+   },
+   {
+    "sha": "bb7e801",
+    "data": "2026-10-31",
+    "assunto": "chore(docs): [STEPS 39+48] backup policy + consolidar SECURITY_RULES (#236)"
+   },
+   {
+    "sha": "0644e60",
+    "data": "2026-10-31",
+    "assunto": "chore(ci): adicionar 2 GHSAs build-time ao ignore do bun audit (#239)"
+   },
+   {
+    "sha": "8172bc7",
+    "data": "2026-10-30",
+    "assunto": "fix(security): .max() nos arrays de edge functions — mitigação GHSA-mrhx-c7xc-m3w5 (#221)"
+   },
+   {
+    "sha": "885dd88",
+    "data": "2026-10-30",
+    "assunto": "docs(ci): inventário final 30/10 — CI pós-#219 confirmado success (#220)"
+   },
+   {
+    "sha": "05e3965",
+    "data": "2026-10-30",
+    "assunto": "docs(ci): relatório final 30/10/2026 — prod-migrate corrigido, PENDENCIAS atualizada (#219)"
+   },
+   {
+    "sha": "68daaf0",
+    "data": "2026-10-30",
+    "assunto": "chore(ci): sincronizar deno.lock com versões do package.json (#218)"
+   },
+   {
+    "sha": "6546df9",
+    "data": "2026-10-30",
+    "assunto": "fix(ci): prod-migrate — check-secrets sem environment antes do migrate (#217)"
+   },
+   {
+    "sha": "bbd683f",
+    "data": "2026-10-29",
+    "assunto": "fix(ci): correção e documentação de workflows — inventário completo de pendências (#201)"
+   }
+  ],
+  "arquivos_mudados_7d": 160,
+  "pastas_mais_mudadas_30d": [
+   {
+    "pasta": "supabase/functions/_shared",
+    "mudancas": 19
+   },
+   {
+    "pasta": "src/components/layout",
+    "mudancas": 13
+   },
+   {
+    "pasta": "PENDENCIAS.md",
+    "mudancas": 11
+   },
+   {
+    "pasta": "RELATORIO_CI.md",
+    "mudancas": 11
+   },
+   {
+    "pasta": "src/components/navigation",
+    "mudancas": 11
+   },
+   {
+    "pasta": ".github/workflows/ci.yml",
+    "mudancas": 10
+   },
+   {
+    "pasta": "bun.lock",
+    "mudancas": 10
+   },
+   {
+    "pasta": "package.json",
+    "mudancas": 9
+   },
+   {
+    "pasta": "src/components/ui",
+    "mudancas": 8
+   },
+   {
+    "pasta": "src/components/contas-receber",
+    "mudancas": 5
+   },
+   {
+    "pasta": ".github/workflows/prod-migrate.yml",
+    "mudancas": 4
+   },
+   {
+    "pasta": ".github/workflows/supabase-linter.yml",
+    "mudancas": 4
+   },
+   {
+    "pasta": "src/components/financeiro",
+    "mudancas": 4
+   },
+   {
+    "pasta": "src/hooks/__tests__",
+    "mudancas": 4
+   },
+   {
+    "pasta": "src/lib/__tests__",
+    "mudancas": 4
+   }
+  ],
+  "arquivos_mais_mudados_90d": [
+   {
+    "arquivo": "package.json",
+    "mudancas": 27
+   },
+   {
+    "arquivo": ".github/workflows/ci.yml",
+    "mudancas": 21
+   },
+   {
+    "arquivo": "bun.lock",
+    "mudancas": 20
+   },
+   {
+    "arquivo": "supabase/config.toml",
+    "mudancas": 15
+   },
+   {
+    "arquivo": "supabase/functions/asaas-proxy/index.ts",
+    "mudancas": 15
+   },
+   {
+    "arquivo": "supabase/functions/mcp-query/index.ts",
+    "mudancas": 13
+   },
+   {
+    "arquivo": ".github/workflows/deno-tests.yml",
+    "mudancas": 12
+   },
+   {
+    "arquivo": "e2e/auth/admin-rbac.e2e.ts",
+    "mudancas": 12
+   },
+   {
+    "arquivo": "src/hooks/useConciliacaoPage.ts",
+    "mudancas": 12
+   },
+   {
+    "arquivo": "supabase/functions/bitrix24-webhook/index.ts",
+    "mudancas": 12
+   },
+   {
+    "arquivo": "PENDENCIAS.md",
+    "mudancas": 11
+   },
+   {
+    "arquivo": "RELATORIO_CI.md",
+    "mudancas": 11
+   },
+   {
+    "arquivo": "env.manifest.json",
+    "mudancas": 10
+   },
+   {
+    "arquivo": "supabase/functions/bling-proxy/index.ts",
+    "mudancas": 10
+   },
+   {
+    "arquivo": "supabase/functions/enviar-convite-organizacao/index.ts",
+    "mudancas": 10
+   },
+   {
+    "arquivo": "supabase/functions/n8n-callback/index.ts",
+    "mudancas": 10
+   },
+   {
+    "arquivo": "supabase/functions/whatsapp-webhook/index.ts",
+    "mudancas": 10
+   },
+   {
+    "arquivo": ".github/workflows/supabase-linter.yml",
+    "mudancas": 9
+   },
+   {
+    "arquivo": "src/App.tsx",
+    "mudancas": 9
+   },
+   {
+    "arquivo": "src/pages/Auth.hooks.ts",
+    "mudancas": 9
+   },
+   {
+    "arquivo": "supabase/functions/bling-webhook/index.ts",
+    "mudancas": 9
+   },
+   {
+    "arquivo": "supabase/functions/gerar-pacote-evidencias/index.ts",
+    "mudancas": 9
+   },
+   {
+    "arquivo": "supabase/functions/n8n-dispatch/index.ts",
+    "mudancas": 9
+   },
+   {
+    "arquivo": "supabase/functions/sync-profile-to-bitrix/index.ts",
+    "mudancas": 9
+   },
+   {
+    "arquivo": ".github/workflows/functions-deploy.yml",
+    "mudancas": 8
+   }
+  ],
+  "autores_30d": [
+   {
+    "autor": "adm01-debug",
+    "commits": 33
+   },
+   {
+    "autor": "devin-ai-integration[bot]",
+    "commits": 22
+   },
+   {
+    "autor": "dependabot[bot]",
+    "commits": 7
+   },
+   {
+    "autor": "Joaquim Ataides",
+    "commits": 1
+   }
+  ]
+ },
+ "contagens": {
+  "arquivos_total": 3391,
+  "arquivos_codigo": 2148,
+  "linhas_codigo": 399641,
+  "rotas": 128,
+  "rotas_http_backend": 12,
+  "vistas_por_id": 0,
+  "itens_menu": 117,
+  "modulos": 126,
+  "componentes": 908,
+  "hooks": 265,
+  "edge_functions": 106,
+  "tabelas": 314,
+  "migrations": 937,
+  "cron_jobs": 21,
+  "testes": 356,
+  "workflows": 14,
+  "scripts": 79,
+  "docs_md": 123
+ },
+ "por_pasta": {
+  "e2e/alertas-preditivos.e2e.ts": {
+   "arquivos": 1,
+   "linhas": 9
+  },
+  "e2e/aprovacoes.e2e.ts": {
+   "arquivos": 1,
+   "linhas": 9
+  },
+  "e2e/auth": {
+   "arquivos": 5,
+   "linhas": 481
+  },
+  "e2e/calculadora-tributaria.e2e.ts": {
+   "arquivos": 1,
+   "linhas": 31
+  },
+  "e2e/conciliacao.e2e.ts": {
+   "arquivos": 1,
+   "linhas": 145
+  },
+  "e2e/contas-pagar.e2e.ts": {
+   "arquivos": 1,
+   "linhas": 290
+  },
+  "e2e/dashboard.e2e.ts": {
+   "arquivos": 1,
+   "linhas": 74
+  },
+  "e2e/error-states.e2e.ts": {
+   "arquivos": 1,
+   "linhas": 38
+  },
+  "e2e/financeiro": {
+   "arquivos": 2,
+   "linhas": 324
+  },
+  "e2e/fixtures": {
+   "arquivos": 4,
+   "linhas": 840
+  },
+  "e2e/fixtures.ts": {
+   "arquivos": 1,
+   "linhas": 350
+  },
+  "e2e/importacao-xml.e2e.ts": {
+   "arquivos": 1,
+   "linhas": 9
+  },
+  "e2e/lgpd-privacidade.e2e.ts": {
+   "arquivos": 1,
+   "linhas": 9
+  },
+  "e2e/nfe-fluxo-falhas.e2e.ts": {
+   "arquivos": 1,
+   "linhas": 144
+  },
+  "e2e/nfe-fluxo.e2e.ts": {
+   "arquivos": 1,
+   "linhas": 152
+  },
+  "e2e/onboarding-tributario.e2e.ts": {
+   "arquivos": 1,
+   "linhas": 9
+  },
+  "e2e/proxies-sessao-expirada.e2e.ts": {
+   "arquivos": 1,
+   "linhas": 174
+  },
+  "e2e/regua-cobranca.e2e.ts": {
+   "arquivos": 1,
+   "linhas": 29
+  },
+  "e2e/relatorios.e2e.ts": {
+   "arquivos": 1,
+   "linhas": 315
+  },
+  "e2e/sefaz-observabilidade.e2e.ts": {
+   "arquivos": 1,
+   "linhas": 39
+  },
+  "e2e/sped-wizard.e2e.ts": {
+   "arquivos": 1,
+   "linhas": 9
+  },
+  "e2e/split-payment.e2e.ts": {
+   "arquivos": 1,
+   "linhas": 24
+  },
+  "e2e/sre-command-center.e2e.ts": {
+   "arquivos": 1,
+   "linhas": 9
+  },
+  "e2e/system": {
+   "arquivos": 1,
+   "linhas": 28
+  },
+  "e2e/tributario-dashboard.e2e.ts": {
+   "arquivos": 1,
+   "linhas": 9
+  },
+  "e2e/visual-theme.e2e.ts": {
+   "arquivos": 1,
+   "linhas": 159
+  },
+  "eslint-rules/no-floating-supabase-write.js": {
+   "arquivos": 1,
+   "linhas": 157
+  },
+  "eslint.config.js": {
+   "arquivos": 1,
+   "linhas": 187
+  },
+  "playwright.config.ts": {
+   "arquivos": 1,
+   "linhas": 163
+  },
+  "playwright.critical.config.ts": {
+   "arquivos": 1,
+   "linhas": 56
+  },
+  "playwright.destructive.config.ts": {
+   "arquivos": 1,
+   "linhas": 51
+  },
+  "playwright.financeiro.config.ts": {
+   "arquivos": 1,
+   "linhas": 127
+  },
+  "postcss.config.js": {
+   "arquivos": 1,
+   "linhas": 7
+  },
+  "public/sw-push.js": {
+   "arquivos": 1,
+   "linhas": 42
+  },
+  "public/sw.js": {
+   "arquivos": 1,
+   "linhas": 264
+  },
+  "scripts/admin": {
+   "arquivos": 2,
+   "linhas": 584
+  },
+  "scripts/ai-context": {
+   "arquivos": 3,
+   "linhas": 1462
+  },
+  "scripts/ci": {
+   "arquivos": 3,
+   "linhas": 417
+  },
+  "scripts/data": {
+   "arquivos": 1,
+   "linhas": 292
+  },
+  "scripts/generate-design-audit.js": {
+   "arquivos": 1,
+   "linhas": 51
+  },
+  "scripts/generate-env-manifest.mjs": {
+   "arquivos": 1,
+   "linhas": 168
+  },
+  "scripts/generate-simulation-report.ts": {
+   "arquivos": 1,
+   "linhas": 68
+  },
+  "scripts/gerar-grafo-arquitetura.ts": {
+   "arquivos": 1,
+   "linhas": 26
+  },
+  "scripts/graphify": {
+   "arquivos": 17,
+   "linhas": 2160
+  },
+  "scripts/healthcheck": {
+   "arquivos": 1,
+   "linhas": 106
+  },
+  "scripts/integrity": {
+   "arquivos": 1,
+   "linhas": 202
+  },
+  "scripts/mcp-phd-suite.mjs": {
+   "arquivos": 1,
+   "linhas": 923
+  },
+  "scripts/regras_negocio": {
+   "arquivos": 3,
+   "linhas": 2579
+  },
+  "scripts/run-scenarios.ts": {
+   "arquivos": 1,
+   "linhas": 45
+  },
+  "scripts/security": {
+   "arquivos": 8,
+   "linhas": 1987
+  },
+  "scripts/simular-observabilidade-digest.ts": {
+   "arquivos": 1,
+   "linhas": 121
+  },
+  "scripts/simular-preferencias-digest.ts": {
+   "arquivos": 1,
+   "linhas": 138
+  },
+  "scripts/simular-projecao-conformidade.ts": {
+   "arquivos": 1,
+   "linhas": 223
+  },
+  "scripts/stress-test.ts": {
+   "arquivos": 1,
+   "linhas": 47
+  },
+  "scripts/supabase_snapshot": {
+   "arquivos": 2,
+   "linhas": 2788
+  },
+  "src/App.tsx": {
+   "arquivos": 1,
+   "linhas": 1188
+  },
+  "src/__tests__": {
+   "arquivos": 1,
+   "linhas": 45
+  },
+  "src/components": {
+   "arquivos": 872,
+   "linhas": 159211
+  },
+  "src/config": {
+   "arquivos": 1,
+   "linhas": 113
+  },
+  "src/contexts": {
+   "arquivos": 3,
+   "linhas": 346
+  },
+  "src/hooks": {
+   "arquivos": 296,
+   "linhas": 44498
+  },
+  "src/i18n.ts": {
+   "arquivos": 1,
+   "linhas": 81
+  },
+  "src/integrations": {
+   "arquivos": 3,
+   "linhas": 21551
+  },
+  "src/lib": {
+   "arquivos": 401,
+   "linhas": 54337
+  },
+  "src/main.tsx": {
+   "arquivos": 1,
+   "linhas": 77
+  },
+  "src/pages": {
+   "arquivos": 211,
+   "linhas": 44684
+  },
+  "src/test": {
+   "arquivos": 21,
+   "linhas": 2126
+  },
+  "src/types": {
+   "arquivos": 15,
+   "linhas": 954
+  },
+  "supabase/functions": {
+   "arquivos": 222,
+   "linhas": 49681
+  },
+  "supabase/tests": {
+   "arquivos": 2,
+   "linhas": 1251
+  },
+  "tailwind.config.ts": {
+   "arquivos": 1,
+   "linhas": 136
+  },
+  "vite.config.ts": {
+   "arquivos": 1,
+   "linhas": 134
+  },
+  "vitest.config.ts": {
+   "arquivos": 1,
+   "linhas": 78
+  }
+ },
+ "maiores_arquivos": [
+  {
+   "arquivo": "src/integrations/supabase/types.ts",
+   "linhas": 21413
+  },
+  {
+   "arquivo": "scripts/regras_negocio/generate.py",
+   "linhas": 2178
+  },
+  {
+   "arquivo": "scripts/supabase_snapshot/snapshot.py",
+   "linhas": 1816
+  },
+  {
+   "arquivo": "supabase/functions/asaas-proxy/index.ts",
+   "linhas": 1329
+  },
+  {
+   "arquivo": "supabase/functions/sso-callback/index.ts",
+   "linhas": 1223
+  },
+  {
+   "arquivo": "src/App.tsx",
+   "linhas": 1188
+  },
+  {
+   "arquivo": "supabase/functions/scim-server/index.ts",
+   "linhas": 1156
+  },
+  {
+   "arquivo": "supabase/functions/_shared/sql-write-guard.ts",
+   "linhas": 1064
+  },
+  {
+   "arquivo": "supabase/functions/bling-proxy/index.ts",
+   "linhas": 1013
+  },
+  {
+   "arquivo": "supabase/functions/_shared/tributario-logic.ts",
+   "linhas": 961
+  },
+  {
+   "arquivo": "scripts/ai-context/gerar.mjs",
+   "linhas": 928
+  },
+  {
+   "arquivo": "scripts/mcp-phd-suite.mjs",
+   "linhas": 923
+  },
+  {
+   "arquivo": "supabase/functions/whatsapp-ia-proativo/index.ts",
+   "linhas": 918
+  },
+  {
+   "arquivo": "supabase/functions/bitrix24-sync/index.ts",
+   "linhas": 894
+  },
+  {
+   "arquivo": "supabase/functions/whatsapp-ia-proativo/index_test.ts",
+   "linhas": 827
+  },
+  {
+   "arquivo": "src/lib/tributario/shared-logic.ts",
+   "linhas": 810
+  },
+  {
+   "arquivo": "src/components/contas-receber/ContaReceberFormFields.tsx",
+   "linhas": 751
+  },
+  {
+   "arquivo": "src/components/ui/sidebar.tsx",
+   "linhas": 734
+  },
+  {
+   "arquivo": "src/pages/Conciliacao.tsx",
+   "linhas": 731
+  },
+  {
+   "arquivo": "src/pages/BI.tsx",
+   "linhas": 709
+  },
+  {
+   "arquivo": "scripts/security/test-canonical-db-gates.mjs",
+   "linhas": 674
+  },
+  {
+   "arquivo": "src/pages/AuditLogs.tsx",
+   "linhas": 673
+  },
+  {
+   "arquivo": "src/components/bling/BlingFinanceiroPanel.tsx",
+   "linhas": 650
+  },
+  {
+   "arquivo": "supabase/functions/open-finance/index.ts",
+   "linhas": 638
+  },
+  {
+   "arquivo": "src/hooks/useContasPagarLogic.ts",
+   "linhas": 625
+  }
+ ],
+ "qualidade": {
+  "any": 340,
+  "console_log": 128,
+  "ts_ignore": 0,
+  "eslint_disable": 1,
+  "todos": 44,
+  "arquivos_acima_500_linhas": 51
+ },
+ "todos": [
+  {
+   "arquivo": "scripts/ai-context/gerar.mjs",
+   "linha": 189,
+   "tipo": "TODO",
+   "texto": "|FIXME|HACK|XXX)\\b[:\\s-]*([^\\n]{0,100})/.exec(line); if (m) todos.push({ linha: ln, tipo: m[1], text"
+  },
+  {
+   "arquivo": "scripts/ai-context/gerar.mjs",
+   "linha": 223,
+   "tipo": "TODO",
+   "texto": "|FIXME|HACK|XXX)\\b[:\\s-]*([^\\n]{0,100})/.exec(l); return m ? { linha: i + 1, tipo: m[1], texto: m[2]"
+  },
+  {
+   "arquivo": "src/components/compras/PedidoCompraForm.tsx",
+   "linha": 95,
+   "tipo": "TODO",
+   "texto": "colunas 'user_id' e 'centro_custo_id' não existem em pedidos_compra no types.ts (removidas)"
+  },
+  {
+   "arquivo": "src/components/compras/PedidoCompraForm.tsx",
+   "linha": 112,
+   "tipo": "TODO",
+   "texto": "coluna 'valor_total' não existe em itens_pedido_compra no types.ts (removida)"
+  },
+  {
+   "arquivo": "src/components/conciliacao/ConciliacaoSplitDialog.tsx",
+   "linha": 128,
+   "tipo": "TODO",
+   "texto": "colunas 'conciliacao_parcial' e 'valor_conciliado' não existem em transacoes_bancarias no types.ts ("
+  },
+  {
+   "arquivo": "src/components/contas-pagar/ContasPagarTableRow.tsx",
+   "linha": 217,
+   "tipo": "TODO",
+   "texto": "coluna 'tags' não existe em contas_pagar no types.ts (removida)"
+  },
+  {
+   "arquivo": "src/components/contas-receber/AplicarDescontoDialog.tsx",
+   "linha": 51,
+   "tipo": "TODO",
+   "texto": "coluna 'valor_final' não existe em contas_receber no types.ts (removida)"
+  },
+  {
+   "arquivo": "src/components/contas-receber/ContaReceberForm.tsx",
+   "linha": 189,
+   "tipo": "TODO",
+   "texto": "colunas 'codigo_barras' e 'link_boleto' não existem em contas_receber no types.ts (removidas)"
+  },
+  {
+   "arquivo": "src/components/contas-receber/ContaReceberForm.tsx",
+   "linha": 192,
+   "tipo": "TODO",
+   "texto": "coluna 'frequencia_recorrencia' não existe em contas_receber no types.ts (removida)"
+  },
+  {
+   "arquivo": "src/components/contas-receber/ContaReceberForm.tsx",
+   "linha": 238,
+   "tipo": "TODO",
+   "texto": "colunas 'codigo_barras' e 'link_boleto' não existem em contas_receber no types.ts (removidas)"
+  },
+  {
+   "arquivo": "src/hooks/expert-actions/financial-actions.ts",
+   "linha": 139,
+   "tipo": "TODO",
+   "texto": "(2026-08-14): data_emissao/created_by removidos — não existem em contas_pagar (types.ts canônico)"
+  },
+  {
+   "arquivo": "src/hooks/expert-actions/financial-actions.ts",
+   "linha": 179,
+   "tipo": "TODO",
+   "texto": "(2026-08-14): created_by removido — coluna não existe em contas_receber (types.ts canônico)"
+  },
+  {
+   "arquivo": "src/hooks/expert-actions/financial-actions.ts",
+   "linha": 219,
+   "tipo": "TODO",
+   "texto": "(2026-08-14): etapa_anterior/etapa_nova não existem em historico_cobranca (types.ts);"
+  },
+  {
+   "arquivo": "src/hooks/useAcordosParcelamento.ts",
+   "linha": 193,
+   "tipo": "TODO",
+   "texto": "(2026-08-14): data_pagamento/valor_pago removidos — não existem em parcelas_acordo (types.ts)"
+  },
+  {
+   "arquivo": "src/hooks/useAlertasTributarios.ts",
+   "linha": 143,
+   "tipo": "TODO",
+   "texto": "(2026-08-14): campos de AlertaTributario fora do schema canônico não são enviados:"
+  },
+  {
+   "arquivo": "src/hooks/useAlertasTributarios.ts",
+   "linha": 186,
+   "tipo": "TODO",
+   "texto": "(2026-08-14): resolvido_em/resolvido_por removidos — não existem em alertas_tributarios (types.ts)"
+  },
+  {
+   "arquivo": "src/hooks/useAprovacoes.ts",
+   "linha": 184,
+   "tipo": "TODO",
+   "texto": "(2026-08-14): usuario_id→user_id e texto→comentario (nomes canônicos em aprovacao_comentarios)"
+  },
+  {
+   "arquivo": "src/hooks/useApuracoesTributarias.ts",
+   "linha": 156,
+   "tipo": "TODO",
+   "texto": "(2026-08-14): data_transmissao/protocolo_transmissao/created_by excluídos — não existem em apuracoes"
+  },
+  {
+   "arquivo": "src/hooks/useBulkActions.ts",
+   "linha": 266,
+   "tipo": "TODO",
+   "texto": "(2026-08-14): cast do tableName para tabelas com coluna status (mark-done só faz sentido nelas)"
+  },
+  {
+   "arquivo": "src/hooks/useConciliacaoPage.ts",
+   "linha": 131,
+   "tipo": "TODO",
+   "texto": "(2026-08-14): status/metadata removidos — não existem em alertas (types.ts canônico);"
+  },
+  {
+   "arquivo": "src/hooks/useConciliacaoPage.ts",
+   "linha": 161,
+   "tipo": "TODO",
+   "texto": "(2026-08-14): insert em extratos_bancarios_importados removido — colunas usadas"
+  },
+  {
+   "arquivo": "src/hooks/useContratos.ts",
+   "linha": 40,
+   "tipo": "TODO",
+   "texto": "(2026-08-14): campos de input fora do schema canônico não são enviados:"
+  },
+  {
+   "arquivo": "src/hooks/useContratos.ts",
+   "linha": 86,
+   "tipo": "TODO",
+   "texto": "(2026-08-14): assinatura estreitada para as colunas canônicas de contratos (types.ts)"
+  },
+  {
+   "arquivo": "src/hooks/useCreditosTributarios.ts",
+   "linha": 143,
+   "tipo": "TODO",
+   "texto": "(2026-08-14): campos de CreateCreditoInput fora do schema canônico não são enviados:"
+  },
+  {
+   "arquivo": "src/hooks/useCreditosTributarios.ts",
+   "linha": 209,
+   "tipo": "TODO",
+   "texto": "(2026-08-14): apuracao_id/competencia_utilizacao removidos — não existem em creditos_tributarios (ty"
+  },
+  {
+   "arquivo": "src/hooks/useCreditosTributarios.ts",
+   "linha": 234,
+   "tipo": "TODO",
+   "texto": "(2026-08-14): observacoes removido — coluna não existe em creditos_tributarios (types.ts)"
+  },
+  {
+   "arquivo": "src/hooks/useFilterPresets.ts",
+   "linha": 64,
+   "tipo": "TODO",
+   "texto": "(2026-08-14): empresa_id removido — coluna não existe em user_filter_presets (types.ts)"
+  },
+  {
+   "arquivo": "src/hooks/useFinancialOperations.ts",
+   "linha": 76,
+   "tipo": "TODO",
+   "texto": "(2026-08-14): filtro por conta_bancaria_id removido — coluna não existe em movimentacoes (types.ts c"
+  },
+  {
+   "arquivo": "src/hooks/useFinancialOperations.ts",
+   "linha": 105,
+   "tipo": "TODO",
+   "texto": "(2026-08-14): campos de MovimentacaoInput fora do schema canônico não são enviados:"
+  },
+  {
+   "arquivo": "src/hooks/useFinancialOperations.ts",
+   "linha": 190,
+   "tipo": "TODO",
+   "texto": "(2026-08-14): conta_bancaria_id→conta_origem_id (renomeada no schema canônico); observacoes removido"
+  },
+  {
+   "arquivo": "src/hooks/useFinancialOperations.ts",
+   "linha": 226,
+   "tipo": "TODO",
+   "texto": "(2026-08-14): cancelado_em removido — coluna não existe em transferencias (types.ts)"
+  },
+  {
+   "arquivo": "src/hooks/useMetasFinanceiras.ts",
+   "linha": 50,
+   "tipo": "TODO",
+   "texto": "(2026-08-14): created_by→user_id (nome canônico em metas_financeiras)"
+  },
+  {
+   "arquivo": "src/hooks/useNegativacoes.ts",
+   "linha": 34,
+   "tipo": "TODO",
+   "texto": "(2026-08-14): observacoes/created_by removidos — não existem em negativacoes (types.ts)"
+  },
+  {
+   "arquivo": "src/hooks/useNegativacoes.ts",
+   "linha": 73,
+   "tipo": "TODO",
+   "texto": "(2026-08-14): data_inclusao→data_negativacao e data_exclusao→data_baixa (renomeadas); observacoes re"
+  },
+  {
+   "arquivo": "src/hooks/useOrganizacoes.ts",
+   "linha": 259,
+   "tipo": "TODO",
+   "texto": "(2026-08-14): patch tipado com colunas canônicas de organizacao_membros (types.ts)"
+  },
+  {
+   "arquivo": "src/hooks/useProtestos.ts",
+   "linha": 32,
+   "tipo": "TODO",
+   "texto": "(2026-08-14): observacoes/created_by removidos — não existem em protestos (types.ts)"
+  },
+  {
+   "arquivo": "src/hooks/useProtestos.ts",
+   "linha": 74,
+   "tipo": "TODO",
+   "texto": "(2026-08-14): data_protocolo→data_protesto (renomeada); data_pagamento/observacoes removidos (não ex"
+  },
+  {
+   "arquivo": "src/hooks/useProtestos.ts",
+   "linha": 75,
+   "tipo": "TODO",
+   "texto": "(2026-08-14): protocolo→numero_protesto (nome canônico em protestos)"
+  },
+  {
+   "arquivo": "src/hooks/useRealtimeAnomalias.ts",
+   "linha": 181,
+   "tipo": "TODO",
+   "texto": "(2026-08-14): centro_custo_id removido — não existe em anomalia_toast_eventos (types.ts)"
+  },
+  {
+   "arquivo": "src/hooks/useRegimesEspeciais.ts",
+   "linha": 35,
+   "tipo": "TODO",
+   "texto": "(2026-08-14): reducao_aliquota→reducao_cbs/reducao_ibs (renomeada no schema canônico)"
+  },
+  {
+   "arquivo": "src/hooks/useScimTokens.ts",
+   "linha": 73,
+   "tipo": "TODO",
+   "texto": "(2026-08-14): default_role removido — coluna não existe em scim_tokens (types.ts canônico)"
+  },
+  {
+   "arquivo": "supabase/functions/monitor-health/index.ts",
+   "linha": 9,
+   "tipo": "TODO",
+   "texto": "(canal-alerta): conectar ao canal WhatsApp/e-mail preferido após inserir o"
+  },
+  {
+   "arquivo": "supabase/functions/whatsapp-ia-proativo/index.ts",
+   "linha": 264,
+   "tipo": "TODO",
+   "texto": "acesso de usuário precisa do"
+  },
+  {
+   "arquivo": "scripts/regras_negocio/generate.py",
+   "linha": 572,
+   "tipo": "TODO",
+   "texto": "\", \"http\", \"import\")) and \"://\" not in c:"
+  }
+ ],
+ "alertas": {
+  "rotas_sem_arquivo": [],
+  "componentes_ambiguos": [],
+  "menu_sem_destino": [
+   "Action Matrix Audit -> /inteligencia#action-matrix",
+   "Apuração IBS/CBS -> apuracao",
+   "Auditoria -> auditoria",
+   "Calculadora -> calculadora",
+   "Cashback -> cashback",
+   "Cenários -> simulador",
+   "Comparativo -> comparativo",
+   "Créditos -> creditos",
+   "Cronograma -> cronograma",
+   "Dashboard -> visao-geral",
+   "Fechamento Mensal -> fechamento-mensal",
+   "Histórico & Chat WA -> /cobrancas#whatsapp",
+   "Importar XML -> importacao-xml",
+   "Incentivos Fiscais -> incentivos",
+   "IRPJ/CSLL -> irpj-csll",
+   "Métricas -> metricas",
+   "Obrigações -> obrigacoes",
+   "Operações -> operacoes",
+   "PER/DCOMP -> per-dcomp",
+   "Quantum-Sentinel: Riscos -> /inteligencia#alertas-preditivos",
+   "Reforma Tributária -> /reforma-tributaria/visao-geral",
+   "Retenções -> retencoes",
+   "SPED -> exportacao",
+   "Split Payment -> split-payment"
+  ],
+  "edges_orfas": [
+   "calcular-slo-metrics-diario",
+   "calculo-iva",
+   "conciliacao-proxy",
+   "contabilizar-evento",
+   "enviar-convite-organizacao",
+   "enviar-relatorios-tributarios-agendados",
+   "gerar-snapshots-conformidade",
+   "get-mapbox-token",
+   "n8n-dispatch",
+   "nfe-upload-certificado",
+   "nfe-vinculo-proxy",
+   "notify-saved-filter",
+   "projecao-reforma",
+   "relatorio-diario-anomalias",
+   "sefaz-manifestar",
+   "simular-presumido",
+   "simular-real",
+   "simular-simples",
+   "sincronizar-anomalia-bitrix24",
+   "sync-profile-to-bitrix"
+  ],
+  "edges_chamadas_sem_pasta": [],
+  "tabelas_sem_rls": [],
+  "tabelas_usadas_sem_definicao": [
+   "companies",
+   "relatorios_tributarios"
+  ],
+  "tabelas_com_drift_migration_vs_types": [
+   "acoes_recomendadas",
+   "alert_configurations",
+   "alertas_preditivos",
+   "alertas_tributarios",
+   "alerts",
+   "allowed_countries",
+   "anexos_financeiros",
+   "anomalia_detection_runs",
+   "anomalia_toast_eventos",
+   "anomalias_detectadas",
+   "api_keys",
+   "aprovacao_comentarios",
+   "apuracoes_irpj_csll",
+   "apuracoes_tributarias",
+   "asaas_audit_trail",
+   "asaas_config",
+   "asaas_customers",
+   "asaas_payments",
+   "asaas_reconciliation_suggestions",
+   "asaas_sync_queue",
+   "asaas_transfers",
+   "auditoria_financeira",
+   "auditoria_tributaria",
+   "benchmarks_setoriais",
+   "bitrix24_stage_mappings",
+   "bitrix_field_mappings",
+   "bitrix_sync_logs",
+   "bitrix_webhook_events",
+   "bling_webhook_events",
+   "blocked_ips",
+   "bloqueios_duplicidade",
+   "boletos",
+   "categorias",
+   "centros_custo",
+   "clientes",
+   "conciliacoes",
+   "conciliacoes_parciais",
+   "configuracoes_aprovacao",
+   "configuracoes_duplicidade",
+   "contas_bancarias",
+   "contas_pagar",
+   "contas_receber",
+   "creditos_tributarios",
+   "darfs",
+   "divergencias_conciliacao",
+   "edge_function_logs",
+   "elisao_alertas",
+   "elisao_creditos_auditoria",
+   "elisao_regras_creditos",
+   "elisao_simulacoes_regime",
+   "elisao_tarefas_acionaveis",
+   "empresas",
+   "evidencias_pacotes",
+   "execucoes_cobranca",
+   "extrato_bancario",
+   "faturamento_mensal",
+   "fechamentos_tributarios",
+   "fila_cobrancas",
+   "fluxos_aprovacao_niveis",
+   "folha_pagamento",
+   "formas_pagamento",
+   "fornecedores",
+   "frontend_error_logs_2026_05",
+   "frontend_error_logs_2026_06",
+   "frontend_error_logs_2026_07",
+   "frontend_error_logs_2026_08",
+   "frontend_error_logs_2026_09",
+   "frontend_error_logs_2026_10",
+   "frontend_error_logs_default",
+   "health_scores_operacionais",
+   "historico_analises_preditivas",
+   "historico_cobranca",
+   "historico_cobranca_whatsapp",
+   "historico_cobrancas_boletos",
+   "historico_score_saude",
+   "integration_secrets",
+   "itens_pedido_compra",
+   "lancamentos_contabeis",
+   "login_attempts",
+   "logs_baixa_automatica",
+   "logs_conciliacao_retroativa",
+   "metas_financeiras",
+   "movimentacoes",
+   "negativacoes",
+   "new_device_alerts",
+   "notas_fiscais",
+   "notas_fiscais_ocr",
+   "notification_history",
+   "open_finance_consents",
+   "operacoes_tributaveis",
+   "parcelas_acordo",
+   "partidas_contabeis",
+   "password_reset_requests",
+   "pedidos_compra",
+   "permissions",
+   "portal_cliente_acessos",
+   "portal_cliente_tokens",
+   "prejuizos_fiscais",
+   "profiles",
+   "protestos",
+   "query_telemetry",
+   "rate_limit_logs",
+   "recomendacoes_metas_ia",
+   "regime_decision_cache",
+   "regimes_especiais_empresa",
+   "regimes_simulados",
+   "regras_conciliacao",
+   "regras_contabilizacao_automatica",
+   "regras_roteamento_financeiro",
+   "regua_cobranca",
+   "regua_cobranca_status",
+   "resumos_executivos_semanais",
+   "retencoes_fonte",
+   "risk_rules",
+   "saved_filter_subscriptions",
+   "scim_setup_checklist",
+   "scim_tokens",
+   "solicitacoes_aprovacao",
+   "solicitacoes_lgpd",
+   "sso_login_attempts",
+   "tax_audit_trail",
+   "templates_cobranca",
+   "transacoes_bancarias",
+   "transferencias",
+   "user_filter_presets",
+   "user_onboarding_progress",
+   "user_roles",
+   "user_sessions",
+   "vendedores",
+   "verificacoes_conformidade",
+   "webhooks_log",
+   "whatsapp_conversas"
+  ],
+  "rpcs_sem_definicao": [
+   "exec_sql",
+   "get_cron_run_history",
+   "pg_try_advisory_lock"
+  ],
+  "componentes_orfaos": [
+   "src/components/admin/FiscalHealthBadge.tsx",
+   "src/components/admin/telemetry/AcessosSuspeitosPanel.tsx",
+   "src/components/admin/telemetry/CatalogosTributariosHealthPanel.tsx",
+   "src/components/admin/telemetry/CatalogosTributariosHistoryPanel.tsx",
+   "src/components/admin/telemetry/CoberturaFiscalUFPanel.tsx",
+   "src/components/charts/RechartsExample.tsx",
+   "src/components/cobranca/PrevisaoInadimplencia.tsx",
+   "src/components/contabilidade/SpedEcdDownloadStep.tsx",
+   "src/components/empresa/EmpresaActionPicker.tsx",
+   "src/components/integracoes/BitrixWebhookPanel.tsx",
+   "src/components/layout/EmpresaSwitcher.tsx",
+   "src/components/nfe/SefazStatusPanel.tsx",
+   "src/components/reforma-tributaria/KPIComparativo.tsx",
+   "src/components/tributario/pf/ResultadoPf.tsx",
+   "src/components/ui/carousel.tsx",
+   "src/components/ui/chart.tsx",
+   "src/components/ui/collapse.tsx",
+   "src/components/ui/context-menu.tsx",
+   "src/components/ui/currency-input.tsx",
+   "src/components/ui/data-grid.tsx",
+   "src/components/ui/data-table.tsx",
+   "src/components/ui/date-range-picker.tsx",
+   "src/components/ui/drawer.tsx",
+   "src/components/ui/dropdown.tsx",
+   "src/components/ui/file-upload.tsx",
+   "src/components/ui/hover-card.tsx",
+   "src/components/ui/input-otp.tsx",
+   "src/components/ui/menubar.tsx",
+   "src/components/ui/modal.tsx",
+   "src/components/ui/navigation-menu.tsx",
+   "src/components/ui/pagination.tsx",
+   "src/components/ui/phone-input.tsx",
+   "src/components/ui/radio.tsx",
+   "src/components/ui/resizable-panels.tsx",
+   "src/components/ui/resizable.tsx",
+   "src/components/ui/rich-text-editor.tsx",
+   "src/components/ui/search-input.tsx",
+   "src/components/ui/sidebar.tsx",
+   "src/components/ui/split-button.tsx",
+   "src/components/ui/status-badge.tsx",
+   "src/components/ui/tag-input.tsx",
+   "src/components/ui/tree-view.tsx",
+   "src/components/ui/wizard.tsx",
+   "src/hooks/usePrefetchRoutes.tsx"
+  ],
+  "componentes_com_nome_duplicado": [
+   "Accordion",
+   "AccordionItem",
+   "AnimatedCounter",
+   "BalancoView",
+   "BenchmarkingSetorial",
+   "CategorizacaoIABadge",
+   "ChartContainer",
+   "ComparativoRegimes",
+   "ContasPagarFilters",
+   "EmptyState",
+   "FAQAccordion",
+   "FieldLabel",
+   "FiltersBar",
+   "InfoTooltip",
+   "InsightsIA",
+   "KpiCard",
+   "KpiChip",
+   "LoadingSkeleton",
+   "MetaField",
+   "ObrigacoesAcessorias",
+   "QueueHistoryDialog",
+   "RadioGroup",
+   "SearchInput",
+   "Skeleton",
+   "SortDirection",
+   "StatsCards",
+   "StatusBadge",
+   "Step",
+   "StepPills",
+   "TransferenciaDialog"
+  ],
+  "scripts_orfaos": [
+   "scripts/ci/listar-excecoes-npm-nativo.py",
+   "scripts/integrity/06_secdef.sql",
+   "scripts/integrity/07_exec_grants.sql",
+   "scripts/integrity/08_rpc_tenant_scope.sql",
+   "scripts/integrity/09_views.sql",
+   "scripts/integrity/10_tenant_indexes.sql",
+   "scripts/integrity/11_pii_mask.sql",
+   "scripts/integrity/12_index_bloat.sql",
+   "scripts/integrity/13_unused_indexes.sql",
+   "scripts/integrity/15_views_pii_rpcs.sql",
+   "scripts/security/test-anon-surface.ts",
+   "scripts/security/test-privilege-baseline.sql",
+   "scripts/security/test-tenant-isolation.sql",
+   "scripts/security/test-tenant-policy-scope.sql",
+   "scripts/security/test-write-isolation.sql",
+   "scripts/simular-observabilidade-digest.ts",
+   "scripts/simular-preferencias-digest.ts",
+   "scripts/simular-projecao-conformidade.ts",
+   "scripts/validate-all.sh"
+  ],
+  "env_usadas_nao_declaradas": [
+   "DEV",
+   "MODE",
+   "NODE_ENV",
+   "SCENARIOS_COUNT"
+  ],
+  "ciclos_de_import": 6,
+  "possiveis_segredos_no_codigo": [
+   "scripts/ai-context/cenarios.mjs:102"
+  ]
+ },
+ "erros_do_gerador": []
+}

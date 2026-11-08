@@ -1,0 +1,8138 @@
+{
+ "aviso": "GERADO AUTOMATICAMENTE por scripts/ai-context/gerar.mjs — não editar à mão; será sobrescrito.",
+ "format_version": 2,
+ "total": 272,
+ "por_camada": {
+  "config": 1,
+  "contexts": 1,
+  "integrations": 3,
+  "lib": 254,
+  "python": 13
+ },
+ "arquivos": [
+  {
+   "arquivo": "scripts/admin/supabase_admin_ops.py",
+   "camada": "python",
+   "exports": [
+    "main",
+    "mask_email",
+    "mutate",
+    "req",
+    "section",
+    "want_verify_jwt",
+    "_SemRedirect"
+   ],
+   "linhas": 321,
+   "tabelas": [],
+   "rpcs": [],
+   "edges": [],
+   "env": [
+    "DELETE_TEST_USERS",
+    "SUPABASE_ACCESS_TOKEN",
+    "SUPABASE_PROJECT_REF",
+    "SUPABASE_SERVICE_ROLE_KEY"
+   ],
+   "externos": [
+    "json",
+    "os",
+    "pathlib",
+    "re",
+    "sys",
+    "urllib"
+   ],
+   "rotas_http": 0,
+   "usado_por": 0,
+   "usado_por_modulos": [],
+   "coberto_por_testes": 0,
+   "orfao": true
+  },
+  {
+   "arquivo": "scripts/ci/listar-excecoes-npm-nativo.py",
+   "camada": "python",
+   "exports": [
+    "arquivos_ts",
+    "main"
+   ],
+   "linhas": 95,
+   "tabelas": [],
+   "rpcs": [],
+   "edges": [],
+   "env": [],
+   "externos": [
+    "__future__",
+    "os",
+    "re",
+    "sys"
+   ],
+   "rotas_http": 0,
+   "usado_por": 0,
+   "usado_por_modulos": [],
+   "coberto_por_testes": 0,
+   "orfao": true
+  },
+  {
+   "arquivo": "scripts/graphify/benchmark.py",
+   "camada": "python",
+   "exports": [
+    "main",
+    "median_time",
+    "rg_hits",
+    "run_case",
+    "source_hits"
+   ],
+   "linhas": 97,
+   "tabelas": [],
+   "rpcs": [],
+   "edges": [],
+   "env": [],
+   "externos": [
+    "argparse",
+    "graph_quality",
+    "json",
+    "pathlib",
+    "run",
+    "statistics",
+    "subprocess",
+    "tempfile",
+    "time"
+   ],
+   "rotas_http": 0,
+   "usado_por": 0,
+   "usado_por_modulos": [],
+   "coberto_por_testes": 0,
+   "orfao": true
+  },
+  {
+   "arquivo": "scripts/graphify/code_references.py",
+   "camada": "python",
+   "exports": [
+    "correlate",
+    "edge_function_names",
+    "extract_references",
+    "line_of",
+    "main",
+    "source_files"
+   ],
+   "linhas": 153,
+   "tabelas": [],
+   "rpcs": [],
+   "edges": [],
+   "env": [],
+   "externos": [
+    "argparse",
+    "datetime",
+    "hashlib",
+    "json",
+    "pathlib",
+    "re",
+    "run",
+    "sql_inventory",
+    "tempfile",
+    "typescript_imports"
+   ],
+   "rotas_http": 0,
+   "usado_por": 0,
+   "usado_por_modulos": [],
+   "coberto_por_testes": 0,
+   "orfao": true
+  },
+  {
+   "arquivo": "scripts/graphify/edge_inventory.py",
+   "camada": "python",
+   "exports": [
+    "edge_files",
+    "inspect_edge",
+    "inventory",
+    "main",
+    "persist_evidence"
+   ],
+   "linhas": 119,
+   "tabelas": [],
+   "rpcs": [],
+   "edges": [],
+   "env": [],
+   "externos": [
+    "argparse",
+    "datetime",
+    "hashlib",
+    "json",
+    "pathlib",
+    "re",
+    "run",
+    "tempfile",
+    "typescript_imports"
+   ],
+   "rotas_http": 0,
+   "usado_por": 0,
+   "usado_por_modulos": [],
+   "coberto_por_testes": 0,
+   "orfao": true
+  },
+  {
+   "arquivo": "scripts/graphify/graph_quality.py",
+   "camada": "python",
+   "exports": [
+    "community_label",
+    "edges_of",
+    "latest_profile_files",
+    "main",
+    "matching_ids",
+    "quality_metrics",
+    "query_graph",
+    "shortest_path",
+    "summary_svg",
+    "validate_artifacts",
+    "validate_file_hashes",
+    "validate_freshness"
+   ],
+   "linhas": 252,
+   "tabelas": [],
+   "rpcs": [],
+   "edges": [],
+   "env": [],
+   "externos": [
+    "argparse",
+    "collections",
+    "hashlib",
+    "html",
+    "json",
+    "pathlib",
+    "re",
+    "run",
+    "tempfile"
+   ],
+   "rotas_http": 0,
+   "usado_por": 0,
+   "usado_por_modulos": [],
+   "coberto_por_testes": 0,
+   "orfao": true
+  },
+  {
+   "arquivo": "scripts/graphify/run.py",
+   "camada": "python",
+   "exports": [
+    "analyze",
+    "atomic_write_json",
+    "command",
+    "inventory",
+    "is_allowed_path",
+    "isolated_env",
+    "main",
+    "profile_config",
+    "selected_names",
+    "validate_graph"
+   ],
+   "linhas": 253,
+   "tabelas": [],
+   "rpcs": [],
+   "edges": [],
+   "env": [],
+   "externos": [
+    "argparse",
+    "datetime",
+    "hashlib",
+    "json",
+    "os",
+    "pathlib",
+    "re",
+    "shutil",
+    "subprocess",
+    "tempfile"
+   ],
+   "rotas_http": 0,
+   "usado_por": 0,
+   "usado_por_modulos": [],
+   "coberto_por_testes": 0,
+   "orfao": true
+  },
+  {
+   "arquivo": "scripts/graphify/sql_inventory.py",
+   "camada": "python",
+   "exports": [
+    "clean_name",
+    "dependencies_in_file",
+    "inventory",
+    "line_of",
+    "main",
+    "objects_in_file",
+    "skip_leading_trivia",
+    "split_statements"
+   ],
+   "linhas": 245,
+   "tabelas": [],
+   "rpcs": [],
+   "edges": [],
+   "env": [],
+   "externos": [
+    "argparse",
+    "collections",
+    "datetime",
+    "hashlib",
+    "json",
+    "pathlib",
+    "re",
+    "run",
+    "tempfile"
+   ],
+   "rotas_http": 0,
+   "usado_por": 0,
+   "usado_por_modulos": [],
+   "coberto_por_testes": 0,
+   "orfao": true
+  },
+  {
+   "arquivo": "scripts/graphify/typescript_imports.py",
+   "camada": "python",
+   "exports": [
+    "candidate_paths",
+    "extract_imports",
+    "line_of",
+    "resolve_imports"
+   ],
+   "linhas": 70,
+   "tabelas": [],
+   "rpcs": [],
+   "edges": [],
+   "env": [],
+   "externos": [
+    "pathlib",
+    "posixpath",
+    "re"
+   ],
+   "rotas_http": 0,
+   "usado_por": 0,
+   "usado_por_modulos": [],
+   "coberto_por_testes": 0,
+   "orfao": true
+  },
+  {
+   "arquivo": "scripts/regras_negocio/generate.py",
+   "camada": "python",
+   "exports": [
+    "analyze_code_file",
+    "balanced",
+    "detect_stack",
+    "dir_tree",
+    "extract_html_constraints",
+    "extract_zod",
+    "files_cell",
+    "git",
+    "header",
+    "is_app_code",
+    "is_archived_sql",
+    "is_test_file",
+    "llm_synthesis",
+    "log",
+    "main",
+    "md_table",
+    "op_from_chain",
+    "read_text",
+    "redact",
+    "rel",
+    "render_access",
+    "render_architecture",
+    "render_changes",
+    "render_database",
+    "render_database_pointer",
+    "render_dataflow",
+    "render_features",
+    "render_glossary",
+    "render_index",
+    "render_integrations",
+    "render_modules",
+    "render_overview",
+    "render_rules",
+    "squash",
+    "stable_hash",
+    "strip_sql_comments",
+    "trunc",
+    "upsert_pointer",
+    "walk_repo"
+   ],
+   "linhas": 2178,
+   "tabelas": [],
+   "rpcs": [],
+   "edges": [],
+   "env": [
+    "AI_CONTEXT_INDEX",
+    "AI_CONTEXT_MODEL",
+    "AI_CONTEXT_PROFILE",
+    "AI_CONTEXT_SCHEMA_SNAPSHOT",
+    "ANTHROPIC_API_KEY"
+   ],
+   "externos": [
+    "__future__",
+    "argparse",
+    "collections",
+    "datetime",
+    "hashlib",
+    "json",
+    "os",
+    "pathlib",
+    "re",
+    "subprocess",
+    "sys",
+    "urllib"
+   ],
+   "rotas_http": 0,
+   "usado_por": 0,
+   "usado_por_modulos": [],
+   "coberto_por_testes": 0,
+   "orfao": true
+  },
+  {
+   "arquivo": "scripts/regras_negocio/indice.py",
+   "camada": "python",
+   "exports": [
+    "entry_file",
+    "git",
+    "main",
+    "parse_dt",
+    "producer_health",
+    "read_manifest"
+   ],
+   "linhas": 237,
+   "tabelas": [],
+   "rpcs": [],
+   "edges": [],
+   "env": [],
+   "externos": [
+    "__future__",
+    "argparse",
+    "datetime",
+    "json",
+    "pathlib",
+    "re",
+    "subprocess",
+    "sys"
+   ],
+   "rotas_http": 0,
+   "usado_por": 0,
+   "usado_por_modulos": [],
+   "coberto_por_testes": 0,
+   "orfao": true
+  },
+  {
+   "arquivo": "scripts/security/test-supabase-config.py",
+   "camada": "python",
+   "exports": [
+    "main"
+   ],
+   "linhas": 47,
+   "tabelas": [],
+   "rpcs": [],
+   "edges": [],
+   "env": [],
+   "externos": [
+    "pathlib",
+    "sys",
+    "tomllib"
+   ],
+   "rotas_http": 0,
+   "usado_por": 0,
+   "usado_por_modulos": [],
+   "coberto_por_testes": 0,
+   "orfao": true
+  },
+  {
+   "arquivo": "scripts/supabase_snapshot/snapshot.py",
+   "camada": "python",
+   "exports": [
+    "api",
+    "api_section",
+    "approx",
+    "banner",
+    "build_function_callers",
+    "callers_status_table",
+    "code",
+    "diff_fingerprints",
+    "dumps",
+    "env_int",
+    "excluded_sql",
+    "fingerprints",
+    "get_columns",
+    "get_constraints",
+    "get_cron",
+    "get_cron_runs",
+    "get_db_stats",
+    "get_extensions",
+    "get_foreign",
+    "get_functions",
+    "get_grants",
+    "get_index_stats",
+    "get_indexes",
+    "get_lints",
+    "get_migrations",
+    "get_policies",
+    "get_queues",
+    "get_realtime",
+    "get_roles",
+    "get_schemas",
+    "get_sequences",
+    "get_server",
+    "get_storage",
+    "get_table_stats",
+    "get_tables",
+    "get_triggers",
+    "get_types",
+    "get_vault",
+    "get_views",
+    "get_webhooks",
+    "group",
+    "has_ext",
+    "has_table",
+    "human_bytes",
+    "introspect_api",
+    "introspect_db",
+    "is_caller_source",
+    "jsonable",
+    "log",
+    "main",
+    "md_cell",
+    "md_table",
+    "prepare_output_directory",
+    "q",
+    "record_error",
+    "redact",
+    "render_readme",
+    "render_relationships",
+    "render_simple",
+    "render_stats",
+    "render_tables",
+    "run_gen_types",
+    "run_pg_dump",
+    "rx_name_keys",
+    "scan_code_files",
+    "scrub",
+    "scrub_value",
+    "section",
+    "sha",
+    "slug",
+    "sql_without_routine_declarations",
+    "update_changelog",
+    "uslug",
+    "valid_previous_snapshot",
+    "write"
+   ],
+   "linhas": 1816,
+   "tabelas": [],
+   "rpcs": [],
+   "edges": [],
+   "env": [
+    "CODE_SCAN_DIRS",
+    "GEN_TYPES",
+    "PGDUMP",
+    "PGDUMP_SCHEMAS",
+    "REPO_ROOT",
+    "SNAPSHOT_DIR",
+    "SNAPSHOT_EXCLUDE_SCHEMAS",
+    "SNAPSHOT_INCLUDE_SCHEMAS",
+    "SUPABASE_ACCESS_TOKEN",
+    "SUPABASE_DB_URL",
+    "SUPABASE_PROJECT_REF",
+    "SUPABASE_SNAPSHOT_PUBLICACAO"
+   ],
+   "externos": [
+    "__future__",
+    "datetime",
+    "decimal",
+    "hashlib",
+    "json",
+    "os",
+    "pathlib",
+    "psycopg",
+    "re",
+    "shutil",
+    "subprocess",
+    "sys",
+    "typing",
+    "urllib"
+   ],
+   "rotas_http": 0,
+   "usado_por": 0,
+   "usado_por_modulos": [],
+   "coberto_por_testes": 0,
+   "orfao": true
+  },
+  {
+   "arquivo": "src/config/env.ts",
+   "camada": "config",
+   "exports": [
+    "Env",
+    "edgeFunctionUrl",
+    "env"
+   ],
+   "export_default": null,
+   "linhas": 113,
+   "tabelas": [],
+   "rpcs": [],
+   "edges": [],
+   "env": [
+    "VITE_BLING_CLIENT_ID",
+    "VITE_SENTRY_DSN",
+    "VITE_SUPABASE_PROJECT_ID",
+    "VITE_SUPABASE_PUBLISHABLE_KEY",
+    "VITE_SUPABASE_URL",
+    "VITE_VAPID_PUBLIC_KEY"
+   ],
+   "externos": [
+    "zod"
+   ],
+   "zod_schemas": 1,
+   "flags": [],
+   "papeis": [],
+   "usado_por": 17,
+   "usado_por_modulos": [
+    "components/admin",
+    "components/copilot",
+    "components/expert",
+    "components/integracoes",
+    "components/tributario",
+    "hooks",
+    "hooks/bling",
+    "hooks/financial",
+    "integrations/supabase",
+    "lib",
+    "pages"
+   ],
+   "coberto_por_testes": 0,
+   "orfao": false
+  },
+  {
+   "arquivo": "src/contexts/useEmpresaScope.ts",
+   "camada": "contexts",
+   "exports": [
+    "EmpresaScopeContext",
+    "EmpresaScopeContextValue",
+    "ScopeMode",
+    "useEmpresaScope"
+   ],
+   "export_default": null,
+   "linhas": 46,
+   "tabelas": [],
+   "rpcs": [],
+   "edges": [],
+   "env": [],
+   "externos": [
+    "react"
+   ],
+   "zod_schemas": 0,
+   "flags": [],
+   "papeis": [],
+   "usado_por": 11,
+   "usado_por_modulos": [
+    "components/dashboard",
+    "components/empresa",
+    "components/layout",
+    "contexts",
+    "hooks",
+    "pages",
+    "pages/tributario"
+   ],
+   "coberto_por_testes": 1,
+   "orfao": false
+  },
+  {
+   "arquivo": "src/integrations/lovable/index.ts",
+   "camada": "integrations",
+   "exports": [
+    "lovable"
+   ],
+   "export_default": null,
+   "linhas": 39,
+   "tabelas": [],
+   "rpcs": [],
+   "edges": [],
+   "env": [],
+   "externos": [
+    "@lovable.dev/cloud-auth-js"
+   ],
+   "zod_schemas": 0,
+   "flags": [],
+   "papeis": [],
+   "usado_por": 1,
+   "usado_por_modulos": [
+    "components/auth"
+   ],
+   "coberto_por_testes": 0,
+   "orfao": false
+  },
+  {
+   "arquivo": "src/integrations/supabase/client.ts",
+   "camada": "integrations",
+   "exports": [
+    "supabase",
+    "verifySupabaseHealth"
+   ],
+   "export_default": null,
+   "linhas": 99,
+   "tabelas": [],
+   "rpcs": [],
+   "edges": [],
+   "env": [],
+   "externos": [
+    "@supabase/supabase-js"
+   ],
+   "zod_schemas": 0,
+   "flags": [],
+   "papeis": [],
+   "usado_por": 308,
+   "usado_por_modulos": [
+    "components/admin",
+    "components/analytics",
+    "components/aprovacoes",
+    "components/asaas",
+    "components/auth",
+    "components/boletos",
+    "components/centros-custo",
+    "components/clientes",
+    "components/cobranca",
+    "components/common",
+    "components/compras",
+    "components/comprovantes",
+    "components/conciliacao",
+    "components/configuracoes",
+    "components/contabilidade",
+    "components/contas-bancarias",
+    "components/contas-pagar",
+    "components/contas-receber",
+    "components/copilot",
+    "components/dashboard",
+    "components/demonstrativos",
+    "components/empresa",
+    "components/expert",
+    "components/financeiro",
+    "components/fluxo-caixa",
+    "components/fornecedores",
+    "components/integracoes",
+    "components/pix-hub",
+    "components/relatorios",
+    "components/security",
+    "components/simuladores",
+    "components/tesouraria",
+    "components/tributario",
+    "components/usuarios",
+    "hooks",
+    "hooks/bling",
+    "hooks/expert-actions",
+    "hooks/financial",
+    "hooks/saved-filter-alerts",
+    "integrations/lovable",
+    "lib",
+    "lib/financeiro",
+    "lib/sso",
+    "lib/tributario",
+    "pages",
+    "pages/admin",
+    "pages/auth",
+    "pages/bloqueios-duplicidade",
+    "pages/configuracoes",
+    "pages/tributario"
+   ],
+   "coberto_por_testes": 2,
+   "orfao": false
+  },
+  {
+   "arquivo": "src/integrations/supabase/types.ts",
+   "camada": "integrations",
+   "exports": [
+    "CompositeTypes",
+    "Constants",
+    "Database",
+    "Enums",
+    "Json",
+    "Tables",
+    "TablesInsert",
+    "TablesUpdate"
+   ],
+   "export_default": null,
+   "linhas": 21413,
+   "tabelas": [],
+   "rpcs": [],
+   "edges": [],
+   "env": [],
+   "externos": [],
+   "zod_schemas": 0,
+   "flags": [],
+   "papeis": [],
+   "usado_por": 34,
+   "usado_por_modulos": [
+    "components/centros-custo",
+    "components/cobranca",
+    "components/conciliacao",
+    "components/contas-receber",
+    "hooks",
+    "hooks/expert-actions",
+    "hooks/financial",
+    "integrations/supabase",
+    "lib",
+    "lib/financeiro",
+    "pages",
+    "pages/ContasPagar",
+    "pages/tributario"
+   ],
+   "coberto_por_testes": 0,
+   "orfao": false
+  },
+  {
+   "arquivo": "src/lib/adaptive-chunk.ts",
+   "camada": "lib",
+   "exports": [
+    "AdaptiveAdjustment",
+    "AdaptiveChunkController",
+    "AdaptiveChunkOptions",
+    "BatchReport",
+    "createAdaptiveChunkController"
+   ],
+   "export_default": null,
+   "linhas": 136,
+   "tabelas": [],
+   "rpcs": [],
+   "edges": [],
+   "env": [],
+   "externos": [],
+   "zod_schemas": 0,
+   "flags": [],
+   "papeis": [],
+   "usado_por": 1,
+   "usado_por_modulos": [
+    "hooks"
+   ],
+   "coberto_por_testes": 1,
+   "orfao": false
+  },
+  {
+   "arquivo": "src/lib/anomalia-routes.ts",
+   "camada": "lib",
+   "exports": [
+    "ANOMALIA_DRAWER_EVENT",
+    "dispatchOpenAnomaliaDrawer",
+    "getEntidadeListInfo",
+    "getEntidadeUrl"
+   ],
+   "export_default": null,
+   "linhas": 54,
+   "tabelas": [],
+   "rpcs": [],
+   "edges": [],
+   "env": [],
+   "externos": [],
+   "zod_schemas": 0,
+   "flags": [],
+   "papeis": [],
+   "usado_por": 7,
+   "usado_por_modulos": [
+    "components/admin",
+    "components/insights-ia",
+    "hooks"
+   ],
+   "coberto_por_testes": 1,
+   "orfao": false
+  },
+  {
+   "arquivo": "src/lib/arquitetura/analisador-imports.ts",
+   "camada": "lib",
+   "exports": [
+    "ArestaObservada",
+    "ImportExtraido",
+    "RelatorioDrift",
+    "analisarDrift",
+    "arquivosDoModulo",
+    "construirGrafoObservado",
+    "extrairImports",
+    "moduloDoArquivo",
+    "resolverEspecificador"
+   ],
+   "export_default": null,
+   "linhas": 228,
+   "tabelas": [],
+   "rpcs": [],
+   "edges": [],
+   "env": [],
+   "externos": [
+    "node:fs",
+    "node:path"
+   ],
+   "zod_schemas": 0,
+   "flags": [],
+   "papeis": [],
+   "usado_por": 1,
+   "usado_por_modulos": [],
+   "coberto_por_testes": 2,
+   "orfao": false
+  },
+  {
+   "arquivo": "src/lib/arquitetura/escopo-empresa.ts",
+   "camada": "lib",
+   "exports": [
+    "BlocoQuery",
+    "ViolacaoEscopo",
+    "analisarEscopoEmpresa",
+    "extrairBlocosUseQuery",
+    "fatiarBalanceado",
+    "resolverChavePorReferencia"
+   ],
+   "export_default": null,
+   "linhas": 200,
+   "tabelas": [],
+   "rpcs": [],
+   "edges": [],
+   "env": [],
+   "externos": [],
+   "zod_schemas": 0,
+   "flags": [],
+   "papeis": [],
+   "usado_por": 0,
+   "usado_por_modulos": [],
+   "coberto_por_testes": 1,
+   "orfao": true
+  },
+  {
+   "arquivo": "src/lib/arquitetura/modulos.ts",
+   "camada": "lib",
+   "exports": [
+    "ADAPTERS_AUTORIZADOS",
+    "CAMADAS",
+    "Camada",
+    "CamadaId",
+    "IMPORTS_PROIBIDOS_NO_NUCLEO",
+    "MODULOS",
+    "Modulo",
+    "ModuloId",
+    "detectarCiclos",
+    "modulosDaCamada",
+    "obterModulo",
+    "violacoesDeCamada"
+   ],
+   "export_default": null,
+   "linhas": 308,
+   "tabelas": [],
+   "rpcs": [],
+   "edges": [],
+   "env": [],
+   "externos": [],
+   "zod_schemas": 0,
+   "flags": [],
+   "papeis": [],
+   "usado_por": 2,
+   "usado_por_modulos": [
+    "lib/arquitetura",
+    "pages/tributario"
+   ],
+   "coberto_por_testes": 2,
+   "orfao": false
+  },
+  {
+   "arquivo": "src/lib/audit-diff.ts",
+   "camada": "lib",
+   "exports": [
+    "CampoChave",
+    "DiffField",
+    "DiffKind",
+    "DiffResult",
+    "computeDiff",
+    "extractCamposChave",
+    "isEmptyDiff"
+   ],
+   "export_default": null,
+   "linhas": 124,
+   "tabelas": [],
+   "rpcs": [],
+   "edges": [],
+   "env": [],
+   "externos": [],
+   "zod_schemas": 0,
+   "flags": [],
+   "papeis": [],
+   "usado_por": 5,
+   "usado_por_modulos": [
+    "components/audit"
+   ],
+   "coberto_por_testes": 1,
+   "orfao": false
+  },
+  {
+   "arquivo": "src/lib/audit-logger.ts",
+   "camada": "lib",
+   "exports": [
+    "AuditActionType",
+    "AuditValue",
+    "logUserAction"
+   ],
+   "export_default": null,
+   "linhas": 56,
+   "tabelas": [
+    "user_action_audit"
+   ],
+   "rpcs": [],
+   "edges": [],
+   "env": [],
+   "externos": [],
+   "zod_schemas": 0,
+   "flags": [],
+   "papeis": [],
+   "usado_por": 4,
+   "usado_por_modulos": [
+    "components/contabilidade"
+   ],
+   "coberto_por_testes": 0,
+   "orfao": false
+  },
+  {
+   "arquivo": "src/lib/audit-priority.ts",
+   "camada": "lib",
+   "exports": [
+    "AuditActionLike",
+    "AuditPriority",
+    "AuditPriorityInput",
+    "PRIORITY_META",
+    "classifyAuditPriority",
+    "toastForPriority"
+   ],
+   "export_default": null,
+   "linhas": 178,
+   "tabelas": [],
+   "rpcs": [],
+   "edges": [],
+   "env": [],
+   "externos": [
+    "sonner"
+   ],
+   "zod_schemas": 0,
+   "flags": [],
+   "papeis": [],
+   "usado_por": 1,
+   "usado_por_modulos": [
+    "hooks"
+   ],
+   "coberto_por_testes": 1,
+   "orfao": false
+  },
+  {
+   "arquivo": "src/lib/auth-cleanup.ts",
+   "camada": "lib",
+   "exports": [
+    "PRESERVED_LOCAL_KEYS",
+    "runAuthCleanup"
+   ],
+   "export_default": null,
+   "linhas": 150,
+   "tabelas": [],
+   "rpcs": [],
+   "edges": [],
+   "env": [],
+   "externos": [
+    "@tanstack/react-query"
+   ],
+   "zod_schemas": 0,
+   "flags": [],
+   "papeis": [],
+   "usado_por": 2,
+   "usado_por_modulos": [
+    "components/auth",
+    "hooks"
+   ],
+   "coberto_por_testes": 0,
+   "orfao": false
+  },
+  {
+   "arquivo": "src/lib/barcode-parser.ts",
+   "camada": "lib",
+   "exports": [
+    "DadosBoleto",
+    "formatarLinhaDigitavel",
+    "parseBoleto",
+    "validarCodigoBarras"
+   ],
+   "export_default": null,
+   "linhas": 296,
+   "tabelas": [],
+   "rpcs": [],
+   "edges": [],
+   "env": [],
+   "externos": [],
+   "zod_schemas": 0,
+   "flags": [],
+   "papeis": [],
+   "usado_por": 2,
+   "usado_por_modulos": [
+    "components/contas-pagar"
+   ],
+   "coberto_por_testes": 1,
+   "orfao": false
+  },
+  {
+   "arquivo": "src/lib/brazilian-validators.ts",
+   "camada": "lib",
+   "exports": [],
+   "export_default": null,
+   "linhas": 6,
+   "tabelas": [],
+   "rpcs": [],
+   "edges": [],
+   "env": [],
+   "externos": [],
+   "zod_schemas": 0,
+   "flags": [],
+   "papeis": [],
+   "usado_por": 2,
+   "usado_por_modulos": [
+    "lib",
+    "pages"
+   ],
+   "coberto_por_testes": 2,
+   "orfao": false
+  },
+  {
+   "arquivo": "src/lib/brazilian-validators/bank.ts",
+   "camada": "lib",
+   "exports": [
+    "validateBankAccount"
+   ],
+   "export_default": null,
+   "linhas": 10,
+   "tabelas": [],
+   "rpcs": [],
+   "edges": [],
+   "env": [],
+   "externos": [],
+   "zod_schemas": 0,
+   "flags": [],
+   "papeis": [],
+   "usado_por": 1,
+   "usado_por_modulos": [
+    "lib/brazilian-validators"
+   ],
+   "coberto_por_testes": 0,
+   "orfao": false
+  },
+  {
+   "arquivo": "src/lib/brazilian-validators/cep.ts",
+   "camada": "lib",
+   "exports": [
+    "formatCEP",
+    "validateCEP"
+   ],
+   "export_default": null,
+   "linhas": 11,
+   "tabelas": [],
+   "rpcs": [],
+   "edges": [],
+   "env": [],
+   "externos": [],
+   "zod_schemas": 0,
+   "flags": [],
+   "papeis": [],
+   "usado_por": 1,
+   "usado_por_modulos": [
+    "lib/brazilian-validators"
+   ],
+   "coberto_por_testes": 0,
+   "orfao": false
+  },
+  {
+   "arquivo": "src/lib/brazilian-validators/cnpj.ts",
+   "camada": "lib",
+   "exports": [
+    "formatCNPJ",
+    "generateCNPJ",
+    "validateCNPJ"
+   ],
+   "export_default": null,
+   "linhas": 47,
+   "tabelas": [],
+   "rpcs": [],
+   "edges": [],
+   "env": [],
+   "externos": [],
+   "zod_schemas": 0,
+   "flags": [],
+   "papeis": [],
+   "usado_por": 4,
+   "usado_por_modulos": [
+    "components/tributario",
+    "lib/brazilian-validators"
+   ],
+   "coberto_por_testes": 0,
+   "orfao": false
+  },
+  {
+   "arquivo": "src/lib/brazilian-validators/cpf.ts",
+   "camada": "lib",
+   "exports": [
+    "formatCPF",
+    "generateCPF",
+    "validateCPF"
+   ],
+   "export_default": null,
+   "linhas": 44,
+   "tabelas": [],
+   "rpcs": [],
+   "edges": [],
+   "env": [],
+   "externos": [],
+   "zod_schemas": 0,
+   "flags": [],
+   "papeis": [],
+   "usado_por": 3,
+   "usado_por_modulos": [
+    "lib/brazilian-validators"
+   ],
+   "coberto_por_testes": 0,
+   "orfao": false
+  },
+  {
+   "arquivo": "src/lib/brazilian-validators/documento.ts",
+   "camada": "lib",
+   "exports": [
+    "formatCPFOrCNPJ",
+    "validateCPFOrCNPJ"
+   ],
+   "export_default": null,
+   "linhas": 17,
+   "tabelas": [],
+   "rpcs": [],
+   "edges": [],
+   "env": [],
+   "externos": [],
+   "zod_schemas": 0,
+   "flags": [],
+   "papeis": [],
+   "usado_por": 1,
+   "usado_por_modulos": [
+    "lib/brazilian-validators"
+   ],
+   "coberto_por_testes": 0,
+   "orfao": false
+  },
+  {
+   "arquivo": "src/lib/brazilian-validators/estados.ts",
+   "camada": "lib",
+   "exports": [
+    "getAllStates",
+    "getStateName",
+    "validateState"
+   ],
+   "export_default": null,
+   "linhas": 44,
+   "tabelas": [],
+   "rpcs": [],
+   "edges": [],
+   "env": [],
+   "externos": [],
+   "zod_schemas": 0,
+   "flags": [],
+   "papeis": [],
+   "usado_por": 2,
+   "usado_por_modulos": [
+    "components/tributario",
+    "lib/brazilian-validators"
+   ],
+   "coberto_por_testes": 0,
+   "orfao": false
+  },
+  {
+   "arquivo": "src/lib/brazilian-validators/index.ts",
+   "camada": "lib",
+   "exports": [],
+   "export_default": null,
+   "linhas": 9,
+   "tabelas": [],
+   "rpcs": [],
+   "edges": [],
+   "env": [],
+   "externos": [],
+   "zod_schemas": 0,
+   "flags": [],
+   "papeis": [],
+   "usado_por": 1,
+   "usado_por_modulos": [
+    "lib"
+   ],
+   "coberto_por_testes": 0,
+   "orfao": false
+  },
+  {
+   "arquivo": "src/lib/brazilian-validators/phone.ts",
+   "camada": "lib",
+   "exports": [
+    "formatPhone",
+    "validatePhone"
+   ],
+   "export_default": null,
+   "linhas": 16,
+   "tabelas": [],
+   "rpcs": [],
+   "edges": [],
+   "env": [],
+   "externos": [],
+   "zod_schemas": 0,
+   "flags": [],
+   "papeis": [],
+   "usado_por": 2,
+   "usado_por_modulos": [
+    "lib/brazilian-validators"
+   ],
+   "coberto_por_testes": 0,
+   "orfao": false
+  },
+  {
+   "arquivo": "src/lib/brazilian-validators/pix.ts",
+   "camada": "lib",
+   "exports": [
+    "validatePIXKey"
+   ],
+   "export_default": null,
+   "linhas": 39,
+   "tabelas": [],
+   "rpcs": [],
+   "edges": [],
+   "env": [],
+   "externos": [],
+   "zod_schemas": 0,
+   "flags": [],
+   "papeis": [],
+   "usado_por": 1,
+   "usado_por_modulos": [
+    "lib/brazilian-validators"
+   ],
+   "coberto_por_testes": 0,
+   "orfao": false
+  },
+  {
+   "arquivo": "src/lib/cashflow-scenarios.ts",
+   "camada": "lib",
+   "exports": [
+    "AlertaRuptura",
+    "CENARIOS_CONFIG",
+    "CenarioConfig",
+    "CenarioTipo",
+    "ProjecaoCenario",
+    "ProjecaoDiaria",
+    "calcularMetricasCenarios",
+    "detectarAlertasRuptura",
+    "formatarDadosGrafico",
+    "gerarProjecaoCenario",
+    "gerarTodasProjecoes"
+   ],
+   "export_default": null,
+   "linhas": 219,
+   "tabelas": [],
+   "rpcs": [],
+   "edges": [],
+   "env": [],
+   "externos": [],
+   "zod_schemas": 0,
+   "flags": [],
+   "papeis": [],
+   "usado_por": 6,
+   "usado_por_modulos": [
+    "components/fluxo-caixa",
+    "hooks"
+   ],
+   "coberto_por_testes": 1,
+   "orfao": false
+  },
+  {
+   "arquivo": "src/lib/cfc-validator.ts",
+   "camada": "lib",
+   "exports": [
+    "DuplicidadeCFC",
+    "NaturezaConta",
+    "PREFIXO_POR_NATUREZA",
+    "PrefixoCheck",
+    "detectarDuplicidades",
+    "sugerirCorrecaoPrefixo",
+    "validarFormatoCFC",
+    "validarHierarquiaCFC",
+    "validarPrefixoNatureza"
+   ],
+   "export_default": null,
+   "linhas": 101,
+   "tabelas": [],
+   "rpcs": [],
+   "edges": [],
+   "env": [],
+   "externos": [],
+   "zod_schemas": 0,
+   "flags": [],
+   "papeis": [],
+   "usado_por": 1,
+   "usado_por_modulos": [
+    "hooks"
+   ],
+   "coberto_por_testes": 1,
+   "orfao": false
+  },
+  {
+   "arquivo": "src/lib/collection-engine.ts",
+   "camada": "lib",
+   "exports": [
+    "COLLECTION_STAGES",
+    "CollectionStage",
+    "calculateCollectionStage",
+    "calculateDynamicScore"
+   ],
+   "export_default": null,
+   "linhas": 63,
+   "tabelas": [],
+   "rpcs": [],
+   "edges": [],
+   "env": [],
+   "externos": [],
+   "zod_schemas": 0,
+   "flags": [],
+   "papeis": [],
+   "usado_por": 1,
+   "usado_por_modulos": [
+    "hooks"
+   ],
+   "coberto_por_testes": 1,
+   "orfao": false
+  },
+  {
+   "arquivo": "src/lib/compras/pedidos.ts",
+   "camada": "lib",
+   "exports": [
+    "MetricasPedidosCompra",
+    "PedidoCompraResumo",
+    "calcularMetricasPedidosCompra"
+   ],
+   "export_default": null,
+   "linhas": 35,
+   "tabelas": [],
+   "rpcs": [],
+   "edges": [],
+   "env": [],
+   "externos": [],
+   "zod_schemas": 0,
+   "flags": [],
+   "papeis": [],
+   "usado_por": 1,
+   "usado_por_modulos": [
+    "pages"
+   ],
+   "coberto_por_testes": 1,
+   "orfao": false
+  },
+  {
+   "arquivo": "src/lib/conciliacao-page-helpers.ts",
+   "camada": "lib",
+   "exports": [
+    "ConfigConciliacaoConta",
+    "TransacaoImportada",
+    "aplicarConciliacoesAutomaticas",
+    "buscarConfigConciliacao",
+    "carregarTransacoesBanco",
+    "filtrarTransacoes",
+    "montarExportData",
+    "montarLancamentosSistema"
+   ],
+   "export_default": null,
+   "linhas": 349,
+   "tabelas": [
+    "contas_bancarias",
+    "transacoes_bancarias",
+    "webhooks_log"
+   ],
+   "rpcs": [],
+   "edges": [],
+   "env": [],
+   "externos": [
+    "sonner"
+   ],
+   "zod_schemas": 0,
+   "flags": [],
+   "papeis": [],
+   "usado_por": 2,
+   "usado_por_modulos": [
+    "hooks"
+   ],
+   "coberto_por_testes": 0,
+   "orfao": false
+  },
+  {
+   "arquivo": "src/lib/concurrency-limiter.ts",
+   "camada": "lib",
+   "exports": [
+    "ConcurrencyLimiter",
+    "LimitedRunner",
+    "createConcurrencyLimiter",
+    "runWithConcurrency"
+   ],
+   "export_default": null,
+   "linhas": 84,
+   "tabelas": [],
+   "rpcs": [],
+   "edges": [],
+   "env": [],
+   "externos": [],
+   "zod_schemas": 0,
+   "flags": [],
+   "papeis": [],
+   "usado_por": 1,
+   "usado_por_modulos": [
+    "hooks"
+   ],
+   "coberto_por_testes": 1,
+   "orfao": false
+  },
+  {
+   "arquivo": "src/lib/console-guard.ts",
+   "camada": "lib",
+   "exports": [],
+   "export_default": null,
+   "linhas": 29,
+   "tabelas": [],
+   "rpcs": [],
+   "edges": [],
+   "env": [
+    "DEV"
+   ],
+   "externos": [],
+   "zod_schemas": 0,
+   "flags": [],
+   "papeis": [],
+   "usado_por": 1,
+   "usado_por_modulos": [],
+   "coberto_por_testes": 0,
+   "orfao": false
+  },
+  {
+   "arquivo": "src/lib/contabil/balancete-utils.ts",
+   "camada": "lib",
+   "exports": [
+    "BalanceteFilterOptions",
+    "BalanceteRow",
+    "BalanceteTotais",
+    "computeBalanceteTotais",
+    "filterBalancete",
+    "round2",
+    "splitSaldo"
+   ],
+   "export_default": null,
+   "linhas": 114,
+   "tabelas": [],
+   "rpcs": [],
+   "edges": [],
+   "env": [],
+   "externos": [],
+   "zod_schemas": 0,
+   "flags": [],
+   "papeis": [],
+   "usado_por": 5,
+   "usado_por_modulos": [
+    "components/contabilidade",
+    "hooks"
+   ],
+   "coberto_por_testes": 1,
+   "orfao": false
+  },
+  {
+   "arquivo": "src/lib/contabil/indices.ts",
+   "camada": "lib",
+   "exports": [
+    "AGREGADOS_ZERO",
+    "AgregadosContabeis",
+    "CATEGORIA_LABEL",
+    "CategoriaIndice",
+    "FaixaIndice",
+    "FormatoIndice",
+    "Indicador",
+    "calcularIndices",
+    "classificar",
+    "formatarIndice",
+    "round2",
+    "safeDiv",
+    "variacao"
+   ],
+   "export_default": null,
+   "linhas": 447,
+   "tabelas": [],
+   "rpcs": [],
+   "edges": [],
+   "env": [],
+   "externos": [],
+   "zod_schemas": 0,
+   "flags": [],
+   "papeis": [],
+   "usado_por": 5,
+   "usado_por_modulos": [
+    "components/contabilidade",
+    "hooks"
+   ],
+   "coberto_por_testes": 3,
+   "orfao": false
+  },
+  {
+   "arquivo": "src/lib/contabil/termos-livro.ts",
+   "camada": "lib",
+   "exports": [
+    "TermoParams",
+    "TipoLivro",
+    "buildTermoAbertura",
+    "buildTermoEncerramento",
+    "dataPorExtenso",
+    "formatarDataIso"
+   ],
+   "export_default": null,
+   "linhas": 133,
+   "tabelas": [],
+   "rpcs": [],
+   "edges": [],
+   "env": [],
+   "externos": [],
+   "zod_schemas": 0,
+   "flags": [],
+   "papeis": [],
+   "usado_por": 1,
+   "usado_por_modulos": [
+    "lib/export-contabil"
+   ],
+   "coberto_por_testes": 1,
+   "orfao": false
+  },
+  {
+   "arquivo": "src/lib/contabilidade/demonstrativos-competencia.ts",
+   "camada": "lib",
+   "exports": [
+    "BalancoLinha",
+    "ContaNaoClassificada",
+    "DRELinha",
+    "DemonstrativosResult",
+    "FonteDemonstrativo",
+    "PartidaRow",
+    "calcularPorCompetencia"
+   ],
+   "export_default": null,
+   "linhas": 412,
+   "tabelas": [],
+   "rpcs": [],
+   "edges": [],
+   "env": [],
+   "externos": [],
+   "zod_schemas": 0,
+   "flags": [],
+   "papeis": [],
+   "usado_por": 1,
+   "usado_por_modulos": [
+    "hooks"
+   ],
+   "coberto_por_testes": 0,
+   "orfao": false
+  },
+  {
+   "arquivo": "src/lib/correlation-id.ts",
+   "camada": "lib",
+   "exports": [
+    "CORRELATION_HEADER",
+    "getCorrelationId",
+    "newCorrelationId",
+    "withCorrelationHeader"
+   ],
+   "export_default": null,
+   "linhas": 50,
+   "tabelas": [],
+   "rpcs": [],
+   "edges": [],
+   "env": [],
+   "externos": [],
+   "zod_schemas": 0,
+   "flags": [],
+   "papeis": [],
+   "usado_por": 1,
+   "usado_por_modulos": [
+    "integrations/supabase"
+   ],
+   "coberto_por_testes": 1,
+   "orfao": false
+  },
+  {
+   "arquivo": "src/lib/csv-importer.ts",
+   "camada": "lib",
+   "exports": [
+    "CsvKind",
+    "CsvParseResult",
+    "FaturamentoRow",
+    "FolhaRow",
+    "downloadCsvTemplate",
+    "parseCsv"
+   ],
+   "export_default": null,
+   "linhas": 230,
+   "tabelas": [],
+   "rpcs": [],
+   "edges": [],
+   "env": [],
+   "externos": [],
+   "zod_schemas": 0,
+   "flags": [],
+   "papeis": [],
+   "usado_por": 3,
+   "usado_por_modulos": [
+    "components/tributario"
+   ],
+   "coberto_por_testes": 1,
+   "orfao": false
+  },
+  {
+   "arquivo": "src/lib/currency.ts",
+   "camada": "lib",
+   "exports": [
+    "CurrencyCode",
+    "CurrencyInfo",
+    "calculateDiscount",
+    "calculateInstallments",
+    "calculatePercentage",
+    "calculateTax",
+    "centsToValue",
+    "compareCurrency",
+    "currencyEquals",
+    "formatCurrency",
+    "formatCurrencyRange",
+    "getAllCurrencies",
+    "getCurrencyInfo",
+    "getPercentage",
+    "isValidCurrencyAmount",
+    "parseCurrency",
+    "roundCurrency",
+    "sumCurrency",
+    "valueToCents"
+   ],
+   "export_default": null,
+   "linhas": 374,
+   "tabelas": [],
+   "rpcs": [],
+   "edges": [],
+   "env": [],
+   "externos": [],
+   "zod_schemas": 0,
+   "flags": [],
+   "papeis": [],
+   "usado_por": 9,
+   "usado_por_modulos": [
+    "components/asaas",
+    "components/ui",
+    "pages"
+   ],
+   "coberto_por_testes": 1,
+   "orfao": false
+  },
+  {
+   "arquivo": "src/lib/edge-function-error.ts",
+   "camada": "lib",
+   "exports": [
+    "EdgeErrorBody",
+    "EdgeFunctionError",
+    "handleEdgeError",
+    "invokeEdge",
+    "normalizeEdgeError"
+   ],
+   "export_default": null,
+   "linhas": 265,
+   "tabelas": [],
+   "rpcs": [],
+   "edges": [],
+   "env": [],
+   "externos": [
+    "@supabase/supabase-js",
+    "sonner"
+   ],
+   "zod_schemas": 0,
+   "flags": [],
+   "papeis": [],
+   "usado_por": 4,
+   "usado_por_modulos": [
+    "hooks"
+   ],
+   "coberto_por_testes": 1,
+   "orfao": false
+  },
+  {
+   "arquivo": "src/lib/error-tracking.ts",
+   "camada": "lib",
+   "exports": [
+    "errorTracker",
+    "initSentry",
+    "redactPath",
+    "reportErrorToTracker",
+    "withErrorTracking"
+   ],
+   "export_default": null,
+   "linhas": 319,
+   "tabelas": [],
+   "rpcs": [],
+   "edges": [],
+   "env": [
+    "DEV"
+   ],
+   "externos": [
+    "@sentry/react"
+   ],
+   "zod_schemas": 0,
+   "flags": [],
+   "papeis": [],
+   "usado_por": 5,
+   "usado_por_modulos": [
+    "components/error",
+    "lib"
+   ],
+   "coberto_por_testes": 1,
+   "orfao": false
+  },
+  {
+   "arquivo": "src/lib/export-contabil.ts",
+   "camada": "lib",
+   "exports": [],
+   "export_default": null,
+   "linhas": 5,
+   "tabelas": [],
+   "rpcs": [],
+   "edges": [],
+   "env": [],
+   "externos": [],
+   "zod_schemas": 0,
+   "flags": [],
+   "papeis": [],
+   "usado_por": 7,
+   "usado_por_modulos": [
+    "components/contabilidade"
+   ],
+   "coberto_por_testes": 0,
+   "orfao": false
+  },
+  {
+   "arquivo": "src/lib/export-contabil/auditoria-cfc.ts",
+   "camada": "lib",
+   "exports": [
+    "exportAuditoriaCFCCSV",
+    "exportAuditoriaCFCPDF"
+   ],
+   "export_default": null,
+   "linhas": 209,
+   "tabelas": [],
+   "rpcs": [],
+   "edges": [],
+   "env": [],
+   "externos": [
+    "date-fns",
+    "jspdf",
+    "jspdf-autotable"
+   ],
+   "zod_schemas": 0,
+   "flags": [],
+   "papeis": [],
+   "usado_por": 1,
+   "usado_por_modulos": [
+    "lib/export-contabil"
+   ],
+   "coberto_por_testes": 0,
+   "orfao": false
+  },
+  {
+   "arquivo": "src/lib/export-contabil/diario.ts",
+   "camada": "lib",
+   "exports": [
+    "exportDiarioCSV",
+    "exportDiarioPDF"
+   ],
+   "export_default": null,
+   "linhas": 100,
+   "tabelas": [],
+   "rpcs": [],
+   "edges": [],
+   "env": [],
+   "externos": [
+    "jspdf",
+    "jspdf-autotable"
+   ],
+   "zod_schemas": 0,
+   "flags": [],
+   "papeis": [],
+   "usado_por": 1,
+   "usado_por_modulos": [
+    "lib/export-contabil"
+   ],
+   "coberto_por_testes": 0,
+   "orfao": false
+  },
+  {
+   "arquivo": "src/lib/export-contabil/index.ts",
+   "camada": "lib",
+   "exports": [
+    "exportAuditoriaCFCCSV",
+    "exportAuditoriaCFCPDF",
+    "exportDiarioCSV",
+    "exportDiarioPDF",
+    "exportLivroDiarioOficialPDF",
+    "exportLivroRazaoOficialPDF",
+    "exportRazaoCSV",
+    "exportRazaoPDF"
+   ],
+   "export_default": null,
+   "linhas": 16,
+   "tabelas": [],
+   "rpcs": [],
+   "edges": [],
+   "env": [],
+   "externos": [],
+   "zod_schemas": 0,
+   "flags": [],
+   "papeis": [],
+   "usado_por": 1,
+   "usado_por_modulos": [
+    "lib"
+   ],
+   "coberto_por_testes": 0,
+   "orfao": false
+  },
+  {
+   "arquivo": "src/lib/export-contabil/livro-oficial.ts",
+   "camada": "lib",
+   "exports": [
+    "LivroOficialParams",
+    "exportLivroDiarioOficialPDF",
+    "exportLivroRazaoOficialPDF"
+   ],
+   "export_default": null,
+   "linhas": 220,
+   "tabelas": [],
+   "rpcs": [],
+   "edges": [],
+   "env": [],
+   "externos": [
+    "jspdf",
+    "jspdf-autotable"
+   ],
+   "zod_schemas": 0,
+   "flags": [],
+   "papeis": [],
+   "usado_por": 1,
+   "usado_por_modulos": [
+    "lib/export-contabil"
+   ],
+   "coberto_por_testes": 0,
+   "orfao": false
+  },
+  {
+   "arquivo": "src/lib/export-contabil/pdf-common.ts",
+   "camada": "lib",
+   "exports": [
+    "DocWithAT",
+    "drawFooter",
+    "drawHeader"
+   ],
+   "export_default": null,
+   "linhas": 39,
+   "tabelas": [],
+   "rpcs": [],
+   "edges": [],
+   "env": [],
+   "externos": [
+    "date-fns",
+    "jspdf"
+   ],
+   "zod_schemas": 0,
+   "flags": [],
+   "papeis": [],
+   "usado_por": 6,
+   "usado_por_modulos": [
+    "components/contabilidade",
+    "lib/export-contabil"
+   ],
+   "coberto_por_testes": 0,
+   "orfao": false
+  },
+  {
+   "arquivo": "src/lib/export-contabil/razao.ts",
+   "camada": "lib",
+   "exports": [
+    "exportRazaoCSV",
+    "exportRazaoPDF"
+   ],
+   "export_default": null,
+   "linhas": 196,
+   "tabelas": [],
+   "rpcs": [],
+   "edges": [],
+   "env": [],
+   "externos": [
+    "jspdf",
+    "jspdf-autotable"
+   ],
+   "zod_schemas": 0,
+   "flags": [],
+   "papeis": [],
+   "usado_por": 1,
+   "usado_por_modulos": [
+    "lib/export-contabil"
+   ],
+   "coberto_por_testes": 0,
+   "orfao": false
+  },
+  {
+   "arquivo": "src/lib/export-contabil/types.ts",
+   "camada": "lib",
+   "exports": [
+    "AuditoriaCFCExportData",
+    "EmpresaHeader",
+    "PartidaExport",
+    "PeriodoCtx",
+    "RazaoContaExport"
+   ],
+   "export_default": null,
+   "linhas": 58,
+   "tabelas": [],
+   "rpcs": [],
+   "edges": [],
+   "env": [],
+   "externos": [],
+   "zod_schemas": 0,
+   "flags": [],
+   "papeis": [],
+   "usado_por": 7,
+   "usado_por_modulos": [
+    "lib/export-contabil"
+   ],
+   "coberto_por_testes": 0,
+   "orfao": false
+  },
+  {
+   "arquivo": "src/lib/export-contabil/utils.ts",
+   "camada": "lib",
+   "exports": [
+    "buildFilename",
+    "csvEscape",
+    "downloadCSV",
+    "fmtDate",
+    "headerLines",
+    "nowStamp"
+   ],
+   "export_default": null,
+   "linhas": 45,
+   "tabelas": [],
+   "rpcs": [],
+   "edges": [],
+   "env": [],
+   "externos": [
+    "date-fns"
+   ],
+   "zod_schemas": 0,
+   "flags": [],
+   "papeis": [],
+   "usado_por": 8,
+   "usado_por_modulos": [
+    "components/contabilidade",
+    "components/tributario",
+    "lib/export-contabil"
+   ],
+   "coberto_por_testes": 0,
+   "orfao": false
+  },
+  {
+   "arquivo": "src/lib/export-utils.ts",
+   "camada": "lib",
+   "exports": [
+    "ExportColumn",
+    "clientesColumns",
+    "contasPagarColumns",
+    "contasReceberColumns",
+    "exportToCSV",
+    "exportToJSON",
+    "exportToPDF",
+    "fornecedoresColumns"
+   ],
+   "export_default": null,
+   "linhas": 278,
+   "tabelas": [],
+   "rpcs": [],
+   "edges": [],
+   "env": [],
+   "externos": [
+    "sonner"
+   ],
+   "zod_schemas": 0,
+   "flags": [],
+   "papeis": [],
+   "usado_por": 13,
+   "usado_por_modulos": [
+    "components/admin",
+    "components/compliance",
+    "components/reforma-tributaria",
+    "components/ui",
+    "pages",
+    "pages/admin",
+    "pages/tributario"
+   ],
+   "coberto_por_testes": 0,
+   "orfao": false
+  },
+  {
+   "arquivo": "src/lib/file.ts",
+   "camada": "lib",
+   "exports": [
+    "downloadFile",
+    "formatFileSize",
+    "getFileExtension",
+    "isValidFileType",
+    "readFileAsDataURL",
+    "readFileAsText"
+   ],
+   "export_default": null,
+   "linhas": 53,
+   "tabelas": [],
+   "rpcs": [],
+   "edges": [],
+   "env": [],
+   "externos": [],
+   "zod_schemas": 0,
+   "flags": [],
+   "papeis": [],
+   "usado_por": 2,
+   "usado_por_modulos": [
+    "components/contabilidade",
+    "components/ui"
+   ],
+   "coberto_por_testes": 0,
+   "orfao": false
+  },
+  {
+   "arquivo": "src/lib/filterHydrationTelemetry.ts",
+   "camada": "lib",
+   "exports": [
+    "HydrationEvent",
+    "HydrationStatus",
+    "clearHydrationEvents",
+    "getHydrationEvents",
+    "getHydrationFailures",
+    "recordHydrationEvent",
+    "subscribeHydrationEvents"
+   ],
+   "export_default": null,
+   "linhas": 120,
+   "tabelas": [],
+   "rpcs": [],
+   "edges": [],
+   "env": [],
+   "externos": [],
+   "zod_schemas": 0,
+   "flags": [],
+   "papeis": [],
+   "usado_por": 3,
+   "usado_por_modulos": [
+    "hooks",
+    "pages/configuracoes"
+   ],
+   "coberto_por_testes": 1,
+   "orfao": false
+  },
+  {
+   "arquivo": "src/lib/financeiro/registrarEvento.ts",
+   "camada": "lib",
+   "exports": [
+    "EventoContaTipo",
+    "RegistrarEventoParams",
+    "RegistrarEventoResult",
+    "registrarEventoFinanceiro",
+    "registrarEventoFinanceiroOrThrow"
+   ],
+   "export_default": null,
+   "linhas": 84,
+   "tabelas": [],
+   "rpcs": [],
+   "edges": [],
+   "env": [
+    "DEV"
+   ],
+   "externos": [],
+   "zod_schemas": 0,
+   "flags": [],
+   "papeis": [],
+   "usado_por": 3,
+   "usado_por_modulos": [
+    "components/contas-receber",
+    "hooks"
+   ],
+   "coberto_por_testes": 0,
+   "orfao": false
+  },
+  {
+   "arquivo": "src/lib/financeiro/valor-recebido-efetivo.ts",
+   "camada": "lib",
+   "exports": [
+    "valorRecebidoEfetivo"
+   ],
+   "export_default": null,
+   "linhas": 23,
+   "tabelas": [],
+   "rpcs": [],
+   "edges": [],
+   "env": [],
+   "externos": [],
+   "zod_schemas": 0,
+   "flags": [],
+   "papeis": [],
+   "usado_por": 14,
+   "usado_por_modulos": [
+    "components/demonstrativos",
+    "components/relatorios",
+    "components/vendedores",
+    "hooks",
+    "pages"
+   ],
+   "coberto_por_testes": 0,
+   "orfao": false
+  },
+  {
+   "arquivo": "src/lib/format-filter-value.ts",
+   "camada": "lib",
+   "exports": [
+    "formatFilterValue"
+   ],
+   "export_default": null,
+   "linhas": 95,
+   "tabelas": [],
+   "rpcs": [],
+   "edges": [],
+   "env": [],
+   "externos": [],
+   "zod_schemas": 0,
+   "flags": [],
+   "papeis": [],
+   "usado_por": 2,
+   "usado_por_modulos": [
+    "components/filters"
+   ],
+   "coberto_por_testes": 1,
+   "orfao": false
+  },
+  {
+   "arquivo": "src/lib/formatters.ts",
+   "camada": "lib",
+   "exports": [
+    "calculateOverdueDays",
+    "formatAverageDays",
+    "formatBytes",
+    "formatCEP",
+    "formatCPF",
+    "formatCpfCnpj",
+    "formatCurrency",
+    "formatCurrencyCompact",
+    "formatDate",
+    "formatDateForInput",
+    "formatDateShort",
+    "formatDateTime",
+    "formatDisplayName",
+    "formatDuration",
+    "formatNFNumber",
+    "formatNumber",
+    "formatPercentage",
+    "formatPhone",
+    "formatVariation",
+    "getCNPJFormatted",
+    "getDaysOverdue",
+    "getDaysUntil",
+    "getEtapaCobrancaLabel",
+    "getInitials",
+    "getRelativeTime",
+    "getStatusLabel",
+    "isPast",
+    "isToday",
+    "parseCurrencyInput",
+    "toISOLocal",
+    "toLocalDate",
+    "todayISOLocal",
+    "truncate"
+   ],
+   "export_default": null,
+   "linhas": 312,
+   "tabelas": [],
+   "rpcs": [],
+   "edges": [],
+   "env": [],
+   "externos": [],
+   "zod_schemas": 0,
+   "flags": [],
+   "papeis": [],
+   "usado_por": 281,
+   "usado_por_modulos": [
+    "components/admin",
+    "components/analytics",
+    "components/aprovacoes",
+    "components/asaas",
+    "components/audit",
+    "components/auth",
+    "components/bi",
+    "components/bitrix",
+    "components/bling",
+    "components/boletos",
+    "components/centros-custo",
+    "components/clientes",
+    "components/cobranca",
+    "components/comprovantes",
+    "components/conciliacao",
+    "components/contabilidade",
+    "components/contas-bancarias",
+    "components/contas-pagar",
+    "components/contas-receber",
+    "components/contratos",
+    "components/dashboard",
+    "components/dashboard-empresa",
+    "components/dashboard-receber",
+    "components/demonstrativos",
+    "components/empresas",
+    "components/expert",
+    "components/financeiro",
+    "components/fluxo-caixa",
+    "components/fornecedores",
+    "components/insights-ia",
+    "components/nfe",
+    "components/orcamento",
+    "components/pagamentos-recorrentes",
+    "components/pix-hub",
+    "components/reforma-tributaria",
+    "components/relatorios",
+    "components/simuladores",
+    "components/tesouraria",
+    "components/tributario",
+    "components/vendedores",
+    "hooks",
+    "hooks/expert-actions",
+    "lib",
+    "lib/export-contabil",
+    "lib/pdf-generator",
+    "lib/transaction-matcher",
+    "pages",
+    "pages/admin",
+    "pages/bloqueios-duplicidade",
+    "pages/centro-custos",
+    "pages/clientes",
+    "pages/tributario"
+   ],
+   "coberto_por_testes": 1,
+   "orfao": false
+  },
+  {
+   "arquivo": "src/lib/haptic-feedback.ts",
+   "camada": "lib",
+   "exports": [
+    "haptic",
+    "isHapticAvailable",
+    "stopHaptic",
+    "useHaptic",
+    "withHaptic"
+   ],
+   "export_default": null,
+   "linhas": 80,
+   "tabelas": [],
+   "rpcs": [],
+   "edges": [],
+   "env": [],
+   "externos": [],
+   "zod_schemas": 0,
+   "flags": [],
+   "papeis": [],
+   "usado_por": 4,
+   "usado_por_modulos": [
+    "components/conciliacao",
+    "components/contas-pagar",
+    "components/contas-receber",
+    "components/wrappers"
+   ],
+   "coberto_por_testes": 0,
+   "orfao": false
+  },
+  {
+   "arquivo": "src/lib/import-checkpoint.ts",
+   "camada": "lib",
+   "exports": [
+    "ImportCheckpoint",
+    "clearImportCheckpoint",
+    "createImportCheckpoint",
+    "peekImportCheckpoint",
+    "quickHash"
+   ],
+   "export_default": null,
+   "linhas": 161,
+   "tabelas": [],
+   "rpcs": [],
+   "edges": [],
+   "env": [],
+   "externos": [],
+   "zod_schemas": 0,
+   "flags": [],
+   "papeis": [],
+   "usado_por": 3,
+   "usado_por_modulos": [
+    "components/contabilidade",
+    "hooks"
+   ],
+   "coberto_por_testes": 1,
+   "orfao": false
+  },
+  {
+   "arquivo": "src/lib/ip-mask.ts",
+   "camada": "lib",
+   "exports": [
+    "maskIp",
+    "matchesIpFilter"
+   ],
+   "export_default": null,
+   "linhas": 45,
+   "tabelas": [],
+   "rpcs": [],
+   "edges": [],
+   "env": [],
+   "externos": [],
+   "zod_schemas": 0,
+   "flags": [],
+   "papeis": [],
+   "usado_por": 7,
+   "usado_por_modulos": [
+    "components/audit",
+    "components/auth",
+    "components/security",
+    "pages"
+   ],
+   "coberto_por_testes": 1,
+   "orfao": false
+  },
+  {
+   "arquivo": "src/lib/lancamentos-csv-importer.ts",
+   "camada": "lib",
+   "exports": [
+    "CsvLancParseResult",
+    "ParsedLancamento",
+    "ParsedPartida",
+    "downloadLancamentosCsvTemplate",
+    "parseLancamentosCsv"
+   ],
+   "export_default": null,
+   "linhas": 373,
+   "tabelas": [],
+   "rpcs": [],
+   "edges": [],
+   "env": [],
+   "externos": [],
+   "zod_schemas": 0,
+   "flags": [],
+   "papeis": [],
+   "usado_por": 4,
+   "usado_por_modulos": [
+    "components/contabilidade",
+    "hooks"
+   ],
+   "coberto_por_testes": 1,
+   "orfao": false
+  },
+  {
+   "arquivo": "src/lib/logger.ts",
+   "camada": "lib",
+   "exports": [
+    "logger"
+   ],
+   "export_default": null,
+   "linhas": 42,
+   "tabelas": [],
+   "rpcs": [],
+   "edges": [],
+   "env": [],
+   "externos": [],
+   "zod_schemas": 0,
+   "flags": [],
+   "papeis": [],
+   "usado_por": 91,
+   "usado_por_modulos": [
+    "components/admin",
+    "components/aprovacoes",
+    "components/auth",
+    "components/centros-custo",
+    "components/clientes",
+    "components/cobranca",
+    "components/comprovantes",
+    "components/conciliacao",
+    "components/configuracoes",
+    "components/contas-pagar",
+    "components/contas-receber",
+    "components/copilot",
+    "components/dashboard",
+    "components/empresa",
+    "components/expert",
+    "components/filters",
+    "components/fluxo-caixa",
+    "components/fornecedores",
+    "components/integracoes",
+    "components/reforma-tributaria",
+    "components/relatorios",
+    "components/security",
+    "components/tributario",
+    "hooks",
+    "hooks/financial",
+    "hooks/saved-filter-alerts",
+    "lib",
+    "lib/sefaz-contingency",
+    "lib/sefaz-simulator",
+    "pages",
+    "pages/admin",
+    "pages/configuracoes"
+   ],
+   "coberto_por_testes": 0,
+   "orfao": false
+  },
+  {
+   "arquivo": "src/lib/magic-bytes.ts",
+   "camada": "lib",
+   "exports": [
+    "TipoDetectado",
+    "detectarTipo",
+    "validarMagicBytes"
+   ],
+   "export_default": null,
+   "linhas": 266,
+   "tabelas": [],
+   "rpcs": [],
+   "edges": [],
+   "env": [],
+   "externos": [],
+   "zod_schemas": 0,
+   "flags": [],
+   "papeis": [],
+   "usado_por": 4,
+   "usado_por_modulos": [
+    "components/conciliacao",
+    "components/financeiro",
+    "components/tributario",
+    "components/ui"
+   ],
+   "coberto_por_testes": 1,
+   "orfao": false
+  },
+  {
+   "arquivo": "src/lib/masks.ts",
+   "camada": "lib",
+   "exports": [
+    "applyCepMask",
+    "applyCnpjMask",
+    "applyPhoneMask",
+    "maskCnpjCpf",
+    "maskPhone",
+    "unmask",
+    "validateCNPJ",
+    "validateCPF",
+    "validateCnpjCpf"
+   ],
+   "export_default": null,
+   "linhas": 157,
+   "tabelas": [],
+   "rpcs": [],
+   "edges": [],
+   "env": [],
+   "externos": [],
+   "zod_schemas": 0,
+   "flags": [],
+   "papeis": [],
+   "usado_por": 7,
+   "usado_por_modulos": [
+    "components/clientes",
+    "components/empresas",
+    "components/fornecedores",
+    "pages/tributario"
+   ],
+   "coberto_por_testes": 1,
+   "orfao": false
+  },
+  {
+   "arquivo": "src/lib/navigation-intent.ts",
+   "camada": "lib",
+   "exports": [
+    "NovoRegistroNavigationState",
+    "deveAbrirNovoRegistro",
+    "navegarParaNovoRegistro"
+   ],
+   "export_default": null,
+   "linhas": 16,
+   "tabelas": [],
+   "rpcs": [],
+   "edges": [],
+   "env": [],
+   "externos": [],
+   "zod_schemas": 0,
+   "flags": [],
+   "papeis": [],
+   "usado_por": 3,
+   "usado_por_modulos": [
+    "components/command-palette",
+    "pages"
+   ],
+   "coberto_por_testes": 1,
+   "orfao": false
+  },
+  {
+   "arquivo": "src/lib/navigation.ts",
+   "camada": "lib",
+   "exports": [
+    "NavEntry",
+    "ROUTE_META",
+    "RouteMeta",
+    "dropForwardEntries",
+    "getNavStackVersion",
+    "getRouteLabel",
+    "getRouteMeta",
+    "hasForwardEntries",
+    "isSensitiveRoute",
+    "previousNavEntry",
+    "recordNavEntry",
+    "resetNavStack",
+    "resolveParentRoute",
+    "subscribeNavStack"
+   ],
+   "export_default": null,
+   "linhas": 426,
+   "tabelas": [],
+   "rpcs": [],
+   "edges": [],
+   "env": [],
+   "externos": [],
+   "zod_schemas": 0,
+   "flags": [],
+   "papeis": [],
+   "usado_por": 6,
+   "usado_por_modulos": [
+    "components/layout",
+    "components/navigation",
+    "components/providers",
+    "hooks"
+   ],
+   "coberto_por_testes": 3,
+   "orfao": false
+  },
+  {
+   "arquivo": "src/lib/offline/fiscal-cache.ts",
+   "camada": "lib",
+   "exports": [
+    "EntradaCache",
+    "TTL_PADRAO_MS",
+    "chaveConsulta",
+    "lerConsulta",
+    "limparCacheFiscal",
+    "salvarConsulta"
+   ],
+   "export_default": null,
+   "linhas": 100,
+   "tabelas": [],
+   "rpcs": [],
+   "edges": [],
+   "env": [],
+   "externos": [],
+   "zod_schemas": 0,
+   "flags": [],
+   "papeis": [],
+   "usado_por": 1,
+   "usado_por_modulos": [
+    "hooks"
+   ],
+   "coberto_por_testes": 1,
+   "orfao": false
+  },
+  {
+   "arquivo": "src/lib/ofx-parser.ts",
+   "camada": "lib",
+   "exports": [],
+   "export_default": null,
+   "linhas": 3,
+   "tabelas": [],
+   "rpcs": [],
+   "edges": [],
+   "env": [],
+   "externos": [],
+   "zod_schemas": 0,
+   "flags": [],
+   "papeis": [],
+   "usado_por": 13,
+   "usado_por_modulos": [
+    "components/conciliacao",
+    "components/contas-receber",
+    "hooks",
+    "lib",
+    "lib/transaction-matcher"
+   ],
+   "coberto_por_testes": 6,
+   "orfao": false
+  },
+  {
+   "arquivo": "src/lib/ofx-parser/csv.ts",
+   "camada": "lib",
+   "exports": [
+    "parseCSV"
+   ],
+   "export_default": null,
+   "linhas": 164,
+   "tabelas": [],
+   "rpcs": [],
+   "edges": [],
+   "env": [],
+   "externos": [],
+   "zod_schemas": 0,
+   "flags": [],
+   "papeis": [],
+   "usado_por": 1,
+   "usado_por_modulos": [
+    "lib/ofx-parser"
+   ],
+   "coberto_por_testes": 0,
+   "orfao": false
+  },
+  {
+   "arquivo": "src/lib/ofx-parser/index.ts",
+   "camada": "lib",
+   "exports": [
+    "parseCSV",
+    "parseExcel",
+    "parseExtratoBancario",
+    "parseOFC",
+    "parseOFX"
+   ],
+   "export_default": null,
+   "linhas": 46,
+   "tabelas": [],
+   "rpcs": [],
+   "edges": [],
+   "env": [],
+   "externos": [],
+   "zod_schemas": 0,
+   "flags": [],
+   "papeis": [],
+   "usado_por": 1,
+   "usado_por_modulos": [
+    "lib"
+   ],
+   "coberto_por_testes": 0,
+   "orfao": false
+  },
+  {
+   "arquivo": "src/lib/ofx-parser/ofx-sgml.ts",
+   "camada": "lib",
+   "exports": [
+    "parseOFC",
+    "parseOFX"
+   ],
+   "export_default": null,
+   "linhas": 167,
+   "tabelas": [],
+   "rpcs": [],
+   "edges": [],
+   "env": [],
+   "externos": [],
+   "zod_schemas": 0,
+   "flags": [],
+   "papeis": [],
+   "usado_por": 1,
+   "usado_por_modulos": [
+    "lib/ofx-parser"
+   ],
+   "coberto_por_testes": 0,
+   "orfao": false
+  },
+  {
+   "arquivo": "src/lib/ofx-parser/types.ts",
+   "camada": "lib",
+   "exports": [
+    "ContaOFX",
+    "ExtratoOFX",
+    "ResultadoImportacao",
+    "TransacaoOFX"
+   ],
+   "export_default": null,
+   "linhas": 41,
+   "tabelas": [],
+   "rpcs": [],
+   "edges": [],
+   "env": [],
+   "externos": [],
+   "zod_schemas": 0,
+   "flags": [],
+   "papeis": [],
+   "usado_por": 4,
+   "usado_por_modulos": [
+    "lib/ofx-parser"
+   ],
+   "coberto_por_testes": 0,
+   "orfao": false
+  },
+  {
+   "arquivo": "src/lib/ofx-parser/utils.ts",
+   "camada": "lib",
+   "exports": [
+    "parseCSVLine",
+    "parseData",
+    "parseOFXDate"
+   ],
+   "export_default": null,
+   "linhas": 96,
+   "tabelas": [],
+   "rpcs": [],
+   "edges": [],
+   "env": [],
+   "externos": [],
+   "zod_schemas": 0,
+   "flags": [],
+   "papeis": [],
+   "usado_por": 3,
+   "usado_por_modulos": [
+    "lib/ofx-parser"
+   ],
+   "coberto_por_testes": 1,
+   "orfao": false
+  },
+  {
+   "arquivo": "src/lib/ofx-parser/xlsx.ts",
+   "camada": "lib",
+   "exports": [
+    "parseExcel"
+   ],
+   "export_default": null,
+   "linhas": 99,
+   "tabelas": [],
+   "rpcs": [],
+   "edges": [],
+   "env": [],
+   "externos": [
+    "xlsx"
+   ],
+   "zod_schemas": 0,
+   "flags": [],
+   "papeis": [],
+   "usado_por": 1,
+   "usado_por_modulos": [
+    "lib/ofx-parser"
+   ],
+   "coberto_por_testes": 0,
+   "orfao": false
+  },
+  {
+   "arquivo": "src/lib/optimistic-lock.ts",
+   "camada": "lib",
+   "exports": [
+    "ConflitoVersaoError",
+    "updateComLockOtimista"
+   ],
+   "export_default": null,
+   "linhas": 56,
+   "tabelas": [],
+   "rpcs": [],
+   "edges": [],
+   "env": [],
+   "externos": [],
+   "zod_schemas": 0,
+   "flags": [],
+   "papeis": [],
+   "usado_por": 3,
+   "usado_por_modulos": [
+    "components/contas-pagar",
+    "components/contas-receber",
+    "hooks/financial"
+   ],
+   "coberto_por_testes": 1,
+   "orfao": false
+  },
+  {
+   "arquivo": "src/lib/organizacoes/convites.ts",
+   "camada": "lib",
+   "exports": [
+    "AvaliacaoConvite",
+    "ConviteAvaliavel",
+    "DIAS_VALIDADE_CONVITE",
+    "MENSAGEM_RECUSA",
+    "MembroResumo",
+    "MotivoRecusaConvite",
+    "ORG_PAPEIS",
+    "OrgPapel",
+    "ROTULO_ORG_PAPEL",
+    "ResumoOrganizacao",
+    "StatusConvite",
+    "avaliarAceiteConvite",
+    "calcularExpiracao",
+    "ehPapelOrg",
+    "emailValido",
+    "gerarTokenConvite",
+    "normalizarEmail",
+    "permiteRebaixarOuRemover",
+    "podeConcederPapel",
+    "resumirMembros",
+    "statusConvite"
+   ],
+   "export_default": null,
+   "linhas": 210,
+   "tabelas": [],
+   "rpcs": [],
+   "edges": [],
+   "env": [],
+   "externos": [],
+   "zod_schemas": 0,
+   "flags": [],
+   "papeis": [],
+   "usado_por": 4,
+   "usado_por_modulos": [
+    "hooks",
+    "pages/organizacoes"
+   ],
+   "coberto_por_testes": 1,
+   "orfao": false
+  },
+  {
+   "arquivo": "src/lib/pdf-generator.ts",
+   "camada": "lib",
+   "exports": [
+    "generateBenchmarkingPDF",
+    "generateBoletoPDF",
+    "generateConciliacaoAuditPDF",
+    "generateFluxoCaixaCSV",
+    "generateFluxoCaixaPDF"
+   ],
+   "export_default": null,
+   "linhas": 20,
+   "tabelas": [],
+   "rpcs": [],
+   "edges": [],
+   "env": [],
+   "externos": [],
+   "zod_schemas": 0,
+   "flags": [],
+   "papeis": [],
+   "usado_por": 6,
+   "usado_por_modulos": [
+    "components/boletos",
+    "components/conciliacao",
+    "components/fluxo-caixa",
+    "hooks/expert-actions",
+    "pages",
+    "pages/benchmarking"
+   ],
+   "coberto_por_testes": 0,
+   "orfao": false
+  },
+  {
+   "arquivo": "src/lib/pdf-generator/benchmarking.ts",
+   "camada": "lib",
+   "exports": [
+    "BenchmarkingGap",
+    "BenchmarkingRoadmap",
+    "generateBenchmarkingPDF"
+   ],
+   "export_default": null,
+   "linhas": 100,
+   "tabelas": [],
+   "rpcs": [],
+   "edges": [],
+   "env": [],
+   "externos": [],
+   "zod_schemas": 0,
+   "flags": [],
+   "papeis": [],
+   "usado_por": 1,
+   "usado_por_modulos": [
+    "lib"
+   ],
+   "coberto_por_testes": 0,
+   "orfao": false
+  },
+  {
+   "arquivo": "src/lib/pdf-generator/boleto.ts",
+   "camada": "lib",
+   "exports": [
+    "BoletoData",
+    "generateBoletoPDF"
+   ],
+   "export_default": null,
+   "linhas": 121,
+   "tabelas": [],
+   "rpcs": [],
+   "edges": [],
+   "env": [],
+   "externos": [],
+   "zod_schemas": 0,
+   "flags": [],
+   "papeis": [],
+   "usado_por": 1,
+   "usado_por_modulos": [
+    "lib"
+   ],
+   "coberto_por_testes": 0,
+   "orfao": false
+  },
+  {
+   "arquivo": "src/lib/pdf-generator/conciliacao.ts",
+   "camada": "lib",
+   "exports": [
+    "ConciliacaoAuditFiltros",
+    "ConciliacaoAuditRow",
+    "generateConciliacaoAuditPDF"
+   ],
+   "export_default": null,
+   "linhas": 99,
+   "tabelas": [],
+   "rpcs": [],
+   "edges": [],
+   "env": [],
+   "externos": [],
+   "zod_schemas": 0,
+   "flags": [],
+   "papeis": [],
+   "usado_por": 1,
+   "usado_por_modulos": [
+    "lib"
+   ],
+   "coberto_por_testes": 1,
+   "orfao": false
+  },
+  {
+   "arquivo": "src/lib/pdf-generator/fluxo-caixa.ts",
+   "camada": "lib",
+   "exports": [
+    "FluxoCaixaRow",
+    "generateFluxoCaixaCSV",
+    "generateFluxoCaixaPDF"
+   ],
+   "export_default": null,
+   "linhas": 107,
+   "tabelas": [],
+   "rpcs": [],
+   "edges": [],
+   "env": [],
+   "externos": [],
+   "zod_schemas": 0,
+   "flags": [],
+   "papeis": [],
+   "usado_por": 1,
+   "usado_por_modulos": [
+    "lib"
+   ],
+   "coberto_por_testes": 0,
+   "orfao": false
+  },
+  {
+   "arquivo": "src/lib/pdf-generator/utils.ts",
+   "camada": "lib",
+   "exports": [
+    "generateBarcodeHTML",
+    "getBancoCode",
+    "openPrintWindow",
+    "writeAndPrint"
+   ],
+   "export_default": null,
+   "linhas": 47,
+   "tabelas": [],
+   "rpcs": [],
+   "edges": [],
+   "env": [],
+   "externos": [
+    "dompurify",
+    "sonner"
+   ],
+   "zod_schemas": 0,
+   "flags": [],
+   "papeis": [],
+   "usado_por": 4,
+   "usado_por_modulos": [
+    "lib/pdf-generator"
+   ],
+   "coberto_por_testes": 0,
+   "orfao": false
+  },
+  {
+   "arquivo": "src/lib/pdf-layout.ts",
+   "camada": "lib",
+   "exports": [
+    "PDF_BRAND",
+    "PdfLayoutOptions",
+    "applyPdfLayout",
+    "getAutoTableMargins",
+    "getContentStartY"
+   ],
+   "export_default": null,
+   "linhas": 165,
+   "tabelas": [],
+   "rpcs": [],
+   "edges": [],
+   "env": [],
+   "externos": [
+    "jspdf"
+   ],
+   "zod_schemas": 0,
+   "flags": [],
+   "papeis": [],
+   "usado_por": 3,
+   "usado_por_modulos": [
+    "components/contabilidade",
+    "components/demonstrativos"
+   ],
+   "coberto_por_testes": 0,
+   "orfao": false
+  },
+  {
+   "arquivo": "src/lib/persisted-ui-state.ts",
+   "camada": "lib",
+   "exports": [
+    "usePersistedState"
+   ],
+   "export_default": null,
+   "linhas": 37,
+   "tabelas": [],
+   "rpcs": [],
+   "edges": [],
+   "env": [],
+   "externos": [
+    "react"
+   ],
+   "zod_schemas": 0,
+   "flags": [],
+   "papeis": [],
+   "usado_por": 2,
+   "usado_por_modulos": [
+    "components/compliance",
+    "pages/admin"
+   ],
+   "coberto_por_testes": 0,
+   "orfao": false
+  },
+  {
+   "arquivo": "src/lib/plano-contas-csv-importer.ts",
+   "camada": "lib",
+   "exports": [
+    "ContaInvalida",
+    "NATUREZAS",
+    "NaturezaConta",
+    "PLANO_CONTAS_CSV_TEMPLATE",
+    "ParsedConta",
+    "PlanoContasParseResult",
+    "TIPOS_CONTA",
+    "TipoConta",
+    "compararCodigos",
+    "parsePlanoContasCsv"
+   ],
+   "export_default": null,
+   "linhas": 308,
+   "tabelas": [],
+   "rpcs": [],
+   "edges": [],
+   "env": [],
+   "externos": [],
+   "zod_schemas": 0,
+   "flags": [],
+   "papeis": [],
+   "usado_por": 2,
+   "usado_por_modulos": [
+    "components/contabilidade",
+    "hooks"
+   ],
+   "coberto_por_testes": 1,
+   "orfao": false
+  },
+  {
+   "arquivo": "src/lib/queryClient.ts",
+   "camada": "lib",
+   "exports": [
+    "DOMAIN_QUERY_CONFIG",
+    "GC_TIMES",
+    "QueryDomain",
+    "STALE_TIMES",
+    "batchInvalidate",
+    "createOptimisticUpdate",
+    "createQueryOptions",
+    "invalidateQueries",
+    "queryClient",
+    "queryConfig",
+    "queryKeys"
+   ],
+   "export_default": null,
+   "linhas": 287,
+   "tabelas": [],
+   "rpcs": [],
+   "edges": [],
+   "env": [],
+   "externos": [
+    "@tanstack/react-query"
+   ],
+   "zod_schemas": 0,
+   "flags": [],
+   "papeis": [],
+   "usado_por": 11,
+   "usado_por_modulos": [
+    "components/contabilidade",
+    "hooks",
+    "hooks/financial"
+   ],
+   "coberto_por_testes": 1,
+   "orfao": false
+  },
+  {
+   "arquivo": "src/lib/reforma-tributaria-calculator.ts",
+   "camada": "lib",
+   "exports": [
+    "aplicarRegimeEspecial",
+    "calcularCreditos",
+    "calcularTributosReforma",
+    "determinarFaseTransicao",
+    "obterAliquotaIS",
+    "obterAliquotasTransicao",
+    "simularComparativo",
+    "verificarIsencao"
+   ],
+   "export_default": null,
+   "linhas": 24,
+   "tabelas": [],
+   "rpcs": [],
+   "edges": [],
+   "env": [],
+   "externos": [],
+   "zod_schemas": 0,
+   "flags": [],
+   "papeis": [],
+   "usado_por": 3,
+   "usado_por_modulos": [
+    "components/reforma-tributaria",
+    "hooks"
+   ],
+   "coberto_por_testes": 1,
+   "orfao": false
+  },
+  {
+   "arquivo": "src/lib/reforma-tributaria/calcular-tributos.ts",
+   "camada": "lib",
+   "exports": [
+    "calcularTributosReforma"
+   ],
+   "export_default": null,
+   "linhas": 158,
+   "tabelas": [],
+   "rpcs": [],
+   "edges": [],
+   "env": [],
+   "externos": [],
+   "zod_schemas": 0,
+   "flags": [],
+   "papeis": [],
+   "usado_por": 1,
+   "usado_por_modulos": [
+    "lib"
+   ],
+   "coberto_por_testes": 0,
+   "orfao": false
+  },
+  {
+   "arquivo": "src/lib/reforma-tributaria/creditos.ts",
+   "camada": "lib",
+   "exports": [
+    "calcularCreditos"
+   ],
+   "export_default": null,
+   "linhas": 40,
+   "tabelas": [],
+   "rpcs": [],
+   "edges": [],
+   "env": [],
+   "externos": [],
+   "zod_schemas": 0,
+   "flags": [],
+   "papeis": [],
+   "usado_por": 1,
+   "usado_por_modulos": [
+    "lib"
+   ],
+   "coberto_por_testes": 0,
+   "orfao": false
+  },
+  {
+   "arquivo": "src/lib/reforma-tributaria/regras.ts",
+   "camada": "lib",
+   "exports": [
+    "aplicarRegimeEspecial",
+    "determinarFaseTransicao",
+    "obterAliquotaIS",
+    "obterAliquotasTransicao",
+    "verificarIsencao"
+   ],
+   "export_default": null,
+   "linhas": 108,
+   "tabelas": [],
+   "rpcs": [],
+   "edges": [],
+   "env": [],
+   "externos": [],
+   "zod_schemas": 0,
+   "flags": [],
+   "papeis": [],
+   "usado_por": 4,
+   "usado_por_modulos": [
+    "lib",
+    "lib/reforma-tributaria"
+   ],
+   "coberto_por_testes": 0,
+   "orfao": false
+  },
+  {
+   "arquivo": "src/lib/reforma-tributaria/simulador.ts",
+   "camada": "lib",
+   "exports": [
+    "simularComparativo"
+   ],
+   "export_default": null,
+   "linhas": 114,
+   "tabelas": [],
+   "rpcs": [],
+   "edges": [],
+   "env": [],
+   "externos": [],
+   "zod_schemas": 0,
+   "flags": [],
+   "papeis": [],
+   "usado_por": 1,
+   "usado_por_modulos": [
+    "lib"
+   ],
+   "coberto_por_testes": 0,
+   "orfao": false
+  },
+  {
+   "arquivo": "src/lib/reforma-tributaria/types.ts",
+   "camada": "lib",
+   "exports": [
+    "DadosCredito",
+    "DadosOperacao",
+    "DadosSimulacao",
+    "ResultadoCalculo",
+    "ResultadoCredito",
+    "ResultadoSimulacao"
+   ],
+   "export_default": null,
+   "linhas": 117,
+   "tabelas": [],
+   "rpcs": [],
+   "edges": [],
+   "env": [],
+   "externos": [],
+   "zod_schemas": 0,
+   "flags": [],
+   "papeis": [],
+   "usado_por": 5,
+   "usado_por_modulos": [
+    "lib",
+    "lib/reforma-tributaria"
+   ],
+   "coberto_por_testes": 0,
+   "orfao": false
+  },
+  {
+   "arquivo": "src/lib/scim/userTemplate.ts",
+   "camada": "lib",
+   "exports": [
+    "BuildResult",
+    "SCIM_USER_SCHEMA",
+    "ScimUserInput",
+    "ScimUserPayload",
+    "ValidationIssue",
+    "buildScimUserPayload"
+   ],
+   "export_default": null,
+   "linhas": 162,
+   "tabelas": [],
+   "rpcs": [],
+   "edges": [],
+   "env": [],
+   "externos": [],
+   "zod_schemas": 0,
+   "flags": [],
+   "papeis": [],
+   "usado_por": 1,
+   "usado_por_modulos": [
+    "components/admin"
+   ],
+   "coberto_por_testes": 0,
+   "orfao": false
+  },
+  {
+   "arquivo": "src/lib/secure-random.ts",
+   "camada": "lib",
+   "exports": [
+    "secureRandomInt"
+   ],
+   "export_default": null,
+   "linhas": 49,
+   "tabelas": [],
+   "rpcs": [],
+   "edges": [],
+   "env": [],
+   "externos": [],
+   "zod_schemas": 0,
+   "flags": [],
+   "papeis": [],
+   "usado_por": 5,
+   "usado_por_modulos": [
+    "components/nfe",
+    "components/ui",
+    "hooks"
+   ],
+   "coberto_por_testes": 1,
+   "orfao": false
+  },
+  {
+   "arquivo": "src/lib/sefaz-contingency.ts",
+   "camada": "lib",
+   "exports": [
+    "MOTIVOS_CONTINGENCIA",
+    "TIPO_EMISSAO",
+    "activateContingency",
+    "addContingencyRule",
+    "addPendingNFe",
+    "checkSefazHealth",
+    "deactivateContingency",
+    "deleteContingencyRule",
+    "evaluateContingencyRules",
+    "generateContingencyXml",
+    "getAutoContingencyConfig",
+    "getContingencyState",
+    "getContingencyStats",
+    "getSefazHealthStatus",
+    "registerCommunicationFailure",
+    "registerCommunicationSuccess",
+    "removePendingNFe",
+    "runAutoContingencyCheck",
+    "saveAutoContingencyConfig",
+    "shouldAutoDeactivate",
+    "updateContingencyRule",
+    "updatePendingNFe",
+    "updateSefazHealthStatus"
+   ],
+   "export_default": null,
+   "linhas": 32,
+   "tabelas": [],
+   "rpcs": [],
+   "edges": [],
+   "env": [],
+   "externos": [],
+   "zod_schemas": 0,
+   "flags": [],
+   "papeis": [],
+   "usado_por": 11,
+   "usado_por_modulos": [
+    "components/nfe"
+   ],
+   "coberto_por_testes": 0,
+   "orfao": false
+  },
+  {
+   "arquivo": "src/lib/sefaz-contingency/constants.ts",
+   "camada": "lib",
+   "exports": [
+    "HEALTH_KEY",
+    "MOTIVOS_CONTINGENCIA",
+    "RULES_KEY",
+    "STORAGE_KEY",
+    "TIPO_EMISSAO",
+    "defaultAutoConfig",
+    "defaultRules",
+    "initialState"
+   ],
+   "export_default": null,
+   "linhas": 116,
+   "tabelas": [],
+   "rpcs": [],
+   "edges": [],
+   "env": [],
+   "externos": [],
+   "zod_schemas": 0,
+   "flags": [],
+   "papeis": [],
+   "usado_por": 4,
+   "usado_por_modulos": [
+    "lib",
+    "lib/sefaz-contingency"
+   ],
+   "coberto_por_testes": 0,
+   "orfao": false
+  },
+  {
+   "arquivo": "src/lib/sefaz-contingency/rules.ts",
+   "camada": "lib",
+   "exports": [
+    "addContingencyRule",
+    "deleteContingencyRule",
+    "evaluateContingencyRules",
+    "getAutoContingencyConfig",
+    "runAutoContingencyCheck",
+    "saveAutoContingencyConfig",
+    "shouldAutoDeactivate",
+    "updateContingencyRule"
+   ],
+   "export_default": null,
+   "linhas": 184,
+   "tabelas": [],
+   "rpcs": [],
+   "edges": [],
+   "env": [],
+   "externos": [],
+   "zod_schemas": 0,
+   "flags": [],
+   "papeis": [],
+   "usado_por": 1,
+   "usado_por_modulos": [
+    "lib"
+   ],
+   "coberto_por_testes": 0,
+   "orfao": false
+  },
+  {
+   "arquivo": "src/lib/sefaz-contingency/state.ts",
+   "camada": "lib",
+   "exports": [
+    "activateContingency",
+    "addPendingNFe",
+    "checkSefazHealth",
+    "deactivateContingency",
+    "getContingencyStats",
+    "registerCommunicationFailure",
+    "registerCommunicationSuccess",
+    "removePendingNFe",
+    "updatePendingNFe"
+   ],
+   "export_default": null,
+   "linhas": 155,
+   "tabelas": [],
+   "rpcs": [],
+   "edges": [],
+   "env": [],
+   "externos": [],
+   "zod_schemas": 0,
+   "flags": [],
+   "papeis": [],
+   "usado_por": 2,
+   "usado_por_modulos": [
+    "lib",
+    "lib/sefaz-contingency"
+   ],
+   "coberto_por_testes": 1,
+   "orfao": false
+  },
+  {
+   "arquivo": "src/lib/sefaz-contingency/storage.ts",
+   "camada": "lib",
+   "exports": [
+    "getContingencyState",
+    "getSefazHealthStatus",
+    "saveContingencyState",
+    "updateSefazHealthStatus"
+   ],
+   "export_default": null,
+   "linhas": 69,
+   "tabelas": [],
+   "rpcs": [],
+   "edges": [],
+   "env": [],
+   "externos": [],
+   "zod_schemas": 0,
+   "flags": [],
+   "papeis": [],
+   "usado_por": 3,
+   "usado_por_modulos": [
+    "lib",
+    "lib/sefaz-contingency"
+   ],
+   "coberto_por_testes": 1,
+   "orfao": false
+  },
+  {
+   "arquivo": "src/lib/sefaz-contingency/types.ts",
+   "camada": "lib",
+   "exports": [
+    "AutoContingencyConfig",
+    "ContingencyMode",
+    "ContingencyRule",
+    "ContingencyState",
+    "NFeData",
+    "PendingNFe",
+    "SefazHealthStatus"
+   ],
+   "export_default": null,
+   "linhas": 72,
+   "tabelas": [],
+   "rpcs": [],
+   "edges": [],
+   "env": [],
+   "externos": [],
+   "zod_schemas": 0,
+   "flags": [],
+   "papeis": [],
+   "usado_por": 6,
+   "usado_por_modulos": [
+    "lib",
+    "lib/sefaz-contingency"
+   ],
+   "coberto_por_testes": 0,
+   "orfao": false
+  },
+  {
+   "arquivo": "src/lib/sefaz-contingency/xml.ts",
+   "camada": "lib",
+   "exports": [
+    "generateContingencyXml"
+   ],
+   "export_default": null,
+   "linhas": 25,
+   "tabelas": [],
+   "rpcs": [],
+   "edges": [],
+   "env": [],
+   "externos": [],
+   "zod_schemas": 0,
+   "flags": [],
+   "papeis": [],
+   "usado_por": 1,
+   "usado_por_modulos": [
+    "lib"
+   ],
+   "coberto_por_testes": 0,
+   "orfao": false
+  },
+  {
+   "arquivo": "src/lib/sefaz-event-logger.ts",
+   "camada": "lib",
+   "exports": [
+    "EventoSefaz",
+    "EventoTipo",
+    "eventTypeConfig",
+    "getEstatisticas",
+    "getEventos",
+    "getEventosPorChave",
+    "getEventosPorNumero",
+    "getEventosPorPeriodo",
+    "getEventosPorTipo",
+    "inicializarEventosDemo",
+    "limparEventosAntigos",
+    "registrarEvento"
+   ],
+   "export_default": null,
+   "linhas": 239,
+   "tabelas": [],
+   "rpcs": [],
+   "edges": [],
+   "env": [],
+   "externos": [],
+   "zod_schemas": 0,
+   "flags": [],
+   "papeis": [],
+   "usado_por": 6,
+   "usado_por_modulos": [
+    "components/nfe",
+    "lib"
+   ],
+   "coberto_por_testes": 1,
+   "orfao": false
+  },
+  {
+   "arquivo": "src/lib/sefaz-rejection-monitor.ts",
+   "camada": "lib",
+   "exports": [
+    "AlertaRejeicao",
+    "adicionarListenerAlerta",
+    "analisarPadroesRejeicao",
+    "getAlertas",
+    "getAlertasNaoLidos",
+    "inicializarAlertasDemo",
+    "limparAlertas",
+    "marcarAlertaComoLido",
+    "marcarTodosComoLidos",
+    "registrarAlerta",
+    "removerAlerta",
+    "verificarRejeicoesConsecutivas"
+   ],
+   "export_default": null,
+   "linhas": 217,
+   "tabelas": [],
+   "rpcs": [],
+   "edges": [],
+   "env": [],
+   "externos": [],
+   "zod_schemas": 0,
+   "flags": [],
+   "papeis": [],
+   "usado_por": 1,
+   "usado_por_modulos": [
+    "components/nfe"
+   ],
+   "coberto_por_testes": 1,
+   "orfao": false
+  },
+  {
+   "arquivo": "src/lib/sefaz-simulator.ts",
+   "camada": "lib",
+   "exports": [],
+   "export_default": null,
+   "linhas": 6,
+   "tabelas": [],
+   "rpcs": [],
+   "edges": [],
+   "env": [],
+   "externos": [],
+   "zod_schemas": 0,
+   "flags": [],
+   "papeis": [],
+   "usado_por": 3,
+   "usado_por_modulos": [
+    "components/nfe"
+   ],
+   "coberto_por_testes": 1,
+   "orfao": false
+  },
+  {
+   "arquivo": "src/lib/sefaz-simulator/handlers.ts",
+   "camada": "lib",
+   "exports": [
+    "processarSefaz"
+   ],
+   "export_default": null,
+   "linhas": 126,
+   "tabelas": [],
+   "rpcs": [],
+   "edges": [],
+   "env": [],
+   "externos": [],
+   "zod_schemas": 0,
+   "flags": [],
+   "papeis": [],
+   "usado_por": 1,
+   "usado_por_modulos": [
+    "lib/sefaz-simulator"
+   ],
+   "coberto_por_testes": 0,
+   "orfao": false
+  },
+  {
+   "arquivo": "src/lib/sefaz-simulator/index.ts",
+   "camada": "lib",
+   "exports": [],
+   "export_default": null,
+   "linhas": 3,
+   "tabelas": [],
+   "rpcs": [],
+   "edges": [],
+   "env": [],
+   "externos": [],
+   "zod_schemas": 0,
+   "flags": [],
+   "papeis": [],
+   "usado_por": 1,
+   "usado_por_modulos": [
+    "lib"
+   ],
+   "coberto_por_testes": 0,
+   "orfao": false
+  },
+  {
+   "arquivo": "src/lib/sefaz-simulator/types.ts",
+   "camada": "lib",
+   "exports": [
+    "NFEData",
+    "SEFAZ_STATUS",
+    "SefazRequest",
+    "SefazResponse"
+   ],
+   "export_default": null,
+   "linhas": 87,
+   "tabelas": [],
+   "rpcs": [],
+   "edges": [],
+   "env": [],
+   "externos": [],
+   "zod_schemas": 0,
+   "flags": [],
+   "papeis": [],
+   "usado_por": 5,
+   "usado_por_modulos": [
+    "lib/sefaz-simulator"
+   ],
+   "coberto_por_testes": 0,
+   "orfao": false
+  },
+  {
+   "arquivo": "src/lib/sefaz-simulator/utils.ts",
+   "camada": "lib",
+   "exports": [
+    "calcularDV",
+    "delay",
+    "gerarChaveAcesso",
+    "gerarProtocolo",
+    "gerarRecibo",
+    "getCodigoUF"
+   ],
+   "export_default": null,
+   "linhas": 78,
+   "tabelas": [],
+   "rpcs": [],
+   "edges": [],
+   "env": [],
+   "externos": [],
+   "zod_schemas": 0,
+   "flags": [],
+   "papeis": [],
+   "usado_por": 2,
+   "usado_por_modulos": [
+    "lib/sefaz-simulator"
+   ],
+   "coberto_por_testes": 0,
+   "orfao": false
+  },
+  {
+   "arquivo": "src/lib/sefaz-simulator/validacao.ts",
+   "camada": "lib",
+   "exports": [
+    "validarNFE"
+   ],
+   "export_default": null,
+   "linhas": 44,
+   "tabelas": [],
+   "rpcs": [],
+   "edges": [],
+   "env": [],
+   "externos": [],
+   "zod_schemas": 0,
+   "flags": [],
+   "papeis": [],
+   "usado_por": 1,
+   "usado_por_modulos": [
+    "lib/sefaz-simulator"
+   ],
+   "coberto_por_testes": 0,
+   "orfao": false
+  },
+  {
+   "arquivo": "src/lib/sefaz-simulator/xml.ts",
+   "camada": "lib",
+   "exports": [
+    "gerarXMLAutorizado"
+   ],
+   "export_default": null,
+   "linhas": 111,
+   "tabelas": [],
+   "rpcs": [],
+   "edges": [],
+   "env": [],
+   "externos": [],
+   "zod_schemas": 0,
+   "flags": [],
+   "papeis": [],
+   "usado_por": 1,
+   "usado_por_modulos": [
+    "lib/sefaz-simulator"
+   ],
+   "coberto_por_testes": 0,
+   "orfao": false
+  },
+  {
+   "arquivo": "src/lib/sharedFiltersExport.ts",
+   "camada": "lib",
+   "exports": [
+    "SHARED_FILTERS_BUNDLE_VERSION",
+    "SharedFilterBundle",
+    "SharedFilterBundleItem",
+    "SharedFilterBundleParseError",
+    "buildBundle",
+    "downloadBundle",
+    "parseBundle"
+   ],
+   "export_default": null,
+   "linhas": 168,
+   "tabelas": [],
+   "rpcs": [],
+   "edges": [],
+   "env": [],
+   "externos": [],
+   "zod_schemas": 0,
+   "flags": [],
+   "papeis": [],
+   "usado_por": 1,
+   "usado_por_modulos": [
+    "pages/admin"
+   ],
+   "coberto_por_testes": 1,
+   "orfao": false
+  },
+  {
+   "arquivo": "src/lib/sound-feedback.ts",
+   "camada": "lib",
+   "exports": [
+    "getSoundConfig",
+    "playSound",
+    "setSoundConfig",
+    "setVolume",
+    "sounds",
+    "toggleSounds",
+    "useSoundFeedback"
+   ],
+   "export_default": null,
+   "linhas": 198,
+   "tabelas": [],
+   "rpcs": [],
+   "edges": [],
+   "env": [],
+   "externos": [
+    "react"
+   ],
+   "zod_schemas": 0,
+   "flags": [],
+   "papeis": [],
+   "usado_por": 13,
+   "usado_por_modulos": [
+    "components/clientes",
+    "components/cobranca",
+    "components/contas-pagar",
+    "components/contas-receber",
+    "components/fornecedores",
+    "components/offline",
+    "components/pagamentos-recorrentes",
+    "components/ui",
+    "hooks",
+    "hooks/financial"
+   ],
+   "coberto_por_testes": 0,
+   "orfao": false
+  },
+  {
+   "arquivo": "src/lib/sped-ecf-checklist-pdf.ts",
+   "camada": "lib",
+   "exports": [
+    "exportChecklistEcfPdf"
+   ],
+   "export_default": null,
+   "linhas": 186,
+   "tabelas": [],
+   "rpcs": [],
+   "edges": [],
+   "env": [],
+   "externos": [
+    "jspdf",
+    "jspdf-autotable"
+   ],
+   "zod_schemas": 0,
+   "flags": [],
+   "papeis": [],
+   "usado_por": 1,
+   "usado_por_modulos": [
+    "components/contabilidade"
+   ],
+   "coberto_por_testes": 0,
+   "orfao": false
+  },
+  {
+   "arquivo": "src/lib/sped-generator.ts",
+   "camada": "lib",
+   "exports": [],
+   "export_default": null,
+   "linhas": 6,
+   "tabelas": [],
+   "rpcs": [],
+   "edges": [],
+   "env": [],
+   "externos": [],
+   "zod_schemas": 0,
+   "flags": [],
+   "papeis": [],
+   "usado_por": 1,
+   "usado_por_modulos": [
+    "components/reforma-tributaria"
+   ],
+   "coberto_por_testes": 2,
+   "orfao": false
+  },
+  {
+   "arquivo": "src/lib/sped-generator/core.ts",
+   "camada": "lib",
+   "exports": [
+    "ApuracaoTributaria",
+    "CreditoTributario",
+    "DadosEmpresa",
+    "OperacaoTributavel",
+    "RegistroSPED",
+    "formatarCNPJ",
+    "formatarDataSPED",
+    "formatarValorSPED",
+    "gerarLinhaSPED"
+   ],
+   "export_default": null,
+   "linhas": 78,
+   "tabelas": [],
+   "rpcs": [],
+   "edges": [],
+   "env": [],
+   "externos": [
+    "date-fns"
+   ],
+   "zod_schemas": 0,
+   "flags": [],
+   "papeis": [],
+   "usado_por": 3,
+   "usado_por_modulos": [
+    "lib/sped-generator"
+   ],
+   "coberto_por_testes": 0,
+   "orfao": false
+  },
+  {
+   "arquivo": "src/lib/sped-generator/efd-contribuicoes.ts",
+   "camada": "lib",
+   "exports": [
+    "gerarEFD_Contribuicoes"
+   ],
+   "export_default": null,
+   "linhas": 64,
+   "tabelas": [],
+   "rpcs": [],
+   "edges": [],
+   "env": [],
+   "externos": [
+    "date-fns"
+   ],
+   "zod_schemas": 0,
+   "flags": [],
+   "papeis": [],
+   "usado_por": 1,
+   "usado_por_modulos": [
+    "lib/sped-generator"
+   ],
+   "coberto_por_testes": 0,
+   "orfao": false
+  },
+  {
+   "arquivo": "src/lib/sped-generator/efd-ibs-cbs.ts",
+   "camada": "lib",
+   "exports": [
+    "gerarEFD_IBS_CBS"
+   ],
+   "export_default": null,
+   "linhas": 273,
+   "tabelas": [],
+   "rpcs": [],
+   "edges": [],
+   "env": [],
+   "externos": [
+    "date-fns"
+   ],
+   "zod_schemas": 0,
+   "flags": [],
+   "papeis": [],
+   "usado_por": 1,
+   "usado_por_modulos": [
+    "lib/sped-generator"
+   ],
+   "coberto_por_testes": 0,
+   "orfao": false
+  },
+  {
+   "arquivo": "src/lib/sped-generator/index.ts",
+   "camada": "lib",
+   "exports": [],
+   "export_default": null,
+   "linhas": 5,
+   "tabelas": [],
+   "rpcs": [],
+   "edges": [],
+   "env": [],
+   "externos": [],
+   "zod_schemas": 0,
+   "flags": [],
+   "papeis": [],
+   "usado_por": 1,
+   "usado_por_modulos": [
+    "lib"
+   ],
+   "coberto_por_testes": 0,
+   "orfao": false
+  },
+  {
+   "arquivo": "src/lib/sped-generator/io.ts",
+   "camada": "lib",
+   "exports": [
+    "downloadArquivoSPED",
+    "validarArquivoSPED"
+   ],
+   "export_default": null,
+   "linhas": 35,
+   "tabelas": [],
+   "rpcs": [],
+   "edges": [],
+   "env": [],
+   "externos": [],
+   "zod_schemas": 0,
+   "flags": [],
+   "papeis": [],
+   "usado_por": 1,
+   "usado_por_modulos": [
+    "lib/sped-generator"
+   ],
+   "coberto_por_testes": 0,
+   "orfao": false
+  },
+  {
+   "arquivo": "src/lib/sped-validacoes-categorias.ts",
+   "camada": "lib",
+   "exports": [
+    "CATEGORIAS_VALIDACAO",
+    "ValidacaoCategoria",
+    "ValidacaoCategoriaId",
+    "ValidacoesAgrupadas",
+    "agruparValidacoes",
+    "classificarValidacao"
+   ],
+   "export_default": null,
+   "linhas": 122,
+   "tabelas": [],
+   "rpcs": [],
+   "edges": [],
+   "env": [],
+   "externos": [],
+   "zod_schemas": 0,
+   "flags": [],
+   "papeis": [],
+   "usado_por": 8,
+   "usado_por_modulos": [
+    "components/contabilidade"
+   ],
+   "coberto_por_testes": 0,
+   "orfao": false
+  },
+  {
+   "arquivo": "src/lib/sped-zip.ts",
+   "camada": "lib",
+   "exports": [
+    "baixarSpedZip"
+   ],
+   "export_default": null,
+   "linhas": 128,
+   "tabelas": [],
+   "rpcs": [],
+   "edges": [],
+   "env": [],
+   "externos": [
+    "jszip"
+   ],
+   "zod_schemas": 0,
+   "flags": [],
+   "papeis": [],
+   "usado_por": 5,
+   "usado_por_modulos": [
+    "components/contabilidade"
+   ],
+   "coberto_por_testes": 0,
+   "orfao": false
+  },
+  {
+   "arquivo": "src/lib/sso-error-messages.ts",
+   "camada": "lib",
+   "exports": [
+    "SSO_ERROR_MESSAGES",
+    "SsoErrorCode",
+    "SsoErrorMessage",
+    "inferSsoErrorCode"
+   ],
+   "export_default": null,
+   "linhas": 159,
+   "tabelas": [],
+   "rpcs": [],
+   "edges": [],
+   "env": [],
+   "externos": [],
+   "zod_schemas": 0,
+   "flags": [],
+   "papeis": [],
+   "usado_por": 1,
+   "usado_por_modulos": [
+    "components/auth"
+   ],
+   "coberto_por_testes": 1,
+   "orfao": false
+  },
+  {
+   "arquivo": "src/lib/sso-slo-audit.ts",
+   "camada": "lib",
+   "exports": [
+    "SloRetryKind",
+    "logSloRetry"
+   ],
+   "export_default": null,
+   "linhas": 92,
+   "tabelas": [],
+   "rpcs": [
+    "log_sso_onboarding_event"
+   ],
+   "edges": [],
+   "env": [],
+   "externos": [],
+   "zod_schemas": 0,
+   "flags": [],
+   "papeis": [],
+   "usado_por": 1,
+   "usado_por_modulos": [
+    "components/auth"
+   ],
+   "coberto_por_testes": 0,
+   "orfao": false
+  },
+  {
+   "arquivo": "src/lib/sso-slo-state.ts",
+   "camada": "lib",
+   "exports": [
+    "SLO_REASON_COPY",
+    "SloFailureReason",
+    "SloFailureSnapshot",
+    "clearSloFailure",
+    "readSloFailure",
+    "setSloFailure"
+   ],
+   "export_default": null,
+   "linhas": 75,
+   "tabelas": [],
+   "rpcs": [],
+   "edges": [],
+   "env": [],
+   "externos": [],
+   "zod_schemas": 0,
+   "flags": [],
+   "papeis": [],
+   "usado_por": 3,
+   "usado_por_modulos": [
+    "components/auth",
+    "hooks",
+    "pages"
+   ],
+   "coberto_por_testes": 1,
+   "orfao": false
+  },
+  {
+   "arquivo": "src/lib/sso-sync.ts",
+   "camada": "lib",
+   "exports": [
+    "SsoSyncMessage",
+    "broadcastSsoSlo",
+    "subscribeSsoSlo"
+   ],
+   "export_default": null,
+   "linhas": 98,
+   "tabelas": [],
+   "rpcs": [],
+   "edges": [],
+   "env": [],
+   "externos": [],
+   "zod_schemas": 0,
+   "flags": [],
+   "papeis": [],
+   "usado_por": 1,
+   "usado_por_modulos": [
+    "hooks"
+   ],
+   "coberto_por_testes": 0,
+   "orfao": false
+  },
+  {
+   "arquivo": "src/lib/sso/consistency.ts",
+   "camada": "lib",
+   "exports": [
+    "AppRole",
+    "AutoFix",
+    "ConsistencyIssue",
+    "SSOConfigInput",
+    "Scope",
+    "Severity",
+    "summarizeIssues",
+    "validateSSOConfig"
+   ],
+   "export_default": null,
+   "linhas": 302,
+   "tabelas": [],
+   "rpcs": [],
+   "edges": [],
+   "env": [],
+   "externos": [],
+   "zod_schemas": 0,
+   "flags": [],
+   "papeis": [],
+   "usado_por": 4,
+   "usado_por_modulos": [
+    "components/admin",
+    "hooks"
+   ],
+   "coberto_por_testes": 1,
+   "orfao": false
+  },
+  {
+   "arquivo": "src/lib/sso/sandbox-bulk-aggregator.ts",
+   "camada": "lib",
+   "exports": [
+    "BulkAggregate",
+    "aggregateBulk"
+   ],
+   "export_default": null,
+   "linhas": 71,
+   "tabelas": [],
+   "rpcs": [],
+   "edges": [],
+   "env": [],
+   "externos": [],
+   "zod_schemas": 0,
+   "flags": [],
+   "papeis": [],
+   "usado_por": 2,
+   "usado_por_modulos": [
+    "components/admin"
+   ],
+   "coberto_por_testes": 1,
+   "orfao": false
+  },
+  {
+   "arquivo": "src/lib/sso/sandbox-bulk-runner.ts",
+   "camada": "lib",
+   "exports": [
+    "BULK_MAX_USERS",
+    "BasePayload",
+    "BulkOutcome",
+    "BulkResult",
+    "BulkRunnerOptions",
+    "BulkUserInput",
+    "runBulk"
+   ],
+   "export_default": null,
+   "linhas": 125,
+   "tabelas": [],
+   "rpcs": [],
+   "edges": [
+    "sso-test-login"
+   ],
+   "env": [],
+   "externos": [],
+   "zod_schemas": 0,
+   "flags": [],
+   "papeis": [],
+   "usado_por": 4,
+   "usado_por_modulos": [
+    "components/admin",
+    "lib/sso"
+   ],
+   "coberto_por_testes": 3,
+   "orfao": false
+  },
+  {
+   "arquivo": "src/lib/sso/sandbox-csv.ts",
+   "camada": "lib",
+   "exports": [
+    "BULK_EXAMPLE_USERS",
+    "ParsedCsv",
+    "downloadCsv",
+    "exportBulkResultsCsv",
+    "parseBulkCsv",
+    "parseBulkJson"
+   ],
+   "export_default": null,
+   "linhas": 205,
+   "tabelas": [],
+   "rpcs": [],
+   "edges": [],
+   "env": [],
+   "externos": [],
+   "zod_schemas": 0,
+   "flags": [],
+   "papeis": [],
+   "usado_por": 1,
+   "usado_por_modulos": [
+    "components/admin"
+   ],
+   "coberto_por_testes": 1,
+   "orfao": false
+  },
+  {
+   "arquivo": "src/lib/storage-path.ts",
+   "camada": "lib",
+   "exports": [
+    "BUCKET_FINANCEIRO",
+    "caminhoNoStorage"
+   ],
+   "export_default": null,
+   "linhas": 39,
+   "tabelas": [],
+   "rpcs": [],
+   "edges": [],
+   "env": [],
+   "externos": [],
+   "zod_schemas": 0,
+   "flags": [],
+   "papeis": [],
+   "usado_por": 2,
+   "usado_por_modulos": [
+    "components/contas-receber",
+    "components/financeiro"
+   ],
+   "coberto_por_testes": 1,
+   "orfao": false
+  },
+  {
+   "arquivo": "src/lib/supabase-dynamic.ts",
+   "camada": "lib",
+   "exports": [
+    "SupabaseDyn",
+    "supabaseDyn"
+   ],
+   "export_default": null,
+   "linhas": 83,
+   "tabelas": [],
+   "rpcs": [],
+   "edges": [],
+   "env": [],
+   "externos": [],
+   "zod_schemas": 0,
+   "flags": [],
+   "papeis": [],
+   "usado_por": 32,
+   "usado_por_modulos": [
+    "components/admin",
+    "components/compliance",
+    "components/configuracoes",
+    "components/contabilidade",
+    "hooks",
+    "hooks/bling",
+    "hooks/financial",
+    "hooks/saved-filter-alerts",
+    "pages/admin",
+    "pages/configuracoes"
+   ],
+   "coberto_por_testes": 0,
+   "orfao": false
+  },
+  {
+   "arquivo": "src/lib/supabase-write.ts",
+   "camada": "lib",
+   "exports": [
+    "DadosDaResposta",
+    "OpcoesBestEffort",
+    "OpcoesMustSucceed",
+    "RespostaPostgrest",
+    "RespostaSupabase",
+    "SupabaseWriteError",
+    "bestEffort",
+    "mustSucceed"
+   ],
+   "export_default": null,
+   "linhas": 307,
+   "tabelas": [],
+   "rpcs": [],
+   "edges": [],
+   "env": [],
+   "externos": [
+    "@supabase/supabase-js"
+   ],
+   "zod_schemas": 0,
+   "flags": [],
+   "papeis": [],
+   "usado_por": 8,
+   "usado_por_modulos": [
+    "components/financeiro",
+    "hooks",
+    "hooks/expert-actions"
+   ],
+   "coberto_por_testes": 1,
+   "orfao": false
+  },
+  {
+   "arquivo": "src/lib/telemetry.ts",
+   "camada": "lib",
+   "exports": [
+    "addBreadcrumb",
+    "initTelemetry",
+    "reportError",
+    "sanitizeBreadcrumbData"
+   ],
+   "export_default": null,
+   "linhas": 314,
+   "tabelas": [
+    "frontend_error_logs",
+    "frontend_performance_logs"
+   ],
+   "rpcs": [],
+   "edges": [],
+   "env": [],
+   "externos": [
+    "web-vitals"
+   ],
+   "zod_schemas": 0,
+   "flags": [],
+   "papeis": [],
+   "usado_por": 4,
+   "usado_por_modulos": [
+    "components/error",
+    "hooks",
+    "integrations/supabase"
+   ],
+   "coberto_por_testes": 1,
+   "orfao": false
+  },
+  {
+   "arquivo": "src/lib/toast-confetti.tsx",
+   "camada": "lib",
+   "exports": [
+    "toastApprovalSuccess",
+    "toastBulkSuccess",
+    "toastEpicCelebration",
+    "toastGoalAchieved",
+    "toastImportSuccess",
+    "toastPaymentSuccess",
+    "toastReceiptSuccess",
+    "toastReconciliationSuccess",
+    "toastWelcome",
+    "toastWithConfetti"
+   ],
+   "export_default": null,
+   "linhas": 264,
+   "tabelas": [],
+   "rpcs": [],
+   "edges": [],
+   "env": [],
+   "externos": [
+    "canvas-confetti",
+    "lucide-react",
+    "react",
+    "sonner"
+   ],
+   "zod_schemas": 0,
+   "flags": [],
+   "papeis": [],
+   "usado_por": 5,
+   "usado_por_modulos": [
+    "components/contas-pagar",
+    "components/contas-receber",
+    "hooks"
+   ],
+   "coberto_por_testes": 0,
+   "orfao": false
+  },
+  {
+   "arquivo": "src/lib/toast-with-undo.tsx",
+   "camada": "lib",
+   "exports": [
+    "toastBulkWithUndo",
+    "toastDeleteWithUndo",
+    "toastSuccessWithUndo",
+    "toastWithUndo"
+   ],
+   "export_default": null,
+   "linhas": 114,
+   "tabelas": [],
+   "rpcs": [],
+   "edges": [],
+   "env": [],
+   "externos": [
+    "react",
+    "sonner"
+   ],
+   "zod_schemas": 0,
+   "flags": [],
+   "papeis": [],
+   "usado_por": 8,
+   "usado_por_modulos": [
+    "components/filters",
+    "hooks",
+    "pages"
+   ],
+   "coberto_por_testes": 0,
+   "orfao": false
+  },
+  {
+   "arquivo": "src/lib/transaction-matcher.ts",
+   "camada": "lib",
+   "exports": [],
+   "export_default": null,
+   "linhas": 6,
+   "tabelas": [],
+   "rpcs": [],
+   "edges": [],
+   "env": [],
+   "externos": [],
+   "zod_schemas": 0,
+   "flags": [],
+   "papeis": [],
+   "usado_por": 7,
+   "usado_por_modulos": [
+    "components/conciliacao",
+    "hooks",
+    "lib"
+   ],
+   "coberto_por_testes": 5,
+   "orfao": false
+  },
+  {
+   "arquivo": "src/lib/transaction-matcher/converters.ts",
+   "camada": "lib",
+   "exports": [
+    "converterContasPagarParaLancamentos",
+    "converterContasReceberParaLancamentos"
+   ],
+   "export_default": null,
+   "linhas": 55,
+   "tabelas": [],
+   "rpcs": [],
+   "edges": [],
+   "env": [],
+   "externos": [],
+   "zod_schemas": 0,
+   "flags": [],
+   "papeis": [],
+   "usado_por": 1,
+   "usado_por_modulos": [
+    "lib/transaction-matcher"
+   ],
+   "coberto_por_testes": 1,
+   "orfao": false
+  },
+  {
+   "arquivo": "src/lib/transaction-matcher/index.ts",
+   "camada": "lib",
+   "exports": [],
+   "export_default": null,
+   "linhas": 5,
+   "tabelas": [],
+   "rpcs": [],
+   "edges": [],
+   "env": [],
+   "externos": [],
+   "zod_schemas": 0,
+   "flags": [],
+   "papeis": [],
+   "usado_por": 1,
+   "usado_por_modulos": [
+    "lib"
+   ],
+   "coberto_por_testes": 0,
+   "orfao": false
+  },
+  {
+   "arquivo": "src/lib/transaction-matcher/matcher.ts",
+   "camada": "lib",
+   "exports": [
+    "encontrarMatchesParaTransacao",
+    "encontrarTodosMatches"
+   ],
+   "export_default": null,
+   "linhas": 192,
+   "tabelas": [],
+   "rpcs": [],
+   "edges": [],
+   "env": [],
+   "externos": [],
+   "zod_schemas": 0,
+   "flags": [],
+   "papeis": [],
+   "usado_por": 1,
+   "usado_por_modulos": [
+    "lib/transaction-matcher"
+   ],
+   "coberto_por_testes": 0,
+   "orfao": false
+  },
+  {
+   "arquivo": "src/lib/transaction-matcher/similarity.ts",
+   "camada": "lib",
+   "exports": [
+    "calcularSimilaridadeData",
+    "calcularSimilaridadeTexto",
+    "calcularSimilaridadeValor",
+    "extrairPalavrasChave",
+    "normalizarTexto"
+   ],
+   "export_default": null,
+   "linhas": 132,
+   "tabelas": [],
+   "rpcs": [],
+   "edges": [],
+   "env": [],
+   "externos": [],
+   "zod_schemas": 0,
+   "flags": [],
+   "papeis": [],
+   "usado_por": 1,
+   "usado_por_modulos": [
+    "lib/transaction-matcher"
+   ],
+   "coberto_por_testes": 0,
+   "orfao": false
+  },
+  {
+   "arquivo": "src/lib/transaction-matcher/stats.ts",
+   "camada": "lib",
+   "exports": [
+    "calcularEstatisticasMatch"
+   ],
+   "export_default": null,
+   "linhas": 39,
+   "tabelas": [],
+   "rpcs": [],
+   "edges": [],
+   "env": [],
+   "externos": [],
+   "zod_schemas": 0,
+   "flags": [],
+   "papeis": [],
+   "usado_por": 1,
+   "usado_por_modulos": [
+    "lib/transaction-matcher"
+   ],
+   "coberto_por_testes": 0,
+   "orfao": false
+  },
+  {
+   "arquivo": "src/lib/transaction-matcher/types.ts",
+   "camada": "lib",
+   "exports": [
+    "ConfiguracaoMatch",
+    "DEFAULT_CONFIG",
+    "EstatisticasMatch",
+    "LancamentoSistema",
+    "MatchMotivo",
+    "MatchSugestao",
+    "TOLERANCIA_CENTAVOS"
+   ],
+   "export_default": null,
+   "linhas": 79,
+   "tabelas": [],
+   "rpcs": [],
+   "edges": [],
+   "env": [],
+   "externos": [],
+   "zod_schemas": 0,
+   "flags": [],
+   "papeis": [],
+   "usado_por": 4,
+   "usado_por_modulos": [
+    "lib/transaction-matcher"
+   ],
+   "coberto_por_testes": 0,
+   "orfao": false
+  },
+  {
+   "arquivo": "src/lib/tributario/aliquotas-simples.ts",
+   "camada": "lib",
+   "exports": [
+    "ANEXO_I",
+    "ANEXO_II",
+    "ANEXO_III",
+    "ANEXO_IV",
+    "ANEXO_V",
+    "FaixaSimples",
+    "LIMITE_SIMPLES_NACIONAL",
+    "identificarFaixa",
+    "obterAnexo"
+   ],
+   "export_default": null,
+   "linhas": 88,
+   "tabelas": [],
+   "rpcs": [],
+   "edges": [],
+   "env": [],
+   "externos": [],
+   "zod_schemas": 0,
+   "flags": [],
+   "papeis": [],
+   "usado_por": 3,
+   "usado_por_modulos": [
+    "lib/tributario"
+   ],
+   "coberto_por_testes": 8,
+   "orfao": false
+  },
+  {
+   "arquivo": "src/lib/tributario/anexos.ts",
+   "camada": "lib",
+   "exports": [
+    "PALAVRAS_ANEXO_IV",
+    "normalizar"
+   ],
+   "export_default": null,
+   "linhas": 29,
+   "tabelas": [],
+   "rpcs": [],
+   "edges": [],
+   "env": [],
+   "externos": [],
+   "zod_schemas": 0,
+   "flags": [],
+   "papeis": [],
+   "usado_por": 1,
+   "usado_por_modulos": [
+    "lib/tributario"
+   ],
+   "coberto_por_testes": 0,
+   "orfao": false
+  },
+  {
+   "arquivo": "src/lib/tributario/apuracao.ts",
+   "camada": "lib",
+   "exports": [
+    "apurarIcmsNaoCumulativo",
+    "apurarRealTrimestral",
+    "compensarPrejuizo",
+    "distribuirTrimestres",
+    "irpjPeriodoAnual",
+    "irpjPeriodoTrimestral"
+   ],
+   "export_default": null,
+   "linhas": 158,
+   "tabelas": [],
+   "rpcs": [],
+   "edges": [],
+   "env": [],
+   "externos": [],
+   "zod_schemas": 0,
+   "flags": [],
+   "papeis": [],
+   "usado_por": 1,
+   "usado_por_modulos": [
+    "lib/tributario"
+   ],
+   "coberto_por_testes": 0,
+   "orfao": false
+  },
+  {
+   "arquivo": "src/lib/tributario/calculadora/atividade-cnae.ts",
+   "camada": "lib",
+   "exports": [
+    "AtividadeDerivada",
+    "derivarAtividadePresumido",
+    "normalizarCnae"
+   ],
+   "export_default": null,
+   "linhas": 186,
+   "tabelas": [],
+   "rpcs": [],
+   "edges": [],
+   "env": [],
+   "externos": [],
+   "zod_schemas": 0,
+   "flags": [],
+   "papeis": [],
+   "usado_por": 2,
+   "usado_por_modulos": [
+    "pages/tributario"
+   ],
+   "coberto_por_testes": 1,
+   "orfao": false
+  },
+  {
+   "arquivo": "src/lib/tributario/calculadora/index.ts",
+   "camada": "lib",
+   "exports": [
+    "calcularLucroPresumido",
+    "calcularLucroReal",
+    "calcularReformaTributaria",
+    "calcularSimplesNacional",
+    "calcularTodosRegimes"
+   ],
+   "export_default": null,
+   "linhas": 42,
+   "tabelas": [],
+   "rpcs": [],
+   "edges": [],
+   "env": [],
+   "externos": [],
+   "zod_schemas": 0,
+   "flags": [],
+   "papeis": [],
+   "usado_por": 6,
+   "usado_por_modulos": [
+    "components/tributario",
+    "lib/tributario",
+    "pages/tributario"
+   ],
+   "coberto_por_testes": 1,
+   "orfao": false
+  },
+  {
+   "arquivo": "src/lib/tributario/calculadora/lucro-presumido.ts",
+   "camada": "lib",
+   "exports": [
+    "calcularLucroPresumido"
+   ],
+   "export_default": null,
+   "linhas": 312,
+   "tabelas": [],
+   "rpcs": [],
+   "edges": [],
+   "env": [],
+   "externos": [],
+   "zod_schemas": 0,
+   "flags": [],
+   "papeis": [],
+   "usado_por": 1,
+   "usado_por_modulos": [
+    "lib/tributario"
+   ],
+   "coberto_por_testes": 5,
+   "orfao": false
+  },
+  {
+   "arquivo": "src/lib/tributario/calculadora/lucro-real.ts",
+   "camada": "lib",
+   "exports": [
+    "calcularLucroReal"
+   ],
+   "export_default": null,
+   "linhas": 351,
+   "tabelas": [],
+   "rpcs": [],
+   "edges": [],
+   "env": [],
+   "externos": [],
+   "zod_schemas": 0,
+   "flags": [],
+   "papeis": [],
+   "usado_por": 1,
+   "usado_por_modulos": [
+    "lib/tributario"
+   ],
+   "coberto_por_testes": 2,
+   "orfao": false
+  },
+  {
+   "arquivo": "src/lib/tributario/calculadora/reforma-tributaria.ts",
+   "camada": "lib",
+   "exports": [
+    "calcularReformaTributaria"
+   ],
+   "export_default": null,
+   "linhas": 244,
+   "tabelas": [],
+   "rpcs": [],
+   "edges": [],
+   "env": [],
+   "externos": [],
+   "zod_schemas": 0,
+   "flags": [],
+   "papeis": [],
+   "usado_por": 1,
+   "usado_por_modulos": [
+    "lib/tributario"
+   ],
+   "coberto_por_testes": 1,
+   "orfao": false
+  },
+  {
+   "arquivo": "src/lib/tributario/calculadora/simples-nacional.ts",
+   "camada": "lib",
+   "exports": [
+    "calcularSimplesNacional"
+   ],
+   "export_default": null,
+   "linhas": 130,
+   "tabelas": [],
+   "rpcs": [],
+   "edges": [],
+   "env": [],
+   "externos": [],
+   "zod_schemas": 0,
+   "flags": [],
+   "papeis": [],
+   "usado_por": 1,
+   "usado_por_modulos": [
+    "lib/tributario"
+   ],
+   "coberto_por_testes": 1,
+   "orfao": false
+  },
+  {
+   "arquivo": "src/lib/tributario/calculadora/types.ts",
+   "camada": "lib",
+   "exports": [
+    "AtividadePresumido",
+    "CreditosPisCofins",
+    "InputCalculadora",
+    "InputEstadualMunicipal",
+    "InputFolha",
+    "InputLalur",
+    "InputLucroPresumido",
+    "InputLucroReal",
+    "InputMonofasico",
+    "InputReceitas",
+    "InputReforma",
+    "InputRetencoes",
+    "InputSimples",
+    "LinhaMemoria",
+    "ModoLucroReal",
+    "Periodicidade",
+    "ResultadoCalculadora",
+    "ResultadoRegime",
+    "TributoDetalhe"
+   ],
+   "export_default": null,
+   "linhas": 186,
+   "tabelas": [],
+   "rpcs": [],
+   "edges": [],
+   "env": [],
+   "externos": [],
+   "zod_schemas": 0,
+   "flags": [],
+   "papeis": [],
+   "usado_por": 6,
+   "usado_por_modulos": [
+    "lib/tributario"
+   ],
+   "coberto_por_testes": 3,
+   "orfao": false
+  },
+  {
+   "arquivo": "src/lib/tributario/catalogos/alertas.ts",
+   "camada": "lib",
+   "exports": [
+    "AlertaCatalogo",
+    "CatalogoId",
+    "EntradaAlertasCatalogos",
+    "ResumoAlertasCatalogos",
+    "SeveridadeAlerta",
+    "TITULOS_CATALOGO",
+    "gerarAlertasCatalogos"
+   ],
+   "export_default": null,
+   "linhas": 289,
+   "tabelas": [],
+   "rpcs": [],
+   "edges": [],
+   "env": [],
+   "externos": [],
+   "zod_schemas": 0,
+   "flags": [],
+   "papeis": [],
+   "usado_por": 4,
+   "usado_por_modulos": [
+    "components/dashboard",
+    "hooks",
+    "lib/tributario"
+   ],
+   "coberto_por_testes": 3,
+   "orfao": false
+  },
+  {
+   "arquivo": "src/lib/tributario/catalogos/coerencia-iss.ts",
+   "camada": "lib",
+   "exports": [
+    "CampoDivergenteIss",
+    "DivergenciaIss",
+    "ISS_PISO_LEGAL",
+    "ISS_TETO_LEGAL",
+    "ItemIssBanco",
+    "compararItensIssComCatalogo",
+    "descreverDivergenciasIss",
+    "normalizarItemIss"
+   ],
+   "export_default": null,
+   "linhas": 162,
+   "tabelas": [],
+   "rpcs": [],
+   "edges": [],
+   "env": [],
+   "externos": [],
+   "zod_schemas": 0,
+   "flags": [],
+   "papeis": [],
+   "usado_por": 2,
+   "usado_por_modulos": [
+    "lib/tributario"
+   ],
+   "coberto_por_testes": 1,
+   "orfao": false
+  },
+  {
+   "arquivo": "src/lib/tributario/catalogos/coerencia-mva.ts",
+   "camada": "lib",
+   "exports": [
+    "CampoDivergenteMva",
+    "DivergenciaMva",
+    "EntradaCoerenciaMva",
+    "compararMvaComCatalogo"
+   ],
+   "export_default": null,
+   "linhas": 237,
+   "tabelas": [],
+   "rpcs": [],
+   "edges": [],
+   "env": [],
+   "externos": [],
+   "zod_schemas": 0,
+   "flags": [],
+   "papeis": [],
+   "usado_por": 1,
+   "usado_por_modulos": [
+    "lib/tributario"
+   ],
+   "coberto_por_testes": 1,
+   "orfao": false
+  },
+  {
+   "arquivo": "src/lib/tributario/catalogos/coerencia-ncm.ts",
+   "camada": "lib",
+   "exports": [
+    "CampoDivergenteNcm",
+    "DivergenciaNcm",
+    "MVA_MAXIMO",
+    "NcmBanco",
+    "compararNcmsComCatalogo",
+    "descreverDivergenciasNcm",
+    "ncmsForaDaTipi"
+   ],
+   "export_default": null,
+   "linhas": 169,
+   "tabelas": [],
+   "rpcs": [],
+   "edges": [],
+   "env": [],
+   "externos": [],
+   "zod_schemas": 0,
+   "flags": [],
+   "papeis": [],
+   "usado_por": 4,
+   "usado_por_modulos": [
+    "lib/tributario"
+   ],
+   "coberto_por_testes": 2,
+   "orfao": false
+  },
+  {
+   "arquivo": "src/lib/tributario/catalogos/coerencia-ufs.ts",
+   "camada": "lib",
+   "exports": [
+    "DivergenciaUf",
+    "compararUfsComCatalogo",
+    "validarMarcadorFcp"
+   ],
+   "export_default": null,
+   "linhas": 86,
+   "tabelas": [],
+   "rpcs": [],
+   "edges": [],
+   "env": [],
+   "externos": [],
+   "zod_schemas": 0,
+   "flags": [],
+   "papeis": [],
+   "usado_por": 2,
+   "usado_por_modulos": [
+    "lib/tributario"
+   ],
+   "coberto_por_testes": 1,
+   "orfao": false
+  },
+  {
+   "arquivo": "src/lib/tributario/catalogos/coerencia.ts",
+   "camada": "lib",
+   "exports": [
+    "compararFaixasComCatalogo",
+    "descreverDivergencias"
+   ],
+   "export_default": null,
+   "linhas": 73,
+   "tabelas": [],
+   "rpcs": [],
+   "edges": [],
+   "env": [],
+   "externos": [],
+   "zod_schemas": 0,
+   "flags": [],
+   "papeis": [],
+   "usado_por": 2,
+   "usado_por_modulos": [
+    "lib/tributario"
+   ],
+   "coberto_por_testes": 1,
+   "orfao": false
+  },
+  {
+   "arquivo": "src/lib/tributario/catalogos/painel.ts",
+   "camada": "lib",
+   "exports": [
+    "ResumoPainelCatalogos",
+    "SituacaoCatalogo",
+    "StatusCatalogo",
+    "aliquotaInterestadualEsperada",
+    "resumirPainelCatalogos",
+    "validarInterestaduais"
+   ],
+   "export_default": null,
+   "linhas": 212,
+   "tabelas": [],
+   "rpcs": [],
+   "edges": [],
+   "env": [],
+   "externos": [],
+   "zod_schemas": 0,
+   "flags": [],
+   "papeis": [],
+   "usado_por": 3,
+   "usado_por_modulos": [
+    "hooks",
+    "lib/tributario",
+    "pages/tributario"
+   ],
+   "coberto_por_testes": 2,
+   "orfao": false
+  },
+  {
+   "arquivo": "src/lib/tributario/catalogos/rejeicoes-auditoria.ts",
+   "camada": "lib",
+   "exports": [
+    "CatalogoOverlay",
+    "EntradaColetaRejeicoes",
+    "RejeicaoAuditavel",
+    "ResumoRejeicoes",
+    "SeveridadeRejeicao",
+    "coletarDriftCatalogoAuditavel",
+    "coletarDriftMvaAuditavel",
+    "coletarRejeicoesOverlay",
+    "descreverMotivo",
+    "resumirRejeicoes"
+   ],
+   "export_default": null,
+   "linhas": 272,
+   "tabelas": [],
+   "rpcs": [],
+   "edges": [],
+   "env": [],
+   "externos": [],
+   "zod_schemas": 0,
+   "flags": [],
+   "papeis": [],
+   "usado_por": 2,
+   "usado_por_modulos": [
+    "hooks",
+    "pages/tributario"
+   ],
+   "coberto_por_testes": 2,
+   "orfao": false
+  },
+  {
+   "arquivo": "src/lib/tributario/catalogos/repositorio.ts",
+   "camada": "lib",
+   "exports": [
+    "CnaeCatalogo",
+    "ItemListaIssCatalogo",
+    "ProtocoloStNcmCatalogo",
+    "ProtocoloStUfCatalogo",
+    "buscarAliquotasInterestaduais",
+    "buscarAliquotasIssMunicipais",
+    "buscarCnaePorCodigo",
+    "buscarCnaes",
+    "buscarFaixasSimples",
+    "buscarItensListaIss",
+    "buscarNcms",
+    "buscarProtocolosStNcms",
+    "buscarProtocolosStUfs",
+    "buscarUfs",
+    "hojeIso",
+    "normalizarCodigoCnae",
+    "normalizarReferencia"
+   ],
+   "export_default": null,
+   "linhas": 348,
+   "tabelas": [
+    "aliquotas_interestaduais",
+    "aliquotas_iss_municipal",
+    "cnaes",
+    "faixas_simples_nacional",
+    "itens_lista_iss",
+    "ncms",
+    "protocolos_st_ncms",
+    "protocolos_st_ufs",
+    "ufs"
+   ],
+   "rpcs": [],
+   "edges": [],
+   "env": [],
+   "externos": [],
+   "zod_schemas": 0,
+   "flags": [],
+   "papeis": [],
+   "usado_por": 3,
+   "usado_por_modulos": [
+    "hooks"
+   ],
+   "coberto_por_testes": 1,
+   "orfao": false
+  },
+  {
+   "arquivo": "src/lib/tributario/catalogos/resumo-mva.ts",
+   "camada": "lib",
+   "exports": [
+    "ProtocoloResumido",
+    "ResumoMvaSt",
+    "formatarFaixaMva",
+    "resumirOverlayMvaSt"
+   ],
+   "export_default": null,
+   "linhas": 125,
+   "tabelas": [],
+   "rpcs": [],
+   "edges": [],
+   "env": [],
+   "externos": [],
+   "zod_schemas": 0,
+   "flags": [],
+   "papeis": [],
+   "usado_por": 1,
+   "usado_por_modulos": [
+    "pages/tributario"
+   ],
+   "coberto_por_testes": 1,
+   "orfao": false
+  },
+  {
+   "arquivo": "src/lib/tributario/catalogos/saude.ts",
+   "camada": "lib",
+   "exports": [
+    "EntradaRejeicoes",
+    "EntradaSaudeCatalogos",
+    "OverlayId",
+    "RejeicaoOverlayResumo",
+    "SaudeCatalogos",
+    "StatusSaudeCatalogos",
+    "TITULOS_OVERLAY",
+    "calcularSaudeCatalogos"
+   ],
+   "export_default": null,
+   "linhas": 158,
+   "tabelas": [],
+   "rpcs": [],
+   "edges": [],
+   "env": [],
+   "externos": [],
+   "zod_schemas": 0,
+   "flags": [],
+   "papeis": [],
+   "usado_por": 2,
+   "usado_por_modulos": [
+    "components/tributario",
+    "hooks"
+   ],
+   "coberto_por_testes": 1,
+   "orfao": false
+  },
+  {
+   "arquivo": "src/lib/tributario/catalogos/types.ts",
+   "camada": "lib",
+   "exports": [
+    "AliquotaInterestadualCatalogo",
+    "DivergenciaCatalogo",
+    "FaixaSimplesCatalogo",
+    "RegiaoBrasil",
+    "UfCatalogo"
+   ],
+   "export_default": null,
+   "linhas": 52,
+   "tabelas": [],
+   "rpcs": [],
+   "edges": [],
+   "env": [],
+   "externos": [],
+   "zod_schemas": 0,
+   "flags": [],
+   "papeis": [],
+   "usado_por": 5,
+   "usado_por_modulos": [
+    "lib/tributario"
+   ],
+   "coberto_por_testes": 4,
+   "orfao": false
+  },
+  {
+   "arquivo": "src/lib/tributario/darf/consolidar.ts",
+   "camada": "lib",
+   "exports": [
+    "CODIGOS_RECEITA",
+    "consolidarDarf",
+    "exportarDarfCsv"
+   ],
+   "export_default": null,
+   "linhas": 257,
+   "tabelas": [],
+   "rpcs": [],
+   "edges": [],
+   "env": [],
+   "externos": [],
+   "zod_schemas": 0,
+   "flags": [],
+   "papeis": [],
+   "usado_por": 1,
+   "usado_por_modulos": [
+    "lib/tributario"
+   ],
+   "coberto_por_testes": 0,
+   "orfao": false
+  },
+  {
+   "arquivo": "src/lib/tributario/darf/index.ts",
+   "camada": "lib",
+   "exports": [],
+   "export_default": null,
+   "linhas": 5,
+   "tabelas": [],
+   "rpcs": [],
+   "edges": [],
+   "env": [],
+   "externos": [],
+   "zod_schemas": 0,
+   "flags": [],
+   "papeis": [],
+   "usado_por": 1,
+   "usado_por_modulos": [
+    "pages/tributario"
+   ],
+   "coberto_por_testes": 1,
+   "orfao": false
+  },
+  {
+   "arquivo": "src/lib/tributario/darf/tabelas.ts",
+   "camada": "lib",
+   "exports": [
+    "CODIGOS_RECEITA",
+    "MULTA_MORA_DIARIA",
+    "MULTA_MORA_TETO",
+    "SELIC_PADRAO_MENSAL",
+    "VALOR_MINIMO_DARF",
+    "VALOR_MINIMO_QUOTA",
+    "anteciparDiaUtil",
+    "buscarCodigo",
+    "isDiaUtil"
+   ],
+   "export_default": null,
+   "linhas": 217,
+   "tabelas": [],
+   "rpcs": [],
+   "edges": [],
+   "env": [],
+   "externos": [],
+   "zod_schemas": 0,
+   "flags": [],
+   "papeis": [],
+   "usado_por": 4,
+   "usado_por_modulos": [
+    "lib/tributario"
+   ],
+   "coberto_por_testes": 1,
+   "orfao": false
+  },
+  {
+   "arquivo": "src/lib/tributario/darf/types.ts",
+   "camada": "lib",
+   "exports": [
+    "AcrescimosMoratorios",
+    "CodigoReceita",
+    "DarfConsolidado",
+    "DebitoApurado",
+    "ParametrosConsolidacao",
+    "QuotaDarf",
+    "RegraVencimento",
+    "ResultadoConsolidacao",
+    "TributoDarf"
+   ],
+   "export_default": null,
+   "linhas": 106,
+   "tabelas": [],
+   "rpcs": [],
+   "edges": [],
+   "env": [],
+   "externos": [],
+   "zod_schemas": 0,
+   "flags": [],
+   "papeis": [],
+   "usado_por": 4,
+   "usado_por_modulos": [
+    "lib/tributario"
+   ],
+   "coberto_por_testes": 0,
+   "orfao": false
+  },
+  {
+   "arquivo": "src/lib/tributario/darf/vencimento.ts",
+   "camada": "lib",
+   "exports": [
+    "calcularAcrescimos",
+    "calcularVencimento",
+    "diasAtraso",
+    "parsePeriodo",
+    "round2",
+    "selicAcumulada",
+    "somarMeses"
+   ],
+   "export_default": null,
+   "linhas": 113,
+   "tabelas": [],
+   "rpcs": [],
+   "edges": [],
+   "env": [],
+   "externos": [],
+   "zod_schemas": 0,
+   "flags": [],
+   "papeis": [],
+   "usado_por": 3,
+   "usado_por_modulos": [
+    "lib/tributario"
+   ],
+   "coberto_por_testes": 0,
+   "orfao": false
+  },
+  {
+   "arquivo": "src/lib/tributario/decidir-regime.ts",
+   "camada": "lib",
+   "exports": [
+    "OpcoesDecisao",
+    "decidirRegime"
+   ],
+   "export_default": null,
+   "linhas": 114,
+   "tabelas": [],
+   "rpcs": [],
+   "edges": [],
+   "env": [],
+   "externos": [],
+   "zod_schemas": 0,
+   "flags": [],
+   "papeis": [],
+   "usado_por": 1,
+   "usado_por_modulos": [
+    "lib/tributario"
+   ],
+   "coberto_por_testes": 4,
+   "orfao": false
+  },
+  {
+   "arquivo": "src/lib/tributario/diagnostico-parametros.ts",
+   "camada": "lib",
+   "exports": [
+    "AjusteParametro",
+    "SeveridadeAjuste",
+    "diagnosticarParametros"
+   ],
+   "export_default": null,
+   "linhas": 139,
+   "tabelas": [],
+   "rpcs": [],
+   "edges": [],
+   "env": [],
+   "externos": [],
+   "zod_schemas": 0,
+   "flags": [],
+   "papeis": [],
+   "usado_por": 5,
+   "usado_por_modulos": [
+    "components/tributario",
+    "hooks",
+    "lib/tributario",
+    "pages/tributario"
+   ],
+   "coberto_por_testes": 2,
+   "orfao": false
+  },
+  {
+   "arquivo": "src/lib/tributario/elisao/detectar-bonificacao.ts",
+   "camada": "lib",
+   "exports": [
+    "detectarBonificacao"
+   ],
+   "export_default": null,
+   "linhas": 35,
+   "tabelas": [],
+   "rpcs": [],
+   "edges": [],
+   "env": [],
+   "externos": [],
+   "zod_schemas": 0,
+   "flags": [],
+   "papeis": [],
+   "usado_por": 2,
+   "usado_por_modulos": [
+    "lib/tributario"
+   ],
+   "coberto_por_testes": 0,
+   "orfao": false
+  },
+  {
+   "arquivo": "src/lib/tributario/elisao/detectar-deliberacao-lucros.ts",
+   "camada": "lib",
+   "exports": [
+    "detectarDeliberacaoLucros"
+   ],
+   "export_default": null,
+   "linhas": 75,
+   "tabelas": [],
+   "rpcs": [],
+   "edges": [],
+   "env": [],
+   "externos": [],
+   "zod_schemas": 0,
+   "flags": [],
+   "papeis": [],
+   "usado_por": 2,
+   "usado_por_modulos": [
+    "lib/tributario"
+   ],
+   "coberto_por_testes": 1,
+   "orfao": false
+  },
+  {
+   "arquivo": "src/lib/tributario/elisao/detectar-depreciacao-acelerada.ts",
+   "camada": "lib",
+   "exports": [
+    "detectarDepreciacaoAcelerada"
+   ],
+   "export_default": null,
+   "linhas": 73,
+   "tabelas": [],
+   "rpcs": [],
+   "edges": [],
+   "env": [],
+   "externos": [],
+   "zod_schemas": 0,
+   "flags": [],
+   "papeis": [],
+   "usado_por": 2,
+   "usado_por_modulos": [
+    "lib/tributario"
+   ],
+   "coberto_por_testes": 1,
+   "orfao": false
+  },
+  {
+   "arquivo": "src/lib/tributario/elisao/detectar-drawback.ts",
+   "camada": "lib",
+   "exports": [
+    "detectarDrawback"
+   ],
+   "export_default": null,
+   "linhas": 36,
+   "tabelas": [],
+   "rpcs": [],
+   "edges": [],
+   "env": [],
+   "externos": [],
+   "zod_schemas": 0,
+   "flags": [],
+   "papeis": [],
+   "usado_por": 2,
+   "usado_por_modulos": [
+    "lib/tributario"
+   ],
+   "coberto_por_testes": 0,
+   "orfao": false
+  },
+  {
+   "arquivo": "src/lib/tributario/elisao/detectar-holding.ts",
+   "camada": "lib",
+   "exports": [
+    "detectarHolding"
+   ],
+   "export_default": null,
+   "linhas": 38,
+   "tabelas": [],
+   "rpcs": [],
+   "edges": [],
+   "env": [],
+   "externos": [],
+   "zod_schemas": 0,
+   "flags": [],
+   "papeis": [],
+   "usado_por": 2,
+   "usado_por_modulos": [
+    "lib/tributario"
+   ],
+   "coberto_por_testes": 0,
+   "orfao": false
+  },
+  {
+   "arquivo": "src/lib/tributario/elisao/detectar-jcp.ts",
+   "camada": "lib",
+   "exports": [
+    "ALIQUOTA_ECONOMIA_JCP",
+    "ALIQUOTA_IRRF_JCP",
+    "MemoriaJcp",
+    "OportunidadeJcp",
+    "PERCENTUAL_LIMITE_JCP",
+    "PL_MINIMO_JCP",
+    "TAXA_ECONOMIA_LIQUIDA_JCP",
+    "detectarJCP"
+   ],
+   "export_default": null,
+   "linhas": 107,
+   "tabelas": [],
+   "rpcs": [],
+   "edges": [],
+   "env": [],
+   "externos": [],
+   "zod_schemas": 0,
+   "flags": [],
+   "papeis": [],
+   "usado_por": 2,
+   "usado_por_modulos": [
+    "lib/tributario"
+   ],
+   "coberto_por_testes": 1,
+   "orfao": false
+  },
+  {
+   "arquivo": "src/lib/tributario/elisao/detectar-lei-bem.ts",
+   "camada": "lib",
+   "exports": [
+    "detectarLeiBem"
+   ],
+   "export_default": null,
+   "linhas": 34,
+   "tabelas": [],
+   "rpcs": [],
+   "edges": [],
+   "env": [],
+   "externos": [],
+   "zod_schemas": 0,
+   "flags": [],
+   "papeis": [],
+   "usado_por": 2,
+   "usado_por_modulos": [
+    "lib/tributario"
+   ],
+   "coberto_por_testes": 0,
+   "orfao": false
+  },
+  {
+   "arquivo": "src/lib/tributario/elisao/detectar-ms-lc224.ts",
+   "camada": "lib",
+   "exports": [
+    "detectarMsLc224"
+   ],
+   "export_default": null,
+   "linhas": 38,
+   "tabelas": [],
+   "rpcs": [],
+   "edges": [],
+   "env": [],
+   "externos": [],
+   "zod_schemas": 0,
+   "flags": [],
+   "papeis": [],
+   "usado_por": 2,
+   "usado_por_modulos": [
+    "lib/tributario"
+   ],
+   "coberto_por_testes": 0,
+   "orfao": false
+  },
+  {
+   "arquivo": "src/lib/tributario/elisao/detectar-pat.ts",
+   "camada": "lib",
+   "exports": [
+    "detectarPAT"
+   ],
+   "export_default": null,
+   "linhas": 37,
+   "tabelas": [],
+   "rpcs": [],
+   "edges": [],
+   "env": [],
+   "externos": [],
+   "zod_schemas": 0,
+   "flags": [],
+   "papeis": [],
+   "usado_por": 2,
+   "usado_por_modulos": [
+    "lib/tributario"
+   ],
+   "coberto_por_testes": 0,
+   "orfao": false
+  },
+  {
+   "arquivo": "src/lib/tributario/elisao/detectar-recuperacao-pis-cofins.ts",
+   "camada": "lib",
+   "exports": [
+    "detectarRecuperacaoPisCofins"
+   ],
+   "export_default": null,
+   "linhas": 55,
+   "tabelas": [],
+   "rpcs": [],
+   "edges": [],
+   "env": [],
+   "externos": [],
+   "zod_schemas": 0,
+   "flags": [],
+   "papeis": [],
+   "usado_por": 2,
+   "usado_por_modulos": [
+    "lib/tributario"
+   ],
+   "coberto_por_testes": 1,
+   "orfao": false
+  },
+  {
+   "arquivo": "src/lib/tributario/elisao/detectar-reintegra.ts",
+   "camada": "lib",
+   "exports": [
+    "detectarReintegra"
+   ],
+   "export_default": null,
+   "linhas": 35,
+   "tabelas": [],
+   "rpcs": [],
+   "edges": [],
+   "env": [],
+   "externos": [],
+   "zod_schemas": 0,
+   "flags": [],
+   "papeis": [],
+   "usado_por": 2,
+   "usado_por_modulos": [
+    "lib/tributario"
+   ],
+   "coberto_por_testes": 0,
+   "orfao": false
+  },
+  {
+   "arquivo": "src/lib/tributario/elisao/detectar-subvencao-icms.ts",
+   "camada": "lib",
+   "exports": [
+    "detectarSubvencaoIcms"
+   ],
+   "export_default": null,
+   "linhas": 34,
+   "tabelas": [],
+   "rpcs": [],
+   "edges": [],
+   "env": [],
+   "externos": [],
+   "zod_schemas": 0,
+   "flags": [],
+   "papeis": [],
+   "usado_por": 2,
+   "usado_por_modulos": [
+    "lib/tributario"
+   ],
+   "coberto_por_testes": 0,
+   "orfao": false
+  },
+  {
+   "arquivo": "src/lib/tributario/elisao/detectar-sudene-sudam.ts",
+   "camada": "lib",
+   "exports": [
+    "detectarSudeneSudam"
+   ],
+   "export_default": null,
+   "linhas": 58,
+   "tabelas": [],
+   "rpcs": [],
+   "edges": [],
+   "env": [],
+   "externos": [],
+   "zod_schemas": 0,
+   "flags": [],
+   "papeis": [],
+   "usado_por": 2,
+   "usado_por_modulos": [
+    "lib/tributario"
+   ],
+   "coberto_por_testes": 1,
+   "orfao": false
+  },
+  {
+   "arquivo": "src/lib/tributario/elisao/index.ts",
+   "camada": "lib",
+   "exports": [
+    "detectarBonificacao",
+    "detectarDeliberacaoLucros",
+    "detectarDepreciacaoAcelerada",
+    "detectarDrawback",
+    "detectarHolding",
+    "detectarJCP",
+    "detectarLeiBem",
+    "detectarMsLc224",
+    "detectarPAT",
+    "detectarRecuperacaoPisCofins",
+    "detectarReintegra",
+    "detectarSubvencaoIcms",
+    "detectarSudeneSudam"
+   ],
+   "export_default": null,
+   "linhas": 16,
+   "tabelas": [],
+   "rpcs": [],
+   "edges": [],
+   "env": [],
+   "externos": [],
+   "zod_schemas": 0,
+   "flags": [],
+   "papeis": [],
+   "usado_por": 6,
+   "usado_por_modulos": [
+    "hooks",
+    "lib/tributario",
+    "pages/tributario"
+   ],
+   "coberto_por_testes": 0,
+   "orfao": false
+  },
+  {
+   "arquivo": "src/lib/tributario/elisao/orquestrador-elisao.ts",
+   "camada": "lib",
+   "exports": [
+    "RelatorioElisao",
+    "analisarOportunidadesElisao"
+   ],
+   "export_default": null,
+   "linhas": 71,
+   "tabelas": [],
+   "rpcs": [],
+   "edges": [],
+   "env": [],
+   "externos": [],
+   "zod_schemas": 0,
+   "flags": [],
+   "papeis": [],
+   "usado_por": 2,
+   "usado_por_modulos": [
+    "components/tributario",
+    "lib/tributario"
+   ],
+   "coberto_por_testes": 4,
+   "orfao": false
+  },
+  {
+   "arquivo": "src/lib/tributario/elisao/types.ts",
+   "camada": "lib",
+   "exports": [
+    "ALIQUOTA_IRPJ_BASICA",
+    "ALIQUOTA_IRPJ_CSLL_COMBINADA",
+    "ALIQUOTA_IRRF_DIVIDENDOS",
+    "ANOS_PRESCRICAO_CREDITO",
+    "CUSTO_OPORTUNIDADE_ANUAL",
+    "ContextoEmpresa",
+    "DATA_LIMITE_DELIBERACAO_LUCROS",
+    "OportunidadeDetectada",
+    "REDUCAO_IRPJ_REGIONAL",
+    "RegimeAplicavel",
+    "RiscoElisao",
+    "SUBLIMITE_SIMPLES",
+    "TAXA_CREDITO_NAO_APROVEITADO_ESTIMADA",
+    "TETO_DIVIDENDOS_IRPFM",
+    "TETO_SIMPLES",
+    "TJLP_ANUAL",
+    "UFS_SUDAM",
+    "UFS_SUDENE"
+   ],
+   "export_default": null,
+   "linhas": 97,
+   "tabelas": [],
+   "rpcs": [],
+   "edges": [],
+   "env": [],
+   "externos": [],
+   "zod_schemas": 0,
+   "flags": [],
+   "papeis": [],
+   "usado_por": 17,
+   "usado_por_modulos": [
+    "components/tributario",
+    "lib/tributario"
+   ],
+   "coberto_por_testes": 5,
+   "orfao": false
+  },
+  {
+   "arquivo": "src/lib/tributario/encargos-folha.ts",
+   "camada": "lib",
+   "exports": [
+    "TERCEIROS_PADRAO",
+    "TERCEIROS_POR_DIVISAO_CNAE",
+    "divisaoCnaeMotor",
+    "ratFap",
+    "terceiros",
+    "terceirosPorCnaeMotor"
+   ],
+   "export_default": null,
+   "linhas": 59,
+   "tabelas": [],
+   "rpcs": [],
+   "edges": [],
+   "env": [],
+   "externos": [],
+   "zod_schemas": 0,
+   "flags": [],
+   "papeis": [],
+   "usado_por": 1,
+   "usado_por_modulos": [
+    "lib/tributario"
+   ],
+   "coberto_por_testes": 0,
+   "orfao": false
+  },
+  {
+   "arquivo": "src/lib/tributario/fator-r.ts",
+   "camada": "lib",
+   "exports": [
+    "calcularFatorR",
+    "calcularFolha12m",
+    "determinarAnexoPorFatorR"
+   ],
+   "export_default": null,
+   "linhas": 57,
+   "tabelas": [],
+   "rpcs": [],
+   "edges": [],
+   "env": [],
+   "externos": [],
+   "zod_schemas": 0,
+   "flags": [],
+   "papeis": [],
+   "usado_por": 1,
+   "usado_por_modulos": [
+    "lib/tributario"
+   ],
+   "coberto_por_testes": 3,
+   "orfao": false
+  },
+  {
+   "arquivo": "src/lib/tributario/folha/encargos.ts",
+   "camada": "lib",
+   "exports": [
+    "calcularEncargosPatronais",
+    "calcularRatAjustado",
+    "compararDesoneracaoFolha",
+    "normalizarFap",
+    "resolverRatNominal"
+   ],
+   "export_default": null,
+   "linhas": 194,
+   "tabelas": [],
+   "rpcs": [],
+   "edges": [],
+   "env": [],
+   "externos": [],
+   "zod_schemas": 0,
+   "flags": [],
+   "papeis": [],
+   "usado_por": 1,
+   "usado_por_modulos": [
+    "lib/tributario"
+   ],
+   "coberto_por_testes": 0,
+   "orfao": false
+  },
+  {
+   "arquivo": "src/lib/tributario/folha/fpas-terceiros.ts",
+   "camada": "lib",
+   "exports": [
+    "FPAS_PADRAO",
+    "FpasInfo",
+    "TABELA_FPAS",
+    "aliquotaTerceirosPorCnae",
+    "buscarFpas",
+    "divisaoCnae",
+    "resolverFpasPorCnae"
+   ],
+   "export_default": null,
+   "linhas": 244,
+   "tabelas": [],
+   "rpcs": [],
+   "edges": [],
+   "env": [],
+   "externos": [],
+   "zod_schemas": 0,
+   "flags": [],
+   "papeis": [],
+   "usado_por": 3,
+   "usado_por_modulos": [
+    "components/empresas",
+    "components/tributario",
+    "pages/tributario"
+   ],
+   "coberto_por_testes": 1,
+   "orfao": false
+  },
+  {
+   "arquivo": "src/lib/tributario/folha/index.ts",
+   "camada": "lib",
+   "exports": [],
+   "export_default": null,
+   "linhas": 4,
+   "tabelas": [],
+   "rpcs": [],
+   "edges": [],
+   "env": [],
+   "externos": [],
+   "zod_schemas": 0,
+   "flags": [],
+   "papeis": [],
+   "usado_por": 3,
+   "usado_por_modulos": [
+    "lib/tributario",
+    "pages/tributario"
+   ],
+   "coberto_por_testes": 1,
+   "orfao": false
+  },
+  {
+   "arquivo": "src/lib/tributario/folha/tabelas.ts",
+   "camada": "lib",
+   "exports": [
+    "ALIQUOTAS_CPRB",
+    "ALIQUOTA_CPP",
+    "ALIQUOTA_FGTS",
+    "FAP_MAXIMO",
+    "FAP_MINIMO",
+    "FPAS_PADRAO",
+    "RAT_AJUSTADO_MAXIMO",
+    "RAT_AJUSTADO_MINIMO",
+    "TABELA_FPAS",
+    "buscarFpas",
+    "grauRiscoPorCnae"
+   ],
+   "export_default": null,
+   "linhas": 225,
+   "tabelas": [],
+   "rpcs": [],
+   "edges": [],
+   "env": [],
+   "externos": [],
+   "zod_schemas": 0,
+   "flags": [],
+   "papeis": [],
+   "usado_por": 2,
+   "usado_por_modulos": [
+    "lib/tributario"
+   ],
+   "coberto_por_testes": 0,
+   "orfao": false
+  },
+  {
+   "arquivo": "src/lib/tributario/folha/types.ts",
+   "camada": "lib",
+   "exports": [
+    "CodigoFpas",
+    "GrauRisco",
+    "InputCprb",
+    "InputEncargosPatronais",
+    "LinhaEncargo",
+    "RAT_POR_GRAU",
+    "ResultadoCprb",
+    "ResultadoEncargosPatronais"
+   ],
+   "export_default": null,
+   "linhas": 100,
+   "tabelas": [],
+   "rpcs": [],
+   "edges": [],
+   "env": [],
+   "externos": [],
+   "zod_schemas": 0,
+   "flags": [],
+   "papeis": [],
+   "usado_por": 4,
+   "usado_por_modulos": [
+    "lib/tributario"
+   ],
+   "coberto_por_testes": 0,
+   "orfao": false
+  },
+  {
+   "arquivo": "src/lib/tributario/historico-simulacao.ts",
+   "camada": "lib",
+   "exports": [
+    "ItemAuditavel",
+    "ItemAuditavelExportavel",
+    "ItemAuditavelOrdenavel",
+    "LinhaAuditoriaCsv",
+    "ORDENACOES_HISTORICO",
+    "OrdenacaoHistorico",
+    "PaginaHistorico",
+    "ResumoAuditoriaHistorico",
+    "filtrarHistorico",
+    "mesclarSnapshotParametros",
+    "montarLinhasAuditoriaCsv",
+    "normalizarAjustesAplicados",
+    "normalizarParametrosSnapshot",
+    "ordenarHistorico",
+    "paginarHistorico",
+    "resumirAuditoriaHistorico",
+    "snapshotComPendencia"
+   ],
+   "export_default": null,
+   "linhas": 428,
+   "tabelas": [],
+   "rpcs": [],
+   "edges": [],
+   "env": [],
+   "externos": [],
+   "zod_schemas": 0,
+   "flags": [],
+   "papeis": [],
+   "usado_por": 4,
+   "usado_por_modulos": [
+    "hooks",
+    "pages/tributario"
+   ],
+   "coberto_por_testes": 3,
+   "orfao": false
+  },
+  {
+   "arquivo": "src/lib/tributario/icms/index.ts",
+   "camada": "lib",
+   "exports": [],
+   "export_default": null,
+   "linhas": 5,
+   "tabelas": [],
+   "rpcs": [],
+   "edges": [],
+   "env": [],
+   "externos": [],
+   "zod_schemas": 0,
+   "flags": [],
+   "papeis": [],
+   "usado_por": 1,
+   "usado_por_modulos": [
+    "pages/tributario"
+   ],
+   "coberto_por_testes": 1,
+   "orfao": false
+  },
+  {
+   "arquivo": "src/lib/tributario/icms/overlay-mva.ts",
+   "camada": "lib",
+   "exports": [
+    "BloqueioMva",
+    "ConsultaMvaSt",
+    "EntradaMvaSt",
+    "EntradaOverlayMva",
+    "IndiceMvaSt",
+    "MVA_MAXIMA",
+    "MotivoBloqueioMva",
+    "MotivoRejeicaoMva",
+    "PapelProtocolo",
+    "RegistroProtocoloNcmBanco",
+    "RegistroProtocoloUfBanco",
+    "RegraJuridicaNcm",
+    "RejeicaoMva",
+    "ResolucaoMvaSt",
+    "ResultadoOverlayMva",
+    "SITUACOES_SEM_ST",
+    "aplicarOverlayMvaSt",
+    "definirIndiceMvaStEfetivo",
+    "descreverBloqueiosMva",
+    "descreverRejeicoesMva",
+    "normalizarMva",
+    "obterIndiceMvaStEfetivo",
+    "resetarIndiceMvaStEfetivo",
+    "resolverMvaSt"
+   ],
+   "export_default": null,
+   "linhas": 527,
+   "tabelas": [],
+   "rpcs": [],
+   "edges": [],
+   "env": [],
+   "externos": [],
+   "zod_schemas": 0,
+   "flags": [],
+   "papeis": [
+    "AMBOS",
+    "DESTINO",
+    "ORIGEM"
+   ],
+   "usado_por": 8,
+   "usado_por_modulos": [
+    "hooks",
+    "lib/tributario",
+    "pages/tributario"
+   ],
+   "coberto_por_testes": 4,
+   "orfao": false
+  },
+  {
+   "arquivo": "src/lib/tributario/icms/overlay.ts",
+   "camada": "lib",
+   "exports": [
+    "AplicacaoOverlay",
+    "MotivoRejeicao",
+    "RegistroUfBanco",
+    "RejeicaoOverlay",
+    "ResultadoOverlay",
+    "aplicarOverlayUfs",
+    "normalizarAliquota",
+    "ufsAusentesNoBanco"
+   ],
+   "export_default": null,
+   "linhas": 138,
+   "tabelas": [],
+   "rpcs": [],
+   "edges": [],
+   "env": [],
+   "externos": [],
+   "zod_schemas": 0,
+   "flags": [],
+   "papeis": [],
+   "usado_por": 2,
+   "usado_por_modulos": [
+    "hooks",
+    "lib/tributario"
+   ],
+   "coberto_por_testes": 2,
+   "orfao": false
+  },
+  {
+   "arquivo": "src/lib/tributario/icms/st.ts",
+   "camada": "lib",
+   "exports": [
+    "calcularDifal",
+    "calcularIcmsSt",
+    "calcularMvaAjustada",
+    "round2"
+   ],
+   "export_default": null,
+   "linhas": 338,
+   "tabelas": [],
+   "rpcs": [],
+   "edges": [],
+   "env": [],
+   "externos": [],
+   "zod_schemas": 0,
+   "flags": [],
+   "papeis": [],
+   "usado_por": 1,
+   "usado_por_modulos": [
+    "lib/tributario"
+   ],
+   "coberto_por_testes": 3,
+   "orfao": false
+  },
+  {
+   "arquivo": "src/lib/tributario/icms/tabelas.ts",
+   "camada": "lib",
+   "exports": [
+    "ALIQUOTAS_UF",
+    "ALIQUOTA_INTERESTADUAL_GERAL",
+    "ALIQUOTA_INTERESTADUAL_IMPORTADO",
+    "ALIQUOTA_INTERESTADUAL_REDUZIDA",
+    "ORIGENS_IMPORTADAS",
+    "UFS",
+    "aliquotaInternaDe",
+    "buscarUf",
+    "definirTabelaUfsEfetiva",
+    "fcpDe",
+    "isImportada",
+    "isUF",
+    "obterTabelaUfsEfetiva",
+    "resetarTabelaUfsEfetiva",
+    "resolverAliquotaInterestadual"
+   ],
+   "export_default": null,
+   "linhas": 129,
+   "tabelas": [],
+   "rpcs": [],
+   "edges": [],
+   "env": [],
+   "externos": [],
+   "zod_schemas": 0,
+   "flags": [],
+   "papeis": [],
+   "usado_por": 8,
+   "usado_por_modulos": [
+    "hooks",
+    "lib/tributario"
+   ],
+   "coberto_por_testes": 8,
+   "orfao": false
+  },
+  {
+   "arquivo": "src/lib/tributario/icms/types.ts",
+   "camada": "lib",
+   "exports": [
+    "AliquotaUf",
+    "InputDifal",
+    "InputIcmsSt",
+    "InputMvaAjustada",
+    "LinhaIcms",
+    "OrigemMercadoria",
+    "RegiaoFiscal",
+    "ResultadoDifal",
+    "ResultadoIcmsSt",
+    "SituacaoIcmsSt",
+    "UF"
+   ],
+   "export_default": null,
+   "linhas": 200,
+   "tabelas": [],
+   "rpcs": [],
+   "edges": [],
+   "env": [],
+   "externos": [],
+   "zod_schemas": 0,
+   "flags": [],
+   "papeis": [],
+   "usado_por": 9,
+   "usado_por_modulos": [
+    "hooks",
+    "lib/tributario"
+   ],
+   "coberto_por_testes": 3,
+   "orfao": false
+  },
+  {
+   "arquivo": "src/lib/tributario/index.ts",
+   "camada": "lib",
+   "exports": [],
+   "export_default": null,
+   "linhas": 14,
+   "tabelas": [],
+   "rpcs": [],
+   "edges": [],
+   "env": [],
+   "externos": [],
+   "zod_schemas": 0,
+   "flags": [],
+   "papeis": [],
+   "usado_por": 11,
+   "usado_por_modulos": [
+    "components/tributario",
+    "hooks",
+    "lib/tributario",
+    "pages/tributario"
+   ],
+   "coberto_por_testes": 0,
+   "orfao": false
+  },
+  {
+   "arquivo": "src/lib/tributario/ipi-iss/index.ts",
+   "camada": "lib",
+   "exports": [],
+   "export_default": null,
+   "linhas": 5,
+   "tabelas": [],
+   "rpcs": [],
+   "edges": [],
+   "env": [],
+   "externos": [],
+   "zod_schemas": 0,
+   "flags": [],
+   "papeis": [],
+   "usado_por": 1,
+   "usado_por_modulos": [
+    "pages/tributario"
+   ],
+   "coberto_por_testes": 1,
+   "orfao": false
+  },
+  {
+   "arquivo": "src/lib/tributario/ipi-iss/ipi.ts",
+   "camada": "lib",
+   "exports": [
+    "calcularIpi"
+   ],
+   "export_default": null,
+   "linhas": 130,
+   "tabelas": [],
+   "rpcs": [],
+   "edges": [],
+   "env": [],
+   "externos": [],
+   "zod_schemas": 0,
+   "flags": [],
+   "papeis": [],
+   "usado_por": 1,
+   "usado_por_modulos": [
+    "lib/tributario"
+   ],
+   "coberto_por_testes": 0,
+   "orfao": false
+  },
+  {
+   "arquivo": "src/lib/tributario/ipi-iss/iss.ts",
+   "camada": "lib",
+   "exports": [
+    "calcularIss",
+    "resolverMunicipioCompetente"
+   ],
+   "export_default": null,
+   "linhas": 205,
+   "tabelas": [],
+   "rpcs": [],
+   "edges": [],
+   "env": [],
+   "externos": [],
+   "zod_schemas": 0,
+   "flags": [],
+   "papeis": [],
+   "usado_por": 1,
+   "usado_por_modulos": [
+    "lib/tributario"
+   ],
+   "coberto_por_testes": 0,
+   "orfao": false
+  },
+  {
+   "arquivo": "src/lib/tributario/ipi-iss/overlay-iss.ts",
+   "camada": "lib",
+   "exports": [
+    "AliquotaIssResolvida",
+    "ComparacaoSugestaoIss",
+    "MotivoRejeicaoIss",
+    "RegistroIssMunicipalBanco",
+    "RejeicaoIss",
+    "ResultadoOverlayIss",
+    "StatusSugestaoIss",
+    "TABELA_ISS_VAZIA",
+    "TabelaIssMunicipal",
+    "aplicarOverlayIss",
+    "compararComSugestaoIss",
+    "definirTabelaIssEfetiva",
+    "normalizarAliquotaIss",
+    "normalizarMunicipio",
+    "obterTabelaIssEfetiva",
+    "resetarTabelaIssEfetiva",
+    "resolverAliquotaIss",
+    "sugerirAliquotaMunicipal"
+   ],
+   "export_default": null,
+   "linhas": 306,
+   "tabelas": [],
+   "rpcs": [],
+   "edges": [],
+   "env": [],
+   "externos": [],
+   "zod_schemas": 0,
+   "flags": [],
+   "papeis": [],
+   "usado_por": 5,
+   "usado_por_modulos": [
+    "hooks",
+    "lib/tributario",
+    "pages/tributario"
+   ],
+   "coberto_por_testes": 1,
+   "orfao": false
+  },
+  {
+   "arquivo": "src/lib/tributario/ipi-iss/overlay-ncm.ts",
+   "camada": "lib",
+   "exports": [
+    "AplicacaoNcm",
+    "IPI_ALIQUOTA_MAXIMA",
+    "MotivoRejeicaoNcm",
+    "RegistroNcmBanco",
+    "RejeicaoNcm",
+    "ResultadoOverlayNcm",
+    "aplicarOverlayNcm",
+    "descreverRejeicoesNcm",
+    "normalizarAliquotaIpi"
+   ],
+   "export_default": null,
+   "linhas": 209,
+   "tabelas": [],
+   "rpcs": [],
+   "edges": [],
+   "env": [],
+   "externos": [],
+   "zod_schemas": 0,
+   "flags": [],
+   "papeis": [],
+   "usado_por": 3,
+   "usado_por_modulos": [
+    "hooks",
+    "lib/tributario",
+    "pages/tributario"
+   ],
+   "coberto_por_testes": 1,
+   "orfao": false
+  },
+  {
+   "arquivo": "src/lib/tributario/ipi-iss/tabelas.ts",
+   "camada": "lib",
+   "exports": [
+    "CSRF_COFINS",
+    "CSRF_CSLL",
+    "CSRF_PIS",
+    "CSRF_PISO_PAGAMENTO",
+    "CSRF_TOTAL",
+    "INSS_RETENCAO_CESSAO",
+    "IRRF_PISO_RECOLHIMENTO",
+    "ISS_ALIQUOTA_MAXIMA",
+    "ISS_ALIQUOTA_MINIMA",
+    "LISTA_LC116",
+    "TIPI",
+    "buscarItemLc116",
+    "buscarTipi",
+    "buscarTipiCanonica",
+    "definirTabelaTipiEfetiva",
+    "normalizarNcm",
+    "obterTabelaTipiEfetiva",
+    "resetarTabelaTipiEfetiva"
+   ],
+   "export_default": null,
+   "linhas": 470,
+   "tabelas": [],
+   "rpcs": [],
+   "edges": [],
+   "env": [],
+   "externos": [],
+   "zod_schemas": 0,
+   "flags": [],
+   "papeis": [],
+   "usado_por": 8,
+   "usado_por_modulos": [
+    "hooks",
+    "lib/tributario"
+   ],
+   "coberto_por_testes": 3,
+   "orfao": false
+  },
+  {
+   "arquivo": "src/lib/tributario/ipi-iss/types.ts",
+   "camada": "lib",
+   "exports": [
+    "InputIpi",
+    "InputIss",
+    "ItemLc116",
+    "ItemTipi",
+    "LinhaMemoria",
+    "LocalIncidencia",
+    "ResultadoIpi",
+    "ResultadoIss",
+    "SituacaoIpi"
+   ],
+   "export_default": null,
+   "linhas": 141,
+   "tabelas": [],
+   "rpcs": [],
+   "edges": [],
+   "env": [],
+   "externos": [],
+   "zod_schemas": 0,
+   "flags": [],
+   "papeis": [],
+   "usado_por": 5,
+   "usado_por_modulos": [
+    "lib/tributario"
+   ],
+   "coberto_por_testes": 0,
+   "orfao": false
+  },
+  {
+   "arquivo": "src/lib/tributario/irpfm.ts",
+   "camada": "lib",
+   "exports": [
+    "IRPFM_LIMITE_ANUAL_BASE",
+    "IRPFM_LIMITE_ISENCAO_MENSAL",
+    "ParametrosIRPFM",
+    "ResultadoIRPFM",
+    "calcularIRPFMAnual",
+    "calcularIRPFMMensal"
+   ],
+   "export_default": null,
+   "linhas": 132,
+   "tabelas": [],
+   "rpcs": [],
+   "edges": [],
+   "env": [],
+   "externos": [],
+   "zod_schemas": 0,
+   "flags": [],
+   "papeis": [],
+   "usado_por": 1,
+   "usado_por_modulos": [
+    "lib/tributario"
+   ],
+   "coberto_por_testes": 1,
+   "orfao": false
+  },
+  {
+   "arquivo": "src/lib/tributario/irpj-csll/apurar.ts",
+   "camada": "lib",
+   "exports": [
+    "apurarIrpjCsll"
+   ],
+   "export_default": null,
+   "linhas": 220,
+   "tabelas": [],
+   "rpcs": [],
+   "edges": [],
+   "env": [],
+   "externos": [],
+   "zod_schemas": 0,
+   "flags": [],
+   "papeis": [],
+   "usado_por": 1,
+   "usado_por_modulos": [
+    "lib/tributario"
+   ],
+   "coberto_por_testes": 0,
+   "orfao": false
+  },
+  {
+   "arquivo": "src/lib/tributario/irpj-csll/index.ts",
+   "camada": "lib",
+   "exports": [],
+   "export_default": null,
+   "linhas": 4,
+   "tabelas": [],
+   "rpcs": [],
+   "edges": [],
+   "env": [],
+   "externos": [],
+   "zod_schemas": 0,
+   "flags": [],
+   "papeis": [],
+   "usado_por": 1,
+   "usado_por_modulos": [
+    "pages/tributario"
+   ],
+   "coberto_por_testes": 1,
+   "orfao": false
+  },
+  {
+   "arquivo": "src/lib/tributario/irpj-csll/tabelas.ts",
+   "camada": "lib",
+   "exports": [
+    "ALIQUOTA_ADICIONAL_IRPJ",
+    "ALIQUOTA_CSLL",
+    "ALIQUOTA_IRPJ",
+    "AtividadePresuncao",
+    "LABEL_ATIVIDADE",
+    "LIMITE_ADICIONAL_MENSAL",
+    "MODELOS_AJUSTE",
+    "ModeloAjuste",
+    "PRESUNCAO_CSLL",
+    "PRESUNCAO_IRPJ",
+    "TRAVA_COMPENSACAO"
+   ],
+   "export_default": null,
+   "linhas": 135,
+   "tabelas": [],
+   "rpcs": [],
+   "edges": [],
+   "env": [],
+   "externos": [],
+   "zod_schemas": 0,
+   "flags": [],
+   "papeis": [],
+   "usado_por": 2,
+   "usado_por_modulos": [
+    "lib/tributario"
+   ],
+   "coberto_por_testes": 0,
+   "orfao": false
+  },
+  {
+   "arquivo": "src/lib/tributario/irpj-csll/types.ts",
+   "camada": "lib",
+   "exports": [
+    "AjusteLalur",
+    "AlvoAjuste",
+    "FormaApuracao",
+    "LinhaMemoriaIrpj",
+    "ParametrosApuracao",
+    "PeriodoApuracao",
+    "ResultadoApuracao",
+    "ResultadoPeriodo",
+    "SaldosParteB",
+    "TipoAjuste"
+   ],
+   "export_default": null,
+   "linhas": 108,
+   "tabelas": [],
+   "rpcs": [],
+   "edges": [],
+   "env": [],
+   "externos": [],
+   "zod_schemas": 0,
+   "flags": [],
+   "papeis": [],
+   "usado_por": 3,
+   "usado_por_modulos": [
+    "lib/tributario"
+   ],
+   "coberto_por_testes": 0,
+   "orfao": false
+  },
+  {
+   "arquivo": "src/lib/tributario/monofasico/calcular.ts",
+   "camada": "lib",
+   "exports": [
+    "aliquotasRegimeNormal",
+    "calcularItemMonofasico",
+    "calcularMixMonofasico",
+    "calcularRecuperacaoRetroativa"
+   ],
+   "export_default": null,
+   "linhas": 188,
+   "tabelas": [],
+   "rpcs": [],
+   "edges": [],
+   "env": [],
+   "externos": [],
+   "zod_schemas": 0,
+   "flags": [],
+   "papeis": [],
+   "usado_por": 1,
+   "usado_por_modulos": [
+    "lib/tributario"
+   ],
+   "coberto_por_testes": 1,
+   "orfao": false
+  },
+  {
+   "arquivo": "src/lib/tributario/monofasico/classificar.ts",
+   "camada": "lib",
+   "exports": [
+    "classificarNcmMonofasico",
+    "classificarNcmMonofasicoCanonico",
+    "definirOverrideMonofasico",
+    "isNcmMonofasico",
+    "normalizarNcm",
+    "obterOverrideMonofasico",
+    "resetarOverrideMonofasico"
+   ],
+   "export_default": null,
+   "linhas": 121,
+   "tabelas": [],
+   "rpcs": [],
+   "edges": [],
+   "env": [],
+   "externos": [],
+   "zod_schemas": 0,
+   "flags": [],
+   "papeis": [],
+   "usado_por": 5,
+   "usado_por_modulos": [
+    "hooks",
+    "lib/tributario"
+   ],
+   "coberto_por_testes": 2,
+   "orfao": false
+  },
+  {
+   "arquivo": "src/lib/tributario/monofasico/grupos.ts",
+   "camada": "lib",
+   "exports": [
+    "ALIQUOTAS_REGIME_NORMAL",
+    "GRUPOS_MONOFASICOS",
+    "GRUPOS_POR_CHAVE",
+    "GRUPO_MONOFASICO_CATALOGO",
+    "MESES_RECUPERACAO_RETROATIVA"
+   ],
+   "export_default": null,
+   "linhas": 197,
+   "tabelas": [],
+   "rpcs": [],
+   "edges": [],
+   "env": [],
+   "externos": [],
+   "zod_schemas": 0,
+   "flags": [],
+   "papeis": [],
+   "usado_por": 3,
+   "usado_por_modulos": [
+    "lib/tributario"
+   ],
+   "coberto_por_testes": 0,
+   "orfao": false
+  },
+  {
+   "arquivo": "src/lib/tributario/monofasico/index.ts",
+   "camada": "lib",
+   "exports": [
+    "ALIQUOTAS_REGIME_NORMAL",
+    "GRUPOS_MONOFASICOS",
+    "GRUPOS_POR_CHAVE",
+    "GRUPO_MONOFASICO_CATALOGO",
+    "MESES_RECUPERACAO_RETROATIVA",
+    "aliquotasRegimeNormal",
+    "aplicarOverlayMonofasico",
+    "calcularItemMonofasico",
+    "calcularMixMonofasico",
+    "calcularRecuperacaoRetroativa",
+    "classificarNcmMonofasico",
+    "classificarNcmMonofasicoCanonico",
+    "definirOverrideMonofasico",
+    "descreverRejeicoesMonofasico",
+    "isNcmMonofasico",
+    "normalizarNcm",
+    "obterOverrideMonofasico",
+    "resetarOverrideMonofasico"
+   ],
+   "export_default": null,
+   "linhas": 31,
+   "tabelas": [],
+   "rpcs": [],
+   "edges": [],
+   "env": [],
+   "externos": [],
+   "zod_schemas": 0,
+   "flags": [],
+   "papeis": [],
+   "usado_por": 8,
+   "usado_por_modulos": [
+    "components/tributario",
+    "lib/tributario",
+    "pages/tributario"
+   ],
+   "coberto_por_testes": 1,
+   "orfao": false
+  },
+  {
+   "arquivo": "src/lib/tributario/monofasico/overlay-monofasico.ts",
+   "camada": "lib",
+   "exports": [
+    "ExclusaoMonofasica",
+    "InclusaoMonofasica",
+    "MotivoRejeicaoMonofasico",
+    "RegistroNcmMonofasicoBanco",
+    "RejeicaoMonofasico",
+    "ResultadoOverlayMonofasico",
+    "aplicarOverlayMonofasico",
+    "descreverRejeicoesMonofasico"
+   ],
+   "export_default": null,
+   "linhas": 119,
+   "tabelas": [],
+   "rpcs": [],
+   "edges": [],
+   "env": [],
+   "externos": [],
+   "zod_schemas": 0,
+   "flags": [],
+   "papeis": [],
+   "usado_por": 4,
+   "usado_por_modulos": [
+    "hooks",
+    "lib/tributario",
+    "pages/tributario"
+   ],
+   "coberto_por_testes": 1,
+   "orfao": false
+  },
+  {
+   "arquivo": "src/lib/tributario/monofasico/types.ts",
+   "camada": "lib",
+   "exports": [
+    "AliquotasPisCofins",
+    "ClassificacaoMonofasica",
+    "GrupoMonofasico",
+    "ItemMonofasico",
+    "NcmMonofasico",
+    "POSICOES_INDUSTRIA",
+    "POSICOES_REVENDA",
+    "PosicaoCadeia",
+    "RecuperacaoRetroativa",
+    "RegimeApuracaoPisCofins",
+    "ResultadoItemMonofasico",
+    "ResumoMonofasico"
+   ],
+   "export_default": null,
+   "linhas": 113,
+   "tabelas": [],
+   "rpcs": [],
+   "edges": [],
+   "env": [],
+   "externos": [],
+   "zod_schemas": 0,
+   "flags": [],
+   "papeis": [],
+   "usado_por": 5,
+   "usado_por_modulos": [
+    "lib/tributario"
+   ],
+   "coberto_por_testes": 0,
+   "orfao": false
+  },
+  {
+   "arquivo": "src/lib/tributario/obrigacoes/alertas.ts",
+   "camada": "lib",
+   "exports": [
+    "AlertaConformidade",
+    "CONFIG_ALERTAS_PADRAO",
+    "ConfigAlertasConformidade",
+    "SeveridadeAlerta",
+    "TipoAlertaConformidade",
+    "avaliarAlertasConformidade",
+    "severidadeMaxima"
+   ],
+   "export_default": null,
+   "linhas": 224,
+   "tabelas": [],
+   "rpcs": [],
+   "edges": [],
+   "env": [],
+   "externos": [],
+   "zod_schemas": 0,
+   "flags": [],
+   "papeis": [],
+   "usado_por": 2,
+   "usado_por_modulos": [
+    "lib/tributario"
+   ],
+   "coberto_por_testes": 1,
+   "orfao": false
+  },
+  {
+   "arquivo": "src/lib/tributario/obrigacoes/calendario.ts",
+   "camada": "lib",
+   "exports": [
+    "GerarCalendarioParams",
+    "calcularMultaAtraso",
+    "calcularPrazo",
+    "chaveItem",
+    "competenciasAoRedor",
+    "enesimoDiaUtil",
+    "exportarCalendarioCsv",
+    "gerarCalendario",
+    "postergarDiaUtil",
+    "ultimoDiaUtil"
+   ],
+   "export_default": null,
+   "linhas": 244,
+   "tabelas": [],
+   "rpcs": [],
+   "edges": [],
+   "env": [],
+   "externos": [],
+   "zod_schemas": 0,
+   "flags": [],
+   "papeis": [],
+   "usado_por": 1,
+   "usado_por_modulos": [
+    "lib/tributario"
+   ],
+   "coberto_por_testes": 1,
+   "orfao": false
+  },
+  {
+   "arquivo": "src/lib/tributario/obrigacoes/catalogo.ts",
+   "camada": "lib",
+   "exports": [
+    "OBRIGACOES",
+    "buscarObrigacao"
+   ],
+   "export_default": null,
+   "linhas": 166,
+   "tabelas": [],
+   "rpcs": [],
+   "edges": [],
+   "env": [],
+   "externos": [],
+   "zod_schemas": 0,
+   "flags": [],
+   "papeis": [],
+   "usado_por": 2,
+   "usado_por_modulos": [
+    "lib/tributario"
+   ],
+   "coberto_por_testes": 1,
+   "orfao": false
+  },
+  {
+   "arquivo": "src/lib/tributario/obrigacoes/comparativo.ts",
+   "camada": "lib",
+   "exports": [
+    "LinhaComparativo",
+    "ResultadoComparativo",
+    "ResumoComparativo",
+    "SerieEmpresa",
+    "compararConformidade",
+    "competenciaReferenciaDe",
+    "exportarComparativoCsv"
+   ],
+   "export_default": null,
+   "linhas": 281,
+   "tabelas": [],
+   "rpcs": [],
+   "edges": [],
+   "env": [],
+   "externos": [],
+   "zod_schemas": 0,
+   "flags": [],
+   "papeis": [],
+   "usado_por": 2,
+   "usado_por_modulos": [
+    "lib/tributario"
+   ],
+   "coberto_por_testes": 1,
+   "orfao": false
+  },
+  {
+   "arquivo": "src/lib/tributario/obrigacoes/conformidade.ts",
+   "camada": "lib",
+   "exports": [
+    "ConformidadePorOrgao",
+    "NIVEL_LABEL",
+    "NivelConformidade",
+    "RegistroEntrega",
+    "ResultadoConformidade",
+    "StatusRegistro",
+    "calcularConformidade",
+    "classificarConformidade"
+   ],
+   "export_default": null,
+   "linhas": 197,
+   "tabelas": [],
+   "rpcs": [],
+   "edges": [],
+   "env": [],
+   "externos": [],
+   "zod_schemas": 0,
+   "flags": [],
+   "papeis": [],
+   "usado_por": 5,
+   "usado_por_modulos": [
+    "lib/tributario"
+   ],
+   "coberto_por_testes": 4,
+   "orfao": false
+  },
+  {
+   "arquivo": "src/lib/tributario/obrigacoes/digest.ts",
+   "camada": "lib",
+   "exports": [
+    "AlertaDigest",
+    "BlocoEmpresaDigest",
+    "DigestConformidade",
+    "OpcoesDigest",
+    "agruparPorEmpresa",
+    "construirDigest",
+    "escaparHtml",
+    "hashConteudo",
+    "montarAssunto",
+    "normalizarSeveridade",
+    "rotuloCompetencia"
+   ],
+   "export_default": null,
+   "linhas": 333,
+   "tabelas": [],
+   "rpcs": [],
+   "edges": [],
+   "env": [],
+   "externos": [],
+   "zod_schemas": 0,
+   "flags": [],
+   "papeis": [
+    "presentation"
+   ],
+   "usado_por": 3,
+   "usado_por_modulos": [
+    "lib/tributario"
+   ],
+   "coberto_por_testes": 1,
+   "orfao": false
+  },
+  {
+   "arquivo": "src/lib/tributario/obrigacoes/historico.ts",
+   "camada": "lib",
+   "exports": [
+    "AnaliseTendencia",
+    "DirecaoTendencia",
+    "LIMIAR_ESTAVEL",
+    "PontoHistorico",
+    "SnapshotConformidade",
+    "analisarTendencia",
+    "competenciaValida",
+    "construirHistorico",
+    "direcaoDe",
+    "mediaMovel",
+    "paraSnapshot"
+   ],
+   "export_default": null,
+   "linhas": 218,
+   "tabelas": [],
+   "rpcs": [],
+   "edges": [],
+   "env": [],
+   "externos": [],
+   "zod_schemas": 0,
+   "flags": [],
+   "papeis": [],
+   "usado_por": 6,
+   "usado_por_modulos": [
+    "lib/tributario"
+   ],
+   "coberto_por_testes": 3,
+   "orfao": false
+  },
+  {
+   "arquivo": "src/lib/tributario/obrigacoes/index.ts",
+   "camada": "lib",
+   "exports": [],
+   "export_default": null,
+   "linhas": 12,
+   "tabelas": [],
+   "rpcs": [],
+   "edges": [],
+   "env": [],
+   "externos": [],
+   "zod_schemas": 0,
+   "flags": [],
+   "papeis": [],
+   "usado_por": 12,
+   "usado_por_modulos": [
+    "components/tributario",
+    "hooks",
+    "pages/tributario"
+   ],
+   "coberto_por_testes": 3,
+   "orfao": false
+  },
+  {
+   "arquivo": "src/lib/tributario/obrigacoes/observabilidade-digest.ts",
+   "camada": "lib",
+   "exports": [
+    "DestinatarioAgrupado",
+    "MotivoAgrupado",
+    "RegistroEnvioDigest",
+    "ResumoObservabilidadeDigest",
+    "SerieDiaDigest",
+    "SituacaoEnvioDigest",
+    "agruparDestinatarios",
+    "agruparMotivos",
+    "resumirEnvios",
+    "serieDiaria",
+    "ultimasFalhas"
+   ],
+   "export_default": null,
+   "linhas": 210,
+   "tabelas": [],
+   "rpcs": [],
+   "edges": [],
+   "env": [],
+   "externos": [],
+   "zod_schemas": 0,
+   "flags": [],
+   "papeis": [],
+   "usado_por": 3,
+   "usado_por_modulos": [
+    "hooks",
+    "pages/tributario"
+   ],
+   "coberto_por_testes": 0,
+   "orfao": false
+  },
+  {
+   "arquivo": "src/lib/tributario/obrigacoes/preferencias-digest.ts",
+   "camada": "lib",
+   "exports": [
+    "ContextoEnvio",
+    "FREQUENCIAS_DIGEST",
+    "FrequenciaDigest",
+    "PlanoEnvioDigest",
+    "PreferenciaDigest",
+    "PreferenciaDigestRaw",
+    "ResultadoPlanejamento",
+    "SEVERIDADES_DIGEST",
+    "SeveridadeDigest",
+    "estaNaJanela",
+    "filtrarAlertas",
+    "hashAlertas",
+    "normalizarPreferencia",
+    "planejarEnvios"
+   ],
+   "export_default": null,
+   "linhas": 279,
+   "tabelas": [],
+   "rpcs": [],
+   "edges": [],
+   "env": [],
+   "externos": [],
+   "zod_schemas": 0,
+   "flags": [],
+   "papeis": [],
+   "usado_por": 4,
+   "usado_por_modulos": [
+    "hooks",
+    "lib/tributario",
+    "pages/tributario"
+   ],
+   "coberto_por_testes": 0,
+   "orfao": false
+  },
+  {
+   "arquivo": "src/lib/tributario/obrigacoes/projecao.ts",
+   "camada": "lib",
+   "exports": [
+    "AjusteLinear",
+    "FATOR_BANDA",
+    "HORIZONTE_PADRAO",
+    "LIMIAR_ALERTA",
+    "LIMIAR_VARIACAO",
+    "MIN_OBSERVACOES",
+    "PontoProjetado",
+    "PontoSerieProjecao",
+    "RISCO_PROJETADO_LABEL",
+    "ResultadoProjecao",
+    "RiscoProjetado",
+    "ajustarTendencia",
+    "contarLacunas",
+    "distanciaCompetencias",
+    "montarSerieProjecao",
+    "projetarConformidade",
+    "somarCompetencia"
+   ],
+   "export_default": null,
+   "linhas": 297,
+   "tabelas": [],
+   "rpcs": [],
+   "edges": [],
+   "env": [],
+   "externos": [],
+   "zod_schemas": 0,
+   "flags": [],
+   "papeis": [],
+   "usado_por": 2,
+   "usado_por_modulos": [
+    "lib/tributario"
+   ],
+   "coberto_por_testes": 0,
+   "orfao": false
+  },
+  {
+   "arquivo": "src/lib/tributario/obrigacoes/serie-comparativa.ts",
+   "camada": "lib",
+   "exports": [
+    "ComparativoTemporal",
+    "LinhaGrafico",
+    "SerieGrafico",
+    "chaveSerie",
+    "exportarComparativoTemporalCsv",
+    "montarComparativoTemporal",
+    "rotuloEixo"
+   ],
+   "export_default": null,
+   "linhas": 223,
+   "tabelas": [],
+   "rpcs": [],
+   "edges": [],
+   "env": [],
+   "externos": [],
+   "zod_schemas": 0,
+   "flags": [],
+   "papeis": [],
+   "usado_por": 1,
+   "usado_por_modulos": [
+    "lib/tributario"
+   ],
+   "coberto_por_testes": 0,
+   "orfao": false
+  },
+  {
+   "arquivo": "src/lib/tributario/obrigacoes/types.ts",
+   "camada": "lib",
+   "exports": [
+    "AjusteDiaNaoUtil",
+    "BaseMulta",
+    "ItemCalendario",
+    "MultaAtraso",
+    "Obrigacao",
+    "Orgao",
+    "Periodicidade",
+    "RegimeAplicavel",
+    "RegraPrazo",
+    "SituacaoObrigacao"
+   ],
+   "export_default": null,
+   "linhas": 86,
+   "tabelas": [],
+   "rpcs": [],
+   "edges": [],
+   "env": [],
+   "externos": [],
+   "zod_schemas": 0,
+   "flags": [],
+   "papeis": [],
+   "usado_por": 5,
+   "usado_por_modulos": [
+    "lib/tributario"
+   ],
+   "coberto_por_testes": 2,
+   "orfao": false
+  },
+  {
+   "arquivo": "src/lib/tributario/parametros.ts",
+   "camada": "lib",
+   "exports": [
+    "clamp",
+    "fracaoExportacao",
+    "num"
+   ],
+   "export_default": null,
+   "linhas": 30,
+   "tabelas": [],
+   "rpcs": [],
+   "edges": [],
+   "env": [],
+   "externos": [],
+   "zod_schemas": 0,
+   "flags": [],
+   "papeis": [],
+   "usado_por": 1,
+   "usado_por_modulos": [
+    "lib/tributario"
+   ],
+   "coberto_por_testes": 0,
+   "orfao": false
+  },
+  {
+   "arquivo": "src/lib/tributario/pf-vinculada.ts",
+   "camada": "lib",
+   "exports": [
+    "AlertaPF",
+    "DetalheIRPFM",
+    "PF_ALIQUOTA_IRRF_DIVIDENDOS",
+    "PF_ALIQUOTA_OUTRAS_RENDAS",
+    "PF_INSS_TETO_MENSAL",
+    "PF_IRPFM_ALIQUOTA_MAXIMA",
+    "PF_IRPFM_PISO_ANUAL",
+    "PF_IRPFM_TETO_ANUAL",
+    "PF_IRPF_ISENCAO_MENSAL",
+    "PF_IRPF_LIMITE_REDUTOR_MENSAL",
+    "PF_LIMITE_IRRF_DIVIDENDOS_MENSAL",
+    "ParametrosSimulacaoPF",
+    "ResultadoSimulacaoPF",
+    "SeveridadeAlertaPF",
+    "calcularAliquotaIrpfm",
+    "calcularIrpfMensal",
+    "otimizarProLabore",
+    "simularPessoaFisica"
+   ],
+   "export_default": null,
+   "linhas": 266,
+   "tabelas": [],
+   "rpcs": [],
+   "edges": [],
+   "env": [],
+   "externos": [],
+   "zod_schemas": 0,
+   "flags": [],
+   "papeis": [],
+   "usado_por": 1,
+   "usado_por_modulos": [
+    "components/tributario"
+   ],
+   "coberto_por_testes": 1,
+   "orfao": false
+  },
+  {
+   "arquivo": "src/lib/tributario/pis-cofins/creditos.ts",
+   "camada": "lib",
+   "exports": [
+    "apurarPisCofins",
+    "baseCredito",
+    "baseReceita"
+   ],
+   "export_default": null,
+   "linhas": 220,
+   "tabelas": [],
+   "rpcs": [],
+   "edges": [],
+   "env": [],
+   "externos": [],
+   "zod_schemas": 0,
+   "flags": [],
+   "papeis": [],
+   "usado_por": 1,
+   "usado_por_modulos": [
+    "lib/tributario"
+   ],
+   "coberto_por_testes": 0,
+   "orfao": false
+  },
+  {
+   "arquivo": "src/lib/tributario/pis-cofins/index.ts",
+   "camada": "lib",
+   "exports": [],
+   "export_default": null,
+   "linhas": 4,
+   "tabelas": [],
+   "rpcs": [],
+   "edges": [],
+   "env": [],
+   "externos": [],
+   "zod_schemas": 0,
+   "flags": [],
+   "papeis": [],
+   "usado_por": 1,
+   "usado_por_modulos": [
+    "pages/tributario"
+   ],
+   "coberto_por_testes": 1,
+   "orfao": false
+  },
+  {
+   "arquivo": "src/lib/tributario/pis-cofins/tabelas.ts",
+   "camada": "lib",
+   "exports": [
+    "LABEL_RECEITA",
+    "RECEITAS_SEM_DEBITO",
+    "REGRAS_CREDITO",
+    "regraDe"
+   ],
+   "export_default": null,
+   "linhas": 116,
+   "tabelas": [],
+   "rpcs": [],
+   "edges": [],
+   "env": [],
+   "externos": [],
+   "zod_schemas": 0,
+   "flags": [],
+   "papeis": [],
+   "usado_por": 2,
+   "usado_por_modulos": [
+    "lib/tributario"
+   ],
+   "coberto_por_testes": 0,
+   "orfao": false
+  },
+  {
+   "arquivo": "src/lib/tributario/pis-cofins/types.ts",
+   "camada": "lib",
+   "exports": [
+    "ALIQUOTA_COFINS_NAO_CUMULATIVO",
+    "ALIQUOTA_PIS_NAO_CUMULATIVO",
+    "InputPisCofins",
+    "ItemCredito",
+    "ItemReceita",
+    "LinhaMemoria",
+    "NaturezaCredito",
+    "NaturezaReceita",
+    "RegraCredito",
+    "ResultadoPisCofins",
+    "ResultadoTributo"
+   ],
+   "export_default": null,
+   "linhas": 131,
+   "tabelas": [],
+   "rpcs": [],
+   "edges": [],
+   "env": [],
+   "externos": [],
+   "zod_schemas": 0,
+   "flags": [],
+   "papeis": [],
+   "usado_por": 3,
+   "usado_por_modulos": [
+    "lib/tributario"
+   ],
+   "coberto_por_testes": 0,
+   "orfao": false
+  },
+  {
+   "arquivo": "src/lib/tributario/projecao-reforma.ts",
+   "camada": "lib",
+   "exports": [
+    "AliquotaTransicao",
+    "CRONOGRAMA_REFORMA",
+    "ParametrosProjecao",
+    "ProjecaoAno",
+    "projetarReforma"
+   ],
+   "export_default": null,
+   "linhas": 219,
+   "tabelas": [],
+   "rpcs": [],
+   "edges": [],
+   "env": [],
+   "externos": [],
+   "zod_schemas": 0,
+   "flags": [],
+   "papeis": [],
+   "usado_por": 3,
+   "usado_por_modulos": [
+    "lib/tributario",
+    "pages/tributario"
+   ],
+   "coberto_por_testes": 2,
+   "orfao": false
+  },
+  {
+   "arquivo": "src/lib/tributario/rbt12.ts",
+   "camada": "lib",
+   "exports": [
+    "calcularRBA",
+    "calcularRBT12"
+   ],
+   "export_default": null,
+   "linhas": 57,
+   "tabelas": [],
+   "rpcs": [],
+   "edges": [],
+   "env": [],
+   "externos": [],
+   "zod_schemas": 0,
+   "flags": [],
+   "papeis": [],
+   "usado_por": 1,
+   "usado_por_modulos": [
+    "lib/tributario"
+   ],
+   "coberto_por_testes": 3,
+   "orfao": false
+  },
+  {
+   "arquivo": "src/lib/tributario/recomendar-empresa.ts",
+   "camada": "lib",
+   "exports": [
+    "ContextoOperacao",
+    "EmpresaCandidata",
+    "RecomendacaoEmpresa",
+    "TipoOperacao",
+    "pontuarEmpresa",
+    "recomendarEmpresa"
+   ],
+   "export_default": null,
+   "linhas": 143,
+   "tabelas": [],
+   "rpcs": [],
+   "edges": [],
+   "env": [],
+   "externos": [],
+   "zod_schemas": 0,
+   "flags": [],
+   "papeis": [],
+   "usado_por": 1,
+   "usado_por_modulos": [
+    "components/empresa"
+   ],
+   "coberto_por_testes": 1,
+   "orfao": false
+  },
+  {
+   "arquivo": "src/lib/tributario/relatorio-pdf.ts",
+   "camada": "lib",
+   "exports": [],
+   "export_default": null,
+   "linhas": 6,
+   "tabelas": [],
+   "rpcs": [],
+   "edges": [],
+   "env": [],
+   "externos": [],
+   "zod_schemas": 0,
+   "flags": [],
+   "papeis": [],
+   "usado_por": 3,
+   "usado_por_modulos": [
+    "pages/tributario"
+   ],
+   "coberto_por_testes": 1,
+   "orfao": false
+  },
+  {
+   "arquivo": "src/lib/tributario/relatorio-pdf/auditoria-creditos.ts",
+   "camada": "lib",
+   "exports": [
+    "CreditoAuditoriaItem",
+    "baixarRelatorioAuditoriaCreditos"
+   ],
+   "export_default": null,
+   "linhas": 51,
+   "tabelas": [],
+   "rpcs": [],
+   "edges": [],
+   "env": [],
+   "externos": [
+    "jspdf",
+    "jspdf-autotable"
+   ],
+   "zod_schemas": 0,
+   "flags": [],
+   "papeis": [],
+   "usado_por": 1,
+   "usado_por_modulos": [
+    "lib/tributario"
+   ],
+   "coberto_por_testes": 0,
+   "orfao": false
+  },
+  {
+   "arquivo": "src/lib/tributario/relatorio-pdf/charts.ts",
+   "camada": "lib",
+   "exports": [
+    "gerarGraficoComparativoBase64",
+    "gerarTimelineReformaBase64"
+   ],
+   "export_default": null,
+   "linhas": 156,
+   "tabelas": [],
+   "rpcs": [],
+   "edges": [],
+   "env": [],
+   "externos": [],
+   "zod_schemas": 0,
+   "flags": [],
+   "papeis": [],
+   "usado_por": 1,
+   "usado_por_modulos": [
+    "lib/tributario"
+   ],
+   "coberto_por_testes": 0,
+   "orfao": false
+  },
+  {
+   "arquivo": "src/lib/tributario/relatorio-pdf/executivo.ts",
+   "camada": "lib",
+   "exports": [
+    "baixarRelatorioPdf",
+    "gerarRelatorioPdfExecutivo"
+   ],
+   "export_default": null,
+   "linhas": 293,
+   "tabelas": [],
+   "rpcs": [],
+   "edges": [],
+   "env": [],
+   "externos": [
+    "jspdf",
+    "jspdf-autotable"
+   ],
+   "zod_schemas": 0,
+   "flags": [],
+   "papeis": [],
+   "usado_por": 1,
+   "usado_por_modulos": [
+    "lib/tributario"
+   ],
+   "coberto_por_testes": 0,
+   "orfao": false
+  },
+  {
+   "arquivo": "src/lib/tributario/relatorio-pdf/index.ts",
+   "camada": "lib",
+   "exports": [
+    "baixarRelatorioAuditoriaCreditos",
+    "baixarRelatorioPdf",
+    "gerarRelatorioPdfExecutivo"
+   ],
+   "export_default": null,
+   "linhas": 4,
+   "tabelas": [],
+   "rpcs": [],
+   "edges": [],
+   "env": [],
+   "externos": [],
+   "zod_schemas": 0,
+   "flags": [],
+   "papeis": [],
+   "usado_por": 1,
+   "usado_por_modulos": [
+    "lib/tributario"
+   ],
+   "coberto_por_testes": 0,
+   "orfao": false
+  },
+  {
+   "arquivo": "src/lib/tributario/relatorio-pdf/memorial.ts",
+   "camada": "lib",
+   "exports": [
+    "DadosEmpresa",
+    "gerarPdfMemorialCalculo"
+   ],
+   "export_default": null,
+   "linhas": 135,
+   "tabelas": [],
+   "rpcs": [],
+   "edges": [],
+   "env": [],
+   "externos": [
+    "jspdf",
+    "jspdf-autotable"
+   ],
+   "zod_schemas": 0,
+   "flags": [],
+   "papeis": [],
+   "usado_por": 1,
+   "usado_por_modulos": [
+    "pages/tributario"
+   ],
+   "coberto_por_testes": 0,
+   "orfao": false
+  },
+  {
+   "arquivo": "src/lib/tributario/relatorio-pdf/shared.ts",
+   "camada": "lib",
+   "exports": [
+    "COR_REGIME",
+    "NOME_REGIME",
+    "OpcoesRelatorio",
+    "fmt",
+    "formatCnpj",
+    "pct"
+   ],
+   "export_default": null,
+   "linhas": 39,
+   "tabelas": [],
+   "rpcs": [],
+   "edges": [],
+   "env": [],
+   "externos": [],
+   "zod_schemas": 0,
+   "flags": [],
+   "papeis": [],
+   "usado_por": 4,
+   "usado_por_modulos": [
+    "lib/tributario"
+   ],
+   "coberto_por_testes": 0,
+   "orfao": false
+  },
+  {
+   "arquivo": "src/lib/tributario/shared-logic.ts",
+   "camada": "lib",
+   "exports": [
+    "ANEXOS",
+    "AnexoSimples",
+    "FaturamentoMes",
+    "FolhaMes",
+    "LIMITE_PRESUMIDO",
+    "LIMITE_SIMPLES",
+    "ParametrosSimulacao",
+    "PeriodicidadeApuracao",
+    "RegimeTributario",
+    "ResultadoCenario",
+    "calcularFolha12m",
+    "calcularRBT12",
+    "determinarAnexoSimples",
+    "sanitizarParametros",
+    "simularPresumido",
+    "simularReal",
+    "simularSimples"
+   ],
+   "export_default": null,
+   "linhas": 810,
+   "tabelas": [],
+   "rpcs": [],
+   "edges": [],
+   "env": [],
+   "externos": [],
+   "zod_schemas": 0,
+   "flags": [],
+   "papeis": [],
+   "usado_por": 7,
+   "usado_por_modulos": [
+    "lib/tributario"
+   ],
+   "coberto_por_testes": 13,
+   "orfao": false
+  },
+  {
+   "arquivo": "src/lib/tributario/simular-presumido.ts",
+   "camada": "lib",
+   "exports": [
+    "simularPresumido"
+   ],
+   "export_default": null,
+   "linhas": 7,
+   "tabelas": [],
+   "rpcs": [],
+   "edges": [],
+   "env": [],
+   "externos": [],
+   "zod_schemas": 0,
+   "flags": [],
+   "papeis": [],
+   "usado_por": 2,
+   "usado_por_modulos": [
+    "lib/tributario"
+   ],
+   "coberto_por_testes": 3,
+   "orfao": false
+  },
+  {
+   "arquivo": "src/lib/tributario/simular-real.ts",
+   "camada": "lib",
+   "exports": [
+    "simularReal"
+   ],
+   "export_default": null,
+   "linhas": 7,
+   "tabelas": [],
+   "rpcs": [],
+   "edges": [],
+   "env": [],
+   "externos": [],
+   "zod_schemas": 0,
+   "flags": [],
+   "papeis": [],
+   "usado_por": 2,
+   "usado_por_modulos": [
+    "lib/tributario"
+   ],
+   "coberto_por_testes": 3,
+   "orfao": false
+  },
+  {
+   "arquivo": "src/lib/tributario/simular-simples.ts",
+   "camada": "lib",
+   "exports": [
+    "OpcoesSimples",
+    "simularSimples"
+   ],
+   "export_default": null,
+   "linhas": 24,
+   "tabelas": [],
+   "rpcs": [],
+   "edges": [],
+   "env": [],
+   "externos": [],
+   "zod_schemas": 0,
+   "flags": [],
+   "papeis": [],
+   "usado_por": 2,
+   "usado_por_modulos": [
+    "lib/tributario"
+   ],
+   "coberto_por_testes": 4,
+   "orfao": false
+  },
+  {
+   "arquivo": "src/lib/tributario/types.ts",
+   "camada": "lib",
+   "exports": [
+    "AnexoSimples",
+    "FaturamentoMes",
+    "FolhaMes",
+    "ParametrosSimulacao",
+    "PeriodicidadeApuracao",
+    "RegimeTributario",
+    "ResultadoCenario",
+    "ResultadoDecisao"
+   ],
+   "export_default": null,
+   "linhas": 166,
+   "tabelas": [],
+   "rpcs": [],
+   "edges": [],
+   "env": [],
+   "externos": [],
+   "zod_schemas": 0,
+   "flags": [],
+   "papeis": [],
+   "usado_por": 17,
+   "usado_por_modulos": [
+    "components/empresa",
+    "hooks",
+    "lib/tributario"
+   ],
+   "coberto_por_testes": 14,
+   "orfao": false
+  },
+  {
+   "arquivo": "src/lib/tributario/validador-ncm-cst.ts",
+   "camada": "lib",
+   "exports": [
+    "ValidacaoNCM",
+    "validarConsistenciaNcmCst"
+   ],
+   "export_default": null,
+   "linhas": 62,
+   "tabelas": [],
+   "rpcs": [],
+   "edges": [],
+   "env": [],
+   "externos": [],
+   "zod_schemas": 0,
+   "flags": [],
+   "papeis": [],
+   "usado_por": 1,
+   "usado_por_modulos": [
+    "hooks"
+   ],
+   "coberto_por_testes": 1,
+   "orfao": false
+  },
+  {
+   "arquivo": "src/lib/tributario/versao.ts",
+   "camada": "lib",
+   "exports": [
+    "VERSAO_MOTOR_TRIBUTARIO",
+    "VersaoMotorTributario",
+    "compararVersaoMotor",
+    "versaoDesatualizada"
+   ],
+   "export_default": null,
+   "linhas": 39,
+   "tabelas": [],
+   "rpcs": [],
+   "edges": [],
+   "env": [],
+   "externos": [],
+   "zod_schemas": 0,
+   "flags": [],
+   "papeis": [],
+   "usado_por": 2,
+   "usado_por_modulos": [
+    "hooks",
+    "lib/tributario"
+   ],
+   "coberto_por_testes": 1,
+   "orfao": false
+  },
+  {
+   "arquivo": "src/lib/unsaved-guard.ts",
+   "camada": "lib",
+   "exports": [
+    "MODAL_HISTORY_MARKER",
+    "OPEN_DIALOG_SELECTOR",
+    "UNSAVED_GUARD_SENTINEL",
+    "UnsavedGuardHandlers",
+    "artificialHistoryState",
+    "getOwnedEscapeHandler",
+    "hasUnsavedChanges",
+    "isGuardAwaitingPop",
+    "isPlannedGuardPop",
+    "isTopOpenDialog",
+    "navigateWithUnsavedGuard",
+    "registerAwaitingPopChecker",
+    "registerMarkerResync",
+    "registerModalMarkerPopper",
+    "registerOwnedEscapeHandler",
+    "registerPlannedPopChecker",
+    "registerTopDialogChecker",
+    "registerUnsavedGuard",
+    "requestMarkerResync",
+    "topModalMarkerCount"
+   ],
+   "export_default": null,
+   "linhas": 197,
+   "tabelas": [],
+   "rpcs": [],
+   "edges": [],
+   "env": [],
+   "externos": [],
+   "zod_schemas": 0,
+   "flags": [],
+   "papeis": [
+    "dialog"
+   ],
+   "usado_por": 13,
+   "usado_por_modulos": [
+    "components/command-palette",
+    "components/contas-pagar",
+    "components/contas-receber",
+    "components/navigation",
+    "components/ui",
+    "hooks"
+   ],
+   "coberto_por_testes": 0,
+   "orfao": false
+  },
+  {
+   "arquivo": "src/lib/utils.ts",
+   "camada": "lib",
+   "exports": [
+    "cn"
+   ],
+   "export_default": null,
+   "linhas": 7,
+   "tabelas": [],
+   "rpcs": [],
+   "edges": [],
+   "env": [],
+   "externos": [
+    "clsx",
+    "tailwind-merge"
+   ],
+   "zod_schemas": 0,
+   "flags": [],
+   "papeis": [],
+   "usado_por": 299,
+   "usado_por_modulos": [
+    "components/admin",
+    "components/alertas",
+    "components/aprovacoes",
+    "components/auth",
+    "components/bi",
+    "components/bitrix",
+    "components/categorias",
+    "components/centros-custo",
+    "components/charts",
+    "components/clientes",
+    "components/cobranca",
+    "components/command-palette",
+    "components/comprovantes",
+    "components/conciliacao",
+    "components/configuracoes",
+    "components/contabilidade",
+    "components/contas-bancarias",
+    "components/contas-pagar",
+    "components/contas-receber",
+    "components/dashboard",
+    "components/dashboard-empresa",
+    "components/dashboard-receber",
+    "components/demonstrativos",
+    "components/design-system-debug",
+    "components/empresa",
+    "components/empresas",
+    "components/expert",
+    "components/financeiro",
+    "components/fluxo-caixa",
+    "components/fornecedores",
+    "components/insights-ia",
+    "components/layout",
+    "components/motion",
+    "components/navigation",
+    "components/offline",
+    "components/onboarding",
+    "components/orcamento",
+    "components/pagamentos-recorrentes",
+    "components/pix-hub",
+    "components/quick-create",
+    "components/reforma-tributaria",
+    "components/relatorios",
+    "components/shared",
+    "components/simuladores",
+    "components/tesouraria",
+    "components/tributario",
+    "components/ui",
+    "pages",
+    "pages/admin",
+    "pages/benchmarking",
+    "pages/centro-custos",
+    "pages/clientes",
+    "pages/configuracoes",
+    "pages/fornecedores",
+    "pages/tributario"
+   ],
+   "coberto_por_testes": 1,
+   "orfao": false
+  },
+  {
+   "arquivo": "src/lib/validators.ts",
+   "camada": "lib",
+   "exports": [
+    "validateBankAccount",
+    "validateCEP",
+    "validateCNPJ",
+    "validateCPF",
+    "validateCPFOrCNPJ",
+    "validateEmail",
+    "validatePIXKey",
+    "validatePhone",
+    "validateState"
+   ],
+   "export_default": null,
+   "linhas": 27,
+   "tabelas": [],
+   "rpcs": [],
+   "edges": [],
+   "env": [],
+   "externos": [],
+   "zod_schemas": 0,
+   "flags": [],
+   "papeis": [],
+   "usado_por": 1,
+   "usado_por_modulos": [
+    "components/asaas"
+   ],
+   "coberto_por_testes": 1,
+   "orfao": false
+  }
+ ]
+}

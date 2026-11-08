@@ -1,0 +1,845 @@
+{
+ "aviso": "GERADO AUTOMATICAMENTE por scripts/ai-context/gerar.mjs — não editar à mão; será sobrescrito.",
+ "format_version": 2,
+ "total": 79,
+ "scripts": [
+  {
+   "arquivo": "scripts/admin/supabase_admin_ops.py",
+   "descricao": "scripts/admin/supabase_admin_ops.py Operações administrativas no projeto Supabase canônico via Management API.",
+   "linhas": 321,
+   "env": [],
+   "npm_scripts": [],
+   "workflows": [
+    "supabase-admin-ops.yml"
+   ],
+   "orfao": false
+  },
+  {
+   "arquivo": "scripts/ai-context/cenarios.mjs",
+   "descricao": "Simulação de cenários do gerador: monta centenas de repositórios sintéticos (variantes de SQL, rotas, menus, edges, workflows, monorepo, Python, arquivos corrompidos, fuzz) e confere:",
+   "linhas": 173,
+   "env": [
+    "A",
+    "K",
+    "NODE_ENV",
+    "SCRIPT_ONLY",
+    "SRK",
+    "SUPABASE_URL",
+    "VITE_A",
+    "VITE_C",
+    "VITE_FEATURE_X",
+    "X"
+   ],
+   "npm_scripts": [],
+   "workflows": [
+    "contexto.yml"
+   ],
+   "orfao": false
+  },
+  {
+   "arquivo": "scripts/ai-context/gerar.mjs",
+   "descricao": "Gera o contexto de projeto para agentes de IA (padrão: inventario/ia/*). Zero dependências. Node >= 18. Genérico: funciona em qualquer repositório.",
+   "linhas": 928,
+   "env": [
+    "AI_CONTEXT_DIR",
+    "AI_CONTEXT_GRAFO_COMO_GERAR",
+    "AI_CONTEXT_PUBLICACAO",
+    "AI_CONTEXT_ROOT"
+   ],
+   "npm_scripts": [],
+   "workflows": [
+    "contexto.yml"
+   ],
+   "orfao": false
+  },
+  {
+   "arquivo": "scripts/check-external-secret-isolation.sh",
+   "descricao": "============================================================================ Guard: EXTERNAL_SUPABASE_SERVICE_ROLE_KEY é uma chave `service_role` de outro",
+   "linhas": 51,
+   "env": [],
+   "npm_scripts": [],
+   "workflows": [
+    "ci.yml"
+   ],
+   "orfao": false
+  },
+  {
+   "arquivo": "scripts/ci/audit-env.ts",
+   "descricao": "* scripts/ci/audit-env.ts",
+   "linhas": 158,
+   "env": [
+    "GITHUB_REPO",
+    "GITHUB_TOKEN",
+    "SUPABASE_PAT",
+    "SUPABASE_REF",
+    "VERCEL_PROJECT",
+    "VERCEL_TEAM_ID",
+    "VERCEL_TOKEN"
+   ],
+   "npm_scripts": [],
+   "workflows": [],
+   "orfao": false
+  },
+  {
+   "arquivo": "scripts/ci/check-baseline-drift.sh",
+   "descricao": "Gate #26 — Drift de schema/policies vs. baseline versionado. Compara o estado real do banco (PROD_DB_URL, somente leitura) com os",
+   "linhas": 151,
+   "env": [],
+   "npm_scripts": [],
+   "workflows": [],
+   "orfao": false
+  },
+  {
+   "arquivo": "scripts/ci/deno-check-functions.sh",
+   "descricao": "Type-check do escopo endurecido. Todo o `_shared/` é coberto por glob — um arquivo compartilhado novo entra",
+   "linhas": 59,
+   "env": [],
+   "npm_scripts": [],
+   "workflows": [
+    "deno-tests.yml"
+   ],
+   "orfao": false
+  },
+  {
+   "arquivo": "scripts/ci/listar-excecoes-npm-nativo.py",
+   "descricao": null,
+   "linhas": 95,
+   "env": [],
+   "npm_scripts": [],
+   "workflows": [],
+   "orfao": true
+  },
+  {
+   "arquivo": "scripts/ci/listar-specs-quarentena.ts",
+   "descricao": "* Imprime, uma por linha, as specs E2E que NÃO são cobertas por nenhum gate",
+   "linhas": 164,
+   "env": [],
+   "npm_scripts": [],
+   "workflows": [],
+   "orfao": false
+  },
+  {
+   "arquivo": "scripts/ci/require-env.sh",
+   "descricao": null,
+   "linhas": 117,
+   "env": [],
+   "npm_scripts": [],
+   "workflows": [
+    "ci.yml",
+    "deno-tests.yml",
+    "functions-deploy.yml",
+    "supabase-linter.yml"
+   ],
+   "orfao": false
+  },
+  {
+   "arquivo": "scripts/ci/typecheck-strict-baseline.sh",
+   "descricao": "Ratchet de strictNullChecks — \"o baseline só encolhe\". O tsconfig principal já roda strict global (PR #141). Este gate roda",
+   "linhas": 78,
+   "env": [],
+   "npm_scripts": [
+    "type-check:strict"
+   ],
+   "workflows": [],
+   "orfao": false
+  },
+  {
+   "arquivo": "scripts/data-migrate.sh",
+   "descricao": "data-migrate.sh — orquestrador de cópia de dados PROD → STAGING. Fluxo: preflight → plan → init-run → snapshot+copy (por tabela) → verify → finalize",
+   "linhas": 265,
+   "env": [],
+   "npm_scripts": [],
+   "workflows": [],
+   "orfao": false
+  },
+  {
+   "arquivo": "scripts/data/checkpoint.sql",
+   "descricao": null,
+   "linhas": 66,
+   "env": [],
+   "npm_scripts": [],
+   "workflows": [],
+   "orfao": false
+  },
+  {
+   "arquivo": "scripts/data/copy-table.sh",
+   "descricao": "copy-table.sh — copia UMA tabela de PROD para STAGING via COPY | COPY. Args: --run-id UUID --table NAME --group GNAME [--where SQL] [--columns \"*\"]",
+   "linhas": 124,
+   "env": [],
+   "npm_scripts": [],
+   "workflows": [],
+   "orfao": false
+  },
+  {
+   "arquivo": "scripts/data/rollback.sh",
+   "descricao": "rollback.sh — restaura snapshots de um run em staging. Uso: ./scripts/data/rollback.sh --run-id <uuid> [--dry-run]",
+   "linhas": 73,
+   "env": [],
+   "npm_scripts": [],
+   "workflows": [],
+   "orfao": false
+  },
+  {
+   "arquivo": "scripts/data/verify.sh",
+   "descricao": "verify.sh — valida cópia por contagem + hash de amostra por tabela. Uso: ./scripts/data/verify.sh --run-id <uuid>",
+   "linhas": 92,
+   "env": [],
+   "npm_scripts": [],
+   "workflows": [],
+   "orfao": false
+  },
+  {
+   "arquivo": "scripts/generate-design-audit.js",
+   "descricao": "Simple script to scan for tailwind classes and generate an audit report",
+   "linhas": 51,
+   "env": [],
+   "npm_scripts": [],
+   "workflows": [],
+   "orfao": false
+  },
+  {
+   "arquivo": "scripts/generate-env-manifest.mjs",
+   "descricao": "* scripts/generate-env-manifest.mjs",
+   "linhas": 168,
+   "env": [],
+   "npm_scripts": [],
+   "workflows": [
+    "ci.yml"
+   ],
+   "orfao": false
+  },
+  {
+   "arquivo": "scripts/generate-simulation-report.ts",
+   "descricao": null,
+   "linhas": 68,
+   "env": [
+    "SUPABASE_SERVICE_ROLE_KEY",
+    "SUPABASE_URL"
+   ],
+   "npm_scripts": [],
+   "workflows": [],
+   "orfao": false
+  },
+  {
+   "arquivo": "scripts/gerar-grafo-arquitetura.ts",
+   "descricao": null,
+   "linhas": 26,
+   "env": [],
+   "npm_scripts": [],
+   "workflows": [],
+   "orfao": false
+  },
+  {
+   "arquivo": "scripts/graphify/benchmark.py",
+   "descricao": "Compara navegação estrutural e busca textual em casos versionados.\"\"\"",
+   "linhas": 97,
+   "env": [],
+   "npm_scripts": [
+    "graphify:benchmark"
+   ],
+   "workflows": [],
+   "orfao": false
+  },
+  {
+   "arquivo": "scripts/graphify/code_references.py",
+   "descricao": "Correlaciona referências literais TypeScript com migrations e Edge Functions.",
+   "linhas": 153,
+   "env": [],
+   "npm_scripts": [
+    "graphify:code-references"
+   ],
+   "workflows": [
+    "graphify.yml"
+   ],
+   "orfao": false
+  },
+  {
+   "arquivo": "scripts/graphify/edge_inventory.py",
+   "descricao": "Inventário estático de Edge Functions Deno; não inicia handlers nem acessa a rede.\"\"\"",
+   "linhas": 119,
+   "env": [],
+   "npm_scripts": [
+    "graphify:edge-inventory"
+   ],
+   "workflows": [
+    "graphify.yml"
+   ],
+   "orfao": false
+  },
+  {
+   "arquivo": "scripts/graphify/graph_quality.py",
+   "descricao": "Valida frescor, qualidade, navegação e resumo visual de um grafo privado.\"\"\"",
+   "linhas": 252,
+   "env": [],
+   "npm_scripts": [
+    "graphify:quality"
+   ],
+   "workflows": [
+    "graphify.yml"
+   ],
+   "orfao": false
+  },
+  {
+   "arquivo": "scripts/graphify/run.py",
+   "descricao": "Piloto Graphify local: corpus explícito, sem execução do código analisado.\"\"\"",
+   "linhas": 253,
+   "env": [],
+   "npm_scripts": [
+    "graphify:inventory",
+    "graphify:pilot",
+    "graphify:analyze"
+   ],
+   "workflows": [
+    "graphify.yml"
+   ],
+   "orfao": false
+  },
+  {
+   "arquivo": "scripts/graphify/sql_inventory.py",
+   "descricao": "Inventário lexical de migrations PostgreSQL; não conecta nem executa SQL.\"\"\"",
+   "linhas": 245,
+   "env": [],
+   "npm_scripts": [
+    "graphify:sql-inventory"
+   ],
+   "workflows": [
+    "graphify.yml"
+   ],
+   "orfao": false
+  },
+  {
+   "arquivo": "scripts/graphify/typescript_imports.py",
+   "descricao": "Inventaria imports TypeScript sem executar módulos ou resolver pacotes externos.\"\"\"",
+   "linhas": 70,
+   "env": [],
+   "npm_scripts": [],
+   "workflows": [],
+   "orfao": false
+  },
+  {
+   "arquivo": "scripts/healthcheck/01_webhooks.sh",
+   "descricao": "01_webhooks.sh — dispara webhooks reais no staging e valida recepção. Executado por run.sh; usa emit/log_line exportados.",
+   "linhas": 133,
+   "env": [],
+   "npm_scripts": [],
+   "workflows": [],
+   "orfao": false
+  },
+  {
+   "arquivo": "scripts/healthcheck/02_crons.sql",
+   "descricao": null,
+   "linhas": 81,
+   "env": [],
+   "npm_scripts": [],
+   "workflows": [],
+   "orfao": false
+  },
+  {
+   "arquivo": "scripts/healthcheck/03_realtime.mjs",
+   "descricao": "03_realtime.mjs — assina postgres_changes, insere linha sintética, mede latência insert→recepção. Cleanup via delete no final.",
+   "linhas": 106,
+   "env": [
+    "JSON_ONLY",
+    "OUT",
+    "RUN_ID",
+    "STAGING_ANON_KEY",
+    "STAGING_PROJECT_REF",
+    "STAGING_SERVICE_ROLE_KEY"
+   ],
+   "npm_scripts": [],
+   "workflows": [],
+   "orfao": false
+  },
+  {
+   "arquivo": "scripts/healthcheck/04_events.sh",
+   "descricao": "04_events.sh — publica evento sintético diretamente em webhook_events (service_role via psql) e valida que triggers/consumers propagam para alerts / n8n_dispatch_logs",
+   "linhas": 69,
+   "env": [],
+   "npm_scripts": [],
+   "workflows": [],
+   "orfao": false
+  },
+  {
+   "arquivo": "scripts/healthcheck/run.sh",
+   "descricao": "scripts/healthcheck/run.sh Healthcheck pós-corte — valida comportamento real (não estrutura).",
+   "linhas": 121,
+   "env": [],
+   "npm_scripts": [],
+   "workflows": [],
+   "orfao": false
+  },
+  {
+   "arquivo": "scripts/integrity/01_schema.sql",
+   "descricao": null,
+   "linhas": 83,
+   "env": [],
+   "npm_scripts": [],
+   "workflows": [],
+   "orfao": false
+  },
+  {
+   "arquivo": "scripts/integrity/02_rls.sql",
+   "descricao": null,
+   "linhas": 76,
+   "env": [],
+   "npm_scripts": [],
+   "workflows": [],
+   "orfao": false
+  },
+  {
+   "arquivo": "scripts/integrity/03_grants.sql",
+   "descricao": null,
+   "linhas": 65,
+   "env": [],
+   "npm_scripts": [],
+   "workflows": [],
+   "orfao": false
+  },
+  {
+   "arquivo": "scripts/integrity/04_endpoints.sh",
+   "descricao": "04_endpoints.sh — Smoke HTTP das Edge Functions críticas. Emite JSONL para stdout. Nunca imprime segredos.",
+   "linhas": 100,
+   "env": [],
+   "npm_scripts": [],
+   "workflows": [],
+   "orfao": false
+  },
+  {
+   "arquivo": "scripts/integrity/05_crons.sql",
+   "descricao": null,
+   "linhas": 58,
+   "env": [],
+   "npm_scripts": [],
+   "workflows": [],
+   "orfao": false
+  },
+  {
+   "arquivo": "scripts/integrity/06_secdef.sql",
+   "descricao": null,
+   "linhas": 69,
+   "env": [],
+   "npm_scripts": [],
+   "workflows": [],
+   "orfao": true
+  },
+  {
+   "arquivo": "scripts/integrity/07_exec_grants.sql",
+   "descricao": null,
+   "linhas": 84,
+   "env": [],
+   "npm_scripts": [],
+   "workflows": [],
+   "orfao": true
+  },
+  {
+   "arquivo": "scripts/integrity/08_rpc_tenant_scope.sql",
+   "descricao": null,
+   "linhas": 29,
+   "env": [],
+   "npm_scripts": [],
+   "workflows": [],
+   "orfao": true
+  },
+  {
+   "arquivo": "scripts/integrity/09_views.sql",
+   "descricao": null,
+   "linhas": 30,
+   "env": [],
+   "npm_scripts": [],
+   "workflows": [],
+   "orfao": true
+  },
+  {
+   "arquivo": "scripts/integrity/10_tenant_indexes.sql",
+   "descricao": null,
+   "linhas": 24,
+   "env": [],
+   "npm_scripts": [],
+   "workflows": [],
+   "orfao": true
+  },
+  {
+   "arquivo": "scripts/integrity/11_pii_mask.sql",
+   "descricao": null,
+   "linhas": 24,
+   "env": [],
+   "npm_scripts": [],
+   "workflows": [],
+   "orfao": true
+  },
+  {
+   "arquivo": "scripts/integrity/12_index_bloat.sql",
+   "descricao": null,
+   "linhas": 26,
+   "env": [],
+   "npm_scripts": [],
+   "workflows": [],
+   "orfao": true
+  },
+  {
+   "arquivo": "scripts/integrity/13_unused_indexes.sql",
+   "descricao": null,
+   "linhas": 31,
+   "env": [],
+   "npm_scripts": [],
+   "workflows": [],
+   "orfao": true
+  },
+  {
+   "arquivo": "scripts/integrity/14_retencao.sql",
+   "descricao": null,
+   "linhas": 79,
+   "env": [],
+   "npm_scripts": [],
+   "workflows": [],
+   "orfao": false
+  },
+  {
+   "arquivo": "scripts/integrity/15_views_pii_rpcs.sql",
+   "descricao": null,
+   "linhas": 123,
+   "env": [],
+   "npm_scripts": [],
+   "workflows": [],
+   "orfao": true
+  },
+  {
+   "arquivo": "scripts/integrity/dump-baseline.sh",
+   "descricao": "dump-baseline.sh — Regera baselines JSON a partir de PROD_DB_URL. Grava em scripts/integrity/baseline/. NUNCA escreve em produção.",
+   "linhas": 49,
+   "env": [],
+   "npm_scripts": [],
+   "workflows": [],
+   "orfao": false
+  },
+  {
+   "arquivo": "scripts/integrity/run.sh",
+   "descricao": "integrity/run.sh — Executa 01→05 em ordem, agrega JSONL e falha com exit code igual ao número de assertions em fail.",
+   "linhas": 98,
+   "env": [],
+   "npm_scripts": [],
+   "workflows": [],
+   "orfao": false
+  },
+  {
+   "arquivo": "scripts/mcp-phd-suite.mjs",
+   "descricao": "* Suíte exaustiva MCP — Promo Finance",
+   "linhas": 923,
+   "env": [],
+   "npm_scripts": [],
+   "workflows": [],
+   "orfao": false
+  },
+  {
+   "arquivo": "scripts/migrate-cron-jobs.sh",
+   "descricao": "scripts/migrate-cron-jobs.sh Wrapper: faz envsubst em migrate-cron-jobs.sql e aplica via psql no destino.",
+   "linhas": 68,
+   "env": [],
+   "npm_scripts": [],
+   "workflows": [],
+   "orfao": false
+  },
+  {
+   "arquivo": "scripts/migrate-cron-jobs.sql",
+   "descricao": null,
+   "linhas": 132,
+   "env": [],
+   "npm_scripts": [],
+   "workflows": [],
+   "orfao": false
+  },
+  {
+   "arquivo": "scripts/migrate-functions.sh",
+   "descricao": "scripts/migrate-functions.sh Deploy em lote das Edge Functions para um projeto Supabase destino.",
+   "linhas": 270,
+   "env": [],
+   "npm_scripts": [],
+   "workflows": [
+    "functions-deploy.yml"
+   ],
+   "orfao": false
+  },
+  {
+   "arquivo": "scripts/regras_negocio/generate.py",
+   "descricao": null,
+   "linhas": 2178,
+   "env": [],
+   "npm_scripts": [],
+   "workflows": [
+    "contexto.yml"
+   ],
+   "orfao": false
+  },
+  {
+   "arquivo": "scripts/regras_negocio/indice.py",
+   "descricao": null,
+   "linhas": 237,
+   "env": [],
+   "npm_scripts": [],
+   "workflows": [
+    "contexto.yml"
+   ],
+   "orfao": false
+  },
+  {
+   "arquivo": "scripts/run-scenarios.ts",
+   "descricao": "* CLI: gera e executa N cenários, escreve relatório Markdown + JSON.",
+   "linhas": 45,
+   "env": [],
+   "npm_scripts": [],
+   "workflows": [],
+   "orfao": false
+  },
+  {
+   "arquivo": "scripts/security/check-view-replay-order.mjs",
+   "descricao": "* check-view-replay-order.mjs",
+   "linhas": 148,
+   "env": [],
+   "npm_scripts": [],
+   "workflows": [
+    "supabase-linter.yml"
+   ],
+   "orfao": false
+  },
+  {
+   "arquivo": "scripts/security/export-function-privileges.sh",
+   "descricao": "============================================================================== Gera resumo de privilégios EXECUTE (função × role) em CSV e JSON.",
+   "linhas": 130,
+   "env": [],
+   "npm_scripts": [],
+   "workflows": [
+    "ci.yml"
+   ],
+   "orfao": false
+  },
+  {
+   "arquivo": "scripts/security/test-anon-surface.ts",
+   "descricao": "* Gap #25 — Probe HTTP de superfície anônima (regressão automática no CI).",
+   "linhas": 279,
+   "env": [
+    "CI_GATE_LOG_SECRET",
+    "GITHUB_REF",
+    "GITHUB_REPOSITORY",
+    "GITHUB_RUN_ID",
+    "GITHUB_SERVER_URL",
+    "GITHUB_SHA",
+    "MIGRATION_REVISION"
+   ],
+   "npm_scripts": [],
+   "workflows": [],
+   "orfao": true
+  },
+  {
+   "arquivo": "scripts/security/test-canonical-db-gates.mjs",
+   "descricao": null,
+   "linhas": 674,
+   "env": [],
+   "npm_scripts": [],
+   "workflows": [
+    "supabase-linter.yml"
+   ],
+   "orfao": false
+  },
+  {
+   "arquivo": "scripts/security/test-functions-deploy.sh",
+   "descricao": null,
+   "linhas": 45,
+   "env": [],
+   "npm_scripts": [],
+   "workflows": [
+    "ci.yml",
+    "functions-deploy.yml"
+   ],
+   "orfao": false
+  },
+  {
+   "arquivo": "scripts/security/test-lint-function-repairs.mjs",
+   "descricao": null,
+   "linhas": 256,
+   "env": [],
+   "npm_scripts": [],
+   "workflows": [
+    "ci.yml",
+    "supabase-linter.yml"
+   ],
+   "orfao": false
+  },
+  {
+   "arquivo": "scripts/security/test-migration-replay-safety.sh",
+   "descricao": null,
+   "linhas": 70,
+   "env": [],
+   "npm_scripts": [],
+   "workflows": [
+    "ci.yml",
+    "supabase-linter.yml"
+   ],
+   "orfao": false
+  },
+  {
+   "arquivo": "scripts/security/test-observability-privileges.sql",
+   "descricao": null,
+   "linhas": 186,
+   "env": [],
+   "npm_scripts": [],
+   "workflows": [],
+   "orfao": false
+  },
+  {
+   "arquivo": "scripts/security/test-privilege-baseline.sql",
+   "descricao": null,
+   "linhas": 874,
+   "env": [],
+   "npm_scripts": [],
+   "workflows": [],
+   "orfao": true
+  },
+  {
+   "arquivo": "scripts/security/test-rpc-runtime.ts",
+   "descricao": "* Runtime privilege test — invoca cada RPC nfe_* e conciliacao_* via",
+   "linhas": 274,
+   "env": [
+    "CI_GATE_LOG_SECRET",
+    "GITHUB_REF",
+    "GITHUB_REPOSITORY",
+    "GITHUB_RUN_ID",
+    "GITHUB_SERVER_URL",
+    "GITHUB_SHA",
+    "MIGRATION_REVISION"
+   ],
+   "npm_scripts": [],
+   "workflows": [],
+   "orfao": false
+  },
+  {
+   "arquivo": "scripts/security/test-security-definer-invocation.sql",
+   "descricao": null,
+   "linhas": 213,
+   "env": [],
+   "npm_scripts": [],
+   "workflows": [],
+   "orfao": false
+  },
+  {
+   "arquivo": "scripts/security/test-supabase-config.py",
+   "descricao": "Valida a sintaxe e contratos críticos do supabase/config.toml.\"\"\"",
+   "linhas": 47,
+   "env": [],
+   "npm_scripts": [],
+   "workflows": [
+    "ci.yml",
+    "functions-deploy.yml",
+    "supabase-linter.yml"
+   ],
+   "orfao": false
+  },
+  {
+   "arquivo": "scripts/security/test-tenant-isolation.sql",
+   "descricao": null,
+   "linhas": 124,
+   "env": [],
+   "npm_scripts": [],
+   "workflows": [],
+   "orfao": true
+  },
+  {
+   "arquivo": "scripts/security/test-tenant-policy-scope.sql",
+   "descricao": null,
+   "linhas": 162,
+   "env": [],
+   "npm_scripts": [],
+   "workflows": [],
+   "orfao": true
+  },
+  {
+   "arquivo": "scripts/security/test-write-isolation.sql",
+   "descricao": null,
+   "linhas": 189,
+   "env": [],
+   "npm_scripts": [],
+   "workflows": [],
+   "orfao": true
+  },
+  {
+   "arquivo": "scripts/security/zod-coverage.sh",
+   "descricao": "Zod coverage gate for Supabase Edge Functions. Emite a lista de funções que consomem `req.json()` sem passar por",
+   "linhas": 58,
+   "env": [],
+   "npm_scripts": [],
+   "workflows": [
+    "ci.yml"
+   ],
+   "orfao": false
+  },
+  {
+   "arquivo": "scripts/simular-observabilidade-digest.ts",
+   "descricao": "* Etapa T — Simulação massiva do motor de observabilidade do digest.",
+   "linhas": 121,
+   "env": [],
+   "npm_scripts": [],
+   "workflows": [],
+   "orfao": true
+  },
+  {
+   "arquivo": "scripts/simular-preferencias-digest.ts",
+   "descricao": "* Etapa R — Simulação exaustiva do motor de preferências do digest.",
+   "linhas": 138,
+   "env": [],
+   "npm_scripts": [],
+   "workflows": [],
+   "orfao": true
+  },
+  {
+   "arquivo": "scripts/simular-projecao-conformidade.ts",
+   "descricao": "* Etapa S — Simulação exaustiva do motor de projeção de conformidade.",
+   "linhas": 223,
+   "env": [],
+   "npm_scripts": [],
+   "workflows": [],
+   "orfao": true
+  },
+  {
+   "arquivo": "scripts/staging-migrate.sh",
+   "descricao": "staging-migrate.sh — Orquestrador end-to-end de promoção para staging. Fases:",
+   "linhas": 247,
+   "env": [],
+   "npm_scripts": [],
+   "workflows": [
+    "staging-migrate.yml"
+   ],
+   "orfao": false
+  },
+  {
+   "arquivo": "scripts/stress-test.ts",
+   "descricao": null,
+   "linhas": 47,
+   "env": [
+    "SUPABASE_SERVICE_ROLE_KEY",
+    "SUPABASE_URL"
+   ],
+   "npm_scripts": [],
+   "workflows": [],
+   "orfao": false
+  },
+  {
+   "arquivo": "scripts/supabase_snapshot/snapshot.py",
+   "descricao": "Somente leitura no banco (sessão read-only, statement_timeout, lock_timeout). Nunca grava linhas de tabelas, valores de segredos, chaves, senhas ou DSN.",
+   "linhas": 1816,
+   "env": [],
+   "npm_scripts": [],
+   "workflows": [
+    "contexto.yml"
+   ],
+   "orfao": false
+  },
+  {
+   "arquivo": "scripts/validate-all.sh",
+   "descricao": "Smoke-test de todos os scripts: verifica sintaxe, --help e modo dry-run. Falha com exit 1 se qualquer script retornar erro inesperado.",
+   "linhas": 467,
+   "env": [],
+   "npm_scripts": [],
+   "workflows": [],
+   "orfao": true
+  }
+ ]
+}

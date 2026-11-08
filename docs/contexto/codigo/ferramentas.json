@@ -1,0 +1,1955 @@
+{
+ "aviso": "GERADO AUTOMATICAMENTE por scripts/ai-context/gerar.mjs — não editar à mão; será sobrescrito.",
+ "format_version": 2,
+ "stack": {
+  "linguagens": [
+   "TypeScript (2104)",
+   "SQL (1006)",
+   "Markdown (123)",
+   "JSON (29)",
+   "Python (28)",
+   "Shell (23)",
+   "YAML (20)",
+   "JavaScript (18)"
+  ],
+  "linguagem_principal": "TypeScript",
+  "framework": "React",
+  "backend_http": [],
+  "bundler": "Vite",
+  "roteador": "react-router",
+  "banco": "Supabase",
+  "testes": [
+   "vitest",
+   "playwright"
+  ],
+  "ui": [
+   "tailwind",
+   "radix/shadcn"
+  ],
+  "estado": [
+   "react-query"
+  ],
+  "gerenciador_pacotes": "bun",
+  "node": ">=18.18.0",
+  "python": null,
+  "deploy": [
+   "vercel"
+  ],
+  "monorepo": null,
+  "pastas_fonte": [
+   "src"
+  ]
+ },
+ "workspaces": [],
+ "package": {
+  "nome": "promo-finance",
+  "versao": "2.0.0",
+  "scripts": {
+   "build": "vite build",
+   "build-storybook": "storybook build",
+   "build:dev": "vite build --mode development",
+   "build:types": "tsc && vite build",
+   "db:migrate": "supabase db push",
+   "db:reset": "supabase db reset",
+   "db:seed": "supabase db seed",
+   "dev": "vite",
+   "format": "prettier --write \"src/**/*.{ts,tsx,css,json}\" \"supabase/functions/**/*.ts\"",
+   "format:check": "prettier --check \"src/**/*.{ts,tsx,css,json}\" \"supabase/functions/**/*.ts\"",
+   "graphify:analyze": "python3 scripts/graphify/run.py analyze",
+   "graphify:benchmark": "python3 scripts/graphify/benchmark.py",
+   "graphify:code-references": "python3 scripts/graphify/code_references.py",
+   "graphify:edge-inventory": "python3 scripts/graphify/edge_inventory.py",
+   "graphify:inventory": "python3 scripts/graphify/run.py inventory",
+   "graphify:pilot": "python3 scripts/graphify/run.py pilot",
+   "graphify:quality": "python3 scripts/graphify/graph_quality.py",
+   "graphify:sql-inventory": "python3 scripts/graphify/sql_inventory.py",
+   "graphify:test": "python3 -m unittest discover -s scripts/graphify -p 'test_*.py' -v",
+   "lint": "cross-env ESLINT_USE_FLAT_CONFIG=true eslint . --report-unused-disable-directives",
+   "lint:fix": "cross-env ESLINT_USE_FLAT_CONFIG=true eslint . --fix",
+   "lint:strict": "cross-env ESLINT_USE_FLAT_CONFIG=true eslint . --report-unused-disable-directives --max-warnings 0",
+   "prepare": "husky",
+   "preview": "vite preview",
+   "scan:secrets": "gitleaks git --no-banner --redact --baseline-path .gitleaks-baseline.json",
+   "scan:secrets:tree": "gitleaks dir . --no-banner --redact --baseline-path .gitleaks-baseline.json",
+   "storybook": "storybook dev -p 6006",
+   "test": "vitest",
+   "test:changed": "cross-env NODE_OPTIONS=--max-old-space-size=8192 vitest run --changed origin/main --passWithNoTests",
+   "test:coverage": "cross-env NODE_OPTIONS=--max-old-space-size=8192 vitest run --coverage",
+   "test:e2e": "playwright test",
+   "test:e2e:report": "playwright show-report",
+   "test:e2e:ui": "playwright test --ui",
+   "test:run": "cross-env NODE_OPTIONS=--max-old-space-size=8192 vitest run",
+   "test:ui": "vitest --ui",
+   "type-check": "tsc --noEmit",
+   "type-check:e2e": "tsc -p tsconfig.e2e.json",
+   "type-check:strict": "bash scripts/ci/typecheck-strict-baseline.sh"
+  },
+  "dependencias": 79,
+  "dev_dependencias": 39,
+  "principais": {
+   "@supabase/supabase-js": "^2.38.4",
+   "@tanstack/react-query": "^5.14.2",
+   "@tanstack/react-virtual": "^3.14.4",
+   "date-fns": "^2.30.0",
+   "framer-motion": "^11.18.0",
+   "i18next": "^26.0.10",
+   "i18next-browser-languagedetector": "^8.2.1",
+   "next-themes": "^0.4.6",
+   "react": "^18.2.0",
+   "react-day-picker": "^9.13.0",
+   "react-dom": "^18.2.0",
+   "react-hook-form": "^7.91.0",
+   "react-i18next": "^17.0.7",
+   "react-joyride": "^2.9.3",
+   "react-markdown": "^10.1.0",
+   "react-resizable-panels": "^4.7.1",
+   "react-router-dom": "^7.18.2",
+   "react-window": "^2.2.7",
+   "recharts": "^2.10.3",
+   "tailwindcss-animate": "^1.0.7",
+   "vitest-axe": "^0.1.0",
+   "zod": "^3.25.76"
+  },
+  "engines": {
+   "node": ">=18.18.0"
+  },
+  "packageManager": null
+ },
+ "python": {
+  "dependencias": [
+   "psycopg"
+  ]
+ },
+ "configs": [
+  ".github/CODEOWNERS",
+  ".github/PULL_REQUEST_TEMPLATE.md",
+  ".github/dependabot.yml",
+  ".husky/pre-commit",
+  ".husky/pre-push",
+  ".prettierrc",
+  "ai-context.config.json",
+  "components.json",
+  "deno.json",
+  "eslint.config.js",
+  "package.json",
+  "playwright.config.ts",
+  "postcss.config.js",
+  "supabase/config.toml",
+  "tailwind.config.ts",
+  "tsconfig.app.json",
+  "tsconfig.e2e.json",
+  "tsconfig.json",
+  "tsconfig.node.json",
+  "vercel.json",
+  "vite.config.ts",
+  "vitest.config.ts"
+ ],
+ "workflows": [
+  {
+   "arquivo": ".github/workflows/actionlint.yml",
+   "nome": "Workflow Linter (actionlint + zizmor)",
+   "gatilhos": [
+    "pull_request",
+    "push",
+    "workflow_dispatch"
+   ],
+   "crons": [],
+   "branches": [
+    "main"
+   ],
+   "jobs": [
+    "lint-workflows"
+   ],
+   "permissoes": [
+    "contents: read"
+   ],
+   "scripts_usados": [],
+   "npm_scripts": [],
+   "secrets": [],
+   "actions": [
+    "actions/checkout"
+   ]
+  },
+  {
+   "arquivo": ".github/workflows/ci.yml",
+   "nome": "CI Pipeline",
+   "gatilhos": [
+    "pull_request",
+    "push"
+   ],
+   "crons": [],
+   "branches": [
+    "main"
+   ],
+   "jobs": [
+    "secret-scan",
+    "quality-gate",
+    "e2e-critical",
+    "e2e-destructive",
+    "e2e-financeiro",
+    "e2e-quarantine",
+    "post-merge-audit"
+   ],
+   "permissoes": [
+    "contents: read"
+   ],
+   "scripts_usados": [
+    "scripts/check-external-secret-isolation.sh",
+    "scripts/ci/require-env.sh",
+    "scripts/generate-env-manifest.mjs",
+    "scripts/security/export-function-privileges.sh",
+    "scripts/security/test-functions-deploy.sh",
+    "scripts/security/test-lint-function-repairs.mjs",
+    "scripts/security/test-migration-replay-safety.sh",
+    "scripts/security/test-supabase-config.py",
+    "scripts/security/zod-coverage.sh"
+   ],
+   "npm_scripts": [
+    "build",
+    "lint",
+    "test:coverage",
+    "test:run",
+    "type-check",
+    "type-check:e2e",
+    "type-check:strict"
+   ],
+   "secrets": [
+    "CI_GATE_LOG_SECRET",
+    "DATABASE_URL",
+    "E2E_USER_EMAIL",
+    "E2E_USER_PASSWORD",
+    "SUPABASE_ANON_KEY",
+    "SUPABASE_SERVICE_ROLE_KEY",
+    "SUPABASE_URL",
+    "VITE_SUPABASE_PROJECT_ID",
+    "VITE_SUPABASE_PUBLISHABLE_KEY",
+    "VITE_SUPABASE_URL"
+   ],
+   "actions": [
+    "actions/checkout",
+    "actions/upload-artifact",
+    "github/codeql-action/upload-sarif"
+   ]
+  },
+  {
+   "arquivo": ".github/workflows/codeql.yml",
+   "nome": "CodeQL Analysis",
+   "gatilhos": [
+    "pull_request",
+    "push",
+    "schedule"
+   ],
+   "crons": [
+    "17 3 * * 1"
+   ],
+   "branches": [
+    "main"
+   ],
+   "jobs": [
+    "analyze"
+   ],
+   "permissoes": [
+    "contents: read",
+    "security-events: write  # publicar SARIF no Code Scanning",
+    "actions: read            # obrigatório em repos privados para CodeQL completar"
+   ],
+   "scripts_usados": [],
+   "npm_scripts": [],
+   "secrets": [],
+   "actions": [
+    "actions/checkout",
+    "github/codeql-action/analyze",
+    "github/codeql-action/autobuild",
+    "github/codeql-action/init"
+   ]
+  },
+  {
+   "arquivo": ".github/workflows/contexto.yml",
+   "nome": "Contexto para agentes de IA (10 min)",
+   "gatilhos": [
+    "pull_request",
+    "push",
+    "schedule",
+    "workflow_dispatch"
+   ],
+   "crons": [
+    "7-59/10 * * * *"
+   ],
+   "branches": [
+    "main"
+   ],
+   "jobs": [
+    "testes",
+    "gate",
+    "codigo",
+    "banco",
+    "regras",
+    "publicar"
+   ],
+   "permissoes": [
+    "contents: read"
+   ],
+   "scripts_usados": [
+    "scripts/ai-context/cenarios.mjs",
+    "scripts/ai-context/gerar.mjs",
+    "scripts/regras_negocio/generate.py",
+    "scripts/regras_negocio/indice.py",
+    "scripts/regras_negocio/test_generate.py",
+    "scripts/supabase_snapshot/snapshot.py",
+    "scripts/supabase_snapshot/test_snapshot.py"
+   ],
+   "npm_scripts": [],
+   "secrets": [
+    "PROD_DB_URL",
+    "SUPABASE_ACCESS_TOKEN",
+    "SUPABASE_DB_PASSWORD",
+    "SUPABASE_DB_URL"
+   ],
+   "actions": [
+    "actions/checkout",
+    "actions/download-artifact",
+    "actions/setup-node",
+    "actions/upload-artifact"
+   ]
+  },
+  {
+   "arquivo": ".github/workflows/deno-tests.yml",
+   "nome": "Deno Edge Function Tests",
+   "gatilhos": [
+    "pull_request",
+    "push",
+    "workflow_dispatch"
+   ],
+   "crons": [],
+   "branches": [
+    "main"
+   ],
+   "jobs": [
+    "unit-tests",
+    "integration-tests"
+   ],
+   "permissoes": [
+    "contents: read"
+   ],
+   "scripts_usados": [
+    "scripts/ci/deno-check-functions.sh",
+    "scripts/ci/require-env.sh"
+   ],
+   "npm_scripts": [],
+   "secrets": [
+    "VITE_SUPABASE_PUBLISHABLE_KEY",
+    "VITE_SUPABASE_URL"
+   ],
+   "actions": [
+    "actions/cache",
+    "actions/checkout",
+    "denoland/setup-deno"
+   ]
+  },
+  {
+   "arquivo": ".github/workflows/dependency-review.yml",
+   "nome": "Dependency Review",
+   "gatilhos": [
+    "pull_request"
+   ],
+   "crons": [],
+   "branches": [],
+   "jobs": [
+    "dependency-review"
+   ],
+   "permissoes": [
+    "contents: read",
+    "pull-requests: write  # permite que a action comente na PR"
+   ],
+   "scripts_usados": [],
+   "npm_scripts": [],
+   "secrets": [],
+   "actions": [
+    "actions/checkout",
+    "actions/dependency-review-action"
+   ]
+  },
+  {
+   "arquivo": ".github/workflows/functions-deploy.yml",
+   "nome": "Deploy controlado de Edge Function",
+   "gatilhos": [
+    "workflow_dispatch"
+   ],
+   "crons": [],
+   "branches": [],
+   "jobs": [
+    "deploy"
+   ],
+   "permissoes": [
+    "contents: read"
+   ],
+   "scripts_usados": [
+    "scripts/ci/require-env.sh",
+    "scripts/migrate-functions.sh",
+    "scripts/security/test-functions-deploy.sh",
+    "scripts/security/test-supabase-config.py"
+   ],
+   "npm_scripts": [],
+   "secrets": [
+    "SUPABASE_ACCESS_TOKEN"
+   ],
+   "actions": [
+    "actions/checkout",
+    "actions/upload-artifact",
+    "supabase/setup-cli"
+   ]
+  },
+  {
+   "arquivo": ".github/workflows/graphify.yml",
+   "nome": "Graphify — mapas privados",
+   "gatilhos": [
+    "pull_request",
+    "push",
+    "workflow_dispatch"
+   ],
+   "crons": [],
+   "branches": [
+    "main"
+   ],
+   "jobs": [
+    "validacoes",
+    "perfis"
+   ],
+   "permissoes": [
+    "contents: read"
+   ],
+   "scripts_usados": [
+    "scripts/graphify/code_references.py",
+    "scripts/graphify/edge_inventory.py",
+    "scripts/graphify/graph_quality.py",
+    "scripts/graphify/run.py",
+    "scripts/graphify/sql_inventory.py"
+   ],
+   "npm_scripts": [],
+   "secrets": [],
+   "actions": [
+    "actions/checkout",
+    "actions/setup-python"
+   ]
+  },
+  {
+   "arquivo": ".github/workflows/migration-ledger.yml",
+   "nome": "Migration Ledger Check",
+   "gatilhos": [
+    "workflow_dispatch"
+   ],
+   "crons": [],
+   "branches": [],
+   "jobs": [
+    "ledger"
+   ],
+   "permissoes": [
+    "contents: read"
+   ],
+   "scripts_usados": [],
+   "npm_scripts": [],
+   "secrets": [
+    "SUPABASE_ACCESS_TOKEN",
+    "SUPABASE_DB_PASSWORD"
+   ],
+   "actions": [
+    "actions/checkout",
+    "supabase/setup-cli"
+   ]
+  },
+  {
+   "arquivo": ".github/workflows/prod-migrate.yml",
+   "nome": "prod-migrate",
+   "gatilhos": [
+    "workflow_dispatch"
+   ],
+   "crons": [],
+   "branches": [],
+   "jobs": [
+    "check-secrets",
+    "migrate"
+   ],
+   "permissoes": [
+    "contents: read"
+   ],
+   "scripts_usados": [],
+   "npm_scripts": [],
+   "secrets": [
+    "PROD_DB_URL",
+    "SUPABASE_ACCESS_TOKEN",
+    "outputs"
+   ],
+   "actions": [
+    "actions/checkout",
+    "actions/upload-artifact",
+    "oven-sh/setup-bun",
+    "supabase/setup-cli"
+   ]
+  },
+  {
+   "arquivo": ".github/workflows/schema-drift.yml",
+   "nome": "Schema drift (types + migrations)",
+   "gatilhos": [
+    "schedule",
+    "workflow_dispatch"
+   ],
+   "crons": [
+    "0 6 * * 1"
+   ],
+   "branches": [],
+   "jobs": [
+    "types-drift",
+    "migration-parity"
+   ],
+   "permissoes": [],
+   "scripts_usados": [],
+   "npm_scripts": [],
+   "secrets": [
+    "GITHUB_TOKEN",
+    "PROD_DB_URL",
+    "SUPABASE_ACCESS_TOKEN"
+   ],
+   "actions": [
+    "actions/checkout",
+    "supabase/setup-cli"
+   ]
+  },
+  {
+   "arquivo": ".github/workflows/staging-migrate.yml",
+   "nome": "staging-migrate",
+   "gatilhos": [
+    "workflow_dispatch"
+   ],
+   "crons": [],
+   "branches": [],
+   "jobs": [
+    "check-secrets",
+    "migrate"
+   ],
+   "permissoes": [
+    "contents: read"
+   ],
+   "scripts_usados": [
+    "scripts/staging-migrate.sh"
+   ],
+   "npm_scripts": [],
+   "secrets": [
+    "PROD_DB_URL",
+    "STAGING_ANON_KEY",
+    "STAGING_DB_URL",
+    "STAGING_PROJECT_REF",
+    "SUPABASE_ACCESS_TOKEN",
+    "TEST_ADMIN_JWT",
+    "outputs"
+   ],
+   "actions": [
+    "actions/checkout",
+    "actions/upload-artifact",
+    "oven-sh/setup-bun",
+    "supabase/setup-cli"
+   ]
+  },
+  {
+   "arquivo": ".github/workflows/supabase-admin-ops.yml",
+   "nome": "Ops administrativas do Supabase canônico",
+   "gatilhos": [
+    "workflow_dispatch"
+   ],
+   "crons": [],
+   "branches": [],
+   "jobs": [
+    "ops"
+   ],
+   "permissoes": [
+    "contents: read"
+   ],
+   "scripts_usados": [
+    "scripts/admin/supabase_admin_ops.py"
+   ],
+   "npm_scripts": [],
+   "secrets": [
+    "SUPABASE_ACCESS_TOKEN",
+    "SUPABASE_SERVICE_ROLE_KEY"
+   ],
+   "actions": [
+    "actions/checkout"
+   ]
+  },
+  {
+   "arquivo": ".github/workflows/supabase-linter.yml",
+   "nome": "Supabase Linter (RLS/GRANT gate)",
+   "gatilhos": [
+    "pull_request",
+    "push",
+    "workflow_dispatch"
+   ],
+   "crons": [],
+   "branches": [
+    "develop",
+    "main",
+    "master"
+   ],
+   "jobs": [
+    "supabase-linter"
+   ],
+   "permissoes": [
+    "contents: read"
+   ],
+   "scripts_usados": [
+    "scripts/ci/require-env.sh",
+    "scripts/security/check-view-replay-order.mjs",
+    "scripts/security/test-canonical-db-gates.mjs",
+    "scripts/security/test-lint-function-repairs.mjs",
+    "scripts/security/test-migration-replay-safety.sh",
+    "scripts/security/test-supabase-config.py"
+   ],
+   "npm_scripts": [],
+   "secrets": [
+    "SUPABASE_ACCESS_TOKEN",
+    "SUPABASE_DB_PASSWORD"
+   ],
+   "actions": [
+    "actions/checkout",
+    "actions/upload-artifact",
+    "supabase/setup-cli"
+   ]
+  }
+ ],
+ "hooks_git": [
+  {
+   "arquivo": ".husky/pre-commit",
+   "comandos": [
+    "node node_modules/lint-staged/bin/lint-staged.js",
+    "if command -v gitleaks >/dev/null 2>&1; then",
+    "  echo \"[pre-commit] gitleaks (staged)...\"",
+    "  gitleaks git --staged --no-banner --redact --baseline-path .gitleaks-baseline.json || {",
+    "    echo \"[pre-commit] Segredo detectado no que você está commitando.\""
+   ]
+  },
+  {
+   "arquivo": ".husky/pre-push",
+   "comandos": [
+    "echo \"[pre-push] type-check...\"",
+    "node node_modules/typescript/bin/tsc --noEmit || {",
+    "  echo \"[pre-push] type-check falhou. Use --no-verify para forçar.\"",
+    "  exit 1",
+    "}"
+   ]
+  }
+ ],
+ "docs_raiz": [
+  {
+   "arquivo": ".github/PULL_REQUEST_TEMPLATE.md",
+   "titulo": null,
+   "linhas": 22
+  },
+  {
+   "arquivo": ".github/copilot-instructions.md",
+   "titulo": "Instruções para o GitHub Copilot — Promo Finance V2",
+   "linhas": 47
+  },
+  {
+   "arquivo": "AGENTS.md",
+   "titulo": "AGENTS.md — Promo_Finance_V2",
+   "linhas": 237
+  },
+  {
+   "arquivo": "AI_RULES.md",
+   "titulo": "AI_RULES",
+   "linhas": 79
+  },
+  {
+   "arquivo": "AUDITORIA.md",
+   "titulo": "AUDITORIA — Promo Finance V2",
+   "linhas": 648
+  },
+  {
+   "arquivo": "CHANGELOG.md",
+   "titulo": "Changelog",
+   "linhas": 114
+  },
+  {
+   "arquivo": "CLAUDE.md",
+   "titulo": "CLAUDE.md — PROMO FINANCE V2",
+   "linhas": 96
+  },
+  {
+   "arquivo": "CONTRIBUTING.md",
+   "titulo": "🤝 Guia de Contribuição",
+   "linhas": 290
+  },
+  {
+   "arquivo": "ESTADO_ATUAL.md",
+   "titulo": "ESTADO ATUAL DO SISTEMA — Promo Finance v2",
+   "linhas": 779
+  },
+  {
+   "arquivo": "EXECAO_RESTYLE_METRONIC_V9.md",
+   "titulo": "EXCEÇÃO FORMAL: Epic de Restyle Metronic v9",
+   "linhas": 119
+  },
+  {
+   "arquivo": "EXECAO_VELA_DARK.md",
+   "titulo": "EXCEÇÃO FORMAL: Epic de Restyle Vela-dark",
+   "linhas": 138
+  },
+  {
+   "arquivo": "HANDOFF_VELA_DARK.md",
+   "titulo": "HANDOFF — Epic Vela-dark Promo_Finance_V2",
+   "linhas": 228
+  },
+  {
+   "arquivo": "PENDENCIAS.md",
+   "titulo": "PENDÊNCIAS — Promo Finance V2",
+   "linhas": 309
+  },
+  {
+   "arquivo": "PLANO_100.md",
+   "titulo": null,
+   "linhas": 561
+  },
+  {
+   "arquivo": "PLANO_50.md",
+   "titulo": "PLANO_50 — 50 etapas de melhoria e correção",
+   "linhas": 485
+  },
+  {
+   "arquivo": "README.md",
+   "titulo": "Promo Finance",
+   "linhas": 64
+  },
+  {
+   "arquivo": "RELATORIO_ACEITE_VELA_DARK.md",
+   "titulo": "RELATÓRIO DE ACEITE — Epic Vela-dark · Promo_Finance_V2",
+   "linhas": 101
+  },
+  {
+   "arquivo": "RELATORIO_CI.md",
+   "titulo": "RELATÓRIO CI — Promo Finance V2",
+   "linhas": 340
+  },
+  {
+   "arquivo": "RELATORIO_IMPLEMENTACAO_EXAUSTIVO.md",
+   "titulo": "RELATÓRIO DE IMPLEMENTAÇÃO EXAUSTIVO — Epic Vela-dark",
+   "linhas": 181
+  },
+  {
+   "arquivo": "SECURITY.md",
+   "titulo": "Política de Segurança — Promo Finance V2",
+   "linhas": 51
+  },
+  {
+   "arquivo": "SECURITY_RULES.md",
+   "titulo": "SECURITY_RULES",
+   "linhas": 102
+  },
+  {
+   "arquivo": "docs/ACCESSIBILITY.md",
+   "titulo": "♿ Guia de Acessibilidade - Promo Finance",
+   "linhas": 311
+  },
+  {
+   "arquivo": "docs/ADR-001-LALAMOVE-FORA-DE-ESCOPO.md",
+   "titulo": "ADR-001 — Exclusão do módulo de logística/Lalamove",
+   "linhas": 57
+  },
+  {
+   "arquivo": "docs/ADR-002-FUNCOES-ESSENCIAIS-PROMO-FINANCE.md",
+   "titulo": "ADR-002 — Funções essenciais do Promo Finance V2",
+   "linhas": 57
+  },
+  {
+   "arquivo": "docs/ADR-003-PAPEIS-POR-EMPRESA.md",
+   "titulo": "ADR-003 — Modelo de papéis e escopo de empresa",
+   "linhas": 130
+  },
+  {
+   "arquivo": "docs/ARCHITECTURE.md",
+   "titulo": "Arquitetura — Promo Finance",
+   "linhas": 102
+  },
+  {
+   "arquivo": "docs/ARCHITECTURE_GRAPH.md",
+   "titulo": "Grafo de Arquitetura — Promo Finance V2",
+   "linhas": 388
+  },
+  {
+   "arquivo": "docs/AUDITORIA_PLANEJADO_X_EXECUTADO_2026-10-12.md",
+   "titulo": "Auditoria exaustiva — Planejado × Executado (Promo Finance V2)",
+   "linhas": 1366
+  },
+  {
+   "arquivo": "docs/AUDITORIA_SINCRONIA_2026-09-17.md",
+   "titulo": "Auditoria de Sincronia — Local ↔ GitHub ↔ Banco (2026-09-17)",
+   "linhas": 80
+  },
+  {
+   "arquivo": "docs/AUDITORIA_TECNICA_EXAUSTIVA_2026-09-02_R2_LIVE.md",
+   "titulo": "Auditoria Técnica Exaustiva R2 (validação live) — Promo Finance V2",
+   "linhas": 324
+  },
+  {
+   "arquivo": "docs/COMPONENTS.md",
+   "titulo": "Documentação dos Componentes UI Aprimorados",
+   "linhas": 457
+  },
+  {
+   "arquivo": "docs/CSP_REVISAO.md",
+   "titulo": "Revisão CSP — Content Security Policy",
+   "linhas": 47
+  },
+  {
+   "arquivo": "docs/DATA_MIGRATION.md",
+   "titulo": "Runbook — Migração de Dados PROD → STAGING",
+   "linhas": 171
+  },
+  {
+   "arquivo": "docs/DB_HEALTH.md",
+   "titulo": "DB_HEALTH — Painel de Saúde do Banco",
+   "linhas": 225
+  },
+  {
+   "arquivo": "docs/DEPLOYMENT.md",
+   "titulo": "Deployment Guide",
+   "linhas": 61
+  },
+  {
+   "arquivo": "docs/DIAGRAMA_ER.md",
+   "titulo": "Diagrama ER — núcleo financeiro",
+   "linhas": 156
+  },
+  {
+   "arquivo": "docs/EDGE_FUNCTIONS_CATALOG.md",
+   "titulo": "Catálogo de Edge Functions",
+   "linhas": 99
+  },
+  {
+   "arquivo": "docs/FUNCIONALIDADES_SEM_UI.md",
+   "titulo": "🔍 Funcionalidades sem UI completa — Promo Finance",
+   "linhas": 169
+  },
+  {
+   "arquivo": "docs/FUNCIONALIDADES_SISTEMA.md",
+   "titulo": "📋 Funcionalidades do Sistema — Promo Finance",
+   "linhas": 359
+  },
+  {
+   "arquivo": "docs/GAPS_ENTERPRISE.md",
+   "titulo": "🌐 Análise de Gaps Enterprise — Promo Finance",
+   "linhas": 326
+  },
+  {
+   "arquivo": "docs/GETTING-STARTED.md",
+   "titulo": "Getting Started - Promo Finance",
+   "linhas": 46
+  },
+  {
+   "arquivo": "docs/GRAPHIFY_PLANO_50_ETAPAS.md",
+   "titulo": "Graphify no Promo Finance V2 — implementação em 50 etapas",
+   "linhas": 403
+  },
+  {
+   "arquivo": "docs/GRAPHIFY_VALIDACAO_2026-09-11.md",
+   "titulo": "Validação Graphify e catálogo canônico — 11/09/2026",
+   "linhas": 203
+  },
+  {
+   "arquivo": "docs/HEALTHCHECK.md",
+   "titulo": "Healthcheck pós-corte",
+   "linhas": 69
+  },
+  {
+   "arquivo": "docs/INVENTARIO_FUNCIONALIDADES.md",
+   "titulo": "📋 Inventário Completo de Funcionalidades e Ferramentas",
+   "linhas": 587
+  },
+  {
+   "arquivo": "docs/INVENTARIO_REPOSITORIO.md",
+   "titulo": "📋 INVENTÁRIO COMPLETO DO PROJETO FINANCEIRO",
+   "linhas": 182
+  },
+  {
+   "arquivo": "docs/MATRIZ_PAPEIS.md",
+   "titulo": "Matriz papel × rota × acesso a dados",
+   "linhas": 63
+  },
+  {
+   "arquivo": "docs/MIGRATIONS_ADR.md",
+   "titulo": "ADR — Migrations Consolidadas (356 migrations)",
+   "linhas": 80
+  },
+  {
+   "arquivo": "docs/MIGRATION_CHECKLIST.md",
+   "titulo": "Checklist de Migração — Schema, RLS/Policies e Índices entre Projetos Supabase",
+   "linhas": 200
+  },
+  {
+   "arquivo": "docs/MODULARIZATION_REPORT.md",
+   "titulo": "Relatório de Modularização (>400 linhas)",
+   "linhas": 42
+  },
+  {
+   "arquivo": "docs/N8N_WORKFLOWS.md",
+   "titulo": "Integração n8n — Triagem, Tarefas e Roteamento por Score",
+   "linhas": 43
+  },
+  {
+   "arquivo": "docs/PERFORMANCE.md",
+   "titulo": "⚡ Guia de Performance - Promo Finance",
+   "linhas": 316
+  },
+  {
+   "arquivo": "docs/PLANO_EXCELENCIA_10_10.md",
+   "titulo": "Plano de Excelência 10/10 — Promo Finance",
+   "linhas": 73
+  },
+  {
+   "arquivo": "docs/PLANO_MELHORIAS_50_ETAPAS_2026-09-13.md",
+   "titulo": "Plano de Melhorias e Correções — 50 Etapas",
+   "linhas": 742
+  },
+  {
+   "arquivo": "docs/QA_EXHAUSTIVE_REPORT.md",
+   "titulo": "Relatório QA Exaustivo — 2026-07-22",
+   "linhas": 69
+  },
+  {
+   "arquivo": "docs/QA_VALIDATION_REPORT.md",
+   "titulo": "QA Validation Report — Auditoria Exaustiva",
+   "linhas": 124
+  },
+  {
+   "arquivo": "docs/REAUDITORIA_FINAL.md",
+   "titulo": "Re-Auditoria Final — Plano 50 Etapas",
+   "linhas": 142
+  },
+  {
+   "arquivo": "docs/RECONCILIACAO_ONLINE_2026-08-31.md",
+   "titulo": "Reconciliação online — 2026-08-31",
+   "linhas": 138
+  },
+  {
+   "arquivo": "docs/RLS_MATRIZ_NEGATIVA.md",
+   "titulo": "Matriz RLS negativa — o que o banco DEVE negar",
+   "linhas": 138
+  },
+  {
+   "arquivo": "docs/RUNBOOK.md",
+   "titulo": "Runbook Operacional — Promo Finance",
+   "linhas": 235
+  },
+  {
+   "arquivo": "docs/SCENARIOS.md",
+   "titulo": "Scenario Harness",
+   "linhas": 103
+  },
+  {
+   "arquivo": "docs/SECURITY.md",
+   "titulo": "Segurança",
+   "linhas": 58
+  },
+  {
+   "arquivo": "docs/SECURITY_DEFINER_ATTESTATION.md",
+   "titulo": "SECURITY DEFINER — Attestation & Justificativas",
+   "linhas": 215
+  },
+  {
+   "arquivo": "docs/STAGING_MIGRATION.md",
+   "titulo": "Runbook — Migração para Staging",
+   "linhas": 138
+  },
+  {
+   "arquivo": "docs/TESTING.md",
+   "titulo": "Guia de Testes",
+   "linhas": 61
+  },
+  {
+   "arquivo": "docs/VALIDACAO_EXAUSTIVA_R2_2026-09-03.md",
+   "titulo": "Validação Exaustiva R2 — 2026-09-03",
+   "linhas": 183
+  },
+  {
+   "arquivo": "docs/VALIDACAO_SEGURANCA_GATEWAY_2026-08-27.md",
+   "titulo": "Validação de segurança dos gateways — 2026-08-27",
+   "linhas": 50
+  },
+  {
+   "arquivo": "docs/testing-architecture.md",
+   "titulo": "Freight Quest Testing Architecture",
+   "linhas": 39
+  }
+ ],
+ "docs_em_subpastas": [
+  {
+   "pasta": "docs/archive",
+   "arquivos_md": 9
+  },
+  {
+   "pasta": "docs/guides",
+   "arquivos_md": 9
+  },
+  {
+   "pasta": "docs/execucao-cline",
+   "arquivos_md": 5
+  },
+  {
+   "pasta": "docs/runbooks",
+   "arquivos_md": 5
+  },
+  {
+   "pasta": "docs/contexto",
+   "arquivos_md": 2
+  },
+  {
+   "pasta": "docs/migracao",
+   "arquivos_md": 2
+  },
+  {
+   "pasta": "docs/adr",
+   "arquivos_md": 1
+  },
+  {
+   "pasta": "docs/evidencias",
+   "arquivos_md": 1
+  }
+ ],
+ "changelog_topo": "[Unreleased]",
+ "env": {
+  "declaradas_no_env_example": [
+   "APP_BASE_URL",
+   "APP_PUBLIC_URL",
+   "ASAAS_API_KEY",
+   "ASAAS_WEBHOOK_TOKEN",
+   "BITRIX24_ACCESS_TOKEN",
+   "BITRIX24_CLIENT_ID",
+   "BITRIX24_CLIENT_SECRET",
+   "BITRIX24_DOMAIN",
+   "BLING_CLIENT_ID",
+   "BLING_CLIENT_SECRET",
+   "CI_GATE_LOG_SECRET",
+   "CNPJA_API_KEY",
+   "CRON_DISPATCH_SECRET",
+   "DENO_TESTING",
+   "EXTERNAL_SUPABASE_SERVICE_KEY",
+   "EXTERNAL_SUPABASE_URL",
+   "INTEGRACOES_DESATIVADAS",
+   "LOVABLE_API_KEY",
+   "MAPBOX_ACCESS_TOKEN",
+   "N8N_DISPATCH_SECRET",
+   "NFE_CERT_MASTER_KEY",
+   "OPENAI_API_KEY",
+   "OPEN_FINANCE_BASE_URL",
+   "OPEN_FINANCE_CLIENT_ID",
+   "OPEN_FINANCE_CLIENT_SECRET",
+   "OPEN_FINANCE_REDIRECT_URI",
+   "PUBLIC_APP_URL",
+   "REGUA_CRON_SECRET",
+   "RESEND_API_KEY",
+   "RESEND_FROM",
+   "SCHEMA_COMPARE_EXTERNAL_SERVICE_ROLE_KEY",
+   "SCHEMA_COMPARE_EXTERNAL_URL",
+   "SEFAZ_CRON_SECRET",
+   "SLACK_WEBHOOK_URL",
+   "SUPABASE_ANON_KEY",
+   "SUPABASE_DB_URL",
+   "SUPABASE_JWT_SECRET",
+   "SUPABASE_SERVICE_ROLE_KEY",
+   "SUPABASE_URL",
+   "VAPID_PRIVATE_KEY",
+   "VAPID_PUBLIC_KEY",
+   "VITE_BLING_CLIENT_ID",
+   "VITE_SENTRY_DSN",
+   "VITE_SUPABASE_PROJECT_ID",
+   "VITE_SUPABASE_PUBLISHABLE_KEY",
+   "VITE_SUPABASE_URL",
+   "VITE_VAPID_PUBLIC_KEY"
+  ],
+  "usadas_no_front": [
+   "DEV",
+   "MODE",
+   "NODE_ENV",
+   "SCENARIOS_COUNT",
+   "VITE_BLING_CLIENT_ID",
+   "VITE_SENTRY_DSN",
+   "VITE_SUPABASE_PROJECT_ID",
+   "VITE_SUPABASE_PUBLISHABLE_KEY",
+   "VITE_SUPABASE_URL",
+   "VITE_VAPID_PUBLIC_KEY"
+  ],
+  "usadas_nas_edges": [
+   "ALLOWED_ORIGINS",
+   "APP_BASE_URL",
+   "APP_PUBLIC_URL",
+   "ASAAS_API_KEY",
+   "ASAAS_WEBHOOK_TOKEN",
+   "BITRIX24_ACCESS_TOKEN",
+   "BITRIX24_CLIENT_ID",
+   "BITRIX24_CLIENT_SECRET",
+   "BITRIX24_DOMAIN",
+   "BLING_CLIENT_ID",
+   "BLING_CLIENT_SECRET",
+   "CNPJA_API_KEY",
+   "CONTADOR_INVITE_SECRET",
+   "CRON_DISPATCH_SECRET",
+   "DENO_TESTING",
+   "EDGE_FUNCTION_NAME",
+   "EDGE_SENTRY_DSN",
+   "EXTERNAL_SUPABASE_SERVICE_KEY",
+   "EXTERNAL_SUPABASE_URL",
+   "INTEGRACOES_DESATIVADAS",
+   "LOVABLE_API_KEY",
+   "MAPBOX_ACCESS_TOKEN",
+   "MFA_ADMIN_ENFORCED",
+   "N8N_DISPATCH_SECRET",
+   "NFE_CERT_MASTER_KEY",
+   "NFE_CERT_MASTER_KEY_PREV",
+   "OPENAI_API_KEY",
+   "OPEN_FINANCE_CLIENT_ID",
+   "OPEN_FINANCE_REDIRECT_URI",
+   "PUBLIC_APP_URL",
+   "REGUA_CRON_SECRET",
+   "RESEND_API_KEY",
+   "RESEND_FROM",
+   "SCHEMA_COMPARE_EXTERNAL_SERVICE_ROLE_KEY",
+   "SCHEMA_COMPARE_EXTERNAL_URL",
+   "SEFAZ_CRON_SECRET",
+   "SENTRY_DSN",
+   "SENTRY_ENVIRONMENT",
+   "SLACK_WEBHOOK_URL",
+   "SUPABASE_ANON_KEY",
+   "SUPABASE_DB_URL",
+   "SUPABASE_FUNCTION_NAME",
+   "SUPABASE_JWT_SECRET",
+   "SUPABASE_SERVICE_ROLE_KEY",
+   "SUPABASE_URL",
+   "VAPID_PRIVATE_KEY",
+   "VAPID_PUBLIC_KEY",
+   "VITE_SUPABASE_PUBLISHABLE_KEY",
+   "VITE_SUPABASE_URL"
+  ],
+  "usadas_no_python": [
+   "AI_CONTEXT_INDEX",
+   "AI_CONTEXT_MODEL",
+   "AI_CONTEXT_PROFILE",
+   "AI_CONTEXT_SCHEMA_SNAPSHOT",
+   "ANTHROPIC_API_KEY",
+   "CODE_SCAN_DIRS",
+   "DELETE_TEST_USERS",
+   "GEN_TYPES",
+   "PGDUMP",
+   "PGDUMP_SCHEMAS",
+   "REPO_ROOT",
+   "SNAPSHOT_DIR",
+   "SNAPSHOT_EXCLUDE_SCHEMAS",
+   "SNAPSHOT_INCLUDE_SCHEMAS",
+   "SUPABASE_ACCESS_TOKEN",
+   "SUPABASE_DB_URL",
+   "SUPABASE_PROJECT_REF",
+   "SUPABASE_SERVICE_ROLE_KEY",
+   "SUPABASE_SNAPSHOT_PUBLICACAO"
+  ],
+  "usadas_mas_nao_declaradas": [
+   "DEV",
+   "MODE",
+   "NODE_ENV",
+   "SCENARIOS_COUNT"
+  ],
+  "secrets_em_workflows": [
+   "CI_GATE_LOG_SECRET",
+   "DATABASE_URL",
+   "E2E_USER_EMAIL",
+   "E2E_USER_PASSWORD",
+   "GITHUB_TOKEN",
+   "PROD_DB_URL",
+   "STAGING_ANON_KEY",
+   "STAGING_DB_URL",
+   "STAGING_PROJECT_REF",
+   "SUPABASE_ACCESS_TOKEN",
+   "SUPABASE_ANON_KEY",
+   "SUPABASE_DB_PASSWORD",
+   "SUPABASE_DB_URL",
+   "SUPABASE_SERVICE_ROLE_KEY",
+   "SUPABASE_URL",
+   "TEST_ADMIN_JWT",
+   "VITE_SUPABASE_PROJECT_ID",
+   "VITE_SUPABASE_PUBLISHABLE_KEY",
+   "VITE_SUPABASE_URL",
+   "outputs"
+  ]
+ },
+ "deploy": {
+  "alvos": [
+   "vercel"
+  ],
+  "dockerfiles": [],
+  "compose": [],
+  "vercel": {
+   "framework": "vite",
+   "build": "npm run build",
+   "rewrites": 1,
+   "redirects": 1,
+   "headers": 2,
+   "ignore_command": null,
+   "crons": []
+  }
+ },
+ "integracoes": {
+  "sdks": [
+   {
+    "pacote": "i18next",
+    "servico": "i18next",
+    "versao": "^26.0.10"
+   },
+   {
+    "pacote": "react-i18next",
+    "servico": "i18next",
+    "versao": "^17.0.7"
+   },
+   {
+    "pacote": "@tanstack/react-query",
+    "servico": "react-query",
+    "versao": "^5.14.2"
+   },
+   {
+    "pacote": "@sentry/react",
+    "servico": "Sentry",
+    "versao": "^11.0.0"
+   },
+   {
+    "pacote": "@supabase/supabase-js",
+    "servico": "Supabase",
+    "versao": "^2.38.4"
+   },
+   {
+    "pacote": "zod",
+    "servico": "zod",
+    "versao": "^3.25.76"
+   }
+  ],
+  "hosts_externos": [
+   {
+    "host": "ai.gateway.lovable.dev",
+    "arquivos": 17
+   },
+   {
+    "host": "api.resend.com",
+    "arquivos": 13
+   },
+   {
+    "host": "www.portalfiscal.inf.br",
+    "arquivos": 9
+   },
+   {
+    "host": "test.supabase.co",
+    "arquivos": 7
+   },
+   {
+    "host": "app.promo-finance.com",
+    "arquivos": 5
+   },
+   {
+    "host": "app.test",
+    "arquivos": 4
+   },
+   {
+    "host": "bwwbeyolnnzppeuhgkcd.supabase.co",
+    "arquivos": 4
+   },
+   {
+    "host": "idp.acme",
+    "arquivos": 4
+   },
+   {
+    "host": "ipapi.co",
+    "arquivos": 3
+   },
+   {
+    "host": "wa.me",
+    "arquivos": 3
+   },
+   {
+    "host": "www1.nfe.fazenda.gov.br",
+    "arquivos": 3
+   },
+   {
+    "host": "x.supabase.co",
+    "arquivos": 3
+   },
+   {
+    "host": "api.asaas.com",
+    "arquivos": 2
+   },
+   {
+    "host": "api.bling.com.br",
+    "arquivos": 2
+   },
+   {
+    "host": "api.ipify.org",
+    "arquivos": 2
+   },
+   {
+    "host": "api.supabase.com",
+    "arquivos": 2
+   },
+   {
+    "host": "developer.okta.com",
+    "arquivos": 2
+   },
+   {
+    "host": "docs.lovable.dev",
+    "arquivos": 2
+   },
+   {
+    "host": "exemplo.com",
+    "arquivos": 2
+   },
+   {
+    "host": "hom.nfe.fazenda.gov.br",
+    "arquivos": 2
+   },
+   {
+    "host": "learn.microsoft.com",
+    "arquivos": 2
+   },
+   {
+    "host": "lszcmoymovkpckehlagr.supabase.co",
+    "arquivos": 2
+   },
+   {
+    "host": "www.bling.com.br",
+    "arquivos": 2
+   },
+   {
+    "host": "a.png",
+    "arquivos": 1
+   },
+   {
+    "host": "abc123.supabase.co",
+    "arquivos": 1
+   },
+   {
+    "host": "accounts.google.com",
+    "arquivos": 1
+   },
+   {
+    "host": "api.cnpja.com",
+    "arquivos": 1
+   },
+   {
+    "host": "api.openai.com",
+    "arquivos": 1
+   },
+   {
+    "host": "api.promobrindes.com",
+    "arquivos": 1
+   },
+   {
+    "host": "api.pwnedpasswords.com",
+    "arquivos": 1
+   },
+   {
+    "host": "api.qualquer-coisa.com",
+    "arquivos": 1
+   },
+   {
+    "host": "api.vercel.com",
+    "arquivos": 1
+   },
+   {
+    "host": "api.x.com",
+    "arquivos": 1
+   },
+   {
+    "host": "app.exemplo.com",
+    "arquivos": 1
+   },
+   {
+    "host": "app.lovable.app",
+    "arquivos": 1
+   },
+   {
+    "host": "app.png",
+    "arquivos": 1
+   },
+   {
+    "host": "app.promofinance.test",
+    "arquivos": 1
+   },
+   {
+    "host": "auth-test.supabase.co",
+    "arquivos": 1
+   },
+   {
+    "host": "banco.bradesco",
+    "arquivos": 1
+   },
+   {
+    "host": "bwwbeyolnnzpckehlagr.supabase.co",
+    "arquivos": 1
+   },
+   {
+    "host": "ci.local",
+    "arquivos": 1
+   },
+   {
+    "host": "connector-gateway.lovable.dev",
+    "arquivos": 1
+   },
+   {
+    "host": "demo.example",
+    "arquivos": 1
+   },
+   {
+    "host": "developers.facebook.com",
+    "arquivos": 1
+   },
+   {
+    "host": "developers.google.com",
+    "arquivos": 1
+   },
+   {
+    "host": "developers.onelogin.com",
+    "arquivos": 1
+   },
+   {
+    "host": "e2eoffline0000000000.supabase.co",
+    "arquivos": 1
+   },
+   {
+    "host": "edge.internal",
+    "arquivos": 1
+   },
+   {
+    "host": "edge.test",
+    "arquivos": 1
+   },
+   {
+    "host": "existing.png",
+    "arquivos": 1
+   },
+   {
+    "host": "hooks.slack.test",
+    "arquivos": 1
+   },
+   {
+    "host": "idp.com",
+    "arquivos": 1
+   },
+   {
+    "host": "ipwho.is",
+    "arquivos": 1
+   },
+   {
+    "host": "jumpcloud.com",
+    "arquivos": 1
+   },
+   {
+    "host": "kept.png",
+    "arquivos": 1
+   },
+   {
+    "host": "lh3.googleusercontent.com",
+    "arquivos": 1
+   },
+   {
+    "host": "login.idp.com",
+    "arquivos": 1
+   },
+   {
+    "host": "login.microsoftonline.com",
+    "arquivos": 1
+   },
+   {
+    "host": "new.png",
+    "arquivos": 1
+   },
+   {
+    "host": "nfe-homologacao.svrs.rs.gov.br",
+    "arquivos": 1
+   },
+   {
+    "host": "nfe.svrs.rs.gov.br",
+    "arquivos": 1
+   },
+   {
+    "host": "nubank.com.br",
+    "arquivos": 1
+   },
+   {
+    "host": "old.png",
+    "arquivos": 1
+   },
+   {
+    "host": "openbanking.bancointer.com.br",
+    "arquivos": 1
+   },
+   {
+    "host": "openbanking.bb.com.br",
+    "arquivos": 1
+   },
+   {
+    "host": "openbanking.bradesco.com.br",
+    "arquivos": 1
+   },
+   {
+    "host": "openbanking.c6bank.com.br",
+    "arquivos": 1
+   },
+   {
+    "host": "openbanking.caixa.gov.br",
+    "arquivos": 1
+   },
+   {
+    "host": "openbanking.santander.com.br",
+    "arquivos": 1
+   },
+   {
+    "host": "openbankingbrasil.org.br",
+    "arquivos": 1
+   },
+   {
+    "host": "prev.png",
+    "arquivos": 1
+   },
+   {
+    "host": "primary.png",
+    "arquivos": 1
+   },
+   {
+    "host": "prod-global-webapp-proxy.nubank.com.br",
+    "arquivos": 1
+   },
+   {
+    "host": "proj.supabase.co",
+    "arquivos": 1
+   },
+   {
+    "host": "project-promofinance-harmony.lovable.app",
+    "arquivos": 1
+   },
+   {
+    "host": "secondary.png",
+    "arquivos": 1
+   },
+   {
+    "host": "secure.api.itau",
+    "arquivos": 1
+   },
+   {
+    "host": "static.bancointer.com.br",
+    "arquivos": 1
+   },
+   {
+    "host": "supabase.invalid",
+    "arquivos": 1
+   },
+   {
+    "host": "supabase.local",
+    "arquivos": 1
+   },
+   {
+    "host": "supabase.test",
+    "arquivos": 1
+   },
+   {
+    "host": "worker.example.dev",
+    "arquivos": 1
+   },
+   {
+    "host": "worker.exemplo.dev",
+    "arquivos": 1
+   },
+   {
+    "host": "www.bb.com.br",
+    "arquivos": 1
+   },
+   {
+    "host": "www.c6bank.com.br",
+    "arquivos": 1
+   },
+   {
+    "host": "www.caixa.gov.br",
+    "arquivos": 1
+   },
+   {
+    "host": "www.gov.br",
+    "arquivos": 1
+   },
+   {
+    "host": "www.itau.com.br",
+    "arquivos": 1
+   },
+   {
+    "host": "www.santander.com.br",
+    "arquivos": 1
+   },
+   {
+    "host": "x.test",
+    "arquivos": 1
+   }
+  ],
+  "env_de_integracao": [
+   "ASAAS_API_KEY",
+   "ASAAS_WEBHOOK_TOKEN",
+   "BITRIX24_ACCESS_TOKEN",
+   "BITRIX24_CLIENT_ID",
+   "BITRIX24_CLIENT_SECRET",
+   "BLING_CLIENT_ID",
+   "BLING_CLIENT_SECRET",
+   "CI_GATE_LOG_SECRET",
+   "CNPJA_API_KEY",
+   "CONTADOR_INVITE_SECRET",
+   "CRON_DISPATCH_SECRET",
+   "EDGE_SENTRY_DSN",
+   "LOVABLE_API_KEY",
+   "MAPBOX_ACCESS_TOKEN",
+   "N8N_DISPATCH_SECRET",
+   "OPENAI_API_KEY",
+   "OPEN_FINANCE_CLIENT_ID",
+   "OPEN_FINANCE_CLIENT_SECRET",
+   "REGUA_CRON_SECRET",
+   "RESEND_API_KEY",
+   "RESEND_FROM",
+   "SEFAZ_CRON_SECRET",
+   "SENTRY_DSN",
+   "SENTRY_ENVIRONMENT",
+   "SLACK_WEBHOOK_URL",
+   "SUPABASE_JWT_SECRET",
+   "VITE_BLING_CLIENT_ID",
+   "VITE_SENTRY_DSN"
+  ],
+  "webhooks_recebidos": [
+   "analise-fluxo-ia",
+   "analyze-document",
+   "api-keys-manage",
+   "asaas-proxy",
+   "asaas-webhook",
+   "benchmarking-setorial",
+   "bitrix24-webhook",
+   "bling-proxy",
+   "bling-webhook",
+   "categorizar-despesa",
+   "ci-security-gate-log",
+   "cnpja-lookup",
+   "compare-schemas",
+   "convidar-usuario",
+   "decidir-regime",
+   "digest-silenciamentos-erro",
+   "enviar-alerta-email",
+   "enviar-bitrix24-tributario",
+   "executar-analise-preditiva",
+   "executar-regua-cobranca",
+   "executar-relatorios",
+   "expert-agent",
+   "external-data",
+   "gerar-alertas",
+   "gerar-alertas-dispatcher",
+   "gerar-alertas-tributarios",
+   "gerar-dre-tributaria",
+   "gerar-heatmap-tributario",
+   "gerar-pdf-tributario",
+   "get-vapid-key",
+   "health",
+   "insights-relatorio",
+   "mcp-query",
+   "monitor-health",
+   "monitorar-erros-frontend",
+   "n8n-callback",
+   "notify-performance-alert",
+   "prever-carga-tributaria",
+   "scim-server",
+   "sefaz-dfe-dispatcher",
+   "sefaz-dfe-puxar",
+   "send-device-alert",
+   "send-push-notification",
+   "sso-callback",
+   "sso-initiate",
+   "sso-logout",
+   "validar-token-contador",
+   "validate-ip-geo",
+   "webhook-replay",
+   "webhook-retry-worker",
+   "whatsapp-ia-proativo",
+   "whatsapp-webhook"
+  ],
+  "realtime": [
+   "${config.channel}-${Math.random().toString(36).slice(2, 8)}",
+   "alertas-realtime-${Math.random().toString(36).slice(2, 8)}",
+   "alertas-tributarios-realtime-${Math.random().toString(36).slice(2, 8)}",
+   "anomalia_detection_runs_changes-${Math.random().toString(36).slice(2, 8)}",
+   "anomalias-realtime-${Math.random().toString(36).slice(2, 8)}",
+   "aprovacoes-pendentes-realtime",
+   "audit-logs-toast-stream-${Math.random().toString(36).slice(2, 8)}",
+   "baixa-failures-${Math.random().toString(36).slice(2, 8)}",
+   "hc-${table}-${RUN_ID}",
+   "notification-history:${user.id}-${Math.random().toString(36).slice(2, 8)}",
+   "performance-alerts-realtime-${Math.random().toString(36).slice(2, 8)}",
+   "reforma-tributaria-realtime-${empresaId ?? ",
+   "regua-failures-${Math.random().toString(36).slice(2, 8)}",
+   "saved-filter-permissions-${user.id}-${Math.random().toString(36).slice(2, 8)}",
+   "security-alerts-realtime-${Math.random().toString(36).slice(2, 8)}",
+   "user-anomalia-preferences:${user.id}-${Math.random().toString(36).slice(2, 8)}",
+   "webhook-logs-realtime-${Math.random().toString(36).slice(2, 8)}"
+  ]
+ },
+ "permissoes": {
+  "papeis_no_codigo": [
+   {
+    "papel": "user",
+    "ocorrencias": 24
+   },
+   {
+    "papel": "system",
+    "ocorrencias": 19
+   },
+   {
+    "papel": "alert",
+    "ocorrencias": 15
+   },
+   {
+    "papel": "admin",
+    "ocorrencias": 14
+   },
+   {
+    "papel": "status",
+    "ocorrencias": 13
+   },
+   {
+    "papel": "assistant",
+    "ocorrencias": 5
+   },
+   {
+    "papel": "region",
+    "ocorrencias": 5
+   },
+   {
+    "papel": "AMBOS",
+    "ocorrencias": 4
+   },
+   {
+    "papel": "ORIGEM",
+    "ocorrencias": 4
+   },
+   {
+    "papel": "dialog",
+    "ocorrencias": 4
+   },
+   {
+    "papel": "img",
+    "ocorrencias": 4
+   },
+   {
+    "papel": "list",
+    "ocorrencias": 4
+   },
+   {
+    "papel": "progressbar",
+    "ocorrencias": 4
+   },
+   {
+    "papel": "DESTINO",
+    "ocorrencias": 3
+   },
+   {
+    "papel": "financeiro",
+    "ocorrencias": 3
+   },
+   {
+    "papel": "presentation",
+    "ocorrencias": 3
+   },
+   {
+    "papel": "RESPONSAVEL",
+    "ocorrencias": 2
+   },
+   {
+    "papel": "anon",
+    "ocorrencias": 2
+   },
+   {
+    "papel": "combobox",
+    "ocorrencias": 2
+   },
+   {
+    "papel": "contador_readonly",
+    "ocorrencias": 2
+   },
+   {
+    "papel": "group",
+    "ocorrencias": 2
+   },
+   {
+    "papel": "separator",
+    "ocorrencias": 2
+   },
+   {
+    "papel": "visualizador",
+    "ocorrencias": 2
+   },
+   {
+    "papel": "MEMBRO",
+    "ocorrencias": 1
+   },
+   {
+    "papel": "agent",
+    "ocorrencias": 1
+   },
+   {
+    "papel": "authenticated",
+    "ocorrencias": 1
+   },
+   {
+    "papel": "button",
+    "ocorrencias": 1
+   },
+   {
+    "papel": "checkbox",
+    "ocorrencias": 1
+   },
+   {
+    "papel": "editor",
+    "ocorrencias": 1
+   },
+   {
+    "papel": "link",
+    "ocorrencias": 1
+   },
+   {
+    "papel": "listitem",
+    "ocorrencias": 1
+   },
+   {
+    "papel": "note",
+    "ocorrencias": 1
+   },
+   {
+    "papel": "operacional",
+    "ocorrencias": 1
+   },
+   {
+    "papel": "radiogroup",
+    "ocorrencias": 1
+   },
+   {
+    "papel": "root",
+    "ocorrencias": 1
+   },
+   {
+    "papel": "sup",
+    "ocorrencias": 1
+   },
+   {
+    "papel": "tool",
+    "ocorrencias": 1
+   },
+   {
+    "papel": "treeitem",
+    "ocorrencias": 1
+   }
+  ],
+  "enums_de_papel": [
+   {
+    "enum": "app_role",
+    "valores": [
+     "admin",
+     "financeiro",
+     "operacional",
+     "visualizador",
+     "financeiro",
+     "operacional",
+     "visualizador",
+     "financeiro",
+     "operacional",
+     "visualizador",
+     "contador"
+    ]
+   },
+   {
+    "enum": "org_papel",
+    "valores": [
+     "RESPONSAVEL",
+     "ADMIN",
+     "MEMBRO",
+     "LEITOR"
+    ]
+   }
+  ],
+  "rpcs_de_autorizacao": [
+   "has_role",
+   "is_country_allowed_for_login",
+   "is_ip_allowed_for_login",
+   "is_ip_blocked",
+   "is_user_locked",
+   "totais_contas_pagar",
+   "totais_contas_receber"
+  ],
+  "guards": [
+   "src/components/auth/EmpresaGuard.tsx",
+   "src/components/auth/ProtectedRoute.tsx",
+   "src/components/navigation/UnsavedGuardProvider.tsx"
+  ],
+  "rotas_protegidas": 119,
+  "rotas_publicas": [
+   "/__especimes",
+   "/*",
+   "/auth/corporate",
+   "/contador/:token",
+   "/convite/:token",
+   "/design-system-debug",
+   "/reset-password",
+   "/status",
+   "/theme-diagnostics"
+  ],
+  "menu_com_papeis": [],
+  "tabelas_sem_rls": []
+ },
+ "feature_flags": {
+  "total": 5,
+  "flags": [
+   {
+    "flag": "ENABLE_AUTHENTICATED_VISUAL_SNAPSHOTS",
+    "arquivos": 2
+   },
+   {
+    "flag": "ENABLE_PRODUCTION_SIMULATION_AUDIT",
+    "arquivos": 1
+   },
+   {
+    "flag": "FEATURE_X",
+    "arquivos": 1
+   },
+   {
+    "flag": "nova-tela",
+    "arquivos": 1
+   },
+   {
+    "flag": "novo-inbox",
+    "arquivos": 1
+   }
+  ],
+  "tabelas_de_flag": [
+   "security_settings"
+  ]
+ },
+ "providers": {
+  "entrada": "src/main.tsx",
+  "providers": [
+   "AuthProvider",
+   "BrowserRouter",
+   "ErrorBoundary",
+   "KeyboardShortcutsProvider",
+   "QueryClientProvider",
+   "ThemeProvider",
+   "TooltipProvider",
+   "TransitionProvider",
+   "UnsavedGuardProvider"
+  ]
+ },
+ "i18n": {
+  "arquivos": 0,
+  "idiomas": [],
+  "lib": [
+   "i18next"
+  ]
+ }
+}

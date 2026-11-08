@@ -1,0 +1,7080 @@
+{
+ "aviso": "GERADO AUTOMATICAMENTE por scripts/ai-context/gerar.mjs — não editar à mão; será sobrescrito.",
+ "format_version": 2,
+ "total": 265,
+ "hooks": [
+  {
+   "arquivo": "scripts/ai-context/cenarios.mjs",
+   "hooks_exportados": [
+    "useA",
+    "useB",
+    "useC",
+    "useX"
+   ],
+   "linhas": 173,
+   "dominio": null,
+   "tabelas": [
+    "a",
+    "fantasma",
+    "so_teste",
+    "t",
+    "t1",
+    "tx"
+   ],
+   "rpcs": [
+    "r1"
+   ],
+   "edges": [
+    "inexistente",
+    "other",
+    "tick"
+   ],
+   "hooks_internos": [
+    "useFeatureFlag"
+   ],
+   "canais_realtime": [],
+   "usado_por": 0,
+   "usado_por_arquivos": [],
+   "coberto_por_testes": 0
+  },
+  {
+   "arquivo": "src/components/admin/anomalia-preferences/useSaveAnomaliaPreferences.ts",
+   "hooks_exportados": [
+    "useSaveAnomaliaPreferences"
+   ],
+   "linhas": 136,
+   "dominio": "components/admin",
+   "tabelas": [],
+   "rpcs": [],
+   "edges": [],
+   "hooks_internos": [
+    "useAnomaliaPreferences",
+    "useLogAudit"
+   ],
+   "canais_realtime": [],
+   "usado_por": 1,
+   "usado_por_arquivos": [
+    "src/components/admin/AnomaliaPreferencesDialog.tsx"
+   ],
+   "coberto_por_testes": 0
+  },
+  {
+   "arquivo": "src/components/admin/anomalias-review-queue/atalhos.ts",
+   "hooks_exportados": [
+    "useAtalhosTeclado"
+   ],
+   "linhas": 112,
+   "dominio": "components/admin",
+   "tabelas": [],
+   "rpcs": [],
+   "edges": [],
+   "hooks_internos": [
+    "useCallback",
+    "useEffect"
+   ],
+   "canais_realtime": [],
+   "usado_por": 1,
+   "usado_por_arquivos": [
+    "src/components/admin/anomalias-review-queue/useReviewQueue.ts"
+   ],
+   "coberto_por_testes": 0
+  },
+  {
+   "arquivo": "src/components/admin/anomalias-review-queue/conflito.ts",
+   "hooks_exportados": [
+    "useConflitoNotifier"
+   ],
+   "linhas": 96,
+   "dominio": "components/admin",
+   "tabelas": [
+    "profiles"
+   ],
+   "rpcs": [],
+   "edges": [],
+   "hooks_internos": [
+    "useCallback"
+   ],
+   "canais_realtime": [],
+   "usado_por": 1,
+   "usado_por_arquivos": [
+    "src/components/admin/anomalias-review-queue/useReviewQueue.ts"
+   ],
+   "coberto_por_testes": 0
+  },
+  {
+   "arquivo": "src/components/admin/anomalias-review-queue/retry.ts",
+   "hooks_exportados": [
+    "useRetry"
+   ],
+   "linhas": 37,
+   "dominio": "components/admin",
+   "tabelas": [],
+   "rpcs": [],
+   "edges": [],
+   "hooks_internos": [
+    "useCallback"
+   ],
+   "canais_realtime": [],
+   "usado_por": 1,
+   "usado_por_arquivos": [
+    "src/components/admin/anomalias-review-queue/useReviewQueue.ts"
+   ],
+   "coberto_por_testes": 0
+  },
+  {
+   "arquivo": "src/components/admin/anomalias-review-queue/useReviewQueue.ts",
+   "hooks_exportados": [
+    "useReviewQueue"
+   ],
+   "linhas": 450,
+   "dominio": "components/admin",
+   "tabelas": [
+    "anomalias_detectadas"
+   ],
+   "rpcs": [],
+   "edges": [],
+   "hooks_internos": [
+    "useAtalhosTeclado",
+    "useCallback",
+    "useConflitoNotifier",
+    "useEffect",
+    "useMemo",
+    "usePendingAnomaliasQueueInfinite",
+    "useRetry",
+    "useRevisarAnomalia",
+    "useSincronizarAnomaliaBitrix",
+    "useState"
+   ],
+   "canais_realtime": [],
+   "usado_por": 1,
+   "usado_por_arquivos": [
+    "src/components/admin/AnomaliasReviewQueue.tsx"
+   ],
+   "coberto_por_testes": 1
+  },
+  {
+   "arquivo": "src/components/admin/telemetry/weekly-trend/useWeeklyTrendData.ts",
+   "hooks_exportados": [
+    "useWeeklyTrendData"
+   ],
+   "linhas": 94,
+   "dominio": "components/admin",
+   "tabelas": [],
+   "rpcs": [],
+   "edges": [],
+   "hooks_internos": [
+    "useMemo"
+   ],
+   "canais_realtime": [],
+   "usado_por": 1,
+   "usado_por_arquivos": [
+    "src/components/admin/telemetry/PerformanceAlertsWeeklyTrend.tsx"
+   ],
+   "coberto_por_testes": 0
+  },
+  {
+   "arquivo": "src/components/admin/useAnomaliasPanelDerivations.ts",
+   "hooks_exportados": [
+    "useAnomaliasPanelDerivations"
+   ],
+   "linhas": 250,
+   "dominio": "components/admin",
+   "tabelas": [],
+   "rpcs": [],
+   "edges": [],
+   "hooks_internos": [
+    "useMemo",
+    "useProfilesByIds"
+   ],
+   "canais_realtime": [],
+   "usado_por": 1,
+   "usado_por_arquivos": [
+    "src/components/admin/AnomaliasDetectadasPanel.tsx"
+   ],
+   "coberto_por_testes": 0
+  },
+  {
+   "arquivo": "src/components/compliance/verificar-integridade/useIntegridadeVerifier.ts",
+   "hooks_exportados": [
+    "useIntegridadeVerifier"
+   ],
+   "linhas": 183,
+   "dominio": "components/compliance",
+   "tabelas": [],
+   "rpcs": [],
+   "edges": [],
+   "hooks_internos": [
+    "useState"
+   ],
+   "canais_realtime": [],
+   "usado_por": 1,
+   "usado_por_arquivos": [
+    "src/components/compliance/VerificarIntegridadeTab.tsx"
+   ],
+   "coberto_por_testes": 0
+  },
+  {
+   "arquivo": "src/components/contabilidade/contabilizacao-automatica/useContabilizacaoMutations.ts",
+   "hooks_exportados": [
+    "useContabilizacaoMutations"
+   ],
+   "linhas": 171,
+   "dominio": "components/contabilidade",
+   "tabelas": [
+    "regras_contabilizacao_automatica"
+   ],
+   "rpcs": [],
+   "edges": [],
+   "hooks_internos": [
+    "useQueryClient"
+   ],
+   "canais_realtime": [],
+   "usado_por": 2,
+   "usado_por_arquivos": [
+    "src/components/contabilidade/ContabilizacaoAutomaticaTab.tsx",
+    "src/components/contabilidade/contabilizacao-automatica/SimulacaoDialog.tsx"
+   ],
+   "coberto_por_testes": 0
+  },
+  {
+   "arquivo": "src/components/contabilidade/contabilizacao-automatica/useContabilizacaoQueries.ts",
+   "hooks_exportados": [
+    "useContabilizacaoQueries"
+   ],
+   "linhas": 73,
+   "dominio": "components/contabilidade",
+   "tabelas": [],
+   "rpcs": [],
+   "edges": [],
+   "hooks_internos": [],
+   "canais_realtime": [],
+   "usado_por": 1,
+   "usado_por_arquivos": [
+    "src/components/contabilidade/ContabilizacaoAutomaticaTab.tsx"
+   ],
+   "coberto_por_testes": 0
+  },
+  {
+   "arquivo": "src/components/contabilidade/razao-diario/useRazaoDiarioData.ts",
+   "hooks_exportados": [
+    "useRazaoDiarioData"
+   ],
+   "linhas": 125,
+   "dominio": "components/contabilidade",
+   "tabelas": [],
+   "rpcs": [],
+   "edges": [],
+   "hooks_internos": [
+    "useEmpresas",
+    "useLancamentosContabeis",
+    "useMemo",
+    "usePlanoContas"
+   ],
+   "canais_realtime": [],
+   "usado_por": 1,
+   "usado_por_arquivos": [
+    "src/components/contabilidade/RazaoDiarioTab.tsx"
+   ],
+   "coberto_por_testes": 0
+  },
+  {
+   "arquivo": "src/components/contabilidade/sped-contabil/useSpedContabilState.ts",
+   "hooks_exportados": [
+    "useSpedContabilState"
+   ],
+   "linhas": 310,
+   "dominio": "components/contabilidade",
+   "tabelas": [
+    "empresas"
+   ],
+   "rpcs": [],
+   "edges": [],
+   "hooks_internos": [
+    "useEffect",
+    "useGerarSpedContabil",
+    "useRegistrarTransmissaoSped",
+    "useSpedContabilHistorico",
+    "useState"
+   ],
+   "canais_realtime": [],
+   "usado_por": 1,
+   "usado_por_arquivos": [
+    "src/components/contabilidade/SpedContabilTab.tsx"
+   ],
+   "coberto_por_testes": 0
+  },
+  {
+   "arquivo": "src/components/contabilidade/sped-ecf-wizard/useSpedEcfWizardState.ts",
+   "hooks_exportados": [
+    "useSpedEcfWizardState"
+   ],
+   "linhas": 159,
+   "dominio": "components/contabilidade",
+   "tabelas": [],
+   "rpcs": [],
+   "edges": [],
+   "hooks_internos": [
+    "useAuditoriaCFC",
+    "useEffect",
+    "useGerarSpedContabil",
+    "usePreValidacaoSped",
+    "useRegistrarTransmissaoSped",
+    "useSpedEcfValidacao",
+    "useState"
+   ],
+   "canais_realtime": [],
+   "usado_por": 1,
+   "usado_por_arquivos": [
+    "src/components/contabilidade/SpedEcfWizard.tsx"
+   ],
+   "coberto_por_testes": 0
+  },
+  {
+   "arquivo": "src/components/layout/page-transition.constants.ts",
+   "hooks_exportados": [
+    "usePageTransition"
+   ],
+   "linhas": 40,
+   "dominio": "components/layout",
+   "tabelas": [],
+   "rpcs": [],
+   "edges": [],
+   "hooks_internos": [],
+   "canais_realtime": [],
+   "usado_por": 0,
+   "usado_por_arquivos": [],
+   "coberto_por_testes": 0
+  },
+  {
+   "arquivo": "src/components/layout/transitions/index.ts",
+   "hooks_exportados": [
+    "useTransition",
+    "useTransitionDefaults"
+   ],
+   "linhas": 9,
+   "dominio": "components/layout",
+   "tabelas": [],
+   "rpcs": [],
+   "edges": [],
+   "hooks_internos": [],
+   "canais_realtime": [],
+   "usado_por": 2,
+   "usado_por_arquivos": [
+    "src/App.tsx",
+    "src/components/layout/PageTransition.tsx"
+   ],
+   "coberto_por_testes": 0
+  },
+  {
+   "arquivo": "src/components/layout/transitions/TransitionContext.ts",
+   "hooks_exportados": [
+    "useTransitionDefaults"
+   ],
+   "linhas": 15,
+   "dominio": "components/layout",
+   "tabelas": [],
+   "rpcs": [],
+   "edges": [],
+   "hooks_internos": [
+    "useContext"
+   ],
+   "canais_realtime": [],
+   "usado_por": 3,
+   "usado_por_arquivos": [
+    "src/components/layout/transitions/TransitionProvider.tsx",
+    "src/components/layout/transitions/index.ts",
+    "src/components/layout/transitions/useTransition.ts"
+   ],
+   "coberto_por_testes": 0
+  },
+  {
+   "arquivo": "src/components/layout/transitions/useTransition.ts",
+   "hooks_exportados": [
+    "useTransition"
+   ],
+   "linhas": 31,
+   "dominio": "components/layout",
+   "tabelas": [],
+   "rpcs": [],
+   "edges": [],
+   "hooks_internos": [
+    "useLocation",
+    "useReducedMotion",
+    "useTransitionDefaults"
+   ],
+   "canais_realtime": [],
+   "usado_por": 2,
+   "usado_por_arquivos": [
+    "src/components/layout/transitions/PageTransition.tsx",
+    "src/components/layout/transitions/index.ts"
+   ],
+   "coberto_por_testes": 0
+  },
+  {
+   "arquivo": "src/components/navigation/unsaved-guard-context.ts",
+   "hooks_exportados": [
+    "useUnsavedChangesGuard"
+   ],
+   "linhas": 25,
+   "dominio": "components/navigation",
+   "tabelas": [],
+   "rpcs": [],
+   "edges": [],
+   "hooks_internos": [
+    "useContext",
+    "useEffect"
+   ],
+   "canais_realtime": [],
+   "usado_por": 3,
+   "usado_por_arquivos": [
+    "src/components/contas-pagar/ContaPagarForm.tsx",
+    "src/components/contas-receber/ContaReceberForm.tsx",
+    "src/components/navigation/UnsavedGuardProvider.tsx"
+   ],
+   "coberto_por_testes": 0
+  },
+  {
+   "arquivo": "src/components/quick-create/QuickCreateModal.hooks.tsx",
+   "hooks_exportados": [
+    "useQuickCreate"
+   ],
+   "linhas": 16,
+   "dominio": "components/quick-create",
+   "tabelas": [],
+   "rpcs": [],
+   "edges": [],
+   "hooks_internos": [
+    "useState"
+   ],
+   "canais_realtime": [],
+   "usado_por": 0,
+   "usado_por_arquivos": [],
+   "coberto_por_testes": 0
+  },
+  {
+   "arquivo": "src/components/theme/ThemeContext.ts",
+   "hooks_exportados": [
+    "useTheme"
+   ],
+   "linhas": 20,
+   "dominio": "components/theme",
+   "tabelas": [],
+   "rpcs": [],
+   "edges": [],
+   "hooks_internos": [
+    "useContext"
+   ],
+   "canais_realtime": [],
+   "usado_por": 6,
+   "usado_por_arquivos": [
+    "src/components/command-palette/CommandPalette.tsx",
+    "src/components/layout/Header.tsx",
+    "src/components/theme/ThemeProvider.tsx",
+    "src/components/ui/toaster.tsx",
+    "src/pages/ThemeDiagnostics.tsx",
+    "src/pages/dev/Especimes.tsx"
+   ],
+   "coberto_por_testes": 0
+  },
+  {
+   "arquivo": "src/components/ui/action-button.hooks.ts",
+   "hooks_exportados": [
+    "useActionState"
+   ],
+   "linhas": 21,
+   "dominio": "components/ui",
+   "tabelas": [],
+   "rpcs": [],
+   "edges": [],
+   "hooks_internos": [],
+   "canais_realtime": [],
+   "usado_por": 0,
+   "usado_por_arquivos": [],
+   "coberto_por_testes": 0
+  },
+  {
+   "arquivo": "src/components/ui/command.hooks.ts",
+   "hooks_exportados": [
+    "useCommandMenu"
+   ],
+   "linhas": 22,
+   "dominio": "components/ui",
+   "tabelas": [],
+   "rpcs": [],
+   "edges": [],
+   "hooks_internos": [
+    "useEffect",
+    "useState"
+   ],
+   "canais_realtime": [],
+   "usado_por": 0,
+   "usado_por_arquivos": [],
+   "coberto_por_testes": 0
+  },
+  {
+   "arquivo": "src/components/ui/confirmation-dialog.hooks.tsx",
+   "hooks_exportados": [
+    "useConfirmation",
+    "useDeleteConfirmation"
+   ],
+   "linhas": 123,
+   "dominio": "components/ui",
+   "tabelas": [],
+   "rpcs": [],
+   "edges": [],
+   "hooks_internos": [
+    "useCallback",
+    "useState"
+   ],
+   "canais_realtime": [],
+   "usado_por": 0,
+   "usado_por_arquivos": [],
+   "coberto_por_testes": 0
+  },
+  {
+   "arquivo": "src/components/ui/lazy-load.utils.tsx",
+   "hooks_exportados": [
+    "useLazyData"
+   ],
+   "linhas": 120,
+   "dominio": "components/ui",
+   "tabelas": [],
+   "rpcs": [],
+   "edges": [],
+   "hooks_internos": [
+    "useEffect",
+    "useState"
+   ],
+   "canais_realtime": [],
+   "usado_por": 0,
+   "usado_por_arquivos": [],
+   "coberto_por_testes": 0
+  },
+  {
+   "arquivo": "src/components/ui/quick-date-filters.hooks.ts",
+   "hooks_exportados": [
+    "useQuickDateFilter"
+   ],
+   "linhas": 46,
+   "dominio": "components/ui",
+   "tabelas": [],
+   "rpcs": [],
+   "edges": [],
+   "hooks_internos": [
+    "useCallback"
+   ],
+   "canais_realtime": [],
+   "usado_por": 3,
+   "usado_por_arquivos": [
+    "src/hooks/useContasPagarLogic.ts",
+    "src/hooks/useContasReceberLogic.ts",
+    "src/hooks/useFluxoCaixaPage.ts"
+   ],
+   "coberto_por_testes": 0
+  },
+  {
+   "arquivo": "src/components/ui/sortable-header.hooks.ts",
+   "hooks_exportados": [
+    "useSorting"
+   ],
+   "linhas": 68,
+   "dominio": "components/ui",
+   "tabelas": [],
+   "rpcs": [],
+   "edges": [],
+   "hooks_internos": [
+    "useMemo"
+   ],
+   "canais_realtime": [],
+   "usado_por": 1,
+   "usado_por_arquivos": [
+    "src/hooks/useContasReceberLogic.ts"
+   ],
+   "coberto_por_testes": 0
+  },
+  {
+   "arquivo": "src/components/wrappers/CelebrationActions.tsx",
+   "hooks_exportados": [
+    "useCelebrations"
+   ],
+   "linhas": 155,
+   "dominio": "components/wrappers",
+   "tabelas": [],
+   "rpcs": [],
+   "edges": [],
+   "hooks_internos": [
+    "useCallback",
+    "useConfetti",
+    "useSoundFeedback"
+   ],
+   "canais_realtime": [],
+   "usado_por": 5,
+   "usado_por_arquivos": [
+    "src/components/aprovacoes/AprovacoesPendentes.tsx",
+    "src/components/conciliacao/ConciliacaoManualDialog.tsx",
+    "src/components/contas-pagar/ContaPagarForm.tsx",
+    "src/components/empresas/EmpresaForm.tsx",
+    "src/components/pix-hub/AprovacaoRapidaMobile.tsx"
+   ],
+   "coberto_por_testes": 0
+  },
+  {
+   "arquivo": "src/contexts/useEmpresaScope.ts",
+   "hooks_exportados": [
+    "useEmpresaScope"
+   ],
+   "linhas": 46,
+   "dominio": "contexts",
+   "tabelas": [],
+   "rpcs": [],
+   "edges": [],
+   "hooks_internos": [
+    "useContext"
+   ],
+   "canais_realtime": [],
+   "usado_por": 11,
+   "usado_por_arquivos": [
+    "src/components/dashboard/PrevisaoIA.tsx",
+    "src/components/empresa/EmpresaActionPicker.tsx",
+    "src/components/empresa/EmpresaBadge.tsx",
+    "src/components/empresa/EmpresaScopeBar.tsx",
+    "src/components/layout/sidebar/RecentAndFavorites.tsx",
+    "src/contexts/EmpresaScopeContext.tsx",
+    "src/hooks/useConformidadeSnapshots.ts",
+    "src/hooks/useEntregasObrigacoes.ts",
+    "src/hooks/useNfeRecebidas.ts",
+    "src/pages/Orcamentos.tsx",
+    "src/pages/tributario/ObrigacoesAcessorias.tsx"
+   ],
+   "coberto_por_testes": 1
+  },
+  {
+   "arquivo": "src/hooks/bling/useContatos.ts",
+   "hooks_exportados": [
+    "useBlingContatoDetail",
+    "useBlingContatoMutations",
+    "useBlingContatos",
+    "useBlingTiposContato"
+   ],
+   "linhas": 72,
+   "dominio": "hooks/bling",
+   "tabelas": [],
+   "rpcs": [],
+   "edges": [],
+   "hooks_internos": [
+    "useMutation",
+    "useQuery",
+    "useQueryClient"
+   ],
+   "canais_realtime": [],
+   "usado_por": 1,
+   "usado_por_arquivos": [
+    "src/hooks/bling/index.ts"
+   ],
+   "coberto_por_testes": 0
+  },
+  {
+   "arquivo": "src/hooks/bling/useEstoque.ts",
+   "hooks_exportados": [
+    "useBlingDepositos",
+    "useBlingEstoque",
+    "useBlingEstoqueMutations"
+   ],
+   "linhas": 44,
+   "dominio": "hooks/bling",
+   "tabelas": [],
+   "rpcs": [],
+   "edges": [],
+   "hooks_internos": [
+    "useMutation",
+    "useQuery",
+    "useQueryClient"
+   ],
+   "canais_realtime": [],
+   "usado_por": 1,
+   "usado_por_arquivos": [
+    "src/hooks/bling/index.ts"
+   ],
+   "coberto_por_testes": 0
+  },
+  {
+   "arquivo": "src/hooks/bling/useFinanceiro.ts",
+   "hooks_exportados": [
+    "useBlingBorderos",
+    "useBlingCategoriasFinanceiras",
+    "useBlingContasContabeis",
+    "useBlingFinanceiro",
+    "useBlingFinanceiroMutations",
+    "useBlingFormasPagamento"
+   ],
+   "linhas": 136,
+   "dominio": "hooks/bling",
+   "tabelas": [],
+   "rpcs": [],
+   "edges": [],
+   "hooks_internos": [
+    "useMutation",
+    "useQuery",
+    "useQueryClient"
+   ],
+   "canais_realtime": [],
+   "usado_por": 1,
+   "usado_por_arquivos": [
+    "src/hooks/bling/index.ts"
+   ],
+   "coberto_por_testes": 0
+  },
+  {
+   "arquivo": "src/hooks/bling/useLogistica.ts",
+   "hooks_exportados": [
+    "useBlingLogisticaMutations",
+    "useBlingLogisticas",
+    "useBlingObjetos",
+    "useBlingRemessas",
+    "useBlingServicosLogistica"
+   ],
+   "linhas": 63,
+   "dominio": "hooks/bling",
+   "tabelas": [],
+   "rpcs": [],
+   "edges": [],
+   "hooks_internos": [
+    "useMutation",
+    "useQuery",
+    "useQueryClient"
+   ],
+   "canais_realtime": [],
+   "usado_por": 1,
+   "usado_por_arquivos": [
+    "src/hooks/bling/index.ts"
+   ],
+   "coberto_por_testes": 0
+  },
+  {
+   "arquivo": "src/hooks/bling/useNFe.ts",
+   "hooks_exportados": [
+    "useBlingNFe",
+    "useBlingNFeDetail",
+    "useBlingNFeMutations"
+   ],
+   "linhas": 86,
+   "dominio": "hooks/bling",
+   "tabelas": [],
+   "rpcs": [],
+   "edges": [],
+   "hooks_internos": [
+    "useMutation",
+    "useQuery",
+    "useQueryClient"
+   ],
+   "canais_realtime": [],
+   "usado_por": 1,
+   "usado_por_arquivos": [
+    "src/hooks/bling/index.ts"
+   ],
+   "coberto_por_testes": 0
+  },
+  {
+   "arquivo": "src/hooks/bling/useOAuth.ts",
+   "hooks_exportados": [
+    "useBlingOAuth",
+    "useBlingStatus"
+   ],
+   "linhas": 43,
+   "dominio": "hooks/bling",
+   "tabelas": [],
+   "rpcs": [],
+   "edges": [],
+   "hooks_internos": [
+    "useMutation",
+    "useQuery",
+    "useQueryClient"
+   ],
+   "canais_realtime": [],
+   "usado_por": 1,
+   "usado_por_arquivos": [
+    "src/hooks/bling/index.ts"
+   ],
+   "coberto_por_testes": 0
+  },
+  {
+   "arquivo": "src/hooks/bling/usePedidos.ts",
+   "hooks_exportados": [
+    "useBlingPedidoDetail",
+    "useBlingPedidoMutations",
+    "useBlingPedidos"
+   ],
+   "linhas": 111,
+   "dominio": "hooks/bling",
+   "tabelas": [],
+   "rpcs": [],
+   "edges": [],
+   "hooks_internos": [
+    "useMutation",
+    "useQuery",
+    "useQueryClient"
+   ],
+   "canais_realtime": [],
+   "usado_por": 1,
+   "usado_por_arquivos": [
+    "src/hooks/bling/index.ts"
+   ],
+   "coberto_por_testes": 0
+  },
+  {
+   "arquivo": "src/hooks/bling/useProdutos.ts",
+   "hooks_exportados": [
+    "useBlingProdutoDetail",
+    "useBlingProdutoMutations",
+    "useBlingProdutos",
+    "useBlingVariacoes",
+    "useBlingVariacoesMutations"
+   ],
+   "linhas": 84,
+   "dominio": "hooks/bling",
+   "tabelas": [],
+   "rpcs": [],
+   "edges": [],
+   "hooks_internos": [
+    "useMutation",
+    "useQuery",
+    "useQueryClient"
+   ],
+   "canais_realtime": [],
+   "usado_por": 1,
+   "usado_por_arquivos": [
+    "src/hooks/bling/index.ts"
+   ],
+   "coberto_por_testes": 0
+  },
+  {
+   "arquivo": "src/hooks/bling/useSyncLogs.ts",
+   "hooks_exportados": [
+    "useBlingSyncLogs",
+    "useBlingWebhookEvents"
+   ],
+   "linhas": 33,
+   "dominio": "hooks/bling",
+   "tabelas": [
+    "bling_sync_logs",
+    "bling_webhook_events"
+   ],
+   "rpcs": [],
+   "edges": [],
+   "hooks_internos": [
+    "useQuery"
+   ],
+   "canais_realtime": [],
+   "usado_por": 1,
+   "usado_por_arquivos": [
+    "src/hooks/bling/index.ts"
+   ],
+   "coberto_por_testes": 0
+  },
+  {
+   "arquivo": "src/hooks/financial/useClientesFornecedores.ts",
+   "hooks_exportados": [
+    "useClientes",
+    "useClientesPaginated",
+    "useFornecedores",
+    "useFornecedoresPaginated"
+   ],
+   "linhas": 166,
+   "dominio": "hooks/financial",
+   "tabelas": [
+    "clientes",
+    "fornecedores"
+   ],
+   "rpcs": [],
+   "edges": [],
+   "hooks_internos": [
+    "useQuery"
+   ],
+   "canais_realtime": [],
+   "usado_por": 1,
+   "usado_por_arquivos": [
+    "src/hooks/useFinancialData.ts"
+   ],
+   "coberto_por_testes": 0
+  },
+  {
+   "arquivo": "src/hooks/financial/useContasPagar.ts",
+   "hooks_exportados": [
+    "useContasPagar",
+    "useContasPagarPaginated",
+    "useCreateContaPagar",
+    "useDeleteContaPagar",
+    "useUpdateContaPagar"
+   ],
+   "linhas": 192,
+   "dominio": "hooks/financial",
+   "tabelas": [
+    "contas_pagar",
+    "vw_contas_pagar_painel"
+   ],
+   "rpcs": [],
+   "edges": [],
+   "hooks_internos": [
+    "useMutation",
+    "useQuery",
+    "useQueryClient"
+   ],
+   "canais_realtime": [],
+   "usado_por": 2,
+   "usado_por_arquivos": [
+    "src/hooks/useFinancialData.ts",
+    "src/pages/Financeiro.tsx"
+   ],
+   "coberto_por_testes": 1
+  },
+  {
+   "arquivo": "src/hooks/financial/useContasReceber.ts",
+   "hooks_exportados": [
+    "useContasReceber",
+    "useContasReceberPaginated"
+   ],
+   "linhas": 110,
+   "dominio": "hooks/financial",
+   "tabelas": [
+    "contas_receber",
+    "vw_contas_receber_painel"
+   ],
+   "rpcs": [],
+   "edges": [],
+   "hooks_internos": [
+    "useQuery"
+   ],
+   "canais_realtime": [],
+   "usado_por": 2,
+   "usado_por_arquivos": [
+    "src/hooks/useFinancialData.ts",
+    "src/pages/Financeiro.tsx"
+   ],
+   "coberto_por_testes": 1
+  },
+  {
+   "arquivo": "src/hooks/financial/useDashboardKPIs.ts",
+   "hooks_exportados": [
+    "useDashboardKPIs"
+   ],
+   "linhas": 30,
+   "dominio": "hooks/financial",
+   "tabelas": [
+    "boletos",
+    "divergencias_conciliacao"
+   ],
+   "rpcs": [],
+   "edges": [],
+   "hooks_internos": [
+    "useQuery"
+   ],
+   "canais_realtime": [],
+   "usado_por": 1,
+   "usado_por_arquivos": [
+    "src/hooks/useFinancialData.ts"
+   ],
+   "coberto_por_testes": 0
+  },
+  {
+   "arquivo": "src/hooks/financial/useEmpresasConfig.ts",
+   "hooks_exportados": [
+    "useCentrosCusto",
+    "useContasBancarias",
+    "useEmpresas"
+   ],
+   "linhas": 94,
+   "dominio": "hooks/financial",
+   "tabelas": [
+    "centros_custo",
+    "empresas"
+   ],
+   "rpcs": [],
+   "edges": [],
+   "hooks_internos": [
+    "useQuery"
+   ],
+   "canais_realtime": [],
+   "usado_por": 1,
+   "usado_por_arquivos": [
+    "src/hooks/useFinancialData.ts"
+   ],
+   "coberto_por_testes": 0
+  },
+  {
+   "arquivo": "src/hooks/financial/useTotaisFinanceiros.ts",
+   "hooks_exportados": [
+    "useTotaisContasPagar",
+    "useTotaisContasReceber"
+   ],
+   "linhas": 77,
+   "dominio": "hooks/financial",
+   "tabelas": [],
+   "rpcs": [
+    "totais_contas_pagar",
+    "totais_contas_receber"
+   ],
+   "edges": [],
+   "hooks_internos": [],
+   "canais_realtime": [],
+   "usado_por": 1,
+   "usado_por_arquivos": [
+    "src/hooks/useDashboardMetrics.ts"
+   ],
+   "coberto_por_testes": 0
+  },
+  {
+   "arquivo": "src/hooks/saved-filter-alerts/useEntitySavedFilterAlerts.ts",
+   "hooks_exportados": [
+    "useEntitySavedFilterAlerts"
+   ],
+   "linhas": 287,
+   "dominio": "hooks/saved-filter-alerts",
+   "tabelas": [
+    "saved_filter_subscriptions"
+   ],
+   "rpcs": [],
+   "edges": [],
+   "hooks_internos": [
+    "useAuth",
+    "useEffect",
+    "useQueryClient",
+    "useRef",
+    "useSavedFilterSubscriptions"
+   ],
+   "canais_realtime": [
+    "${config.channel}-${Math.random().toString(36).slice(2, 8)}"
+   ],
+   "usado_por": 1,
+   "usado_por_arquivos": [
+    "src/hooks/useSavedFilterAlerts.ts"
+   ],
+   "coberto_por_testes": 0
+  },
+  {
+   "arquivo": "src/hooks/use-mobile.tsx",
+   "hooks_exportados": [
+    "useIsMobile"
+   ],
+   "linhas": 20,
+   "dominio": "hooks",
+   "tabelas": [],
+   "rpcs": [],
+   "edges": [],
+   "hooks_internos": [
+    "useEffect"
+   ],
+   "canais_realtime": [],
+   "usado_por": 3,
+   "usado_por_arquivos": [
+    "src/components/layout/MainLayout.tsx",
+    "src/components/layout/ResponsiveSidebar.tsx",
+    "src/components/ui/sidebar.tsx"
+   ],
+   "coberto_por_testes": 0
+  },
+  {
+   "arquivo": "src/hooks/use-toast.ts",
+   "hooks_exportados": [
+    "useToast"
+   ],
+   "linhas": 39,
+   "dominio": "hooks",
+   "tabelas": [],
+   "rpcs": [],
+   "edges": [],
+   "hooks_internos": [],
+   "canais_realtime": [],
+   "usado_por": 22,
+   "usado_por_arquivos": [
+    "src/components/clientes/ClienteForm.tsx",
+    "src/components/configuracoes/RegrasRoteamentoTab.tsx",
+    "src/components/contas-pagar/ContaPagarForm.tsx",
+    "src/components/contas-pagar/RegistrarPagamentoDialog.tsx",
+    "src/components/contas-receber/ContaReceberForm.tsx",
+    "src/components/contas-receber/RegistrarRecebimentoDialog.tsx",
+    "src/components/dashboard/PrevisaoIA.tsx",
+    "src/components/fornecedores/FornecedorForm.tsx",
+    "src/components/relatorios/RelatoriosAgendados.tsx",
+    "src/components/relatorios/VisualizarRelatorioDialog.tsx",
+    "src/hooks/useAprovacoes.ts",
+    "src/hooks/useBitrix24.ts",
+    "src/hooks/useBoletos.ts",
+    "src/hooks/useBulkActions.ts",
+    "src/hooks/useFechamentoTributario.ts",
+    "src/hooks/useReformaTributaria.ts",
+    "src/hooks/useRelatoriosAgendados.ts",
+    "src/hooks/useWebPushSubscription.ts",
+    "src/pages/Bitrix24.tsx",
+    "src/pages/Configuracoes.tsx",
+    "src/pages/Empresas.tsx",
+    "src/pages/Relatorios.tsx"
+   ],
+   "coberto_por_testes": 1
+  },
+  {
+   "arquivo": "src/hooks/useAcoesRecomendadas.ts",
+   "hooks_exportados": [
+    "useAcoesRecomendadas"
+   ],
+   "linhas": 57,
+   "dominio": "hooks",
+   "tabelas": [
+    "acoes_recomendadas"
+   ],
+   "rpcs": [],
+   "edges": [
+    "gerar-acoes-recomendadas"
+   ],
+   "hooks_internos": [
+    "useMutation",
+    "useQuery",
+    "useQueryClient"
+   ],
+   "canais_realtime": [],
+   "usado_por": 1,
+   "usado_por_arquivos": [
+    "src/components/dashboard/CentroAcoesInteligentes.tsx"
+   ],
+   "coberto_por_testes": 0
+  },
+  {
+   "arquivo": "src/hooks/useAcordosParcelamento.ts",
+   "hooks_exportados": [
+    "useAcordosParcelamento"
+   ],
+   "linhas": 527,
+   "dominio": "hooks",
+   "tabelas": [
+    "acordos_parcelamento",
+    "contas_receber",
+    "parcelas_acordo"
+   ],
+   "rpcs": [
+    "gerar_numero_acordo"
+   ],
+   "edges": [],
+   "hooks_internos": [
+    "useAuth",
+    "useMutation",
+    "useQuery",
+    "useQueryClient"
+   ],
+   "canais_realtime": [],
+   "usado_por": 1,
+   "usado_por_arquivos": [
+    "src/components/cobranca/AcordoParcelamentoDialog.tsx"
+   ],
+   "coberto_por_testes": 1
+  },
+  {
+   "arquivo": "src/hooks/useAlertas.ts",
+   "hooks_exportados": [
+    "useAlertas",
+    "useAlertasNaoLidos",
+    "useCriarAlerta",
+    "useMarcarAlertaComoLido",
+    "useMarcarTodosAlertasComoLidos"
+   ],
+   "linhas": 177,
+   "dominio": "hooks",
+   "tabelas": [
+    "alertas",
+    "contas_pagar",
+    "contas_receber"
+   ],
+   "rpcs": [],
+   "edges": [],
+   "hooks_internos": [
+    "useMutation",
+    "useQuery",
+    "useQueryClient"
+   ],
+   "canais_realtime": [],
+   "usado_por": 6,
+   "usado_por_arquivos": [
+    "src/components/alertas/AlertaComponents.tsx",
+    "src/components/alertas/alerta-components.config.ts",
+    "src/components/layout/Header.tsx",
+    "src/components/layout/sidebar/SidebarNavGroups.tsx",
+    "src/hooks/usePrefetchRoutes.ts",
+    "src/pages/Alertas.tsx"
+   ],
+   "coberto_por_testes": 0
+  },
+  {
+   "arquivo": "src/hooks/useAlertasPreditivos.ts",
+   "hooks_exportados": [
+    "useAlertasPreditivos"
+   ],
+   "linhas": 235,
+   "dominio": "hooks",
+   "tabelas": [],
+   "rpcs": [],
+   "edges": [
+    "send-push-notification"
+   ],
+   "hooks_internos": [
+    "useCallback",
+    "useState"
+   ],
+   "canais_realtime": [],
+   "usado_por": 1,
+   "usado_por_arquivos": [
+    "src/components/dashboard/AlertasPreditivosPanel.tsx"
+   ],
+   "coberto_por_testes": 1
+  },
+  {
+   "arquivo": "src/hooks/useAlertasTributarios.ts",
+   "hooks_exportados": [
+    "useAlertasTributarios"
+   ],
+   "linhas": 328,
+   "dominio": "hooks",
+   "tabelas": [
+    "alertas_tributarios",
+    "creditos_tributarios",
+    "darfs"
+   ],
+   "rpcs": [
+    "get_retencoes_pendentes_count"
+   ],
+   "edges": [],
+   "hooks_internos": [
+    "useCallback",
+    "useEffect",
+    "useMutation",
+    "useQuery",
+    "useQueryClient"
+   ],
+   "canais_realtime": [
+    "alertas-tributarios-realtime-${Math.random().toString(36).slice(2, 8)}"
+   ],
+   "usado_por": 6,
+   "usado_por_arquivos": [
+    "src/components/reforma-tributaria/AlertasTributarios.tsx",
+    "src/components/reforma-tributaria/DashboardMetricasTributarias.tsx",
+    "src/components/reforma-tributaria/DashboardReformaTributaria.tsx",
+    "src/components/tributario/dashboard/AlertasAtivosResumo.tsx",
+    "src/components/tributario/dashboard/ProximosVencimentosTimeline.tsx",
+    "src/hooks/useDashboardTributario.ts"
+   ],
+   "coberto_por_testes": 0
+  },
+  {
+   "arquivo": "src/hooks/useAlertasTributariosCount.ts",
+   "hooks_exportados": [
+    "useAlertasTributariosCount"
+   ],
+   "linhas": 31,
+   "dominio": "hooks",
+   "tabelas": [
+    "alertas"
+   ],
+   "rpcs": [],
+   "edges": [],
+   "hooks_internos": [
+    "useQuery"
+   ],
+   "canais_realtime": [],
+   "usado_por": 1,
+   "usado_por_arquivos": [
+    "src/components/layout/sidebar/SidebarNavGroups.tsx"
+   ],
+   "coberto_por_testes": 1
+  },
+  {
+   "arquivo": "src/hooks/useAnomaliaAuditHistory.ts",
+   "hooks_exportados": [
+    "useAnomaliaAuditHistory"
+   ],
+   "linhas": 39,
+   "dominio": "hooks",
+   "tabelas": [
+    "audit_logs"
+   ],
+   "rpcs": [],
+   "edges": [],
+   "hooks_internos": [
+    "useQuery"
+   ],
+   "canais_realtime": [],
+   "usado_por": 1,
+   "usado_por_arquivos": [
+    "src/components/admin/AnomaliaHistoricoSection.tsx"
+   ],
+   "coberto_por_testes": 0
+  },
+  {
+   "arquivo": "src/hooks/useAnomaliaDetalhe.ts",
+   "hooks_exportados": [
+    "useAnomaliaDetalhe"
+   ],
+   "linhas": 142,
+   "dominio": "hooks",
+   "tabelas": [
+    "anomalias_detectadas",
+    "contas_pagar",
+    "movimentacoes",
+    "transacoes_bancarias"
+   ],
+   "rpcs": [],
+   "edges": [],
+   "hooks_internos": [
+    "useQuery"
+   ],
+   "canais_realtime": [],
+   "usado_por": 6,
+   "usado_por_arquivos": [
+    "src/components/admin/AnomaliaDrillDownDrawer.tsx",
+    "src/components/insights-ia/anomalia/EntidadeDetalheDrawer.tsx",
+    "src/components/insights-ia/anomalia/EntidadeRelacionadaCard.tsx",
+    "src/components/insights-ia/anomalia/ExportarEvidenciasButton.tsx",
+    "src/components/insights-ia/anomalia/HistoricoContextualCard.tsx",
+    "src/pages/admin/AnomaliaDetalhe.tsx"
+   ],
+   "coberto_por_testes": 0
+  },
+  {
+   "arquivo": "src/hooks/useAnomaliaDetectionRun.ts",
+   "hooks_exportados": [
+    "useAnomaliaDetectionRun"
+   ],
+   "linhas": 139,
+   "dominio": "hooks",
+   "tabelas": [
+    "anomalia_detection_runs"
+   ],
+   "rpcs": [],
+   "edges": [
+    "detectar-anomalias-financeiras"
+   ],
+   "hooks_internos": [
+    "useEffect",
+    "useMutation",
+    "useQuery",
+    "useQueryClient"
+   ],
+   "canais_realtime": [
+    "anomalia_detection_runs_changes-${Math.random().toString(36).slice(2, 8)}"
+   ],
+   "usado_por": 2,
+   "usado_por_arquivos": [
+    "src/components/admin/AnomaliasDetectadasPanel.tsx",
+    "src/components/admin/DetectionRunProgress.tsx"
+   ],
+   "coberto_por_testes": 0
+  },
+  {
+   "arquivo": "src/hooks/useAnomaliaPreferences.ts",
+   "hooks_exportados": [
+    "useAnomaliaPreferences"
+   ],
+   "linhas": 219,
+   "dominio": "hooks",
+   "tabelas": [
+    "user_anomalia_preferences"
+   ],
+   "rpcs": [],
+   "edges": [],
+   "hooks_internos": [
+    "useAuth",
+    "useEffect",
+    "useMemo",
+    "useMutation",
+    "useQuery",
+    "useQueryClient"
+   ],
+   "canais_realtime": [
+    "user-anomalia-preferences:${user.id}-${Math.random().toString(36).slice(2, 8)}"
+   ],
+   "usado_por": 12,
+   "usado_por_arquivos": [
+    "src/components/admin/AnomaliaDrillDownDrawer.tsx",
+    "src/components/admin/AnomaliaPreferencePresetPicker.tsx",
+    "src/components/admin/AnomaliaPreferencesDialog.tsx",
+    "src/components/admin/PreviewAnomaliaToastDrawer.tsx",
+    "src/components/admin/anomalia-preferences/DuracaoSection.tsx",
+    "src/components/admin/anomalia-preferences/SeveridadesSection.tsx",
+    "src/components/admin/anomalia-preferences/constants.ts",
+    "src/components/admin/anomalia-preferences/useSaveAnomaliaPreferences.ts",
+    "src/components/admin/anomaliaPreferencePresets.ts",
+    "src/hooks/anomaliaPreferencesValidation.ts",
+    "src/hooks/useAnomaliasCriticasCount.ts",
+    "src/hooks/useRealtimeAnomalias.ts"
+   ],
+   "coberto_por_testes": 1
+  },
+  {
+   "arquivo": "src/hooks/useAnomaliasCriticasCount.ts",
+   "hooks_exportados": [
+    "useAnomaliasCriticasCount"
+   ],
+   "linhas": 41,
+   "dominio": "hooks",
+   "tabelas": [
+    "anomalias_detectadas"
+   ],
+   "rpcs": [],
+   "edges": [],
+   "hooks_internos": [
+    "useAnomaliaPreferences",
+    "useQuery"
+   ],
+   "canais_realtime": [],
+   "usado_por": 1,
+   "usado_por_arquivos": [
+    "src/components/admin/AnomaliasDetectadasPanel.tsx"
+   ],
+   "coberto_por_testes": 0
+  },
+  {
+   "arquivo": "src/hooks/useAnomaliasDetectadas.ts",
+   "hooks_exportados": [
+    "useAnomaliasDetectadas",
+    "usePendingAnomaliasQueue",
+    "usePendingAnomaliasQueueInfinite",
+    "useReabrirAnomalia",
+    "useReabrirAnomaliasLote",
+    "useRevisarAnomalia"
+   ],
+   "linhas": 356,
+   "dominio": "hooks",
+   "tabelas": [
+    "anomalias_detectadas"
+   ],
+   "rpcs": [],
+   "edges": [
+    "detectar-anomalias-financeiras"
+   ],
+   "hooks_internos": [
+    "useInfiniteQuery",
+    "useLogAudit",
+    "useMemo",
+    "useMutation",
+    "useQuery",
+    "useQueryClient"
+   ],
+   "canais_realtime": [],
+   "usado_por": 18,
+   "usado_por_arquivos": [
+    "src/components/admin/AnomaliasDetectadasPanel.helpers.ts",
+    "src/components/admin/AnomaliasDetectadasPanel.tsx",
+    "src/components/admin/AnomaliasFiltersBar.tsx",
+    "src/components/admin/AnomaliasList.tsx",
+    "src/components/admin/AnomaliasPanelHeader.tsx",
+    "src/components/admin/anomalias-review-queue/helpers.ts",
+    "src/components/admin/anomalias-review-queue/retry.ts",
+    "src/components/admin/anomalias-review-queue/types.ts",
+    "src/components/admin/anomalias-review-queue/useReviewQueue.ts",
+    "src/components/admin/useAnomaliasPanelDerivations.ts",
+    "src/components/insights-ia/anomalia/AcoesSugeridasCard.tsx",
+    "src/components/insights-ia/anomalia/AnomaliaHeader.tsx",
+    "src/components/insights-ia/anomalia/AnomaliasRelacionadasCard.tsx",
+    "src/components/insights-ia/anomalia/DetectoresContribuintesCard.tsx",
+    "src/components/insights-ia/anomalia/ExportarEvidenciasButton.tsx",
+    "src/components/insights-ia/anomalia/ReabrirAnomaliaDialog.tsx",
+    "src/components/insights-ia/anomalia/ReabrirAnomaliasLoteDialog.tsx",
+    "src/hooks/useAnomaliaDetalhe.ts"
+   ],
+   "coberto_por_testes": 0
+  },
+  {
+   "arquivo": "src/hooks/useAnomaliasReabertasIndex.ts",
+   "hooks_exportados": [
+    "useAnomaliasReabertasIndex"
+   ],
+   "linhas": 58,
+   "dominio": "hooks",
+   "tabelas": [
+    "audit_logs"
+   ],
+   "rpcs": [],
+   "edges": [],
+   "hooks_internos": [
+    "useQuery"
+   ],
+   "canais_realtime": [],
+   "usado_por": 3,
+   "usado_por_arquivos": [
+    "src/components/admin/AnomaliasDetectadasPanel.tsx",
+    "src/components/admin/AnomaliasFiltersBar.tsx",
+    "src/components/admin/useAnomaliasPanelDerivations.ts"
+   ],
+   "coberto_por_testes": 0
+  },
+  {
+   "arquivo": "src/hooks/useApiKeys.ts",
+   "hooks_exportados": [
+    "useApiKeys",
+    "useCreateApiKey",
+    "useRevokeApiKey"
+   ],
+   "linhas": 80,
+   "dominio": "hooks",
+   "tabelas": [
+    "api_keys"
+   ],
+   "rpcs": [],
+   "edges": [
+    "api-keys-manage"
+   ],
+   "hooks_internos": [
+    "useMutation",
+    "useQuery",
+    "useQueryClient"
+   ],
+   "canais_realtime": [],
+   "usado_por": 1,
+   "usado_por_arquivos": [
+    "src/pages/admin/ApiManagement.tsx"
+   ],
+   "coberto_por_testes": 1
+  },
+  {
+   "arquivo": "src/hooks/useAprovacoes.ts",
+   "hooks_exportados": [
+    "useAdicionarComentario",
+    "useAprovarSolicitacao",
+    "useComentariosAprovacao",
+    "useConfiguracaoAprovacao",
+    "useCriarSolicitacaoAprovacao",
+    "useFluxosNiveis",
+    "useRejeitarSolicitacao",
+    "useSolicitacoesAprovacao",
+    "useSolicitacoesPendentes",
+    "useUpdateConfiguracaoAprovacao",
+    "useUpdateFluxoNivel",
+    "useVerificarAprovacaoNecessaria"
+   ],
+   "linhas": 382,
+   "dominio": "hooks",
+   "tabelas": [
+    "aprovacao_comentarios",
+    "configuracoes_aprovacao",
+    "fluxos_aprovacao_niveis",
+    "solicitacoes_aprovacao"
+   ],
+   "rpcs": [
+    "aprovar_solicitacao_pagamento"
+   ],
+   "edges": [],
+   "hooks_internos": [
+    "useMutation",
+    "useQuery",
+    "useQueryClient",
+    "useToast"
+   ],
+   "canais_realtime": [],
+   "usado_por": 6,
+   "usado_por_arquivos": [
+    "src/components/aprovacoes/AprovacoesPendentes.tsx",
+    "src/components/aprovacoes/ConfiguracaoAprovacaoCard.tsx",
+    "src/components/aprovacoes/HistoricoAprovacoes.tsx",
+    "src/components/contas-pagar/RegistrarPagamentoDialog.tsx",
+    "src/components/pix-hub/AprovacaoRapidaMobile.tsx",
+    "src/hooks/useContasPagarLogic.ts"
+   ],
+   "coberto_por_testes": 1
+  },
+  {
+   "arquivo": "src/hooks/useAprovacoesPendentesCount.ts",
+   "hooks_exportados": [
+    "useAprovacoesPendentesCount"
+   ],
+   "linhas": 93,
+   "dominio": "hooks",
+   "tabelas": [
+    "solicitacoes_aprovacao"
+   ],
+   "rpcs": [],
+   "edges": [],
+   "hooks_internos": [
+    "useEffect",
+    "useQuery",
+    "useQueryClient"
+   ],
+   "canais_realtime": [
+    "aprovacoes-pendentes-realtime"
+   ],
+   "usado_por": 3,
+   "usado_por_arquivos": [
+    "src/components/layout/sidebar/MobileBottomNav.tsx",
+    "src/components/layout/sidebar/SidebarNavGroups.tsx",
+    "src/hooks/useDashboardMetrics.ts"
+   ],
+   "coberto_por_testes": 0
+  },
+  {
+   "arquivo": "src/hooks/useApuracoesTributarias.ts",
+   "hooks_exportados": [
+    "useApuracoesTributarias"
+   ],
+   "linhas": 342,
+   "dominio": "hooks",
+   "tabelas": [
+    "apuracoes_tributarias",
+    "operacoes_tributaveis"
+   ],
+   "rpcs": [],
+   "edges": [],
+   "hooks_internos": [
+    "useMutation",
+    "useQuery",
+    "useQueryClient"
+   ],
+   "canais_realtime": [],
+   "usado_por": 6,
+   "usado_por_arquivos": [
+    "src/components/reforma-tributaria/ApuracaoMensal.tsx",
+    "src/components/reforma-tributaria/DashboardMetricasTributarias.tsx",
+    "src/components/reforma-tributaria/DashboardReformaTributaria.tsx",
+    "src/components/reforma-tributaria/ExportacaoSPED.tsx",
+    "src/components/reforma-tributaria/RelatoriosContabeisTributarios.tsx",
+    "src/components/reforma-tributaria/apuracao/ApuracaoDetalheCard.tsx"
+   ],
+   "coberto_por_testes": 0
+  },
+  {
+   "arquivo": "src/hooks/useAsaas.ts",
+   "hooks_exportados": [
+    "useAsaas"
+   ],
+   "linhas": 472,
+   "dominio": "hooks",
+   "tabelas": [
+    "asaas_config",
+    "asaas_customers",
+    "asaas_payments",
+    "asaas_reconciliation_suggestions",
+    "asaas_transfers"
+   ],
+   "rpcs": [],
+   "edges": [],
+   "hooks_internos": [
+    "useMutation",
+    "useQuery",
+    "useQueryClient"
+   ],
+   "canais_realtime": [],
+   "usado_por": 19,
+   "usado_por_arquivos": [
+    "src/components/asaas/AntecipacaoDialog.tsx",
+    "src/components/asaas/AssinaturaDialog.tsx",
+    "src/components/asaas/AssinaturasListPanel.tsx",
+    "src/components/asaas/ClientesAsaasDialog.tsx",
+    "src/components/asaas/EstornoDialog.tsx",
+    "src/components/asaas/ExtratoAsaasPanel.tsx",
+    "src/components/asaas/LinkPagamentoDialog.tsx",
+    "src/components/asaas/LinksListPanel.tsx",
+    "src/components/asaas/NovaCobrancaDialog.tsx",
+    "src/components/asaas/PixQrCodeDialog.tsx",
+    "src/components/asaas/SegundaViaDialog.tsx",
+    "src/components/asaas/TransferenciaPixDialog.tsx",
+    "src/components/asaas/TransferenciaPixHistoryPanel.tsx",
+    "src/components/asaas/tabs/CobrancasTab.tsx",
+    "src/components/asaas/tabs/ConfigTab.tsx",
+    "src/components/asaas/tabs/FilaTab.tsx",
+    "src/components/pix-hub/PixRecebimento.tsx",
+    "src/pages/Asaas.parts.tsx",
+    "src/pages/Asaas.tsx"
+   ],
+   "coberto_por_testes": 0
+  },
+  {
+   "arquivo": "src/hooks/useAuditLog.ts",
+   "hooks_exportados": [
+    "useLogAudit"
+   ],
+   "linhas": 37,
+   "dominio": "hooks",
+   "tabelas": [],
+   "rpcs": [
+    "log_audit"
+   ],
+   "edges": [],
+   "hooks_internos": [
+    "useMutation"
+   ],
+   "canais_realtime": [],
+   "usado_por": 6,
+   "usado_por_arquivos": [
+    "src/components/admin/AnomaliaDrillDownDrawer.tsx",
+    "src/components/admin/anomalia-preferences/useSaveAnomaliaPreferences.ts",
+    "src/components/insights-ia/anomalia/AnomaliaHeader.tsx",
+    "src/components/insights-ia/anomalia/ExportarEvidenciasButton.tsx",
+    "src/hooks/useAnomaliasDetectadas.ts",
+    "src/hooks/useSincronizarAnomaliaBitrix.ts"
+   ],
+   "coberto_por_testes": 0
+  },
+  {
+   "arquivo": "src/hooks/useAuditoriaCFC.ts",
+   "hooks_exportados": [
+    "useAuditoriaCFC"
+   ],
+   "linhas": 90,
+   "dominio": "hooks",
+   "tabelas": [],
+   "rpcs": [],
+   "edges": [],
+   "hooks_internos": [
+    "usePlanoContas"
+   ],
+   "canais_realtime": [],
+   "usado_por": 7,
+   "usado_por_arquivos": [
+    "src/components/contabilidade/AuditoriaCFCPanel.tsx",
+    "src/components/contabilidade/PlanoContasTab.tsx",
+    "src/components/contabilidade/SpedEcdPreviewDialog.tsx",
+    "src/components/contabilidade/SpedEcdWizard.tsx",
+    "src/components/contabilidade/sped-ecf-wizard/Step2Validacoes.tsx",
+    "src/components/contabilidade/sped-ecf-wizard/useSpedEcfWizardState.ts",
+    "src/hooks/usePreValidacaoSped.ts"
+   ],
+   "coberto_por_testes": 0
+  },
+  {
+   "arquivo": "src/hooks/useAuditoriaCompliance.ts",
+   "hooks_exportados": [
+    "useAuditoriaCompliance"
+   ],
+   "linhas": 252,
+   "dominio": "hooks",
+   "tabelas": [
+    "apuracoes_tributarias",
+    "creditos_tributarios",
+    "notas_fiscais"
+   ],
+   "rpcs": [],
+   "edges": [],
+   "hooks_internos": [
+    "useMemo",
+    "useQuery",
+    "useState"
+   ],
+   "canais_realtime": [],
+   "usado_por": 1,
+   "usado_por_arquivos": [
+    "src/components/reforma-tributaria/AuditoriaCompliancePanel.tsx"
+   ],
+   "coberto_por_testes": 0
+  },
+  {
+   "arquivo": "src/hooks/useAuditoriaIA.ts",
+   "hooks_exportados": [
+    "useAuditoriaIA"
+   ],
+   "linhas": 167,
+   "dominio": "hooks",
+   "tabelas": [
+    "contas_bancarias",
+    "empresas",
+    "feedback_conciliacao_ia",
+    "historico_conciliacao_ia",
+    "profiles",
+    "transacoes_bancarias"
+   ],
+   "rpcs": [],
+   "edges": [],
+   "hooks_internos": [
+    "useQuery"
+   ],
+   "canais_realtime": [],
+   "usado_por": 1,
+   "usado_por_arquivos": [
+    "src/pages/admin/AuditoriaIA.tsx"
+   ],
+   "coberto_por_testes": 0
+  },
+  {
+   "arquivo": "src/hooks/useAuditoriaLancamentos.ts",
+   "hooks_exportados": [
+    "useAuditoriaLancamentos"
+   ],
+   "linhas": 108,
+   "dominio": "hooks",
+   "tabelas": [
+    "auditoria_financeira"
+   ],
+   "rpcs": [],
+   "edges": [],
+   "hooks_internos": [
+    "useQuery"
+   ],
+   "canais_realtime": [],
+   "usado_por": 1,
+   "usado_por_arquivos": [
+    "src/components/contabilidade/AuditoriaLancamentosPanel.tsx"
+   ],
+   "coberto_por_testes": 0
+  },
+  {
+   "arquivo": "src/hooks/useAuth.tsx",
+   "hooks_exportados": [
+    "useAuth"
+   ],
+   "linhas": 43,
+   "dominio": "hooks",
+   "tabelas": [],
+   "rpcs": [],
+   "edges": [],
+   "hooks_internos": [
+    "useContext"
+   ],
+   "canais_realtime": [],
+   "usado_por": 100,
+   "usado_por_arquivos": [
+    "src/components/admin/AnomaliaToastHistorico.tsx",
+    "src/components/admin/CronJobsStatus.tsx",
+    "src/components/aprovacoes/PasswordResetApprovals.tsx",
+    "src/components/auth/EmpresaSelectionGate.tsx",
+    "src/components/auth/PermissionGate.tsx",
+    "src/components/auth/ProtectedRoute.tsx",
+    "src/components/auth/WebAuthnManager.tsx",
+    "src/components/categorias/CategoriaForm.tsx",
+    "src/components/clientes/ClienteForm.tsx",
+    "src/components/compliance/EvidenciasTab.tsx",
+    "src/components/conciliacao/ExtratoPreviewStep.tsx",
+    "src/components/conciliacao/RegrasConciliacaoPanel.tsx",
+    "src/components/configuracoes/SecuritySettings.tsx",
+    "src/components/configuracoes/SecurityStatusBanner.tsx",
+    "src/components/contabilidade/DreBalancoTab.tsx",
+    "src/components/contabilidade/FilterPresetsManager.tsx",
+    "src/components/contabilidade/LancamentosTab.tsx",
+    "src/components/contabilidade/RazaoDiarioTab.tsx",
+    "src/components/contas-receber/ContaReceberForm.tsx",
+    "src/components/dashboard-receber/ReceberKpis.tsx",
+    "src/components/dashboard/AlertasOrcamento.tsx",
+    "src/components/dashboard/DashboardExecutivo.tsx",
+    "src/components/dashboard/DashboardFiltersHeader.tsx",
+    "src/components/layout/Header.tsx",
+    "src/components/layout/sidebar/SidebarNavGroups.tsx",
+    "src/components/providers/NavigationTracker.tsx",
+    "src/components/security/GeoRestrictionPanel.tsx",
+    "src/components/security/KnownDevicesPanel.tsx",
+    "src/components/shared/SavedFiltersBar.tsx",
+    "src/hooks/AuthProvider.tsx"
+   ],
+   "coberto_por_testes": 0
+  },
+  {
+   "arquivo": "src/hooks/useAuthValidation.ts",
+   "hooks_exportados": [
+    "useAuthValidation"
+   ],
+   "linhas": 164,
+   "dominio": "hooks",
+   "tabelas": [
+    "blocked_ips",
+    "login_attempts"
+   ],
+   "rpcs": [],
+   "edges": [
+    "validate-ip-geo"
+   ],
+   "hooks_internos": [
+    "useCallback",
+    "useEffect",
+    "useState"
+   ],
+   "canais_realtime": [],
+   "usado_por": 1,
+   "usado_por_arquivos": [
+    "src/pages/Auth.hooks.ts"
+   ],
+   "coberto_por_testes": 0
+  },
+  {
+   "arquivo": "src/hooks/useBalancete.ts",
+   "hooks_exportados": [
+    "useBalancete"
+   ],
+   "linhas": 81,
+   "dominio": "hooks",
+   "tabelas": [],
+   "rpcs": [
+    "fn_balancete"
+   ],
+   "edges": [],
+   "hooks_internos": [],
+   "canais_realtime": [],
+   "usado_por": 1,
+   "usado_por_arquivos": [
+    "src/components/contabilidade/BalanceteTab.tsx"
+   ],
+   "coberto_por_testes": 0
+  },
+  {
+   "arquivo": "src/hooks/useBankAccounts.ts",
+   "hooks_exportados": [
+    "useBankAccount",
+    "useBankAccountMutations",
+    "useBankAccountRealtime",
+    "useBankAccountTotals",
+    "useBankAccounts"
+   ],
+   "linhas": 255,
+   "dominio": "hooks",
+   "tabelas": [
+    "contas_bancarias"
+   ],
+   "rpcs": [],
+   "edges": [],
+   "hooks_internos": [
+    "useEffect",
+    "useMutation",
+    "useQuery",
+    "useQueryClient"
+   ],
+   "canais_realtime": [],
+   "usado_por": 1,
+   "usado_por_arquivos": [
+    "src/components/financeiro/BankAccountSwitcher.tsx"
+   ],
+   "coberto_por_testes": 0
+  },
+  {
+   "arquivo": "src/hooks/useBenchmarkSetorial.ts",
+   "hooks_exportados": [
+    "useBenchmarkSetorial"
+   ],
+   "linhas": 37,
+   "dominio": "hooks",
+   "tabelas": [],
+   "rpcs": [],
+   "edges": [
+    "comparar-benchmark-setorial"
+   ],
+   "hooks_internos": [
+    "useQuery"
+   ],
+   "canais_realtime": [],
+   "usado_por": 1,
+   "usado_por_arquivos": [
+    "src/components/tributario/dashboard/BenchmarkSetorialCard.tsx"
+   ],
+   "coberto_por_testes": 0
+  },
+  {
+   "arquivo": "src/hooks/useBitrix24.ts",
+   "hooks_exportados": [
+    "useBitrix24"
+   ],
+   "linhas": 305,
+   "dominio": "hooks",
+   "tabelas": [
+    "bitrix_field_mappings",
+    "bitrix_sync_logs",
+    "clientes",
+    "contas_receber"
+   ],
+   "rpcs": [],
+   "edges": [
+    "bitrix24-sync"
+   ],
+   "hooks_internos": [
+    "useCallback",
+    "useEffect",
+    "useMutation",
+    "useQuery",
+    "useState",
+    "useToast"
+   ],
+   "canais_realtime": [],
+   "usado_por": 1,
+   "usado_por_arquivos": [
+    "src/pages/Bitrix24.tsx"
+   ],
+   "coberto_por_testes": 0
+  },
+  {
+   "arquivo": "src/hooks/useBling.ts",
+   "hooks_exportados": [],
+   "linhas": 2,
+   "dominio": "hooks",
+   "tabelas": [],
+   "rpcs": [],
+   "edges": [],
+   "hooks_internos": [],
+   "canais_realtime": [],
+   "usado_por": 9,
+   "usado_por_arquivos": [
+    "src/components/bling/BlingContatosPanel.tsx",
+    "src/components/bling/BlingEstoquePanel.tsx",
+    "src/components/bling/BlingFinanceiroPanel.tsx",
+    "src/components/bling/BlingLogisticaPanel.tsx",
+    "src/components/bling/BlingNFeTab.tsx",
+    "src/components/bling/BlingPedidosPanel.tsx",
+    "src/components/bling/BlingProdutosPanel.tsx",
+    "src/components/bling/BlingWebhooksPanel.tsx",
+    "src/pages/Bling.tsx"
+   ],
+   "coberto_por_testes": 0
+  },
+  {
+   "arquivo": "src/hooks/useBlingNFe.ts",
+   "hooks_exportados": [
+    "useBlingNFe"
+   ],
+   "linhas": 336,
+   "dominio": "hooks",
+   "tabelas": [],
+   "rpcs": [],
+   "edges": [
+    "bling-proxy"
+   ],
+   "hooks_internos": [
+    "useCallback",
+    "useState"
+   ],
+   "canais_realtime": [],
+   "usado_por": 1,
+   "usado_por_arquivos": [
+    "src/components/nfe/BlingNFePanel.tsx"
+   ],
+   "coberto_por_testes": 0
+  },
+  {
+   "arquivo": "src/hooks/useBoletos.ts",
+   "hooks_exportados": [
+    "useBoletos"
+   ],
+   "linhas": 474,
+   "dominio": "hooks",
+   "tabelas": [
+    "boletos",
+    "contas_bancarias",
+    "empresas",
+    "historico_cobrancas_boletos"
+   ],
+   "rpcs": [],
+   "edges": [
+    "asaas-proxy",
+    "bitrix24-sync"
+   ],
+   "hooks_internos": [
+    "useMutation",
+    "useQuery",
+    "useQueryClient",
+    "useState",
+    "useToast"
+   ],
+   "canais_realtime": [],
+   "usado_por": 5,
+   "usado_por_arquivos": [
+    "src/components/boletos/BoletoPreviewPanel.tsx",
+    "src/components/boletos/NovoBoletoForm.tsx",
+    "src/hooks/useDashboardMetrics.ts",
+    "src/pages/Boletos.tsx",
+    "src/pages/Financeiro.tsx"
+   ],
+   "coberto_por_testes": 1
+  },
+  {
+   "arquivo": "src/hooks/useBudget.ts",
+   "hooks_exportados": [
+    "useBudgets",
+    "useBudgetsWithSpent",
+    "useCreateBudget",
+    "useDeleteBudget",
+    "useUpdateBudget"
+   ],
+   "linhas": 159,
+   "dominio": "hooks",
+   "tabelas": [
+    "budgets",
+    "contas_pagar"
+   ],
+   "rpcs": [],
+   "edges": [],
+   "hooks_internos": [
+    "useMutation",
+    "useQuery",
+    "useQueryClient"
+   ],
+   "canais_realtime": [],
+   "usado_por": 3,
+   "usado_por_arquivos": [
+    "src/components/dashboard/AlertasOrcamento.tsx",
+    "src/pages/Orcamentos.tsx",
+    "src/pages/orcamentos.types.ts"
+   ],
+   "coberto_por_testes": 0
+  },
+  {
+   "arquivo": "src/hooks/useBulkActions.ts",
+   "hooks_exportados": [
+    "useBulkActions"
+   ],
+   "linhas": 309,
+   "dominio": "hooks",
+   "tabelas": [],
+   "rpcs": [],
+   "edges": [],
+   "hooks_internos": [
+    "useCallback",
+    "useMemo",
+    "useState"
+   ],
+   "canais_realtime": [],
+   "usado_por": 3,
+   "usado_por_arquivos": [
+    "src/hooks/useContasPagarLogic.ts",
+    "src/hooks/useContasReceberLogic.ts",
+    "src/pages/Alertas.tsx"
+   ],
+   "coberto_por_testes": 1
+  },
+  {
+   "arquivo": "src/hooks/useCalculadoraDadosReais.ts",
+   "hooks_exportados": [
+    "useCalculadoraDadosReais"
+   ],
+   "linhas": 93,
+   "dominio": "hooks",
+   "tabelas": [
+    "contas_receber",
+    "folha_pagamento",
+    "nfe_recebidas"
+   ],
+   "rpcs": [],
+   "edges": [],
+   "hooks_internos": [
+    "useQuery"
+   ],
+   "canais_realtime": [],
+   "usado_por": 1,
+   "usado_por_arquivos": [
+    "src/pages/tributario/CalculadoraTributaria.tsx"
+   ],
+   "coberto_por_testes": 0
+  },
+  {
+   "arquivo": "src/hooks/useCashbackSimulador.ts",
+   "hooks_exportados": [
+    "useCashbackSimulador"
+   ],
+   "linhas": 208,
+   "dominio": "hooks",
+   "tabelas": [],
+   "rpcs": [],
+   "edges": [],
+   "hooks_internos": [
+    "useCallback",
+    "useMemo",
+    "useState"
+   ],
+   "canais_realtime": [],
+   "usado_por": 1,
+   "usado_por_arquivos": [
+    "src/components/reforma-tributaria/CashbackSimuladorPanel.tsx"
+   ],
+   "coberto_por_testes": 1
+  },
+  {
+   "arquivo": "src/hooks/useCatalogoIssMunicipal.ts",
+   "hooks_exportados": [
+    "useCatalogoIssMunicipal"
+   ],
+   "linhas": 23,
+   "dominio": "hooks",
+   "tabelas": [],
+   "rpcs": [],
+   "edges": [],
+   "hooks_internos": [],
+   "canais_realtime": [],
+   "usado_por": 1,
+   "usado_por_arquivos": [
+    "src/pages/tributario/IpiIss.tsx"
+   ],
+   "coberto_por_testes": 0
+  },
+  {
+   "arquivo": "src/hooks/useCatalogosFiscais.ts",
+   "hooks_exportados": [
+    "useCatalogosFiscais"
+   ],
+   "linhas": 210,
+   "dominio": "hooks",
+   "tabelas": [],
+   "rpcs": [],
+   "edges": [],
+   "hooks_internos": [],
+   "canais_realtime": [],
+   "usado_por": 5,
+   "usado_por_arquivos": [
+    "src/components/dashboard/AlertasCatalogosFiscaisCard.tsx",
+    "src/components/tributario/dashboard/SaudeCatalogosBadge.tsx",
+    "src/pages/tributario/AuditoriaOverlay.tsx",
+    "src/pages/tributario/CatalogosFiscais.tsx",
+    "src/pages/tributario/IcmsStDifal.tsx"
+   ],
+   "coberto_por_testes": 0
+  },
+  {
+   "arquivo": "src/hooks/useCategorias.ts",
+   "hooks_exportados": [
+    "useCategoria",
+    "useCategorias",
+    "useCreateCategoria",
+    "useDeleteCategoria",
+    "useUpdateCategoria"
+   ],
+   "linhas": 220,
+   "dominio": "hooks",
+   "tabelas": [
+    "categorias"
+   ],
+   "rpcs": [],
+   "edges": [],
+   "hooks_internos": [
+    "useAuth",
+    "useMutation",
+    "useQuery",
+    "useQueryClient"
+   ],
+   "canais_realtime": [],
+   "usado_por": 6,
+   "usado_por_arquivos": [
+    "src/components/categorias/CategoriaForm.tsx",
+    "src/components/categorias/CategoriaTable.tsx",
+    "src/components/contas-pagar/ContaPagarForm.tsx",
+    "src/components/contas-receber/ContaReceberForm.tsx",
+    "src/pages/Categorias.tsx",
+    "src/pages/Orcamentos.tsx"
+   ],
+   "coberto_por_testes": 1
+  },
+  {
+   "arquivo": "src/hooks/useCategorizacaoIA.ts",
+   "hooks_exportados": [
+    "useCategorizacaoIA"
+   ],
+   "linhas": 155,
+   "dominio": "hooks",
+   "tabelas": [],
+   "rpcs": [],
+   "edges": [
+    "categorizar-despesa"
+   ],
+   "hooks_internos": [
+    "useState"
+   ],
+   "canais_realtime": [],
+   "usado_por": 2,
+   "usado_por_arquivos": [
+    "src/components/contas-pagar/CategorizacaoIABadge.tsx",
+    "src/components/contas-receber/CategorizacaoIABadge.tsx"
+   ],
+   "coberto_por_testes": 0
+  },
+  {
+   "arquivo": "src/hooks/useCentrosCusto.ts",
+   "hooks_exportados": [
+    "useAllCentrosCusto",
+    "useAtualizarCentroCusto",
+    "useCentrosCusto",
+    "useCriarCentroCusto",
+    "useExcluirCentroCusto",
+    "useReativarCentroCusto"
+   ],
+   "linhas": 150,
+   "dominio": "hooks",
+   "tabelas": [
+    "centros_custo"
+   ],
+   "rpcs": [],
+   "edges": [],
+   "hooks_internos": [
+    "useAuth",
+    "useMutation",
+    "useQuery",
+    "useQueryClient"
+   ],
+   "canais_realtime": [],
+   "usado_por": 6,
+   "usado_por_arquivos": [
+    "src/components/centros-custo/CentroCustoExport.tsx",
+    "src/components/centros-custo/CentroCustoForm.tsx",
+    "src/components/centros-custo/CentroCustoTree.tsx",
+    "src/components/pagamentos-recorrentes/PagamentoRecorrenteForm.tsx",
+    "src/pages/CentroCustos.tsx",
+    "src/pages/centro-custos/CentroCustoCards.tsx"
+   ],
+   "coberto_por_testes": 1
+  },
+  {
+   "arquivo": "src/hooks/useCertificadosDigitais.ts",
+   "hooks_exportados": [
+    "useCertificadosDigitais",
+    "useToggleCertificado",
+    "useUploadCertificado"
+   ],
+   "linhas": 108,
+   "dominio": "hooks",
+   "tabelas": [
+    "empresas_certificados"
+   ],
+   "rpcs": [],
+   "edges": [],
+   "hooks_internos": [
+    "useMutation",
+    "useQuery",
+    "useQueryClient"
+   ],
+   "canais_realtime": [],
+   "usado_por": 1,
+   "usado_por_arquivos": [
+    "src/components/tributario/CertificadosDigitaisTab.tsx"
+   ],
+   "coberto_por_testes": 1
+  },
+  {
+   "arquivo": "src/hooks/useCnaes.ts",
+   "hooks_exportados": [
+    "useCnaes",
+    "useResolucaoCnae"
+   ],
+   "linhas": 52,
+   "dominio": "hooks",
+   "tabelas": [],
+   "rpcs": [],
+   "edges": [],
+   "hooks_internos": [],
+   "canais_realtime": [],
+   "usado_por": 4,
+   "usado_por_arquivos": [
+    "src/components/empresas/CnaeCatalogoInfo.tsx",
+    "src/components/empresas/EmpresaForm.tsx",
+    "src/components/tributario/simulacao/ParametrosForm.tsx",
+    "src/pages/tributario/OnboardingTributario.tsx"
+   ],
+   "coberto_por_testes": 0
+  },
+  {
+   "arquivo": "src/hooks/useCnpjaLookup.ts",
+   "hooks_exportados": [
+    "useCnpjaLookup"
+   ],
+   "linhas": 95,
+   "dominio": "hooks",
+   "tabelas": [],
+   "rpcs": [],
+   "edges": [
+    "cnpja-lookup"
+   ],
+   "hooks_internos": [],
+   "canais_realtime": [],
+   "usado_por": 3,
+   "usado_por_arquivos": [
+    "src/pages/tributario/OnboardingTributario.helpers.ts",
+    "src/pages/tributario/OnboardingTributario.parts.tsx",
+    "src/pages/tributario/OnboardingTributario.tsx"
+   ],
+   "coberto_por_testes": 0
+  },
+  {
+   "arquivo": "src/hooks/useCobrancas.ts",
+   "hooks_exportados": [
+    "useAgingData",
+    "useCobrancaKPIs",
+    "useContasVencidas",
+    "useEtapasCobranca",
+    "useReguaCobrancaStatus",
+    "useTopDevedores",
+    "useUpdateEtapaCobranca"
+   ],
+   "linhas": 368,
+   "dominio": "hooks",
+   "tabelas": [
+    "contas_receber",
+    "regua_cobranca_status"
+   ],
+   "rpcs": [],
+   "edges": [],
+   "hooks_internos": [
+    "useAuth",
+    "useMutation",
+    "useQuery",
+    "useQueryClient"
+   ],
+   "canais_realtime": [],
+   "usado_por": 2,
+   "usado_por_arquivos": [
+    "src/hooks/useDashboardMetrics.ts",
+    "src/pages/Cobrancas.tsx"
+   ],
+   "coberto_por_testes": 0
+  },
+  {
+   "arquivo": "src/hooks/useComparativoConformidade.ts",
+   "hooks_exportados": [
+    "useComparativoConformidade"
+   ],
+   "linhas": 118,
+   "dominio": "hooks",
+   "tabelas": [
+    "conformidade_snapshots"
+   ],
+   "rpcs": [],
+   "edges": [],
+   "hooks_internos": [
+    "useMemo",
+    "useQuery"
+   ],
+   "canais_realtime": [],
+   "usado_por": 1,
+   "usado_por_arquivos": [
+    "src/pages/tributario/ComparativoConformidade.tsx"
+   ],
+   "coberto_por_testes": 0
+  },
+  {
+   "arquivo": "src/hooks/useComparativoRegimes.ts",
+   "hooks_exportados": [
+    "useComparativoRegimes"
+   ],
+   "linhas": 311,
+   "dominio": "hooks",
+   "tabelas": [],
+   "rpcs": [],
+   "edges": [],
+   "hooks_internos": [
+    "useMemo"
+   ],
+   "canais_realtime": [],
+   "usado_por": 1,
+   "usado_por_arquivos": [
+    "src/components/reforma-tributaria/ComparativoRegimesPanel.tsx"
+   ],
+   "coberto_por_testes": 0
+  },
+  {
+   "arquivo": "src/hooks/useComplianceKpis.ts",
+   "hooks_exportados": [
+    "useComplianceKpis"
+   ],
+   "linhas": 47,
+   "dominio": "hooks",
+   "tabelas": [
+    "audit_logs",
+    "evidencias_pacotes",
+    "verificacoes_conformidade"
+   ],
+   "rpcs": [],
+   "edges": [],
+   "hooks_internos": [
+    "useQuery"
+   ],
+   "canais_realtime": [],
+   "usado_por": 1,
+   "usado_por_arquivos": [
+    "src/components/compliance/ComplianceKpis.tsx"
+   ],
+   "coberto_por_testes": 0
+  },
+  {
+   "arquivo": "src/hooks/useConciliacao.ts",
+   "hooks_exportados": [
+    "useConciliacao",
+    "useHistoricoCobranca",
+    "useTransacoesBancarias"
+   ],
+   "linhas": 317,
+   "dominio": "hooks",
+   "tabelas": [
+    "extrato_bancario",
+    "historico_cobranca",
+    "transacoes_bancarias"
+   ],
+   "rpcs": [],
+   "edges": [],
+   "hooks_internos": [
+    "useMutation",
+    "useQueryClient"
+   ],
+   "canais_realtime": [],
+   "usado_por": 2,
+   "usado_por_arquivos": [
+    "src/components/conciliacao/ConciliacaoManualDialog.tsx",
+    "src/hooks/useConciliacaoPage.ts"
+   ],
+   "coberto_por_testes": 1
+  },
+  {
+   "arquivo": "src/hooks/useConciliacaoAudit.ts",
+   "hooks_exportados": [
+    "useConciliacaoAudit"
+   ],
+   "linhas": 61,
+   "dominio": "hooks",
+   "tabelas": [
+    "alertas",
+    "divergencias_conciliacao",
+    "transacoes_bancarias"
+   ],
+   "rpcs": [],
+   "edges": [],
+   "hooks_internos": [
+    "useMutation"
+   ],
+   "canais_realtime": [],
+   "usado_por": 1,
+   "usado_por_arquivos": [
+    "src/components/conciliacao/DivergenciasConciliacaoPanel.tsx"
+   ],
+   "coberto_por_testes": 0
+  },
+  {
+   "arquivo": "src/hooks/useConciliacaoIA.ts",
+   "hooks_exportados": [
+    "useConciliacaoIA"
+   ],
+   "linhas": 152,
+   "dominio": "hooks",
+   "tabelas": [],
+   "rpcs": [],
+   "edges": [
+    "conciliacao-ia"
+   ],
+   "hooks_internos": [
+    "useCallback",
+    "useHistoricoConciliacaoIA",
+    "useState"
+   ],
+   "canais_realtime": [],
+   "usado_por": 6,
+   "usado_por_arquivos": [
+    "src/components/conciliacao/SugestoesMatchIA.tsx",
+    "src/components/conciliacao/ia/AprovarTodosDialog.tsx",
+    "src/components/conciliacao/ia/DetalhesExpandidosDialog.tsx",
+    "src/components/conciliacao/ia/RejeicaoDialog.tsx",
+    "src/components/conciliacao/ia/SugestoesMatchSections.tsx",
+    "src/hooks/useHistoricoConciliacaoIA.ts"
+   ],
+   "coberto_por_testes": 1
+  },
+  {
+   "arquivo": "src/hooks/useConciliacaoIgnorarActions.ts",
+   "hooks_exportados": [
+    "useConciliacaoIgnorarActions"
+   ],
+   "linhas": 128,
+   "dominio": "hooks",
+   "tabelas": [
+    "transacoes_bancarias"
+   ],
+   "rpcs": [],
+   "edges": [],
+   "hooks_internos": [
+    "useCallback",
+    "useState"
+   ],
+   "canais_realtime": [],
+   "usado_por": 1,
+   "usado_por_arquivos": [
+    "src/hooks/useConciliacaoPage.ts"
+   ],
+   "coberto_por_testes": 0
+  },
+  {
+   "arquivo": "src/hooks/useConciliacaoPage.ts",
+   "hooks_exportados": [
+    "useConciliacaoPage"
+   ],
+   "linhas": 463,
+   "dominio": "hooks",
+   "tabelas": [
+    "alertas",
+    "divergencias_conciliacao"
+   ],
+   "rpcs": [],
+   "edges": [],
+   "hooks_internos": [
+    "useCallback",
+    "useConciliacao",
+    "useConciliacaoIgnorarActions",
+    "useContaBancariaSelecionada",
+    "useContasBancarias",
+    "useContasPagar",
+    "useContasReceber",
+    "useDebounce",
+    "useEffect",
+    "useFiltrosConciliacaoPersistidos",
+    "useGlobalFinancialFilter",
+    "useMemo",
+    "useState",
+    "useTransacoesBancariasSelecionadas"
+   ],
+   "canais_realtime": [],
+   "usado_por": 1,
+   "usado_por_arquivos": [
+    "src/pages/Conciliacao.tsx"
+   ],
+   "coberto_por_testes": 3
+  },
+  {
+   "arquivo": "src/hooks/useConciliacaoPageState.ts",
+   "hooks_exportados": [
+    "useContaBancariaSelecionada",
+    "useFiltrosConciliacaoPersistidos",
+    "useTransacoesBancariasSelecionadas"
+   ],
+   "linhas": 120,
+   "dominio": "hooks",
+   "tabelas": [],
+   "rpcs": [],
+   "edges": [],
+   "hooks_internos": [
+    "useCallback",
+    "useEffect",
+    "useQueryClient",
+    "useRef",
+    "useState"
+   ],
+   "canais_realtime": [],
+   "usado_por": 1,
+   "usado_por_arquivos": [
+    "src/hooks/useConciliacaoPage.ts"
+   ],
+   "coberto_por_testes": 1
+  },
+  {
+   "arquivo": "src/hooks/useConciliacaoRetroativa.ts",
+   "hooks_exportados": [
+    "useConciliacaoRetroativa"
+   ],
+   "linhas": 72,
+   "dominio": "hooks",
+   "tabelas": [
+    "logs_conciliacao_retroativa"
+   ],
+   "rpcs": [],
+   "edges": [],
+   "hooks_internos": [
+    "useMutation",
+    "useQueryClient"
+   ],
+   "canais_realtime": [],
+   "usado_por": 1,
+   "usado_por_arquivos": [
+    "src/components/conciliacao/ConciliacaoRetroativaPanel.tsx"
+   ],
+   "coberto_por_testes": 0
+  },
+  {
+   "arquivo": "src/hooks/useConciliacaoTributaria.ts",
+   "hooks_exportados": [
+    "useConciliacaoTributaria"
+   ],
+   "linhas": 252,
+   "dominio": "hooks",
+   "tabelas": [
+    "apuracoes_tributarias",
+    "creditos_tributarios",
+    "notas_fiscais"
+   ],
+   "rpcs": [],
+   "edges": [],
+   "hooks_internos": [
+    "useMemo",
+    "useMutation",
+    "useQuery",
+    "useState"
+   ],
+   "canais_realtime": [],
+   "usado_por": 1,
+   "usado_por_arquivos": [
+    "src/components/reforma-tributaria/ConciliacaoTributariaPanel.tsx"
+   ],
+   "coberto_por_testes": 0
+  },
+  {
+   "arquivo": "src/hooks/useConfetti.ts",
+   "hooks_exportados": [
+    "useConfetti"
+   ],
+   "linhas": 76,
+   "dominio": "hooks",
+   "tabelas": [],
+   "rpcs": [],
+   "edges": [],
+   "hooks_internos": [
+    "useCallback"
+   ],
+   "canais_realtime": [],
+   "usado_por": 6,
+   "usado_por_arquivos": [
+    "src/components/clientes/ClienteForm.tsx",
+    "src/components/cobranca/AcordoParcelamentoDialog.tsx",
+    "src/components/contas-receber/ContaReceberForm.tsx",
+    "src/components/fornecedores/FornecedorForm.tsx",
+    "src/components/pagamentos-recorrentes/PagamentoRecorrenteForm.tsx",
+    "src/components/wrappers/CelebrationActions.tsx"
+   ],
+   "coberto_por_testes": 0
+  },
+  {
+   "arquivo": "src/hooks/useConformidadeFiscal.ts",
+   "hooks_exportados": [
+    "useConformidadeFiscal"
+   ],
+   "linhas": 97,
+   "dominio": "hooks",
+   "tabelas": [
+    "verificacoes_conformidade"
+   ],
+   "rpcs": [],
+   "edges": [
+    "verificar-conformidade-fiscal"
+   ],
+   "hooks_internos": [
+    "useMutation",
+    "useQueryClient"
+   ],
+   "canais_realtime": [],
+   "usado_por": 1,
+   "usado_por_arquivos": [
+    "src/components/tributario/dashboard/ConformidadeFiscalCard.tsx"
+   ],
+   "coberto_por_testes": 0
+  },
+  {
+   "arquivo": "src/hooks/useConformidadeSnapshots.ts",
+   "hooks_exportados": [
+    "useConformidadeSnapshots",
+    "useConformidadeSnapshotsDaEmpresa",
+    "useSalvarConformidadeSnapshots"
+   ],
+   "linhas": 103,
+   "dominio": "hooks",
+   "tabelas": [
+    "conformidade_snapshots"
+   ],
+   "rpcs": [],
+   "edges": [],
+   "hooks_internos": [
+    "useEmpresaScope",
+    "useMutation",
+    "useQuery",
+    "useQueryClient"
+   ],
+   "canais_realtime": [],
+   "usado_por": 2,
+   "usado_por_arquivos": [
+    "src/components/tributario/dashboard/ConformidadeTendenciaWidget.tsx",
+    "src/pages/tributario/ObrigacoesAcessorias.tsx"
+   ],
+   "coberto_por_testes": 0
+  },
+  {
+   "arquivo": "src/hooks/useConsultaTributaria.ts",
+   "hooks_exportados": [
+    "useConsultaCNAE",
+    "useConsultaNCM",
+    "useConsultaTributaria",
+    "useConsultaUF"
+   ],
+   "linhas": 152,
+   "dominio": "hooks",
+   "tabelas": [],
+   "rpcs": [],
+   "edges": [
+    "consulta-tributaria"
+   ],
+   "hooks_internos": [],
+   "canais_realtime": [],
+   "usado_por": 4,
+   "usado_por_arquivos": [
+    "src/pages/tributario/consulta-rapida/ConsultaCnaeTab.tsx",
+    "src/pages/tributario/consulta-rapida/ConsultaNcmTab.tsx",
+    "src/pages/tributario/consulta-rapida/ConsultaUFTab.tsx",
+    "src/pages/tributario/consulta-rapida/MatchBadge.tsx"
+   ],
+   "coberto_por_testes": 1
+  },
+  {
+   "arquivo": "src/hooks/useContasPagarLogic.ts",
+   "hooks_exportados": [
+    "useContasPagarLogic"
+   ],
+   "linhas": 625,
+   "dominio": "hooks",
+   "tabelas": [
+    "profiles",
+    "solicitacoes_aprovacao"
+   ],
+   "rpcs": [],
+   "edges": [],
+   "hooks_internos": [
+    "useAuth",
+    "useBulkActions",
+    "useCallback",
+    "useCentrosCusto",
+    "useConfiguracaoAprovacao",
+    "useContasBancarias",
+    "useContasPagar",
+    "useContasPagarPaginated",
+    "useCriarSolicitacaoAprovacao",
+    "useDebounce",
+    "useDeleteContaPagar",
+    "useEffect",
+    "useEmpresas",
+    "useGlobalFinancialFilter",
+    "useMemo",
+    "useQuery",
+    "useQueryClient",
+    "useQuickDateFilter",
+    "useRef",
+    "useState",
+    "useTableOptimization",
+    "useUpdateContaPagar"
+   ],
+   "canais_realtime": [],
+   "usado_por": 1,
+   "usado_por_arquivos": [
+    "src/pages/ContasPagar.tsx"
+   ],
+   "coberto_por_testes": 0
+  },
+  {
+   "arquivo": "src/hooks/useContasReceberLogic.ts",
+   "hooks_exportados": [
+    "useContasReceberLogic"
+   ],
+   "linhas": 466,
+   "dominio": "hooks",
+   "tabelas": [
+    "contas_receber"
+   ],
+   "rpcs": [],
+   "edges": [],
+   "hooks_internos": [
+    "useBulkActions",
+    "useCallback",
+    "useCentrosCusto",
+    "useContasBancarias",
+    "useContasReceber",
+    "useContasReceberPaginated",
+    "useDebounce",
+    "useEffect",
+    "useEmpresas",
+    "useGlobalFinancialFilter",
+    "useMemo",
+    "useQueryClient",
+    "useQuickDateFilter",
+    "useSorting",
+    "useState",
+    "useTableOptimization"
+   ],
+   "canais_realtime": [],
+   "usado_por": 1,
+   "usado_por_arquivos": [
+    "src/pages/ContasReceber.tsx"
+   ],
+   "coberto_por_testes": 0
+  },
+  {
+   "arquivo": "src/hooks/useContratos.ts",
+   "hooks_exportados": [
+    "useContratos",
+    "useCreateContrato",
+    "useDeleteContrato",
+    "useUpdateContrato"
+   ],
+   "linhas": 115,
+   "dominio": "hooks",
+   "tabelas": [
+    "contratos"
+   ],
+   "rpcs": [],
+   "edges": [],
+   "hooks_internos": [
+    "useMutation",
+    "useQuery",
+    "useQueryClient"
+   ],
+   "canais_realtime": [],
+   "usado_por": 1,
+   "usado_por_arquivos": [
+    "src/components/contratos/GestaoContratos.tsx"
+   ],
+   "coberto_por_testes": 1
+  },
+  {
+   "arquivo": "src/hooks/useCountUp.ts",
+   "hooks_exportados": [
+    "useCountUp"
+   ],
+   "linhas": 54,
+   "dominio": "hooks",
+   "tabelas": [],
+   "rpcs": [],
+   "edges": [],
+   "hooks_internos": [
+    "useEffect",
+    "useRef",
+    "useState"
+   ],
+   "canais_realtime": [],
+   "usado_por": 2,
+   "usado_por_arquivos": [
+    "src/components/dashboard/HeroKPICards.tsx",
+    "src/components/dashboard/SecondaryKPICards.tsx"
+   ],
+   "coberto_por_testes": 0
+  },
+  {
+   "arquivo": "src/hooks/useCreditosTributarios.ts",
+   "hooks_exportados": [
+    "useCreditosTributarios"
+   ],
+   "linhas": 383,
+   "dominio": "hooks",
+   "tabelas": [
+    "creditos_tributarios",
+    "notas_fiscais"
+   ],
+   "rpcs": [],
+   "edges": [],
+   "hooks_internos": [
+    "useMutation",
+    "useQuery",
+    "useQueryClient"
+   ],
+   "canais_realtime": [],
+   "usado_por": 5,
+   "usado_por_arquivos": [
+    "src/components/reforma-tributaria/DashboardMetricasTributarias.tsx",
+    "src/components/reforma-tributaria/ExportacaoSPED.tsx",
+    "src/components/reforma-tributaria/GestorCreditosTributarios.tsx",
+    "src/components/reforma-tributaria/PerDcompPanel.tsx",
+    "src/components/reforma-tributaria/RelatoriosContabeisTributarios.tsx"
+   ],
+   "coberto_por_testes": 0
+  },
+  {
+   "arquivo": "src/hooks/useCustomFields.ts",
+   "hooks_exportados": [
+    "useCustomFieldDefinitions",
+    "useDeleteCustomFieldDefinition",
+    "useSaveCustomFieldDefinition"
+   ],
+   "linhas": 115,
+   "dominio": "hooks",
+   "tabelas": [
+    "custom_field_definitions"
+   ],
+   "rpcs": [],
+   "edges": [],
+   "hooks_internos": [
+    "useMutation",
+    "useQuery",
+    "useQueryClient"
+   ],
+   "canais_realtime": [],
+   "usado_por": 1,
+   "usado_por_arquivos": [
+    "src/pages/admin/CustomFieldsAdmin.tsx"
+   ],
+   "coberto_por_testes": 0
+  },
+  {
+   "arquivo": "src/hooks/useDashboardConfig.ts",
+   "hooks_exportados": [
+    "useDashboardConfig"
+   ],
+   "linhas": 230,
+   "dominio": "hooks",
+   "tabelas": [],
+   "rpcs": [],
+   "edges": [],
+   "hooks_internos": [
+    "useAuth",
+    "useCallback",
+    "useEffect",
+    "useState"
+   ],
+   "canais_realtime": [],
+   "usado_por": 2,
+   "usado_por_arquivos": [
+    "src/components/dashboard/DashboardConfigDialog.tsx",
+    "src/components/dashboard/DashboardExecutivo.tsx"
+   ],
+   "coberto_por_testes": 0
+  },
+  {
+   "arquivo": "src/hooks/useDashboardMetrics.ts",
+   "hooks_exportados": [
+    "useDashboardMetrics"
+   ],
+   "linhas": 355,
+   "dominio": "hooks",
+   "tabelas": [],
+   "rpcs": [],
+   "edges": [],
+   "hooks_internos": [
+    "useAprovacoesPendentesCount",
+    "useAuth",
+    "useBoletos",
+    "useCentrosCusto",
+    "useClientes",
+    "useCobrancaKPIs",
+    "useContasBancarias",
+    "useContasPagar",
+    "useContasReceber",
+    "useDivergenciasConciliacao",
+    "useEmpresas",
+    "useMemo",
+    "useTotaisContasPagar",
+    "useTotaisContasReceber"
+   ],
+   "canais_realtime": [],
+   "usado_por": 1,
+   "usado_por_arquivos": [
+    "src/components/dashboard/DashboardExecutivo.tsx"
+   ],
+   "coberto_por_testes": 1
+  },
+  {
+   "arquivo": "src/hooks/useDashboardTributario.ts",
+   "hooks_exportados": [
+    "useDashboardTributario"
+   ],
+   "linhas": 93,
+   "dominio": "hooks",
+   "tabelas": [
+    "vw_tributario_dashboard"
+   ],
+   "rpcs": [],
+   "edges": [],
+   "hooks_internos": [
+    "useAlertasTributarios",
+    "useOportunidadesElisao",
+    "useQuery",
+    "useSimulacaoRegimes"
+   ],
+   "canais_realtime": [],
+   "usado_por": 2,
+   "usado_por_arquivos": [
+    "src/components/tributario/dashboard/EvolucaoCargaChart.tsx",
+    "src/pages/tributario/DashboardTributario.tsx"
+   ],
+   "coberto_por_testes": 0
+  },
+  {
+   "arquivo": "src/hooks/useDebounce.ts",
+   "hooks_exportados": [
+    "useDebounce",
+    "useDebouncedCallback",
+    "useNumericInput",
+    "useScrollPosition",
+    "useSearchInput",
+    "useThrottledCallback",
+    "useTypingDetection",
+    "useWindowSize"
+   ],
+   "linhas": 280,
+   "dominio": "hooks",
+   "tabelas": [],
+   "rpcs": [],
+   "edges": [],
+   "hooks_internos": [
+    "useCallback",
+    "useEffect",
+    "useMemo",
+    "useRef",
+    "useState"
+   ],
+   "canais_realtime": [],
+   "usado_por": 2,
+   "usado_por_arquivos": [
+    "src/components/ui/search-input.tsx",
+    "src/hooks/useOptimizedQueries.ts"
+   ],
+   "coberto_por_testes": 0
+  },
+  {
+   "arquivo": "src/hooks/useDecidirRegimeServer.ts",
+   "hooks_exportados": [
+    "useDecidirRegimeServer"
+   ],
+   "linhas": 48,
+   "dominio": "hooks",
+   "tabelas": [],
+   "rpcs": [],
+   "edges": [
+    "decidir-regime"
+   ],
+   "hooks_internos": [],
+   "canais_realtime": [],
+   "usado_por": 1,
+   "usado_por_arquivos": [
+    "src/hooks/useSimulacaoRegimes.ts"
+   ],
+   "coberto_por_testes": 0
+  },
+  {
+   "arquivo": "src/hooks/useDemonstrativosContabeis.ts",
+   "hooks_exportados": [
+    "useDemonstrativosContabeis"
+   ],
+   "linhas": 307,
+   "dominio": "hooks",
+   "tabelas": [
+    "partidas_contabeis"
+   ],
+   "rpcs": [],
+   "edges": [],
+   "hooks_internos": [
+    "useContasBancarias",
+    "useContasPagar",
+    "useContasReceber",
+    "useQuery"
+   ],
+   "canais_realtime": [],
+   "usado_por": 11,
+   "usado_por_arquivos": [
+    "src/components/contabilidade/DreBalancoTab.tsx",
+    "src/components/contabilidade/dre-balanco/BalancoView.tsx",
+    "src/components/contabilidade/dre-balanco/DreBalancoToolbar.tsx",
+    "src/components/contabilidade/dre-balanco/DreView.tsx",
+    "src/components/contabilidade/dre-balanco/exporters.ts",
+    "src/components/demonstrativos/BalancoPatrimonial.tsx",
+    "src/components/demonstrativos/ContasNaoClassificadasDialog.tsx",
+    "src/components/demonstrativos/DREStatement.tsx",
+    "src/components/demonstrativos/FonteDadosToggle.tsx",
+    "src/hooks/usePreValidacaoSped.ts",
+    "src/pages/Demonstrativos.tsx"
+   ],
+   "coberto_por_testes": 0
+  },
+  {
+   "arquivo": "src/hooks/useDeviceDetection.ts",
+   "hooks_exportados": [
+    "useDeviceDetection"
+   ],
+   "linhas": 221,
+   "dominio": "hooks",
+   "tabelas": [
+    "dispositivos_conhecidos",
+    "new_device_alerts",
+    "profiles"
+   ],
+   "rpcs": [],
+   "edges": [
+    "send-device-alert"
+   ],
+   "hooks_internos": [
+    "useCallback",
+    "useState"
+   ],
+   "canais_realtime": [],
+   "usado_por": 2,
+   "usado_por_arquivos": [
+    "src/components/security/KnownDevicesPanel.tsx",
+    "src/pages/Auth.hooks.ts"
+   ],
+   "coberto_por_testes": 0
+  },
+  {
+   "arquivo": "src/hooks/useDigestEnviosLog.ts",
+   "hooks_exportados": [
+    "useDigestEnviosLog"
+   ],
+   "linhas": 78,
+   "dominio": "hooks",
+   "tabelas": [
+    "digest_envios_log"
+   ],
+   "rpcs": [],
+   "edges": [],
+   "hooks_internos": [
+    "useQuery"
+   ],
+   "canais_realtime": [],
+   "usado_por": 1,
+   "usado_por_arquivos": [
+    "src/pages/tributario/ObservabilidadeDigest.tsx"
+   ],
+   "coberto_por_testes": 0
+  },
+  {
+   "arquivo": "src/hooks/useDigestPreferences.ts",
+   "hooks_exportados": [
+    "useDigestPreferences"
+   ],
+   "linhas": 109,
+   "dominio": "hooks",
+   "tabelas": [
+    "user_digest_preferences"
+   ],
+   "rpcs": [],
+   "edges": [],
+   "hooks_internos": [
+    "useMutation",
+    "useQuery",
+    "useQueryClient"
+   ],
+   "canais_realtime": [],
+   "usado_por": 1,
+   "usado_por_arquivos": [
+    "src/pages/tributario/PreferenciasDigest.tsx"
+   ],
+   "coberto_por_testes": 0
+  },
+  {
+   "arquivo": "src/hooks/useDivergenciasConciliacao.ts",
+   "hooks_exportados": [
+    "useDivergenciasConciliacao"
+   ],
+   "linhas": 50,
+   "dominio": "hooks",
+   "tabelas": [
+    "divergencias_conciliacao"
+   ],
+   "rpcs": [],
+   "edges": [],
+   "hooks_internos": [
+    "useMutation",
+    "useQuery",
+    "useQueryClient"
+   ],
+   "canais_realtime": [],
+   "usado_por": 2,
+   "usado_por_arquivos": [
+    "src/components/conciliacao/DivergenciasConciliacaoPanel.tsx",
+    "src/hooks/useDashboardMetrics.ts"
+   ],
+   "coberto_por_testes": 0
+  },
+  {
+   "arquivo": "src/hooks/useDRETributaria.ts",
+   "hooks_exportados": [
+    "useDRETributaria"
+   ],
+   "linhas": 47,
+   "dominio": "hooks",
+   "tabelas": [],
+   "rpcs": [],
+   "edges": [
+    "gerar-dre-tributaria"
+   ],
+   "hooks_internos": [
+    "useQuery"
+   ],
+   "canais_realtime": [],
+   "usado_por": 1,
+   "usado_por_arquivos": [
+    "src/components/tributario/dashboard/DRETributariaPanel.tsx"
+   ],
+   "coberto_por_testes": 0
+  },
+  {
+   "arquivo": "src/hooks/useEmpresas.ts",
+   "hooks_exportados": [
+    "useAllEmpresas",
+    "useAtualizarEmpresa",
+    "useCriarEmpresa",
+    "useExcluirEmpresa",
+    "useReativarEmpresa"
+   ],
+   "linhas": 111,
+   "dominio": "hooks",
+   "tabelas": [
+    "empresas"
+   ],
+   "rpcs": [],
+   "edges": [],
+   "hooks_internos": [
+    "useMutation",
+    "useQuery",
+    "useQueryClient"
+   ],
+   "canais_realtime": [],
+   "usado_por": 24,
+   "usado_por_arquivos": [
+    "src/components/empresas/EmpresaCardView.tsx",
+    "src/components/empresas/EmpresaForm.tsx",
+    "src/components/pagamentos-recorrentes/PagamentoRecorrenteForm.tsx",
+    "src/components/reforma-tributaria/AlertasTributarios.tsx",
+    "src/components/reforma-tributaria/ApuracaoMensal.tsx",
+    "src/components/reforma-tributaria/DashboardMetricasTributarias.tsx",
+    "src/components/reforma-tributaria/DashboardReformaTributaria.tsx",
+    "src/components/reforma-tributaria/ExportacaoSPED.tsx",
+    "src/components/reforma-tributaria/GestorCreditosTributarios.tsx",
+    "src/components/reforma-tributaria/ModuloIRPJCSLL.tsx",
+    "src/components/reforma-tributaria/OperacoesLista.tsx",
+    "src/components/reforma-tributaria/PerDcompPanel.tsx",
+    "src/components/reforma-tributaria/RelatoriosContabeisTributarios.tsx",
+    "src/components/reforma-tributaria/RetencoesFonte.tsx",
+    "src/components/reforma-tributaria/SplitPaymentPanel.tsx",
+    "src/pages/Asaas.tsx",
+    "src/pages/Empresas.tsx",
+    "src/pages/tributario/CalculadoraTributaria.tsx",
+    "src/pages/tributario/DashboardTributario.tsx",
+    "src/pages/tributario/HistoricoFinanceiro.tsx",
+    "src/pages/tributario/OnboardingTributario.tsx",
+    "src/pages/tributario/OportunidadesElisao.tsx",
+    "src/pages/tributario/RecomendacaoExecutiva.tsx",
+    "src/pages/tributario/SimulacaoRegimes.tsx"
+   ],
+   "coberto_por_testes": 0
+  },
+  {
+   "arquivo": "src/hooks/useEntregasObrigacoes.ts",
+   "hooks_exportados": [
+    "useEntregasObrigacoes",
+    "useRegistrarEntregaObrigacao"
+   ],
+   "linhas": 121,
+   "dominio": "hooks",
+   "tabelas": [
+    "entregas_obrigacoes"
+   ],
+   "rpcs": [],
+   "edges": [],
+   "hooks_internos": [
+    "useEmpresaScope",
+    "useMutation",
+    "useQuery",
+    "useQueryClient"
+   ],
+   "canais_realtime": [],
+   "usado_por": 1,
+   "usado_por_arquivos": [
+    "src/pages/tributario/ObrigacoesAcessorias.tsx"
+   ],
+   "coberto_por_testes": 0
+  },
+  {
+   "arquivo": "src/hooks/useEvidenciasPack.ts",
+   "hooks_exportados": [
+    "useEvidenciasPacotes"
+   ],
+   "linhas": 76,
+   "dominio": "hooks",
+   "tabelas": [
+    "evidencias_pacotes"
+   ],
+   "rpcs": [],
+   "edges": [
+    "gerar-pacote-evidencias"
+   ],
+   "hooks_internos": [
+    "useMutation",
+    "useQuery",
+    "useQueryClient"
+   ],
+   "canais_realtime": [],
+   "usado_por": 2,
+   "usado_por_arquivos": [
+    "src/components/compliance/EvidenciasTab.tsx",
+    "src/hooks/useGerarEvidenciasStream.ts"
+   ],
+   "coberto_por_testes": 0
+  },
+  {
+   "arquivo": "src/hooks/useExpertActions.ts",
+   "hooks_exportados": [
+    "useExpertActions"
+   ],
+   "linhas": 99,
+   "dominio": "hooks",
+   "tabelas": [],
+   "rpcs": [],
+   "edges": [],
+   "hooks_internos": [
+    "useNavigate",
+    "useQueryClient"
+   ],
+   "canais_realtime": [],
+   "usado_por": 4,
+   "usado_por_arquivos": [
+    "src/components/expert/ExpertChatMessages.tsx",
+    "src/components/expert/expertPageSupport.ts",
+    "src/hooks/useExpertConversations.ts",
+    "src/pages/Expert.tsx"
+   ],
+   "coberto_por_testes": 0
+  },
+  {
+   "arquivo": "src/hooks/useExpertContext.ts",
+   "hooks_exportados": [
+    "useExpertContext"
+   ],
+   "linhas": 255,
+   "dominio": "hooks",
+   "tabelas": [
+    "contas_bancarias",
+    "contas_pagar",
+    "contas_receber",
+    "solicitacoes_aprovacao"
+   ],
+   "rpcs": [],
+   "edges": [
+    "external-data"
+   ],
+   "hooks_internos": [
+    "useQuery"
+   ],
+   "canais_realtime": [],
+   "usado_por": 1,
+   "usado_por_arquivos": [
+    "src/pages/Expert.tsx"
+   ],
+   "coberto_por_testes": 0
+  },
+  {
+   "arquivo": "src/hooks/useExpertConversations.ts",
+   "hooks_exportados": [
+    "useCreateConversation",
+    "useDeleteConversation",
+    "useExpertConversations",
+    "useExpertMessages",
+    "useSaveMessage",
+    "useUpdateConversation",
+    "useUpdateMessageActions"
+   ],
+   "linhas": 217,
+   "dominio": "hooks",
+   "tabelas": [
+    "expert_conversations",
+    "expert_messages"
+   ],
+   "rpcs": [],
+   "edges": [],
+   "hooks_internos": [
+    "useMutation",
+    "useQuery",
+    "useQueryClient"
+   ],
+   "canais_realtime": [],
+   "usado_por": 2,
+   "usado_por_arquivos": [
+    "src/components/expert/expertPageSupport.ts",
+    "src/pages/Expert.tsx"
+   ],
+   "coberto_por_testes": 0
+  },
+  {
+   "arquivo": "src/hooks/useExportarSped.ts",
+   "hooks_exportados": [
+    "useExportarSped"
+   ],
+   "linhas": 29,
+   "dominio": "hooks",
+   "tabelas": [],
+   "rpcs": [],
+   "edges": [
+    "exportar-sped-contribuicoes"
+   ],
+   "hooks_internos": [
+    "useMutation"
+   ],
+   "canais_realtime": [],
+   "usado_por": 1,
+   "usado_por_arquivos": [
+    "src/pages/tributario/DashboardTributario.tsx"
+   ],
+   "coberto_por_testes": 0
+  },
+  {
+   "arquivo": "src/hooks/useExtratoWebhooks.ts",
+   "hooks_exportados": [
+    "useConciliacoes",
+    "useExtratoBancario",
+    "useHistoricoAnalisesPreditivas",
+    "useWebhooksLog",
+    "useWebhooksRecentes"
+   ],
+   "linhas": 83,
+   "dominio": "hooks",
+   "tabelas": [
+    "conciliacoes",
+    "extrato_bancario",
+    "historico_analises_preditivas",
+    "vw_webhooks_recentes",
+    "webhooks_log"
+   ],
+   "rpcs": [],
+   "edges": [],
+   "hooks_internos": [
+    "useQuery"
+   ],
+   "canais_realtime": [],
+   "usado_por": 4,
+   "usado_por_arquivos": [
+    "src/components/analytics/HistoricoAnalisesPreditivasPanel.tsx",
+    "src/components/asaas/WebhooksLogPanel.tsx",
+    "src/components/conciliacao/ExtratoBancarioPanel.tsx",
+    "src/components/conciliacao/SessoesConciliacaoPanel.tsx"
+   ],
+   "coberto_por_testes": 0
+  },
+  {
+   "arquivo": "src/hooks/useFechamentoTributario.ts",
+   "hooks_exportados": [
+    "useFechamentoTributario"
+   ],
+   "linhas": 90,
+   "dominio": "hooks",
+   "tabelas": [
+    "fechamentos_tributarios"
+   ],
+   "rpcs": [],
+   "edges": [
+    "executar-fechamento-tributario"
+   ],
+   "hooks_internos": [
+    "useMutation",
+    "useQuery",
+    "useQueryClient",
+    "useToast"
+   ],
+   "canais_realtime": [],
+   "usado_por": 1,
+   "usado_por_arquivos": [
+    "src/components/tributario/dashboard/AssistenteFechamentoMensal.tsx"
+   ],
+   "coberto_por_testes": 0
+  },
+  {
+   "arquivo": "src/hooks/useFilterPresets.ts",
+   "hooks_exportados": [
+    "useFilterPresets"
+   ],
+   "linhas": 101,
+   "dominio": "hooks",
+   "tabelas": [
+    "user_filter_presets"
+   ],
+   "rpcs": [],
+   "edges": [],
+   "hooks_internos": [
+    "useAuth",
+    "useMutation",
+    "useQuery",
+    "useQueryClient"
+   ],
+   "canais_realtime": [],
+   "usado_por": 1,
+   "usado_por_arquivos": [
+    "src/components/contabilidade/FilterPresetsManager.tsx"
+   ],
+   "coberto_por_testes": 0
+  },
+  {
+   "arquivo": "src/hooks/useFinancialAlerts.tsx",
+   "hooks_exportados": [
+    "useFinancialAlerts"
+   ],
+   "linhas": 75,
+   "dominio": "hooks",
+   "tabelas": [],
+   "rpcs": [],
+   "edges": [],
+   "hooks_internos": [
+    "useAuth",
+    "useEffect"
+   ],
+   "canais_realtime": [
+    "baixa-failures-${Math.random().toString(36).slice(2, 8)}",
+    "regua-failures-${Math.random().toString(36).slice(2, 8)}"
+   ],
+   "usado_por": 1,
+   "usado_por_arquivos": [
+    "src/components/layout/MainLayout.tsx"
+   ],
+   "coberto_por_testes": 0
+  },
+  {
+   "arquivo": "src/hooks/useFinancialData.ts",
+   "hooks_exportados": [
+    "useCentrosCusto",
+    "useClientes",
+    "useClientesPaginated",
+    "useContasBancarias",
+    "useContasPagar",
+    "useContasPagarPaginated",
+    "useContasReceber",
+    "useContasReceberPaginated",
+    "useCreateContaPagar",
+    "useDashboardKPIs",
+    "useDeleteContaPagar",
+    "useEmpresas",
+    "useFornecedores",
+    "useFornecedoresPaginated",
+    "useUpdateContaPagar"
+   ],
+   "linhas": 37,
+   "dominio": "hooks",
+   "tabelas": [],
+   "rpcs": [],
+   "edges": [],
+   "hooks_internos": [],
+   "canais_realtime": [],
+   "usado_por": 49,
+   "usado_por_arquivos": [
+    "src/components/admin/sso/ScimTokensTab.tsx",
+    "src/components/clientes/ClienteDetailDialog.tsx",
+    "src/components/conciliacao/ConciliacaoFilters.tsx",
+    "src/components/contabilidade/BalanceteTab.tsx",
+    "src/components/contabilidade/DreBalancoTab.tsx",
+    "src/components/contabilidade/IndicesTab.tsx",
+    "src/components/contabilidade/PlanoContasTab.tsx",
+    "src/components/contabilidade/razao-diario/useRazaoDiarioData.ts",
+    "src/components/contas-bancarias/ContaBancariaCard.tsx",
+    "src/components/contas-bancarias/DistribuicaoBancos.tsx",
+    "src/components/contas-bancarias/TransferenciaDialog.tsx",
+    "src/components/contas-pagar/ContaPagarForm.tsx",
+    "src/components/contas-pagar/RegistrarPagamentoDialog.tsx",
+    "src/components/contas-receber/ContaReceberForm.tsx",
+    "src/components/contas-receber/RegistrarRecebimentoDialog.tsx",
+    "src/components/demonstrativos/FluxoCaixaContabil.tsx",
+    "src/components/financeiro/TransferenciaDialog.tsx",
+    "src/components/fornecedores/FornecedorDetailDialog.tsx",
+    "src/components/nfe/InutilizacaoNFe.tsx",
+    "src/components/nfe/NovaNFeForm.tsx",
+    "src/components/pix-hub/PixDashboardRealtime.tsx",
+    "src/components/pix-hub/PixRecebimento.tsx",
+    "src/components/pix-hub/PixTemplates.tsx",
+    "src/components/relatorios/RelatoriosAgendados.tsx",
+    "src/components/tesouraria/ConsolidacaoMultiCNPJ.tsx",
+    "src/components/tesouraria/FluxoInterEmpresas.tsx",
+    "src/components/tesouraria/MatrizCNPJBanco.tsx",
+    "src/components/tesouraria/TesourariaCentralizada.tsx",
+    "src/components/vendedores/VendedorDashboard.tsx",
+    "src/hooks/useConciliacaoPage.ts"
+   ],
+   "coberto_por_testes": 0
+  },
+  {
+   "arquivo": "src/hooks/useFinancialOperations.ts",
+   "hooks_exportados": [
+    "useCancelTransferencia",
+    "useCreateMovimentacao",
+    "useCreateTransferencia",
+    "useDeleteMovimentacao",
+    "useFormasPagamento",
+    "useMovimentacoes",
+    "usePlanoContas",
+    "useTransferencias"
+   ],
+   "linhas": 281,
+   "dominio": "hooks",
+   "tabelas": [
+    "formas_pagamento",
+    "movimentacoes",
+    "plano_contas",
+    "transferencias"
+   ],
+   "rpcs": [],
+   "edges": [],
+   "hooks_internos": [
+    "useMutation",
+    "useQuery",
+    "useQueryClient"
+   ],
+   "canais_realtime": [],
+   "usado_por": 2,
+   "usado_por_arquivos": [
+    "src/components/contas-bancarias/TransferenciaDialog.tsx",
+    "src/pages/Movimentacoes.tsx"
+   ],
+   "coberto_por_testes": 0
+  },
+  {
+   "arquivo": "src/hooks/useFluxoCaixa.ts",
+   "hooks_exportados": [
+    "useFluxoCaixaHistorico",
+    "useFluxoCaixaKPIs",
+    "useFluxoCaixaProjetado"
+   ],
+   "linhas": 210,
+   "dominio": "hooks",
+   "tabelas": [
+    "contas_bancarias",
+    "contas_pagar",
+    "contas_receber",
+    "transacoes_bancarias"
+   ],
+   "rpcs": [],
+   "edges": [],
+   "hooks_internos": [
+    "useQuery"
+   ],
+   "canais_realtime": [],
+   "usado_por": 1,
+   "usado_por_arquivos": [
+    "src/hooks/useFluxoCaixaPage.ts"
+   ],
+   "coberto_por_testes": 1
+  },
+  {
+   "arquivo": "src/hooks/useFluxoCaixaPage.ts",
+   "hooks_exportados": [
+    "useFluxoCaixaPage"
+   ],
+   "linhas": 143,
+   "dominio": "hooks",
+   "tabelas": [],
+   "rpcs": [],
+   "edges": [],
+   "hooks_internos": [
+    "useCallback",
+    "useFluxoCaixaKPIs",
+    "useFluxoCaixaProjetado",
+    "useMemo",
+    "useQuickDateFilter",
+    "useState"
+   ],
+   "canais_realtime": [],
+   "usado_por": 1,
+   "usado_por_arquivos": [
+    "src/pages/FluxoCaixa.tsx"
+   ],
+   "coberto_por_testes": 0
+  },
+  {
+   "arquivo": "src/hooks/useFrontendErrorLogs.ts",
+   "hooks_exportados": [
+    "useFrontendErrorAlertState",
+    "useFrontendErrorGroups",
+    "useFrontendErrorOccurrences",
+    "useSilenciamentosExpirando",
+    "useSilenciarAlertaErro"
+   ],
+   "linhas": 190,
+   "dominio": "hooks",
+   "tabelas": [
+    "frontend_error_alert_state"
+   ],
+   "rpcs": [
+    "get_frontend_error_groups",
+    "get_frontend_error_occurrences",
+    "get_silenciamentos_expirando",
+    "silenciar_alerta_erro_frontend"
+   ],
+   "edges": [],
+   "hooks_internos": [
+    "useMutation",
+    "useQuery",
+    "useQueryClient"
+   ],
+   "canais_realtime": [],
+   "usado_por": 3,
+   "usado_por_arquivos": [
+    "src/components/admin/AlertasProativosErros.tsx",
+    "src/components/admin/SilenciamentosExpirando.tsx",
+    "src/pages/admin/AdminErrosFrontend.tsx"
+   ],
+   "coberto_por_testes": 0
+  },
+  {
+   "arquivo": "src/hooks/useGerarEvidenciasStream.ts",
+   "hooks_exportados": [
+    "useGerarEvidenciasStream"
+   ],
+   "linhas": 263,
+   "dominio": "hooks",
+   "tabelas": [],
+   "rpcs": [],
+   "edges": [
+    "gerar-pacote-evidencias"
+   ],
+   "hooks_internos": [
+    "useCallback",
+    "useEffect",
+    "useQueryClient",
+    "useState"
+   ],
+   "canais_realtime": [],
+   "usado_por": 2,
+   "usado_por_arquivos": [
+    "src/components/compliance/EvidenciaStatusDialog.tsx",
+    "src/components/compliance/EvidenciasTab.tsx"
+   ],
+   "coberto_por_testes": 0
+  },
+  {
+   "arquivo": "src/hooks/useGlobalFilterSync.ts",
+   "hooks_exportados": [
+    "useGlobalFilterSync"
+   ],
+   "linhas": 25,
+   "dominio": "hooks",
+   "tabelas": [],
+   "rpcs": [],
+   "edges": [],
+   "hooks_internos": [
+    "useEffect"
+   ],
+   "canais_realtime": [],
+   "usado_por": 0,
+   "usado_por_arquivos": [],
+   "coberto_por_testes": 1
+  },
+  {
+   "arquivo": "src/hooks/useGlobalFinancialFilter.ts",
+   "hooks_exportados": [
+    "useGlobalFinancialFilter"
+   ],
+   "linhas": 44,
+   "dominio": "hooks",
+   "tabelas": [],
+   "rpcs": [],
+   "edges": [],
+   "hooks_internos": [
+    "useCallback",
+    "useEffect"
+   ],
+   "canais_realtime": [],
+   "usado_por": 3,
+   "usado_por_arquivos": [
+    "src/hooks/useConciliacaoPage.ts",
+    "src/hooks/useContasPagarLogic.ts",
+    "src/hooks/useContasReceberLogic.ts"
+   ],
+   "coberto_por_testes": 0
+  },
+  {
+   "arquivo": "src/hooks/useHealthScoreOperacional.ts",
+   "hooks_exportados": [
+    "useHealthScoreOperacional"
+   ],
+   "linhas": 55,
+   "dominio": "hooks",
+   "tabelas": [
+    "health_scores_operacionais"
+   ],
+   "rpcs": [],
+   "edges": [
+    "calcular-health-score-operacional"
+   ],
+   "hooks_internos": [
+    "useMutation",
+    "useQuery",
+    "useQueryClient"
+   ],
+   "canais_realtime": [],
+   "usado_por": 1,
+   "usado_por_arquivos": [
+    "src/components/dashboard/HealthScoreCard.tsx"
+   ],
+   "coberto_por_testes": 0
+  },
+  {
+   "arquivo": "src/hooks/useHeatmapTributario.ts",
+   "hooks_exportados": [
+    "useHeatmapTributario"
+   ],
+   "linhas": 38,
+   "dominio": "hooks",
+   "tabelas": [],
+   "rpcs": [],
+   "edges": [
+    "gerar-heatmap-tributario"
+   ],
+   "hooks_internos": [
+    "useQuery"
+   ],
+   "canais_realtime": [],
+   "usado_por": 1,
+   "usado_por_arquivos": [
+    "src/components/tributario/dashboard/HeatmapTributarioAnual.tsx"
+   ],
+   "coberto_por_testes": 0
+  },
+  {
+   "arquivo": "src/hooks/useHighlightFromUrl.ts",
+   "hooks_exportados": [
+    "useHighlightFromUrl"
+   ],
+   "linhas": 87,
+   "dominio": "hooks",
+   "tabelas": [],
+   "rpcs": [],
+   "edges": [],
+   "hooks_internos": [
+    "useEffect",
+    "useSearchParams"
+   ],
+   "canais_realtime": [],
+   "usado_por": 4,
+   "usado_por_arquivos": [
+    "src/pages/Conciliacao.tsx",
+    "src/pages/ContasPagar.tsx",
+    "src/pages/ContasReceber.tsx",
+    "src/pages/Movimentacoes.tsx"
+   ],
+   "coberto_por_testes": 0
+  },
+  {
+   "arquivo": "src/hooks/useHistoricoBoletos.ts",
+   "hooks_exportados": [
+    "useHistoricoBoletos"
+   ],
+   "linhas": 47,
+   "dominio": "hooks",
+   "tabelas": [
+    "historico_cobrancas_boletos"
+   ],
+   "rpcs": [],
+   "edges": [],
+   "hooks_internos": [
+    "useQuery"
+   ],
+   "canais_realtime": [],
+   "usado_por": 1,
+   "usado_por_arquivos": [
+    "src/components/boletos/BoletoGlobalHistory.tsx"
+   ],
+   "coberto_por_testes": 0
+  },
+  {
+   "arquivo": "src/hooks/useHistoricoConciliacaoIA.ts",
+   "hooks_exportados": [
+    "useHistoricoConciliacaoIA"
+   ],
+   "linhas": 249,
+   "dominio": "hooks",
+   "tabelas": [
+    "feedback_conciliacao_ia",
+    "historico_conciliacao_ia"
+   ],
+   "rpcs": [],
+   "edges": [],
+   "hooks_internos": [
+    "useAuth",
+    "useMutation",
+    "useQuery",
+    "useQueryClient"
+   ],
+   "canais_realtime": [],
+   "usado_por": 4,
+   "usado_por_arquivos": [
+    "src/components/conciliacao/SugestoesMatchIA.tsx",
+    "src/components/insights-ia/AuditoriaDecisoesTab.tsx",
+    "src/components/insights-ia/ConciliacaoHistoricoTab.tsx",
+    "src/hooks/useConciliacaoIA.ts"
+   ],
+   "coberto_por_testes": 0
+  },
+  {
+   "arquivo": "src/hooks/useHistoricoFinanceiro.ts",
+   "hooks_exportados": [
+    "useHistoricoFinanceiro"
+   ],
+   "linhas": 142,
+   "dominio": "hooks",
+   "tabelas": [
+    "faturamento_mensal",
+    "folha_pagamento"
+   ],
+   "rpcs": [],
+   "edges": [],
+   "hooks_internos": [
+    "useAuth",
+    "useMutation",
+    "useQuery",
+    "useQueryClient"
+   ],
+   "canais_realtime": [],
+   "usado_por": 2,
+   "usado_por_arquivos": [
+    "src/components/tributario/historico/FaturamentoTab.tsx",
+    "src/components/tributario/historico/FolhaTab.tsx"
+   ],
+   "coberto_por_testes": 0
+  },
+  {
+   "arquivo": "src/hooks/useImportacaoXMLNFe.ts",
+   "hooks_exportados": [
+    "useImportacaoXMLNFe"
+   ],
+   "linhas": 378,
+   "dominio": "hooks",
+   "tabelas": [],
+   "rpcs": [
+    "registrar_nfe_com_creditos"
+   ],
+   "edges": [],
+   "hooks_internos": [
+    "useMutation",
+    "useQueryClient",
+    "useState"
+   ],
+   "canais_realtime": [],
+   "usado_por": 1,
+   "usado_por_arquivos": [
+    "src/components/reforma-tributaria/ImportacaoXMLPanel.tsx"
+   ],
+   "coberto_por_testes": 1
+  },
+  {
+   "arquivo": "src/hooks/useImportPlanoContas.ts",
+   "hooks_exportados": [
+    "useImportPlanoContas"
+   ],
+   "linhas": 131,
+   "dominio": "hooks",
+   "tabelas": [
+    "plano_contas"
+   ],
+   "rpcs": [],
+   "edges": [],
+   "hooks_internos": [
+    "useMutation",
+    "useQueryClient"
+   ],
+   "canais_realtime": [],
+   "usado_por": 1,
+   "usado_por_arquivos": [
+    "src/components/contabilidade/ImportarPlanoContasDialog.tsx"
+   ],
+   "coberto_por_testes": 0
+  },
+  {
+   "arquivo": "src/hooks/useInadimplenciaSegmentada.ts",
+   "hooks_exportados": [
+    "useInadimplenciaPorRamo",
+    "useInadimplenciaPorVendedor",
+    "usePrevisoesInadimplencia",
+    "useRamosAtividade",
+    "useVendedores"
+   ],
+   "linhas": 333,
+   "dominio": "hooks",
+   "tabelas": [
+    "alertas_preditivos",
+    "clientes",
+    "contas_receber",
+    "vendedores"
+   ],
+   "rpcs": [],
+   "edges": [],
+   "hooks_internos": [
+    "useQuery"
+   ],
+   "canais_realtime": [],
+   "usado_por": 3,
+   "usado_por_arquivos": [
+    "src/components/analytics/InadimplenciaSegmentada.tsx",
+    "src/components/analytics/PredicaoTab.tsx",
+    "src/pages/DashboardReceber.tsx"
+   ],
+   "coberto_por_testes": 0
+  },
+  {
+   "arquivo": "src/hooks/useIncentivosFiscais.ts",
+   "hooks_exportados": [
+    "useIncentivosFiscais"
+   ],
+   "linhas": 206,
+   "dominio": "hooks",
+   "tabelas": [
+    "incentivos_fiscais"
+   ],
+   "rpcs": [],
+   "edges": [],
+   "hooks_internos": [
+    "useMutation",
+    "useQuery",
+    "useQueryClient"
+   ],
+   "canais_realtime": [],
+   "usado_por": 1,
+   "usado_por_arquivos": [
+    "src/components/reforma-tributaria/IncentivosFiscaisPanel.tsx"
+   ],
+   "coberto_por_testes": 0
+  },
+  {
+   "arquivo": "src/hooks/useIndicesContabeis.ts",
+   "hooks_exportados": [
+    "useIndicesContabeis",
+    "useSerieIndices"
+   ],
+   "linhas": 182,
+   "dominio": "hooks",
+   "tabelas": [],
+   "rpcs": [
+    "fn_indices_contabeis"
+   ],
+   "edges": [],
+   "hooks_internos": [],
+   "canais_realtime": [],
+   "usado_por": 2,
+   "usado_por_arquivos": [
+    "src/components/contabilidade/IndicesTab.tsx",
+    "src/components/contabilidade/indices/IndicesSerieChart.tsx"
+   ],
+   "coberto_por_testes": 1
+  },
+  {
+   "arquivo": "src/hooks/useInsightsIA.ts",
+   "hooks_exportados": [
+    "useInsightsIAKpis"
+   ],
+   "linhas": 57,
+   "dominio": "hooks",
+   "tabelas": [
+    "anomalias_detectadas",
+    "feedback_conciliacao_ia",
+    "regras_conciliacao"
+   ],
+   "rpcs": [],
+   "edges": [],
+   "hooks_internos": [
+    "useQuery"
+   ],
+   "canais_realtime": [],
+   "usado_por": 1,
+   "usado_por_arquivos": [
+    "src/components/insights-ia/InsightsIAKpis.tsx"
+   ],
+   "coberto_por_testes": 0
+  },
+  {
+   "arquivo": "src/hooks/useInstallPrompt.ts",
+   "hooks_exportados": [
+    "useInstallPrompt"
+   ],
+   "linhas": 77,
+   "dominio": "hooks",
+   "tabelas": [],
+   "rpcs": [],
+   "edges": [],
+   "hooks_internos": [
+    "useCallback",
+    "useEffect",
+    "useState"
+   ],
+   "canais_realtime": [],
+   "usado_por": 1,
+   "usado_por_arquivos": [
+    "src/components/pwa/PWAInstallBanner.tsx"
+   ],
+   "coberto_por_testes": 0
+  },
+  {
+   "arquivo": "src/hooks/useInteligenciaOperacional.ts",
+   "hooks_exportados": [
+    "useCreatePlanoAcao",
+    "useKPIsOperacionais",
+    "usePlanosAcao",
+    "useUpdatePlanoAcao"
+   ],
+   "linhas": 108,
+   "dominio": "hooks",
+   "tabelas": [
+    "kpis_operacionais",
+    "planos_acao"
+   ],
+   "rpcs": [],
+   "edges": [],
+   "hooks_internos": [
+    "useMutation",
+    "useQuery",
+    "useQueryClient"
+   ],
+   "canais_realtime": [],
+   "usado_por": 1,
+   "usado_por_arquivos": [
+    "src/components/dashboard/PlanosAcaoPanel.tsx"
+   ],
+   "coberto_por_testes": 0
+  },
+  {
+   "arquivo": "src/hooks/useIpMaskPreference.ts",
+   "hooks_exportados": [
+    "useIpMaskPreference"
+   ],
+   "linhas": 19,
+   "dominio": "hooks",
+   "tabelas": [],
+   "rpcs": [],
+   "edges": [],
+   "hooks_internos": [],
+   "canais_realtime": [],
+   "usado_por": 7,
+   "usado_por_arquivos": [
+    "src/components/admin/IpMaskToggle.tsx",
+    "src/components/audit/AuditLogTable.tsx",
+    "src/components/audit/jit/SSOJitEventsTable.tsx",
+    "src/components/auth/MFASettings.tsx",
+    "src/components/security/RateLimitDashboard.tsx",
+    "src/components/security/rate-limit/BlockedIPsTab.tsx",
+    "src/pages/AuditLogs.tsx"
+   ],
+   "coberto_por_testes": 0
+  },
+  {
+   "arquivo": "src/hooks/useIRPJCSLL.ts",
+   "hooks_exportados": [
+    "useIRPJCSLL"
+   ],
+   "linhas": 387,
+   "dominio": "hooks",
+   "tabelas": [
+    "apuracoes_irpj_csll",
+    "prejuizos_fiscais"
+   ],
+   "rpcs": [],
+   "edges": [],
+   "hooks_internos": [
+    "useMutation",
+    "useQuery",
+    "useQueryClient"
+   ],
+   "canais_realtime": [],
+   "usado_por": 1,
+   "usado_por_arquivos": [
+    "src/components/reforma-tributaria/ModuloIRPJCSLL.tsx"
+   ],
+   "coberto_por_testes": 0
+  },
+  {
+   "arquivo": "src/hooks/useKeyboardNavigation.ts",
+   "hooks_exportados": [
+    "useKeyboardNavigation"
+   ],
+   "linhas": 65,
+   "dominio": "hooks",
+   "tabelas": [],
+   "rpcs": [],
+   "edges": [],
+   "hooks_internos": [
+    "useEffect",
+    "useLocation",
+    "useNavigate",
+    "useSmartBack"
+   ],
+   "canais_realtime": [],
+   "usado_por": 1,
+   "usado_por_arquivos": [
+    "src/components/layout/MainLayout.tsx"
+   ],
+   "coberto_por_testes": 1
+  },
+  {
+   "arquivo": "src/hooks/useKeyboardShortcuts.ts",
+   "hooks_exportados": [
+    "useKeyboardShortcuts"
+   ],
+   "linhas": 285,
+   "dominio": "hooks",
+   "tabelas": [],
+   "rpcs": [],
+   "edges": [],
+   "hooks_internos": [
+    "useCallback",
+    "useEffect",
+    "useNavigate"
+   ],
+   "canais_realtime": [],
+   "usado_por": 2,
+   "usado_por_arquivos": [
+    "src/components/layout/KeyboardShortcutsDialog.tsx",
+    "src/components/layout/KeyboardShortcutsProvider.tsx"
+   ],
+   "coberto_por_testes": 1
+  },
+  {
+   "arquivo": "src/hooks/useLancamentosContabeis.ts",
+   "hooks_exportados": [
+    "useCriarLancamento",
+    "useImportLancamentosLote",
+    "useLancamentosContabeis"
+   ],
+   "linhas": 350,
+   "dominio": "hooks",
+   "tabelas": [
+    "lancamentos_contabeis",
+    "partidas_contabeis"
+   ],
+   "rpcs": [],
+   "edges": [],
+   "hooks_internos": [
+    "useMutation",
+    "useQuery",
+    "useQueryClient"
+   ],
+   "canais_realtime": [],
+   "usado_por": 8,
+   "usado_por_arquivos": [
+    "src/components/contabilidade/ImportLancamentosCSVDialog.tsx",
+    "src/components/contabilidade/LancamentosTab.tsx",
+    "src/components/contabilidade/NovoLancamentoDialog.tsx",
+    "src/components/contabilidade/dre-balanco/LancamentosDrillDown.tsx",
+    "src/components/contabilidade/import-lancamentos-csv/ResultStep.tsx",
+    "src/components/contabilidade/razao-diario/useRazaoDiarioData.ts",
+    "src/components/demonstrativos/BalancoDesequilibrioIndicator.tsx",
+    "src/hooks/usePreValidacaoSped.ts"
+   ],
+   "coberto_por_testes": 1
+  },
+  {
+   "arquivo": "src/hooks/useLastSsoProfileSync.ts",
+   "hooks_exportados": [
+    "useLastSsoProfileSync"
+   ],
+   "linhas": 96,
+   "dominio": "hooks",
+   "tabelas": [
+    "audit_logs"
+   ],
+   "rpcs": [],
+   "edges": [],
+   "hooks_internos": [
+    "useQuery"
+   ],
+   "canais_realtime": [],
+   "usado_por": 5,
+   "usado_por_arquivos": [
+    "src/components/profile/SsoProfileSyncBanner.tsx",
+    "src/hooks/useSsoProfileSyncEvents.ts",
+    "src/pages/admin/AuditSsoProfileSync.helpers.ts",
+    "src/pages/admin/AuditSsoProfileSync.parts.tsx",
+    "src/pages/admin/AuditSsoProfileSync.tsx"
+   ],
+   "coberto_por_testes": 0
+  },
+  {
+   "arquivo": "src/hooks/useLocalStorage.ts",
+   "hooks_exportados": [
+    "useLocalStorage",
+    "useSessionStorage"
+   ],
+   "linhas": 134,
+   "dominio": "hooks",
+   "tabelas": [],
+   "rpcs": [],
+   "edges": [],
+   "hooks_internos": [
+    "useCallback",
+    "useEffect"
+   ],
+   "canais_realtime": [],
+   "usado_por": 1,
+   "usado_por_arquivos": [
+    "src/hooks/useIpMaskPreference.ts"
+   ],
+   "coberto_por_testes": 0
+  },
+  {
+   "arquivo": "src/hooks/useLocalStorageState.ts",
+   "hooks_exportados": [
+    "useLocalStorageState"
+   ],
+   "linhas": 75,
+   "dominio": "hooks",
+   "tabelas": [],
+   "rpcs": [],
+   "edges": [],
+   "hooks_internos": [
+    "useCallback",
+    "useEffect",
+    "useRef"
+   ],
+   "canais_realtime": [],
+   "usado_por": 5,
+   "usado_por_arquivos": [
+    "src/components/audit/AuditDiffView.tsx",
+    "src/components/contabilidade/BalanceteTab.tsx",
+    "src/components/contabilidade/IndicesTab.tsx",
+    "src/components/insights-ia/anomalia/EntidadeDetalheDrawer.tsx",
+    "src/pages/Contabilidade.tsx"
+   ],
+   "coberto_por_testes": 0
+  },
+  {
+   "arquivo": "src/hooks/useManagedFilters.ts",
+   "hooks_exportados": [
+    "useManagedFilters"
+   ],
+   "linhas": 354,
+   "dominio": "hooks",
+   "tabelas": [
+    "user_active_filters"
+   ],
+   "rpcs": [],
+   "edges": [],
+   "hooks_internos": [
+    "useAuth",
+    "useCallback",
+    "useEffect",
+    "useMemo",
+    "useRef",
+    "useState"
+   ],
+   "canais_realtime": [],
+   "usado_por": 12,
+   "usado_por_arquivos": [
+    "src/components/contabilidade/LancamentosTab.tsx",
+    "src/components/contabilidade/RazaoDiarioTab.tsx",
+    "src/components/contabilidade/razao-diario/FiltersBar.tsx",
+    "src/components/filters/ClearFiltersButton.tsx",
+    "src/components/ui/advanced-filters.tsx",
+    "src/pages/AuditLogs.tsx",
+    "src/pages/Clientes.tsx",
+    "src/pages/DashboardReceber.tsx",
+    "src/pages/Expert.tsx",
+    "src/pages/Fornecedores.tsx",
+    "src/pages/admin/AuditoriaIA.tsx",
+    "src/pages/admin/SSOJitEvents.tsx"
+   ],
+   "coberto_por_testes": 0
+  },
+  {
+   "arquivo": "src/hooks/useManifestarNfe.ts",
+   "hooks_exportados": [
+    "useManifestarNfe"
+   ],
+   "linhas": 63,
+   "dominio": "hooks",
+   "tabelas": [],
+   "rpcs": [],
+   "edges": [],
+   "hooks_internos": [
+    "useQueryClient"
+   ],
+   "canais_realtime": [],
+   "usado_por": 1,
+   "usado_por_arquivos": [
+    "src/pages/tributario/NfeRecebidas.tsx"
+   ],
+   "coberto_por_testes": 0
+  },
+  {
+   "arquivo": "src/hooks/useMetasFinanceiras.ts",
+   "hooks_exportados": [
+    "useCreateMeta",
+    "useDeleteMeta",
+    "useHistoricoScoreSaude",
+    "useMetasFinanceiras",
+    "useRecomendacoesIA",
+    "useUpdateMeta"
+   ],
+   "linhas": 136,
+   "dominio": "hooks",
+   "tabelas": [
+    "historico_score_saude",
+    "metas_financeiras",
+    "recomendacoes_metas_ia"
+   ],
+   "rpcs": [],
+   "edges": [],
+   "hooks_internos": [
+    "useAuth",
+    "useMutation",
+    "useQuery",
+    "useQueryClient"
+   ],
+   "canais_realtime": [],
+   "usado_por": 1,
+   "usado_por_arquivos": [
+    "src/components/dashboard/MetasFinanceirasPanel.tsx"
+   ],
+   "coberto_por_testes": 0
+  },
+  {
+   "arquivo": "src/hooks/useMetricasAprendizadoIA.ts",
+   "hooks_exportados": [
+    "useMetricasAprendizadoIA"
+   ],
+   "linhas": 143,
+   "dominio": "hooks",
+   "tabelas": [
+    "anomalias_detectadas",
+    "feedback_conciliacao_ia",
+    "historico_conciliacao_ia",
+    "regras_conciliacao"
+   ],
+   "rpcs": [],
+   "edges": [],
+   "hooks_internos": [
+    "useQuery"
+   ],
+   "canais_realtime": [],
+   "usado_por": 1,
+   "usado_por_arquivos": [
+    "src/components/insights-ia/AprendizadoMetricasTab.tsx"
+   ],
+   "coberto_por_testes": 0
+  },
+  {
+   "arquivo": "src/hooks/useMFA.ts",
+   "hooks_exportados": [
+    "useMFA"
+   ],
+   "linhas": 184,
+   "dominio": "hooks",
+   "tabelas": [],
+   "rpcs": [],
+   "edges": [],
+   "hooks_internos": [
+    "useAuth",
+    "useCallback",
+    "useEffect",
+    "useState"
+   ],
+   "canais_realtime": [],
+   "usado_por": 1,
+   "usado_por_arquivos": [
+    "src/components/auth/MFASettings.tsx"
+   ],
+   "coberto_por_testes": 0
+  },
+  {
+   "arquivo": "src/hooks/useNegativacoes.ts",
+   "hooks_exportados": [
+    "useCreateNegativacao",
+    "useNegativacoes",
+    "useUpdateNegativacao"
+   ],
+   "linhas": 90,
+   "dominio": "hooks",
+   "tabelas": [
+    "negativacoes"
+   ],
+   "rpcs": [],
+   "edges": [],
+   "hooks_internos": [
+    "useMutation",
+    "useQuery",
+    "useQueryClient"
+   ],
+   "canais_realtime": [],
+   "usado_por": 1,
+   "usado_por_arquivos": [
+    "src/components/cobranca/NegativacoesProtestosPanel.tsx"
+   ],
+   "coberto_por_testes": 0
+  },
+  {
+   "arquivo": "src/hooks/useNetworkStatus.ts",
+   "hooks_exportados": [
+    "useNetworkStatus"
+   ],
+   "linhas": 95,
+   "dominio": "hooks",
+   "tabelas": [],
+   "rpcs": [],
+   "edges": [],
+   "hooks_internos": [
+    "useCallback",
+    "useEffect"
+   ],
+   "canais_realtime": [],
+   "usado_por": 2,
+   "usado_por_arquivos": [
+    "src/components/offline/OfflineBanner.tsx",
+    "src/components/ui/network-status-indicator.tsx"
+   ],
+   "coberto_por_testes": 0
+  },
+  {
+   "arquivo": "src/hooks/useNfeRecebidas.ts",
+   "hooks_exportados": [
+    "useNfeRecebidas"
+   ],
+   "linhas": 83,
+   "dominio": "hooks",
+   "tabelas": [
+    "nfe_recebidas"
+   ],
+   "rpcs": [],
+   "edges": [],
+   "hooks_internos": [
+    "useEmpresaScope",
+    "useQuery"
+   ],
+   "canais_realtime": [],
+   "usado_por": 1,
+   "usado_por_arquivos": [
+    "src/pages/tributario/NfeRecebidas.tsx"
+   ],
+   "coberto_por_testes": 0
+  },
+  {
+   "arquivo": "src/hooks/useNfeVinculo.ts",
+   "hooks_exportados": [
+    "useCriarContaDaNfe",
+    "useDesvincularNfe",
+    "useSugestoesContaPagar",
+    "useVincularNfe"
+   ],
+   "linhas": 109,
+   "dominio": "hooks",
+   "tabelas": [],
+   "rpcs": [],
+   "edges": [],
+   "hooks_internos": [
+    "useMutation",
+    "useQuery",
+    "useQueryClient"
+   ],
+   "canais_realtime": [],
+   "usado_por": 2,
+   "usado_por_arquivos": [
+    "src/components/tributario/NfeVinculoDialog.tsx",
+    "src/pages/tributario/NfeRecebidas.tsx"
+   ],
+   "coberto_por_testes": 1
+  },
+  {
+   "arquivo": "src/hooks/useOnboardingProgress.ts",
+   "hooks_exportados": [
+    "useOnboardingProgress"
+   ],
+   "linhas": 115,
+   "dominio": "hooks",
+   "tabelas": [
+    "user_onboarding_progress"
+   ],
+   "rpcs": [],
+   "edges": [],
+   "hooks_internos": [
+    "useAuth",
+    "useCallback",
+    "useEffect",
+    "useState"
+   ],
+   "canais_realtime": [],
+   "usado_por": 2,
+   "usado_por_arquivos": [
+    "src/components/configuracoes/NotificacoesPreferencias.tsx",
+    "src/components/onboarding/OnboardingTour.tsx"
+   ],
+   "coberto_por_testes": 0
+  },
+  {
+   "arquivo": "src/hooks/useOpenFinance.ts",
+   "hooks_exportados": [
+    "useOpenFinance"
+   ],
+   "linhas": 268,
+   "dominio": "hooks",
+   "tabelas": [
+    "open_finance_consents"
+   ],
+   "rpcs": [],
+   "edges": [
+    "open-finance"
+   ],
+   "hooks_internos": [
+    "useMutation",
+    "useQuery",
+    "useQueryClient"
+   ],
+   "canais_realtime": [],
+   "usado_por": 1,
+   "usado_por_arquivos": [
+    "src/components/integracoes/OpenFinancePanel.tsx"
+   ],
+   "coberto_por_testes": 0
+  },
+  {
+   "arquivo": "src/hooks/useOperacoesTributaveis.ts",
+   "hooks_exportados": [
+    "useOperacoesTributaveis"
+   ],
+   "linhas": 438,
+   "dominio": "hooks",
+   "tabelas": [
+    "notas_fiscais",
+    "operacoes_tributaveis"
+   ],
+   "rpcs": [],
+   "edges": [],
+   "hooks_internos": [
+    "useMutation",
+    "useQuery",
+    "useQueryClient"
+   ],
+   "canais_realtime": [],
+   "usado_por": 4,
+   "usado_por_arquivos": [
+    "src/components/reforma-tributaria/DashboardMetricasTributarias.tsx",
+    "src/components/reforma-tributaria/ExportacaoSPED.tsx",
+    "src/components/reforma-tributaria/OperacoesLista.tsx",
+    "src/components/reforma-tributaria/RelatoriosContabeisTributarios.tsx"
+   ],
+   "coberto_por_testes": 0
+  },
+  {
+   "arquivo": "src/hooks/useOportunidadesElisao.ts",
+   "hooks_exportados": [
+    "useOportunidadesElisao"
+   ],
+   "linhas": 318,
+   "dominio": "hooks",
+   "tabelas": [
+    "elisao_alertas",
+    "elisao_creditos_auditoria",
+    "elisao_tarefas_acionaveis",
+    "estrategias_elisao_catalogo",
+    "faturamento_mensal",
+    "folha_pagamento",
+    "oportunidades_elisao"
+   ],
+   "rpcs": [],
+   "edges": [
+    "bitrix24-sync"
+   ],
+   "hooks_internos": [
+    "useAuth",
+    "useMemo",
+    "useMutation",
+    "useQuery",
+    "useQueryClient"
+   ],
+   "canais_realtime": [],
+   "usado_por": 3,
+   "usado_por_arquivos": [
+    "src/hooks/useDashboardTributario.ts",
+    "src/pages/tributario/OportunidadesElisao.tsx",
+    "src/pages/tributario/SimulacaoRegimes.tsx"
+   ],
+   "coberto_por_testes": 0
+  },
+  {
+   "arquivo": "src/hooks/useOptimizedQueries.ts",
+   "hooks_exportados": [
+    "useCentrosCustoSelect",
+    "useContasBancariasSelect",
+    "useDebounce",
+    "useEmpresas",
+    "useInvalidateRelatedQueries",
+    "usePrefetchCriticalData"
+   ],
+   "linhas": 274,
+   "dominio": "hooks",
+   "tabelas": [
+    "centros_custo",
+    "contas_bancarias",
+    "empresas"
+   ],
+   "rpcs": [],
+   "edges": [],
+   "hooks_internos": [
+    "useCallback",
+    "useEffect",
+    "useQuery",
+    "useQueryClient"
+   ],
+   "canais_realtime": [],
+   "usado_por": 6,
+   "usado_por_arquivos": [
+    "src/components/providers/DataPrefetcher.tsx",
+    "src/hooks/useConciliacaoPage.ts",
+    "src/hooks/useContasPagarLogic.ts",
+    "src/hooks/useContasReceberLogic.ts",
+    "src/pages/Clientes.tsx",
+    "src/pages/Fornecedores.tsx"
+   ],
+   "coberto_por_testes": 0
+  },
+  {
+   "arquivo": "src/hooks/useOrganizacoes.ts",
+   "hooks_exportados": [
+    "useAceitarConvite",
+    "useAtualizarMembro",
+    "useConvitesOrganizacao",
+    "useCriarConvite",
+    "useCriarOrganizacao",
+    "useMembrosOrganizacao",
+    "useOrganizacoes",
+    "useRevogarConvite"
+   ],
+   "linhas": 304,
+   "dominio": "hooks",
+   "tabelas": [
+    "convites",
+    "organizacao_membros",
+    "organizacoes",
+    "profiles"
+   ],
+   "rpcs": [],
+   "edges": [
+    "aceitar-convite"
+   ],
+   "hooks_internos": [
+    "useAuth",
+    "useMutation",
+    "useQuery",
+    "useQueryClient"
+   ],
+   "canais_realtime": [],
+   "usado_por": 3,
+   "usado_por_arquivos": [
+    "src/pages/organizacoes/AceitarConvite.tsx",
+    "src/pages/organizacoes/Organizacoes.parts.tsx",
+    "src/pages/organizacoes/Organizacoes.tsx"
+   ],
+   "coberto_por_testes": 1
+  },
+  {
+   "arquivo": "src/hooks/useOverlayRejeicoesAuditoria.ts",
+   "hooks_exportados": [
+    "useOverlayRejeicoesAuditoria",
+    "useRegistrarRejeicoesOverlay",
+    "useResolverRejeicaoOverlay"
+   ],
+   "linhas": 108,
+   "dominio": "hooks",
+   "tabelas": [
+    "overlay_rejeicoes_auditoria"
+   ],
+   "rpcs": [],
+   "edges": [
+    "overlay-rejeicoes-auditoria"
+   ],
+   "hooks_internos": [
+    "useMutation",
+    "useQueryClient"
+   ],
+   "canais_realtime": [],
+   "usado_por": 1,
+   "usado_por_arquivos": [
+    "src/pages/tributario/AuditoriaOverlay.tsx"
+   ],
+   "coberto_por_testes": 0
+  },
+  {
+   "arquivo": "src/hooks/usePagamentosRecorrentes.ts",
+   "hooks_exportados": [
+    "usePagamentosRecorrentes"
+   ],
+   "linhas": 249,
+   "dominio": "hooks",
+   "tabelas": [
+    "pagamentos_recorrentes"
+   ],
+   "rpcs": [
+    "gerar_contas_recorrentes"
+   ],
+   "edges": [],
+   "hooks_internos": [
+    "useAuth",
+    "useMutation",
+    "useQuery",
+    "useQueryClient"
+   ],
+   "canais_realtime": [],
+   "usado_por": 3,
+   "usado_por_arquivos": [
+    "src/components/pagamentos-recorrentes/PagamentoRecorrenteForm.tsx",
+    "src/components/pagamentos-recorrentes/PagamentosRecorrentesList.tsx",
+    "src/components/pagamentos-recorrentes/pagamento-recorrente-model.ts"
+   ],
+   "coberto_por_testes": 0
+  },
+  {
+   "arquivo": "src/hooks/usePdfTributario.ts",
+   "hooks_exportados": [
+    "useEnviarBitrix24Tributario",
+    "useGerarPdfTributario"
+   ],
+   "linhas": 85,
+   "dominio": "hooks",
+   "tabelas": [],
+   "rpcs": [],
+   "edges": [
+    "enviar-bitrix24-tributario",
+    "gerar-pdf-tributario"
+   ],
+   "hooks_internos": [],
+   "canais_realtime": [],
+   "usado_por": 1,
+   "usado_por_arquivos": [
+    "src/pages/tributario/RecomendacaoExecutiva.tsx"
+   ],
+   "coberto_por_testes": 0
+  },
+  {
+   "arquivo": "src/hooks/usePerDcomp.ts",
+   "hooks_exportados": [
+    "usePerDcomp"
+   ],
+   "linhas": 213,
+   "dominio": "hooks",
+   "tabelas": [
+    "per_dcomp"
+   ],
+   "rpcs": [],
+   "edges": [],
+   "hooks_internos": [
+    "useMutation",
+    "useQuery",
+    "useQueryClient"
+   ],
+   "canais_realtime": [],
+   "usado_por": 3,
+   "usado_por_arquivos": [
+    "src/components/reforma-tributaria/PerDcompPanel.tsx",
+    "src/components/reforma-tributaria/per-dcomp/PerDcompFormDialog.tsx",
+    "src/components/reforma-tributaria/per-dcomp/PerDcompTable.tsx"
+   ],
+   "coberto_por_testes": 1
+  },
+  {
+   "arquivo": "src/hooks/usePermissions.ts",
+   "hooks_exportados": [
+    "usePermissions"
+   ],
+   "linhas": 126,
+   "dominio": "hooks",
+   "tabelas": [
+    "permissions",
+    "role_permissions"
+   ],
+   "rpcs": [],
+   "edges": [],
+   "hooks_internos": [
+    "useAuth",
+    "useCallback",
+    "useEffect",
+    "useState"
+   ],
+   "canais_realtime": [],
+   "usado_por": 1,
+   "usado_por_arquivos": [
+    "src/components/auth/PermissionGate.tsx"
+   ],
+   "coberto_por_testes": 0
+  },
+  {
+   "arquivo": "src/hooks/usePixTemplates.ts",
+   "hooks_exportados": [
+    "useCreatePixTemplate",
+    "useDeletePixTemplate",
+    "useIncrementTemplateUso",
+    "usePixTemplates"
+   ],
+   "linhas": 117,
+   "dominio": "hooks",
+   "tabelas": [
+    "pix_templates"
+   ],
+   "rpcs": [],
+   "edges": [],
+   "hooks_internos": [
+    "useAuth",
+    "useMutation",
+    "useQuery",
+    "useQueryClient"
+   ],
+   "canais_realtime": [],
+   "usado_por": 1,
+   "usado_por_arquivos": [
+    "src/components/pix-hub/PixTemplates.tsx"
+   ],
+   "coberto_por_testes": 0
+  },
+  {
+   "arquivo": "src/hooks/usePlanoContaHistory.ts",
+   "hooks_exportados": [
+    "usePlanoContaHistory"
+   ],
+   "linhas": 58,
+   "dominio": "hooks",
+   "tabelas": [
+    "audit_logs"
+   ],
+   "rpcs": [],
+   "edges": [],
+   "hooks_internos": [
+    "useQuery"
+   ],
+   "canais_realtime": [],
+   "usado_por": 2,
+   "usado_por_arquivos": [
+    "src/components/contabilidade/PlanoContaHistoryPanel.tsx",
+    "src/components/contabilidade/PlanoContasTab.tsx"
+   ],
+   "coberto_por_testes": 0
+  },
+  {
+   "arquivo": "src/hooks/usePlanoContas.ts",
+   "hooks_exportados": [
+    "usePlanoContas",
+    "useUpsertPlanoConta"
+   ],
+   "linhas": 101,
+   "dominio": "hooks",
+   "tabelas": [
+    "plano_contas"
+   ],
+   "rpcs": [
+    "log_audit"
+   ],
+   "edges": [],
+   "hooks_internos": [
+    "useMutation",
+    "useQuery",
+    "useQueryClient"
+   ],
+   "canais_realtime": [],
+   "usado_por": 8,
+   "usado_por_arquivos": [
+    "src/components/contabilidade/ImportLancamentosCSVDialog.tsx",
+    "src/components/contabilidade/LancamentosTab.tsx",
+    "src/components/contabilidade/NovoLancamentoDialog.tsx",
+    "src/components/contabilidade/PlanoContasTab.tsx",
+    "src/components/contabilidade/razao-diario/useRazaoDiarioData.ts",
+    "src/hooks/useAuditoriaCFC.ts",
+    "src/lib/cfc-validator.ts",
+    "src/lib/lancamentos-csv-importer.ts"
+   ],
+   "coberto_por_testes": 1
+  },
+  {
+   "arquivo": "src/hooks/usePortalCliente.ts",
+   "hooks_exportados": [
+    "useCreatePortalToken",
+    "usePortalClienteAcessos",
+    "usePortalClienteTokens",
+    "useRevokePortalToken"
+   ],
+   "linhas": 93,
+   "dominio": "hooks",
+   "tabelas": [
+    "portal_cliente_acessos",
+    "portal_cliente_tokens"
+   ],
+   "rpcs": [],
+   "edges": [],
+   "hooks_internos": [
+    "useMutation",
+    "useQuery",
+    "useQueryClient"
+   ],
+   "canais_realtime": [],
+   "usado_por": 1,
+   "usado_por_arquivos": [
+    "src/components/clientes/PortalClientePanel.tsx"
+   ],
+   "coberto_por_testes": 0
+  },
+  {
+   "arquivo": "src/hooks/usePrefetchRoutes.ts",
+   "hooks_exportados": [
+    "useLinkPrefetch",
+    "usePrefetchRoutes"
+   ],
+   "linhas": 185,
+   "dominio": "hooks",
+   "tabelas": [],
+   "rpcs": [],
+   "edges": [],
+   "hooks_internos": [
+    "useCallback",
+    "useEffect",
+    "useLocation",
+    "useQueryClient"
+   ],
+   "canais_realtime": [],
+   "usado_por": 2,
+   "usado_por_arquivos": [
+    "src/components/providers/DataPrefetcher.tsx",
+    "src/hooks/usePrefetchRoutes.tsx"
+   ],
+   "coberto_por_testes": 0
+  },
+  {
+   "arquivo": "src/hooks/usePrefetchRoutes.tsx",
+   "hooks_exportados": [],
+   "linhas": 31,
+   "dominio": "hooks",
+   "tabelas": [],
+   "rpcs": [],
+   "edges": [],
+   "hooks_internos": [
+    "useEffect",
+    "usePrefetchRoutes",
+    "useRef"
+   ],
+   "canais_realtime": [],
+   "usado_por": 0,
+   "usado_por_arquivos": [],
+   "coberto_por_testes": 0
+  },
+  {
+   "arquivo": "src/hooks/usePreValidacaoSped.ts",
+   "hooks_exportados": [
+    "usePreValidacaoSped"
+   ],
+   "linhas": 333,
+   "dominio": "hooks",
+   "tabelas": [],
+   "rpcs": [],
+   "edges": [],
+   "hooks_internos": [
+    "useAuditoriaCFC",
+    "useDemonstrativosContabeis",
+    "useLancamentosContabeis"
+   ],
+   "canais_realtime": [],
+   "usado_por": 5,
+   "usado_por_arquivos": [
+    "src/components/contabilidade/PreValidacaoSpedPanel.tsx",
+    "src/components/contabilidade/SpedEcdPreviewDialog.tsx",
+    "src/components/contabilidade/SpedEcdWizard.tsx",
+    "src/components/contabilidade/sped-ecf-wizard/Step2Validacoes.tsx",
+    "src/components/contabilidade/sped-ecf-wizard/useSpedEcfWizardState.ts"
+   ],
+   "coberto_por_testes": 0
+  },
+  {
+   "arquivo": "src/hooks/usePrevisaoTributaria.ts",
+   "hooks_exportados": [
+    "usePrevisaoTributaria"
+   ],
+   "linhas": 68,
+   "dominio": "hooks",
+   "tabelas": [],
+   "rpcs": [],
+   "edges": [
+    "prever-carga-tributaria"
+   ],
+   "hooks_internos": [
+    "useMutation",
+    "useQueryClient"
+   ],
+   "canais_realtime": [],
+   "usado_por": 1,
+   "usado_por_arquivos": [
+    "src/components/tributario/dashboard/PrevisaoTributariaIA.tsx"
+   ],
+   "coberto_por_testes": 0
+  },
+  {
+   "arquivo": "src/hooks/useProcessarNFOCR.ts",
+   "hooks_exportados": [
+    "useListaNotasFiscaisOCR",
+    "useProcessarNFMutation",
+    "useProcessarNFOCR"
+   ],
+   "linhas": 78,
+   "dominio": "hooks",
+   "tabelas": [],
+   "rpcs": [],
+   "edges": [
+    "processar-nf-ocr"
+   ],
+   "hooks_internos": [
+    "useMutation",
+    "useQuery"
+   ],
+   "canais_realtime": [],
+   "usado_por": 2,
+   "usado_por_arquivos": [
+    "src/components/contas-pagar/ContaPagarForm.tsx",
+    "src/components/tributario/dashboard/UploadNotaFiscalOCR.tsx"
+   ],
+   "coberto_por_testes": 0
+  },
+  {
+   "arquivo": "src/hooks/useProfilesByIds.ts",
+   "hooks_exportados": [
+    "useProfilesByIds"
+   ],
+   "linhas": 58,
+   "dominio": "hooks",
+   "tabelas": [
+    "profiles"
+   ],
+   "rpcs": [],
+   "edges": [],
+   "hooks_internos": [
+    "useQuery"
+   ],
+   "canais_realtime": [],
+   "usado_por": 2,
+   "usado_por_arquivos": [
+    "src/components/admin/AnomaliasList.tsx",
+    "src/components/admin/useAnomaliasPanelDerivations.ts"
+   ],
+   "coberto_por_testes": 0
+  },
+  {
+   "arquivo": "src/hooks/useProtestos.ts",
+   "hooks_exportados": [
+    "useCreateProtesto",
+    "useProtestos",
+    "useUpdateProtesto"
+   ],
+   "linhas": 92,
+   "dominio": "hooks",
+   "tabelas": [
+    "protestos"
+   ],
+   "rpcs": [],
+   "edges": [],
+   "hooks_internos": [
+    "useMutation",
+    "useQuery",
+    "useQueryClient"
+   ],
+   "canais_realtime": [],
+   "usado_por": 1,
+   "usado_por_arquivos": [
+    "src/components/cobranca/NegativacoesProtestosPanel.tsx"
+   ],
+   "coberto_por_testes": 0
+  },
+  {
+   "arquivo": "src/hooks/usePushNotifications.ts",
+   "hooks_exportados": [
+    "usePushNotifications"
+   ],
+   "linhas": 344,
+   "dominio": "hooks",
+   "tabelas": [
+    "push_subscriptions"
+   ],
+   "rpcs": [],
+   "edges": [
+    "get-vapid-key",
+    "send-push-notification"
+   ],
+   "hooks_internos": [
+    "useAuth",
+    "useCallback",
+    "useEffect",
+    "useState"
+   ],
+   "canais_realtime": [],
+   "usado_por": 1,
+   "usado_por_arquivos": [
+    "src/components/configuracoes/NotificacoesConfig.tsx"
+   ],
+   "coberto_por_testes": 0
+  },
+  {
+   "arquivo": "src/hooks/useQueuedMessage.ts",
+   "hooks_exportados": [
+    "useQueuedMessage"
+   ],
+   "linhas": 32,
+   "dominio": "hooks",
+   "tabelas": [],
+   "rpcs": [],
+   "edges": [],
+   "hooks_internos": [
+    "useCallback",
+    "useEffect",
+    "useRef",
+    "useState"
+   ],
+   "canais_realtime": [],
+   "usado_por": 1,
+   "usado_por_arquivos": [
+    "src/pages/Expert.tsx"
+   ],
+   "coberto_por_testes": 1
+  },
+  {
+   "arquivo": "src/hooks/useRateLimitLogs.ts",
+   "hooks_exportados": [
+    "useRateLimitLogs"
+   ],
+   "linhas": 206,
+   "dominio": "hooks",
+   "tabelas": [
+    "blocked_ips",
+    "rate_limit_logs"
+   ],
+   "rpcs": [],
+   "edges": [],
+   "hooks_internos": [
+    "useAuth",
+    "useCallback",
+    "useEffect",
+    "useState"
+   ],
+   "canais_realtime": [],
+   "usado_por": 1,
+   "usado_por_arquivos": [
+    "src/components/security/RateLimitDashboard.tsx"
+   ],
+   "coberto_por_testes": 0
+  },
+  {
+   "arquivo": "src/hooks/useRealtimeAlertas.ts",
+   "hooks_exportados": [
+    "useRealtimeAlertas"
+   ],
+   "linhas": 52,
+   "dominio": "hooks",
+   "tabelas": [],
+   "rpcs": [],
+   "edges": [],
+   "hooks_internos": [
+    "useEffect",
+    "useQueryClient"
+   ],
+   "canais_realtime": [
+    "alertas-realtime-${Math.random().toString(36).slice(2, 8)}"
+   ],
+   "usado_por": 1,
+   "usado_por_arquivos": [
+    "src/components/layout/sidebar/SidebarNavGroups.tsx"
+   ],
+   "coberto_por_testes": 0
+  },
+  {
+   "arquivo": "src/hooks/useRealtimeAnomalias.ts",
+   "hooks_exportados": [
+    "useRealtimeAnomalias"
+   ],
+   "linhas": 203,
+   "dominio": "hooks",
+   "tabelas": [
+    "anomalia_toast_eventos",
+    "anomalias_detectadas",
+    "centros_custo"
+   ],
+   "rpcs": [],
+   "edges": [],
+   "hooks_internos": [
+    "useAnomaliaPreferences",
+    "useAuth",
+    "useEffect",
+    "useQueryClient",
+    "useRef"
+   ],
+   "canais_realtime": [
+    "anomalias-realtime-${Math.random().toString(36).slice(2, 8)}"
+   ],
+   "usado_por": 1,
+   "usado_por_arquivos": [
+    "src/components/layout/sidebar/SidebarNavGroups.tsx"
+   ],
+   "coberto_por_testes": 0
+  },
+  {
+   "arquivo": "src/hooks/useRealtimeAuditToasts.ts",
+   "hooks_exportados": [
+    "useRealtimeAuditToasts"
+   ],
+   "linhas": 179,
+   "dominio": "hooks",
+   "tabelas": [],
+   "rpcs": [],
+   "edges": [],
+   "hooks_internos": [
+    "useAuth",
+    "useEffect",
+    "useNavigate"
+   ],
+   "canais_realtime": [
+    "audit-logs-toast-stream-${Math.random().toString(36).slice(2, 8)}"
+   ],
+   "usado_por": 1,
+   "usado_por_arquivos": [
+    "src/pages/admin/ComplianceAuditoria.tsx"
+   ],
+   "coberto_por_testes": 0
+  },
+  {
+   "arquivo": "src/hooks/useRecentItems.ts",
+   "hooks_exportados": [
+    "useRecentItems"
+   ],
+   "linhas": 108,
+   "dominio": "hooks",
+   "tabelas": [],
+   "rpcs": [],
+   "edges": [],
+   "hooks_internos": [
+    "useCallback",
+    "useEffect"
+   ],
+   "canais_realtime": [],
+   "usado_por": 2,
+   "usado_por_arquivos": [
+    "src/components/layout/sidebar/RecentAndFavorites.tsx",
+    "src/components/providers/NavigationTracker.tsx"
+   ],
+   "coberto_por_testes": 0
+  },
+  {
+   "arquivo": "src/hooks/useRefetchAnomaliasOnFocus.ts",
+   "hooks_exportados": [
+    "useRefetchAnomaliasOnFocus"
+   ],
+   "linhas": 38,
+   "dominio": "hooks",
+   "tabelas": [],
+   "rpcs": [],
+   "edges": [],
+   "hooks_internos": [
+    "useEffect",
+    "useQueryClient"
+   ],
+   "canais_realtime": [],
+   "usado_por": 3,
+   "usado_por_arquivos": [
+    "src/components/admin/AnomaliaDrillDownDrawer.tsx",
+    "src/components/admin/AnomaliasDetectadasPanel.tsx",
+    "src/pages/admin/AnomaliaDetalhe.tsx"
+   ],
+   "coberto_por_testes": 0
+  },
+  {
+   "arquivo": "src/hooks/useReformaTributaria.ts",
+   "hooks_exportados": [
+    "useReformaTributaria"
+   ],
+   "linhas": 367,
+   "dominio": "hooks",
+   "tabelas": [
+    "apuracoes_tributarias",
+    "operacoes_tributaveis"
+   ],
+   "rpcs": [],
+   "edges": [],
+   "hooks_internos": [
+    "useCallback",
+    "useEffect",
+    "useMemo",
+    "useMutation",
+    "useQuery",
+    "useQueryClient",
+    "useToast"
+   ],
+   "canais_realtime": [
+    "reforma-tributaria-realtime-${empresaId ?? "
+   ],
+   "usado_por": 4,
+   "usado_por_arquivos": [
+    "src/components/reforma-tributaria/CalculadoraTributos.tsx",
+    "src/components/reforma-tributaria/CronogramaTransicao.tsx",
+    "src/components/reforma-tributaria/DashboardReformaTributaria.tsx",
+    "src/components/reforma-tributaria/SimuladorCenariosTributarios.tsx"
+   ],
+   "coberto_por_testes": 0
+  },
+  {
+   "arquivo": "src/hooks/useRegimesEspeciais.ts",
+   "hooks_exportados": [
+    "useRegimesEspeciaisEmpresa",
+    "useUpdateRegimeEspecial"
+   ],
+   "linhas": 51,
+   "dominio": "hooks",
+   "tabelas": [
+    "regimes_especiais_empresa"
+   ],
+   "rpcs": [],
+   "edges": [],
+   "hooks_internos": [
+    "useMutation",
+    "useQuery",
+    "useQueryClient"
+   ],
+   "canais_realtime": [],
+   "usado_por": 1,
+   "usado_por_arquivos": [
+    "src/components/reforma-tributaria/ComparativoRegimesPanel.tsx"
+   ],
+   "coberto_por_testes": 0
+  },
+  {
+   "arquivo": "src/hooks/useRegrasConciliacao.ts",
+   "hooks_exportados": [],
+   "linhas": 85,
+   "dominio": "hooks",
+   "tabelas": [
+    "regras_conciliacao"
+   ],
+   "rpcs": [],
+   "edges": [],
+   "hooks_internos": [],
+   "canais_realtime": [],
+   "usado_por": 1,
+   "usado_por_arquivos": [
+    "src/components/conciliacao/ConciliacaoManualDialog.tsx"
+   ],
+   "coberto_por_testes": 1
+  },
+  {
+   "arquivo": "src/hooks/useReguaCobranca.ts",
+   "hooks_exportados": [
+    "useConfirmarEnvio",
+    "useExecucoesCobranca",
+    "useFilaCobrancas",
+    "useProcessarFila",
+    "useProcessarRegua",
+    "useReguaCobranca",
+    "useTemplatesCobranca",
+    "useUpdateReguaCobranca",
+    "useUpdateTemplate"
+   ],
+   "linhas": 197,
+   "dominio": "hooks",
+   "tabelas": [
+    "execucoes_cobranca",
+    "fila_cobrancas",
+    "regua_cobranca",
+    "templates_cobranca"
+   ],
+   "rpcs": [
+    "confirmar_envio_cobranca",
+    "processar_regua_cobranca"
+   ],
+   "edges": [
+    "processar-fila-cobrancas"
+   ],
+   "hooks_internos": [
+    "useMutation",
+    "useQuery",
+    "useQueryClient"
+   ],
+   "canais_realtime": [],
+   "usado_por": 2,
+   "usado_por_arquivos": [
+    "src/components/cobranca/FilaCobrancasPanel.tsx",
+    "src/components/cobranca/ReguaCobrancaConfig.tsx"
+   ],
+   "coberto_por_testes": 0
+  },
+  {
+   "arquivo": "src/hooks/useRelatorioAnual.ts",
+   "hooks_exportados": [
+    "useRelatorioAnual"
+   ],
+   "linhas": 44,
+   "dominio": "hooks",
+   "tabelas": [],
+   "rpcs": [],
+   "edges": [
+    "gerar-relatorio-anual"
+   ],
+   "hooks_internos": [],
+   "canais_realtime": [],
+   "usado_por": 1,
+   "usado_por_arquivos": [
+    "src/pages/tributario/DashboardTributario.tsx"
+   ],
+   "coberto_por_testes": 0
+  },
+  {
+   "arquivo": "src/hooks/useRelatoriosAgendados.ts",
+   "hooks_exportados": [
+    "useRelatoriosAgendados"
+   ],
+   "linhas": 243,
+   "dominio": "hooks",
+   "tabelas": [
+    "historico_relatorios",
+    "relatorios_agendados"
+   ],
+   "rpcs": [],
+   "edges": [],
+   "hooks_internos": [
+    "useAuth",
+    "useMutation",
+    "useQuery",
+    "useQueryClient",
+    "useToast"
+   ],
+   "canais_realtime": [],
+   "usado_por": 2,
+   "usado_por_arquivos": [
+    "src/components/relatorios/RelatoriosAgendados.tsx",
+    "src/components/relatorios/agendados/CriarAgendamentoDialog.tsx"
+   ],
+   "coberto_por_testes": 0
+  },
+  {
+   "arquivo": "src/hooks/useRelatoriosData.ts",
+   "hooks_exportados": [
+    "useComparativoPeriodos",
+    "useDespesasPorCategoria",
+    "useFluxoMensal",
+    "useInadimplenciaPorMes",
+    "useReceitasPorCliente",
+    "useRelatorioDetalhado",
+    "useRelatorioKPIs",
+    "useResumosSemanais"
+   ],
+   "linhas": 416,
+   "dominio": "hooks",
+   "tabelas": [
+    "contas_pagar",
+    "contas_receber",
+    "resumos_executivos_semanais"
+   ],
+   "rpcs": [],
+   "edges": [],
+   "hooks_internos": [
+    "useQuery"
+   ],
+   "canais_realtime": [],
+   "usado_por": 2,
+   "usado_por_arquivos": [
+    "src/components/relatorios/RelatoriosResumosSemanais.tsx",
+    "src/pages/Relatorios.tsx"
+   ],
+   "coberto_por_testes": 0
+  },
+  {
+   "arquivo": "src/hooks/useRelatoriosTributariosAgendados.ts",
+   "hooks_exportados": [
+    "useRelatoriosTributariosAgendados"
+   ],
+   "linhas": 95,
+   "dominio": "hooks",
+   "tabelas": [
+    "relatorios_tributarios_agendados"
+   ],
+   "rpcs": [],
+   "edges": [],
+   "hooks_internos": [
+    "useMutation",
+    "useQuery",
+    "useQueryClient"
+   ],
+   "canais_realtime": [],
+   "usado_por": 1,
+   "usado_por_arquivos": [
+    "src/components/tributario/dashboard/RelatoriosAgendadosCard.tsx"
+   ],
+   "coberto_por_testes": 0
+  },
+  {
+   "arquivo": "src/hooks/useResumosExecutivos.ts",
+   "hooks_exportados": [
+    "useResumosExecutivos"
+   ],
+   "linhas": 55,
+   "dominio": "hooks",
+   "tabelas": [
+    "resumos_executivos_semanais"
+   ],
+   "rpcs": [],
+   "edges": [
+    "gerar-resumo-executivo-semanal"
+   ],
+   "hooks_internos": [
+    "useMutation",
+    "useQuery",
+    "useQueryClient"
+   ],
+   "canais_realtime": [],
+   "usado_por": 1,
+   "usado_por_arquivos": [
+    "src/components/admin/ResumosExecutivosTab.tsx"
+   ],
+   "coberto_por_testes": 0
+  },
+  {
+   "arquivo": "src/hooks/useRetencoesFonte.ts",
+   "hooks_exportados": [
+    "useRetencoesFonte"
+   ],
+   "linhas": 333,
+   "dominio": "hooks",
+   "tabelas": [
+    "darfs",
+    "retencoes_fonte"
+   ],
+   "rpcs": [
+    "gerar_darf_retencoes",
+    "pagar_darf_retencoes"
+   ],
+   "edges": [],
+   "hooks_internos": [
+    "useMutation",
+    "useQuery",
+    "useQueryClient"
+   ],
+   "canais_realtime": [],
+   "usado_por": 4,
+   "usado_por_arquivos": [
+    "src/components/reforma-tributaria/RetencoesFonte.tsx",
+    "src/components/reforma-tributaria/retencoes/DARFsTable.tsx",
+    "src/components/reforma-tributaria/retencoes/ResumoPorTipoGrid.tsx",
+    "src/components/reforma-tributaria/retencoes/RetencoesTable.tsx"
+   ],
+   "coberto_por_testes": 1
+  },
+  {
+   "arquivo": "src/hooks/useSavedFilterAlerts.ts",
+   "hooks_exportados": [
+    "useSavedFilterAlerts",
+    "useSavedFilterAlertsConciliacao"
+   ],
+   "linhas": 79,
+   "dominio": "hooks",
+   "tabelas": [],
+   "rpcs": [],
+   "edges": [],
+   "hooks_internos": [],
+   "canais_realtime": [],
+   "usado_por": 2,
+   "usado_por_arquivos": [
+    "src/pages/Conciliacao.tsx",
+    "src/pages/admin/InsightsIA.tsx"
+   ],
+   "coberto_por_testes": 0
+  },
+  {
+   "arquivo": "src/hooks/useSavedFilters.ts",
+   "hooks_exportados": [
+    "useSavedFilters"
+   ],
+   "linhas": 304,
+   "dominio": "hooks",
+   "tabelas": [
+    "saved_filters",
+    "user_empresas"
+   ],
+   "rpcs": [
+    "duplicate_saved_filter",
+    "log_audit"
+   ],
+   "edges": [],
+   "hooks_internos": [
+    "useAuth",
+    "useMutation",
+    "useQuery",
+    "useQueryClient"
+   ],
+   "canais_realtime": [],
+   "usado_por": 18,
+   "usado_por_arquivos": [
+    "src/components/admin/AnomaliasDetectadasPanel.helpers.ts",
+    "src/components/admin/AnomaliasDetectadasPanel.tsx",
+    "src/components/admin/AnomaliasFiltersBar.tsx",
+    "src/components/conciliacao/ConciliacaoToolbar.tsx",
+    "src/components/shared/SavedFiltersBar.tsx",
+    "src/components/shared/saved-filters-bar/PresetListItem.tsx",
+    "src/components/shared/saved-filters-bar/PresetsDropdownMenu.tsx",
+    "src/components/shared/saved-filters-bar/RestoreConfirmDialog.tsx",
+    "src/components/shared/saved-filters-bar/RoleCheckboxGroup.tsx",
+    "src/components/shared/saved-filters-bar/SavePresetDialog.tsx",
+    "src/components/shared/saved-filters-bar/ShareFilterDialog.tsx",
+    "src/components/shared/saved-filters-bar/constants.ts",
+    "src/hooks/saved-filter-alerts/descriptions.ts",
+    "src/hooks/saved-filter-alerts/matchers.ts",
+    "src/hooks/saved-filter-alerts/types.ts",
+    "src/hooks/saved-filter-alerts/useEntitySavedFilterAlerts.ts",
+    "src/pages/Conciliacao.tsx",
+    "src/pages/ConciliacaoToolbarHost.tsx"
+   ],
+   "coberto_por_testes": 0
+  },
+  {
+   "arquivo": "src/hooks/useSavedFilterSubscriptions.ts",
+   "hooks_exportados": [
+    "useSavedFilterSubscriptions"
+   ],
+   "linhas": 238,
+   "dominio": "hooks",
+   "tabelas": [
+    "saved_filter_subscriptions"
+   ],
+   "rpcs": [],
+   "edges": [],
+   "hooks_internos": [
+    "useAuth",
+    "useEffect",
+    "useMutation",
+    "useQuery",
+    "useQueryClient"
+   ],
+   "canais_realtime": [
+    "saved-filter-permissions-${user.id}-${Math.random().toString(36).slice(2, 8)}"
+   ],
+   "usado_por": 8,
+   "usado_por_arquivos": [
+    "src/components/shared/SavedFiltersBar.tsx",
+    "src/components/shared/SubscriptionPopover.tsx",
+    "src/components/shared/saved-filters-bar/PresetListItem.tsx",
+    "src/components/shared/saved-filters-bar/PresetsDropdownMenu.tsx",
+    "src/hooks/saved-filter-alerts/useEntitySavedFilterAlerts.ts",
+    "src/hooks/savedFilterDispatchSchedule.ts",
+    "src/pages/configuracoes/SinoNotificacoesFiltros.parts.tsx",
+    "src/pages/configuracoes/SinoNotificacoesFiltros.tsx"
+   ],
+   "coberto_por_testes": 0
+  },
+  {
+   "arquivo": "src/hooks/useScimChecklist.ts",
+   "hooks_exportados": [
+    "useScimChecklist"
+   ],
+   "linhas": 74,
+   "dominio": "hooks",
+   "tabelas": [
+    "scim_setup_checklist"
+   ],
+   "rpcs": [],
+   "edges": [],
+   "hooks_internos": [
+    "useAuth",
+    "useCallback",
+    "useEffect",
+    "useState"
+   ],
+   "canais_realtime": [],
+   "usado_por": 1,
+   "usado_por_arquivos": [
+    "src/components/admin/sso/ScimSetupGuide.tsx"
+   ],
+   "coberto_por_testes": 0
+  },
+  {
+   "arquivo": "src/hooks/useScimTokens.ts",
+   "hooks_exportados": [
+    "useCreateScimToken",
+    "useRevokeScimToken",
+    "useScimTokens"
+   ],
+   "linhas": 103,
+   "dominio": "hooks",
+   "tabelas": [
+    "scim_tokens"
+   ],
+   "rpcs": [],
+   "edges": [],
+   "hooks_internos": [
+    "useMutation",
+    "useQuery",
+    "useQueryClient"
+   ],
+   "canais_realtime": [],
+   "usado_por": 1,
+   "usado_por_arquivos": [
+    "src/components/admin/sso/ScimTokensTab.tsx"
+   ],
+   "coberto_por_testes": 0
+  },
+  {
+   "arquivo": "src/hooks/useScoringClientes.ts",
+   "hooks_exportados": [
+    "useScoringClientes"
+   ],
+   "linhas": 394,
+   "dominio": "hooks",
+   "tabelas": [
+    "clientes",
+    "contas_receber"
+   ],
+   "rpcs": [],
+   "edges": [],
+   "hooks_internos": [
+    "useAuth",
+    "useMutation",
+    "useQuery",
+    "useQueryClient"
+   ],
+   "canais_realtime": [],
+   "usado_por": 1,
+   "usado_por_arquivos": [
+    "src/components/clientes/ScoringClientesPanel.tsx"
+   ],
+   "coberto_por_testes": 0
+  },
+  {
+   "arquivo": "src/hooks/useSecurityAlerts.ts",
+   "hooks_exportados": [
+    "useSecurityAlerts"
+   ],
+   "linhas": 213,
+   "dominio": "hooks",
+   "tabelas": [
+    "security_alerts"
+   ],
+   "rpcs": [],
+   "edges": [
+    "send-push-notification"
+   ],
+   "hooks_internos": [
+    "useAuth",
+    "useCallback",
+    "useEffect",
+    "useState"
+   ],
+   "canais_realtime": [
+    "security-alerts-realtime-${Math.random().toString(36).slice(2, 8)}"
+   ],
+   "usado_por": 2,
+   "usado_por_arquivos": [
+    "src/components/security/RateLimitDashboard.tsx",
+    "src/components/security/rate-limit/SecurityAlertsTab.tsx"
+   ],
+   "coberto_por_testes": 0
+  },
+  {
+   "arquivo": "src/hooks/useSefazObservability.ts",
+   "hooks_exportados": [
+    "useResolveAlert",
+    "useSefazAlerts",
+    "useSefazObservability"
+   ],
+   "linhas": 89,
+   "dominio": "hooks",
+   "tabelas": [
+    "integrity_alerts",
+    "v_sefaz_observability"
+   ],
+   "rpcs": [
+    "resolve_integrity_alert"
+   ],
+   "edges": [],
+   "hooks_internos": [
+    "useMutation",
+    "useQuery",
+    "useQueryClient"
+   ],
+   "canais_realtime": [],
+   "usado_por": 1,
+   "usado_por_arquivos": [
+    "src/pages/tributario/SefazObservabilidade.tsx"
+   ],
+   "coberto_por_testes": 0
+  },
+  {
+   "arquivo": "src/hooks/useSelectiveEmpresaInvalidation.ts",
+   "hooks_exportados": [
+    "useSelectiveEmpresaInvalidation"
+   ],
+   "linhas": 100,
+   "dominio": "hooks",
+   "tabelas": [],
+   "rpcs": [],
+   "edges": [],
+   "hooks_internos": [
+    "useEffect",
+    "useQueryClient"
+   ],
+   "canais_realtime": [],
+   "usado_por": 1,
+   "usado_por_arquivos": [
+    "src/App.tsx"
+   ],
+   "coberto_por_testes": 1
+  },
+  {
+   "arquivo": "src/hooks/useSessions.ts",
+   "hooks_exportados": [
+    "useSessions"
+   ],
+   "linhas": 199,
+   "dominio": "hooks",
+   "tabelas": [
+    "user_sessions"
+   ],
+   "rpcs": [],
+   "edges": [],
+   "hooks_internos": [
+    "useAuth",
+    "useCallback",
+    "useEffect",
+    "useState"
+   ],
+   "canais_realtime": [],
+   "usado_por": 1,
+   "usado_por_arquivos": [
+    "src/components/auth/MFASettings.tsx"
+   ],
+   "coberto_por_testes": 0
+  },
+  {
+   "arquivo": "src/hooks/useSimulacaoRegimes.ts",
+   "hooks_exportados": [
+    "useSimulacaoRegimes"
+   ],
+   "linhas": 324,
+   "dominio": "hooks",
+   "tabelas": [
+    "faturamento_mensal",
+    "folha_pagamento",
+    "regimes_simulados"
+   ],
+   "rpcs": [],
+   "edges": [],
+   "hooks_internos": [
+    "useAuth",
+    "useCallback",
+    "useDecidirRegimeServer",
+    "useMemo",
+    "useMutation",
+    "useQuery",
+    "useQueryClient"
+   ],
+   "canais_realtime": [],
+   "usado_por": 4,
+   "usado_por_arquivos": [
+    "src/hooks/useDashboardTributario.ts",
+    "src/pages/tributario/RecomendacaoExecutiva.tsx",
+    "src/pages/tributario/SimulacaoRegimes.parts.tsx",
+    "src/pages/tributario/SimulacaoRegimes.tsx"
+   ],
+   "coberto_por_testes": 1
+  },
+  {
+   "arquivo": "src/hooks/useSincronizarAnomaliaBitrix.ts",
+   "hooks_exportados": [
+    "useSincronizarAnomaliaBitrix"
+   ],
+   "linhas": 63,
+   "dominio": "hooks",
+   "tabelas": [],
+   "rpcs": [],
+   "edges": [],
+   "hooks_internos": [
+    "useLogAudit"
+   ],
+   "canais_realtime": [],
+   "usado_por": 7,
+   "usado_por_arquivos": [
+    "src/components/admin/AnomaliasDetectadasPanel.tsx",
+    "src/components/admin/AnomaliasList.tsx",
+    "src/components/admin/anomalias-review-queue/useReviewQueue.ts",
+    "src/components/insights-ia/anomalia/AcoesSugeridasCard.tsx",
+    "src/components/insights-ia/anomalia/AnomaliaHeader.tsx",
+    "src/components/insights-ia/anomalia/ReabrirAnomaliaDialog.tsx",
+    "src/components/insights-ia/anomalia/ReabrirAnomaliasLoteDialog.tsx"
+   ],
+   "coberto_por_testes": 0
+  },
+  {
+   "arquivo": "src/hooks/useSLOMetrics.ts",
+   "hooks_exportados": [
+    "useSLOMetrics"
+   ],
+   "linhas": 36,
+   "dominio": "hooks",
+   "tabelas": [
+    "slo_metrics_diarias"
+   ],
+   "rpcs": [],
+   "edges": [],
+   "hooks_internos": [
+    "useQuery"
+   ],
+   "canais_realtime": [],
+   "usado_por": 1,
+   "usado_por_arquivos": [
+    "src/components/admin/SLOPanel.tsx"
+   ],
+   "coberto_por_testes": 0
+  },
+  {
+   "arquivo": "src/hooks/useSmartBack.ts",
+   "hooks_exportados": [
+    "useSmartBack"
+   ],
+   "linhas": 72,
+   "dominio": "hooks",
+   "tabelas": [],
+   "rpcs": [],
+   "edges": [],
+   "hooks_internos": [
+    "useCallback",
+    "useLocation",
+    "useNavigate",
+    "useSyncExternalStore"
+   ],
+   "canais_realtime": [],
+   "usado_por": 4,
+   "usado_por_arquivos": [
+    "src/components/auth/ProtectedRoute.tsx",
+    "src/components/navigation/BackButton.tsx",
+    "src/hooks/useKeyboardNavigation.ts",
+    "src/hooks/useSwipeBack.ts"
+   ],
+   "coberto_por_testes": 0
+  },
+  {
+   "arquivo": "src/hooks/useSolicitacoesLGPD.ts",
+   "hooks_exportados": [
+    "useSolicitacoesLGPD"
+   ],
+   "linhas": 83,
+   "dominio": "hooks",
+   "tabelas": [
+    "solicitacoes_lgpd"
+   ],
+   "rpcs": [],
+   "edges": [
+    "processar-solicitacao-lgpd"
+   ],
+   "hooks_internos": [
+    "useAuth",
+    "useMutation",
+    "useQuery",
+    "useQueryClient"
+   ],
+   "canais_realtime": [],
+   "usado_por": 1,
+   "usado_por_arquivos": [
+    "src/pages/CentroPrivacidadeLGPD.tsx"
+   ],
+   "coberto_por_testes": 0
+  },
+  {
+   "arquivo": "src/hooks/useSoundFeedback.ts",
+   "hooks_exportados": [
+    "useSoundFeedback"
+   ],
+   "linhas": 44,
+   "dominio": "hooks",
+   "tabelas": [],
+   "rpcs": [],
+   "edges": [],
+   "hooks_internos": [
+    "useBaseSoundFeedback",
+    "useCallback"
+   ],
+   "canais_realtime": [],
+   "usado_por": 1,
+   "usado_por_arquivos": [
+    "src/components/wrappers/CelebrationActions.tsx"
+   ],
+   "coberto_por_testes": 0
+  },
+  {
+   "arquivo": "src/hooks/useSpedContabil.ts",
+   "hooks_exportados": [
+    "useGerarSpedContabil",
+    "useRegistrarTransmissaoSped",
+    "useSpedContabilHistorico",
+    "useSpedEcdValidacao",
+    "useSpedEcfValidacao"
+   ],
+   "linhas": 278,
+   "dominio": "hooks",
+   "tabelas": [
+    "empresas",
+    "sped_contabil_arquivos"
+   ],
+   "rpcs": [],
+   "edges": [
+    "gerar-sped-ecd",
+    "gerar-sped-ecf",
+    "log-sped-bitrix24"
+   ],
+   "hooks_internos": [
+    "useMutation",
+    "useQuery",
+    "useQueryClient"
+   ],
+   "canais_realtime": [],
+   "usado_por": 14,
+   "usado_por_arquivos": [
+    "src/components/contabilidade/SpedChecklistRow.tsx",
+    "src/components/contabilidade/SpedEcdDownloadStep.tsx",
+    "src/components/contabilidade/SpedEcdPreviewDialog.tsx",
+    "src/components/contabilidade/SpedEcdWizard.tsx",
+    "src/components/contabilidade/SpedEcdWizardStep3.tsx",
+    "src/components/contabilidade/sped-contabil/useSpedContabilState.ts",
+    "src/components/contabilidade/sped-ecf-wizard/Step1PeriodoEcd.tsx",
+    "src/components/contabilidade/sped-ecf-wizard/Step2Validacoes.tsx",
+    "src/components/contabilidade/sped-ecf-wizard/Step3Download.tsx",
+    "src/components/contabilidade/sped-ecf-wizard/crosscheck.ts",
+    "src/components/contabilidade/sped-ecf-wizard/types.ts",
+    "src/components/contabilidade/sped-ecf-wizard/useSpedEcfWizardState.ts",
+    "src/lib/sped-ecf-checklist-pdf.ts",
+    "src/pages/Contabilidade.tsx"
+   ],
+   "coberto_por_testes": 0
+  },
+  {
+   "arquivo": "src/hooks/useSpedEcfHistorico.ts",
+   "hooks_exportados": [
+    "useSpedEcfHistorico"
+   ],
+   "linhas": 63,
+   "dominio": "hooks",
+   "tabelas": [
+    "empresas",
+    "sped_contabil_arquivos"
+   ],
+   "rpcs": [],
+   "edges": [],
+   "hooks_internos": [
+    "useQuery"
+   ],
+   "canais_realtime": [],
+   "usado_por": 4,
+   "usado_por_arquivos": [
+    "src/components/contabilidade/SpedEcfHistorico.tsx",
+    "src/components/contabilidade/sped-ecf-historico/AlertasResumo.tsx",
+    "src/components/contabilidade/sped-ecf-historico/HistoricoRow.tsx",
+    "src/components/contabilidade/sped-ecf-historico/ValidacoesDialog.tsx"
+   ],
+   "coberto_por_testes": 0
+  },
+  {
+   "arquivo": "src/hooks/useSplitPayment.ts",
+   "hooks_exportados": [
+    "useSplitPayment"
+   ],
+   "linhas": 200,
+   "dominio": "hooks",
+   "tabelas": [
+    "split_payment_transacoes"
+   ],
+   "rpcs": [],
+   "edges": [],
+   "hooks_internos": [
+    "useMutation",
+    "useQuery",
+    "useQueryClient"
+   ],
+   "canais_realtime": [],
+   "usado_por": 1,
+   "usado_por_arquivos": [
+    "src/components/reforma-tributaria/SplitPaymentPanel.tsx"
+   ],
+   "coberto_por_testes": 0
+  },
+  {
+   "arquivo": "src/hooks/useSSO.ts",
+   "hooks_exportados": [
+    "useDeleteSSOProvider",
+    "useGenerateSSOMetadata",
+    "useSSOLoginAttempts",
+    "useSSOProviders",
+    "useSSORoleMappings",
+    "useSaveSSOProvider",
+    "useSaveSSORoleMappings",
+    "useTestSSOConfig",
+    "useTestSSOLogin",
+    "useToggleSSOProvider"
+   ],
+   "linhas": 231,
+   "dominio": "hooks",
+   "tabelas": [
+    "sso_login_attempts",
+    "sso_providers",
+    "sso_role_mappings"
+   ],
+   "rpcs": [],
+   "edges": [
+    "sso-generate-metadata",
+    "sso-test-login",
+    "sso-validate-config"
+   ],
+   "hooks_internos": [
+    "useMutation",
+    "useQuery",
+    "useQueryClient"
+   ],
+   "canais_realtime": [],
+   "usado_por": 10,
+   "usado_por_arquivos": [
+    "src/components/admin/sso/SSOMetricsPanel.tsx",
+    "src/components/admin/sso/SSOProvidersList.tsx",
+    "src/components/admin/sso/SSOSandboxPanel.tsx",
+    "src/components/admin/sso/SSOStepConexao.tsx",
+    "src/components/admin/sso/SSOStepValidacao.tsx",
+    "src/components/admin/sso/SSOWizardDialog.tsx",
+    "src/components/admin/sso/sandbox/SandboxBulkPanel.tsx",
+    "src/components/admin/sso/sandbox/SandboxHistory.tsx",
+    "src/pages/admin/SSOAdmin.tsx",
+    "src/pages/admin/SSOJitEvents.tsx"
+   ],
+   "coberto_por_testes": 0
+  },
+  {
+   "arquivo": "src/hooks/useSSOConsistency.ts",
+   "hooks_exportados": [
+    "useSSOConsistency"
+   ],
+   "linhas": 7,
+   "dominio": "hooks",
+   "tabelas": [],
+   "rpcs": [],
+   "edges": [],
+   "hooks_internos": [
+    "useMemo"
+   ],
+   "canais_realtime": [],
+   "usado_por": 2,
+   "usado_por_arquivos": [
+    "src/components/admin/sso/SSOStepValidacao.tsx",
+    "src/components/admin/sso/SSOWizardDialog.tsx"
+   ],
+   "coberto_por_testes": 0
+  },
+  {
+   "arquivo": "src/hooks/useSsoDomainResolver.ts",
+   "hooks_exportados": [
+    "useSsoDomainResolver"
+   ],
+   "linhas": 78,
+   "dominio": "hooks",
+   "tabelas": [],
+   "rpcs": [
+    "resolve_sso_providers_for_domain"
+   ],
+   "edges": [],
+   "hooks_internos": [
+    "useEffect"
+   ],
+   "canais_realtime": [],
+   "usado_por": 1,
+   "usado_por_arquivos": [
+    "src/pages/auth/CorporateOnboarding.hook.ts"
+   ],
+   "coberto_por_testes": 1
+  },
+  {
+   "arquivo": "src/hooks/useSSOJitEvents.ts",
+   "hooks_exportados": [
+    "useSSOJitEvents"
+   ],
+   "linhas": 53,
+   "dominio": "hooks",
+   "tabelas": [
+    "audit_logs"
+   ],
+   "rpcs": [],
+   "edges": [],
+   "hooks_internos": [
+    "useQuery"
+   ],
+   "canais_realtime": [],
+   "usado_por": 5,
+   "usado_por_arquivos": [
+    "src/components/audit/jit/SSOJitEventsKPIs.tsx",
+    "src/components/audit/jit/SSOJitEventsTable.tsx",
+    "src/pages/admin/AuditSsoProfileSync.helpers.ts",
+    "src/pages/admin/AuditSsoProfileSync.tsx",
+    "src/pages/admin/SSOJitEvents.tsx"
+   ],
+   "coberto_por_testes": 0
+  },
+  {
+   "arquivo": "src/hooks/useSsoOnboardingAudit.ts",
+   "hooks_exportados": [
+    "useSsoOnboardingAudit"
+   ],
+   "linhas": 82,
+   "dominio": "hooks",
+   "tabelas": [],
+   "rpcs": [
+    "log_sso_onboarding_event"
+   ],
+   "edges": [],
+   "hooks_internos": [
+    "useCallback"
+   ],
+   "canais_realtime": [],
+   "usado_por": 1,
+   "usado_por_arquivos": [
+    "src/pages/auth/CorporateOnboarding.hook.ts"
+   ],
+   "coberto_por_testes": 0
+  },
+  {
+   "arquivo": "src/hooks/useSsoProfileSyncEvents.ts",
+   "hooks_exportados": [
+    "useSsoProfileSyncEvents"
+   ],
+   "linhas": 84,
+   "dominio": "hooks",
+   "tabelas": [
+    "audit_logs"
+   ],
+   "rpcs": [],
+   "edges": [],
+   "hooks_internos": [
+    "useQuery"
+   ],
+   "canais_realtime": [],
+   "usado_por": 2,
+   "usado_por_arquivos": [
+    "src/pages/admin/AuditSsoProfileSync.helpers.ts",
+    "src/pages/admin/AuditSsoProfileSync.tsx"
+   ],
+   "coberto_por_testes": 0
+  },
+  {
+   "arquivo": "src/hooks/useSSOSandboxRuns.ts",
+   "hooks_exportados": [
+    "useDeleteSSOSandboxRun",
+    "useSSOSandboxRuns",
+    "useSaveSSOSandboxRun"
+   ],
+   "linhas": 115,
+   "dominio": "hooks",
+   "tabelas": [
+    "sso_sandbox_runs"
+   ],
+   "rpcs": [],
+   "edges": [],
+   "hooks_internos": [
+    "useMutation",
+    "useQuery",
+    "useQueryClient"
+   ],
+   "canais_realtime": [],
+   "usado_por": 5,
+   "usado_por_arquivos": [
+    "src/components/admin/sso/SSOSandboxPanel.tsx",
+    "src/components/admin/sso/sandbox/SandboxBulkPanel.tsx",
+    "src/components/admin/sso/sandbox/SandboxCompareDialog.tsx",
+    "src/components/admin/sso/sandbox/SandboxHistory.tsx",
+    "src/components/admin/sso/sandbox/SandboxRunDetailSheet.tsx"
+   ],
+   "coberto_por_testes": 0
+  },
+  {
+   "arquivo": "src/hooks/useStartupDiagnostic.ts",
+   "hooks_exportados": [
+    "useStartupDiagnostic"
+   ],
+   "linhas": 184,
+   "dominio": "hooks",
+   "tabelas": [
+    "profiles"
+   ],
+   "rpcs": [],
+   "edges": [],
+   "hooks_internos": [
+    "useCallback",
+    "useEffect",
+    "useState"
+   ],
+   "canais_realtime": [],
+   "usado_por": 1,
+   "usado_por_arquivos": [
+    "src/components/common/StartupDiagnostic.tsx"
+   ],
+   "coberto_por_testes": 0
+  },
+  {
+   "arquivo": "src/hooks/useSwipeBack.ts",
+   "hooks_exportados": [
+    "useSwipeBack"
+   ],
+   "linhas": 81,
+   "dominio": "hooks",
+   "tabelas": [],
+   "rpcs": [],
+   "edges": [],
+   "hooks_internos": [
+    "useCallback",
+    "useEffect",
+    "useLocation",
+    "useRef",
+    "useSmartBack"
+   ],
+   "canais_realtime": [],
+   "usado_por": 1,
+   "usado_por_arquivos": [
+    "src/components/layout/MainLayout.tsx"
+   ],
+   "coberto_por_testes": 0
+  },
+  {
+   "arquivo": "src/hooks/useTableOptimization.ts",
+   "hooks_exportados": [
+    "useTableOptimization"
+   ],
+   "linhas": 61,
+   "dominio": "hooks",
+   "tabelas": [],
+   "rpcs": [],
+   "edges": [],
+   "hooks_internos": [
+    "useMemo"
+   ],
+   "canais_realtime": [],
+   "usado_por": 2,
+   "usado_por_arquivos": [
+    "src/hooks/useContasPagarLogic.ts",
+    "src/hooks/useContasReceberLogic.ts"
+   ],
+   "coberto_por_testes": 0
+  },
+  {
+   "arquivo": "src/hooks/useTrilhaAuditoria.ts",
+   "hooks_exportados": [
+    "useTrilhaAuditoria"
+   ],
+   "linhas": 142,
+   "dominio": "hooks",
+   "tabelas": [],
+   "rpcs": [],
+   "edges": [],
+   "hooks_internos": [
+    "useQuery"
+   ],
+   "canais_realtime": [],
+   "usado_por": 1,
+   "usado_por_arquivos": [
+    "src/components/compliance/TrilhaTable.tsx"
+   ],
+   "coberto_por_testes": 0
+  },
+  {
+   "arquivo": "src/hooks/useUrlTab.ts",
+   "hooks_exportados": [
+    "useUrlTab"
+   ],
+   "linhas": 44,
+   "dominio": "hooks",
+   "tabelas": [],
+   "rpcs": [],
+   "edges": [],
+   "hooks_internos": [
+    "useCallback",
+    "useEffect",
+    "useSearchParams"
+   ],
+   "canais_realtime": [],
+   "usado_por": 4,
+   "usado_por_arquivos": [
+    "src/pages/Asaas.tsx",
+    "src/pages/Configuracoes.tsx",
+    "src/pages/Integracoes.tsx",
+    "src/pages/Seguranca.tsx"
+   ],
+   "coberto_por_testes": 1
+  },
+  {
+   "arquivo": "src/hooks/useUserDemonstrativoPreferences.ts",
+   "hooks_exportados": [
+    "useUserDemonstrativoPreferences"
+   ],
+   "linhas": 79,
+   "dominio": "hooks",
+   "tabelas": [
+    "user_demonstrativo_preferences"
+   ],
+   "rpcs": [],
+   "edges": [],
+   "hooks_internos": [
+    "useAuth",
+    "useMutation",
+    "useQuery",
+    "useQueryClient"
+   ],
+   "canais_realtime": [],
+   "usado_por": 1,
+   "usado_por_arquivos": [
+    "src/components/contabilidade/DreBalancoTab.tsx"
+   ],
+   "coberto_por_testes": 0
+  },
+  {
+   "arquivo": "src/hooks/useUserEmpresas.ts",
+   "hooks_exportados": [
+    "useDefinirEmpresaPadrao",
+    "useUserEmpresas"
+   ],
+   "linhas": 216,
+   "dominio": "hooks",
+   "tabelas": [
+    "empresas",
+    "user_empresas"
+   ],
+   "rpcs": [
+    "registrar_auditoria_config"
+   ],
+   "edges": [],
+   "hooks_internos": [
+    "useAuth",
+    "useMutation",
+    "useQuery",
+    "useQueryClient"
+   ],
+   "canais_realtime": [],
+   "usado_por": 11,
+   "usado_por_arquivos": [
+    "src/components/auth/EmpresaGuard.tsx",
+    "src/components/auth/EmpresaSelectionGate.tsx",
+    "src/components/dashboard-receber/ReceberKpis.tsx",
+    "src/components/layout/EmpresaSwitcher.tsx",
+    "src/components/layout/Header.tsx",
+    "src/components/tributario/CertificadosDigitaisTab.tsx",
+    "src/contexts/EmpresaScopeContext.tsx",
+    "src/contexts/useEmpresaScope.ts",
+    "src/hooks/AuthProvider.tsx",
+    "src/hooks/useGlobalFinancialFilter.ts",
+    "src/pages/tributario/ComparativoConformidade.tsx"
+   ],
+   "coberto_por_testes": 1
+  },
+  {
+   "arquivo": "src/hooks/useVendedores.ts",
+   "hooks_exportados": [
+    "useCreateVendedor",
+    "useDeleteVendedor",
+    "useUpdateVendedor",
+    "useVendedores",
+    "useVendedoresAtivos"
+   ],
+   "linhas": 93,
+   "dominio": "hooks",
+   "tabelas": [
+    "vendedores"
+   ],
+   "rpcs": [],
+   "edges": [],
+   "hooks_internos": [
+    "useMutation",
+    "useQuery",
+    "useQueryClient"
+   ],
+   "canais_realtime": [],
+   "usado_por": 3,
+   "usado_por_arquivos": [
+    "src/components/contas-receber/ContaReceberForm.tsx",
+    "src/components/vendedores/VendedorDashboard.tsx",
+    "src/pages/Vendedores.tsx"
+   ],
+   "coberto_por_testes": 0
+  },
+  {
+   "arquivo": "src/hooks/useVerificacaoIntegracoes.ts",
+   "hooks_exportados": [
+    "useVerificacaoIntegracoes"
+   ],
+   "linhas": 160,
+   "dominio": "hooks",
+   "tabelas": [
+    "lancamentos_contabeis"
+   ],
+   "rpcs": [],
+   "edges": [],
+   "hooks_internos": [],
+   "canais_realtime": [],
+   "usado_por": 1,
+   "usado_por_arquivos": [
+    "src/components/contabilidade/VerificacaoIntegracoesPanel.tsx"
+   ],
+   "coberto_por_testes": 0
+  },
+  {
+   "arquivo": "src/hooks/useViews.ts",
+   "hooks_exportados": [
+    "useDREMensal",
+    "useDSOAging",
+    "useFluxoCaixaDiario",
+    "useFluxoCaixaView",
+    "useGastosCentroCusto",
+    "useMetricasCobranca",
+    "useSaldosContas",
+    "useTransferenciasPainel"
+   ],
+   "linhas": 134,
+   "dominio": "hooks",
+   "tabelas": [
+    "vw_dre_mensal",
+    "vw_dso_aging",
+    "vw_fluxo_caixa",
+    "vw_fluxo_caixa_diario",
+    "vw_gastos_centro_custo",
+    "vw_metricas_cobranca",
+    "vw_saldos_contas",
+    "vw_transferencias_painel"
+   ],
+   "rpcs": [],
+   "edges": [],
+   "hooks_internos": [
+    "useQuery"
+   ],
+   "canais_realtime": [],
+   "usado_por": 1,
+   "usado_por_arquivos": [
+    "src/components/cobranca/FilaCobrancasPanel.tsx"
+   ],
+   "coberto_por_testes": 0
+  },
+  {
+   "arquivo": "src/hooks/useVirtualRows.ts",
+   "hooks_exportados": [
+    "useVirtualRows"
+   ],
+   "linhas": 35,
+   "dominio": "hooks",
+   "tabelas": [],
+   "rpcs": [],
+   "edges": [],
+   "hooks_internos": [
+    "useVirtualizer"
+   ],
+   "canais_realtime": [],
+   "usado_por": 2,
+   "usado_por_arquivos": [
+    "src/components/audit/AuditLogTable.tsx",
+    "src/pages/admin-telemetria/TelemetriaTable.tsx"
+   ],
+   "coberto_por_testes": 0
+  },
+  {
+   "arquivo": "src/hooks/useWebAuthn.ts",
+   "hooks_exportados": [
+    "useWebAuthn"
+   ],
+   "linhas": 377,
+   "dominio": "hooks",
+   "tabelas": [
+    "webauthn_credentials"
+   ],
+   "rpcs": [],
+   "edges": [],
+   "hooks_internos": [
+    "useAuth",
+    "useCallback",
+    "useState"
+   ],
+   "canais_realtime": [],
+   "usado_por": 3,
+   "usado_por_arquivos": [
+    "src/components/auth/WebAuthnManager.tsx",
+    "src/components/configuracoes/BiometricSettings.tsx",
+    "src/pages/Auth.hooks.ts"
+   ],
+   "coberto_por_testes": 1
+  },
+  {
+   "arquivo": "src/hooks/useWebPushSubscription.ts",
+   "hooks_exportados": [
+    "useWebPushSubscription"
+   ],
+   "linhas": 152,
+   "dominio": "hooks",
+   "tabelas": [
+    "push_subscriptions"
+   ],
+   "rpcs": [],
+   "edges": [],
+   "hooks_internos": [
+    "useCallback",
+    "useEffect",
+    "useState",
+    "useToast"
+   ],
+   "canais_realtime": [],
+   "usado_por": 3,
+   "usado_por_arquivos": [
+    "src/components/settings/PushNotificationsBanner.tsx",
+    "src/components/shared/SavedFiltersBar.tsx",
+    "src/pages/configuracoes/SinoNotificacoesFiltros.tsx"
+   ],
+   "coberto_por_testes": 0
+  },
+  {
+   "arquivo": "src/hooks/useWhatsAppCobrancaHistory.ts",
+   "hooks_exportados": [
+    "useCreateWhatsAppCobranca",
+    "useWhatsAppCobrancaHistory"
+   ],
+   "linhas": 57,
+   "dominio": "hooks",
+   "tabelas": [
+    "historico_cobranca_whatsapp"
+   ],
+   "rpcs": [],
+   "edges": [],
+   "hooks_internos": [
+    "useMutation",
+    "useQuery",
+    "useQueryClient"
+   ],
+   "canais_realtime": [],
+   "usado_por": 1,
+   "usado_por_arquivos": [
+    "src/components/cobranca/WhatsAppHistoryPanel.tsx"
+   ],
+   "coberto_por_testes": 0
+  },
+  {
+   "arquivo": "src/hooks/useWhatsAppIA.ts",
+   "hooks_exportados": [
+    "useSendMessage",
+    "useWhatsAppConversas"
+   ],
+   "linhas": 63,
+   "dominio": "hooks",
+   "tabelas": [
+    "whatsapp_conversas"
+   ],
+   "rpcs": [],
+   "edges": [],
+   "hooks_internos": [
+    "useMutation",
+    "useQuery",
+    "useQueryClient"
+   ],
+   "canais_realtime": [],
+   "usado_por": 1,
+   "usado_por_arquivos": [
+    "src/components/financeiro/cobranca/WhatsAppHistoryIA.tsx"
+   ],
+   "coberto_por_testes": 0
+  },
+  {
+   "arquivo": "src/hooks/useWhatsAppUnreadCount.ts",
+   "hooks_exportados": [
+    "useWhatsAppUnreadCount"
+   ],
+   "linhas": 22,
+   "dominio": "hooks",
+   "tabelas": [
+    "historico_cobranca_whatsapp"
+   ],
+   "rpcs": [],
+   "edges": [],
+   "hooks_internos": [
+    "useQuery"
+   ],
+   "canais_realtime": [],
+   "usado_por": 1,
+   "usado_por_arquivos": [
+    "src/components/layout/sidebar/SidebarNavGroups.tsx"
+   ],
+   "coberto_por_testes": 0
+  },
+  {
+   "arquivo": "src/hooks/useZodForm.ts",
+   "hooks_exportados": [
+    "useZodField",
+    "useZodForm"
+   ],
+   "linhas": 301,
+   "dominio": "hooks",
+   "tabelas": [],
+   "rpcs": [],
+   "edges": [],
+   "hooks_internos": [
+    "useCallback",
+    "useMemo",
+    "useState"
+   ],
+   "canais_realtime": [],
+   "usado_por": 2,
+   "usado_por_arquivos": [
+    "src/pages/Orcamentos.tsx",
+    "src/pages/OrcamentosFormDialog.tsx"
+   ],
+   "coberto_por_testes": 0
+  },
+  {
+   "arquivo": "src/lib/haptic-feedback.ts",
+   "hooks_exportados": [
+    "useHaptic"
+   ],
+   "linhas": 80,
+   "dominio": "lib",
+   "tabelas": [],
+   "rpcs": [],
+   "edges": [],
+   "hooks_internos": [],
+   "canais_realtime": [],
+   "usado_por": 4,
+   "usado_por_arquivos": [
+    "src/components/conciliacao/ConciliacaoManualDialog.tsx",
+    "src/components/contas-pagar/RegistrarPagamentoDialog.tsx",
+    "src/components/contas-receber/RegistrarRecebimentoDialog.tsx",
+    "src/components/wrappers/CelebrationActions.tsx"
+   ],
+   "coberto_por_testes": 0
+  },
+  {
+   "arquivo": "src/lib/persisted-ui-state.ts",
+   "hooks_exportados": [
+    "usePersistedState"
+   ],
+   "linhas": 37,
+   "dominio": "lib",
+   "tabelas": [],
+   "rpcs": [],
+   "edges": [],
+   "hooks_internos": [
+    "useCallback",
+    "useEffect"
+   ],
+   "canais_realtime": [],
+   "usado_por": 2,
+   "usado_por_arquivos": [
+    "src/components/compliance/AuditFiltersBar.tsx",
+    "src/pages/admin/ComplianceAuditoria.tsx"
+   ],
+   "coberto_por_testes": 0
+  },
+  {
+   "arquivo": "src/lib/sound-feedback.ts",
+   "hooks_exportados": [
+    "useSoundFeedback"
+   ],
+   "linhas": 198,
+   "dominio": "lib",
+   "tabelas": [],
+   "rpcs": [],
+   "edges": [],
+   "hooks_internos": [
+    "useCallback",
+    "useEffect"
+   ],
+   "canais_realtime": [],
+   "usado_por": 13,
+   "usado_por_arquivos": [
+    "src/components/clientes/ClienteForm.tsx",
+    "src/components/cobranca/AcordoParcelamentoDialog.tsx",
+    "src/components/contas-pagar/ContaPagarForm.tsx",
+    "src/components/contas-pagar/RegistrarPagamentoDialog.tsx",
+    "src/components/contas-receber/ContaReceberForm.tsx",
+    "src/components/contas-receber/RegistrarRecebimentoDialog.tsx",
+    "src/components/fornecedores/FornecedorForm.tsx",
+    "src/components/offline/OfflineBanner.tsx",
+    "src/components/pagamentos-recorrentes/PagamentoRecorrenteForm.tsx",
+    "src/components/ui/micro-interactions.helpers.ts",
+    "src/components/ui/micro-interactions.tsx",
+    "src/hooks/financial/useContasPagar.ts",
+    "src/hooks/useSoundFeedback.ts"
+   ],
+   "coberto_por_testes": 0
+  },
+  {
+   "arquivo": "src/pages/admin/shared-filters-admin/useSharedFiltersAdmin.ts",
+   "hooks_exportados": [
+    "useSharedFiltersAdmin"
+   ],
+   "linhas": 270,
+   "dominio": "pages/admin",
+   "tabelas": [
+    "empresas",
+    "profiles",
+    "saved_filters",
+    "user_empresas"
+   ],
+   "rpcs": [],
+   "edges": [],
+   "hooks_internos": [
+    "useMemo",
+    "useMutation",
+    "useQuery",
+    "useQueryClient"
+   ],
+   "canais_realtime": [],
+   "usado_por": 1,
+   "usado_por_arquivos": [
+    "src/pages/admin/SharedFiltersAdmin.tsx"
+   ],
+   "coberto_por_testes": 0
+  },
+  {
+   "arquivo": "src/pages/Auth.hooks.ts",
+   "hooks_exportados": [
+    "useAuthPage"
+   ],
+   "linhas": 440,
+   "dominio": "pages",
+   "tabelas": [
+    "password_reset_requests"
+   ],
+   "rpcs": [
+    "is_user_locked",
+    "reset_failed_attempts"
+   ],
+   "edges": [
+    "sso-callback"
+   ],
+   "hooks_internos": [
+    "useAuthValidation",
+    "useCallback",
+    "useDeviceDetection",
+    "useEffect",
+    "useNavigate",
+    "useState",
+    "useWebAuthn"
+   ],
+   "canais_realtime": [],
+   "usado_por": 1,
+   "usado_por_arquivos": [
+    "src/pages/Auth.tsx"
+   ],
+   "coberto_por_testes": 0
+  },
+  {
+   "arquivo": "src/pages/auth/CorporateOnboarding.hook.ts",
+   "hooks_exportados": [
+    "useCorporateOnboarding"
+   ],
+   "linhas": 224,
+   "dominio": "pages/auth",
+   "tabelas": [],
+   "rpcs": [],
+   "edges": [
+    "sso-initiate"
+   ],
+   "hooks_internos": [
+    "useEffect",
+    "useNavigate",
+    "useRef",
+    "useSsoDomainResolver",
+    "useSsoOnboardingAudit",
+    "useState"
+   ],
+   "canais_realtime": [],
+   "usado_por": 1,
+   "usado_por_arquivos": [
+    "src/pages/auth/CorporateOnboarding.tsx"
+   ],
+   "coberto_por_testes": 0
+  },
+  {
+   "arquivo": "src/pages/bloqueios-duplicidade/useBloqueiosData.ts",
+   "hooks_exportados": [
+    "useBloqueiosData"
+   ],
+   "linhas": 60,
+   "dominio": "pages/bloqueios-duplicidade",
+   "tabelas": [
+    "bloqueios_duplicidade",
+    "empresas"
+   ],
+   "rpcs": [],
+   "edges": [],
+   "hooks_internos": [
+    "useQuery"
+   ],
+   "canais_realtime": [],
+   "usado_por": 1,
+   "usado_por_arquivos": [
+    "src/pages/BloqueiosDuplicidade.tsx"
+   ],
+   "coberto_por_testes": 0
+  },
+  {
+   "arquivo": "src/pages/configuracoes/filtros-salvos/useFiltrosSalvosDiagnostics.ts",
+   "hooks_exportados": [
+    "useFiltrosSalvosDiagnostics"
+   ],
+   "linhas": 167,
+   "dominio": "pages/configuracoes",
+   "tabelas": [
+    "user_active_filters"
+   ],
+   "rpcs": [],
+   "edges": [],
+   "hooks_internos": [
+    "useCallback",
+    "useEffect",
+    "useState"
+   ],
+   "canais_realtime": [],
+   "usado_por": 1,
+   "usado_por_arquivos": [
+    "src/pages/configuracoes/FiltrosSalvos.tsx"
+   ],
+   "coberto_por_testes": 0
+  }
+ ]
+}

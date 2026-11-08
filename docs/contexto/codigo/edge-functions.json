@@ -1,0 +1,4324 @@
+{
+ "aviso": "GERADO AUTOMATICAMENTE por scripts/ai-context/gerar.mjs — não editar à mão; será sobrescrito.",
+ "format_version": 2,
+ "pasta": "supabase/functions",
+ "total": 106,
+ "verify_jwt_false": [
+  "analise-fluxo-ia",
+  "analyze-document",
+  "api-keys-manage",
+  "asaas-proxy",
+  "asaas-webhook",
+  "benchmarking-setorial",
+  "bitrix24-webhook",
+  "bling-proxy",
+  "bling-webhook",
+  "categorizar-despesa",
+  "ci-security-gate-log",
+  "cnpja-lookup",
+  "compare-schemas",
+  "convidar-usuario",
+  "decidir-regime",
+  "digest-silenciamentos-erro",
+  "enviar-alerta-email",
+  "enviar-bitrix24-tributario",
+  "executar-analise-preditiva",
+  "executar-regua-cobranca",
+  "executar-relatorios",
+  "expert-agent",
+  "external-data",
+  "gerar-alertas",
+  "gerar-alertas-dispatcher",
+  "gerar-alertas-tributarios",
+  "gerar-dre-tributaria",
+  "gerar-heatmap-tributario",
+  "gerar-pdf-tributario",
+  "get-vapid-key",
+  "health",
+  "insights-relatorio",
+  "mcp-query",
+  "monitor-health",
+  "monitorar-erros-frontend",
+  "n8n-callback",
+  "notify-performance-alert",
+  "prever-carga-tributaria",
+  "scim-server",
+  "sefaz-dfe-dispatcher",
+  "sefaz-dfe-puxar",
+  "send-device-alert",
+  "send-push-notification",
+  "sso-callback",
+  "sso-initiate",
+  "sso-logout",
+  "validar-token-contador",
+  "validate-ip-geo",
+  "webhook-replay",
+  "webhook-retry-worker",
+  "whatsapp-ia-proativo",
+  "whatsapp-webhook"
+ ],
+ "shared": [
+  "supabase/functions/_shared/app-url.ts",
+  "supabase/functions/_shared/auth-guard.ts",
+  "supabase/functions/_shared/auth-guard_test.ts",
+  "supabase/functions/_shared/concurrency-limiter.ts",
+  "supabase/functions/_shared/console-persist.ts",
+  "supabase/functions/_shared/contract-coverage_test.ts",
+  "supabase/functions/_shared/contract-response.ts",
+  "supabase/functions/_shared/contract-response_test.ts",
+  "supabase/functions/_shared/contract-validator.ts",
+  "supabase/functions/_shared/correlation.ts",
+  "supabase/functions/_shared/cors.ts",
+  "supabase/functions/_shared/edge-observability.ts",
+  "supabase/functions/_shared/edge-observability_test.ts",
+  "supabase/functions/_shared/erros.ts",
+  "supabase/functions/_shared/fuzzer.ts",
+  "supabase/functions/_shared/load-tester.ts",
+  "supabase/functions/_shared/logger.ts",
+  "supabase/functions/_shared/magic-bytes.ts",
+  "supabase/functions/_shared/magic-bytes_test.ts",
+  "supabase/functions/_shared/nfe/xml-storage.ts",
+  "supabase/functions/_shared/nfe/xml-storage_test.ts",
+  "supabase/functions/_shared/obrigacoes/alertas.ts",
+  "supabase/functions/_shared/obrigacoes/calendario.ts",
+  "supabase/functions/_shared/obrigacoes/catalogo.ts",
+  "supabase/functions/_shared/obrigacoes/conformidade.ts",
+  "supabase/functions/_shared/obrigacoes/dias-uteis.ts",
+  "supabase/functions/_shared/obrigacoes/digest.ts",
+  "supabase/functions/_shared/obrigacoes/preferencias-digest.ts",
+  "supabase/functions/_shared/obrigacoes/types.ts",
+  "supabase/functions/_shared/observability.ts",
+  "supabase/functions/_shared/proxy-audit.ts",
+  "supabase/functions/_shared/rate-limit.ts",
+  "supabase/functions/_shared/rate-limit_test.ts",
+  "supabase/functions/_shared/resilience.ts",
+  "supabase/functions/_shared/resilience_test.ts",
+  "supabase/functions/_shared/sefaz/__fixtures__/procEventoNFe-ciencia.xml",
+  "supabase/functions/_shared/sefaz/__fixtures__/procNFe-duplicada.xml",
+  "supabase/functions/_shared/sefaz/__fixtures__/procNFe-ok.xml",
+  "supabase/functions/_shared/sefaz/__fixtures__/resNFe-resumo.xml",
+  "supabase/functions/_shared/sefaz/__fixtures__/retDistDFeInt-108.xml",
+  "supabase/functions/_shared/sefaz/__fixtures__/retDistDFeInt-137.xml",
+  "supabase/functions/_shared/sefaz/__fixtures__/retDistDFeInt-138.xml.tmpl",
+  "supabase/functions/_shared/sefaz/__fixtures__/retDistDFeInt-656.xml",
+  "supabase/functions/_shared/sefaz/__fixtures__/retDistDFeInt-malformed.xml",
+  "supabase/functions/_shared/sefaz/__mocks__/soap-mock.ts",
+  "supabase/functions/_shared/sefaz/__mocks__/soap-mock_test.ts",
+  "supabase/functions/_shared/sefaz/__tests__/manifestacao_test.ts",
+  "supabase/functions/_shared/sefaz/endpoints.ts",
+  "supabase/functions/_shared/sefaz/gunzip.ts",
+  "supabase/functions/_shared/sefaz/manifestacao.ts",
+  "supabase/functions/_shared/sefaz/parser.ts",
+  "supabase/functions/_shared/sefaz/pfx.ts",
+  "supabase/functions/_shared/sefaz/soap.ts",
+  "supabase/functions/_shared/sentry.ts",
+  "supabase/functions/_shared/sped/bloco9.ts",
+  "supabase/functions/_shared/sped/bloco9_test.ts",
+  "supabase/functions/_shared/sped/push-helper.ts",
+  "supabase/functions/_shared/sql-write-guard.ts",
+  "supabase/functions/_shared/sql-write-guard_test.ts",
+  "supabase/functions/_shared/tributario-logic.ts",
+  "supabase/functions/_shared/tributario-logic_test.ts",
+  "supabase/functions/_shared/validation.ts",
+  "supabase/functions/_shared/versioned-contract.ts",
+  "supabase/functions/_shared/versioned-contract_test.ts",
+  "supabase/functions/_shared/webhook-auth.ts",
+  "supabase/functions/_shared/webhook-auth_test.ts",
+  "supabase/functions/_shared/webhook-idempotency.ts",
+  "supabase/functions/_shared/zod.ts"
+ ],
+ "edges": [
+  {
+   "nome": "aceitar-convite",
+   "entrada": "supabase/functions/aceitar-convite/index.ts",
+   "arquivos": 1,
+   "linhas": 154,
+   "verify_jwt": true,
+   "metodos": [
+    "OPTIONS"
+   ],
+   "tabelas": [
+    "convites",
+    "organizacao_membros",
+    "organizacoes"
+   ],
+   "rpcs": [],
+   "env": [
+    "SUPABASE_ANON_KEY",
+    "SUPABASE_SERVICE_ROLE_KEY",
+    "SUPABASE_URL"
+   ],
+   "buckets": [],
+   "chama_edges": [],
+   "hosts_externos": [],
+   "usa_shared": [
+    "cors.ts",
+    "edge-observability.ts",
+    "zod.ts"
+   ],
+   "chamada_pelo_front": [
+    "src/hooks/useOrganizacoes.ts"
+   ],
+   "chamada_por_edges": [],
+   "chamada_por_sql_ou_cron": false,
+   "orfa": false,
+   "testes": 0
+  },
+  {
+   "nome": "analise-fluxo-ia",
+   "entrada": "supabase/functions/analise-fluxo-ia/index.ts",
+   "arquivos": 2,
+   "linhas": 479,
+   "verify_jwt": false,
+   "metodos": [
+    "OPTIONS"
+   ],
+   "tabelas": [],
+   "rpcs": [],
+   "env": [
+    "LOVABLE_API_KEY",
+    "SUPABASE_SERVICE_ROLE_KEY",
+    "SUPABASE_URL"
+   ],
+   "buckets": [],
+   "chama_edges": [],
+   "hosts_externos": [
+    "ai.gateway.lovable.dev",
+    "app.promo-finance.com"
+   ],
+   "usa_shared": [
+    "auth-guard.ts",
+    "contract-validator.ts",
+    "cors.ts",
+    "edge-observability.ts",
+    "erros.ts",
+    "observability.ts",
+    "rate-limit.ts",
+    "zod.ts"
+   ],
+   "chamada_pelo_front": [
+    "src/components/fluxo-caixa/InsightsFluxoIA.tsx"
+   ],
+   "chamada_por_edges": [],
+   "chamada_por_sql_ou_cron": false,
+   "orfa": false,
+   "testes": 0
+  },
+  {
+   "nome": "analise-preditiva",
+   "entrada": "supabase/functions/analise-preditiva/index.ts",
+   "arquivos": 1,
+   "linhas": 346,
+   "verify_jwt": true,
+   "metodos": [
+    "OPTIONS"
+   ],
+   "tabelas": [
+    "clientes",
+    "contas_pagar",
+    "contas_receber",
+    "transacoes_bancarias"
+   ],
+   "rpcs": [],
+   "env": [
+    "LOVABLE_API_KEY",
+    "SUPABASE_SERVICE_ROLE_KEY",
+    "SUPABASE_URL"
+   ],
+   "buckets": [],
+   "chama_edges": [],
+   "hosts_externos": [
+    "ai.gateway.lovable.dev"
+   ],
+   "usa_shared": [
+    "auth-guard.ts",
+    "cors.ts",
+    "edge-observability.ts",
+    "erros.ts",
+    "observability.ts",
+    "validation.ts"
+   ],
+   "chamada_pelo_front": [
+    "src/components/dashboard/PrevisaoIA.tsx"
+   ],
+   "chamada_por_edges": [],
+   "chamada_por_sql_ou_cron": false,
+   "orfa": false,
+   "testes": 0
+  },
+  {
+   "nome": "analyze-document",
+   "entrada": "supabase/functions/analyze-document/index.ts",
+   "arquivos": 1,
+   "linhas": 214,
+   "verify_jwt": false,
+   "metodos": [
+    "OPTIONS"
+   ],
+   "tabelas": [],
+   "rpcs": [],
+   "env": [
+    "LOVABLE_API_KEY",
+    "SUPABASE_SERVICE_ROLE_KEY",
+    "SUPABASE_URL"
+   ],
+   "buckets": [],
+   "chama_edges": [],
+   "hosts_externos": [
+    "ai.gateway.lovable.dev"
+   ],
+   "usa_shared": [
+    "auth-guard.ts",
+    "cors.ts",
+    "edge-observability.ts",
+    "erros.ts",
+    "observability.ts",
+    "rate-limit.ts",
+    "validation.ts"
+   ],
+   "chamada_pelo_front": [
+    "src/components/comprovantes/ComprovanteOCR.tsx",
+    "src/components/expert/DocumentAnalyzer.tsx"
+   ],
+   "chamada_por_edges": [],
+   "chamada_por_sql_ou_cron": false,
+   "orfa": false,
+   "testes": 0
+  },
+  {
+   "nome": "api-keys-manage",
+   "entrada": "supabase/functions/api-keys-manage/index.ts",
+   "arquivos": 1,
+   "linhas": 162,
+   "verify_jwt": false,
+   "metodos": [
+    "OPTIONS",
+    "POST"
+   ],
+   "tabelas": [
+    "api_keys",
+    "user_empresas"
+   ],
+   "rpcs": [],
+   "env": [],
+   "buckets": [],
+   "chama_edges": [],
+   "hosts_externos": [],
+   "usa_shared": [
+    "auth-guard.ts",
+    "cors.ts",
+    "edge-observability.ts",
+    "zod.ts"
+   ],
+   "chamada_pelo_front": [
+    "src/hooks/useApiKeys.ts"
+   ],
+   "chamada_por_edges": [],
+   "chamada_por_sql_ou_cron": false,
+   "orfa": false,
+   "testes": 1
+  },
+  {
+   "nome": "asaas-proxy",
+   "entrada": "supabase/functions/asaas-proxy/index.ts",
+   "arquivos": 3,
+   "linhas": 1374,
+   "verify_jwt": false,
+   "metodos": [
+    "OPTIONS"
+   ],
+   "tabelas": [
+    "asaas_audit_trail",
+    "asaas_config",
+    "asaas_credit_risk_analysis",
+    "asaas_customers",
+    "asaas_payment_links",
+    "asaas_payments",
+    "asaas_reconciliation_suggestions",
+    "asaas_sync_queue",
+    "asaas_transfers",
+    "clientes",
+    "contas_receber",
+    "user_empresas",
+    "user_roles"
+   ],
+   "rpcs": [
+    "generate_reconciliation_suggestions"
+   ],
+   "env": [
+    "ASAAS_API_KEY",
+    "SUPABASE_ANON_KEY",
+    "SUPABASE_SERVICE_ROLE_KEY",
+    "SUPABASE_URL"
+   ],
+   "buckets": [],
+   "chama_edges": [
+    "copilot-global",
+    "enviar-alerta-email",
+    "whatsapp-ia-proativo"
+   ],
+   "hosts_externos": [
+    "api.asaas.com"
+   ],
+   "usa_shared": [
+    "auth-guard.ts",
+    "cors.ts",
+    "edge-observability.ts",
+    "erros.ts",
+    "observability.ts",
+    "rate-limit.ts",
+    "resilience.ts",
+    "validation.ts"
+   ],
+   "chamada_pelo_front": [
+    "src/components/asaas/AssinaturasListPanel.tsx",
+    "src/components/asaas/LinksListPanel.tsx",
+    "src/hooks/useBoletos.ts"
+   ],
+   "chamada_por_edges": [
+    "functions"
+   ],
+   "chamada_por_sql_ou_cron": false,
+   "orfa": false,
+   "testes": 2
+  },
+  {
+   "nome": "asaas-webhook",
+   "entrada": "supabase/functions/asaas-webhook/index.ts",
+   "arquivos": 1,
+   "linhas": 237,
+   "verify_jwt": false,
+   "metodos": [
+    "OPTIONS"
+   ],
+   "tabelas": [
+    "asaas_audit_trail",
+    "asaas_payments",
+    "asaas_transfers"
+   ],
+   "rpcs": [],
+   "env": [
+    "ASAAS_WEBHOOK_TOKEN"
+   ],
+   "buckets": [],
+   "chama_edges": [],
+   "hosts_externos": [],
+   "usa_shared": [
+    "auth-guard.ts",
+    "contract-response.ts",
+    "cors.ts",
+    "edge-observability.ts",
+    "logger.ts",
+    "rate-limit.ts",
+    "validation.ts",
+    "versioned-contract.ts",
+    "webhook-idempotency.ts"
+   ],
+   "chamada_pelo_front": [],
+   "chamada_por_edges": [
+    "webhook-retry-worker"
+   ],
+   "chamada_por_sql_ou_cron": false,
+   "orfa": false,
+   "testes": 1
+  },
+  {
+   "nome": "benchmarking-setorial",
+   "entrada": "supabase/functions/benchmarking-setorial/index.ts",
+   "arquivos": 1,
+   "linhas": 183,
+   "verify_jwt": false,
+   "metodos": [
+    "OPTIONS"
+   ],
+   "tabelas": [],
+   "rpcs": [],
+   "env": [
+    "LOVABLE_API_KEY",
+    "SUPABASE_SERVICE_ROLE_KEY",
+    "SUPABASE_URL"
+   ],
+   "buckets": [],
+   "chama_edges": [],
+   "hosts_externos": [
+    "ai.gateway.lovable.dev"
+   ],
+   "usa_shared": [
+    "auth-guard.ts",
+    "cors.ts",
+    "edge-observability.ts",
+    "erros.ts",
+    "observability.ts",
+    "rate-limit.ts",
+    "validation.ts"
+   ],
+   "chamada_pelo_front": [
+    "src/pages/BenchmarkingSetorial.tsx"
+   ],
+   "chamada_por_edges": [],
+   "chamada_por_sql_ou_cron": false,
+   "orfa": false,
+   "testes": 0
+  },
+  {
+   "nome": "bitrix24-sync",
+   "entrada": "supabase/functions/bitrix24-sync/index.ts",
+   "arquivos": 1,
+   "linhas": 894,
+   "verify_jwt": true,
+   "metodos": [
+    "OPTIONS"
+   ],
+   "tabelas": [
+    "bitrix_field_mappings",
+    "bitrix_oauth_tokens",
+    "bitrix_sync_logs",
+    "clientes",
+    "contas_receber",
+    "elisao_tarefas_acionaveis",
+    "empresas"
+   ],
+   "rpcs": [],
+   "env": [
+    "BITRIX24_ACCESS_TOKEN",
+    "BITRIX24_CLIENT_ID",
+    "BITRIX24_CLIENT_SECRET",
+    "BITRIX24_DOMAIN",
+    "SUPABASE_SERVICE_ROLE_KEY",
+    "SUPABASE_URL"
+   ],
+   "buckets": [],
+   "chama_edges": [],
+   "hosts_externos": [],
+   "usa_shared": [
+    "cors.ts",
+    "edge-observability.ts",
+    "erros.ts",
+    "observability.ts",
+    "resilience.ts",
+    "validation.ts"
+   ],
+   "chamada_pelo_front": [
+    "src/hooks/useBitrix24.ts",
+    "src/hooks/useBoletos.ts",
+    "src/hooks/useOportunidadesElisao.ts"
+   ],
+   "chamada_por_edges": [],
+   "chamada_por_sql_ou_cron": false,
+   "orfa": false,
+   "testes": 0
+  },
+  {
+   "nome": "bitrix24-webhook",
+   "entrada": "supabase/functions/bitrix24-webhook/index.ts",
+   "arquivos": 1,
+   "linhas": 204,
+   "verify_jwt": false,
+   "metodos": [
+    "OPTIONS",
+    "POST"
+   ],
+   "tabelas": [],
+   "rpcs": [],
+   "env": [
+    "SUPABASE_SERVICE_ROLE_KEY",
+    "SUPABASE_URL"
+   ],
+   "buckets": [],
+   "chama_edges": [],
+   "hosts_externos": [],
+   "usa_shared": [
+    "contract-response.ts",
+    "cors.ts",
+    "edge-observability.ts",
+    "erros.ts",
+    "observability.ts",
+    "rate-limit.ts",
+    "validation.ts",
+    "versioned-contract.ts",
+    "webhook-auth.ts",
+    "webhook-idempotency.ts"
+   ],
+   "chamada_pelo_front": [
+    "src/components/integracoes/BitrixWebhookPanel.tsx"
+   ],
+   "chamada_por_edges": [],
+   "chamada_por_sql_ou_cron": false,
+   "orfa": false,
+   "testes": 1
+  },
+  {
+   "nome": "bling-proxy",
+   "entrada": "supabase/functions/bling-proxy/index.ts",
+   "arquivos": 1,
+   "linhas": 1013,
+   "verify_jwt": false,
+   "metodos": [
+    "OPTIONS"
+   ],
+   "tabelas": [
+    "bling_tokens",
+    "user_roles"
+   ],
+   "rpcs": [],
+   "env": [
+    "BLING_CLIENT_ID",
+    "BLING_CLIENT_SECRET",
+    "SUPABASE_ANON_KEY",
+    "SUPABASE_SERVICE_ROLE_KEY",
+    "SUPABASE_URL"
+   ],
+   "buckets": [],
+   "chama_edges": [],
+   "hosts_externos": [
+    "api.bling.com.br",
+    "www.bling.com.br"
+   ],
+   "usa_shared": [
+    "cors.ts",
+    "edge-observability.ts",
+    "erros.ts",
+    "observability.ts",
+    "rate-limit.ts",
+    "resilience.ts",
+    "validation.ts"
+   ],
+   "chamada_pelo_front": [
+    "src/hooks/bling/client.ts",
+    "src/hooks/useBlingNFe.ts"
+   ],
+   "chamada_por_edges": [],
+   "chamada_por_sql_ou_cron": false,
+   "orfa": false,
+   "testes": 0
+  },
+  {
+   "nome": "bling-webhook",
+   "entrada": "supabase/functions/bling-webhook/index.ts",
+   "arquivos": 1,
+   "linhas": 370,
+   "verify_jwt": false,
+   "metodos": [
+    "OPTIONS",
+    "POST"
+   ],
+   "tabelas": [
+    "alertas"
+   ],
+   "rpcs": [],
+   "env": [
+    "SUPABASE_SERVICE_ROLE_KEY",
+    "SUPABASE_URL"
+   ],
+   "buckets": [],
+   "chama_edges": [],
+   "hosts_externos": [],
+   "usa_shared": [
+    "contract-response.ts",
+    "cors.ts",
+    "edge-observability.ts",
+    "erros.ts",
+    "observability.ts",
+    "rate-limit.ts",
+    "validation.ts",
+    "versioned-contract.ts",
+    "webhook-auth.ts",
+    "webhook-idempotency.ts"
+   ],
+   "chamada_pelo_front": [],
+   "chamada_por_edges": [],
+   "chamada_por_sql_ou_cron": false,
+   "orfa": false,
+   "testes": 1
+  },
+  {
+   "nome": "calcular-health-score-operacional",
+   "entrada": "supabase/functions/calcular-health-score-operacional/index.ts",
+   "arquivos": 1,
+   "linhas": 326,
+   "verify_jwt": true,
+   "metodos": [
+    "OPTIONS",
+    "POST"
+   ],
+   "tabelas": [
+    "alertas",
+    "apuracoes_tributarias",
+    "contas_bancarias",
+    "contas_receber",
+    "empresas",
+    "health_scores_operacionais",
+    "solicitacoes_lgpd",
+    "transacoes_bancarias",
+    "user_empresas"
+   ],
+   "rpcs": [
+    "has_role"
+   ],
+   "env": [
+    "LOVABLE_API_KEY",
+    "SUPABASE_SERVICE_ROLE_KEY",
+    "SUPABASE_URL"
+   ],
+   "buckets": [],
+   "chama_edges": [],
+   "hosts_externos": [
+    "ai.gateway.lovable.dev"
+   ],
+   "usa_shared": [
+    "auth-guard.ts",
+    "cors.ts",
+    "edge-observability.ts",
+    "erros.ts",
+    "observability.ts",
+    "validation.ts"
+   ],
+   "chamada_pelo_front": [
+    "src/hooks/useHealthScoreOperacional.ts"
+   ],
+   "chamada_por_edges": [],
+   "chamada_por_sql_ou_cron": false,
+   "orfa": false,
+   "testes": 0
+  },
+  {
+   "nome": "calcular-slo-metrics-diario",
+   "entrada": "supabase/functions/calcular-slo-metrics-diario/index.ts",
+   "arquivos": 1,
+   "linhas": 122,
+   "verify_jwt": true,
+   "metodos": [
+    "OPTIONS"
+   ],
+   "tabelas": [
+    "slo_metrics_diarias",
+    "vw_edge_health"
+   ],
+   "rpcs": [
+    "get_cron_run_history"
+   ],
+   "env": [
+    "SUPABASE_SERVICE_ROLE_KEY",
+    "SUPABASE_URL"
+   ],
+   "buckets": [],
+   "chama_edges": [],
+   "hosts_externos": [],
+   "usa_shared": [
+    "auth-guard.ts",
+    "edge-observability.ts",
+    "erros.ts",
+    "observability.ts"
+   ],
+   "chamada_pelo_front": [],
+   "chamada_por_edges": [],
+   "chamada_por_sql_ou_cron": false,
+   "orfa": true,
+   "testes": 0
+  },
+  {
+   "nome": "calculo-iva",
+   "entrada": "supabase/functions/calculo-iva/index.ts",
+   "arquivos": 1,
+   "linhas": 71,
+   "verify_jwt": true,
+   "metodos": [
+    "OPTIONS"
+   ],
+   "tabelas": [],
+   "rpcs": [],
+   "env": [],
+   "buckets": [],
+   "chama_edges": [],
+   "hosts_externos": [],
+   "usa_shared": [
+    "auth-guard.ts",
+    "cors.ts",
+    "edge-observability.ts",
+    "validation.ts"
+   ],
+   "chamada_pelo_front": [],
+   "chamada_por_edges": [],
+   "chamada_por_sql_ou_cron": false,
+   "orfa": true,
+   "testes": 0
+  },
+  {
+   "nome": "categorizar-despesa",
+   "entrada": "supabase/functions/categorizar-despesa/index.ts",
+   "arquivos": 1,
+   "linhas": 202,
+   "verify_jwt": false,
+   "metodos": [
+    "OPTIONS"
+   ],
+   "tabelas": [],
+   "rpcs": [],
+   "env": [
+    "LOVABLE_API_KEY",
+    "SUPABASE_SERVICE_ROLE_KEY",
+    "SUPABASE_URL"
+   ],
+   "buckets": [],
+   "chama_edges": [],
+   "hosts_externos": [
+    "ai.gateway.lovable.dev"
+   ],
+   "usa_shared": [
+    "auth-guard.ts",
+    "cors.ts",
+    "edge-observability.ts",
+    "erros.ts",
+    "observability.ts",
+    "rate-limit.ts",
+    "validation.ts"
+   ],
+   "chamada_pelo_front": [
+    "src/hooks/useCategorizacaoIA.ts"
+   ],
+   "chamada_por_edges": [],
+   "chamada_por_sql_ou_cron": false,
+   "orfa": false,
+   "testes": 0
+  },
+  {
+   "nome": "ci-security-gate-log",
+   "entrada": "supabase/functions/ci-security-gate-log/index.ts",
+   "arquivos": 1,
+   "linhas": 193,
+   "verify_jwt": false,
+   "metodos": [
+    "OPTIONS",
+    "POST"
+   ],
+   "tabelas": [
+    "ci_security_gate_events"
+   ],
+   "rpcs": [],
+   "env": [
+    "DENO_TESTING",
+    "SUPABASE_SERVICE_ROLE_KEY",
+    "SUPABASE_URL"
+   ],
+   "buckets": [],
+   "chama_edges": [],
+   "hosts_externos": [],
+   "usa_shared": [
+    "contract-validator.ts",
+    "cors.ts",
+    "edge-observability.ts",
+    "erros.ts",
+    "observability.ts"
+   ],
+   "chamada_pelo_front": [],
+   "chamada_por_edges": [],
+   "chamada_por_sql_ou_cron": false,
+   "orfa": false,
+   "testes": 1
+  },
+  {
+   "nome": "cnpja-lookup",
+   "entrada": "supabase/functions/cnpja-lookup/index.ts",
+   "arquivos": 1,
+   "linhas": 346,
+   "verify_jwt": false,
+   "metodos": [
+    "OPTIONS",
+    "POST"
+   ],
+   "tabelas": [
+    "cnpja_cache"
+   ],
+   "rpcs": [
+    "cnpja_check_rate_limit"
+   ],
+   "env": [
+    "CNPJA_API_KEY",
+    "SUPABASE_ANON_KEY",
+    "SUPABASE_SERVICE_ROLE_KEY",
+    "SUPABASE_URL"
+   ],
+   "buckets": [],
+   "chama_edges": [],
+   "hosts_externos": [
+    "api.cnpja.com"
+   ],
+   "usa_shared": [
+    "correlation.ts",
+    "cors.ts",
+    "edge-observability.ts",
+    "observability.ts",
+    "validation.ts"
+   ],
+   "chamada_pelo_front": [
+    "src/hooks/useCnpjaLookup.ts"
+   ],
+   "chamada_por_edges": [],
+   "chamada_por_sql_ou_cron": false,
+   "orfa": false,
+   "testes": 0
+  },
+  {
+   "nome": "comparar-benchmark-setorial",
+   "entrada": "supabase/functions/comparar-benchmark-setorial/index.ts",
+   "arquivos": 1,
+   "linhas": 151,
+   "verify_jwt": true,
+   "metodos": [
+    "OPTIONS",
+    "POST"
+   ],
+   "tabelas": [
+    "empresas",
+    "faturamento_mensal",
+    "user_empresas"
+   ],
+   "rpcs": [
+    "has_role"
+   ],
+   "env": [
+    "SUPABASE_SERVICE_ROLE_KEY",
+    "SUPABASE_URL"
+   ],
+   "buckets": [],
+   "chama_edges": [],
+   "hosts_externos": [],
+   "usa_shared": [
+    "auth-guard.ts",
+    "cors.ts",
+    "edge-observability.ts",
+    "zod.ts"
+   ],
+   "chamada_pelo_front": [
+    "src/hooks/useBenchmarkSetorial.ts"
+   ],
+   "chamada_por_edges": [],
+   "chamada_por_sql_ou_cron": false,
+   "orfa": false,
+   "testes": 0
+  },
+  {
+   "nome": "compare-schemas",
+   "entrada": "supabase/functions/compare-schemas/index.ts",
+   "arquivos": 1,
+   "linhas": 123,
+   "verify_jwt": false,
+   "metodos": [
+    "OPTIONS",
+    "POST"
+   ],
+   "tabelas": [],
+   "rpcs": [],
+   "env": [
+    "SCHEMA_COMPARE_EXTERNAL_SERVICE_ROLE_KEY",
+    "SCHEMA_COMPARE_EXTERNAL_URL",
+    "SUPABASE_DB_URL"
+   ],
+   "buckets": [],
+   "chama_edges": [],
+   "hosts_externos": [],
+   "usa_shared": [
+    "auth-guard.ts",
+    "edge-observability.ts",
+    "erros.ts",
+    "observability.ts"
+   ],
+   "chamada_pelo_front": [],
+   "chamada_por_edges": [],
+   "chamada_por_sql_ou_cron": false,
+   "orfa": false,
+   "testes": 0
+  },
+  {
+   "nome": "conciliacao-ia",
+   "entrada": "supabase/functions/conciliacao-ia/index.ts",
+   "arquivos": 1,
+   "linhas": 281,
+   "verify_jwt": true,
+   "metodos": [
+    "OPTIONS"
+   ],
+   "tabelas": [],
+   "rpcs": [],
+   "env": [
+    "LOVABLE_API_KEY",
+    "SUPABASE_SERVICE_ROLE_KEY",
+    "SUPABASE_URL"
+   ],
+   "buckets": [],
+   "chama_edges": [],
+   "hosts_externos": [
+    "ai.gateway.lovable.dev"
+   ],
+   "usa_shared": [
+    "auth-guard.ts",
+    "contract-validator.ts",
+    "cors.ts",
+    "edge-observability.ts",
+    "erros.ts",
+    "observability.ts",
+    "rate-limit.ts"
+   ],
+   "chamada_pelo_front": [
+    "src/hooks/useConciliacaoIA.ts"
+   ],
+   "chamada_por_edges": [],
+   "chamada_por_sql_ou_cron": false,
+   "orfa": false,
+   "testes": 0
+  },
+  {
+   "nome": "conciliacao-proxy",
+   "entrada": "supabase/functions/conciliacao-proxy/index.ts",
+   "arquivos": 2,
+   "linhas": 319,
+   "verify_jwt": true,
+   "metodos": [
+    "OPTIONS",
+    "POST"
+   ],
+   "tabelas": [],
+   "rpcs": [],
+   "env": [
+    "DENO_TESTING",
+    "SUPABASE_ANON_KEY",
+    "SUPABASE_SERVICE_ROLE_KEY",
+    "SUPABASE_URL"
+   ],
+   "buckets": [],
+   "chama_edges": [],
+   "hosts_externos": [],
+   "usa_shared": [
+    "contract-response.ts",
+    "cors.ts",
+    "edge-observability.ts",
+    "proxy-audit.ts",
+    "validation.ts"
+   ],
+   "chamada_pelo_front": [],
+   "chamada_por_edges": [],
+   "chamada_por_sql_ou_cron": false,
+   "orfa": true,
+   "testes": 0
+  },
+  {
+   "nome": "consulta-tributaria",
+   "entrada": "supabase/functions/consulta-tributaria/index.ts",
+   "arquivos": 2,
+   "linhas": 536,
+   "verify_jwt": true,
+   "metodos": [
+    "OPTIONS",
+    "POST"
+   ],
+   "tabelas": [
+    "aliquotas_interestaduais",
+    "aliquotas_internas_uf",
+    "aliquotas_iss_municipal",
+    "beneficios_fiscais",
+    "cnaes",
+    "ncms",
+    "protocolos_st_ncms",
+    "protocolos_st_ufs"
+   ],
+   "rpcs": [],
+   "env": [
+    "SUPABASE_ANON_KEY",
+    "SUPABASE_URL"
+   ],
+   "buckets": [],
+   "chama_edges": [],
+   "hosts_externos": [],
+   "usa_shared": [
+    "cors.ts",
+    "edge-observability.ts",
+    "erros.ts",
+    "observability.ts",
+    "zod.ts"
+   ],
+   "chamada_pelo_front": [
+    "src/hooks/useConsultaTributaria.ts"
+   ],
+   "chamada_por_edges": [],
+   "chamada_por_sql_ou_cron": false,
+   "orfa": false,
+   "testes": 1
+  },
+  {
+   "nome": "contabilizar-evento",
+   "entrada": "supabase/functions/contabilizar-evento/index.ts",
+   "arquivos": 1,
+   "linhas": 262,
+   "verify_jwt": true,
+   "metodos": [
+    "OPTIONS"
+   ],
+   "tabelas": [
+    "eventos_contabilizacao_log",
+    "lancamentos_contabeis",
+    "partidas_contabeis",
+    "regras_contabilizacao_automatica",
+    "user_empresas",
+    "user_roles"
+   ],
+   "rpcs": [
+    "has_role"
+   ],
+   "env": [
+    "SUPABASE_ANON_KEY",
+    "SUPABASE_SERVICE_ROLE_KEY",
+    "SUPABASE_URL"
+   ],
+   "buckets": [],
+   "chama_edges": [],
+   "hosts_externos": [],
+   "usa_shared": [
+    "cors.ts",
+    "edge-observability.ts",
+    "validation.ts"
+   ],
+   "chamada_pelo_front": [],
+   "chamada_por_edges": [],
+   "chamada_por_sql_ou_cron": false,
+   "orfa": true,
+   "testes": 0
+  },
+  {
+   "nome": "convidar-contador",
+   "entrada": "supabase/functions/convidar-contador/index.ts",
+   "arquivos": 1,
+   "linhas": 246,
+   "verify_jwt": true,
+   "metodos": [
+    "OPTIONS"
+   ],
+   "tabelas": [
+    "convites_contador",
+    "user_empresas"
+   ],
+   "rpcs": [],
+   "env": [
+    "CONTADOR_INVITE_SECRET",
+    "LOVABLE_API_KEY",
+    "RESEND_API_KEY",
+    "SUPABASE_ANON_KEY",
+    "SUPABASE_JWT_SECRET",
+    "SUPABASE_SERVICE_ROLE_KEY",
+    "SUPABASE_URL"
+   ],
+   "buckets": [],
+   "chama_edges": [],
+   "hosts_externos": [
+    "app.lovable.app",
+    "connector-gateway.lovable.dev"
+   ],
+   "usa_shared": [
+    "contract-response.ts",
+    "correlation.ts",
+    "cors.ts",
+    "edge-observability.ts",
+    "observability.ts"
+   ],
+   "chamada_pelo_front": [
+    "src/components/tributario/onboarding/StepConvidarContador.tsx"
+   ],
+   "chamada_por_edges": [],
+   "chamada_por_sql_ou_cron": false,
+   "orfa": false,
+   "testes": 0
+  },
+  {
+   "nome": "convidar-usuario",
+   "entrada": "supabase/functions/convidar-usuario/index.ts",
+   "arquivos": 1,
+   "linhas": 240,
+   "verify_jwt": false,
+   "metodos": [
+    "OPTIONS",
+    "POST"
+   ],
+   "tabelas": [
+    "profiles",
+    "user_roles"
+   ],
+   "rpcs": [],
+   "env": [],
+   "buckets": [],
+   "chama_edges": [],
+   "hosts_externos": [],
+   "usa_shared": [
+    "app-url.ts",
+    "auth-guard.ts",
+    "cors.ts",
+    "edge-observability.ts",
+    "observability.ts",
+    "rate-limit.ts",
+    "zod.ts"
+   ],
+   "chamada_pelo_front": [
+    "src/components/usuarios/ConviteUsuarioDialog.tsx"
+   ],
+   "chamada_por_edges": [],
+   "chamada_por_sql_ou_cron": false,
+   "orfa": false,
+   "testes": 1
+  },
+  {
+   "nome": "copilot-global",
+   "entrada": "supabase/functions/copilot-global/index.ts",
+   "arquivos": 1,
+   "linhas": 305,
+   "verify_jwt": true,
+   "metodos": [
+    "OPTIONS"
+   ],
+   "tabelas": [
+    "acoes_recomendadas",
+    "alertas",
+    "contas_bancarias",
+    "contas_pagar",
+    "contas_receber",
+    "health_scores_operacionais",
+    "user_roles"
+   ],
+   "rpcs": [],
+   "env": [
+    "LOVABLE_API_KEY",
+    "SUPABASE_ANON_KEY",
+    "SUPABASE_SERVICE_ROLE_KEY",
+    "SUPABASE_URL"
+   ],
+   "buckets": [],
+   "chama_edges": [],
+   "hosts_externos": [
+    "ai.gateway.lovable.dev"
+   ],
+   "usa_shared": [
+    "contract-validator.ts",
+    "cors.ts",
+    "edge-observability.ts",
+    "erros.ts",
+    "observability.ts"
+   ],
+   "chamada_pelo_front": [
+    "src/components/copilot/CopilotGlobalFloat.tsx"
+   ],
+   "chamada_por_edges": [
+    "asaas-proxy"
+   ],
+   "chamada_por_sql_ou_cron": false,
+   "orfa": false,
+   "testes": 0
+  },
+  {
+   "nome": "copilot-tributario",
+   "entrada": "supabase/functions/copilot-tributario/index.ts",
+   "arquivos": 1,
+   "linhas": 177,
+   "verify_jwt": true,
+   "metodos": [
+    "OPTIONS"
+   ],
+   "tabelas": [
+    "empresas",
+    "user_roles"
+   ],
+   "rpcs": [],
+   "env": [
+    "LOVABLE_API_KEY",
+    "SUPABASE_ANON_KEY",
+    "SUPABASE_SERVICE_ROLE_KEY",
+    "SUPABASE_URL"
+   ],
+   "buckets": [],
+   "chama_edges": [],
+   "hosts_externos": [
+    "ai.gateway.lovable.dev"
+   ],
+   "usa_shared": [
+    "contract-validator.ts",
+    "correlation.ts",
+    "cors.ts",
+    "edge-observability.ts",
+    "observability.ts"
+   ],
+   "chamada_pelo_front": [
+    "src/components/tributario/dashboard/CopilotTributarioFloat.tsx"
+   ],
+   "chamada_por_edges": [],
+   "chamada_por_sql_ou_cron": false,
+   "orfa": false,
+   "testes": 0
+  },
+  {
+   "nome": "decidir-regime",
+   "entrada": "supabase/functions/decidir-regime/index.ts",
+   "arquivos": 1,
+   "linhas": 386,
+   "verify_jwt": false,
+   "metodos": [
+    "OPTIONS"
+   ],
+   "tabelas": [
+    "empresas",
+    "faturamento_mensal",
+    "folha_pagamento",
+    "regime_decision_cache",
+    "tax_audit_trail"
+   ],
+   "rpcs": [],
+   "env": [
+    "LOVABLE_API_KEY",
+    "SUPABASE_ANON_KEY",
+    "SUPABASE_SERVICE_ROLE_KEY",
+    "SUPABASE_URL"
+   ],
+   "buckets": [],
+   "chama_edges": [],
+   "hosts_externos": [
+    "ai.gateway.lovable.dev"
+   ],
+   "usa_shared": [
+    "correlation.ts",
+    "cors.ts",
+    "edge-observability.ts",
+    "observability.ts",
+    "tributario-logic.ts",
+    "validation.ts"
+   ],
+   "chamada_pelo_front": [
+    "src/hooks/useDecidirRegimeServer.ts"
+   ],
+   "chamada_por_edges": [
+    "gerar-pdf-tributario",
+    "gerar-relatorio-anual"
+   ],
+   "chamada_por_sql_ou_cron": false,
+   "orfa": false,
+   "testes": 1
+  },
+  {
+   "nome": "detectar-anomalias-financeiras",
+   "entrada": "supabase/functions/detectar-anomalias-financeiras/index.ts",
+   "arquivos": 1,
+   "linhas": 415,
+   "verify_jwt": true,
+   "metodos": [
+    "OPTIONS",
+    "POST"
+   ],
+   "tabelas": [
+    "anomalia_detection_runs",
+    "anomalias_detectadas",
+    "contas_pagar",
+    "empresas",
+    "movimentacoes",
+    "regime_decision_cache",
+    "transacoes_bancarias"
+   ],
+   "rpcs": [
+    "pg_try_advisory_lock"
+   ],
+   "env": [
+    "SUPABASE_SERVICE_ROLE_KEY",
+    "SUPABASE_URL"
+   ],
+   "buckets": [],
+   "chama_edges": [],
+   "hosts_externos": [],
+   "usa_shared": [
+    "auth-guard.ts",
+    "contract-validator.ts",
+    "cors.ts",
+    "edge-observability.ts",
+    "erros.ts",
+    "observability.ts"
+   ],
+   "chamada_pelo_front": [
+    "src/hooks/useAnomaliaDetectionRun.ts",
+    "src/hooks/useAnomaliasDetectadas.ts"
+   ],
+   "chamada_por_edges": [],
+   "chamada_por_sql_ou_cron": false,
+   "orfa": false,
+   "testes": 0
+  },
+  {
+   "nome": "digest-silenciamentos-erro",
+   "entrada": "supabase/functions/digest-silenciamentos-erro/index.ts",
+   "arquivos": 1,
+   "linhas": 263,
+   "verify_jwt": false,
+   "metodos": [
+    "OPTIONS"
+   ],
+   "tabelas": [
+    "profiles",
+    "user_roles"
+   ],
+   "rpcs": [
+    "claim_silenciamentos_digest"
+   ],
+   "env": [
+    "RESEND_API_KEY",
+    "SLACK_WEBHOOK_URL",
+    "SUPABASE_SERVICE_ROLE_KEY",
+    "SUPABASE_URL"
+   ],
+   "buckets": [],
+   "chama_edges": [],
+   "hosts_externos": [
+    "api.resend.com"
+   ],
+   "usa_shared": [
+    "auth-guard.ts",
+    "contract-response.ts",
+    "cors.ts",
+    "edge-observability.ts",
+    "erros.ts",
+    "observability.ts",
+    "zod.ts"
+   ],
+   "chamada_pelo_front": [],
+   "chamada_por_edges": [],
+   "chamada_por_sql_ou_cron": true,
+   "orfa": false,
+   "testes": 0
+  },
+  {
+   "nome": "enviar-alerta-email",
+   "entrada": "supabase/functions/enviar-alerta-email/index.ts",
+   "arquivos": 1,
+   "linhas": 227,
+   "verify_jwt": false,
+   "metodos": [
+    "OPTIONS"
+   ],
+   "tabelas": [
+    "alertas"
+   ],
+   "rpcs": [],
+   "env": [
+    "RESEND_API_KEY",
+    "SUPABASE_SERVICE_ROLE_KEY",
+    "SUPABASE_URL"
+   ],
+   "buckets": [],
+   "chama_edges": [],
+   "hosts_externos": [
+    "api.resend.com"
+   ],
+   "usa_shared": [
+    "auth-guard.ts",
+    "cors.ts",
+    "edge-observability.ts",
+    "erros.ts",
+    "observability.ts",
+    "validation.ts"
+   ],
+   "chamada_pelo_front": [],
+   "chamada_por_edges": [
+    "asaas-proxy",
+    "executar-regua-cobranca",
+    "gerar-resumo-financeiro-diario",
+    "processar-fila-cobrancas"
+   ],
+   "chamada_por_sql_ou_cron": false,
+   "orfa": false,
+   "testes": 1
+  },
+  {
+   "nome": "enviar-bitrix24-tributario",
+   "entrada": "supabase/functions/enviar-bitrix24-tributario/index.ts",
+   "arquivos": 1,
+   "linhas": 201,
+   "verify_jwt": false,
+   "metodos": [
+    "OPTIONS"
+   ],
+   "tabelas": [
+    "user_empresas"
+   ],
+   "rpcs": [],
+   "env": [
+    "BITRIX24_ACCESS_TOKEN",
+    "BITRIX24_DOMAIN",
+    "SUPABASE_ANON_KEY",
+    "SUPABASE_URL"
+   ],
+   "buckets": [],
+   "chama_edges": [],
+   "hosts_externos": [],
+   "usa_shared": [
+    "contract-validator.ts",
+    "correlation.ts",
+    "cors.ts",
+    "edge-observability.ts",
+    "observability.ts",
+    "resilience.ts"
+   ],
+   "chamada_pelo_front": [
+    "src/hooks/usePdfTributario.ts"
+   ],
+   "chamada_por_edges": [],
+   "chamada_por_sql_ou_cron": false,
+   "orfa": false,
+   "testes": 0
+  },
+  {
+   "nome": "enviar-convite-organizacao",
+   "entrada": "supabase/functions/enviar-convite-organizacao/index.ts",
+   "arquivos": 1,
+   "linhas": 218,
+   "verify_jwt": true,
+   "metodos": [
+    "OPTIONS"
+   ],
+   "tabelas": [
+    "convites",
+    "organizacao_membros",
+    "organizacoes"
+   ],
+   "rpcs": [],
+   "env": [
+    "RESEND_API_KEY",
+    "RESEND_FROM",
+    "SUPABASE_ANON_KEY",
+    "SUPABASE_SERVICE_ROLE_KEY",
+    "SUPABASE_URL"
+   ],
+   "buckets": [],
+   "chama_edges": [],
+   "hosts_externos": [
+    "api.resend.com"
+   ],
+   "usa_shared": [
+    "app-url.ts",
+    "cors.ts",
+    "edge-observability.ts",
+    "erros.ts",
+    "observability.ts",
+    "zod.ts"
+   ],
+   "chamada_pelo_front": [],
+   "chamada_por_edges": [],
+   "chamada_por_sql_ou_cron": false,
+   "orfa": true,
+   "testes": 0
+  },
+  {
+   "nome": "enviar-digest-conformidade",
+   "entrada": "supabase/functions/enviar-digest-conformidade/index.ts",
+   "arquivos": 1,
+   "linhas": 471,
+   "verify_jwt": true,
+   "metodos": [
+    "OPTIONS",
+    "POST"
+   ],
+   "tabelas": [
+    "alertas_tributarios",
+    "digest_envios_log",
+    "empresas",
+    "integration_secrets",
+    "profiles",
+    "user_digest_preferences",
+    "user_roles"
+   ],
+   "rpcs": [
+    "has_role"
+   ],
+   "env": [
+    "RESEND_API_KEY",
+    "RESEND_FROM",
+    "SUPABASE_SERVICE_ROLE_KEY",
+    "SUPABASE_URL"
+   ],
+   "buckets": [],
+   "chama_edges": [],
+   "hosts_externos": [
+    "api.resend.com"
+   ],
+   "usa_shared": [
+    "app-url.ts",
+    "auth-guard.ts",
+    "cors.ts",
+    "digest.ts",
+    "edge-observability.ts",
+    "preferencias-digest.ts",
+    "zod.ts"
+   ],
+   "chamada_pelo_front": [],
+   "chamada_por_edges": [],
+   "chamada_por_sql_ou_cron": true,
+   "orfa": false,
+   "testes": 0
+  },
+  {
+   "nome": "enviar-relatorios-tributarios-agendados",
+   "entrada": "supabase/functions/enviar-relatorios-tributarios-agendados/index.ts",
+   "arquivos": 1,
+   "linhas": 225,
+   "verify_jwt": true,
+   "metodos": [
+    "OPTIONS"
+   ],
+   "tabelas": [
+    "empresas",
+    "relatorios_tributarios_agendados"
+   ],
+   "rpcs": [],
+   "env": [
+    "RESEND_API_KEY",
+    "SUPABASE_SERVICE_ROLE_KEY",
+    "SUPABASE_URL"
+   ],
+   "buckets": [],
+   "chama_edges": [
+    "gerar-relatorio-anual"
+   ],
+   "hosts_externos": [
+    "api.resend.com"
+   ],
+   "usa_shared": [
+    "auth-guard.ts",
+    "correlation.ts",
+    "cors.ts",
+    "edge-observability.ts",
+    "observability.ts"
+   ],
+   "chamada_pelo_front": [],
+   "chamada_por_edges": [],
+   "chamada_por_sql_ou_cron": false,
+   "orfa": true,
+   "testes": 0
+  },
+  {
+   "nome": "executar-analise-preditiva",
+   "entrada": "supabase/functions/executar-analise-preditiva/index.ts",
+   "arquivos": 1,
+   "linhas": 469,
+   "verify_jwt": false,
+   "metodos": [
+    "OPTIONS"
+   ],
+   "tabelas": [
+    "alertas_preditivos",
+    "clientes",
+    "contas_pagar",
+    "contas_receber",
+    "empresas",
+    "historico_analises_preditivas",
+    "historico_score_saude",
+    "metas_financeiras",
+    "recomendacoes_metas_ia",
+    "transacoes_bancarias",
+    "user_empresas"
+   ],
+   "rpcs": [],
+   "env": [
+    "LOVABLE_API_KEY",
+    "SUPABASE_SERVICE_ROLE_KEY",
+    "SUPABASE_URL"
+   ],
+   "buckets": [],
+   "chama_edges": [
+    "send-push-notification"
+   ],
+   "hosts_externos": [
+    "ai.gateway.lovable.dev"
+   ],
+   "usa_shared": [
+    "auth-guard.ts",
+    "correlation.ts",
+    "cors.ts",
+    "edge-observability.ts",
+    "erros.ts",
+    "observability.ts"
+   ],
+   "chamada_pelo_front": [],
+   "chamada_por_edges": [],
+   "chamada_por_sql_ou_cron": false,
+   "orfa": false,
+   "testes": 1
+  },
+  {
+   "nome": "executar-fechamento-tributario",
+   "entrada": "supabase/functions/executar-fechamento-tributario/index.ts",
+   "arquivos": 1,
+   "linhas": 351,
+   "verify_jwt": true,
+   "metodos": [
+    "OPTIONS"
+   ],
+   "tabelas": [
+    "apuracoes_tributarias",
+    "empresas",
+    "fechamentos_tributarios",
+    "regime_decision_cache",
+    "relatorios_tributarios",
+    "transacoes_bancarias",
+    "user_roles",
+    "verificacoes_conformidade"
+   ],
+   "rpcs": [],
+   "env": [
+    "RESEND_API_KEY",
+    "SUPABASE_ANON_KEY",
+    "SUPABASE_SERVICE_ROLE_KEY",
+    "SUPABASE_URL"
+   ],
+   "buckets": [],
+   "chama_edges": [],
+   "hosts_externos": [
+    "api.resend.com"
+   ],
+   "usa_shared": [
+    "auth-guard.ts",
+    "contract-validator.ts",
+    "correlation.ts",
+    "cors.ts",
+    "edge-observability.ts",
+    "observability.ts"
+   ],
+   "chamada_pelo_front": [
+    "src/hooks/useFechamentoTributario.ts"
+   ],
+   "chamada_por_edges": [],
+   "chamada_por_sql_ou_cron": false,
+   "orfa": false,
+   "testes": 0
+  },
+  {
+   "nome": "executar-regua-cobranca",
+   "entrada": "supabase/functions/executar-regua-cobranca/index.ts",
+   "arquivos": 2,
+   "linhas": 238,
+   "verify_jwt": false,
+   "metodos": [
+    "OPTIONS",
+    "POST"
+   ],
+   "tabelas": [
+    "contas_receber",
+    "execucoes_regua_cobranca",
+    "regua_cobranca"
+   ],
+   "rpcs": [],
+   "env": [
+    "REGUA_CRON_SECRET",
+    "SUPABASE_SERVICE_ROLE_KEY",
+    "SUPABASE_URL"
+   ],
+   "buckets": [],
+   "chama_edges": [
+    "enviar-alerta-email",
+    "whatsapp-ia-proativo"
+   ],
+   "hosts_externos": [],
+   "usa_shared": [
+    "correlation.ts",
+    "cors.ts",
+    "edge-observability.ts",
+    "erros.ts",
+    "observability.ts",
+    "zod.ts"
+   ],
+   "chamada_pelo_front": [],
+   "chamada_por_edges": [],
+   "chamada_por_sql_ou_cron": true,
+   "orfa": false,
+   "testes": 1
+  },
+  {
+   "nome": "executar-relatorios",
+   "entrada": "supabase/functions/executar-relatorios/index.ts",
+   "arquivos": 1,
+   "linhas": 580,
+   "verify_jwt": false,
+   "metodos": [
+    "OPTIONS"
+   ],
+   "tabelas": [
+    "contas_bancarias",
+    "contas_pagar",
+    "contas_receber",
+    "historico_relatorios",
+    "relatorios_agendados",
+    "user_empresas"
+   ],
+   "rpcs": [],
+   "env": [
+    "SUPABASE_SERVICE_ROLE_KEY",
+    "SUPABASE_URL"
+   ],
+   "buckets": [],
+   "chama_edges": [],
+   "hosts_externos": [],
+   "usa_shared": [
+    "auth-guard.ts",
+    "cors.ts",
+    "edge-observability.ts",
+    "erros.ts",
+    "observability.ts",
+    "validation.ts"
+   ],
+   "chamada_pelo_front": [
+    "src/components/relatorios/RelatoriosAgendados.tsx"
+   ],
+   "chamada_por_edges": [],
+   "chamada_por_sql_ou_cron": false,
+   "orfa": false,
+   "testes": 0
+  },
+  {
+   "nome": "expert-agent",
+   "entrada": "supabase/functions/expert-agent/index.ts",
+   "arquivos": 1,
+   "linhas": 245,
+   "verify_jwt": false,
+   "metodos": [
+    "OPTIONS"
+   ],
+   "tabelas": [],
+   "rpcs": [],
+   "env": [
+    "LOVABLE_API_KEY",
+    "SUPABASE_SERVICE_ROLE_KEY",
+    "SUPABASE_URL"
+   ],
+   "buckets": [],
+   "chama_edges": [],
+   "hosts_externos": [
+    "ai.gateway.lovable.dev"
+   ],
+   "usa_shared": [
+    "auth-guard.ts",
+    "cors.ts",
+    "edge-observability.ts",
+    "erros.ts",
+    "observability.ts",
+    "rate-limit.ts",
+    "validation.ts"
+   ],
+   "chamada_pelo_front": [
+    "src/components/cobranca/NegociacaoIA.tsx",
+    "src/components/expert/expertPageSupport.ts"
+   ],
+   "chamada_por_edges": [],
+   "chamada_por_sql_ou_cron": false,
+   "orfa": false,
+   "testes": 0
+  },
+  {
+   "nome": "exportar-sped-contribuicoes",
+   "entrada": "supabase/functions/exportar-sped-contribuicoes/index.ts",
+   "arquivos": 3,
+   "linhas": 469,
+   "verify_jwt": true,
+   "metodos": [
+    "OPTIONS"
+   ],
+   "tabelas": [
+    "apuracoes_tributarias",
+    "empresas",
+    "user_empresas",
+    "user_roles"
+   ],
+   "rpcs": [],
+   "env": [
+    "SUPABASE_ANON_KEY",
+    "SUPABASE_SERVICE_ROLE_KEY",
+    "SUPABASE_URL"
+   ],
+   "buckets": [],
+   "chama_edges": [],
+   "hosts_externos": [],
+   "usa_shared": [
+    "bloco9.ts",
+    "correlation.ts",
+    "cors.ts",
+    "edge-observability.ts",
+    "observability.ts",
+    "push-helper.ts",
+    "validation.ts"
+   ],
+   "chamada_pelo_front": [
+    "src/hooks/useExportarSped.ts"
+   ],
+   "chamada_por_edges": [],
+   "chamada_por_sql_ou_cron": false,
+   "orfa": false,
+   "testes": 2
+  },
+  {
+   "nome": "external-data",
+   "entrada": "supabase/functions/external-data/index.ts",
+   "arquivos": 2,
+   "linhas": 461,
+   "verify_jwt": false,
+   "metodos": [
+    "OPTIONS"
+   ],
+   "tabelas": [
+    "companies",
+    "query_telemetry",
+    "user_empresas"
+   ],
+   "rpcs": [],
+   "env": [
+    "EXTERNAL_SUPABASE_SERVICE_KEY",
+    "EXTERNAL_SUPABASE_URL",
+    "SUPABASE_ANON_KEY",
+    "SUPABASE_SERVICE_ROLE_KEY",
+    "SUPABASE_URL"
+   ],
+   "buckets": [],
+   "chama_edges": [],
+   "hosts_externos": [
+    "docs.lovable.dev"
+   ],
+   "usa_shared": [
+    "cors.ts",
+    "edge-observability.ts",
+    "erros.ts",
+    "observability.ts"
+   ],
+   "chamada_pelo_front": [
+    "src/hooks/financial/externalData.ts",
+    "src/hooks/useExpertContext.ts"
+   ],
+   "chamada_por_edges": [],
+   "chamada_por_sql_ou_cron": false,
+   "orfa": false,
+   "testes": 0
+  },
+  {
+   "nome": "gerar-acoes-recomendadas",
+   "entrada": "supabase/functions/gerar-acoes-recomendadas/index.ts",
+   "arquivos": 1,
+   "linhas": 228,
+   "verify_jwt": true,
+   "metodos": [
+    "OPTIONS"
+   ],
+   "tabelas": [
+    "acoes_recomendadas",
+    "alertas_tributarios",
+    "anomalias_detectadas",
+    "apuracoes_tributarias",
+    "empresas",
+    "health_scores_operacionais",
+    "solicitacoes_lgpd"
+   ],
+   "rpcs": [
+    "detectar_duplicidades_financeiras"
+   ],
+   "env": [
+    "LOVABLE_API_KEY",
+    "SUPABASE_SERVICE_ROLE_KEY",
+    "SUPABASE_URL"
+   ],
+   "buckets": [],
+   "chama_edges": [],
+   "hosts_externos": [
+    "ai.gateway.lovable.dev"
+   ],
+   "usa_shared": [
+    "auth-guard.ts",
+    "contract-validator.ts",
+    "cors.ts",
+    "edge-observability.ts",
+    "erros.ts",
+    "observability.ts"
+   ],
+   "chamada_pelo_front": [
+    "src/hooks/useAcoesRecomendadas.ts"
+   ],
+   "chamada_por_edges": [],
+   "chamada_por_sql_ou_cron": false,
+   "orfa": false,
+   "testes": 0
+  },
+  {
+   "nome": "gerar-alertas",
+   "entrada": "supabase/functions/gerar-alertas/index.ts",
+   "arquivos": 1,
+   "linhas": 342,
+   "verify_jwt": false,
+   "metodos": [
+    "OPTIONS",
+    "POST"
+   ],
+   "tabelas": [
+    "alertas",
+    "contas_pagar",
+    "contas_receber",
+    "metas_financeiras"
+   ],
+   "rpcs": [
+    "gerar_alertas_vencimento"
+   ],
+   "env": [
+    "SUPABASE_SERVICE_ROLE_KEY",
+    "SUPABASE_URL"
+   ],
+   "buckets": [],
+   "chama_edges": [
+    "send-push-notification"
+   ],
+   "hosts_externos": [],
+   "usa_shared": [
+    "auth-guard.ts",
+    "contract-validator.ts",
+    "cors.ts",
+    "edge-observability.ts",
+    "erros.ts",
+    "observability.ts"
+   ],
+   "chamada_pelo_front": [],
+   "chamada_por_edges": [],
+   "chamada_por_sql_ou_cron": false,
+   "orfa": false,
+   "testes": 0
+  },
+  {
+   "nome": "gerar-alertas-dispatcher",
+   "entrada": "supabase/functions/gerar-alertas-dispatcher/index.ts",
+   "arquivos": 1,
+   "linhas": 91,
+   "verify_jwt": false,
+   "metodos": [
+    "GET",
+    "OPTIONS"
+   ],
+   "tabelas": [],
+   "rpcs": [],
+   "env": [
+    "SUPABASE_ANON_KEY",
+    "SUPABASE_URL"
+   ],
+   "buckets": [],
+   "chama_edges": [],
+   "hosts_externos": [],
+   "usa_shared": [
+    "contract-response.ts",
+    "correlation.ts",
+    "cors.ts",
+    "edge-observability.ts",
+    "logger.ts",
+    "zod.ts"
+   ],
+   "chamada_pelo_front": [],
+   "chamada_por_edges": [],
+   "chamada_por_sql_ou_cron": false,
+   "orfa": false,
+   "testes": 0
+  },
+  {
+   "nome": "gerar-alertas-tributarios",
+   "entrada": "supabase/functions/gerar-alertas-tributarios/index.ts",
+   "arquivos": 1,
+   "linhas": 375,
+   "verify_jwt": false,
+   "metodos": [
+    "OPTIONS"
+   ],
+   "tabelas": [
+    "alertas_tributarios",
+    "apuracoes_tributarias",
+    "benchmarks_setoriais",
+    "edge_function_logs",
+    "empresas",
+    "faturamento_mensal",
+    "folha_pagamento",
+    "movimentacoes"
+   ],
+   "rpcs": [],
+   "env": [
+    "SUPABASE_SERVICE_ROLE_KEY",
+    "SUPABASE_URL"
+   ],
+   "buckets": [],
+   "chama_edges": [],
+   "hosts_externos": [],
+   "usa_shared": [
+    "auth-guard.ts",
+    "cors.ts",
+    "edge-observability.ts",
+    "observability.ts"
+   ],
+   "chamada_pelo_front": [],
+   "chamada_por_edges": [],
+   "chamada_por_sql_ou_cron": false,
+   "orfa": false,
+   "testes": 1
+  },
+  {
+   "nome": "gerar-dre-tributaria",
+   "entrada": "supabase/functions/gerar-dre-tributaria/index.ts",
+   "arquivos": 1,
+   "linhas": 146,
+   "verify_jwt": false,
+   "metodos": [
+    "OPTIONS",
+    "POST"
+   ],
+   "tabelas": [
+    "empresas",
+    "faturamento_mensal",
+    "user_empresas"
+   ],
+   "rpcs": [
+    "has_role"
+   ],
+   "env": [
+    "SUPABASE_SERVICE_ROLE_KEY",
+    "SUPABASE_URL"
+   ],
+   "buckets": [],
+   "chama_edges": [],
+   "hosts_externos": [],
+   "usa_shared": [
+    "auth-guard.ts",
+    "cors.ts",
+    "edge-observability.ts",
+    "zod.ts"
+   ],
+   "chamada_pelo_front": [
+    "src/hooks/useDRETributaria.ts"
+   ],
+   "chamada_por_edges": [],
+   "chamada_por_sql_ou_cron": false,
+   "orfa": false,
+   "testes": 0
+  },
+  {
+   "nome": "gerar-heatmap-tributario",
+   "entrada": "supabase/functions/gerar-heatmap-tributario/index.ts",
+   "arquivos": 1,
+   "linhas": 168,
+   "verify_jwt": false,
+   "metodos": [
+    "OPTIONS",
+    "POST"
+   ],
+   "tabelas": [
+    "faturamento_mensal",
+    "user_empresas"
+   ],
+   "rpcs": [
+    "has_role"
+   ],
+   "env": [
+    "SUPABASE_SERVICE_ROLE_KEY",
+    "SUPABASE_URL"
+   ],
+   "buckets": [],
+   "chama_edges": [],
+   "hosts_externos": [],
+   "usa_shared": [
+    "auth-guard.ts",
+    "cors.ts",
+    "edge-observability.ts",
+    "zod.ts"
+   ],
+   "chamada_pelo_front": [
+    "src/hooks/useHeatmapTributario.ts"
+   ],
+   "chamada_por_edges": [],
+   "chamada_por_sql_ou_cron": false,
+   "orfa": false,
+   "testes": 0
+  },
+  {
+   "nome": "gerar-pacote-evidencias",
+   "entrada": "supabase/functions/gerar-pacote-evidencias/index.ts",
+   "arquivos": 1,
+   "linhas": 414,
+   "verify_jwt": true,
+   "metodos": [
+    "OPTIONS"
+   ],
+   "tabelas": [
+    "evidencias_pacotes",
+    "user_empresas",
+    "user_roles"
+   ],
+   "rpcs": [
+    "log_audit"
+   ],
+   "env": [
+    "SUPABASE_ANON_KEY",
+    "SUPABASE_SERVICE_ROLE_KEY",
+    "SUPABASE_URL"
+   ],
+   "buckets": [],
+   "chama_edges": [],
+   "hosts_externos": [],
+   "usa_shared": [
+    "contract-validator.ts",
+    "cors.ts",
+    "edge-observability.ts",
+    "erros.ts",
+    "observability.ts"
+   ],
+   "chamada_pelo_front": [
+    "src/hooks/useEvidenciasPack.ts",
+    "src/hooks/useGerarEvidenciasStream.ts"
+   ],
+   "chamada_por_edges": [],
+   "chamada_por_sql_ou_cron": false,
+   "orfa": false,
+   "testes": 0
+  },
+  {
+   "nome": "gerar-pdf-tributario",
+   "entrada": "supabase/functions/gerar-pdf-tributario/index.ts",
+   "arquivos": 1,
+   "linhas": 363,
+   "verify_jwt": false,
+   "metodos": [
+    "OPTIONS"
+   ],
+   "tabelas": [
+    "empresas",
+    "user_empresas"
+   ],
+   "rpcs": [
+    "has_role"
+   ],
+   "env": [
+    "SUPABASE_ANON_KEY",
+    "SUPABASE_SERVICE_ROLE_KEY",
+    "SUPABASE_URL"
+   ],
+   "buckets": [],
+   "chama_edges": [
+    "decidir-regime"
+   ],
+   "hosts_externos": [],
+   "usa_shared": [
+    "contract-validator.ts",
+    "correlation.ts",
+    "cors.ts",
+    "edge-observability.ts",
+    "observability.ts",
+    "rate-limit.ts"
+   ],
+   "chamada_pelo_front": [
+    "src/hooks/usePdfTributario.ts"
+   ],
+   "chamada_por_edges": [],
+   "chamada_por_sql_ou_cron": false,
+   "orfa": false,
+   "testes": 0
+  },
+  {
+   "nome": "gerar-relatorio-anual",
+   "entrada": "supabase/functions/gerar-relatorio-anual/index.ts",
+   "arquivos": 1,
+   "linhas": 204,
+   "verify_jwt": true,
+   "metodos": [
+    "OPTIONS"
+   ],
+   "tabelas": [
+    "alertas_tributarios",
+    "empresas",
+    "user_empresas",
+    "user_roles",
+    "vw_tributario_dashboard"
+   ],
+   "rpcs": [],
+   "env": [
+    "SUPABASE_ANON_KEY",
+    "SUPABASE_SERVICE_ROLE_KEY",
+    "SUPABASE_URL"
+   ],
+   "buckets": [],
+   "chama_edges": [
+    "decidir-regime"
+   ],
+   "hosts_externos": [],
+   "usa_shared": [
+    "contract-validator.ts",
+    "correlation.ts",
+    "cors.ts",
+    "edge-observability.ts",
+    "observability.ts"
+   ],
+   "chamada_pelo_front": [
+    "src/hooks/useRelatorioAnual.ts"
+   ],
+   "chamada_por_edges": [
+    "enviar-relatorios-tributarios-agendados"
+   ],
+   "chamada_por_sql_ou_cron": false,
+   "orfa": false,
+   "testes": 0
+  },
+  {
+   "nome": "gerar-resumo-executivo-semanal",
+   "entrada": "supabase/functions/gerar-resumo-executivo-semanal/index.ts",
+   "arquivos": 1,
+   "linhas": 317,
+   "verify_jwt": true,
+   "metodos": [
+    "OPTIONS"
+   ],
+   "tabelas": [
+    "alertas_tributarios",
+    "contas_pagar",
+    "contas_receber",
+    "empresas",
+    "relatorios_tributarios_agendados",
+    "resumos_executivos_semanais"
+   ],
+   "rpcs": [],
+   "env": [
+    "LOVABLE_API_KEY",
+    "RESEND_API_KEY",
+    "SUPABASE_SERVICE_ROLE_KEY",
+    "SUPABASE_URL"
+   ],
+   "buckets": [],
+   "chama_edges": [],
+   "hosts_externos": [
+    "ai.gateway.lovable.dev",
+    "api.resend.com"
+   ],
+   "usa_shared": [
+    "auth-guard.ts",
+    "contract-validator.ts",
+    "cors.ts",
+    "edge-observability.ts",
+    "erros.ts",
+    "observability.ts"
+   ],
+   "chamada_pelo_front": [
+    "src/hooks/useResumosExecutivos.ts"
+   ],
+   "chamada_por_edges": [],
+   "chamada_por_sql_ou_cron": false,
+   "orfa": false,
+   "testes": 0
+  },
+  {
+   "nome": "gerar-resumo-financeiro-diario",
+   "entrada": "supabase/functions/gerar-resumo-financeiro-diario/index.ts",
+   "arquivos": 1,
+   "linhas": 111,
+   "verify_jwt": true,
+   "metodos": [
+    "OPTIONS"
+   ],
+   "tabelas": [
+    "asaas_config",
+    "asaas_payments",
+    "asaas_sync_queue",
+    "empresas"
+   ],
+   "rpcs": [],
+   "env": [
+    "SUPABASE_URL"
+   ],
+   "buckets": [],
+   "chama_edges": [
+    "enviar-alerta-email"
+   ],
+   "hosts_externos": [],
+   "usa_shared": [
+    "auth-guard.ts",
+    "correlation.ts",
+    "cors.ts",
+    "edge-observability.ts",
+    "erros.ts",
+    "observability.ts"
+   ],
+   "chamada_pelo_front": [
+    "src/components/asaas/tabs/ConfigTab.tsx"
+   ],
+   "chamada_por_edges": [],
+   "chamada_por_sql_ou_cron": false,
+   "orfa": false,
+   "testes": 0
+  },
+  {
+   "nome": "gerar-snapshots-conformidade",
+   "entrada": "supabase/functions/gerar-snapshots-conformidade/index.ts",
+   "arquivos": 1,
+   "linhas": 286,
+   "verify_jwt": true,
+   "metodos": [
+    "OPTIONS",
+    "POST"
+   ],
+   "tabelas": [
+    "alertas_tributarios",
+    "conformidade_snapshots",
+    "empresas",
+    "entregas_obrigacoes",
+    "integration_secrets"
+   ],
+   "rpcs": [
+    "has_role"
+   ],
+   "env": [
+    "SUPABASE_SERVICE_ROLE_KEY",
+    "SUPABASE_URL"
+   ],
+   "buckets": [],
+   "chama_edges": [],
+   "hosts_externos": [],
+   "usa_shared": [
+    "alertas.ts",
+    "calendario.ts",
+    "conformidade.ts",
+    "cors.ts",
+    "edge-observability.ts",
+    "erros.ts",
+    "observability.ts",
+    "types.ts",
+    "zod.ts"
+   ],
+   "chamada_pelo_front": [],
+   "chamada_por_edges": [],
+   "chamada_por_sql_ou_cron": false,
+   "orfa": true,
+   "testes": 0
+  },
+  {
+   "nome": "gerar-sped-ecd",
+   "entrada": "supabase/functions/gerar-sped-ecd/index.ts",
+   "arquivos": 3,
+   "linhas": 730,
+   "verify_jwt": true,
+   "metodos": [
+    "OPTIONS"
+   ],
+   "tabelas": [
+    "empresas",
+    "lancamentos_contabeis",
+    "plano_contas",
+    "sped_contabil_arquivos",
+    "user_empresas",
+    "user_roles"
+   ],
+   "rpcs": [],
+   "env": [
+    "SUPABASE_SERVICE_ROLE_KEY",
+    "SUPABASE_URL"
+   ],
+   "buckets": [],
+   "chama_edges": [],
+   "hosts_externos": [],
+   "usa_shared": [
+    "bloco9.ts",
+    "cors.ts",
+    "edge-observability.ts",
+    "push-helper.ts",
+    "validation.ts"
+   ],
+   "chamada_pelo_front": [
+    "src/hooks/useSpedContabil.ts"
+   ],
+   "chamada_por_edges": [],
+   "chamada_por_sql_ou_cron": false,
+   "orfa": false,
+   "testes": 2
+  },
+  {
+   "nome": "gerar-sped-ecf",
+   "entrada": "supabase/functions/gerar-sped-ecf/index.ts",
+   "arquivos": 3,
+   "linhas": 681,
+   "verify_jwt": true,
+   "metodos": [
+    "OPTIONS"
+   ],
+   "tabelas": [
+    "empresas",
+    "lancamentos_contabeis",
+    "plano_contas",
+    "sped_contabil_arquivos",
+    "user_empresas",
+    "user_roles"
+   ],
+   "rpcs": [],
+   "env": [
+    "SUPABASE_SERVICE_ROLE_KEY",
+    "SUPABASE_URL"
+   ],
+   "buckets": [],
+   "chama_edges": [],
+   "hosts_externos": [],
+   "usa_shared": [
+    "bloco9.ts",
+    "cors.ts",
+    "edge-observability.ts",
+    "push-helper.ts",
+    "validation.ts"
+   ],
+   "chamada_pelo_front": [
+    "src/hooks/useSpedContabil.ts"
+   ],
+   "chamada_por_edges": [],
+   "chamada_por_sql_ou_cron": false,
+   "orfa": false,
+   "testes": 2
+  },
+  {
+   "nome": "get-mapbox-token",
+   "entrada": "supabase/functions/get-mapbox-token/index.ts",
+   "arquivos": 1,
+   "linhas": 27,
+   "verify_jwt": true,
+   "metodos": [
+    "OPTIONS"
+   ],
+   "tabelas": [],
+   "rpcs": [],
+   "env": [
+    "MAPBOX_ACCESS_TOKEN"
+   ],
+   "buckets": [],
+   "chama_edges": [],
+   "hosts_externos": [],
+   "usa_shared": [
+    "cors.ts",
+    "edge-observability.ts"
+   ],
+   "chamada_pelo_front": [],
+   "chamada_por_edges": [],
+   "chamada_por_sql_ou_cron": false,
+   "orfa": true,
+   "testes": 0
+  },
+  {
+   "nome": "get-vapid-key",
+   "entrada": "supabase/functions/get-vapid-key/index.ts",
+   "arquivos": 1,
+   "linhas": 51,
+   "verify_jwt": false,
+   "metodos": [
+    "OPTIONS"
+   ],
+   "tabelas": [],
+   "rpcs": [],
+   "env": [
+    "VAPID_PUBLIC_KEY"
+   ],
+   "buckets": [],
+   "chama_edges": [],
+   "hosts_externos": [],
+   "usa_shared": [
+    "cors.ts",
+    "edge-observability.ts",
+    "erros.ts",
+    "observability.ts"
+   ],
+   "chamada_pelo_front": [
+    "src/hooks/usePushNotifications.ts"
+   ],
+   "chamada_por_edges": [],
+   "chamada_por_sql_ou_cron": false,
+   "orfa": false,
+   "testes": 0
+  },
+  {
+   "nome": "health",
+   "entrada": "supabase/functions/health/index.ts",
+   "arquivos": 1,
+   "linhas": 138,
+   "verify_jwt": false,
+   "metodos": [
+    "OPTIONS"
+   ],
+   "tabelas": [
+    "asaas_config"
+   ],
+   "rpcs": [],
+   "env": [
+    "SUPABASE_SERVICE_ROLE_KEY",
+    "SUPABASE_URL"
+   ],
+   "buckets": [],
+   "chama_edges": [],
+   "hosts_externos": [
+    "api.asaas.com",
+    "api.bling.com.br"
+   ],
+   "usa_shared": [
+    "auth-guard.ts",
+    "cors.ts",
+    "edge-observability.ts"
+   ],
+   "chamada_pelo_front": [
+    "src/pages/StatusPage.tsx"
+   ],
+   "chamada_por_edges": [],
+   "chamada_por_sql_ou_cron": false,
+   "orfa": false,
+   "testes": 0
+  },
+  {
+   "nome": "insights-relatorio",
+   "entrada": "supabase/functions/insights-relatorio/index.ts",
+   "arquivos": 1,
+   "linhas": 179,
+   "verify_jwt": false,
+   "metodos": [
+    "OPTIONS"
+   ],
+   "tabelas": [],
+   "rpcs": [],
+   "env": [
+    "LOVABLE_API_KEY",
+    "SUPABASE_SERVICE_ROLE_KEY",
+    "SUPABASE_URL"
+   ],
+   "buckets": [],
+   "chama_edges": [],
+   "hosts_externos": [
+    "ai.gateway.lovable.dev"
+   ],
+   "usa_shared": [
+    "auth-guard.ts",
+    "contract-validator.ts",
+    "cors.ts",
+    "edge-observability.ts",
+    "erros.ts",
+    "observability.ts",
+    "rate-limit.ts",
+    "zod.ts"
+   ],
+   "chamada_pelo_front": [
+    "src/components/relatorios/InsightsIA.tsx"
+   ],
+   "chamada_por_edges": [],
+   "chamada_por_sql_ou_cron": false,
+   "orfa": false,
+   "testes": 0
+  },
+  {
+   "nome": "log-sped-bitrix24",
+   "entrada": "supabase/functions/log-sped-bitrix24/index.ts",
+   "arquivos": 1,
+   "linhas": 241,
+   "verify_jwt": true,
+   "metodos": [
+    "OPTIONS"
+   ],
+   "tabelas": [
+    "audit_logs"
+   ],
+   "rpcs": [],
+   "env": [
+    "BITRIX24_ACCESS_TOKEN",
+    "BITRIX24_DOMAIN",
+    "SUPABASE_ANON_KEY",
+    "SUPABASE_SERVICE_ROLE_KEY",
+    "SUPABASE_URL"
+   ],
+   "buckets": [],
+   "chama_edges": [],
+   "hosts_externos": [],
+   "usa_shared": [
+    "correlation.ts",
+    "cors.ts",
+    "edge-observability.ts",
+    "observability.ts",
+    "resilience.ts",
+    "validation.ts"
+   ],
+   "chamada_pelo_front": [
+    "src/hooks/useSpedContabil.ts"
+   ],
+   "chamada_por_edges": [],
+   "chamada_por_sql_ou_cron": false,
+   "orfa": false,
+   "testes": 0
+  },
+  {
+   "nome": "mcp-query",
+   "entrada": "supabase/functions/mcp-query/index.ts",
+   "arquivos": 4,
+   "linhas": 1228,
+   "verify_jwt": false,
+   "metodos": [
+    "OPTIONS",
+    "POST"
+   ],
+   "tabelas": [],
+   "rpcs": [],
+   "env": [],
+   "buckets": [],
+   "chama_edges": [],
+   "hosts_externos": [
+    "supabase.local"
+   ],
+   "usa_shared": [
+    "cors.ts",
+    "edge-observability.ts",
+    "sql-write-guard.ts",
+    "zod.ts"
+   ],
+   "chamada_pelo_front": [],
+   "chamada_por_edges": [],
+   "chamada_por_sql_ou_cron": false,
+   "orfa": false,
+   "testes": 0
+  },
+  {
+   "nome": "monitor-health",
+   "entrada": "supabase/functions/monitor-health/index.ts",
+   "arquivos": 1,
+   "linhas": 202,
+   "verify_jwt": false,
+   "metodos": [
+    "OPTIONS"
+   ],
+   "tabelas": [
+    "alertas",
+    "webhooks_log"
+   ],
+   "rpcs": [
+    "exec_sql"
+   ],
+   "env": [],
+   "buckets": [],
+   "chama_edges": [],
+   "hosts_externos": [],
+   "usa_shared": [
+    "auth-guard.ts",
+    "cors.ts",
+    "edge-observability.ts",
+    "observability.ts"
+   ],
+   "chamada_pelo_front": [],
+   "chamada_por_edges": [],
+   "chamada_por_sql_ou_cron": true,
+   "orfa": false,
+   "testes": 0
+  },
+  {
+   "nome": "monitorar-erros-frontend",
+   "entrada": "supabase/functions/monitorar-erros-frontend/index.ts",
+   "arquivos": 1,
+   "linhas": 262,
+   "verify_jwt": false,
+   "metodos": [
+    "OPTIONS"
+   ],
+   "tabelas": [
+    "profiles",
+    "user_roles"
+   ],
+   "rpcs": [
+    "claim_frontend_error_alerts"
+   ],
+   "env": [
+    "RESEND_API_KEY",
+    "SLACK_WEBHOOK_URL",
+    "SUPABASE_SERVICE_ROLE_KEY",
+    "SUPABASE_URL"
+   ],
+   "buckets": [],
+   "chama_edges": [],
+   "hosts_externos": [
+    "api.resend.com"
+   ],
+   "usa_shared": [
+    "auth-guard.ts",
+    "contract-response.ts",
+    "cors.ts",
+    "edge-observability.ts",
+    "erros.ts",
+    "observability.ts",
+    "validation.ts",
+    "zod.ts"
+   ],
+   "chamada_pelo_front": [],
+   "chamada_por_edges": [],
+   "chamada_por_sql_ou_cron": false,
+   "orfa": false,
+   "testes": 0
+  },
+  {
+   "nome": "n8n-callback",
+   "entrada": "supabase/functions/n8n-callback/index.ts",
+   "arquivos": 1,
+   "linhas": 261,
+   "verify_jwt": false,
+   "metodos": [
+    "OPTIONS",
+    "POST"
+   ],
+   "tabelas": [],
+   "rpcs": [],
+   "env": [
+    "DENO_TESTING",
+    "SUPABASE_SERVICE_ROLE_KEY",
+    "SUPABASE_URL"
+   ],
+   "buckets": [],
+   "chama_edges": [],
+   "hosts_externos": [],
+   "usa_shared": [
+    "cors.ts",
+    "edge-observability.ts",
+    "erros.ts",
+    "observability.ts",
+    "sentry.ts",
+    "validation.ts"
+   ],
+   "chamada_pelo_front": [],
+   "chamada_por_edges": [],
+   "chamada_por_sql_ou_cron": false,
+   "orfa": false,
+   "testes": 1
+  },
+  {
+   "nome": "n8n-dispatch",
+   "entrada": "supabase/functions/n8n-dispatch/index.ts",
+   "arquivos": 1,
+   "linhas": 214,
+   "verify_jwt": true,
+   "metodos": [
+    "OPTIONS",
+    "POST"
+   ],
+   "tabelas": [
+    "n8n_dispatch_logs",
+    "n8n_workflow_configs"
+   ],
+   "rpcs": [],
+   "env": [
+    "N8N_DISPATCH_SECRET",
+    "SUPABASE_SERVICE_ROLE_KEY",
+    "SUPABASE_URL"
+   ],
+   "buckets": [],
+   "chama_edges": [],
+   "hosts_externos": [],
+   "usa_shared": [
+    "auth-guard.ts",
+    "cors.ts",
+    "edge-observability.ts",
+    "erros.ts",
+    "observability.ts",
+    "resilience.ts",
+    "validation.ts"
+   ],
+   "chamada_pelo_front": [],
+   "chamada_por_edges": [],
+   "chamada_por_sql_ou_cron": false,
+   "orfa": true,
+   "testes": 0
+  },
+  {
+   "nome": "nfe-upload-certificado",
+   "entrada": "supabase/functions/nfe-upload-certificado/index.ts",
+   "arquivos": 1,
+   "linhas": 270,
+   "verify_jwt": true,
+   "metodos": [
+    "OPTIONS",
+    "POST"
+   ],
+   "tabelas": [
+    "sefaz_dfe_cursor"
+   ],
+   "rpcs": [
+    "certificado_upsert",
+    "has_role"
+   ],
+   "env": [
+    "NFE_CERT_MASTER_KEY",
+    "SUPABASE_ANON_KEY",
+    "SUPABASE_SERVICE_ROLE_KEY",
+    "SUPABASE_URL"
+   ],
+   "buckets": [],
+   "chama_edges": [],
+   "hosts_externos": [],
+   "usa_shared": [
+    "auth-guard.ts",
+    "contract-response.ts",
+    "contract-validator.ts",
+    "cors.ts",
+    "edge-observability.ts",
+    "observability.ts"
+   ],
+   "chamada_pelo_front": [],
+   "chamada_por_edges": [],
+   "chamada_por_sql_ou_cron": false,
+   "orfa": true,
+   "testes": 0
+  },
+  {
+   "nome": "nfe-vinculo-proxy",
+   "entrada": "supabase/functions/nfe-vinculo-proxy/index.ts",
+   "arquivos": 2,
+   "linhas": 297,
+   "verify_jwt": true,
+   "metodos": [
+    "OPTIONS",
+    "POST"
+   ],
+   "tabelas": [],
+   "rpcs": [],
+   "env": [
+    "DENO_TESTING",
+    "SUPABASE_ANON_KEY",
+    "SUPABASE_SERVICE_ROLE_KEY",
+    "SUPABASE_URL"
+   ],
+   "buckets": [],
+   "chama_edges": [],
+   "hosts_externos": [],
+   "usa_shared": [
+    "contract-response.ts",
+    "cors.ts",
+    "edge-observability.ts",
+    "proxy-audit.ts",
+    "validation.ts"
+   ],
+   "chamada_pelo_front": [],
+   "chamada_por_edges": [],
+   "chamada_por_sql_ou_cron": false,
+   "orfa": true,
+   "testes": 0
+  },
+  {
+   "nome": "notify-performance-alert",
+   "entrada": "supabase/functions/notify-performance-alert/index.ts",
+   "arquivos": 1,
+   "linhas": 204,
+   "verify_jwt": false,
+   "metodos": [
+    "OPTIONS",
+    "POST"
+   ],
+   "tabelas": [
+    "query_telemetry"
+   ],
+   "rpcs": [],
+   "env": [
+    "DENO_TESTING",
+    "SUPABASE_SERVICE_ROLE_KEY",
+    "SUPABASE_URL"
+   ],
+   "buckets": [],
+   "chama_edges": [],
+   "hosts_externos": [
+    "api.resend.com"
+   ],
+   "usa_shared": [
+    "auth-guard.ts",
+    "cors.ts",
+    "edge-observability.ts",
+    "validation.ts"
+   ],
+   "chamada_pelo_front": [],
+   "chamada_por_edges": [],
+   "chamada_por_sql_ou_cron": true,
+   "orfa": false,
+   "testes": 1
+  },
+  {
+   "nome": "notify-saved-filter",
+   "entrada": "supabase/functions/notify-saved-filter/index.ts",
+   "arquivos": 1,
+   "linhas": 251,
+   "verify_jwt": true,
+   "metodos": [
+    "OPTIONS"
+   ],
+   "tabelas": [
+    "notification_history"
+   ],
+   "rpcs": [],
+   "env": [
+    "RESEND_API_KEY",
+    "SUPABASE_SERVICE_ROLE_KEY",
+    "SUPABASE_URL"
+   ],
+   "buckets": [],
+   "chama_edges": [],
+   "hosts_externos": [
+    "api.resend.com"
+   ],
+   "usa_shared": [
+    "cors.ts",
+    "edge-observability.ts",
+    "erros.ts",
+    "observability.ts",
+    "validation.ts"
+   ],
+   "chamada_pelo_front": [],
+   "chamada_por_edges": [],
+   "chamada_por_sql_ou_cron": false,
+   "orfa": true,
+   "testes": 0
+  },
+  {
+   "nome": "open-finance",
+   "entrada": "supabase/functions/open-finance/index.ts",
+   "arquivos": 1,
+   "linhas": 638,
+   "verify_jwt": true,
+   "metodos": [
+    "OPTIONS"
+   ],
+   "tabelas": [
+    "contas_bancarias",
+    "open_finance_consents",
+    "transacoes_bancarias"
+   ],
+   "rpcs": [],
+   "env": [
+    "OPEN_FINANCE_CLIENT_ID",
+    "OPEN_FINANCE_REDIRECT_URI",
+    "SUPABASE_SERVICE_ROLE_KEY",
+    "SUPABASE_URL"
+   ],
+   "buckets": [],
+   "chama_edges": [],
+   "hosts_externos": [
+    "banco.bradesco",
+    "nubank.com.br",
+    "openbanking.bancointer.com.br",
+    "openbanking.bb.com.br",
+    "openbanking.bradesco.com.br",
+    "openbanking.c6bank.com.br",
+    "openbanking.caixa.gov.br",
+    "openbanking.santander.com.br",
+    "prod-global-webapp-proxy.nubank.com.br",
+    "secure.api.itau",
+    "static.bancointer.com.br",
+    "www.bb.com.br",
+    "www.c6bank.com.br",
+    "www.caixa.gov.br",
+    "www.itau.com.br",
+    "www.santander.com.br"
+   ],
+   "usa_shared": [
+    "auth-guard.ts",
+    "contract-validator.ts",
+    "cors.ts",
+    "edge-observability.ts",
+    "erros.ts",
+    "observability.ts",
+    "resilience.ts"
+   ],
+   "chamada_pelo_front": [
+    "src/hooks/useOpenFinance.ts"
+   ],
+   "chamada_por_edges": [],
+   "chamada_por_sql_ou_cron": false,
+   "orfa": false,
+   "testes": 0
+  },
+  {
+   "nome": "overlay-rejeicoes-auditoria",
+   "entrada": "supabase/functions/overlay-rejeicoes-auditoria/index.ts",
+   "arquivos": 1,
+   "linhas": 192,
+   "verify_jwt": true,
+   "metodos": [
+    "OPTIONS",
+    "POST"
+   ],
+   "tabelas": [
+    "overlay_rejeicoes_auditoria"
+   ],
+   "rpcs": [
+    "has_role"
+   ],
+   "env": [
+    "SUPABASE_SERVICE_ROLE_KEY",
+    "SUPABASE_URL"
+   ],
+   "buckets": [],
+   "chama_edges": [],
+   "hosts_externos": [],
+   "usa_shared": [
+    "cors.ts",
+    "edge-observability.ts",
+    "erros.ts",
+    "observability.ts",
+    "zod.ts"
+   ],
+   "chamada_pelo_front": [
+    "src/hooks/useOverlayRejeicoesAuditoria.ts"
+   ],
+   "chamada_por_edges": [],
+   "chamada_por_sql_ou_cron": false,
+   "orfa": false,
+   "testes": 0
+  },
+  {
+   "nome": "prever-carga-tributaria",
+   "entrada": "supabase/functions/prever-carga-tributaria/index.ts",
+   "arquivos": 1,
+   "linhas": 194,
+   "verify_jwt": false,
+   "metodos": [
+    "OPTIONS",
+    "POST"
+   ],
+   "tabelas": [
+    "faturamento_mensal",
+    "user_empresas"
+   ],
+   "rpcs": [
+    "has_role"
+   ],
+   "env": [
+    "SUPABASE_SERVICE_ROLE_KEY",
+    "SUPABASE_URL"
+   ],
+   "buckets": [],
+   "chama_edges": [],
+   "hosts_externos": [],
+   "usa_shared": [
+    "auth-guard.ts",
+    "cors.ts",
+    "edge-observability.ts",
+    "zod.ts"
+   ],
+   "chamada_pelo_front": [
+    "src/hooks/usePrevisaoTributaria.ts"
+   ],
+   "chamada_por_edges": [],
+   "chamada_por_sql_ou_cron": false,
+   "orfa": false,
+   "testes": 0
+  },
+  {
+   "nome": "processar-fila-cobrancas",
+   "entrada": "supabase/functions/processar-fila-cobrancas/index.ts",
+   "arquivos": 1,
+   "linhas": 158,
+   "verify_jwt": true,
+   "metodos": [
+    "OPTIONS"
+   ],
+   "tabelas": [
+    "execucoes_cobranca",
+    "fila_cobrancas"
+   ],
+   "rpcs": [
+    "processar_fila_cobrancas"
+   ],
+   "env": [
+    "SUPABASE_URL"
+   ],
+   "buckets": [],
+   "chama_edges": [
+    "enviar-alerta-email",
+    "whatsapp-ia-proativo"
+   ],
+   "hosts_externos": [],
+   "usa_shared": [
+    "auth-guard.ts",
+    "correlation.ts",
+    "cors.ts",
+    "edge-observability.ts",
+    "erros.ts",
+    "observability.ts"
+   ],
+   "chamada_pelo_front": [
+    "src/hooks/useReguaCobranca.ts"
+   ],
+   "chamada_por_edges": [],
+   "chamada_por_sql_ou_cron": false,
+   "orfa": false,
+   "testes": 0
+  },
+  {
+   "nome": "processar-nf-ocr",
+   "entrada": "supabase/functions/processar-nf-ocr/index.ts",
+   "arquivos": 1,
+   "linhas": 197,
+   "verify_jwt": true,
+   "metodos": [
+    "OPTIONS"
+   ],
+   "tabelas": [
+    "notas_fiscais_ocr"
+   ],
+   "rpcs": [],
+   "env": [
+    "LOVABLE_API_KEY",
+    "SUPABASE_SERVICE_ROLE_KEY",
+    "SUPABASE_URL"
+   ],
+   "buckets": [],
+   "chama_edges": [],
+   "hosts_externos": [
+    "ai.gateway.lovable.dev"
+   ],
+   "usa_shared": [
+    "cors.ts",
+    "edge-observability.ts",
+    "erros.ts",
+    "observability.ts",
+    "validation.ts"
+   ],
+   "chamada_pelo_front": [
+    "src/hooks/useProcessarNFOCR.ts"
+   ],
+   "chamada_por_edges": [],
+   "chamada_por_sql_ou_cron": false,
+   "orfa": false,
+   "testes": 0
+  },
+  {
+   "nome": "processar-solicitacao-lgpd",
+   "entrada": "supabase/functions/processar-solicitacao-lgpd/index.ts",
+   "arquivos": 1,
+   "linhas": 238,
+   "verify_jwt": true,
+   "metodos": [
+    "OPTIONS"
+   ],
+   "tabelas": [
+    "alertas",
+    "audit_logs",
+    "auditoria_tributaria",
+    "profiles",
+    "solicitacoes_lgpd"
+   ],
+   "rpcs": [
+    "has_role"
+   ],
+   "env": [
+    "SUPABASE_ANON_KEY",
+    "SUPABASE_SERVICE_ROLE_KEY",
+    "SUPABASE_URL"
+   ],
+   "buckets": [],
+   "chama_edges": [],
+   "hosts_externos": [],
+   "usa_shared": [
+    "auth-guard.ts",
+    "cors.ts",
+    "edge-observability.ts",
+    "erros.ts",
+    "observability.ts",
+    "validation.ts"
+   ],
+   "chamada_pelo_front": [
+    "src/hooks/useSolicitacoesLGPD.ts"
+   ],
+   "chamada_por_edges": [],
+   "chamada_por_sql_ou_cron": false,
+   "orfa": false,
+   "testes": 0
+  },
+  {
+   "nome": "projecao-reforma",
+   "entrada": "supabase/functions/projecao-reforma/index.ts",
+   "arquivos": 1,
+   "linhas": 207,
+   "verify_jwt": true,
+   "metodos": [
+    "OPTIONS"
+   ],
+   "tabelas": [],
+   "rpcs": [],
+   "env": [],
+   "buckets": [],
+   "chama_edges": [],
+   "hosts_externos": [],
+   "usa_shared": [
+    "correlation.ts",
+    "cors.ts",
+    "edge-observability.ts",
+    "observability.ts",
+    "validation.ts"
+   ],
+   "chamada_pelo_front": [],
+   "chamada_por_edges": [],
+   "chamada_por_sql_ou_cron": false,
+   "orfa": true,
+   "testes": 1
+  },
+  {
+   "nome": "relatorio-diario-anomalias",
+   "entrada": "supabase/functions/relatorio-diario-anomalias/index.ts",
+   "arquivos": 1,
+   "linhas": 297,
+   "verify_jwt": true,
+   "metodos": [
+    "OPTIONS"
+   ],
+   "tabelas": [
+    "alertas",
+    "anomalias_detectadas",
+    "profiles",
+    "user_roles"
+   ],
+   "rpcs": [],
+   "env": [
+    "RESEND_API_KEY",
+    "SUPABASE_SERVICE_ROLE_KEY",
+    "SUPABASE_URL"
+   ],
+   "buckets": [],
+   "chama_edges": [],
+   "hosts_externos": [
+    "api.resend.com",
+    "project-promofinance-harmony.lovable.app"
+   ],
+   "usa_shared": [
+    "app-url.ts",
+    "contract-validator.ts",
+    "cors.ts",
+    "edge-observability.ts",
+    "erros.ts",
+    "observability.ts"
+   ],
+   "chamada_pelo_front": [],
+   "chamada_por_edges": [],
+   "chamada_por_sql_ou_cron": false,
+   "orfa": true,
+   "testes": 0
+  },
+  {
+   "nome": "scim-server",
+   "entrada": "supabase/functions/scim-server/index.ts",
+   "arquivos": 1,
+   "linhas": 1156,
+   "verify_jwt": false,
+   "metodos": [
+    "DELETE",
+    "GET",
+    "OPTIONS",
+    "PATCH",
+    "POST",
+    "PUT"
+   ],
+   "tabelas": [
+    "profiles",
+    "scim_operations_log",
+    "scim_tokens",
+    "sso_providers",
+    "sso_role_mappings",
+    "user_empresas",
+    "user_roles"
+   ],
+   "rpcs": [],
+   "env": [
+    "SUPABASE_SERVICE_ROLE_KEY",
+    "SUPABASE_URL"
+   ],
+   "buckets": [],
+   "chama_edges": [],
+   "hosts_externos": [
+    "docs.lovable.dev"
+   ],
+   "usa_shared": [
+    "cors.ts",
+    "edge-observability.ts"
+   ],
+   "chamada_pelo_front": [
+    "src/components/admin/sso/ScimSetupGuide.tsx",
+    "src/components/admin/sso/ScimTokensTab.tsx"
+   ],
+   "chamada_por_edges": [],
+   "chamada_por_sql_ou_cron": false,
+   "orfa": false,
+   "testes": 0
+  },
+  {
+   "nome": "sefaz-dfe-dispatcher",
+   "entrada": "supabase/functions/sefaz-dfe-dispatcher/index.ts",
+   "arquivos": 3,
+   "linhas": 519,
+   "verify_jwt": false,
+   "metodos": [
+    "OPTIONS"
+   ],
+   "tabelas": [
+    "cron_job_logs",
+    "empresas_certificados",
+    "sefaz_dfe_cursor"
+   ],
+   "rpcs": [],
+   "env": [
+    "CRON_DISPATCH_SECRET",
+    "SUPABASE_SERVICE_ROLE_KEY",
+    "SUPABASE_URL"
+   ],
+   "buckets": [],
+   "chama_edges": [
+    "sefaz-dfe-puxar"
+   ],
+   "hosts_externos": [],
+   "usa_shared": [
+    "concurrency-limiter.ts",
+    "correlation.ts",
+    "cors.ts",
+    "edge-observability.ts",
+    "logger.ts"
+   ],
+   "chamada_pelo_front": [],
+   "chamada_por_edges": [],
+   "chamada_por_sql_ou_cron": false,
+   "orfa": false,
+   "testes": 0
+  },
+  {
+   "nome": "sefaz-dfe-puxar",
+   "entrada": "supabase/functions/sefaz-dfe-puxar/index.ts",
+   "arquivos": 1,
+   "linhas": 563,
+   "verify_jwt": false,
+   "metodos": [
+    "OPTIONS",
+    "POST"
+   ],
+   "tabelas": [
+    "empresas_certificados",
+    "query_telemetry",
+    "sefaz_dfe_cursor"
+   ],
+   "rpcs": [
+    "sefaz_process_batch"
+   ],
+   "env": [
+    "SEFAZ_CRON_SECRET"
+   ],
+   "buckets": [],
+   "chama_edges": [],
+   "hosts_externos": [],
+   "usa_shared": [
+    "contract-response.ts",
+    "cors.ts",
+    "edge-observability.ts",
+    "endpoints.ts",
+    "gunzip.ts",
+    "observability.ts",
+    "parser.ts",
+    "pfx.ts",
+    "soap.ts",
+    "xml-storage.ts",
+    "zod.ts"
+   ],
+   "chamada_pelo_front": [],
+   "chamada_por_edges": [
+    "sefaz-dfe-dispatcher"
+   ],
+   "chamada_por_sql_ou_cron": false,
+   "orfa": false,
+   "testes": 5
+  },
+  {
+   "nome": "sefaz-manifestar",
+   "entrada": "supabase/functions/sefaz-manifestar/index.ts",
+   "arquivos": 1,
+   "linhas": 311,
+   "verify_jwt": true,
+   "metodos": [
+    "OPTIONS",
+    "POST"
+   ],
+   "tabelas": [
+    "empresas_certificados",
+    "nfe_eventos",
+    "nfe_recebidas",
+    "user_empresas"
+   ],
+   "rpcs": [
+    "nfe_apply_manifestacao"
+   ],
+   "env": [
+    "SUPABASE_ANON_KEY",
+    "SUPABASE_URL"
+   ],
+   "buckets": [],
+   "chama_edges": [],
+   "hosts_externos": [
+    "www.portalfiscal.inf.br"
+   ],
+   "usa_shared": [
+    "cors.ts",
+    "edge-observability.ts",
+    "manifestacao.ts",
+    "observability.ts",
+    "pfx.ts",
+    "validation.ts"
+   ],
+   "chamada_pelo_front": [],
+   "chamada_por_edges": [],
+   "chamada_por_sql_ou_cron": false,
+   "orfa": true,
+   "testes": 1
+  },
+  {
+   "nome": "send-device-alert",
+   "entrada": "supabase/functions/send-device-alert/index.ts",
+   "arquivos": 1,
+   "linhas": 181,
+   "verify_jwt": false,
+   "metodos": [
+    "OPTIONS",
+    "POST"
+   ],
+   "tabelas": [],
+   "rpcs": [],
+   "env": [
+    "RESEND_API_KEY"
+   ],
+   "buckets": [],
+   "chama_edges": [],
+   "hosts_externos": [
+    "api.resend.com"
+   ],
+   "usa_shared": [
+    "auth-guard.ts",
+    "cors.ts",
+    "edge-observability.ts",
+    "erros.ts",
+    "observability.ts",
+    "validation.ts"
+   ],
+   "chamada_pelo_front": [
+    "src/hooks/useDeviceDetection.ts"
+   ],
+   "chamada_por_edges": [],
+   "chamada_por_sql_ou_cron": false,
+   "orfa": false,
+   "testes": 0
+  },
+  {
+   "nome": "send-push-notification",
+   "entrada": "supabase/functions/send-push-notification/index.ts",
+   "arquivos": 1,
+   "linhas": 366,
+   "verify_jwt": false,
+   "metodos": [
+    "OPTIONS",
+    "POST"
+   ],
+   "tabelas": [
+    "alertas",
+    "push_subscriptions"
+   ],
+   "rpcs": [],
+   "env": [
+    "SUPABASE_SERVICE_ROLE_KEY",
+    "SUPABASE_URL",
+    "VAPID_PRIVATE_KEY",
+    "VAPID_PUBLIC_KEY"
+   ],
+   "buckets": [],
+   "chama_edges": [],
+   "hosts_externos": [],
+   "usa_shared": [
+    "auth-guard.ts",
+    "cors.ts",
+    "edge-observability.ts",
+    "erros.ts",
+    "observability.ts",
+    "validation.ts"
+   ],
+   "chamada_pelo_front": [
+    "src/hooks/useAlertasPreditivos.ts",
+    "src/hooks/usePushNotifications.ts",
+    "src/hooks/useSecurityAlerts.ts"
+   ],
+   "chamada_por_edges": [
+    "executar-analise-preditiva",
+    "gerar-alertas"
+   ],
+   "chamada_por_sql_ou_cron": true,
+   "orfa": false,
+   "testes": 1
+  },
+  {
+   "nome": "simular-presumido",
+   "entrada": "supabase/functions/simular-presumido/index.ts",
+   "arquivos": 1,
+   "linhas": 34,
+   "verify_jwt": true,
+   "metodos": [
+    "OPTIONS"
+   ],
+   "tabelas": [],
+   "rpcs": [],
+   "env": [],
+   "buckets": [],
+   "chama_edges": [],
+   "hosts_externos": [],
+   "usa_shared": [
+    "auth-guard.ts",
+    "cors.ts",
+    "edge-observability.ts",
+    "tributario-logic.ts",
+    "validation.ts"
+   ],
+   "chamada_pelo_front": [],
+   "chamada_por_edges": [],
+   "chamada_por_sql_ou_cron": false,
+   "orfa": true,
+   "testes": 1
+  },
+  {
+   "nome": "simular-real",
+   "entrada": "supabase/functions/simular-real/index.ts",
+   "arquivos": 1,
+   "linhas": 34,
+   "verify_jwt": true,
+   "metodos": [
+    "OPTIONS"
+   ],
+   "tabelas": [],
+   "rpcs": [],
+   "env": [],
+   "buckets": [],
+   "chama_edges": [],
+   "hosts_externos": [],
+   "usa_shared": [
+    "auth-guard.ts",
+    "cors.ts",
+    "edge-observability.ts",
+    "tributario-logic.ts",
+    "validation.ts"
+   ],
+   "chamada_pelo_front": [],
+   "chamada_por_edges": [],
+   "chamada_por_sql_ou_cron": false,
+   "orfa": true,
+   "testes": 1
+  },
+  {
+   "nome": "simular-simples",
+   "entrada": "supabase/functions/simular-simples/index.ts",
+   "arquivos": 1,
+   "linhas": 49,
+   "verify_jwt": true,
+   "metodos": [
+    "OPTIONS"
+   ],
+   "tabelas": [],
+   "rpcs": [],
+   "env": [],
+   "buckets": [],
+   "chama_edges": [],
+   "hosts_externos": [],
+   "usa_shared": [
+    "auth-guard.ts",
+    "cors.ts",
+    "edge-observability.ts",
+    "tributario-logic.ts",
+    "validation.ts"
+   ],
+   "chamada_pelo_front": [],
+   "chamada_por_edges": [],
+   "chamada_por_sql_ou_cron": false,
+   "orfa": true,
+   "testes": 1
+  },
+  {
+   "nome": "sincronizar-anomalia-bitrix24",
+   "entrada": "supabase/functions/sincronizar-anomalia-bitrix24/index.ts",
+   "arquivos": 1,
+   "linhas": 246,
+   "verify_jwt": true,
+   "metodos": [
+    "OPTIONS"
+   ],
+   "tabelas": [
+    "anomalias_detectadas"
+   ],
+   "rpcs": [],
+   "env": [
+    "BITRIX24_ACCESS_TOKEN",
+    "BITRIX24_DOMAIN",
+    "SUPABASE_ANON_KEY",
+    "SUPABASE_SERVICE_ROLE_KEY",
+    "SUPABASE_URL"
+   ],
+   "buckets": [],
+   "chama_edges": [],
+   "hosts_externos": [],
+   "usa_shared": [
+    "contract-validator.ts",
+    "cors.ts",
+    "edge-observability.ts",
+    "erros.ts",
+    "observability.ts",
+    "resilience.ts"
+   ],
+   "chamada_pelo_front": [],
+   "chamada_por_edges": [],
+   "chamada_por_sql_ou_cron": false,
+   "orfa": true,
+   "testes": 0
+  },
+  {
+   "nome": "sso-callback",
+   "entrada": "supabase/functions/sso-callback/index.ts",
+   "arquivos": 3,
+   "linhas": 1388,
+   "verify_jwt": false,
+   "metodos": [
+    "OPTIONS",
+    "POST"
+   ],
+   "tabelas": [
+    "audit_logs",
+    "profiles",
+    "sso_login_attempts",
+    "sso_providers",
+    "sso_role_mappings",
+    "sso_user_groups",
+    "user_empresas",
+    "user_roles"
+   ],
+   "rpcs": [],
+   "env": [
+    "SUPABASE_ANON_KEY",
+    "SUPABASE_SERVICE_ROLE_KEY",
+    "SUPABASE_URL"
+   ],
+   "buckets": [],
+   "chama_edges": [],
+   "hosts_externos": [],
+   "usa_shared": [
+    "app-url.ts",
+    "cors.ts",
+    "edge-observability.ts",
+    "observability.ts"
+   ],
+   "chamada_pelo_front": [
+    "src/pages/Auth.hooks.ts"
+   ],
+   "chamada_por_edges": [
+    "sso-initiate"
+   ],
+   "chamada_por_sql_ou_cron": false,
+   "orfa": false,
+   "testes": 2
+  },
+  {
+   "nome": "sso-generate-metadata",
+   "entrada": "supabase/functions/sso-generate-metadata/index.ts",
+   "arquivos": 1,
+   "linhas": 78,
+   "verify_jwt": true,
+   "metodos": [
+    "OPTIONS"
+   ],
+   "tabelas": [],
+   "rpcs": [],
+   "env": [],
+   "buckets": [],
+   "chama_edges": [],
+   "hosts_externos": [],
+   "usa_shared": [
+    "cors.ts",
+    "edge-observability.ts",
+    "validation.ts"
+   ],
+   "chamada_pelo_front": [
+    "src/hooks/useSSO.ts"
+   ],
+   "chamada_por_edges": [],
+   "chamada_por_sql_ou_cron": false,
+   "orfa": false,
+   "testes": 0
+  },
+  {
+   "nome": "sso-initiate",
+   "entrada": "supabase/functions/sso-initiate/index.ts",
+   "arquivos": 1,
+   "linhas": 167,
+   "verify_jwt": false,
+   "metodos": [
+    "OPTIONS"
+   ],
+   "tabelas": [
+    "sso_login_attempts",
+    "sso_providers"
+   ],
+   "rpcs": [],
+   "env": [
+    "SUPABASE_SERVICE_ROLE_KEY",
+    "SUPABASE_URL"
+   ],
+   "buckets": [],
+   "chama_edges": [
+    "sso-callback"
+   ],
+   "hosts_externos": [],
+   "usa_shared": [
+    "app-url.ts",
+    "cors.ts",
+    "edge-observability.ts",
+    "validation.ts"
+   ],
+   "chamada_pelo_front": [
+    "src/components/admin/sso/SsoLoginButtons.tsx",
+    "src/pages/auth/CorporateOnboarding.hook.ts"
+   ],
+   "chamada_por_edges": [],
+   "chamada_por_sql_ou_cron": false,
+   "orfa": false,
+   "testes": 0
+  },
+  {
+   "nome": "sso-logout",
+   "entrada": "supabase/functions/sso-logout/index.ts",
+   "arquivos": 1,
+   "linhas": 106,
+   "verify_jwt": false,
+   "metodos": [
+    "OPTIONS"
+   ],
+   "tabelas": [
+    "audit_logs",
+    "sso_login_attempts",
+    "sso_providers"
+   ],
+   "rpcs": [],
+   "env": [
+    "SUPABASE_ANON_KEY",
+    "SUPABASE_SERVICE_ROLE_KEY",
+    "SUPABASE_URL"
+   ],
+   "buckets": [],
+   "chama_edges": [],
+   "hosts_externos": [],
+   "usa_shared": [
+    "cors.ts",
+    "edge-observability.ts"
+   ],
+   "chamada_pelo_front": [
+    "src/components/auth/SloFailureBanner.tsx",
+    "src/hooks/AuthProvider.tsx"
+   ],
+   "chamada_por_edges": [],
+   "chamada_por_sql_ou_cron": false,
+   "orfa": false,
+   "testes": 0
+  },
+  {
+   "nome": "sso-test-login",
+   "entrada": "supabase/functions/sso-test-login/index.ts",
+   "arquivos": 3,
+   "linhas": 437,
+   "verify_jwt": true,
+   "metodos": [
+    "OPTIONS"
+   ],
+   "tabelas": [
+    "sso_providers",
+    "sso_role_mappings",
+    "user_roles"
+   ],
+   "rpcs": [],
+   "env": [
+    "SUPABASE_ANON_KEY",
+    "SUPABASE_SERVICE_ROLE_KEY",
+    "SUPABASE_URL"
+   ],
+   "buckets": [],
+   "chama_edges": [],
+   "hosts_externos": [],
+   "usa_shared": [
+    "cors.ts",
+    "edge-observability.ts",
+    "validation.ts"
+   ],
+   "chamada_pelo_front": [
+    "src/hooks/useSSO.ts",
+    "src/lib/sso/sandbox-bulk-runner.ts"
+   ],
+   "chamada_por_edges": [],
+   "chamada_por_sql_ou_cron": false,
+   "orfa": false,
+   "testes": 2
+  },
+  {
+   "nome": "sso-validate-config",
+   "entrada": "supabase/functions/sso-validate-config/index.ts",
+   "arquivos": 1,
+   "linhas": 148,
+   "verify_jwt": true,
+   "metodos": [
+    "OPTIONS"
+   ],
+   "tabelas": [],
+   "rpcs": [],
+   "env": [],
+   "buckets": [],
+   "chama_edges": [],
+   "hosts_externos": [],
+   "usa_shared": [
+    "cors.ts",
+    "edge-observability.ts",
+    "validation.ts"
+   ],
+   "chamada_pelo_front": [
+    "src/hooks/useSSO.ts"
+   ],
+   "chamada_por_edges": [],
+   "chamada_por_sql_ou_cron": false,
+   "orfa": false,
+   "testes": 0
+  },
+  {
+   "nome": "sync-profile-to-bitrix",
+   "entrada": "supabase/functions/sync-profile-to-bitrix/index.ts",
+   "arquivos": 1,
+   "linhas": 307,
+   "verify_jwt": true,
+   "metodos": [
+    "OPTIONS",
+    "POST"
+   ],
+   "tabelas": [
+    "audit_logs",
+    "bitrix_oauth_tokens",
+    "profiles"
+   ],
+   "rpcs": [],
+   "env": [
+    "BITRIX24_ACCESS_TOKEN",
+    "BITRIX24_CLIENT_ID",
+    "BITRIX24_CLIENT_SECRET",
+    "BITRIX24_DOMAIN",
+    "SUPABASE_ANON_KEY",
+    "SUPABASE_SERVICE_ROLE_KEY",
+    "SUPABASE_URL"
+   ],
+   "buckets": [],
+   "chama_edges": [],
+   "hosts_externos": [],
+   "usa_shared": [
+    "contract-validator.ts",
+    "cors.ts",
+    "edge-observability.ts",
+    "erros.ts",
+    "observability.ts",
+    "resilience.ts"
+   ],
+   "chamada_pelo_front": [],
+   "chamada_por_edges": [],
+   "chamada_por_sql_ou_cron": false,
+   "orfa": true,
+   "testes": 0
+  },
+  {
+   "nome": "upload-anexo",
+   "entrada": "supabase/functions/upload-anexo/index.ts",
+   "arquivos": 1,
+   "linhas": 218,
+   "verify_jwt": true,
+   "metodos": [
+    "OPTIONS",
+    "POST"
+   ],
+   "tabelas": [
+    "anexos_financeiros",
+    "user_empresas"
+   ],
+   "rpcs": [],
+   "env": [
+    "SUPABASE_SERVICE_ROLE_KEY",
+    "SUPABASE_URL"
+   ],
+   "buckets": [],
+   "chama_edges": [],
+   "hosts_externos": [],
+   "usa_shared": [
+    "auth-guard.ts",
+    "cors.ts",
+    "edge-observability.ts",
+    "logger.ts",
+    "magic-bytes.ts"
+   ],
+   "chamada_pelo_front": [
+    "src/components/financeiro/AnexoList.tsx"
+   ],
+   "chamada_por_edges": [],
+   "chamada_por_sql_ou_cron": false,
+   "orfa": false,
+   "testes": 0
+  },
+  {
+   "nome": "validar-token-contador",
+   "entrada": "supabase/functions/validar-token-contador/index.ts",
+   "arquivos": 1,
+   "linhas": 152,
+   "verify_jwt": false,
+   "metodos": [
+    "OPTIONS"
+   ],
+   "tabelas": [
+    "convites_contador",
+    "empresas"
+   ],
+   "rpcs": [],
+   "env": [
+    "CONTADOR_INVITE_SECRET",
+    "SUPABASE_JWT_SECRET",
+    "SUPABASE_SERVICE_ROLE_KEY",
+    "SUPABASE_URL"
+   ],
+   "buckets": [],
+   "chama_edges": [],
+   "hosts_externos": [],
+   "usa_shared": [
+    "contract-validator.ts",
+    "correlation.ts",
+    "cors.ts",
+    "edge-observability.ts",
+    "observability.ts"
+   ],
+   "chamada_pelo_front": [
+    "src/pages/ContadorReadonly.tsx"
+   ],
+   "chamada_por_edges": [],
+   "chamada_por_sql_ou_cron": false,
+   "orfa": false,
+   "testes": 0
+  },
+  {
+   "nome": "validate-ip-geo",
+   "entrada": "supabase/functions/validate-ip-geo/index.ts",
+   "arquivos": 1,
+   "linhas": 218,
+   "verify_jwt": false,
+   "metodos": [
+    "OPTIONS"
+   ],
+   "tabelas": [
+    "auth_logs"
+   ],
+   "rpcs": [
+    "is_country_allowed_for_login",
+    "is_ip_allowed_for_login",
+    "is_ip_blocked"
+   ],
+   "env": [
+    "SUPABASE_SERVICE_ROLE_KEY",
+    "SUPABASE_URL"
+   ],
+   "buckets": [],
+   "chama_edges": [],
+   "hosts_externos": [
+    "ipapi.co",
+    "ipwho.is"
+   ],
+   "usa_shared": [
+    "contract-validator.ts",
+    "cors.ts",
+    "edge-observability.ts",
+    "rate-limit.ts"
+   ],
+   "chamada_pelo_front": [
+    "src/hooks/useAuthValidation.ts"
+   ],
+   "chamada_por_edges": [],
+   "chamada_por_sql_ou_cron": false,
+   "orfa": false,
+   "testes": 0
+  },
+  {
+   "nome": "verificar-conformidade-fiscal",
+   "entrada": "supabase/functions/verificar-conformidade-fiscal/index.ts",
+   "arquivos": 1,
+   "linhas": 323,
+   "verify_jwt": true,
+   "metodos": [
+    "OPTIONS"
+   ],
+   "tabelas": [
+    "alertas_tributarios",
+    "apuracoes_tributarias",
+    "contas_pagar",
+    "empresas",
+    "regime_decision_cache",
+    "relatorios_tributarios_agendados",
+    "user_empresas",
+    "user_roles",
+    "verificacoes_conformidade"
+   ],
+   "rpcs": [],
+   "env": [
+    "SUPABASE_ANON_KEY",
+    "SUPABASE_SERVICE_ROLE_KEY",
+    "SUPABASE_URL"
+   ],
+   "buckets": [],
+   "chama_edges": [],
+   "hosts_externos": [],
+   "usa_shared": [
+    "contract-validator.ts",
+    "correlation.ts",
+    "cors.ts",
+    "edge-observability.ts",
+    "observability.ts"
+   ],
+   "chamada_pelo_front": [
+    "src/hooks/useConformidadeFiscal.ts"
+   ],
+   "chamada_por_edges": [],
+   "chamada_por_sql_ou_cron": false,
+   "orfa": false,
+   "testes": 0
+  },
+  {
+   "nome": "webhook-replay",
+   "entrada": "supabase/functions/webhook-replay/index.ts",
+   "arquivos": 1,
+   "linhas": 113,
+   "verify_jwt": false,
+   "metodos": [
+    "OPTIONS"
+   ],
+   "tabelas": [
+    "webhooks_log"
+   ],
+   "rpcs": [
+    "has_role",
+    "webhook_replay"
+   ],
+   "env": [
+    "SUPABASE_ANON_KEY",
+    "SUPABASE_SERVICE_ROLE_KEY",
+    "SUPABASE_URL"
+   ],
+   "buckets": [],
+   "chama_edges": [
+    "webhook-retry-worker"
+   ],
+   "hosts_externos": [],
+   "usa_shared": [
+    "contract-response.ts",
+    "cors.ts",
+    "edge-observability.ts",
+    "logger.ts",
+    "validation.ts",
+    "zod.ts"
+   ],
+   "chamada_pelo_front": [],
+   "chamada_por_edges": [],
+   "chamada_por_sql_ou_cron": false,
+   "orfa": false,
+   "testes": 0
+  },
+  {
+   "nome": "webhook-retry-worker",
+   "entrada": "supabase/functions/webhook-retry-worker/index.ts",
+   "arquivos": 1,
+   "linhas": 110,
+   "verify_jwt": false,
+   "metodos": [
+    "OPTIONS"
+   ],
+   "tabelas": [],
+   "rpcs": [
+    "webhook_dequeue_retries"
+   ],
+   "env": [
+    "ASAAS_WEBHOOK_TOKEN",
+    "SUPABASE_URL"
+   ],
+   "buckets": [],
+   "chama_edges": [
+    "asaas-webhook"
+   ],
+   "hosts_externos": [],
+   "usa_shared": [
+    "auth-guard.ts",
+    "contract-response.ts",
+    "cors.ts",
+    "edge-observability.ts",
+    "logger.ts",
+    "validation.ts",
+    "webhook-idempotency.ts",
+    "zod.ts"
+   ],
+   "chamada_pelo_front": [],
+   "chamada_por_edges": [
+    "webhook-replay"
+   ],
+   "chamada_por_sql_ou_cron": false,
+   "orfa": false,
+   "testes": 0
+  },
+  {
+   "nome": "webhook-simulator",
+   "entrada": "supabase/functions/webhook-simulator/index.ts",
+   "arquivos": 2,
+   "linhas": 352,
+   "verify_jwt": true,
+   "metodos": [
+    "OPTIONS"
+   ],
+   "tabelas": [
+    "webhook_simulation_results",
+    "webhook_simulation_runs"
+   ],
+   "rpcs": [],
+   "env": [
+    "ASAAS_WEBHOOK_TOKEN",
+    "SUPABASE_SERVICE_ROLE_KEY",
+    "SUPABASE_URL"
+   ],
+   "buckets": [],
+   "chama_edges": [],
+   "hosts_externos": [],
+   "usa_shared": [
+    "auth-guard.ts",
+    "concurrency-limiter.ts",
+    "contract-validator.ts",
+    "correlation.ts",
+    "edge-observability.ts",
+    "validation.ts",
+    "webhook-auth.ts"
+   ],
+   "chamada_pelo_front": [
+    "src/components/admin/WebhookSimulator.tsx"
+   ],
+   "chamada_por_edges": [],
+   "chamada_por_sql_ou_cron": false,
+   "orfa": false,
+   "testes": 0
+  },
+  {
+   "nome": "whatsapp-ai-analyzer",
+   "entrada": "supabase/functions/whatsapp-ai-analyzer/index.ts",
+   "arquivos": 1,
+   "linhas": 93,
+   "verify_jwt": true,
+   "metodos": [
+    "OPTIONS"
+   ],
+   "tabelas": [
+    "historico_cobranca_whatsapp"
+   ],
+   "rpcs": [],
+   "env": [
+    "OPENAI_API_KEY",
+    "SUPABASE_SERVICE_ROLE_KEY",
+    "SUPABASE_URL"
+   ],
+   "buckets": [],
+   "chama_edges": [],
+   "hosts_externos": [
+    "api.openai.com"
+   ],
+   "usa_shared": [
+    "contract-validator.ts",
+    "cors.ts",
+    "edge-observability.ts"
+   ],
+   "chamada_pelo_front": [],
+   "chamada_por_edges": [],
+   "chamada_por_sql_ou_cron": true,
+   "orfa": false,
+   "testes": 0
+  },
+  {
+   "nome": "whatsapp-ia-proativo",
+   "entrada": "supabase/functions/whatsapp-ia-proativo/index.ts",
+   "arquivos": 2,
+   "linhas": 1745,
+   "verify_jwt": false,
+   "metodos": [
+    "OPTIONS"
+   ],
+   "tabelas": [
+    "clientes",
+    "contas_receber",
+    "historico_cobranca_whatsapp",
+    "user_empresas"
+   ],
+   "rpcs": [],
+   "env": [
+    "LOVABLE_API_KEY",
+    "SUPABASE_SERVICE_ROLE_KEY",
+    "SUPABASE_URL"
+   ],
+   "buckets": [],
+   "chama_edges": [],
+   "hosts_externos": [
+    "ai.gateway.lovable.dev",
+    "app.promo-finance.com",
+    "supabase.invalid",
+    "wa.me"
+   ],
+   "usa_shared": [
+    "auth-guard.ts",
+    "cors.ts",
+    "edge-observability.ts",
+    "erros.ts",
+    "observability.ts",
+    "rate-limit.ts",
+    "validation.ts"
+   ],
+   "chamada_pelo_front": [
+    "src/components/cobranca/WhatsAppProativoPanel.tsx",
+    "src/components/integracoes/WhatsAppConfigPanel.tsx"
+   ],
+   "chamada_por_edges": [
+    "asaas-proxy",
+    "executar-regua-cobranca",
+    "processar-fila-cobrancas"
+   ],
+   "chamada_por_sql_ou_cron": false,
+   "orfa": false,
+   "testes": 0
+  },
+  {
+   "nome": "whatsapp-webhook",
+   "entrada": "supabase/functions/whatsapp-webhook/index.ts",
+   "arquivos": 1,
+   "linhas": 199,
+   "verify_jwt": false,
+   "metodos": [
+    "OPTIONS",
+    "POST"
+   ],
+   "tabelas": [
+    "asaas_audit_trail",
+    "execucoes_cobranca"
+   ],
+   "rpcs": [],
+   "env": [
+    "SUPABASE_SERVICE_ROLE_KEY",
+    "SUPABASE_URL"
+   ],
+   "buckets": [],
+   "chama_edges": [],
+   "hosts_externos": [],
+   "usa_shared": [
+    "contract-response.ts",
+    "cors.ts",
+    "edge-observability.ts",
+    "erros.ts",
+    "observability.ts",
+    "rate-limit.ts",
+    "validation.ts",
+    "versioned-contract.ts",
+    "webhook-auth.ts",
+    "webhook-idempotency.ts"
+   ],
+   "chamada_pelo_front": [],
+   "chamada_por_edges": [],
+   "chamada_por_sql_ou_cron": false,
+   "orfa": false,
+   "testes": 1
+  }
+ ],
+ "chamadas_sem_pasta": []
+}

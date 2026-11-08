@@ -1,0 +1,87 @@
+{
+ "aviso": "GERADO AUTOMATICAMENTE por scripts/ai-context/gerar.mjs — não editar à mão; será sobrescrito.",
+ "format_version": 2,
+ "onde_ficam": {
+  "telas": [
+   "src/pages (125)"
+  ],
+  "componentes": [
+   "src/components (730)",
+   "src/pages (174)",
+   "src/hooks (2)"
+  ],
+  "hooks": [
+   "src/hooks (228)",
+   "src/components (27)",
+   "src/pages (5)"
+  ],
+  "servicos_logica": [
+   "src/lib (254)",
+   "scripts/graphify (7)",
+   "src/integrations (3)"
+  ],
+  "testes": [
+   "co-localizado (__tests__) (239)",
+   "co-localizado (*.test) (40)",
+   "outro (37)"
+  ],
+  "edge_functions": "supabase/functions",
+  "migrations": "supabase/migrations",
+  "scripts": [
+   "scripts/integrity (17)",
+   "scripts/security (16)",
+   "scripts/ci (7)"
+  ],
+  "docs": [
+   "docs (47)",
+   "(raiz) (19)",
+   ".github (2)"
+  ]
+ },
+ "nomenclatura": {
+  "componentes": "PascalCase (90%)",
+  "hooks": "use + PascalCase",
+  "servicos": "camelCase (52%)",
+  "edge_functions": "kebab-case (99%)",
+  "tabelas": "snake_case (91%)"
+ },
+ "barrels_index": 27,
+ "extensao_componentes": [
+  ".tsx (908)"
+ ],
+ "alias_imports": {
+  "(raiz)": {
+   "@/": "src/",
+   "~/": "src/"
+  }
+ },
+ "commits": {
+  "convencao": "conventional commits (observado)",
+  "exemplos": [
+   "feat(contexto): sistema autônomo de contexto do estado real para agentes de IA (#260)",
+   "fix: corrigir 26 bugs em scripts (ci, healthcheck, security, graphify, data) (#258)",
+   "feat: [STEPS 46+47] monitor-health cron + painel DB_HEALTH.md (#240)",
+   "fix: sentry.ts — host DSN, redação de dados e parseDsn seguro [substitui #246] (#248)",
+   "infra: migra imports esm.sh para npm: pinados nas edge functions (#251)"
+  ]
+ },
+ "pr_template": ".github/PULL_REQUEST_TEMPLATE.md",
+ "codeowners": ".github/CODEOWNERS",
+ "contributing": "CONTRIBUTING.md",
+ "instrucoes_agentes": [
+  ".claude/CLAUDE.md",
+  ".github/copilot-instructions.md",
+  "AGENTS.md",
+  "CLAUDE.md"
+ ],
+ "typescript": {
+  "strict": true,
+  "noImplicitAny": null,
+  "tsconfigs": [
+   "tsconfig.app.json",
+   "tsconfig.e2e.json",
+   "tsconfig.json",
+   "tsconfig.node.json"
+  ]
+ }
+}

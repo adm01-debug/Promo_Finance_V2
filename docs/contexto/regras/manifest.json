@@ -1,0 +1,18 @@
+{
+ "produtor": "ai-context-sync",
+ "versao": "1.3.2",
+ "perfil": "regras",
+ "gerado_em": "2026-11-08 17:10 UTC",
+ "commit": "794478effc87c0718867f47942a5afaaecdd41cb",
+ "fonte": "código + migrations/types + manual/ (regras de negócio)",
+ "entrada": "07-REGRAS-DE-NEGOCIO.md",
+ "arquivos": [
+  "07-REGRAS-DE-NEGOCIO.md",
+  "10-ACESSO-E-SEGURANCA.md",
+  "11-GLOSSARIO-E-LACUNAS.md",
+  "context.json"
+ ],
+ "schema_real_em": "",
+ "inconsistencias": 227,
+ "lacunas": 77
+}
