@@ -80,6 +80,11 @@ BAD_FK=$(psql "$STAGING_DB_URL" -Atc "
        SELECT 1 FROM pg_class pc
         WHERE pc.oid = c.confrelid
      )" 2>/dev/null || echo "0")
-emit "fk" "*" "pass" "0" "$BAD_FK" "structural check only"
+if [ "$BAD_FK" = "0" ]; then
+  emit "fk" "*" "pass" "0" "$BAD_FK" "structural check only"
+else
+  emit "fk" "*" "fail" "0" "$BAD_FK" "FK constraints sem tabela referenciada"
+  FAILS=$((FAILS+1))
+fi
 
 exit "$FAILS"
