@@ -73,3 +73,7 @@ node --test scripts/inventario/inventario.unit.mjs
 - `rotas.json` cobre o menu lateral (`SidebarNavGroups.tsx` + `sidebarFiscalNavGroup.ts`); menus de
   dentro de módulo (ex.: `NavigationTributaria.tsx`) não entram — por isso `menu_sem_rota` pode
   apontar rota que existe em sub-navegação própria.
+- `componente` de cada rota é o **último** JSX capitalizado do bloco `<Route>` (fora de wrappers
+  conhecidos como `MainLayout`/`ProtectedRoute`): se a página algum dia ganhar filho JSX inline na
+  própria declaração da rota (ex. `<Pagina><Modal/></Pagina>`), o script atribui o filho, não a
+  página — hoje nenhuma das rotas está assim.
