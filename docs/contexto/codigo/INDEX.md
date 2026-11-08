@@ -1,7 +1,7 @@
 # Contexto do projeto para agentes de IA
 
 GERADO AUTOMATICAMENTE por scripts/ai-context/gerar.mjs — não editar à mão; será sobrescrito.
-Publicado pelo workflow .github/workflows/contexto.yml em docs/contexto/codigo/ da branch gerada `contexto`. Índice único em docs/contexto/00-INDEX.md. Ler: git fetch origin contexto && git show origin/contexto:docs/contexto/00-INDEX.md Gere local com `node scripts/ai-context/gerar.mjs`. Commit-base: `794478effc87c0718867f47942a5afaaecdd41cb` (2026-11-08T14:09:27-03:00).
+Publicado pelo workflow .github/workflows/contexto.yml em docs/contexto/codigo/ da branch gerada `contexto`. Índice único em docs/contexto/00-INDEX.md. Ler: git fetch origin contexto && git show origin/contexto:docs/contexto/00-INDEX.md Gere local com `node scripts/ai-context/gerar.mjs`. Commit-base: `b0d9ddb12f4508f2fdff34e314a777708e36eae8` (2026-11-08T15:04:48-03:00).
 
 ## Como usar (leia antes de planejar ou executar qualquer tarefa)
 1. **Tela/rota/menu** → `rotas.json` (url/vista/menu → arquivo → hooks → tabelas → edges; `rotas_http_backend` para APIs) e `modulos.json` (módulo inteiro + dependências entre módulos).
@@ -36,7 +36,7 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 |---|---|
 | arquivos_total | 3391 |
 | arquivos_codigo | 2148 |
-| linhas_codigo | 399641 |
+| linhas_codigo | 399671 |
 | rotas | 128 |
 | rotas_http_backend | 12 |
 | vistas_por_id | 0 |
@@ -587,6 +587,7 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 - CHANGELOG topo: [Unreleased]
 
 ## Últimos commits
+- 2026-11-08 `b0d9ddb` fix(contexto): guard de segredo reprovava a coleta do banco com a saída já redigida (#261)
 - 2026-11-08 `794478e` feat(contexto): sistema autônomo de contexto do estado real para agentes de IA (#260)
 - 2026-11-08 `d06af85` fix: corrigir 26 bugs em scripts (ci, healthcheck, security, graphify, data) (#258)
 - 2026-11-07 `dd48a93` feat: [STEPS 46+47] monitor-health cron + painel DB_HEALTH.md (#240)
@@ -601,7 +602,6 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 - 2026-11-06 `4df9b8e` docs: grafo de arquitetura manual e template de re-auditoria (Steps 49+50) (#242)
 - 2026-11-06 `dca65c5` fix(n8n-callback): BufferSource + readBytes + prettier
 - 2026-11-02 `3285b4f` chore: AGENTS.md com o texto-mestre adm01-debug (seções 1-7) (#250)
-- 2026-11-01 `309ee32` fix: boletos asaas_id types + migrations steps 10+20 (rebuid sem conflito) (#247)
 
 ## Arquivos deste diretório
 - `docs/contexto/codigo/rotas.json`

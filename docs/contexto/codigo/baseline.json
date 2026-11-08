@@ -2,11 +2,16 @@
  "aviso": "GERADO AUTOMATICAMENTE por scripts/ai-context/gerar.mjs — não editar à mão; será sobrescrito.",
  "format_version": 2,
  "git": {
-  "commit": "794478effc87c0718867f47942a5afaaecdd41cb",
+  "commit": "b0d9ddb12f4508f2fdff34e314a777708e36eae8",
   "branch": "main",
-  "data_commit": "2026-11-08T14:09:27-03:00",
+  "data_commit": "2026-11-08T15:04:48-03:00",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
   "ultimos_commits": [
+   {
+    "sha": "b0d9ddb",
+    "data": "2026-11-08",
+    "assunto": "fix(contexto): guard de segredo reprovava a coleta do banco com a saída já redigida (#261)"
+   },
    {
     "sha": "794478e",
     "data": "2026-11-08",
@@ -126,11 +131,6 @@
     "sha": "6546df9",
     "data": "2026-10-30",
     "assunto": "fix(ci): prod-migrate — check-secrets sem environment antes do migrate (#217)"
-   },
-   {
-    "sha": "bbd683f",
-    "data": "2026-10-29",
-    "assunto": "fix(ci): correção e documentação de workflows — inventário completo de pendências (#201)"
    }
   ],
   "arquivos_mudados_7d": 160,
@@ -301,7 +301,7 @@
   "autores_30d": [
    {
     "autor": "adm01-debug",
-    "commits": 33
+    "commits": 34
    },
    {
     "autor": "devin-ai-integration[bot]",
@@ -320,7 +320,7 @@
  "contagens": {
   "arquivos_total": 3391,
   "arquivos_codigo": 2148,
-  "linhas_codigo": 399641,
+  "linhas_codigo": 399671,
   "rotas": 128,
   "rotas_http_backend": 12,
   "vistas_por_id": 0,
@@ -556,7 +556,7 @@
   },
   "scripts/supabase_snapshot": {
    "arquivos": 2,
-   "linhas": 2788
+   "linhas": 2818
   },
   "src/App.tsx": {
    "arquivos": 1,

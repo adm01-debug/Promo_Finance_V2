@@ -1,15 +1,15 @@
 {
  "meta": {
-  "sha": "794478effc87c0718867f47942a5afaaecdd41cb",
+  "sha": "b0d9ddb12f4508f2fdff34e314a777708e36eae8",
   "branch": "main",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
-  "generated_at": "2026-11-08 17:10 UTC",
+  "generated_at": "2026-11-08 18:05 UTC",
   "files_total": 3433,
   "code_files": 3155,
-  "code_lines": 452645
+  "code_lines": 452675
  },
  "version": "1.3.2",
- "facts_hash": "06506b5f720a8126",
+ "facts_hash": "9cbcf176044f5a08",
  "stack": {
   "frameworks": [
    "React + Vite",
@@ -63134,7 +63134,7 @@
   {
    "module": "scripts",
    "files": 74,
-   "lines": 17215,
+   "lines": 17245,
    "tables": [
     "a",
     "alerts",
@@ -165833,7 +165833,7 @@
   },
   "scripts/supabase_snapshot/test_snapshot.py": {
    "path": "scripts/supabase_snapshot/test_snapshot.py",
-   "lines": 972,
+   "lines": 1002,
    "exports": [
     "class OfflineConnection",
     "def function",
@@ -165851,7 +165851,8 @@
     "class SnapshotConfigurationTests",
     "def db_stats_case",
     "class SnapshotApiCarryOverTests",
-    "class SnapshotErrorRedactionTests"
+    "class SnapshotErrorRedactionTests",
+    "class SnapshotDsnScrubTests"
    ],
    "rpc": [
     "demo"
@@ -228310,10 +228311,20 @@
   }
  },
  "git": {
-  "sha": "794478effc87c0718867f47942a5afaaecdd41cb",
+  "sha": "b0d9ddb12f4508f2fdff34e314a777708e36eae8",
   "branch": "main",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
   "commits": [
+   {
+    "sha": "b0d9ddb",
+    "date": "2026-11-08",
+    "author": "adm01-debug",
+    "subject": "fix(contexto): guard de segredo reprovava a coleta do banco com a saída já redigida (#261)",
+    "files": [
+     ".github/workflows/contexto.yml",
+     "scripts/supabase_snapshot/test_snapshot.py"
+    ]
+   },
    {
     "sha": "794478e",
     "date": "2026-11-08",
@@ -228738,20 +228749,6 @@
     "files": [
      "RELATORIO_CI.md"
     ]
-   },
-   {
-    "sha": "75a83a6",
-    "date": "2026-10-29",
-    "author": "adm01-debug",
-    "subject": "fix(ci): zod 3.22→3.25.76 + guards de secret em staging/prod-migrate + superRefine CNPJ/CPF (#196)",
-    "files": [
-     ".github/workflows/prod-migrate.yml",
-     ".github/workflows/staging-migrate.yml",
-     "bun.lock",
-     "package.json",
-     "src/components/clientes/ClienteForm.tsx",
-     "src/components/fornecedores/FornecedorForm.tsx"
-    ]
    }
   ],
   "hot_files": [
@@ -228761,14 +228758,6 @@
    ],
    [
     "scripts/security/test-canonical-db-gates.mjs",
-    3
-   ],
-   [
-    "bun.lock",
-    3
-   ],
-   [
-    "package.json",
     3
    ],
    [
@@ -228784,6 +228773,14 @@
     3
    ],
    [
+    ".github/workflows/contexto.yml",
+    2
+   ],
+   [
+    "scripts/supabase_snapshot/test_snapshot.py",
+    2
+   ],
+   [
     ".gitignore",
     2
    ],
@@ -228793,6 +228790,14 @@
    ],
    [
     "supabase/config.toml",
+    2
+   ],
+   [
+    "bun.lock",
+    2
+   ],
+   [
+    "package.json",
     2
    ],
    [
@@ -228816,15 +228821,7 @@
     2
    ],
    [
-    ".github/workflows/prod-migrate.yml",
-    2
-   ],
-   [
     ".github/workflows/README.md",
-    1
-   ],
-   [
-    ".github/workflows/contexto.yml",
     1
    ],
    [
