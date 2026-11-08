@@ -18,7 +18,7 @@ for d in "$FUNCS_DIR"/*/; do
   [ -f "$f" ] || continue
   total=$((total+1))
   if grep -q "req\.json()" "$f" 2>/dev/null; then
-    if ! grep -qE "validatePayload|validateContract|\.safeParse\(|_shared/validation|_shared/contract-validator" "$f" 2>/dev/null; then
+    if ! grep -vE '^\s*//' "$f" 2>/dev/null | grep -qE "validatePayload|validateContract|\.safeParse\(|_shared/validation|_shared/contract-validator"; then
       missing+=("$name")
     fi
   fi
@@ -31,6 +31,10 @@ for n in "${missing[@]}"; do echo "  - $n"; done
 
 if [ -f "$BASELINE_FILE" ]; then
   baseline=$(cat "$BASELINE_FILE" | tr -d '[:space:]')
+  if ! [[ "$baseline" =~ ^[0-9]+$ ]]; then
+    echo "❌ Baseline corrompido ou vazio em $BASELINE_FILE (valor: '$baseline')" >&2
+    exit 2
+  fi
   if [ "$count" -gt "$baseline" ]; then
     echo "❌ Regressão: cobertura Zod piorou ($count > baseline $baseline)"
     exit 1

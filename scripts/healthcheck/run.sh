@@ -27,13 +27,14 @@ OUT="/tmp/healthcheck-${TS}.jsonl"
 
 JSON_ONLY=0
 SKIP=()
-for arg in "$@"; do
-  case "$arg" in
+while [ $# -gt 0 ]; do
+  case "$1" in
     --json-only) JSON_ONLY=1 ;;
-    --skip) shift; SKIP+=("$1") ;;
-    --skip=*) SKIP+=("${arg#--skip=}") ;;
+    --skip) shift; [ $# -gt 0 ] && SKIP+=("$1") ;;
+    --skip=*) SKIP+=("${1#--skip=}") ;;
     -h|--help) sed -n '2,20p' "$0"; exit 0 ;;
   esac
+  shift
 done
 
 emit() { printf '%s\n' "$1" | tee -a "$OUT" >&2 ; [ "$JSON_ONLY" -eq 1 ] && printf '%s\n' "$1" ; }
@@ -49,10 +50,10 @@ log_line() {
 export -f log_line emit
 export OUT JSON_ONLY
 
-skipped() { for s in "${SKIP[@]:-}"; do [ "$s" = "$1" ] && return 0; done; return 1; }
+skipped() { local s; for s in "${SKIP[@]+"${SKIP[@]}"}"; do [ "$s" = "$1" ] && return 0; done; return 1; }
 
 # ---------- Preflight ----------
-for bin in psql jq curl; do
+for bin in psql jq curl node; do
   command -v "$bin" >/dev/null 2>&1 || { echo "❌ falta binário: $bin" >&2; exit 2; }
 done
 : "${STAGING_DB_URL:?STAGING_DB_URL ausente}"
@@ -86,7 +87,10 @@ trap cleanup EXIT
 
 # ---------- Executar checks ----------
 skipped webhooks || bash "$HC_DIR/01_webhooks.sh" || true
-skipped crons    || psql "$STAGING_DB_URL" -v ON_ERROR_STOP=0 -q -f "$HC_DIR/02_crons.sql" 2>/dev/null | grep '^{' | while read -r l; do emit "$l"; done || true
+skipped crons    || psql "$STAGING_DB_URL" -v ON_ERROR_STOP=0 -q \
+                      -c "SET app.hc_run_id = '$RUN_ID'" \
+                      -f "$HC_DIR/02_crons.sql" 2>&1 | sed 's/^NOTICE: *//' | grep '^{' \
+                      | while read -r l; do emit "$l"; done || true
 skipped realtime || node "$HC_DIR/03_realtime.mjs" || true
 skipped events   || bash "$HC_DIR/04_events.sh"    || true
 

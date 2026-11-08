@@ -23,7 +23,7 @@ check_absent() {
 
 echo "Verificando replay safety das migrations críticas..."
 
-check_absent '^[[:space:]]*ALTER DATABASE[[:space:]]+postgres[[:space:]]+SET[[:space:]]+"app\.jwt_secret"' \
+check_absent '^[[:space:]]*ALTER DATABASE[[:space:]]+("postgres"|postgres)[[:space:]]+SET[[:space:]]+"app\.jwt_secret"' \
   supabase/migrations/001_create_tables.sql
 
 # O schema `auth` é gerenciado pelo Supabase e não concede CREATE ao papel de

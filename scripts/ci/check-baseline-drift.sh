@@ -114,9 +114,10 @@ VIEWS_BAD="$(psql "$PROD_DB_URL" -A -t -c "
 [ -n "$VIEWS_BAD" ] && fail "views sem security_invoker: $VIEWS_BAD" \
                     || ok "todas as views com security_invoker"
 
-ANON_BAD="$(psql "$PROD_DB_URL" -A -t -c "
+ALLOWED_JSON="$(cat "$BASELINE/allowed-public-tables.json")"
+ANON_BAD="$(psql "$PROD_DB_URL" -A -t -v "allowed_json=$ALLOWED_JSON" -c "
   WITH allowed AS (
-    SELECT jsonb_array_elements_text('$(cat "$BASELINE/allowed-public-tables.json")'::jsonb) AS tbl
+    SELECT jsonb_array_elements_text(:'allowed_json'::jsonb) AS tbl
   )
   SELECT COALESCE(string_agg(DISTINCT table_name || ':' || privilege_type, ','), '')
   FROM information_schema.role_table_grants

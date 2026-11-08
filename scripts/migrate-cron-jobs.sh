@@ -52,5 +52,5 @@ psql "$DEST_DB_URL" -c "SELECT jobname, schedule, active FROM cron.job ORDER BY 
 
 COUNT="$(psql "$DEST_DB_URL" -Atc "SELECT count(*) FROM cron.job;")"
 echo ""
-echo "✅ Total de jobs no destino: $COUNT (esperado ≥ 14)"
+echo "✅ Total de jobs no destino: $COUNT (esperado ≥ 13)"
 echo "📝 Log: $LOG"

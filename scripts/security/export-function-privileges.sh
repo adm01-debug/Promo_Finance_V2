@@ -8,7 +8,7 @@
 # ==============================================================================
 set -euo pipefail
 
-OUT_DIR="${OUT_DIR:-/mnt/documents/security}"
+OUT_DIR="${OUT_DIR:-./security-audit}"
 mkdir -p "$OUT_DIR"
 
 PSQL=(psql -v ON_ERROR_STOP=1 -X -q)

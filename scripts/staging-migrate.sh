@@ -152,9 +152,9 @@ run_crons() {
   log_step "crons" "start"
   local args=()
   [ "$DRY_RUN" -eq 1 ] && args+=(--dry-run)
-  SUPABASE_PROJECT_REF="$STAGING_PROJECT_REF" \
-  SUPABASE_ANON_KEY="$STAGING_ANON_KEY" \
-  STAGING_DB_URL="$STAGING_DB_URL" \
+  PROJECT_REF="$STAGING_PROJECT_REF" \
+  ANON_KEY="$STAGING_ANON_KEY" \
+  DEST_DB_URL="$STAGING_DB_URL" \
     bash "$ROOT/scripts/migrate-cron-jobs.sh" "${args[@]}" \
     || die "crons" "migrate-cron-jobs falhou"
   log_step "crons" "ok"

@@ -63,13 +63,14 @@ done
 
 # FKs órfãos (rápido): valida constraints em staging
 BAD_FK=$(psql "$STAGING_DB_URL" -Atc "
-  SELECT count(*) FROM (
-    SELECT conrelid::regclass::text AS t
-      FROM pg_constraint
-     WHERE contype='f'
-       AND connamespace = 'public'::regnamespace
-  ) s
-  WHERE NOT EXISTS (SELECT 1)" 2>/dev/null || echo "0")
+  SELECT count(*)
+    FROM pg_constraint c
+   WHERE c.contype = 'f'
+     AND c.connamespace = 'public'::regnamespace
+     AND NOT EXISTS (
+       SELECT 1 FROM pg_class pc
+        WHERE pc.oid = c.confrelid
+     )" 2>/dev/null || echo "0")
 emit "fk" "*" "pass" "0" "$BAD_FK" "structural check only"
 
 exit "$FAILS"

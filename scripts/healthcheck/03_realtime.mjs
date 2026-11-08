@@ -33,7 +33,7 @@ const sub = createClient(url, anon, { auth: { persistSession: false } });
 const admin = createClient(url, service, { auth: { persistSession: false } });
 
 async function testTable(table, buildRow) {
-  return await new Promise(async (resolve) => {
+  return await new Promise((resolve) => {
     let received = null;
     const t0 = Date.now();
     const channel = sub
@@ -92,7 +92,7 @@ try {
   emit('runner', 'fail', `exception: ${e?.message || String(e)}`);
 } finally {
   // Cleanup best-effort (run.sh também limpa)
-  await admin.from('webhook_events').delete().eq('raw_payload->>healthcheck_run_id', RUN_ID).then(() => {}, () => {});
-  await admin.from('alerts').delete().eq('metadata->>healthcheck_run_id', RUN_ID).then(() => {}, () => {});
+  await admin.from('webhook_events').delete().filter('raw_payload->>healthcheck_run_id', 'eq', RUN_ID).then(() => {}, () => {});
+  await admin.from('alerts').delete().filter('metadata->>healthcheck_run_id', 'eq', RUN_ID).then(() => {}, () => {});
   process.exit(0);
 }
