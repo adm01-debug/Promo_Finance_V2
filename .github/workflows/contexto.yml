@@ -538,4 +538,3 @@ jobs:
           git commit --quiet -m "chore(contexto): $novos fonte(s) regerada(s) @ main ${HEAD_MAIN:0:7} [skip ci]"
           git push --quiet "$REMOTE" "HEAD:refs/heads/$CONTEXTO_BRANCH"
           echo "Publicado em $CONTEXTO_BRANCH: $(git rev-parse --short HEAD) (fontes novas: $novos)"
-
