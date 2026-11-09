@@ -17,11 +17,11 @@ Valores aproximados de propósito, para não gerar commits a cada coleta. Fora d
 | public.slow_query_alerts | ~17.1k | 21.0 MB | 18.0 MB | 3.0 MB | ~220 | ~80 | ~27k | 2026-11-09 |
 | public.frontend_performance_logs | ~58.7k | 20.2 MB | 15.8 MB | 4.4 MB | 0 | ~10 | ~660 | 2026-11-09 |
 | public.index_usage_snapshots | ~49.6k | 14.0 MB | 7.8 MB | 6.2 MB | 0 | ~20 | ~50.7k | 2026-11-02 |
-| public.query_telemetry | ~16.4k | 13.6 MB | 10.0 MB | 3.6 MB | ~1.3k | ~2k | ~64.4k | 2026-11-07 |
+| public.query_telemetry | ~16.4k | 13.6 MB | 10.0 MB | 3.6 MB | ~1.3k | ~2k | ~64.5k | 2026-11-07 |
 | public.bloat_snapshots | ~19.4k | 4.9 MB | 2.7 MB | 2.1 MB | 0 | 7 | ~23.1k | 2026-10-31 |
-| public.performance_alerts | ~3.9k | 3.1 MB | 2.1 MB | 1.0 MB | ~520 | ~20 | ~164.7k | 2026-11-07 |
+| public.performance_alerts | ~3.9k | 3.1 MB | 2.1 MB | 1.0 MB | ~530 | ~20 | ~164.8k | 2026-11-07 |
 | public.integrity_alerts | ~1.7k | 1.6 MB | 1.1 MB | 472.0 KB | 0 | ~27.5k | ~15.6k | 2026-10-15 |
-| public.login_attempts | ~1.3k | 1.6 MB | 1.1 MB | 456.0 KB | 0 | ~3.5k | ~720 | 2026-11-09 |
+| public.login_attempts | ~1.3k | 1.6 MB | 1.1 MB | 456.0 KB | ~1.3k | ~3.5k | ~720 | 2026-11-09 |
 | public.alertas | ~1.6k | 528.0 KB | 360.0 KB | 128.0 KB | 0 | ~1.3M | ~80 | 2026-10-23 |
 | public.audit_logs | ~420 | 416.0 KB | 280.0 KB | 104.0 KB | ~40 | ~30 | ~24.4k |  |
 | public.pg_stat_statements_baseline | 0 | 408.0 KB | 0 B | 384.0 KB | 0 | ~20 | ~3.5k | 2026-10-18 |
@@ -315,30 +315,31 @@ _nenhum_
 | role | chamadas (~) | total ms (~) | média ms | query |
 |---|---|---|---|---|
 | postgres | ~1.8k | ~2.9M | 1577.45 | `SELECT public.watch_cron_failures($1,$2)` |
-| postgres | ~19.8k | ~2.4M | 122.00 | `SELECT public.detect_query_regressions()` |
-| postgres | ~12.8k | ~2.2M | 172.78 | `SELECT table_schema AS schema, table_name AS "table", column_name AS "column", grantee, string_agg(privilege_type, $2 ORDER BY privilege_type) AS privileges FROM information_schema.column_privileges cp WHERE grantee NOT ` |
+| postgres | ~19.8k | ~2.4M | 122.01 | `SELECT public.detect_query_regressions()` |
+| postgres | ~12.9k | ~2.2M | 172.72 | `SELECT table_schema AS schema, table_name AS "table", column_name AS "column", grantee, string_agg(privilege_type, $2 ORDER BY privilege_type) AS privileges FROM information_schema.column_privileges cp WHERE grantee NOT ` |
 | authenticated | ~251.7k | ~1.7M | 6.80 | `WITH pgrst_source AS ( SELECT "public"."alertas".* FROM "public"."alertas" ORDER BY "public"."alertas"."created_at" DESC LIMIT $1 OFFSET $2 ) SELECT $3::bigint AS total_result_set, pg_catalog.count(_postgrest_t) AS page_` |
 | postgres | ~88.2k | ~1.3M | 14.91 | `SELECT net.http_post( url := $1, headers := jsonb_build_object($2,$3,$4, public.internal_job_secret()), body := jsonb_build_object($5,$6,$7, now()) ) AS request_id` |
 | postgres | ~88.2k | ~1.2M | 14.03 | `SELECT net.http_post( url := $1, headers := jsonb_build_object($2,$3,$4, public.internal_job_secret()), body := jsonb_build_object($5,$6,$7,$8) ) AS request_id` |
 | authenticated | ~280.6k | ~1.2M | 4.33 | `WITH pgrst_source AS ( SELECT "public"."vw_contas_pagar_painel".* FROM "public"."vw_contas_pagar_painel" ORDER BY "public"."vw_contas_pagar_painel"."data_vencimento" ASC LIMIT $1 OFFSET $2 ) SELECT $3::bigint AS total_re` |
 | postgres | ~6.7k | ~1M | 152.37 | `SELECT public.capture_slow_queries()` |
-| postgres | ~130 | ~803.6k | 6278.42 | `SELECT jobid, runid, status, start_time, end_time, EXTRACT($2 FROM (end_time - start_time))::numeric(10,2) AS seconds, left(return_message, $3) AS return_message FROM (SELECT *, row_number() OVER (PARTITION BY jobid ORDE` |
-| authenticator | ~2.5k | ~776.2k | 306.20 | `SELECT name FROM pg_timezone_names` |
+| postgres | ~130 | ~804k | 6232.28 | `SELECT jobid, runid, status, start_time, end_time, EXTRACT($2 FROM (end_time - start_time))::numeric(10,2) AS seconds, left(return_message, $3) AS return_message FROM (SELECT *, row_number() OVER (PARTITION BY jobid ORDE` |
+| authenticator | ~2.5k | ~777.1k | 306.41 | `SELECT name FROM pg_timezone_names` |
 | authenticated | ~104.4k | ~627.5k | 6.01 | `WITH pgrst_source AS ( SELECT "public"."contas_pagar".* FROM "public"."contas_pagar" LIMIT $1 OFFSET $2 ) , pgrst_source_count AS (SELECT $3 FROM "public"."contas_pagar") SELECT (SELECT pg_catalog.count(*) FROM pgrst_sou` |
 | authenticated | ~73.7k | ~425.6k | 5.77 | `WITH pgrst_source AS ( SELECT "public"."vw_contas_receber_painel".* FROM "public"."vw_contas_receber_painel" ORDER BY "public"."vw_contas_receber_painel"."data_vencimento" ASC LIMIT $1 OFFSET $2 ) SELECT $3::bigint AS to` |
 | authenticated | ~97.1k | ~414.6k | 4.27 | `WITH pgrst_source AS ( SELECT "public"."contas_receber"."id", "public"."contas_receber"."data_vencimento", "public"."contas_receber"."data_recebimento", "public"."contas_receber"."cliente_nome", "public"."contas_receber"` |
-| authenticator | ~2.5k | ~385.6k | 152.12 | `WITH -- Recursively get the base types of domains base_types AS ( WITH RECURSIVE recurse AS ( SELECT oid, typbasetype, typnamespace AS base_namespace, COALESCE(NULLIF(typbasetype, $2), oid) AS base_type FROM pg_type UNIO` |
+| authenticator | ~2.5k | ~385.8k | 152.13 | `WITH -- Recursively get the base types of domains base_types AS ( WITH RECURSIVE recurse AS ( SELECT oid, typbasetype, typnamespace AS base_namespace, COALESCE(NULLIF(typbasetype, $2), oid) AS base_type FROM pg_type UNIO` |
 | authenticated | ~9.7M | ~378.8k | 0.04 | `select set_config('?', $1, true), set_config($2, $3, true), set_config($4, $5, true), set_config($6, $7, true), set_config('?', $8, true), set_config('?', $9, true), set_config('request.meth` |
 
 
 ## Conexões
 | usuário | estado | n |
 |---|---|---|
-| authenticator | idle | 2 |
+| authenticator | idle | 4 |
 | pgbouncer | idle | 2 |
 | postgres | active | 1 |
 | supabase_admin | idle | 2 |
 | supabase_admin |  | 2 |
+| supabase_auth_admin | idle | 1 |
 | supabase_storage_admin | idle | 1 |
 
 
@@ -371,7 +372,7 @@ _nenhum_
       "connected_cluster": 0,
       "db_connected": false,
       "healthy": true,
-      "node": "realtime@2600:1f1c:c90:ad00:a7ad:eff8:263:7a7d",
+      "node": "realtime@2600:1f1c:c90:ad00:bbd2:8fef:3b07:60b3",
       "region": "us-west-1",
       "replication_connected": false
     },
