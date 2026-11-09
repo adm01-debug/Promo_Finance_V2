@@ -2,11 +2,16 @@
  "aviso": "GERADO AUTOMATICAMENTE por scripts/ai-context/gerar.mjs — não editar à mão; será sobrescrito.",
  "format_version": 2,
  "git": {
-  "commit": "8ec6561a99cf3bde38aadcb8f52010350a3a33cf",
+  "commit": "529236d4b6c373aabe6af2b9e5c6ea59a402d1a9",
   "branch": "main",
-  "data_commit": "2026-11-09T10:59:50Z",
+  "data_commit": "2026-11-09T08:51:12-03:00",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
   "ultimos_commits": [
+   {
+    "sha": "529236d",
+    "data": "2026-11-09",
+    "assunto": "fix: compatibilidade TypeScript com Zod v4 (supersede #211)"
+   },
    {
     "sha": "8ec6561",
     "data": "2026-11-09",
@@ -126,14 +131,9 @@
     "sha": "c6eb99b",
     "data": "2026-11-08",
     "assunto": "fix(contexto): grants timeout, custom_hostname 400 e refresh diário (#262)"
-   },
-   {
-    "sha": "cab8834",
-    "data": "2026-11-08",
-    "assunto": "chore: instruções enxutas para agentes (#252)"
    }
   ],
-  "arquivos_mudados_7d": 258,
+  "arquivos_mudados_7d": 264,
   "pastas_mais_mudadas_30d": [
    {
     "pasta": "supabase/functions/_shared",
@@ -141,11 +141,11 @@
    },
    {
     "pasta": "bun.lock",
-    "mudancas": 15
+    "mudancas": 16
    },
    {
     "pasta": "package.json",
-    "mudancas": 14
+    "mudancas": 15
    },
    {
     "pasta": "src/components/layout",
@@ -199,11 +199,11 @@
   "arquivos_mais_mudados_90d": [
    {
     "arquivo": "package.json",
-    "mudancas": 32
+    "mudancas": 33
    },
    {
     "arquivo": "bun.lock",
-    "mudancas": 25
+    "mudancas": 26
    },
    {
     "arquivo": ".github/workflows/ci.yml",
@@ -250,6 +250,10 @@
     "mudancas": 10
    },
    {
+    "arquivo": "src/pages/Auth.hooks.ts",
+    "mudancas": 10
+   },
+   {
     "arquivo": "supabase/functions/bling-proxy/index.ts",
     "mudancas": 10
    },
@@ -278,10 +282,6 @@
     "mudancas": 9
    },
    {
-    "arquivo": "src/pages/Auth.hooks.ts",
-    "mudancas": 9
-   },
-   {
     "arquivo": "supabase/functions/bling-webhook/index.ts",
     "mudancas": 9
    },
@@ -301,7 +301,7 @@
   "autores_30d": [
    {
     "autor": "adm01-debug",
-    "commits": 59
+    "commits": 60
    },
    {
     "autor": "devin-ai-integration[bot]",
@@ -320,7 +320,7 @@
  "contagens": {
   "arquivos_total": 3482,
   "arquivos_codigo": 2170,
-  "linhas_codigo": 402256,
+  "linhas_codigo": 402246,
   "rotas": 128,
   "rotas_http_backend": 12,
   "vistas_por_id": 0,
@@ -572,7 +572,7 @@
   },
   "src/components": {
    "arquivos": 872,
-   "linhas": 159219
+   "linhas": 159209
   },
   "src/config": {
    "arquivos": 1,

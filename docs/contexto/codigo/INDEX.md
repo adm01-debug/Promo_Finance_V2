@@ -1,7 +1,7 @@
 # Contexto do projeto para agentes de IA
 
 GERADO AUTOMATICAMENTE por scripts/ai-context/gerar.mjs — não editar à mão; será sobrescrito.
-Publicado pelo workflow .github/workflows/contexto.yml em docs/contexto/codigo/ da branch gerada `contexto`. Índice único em docs/contexto/00-INDEX.md. Ler: git fetch origin contexto && git show origin/contexto:docs/contexto/00-INDEX.md Gere local com `node scripts/ai-context/gerar.mjs`. Commit-base: `8ec6561a99cf3bde38aadcb8f52010350a3a33cf` (2026-11-09T10:59:50Z).
+Publicado pelo workflow .github/workflows/contexto.yml em docs/contexto/codigo/ da branch gerada `contexto`. Índice único em docs/contexto/00-INDEX.md. Ler: git fetch origin contexto && git show origin/contexto:docs/contexto/00-INDEX.md Gere local com `node scripts/ai-context/gerar.mjs`. Commit-base: `529236d4b6c373aabe6af2b9e5c6ea59a402d1a9` (2026-11-09T08:51:12-03:00).
 
 ## Como usar (leia antes de planejar ou executar qualquer tarefa)
 1. **Tela/rota/menu** → `rotas.json` (url/vista/menu → arquivo → hooks → tabelas → edges; `rotas_http_backend` para APIs) e `modulos.json` (módulo inteiro + dependências entre módulos).
@@ -36,7 +36,7 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 |---|---|
 | arquivos_total | 3482 |
 | arquivos_codigo | 2170 |
-| linhas_codigo | 402256 |
+| linhas_codigo | 402246 |
 | rotas | 128 |
 | rotas_http_backend | 12 |
 | vistas_por_id | 0 |
@@ -442,8 +442,8 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 - não gerado neste run. Neste repo NÃO execute `graphify update .` (proibido por AGENTS.md, seção Graphify). O fluxo autorizado é o piloto: `npm run graphify:pilot`, ou `npm run graphify:analyze -- --profile NOME` (revise antes com `npm run graphify:inventory -- --profile NOME`). Resultados privados em graphify-out/piloto-*/; consulte apenas grafo cuja evidencia.json tenha piloto validado e hashes compatíveis com os arquivos atuais.
 
 ## Hotspots (arquivos mais alterados, 90 dias)
-- package.json (32)
-- bun.lock (25)
+- package.json (33)
+- bun.lock (26)
 - .github/workflows/ci.yml (22)
 - supabase/config.toml (15)
 - supabase/functions/asaas-proxy/index.ts (15)
@@ -455,8 +455,8 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 - PENDENCIAS.md (11)
 - RELATORIO_CI.md (11)
 - env.manifest.json (10)
+- src/pages/Auth.hooks.ts (10)
 - supabase/functions/bling-proxy/index.ts (10)
-- supabase/functions/enviar-convite-organizacao/index.ts (10)
 
 ## Workflows
 - `actionlint.yml` — Workflow Linter (actionlint + zizmor) (pull_request, push, workflow_dispatch)
@@ -588,6 +588,7 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 - CHANGELOG topo: [Unreleased]
 
 ## Últimos commits
+- 2026-11-09 `529236d` fix: compatibilidade TypeScript com Zod v4 (supersede #211)
 - 2026-11-09 `8ec6561` infra: bloqueia wipe de AGENTS.md e docs/agentes por sessão paralela (#263)
 - 2026-11-09 `34efae1` chore: atualiza prs.json — adiciona #283-#288, 48 PRs classificadas
 - 2026-11-09 `ea42a9b` feat(ci): documentos gerados do estado real do CI e das edge functions (#275)
@@ -602,7 +603,6 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 - 2026-11-09 `039e16d` chore: dossiês completos por PR + relatório final sessão merge-prs (#280)
 - 2026-11-09 `8f63e2c` chore(docs): atualiza contagem de edge functions para 106 em sistema.md
 - 2026-11-09 `97b7711` fix(docs): corrige contagem de edge functions para 106 em mapa-repo.md
-- 2026-11-08 `93026e6` chore: inventário e dossiê das 34 PRs abertas (#273)
 
 ## Arquivos deste diretório
 - `docs/contexto/codigo/rotas.json`

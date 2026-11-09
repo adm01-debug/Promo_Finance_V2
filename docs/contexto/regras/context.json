@@ -1,15 +1,15 @@
 {
  "meta": {
-  "sha": "8ec6561a99cf3bde38aadcb8f52010350a3a33cf",
+  "sha": "529236d4b6c373aabe6af2b9e5c6ea59a402d1a9",
   "branch": "main",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
-  "generated_at": "2026-11-09 11:46 UTC",
+  "generated_at": "2026-11-09 11:52 UTC",
   "files_total": 3524,
   "code_files": 3177,
-  "code_lines": 455260
+  "code_lines": 455250
  },
  "version": "1.3.2",
- "facts_hash": "d3bf87a9fb744203",
+ "facts_hash": "9ad0281e73b6cfd6",
  "stack": {
   "frameworks": [
    "React + Vite",
@@ -77,7 +77,7 @@
     "in": "package.json"
    },
    "zod": {
-    "version": "^3.25.76",
+    "version": "^4.6.7",
     "role": "Validação de schemas (Zod)",
     "in": "package.json"
    },
@@ -63412,7 +63412,7 @@
   {
    "module": "src/components",
    "files": 872,
-   "lines": 159219,
+   "lines": 159209,
    "tables": [
     "acordos_parcelamento",
     "alertas",
@@ -177155,7 +177155,7 @@
   },
   "src/components/empresas/empresa-form-model.ts": {
    "path": "src/components/empresas/empresa-form-model.ts",
-   "lines": 98,
+   "lines": 88,
    "exports": [
     "function paraPercentual",
     "function paraFracao",
@@ -228971,10 +228971,26 @@
   }
  },
  "git": {
-  "sha": "8ec6561a99cf3bde38aadcb8f52010350a3a33cf",
+  "sha": "529236d4b6c373aabe6af2b9e5c6ea59a402d1a9",
   "branch": "main",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
   "commits": [
+   {
+    "sha": "529236d",
+    "date": "2026-11-09",
+    "author": "adm01-debug",
+    "subject": "fix: compatibilidade TypeScript com Zod v4 (supersede #211)",
+    "files": [
+     "bun.lock",
+     "package.json",
+     "src/components/configuracoes/SecuritySettings.tsx",
+     "src/components/empresas/empresa-form-model.ts",
+     "src/components/tributario/onboarding/StepConvidarContador.tsx",
+     "src/hooks/financial/views.schemas.ts",
+     "src/hooks/useZodForm.ts",
+     "src/pages/Auth.hooks.ts"
+    ]
+   },
    {
     "sha": "8ec6561",
     "date": "2026-11-09",
@@ -229405,21 +229421,6 @@
      "supabase/functions/monitor-health/index.ts",
      "supabase/migrations/20261101200000_monitor_health_cron.sql"
     ]
-   },
-   {
-    "sha": "dc39f52",
-    "date": "2026-11-07",
-    "author": "adm01-debug",
-    "subject": "fix: sentry.ts — host DSN, redação de dados e parseDsn seguro [substitui #246] (#248)",
-    "files": [
-     "bun.lock",
-     "env.manifest.json",
-     "package.json",
-     "supabase/functions/_shared/edge-observability.ts",
-     "supabase/functions/_shared/sentry.ts",
-     "supabase/functions/n8n-callback/index.ts",
-     "vite.config.ts"
-    ]
    }
   ],
   "hot_files": [
@@ -229428,15 +229429,15 @@
     7
    ],
    [
-    "analise-prs/RELATORIO_PRS.md",
-    6
-   ],
-   [
     "bun.lock",
     6
    ],
    [
     "package.json",
+    6
+   ],
+   [
+    "analise-prs/RELATORIO_PRS.md",
     6
    ],
    [
@@ -229492,15 +229493,15 @@
     2
    ],
    [
-    "env.manifest.json",
-    2
-   ],
-   [
-    ".github/workflows/ci.yml",
+    "src/components/configuracoes/SecuritySettings.tsx",
     1
    ],
    [
-    "scripts/ci/check-claude-md-integrity.mjs",
+    "src/components/empresas/empresa-form-model.ts",
+    1
+   ],
+   [
+    "src/components/tributario/onboarding/StepConvidarContador.tsx",
     1
    ]
   ]
