@@ -2,11 +2,16 @@
  "aviso": "GERADO AUTOMATICAMENTE por scripts/ai-context/gerar.mjs — não editar à mão; será sobrescrito.",
  "format_version": 2,
  "git": {
-  "commit": "1f5138a767de996ea61ecfb5f852cc71e8f4624c",
+  "commit": "d83f82e60c63aa2ed017aefdf4d864084f9c3c63",
   "branch": "main",
-  "data_commit": "2026-11-08T21:16:41-03:00",
+  "data_commit": "2026-11-08T21:28:33-03:00",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
   "ultimos_commits": [
+   {
+    "sha": "d83f82e",
+    "data": "2026-11-08",
+    "assunto": "docs: atualiza AGENTS.md e docs/agentes/ — supersede #264 (#272)"
+   },
    {
     "sha": "1f5138a",
     "data": "2026-11-08",
@@ -126,14 +131,9 @@
     "sha": "1c0ccea",
     "data": "2026-10-31",
     "assunto": "chore(ci): adiciona estrategias_elisao_catalogo ao baseline literal-true [DB Linter] (#245)"
-   },
-   {
-    "sha": "bb7e801",
-    "data": "2026-10-31",
-    "assunto": "chore(docs): [STEPS 39+48] backup policy + consolidar SECURITY_RULES (#236)"
    }
   ],
-  "arquivos_mudados_7d": 170,
+  "arquivos_mudados_7d": 173,
   "pastas_mais_mudadas_30d": [
    {
     "pasta": "supabase/functions/_shared",
@@ -301,7 +301,7 @@
   "autores_30d": [
    {
     "autor": "adm01-debug",
-    "commits": 40
+    "commits": 41
    },
    {
     "autor": "devin-ai-integration[bot]",
@@ -318,7 +318,7 @@
   ]
  },
  "contagens": {
-  "arquivos_total": 3396,
+  "arquivos_total": 3399,
   "arquivos_codigo": 2148,
   "linhas_codigo": 399687,
   "rotas": 128,
@@ -335,7 +335,7 @@
   "testes": 356,
   "workflows": 14,
   "scripts": 79,
-  "docs_md": 128
+  "docs_md": 131
  },
  "por_pasta": {
   "e2e/alertas-preditivos.e2e.ts": {

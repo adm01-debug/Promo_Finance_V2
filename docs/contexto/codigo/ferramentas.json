@@ -5,7 +5,7 @@
   "linguagens": [
    "TypeScript (2104)",
    "SQL (1006)",
-   "Markdown (128)",
+   "Markdown (131)",
    "JSON (29)",
    "Python (28)",
    "Shell (23)",
@@ -990,7 +990,7 @@
   },
   {
    "pasta": "docs/agentes",
-   "arquivos_md": 5
+   "arquivos_md": 8
   },
   {
    "pasta": "docs/execucao-cline",

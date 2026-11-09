@@ -1,10 +1,10 @@
 {
  "meta": {
-  "sha": "1f5138a767de996ea61ecfb5f852cc71e8f4624c",
+  "sha": "d83f82e60c63aa2ed017aefdf4d864084f9c3c63",
   "branch": "main",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
-  "generated_at": "2026-11-09 00:21 UTC",
-  "files_total": 3438,
+  "generated_at": "2026-11-09 00:41 UTC",
+  "files_total": 3441,
   "code_files": 3155,
   "code_lines": 452691
  },
@@ -228311,10 +228311,22 @@
   }
  },
  "git": {
-  "sha": "1f5138a767de996ea61ecfb5f852cc71e8f4624c",
+  "sha": "d83f82e60c63aa2ed017aefdf4d864084f9c3c63",
   "branch": "main",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
   "commits": [
+   {
+    "sha": "d83f82e",
+    "date": "2026-11-08",
+    "author": "adm01-debug",
+    "subject": "docs: atualiza AGENTS.md e docs/agentes/ — supersede #264 (#272)",
+    "files": [
+     "AGENTS.md",
+     "docs/agentes/github-ci.md",
+     "docs/agentes/mapa-repo.md",
+     "docs/agentes/vercel-deploy.md"
+    ]
+   },
    {
     "sha": "1f5138a",
     "date": "2026-11-08",
@@ -228753,15 +228765,6 @@
      "PENDENCIAS.md",
      "RELATORIO_CI.md"
     ]
-   },
-   {
-    "sha": "68daaf0",
-    "date": "2026-10-30",
-    "author": "adm01-debug",
-    "subject": "chore(ci): sincronizar deno.lock com versões do package.json (#218)",
-    "files": [
-     "deno.lock"
-    ]
    }
   ],
   "hot_files": [
@@ -228772,6 +228775,10 @@
    [
     "package.json",
     4
+   ],
+   [
+    "AGENTS.md",
+    3
    ],
    [
     ".github/workflows/contexto.yml",
@@ -228795,10 +228802,6 @@
    ],
    [
     "scripts/supabase_snapshot/snapshot.py",
-    2
-   ],
-   [
-    "AGENTS.md",
     2
    ],
    [

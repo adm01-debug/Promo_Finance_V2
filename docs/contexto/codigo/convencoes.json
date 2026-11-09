@@ -58,11 +58,11 @@
  "commits": {
   "convencao": "conventional commits (observado)",
   "exemplos": [
+   "docs: atualiza AGENTS.md e docs/agentes/ — supersede #264 (#272)",
    "fix: corrige TS2345 na edge function gerar-pacote-evidencias (#270)",
    "chore(deps): bump @dnd-kit/sortable from 7.0.2 to 10.0.0 (#267)",
    "fix: erros TypeScript framer-motion 14.x — supersede #209 (#266)",
-   "chore(deps-dev): bump eslint-config-prettier from 9.1.2 to 10.1.8 (#268)",
-   "fix(contexto): grants timeout, custom_hostname 400 e refresh diário (#262)"
+   "chore(deps-dev): bump eslint-config-prettier from 9.1.2 to 10.1.8 (#268)"
   ]
  },
  "pr_template": ".github/PULL_REQUEST_TEMPLATE.md",

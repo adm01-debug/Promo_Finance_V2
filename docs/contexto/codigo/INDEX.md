@@ -1,7 +1,7 @@
 # Contexto do projeto para agentes de IA
 
 GERADO AUTOMATICAMENTE por scripts/ai-context/gerar.mjs — não editar à mão; será sobrescrito.
-Publicado pelo workflow .github/workflows/contexto.yml em docs/contexto/codigo/ da branch gerada `contexto`. Índice único em docs/contexto/00-INDEX.md. Ler: git fetch origin contexto && git show origin/contexto:docs/contexto/00-INDEX.md Gere local com `node scripts/ai-context/gerar.mjs`. Commit-base: `1f5138a767de996ea61ecfb5f852cc71e8f4624c` (2026-11-08T21:16:41-03:00).
+Publicado pelo workflow .github/workflows/contexto.yml em docs/contexto/codigo/ da branch gerada `contexto`. Índice único em docs/contexto/00-INDEX.md. Ler: git fetch origin contexto && git show origin/contexto:docs/contexto/00-INDEX.md Gere local com `node scripts/ai-context/gerar.mjs`. Commit-base: `d83f82e60c63aa2ed017aefdf4d864084f9c3c63` (2026-11-08T21:28:33-03:00).
 
 ## Como usar (leia antes de planejar ou executar qualquer tarefa)
 1. **Tela/rota/menu** → `rotas.json` (url/vista/menu → arquivo → hooks → tabelas → edges; `rotas_http_backend` para APIs) e `modulos.json` (módulo inteiro + dependências entre módulos).
@@ -14,7 +14,7 @@ Publicado pelo workflow .github/workflows/contexto.yml em docs/contexto/codigo/ 
 Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua tarefa; não carregue tudo.
 
 ## Stack
-- linguagens: TypeScript (2104), SQL (1006), Markdown (128), JSON (29), Python (28), Shell (23), YAML (20), JavaScript (18)
+- linguagens: TypeScript (2104), SQL (1006), Markdown (131), JSON (29), Python (28), Shell (23), YAML (20), JavaScript (18)
 - linguagem_principal: TypeScript
 - framework: React
 - backend_http: n/d
@@ -34,7 +34,7 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 ## Números
 | item | qtd |
 |---|---|
-| arquivos_total | 3396 |
+| arquivos_total | 3399 |
 | arquivos_codigo | 2148 |
 | linhas_codigo | 399687 |
 | rotas | 128 |
@@ -51,7 +51,7 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 | testes | 356 |
 | workflows | 14 |
 | scripts | 79 |
-| docs_md | 128 |
+| docs_md | 131 |
 
 ## Onde ficam as coisas
 - telas: src/pages (125)
@@ -583,10 +583,11 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 - `docs/VALIDACAO_EXAUSTIVA_R2_2026-09-03.md` — Validação Exaustiva R2 — 2026-09-03 (183 linhas)
 - `docs/VALIDACAO_SEGURANCA_GATEWAY_2026-08-27.md` — Validação de segurança dos gateways — 2026-08-27 (50 linhas)
 - `docs/testing-architecture.md` — Freight Quest Testing Architecture (39 linhas)
-- subpastas de docs/: docs/archive (9), docs/guides (9), docs/agentes (5), docs/execucao-cline (5), docs/runbooks (5), docs/contexto (2), docs/migracao (2), docs/adr (1), docs/evidencias (1)
+- subpastas de docs/: docs/archive (9), docs/guides (9), docs/agentes (8), docs/execucao-cline (5), docs/runbooks (5), docs/contexto (2), docs/migracao (2), docs/adr (1), docs/evidencias (1)
 - CHANGELOG topo: [Unreleased]
 
 ## Últimos commits
+- 2026-11-08 `d83f82e` docs: atualiza AGENTS.md e docs/agentes/ — supersede #264 (#272)
 - 2026-11-08 `1f5138a` fix: corrige TS2345 na edge function gerar-pacote-evidencias (#270)
 - 2026-11-08 `020bb81` chore(deps): bump @dnd-kit/sortable from 7.0.2 to 10.0.0 (#267)
 - 2026-11-08 `6a92560` fix: erros TypeScript framer-motion 14.x — supersede #209 (#266)
@@ -601,7 +602,6 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 - 2026-11-07 `32a5e79` infra: migra imports esm.sh para npm: pinados nas edge functions (#251)
 - 2026-11-06 `6bedb92` fix: atualiza lock graphifyy 0.9.97 com pyyaml (#249)
 - 2026-11-06 `58f58a2` docs(auditoria): Fase 2 — auditorias-anteriores.md reconciliadas com main (#222)
-- 2026-11-06 `c464deb` feat(seguranca+ux): steps 25+26+30+32 — acordo real, URL, asaas-proxy, calculo-iva (#237)
 
 ## Arquivos deste diretório
 - `docs/contexto/codigo/rotas.json`
