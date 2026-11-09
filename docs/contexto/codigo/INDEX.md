@@ -1,7 +1,7 @@
 # Contexto do projeto para agentes de IA
 
 GERADO AUTOMATICAMENTE por scripts/ai-context/gerar.mjs — não editar à mão; será sobrescrito.
-Publicado pelo workflow .github/workflows/contexto.yml em docs/contexto/codigo/ da branch gerada `contexto`. Índice único em docs/contexto/00-INDEX.md. Ler: git fetch origin contexto && git show origin/contexto:docs/contexto/00-INDEX.md Gere local com `node scripts/ai-context/gerar.mjs`. Commit-base: `b0c226b440bb207c98fa02742b8ae5b492293ba1` (2026-11-09T02:39:36-03:00).
+Publicado pelo workflow .github/workflows/contexto.yml em docs/contexto/codigo/ da branch gerada `contexto`. Índice único em docs/contexto/00-INDEX.md. Ler: git fetch origin contexto && git show origin/contexto:docs/contexto/00-INDEX.md Gere local com `node scripts/ai-context/gerar.mjs`. Commit-base: `68fa502741e90ab8f7ec1380200e033a1d8463cc` (2026-11-09T03:52:54-03:00).
 
 ## Como usar (leia antes de planejar ou executar qualquer tarefa)
 1. **Tela/rota/menu** → `rotas.json` (url/vista/menu → arquivo → hooks → tabelas → edges; `rotas_http_backend` para APIs) e `modulos.json` (módulo inteiro + dependências entre módulos).
@@ -587,6 +587,7 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 - CHANGELOG topo: [Unreleased]
 
 ## Últimos commits
+- 2026-11-09 `68fa502` chore: documentação analise-prs v2 + progresso.json corrigido (#284)
 - 2026-11-09 `b0c226b` fix: corrigir classificação #175/#208/#210/#216 em progresso.json
 - 2026-11-09 `900925a` chore: estado final sessao merge-prs — prs.json + progresso + dossies
 - 2026-11-09 `8eef9b0` fix: sanitizar fixture deploy-log-all para remover token real (supersede #253)
@@ -601,7 +602,6 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 - 2026-11-08 `1f5138a` fix: corrige TS2345 na edge function gerar-pacote-evidencias (#270)
 - 2026-11-08 `020bb81` chore(deps): bump @dnd-kit/sortable from 7.0.2 to 10.0.0 (#267)
 - 2026-11-08 `6a92560` fix: erros TypeScript framer-motion 14.x — supersede #209 (#266)
-- 2026-11-08 `d8804a2` chore(deps-dev): bump eslint-config-prettier from 9.1.2 to 10.1.8 (#268)
 
 ## Arquivos deste diretório
 - `docs/contexto/codigo/rotas.json`

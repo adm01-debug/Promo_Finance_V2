@@ -58,11 +58,11 @@
  "commits": {
   "convencao": "conventional commits (observado)",
   "exemplos": [
+   "chore: documentação analise-prs v2 + progresso.json corrigido (#284)",
    "fix: corrigir classificação #175/#208/#210/#216 em progresso.json",
    "chore: estado final sessao merge-prs — prs.json + progresso + dossies",
    "fix: sanitizar fixture deploy-log-all para remover token real (supersede #253)",
-   "chore: dossiês completos por PR + relatório final sessão merge-prs (#280)",
-   "chore(docs): atualiza contagem de edge functions para 106 em sistema.md"
+   "chore: dossiês completos por PR + relatório final sessão merge-prs (#280)"
   ]
  },
  "pr_template": ".github/PULL_REQUEST_TEMPLATE.md",

@@ -1,9 +1,9 @@
 {
  "meta": {
-  "sha": "b0c226b440bb207c98fa02742b8ae5b492293ba1",
+  "sha": "68fa502741e90ab8f7ec1380200e033a1d8463cc",
   "branch": "main",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
-  "generated_at": "2026-11-09 06:51 UTC",
+  "generated_at": "2026-11-09 07:02 UTC",
   "files_total": 3512,
   "code_files": 3170,
   "code_lines": 454108
@@ -228762,10 +228762,20 @@
   }
  },
  "git": {
-  "sha": "b0c226b440bb207c98fa02742b8ae5b492293ba1",
+  "sha": "68fa502741e90ab8f7ec1380200e033a1d8463cc",
   "branch": "main",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
   "commits": [
+   {
+    "sha": "68fa502",
+    "date": "2026-11-09",
+    "author": "adm01-debug",
+    "subject": "chore: documentação analise-prs v2 + progresso.json corrigido (#284)",
+    "files": [
+     "analise-prs/RELATORIO_PRS.md",
+     "analise-prs/progresso.json"
+    ]
+   },
    {
     "sha": "b0c226b",
     "date": "2026-11-09",
@@ -229264,19 +229274,13 @@
     "author": "adm01-debug",
     "subject": "Merge branch 'main' into fix/conciliacao-manual-dupla-confirmacao",
     "files": []
-   },
-   {
-    "sha": "4df9b8e",
-    "date": "2026-11-06",
-    "author": "adm01-debug",
-    "subject": "docs: grafo de arquitetura manual e template de re-auditoria (Steps 49+50) (#242)",
-    "files": [
-     "docs/ARCHITECTURE_GRAPH.md",
-     "docs/REAUDITORIA_FINAL.md"
-    ]
    }
   ],
   "hot_files": [
+   [
+    "analise-prs/progresso.json",
+    5
+   ],
    [
     "bun.lock",
     5
@@ -229286,8 +229290,8 @@
     5
    ],
    [
-    "analise-prs/progresso.json",
-    4
+    "analise-prs/RELATORIO_PRS.md",
+    3
    ],
    [
     ".github/workflows/contexto.yml",
@@ -229295,10 +229299,6 @@
    ],
    [
     "analise-prs/prs.json",
-    2
-   ],
-   [
-    "analise-prs/RELATORIO_PRS.md",
     2
    ],
    [

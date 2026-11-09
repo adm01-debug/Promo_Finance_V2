@@ -2,11 +2,16 @@
  "aviso": "GERADO AUTOMATICAMENTE por scripts/ai-context/gerar.mjs — não editar à mão; será sobrescrito.",
  "format_version": 2,
  "git": {
-  "commit": "b0c226b440bb207c98fa02742b8ae5b492293ba1",
+  "commit": "68fa502741e90ab8f7ec1380200e033a1d8463cc",
   "branch": "main",
-  "data_commit": "2026-11-09T02:39:36-03:00",
+  "data_commit": "2026-11-09T03:52:54-03:00",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
   "ultimos_commits": [
+   {
+    "sha": "68fa502",
+    "data": "2026-11-09",
+    "assunto": "chore: documentação analise-prs v2 + progresso.json corrigido (#284)"
+   },
    {
     "sha": "b0c226b",
     "data": "2026-11-09",
@@ -126,11 +131,6 @@
     "sha": "6bedb92",
     "data": "2026-11-06",
     "assunto": "fix: atualiza lock graphifyy 0.9.97 com pyyaml (#249)"
-   },
-   {
-    "sha": "58f58a2",
-    "data": "2026-11-06",
-    "assunto": "docs(auditoria): Fase 2 — auditorias-anteriores.md reconciliadas com main (#222)"
    }
   ],
   "arquivos_mudados_7d": 245,
@@ -172,6 +172,10 @@
     "mudancas": 9
    },
    {
+    "pasta": "analise-prs/progresso.json",
+    "mudancas": 5
+   },
+   {
     "pasta": "src/components/contas-receber",
     "mudancas": 5
    },
@@ -181,10 +185,6 @@
    },
    {
     "pasta": ".github/workflows/supabase-linter.yml",
-    "mudancas": 4
-   },
-   {
-    "pasta": "analise-prs/progresso.json",
     "mudancas": 4
    },
    {
@@ -301,7 +301,7 @@
   "autores_30d": [
    {
     "autor": "adm01-debug",
-    "commits": 51
+    "commits": 52
    },
    {
     "autor": "devin-ai-integration[bot]",
