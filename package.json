@@ -140,7 +140,7 @@
     "@sentry/vite-plugin": "~2.22.0",
     "@vitejs/plugin-react-swc": "^4.3.3",
     "@vitest/coverage-v8": "^4.1.11",
-    "@vitest/ui": "^4.1.11",
+    "@vitest/ui": "^5.1.0",
     "autoprefixer": "^10.4.16",
     "cross-env": "^10.1.0",
     "esbuild": "^0.28.2",
