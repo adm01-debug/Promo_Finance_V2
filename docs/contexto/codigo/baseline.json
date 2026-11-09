@@ -2,11 +2,16 @@
  "aviso": "GERADO AUTOMATICAMENTE por scripts/ai-context/gerar.mjs — não editar à mão; será sobrescrito.",
  "format_version": 2,
  "git": {
-  "commit": "9c94d005cae0989567d44831016c81dc3ae36fe4",
+  "commit": "e914163c677ebfb7b72c78caaaf3303be0ec2d12",
   "branch": "main",
-  "data_commit": "2026-11-09T18:37:04-03:00",
+  "data_commit": "2026-11-09T21:58:55Z",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
   "ultimos_commits": [
+   {
+    "sha": "e914163",
+    "data": "2026-11-09",
+    "assunto": "fix: bump date-fns from 2.30.0 to 4.4.0 (#298)"
+   },
    {
     "sha": "9c94d00",
     "data": "2026-11-09",
@@ -126,11 +131,6 @@
     "sha": "020bb81",
     "data": "2026-11-08",
     "assunto": "chore(deps): bump @dnd-kit/sortable from 7.0.2 to 10.0.0 (#267)"
-   },
-   {
-    "sha": "6a92560",
-    "data": "2026-11-08",
-    "assunto": "fix: erros TypeScript framer-motion 14.x — supersede #209 (#266)"
    }
   ],
   "arquivos_mudados_7d": 265,
@@ -141,11 +141,11 @@
    },
    {
     "pasta": "bun.lock",
-    "mudancas": 17
+    "mudancas": 18
    },
    {
     "pasta": "package.json",
-    "mudancas": 16
+    "mudancas": 17
    },
    {
     "pasta": "src/components/layout",
@@ -199,11 +199,11 @@
   "arquivos_mais_mudados_90d": [
    {
     "arquivo": "package.json",
-    "mudancas": 34
+    "mudancas": 35
    },
    {
     "arquivo": "bun.lock",
-    "mudancas": 27
+    "mudancas": 28
    },
    {
     "arquivo": ".github/workflows/ci.yml",
@@ -309,7 +309,7 @@
    },
    {
     "autor": "dependabot[bot]",
-    "commits": 8
+    "commits": 9
    },
    {
     "autor": "Joaquim Ataides",

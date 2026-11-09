@@ -1,15 +1,15 @@
 {
  "meta": {
-  "sha": "9c94d005cae0989567d44831016c81dc3ae36fe4",
+  "sha": "e914163c677ebfb7b72c78caaaf3303be0ec2d12",
   "branch": "main",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
-  "generated_at": "2026-11-09 22:01 UTC",
+  "generated_at": "2026-11-09 22:07 UTC",
   "files_total": 3525,
   "code_files": 3177,
   "code_lines": 455250
  },
  "version": "1.3.2",
- "facts_hash": "9ad0281e73b6cfd6",
+ "facts_hash": "39919c7284e7eef5",
  "stack": {
   "frameworks": [
    "React + Vite",
@@ -32,7 +32,7 @@
     "in": "package.json"
    },
    "date-fns": {
-    "version": "^2.30.0",
+    "version": "^4.4.0",
     "role": "Datas date-fns",
     "in": "package.json"
    },
@@ -228971,10 +228971,20 @@
   }
  },
  "git": {
-  "sha": "9c94d005cae0989567d44831016c81dc3ae36fe4",
+  "sha": "e914163c677ebfb7b72c78caaaf3303be0ec2d12",
   "branch": "main",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
   "commits": [
+   {
+    "sha": "e914163",
+    "date": "2026-11-09",
+    "author": "dependabot[bot]",
+    "subject": "fix: bump date-fns from 2.30.0 to 4.4.0 (#298)",
+    "files": [
+     "bun.lock",
+     "package.json"
+    ]
+   },
    {
     "sha": "9c94d00",
     "date": "2026-11-09",
@@ -229356,48 +229366,20 @@
      ".github/workflows/contexto.yml",
      "scripts/supabase_snapshot/test_snapshot.py"
     ]
-   },
-   {
-    "sha": "794478e",
-    "date": "2026-11-08",
-    "author": "adm01-debug",
-    "subject": "feat(contexto): sistema autônomo de contexto do estado real para agentes de IA (#260)",
-    "files": [
-     ".github/workflows/README.md",
-     ".github/workflows/contexto.yml",
-     ".gitignore",
-     "ai-context.config.json",
-     "docs/contexto/regras/manual/README.md",
-     "docs/contexto/regras/manual/TEMPLATE-regras-de-negocio.md",
-     "env.manifest.json",
-     "scripts/README.md",
-     "scripts/ai-context/README.md",
-     "scripts/ai-context/cenarios.mjs",
-     "scripts/ai-context/gerar.mjs",
-     "scripts/ai-context/gerar.unit.mjs",
-     "scripts/regras_negocio/README.md",
-     "scripts/regras_negocio/generate.py",
-     "scripts/regras_negocio/indice.py",
-     "scripts/regras_negocio/test_generate.py",
-     "scripts/supabase_snapshot/README.md",
-     "scripts/supabase_snapshot/requirements.txt",
-     "scripts/supabase_snapshot/snapshot.py",
-     "scripts/supabase_snapshot/test_snapshot.py"
-    ]
    }
   ],
   "hot_files": [
    [
-    "analise-prs/progresso.json",
+    "bun.lock",
     8
    ],
    [
-    "bun.lock",
-    7
+    "package.json",
+    8
    ],
    [
-    "package.json",
-    7
+    "analise-prs/progresso.json",
+    8
    ],
    [
     "analise-prs/RELATORIO_PRS.md",
@@ -229406,10 +229388,6 @@
    [
     "analise-prs/prs.json",
     4
-   ],
-   [
-    ".github/workflows/contexto.yml",
-    3
    ],
    [
     "analise-prs/dossiers/pr277.md",
@@ -229436,11 +229414,7 @@
     2
    ],
    [
-    "scripts/supabase_snapshot/snapshot.py",
-    2
-   ],
-   [
-    "scripts/supabase_snapshot/test_snapshot.py",
+    ".github/workflows/contexto.yml",
     2
    ],
    [
@@ -229465,6 +229439,14 @@
    ],
    [
     "src/hooks/useZodForm.ts",
+    1
+   ],
+   [
+    "src/pages/Auth.hooks.ts",
+    1
+   ],
+   [
+    ".github/workflows/ci.yml",
     1
    ]
   ]
