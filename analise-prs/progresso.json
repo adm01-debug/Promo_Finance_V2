@@ -1,74 +1,48 @@
 {
-  "baseline_main_sha": "c6eb99b275e1270cf99f1216e808c120f7cf58a2",
-  "main_final_sha": "93026e683e6cbb96257a165831c18a988b0fb887",
-  "atualizado_em": "2026-11-09T03:30Z",
+  "atualizado_em": "2026-11-09T05:35:00Z",
   "sessao": "session_01N1ArYN9EZ2fbFJ2Z2rqAh1",
-  "total_rastreado": 43,
-  "prs_mergeadas": [
-    {"n": 266, "titulo": "fix framer-motion 14.x types", "sha_main": "6a925600f36f44488dc07b79e063f3dd67e5d30b", "checks": "8/8 SUCCESS"},
-    {"n": 267, "titulo": "fix dnd-kit sortable 7→10", "sha_main": "020bb81ebf87848ca653d1665f808e15db7bc863", "checks": "8/8 SUCCESS"},
-    {"n": 268, "titulo": "bump eslint-config-prettier 9→10", "sha_main": "d8804a2000192594419275bc94da6e44fbf6e211", "checks": "8/8 SUCCESS"},
-    {"n": 269, "titulo": "fix eslint-plugin-react-refresh", "sha_main": "45a20a254ad5b74a08deb8f495f1223242a5b59b", "checks": "8/8 SUCCESS"},
-    {"n": 270, "titulo": "fix TS2345 gerar-pacote-evidencias", "sha_main": "1f5138a767de996ea61ecfb5f852cc71e8f4624c", "checks": "8/8 SUCCESS"},
-    {"n": 271, "titulo": "fix monitor-health review #240", "sha_main": "924e4a015792e4cfb161cfbfdae79189a60339cb", "checks": "8/8 SUCCESS"},
-    {"n": 272, "titulo": "docs/agentes update", "sha_main": "d83f82e60c63aa2ed017aefdf4d864084f9c3c63", "checks": "8/8 SUCCESS"},
-    {"n": 273, "titulo": "documentação analise-prs + progresso.json", "sha_main": "93026e683e6cbb96257a165831c18a988b0fb887", "checks": "8/8 SUCCESS"},
-    {"n": 278, "titulo": "fix micro-interactions.tsx spring const", "sha_main": "8d88a61f5d1e46b785f6d734d91f6e082076f48e", "checks": "8/8 SUCCESS"}
+  "baseline_sha": "c6eb99b275e1270cf99f1216e808c120f7cf58a2",
+  "main_sha_final": "8eef9b064acb30e12c1f616a5c8f29300ac8936f",
+  "main_ci_final": "8/8 required SUCCESS em 8eef9b06 (verificado 2026-11-09T02:41Z)",
+  "estado": "SESSAO_CONCLUIDA_PR282_PENDENTE",
+  "mergeadas_sessao": [
+    {"n":266,"sha":"6a925600f36f44488dc07b79e063f3dd67e5d30b","supersede":209},
+    {"n":267,"sha":"020bb81ebf87848ca653d1665f808e15db7bc863","supersede":213},
+    {"n":268,"sha":"d8804a2000192594419275bc94da6e44fbf6e211","supersede":214},
+    {"n":269,"sha":"45a20a254ad5b74a08deb8f495f1223242a5b59b","supersede":215},
+    {"n":270,"sha":"1f5138a767de996ea61ecfb5f852cc71e8f4624c","supersede":254},
+    {"n":271,"sha":"924e4a015792e4cfb161cfbfdae79189a60339cb","supersede":257},
+    {"n":272,"sha":"d83f82e60c63aa2ed017aefdf4d864084f9c3c63","supersede":264},
+    {"n":273,"sha":"93026e683e6cbb96257a165831c18a988b0fb887"},
+    {"n":278,"sha":"8d88a61f5d1e46b785f6d734d91f6e082076f48e"},
+    {"n":280,"sha":"039e16df6a88ec27c9405635a2d3628bfc37fa5a"},
+    {"n":281,"sha":"8eef9b064acb30e12c1f616a5c8f29300ac8936f","supersede":253}
   ],
-  "prs_fechadas_supersedidas": [
-    {"n": 213, "supersedida_por": 267, "fechada_em": "2026-11-09T03:20:55Z"},
-    {"n": 214, "supersedida_por": 268, "fechada_em": "2026-11-09T03:20:56Z"},
-    {"n": 215, "supersedida_por": 269, "fechada_em": "2026-11-09T03:20:58Z"},
-    {"n": 254, "supersedida_por": 270, "fechada_em": "2026-11-09T03:20:59Z"},
-    {"n": 257, "supersedida_por": 271, "fechada_em": "2026-11-09T03:21:02Z"}
-  ],
-  "prs_fechadas_externamente": [
-    {"n": 209, "motivo": "Dependabot auto-close após #266 mergear equivalente"},
-    {"n": 264, "motivo": "Fechada externamente; conteúdo coberto por #272"}
-  ],
-  "prs_aguardando_humano": [
-    {"n": 131, "regra": "regra8_ddl + conflito_escopo", "veredicto": "90 arquivos CONFLICTING + DDL — decisão de escopo necessária"},
-    {"n": 175, "regra": "regra8_arquitetura", "veredicto": "recharts 2→3 breaking API — requer migração de componentes"},
-    {"n": 203, "regra": "regra8_workflow", "veredicto": "codeql.yml workflow"},
-    {"n": 204, "regra": "regra8_workflow", "veredicto": "codeql.yml workflow"},
-    {"n": 205, "regra": "regra8_workflow", "veredicto": "codeql.yml workflow"},
-    {"n": 206, "regra": "regra8_workflow", "veredicto": "5 workflows simultaneamente"},
-    {"n": 211, "regra": "regra8_arquitetura", "veredicto": "zod v4 breaking — requer migração extensiva"},
-    {"n": 212, "regra": "regra8_arquitetura", "veredicto": "react-dom 19 peerDep mismatch — requer migração maior"},
-    {"n": 234, "regra": "regra8_ddl", "veredicto": "migration SQL — CI verde, pronta para aprovar"},
-    {"n": 235, "regra": "regra8_ddl", "veredicto": "5 migrations SQL — CI verde, pronta para aprovar"},
-    {"n": 238, "regra": "regra8_ddl", "veredicto": "migration RLS cross-tenant — CI verde, pronta para aprovar"},
-    {"n": 243, "regra": "regra8_ddl_delecao", "veredicto": "dropa 404 índices — CI verde, requer aprovação explícita"},
-    {"n": 253, "regra": "regra8_segredo + regra8_infra", "veredicto": "gitleaks FAILURE (token em fixture) + edge deploy scripts — revogar token antes"},
-    {"n": 255, "regra": "regra8_r2_pagamento", "veredicto": "asaas-proxy edge function — CI verde, pronta para aprovar"},
-    {"n": 256, "regra": "pr_alheia_obsoleta", "veredicto": "duplicata de #257 já supersedida por #271 — dono pode fechar"},
-    {"n": 263, "regra": "regra8_workflow", "veredicto": "ci.yml workflow crítico"},
-    {"n": 265, "regra": "regra8_workflow", "veredicto": "novo workflow inventario-estado.yml"},
-    {"n": 275, "regra": "regra8_workflow", "veredicto": "outra sessão — estado-real.yml"},
-    {"n": 276, "regra": "regra8_workflow", "veredicto": "outra sessão — auto-update-pr-branch.yml"},
-    {"n": 277, "regra": "regra8_workflow", "veredicto": "outra sessão — settings-guard.yml"}
-  ],
-  "prs_bloqueadas_ambiente": [
-    {"n": 208, "motivo": "bun.lock CONFLICTING — bun install bloqueado (ProxyConnectFailed 403)"},
-    {"n": 210, "motivo": "bun.lock CONFLICTING — bun install bloqueado (ProxyConnectFailed 403)"},
-    {"n": 216, "motivo": "bun.lock CONFLICTING + vitest major — bun install bloqueado"}
-  ],
-  "prs_outras_sessoes": [
-    {"n": 274, "motivo": "docs/agentes/sistema.md — outra sessão"},
-    {"n": 279, "motivo": "docs/agentes/mapa-repo.md — outra sessão"}
-  ],
-  "main_checks_final": {
-    "required_8_8": "SUCCESS",
-    "e2e_quarantine_non_blocking": "SUCCESS (job 128952881128, 2026-11-09T03:16:32Z)",
-    "statusCheckRollup": "SUCCESS",
-    "vercel": "SUCCESS"
+  "aguardando_humano": [131, 203, 204, 205, 206, 211, 212, 234, 235, 238, 243, 255, 263, 265, 275, 276, 277],
+  "bloqueadas_bun_lock": {
+    "prs": [175, 208, 210, 216],
+    "motivo": "bun install --frozen-lockfile em .github/actions/setup-bun/action.yml:15; registro npm/bun bloqueado neste ambiente cloud (ProxyConnectFailed 403); impossivel regenerar bun.lock sem acesso ao registro",
+    "evidencia": "lido em .github/actions/setup-bun/action.yml SHA dcf1a20f16e8c92c83ec370665ade2601e2155e5; dossiers/pr-175-recharts-bun-lock.md; dossiers/pr-208-210-216-bun-lock.md"
   },
-  "compliance_audit": {
-    "workflows_tocados": false,
-    "migrations_sql_mergeadas": false,
-    "edge_functions_r2_mergeadas": false,
-    "padroes_proibidos_introduzidos": false,
-    "prs_alheias_editadas": false,
-    "segredos_em_codigo": false
+  "supersedidas_fechadas": [
+    {"n":213,"supersedida_por":267,"fechada_em":"2026-11-09T03:20:00Z"},
+    {"n":214,"supersedida_por":268,"fechada_em":"2026-11-09T03:20:00Z"},
+    {"n":215,"supersedida_por":269,"fechada_em":"2026-11-09T03:20:00Z"},
+    {"n":254,"supersedida_por":270,"fechada_em":"2026-11-09T03:20:00Z"},
+    {"n":257,"supersedida_por":271,"fechada_em":"2026-11-09T03:20:00Z"},
+    {"n":253,"supersedida_por":281,"fechada_em":"2026-11-09T03:20:00Z"}
+  ],
+  "fechadas_obsoletas": [
+    {"n":256,"motivo":"duplicata obsoleta de #257 ja supersedida por #271 mergeada","fechada_em":"2026-11-09T03:20:00Z"}
+  ],
+  "outras_sessoes": [274, 279],
+  "fechadas_externamente": [209, 264],
+  "conformidade": {
+    "checks_afrouxados": 0,
+    "prs_alheias_alteradas": 0,
+    "secrets_em_codigo": 0,
+    "regra8_violacoes": 0,
+    "merges_sem_8_checks_verdes": 0,
+    "skip_disable_ts_ignore_any": 0
   }
 }
