@@ -6,7 +6,7 @@ Valores aproximados de propósito, para não gerar commits a cada coleta. Fora d
 
 | métrica | valor |
 |---|---|
-| tamanho | 492.9 MB |
+| tamanho | 493.0 MB |
 | schema public | 89.4 MB |
 
 
@@ -321,10 +321,10 @@ _nenhum_
 | postgres | ~87.4k | ~1.2M | 14.01 | `SELECT net.http_post( url := $1, headers := jsonb_build_object($2,$3,$4, public.internal_job_secret()), body := jsonb_build_object($5,$6,$7,$8) ) AS request_id` |
 | authenticated | ~271.9k | ~1.2M | 4.32 | `WITH pgrst_source AS ( SELECT "public"."vw_contas_pagar_painel".* FROM "public"."vw_contas_pagar_painel" ORDER BY "public"."vw_contas_pagar_painel"."data_vencimento" ASC LIMIT $1 OFFSET $2 ) SELECT $3::bigint AS total_re` |
 | postgres | ~6.7k | ~1M | 151.92 | `SELECT public.capture_slow_queries()` |
+| postgres | ~4.3k | ~779.1k | 179.98 | `SELECT table_schema AS schema, table_name AS "table", column_name AS "column", grantee, string_agg(privilege_type, $2 ORDER BY privilege_type) AS privileges FROM information_schema.column_privileges cp WHERE grantee NOT ` |
 | authenticator | ~2.5k | ~776.2k | 306.20 | `SELECT name FROM pg_timezone_names` |
-| postgres | ~4.2k | ~759.7k | 180.35 | `SELECT table_schema AS schema, table_name AS "table", column_name AS "column", grantee, string_agg(privilege_type, $2 ORDER BY privilege_type) AS privileges FROM information_schema.column_privileges cp WHERE grantee NOT ` |
 | authenticated | ~101.1k | ~607.3k | 6.01 | `WITH pgrst_source AS ( SELECT "public"."contas_pagar".* FROM "public"."contas_pagar" LIMIT $1 OFFSET $2 ) , pgrst_source_count AS (SELECT $3 FROM "public"."contas_pagar") SELECT (SELECT pg_catalog.count(*) FROM pgrst_sou` |
-| postgres | ~60 | ~563.1k | 10237.95 | `SELECT jobid, runid, status, start_time, end_time, EXTRACT($2 FROM (end_time - start_time))::numeric(10,2) AS seconds, left(return_message, $3) AS return_message FROM (SELECT *, row_number() OVER (PARTITION BY jobid ORDE` |
+| postgres | ~60 | ~567.3k | 10130.58 | `SELECT jobid, runid, status, start_time, end_time, EXTRACT($2 FROM (end_time - start_time))::numeric(10,2) AS seconds, left(return_message, $3) AS return_message FROM (SELECT *, row_number() OVER (PARTITION BY jobid ORDE` |
 | authenticated | ~71.6k | ~411.2k | 5.74 | `WITH pgrst_source AS ( SELECT "public"."vw_contas_receber_painel".* FROM "public"."vw_contas_receber_painel" ORDER BY "public"."vw_contas_receber_painel"."data_vencimento" ASC LIMIT $1 OFFSET $2 ) SELECT $3::bigint AS to` |
 | authenticated | ~94.1k | ~400.1k | 4.25 | `WITH pgrst_source AS ( SELECT "public"."contas_receber"."id", "public"."contas_receber"."data_vencimento", "public"."contas_receber"."data_recebimento", "public"."contas_receber"."cliente_nome", "public"."contas_receber"` |
 | authenticator | ~2.5k | ~385.6k | 152.12 | `WITH -- Recursively get the base types of domains base_types AS ( WITH RECURSIVE recurse AS ( SELECT oid, typbasetype, typnamespace AS base_namespace, COALESCE(NULLIF(typbasetype, $2), oid) AS base_type FROM pg_type UNIO` |
@@ -335,11 +335,11 @@ _nenhum_
 | usuário | estado | n |
 |---|---|---|
 | authenticator | idle | 18 |
-| pgbouncer | idle | 1 |
+| pgbouncer | idle | 2 |
 | postgres | active | 1 |
-| supabase_admin | active | 1 |
-| supabase_admin | idle | 8 |
+| supabase_admin | idle | 2 |
 | supabase_admin |  | 2 |
+| supabase_storage_admin | idle | 1 |
 
 
 ## Saúde dos serviços
@@ -369,11 +369,11 @@ _nenhum_
     "healthy": true,
     "info": {
       "connected_cluster": 0,
-      "db_connected": true,
+      "db_connected": false,
       "healthy": true,
-      "node": "realtime@2600:1f1c:c90:ad01:df03:4854:4067:cd7c",
-      "region": "us-west-1",
-      "replication_connected": true
+      "node": "realtime@2600:1f18:67fc:ac00:86bf:e206:1da0:f3ae",
+      "region": "us-east-1",
+      "replication_connected": false
     },
     "name": "realtime",
     "status": "ACTIVE_HEALTHY"
