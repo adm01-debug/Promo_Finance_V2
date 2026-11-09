@@ -2,11 +2,16 @@
  "aviso": "GERADO AUTOMATICAMENTE por scripts/ai-context/gerar.mjs — não editar à mão; será sobrescrito.",
  "format_version": 2,
  "git": {
-  "commit": "45a20a254ad5b74a08deb8f495f1223242a5b59b",
+  "commit": "93026e683e6cbb96257a165831c18a988b0fb887",
   "branch": "main",
-  "data_commit": "2026-11-08T23:22:35-03:00",
+  "data_commit": "2026-11-08T23:41:07-03:00",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
   "ultimos_commits": [
+   {
+    "sha": "93026e6",
+    "data": "2026-11-08",
+    "assunto": "chore: inventário e dossiê das 34 PRs abertas (#273)"
+   },
    {
     "sha": "45a20a2",
     "data": "2026-11-08",
@@ -126,14 +131,9 @@
     "sha": "dca65c5",
     "data": "2026-11-06",
     "assunto": "fix(n8n-callback): BufferSource + readBytes + prettier"
-   },
-   {
-    "sha": "3285b4f",
-    "data": "2026-11-02",
-    "assunto": "chore: AGENTS.md com o texto-mestre adm01-debug (seções 1-7) (#250)"
    }
   ],
-  "arquivos_mudados_7d": 174,
+  "arquivos_mudados_7d": 213,
   "pastas_mais_mudadas_30d": [
    {
     "pasta": "supabase/functions/_shared",
@@ -301,7 +301,7 @@
   "autores_30d": [
    {
     "autor": "adm01-debug",
-    "commits": 44
+    "commits": 45
    },
    {
     "autor": "devin-ai-integration[bot]",
@@ -318,7 +318,7 @@
   ]
  },
  "contagens": {
-  "arquivos_total": 3399,
+  "arquivos_total": 3438,
   "arquivos_codigo": 2148,
   "linhas_codigo": 399754,
   "rotas": 128,
@@ -335,7 +335,7 @@
   "testes": 356,
   "workflows": 14,
   "scripts": 79,
-  "docs_md": 131
+  "docs_md": 168
  },
  "por_pasta": {
   "e2e/alertas-preditivos.e2e.ts": {

@@ -1,10 +1,10 @@
 {
  "meta": {
-  "sha": "45a20a254ad5b74a08deb8f495f1223242a5b59b",
+  "sha": "93026e683e6cbb96257a165831c18a988b0fb887",
   "branch": "main",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
-  "generated_at": "2026-11-09 02:43 UTC",
-  "files_total": 3441,
+  "generated_at": "2026-11-09 02:52 UTC",
+  "files_total": 3480,
   "code_files": 3155,
   "code_lines": 452758
  },
@@ -228432,10 +228432,57 @@
   }
  },
  "git": {
-  "sha": "45a20a254ad5b74a08deb8f495f1223242a5b59b",
+  "sha": "93026e683e6cbb96257a165831c18a988b0fb887",
   "branch": "main",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
   "commits": [
+   {
+    "sha": "93026e6",
+    "date": "2026-11-08",
+    "author": "adm01-debug",
+    "subject": "chore: inventário e dossiê das 34 PRs abertas (#273)",
+    "files": [
+     "analise-prs/RELATORIO_PRS.md",
+     "analise-prs/dossiers/pr131.md",
+     "analise-prs/dossiers/pr175.md",
+     "analise-prs/dossiers/pr203.md",
+     "analise-prs/dossiers/pr204.md",
+     "analise-prs/dossiers/pr205.md",
+     "analise-prs/dossiers/pr206.md",
+     "analise-prs/dossiers/pr208.md",
+     "analise-prs/dossiers/pr209.md",
+     "analise-prs/dossiers/pr210.md",
+     "analise-prs/dossiers/pr211.md",
+     "analise-prs/dossiers/pr212.md",
+     "analise-prs/dossiers/pr213.md",
+     "analise-prs/dossiers/pr214.md",
+     "analise-prs/dossiers/pr215.md",
+     "analise-prs/dossiers/pr216.md",
+     "analise-prs/dossiers/pr234.md",
+     "analise-prs/dossiers/pr235.md",
+     "analise-prs/dossiers/pr238.md",
+     "analise-prs/dossiers/pr243.md",
+     "analise-prs/dossiers/pr253.md",
+     "analise-prs/dossiers/pr254.md",
+     "analise-prs/dossiers/pr255.md",
+     "analise-prs/dossiers/pr256.md",
+     "analise-prs/dossiers/pr257.md",
+     "analise-prs/dossiers/pr263.md",
+     "analise-prs/dossiers/pr264.md",
+     "analise-prs/dossiers/pr265.md",
+     "analise-prs/dossiers/pr266.md",
+     "analise-prs/dossiers/pr267.md",
+     "analise-prs/dossiers/pr268.md",
+     "analise-prs/dossiers/pr269.md",
+     "analise-prs/dossiers/pr270.md",
+     "analise-prs/dossiers/pr271.md",
+     "analise-prs/dossiers/pr272.md",
+     "analise-prs/dossiers/pr273.md",
+     "analise-prs/dossiers/pr278.md",
+     "analise-prs/progresso.json",
+     "analise-prs/prs.json"
+    ]
+   },
    {
     "sha": "45a20a2",
     "date": "2026-11-08",
@@ -228876,15 +228923,6 @@
      "SECURITY_RULES.md",
      "docs/SECURITY.md"
     ]
-   },
-   {
-    "sha": "0644e60",
-    "date": "2026-10-31",
-    "author": "adm01-debug",
-    "subject": "chore(ci): adicionar 2 GHSAs build-time ao ignore do bun audit (#239)",
-    "files": [
-     ".github/workflows/ci.yml"
-    ]
    }
   ],
   "hot_files": [
@@ -228961,11 +228999,11 @@
     2
    ],
    [
-    ".github/workflows/ci.yml",
-    2
+    "analise-prs/RELATORIO_PRS.md",
+    1
    ],
    [
-    "src/components/ui/micro-interactions.tsx",
+    "analise-prs/dossiers/pr131.md",
     1
    ]
   ]

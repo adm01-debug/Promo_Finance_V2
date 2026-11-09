@@ -1,7 +1,7 @@
 # Contexto do projeto para agentes de IA
 
 GERADO AUTOMATICAMENTE por scripts/ai-context/gerar.mjs — não editar à mão; será sobrescrito.
-Publicado pelo workflow .github/workflows/contexto.yml em docs/contexto/codigo/ da branch gerada `contexto`. Índice único em docs/contexto/00-INDEX.md. Ler: git fetch origin contexto && git show origin/contexto:docs/contexto/00-INDEX.md Gere local com `node scripts/ai-context/gerar.mjs`. Commit-base: `45a20a254ad5b74a08deb8f495f1223242a5b59b` (2026-11-08T23:22:35-03:00).
+Publicado pelo workflow .github/workflows/contexto.yml em docs/contexto/codigo/ da branch gerada `contexto`. Índice único em docs/contexto/00-INDEX.md. Ler: git fetch origin contexto && git show origin/contexto:docs/contexto/00-INDEX.md Gere local com `node scripts/ai-context/gerar.mjs`. Commit-base: `93026e683e6cbb96257a165831c18a988b0fb887` (2026-11-08T23:41:07-03:00).
 
 ## Como usar (leia antes de planejar ou executar qualquer tarefa)
 1. **Tela/rota/menu** → `rotas.json` (url/vista/menu → arquivo → hooks → tabelas → edges; `rotas_http_backend` para APIs) e `modulos.json` (módulo inteiro + dependências entre módulos).
@@ -14,7 +14,7 @@ Publicado pelo workflow .github/workflows/contexto.yml em docs/contexto/codigo/ 
 Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua tarefa; não carregue tudo.
 
 ## Stack
-- linguagens: TypeScript (2104), SQL (1006), Markdown (131), JSON (29), Python (28), Shell (23), YAML (20), JavaScript (18)
+- linguagens: TypeScript (2104), SQL (1006), Markdown (168), JSON (31), Python (28), Shell (23), YAML (20), JavaScript (18)
 - linguagem_principal: TypeScript
 - framework: React
 - backend_http: n/d
@@ -34,7 +34,7 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 ## Números
 | item | qtd |
 |---|---|
-| arquivos_total | 3399 |
+| arquivos_total | 3438 |
 | arquivos_codigo | 2148 |
 | linhas_codigo | 399754 |
 | rotas | 128 |
@@ -51,7 +51,7 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 | testes | 356 |
 | workflows | 14 |
 | scripts | 79 |
-| docs_md | 131 |
+| docs_md | 168 |
 
 ## Onde ficam as coisas
 - telas: src/pages (125)
@@ -587,6 +587,7 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 - CHANGELOG topo: [Unreleased]
 
 ## Últimos commits
+- 2026-11-08 `93026e6` chore: inventário e dossiê das 34 PRs abertas (#273)
 - 2026-11-08 `45a20a2` fix: bump eslint-plugin-react-refresh para ^0.4.20 (supersede #215)
 - 2026-11-08 `8d88a61` fix: type 'spring' as const em micro-interactions.tsx (StaggerItem/EmptyState)
 - 2026-11-08 `924e4a0` fix: monitor-health review #240 — supersede #257 (#271)
@@ -601,7 +602,6 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 - 2026-11-08 `794478e` feat(contexto): sistema autônomo de contexto do estado real para agentes de IA (#260)
 - 2026-11-08 `d06af85` fix: corrigir 26 bugs em scripts (ci, healthcheck, security, graphify, data) (#258)
 - 2026-11-07 `dd48a93` feat: [STEPS 46+47] monitor-health cron + painel DB_HEALTH.md (#240)
-- 2026-11-07 `dc39f52` fix: sentry.ts — host DSN, redação de dados e parseDsn seguro [substitui #246] (#248)
 
 ## Arquivos deste diretório
 - `docs/contexto/codigo/rotas.json`
