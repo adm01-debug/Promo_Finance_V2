@@ -19,9 +19,10 @@
 // Uso no workflow: `node scripts/ci/fila-merge.mjs` (lê `gh pr list` e grava
 // `pr=<número>` + `fila=<lista>` em $GITHUB_OUTPUT quando há alguém a atualizar).
 
-import { appendFileSync } from 'node:fs';
+import { appendFileSync, readFileSync } from 'node:fs';
 import { execFileSync } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
+import { dirname, join } from 'node:path';
 
 function erroTransitorio(err) {
   const msg = String(err?.stderr ?? err?.message ?? '');
@@ -39,12 +40,26 @@ async function execComRetry(cmd, args, opts, { tentativas = 4, delaysMs = [5000,
   }
 }
 
-/** Lê os required status checks da branch protection de `main` (fonte viva, não baseline). */
+/** Lê os required status checks da branch protection de `main` (fonte viva, não baseline).
+ *  Fallback: lê do baseline versionado se a API retornar 403 (GITHUB_TOKEN sem `administration:read`). */
 export async function checksObrigatorios(repo, { exec = execComRetry } = {}) {
-  const saida = await exec('gh', [
-    'api', `repos/${repo}/branches/main/protection/required_status_checks`, '--jq', '.contexts',
-  ], { encoding: 'utf8' });
-  return JSON.parse(saida);
+  try {
+    const saida = await exec('gh', [
+      'api', `repos/${repo}/branches/main/protection/required_status_checks`, '--jq', '.contexts',
+    ], { encoding: 'utf8' });
+    return JSON.parse(saida);
+  } catch (err) {
+    const msg = String(err?.stderr ?? err?.message ?? '');
+    if (/HTTP 403|Resource not accessible/i.test(msg)) {
+      // GITHUB_TOKEN não tem escopo `administration:read`; usa o baseline versionado
+      // como fonte de verdade auditável (scripts/ci/github-settings-baseline.json).
+      console.log('::warning::Sem permissão para ler branch protection via API (403); usando baseline versionado.');
+      const dir = dirname(fileURLToPath(import.meta.url));
+      const baseline = JSON.parse(readFileSync(join(dir, 'github-settings-baseline.json'), 'utf8'));
+      return baseline.branch_protection_main?.required_status_checks ?? [];
+    }
+    throw err;
+  }
 }
 
 const PASSOU = new Set(['SUCCESS', 'SKIPPED', 'NEUTRAL']);

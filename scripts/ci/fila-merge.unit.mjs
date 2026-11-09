@@ -1,6 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {
+  checksObrigatorios,
   classificar,
   confirmarCandidato,
   decidir,
@@ -93,4 +94,29 @@ test('resolverDesconhecidos: falha na comparacao mantem UNKNOWN (conservador)', 
   const comparar = async () => { throw new Error('rede caiu'); };
   const resolvidos = await resolverDesconhecidos([pr(1, { mergeStateStatus: 'UNKNOWN' })], comparar);
   assert.equal(resolvidos[0].mergeStateStatus, 'UNKNOWN');
+});
+
+test('checksObrigatorios: 403 cai no fallback do baseline versionado', async () => {
+  const mockExec = async () => {
+    const err = new Error('HTTP 403');
+    err.stderr = 'HTTP 403\nResource not accessible by integration';
+    throw err;
+  };
+  const checks = await checksObrigatorios('owner/repo', { exec: mockExec });
+  assert.ok(Array.isArray(checks), 'deve devolver array');
+  assert.ok(checks.length > 0, 'baseline nao pode estar vazio');
+  assert.ok(checks.includes('Quality Gate & Tests'), 'deve conter Quality Gate & Tests do baseline');
+});
+
+test('checksObrigatorios: erro nao-403 e relancado', async () => {
+  const mockExec = async () => {
+    const err = new Error('HTTP 500 Internal Server Error');
+    err.stderr = 'HTTP 500 Internal Server Error';
+    throw err;
+  };
+  await assert.rejects(
+    () => checksObrigatorios('owner/repo', { exec: mockExec }),
+    /HTTP 500/,
+    'erro 500 nao deveria ser absorvido',
+  );
 });

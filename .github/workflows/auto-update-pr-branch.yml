@@ -61,6 +61,7 @@ jobs:
           ref: main
           sparse-checkout: |
             scripts/ci/fila-merge.mjs
+            scripts/ci/github-settings-baseline.json
 
       - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
         with:
@@ -91,11 +92,20 @@ jobs:
               echo "PR #$candidato: a fila recalculada não a autoriza mais; encerrando. A próxima execução reavalia."
               exit 0
             fi
-            if ! sha_antes=$(gh api "repos/$REPO/pulls/$candidato" --jq '.head.sha'); then
-              echo "::warning::PR #$candidato: falha ao ler head atual via API; encerrando para manter a ordem da fila."
+            if ! pr_meta=$(gh api "repos/$REPO/pulls/$candidato" --jq '{sha: .head.sha, draft: .draft, state: .state}'); then
+              echo "::warning::PR #$candidato: falha ao ler estado da PR via API; encerrando para manter a ordem da fila."
               exit 0
             fi
-            if ! gh api -X PUT "repos/$REPO/pulls/$candidato/update-branch" >/dev/null 2>"$RUNNER_TEMP/update-branch.err"; then
+            sha_antes=$(printf '%s' "$pr_meta" | jq -r '.sha')
+            is_draft=$(printf '%s' "$pr_meta" | jq -r '.draft')
+            pr_state=$(printf '%s' "$pr_meta" | jq -r '.state')
+            if [ "$is_draft" = "true" ] || [ "$pr_state" != "open" ]; then
+              echo "PR #$candidato: releitura mostra que a PR está draft ou fechada — pulando."
+              recusadas="$recusadas $candidato"
+              continue
+            fi
+            if ! gh api -X PUT "repos/$REPO/pulls/$candidato/update-branch" \
+              -f expected_head_sha="$sha_antes" >/dev/null 2>"$RUNNER_TEMP/update-branch.err"; then
               if ! grep -Eq 'HTTP (403|422)' "$RUNNER_TEMP/update-branch.err"; then
                 echo "::warning::PR #$candidato: falha ambígua no update-branch (sem 403/422); encerrando para não atualizar duas PRs."
                 exit 0
