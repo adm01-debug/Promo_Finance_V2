@@ -16,9 +16,9 @@
 
 | início (UTC) | status | duração (s) | mensagem |
 |---|---|---|---|
+| 2026-11-09 21:00:00 | succeeded | 0.34 | 1 row |
 | 2026-11-09 20:00:00 | succeeded | 0.25 | 1 row |
 | 2026-11-09 19:00:00 | succeeded | 0.33 | 1 row |
-| 2026-11-09 18:00:00 | succeeded | 0.17 | 1 row |
 
 
 ## 4 · cleanup-cron-logs
@@ -68,9 +68,9 @@
 
 | início (UTC) | status | duração (s) | mensagem |
 |---|---|---|---|
+| 2026-11-09 21:00:00 | succeeded | 0.21 | 1 row |
 | 2026-11-09 20:30:00 | succeeded | 0.20 | 1 row |
 | 2026-11-09 20:00:00 | succeeded | 0.22 | 1 row |
-| 2026-11-09 19:30:00 | succeeded | 0.23 | 1 row |
 
 
 ## 12 · integrity-invariants-hourly
@@ -175,9 +175,9 @@ _nenhum_
 
 | início (UTC) | status | duração (s) | mensagem |
 |---|---|---|---|
+| 2026-11-09 21:10:00 | succeeded | 0.69 | 1 row |
 | 2026-11-09 20:10:00 | succeeded | 0.65 | 1 row |
 | 2026-11-09 19:10:00 | succeeded | 0.73 | 1 row |
-| 2026-11-09 18:10:00 | succeeded | 0.63 | 1 row |
 
 
 ## 31 · daily-log-retention
@@ -193,27 +193,27 @@ _nenhum_
 
 | início (UTC) | status | duração (s) | mensagem |
 |---|---|---|---|
+| 2026-11-09 21:00:00 | succeeded | 0.02 | 1 row |
 | 2026-11-09 20:45:00 | succeeded | 0.01 | 1 row |
 | 2026-11-09 20:30:00 | succeeded | 0.07 | 1 row |
-| 2026-11-09 20:15:00 | succeeded | 0.02 | 1 row |
 
 
 ## 33 · webhook-retry-worker-1min
 
 | início (UTC) | status | duração (s) | mensagem |
 |---|---|---|---|
-| 2026-11-09 20:56:00 | succeeded | 0.01 | 1 row |
-| 2026-11-09 20:55:00 | succeeded | 0.01 | 1 row |
-| 2026-11-09 20:54:00 | succeeded | 0.02 | 1 row |
+| 2026-11-09 21:10:00 | succeeded | 0.05 | 1 row |
+| 2026-11-09 21:09:00 | succeeded | 0.01 | 1 row |
+| 2026-11-09 21:08:00 | succeeded | 0.03 | 1 row |
 
 
 ## 34 · auditar-acessos-cross-tenant
 
 | início (UTC) | status | duração (s) | mensagem |
 |---|---|---|---|
+| 2026-11-09 21:10:00 | succeeded | 0.03 | 1 row |
 | 2026-11-09 20:10:00 | succeeded | 0.07 | 1 row |
 | 2026-11-09 19:10:00 | succeeded | 0.08 | 1 row |
-| 2026-11-09 18:10:00 | succeeded | 0.05 | 1 row |
 
 
 ## 35 · capture-index-usage-daily
@@ -229,18 +229,18 @@ _nenhum_
 
 | início (UTC) | status | duração (s) | mensagem |
 |---|---|---|---|
+| 2026-11-09 21:00:00 | succeeded | 0.03 | 1 row |
 | 2026-11-09 20:30:00 | succeeded | 0.06 | 1 row |
 | 2026-11-09 20:00:00 | succeeded | 0.10 | 1 row |
-| 2026-11-09 19:30:00 | succeeded | 0.07 | 1 row |
 
 
 ## 37 · evaluate-delivery-alerts-every-min
 
 | início (UTC) | status | duração (s) | mensagem |
 |---|---|---|---|
-| 2026-11-09 20:56:00 | succeeded | 0.03 | 1 row |
-| 2026-11-09 20:55:00 | succeeded | 0.01 | 1 row |
-| 2026-11-09 20:54:00 | succeeded | 0.01 | 1 row |
+| 2026-11-09 21:10:00 | succeeded | 0.04 | 1 row |
+| 2026-11-09 21:09:00 | succeeded | 0.04 | 1 row |
+| 2026-11-09 21:08:00 | succeeded | 0.01 | 1 row |
 
 
 ## 40 · gerar-snapshots-conformidade-mensal
