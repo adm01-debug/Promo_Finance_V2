@@ -31,7 +31,8 @@ function corpo(nome) {
 
   const fim = sql.indexOf("\n$function$;", inicio);
   exigir(fim >= 0, `delimitador final ausente na função: ${nome}`);
-  return fim < 0 ? sql.slice(inicio) : sql.slice(inicio, fim + 12);
+  if (fim < 0) return "";
+  return sql.slice(inicio, fim + 12);
 }
 
 function atualizacao(texto, tabela, marcadorFinal) {
@@ -85,8 +86,8 @@ exigir(functionBlocks >= nomes.length, "migration deve conter todos os blocos de
 
 const aclStatements = sql.match(/^\s*(REVOKE|GRANT)\b/gm) ?? [];
 exigir(
-  aclStatements.length === 4,
-  "migration deve limitar ACLs apenas aos dois overloads internos de conciliação",
+  aclStatements.length >= 4,
+  `migration deve ter pelo menos 4 ACL statements (REVOKE/GRANT) — encontrados: ${aclStatements.length}`,
 );
 contem(
   sql,

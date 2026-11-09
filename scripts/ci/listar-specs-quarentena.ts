@@ -97,7 +97,7 @@ function morrer(msg: string): never {
 async function main() {
   // `git ls-files` é a fonte da verdade porque só o que está versionado chega
   // ao runner; o disco entra logo abaixo como conferência cruzada.
-  const rastreadas = execFileSync('git', ['ls-files', '--', 'e2e/*.e2e.ts'], { encoding: 'utf8' })
+  const rastreadas = execFileSync('git', ['ls-files', '--', 'e2e/**/*.e2e.ts', 'e2e/*.e2e.ts'], { encoding: 'utf8' })
     .split('\n')
     .filter(Boolean)
     .sort();

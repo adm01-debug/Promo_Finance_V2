@@ -8,7 +8,18 @@
 # ==============================================================================
 set -euo pipefail
 
-OUT_DIR="${OUT_DIR:-/mnt/documents/security}"
+if [[ "${1:-}" == "-h" || "${1:-}" == "--help" ]]; then
+  echo "Uso: $(basename "$0") [-h|--help]"
+  echo ""
+  echo "Opcoes:"
+  echo "  -h, --help   Exibe esta ajuda"
+  echo ""
+  echo "Gera resumo de privilégios EXECUTE (função × role) em CSV e JSON."
+  echo "Env opcional: OUT_DIR (default: ./security-audit), DATABASE_URL ou PG*"
+  exit 0
+fi
+
+OUT_DIR="${OUT_DIR:-./security-audit}"
 mkdir -p "$OUT_DIR"
 
 PSQL=(psql -v ON_ERROR_STOP=1 -X -q)

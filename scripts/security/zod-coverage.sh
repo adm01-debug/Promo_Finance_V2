@@ -5,9 +5,20 @@
 # do baseline registrado em scripts/security/zod-coverage.baseline.
 set -euo pipefail
 
+if [[ "${1:-}" == "-h" || "${1:-}" == "--help" ]]; then
+  echo "Uso: $(basename "$0") [-h|--help]"
+  echo ""
+  echo "Opcoes:"
+  echo "  -h, --help   Exibe esta ajuda"
+  echo ""
+  echo "Verifica cobertura Zod nas Edge Functions. Falha se regredir abaixo do baseline."
+  echo "Env opcional: BASELINE_FILE (default: scripts/security/zod-coverage.baseline)"
+  exit 0
+fi
+
 ROOT="$(cd "$(dirname "$0")/../.." && pwd)"
 FUNCS_DIR="$ROOT/supabase/functions"
-BASELINE_FILE="$ROOT/scripts/security/zod-coverage.baseline"
+BASELINE_FILE="${BASELINE_FILE:-$ROOT/scripts/security/zod-coverage.baseline}"
 
 missing=()
 total=0
@@ -18,7 +29,7 @@ for d in "$FUNCS_DIR"/*/; do
   [ -f "$f" ] || continue
   total=$((total+1))
   if grep -q "req\.json()" "$f" 2>/dev/null; then
-    if ! grep -qE "validatePayload|validateContract|\.safeParse\(|_shared/validation|_shared/contract-validator" "$f" 2>/dev/null; then
+    if ! grep -vE '^\s*//' "$f" 2>/dev/null | grep -qE "validatePayload|validateContract|\.safeParse\(|_shared/validation|_shared/contract-validator"; then
       missing+=("$name")
     fi
   fi
@@ -31,6 +42,10 @@ for n in "${missing[@]}"; do echo "  - $n"; done
 
 if [ -f "$BASELINE_FILE" ]; then
   baseline=$(cat "$BASELINE_FILE" | tr -d '[:space:]')
+  if ! [[ "$baseline" =~ ^[0-9]+$ ]]; then
+    echo "❌ Baseline corrompido ou vazio em $BASELINE_FILE (valor: '$baseline')" >&2
+    exit 2
+  fi
   if [ "$count" -gt "$baseline" ]; then
     echo "❌ Regressão: cobertura Zod piorou ($count > baseline $baseline)"
     exit 1
