@@ -133,7 +133,7 @@ def query_graph(graph, term, max_nodes=20):
     for edge in edges_of(graph):
         adjacency.setdefault(edge.get("source"), []).append((edge.get("target"), edge))
         adjacency.setdefault(edge.get("target"), []).append((edge.get("source"), edge))
-    queue, seen, selected_edges = deque(starts), set(), []
+    queue, seen, selected_edge_keys, selected_edges = deque(starts), set(), set(), []
     while queue and len(seen) < max_nodes:
         current = queue.popleft()
         if current in seen:
@@ -142,7 +142,9 @@ def query_graph(graph, term, max_nodes=20):
         for target, edge in adjacency.get(current, []):
             if target not in seen and target not in queue:
                 queue.append(target)
-            if edge not in selected_edges:
+            edge_key = (edge.get("source"), edge.get("target"), edge.get("relation"))
+            if edge_key not in selected_edge_keys:
+                selected_edge_keys.add(edge_key)
                 selected_edges.append(edge)
     nodes = [node for node in graph.get("nodes", []) if node["id"] in seen]
     edges = [edge for edge in selected_edges if edge.get("source") in seen and edge.get("target") in seen]
@@ -159,16 +161,23 @@ def shortest_path(graph, source_term, target_term, directed=None):
         adjacency.setdefault(edge.get("source"), []).append(edge.get("target"))
         if not directed:
             adjacency.setdefault(edge.get("target"), []).append(edge.get("source"))
-    queue = deque((source, [source]) for source in sources)
+    queue = deque(sources)
     seen = set(sources)
+    predecessor: dict = {source: None for source in sources}
     while queue:
-        current, path = queue.popleft()
+        current = queue.popleft()
         if current in targets:
-            return path
+            path = []
+            node = current
+            while node is not None:
+                path.append(node)
+                node = predecessor[node]
+            return list(reversed(path))
         for neighbor in adjacency.get(current, []):
             if neighbor not in seen:
                 seen.add(neighbor)
-                queue.append((neighbor, path + [neighbor]))
+                predecessor[neighbor] = current
+                queue.append(neighbor)
     return []
 
 
