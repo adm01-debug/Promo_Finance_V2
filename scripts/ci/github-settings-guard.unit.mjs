@@ -70,7 +70,7 @@ function stub(
     tokenReal: SEM_ESCOPO,
     parcial: PROT_OK,
     injecao: "send({ required_status_checks: { strict: 'false\\n::error::forged', contexts: ['ci'] }, enforce_admins: { enabled: true }, required_linear_history: { enabled: true }, allow_force_pushes: { enabled: false } })",
-  }[modo];
+  }[modo] ?? PROT_OK;
   const workflowPerms = modo === 'tokenReal' ? SEM_ESCOPO : WORKFLOW_PERMS_OK;
 
   // S3923: aqui havia `modo === 'injecao' ? A : B` com A e B IDENTICOS -- ramo morto,
@@ -84,6 +84,13 @@ function stub(
     tokenReal: "send({ id: 1, name: 'r', full_name: 'o/r', private: false, default_branch: 'main' })",
     // Cegueira parcial: dois campos vieram, os outros cinco nao.
     parcial: "send({ id: 1, allow_auto_merge: true, delete_branch_on_merge: true })",
+    // merge.* completo, mas o GET /repos nao trouxe security_and_analysis (token sem
+    // o escopo que esse bloco exige — distinto do escopo que os campos de merge exigem).
+    secAusente:
+      "send({ allow_auto_merge: true, allow_squash_merge: true, allow_merge_commit: true, allow_rebase_merge: true, delete_branch_on_merge: true, squash_merge_commit_message: 'COMMIT_MESSAGES', squash_merge_commit_title: 'COMMIT_OR_PR_TITLE' })",
+    // merge.* completo, security_and_analysis presente mas secret_scanning desligado.
+    secDesligado:
+      "send({ allow_auto_merge: true, allow_squash_merge: true, allow_merge_commit: true, allow_rebase_merge: true, delete_branch_on_merge: true, squash_merge_commit_message: 'COMMIT_MESSAGES', squash_merge_commit_title: 'COMMIT_OR_PR_TITLE', security_and_analysis: { secret_scanning: { status: 'disabled' }, secret_scanning_push_protection: { status: 'enabled' } } })",
   }[modo] ?? REPO_OK;
 
   const actions = modo === 'tokenReal' ? SEM_ESCOPO : ACTIONS_OK;
@@ -180,6 +187,25 @@ describe('settings-guard: perimetro conforme o baseline', () => {
     assert.ok(!r.out.includes('NAO VERIFICAVEL'), `409 por nao-aplicabilidade nao e ponto cego:\n${r.out}`);
   });
 
+  it("prova forte: checarSelectedActions NUNCA chama a API quando o baseline nao pede 'selected'", () => {
+    // A prova anterior só olhava o texto da saída (fraca, achado da revisão adversarial:
+    // um 409 que chegasse a virar `throw` sem `catch` também não imprimiria
+    // 'selected_actions' nem 'NAO VERIFICAVEL' — passaria pelo mesmo jeito, por motivo
+    // errado). Aqui a chamada, se acontecer, mata o processo com exit 97 na hora: só dá
+    // pra ver exit 0 se o endpoint realmente nunca foi tocado.
+    const stb = stub('ok').replace(
+      /if \(p\.endsWith\('\/actions\/permissions\/selected-actions'\)\) return [^;]+;/,
+      "if (p.endsWith('/actions/permissions/selected-actions')) { process.exit(97); }",
+    );
+    const arq = 'data:text/javascript,' + encodeURIComponent(stb);
+    const res = spawnSync(process.execPath, ['--import', arq, SCRIPT], {
+      encoding: 'utf8',
+      env: { ...process.env, GITHUB_TOKEN: 'x', GITHUB_REPOSITORY: 'o/r', GITHUB_RUN_ID: '1' },
+    });
+    assert.notEqual(res.status, 97, `checarSelectedActions chamou a API que nem deveria tocar:\n${res.stdout}${res.stderr}`);
+    assert.equal(res.status, 0, `esperava exit 0, veio ${res.status}:\n${res.stdout}${res.stderr}`);
+  });
+
   it('strict=false e detectado como divergencia (a regressao que o guard existe para pegar)', () => {
     const r = rodarGuard('regressao');
     assert.equal(r.code, 1, `esperava exit 1, veio ${r.code}:\n${r.out}`);
@@ -243,6 +269,22 @@ describe('settings-guard: ponto cego (E95, W04, W05)', () => {
     assert.ok(r.out.includes('merge/repo: NAO VERIFICAVEL'), `merge/repo nao foi declarado cego:\n${r.out}`);
     assert.ok(!r.out.includes('Restaurado'), `tentou restaurar o que nao conseguiu ler:\n${r.out}`);
     assert.ok(r.linhas.some((l) => l.startsWith('Issue #')), `a issue de ponto cego precisa existir:\n${r.out}`);
+  });
+
+  it('security_and_analysis ausente e ponto cego, nao divergencia falsa (achado da revisao: nao ficava cego nem divergente)', () => {
+    const r = rodarGuard('secAusente');
+    assert.equal(r.code, 0, `esperava exit 0 (so ponto cego), veio ${r.code}:\n${r.out}`);
+    assert.ok(r.out.includes('NAO VERIFICAVEL') || r.out.includes('PARCIALMENTE VERIFICAVEL'), `security ausente tem de aparecer como ponto cego:\n${r.out}`);
+    assert.ok(r.out.includes('security_and_analysis.secret_scanning'), `nao nomeou o campo ausente:\n${r.out}`);
+    assert.ok(!r.out.includes('divergencia:'), `campo ausente nao pode virar divergencia:\n${r.out}`);
+  });
+
+  it('secret_scanning desligado E CONFERIDO mesmo quando merge.* vem completo (achado: antes so era checado se merge tambem viesse completo)', () => {
+    const r = rodarGuard('secDesligado');
+    assert.equal(r.code, 1, `secret scanning desligado tem de reprovar, veio ${r.code}:\n${r.out}`);
+    assert.ok(r.out.includes('security_and_analysis.secret_scanning'), `divergencia nao apontada:\n${r.out}`);
+    assert.ok(r.out.includes('esperado=enabled') || r.out.includes('esperado=enabled'), r.out);
+    assert.ok(r.out.includes('encontrado=disabled'), `valor real nao apareceu:\n${r.out}`);
   });
 
   it('W04: GET /repos com PARTE dos campos e parcialmente verificavel; o que veio e conferido', () => {

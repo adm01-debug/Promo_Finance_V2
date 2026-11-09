@@ -209,20 +209,31 @@ async function checarRepo() {
       divergencias.push({ campo: `merge.${campo}`, esperado, encontrado, restauravel: campo === 'allow_auto_merge' });
     }
   }
-  if (ausentes.length === Object.keys(baseline.merge).length) {
+  const totalMerge = Object.keys(baseline.merge).length;
+  if (ausentes.length === totalMerge) {
     throw new NaoVerificavel(`/repos (merge.*)`, 200, 'resposta sem os campos de merge: o token nao tem permissao push/admin para le-los');
   }
-  if (ausentes.length > 0) {
-    return { divergencias, cego: `200 — campos nao expostos ao token: ${ausentes.join(', ')}`, campos: ausentes };
-  }
-  // W14: security_and_analysis (secret_scanning*)
+  // W14: security_and_analysis (secret_scanning*). Roda SEMPRE, inclusive quando merge.*
+  // veio parcial: achado do port — a versao anterior saia antes daqui no caso parcial, e
+  // um secret_scanning desligado passava sem alerta nenhum (nem divergencia, nem ponto
+  // cego). Mesmo defeito W04 (campo ausente = divergencia falsa), só que para este bloco.
   const blSec = baseline.security_and_analysis ?? {};
+  const ausentesSec = [];
   for (const [chave, valorEsperado] of Object.entries(blSec)) {
     if (chave.startsWith('_')) continue; // skip JSON comment fields
-    const encontrado = repo?.security_and_analysis?.[chave]?.status ?? null;
+    const bloco = repo?.security_and_analysis;
+    if (!bloco || typeof bloco !== 'object' || !Object.hasOwn(bloco, chave) || bloco[chave] == null) {
+      ausentesSec.push(`security_and_analysis.${chave}`);
+      continue;
+    }
+    const encontrado = bloco[chave]?.status ?? null;
     if (encontrado !== valorEsperado) {
       divergencias.push({ campo: `security_and_analysis.${chave}`, esperado: valorEsperado, encontrado, restauravel: false });
     }
+  }
+  const todosAusentes = [...ausentes, ...ausentesSec];
+  if (todosAusentes.length > 0) {
+    return { divergencias, cego: `200 — campos nao expostos ao token: ${todosAusentes.join(', ')}`, campos: todosAusentes };
   }
   return divergencias;
 }
@@ -259,7 +270,17 @@ async function checarSelectedActions() {
   // ponto cego (nenhum escopo faltando), é a checagem não se aplicar. Sem este atalho,
   // toda run reportaria "actions (parcial)" por um campo que o baseline não pede.
   if (baseline.actions?.allowed_actions !== 'selected') return [];
-  const sel = await ghAdmin('GET', `/repos/${OWNER}/${REPO_NAME}/actions/permissions/selected-actions`);
+  let sel;
+  try {
+    sel = await ghAdmin('GET', `/repos/${OWNER}/${REPO_NAME}/actions/permissions/selected-actions`);
+  } catch (e) {
+    // 409 aqui significa que `allowed_actions` real já não é 'selected' — divergência
+    // real, mas `checarActions()` já a reporta (actions.allowed_actions). Sem este
+    // catch, o 409 derrubava o processo inteiro ANTES de abrir a issue — exatamente o
+    // defeito que este guard existe para evitar (NaoVerificavel/403 tratados, 409 não).
+    if (e?.message?.includes('409')) return [];
+    throw e;
+  }
   const divergencias = [];
   const blPatterns = [...(baseline.selected_actions_patterns ?? [])].sort();
   // A API devolve padrões com `@*` (wildcard total); strip só esse sufixo.
@@ -337,18 +358,24 @@ async function checarEnvironments() {
 // ---------------------------------------------------------------- restauração
 
 async function restaurar(campo) {
+  // Usa o valor do BASELINE, nunca um literal fixo: se o baseline um dia mudar
+  // (ex.: allow_auto_merge passar a ser false por decisão do dono), restaurar não
+  // pode continuar empurrando o valor antigo — isso seria "restaurar" para o errado
+  // e ainda assim declarar sucesso.
   if (campo === 'branch_protection_main.strict') {
     const protection = await gh('GET', `/repos/${OWNER}/${REPO_NAME}/branches/${BRANCH}/protection`);
     const contexts = protection?.required_status_checks?.contexts ?? [];
+    const valor = baseline.branch_protection_main.strict;
     await gh('PATCH', `/repos/${OWNER}/${REPO_NAME}/branches/${BRANCH}/protection/required_status_checks`, {
-      strict: true,
+      strict: valor,
       contexts,
     });
-    return '`branch_protection_main.strict` restaurado para `true`';
+    return `\`branch_protection_main.strict\` restaurado para \`${valor}\``;
   }
   if (campo === 'merge.allow_auto_merge') {
-    await gh('PATCH', `/repos/${OWNER}/${REPO_NAME}`, { allow_auto_merge: true });
-    return '`merge.allow_auto_merge` restaurado para `true`';
+    const valor = baseline.merge.allow_auto_merge;
+    await gh('PATCH', `/repos/${OWNER}/${REPO_NAME}`, { allow_auto_merge: valor });
+    return `\`merge.allow_auto_merge\` restaurado para \`${valor}\``;
   }
   return null;
 }
