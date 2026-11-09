@@ -1,16 +1,17 @@
 {
-  "atualizado_em": "2026-11-09T10:00:00Z",
+  "atualizado_em": "2026-11-09T10:06:00Z",
   "sessao": "session_01N1ArYN9EZ2fbFJ2Z2rqAh1",
   "baseline_main": {
     "sha_inicio": "c6eb99b275e1270cf99f1216e808c120f7cf58a2",
-    "sha_final": "e8620bd0338e351efa9fc10e38e969716ae0892b",
-    "main_ci_final_status": "7/8 required SUCCESS (E2E Quarantine nao-obrigatorio IN_PROGRESS apos ultimo merge #287)",
-    "merges_esta_sessao": 17
+    "sha_final": "94bb4af7c6cac27970e613e0daca3033227fa1b1",
+    "main_ci_final_status": "todos os checks SUCCESS (CLEAN) apos merge #288",
+    "merges_esta_sessao": 18
   },
   "resumo": {
     "total_prs_inicio": 34,
-    "prs_criadas_sessao": 18,
-    "mergeadas_sessao": 17,
+    "prs_criadas_sessao": 19,
+    "mergeadas_sessao": 18,
+    "aguardando_merge": 1,
     "aguardando_humano_regra8_ou_conflito": 20,
     "bloqueadas_bun_lock": 3,
     "supersedidas_abertas": 1,
@@ -18,7 +19,7 @@
     "fechadas_obsoletas": 1,
     "outras_sessoes": 2,
     "fechadas_externamente": 2,
-    "total_classificadas": 48
+    "total_classificadas": 49
   },
   "prs": [
     {"n": 131, "titulo": "fix shims Supabase Preview", "veredito": "AGUARDANDO_HUMANO", "motivo": "DIRTY/CONFLICTING em 90 arquivos desde set/26 — decisao de escopo; Quality Gate FAILURE"},
@@ -70,6 +71,7 @@
     {"n": 285, "titulo": "chore: corrige dossiers pr270/271 EM_ANDAMENTO→MERGEADA + pr284 + progresso/relatorio v2", "veredito": "MERGEADA", "sha_merge": "fc358256625a38228f71d70399bfdd8eaf581d78", "checks": "8/8 SUCCESS"},
     {"n": 286, "titulo": "chore: docs analise-prs estado final 15 mergeadas esta sessao", "veredito": "MERGEADA", "sha_merge": "b6e60a5cb943b6cb585313c1a6ca035cdc3e6f08", "checks": "8/8 SUCCESS"},
     {"n": 287, "titulo": "chore: bump @sentry/react 11.0.0 → 11.9.0 (supersede #210)", "veredito": "MERGEADA", "sha_merge": "e8620bd0338e351efa9fc10e38e969716ae0892b", "checks": "8/8 SUCCESS (required), E2E Quarantine IN_PROGRESS no merge", "supersede": 210},
-    {"n": 288, "titulo": "chore: relatorio final sessao merge-prs (total 46, 16 mergeadas, #287 sentry)", "veredito": "AGUARDANDO_MERGE", "motivo": "E2E Quarantine IN_PROGRESS no momento do registro; aguardando CLEAN para merge final"}
+    {"n": 288, "titulo": "chore: relatorio final sessao merge-prs (total 46, 16 mergeadas, #287 sentry)", "veredito": "MERGEADA", "sha_merge": "94bb4af7c6cac27970e613e0daca3033227fa1b1", "checks": "todos SUCCESS (CLEAN) incluindo E2E Quarantine"},
+    {"n": 289, "titulo": "chore: prs.json estado final sessao (total 48, 18 mergeadas)", "veredito": "AGUARDANDO_MERGE", "motivo": "aguardando CI CLEAN para merge final desta sessao"}
   ]
 }
