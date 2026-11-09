@@ -1,0 +1,27 @@
+Downloading edge-runtime image
+60414ed24b30: Pull complete
+597c6c618d36: Pull complete
+c39190ba742d: Pull complete
+0d29c829782d: Pull complete
+ba9e24d39072: Pull complete
+662b1f44f1ee: Pull complete
+Digest: sha256:c52405002a890ca9fcf77978671c57f3a988e03174afb277f84ac65bc917013c
+Status: Downloaded newer image for public.ecr.aws/supabase/edge-runtime:v1.74.3
+public.ecr.aws/supabase/edge-runtime:v1.74.3
+No change found in Function: ai-auto-tag
+No change found in Function: ai-churn-analysis
+No change found in Function: ai-classify-tickets
+No change found in Function: ai-conversation-analysis
+No change found in Function: ai-conversation-manager
+No change found in Function: ai-dre-analysis
+No change found in Function: ai-email-processor
+No change found in Function: ai-forecast
+No change found in Function: ai-invoice-reader
+No change found in Function: ai-ocr-nfe
+No change found in Function: ai-report-builder
+No change found in Function: ai-risk-analyzer
+No change found in Function: ai-summarizer
+No change found in Function: bitrix-api
+No change found in Function: chatbot-l1
+Deployed Functions on project ***: 15 functions
+You can inspect your deployment in the Dashboard: https://supabase.com/dashboard/project/***/functions

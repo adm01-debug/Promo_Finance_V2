@@ -16,11 +16,11 @@
 //   });
 
 import { serve } from 'https://deno.land/std@0.190.0/http/server.ts';
-import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.49.4';
+import { type SupabaseClient } from 'npm:@supabase/supabase-js@2.49.4';
 import { exigirChamadaInterna, clientDeServico } from '../_shared/auth-guard.ts';
-import { corsHeadersPara } from '../_shared/cors.ts';
 import { withEdgeObservability } from '../_shared/edge-observability.ts';
 import { createLogger } from '../_shared/observability.ts';
+import { corsHeadersPara } from '../_shared/cors.ts';
 
 const log = createLogger('monitor-health');
 
@@ -43,7 +43,7 @@ interface StatusMonitor {
 
 // ─── Helpers ─────────────────────────────────────────────────────────────────
 
-async function verificarCronFalhos(db: ReturnType<typeof createClient>): Promise<CronJobFalho[]> {
+async function verificarCronFalhos(db: SupabaseClient): Promise<CronJobFalho[]> {
   // Retorna jobs onde ambas as 2 execuções mais recentes (nas últimas 2h)
   // falharam. HAVING garante mínimo de 2 execuções registradas.
   const { data, error } = await db.rpc(
@@ -79,15 +79,16 @@ async function verificarCronFalhos(db: ReturnType<typeof createClient>): Promise
   );
 
   if (error) {
-    log.error('Erro ao verificar cron jobs', { error });
-    return [];
+    // Não engolir falha de leitura: o chamador precisa saber que o monitor
+    // não conseguiu cumprir sua função, senão reporta ok:true com dados vazios.
+    throw new Error(`falha ao consultar cron.job_run_details: ${error.message}`);
   }
 
   return ((data as unknown[]) ?? []) as CronJobFalho[];
 }
 
 async function verificarWebhooks(
-  db: ReturnType<typeof createClient>
+  db: SupabaseClient
 ): Promise<{ taxa: number; total: number; erros: number }> {
   const { data, error } = await db
     .from('webhooks_log')
@@ -95,25 +96,74 @@ async function verificarWebhooks(
     .gte('created_at', new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString());
 
   if (error || !data) {
-    log.error('Erro ao verificar webhooks_log', { error });
-    return { taxa: 0, total: 0, erros: 0 };
+    // Não engolir falha de leitura (mesmo motivo de verificarCronFalhos).
+    throw new Error(`falha ao consultar webhooks_log: ${error?.message ?? 'sem dados'}`);
   }
 
   const total = data.length;
+  // Estado 'error' não existe no CHECK chk_webhooks_log_status — os estados
+  // reais de falha gravados pelo webhook_mark_failure são failed/retrying/dead.
   const erros = data.filter(
-    (r: { status: string }) => r.status === 'error' || r.status === 'failed'
+    (r: { status: string }) =>
+      r.status === 'failed' || r.status === 'retrying' || r.status === 'dead'
   ).length;
   const taxa = total > 0 ? erros / total : 0;
 
   return { taxa, total, erros };
 }
 
+// Janela de cooldown: não reabrir um alerta do mesmo tipo/título recém-criado.
+const COOLDOWN_ALERTA_MS = 2 * 60 * 60 * 1000;
+
+async function existeAlertaRecente(db: SupabaseClient, titulo: string): Promise<boolean> {
+  const { data, error } = await db
+    .from('alertas')
+    .select('id')
+    .eq('tipo', 'monitor_health')
+    .eq('titulo', titulo)
+    .eq('lido', false)
+    .gte('created_at', new Date(Date.now() - COOLDOWN_ALERTA_MS).toISOString())
+    .limit(1);
+
+  if (error) {
+    log.error('Falha ao checar alerta duplicado', { context: { error, titulo } });
+  }
+
+  return (data?.length ?? 0) > 0;
+}
+
 async function inserirAlerta(
-  db: ReturnType<typeof createClient>,
+  db: SupabaseClient,
   titulo: string,
   mensagem: string
-): Promise<void> {
+): Promise<boolean> {
+  if (await existeAlertaRecente(db, titulo)) {
+    log.info('Alerta já existente nas últimas 2h, pulando duplicata', { context: { titulo } });
+    return false;
+  }
+
+  // alertas.user_id é NOT NULL DEFAULT uid(); insert com service_role manda
+  // uid() = NULL e viola a constraint. Busca um admin global para ser o dono.
+  const { data: admin, error: errAdmin } = await db
+    .from('profiles')
+    .select('id')
+    .eq('role', 'admin')
+    .is('empresa_id', null)
+    .limit(1)
+    .maybeSingle();
+
+  if (errAdmin) {
+    log.error('Falha ao buscar admin destinatário do alerta', { context: { error: errAdmin } });
+    return false;
+  }
+
+  if (!admin?.id) {
+    log.error('Nenhum admin global encontrado; alerta não inserido', { context: { titulo } });
+    return false;
+  }
+
   const { error } = await db.from('alertas').insert({
+    user_id: admin.id,
     tipo: 'monitor_health',
     titulo,
     mensagem,
@@ -122,8 +172,11 @@ async function inserirAlerta(
   });
 
   if (error) {
-    log.error('Falha ao inserir alerta na tabela alertas', { error, titulo });
+    log.error('Falha ao inserir alerta na tabela alertas', { context: { error, titulo } });
+    return false;
   }
+
+  return true;
 }
 
 // ─── Handler principal ───────────────────────────────────────────────────────
@@ -134,6 +187,13 @@ serve(
 
     if (req.method === 'OPTIONS') {
       return new Response('ok', { headers: corsHeaders });
+    }
+
+    // GET é apenas health-check: não executa monitoramento nem insere nada.
+    if (req.method === 'GET') {
+      return new Response(JSON.stringify({ ok: true }), {
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
     }
 
     // Apenas pg_cron ou chamada interna com segredo rotacionável.
@@ -161,9 +221,10 @@ serve(
           `Última execução: ${job.ultima_execucao}\n` +
           `Erro: ${job.ultimo_erro ?? 'sem detalhe'}`;
 
-        log.warn(titulo, { job });
-        await inserirAlerta(db, titulo, mensagem);
-        status.alertas_inseridos++;
+        log.warn(titulo, { context: { job } });
+        if (await inserirAlerta(db, titulo, mensagem)) {
+          status.alertas_inseridos++;
+        }
       }
 
       // 2. Taxa de erro de webhooks nas últimas 2h
@@ -180,19 +241,21 @@ serve(
           `Taxa: ${(taxa * 100).toFixed(1)}%\n` +
           `Limiar: 20%`;
 
-        log.warn(titulo, { taxa, total, erros });
-        await inserirAlerta(db, titulo, mensagem);
-        status.alertas_inseridos++;
+        log.warn(titulo, { context: { taxa, total, erros } });
+        if (await inserirAlerta(db, titulo, mensagem)) {
+          status.alertas_inseridos++;
+        }
       }
 
-      log.info('monitor-health concluído', status);
+      log.info('monitor-health concluído', { context: { status } });
 
       return new Response(JSON.stringify({ ok: true, status }), {
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       });
     } catch (err) {
-      log.error('Erro inesperado no monitor-health', { err });
-      return new Response(JSON.stringify({ ok: false, error: String(err) }), {
+      const mensagem = err instanceof Error ? err.message : 'erro desconhecido no monitor-health';
+      log.error('Erro inesperado no monitor-health', { context: { error: mensagem } });
+      return new Response(JSON.stringify({ ok: false, error: 'falha interna' }), {
         status: 500,
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       });
