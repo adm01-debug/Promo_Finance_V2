@@ -1,12 +1,14 @@
 {
   "baseline_main_sha": "c6eb99b275e1270cf99f1216e808c120f7cf58a2",
   "atualizado_em": "2026-11-08T23:55:00Z",
-  "ciclo_atual": "2 de 6 PRs em andamento mergeadas (#266, #268); aguardando fila de CI (limite de jobs concorrentes da conta) para as 4 restantes (#267,#269,#270,#271) + #272 + #273",
+  "ciclo_atual": "4 de 7 PRs em andamento mergeadas (#266, #268, #267, #270); aguardando fila de CI para as 5 restantes (#269, #271, #272, #273, #278)",
   "prs_mergeadas": [
     {"n": 268, "sha": "d8804a2000192594419275bc94da6e44fbf6e211", "supersede": 214},
-    {"n": 266, "sha": "6a925600f36f44488dc07b79e063f3dd67e5d30b", "supersede": 209}
+    {"n": 266, "sha": "6a925600f36f44488dc07b79e063f3dd67e5d30b", "supersede": 209},
+    {"n": 267, "sha": "020bb81ebf87848ca653d1665f808e15db7bc863", "supersede": 213},
+    {"n": 270, "sha": "1f5138a767de996ea61ecfb5f852cc71e8f4624c", "supersede": 254}
   ],
-  "prs_em_andamento": [267, 269, 270, 271, 272, 273],
+  "prs_em_andamento": [269, 271, 272, 273, 278],
   "prs_aguardando_humano": [131, 203, 204, 205, 206, 211, 212, 234, 235, 238, 243, 253, 255, 256, 263, 265],
   "prs_bloqueadas_ambiente": [208, 210, 216],
   "prs_nao_iniciadas": [175],
@@ -47,7 +49,7 @@
     "falha_real_detectada_e_investigada": {
       "pr": 270,
       "check": "Quality Gate & Tests / Zod coverage gate (edge functions)",
-      "resultado": "NAO E DESTA PR -- diff de #270 so toca gerar-pacote-evidencias/index.ts (fixes de tipo); o arquivo apontado como sem Zod (whatsapp-ia-proativo) JA TEM validatePayload importado e chamado no SHA exato que falhou (confirmado lendo o blob via API). Aparenta ser flake/falso-positivo do gate nessa execucao. Rerun solicitado mas bloqueado (workflow run ainda em andamento); repetir quando a run terminar."
+      "resultado": "CONFIRMADO FLAKE -- diff de #270 so toca gerar-pacote-evidencias/index.ts (fixes de tipo); o arquivo apontado como sem Zod (whatsapp-ia-proativo) JA TEM validatePayload importado e chamado. Apos update_pr_branch e novo ciclo de CI, o gate passou (SUCCESS) e a PR foi squash-mergeada em main no SHA 1f5138a767de996ea61ecfb5f852cc71e8f4624c."
     }
   }
 }
