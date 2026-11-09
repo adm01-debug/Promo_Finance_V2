@@ -1,0 +1,169 @@
+# docs:
+#   gatilho: segunda 11:38 UTC (08:38 BRT), push em main que toque workflows ou supabase/functions, e dispatch
+#   prova: docs/ci/README.md, docs/ci/MATRIZ_EDGE_TABELA.md e docs/ci/kpi.json refeitos do estado real (YAML dos workflows, .from() das edge functions, API do Actions)
+#   falha: o job fica vermelho e os docs gerados continuam como estavam
+#   avisa: PR automation/estado-real quando algum doc divergir, e a issue [kpi-actions] com o custo semanal
+# nao-e-bug:
+#   - sem-pr: "nada mudou" significa que nenhum dos tres documentos divergiu do estado real
+#   - sem-bloco-docs: workflow ainda sem bloco `# docs:` entra na lista de pendencias do README, nao reprova o job
+#   - kpi-sem-timing: a duracao vem de run_started_at/updated_at porque /timing devolve billable vazio em repo publico
+name: Estado real (CI e edge functions)
+
+# Mantém os documentos gerados em dia com o repositório, para agente de IA não
+# precisar reler o repo inteiro (nem confiar em doc escrito à mão que já desatualizou):
+#   1. docs/ci/kpi.json            — custo e taxa de falha por workflow, da API do Actions.
+#   2. docs/ci/MATRIZ_EDGE_TABELA.md — qual edge function toca qual tabela.
+#   3. docs/ci/README.md           — o que cada workflow prova, do bloco `# docs:` do próprio YAML.
+# Nunca faz push direto em main: entrega via PR na branch automation/estado-real.
+
+on:
+  schedule:
+    - cron: '38 11 * * 1' # segunda 11:38 UTC (08:38 BRT) — fora do minuto 0 e dos outros crons do repo
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/**'
+      - 'supabase/functions/**'
+      - 'scripts/ci/render-workflow-docs.mjs'
+      - 'scripts/ci/gerar-matriz-edge-tabela.mjs'
+      - 'scripts/ci/actions-kpi.mjs'
+  workflow_dispatch: {}
+
+concurrency:
+  group: estado-real
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+jobs:
+  gerar:
+    name: Refazer os documentos gerados
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    permissions:
+      contents: write        # branch do PR
+      pull-requests: write   # abrir o PR
+      issues: write          # issue [kpi-actions]
+      actions: read          # ler runs e jobs do Actions
+    steps:
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+        with:
+          # Sempre da main: um dispatch disparado de branch não integrada colocaria
+          # os commits dela na PR dos documentos.
+          ref: main
+          persist-credentials: false
+
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: '22'
+
+      - name: Testes dos geradores
+        run: |
+          set -euo pipefail
+          node --test \
+            scripts/ci/render-workflow-docs.unit.mjs \
+            scripts/ci/gerar-matriz-edge-tabela.unit.mjs \
+            scripts/ci/actions-kpi.unit.mjs
+
+      - name: KPI do Actions (docs/ci/kpi.json + issue)
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: node scripts/ci/actions-kpi.mjs
+
+      - name: Matriz edge function x tabela
+        run: node scripts/ci/gerar-matriz-edge-tabela.mjs
+
+      - name: README dos workflows
+        run: node scripts/ci/render-workflow-docs.mjs
+
+      - name: Algum documento divergiu?
+        id: drift
+        run: |
+          set -euo pipefail
+          # `git status --porcelain`, nao `git diff`: na primeira run o docs/ci/kpi.json
+          # ainda nao esta versionado, e arquivo novo nao aparece em `git diff`.
+          MUDOU=$(git status --porcelain -- docs/ci/)
+          if [ -z "$MUDOU" ]; then
+            echo "Documentos em dia — nenhum PR a abrir."
+            echo "drift=false" >> "$GITHUB_OUTPUT"
+          else
+            printf '%s\n' "$MUDOU"
+            echo "drift=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Publicar branch com os documentos refeitos
+        if: steps.drift.outputs.drift == 'true'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          REPO: ${{ github.repository }}
+        run: |
+          set -euo pipefail
+          BRANCH=automation/estado-real
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git checkout -B "$BRANCH"
+          git add docs/ci/
+          git commit -m "chore(docs): estado real do CI e das edge functions [auto]"
+          # checkout usa persist-credentials:false — autentica o push com o GITHUB_TOKEN
+          # do job direto na URL, sem gravar o token no .git/config.
+          REMOTE="https://x-access-token:${GH_TOKEN}@github.com/${REPO}.git"
+          # A branch é reaproveitada toda semana: lease explícito contra o SHA remoto,
+          # para falhar só se alguém mexeu nela entre o fetch e o push.
+          if git fetch "$REMOTE" "$BRANCH"; then
+            git push --force-with-lease="refs/heads/$BRANCH:$(git rev-parse FETCH_HEAD)" "$REMOTE" "$BRANCH"
+          else
+            git push "$REMOTE" "$BRANCH"
+          fi
+          echo "branch_pushed=true" >> "$GITHUB_ENV"
+
+      - name: Abrir PR dos documentos
+        if: steps.drift.outputs.drift == 'true' && env.branch_pushed == 'true'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+          ORIGEM: ${{ github.sha }}
+        run: |
+          set -uo pipefail
+          BRANCH=automation/estado-real
+          if gh pr view "$BRANCH" --json number >/dev/null 2>&1; then
+            echo "PR da branch $BRANCH já existe — apenas os commits foram atualizados."
+            exit 0
+          fi
+          # shellcheck disable=SC2016
+          PR_BODY=$(printf '%s\n' \
+            'Documentos gerados refeitos automaticamente por `.github/workflows/estado-real.yml`:' \
+            '' \
+            '- `docs/ci/README.md` — projeção do bloco `# docs:` de cada workflow.' \
+            '- `docs/ci/MATRIZ_EDGE_TABELA.md` — `.from()` de `supabase/functions/**`.' \
+            '- `docs/ci/kpi.json` — custo e taxa de falha por workflow (API do Actions, 7 dias).' \
+            '' \
+            "- main de origem: \`${ORIGEM}\`" \
+            "- run: ${RUN_URL}")
+          GH_ERR=$(mktemp)
+          if gh pr create --head "$BRANCH" --base main \
+            --title 'chore(docs): estado real do CI e das edge functions' \
+            --body "$PR_BODY" 2>"$GH_ERR"; then
+            echo "PR criado."
+          elif grep -q "GitHub Actions is not permitted to create or approve pull requests" "$GH_ERR"; then
+            cat "$GH_ERR" >&2
+            echo "::warning::PR automático bloqueado pela configuração do repo. Branch '$BRANCH' publicada."
+            {
+              echo "## ⚠️ Documentos gerados divergiram — PR pendente de criação manual"
+              echo
+              echo "Branch \`$BRANCH\` publicada com os documentos refeitos."
+              echo
+              echo "**Ação:** habilite *Settings → Actions → General → Allow GitHub Actions to create and approve pull requests*."
+            } >> "$GITHUB_STEP_SUMMARY"
+          else
+            cat "$GH_ERR" >&2
+            exit 1
+          fi
+
+      - name: Upload dos documentos gerados
+        if: always()
+        uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v4
+        with:
+          name: estado-real-${{ github.run_id }}
+          path: docs/ci/
+          retention-days: 14
