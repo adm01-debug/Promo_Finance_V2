@@ -1,9 +1,9 @@
 {
  "meta": {
-  "sha": "e8620bd0338e351efa9fc10e38e969716ae0892b",
+  "sha": "94bb4af7c6cac27970e613e0daca3033227fa1b1",
   "branch": "main",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
-  "generated_at": "2026-11-09 10:02 UTC",
+  "generated_at": "2026-11-09 10:19 UTC",
   "files_total": 3514,
   "code_files": 3170,
   "code_lines": 454108
@@ -228762,10 +228762,19 @@
   }
  },
  "git": {
-  "sha": "e8620bd0338e351efa9fc10e38e969716ae0892b",
+  "sha": "94bb4af7c6cac27970e613e0daca3033227fa1b1",
   "branch": "main",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
   "commits": [
+   {
+    "sha": "94bb4af",
+    "date": "2026-11-09",
+    "author": "adm01-debug",
+    "subject": "chore: relatorio final sessao merge-prs (total 46, 16 mergeadas, #287 sentry bump) (#288)",
+    "files": [
+     "analise-prs/RELATORIO_PRS.md"
+    ]
+   },
    {
     "sha": "e8620bd",
     "date": "2026-11-09",
@@ -229275,17 +229284,6 @@
     "files": [
      "analise-prs/auditorias-anteriores.md"
     ]
-   },
-   {
-    "sha": "c464deb",
-    "date": "2026-11-06",
-    "author": "adm01-debug",
-    "subject": "feat(seguranca+ux): steps 25+26+30+32 — acordo real, URL, asaas-proxy, calculo-iva (#237)",
-    "files": [
-     "src/components/cobranca/AcordoParcelamentoDialog.tsx",
-     "supabase/functions/_shared/app-url.ts",
-     "supabase/functions/asaas-proxy/index.ts"
-    ]
    }
   ],
   "hot_files": [
@@ -229294,16 +229292,16 @@
     7
    ],
    [
+    "analise-prs/RELATORIO_PRS.md",
+    6
+   ],
+   [
     "bun.lock",
     6
    ],
    [
     "package.json",
     6
-   ],
-   [
-    "analise-prs/RELATORIO_PRS.md",
-    5
    ],
    [
     ".github/workflows/contexto.yml",

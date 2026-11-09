@@ -2,11 +2,16 @@
  "aviso": "GERADO AUTOMATICAMENTE por scripts/ai-context/gerar.mjs — não editar à mão; será sobrescrito.",
  "format_version": 2,
  "git": {
-  "commit": "e8620bd0338e351efa9fc10e38e969716ae0892b",
+  "commit": "94bb4af7c6cac27970e613e0daca3033227fa1b1",
   "branch": "main",
-  "data_commit": "2026-11-09T06:27:08-03:00",
+  "data_commit": "2026-11-09T07:07:48-03:00",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
   "ultimos_commits": [
+   {
+    "sha": "94bb4af",
+    "data": "2026-11-09",
+    "assunto": "chore: relatorio final sessao merge-prs (total 46, 16 mergeadas, #287 sentry bump) (#288)"
+   },
    {
     "sha": "e8620bd",
     "data": "2026-11-09",
@@ -126,11 +131,6 @@
     "sha": "d06af85",
     "data": "2026-11-08",
     "assunto": "fix: corrigir 26 bugs em scripts (ci, healthcheck, security, graphify, data) (#258)"
-   },
-   {
-    "sha": "dd48a93",
-    "data": "2026-11-07",
-    "assunto": "feat: [STEPS 46+47] monitor-health cron + painel DB_HEALTH.md (#240)"
    }
   ],
   "arquivos_mudados_7d": 247,
@@ -177,7 +177,7 @@
    },
    {
     "pasta": "analise-prs/RELATORIO_PRS.md",
-    "mudancas": 5
+    "mudancas": 6
    },
    {
     "pasta": "src/components/contas-receber",
@@ -301,7 +301,7 @@
   "autores_30d": [
    {
     "autor": "adm01-debug",
-    "commits": 55
+    "commits": 56
    },
    {
     "autor": "devin-ai-integration[bot]",

@@ -1,7 +1,7 @@
 # Contexto do projeto para agentes de IA
 
 GERADO AUTOMATICAMENTE por scripts/ai-context/gerar.mjs — não editar à mão; será sobrescrito.
-Publicado pelo workflow .github/workflows/contexto.yml em docs/contexto/codigo/ da branch gerada `contexto`. Índice único em docs/contexto/00-INDEX.md. Ler: git fetch origin contexto && git show origin/contexto:docs/contexto/00-INDEX.md Gere local com `node scripts/ai-context/gerar.mjs`. Commit-base: `e8620bd0338e351efa9fc10e38e969716ae0892b` (2026-11-09T06:27:08-03:00).
+Publicado pelo workflow .github/workflows/contexto.yml em docs/contexto/codigo/ da branch gerada `contexto`. Índice único em docs/contexto/00-INDEX.md. Ler: git fetch origin contexto && git show origin/contexto:docs/contexto/00-INDEX.md Gere local com `node scripts/ai-context/gerar.mjs`. Commit-base: `94bb4af7c6cac27970e613e0daca3033227fa1b1` (2026-11-09T07:07:48-03:00).
 
 ## Como usar (leia antes de planejar ou executar qualquer tarefa)
 1. **Tela/rota/menu** → `rotas.json` (url/vista/menu → arquivo → hooks → tabelas → edges; `rotas_http_backend` para APIs) e `modulos.json` (módulo inteiro + dependências entre módulos).
@@ -587,6 +587,7 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 - CHANGELOG topo: [Unreleased]
 
 ## Últimos commits
+- 2026-11-09 `94bb4af` chore: relatorio final sessao merge-prs (total 46, 16 mergeadas, #287 sentry bump) (#288)
 - 2026-11-09 `e8620bd` chore: bump @sentry/react 11.0.0 → 11.9.0 (supersede #210) (#287)
 - 2026-11-09 `b6e60a5` chore: docs analise-prs estado final 15 mergeadas esta sessao
 - 2026-11-09 `fc35825` chore: docs analise-prs estado final 14 mergeadas esta sessao (#285)
@@ -601,7 +602,6 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 - 2026-11-08 `45a20a2` fix: bump eslint-plugin-react-refresh para ^0.4.20 (supersede #215)
 - 2026-11-08 `8d88a61` fix: type 'spring' as const em micro-interactions.tsx (StaggerItem/EmptyState)
 - 2026-11-08 `924e4a0` fix: monitor-health review #240 — supersede #257 (#271)
-- 2026-11-08 `d83f82e` docs: atualiza AGENTS.md e docs/agentes/ — supersede #264 (#272)
 
 ## Arquivos deste diretório
 - `docs/contexto/codigo/rotas.json`
