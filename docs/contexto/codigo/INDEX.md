@@ -1,7 +1,7 @@
 # Contexto do projeto para agentes de IA
 
 GERADO AUTOMATICAMENTE por scripts/ai-context/gerar.mjs — não editar à mão; será sobrescrito.
-Publicado pelo workflow .github/workflows/contexto.yml em docs/contexto/codigo/ da branch gerada `contexto`. Índice único em docs/contexto/00-INDEX.md. Ler: git fetch origin contexto && git show origin/contexto:docs/contexto/00-INDEX.md Gere local com `node scripts/ai-context/gerar.mjs`. Commit-base: `8eef9b064acb30e12c1f616a5c8f29300ac8936f` (2026-11-09T01:27:19-03:00).
+Publicado pelo workflow .github/workflows/contexto.yml em docs/contexto/codigo/ da branch gerada `contexto`. Índice único em docs/contexto/00-INDEX.md. Ler: git fetch origin contexto && git show origin/contexto:docs/contexto/00-INDEX.md Gere local com `node scripts/ai-context/gerar.mjs`. Commit-base: `900925a649f972e2d3483e49255ae68c24868253` (2026-11-09T02:20:23-03:00).
 
 ## Como usar (leia antes de planejar ou executar qualquer tarefa)
 1. **Tela/rota/menu** → `rotas.json` (url/vista/menu → arquivo → hooks → tabelas → edges; `rotas_http_backend` para APIs) e `modulos.json` (módulo inteiro + dependências entre módulos).
@@ -14,7 +14,7 @@ Publicado pelo workflow .github/workflows/contexto.yml em docs/contexto/codigo/ 
 Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua tarefa; não carregue tudo.
 
 ## Stack
-- linguagens: TypeScript (2104), SQL (1006), Markdown (169), JavaScript (33), JSON (32), Python (28), Shell (23), YAML (20)
+- linguagens: TypeScript (2104), SQL (1006), Markdown (180), JavaScript (33), JSON (32), Python (28), Shell (23), YAML (20)
 - linguagem_principal: TypeScript
 - framework: React
 - backend_http: n/d
@@ -34,7 +34,7 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 ## Números
 | item | qtd |
 |---|---|
-| arquivos_total | 3459 |
+| arquivos_total | 3470 |
 | arquivos_codigo | 2163 |
 | linhas_codigo | 401104 |
 | rotas | 128 |
@@ -51,7 +51,7 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 | testes | 363 |
 | workflows | 14 |
 | scripts | 87 |
-| docs_md | 169 |
+| docs_md | 180 |
 
 ## Onde ficam as coisas
 - telas: src/pages (125)
@@ -587,6 +587,7 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 - CHANGELOG topo: [Unreleased]
 
 ## Últimos commits
+- 2026-11-09 `900925a` chore: estado final sessao merge-prs — prs.json + progresso + dossies
 - 2026-11-09 `8eef9b0` fix: sanitizar fixture deploy-log-all para remover token real (supersede #253)
 - 2026-11-09 `039e16d` chore: dossiês completos por PR + relatório final sessão merge-prs (#280)
 - 2026-11-09 `8f63e2c` chore(docs): atualiza contagem de edge functions para 106 em sistema.md
@@ -601,7 +602,6 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 - 2026-11-08 `6a92560` fix: erros TypeScript framer-motion 14.x — supersede #209 (#266)
 - 2026-11-08 `d8804a2` chore(deps-dev): bump eslint-config-prettier from 9.1.2 to 10.1.8 (#268)
 - 2026-11-08 `c6eb99b` fix(contexto): grants timeout, custom_hostname 400 e refresh diário (#262)
-- 2026-11-08 `cab8834` chore: instruções enxutas para agentes (#252)
 
 ## Arquivos deste diretório
 - `docs/contexto/codigo/rotas.json`

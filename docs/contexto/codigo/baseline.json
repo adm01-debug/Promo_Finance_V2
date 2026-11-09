@@ -2,11 +2,16 @@
  "aviso": "GERADO AUTOMATICAMENTE por scripts/ai-context/gerar.mjs — não editar à mão; será sobrescrito.",
  "format_version": 2,
  "git": {
-  "commit": "8eef9b064acb30e12c1f616a5c8f29300ac8936f",
+  "commit": "900925a649f972e2d3483e49255ae68c24868253",
   "branch": "main",
-  "data_commit": "2026-11-09T01:27:19-03:00",
+  "data_commit": "2026-11-09T02:20:23-03:00",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
   "ultimos_commits": [
+   {
+    "sha": "900925a",
+    "data": "2026-11-09",
+    "assunto": "chore: estado final sessao merge-prs — prs.json + progresso + dossies"
+   },
    {
     "sha": "8eef9b0",
     "data": "2026-11-09",
@@ -126,14 +131,9 @@
     "sha": "c464deb",
     "data": "2026-11-06",
     "assunto": "feat(seguranca+ux): steps 25+26+30+32 — acordo real, URL, asaas-proxy, calculo-iva (#237)"
-   },
-   {
-    "sha": "fab4030",
-    "data": "2026-11-06",
-    "assunto": "chore(deps): bump actions/setup-python from 7.0.0 to 7.1.0 (#207)"
    }
   ],
-  "arquivos_mudados_7d": 234,
+  "arquivos_mudados_7d": 245,
   "pastas_mais_mudadas_30d": [
    {
     "pasta": "supabase/functions/_shared",
@@ -301,7 +301,7 @@
   "autores_30d": [
    {
     "autor": "adm01-debug",
-    "commits": 49
+    "commits": 50
    },
    {
     "autor": "devin-ai-integration[bot]",
@@ -318,7 +318,7 @@
   ]
  },
  "contagens": {
-  "arquivos_total": 3459,
+  "arquivos_total": 3470,
   "arquivos_codigo": 2163,
   "linhas_codigo": 401104,
   "rotas": 128,
@@ -335,7 +335,7 @@
   "testes": 363,
   "workflows": 14,
   "scripts": 87,
-  "docs_md": 169
+  "docs_md": 180
  },
  "por_pasta": {
   "e2e/alertas-preditivos.e2e.ts": {
