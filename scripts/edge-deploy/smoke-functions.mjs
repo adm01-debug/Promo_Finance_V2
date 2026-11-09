@@ -11,6 +11,7 @@
 // públicos (verify_jwt=false) NUNCA recebem requisição de negócio.
 import { createRequire } from 'node:module';
 import { readFile, writeFile } from 'node:fs/promises';
+import { realpathSync } from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 
@@ -26,6 +27,7 @@ function parseArgs(argv) {
   const args = {
     concurrency: 8,
     retries: 3,
+    timeoutMs: 20_000,
   };
   for (let index = 0; index < argv.length; index += 1) {
     const key = argv[index];
@@ -37,6 +39,7 @@ function parseArgs(argv) {
     else if (key === '--functions-list') args.functionsListPath = argv[++index];
     else if (key === '--concurrency') args.concurrency = Number(argv[++index]);
     else if (key === '--retries') args.retries = Number(argv[++index]);
+    else if (key === '--timeout-ms') args.timeoutMs = Number(argv[++index]);
     else throw new Error(`Argumento desconhecido: ${key}`);
   }
   for (const required of ['baseUrl', 'outputPath', 'gitSha', 'runId']) {
@@ -51,6 +54,9 @@ function parseArgs(argv) {
   }
   if (!Number.isInteger(args.retries) || args.retries < 1 || args.retries > 5) {
     throw new Error('retries precisa ser inteiro entre 1 e 5');
+  }
+  if (!Number.isInteger(args.timeoutMs) || args.timeoutMs < 100 || args.timeoutMs > 120_000) {
+    throw new Error('timeout-ms precisa ser inteiro entre 100 e 120000');
   }
   return args;
 }
@@ -89,16 +95,23 @@ async function lerFuncoes(args) {
       // igual ao fail-closed do deploy em massa.
       throw new Error(`verify_jwt ausente no config.toml para a função "${fn.name}" — recusado`);
     }
-    return { name: fn.name, verify_jwt: vjwt === 'true' };
+    // Valor que não é booleano ("treu", "1") virava verify_jwt=false e o smoke
+    // pulava calado o teste do gateway (POST sem JWT → 401) daquela função.
+    if (!/^(true|false)$/i.test(vjwt)) {
+      throw new Error(`verify_jwt inválido no config.toml para a função "${fn.name}": ${vjwt} — recusado`);
+    }
+    return { name: fn.name, verify_jwt: vjwt.toLowerCase() === 'true' };
   });
   return resultado;
 }
 
-async function fetchWithRetry(url, init, { retries, expectedStatuses, fetchImpl }) {
+async function fetchWithRetry(url, init, { retries, expectedStatuses, fetchImpl, timeoutMs = 20_000 }) {
   let lastError;
   for (let attempt = 1; attempt <= retries; attempt += 1) {
     try {
-      const response = await fetchImpl(url, { ...init, signal: AbortSignal.timeout(20_000) });
+      // redirect manual: um 3xx é resposta inesperada da função, não um convite para
+      // o smoke validar o CORS de OUTRO endereço e dar a função por aprovada.
+      const response = await fetchImpl(url, { ...init, redirect: 'manual', signal: AbortSignal.timeout(timeoutMs) });
       if (expectedStatuses.includes(response.status)) return response;
       lastError = new Error(`HTTP inesperado ${response.status}`);
       if (response.status < 500) return response;
@@ -110,9 +123,13 @@ async function fetchWithRetry(url, init, { retries, expectedStatuses, fetchImpl 
   throw lastError;
 }
 
-export async function smokeFunction({ fn, baseUrl, retries, allowedOrigins = CANONICAL_ORIGINS, fetchImpl = fetch }) {
+export async function smokeFunction({ fn, baseUrl, retries, allowedOrigins = CANONICAL_ORIGINS, fetchImpl = fetch, timeoutMs }) {
   const url = `${baseUrl.replace(/\/$/, '')}/${encodeURIComponent(fn.name)}`;
   try {
+    // Sem origem canônica o `every` abaixo é verdadeiro por vacuidade: aprovaria sem testar.
+    if (!Array.isArray(allowedOrigins) || allowedOrigins.length === 0) {
+      throw new Error('nenhuma origem canônica em allowed-origins.json (exact) — preflight positivo impossível');
+    }
     // Preflight CORS positivo para cada origem canônica; o negativo não pode
     // refletir origem não confiável nem devolver `*`.
     const originChecks = [];
@@ -124,7 +141,7 @@ export async function smokeFunction({ fn, baseUrl, retries, allowedOrigins = CAN
           'Access-Control-Request-Method': 'POST',
           'Access-Control-Request-Headers': 'authorization,content-type',
         },
-      }, { retries, expectedStatuses: [200, 204], fetchImpl });
+      }, { retries, expectedStatuses: [200, 204], fetchImpl, timeoutMs });
       const returnedOrigin = allowed.headers.get('access-control-allow-origin');
       originChecks.push({ origin, status: allowed.status, allow_origin: returnedOrigin, passed: [200, 204].includes(allowed.status) && returnedOrigin === origin });
     }
@@ -137,7 +154,7 @@ export async function smokeFunction({ fn, baseUrl, retries, allowedOrigins = CAN
         Origin: DEFAULT_DENIED_ORIGIN,
         'Access-Control-Request-Method': 'POST',
       },
-    }, { retries, expectedStatuses: [200, 204], fetchImpl });
+    }, { retries, expectedStatuses: [200, 204], fetchImpl, timeoutMs });
     const deniedOrigin = denied.headers.get('access-control-allow-origin');
     const corsDenialOk = [200, 204].includes(denied.status) &&
       deniedOrigin !== DEFAULT_DENIED_ORIGIN && deniedOrigin !== '*';
@@ -148,7 +165,7 @@ export async function smokeFunction({ fn, baseUrl, retries, allowedOrigins = CAN
         method: 'POST',
         headers: { Origin: DEFAULT_ALLOWED_ORIGIN, 'Content-Type': 'application/json' },
         body: '{}',
-      }, { retries, expectedStatuses: [401], fetchImpl });
+      }, { retries, expectedStatuses: [401], fetchImpl, timeoutMs });
       anonymousGateway = { status: anonymous.status, passed: anonymous.status === 401 };
     }
 
@@ -193,7 +210,7 @@ export async function runSmokeSuite(args) {
   const results = await runPool(
     fns,
     args.concurrency,
-    (fn) => smokeFunction({ fn, baseUrl: args.baseUrl, retries: args.retries }),
+    (fn) => smokeFunction({ fn, baseUrl: args.baseUrl, retries: args.retries, timeoutMs: args.timeoutMs }),
   );
   const passed = results.filter((result) => result.passed).length;
   const evidence = {
@@ -220,10 +237,24 @@ async function main() {
     `Edge smoke: ${evidence.summary.passed}/${evidence.summary.total} passed; ` +
     `${evidence.summary.failed} failed`,
   );
+  if (evidence.summary.total === 0) {
+    console.log('::warning::Edge smoke: lista de funções vazia — nenhuma função foi testada.');
+  }
   if (evidence.summary.failed > 0) process.exitCode = 1;
 }
 
-if (process.argv[1] && import.meta.url === pathToFileURL(path.resolve(process.argv[1])).href) {
+// realpath: com o repo atrás de um symlink (ou /tmp no macOS) `argv[1]` não bate com
+// `import.meta.url` e o script saía 0 sem executar nada.
+function invocadoDireto() {
+  if (!process.argv[1]) return false;
+  try {
+    return import.meta.url === pathToFileURL(realpathSync(process.argv[1])).href;
+  } catch {
+    return false;
+  }
+}
+
+if (invocadoDireto()) {
   main().catch((error) => {
     console.error(error.message);
     process.exitCode = 1;
