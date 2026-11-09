@@ -543,7 +543,9 @@ async function runA1() {
     params: { protocolVersion: '2024-11-05', capabilities: {}, clientInfo: { name: 'phd', version: '1' } },
   });
   assert('A1.version', init.json?.result?.serverInfo?.version?.startsWith('1.'), init.json?.result?.serverInfo?.version, '1.x.x');
-  assert('A1.tools-71', (await rawPost({ jsonrpc: '2.0', id: 2, method: 'tools/list' })).json?.result?.tools?.length === 71, null, 71);
+  const toolsResult = (await rawPost({ jsonrpc: '2.0', id: 2, method: 'tools/list' })).json?.result?.tools;
+  assert('A1.tools-min', Array.isArray(toolsResult) && toolsResult.length >= 1, toolsResult?.length, '>=1');
+  assert('A1.tools-71', toolsResult?.length === 71, toolsResult?.length, 71);
 
   const noAuth = await fetch(runtimeConfig.url, {
     method: 'POST',

@@ -196,7 +196,11 @@ export function StaggerItem({
       className={className}
       variants={{
         hidden: { opacity: 0, y: 20 },
-        visible: { opacity: 1, y: 0, transition: { type: 'spring', stiffness: 300, damping: 24 } },
+        visible: {
+          opacity: 1,
+          y: 0,
+          transition: { type: 'spring' as const, stiffness: 300, damping: 24 },
+        },
       }}
     >
       {children}
@@ -223,7 +227,7 @@ export function EmptyState({ icon, title, description, action, className }: Empt
       <motion.div
         initial={{ scale: 0 }}
         animate={{ scale: 1 }}
-        transition={{ type: 'spring', delay: 0.1 }}
+        transition={{ type: 'spring' as const, delay: 0.1 }}
         className="h-16 w-16 rounded-full bg-muted flex items-center justify-center mb-4"
       >
         {icon}

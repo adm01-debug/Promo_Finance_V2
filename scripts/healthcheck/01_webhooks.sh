@@ -101,7 +101,7 @@ for i in $(seq 0 $((count-1))); do
     for _ in 1 2 3 4 5; do
       n=$(psql "$STAGING_DB_URL" -Atc \
         "SELECT count(*) FROM public.webhooks_log
-          WHERE provider = '$provider'
+          WHERE provider = \$\$${provider//\$\$/}\$\$
             AND (payload ->> 'healthcheck_run_id') = '$RUN_ID';" 2>/dev/null || echo 0)
       if [ "${n:-0}" -ge 1 ]; then found=1; break; fi
       sleep 2
@@ -114,10 +114,16 @@ for i in $(seq 0 $((count-1))); do
   fi
 
   # 4) DLQ deve permanecer vazia para esse run_id
-  ndlq=$(psql "$STAGING_DB_URL" -Atc \
-    "SELECT count(*) FROM public.webhook_dlq
-      WHERE (payload ->> 'healthcheck_run_id') = '$RUN_ID'
-        AND source ILIKE '%$provider%';" 2>/dev/null || echo 0)
+  if [ -n "$provider" ]; then
+    ndlq=$(psql "$STAGING_DB_URL" -Atc \
+      "SELECT count(*) FROM public.webhook_dlq
+        WHERE (payload ->> 'healthcheck_run_id') = '$RUN_ID'
+          AND source ILIKE \$\$%${provider//\$\$/}%\$\$;" 2>/dev/null || echo 0)
+  else
+    ndlq=$(psql "$STAGING_DB_URL" -Atc \
+      "SELECT count(*) FROM public.webhook_dlq
+        WHERE (payload ->> 'healthcheck_run_id') = '$RUN_ID';" 2>/dev/null || echo 0)
+  fi
   if [ "${ndlq:-0}" -eq 0 ]; then
     _emit webhooks "${name}.dlq_clean" pass "dlq=0"
   else
