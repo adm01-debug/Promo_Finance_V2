@@ -2,11 +2,16 @@
  "aviso": "GERADO AUTOMATICAMENTE por scripts/ai-context/gerar.mjs — não editar à mão; será sobrescrito.",
  "format_version": 2,
  "git": {
-  "commit": "97b7711c03c9b7fc3ac24ea4f153e72c88de91e6",
+  "commit": "8f63e2c685a4cb9a19e115ed7defb8dbbace28ac",
   "branch": "main",
-  "data_commit": "2026-11-09T00:24:18-03:00",
+  "data_commit": "2026-11-09T00:39:32-03:00",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
   "ultimos_commits": [
+   {
+    "sha": "8f63e2c",
+    "data": "2026-11-09",
+    "assunto": "chore(docs): atualiza contagem de edge functions para 106 em sistema.md"
+   },
    {
     "sha": "97b7711",
     "data": "2026-11-09",
@@ -126,11 +131,6 @@
     "sha": "d4c1e0e",
     "data": "2026-11-06",
     "assunto": "Merge branch 'main' into fix/conciliacao-manual-dupla-confirmacao"
-   },
-   {
-    "sha": "4df9b8e",
-    "data": "2026-11-06",
-    "assunto": "docs: grafo de arquitetura manual e template de re-auditoria (Steps 49+50) (#242)"
    }
   ],
   "arquivos_mudados_7d": 213,
@@ -301,7 +301,7 @@
   "autores_30d": [
    {
     "autor": "adm01-debug",
-    "commits": 46
+    "commits": 47
    },
    {
     "autor": "devin-ai-integration[bot]",

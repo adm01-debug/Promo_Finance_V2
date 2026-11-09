@@ -12,7 +12,6 @@
 | publication | tabela | replica identity |
 |---|---|---|
 | supabase_realtime | public.performance_alerts | default |
-| supabase_realtime_messages_publication | realtime.messages_2026_11_05 |  |
 | supabase_realtime_messages_publication | realtime.messages_2026_11_06 |  |
 | supabase_realtime_messages_publication | realtime.messages_2026_11_07 |  |
 | supabase_realtime_messages_publication | realtime.messages_2026_11_08 |  |

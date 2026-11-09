@@ -1,9 +1,9 @@
 {
  "meta": {
-  "sha": "97b7711c03c9b7fc3ac24ea4f153e72c88de91e6",
+  "sha": "8f63e2c685a4cb9a19e115ed7defb8dbbace28ac",
   "branch": "main",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
-  "generated_at": "2026-11-09 03:32 UTC",
+  "generated_at": "2026-11-09 03:44 UTC",
   "files_total": 3480,
   "code_files": 3155,
   "code_lines": 452758
@@ -228432,10 +228432,19 @@
   }
  },
  "git": {
-  "sha": "97b7711c03c9b7fc3ac24ea4f153e72c88de91e6",
+  "sha": "8f63e2c685a4cb9a19e115ed7defb8dbbace28ac",
   "branch": "main",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
   "commits": [
+   {
+    "sha": "8f63e2c",
+    "date": "2026-11-09",
+    "author": "adm01-debug",
+    "subject": "chore(docs): atualiza contagem de edge functions para 106 em sistema.md",
+    "files": [
+     "docs/agentes/sistema.md"
+    ]
+   },
    {
     "sha": "97b7711",
     "date": "2026-11-09",
@@ -228913,15 +228922,6 @@
      "supabase/functions/gerar-pdf-tributario/index.ts",
      "supabase/migrations/20261027141000_idx_movimentacoes_empresa_data.sql"
     ]
-   },
-   {
-    "sha": "1c0ccea",
-    "date": "2026-10-31",
-    "author": "adm01-debug",
-    "subject": "chore(ci): adiciona estrategias_elisao_catalogo ao baseline literal-true [DB Linter] (#245)",
-    "files": [
-     "scripts/security/test-canonical-db-gates.mjs"
-    ]
    }
   ],
   "hot_files": [
@@ -228942,16 +228942,16 @@
     3
    ],
    [
-    "scripts/security/test-canonical-db-gates.mjs",
-    3
-   ],
-   [
     "supabase/functions/n8n-callback/index.ts",
     3
    ],
    [
     "supabase/functions/asaas-proxy/index.ts",
     3
+   ],
+   [
+    "docs/agentes/sistema.md",
+    2
    ],
    [
     "docs/agentes/mapa-repo.md",
@@ -228990,6 +228990,10 @@
     2
    ],
    [
+    "scripts/security/test-canonical-db-gates.mjs",
+    2
+   ],
+   [
     "supabase/config.toml",
     2
    ],
@@ -229000,10 +229004,6 @@
    [
     "supabase/functions/gerar-pdf-tributario/index.ts",
     2
-   ],
-   [
-    "analise-prs/RELATORIO_PRS.md",
-    1
    ]
   ]
  }
