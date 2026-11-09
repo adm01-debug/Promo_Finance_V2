@@ -1,9 +1,9 @@
 # Relatório de PRs — Promo Finance V2
 
 > Gerado por sessão `session_01N1ArYN9EZ2fbFJ2Z2rqAh1` em 2026-11-09T07:30Z  
-> Atualizado em 2026-11-09T09:30Z (corrige pr270/271 EM_ANDAMENTO→MERGEADA; adiciona #284)  
+> Atualizado em 2026-11-09T08:15Z (adiciona #285; AGUARDANDO 17→18 inclui #277; evidência CI #175; fix attempt #208/#210/#216)  
 > Baseline main SHA início: `c6eb99b275e1270cf99f1216e808c120f7cf58a2`  
-> Main SHA final: `68fa502741e90ab8f7ec1380200e033a1d8463cc` (9/9 checks COMPLETED SUCCESS + Vercel READY)
+> Main SHA final: `fc358256625a38228f71d70399bfdd8eaf581d78` (5/5 required jobs COMPLETED SUCCESS 08:10:01Z)
 
 ---
 
@@ -11,15 +11,15 @@
 
 | Categoria | Qtd | PRs |
 |---|---|---|
-| Mergeadas esta sessão (CI 100% verde) | 14 | #266–#273, #278, #280–#284 |
+| Mergeadas esta sessão (CI 100% verde) | 15 | #266–#273, #278, #280–#285 |
 | Mergeadas por outras sessões | 2 | #274, #279 |
 | Fechadas supersedidas | 5 | #213, #214, #215, #254, #257 |
 | Fechadas externamente | 4 | #209, #264, #253, #256 |
-| **AGUARDANDO HUMANO** | **17** | ver seção abaixo |
+| **AGUARDANDO HUMANO** | **18** | ver seção abaixo (inclui #275, #276, #277 Regra 8) |
 | Bloqueadas por ambiente | 3 | #208, #210, #216 |
-| Outras sessões abertas | 3 | #275, #276, #277 |
+| Outras sessões abertas | 2 | #275, #276 (Regra 8 — também contadas acima) |
 
-**Total rastreado nesta sessão: 48**
+**Total rastreado nesta sessão: 49**
 
 ---
 
@@ -40,7 +40,8 @@
 | [#281](https://github.com/adm01-debug/Promo_Finance_V2/pull/281) | fix gitleaks: remove fixture com token (supersede #253) | `8eef9b06` | 8/8 SUCCESS |
 | [#282](https://github.com/adm01-debug/Promo_Finance_V2/pull/282) | docs: estado final sessão merge-prs | `900925a6` | 8/8 SUCCESS |
 | [#283](https://github.com/adm01-debug/Promo_Finance_V2/pull/283) | chore: prs.json final + dossiers completos | `b0c226b4` | 8/8 SUCCESS |
-| [#284](https://github.com/adm01-debug/Promo_Finance_V2/pull/284) | chore: docs analise-prs estado final 13 mergeadas | `68fa5027` | CI SUCCESS |
+| [#284](https://github.com/adm01-debug/Promo_Finance_V2/pull/284) | chore: docs analise-prs estado final 13 mergeadas | `68fa5027` | 8/8 SUCCESS |
+| [#285](https://github.com/adm01-debug/Promo_Finance_V2/pull/285) | chore: docs analise-prs estado final 14 mergeadas | `fc358256` | 8/8 SUCCESS (gitleaks: force-cancel E2E Quarantine stuck 1.5h, rerun ok) |
 
 Nenhuma PR mergeada tocou: `.github/workflows/`, migrations SQL, secrets, edge functions R2.  
 Nenhum padrão proibido introduzido: `.skip`, `@ts-ignore`, `eslint-disable`, `any` de calar erro, baseline ampliado.
@@ -53,9 +54,6 @@ Nenhum padrão proibido introduzido: `.skip`, `@ts-ignore`, `eslint-disable`, `a
 |---|---|---|---|
 | [#274](https://github.com/adm01-debug/Promo_Finance_V2/pull/274) | docs/agentes/sistema.md | **MERGED** (03:39Z, SHA `8f63e2c6`) | outra sessão |
 | [#279](https://github.com/adm01-debug/Promo_Finance_V2/pull/279) | docs/agentes/mapa-repo.md | **MERGED** (03:24Z, SHA `97b7711c`) | outra sessão |
-| [#275](https://github.com/adm01-debug/Promo_Finance_V2/pull/275) | adiciona .github/workflows/estado-real.yml | BEHIND | Regra 8 workflow |
-| [#276](https://github.com/adm01-debug/Promo_Finance_V2/pull/276) | adiciona .github/workflows/auto-update-pr-branch.yml | BEHIND | Regra 8 workflow |
-| [#277](https://github.com/adm01-debug/Promo_Finance_V2/pull/277) | adiciona .github/workflows/settings-guard.yml | BEHIND | Regra 8 workflow |
 
 Não mergeadas por esta sessão (branch alheia, somente leitura).
 
@@ -114,9 +112,12 @@ Todas fechadas por `github_update_pull_request state=closed` em 2026-11-09T03:20
 - **SHA head:** `4f2e3778f5fc34aac27da984b52976bb9d916d50`
 - **Válido:** Sim — bump de versão legítimo do Dependabot
 - **Já implementado:** Não
-- **Regressão:** Sim, garantida — recharts 3.x tem breaking changes em API de eixos, legendas e composição; a PR só atualiza `package.json` e `bun.lock` sem adaptar os componentes que usam a API v2
-- **Completo:** Não — falta migrar chamadas de API nos componentes React que usam recharts (eixos, legendas, Tooltip, composição)
-- **Causa da falha:** Quality Gate FAILURE (TypeScript errors de API incompatível); `bun install` bloqueado no ambiente (ProxyConnectFailed 403)
+- **Regressão:** Sim, garantida — recharts v3 tem breaking changes de API de formatação, tooltips e composição
+- **Evidência de falha CI (job 122301005519, run na branch):**
+  - `src/components/ui/chart.tsx:109` → TS2339: `Property 'payload' does not exist on type 'TooltipProps<ValueType, NameType>'` (Tooltip no v3 não expõe `payload` diretamente via props)
+  - `src/components/ui/chart.tsx:168` → TS7006: `Parameter 'item' implicitly has an 'any' type`
+  - 20+ arquivos adicionais com erro TS2322: `Formatter<ValueType, NameType>` incompatível — recharts v3 mudou assinatura do tipo `Formatter` para `value: ValueType | undefined` (era `number`), quebrando todos os componentes financeiros que passam formatadores numéricos
+- **Fix tentado:** Não — fix requer refatoração de 20+ componentes (mudança de arquitetura). `bun install` também bloqueado neste ambiente (ProxyConnectFailed 403)
 - **Regra 8:** Mudança de arquitetura (breaking API em componentes financeiros visuais)
 - **Veredito:** **AGUARDANDO HUMANO** — requer migração de código nos componentes antes do bump; não é merge direto
 
@@ -158,18 +159,25 @@ Todas fechadas por `github_update_pull_request state=closed` em 2026-11-09T03:20
 
 ---
 
-### #208 — Dependabot: bump com bun.lock conflitante
+### #208 — Dependabot: bump com bun.lock conflitante (radix-ui × 20 pacotes)
 
 - **Válido:** Sim
-- **Causa da falha:** `bun.lock CONFLICTING` — resolução requer `bun install` que falha com ProxyConnectFailed 403 neste ambiente
-- **Veredito:** **BLOQUEADO AMBIENTE** — `bun install` inacessível nesta sessão
+- **Fix tentado:** Sim
+  - GraphQL confirmou: `mergeable: CONFLICTING`, `mergeStateStatus: DIRTY`
+  - Causa: bun.lock tem conflitos em 20 pacotes @radix-ui (atualização simultânea de múltiplas versões)
+  - Tentativa de resolução: `bun install` para regenerar bun.lock → **ProxyConnectFailed 403** (registro npm/bun bloqueado neste ambiente cloud)
+  - Sem `bun install` não há como regenerar bun.lock com as versões corretas
+- **Veredito:** **BLOQUEADO AMBIENTE** — `bun install` inacessível nesta sessão; fix possível em ambiente com acesso a registros npm
 
 ---
 
 ### #210 — Dependabot: bump com bun.lock conflitante
 
 - **Válido:** Sim
-- **Causa da falha:** `bun.lock CONFLICTING` — mesma causa de #208
+- **Fix tentado:** Sim
+  - GraphQL confirmou: `mergeable: CONFLICTING`, `mergeStateStatus: DIRTY`
+  - Causa: bun.lock CONFLICTING — mesma raiz de #208 (bun install bloqueado)
+  - Tentativa de resolução: `bun install` → **ProxyConnectFailed 403**
 - **Veredito:** **BLOQUEADO AMBIENTE** — `bun install` inacessível nesta sessão
 
 ---
@@ -188,7 +196,7 @@ Todas fechadas por `github_update_pull_request state=closed` em 2026-11-09T03:20
 
 - **Válido:** Sim | **Já implementado:** Não
 - **Regressão:** Sim, garantida — peerDependency mismatch react ^18.2.0 + react-dom 19; breaking APIs React 19
-- **Causa da falha:** Quality Gate FAILURE (peerDependency mismatch + breaking API)
+- **Causa da falha:** E2E Financeiro (offline): FAILURE — `mergeable: CONFLICTING` confirmado via GraphQL; peerDep mismatch react 18 + react-dom 19 causa falha em runtime do E2E
 - **Regra 8:** Mudança de arquitetura (React 19 = migração maior)
 - **Veredito:** **AGUARDANDO HUMANO** — requer migração coordenada react + react-dom
 
@@ -197,8 +205,11 @@ Todas fechadas por `github_update_pull_request state=closed` em 2026-11-09T03:20
 ### #216 — Dependabot: vitest major + bun.lock conflitante
 
 - **Válido:** Sim
-- **Causa da falha:** `bun.lock CONFLICTING` + vitest major breaking changes; Quality Gate FAILURE
-- **Veredito:** **BLOQUEADO AMBIENTE** — duplo bloqueio: `bun install` inacessível + vitest major requer análise
+- **Fix tentado:** Sim
+  - GraphQL confirmou: `mergeable: CONFLICTING`, `mergeStateStatus: DIRTY`
+  - Causa: bun.lock CONFLICTING (vitest major + dependências associadas) + Quality Gate FAILURE (vitest v3 breaking changes em fixtures de testes)
+  - Tentativa de resolução: `bun install` → **ProxyConnectFailed 403**
+- **Veredito:** **BLOQUEADO AMBIENTE** — duplo bloqueio: `bun install` inacessível + vitest major requer análise de breaking changes
 
 ---
 
@@ -263,15 +274,39 @@ Todas fechadas por `github_update_pull_request state=closed` em 2026-11-09T03:20
 
 ---
 
-## PRs de Outras Sessões
+### #275 — adiciona .github/workflows/estado-real.yml (outra sessão)
+
+- **Válido:** Sim | **Completo:** Sim — `mergeable=BEHIND`
+- **Regra 8:** Adiciona novo arquivo `.github/workflows/`
+- **Veredito:** **AGUARDANDO HUMANO** — Regra 8 (workflow CI); branch alheia (somente leitura para esta sessão)
+
+---
+
+### #276 — adiciona .github/workflows/auto-update-pr-branch.yml (outra sessão)
+
+- **Válido:** Sim | **Completo:** Sim — `mergeable=BEHIND`
+- **Regra 8:** Adiciona novo arquivo `.github/workflows/`
+- **Veredito:** **AGUARDANDO HUMANO** — Regra 8 (workflow CI); branch alheia (somente leitura para esta sessão)
+
+---
+
+### #277 — adiciona .github/workflows/settings-guard.yml (outra sessão)
+
+- **Válido:** Sim | **Completo:** Sim — `mergeable=BEHIND`
+- **Regra 8:** Adiciona novo arquivo `.github/workflows/`
+- **Veredito:** **AGUARDANDO HUMANO** — Regra 8 (workflow CI); branch alheia (somente leitura para esta sessão)
+
+---
+
+## PRs de Outras Sessões (abertas, Regra 8 — ver dossiês acima)
 
 | # | Título resumido | Estado | Regra |
 |---|---|---|---|
-| [#274](https://github.com/adm01-debug/Promo_Finance_V2/pull/274) | docs/agentes/sistema.md | **MERGED** (03:39Z, SHA `8f63e2c6`) | outra sessão |
-| [#279](https://github.com/adm01-debug/Promo_Finance_V2/pull/279) | docs/agentes/mapa-repo.md | **MERGED** (03:24Z, SHA `97b7711c`) | outra sessão |
 | [#275](https://github.com/adm01-debug/Promo_Finance_V2/pull/275) | adiciona .github/workflows/estado-real.yml | BEHIND | Regra 8 workflow |
 | [#276](https://github.com/adm01-debug/Promo_Finance_V2/pull/276) | adiciona .github/workflows/auto-update-pr-branch.yml | BEHIND | Regra 8 workflow |
 | [#277](https://github.com/adm01-debug/Promo_Finance_V2/pull/277) | adiciona .github/workflows/settings-guard.yml | BEHIND | Regra 8 workflow |
+
+Não mergeadas por esta sessão (branch alheia, somente leitura). Todas em AGUARDANDO HUMANO.
 
 ---
 
@@ -280,13 +315,16 @@ Todas fechadas por `github_update_pull_request state=closed` em 2026-11-09T03:20
 | Item | Valor |
 |---|---|
 | SHA baseline (início) | `c6eb99b275e1270cf99f1216e808c120f7cf58a2` |
-| SHA final (pós-#284) | `68fa502741e90ab8f7ec1380200e033a1d8463cc` |
-| Required checks (8/8) | COMPLETED SUCCESS (todos às 05:52Z) |
-| E2E Quarantine (non-blocking) | **COMPLETED SUCCESS** (2026-11-09T07:26:50Z) |
-| statusCheckRollup | **SUCCESS** |
-| Vercel deploy | READY (`dpl_2A9ddEpfZAxruDe1Ke5CQYnv99Pd`) |
+| SHA final (pós-#285) | `fc358256625a38228f71d70399bfdd8eaf581d78` |
+| E2E Critical Gate | COMPLETED SUCCESS (08:04:01→08:05:37Z) |
+| Quality Gate & Tests | COMPLETED SUCCESS (08:04:02→08:09:13Z) |
+| E2E Financeiro (offline) | COMPLETED SUCCESS (08:04:02→08:05:00Z) |
+| Varredura de segredos (gitleaks) | COMPLETED SUCCESS (08:04:01→08:04:19Z) |
+| E2E Destructive Logout | COMPLETED SUCCESS (08:09:15→08:10:01Z) job 129048903166 |
+| E2E Quarantine (non-blocking) | IN_PROGRESS (08:10:04Z, não bloqueia merge) |
+| Vercel deploy | NÃO VERIFICADO — Vercel MCP retorna 0 resultados para slug `juca1` nesta sessão |
 
-main está **100% verde** — todos os 9 checks (8 required + E2E Quarantine non-blocking) COMPLETED SUCCESS.
+main tem **5/5 required jobs COMPLETED SUCCESS** em `fc358256`. E2E Quarantine (non-blocking) ainda rodando — não impede merge das PRs aguardando.
 
 ---
 
@@ -301,3 +339,5 @@ main está **100% verde** — todos os 9 checks (8 required + E2E Quarantine non
 - Segredos: nenhum em código, commit ou resposta
 - **Supabase DB Linter:** não gerou CheckRun para PRs non-DDL — evidência: GraphQL statusCheckRollup de `b0c226b4` não contém CheckRun com esse nome; merge de #282 e #283 bem-sucedido
 - **PR #131 rebase tentado:** git rebase abortado — centenas de conflitos add/add (188 commits divergência desde set/26); documentado como AGUARDANDO HUMANO com justificativa técnica completa
+- **PRs #208/#210/#216:** fix tentado — GraphQL confirmou CONFLICTING; `bun install` bloqueado por ProxyConnectFailed 403; documentado como BLOQUEADO AMBIENTE com evidência
+- **PRs #175/#211/#212:** TypeScript breaking API confirmada em CI jobs reais; documentadas como AGUARDANDO HUMANO com evidência específica por arquivo:linha
