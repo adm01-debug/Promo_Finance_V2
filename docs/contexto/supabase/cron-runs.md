@@ -123,9 +123,9 @@ _nenhum_
 
 | início (UTC) | status | duração (s) | mensagem |
 |---|---|---|---|
+| 2026-11-09 04:15:00 | succeeded | 0.12 | 1 row |
 | 2026-11-09 03:15:00 | succeeded | 0.13 | 1 row |
 | 2026-11-09 02:15:00 | succeeded | 0.12 | 1 row |
-| 2026-11-09 01:15:00 | succeeded | 0.14 | 1 row |
 
 
 ## 20 · snapshot-table-bloat-daily
@@ -175,9 +175,9 @@ _nenhum_
 
 | início (UTC) | status | duração (s) | mensagem |
 |---|---|---|---|
+| 2026-11-09 04:10:00 | succeeded | 14.02 | 1 row |
 | 2026-11-09 03:10:00 | succeeded | 14.78 | 1 row |
 | 2026-11-09 02:10:00 | succeeded | 12.55 | 1 row |
-| 2026-11-09 01:10:00 | succeeded | 13.44 | 1 row |
 
 
 ## 31 · daily-log-retention
@@ -193,36 +193,36 @@ _nenhum_
 
 | início (UTC) | status | duração (s) | mensagem |
 |---|---|---|---|
+| 2026-11-09 04:15:00 | succeeded | 0.04 | 1 row |
 | 2026-11-09 04:00:00 | succeeded | 0.13 | 1 row |
 | 2026-11-09 03:45:00 | succeeded | 0.07 | 1 row |
-| 2026-11-09 03:30:00 | succeeded | 0.06 | 1 row |
 
 
 ## 33 · webhook-retry-worker-1min
 
 | início (UTC) | status | duração (s) | mensagem |
 |---|---|---|---|
-| 2026-11-09 04:02:00 | succeeded | 0.06 | 1 row |
-| 2026-11-09 04:01:00 | succeeded | 0.05 | 1 row |
-| 2026-11-09 04:00:00 | succeeded | 0.07 | 1 row |
+| 2026-11-09 04:20:00 | succeeded | 0.04 | 1 row |
+| 2026-11-09 04:19:00 | succeeded | 0.01 | 1 row |
+| 2026-11-09 04:18:00 | succeeded | 0.07 | 1 row |
 
 
 ## 34 · auditar-acessos-cross-tenant
 
 | início (UTC) | status | duração (s) | mensagem |
 |---|---|---|---|
+| 2026-11-09 04:10:00 | succeeded | 0.20 | 1 row |
 | 2026-11-09 03:10:00 | succeeded | 0.15 | 1 row |
 | 2026-11-09 02:10:00 | succeeded | 0.13 | 1 row |
-| 2026-11-09 01:10:00 | succeeded | 0.17 | 1 row |
 
 
 ## 35 · capture-index-usage-daily
 
 | início (UTC) | status | duração (s) | mensagem |
 |---|---|---|---|
+| 2026-11-09 04:20:00 | succeeded | 0.79 | 1 row |
 | 2026-11-08 04:20:00 | succeeded | 0.49 | 1 row |
 | 2026-11-07 04:20:00 | succeeded | 0.81 | 1 row |
-| 2026-11-06 04:20:00 | succeeded | 0.72 | 1 row |
 
 
 ## 36 · monitorar-erros-frontend
@@ -238,9 +238,9 @@ _nenhum_
 
 | início (UTC) | status | duração (s) | mensagem |
 |---|---|---|---|
-| 2026-11-09 04:02:00 | succeeded | 0.04 | 1 row |
-| 2026-11-09 04:01:00 | succeeded | 0.05 | 1 row |
-| 2026-11-09 04:00:00 | succeeded | 0.04 | 1 row |
+| 2026-11-09 04:20:00 | succeeded | 0.03 | 1 row |
+| 2026-11-09 04:19:00 | succeeded | 0.02 | 1 row |
+| 2026-11-09 04:18:00 | succeeded | 0.06 | 1 row |
 
 
 ## 40 · gerar-snapshots-conformidade-mensal

@@ -2,11 +2,16 @@
  "aviso": "GERADO AUTOMATICAMENTE por scripts/ai-context/gerar.mjs — não editar à mão; será sobrescrito.",
  "format_version": 2,
  "git": {
-  "commit": "8f63e2c685a4cb9a19e115ed7defb8dbbace28ac",
+  "commit": "039e16df6a88ec27c9405635a2d3628bfc37fa5a",
   "branch": "main",
-  "data_commit": "2026-11-09T00:39:32-03:00",
+  "data_commit": "2026-11-09T01:11:44-03:00",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
   "ultimos_commits": [
+   {
+    "sha": "039e16d",
+    "data": "2026-11-09",
+    "assunto": "chore: dossiês completos por PR + relatório final sessão merge-prs (#280)"
+   },
    {
     "sha": "8f63e2c",
     "data": "2026-11-09",
@@ -126,11 +131,6 @@
     "sha": "8244796",
     "data": "2026-11-06",
     "assunto": "Merge pull request #199 from adm01-debug/fix/conciliacao-manual-dupla-confirmacao"
-   },
-   {
-    "sha": "d4c1e0e",
-    "data": "2026-11-06",
-    "assunto": "Merge branch 'main' into fix/conciliacao-manual-dupla-confirmacao"
    }
   ],
   "arquivos_mudados_7d": 213,
@@ -301,7 +301,7 @@
   "autores_30d": [
    {
     "autor": "adm01-debug",
-    "commits": 47
+    "commits": 48
    },
    {
     "autor": "devin-ai-integration[bot]",

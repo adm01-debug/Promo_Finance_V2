@@ -58,11 +58,11 @@
  "commits": {
   "convencao": "conventional commits (observado)",
   "exemplos": [
+   "chore: dossiês completos por PR + relatório final sessão merge-prs (#280)",
    "chore(docs): atualiza contagem de edge functions para 106 em sistema.md",
    "fix(docs): corrige contagem de edge functions para 106 em mapa-repo.md",
    "chore: inventário e dossiê das 34 PRs abertas (#273)",
-   "fix: bump eslint-plugin-react-refresh para ^0.4.20 (supersede #215)",
-   "fix: type 'spring' as const em micro-interactions.tsx (StaggerItem/EmptyState)"
+   "fix: bump eslint-plugin-react-refresh para ^0.4.20 (supersede #215)"
   ]
  },
  "pr_template": ".github/PULL_REQUEST_TEMPLATE.md",

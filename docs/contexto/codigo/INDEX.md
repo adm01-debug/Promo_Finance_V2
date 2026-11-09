@@ -1,7 +1,7 @@
 # Contexto do projeto para agentes de IA
 
 GERADO AUTOMATICAMENTE por scripts/ai-context/gerar.mjs — não editar à mão; será sobrescrito.
-Publicado pelo workflow .github/workflows/contexto.yml em docs/contexto/codigo/ da branch gerada `contexto`. Índice único em docs/contexto/00-INDEX.md. Ler: git fetch origin contexto && git show origin/contexto:docs/contexto/00-INDEX.md Gere local com `node scripts/ai-context/gerar.mjs`. Commit-base: `8f63e2c685a4cb9a19e115ed7defb8dbbace28ac` (2026-11-09T00:39:32-03:00).
+Publicado pelo workflow .github/workflows/contexto.yml em docs/contexto/codigo/ da branch gerada `contexto`. Índice único em docs/contexto/00-INDEX.md. Ler: git fetch origin contexto && git show origin/contexto:docs/contexto/00-INDEX.md Gere local com `node scripts/ai-context/gerar.mjs`. Commit-base: `039e16df6a88ec27c9405635a2d3628bfc37fa5a` (2026-11-09T01:11:44-03:00).
 
 ## Como usar (leia antes de planejar ou executar qualquer tarefa)
 1. **Tela/rota/menu** → `rotas.json` (url/vista/menu → arquivo → hooks → tabelas → edges; `rotas_http_backend` para APIs) e `modulos.json` (módulo inteiro + dependências entre módulos).
@@ -587,6 +587,7 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 - CHANGELOG topo: [Unreleased]
 
 ## Últimos commits
+- 2026-11-09 `039e16d` chore: dossiês completos por PR + relatório final sessão merge-prs (#280)
 - 2026-11-09 `8f63e2c` chore(docs): atualiza contagem de edge functions para 106 em sistema.md
 - 2026-11-09 `97b7711` fix(docs): corrige contagem de edge functions para 106 em mapa-repo.md
 - 2026-11-08 `93026e6` chore: inventário e dossiê das 34 PRs abertas (#273)
@@ -601,7 +602,6 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 - 2026-11-08 `c6eb99b` fix(contexto): grants timeout, custom_hostname 400 e refresh diário (#262)
 - 2026-11-08 `cab8834` chore: instruções enxutas para agentes (#252)
 - 2026-11-08 `b0d9ddb` fix(contexto): guard de segredo reprovava a coleta do banco com a saída já redigida (#261)
-- 2026-11-08 `794478e` feat(contexto): sistema autônomo de contexto do estado real para agentes de IA (#260)
 
 ## Arquivos deste diretório
 - `docs/contexto/codigo/rotas.json`

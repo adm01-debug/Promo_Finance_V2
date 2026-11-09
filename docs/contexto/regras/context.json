@@ -1,9 +1,9 @@
 {
  "meta": {
-  "sha": "8f63e2c685a4cb9a19e115ed7defb8dbbace28ac",
+  "sha": "039e16df6a88ec27c9405635a2d3628bfc37fa5a",
   "branch": "main",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
-  "generated_at": "2026-11-09 04:02 UTC",
+  "generated_at": "2026-11-09 04:19 UTC",
   "files_total": 3480,
   "code_files": 3155,
   "code_lines": 452758
@@ -228432,10 +228432,20 @@
   }
  },
  "git": {
-  "sha": "8f63e2c685a4cb9a19e115ed7defb8dbbace28ac",
+  "sha": "039e16df6a88ec27c9405635a2d3628bfc37fa5a",
   "branch": "main",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
   "commits": [
+   {
+    "sha": "039e16d",
+    "date": "2026-11-09",
+    "author": "adm01-debug",
+    "subject": "chore: dossiês completos por PR + relatório final sessão merge-prs (#280)",
+    "files": [
+     "analise-prs/RELATORIO_PRS.md",
+     "analise-prs/progresso.json"
+    ]
+   },
    {
     "sha": "8f63e2c",
     "date": "2026-11-09",
@@ -228907,21 +228917,6 @@
      "supabase/migrations/20260913160000_mv_perf_weekly_unique_idx.sql",
      "supabase/migrations/20260913170000_boletos_add_asaas_cols.sql"
     ]
-   },
-   {
-    "sha": "629439c",
-    "date": "2026-10-31",
-    "author": "adm01-debug",
-    "subject": "feat: steps 24, 31, 36 — totais movimentações, auditoria verify_jwt, rate limit uniforme",
-    "files": [
-     ".github/workflows/ci.yml",
-     "scripts/security/test-canonical-db-gates.mjs",
-     "supabase/config.toml",
-     "supabase/functions/asaas-proxy/index.ts",
-     "supabase/functions/bling-proxy/index.ts",
-     "supabase/functions/gerar-pdf-tributario/index.ts",
-     "supabase/migrations/20261027141000_idx_movimentacoes_empresa_data.sql"
-    ]
    }
   ],
   "hot_files": [
@@ -228946,8 +228941,12 @@
     3
    ],
    [
-    "supabase/functions/asaas-proxy/index.ts",
-    3
+    "analise-prs/RELATORIO_PRS.md",
+    2
+   ],
+   [
+    "analise-prs/progresso.json",
+    2
    ],
    [
     "docs/agentes/sistema.md",
@@ -228990,20 +228989,16 @@
     2
    ],
    [
-    "scripts/security/test-canonical-db-gates.mjs",
+    "supabase/functions/asaas-proxy/index.ts",
     2
    ],
    [
-    "supabase/config.toml",
-    2
+    "analise-prs/dossiers/pr131.md",
+    1
    ],
    [
-    "supabase/functions/bling-proxy/index.ts",
-    2
-   ],
-   [
-    "supabase/functions/gerar-pdf-tributario/index.ts",
-    2
+    "analise-prs/dossiers/pr175.md",
+    1
    ]
   ]
  }
