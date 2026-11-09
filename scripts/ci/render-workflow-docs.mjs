@@ -102,8 +102,8 @@ export function nomeDe(texto, arquivo) {
   return m ? m[1].replace(/^["']|["']$/g, '') : arquivo.replace(/\.ya?ml$/, '');
 }
 
-/** Escapa `|` para não quebrar a célula da tabela markdown. */
-const celula = (v) => String(v).replace(/\|/g, '\\|');
+/** Escapa `\` e `|` para não quebrar a célula da tabela markdown. */
+const celula = (v) => String(v).replace(/\\/g, '\\\\').replace(/\|/g, '\\|');
 
 /**
  * Monta o markdown. `arquivos` é [{ arquivo, texto }]; `kpi` é o conteúdo de kpi.json.

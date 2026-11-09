@@ -130,6 +130,7 @@ jobs:
             echo "PR da branch $BRANCH já existe — apenas os commits foram atualizados."
             exit 0
           fi
+          # shellcheck disable=SC2016
           PR_BODY=$(printf '%s\n' \
             'Documentos gerados refeitos automaticamente por `.github/workflows/estado-real.yml`:' \
             '' \

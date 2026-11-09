@@ -184,12 +184,17 @@ export async function coletarRuns({
   pedir: buscar = pedir,
 } = {}) {
   const todos = [];
+  const vistos = new Set();
   for (let pagina = 1; pagina <= maxPaginas; pagina += 1) {
     const { workflow_runs: runs = [] } = await buscar(
       `/repos/${repo}/actions/runs?per_page=${porPagina}&page=${pagina}`,
       token,
     );
-    todos.push(...runs);
+    for (const run of runs) {
+      if (run.id !== undefined && vistos.has(run.id)) continue;
+      if (run.id !== undefined) vistos.add(run.id);
+      todos.push(run);
+    }
     if (!paginaTemMais(runs, { janelaDias, agora, porPagina })) {
       if (pagina === maxPaginas && runs.length >= porPagina) {
         console.error(`::warning::paginacao de runs parou no teto de ${maxPaginas} paginas`);
@@ -255,7 +260,8 @@ async function principal() {
     console.error('::error::GITHUB_REPOSITORY e GH_TOKEN sao obrigatorios');
     process.exit(2);
   }
-  const janela = Number(process.env.JANELA_DIAS ?? 7);
+  const _janelaEnv = Number(process.env.JANELA_DIAS ?? 7);
+  const janela = Number.isFinite(_janelaEnv) && _janelaEnv > 0 ? _janelaEnv : 7;
   const runs = await coletarRuns({ repo, token, janelaDias: janela });
   // Limita a 50 runs mais recentes para o ranking de jobs (1 request HTTP por run).
   const jobs = await coletarJobs(runsNaJanela(runs, { janelaDias: janela }).slice(0, 50), { repo, token });
