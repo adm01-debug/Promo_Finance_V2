@@ -1,7 +1,7 @@
 # Contexto do projeto para agentes de IA
 
 GERADO AUTOMATICAMENTE por scripts/ai-context/gerar.mjs — não editar à mão; será sobrescrito.
-Publicado pelo workflow .github/workflows/contexto.yml em docs/contexto/codigo/ da branch gerada `contexto`. Índice único em docs/contexto/00-INDEX.md. Ler: git fetch origin contexto && git show origin/contexto:docs/contexto/00-INDEX.md Gere local com `node scripts/ai-context/gerar.mjs`. Commit-base: `e07fec74eb66949d615c0abc8912bfb990f8861a` (2026-11-09T09:51:30-03:00).
+Publicado pelo workflow .github/workflows/contexto.yml em docs/contexto/codigo/ da branch gerada `contexto`. Índice único em docs/contexto/00-INDEX.md. Ler: git fetch origin contexto && git show origin/contexto:docs/contexto/00-INDEX.md Gere local com `node scripts/ai-context/gerar.mjs`. Commit-base: `9c94d005cae0989567d44831016c81dc3ae36fe4` (2026-11-09T18:37:04-03:00).
 
 ## Como usar (leia antes de planejar ou executar qualquer tarefa)
 1. **Tela/rota/menu** → `rotas.json` (url/vista/menu → arquivo → hooks → tabelas → edges; `rotas_http_backend` para APIs) e `modulos.json` (módulo inteiro + dependências entre módulos).
@@ -442,11 +442,11 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 - não gerado neste run. Neste repo NÃO execute `graphify update .` (proibido por AGENTS.md, seção Graphify). O fluxo autorizado é o piloto: `npm run graphify:pilot`, ou `npm run graphify:analyze -- --profile NOME` (revise antes com `npm run graphify:inventory -- --profile NOME`). Resultados privados em graphify-out/piloto-*/; consulte apenas grafo cuja evidencia.json tenha piloto validado e hashes compatíveis com os arquivos atuais.
 
 ## Hotspots (arquivos mais alterados, 90 dias)
-- package.json (33)
-- bun.lock (26)
+- package.json (34)
+- bun.lock (27)
 - .github/workflows/ci.yml (22)
-- supabase/config.toml (15)
 - supabase/functions/asaas-proxy/index.ts (15)
+- supabase/config.toml (14)
 - supabase/functions/mcp-query/index.ts (13)
 - .github/workflows/deno-tests.yml (12)
 - e2e/auth/admin-rbac.e2e.ts (12)
@@ -588,6 +588,7 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 - CHANGELOG topo: [Unreleased]
 
 ## Últimos commits
+- 2026-11-09 `9c94d00` fix: bump input-otp from 1.4.2 to 1.5.0 (#295)
 - 2026-11-09 `e07fec7` chore: documentação final sessão merge-prs (prs.json + RELATORIO + dossiers)
 - 2026-11-09 `529236d` fix: compatibilidade TypeScript com Zod v4 (supersede #211)
 - 2026-11-09 `8ec6561` infra: bloqueia wipe de AGENTS.md e docs/agentes por sessão paralela (#263)
@@ -602,7 +603,6 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 - 2026-11-09 `900925a` chore: estado final sessao merge-prs — prs.json + progresso + dossies
 - 2026-11-09 `8eef9b0` fix: sanitizar fixture deploy-log-all para remover token real (supersede #253)
 - 2026-11-09 `039e16d` chore: dossiês completos por PR + relatório final sessão merge-prs (#280)
-- 2026-11-09 `8f63e2c` chore(docs): atualiza contagem de edge functions para 106 em sistema.md
 
 ## Arquivos deste diretório
 - `docs/contexto/codigo/rotas.json`

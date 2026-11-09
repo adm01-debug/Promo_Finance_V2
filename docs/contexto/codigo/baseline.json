@@ -2,11 +2,16 @@
  "aviso": "GERADO AUTOMATICAMENTE por scripts/ai-context/gerar.mjs — não editar à mão; será sobrescrito.",
  "format_version": 2,
  "git": {
-  "commit": "e07fec74eb66949d615c0abc8912bfb990f8861a",
+  "commit": "9c94d005cae0989567d44831016c81dc3ae36fe4",
   "branch": "main",
-  "data_commit": "2026-11-09T09:51:30-03:00",
+  "data_commit": "2026-11-09T18:37:04-03:00",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
   "ultimos_commits": [
+   {
+    "sha": "9c94d00",
+    "data": "2026-11-09",
+    "assunto": "fix: bump input-otp from 1.4.2 to 1.5.0 (#295)"
+   },
    {
     "sha": "e07fec7",
     "data": "2026-11-09",
@@ -126,11 +131,6 @@
     "sha": "6a92560",
     "data": "2026-11-08",
     "assunto": "fix: erros TypeScript framer-motion 14.x — supersede #209 (#266)"
-   },
-   {
-    "sha": "d8804a2",
-    "data": "2026-11-08",
-    "assunto": "chore(deps-dev): bump eslint-config-prettier from 9.1.2 to 10.1.8 (#268)"
    }
   ],
   "arquivos_mudados_7d": 265,
@@ -141,11 +141,11 @@
    },
    {
     "pasta": "bun.lock",
-    "mudancas": 16
+    "mudancas": 17
    },
    {
     "pasta": "package.json",
-    "mudancas": 15
+    "mudancas": 16
    },
    {
     "pasta": "src/components/layout",
@@ -199,23 +199,23 @@
   "arquivos_mais_mudados_90d": [
    {
     "arquivo": "package.json",
-    "mudancas": 33
+    "mudancas": 34
    },
    {
     "arquivo": "bun.lock",
-    "mudancas": 26
+    "mudancas": 27
    },
    {
     "arquivo": ".github/workflows/ci.yml",
     "mudancas": 22
    },
    {
-    "arquivo": "supabase/config.toml",
+    "arquivo": "supabase/functions/asaas-proxy/index.ts",
     "mudancas": 15
    },
    {
-    "arquivo": "supabase/functions/asaas-proxy/index.ts",
-    "mudancas": 15
+    "arquivo": "supabase/config.toml",
+    "mudancas": 14
    },
    {
     "arquivo": "supabase/functions/mcp-query/index.ts",
@@ -309,7 +309,7 @@
    },
    {
     "autor": "dependabot[bot]",
-    "commits": 7
+    "commits": 8
    },
    {
     "autor": "Joaquim Ataides",

@@ -1,9 +1,9 @@
 {
  "meta": {
-  "sha": "e07fec74eb66949d615c0abc8912bfb990f8861a",
+  "sha": "9c94d005cae0989567d44831016c81dc3ae36fe4",
   "branch": "main",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
-  "generated_at": "2026-11-09 21:36 UTC",
+  "generated_at": "2026-11-09 21:56 UTC",
   "files_total": 3525,
   "code_files": 3177,
   "code_lines": 455250
@@ -228971,10 +228971,20 @@
   }
  },
  "git": {
-  "sha": "e07fec74eb66949d615c0abc8912bfb990f8861a",
+  "sha": "9c94d005cae0989567d44831016c81dc3ae36fe4",
   "branch": "main",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
   "commits": [
+   {
+    "sha": "9c94d00",
+    "date": "2026-11-09",
+    "author": "dependabot[bot]",
+    "subject": "fix: bump input-otp from 1.4.2 to 1.5.0 (#295)",
+    "files": [
+     "bun.lock",
+     "package.json"
+    ]
+   },
    {
     "sha": "e07fec7",
     "date": "2026-11-09",
@@ -229374,53 +229384,6 @@
      "scripts/supabase_snapshot/snapshot.py",
      "scripts/supabase_snapshot/test_snapshot.py"
     ]
-   },
-   {
-    "sha": "d06af85",
-    "date": "2026-11-08",
-    "author": "adm01-debug",
-    "subject": "fix: corrigir 26 bugs em scripts (ci, healthcheck, security, graphify, data) (#258)",
-    "files": [
-     ".gitignore",
-     "scripts/admin/supabase_admin_ops.py",
-     "scripts/admin/test_supabase_admin_ops_scenarios.py",
-     "scripts/ci/audit-env.ts",
-     "scripts/ci/check-baseline-drift.sh",
-     "scripts/ci/deno-check-functions.sh",
-     "scripts/ci/listar-excecoes-npm-nativo.py",
-     "scripts/ci/listar-specs-quarentena.ts",
-     "scripts/ci/typecheck-strict-baseline.sh",
-     "scripts/data/test_verify_scenarios.py",
-     "scripts/data/verify.sh",
-     "scripts/generate-design-audit.js",
-     "scripts/gerar-grafo-arquitetura.ts",
-     "scripts/graphify/benchmark.py",
-     "scripts/graphify/graph_quality.py",
-     "scripts/graphify/run.py",
-     "scripts/graphify/sql_inventory.py",
-     "scripts/graphify/test_scenarios.py",
-     "scripts/graphify/typescript_imports.py",
-     "scripts/healthcheck/01_webhooks.sh",
-     "scripts/healthcheck/03_realtime.mjs",
-     "scripts/healthcheck/run.sh",
-     "scripts/integrity/dump-baseline.sh",
-     "scripts/integrity/run.sh",
-     "scripts/integrity/test_dump_baseline_scenarios.py",
-     "scripts/mcp-phd-suite.mjs",
-     "scripts/migrate-cron-jobs.sh",
-     "scripts/run-scenarios.ts",
-     "scripts/security/export-function-privileges.sh",
-     "scripts/security/test-anon-surface.ts",
-     "scripts/security/test-canonical-db-gates.mjs",
-     "scripts/security/test-lint-function-repairs.mjs",
-     "scripts/security/test-migration-replay-safety.sh",
-     "scripts/security/test-rpc-runtime.ts",
-     "scripts/security/zod-coverage.sh",
-     "scripts/simular-observabilidade-digest.ts",
-     "scripts/staging-migrate.sh",
-     "scripts/stress-test.ts",
-     "scripts/validate-all.sh"
-    ]
    }
   ],
   "hot_files": [
@@ -229429,16 +229392,16 @@
     8
    ],
    [
-    "analise-prs/RELATORIO_PRS.md",
+    "bun.lock",
     7
    ],
    [
-    "bun.lock",
-    6
+    "package.json",
+    7
    ],
    [
-    "package.json",
-    6
+    "analise-prs/RELATORIO_PRS.md",
+    7
    ],
    [
     "analise-prs/prs.json",
@@ -229481,10 +229444,6 @@
     2
    ],
    [
-    ".gitignore",
-    2
-   ],
-   [
     "analise-prs/dossiers/pr291.md",
     1
    ],
@@ -229502,6 +229461,10 @@
    ],
    [
     "src/hooks/financial/views.schemas.ts",
+    1
+   ],
+   [
+    "src/hooks/useZodForm.ts",
     1
    ]
   ]

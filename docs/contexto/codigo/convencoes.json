@@ -58,11 +58,11 @@
  "commits": {
   "convencao": "conventional commits (observado)",
   "exemplos": [
+   "fix: bump input-otp from 1.4.2 to 1.5.0 (#295)",
    "chore: documentação final sessão merge-prs (prs.json + RELATORIO + dossiers)",
    "fix: compatibilidade TypeScript com Zod v4 (supersede #211)",
    "infra: bloqueia wipe de AGENTS.md e docs/agentes por sessão paralela (#263)",
-   "chore: atualiza prs.json — adiciona #283-#288, 48 PRs classificadas",
-   "feat(ci): documentos gerados do estado real do CI e das edge functions (#275)"
+   "chore: atualiza prs.json — adiciona #283-#288, 48 PRs classificadas"
   ]
  },
  "pr_template": ".github/PULL_REQUEST_TEMPLATE.md",
