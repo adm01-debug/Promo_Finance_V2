@@ -2,11 +2,16 @@
  "aviso": "GERADO AUTOMATICAMENTE por scripts/ai-context/gerar.mjs — não editar à mão; será sobrescrito.",
  "format_version": 2,
  "git": {
-  "commit": "d83f82e60c63aa2ed017aefdf4d864084f9c3c63",
+  "commit": "924e4a015792e4cfb161cfbfdae79189a60339cb",
   "branch": "main",
-  "data_commit": "2026-11-08T21:28:33-03:00",
+  "data_commit": "2026-11-08T21:55:52-03:00",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
   "ultimos_commits": [
+   {
+    "sha": "924e4a0",
+    "data": "2026-11-08",
+    "assunto": "fix: monitor-health review #240 — supersede #257 (#271)"
+   },
    {
     "sha": "d83f82e",
     "data": "2026-11-08",
@@ -126,11 +131,6 @@
     "sha": "629439c",
     "data": "2026-10-31",
     "assunto": "feat: steps 24, 31, 36 — totais movimentações, auditoria verify_jwt, rate limit uniforme"
-   },
-   {
-    "sha": "1c0ccea",
-    "data": "2026-10-31",
-    "assunto": "chore(ci): adiciona estrategias_elisao_catalogo ao baseline literal-true [DB Linter] (#245)"
    }
   ],
   "arquivos_mudados_7d": 173,
@@ -301,7 +301,7 @@
   "autores_30d": [
    {
     "autor": "adm01-debug",
-    "commits": 41
+    "commits": 42
    },
    {
     "autor": "devin-ai-integration[bot]",
@@ -320,7 +320,7 @@
  "contagens": {
   "arquivos_total": 3399,
   "arquivos_codigo": 2148,
-  "linhas_codigo": 399687,
+  "linhas_codigo": 399750,
   "rotas": 128,
   "rotas_http_backend": 12,
   "vistas_por_id": 0,
@@ -612,7 +612,7 @@
   },
   "supabase/functions": {
    "arquivos": 222,
-   "linhas": 49681
+   "linhas": 49744
   },
   "supabase/tests": {
    "arquivos": 2,

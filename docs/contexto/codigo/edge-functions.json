@@ -2674,13 +2674,15 @@
    "nome": "monitor-health",
    "entrada": "supabase/functions/monitor-health/index.ts",
    "arquivos": 1,
-   "linhas": 202,
+   "linhas": 265,
    "verify_jwt": false,
    "metodos": [
+    "GET",
     "OPTIONS"
    ],
    "tabelas": [
     "alertas",
+    "profiles",
     "webhooks_log"
    ],
    "rpcs": [

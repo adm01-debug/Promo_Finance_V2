@@ -1,7 +1,7 @@
 # Contexto do projeto para agentes de IA
 
 GERADO AUTOMATICAMENTE por scripts/ai-context/gerar.mjs — não editar à mão; será sobrescrito.
-Publicado pelo workflow .github/workflows/contexto.yml em docs/contexto/codigo/ da branch gerada `contexto`. Índice único em docs/contexto/00-INDEX.md. Ler: git fetch origin contexto && git show origin/contexto:docs/contexto/00-INDEX.md Gere local com `node scripts/ai-context/gerar.mjs`. Commit-base: `d83f82e60c63aa2ed017aefdf4d864084f9c3c63` (2026-11-08T21:28:33-03:00).
+Publicado pelo workflow .github/workflows/contexto.yml em docs/contexto/codigo/ da branch gerada `contexto`. Índice único em docs/contexto/00-INDEX.md. Ler: git fetch origin contexto && git show origin/contexto:docs/contexto/00-INDEX.md Gere local com `node scripts/ai-context/gerar.mjs`. Commit-base: `924e4a015792e4cfb161cfbfdae79189a60339cb` (2026-11-08T21:55:52-03:00).
 
 ## Como usar (leia antes de planejar ou executar qualquer tarefa)
 1. **Tela/rota/menu** → `rotas.json` (url/vista/menu → arquivo → hooks → tabelas → edges; `rotas_http_backend` para APIs) e `modulos.json` (módulo inteiro + dependências entre módulos).
@@ -36,7 +36,7 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 |---|---|
 | arquivos_total | 3399 |
 | arquivos_codigo | 2148 |
-| linhas_codigo | 399687 |
+| linhas_codigo | 399750 |
 | rotas | 128 |
 | rotas_http_backend | 12 |
 | vistas_por_id | 0 |
@@ -342,7 +342,7 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 - `insights-relatorio` (verify_jwt=false) — tabelas: -; chamada por 1 arquivo(s) do front
 - `log-sped-bitrix24` — tabelas: audit_logs; chamada por 1 arquivo(s) do front
 - `mcp-query` (verify_jwt=false) — tabelas: -; chamada por 0 arquivo(s) do front
-- `monitor-health` (verify_jwt=false) — tabelas: alertas, webhooks_log; chamada por 0 arquivo(s) do front, por SQL/cron
+- `monitor-health` (verify_jwt=false) — tabelas: alertas, profiles, webhooks_log; chamada por 0 arquivo(s) do front, por SQL/cron
 - `monitorar-erros-frontend` (verify_jwt=false) — tabelas: profiles, user_roles; chamada por 0 arquivo(s) do front
 - `n8n-callback` (verify_jwt=false) — tabelas: -; chamada por 0 arquivo(s) do front
 - `n8n-dispatch` — tabelas: n8n_dispatch_logs, n8n_workflow_configs; chamada por 0 arquivo(s) do front — **ÓRFÃ**
@@ -548,7 +548,7 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 - `docs/COMPONENTS.md` — Documentação dos Componentes UI Aprimorados (457 linhas)
 - `docs/CSP_REVISAO.md` — Revisão CSP — Content Security Policy (47 linhas)
 - `docs/DATA_MIGRATION.md` — Runbook — Migração de Dados PROD → STAGING (171 linhas)
-- `docs/DB_HEALTH.md` — DB_HEALTH — Painel de Saúde do Banco (225 linhas)
+- `docs/DB_HEALTH.md` — DB_HEALTH — Painel de Saúde do Banco (232 linhas)
 - `docs/DEPLOYMENT.md` — Deployment Guide (61 linhas)
 - `docs/DIAGRAMA_ER.md` — Diagrama ER — núcleo financeiro (156 linhas)
 - `docs/EDGE_FUNCTIONS_CATALOG.md` — Catálogo de Edge Functions (99 linhas)
@@ -587,6 +587,7 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 - CHANGELOG topo: [Unreleased]
 
 ## Últimos commits
+- 2026-11-08 `924e4a0` fix: monitor-health review #240 — supersede #257 (#271)
 - 2026-11-08 `d83f82e` docs: atualiza AGENTS.md e docs/agentes/ — supersede #264 (#272)
 - 2026-11-08 `1f5138a` fix: corrige TS2345 na edge function gerar-pacote-evidencias (#270)
 - 2026-11-08 `020bb81` chore(deps): bump @dnd-kit/sortable from 7.0.2 to 10.0.0 (#267)
@@ -601,7 +602,6 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 - 2026-11-07 `dc39f52` fix: sentry.ts — host DSN, redação de dados e parseDsn seguro [substitui #246] (#248)
 - 2026-11-07 `32a5e79` infra: migra imports esm.sh para npm: pinados nas edge functions (#251)
 - 2026-11-06 `6bedb92` fix: atualiza lock graphifyy 0.9.97 com pyyaml (#249)
-- 2026-11-06 `58f58a2` docs(auditoria): Fase 2 — auditorias-anteriores.md reconciliadas com main (#222)
 
 ## Arquivos deste diretório
 - `docs/contexto/codigo/rotas.json`

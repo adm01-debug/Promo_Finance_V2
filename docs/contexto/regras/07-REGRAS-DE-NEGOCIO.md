@@ -1,6 +1,6 @@
 # 07 · REGRAS DE NEGÓCIO
 
-> Gerado automaticamente por AI Context Sync v1.3.2 · commit `d83f82e60c` · branch `main` · 2026-11-09 01:22 UTC
+> Gerado automaticamente por AI Context Sync v1.3.2 · commit `924e4a0157` · branch `main` · 2026-11-09 01:49 UTC
 > Não edite à mão — regras humanas vão em `manual/`.
 
 ## A. Regras escritas por humanos (`manual/` — prioridade máxima, nunca sobrescrito)
@@ -1366,6 +1366,7 @@ Erros lançados por funções SQL (`RAISE EXCEPTION` = regra de negócio no banc
 | `status` | `confirmado` | compara, escreve | `src/components/contabilidade/LancamentosTab.tsx`<br>`src/components/contas-receber/BaixaAutomaticaDialog.tsx`<br>`src/components/contas-receber/RegistrarRecebimentoDialog.tsx`<br>`supabase/functions/contabilizar-evento/index.ts` |
 | `status` | `contact_not_found` | escreve | `supabase/functions/sync-profile-to-bitrix/index.ts` |
 | `status` | `corrigido` | escreve | `src/components/conciliacao/DivergenciasConciliacaoPanel.tsx` |
+| `status` | `dead` | compara | `supabase/functions/monitor-health/index.ts` |
 | `status` | `deferido` | compara | `src/hooks/usePerDcomp.ts` |
 | `status` | `degraded` | compara | `src/pages/StatusPage.tsx` |
 | `status` | `delivered` | compara | `supabase/functions/whatsapp-webhook/index.ts` |
@@ -1382,7 +1383,7 @@ Erros lançados por funções SQL (`RAISE EXCEPTION` = regra de negócio no banc
 | `status` | `entregue` | compara | `src/hooks/useEntregasObrigacoes.ts`<br>`src/lib/tributario/obrigacoes/conformidade.ts`<br>`src/pages/tributario/ObrigacoesAcessorias.tsx`<br>`supabase/functions/_shared/obrigacoes/conformidade.ts` |
 | `status` | `enviado` | compara, escreve | `src/components/boletos/BoletoPreviewPanel.tsx`<br>`src/components/cobranca/FilaCobrancasPanel.tsx`<br>`src/components/contas-receber/DrawerCobrancasTab.tsx`<br>`src/components/relatorios/RelatoriosAgendados.tsx`<br>`src/hooks/useBoletos.ts`<br>… +3 |
 | `status` | `erro` | compara, escreve | `src/components/bling/BlingWebhooksPanel.tsx`<br>`src/components/conciliacao/ConciliacaoRetroativaPanel.tsx`<br>`src/components/contabilidade/contabilizacao-automatica/LogsTable.tsx`<br>`src/components/contabilidade/contabilizacao-automatica/StatsCards.tsx`<br>`src/components/reforma-tributaria/ImportacaoXMLPanel.tsx`<br>… +10 |
-| `status` | `error` | compara, escreve | `src/components/compliance/EvidenciaStatusDialog.tsx`<br>`src/components/compliance/EvidenciasTab.tsx`<br>`src/components/comprovantes/ComprovanteOCR.tsx`<br>`src/components/contabilidade/SpedEcdPreviewDialog.tsx`<br>`src/components/contabilidade/sped-ecf-wizard/Step3DownloadParts.tsx`<br>… +14 |
+| `status` | `error` | compara, escreve | `src/components/compliance/EvidenciaStatusDialog.tsx`<br>`src/components/compliance/EvidenciasTab.tsx`<br>`src/components/comprovantes/ComprovanteOCR.tsx`<br>`src/components/contabilidade/SpedEcdPreviewDialog.tsx`<br>`src/components/contabilidade/sped-ecf-wizard/Step3DownloadParts.tsx`<br>… +13 |
 | `status` | `estornado` | compara, escreve | `src/components/reforma-tributaria/GestorCreditosTributarios.tsx`<br>`src/hooks/useCreditosTributarios.ts` |
 | `status` | `estouro` | compara | `src/components/orcamento/OrcamentoCardsView.tsx`<br>`src/pages/OrcamentoEvento.tsx` |
 | `status` | `excluido` | escreve | `src/components/cobranca/NegativacoesProtestosPanel.tsx` |
@@ -1439,6 +1440,7 @@ Erros lançados por funções SQL (`RAISE EXCEPTION` = regra de negócio no banc
 | `status` | `resolvido` | compara, escreve | `src/hooks/useAuditoriaCompliance.ts` |
 | `status` | `retificada` | compara | `src/lib/tributario/obrigacoes/conformidade.ts`<br>`supabase/functions/_shared/obrigacoes/conformidade.ts` |
 | `status` | `retificado` | compara | `src/components/reforma-tributaria/ApuracaoMensal.tsx` |
+| `status` | `retrying` | compara | `supabase/functions/monitor-health/index.ts` |
 | `status` | `revisado` | compara | `src/components/reforma-tributaria/ApuracaoMensal.tsx` |
 | `status` | `revoked` | compara, escreve | `src/components/integracoes/open-finance/OpenFinanceConsentList.tsx`<br>`supabase/functions/open-finance/index.ts` |
 | `status` | `running` | compara, escreve, filtra | `src/components/admin/DetectionRunProgress.tsx`<br>`src/components/compliance/EvidenciaStatusDialog.tsx`<br>`src/components/compliance/EvidenciasTab.tsx`<br>`supabase/functions/detectar-anomalias-financeiras/index.ts`<br>`supabase/functions/webhook-simulator/index.ts` |
@@ -1469,7 +1471,7 @@ Erros lançados por funções SQL (`RAISE EXCEPTION` = regra de negócio no banc
 | `estado` | `critical` | compara | `src/components/admin/FiscalHealthBadge.tsx` |
 | `estado` | `ok` | compara | `src/components/admin/FiscalHealthBadge.tsx` |
 | `estado` | `warning` | compara | `src/components/admin/FiscalHealthBadge.tsx` |
-| `role` | `admin` | compara, escreve, filtra | `src/components/admin/GerenciadorPermissoes.tsx`<br>`src/pages/Usuarios.tsx`<br>`supabase/functions/_shared/auth-guard.ts`<br>`supabase/functions/_shared/auth-guard_test.ts`<br>`supabase/functions/asaas-proxy/index.ts`<br>… +10 |
+| `role` | `admin` | compara, escreve, filtra | `src/components/admin/GerenciadorPermissoes.tsx`<br>`src/pages/Usuarios.tsx`<br>`supabase/functions/_shared/auth-guard.ts`<br>`supabase/functions/_shared/auth-guard_test.ts`<br>`supabase/functions/asaas-proxy/index.ts`<br>… +11 |
 | `role` | `assistant` | compara, escreve | `src/components/cobranca/NegociacaoIA.tsx`<br>`src/components/copilot/CopilotGlobalFloat.tsx`<br>`src/components/expert/ExpertChatMessages.tsx`<br>`src/components/tributario/dashboard/CopilotTributarioFloat.tsx`<br>`src/pages/Expert.tsx` |
 | `role` | `contador_readonly` | compara, escreve | `supabase/functions/convidar-contador/index.ts`<br>`supabase/functions/validar-token-contador/index.ts` |
 | `role` | `financeiro` | compara, filtra | `src/pages/Usuarios.tsx`<br>`supabase/functions/contabilizar-evento/index.ts`<br>`supabase/functions/executar-fechamento-tributario/index.ts` |
@@ -1489,9 +1491,7 @@ Erros lançados por funções SQL (`RAISE EXCEPTION` = regra de negócio no banc
 | `tipo` | `9999` | compara, escreve | `src/lib/sped-generator/efd-contribuicoes.ts`<br>`src/lib/sped-generator/efd-ibs-cbs.ts`<br>`supabase/functions/exportar-sped-contribuicoes/layout_test.ts`<br>`supabase/functions/gerar-sped-ecd/layout_test.ts`<br>`supabase/functions/gerar-sped-ecf/layout_test.ts` |
 | `tipo` | `A001` | escreve | `src/lib/sped-generator/efd-contribuicoes.ts` |
 | `tipo` | `A990` | escreve | `src/lib/sped-generator/efd-contribuicoes.ts` |
-| `tipo` | `APURACAO_ATRASADA` | escreve | `src/hooks/useAuditoriaCompliance.ts` |
-| `tipo` | `AUTORIZACAO` | compara, escreve | `src/components/nfe/ContingenciaNFe.tsx`<br>`src/components/nfe/EventosHistorico.tsx`<br>`src/components/nfe/SefazAnalytics.tsx`<br>`src/lib/sefaz-event-logger.ts`<br>`src/lib/sefaz-rejection-monitor.ts` |
-| … +233 linhas — lista completa em `context.json` | | | |
+| … +235 linhas — lista completa em `context.json` | | | |
 
 ### E.4 Enums e listas de valores
 
@@ -4248,6 +4248,7 @@ Erros lançados por funções SQL (`RAISE EXCEPTION` = regra de negócio no banc
 | `STATEMENT_TIMEOUT_MS` | `5000` | `supabase/functions/mcp-query/index.ts` |
 | `LOCK_TIMEOUT_MS` | `1000` | `supabase/functions/mcp-query/index.ts` |
 | `ADMIN_TIMEOUT_MS` | `5000` | `supabase/functions/mcp-query/index.ts` |
+| `COOLDOWN_ALERTA_MS` | `2` | `supabase/functions/monitor-health/index.ts` |
 | `UUID_A` | `'11111111-1111-4111-8111-111111111111'` | `supabase/functions/nfe-vinculo-proxy/index_test.ts` |
 | `UUID_B` | `'22222222-2222-4222-8222-222222222222'` | `supabase/functions/nfe-vinculo-proxy/index_test.ts` |
 | `ENTERPRISE_URN` | `'urn:ietf:params:scim:schemas:extension:enterprise:2.0:user'` | `supabase/functions/scim-server/index.ts` |
@@ -4476,6 +4477,7 @@ Erros lançados por funções SQL (`RAISE EXCEPTION` = regra de negócio no banc
 | `connect_timeout: 10,` | `supabase/functions/mcp-query/index.ts` |
 | `idle_timeout: 20,` | `supabase/functions/mcp-query/index.ts` |
 | `.gte('created_at', new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString());` | `supabase/functions/monitor-health/index.ts` |
+| `const COOLDOWN_ALERTA_MS = 2 * 60 * 60 * 1000;` | `supabase/functions/monitor-health/index.ts` |
 | `const expiresAt = new Date(Date.now() + 365 * 24 * 60 * 60 * 1000); // 1 year` | `supabase/functions/open-finance/index.ts` |
 | `const start = startDate \|\| new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString();` | `supabase/functions/open-finance/index.ts` |
 | `date: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000).toISOString(),` | `supabase/functions/open-finance/index.ts` |
@@ -4657,6 +4659,7 @@ Erros lançados por funções SQL (`RAISE EXCEPTION` = regra de negócio no banc
 | 12 | `supabase/functions/gerar-snapshots-conformidade/index.ts` |
 | 1 | `supabase/functions/gerar-sped-ecf/index.ts` |
 | 1 | `supabase/functions/health/index.ts` |
+| 1 | `supabase/functions/monitor-health/index.ts` |
 | 1000 | `supabase/functions/processar-solicitacao-lgpd/index.ts` |
 | 1000 | `supabase/functions/relatorio-diario-anomalias/index.ts` |
 | 2000 | `supabase/functions/relatorio-diario-anomalias/index.ts` |
@@ -4972,7 +4975,7 @@ Erros lançados por funções SQL (`RAISE EXCEPTION` = regra de negócio no banc
 | Selecione uma conta bancária | `src/components/integracoes/OpenFinancePanel.tsx` |
 | Informe um número para teste | `src/components/integracoes/WhatsAppConfigPanel.tsx` |
 | Informe o motivo da ativação | `src/components/nfe/AutoContingenciaConfig.tsx` |
-| … +679 linhas — lista completa em `context.json` | |
+| … +681 linhas — lista completa em `context.json` | |
 
 ## J. Controle de acesso no código (checagens de perfil/permissão)
 
@@ -5854,4 +5857,4 @@ Erros lançados por funções SQL (`RAISE EXCEPTION` = regra de negócio no banc
 | de base negativa reduz a base tributável em no máximo 30% do lucro do período. | `src/lib/tributario/shared-logic.ts` |
 | Regra de Substituição Tributária (ST) | `src/lib/tributario/validador-ncm-cst.ts` |
 | Validação básica de tamanho de NCM | `src/lib/tributario/validador-ncm-cst.ts` |
-| … +360 linhas — lista completa em `context.json` | |
+| … +361 linhas — lista completa em `context.json` | |

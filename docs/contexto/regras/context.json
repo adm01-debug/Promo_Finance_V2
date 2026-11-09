@@ -1,15 +1,15 @@
 {
  "meta": {
-  "sha": "d83f82e60c63aa2ed017aefdf4d864084f9c3c63",
+  "sha": "924e4a015792e4cfb161cfbfdae79189a60339cb",
   "branch": "main",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
-  "generated_at": "2026-11-09 01:22 UTC",
+  "generated_at": "2026-11-09 01:49 UTC",
   "files_total": 3441,
   "code_files": 3155,
-  "code_lines": 452691
+  "code_lines": 452754
  },
  "version": "1.3.2",
- "facts_hash": "78822b1c37cd6290",
+ "facts_hash": "b5bd1680ae58f23c",
  "stack": {
   "frameworks": [
    "React + Vite",
@@ -58112,6 +58112,7 @@
     "name": "monitor-health",
     "file": "supabase/functions/monitor-health/index.ts",
     "methods": [
+     "GET",
      "OPTIONS"
     ],
     "auth": "PÚBLICA (verify_jwt=false em config.toml)",
@@ -58119,6 +58120,7 @@
      "alertas",
      "edge_function_logs",
      "integration_secrets",
+     "profiles",
      "user_empresas",
      "user_roles",
      "webhooks_log"
@@ -58129,7 +58131,10 @@
     "external": [],
     "invokes": [],
     "doc": "Edge Function: monitor-health Step 46 — PLANO_50: alerta ativo para falha de cron e de webhook. A cada 30 min o pg_cron chama esta função. Ela: 1. Verifica se algum job falhou nas 2 execuções consecutivas mais recentes. 2. Verifica se a taxa de erro de webhooks nas últimas 2 h supera 20%. 3. Em caso …",
-    "errors": [],
+    "errors": [
+     "falha ao consultar cron.job_run_details: ${error.message}",
+     "falha ao consultar webhooks_log: ${error?.message ?? "
+    ],
     "side_effects": [],
     "webhook_events": [],
     "idempotency": false
@@ -64469,7 +64474,7 @@
   {
    "module": "supabase/functions",
    "files": 222,
-   "lines": 49681,
+   "lines": 49744,
    "tables": [
     "acoes_recomendadas",
     "alertas",
@@ -64891,6 +64896,7 @@
      "supabase/functions/calcular-health-score-operacional/index.ts",
      "supabase/functions/copilot-global/index.ts",
      "supabase/functions/gerar-alertas/index.ts",
+     "supabase/functions/monitor-health/index.ts",
      "supabase/functions/processar-solicitacao-lgpd/index.ts"
     ],
     "update": [
@@ -66505,6 +66511,7 @@
      "supabase/functions/convidar-usuario/index.ts",
      "supabase/functions/digest-silenciamentos-erro/index.ts",
      "supabase/functions/enviar-digest-conformidade/index.ts",
+     "supabase/functions/monitor-health/index.ts",
      "supabase/functions/monitorar-erros-frontend/index.ts",
      "supabase/functions/processar-solicitacao-lgpd/index.ts",
      "supabase/functions/relatorio-diario-anomalias/index.ts",
@@ -68137,6 +68144,7 @@
     "empresa_id",
     "full_name",
     "id",
+    "role",
     "telefone",
     "user_id"
    ],
@@ -76512,6 +76520,14 @@
     "msg": "payload não é array"
    },
    {
+    "file": "supabase/functions/monitor-health/index.ts",
+    "msg": "falha ao consultar cron.job_run_details: ${error.message}"
+   },
+   {
+    "file": "supabase/functions/monitor-health/index.ts",
+    "msg": "falha ao consultar webhooks_log: ${error?.message ?? "
+   },
+   {
     "file": "supabase/functions/n8n-callback/index.ts",
     "msg": ": {\n      const severity = (asString(payload.severity) ?? "
    },
@@ -79362,6 +79378,10 @@
    {
     "file": "supabase/functions/monitor-health/index.ts",
     "text": "falharam. HAVING garante mínimo de 2 execuções registradas."
+   },
+   {
+    "file": "supabase/functions/monitor-health/index.ts",
+    "text": "GET é apenas health-check: não executa monitoramento nem insere nada."
    },
    {
     "file": "supabase/functions/monitor-health/index.ts",
@@ -91452,6 +91472,11 @@
     "file": "supabase/functions/mcp-query/index.ts",
     "name": "ADMIN_TIMEOUT_MS",
     "value": "5000"
+   },
+   {
+    "file": "supabase/functions/monitor-health/index.ts",
+    "name": "COOLDOWN_ALERTA_MS",
+    "value": "2"
    },
    {
     "file": "supabase/functions/nfe-vinculo-proxy/index_test.ts",
@@ -105425,14 +105450,32 @@
    {
     "file": "supabase/functions/monitor-health/index.ts",
     "field": "status",
-    "value": "error",
+    "value": "failed",
     "kind": "compara"
    },
    {
     "file": "supabase/functions/monitor-health/index.ts",
     "field": "status",
-    "value": "failed",
+    "value": "retrying",
     "kind": "compara"
+   },
+   {
+    "file": "supabase/functions/monitor-health/index.ts",
+    "field": "status",
+    "value": "dead",
+    "kind": "compara"
+   },
+   {
+    "file": "supabase/functions/monitor-health/index.ts",
+    "field": "tipo",
+    "value": "monitor_health",
+    "kind": "filtra"
+   },
+   {
+    "file": "supabase/functions/monitor-health/index.ts",
+    "field": "role",
+    "value": "admin",
+    "kind": "filtra"
    },
    {
     "file": "supabase/functions/monitorar-erros-frontend/index.ts",
@@ -109109,6 +109152,10 @@
    {
     "file": "supabase/functions/monitor-health/index.ts",
     "line": ".gte('created_at', new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString());"
+   },
+   {
+    "file": "supabase/functions/monitor-health/index.ts",
+    "line": "const COOLDOWN_ALERTA_MS = 2 * 60 * 60 * 1000;"
    },
    {
     "file": "supabase/functions/open-finance/index.ts",
@@ -141821,6 +141868,10 @@
     "limit": "1"
    },
    {
+    "file": "supabase/functions/monitor-health/index.ts",
+    "limit": "1"
+   },
+   {
     "file": "supabase/functions/processar-solicitacao-lgpd/index.ts",
     "limit": "1000"
    },
@@ -143757,7 +143808,6 @@
       "compara:src/pages/configuracoes/filtros-salvos/useFiltrosSalvosDiagnostics.ts",
       "compara:supabase/functions/gerar-sped-ecd/index.ts",
       "compara:supabase/functions/gerar-sped-ecf/index.ts",
-      "compara:supabase/functions/monitor-health/index.ts",
       "escreve:src/components/comprovantes/ComprovanteOCR.tsx",
       "escreve:src/components/expert/DocumentAnalyzer.tsx",
       "escreve:src/components/ui/file-upload.tsx",
@@ -144257,6 +144307,12 @@
      "unknown": [
       "escreve:supabase/functions/health/index.ts"
      ],
+     "retrying": [
+      "compara:supabase/functions/monitor-health/index.ts"
+     ],
+     "dead": [
+      "compara:supabase/functions/monitor-health/index.ts"
+     ],
      "falhou": [
       "escreve:supabase/functions/processar-fila-cobrancas/index.ts"
      ],
@@ -144312,6 +144368,7 @@
       "filtra:supabase/functions/digest-silenciamentos-erro/index.ts",
       "filtra:supabase/functions/enviar-digest-conformidade/index.ts",
       "filtra:supabase/functions/gerar-pacote-evidencias/index.ts",
+      "filtra:supabase/functions/monitor-health/index.ts",
       "filtra:supabase/functions/monitorar-erros-frontend/index.ts",
       "filtra:supabase/functions/relatorio-diario-anomalias/index.ts",
       "filtra:supabase/functions/sso-test-login/index.ts"
@@ -145233,7 +145290,8 @@
       "escreve:supabase/functions/gerar-alertas-tributarios/index.ts"
      ],
      "monitor_health": [
-      "escreve:supabase/functions/monitor-health/index.ts"
+      "escreve:supabase/functions/monitor-health/index.ts",
+      "filtra:supabase/functions/monitor-health/index.ts"
      ],
      "acesso": [
       "compara:supabase/functions/processar-solicitacao-lgpd/index.ts"
@@ -162367,6 +162425,20 @@
     "msg": "valor `cancelled` para `status` usado no código não existe em nenhum enum do banco/TS",
     "where": [
      "escreve:supabase/functions/detectar-anomalias-financeiras/index.ts"
+    ]
+   },
+   {
+    "kind": "status",
+    "msg": "valor `retrying` para `status` usado no código não existe em nenhum enum do banco/TS",
+    "where": [
+     "compara:supabase/functions/monitor-health/index.ts"
+    ]
+   },
+   {
+    "kind": "status",
+    "msg": "valor `dead` para `status` usado no código não existe em nenhum enum do banco/TS",
+    "where": [
+     "compara:supabase/functions/monitor-health/index.ts"
     ]
    },
    {
@@ -220289,10 +220361,18 @@
   },
   "supabase/functions/monitor-health/index.ts": {
    "path": "supabase/functions/monitor-health/index.ts",
-   "lines": 202,
+   "lines": 265,
    "tables": [
     {
      "table": "webhooks_log",
+     "op": "select"
+    },
+    {
+     "table": "alertas",
+     "op": "select"
+    },
+    {
+     "table": "profiles",
      "op": "select"
     },
     {
@@ -220303,6 +220383,17 @@
    "table_cols": {
     "webhooks_log": [
      "status"
+    ],
+    "alertas": [
+     "id",
+     "lido",
+     "tipo",
+     "titulo"
+    ],
+    "profiles": [
+     "empresa_id",
+     "id",
+     "role"
     ]
    },
    "rpc": [
@@ -220310,6 +220401,16 @@
    ],
    "env": [
     "SUPABASE_URL"
+   ],
+   "errors": [
+    "falha ao consultar cron.job_run_details: ${error.message}",
+    "falha ao consultar webhooks_log: ${error?.message ?? "
+   ],
+   "params": [
+    {
+     "name": "COOLDOWN_ALERTA_MS",
+     "value": "2"
+    }
    ],
    "status_values": [
     {
@@ -220319,25 +220420,45 @@
     },
     {
      "field": "status",
-     "value": "error",
+     "value": "failed",
      "kind": "compara"
     },
     {
      "field": "status",
-     "value": "failed",
+     "value": "retrying",
      "kind": "compara"
+    },
+    {
+     "field": "status",
+     "value": "dead",
+     "kind": "compara"
+    },
+    {
+     "field": "tipo",
+     "value": "monitor_health",
+     "kind": "filtra"
+    },
+    {
+     "field": "role",
+     "value": "admin",
+     "kind": "filtra"
     }
    ],
    "rule_comments": [
     "falharam. HAVING garante mínimo de 2 execuções registradas.",
+    "GET é apenas health-check: não executa monitoramento nem insere nada.",
     "Apenas pg_cron ou chamada interna com segredo rotacionável."
    ],
    "doc": "Edge Function: monitor-health Step 46 — PLANO_50: alerta ativo para falha de cron e de webhook. A cada 30 min o pg_cron chama esta função. Ela: 1. Verifica se algum job falhou nas 2 execuções consecutivas mais recentes. 2. Verifica se a taxa de erro de webhooks nas últimas 2 h supera 20%. 3. Em caso …",
    "temporal": [
-    ".gte('created_at', new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString());"
+    ".gte('created_at', new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString());",
+    "const COOLDOWN_ALERTA_MS = 2 * 60 * 60 * 1000;"
    ],
    "percents": [
     "// 2. Verifica se a taxa de erro de webhooks nas últimas 2 h supera 20%."
+   ],
+   "pagination": [
+    "1"
    ],
    "uses_service_role": true
   },
@@ -228311,10 +228432,20 @@
   }
  },
  "git": {
-  "sha": "d83f82e60c63aa2ed017aefdf4d864084f9c3c63",
+  "sha": "924e4a015792e4cfb161cfbfdae79189a60339cb",
   "branch": "main",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
   "commits": [
+   {
+    "sha": "924e4a0",
+    "date": "2026-11-08",
+    "author": "adm01-debug",
+    "subject": "fix: monitor-health review #240 — supersede #257 (#271)",
+    "files": [
+     "docs/DB_HEALTH.md",
+     "supabase/functions/monitor-health/index.ts"
+    ]
+   },
    {
     "sha": "d83f82e",
     "date": "2026-11-08",
@@ -228755,16 +228886,6 @@
     "files": [
      "RELATORIO_CI.md"
     ]
-   },
-   {
-    "sha": "05e3965",
-    "date": "2026-10-30",
-    "author": "adm01-debug",
-    "subject": "docs(ci): relatório final 30/10/2026 — prod-migrate corrigido, PENDENCIAS atualizada (#219)",
-    "files": [
-     "PENDENCIAS.md",
-     "RELATORIO_CI.md"
-    ]
    }
   ],
   "hot_files": [
@@ -228795,6 +228916,14 @@
    [
     "supabase/functions/asaas-proxy/index.ts",
     3
+   ],
+   [
+    "docs/DB_HEALTH.md",
+    2
+   ],
+   [
+    "supabase/functions/monitor-health/index.ts",
+    2
    ],
    [
     "supabase/functions/gerar-pacote-evidencias/index.ts",
@@ -228838,14 +228967,6 @@
    ],
    [
     "supabase/functions/gerar-pdf-tributario/index.ts",
-    2
-   ],
-   [
-    ".github/workflows/ci.yml",
-    2
-   ],
-   [
-    "PENDENCIAS.md",
     2
    ]
   ]

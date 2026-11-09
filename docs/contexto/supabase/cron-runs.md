@@ -41,9 +41,9 @@
 
 | início (UTC) | status | duração (s) | mensagem |
 |---|---|---|---|
+| 2026-11-09 01:30:00 | succeeded | 0.04 | 1 row |
 | 2026-11-08 01:30:00 | succeeded | 0.05 | 1 row |
 | 2026-11-07 01:30:00 | succeeded | 0.16 | 1 row |
-| 2026-11-06 01:30:00 | succeeded | 0.18 | 1 row |
 
 
 ## 7 · cleanup-rpc-obs-metrics-daily
@@ -68,18 +68,18 @@
 
 | início (UTC) | status | duração (s) | mensagem |
 |---|---|---|---|
+| 2026-11-09 01:30:00 | succeeded | 0.25 | 1 row |
 | 2026-11-09 01:00:00 | succeeded | 0.89 | 1 row |
 | 2026-11-09 00:30:00 | succeeded | 0.30 | 1 row |
-| 2026-11-09 00:00:00 | succeeded | 1.45 | 1 row |
 
 
 ## 12 · integrity-invariants-hourly
 
 | início (UTC) | status | duração (s) | mensagem |
 |---|---|---|---|
+| 2026-11-09 01:45:00 | succeeded | 0.03 | 1 row |
 | 2026-11-09 00:45:00 | succeeded | 0.01 | 1 row |
 | 2026-11-08 23:45:00 | succeeded | 0.02 | 1 row |
-| 2026-11-08 22:45:00 | succeeded | 0.01 | 1 row |
 
 
 ## 13 · maintain-monthly-partitions
@@ -193,18 +193,18 @@ _nenhum_
 
 | início (UTC) | status | duração (s) | mensagem |
 |---|---|---|---|
+| 2026-11-09 01:45:00 | succeeded | 0.07 | 1 row |
+| 2026-11-09 01:30:00 | succeeded | 0.07 | 1 row |
 | 2026-11-09 01:15:00 | succeeded | 0.04 | 1 row |
-| 2026-11-09 01:00:00 | succeeded | 0.09 | 1 row |
-| 2026-11-09 00:45:00 | succeeded | 0.06 | 1 row |
 
 
 ## 33 · webhook-retry-worker-1min
 
 | início (UTC) | status | duração (s) | mensagem |
 |---|---|---|---|
-| 2026-11-09 01:22:00 | succeeded | 0.05 | 1 row |
-| 2026-11-09 01:21:00 | succeeded | 0.02 | 1 row |
-| 2026-11-09 01:20:00 | succeeded | 0.08 | 1 row |
+| 2026-11-09 01:50:00 | succeeded | 0.04 | 1 row |
+| 2026-11-09 01:49:00 | succeeded | 0.02 | 1 row |
+| 2026-11-09 01:48:00 | succeeded | 0.04 | 1 row |
 
 
 ## 34 · auditar-acessos-cross-tenant
@@ -229,18 +229,18 @@ _nenhum_
 
 | início (UTC) | status | duração (s) | mensagem |
 |---|---|---|---|
+| 2026-11-09 01:30:00 | succeeded | 0.06 | 1 row |
 | 2026-11-09 01:00:00 | succeeded | 0.09 | 1 row |
 | 2026-11-09 00:30:00 | succeeded | 0.03 | 1 row |
-| 2026-11-09 00:00:00 | succeeded | 0.17 | 1 row |
 
 
 ## 37 · evaluate-delivery-alerts-every-min
 
 | início (UTC) | status | duração (s) | mensagem |
 |---|---|---|---|
-| 2026-11-09 01:22:00 | succeeded | 0.02 | 1 row |
-| 2026-11-09 01:21:00 | succeeded | 0.02 | 1 row |
-| 2026-11-09 01:20:00 | succeeded | 0.06 | 1 row |
+| 2026-11-09 01:50:00 | succeeded | 0.03 | 1 row |
+| 2026-11-09 01:49:00 | succeeded | 0.03 | 1 row |
+| 2026-11-09 01:48:00 | succeeded | 0.03 | 1 row |
 
 
 ## 40 · gerar-snapshots-conformidade-mensal
@@ -261,6 +261,6 @@ _nenhum_
 
 | início (UTC) | status | duração (s) | mensagem |
 |---|---|---|---|
+| 2026-11-09 01:30:00 | failed | 0.04 | ERROR:  Secret "anon_key" ausente no Vault. Crie-o em Project Settings > Vault com a anon key de bwwbeyolnnzppeuhgkcd. CONTEXT:  PL/pgSQL function chave_anon_vault() line 11 at RAISE SQL statement "SELECT net.http_post(     url := 'https://bwwbeyolnnzppeuhgkcd.supabase.co/functions/v1/enviar-digest- |
 | 2026-11-09 00:30:00 | failed | 0.05 | ERROR:  Secret "anon_key" ausente no Vault. Crie-o em Project Settings > Vault com a anon key de bwwbeyolnnzppeuhgkcd. CONTEXT:  PL/pgSQL function chave_anon_vault() line 11 at RAISE SQL statement "SELECT net.http_post(     url := 'https://bwwbeyolnnzppeuhgkcd.supabase.co/functions/v1/enviar-digest- |
 | 2026-11-08 23:30:00 | failed | 0.01 | ERROR:  Secret "anon_key" ausente no Vault. Crie-o em Project Settings > Vault com a anon key de bwwbeyolnnzppeuhgkcd. CONTEXT:  PL/pgSQL function chave_anon_vault() line 11 at RAISE SQL statement "SELECT net.http_post(     url := 'https://bwwbeyolnnzppeuhgkcd.supabase.co/functions/v1/enviar-digest- |
-| 2026-11-08 22:30:00 | failed | 0.04 | ERROR:  Secret "anon_key" ausente no Vault. Crie-o em Project Settings > Vault com a anon key de bwwbeyolnnzppeuhgkcd. CONTEXT:  PL/pgSQL function chave_anon_vault() line 11 at RAISE SQL statement "SELECT net.http_post(     url := 'https://bwwbeyolnnzppeuhgkcd.supabase.co/functions/v1/enviar-digest- |

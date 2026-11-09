@@ -1,6 +1,6 @@
 # 11 · GLOSSÁRIO, DADOS DE REFERÊNCIA E LACUNAS
 
-> Gerado automaticamente por AI Context Sync v1.3.2 · commit `d83f82e60c` · branch `main` · 2026-11-09 01:22 UTC
+> Gerado automaticamente por AI Context Sync v1.3.2 · commit `924e4a0157` · branch `main` · 2026-11-09 01:49 UTC
 > Não edite à mão — regras humanas vão em `manual/`.
 
 ## Glossário do domínio (entidades do sistema)
@@ -382,6 +382,8 @@
 | status | valor `ACCEPTED` para `status` usado no código não existe em nenhum enum do banco/TS | `escreve:supabase/functions/asaas-proxy/index.ts` |
 | status | valor `finalizado` para `status` usado no código não existe em nenhum enum do banco/TS | `compara:supabase/functions/calcular-health-score-operacional/index.ts` |
 | status | valor `cancelled` para `status` usado no código não existe em nenhum enum do banco/TS | `escreve:supabase/functions/detectar-anomalias-financeiras/index.ts` |
+| status | valor `retrying` para `status` usado no código não existe em nenhum enum do banco/TS | `compara:supabase/functions/monitor-health/index.ts` |
+| status | valor `dead` para `status` usado no código não existe em nenhum enum do banco/TS | `compara:supabase/functions/monitor-health/index.ts` |
 | status | valor `contact_not_found` para `status` usado no código não existe em nenhum enum do banco/TS | `escreve:supabase/functions/sync-profile-to-bitrix/index.ts` |
 | status | valor `fechada` para `status` usado no código não existe em nenhum enum do banco/TS | `compara:supabase/functions/verificar-conformidade-fiscal/index.ts` |
 | status | valor `string` para `status` usado no código não existe em nenhum enum do banco/TS | `compara:supabase/functions/webhook-replay/index.ts` |

@@ -36428,6 +36428,7 @@
     "convidar-usuario",
     "digest-silenciamentos-erro",
     "enviar-digest-conformidade",
+    "monitor-health",
     "monitorar-erros-frontend",
     "processar-solicitacao-lgpd",
     "relatorio-diario-anomalias",
