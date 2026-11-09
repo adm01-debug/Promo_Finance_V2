@@ -21,7 +21,7 @@
 | Onde | O que tem |
 |---|---|
 | `src/` | front Vite + React: `components/`, `hooks/`, `pages/`, `contexts/`, `lib/`, `config/` (inclui `env.ts`, que lê as vars de `env.manifest.json`), `integrations/` (cliente Supabase, `types.ts` gerado), `types/` |
-| `supabase/functions/` | 109 Edge Functions Deno, 1 pasta por função; catálogo em `docs/EDGE_FUNCTIONS_CATALOG.md` |
+| `supabase/functions/` | 106 Edge Functions Deno, 1 pasta por função; catálogo em `docs/EDGE_FUNCTIONS_CATALOG.md` |
 | `supabase/migrations/` | arquivos `.sql`, timestamp `YYYYMMDDHHmmss` estritamente crescente |
 | `supabase/tests/` | testes de banco |
 | `supabase/config.toml` | `project_id` + `verify_jwt` por função |
@@ -33,7 +33,7 @@
 | `scripts/regras_negocio/` | gerador de `docs/contexto/regras/` (regras de negócio; `manual/` é a parte editada por humano) |
 | `scripts/edge-deploy/` *(ver PR aberta #253)* | tooling de verificação pós-deploy de Edge Function |
 | `e2e/` | specs Playwright |
-| `docs/` | documentação extensa — `EDGE_FUNCTIONS_CATALOG.md`, `ARCHITECTURE.md`, `DB_HEALTH.md`, `SECURITY.md`, `adr/`, `runbooks/`, `contexto/regras/manual/`, `agentes/` (esta pasta) |
+| `docs/` | documentação extensa — `EDGE_FUNCTIONS_CATALOG.md`, `ARCHITECTURE.md`, `DB_HEALTH.md`, `SECURITY.md`, `adr/`, `runbooks/`, `docs/contexto/regras/manual/`, `agentes/` (esta pasta) |
 
 ## Comandos
 
