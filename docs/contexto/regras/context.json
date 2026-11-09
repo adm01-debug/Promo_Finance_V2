@@ -1,10 +1,10 @@
 {
  "meta": {
-  "sha": "529236d4b6c373aabe6af2b9e5c6ea59a402d1a9",
+  "sha": "e07fec74eb66949d615c0abc8912bfb990f8861a",
   "branch": "main",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
-  "generated_at": "2026-11-09 12:52 UTC",
-  "files_total": 3524,
+  "generated_at": "2026-11-09 13:03 UTC",
+  "files_total": 3525,
   "code_files": 3177,
   "code_lines": 455250
  },
@@ -228971,10 +228971,22 @@
   }
  },
  "git": {
-  "sha": "529236d4b6c373aabe6af2b9e5c6ea59a402d1a9",
+  "sha": "e07fec74eb66949d615c0abc8912bfb990f8861a",
   "branch": "main",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
   "commits": [
+   {
+    "sha": "e07fec7",
+    "date": "2026-11-09",
+    "author": "adm01-debug",
+    "subject": "chore: documentação final sessão merge-prs (prs.json + RELATORIO + dossiers)",
+    "files": [
+     "analise-prs/RELATORIO_PRS.md",
+     "analise-prs/dossiers/pr291.md",
+     "analise-prs/progresso.json",
+     "analise-prs/prs.json"
+    ]
+   },
    {
     "sha": "529236d",
     "date": "2026-11-09",
@@ -229409,23 +229421,15 @@
      "scripts/stress-test.ts",
      "scripts/validate-all.sh"
     ]
-   },
-   {
-    "sha": "dd48a93",
-    "date": "2026-11-07",
-    "author": "adm01-debug",
-    "subject": "feat: [STEPS 46+47] monitor-health cron + painel DB_HEALTH.md (#240)",
-    "files": [
-     "docs/DB_HEALTH.md",
-     "supabase/config.toml",
-     "supabase/functions/monitor-health/index.ts",
-     "supabase/migrations/20261101200000_monitor_health_cron.sql"
-    ]
    }
   ],
   "hot_files": [
    [
     "analise-prs/progresso.json",
+    8
+   ],
+   [
+    "analise-prs/RELATORIO_PRS.md",
     7
    ],
    [
@@ -229437,12 +229441,8 @@
     6
    ],
    [
-    "analise-prs/RELATORIO_PRS.md",
-    6
-   ],
-   [
     "analise-prs/prs.json",
-    3
+    4
    ],
    [
     ".github/workflows/contexto.yml",
@@ -229469,14 +229469,6 @@
     2
    ],
    [
-    "docs/DB_HEALTH.md",
-    2
-   ],
-   [
-    "supabase/functions/monitor-health/index.ts",
-    2
-   ],
-   [
     "AGENTS.md",
     2
    ],
@@ -229493,6 +229485,10 @@
     2
    ],
    [
+    "analise-prs/dossiers/pr291.md",
+    1
+   ],
+   [
     "src/components/configuracoes/SecuritySettings.tsx",
     1
    ],
@@ -229502,6 +229498,10 @@
    ],
    [
     "src/components/tributario/onboarding/StepConvidarContador.tsx",
+    1
+   ],
+   [
+    "src/hooks/financial/views.schemas.ts",
     1
    ]
   ]
