@@ -2,11 +2,16 @@
  "aviso": "GERADO AUTOMATICAMENTE por scripts/ai-context/gerar.mjs — não editar à mão; será sobrescrito.",
  "format_version": 2,
  "git": {
-  "commit": "ea42a9b1b4297eabfc2f0f20a70c66fdb44e907e",
+  "commit": "34efae1f81963db1f12a1c1a35ec1b8845ca1096",
   "branch": "main",
-  "data_commit": "2026-11-09T10:19:49Z",
+  "data_commit": "2026-11-09T07:36:55-03:00",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
   "ultimos_commits": [
+   {
+    "sha": "34efae1",
+    "data": "2026-11-09",
+    "assunto": "chore: atualiza prs.json — adiciona #283-#288, 48 PRs classificadas"
+   },
    {
     "sha": "ea42a9b",
     "data": "2026-11-09",
@@ -126,11 +131,6 @@
     "sha": "b0d9ddb",
     "data": "2026-11-08",
     "assunto": "fix(contexto): guard de segredo reprovava a coleta do banco com a saída já redigida (#261)"
-   },
-   {
-    "sha": "794478e",
-    "data": "2026-11-08",
-    "assunto": "feat(contexto): sistema autônomo de contexto do estado real para agentes de IA (#260)"
    }
   ],
   "arquivos_mudados_7d": 256,
@@ -301,7 +301,7 @@
   "autores_30d": [
    {
     "autor": "adm01-debug",
-    "commits": 57
+    "commits": 58
    },
    {
     "autor": "devin-ai-integration[bot]",

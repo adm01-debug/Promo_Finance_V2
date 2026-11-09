@@ -58,11 +58,11 @@
  "commits": {
   "convencao": "conventional commits (observado)",
   "exemplos": [
+   "chore: atualiza prs.json — adiciona #283-#288, 48 PRs classificadas",
    "feat(ci): documentos gerados do estado real do CI e das edge functions (#275)",
    "chore: relatorio final sessao merge-prs (total 46, 16 mergeadas, #287 sentry bump) (#288)",
    "chore: bump @sentry/react 11.0.0 → 11.9.0 (supersede #210) (#287)",
-   "chore: docs analise-prs estado final 15 mergeadas esta sessao",
-   "chore: docs analise-prs estado final 14 mergeadas esta sessao (#285)"
+   "chore: docs analise-prs estado final 15 mergeadas esta sessao"
   ]
  },
  "pr_template": ".github/PULL_REQUEST_TEMPLATE.md",

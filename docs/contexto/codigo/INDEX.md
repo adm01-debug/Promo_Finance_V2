@@ -1,7 +1,7 @@
 # Contexto do projeto para agentes de IA
 
 GERADO AUTOMATICAMENTE por scripts/ai-context/gerar.mjs — não editar à mão; será sobrescrito.
-Publicado pelo workflow .github/workflows/contexto.yml em docs/contexto/codigo/ da branch gerada `contexto`. Índice único em docs/contexto/00-INDEX.md. Ler: git fetch origin contexto && git show origin/contexto:docs/contexto/00-INDEX.md Gere local com `node scripts/ai-context/gerar.mjs`. Commit-base: `ea42a9b1b4297eabfc2f0f20a70c66fdb44e907e` (2026-11-09T10:19:49Z).
+Publicado pelo workflow .github/workflows/contexto.yml em docs/contexto/codigo/ da branch gerada `contexto`. Índice único em docs/contexto/00-INDEX.md. Ler: git fetch origin contexto && git show origin/contexto:docs/contexto/00-INDEX.md Gere local com `node scripts/ai-context/gerar.mjs`. Commit-base: `34efae1f81963db1f12a1c1a35ec1b8845ca1096` (2026-11-09T07:36:55-03:00).
 
 ## Como usar (leia antes de planejar ou executar qualquer tarefa)
 1. **Tela/rota/menu** → `rotas.json` (url/vista/menu → arquivo → hooks → tabelas → edges; `rotas_http_backend` para APIs) e `modulos.json` (módulo inteiro + dependências entre módulos).
@@ -588,6 +588,7 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 - CHANGELOG topo: [Unreleased]
 
 ## Últimos commits
+- 2026-11-09 `34efae1` chore: atualiza prs.json — adiciona #283-#288, 48 PRs classificadas
 - 2026-11-09 `ea42a9b` feat(ci): documentos gerados do estado real do CI e das edge functions (#275)
 - 2026-11-09 `94bb4af` chore: relatorio final sessao merge-prs (total 46, 16 mergeadas, #287 sentry bump) (#288)
 - 2026-11-09 `e8620bd` chore: bump @sentry/react 11.0.0 → 11.9.0 (supersede #210) (#287)
@@ -602,7 +603,6 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 - 2026-11-09 `97b7711` fix(docs): corrige contagem de edge functions para 106 em mapa-repo.md
 - 2026-11-08 `93026e6` chore: inventário e dossiê das 34 PRs abertas (#273)
 - 2026-11-08 `45a20a2` fix: bump eslint-plugin-react-refresh para ^0.4.20 (supersede #215)
-- 2026-11-08 `8d88a61` fix: type 'spring' as const em micro-interactions.tsx (StaggerItem/EmptyState)
 
 ## Arquivos deste diretório
 - `docs/contexto/codigo/rotas.json`

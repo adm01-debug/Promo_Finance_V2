@@ -1,9 +1,9 @@
 {
  "meta": {
-  "sha": "ea42a9b1b4297eabfc2f0f20a70c66fdb44e907e",
+  "sha": "34efae1f81963db1f12a1c1a35ec1b8845ca1096",
   "branch": "main",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
-  "generated_at": "2026-11-09 10:38 UTC",
+  "generated_at": "2026-11-09 10:47 UTC",
   "files_total": 3523,
   "code_files": 3176,
   "code_lines": 455118
@@ -228937,10 +228937,19 @@
   }
  },
  "git": {
-  "sha": "ea42a9b1b4297eabfc2f0f20a70c66fdb44e907e",
+  "sha": "34efae1f81963db1f12a1c1a35ec1b8845ca1096",
   "branch": "main",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
   "commits": [
+   {
+    "sha": "34efae1",
+    "date": "2026-11-09",
+    "author": "adm01-debug",
+    "subject": "chore: atualiza prs.json — adiciona #283-#288, 48 PRs classificadas",
+    "files": [
+     "analise-prs/prs.json"
+    ]
+   },
    {
     "sha": "ea42a9b",
     "date": "2026-11-09",
@@ -229455,18 +229464,6 @@
      "supabase/functions/whatsapp-ia-proativo/index.ts",
      "supabase/functions/whatsapp-webhook/index.ts"
     ]
-   },
-   {
-    "sha": "6bedb92",
-    "date": "2026-11-06",
-    "author": "dependabot[bot]",
-    "subject": "fix: atualiza lock graphifyy 0.9.97 com pyyaml (#249)",
-    "files": [
-     "scripts/graphify/config.json",
-     "scripts/graphify/requirements-linux-py311.lock",
-     "scripts/graphify/requirements.in",
-     "scripts/graphify/test_requirements_lock.py"
-    ]
    }
   ],
   "hot_files": [
@@ -229487,6 +229484,10 @@
     6
    ],
    [
+    "analise-prs/prs.json",
+    3
+   ],
+   [
     ".github/workflows/contexto.yml",
     3
    ],
@@ -229500,10 +229501,6 @@
    ],
    [
     "analise-prs/dossiers/pr271.md",
-    2
-   ],
-   [
-    "analise-prs/prs.json",
     2
    ],
    [
