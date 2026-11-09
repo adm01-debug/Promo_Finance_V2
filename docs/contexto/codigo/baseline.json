@@ -2,11 +2,16 @@
  "aviso": "GERADO AUTOMATICAMENTE por scripts/ai-context/gerar.mjs — não editar à mão; será sobrescrito.",
  "format_version": 2,
  "git": {
-  "commit": "924e4a015792e4cfb161cfbfdae79189a60339cb",
+  "commit": "8d88a61f5d1e46b785f6d734d91f6e082076f48e",
   "branch": "main",
-  "data_commit": "2026-11-08T21:55:52-03:00",
+  "data_commit": "2026-11-08T22:39:52-03:00",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
   "ultimos_commits": [
+   {
+    "sha": "8d88a61",
+    "data": "2026-11-08",
+    "assunto": "fix: type 'spring' as const em micro-interactions.tsx (StaggerItem/EmptyState)"
+   },
    {
     "sha": "924e4a0",
     "data": "2026-11-08",
@@ -126,14 +131,9 @@
     "sha": "309ee32",
     "data": "2026-11-01",
     "assunto": "fix: boletos asaas_id types + migrations steps 10+20 (rebuid sem conflito) (#247)"
-   },
-   {
-    "sha": "629439c",
-    "data": "2026-10-31",
-    "assunto": "feat: steps 24, 31, 36 — totais movimentações, auditoria verify_jwt, rate limit uniforme"
    }
   ],
-  "arquivos_mudados_7d": 173,
+  "arquivos_mudados_7d": 174,
   "pastas_mais_mudadas_30d": [
    {
     "pasta": "supabase/functions/_shared",
@@ -169,7 +169,7 @@
    },
    {
     "pasta": "src/components/ui",
-    "mudancas": 8
+    "mudancas": 9
    },
    {
     "pasta": "src/components/contas-receber",
@@ -301,7 +301,7 @@
   "autores_30d": [
    {
     "autor": "adm01-debug",
-    "commits": 42
+    "commits": 43
    },
    {
     "autor": "devin-ai-integration[bot]",
@@ -320,7 +320,7 @@
  "contagens": {
   "arquivos_total": 3399,
   "arquivos_codigo": 2148,
-  "linhas_codigo": 399750,
+  "linhas_codigo": 399754,
   "rotas": 128,
   "rotas_http_backend": 12,
   "vistas_por_id": 0,
@@ -568,7 +568,7 @@
   },
   "src/components": {
    "arquivos": 872,
-   "linhas": 159215
+   "linhas": 159219
   },
   "src/config": {
    "arquivos": 1,

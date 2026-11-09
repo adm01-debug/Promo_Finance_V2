@@ -1,7 +1,7 @@
 # Contexto do projeto para agentes de IA
 
 GERADO AUTOMATICAMENTE por scripts/ai-context/gerar.mjs — não editar à mão; será sobrescrito.
-Publicado pelo workflow .github/workflows/contexto.yml em docs/contexto/codigo/ da branch gerada `contexto`. Índice único em docs/contexto/00-INDEX.md. Ler: git fetch origin contexto && git show origin/contexto:docs/contexto/00-INDEX.md Gere local com `node scripts/ai-context/gerar.mjs`. Commit-base: `924e4a015792e4cfb161cfbfdae79189a60339cb` (2026-11-08T21:55:52-03:00).
+Publicado pelo workflow .github/workflows/contexto.yml em docs/contexto/codigo/ da branch gerada `contexto`. Índice único em docs/contexto/00-INDEX.md. Ler: git fetch origin contexto && git show origin/contexto:docs/contexto/00-INDEX.md Gere local com `node scripts/ai-context/gerar.mjs`. Commit-base: `8d88a61f5d1e46b785f6d734d91f6e082076f48e` (2026-11-08T22:39:52-03:00).
 
 ## Como usar (leia antes de planejar ou executar qualquer tarefa)
 1. **Tela/rota/menu** → `rotas.json` (url/vista/menu → arquivo → hooks → tabelas → edges; `rotas_http_backend` para APIs) e `modulos.json` (módulo inteiro + dependências entre módulos).
@@ -36,7 +36,7 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 |---|---|
 | arquivos_total | 3399 |
 | arquivos_codigo | 2148 |
-| linhas_codigo | 399750 |
+| linhas_codigo | 399754 |
 | rotas | 128 |
 | rotas_http_backend | 12 |
 | vistas_por_id | 0 |
@@ -587,6 +587,7 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 - CHANGELOG topo: [Unreleased]
 
 ## Últimos commits
+- 2026-11-08 `8d88a61` fix: type 'spring' as const em micro-interactions.tsx (StaggerItem/EmptyState)
 - 2026-11-08 `924e4a0` fix: monitor-health review #240 — supersede #257 (#271)
 - 2026-11-08 `d83f82e` docs: atualiza AGENTS.md e docs/agentes/ — supersede #264 (#272)
 - 2026-11-08 `1f5138a` fix: corrige TS2345 na edge function gerar-pacote-evidencias (#270)
@@ -601,7 +602,6 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 - 2026-11-07 `dd48a93` feat: [STEPS 46+47] monitor-health cron + painel DB_HEALTH.md (#240)
 - 2026-11-07 `dc39f52` fix: sentry.ts — host DSN, redação de dados e parseDsn seguro [substitui #246] (#248)
 - 2026-11-07 `32a5e79` infra: migra imports esm.sh para npm: pinados nas edge functions (#251)
-- 2026-11-06 `6bedb92` fix: atualiza lock graphifyy 0.9.97 com pyyaml (#249)
 
 ## Arquivos deste diretório
 - `docs/contexto/codigo/rotas.json`
