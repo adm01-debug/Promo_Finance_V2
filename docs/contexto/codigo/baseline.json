@@ -2,11 +2,16 @@
  "aviso": "GERADO AUTOMATICAMENTE por scripts/ai-context/gerar.mjs — não editar à mão; será sobrescrito.",
  "format_version": 2,
  "git": {
-  "commit": "6a925600f36f44488dc07b79e063f3dd67e5d30b",
+  "commit": "020bb81ebf87848ca653d1665f808e15db7bc863",
   "branch": "main",
-  "data_commit": "2026-11-08T19:25:03-03:00",
+  "data_commit": "2026-11-08T20:57:11-03:00",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
   "ultimos_commits": [
+   {
+    "sha": "020bb81",
+    "data": "2026-11-08",
+    "assunto": "chore(deps): bump @dnd-kit/sortable from 7.0.2 to 10.0.0 (#267)"
+   },
    {
     "sha": "6a92560",
     "data": "2026-11-08",
@@ -126,11 +131,6 @@
     "sha": "0644e60",
     "data": "2026-10-31",
     "assunto": "chore(ci): adicionar 2 GHSAs build-time ao ignore do bun audit (#239)"
-   },
-   {
-    "sha": "8172bc7",
-    "data": "2026-10-30",
-    "assunto": "fix(security): .max() nos arrays de edge functions — mitigação GHSA-mrhx-c7xc-m3w5 (#221)"
    }
   ],
   "arquivos_mudados_7d": 170,
@@ -140,11 +140,15 @@
     "mudancas": 19
    },
    {
+    "pasta": "bun.lock",
+    "mudancas": 13
+   },
+   {
     "pasta": "src/components/layout",
     "mudancas": 13
    },
    {
-    "pasta": "bun.lock",
+    "pasta": "package.json",
     "mudancas": 12
    },
    {
@@ -153,10 +157,6 @@
    },
    {
     "pasta": "RELATORIO_CI.md",
-    "mudancas": 11
-   },
-   {
-    "pasta": "package.json",
     "mudancas": 11
    },
    {
@@ -199,11 +199,11 @@
   "arquivos_mais_mudados_90d": [
    {
     "arquivo": "package.json",
-    "mudancas": 29
+    "mudancas": 30
    },
    {
     "arquivo": "bun.lock",
-    "mudancas": 22
+    "mudancas": 23
    },
    {
     "arquivo": ".github/workflows/ci.yml",
@@ -301,7 +301,7 @@
   "autores_30d": [
    {
     "autor": "adm01-debug",
-    "commits": 38
+    "commits": 39
    },
    {
     "autor": "devin-ai-integration[bot]",

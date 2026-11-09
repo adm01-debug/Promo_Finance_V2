@@ -1,9 +1,9 @@
 {
  "meta": {
-  "sha": "6a925600f36f44488dc07b79e063f3dd67e5d30b",
+  "sha": "020bb81ebf87848ca653d1665f808e15db7bc863",
   "branch": "main",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
-  "generated_at": "2026-11-08 23:53 UTC",
+  "generated_at": "2026-11-09 00:00 UTC",
   "files_total": 3438,
   "code_files": 3155,
   "code_lines": 452691
@@ -228311,10 +228311,20 @@
   }
  },
  "git": {
-  "sha": "6a925600f36f44488dc07b79e063f3dd67e5d30b",
+  "sha": "020bb81ebf87848ca653d1665f808e15db7bc863",
   "branch": "main",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
   "commits": [
+   {
+    "sha": "020bb81",
+    "date": "2026-11-08",
+    "author": "adm01-debug",
+    "subject": "chore(deps): bump @dnd-kit/sortable from 7.0.2 to 10.0.0 (#267)",
+    "files": [
+     "bun.lock",
+     "package.json"
+    ]
+   },
    {
     "sha": "6a92560",
     "date": "2026-11-08",
@@ -228752,26 +228762,16 @@
     "files": [
      ".github/workflows/prod-migrate.yml"
     ]
-   },
-   {
-    "sha": "bbd683f",
-    "date": "2026-10-29",
-    "author": "adm01-debug",
-    "subject": "fix(ci): correção e documentação de workflows — inventário completo de pendências (#201)",
-    "files": [
-     "PENDENCIAS.md",
-     "RELATORIO_CI.md"
-    ]
    }
   ],
   "hot_files": [
    [
     "bun.lock",
-    3
+    4
    ],
    [
     "package.json",
-    3
+    4
    ],
    [
     ".github/workflows/contexto.yml",
@@ -228787,14 +228787,6 @@
    ],
    [
     "supabase/functions/asaas-proxy/index.ts",
-    3
-   ],
-   [
-    "PENDENCIAS.md",
-    3
-   ],
-   [
-    "RELATORIO_CI.md",
     3
    ],
    [
@@ -228843,6 +228835,14 @@
    ],
    [
     ".github/workflows/ci.yml",
+    2
+   ],
+   [
+    "PENDENCIAS.md",
+    2
+   ],
+   [
+    "RELATORIO_CI.md",
     2
    ]
   ]

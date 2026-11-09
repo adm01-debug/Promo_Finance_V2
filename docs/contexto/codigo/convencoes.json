@@ -58,11 +58,11 @@
  "commits": {
   "convencao": "conventional commits (observado)",
   "exemplos": [
+   "chore(deps): bump @dnd-kit/sortable from 7.0.2 to 10.0.0 (#267)",
    "fix: erros TypeScript framer-motion 14.x — supersede #209 (#266)",
    "chore(deps-dev): bump eslint-config-prettier from 9.1.2 to 10.1.8 (#268)",
    "fix(contexto): grants timeout, custom_hostname 400 e refresh diário (#262)",
-   "chore: instruções enxutas para agentes (#252)",
-   "fix(contexto): guard de segredo reprovava a coleta do banco com a saída já redigida (#261)"
+   "chore: instruções enxutas para agentes (#252)"
   ]
  },
  "pr_template": ".github/PULL_REQUEST_TEMPLATE.md",
