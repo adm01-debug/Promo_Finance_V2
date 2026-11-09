@@ -39,12 +39,12 @@ Regras do dono para todo agente de IA; em conflito com `docs/`/README/relatório
 
 - Componentes em `src/components/`, preferindo shadcn/ui existentes; queries via TanStack Query (não fetch direto); `src/integrations/supabase/types.ts` é gerado, não editar; sem `any` implícito nem `// @ts-ignore` sem justificativa documentada.
 - Edge Function nova: `validatePayload` com Zod (gate no CI); `verify_jwt` ligado (desligar só com justificativa em comentário); imports `npm:`/`jsr:`, sem CDN externo.
-- CI: actions pinadas por SHA (não tag); secrets de produção só no environment `Production`.
+- CI: actions por tag aceitas (`sha_pinning_required=false` — ver `docs/agentes/github-ci.md`); secrets de produção só no environment `Production`.
 - Sem credencial em código, nem em teste; `EXTERNAL_SUPABASE_SERVICE_ROLE_KEY` só na função `external-data`; nunca imprimir/commitar `.git-credentials`, `.env.local`, tokens, chaves de API, service_role keys.
 
 ## 6. Git
 
-Escrita no GitHub (`adm01-debug`): MCP `GITHUB - MCP - FOREVER` (o padrão dá 403; `git push`/`gh` só em repo fonte autorizada da sessão). Fluxo completo: `docs/agentes/fluxo-git.md` (ler antes da primeira branch).
+Escrita no GitHub (`adm01-debug`): MCP `GITHUB - MCP - FOREVER` (o padrão dá 403; `git push`/`gh` só em repo fonte autorizada da sessão). Fluxo completo: `docs/agentes/fluxo-git.md` (ler antes da primeira branch). Perímetro, branch protection e workflows: `docs/agentes/github-ci.md` (ler ao mexer em settings ou `.github/workflows/`). Deploy e Vercel: `docs/agentes/vercel-deploy.md` (ler ao confirmar deploy ou mexer em env/domínio). Onde fica cada coisa: `docs/agentes/mapa-repo.md` (ler antes de buscar por texto).
 
 1. Nunca commite em `main`; nunca reaproveite branch nem escreva em branch alheia (só leitura, sem exceção). Branch própria em worktree isolado, de `main` atualizado: `claude/<tipo>-<slug>-<AAMMDD-HHMM>` (`fix`|`feat`|`chore`|`infra`); sem carimbo não é aceito. Uma tarefa = uma branch = uma PR.
 2. Antes de começar, liste PRs abertas (`github_graphql`, não `github_list_pull_requests`); PR aberta nos mesmos arquivos → pare e avise. Antes de push, confirme que o último commit é seu.
