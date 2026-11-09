@@ -1,10 +1,10 @@
 {
  "meta": {
-  "sha": "68fa502741e90ab8f7ec1380200e033a1d8463cc",
+  "sha": "fc358256625a38228f71d70399bfdd8eaf581d78",
   "branch": "main",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
-  "generated_at": "2026-11-09 08:02 UTC",
-  "files_total": 3512,
+  "generated_at": "2026-11-09 08:23 UTC",
+  "files_total": 3513,
   "code_files": 3170,
   "code_lines": 454108
  },
@@ -228762,10 +228762,23 @@
   }
  },
  "git": {
-  "sha": "68fa502741e90ab8f7ec1380200e033a1d8463cc",
+  "sha": "fc358256625a38228f71d70399bfdd8eaf581d78",
   "branch": "main",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
   "commits": [
+   {
+    "sha": "fc35825",
+    "date": "2026-11-09",
+    "author": "adm01-debug",
+    "subject": "chore: docs analise-prs estado final 14 mergeadas esta sessao (#285)",
+    "files": [
+     "analise-prs/RELATORIO_PRS.md",
+     "analise-prs/dossiers/pr270.md",
+     "analise-prs/dossiers/pr271.md",
+     "analise-prs/dossiers/pr284.md",
+     "analise-prs/progresso.json"
+    ]
+   },
    {
     "sha": "68fa502",
     "date": "2026-11-09",
@@ -229267,19 +229280,12 @@
     "author": "adm01-debug",
     "subject": "Merge pull request #199 from adm01-debug/fix/conciliacao-manual-dupla-confirmacao",
     "files": []
-   },
-   {
-    "sha": "d4c1e0e",
-    "date": "2026-11-06",
-    "author": "adm01-debug",
-    "subject": "Merge branch 'main' into fix/conciliacao-manual-dupla-confirmacao",
-    "files": []
    }
   ],
   "hot_files": [
    [
     "analise-prs/progresso.json",
-    5
+    6
    ],
    [
     "bun.lock",
@@ -229291,11 +229297,19 @@
    ],
    [
     "analise-prs/RELATORIO_PRS.md",
-    3
+    4
    ],
    [
     ".github/workflows/contexto.yml",
     3
+   ],
+   [
+    "analise-prs/dossiers/pr270.md",
+    2
+   ],
+   [
+    "analise-prs/dossiers/pr271.md",
+    2
    ],
    [
     "analise-prs/prs.json",
@@ -229348,14 +229362,6 @@
    [
     "supabase/functions/asaas-proxy/index.ts",
     2
-   ],
-   [
-    "analise-prs/dossiers/pr-131-conflito-escopo.md",
-    1
-   ],
-   [
-    "analise-prs/dossiers/pr-175-recharts-bun-lock.md",
-    1
    ]
   ]
  }
