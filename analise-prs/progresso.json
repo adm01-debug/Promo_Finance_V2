@@ -1,24 +1,24 @@
 {
   "sessao": "session_01N1ArYN9EZ2fbFJ2Z2rqAh1",
-  "atualizado_em": "2026-11-09T11:42:00Z",
+  "atualizado_em": "2026-11-09T12:30:00Z",
   "baseline": {
     "sha_inicio_sessao": "c6eb99b275e1270cf99f1216e808c120f7cf58a2",
-    "sha_final_main": "8ec6561a99cf3bde38aadcb8f52010350a3a33cf",
+    "sha_final_main": "529236d4b6c373aabe6af2b9e5c6ea59a402d1a9",
     "main_ci_antes": "todos 8 required checks SUCCESS; E2E Quarantine non-blocking in_progress",
-    "main_ci_depois": "aguardando merge #291 (CI EM_ANDAMENTO)"
+    "main_ci_depois": "todos checks SUCCESS apos merge #291"
   },
   "resumo": {
     "total_prs_inventariadas": 52,
-    "mergeadas_esta_sessao": 21,
+    "mergeadas_esta_sessao": 22,
     "mergeadas_outras_sessoes": 2,
-    "total_mergeadas": 23,
+    "total_mergeadas": 24,
     "aguardando_humano_regra8": 13,
     "bloqueadas_bun_lock_ambiente": 3,
     "bloqueadas_arquitetura": 1,
     "supersedidas_abertas": 1,
     "supersedidas_fechadas": 6,
     "fechadas_externas_sessao": 5,
-    "em_andamento": 1
+    "em_andamento": 0
   },
   "aguardando_humano": [
     {"n": 131, "motivo": "DIRTY/CONFLICTING 90 arquivos; DDL + bun.lock — escopo + Regra8-DDL"},
@@ -42,33 +42,31 @@
     {"n": 216, "motivo": "bun.lock CONFLICTING; bun install bloqueado ProxyConnectFailed 403; vitest5 breaking"}
   ],
   "mergeadas_esta_sessao": [
-    {"n": 266, "sha": "6a925600f36f44488dc07b79e063f3dd67e5d30b"},
-    {"n": 267, "sha": "020bb81ebf87848ca653d1665f808e15db7bc863"},
-    {"n": 268, "sha": "d8804a2000192594419275bc94da6e44fbf6e211"},
-    {"n": 269, "sha": "45a20a254ad5b74a08deb8f495f1223242a5b59b"},
-    {"n": 270, "sha": "1f5138a767de996ea61ecfb5f852cc71e8f4624c"},
-    {"n": 271, "sha": "924e4a015792e4cfb161cfbfdae79189a60339cb"},
-    {"n": 272, "sha": "d83f82e60c63aa2ed017aefdf4d864084f9c3c63"},
-    {"n": 273, "sha": "93026e683e6cbb96257a165831c18a988b0fb887"},
-    {"n": 278, "sha": "8d88a61f5d1e46b785f6d734d91f6e082076f48e"},
-    {"n": 280, "sha": "039e16df6a88ec27c9405635a2d3628bfc37fa5a"},
-    {"n": 281, "sha": "8eef9b064acb30e12c1f616a5c8f29300ac8936f"},
-    {"n": 282, "sha": "900925a649f972e2d3483e49255ae68c24868253"},
-    {"n": 283, "sha": "b0c226b440bb207c98fa02742b8ae5b492293ba1"},
-    {"n": 284, "sha": "68fa502741e90ab8f7ec1380200e033a1d8463cc"},
-    {"n": 285, "sha": "fc358256625a38228f71d70399bfdd8eaf581d78"},
-    {"n": 286, "sha": "b6e60a5cb943b6cb585313c1a6ca035cdc3e6f08"},
-    {"n": 287, "sha": "e8620bd0338e351efa9fc10e38e969716ae0892b"},
-    {"n": 288, "sha": "94bb4af7c6cac27970e613e0daca3033227fa1b1"},
-    {"n": 289, "sha": "34efae1f81963db1f12a1c1a35ec1b8845ca1096"},
-    {"n": 263, "sha": "8ec6561a99cf3bde38aadcb8f52010350a3a33cf"},
-    {"n": 275, "sha": "ea42a9b1"}
+    {"n": 266, "sha": "6a925600f36f44488dc07b79e063f3dd67e5d30b", "titulo": "fix framer-motion 14.x types"},
+    {"n": 267, "sha": "020bb81ebf87848ca653d1665f808e15db7bc863", "titulo": "fix dnd-kit sortable 7→10"},
+    {"n": 268, "sha": "d8804a2000192594419275bc94da6e44fbf6e211", "titulo": "bump eslint-config-prettier 9→10"},
+    {"n": 269, "sha": "45a20a254ad5b74a08deb8f495f1223242a5b59b", "titulo": "fix eslint-plugin-react-refresh 0.4→0.5"},
+    {"n": 270, "sha": "1f5138a767de996ea61ecfb5f852cc71e8f4624c", "titulo": "fix TS2345 gerar-pacote-evidencias"},
+    {"n": 271, "sha": "924e4a015792e4cfb161cfbfdae79189a60339cb", "titulo": "fix monitor-health review #240"},
+    {"n": 272, "sha": "d83f82e60c63aa2ed017aefdf4d864084f9c3c63", "titulo": "docs/agentes update"},
+    {"n": 273, "sha": "93026e683e6cbb96257a165831c18a988b0fb887", "titulo": "documentacao analise-prs + progresso.json"},
+    {"n": 278, "sha": "8d88a61f5d1e46b785f6d734d91f6e082076f48e", "titulo": "fix micro-interactions.tsx spring type const"},
+    {"n": 280, "sha": "039e16df6a88ec27c9405635a2d3628bfc37fa5a", "titulo": "chore: relatorio dossies analise-prs"},
+    {"n": 281, "sha": "8eef9b064acb30e12c1f616a5c8f29300ac8936f", "titulo": "fix: sanitizar fixture deploy-log-all"},
+    {"n": 282, "sha": "900925a649f972e2d3483e49255ae68c24868253", "titulo": "chore: estado final sessao merge-prs"},
+    {"n": 283, "sha": "b0c226b440bb207c98fa02742b8ae5b492293ba1", "titulo": "fix: corrigir classificacao prs bloqueadas"},
+    {"n": 284, "sha": "68fa502741e90ab8f7ec1380200e033a1d8463cc", "titulo": "chore: docs analise-prs estado final 13 mergeadas"},
+    {"n": 285, "sha": "fc358256625a38228f71d70399bfdd8eaf581d78", "titulo": "chore: corrige dossiers pr270/271 + pr284"},
+    {"n": 286, "sha": "b6e60a5cb943b6cb585313c1a6ca035cdc3e6f08", "titulo": "chore: docs analise-prs estado final 15 mergeadas"},
+    {"n": 287, "sha": "e8620bd0338e351efa9fc10e38e969716ae0892b", "titulo": "chore: bump @sentry/react 11.0.0→11.9.0 (supersede #210)"},
+    {"n": 288, "sha": "94bb4af7c6cac27970e613e0daca3033227fa1b1", "titulo": "chore: relatorio final sessao merge-prs"},
+    {"n": 289, "sha": "34efae1f81963db1f12a1c1a35ec1b8845ca1096", "titulo": "chore: prs.json estado final sessao"},
+    {"n": 263, "sha": "8ec6561a99cf3bde38aadcb8f52010350a3a33cf", "titulo": "infra: bloqueia wipe de AGENTS.md (mergeado pelo dono)"},
+    {"n": 275, "sha": "ea42a9b1", "titulo": "feat(ci): documentos gerados estado-real.yml (mergeado pelo dono)"},
+    {"n": 291, "sha": "529236d4b6c373aabe6af2b9e5c6ea59a402d1a9", "titulo": "fix: compatibilidade TypeScript com Zod v4 (supersede #211)"}
   ],
   "mergeadas_outras_sessoes": [
-    {"n": 274, "sha": "8f63e2c685a4cb9a19e115ed7defb8dbbace28ac"},
-    {"n": 279, "sha": "97b7711c03c9b7fc3ac24ea4f153e72c88de91e6"}
-  ],
-  "em_andamento": [
-    {"n": 291, "branch": "claude/fix-pr211-zod-v4-261109-1500", "head_sha": "9aee612f624f17b599421681ddc9f11b93cbb108", "status": "CI_PENDING_E2E"}
+    {"n": 274, "sha": "8f63e2c685a4cb9a19e115ed7defb8dbbace28ac", "titulo": "docs/sistema.md corrige contagem Edge Functions"},
+    {"n": 279, "sha": "97b7711c03c9b7fc3ac24ea4f153e72c88de91e6", "titulo": "fix(docs): corrige contagem Edge Functions mapa-repo.md"}
   ]
 }

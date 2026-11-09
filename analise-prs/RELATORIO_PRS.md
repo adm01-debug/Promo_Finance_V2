@@ -3,14 +3,14 @@
 **Sessão:** `session_01N1ArYN9EZ2fbFJ2Z2rqAh1`  
 **Data:** 2026-11-09  
 **Main baseline início:** `c6eb99b275e1270cf99f1216e808c120f7cf58a2`  
-**Main baseline final:** `PLACEHOLDER_MERGE_291`  
+**Main baseline final:** `529236d4b6c373aabe6af2b9e5c6ea59a402d1a9`  
 
 ---
 
 ## Resumo executivo
 
 | Estado | Quantidade |
-|--------|-----------|
+|--------|----------|
 | **Mergeadas (esta sessão)** | **22** |
 | Mergeadas (outras sessões, confirmadas) | 2 |
 | Aguardando Humano (Regra 8) | 13 |
@@ -48,7 +48,7 @@
 | #287 | chore: bump @sentry/react 11.0.0→11.9.0 | `e8620bd0` | 8/8 ✅ |
 | #288 | chore: relatorio final sessao merge-prs | `94bb4af7` | 8/8 ✅ |
 | #289 | chore: prs.json estado final sessao | `34efae1f` | 8/8 ✅ |
-| #291 | fix: compatibilidade TypeScript com Zod v4 | `PLACEHOLDER_MERGE_291` | todos ✅ |
+| #291 | fix: compatibilidade TypeScript com Zod v4 | `529236d4` | 8/8 ✅ |
 
 ---
 
