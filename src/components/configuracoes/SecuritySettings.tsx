@@ -35,7 +35,7 @@ import { z } from 'zod';
 const ipSchema = z
   .string()
   .regex(
-    /^(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)(?:\/\d{1,2})?$/,
+    /^(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){	3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)(?:\/\d{1,2})?$/,
     'IP inválido. Use formato: 192.168.1.1 ou 192.168.1.0/24'
   );
 
@@ -198,7 +198,7 @@ export function SecuritySettings() {
       addIpMutation.mutate();
     } catch (error: unknown) {
       if (error instanceof z.ZodError) {
-        setIpError(error.errors[0].message);
+        setIpError(error.issues[0].message);
       }
     }
   };

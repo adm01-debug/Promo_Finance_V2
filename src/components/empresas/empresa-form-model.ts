@@ -81,13 +81,13 @@ export const empresaSchema = z.object({
     ),
   codigo_fpas: z.string().max(10, 'FPAS inválido').optional().nullable(),
   aliquota_rat: z
-    .number({ invalid_type_error: 'Informe um percentual' })
+    .number()
     .min(0, 'Mínimo 0%')
     .max(6, 'Máximo 6%')
     .optional()
     .nullable(),
   aliquota_terceiros: z
-    .number({ invalid_type_error: 'Informe um percentual' })
+    .number()
     .min(0, 'Mínimo 0%')
     .max(8, 'Máximo 8%')
     .optional()

@@ -79,12 +79,12 @@ export function useZodForm<T extends z.ZodRawShape>(
       try {
         const fieldSchema = (schema as z.ZodObject<T>).shape[field as string];
         if (fieldSchema) {
-          fieldSchema.parse(values[field]);
+          (fieldSchema as z.ZodTypeAny).parse(values[field]);
         }
         return undefined;
       } catch (err) {
         if (err instanceof z.ZodError) {
-          return err.errors[0]?.message;
+          return err.issues[0]?.message;
         }
         return 'Erro de validação';
       }
@@ -100,7 +100,7 @@ export function useZodForm<T extends z.ZodRawShape>(
     }
 
     const newErrors: FormErrors<FormData> = {};
-    result.error.errors.forEach((err) => {
+    result.error.issues.forEach((err) => {
       const path = err.path[0] as keyof FormData;
       if (!newErrors[path]) {
         newErrors[path] = err.message;
@@ -263,7 +263,7 @@ export function useZodField<T>(schema: ZodSchema<T>, initialValue?: T) {
       setError(undefined);
       return true;
     }
-    setError(result.error.errors[0]?.message);
+    setError(result.error.issues[0]?.message);
     return false;
   }, [schema, value]);
 
@@ -272,7 +272,7 @@ export function useZodField<T>(schema: ZodSchema<T>, initialValue?: T) {
       setValue(newValue);
       if (touched) {
         const result = schema.safeParse(newValue);
-        setError(result.success ? undefined : result.error.errors[0]?.message);
+        setError(result.success ? undefined : result.error.issues[0]?.message);
       }
     },
     [schema, touched]
