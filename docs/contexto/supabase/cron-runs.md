@@ -68,9 +68,9 @@
 
 | início (UTC) | status | duração (s) | mensagem |
 |---|---|---|---|
+| 2026-11-09 03:30:00 | succeeded | 0.27 | 1 row |
 | 2026-11-09 03:00:00 | succeeded | 0.72 | 1 row |
 | 2026-11-09 02:30:00 | succeeded | 0.30 | 1 row |
-| 2026-11-09 02:00:00 | succeeded | 0.80 | 1 row |
 
 
 ## 12 · integrity-invariants-hourly
@@ -193,18 +193,18 @@ _nenhum_
 
 | início (UTC) | status | duração (s) | mensagem |
 |---|---|---|---|
+| 2026-11-09 03:30:00 | succeeded | 0.06 | 1 row |
 | 2026-11-09 03:15:00 | succeeded | 0.04 | 1 row |
 | 2026-11-09 03:00:00 | succeeded | 0.05 | 1 row |
-| 2026-11-09 02:45:00 | succeeded | 0.08 | 1 row |
 
 
 ## 33 · webhook-retry-worker-1min
 
 | início (UTC) | status | duração (s) | mensagem |
 |---|---|---|---|
-| 2026-11-09 03:20:00 | succeeded | 0.04 | 1 row |
-| 2026-11-09 03:19:00 | succeeded | 0.02 | 1 row |
-| 2026-11-09 03:18:00 | succeeded | 0.05 | 1 row |
+| 2026-11-09 03:32:00 | succeeded | 0.01 | 1 row |
+| 2026-11-09 03:31:00 | succeeded | 0.02 | 1 row |
+| 2026-11-09 03:30:00 | succeeded | 0.09 | 1 row |
 
 
 ## 34 · auditar-acessos-cross-tenant
@@ -229,18 +229,18 @@ _nenhum_
 
 | início (UTC) | status | duração (s) | mensagem |
 |---|---|---|---|
+| 2026-11-09 03:30:00 | succeeded | 0.05 | 1 row |
 | 2026-11-09 03:00:00 | succeeded | 0.09 | 1 row |
 | 2026-11-09 02:30:00 | succeeded | 0.09 | 1 row |
-| 2026-11-09 02:00:00 | succeeded | 0.10 | 1 row |
 
 
 ## 37 · evaluate-delivery-alerts-every-min
 
 | início (UTC) | status | duração (s) | mensagem |
 |---|---|---|---|
-| 2026-11-09 03:20:00 | succeeded | 0.06 | 1 row |
-| 2026-11-09 03:19:00 | succeeded | 0.03 | 1 row |
-| 2026-11-09 03:18:00 | succeeded | 0.04 | 1 row |
+| 2026-11-09 03:32:00 | succeeded | 0.01 | 1 row |
+| 2026-11-09 03:31:00 | succeeded | 0.01 | 1 row |
+| 2026-11-09 03:30:00 | succeeded | 0.06 | 1 row |
 
 
 ## 40 · gerar-snapshots-conformidade-mensal
@@ -261,6 +261,6 @@ _nenhum_
 
 | início (UTC) | status | duração (s) | mensagem |
 |---|---|---|---|
+| 2026-11-09 03:30:00 | failed | 0.04 | ERROR:  Secret "anon_key" ausente no Vault. Crie-o em Project Settings > Vault com a anon key de bwwbeyolnnzppeuhgkcd. CONTEXT:  PL/pgSQL function chave_anon_vault() line 11 at RAISE SQL statement "SELECT net.http_post(     url := 'https://bwwbeyolnnzppeuhgkcd.supabase.co/functions/v1/enviar-digest- |
 | 2026-11-09 02:30:00 | failed | 0.03 | ERROR:  Secret "anon_key" ausente no Vault. Crie-o em Project Settings > Vault com a anon key de bwwbeyolnnzppeuhgkcd. CONTEXT:  PL/pgSQL function chave_anon_vault() line 11 at RAISE SQL statement "SELECT net.http_post(     url := 'https://bwwbeyolnnzppeuhgkcd.supabase.co/functions/v1/enviar-digest- |
 | 2026-11-09 01:30:00 | failed | 0.04 | ERROR:  Secret "anon_key" ausente no Vault. Crie-o em Project Settings > Vault com a anon key de bwwbeyolnnzppeuhgkcd. CONTEXT:  PL/pgSQL function chave_anon_vault() line 11 at RAISE SQL statement "SELECT net.http_post(     url := 'https://bwwbeyolnnzppeuhgkcd.supabase.co/functions/v1/enviar-digest- |
-| 2026-11-09 00:30:00 | failed | 0.05 | ERROR:  Secret "anon_key" ausente no Vault. Crie-o em Project Settings > Vault com a anon key de bwwbeyolnnzppeuhgkcd. CONTEXT:  PL/pgSQL function chave_anon_vault() line 11 at RAISE SQL statement "SELECT net.http_post(     url := 'https://bwwbeyolnnzppeuhgkcd.supabase.co/functions/v1/enviar-digest- |

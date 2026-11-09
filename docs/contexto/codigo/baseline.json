@@ -2,11 +2,16 @@
  "aviso": "GERADO AUTOMATICAMENTE por scripts/ai-context/gerar.mjs — não editar à mão; será sobrescrito.",
  "format_version": 2,
  "git": {
-  "commit": "93026e683e6cbb96257a165831c18a988b0fb887",
+  "commit": "97b7711c03c9b7fc3ac24ea4f153e72c88de91e6",
   "branch": "main",
-  "data_commit": "2026-11-08T23:41:07-03:00",
+  "data_commit": "2026-11-09T00:24:18-03:00",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
   "ultimos_commits": [
+   {
+    "sha": "97b7711",
+    "data": "2026-11-09",
+    "assunto": "fix(docs): corrige contagem de edge functions para 106 em mapa-repo.md"
+   },
    {
     "sha": "93026e6",
     "data": "2026-11-08",
@@ -126,11 +131,6 @@
     "sha": "4df9b8e",
     "data": "2026-11-06",
     "assunto": "docs: grafo de arquitetura manual e template de re-auditoria (Steps 49+50) (#242)"
-   },
-   {
-    "sha": "dca65c5",
-    "data": "2026-11-06",
-    "assunto": "fix(n8n-callback): BufferSource + readBytes + prettier"
    }
   ],
   "arquivos_mudados_7d": 213,
@@ -301,7 +301,7 @@
   "autores_30d": [
    {
     "autor": "adm01-debug",
-    "commits": 45
+    "commits": 46
    },
    {
     "autor": "devin-ai-integration[bot]",

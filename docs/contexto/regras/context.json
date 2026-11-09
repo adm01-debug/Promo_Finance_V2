@@ -1,9 +1,9 @@
 {
  "meta": {
-  "sha": "93026e683e6cbb96257a165831c18a988b0fb887",
+  "sha": "97b7711c03c9b7fc3ac24ea4f153e72c88de91e6",
   "branch": "main",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
-  "generated_at": "2026-11-09 03:20 UTC",
+  "generated_at": "2026-11-09 03:32 UTC",
   "files_total": 3480,
   "code_files": 3155,
   "code_lines": 452758
@@ -228432,10 +228432,19 @@
   }
  },
  "git": {
-  "sha": "93026e683e6cbb96257a165831c18a988b0fb887",
+  "sha": "97b7711c03c9b7fc3ac24ea4f153e72c88de91e6",
   "branch": "main",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
   "commits": [
+   {
+    "sha": "97b7711",
+    "date": "2026-11-09",
+    "author": "adm01-debug",
+    "subject": "fix(docs): corrige contagem de edge functions para 106 em mapa-repo.md",
+    "files": [
+     "docs/agentes/mapa-repo.md"
+    ]
+   },
    {
     "sha": "93026e6",
     "date": "2026-11-08",
@@ -228913,16 +228922,6 @@
     "files": [
      "scripts/security/test-canonical-db-gates.mjs"
     ]
-   },
-   {
-    "sha": "bb7e801",
-    "date": "2026-10-31",
-    "author": "adm01-debug",
-    "subject": "chore(docs): [STEPS 39+48] backup policy + consolidar SECURITY_RULES (#236)",
-    "files": [
-     "SECURITY_RULES.md",
-     "docs/SECURITY.md"
-    ]
    }
   ],
   "hot_files": [
@@ -228953,6 +228952,10 @@
    [
     "supabase/functions/asaas-proxy/index.ts",
     3
+   ],
+   [
+    "docs/agentes/mapa-repo.md",
+    2
    ],
    [
     "docs/DB_HEALTH.md",
@@ -229000,10 +229003,6 @@
    ],
    [
     "analise-prs/RELATORIO_PRS.md",
-    1
-   ],
-   [
-    "analise-prs/dossiers/pr131.md",
     1
    ]
   ]
