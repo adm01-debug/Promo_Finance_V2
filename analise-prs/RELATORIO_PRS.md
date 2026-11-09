@@ -1,9 +1,9 @@
 # Relatório de PRs — Promo Finance V2
 
 > Gerado por sessão `session_01N1ArYN9EZ2fbFJ2Z2rqAh1` em 2026-11-09T07:30Z  
-> Atualizado em 2026-11-09T08:30Z (pós-rebase #131 + E2E Quarantine COMPLETED)  
+> Atualizado em 2026-11-09T09:30Z (corrige pr270/271 EM_ANDAMENTO→MERGEADA; adiciona #284)  
 > Baseline main SHA início: `c6eb99b275e1270cf99f1216e808c120f7cf58a2`  
-> Main SHA final: `b0c226b440bb207c98fa02742b8ae5b492293ba1` (8/8 required SUCCESS + Vercel SUCCESS + E2E Quarantine SUCCESS)
+> Main SHA final: `68fa502741e90ab8f7ec1380200e033a1d8463cc` (9/9 checks COMPLETED SUCCESS + Vercel READY)
 
 ---
 
@@ -11,7 +11,7 @@
 
 | Categoria | Qtd | PRs |
 |---|---|---|
-| Mergeadas esta sessão (CI 100% verde) | 13 | #266–#273, #278, #280–#283 |
+| Mergeadas esta sessão (CI 100% verde) | 14 | #266–#273, #278, #280–#284 |
 | Mergeadas por outras sessões | 2 | #274, #279 |
 | Fechadas supersedidas | 5 | #213, #214, #215, #254, #257 |
 | Fechadas externamente | 4 | #209, #264, #253, #256 |
@@ -19,7 +19,7 @@
 | Bloqueadas por ambiente | 3 | #208, #210, #216 |
 | Outras sessões abertas | 3 | #275, #276, #277 |
 
-**Total rastreado nesta sessão: 47**
+**Total rastreado nesta sessão: 48**
 
 ---
 
@@ -40,6 +40,7 @@
 | [#281](https://github.com/adm01-debug/Promo_Finance_V2/pull/281) | fix gitleaks: remove fixture com token (supersede #253) | `8eef9b06` | 8/8 SUCCESS |
 | [#282](https://github.com/adm01-debug/Promo_Finance_V2/pull/282) | docs: estado final sessão merge-prs | `900925a6` | 8/8 SUCCESS |
 | [#283](https://github.com/adm01-debug/Promo_Finance_V2/pull/283) | chore: prs.json final + dossiers completos | `b0c226b4` | 8/8 SUCCESS |
+| [#284](https://github.com/adm01-debug/Promo_Finance_V2/pull/284) | chore: docs analise-prs estado final 13 mergeadas | `68fa5027` | CI SUCCESS |
 
 Nenhuma PR mergeada tocou: `.github/workflows/`, migrations SQL, secrets, edge functions R2.  
 Nenhum padrão proibido introduzido: `.skip`, `@ts-ignore`, `eslint-disable`, `any` de calar erro, baseline ampliado.
@@ -48,10 +49,13 @@ Nenhum padrão proibido introduzido: `.skip`, `@ts-ignore`, `eslint-disable`, `a
 
 ## PRs Mergeadas por Outras Sessões
 
-| # | Título | SHA main | Mergeada em |
+| # | Título resumido | Estado | Regra |
 |---|---|---|---|
-| [#274](https://github.com/adm01-debug/Promo_Finance_V2/pull/274) | docs/agentes/sistema.md | `8f63e2c6` | 2026-11-09T03:39:33Z |
-| [#279](https://github.com/adm01-debug/Promo_Finance_V2/pull/279) | docs/agentes/mapa-repo.md | `97b7711c` | 2026-11-09T03:24:18Z |
+| [#274](https://github.com/adm01-debug/Promo_Finance_V2/pull/274) | docs/agentes/sistema.md | **MERGED** (03:39Z, SHA `8f63e2c6`) | outra sessão |
+| [#279](https://github.com/adm01-debug/Promo_Finance_V2/pull/279) | docs/agentes/mapa-repo.md | **MERGED** (03:24Z, SHA `97b7711c`) | outra sessão |
+| [#275](https://github.com/adm01-debug/Promo_Finance_V2/pull/275) | adiciona .github/workflows/estado-real.yml | BEHIND | Regra 8 workflow |
+| [#276](https://github.com/adm01-debug/Promo_Finance_V2/pull/276) | adiciona .github/workflows/auto-update-pr-branch.yml | BEHIND | Regra 8 workflow |
+| [#277](https://github.com/adm01-debug/Promo_Finance_V2/pull/277) | adiciona .github/workflows/settings-guard.yml | BEHIND | Regra 8 workflow |
 
 Não mergeadas por esta sessão (branch alheia, somente leitura).
 
@@ -100,7 +104,7 @@ Todas fechadas por `github_update_pull_request state=closed` em 2026-11-09T03:20
   - Rebase abortado (`git rebase --abort`), branch local deletada
 - **Mergeable:** `CONFLICTING` — não mergeável no estado atual
 - **Regra 8:** DDL/migration em produção (7 migrations modificados + 13 adicionados)
-- **Veredicto:** **AGUARDANDO HUMANO** — duplo bloqueio: (1) rebase impossível automaticamente, (2) DDL requer aprovação explícita. Recomendação: extrair cirurgicamente apenas os shims necessários em nova branch a partir do main atual.
+- **Veredito:** **AGUARDANDO HUMANO** — duplo bloqueio: (1) rebase impossível automaticamente, (2) DDL requer aprovação explícita. Recomendação: extrair cirurgicamente apenas os shims necessários em nova branch a partir do main atual.
 
 ---
 
@@ -114,7 +118,7 @@ Todas fechadas por `github_update_pull_request state=closed` em 2026-11-09T03:20
 - **Completo:** Não — falta migrar chamadas de API nos componentes React que usam recharts (eixos, legendas, Tooltip, composição)
 - **Causa da falha:** Quality Gate FAILURE (TypeScript errors de API incompatível); `bun install` bloqueado no ambiente (ProxyConnectFailed 403)
 - **Regra 8:** Mudança de arquitetura (breaking API em componentes financeiros visuais)
-- **Veredicto:** **AGUARDANDO HUMANO** — requer migração de código nos componentes antes do bump; não é merge direto
+- **Veredito:** **AGUARDANDO HUMANO** — requer migração de código nos componentes antes do bump; não é merge direto
 
 ---
 
@@ -123,7 +127,7 @@ Todas fechadas por `github_update_pull_request state=closed` em 2026-11-09T03:20
 - **Válido:** Sim | **Completo:** Sim | **Regressão:** Baixo risco
 - **Causa da falha:** Analyze TypeScript FAILURE (pre-existente em main, não causada por esta PR); `mergeable=BEHIND`
 - **Regra 8:** Altera `.github/workflows/codeql.yml`
-- **Veredicto:** **AGUARDANDO HUMANO** — Regra 8 (workflow CI)
+- **Veredito:** **AGUARDANDO HUMANO** — Regra 8 (workflow CI)
 
 ---
 
@@ -132,7 +136,7 @@ Todas fechadas por `github_update_pull_request state=closed` em 2026-11-09T03:20
 - **Válido:** Sim | **Completo:** Sim | **Regressão:** Baixo risco
 - **Causa da falha:** Analyze TypeScript FAILURE (pre-existente); `mergeable=BEHIND`
 - **Regra 8:** Altera `.github/workflows/codeql.yml`
-- **Veredicto:** **AGUARDANDO HUMANO** — Regra 8 (workflow CI)
+- **Veredito:** **AGUARDANDO HUMANO** — Regra 8 (workflow CI)
 
 ---
 
@@ -141,7 +145,7 @@ Todas fechadas por `github_update_pull_request state=closed` em 2026-11-09T03:20
 - **Válido:** Sim | **Completo:** Sim | **Regressão:** Baixo risco
 - **Causa da falha:** Analyze TypeScript FAILURE (pre-existente); `mergeable=BEHIND`
 - **Regra 8:** Altera `.github/workflows/codeql.yml`
-- **Veredicto:** **AGUARDANDO HUMANO** — Regra 8; ideal: mergear #203+#204+#205 num único commit que atualiza codeql.yml
+- **Veredito:** **AGUARDANDO HUMANO** — Regra 8; ideal: mergear #203+#204+#205 num único commit que atualiza codeql.yml
 
 ---
 
@@ -150,7 +154,7 @@ Todas fechadas por `github_update_pull_request state=closed` em 2026-11-09T03:20
 - **Válido:** Sim | **Completo:** Sim | **Regressão:** Médio risco (5 workflows simultâneos)
 - **Causa da falha:** Quality Gate FAILURE (pre-existente em main); `mergeable=BEHIND`
 - **Regra 8:** Altera `.github/workflows/` (ci.yml, codeql.yml, deno-tests.yml, dependency-review.yml, actionlint.yml)
-- **Veredicto:** **AGUARDANDO HUMANO** — Regra 8 (múltiplos workflows CI)
+- **Veredito:** **AGUARDANDO HUMANO** — Regra 8 (múltiplos workflows CI)
 
 ---
 
@@ -158,7 +162,7 @@ Todas fechadas por `github_update_pull_request state=closed` em 2026-11-09T03:20
 
 - **Válido:** Sim
 - **Causa da falha:** `bun.lock CONFLICTING` — resolução requer `bun install` que falha com ProxyConnectFailed 403 neste ambiente
-- **Veredicto:** **BLOQUEADO AMBIENTE** — `bun install` inacessível nesta sessão
+- **Veredito:** **BLOQUEADO AMBIENTE** — `bun install` inacessível nesta sessão
 
 ---
 
@@ -166,7 +170,7 @@ Todas fechadas por `github_update_pull_request state=closed` em 2026-11-09T03:20
 
 - **Válido:** Sim
 - **Causa da falha:** `bun.lock CONFLICTING` — mesma causa de #208
-- **Veredicto:** **BLOQUEADO AMBIENTE** — `bun install` inacessível nesta sessão
+- **Veredito:** **BLOQUEADO AMBIENTE** — `bun install` inacessível nesta sessão
 
 ---
 
@@ -176,7 +180,7 @@ Todas fechadas por `github_update_pull_request state=closed` em 2026-11-09T03:20
 - **Regressão:** Sim, garantida — zod v4 breaking changes; app usa API v3; PR só bumpa sem adaptar 105 edge functions + componentes
 - **Causa da falha:** Quality Gate FAILURE (TypeScript errors da API incompatível)
 - **Regra 8:** Mudança de arquitetura (zod v4 = migração extensiva de toda a camada de validação)
-- **Veredicto:** **AGUARDANDO HUMANO** — requer plano de migração; não é merge direto
+- **Veredito:** **AGUARDANDO HUMANO** — requer plano de migração; não é merge direto
 
 ---
 
@@ -186,7 +190,7 @@ Todas fechadas por `github_update_pull_request state=closed` em 2026-11-09T03:20
 - **Regressão:** Sim, garantida — peerDependency mismatch react ^18.2.0 + react-dom 19; breaking APIs React 19
 - **Causa da falha:** Quality Gate FAILURE (peerDependency mismatch + breaking API)
 - **Regra 8:** Mudança de arquitetura (React 19 = migração maior)
-- **Veredicto:** **AGUARDANDO HUMANO** — requer migração coordenada react + react-dom
+- **Veredito:** **AGUARDANDO HUMANO** — requer migração coordenada react + react-dom
 
 ---
 
@@ -194,7 +198,7 @@ Todas fechadas por `github_update_pull_request state=closed` em 2026-11-09T03:20
 
 - **Válido:** Sim
 - **Causa da falha:** `bun.lock CONFLICTING` + vitest major breaking changes; Quality Gate FAILURE
-- **Veredicto:** **BLOQUEADO AMBIENTE** — duplo bloqueio: `bun install` inacessível + vitest major requer análise
+- **Veredito:** **BLOQUEADO AMBIENTE** — duplo bloqueio: `bun install` inacessível + vitest major requer análise
 
 ---
 
@@ -203,16 +207,16 @@ Todas fechadas por `github_update_pull_request state=closed` em 2026-11-09T03:20
 - **Válido:** Sim | **Completo:** Sim | **Regressão:** Baixo risco se idempotente
 - **Causa da falha:** Nenhuma — CI SUCCESS, apenas `mergeable=BEHIND`
 - **Regra 8:** DDL/migration em produção
-- **Veredicto:** **AGUARDANDO HUMANO** — Regra 8; CI verde, pronta para o dono aprovar
+- **Veredito:** **AGUARDANDO HUMANO** — Regra 8; CI verde, pronta para o dono aprovar
 
 ---
 
-### #235 — 5 Migrations SQL (202604*.sql)
+### #235 — 5 Migrations SQL (20260425*.sql)
 
 - **Válido:** Sim | **Completo:** Sim
 - **Causa da falha:** Nenhuma — CI SUCCESS, apenas `mergeable=BEHIND`
 - **Regra 8:** DDL/migration em produção (5 arquivos)
-- **Veredicto:** **AGUARDANDO HUMANO** — Regra 8; CI verde, pronta para o dono aprovar
+- **Veredito:** **AGUARDANDO HUMANO** — Regra 8; CI verde, pronta para o dono aprovar
 
 ---
 
@@ -221,7 +225,7 @@ Todas fechadas por `github_update_pull_request state=closed` em 2026-11-09T03:20
 - **Válido:** Sim | **Completo:** Sim | **Regressão:** Médio risco (RLS cross-tenant crítico)
 - **Causa da falha:** Nenhuma — CI SUCCESS, apenas `mergeable=BEHIND`
 - **Regra 8:** DDL/migration em produção + RLS
-- **Veredicto:** **AGUARDANDO HUMANO** — Regra 8; CI verde, requer revisão de RLS
+- **Veredito:** **AGUARDANDO HUMANO** — Regra 8; CI verde, requer revisão de RLS
 
 ---
 
@@ -230,7 +234,7 @@ Todas fechadas por `github_update_pull_request state=closed` em 2026-11-09T03:20
 - **Válido:** Sim | **Completo:** Sim | **Regressão:** Alto risco potencial (404 índices = mudança estrutural)
 - **Causa da falha:** Nenhuma — CI SUCCESS, apenas `mergeable=BEHIND`
 - **Regra 8:** DDL/deleção de dado (irreversível)
-- **Veredicto:** **AGUARDANDO HUMANO** — Regra 8 (deleção); CI verde, requer aprovação explícita do dono
+- **Veredito:** **AGUARDANDO HUMANO** — Regra 8 (deleção); CI verde, requer aprovação explícita do dono
 
 ---
 
@@ -239,7 +243,7 @@ Todas fechadas por `github_update_pull_request state=closed` em 2026-11-09T03:20
 - **Válido:** Sim | **Completo:** Sim
 - **Causa da falha:** Nenhuma — CI SUCCESS, apenas `mergeable=BEHIND`
 - **Regra 8:** Edge function R2 de pagamento (asaas-proxy = boletos, PIX, cobrança)
-- **Veredicto:** **AGUARDANDO HUMANO** — Regra 8; CI verde, pronta para o dono aprovar
+- **Veredito:** **AGUARDANDO HUMANO** — Regra 8; CI verde, pronta para o dono aprovar
 
 ---
 
@@ -247,7 +251,7 @@ Todas fechadas por `github_update_pull_request state=closed` em 2026-11-09T03:20
 
 - **Válido:** Sim | **Completo:** 7/8 required SUCCESS ao verificar
 - **Regra 8:** Altera `.github/workflows/ci.yml` (workflow principal de CI)
-- **Veredicto:** **AGUARDANDO HUMANO** — Regra 8 (workflow CI crítico)
+- **Veredito:** **AGUARDANDO HUMANO** — Regra 8 (workflow CI crítico)
 
 ---
 
@@ -255,7 +259,7 @@ Todas fechadas por `github_update_pull_request state=closed` em 2026-11-09T03:20
 
 - **Válido:** Sim | **Completo:** Sim — CI SUCCESS, `mergeable=BEHIND`
 - **Regra 8:** Adiciona novo arquivo `.github/workflows/`
-- **Veredicto:** **AGUARDANDO HUMANO** — Regra 8 (workflow CI)
+- **Veredito:** **AGUARDANDO HUMANO** — Regra 8 (workflow CI)
 
 ---
 
@@ -276,13 +280,13 @@ Todas fechadas por `github_update_pull_request state=closed` em 2026-11-09T03:20
 | Item | Valor |
 |---|---|
 | SHA baseline (início) | `c6eb99b275e1270cf99f1216e808c120f7cf58a2` |
-| SHA atual | `b0c226b440bb207c98fa02742b8ae5b492293ba1` |
+| SHA final (pós-#284) | `68fa502741e90ab8f7ec1380200e033a1d8463cc` |
 | Required checks (8/8) | COMPLETED SUCCESS (todos às 05:52Z) |
-| E2E Quarantine (non-blocking) | **COMPLETED SUCCESS** (confirmado em 2026-11-09T08:20Z) |
+| E2E Quarantine (non-blocking) | **COMPLETED SUCCESS** (2026-11-09T07:26:50Z) |
 | statusCheckRollup | **SUCCESS** |
-| Vercel deploy | SUCCESS |
+| Vercel deploy | READY (`dpl_2A9ddEpfZAxruDe1Ke5CQYnv99Pd`) |
 
-main está **100% verde** — todos os checks (required e non-blocking) COMPLETED SUCCESS.
+main está **100% verde** — todos os 9 checks (8 required + E2E Quarantine non-blocking) COMPLETED SUCCESS.
 
 ---
 
