@@ -1,7 +1,7 @@
 {
  "aviso": "GERADO AUTOMATICAMENTE por scripts/ai-context/gerar.mjs — não editar à mão; será sobrescrito.",
  "format_version": 2,
- "total": 79,
+ "total": 87,
  "scripts": [
   {
    "arquivo": "scripts/admin/supabase_admin_ops.py",
@@ -183,6 +183,88 @@
    "arquivo": "scripts/data/verify.sh",
    "descricao": "verify.sh — valida cópia por contagem + hash de amostra por tabela. Uso: ./scripts/data/verify.sh --run-id <uuid>",
    "linhas": 92,
+   "env": [],
+   "npm_scripts": [],
+   "workflows": [],
+   "orfao": false
+  },
+  {
+   "arquivo": "scripts/edge-deploy/deployment-record.mjs",
+   "descricao": "Porto de Zapp_Web_V2/scripts/edge-deploy/deployment-record.mjs (E60). Rastreabilidade do deploy de edge via GitHub Deployment.",
+   "linhas": 54,
+   "env": [],
+   "npm_scripts": [],
+   "workflows": [],
+   "orfao": false
+  },
+  {
+   "arquivo": "scripts/edge-deploy/health-check.mjs",
+   "descricao": "Porto de Zapp_Web_V2/scripts/edge-deploy/health-check.mjs (W65), adaptado ao Promo_Finance_V2 (project ref canônico e escopo via lista plana, sem manifest).",
+   "linhas": 159,
+   "env": [
+    "SUPABASE_ACCESS_TOKEN"
+   ],
+   "npm_scripts": [],
+   "workflows": [],
+   "orfao": false
+  },
+  {
+   "arquivo": "scripts/edge-deploy/redigir-log.mjs",
+   "descricao": "Porto de Zapp_Web_V2/scripts/edge-deploy/redigir-log.mjs (E74). O log do deploy vai para o artifact do GitHub. A saída do CLI Supabase carrega",
+   "linhas": 87,
+   "env": [
+    "REDIGIR_LOG_BASE",
+    "RUNNER_TEMP"
+   ],
+   "npm_scripts": [],
+   "workflows": [],
+   "orfao": false
+  },
+  {
+   "arquivo": "scripts/edge-deploy/register-deployment.mjs",
+   "descricao": "Porto de Zapp_Web_V2/scripts/edge-deploy/register-deployment.mjs (E60). Registra o Deployment de rastreabilidade do deploy de edge.",
+   "linhas": 109,
+   "env": [
+    "GITHUB_API_URL",
+    "GITHUB_SERVER_URL"
+   ],
+   "npm_scripts": [],
+   "workflows": [],
+   "orfao": false
+  },
+  {
+   "arquivo": "scripts/edge-deploy/secrets-scope.mjs",
+   "descricao": "Porto de Zapp_Web_V2/scripts/edge-deploy/secrets-scope.mjs (E58), adaptado ao Promo_Finance_V2: os secrets de escopo vêm do env.manifest.json (dest",
+   "linhas": 137,
+   "env": [
+    "GITHUB_OUTPUT"
+   ],
+   "npm_scripts": [],
+   "workflows": [],
+   "orfao": false
+  },
+  {
+   "arquivo": "scripts/edge-deploy/smoke-functions.mjs",
+   "descricao": "Porto de Zapp_Web_V2/scripts/edge-deploy/smoke-functions.mjs (W61), adaptado ao Promo_Finance_V2: sem manifest (o PF não tem deployment-manifest.json) — a",
+   "linhas": 232,
+   "env": [],
+   "npm_scripts": [],
+   "workflows": [],
+   "orfao": false
+  },
+  {
+   "arquivo": "scripts/edge-deploy/unchanged-from-log.mjs",
+   "descricao": "Porto de Zapp_Web_V2/scripts/edge-deploy/unchanged-from-log.mjs (E56). Extrator testável de \"No change found in Function: X\", com fixture do log real.",
+   "linhas": 57,
+   "env": [],
+   "npm_scripts": [],
+   "workflows": [],
+   "orfao": false
+  },
+  {
+   "arquivo": "scripts/edge-deploy/verify-remote.mjs",
+   "descricao": "Porto de Zapp_Web_V2/scripts/edge-deploy/verify-remote.mjs (E74), simplificado para o Promo_Finance_V2: o PF não tem deployment-manifest.json, então a",
+   "linhas": 95,
    "env": [],
    "npm_scripts": [],
    "workflows": [],

@@ -12,6 +12,12 @@
   "scripts/ci/audit-env.ts": [
    "env.manifest.json"
   ],
+  "scripts/edge-deploy/register-deployment.mjs": [
+   "scripts/edge-deploy/deployment-record.mjs"
+  ],
+  "scripts/edge-deploy/smoke-functions.mjs": [
+   "scripts/edge-deploy/allowed-origins.json"
+  ],
   "scripts/gerar-grafo-arquitetura.ts": [
    "src/lib/arquitetura/analisador-imports.ts"
   ],

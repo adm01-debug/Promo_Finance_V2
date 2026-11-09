@@ -1,7 +1,7 @@
 # Contexto do projeto para agentes de IA
 
 GERADO AUTOMATICAMENTE por scripts/ai-context/gerar.mjs — não editar à mão; será sobrescrito.
-Publicado pelo workflow .github/workflows/contexto.yml em docs/contexto/codigo/ da branch gerada `contexto`. Índice único em docs/contexto/00-INDEX.md. Ler: git fetch origin contexto && git show origin/contexto:docs/contexto/00-INDEX.md Gere local com `node scripts/ai-context/gerar.mjs`. Commit-base: `039e16df6a88ec27c9405635a2d3628bfc37fa5a` (2026-11-09T01:11:44-03:00).
+Publicado pelo workflow .github/workflows/contexto.yml em docs/contexto/codigo/ da branch gerada `contexto`. Índice único em docs/contexto/00-INDEX.md. Ler: git fetch origin contexto && git show origin/contexto:docs/contexto/00-INDEX.md Gere local com `node scripts/ai-context/gerar.mjs`. Commit-base: `8eef9b064acb30e12c1f616a5c8f29300ac8936f` (2026-11-09T01:27:19-03:00).
 
 ## Como usar (leia antes de planejar ou executar qualquer tarefa)
 1. **Tela/rota/menu** → `rotas.json` (url/vista/menu → arquivo → hooks → tabelas → edges; `rotas_http_backend` para APIs) e `modulos.json` (módulo inteiro + dependências entre módulos).
@@ -14,7 +14,7 @@ Publicado pelo workflow .github/workflows/contexto.yml em docs/contexto/codigo/ 
 Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua tarefa; não carregue tudo.
 
 ## Stack
-- linguagens: TypeScript (2104), SQL (1006), Markdown (168), JSON (31), Python (28), Shell (23), YAML (20), JavaScript (18)
+- linguagens: TypeScript (2104), SQL (1006), Markdown (169), JavaScript (33), JSON (32), Python (28), Shell (23), YAML (20)
 - linguagem_principal: TypeScript
 - framework: React
 - backend_http: n/d
@@ -34,9 +34,9 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 ## Números
 | item | qtd |
 |---|---|
-| arquivos_total | 3438 |
-| arquivos_codigo | 2148 |
-| linhas_codigo | 399754 |
+| arquivos_total | 3459 |
+| arquivos_codigo | 2163 |
+| linhas_codigo | 401104 |
 | rotas | 128 |
 | rotas_http_backend | 12 |
 | vistas_por_id | 0 |
@@ -48,20 +48,20 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 | tabelas | 314 |
 | migrations | 937 |
 | cron_jobs | 21 |
-| testes | 356 |
+| testes | 363 |
 | workflows | 14 |
-| scripts | 79 |
-| docs_md | 168 |
+| scripts | 87 |
+| docs_md | 169 |
 
 ## Onde ficam as coisas
 - telas: src/pages (125)
 - componentes: src/components (730), src/pages (174), src/hooks (2)
 - hooks: src/hooks (228), src/components (27), src/pages (5)
 - servicos_logica: src/lib (254), scripts/graphify (7), src/integrations (3)
-- testes: co-localizado (__tests__) (239), co-localizado (*.test) (40), outro (37)
+- testes: co-localizado (__tests__) (239), outro (44), co-localizado (*.test) (40)
 - edge_functions: supabase/functions
 - migrations: supabase/migrations
-- scripts: scripts/integrity (17), scripts/security (16), scripts/ci (7)
+- scripts: scripts/integrity (17), scripts/security (16), scripts/edge-deploy (8)
 - docs: docs (47), (raiz) (19), .github (2)
 - nomenclatura: {"componentes":"PascalCase (90%)","hooks":"use + PascalCase","servicos":"camelCase (52%)","edge_functions":"kebab-case (99%)","tabelas":"snake_case (91%)"}
 - instruções para agentes no repo: .claude/CLAUDE.md, .github/copilot-instructions.md, AGENTS.md, CLAUDE.md
@@ -411,7 +411,7 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 
 ## Integrações externas
 - SDKs: Sentry, Supabase, i18next, react-query, zod
-- hosts mais citados: ai.gateway.lovable.dev, api.resend.com, www.portalfiscal.inf.br, test.supabase.co, app.promo-finance.com, app.test, bwwbeyolnnzppeuhgkcd.supabase.co, idp.acme, ipapi.co, wa.me, www1.nfe.fazenda.gov.br, x.supabase.co, api.asaas.com, api.bling.com.br, api.ipify.org
+- hosts mais citados: ai.gateway.lovable.dev, api.resend.com, www.portalfiscal.inf.br, test.supabase.co, app.promo-finance.com, app.test, bwwbeyolnnzppeuhgkcd.supabase.co, idp.acme, api.supabase.com, ipapi.co, wa.me, www1.nfe.fazenda.gov.br, x.supabase.co, api.asaas.com, api.bling.com.br
 - webhooks recebidos: analise-fluxo-ia, analyze-document, api-keys-manage, asaas-proxy, asaas-webhook, benchmarking-setorial, bitrix24-webhook, bling-proxy, bling-webhook, categorizar-despesa, ci-security-gate-log, cnpja-lookup, compare-schemas, convidar-usuario, decidir-regime, digest-silenciamentos-erro, enviar-alerta-email, enviar-bitrix24-tributario, executar-analise-preditiva, executar-regua-cobranca, executar-relatorios, expert-agent, external-data, gerar-alertas, gerar-alertas-dispatcher, gerar-alertas-tributarios, gerar-dre-tributaria, gerar-heatmap-tributario, gerar-pdf-tributario, get-vapid-key, health, insights-relatorio, mcp-query, monitor-health, monitorar-erros-frontend, n8n-callback, notify-performance-alert, prever-carga-tributaria, scim-server, sefaz-dfe-dispatcher, sefaz-dfe-puxar, send-device-alert, send-push-notification, sso-callback, sso-initiate, sso-logout, validar-token-contador, validate-ip-geo, webhook-replay, webhook-retry-worker, whatsapp-ia-proativo, whatsapp-webhook
 - env de integração (só nomes): ASAAS_API_KEY, ASAAS_WEBHOOK_TOKEN, BITRIX24_ACCESS_TOKEN, BITRIX24_CLIENT_ID, BITRIX24_CLIENT_SECRET, BLING_CLIENT_ID, BLING_CLIENT_SECRET, CI_GATE_LOG_SECRET, CNPJA_API_KEY, CONTADOR_INVITE_SECRET, CRON_DISPATCH_SECRET, EDGE_SENTRY_DSN, LOVABLE_API_KEY, MAPBOX_ACCESS_TOKEN, N8N_DISPATCH_SECRET, OPENAI_API_KEY, OPEN_FINANCE_CLIENT_ID, OPEN_FINANCE_CLIENT_SECRET, REGUA_CRON_SECRET, RESEND_API_KEY, RESEND_FROM, SEFAZ_CRON_SECRET, SENTRY_DSN, SENTRY_ENVIRONMENT, SLACK_WEBHOOK_URL, SUPABASE_JWT_SECRET, VITE_BLING_CLIENT_ID, VITE_SENTRY_DSN
 
@@ -587,6 +587,7 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 - CHANGELOG topo: [Unreleased]
 
 ## Últimos commits
+- 2026-11-09 `8eef9b0` fix: sanitizar fixture deploy-log-all para remover token real (supersede #253)
 - 2026-11-09 `039e16d` chore: dossiês completos por PR + relatório final sessão merge-prs (#280)
 - 2026-11-09 `8f63e2c` chore(docs): atualiza contagem de edge functions para 106 em sistema.md
 - 2026-11-09 `97b7711` fix(docs): corrige contagem de edge functions para 106 em mapa-repo.md
@@ -601,7 +602,6 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 - 2026-11-08 `d8804a2` chore(deps-dev): bump eslint-config-prettier from 9.1.2 to 10.1.8 (#268)
 - 2026-11-08 `c6eb99b` fix(contexto): grants timeout, custom_hostname 400 e refresh diário (#262)
 - 2026-11-08 `cab8834` chore: instruções enxutas para agentes (#252)
-- 2026-11-08 `b0d9ddb` fix(contexto): guard de segredo reprovava a coleta do banco com a saída já redigida (#261)
 
 ## Arquivos deste diretório
 - `docs/contexto/codigo/rotas.json`

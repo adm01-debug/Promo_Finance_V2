@@ -5,12 +5,12 @@
   "linguagens": [
    "TypeScript (2104)",
    "SQL (1006)",
-   "Markdown (168)",
-   "JSON (31)",
+   "Markdown (169)",
+   "JavaScript (33)",
+   "JSON (32)",
    "Python (28)",
    "Shell (23)",
-   "YAML (20)",
-   "JavaScript (18)"
+   "YAML (20)"
   ],
   "linguagem_principal": "TypeScript",
   "framework": "React",
@@ -1264,6 +1264,10 @@
     "arquivos": 4
    },
    {
+    "host": "api.supabase.com",
+    "arquivos": 3
+   },
+   {
     "host": "ipapi.co",
     "arquivos": 3
    },
@@ -1292,7 +1296,7 @@
     "arquivos": 2
    },
    {
-    "host": "api.supabase.com",
+    "host": "bwwbeyolnnzppeuhgkcd.functions.supabase.co",
     "arquivos": 2
    },
    {
@@ -1301,6 +1305,10 @@
    },
    {
     "host": "docs.lovable.dev",
+    "arquivos": 2
+   },
+   {
+    "host": "edge-smoke.invalid",
     "arquivos": 2
    },
    {
@@ -1337,6 +1345,10 @@
    },
    {
     "host": "api.cnpja.com",
+    "arquivos": 1
+   },
+   {
+    "host": "api.gitlab.com",
     "arquivos": 1
    },
    {

@@ -5,11 +5,11 @@
   "vitest",
   "playwright"
  ],
- "total": 356,
+ "total": 363,
  "por_tipo": {
   "e2e": 35,
   "pytest": 15,
-  "unit": 300
+  "unit": 307
  },
  "onde_ficam": [
   {
@@ -17,12 +17,12 @@
    "arquivos": 239
   },
   {
-   "padrao": "co-localizado (*.test)",
-   "arquivos": 40
+   "padrao": "outro",
+   "arquivos": 44
   },
   {
-   "padrao": "outro",
-   "arquivos": 37
+   "padrao": "co-localizado (*.test)",
+   "arquivos": 40
   },
   {
    "padrao": "e2e/",
@@ -290,6 +290,69 @@
    "linhas": 292,
    "testa": [],
    "casos": 0
+  },
+  {
+   "arquivo": "scripts/edge-deploy/deployment-record.unit.mjs",
+   "tipo": "unit",
+   "linhas": 35,
+   "testa": [
+    "scripts/edge-deploy/deployment-record.mjs"
+   ],
+   "casos": 4
+  },
+  {
+   "arquivo": "scripts/edge-deploy/redigir-log.unit.mjs",
+   "tipo": "unit",
+   "linhas": 86,
+   "testa": [
+    "scripts/edge-deploy/redigir-log.mjs"
+   ],
+   "casos": 5
+  },
+  {
+   "arquivo": "scripts/edge-deploy/register-deployment.unit.mjs",
+   "tipo": "unit",
+   "linhas": 31,
+   "testa": [
+    "scripts/edge-deploy/register-deployment.mjs"
+   ],
+   "casos": 5
+  },
+  {
+   "arquivo": "scripts/edge-deploy/secrets-scope.unit.mjs",
+   "tipo": "unit",
+   "linhas": 56,
+   "testa": [
+    "scripts/edge-deploy/secrets-scope.mjs"
+   ],
+   "casos": 7
+  },
+  {
+   "arquivo": "scripts/edge-deploy/smoke-functions.unit.mjs",
+   "tipo": "unit",
+   "linhas": 91,
+   "testa": [
+    "scripts/edge-deploy/smoke-functions.mjs"
+   ],
+   "casos": 4
+  },
+  {
+   "arquivo": "scripts/edge-deploy/unchanged-from-log.unit.mjs",
+   "tipo": "unit",
+   "linhas": 58,
+   "testa": [
+    "scripts/edge-deploy/unchanged-from-log.mjs"
+   ],
+   "casos": 9
+  },
+  {
+   "arquivo": "scripts/edge-deploy/verify-remote.unit.mjs",
+   "tipo": "unit",
+   "linhas": 63,
+   "testa": [
+    "scripts/edge-deploy/verify-remote.mjs"
+   ],
+   "casos": 4
   },
   {
    "arquivo": "scripts/graphify/test_benchmark.py",
@@ -3170,6 +3233,13 @@
  ],
  "cobertura_por_arquivo": {
   "eslint-rules/no-floating-supabase-write.js": 1,
+  "scripts/edge-deploy/deployment-record.mjs": 1,
+  "scripts/edge-deploy/redigir-log.mjs": 1,
+  "scripts/edge-deploy/register-deployment.mjs": 1,
+  "scripts/edge-deploy/secrets-scope.mjs": 1,
+  "scripts/edge-deploy/smoke-functions.mjs": 1,
+  "scripts/edge-deploy/unchanged-from-log.mjs": 1,
+  "scripts/edge-deploy/verify-remote.mjs": 1,
   "scripts/security/test-canonical-db-gates.mjs": 1,
   "scripts/security/test-rpc-runtime.ts": 1,
   "src/components/accessibility/SkipLinks.tsx": 1,

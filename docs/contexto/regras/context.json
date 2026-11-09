@@ -1,15 +1,15 @@
 {
  "meta": {
-  "sha": "039e16df6a88ec27c9405635a2d3628bfc37fa5a",
+  "sha": "8eef9b064acb30e12c1f616a5c8f29300ac8936f",
   "branch": "main",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
-  "generated_at": "2026-11-09 04:19 UTC",
-  "files_total": 3480,
-  "code_files": 3155,
-  "code_lines": 452758
+  "generated_at": "2026-11-09 04:33 UTC",
+  "files_total": 3501,
+  "code_files": 3170,
+  "code_lines": 454108
  },
  "version": "1.3.2",
- "facts_hash": "0b2c6f8529efe209",
+ "facts_hash": "6d4b0b46f1f633e4",
  "stack": {
   "frameworks": [
    "React + Vite",
@@ -277,7 +277,7 @@
    ".sql": 1006,
    ".tsx": 992,
    ".py": 28,
-   ".mjs": 10,
+   ".mjs": 25,
    ".js": 8
   },
   "monorepo_packages": [],
@@ -63138,8 +63138,8 @@
   },
   {
    "module": "scripts",
-   "files": 74,
-   "lines": 17253,
+   "files": 89,
+   "lines": 18603,
    "tables": [
     "a",
     "alerts",
@@ -63168,6 +63168,13 @@
     "gerar.unit.mjs: AppRoutes, useContacts",
     "listar-excecoes-npm-nativo.py: arquivos_ts, main",
     "test_verify_scenarios.py: _run_verify, _make_psql, TestVerifyShMissingArgs, TestVerifyShFKCheckFix, TestVerifyShSyntax",
+    "deployment-record.mjs: AMBIENTE_PADRAO, construirDeployment, construirStatus, resumirDeployment",
+    "redigir-log.mjs: redigir, confinar",
+    "register-deployment.mjs: resolverDestino",
+    "secrets-scope.mjs: nomesDeSecretsParaEscopo, decidirReescrita, extrairNomesDeSecrets",
+    "smoke-functions.mjs: smokeFunction, runSmokeSuite",
+    "unchanged-from-log.mjs: stripAnsi, extractUnchangedSlugs",
+    "verify-remote.mjs: extrairNomesRemotos, runVerifyRemote",
     "benchmark.py: source_hits, rg_hits, median_time, run_case, main",
     "code_references.py: source_files, line_of, extract_references, edge_function_names, correlate, main",
     "edge_inventory.py: edge_files, inspect_edge, inventory, persist_evidence, main",
@@ -63218,6 +63225,7 @@
     "node:child_process",
     "node:crypto",
     "node:fs",
+    "node:module",
     "node:os",
     "node:path",
     "node:test",
@@ -63264,6 +63272,21 @@
     "scripts/ci/listar-specs-quarentena.ts",
     "scripts/data/checkpoint.sql",
     "scripts/data/test_verify_scenarios.py",
+    "scripts/edge-deploy/deployment-record.mjs",
+    "scripts/edge-deploy/deployment-record.unit.mjs",
+    "scripts/edge-deploy/health-check.mjs",
+    "scripts/edge-deploy/redigir-log.mjs",
+    "scripts/edge-deploy/redigir-log.unit.mjs",
+    "scripts/edge-deploy/register-deployment.mjs",
+    "scripts/edge-deploy/register-deployment.unit.mjs",
+    "scripts/edge-deploy/secrets-scope.mjs",
+    "scripts/edge-deploy/secrets-scope.unit.mjs",
+    "scripts/edge-deploy/smoke-functions.mjs",
+    "scripts/edge-deploy/smoke-functions.unit.mjs",
+    "scripts/edge-deploy/unchanged-from-log.mjs",
+    "scripts/edge-deploy/unchanged-from-log.unit.mjs",
+    "scripts/edge-deploy/verify-remote.mjs",
+    "scripts/edge-deploy/verify-remote.unit.mjs",
     "scripts/graphify/benchmark.py",
     "scripts/graphify/code_references.py",
     "scripts/graphify/edge_inventory.py",
@@ -63307,16 +63330,7 @@
     "scripts/security/test-canonical-db-gates.test.mjs",
     "scripts/security/test-lint-function-repairs.mjs",
     "scripts/security/test-observability-privileges.sql",
-    "scripts/security/test-privilege-baseline.sql",
-    "scripts/security/test-rpc-runtime.evaluate.test.ts",
-    "scripts/security/test-rpc-runtime.ts",
-    "scripts/security/test-security-definer-invocation.sql",
-    "scripts/security/test-supabase-config.py",
-    "scripts/security/test-tenant-isolation.sql",
-    "scripts/security/test-tenant-policy-scope.sql",
-    "scripts/security/test-write-isolation.sql",
-    "scripts/supabase_snapshot/snapshot.py",
-    "scripts/supabase_snapshot/test_snapshot.py"
+    "scripts/security/test-privilege-baseline.sql"
    ]
   },
   {
@@ -72850,6 +72864,90 @@
    {
     "file": "scripts/ci/listar-specs-quarentena.ts",
     "msg": "Glob com sintaxe não suportada por este script: ${glob}"
+   },
+   {
+    "file": "scripts/edge-deploy/deployment-record.mjs",
+    "msg": "shaDeployado precisa ser um sha de 40 hex: recebido "
+   },
+   {
+    "file": "scripts/edge-deploy/deployment-record.mjs",
+    "msg": "status exige o id do deployment"
+   },
+   {
+    "file": "scripts/edge-deploy/health-check.mjs",
+    "msg": "--project-ref obrigatório"
+   },
+   {
+    "file": "scripts/edge-deploy/health-check.mjs",
+    "msg": "Apenas o projeto canônico é aceito"
+   },
+   {
+    "file": "scripts/edge-deploy/health-check.mjs",
+    "msg": "Argumento desconhecido: ${argv[i]}"
+   },
+   {
+    "file": "scripts/edge-deploy/health-check.mjs",
+    "msg": "Management API retornou HTTP ${res.status} na consulta de analytics"
+   },
+   {
+    "file": "scripts/edge-deploy/redigir-log.mjs",
+    "msg": "caminho fora da base permitida (${raiz}): ${arquivo}"
+   },
+   {
+    "file": "scripts/edge-deploy/redigir-log.mjs",
+    "msg": "caminho resolve para fora da base via link (${raizReal}): ${arquivo}"
+   },
+   {
+    "file": "scripts/edge-deploy/register-deployment.mjs",
+    "msg": "${caminho} -> ${r.status} ${(await r.text()).slice(0, 200)}"
+   },
+   {
+    "file": "scripts/edge-deploy/register-deployment.mjs",
+    "msg": "caminho recusado (precisa começar com / e não conter ..): ${c}"
+   },
+   {
+    "file": "scripts/edge-deploy/register-deployment.mjs",
+    "msg": "destino não permitido (allowlist): host ${destino.host}"
+   },
+   {
+    "file": "scripts/edge-deploy/register-deployment.mjs",
+    "msg": "destino não permitido (exige https, recebido ${destino.protocol}, host ${destino.host}): ${base}"
+   },
+   {
+    "file": "scripts/edge-deploy/register-deployment.mjs",
+    "msg": "destino recusado (URL inválida): ${base}"
+   },
+   {
+    "file": "scripts/edge-deploy/smoke-functions.mjs",
+    "msg": "Argumento desconhecido: ${key}"
+   },
+   {
+    "file": "scripts/edge-deploy/smoke-functions.mjs",
+    "msg": "Argumento obrigatório ausente: ${required}"
+   },
+   {
+    "file": "scripts/edge-deploy/smoke-functions.mjs",
+    "msg": "Argumento obrigatório ausente: --functions-list (JSON plano com { functions: [{ name, verify_jwt }] })"
+   },
+   {
+    "file": "scripts/edge-deploy/smoke-functions.mjs",
+    "msg": "concurrency precisa ser inteiro entre 1 e 20"
+   },
+   {
+    "file": "scripts/edge-deploy/smoke-functions.mjs",
+    "msg": "retries precisa ser inteiro entre 1 e 5"
+   },
+   {
+    "file": "scripts/edge-deploy/smoke-functions.mjs",
+    "msg": "verify_jwt ausente no config.toml para a função "
+   },
+   {
+    "file": "scripts/edge-deploy/verify-remote.mjs",
+    "msg": "Argumento desconhecido: ${key}"
+   },
+   {
+    "file": "scripts/edge-deploy/verify-remote.mjs",
+    "msg": "Argumento obrigatório ausente: ${required}"
    },
    {
     "file": "scripts/graphify/benchmark.py",
@@ -165055,6 +165153,238 @@
     "capture_output=True, text=True, timeout=10)"
    ]
   },
+  "scripts/edge-deploy/deployment-record.mjs": {
+   "path": "scripts/edge-deploy/deployment-record.mjs",
+   "lines": 54,
+   "exports": [
+    "const AMBIENTE_PADRAO",
+    "function construirDeployment",
+    "function construirStatus",
+    "function resumirDeployment"
+   ],
+   "errors": [
+    "shaDeployado precisa ser um sha de 40 hex: recebido ",
+    "status exige o id do deployment"
+   ],
+   "params": [
+    {
+     "name": "AMBIENTE_PADRAO",
+     "value": "'producao'"
+    }
+   ],
+   "doc": "Porto de Zapp_Web_V2/scripts/edge-deploy/deployment-record.mjs (E60). Rastreabilidade do deploy de edge via GitHub Deployment. O Deployment criado pela plataforma (por `environment:`) aponta para a BRANCH, que anda. Em rollback, o que foi publicado é um ANCESTRAL, não a branch. Este módulo cria o De …"
+  },
+  "scripts/edge-deploy/deployment-record.unit.mjs": {
+   "path": "scripts/edge-deploy/deployment-record.unit.mjs",
+   "lines": 35,
+   "doc": "Porto de Zapp_Web_V2/scripts/edge-deploy/deployment-record.unit.mjs, ajustado para o AMBIENTE_PADRAO 'producao' do Promo_Finance_V2."
+  },
+  "scripts/edge-deploy/health-check.mjs": {
+   "path": "scripts/edge-deploy/health-check.mjs",
+   "lines": 159,
+   "env": [
+    "SUPABASE_ACCESS_TOKEN"
+   ],
+   "errors": [
+    "--project-ref obrigatório",
+    "Apenas o projeto canônico é aceito",
+    "Argumento desconhecido: ${argv[i]}",
+    "Management API retornou HTTP ${res.status} na consulta de analytics"
+   ],
+   "params": [
+    {
+     "name": "CANONICAL_PROJECT",
+     "value": "'bwwbeyolnnzppeuhgkcd'"
+    },
+    {
+     "name": "MGMT_BASE",
+     "value": "'https://api.supabase.com'"
+    },
+    {
+     "name": "DEFAULT_THRESHOLD",
+     "value": "0.10"
+    },
+    {
+     "name": "DEFAULT_WAIT_MS",
+     "value": "5"
+    },
+    {
+     "name": "WINDOW_MINUTES",
+     "value": "5"
+    }
+   ],
+   "doc": "!/usr/bin/env node Porto de Zapp_Web_V2/scripts/edge-deploy/health-check.mjs (W65), adaptado ao Promo_Finance_V2 (project ref canônico e escopo via lista plana, sem manifest). Pós-deploy health check — consulta logs de erro pela Management API e falha com ::error:: se a taxa de 5xx superar o limiar. …",
+   "temporal": [
+    "const DEFAULT_WAIT_MS = 5 * 60 * 1000; // 5 min"
+   ],
+   "percents": [
+    "const DEFAULT_THRESHOLD = 0.10; // 10% de 5xx = falha"
+   ]
+  },
+  "scripts/edge-deploy/redigir-log.mjs": {
+   "path": "scripts/edge-deploy/redigir-log.mjs",
+   "lines": 87,
+   "exports": [
+    "function redigir",
+    "function confinar"
+   ],
+   "env": [
+    "REDIGIR_LOG_BASE",
+    "RUNNER_TEMP"
+   ],
+   "errors": [
+    "caminho fora da base permitida (${raiz}): ${arquivo}",
+    "caminho resolve para fora da base via link (${raizReal}): ${arquivo}"
+   ],
+   "rule_comments": [
+    "somente a contagem."
+   ],
+   "doc": "!/usr/bin/env node Porto de Zapp_Web_V2/scripts/edge-deploy/redigir-log.mjs (E74). O log do deploy vai para o artifact do GitHub. A saída do CLI Supabase carrega URL com `access_token=` embutido — publicar isso num storage de terceiro é publicar credencial. Este módulo reescreve o arquivo removendo …"
+  },
+  "scripts/edge-deploy/redigir-log.unit.mjs": {
+   "path": "scripts/edge-deploy/redigir-log.unit.mjs",
+   "lines": 86,
+   "params": [
+    {
+     "name": "SUFIXO_FICTICIO",
+     "value": "'abc123def456'"
+    }
+   ],
+   "rule_comments": [
+    "encostado em \"access_token=\" no código-fonte, a regra generic-api-key do"
+   ],
+   "doc": "Porto de Zapp_Web_V2/scripts/edge-deploy/redigir-log.unit.mjs, adaptado ao Promo_Finance_V2 (a redação roda no migrate-functions.sh, não no YAML do Zapp).",
+   "side_effects": [
+    "asaas"
+   ]
+  },
+  "scripts/edge-deploy/register-deployment.mjs": {
+   "path": "scripts/edge-deploy/register-deployment.mjs",
+   "lines": 109,
+   "exports": [
+    "function resolverDestino"
+   ],
+   "env": [
+    "GITHUB_API_URL",
+    "GITHUB_SERVER_URL"
+   ],
+   "errors": [
+    "${caminho} -> ${r.status} ${(await r.text()).slice(0, 200)}",
+    "caminho recusado (precisa começar com / e não conter ..): ${c}",
+    "destino não permitido (allowlist): host ${destino.host}",
+    "destino não permitido (exige https, recebido ${destino.protocol}, host ${destino.host}): ${base}",
+    "destino recusado (URL inválida): ${base}"
+   ],
+   "doc": "!/usr/bin/env node Porto de Zapp_Web_V2/scripts/edge-deploy/register-deployment.mjs (E60). Registra o Deployment de rastreabilidade do deploy de edge. Best-effort por decisão: falha ao registrar AVISA e não derruba o deploy (o código já está no ar quando este passo roda — falhar aqui não despublica …"
+  },
+  "scripts/edge-deploy/register-deployment.unit.mjs": {
+   "path": "scripts/edge-deploy/register-deployment.unit.mjs",
+   "lines": 31,
+   "rule_comments": [
+    "nunca é tocada: exercita apenas as decisões de destino (allowlist https, sem"
+   ],
+   "doc": "Porto de Zapp_Web_V2/scripts/edge-deploy/register-deployment.unit.mjs — a rede nunca é tocada: exercita apenas as decisões de destino (allowlist https, sem path traversal), puras e determinísticas. resolverDestino LANÇA erro nas recusas; o teste confere erro e mensagem."
+  },
+  "scripts/edge-deploy/secrets-scope.mjs": {
+   "path": "scripts/edge-deploy/secrets-scope.mjs",
+   "lines": 137,
+   "exports": [
+    "function nomesDeSecretsParaEscopo",
+    "function decidirReescrita",
+    "function extrairNomesDeSecrets"
+   ],
+   "env": [
+    "GITHUB_OUTPUT"
+   ],
+   "rule_comments": [
+    "supabase_vault, required=true), a mesma fonte do gate do migrate-functions.sh.",
+    "// Decisão desta etapa: reescrever APENAS quando",
+    "// Limite assumido e declarado: a comparação é do CONJUNTO DE NOMES, não do",
+    "`required=true`. Espelha a exclusão do gate do migrate-functions.sh:",
+    "* Extrai APENAS os nomes do `secrets list`. Tolerante à forma (array de objetos,"
+   ],
+   "doc": "!/usr/bin/env node Porto de Zapp_Web_V2/scripts/edge-deploy/secrets-scope.mjs (E58), adaptado ao Promo_Finance_V2: os secrets de escopo vêm do env.manifest.json (dest supabase_vault, required=true), a mesma fonte do gate do migrate-functions.sh. Decisão desta etapa: reescrever APENAS quando (a) o op …",
+   "calc_fns": [
+    {
+     "name": "valor",
+     "params": "nome",
+     "body": "const i = args.indexOf(nome); return i === -1 ? undefined : args[i + 1];"
+    }
+   ]
+  },
+  "scripts/edge-deploy/secrets-scope.unit.mjs": {
+   "path": "scripts/edge-deploy/secrets-scope.unit.mjs",
+   "lines": 56,
+   "rule_comments": [
+    "Promo_Finance_V2: escopo = nomes required do env.manifest.json (mesma fonte"
+   ],
+   "doc": "Porto de Zapp_Web_V2/scripts/edge-deploy/secrets-scope.unit.mjs, adaptado ao Promo_Finance_V2: escopo = nomes required do env.manifest.json (mesma fonte do gate do migrate-functions.sh), SEM escrita em secrets real — a decisão é pura (decidirReescrita) e roda com dry-run."
+  },
+  "scripts/edge-deploy/smoke-functions.mjs": {
+   "path": "scripts/edge-deploy/smoke-functions.mjs",
+   "lines": 232,
+   "exports": [
+    "function smokeFunction",
+    "function runSmokeSuite"
+   ],
+   "errors": [
+    "Argumento desconhecido: ${key}",
+    "Argumento obrigatório ausente: ${required}",
+    "Argumento obrigatório ausente: --functions-list (JSON plano com { functions: [{ name, verify_jwt }] })",
+    "concurrency precisa ser inteiro entre 1 e 20",
+    "retries precisa ser inteiro entre 1 e 5",
+    "verify_jwt ausente no config.toml para a função "
+   ],
+   "rule_comments": [
+    "(POST sem JWT → 401) apenas nas funções com verify_jwt=true. Webhooks/cron",
+    "públicos (verify_jwt=false) NUNCA recebem requisição de negócio.",
+    "Preflight CORS positivo para cada origem canônica; o negativo não pode"
+   ],
+   "doc": "!/usr/bin/env node Porto de Zapp_Web_V2/scripts/edge-deploy/smoke-functions.mjs (W61), adaptado ao Promo_Finance_V2: sem manifest (o PF não tem deployment-manifest.json) — a lista de funções vem de um JSON plano gerado pelo migrate-functions.sh e o contrato verify_jwt vem do supabase/config.toml (fa …"
+  },
+  "scripts/edge-deploy/smoke-functions.unit.mjs": {
+   "path": "scripts/edge-deploy/smoke-functions.unit.mjs",
+   "lines": 91,
+   "doc": "Porto de Zapp_Web_V2/scripts/edge-deploy/smoke-functions.unit.mjs — a rede nunca é tocada: o fetch é injetado como um fake determinístico. Exercita o contrato CORS (positivo/negativo) e o gateway anonymous 401 das funções com verify_jwt=true, além do fail-closed quando o config.toml não declara o bl …",
+   "side_effects": [
+    "asaas"
+   ]
+  },
+  "scripts/edge-deploy/unchanged-from-log.mjs": {
+   "path": "scripts/edge-deploy/unchanged-from-log.mjs",
+   "lines": 57,
+   "exports": [
+    "function stripAnsi",
+    "function extractUnchangedSlugs"
+   ],
+   "doc": "!/usr/bin/env node Porto de Zapp_Web_V2/scripts/edge-deploy/unchanged-from-log.mjs (E56). Extrator testável de \"No change found in Function: X\", com fixture do log real. Por que as duas propriedades abaixo importam: - o CLI marca \"No change found\" quando o bundle local bate byte a byte com o publica …"
+  },
+  "scripts/edge-deploy/unchanged-from-log.unit.mjs": {
+   "path": "scripts/edge-deploy/unchanged-from-log.unit.mjs",
+   "lines": 58,
+   "doc": "Porto de Zapp_Web_V2/scripts/edge-deploy/unchanged-from-log.unit.mjs. Fixtures derivadas byte a byte dos logs reais dos runs do Zapp (F-03). O run 36583351162 é o caso F-03: o extrator com âncoras ^...$ não casava a linha do CLI (ANSI). O teste 3 trava isso; o teste 4 trava o eco do script."
+  },
+  "scripts/edge-deploy/verify-remote.mjs": {
+   "path": "scripts/edge-deploy/verify-remote.mjs",
+   "lines": 95,
+   "exports": [
+    "function extrairNomesRemotos",
+    "function runVerifyRemote"
+   ],
+   "errors": [
+    "Argumento desconhecido: ${key}",
+    "Argumento obrigatório ausente: ${required}"
+   ],
+   "doc": "!/usr/bin/env node Porto de Zapp_Web_V2/scripts/edge-deploy/verify-remote.mjs (E74), simplificado para o Promo_Finance_V2: o PF não tem deployment-manifest.json, então a confirmação de que \"a função subiu\" é a presença de cada função no inventário remoto (`supabase functions list --project-ref ... - …"
+  },
+  "scripts/edge-deploy/verify-remote.unit.mjs": {
+   "path": "scripts/edge-deploy/verify-remote.unit.mjs",
+   "lines": 63,
+   "doc": "Porto de Zapp_Web_V2/scripts/edge-deploy/verify-remote.unit.mjs, adaptado ao Promo_Finance_V2: verificação de que cada função esperada existe no inventário remoto (supabase functions list --output json tolera array ou {functions}).",
+   "side_effects": [
+    "asaas"
+   ]
+  },
   "scripts/graphify/benchmark.py": {
    "path": "scripts/graphify/benchmark.py",
    "lines": 97,
@@ -228432,10 +228762,39 @@
   }
  },
  "git": {
-  "sha": "039e16df6a88ec27c9405635a2d3628bfc37fa5a",
+  "sha": "8eef9b064acb30e12c1f616a5c8f29300ac8936f",
   "branch": "main",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
   "commits": [
+   {
+    "sha": "8eef9b0",
+    "date": "2026-11-09",
+    "author": "adm01-debug",
+    "subject": "fix: sanitizar fixture deploy-log-all para remover token real (supersede #253)",
+    "files": [
+     "scripts/edge-deploy/README.md",
+     "scripts/edge-deploy/allowed-origins.json",
+     "scripts/edge-deploy/deployment-record.mjs",
+     "scripts/edge-deploy/deployment-record.unit.mjs",
+     "scripts/edge-deploy/fixtures/deploy-log-all-36583351162.txt",
+     "scripts/edge-deploy/fixtures/deploy-log-ansi-f03.txt",
+     "scripts/edge-deploy/fixtures/deploy-log-echo-only.txt",
+     "scripts/edge-deploy/fixtures/deploy-log-single-36852598923.txt",
+     "scripts/edge-deploy/health-check.mjs",
+     "scripts/edge-deploy/redigir-log.mjs",
+     "scripts/edge-deploy/redigir-log.unit.mjs",
+     "scripts/edge-deploy/register-deployment.mjs",
+     "scripts/edge-deploy/register-deployment.unit.mjs",
+     "scripts/edge-deploy/secrets-scope.mjs",
+     "scripts/edge-deploy/secrets-scope.unit.mjs",
+     "scripts/edge-deploy/smoke-functions.mjs",
+     "scripts/edge-deploy/smoke-functions.unit.mjs",
+     "scripts/edge-deploy/unchanged-from-log.mjs",
+     "scripts/edge-deploy/unchanged-from-log.unit.mjs",
+     "scripts/edge-deploy/verify-remote.mjs",
+     "scripts/edge-deploy/verify-remote.unit.mjs"
+    ]
+   },
    {
     "sha": "039e16d",
     "date": "2026-11-09",
@@ -228905,18 +229264,6 @@
      "AGENTS.md",
      "CLAUDE.md"
     ]
-   },
-   {
-    "sha": "309ee32",
-    "date": "2026-11-01",
-    "author": "adm01-debug",
-    "subject": "fix: boletos asaas_id types + migrations steps 10+20 (rebuid sem conflito) (#247)",
-    "files": [
-     "src/hooks/useBoletos.ts",
-     "src/integrations/supabase/types.ts",
-     "supabase/migrations/20260913160000_mv_perf_weekly_unique_idx.sql",
-     "supabase/migrations/20260913170000_boletos_add_asaas_cols.sql"
-    ]
    }
   ],
   "hot_files": [
@@ -228993,11 +229340,11 @@
     2
    ],
    [
-    "analise-prs/dossiers/pr131.md",
+    "scripts/edge-deploy/README.md",
     1
    ],
    [
-    "analise-prs/dossiers/pr175.md",
+    "scripts/edge-deploy/allowed-origins.json",
     1
    ]
   ]

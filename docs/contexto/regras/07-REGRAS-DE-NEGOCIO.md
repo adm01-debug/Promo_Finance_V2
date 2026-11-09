@@ -1,6 +1,6 @@
 # 07 · REGRAS DE NEGÓCIO
 
-> Gerado automaticamente por AI Context Sync v1.3.2 · commit `039e16df6a` · branch `main` · 2026-11-09 04:19 UTC
+> Gerado automaticamente por AI Context Sync v1.3.2 · commit `8eef9b064a` · branch `main` · 2026-11-09 04:33 UTC
 > Não edite à mão — regras humanas vão em `manual/`.
 
 ## A. Regras escritas por humanos (`manual/` — prioridade máxima, nunca sobrescrito)
@@ -4680,6 +4680,27 @@ Erros lançados por funções SQL (`RAISE EXCEPTION` = regra de negócio no banc
 | ALERTS_EMAIL_FROM | `scripts/generate-env-manifest.mjs` |
 | ${msg}: esperado ${JSON.stringify(b)} obtido ${JSON.stringify(a)} | `scripts/ai-context/cenarios.mjs` |
 | Glob com sintaxe não suportada por este script: ${glob} | `scripts/ci/listar-specs-quarentena.ts` |
+| shaDeployado precisa ser um sha de 40 hex: recebido  | `scripts/edge-deploy/deployment-record.mjs` |
+| status exige o id do deployment | `scripts/edge-deploy/deployment-record.mjs` |
+| --project-ref obrigatório | `scripts/edge-deploy/health-check.mjs` |
+| Apenas o projeto canônico é aceito | `scripts/edge-deploy/health-check.mjs` |
+| Argumento desconhecido: ${argv[i]} | `scripts/edge-deploy/health-check.mjs` |
+| Management API retornou HTTP ${res.status} na consulta de analytics | `scripts/edge-deploy/health-check.mjs` |
+| caminho fora da base permitida (${raiz}): ${arquivo} | `scripts/edge-deploy/redigir-log.mjs` |
+| caminho resolve para fora da base via link (${raizReal}): ${arquivo} | `scripts/edge-deploy/redigir-log.mjs` |
+| ${caminho} -> ${r.status} ${(await r.text()).slice(0, 200)} | `scripts/edge-deploy/register-deployment.mjs` |
+| caminho recusado (precisa começar com / e não conter ..): ${c} | `scripts/edge-deploy/register-deployment.mjs` |
+| destino não permitido (allowlist): host ${destino.host} | `scripts/edge-deploy/register-deployment.mjs` |
+| destino não permitido (exige https, recebido ${destino.protocol}, host ${destino.host}): ${base} | `scripts/edge-deploy/register-deployment.mjs` |
+| destino recusado (URL inválida): ${base} | `scripts/edge-deploy/register-deployment.mjs` |
+| Argumento desconhecido: ${key} | `scripts/edge-deploy/smoke-functions.mjs` |
+| Argumento obrigatório ausente: ${required} | `scripts/edge-deploy/smoke-functions.mjs` |
+| Argumento obrigatório ausente: --functions-list (JSON plano com { functions: [{ name, verify_jwt }] }) | `scripts/edge-deploy/smoke-functions.mjs` |
+| concurrency precisa ser inteiro entre 1 e 20 | `scripts/edge-deploy/smoke-functions.mjs` |
+| retries precisa ser inteiro entre 1 e 5 | `scripts/edge-deploy/smoke-functions.mjs` |
+| verify_jwt ausente no config.toml para a função  | `scripts/edge-deploy/smoke-functions.mjs` |
+| Argumento desconhecido: ${key} | `scripts/edge-deploy/verify-remote.mjs` |
+| Argumento obrigatório ausente: ${required} | `scripts/edge-deploy/verify-remote.mjs` |
 | Corpus preservado da execução não foi encontrado. | `scripts/graphify/benchmark.py` |
 | ripgrep ( | `scripts/graphify/benchmark.py` |
 | Nenhuma Edge Function rastreada foi encontrada. | `scripts/graphify/edge_inventory.py` |
@@ -4954,28 +4975,7 @@ Erros lançados por funções SQL (`RAISE EXCEPTION` = regra de negócio no banc
 | Erro ao analisar  | `src/components/expert/DocumentAnalyzer.tsx` |
 | Tipo de arquivo não suportado: ${file.name} | `src/components/expert/DocumentAnalyzer.tsx` |
 | Arquivo muito grande (máx 10MB) | `src/components/financeiro/AnexoList.tsx` |
-| Falha ao gerar link de download | `src/components/financeiro/AnexoList.tsx` |
-| Falha ao gerar link de download:  | `src/components/financeiro/AnexoList.tsx` |
-| Falha ao remover anexo:  | `src/components/financeiro/AnexoList.tsx` |
-| Falha ao remover o arquivo do storage: ${erroStorage.message} | `src/components/financeiro/AnexoList.tsx` |
-| Falha no upload:  | `src/components/financeiro/AnexoList.tsx` |
-| Não foi possível localizar o arquivo do anexo | `src/components/financeiro/AnexoList.tsx` |
-| Registro removido, mas o arquivo de  | `src/components/financeiro/AnexoList.tsx` |
-| Erro ao realizar transferência:  | `src/components/financeiro/TransferenciaDialog.tsx` |
-| Erro ao gerar análise de IA | `src/components/fluxo-caixa/InsightsFluxoIA.tsx` |
-| Erro ao atualizar fornecedor | `src/components/fornecedores/FornecedorForm.tsx` |
-| Erro ao cadastrar fornecedor | `src/components/fornecedores/FornecedorForm.tsx` |
-| Fornecedor não encontrado | `src/components/fornecedores/FornecedorForm.tsx` |
-| Não foi possível copiar | `src/components/insights-ia/anomalia/EntidadeDetalheDrawer.tsx` |
-| Não foi possível copiar — verifique permissões do navegador | `src/components/insights-ia/anomalia/ExportarEvidenciasButton.tsx` |
-|  className= | `src/components/insights-ia/anomalia/ReabrirAnomaliaDialog.tsx` |
-| Motivo muito curto para reabrir | `src/components/insights-ia/anomalia/ReabrirAnomaliaDialog.tsx` |
-|  className= | `src/components/insights-ia/anomalia/ReabrirAnomaliasLoteDialog.tsx` |
-| ; import { RotateCcw, Loader2, AlertTriangle } from  | `src/components/insights-ia/anomalia/ReabrirAnomaliasLoteDialog.tsx` |
-| Selecione uma conta bancária | `src/components/integracoes/OpenFinancePanel.tsx` |
-| Informe um número para teste | `src/components/integracoes/WhatsAppConfigPanel.tsx` |
-| Informe o motivo da ativação | `src/components/nfe/AutoContingenciaConfig.tsx` |
-| … +681 linhas — lista completa em `context.json` | |
+| … +702 linhas — lista completa em `context.json` | |
 
 ## J. Controle de acesso no código (checagens de perfil/permissão)
 
