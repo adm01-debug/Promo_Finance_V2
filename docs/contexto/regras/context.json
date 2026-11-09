@@ -1,15 +1,15 @@
 {
  "meta": {
-  "sha": "94bb4af7c6cac27970e613e0daca3033227fa1b1",
+  "sha": "ea42a9b1b4297eabfc2f0f20a70c66fdb44e907e",
   "branch": "main",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
-  "generated_at": "2026-11-09 10:19 UTC",
-  "files_total": 3514,
-  "code_files": 3170,
-  "code_lines": 454108
+  "generated_at": "2026-11-09 10:25 UTC",
+  "files_total": 3523,
+  "code_files": 3176,
+  "code_lines": 455118
  },
  "version": "1.3.2",
- "facts_hash": "6d4b0b46f1f633e4",
+ "facts_hash": "feb2dde57883f2b9",
  "stack": {
   "frameworks": [
    "React + Vite",
@@ -210,6 +210,15 @@
     ]
    },
    {
+    "file": ".github/workflows/estado-real.yml",
+    "name": "Estado real (CI e edge functions)",
+    "triggers": [
+     "push",
+     "schedule",
+     "workflow_dispatch"
+    ]
+   },
+   {
     "file": ".github/workflows/functions-deploy.yml",
     "name": "Deploy controlado de Edge Function",
     "triggers": [
@@ -276,8 +285,8 @@
    ".ts": 1112,
    ".sql": 1006,
    ".tsx": 992,
+   ".mjs": 31,
    ".py": 28,
-   ".mjs": 25,
    ".js": 8
   },
   "monorepo_packages": [],
@@ -60480,6 +60489,11 @@
    },
    {
     "kind": "GitHub Actions cron",
+    "detail": "38 11 * * 1",
+    "file": ".github/workflows/estado-real.yml"
+   },
+   {
+    "kind": "GitHub Actions cron",
     "detail": "0 6 * * 1",
     "file": ".github/workflows/schema-drift.yml"
    }
@@ -63138,8 +63152,8 @@
   },
   {
    "module": "scripts",
-   "files": 89,
-   "lines": 18603,
+   "files": 95,
+   "lines": 19613,
    "tables": [
     "a",
     "alerts",
@@ -63147,15 +63161,19 @@
     "contas_pagar",
     "dashboard_table",
     "emails",
+    "empresas",
     "fantasma",
     "fixture_table",
     "ghost_table",
+    "ignorada",
     "payments",
     "profiles",
     "runtime_table",
+    "shared_nao_conta",
     "so_teste",
     "t",
     "t1",
+    "tabela",
     "tools_runtime",
     "tx",
     "webhook_events",
@@ -63166,7 +63184,10 @@
     "supabase_admin_ops.py: _SemRedirect, req, mask_email, mutate, want_verify_jwt, section",
     "test_supabase_admin_ops_scenarios.py: _resp, TestReqHelper, TestWantVerifyJwt, TestMutateAndFalhas, TestTestUserAllowlist, TestMfaConfigLogic",
     "gerar.unit.mjs: AppRoutes, useContacts",
+    "actions-kpi.mjs: duracaoMinutos, runsNaJanela, agregar, kpiPorArquivo, paginaTemMais, maisLentos",
+    "gerar-matriz-edge-tabela.mjs: extrairTabelas, montarMatriz, renderizar, main",
     "listar-excecoes-npm-nativo.py: arquivos_ts, main",
+    "render-workflow-docs.mjs: CAMPOS, extrairDocs, extrairNaoEBug, nomeDe, renderizar, main",
     "test_verify_scenarios.py: _run_verify, _make_psql, TestVerifyShMissingArgs, TestVerifyShFKCheckFix, TestVerifyShSyntax",
     "deployment-record.mjs: AMBIENTE_PADRAO, construirDeployment, construirStatus, resumirDeployment",
     "redigir-log.mjs: redigir, confinar",
@@ -63199,8 +63220,7 @@
     "test-canonical-db-gates.mjs: EXPECTED_PROJECT_REF, REQUIRED_MIGRATIONS, EXPECTED_FUNCTION_PRIVILEGES, EXPECTED_FIXED_POLICIES, ALLOWED_LITERAL_TRUE_POLICIES, ALLOWED_ANON_WRITE_GRANTS",
     "test-rpc-runtime.ts: evaluate",
     "test-supabase-config.py: main",
-    "snapshot.py: env_int, log, valid_previous_snapshot, prepare_output_directory, record_error, jsonable",
-    "test_snapshot.py: OfflineConnection, function, migration, structural_records, SnapshotFixture, SnapshotSQLRecoveryTests"
+    "snapshot.py: env_int, log, valid_previous_snapshot, prepare_output_directory, record_error, jsonable"
    ],
    "docs": [
     "generate-env-manifest.mjs: !/usr/bin/env node",
@@ -63267,9 +63287,15 @@
     "scripts/ai-context/cenarios.mjs",
     "scripts/ai-context/gerar.mjs",
     "scripts/ai-context/gerar.unit.mjs",
+    "scripts/ci/actions-kpi.mjs",
+    "scripts/ci/actions-kpi.unit.mjs",
     "scripts/ci/audit-env.ts",
+    "scripts/ci/gerar-matriz-edge-tabela.mjs",
+    "scripts/ci/gerar-matriz-edge-tabela.unit.mjs",
     "scripts/ci/listar-excecoes-npm-nativo.py",
     "scripts/ci/listar-specs-quarentena.ts",
+    "scripts/ci/render-workflow-docs.mjs",
+    "scripts/ci/render-workflow-docs.unit.mjs",
     "scripts/data/checkpoint.sql",
     "scripts/data/test_verify_scenarios.py",
     "scripts/edge-deploy/deployment-record.mjs",
@@ -63324,13 +63350,7 @@
     "scripts/regras_negocio/generate.py",
     "scripts/regras_negocio/indice.py",
     "scripts/regras_negocio/test_generate.py",
-    "scripts/security/check-view-replay-order.mjs",
-    "scripts/security/test-anon-surface.ts",
-    "scripts/security/test-canonical-db-gates.mjs",
-    "scripts/security/test-canonical-db-gates.test.mjs",
-    "scripts/security/test-lint-function-repairs.mjs",
-    "scripts/security/test-observability-privileges.sql",
-    "scripts/security/test-privilege-baseline.sql"
+    "scripts/security/check-view-replay-order.mjs"
    ]
   },
   {
@@ -72862,8 +72882,16 @@
     "msg": "${msg}: esperado ${JSON.stringify(b)} obtido ${JSON.stringify(a)}"
    },
    {
+    "file": "scripts/ci/actions-kpi.mjs",
+    "msg": "${metodo} ${caminho} -> ${r.status}"
+   },
+   {
     "file": "scripts/ci/listar-specs-quarentena.ts",
     "msg": "Glob com sintaxe não suportada por este script: ${glob}"
+   },
+   {
+    "file": "scripts/ci/render-workflow-docs.mjs",
+    "msg": "bloco "
    },
    {
     "file": "scripts/edge-deploy/deployment-record.mjs",
@@ -165098,6 +165126,65 @@
    ],
    "uses_service_role": true
   },
+  "scripts/ci/actions-kpi.mjs": {
+   "path": "scripts/ci/actions-kpi.mjs",
+   "lines": 285,
+   "exports": [
+    "function duracaoMinutos",
+    "function runsNaJanela",
+    "function agregar",
+    "function kpiPorArquivo",
+    "function paginaTemMais",
+    "function maisLentos",
+    "function tabela",
+    "function tabelaLentos",
+    "function corpoDoKpi",
+    "function coletarRuns",
+    "function coletarJobs",
+    "function publicarIssue",
+    "function gravarKpi"
+   ],
+   "env": [
+    "GH_TOKEN",
+    "GITHUB_API_URL",
+    "GITHUB_REPOSITORY",
+    "GITHUB_STEP_SUMMARY",
+    "GITHUB_TOKEN",
+    "JANELA_DIAS",
+    "PUBLICAR_ISSUE"
+   ],
+   "errors": [
+    "${metodo} ${caminho} -> ${r.status}"
+   ],
+   "params": [
+    {
+     "name": "UM_DIA",
+     "value": "24"
+    },
+    {
+     "name": "POR_PAGINA",
+     "value": "100"
+    }
+   ],
+   "doc": "!/usr/bin/env node KPI de uso do GitHub Actions: quanto cada workflow custa e com que frequência falha, medido da API em vez de estimado. Alimenta `docs/ci/kpi.json`, que o `render-workflow-docs.mjs` usa nas colunas \"custo/sem (min)\" e \"falha (7 d)\". A API devolve `run_started_at` e `updated_at` por …",
+   "calc_fns": [
+    {
+     "name": "maisLentos",
+     "params": "jobs, { limite = 5 } = {}",
+     "body": "return (jobs ?? []) .map((j) => ({ job: j.name, workflow: j.workflow_name ?? '', minutos: Math.round(duracaoMinutos({ run_started_at: j.started_at, updated_at: j.completed_at }) * 10) / 10, })) .sort((a, b) => b.minutos - a.minutos) .slice(0, limite);"
+    }
+   ],
+   "temporal": [
+    "const UM_DIA = 24 * 60 * 60 * 1000;"
+   ]
+  },
+  "scripts/ci/actions-kpi.unit.mjs": {
+   "path": "scripts/ci/actions-kpi.unit.mjs",
+   "lines": 233,
+   "rule_comments": [
+    "60 min em 1 dia = 420 min/semana: a coluna nao pode mudar de unidade sem avisar."
+   ]
+  },
   "scripts/ci/audit-env.ts": {
    "path": "scripts/ci/audit-env.ts",
    "lines": 158,
@@ -165111,6 +165198,68 @@
     "VERCEL_TOKEN"
    ],
    "doc": "!/usr/bin/env -S deno run --allow-read --allow-net --allow-env"
+  },
+  "scripts/ci/gerar-matriz-edge-tabela.mjs": {
+   "path": "scripts/ci/gerar-matriz-edge-tabela.mjs",
+   "lines": 92,
+   "exports": [
+    "function extrairTabelas",
+    "function montarMatriz",
+    "function renderizar",
+    "function main"
+   ],
+   "tables": [
+    {
+     "table": "tabela",
+     "op": "ref"
+    },
+    {
+     "table": "tabela",
+     "op": "ref"
+    }
+   ],
+   "storage": [
+    "bucket"
+   ],
+   "params": [
+    {
+     "name": "SAIDA",
+     "value": "\"docs/ci/MATRIZ_EDGE_TABELA.md\""
+    }
+   ],
+   "doc": "!/usr/bin/env node Matriz edge function x tabela. Escaneia supabase/functions/<funcao>/**/*.ts (sem testes, sem _shared) e anota cada tabela citada em `.from('tabela')`. Uso: node scripts/ci/gerar-matriz-edge-tabela.mjs [--check]"
+  },
+  "scripts/ci/gerar-matriz-edge-tabela.unit.mjs": {
+   "path": "scripts/ci/gerar-matriz-edge-tabela.unit.mjs",
+   "lines": 46,
+   "tables": [
+    {
+     "table": "empresas",
+     "op": "select"
+    },
+    {
+     "table": "ignorada",
+     "op": "ref"
+    },
+    {
+     "table": "empresas",
+     "op": "ref"
+    },
+    {
+     "table": "profiles",
+     "op": "ref"
+    },
+    {
+     "table": "shared_nao_conta",
+     "op": "ref"
+    }
+   ],
+   "rpc": [
+    "somar_saldo"
+   ],
+   "storage": [
+    "financeiro"
+   ]
   },
   "scripts/ci/listar-excecoes-npm-nativo.py": {
    "path": "scripts/ci/listar-excecoes-npm-nativo.py",
@@ -165126,6 +165275,32 @@
    "lines": 164,
    "errors": [
     "Glob com sintaxe não suportada por este script: ${glob}"
+   ]
+  },
+  "scripts/ci/render-workflow-docs.mjs": {
+   "path": "scripts/ci/render-workflow-docs.mjs",
+   "lines": 249,
+   "exports": [
+    "const CAMPOS",
+    "function extrairDocs",
+    "function extrairNaoEBug",
+    "function nomeDe",
+    "function renderizar",
+    "function main"
+   ],
+   "errors": [
+    "bloco "
+   ],
+   "doc": "!/usr/bin/env node"
+  },
+  "scripts/ci/render-workflow-docs.unit.mjs": {
+   "path": "scripts/ci/render-workflow-docs.unit.mjs",
+   "lines": 105,
+   "rule_comments": [
+    "`name:` nao e comentario: nao pode ser absorvido como campo do bloco."
+   ],
+   "percents": [
+    "assert.match(renderizar([{ arquivo: 'ci.yml', texto: COMPLETO }], kpi), /\\| 123\\.4 \\| 8\\.3% \\|/);"
    ]
   },
   "scripts/data/checkpoint.sql": {
@@ -228762,10 +228937,27 @@
   }
  },
  "git": {
-  "sha": "94bb4af7c6cac27970e613e0daca3033227fa1b1",
+  "sha": "ea42a9b1b4297eabfc2f0f20a70c66fdb44e907e",
   "branch": "main",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
   "commits": [
+   {
+    "sha": "ea42a9b",
+    "date": "2026-11-09",
+    "author": "adm01-debug",
+    "subject": "feat(ci): documentos gerados do estado real do CI e das edge functions (#275)",
+    "files": [
+     ".github/workflows/estado-real.yml",
+     "docs/ci/MATRIZ_EDGE_TABELA.md",
+     "docs/ci/README.md",
+     "scripts/ci/actions-kpi.mjs",
+     "scripts/ci/actions-kpi.unit.mjs",
+     "scripts/ci/gerar-matriz-edge-tabela.mjs",
+     "scripts/ci/gerar-matriz-edge-tabela.unit.mjs",
+     "scripts/ci/render-workflow-docs.mjs",
+     "scripts/ci/render-workflow-docs.unit.mjs"
+    ]
+   },
    {
     "sha": "94bb4af",
     "date": "2026-11-09",
@@ -229274,15 +229466,6 @@
      "scripts/graphify/requirements-linux-py311.lock",
      "scripts/graphify/requirements.in",
      "scripts/graphify/test_requirements_lock.py"
-    ]
-   },
-   {
-    "sha": "58f58a2",
-    "date": "2026-11-06",
-    "author": "adm01-debug",
-    "subject": "docs(auditoria): Fase 2 — auditorias-anteriores.md reconciliadas com main (#222)",
-    "files": [
-     "analise-prs/auditorias-anteriores.md"
     ]
    }
   ],

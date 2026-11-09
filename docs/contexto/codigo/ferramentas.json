@@ -5,12 +5,12 @@
   "linguagens": [
    "TypeScript (2104)",
    "SQL (1006)",
-   "Markdown (182)",
-   "JavaScript (33)",
+   "Markdown (184)",
+   "JavaScript (39)",
    "JSON (32)",
    "Python (28)",
    "Shell (23)",
-   "YAML (20)"
+   "YAML (21)"
   ],
   "linguagem_principal": "TypeScript",
   "framework": "React",
@@ -367,6 +367,41 @@
    "actions": [
     "actions/checkout",
     "actions/dependency-review-action"
+   ]
+  },
+  {
+   "arquivo": ".github/workflows/estado-real.yml",
+   "nome": "Estado real (CI e edge functions)",
+   "gatilhos": [
+    "push",
+    "schedule",
+    "workflow_dispatch"
+   ],
+   "crons": [
+    "38 11 * * 1"
+   ],
+   "branches": [
+    "main"
+   ],
+   "jobs": [
+    "gerar"
+   ],
+   "permissoes": [
+    "contents: read"
+   ],
+   "scripts_usados": [
+    "scripts/ci/actions-kpi.mjs",
+    "scripts/ci/gerar-matriz-edge-tabela.mjs",
+    "scripts/ci/render-workflow-docs.mjs"
+   ],
+   "npm_scripts": [],
+   "secrets": [
+    "GITHUB_TOKEN"
+   ],
+   "actions": [
+    "actions/checkout",
+    "actions/setup-node",
+    "actions/upload-artifact"
    ]
   },
   {
@@ -999,6 +1034,10 @@
   {
    "pasta": "docs/runbooks",
    "arquivos_md": 5
+  },
+  {
+   "pasta": "docs/ci",
+   "arquivos_md": 2
   },
   {
    "pasta": "docs/contexto",

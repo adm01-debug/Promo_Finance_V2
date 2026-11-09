@@ -5,11 +5,11 @@
   "vitest",
   "playwright"
  ],
- "total": 363,
+ "total": 366,
  "por_tipo": {
   "e2e": 35,
   "pytest": 15,
-  "unit": 307
+  "unit": 310
  },
  "onde_ficam": [
   {
@@ -18,7 +18,7 @@
   },
   {
    "padrao": "outro",
-   "arquivos": 44
+   "arquivos": 47
   },
   {
    "padrao": "co-localizado (*.test)",
@@ -283,6 +283,33 @@
     "src/components/auth/ProtectedRoute.tsx"
    ],
    "casos": 18
+  },
+  {
+   "arquivo": "scripts/ci/actions-kpi.unit.mjs",
+   "tipo": "unit",
+   "linhas": 233,
+   "testa": [
+    "scripts/ci/actions-kpi.mjs"
+   ],
+   "casos": 16
+  },
+  {
+   "arquivo": "scripts/ci/gerar-matriz-edge-tabela.unit.mjs",
+   "tipo": "unit",
+   "linhas": 46,
+   "testa": [
+    "scripts/ci/gerar-matriz-edge-tabela.mjs"
+   ],
+   "casos": 2
+  },
+  {
+   "arquivo": "scripts/ci/render-workflow-docs.unit.mjs",
+   "tipo": "unit",
+   "linhas": 105,
+   "testa": [
+    "scripts/ci/render-workflow-docs.mjs"
+   ],
+   "casos": 10
   },
   {
    "arquivo": "scripts/data/test_verify_scenarios.py",
@@ -3233,6 +3260,9 @@
  ],
  "cobertura_por_arquivo": {
   "eslint-rules/no-floating-supabase-write.js": 1,
+  "scripts/ci/actions-kpi.mjs": 1,
+  "scripts/ci/gerar-matriz-edge-tabela.mjs": 1,
+  "scripts/ci/render-workflow-docs.mjs": 1,
   "scripts/edge-deploy/deployment-record.mjs": 1,
   "scripts/edge-deploy/redigir-log.mjs": 1,
   "scripts/edge-deploy/register-deployment.mjs": 1,

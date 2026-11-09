@@ -1,7 +1,7 @@
 {
  "aviso": "GERADO AUTOMATICAMENTE por scripts/ai-context/gerar.mjs — não editar à mão; será sobrescrito.",
  "format_version": 2,
- "total": 87,
+ "total": 90,
  "scripts": [
   {
    "arquivo": "scripts/admin/supabase_admin_ops.py",
@@ -64,6 +64,25 @@
    "orfao": false
   },
   {
+   "arquivo": "scripts/ci/actions-kpi.mjs",
+   "descricao": "KPI de uso do GitHub Actions: quanto cada workflow custa e com que frequência falha, medido da API em vez de estimado. Alimenta `docs/ci/kpi.json`, que o",
+   "linhas": 285,
+   "env": [
+    "GH_TOKEN",
+    "GITHUB_API_URL",
+    "GITHUB_REPOSITORY",
+    "GITHUB_STEP_SUMMARY",
+    "GITHUB_TOKEN",
+    "JANELA_DIAS",
+    "PUBLICAR_ISSUE"
+   ],
+   "npm_scripts": [],
+   "workflows": [
+    "estado-real.yml"
+   ],
+   "orfao": false
+  },
+  {
    "arquivo": "scripts/ci/audit-env.ts",
    "descricao": "* scripts/ci/audit-env.ts",
    "linhas": 158,
@@ -101,6 +120,17 @@
    "orfao": false
   },
   {
+   "arquivo": "scripts/ci/gerar-matriz-edge-tabela.mjs",
+   "descricao": "Matriz edge function x tabela. Escaneia supabase/functions/<funcao>/**/*.ts (sem testes, sem _shared) e anota cada tabela citada em `.from('tabela')`.",
+   "linhas": 92,
+   "env": [],
+   "npm_scripts": [],
+   "workflows": [
+    "estado-real.yml"
+   ],
+   "orfao": false
+  },
+  {
    "arquivo": "scripts/ci/listar-excecoes-npm-nativo.py",
    "descricao": null,
    "linhas": 95,
@@ -116,6 +146,17 @@
    "env": [],
    "npm_scripts": [],
    "workflows": [],
+   "orfao": false
+  },
+  {
+   "arquivo": "scripts/ci/render-workflow-docs.mjs",
+   "descricao": "* Gera `docs/ci/README.md` a partir dos blocos `# docs:` e `# nao-e-bug:` de cada workflow.",
+   "linhas": 249,
+   "env": [],
+   "npm_scripts": [],
+   "workflows": [
+    "estado-real.yml"
+   ],
    "orfao": false
   },
   {

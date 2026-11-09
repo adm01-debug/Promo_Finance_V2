@@ -1,6 +1,6 @@
 # 07 · REGRAS DE NEGÓCIO
 
-> Gerado automaticamente por AI Context Sync v1.3.2 · commit `94bb4af7c6` · branch `main` · 2026-11-09 10:19 UTC
+> Gerado automaticamente por AI Context Sync v1.3.2 · commit `ea42a9b1b4` · branch `main` · 2026-11-09 10:25 UTC
 > Não edite à mão — regras humanas vão em `manual/`.
 
 ## A. Regras escritas por humanos (`manual/` — prioridade máxima, nunca sobrescrito)
@@ -4679,7 +4679,9 @@ Erros lançados por funções SQL (`RAISE EXCEPTION` = regra de negócio no banc
 | Pré-flight do logout destrutivo falhou: variável obrigatória ausente (${name}). | `e2e/auth/logout-real.e2e.ts` |
 | ALERTS_EMAIL_FROM | `scripts/generate-env-manifest.mjs` |
 | ${msg}: esperado ${JSON.stringify(b)} obtido ${JSON.stringify(a)} | `scripts/ai-context/cenarios.mjs` |
+| ${metodo} ${caminho} -> ${r.status} | `scripts/ci/actions-kpi.mjs` |
 | Glob com sintaxe não suportada por este script: ${glob} | `scripts/ci/listar-specs-quarentena.ts` |
+| bloco  | `scripts/ci/render-workflow-docs.mjs` |
 | shaDeployado precisa ser um sha de 40 hex: recebido  | `scripts/edge-deploy/deployment-record.mjs` |
 | status exige o id do deployment | `scripts/edge-deploy/deployment-record.mjs` |
 | --project-ref obrigatório | `scripts/edge-deploy/health-check.mjs` |
@@ -4973,9 +4975,7 @@ Erros lançados por funções SQL (`RAISE EXCEPTION` = regra de negócio no banc
 | Adicione pelo menos um signatário | `src/components/documentos/AssinaturaDigital.tsx` |
 | Preencha nome e email | `src/components/documentos/AssinaturaDigital.tsx` |
 | Erro ao analisar  | `src/components/expert/DocumentAnalyzer.tsx` |
-| Tipo de arquivo não suportado: ${file.name} | `src/components/expert/DocumentAnalyzer.tsx` |
-| Arquivo muito grande (máx 10MB) | `src/components/financeiro/AnexoList.tsx` |
-| … +702 linhas — lista completa em `context.json` | |
+| … +704 linhas — lista completa em `context.json` | |
 
 ## J. Controle de acesso no código (checagens de perfil/permissão)
 

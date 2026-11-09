@@ -2,11 +2,16 @@
  "aviso": "GERADO AUTOMATICAMENTE por scripts/ai-context/gerar.mjs — não editar à mão; será sobrescrito.",
  "format_version": 2,
  "git": {
-  "commit": "94bb4af7c6cac27970e613e0daca3033227fa1b1",
+  "commit": "ea42a9b1b4297eabfc2f0f20a70c66fdb44e907e",
   "branch": "main",
-  "data_commit": "2026-11-09T07:07:48-03:00",
+  "data_commit": "2026-11-09T10:19:49Z",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
   "ultimos_commits": [
+   {
+    "sha": "ea42a9b",
+    "data": "2026-11-09",
+    "assunto": "feat(ci): documentos gerados do estado real do CI e das edge functions (#275)"
+   },
    {
     "sha": "94bb4af",
     "data": "2026-11-09",
@@ -126,14 +131,9 @@
     "sha": "794478e",
     "data": "2026-11-08",
     "assunto": "feat(contexto): sistema autônomo de contexto do estado real para agentes de IA (#260)"
-   },
-   {
-    "sha": "d06af85",
-    "data": "2026-11-08",
-    "assunto": "fix: corrigir 26 bugs em scripts (ci, healthcheck, security, graphify, data) (#258)"
    }
   ],
-  "arquivos_mudados_7d": 247,
+  "arquivos_mudados_7d": 256,
   "pastas_mais_mudadas_30d": [
    {
     "pasta": "supabase/functions/_shared",
@@ -301,7 +301,7 @@
   "autores_30d": [
    {
     "autor": "adm01-debug",
-    "commits": 56
+    "commits": 57
    },
    {
     "autor": "devin-ai-integration[bot]",
@@ -318,9 +318,9 @@
   ]
  },
  "contagens": {
-  "arquivos_total": 3472,
-  "arquivos_codigo": 2163,
-  "linhas_codigo": 401104,
+  "arquivos_total": 3481,
+  "arquivos_codigo": 2169,
+  "linhas_codigo": 402114,
   "rotas": 128,
   "rotas_http_backend": 12,
   "vistas_por_id": 0,
@@ -332,10 +332,10 @@
   "tabelas": 314,
   "migrations": 937,
   "cron_jobs": 21,
-  "testes": 363,
-  "workflows": 14,
-  "scripts": 87,
-  "docs_md": 182
+  "testes": 366,
+  "workflows": 15,
+  "scripts": 90,
+  "docs_md": 184
  },
  "por_pasta": {
   "e2e/alertas-preditivos.e2e.ts": {
@@ -487,8 +487,8 @@
    "linhas": 1462
   },
   "scripts/ci": {
-   "arquivos": 3,
-   "linhas": 417
+   "arquivos": 9,
+   "linhas": 1427
   },
   "scripts/data": {
    "arquivos": 1,
@@ -739,7 +739,7 @@
  ],
  "qualidade": {
   "any": 340,
-  "console_log": 145,
+  "console_log": 152,
   "ts_ignore": 0,
   "eslint_disable": 1,
   "todos": 44,

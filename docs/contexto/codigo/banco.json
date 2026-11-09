@@ -2729,9 +2729,14 @@
  ],
  "buckets": [
   {
+   "nome": "bucket",
+   "criado_em_sql": false,
+   "usado_em": 1
+  },
+  {
    "nome": "financeiro",
    "criado_em_sql": true,
-   "usado_em": 0
+   "usado_em": 1
   },
   {
    "nome": "nfe-certificados",
