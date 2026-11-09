@@ -1,7 +1,7 @@
 {
   "baseline_main_sha": "c6eb99b275e1270cf99f1216e808c120f7cf58a2",
-  "atualizado_em": "2026-11-08T23:55:00Z",
-  "ciclo_atual": "5 de 7 PRs em andamento mergeadas (#266, #268, #267, #270, #272); aguardando fila de CI para as 3 restantes (#269, #271, #273) + #278",
+  "atualizado_em": "2026-11-09T01:00:00Z",
+  "ciclo_atual": "5 de 7 PRs em andamento mergeadas (#266, #268, #267, #270, #272); 4 aguardando CI (#269, #271, #273, #278)",
   "prs_mergeadas": [
     {"n": 268, "sha": "d8804a2000192594419275bc94da6e44fbf6e211", "supersede": 214},
     {"n": 266, "sha": "6a925600f36f44488dc07b79e063f3dd67e5d30b", "supersede": 209},
@@ -9,48 +9,28 @@
     {"n": 270, "sha": "1f5138a767de996ea61ecfb5f852cc71e8f4624c", "supersede": 254},
     {"n": 272, "sha": "d83f82e60c63aa2ed017aefdf4d864084f9c3c63", "supersede": 264}
   ],
-  "prs_em_andamento": [269, 271, 273, 278],
+  "prs_em_andamento": [
+    {"n": 269, "sha": "6c84a433d379a6a061a9486e7c363f3dbcf2ea60", "ci_status": "3/8 required SUCCESS (Integration, Supabase DB Linter, Unit tests); outros 5 jobs ainda nao criados (fila CI)"},
+    {"n": 271, "sha": "9a75360a9084739090c658b60f31de3de9c09030", "ci_status": "6/8 required SUCCESS (Varredura, E2E Financeiro, E2E Critical, Integration + gitleaks confirmed); Quality Gate in_progress; E2E Destructive aguardando Quality Gate"},
+    {"n": 273, "sha": "63c350e4c9fa5eda5fd8a5a4531ac4a989dc8f5a", "ci_status": "3/8 required SUCCESS (Integration, Supabase DB Linter, Unit tests); outros 5 jobs ainda nao criados (fila CI)"},
+    {"n": 278, "sha": "aec30ed22feefbb1fe49360207888dda8822a4b5", "ci_status": "3/8 required SUCCESS (Integration, Supabase DB Linter, Unit tests); outros 5 jobs ainda nao criados (fila CI)"}
+  ],
   "prs_aguardando_humano": [131, 203, 204, 205, 206, 211, 212, 234, 235, 238, 243, 253, 255, 256, 263, 265],
   "prs_bloqueadas_ambiente": [208, 210, 216],
   "prs_nao_iniciadas": [175],
   "prs_supersedidas": [213, 214, 215, 254, 257, 264],
-  "prs_fechadas_externamente": [{"n": 209, "motivo": "fechada por ação externa (provável dependabot auto-close ao detectar #266 já mergeada); não fechada por esta sessão"}],
-  "proxima_acao": "repetir github_graphql para #267,#269-#273 a cada ciclo de wakeup; squash merge quando mergeStateStatus=CLEAN; acompanhar PR #278 (fix adicional encontrado na auditoria de validação, ver abaixo)",
-  "causa_raiz_atraso_ci": "job e2e-destructive em .github/workflows/ci.yml tem needs:[quality-gate, e2e-critical] e so dispara depois que ambos terminam; concurrency do ci.yml e por-PR (nao serializa entre PRs diferentes, confirmado lendo o workflow). Causa real confirmada via github_list_workflow_runs: 45-50 runs simultaneos em queued ha 80-90+ minutos, incluindo o push do proprio merge em main e branches de OUTRAS sessoes (dependabot, claude/feat-*) competindo pelo mesmo teto de jobs concorrentes da conta. NAO VERIFICADO o numero exato do limite do plano (sem acesso a billing API).",
+  "prs_fechadas_externamente": [{"n": 209, "motivo": "fechada por acao externa (provavel dependabot auto-close ao detectar #266 ja mergeada); nao fechada por esta sessao"}],
+  "proxima_acao": "aguardar Quality Gate (#271) e dispatch dos jobs de fila (#269, #273, #278); squash merge quando mergeStateStatus=CLEAN",
+  "causa_raiz_atraso_ci": "Contencao de jobs concorrentes conta inteira — confirmada em sessao anterior. 45-50 runs em fila simultaneamente. #271 mais avancado: Quality Gate in_progress, E2E Destructive aguardando. #269/#273/#278: 5 jobs nao criados ainda.",
   "auditoria_validacao_pos_merge": {
     "realizada_em": "2026-11-08T23:00-23:55Z",
-    "metodo": "5 agentes especializados em paralelo, cada um auditando uma dimensao diferente via MCP GITHUB-FOREVER (somente leitura) + verificacao manual de evidencia",
+    "metodo": "5 agentes especializados em paralelo",
     "achados": [
-      {
-        "tema": "PR #266 (framer-motion)",
-        "veredito": "GAP ENCONTRADO E CORRIGIDO",
-        "detalhe": "micro-interactions.tsx (StaggerItem, EmptyState) tinha o mesmo padrao 'type: spring' inline que exigiu as const em AlertaComponents.tsx mas nao recebeu o fix. Corrigido na PR #278 (claude/fix-micro-interactions-spring-261108-2353). bun run type-check NAO VERIFICADO: registro npm bloqueado nesta sessao (ProxyConnectFailed 403)."
-      },
-      {
-        "tema": "PR #268 (eslint-config-prettier)",
-        "veredito": "CONFIRMADO SEM GAPS",
-        "detalhe": "Pacote bumpado nao e referenciado em eslint.config.js (dependencia orfa pre-existente, fora do escopo do bump). Sem risco de quebra."
-      },
-      {
-        "tema": "Inventario analise-prs/",
-        "veredito": "DIVERGENCIAS DE DOCUMENTACAO CORRIGIDAS",
-        "detalhe": "#209 estava registrada como aberta, na realidade foi fechada externamente. RELATORIO_PRS.md estava descrevendo #266/#268 como ainda em CI quando ja estavam mergeadas. Corrigido nesta atualizacao."
-      },
-      {
-        "tema": "Causa raiz da fila de CI",
-        "veredito": "CONFIRMADA E AGRAVADA",
-        "detalhe": "Nao e isolada as 6 PRs do ciclo: o proprio push de merge em main tem CI Pipeline em queued desde 22:25Z (82+ min). Outras sessoes (dependabot, claude/feat-settings-guard, claude/feat-fila-merge-pr-branch, etc.) seguem adicionando carga nova. Contencao de conta inteira, nao so deste ciclo."
-      },
-      {
-        "tema": "Compliance Fluxo Git (regra 8)",
-        "veredito": "COMPLIANCE TOTAL",
-        "detalhe": "Nenhum merge tocou .github/workflows/. Nenhum padrao proibido (.skip, @ts-ignore, eslint-disable, any de calar erro, baseline ampliado) nos diffs de #266/#268. Autoria de commits consistente em todas as 6 branches em andamento. Nenhuma PR alheia fechada/editada/comentada por esta sessao."
-      }
-    ],
-    "falha_real_detectada_e_investigada": {
-      "pr": 270,
-      "check": "Quality Gate & Tests / Zod coverage gate (edge functions)",
-      "resultado": "CONFIRMADO FLAKE -- diff de #270 so toca gerar-pacote-evidencias/index.ts (fixes de tipo); o arquivo apontado como sem Zod (whatsapp-ia-proativo) JA TEM validatePayload importado e chamado. Apos update_pr_branch e novo ciclo de CI, o gate passou (SUCCESS) e a PR foi squash-mergeada em main no SHA 1f5138a767de996ea61ecfb5f852cc71e8f4624c."
-    }
+      {"tema": "PR #266 (framer-motion)", "veredito": "GAP ENCONTRADO E CORRIGIDO", "detalhe": "micro-interactions.tsx corrigido na PR #278"},
+      {"tema": "PR #268 (eslint-config-prettier)", "veredito": "CONFIRMADO SEM GAPS"},
+      {"tema": "Inventario analise-prs/", "veredito": "DIVERGENCIAS DE DOCUMENTACAO CORRIGIDAS"},
+      {"tema": "Causa raiz da fila de CI", "veredito": "CONFIRMADA E AGRAVADA"},
+      {"tema": "Compliance Fluxo Git (regra 8)", "veredito": "COMPLIANCE TOTAL"}
+    ]
   }
 }
