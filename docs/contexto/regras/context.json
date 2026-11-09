@@ -1,9 +1,9 @@
 {
  "meta": {
-  "sha": "8d88a61f5d1e46b785f6d734d91f6e082076f48e",
+  "sha": "45a20a254ad5b74a08deb8f495f1223242a5b59b",
   "branch": "main",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
-  "generated_at": "2026-11-09 02:23 UTC",
+  "generated_at": "2026-11-09 02:25 UTC",
   "files_total": 3441,
   "code_files": 3155,
   "code_lines": 452758
@@ -228432,10 +228432,20 @@
   }
  },
  "git": {
-  "sha": "8d88a61f5d1e46b785f6d734d91f6e082076f48e",
+  "sha": "45a20a254ad5b74a08deb8f495f1223242a5b59b",
   "branch": "main",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
   "commits": [
+   {
+    "sha": "45a20a2",
+    "date": "2026-11-08",
+    "author": "adm01-debug",
+    "subject": "fix: bump eslint-plugin-react-refresh para ^0.4.20 (supersede #215)",
+    "files": [
+     "bun.lock",
+     "package.json"
+    ]
+   },
    {
     "sha": "8d88a61",
     "date": "2026-11-08",
@@ -228875,27 +228885,16 @@
     "files": [
      ".github/workflows/ci.yml"
     ]
-   },
-   {
-    "sha": "8172bc7",
-    "date": "2026-10-30",
-    "author": "adm01-debug",
-    "subject": "fix(security): .max() nos arrays de edge functions — mitigação GHSA-mrhx-c7xc-m3w5 (#221)",
-    "files": [
-     "PENDENCIAS.md",
-     "supabase/functions/_shared/validation.ts",
-     "supabase/functions/conciliacao-ia/index.ts"
-    ]
    }
   ],
   "hot_files": [
    [
     "bun.lock",
-    4
+    5
    ],
    [
     "package.json",
-    4
+    5
    ],
    [
     "AGENTS.md",
@@ -228954,20 +228953,20 @@
     2
    ],
    [
-    "supabase/functions/_shared/validation.ts",
-    2
-   ],
-   [
     "supabase/functions/bling-proxy/index.ts",
-    2
-   ],
-   [
-    "supabase/functions/conciliacao-ia/index.ts",
     2
    ],
    [
     "supabase/functions/gerar-pdf-tributario/index.ts",
     2
+   ],
+   [
+    ".github/workflows/ci.yml",
+    2
+   ],
+   [
+    "src/components/ui/micro-interactions.tsx",
+    1
    ]
   ]
  }

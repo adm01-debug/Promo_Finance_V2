@@ -2,11 +2,16 @@
  "aviso": "GERADO AUTOMATICAMENTE por scripts/ai-context/gerar.mjs — não editar à mão; será sobrescrito.",
  "format_version": 2,
  "git": {
-  "commit": "8d88a61f5d1e46b785f6d734d91f6e082076f48e",
+  "commit": "45a20a254ad5b74a08deb8f495f1223242a5b59b",
   "branch": "main",
-  "data_commit": "2026-11-08T22:39:52-03:00",
+  "data_commit": "2026-11-08T23:22:35-03:00",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
   "ultimos_commits": [
+   {
+    "sha": "45a20a2",
+    "data": "2026-11-08",
+    "assunto": "fix: bump eslint-plugin-react-refresh para ^0.4.20 (supersede #215)"
+   },
    {
     "sha": "8d88a61",
     "data": "2026-11-08",
@@ -126,11 +131,6 @@
     "sha": "3285b4f",
     "data": "2026-11-02",
     "assunto": "chore: AGENTS.md com o texto-mestre adm01-debug (seções 1-7) (#250)"
-   },
-   {
-    "sha": "309ee32",
-    "data": "2026-11-01",
-    "assunto": "fix: boletos asaas_id types + migrations steps 10+20 (rebuid sem conflito) (#247)"
    }
   ],
   "arquivos_mudados_7d": 174,
@@ -141,15 +141,15 @@
    },
    {
     "pasta": "bun.lock",
+    "mudancas": 14
+   },
+   {
+    "pasta": "package.json",
     "mudancas": 13
    },
    {
     "pasta": "src/components/layout",
     "mudancas": 13
-   },
-   {
-    "pasta": "package.json",
-    "mudancas": 12
    },
    {
     "pasta": "PENDENCIAS.md",
@@ -199,11 +199,11 @@
   "arquivos_mais_mudados_90d": [
    {
     "arquivo": "package.json",
-    "mudancas": 30
+    "mudancas": 31
    },
    {
     "arquivo": "bun.lock",
-    "mudancas": 23
+    "mudancas": 24
    },
    {
     "arquivo": ".github/workflows/ci.yml",
@@ -301,7 +301,7 @@
   "autores_30d": [
    {
     "autor": "adm01-debug",
-    "commits": 43
+    "commits": 44
    },
    {
     "autor": "devin-ai-integration[bot]",
