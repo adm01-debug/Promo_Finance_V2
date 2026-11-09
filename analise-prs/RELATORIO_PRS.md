@@ -1,8 +1,9 @@
 # Relatório de PRs — Promo Finance V2
 
 > Gerado por sessão `session_01N1ArYN9EZ2fbFJ2Z2rqAh1` em 2026-11-09T07:30Z  
+> Atualizado em 2026-11-09T08:30Z (pós-rebase #131 + E2E Quarantine COMPLETED)  
 > Baseline main SHA início: `c6eb99b275e1270cf99f1216e808c120f7cf58a2`  
-> Main SHA final: `b0c226b440bb207c98fa02742b8ae5b492293ba1` (8/8 required SUCCESS + Vercel SUCCESS)
+> Main SHA final: `b0c226b440bb207c98fa02742b8ae5b492293ba1` (8/8 required SUCCESS + Vercel SUCCESS + E2E Quarantine SUCCESS)
 
 ---
 
@@ -83,17 +84,23 @@ Todas fechadas por `github_update_pull_request state=closed` em 2026-11-09T03:20
 
 ## Dossiês — AGUARDANDO HUMANO
 
-### #131 — fix: shims para Supabase Preview (conflito de 90 arquivos)
+### #131 — fix: shims para Supabase Preview (conflito — rebase impossível)
 
-- **Branch:** `claude/fix-supabase-preview-cron-260928-1235`
+- **Branch:** `claude/fix-supabase-preview-cron-260928-1235` (outra sessão, setembro/2026)
 - **SHA head:** `f204ec07dc268043bd5215e10fcf769d6b7ee7a3`
-- **Válido:** Sim — shims de tipo para replay em Supabase Preview (`DROP FUNCTION IF EXISTS get_cron_jobs()` nos timestamps 20260518153329 e 20260728110752)
-- **Já implementado:** Desconhecido — migrations posteriores podem já cobrir o shim; requer análise
-- **Regressão:** Sim, risco alto — DDL em produção sem revisão pode remover função em uso
-- **Completo:** Não — PR tem 90 arquivos alterados (+9333/-3999), 188 commits acumulados desde set/26, indica refactoring amplo não relacionado ao título
-- **Causa da falha:** `mergeable=CONFLICTING` (90 arquivos em conflito com main); Quality Gate FAILURE
-- **Regra 8:** DDL/migration que roda em produção + decisão de escopo (90 arquivos)
-- **Veredicto:** **AGUARDANDO HUMANO** — requer decisão do dono sobre o que aproveitar desta branch vs. criar PR cirúrgica apenas com os shims
+- **Arquivos alterados na PR:** 30 arquivos (via `github_list_pr_files`)
+  - 7 migrations SQL MODIFICADOS (20260417150749, 20260518153331, 20260518170823, 20260518171340, 20260518171613, 20260518172812, 20260519122034)
+  - 13 migrations SQL ADICIONADOS
+  - 3 arquivos TypeScript
+  - 2 arquivos Sonar config
+- **Válido:** Sim — shims de tipo para replay em Supabase Preview (`DROP FUNCTION IF EXISTS get_cron_jobs()` antes de mudanças de return type)
+- **Rebase tentado:** Sim — `git checkout -b claude/fix-pr131-supabase-shims-261109-0620 f204ec07` + `git rebase origin/main` → **IMPOSSÍVEL**
+  - Resultado: centenas de conflitos `add/add` em praticamente todos os arquivos do repo
+  - Causa: branch tem base de setembro/2026, main avançou 188 commits; git não consegue distinguir quais mudanças são da PR vs. do main
+  - Rebase abortado (`git rebase --abort`), branch local deletada
+- **Mergeable:** `CONFLICTING` — não mergeável no estado atual
+- **Regra 8:** DDL/migration em produção (7 migrations modificados + 13 adicionados)
+- **Veredicto:** **AGUARDANDO HUMANO** — duplo bloqueio: (1) rebase impossível automaticamente, (2) DDL requer aprovação explícita. Recomendação: extrair cirurgicamente apenas os shims necessários em nova branch a partir do main atual.
 
 ---
 
@@ -270,12 +277,12 @@ Todas fechadas por `github_update_pull_request state=closed` em 2026-11-09T03:20
 |---|---|
 | SHA baseline (início) | `c6eb99b275e1270cf99f1216e808c120f7cf58a2` |
 | SHA atual | `b0c226b440bb207c98fa02742b8ae5b492293ba1` |
-| Required checks (8/8) | SUCCESS (todos COMPLETED às 05:52Z) |
-| E2E Quarantine (non-blocking) | IN_PROGRESS às 07:30Z — job 129004154225, step 6, rodando desde 05:54Z; non-blocking, não afeta mergeable |
-| statusCheckRollup | PENDING (exclusivamente por E2E Quarantine non-blocking) |
+| Required checks (8/8) | COMPLETED SUCCESS (todos às 05:52Z) |
+| E2E Quarantine (non-blocking) | **COMPLETED SUCCESS** (confirmado em 2026-11-09T08:20Z) |
+| statusCheckRollup | **SUCCESS** |
 | Vercel deploy | SUCCESS |
 
-**Nota:** rollup PENDING não bloqueia merges — todos os 8 required checks são SUCCESS. E2E Quarantine não está na lista de required checks do branch protection.
+main está **100% verde** — todos os checks (required e non-blocking) COMPLETED SUCCESS.
 
 ---
 
@@ -288,4 +295,5 @@ Todas fechadas por `github_update_pull_request state=closed` em 2026-11-09T03:20
 - Nenhuma PR alheia editada, comentada ou mergeada por esta sessão
 - 5 PRs supersedidas fechadas com evidência (timestamp de closure)
 - Segredos: nenhum em código, commit ou resposta
-- **Supabase DB Linter:** não gerou CheckRun para PRs non-DDL — evidência: GraphQL statusCheckRollup de `b0c226b4` não contém CheckRun com esse nome; merge de #282 e #283 bem-sucedido (branch protection não bloqueou)
+- **Supabase DB Linter:** não gerou CheckRun para PRs non-DDL — evidência: GraphQL statusCheckRollup de `b0c226b4` não contém CheckRun com esse nome; merge de #282 e #283 bem-sucedido
+- **PR #131 rebase tentado:** git rebase abortado — centenas de conflitos add/add (188 commits divergência desde set/26); documentado como AGUARDANDO HUMANO com justificativa técnica completa
