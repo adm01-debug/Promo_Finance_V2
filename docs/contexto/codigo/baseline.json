@@ -2,11 +2,16 @@
  "aviso": "GERADO AUTOMATICAMENTE por scripts/ai-context/gerar.mjs — não editar à mão; será sobrescrito.",
  "format_version": 2,
  "git": {
-  "commit": "900925a649f972e2d3483e49255ae68c24868253",
+  "commit": "b0c226b440bb207c98fa02742b8ae5b492293ba1",
   "branch": "main",
-  "data_commit": "2026-11-09T02:20:23-03:00",
+  "data_commit": "2026-11-09T02:39:36-03:00",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
   "ultimos_commits": [
+   {
+    "sha": "b0c226b",
+    "data": "2026-11-09",
+    "assunto": "fix: corrigir classificação #175/#208/#210/#216 em progresso.json"
+   },
    {
     "sha": "900925a",
     "data": "2026-11-09",
@@ -126,11 +131,6 @@
     "sha": "58f58a2",
     "data": "2026-11-06",
     "assunto": "docs(auditoria): Fase 2 — auditorias-anteriores.md reconciliadas com main (#222)"
-   },
-   {
-    "sha": "c464deb",
-    "data": "2026-11-06",
-    "assunto": "feat(seguranca+ux): steps 25+26+30+32 — acordo real, URL, asaas-proxy, calculo-iva (#237)"
    }
   ],
   "arquivos_mudados_7d": 245,
@@ -184,15 +184,15 @@
     "mudancas": 4
    },
    {
+    "pasta": "analise-prs/progresso.json",
+    "mudancas": 4
+   },
+   {
     "pasta": "scripts/edge-deploy/fixtures",
     "mudancas": 4
    },
    {
     "pasta": "src/components/financeiro",
-    "mudancas": 4
-   },
-   {
-    "pasta": "src/hooks/__tests__",
     "mudancas": 4
    }
   ],
@@ -301,7 +301,7 @@
   "autores_30d": [
    {
     "autor": "adm01-debug",
-    "commits": 50
+    "commits": 51
    },
    {
     "autor": "devin-ai-integration[bot]",
