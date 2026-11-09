@@ -2,11 +2,16 @@
  "aviso": "GERADO AUTOMATICAMENTE por scripts/ai-context/gerar.mjs — não editar à mão; será sobrescrito.",
  "format_version": 2,
  "git": {
-  "commit": "fc358256625a38228f71d70399bfdd8eaf581d78",
+  "commit": "b6e60a5cb943b6cb585313c1a6ca035cdc3e6f08",
   "branch": "main",
-  "data_commit": "2026-11-09T05:03:55-03:00",
+  "data_commit": "2026-11-09T05:32:24-03:00",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
   "ultimos_commits": [
+   {
+    "sha": "b6e60a5",
+    "data": "2026-11-09",
+    "assunto": "chore: docs analise-prs estado final 15 mergeadas esta sessao"
+   },
    {
     "sha": "fc35825",
     "data": "2026-11-09",
@@ -126,14 +131,9 @@
     "sha": "dc39f52",
     "data": "2026-11-07",
     "assunto": "fix: sentry.ts — host DSN, redação de dados e parseDsn seguro [substitui #246] (#248)"
-   },
-   {
-    "sha": "32a5e79",
-    "data": "2026-11-07",
-    "assunto": "infra: migra imports esm.sh para npm: pinados nas edge functions (#251)"
    }
   ],
-  "arquivos_mudados_7d": 246,
+  "arquivos_mudados_7d": 247,
   "pastas_mais_mudadas_30d": [
    {
     "pasta": "supabase/functions/_shared",
@@ -173,7 +173,11 @@
    },
    {
     "pasta": "analise-prs/progresso.json",
-    "mudancas": 6
+    "mudancas": 7
+   },
+   {
+    "pasta": "analise-prs/RELATORIO_PRS.md",
+    "mudancas": 5
    },
    {
     "pasta": "src/components/contas-receber",
@@ -185,10 +189,6 @@
    },
    {
     "pasta": ".github/workflows/supabase-linter.yml",
-    "mudancas": 4
-   },
-   {
-    "pasta": "analise-prs/RELATORIO_PRS.md",
     "mudancas": 4
    },
    {
@@ -301,7 +301,7 @@
   "autores_30d": [
    {
     "autor": "adm01-debug",
-    "commits": 53
+    "commits": 54
    },
    {
     "autor": "devin-ai-integration[bot]",
@@ -318,7 +318,7 @@
   ]
  },
  "contagens": {
-  "arquivos_total": 3471,
+  "arquivos_total": 3472,
   "arquivos_codigo": 2163,
   "linhas_codigo": 401104,
   "rotas": 128,
@@ -335,7 +335,7 @@
   "testes": 363,
   "workflows": 14,
   "scripts": 87,
-  "docs_md": 181
+  "docs_md": 182
  },
  "por_pasta": {
   "e2e/alertas-preditivos.e2e.ts": {
