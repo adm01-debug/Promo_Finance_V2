@@ -1,7 +1,7 @@
 # Contexto do projeto para agentes de IA
 
 GERADO AUTOMATICAMENTE por scripts/ai-context/gerar.mjs — não editar à mão; será sobrescrito.
-Publicado pelo workflow .github/workflows/contexto.yml em docs/contexto/codigo/ da branch gerada `contexto`. Índice único em docs/contexto/00-INDEX.md. Ler: git fetch origin contexto && git show origin/contexto:docs/contexto/00-INDEX.md Gere local com `node scripts/ai-context/gerar.mjs`. Commit-base: `34efae1f81963db1f12a1c1a35ec1b8845ca1096` (2026-11-09T07:36:55-03:00).
+Publicado pelo workflow .github/workflows/contexto.yml em docs/contexto/codigo/ da branch gerada `contexto`. Índice único em docs/contexto/00-INDEX.md. Ler: git fetch origin contexto && git show origin/contexto:docs/contexto/00-INDEX.md Gere local com `node scripts/ai-context/gerar.mjs`. Commit-base: `8ec6561a99cf3bde38aadcb8f52010350a3a33cf` (2026-11-09T10:59:50Z).
 
 ## Como usar (leia antes de planejar ou executar qualquer tarefa)
 1. **Tela/rota/menu** → `rotas.json` (url/vista/menu → arquivo → hooks → tabelas → edges; `rotas_http_backend` para APIs) e `modulos.json` (módulo inteiro + dependências entre módulos).
@@ -14,7 +14,7 @@ Publicado pelo workflow .github/workflows/contexto.yml em docs/contexto/codigo/ 
 Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua tarefa; não carregue tudo.
 
 ## Stack
-- linguagens: TypeScript (2104), SQL (1006), Markdown (184), JavaScript (39), JSON (32), Python (28), Shell (23), YAML (21)
+- linguagens: TypeScript (2104), SQL (1006), Markdown (184), JavaScript (40), JSON (32), Python (28), Shell (23), YAML (21)
 - linguagem_principal: TypeScript
 - framework: React
 - backend_http: n/d
@@ -34,9 +34,9 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 ## Números
 | item | qtd |
 |---|---|
-| arquivos_total | 3481 |
-| arquivos_codigo | 2169 |
-| linhas_codigo | 402114 |
+| arquivos_total | 3482 |
+| arquivos_codigo | 2170 |
+| linhas_codigo | 402256 |
 | rotas | 128 |
 | rotas_http_backend | 12 |
 | vistas_por_id | 0 |
@@ -50,7 +50,7 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 | cron_jobs | 21 |
 | testes | 366 |
 | workflows | 15 |
-| scripts | 90 |
+| scripts | 91 |
 | docs_md | 184 |
 
 ## Onde ficam as coisas
@@ -61,7 +61,7 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 - testes: co-localizado (__tests__) (239), outro (47), co-localizado (*.test) (40)
 - edge_functions: supabase/functions
 - migrations: supabase/migrations
-- scripts: scripts/integrity (17), scripts/security (16), scripts/ci (10)
+- scripts: scripts/integrity (17), scripts/security (16), scripts/ci (11)
 - docs: docs (47), (raiz) (19), .github (2)
 - nomenclatura: {"componentes":"PascalCase (90%)","hooks":"use + PascalCase","servicos":"camelCase (52%)","edge_functions":"kebab-case (99%)","tabelas":"snake_case (91%)"}
 - instruções para agentes no repo: .claude/CLAUDE.md, .github/copilot-instructions.md, AGENTS.md, CLAUDE.md
@@ -444,7 +444,7 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 ## Hotspots (arquivos mais alterados, 90 dias)
 - package.json (32)
 - bun.lock (25)
-- .github/workflows/ci.yml (21)
+- .github/workflows/ci.yml (22)
 - supabase/config.toml (15)
 - supabase/functions/asaas-proxy/index.ts (15)
 - supabase/functions/mcp-query/index.ts (13)
@@ -588,6 +588,7 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 - CHANGELOG topo: [Unreleased]
 
 ## Últimos commits
+- 2026-11-09 `8ec6561` infra: bloqueia wipe de AGENTS.md e docs/agentes por sessão paralela (#263)
 - 2026-11-09 `34efae1` chore: atualiza prs.json — adiciona #283-#288, 48 PRs classificadas
 - 2026-11-09 `ea42a9b` feat(ci): documentos gerados do estado real do CI e das edge functions (#275)
 - 2026-11-09 `94bb4af` chore: relatorio final sessao merge-prs (total 46, 16 mergeadas, #287 sentry bump) (#288)
@@ -602,7 +603,6 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 - 2026-11-09 `8f63e2c` chore(docs): atualiza contagem de edge functions para 106 em sistema.md
 - 2026-11-09 `97b7711` fix(docs): corrige contagem de edge functions para 106 em mapa-repo.md
 - 2026-11-08 `93026e6` chore: inventário e dossiê das 34 PRs abertas (#273)
-- 2026-11-08 `45a20a2` fix: bump eslint-plugin-react-refresh para ^0.4.20 (supersede #215)
 
 ## Arquivos deste diretório
 - `docs/contexto/codigo/rotas.json`

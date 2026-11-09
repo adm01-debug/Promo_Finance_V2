@@ -1,15 +1,15 @@
 {
  "meta": {
-  "sha": "34efae1f81963db1f12a1c1a35ec1b8845ca1096",
+  "sha": "8ec6561a99cf3bde38aadcb8f52010350a3a33cf",
   "branch": "main",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
-  "generated_at": "2026-11-09 10:54 UTC",
-  "files_total": 3523,
-  "code_files": 3176,
-  "code_lines": 455118
+  "generated_at": "2026-11-09 11:01 UTC",
+  "files_total": 3524,
+  "code_files": 3177,
+  "code_lines": 455260
  },
  "version": "1.3.2",
- "facts_hash": "feb2dde57883f2b9",
+ "facts_hash": "d3bf87a9fb744203",
  "stack": {
   "frameworks": [
    "React + Vite",
@@ -285,7 +285,7 @@
    ".ts": 1112,
    ".sql": 1006,
    ".tsx": 992,
-   ".mjs": 31,
+   ".mjs": 32,
    ".py": 28,
    ".js": 8
   },
@@ -63152,8 +63152,8 @@
   },
   {
    "module": "scripts",
-   "files": 95,
-   "lines": 19613,
+   "files": 96,
+   "lines": 19755,
    "tables": [
     "a",
     "alerts",
@@ -63290,6 +63290,7 @@
     "scripts/ci/actions-kpi.mjs",
     "scripts/ci/actions-kpi.unit.mjs",
     "scripts/ci/audit-env.ts",
+    "scripts/ci/check-claude-md-integrity.mjs",
     "scripts/ci/gerar-matriz-edge-tabela.mjs",
     "scripts/ci/gerar-matriz-edge-tabela.unit.mjs",
     "scripts/ci/listar-excecoes-npm-nativo.py",
@@ -63349,8 +63350,7 @@
     "scripts/integrity/test_dump_baseline_scenarios.py",
     "scripts/regras_negocio/generate.py",
     "scripts/regras_negocio/indice.py",
-    "scripts/regras_negocio/test_generate.py",
-    "scripts/security/check-view-replay-order.mjs"
+    "scripts/regras_negocio/test_generate.py"
    ]
   },
   {
@@ -165199,6 +165199,40 @@
    ],
    "doc": "!/usr/bin/env -S deno run --allow-read --allow-net --allow-env"
   },
+  "scripts/ci/check-claude-md-integrity.mjs": {
+   "path": "scripts/ci/check-claude-md-integrity.mjs",
+   "lines": 142,
+   "env": [
+    "CLAUDE_MD_BASE"
+   ],
+   "params": [
+    {
+     "name": "AGENTS",
+     "value": "'AGENTS.md'"
+    },
+    {
+     "name": "DOCS_DIR",
+     "value": "'docs/agentes'"
+    },
+    {
+     "name": "SHRINK_THRESHOLD",
+     "value": "0.3"
+    },
+    {
+     "name": "FILE_SHRINK_THRESHOLD",
+     "value": "0.5"
+    }
+   ],
+   "rule_comments": [
+    "100)}% vs ${BASE} (atual: ${agora} bytes, base: ${naBase} bytes); limite por arquivo e ${Math.round(FILE_SHRINK_THRESHOLD * 100)}%.`,"
+   ],
+   "doc": "!/usr/bin/env node",
+   "percents": [
+    "* AGENTS.md + CLAUDE.md + docs/agentes/*.md nao encolheu >30% em bytes vs a base, e cada arquivo",
+    "* vigiado (AGENTS.md e cada docs/agentes/*.md que exista na base) continua existindo com >=50% do",
+    "// com >= 50% do tamanho de la. CLAUDE.md fica de fora: e so `@AGENTS.md` por design."
+   ]
+  },
   "scripts/ci/gerar-matriz-edge-tabela.mjs": {
    "path": "scripts/ci/gerar-matriz-edge-tabela.mjs",
    "lines": 92,
@@ -228937,10 +228971,20 @@
   }
  },
  "git": {
-  "sha": "34efae1f81963db1f12a1c1a35ec1b8845ca1096",
+  "sha": "8ec6561a99cf3bde38aadcb8f52010350a3a33cf",
   "branch": "main",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
   "commits": [
+   {
+    "sha": "8ec6561",
+    "date": "2026-11-09",
+    "author": "adm01-debug",
+    "subject": "infra: bloqueia wipe de AGENTS.md e docs/agentes por sessão paralela (#263)",
+    "files": [
+     ".github/workflows/ci.yml",
+     "scripts/ci/check-claude-md-integrity.mjs"
+    ]
+   },
    {
     "sha": "34efae1",
     "date": "2026-11-09",
@@ -229376,94 +229420,6 @@
      "supabase/functions/n8n-callback/index.ts",
      "vite.config.ts"
     ]
-   },
-   {
-    "sha": "32a5e79",
-    "date": "2026-11-07",
-    "author": "adm01-debug",
-    "subject": "infra: migra imports esm.sh para npm: pinados nas edge functions (#251)",
-    "files": [
-     "deno.json",
-     "supabase/functions/_shared/auth-guard.ts",
-     "supabase/functions/_shared/console-persist.ts",
-     "supabase/functions/_shared/observability.ts",
-     "supabase/functions/_shared/validation.ts",
-     "supabase/functions/_shared/webhook-auth.ts",
-     "supabase/functions/_shared/webhook-auth_test.ts",
-     "supabase/functions/_shared/webhook-idempotency.ts",
-     "supabase/functions/aceitar-convite/index.ts",
-     "supabase/functions/analise-fluxo-ia/index.ts",
-     "supabase/functions/analise-preditiva/index.ts",
-     "supabase/functions/analyze-document/index.ts",
-     "supabase/functions/asaas-proxy/index.ts",
-     "supabase/functions/benchmarking-setorial/index.ts",
-     "supabase/functions/bitrix24-sync/index.ts",
-     "supabase/functions/bitrix24-webhook/index.ts",
-     "supabase/functions/bling-proxy/index.ts",
-     "supabase/functions/bling-webhook/index.ts",
-     "supabase/functions/calcular-health-score-operacional/index.ts",
-     "supabase/functions/calcular-slo-metrics-diario/index.ts",
-     "supabase/functions/categorizar-despesa/index.ts",
-     "supabase/functions/ci-security-gate-log/index.ts",
-     "supabase/functions/cnpja-lookup/index.ts",
-     "supabase/functions/comparar-benchmark-setorial/index.ts",
-     "supabase/functions/conciliacao-ia/index.ts",
-     "supabase/functions/consulta-tributaria/index.ts",
-     "supabase/functions/contabilizar-evento/index.ts",
-     "supabase/functions/convidar-contador/index.ts",
-     "supabase/functions/copilot-global/index.ts",
-     "supabase/functions/copilot-tributario/index.ts",
-     "supabase/functions/decidir-regime/index.ts",
-     "supabase/functions/detectar-anomalias-financeiras/index.ts",
-     "supabase/functions/digest-silenciamentos-erro/index.ts",
-     "supabase/functions/enviar-alerta-email/index.ts",
-     "supabase/functions/enviar-bitrix24-tributario/index.ts",
-     "supabase/functions/enviar-convite-organizacao/index.ts",
-     "supabase/functions/enviar-relatorios-tributarios-agendados/index.ts",
-     "supabase/functions/executar-analise-preditiva/index.ts",
-     "supabase/functions/executar-fechamento-tributario/index.ts",
-     "supabase/functions/executar-regua-cobranca/index.ts",
-     "supabase/functions/executar-relatorios/index.ts",
-     "supabase/functions/expert-agent/index.ts",
-     "supabase/functions/exportar-sped-contribuicoes/index.ts",
-     "supabase/functions/external-data/index.ts",
-     "supabase/functions/external-data/validate_contract.ts",
-     "supabase/functions/gerar-acoes-recomendadas/index.ts",
-     "supabase/functions/gerar-alertas-tributarios/index.ts",
-     "supabase/functions/gerar-alertas/index.ts",
-     "supabase/functions/gerar-dre-tributaria/index.ts",
-     "supabase/functions/gerar-heatmap-tributario/index.ts",
-     "supabase/functions/gerar-pacote-evidencias/index.ts",
-     "supabase/functions/gerar-pdf-tributario/index.ts",
-     "supabase/functions/gerar-relatorio-anual/index.ts",
-     "supabase/functions/gerar-resumo-executivo-semanal/index.ts",
-     "supabase/functions/gerar-sped-ecd/index.ts",
-     "supabase/functions/gerar-sped-ecf/index.ts",
-     "supabase/functions/health/index.ts",
-     "supabase/functions/insights-relatorio/index.ts",
-     "supabase/functions/log-sped-bitrix24/index.ts",
-     "supabase/functions/mcp-query/index.ts",
-     "supabase/functions/monitorar-erros-frontend/index.ts",
-     "supabase/functions/n8n-callback/index.ts",
-     "supabase/functions/n8n-dispatch/index.ts",
-     "supabase/functions/notify-performance-alert/index.ts",
-     "supabase/functions/notify-saved-filter/index.ts",
-     "supabase/functions/overlay-rejeicoes-auditoria/index.ts",
-     "supabase/functions/prever-carga-tributaria/index.ts",
-     "supabase/functions/processar-nf-ocr/index.ts",
-     "supabase/functions/processar-solicitacao-lgpd/index.ts",
-     "supabase/functions/relatorio-diario-anomalias/index.ts",
-     "supabase/functions/send-push-notification/index.ts",
-     "supabase/functions/sincronizar-anomalia-bitrix24/index.ts",
-     "supabase/functions/validar-token-contador/index.ts",
-     "supabase/functions/validate-ip-geo/index.ts",
-     "supabase/functions/verificar-conformidade-fiscal/index.ts",
-     "supabase/functions/webhook-replay/index.ts",
-     "supabase/functions/webhook-simulator/index.ts",
-     "supabase/functions/whatsapp-ai-analyzer/index.ts",
-     "supabase/functions/whatsapp-ia-proativo/index.ts",
-     "supabase/functions/whatsapp-webhook/index.ts"
-    ]
    }
   ],
   "hot_files": [
@@ -229524,10 +229480,6 @@
     2
    ],
    [
-    "supabase/functions/gerar-pacote-evidencias/index.ts",
-    2
-   ],
-   [
     "scripts/supabase_snapshot/snapshot.py",
     2
    ],
@@ -229544,8 +229496,12 @@
     2
    ],
    [
-    "supabase/functions/n8n-callback/index.ts",
-    2
+    ".github/workflows/ci.yml",
+    1
+   ],
+   [
+    "scripts/ci/check-claude-md-integrity.mjs",
+    1
    ]
   ]
  }

@@ -6,7 +6,7 @@
    "TypeScript (2104)",
    "SQL (1006)",
    "Markdown (184)",
-   "JavaScript (39)",
+   "JavaScript (40)",
    "JSON (32)",
    "Python (28)",
    "Shell (23)",
@@ -195,6 +195,7 @@
    ],
    "scripts_usados": [
     "scripts/check-external-secret-isolation.sh",
+    "scripts/ci/check-claude-md-integrity.mjs",
     "scripts/ci/require-env.sh",
     "scripts/generate-env-manifest.mjs",
     "scripts/security/export-function-privileges.sh",

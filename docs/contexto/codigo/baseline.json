@@ -2,11 +2,16 @@
  "aviso": "GERADO AUTOMATICAMENTE por scripts/ai-context/gerar.mjs — não editar à mão; será sobrescrito.",
  "format_version": 2,
  "git": {
-  "commit": "34efae1f81963db1f12a1c1a35ec1b8845ca1096",
+  "commit": "8ec6561a99cf3bde38aadcb8f52010350a3a33cf",
   "branch": "main",
-  "data_commit": "2026-11-09T07:36:55-03:00",
+  "data_commit": "2026-11-09T10:59:50Z",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
   "ultimos_commits": [
+   {
+    "sha": "8ec6561",
+    "data": "2026-11-09",
+    "assunto": "infra: bloqueia wipe de AGENTS.md e docs/agentes por sessão paralela (#263)"
+   },
    {
     "sha": "34efae1",
     "data": "2026-11-09",
@@ -126,14 +131,9 @@
     "sha": "cab8834",
     "data": "2026-11-08",
     "assunto": "chore: instruções enxutas para agentes (#252)"
-   },
-   {
-    "sha": "b0d9ddb",
-    "data": "2026-11-08",
-    "assunto": "fix(contexto): guard de segredo reprovava a coleta do banco com a saída já redigida (#261)"
    }
   ],
-  "arquivos_mudados_7d": 256,
+  "arquivos_mudados_7d": 258,
   "pastas_mais_mudadas_30d": [
    {
     "pasta": "supabase/functions/_shared",
@@ -152,6 +152,10 @@
     "mudancas": 13
    },
    {
+    "pasta": ".github/workflows/ci.yml",
+    "mudancas": 11
+   },
+   {
     "pasta": "PENDENCIAS.md",
     "mudancas": 11
    },
@@ -162,10 +166,6 @@
    {
     "pasta": "src/components/navigation",
     "mudancas": 11
-   },
-   {
-    "pasta": ".github/workflows/ci.yml",
-    "mudancas": 10
    },
    {
     "pasta": "src/components/ui",
@@ -207,7 +207,7 @@
    },
    {
     "arquivo": ".github/workflows/ci.yml",
-    "mudancas": 21
+    "mudancas": 22
    },
    {
     "arquivo": "supabase/config.toml",
@@ -301,7 +301,7 @@
   "autores_30d": [
    {
     "autor": "adm01-debug",
-    "commits": 58
+    "commits": 59
    },
    {
     "autor": "devin-ai-integration[bot]",
@@ -318,9 +318,9 @@
   ]
  },
  "contagens": {
-  "arquivos_total": 3481,
-  "arquivos_codigo": 2169,
-  "linhas_codigo": 402114,
+  "arquivos_total": 3482,
+  "arquivos_codigo": 2170,
+  "linhas_codigo": 402256,
   "rotas": 128,
   "rotas_http_backend": 12,
   "vistas_por_id": 0,
@@ -334,7 +334,7 @@
   "cron_jobs": 21,
   "testes": 366,
   "workflows": 15,
-  "scripts": 90,
+  "scripts": 91,
   "docs_md": 184
  },
  "por_pasta": {
@@ -487,8 +487,8 @@
    "linhas": 1462
   },
   "scripts/ci": {
-   "arquivos": 9,
-   "linhas": 1427
+   "arquivos": 10,
+   "linhas": 1569
   },
   "scripts/data": {
    "arquivos": 1,
@@ -739,7 +739,7 @@
  ],
  "qualidade": {
   "any": 340,
-  "console_log": 152,
+  "console_log": 154,
   "ts_ignore": 0,
   "eslint_disable": 1,
   "todos": 44,

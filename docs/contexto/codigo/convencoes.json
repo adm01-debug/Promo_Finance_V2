@@ -30,7 +30,7 @@
   "scripts": [
    "scripts/integrity (17)",
    "scripts/security (16)",
-   "scripts/ci (10)"
+   "scripts/ci (11)"
   ],
   "docs": [
    "docs (47)",
@@ -58,11 +58,11 @@
  "commits": {
   "convencao": "conventional commits (observado)",
   "exemplos": [
+   "infra: bloqueia wipe de AGENTS.md e docs/agentes por sessão paralela (#263)",
    "chore: atualiza prs.json — adiciona #283-#288, 48 PRs classificadas",
    "feat(ci): documentos gerados do estado real do CI e das edge functions (#275)",
    "chore: relatorio final sessao merge-prs (total 46, 16 mergeadas, #287 sentry bump) (#288)",
-   "chore: bump @sentry/react 11.0.0 → 11.9.0 (supersede #210) (#287)",
-   "chore: docs analise-prs estado final 15 mergeadas esta sessao"
+   "chore: bump @sentry/react 11.0.0 → 11.9.0 (supersede #210) (#287)"
   ]
  },
  "pr_template": ".github/PULL_REQUEST_TEMPLATE.md",

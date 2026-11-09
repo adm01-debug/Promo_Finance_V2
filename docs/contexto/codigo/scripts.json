@@ -1,7 +1,7 @@
 {
  "aviso": "GERADO AUTOMATICAMENTE por scripts/ai-context/gerar.mjs — não editar à mão; será sobrescrito.",
  "format_version": 2,
- "total": 90,
+ "total": 91,
  "scripts": [
   {
    "arquivo": "scripts/admin/supabase_admin_ops.py",
@@ -106,6 +106,19 @@
    "env": [],
    "npm_scripts": [],
    "workflows": [],
+   "orfao": false
+  },
+  {
+   "arquivo": "scripts/ci/check-claude-md-integrity.mjs",
+   "descricao": "* Garante que as instrucoes para agentes nao foram apagadas ou esvaziadas por outra sessao.",
+   "linhas": 142,
+   "env": [
+    "CLAUDE_MD_BASE"
+   ],
+   "npm_scripts": [],
+   "workflows": [
+    "ci.yml"
+   ],
    "orfao": false
   },
   {
