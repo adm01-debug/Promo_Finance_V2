@@ -22,6 +22,15 @@ fi
 OUT_DIR="${OUT_DIR:-./security-audit}"
 mkdir -p "$OUT_DIR"
 
+# Cada arquivo só é publicado completo: o passo de upload do CI roda com
+# always() e enviaria como artefato o CSV vazio de um psql que falhou.
+CSV_OUT="$OUT_DIR/function-privileges.csv"
+JSON_OUT="$OUT_DIR/function-privileges.json"
+trap 'rm -f "$CSV_OUT.tmp" "$JSON_OUT.tmp"' EXIT
+
+# Host inalcançável não pode segurar o job até o timeout do runner.
+export PGCONNECT_TIMEOUT="${PGCONNECT_TIMEOUT:-15}"
+
 PSQL=(psql -v ON_ERROR_STOP=1 -X -q)
 if [[ -n "${DATABASE_URL:-}" ]]; then
   PSQL+=("$DATABASE_URL")
@@ -92,7 +101,8 @@ COPY (
   FROM _matrix
   ORDER BY categoria, fn, role_name
 ) TO STDOUT WITH CSV HEADER;
-ROLLBACK;" > "$OUT_DIR/function-privileges.csv"
+ROLLBACK;" > "$CSV_OUT.tmp"
+mv "$CSV_OUT.tmp" "$CSV_OUT"
 
 # --- JSON ----------------------------------------------------------------------
 "${PSQL[@]}" -A -t -c "BEGIN; ${BUILD_MATRIX}
@@ -111,7 +121,8 @@ FROM (
   FROM _matrix
   GROUP BY categoria, fn, schema_name, fn_name, identity_args, security_definer, owner_name
 ) sub;
-ROLLBACK;" > "$OUT_DIR/function-privileges.json"
+ROLLBACK;" > "$JSON_OUT.tmp"
+mv "$JSON_OUT.tmp" "$JSON_OUT"
 
 # --- Resumo (stdout) -----------------------------------------------------------
 echo "=== Resumo por categoria × role ==="
@@ -126,4 +137,4 @@ ROLLBACK;"
 
 echo
 echo "✅ Arquivos gerados:"
-ls -la "$OUT_DIR"/function-privileges.{csv,json}
+ls -la "$CSV_OUT" "$JSON_OUT"
