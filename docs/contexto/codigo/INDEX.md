@@ -1,7 +1,7 @@
 # Contexto do projeto para agentes de IA
 
 GERADO AUTOMATICAMENTE por scripts/ai-context/gerar.mjs — não editar à mão; será sobrescrito.
-Publicado pelo workflow .github/workflows/contexto.yml em docs/contexto/codigo/ da branch gerada `contexto`. Índice único em docs/contexto/00-INDEX.md. Ler: git fetch origin contexto && git show origin/contexto:docs/contexto/00-INDEX.md Gere local com `node scripts/ai-context/gerar.mjs`. Commit-base: `b6e60a5cb943b6cb585313c1a6ca035cdc3e6f08` (2026-11-09T05:32:24-03:00).
+Publicado pelo workflow .github/workflows/contexto.yml em docs/contexto/codigo/ da branch gerada `contexto`. Índice único em docs/contexto/00-INDEX.md. Ler: git fetch origin contexto && git show origin/contexto:docs/contexto/00-INDEX.md Gere local com `node scripts/ai-context/gerar.mjs`. Commit-base: `e8620bd0338e351efa9fc10e38e969716ae0892b` (2026-11-09T06:27:08-03:00).
 
 ## Como usar (leia antes de planejar ou executar qualquer tarefa)
 1. **Tela/rota/menu** → `rotas.json` (url/vista/menu → arquivo → hooks → tabelas → edges; `rotas_http_backend` para APIs) e `modulos.json` (módulo inteiro + dependências entre módulos).
@@ -442,8 +442,8 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 - não gerado neste run. Neste repo NÃO execute `graphify update .` (proibido por AGENTS.md, seção Graphify). O fluxo autorizado é o piloto: `npm run graphify:pilot`, ou `npm run graphify:analyze -- --profile NOME` (revise antes com `npm run graphify:inventory -- --profile NOME`). Resultados privados em graphify-out/piloto-*/; consulte apenas grafo cuja evidencia.json tenha piloto validado e hashes compatíveis com os arquivos atuais.
 
 ## Hotspots (arquivos mais alterados, 90 dias)
-- package.json (31)
-- bun.lock (24)
+- package.json (32)
+- bun.lock (25)
 - .github/workflows/ci.yml (21)
 - supabase/config.toml (15)
 - supabase/functions/asaas-proxy/index.ts (15)
@@ -587,6 +587,7 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 - CHANGELOG topo: [Unreleased]
 
 ## Últimos commits
+- 2026-11-09 `e8620bd` chore: bump @sentry/react 11.0.0 → 11.9.0 (supersede #210) (#287)
 - 2026-11-09 `b6e60a5` chore: docs analise-prs estado final 15 mergeadas esta sessao
 - 2026-11-09 `fc35825` chore: docs analise-prs estado final 14 mergeadas esta sessao (#285)
 - 2026-11-09 `68fa502` chore: documentação analise-prs v2 + progresso.json corrigido (#284)
@@ -601,7 +602,6 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 - 2026-11-08 `8d88a61` fix: type 'spring' as const em micro-interactions.tsx (StaggerItem/EmptyState)
 - 2026-11-08 `924e4a0` fix: monitor-health review #240 — supersede #257 (#271)
 - 2026-11-08 `d83f82e` docs: atualiza AGENTS.md e docs/agentes/ — supersede #264 (#272)
-- 2026-11-08 `1f5138a` fix: corrige TS2345 na edge function gerar-pacote-evidencias (#270)
 
 ## Arquivos deste diretório
 - `docs/contexto/codigo/rotas.json`

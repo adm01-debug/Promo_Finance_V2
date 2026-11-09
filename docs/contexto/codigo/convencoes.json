@@ -58,11 +58,11 @@
  "commits": {
   "convencao": "conventional commits (observado)",
   "exemplos": [
+   "chore: bump @sentry/react 11.0.0 → 11.9.0 (supersede #210) (#287)",
    "chore: docs analise-prs estado final 15 mergeadas esta sessao",
    "chore: docs analise-prs estado final 14 mergeadas esta sessao (#285)",
    "chore: documentação analise-prs v2 + progresso.json corrigido (#284)",
-   "fix: corrigir classificação #175/#208/#210/#216 em progresso.json",
-   "chore: estado final sessao merge-prs — prs.json + progresso + dossies"
+   "fix: corrigir classificação #175/#208/#210/#216 em progresso.json"
   ]
  },
  "pr_template": ".github/PULL_REQUEST_TEMPLATE.md",

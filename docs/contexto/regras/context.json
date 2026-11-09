@@ -1,9 +1,9 @@
 {
  "meta": {
-  "sha": "b6e60a5cb943b6cb585313c1a6ca035cdc3e6f08",
+  "sha": "e8620bd0338e351efa9fc10e38e969716ae0892b",
   "branch": "main",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
-  "generated_at": "2026-11-09 09:22 UTC",
+  "generated_at": "2026-11-09 09:27 UTC",
   "files_total": 3514,
   "code_files": 3170,
   "code_lines": 454108
@@ -228762,10 +228762,20 @@
   }
  },
  "git": {
-  "sha": "b6e60a5cb943b6cb585313c1a6ca035cdc3e6f08",
+  "sha": "e8620bd0338e351efa9fc10e38e969716ae0892b",
   "branch": "main",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
   "commits": [
+   {
+    "sha": "e8620bd",
+    "date": "2026-11-09",
+    "author": "adm01-debug",
+    "subject": "chore: bump @sentry/react 11.0.0 → 11.9.0 (supersede #210) (#287)",
+    "files": [
+     "bun.lock",
+     "package.json"
+    ]
+   },
    {
     "sha": "b6e60a5",
     "date": "2026-11-09",
@@ -229276,15 +229286,6 @@
      "supabase/functions/_shared/app-url.ts",
      "supabase/functions/asaas-proxy/index.ts"
     ]
-   },
-   {
-    "sha": "fab4030",
-    "date": "2026-11-06",
-    "author": "dependabot[bot]",
-    "subject": "chore(deps): bump actions/setup-python from 7.0.0 to 7.1.0 (#207)",
-    "files": [
-     ".github/workflows/graphify.yml"
-    ]
    }
   ],
   "hot_files": [
@@ -229293,15 +229294,15 @@
     7
    ],
    [
-    "analise-prs/RELATORIO_PRS.md",
-    5
-   ],
-   [
     "bun.lock",
-    5
+    6
    ],
    [
     "package.json",
+    6
+   ],
+   [
+    "analise-prs/RELATORIO_PRS.md",
     5
    ],
    [
