@@ -1,9 +1,9 @@
 {
-  "atualizado_em": "2026-11-09T07:30Z",
+  "atualizado_em": "2026-11-09T09:30Z",
   "sessao": "session_01N1ArYN9EZ2fbFJ2Z2rqAh1",
   "baseline_sha": "c6eb99b275e1270cf99f1216e808c120f7cf58a2",
-  "main_sha_final": "b0c226b440bb207c98fa02742b8ae5b492293ba1",
-  "main_ci_final": "8/8 required SUCCESS em b0c226b4 (pos-merge #283, 2026-11-09T05:40-05:52Z); Varredura gitleaks SUCCESS 05:47Z; E2E Quarantine non-blocking IN_PROGRESS as 07:30Z (nao bloqueia merge)",
+  "main_sha_final": "68fa502741e90ab8f7ec1380200e033a1d8463cc",
+  "main_ci_final": "9/9 checks (8/8 required + E2E Quarantine non-blocking) COMPLETED SUCCESS em 68fa502741e90ab8f7ec1380200e033a1d8463cc (pos-merge #284, 2026-11-09T06:52:54Z); E2E Quarantine COMPLETED SUCCESS 2026-11-09T07:26:50Z; Vercel READY (dpl_2A9ddEpfZAxruDe1Ke5CQYnv99Pd)",
   "estado": "SESSAO_CONCLUIDA",
   "mergeadas_sessao": [
     {"n":266,"sha":"6a925600f36f44488dc07b79e063f3dd67e5d30b","supersede":209},
@@ -18,7 +18,8 @@
     {"n":280,"sha":"039e16df6a88ec27c9405635a2d3628bfc37fa5a"},
     {"n":281,"sha":"8eef9b064acb30e12c1f616a5c8f29300ac8936f","supersede":253},
     {"n":282,"sha":"900925a649f972e2d3483e49255ae68c24868253","nota":"docs: estado final sessao merge-prs"},
-    {"n":283,"sha":"b0c226b440bb207c98fa02742b8ae5b492293ba1","nota":"prs.json final + dossiers"}
+    {"n":283,"sha":"b0c226b440bb207c98fa02742b8ae5b492293ba1","nota":"prs.json final + dossiers"},
+    {"n":284,"sha":"68fa502741e90ab8f7ec1380200e033a1d8463cc","nota":"docs analise-prs estado final 13 mergeadas + E2E Quarantine COMPLETED"}
   ],
   "mergeadas_por_outras_sessoes": [
     {"n":274,"sha":"8f63e2c685a4cb9a19e115ed7defb8dbbace28ac","mergedAt":"2026-11-09T03:39:33Z"},
