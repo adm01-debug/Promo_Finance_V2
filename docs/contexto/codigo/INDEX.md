@@ -1,7 +1,7 @@
 # Contexto do projeto para agentes de IA
 
 GERADO AUTOMATICAMENTE por scripts/ai-context/gerar.mjs — não editar à mão; será sobrescrito.
-Publicado pelo workflow .github/workflows/contexto.yml em docs/contexto/codigo/ da branch gerada `contexto`. Índice único em docs/contexto/00-INDEX.md. Ler: git fetch origin contexto && git show origin/contexto:docs/contexto/00-INDEX.md Gere local com `node scripts/ai-context/gerar.mjs`. Commit-base: `020bb81ebf87848ca653d1665f808e15db7bc863` (2026-11-08T20:57:11-03:00).
+Publicado pelo workflow .github/workflows/contexto.yml em docs/contexto/codigo/ da branch gerada `contexto`. Índice único em docs/contexto/00-INDEX.md. Ler: git fetch origin contexto && git show origin/contexto:docs/contexto/00-INDEX.md Gere local com `node scripts/ai-context/gerar.mjs`. Commit-base: `1f5138a767de996ea61ecfb5f852cc71e8f4624c` (2026-11-08T21:16:41-03:00).
 
 ## Como usar (leia antes de planejar ou executar qualquer tarefa)
 1. **Tela/rota/menu** → `rotas.json` (url/vista/menu → arquivo → hooks → tabelas → edges; `rotas_http_backend` para APIs) e `modulos.json` (módulo inteiro + dependências entre módulos).
@@ -587,6 +587,7 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 - CHANGELOG topo: [Unreleased]
 
 ## Últimos commits
+- 2026-11-08 `1f5138a` fix: corrige TS2345 na edge function gerar-pacote-evidencias (#270)
 - 2026-11-08 `020bb81` chore(deps): bump @dnd-kit/sortable from 7.0.2 to 10.0.0 (#267)
 - 2026-11-08 `6a92560` fix: erros TypeScript framer-motion 14.x — supersede #209 (#266)
 - 2026-11-08 `d8804a2` chore(deps-dev): bump eslint-config-prettier from 9.1.2 to 10.1.8 (#268)
@@ -601,7 +602,6 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 - 2026-11-06 `6bedb92` fix: atualiza lock graphifyy 0.9.97 com pyyaml (#249)
 - 2026-11-06 `58f58a2` docs(auditoria): Fase 2 — auditorias-anteriores.md reconciliadas com main (#222)
 - 2026-11-06 `c464deb` feat(seguranca+ux): steps 25+26+30+32 — acordo real, URL, asaas-proxy, calculo-iva (#237)
-- 2026-11-06 `fab4030` chore(deps): bump actions/setup-python from 7.0.0 to 7.1.0 (#207)
 
 ## Arquivos deste diretório
 - `docs/contexto/codigo/rotas.json`

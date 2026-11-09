@@ -1,9 +1,9 @@
 {
  "meta": {
-  "sha": "020bb81ebf87848ca653d1665f808e15db7bc863",
+  "sha": "1f5138a767de996ea61ecfb5f852cc71e8f4624c",
   "branch": "main",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
-  "generated_at": "2026-11-09 00:07 UTC",
+  "generated_at": "2026-11-09 00:21 UTC",
   "files_total": 3438,
   "code_files": 3155,
   "code_lines": 452691
@@ -228311,10 +228311,19 @@
   }
  },
  "git": {
-  "sha": "020bb81ebf87848ca653d1665f808e15db7bc863",
+  "sha": "1f5138a767de996ea61ecfb5f852cc71e8f4624c",
   "branch": "main",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
   "commits": [
+   {
+    "sha": "1f5138a",
+    "date": "2026-11-08",
+    "author": "adm01-debug",
+    "subject": "fix: corrige TS2345 na edge function gerar-pacote-evidencias (#270)",
+    "files": [
+     "supabase/functions/gerar-pacote-evidencias/index.ts"
+    ]
+   },
    {
     "sha": "020bb81",
     "date": "2026-11-08",
@@ -228753,15 +228762,6 @@
     "files": [
      "deno.lock"
     ]
-   },
-   {
-    "sha": "6546df9",
-    "date": "2026-10-30",
-    "author": "adm01-debug",
-    "subject": "fix(ci): prod-migrate — check-secrets sem environment antes do migrate (#217)",
-    "files": [
-     ".github/workflows/prod-migrate.yml"
-    ]
    }
   ],
   "hot_files": [
@@ -228788,6 +228788,10 @@
    [
     "supabase/functions/asaas-proxy/index.ts",
     3
+   ],
+   [
+    "supabase/functions/gerar-pacote-evidencias/index.ts",
+    2
    ],
    [
     "scripts/supabase_snapshot/snapshot.py",
@@ -228839,10 +228843,6 @@
    ],
    [
     "PENDENCIAS.md",
-    2
-   ],
-   [
-    "RELATORIO_CI.md",
     2
    ]
   ]
