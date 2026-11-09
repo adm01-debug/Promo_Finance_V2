@@ -1,36 +1,25 @@
 {
   "baseline_main_sha": "c6eb99b275e1270cf99f1216e808c120f7cf58a2",
-  "atualizado_em": "2026-11-09T01:00:00Z",
-  "ciclo_atual": "5 de 7 PRs em andamento mergeadas (#266, #268, #267, #270, #272); 4 aguardando CI (#269, #271, #273, #278)",
+  "main_sha_atual": "924e4a015792e4cfb161cfbfdae79189a60339cb",
+  "atualizado_em": "2026-11-09T01:05:00Z",
+  "ciclo_atual": "6 de 9 PRs desta sessao mergeadas; 3 aguardando CI (rebased em main apos merge #271)",
   "prs_mergeadas": [
-    {"n": 268, "sha": "d8804a2000192594419275bc94da6e44fbf6e211", "supersede": 214},
-    {"n": 266, "sha": "6a925600f36f44488dc07b79e063f3dd67e5d30b", "supersede": 209},
-    {"n": 267, "sha": "020bb81ebf87848ca653d1665f808e15db7bc863", "supersede": 213},
-    {"n": 270, "sha": "1f5138a767de996ea61ecfb5f852cc71e8f4624c", "supersede": 254},
-    {"n": 272, "sha": "d83f82e60c63aa2ed017aefdf4d864084f9c3c63", "supersede": 264}
+    {"n": 268, "sha": "d8804a2000192594419275bc94da6e44fbf6e211", "supersede": 214, "titulo": "bump eslint-config-prettier 9->10"},
+    {"n": 266, "sha": "6a925600f36f44488dc07b79e063f3dd67e5d30b", "supersede": 209, "titulo": "fix framer-motion 14.x types"},
+    {"n": 267, "sha": "020bb81ebf87848ca653d1665f808e15db7bc863", "supersede": 213, "titulo": "dnd-kit bump"},
+    {"n": 270, "sha": "1f5138a767de996ea61ecfb5f852cc71e8f4624c", "supersede": 254, "titulo": "TS2345 gerar-pacote-evidencias"},
+    {"n": 272, "sha": "d83f82e60c63aa2ed017aefdf4d864084f9c3c63", "supersede": 264, "titulo": "docs/agentes"},
+    {"n": 271, "sha": "924e4a015792e4cfb161cfbfdae79189a60339cb", "supersede": 257, "titulo": "monitor-health review #240", "merge_state_antes": "UNSTABLE (8/8 required SUCCESS)"}
   ],
   "prs_em_andamento": [
-    {"n": 269, "sha": "6c84a433d379a6a061a9486e7c363f3dbcf2ea60", "ci_status": "3/8 required SUCCESS (Integration, Supabase DB Linter, Unit tests); outros 5 jobs ainda nao criados (fila CI)"},
-    {"n": 271, "sha": "9a75360a9084739090c658b60f31de3de9c09030", "ci_status": "6/8 required SUCCESS (Varredura, E2E Financeiro, E2E Critical, Integration + gitleaks confirmed); Quality Gate in_progress; E2E Destructive aguardando Quality Gate"},
-    {"n": 273, "sha": "63c350e4c9fa5eda5fd8a5a4531ac4a989dc8f5a", "ci_status": "3/8 required SUCCESS (Integration, Supabase DB Linter, Unit tests); outros 5 jobs ainda nao criados (fila CI)"},
-    {"n": 278, "sha": "aec30ed22feefbb1fe49360207888dda8822a4b5", "ci_status": "3/8 required SUCCESS (Integration, Supabase DB Linter, Unit tests); outros 5 jobs ainda nao criados (fila CI)"}
+    {"n": 269, "sha_original": "6c84a433d379a6a061a9486e7c363f3dbcf2ea60", "status": "update_pr_branch executado; CI reiniciando sobre main 924e4a01", "supersede": 215},
+    {"n": 273, "sha_original": "942ac4f29acdedda7442b8c0aa71baf35541e5e4", "status": "update_pr_branch executado; CI reiniciando sobre main 924e4a01", "titulo": "docs analise-prs"},
+    {"n": 278, "sha_original": "aec30ed22feefbb1fe49360207888dda8822a4b5", "status": "update_pr_branch executado; CI reiniciando sobre main 924e4a01", "titulo": "fix micro-interactions spring gap"}
   ],
   "prs_aguardando_humano": [131, 203, 204, 205, 206, 211, 212, 234, 235, 238, 243, 253, 255, 256, 263, 265],
   "prs_bloqueadas_ambiente": [208, 210, 216],
   "prs_nao_iniciadas": [175],
   "prs_supersedidas": [213, 214, 215, 254, 257, 264],
-  "prs_fechadas_externamente": [{"n": 209, "motivo": "fechada por acao externa (provavel dependabot auto-close ao detectar #266 ja mergeada); nao fechada por esta sessao"}],
-  "proxima_acao": "aguardar Quality Gate (#271) e dispatch dos jobs de fila (#269, #273, #278); squash merge quando mergeStateStatus=CLEAN",
-  "causa_raiz_atraso_ci": "Contencao de jobs concorrentes conta inteira — confirmada em sessao anterior. 45-50 runs em fila simultaneamente. #271 mais avancado: Quality Gate in_progress, E2E Destructive aguardando. #269/#273/#278: 5 jobs nao criados ainda.",
-  "auditoria_validacao_pos_merge": {
-    "realizada_em": "2026-11-08T23:00-23:55Z",
-    "metodo": "5 agentes especializados em paralelo",
-    "achados": [
-      {"tema": "PR #266 (framer-motion)", "veredito": "GAP ENCONTRADO E CORRIGIDO", "detalhe": "micro-interactions.tsx corrigido na PR #278"},
-      {"tema": "PR #268 (eslint-config-prettier)", "veredito": "CONFIRMADO SEM GAPS"},
-      {"tema": "Inventario analise-prs/", "veredito": "DIVERGENCIAS DE DOCUMENTACAO CORRIGIDAS"},
-      {"tema": "Causa raiz da fila de CI", "veredito": "CONFIRMADA E AGRAVADA"},
-      {"tema": "Compliance Fluxo Git (regra 8)", "veredito": "COMPLIANCE TOTAL"}
-    ]
-  }
+  "prs_fechadas_externamente": [{"n": 209, "motivo": "auto-close Dependabot apos #266 mergear equivalente"}],
+  "bloqueio_ci": "Contencao conta inteira: 45-50 runs simultaneos. Causa confirmada em sessao anterior. Nao e codigo — e fila de jobs do GitHub Actions. #269/#273/#278 rebased; CI reiniciando."
 }
