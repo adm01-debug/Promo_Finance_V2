@@ -1,18 +1,11 @@
 {
   "version": 1,
   "manager": "bun",
-  "tsconfigs": [
-    "tsconfig.app.json",
-    "tsconfig.node.json"
-  ],
+  "tsconfigs": ["tsconfig.app.json", "tsconfig.node.json"],
   "gates": [
     {
       "name": "lint",
-      "command": [
-        "bun",
-        "run",
-        "lint:strict"
-      ]
+      "command": ["bun", "run", "lint:strict"]
     },
     {
       "name": "types",
@@ -25,20 +18,11 @@
     },
     {
       "name": "test",
-      "command": [
-        "node",
-        "node_modules/vitest/vitest.mjs",
-        "run",
-        "--maxWorkers=1"
-      ]
+      "command": ["node", "node_modules/vitest/vitest.mjs", "run", "--maxWorkers=1"]
     },
     {
       "name": "build",
-      "command": [
-        "bun",
-        "run",
-        "build"
-      ],
+      "command": ["bun", "run", "build"],
       "env": {
         "VITE_SUPABASE_URL": "https://maintenance.invalid",
         "VITE_SUPABASE_PROJECT_ID": "maintenance_test",
@@ -47,14 +31,10 @@
     }
   ],
   "fix": {
-    "roots": [
-      "src"
-    ],
+    "roots": ["src"],
     "eslintRules": [],
     "prettier": true,
-    "exclude": [
-      "src/integrations/supabase/types.ts"
-    ]
+    "exclude": ["src/integrations/supabase/types.ts"]
   },
   "timeoutMs": 300000,
   "maxFiles": 20,
