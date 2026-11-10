@@ -40,7 +40,7 @@ As suites usam fixtures descartáveis e não executam os scripts operacionais do
 
 ## Registro exato dos demais scripts
 
-Os registros `legacy` abaixo preservam ferramentas anteriores e seus chamadores; não são incluídos automaticamente no novo pipeline. Referência literal indica onde o arquivo é citado, sem garantir que esse caminho rode nem autorização para executar operações contra serviços. Sem referência, o arquivo é mantido manual porque função, parâmetros e ambiente precisam de revisão antes de ativar qualquer gatilho. Scripts novos não cobertos por registro fazem `doctor --static` falhar; não existe registro genérico `scripts/**` para ocultá-los.
+Os registros `legacy` abaixo preservam ferramentas anteriores e seus chamadores; não são incluídos automaticamente no novo pipeline. Para arquivos TypeScript de apoio sem runner comprovado, o comando listado só valida o inventário; os chamadores originais continuam sendo a referência de execução. Referência literal indica onde o arquivo é citado, sem garantir que esse caminho rode nem autorização para executar operações contra serviços. Sem referência, o arquivo é mantido manual porque função, parâmetros e ambiente precisam de revisão antes de ativar qualquer gatilho. Scripts novos não cobertos por registro fazem `doctor --static` falhar; não existe registro genérico `scripts/**` para ocultá-los.
 
 | Arquivo exato | Invocação manual de inventário | Chamadores literais / justificativa |
 |---|---|---|
@@ -52,14 +52,14 @@ Os registros `legacy` abaixo preservam ferramentas anteriores e seus chamadores;
 | `scripts/check-external-secret-isolation.sh` | `sh scripts/check-external-secret-isolation.sh` | .github/workflows/ci.yml |
 | `scripts/ci/actions-kpi.mjs` | `node scripts/ci/actions-kpi.mjs` | .github/workflows/estado-real.yml |
 | `scripts/ci/actions-kpi.unit.mjs` | `node --test scripts/ci/actions-kpi.unit.mjs` | .github/workflows/estado-real.yml |
-| `scripts/ci/audit-env.ts` | `bun scripts/ci/audit-env.ts` | Sem chamador literal; manter manual e revisar parâmetros/ambiente antes de executar. |
+| `scripts/ci/audit-env.ts` | `node scripts/automation.mjs doctor --static` | Sem chamador literal; manter manual e revisar parâmetros/ambiente antes de executar. |
 | `scripts/ci/check-baseline-drift.sh` | `sh scripts/ci/check-baseline-drift.sh` | scripts/validate-all.sh |
 | `scripts/ci/check-claude-md-integrity.mjs` | `node scripts/ci/check-claude-md-integrity.mjs` | .github/workflows/ci.yml |
 | `scripts/ci/deno-check-functions.sh` | `sh scripts/ci/deno-check-functions.sh` | .github/workflows/deno-tests.yml |
 | `scripts/ci/gerar-matriz-edge-tabela.mjs` | `node scripts/ci/gerar-matriz-edge-tabela.mjs` | .github/workflows/estado-real.yml |
 | `scripts/ci/gerar-matriz-edge-tabela.unit.mjs` | `node --test scripts/ci/gerar-matriz-edge-tabela.unit.mjs` | .github/workflows/estado-real.yml |
 | `scripts/ci/listar-excecoes-npm-nativo.py` | `python3 scripts/ci/listar-excecoes-npm-nativo.py` | Sem chamador literal; manter manual e revisar parâmetros/ambiente antes de executar. |
-| `scripts/ci/listar-specs-quarentena.ts` | `bun scripts/ci/listar-specs-quarentena.ts` | .github/workflows/ci.yml |
+| `scripts/ci/listar-specs-quarentena.ts` | `node scripts/automation.mjs doctor --static` | .github/workflows/ci.yml |
 | `scripts/ci/render-workflow-docs.mjs` | `node scripts/ci/render-workflow-docs.mjs` | .github/workflows/estado-real.yml |
 | `scripts/ci/render-workflow-docs.unit.mjs` | `node --test scripts/ci/render-workflow-docs.unit.mjs` | .github/workflows/estado-real.yml |
 | `scripts/ci/require-env.sh` | `sh scripts/ci/require-env.sh` | .github/workflows/ci.yml, .github/workflows/deno-tests.yml, .github/workflows/functions-deploy.yml, .github/workflows/supabase-linter.yml |
@@ -86,8 +86,8 @@ Os registros `legacy` abaixo preservam ferramentas anteriores e seus chamadores;
 | `scripts/edge-deploy/verify-remote.unit.mjs` | `node --test scripts/edge-deploy/verify-remote.unit.mjs` | Sem chamador literal; manter manual e revisar parâmetros/ambiente antes de executar. |
 | `scripts/generate-design-audit.js` | `node scripts/generate-design-audit.js` | Sem chamador literal; manter manual e revisar parâmetros/ambiente antes de executar. |
 | `scripts/generate-env-manifest.mjs` | `node scripts/generate-env-manifest.mjs` | .github/workflows/ci.yml |
-| `scripts/generate-simulation-report.ts` | `bun scripts/generate-simulation-report.ts` | Sem chamador literal; manter manual e revisar parâmetros/ambiente antes de executar. |
-| `scripts/gerar-grafo-arquitetura.ts` | `bun scripts/gerar-grafo-arquitetura.ts` | Sem chamador literal; manter manual e revisar parâmetros/ambiente antes de executar. |
+| `scripts/generate-simulation-report.ts` | `node scripts/automation.mjs doctor --static` | Sem chamador literal; manter manual e revisar parâmetros/ambiente antes de executar. |
+| `scripts/gerar-grafo-arquitetura.ts` | `node scripts/automation.mjs doctor --static` | Sem chamador literal; manter manual e revisar parâmetros/ambiente antes de executar. |
 | `scripts/graphify/benchmark.py` | `python3 scripts/graphify/benchmark.py` | package.json:scripts, .github/workflows/graphify.yml |
 | `scripts/graphify/code_references.py` | `python3 scripts/graphify/code_references.py` | package.json:scripts, .github/workflows/graphify.yml |
 | `scripts/graphify/edge_inventory.py` | `python3 scripts/graphify/edge_inventory.py` | package.json:scripts, .github/workflows/graphify.yml |
@@ -124,24 +124,24 @@ Os registros `legacy` abaixo preservam ferramentas anteriores e seus chamadores;
 | `scripts/regras_negocio/generate.py` | `python3 scripts/regras_negocio/generate.py` | .github/workflows/contexto.yml |
 | `scripts/regras_negocio/indice.py` | `python3 scripts/regras_negocio/indice.py` | .github/workflows/contexto.yml |
 | `scripts/regras_negocio/test_generate.py` | `python3 scripts/regras_negocio/test_generate.py` | .github/workflows/contexto.yml |
-| `scripts/run-scenarios.ts` | `bun scripts/run-scenarios.ts` | Sem chamador literal; manter manual e revisar parâmetros/ambiente antes de executar. |
+| `scripts/run-scenarios.ts` | `node scripts/automation.mjs doctor --static` | Sem chamador literal; manter manual e revisar parâmetros/ambiente antes de executar. |
 | `scripts/security/check-view-replay-order.mjs` | `node scripts/security/check-view-replay-order.mjs` | .github/workflows/supabase-linter.yml |
 | `scripts/security/export-function-privileges.sh` | `sh scripts/security/export-function-privileges.sh` | .github/workflows/ci.yml |
-| `scripts/security/test-anon-surface.ts` | `bun scripts/security/test-anon-surface.ts` | Sem chamador literal; manter manual e revisar parâmetros/ambiente antes de executar. |
+| `scripts/security/test-anon-surface.ts` | `node scripts/automation.mjs doctor --static` | Sem chamador literal; manter manual e revisar parâmetros/ambiente antes de executar. |
 | `scripts/security/test-canonical-db-gates.mjs` | `node scripts/security/test-canonical-db-gates.mjs` | .github/workflows/supabase-linter.yml |
 | `scripts/security/test-canonical-db-gates.test.mjs` | `node --test scripts/security/test-canonical-db-gates.test.mjs` | .github/workflows/ci.yml, .github/workflows/supabase-linter.yml |
 | `scripts/security/test-functions-deploy.sh` | `sh scripts/security/test-functions-deploy.sh` | .github/workflows/ci.yml, .github/workflows/functions-deploy.yml |
 | `scripts/security/test-lint-function-repairs.mjs` | `node scripts/security/test-lint-function-repairs.mjs` | .github/workflows/ci.yml, .github/workflows/supabase-linter.yml |
 | `scripts/security/test-migration-replay-safety.sh` | `sh scripts/security/test-migration-replay-safety.sh` | .github/workflows/ci.yml, .github/workflows/supabase-linter.yml |
-| `scripts/security/test-rpc-runtime.evaluate.test.ts` | `bun scripts/security/test-rpc-runtime.evaluate.test.ts` | Sem chamador literal; manter manual e revisar parâmetros/ambiente antes de executar. |
-| `scripts/security/test-rpc-runtime.ts` | `bun scripts/security/test-rpc-runtime.ts` | .github/workflows/ci.yml |
+| `scripts/security/test-rpc-runtime.evaluate.test.ts` | `node scripts/automation.mjs doctor --static` | Sem chamador literal; manter manual e revisar parâmetros/ambiente antes de executar. |
+| `scripts/security/test-rpc-runtime.ts` | `node scripts/automation.mjs doctor --static` | .github/workflows/ci.yml |
 | `scripts/security/test-supabase-config.py` | `python3 scripts/security/test-supabase-config.py` | .github/workflows/ci.yml, .github/workflows/functions-deploy.yml, .github/workflows/supabase-linter.yml |
 | `scripts/security/zod-coverage.sh` | `sh scripts/security/zod-coverage.sh` | .github/workflows/ci.yml |
-| `scripts/simular-observabilidade-digest.ts` | `bun scripts/simular-observabilidade-digest.ts` | Sem chamador literal; manter manual e revisar parâmetros/ambiente antes de executar. |
-| `scripts/simular-preferencias-digest.ts` | `bun scripts/simular-preferencias-digest.ts` | Sem chamador literal; manter manual e revisar parâmetros/ambiente antes de executar. |
-| `scripts/simular-projecao-conformidade.ts` | `bun scripts/simular-projecao-conformidade.ts` | Sem chamador literal; manter manual e revisar parâmetros/ambiente antes de executar. |
+| `scripts/simular-observabilidade-digest.ts` | `node scripts/automation.mjs doctor --static` | Sem chamador literal; manter manual e revisar parâmetros/ambiente antes de executar. |
+| `scripts/simular-preferencias-digest.ts` | `node scripts/automation.mjs doctor --static` | Sem chamador literal; manter manual e revisar parâmetros/ambiente antes de executar. |
+| `scripts/simular-projecao-conformidade.ts` | `node scripts/automation.mjs doctor --static` | Sem chamador literal; manter manual e revisar parâmetros/ambiente antes de executar. |
 | `scripts/staging-migrate.sh` | `sh scripts/staging-migrate.sh` | .github/workflows/staging-migrate.yml |
-| `scripts/stress-test.ts` | `bun scripts/stress-test.ts` | Sem chamador literal; manter manual e revisar parâmetros/ambiente antes de executar. |
+| `scripts/stress-test.ts` | `node scripts/automation.mjs doctor --static` | Sem chamador literal; manter manual e revisar parâmetros/ambiente antes de executar. |
 | `scripts/supabase_snapshot/snapshot.py` | `python3 scripts/supabase_snapshot/snapshot.py` | .github/workflows/contexto.yml |
 | `scripts/supabase_snapshot/test_snapshot.py` | `python3 scripts/supabase_snapshot/test_snapshot.py` | .github/workflows/contexto.yml |
 | `scripts/validate-all.sh` | `sh scripts/validate-all.sh` | Sem chamador literal; manter manual e revisar parâmetros/ambiente antes de executar. |
