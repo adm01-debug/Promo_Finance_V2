@@ -1,7 +1,7 @@
 # Contexto do projeto para agentes de IA
 
 GERADO AUTOMATICAMENTE por scripts/ai-context/gerar.mjs — não editar à mão; será sobrescrito.
-Publicado pelo workflow .github/workflows/contexto.yml em docs/contexto/codigo/ da branch gerada `contexto`. Índice único em docs/contexto/00-INDEX.md. Ler: git fetch origin contexto && git show origin/contexto:docs/contexto/00-INDEX.md Gere local com `node scripts/ai-context/gerar.mjs`. Commit-base: `ab802d4fad1e06f5b6a3bd424370493a38842cd3` (2026-11-10T19:20:47Z).
+Publicado pelo workflow .github/workflows/contexto.yml em docs/contexto/codigo/ da branch gerada `contexto`. Índice único em docs/contexto/00-INDEX.md. Ler: git fetch origin contexto && git show origin/contexto:docs/contexto/00-INDEX.md Gere local com `node scripts/ai-context/gerar.mjs`. Commit-base: `4a0178825eb03c111413382059f0678d0bf5aa38` (2026-11-10T19:57:51Z).
 
 ## Como usar (leia antes de planejar ou executar qualquer tarefa)
 1. **Tela/rota/menu** → `rotas.json` (url/vista/menu → arquivo → hooks → tabelas → edges; `rotas_http_backend` para APIs) e `modulos.json` (módulo inteiro + dependências entre módulos).
@@ -14,7 +14,7 @@ Publicado pelo workflow .github/workflows/contexto.yml em docs/contexto/codigo/ 
 Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua tarefa; não carregue tudo.
 
 ## Stack
-- linguagens: TypeScript (2104), SQL (1007), Markdown (188), JavaScript (55), JSON (37), Python (28), Shell (24), YAML (24)
+- linguagens: TypeScript (2104), SQL (1007), Markdown (188), JavaScript (57), JSON (37), Python (28), YAML (25), Shell (24)
 - linguagem_principal: TypeScript
 - framework: React
 - backend_http: n/d
@@ -34,9 +34,9 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 ## Números
 | item | qtd |
 |---|---|
-| arquivos_total | 3511 |
-| arquivos_codigo | 2185 |
-| linhas_codigo | 409953 |
+| arquivos_total | 3514 |
+| arquivos_codigo | 2187 |
+| linhas_codigo | 410281 |
 | rotas | 128 |
 | rotas_http_backend | 12 |
 | vistas_por_id | 0 |
@@ -48,9 +48,9 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 | tabelas | 314 |
 | migrations | 937 |
 | cron_jobs | 21 |
-| testes | 371 |
-| workflows | 18 |
-| scripts | 103 |
+| testes | 372 |
+| workflows | 19 |
+| scripts | 104 |
 | docs_md | 188 |
 
 ## Onde ficam as coisas
@@ -58,10 +58,10 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 - componentes: src/components (730), src/pages (174), src/hooks (2)
 - hooks: src/hooks (228), src/components (27), src/pages (5)
 - servicos_logica: src/lib (254), scripts/graphify (7), src/integrations (3)
-- testes: co-localizado (__tests__) (239), outro (52), co-localizado (*.test) (40)
+- testes: co-localizado (__tests__) (239), outro (53), co-localizado (*.test) (40)
 - edge_functions: supabase/functions
 - migrations: supabase/migrations
-- scripts: scripts/integrity (17), scripts/security (16), scripts/ci (12)
+- scripts: scripts/integrity (17), scripts/security (16), scripts/ci (13)
 - docs: docs (48), (raiz) (19), .github (2)
 - nomenclatura: {"componentes":"PascalCase (90%)","hooks":"use + PascalCase","servicos":"camelCase (52%)","edge_functions":"kebab-case (99%)","tabelas":"snake_case (91%)"}
 - instruções para agentes no repo: .claude/CLAUDE.md, .github/copilot-instructions.md, AGENTS.md, CLAUDE.md
@@ -460,6 +460,7 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 
 ## Workflows
 - `actionlint.yml` — Workflow Linter (actionlint + zizmor) (pull_request, push, workflow_dispatch)
+- `auto-update-pr-branch.yml` — Auto Update PR Branches (push, schedule, workflow_dispatch, workflow_run; cron 11,41 * * * *)
 - `automation-local.yml` — Automação local (pull_request, push, workflow_dispatch)
 - `ci.yml` — CI Pipeline (pull_request, push)
 - `codeql.yml` — CodeQL Analysis (pull_request, push, schedule; cron 17 3 * * 1)
@@ -605,6 +606,7 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 - CHANGELOG topo: [Unreleased]
 
 ## Últimos commits
+- 2026-11-10 `4a01788` feat(ci): fila serial de atualização de branch das PRs contra main (#276)
 - 2026-11-10 `ab802d4` fix: alinha admin_global com papel real admin (docs + guard asaas-proxy) (#255)
 - 2026-11-10 `bec7163` feat(ci): guard do perímetro do GitHub contra baseline versionado (#277)
 - 2026-11-10 `3e0b415` fix(automacao): aplica findings do Codex no #300 (#301)
@@ -619,7 +621,6 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 - 2026-11-09 `ea42a9b` feat(ci): documentos gerados do estado real do CI e das edge functions (#275)
 - 2026-11-09 `94bb4af` chore: relatorio final sessao merge-prs (total 46, 16 mergeadas, #287 sentry bump) (#288)
 - 2026-11-09 `e8620bd` chore: bump @sentry/react 11.0.0 → 11.9.0 (supersede #210) (#287)
-- 2026-11-09 `b6e60a5` chore: docs analise-prs estado final 15 mergeadas esta sessao
 
 ## Arquivos deste diretório
 - `docs/contexto/codigo/rotas.json`

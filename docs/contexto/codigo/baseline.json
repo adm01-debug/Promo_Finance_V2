@@ -2,11 +2,16 @@
  "aviso": "GERADO AUTOMATICAMENTE por scripts/ai-context/gerar.mjs — não editar à mão; será sobrescrito.",
  "format_version": 2,
  "git": {
-  "commit": "ab802d4fad1e06f5b6a3bd424370493a38842cd3",
+  "commit": "4a0178825eb03c111413382059f0678d0bf5aa38",
   "branch": "main",
-  "data_commit": "2026-11-10T19:20:47Z",
+  "data_commit": "2026-11-10T19:57:51Z",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
   "ultimos_commits": [
+   {
+    "sha": "4a01788",
+    "data": "2026-11-10",
+    "assunto": "feat(ci): fila serial de atualização de branch das PRs contra main (#276)"
+   },
    {
     "sha": "ab802d4",
     "data": "2026-11-10",
@@ -126,14 +131,9 @@
     "sha": "93026e6",
     "data": "2026-11-08",
     "assunto": "chore: inventário e dossiê das 34 PRs abertas (#273)"
-   },
-   {
-    "sha": "45a20a2",
-    "data": "2026-11-08",
-    "assunto": "fix: bump eslint-plugin-react-refresh para ^0.4.20 (supersede #215)"
    }
   ],
-  "arquivos_mudados_7d": 294,
+  "arquivos_mudados_7d": 297,
   "pastas_mais_mudadas_30d": [
    {
     "pasta": "supabase/functions/_shared",
@@ -301,7 +301,7 @@
   "autores_30d": [
    {
     "autor": "adm01-debug",
-    "commits": 66
+    "commits": 67
    },
    {
     "autor": "devin-ai-integration[bot]",
@@ -318,9 +318,9 @@
   ]
  },
  "contagens": {
-  "arquivos_total": 3511,
-  "arquivos_codigo": 2185,
-  "linhas_codigo": 409953,
+  "arquivos_total": 3514,
+  "arquivos_codigo": 2187,
+  "linhas_codigo": 410281,
   "rotas": 128,
   "rotas_http_backend": 12,
   "vistas_por_id": 0,
@@ -332,9 +332,9 @@
   "tabelas": 314,
   "migrations": 937,
   "cron_jobs": 21,
-  "testes": 371,
-  "workflows": 18,
-  "scripts": 103,
+  "testes": 372,
+  "workflows": 19,
+  "scripts": 104,
   "docs_md": 188
  },
  "por_pasta": {
@@ -495,8 +495,8 @@
    "linhas": 603
   },
   "scripts/ci": {
-   "arquivos": 12,
-   "linhas": 2653
+   "arquivos": 14,
+   "linhas": 2981
   },
   "scripts/data": {
    "arquivos": 1,
@@ -763,7 +763,7 @@
  ],
  "qualidade": {
   "any": 340,
-  "console_log": 191,
+  "console_log": 194,
   "ts_ignore": 0,
   "eslint_disable": 1,
   "todos": 44,

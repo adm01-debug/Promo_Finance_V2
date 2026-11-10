@@ -22,7 +22,7 @@
   ],
   "testes": [
    "co-localizado (__tests__) (239)",
-   "outro (52)",
+   "outro (53)",
    "co-localizado (*.test) (40)"
   ],
   "edge_functions": "supabase/functions",
@@ -30,7 +30,7 @@
   "scripts": [
    "scripts/integrity (17)",
    "scripts/security (16)",
-   "scripts/ci (12)"
+   "scripts/ci (13)"
   ],
   "docs": [
    "docs (48)",
@@ -58,11 +58,11 @@
  "commits": {
   "convencao": "conventional commits (observado)",
   "exemplos": [
+   "feat(ci): fila serial de atualização de branch das PRs contra main (#276)",
    "fix: alinha admin_global com papel real admin (docs + guard asaas-proxy) (#255)",
    "feat(ci): guard do perímetro do GitHub contra baseline versionado (#277)",
    "fix(automacao): aplica findings do Codex no #300 (#301)",
-   "chore(automacao): conecta testes, grafo e manutenção aos gatilhos (#300)",
-   "feat(inventario): inventário autônomo do estado real (banco, rotas e edge functions) (#265)"
+   "chore(automacao): conecta testes, grafo e manutenção aos gatilhos (#300)"
   ]
  },
  "pr_template": ".github/PULL_REQUEST_TEMPLATE.md",

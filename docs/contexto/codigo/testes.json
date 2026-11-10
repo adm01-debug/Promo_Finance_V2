@@ -5,11 +5,11 @@
   "vitest",
   "playwright"
  ],
- "total": 371,
+ "total": 372,
  "por_tipo": {
   "e2e": 35,
   "pytest": 15,
-  "unit": 315
+  "unit": 316
  },
  "onde_ficam": [
   {
@@ -18,7 +18,7 @@
   },
   {
    "padrao": "outro",
-   "arquivos": 52
+   "arquivos": 53
   },
   {
    "padrao": "co-localizado (*.test)",
@@ -301,6 +301,15 @@
     "scripts/ci/actions-kpi.mjs"
    ],
    "casos": 16
+  },
+  {
+   "arquivo": "scripts/ci/fila-merge.unit.mjs",
+   "tipo": "unit",
+   "linhas": 123,
+   "testa": [
+    "scripts/ci/fila-merge.mjs"
+   ],
+   "casos": 10
   },
   {
    "arquivo": "scripts/ci/gerar-matriz-edge-tabela.unit.mjs",
@@ -3311,6 +3320,7 @@
   "eslint-rules/no-floating-supabase-write.js": 1,
   "scripts/automation.mjs": 1,
   "scripts/ci/actions-kpi.mjs": 1,
+  "scripts/ci/fila-merge.mjs": 1,
   "scripts/ci/gerar-matriz-edge-tabela.mjs": 1,
   "scripts/ci/github-settings-guard.mjs": 1,
   "scripts/ci/render-workflow-docs.mjs": 1,

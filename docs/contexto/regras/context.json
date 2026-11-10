@@ -1,15 +1,15 @@
 {
  "meta": {
-  "sha": "ab802d4fad1e06f5b6a3bd424370493a38842cd3",
+  "sha": "4a0178825eb03c111413382059f0678d0bf5aa38",
   "branch": "main",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
-  "generated_at": "2026-11-10 19:51 UTC",
-  "files_total": 3553,
-  "code_files": 3193,
-  "code_lines": 463106
+  "generated_at": "2026-11-10 19:58 UTC",
+  "files_total": 3556,
+  "code_files": 3195,
+  "code_lines": 463434
  },
  "version": "1.3.2",
- "facts_hash": "bea2858c7a660402",
+ "facts_hash": "68151f092c819500",
  "stack": {
   "frameworks": [
    "React + Vite",
@@ -180,6 +180,15 @@
     ]
    },
    {
+    "file": ".github/workflows/auto-update-pr-branch.yml",
+    "name": "Auto Update PR Branches",
+    "triggers": [
+     "push",
+     "schedule",
+     "workflow_dispatch"
+    ]
+   },
+   {
     "file": ".github/workflows/automation-local.yml",
     "name": "Automação local",
     "triggers": [
@@ -325,7 +334,7 @@
    ".ts": 1112,
    ".sql": 1007,
    ".tsx": 992,
-   ".mjs": 47,
+   ".mjs": 49,
    ".py": 28,
    ".js": 8
   },
@@ -60519,6 +60528,11 @@
    },
    {
     "kind": "GitHub Actions cron",
+    "detail": "11,41 * * * *",
+    "file": ".github/workflows/auto-update-pr-branch.yml"
+   },
+   {
+    "kind": "GitHub Actions cron",
     "detail": "17 3 * * 1",
     "file": ".github/workflows/codeql.yml"
    },
@@ -63206,8 +63220,8 @@
   },
   {
    "module": "scripts",
-   "files": 112,
-   "lines": 27611,
+   "files": 114,
+   "lines": 27939,
    "tables": [
     "a",
     "alerts",
@@ -63241,6 +63255,7 @@
     "test_supabase_admin_ops_scenarios.py: _resp, TestReqHelper, TestWantVerifyJwt, TestMutateAndFalhas, TestTestUserAllowlist, TestMfaConfigLogic",
     "gerar.unit.mjs: AppRoutes, useContacts",
     "actions-kpi.mjs: duracaoMinutos, runsNaJanela, agregar, kpiPorArquivo, paginaTemMais, maisLentos",
+    "fila-merge.mjs: checksObrigatorios, estadoDoCheck, classificar, decidir, confirmarCandidato, resolverDesconhecidos",
     "gerar-matriz-edge-tabela.mjs: extrairTabelas, montarMatriz, renderizar, main",
     "github-settings-guard.mjs: assinaturaDe",
     "listar-excecoes-npm-nativo.py: arquivos_ts, main",
@@ -63273,8 +63288,7 @@
     "test_dump_baseline_scenarios.py: TestDumpBaselineSyntax, TestDumpBaselineCoalesceQuery, TestDumpBaselineAllowedPublicTables, TestDumpBaselineSchemaCountsQuery",
     "gerar-banco.mjs: PROJETO_OFICIAL, LIMIARES, PARECE_CREDENCIAL, extrairInventario, contarUsoNoCodigo, tabelasDosTipos",
     "gerar-rotas.mjs: resolverImport, extrairImports, extrairChamadas, MAX_SALTOS, fechoDaRota, lerUrls",
-    "mudou-conteudo.mjs: PADRAO, semCarimbos, mudou",
-    "lib.mjs: MaintenanceError, fail, digest, exists, safeEnv, stopChildren"
+    "mudou-conteudo.mjs: PADRAO, semCarimbos, mudou"
    ],
    "docs": [
     "automation.mjs: !/usr/bin/env node",
@@ -63349,6 +63363,8 @@
     "scripts/ci/actions-kpi.unit.mjs",
     "scripts/ci/audit-env.ts",
     "scripts/ci/check-claude-md-integrity.mjs",
+    "scripts/ci/fila-merge.mjs",
+    "scripts/ci/fila-merge.unit.mjs",
     "scripts/ci/gerar-matriz-edge-tabela.mjs",
     "scripts/ci/gerar-matriz-edge-tabela.unit.mjs",
     "scripts/ci/github-settings-guard.mjs",
@@ -63402,9 +63418,7 @@
     "scripts/integrity/08_rpc_tenant_scope.sql",
     "scripts/integrity/09_views.sql",
     "scripts/integrity/10_tenant_indexes.sql",
-    "scripts/integrity/11_pii_mask.sql",
-    "scripts/integrity/12_index_bloat.sql",
-    "scripts/integrity/13_unused_indexes.sql"
+    "scripts/integrity/11_pii_mask.sql"
    ]
   },
   {
@@ -72942,6 +72956,10 @@
    {
     "file": "scripts/ci/actions-kpi.mjs",
     "msg": "${metodo} ${caminho} -> ${r.status}"
+   },
+   {
+    "file": "scripts/ci/fila-merge.unit.mjs",
+    "msg": "rede caiu"
    },
    {
     "file": "scripts/ci/github-settings-guard.mjs",
@@ -165468,6 +165486,37 @@
     "// com >= 50% do tamanho de la. CLAUDE.md fica de fora: e so `@AGENTS.md` por design."
    ]
   },
+  "scripts/ci/fila-merge.mjs": {
+   "path": "scripts/ci/fila-merge.mjs",
+   "lines": 205,
+   "exports": [
+    "function checksObrigatorios",
+    "function estadoDoCheck",
+    "function classificar",
+    "function decidir",
+    "function confirmarCandidato",
+    "function resolverDesconhecidos"
+   ],
+   "env": [
+    "GITHUB_OUTPUT",
+    "GITHUB_REPOSITORY",
+    "GITHUB_STEP_SUMMARY"
+   ],
+   "rule_comments": [
+    "// Por que existe: com `strict=true` na branch protection (8 required status checks),",
+    "voo\" (CI rodando de propósito). Aqui o merge é manual (AGENTS.md regra 6.5 — a",
+    "* Lê os required status checks da branch protection de `main` (fonte viva, não baseline).",
+    "nunca funcionaria. Fica fora da fila (não é \"conflito\", é limitação de permissão)."
+   ],
+   "doc": "!/usr/bin/env node Fila de atualização de branch serial para as PRs abertas contra `main`. Por que existe: com `strict=true` na branch protection (8 required status checks), toda PR fica BEHIND a cada merge na main. Atualizar TODAS de uma vez faz as N recomeçarem a CI inteira ao mesmo tempo, disputa …"
+  },
+  "scripts/ci/fila-merge.unit.mjs": {
+   "path": "scripts/ci/fila-merge.unit.mjs",
+   "lines": 123,
+   "errors": [
+    "rede caiu"
+   ]
+  },
   "scripts/ci/gerar-matriz-edge-tabela.mjs": {
    "path": "scripts/ci/gerar-matriz-edge-tabela.mjs",
    "lines": 92,
@@ -229559,10 +229608,22 @@
   }
  },
  "git": {
-  "sha": "ab802d4fad1e06f5b6a3bd424370493a38842cd3",
+  "sha": "4a0178825eb03c111413382059f0678d0bf5aa38",
   "branch": "main",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
   "commits": [
+   {
+    "sha": "4a01788",
+    "date": "2026-11-10",
+    "author": "adm01-debug",
+    "subject": "feat(ci): fila serial de atualização de branch das PRs contra main (#276)",
+    "files": [
+     ".github/workflows/auto-update-pr-branch.yml",
+     "scripts/automation.config.json",
+     "scripts/ci/fila-merge.mjs",
+     "scripts/ci/fila-merge.unit.mjs"
+    ]
+   },
    {
     "sha": "ab802d4",
     "date": "2026-11-10",
@@ -229966,16 +230027,6 @@
     "files": [
      "supabase/functions/gerar-pacote-evidencias/index.ts"
     ]
-   },
-   {
-    "sha": "020bb81",
-    "date": "2026-11-08",
-    "author": "adm01-debug",
-    "subject": "chore(deps): bump @dnd-kit/sortable from 7.0.2 to 10.0.0 (#267)",
-    "files": [
-     "bun.lock",
-     "package.json"
-    ]
    }
   ],
   "hot_files": [
@@ -229984,16 +230035,16 @@
     8
    ],
    [
-    "package.json",
-    7
-   ],
-   [
     "analise-prs/RELATORIO_PRS.md",
     7
    ],
    [
-    "bun.lock",
+    "package.json",
     6
+   ],
+   [
+    "bun.lock",
+    5
    ],
    [
     "analise-prs/prs.json",
@@ -230002,6 +230053,10 @@
    [
     ".gitignore",
     3
+   ],
+   [
+    "scripts/automation.config.json",
+    2
    ],
    [
     "graphify.local.json",
@@ -230044,19 +230099,15 @@
     2
    ],
    [
-    "SECURITY_RULES.md",
+    ".github/workflows/auto-update-pr-branch.yml",
     1
    ],
    [
-    "supabase/functions/asaas-proxy/index.ts",
+    "scripts/ci/fila-merge.mjs",
     1
    ],
    [
-    ".github/workflows/settings-guard.yml",
-    1
-   ],
-   [
-    "env.manifest.json",
+    "scripts/ci/fila-merge.unit.mjs",
     1
    ]
   ]

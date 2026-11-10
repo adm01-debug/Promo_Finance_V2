@@ -1,7 +1,7 @@
 {
  "aviso": "GERADO AUTOMATICAMENTE por scripts/ai-context/gerar.mjs — não editar à mão; será sobrescrito.",
  "format_version": 2,
- "total": 103,
+ "total": 104,
  "scripts": [
   {
    "arquivo": "scripts/admin/supabase_admin_ops.py",
@@ -153,6 +153,21 @@
    "npm_scripts": [],
    "workflows": [
     "deno-tests.yml"
+   ],
+   "orfao": false
+  },
+  {
+   "arquivo": "scripts/ci/fila-merge.mjs",
+   "descricao": "Fila de atualização de branch serial para as PRs abertas contra `main`. Por que existe: com `strict=true` na branch protection (8 required status checks),",
+   "linhas": 205,
+   "env": [
+    "GITHUB_OUTPUT",
+    "GITHUB_REPOSITORY",
+    "GITHUB_STEP_SUMMARY"
+   ],
+   "npm_scripts": [],
+   "workflows": [
+    "auto-update-pr-branch.yml"
    ],
    "orfao": false
   },

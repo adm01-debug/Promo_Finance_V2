@@ -1,6 +1,6 @@
 # 07 · REGRAS DE NEGÓCIO
 
-> Gerado automaticamente por AI Context Sync v1.3.2 · commit `ab802d4fad` · branch `main` · 2026-11-10 19:51 UTC
+> Gerado automaticamente por AI Context Sync v1.3.2 · commit `4a0178825e` · branch `main` · 2026-11-10 19:58 UTC
 > Não edite à mão — regras humanas vão em `manual/`.
 
 ## A. Regras escritas por humanos (`manual/` — prioridade máxima, nunca sobrescrito)
@@ -4681,6 +4681,7 @@ Erros lançados por funções SQL (`RAISE EXCEPTION` = regra de negócio no banc
 | ALERTS_EMAIL_FROM | `scripts/generate-env-manifest.mjs` |
 | ${msg}: esperado ${JSON.stringify(b)} obtido ${JSON.stringify(a)} | `scripts/ai-context/cenarios.mjs` |
 | ${metodo} ${caminho} -> ${r.status} | `scripts/ci/actions-kpi.mjs` |
+| rede caiu | `scripts/ci/fila-merge.unit.mjs` |
 | GitHub API ${method} ${path} → ${res.status}: ${text} | `scripts/ci/github-settings-guard.mjs` |
 | Glob com sintaxe não suportada por este script: ${glob} | `scripts/ci/listar-specs-quarentena.ts` |
 | bloco  | `scripts/ci/render-workflow-docs.mjs` |
@@ -4974,8 +4975,7 @@ Erros lançados por funções SQL (`RAISE EXCEPTION` = regra de negócio no banc
 | Usuário não autenticado | `src/components/contas-receber/ContaReceberForm.tsx` |
 | ALERTA DE FLUXO | `src/components/contas-receber/ContasReceberKPIs.tsx` |
 | RISCO CRÍTICO DETECTADO | `src/components/contas-receber/ContasReceberKPIs.tsx` |
-| Anexo sem caminho de storage válido. | `src/components/contas-receber/DrawerAnexosTab.tsx` |
-| … +724 linhas — lista completa em `context.json` | |
+| … +725 linhas — lista completa em `context.json` | |
 
 ## J. Controle de acesso no código (checagens de perfil/permissão)
 

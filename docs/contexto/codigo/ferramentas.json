@@ -6,11 +6,11 @@
    "TypeScript (2104)",
    "SQL (1007)",
    "Markdown (188)",
-   "JavaScript (55)",
+   "JavaScript (57)",
    "JSON (37)",
    "Python (28)",
-   "Shell (24)",
-   "YAML (24)"
+   "YAML (25)",
+   "Shell (24)"
   ],
   "linguagem_principal": "TypeScript",
   "framework": "React",
@@ -181,6 +181,37 @@
    "secrets": [],
    "actions": [
     "actions/checkout"
+   ]
+  },
+  {
+   "arquivo": ".github/workflows/auto-update-pr-branch.yml",
+   "nome": "Auto Update PR Branches",
+   "gatilhos": [
+    "push",
+    "schedule",
+    "workflow_dispatch",
+    "workflow_run"
+   ],
+   "crons": [
+    "11,41 * * * *"
+   ],
+   "branches": [
+    "main"
+   ],
+   "jobs": [
+    "update-behind-branches"
+   ],
+   "permissoes": [],
+   "scripts_usados": [
+    "scripts/ci/fila-merge.mjs"
+   ],
+   "npm_scripts": [],
+   "secrets": [
+    "GITHUB_TOKEN"
+   ],
+   "actions": [
+    "actions/checkout",
+    "actions/setup-node"
    ]
   },
   {
