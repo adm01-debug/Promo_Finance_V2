@@ -1,7 +1,7 @@
 # Contexto do projeto para agentes de IA
 
 GERADO AUTOMATICAMENTE por scripts/ai-context/gerar.mjs — não editar à mão; será sobrescrito.
-Publicado pelo workflow .github/workflows/contexto.yml em docs/contexto/codigo/ da branch gerada `contexto`. Índice único em docs/contexto/00-INDEX.md. Ler: git fetch origin contexto && git show origin/contexto:docs/contexto/00-INDEX.md Gere local com `node scripts/ai-context/gerar.mjs`. Commit-base: `bec7163dc83937fdd28995b156b8bffcd5b76f7a` (2026-11-10T18:42:03Z).
+Publicado pelo workflow .github/workflows/contexto.yml em docs/contexto/codigo/ da branch gerada `contexto`. Índice único em docs/contexto/00-INDEX.md. Ler: git fetch origin contexto && git show origin/contexto:docs/contexto/00-INDEX.md Gere local com `node scripts/ai-context/gerar.mjs`. Commit-base: `ab802d4fad1e06f5b6a3bd424370493a38842cd3` (2026-11-10T19:20:47Z).
 
 ## Como usar (leia antes de planejar ou executar qualquer tarefa)
 1. **Tela/rota/menu** → `rotas.json` (url/vista/menu → arquivo → hooks → tabelas → edges; `rotas_http_backend` para APIs) e `modulos.json` (módulo inteiro + dependências entre módulos).
@@ -445,7 +445,7 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 - package.json (36)
 - bun.lock (28)
 - .github/workflows/ci.yml (22)
-- supabase/functions/asaas-proxy/index.ts (15)
+- supabase/functions/asaas-proxy/index.ts (16)
 - supabase/config.toml (14)
 - supabase/functions/mcp-query/index.ts (13)
 - .github/workflows/deno-tests.yml (12)
@@ -605,6 +605,7 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 - CHANGELOG topo: [Unreleased]
 
 ## Últimos commits
+- 2026-11-10 `ab802d4` fix: alinha admin_global com papel real admin (docs + guard asaas-proxy) (#255)
 - 2026-11-10 `bec7163` feat(ci): guard do perímetro do GitHub contra baseline versionado (#277)
 - 2026-11-10 `3e0b415` fix(automacao): aplica findings do Codex no #300 (#301)
 - 2026-11-10 `acebea0` chore(automacao): conecta testes, grafo e manutenção aos gatilhos (#300)
@@ -619,7 +620,6 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 - 2026-11-09 `94bb4af` chore: relatorio final sessao merge-prs (total 46, 16 mergeadas, #287 sentry bump) (#288)
 - 2026-11-09 `e8620bd` chore: bump @sentry/react 11.0.0 → 11.9.0 (supersede #210) (#287)
 - 2026-11-09 `b6e60a5` chore: docs analise-prs estado final 15 mergeadas esta sessao
-- 2026-11-09 `fc35825` chore: docs analise-prs estado final 14 mergeadas esta sessao (#285)
 
 ## Arquivos deste diretório
 - `docs/contexto/codigo/rotas.json`

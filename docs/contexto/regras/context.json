@@ -1,9 +1,9 @@
 {
  "meta": {
-  "sha": "bec7163dc83937fdd28995b156b8bffcd5b76f7a",
+  "sha": "ab802d4fad1e06f5b6a3bd424370493a38842cd3",
   "branch": "main",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
-  "generated_at": "2026-11-10 19:13 UTC",
+  "generated_at": "2026-11-10 19:21 UTC",
   "files_total": 3553,
   "code_files": 3193,
   "code_lines": 463106
@@ -229559,10 +229559,20 @@
   }
  },
  "git": {
-  "sha": "bec7163dc83937fdd28995b156b8bffcd5b76f7a",
+  "sha": "ab802d4fad1e06f5b6a3bd424370493a38842cd3",
   "branch": "main",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
   "commits": [
+   {
+    "sha": "ab802d4",
+    "date": "2026-11-10",
+    "author": "adm01-debug",
+    "subject": "fix: alinha admin_global com papel real admin (docs + guard asaas-proxy) (#255)",
+    "files": [
+     "SECURITY_RULES.md",
+     "supabase/functions/asaas-proxy/index.ts"
+    ]
+   },
    {
     "sha": "bec7163",
     "date": "2026-11-10",
@@ -229966,38 +229976,24 @@
      "bun.lock",
      "package.json"
     ]
-   },
-   {
-    "sha": "6a92560",
-    "date": "2026-11-08",
-    "author": "adm01-debug",
-    "subject": "fix: erros TypeScript framer-motion 14.x — supersede #209 (#266)",
-    "files": [
-     "bun.lock",
-     "package.json",
-     "src/components/alertas/AlertaComponents.tsx",
-     "src/components/relatorios/RelatoriosKpis.tsx",
-     "src/pages/Alertas.tsx",
-     "src/pages/Empresas.tsx"
-    ]
    }
   ],
   "hot_files": [
-   [
-    "package.json",
-    8
-   ],
    [
     "analise-prs/progresso.json",
     8
    ],
    [
-    "bun.lock",
+    "package.json",
     7
    ],
    [
     "analise-prs/RELATORIO_PRS.md",
     7
+   ],
+   [
+    "bun.lock",
+    6
    ],
    [
     "analise-prs/prs.json",
@@ -230048,19 +230044,19 @@
     2
    ],
    [
+    "SECURITY_RULES.md",
+    1
+   ],
+   [
+    "supabase/functions/asaas-proxy/index.ts",
+    1
+   ],
+   [
     ".github/workflows/settings-guard.yml",
     1
    ],
    [
     "env.manifest.json",
-    1
-   ],
-   [
-    "scripts/ci/github-settings-baseline.json",
-    1
-   ],
-   [
-    "scripts/ci/github-settings-guard.mjs",
     1
    ]
   ]

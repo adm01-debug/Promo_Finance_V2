@@ -2,11 +2,16 @@
  "aviso": "GERADO AUTOMATICAMENTE por scripts/ai-context/gerar.mjs — não editar à mão; será sobrescrito.",
  "format_version": 2,
  "git": {
-  "commit": "bec7163dc83937fdd28995b156b8bffcd5b76f7a",
+  "commit": "ab802d4fad1e06f5b6a3bd424370493a38842cd3",
   "branch": "main",
-  "data_commit": "2026-11-10T18:42:03Z",
+  "data_commit": "2026-11-10T19:20:47Z",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
   "ultimos_commits": [
+   {
+    "sha": "ab802d4",
+    "data": "2026-11-10",
+    "assunto": "fix: alinha admin_global com papel real admin (docs + guard asaas-proxy) (#255)"
+   },
    {
     "sha": "bec7163",
     "data": "2026-11-10",
@@ -126,14 +131,9 @@
     "sha": "45a20a2",
     "data": "2026-11-08",
     "assunto": "fix: bump eslint-plugin-react-refresh para ^0.4.20 (supersede #215)"
-   },
-   {
-    "sha": "8d88a61",
-    "data": "2026-11-08",
-    "assunto": "fix: type 'spring' as const em micro-interactions.tsx (StaggerItem/EmptyState)"
    }
   ],
-  "arquivos_mudados_7d": 293,
+  "arquivos_mudados_7d": 294,
   "pastas_mais_mudadas_30d": [
    {
     "pasta": "supabase/functions/_shared",
@@ -211,7 +211,7 @@
    },
    {
     "arquivo": "supabase/functions/asaas-proxy/index.ts",
-    "mudancas": 15
+    "mudancas": 16
    },
    {
     "arquivo": "supabase/config.toml",
@@ -301,7 +301,7 @@
   "autores_30d": [
    {
     "autor": "adm01-debug",
-    "commits": 65
+    "commits": 66
    },
    {
     "autor": "devin-ai-integration[bot]",

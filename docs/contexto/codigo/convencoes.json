@@ -58,11 +58,11 @@
  "commits": {
   "convencao": "conventional commits (observado)",
   "exemplos": [
+   "fix: alinha admin_global com papel real admin (docs + guard asaas-proxy) (#255)",
    "feat(ci): guard do perímetro do GitHub contra baseline versionado (#277)",
    "fix(automacao): aplica findings do Codex no #300 (#301)",
    "chore(automacao): conecta testes, grafo e manutenção aos gatilhos (#300)",
-   "feat(inventario): inventário autônomo do estado real (banco, rotas e edge functions) (#265)",
-   "fix: bump date-fns from 2.30.0 to 4.4.0 (#298)"
+   "feat(inventario): inventário autônomo do estado real (banco, rotas e edge functions) (#265)"
   ]
  },
  "pr_template": ".github/PULL_REQUEST_TEMPLATE.md",
