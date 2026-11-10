@@ -70,3 +70,7 @@ docs/contexto/regras/*
 
 # gerado pelos scripts/inventario e publicado na branch inventario (nunca em main)
 inventario/estado/
+
+# Estado local privado dos novos adaptadores de automação
+/.tools/repo-automation/
+/.tools/graphify/local-state/
