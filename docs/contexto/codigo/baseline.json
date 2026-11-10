@@ -2,11 +2,16 @@
  "aviso": "GERADO AUTOMATICAMENTE por scripts/ai-context/gerar.mjs — não editar à mão; será sobrescrito.",
  "format_version": 2,
  "git": {
-  "commit": "4a0178825eb03c111413382059f0678d0bf5aa38",
+  "commit": "4e177c3c36e7b64052b85f1ca9f4fd6b81feebdb",
   "branch": "main",
-  "data_commit": "2026-11-10T19:57:51Z",
+  "data_commit": "2026-11-10T20:32:05Z",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
   "ultimos_commits": [
+   {
+    "sha": "4e177c3",
+    "data": "2026-11-10",
+    "assunto": "chore(ddl): steps 12-16+19+21+23 — DDL banco produção (#235)"
+   },
    {
     "sha": "4a01788",
     "data": "2026-11-10",
@@ -126,14 +131,9 @@
     "sha": "97b7711",
     "data": "2026-11-09",
     "assunto": "fix(docs): corrige contagem de edge functions para 106 em mapa-repo.md"
-   },
-   {
-    "sha": "93026e6",
-    "data": "2026-11-08",
-    "assunto": "chore: inventário e dossiê das 34 PRs abertas (#273)"
    }
   ],
-  "arquivos_mudados_7d": 297,
+  "arquivos_mudados_7d": 309,
   "pastas_mais_mudadas_30d": [
    {
     "pasta": "supabase/functions/_shared",
@@ -301,7 +301,7 @@
   "autores_30d": [
    {
     "autor": "adm01-debug",
-    "commits": 67
+    "commits": 68
    },
    {
     "autor": "devin-ai-integration[bot]",
@@ -318,7 +318,7 @@
   ]
  },
  "contagens": {
-  "arquivos_total": 3514,
+  "arquivos_total": 3521,
   "arquivos_codigo": 2187,
   "linhas_codigo": 410281,
   "rotas": 128,
@@ -330,7 +330,7 @@
   "hooks": 265,
   "edge_functions": 106,
   "tabelas": 314,
-  "migrations": 937,
+  "migrations": 944,
   "cron_jobs": 21,
   "testes": 372,
   "workflows": 19,

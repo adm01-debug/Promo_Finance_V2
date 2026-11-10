@@ -1,7 +1,7 @@
 # Contexto do projeto para agentes de IA
 
 GERADO AUTOMATICAMENTE por scripts/ai-context/gerar.mjs — não editar à mão; será sobrescrito.
-Publicado pelo workflow .github/workflows/contexto.yml em docs/contexto/codigo/ da branch gerada `contexto`. Índice único em docs/contexto/00-INDEX.md. Ler: git fetch origin contexto && git show origin/contexto:docs/contexto/00-INDEX.md Gere local com `node scripts/ai-context/gerar.mjs`. Commit-base: `4a0178825eb03c111413382059f0678d0bf5aa38` (2026-11-10T19:57:51Z).
+Publicado pelo workflow .github/workflows/contexto.yml em docs/contexto/codigo/ da branch gerada `contexto`. Índice único em docs/contexto/00-INDEX.md. Ler: git fetch origin contexto && git show origin/contexto:docs/contexto/00-INDEX.md Gere local com `node scripts/ai-context/gerar.mjs`. Commit-base: `4e177c3c36e7b64052b85f1ca9f4fd6b81feebdb` (2026-11-10T20:32:05Z).
 
 ## Como usar (leia antes de planejar ou executar qualquer tarefa)
 1. **Tela/rota/menu** → `rotas.json` (url/vista/menu → arquivo → hooks → tabelas → edges; `rotas_http_backend` para APIs) e `modulos.json` (módulo inteiro + dependências entre módulos).
@@ -14,7 +14,7 @@ Publicado pelo workflow .github/workflows/contexto.yml em docs/contexto/codigo/ 
 Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua tarefa; não carregue tudo.
 
 ## Stack
-- linguagens: TypeScript (2104), SQL (1007), Markdown (188), JavaScript (57), JSON (37), Python (28), YAML (25), Shell (24)
+- linguagens: TypeScript (2104), SQL (1014), Markdown (188), JavaScript (57), JSON (37), Python (28), YAML (25), Shell (24)
 - linguagem_principal: TypeScript
 - framework: React
 - backend_http: n/d
@@ -34,7 +34,7 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 ## Números
 | item | qtd |
 |---|---|
-| arquivos_total | 3514 |
+| arquivos_total | 3521 |
 | arquivos_codigo | 2187 |
 | linhas_codigo | 410281 |
 | rotas | 128 |
@@ -46,7 +46,7 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 | hooks | 265 |
 | edge_functions | 106 |
 | tabelas | 314 |
-| migrations | 937 |
+| migrations | 944 |
 | cron_jobs | 21 |
 | testes | 372 |
 | workflows | 19 |
@@ -606,6 +606,7 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 - CHANGELOG topo: [Unreleased]
 
 ## Últimos commits
+- 2026-11-10 `4e177c3` chore(ddl): steps 12-16+19+21+23 — DDL banco produção (#235)
 - 2026-11-10 `4a01788` feat(ci): fila serial de atualização de branch das PRs contra main (#276)
 - 2026-11-10 `ab802d4` fix: alinha admin_global com papel real admin (docs + guard asaas-proxy) (#255)
 - 2026-11-10 `bec7163` feat(ci): guard do perímetro do GitHub contra baseline versionado (#277)
@@ -620,7 +621,6 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 - 2026-11-09 `34efae1` chore: atualiza prs.json — adiciona #283-#288, 48 PRs classificadas
 - 2026-11-09 `ea42a9b` feat(ci): documentos gerados do estado real do CI e das edge functions (#275)
 - 2026-11-09 `94bb4af` chore: relatorio final sessao merge-prs (total 46, 16 mergeadas, #287 sentry bump) (#288)
-- 2026-11-09 `e8620bd` chore: bump @sentry/react 11.0.0 → 11.9.0 (supersede #210) (#287)
 
 ## Arquivos deste diretório
 - `docs/contexto/codigo/rotas.json`

@@ -1,11 +1,11 @@
 # 10 · ACESSO E SEGURANÇA — quem pode o quê
 
-> Gerado automaticamente por AI Context Sync v1.3.2 · commit `4a0178825e` · branch `main` · 2026-11-10 20:24 UTC
+> Gerado automaticamente por AI Context Sync v1.3.2 · commit `4e177c3c36` · branch `main` · 2026-11-10 20:32 UTC
 > Não edite à mão — regras humanas vão em `manual/`.
 
 ## Perfis / roles identificados
 
-`admin`, `assistant`, `contador`, `contador_readonly`, `denied`, `financeiro`, `granted`, `manager`, `operacional`, `operator`, `r`, `role`, `user`, `viewer`, `visualizador`
+`admin`, `admin_global`, `assistant`, `contador`, `contador_readonly`, `denied`, `financeiro`, `granted`, `manager`, `operacional`, `operator`, `r`, `role`, `user`, `viewer`, `visualizador`
 
 - Tabelas de perfil/permissão: `user_roles`, `permissions`, `role_permissions`, `sso_role_mappings`
 - Colunas de perfil: `profiles.role` (TEXT SET DEFAULT 'visualizador'), `user_roles.role` (app_role NOT NULL DEFAULT 'visualizador'), `expert_messages.role` (TEXT NOT NULL), `role_permissions.role` (app_role NOT NULL), `user_empresas.role` (public.app_role NOT NULL DEFAULT 'visualizador'), `protocolos_st_ufs.papel` (text NOT NULL DEFAULT 'AMBOS' CHECK (papel IN ('ORIGEM','DESTINO','AMBOS')))
@@ -154,7 +154,7 @@
 | `incentivos_fiscais` | enabled | authenticated: public.empresa_acessivel(empresa_id)<br>authenticated: (((auth.jwt() ->> 'role'::text) = 'service_role'::text) OR ((auth.jwt() ->> 'role'::text) = 'anon'::text) OR (((auth.jwt() -> | authenticated: public.empresa_acessivel(empresa_id)<br>authenticated: (((auth.jwt() ->> 'role'::text) = 'service_role'::text) OR ((auth.jwt() ->> 'role'::text) = 'anon'::text) OR (((auth.jwt() -> | authenticated: public.empresa_acessivel(empresa_id)<br>authenticated: (((auth.jwt() ->> 'role'::text) = 'service_role'::text) OR ((auth.jwt() ->> 'role'::text) = 'anon'::text) OR (((auth.jwt() -> | authenticated: public.empresa_acessivel(empresa_id)<br>authenticated: (((auth.jwt() ->> 'role'::text) = 'service_role'::text) OR ((auth.jwt() ->> 'role'::text) = 'anon'::text) OR (((auth.jwt() -> |
 | `index_usage_snapshots` | enabled | authenticated: has_role((SELECT auth.uid()), 'admin'::app_role) | — | — | — |
 | `indices_uso_excecoes` | enabled | authenticated: has_role((SELECT auth.uid()), 'admin'::app_role) | — | — | — |
-| `integration_secrets` | enabled | authenticated, anon: false<br>authenticated: (EXISTS ( SELECT 1 FROM user_roles WHERE ((user_roles.user_id = (SELECT auth.uid())) AND (user_roles.role = 'admin'::app_role | authenticated, anon: false<br>authenticated: (EXISTS ( SELECT 1 FROM user_roles WHERE ((user_roles.user_id = (SELECT auth.uid())) AND (user_roles.role = 'admin'::app_role | authenticated, anon: false<br>authenticated: (EXISTS ( SELECT 1 FROM user_roles WHERE ((user_roles.user_id = (SELECT auth.uid())) AND (user_roles.role = 'admin'::app_role | authenticated, anon: false<br>authenticated: (EXISTS ( SELECT 1 FROM user_roles WHERE ((user_roles.user_id = (SELECT auth.uid())) AND (user_roles.role = 'admin'::app_role |
+| `integration_secrets` | enabled | authenticated, anon: false | authenticated, anon: false | authenticated, anon: false | authenticated, anon: false |
 | `integrity_alerts` | enabled | service_role: true<br>authenticated: has_role((SELECT auth.uid()), 'admin'::app_role) | service_role: true | service_role: true | service_role: true |
 | `itens_lista_iss` | enabled | authenticated: true<br>authenticated: has_role(( SELECT (SELECT auth.uid()) AS uid), 'admin'::app_role) | authenticated: has_role(( SELECT (SELECT auth.uid()) AS uid), 'admin'::app_role) | authenticated: has_role(( SELECT (SELECT auth.uid()) AS uid), 'admin'::app_role) | authenticated: has_role(( SELECT (SELECT auth.uid()) AS uid), 'admin'::app_role) |
 | `itens_pedido_compra` | enabled | public: EXISTS ( SELECT 1 FROM public.pedidos_compra WHERE pedidos_compra.id = itens_pedido_compra.pedido_id AND pedidos_compra.user_id = au<br>authenticated: (pedido_id IN ( SELECT pedidos_compra.id FROM pedidos_compra WHERE (pedidos_compra.empresa_id IN ( SELECT user_empresas.empre | public: EXISTS ( SELECT 1 FROM public.pedidos_compra WHERE pedidos_compra.id = itens_pedido_compra.pedido_id AND pedidos_compra.user_id = au | — | — |

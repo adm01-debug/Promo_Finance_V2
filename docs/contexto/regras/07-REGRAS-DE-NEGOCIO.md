@@ -1,6 +1,6 @@
 # 07 · REGRAS DE NEGÓCIO
 
-> Gerado automaticamente por AI Context Sync v1.3.2 · commit `4a0178825e` · branch `main` · 2026-11-10 20:24 UTC
+> Gerado automaticamente por AI Context Sync v1.3.2 · commit `4e177c3c36` · branch `main` · 2026-11-10 20:32 UTC
 > Não edite à mão — regras humanas vão em `manual/`.
 
 ## A. Regras escritas por humanos (`manual/` — prioridade máxima, nunca sobrescrito)
@@ -311,7 +311,7 @@ _Nenhum arquivo em `manual/`. Copie `manual/TEMPLATE-regras-de-negocio.md` para 
 | `benchmarks_setoriais` | benchmarks_select | SELECT | authenticated | permissive | `true` |  |
 | `beneficios_fiscais` | beneficios_select_authenticated | SELECT | authenticated | permissive | `true` |  |
 | `bitrix24_activities` | bitrix24_activities_tenant_delete | DELETE | authenticated | permissive | `((EXISTS ( SELECT 1 FROM public.lalamove_orders o WHERE ((o.id = bitrix24_activities.order_id) AND public.empresa_membro_ativo(o.empresa_id)))) AND (public.has_role(auth.uid(), 'admin'::public.app_role) OR public.has_role(auth.uid(), 'manager'::public.app_role)))` |  |
-| … +567 linhas — lista completa em `context.json` | | | | | | |
+| … +566 linhas — lista completa em `context.json` | | | | | | |
 
 ## C. Restrições de dados (obrigatório / único / default / CHECK / FK / calculada)
 
@@ -518,6 +518,7 @@ _Nenhum arquivo em `manual/`. Copie `manual/TEMPLATE-regras-de-negocio.md` para 
 | `boletos` | `valor` | default 0 |
 | `boletos` | `status` | default 'emitido' |
 | `boletos` | `created_at` | default now() |
+| `boletos` | `asaas_id` | default '' |
 | `historico_cobranca` | `id` | PK; default gen_random_uuid() |
 | `historico_cobranca` | `cliente_id` | FK → clientes.id |
 | `historico_cobranca` | `conta_receber_id` | FK → contas_receber.id |
@@ -616,8 +617,7 @@ _Nenhum arquivo em `manual/`. Copie `manual/TEMPLATE-regras-de-negocio.md` para 
 | `pagamentos_recorrentes` | `data_inicio` | obrigatório |
 | `pagamentos_recorrentes` | `tipo_cobranca` | default 'transferencia' |
 | `pagamentos_recorrentes` | `ativo` | default TRUE |
-| `pagamentos_recorrentes` | `total_gerado` | default 0; CHECK total_gerado >= 0 |
-| … +1845 linhas — lista completa em `context.json` | | |
+| … +1846 linhas — lista completa em `context.json` | | |
 
 ## D. Automações no banco (triggers e funções — regras que rodam sozinhas)
 
@@ -5030,6 +5030,8 @@ Erros lançados por funções SQL (`RAISE EXCEPTION` = regra de negócio no banc
 | `admin` | `supabase/migrations/20260831153000_corrigir_12_erros_lint_funcoes.sql` |
 | `admin` | `supabase/migrations/20260902200000_fix_rls_cross_tenant_leak_grupo_c.sql` |
 | `admin` | `supabase/migrations/20260903000900_fix_export_asaas_audit_csv_idor.sql` |
+| `admin` | `supabase/migrations/20261101120500_rls_elisao_catalogo.sql` |
+| `admin_global` | `supabase/migrations/20261101120500_rls_elisao_catalogo.sql` |
 
 ## K. Testes como especificação (3300 testes em 270 arquivos — nomes completos em `context.json`)
 
@@ -5552,6 +5554,7 @@ Erros lançados por funções SQL (`RAISE EXCEPTION` = regra de negócio no banc
 | `notify_performance_alert_trigger` | `supabase/migrations/20260913120000_corrige_credenciais_automacoes_internas.sql` |
 | `asaas` | `supabase/migrations/20260913170000_boletos_add_asaas_cols.sql` |
 | `asaas` | `supabase/migrations/20260924220000_asaas_payment_links_empresa.sql` |
+| `asaas` | `supabase/migrations/20261101120600_boletos_asaas_defaults.sql` |
 
 ## N. Regras citadas em comentários do código
 
