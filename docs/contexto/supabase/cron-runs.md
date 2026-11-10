@@ -202,9 +202,9 @@ _nenhum_
 
 | início (UTC) | status | duração (s) | mensagem |
 |---|---|---|---|
-| 2026-11-10 15:35:00 | succeeded | 0.04 | 1 row |
-| 2026-11-10 15:34:00 | succeeded | 0.02 | 1 row |
-| 2026-11-10 15:33:00 | succeeded | 0.03 | 1 row |
+| 2026-11-10 15:43:00 | succeeded | 0.01 | 1 row |
+| 2026-11-10 15:42:00 | succeeded | 0.01 | 1 row |
+| 2026-11-10 15:41:00 | succeeded | 0.05 | 1 row |
 
 
 ## 34 · auditar-acessos-cross-tenant
@@ -238,9 +238,9 @@ _nenhum_
 
 | início (UTC) | status | duração (s) | mensagem |
 |---|---|---|---|
-| 2026-11-10 15:35:00 | succeeded | 0.02 | 1 row |
-| 2026-11-10 15:34:00 | succeeded | 0.02 | 1 row |
-| 2026-11-10 15:33:00 | succeeded | 0.00 | 1 row |
+| 2026-11-10 15:43:00 | succeeded | 0.01 | 1 row |
+| 2026-11-10 15:42:00 | succeeded | 0.02 | 1 row |
+| 2026-11-10 15:41:00 | succeeded | 0.04 | 1 row |
 
 
 ## 40 · gerar-snapshots-conformidade-mensal
