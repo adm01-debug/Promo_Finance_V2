@@ -1,6 +1,6 @@
 # GitHub Actions — Workflows do Promo Finance V2
 
-Referência viva dos 8 workflows ativos. Atualizada em 2026-09-27.
+Referência viva dos workflows ativos. Atualizada em 2026-09-27.
 
 ---
 
@@ -17,6 +17,7 @@ Referência viva dos 8 workflows ativos. Atualizada em 2026-09-27.
 | `staging-migrate.yml`   | `workflow_dispatch`                          | N/A (manual)                 | ~10 min        |
 | `graphify.yml`          | push `main` + schedule semanal               | Não                          | ~5 min         |
 | `contexto.yml`          | push `main` + PR (só testes) + cada 10 min   | Não (publica na branch `contexto`) | ~3 min         |
+| `inventario-estado.yml` | segunda 09:41 UTC + push `main` (rotas/menu/edges) + PR (só testes) | Não (publica na branch `inventario`) | ~3 min |
 
 ---
 
