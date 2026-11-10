@@ -32,9 +32,10 @@ SENHA = "senha-e2e-de-teste"
 SEGREDO_LOG = "segredo-gate-log-de-teste"
 
 _FONTE_ANON = (AQUI / "test-anon-surface.ts").read_text(encoding="utf-8")
-TABELAS_VAZIAS = re.findall(r'table: "(\w+)",\s*read: "empty"', _FONTE_ANON)
-TABELAS_NEGADAS = re.findall(r'table: "(\w+)",\s*read: "denied"', _FONTE_ANON)
-RPCS_ANON = re.findall(r'fn: "(\w+)",\s*allowed: false', _FONTE_ANON)
+# Aceita aspas simples ou duplas: o prettier do pre-commit (singleQuote) reescreve o .ts.
+TABELAS_VAZIAS = re.findall(r"""table: ["'](\w+)["'],\s*read: ["']empty["']""", _FONTE_ANON)
+TABELAS_NEGADAS = re.findall(r"""table: ["'](\w+)["'],\s*read: ["']denied["']""", _FONTE_ANON)
+RPCS_ANON = re.findall(r"""fn: ["'](\w+)["'],\s*allowed: false""", _FONTE_ANON)
 
 
 class _Servidor:
