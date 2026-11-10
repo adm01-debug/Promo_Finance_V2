@@ -155,7 +155,15 @@ export async function checked(command, cwd, timeout) {
 }
 export const git = (cwd, args, timeout, prefix = []) =>
   checked([...prefix, 'git', '-c', 'core.hooksPath=/dev/null', ...args], cwd, timeout);
-export async function commitWithHooks(source, workspace, jobDir, args, timeout, prefix = []) {
+export async function commitWithHooks(
+  source,
+  workspace,
+  jobDir,
+  args,
+  timeout,
+  prefix = [],
+  publicEnv = {}
+) {
   const configured = await run(
     [...prefix, 'git', 'config', '--get', 'core.hooksPath'],
     source,
@@ -232,7 +240,7 @@ export async function commitWithHooks(source, workspace, jobDir, args, timeout, 
       [...prefix, 'git', '-c', `core.hooksPath=${directory}`, ...args],
       workspace,
       timeout,
-      { hooks: true }
+          { hooks: true, publicEnv }
     );
     return { names, ...result };
   } finally {
@@ -360,21 +368,28 @@ async function localDependencies(root) {
   const local = {};
   for (const relative of [...paths].sort()) {
     const absolute = path.join(root, relative);
-    if (!(await exists(absolute)) || !(await lstat(absolute)).isDirectory())
+      if (!(await exists(absolute)))
       throw new MaintenanceError(
         'missing_dependencies',
-        'Dependência local precisa ser um diretório versionado'
+          'Dependência local precisa existir e estar versionada'
       );
-    const metadata = JSON.parse(await readFile(path.join(absolute, 'package.json'), 'utf8'));
-    local[relative] = await directoryHash(absolute);
-    if (typeof metadata.name === 'string') {
-      const installed = path.posix.join('node_modules', metadata.name);
-      if (!inside(path.join(root, 'node_modules'), path.resolve(root, installed)))
-        throw new MaintenanceError('missing_dependencies', 'Nome de dependência local inválido');
-      links[installed] ||= relative;
+      const info = await lstat(absolute);
+      if (!info.isDirectory() && !info.isFile())
+        throw new MaintenanceError(
+          'missing_dependencies',
+          'Dependência local precisa ser um diretório ou arquivo versionado'
+        );
+      local[relative] = await directoryHash(absolute);
+      if (!info.isDirectory()) continue;
+      const metadata = JSON.parse(await readFile(path.join(absolute, 'package.json'), 'utf8'));
+      if (typeof metadata.name === 'string') {
+        const installed = path.posix.join('node_modules', metadata.name);
+        if (!inside(path.join(root, 'node_modules'), path.resolve(root, installed)))
+          throw new MaintenanceError('missing_dependencies', 'Nome de dependência local inválido');
+        links[installed] ||= relative;
+      }
     }
-  }
-  return { local, links };
+    return { local, links };
 }
 export async function dependencyFingerprint(root) {
   const files = {};
