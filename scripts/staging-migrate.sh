@@ -10,7 +10,8 @@
 #   PROD_DB_URL, STAGING_DB_URL, STAGING_PROJECT_REF, STAGING_ANON_KEY,
 #   SUPABASE_ACCESS_TOKEN, REQUIRED_SECRETS (CSV)
 # Env opcional:
-#   PROD_PROJECT_REF (guard-rail), TEST_ADMIN_JWT, ONLY_FUNCTIONS (CSV)
+#   PROD_PROJECT_REF (guard-rail), TEST_ADMIN_JWT, ONLY_FUNCTIONS (CSV),
+#   STAGING_LOG_DIR (pasta dos JSONL; default /tmp)
 #
 # Flags:
 #   --dry-run           Todas as etapas em preview (sem escrever em staging)
@@ -19,11 +20,14 @@
 #   --skip-schema       Não aplica migrations nem pós-schema
 #   --skip-functions    Não faz deploy das Edge Functions
 #   --skip-crons        Não recria/valida cron jobs
+#   --skip-healthcheck  Não roda o healthcheck comportamental (fase 8)
+#   --with-data         Copia dados prod → staging (scripts/data-migrate.sh)
 set -euo pipefail
 
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 TS="$(date -u +%Y%m%dT%H%M%SZ)"
-LOG="/tmp/staging-migrate-${TS}.jsonl"
+LOG_DIR="${STAGING_LOG_DIR:-/tmp}"
+LOG="$LOG_DIR/staging-migrate-${TS}.jsonl"
 DRY_RUN=0
 SKIP_BASELINE=0
 ONLY_INTEGRITY=0
@@ -44,7 +48,8 @@ for arg in "$@"; do
     --skip-functions) SKIP_FUNCTIONS=1 ;;
     --skip-crons) SKIP_CRONS=1 ;;
     -h|--help)
-      echo "Uso: $(basename "$0") [--dry-run] [--skip-baseline] [--only-integrity] [-h|--help]"
+      echo "Uso: $(basename "$0") [--dry-run] [--skip-baseline] [--only-integrity] [--skip-schema]"
+      echo "       [--skip-functions] [--skip-crons] [--skip-healthcheck] [--with-data] [-h|--help]"
       echo ""
       echo "Opcoes:"
       echo "  --dry-run           Todas as etapas em preview (sem escrever em staging)"
@@ -53,6 +58,8 @@ for arg in "$@"; do
       echo "  --skip-schema       Não aplica migrations nem pós-schema"
       echo "  --skip-functions    Não faz deploy das Edge Functions"
       echo "  --skip-crons        Não recria/valida cron jobs"
+      echo "  --skip-healthcheck  Não roda o healthcheck comportamental"
+      echo "  --with-data         Copia dados prod → staging (data-migrate.sh)"
       echo "  -h, --help          Exibe esta ajuda"
       echo ""
       echo "Env obrigatório: PROD_DB_URL, STAGING_DB_URL, STAGING_PROJECT_REF, STAGING_ANON_KEY, SUPABASE_ACCESS_TOKEN, REQUIRED_SECRETS"
@@ -76,6 +83,11 @@ require_env() {
   if [ -z "${!name:-}" ]; then die "preflight" "env $name ausente"; fi
 }
 
+# jq e a pasta de log vêm antes do 1º log_step: sem eles a própria linha JSONL
+# sai corrompida ou o tee falha sem dizer por quê.
+command -v jq >/dev/null 2>&1 || { echo "❌ preflight falhou: binário faltando: jq" >&2; exit 1; }
+[ -d "$LOG_DIR" ] || { echo "❌ preflight falhou: pasta de log não existe: $LOG_DIR" >&2; exit 1; }
+
 log_step "preflight" "start"
 for bin in psql jq curl envsubst supabase; do
   command -v "$bin" >/dev/null 2>&1 || die "preflight" "binário faltando: $bin"
@@ -87,6 +99,13 @@ done
 # Guard-rail: nunca escrever em produção
 if [ -n "${PROD_PROJECT_REF:-}" ] && [ "$PROD_PROJECT_REF" = "$STAGING_PROJECT_REF" ]; then
   die "preflight" "STAGING_PROJECT_REF == PROD_PROJECT_REF — abortando"
+fi
+# O ref só protege functions/secrets; schema, crons e dados seguem STAGING_DB_URL.
+if [ "$STAGING_DB_URL" = "$PROD_DB_URL" ]; then
+  die "preflight" "STAGING_DB_URL == PROD_DB_URL — abortando"
+fi
+if [ -n "${PROD_PROJECT_REF:-}" ] && [[ "$STAGING_DB_URL" == *"$PROD_PROJECT_REF"* ]]; then
+  die "preflight" "STAGING_DB_URL aponta para o projeto de produção (contém PROD_PROJECT_REF) — abortando"
 fi
 log_step "preflight" "ok"
 
@@ -131,16 +150,22 @@ run_secrets_check() {
   local missing=()
   IFS=',' read -r -a required <<< "$REQUIRED_SECRETS"
   # Lista secrets deployados no projeto
-  local listed
-  listed="$(supabase secrets list --project-ref "$STAGING_PROJECT_REF" 2>/dev/null \
-              | awk 'NR>2 {print $1}' | grep -v '^$' || true)"
+  local listed raw checked=0
+  # Falha da CLI (token, rede) não pode virar "todos os secrets faltando".
+  raw="$(supabase secrets list --project-ref "$STAGING_PROJECT_REF" 2>/dev/null)" \
+    || die "secrets" "supabase secrets list falhou — confira SUPABASE_ACCESS_TOKEN e STAGING_PROJECT_REF"
+  listed="$(awk 'NR>2 {print $1}' <<< "$raw" | grep -v '^$' || true)"
   for s in "${required[@]}"; do
     s="$(echo "$s" | xargs)"
     [ -z "$s" ] && continue
-    if ! grep -Fxq "$s" <<< "$listed"; then
+    checked=$((checked + 1))
+    if ! grep -Fxq -- "$s" <<< "$listed"; then
       missing+=("$s")
     fi
   done
+  if [ "$checked" -eq 0 ]; then
+    die "secrets" "REQUIRED_SECRETS não contém nenhum nome válido"
+  fi
   if [ "${#missing[@]}" -gt 0 ]; then
     die "secrets" "faltando: ${missing[*]}"
   fi
@@ -181,9 +206,9 @@ run_integrity() {
   STAGING_ANON_KEY="$STAGING_ANON_KEY" \
   TEST_ADMIN_JWT="${TEST_ADMIN_JWT:-}" \
     bash "$ROOT/scripts/integrity/run.sh" --json-only \
-      > "/tmp/integrity-${TS}.jsonl" \
-    || die "integrity" "assertions falharam — veja /tmp/integrity-${TS}.jsonl"
-  log_step "integrity" "ok" "/tmp/integrity-${TS}.jsonl"
+      > "$LOG_DIR/integrity-${TS}.jsonl" \
+    || die "integrity" "assertions falharam — veja $LOG_DIR/integrity-${TS}.jsonl"
+  log_step "integrity" "ok" "$LOG_DIR/integrity-${TS}.jsonl"
 }
 
 # --------------------------- orquestração ----------------------------------
@@ -231,9 +256,9 @@ run_healthcheck() {
   STAGING_SERVICE_ROLE_KEY="${STAGING_SERVICE_ROLE_KEY:-}" \
   PROD_PROJECT_REF="${PROD_PROJECT_REF:-}" \
     bash "$ROOT/scripts/healthcheck/run.sh" --json-only \
-      > "/tmp/healthcheck-${TS}.jsonl" \
-    || die "healthcheck" "assertions falharam — veja /tmp/healthcheck-${TS}.jsonl"
-  log_step "healthcheck" "ok" "/tmp/healthcheck-${TS}.jsonl"
+      > "$LOG_DIR/healthcheck-${TS}.jsonl" \
+    || die "healthcheck" "assertions falharam — veja $LOG_DIR/healthcheck-${TS}.jsonl"
+  log_step "healthcheck" "ok" "$LOG_DIR/healthcheck-${TS}.jsonl"
 }
 
 if [ "$SKIP_HEALTHCHECK" -eq 0 ]; then
