@@ -12,13 +12,13 @@
 | publication | tabela | replica identity |
 |---|---|---|
 | supabase_realtime | public.performance_alerts | default |
-| supabase_realtime_messages_publication | realtime.messages_2026_11_06 |  |
 | supabase_realtime_messages_publication | realtime.messages_2026_11_07 |  |
 | supabase_realtime_messages_publication | realtime.messages_2026_11_08 |  |
 | supabase_realtime_messages_publication | realtime.messages_2026_11_09 |  |
 | supabase_realtime_messages_publication | realtime.messages_2026_11_10 |  |
 | supabase_realtime_messages_publication | realtime.messages_2026_11_11 |  |
 | supabase_realtime_messages_publication | realtime.messages_2026_11_12 |  |
+| supabase_realtime_messages_publication | realtime.messages_2026_11_13 |  |
 
 ## Broadcast / Presence (policies em realtime.messages)
 
