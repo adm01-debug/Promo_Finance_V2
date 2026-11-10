@@ -1,4 +1,4 @@
-{
+﻿{
   "version": 1,
   "name": "Promo_Finance_V2",
   "entrypoint": "scripts/automation.mjs",
@@ -196,6 +196,22 @@
       "manual": ["python3", "scripts/ci/listar-excecoes-npm-nativo.py"],
       "triggers": ["manual"],
       "reason": "Legado sem chamador literal no inventário; execução manual controlada após revisar parâmetros e ambiente. O dispatcher não executa esta operação."
+    },
+    {
+      "id": "legacy-4c92b871e7b7e840",
+      "kind": "legacy",
+      "files": ["scripts/ci/github-settings-guard.mjs"],
+      "manual": ["node", "scripts/ci/github-settings-guard.mjs"],
+      "triggers": ["manual"],
+      "reason": "Legado mantido no fluxo existente; referências literais: .github/workflows/settings-guard.yml. O dispatcher não executa esta operação."
+    },
+    {
+      "id": "legacy-8721e4465d0413f3",
+      "kind": "legacy",
+      "files": ["scripts/ci/github-settings-guard.unit.mjs"],
+      "manual": ["node", "--test", "scripts/ci/github-settings-guard.unit.mjs"],
+      "triggers": ["manual"],
+      "reason": "Legado mantido no fluxo existente; referências literais: .github/workflows/settings-guard.yml. O dispatcher não executa esta operação."
     },
     {
       "id": "legacy-348684021a07ad71",
@@ -907,3 +923,4 @@
   ],
   "sourcePatterns": ["src/**", "tests/**", "e2e/**", "api/**", "shared/**", "supabase/functions/**"]
 }
+
