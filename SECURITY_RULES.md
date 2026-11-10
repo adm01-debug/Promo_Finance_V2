@@ -32,9 +32,8 @@ O papel real no banco é **`admin`** (tabela `user_roles`; ex.: adm01@promobrind
 **Decisão do Step 20 (PR #226):**
 - Existe um papel de "admin de plataforma" que pode operar em qualquer empresa do sistema, sem restrição por `empresa_id` ou `user_empresas`.
 - Esse modelo é intencional: o admin gerencia toda a plataforma, não apenas empresas às quais está vinculado.
-- Queries e policies que usam `auth.uid()` normalmente retornam dados apenas da empresa vinculada ao usuário — o papel `admin` é a exceção documentada (guards usam `exigirPapel(['admin'])`, cuja fonte de verdade é a `user_roles` via `has_role`).
+- O bypass de tenant NÃO é automático: `exigirVinculoEmpresa` e `empresa_acessivel` não têm exceção por papel — um admin só opera fora do vínculo quando a rota usa explicitamente `exigirPapel(['admin'])` ou equivalente. Não tratar `admin` como exceção universal em políticas/views.
 - **Implicação:** toda nova funcionalidade que conceda papel irrestrito ao `admin` deve ser explicitamente revisada para garantir que o escopo irrestrito é o comportamento desejado e que não há vazamento de dados entre clientes finais.
-- Não tratar a ausência de `exigirVinculoEmpresa` para `admin` como achado de segurança em auditorias — é decisão de produto documentada aqui.
 - Acesso é **tenant-scoped**: usuários comuns (não `admin`) só acessam empresas às quais estão vinculados em `user_empresas`, conforme políticas RLS. Não existe acesso irrestrito por padrão.
 
 ## Padrões obrigatórios para Views
