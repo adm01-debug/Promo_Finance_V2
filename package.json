@@ -4,6 +4,10 @@
   "private": true,
   "type": "module",
   "scripts": {
+    "maintenance:doctor": "node scripts/maintenance/run.mjs doctor --root .",
+    "maintenance:check": "node scripts/maintenance/run.mjs check --root . --ref origin/main",
+    "maintenance:heal": "node scripts/maintenance/run.mjs heal --root . --ref origin/main",
+    "test:maintenance": "node --test scripts/maintenance/maintenance.unit.mjs",
     "graphify:inventory": "python3 scripts/graphify/run.py inventory",
     "graphify:pilot": "python3 scripts/graphify/run.py pilot",
     "graphify:analyze": "python3 scripts/graphify/run.py analyze",
