@@ -22,7 +22,7 @@
   ],
   "testes": [
    "co-localizado (__tests__) (239)",
-   "outro (48)",
+   "outro (51)",
    "co-localizado (*.test) (40)"
   ],
   "edge_functions": "supabase/functions",
@@ -33,7 +33,7 @@
    "scripts/ci (11)"
   ],
   "docs": [
-   "docs (47)",
+   "docs (48)",
    "(raiz) (19)",
    ".github (2)"
   ]
@@ -58,11 +58,11 @@
  "commits": {
   "convencao": "conventional commits (observado)",
   "exemplos": [
+   "chore(automacao): conecta testes, grafo e manutenção aos gatilhos (#300)",
    "feat(inventario): inventário autônomo do estado real (banco, rotas e edge functions) (#265)",
    "fix: bump date-fns from 2.30.0 to 4.4.0 (#298)",
    "fix: bump input-otp from 1.4.2 to 1.5.0 (#295)",
-   "chore: documentação final sessão merge-prs (prs.json + RELATORIO + dossiers)",
-   "fix: compatibilidade TypeScript com Zod v4 (supersede #211)"
+   "chore: documentação final sessão merge-prs (prs.json + RELATORIO + dossiers)"
   ]
  },
  "pr_template": ".github/PULL_REQUEST_TEMPLATE.md",

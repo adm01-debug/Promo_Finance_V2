@@ -21,6 +21,12 @@
   "scripts/gerar-grafo-arquitetura.ts": [
    "src/lib/arquitetura/analisador-imports.ts"
   ],
+  "scripts/maintenance/run.mjs": [
+   "scripts/maintenance/lib.mjs"
+  ],
+  "scripts/maintenance/typecheck.mjs": [
+   "scripts/maintenance/lib.mjs"
+  ],
   "scripts/run-scenarios.ts": [
    "src/test/scenarios/generator.ts",
    "src/test/scenarios/report.ts",

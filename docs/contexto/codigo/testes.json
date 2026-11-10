@@ -5,11 +5,11 @@
   "vitest",
   "playwright"
  ],
- "total": 367,
+ "total": 370,
  "por_tipo": {
   "e2e": 35,
   "pytest": 15,
-  "unit": 311
+  "unit": 314
  },
  "onde_ficam": [
   {
@@ -18,7 +18,7 @@
   },
   {
    "padrao": "outro",
-   "arquivos": 48
+   "arquivos": 51
   },
   {
    "padrao": "co-localizado (*.test)",
@@ -285,6 +285,15 @@
    "casos": 18
   },
   {
+   "arquivo": "scripts/automation.unit.mjs",
+   "tipo": "unit",
+   "linhas": 603,
+   "testa": [
+    "scripts/automation.mjs"
+   ],
+   "casos": 32
+  },
+  {
    "arquivo": "scripts/ci/actions-kpi.unit.mjs",
    "tipo": "unit",
    "linhas": 233,
@@ -382,6 +391,15 @@
    "casos": 4
   },
   {
+   "arquivo": "scripts/graphify-local.unit.mjs",
+   "tipo": "unit",
+   "linhas": 463,
+   "testa": [
+    "scripts/graphify-local.mjs"
+   ],
+   "casos": 24
+  },
+  {
    "arquivo": "scripts/graphify/test_benchmark.py",
    "tipo": "pytest",
    "linhas": 79,
@@ -469,6 +487,16 @@
     "src/hooks/useAsaas.ts"
    ],
    "casos": 16
+  },
+  {
+   "arquivo": "scripts/maintenance/maintenance.unit.mjs",
+   "tipo": "unit",
+   "linhas": 887,
+   "testa": [
+    "scripts/maintenance/lib.mjs",
+    "scripts/maintenance/run.mjs"
+   ],
+   "casos": 44
   },
   {
    "arquivo": "scripts/regras_negocio/test_generate.py",
@@ -3272,6 +3300,7 @@
  ],
  "cobertura_por_arquivo": {
   "eslint-rules/no-floating-supabase-write.js": 1,
+  "scripts/automation.mjs": 1,
   "scripts/ci/actions-kpi.mjs": 1,
   "scripts/ci/gerar-matriz-edge-tabela.mjs": 1,
   "scripts/ci/render-workflow-docs.mjs": 1,
@@ -3282,9 +3311,12 @@
   "scripts/edge-deploy/smoke-functions.mjs": 1,
   "scripts/edge-deploy/unchanged-from-log.mjs": 1,
   "scripts/edge-deploy/verify-remote.mjs": 1,
+  "scripts/graphify-local.mjs": 1,
   "scripts/inventario/gerar-banco.mjs": 1,
   "scripts/inventario/gerar-rotas.mjs": 1,
   "scripts/inventario/mudou-conteudo.mjs": 1,
+  "scripts/maintenance/lib.mjs": 1,
+  "scripts/maintenance/run.mjs": 1,
   "scripts/security/test-canonical-db-gates.mjs": 1,
   "scripts/security/test-rpc-runtime.ts": 1,
   "src/components/accessibility/SkipLinks.tsx": 1,

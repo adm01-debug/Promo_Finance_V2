@@ -5,12 +5,12 @@
   "linguagens": [
    "TypeScript (2104)",
    "SQL (1007)",
-   "Markdown (186)",
-   "JavaScript (45)",
-   "JSON (32)",
+   "Markdown (188)",
+   "JavaScript (53)",
+   "JSON (36)",
    "Python (28)",
-   "Shell (23)",
-   "YAML (22)"
+   "Shell (24)",
+   "YAML (23)"
   ],
   "linguagem_principal": "TypeScript",
   "framework": "React",
@@ -45,6 +45,15 @@
   "nome": "promo-finance",
   "versao": "2.0.0",
   "scripts": {
+   "automation:check": "node scripts/automation.mjs check --ref HEAD",
+   "automation:doctor": "node scripts/automation.mjs doctor",
+   "automation:graph": "node scripts/automation.mjs graph",
+   "automation:heal": "node scripts/automation.mjs heal --ref origin/main",
+   "automation:install-hooks": "node scripts/automation.mjs install-hooks",
+   "automation:nightly": "node scripts/automation.mjs nightly --ref origin/main",
+   "automation:status": "node scripts/automation.mjs graph status",
+   "automation:test": "node scripts/automation.mjs test",
+   "automation:uninstall-hooks": "node scripts/automation.mjs uninstall-hooks",
    "build": "vite build",
    "build-storybook": "storybook build",
    "build:dev": "vite build --mode development",
@@ -67,6 +76,9 @@
    "lint": "cross-env ESLINT_USE_FLAT_CONFIG=true eslint . --report-unused-disable-directives",
    "lint:fix": "cross-env ESLINT_USE_FLAT_CONFIG=true eslint . --fix",
    "lint:strict": "cross-env ESLINT_USE_FLAT_CONFIG=true eslint . --report-unused-disable-directives --max-warnings 0",
+   "maintenance:check": "sh scripts/maintenance/run.sh check --root . --ref origin/main",
+   "maintenance:doctor": "sh scripts/maintenance/run.sh doctor --root .",
+   "maintenance:heal": "sh scripts/maintenance/run.sh heal --root . --ref origin/main",
    "prepare": "husky",
    "preview": "vite preview",
    "scan:secrets": "gitleaks git --no-banner --redact --baseline-path .gitleaks-baseline.json",
@@ -78,6 +90,7 @@
    "test:e2e": "playwright test",
    "test:e2e:report": "playwright show-report",
    "test:e2e:ui": "playwright test --ui",
+   "test:maintenance": "node --test scripts/maintenance/maintenance.unit.mjs",
    "test:run": "cross-env NODE_OPTIONS=--max-old-space-size=8192 vitest run",
    "test:ui": "vitest --ui",
    "type-check": "tsc --noEmit",
@@ -168,6 +181,34 @@
    "secrets": [],
    "actions": [
     "actions/checkout"
+   ]
+  },
+  {
+   "arquivo": ".github/workflows/automation-local.yml",
+   "nome": "Automação local",
+   "gatilhos": [
+    "pull_request",
+    "push",
+    "workflow_dispatch"
+   ],
+   "crons": [],
+   "branches": [
+    "main"
+   ],
+   "jobs": [
+    "contracts"
+   ],
+   "permissoes": [
+    "contents: read"
+   ],
+   "scripts_usados": [
+    "scripts/automation.mjs"
+   ],
+   "npm_scripts": [],
+   "secrets": [],
+   "actions": [
+    "actions/checkout",
+    "actions/setup-node"
    ]
   },
   {
@@ -863,6 +904,11 @@
    "linhas": 324
   },
   {
+   "arquivo": "docs/AUTOMACAO_LOCAL.md",
+   "titulo": "Automação local — Promo_Finance_V2",
+   "linhas": 178
+  },
+  {
    "arquivo": "docs/COMPONENTS.md",
    "titulo": "Documentação dos Componentes UI Aprimorados",
    "linhas": 457
@@ -1554,6 +1600,10 @@
     "arquivos": 1
    },
    {
+    "host": "maintenance.invalid",
+    "arquivos": 1
+   },
+   {
     "host": "new.png",
     "arquivos": 1
    },
@@ -1611,6 +1661,14 @@
    },
    {
     "host": "prod-global-webapp-proxy.nubank.com.br",
+    "arquivos": 1
+   },
+   {
+    "host": "production.invalid",
+    "arquivos": 1
+   },
+   {
+    "host": "production.supabase.co",
     "arquivos": 1
    },
    {

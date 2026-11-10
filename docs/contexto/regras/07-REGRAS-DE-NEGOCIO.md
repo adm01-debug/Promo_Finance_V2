@@ -1,6 +1,6 @@
 # 07 · REGRAS DE NEGÓCIO
 
-> Gerado automaticamente por AI Context Sync v1.3.2 · commit `79382a6e62` · branch `main` · 2026-11-10 17:10 UTC
+> Gerado automaticamente por AI Context Sync v1.3.2 · commit `acebea0945` · branch `main` · 2026-11-10 17:21 UTC
 > Não edite à mão — regras humanas vão em `manual/`.
 
 ## A. Regras escritas por humanos (`manual/` — prioridade máxima, nunca sobrescrito)
@@ -4677,6 +4677,7 @@ Erros lançados por funções SQL (`RAISE EXCEPTION` = regra de negócio no banc
 |---|---|
 | Autenticação E2E rejeitada pelo Supabase Auth (HTTP ${response.status()}).  | `e2e/auth/auth.setup.ts` |
 | Pré-flight do logout destrutivo falhou: variável obrigatória ausente (${name}). | `e2e/auth/logout-real.e2e.ts` |
+| falha fixture | `scripts/automation.unit.mjs` |
 | ALERTS_EMAIL_FROM | `scripts/generate-env-manifest.mjs` |
 | ${msg}: esperado ${JSON.stringify(b)} obtido ${JSON.stringify(a)} | `scripts/ai-context/cenarios.mjs` |
 | ${metodo} ${caminho} -> ${r.status} | `scripts/ci/actions-kpi.mjs` |
@@ -4739,6 +4740,12 @@ Erros lançados por funções SQL (`RAISE EXCEPTION` = regra de negócio no banc
 | types.ts sem o bloco  | `scripts/inventario/gerar-banco.mjs` |
 | ripgrep (rg) falhou com exit ${status}; o inventario nao foi gerado. | `scripts/inventario/gerar-repo.mjs` |
 | ripgrep (rg) nao encontrado; o inventario nao pode ser gerado com seguranca. | `scripts/inventario/gerar-repo.mjs` |
+| failed | `scripts/maintenance/lib.mjs` |
+| missing_dependencies | `scripts/maintenance/lib.mjs` |
+| skipped_busy | `scripts/maintenance/lib.mjs` |
+| formatter fixture failed | `scripts/maintenance/maintenance.unit.mjs` |
+| blocked_network_sandbox | `scripts/maintenance/run.mjs` |
+| pending_patch | `scripts/maintenance/run.mjs` |
 | ACL divergente em funções sensíveis: ${failures.join( | `scripts/security/test-canonical-db-gates.mjs` |
 | Constraint performance_alerts_source_check esperada em 1 linha, recebidas ${rows.length}. | `scripts/security/test-canonical-db-gates.mjs` |
 | Constraint performance_alerts_source_check sem o valor obrigatório  | `scripts/security/test-canonical-db-gates.mjs` |
@@ -4968,14 +4975,7 @@ Erros lançados por funções SQL (`RAISE EXCEPTION` = regra de negócio no banc
 | RISCO CRÍTICO DETECTADO | `src/components/contas-receber/ContasReceberKPIs.tsx` |
 | Anexo sem caminho de storage válido. | `src/components/contas-receber/DrawerAnexosTab.tsx` |
 | Não foi possível abrir o anexo. | `src/components/contas-receber/DrawerAnexosTab.tsx` |
-| Conta não encontrada | `src/components/contas-receber/RegistrarRecebimentoDialog.tsx` |
-| Erro ao registrar recebimento | `src/components/contas-receber/RegistrarRecebimentoDialog.tsx` |
-| O valor não pode ser maior que o saldo restante (${formatCurrency(saldoRestante)}) | `src/components/contas-receber/RegistrarRecebimentoDialog.tsx` |
-| Conexão interrompida. | `src/components/copilot/CopilotGlobalFloat.tsx` |
-| Créditos de IA esgotados. | `src/components/copilot/CopilotGlobalFloat.tsx` |
-| Erro ao iniciar conversa. | `src/components/copilot/CopilotGlobalFloat.tsx` |
-| Limite de requisições. Tente em alguns segundos. | `src/components/copilot/CopilotGlobalFloat.tsx` |
-| … +716 linhas — lista completa em `context.json` | |
+| … +723 linhas — lista completa em `context.json` | |
 
 ## J. Controle de acesso no código (checagens de perfil/permissão)
 

@@ -2,11 +2,16 @@
  "aviso": "GERADO AUTOMATICAMENTE por scripts/ai-context/gerar.mjs — não editar à mão; será sobrescrito.",
  "format_version": 2,
  "git": {
-  "commit": "79382a6e62b44b714591407d9978c2107f473d6d",
+  "commit": "acebea0945dbe119e0487b16a520e47dc52fced5",
   "branch": "main",
-  "data_commit": "2026-11-10T10:31:07Z",
+  "data_commit": "2026-11-10T14:20:44-03:00",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
   "ultimos_commits": [
+   {
+    "sha": "acebea0",
+    "data": "2026-11-10",
+    "assunto": "chore(automacao): conecta testes, grafo e manutenção aos gatilhos (#300)"
+   },
    {
     "sha": "79382a6",
     "data": "2026-11-10",
@@ -126,34 +131,25 @@
     "sha": "d83f82e",
     "data": "2026-11-08",
     "assunto": "docs: atualiza AGENTS.md e docs/agentes/ — supersede #264 (#272)"
-   },
-   {
-    "sha": "1f5138a",
-    "data": "2026-11-08",
-    "assunto": "fix: corrige TS2345 na edge function gerar-pacote-evidencias (#270)"
    }
   ],
-  "arquivos_mudados_7d": 273,
+  "arquivos_mudados_7d": 289,
   "pastas_mais_mudadas_30d": [
    {
     "pasta": "supabase/functions/_shared",
     "mudancas": 19
    },
    {
-    "pasta": "bun.lock",
+    "pasta": "package.json",
     "mudancas": 18
    },
    {
-    "pasta": "package.json",
+    "pasta": "bun.lock",
     "mudancas": 17
    },
    {
     "pasta": "src/components/layout",
     "mudancas": 13
-   },
-   {
-    "pasta": ".github/workflows/ci.yml",
-    "mudancas": 11
    },
    {
     "pasta": "PENDENCIAS.md",
@@ -166,6 +162,10 @@
    {
     "pasta": "src/components/navigation",
     "mudancas": 11
+   },
+   {
+    "pasta": ".github/workflows/ci.yml",
+    "mudancas": 10
    },
    {
     "pasta": "src/components/ui",
@@ -192,14 +192,14 @@
     "mudancas": 4
    },
    {
-    "pasta": "analise-prs/prs.json",
+    "pasta": ".gitignore",
     "mudancas": 4
    }
   ],
   "arquivos_mais_mudados_90d": [
    {
     "arquivo": "package.json",
-    "mudancas": 35
+    "mudancas": 36
    },
    {
     "arquivo": "bun.lock",
@@ -301,11 +301,11 @@
   "autores_30d": [
    {
     "autor": "adm01-debug",
-    "commits": 62
+    "commits": 63
    },
    {
     "autor": "devin-ai-integration[bot]",
-    "commits": 22
+    "commits": 20
    },
    {
     "autor": "dependabot[bot]",
@@ -318,9 +318,9 @@
   ]
  },
  "contagens": {
-  "arquivos_total": 3491,
-  "arquivos_codigo": 2175,
-  "linhas_codigo": 403172,
+  "arquivos_total": 3507,
+  "arquivos_codigo": 2183,
+  "linhas_codigo": 408768,
   "rotas": 128,
   "rotas_http_backend": 12,
   "vistas_por_id": 0,
@@ -332,10 +332,10 @@
   "tabelas": 314,
   "migrations": 937,
   "cron_jobs": 21,
-  "testes": 367,
-  "workflows": 16,
-  "scripts": 96,
-  "docs_md": 186
+  "testes": 370,
+  "workflows": 17,
+  "scripts": 102,
+  "docs_md": 188
  },
  "por_pasta": {
   "e2e/alertas-preditivos.e2e.ts": {
@@ -486,6 +486,14 @@
    "arquivos": 3,
    "linhas": 1462
   },
+  "scripts/automation.mjs": {
+   "arquivos": 1,
+   "linhas": 992
+  },
+  "scripts/automation.unit.mjs": {
+   "arquivos": 1,
+   "linhas": 603
+  },
   "scripts/ci": {
    "arquivos": 10,
    "linhas": 1569
@@ -518,6 +526,14 @@
    "arquivos": 17,
    "linhas": 2160
   },
+  "scripts/graphify-local.mjs": {
+   "arquivos": 1,
+   "linhas": 1076
+  },
+  "scripts/graphify-local.unit.mjs": {
+   "arquivos": 1,
+   "linhas": 463
+  },
   "scripts/healthcheck": {
    "arquivos": 1,
    "linhas": 106
@@ -529,6 +545,10 @@
   "scripts/inventario": {
    "arquivos": 5,
    "linhas": 926
+  },
+  "scripts/maintenance": {
+   "arquivos": 4,
+   "linhas": 2462
   },
   "scripts/mcp-phd-suite.mjs": {
    "arquivos": 1,
@@ -669,12 +689,20 @@
    "linhas": 1156
   },
   {
+   "arquivo": "scripts/graphify-local.mjs",
+   "linhas": 1076
+  },
+  {
    "arquivo": "supabase/functions/_shared/sql-write-guard.ts",
    "linhas": 1064
   },
   {
    "arquivo": "supabase/functions/bling-proxy/index.ts",
    "linhas": 1013
+  },
+  {
+   "arquivo": "scripts/automation.mjs",
+   "linhas": 992
   },
   {
    "arquivo": "supabase/functions/_shared/tributario-logic.ts",
@@ -705,6 +733,10 @@
    "linhas": 810
   },
   {
+   "arquivo": "scripts/maintenance/lib.mjs",
+   "linhas": 783
+  },
+  {
    "arquivo": "src/components/contas-receber/ContaReceberFormFields.tsx",
    "linhas": 751
   },
@@ -717,37 +749,25 @@
    "linhas": 731
   },
   {
+   "arquivo": "scripts/maintenance/run.mjs",
+   "linhas": 710
+  },
+  {
    "arquivo": "src/pages/BI.tsx",
    "linhas": 709
   },
   {
    "arquivo": "scripts/security/test-canonical-db-gates.mjs",
    "linhas": 674
-  },
-  {
-   "arquivo": "src/pages/AuditLogs.tsx",
-   "linhas": 673
-  },
-  {
-   "arquivo": "src/components/bling/BlingFinanceiroPanel.tsx",
-   "linhas": 650
-  },
-  {
-   "arquivo": "supabase/functions/open-finance/index.ts",
-   "linhas": 638
-  },
-  {
-   "arquivo": "src/hooks/useContasPagarLogic.ts",
-   "linhas": 625
   }
  ],
  "qualidade": {
   "any": 340,
-  "console_log": 160,
+  "console_log": 177,
   "ts_ignore": 0,
   "eslint_disable": 1,
   "todos": 44,
-  "arquivos_acima_500_linhas": 51
+  "arquivos_acima_500_linhas": 55
  },
  "todos": [
   {
@@ -1290,7 +1310,6 @@
    "TransferenciaDialog"
   ],
   "scripts_orfaos": [
-   "scripts/ci/listar-excecoes-npm-nativo.py",
    "scripts/integrity/06_secdef.sql",
    "scripts/integrity/07_exec_grants.sql",
    "scripts/integrity/08_rpc_tenant_scope.sql",
@@ -1300,15 +1319,10 @@
    "scripts/integrity/12_index_bloat.sql",
    "scripts/integrity/13_unused_indexes.sql",
    "scripts/integrity/15_views_pii_rpcs.sql",
-   "scripts/security/test-anon-surface.ts",
    "scripts/security/test-privilege-baseline.sql",
    "scripts/security/test-tenant-isolation.sql",
    "scripts/security/test-tenant-policy-scope.sql",
-   "scripts/security/test-write-isolation.sql",
-   "scripts/simular-observabilidade-digest.ts",
-   "scripts/simular-preferencias-digest.ts",
-   "scripts/simular-projecao-conformidade.ts",
-   "scripts/validate-all.sh"
+   "scripts/security/test-write-isolation.sql"
   ],
   "env_usadas_nao_declaradas": [
    "DEV",

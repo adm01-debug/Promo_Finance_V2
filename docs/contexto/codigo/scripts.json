@@ -1,7 +1,7 @@
 {
  "aviso": "GERADO AUTOMATICAMENTE por scripts/ai-context/gerar.mjs — não editar à mão; será sobrescrito.",
  "format_version": 2,
- "total": 96,
+ "total": 102,
  "scripts": [
   {
    "arquivo": "scripts/admin/supabase_admin_ops.py",
@@ -49,6 +49,29 @@
    "npm_scripts": [],
    "workflows": [
     "contexto.yml"
+   ],
+   "orfao": false
+  },
+  {
+   "arquivo": "scripts/automation.mjs",
+   "descricao": null,
+   "linhas": 992,
+   "env": [
+    "REPO_AUTOMATION_CHAINING"
+   ],
+   "npm_scripts": [
+    "automation:doctor",
+    "automation:test",
+    "automation:check",
+    "automation:heal",
+    "automation:nightly",
+    "automation:graph",
+    "automation:status",
+    "automation:install-hooks",
+    "automation:uninstall-hooks"
+   ],
+   "workflows": [
+    "automation-local.yml"
    ],
    "orfao": false
   },
@@ -150,7 +173,7 @@
    "env": [],
    "npm_scripts": [],
    "workflows": [],
-   "orfao": true
+   "orfao": false
   },
   {
    "arquivo": "scripts/ci/listar-specs-quarentena.ts",
@@ -366,6 +389,15 @@
    "orfao": false
   },
   {
+   "arquivo": "scripts/graphify-local.mjs",
+   "descricao": null,
+   "linhas": 1076,
+   "env": [],
+   "npm_scripts": [],
+   "workflows": [],
+   "orfao": false
+  },
+  {
    "arquivo": "scripts/graphify/benchmark.py",
    "descricao": "Compara navegação estrutural e busca textual em casos versionados.\"\"\"",
    "linhas": 97,
@@ -500,7 +532,11 @@
    "descricao": "scripts/healthcheck/run.sh Healthcheck pós-corte — valida comportamento real (não estrutura).",
    "linhas": 121,
    "env": [],
-   "npm_scripts": [],
+   "npm_scripts": [
+    "maintenance:doctor",
+    "maintenance:check",
+    "maintenance:heal"
+   ],
    "workflows": [],
    "orfao": false
   },
@@ -653,7 +689,11 @@
    "descricao": "integrity/run.sh — Executa 01→05 em ordem, agrega JSONL e falha com exit code igual ao número de assertions em fail.",
    "linhas": 98,
    "env": [],
-   "npm_scripts": [],
+   "npm_scripts": [
+    "maintenance:doctor",
+    "maintenance:check",
+    "maintenance:heal"
+   ],
    "workflows": [],
    "orfao": false
   },
@@ -715,6 +755,48 @@
    "workflows": [
     "inventario-estado.yml"
    ],
+   "orfao": false
+  },
+  {
+   "arquivo": "scripts/maintenance/lib.mjs",
+   "descricao": null,
+   "linhas": 783,
+   "env": [],
+   "npm_scripts": [],
+   "workflows": [],
+   "orfao": false
+  },
+  {
+   "arquivo": "scripts/maintenance/run.mjs",
+   "descricao": null,
+   "linhas": 710,
+   "env": [
+    "XDG_STATE_HOME"
+   ],
+   "npm_scripts": [],
+   "workflows": [],
+   "orfao": false
+  },
+  {
+   "arquivo": "scripts/maintenance/run.sh",
+   "descricao": null,
+   "linhas": 16,
+   "env": [],
+   "npm_scripts": [
+    "maintenance:doctor",
+    "maintenance:check",
+    "maintenance:heal"
+   ],
+   "workflows": [],
+   "orfao": false
+  },
+  {
+   "arquivo": "scripts/maintenance/typecheck.mjs",
+   "descricao": null,
+   "linhas": 82,
+   "env": [],
+   "npm_scripts": [],
+   "workflows": [],
    "orfao": false
   },
   {
@@ -823,7 +905,7 @@
    ],
    "npm_scripts": [],
    "workflows": [],
-   "orfao": true
+   "orfao": false
   },
   {
    "arquivo": "scripts/security/test-canonical-db-gates.mjs",
@@ -974,7 +1056,7 @@
    "env": [],
    "npm_scripts": [],
    "workflows": [],
-   "orfao": true
+   "orfao": false
   },
   {
    "arquivo": "scripts/simular-preferencias-digest.ts",
@@ -983,7 +1065,7 @@
    "env": [],
    "npm_scripts": [],
    "workflows": [],
-   "orfao": true
+   "orfao": false
   },
   {
    "arquivo": "scripts/simular-projecao-conformidade.ts",
@@ -992,7 +1074,7 @@
    "env": [],
    "npm_scripts": [],
    "workflows": [],
-   "orfao": true
+   "orfao": false
   },
   {
    "arquivo": "scripts/staging-migrate.sh",
@@ -1035,7 +1117,7 @@
    "env": [],
    "npm_scripts": [],
    "workflows": [],
-   "orfao": true
+   "orfao": false
   }
  ]
 }
