@@ -1,7 +1,7 @@
 {
  "aviso": "GERADO AUTOMATICAMENTE por scripts/ai-context/gerar.mjs — não editar à mão; será sobrescrito.",
  "format_version": 2,
- "total": 102,
+ "total": 103,
  "scripts": [
   {
    "arquivo": "scripts/admin/supabase_admin_ops.py",
@@ -164,6 +164,24 @@
    "npm_scripts": [],
    "workflows": [
     "estado-real.yml"
+   ],
+   "orfao": false
+  },
+  {
+   "arquivo": "scripts/ci/github-settings-guard.mjs",
+   "descricao": "* Confere o perimetro do GitHub contra o baseline versionado",
+   "linhas": 637,
+   "env": [
+    "ADMIN_READ_TOKEN",
+    "GITHUB_REPOSITORY",
+    "GITHUB_RUN_ID",
+    "GITHUB_TOKEN",
+    "PERIMETER_SNAPSHOT_PATH",
+    "SETTINGS_GUARD_AUTOR"
+   ],
+   "npm_scripts": [],
+   "workflows": [
+    "settings-guard.yml"
    ],
    "orfao": false
   },

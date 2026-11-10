@@ -1,6 +1,6 @@
 # 07 · REGRAS DE NEGÓCIO
 
-> Gerado automaticamente por AI Context Sync v1.3.2 · commit `3e0b4155c2` · branch `main` · 2026-11-10 18:41 UTC
+> Gerado automaticamente por AI Context Sync v1.3.2 · commit `bec7163dc8` · branch `main` · 2026-11-10 18:43 UTC
 > Não edite à mão — regras humanas vão em `manual/`.
 
 ## A. Regras escritas por humanos (`manual/` — prioridade máxima, nunca sobrescrito)
@@ -4681,6 +4681,7 @@ Erros lançados por funções SQL (`RAISE EXCEPTION` = regra de negócio no banc
 | ALERTS_EMAIL_FROM | `scripts/generate-env-manifest.mjs` |
 | ${msg}: esperado ${JSON.stringify(b)} obtido ${JSON.stringify(a)} | `scripts/ai-context/cenarios.mjs` |
 | ${metodo} ${caminho} -> ${r.status} | `scripts/ci/actions-kpi.mjs` |
+| GitHub API ${method} ${path} → ${res.status}: ${text} | `scripts/ci/github-settings-guard.mjs` |
 | Glob com sintaxe não suportada por este script: ${glob} | `scripts/ci/listar-specs-quarentena.ts` |
 | bloco  | `scripts/ci/render-workflow-docs.mjs` |
 | shaDeployado precisa ser um sha de 40 hex: recebido  | `scripts/edge-deploy/deployment-record.mjs` |
@@ -4974,8 +4975,7 @@ Erros lançados por funções SQL (`RAISE EXCEPTION` = regra de negócio no banc
 | ALERTA DE FLUXO | `src/components/contas-receber/ContasReceberKPIs.tsx` |
 | RISCO CRÍTICO DETECTADO | `src/components/contas-receber/ContasReceberKPIs.tsx` |
 | Anexo sem caminho de storage válido. | `src/components/contas-receber/DrawerAnexosTab.tsx` |
-| Não foi possível abrir o anexo. | `src/components/contas-receber/DrawerAnexosTab.tsx` |
-| … +723 linhas — lista completa em `context.json` | |
+| … +724 linhas — lista completa em `context.json` | |
 
 ## J. Controle de acesso no código (checagens de perfil/permissão)
 

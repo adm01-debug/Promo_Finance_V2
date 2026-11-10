@@ -22,7 +22,7 @@
   ],
   "testes": [
    "co-localizado (__tests__) (239)",
-   "outro (51)",
+   "outro (52)",
    "co-localizado (*.test) (40)"
   ],
   "edge_functions": "supabase/functions",
@@ -30,7 +30,7 @@
   "scripts": [
    "scripts/integrity (17)",
    "scripts/security (16)",
-   "scripts/ci (11)"
+   "scripts/ci (12)"
   ],
   "docs": [
    "docs (48)",
@@ -58,11 +58,11 @@
  "commits": {
   "convencao": "conventional commits (observado)",
   "exemplos": [
+   "feat(ci): guard do perímetro do GitHub contra baseline versionado (#277)",
    "fix(automacao): aplica findings do Codex no #300 (#301)",
    "chore(automacao): conecta testes, grafo e manutenção aos gatilhos (#300)",
    "feat(inventario): inventário autônomo do estado real (banco, rotas e edge functions) (#265)",
-   "fix: bump date-fns from 2.30.0 to 4.4.0 (#298)",
-   "fix: bump input-otp from 1.4.2 to 1.5.0 (#295)"
+   "fix: bump date-fns from 2.30.0 to 4.4.0 (#298)"
   ]
  },
  "pr_template": ".github/PULL_REQUEST_TEMPLATE.md",

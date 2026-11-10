@@ -6,11 +6,11 @@
    "TypeScript (2104)",
    "SQL (1007)",
    "Markdown (188)",
-   "JavaScript (53)",
-   "JSON (36)",
+   "JavaScript (55)",
+   "JSON (37)",
    "Python (28)",
    "Shell (24)",
-   "YAML (23)"
+   "YAML (24)"
   ],
   "linguagem_principal": "TypeScript",
   "framework": "React",
@@ -627,6 +627,37 @@
    "actions": [
     "actions/checkout",
     "supabase/setup-cli"
+   ]
+  },
+  {
+   "arquivo": ".github/workflows/settings-guard.yml",
+   "nome": "Settings Guard",
+   "gatilhos": [
+    "schedule",
+    "workflow_dispatch"
+   ],
+   "crons": [
+    "19 7 * * *"
+   ],
+   "branches": [],
+   "jobs": [
+    "guard"
+   ],
+   "permissoes": [
+    "contents: read"
+   ],
+   "scripts_usados": [
+    "scripts/ci/github-settings-guard.mjs"
+   ],
+   "npm_scripts": [],
+   "secrets": [
+    "GITHUB_TOKEN",
+    "SETTINGS_GUARD_TOKEN"
+   ],
+   "actions": [
+    "actions/checkout",
+    "actions/setup-node",
+    "actions/upload-artifact"
    ]
   },
   {
@@ -1289,6 +1320,7 @@
    "E2E_USER_PASSWORD",
    "GITHUB_TOKEN",
    "PROD_DB_URL",
+   "SETTINGS_GUARD_TOKEN",
    "STAGING_ANON_KEY",
    "STAGING_DB_URL",
    "STAGING_PROJECT_REF",

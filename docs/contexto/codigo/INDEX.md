@@ -1,7 +1,7 @@
 # Contexto do projeto para agentes de IA
 
 GERADO AUTOMATICAMENTE por scripts/ai-context/gerar.mjs — não editar à mão; será sobrescrito.
-Publicado pelo workflow .github/workflows/contexto.yml em docs/contexto/codigo/ da branch gerada `contexto`. Índice único em docs/contexto/00-INDEX.md. Ler: git fetch origin contexto && git show origin/contexto:docs/contexto/00-INDEX.md Gere local com `node scripts/ai-context/gerar.mjs`. Commit-base: `3e0b4155c2735b37ecc93f6b43f37d0f365dbf0c` (2026-11-10T15:13:40-03:00).
+Publicado pelo workflow .github/workflows/contexto.yml em docs/contexto/codigo/ da branch gerada `contexto`. Índice único em docs/contexto/00-INDEX.md. Ler: git fetch origin contexto && git show origin/contexto:docs/contexto/00-INDEX.md Gere local com `node scripts/ai-context/gerar.mjs`. Commit-base: `bec7163dc83937fdd28995b156b8bffcd5b76f7a` (2026-11-10T18:42:03Z).
 
 ## Como usar (leia antes de planejar ou executar qualquer tarefa)
 1. **Tela/rota/menu** → `rotas.json` (url/vista/menu → arquivo → hooks → tabelas → edges; `rotas_http_backend` para APIs) e `modulos.json` (módulo inteiro + dependências entre módulos).
@@ -14,7 +14,7 @@ Publicado pelo workflow .github/workflows/contexto.yml em docs/contexto/codigo/ 
 Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua tarefa; não carregue tudo.
 
 ## Stack
-- linguagens: TypeScript (2104), SQL (1007), Markdown (188), JavaScript (53), JSON (36), Python (28), Shell (24), YAML (23)
+- linguagens: TypeScript (2104), SQL (1007), Markdown (188), JavaScript (55), JSON (37), Python (28), Shell (24), YAML (24)
 - linguagem_principal: TypeScript
 - framework: React
 - backend_http: n/d
@@ -34,9 +34,9 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 ## Números
 | item | qtd |
 |---|---|
-| arquivos_total | 3507 |
-| arquivos_codigo | 2183 |
-| linhas_codigo | 408869 |
+| arquivos_total | 3511 |
+| arquivos_codigo | 2185 |
+| linhas_codigo | 409953 |
 | rotas | 128 |
 | rotas_http_backend | 12 |
 | vistas_por_id | 0 |
@@ -48,9 +48,9 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 | tabelas | 314 |
 | migrations | 937 |
 | cron_jobs | 21 |
-| testes | 370 |
-| workflows | 17 |
-| scripts | 102 |
+| testes | 371 |
+| workflows | 18 |
+| scripts | 103 |
 | docs_md | 188 |
 
 ## Onde ficam as coisas
@@ -58,10 +58,10 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 - componentes: src/components (730), src/pages (174), src/hooks (2)
 - hooks: src/hooks (228), src/components (27), src/pages (5)
 - servicos_logica: src/lib (254), scripts/graphify (7), src/integrations (3)
-- testes: co-localizado (__tests__) (239), outro (51), co-localizado (*.test) (40)
+- testes: co-localizado (__tests__) (239), outro (52), co-localizado (*.test) (40)
 - edge_functions: supabase/functions
 - migrations: supabase/migrations
-- scripts: scripts/integrity (17), scripts/security (16), scripts/ci (11)
+- scripts: scripts/integrity (17), scripts/security (16), scripts/ci (12)
 - docs: docs (48), (raiz) (19), .github (2)
 - nomenclatura: {"componentes":"PascalCase (90%)","hooks":"use + PascalCase","servicos":"camelCase (52%)","edge_functions":"kebab-case (99%)","tabelas":"snake_case (91%)"}
 - instruções para agentes no repo: .claude/CLAUDE.md, .github/copilot-instructions.md, AGENTS.md, CLAUDE.md
@@ -454,7 +454,7 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 - supabase/functions/bitrix24-webhook/index.ts (12)
 - PENDENCIAS.md (11)
 - RELATORIO_CI.md (11)
-- env.manifest.json (10)
+- env.manifest.json (11)
 - src/pages/Auth.hooks.ts (10)
 - supabase/functions/bling-proxy/index.ts (10)
 
@@ -473,6 +473,7 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 - `migration-ledger.yml` — Migration Ledger Check (workflow_dispatch)
 - `prod-migrate.yml` — prod-migrate (workflow_dispatch)
 - `schema-drift.yml` — Schema drift (types + migrations) (schedule, workflow_dispatch; cron 0 6 * * 1)
+- `settings-guard.yml` — Settings Guard (schedule, workflow_dispatch; cron 19 7 * * *)
 - `staging-migrate.yml` — staging-migrate (workflow_dispatch)
 - `supabase-admin-ops.yml` — Ops administrativas do Supabase canônico (workflow_dispatch)
 - `supabase-linter.yml` — Supabase Linter (RLS/GRANT gate) (pull_request, push, workflow_dispatch)
@@ -604,6 +605,7 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 - CHANGELOG topo: [Unreleased]
 
 ## Últimos commits
+- 2026-11-10 `bec7163` feat(ci): guard do perímetro do GitHub contra baseline versionado (#277)
 - 2026-11-10 `3e0b415` fix(automacao): aplica findings do Codex no #300 (#301)
 - 2026-11-10 `acebea0` chore(automacao): conecta testes, grafo e manutenção aos gatilhos (#300)
 - 2026-11-10 `79382a6` feat(inventario): inventário autônomo do estado real (banco, rotas e edge functions) (#265)
@@ -618,7 +620,6 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 - 2026-11-09 `e8620bd` chore: bump @sentry/react 11.0.0 → 11.9.0 (supersede #210) (#287)
 - 2026-11-09 `b6e60a5` chore: docs analise-prs estado final 15 mergeadas esta sessao
 - 2026-11-09 `fc35825` chore: docs analise-prs estado final 14 mergeadas esta sessao (#285)
-- 2026-11-09 `68fa502` chore: documentação analise-prs v2 + progresso.json corrigido (#284)
 
 ## Arquivos deste diretório
 - `docs/contexto/codigo/rotas.json`

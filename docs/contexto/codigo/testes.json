@@ -5,11 +5,11 @@
   "vitest",
   "playwright"
  ],
- "total": 370,
+ "total": 371,
  "por_tipo": {
   "e2e": 35,
   "pytest": 15,
-  "unit": 314
+  "unit": 315
  },
  "onde_ficam": [
   {
@@ -18,7 +18,7 @@
   },
   {
    "padrao": "outro",
-   "arquivos": 51
+   "arquivos": 52
   },
   {
    "padrao": "co-localizado (*.test)",
@@ -310,6 +310,15 @@
     "scripts/ci/gerar-matriz-edge-tabela.mjs"
    ],
    "casos": 2
+  },
+  {
+   "arquivo": "scripts/ci/github-settings-guard.unit.mjs",
+   "tipo": "unit",
+   "linhas": 447,
+   "testa": [
+    "scripts/ci/github-settings-guard.mjs"
+   ],
+   "casos": 24
   },
   {
    "arquivo": "scripts/ci/render-workflow-docs.unit.mjs",
@@ -3303,6 +3312,7 @@
   "scripts/automation.mjs": 1,
   "scripts/ci/actions-kpi.mjs": 1,
   "scripts/ci/gerar-matriz-edge-tabela.mjs": 1,
+  "scripts/ci/github-settings-guard.mjs": 1,
   "scripts/ci/render-workflow-docs.mjs": 1,
   "scripts/edge-deploy/deployment-record.mjs": 1,
   "scripts/edge-deploy/redigir-log.mjs": 1,

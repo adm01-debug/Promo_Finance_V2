@@ -2,11 +2,16 @@
  "aviso": "GERADO AUTOMATICAMENTE por scripts/ai-context/gerar.mjs — não editar à mão; será sobrescrito.",
  "format_version": 2,
  "git": {
-  "commit": "3e0b4155c2735b37ecc93f6b43f37d0f365dbf0c",
+  "commit": "bec7163dc83937fdd28995b156b8bffcd5b76f7a",
   "branch": "main",
-  "data_commit": "2026-11-10T15:13:40-03:00",
+  "data_commit": "2026-11-10T18:42:03Z",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
   "ultimos_commits": [
+   {
+    "sha": "bec7163",
+    "data": "2026-11-10",
+    "assunto": "feat(ci): guard do perímetro do GitHub contra baseline versionado (#277)"
+   },
    {
     "sha": "3e0b415",
     "data": "2026-11-10",
@@ -126,14 +131,9 @@
     "sha": "8d88a61",
     "data": "2026-11-08",
     "assunto": "fix: type 'spring' as const em micro-interactions.tsx (StaggerItem/EmptyState)"
-   },
-   {
-    "sha": "924e4a0",
-    "data": "2026-11-08",
-    "assunto": "fix: monitor-health review #240 — supersede #257 (#271)"
    }
   ],
-  "arquivos_mudados_7d": 289,
+  "arquivos_mudados_7d": 293,
   "pastas_mais_mudadas_30d": [
    {
     "pasta": "supabase/functions/_shared",
@@ -247,7 +247,7 @@
    },
    {
     "arquivo": "env.manifest.json",
-    "mudancas": 10
+    "mudancas": 11
    },
    {
     "arquivo": "src/pages/Auth.hooks.ts",
@@ -301,7 +301,7 @@
   "autores_30d": [
    {
     "autor": "adm01-debug",
-    "commits": 64
+    "commits": 65
    },
    {
     "autor": "devin-ai-integration[bot]",
@@ -318,9 +318,9 @@
   ]
  },
  "contagens": {
-  "arquivos_total": 3507,
-  "arquivos_codigo": 2183,
-  "linhas_codigo": 408869,
+  "arquivos_total": 3511,
+  "arquivos_codigo": 2185,
+  "linhas_codigo": 409953,
   "rotas": 128,
   "rotas_http_backend": 12,
   "vistas_por_id": 0,
@@ -332,9 +332,9 @@
   "tabelas": 314,
   "migrations": 937,
   "cron_jobs": 21,
-  "testes": 370,
-  "workflows": 17,
-  "scripts": 102,
+  "testes": 371,
+  "workflows": 18,
+  "scripts": 103,
   "docs_md": 188
  },
  "por_pasta": {
@@ -495,8 +495,8 @@
    "linhas": 603
   },
   "scripts/ci": {
-   "arquivos": 10,
-   "linhas": 1569
+   "arquivos": 12,
+   "linhas": 2653
   },
   "scripts/data": {
    "arquivos": 1,
@@ -763,11 +763,11 @@
  ],
  "qualidade": {
   "any": 340,
-  "console_log": 177,
+  "console_log": 191,
   "ts_ignore": 0,
   "eslint_disable": 1,
   "todos": 44,
-  "arquivos_acima_500_linhas": 55
+  "arquivos_acima_500_linhas": 56
  },
  "todos": [
   {
