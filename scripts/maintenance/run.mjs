@@ -574,7 +574,25 @@ export async function main(args = process.argv.slice(2)) {
     await git(workspace, ['add', '--', ...report.change.files]);
     if ((await snapshotDiff(true)) !== fixedDiff)
       fail('Filtro Git alterou o patch ao preparar o commit');
-    const restoreHooks = await quarantine(workspace, path.join(jobDir, 'hooks'), prefix);
+        const gitleaks = await run(['sh', '-c', 'command -v gitleaks >/dev/null 2>&1'], workspace, 10000);
+        if (gitleaks.code === 0) {
+          const leak = await run(
+            [
+              'gitleaks',
+              'git',
+              '--staged',
+              '--no-banner',
+              '--redact',
+              '--baseline-path',
+              '.gitleaks-baseline.json',
+            ],
+            workspace,
+            config.timeoutMs
+          );
+          if (leak.code !== 0 || leak.timedOut || leak.overflow)
+            fail('Varredura de segredos (gitleaks) reprovou o patch staged');
+        }
+        const restoreHooks = await quarantine(workspace, path.join(jobDir, 'hooks'), prefix);
     try {
       const hookResult = await commitWithHooks(
         source,
@@ -592,9 +610,10 @@ export async function main(args = process.argv.slice(2)) {
           'style(manutencao): aplica correcoes locais verificadas',
         ],
         config.timeoutMs,
-        prefix
-      );
-      const output = redact(hookResult.output);
+                prefix,
+                { REPO_AUTOMATION_STATE_FILE: path.join(source, '.tools/repo-automation/state.json') }
+              );
+              const output = redact(hookResult.output);
       await writeFile(path.join(jobDir, 'commit-hooks.log'), output, { mode: 0o600 });
       report.hooks = {
         names: hookResult.names,

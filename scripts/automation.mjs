@@ -456,6 +456,7 @@ function workflowRuns(text, commandText) {
   return false;
 }
 async function statePath(root) {
+  if (process.env.REPO_AUTOMATION_STATE_FILE) return process.env.REPO_AUTOMATION_STATE_FILE;
   const value = (await git(root, ['config', '--get', 'core.hooksPath'], [0, 1])).stdout.trim();
   const hooks = value ? resolve(root, value) : '';
   return hooks.endsWith('/.tools/repo-automation/hooks')
@@ -880,7 +881,8 @@ async function hook(ctx, args) {
     resolve(ctx.root, (await git(ctx.root, ['rev-parse', '--git-common-dir'])).stdout.trim())
   );
   if (state.common !== common) throw fail('estado pertence a outro repositório');
-  if (process.env.REPO_AUTOMATION_CHAINING) throw fail('recursão de hook recusada');
+  if (process.env.REPO_AUTOMATION_CHAINING === state.id + ':' + event)
+    throw fail('recursão de hook recusada');
   let original = isAbsolute(state.previousPath)
       ? join(state.previousPath, event)
       : resolve(ctx.root, state.previousPath, event),
@@ -895,7 +897,7 @@ async function hook(ctx, args) {
   if (existsSync(original) && (viaSh || statSync(original).mode & 0o111)) {
     if (within(realpathSync(state.hooks), realpathSync(original)))
       throw fail('hook original recursivo');
-    const r = await execute([...(viaSh ? ['sh'] : []), original, ...args.slice(1)], {
+    const r = await execute([...(viaSh ? ['sh', '-e'] : []), original, ...args.slice(1)], {
       cwd: ctx.root,
       timeout: ctx.c.timeoutMs || 300000,
       env: { ...process.env, REPO_AUTOMATION_CHAINING: state.id + ':' + event },
@@ -939,8 +941,9 @@ export async function main(argv) {
   const opts = parseArgs(argv);
   const c = opts.action === 'uninstall-hooks' ? null : validateConfig(json(opts.config));
   const root = (await git(opts.root, ['rev-parse', '--show-toplevel'])).stdout.trim();
-  if (realpathSync(root) !== realpathSync(opts.root))
-    throw fail('--root deve ser a raiz do repositório');
+    const normalize = (p) => realpathSync.native(p).toLowerCase().replace(/[\\/]+$/, '');
+    if (normalize(root) !== normalize(opts.root))
+      throw fail('--root deve ser a raiz do repositório');
   const ctx = { root: opts.root, config: opts.config, c };
   if (opts.action === 'doctor') {
     const r = await doctor(ctx, opts.staticOnly);
