@@ -2,11 +2,16 @@
  "aviso": "GERADO AUTOMATICAMENTE por scripts/ai-context/gerar.mjs — não editar à mão; será sobrescrito.",
  "format_version": 2,
  "git": {
-  "commit": "acebea0945dbe119e0487b16a520e47dc52fced5",
+  "commit": "3e0b4155c2735b37ecc93f6b43f37d0f365dbf0c",
   "branch": "main",
-  "data_commit": "2026-11-10T14:20:44-03:00",
+  "data_commit": "2026-11-10T15:13:40-03:00",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
   "ultimos_commits": [
+   {
+    "sha": "3e0b415",
+    "data": "2026-11-10",
+    "assunto": "fix(automacao): aplica findings do Codex no #300 (#301)"
+   },
    {
     "sha": "acebea0",
     "data": "2026-11-10",
@@ -126,11 +131,6 @@
     "sha": "924e4a0",
     "data": "2026-11-08",
     "assunto": "fix: monitor-health review #240 — supersede #257 (#271)"
-   },
-   {
-    "sha": "d83f82e",
-    "data": "2026-11-08",
-    "assunto": "docs: atualiza AGENTS.md e docs/agentes/ — supersede #264 (#272)"
    }
   ],
   "arquivos_mudados_7d": 289,
@@ -180,6 +180,10 @@
     "mudancas": 7
    },
    {
+    "pasta": ".gitignore",
+    "mudancas": 5
+   },
+   {
     "pasta": "src/components/contas-receber",
     "mudancas": 5
    },
@@ -189,10 +193,6 @@
    },
    {
     "pasta": ".github/workflows/supabase-linter.yml",
-    "mudancas": 4
-   },
-   {
-    "pasta": ".gitignore",
     "mudancas": 4
    }
   ],
@@ -301,7 +301,7 @@
   "autores_30d": [
    {
     "autor": "adm01-debug",
-    "commits": 63
+    "commits": 64
    },
    {
     "autor": "devin-ai-integration[bot]",
@@ -320,7 +320,7 @@
  "contagens": {
   "arquivos_total": 3507,
   "arquivos_codigo": 2183,
-  "linhas_codigo": 408768,
+  "linhas_codigo": 408869,
   "rotas": 128,
   "rotas_http_backend": 12,
   "vistas_por_id": 0,
@@ -488,7 +488,7 @@
   },
   "scripts/automation.mjs": {
    "arquivos": 1,
-   "linhas": 992
+   "linhas": 995
   },
   "scripts/automation.unit.mjs": {
    "arquivos": 1,
@@ -528,7 +528,7 @@
   },
   "scripts/graphify-local.mjs": {
    "arquivos": 1,
-   "linhas": 1076
+   "linhas": 1140
   },
   "scripts/graphify-local.unit.mjs": {
    "arquivos": 1,
@@ -548,7 +548,7 @@
   },
   "scripts/maintenance": {
    "arquivos": 4,
-   "linhas": 2462
+   "linhas": 2496
   },
   "scripts/mcp-phd-suite.mjs": {
    "arquivos": 1,
@@ -690,7 +690,7 @@
   },
   {
    "arquivo": "scripts/graphify-local.mjs",
-   "linhas": 1076
+   "linhas": 1140
   },
   {
    "arquivo": "supabase/functions/_shared/sql-write-guard.ts",
@@ -702,7 +702,7 @@
   },
   {
    "arquivo": "scripts/automation.mjs",
-   "linhas": 992
+   "linhas": 995
   },
   {
    "arquivo": "supabase/functions/_shared/tributario-logic.ts",
@@ -734,7 +734,7 @@
   },
   {
    "arquivo": "scripts/maintenance/lib.mjs",
-   "linhas": 783
+   "linhas": 798
   },
   {
    "arquivo": "src/components/contas-receber/ContaReceberFormFields.tsx",
@@ -750,7 +750,7 @@
   },
   {
    "arquivo": "scripts/maintenance/run.mjs",
-   "linhas": 710
+   "linhas": 729
   },
   {
    "arquivo": "src/pages/BI.tsx",

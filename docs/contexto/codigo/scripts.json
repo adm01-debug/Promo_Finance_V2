@@ -55,9 +55,10 @@
   {
    "arquivo": "scripts/automation.mjs",
    "descricao": null,
-   "linhas": 992,
+   "linhas": 995,
    "env": [
-    "REPO_AUTOMATION_CHAINING"
+    "REPO_AUTOMATION_CHAINING",
+    "REPO_AUTOMATION_STATE_FILE"
    ],
    "npm_scripts": [
     "automation:doctor",
@@ -391,7 +392,7 @@
   {
    "arquivo": "scripts/graphify-local.mjs",
    "descricao": null,
-   "linhas": 1076,
+   "linhas": 1140,
    "env": [],
    "npm_scripts": [],
    "workflows": [],
@@ -760,7 +761,7 @@
   {
    "arquivo": "scripts/maintenance/lib.mjs",
    "descricao": null,
-   "linhas": 783,
+   "linhas": 798,
    "env": [],
    "npm_scripts": [],
    "workflows": [],
@@ -769,7 +770,7 @@
   {
    "arquivo": "scripts/maintenance/run.mjs",
    "descricao": null,
-   "linhas": 710,
+   "linhas": 729,
    "env": [
     "XDG_STATE_HOME"
    ],
