@@ -1,4 +1,4 @@
-
+-- Guarda idempotente: safe para re-executar
 -- Complementa plano_contas existente
 ALTER TABLE public.plano_contas
   ADD COLUMN IF NOT EXISTS empresa_id UUID,
