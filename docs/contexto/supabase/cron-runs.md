@@ -202,9 +202,9 @@ _nenhum_
 
 | início (UTC) | status | duração (s) | mensagem |
 |---|---|---|---|
-| 2026-11-10 04:17:00 | succeeded | 0.02 | 1 row |
-| 2026-11-10 04:16:00 | succeeded | 0.04 | 1 row |
-| 2026-11-10 04:15:00 | succeeded | 0.02 | 1 row |
+| 2026-11-10 04:27:00 | succeeded | 0.02 | 1 row |
+| 2026-11-10 04:26:00 | succeeded | 0.02 | 1 row |
+| 2026-11-10 04:25:00 | succeeded | 0.01 | 1 row |
 
 
 ## 34 · auditar-acessos-cross-tenant
@@ -220,9 +220,9 @@ _nenhum_
 
 | início (UTC) | status | duração (s) | mensagem |
 |---|---|---|---|
+| 2026-11-10 04:20:00 | succeeded | 0.53 | 1 row |
 | 2026-11-09 04:20:00 | succeeded | 0.79 | 1 row |
 | 2026-11-08 04:20:00 | succeeded | 0.49 | 1 row |
-| 2026-11-07 04:20:00 | succeeded | 0.81 | 1 row |
 
 
 ## 36 · monitorar-erros-frontend
@@ -238,9 +238,9 @@ _nenhum_
 
 | início (UTC) | status | duração (s) | mensagem |
 |---|---|---|---|
-| 2026-11-10 04:17:00 | succeeded | 0.01 | 1 row |
-| 2026-11-10 04:16:00 | succeeded | 0.04 | 1 row |
-| 2026-11-10 04:15:00 | succeeded | 0.06 | 1 row |
+| 2026-11-10 04:27:00 | succeeded | 0.01 | 1 row |
+| 2026-11-10 04:26:00 | succeeded | 0.03 | 1 row |
+| 2026-11-10 04:25:00 | succeeded | 0.01 | 1 row |
 
 
 ## 40 · gerar-snapshots-conformidade-mensal
