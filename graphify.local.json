@@ -1,0 +1,29 @@
+{
+  "version": 1,
+  "project": "Promo_Finance_V2",
+  "environment": ".tools/graphify/.venv",
+  "pin": "0.9.97",
+  "pythonVersion": "3.11",
+  "state": ".tools/graphify/local-state",
+  "output": "graphify-out",
+  "adapter": "finance",
+  "scope": [
+    "src/lib/arquitetura/analisador-imports.ts",
+    "src/lib/arquitetura/modulos.ts",
+    "src/integrations/supabase/client.ts",
+    "supabase/functions/_shared/auth-guard.ts",
+    "supabase/functions/_shared/webhook-auth.ts"
+  ],
+  "partial": true,
+  "timeoutMs": 1200000,
+  "minAvailableMb": 6144,
+  "metadata": [
+    ".gitignore",
+    ".graphifyignore",
+    ".graphifyrc",
+    "package.json",
+    "tsconfig.json",
+    "scripts/graphify/config.json",
+    "scripts/graphify/run.py"
+  ]
+}
