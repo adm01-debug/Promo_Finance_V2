@@ -2,11 +2,16 @@
  "aviso": "GERADO AUTOMATICAMENTE por scripts/ai-context/gerar.mjs — não editar à mão; será sobrescrito.",
  "format_version": 2,
  "git": {
-  "commit": "4e177c3c36e7b64052b85f1ca9f4fd6b81feebdb",
+  "commit": "8f43c3f89fb6c63bf09280f21c8251dd9ae584da",
   "branch": "main",
-  "data_commit": "2026-11-10T20:32:05Z",
+  "data_commit": "2026-11-10T21:05:40Z",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
   "ultimos_commits": [
+   {
+    "sha": "8f43c3f",
+    "data": "2026-11-10",
+    "assunto": "chore: [STEP 43] espacar cron jobs diagnosticos de alta frequencia (#234)"
+   },
    {
     "sha": "4e177c3",
     "data": "2026-11-10",
@@ -126,14 +131,9 @@
     "sha": "8f63e2c",
     "data": "2026-11-09",
     "assunto": "chore(docs): atualiza contagem de edge functions para 106 em sistema.md"
-   },
-   {
-    "sha": "97b7711",
-    "data": "2026-11-09",
-    "assunto": "fix(docs): corrige contagem de edge functions para 106 em mapa-repo.md"
    }
   ],
-  "arquivos_mudados_7d": 309,
+  "arquivos_mudados_7d": 310,
   "pastas_mais_mudadas_30d": [
    {
     "pasta": "supabase/functions/_shared",
@@ -148,10 +148,6 @@
     "mudancas": 17
    },
    {
-    "pasta": "src/components/layout",
-    "mudancas": 13
-   },
-   {
     "pasta": "PENDENCIAS.md",
     "mudancas": 11
    },
@@ -160,16 +156,12 @@
     "mudancas": 11
    },
    {
-    "pasta": "src/components/navigation",
+    "pasta": "src/components/layout",
     "mudancas": 11
    },
    {
     "pasta": ".github/workflows/ci.yml",
     "mudancas": 10
-   },
-   {
-    "pasta": "src/components/ui",
-    "mudancas": 9
    },
    {
     "pasta": "analise-prs/progresso.json",
@@ -180,11 +172,15 @@
     "mudancas": 7
    },
    {
+    "pasta": "src/components/ui",
+    "mudancas": 6
+   },
+   {
     "pasta": ".gitignore",
     "mudancas": 5
    },
    {
-    "pasta": "src/components/contas-receber",
+    "pasta": "src/components/navigation",
     "mudancas": 5
    },
    {
@@ -193,6 +189,10 @@
    },
    {
     "pasta": ".github/workflows/supabase-linter.yml",
+    "mudancas": 4
+   },
+   {
+    "pasta": "analise-prs/prs.json",
     "mudancas": 4
    }
   ],
@@ -301,11 +301,11 @@
   "autores_30d": [
    {
     "autor": "adm01-debug",
-    "commits": 68
+    "commits": 69
    },
    {
     "autor": "devin-ai-integration[bot]",
-    "commits": 20
+    "commits": 19
    },
    {
     "autor": "dependabot[bot]",
@@ -318,7 +318,7 @@
   ]
  },
  "contagens": {
-  "arquivos_total": 3521,
+  "arquivos_total": 3522,
   "arquivos_codigo": 2187,
   "linhas_codigo": 410281,
   "rotas": 128,
@@ -330,7 +330,7 @@
   "hooks": 265,
   "edge_functions": 106,
   "tabelas": 314,
-  "migrations": 944,
+  "migrations": 945,
   "cron_jobs": 21,
   "testes": 372,
   "workflows": 19,
