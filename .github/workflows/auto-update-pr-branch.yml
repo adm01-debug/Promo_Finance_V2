@@ -1,0 +1,181 @@
+# docs:
+#   gatilho: push em main, fim de CI Pipeline/Supabase Linter/Deno Edge Function Tests, agendado (minuto 11 e 41) e dispatch
+#   prova: fila de atualização serial — só a próxima PR atrasada é atualizada por execução; as demais esperam sem gastar CI
+#   falha: a fila para e as PRs atrasadas ficam BEHIND até o próximo evento
+#   avisa: Job Summary com a fila (próxima, esperando, bloqueadas por check obrigatório, em conflito real)
+# nao-e-bug:
+#   - uma-por-vez: so UMA PR e atualizada por execucao, mesmo com varias atrasadas — e o ponto (R1 do Zapp_Web_V2, origem deste workflow): atualizar todas de uma vez faz as N recomecarem a CI ao mesmo tempo, disputando runner, sem nenhuma chegar ao merge mais rapido.
+#   - conflito-fica: PR com mergeStateStatus DIRTY nunca e atualizada por este workflow — e conflito real, so o autor resolve (rebase na sua branch, nunca nesta automacao).
+name: Auto Update PR Branches
+
+# Fila serial de `update-branch` (scripts/ci/fila-merge.mjs, testado em
+# fila-merge.unit.mjs). Branch protection de `main` tem strict=true: toda PR fica
+# BEHIND a cada merge. Sem fila, o workflow anterior atualizaria TODAS de uma vez.
+#
+# Diferente do Zapp_Web_V2 (de onde isto foi portado): lá a fila só age em PR com
+# GitHub auto-merge ligado. Aqui o merge é manual (AGENTS.md regra 6.5), então a
+# fila atua em TODA PR aberta, não-draft, contra `main` que estiver BEHIND — uma
+# por execução, FIFO pelo número da PR.
+#
+# Heads criados por este workflow nascem com GITHUB_TOKEN e os checks do PR caem em
+# action_required; o passo de liberação abaixo aprova esses runs (mesma política do
+# types-sync/schema-drift deste repo).
+
+on:
+  push:
+    branches: [main]
+  workflow_run:  # zizmor: ignore[dangerous-triggers]
+    workflows:
+      - 'CI Pipeline'
+      - 'Supabase Linter (RLS/GRANT gate)'
+      - 'Deno Edge Function Tests'
+    types: [completed]
+  schedule:
+    - cron: '11,41 * * * *' # fora do minuto 0 (fila do GitHub) e dos outros crons do repo
+  workflow_dispatch: {}
+
+defaults:
+  run:
+    shell: bash --noprofile --norc -euo pipefail {0}
+
+concurrency:
+  group: auto-update-pr-branch
+  cancel-in-progress: false
+
+jobs:
+  update-behind-branches:
+    # Run de CI vindo de fork não aciona a fila: o checkout abaixo é sempre da main
+    # e o job só chama a API; nenhum código de PR é executado.
+    if: github.event_name != 'workflow_run' || github.event.workflow_run.head_repository.full_name == github.repository
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:  # zizmor: ignore[excessive-permissions]
+      contents: write
+      pull-requests: write
+      actions: write
+    steps:
+      - name: Checkout (só o script da main)
+        uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+        with:
+          persist-credentials: false
+          ref: main
+          sparse-checkout: |
+            scripts/ci/fila-merge.mjs
+            scripts/ci/github-settings-baseline.json
+
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: '22'
+
+      - name: Escolher a próxima PR da fila
+        id: fila
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: node scripts/ci/fila-merge.mjs
+
+      - name: Atualizar a próxima PR e liberar os checks
+        if: steps.fila.outputs.pr != ''
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          REPO: ${{ github.repository }}
+          FILA: ${{ steps.fila.outputs.fila }}
+        run: |
+          # Tenta a fila em ordem e para no PRIMEIRO update-branch aceito: no máximo
+          # uma PR atualizada por execução. Só uma recusa PERMANENTE comprovada
+          # (HTTP 403/422, ex.: sem permissão no head) avança para a próxima; qualquer
+          # outra falha é ambígua (o update é assíncrono e pode ter sido aceito com 202
+          # antes de a resposta se perder), então a execução para e a próxima reavalia.
+          PR=""
+          recusadas=""
+          for candidato in $FILA; do
+            if [ -n "$recusadas" ] && ! node scripts/ci/fila-merge.mjs --confirmar "$candidato" --recusadas "$recusadas"; then
+              echo "PR #$candidato: a fila recalculada não a autoriza mais; encerrando. A próxima execução reavalia."
+              exit 0
+            fi
+            if ! pr_meta=$(gh api "repos/$REPO/pulls/$candidato" --jq '{sha: .head.sha, draft: .draft, state: .state}'); then
+              echo "::warning::PR #$candidato: falha ao ler estado da PR via API; encerrando para manter a ordem da fila."
+              exit 0
+            fi
+            sha_antes=$(printf '%s' "$pr_meta" | jq -r '.sha')
+            is_draft=$(printf '%s' "$pr_meta" | jq -r '.draft')
+            pr_state=$(printf '%s' "$pr_meta" | jq -r '.state')
+            if [ "$is_draft" = "true" ] || [ "$pr_state" != "open" ]; then
+              echo "PR #$candidato: releitura mostra que a PR está draft ou fechada — pulando."
+              recusadas="$recusadas $candidato"
+              continue
+            fi
+            if ! gh api -X PUT "repos/$REPO/pulls/$candidato/update-branch" \
+              -f expected_head_sha="$sha_antes" >/dev/null 2>"$RUNNER_TEMP/update-branch.err"; then
+              if ! grep -Eq 'HTTP (403|422)' "$RUNNER_TEMP/update-branch.err"; then
+                echo "::warning::PR #$candidato: falha ambígua no update-branch (sem 403/422); encerrando para não atualizar duas PRs."
+                exit 0
+              fi
+              if grep -Eiq 'rate limit|abuse|spam' "$RUNNER_TEMP/update-branch.err"; then
+                echo "::warning::PR #$candidato: update-branch limitado pelo GitHub (rate limit/spam); encerrando."
+                exit 0
+              fi
+              if grep -q 'HTTP 422' "$RUNNER_TEMP/update-branch.err"; then
+                if ! sha_agora=$(gh api "repos/$REPO/pulls/$candidato" --jq '.head.sha') \
+                  || ! atras=$(gh api "repos/$REPO/compare/main...$sha_agora" --jq '.behind_by'); then
+                  echo "::warning::PR #$candidato: 422 sem confirmação do estado (falha ao reler); encerrando."
+                  exit 0
+                fi
+                if [ "$atras" = "0" ]; then
+                  echo "PR #$candidato: 422 porque já está em dia com a main (atualizada por fora)."
+                  exit 0
+                fi
+              fi
+              echo "::warning::PR #$candidato: update-branch recusado (403/422) e a PR segue atrás da main; tentando a próxima da fila"
+              recusadas="$recusadas $candidato"
+              continue
+            fi
+            PR="$candidato"
+            break
+          done
+          if [ -z "$PR" ]; then
+            echo "Nenhuma PR da fila aceitou update-branch nesta execução."
+            exit 0
+          fi
+          echo "Atualizada PR #$PR (próxima da fila)"
+          sha_depois="$sha_antes"
+          for tentativa in 1 2 3 4 5 6; do
+            sleep 10
+            if ! sha_depois=$(gh api "repos/$REPO/pulls/$PR" --jq '.head.sha'); then
+              echo "PR #$PR: falha temporária ao consultar head (tentativa $tentativa)"
+              sha_depois="$sha_antes"
+              continue
+            fi
+            [ "$sha_depois" != "$sha_antes" ] && break
+          done
+          if [ "$sha_depois" = "$sha_antes" ]; then
+            echo "PR #$PR: head não mudou após o update-branch; nada a liberar"
+            exit 0
+          fi
+          head_branch=""
+          head_branch=$(gh api "repos/$REPO/pulls/$PR" --jq '.head.ref' 2>/dev/null) || head_branch=""
+          aprovados=""
+          for tentativa in 1 2 3 4 5 6; do
+            novos=""
+            if [ -n "$head_branch" ]; then
+              novos=$(gh api "repos/$REPO/actions/runs?head_sha=$sha_depois&status=action_required&per_page=20" 2>/dev/null \
+                | jq -r --arg b "$head_branch" '.workflow_runs[] | select(.head_branch == $b) | .id') || novos=""
+            else
+              novos=$(gh api "repos/$REPO/actions/runs?head_sha=$sha_depois&status=action_required&per_page=20" \
+                --jq '.workflow_runs[].id' 2>/dev/null) || novos=""
+            fi
+            for run in $novos; do
+              if echo " $aprovados " | grep -q " $run "; then continue; fi
+              if gh api -X POST "repos/$REPO/actions/runs/$run/approve" >/dev/null; then
+                echo "PR #$PR: run $run liberado"
+              else
+                echo "PR #$PR: run $run recusado pelo GITHUB_TOKEN - aprovar na aba Actions"
+              fi
+              aprovados="$aprovados $run"
+            done
+            [ -n "$aprovados" ] && [ "$tentativa" -ge 3 ] && break
+            sleep 10
+          done
+          if [ -z "$aprovados" ]; then
+            echo "PR #$PR ($sha_depois): nenhum run aguardando aprovação"
+            exit 0
+          fi

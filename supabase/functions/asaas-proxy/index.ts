@@ -750,7 +750,7 @@ export const handler = async (req: Request) => {
       }
 
       case 'consultar_saldo': {
-        const guardSaldo = await exigirPapel(req, ['admin', 'admin_global', 'financeiro']);
+        const guardSaldo = await exigirPapel(req, ['admin', 'financeiro']);
         if (!guardSaldo.ok) return guardSaldo.resposta;
         result = await asaasFetch('/finance/balance', ASAAS_API_KEY);
         break;
