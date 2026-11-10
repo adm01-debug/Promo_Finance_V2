@@ -122,7 +122,7 @@
     "react-dom": "^18.2.0",
     "react-hook-form": "^7.91.0",
     "react-i18next": "^17.0.7",
-    "react-joyride": "^2.9.3",
+    "react-joyride": "^3.2.0",
     "react-markdown": "^10.1.0",
     "react-resizable-panels": "^4.7.1",
     "react-router-dom": "^7.18.2",
