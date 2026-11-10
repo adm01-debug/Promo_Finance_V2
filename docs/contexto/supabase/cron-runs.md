@@ -175,9 +175,9 @@ _nenhum_
 
 | início (UTC) | status | duração (s) | mensagem |
 |---|---|---|---|
+| 2026-11-10 19:10:00 | succeeded | 15.33 | 1 row |
 | 2026-11-10 18:10:00 | succeeded | 0.86 | 1 row |
 | 2026-11-10 17:10:00 | succeeded | 2.04 | 1 row |
-| 2026-11-10 16:10:00 | succeeded | 0.85 | 1 row |
 
 
 ## 31 · daily-log-retention
@@ -202,18 +202,18 @@ _nenhum_
 
 | início (UTC) | status | duração (s) | mensagem |
 |---|---|---|---|
-| 2026-11-10 19:02:00 | succeeded | 0.04 | 1 row |
-| 2026-11-10 19:01:00 | succeeded | 0.04 | 1 row |
-| 2026-11-10 19:00:00 | succeeded | 0.05 | 1 row |
+| 2026-11-10 19:13:00 | succeeded | 0.03 | 1 row |
+| 2026-11-10 19:12:00 | succeeded | 0.07 | 1 row |
+| 2026-11-10 19:11:00 | succeeded | 0.04 | 1 row |
 
 
 ## 34 · auditar-acessos-cross-tenant
 
 | início (UTC) | status | duração (s) | mensagem |
 |---|---|---|---|
+| 2026-11-10 19:10:00 | succeeded | 0.15 | 1 row |
 | 2026-11-10 18:10:00 | succeeded | 0.06 | 1 row |
 | 2026-11-10 17:10:00 | succeeded | 0.10 | 1 row |
-| 2026-11-10 16:10:00 | succeeded | 0.08 | 1 row |
 
 
 ## 35 · capture-index-usage-daily
@@ -238,9 +238,9 @@ _nenhum_
 
 | início (UTC) | status | duração (s) | mensagem |
 |---|---|---|---|
-| 2026-11-10 19:02:00 | succeeded | 0.02 | 1 row |
-| 2026-11-10 19:01:00 | succeeded | 0.04 | 1 row |
-| 2026-11-10 19:00:00 | succeeded | 0.05 | 1 row |
+| 2026-11-10 19:13:00 | succeeded | 0.03 | 1 row |
+| 2026-11-10 19:12:00 | succeeded | 0.06 | 1 row |
+| 2026-11-10 19:11:00 | succeeded | 0.05 | 1 row |
 
 
 ## 40 · gerar-snapshots-conformidade-mensal
