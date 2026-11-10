@@ -273,6 +273,15 @@
         "status": "succeeded"
       },
       {
+        "end_time": "2026-11-10T05:30:00.270786+00:00",
+        "jobid": 11,
+        "return_message": "1 row",
+        "runid": 224691,
+        "seconds": 0.18,
+        "start_time": "2026-11-10T05:30:00.091259+00:00",
+        "status": "succeeded"
+      },
+      {
         "end_time": "2026-11-10T05:00:00.517544+00:00",
         "jobid": 11,
         "return_message": "1 row",
@@ -288,15 +297,6 @@
         "runid": 224556,
         "seconds": 0.22,
         "start_time": "2026-11-10T04:30:00.194840+00:00",
-        "status": "succeeded"
-      },
-      {
-        "end_time": "2026-11-10T04:00:00.526331+00:00",
-        "jobid": 11,
-        "return_message": "1 row",
-        "runid": 224487,
-        "seconds": 0.29,
-        "start_time": "2026-11-10T04:00:00.240725+00:00",
         "status": "succeeded"
       },
       {
@@ -597,6 +597,15 @@
         "status": "succeeded"
       },
       {
+        "end_time": "2026-11-10T05:30:00.242405+00:00",
+        "jobid": 32,
+        "return_message": "1 row",
+        "runid": 224690,
+        "seconds": 0.14,
+        "start_time": "2026-11-10T05:30:00.100087+00:00",
+        "status": "succeeded"
+      },
+      {
         "end_time": "2026-11-10T05:15:00.261375+00:00",
         "jobid": 32,
         "return_message": "1 row",
@@ -615,39 +624,30 @@
         "status": "succeeded"
       },
       {
-        "end_time": "2026-11-10T04:45:00.183525+00:00",
-        "jobid": 32,
+        "end_time": "2026-11-10T05:36:00.020718+00:00",
+        "jobid": 33,
         "return_message": "1 row",
-        "runid": 224589,
-        "seconds": 0.06,
-        "start_time": "2026-11-10T04:45:00.128079+00:00",
+        "runid": 224706,
+        "seconds": 0,
+        "start_time": "2026-11-10T05:36:00.017308+00:00",
         "status": "succeeded"
       },
       {
-        "end_time": "2026-11-10T05:25:00.040441+00:00",
+        "end_time": "2026-11-10T05:35:00.022048+00:00",
         "jobid": 33,
         "return_message": "1 row",
-        "runid": 224680,
-        "seconds": 0.02,
-        "start_time": "2026-11-10T05:25:00.025218+00:00",
+        "runid": 224704,
+        "seconds": 0,
+        "start_time": "2026-11-10T05:35:00.018345+00:00",
         "status": "succeeded"
       },
       {
-        "end_time": "2026-11-10T05:24:00.032957+00:00",
+        "end_time": "2026-11-10T05:34:00.021920+00:00",
         "jobid": 33,
         "return_message": "1 row",
-        "runid": 224678,
-        "seconds": 0.01,
-        "start_time": "2026-11-10T05:24:00.019708+00:00",
-        "status": "succeeded"
-      },
-      {
-        "end_time": "2026-11-10T05:23:00.044507+00:00",
-        "jobid": 33,
-        "return_message": "1 row",
-        "runid": 224676,
-        "seconds": 0.02,
-        "start_time": "2026-11-10T05:23:00.025039+00:00",
+        "runid": 224702,
+        "seconds": 0,
+        "start_time": "2026-11-10T05:34:00.018344+00:00",
         "status": "succeeded"
       },
       {
@@ -705,6 +705,15 @@
         "status": "succeeded"
       },
       {
+        "end_time": "2026-11-10T05:30:00.174199+00:00",
+        "jobid": 36,
+        "return_message": "1 row",
+        "runid": 224692,
+        "seconds": 0.11,
+        "start_time": "2026-11-10T05:30:00.068695+00:00",
+        "status": "succeeded"
+      },
+      {
         "end_time": "2026-11-10T05:00:00.350065+00:00",
         "jobid": 36,
         "return_message": "1 row",
@@ -723,39 +732,30 @@
         "status": "succeeded"
       },
       {
-        "end_time": "2026-11-10T04:00:00.359666+00:00",
-        "jobid": 36,
+        "end_time": "2026-11-10T05:36:00.022163+00:00",
+        "jobid": 37,
         "return_message": "1 row",
-        "runid": 224488,
-        "seconds": 0.09,
-        "start_time": "2026-11-10T04:00:00.264791+00:00",
+        "runid": 224705,
+        "seconds": 0,
+        "start_time": "2026-11-10T05:36:00.019595+00:00",
         "status": "succeeded"
       },
       {
-        "end_time": "2026-11-10T05:25:00.036245+00:00",
+        "end_time": "2026-11-10T05:35:00.023396+00:00",
         "jobid": 37,
         "return_message": "1 row",
-        "runid": 224679,
-        "seconds": 0.01,
-        "start_time": "2026-11-10T05:25:00.024219+00:00",
+        "runid": 224703,
+        "seconds": 0,
+        "start_time": "2026-11-10T05:35:00.018911+00:00",
         "status": "succeeded"
       },
       {
-        "end_time": "2026-11-10T05:24:00.035555+00:00",
+        "end_time": "2026-11-10T05:34:00.023438+00:00",
         "jobid": 37,
         "return_message": "1 row",
-        "runid": 224677,
-        "seconds": 0.01,
-        "start_time": "2026-11-10T05:24:00.028621+00:00",
-        "status": "succeeded"
-      },
-      {
-        "end_time": "2026-11-10T05:23:00.073209+00:00",
-        "jobid": 37,
-        "return_message": "1 row",
-        "runid": 224675,
-        "seconds": 0.03,
-        "start_time": "2026-11-10T05:23:00.038459+00:00",
+        "runid": 224701,
+        "seconds": 0,
+        "start_time": "2026-11-10T05:34:00.019003+00:00",
         "status": "succeeded"
       },
       {
@@ -777,6 +777,15 @@
         "status": "succeeded"
       },
       {
+        "end_time": "2026-11-10T05:30:00.241244+00:00",
+        "jobid": 42,
+        "return_message": "ERROR:  Secret \"anon_key\" ausente no Vault. Crie-o em Project Settings > Vault com a anon key de bwwbeyolnnzppeuhgkcd.\nCONTEXT:  PL/pgSQL function chave_anon_vault() line 11 at RAISE\nSQL statement \"SELECT net.http_post(\n    url := 'https://bwwbeyolnnzppeuhgkcd.supabase.co/functions/v1/enviar-digest-",
+        "runid": 224694,
+        "seconds": 0.03,
+        "start_time": "2026-11-10T05:30:00.215564+00:00",
+        "status": "failed"
+      },
+      {
         "end_time": "2026-11-10T04:30:00.348100+00:00",
         "jobid": 42,
         "return_message": "ERROR:  Secret \"anon_key\" ausente no Vault. Crie-o em Project Settings > Vault com a anon key de bwwbeyolnnzppeuhgkcd.\nCONTEXT:  PL/pgSQL function chave_anon_vault() line 11 at RAISE\nSQL statement \"SELECT net.http_post(\n    url := 'https://bwwbeyolnnzppeuhgkcd.supabase.co/functions/v1/enviar-digest-",
@@ -792,15 +801,6 @@
         "runid": 224423,
         "seconds": 0.03,
         "start_time": "2026-11-10T03:30:00.122321+00:00",
-        "status": "failed"
-      },
-      {
-        "end_time": "2026-11-10T02:30:00.340261+00:00",
-        "jobid": 42,
-        "return_message": "ERROR:  Secret \"anon_key\" ausente no Vault. Crie-o em Project Settings > Vault com a anon key de bwwbeyolnnzppeuhgkcd.\nCONTEXT:  PL/pgSQL function chave_anon_vault() line 11 at RAISE\nSQL statement \"SELECT net.http_post(\n    url := 'https://bwwbeyolnnzppeuhgkcd.supabase.co/functions/v1/enviar-digest-",
-        "runid": 224288,
-        "seconds": 0.05,
-        "start_time": "2026-11-10T02:30:00.290101+00:00",
         "status": "failed"
       }
     ],
@@ -824,7 +824,7 @@
           "usename": "authenticator"
         },
         {
-          "n": 2,
+          "n": 1,
           "state": "idle",
           "usename": "pgbouncer"
         },
@@ -842,14 +842,9 @@
           "n": 2,
           "state": null,
           "usename": "supabase_admin"
-        },
-        {
-          "n": 1,
-          "state": "idle",
-          "usename": "supabase_storage_admin"
         }
       ],
-      "database_bytes": 525716627,
+      "database_bytes": 525765779,
       "queues": [],
       "schema_bytes": [
         {
@@ -860,12 +855,12 @@
       "storage": [],
       "top_queries": [
         {
-          "calls": 17199,
-          "mean_ms": 172.43,
+          "calls": 17316,
+          "mean_ms": 172.37,
           "query": "SELECT table_schema AS schema, table_name AS \"table\", column_name AS \"column\", grantee, string_agg(privilege_type, $2 ORDER BY privilege_type) AS privileges FROM information_schema.column_privileges cp WHERE grantee NOT ",
           "role": "postgres",
           "rows": 0,
-          "total_ms": 2965618
+          "total_ms": 2984801
         },
         {
           "calls": 1830,
@@ -876,12 +871,12 @@
           "total_ms": 2907846
         },
         {
-          "calls": 19790,
+          "calls": 19791,
           "mean_ms": 122.12,
           "query": "SELECT public.detect_query_regressions()",
           "role": "postgres",
-          "rows": 19790,
-          "total_ms": 2416805
+          "rows": 19791,
+          "total_ms": 2416943
         },
         {
           "calls": 257732,
@@ -892,20 +887,20 @@
           "total_ms": 1772261
         },
         {
-          "calls": 88669,
+          "calls": 88680,
           "mean_ms": 14.91,
           "query": "SELECT net.http_post( url := $1, headers := jsonb_build_object($2,$3,$4, public.internal_job_secret()), body := jsonb_build_object($5,$6,$7, now()) ) AS request_id",
           "role": "postgres",
-          "rows": 88669,
-          "total_ms": 1321886
+          "rows": 88680,
+          "total_ms": 1322048
         },
         {
-          "calls": 88669,
+          "calls": 88680,
           "mean_ms": 14.04,
           "query": "SELECT net.http_post( url := $1, headers := jsonb_build_object($2,$3,$4, public.internal_job_secret()), body := jsonb_build_object($5,$6,$7,$8) ) AS request_id",
           "role": "postgres",
-          "rows": 88669,
-          "total_ms": 1245085
+          "rows": 88680,
+          "total_ms": 1245154
         },
         {
           "calls": 286208,
@@ -924,12 +919,12 @@
           "total_ms": 1017471
         },
         {
-          "calls": 166,
-          "mean_ms": 5585.79,
+          "calls": 167,
+          "mean_ms": 5553.04,
           "query": "SELECT jobid, runid, status, start_time, end_time, EXTRACT($2 FROM (end_time - start_time))::numeric(10,2) AS seconds, left(return_message, $3) AS return_message FROM (SELECT *, row_number() OVER (PARTITION BY jobid ORDE",
           "role": "postgres",
-          "rows": 12948,
-          "total_ms": 927241
+          "rows": 13026,
+          "total_ms": 927358
         },
         {
           "calls": 2544,
@@ -3273,7 +3268,7 @@
         "is_primary": false,
         "is_unique": true,
         "name": "integration_secrets_chave_key",
-        "scans": 7882,
+        "scans": 7883,
         "schema": "public",
         "table": "integration_secrets"
       },
@@ -3885,7 +3880,7 @@
         "is_primary": false,
         "is_unique": false,
         "name": "idx_perf_alerts_created_severity",
-        "scans": 44266,
+        "scans": 44267,
         "schema": "public",
         "table": "performance_alerts"
       },
@@ -3903,7 +3898,7 @@
         "is_primary": false,
         "is_unique": true,
         "name": "performance_alerts_source_alert_key_alert_hour_key",
-        "scans": 119830,
+        "scans": 119837,
         "schema": "public",
         "table": "performance_alerts"
       },
@@ -4191,7 +4186,7 @@
         "is_primary": false,
         "is_unique": false,
         "name": "idx_query_telemetry_created_at",
-        "scans": 61191,
+        "scans": 61194,
         "schema": "public",
         "table": "query_telemetry"
       },
@@ -5419,7 +5414,7 @@
         "dead_rows": 2016,
         "est_rows": 16390,
         "heap_bytes": 10452992,
-        "idx_scan": 64514,
+        "idx_scan": 64517,
         "index_bytes": 3817472,
         "last_autoanalyze": "2026-11-09T14:01:01.221299+00:00",
         "last_autovacuum": "2026-11-07T03:00:47.785420+00:00",
@@ -5442,10 +5437,10 @@
         "total_bytes": 5193728
       },
       {
-        "dead_rows": 591,
+        "dead_rows": 602,
         "est_rows": 3864,
         "heap_bytes": 2162688,
-        "idx_scan": 164905,
+        "idx_scan": 164913,
         "index_bytes": 1105920,
         "last_autoanalyze": "2026-11-09T16:30:01.886176+00:00",
         "last_autovacuum": "2026-11-07T07:30:52.622100+00:00",
@@ -6251,7 +6246,7 @@
         "dead_rows": 1,
         "est_rows": 0,
         "heap_bytes": 8192,
-        "idx_scan": 7884,
+        "idx_scan": 7885,
         "index_bytes": 32768,
         "last_autoanalyze": null,
         "last_autovacuum": null,
