@@ -16,9 +16,9 @@
 
 | início (UTC) | status | duração (s) | mensagem |
 |---|---|---|---|
+| 2026-11-10 16:00:00 | succeeded | 0.30 | 1 row |
 | 2026-11-10 15:00:00 | succeeded | 0.39 | 1 row |
 | 2026-11-10 14:00:00 | succeeded | 0.48 | 1 row |
-| 2026-11-10 13:00:00 | succeeded | 0.39 | 1 row |
 
 
 ## 4 · cleanup-cron-logs
@@ -68,9 +68,9 @@
 
 | início (UTC) | status | duração (s) | mensagem |
 |---|---|---|---|
+| 2026-11-10 16:00:00 | succeeded | 0.31 | 1 row |
 | 2026-11-10 15:30:00 | succeeded | 0.20 | 1 row |
 | 2026-11-10 15:00:00 | succeeded | 0.48 | 1 row |
-| 2026-11-10 14:30:00 | succeeded | 0.26 | 1 row |
 
 
 ## 12 · integrity-invariants-hourly
@@ -193,18 +193,18 @@ _nenhum_
 
 | início (UTC) | status | duração (s) | mensagem |
 |---|---|---|---|
+| 2026-11-10 16:00:00 | succeeded | 0.07 | 1 row |
 | 2026-11-10 15:45:00 | succeeded | 0.01 | 1 row |
 | 2026-11-10 15:30:00 | succeeded | 0.03 | 1 row |
-| 2026-11-10 15:15:00 | succeeded | 0.05 | 1 row |
 
 
 ## 33 · webhook-retry-worker-1min
 
 | início (UTC) | status | duração (s) | mensagem |
 |---|---|---|---|
-| 2026-11-10 15:52:00 | succeeded | 0.01 | 1 row |
-| 2026-11-10 15:51:00 | succeeded | 0.01 | 1 row |
-| 2026-11-10 15:50:00 | succeeded | 0.00 | 1 row |
+| 2026-11-10 16:02:00 | succeeded | 0.02 | 1 row |
+| 2026-11-10 16:01:00 | succeeded | 0.04 | 1 row |
+| 2026-11-10 16:00:00 | succeeded | 0.02 | 1 row |
 
 
 ## 34 · auditar-acessos-cross-tenant
@@ -229,18 +229,18 @@ _nenhum_
 
 | início (UTC) | status | duração (s) | mensagem |
 |---|---|---|---|
+| 2026-11-10 16:00:00 | succeeded | 0.03 | 1 row |
 | 2026-11-10 15:30:00 | succeeded | 0.02 | 1 row |
 | 2026-11-10 15:00:00 | succeeded | 0.06 | 1 row |
-| 2026-11-10 14:30:00 | succeeded | 0.12 | 1 row |
 
 
 ## 37 · evaluate-delivery-alerts-every-min
 
 | início (UTC) | status | duração (s) | mensagem |
 |---|---|---|---|
-| 2026-11-10 15:52:00 | succeeded | 0.02 | 1 row |
-| 2026-11-10 15:51:00 | succeeded | 0.01 | 1 row |
-| 2026-11-10 15:50:00 | succeeded | 0.02 | 1 row |
+| 2026-11-10 16:02:00 | succeeded | 0.02 | 1 row |
+| 2026-11-10 16:01:00 | succeeded | 0.06 | 1 row |
+| 2026-11-10 16:00:00 | succeeded | 0.01 | 1 row |
 
 
 ## 40 · gerar-snapshots-conformidade-mensal
