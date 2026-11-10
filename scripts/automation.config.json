@@ -1,4 +1,4 @@
-﻿{
+{
   "version": 1,
   "name": "Promo_Finance_V2",
   "entrypoint": "scripts/automation.mjs",
