@@ -15,7 +15,8 @@ _emit() {
 
 publish_event() {
   local event_type="$1"
-  psql "$STAGING_DB_URL" -v ON_ERROR_STOP=1 -Atc \
+  # -q: sem ele o id capturado vinha com a tag "INSERT 0 1" na linha seguinte.
+  psql "$STAGING_DB_URL" -v ON_ERROR_STOP=1 -q -Atc \
     "INSERT INTO public.webhook_events (event_type, raw_payload)
      VALUES ('$event_type',
              jsonb_build_object(

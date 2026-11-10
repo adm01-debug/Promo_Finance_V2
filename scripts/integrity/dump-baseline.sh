@@ -9,10 +9,16 @@ DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 OUT="$DIR/baseline"
 mkdir -p "$OUT"
 
+# Gera numa pasta temporária e só publica no fim: redirecionar direto para
+# baseline/*.json truncava o arquivo versionado antes de o psql responder, e
+# uma falha de conexão deixava "{}" / arquivo vazio no lugar do baseline.
+TMP="$(mktemp -d "$OUT/.dump.XXXXXX")"
+trap 'rm -rf "$TMP"' EXIT
+
 # --- schema-counts.json ----------------------------------------------------
 psql "$PROD_DB_URL" -v ON_ERROR_STOP=1 -A -t -F , <<'SQL' \
   | awk -F, 'BEGIN{printf "{"} {printf "%s\"%s\":%s", (NR>1?",":""), $1, $2} END{print "}"}' \
-  > "$OUT/schema-counts.json"
+  > "$TMP/schema-counts.json"
 SELECT 'tables',    count(*) FROM pg_class c JOIN pg_namespace n ON n.oid=c.relnamespace
   WHERE n.nspname='public' AND c.relkind='r';
 SELECT 'views',     count(*) FROM pg_class c JOIN pg_namespace n ON n.oid=c.relnamespace
@@ -25,7 +31,7 @@ SELECT 'policies',  count(*) FROM pg_policies WHERE schemaname='public';
 SQL
 
 # --- expected-policies.json (contagem por tabela) --------------------------
-psql "$PROD_DB_URL" -v ON_ERROR_STOP=1 -A -t <<'SQL' > "$OUT/expected-policies.json"
+psql "$PROD_DB_URL" -v ON_ERROR_STOP=1 -A -t <<'SQL' > "$TMP/expected-policies.json"
 SELECT COALESCE(jsonb_object_agg(tablename, cnt), '{}'::jsonb)::text FROM (
   SELECT tablename, count(*) AS cnt FROM pg_policies
   WHERE schemaname='public' GROUP BY tablename
@@ -33,11 +39,19 @@ SELECT COALESCE(jsonb_object_agg(tablename, cnt), '{}'::jsonb)::text FROM (
 SQL
 
 # --- expected-crons.json ---------------------------------------------------
-psql "$PROD_DB_URL" -v ON_ERROR_STOP=1 -A -t <<'SQL' > "$OUT/expected-crons.json"
+psql "$PROD_DB_URL" -v ON_ERROR_STOP=1 -A -t <<'SQL' > "$TMP/expected-crons.json"
 SELECT COALESCE(jsonb_agg(jsonb_build_object('jobname', jobname, 'schedule', schedule)
        ORDER BY jobname), '[]'::jsonb)::text
 FROM cron.job WHERE active = true;
 SQL
+
+# psql pode sair com 0 sem devolver linha (resposta vazia): não publicar isso.
+grep -q '"tables":[0-9]' "$TMP/schema-counts.json" \
+  || { echo "❌ schema-counts.json sem contagens — baseline preservado" >&2; exit 1; }
+for f in expected-policies.json expected-crons.json; do
+  [ -s "$TMP/$f" ] || { echo "❌ $f vazio — baseline preservado" >&2; exit 1; }
+done
+mv -f "$TMP/schema-counts.json" "$TMP/expected-policies.json" "$TMP/expected-crons.json" "$OUT/"
 
 # --- allowed-public-tables.json --------------------------------------------
 # Preserva a whitelist manual — nunca sobrescreve se já existir.
