@@ -1,6 +1,6 @@
 # 10 · ACESSO E SEGURANÇA — quem pode o quê
 
-> Gerado automaticamente por AI Context Sync v1.3.2 · commit `e914163c67` · branch `main` · 2026-11-10 10:26 UTC
+> Gerado automaticamente por AI Context Sync v1.3.2 · commit `79382a6e62` · branch `main` · 2026-11-10 10:33 UTC
 > Não edite à mão — regras humanas vão em `manual/`.
 
 ## Perfis / roles identificados
@@ -294,7 +294,7 @@
 >
 > Origem: `supabase/migrations/20260314212617_0a1622f1-b87c-45b4-96af-b589c5f843e0.sql`, `supabase/migrations/20260314213748_9f7b6de3-00ed-4be1-a331-21da0a4ce4d2.sql`, `supabase/migrations/20260508142905_cd82af24-5945-4425-b592-a83280a9769a.sql`, `supabase/migrations/20260508164134_b26ebd81-74d3-41bc-b11a-887516242066.sql`, `supabase/migrations/20260509120200_4c66bf65-6bc5-48d5-8a35-6bf08e36553c.sql`, `supabase/migrations/20260518165422_5d19ef90-1069-47a2-9850-897c841223f5.sql`, `supabase/migrations/20260518175808_24a38d93-e893-4520-a1c0-4aae3736be3d.sql`, `supabase/migrations/20260518180000_73eeb2d6-0d42-4b13-99c6-272287342949.sql`, `supabase/migrations/20260519120718_ee2af21a-48fa-48f5-b5de-9fcbdb85bbcb.sql`, `supabase/migrations/20260519120818_c1b736d5-2911-43e5-9e4e-8b7822c71194.sql`, `supabase/migrations/20260519121119_b30b4133-b443-4f58-962a-7956a03614c0.sql`, `supabase/migrations/20260519121319_5128c289-f051-4578-a625-381857d1538b.sql`, `supabase/migrations/20260519160631_c31c5db9-fca5-4a62-92e6-1d780fa9fb44.sql`, `supabase/migrations/20260522142604_6665fe77-12f7-40ef-8e4f-17d9525d3b69.sql`, `supabase/migrations/20260522142711_a38cc086-ae93-4fd5-a53b-dcfe1e359450.sql`, `supabase/migrations/20260527125840_4c2450b3-29f0-46f6-8f8e-e19c9f0061c3.sql`, `supabase/migrations/20260531123734_e923a347-4d43-4af5-b68f-db154ca7f62b.sql`, `supabase/migrations/20260531123935_090ff7cb-3843-4573-a977-3eae18581dd7.sql`, `supabase/migrations/20260711183150_5cd96ae1-0804-4d73-b367-904722df8877.sql`, `supabase/migrations/20260728173440_c9548968-94e3-4c53-939e-2d7cf890be29.sql`, `supabase/migrations/20260728213519_18e89190-27ac-4f1a-9ec9-0fa78dd00208.sql`, `supabase/migrations/20260728215040_cc625266-ea37-4fa7-9fc3-02b304292281.sql`, `supabase/migrations/20260902240000_fix_rls_gaps_pos_pr54.sql`
 
-## Onde o RLS é IGNORADO (service_role) — 328 arquivo(s)
+## Onde o RLS é IGNORADO (service_role) — 329 arquivo(s)
 
 - `db/functions/observability/capture_slow_queries.sql`
 - `db/functions/retention/cleanup_log_tables.sql`
@@ -312,6 +312,7 @@
 - `scripts/graphify/test_run.py`
 - `scripts/healthcheck/03_realtime.mjs`
 - `scripts/integrity/03_grants.sql`
+- `scripts/inventario/gerar-banco.mjs`
 - `scripts/regras_negocio/generate.py`
 - `scripts/security/test-canonical-db-gates.mjs`
 - `scripts/security/test-canonical-db-gates.test.mjs`
@@ -445,8 +446,7 @@
 - `supabase/migrations/20260418133956_8e6357ff-8c8e-4f67-90f8-d140288933d0.sql`
 - `supabase/migrations/20260418140247_dc7264b3-fa0f-4add-94d8-a73b6eaa42d0.sql`
 - `supabase/migrations/20260418143540_10bd7364-4c7c-4962-8a95-260d4cc151e1.sql`
-- `supabase/migrations/20260418151247_d0085f49-21ab-4234-ba69-de4205afa739.sql`
-- … +178 (lista completa em `context.json`)
+- … +179 (lista completa em `context.json`)
 
 ## Funções SQL `SECURITY DEFINER` (rodam com privilégio do dono, ignoram RLS)
 

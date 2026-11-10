@@ -4,13 +4,13 @@
  "stack": {
   "linguagens": [
    "TypeScript (2104)",
-   "SQL (1006)",
-   "Markdown (185)",
-   "JavaScript (40)",
+   "SQL (1007)",
+   "Markdown (186)",
+   "JavaScript (45)",
    "JSON (32)",
    "Python (28)",
    "Shell (23)",
-   "YAML (21)"
+   "YAML (22)"
   ],
   "linguagem_principal": "TypeScript",
   "framework": "React",
@@ -466,6 +466,44 @@
    "actions": [
     "actions/checkout",
     "actions/setup-python"
+   ]
+  },
+  {
+   "arquivo": ".github/workflows/inventario-estado.yml",
+   "nome": "Inventário do estado real (semanal)",
+   "gatilhos": [
+    "pull_request",
+    "push",
+    "schedule",
+    "workflow_dispatch"
+   ],
+   "crons": [
+    "41 9 * * 1"
+   ],
+   "branches": [
+    "main"
+   ],
+   "jobs": [
+    "testes",
+    "gerar"
+   ],
+   "permissoes": [
+    "contents: read"
+   ],
+   "scripts_usados": [
+    "scripts/inventario/gerar-banco.mjs",
+    "scripts/inventario/gerar-repo.mjs",
+    "scripts/inventario/gerar-rotas.mjs",
+    "scripts/inventario/mudou-conteudo.mjs"
+   ],
+   "npm_scripts": [],
+   "secrets": [
+    "SUPABASE_ACCESS_TOKEN"
+   ],
+   "actions": [
+    "actions/checkout",
+    "actions/setup-node",
+    "actions/upload-artifact"
    ]
   },
   {
@@ -1292,6 +1330,10 @@
     "arquivos": 5
    },
    {
+    "host": "api.supabase.com",
+    "arquivos": 4
+   },
+   {
     "host": "app.test",
     "arquivos": 4
    },
@@ -1302,10 +1344,6 @@
    {
     "host": "idp.acme",
     "arquivos": 4
-   },
-   {
-    "host": "api.supabase.com",
-    "arquivos": 3
    },
    {
     "host": "ipapi.co",

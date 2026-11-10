@@ -1679,7 +1679,7 @@
     "src/pages/Asaas.parts.tsx",
     "src/pages/Asaas.tsx"
    ],
-   "coberto_por_testes": 0
+   "coberto_por_testes": 1
   },
   {
    "arquivo": "src/hooks/useAuditLog.ts",

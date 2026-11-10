@@ -22,7 +22,7 @@
   ],
   "testes": [
    "co-localizado (__tests__) (239)",
-   "outro (47)",
+   "outro (48)",
    "co-localizado (*.test) (40)"
   ],
   "edge_functions": "supabase/functions",
@@ -58,11 +58,11 @@
  "commits": {
   "convencao": "conventional commits (observado)",
   "exemplos": [
+   "feat(inventario): inventário autônomo do estado real (banco, rotas e edge functions) (#265)",
    "fix: bump date-fns from 2.30.0 to 4.4.0 (#298)",
    "fix: bump input-otp from 1.4.2 to 1.5.0 (#295)",
    "chore: documentação final sessão merge-prs (prs.json + RELATORIO + dossiers)",
-   "fix: compatibilidade TypeScript com Zod v4 (supersede #211)",
-   "infra: bloqueia wipe de AGENTS.md e docs/agentes por sessão paralela (#263)"
+   "fix: compatibilidade TypeScript com Zod v4 (supersede #211)"
   ]
  },
  "pr_template": ".github/PULL_REQUEST_TEMPLATE.md",

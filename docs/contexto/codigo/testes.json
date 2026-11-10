@@ -5,11 +5,11 @@
   "vitest",
   "playwright"
  ],
- "total": 366,
+ "total": 367,
  "por_tipo": {
   "e2e": 35,
   "pytest": 15,
-  "unit": 310
+  "unit": 311
  },
  "onde_ficam": [
   {
@@ -18,7 +18,7 @@
   },
   {
    "padrao": "outro",
-   "arquivos": 47
+   "arquivos": 48
   },
   {
    "padrao": "co-localizado (*.test)",
@@ -457,6 +457,18 @@
    "linhas": 202,
    "testa": [],
    "casos": 0
+  },
+  {
+   "arquivo": "scripts/inventario/inventario.unit.mjs",
+   "tipo": "unit",
+   "linhas": 172,
+   "testa": [
+    "scripts/inventario/gerar-banco.mjs",
+    "scripts/inventario/gerar-rotas.mjs",
+    "scripts/inventario/mudou-conteudo.mjs",
+    "src/hooks/useAsaas.ts"
+   ],
+   "casos": 16
   },
   {
    "arquivo": "scripts/regras_negocio/test_generate.py",
@@ -3270,6 +3282,9 @@
   "scripts/edge-deploy/smoke-functions.mjs": 1,
   "scripts/edge-deploy/unchanged-from-log.mjs": 1,
   "scripts/edge-deploy/verify-remote.mjs": 1,
+  "scripts/inventario/gerar-banco.mjs": 1,
+  "scripts/inventario/gerar-rotas.mjs": 1,
+  "scripts/inventario/mudou-conteudo.mjs": 1,
   "scripts/security/test-canonical-db-gates.mjs": 1,
   "scripts/security/test-rpc-runtime.ts": 1,
   "src/components/accessibility/SkipLinks.tsx": 1,
@@ -3333,6 +3348,7 @@
   "src/hooks/useAnomaliaPreferences.ts": 1,
   "src/hooks/useApiKeys.ts": 1,
   "src/hooks/useAprovacoes.ts": 1,
+  "src/hooks/useAsaas.ts": 1,
   "src/hooks/useBoletos.ts": 1,
   "src/hooks/useBulkActions.ts": 1,
   "src/hooks/useCashbackSimulador.ts": 1,
@@ -3727,7 +3743,6 @@
    "src/hooks/useAnomaliasReabertasIndex.ts",
    "src/hooks/useAprovacoesPendentesCount.ts",
    "src/hooks/useApuracoesTributarias.ts",
-   "src/hooks/useAsaas.ts",
    "src/hooks/useAuditLog.ts",
    "src/hooks/useAuditoriaCFC.ts",
    "src/hooks/useAuditoriaCompliance.ts",

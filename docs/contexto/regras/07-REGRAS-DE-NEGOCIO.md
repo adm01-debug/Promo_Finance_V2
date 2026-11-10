@@ -1,6 +1,6 @@
 # 07 · REGRAS DE NEGÓCIO
 
-> Gerado automaticamente por AI Context Sync v1.3.2 · commit `e914163c67` · branch `main` · 2026-11-10 10:26 UTC
+> Gerado automaticamente por AI Context Sync v1.3.2 · commit `79382a6e62` · branch `main` · 2026-11-10 10:33 UTC
 > Não edite à mão — regras humanas vão em `manual/`.
 
 ## A. Regras escritas por humanos (`manual/` — prioridade máxima, nunca sobrescrito)
@@ -4727,6 +4727,18 @@ Erros lançados por funções SQL (`RAISE EXCEPTION` = regra de negócio no banc
 | Nenhuma migration SQL encontrada. | `scripts/graphify/sql_inventory.py` |
 | SQL com string, comentário ou dollar-quote não fechado. | `scripts/graphify/sql_inventory.py` |
 | falha sintética de cópia | `scripts/graphify/test_run.py` |
+| --entrada exige o caminho do arquivo com a resposta do banco.sql | `scripts/inventario/gerar-banco.mjs` |
+| Management API ${caminho} respondeu HTTP ${res.status} | `scripts/inventario/gerar-banco.mjs` |
+| SUPABASE_PROJECT_REF=${ref} nao e o banco oficial (${PROJETO_OFICIAL}). | `scripts/inventario/gerar-banco.mjs` |
+| a resposta nao parece ser do banco oficial: ${comuns} tabelas em comum com types.ts  | `scripts/inventario/gerar-banco.mjs` |
+| a saida tem algo com cara de credencial; nada foi gravado. Revise banco.sql. | `scripts/inventario/gerar-banco.mjs` |
+| entrada sem as chaves: ${faltando.join( | `scripts/inventario/gerar-banco.mjs` |
+| entrada sem tabelas | `scripts/inventario/gerar-banco.mjs` |
+| format_version ${dado.format_version} desconhecido (esperado 1) | `scripts/inventario/gerar-banco.mjs` |
+| sem --entrada e sem SUPABASE_ACCESS_TOKEN: nada para ler (veja o cabecalho do script). | `scripts/inventario/gerar-banco.mjs` |
+| types.ts sem o bloco  | `scripts/inventario/gerar-banco.mjs` |
+| ripgrep (rg) falhou com exit ${status}; o inventario nao foi gerado. | `scripts/inventario/gerar-repo.mjs` |
+| ripgrep (rg) nao encontrado; o inventario nao pode ser gerado com seguranca. | `scripts/inventario/gerar-repo.mjs` |
 | ACL divergente em funções sensíveis: ${failures.join( | `scripts/security/test-canonical-db-gates.mjs` |
 | Constraint performance_alerts_source_check esperada em 1 linha, recebidas ${rows.length}. | `scripts/security/test-canonical-db-gates.mjs` |
 | Constraint performance_alerts_source_check sem o valor obrigatório  | `scripts/security/test-canonical-db-gates.mjs` |
@@ -4963,19 +4975,7 @@ Erros lançados por funções SQL (`RAISE EXCEPTION` = regra de negócio no banc
 | Créditos de IA esgotados. | `src/components/copilot/CopilotGlobalFloat.tsx` |
 | Erro ao iniciar conversa. | `src/components/copilot/CopilotGlobalFloat.tsx` |
 | Limite de requisições. Tente em alguns segundos. | `src/components/copilot/CopilotGlobalFloat.tsx` |
-| Sem permissão para usar o Copilot. | `src/components/copilot/CopilotGlobalFloat.tsx` |
-| Sessão expirada — refaça login. | `src/components/copilot/CopilotGlobalFloat.tsx` |
-| Erro na análise | `src/components/dashboard/PrevisaoIA.tsx` |
-| ; import {   Select,   SelectContent,   SelectItem,   SelectTrigger,   SelectValue, } from  | `src/components/demonstrativos/ContasNaoClassificadasDialog.tsx` |
-| Erro ao salvar | `src/components/demonstrativos/ContasNaoClassificadasDialog.tsx` |
-| Selecione ao menos uma classificação | `src/components/demonstrativos/ContasNaoClassificadasDialog.tsx` |
-| Erro ao exportar JSON | `src/components/demonstrativos/ExportDemonstrativoPDF.tsx` |
-| Erro ao exportar PDF | `src/components/demonstrativos/ExportDemonstrativoPDF.tsx` |
-| ; import type { FonteDemonstrativo } from  | `src/components/demonstrativos/FonteDadosToggle.tsx` |
-| Adicione pelo menos um signatário | `src/components/documentos/AssinaturaDigital.tsx` |
-| Preencha nome e email | `src/components/documentos/AssinaturaDigital.tsx` |
-| Erro ao analisar  | `src/components/expert/DocumentAnalyzer.tsx` |
-| … +704 linhas — lista completa em `context.json` | |
+| … +716 linhas — lista completa em `context.json` | |
 
 ## J. Controle de acesso no código (checagens de perfil/permissão)
 
