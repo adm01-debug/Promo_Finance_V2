@@ -6,7 +6,7 @@ Valores aproximados de propósito, para não gerar commits a cada coleta. Fora d
 
 | métrica | valor |
 |---|---|
-| tamanho | 513.1 MB |
+| tamanho | 513.2 MB |
 | schema public | 95.6 MB |
 
 
@@ -19,7 +19,7 @@ Valores aproximados de propósito, para não gerar commits a cada coleta. Fora d
 | public.index_usage_snapshots | ~49.6k | 14.2 MB | 7.9 MB | 6.3 MB | 0 | ~20 | ~51.7k | 2026-11-02 |
 | public.query_telemetry | ~15.4k | 13.6 MB | 10.0 MB | 3.6 MB | ~2.7k | ~2k | ~64.7k | 2026-11-07 |
 | public.bloat_snapshots | ~19.4k | 5.0 MB | 2.8 MB | 2.2 MB | 0 | 7 | ~23.7k | 2026-10-31 |
-| public.performance_alerts | ~4k | 3.3 MB | 2.2 MB | 1.1 MB | ~10 | ~20 | ~165.5k | 2026-11-11 |
+| public.performance_alerts | ~4k | 3.3 MB | 2.2 MB | 1.1 MB | ~20 | ~20 | ~165.5k | 2026-11-11 |
 | public.login_attempts | ~1.4k | 1.9 MB | 1.3 MB | 568.0 KB | 0 | ~3.9k | ~860 | 2026-11-10 |
 | public.integrity_alerts | ~1.7k | 1.6 MB | 1.1 MB | 488.0 KB | 0 | ~30.1k | ~17k | 2026-10-15 |
 | public.alertas | ~1.6k | 536.0 KB | 368.0 KB | 128.0 KB | 0 | ~1.4M | ~80 | 2026-10-23 |
@@ -314,11 +314,11 @@ _nenhum_
 ## Consultas mais custosas (pg_stat_statements, desde o último reset)
 | role | chamadas (~) | total ms (~) | média ms | query |
 |---|---|---|---|---|
-| postgres | ~36k | ~6.2M | 171.05 | `SELECT table_schema AS schema, table_name AS "table", column_name AS "column", grantee, string_agg(privilege_type, $2 ORDER BY privilege_type) AS privileges FROM information_schema.column_privileges cp WHERE grantee NOT ` |
+| postgres | ~36.2k | ~6.2M | 171.04 | `SELECT table_schema AS schema, table_name AS "table", column_name AS "column", grantee, string_agg(privilege_type, $2 ORDER BY privilege_type) AS privileges FROM information_schema.column_privileges cp WHERE grantee NOT ` |
 | postgres | ~1.9k | ~3M | 1604.56 | `SELECT public.watch_cron_failures($1,$2)` |
 | postgres | ~19.9k | ~2.4M | 122.56 | `SELECT public.detect_query_regressions()` |
 | authenticated | ~278.6k | ~2M | 7.12 | `WITH pgrst_source AS ( SELECT "public"."alertas".* FROM "public"."alertas" ORDER BY "public"."alertas"."created_at" DESC LIMIT $1 OFFSET $2 ) SELECT $3::bigint AS total_result_set, pg_catalog.count(_postgrest_t) AS page_` |
-| postgres | ~330 | ~1.4M | 4208.17 | `SELECT jobid, runid, status, start_time, end_time, EXTRACT($2 FROM (end_time - start_time))::numeric(10,2) AS seconds, left(return_message, $3) AS return_message FROM (SELECT *, row_number() OVER (PARTITION BY jobid ORDE` |
+| postgres | ~330 | ~1.4M | 4195.73 | `SELECT jobid, runid, status, start_time, end_time, EXTRACT($2 FROM (end_time - start_time))::numeric(10,2) AS seconds, left(return_message, $3) AS return_message FROM (SELECT *, row_number() OVER (PARTITION BY jobid ORDE` |
 | postgres | ~90.5k | ~1.4M | 14.94 | `SELECT net.http_post( url := $1, headers := jsonb_build_object($2,$3,$4, public.internal_job_secret()), body := jsonb_build_object($5,$6,$7, now()) ) AS request_id` |
 | authenticated | ~306k | ~1.3M | 4.39 | `WITH pgrst_source AS ( SELECT "public"."vw_contas_pagar_painel".* FROM "public"."vw_contas_pagar_painel" ORDER BY "public"."vw_contas_pagar_painel"."data_vencimento" ASC LIMIT $1 OFFSET $2 ) SELECT $3::bigint AS total_re` |
 | postgres | ~90.5k | ~1.3M | 14.08 | `SELECT net.http_post( url := $1, headers := jsonb_build_object($2,$3,$4, public.internal_job_secret()), body := jsonb_build_object($5,$6,$7,$8) ) AS request_id` |
@@ -335,10 +335,11 @@ _nenhum_
 | usuário | estado | n |
 |---|---|---|
 | authenticator | idle | 2 |
-| pgbouncer | idle | 1 |
+| pgbouncer | idle | 2 |
 | postgres | active | 1 |
 | supabase_admin | idle | 2 |
 | supabase_admin |  | 2 |
+| supabase_storage_admin | idle | 1 |
 
 
 ## Saúde dos serviços
@@ -370,7 +371,7 @@ _nenhum_
       "connected_cluster": 0,
       "db_connected": false,
       "healthy": true,
-      "node": "realtime@2600:1f18:67fc:ac02:90a5:694a:bde1:9b5d",
+      "node": "realtime@2600:1f18:67fc:ac02:2971:c320:967d:242",
       "region": "us-east-1",
       "replication_connected": false
     },
