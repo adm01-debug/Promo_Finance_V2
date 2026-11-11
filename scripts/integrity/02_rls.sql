@@ -48,8 +48,11 @@ views_no_invoker AS (
   JOIN pg_namespace n ON n.oid = c.relnamespace
   WHERE n.nspname = 'public'
     AND c.relkind = 'v'
-    AND NOT COALESCE(
-      (SELECT (reloptions::text) LIKE '%security_invoker=true%'), false
+    -- A opção fica gravada como foi escrita: security_invoker=on é tão válido
+    -- quanto =true (44 views das migrations usam "on" e eram acusadas aqui).
+    AND NOT EXISTS (
+      SELECT 1 FROM unnest(COALESCE(c.reloptions, '{}'::text[])) o
+      WHERE lower(o) ~ '^security_invoker=(on|true|yes|1)$'
     )
 )
 SELECT * FROM (

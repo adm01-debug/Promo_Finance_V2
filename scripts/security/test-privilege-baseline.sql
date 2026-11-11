@@ -849,14 +849,15 @@ BEGIN
   WHERE n.nspname = 'public'
     AND c.relname = ANY(v_evidence)
     AND p.polpermissive
-    AND p.polcmd IN ('u', 'd', '*')
+    -- pg_policy.polcmd: 'w' = UPDATE (não 'u'), 'd' = DELETE, '*' = ALL.
+    AND p.polcmd IN ('w', 'd', '*')
     AND EXISTS (
       SELECT 1 FROM unnest(p.polroles) r
       WHERE pg_get_userbyid(r) IN ('authenticated', 'public', 'anon')
     )
     AND (
       -- UPDATE e FOR ALL nunca são aceitáveis: mutação de evidência.
-      p.polcmd IN ('u', '*')
+      p.polcmd IN ('w', '*')
       -- DELETE só passa se exigir papel administrativo comprovado.
       OR coalesce(pg_get_expr(p.polqual, p.polrelid), '') NOT LIKE '%has_role%'
     );

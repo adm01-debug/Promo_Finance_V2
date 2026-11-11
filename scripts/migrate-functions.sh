@@ -15,25 +15,53 @@
 #                                                           # `supabase_vault` required=true do env.manifest.json
 #   FUNCTIONS_DIR=supabase/functions                        # default
 #   STOP_ON_FAIL=1                                          # aborta no 1º deploy que falhar
+#   DEPLOY_LOG_DIR=/tmp                                     # default; pasta do log JSONL
 #
-# Saída: /tmp/deploy-log-YYYYMMDD-HHMM.jsonl
+# Saída: /tmp/deploy-log-YYYYMMDD-HHMM-<pid>.jsonl
 
 set -euo pipefail
 
 DRY_RUN=0
 ONLY=""
+ONLY_SET=0
 FUNCTIONS_DIR="${FUNCTIONS_DIR:-supabase/functions}"
 CONFIG_TOML="supabase/config.toml"
 
 while [[ $# -gt 0 ]]; do
   case "$1" in
     --dry-run) DRY_RUN=1; shift ;;
-    --only) ONLY="$2"; shift 2 ;;
+    --only)
+      [[ $# -ge 2 ]] || { echo "--only exige uma lista de functions (fn1,fn2)" >&2; exit 2; }
+      ONLY="$2"; ONLY_SET=1; shift 2 ;;
     -h|--help)
-      sed -n '2,20p' "$0"; exit 0 ;;
+      sed -n '2,21p' "$0"; exit 0 ;;
     *) echo "Argumento desconhecido: $1" >&2; exit 2 ;;
   esac
 done
+
+# `--only ""` (input vazio do workflow, variável não definida) não pode virar
+# deploy em lote de TODAS as functions: a lista é normalizada (trim, sem
+# vazios, sem repetição) e precisa sobrar ao menos um nome válido.
+declare -a ONLY_FNS=()
+if [[ $ONLY_SET -eq 1 ]]; then
+  IFS=',' read -ra _only_raw <<< "$ONLY"
+  for _fn in "${_only_raw[@]}"; do
+    _fn="${_fn#"${_fn%%[![:space:]]*}"}"
+    _fn="${_fn%"${_fn##*[![:space:]]}"}"
+    [[ -z "$_fn" ]] && continue
+    if [[ ! "$_fn" =~ ^[A-Za-z0-9_-]+$ ]]; then
+      echo "--only: nome de function inválido: '$_fn' (use letras, números, '-' e '_')" >&2
+      exit 2
+    fi
+    [[ " ${ONLY_FNS[*]} " == *" $_fn "* ]] && continue
+    ONLY_FNS+=("$_fn")
+  done
+  if [[ ${#ONLY_FNS[@]} -eq 0 ]]; then
+    echo "--only recebeu lista vazia — informe ao menos uma function (para o lote completo, omita --only)" >&2
+    exit 2
+  fi
+  ONLY="$(IFS=','; echo "${ONLY_FNS[*]}")"
+fi
 
 # --- Validações -------------------------------------------------------------
 : "${SUPABASE_ACCESS_TOKEN:?SUPABASE_ACCESS_TOKEN é obrigatório (token sbp_...)}"
@@ -44,9 +72,23 @@ command -v jq >/dev/null 2>&1 || { echo "jq não encontrado no PATH" >&2; exit 3
 
 [[ -d "$FUNCTIONS_DIR" ]] || { echo "Pasta $FUNCTIONS_DIR não existe" >&2; exit 4; }
 
+if [[ $ONLY_SET -eq 1 ]]; then
+  for _fn in "${ONLY_FNS[@]}"; do
+    [[ -f "$FUNCTIONS_DIR/$_fn/index.ts" ]] || { echo "--only: function '$_fn' não existe em $FUNCTIONS_DIR (sem index.ts)" >&2; exit 4; }
+  done
+fi
+
+DEPLOY_LOG_DIR="${DEPLOY_LOG_DIR:-/tmp}"
+[[ -d "$DEPLOY_LOG_DIR" ]] || { echo "Pasta de log $DEPLOY_LOG_DIR não existe" >&2; exit 4; }
 TS="$(date -u +%Y%m%d-%H%M)"
-LOG="/tmp/deploy-log-${TS}.jsonl"
-: > "$LOG"
+# PID no nome: duas execuções no mesmo minuto não sobrescrevem a evidência uma
+# da outra. noclobber cria com O_EXCL — não segue symlink pré-plantado em /tmp.
+LOG="${DEPLOY_LOG_DIR}/deploy-log-${TS}-$$.jsonl"
+( set -o noclobber; : > "$LOG" ) 2>/dev/null || { echo "Não foi possível criar o log $LOG (já existe ou sem permissão)" >&2; exit 4; }
+
+LIST_ERR=""
+DEPLOY_OUT=""
+trap 'rm -f "$LIST_ERR" "$DEPLOY_OUT"' EXIT
 
 log_event() {
   # $1=event, $2=fn, $3=status, $4=extra_json (opcional)
@@ -96,28 +138,35 @@ if [[ -n "${REQUIRED_SECRETS:-}" ]]; then
   fi
   rm -f "$LIST_ERR"
   MISSING=()
+  CHECKED=()
   IFS=',' read -ra WANTED <<< "$REQUIRED_SECRETS"
   for s in "${WANTED[@]}"; do
     s="$(echo "$s" | xargs)"  # trim
     [[ -z "$s" ]] && continue
-    if ! grep -qx "$s" <<< "$REMOTE_SECRETS"; then
+    CHECKED+=("$s")
+    # -F: o nome é literal — como regex, "A.B" casaria "A_B" e aprovaria o gate.
+    if ! grep -Fqx -- "$s" <<< "$REMOTE_SECRETS"; then
       MISSING+=("$s")
     fi
   done
+  if [[ ${#CHECKED[@]} -eq 0 ]]; then
+    echo "❌ REQUIRED_SECRETS não contém nenhum nome válido: '$REQUIRED_SECRETS'" >&2
+    exit 5
+  fi
   if [[ ${#MISSING[@]} -gt 0 ]]; then
     log_event "secrets_check" "-" "failed" "$(jq -cn --argjson m "$(printf '%s\n' "${MISSING[@]}" | jq -R . | jq -s .)" '{missing:$m}')"
     echo "❌ Secrets faltando no destino: ${MISSING[*]}" >&2
     echo "   Configure via RUNBOOK §6 antes de rodar novamente." >&2
     exit 5
   fi
-  log_event "secrets_check" "-" "ok" "$(jq -cn --argjson w "$(printf '%s\n' "${WANTED[@]}" | jq -R . | jq -s .)" '{checked:$w}')"
+  log_event "secrets_check" "-" "ok" "$(jq -cn --argjson w "$(printf '%s\n' "${CHECKED[@]}" | jq -R . | jq -s .)" '{checked:$w}')"
   echo "✅ Todos os secrets obrigatórios estão presentes."
 fi
 
 # --- Descoberta de functions ------------------------------------------------
 declare -a FNS=()
-if [[ -n "$ONLY" ]]; then
-  IFS=',' read -ra FNS <<< "$ONLY"
+if [[ $ONLY_SET -eq 1 ]]; then
+  FNS=("${ONLY_FNS[@]}")
 else
   while IFS= read -r -d '' dir; do
     name="$(basename "$dir")"
@@ -125,11 +174,18 @@ else
     [[ "$name" == .* ]] && continue
     [[ -f "$dir/index.ts" ]] || continue
     FNS+=("$name")
-  done < <(find "$FUNCTIONS_DIR" -mindepth 1 -maxdepth 1 -type d -print0)
+  # sort: ordem do find depende do filesystem; lote determinístico permite
+  # retomar um deploy interrompido a partir do ponto exato.
+  done < <(find "$FUNCTIONS_DIR" -mindepth 1 -maxdepth 1 -type d -print0 | LC_ALL=C sort -z)
 fi
 
 TOTAL=${#FNS[@]}
 echo "📦 ${TOTAL} function(s) alvo."
+if [[ $TOTAL -eq 0 ]]; then
+  echo "❌ Nenhuma function com index.ts em $FUNCTIONS_DIR — nada a implantar." >&2
+  log_event "discovery" "-" "failed" '{"reason":"no_functions"}'
+  exit 4
+fi
 
 # --- Helpers: validar cobertura do config.toml -----------------------------
 config_functions() {
@@ -147,9 +203,10 @@ verify_jwt_for() {
   local fn="$1"
   # Bloco: [functions.<fn>]   ... verify_jwt = true|false
   awk -v fn="$fn" '
-    $0 ~ "^\\[functions\\."fn"\\]" { inblock=1; next }
+    $0 == "[functions." fn "]" { inblock=1; next }
     /^\[/ { inblock=0 }
     inblock && /^[[:space:]]*verify_jwt[[:space:]]*=/ {
+      sub(/#.*/, "");
       gsub(/[[:space:]]|verify_jwt|=/, "");
       print; exit
     }
@@ -176,7 +233,8 @@ validate_config_coverage() {
     exit 6
   fi
 
-  if [[ -n "$unexpected" ]]; then
+  # Com --only, todo o resto do config.toml está "fora do lote" por definição.
+  if [[ -n "$unexpected" && $ONLY_SET -eq 0 ]]; then
     echo "⚠️ ${CONFIG_TOML} possui funções fora do lote alvo:" >&2
     printf '%s\n' "$unexpected" >&2
     log_event "config_coverage" "-" "warning" \
@@ -191,17 +249,21 @@ validate_config_coverage() {
 
 validate_config_coverage
 
+STOPPED=0
 stop_if_needed() {
   if [[ "${STOP_ON_FAIL:-0}" == "1" ]]; then
     echo "⛔ STOP_ON_FAIL=1 — lote interrompido." >&2
+    STOPPED=1
     return 0
   fi
   return 1
 }
 
 # --- Loop de deploy ---------------------------------------------------------
-OK=0; FAIL=0
+OK=0; FAIL=0; TENTADAS=0
+[[ $DRY_RUN -eq 1 ]] || DEPLOY_OUT="$(mktemp)"
 for fn in "${FNS[@]}"; do
+  TENTADAS=$((TENTADAS + 1))
   vjwt="$(verify_jwt_for "$fn")"
   DEPLOY_ARGS=()
   # Segurança fail-closed: toda função precisa declarar explicitamente a política
@@ -236,23 +298,31 @@ for fn in "${FNS[@]}"; do
   if supabase functions deploy "$fn" \
       --project-ref "$SUPABASE_PROJECT_REF" \
       "${DEPLOY_ARGS[@]}" \
-      >/tmp/deploy-out-$$.log 2>&1; then
+      >"$DEPLOY_OUT" 2>&1; then
     OK=$((OK+1))
     log_event "deploy" "$fn" "ok" "$(jq -cn --arg f "$FLAG" '{flag:$f}')"
   else
     FAIL=$((FAIL+1))
-    ERR="$(tail -c 1000 /tmp/deploy-out-$$.log | jq -Rs .)"
+    # O log vira artifact do workflow (não é mascarado como o console): o
+    # token nunca pode ir junto com a saída da CLI.
+    ERR_TXT="$(tail -c 1000 "$DEPLOY_OUT")"
+    ERR="$(printf '%s' "${ERR_TXT//"$SUPABASE_ACCESS_TOKEN"/***}" | jq -Rs .)"
     log_event "deploy" "$fn" "failed" "$(jq -cn --argjson e "$ERR" --arg f "$FLAG" '{flag:$f, error:$e}')"
     echo "   ❌ falhou — ver $LOG" >&2
     # Falha no meio do lote deixa prod com versões mistas; parar aqui mantém
     # o estrago mínimo e o log diz onde retomar com --only fn1,fn2,...
-    if stop_if_needed; then
-      rm -f /tmp/deploy-out-$$.log
-      break
-    fi
+    stop_if_needed && break
   fi
-  rm -f /tmp/deploy-out-$$.log
 done
+
+if [[ $STOPPED -eq 1 ]]; then
+  PENDENTES=("${FNS[@]:$TENTADAS}")
+  if [[ ${#PENDENTES[@]} -gt 0 ]]; then
+    PEND_CSV="$(IFS=','; echo "${PENDENTES[*]}")"
+    echo "   Não tentadas (${#PENDENTES[@]}): retome com --only $PEND_CSV" >&2
+    log_event "stopped" "-" "pending" "$(jq -cn --arg p "$PEND_CSV" '{pending:($p | split(","))}')"
+  fi
+fi
 
 # --- Resumo -----------------------------------------------------------------
 echo ""

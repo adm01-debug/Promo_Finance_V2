@@ -33,6 +33,11 @@ Variáveis de ambiente:
   REPO_ROOT                  (default ".") raiz do repo para cruzar funções x código (vazio desliga)
   CODE_SCAN_DIRS             (default src,supabase/functions,supabase/migrations,scripts,...) pastas varridas
   SUPABASE_SNAPSHOT_PUBLICACAO  (default "Gerado automaticamente...") rodapé do índice
+
+Sem argumentos de linha de comando (só -h/--help). Códigos de saída:
+  0  coleta publicada (completa ou parcial: ver erros/carried em manifest.json)
+  1  banco indisponível (conexão, DSN ou nenhuma seção coletada) — a saída anterior fica intacta
+  2  configuração inválida
 """
 
 from __future__ import annotations
@@ -47,12 +52,27 @@ import shutil
 import subprocess
 import sys
 import urllib.error
+import urllib.parse
 import urllib.request
 from decimal import Decimal
 from typing import Any, Callable
 
-import psycopg
-from psycopg.rows import dict_row
+try:
+    import psycopg
+    from psycopg.rows import dict_row
+except ModuleNotFoundError:
+    # Importado por teste (que injeta um psycopg falso), o erro original é o certo.
+    if __name__ != "__main__":
+        raise
+    if sys.argv[1:2] in (["-h"], ["--help"]):
+        print((__doc__ or "").strip())
+        sys.exit(0)
+    print(
+        "psycopg ausente. Instale com: "
+        "python3 -m pip install -r scripts/supabase_snapshot/requirements.txt",
+        file=sys.stderr,
+    )
+    sys.exit(1)
 
 # --------------------------------------------------------------------------- #
 # Config
@@ -183,7 +203,7 @@ def record_error(section: str, err: Exception | str) -> None:
     # comando de pg_dump/gen_types inclui DB_URL com a senha. Sem isto a credencial ia para
     # errors.md, snapshot.json e manifest.json, além do log.
     text = str(err).strip().splitlines()[0] if str(err).strip() else repr(err)
-    text = scrub(text)
+    text = redact_dsn(text)
     ERRORS.append({"section": section, "error": text[:500]})
     log(f"ERRO em {section}: {text[:300]}")
 
@@ -217,7 +237,9 @@ def md_cell(value: Any) -> str:
         return "sim" if value else "não"
     if isinstance(value, (list, tuple)):
         value = ", ".join(str(v) for v in value)
-    return str(value).replace("\r", "").replace("\n", " ").replace("|", "\\|")
+    text = str(value).replace("\r", "").replace("\n", " ")
+    # Barras imediatamente antes do pipe são dobradas: em GFM `\\|` volta a ser separador de célula.
+    return re.sub(r"(\\*)\|", lambda m: m.group(1) * 2 + "\\|", text)
 
 
 def md_table(headers: list[str], rows: list[list[Any]]) -> str:
@@ -260,7 +282,20 @@ def approx(n: Any) -> str:
 
 
 def slug(text: str) -> str:
-    return re.sub(r"[^A-Za-z0-9_.-]+", "_", text).strip("_") or "_"
+    base = re.sub(r"[^A-Za-z0-9_.-]+", "_", text).strip("_")
+    # "." e ".." como nome de pasta gravariam fora de tables/ e functions/.
+    return base if base.strip(".") else "_"
+
+
+def heading(text: str) -> str:
+    """Identificador com quebra de linha não pode partir um título Markdown."""
+    return " ".join(text.splitlines()) if "\n" in text or "\r" in text else text
+
+
+def sql_block(sql: str) -> str:
+    """Cerca maior que qualquer sequência de crases do conteúdo, para o SQL não fechar o bloco."""
+    fence = "`" * max(3, max((len(run) for run in re.findall(r"`+", sql)), default=0) + 1)
+    return f"\n{fence}sql\n{sql}\n{fence}\n"
 
 
 _SLUG_SEEN: dict[str, str] = {}
@@ -328,6 +363,41 @@ def scrub(text: str) -> str:
     for rx, rep in SCRUB_RULES:
         text = rx.sub(rep, text)
     return text
+
+
+def dsn_secret_fragments(dsn: str) -> list[str]:
+    """Pedaços do DSN que podem conter a senha, inclusive quando o DSN está malformado."""
+    regions = re.findall(r"""(?i)password\s*=\s*('(?:[^'\\]|\\.)*'|[^\s&]+)""", dsn)
+    userinfo = re.sub(r"^\w+://", "", dsn).rpartition("@")[0]
+    if ":" in userinfo:
+        regions.append(userinfo.split(":", 1)[1])
+    pieces: set[str] = set()
+    for region in regions:
+        for candidate in (region, urllib.parse.unquote(region)):
+            pieces.update(piece for piece in re.split(r"""[\s@/:?#%&='"]+""", candidate) if len(piece) >= 3)
+    return sorted(pieces, key=len, reverse=True)
+
+
+def redact_dsn(text: str) -> str:
+    """Mensagens do driver/libpq ecoam trechos do DSN (senha com `@`, espaço ou `%` cru); scrub() não os reconhece."""
+    for piece in dsn_secret_fragments(DB_URL):
+        text = text.replace(piece, "[REDACTED]")
+    return scrub(text)
+
+
+class DatabaseUnavailable(Exception):
+    """Falha de conexão com a mensagem já redigida."""
+
+
+def connect_db():
+    try:
+        # prepare_threshold=None: compatível com pooler em transaction mode (sem prepared statements).
+        return psycopg.connect(DB_URL, connect_timeout=30, application_name="supabase-snapshot",
+                               prepare_threshold=None, autocommit=True)
+    except Exception as error:  # noqa: BLE001
+        text = str(error).strip().splitlines()[0] if str(error).strip() else repr(error)
+        # from None: o traceback encadeado imprimiria a mensagem original, sem redação.
+        raise DatabaseUnavailable(f"{type(error).__name__}: {redact_dsn(text)[:300]}") from None
 
 
 def scrub_value(v: Any) -> Any:
@@ -416,7 +486,7 @@ def get_tables(conn):
                pg_get_userbyid(c.relowner) AS owner, obj_description(c.oid, 'pg_class') AS comment,
                c.relispartition AS is_partition,
                (SELECT pn.nspname || '.' || pc.relname FROM pg_inherits i JOIN pg_class pc ON pc.oid = i.inhparent
-                  JOIN pg_namespace pn ON pn.oid = pc.relnamespace WHERE i.inhrelid = c.oid LIMIT 1) AS parent,
+                  JOIN pg_namespace pn ON pn.oid = pc.relnamespace WHERE i.inhrelid = c.oid ORDER BY i.inhseqno LIMIT 1) AS parent,
                CASE WHEN c.relkind = 'p' THEN pg_get_partkeydef(c.oid) END AS partition_key,
                CASE WHEN c.relispartition THEN pg_get_expr(c.relpartbound, c.oid) END AS partition_bound,
                CASE c.relreplident WHEN 'd' THEN 'default' WHEN 'f' THEN 'full' WHEN 'i' THEN 'index' WHEN 'n' THEN 'nothing' END AS replica_identity,
@@ -451,9 +521,11 @@ def get_constraints(conn):
                CASE con.contype WHEN 'p' THEN 'PRIMARY KEY' WHEN 'f' THEN 'FOREIGN KEY' WHEN 'u' THEN 'UNIQUE'
                     WHEN 'c' THEN 'CHECK' WHEN 'x' THEN 'EXCLUDE' ELSE con.contype::text END AS type,
                pg_get_constraintdef(con.oid, true) AS definition,
-               ARRAY(SELECT a.attname FROM unnest(con.conkey) k JOIN pg_attribute a ON a.attrelid = con.conrelid AND a.attnum = k) AS columns,
+               ARRAY(SELECT a.attname FROM unnest(con.conkey) WITH ORDINALITY k(attnum, ord)
+                     JOIN pg_attribute a ON a.attrelid = con.conrelid AND a.attnum = k.attnum ORDER BY k.ord) AS columns,
                fn.nspname AS ref_schema, fc.relname AS ref_table,
-               ARRAY(SELECT a.attname FROM unnest(con.confkey) k JOIN pg_attribute a ON a.attrelid = con.confrelid AND a.attnum = k) AS ref_columns,
+               ARRAY(SELECT a.attname FROM unnest(con.confkey) WITH ORDINALITY k(attnum, ord)
+                     JOIN pg_attribute a ON a.attrelid = con.confrelid AND a.attnum = k.attnum ORDER BY k.ord) AS ref_columns,
                CASE con.confdeltype WHEN 'a' THEN 'NO ACTION' WHEN 'r' THEN 'RESTRICT' WHEN 'c' THEN 'CASCADE'
                     WHEN 'n' THEN 'SET NULL' WHEN 'd' THEN 'SET DEFAULT' END AS on_delete,
                CASE con.confupdtype WHEN 'a' THEN 'NO ACTION' WHEN 'r' THEN 'RESTRICT' WHEN 'c' THEN 'CASCADE'
@@ -486,6 +558,10 @@ def get_indexes(conn):
         ORDER BY 1, 2, 3""")
 
 
+# reloptions guarda o valor como foi escrito: `security_invoker = on`, `yes` e `1` também ligam a opção.
+SECURITY_INVOKER_ON = "EXISTS (SELECT 1 FROM unnest(c.reloptions) o WHERE o ~* '^security_invoker=(t|tr|tru|true|y|ye|yes|on|1)$')"
+
+
 @section("views")
 def get_views(conn):
     return q(conn, f"""
@@ -495,7 +571,7 @@ def get_views(conn):
                c.reloptions AS options, pg_get_userbyid(c.relowner) AS owner,
                obj_description(c.oid, 'pg_class') AS comment,
                CASE WHEN c.relkind = 'm' THEN c.relispopulated END AS populated,
-               (c.relkind = 'v' AND coalesce(array_to_string(c.reloptions, ','), '') ILIKE '%security_invoker=true%') AS security_invoker,
+               (c.relkind = 'v' AND {SECURITY_INVOKER_ON}) AS security_invoker,
                ARRAY(SELECT DISTINCT dn.nspname || '.' || dc.relname
                      FROM pg_depend d JOIN pg_rewrite r ON r.oid = d.objid
                      JOIN pg_class dc ON dc.oid = d.refobjid JOIN pg_namespace dn ON dn.oid = dc.relnamespace
@@ -566,13 +642,14 @@ def get_policies(conn):
 def get_types(conn):
     enums = q(conn, f"""
         SELECT n.nspname AS schema, t.typname AS name, 'enum' AS kind,
-               array_agg(e.enumlabel ORDER BY e.enumsortorder) AS values, NULL AS definition
+               array_agg(e.enumlabel ORDER BY e.enumsortorder) AS values, NULL AS definition,
+               format_type(t.oid, NULL) AS type_ref
         FROM pg_type t JOIN pg_enum e ON e.enumtypid = t.oid JOIN pg_namespace n ON n.oid = t.typnamespace
-        WHERE {excluded_sql()} GROUP BY 1, 2""")
+        WHERE {excluded_sql()} GROUP BY 1, 2, t.oid""")
     domains = q(conn, f"""
         SELECT n.nspname AS schema, t.typname AS name, 'domain' AS kind, NULL AS values,
                format_type(t.typbasetype, t.typtypmod)
-                 || COALESCE(' ' || (SELECT string_agg(pg_get_constraintdef(c.oid), ' ') FROM pg_constraint c WHERE c.contypid = t.oid), '') AS definition
+                 || COALESCE(' ' || (SELECT string_agg(pg_get_constraintdef(c.oid), ' ' ORDER BY c.oid) FROM pg_constraint c WHERE c.contypid = t.oid), '') AS definition
         FROM pg_type t JOIN pg_namespace n ON n.oid = t.typnamespace
         WHERE t.typtype = 'd' AND {excluded_sql()}""")
     composites = q(conn, f"""
@@ -765,11 +842,13 @@ def get_lints(conn):
                     "detail": "Sem chave primária: Realtime/replicação e updates por linha ficam frágeis."})
     for r in q(conn, f"""
         SELECT n.nspname AS schema, c.relname AS "table", con.conname,
-               ARRAY(SELECT a.attname FROM unnest(con.conkey) k JOIN pg_attribute a ON a.attrelid = con.conrelid AND a.attnum = k) AS cols
+               ARRAY(SELECT a.attname FROM unnest(con.conkey) WITH ORDINALITY k(attnum, ord)
+                     JOIN pg_attribute a ON a.attrelid = con.conrelid AND a.attnum = k.attnum ORDER BY k.ord) AS cols
         FROM pg_constraint con JOIN pg_class c ON c.oid = con.conrelid JOIN pg_namespace n ON n.oid = c.relnamespace
         WHERE con.contype = 'f' AND {excluded_sql()}
-          AND NOT EXISTS (SELECT 1 FROM pg_index ix WHERE ix.indrelid = con.conrelid
-                          AND (ix.indkey::int2[])[0:array_length(con.conkey,1)-1] = con.conkey::int2[])"""):
+          AND NOT EXISTS (SELECT 1 FROM pg_index ix WHERE ix.indrelid = con.conrelid AND ix.indpred IS NULL
+                          AND ARRAY(SELECT k FROM unnest((ix.indkey::int2[])[0:array_length(con.conkey,1)-1]) k ORDER BY 1)
+                            = ARRAY(SELECT k FROM unnest(con.conkey::int2[]) k ORDER BY 1))"""):
         out.append({"severity": "BAIXA", "code": "fk_without_index", "object": f"{r['schema']}.{r['table']}.{r['conname']}",
                     "detail": f"FK sem índice nas colunas {r['cols']}: joins e DELETE/UPDATE na tabela pai ficam lentos."})
     for r in q(conn, f"""
@@ -780,10 +859,10 @@ def get_lints(conn):
           AND NOT EXISTS (SELECT 1 FROM pg_depend d WHERE d.objid = p.oid AND d.deptype = 'e')"""):
         out.append({"severity": "ALTA", "code": "secdef_mutable_search_path", "object": f"{r['schema']}.{r['name']}({r['args']})",
                     "detail": "SECURITY DEFINER sem `SET search_path`: vulnerável a sequestro de search_path."})
-    for r in q(conn, """
+    for r in q(conn, f"""
         SELECT n.nspname AS schema, c.relname AS name FROM pg_class c JOIN pg_namespace n ON n.oid = c.relnamespace
         WHERE c.relkind = 'v' AND n.nspname = 'public'
-          AND coalesce(array_to_string(c.reloptions, ','), '') NOT ILIKE '%security_invoker=true%'"""):
+          AND NOT {SECURITY_INVOKER_ON}"""):
         out.append({"severity": "ALTA", "code": "view_security_definer", "object": f"{r['schema']}.{r['name']}",
                     "detail": "View em public sem security_invoker: executa como owner e ignora RLS das tabelas base."})
     for r in q(conn, f"""
@@ -909,9 +988,7 @@ DB_SECTIONS: list[Callable] = [
 def introspect_db(previous_db: dict | None) -> tuple[dict[str, Any], dict[str, Any]]:
     db: dict[str, Any] = {}
     stats: dict[str, Any] = {}
-    # prepare_threshold=None: compatível com pooler em transaction mode (sem prepared statements).
-    with psycopg.connect(DB_URL, connect_timeout=30, application_name="supabase-snapshot",
-                         prepare_threshold=None, autocommit=True) as conn:
+    with connect_db() as conn:
         conn.execute("SET default_transaction_read_only = on")
         conn.execute("SET statement_timeout = '90s'")
         conn.execute("SET lock_timeout = '5s'")
@@ -1223,7 +1300,8 @@ def fingerprints(snap: dict[str, Any]) -> dict[str, dict[str, str]]:
                       for r in (db.get("functions") or [])], lambda r: f"{r['schema']}.{r['name']}({r['args']})")
     add("triggers", db.get("triggers"), lambda r: f"{r['schema']}.{r['table']}.{r['name']}")
     add("policies (RLS)", db.get("policies"), lambda r: f"{r['schema']}.{r['table']}.{r['name']}")
-    add("types/enums", db.get("types"), lambda r: f"{r['schema']}.{r['name']}")
+    # type_ref só cruza enum x coluna: fora do fingerprint para não virar "alterado" no CHANGELOG.
+    add("types/enums", db.get("types"), lambda r: f"{r['schema']}.{r['name']}", strip=("type_ref",))
     add("extensions", db.get("extensions"), lambda r: r["name"])
     g = db.get("grants") or {}
     add("grants", g.get("tables"), lambda r: f"{r['schema']}.{r['table']}:{r['grantee']}")
@@ -1296,15 +1374,19 @@ def render_tables(db: dict) -> None:
             used_by_views.setdefault((s, t), []).append(f"{v['schema']}.{v['name']}")
     del view_deps
 
+    def missing(name: str) -> str:
+        """Seção que falhou e não tem versão anterior: a lista vazia abaixo não significa "nenhum"."""
+        return banner(name) if db.get(name) is None else ""
+
     index_rows = []
     for t in tables:
         key = (t["schema"], t["name"])
-        rel = f"tables/{slug(t['schema'])}/{uslug(t['name'], 'tables/' + t['schema'])}.md"
+        rel = f"tables/{uslug(t['schema'], 'tables')}/{uslug(t['name'], 'tables/' + t['schema'])}.md"
         index_rows.append([f"[{t['schema']}.{t['name']}]({rel})", t["kind"] + (" (partição)" if t["is_partition"] else ""),
                            t["rls_enabled"], len(pol.get(key, [])), len(cols.get(key, [])), key in rt, t.get("comment")])
-        md = [f"# {t['schema']}.{t['name']}\n"]
+        md = [f"# {heading(t['schema'] + '.' + t['name'])}\n"]
         if t.get("comment"):
-            md.append(f"> {t['comment']}\n")
+            md.append("> " + t["comment"].replace("\r", "").replace("\n", "\n> ") + "\n")
         props = [["tipo", t["kind"]], ["owner", t["owner"]], ["RLS habilitado", t["rls_enabled"]], ["RLS forçado (owner)", t["rls_forced"]],
                  ["policies", len(pol.get(key, []))], ["realtime (publication)", key in rt], ["replica identity", t["replica_identity"]],
                  ["vem de extensão", t["from_extension"]]]
@@ -1316,33 +1398,35 @@ def render_tables(db: dict) -> None:
             props.append(["usada por views", ", ".join(sorted(used_by_views[key]))])
         md.append(md_table(["propriedade", "valor"], props))
         md.append("\n## Colunas\n")
-        md.append(md_table(["#", "coluna", "tipo", "nullable", "default", "identity/generated", "comentário"], [
+        md.append(missing("columns") + md_table(["#", "coluna", "tipo", "nullable", "default", "identity/generated", "comentário"], [
             [c["position"], code(c["name"]), code(c["type"]), c["nullable"], code(c["default"]),
              c.get("identity") or c.get("generated") or "", c.get("comment")] for c in cols.get(key, [])]))
         md.append("\n## Constraints\n")
-        md.append(md_table(["nome", "tipo", "definição", "on delete", "on update", "validada"],
+        md.append(missing("constraints") + md_table(["nome", "tipo", "definição", "on delete", "on update", "validada"],
                            [[c["name"], c["type"], code(c["definition"]), c["on_delete"] or "", c["on_update"] or "", c["validated"]] for c in cons.get(key, [])]))
         if fks_in.get(key):
             md.append("\n## Referenciada por (FKs de outras tabelas)\n")
             md.append(md_table(["tabela", "constraint", "colunas", "on delete"],
                                [[f"{c['schema']}.{c['table']}", c["name"], c["columns"], c["on_delete"]] for c in fks_in[key]]))
         md.append("\n## Índices\n")
-        md.append(md_table(["nome", "método", "colunas", "único", "válido", "predicado", "definição"],
+        md.append(missing("indexes") + md_table(["nome", "método", "colunas", "único", "válido", "predicado", "definição"],
                            [[i["name"], i["method"], i["columns"], i["is_unique"], i["is_valid"], code(i["predicate"]), code(i["definition"])] for i in idx.get(key, [])]))
         md.append("\n## Policies (RLS)\n")
         if not t["rls_enabled"]:
             md.append("> ⚠️ RLS **desabilitado** nesta tabela.\n\n")
+        elif missing("policies"):
+            md.append(missing("policies"))
         elif not pol.get(key):
             md.append("> ⚠️ RLS habilitado **sem policies**: nenhum acesso via API (anon/authenticated).\n\n")
         for p in pol.get(key, []):
-            md.append(f"### `{p['name']}`\n")
+            md.append(f"### `{heading(p['name'])}`\n")
             md.append(md_table(["campo", "valor"], [["comando", p["cmd"]], ["tipo", p["permissive"]], ["roles", p["roles"]],
                                                      ["USING", code(p["using"])], ["WITH CHECK", code(p["with_check"])]]))
         md.append("\n## Triggers\n")
-        md.append(md_table(["nome", "timing", "eventos", "nível", "status", "função"],
+        md.append(missing("triggers") + md_table(["nome", "timing", "eventos", "nível", "status", "função"],
                            [[x["name"], x["timing"], x["events"], x["level"], x["status"], x["function"]] for x in trg.get(key, [])]))
         md.append("\n## Grants\n")
-        md.append(md_table(["role", "privilégios"], [[g["grantee"], g["privileges"]] for g in grants.get(key, [])]))
+        md.append(missing("grants") + md_table(["role", "privilégios"], [[g["grantee"], g["privileges"]] for g in grants.get(key, [])]))
         if colgrants.get(key):
             md.append("\nGrants por coluna:\n\n" + md_table(["coluna", "role", "privilégios"], [[g["column"], g["grantee"], g["privileges"]] for g in colgrants[key]]))
         write(OUT / rel, "\n".join(md))
@@ -1393,18 +1477,18 @@ def render_simple(db: dict, api_: dict, caller_sources: dict[str, str] | None = 
     # Views
     md = ["# Views\n", banner("views")]
     for v in db.get("views") or []:
-        md.append(f"## {v['schema']}.{v['name']} ({v['kind']})\n")
+        md.append(f"## {heading(v['schema'] + '.' + v['name'])} ({v['kind']})\n")
         md.append(md_table(["campo", "valor"], [["owner", v["owner"]], ["security_invoker", v["security_invoker"] if v["kind"] == "view" else "n/a"],
                                                  ["opções", ", ".join(v["options"] or [])], ["depende de", v["depends_on"]],
                                                  ["populada", v["populated"] if v["kind"] == "materialized" else "n/a"], ["comentário", v["comment"]]]))
-        md.append(f"\n```sql\n{(v['definition'] or '').strip()}\n```\n")
-    write(OUT / "views.md", "\n".join(md) if len(md) > 2 else "# Views\n\n_nenhuma_\n")
+        md.append(sql_block((v["definition"] or "").strip()))
+    write(OUT / "views.md", "\n".join(md) if len(md) > 2 else "# Views\n\n" + banner("views") + "_nenhuma_\n")
 
     # Functions
     rows = []
     missing_function_sql = 0
     for f in db.get("functions") or []:
-        rel = f"functions/{slug(f['schema'])}/{slug(f['name'] + '__' + sha(f['args']))}.sql"
+        rel = f"functions/{uslug(f['schema'], 'functions')}/{uslug(f['name'] + '__' + sha(f['args']), 'functions/' + f['schema'])}.sql"
         if f.get("definition"):
             write(OUT / rel, f["definition"].strip())
         sql_available = bool(f.get("definition")) or ("functions" in CARRIED and (OUT / rel).is_file())
@@ -1459,14 +1543,17 @@ def render_simple(db: dict, api_: dict, caller_sources: dict[str, str] | None = 
         ["tabela", "índice", "método", "colunas", "único", "válido", "predicado"],
         [[f"{i['schema']}.{i['table']}", i["name"], i["method"], i["columns"], i["is_unique"], i["is_valid"], code(i["predicate"])] for i in db.get("indexes") or []]))
 
-    # Types (+ onde cada enum é usado)
-    enum_usage: dict[str, list[str]] = {}
+    # Types (+ onde cada enum é usado). type_ref (format_type) distingue enums homônimos em schemas
+    # diferentes; registro vindo de snapshot antigo só tem o nome.
+    enum_usage: dict[Any, list[str]] = {}
     for c in db.get("columns") or []:
         if c.get("is_enum"):
-            enum_usage.setdefault(c["type"].split(".")[-1].strip('"'), []).append(f"{c['schema']}.{c['table']}.{c['name']}")
+            enum_usage.setdefault(c["type"], []).append(f"{c['schema']}.{c['table']}.{c['name']}")
+            enum_usage.setdefault(("nome", c["type"].split(".")[-1].strip('"')), []).append(f"{c['schema']}.{c['table']}.{c['name']}")
     write(OUT / "types-enums.md", "# Tipos customizados (enums, domains, composites)\n\n" + banner("types") + md_table(
         ["tipo", "kind", "valores / definição", "usado em"],
-        [[f"{t['schema']}.{t['name']}", t["kind"], t["values"] or t["definition"], sorted(enum_usage.get(t["name"], []))] for t in db.get("types") or []]))
+        [[f"{t['schema']}.{t['name']}", t["kind"], t["values"] or t["definition"],
+          sorted(enum_usage.get(t.get("type_ref") or ("nome", t["name"]), []))] for t in db.get("types") or []]))
 
     # Extensions / sequences / schemas
     write(OUT / "extensions.md", "# Extensões\n\n" + banner("extensions") + md_table(
@@ -1510,7 +1597,8 @@ def render_simple(db: dict, api_: dict, caller_sources: dict[str, str] | None = 
     # Cron / queues
     cron = db.get("cron") or {}
     if not cron.get("installed"):
-        write(OUT / "cron.md", "# Cron (pg_cron)\n\n_extensão pg_cron não instalada_\n")
+        # Seção que falhou sem versão anterior não prova que a extensão está ausente.
+        write(OUT / "cron.md", "# Cron (pg_cron)\n\n" + ((banner("cron") if db.get("cron") is None else "") or "_extensão pg_cron não instalada_\n"))
     else:
         write(OUT / "cron.md", "# Cron (pg_cron)\n\n" + banner("cron") + "Horários em UTC. Execuções recentes em `cron-runs.md`.\n\n" + md_table(
             ["id", "nome", "schedule", "ativo", "database", "usuário", "comando"],
@@ -1518,7 +1606,7 @@ def render_simple(db: dict, api_: dict, caller_sources: dict[str, str] | None = 
     qs = db.get("queues") or {}
     write(OUT / "queues.md", "# Queues (pgmq)\n\n" + (banner("queues") + md_table(
         ["fila", "particionada", "unlogged", "criada em"],
-        [[x["queue_name"], x["is_partitioned"], x["is_unlogged"], x["created_at"]] for x in qs.get("queues") or []]) if qs.get("installed") else "_extensão pgmq não instalada_\n"))
+        [[x["queue_name"], x["is_partitioned"], x["is_unlogged"], x["created_at"]] for x in qs.get("queues") or []]) if qs.get("installed") else (banner("queues") if db.get("queues") is None else "") or "_extensão pgmq não instalada_\n"))
 
     # Migrations
     rows = []
@@ -1754,11 +1842,21 @@ def main() -> int:
             previous = json.loads(prev_path.read_text(encoding="utf-8"))
             if previous.get("format_version") != FORMAT_VERSION:
                 previous = None
+            else:
+                # JSON válido com estrutura errada quebraria o render depois da limpeza, em toda coleta.
+                fingerprints(previous)
         except Exception:  # noqa: BLE001
+            log("snapshot.json anterior ilegível — tratado como primeira coleta")
             previous = None
 
-    db, stats = introspect_db((previous or {}).get("db"))
-    if all(v is None for v in db.values()):
+    try:
+        db, stats = introspect_db((previous or {}).get("db"))
+    except DatabaseUnavailable as error:
+        print(f"Banco indisponível: {error}", file=sys.stderr)
+        log("Banco inteiro indisponível — nada será sobrescrito.")
+        return 1
+    # Seção reaproveitada não é coleta: sem nenhuma seção nova, publicar renovaria o frescor de dados velhos.
+    if all(v is None or name in CARRIED for name, v in db.items()):
         log("Banco inteiro indisponível — nada será sobrescrito.")
         return 1
 
@@ -1820,4 +1918,8 @@ def main() -> int:
 
 
 if __name__ == "__main__":
+    if len(sys.argv) > 1:
+        # Sem argumentos de linha de comando: toda a configuração vem do ambiente.
+        print((__doc__ or "").strip(), file=sys.stdout if sys.argv[1] in ("-h", "--help") else sys.stderr)
+        sys.exit(0 if sys.argv[1] in ("-h", "--help") else 2)
     sys.exit(main())

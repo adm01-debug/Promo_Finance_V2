@@ -9,7 +9,7 @@ from pathlib import Path, PurePosixPath
 import re
 import tempfile
 
-from run import ROOT, command
+from run import PROFILE_NAME, ROOT, command
 
 
 def edges_of(graph):
@@ -36,7 +36,7 @@ def validate_file_hashes(root, files):
 
 
 def validate_freshness(root, evidence):
-    if evidence.get("status") != "validado_com_limitacoes":
+    if not isinstance(evidence, dict) or evidence.get("status") != "validado_com_limitacoes":
         raise ValueError("Evidência não está validada.")
     if evidence.get("commit") != command(["git", "rev-parse", "HEAD"], root).strip():
         raise ValueError("Evidência pertence a outro commit.")
@@ -62,6 +62,8 @@ def community_label(nodes):
         if not source:
             continue
         parts = Path(source).parts
+        if not parts:
+            continue
         if len(parts) >= 3 and parts[0] in {"src", "supabase"}:
             candidates.append("/".join(parts[:3]))
         else:
@@ -200,8 +202,12 @@ def summary_svg(metrics):
 
 
 def latest_profile_files(root, profile):
+    # O perfil compõe um caminho: sem validar, "../x" leria execuções fora de graphify-out/.
+    if not isinstance(profile, str) or not PROFILE_NAME.fullmatch(profile):
+        raise ValueError("Nome de perfil inválido.")
+    # O nome desempata mtimes iguais para a escolha não depender da ordem do sistema de arquivos.
     executions = sorted((root / "graphify-out" / profile).glob("execucao-*"),
-                        key=lambda path: path.stat().st_mtime, reverse=True)
+                        key=lambda path: (path.stat().st_mtime, path.name), reverse=True)
     for run in executions:
         graph = run / "graphify-out" / "graph.json"
         raw = run / "extracao-bruta.json"
@@ -211,7 +217,7 @@ def latest_profile_files(root, profile):
                 manifest = json.loads(evidence.read_text())
             except (OSError, json.JSONDecodeError):
                 continue
-            if manifest.get("status") == "validado_com_limitacoes":
+            if isinstance(manifest, dict) and manifest.get("status") == "validado_com_limitacoes":
                 return graph, raw, evidence
     raise ValueError(f"Nenhuma execução completa para o perfil: {profile}")
 
