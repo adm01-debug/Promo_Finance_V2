@@ -89,6 +89,13 @@ def req(method, path, body=None, gotrue=False):
     except urllib.error.HTTPError as e:
         detail = e.read()[:400].decode("utf-8", "replace")
         return e.code, {"_error": detail}
+    except json.JSONDecodeError:
+        return 0, {"_error": "resposta não é JSON"}
+    except OSError as e:
+        # URLError, timeout e erro de socket são OSError. Código 0 cai no ramo
+        # de falha de todo chamador; o traceback antigo derrubava o script no
+        # meio do apply sem dizer o que já tinha sido aplicado.
+        return 0, {"_error": f"falha de rede: {getattr(e, 'reason', e)}"}
 
 
 def mask_email(email):
@@ -140,14 +147,29 @@ def section(title):
 
 
 def main():
+    if MODE in ("-h", "--help"):
+        print("Uso: supabase_admin_ops.py [check|apply]\n"
+              "  check  somente leitura (padrão)\n"
+              "  apply  corrige o que o check apontou\n"
+              "Env: SUPABASE_ACCESS_TOKEN, SUPABASE_PROJECT_REF, "
+              "SUPABASE_SERVICE_ROLE_KEY (opcional), DELETE_TEST_USERS=1 (opcional)")
+        return
+    # Modo com erro de digitação ("aply") rodava como check e saía verde.
+    if MODE not in ("check", "apply"):
+        print(f"modo desconhecido: {MODE!r} — use check ou apply", file=sys.stderr)
+        sys.exit(2)
     if not TOKEN or not REF:
         sys.exit("SUPABASE_ACCESS_TOKEN e SUPABASE_PROJECT_REF são obrigatórios")
+    # O ref vira host (https://<ref>.supabase.co) para onde a service key é
+    # enviada: só o alfabeto de um project-ref.
+    if not re.fullmatch(r"[a-z0-9]+", REF):
+        sys.exit("SUPABASE_PROJECT_REF inválido (esperado apenas [a-z0-9])")
     pendencias = []
 
     # --- 1. Auth config (MFA) ------------------------------------------------
     section("Auth config")
     code, cfg = req("GET", "/config/auth")
-    if code == 200:
+    if code == 200 and isinstance(cfg, dict):
         # A resposta de /config/auth inclui segredos (captcha, hooks). Nunca
         # imprimir o payload inteiro — só as chaves de MFA que nos interessam.
         seguro = {k: v for k, v in cfg.items() if k.startswith("mfa_")}
@@ -236,7 +258,7 @@ def main():
                 # confirmed_at cobre e-mail OU telefone; aqui interessa
                 # especificamente a confirmação de e-mail.
                 conf = bool(u.get("email_confirmed_at"))
-                if email in TEST_USER_ALLOWLIST:
+                if email in TEST_USER_ALLOWLIST and u.get("id"):
                     deletaveis.append({"id": u.get("id"), "email": email})
                 elif not conf:
                     nao_confirmados.append({"email": mask_email(email)})
@@ -261,17 +283,13 @@ def main():
 
     section("APPLY")
     if "mfa_totp" in pendencias:
-        mutate(
-            "MFA TOTP",
-            "PATCH",
-            "/config/auth",
-            {
-                "mfa_totp_enroll_enabled": True,
-                "mfa_totp_verify_enabled": True,
-                # Default do Supabase: 10 fatores por usuário.
-                "mfa_max_enrolled_factors": 10,
-            },
-        )
+        corpo = {"mfa_totp_enroll_enabled": True, "mfa_totp_verify_enabled": True}
+        # Só define o limite quando ele está zerado/ausente; um limite já
+        # configurado em produção não é sobrescrito pelo default.
+        if not cfg.get("mfa_max_enrolled_factors"):
+            # Default do Supabase: 10 fatores por usuário.
+            corpo["mfa_max_enrolled_factors"] = 10
+        mutate("MFA TOTP", "PATCH", "/config/auth", corpo)
 
     if "verify_jwt" in pendencias:
         for slug, d in divergentes.items():

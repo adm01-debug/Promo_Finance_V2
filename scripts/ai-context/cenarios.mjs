@@ -122,6 +122,92 @@ sc('deploy: dockerfile, compose, vercel, fly', (r) => { base(r); w(r, 'Dockerfil
 sc('testes: tipos, onde ficam, casos, sem_teste', (r) => { base(r); w(r, 'src/a.ts', 'export const a = 1;'); w(r, 'src/a.test.ts', "import { a } from './a'; it('1', () => {}); test('2', () => {}); it.each([])('3', () => {});"); w(r, 'e2e/x.spec.ts', "test('e', () => {});"); w(r, 'tests/contract/y.contract.test.ts', 'it("c", () => {});'); w(r, 'supabase/tests/z.sql', 'select 1;'); w(r, 'app/test_py.py', 'def test_a(): pass\ndef test_b(): pass\ndef helper(): pass'); }, (J) => { const t = J('testes.json'); eq(t.total, 5, 'total'); eq(t.por_tipo, { contrato: 1, e2e: 1, pytest: 1, unit: 1 }, 'tipos'); eq(t.arquivos.find((x) => x.arquivo === 'src/a.test.ts').casos, 3, 'casos'); eq(t.arquivos.find((x) => x.arquivo === 'app/test_py.py').casos, 2, 'py casos'); eq(t.cobertura_por_arquivo['src/a.ts'], 1, 'cob'); });
 sc('convencoes: nomenclatura, barrels, commits, instrucoes', (r) => { base(r); for (const n of ['Alpha', 'Beta', 'gamma-x']) w(r, `src/components/${n}.tsx`, `export const ${n === 'gamma-x' ? 'GammaX' : n} = () => <i/>;`); w(r, 'src/components/index.ts', "export * from './Alpha';\nexport * from './Beta';\nexport * from './gamma-x';"); w(r, 'CLAUDE.md', '# x'); w(r, '.cursorrules', 'x'); w(r, '.github/copilot-instructions.md', 'x'); w(r, 'commitlint.config.js', 'module.exports = {}'); }, (J) => { const c = J('convencoes.json'); eq(c.nomenclatura.componentes, 'PascalCase (67%)', 'nome'); eq(c.barrels_index, 1, 'barrel'); eq(c.commits.convencao, 'commitlint', 'commit'); eq(c.instrucoes_agentes, ['.cursorrules', '.github/copilot-instructions.md', 'CLAUDE.md'], 'instr'); });
 
+// ---------------- sintaxe válida que leitura por regex erra (achados no repositório real) ----------------
+const logicaDe = (J, f) => J('logica.json').arquivos.find((x) => x.arquivo === f) || {};
+// `/*` ou `//` dentro de literal não é comentário: o código seguinte (até o próximo `*/` do arquivo) tem de continuar visível
+const falsoComentario = {
+  'glob em aspas simples': "const G = ['src/**/*.ts', '**/api/**'];",
+  'glob em aspas duplas': 'const G = ["**/api/**"];',
+  'atributo JSX accept="image/*"': 'const I = () => <input type="file" accept="image/*" />;',
+  'URL com curinga em string': "const u = 'https://x.test/*';",
+  'template com //': 'const u = `${a.protocol}//${a.host}/api/`;',
+  'template aninhado com /*': 'const u = `a${`b/*${c}`}//d`;',
+  'template multilinha com /*': 'const u = `linha 1 /*\nlinha 2 ${x} //\n`;',
+  'regex com aspas, crase e /*': "const re = /['\"`]\\/\\*/;",
+  'regex depois de =>': "const f = (x) => /['\"`]\\/\\*/.test(x);",
+  'apóstrofo solto em texto JSX antes de string com /*': "const I = () => <p>copo d'água</p>;\nconst u = 'a/*b';",
+  'aspas escapadas com /*': "const u = 'it\\'s /* ok';",
+  'divisão não é regex': 'const d = a / b / c;',
+};
+for (const [nome, antes] of Object.entries(falsoComentario)) sc(`sintaxe: código depois de ${nome} continua visível`, (r) => { base(r); w(r, 'src/lib/s.tsx', `${antes}\nexport const depois = supabase.from('tabela_depois');\n/** doc real */\nexport const fim = 1;\n`); }, (J) => { const l = logicaDe(J, 'src/lib/s.tsx'); ok((l.exports || []).includes('depois') && l.exports.includes('fim'), `exports ${JSON.stringify(l.exports)}`); eq(l.tabelas, ['tabela_depois'], 'tabela'); });
+// comentário de verdade continua sendo removido
+const comentarioReal = {
+  'bloco': "/* import { x } from './x'; export const morto = supabase.from('t_morta'); */",
+  'bloco multilinha': "/*\n import { x } from './x';\n export const morto = supabase.from('t_morta');\n*/",
+  'linha': "// import { x } from './x'; export const morto = supabase.from('t_morta');",
+  'JSDoc com exemplo': "/**\n * @example import { x } from './x'; supabase.from('t_morta')\n */",
+  'comentário JSX': "const I = () => <div>{/* import { x } from './x'; supabase.from('t_morta') */}</div>;",
+  'linha depois de código': "const a = 1; // import { x } from './x'; supabase.from('t_morta')",
+};
+for (const [nome, cod] of Object.entries(comentarioReal)) sc(`sintaxe: comentário real (${nome}) não vira import/export/tabela`, (r) => { base(r); w(r, 'src/lib/x.ts', 'export const x = 1;'); w(r, 'src/lib/s.tsx', `${cod}\nexport const vivo = 1;\n`); }, (J) => { const l = logicaDe(J, 'src/lib/s.tsx'); eq(l.exports, ['vivo'], 'exports'); eq(l.tabelas, [], 'tabelas'); eq(J('grafo-arestas.json').arestas['src/lib/s.tsx'], undefined, 'arestas'); });
+// código dentro de literal não é código
+const dentroDeLiteral = {
+  'template': "const F = `import { x } from './x';\nexport const useFalso = () => 1;\n`;",
+  'aspas simples': "const F = 'import { x } from \"./x\"; export const useFalso = 1';",
+  'aspas duplas': "const F = \"export const useFalso = require('./x')\";",
+  'template com ${}': "const F = `${a} import('./x') export function useFalso() {}`;",
+};
+for (const [nome, cod] of Object.entries(dentroDeLiteral)) sc(`sintaxe: import/export dentro de literal (${nome}) é texto`, (r) => { base(r); w(r, 'src/lib/x.ts', 'export const x = 1;'); w(r, 'src/lib/s.ts', `${cod}\nexport const vivo = 1;\n`); }, (J) => { eq(logicaDe(J, 'src/lib/s.ts').exports, ['vivo'], 'exports'); eq(J('grafo-arestas.json').arestas['src/lib/s.ts'], undefined, 'arestas'); eq(J('hooks.json').total, 0, 'hooks'); });
+const exportsCasos = {
+  'export type { A, B as C }': ["type A = 1; type B = 2;\nexport type { A, B as C };", ['A', 'C']],
+  'export { type A, b }': ["type A = 1; const b = 1;\nexport { type A, b };", ['A', 'b']],
+  'export { type A as B }': ["type A = 1;\nexport { type A as B };", ['B']],
+  'export type { A } from': ["export type { A } from './x';", ['A']],
+  'export multilinha com comentário': ["const a = 1, b = 2;\nexport {\n  a, // primeiro\n  b as bee,\n};", ['a', 'bee']],
+};
+for (const [nome, [cod, esperado]] of Object.entries(exportsCasos)) sc(`sintaxe: ${nome}`, (r) => { base(r); w(r, 'src/lib/x.ts', 'export type A = 1;'); w(r, 'src/lib/s.ts', cod); }, (J) => eq(logicaDe(J, 'src/lib/s.ts').exports, esperado, 'exports'));
+const importsCasos = {
+  'import multilinha com comentários': "import {\n  x, // um\n  /* dois */ y,\n} from './x';",
+  'import type + default': "import type Def, { type X } from './x';",
+  'export * as ns': "export * as ns from './x';",
+  'import = require': "import x = require('./x');",
+  'import() com await': "const m = await import('./x');",
+  'import depois de string com /*': "const G = '**/*';\nimport { x } from './x';",
+};
+for (const [nome, cod] of Object.entries(importsCasos)) sc(`sintaxe: ${nome} vira aresta`, (r) => { base(r); w(r, 'src/lib/x.ts', 'export const x = 1; export const y = 2;'); w(r, 'src/lib/s.ts', cod); }, (J) => eq(J('grafo-arestas.json').arestas['src/lib/s.ts'], ['src/lib/x.ts'], 'aresta'));
+const chamadas = {
+  ".from<T>('t')": ["supabase.from<Linha>('t_gen')", 'tabelas', ['t_gen']],
+  ".from<T> aninhado": ["supabase.from<Array<{ a: string }>>('t_gen')", 'tabelas', ['t_gen']],
+  ".from em outra linha": ["supabase\n  .from(\n    't_gen')", 'tabelas', ['t_gen']],
+  ".rpc<T[]> multilinha": ["supabase.rpc<Linha[]>(\n  'f_gen',\n  {})", 'rpcs', ['f_gen']],
+  "functions.invoke<T>": ["supabase.functions.invoke<{ ok: boolean; itens: Array<{ id: string }> }>('e-gen', { body: {} })", 'edges', ['e-gen']],
+  "functions\\n.invoke": ["supabase.functions\n  .invoke('e-gen')", 'edges', ['e-gen']],
+  "wrapper invokeEdge<T>": ["invokeEdge<Resp>('e-gen', {})", 'edges', ['e-gen']],
+  "wrapper callEdgeFunction": ["callEdgeFunction('e-gen')", 'edges', ['e-gen']],
+  "wrapper com nome que não é edge": ["invokeAsaas('listar'); edgeCase('x')", 'edges', []],
+  "Array.from e regex.test não são tabela nem edge": ["Array.from(lista); /x/.test('e-gen')", 'edges', []],
+};
+for (const [nome, [cod, campo, esperado]] of Object.entries(chamadas)) sc(`sintaxe: chamada ${nome}`, (r) => { base(r); w(r, 'supabase/functions/e-gen/index.ts', "Deno.serve(() => new Response('ok'));"); w(r, 'src/lib/s.ts', `export const f = () => { ${cod}; };`); }, (J) => { eq(logicaDe(J, 'src/lib/s.ts')[campo], esperado, campo); eq(J('baseline.json').alertas.edges_chamadas_sem_pasta, [], 'sem pasta'); eq(J('baseline.json').alertas.edges_orfas, campo === 'edges' && esperado.length ? [] : ['e-gen'], 'órfãs'); });
+sc('sintaxe: storage em outra linha conta uso do bucket e não vira tabela', (r) => { base(r); w(r, 'src/lib/s.ts', "export const f = () => supabase.storage\n  .from('anexos_fin').download('a');"); }, (J) => { eq(J('banco.json').buckets, [{ nome: 'anexos_fin', criado_em_sql: false, usado_em: 1 }], 'bucket'); });
+const casosDeTeste = {
+  'regex.test() não conta': ["it('a', () => { /x/.test('x'); re.test('y'); });", 1],
+  'it.each<T>()': ["it.each<[number, number]>([[1, 2]])('a %i', () => {});\ntest.each([[1]])('b', () => {});", 2],
+  'Deno.test e t.test': ["Deno.test('a', () => {});\nDeno.test({ name: 'b', fn() {} });\ntest('c', async (t) => { await t.test('d', () => {}); });", 4],
+  'it dentro de template não conta': ["it('a', () => {});\nconst F = `it('falso', () => {})`;", 1],
+  'it comentado não conta': ["it('a', () => {});\n// it('b', () => {});\n/* test('c', () => {}); */", 1],
+  'attest( e submit( não contam': ["attest(x); submit('y'); it('a', () => {});", 1],
+};
+for (const [nome, [cod, n]] of Object.entries(casosDeTeste)) sc(`testes: casos — ${nome}`, (r) => { base(r); w(r, 'src/a.test.ts', cod); }, (J) => eq(J('testes.json').arquivos[0].casos, n, 'casos'));
+sc('testes: *_test.ts (Deno) é teste, conta para a edge e sai do grafo de produção', (r) => { base(r); w(r, 'supabase/functions/f/index.ts', "Deno.serve(() => new Response('ok'));"); w(r, 'supabase/functions/f/index_test.ts', "import './index.ts';\nDeno.test('a', () => {});"); w(r, 'supabase/functions/_shared/util_test.ts', "Deno.test('u', () => {});"); w(r, 'src/lib/contest.ts', 'export const c = 1;'); }, (J) => { const t = J('testes.json'); eq(t.arquivos.map((x) => x.arquivo), ['supabase/functions/_shared/util_test.ts', 'supabase/functions/f/index_test.ts'], 'arquivos'); const e = J('edge-functions.json').edges[0]; eq(e.testes, 1, 'testes da edge'); eq(e.arquivos, 1, 'arquivos da edge'); eq(t.sem_teste.edges, [], 'sem_teste'); ok(logicaDe(J, 'src/lib/contest.ts').arquivo, 'contest.ts não é teste'); });
+sc('rotas: tela Auth/Admin sem guarda não é protegida; com guarda é', (r) => { base(r); for (const n of ['Auth', 'AdminHome', 'Painel']) w(r, `src/pages/${n}.tsx`, `export default function ${n}() { return <div/>; }`); w(r, 'src/components/RequireAuth.tsx', 'export const RequireAuth = ({children}) => children;'); w(r, 'src/App.tsx', route('<Route path="/auth" element={<Auth />} /><Route path="/admin" element={<AdminHome />} /><Route path="/p" element={<RequireAuth><Painel /></RequireAuth>} /><Route path="/admin2" element={<RequireAuth><AdminHome /></RequireAuth>} />', "import Auth from '@/pages/Auth'; import AdminHome from '@/pages/AdminHome'; import Painel from '@/pages/Painel'; import { RequireAuth } from '@/components/RequireAuth';")); }, (J) => { const u = Object.fromEntries(J('rotas.json').urls.map((x) => [x.caminho, x.protegida])); eq(u, { '/admin': false, '/admin2': true, '/auth': false, '/p': true }, 'protegida'); eq(J('ferramentas.json').permissoes.rotas_publicas, ['/admin', '/auth'], 'públicas'); });
+sc('menu: destino com #âncora, ?query e rota com :parâmetro resolve; catch-all não engole', (r) => { base(r); comp(r, 'A'); comp(r, 'B'); w(r, 'src/App.tsx', route('<Route path="/a" element={<A/>}/><Route path="/b/:tab" element={<B/>}/><Route path="/:tenant" element={<B/>}/><Route path="*" element={<A/>}/>', "import { A } from '@/pages/A'; import { B } from '@/pages/B';")); w(r, 'src/components/nav/items.ts', "export const items = [{ label: 'Um', path: '/a#x' }, { label: 'Dois', path: '/a?q=1#x' }, { label: 'Três', path: '/b/geral' }, { label: 'Quatro', path: '/c/geral' }, { label: 'Cinco', path: '/b/geral/extra' }, { label: 'Seis', id: 'aba-solta' }];"); }, (J) => { const m = Object.fromEntries(J('rotas.json').menu.map((x) => [x.rotulo, x.resolve_para])); eq(m, { Cinco: null, Dois: 'src/pages/A.tsx', Quatro: null, Seis: null, Três: 'src/pages/B.tsx', Um: 'src/pages/A.tsx' }, 'menu'); eq(J('baseline.json').alertas.menu_sem_destino.length, 3, 'sem destino'); });
+sc('segredos: linha certa depois de comentário de bloco', (r) => { base(r); w(r, 'src/a.ts', "/*\n * a\n * b\n */\n\nconst s = 'sk_" + "live_abcdefghijklmnop';\n"); }, (J) => eq(J('baseline.json').alertas.possiveis_segredos_no_codigo, ['src/a.ts:6'], 'linha'));
+sc('workflows: script com flag, `bun run` e `psql -f` entram em scripts_usados', (r) => { base(r); for (const f of ['scripts/a.unit.mjs', 'scripts/b.ts', 'scripts/c.sql', 'scripts/d.sh', 'scripts/e.py']) w(r, f, '# x\n'); w(r, '.github/workflows/ci.yml', 'name: CI\non: [push]\njobs:\n  a:\n    runs-on: x\n    steps:\n      - run: node --test scripts/a.unit.mjs\n      - run: bun run scripts/b.ts\n      - run: psql "$DB" -v ON_ERROR_STOP=1 -f scripts/c.sql\n      - run: bash scripts/d.sh\n      - run: python3 -u scripts/e.py\n'); }, (J) => eq(J('ferramentas.json').workflows[0].scripts_usados, ['scripts/a.unit.mjs', 'scripts/b.ts', 'scripts/c.sql', 'scripts/d.sh', 'scripts/e.py'], 'scripts'));
+sc('linhas: igual a wc -l (quebra final não soma linha)', (r) => { base(r); w(r, 'src/lib/a.ts', 'export const a = 1;\nexport const b = 2;\n'); w(r, 'src/lib/b.ts', 'export const a = 1;\r\nexport const b = 2;'); }, (J) => { eq(logicaDe(J, 'src/lib/a.ts').linhas, 2, 'com \\n final'); eq(logicaDe(J, 'src/lib/b.ts').linhas, 2, 'sem \\n final'); eq(J('baseline.json').contagens.linhas_codigo, 4, 'total'); });
+sc('graphify: relatório versionado é apontado mesmo com graphify-out fora da varredura', (r) => { base(r); w(r, 'graphify-out/GRAPH_REPORT.md', '# r'); w(r, 'src/a.ts', 'export const a = 1;'); }, (J) => { eq(J('grafo-graphify.json').relatorio, 'graphify-out/GRAPH_REPORT.md', 'relatorio'); eq(J('grafo-graphify.json').presente, false, 'sem graph.json'); });
+sc('robustez: symlink quebrado e arquivo solto em supabase/functions não zeram as edges', (r) => { base(r); w(r, 'supabase/functions/f/index.ts', "Deno.serve(() => new Response('ok'));"); w(r, 'supabase/functions/README.md', '# x'); try { fs.symlinkSync(path.join(r, 'nao-existe'), path.join(r, 'supabase/functions/quebrado')); } catch {} }, (J) => { eq(J('edge-functions.json').edges.map((e) => e.nome), ['f'], 'edges'); eq(J('manifest.json').erros, [], 'erros'); });
+sc('robustez: workspaces apontando para arquivo e supabase/functions sendo arquivo', (r) => { w(r, 'package.json', JSON.stringify({ name: 'x', workspaces: ['packages/*'] })); w(r, 'packages', 'arquivo'); w(r, 'supabase/functions', 'arquivo'); w(r, 'src/a.ts', 'export const a = 1;'); }, (J) => { eq(J('manifest.json').erros, [], 'erros'); eq(J('edge-functions.json').total, 0, 'edges'); });
+sc('robustez: crase solta em texto JSX cai no modo antigo sem perder exports', (r) => { base(r); w(r, 'src/pages/Doc.tsx', "export const Doc = () => <p>use a crase ` para código</p>;\nexport const Outro = () => <b/>;\n// comentário\nexport const fim = 1;\n"); }, (J) => { const c = J('componentes.json').componentes[0]; eq(c.exports, ['Doc', 'Outro'], 'exports'); eq(J('manifest.json').erros, [], 'erros'); });
 // ---------------- robustez ----------------
 sc('robustez: repo vazio', (r) => {}, (J) => { eq(J('baseline.json').contagens.arquivos_total, 0, 'vazio'); eq(J('manifest.json').erros, [], 'erros'); });
 sc('robustez: sem git', (r) => { base(r); w(r, 'src/a.ts', 'export const a = 1;'); }, (J) => { eq(J('manifest.json').commit, null, 'commit null'); eq(J('manifest.json').erros, [], 'erros'); }, { nogit: true });

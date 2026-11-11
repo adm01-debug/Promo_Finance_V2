@@ -5,21 +5,9 @@
 // Best-effort por decisão: falha ao registrar AVISA e não derruba o deploy (o
 // código já está no ar quando este passo roda — falhar aqui não despublica nada
 // e só esconde o resultado do operador).
-import { appendFileSync } from 'node:fs';
+import { appendFileSync, realpathSync } from 'node:fs';
+import { pathToFileURL } from 'node:url';
 import { construirDeployment, construirStatus, resumirDeployment } from './deployment-record.mjs';
-
-const {
-  GITHUB_TOKEN,
-  GITHUB_REPOSITORY,
-  GITHUB_RUN_ID,
-  GITHUB_SERVER_URL = 'https://github.com',
-  GITHUB_OUTPUT,
-  DEPLOYED_GIT_SHA,
-  ESCOPO,
-} = process.env;
-
-const api = process.env.GITHUB_API_URL || 'https://api.github.com';
-const runUrl = `${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}`;
 
 /**
  * Monta o destino da requisição com allowlist de host.
@@ -75,34 +63,74 @@ export function resolverDestino(apiUrl, caminho, serverUrl = process.env.GITHUB_
   return `${base}${c}`;
 }
 
-async function post(caminho, corpo) {
-  const r = await fetch(resolverDestino(api, caminho, GITHUB_SERVER_URL), {
-    method: 'POST',
-    headers: {
-      Authorization: `Bearer ${GITHUB_TOKEN}`,
-      Accept: 'application/vnd.github+json',
-      'Content-Type': 'application/json',
-      'X-GitHub-Api-Version': '2022-11-28',
-    },
-    body: JSON.stringify(corpo),
-  });
-  if (!r.ok) throw new Error(`${caminho} -> ${r.status} ${(await r.text()).slice(0, 200)}`);
-  return r.json();
+/**
+ * Registra Deployment + status. Nunca lança: qualquer falha vira `::warning::`.
+ * `env` e `fetchImpl` são injetáveis para o teste exercitar o fluxo sem rede e
+ * sem depender do ambiente do runner. Devolve `{ registrado, deploymentId }`.
+ */
+export async function registrar({ env = process.env, fetchImpl = fetch, timeoutMs = 30_000 } = {}) {
+  const {
+    GITHUB_TOKEN,
+    GITHUB_REPOSITORY,
+    GITHUB_RUN_ID,
+    GITHUB_SERVER_URL = 'https://github.com',
+    GITHUB_OUTPUT,
+    DEPLOYED_GIT_SHA,
+    ESCOPO,
+  } = env;
+  const api = env.GITHUB_API_URL || 'https://api.github.com';
+  const runUrl = `${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}`;
+
+  async function post(caminho, corpo) {
+    const r = await fetchImpl(resolverDestino(api, caminho, GITHUB_SERVER_URL), {
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${GITHUB_TOKEN}`,
+        Accept: 'application/vnd.github+json',
+        'Content-Type': 'application/json',
+        'X-GitHub-Api-Version': '2022-11-28',
+      },
+      body: JSON.stringify(corpo),
+      // Sem teto, uma API pendurada segurava o job do deploy até o timeout do runner.
+      signal: AbortSignal.timeout(timeoutMs),
+    });
+    if (!r.ok) throw new Error(`${caminho} -> ${r.status} ${(await r.text()).slice(0, 200)}`);
+    return r.json();
+  }
+
+  try {
+    // Pré-condição local: sem isto a chamada sairia como `Bearer undefined` para `/repos/undefined/…`.
+    if (!GITHUB_TOKEN?.trim()) throw new Error('GITHUB_TOKEN ausente');
+    if (!/^[\w.-]+\/[\w.-]+$/.test(GITHUB_REPOSITORY ?? '')) throw new Error('GITHUB_REPOSITORY ausente ou fora do formato dono/repo');
+    const dep = await post(
+      `/repos/${GITHUB_REPOSITORY}/deployments`,
+      construirDeployment({ shaDeployado: DEPLOYED_GIT_SHA, runId: GITHUB_RUN_ID, runUrl, escopo: ESCOPO }),
+    );
+    const st = await post(
+      `/repos/${GITHUB_REPOSITORY}/deployments/${dep.id}/statuses`,
+      construirStatus({ id: dep.id, runUrl }),
+    );
+    console.log(`::notice::Deployment registrado: ${semQuebra(resumirDeployment(dep))} (id=${semQuebra(dep.id)}, status=${semQuebra(st.state)})`);
+    console.log(`deployment_id=${semQuebra(dep.id)}`);
+    if (GITHUB_OUTPUT) appendFileSync(GITHUB_OUTPUT, `deployment_id=${semQuebra(dep.id)}\n`);
+    return { registrado: true, deploymentId: dep.id };
+  } catch (e) {
+    // Nunca derruba o deploy: o passo é best-effort desde a tag.
+    console.log(`::warning::Falha ao registrar o Deployment (deploy não afetado): ${semQuebra(e.message)}`);
+    return { registrado: false, deploymentId: null };
+  }
 }
 
-try {
-  const dep = await post(
-    `/repos/${GITHUB_REPOSITORY}/deployments`,
-    construirDeployment({ shaDeployado: DEPLOYED_GIT_SHA, runId: GITHUB_RUN_ID, runUrl, escopo: ESCOPO }),
-  );
-  const st = await post(
-    `/repos/${GITHUB_REPOSITORY}/deployments/${dep.id}/statuses`,
-    construirStatus({ id: dep.id, runUrl }),
-  );
-  console.log(`::notice::Deployment registrado: ${semQuebra(resumirDeployment(dep))} (id=${semQuebra(dep.id)}, status=${semQuebra(st.state)})`);
-  console.log(`deployment_id=${semQuebra(dep.id)}`);
-  if (GITHUB_OUTPUT) appendFileSync(GITHUB_OUTPUT, `deployment_id=${semQuebra(dep.id)}\n`);
-} catch (e) {
-  // Nunca derruba o deploy: o passo é best-effort desde a tag.
-  console.log(`::warning::Falha ao registrar o Deployment (deploy não afetado): ${semQuebra(e.message)}`);
+// Só registra quando é o script invocado. Antes o bloco rodava no `import`: bastava o
+// teste unitário importar `resolverDestino` com DEPLOYED_GIT_SHA e GITHUB_TOKEN no
+// ambiente para criar um Deployment de verdade no GitHub.
+function invocadoDireto() {
+  if (!process.argv[1]) return false;
+  try {
+    return import.meta.url === pathToFileURL(realpathSync(process.argv[1])).href;
+  } catch {
+    return false;
+  }
 }
+
+if (invocadoDireto()) await registrar();

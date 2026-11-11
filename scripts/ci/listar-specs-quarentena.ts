@@ -76,7 +76,13 @@ function comoLista(v: ConfigParcial['testMatch']): Array<string | RegExp> {
 }
 
 function casa(caminho: string, padrao: string | RegExp): boolean {
-  return padrao instanceof RegExp ? padrao.test(caminho) : globParaRegExp(padrao).test(caminho);
+  if (padrao instanceof RegExp) {
+    // RegExp com flag g/y guarda `lastIndex` entre chamadas: sem zerar, a mesma spec
+    // casa numa chamada e deixa de casar na seguinte.
+    padrao.lastIndex = 0;
+    return padrao.test(caminho);
+  }
+  return globParaRegExp(padrao).test(caminho);
 }
 
 function specsEmDisco(dir: string): string[] {
@@ -97,19 +103,32 @@ function morrer(msg: string): never {
 async function main() {
   // `git ls-files` é a fonte da verdade porque só o que está versionado chega
   // ao runner; o disco entra logo abaixo como conferência cruzada.
-  const rastreadas = execFileSync('git', ['ls-files', '--', 'e2e/**/*.e2e.ts', 'e2e/*.e2e.ts'], { encoding: 'utf8' })
-    .split('\n')
+  // `-z`: sem ele o git devolve caminho com acento entre aspas e escapado, que não
+  // casa com padrão nenhum e iria para a quarentena como um caminho que não existe.
+  const rastreadas = execFileSync(
+    'git',
+    ['ls-files', '-z', '--', 'e2e/**/*.e2e.ts', 'e2e/*.e2e.ts'],
+    { encoding: 'utf8' }
+  )
+    .split('\0')
     .filter(Boolean)
     .sort();
 
   const emDisco = specsEmDisco('e2e').sort();
-  if (rastreadas.length !== emDisco.length) {
+  // Compara os CONJUNTOS, não só o tamanho: uma spec nova não rastreada mais uma
+  // spec apagada sem commit dão a mesma contagem e passavam.
+  const soNoDisco = emDisco.filter((s) => !rastreadas.includes(s));
+  const soNoGit = rastreadas.filter((s) => !emDisco.includes(s));
+  if (soNoDisco.length > 0 || soNoGit.length > 0) {
     // Só checar "> 0" foi exatamente o que deixou um pathspec quebrado passar
     // despercebido antes: havia 5 specs de 26 e o job reportava sucesso.
     morrer(
       `Descoberta de specs inconsistente: git=${rastreadas.length} vs disco=${emDisco.length}. ` +
         `Specs não rastreadas ou pathspec quebrado. Diferença: ` +
-        emDisco.filter((s) => !rastreadas.includes(s)).join(', ')
+        [
+          ...soNoDisco.map((s) => `${s} (só no disco)`),
+          ...soNoGit.map((s) => `${s} (só no git)`),
+        ].join(', ')
     );
   }
 
@@ -160,4 +179,4 @@ async function main() {
   process.stdout.write(quarentena.join('\n') + '\n');
 }
 
-void main();
+main().catch((erro: unknown) => morrer(erro instanceof Error ? erro.message : String(erro)));

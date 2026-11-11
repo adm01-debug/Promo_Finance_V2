@@ -40,13 +40,19 @@ SELECT
   EXISTS (
     SELECT 1
     FROM pg_constraint fk
+    -- Compara por pg_class.relname: `oid::regclass::text` sai qualificado
+    -- ("public.x") quando `public` não está no search_path da conexão e entre
+    -- aspas para nome com maiúscula — nos dois casos o vínculo por FK sumia.
+    JOIN pg_class filha ON filha.oid = fk.conrelid
+    JOIN pg_class pai ON pai.oid = fk.confrelid
+                     AND pai.relnamespace = 'public'::regnamespace
     JOIN information_schema.columns pc
       ON pc.table_schema = 'public'
-     AND pc.table_name = fk.confrelid::regclass::text
+     AND pc.table_name = pai.relname
      AND pc.column_name = 'empresa_id'
     WHERE fk.contype = 'f'
       AND fk.connamespace = 'public'::regnamespace
-      AND fk.conrelid::regclass::text = t.table_name
+      AND filha.relname = t.table_name
   ) AS tem_fk
 FROM information_schema.tables t
 WHERE t.table_schema = 'public'

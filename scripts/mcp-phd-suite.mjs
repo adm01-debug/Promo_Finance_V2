@@ -12,6 +12,8 @@
  *   - modo padrão é estritamente read-only (A1–A4).
  *   - testes mutáveis exigem `--suite a5 --allow-mutations --confirm-target <alvo>`.
  *   - `--dry-run` e `--self-test` nunca fazem chamadas de rede.
+ *   - URL precisa ser https (http só para localhost/127.0.0.1): o token vai no header.
+ *   - cada requisição tem timeout (MCP_TIMEOUT_MS, padrão 120000).
  *   - alvo compatível deste script = Worker MCP com endpoint JSON-RPC `/mcp`.
  *   - não use este script contra o Edge `mcp-query`, que expõe HTTP JSON próprio.
  */
@@ -31,6 +33,10 @@ Opções:
   --dry-run                  Mostra a execução planejada sem rede
   --self-test                Valida parser/seleção/guardas sem rede
   --help                     Mostra esta ajuda
+
+Ambiente:
+  MCP_TOKEN                  Token Bearer (alternativa a --token)
+  MCP_TIMEOUT_MS             Timeout por requisição em ms (padrão 120000)
 
 Exemplos:
   MCP_TOKEN=*** node scripts/mcp-phd-suite.mjs --url https://worker.exemplo.dev/mcp
@@ -245,6 +251,11 @@ function detectTarget(url) {
   }
 
   const hostname = parsed.hostname.toLowerCase();
+  // O token Bearer viaja no header: http em rede aberta o expõe em claro.
+  const loopback = ['localhost', '127.0.0.1', '[::1]'].includes(hostname);
+  if (parsed.protocol !== 'https:' && !(parsed.protocol === 'http:' && loopback)) {
+    fail(`URL precisa ser https (http só para localhost/127.0.0.1): ${url}`);
+  }
   const path = parsed.pathname.replace(/\/+$/, '');
   const normalizedPath = path || '/';
   const subdomain = hostname.split('.')[0];
@@ -267,7 +278,7 @@ function validateConfig(config) {
 
   detectTarget(config.url);
 
-  if (!config.token) {
+  if (!config.token && !config.dryRun) {
     fail('Token ausente. Forneça `--token` ou exporte `MCP_TOKEN`.');
   }
 
@@ -431,6 +442,46 @@ function runSelfTest() {
     }
   });
 
+  test('recusa URL sem TLS fora de loopback', () => {
+    for (const url of ['http://worker.example.dev/mcp', 'ftp://worker.example.dev/mcp', 'javascript:alert(1)']) {
+      let ok = false;
+      try {
+        detectTarget(url);
+      } catch (error) {
+        ok = String(error.message).includes('https');
+      }
+      if (!ok) fail(`aceitou URL insegura: ${url}`);
+    }
+    detectTarget('http://127.0.0.1:8787/mcp');
+    detectTarget('http://localhost:8787/mcp');
+  });
+
+  test('dry-run dispensa token; execução real exige', () => {
+    const base = { url: 'https://worker.example.dev/mcp', token: '', suiteInputs: [], help: false, selfTest: false, allowMutations: false, confirmTarget: '', verbose: false };
+    validateConfig({ ...base, dryRun: true });
+    let ok = false;
+    try {
+      validateConfig({ ...base, dryRun: false });
+    } catch (error) {
+      ok = String(error.message).includes('Token ausente');
+    }
+    if (!ok) fail('execução real sem token não foi bloqueada');
+  });
+
+  test('MCP_TIMEOUT_MS: padrão e validação', () => {
+    if (requestTimeoutMs({}) !== 120_000) fail('padrão divergente');
+    if (requestTimeoutMs({ MCP_TIMEOUT_MS: '500' }) !== 500) fail('override ignorado');
+    for (const raw of ['0', '-1', 'abc', '1.5']) {
+      let ok = false;
+      try {
+        requestTimeoutMs({ MCP_TIMEOUT_MS: raw });
+      } catch {
+        ok = true;
+      }
+      if (!ok) fail(`aceitou MCP_TIMEOUT_MS=${raw}`);
+    }
+  });
+
   test('help documenta incompatibilidade com edge mcp-query', () => {
     if (!HELP_TEXT.includes('Incompatível: Edge Function supabase/functions/mcp-query')) {
       fail('help não documenta alvo incompatível');
@@ -450,6 +501,28 @@ function runSelfTest() {
 
 let runtimeConfig = null;
 let reqId = 1;
+
+function requestTimeoutMs(env = process.env) {
+  const raw = env.MCP_TIMEOUT_MS;
+  if (raw === undefined || raw === '') return 120_000;
+  const ms = Number(raw);
+  if (!Number.isInteger(ms) || ms <= 0) fail(`MCP_TIMEOUT_MS inválido: ${raw} (use inteiro positivo em ms).`);
+  return ms;
+}
+
+// Sem timeout, um servidor que aceita a conexão e não responde trava a suíte
+// para sempre (e o job de CI até o limite do runner).
+function fetchWithTimeout(url, init = {}) {
+  return fetch(url, { ...init, signal: AbortSignal.timeout(runtimeConfig.timeoutMs) });
+}
+
+// Linha de status da suíte: ✅ só quando nenhuma verificação daquele prefixo
+// falhou; o denominador é o total realmente executado.
+function suiteStatus(prefix, detail = '') {
+  const pass = results.pass.filter((name) => name.startsWith(prefix)).length;
+  const failed = results.fail.filter((item) => item.name?.startsWith(prefix)).length;
+  return { pass, failed, line: `${failed === 0 ? '✅' : '❌'} ${detail || `${pass}/${pass + failed}`}\n` };
+}
 let results = { pass: [], fail: [], warn: [] };
 
 function resetRunState() {
@@ -464,7 +537,7 @@ async function rawPost(body, extraHeaders = {}) {
     ...extraHeaders,
   };
   const t0 = Date.now();
-  const res = await fetch(runtimeConfig.url, {
+  const res = await fetchWithTimeout(runtimeConfig.url, {
     method: 'POST',
     headers,
     body: JSON.stringify(body),
@@ -545,9 +618,10 @@ async function runA1() {
   assert('A1.version', init.json?.result?.serverInfo?.version?.startsWith('1.'), init.json?.result?.serverInfo?.version, '1.x.x');
   const toolsResult = (await rawPost({ jsonrpc: '2.0', id: 2, method: 'tools/list' })).json?.result?.tools;
   assert('A1.tools-min', Array.isArray(toolsResult) && toolsResult.length >= 1, toolsResult?.length, '>=1');
-  assert('A1.tools-71', toolsResult?.length === 71, toolsResult?.length, 71);
+  // A regressão A5 cobre 71 ferramentas: menos que isso é remoção; mais é adição legítima.
+  assert('A1.tools-71', toolsResult?.length >= 71, toolsResult?.length, '>=71');
 
-  const noAuth = await fetch(runtimeConfig.url, {
+  const noAuth = await fetchWithTimeout(runtimeConfig.url, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: '{"jsonrpc":"2.0","id":3,"method":"tools/list"}',
@@ -561,14 +635,14 @@ async function runA1() {
   assert('A1.401-wrongauth', wrongAuth.status === 401, wrongAuth.status, 401);
 
   const baseUrl = runtimeConfig.url.replace(/\/mcp\/?$/, '');
-  const disc = await (await fetch(`${baseUrl}/.well-known/oauth-authorization-server`)).json();
+  const disc = await (await fetchWithTimeout(`${baseUrl}/.well-known/oauth-authorization-server`)).json();
   assert('A1.oauth-S256', disc.code_challenge_methods_supported?.includes('S256'), disc, 'S256');
   assert('A1.oauth-pkce', !!disc.authorization_endpoint && !!disc.token_endpoint, disc, 'endpoints');
 
-  const opts = await fetch(runtimeConfig.url, { method: 'OPTIONS' });
+  const opts = await fetchWithTimeout(runtimeConfig.url, { method: 'OPTIONS' });
   assert('A1.cors-star', opts.headers.get('access-control-allow-origin') === '*', null, '*');
 
-  const pathAuth = await fetch(`${baseUrl}/${runtimeConfig.token}/mcp`, {
+  const pathAuth = await fetchWithTimeout(`${baseUrl}/${runtimeConfig.token}/mcp`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ jsonrpc: '2.0', id: 5, method: 'tools/list' }),
@@ -579,10 +653,10 @@ async function runA1() {
   assert('A1.unknown-method', unknownMethod.json?.error?.code === -32601, unknownMethod.json?.error?.code, -32601);
 
   const wwwAuth =
-    (await fetch(runtimeConfig.url, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: '{}' })).headers.get('www-authenticate') || '';
+    (await fetchWithTimeout(runtimeConfig.url, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: '{}' })).headers.get('www-authenticate') || '';
   assert('A1.www-auth-bearer', wwwAuth.toLowerCase().includes('bearer'), wwwAuth, 'Bearer');
 
-  process.stdout.write(`✅ ${results.pass.filter((p) => p.startsWith('A1')).length}/9\n`);
+  process.stdout.write(suiteStatus('A1.').line);
 }
 
 async function runA2() {
@@ -621,7 +695,7 @@ async function runA2() {
   assert('A2.mcp-probe-probe-col', p.parsed?.rows?.[0]?.probe === 1, p.parsed?.rows?.[0], '{probe:1}');
   assert('A2.mcp-probe-ts-col', !!p.parsed?.rows?.[0]?.ts, p.parsed?.rows?.[0]?.ts, 'timestamp');
 
-  process.stdout.write(`✅ ${results.pass.filter((p) => p.startsWith('A2')).length}/11\n`);
+  process.stdout.write(suiteStatus('A2.').line);
 }
 
 async function runA3() {
@@ -647,7 +721,7 @@ async function runA3() {
     'Escrita administrativa bloqueada',
   );
 
-  process.stdout.write(`✅ ${results.pass.filter((p) => p.startsWith('A3')).length}/10\n`);
+  process.stdout.write(suiteStatus('A3.').line);
 }
 
 async function runA4() {
@@ -688,7 +762,7 @@ async function runA4() {
     warn_('A4.fifty-stmts', `PG simple query length limit hit at 50 stmts: ${JSON.stringify(big.parsed.error)}`);
   }
 
-  process.stdout.write(`✅ ${results.pass.filter((p) => p.startsWith('A4')).length}/9\n`);
+  process.stdout.write(suiteStatus('A4.').line);
 }
 
 async function runA5() {
@@ -846,7 +920,7 @@ async function runA5() {
   const avg = Math.round(sorted.reduce((sum, [, ms]) => sum + ms, 0) / sorted.length);
   const perf = `avg:${avg}ms  slowest:${sorted[0]?.[0]}(${sorted[0]?.[1]}ms)`;
 
-  process.stdout.write(`✅ ${pass71}/71 reg  ${perf}\n`);
+  process.stdout.write(suiteStatus('A5.', `${pass71}/${tools71.length} reg  ${perf}`).line);
   if (fail71 > 0) {
     results.fail
       .filter((f) => f.name?.startsWith('A5.reg:'))
@@ -881,6 +955,7 @@ async function main() {
     printPlan(runtimeConfig);
     return;
   }
+  runtimeConfig.timeoutMs = requestTimeoutMs();
 
   resetRunState();
 
@@ -917,6 +992,10 @@ async function main() {
 }
 
 main().catch((error) => {
-  console.error('FATAL:', error instanceof Error ? error.message : error);
+  if (error?.name === 'TimeoutError') {
+    console.error(`FATAL: requisição excedeu o timeout de ${runtimeConfig?.timeoutMs}ms (ajuste MCP_TIMEOUT_MS).`);
+  } else {
+    console.error('FATAL:', error instanceof Error ? error.message : error);
+  }
   process.exit(1);
 });
