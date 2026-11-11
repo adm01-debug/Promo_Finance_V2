@@ -1,6 +1,7 @@
 CREATE OR REPLACE FUNCTION public.watch_cron_failures()
  RETURNS jsonb
  LANGUAGE plpgsql
+ SET search_path TO 'public', 'extensions', 'pg_temp'
 AS $function$
 DECLARE
   v_falhas integer;

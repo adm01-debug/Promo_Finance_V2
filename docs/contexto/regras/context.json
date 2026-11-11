@@ -1,9 +1,9 @@
 {
  "meta": {
-  "sha": "f1d42f8639bc31a20ac50d39a08c84cf2c2814c0",
+  "sha": "5215111cf73d9b6a89e2e5654650f7f4c9ac8c30",
   "branch": "main",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
-  "generated_at": "2026-11-11 19:30 UTC",
+  "generated_at": "2026-11-11 23:26 UTC",
   "files_total": 3651,
   "code_files": 3286,
   "code_lines": 491200
@@ -241670,10 +241670,31 @@
   }
  },
  "git": {
-  "sha": "f1d42f8639bc31a20ac50d39a08c84cf2c2814c0",
+  "sha": "5215111cf73d9b6a89e2e5654650f7f4c9ac8c30",
   "branch": "main",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
   "commits": [
+   {
+    "sha": "5215111",
+    "date": "2026-11-11",
+    "author": "dependabot[bot]",
+    "subject": "chore(deps): bump actions/checkout from 5.1.0 to 7.0.1 (#206)",
+    "files": [
+     ".github/workflows/actionlint.yml",
+     ".github/workflows/ci.yml",
+     ".github/workflows/codeql.yml",
+     ".github/workflows/deno-tests.yml",
+     ".github/workflows/dependency-review.yml",
+     ".github/workflows/functions-deploy.yml",
+     ".github/workflows/graphify.yml",
+     ".github/workflows/migration-ledger.yml",
+     ".github/workflows/prod-migrate.yml",
+     ".github/workflows/schema-drift.yml",
+     ".github/workflows/staging-migrate.yml",
+     ".github/workflows/supabase-admin-ops.yml",
+     ".github/workflows/supabase-linter.yml"
+    ]
+   },
    {
     "sha": "f1d42f8",
     "date": "2026-11-11",
@@ -242298,29 +242319,19 @@
      "scripts/edge-deploy/verify-remote.mjs",
      "scripts/edge-deploy/verify-remote.unit.mjs"
     ]
-   },
-   {
-    "sha": "039e16d",
-    "date": "2026-11-09",
-    "author": "adm01-debug",
-    "subject": "chore: dossiês completos por PR + relatório final sessão merge-prs (#280)",
-    "files": [
-     "analise-prs/RELATORIO_PRS.md",
-     "analise-prs/progresso.json"
-    ]
    }
   ],
   "hot_files": [
    [
     "analise-prs/progresso.json",
-    7
-   ],
-   [
-    "analise-prs/RELATORIO_PRS.md",
     6
    ],
    [
     "package.json",
+    5
+   ],
+   [
+    "analise-prs/RELATORIO_PRS.md",
     5
    ],
    [
@@ -242356,6 +242367,14 @@
     3
    ],
    [
+    ".github/workflows/ci.yml",
+    2
+   ],
+   [
+    ".github/workflows/prod-migrate.yml",
+    2
+   ],
+   [
     "scripts/automation.unit.mjs",
     2
    ],
@@ -242381,14 +242400,6 @@
    ],
    [
     "scripts/inventario/README.md",
-    2
-   ],
-   [
-    "scripts/inventario/banco.sql",
-    2
-   ],
-   [
-    "scripts/inventario/gerar-banco.mjs",
     2
    ]
   ]

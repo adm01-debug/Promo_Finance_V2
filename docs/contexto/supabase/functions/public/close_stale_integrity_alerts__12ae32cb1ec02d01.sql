@@ -1,6 +1,7 @@
 CREATE OR REPLACE FUNCTION public.close_stale_integrity_alerts()
  RETURNS integer
  LANGUAGE plpgsql
+ SET search_path TO 'public', 'extensions', 'pg_temp'
 AS $function$
 DECLARE v int;
 BEGIN

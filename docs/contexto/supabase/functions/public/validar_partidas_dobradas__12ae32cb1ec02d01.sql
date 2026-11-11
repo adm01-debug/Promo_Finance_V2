@@ -1,6 +1,7 @@
 CREATE OR REPLACE FUNCTION public.validar_partidas_dobradas()
  RETURNS trigger
  LANGUAGE plpgsql
+ SET search_path TO 'public', 'extensions', 'pg_temp'
 AS $function$
 DECLARE v_deb numeric; v_cre numeric;
 BEGIN

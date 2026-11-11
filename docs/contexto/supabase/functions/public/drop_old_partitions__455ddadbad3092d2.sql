@@ -1,6 +1,7 @@
 CREATE OR REPLACE FUNCTION public.drop_old_partitions(p_schema text DEFAULT 'public'::text, p_keep_months integer DEFAULT 12)
  RETURNS jsonb
  LANGUAGE plpgsql
+ SET search_path TO 'public', 'extensions', 'pg_temp'
 AS $function$
 DECLARE v_dropped text[]:='{}'; rec record;
 BEGIN

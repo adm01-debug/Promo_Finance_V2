@@ -4,7 +4,7 @@
 |---|---|
 | nome | enviar-relatorios-tributarios-agendados |
 | status | ACTIVE |
-| versão | 14 |
+| versão | 15 |
 | verify_jwt | sim |
 | entrypoint | file:///tmp/user_fn_bwwbeyolnnzppeuhgkcd_b308dda6-672d-471a-8236-f3cb088b5f0b_1/source/supabase/functions/enviar-relatorios-tributarios-agendados/index.ts |
 | import_map |  |

@@ -1,6 +1,7 @@
 CREATE OR REPLACE FUNCTION public.escalate_stale_integrity_alerts()
  RETURNS jsonb
  LANGUAGE plpgsql
+ SET search_path TO 'public', 'extensions', 'pg_temp'
 AS $function$
 DECLARE v int;
 BEGIN

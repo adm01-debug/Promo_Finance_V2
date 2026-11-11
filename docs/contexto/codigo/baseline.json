@@ -2,11 +2,16 @@
  "aviso": "GERADO AUTOMATICAMENTE por scripts/ai-context/gerar.mjs — não editar à mão; será sobrescrito.",
  "format_version": 2,
  "git": {
-  "commit": "f1d42f8639bc31a20ac50d39a08c84cf2c2814c0",
+  "commit": "5215111cf73d9b6a89e2e5654650f7f4c9ac8c30",
   "branch": "main",
-  "data_commit": "2026-11-11T15:59:10-03:00",
+  "data_commit": "2026-11-11T19:49:39-03:00",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
   "ultimos_commits": [
+   {
+    "sha": "5215111",
+    "data": "2026-11-11",
+    "assunto": "chore(deps): bump actions/checkout from 5.1.0 to 7.0.1 (#206)"
+   },
    {
     "sha": "f1d42f8",
     "data": "2026-11-11",
@@ -126,14 +131,9 @@
     "sha": "b6e60a5",
     "data": "2026-11-09",
     "assunto": "chore: docs analise-prs estado final 15 mergeadas esta sessao"
-   },
-   {
-    "sha": "fc35825",
-    "data": "2026-11-09",
-    "assunto": "chore: docs analise-prs estado final 14 mergeadas esta sessao (#285)"
    }
   ],
-  "arquivos_mudados_7d": 470,
+  "arquivos_mudados_7d": 480,
   "pastas_mais_mudadas_30d": [
    {
     "pasta": "package.json",
@@ -148,6 +148,10 @@
     "mudancas": 17
    },
    {
+    "pasta": ".github/workflows/ci.yml",
+    "mudancas": 11
+   },
+   {
     "pasta": "PENDENCIAS.md",
     "mudancas": 11
    },
@@ -160,10 +164,6 @@
     "mudancas": 11
    },
    {
-    "pasta": ".github/workflows/ci.yml",
-    "mudancas": 10
-   },
-   {
     "pasta": "analise-prs/progresso.json",
     "mudancas": 8
    },
@@ -172,15 +172,19 @@
     "mudancas": 7
    },
    {
+    "pasta": ".github/workflows/prod-migrate.yml",
+    "mudancas": 5
+   },
+   {
+    "pasta": ".github/workflows/supabase-linter.yml",
+    "mudancas": 5
+   },
+   {
     "pasta": ".gitignore",
     "mudancas": 5
    },
    {
-    "pasta": ".github/workflows/prod-migrate.yml",
-    "mudancas": 4
-   },
-   {
-    "pasta": ".github/workflows/supabase-linter.yml",
+    "pasta": ".github/workflows/schema-drift.yml",
     "mudancas": 4
    },
    {
@@ -189,10 +193,6 @@
    },
    {
     "pasta": "scripts/automation.config.json",
-    "mudancas": 4
-   },
-   {
-    "pasta": "scripts/edge-deploy/fixtures",
     "mudancas": 4
    }
   ],
@@ -207,7 +207,7 @@
    },
    {
     "arquivo": ".github/workflows/ci.yml",
-    "mudancas": 22
+    "mudancas": 23
    },
    {
     "arquivo": "supabase/config.toml",
@@ -218,12 +218,12 @@
     "mudancas": 15
    },
    {
-    "arquivo": "supabase/functions/mcp-query/index.ts",
+    "arquivo": ".github/workflows/deno-tests.yml",
     "mudancas": 13
    },
    {
-    "arquivo": ".github/workflows/deno-tests.yml",
-    "mudancas": 12
+    "arquivo": "supabase/functions/mcp-query/index.ts",
+    "mudancas": 13
    },
    {
     "arquivo": "e2e/auth/admin-rbac.e2e.ts",
@@ -250,11 +250,15 @@
     "mudancas": 11
    },
    {
+    "arquivo": ".github/workflows/supabase-linter.yml",
+    "mudancas": 10
+   },
+   {
     "arquivo": "src/pages/Auth.hooks.ts",
     "mudancas": 10
    },
    {
-    "arquivo": ".github/workflows/supabase-linter.yml",
+    "arquivo": ".github/workflows/functions-deploy.yml",
     "mudancas": 9
    },
    {
@@ -286,15 +290,11 @@
     "mudancas": 9
    },
    {
-    "arquivo": ".github/workflows/functions-deploy.yml",
+    "arquivo": ".github/workflows/graphify.yml",
     "mudancas": 8
    },
    {
     "arquivo": "analise-prs/progresso.json",
-    "mudancas": 8
-   },
-   {
-    "arquivo": "scripts/security/test-canonical-db-gates.mjs",
     "mudancas": 8
    }
   ],
@@ -309,7 +309,7 @@
    },
    {
     "autor": "dependabot[bot]",
-    "commits": 9
+    "commits": 10
    },
    {
     "autor": "Joaquim Ataides",

@@ -1,6 +1,7 @@
 CREATE OR REPLACE FUNCTION public.purge_old_rows(p_table text, p_column text DEFAULT 'created_at'::text, p_days integer DEFAULT 90)
  RETURNS bigint
  LANGUAGE plpgsql
+ SET search_path TO 'public', 'extensions', 'pg_temp'
 AS $function$
 DECLARE v bigint;
 BEGIN

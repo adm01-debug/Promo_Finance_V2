@@ -2,6 +2,7 @@ CREATE OR REPLACE FUNCTION public.validar_catalogos_tributarios()
  RETURNS TABLE(tabela text, registros bigint, status text)
  LANGUAGE sql
  STABLE
+ SET search_path TO 'public', 'extensions', 'pg_temp'
 AS $function$
   SELECT 'ufs'::text,COUNT(*)::bigint,CASE WHEN COUNT(*)=27 THEN 'OK' ELSE 'INCOMPLETO' END FROM public.ufs UNION ALL
   SELECT 'ncms',COUNT(*),CASE WHEN COUNT(*)>0 THEN 'OK' ELSE 'VAZIO' END FROM public.ncms UNION ALL

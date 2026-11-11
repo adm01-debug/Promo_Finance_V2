@@ -2,6 +2,7 @@ CREATE OR REPLACE FUNCTION public.fn_livro_razao(p_empresa_id uuid, p_conta_id u
  RETURNS TABLE(data_lancamento date, descricao text, tipo text, valor numeric, saldo_acumulado numeric)
  LANGUAGE sql
  STABLE
+ SET search_path TO 'public', 'extensions', 'pg_temp'
 AS $function$
   SELECT l.data_lancamento, l.historico, p.tipo, p.valor,
     SUM(CASE WHEN p.tipo='DEBITO' THEN p.valor ELSE -p.valor END)

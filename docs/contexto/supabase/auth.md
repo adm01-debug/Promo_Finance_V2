@@ -23,7 +23,7 @@ Contagens de usuários em `stats.md` (apenas agregados — sem dados pessoais).
   "api_max_request_duration": 10,
   "audit_log_disable_postgres": true,
   "custom_oauth_enabled": false,
-  "custom_oauth_max_providers": 3,
+  "custom_oauth_max_providers": 32767,
   "db_max_pool_size": 10,
   "db_max_pool_size_unit": "connections",
   "disable_signup": false,
