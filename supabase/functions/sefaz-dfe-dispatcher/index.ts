@@ -164,8 +164,8 @@ Deno.serve(
                 ultima_consulta: next.ultima_consulta
                   ? new Date(next.ultima_consulta).toISOString()
                   : null,
-                ultimo_status: outcome.kind === 'success' ? 'ok' : outcome.errorTag ?? 'erro',
-                ultimo_erro: outcome.kind === 'failure' ? outcome.errorTag ?? null : null,
+                ultimo_status: outcome.kind === 'success' ? 'ok' : (outcome.errorTag ?? 'erro'),
+                ultimo_erro: outcome.kind === 'failure' ? (outcome.errorTag ?? null) : null,
               })
               .eq('id', e.cursor_id);
 
