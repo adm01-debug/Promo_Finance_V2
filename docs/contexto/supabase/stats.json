@@ -77,7 +77,7 @@
           "connected_cluster": 0,
           "db_connected": false,
           "healthy": true,
-          "node": "realtime@2600:1f18:67fc:ac02:90a5:694a:bde1:9b5d",
+          "node": "realtime@2600:1f18:67fc:ac02:2971:c320:967d:242",
           "region": "us-east-1",
           "replication_connected": false
         },
@@ -624,30 +624,30 @@
         "status": "succeeded"
       },
       {
-        "end_time": "2026-11-11T05:18:00.129421+00:00",
+        "end_time": "2026-11-11T05:26:00.114790+00:00",
         "jobid": 33,
         "return_message": "1 row",
-        "runid": 227895,
-        "seconds": 0.05,
-        "start_time": "2026-11-11T05:18:00.078596+00:00",
-        "status": "succeeded"
-      },
-      {
-        "end_time": "2026-11-11T05:17:00.114928+00:00",
-        "jobid": 33,
-        "return_message": "1 row",
-        "runid": 227893,
+        "runid": 227911,
         "seconds": 0.02,
-        "start_time": "2026-11-11T05:17:00.099319+00:00",
+        "start_time": "2026-11-11T05:26:00.098756+00:00",
         "status": "succeeded"
       },
       {
-        "end_time": "2026-11-11T05:16:00.163736+00:00",
+        "end_time": "2026-11-11T05:25:00.114693+00:00",
         "jobid": 33,
         "return_message": "1 row",
-        "runid": 227891,
+        "runid": 227909,
         "seconds": 0.03,
-        "start_time": "2026-11-11T05:16:00.130646+00:00",
+        "start_time": "2026-11-11T05:25:00.085936+00:00",
+        "status": "succeeded"
+      },
+      {
+        "end_time": "2026-11-11T05:24:00.058658+00:00",
+        "jobid": 33,
+        "return_message": "1 row",
+        "runid": 227907,
+        "seconds": 0,
+        "start_time": "2026-11-11T05:24:00.053753+00:00",
         "status": "succeeded"
       },
       {
@@ -732,30 +732,30 @@
         "status": "succeeded"
       },
       {
-        "end_time": "2026-11-11T05:18:00.099227+00:00",
+        "end_time": "2026-11-11T05:26:00.096189+00:00",
         "jobid": 37,
         "return_message": "1 row",
-        "runid": 227894,
-        "seconds": 0.01,
-        "start_time": "2026-11-11T05:18:00.088762+00:00",
-        "status": "succeeded"
-      },
-      {
-        "end_time": "2026-11-11T05:17:00.108292+00:00",
-        "jobid": 37,
-        "return_message": "1 row",
-        "runid": 227892,
-        "seconds": 0.03,
-        "start_time": "2026-11-11T05:17:00.075417+00:00",
-        "status": "succeeded"
-      },
-      {
-        "end_time": "2026-11-11T05:16:00.127175+00:00",
-        "jobid": 37,
-        "return_message": "1 row",
-        "runid": 227890,
+        "runid": 227910,
         "seconds": 0.04,
-        "start_time": "2026-11-11T05:16:00.091359+00:00",
+        "start_time": "2026-11-11T05:26:00.052918+00:00",
+        "status": "succeeded"
+      },
+      {
+        "end_time": "2026-11-11T05:25:00.120010+00:00",
+        "jobid": 37,
+        "return_message": "1 row",
+        "runid": 227908,
+        "seconds": 0.03,
+        "start_time": "2026-11-11T05:25:00.091245+00:00",
+        "status": "succeeded"
+      },
+      {
+        "end_time": "2026-11-11T05:24:00.082303+00:00",
+        "jobid": 37,
+        "return_message": "1 row",
+        "runid": 227906,
+        "seconds": 0.01,
+        "start_time": "2026-11-11T05:24:00.075419+00:00",
         "status": "succeeded"
       },
       {
@@ -824,7 +824,7 @@
           "usename": "authenticator"
         },
         {
-          "n": 1,
+          "n": 2,
           "state": "idle",
           "usename": "pgbouncer"
         },
@@ -842,9 +842,14 @@
           "n": 2,
           "state": null,
           "usename": "supabase_admin"
+        },
+        {
+          "n": 1,
+          "state": "idle",
+          "usename": "supabase_storage_admin"
         }
       ],
-      "database_bytes": 536218771,
+      "database_bytes": 536251539,
       "queues": [],
       "schema_bytes": [
         {
@@ -855,12 +860,12 @@
       "storage": [],
       "top_queries": [
         {
-          "calls": 32292,
-          "mean_ms": 171.5,
+          "calls": 32409,
+          "mean_ms": 171.47,
           "query": "SELECT table_schema AS schema, table_name AS \"table\", column_name AS \"column\", grantee, string_agg(privilege_type, $2 ORDER BY privilege_type) AS privileges FROM information_schema.column_privileges cp WHERE grantee NOT ",
           "role": "postgres",
           "rows": 0,
-          "total_ms": 5537954
+          "total_ms": 5557134
         },
         {
           "calls": 1854,
@@ -887,20 +892,20 @@
           "total_ms": 1983088
         },
         {
-          "calls": 295,
-          "mean_ms": 4642.63,
+          "calls": 296,
+          "mean_ms": 4627.51,
           "query": "SELECT jobid, runid, status, start_time, end_time, EXTRACT($2 FROM (end_time - start_time))::numeric(10,2) AS seconds, left(return_message, $3) AS return_message FROM (SELECT *, row_number() OVER (PARTITION BY jobid ORDE",
           "role": "postgres",
-          "rows": 23010,
-          "total_ms": 1369575
+          "rows": 23088,
+          "total_ms": 1369742
         },
         {
-          "calls": 90102,
+          "calls": 90110,
           "mean_ms": 14.95,
           "query": "SELECT net.http_post( url := $1, headers := jsonb_build_object($2,$3,$4, public.internal_job_secret()), body := jsonb_build_object($5,$6,$7, now()) ) AS request_id",
           "role": "postgres",
-          "rows": 90102,
-          "total_ms": 1346656
+          "rows": 90110,
+          "total_ms": 1346776
         },
         {
           "calls": 305973,
@@ -911,12 +916,12 @@
           "total_ms": 1342284
         },
         {
-          "calls": 90102,
+          "calls": 90110,
           "mean_ms": 14.08,
           "query": "SELECT net.http_post( url := $1, headers := jsonb_build_object($2,$3,$4, public.internal_job_secret()), body := jsonb_build_object($5,$6,$7,$8) ) AS request_id",
           "role": "postgres",
-          "rows": 90102,
-          "total_ms": 1268885
+          "rows": 90110,
+          "total_ms": 1268990
         },
         {
           "calls": 6696,
