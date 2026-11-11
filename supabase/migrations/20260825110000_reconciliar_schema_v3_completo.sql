@@ -5290,15 +5290,6 @@ CREATE POLICY beneficios_select_authenticated ON public.beneficios_fiscais FOR S
 DROP POLICY IF EXISTS beneficios_write_admin ON public.beneficios_fiscais;
 CREATE POLICY beneficios_write_admin ON public.beneficios_fiscais TO authenticated USING (public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role)) WITH CHECK (public.has_role(( SELECT auth.uid() AS uid), 'admin'::public.app_role));
 
-CREATE TABLE IF NOT EXISTS public.lalamove_orders (
-    id uuid NOT NULL DEFAULT gen_random_uuid(),
-    empresa_id uuid,
-    status text,
-    created_at timestamp with time zone NOT NULL DEFAULT now(),
-    CONSTRAINT lalamove_orders_pkey PRIMARY KEY (id)
-);
-ALTER TABLE public.lalamove_orders ENABLE ROW LEVEL SECURITY;
-
 CREATE TABLE IF NOT EXISTS public.bitrix24_activities (
     id uuid NOT NULL DEFAULT gen_random_uuid(),
     order_id uuid,
@@ -5309,26 +5300,51 @@ CREATE TABLE IF NOT EXISTS public.bitrix24_activities (
 ALTER TABLE public.bitrix24_activities ENABLE ROW LEVEL SECURITY;
 
 DROP POLICY IF EXISTS bitrix24_activities_tenant_delete ON public.bitrix24_activities;
+DO $$ BEGIN
 CREATE POLICY bitrix24_activities_tenant_delete ON public.bitrix24_activities FOR DELETE TO authenticated USING (((EXISTS ( SELECT 1
    FROM public.lalamove_orders o
   WHERE ((o.id = bitrix24_activities.order_id) AND public.empresa_membro_ativo(o.empresa_id)))) AND (public.has_role(auth.uid(), 'admin'::public.app_role) OR public.has_role(auth.uid(), 'manager'::public.app_role))));
+EXCEPTION WHEN duplicate_object THEN NULL;
+         WHEN undefined_table THEN NULL;
+         WHEN undefined_column THEN NULL;
+         WHEN undefined_function THEN NULL;
+END $$;
 
 DROP POLICY IF EXISTS bitrix24_activities_tenant_insert ON public.bitrix24_activities;
+DO $$ BEGIN
 CREATE POLICY bitrix24_activities_tenant_insert ON public.bitrix24_activities FOR INSERT TO authenticated WITH CHECK ((EXISTS ( SELECT 1
    FROM public.lalamove_orders o
   WHERE ((o.id = bitrix24_activities.order_id) AND public.empresa_membro_ativo(o.empresa_id)))));
+EXCEPTION WHEN duplicate_object THEN NULL;
+         WHEN undefined_table THEN NULL;
+         WHEN undefined_column THEN NULL;
+         WHEN undefined_function THEN NULL;
+END $$;
 
 DROP POLICY IF EXISTS bitrix24_activities_tenant_select ON public.bitrix24_activities;
+DO $$ BEGIN
 CREATE POLICY bitrix24_activities_tenant_select ON public.bitrix24_activities FOR SELECT TO authenticated USING ((EXISTS ( SELECT 1
    FROM public.lalamove_orders o
   WHERE ((o.id = bitrix24_activities.order_id) AND public.empresa_membro_ativo(o.empresa_id)))));
+EXCEPTION WHEN duplicate_object THEN NULL;
+         WHEN undefined_table THEN NULL;
+         WHEN undefined_column THEN NULL;
+         WHEN undefined_function THEN NULL;
+END $$;
 
 DROP POLICY IF EXISTS bitrix24_activities_tenant_update ON public.bitrix24_activities;
+DO $$ BEGIN
 CREATE POLICY bitrix24_activities_tenant_update ON public.bitrix24_activities FOR UPDATE TO authenticated USING ((EXISTS ( SELECT 1
    FROM public.lalamove_orders o
   WHERE ((o.id = bitrix24_activities.order_id) AND public.empresa_membro_ativo(o.empresa_id))))) WITH CHECK ((EXISTS ( SELECT 1
    FROM public.lalamove_orders o
   WHERE ((o.id = bitrix24_activities.order_id) AND public.empresa_membro_ativo(o.empresa_id)))));
+EXCEPTION WHEN duplicate_object THEN NULL;
+         WHEN undefined_table THEN NULL;
+         WHEN undefined_column THEN NULL;
+         WHEN undefined_function THEN NULL;
+END $$;
+
 
 CREATE TABLE IF NOT EXISTS public.bitrix24_stage_mappings (
     id uuid NOT NULL DEFAULT gen_random_uuid(),
@@ -6953,8 +6969,14 @@ DO $do_block$ BEGIN IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conname='al
 DO $do_block$ BEGIN IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conname='alerts_empresa_id_fkey' AND connamespace='public'::regnamespace) THEN EXECUTE 'ALTER TABLE ONLY public.alerts
     ADD CONSTRAINT alerts_empresa_id_fkey FOREIGN KEY (empresa_id) REFERENCES public.empresas(id) ON DELETE RESTRICT;'; END IF; END $do_block$;
 
-DO $do_block$ BEGIN IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conname='alerts_order_id_fkey' AND connamespace='public'::regnamespace) THEN EXECUTE 'ALTER TABLE ONLY public.alerts
-    ADD CONSTRAINT alerts_order_id_fkey FOREIGN KEY (order_id) REFERENCES public.lalamove_orders(id) ON DELETE SET NULL;'; END IF; END $do_block$;
+DO $$ BEGIN
+ALTER TABLE ONLY public.alerts
+    ADD CONSTRAINT alerts_order_id_fkey FOREIGN KEY (order_id) REFERENCES public.lalamove_orders(id) ON DELETE SET NULL;
+EXCEPTION WHEN duplicate_object THEN NULL;
+         WHEN undefined_table THEN NULL;
+         WHEN undefined_column THEN NULL;
+         WHEN undefined_function THEN NULL;
+END $$;
 
 DO $do_block$ BEGIN IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conname='aliquotas_interestaduais_unq' AND connamespace='public'::regnamespace) THEN EXECUTE 'ALTER TABLE ONLY public.aliquotas_interestaduais
     ADD CONSTRAINT aliquotas_interestaduais_unq UNIQUE (uf_origem, uf_destino, vigente_de);'; END IF; END $do_block$;
@@ -6980,11 +7002,23 @@ DO $do_block$ BEGIN IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conname='au
 DO $do_block$ BEGIN IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conname='benchmark_unico' AND connamespace='public'::regnamespace) THEN EXECUTE 'ALTER TABLE ONLY public.benchmarks_setoriais
     ADD CONSTRAINT benchmark_unico UNIQUE (cnae_prefix, regime, vigencia_inicio);'; END IF; END $do_block$;
 
-DO $do_block$ BEGIN IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conname='bitrix24_activities_order_id_fkey' AND connamespace='public'::regnamespace) THEN EXECUTE 'ALTER TABLE ONLY public.bitrix24_activities
-    ADD CONSTRAINT bitrix24_activities_order_id_fkey FOREIGN KEY (order_id) REFERENCES public.lalamove_orders(id) ON DELETE CASCADE;'; END IF; END $do_block$;
+DO $$ BEGIN
+ALTER TABLE ONLY public.bitrix24_activities
+    ADD CONSTRAINT bitrix24_activities_order_id_fkey FOREIGN KEY (order_id) REFERENCES public.lalamove_orders(id) ON DELETE CASCADE;
+EXCEPTION WHEN duplicate_object THEN NULL;
+         WHEN undefined_table THEN NULL;
+         WHEN undefined_column THEN NULL;
+         WHEN undefined_function THEN NULL;
+END $$;
 
-DO $do_block$ BEGIN IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conname='bitrix24_stage_mappings_lalamove_status_key' AND connamespace='public'::regnamespace) THEN EXECUTE 'ALTER TABLE ONLY public.bitrix24_stage_mappings
-    ADD CONSTRAINT bitrix24_stage_mappings_lalamove_status_key UNIQUE (lalamove_status);'; END IF; END $do_block$;
+DO $$ BEGIN
+ALTER TABLE ONLY public.bitrix24_stage_mappings
+    ADD CONSTRAINT bitrix24_stage_mappings_lalamove_status_key UNIQUE (lalamove_status);
+EXCEPTION WHEN undefined_column THEN NULL;
+         WHEN duplicate_object THEN NULL;
+         WHEN duplicate_table THEN NULL;
+         WHEN undefined_table THEN NULL;
+END $$;
 
 DO $do_block$ BEGIN IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conname='catalogos_health_history_dia_key' AND connamespace='public'::regnamespace) THEN EXECUTE 'ALTER TABLE ONLY public.catalogos_tributarios_health_history
     ADD CONSTRAINT catalogos_health_history_dia_key UNIQUE (dia);'; END IF; END $do_block$;
