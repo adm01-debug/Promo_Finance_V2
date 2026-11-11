@@ -173,7 +173,7 @@ export const handler = async (req: Request): Promise<Response> => {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        from: 'Sistema Financeiro <alertas@resend.dev>',
+        from: Deno.env.get('RESEND_FROM') ?? 'Sistema Financeiro <alertas@resend.dev>',
         to: [destinatario],
         subject: template.subject,
         html: template.html,
