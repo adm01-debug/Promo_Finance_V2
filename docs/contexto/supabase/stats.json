@@ -77,7 +77,7 @@
           "connected_cluster": 0,
           "db_connected": false,
           "healthy": true,
-          "node": "realtime@2600:1f18:67fc:ac00:86bf:e206:1da0:f3ae",
+          "node": "realtime@2600:1f18:67fc:ac02:90a5:694a:bde1:9b5d",
           "region": "us-east-1",
           "replication_connected": false
         },
@@ -624,30 +624,30 @@
         "status": "succeeded"
       },
       {
-        "end_time": "2026-11-11T01:45:00.291877+00:00",
+        "end_time": "2026-11-11T01:53:00.187152+00:00",
         "jobid": 33,
         "return_message": "1 row",
-        "runid": 227413,
+        "runid": 227429,
+        "seconds": 0.01,
+        "start_time": "2026-11-11T01:53:00.179558+00:00",
+        "status": "succeeded"
+      },
+      {
+        "end_time": "2026-11-11T01:52:00.146678+00:00",
+        "jobid": 33,
+        "return_message": "1 row",
+        "runid": 227427,
+        "seconds": 0.02,
+        "start_time": "2026-11-11T01:52:00.128025+00:00",
+        "status": "succeeded"
+      },
+      {
+        "end_time": "2026-11-11T01:51:00.094389+00:00",
+        "jobid": 33,
+        "return_message": "1 row",
+        "runid": 227425,
         "seconds": 0.03,
-        "start_time": "2026-11-11T01:45:00.262685+00:00",
-        "status": "succeeded"
-      },
-      {
-        "end_time": "2026-11-11T01:44:00.136474+00:00",
-        "jobid": 33,
-        "return_message": "1 row",
-        "runid": 227409,
-        "seconds": 0.02,
-        "start_time": "2026-11-11T01:44:00.113246+00:00",
-        "status": "succeeded"
-      },
-      {
-        "end_time": "2026-11-11T01:43:00.111296+00:00",
-        "jobid": 33,
-        "return_message": "1 row",
-        "runid": 227407,
-        "seconds": 0.02,
-        "start_time": "2026-11-11T01:43:00.095896+00:00",
+        "start_time": "2026-11-11T01:51:00.064845+00:00",
         "status": "succeeded"
       },
       {
@@ -732,30 +732,30 @@
         "status": "succeeded"
       },
       {
-        "end_time": "2026-11-11T01:45:00.327533+00:00",
+        "end_time": "2026-11-11T01:53:00.191991+00:00",
         "jobid": 37,
         "return_message": "1 row",
-        "runid": 227410,
-        "seconds": 0.13,
-        "start_time": "2026-11-11T01:45:00.198158+00:00",
+        "runid": 227428,
+        "seconds": 0.09,
+        "start_time": "2026-11-11T01:53:00.106076+00:00",
         "status": "succeeded"
       },
       {
-        "end_time": "2026-11-11T01:44:00.134433+00:00",
+        "end_time": "2026-11-11T01:52:00.125681+00:00",
         "jobid": 37,
         "return_message": "1 row",
-        "runid": 227408,
-        "seconds": 0.02,
-        "start_time": "2026-11-11T01:44:00.111482+00:00",
+        "runid": 227426,
+        "seconds": 0.04,
+        "start_time": "2026-11-11T01:52:00.082680+00:00",
         "status": "succeeded"
       },
       {
-        "end_time": "2026-11-11T01:43:00.094675+00:00",
+        "end_time": "2026-11-11T01:51:00.077761+00:00",
         "jobid": 37,
         "return_message": "1 row",
-        "runid": 227406,
-        "seconds": 0.02,
-        "start_time": "2026-11-11T01:43:00.071842+00:00",
+        "runid": 227424,
+        "seconds": 0.03,
+        "start_time": "2026-11-11T01:51:00.052096+00:00",
         "status": "succeeded"
       },
       {
@@ -849,7 +849,7 @@
           "usename": "supabase_storage_admin"
         }
       ],
-      "database_bytes": 534973587,
+      "database_bytes": 535014547,
       "queues": [],
       "schema_bytes": [
         {
@@ -860,12 +860,12 @@
       "storage": [],
       "top_queries": [
         {
-          "calls": 30186,
-          "mean_ms": 171.74,
+          "calls": 30303,
+          "mean_ms": 171.73,
           "query": "SELECT table_schema AS schema, table_name AS \"table\", column_name AS \"column\", grantee, string_agg(privilege_type, $2 ORDER BY privilege_type) AS privileges FROM information_schema.column_privileges cp WHERE grantee NOT ",
           "role": "postgres",
           "rows": 0,
-          "total_ms": 5184131
+          "total_ms": 5203820
         },
         {
           "calls": 1850,
@@ -892,20 +892,20 @@
           "total_ms": 1983088
         },
         {
-          "calls": 277,
-          "mean_ms": 4924.55,
+          "calls": 278,
+          "mean_ms": 4907.26,
           "query": "SELECT jobid, runid, status, start_time, end_time, EXTRACT($2 FROM (end_time - start_time))::numeric(10,2) AS seconds, left(return_message, $3) AS return_message FROM (SELECT *, row_number() OVER (PARTITION BY jobid ORDE",
           "role": "postgres",
-          "rows": 21606,
-          "total_ms": 1364100
+          "rows": 21684,
+          "total_ms": 1364219
         },
         {
-          "calls": 89889,
+          "calls": 89897,
           "mean_ms": 14.95,
           "query": "SELECT net.http_post( url := $1, headers := jsonb_build_object($2,$3,$4, public.internal_job_secret()), body := jsonb_build_object($5,$6,$7, now()) ) AS request_id",
           "role": "postgres",
-          "rows": 89889,
-          "total_ms": 1343531
+          "rows": 89897,
+          "total_ms": 1343705
         },
         {
           "calls": 305973,
@@ -916,12 +916,12 @@
           "total_ms": 1342284
         },
         {
-          "calls": 89889,
+          "calls": 89897,
           "mean_ms": 14.09,
           "query": "SELECT net.http_post( url := $1, headers := jsonb_build_object($2,$3,$4, public.internal_job_secret()), body := jsonb_build_object($5,$6,$7,$8) ) AS request_id",
           "role": "postgres",
-          "rows": 89889,
-          "total_ms": 1266186
+          "rows": 89897,
+          "total_ms": 1266296
         },
         {
           "calls": 6692,
