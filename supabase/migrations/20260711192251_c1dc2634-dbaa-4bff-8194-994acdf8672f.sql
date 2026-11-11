@@ -1,9 +1,49 @@
 -- Item 24: Automação de retenção e manutenção via pg_cron
--- Todas as tarefas chamam funções SQL internas (sem HTTP), portanto podem viver em migração.
+-- Todas as tarefas chamam funções SQL internas (sem HTTP).
 
-CREATE EXTENSION IF NOT EXISTS pg_cron;
+-- Instala pg_cron (no-op se já existe); captura 2BP01 em ambiente Preview.
+DO $$
+BEGIN
+  CREATE EXTENSION IF NOT EXISTS pg_cron;
+EXCEPTION WHEN OTHERS THEN
+  RAISE NOTICE 'pg_cron CREATE EXTENSION ignorado: %', SQLERRM;
+END $$;
 
--- Helper: agenda ou reagenda job idempotentemente
+-- Se pg_cron não foi instalado (Preview), cria stubs compatíveis.
+DO $$
+BEGIN
+  IF NOT EXISTS (SELECT 1 FROM pg_extension WHERE extname = 'pg_cron') THEN
+    CREATE SCHEMA IF NOT EXISTS cron;
+    CREATE TABLE IF NOT EXISTS cron.job (
+      jobid    bigserial PRIMARY KEY,
+      schedule text,
+      command  text,
+      nodename text    DEFAULT ''::text,
+      nodeport integer DEFAULT 5432,
+      database text    DEFAULT current_database(),
+      username text    DEFAULT current_user,
+      active   boolean DEFAULT true,
+      jobname  text
+    );
+    CREATE OR REPLACE FUNCTION cron.schedule(p_name text, p_schedule text, p_command text)
+    RETURNS bigint LANGUAGE plpgsql AS $fn$
+    DECLARE v_id bigint;
+    BEGIN
+      INSERT INTO cron.job(jobname, schedule, command, active)
+      VALUES (p_name, p_schedule, p_command, true)
+      RETURNING jobid INTO v_id;
+      RETURN v_id;
+    END $fn$;
+    CREATE OR REPLACE FUNCTION cron.unschedule(p_jobid bigint)
+    RETURNS boolean LANGUAGE plpgsql AS $fn$
+    BEGIN
+      DELETE FROM cron.job WHERE jobid = p_jobid;
+      RETURN true;
+    END $fn$;
+  END IF;
+END $$;
+
+-- Agenda ou reagenda jobs idempotentemente.
 DO $$
 DECLARE
   v_jobs JSONB := '[
