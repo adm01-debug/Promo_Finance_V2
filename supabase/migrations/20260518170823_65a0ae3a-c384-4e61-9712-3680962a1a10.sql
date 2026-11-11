@@ -61,18 +61,22 @@ CREATE POLICY "Admins can manage contas receber" ON public.contas_receber
 
 
 -- 4. Restrict SECURITY DEFINER functions
+-- Usa pg_proc + pg_get_function_identity_arguments para incluir tipos de argumento
+-- e evitar 42725 (function name is not unique) em funções sobrecarregadas
 DO $$ 
 DECLARE 
     func_record RECORD;
 BEGIN 
     FOR func_record IN 
-        SELECT routine_name 
-        FROM information_schema.routines 
-        WHERE routine_schema = 'public' 
-        AND security_type = 'DEFINER'
+        SELECT p.proname AS func_name,
+               pg_catalog.pg_get_function_identity_arguments(p.oid) AS func_args
+        FROM pg_catalog.pg_proc p
+        JOIN pg_catalog.pg_namespace n ON n.oid = p.pronamespace
+        WHERE n.nspname = 'public'
+        AND p.prosecdef = true
     LOOP 
-        EXECUTE format('REVOKE ALL ON FUNCTION public.%I FROM public, anon', func_record.routine_name);
-        EXECUTE format('GRANT EXECUTE ON FUNCTION public.%I TO authenticated, service_role', func_record.routine_name);
+        EXECUTE format('REVOKE ALL ON FUNCTION public.%I(%s) FROM public, anon', func_record.func_name, func_record.func_args);
+        EXECUTE format('GRANT EXECUTE ON FUNCTION public.%I(%s) TO authenticated, service_role', func_record.func_name, func_record.func_args);
     END LOOP;
 END $$;
 
@@ -124,6 +128,9 @@ BEGIN
     RETURN COALESCE(jobs, '[]'::jsonb);
 END;
 $$;
+
+-- Drop existing get_cron_run_history (may exist with different return type from earlier migration)
+DROP FUNCTION IF EXISTS public.get_cron_run_history(text, integer);
 
 -- Implement get_cron_run_history
 CREATE OR REPLACE FUNCTION public.get_cron_run_history(p_job_name text DEFAULT NULL, p_limit int DEFAULT 100)
