@@ -43,12 +43,20 @@ node scripts/inventario/gerar-repo.mjs < /dev/null
 # 3) mudou de verdade? (ignora carimbo de data e telemetria rolante do cron)
 INVENTARIO_REF=origin/inventario node scripts/inventario/mudou-conteudo.mjs
 
-# 4) testes das funções puras
+# 4) testes (funções puras, CLIs em repo sintético e Management API simulada em 127.0.0.1)
 node --test scripts/inventario/inventario.unit.mjs
+
+# 5) banco.sql contra um Postgres efêmero com schema hostil (auto-pula sem servidor;
+#    como root, aponte para um servidor local: INVENTARIO_PG_PORTA=5432)
+python3 -m unittest discover -s scripts/inventario -p 'test_banco_sql.py'
 ```
 
 `gerar-rotas.mjs --check` sai com 1 se o arquivo gerado difere do que está em
 `inventario/estado/rotas.json`.
+
+Todos os scripts recusam argumento desconhecido (exit 2, nada gravado): um typo como `--entrda`
+não pode cair na API viva. `mudou-conteudo.mjs` imprime só `true`/`false`; arquivo gerado ausente ou
+`INVENTARIO_REF` inválida é erro (exit 2), nunca `false`.
 
 ## Garantias
 
@@ -58,13 +66,27 @@ node --test scripts/inventario/inventario.unit.mjs
   (salvo `INVENTARIO_PERMITIR_OUTRO_PROJETO=1`, só para teste) e confere a resposta contra a lista de
   tabelas de `src/integrations/supabase/types.ts` — 90% de cobertura nos dois sentidos, para um banco
   irmão (Lovable, VPS) não passar.
+- **Banco indisponível não gera inventário vazio.** Resposta sem tabelas, sem `cron`, de outro
+  banco ou HTTP de erro sai com exit 2 e **não toca** no `banco.json` anterior (gravação por
+  arquivo temporário + `rename`). 5xx/429/rede caída tentam de novo (3 tentativas, 120 s cada);
+  4xx não.
 - **Sem segredo na saída.** De `cron.job` sai só o nome das funções chamadas, nunca o `command`
   (que pode ter URL, cabeçalho ou chave); antes de gravar, a saída é recusada se tiver cara de
-  credencial (`Bearer …`, JWT, `sb_secret_`).
-- **Diff estável.** As chaves são ordenadas e a comparação ignora `medido_em`/`gerado_em` e a
+  credencial (`Bearer …`, JWT, `sb_secret_`); mensagens de erro saem sem o token e sem nada com essa cara.
+- **Diff estável.** As chaves são ordenadas, as listas saem por code point (`COLLATE "C"` no SQL;
+  nunca `localeCompare`) e a comparação ignora `medido_em`/`gerado_em` e a
   telemetria de 7 dias do cron: a branch só recebe commit quando algo estrutural muda.
 
 ## Limites conhecidos
+
+- `linhas`/`bytes` de cada tabela entram na comparação do `mudou-conteudo.mjs`: num banco em uso
+  elas mudam a cada medição, então "publica só quando algo estrutural muda" vale para o resto do
+  arquivo, não para a contagem de linhas.
+- `citada_no_banco` procura o nome da tabela como palavra no corpo de funções e views: coluna ou
+  variável com o mesmo nome de uma tabela também a marca como citada (nunca o contrário).
+- `rotas.json` entende `<Route>` aninhada (caminho relativo e `index` herdam o do pai), `:param`
+  e `*` final casando com href do menu, e comentários (não viram rota, import nem chamada).
+  Duplicatas saem em `problemas` (`rota_duplicada`, `menu_duplicado`).
 
 - `.from(variável)` que não seja `const` de módulo no mesmo arquivo não é resolvido: a tabela pode
   aparecer com uso 0 mesmo sendo usada.
