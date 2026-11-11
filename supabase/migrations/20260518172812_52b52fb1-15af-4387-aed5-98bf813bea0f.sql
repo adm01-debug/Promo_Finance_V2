@@ -75,11 +75,30 @@ BEGIN
   END LOOP;
 END $$;
 
-REVOKE EXECUTE ON FUNCTION public.get_cron_run_history(text,integer) FROM authenticated, anon, PUBLIC;
-REVOKE EXECUTE ON FUNCTION public.cleanup_expired_tokens() FROM authenticated;
-REVOKE EXECUTE ON FUNCTION public.cleanup_old_cron_logs() FROM authenticated;
-REVOKE EXECUTE ON FUNCTION public.cleanup_old_login_attempts() FROM authenticated;
-REVOKE EXECUTE ON FUNCTION public.run_daily_cleanup() FROM authenticated;
-REVOKE EXECUTE ON FUNCTION public.run_daily_cleanup_with_logging() FROM authenticated;
-REVOKE EXECUTE ON FUNCTION public.get_active_uapi_token() FROM authenticated;
-REVOKE EXECUTE ON FUNCTION public.clear_login_attempts(text) FROM authenticated;
+DO $$
+BEGIN
+  IF to_regprocedure('public.get_cron_run_history(text,integer)') IS NOT NULL THEN
+    EXECUTE 'REVOKE EXECUTE ON FUNCTION public.get_cron_run_history(text,integer) FROM authenticated, anon, PUBLIC';
+  END IF;
+  IF to_regprocedure('public.cleanup_expired_tokens()') IS NOT NULL THEN
+    EXECUTE 'REVOKE EXECUTE ON FUNCTION public.cleanup_expired_tokens() FROM authenticated';
+  END IF;
+  IF to_regprocedure('public.cleanup_old_cron_logs()') IS NOT NULL THEN
+    EXECUTE 'REVOKE EXECUTE ON FUNCTION public.cleanup_old_cron_logs() FROM authenticated';
+  END IF;
+  IF to_regprocedure('public.cleanup_old_login_attempts()') IS NOT NULL THEN
+    EXECUTE 'REVOKE EXECUTE ON FUNCTION public.cleanup_old_login_attempts() FROM authenticated';
+  END IF;
+  IF to_regprocedure('public.run_daily_cleanup()') IS NOT NULL THEN
+    EXECUTE 'REVOKE EXECUTE ON FUNCTION public.run_daily_cleanup() FROM authenticated';
+  END IF;
+  IF to_regprocedure('public.run_daily_cleanup_with_logging()') IS NOT NULL THEN
+    EXECUTE 'REVOKE EXECUTE ON FUNCTION public.run_daily_cleanup_with_logging() FROM authenticated';
+  END IF;
+  IF to_regprocedure('public.get_active_uapi_token()') IS NOT NULL THEN
+    EXECUTE 'REVOKE EXECUTE ON FUNCTION public.get_active_uapi_token() FROM authenticated';
+  END IF;
+  IF to_regprocedure('public.clear_login_attempts(text)') IS NOT NULL THEN
+    EXECUTE 'REVOKE EXECUTE ON FUNCTION public.clear_login_attempts(text) FROM authenticated';
+  END IF;
+END $$;
