@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { spawnSync } from 'node:child_process';
+import { spawn, spawnSync } from 'node:child_process';
 import {
   appendFileSync,
   chmodSync,
@@ -18,7 +18,14 @@ import {
 import { tmpdir } from 'node:os';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { appendExclude, removeExclude, execute, parseArgs, validateConfig } from './automation.mjs';
+import {
+  appendExclude,
+  removeExclude,
+  execute,
+  parseArgs,
+  validateConfig,
+  USAGE,
+} from './automation.mjs';
 
 const kit = dirname(fileURLToPath(import.meta.url));
 const text = (p) => readFileSync(p, 'utf8');
@@ -599,4 +606,311 @@ test('info/exclude troca de inode durante leitura aborta sem tocar novo arquivo'
   );
   assert.equal(text(file), 'novo arquivo de terceiro\n');
   assert.equal(text(old), 'original\n');
+});
+
+// ---- Endurecimento (rodada 2) ----
+
+test('execução via symlink de diretório ou de arquivo não sai 0 em silêncio', (t) => {
+  const f = fixture(t);
+  const links = mkdtempSync(join(tmpdir(), 'automation link ç-'));
+  t.after(() => rmSync(links, { recursive: true, force: true }));
+  symlinkSync(f.root, join(links, 'repo'));
+  symlinkSync(join(f.root, 'scripts/automation.mjs'), join(links, 'automation.mjs'));
+  for (const script of [
+    join(links, 'repo/scripts/automation.mjs'),
+    join(links, 'automation.mjs'),
+  ]) {
+    const bad = f.run(process.execPath, [script, '--bogus']);
+    assert.equal(bad.status, 2, bad.stdout + bad.stderr);
+    assert.match(bad.stderr, /opção desconhecida --bogus/);
+    const ok = f.run(process.execPath, [script, '--root', f.root, 'doctor', '--static']);
+    assert.equal(ok.status, 0, ok.stdout + ok.stderr);
+    assert.equal(JSON.parse(ok.stdout).ok, true);
+  }
+});
+
+test('raiz com espaço, aspas e acento: doctor e install/uninstall funcionam', (t) => {
+  const base = mkdtempSync(join(tmpdir(), "automation d'ir ç-"));
+  t.after(() => rmSync(base, { recursive: true, force: true }));
+  const f = fixture(t);
+  const root = join(base, 'repo ã');
+  cpSync(f.root, root, { recursive: true });
+  const cli = (...a) =>
+    f.run(process.execPath, ['scripts/automation.mjs', '--root', root, ...a], { cwd: root });
+  assert.equal(cli('doctor', '--static').status, 0);
+  const inst = cli('install-hooks');
+  assert.equal(inst.status, 0, inst.stderr);
+  assert.equal(JSON.parse(cli('doctor').stdout).hooks, 'installed');
+  assert.equal(cli('uninstall-hooks').status, 0);
+});
+
+test('erro de uso sai 2 e falha de verificação continua 1', (t) => {
+  for (const args of [
+    ['--bogus'],
+    ['doctor', '--oops'],
+    ['doctor', '--root'],
+    ['check'],
+    ['check', '--ref', '-x'],
+    ['check', '--ref', ''],
+    ['nightly', '--ref'],
+    ['doctor', 'extra'],
+    ['doctor', '--ref', 'HEAD'],
+    ['test', '--static'],
+    [],
+    [''],
+  ])
+    assert.throws(
+      () => parseArgs(args),
+      (e) => e.code === 2,
+      JSON.stringify(args)
+    );
+  const f = fixture(t);
+  f.write('scripts/orphan.sh', 'exit 0\n');
+  assert.equal(f.cli('doctor', '--static').status, 1);
+  assert.equal(f.cli('hook', 'nao-existe').status, 2);
+  assert.equal(f.cli('graph', 'nao-existe').status, 2);
+  assert.equal(f.cli('check', '--ref', '-x').status, 2);
+  // refs legítimas continuam aceitas
+  assert.equal(parseArgs(['check', '--ref', 'origin/main']).ref, 'origin/main');
+  assert.equal(parseArgs(['heal', '--ref', 'HEAD~1']).ref, 'HEAD~1');
+});
+
+test('--help, -h e help imprimem uso e saem 0; graph repassa --help ao adaptador', (t) => {
+  const f = fixture(t);
+  for (const a of ['--help', '-h', 'help'])
+    for (const r of [f.run(process.execPath, ['scripts/automation.mjs', a])]) {
+      assert.equal(r.status, 0, r.stderr);
+      assert.ok(r.stdout.includes(USAGE.split('\n')[0]));
+    }
+  assert.deepEqual(parseArgs(['graph', 'query', '--help']).positional, ['query', '--help']);
+});
+
+test('config ausente ou ilegível dá mensagem acionável e sai 1', (t) => {
+  const f = fixture(t);
+  let r = f.cli('doctor', '--config', 'nao/existe.json');
+  assert.equal(r.status, 1);
+  assert.match(r.stderr, /config ausente: .*nao\/existe\.json/);
+  f.write('scripts/ruim.json', '{ruim');
+  r = f.cli('doctor', '--config', 'scripts/ruim.json');
+  assert.equal(r.status, 1);
+  assert.match(r.stderr, /config ilegível/);
+  f.write('scripts/nulo.json', 'null');
+  assert.match(f.cli('doctor', '--config', 'scripts/nulo.json').stderr, /objeto obrigatório/);
+});
+
+test('validateConfig rejeita tipos errados com mensagem, sem TypeError', (t) => {
+  const f = fixture(t);
+  const bad = (patch) => validateConfig({ ...structuredClone(f.config), ...patch });
+  for (const [patch, re] of [
+    [{ motorConfig: null }, /motorConfig: caminho inválido/],
+    [{ motorConfig: 5 }, /motorConfig: caminho inválido/],
+    [{ motorSource: {} }, /motorSource: caminho inválido/],
+    [{ graphConfig: 5 }, /graphConfig obrigatório/],
+    [{ graphConfig: undefined }, /graphConfig obrigatório/],
+    [{ nightly: { command: ['node', 'x'], file: 7 } }, /nightly: comando obrigatório/],
+    [{ snapshot: { root: 7, ref: 'a'.repeat(40) } }, /snapshot: root absoluto/],
+    [{ snapshot: { root: '/tmp', ref: 'curto' } }, /snapshot: root absoluto/],
+    [{ timeoutMs: 'x' }, /timeoutMs inválido/],
+    [{ timeoutMs: NaN }, /timeoutMs inválido/],
+    [{ testSuites: [] }, /testSuites/],
+    [{ aliases: [] }, /aliases/],
+    [{ registrations: [] }, /registrations/],
+  ])
+    assert.throws(
+      () => bad(patch),
+      (e) => re.test(e.message) && !(e instanceof TypeError),
+      JSON.stringify(patch)
+    );
+  assert.doesNotThrow(() => bad({ requirements: null, snapshot: null }));
+});
+
+const WORKFLOW_JOB =
+  'jobs:\n  t:\n    runs-on: ubuntu-latest\n    steps:\n      - run: node scripts/automation.mjs test\n';
+test('doctor só aceita workflow cujo gatilho realmente alcança main (PR e push)', (t) => {
+  const f = fixture(t);
+  const cases = [
+    ['on:\n  pull_request: {}\n  push:\n    branches: [main]\n', true],
+    ['on:\n  pull_request:\n    branches: [main]\n  push:\n    branches:\n      - main\n', true],
+    ['on:\n  pull_request: {}\n  push:\n    branches:\n    - main\n', true],
+    ["'on':\n  pull_request:\n  push:\n    branches: ['main']\n", true],
+    ['on:\n  pull_request: {}\n  push:\n    branches: [main]\n  workflow_dispatch:\n', true],
+    ['on:\n  pull_request: {}\n  push: {branches: [main]}\n', true],
+    ["on:\n  pull_request:\n  push:\n    branches: ['m*']\n", true],
+    ['on: [push, pull_request]\n', true],
+    ['on:\n  - push\n  - pull_request\n', true],
+    ['on:\n  pull_request: {}\n  push:\n    branches-ignore: [dev]\n', true],
+    // falsos OK antigos: o regex só procurava as palavras "push" e "main" em qualquer lugar
+    ['on:\n  pull_request:\n    branches: [main]\n  push:\n    branches: [dev]\n', false],
+    ['on:\n  pull_request: {}\n  push:\n    branches-ignore: [main]\n', false],
+    ['on:\n  pull_request: {}\n  push:\n    tags: [main]\n', false],
+    ['on:\n  pull_request: {}\n  push:\n    branches: [main, "!main"]\n', false],
+    ['on:\n  pull_request:\n    branches: [release]\n  push:\n    branches: [main]\n', false],
+    ['on:\n  pull_request_target: {}\n  push:\n    branches: [main]\n', false],
+    ['on: push\n', false],
+    ['jobs: {}\n', false],
+  ];
+  for (const [on, ok] of cases) {
+    f.write('.github/workflows/ci.yml', on + WORKFLOW_JOB);
+    const r = f.cli('doctor', '--static');
+    assert.equal(r.status === 0, ok, JSON.stringify(on) + r.stdout);
+  }
+  f.write(
+    '.github/workflows/ci.yml',
+    'on:\r\n  pull_request: {}\r\n  push:\r\n    branches: [main]\r\n' +
+      WORKFLOW_JOB.replace(/\n/g, '\r\n')
+  );
+  assert.equal(f.cli('doctor', '--static').status, 0);
+});
+
+test('doctor não aceita passo de CI que engole a falha ou está desligado', (t) => {
+  const f = fixture(t);
+  const on = 'on:\n  pull_request: {}\n  push:\n    branches: [main]\n';
+  const run = 'node scripts/automation.mjs test';
+  const cases = [
+    [`      - run: ${run}\n`, true],
+    [`      - name: a\n        run: |\n          set -e\n          ${run}\n`, true],
+    [`      - if: false\n        run: echo x\n      - run: ${run}\n`, true],
+    [`      - run: ${run} || true\n`, false],
+    [`      - run: |\n          ${run} || true\n`, false],
+    [`      - run: |\n          ${run} || :\n`, false],
+    [`      - run: ${run}; true\n`, false],
+    [`      - run: ${run}\n        continue-on-error: true\n`, false],
+    [`      - name: a\n        continue-on-error: true\n        run: ${run}\n`, false],
+    [`      - name: a\n        if: false\n        run: |\n          ${run}\n`, false],
+    [`      - if: 'false'\n        run: ${run}\n`, false],
+  ];
+  for (const [step, ok] of cases) {
+    f.write('.github/workflows/ci.yml', `${on}jobs:\n  t:\n    runs-on: x\n    steps:\n${step}`);
+    const r = f.cli('doctor', '--static');
+    assert.equal(r.status === 0, ok, step + r.stdout);
+  }
+});
+
+test('doctor lista scripts sem registro em ordem determinística', (t) => {
+  const f = fixture(t);
+  for (const n of ['z', 'b', 'm', 'a']) f.write(`scripts/orfao-${n}.sh`, 'exit 0\n');
+  const issues = JSON.parse(f.cli('doctor', '--static').stdout).issues;
+  assert.deepEqual(
+    issues,
+    ['a', 'b', 'm', 'z'].map((n) => `script sem registro/gatilho: scripts/orfao-${n}.sh`)
+  );
+});
+
+test('doctor com state.json inválido reporta problema em vez de quebrar', (t) => {
+  const f = fixture(t);
+  for (const body of ['{}', '[]', '{"hooks":5}', '"x"']) {
+    f.write('.tools/repo-automation/state.json', body);
+    const r = f.cli('doctor', '--static');
+    assert.equal(r.status, 1, body);
+    assert.match(JSON.parse(r.stdout).issues.join('|'), /estado da ponte inválido/);
+  }
+});
+
+test('uninstall recusa state.json incompleto antes de mexer no hooksPath', (t) => {
+  const f = fixture(t);
+  f.install();
+  const stateFile = join(f.root, '.tools/repo-automation/state.json');
+  const state = JSON.parse(text(stateFile));
+  delete state.previousLocal;
+  writeFileSync(stateFile, JSON.stringify(state));
+  const before = f.git('config', 'core.hooksPath');
+  const r = f.cli('uninstall-hooks');
+  assert.equal(r.status, 1);
+  assert.match(r.stderr, /estado de hooks inválido/);
+  assert.equal(f.git('config', 'core.hooksPath'), before);
+  assert.ok(existsSync(join(f.root, '.tools/repo-automation/hooks/pre-commit')));
+});
+
+test('install/uninstall simultâneos: lock vivo recusa, lock obsoleto é recuperado', async (t) => {
+  const f = fixture(t);
+  const lock = join(f.root, '.git/repo-automation.lock');
+  writeFileSync(lock, String(process.pid));
+  const busy = f.cli('install-hooks');
+  assert.equal(busy.status, 1);
+  assert.match(busy.stderr, /já em andamento/);
+  assert.equal(existsSync(join(f.root, '.tools/repo-automation/state.json')), false);
+  assert.equal(text(lock), String(process.pid));
+  // pid de processo que já terminou
+  const dead = spawnSync(process.execPath, ['-e', '0']);
+  writeFileSync(lock, String(dead.pid));
+  f.install();
+  assert.equal(existsSync(lock), false);
+  f.cli('uninstall-hooks');
+  assert.equal(existsSync(lock), false);
+
+  const runs = await Promise.all(
+    [1, 2, 3, 4].map(
+      () =>
+        new Promise((done) => {
+          const c = spawn(
+            process.execPath,
+            ['scripts/automation.mjs', '--root', f.root, 'install-hooks'],
+            {
+              cwd: f.root,
+              env: { ...process.env, HUSKY: '0' },
+            }
+          );
+          c.on('close', (code) => done(code));
+        })
+    )
+  );
+  assert.ok(runs.includes(0), 'ao menos uma instalação conclui');
+  assert.equal(
+    text(join(f.root, '.git/info/exclude')).split('/.tools/repo-automation/').length - 1,
+    1
+  );
+  assert.equal(f.cli('uninstall-hooks').status, 0);
+  assert.equal(text(join(f.root, '.git/info/exclude')).includes('/.tools/repo-automation/'), false);
+  assert.equal(existsSync(lock), false);
+});
+
+test('captura sinaliza saída truncada acima do limite', async () => {
+  const big = await execute(
+    [process.execPath, '-e', 'process.stdout.write(Buffer.alloc(6*1024*1024,97))'],
+    { capture: true }
+  );
+  assert.equal(big.code, 0);
+  assert.equal(big.truncated, true);
+  assert.ok(big.stdout.length < 6 * 1024 * 1024);
+  const small = await execute([process.execPath, '-e', 'process.stdout.write("ok")'], {
+    capture: true,
+  });
+  assert.equal(small.truncated, undefined);
+  assert.equal(small.stdout, 'ok');
+});
+
+test('SIGHUP no orquestrador encerra o grupo filho (sem órfão rodando)', async (t) => {
+  if (!existsSync('/proc/self/stat')) return t.skip('requer /proc');
+  const dir = mkdtempSync(join(tmpdir(), 'automation-hup-'));
+  t.after(() => rmSync(dir, { recursive: true, force: true }));
+  const pidFile = join(dir, 'pid');
+  const helper = join(dir, 'helper.mjs');
+  writeFileSync(
+    helper,
+    `import { execute } from ${JSON.stringify(join(kit, 'automation.mjs'))};
+const r = await execute(['sh','-c','echo $$ > ' + ${JSON.stringify(pidFile)} + '; exec sleep 30'], { timeout: 20000 });
+console.log(JSON.stringify(r));\n`
+  );
+  const child = spawn(process.execPath, [helper], { stdio: ['ignore', 'pipe', 'inherit'] });
+  let out = '';
+  child.stdout.on('data', (x) => (out += x));
+  for (let i = 0; i < 100 && !existsSync(pidFile); i++) await new Promise((r) => setTimeout(r, 50));
+  const pid = Number(text(pidFile).trim());
+  assert.ok(pid > 0);
+  child.kill('SIGHUP');
+  await new Promise((r) => child.once('close', r));
+  await new Promise((r) => setTimeout(r, 300));
+  let state = 'ausente';
+  try {
+    state = text(`/proc/${pid}/stat`).replace(/^.*\) /, '')[0];
+  } catch {
+    /* processo inexistente */
+  }
+  assert.ok(['ausente', 'Z'].includes(state), `filho ainda vivo (estado ${state})`);
+  assert.equal(JSON.parse(out).code, 130);
+  try {
+    process.kill(pid, 'SIGKILL');
+  } catch {
+    /* já encerrado */
+  }
 });
