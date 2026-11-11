@@ -1,9 +1,12 @@
 import { describe, it } from 'node:test';
 import assert from 'node:assert/strict';
-import { spawnSync } from 'node:child_process';
+import { spawn, spawnSync } from 'node:child_process';
+import { copyFileSync, mkdirSync, mkdtempSync, readFileSync, rmSync, symlinkSync, writeFileSync } from 'node:fs';
+import { createServer } from 'node:http';
+import { tmpdir } from 'node:os';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { assinaturaDe } from './github-settings-guard.mjs';
+import { assinaturaDe, validarBaseline } from './github-settings-guard.mjs';
 
 // Contratos do settings-guard. O guard é executado de VERDADE (child process) com
 // um `fetch` stubbed — um teste que reimplementa a lógica no próprio arquivo
@@ -442,5 +445,539 @@ describe('settings-guard: W13 — environments extras', () => {
     assert.equal(r.code, 1, `esperava exit 1 (extra inesperado e regressao):\n${r.out}`);
     assert.ok(r.out.includes('extras_inesperados'), `divergencia nao apontada:\n${r.out}`);
     assert.ok(r.out.includes('meu-ambiente-desconhecido'), `nome do ambiente ausente:\n${r.out}`);
+  });
+});
+
+// ---------------------------------------------------------------------------------------
+// Cenarios adversos contra um servidor HTTP LOCAL (127.0.0.1, porta efemera) via
+// GITHUB_API_URL. Nenhuma chamada sai da maquina e nenhum teste usa o token do ambiente.
+// ---------------------------------------------------------------------------------------
+
+const BASELINE_PATH = join(dirname(SCRIPT), 'github-settings-baseline.json');
+const BASELINE = JSON.parse(readFileSync(BASELINE_PATH, 'utf8'));
+const CHECKS_BASELINE = BASELINE.branch_protection_main.required_status_checks;
+
+const json = (body, status = 200) => ({ status, json: body });
+const protOk = (extra = {}) => ({
+  required_status_checks: { strict: true, contexts: [...CHECKS_BASELINE] },
+  enforce_admins: { enabled: true },
+  required_linear_history: { enabled: false },
+  allow_force_pushes: { enabled: false },
+  ...extra,
+});
+const repoOk = () => ({
+  allow_auto_merge: true, allow_squash_merge: true, allow_merge_commit: true, allow_rebase_merge: true,
+  delete_branch_on_merge: true, squash_merge_commit_message: 'COMMIT_MESSAGES', squash_merge_commit_title: 'COMMIT_OR_PR_TITLE',
+  security_and_analysis: { secret_scanning: { status: 'enabled' }, secret_scanning_push_protection: { status: 'enabled' } },
+});
+const envsOk = () => ({ total_count: 4, environments: BASELINE.environments.map((name) => ({ name })) });
+
+// Respostas "tudo conforme"; `over` troca rotas por objeto de resposta ou funcao (req) => resposta.
+function roteador(over = {}) {
+  return (req) => {
+    const { method, caminho, query } = req;
+    const rota = (() => {
+      if (method === 'GET' && caminho.endsWith('/branches/main/protection')) return 'protection';
+      if (method === 'PATCH' && caminho.endsWith('/protection/required_status_checks')) return 'patchChecks';
+      if (method === 'PATCH' && caminho === '/repos/o/r') return 'patchRepo';
+      if (method === 'GET' && caminho === '/repos/o/r') return 'repo';
+      if (method === 'GET' && caminho.endsWith('/actions/permissions/workflow')) return 'workflow';
+      if (method === 'GET' && caminho.endsWith('/actions/permissions/selected-actions')) return 'selected';
+      if (method === 'GET' && caminho.endsWith('/actions/permissions')) return 'actions';
+      if (method === 'GET' && caminho.endsWith('/rulesets')) return 'rulesets';
+      if (method === 'GET' && caminho.endsWith('/environments')) return 'environments';
+      if (method === 'GET' && caminho === '/repos/o/r/issues') return 'issues';
+      if (method === 'GET' && caminho.endsWith('/issues/42/comments')) return 'comments';
+      if (method === 'POST' && caminho === '/repos/o/r/labels') return 'label';
+      if (method === 'POST' && caminho === '/repos/o/r/issues') return 'novaIssue';
+      if (method === 'POST' && caminho.endsWith('/comments')) return 'comentar';
+      if (method === 'PATCH' && caminho.startsWith('/repos/o/r/issues/')) return 'fechar';
+      return 'desconhecida';
+    })();
+    req.rota = rota;
+    if (over[rota] !== undefined) return typeof over[rota] === 'function' ? over[rota](req) : over[rota];
+    switch (rota) {
+      case 'protection': return json(protOk());
+      case 'repo': return json(repoOk());
+      case 'actions': return json({ enabled: true, allowed_actions: 'all', sha_pinning_required: false });
+      case 'workflow': return json({ default_workflow_permissions: 'read', can_approve_pull_request_reviews: false });
+      case 'selected': return json({ message: 'All actions and workflows are allowed' }, 409);
+      case 'rulesets': return json([]);
+      case 'environments': return json(envsOk());
+      case 'issues': return json([]);
+      case 'comments': return json([]);
+      case 'label': return json({}, 201);
+      case 'novaIssue': return json({ number: 77 }, 201);
+      case 'comentar': return json({ id: 1 }, 201);
+      case 'fechar': return json({});
+      case 'patchChecks': case 'patchRepo': return json({});
+      default: return json({ message: 'rota sem cenario' }, 599);
+    }
+  };
+}
+
+async function rodarReal(handler, { env = {}, script = SCRIPT, timeoutMs = 20_000 } = {}) {
+  const requisicoes = [];
+  const servidor = createServer((req, res) => {
+    const pedacos = [];
+    req.on('data', (c) => pedacos.push(c));
+    req.on('end', () => {
+      const url = new URL(req.url, 'http://127.0.0.1');
+      const registro = {
+        method: req.method, caminho: url.pathname, query: Object.fromEntries(url.searchParams),
+        auth: req.headers.authorization, corpo: pedacos.length ? Buffer.concat(pedacos).toString('utf8') : '',
+      };
+      requisicoes.push(registro);
+      const r = handler(registro);
+      if (r.travar) return; // nunca responde (teste de timeout)
+      res.statusCode = r.status ?? 200;
+      if (r.raw !== undefined) {
+        res.end(r.raw);
+      } else {
+        res.setHeader('content-type', 'application/json');
+        res.end(JSON.stringify(r.json ?? null));
+      }
+    });
+  });
+  await new Promise((ok) => servidor.listen(0, '127.0.0.1', ok));
+  const porta = servidor.address().port;
+  try {
+    const filho = spawn(process.execPath, [script], {
+      env: {
+        PATH: process.env.PATH,
+        GITHUB_TOKEN: 'x',
+        GITHUB_REPOSITORY: 'o/r',
+        GITHUB_RUN_ID: '1',
+        GITHUB_API_URL: `http://127.0.0.1:${porta}`,
+        SETTINGS_GUARD_RETRY_MS: '0',
+        ...env,
+      },
+    });
+    let out = '';
+    filho.stdout.on('data', (c) => { out += c; });
+    filho.stderr.on('data', (c) => { out += c; });
+    const code = await new Promise((ok) => {
+      const t = setTimeout(() => { filho.kill('SIGKILL'); ok('TIMEOUT'); }, timeoutMs);
+      filho.on('close', (c) => { clearTimeout(t); ok(c); });
+    });
+    return { code, out, requisicoes, linhas: out.split('\n') };
+  } finally {
+    servidor.closeAllConnections?.();
+    await new Promise((ok) => servidor.close(ok));
+  }
+}
+
+const postadas = (r, rota) => r.requisicoes.filter((q) => q.rota === rota);
+
+describe('settings-guard (HTTP local): falso OK em protecao removida e respostas malformadas', () => {
+  it('baseline de controle: tudo conforme sai 0 com "Perimetro OK"', async () => {
+    const r = await rodarReal(roteador());
+    assert.equal(r.code, 0, r.out);
+    assert.ok(r.out.includes('Perimetro OK'), r.out);
+    assert.ok(r.requisicoes.every((q) => q.auth === 'Bearer x'));
+  });
+
+  it('404 "Branch not protected" e REGRESSAO (protecao removida), nao ponto cego verde', async () => {
+    const r = await rodarReal(roteador({ protection: json({ message: 'Branch not protected', status: '404' }, 404) }));
+    assert.equal(r.code, 1, r.out);
+    assert.ok(r.out.includes('divergencia: branch_protection_main'), r.out);
+    assert.ok(!r.out.includes('branch protection: NAO VERIFICAVEL'), r.out);
+    assert.ok(!r.out.includes('Perimetro OK'), r.out);
+  });
+
+  it('404 generico (escopo escondendo o recurso) continua ponto cego, nao regressao', async () => {
+    const r = await rodarReal(roteador({ protection: json({ message: 'Not Found' }, 404) }));
+    assert.equal(r.code, 0, r.out);
+    assert.ok(r.out.includes('branch protection: NAO VERIFICAVEL'), r.out);
+  });
+
+  it('rulesets: corpo "null", JSON invalido ou objeto NAO contam como "0 rulesets"', async () => {
+    for (const rulesets of [{ status: 200, raw: 'null' }, { status: 200, raw: '{"message":"x"}' }, { status: 200, raw: '{nao json' }]) {
+      const r = await rodarReal(roteador({ rulesets }));
+      assert.ok(!r.out.includes('Perimetro OK'), `rulesets=${JSON.stringify(rulesets)} aprovou:\n${r.out}`);
+      if (rulesets.raw === '{nao json') assert.equal(r.code, 1, 'JSON invalido e erro de API, exit 1');
+      else assert.ok(r.out.includes('rulesets: NAO VERIFICAVEL'), r.out);
+    }
+  });
+
+  it('rulesets: um ruleset inesperado e divergencia', async () => {
+    const r = await rodarReal(roteador({ rulesets: json([{ id: 1 }]) }));
+    assert.equal(r.code, 1, r.out);
+    assert.ok(r.out.includes('rulesets.count'), r.out);
+  });
+
+  it('GET /repos com campo de merge explicitamente false diverge; ausente continua ponto cego', async () => {
+    const r1 = await rodarReal(roteador({ repo: json({ ...repoOk(), allow_squash_merge: false }) }));
+    assert.equal(r1.code, 1, r1.out);
+    assert.ok(r1.out.includes('merge.allow_squash_merge'), r1.out);
+    const sem = repoOk(); delete sem.allow_squash_merge;
+    const r2 = await rodarReal(roteador({ repo: json(sem) }));
+    assert.equal(r2.code, 0, r2.out);
+    assert.ok(r2.out.includes('PARCIALMENTE VERIFICAVEL'), r2.out);
+  });
+
+  it('actions: campo omitido (sha_pinning_required) e ponto cego parcial; false explicito conforme', async () => {
+    const r = await rodarReal(roteador({ actions: json({ enabled: true, allowed_actions: 'all' }) }));
+    assert.equal(r.code, 0, r.out);
+    assert.ok(r.out.includes('actions: PARCIALMENTE VERIFICAVEL'), r.out);
+    assert.ok(r.out.includes('actions.sha_pinning_required'), r.out);
+    assert.ok(!r.out.includes('divergencia:'), r.out);
+  });
+
+  it('actions desligado (enabled=false, allowed_actions omitido pela API) e divergencia + ponto cego, nao OK', async () => {
+    const r = await rodarReal(roteador({ actions: json({ enabled: false }) }));
+    assert.equal(r.code, 1, r.out);
+    assert.ok(r.out.includes('divergencia: actions.enabled esperado=true encontrado=false'), r.out);
+  });
+
+  it('actions/workflow com corpo null ou lista = ponto cego total (nunca "tudo null" nem OK)', async () => {
+    for (const raw of ['null', '[]']) {
+      const r = await rodarReal(roteador({ actions: { status: 200, raw }, workflow: { status: 200, raw } }));
+      assert.equal(r.code, 0, r.out);
+      assert.ok(r.out.includes('actions: NAO VERIFICAVEL') && r.out.includes('workflow permissions: NAO VERIFICAVEL'), r.out);
+      assert.ok(!r.out.includes('Perimetro OK'), r.out);
+    }
+  });
+
+  it('workflow_permissions divergente (write) e detectado', async () => {
+    const r = await rodarReal(roteador({ workflow: json({ default_workflow_permissions: 'write', can_approve_pull_request_reviews: false }) }));
+    assert.equal(r.code, 1, r.out);
+    assert.ok(r.out.includes('workflow_permissions.default_workflow_permissions'), r.out);
+  });
+
+  it('required_approving_review_count do baseline agora e conferido', async () => {
+    const r = await rodarReal(roteador({ protection: json(protOk({ required_pull_request_reviews: { required_approving_review_count: 2 } })) }));
+    assert.equal(r.code, 1, r.out);
+    assert.ok(r.out.includes('required_approving_review_count esperado=0 encontrado=2'), r.out);
+  });
+
+  it('contexts: ordem diferente nao e divergencia; caixa/espaco/duplicata/extra e', async () => {
+    const embaralhado = [...CHECKS_BASELINE].reverse();
+    const ok = await rodarReal(roteador({ protection: json(protOk({ required_status_checks: { strict: true, contexts: embaralhado } })) }));
+    assert.equal(ok.code, 0, ok.out);
+    const variantes = [
+      [...CHECKS_BASELINE.slice(1), CHECKS_BASELINE[0].toLowerCase()],
+      [...CHECKS_BASELINE.slice(1), `${CHECKS_BASELINE[0]} `],
+      [...CHECKS_BASELINE, CHECKS_BASELINE[0]],
+      [...CHECKS_BASELINE, 'extra'],
+      CHECKS_BASELINE.slice(1),
+    ];
+    for (const contexts of variantes) {
+      const r = await rodarReal(roteador({ protection: json(protOk({ required_status_checks: { strict: true, contexts } })) }));
+      assert.equal(r.code, 1, `contexts=${JSON.stringify(contexts)} passou:\n${r.out}`);
+      assert.ok(r.out.includes('branch_protection_main.required_status_checks'), r.out);
+    }
+  });
+
+  it('contexts que nao e lista e ponto cego (nao TypeError, nao OK)', async () => {
+    const r = await rodarReal(roteador({ protection: json(protOk({ required_status_checks: { strict: true, contexts: 'texto' } })) }));
+    assert.ok(!r.out.includes('Perimetro OK'), r.out);
+    assert.ok(r.out.includes('branch protection: NAO VERIFICAVEL'), r.out);
+  });
+
+  it('flags de protecao: enforce_admins off, linear_history on e force_push on divergem; ausentes = null divergem', async () => {
+    const r = await rodarReal(roteador({ protection: json(protOk({ enforce_admins: { enabled: false }, required_linear_history: { enabled: true }, allow_force_pushes: { enabled: true } })) }));
+    assert.equal(r.code, 1, r.out);
+    for (const campo of ['enforce_admins', 'required_linear_history', 'allow_force_pushes']) assert.ok(r.out.includes(`branch_protection_main.${campo}`), r.out);
+    const sem = protOk(); delete sem.enforce_admins;
+    const r2 = await rodarReal(roteador({ protection: json(sem) }));
+    assert.equal(r2.code, 1, 'enforce_admins ausente na protecao lida e divergencia (campo faz parte do bloco de protecao)');
+  });
+});
+
+describe('settings-guard (HTTP local): erros de API, retry, timeout e paginacao', () => {
+  it('5xx transitorio em GET e re-tentado e o guard conclui OK', async () => {
+    let n = 0;
+    const r = await rodarReal(roteador({ rulesets: () => (++n < 3 ? { status: 502, raw: 'bad gateway' } : json([])) }));
+    assert.equal(r.code, 0, r.out);
+    assert.ok(r.out.includes('Perimetro OK'), r.out);
+    assert.equal(postadas(r, 'rulesets').length, 3);
+  });
+
+  it('5xx persistente: exit 1, 3 tentativas, sem "OK" e sem tratar como ponto cego', async () => {
+    const r = await rodarReal(roteador({ rulesets: { status: 500, raw: 'boom' } }));
+    assert.equal(r.code, 1, r.out);
+    assert.equal(postadas(r, 'rulesets').length, 3);
+    assert.ok(!r.out.includes('Perimetro OK') && !r.out.includes('NAO VERIFICAVEL'), r.out);
+  });
+
+  it('403 de rate limit NAO e falta de escopo: exit 1 (antes virava ponto cego verde)', async () => {
+    const r = await rodarReal(roteador({ protection: json({ message: 'API rate limit exceeded for user ID 1.' }, 403) }));
+    assert.equal(r.code, 1, r.out);
+    assert.ok(!r.out.includes('branch protection: NAO VERIFICAVEL'), r.out);
+    const r2 = await rodarReal(roteador({ protection: json({ message: 'You have exceeded a secondary rate limit.' }, 403) }));
+    assert.equal(r2.code, 1, r2.out);
+  });
+
+  it('429 e exit 1 (com retry), nunca OK', async () => {
+    const r = await rodarReal(roteador({ environments: json({ message: 'slow down' }, 429) }));
+    assert.equal(r.code, 1, r.out);
+    assert.equal(postadas(r, 'environments').length, 3);
+  });
+
+  it('4xx definitivo (422) em GET nao e re-tentado', async () => {
+    const r = await rodarReal(roteador({ rulesets: json({ message: 'invalido' }, 422) }));
+    assert.equal(r.code, 1, r.out);
+    assert.equal(postadas(r, 'rulesets').length, 1);
+  });
+
+  it('servidor que nunca responde: timeout e exit 1 (nao pendura ate o timeout do job)', async () => {
+    const r = await rodarReal(roteador({ rulesets: { travar: true } }), { env: { SETTINGS_GUARD_TIMEOUT_MS: '300' }, timeoutMs: 15_000 });
+    assert.equal(r.code, 1, r.out);
+    assert.ok(!r.out.includes('Perimetro OK'), r.out);
+  });
+
+  it('JSON invalido num 200 de checagem de protecao e erro (exit 1), nao "campo ausente"', async () => {
+    const r = await rodarReal(roteador({ protection: { status: 200, raw: '{"required_status_checks": {' } }));
+    assert.equal(r.code, 1, r.out);
+    assert.ok(!r.out.includes('Perimetro OK'), r.out);
+  });
+
+  it('environments pagina: extra inesperado na pagina 2 e detectado (antes so lia 30)', async () => {
+    const pagina1 = BASELINE.environments.concat(Array.from({ length: 96 }, (_, i) => `Preview – b${i}`));
+    const handler = (req) => {
+      const pg = Number(req.query.page ?? 1);
+      const todos = [...pagina1, 'intruso-na-pagina-2'];
+      const fatia = todos.slice((pg - 1) * 100, pg * 100);
+      return json({ total_count: todos.length, environments: fatia.map((name) => ({ name })) });
+    };
+    const r = await rodarReal(roteador({ environments: handler }));
+    assert.equal(r.code, 1, r.out);
+    assert.ok(r.out.includes('intruso-na-pagina-2'), r.out);
+    assert.equal(postadas(r, 'environments').length, 2);
+    assert.ok(postadas(r, 'environments').every((q) => q.query.per_page === '100'));
+  });
+
+  it('environments malformado (sem lista, itens nulos) e ponto cego/ignorado, nunca TypeError nem OK por vacuidade', async () => {
+    const r = await rodarReal(roteador({ environments: json({ total_count: 0 }) }));
+    assert.equal(r.code, 0, r.out);
+    assert.ok(r.out.includes('environments: NAO VERIFICAVEL'), r.out);
+    const r2 = await rodarReal(roteador({ environments: json({ total_count: 5, environments: [null, { name: 7 }, ...BASELINE.environments.map((name) => ({ name }))] }) }));
+    assert.equal(r2.code, 0, r2.out);
+  });
+
+  it('environment do baseline faltando e divergencia', async () => {
+    const r = await rodarReal(roteador({ environments: json({ total_count: 3, environments: BASELINE.environments.slice(1).map((name) => ({ name })) }) }));
+    assert.equal(r.code, 1, r.out);
+    assert.ok(r.out.includes('environments.faltando'), r.out);
+  });
+
+  it('findIssue le 100 por pagina (a issue do guard nao pode ficar fora da primeira pagina de 10)', async () => {
+    const r = await rodarReal(roteador());
+    assert.equal(postadas(r, 'issues')[0].query.per_page, '100');
+  });
+});
+
+describe('settings-guard (HTTP local): restauracao nao pode causar dano', () => {
+  const protStrictFalse = (contexts) => json(protOk({ required_status_checks: { strict: false, contexts } }));
+
+  it('NAO faz PATCH com contexts vazios (apagaria os checks obrigatorios)', async () => {
+    const r = await rodarReal(roteador({ protection: protStrictFalse([]) }));
+    assert.equal(r.code, 1, r.out);
+    assert.equal(postadas(r, 'patchChecks').length, 0, `PATCH indevido: ${JSON.stringify(postadas(r, 'patchChecks'))}`);
+    assert.ok(r.out.includes('divergencia: branch_protection_main.strict'), r.out);
+  });
+
+  it('restaura strict com a lista viva de contexts, lendo a protecao com o token ADMIN quando existe', async () => {
+    const r = await rodarReal(
+      roteador({
+        protection: (req) => (req.auth === 'Bearer admin' ? protStrictFalse([...CHECKS_BASELINE]) : json({ message: 'Resource not accessible by integration' }, 403)),
+      }),
+      { env: { ADMIN_READ_TOKEN: 'admin' } },
+    );
+    assert.equal(r.code, 1, r.out);
+    const patches = postadas(r, 'patchChecks');
+    assert.equal(patches.length, 1, r.out);
+    assert.equal(patches[0].auth, 'Bearer x', 'escrita segue com o GITHUB_TOKEN');
+    assert.deepEqual(JSON.parse(patches[0].corpo), { strict: true, contexts: CHECKS_BASELINE });
+    assert.ok(r.out.includes('Restaurado: branch_protection_main.strict'), r.out);
+  });
+
+  it('allow_auto_merge desligado e restaurado com o valor do baseline', async () => {
+    const r = await rodarReal(roteador({ repo: json({ ...repoOk(), allow_auto_merge: false }) }));
+    assert.equal(r.code, 1, r.out);
+    const patches = postadas(r, 'patchRepo');
+    assert.equal(patches.length, 1);
+    assert.deepEqual(JSON.parse(patches[0].corpo), { allow_auto_merge: true });
+  });
+});
+
+describe('settings-guard (HTTP local): issue, log e saida', () => {
+  it('divergencia abre a issue com label e corpo, e sai 1', async () => {
+    const r = await rodarReal(roteador({ rulesets: json([{ id: 1 }]) }));
+    assert.equal(r.code, 1, r.out);
+    const novas = postadas(r, 'novaIssue');
+    assert.equal(novas.length, 1);
+    assert.deepEqual(JSON.parse(novas[0].corpo).labels, ['settings-guard']);
+    assert.ok(JSON.parse(novas[0].corpo).body.includes('rulesets.count'));
+  });
+
+  it('OK com issue aberta fecha a issue; ponto cego NAO fecha', async () => {
+    const aberta = json([{ number: 42, title: TITULO, comments: 0, body: '', user: { login: GUARD } }]);
+    const ok = await rodarReal(roteador({ issues: aberta }));
+    assert.equal(ok.code, 0, ok.out);
+    assert.equal(postadas(ok, 'fechar').length, 1);
+    const cego = await rodarReal(roteador({ issues: aberta, protection: json({ message: 'Resource not accessible by integration' }, 403) }));
+    assert.equal(cego.code, 0, cego.out);
+    assert.equal(postadas(cego, 'fechar').length, 0, 'ponto cego nao pode fechar a issue');
+  });
+
+  it('erro de API com quebra de linha no corpo nao forja linha ::error:: no log', async () => {
+    const r = await rodarReal(roteador({ rulesets: { status: 500, raw: 'falha\n::error::forjado\n::add-mask::x' } }));
+    assert.equal(r.code, 1, r.out);
+    assert.ok(!r.linhas.some((l) => l.startsWith('::error::forjado') || l.startsWith('::add-mask::')), r.out);
+  });
+
+  it('motivo de ponto cego com quebra de linha e pipe nao quebra a tabela da issue', async () => {
+    const r = await rodarReal(roteador({ protection: { status: 403, raw: 'linha1\n| col | forjada' } }));
+    assert.equal(r.code, 0, r.out);
+    const corpo = JSON.parse(postadas(r, 'novaIssue')[0].corpo).body;
+    const linhaTabela = corpo.split('\n').filter((l) => l.startsWith('| branch protection'));
+    assert.equal(linhaTabela.length, 1, corpo);
+    assert.ok(!corpo.includes('linha1\n'), `quebra de linha do motivo vazou para a tabela:\n${corpo}`);
+  });
+
+  it('snapshot do perimetro e gravado quando PERIMETER_SNAPSHOT_PATH existe', async () => {
+    const dir = mkdtempSync(join(tmpdir(), 'guard snap '));
+    try {
+      const alvo = join(dir, 'snap.json');
+      const r = await rodarReal(roteador({ rulesets: json([{ id: 1 }]) }), { env: { PERIMETER_SNAPSHOT_PATH: alvo } });
+      assert.equal(r.code, 1, r.out);
+      const snap = JSON.parse(readFileSync(alvo, 'utf8'));
+      assert.equal(snap.divergencias.length, 1);
+      assert.equal(snap.run_id, '1');
+    } finally {
+      rmSync(dir, { recursive: true, force: true });
+    }
+  });
+});
+
+describe('settings-guard (HTTP local): configuracao e invocacao', () => {
+  it('GITHUB_TOKEN vazio e exit 1 sem nenhuma chamada', async () => {
+    const r = await rodarReal(roteador(), { env: { GITHUB_TOKEN: '' } });
+    assert.equal(r.code, 1, r.out);
+    assert.equal(r.requisicoes.length, 0);
+  });
+
+  it('GITHUB_REPOSITORY malformado e exit 2 sem nenhuma chamada', async () => {
+    for (const repo of ['semBarra', 'a b/c', 'o/r/extra', '/r', 'o/']) {
+      const r = await rodarReal(roteador(), { env: { GITHUB_REPOSITORY: repo } });
+      assert.equal(r.code, 2, `repo=${repo}: ${r.out}`);
+      assert.equal(r.requisicoes.length, 0);
+    }
+  });
+
+  it('invocado por symlink em pasta com espaco executa a conferencia (antes: exit 0 mudo = falso OK)', async () => {
+    const dir = mkdtempSync(join(tmpdir(), 'guard link '));
+    try {
+      const sub = join(dir, 'pasta com espaço');
+      mkdirSync(sub);
+      const link = join(sub, 'guard.mjs');
+      symlinkSync(SCRIPT, link);
+      const r = await rodarReal(roteador({ rulesets: json([{ id: 1 }]) }), { script: link });
+      assert.equal(r.code, 1, `via symlink o guard deveria detectar o ruleset extra:\n${r.out}`);
+      assert.ok(r.requisicoes.length > 0, 'nenhuma requisicao feita: o guard nao rodou');
+    } finally {
+      rmSync(dir, { recursive: true, force: true });
+    }
+  });
+
+  it('baseline estruturalmente invalido: exit 2 sem chamar a API (nao aprova por vacuidade)', async () => {
+    const dir = mkdtempSync(join(tmpdir(), 'guard bl '));
+    try {
+      const variantes = {
+        secao_vazia: { ...BASELINE, merge: {} },
+        sem_actions: (() => { const b = { ...BASELINE }; delete b.actions; return b; })(),
+        checks_vazios: { ...BASELINE, branch_protection_main: { ...BASELINE.branch_protection_main, required_status_checks: [] } },
+        campo_ignorado: { ...BASELINE, branch_protection_main: { ...BASELINE.branch_protection_main, require_code_owner_reviews: true } },
+      };
+      for (const [nome, bl] of Object.entries(variantes)) {
+        const sub = join(dir, nome);
+        mkdirSync(sub);
+        copyFileSync(SCRIPT, join(sub, 'guard.mjs'));
+        writeFileSync(join(sub, 'github-settings-baseline.json'), JSON.stringify(bl));
+        const r = await rodarReal(roteador(), { script: join(sub, 'guard.mjs') });
+        assert.equal(r.code, 2, `${nome}: ${r.out}`);
+        assert.ok(r.out.includes('baseline invalido'), `${nome}: ${r.out}`);
+        assert.equal(r.requisicoes.length, 0, `${nome}: chamou a API com baseline invalido`);
+      }
+    } finally {
+      rmSync(dir, { recursive: true, force: true });
+    }
+  });
+
+  it("selected-actions: 500 cujo corpo contem '409' NAO e engolido como 409 (baseline 'selected')", async () => {
+    const dir = mkdtempSync(join(tmpdir(), 'guard sel '));
+    try {
+      copyFileSync(SCRIPT, join(dir, 'guard.mjs'));
+      const bl = { ...BASELINE, actions: { ...BASELINE.actions, allowed_actions: 'selected' }, selected_actions_patterns: [] };
+      writeFileSync(join(dir, 'github-settings-baseline.json'), JSON.stringify(bl));
+      const sobre = { actions: json({ enabled: true, allowed_actions: 'selected', sha_pinning_required: false }) };
+      const r500 = await rodarReal(roteador({ ...sobre, selected: { status: 500, raw: 'erro interno ref 409' } }), { script: join(dir, 'guard.mjs') });
+      assert.equal(r500.code, 1, r500.out);
+      const r409 = await rodarReal(roteador({ ...sobre, selected: json({ message: 'All actions and workflows are allowed' }, 409) }), { script: join(dir, 'guard.mjs') });
+      assert.equal(r409.code, 0, r409.out);
+    } finally {
+      rmSync(dir, { recursive: true, force: true });
+    }
+  });
+});
+
+describe('settings-guard (HTTP local): campos opcionais do baseline sao conferidos de verdade', () => {
+  it('required_conversation_resolution/allow_deletions no baseline divergem da protecao lida', async () => {
+    const dir = mkdtempSync(join(tmpdir(), 'guard opc '));
+    try {
+      copyFileSync(SCRIPT, join(dir, 'guard.mjs'));
+      const bl = JSON.parse(JSON.stringify(BASELINE));
+      bl.branch_protection_main.required_conversation_resolution = true;
+      bl.branch_protection_main.allow_deletions = false;
+      writeFileSync(join(dir, 'github-settings-baseline.json'), JSON.stringify(bl));
+      const r = await rodarReal(roteador({ protection: json(protOk({ required_conversation_resolution: { enabled: false }, allow_deletions: { enabled: true } })) }), { script: join(dir, 'guard.mjs') });
+      assert.equal(r.code, 1, r.out);
+      assert.ok(r.out.includes('branch_protection_main.required_conversation_resolution esperado=true encontrado=false'), r.out);
+      assert.ok(r.out.includes('branch_protection_main.allow_deletions esperado=false encontrado=true'), r.out);
+      const ok = await rodarReal(roteador({ protection: json(protOk({ required_conversation_resolution: { enabled: true }, allow_deletions: { enabled: false } })) }), { script: join(dir, 'guard.mjs') });
+      assert.equal(ok.code, 0, ok.out);
+    } finally {
+      rmSync(dir, { recursive: true, force: true });
+    }
+  });
+});
+
+describe('settings-guard: validarBaseline', () => {
+  const clone = () => JSON.parse(JSON.stringify(BASELINE));
+  it('o baseline versionado e valido', () => {
+    assert.deepEqual(validarBaseline(BASELINE), []);
+  });
+  it('detecta chave a menos, vazia e tipo errado', () => {
+    const casos = {
+      'nao e objeto': null,
+      'array': [],
+      'sem branch_protection_main': (() => { const b = clone(); delete b.branch_protection_main; return b; })(),
+      'strict string': (() => { const b = clone(); b.branch_protection_main.strict = 'true'; return b; })(),
+      'enforce_admins ausente': (() => { const b = clone(); delete b.branch_protection_main.enforce_admins; return b; })(),
+      'checks string': (() => { const b = clone(); b.branch_protection_main.required_status_checks = 'a,b'; return b; })(),
+      'checks com item vazio': (() => { const b = clone(); b.branch_protection_main.required_status_checks.push(' '); return b; })(),
+      'reviews negativo': (() => { const b = clone(); b.branch_protection_main.required_approving_review_count = -1; return b; })(),
+      'linear_history string': (() => { const b = clone(); b.branch_protection_main.required_linear_history = 'false'; return b; })(),
+      'merge vazio': (() => { const b = clone(); b.merge = {}; return b; })(),
+      'merge so comentario': (() => { const b = clone(); b.merge = { _x: 1 }; return b; })(),
+      'actions ausente': (() => { const b = clone(); delete b.actions; return b; })(),
+      'workflow_permissions lista': (() => { const b = clone(); b.workflow_permissions = []; return b; })(),
+      'rulesets_count string': (() => { const b = clone(); b.rulesets_count = '0'; return b; })(),
+      'environments ausente': (() => { const b = clone(); delete b.environments; return b; })(),
+      'environments com numero': (() => { const b = clone(); b.environments = ['a', 3]; return b; })(),
+      'campo desconhecido em branch_protection_main': (() => { const b = clone(); b.branch_protection_main.dismiss_stale_reviews = true; return b; })(),
+    };
+    for (const [nome, bl] of Object.entries(casos)) {
+      assert.ok(validarBaseline(bl).length > 0, `${nome} deveria ser invalido`);
+    }
+  });
+  it('aceita campos opcionais conhecidos e comentarios com underscore', () => {
+    const b = clone();
+    b.branch_protection_main._nota = 'x';
+    b.branch_protection_main.required_conversation_resolution = true;
+    b.branch_protection_main.allow_deletions = false;
+    assert.deepEqual(validarBaseline(b), []);
   });
 });

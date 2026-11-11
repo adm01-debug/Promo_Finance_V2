@@ -147,10 +147,15 @@ export function run(command, cwd, timeoutMs = 120000, options = {}) {
 }
 export async function checked(command, cwd, timeout) {
   const result = await run(command, cwd, timeout);
-  if (result.code !== 0 || result.timedOut || result.overflow)
+  if (result.code !== 0 || result.timedOut || result.overflow) {
+    const detail = result.stderr
+      .split('\n')
+      .map((line) => line.trim())
+      .find(Boolean);
     fail(
-      `Comando ${path.basename(command[0])} falhou (exit=${result.code}, timeout=${result.timedOut}, limiteSaida=${result.overflow})`
+      `Comando ${path.basename(command[0])} falhou (exit=${result.code}, timeout=${result.timedOut}, limiteSaida=${result.overflow})${detail ? `: ${detail.slice(0, 200)}` : ''}`
     );
+  }
   return result.output.trim();
 }
 export const git = (cwd, args, timeout, prefix = []) =>
@@ -509,6 +514,7 @@ export function validateConfig(c) {
   if (
     !Array.isArray(c.gates) ||
     c.gates.length !== 4 ||
+    c.gates.some((g) => !g || typeof g !== 'object' || Array.isArray(g)) ||
     expected.some((name) => c.gates.filter((g) => g.name === name).length !== 1)
   )
     fail('Gates lint/types/test/build obrigatórios e únicos');
@@ -574,7 +580,15 @@ export function validateConfig(c) {
     Object.keys(f).some((k) => !['roots', 'eslintRules', 'prettier', 'exclude'].includes(k)) ||
     !Array.isArray(f.roots) ||
     !f.roots.length ||
-    !f.roots.every((x) => x === 'src' || (x.startsWith('src/') && relative(x))) ||
+    !f.roots.every(
+      (x) =>
+        x === 'src' ||
+        (typeof x === 'string' &&
+          x.startsWith('src/') &&
+          relative(x) &&
+          !x.endsWith('/') &&
+          path.posix.normalize(x) === x)
+    ) ||
     typeof f.prettier !== 'boolean'
   )
     fail('Escopo de correção deve ficar em src');

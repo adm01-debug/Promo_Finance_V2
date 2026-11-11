@@ -69,12 +69,36 @@ export function mudou(arquivos, lerAntes, lerDepois) {
   return arquivos.some((f) => semCarimbos(lerAntes(f)) !== semCarimbos(lerDepois(f)));
 }
 
-if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) {
-  const arquivos = process.argv.length > 2 ? process.argv.slice(2) : PADRAO;
-  const ref = process.env.INVENTARIO_REF || 'HEAD';
+/**
+ * CLI. Saida: so `true` ou `false` em stdout (o workflow grava isso em GITHUB_OUTPUT); erro vai para
+ * stderr com exit 2, nunca um `false` que esconda falha.
+ */
+function main(argv, env) {
+  const arquivos = argv.length ? argv : PADRAO;
+  const ref = env.INVENTARIO_REF || 'HEAD';
+  if (ref.startsWith('-')) throw new Error(`INVENTARIO_REF invalida: ${ref}`);
+  // O gerador acabou de rodar: arquivo local ausente e falha dele, nao "apagado de proposito".
+  // Sem esta checagem, ausente nos dois lados dava `false` e ausente so no local dava `true`
+  // (publicaria a remocao do arquivo).
+  const ausentes = arquivos.filter((f) => !fs.existsSync(f));
+  if (ausentes.length) throw new Error(`arquivo(s) gerado(s) ausente(s): ${ausentes.join(', ')} (rode os geradores antes)`);
   const lerAntes = (f) => {
     try { return execFileSync('git', ['show', `${ref}:${f}`], { encoding: 'utf8', stdio: ['ignore', 'pipe', 'ignore'], maxBuffer: 64 * 1024 * 1024 }); } catch { return null; }
   };
-  const lerDepois = (f) => (fs.existsSync(f) ? fs.readFileSync(f, 'utf8') : null);
+  const lerDepois = (f) => fs.readFileSync(f, 'utf8');
   console.log(String(mudou(arquivos, lerAntes, lerDepois)));
+}
+
+// realpath: process.argv[1] pode vir por symlink; import.meta.url ja vem resolvido. Sem isto o script
+// saia 0 sem imprimir nada e o workflow lia "nao mudou" para sempre.
+const executadoDireto = () => {
+  try { return Boolean(process.argv[1]) && import.meta.url === pathToFileURL(fs.realpathSync(process.argv[1])).href; } catch { return false; }
+};
+if (executadoDireto()) {
+  try {
+    main(process.argv.slice(2), process.env);
+  } catch (erro) {
+    console.error(`ERRO: ${erro.message}`);
+    process.exit(2);
+  }
 }
