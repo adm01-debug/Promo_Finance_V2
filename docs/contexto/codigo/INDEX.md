@@ -1,7 +1,7 @@
 # Contexto do projeto para agentes de IA
 
 GERADO AUTOMATICAMENTE por scripts/ai-context/gerar.mjs — não editar à mão; será sobrescrito.
-Publicado pelo workflow .github/workflows/contexto.yml em docs/contexto/codigo/ da branch gerada `contexto`. Índice único em docs/contexto/00-INDEX.md. Ler: git fetch origin contexto && git show origin/contexto:docs/contexto/00-INDEX.md Gere local com `node scripts/ai-context/gerar.mjs`. Commit-base: `67613f40eabb49ce03c27ce9470aa5fc0a1220f7` (2026-11-11T18:22:20Z).
+Publicado pelo workflow .github/workflows/contexto.yml em docs/contexto/codigo/ da branch gerada `contexto`. Índice único em docs/contexto/00-INDEX.md. Ler: git fetch origin contexto && git show origin/contexto:docs/contexto/00-INDEX.md Gere local com `node scripts/ai-context/gerar.mjs`. Commit-base: `f1d42f8639bc31a20ac50d39a08c84cf2c2814c0` (2026-11-11T15:59:10-03:00).
 
 ## Como usar (leia antes de planejar ou executar qualquer tarefa)
 1. **Tela/rota/menu** → `rotas.json` (url/vista/menu → arquivo → hooks → tabelas → edges; `rotas_http_backend` para APIs) e `modulos.json` (módulo inteiro + dependências entre módulos).
@@ -458,8 +458,8 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 - package.json (35)
 - bun.lock (28)
 - .github/workflows/ci.yml (22)
+- supabase/config.toml (15)
 - supabase/functions/asaas-proxy/index.ts (15)
-- supabase/config.toml (14)
 - supabase/functions/mcp-query/index.ts (13)
 - .github/workflows/deno-tests.yml (12)
 - e2e/auth/admin-rbac.e2e.ts (12)
@@ -619,6 +619,7 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 - CHANGELOG topo: [Unreleased]
 
 ## Últimos commits
+- 2026-11-11 `f1d42f8` fix: 9 edge functions ganham bloco verify_jwt no config.toml (deploy em lote abortava com exit 6) (#305)
 - 2026-11-11 `67613f4` fix: endurecimento dos scripts de automação, guard de perímetro, inventário e manutenção (#304)
 - 2026-11-11 `f0bad74` fix: endurecimento e cobertura de teste de todos os scripts em scripts/ (#299)
 - 2026-11-11 `85d018c` fix: shims para Supabase Preview — drop get_cron_jobs() antes de mudanças de return type (#131)
@@ -633,7 +634,6 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 - 2026-11-10 `acebea0` chore(automacao): conecta testes, grafo e manutenção aos gatilhos (#300)
 - 2026-11-10 `79382a6` feat(inventario): inventário autônomo do estado real (banco, rotas e edge functions) (#265)
 - 2026-11-09 `e914163` fix: bump date-fns from 2.30.0 to 4.4.0 (#298)
-- 2026-11-09 `9c94d00` fix: bump input-otp from 1.4.2 to 1.5.0 (#295)
 
 ## Arquivos deste diretório
 - `docs/contexto/codigo/rotas.json`

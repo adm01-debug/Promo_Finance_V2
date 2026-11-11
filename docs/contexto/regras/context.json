@@ -1,9 +1,9 @@
 {
  "meta": {
-  "sha": "67613f40eabb49ce03c27ce9470aa5fc0a1220f7",
+  "sha": "f1d42f8639bc31a20ac50d39a08c84cf2c2814c0",
   "branch": "main",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
-  "generated_at": "2026-11-11 18:50 UTC",
+  "generated_at": "2026-11-11 19:30 UTC",
   "files_total": 3651,
   "code_files": 3286,
   "code_lines": 491200
@@ -241670,10 +241670,19 @@
   }
  },
  "git": {
-  "sha": "67613f40eabb49ce03c27ce9470aa5fc0a1220f7",
+  "sha": "f1d42f8639bc31a20ac50d39a08c84cf2c2814c0",
   "branch": "main",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
   "commits": [
+   {
+    "sha": "f1d42f8",
+    "date": "2026-11-11",
+    "author": "adm01-debug",
+    "subject": "fix: 9 edge functions ganham bloco verify_jwt no config.toml (deploy em lote abortava com exit 6) (#305)",
+    "files": [
+     "supabase/config.toml"
+    ]
+   },
    {
     "sha": "67613f4",
     "date": "2026-11-11",
@@ -242298,15 +242307,6 @@
     "files": [
      "analise-prs/RELATORIO_PRS.md",
      "analise-prs/progresso.json"
-    ]
-   },
-   {
-    "sha": "8f63e2c",
-    "date": "2026-11-09",
-    "author": "adm01-debug",
-    "subject": "chore(docs): atualiza contagem de edge functions para 106 em sistema.md",
-    "files": [
-     "docs/agentes/sistema.md"
     ]
    }
   ],

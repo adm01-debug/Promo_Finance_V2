@@ -58,11 +58,11 @@
  "commits": {
   "convencao": "conventional commits (observado)",
   "exemplos": [
+   "fix: 9 edge functions ganham bloco verify_jwt no config.toml (deploy em lote abortava com exit 6) (#305)",
    "fix: endurecimento dos scripts de automação, guard de perímetro, inventário e manutenção (#304)",
    "fix: endurecimento e cobertura de teste de todos os scripts em scripts/ (#299)",
    "fix: shims para Supabase Preview — drop get_cron_jobs() antes de mudanças de return type (#131)",
-   "chore(migrations): [STEP 22] reconciliar migrations não rastreadas (#238)",
-   "chore(db): [STEP 17] dropar 404 índices idle (idx_scan=0) (#243)"
+   "chore(migrations): [STEP 22] reconciliar migrations não rastreadas (#238)"
   ]
  },
  "pr_template": ".github/PULL_REQUEST_TEMPLATE.md",
