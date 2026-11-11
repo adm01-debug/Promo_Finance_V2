@@ -8,6 +8,12 @@ ALTER TABLE public.budgets ALTER COLUMN valor_total DROP NOT NULL;
 ALTER TABLE public.contas_bancarias ALTER COLUMN nome DROP NOT NULL;
 
 -- 3. Fix solicitacoes_aprovacao
+DO $$
+BEGIN
+    IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema = 'public' AND table_name = 'solicitacoes_aprovacao' AND column_name = 'entidade_tipo') THEN
+        ALTER TABLE public.solicitacoes_aprovacao ADD COLUMN entidade_tipo TEXT;
+    END IF;
+END $$;
 ALTER TABLE public.solicitacoes_aprovacao ALTER COLUMN entidade_tipo DROP NOT NULL;
 ALTER TABLE public.solicitacoes_aprovacao ALTER COLUMN entidade_tipo SET DEFAULT 'conta_pagar';
 

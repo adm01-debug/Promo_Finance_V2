@@ -155,7 +155,13 @@ BEGIN
 
       IF r.column1 IN ('anon', 'authenticated') THEN
         v_expect := 'deny(42501)';
-        v_status := CASE WHEN v_sqlstate = '42501' THEN 'PASS' ELSE 'FAIL' END;
+        -- 42501 só prova a negativa quando vem da ACL: com EXECUTE concedido, o
+        -- mesmo código emitido por uma guarda do corpo significa que a função rodou.
+        v_status := CASE
+          WHEN v_sqlstate = '42501'
+               AND NOT has_function_privilege(r.column1, c.proc_oid, 'EXECUTE') THEN 'PASS'
+          ELSE 'FAIL'
+        END;
       ELSE
         v_expect := 'allow(not 42501)';
         v_status := CASE WHEN v_sqlstate <> '42501' THEN 'PASS' ELSE 'FAIL' END;

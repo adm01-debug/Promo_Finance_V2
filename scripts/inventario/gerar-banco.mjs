@@ -19,11 +19,14 @@
  *      Sem token, as edges publicadas ficam de fora (`edge_functions.publicadas: null`).
  *
  * Antes de gravar, recusa saida com cara de credencial (Bearer, JWT, sb_secret_).
- * Exit: 0 = gravado; 2 = entrada invalida, consulta falhou ou saida com credencial.
+ * A gravacao e atomica (temporario + rename): banco indisponivel ou resposta invalida sai com
+ * exit 2 sem tocar no banco.json anterior.
+ * Exit: 0 = gravado; 2 = argumento invalido, entrada invalida, consulta falhou ou saida com credencial.
  */
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
+import { semComentarios } from './gerar-rotas.mjs';
 
 const RAIZ = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..', '..');
 const SQL_PATH = path.join(RAIZ, 'scripts/inventario/banco.sql');
@@ -58,6 +61,12 @@ export function extrairInventario(bruto) {
   if (faltando.length) throw new Error(`entrada sem as chaves: ${faltando.join(', ')}`);
   if (dado.format_version !== 1) throw new Error(`format_version ${dado.format_version} desconhecido (esperado 1)`);
   if (!Array.isArray(dado.tabelas) || dado.tabelas.length === 0) throw new Error('entrada sem tabelas');
+  if (dado.tabelas.some((t) => !t || typeof t.nome !== 'string')) throw new Error('entrada com tabela sem `nome`');
+  const { cron } = dado;
+  if (!cron || !Array.isArray(cron.jobs) || !Array.isArray(cron.horas_paradas_7d) || !cron.historico || typeof cron.historico !== 'object') {
+    throw new Error('entrada com `cron` incompleto (esperado jobs[], horas_paradas_7d[] e historico{})');
+  }
+  if (!Array.isArray(dado.extensoes)) throw new Error('entrada com `extensoes` que nao e lista');
   return dado;
 }
 
@@ -79,15 +88,19 @@ function listarArquivos(dir, acc = []) {
  */
 export function contarUsoNoCodigo(raiz, nomes) {
   const uso = Object.fromEntries(nomes.map((n) => [n, { src: 0, edges: 0 }]));
-  const reFrom = /(\bstorage\s*)?\.from\(\s*['"`]([A-Za-z0-9_]+)['"`]/g;
+  // Qualquer caractere no nome (tabela "Minha Tabela" existe); so conta o que for tabela conhecida.
+  const reFrom = /(\bstorage\s*)?\.from\(\s*(['"`])([^'"`\n]+)\2/g;
   const reRest = /\/rest\/v1\/([A-Za-z0-9_]+)/g;
   for (const pasta of PASTAS_CODIGO) {
     const chave = pasta === 'src' ? 'src' : 'edges';
     for (const arquivo of listarArquivos(path.join(raiz, pasta))) {
-      if (/(\.test\.|\.spec\.|__tests__)/.test(arquivo)) continue;
-      const texto = fs.readFileSync(arquivo, 'utf8');
-      for (const m of texto.matchAll(reFrom)) if (!m[1] && uso[m[2]]) uso[m[2]][chave] += 1;
-      for (const m of texto.matchAll(reRest)) if (m[1] !== 'rpc' && uso[m[1]]) uso[m[1]][chave] += 1;
+      // Caminho relativo: pasta-pai com `.test.` no nome (ou /home/x.spec/) nao pode apagar o repo inteiro.
+      // `_test.ts` e a convencao do Deno (supabase/functions/**/layout_test.ts).
+      if (/(\.test\.|\.spec\.|_test\.|__tests__)/.test(path.relative(raiz, arquivo))) continue;
+      // Sem comentarios: `// supabase.from('tabela_velha')` nao e uso.
+      const texto = semComentarios(fs.readFileSync(arquivo, 'utf8'));
+      for (const m of texto.matchAll(reFrom)) if (!m[1] && Object.hasOwn(uso, m[3])) uso[m[3]][chave] += 1;
+      for (const m of texto.matchAll(reRest)) if (m[1] !== 'rpc' && Object.hasOwn(uso, m[1])) uso[m[1]][chave] += 1;
     }
   }
   return uso;
@@ -137,6 +150,15 @@ export function edgesNoRepo(raiz) {
     .map((d) => d.name).sort();
 }
 
+// Ordem por code point: localeCompare muda com a versao do ICU do Node e geraria diff sem mudanca real.
+const cmp = (a, b) => (a < b ? -1 : a > b ? 1 : 0);
+// Data invalida (ou ausente) vira null em vez de derrubar o inventario com RangeError.
+const minutoUtc = (v) => {
+  if (!v) return null;
+  const d = new Date(v);
+  return Number.isNaN(d.getTime()) ? null : d.toISOString().slice(0, 16) + 'Z';
+};
+
 /** Edges publicadas (resposta de GET /functions) x repo. `publicadas` null = nao consultado. */
 export function compararEdges(publicadasApi, noRepo) {
   if (!publicadasApi) return { publicadas: null, no_repo: noRepo.length, publicadas_sem_codigo_no_repo: null, no_repo_sem_deploy: null };
@@ -145,8 +167,8 @@ export function compararEdges(publicadasApi, noRepo) {
     versao: f.version,
     status: f.status,
     verify_jwt: f.verify_jwt,
-    atualizada_em: f.updated_at ? new Date(f.updated_at).toISOString().slice(0, 16) + 'Z' : null,
-  })).sort((a, b) => a.slug.localeCompare(b.slug));
+    atualizada_em: minutoUtc(f.updated_at),
+  })).sort((a, b) => cmp(a.slug, b.slug));
   const slugs = new Set(publicadas.map((f) => f.slug));
   return {
     publicadas,
@@ -232,29 +254,90 @@ function projeto() {
   return ref;
 }
 
+const ESPERAS_MS = [500, 1500]; // entre tentativas: 5xx/429/rede caem, 4xx definitivo (token errado) nao
+
 async function chamarApi(caminho, init = {}) {
   const token = process.env.SUPABASE_ACCESS_TOKEN?.trim();
-  const res = await fetch(`${API}/${encodeURIComponent(projeto())}${caminho}`, {
-    ...init,
-    headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json', ...(init.headers || {}) },
-    signal: AbortSignal.timeout(120_000),
-  });
-  // Nunca repassa o corpo do erro: pode ecoar cabecalho ou parte da consulta.
-  if (!res.ok) throw new Error(`Management API ${caminho} respondeu HTTP ${res.status}`);
-  return res.json();
+  const ref = projeto();
+  for (let tentativa = 0; ; tentativa++) {
+    let transitorio = false;
+    let falha;
+    try {
+      const res = await fetch(`${API}/${encodeURIComponent(ref)}${caminho}`, {
+        ...init,
+        headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json', ...(init.headers || {}) },
+        signal: AbortSignal.timeout(120_000),
+      });
+      // Nunca repassa o corpo do erro: pode ecoar cabecalho ou parte da consulta.
+      if (res.ok) return await res.json();
+      transitorio = res.status === 429 || res.status >= 500;
+      falha = new Error(`Management API ${caminho} respondeu HTTP ${res.status}`);
+    } catch (erro) {
+      // Rede caiu / conexao cortada (erro com `cause`) ou estourou o tempo: tenta de novo. Cabecalho
+      // invalido ou corpo que nao e JSON nao melhoram na segunda tentativa.
+      transitorio = erro?.name === 'TimeoutError' || Boolean(erro?.cause);
+      falha = new Error(`Management API ${caminho} sem resposta valida: ${erro?.name === 'TimeoutError' ? 'timeout de 120 s' : erro?.message ?? erro}`);
+    }
+    if (!transitorio || tentativa >= ESPERAS_MS.length) throw falha;
+    await new Promise((resolver) => setTimeout(resolver, ESPERAS_MS[tentativa]));
+  }
+}
+
+/** Texto de erro sem token nem nada com cara de credencial (o Node ecoa trecho do corpo em erros de JSON/cabecalho). */
+export function redigir(mensagem) {
+  let texto = String(mensagem);
+  const token = process.env.SUPABASE_ACCESS_TOKEN?.trim();
+  if (token) texto = texto.split(token).join('***');
+  return texto.replace(new RegExp(PARECE_CREDENCIAL.source, 'g'), '***');
+}
+
+const USO = `uso: node scripts/inventario/gerar-banco.mjs [--entrada resposta.json [--functions functions.json]]
+  sem --entrada: le o banco pela Management API (exige SUPABASE_ACCESS_TOKEN).
+  --entrada: resposta do banco.sql salva do MCP; --functions: lista de GET /functions (opcional).
+`;
+
+/** Argumentos estritos: flag desconhecida ou sem valor e erro, nunca ignorada (um typo cairia na API viva). */
+export function lerArgumentos(argv) {
+  const opcoes = {};
+  for (let i = 0; i < argv.length; i++) {
+    const a = argv[i];
+    if (a === '--help' || a === '-h') opcoes.ajuda = true;
+    else if (a === '--entrada' || a === '--functions') {
+      const valor = argv[i + 1];
+      if (!valor || valor.startsWith('--')) throw new Error(`${a} exige o caminho de um arquivo`);
+      opcoes[a.slice(2)] = valor;
+      i++;
+    } else throw new Error(`argumento desconhecido: ${a}\n${USO}`);
+  }
+  if (opcoes.functions && !opcoes.entrada) throw new Error('--functions so vale junto com --entrada');
+  return opcoes;
+}
+
+/** Grava por arquivo temporario + rename: queda no meio nao apaga nem trunca o banco.json anterior. */
+function gravarAtomico(destino, conteudo) {
+  fs.mkdirSync(path.dirname(destino), { recursive: true });
+  const tmp = `${destino}.${process.pid}.tmp`;
+  try {
+    fs.writeFileSync(tmp, conteudo);
+    fs.renameSync(tmp, destino);
+  } catch (erro) {
+    fs.rmSync(tmp, { force: true });
+    throw erro;
+  }
 }
 
 async function main(argv) {
-  const iEntrada = argv.indexOf('--entrada');
-  const iFunctions = argv.indexOf('--functions');
+  const opcoes = lerArgumentos(argv);
+  if (opcoes.ajuda) {
+    process.stdout.write(USO);
+    return;
+  }
   const token = process.env.SUPABASE_ACCESS_TOKEN?.trim();
   let bruto;
   let publicadasApi = null;
-  if (iEntrada !== -1) {
-    const arquivo = argv[iEntrada + 1];
-    if (!arquivo) throw new Error('--entrada exige o caminho do arquivo com a resposta do banco.sql');
-    bruto = fs.readFileSync(arquivo, 'utf8');
-    if (iFunctions !== -1) publicadasApi = JSON.parse(fs.readFileSync(argv[iFunctions + 1], 'utf8'));
+  if (opcoes.entrada) {
+    bruto = fs.readFileSync(opcoes.entrada, 'utf8');
+    if (opcoes.functions) publicadasApi = JSON.parse(fs.readFileSync(opcoes.functions, 'utf8'));
   } else {
     if (!token) throw new Error('sem --entrada e sem SUPABASE_ACCESS_TOKEN: nada para ler (veja o cabecalho do script).');
     bruto = await chamarApi('/database/query/read-only', {
@@ -263,6 +346,9 @@ async function main(argv) {
     });
   }
   if (!publicadasApi && token) publicadasApi = await chamarApi('/functions');
+  if (publicadasApi && (!Array.isArray(publicadasApi) || publicadasApi.some((f) => typeof f?.slug !== 'string'))) {
+    throw new Error('a lista de edge functions publicadas nao e uma lista de objetos com `slug` (GET /functions mudou de formato?)');
+  }
 
   const dado = extrairInventario(bruto);
   const origem = conferirOrigem(dado, tabelasDosTipos(RAIZ));
@@ -272,8 +358,7 @@ async function main(argv) {
   if (PARECE_CREDENCIAL.test(texto)) {
     throw new Error('a saida tem algo com cara de credencial; nada foi gravado. Revise banco.sql.');
   }
-  fs.mkdirSync(path.dirname(SAIDA), { recursive: true });
-  fs.writeFileSync(SAIDA, texto);
+  gravarAtomico(SAIDA, texto);
   const ed = inventario.edge_functions;
   console.log(`banco.json: ${inventario.tabelas.length} tabelas, ${inventario.cron.jobs.length} cron jobs, `
     + `${inventario.tabelas_orfas.lista.length} orfas, ${inventario.alertas.length} alertas, `
@@ -281,9 +366,13 @@ async function main(argv) {
     + `(medido_em ${inventario.medido_em}).`);
 }
 
-if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) {
+// realpath: process.argv[1] pode vir por symlink; import.meta.url ja vem resolvido.
+const executadoDireto = () => {
+  try { return Boolean(process.argv[1]) && import.meta.url === pathToFileURL(fs.realpathSync(process.argv[1])).href; } catch { return false; }
+};
+if (executadoDireto()) {
   main(process.argv.slice(2)).catch((error) => {
-    console.error(`ERRO: ${error.message}`);
+    console.error(`ERRO: ${redigir(error.message)}`);
     process.exit(2);
   });
 }

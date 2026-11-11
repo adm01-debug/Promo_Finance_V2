@@ -7,6 +7,12 @@ output_name=""
 
 while [ "$#" -gt 0 ]; do
   case "$1" in
+    -h|--help)
+      echo "Uso: require-env.sh --label <rótulo> [--mode fail|summary] [--output <nome>] VAR [VAR...]"
+      echo "Confere se cada VAR existe no ambiente com valor não vazio. Nunca imprime o valor."
+      echo "Exit: 0 presentes (ou ausentes em --mode summary) | 1 ausente em --mode fail | 2 uso inválido"
+      exit 0
+      ;;
     --label)
       if [ "$#" -lt 2 ]; then
         echo "::error::--label exige um valor."
@@ -68,7 +74,9 @@ for key in "$@"; do
     exit 2
   fi
 
-  value="${!key:-}"
+  # printenv, não ${!key}: a expansão indireta enxerga variável do próprio shell
+  # (label, mode, key, HOSTNAME…) e dava "presente" para o que não está no ambiente.
+  value="$(printenv "$key" || true)"
   if [ -z "${value//[[:space:]]/}" ]; then
     missing+=("$key")
   fi

@@ -9,14 +9,23 @@ import tempfile
 from datetime import datetime, timezone
 
 from run import ROOT, SECRET, atomic_write_json, command
-from typescript_imports import extract_imports
+from typescript_imports import extract_imports, mask_comments
+
+try:
+    import tomllib
+except ModuleNotFoundError:  # Python < 3.11: verify_jwt fica "não declarado", sem derrubar o inventário.
+    tomllib = None
 
 
+# Os guards de _shared/auth-guard.ts seguem o prefixo exigir*; o sinal vem das palavras do nome
+# (exigirInternaOuUsuarioComPapel sinaliza interna, usuario e papel), não de uma lista fechada.
 GUARD_PATTERNS = {
-    "usuario": re.compile(r"\b(?:exigirUsuario|getUser|getClaims)\s*\("),
-    "papel": re.compile(r"\bexigirPapel\s*\("),
-    "interna": re.compile(r"\bexigirChamadaInterna\s*\("),
+    "usuario": re.compile(r"\b(?:exigir\w*Usuario\w*|getUser|getClaims)\s*\("),
+    "papel": re.compile(r"\bexigir\w*(?:Papel|Admin)\w*\s*\("),
+    "interna": re.compile(r"\bexigir\w*Interna\w*\s*\("),
+    "empresa": re.compile(r"\bexigir\w*(?:Empresa|Vinculo)\w*\s*\("),
     "webhook": re.compile(r"\b(?:authenticateWebhook|verifyWebhookSignature)\s*\("),
+    "segredo": re.compile(r"\bsegredosIguais\s*\("),
 }
 ENTRYPOINT = re.compile(r"\b(?:Deno\.serve|serve)\s*\(")
 SERVICE_ROLE = re.compile(r"\bSUPABASE_SERVICE_ROLE_KEY\b")
@@ -25,13 +34,31 @@ SERVICE_ROLE = re.compile(r"\bSUPABASE_SERVICE_ROLE_KEY\b")
 def edge_files(root=ROOT):
     tracked = set(command(["git", "ls-files", "-z"], root).split("\0"))
     prefix = "supabase/functions/"
+    # Pasta iniciada por "_" (ex.: _shared) é código compartilhado: a plataforma não a publica como função.
     return sorted(name for name in tracked
                   if name.startswith(prefix) and name.endswith("/index.ts")
-                  and name.count("/") == 3)
+                  and name.count("/") == 3 and not name.startswith(prefix + "_"))
+
+
+def verify_jwt_settings(root=ROOT):
+    """verify_jwt declarado por função em supabase/config.toml; sem declaração, a função não aparece."""
+    path = Path(root) / "supabase" / "config.toml"
+    if tomllib is None or not path.is_file():
+        return {}
+    try:
+        functions = tomllib.loads(path.read_text(encoding="utf-8")).get("functions", {})
+    except tomllib.TOMLDecodeError as error:
+        raise ValueError(f"supabase/config.toml inválido: {error}") from error
+    if not isinstance(functions, dict):
+        raise ValueError("supabase/config.toml inválido: 'functions' não é uma tabela.")
+    return {name: settings["verify_jwt"] for name, settings in functions.items()
+            if isinstance(settings, dict) and isinstance(settings.get("verify_jwt"), bool)}
 
 
 def inspect_edge(relative, text):
     imports = extract_imports(relative, text)
+    # Guard ou chave citados só em comentário de linha inteira não são sinal de proteção ou de uso.
+    text = mask_comments(text)
     return {
         "name": Path(relative).parent.name,
         "entrypoint": bool(ENTRYPOINT.search(text)),
@@ -47,6 +74,7 @@ def inspect_edge(relative, text):
 
 def inventory(root=ROOT):
     functions, hashes, credential_like = [], {}, []
+    verify_jwt = verify_jwt_settings(root)
     for relative in edge_files(root):
         content = (root / relative).read_bytes()
         text = content.decode("utf-8")
@@ -56,6 +84,8 @@ def inventory(root=ROOT):
             credential_like.append(relative)
         hashes[relative] = hashlib.sha256(content).hexdigest()
         functions.append(inspect_edge(relative, text))
+        # None = não declarado no config.toml (vale o padrão da plataforma), diferente de desligado.
+        functions[-1]["verify_jwt"] = verify_jwt.get(functions[-1]["name"])
     if not functions:
         raise ValueError("Nenhuma Edge Function rastreada foi encontrada.")
     return {"functions": functions, "hashes": hashes, "credential_like_files": credential_like}
@@ -90,6 +120,10 @@ def main():
             "with_guard_signal": sum(bool(item["guard_signals"]) for item in functions),
             "with_service_role": sum(item["uses_service_role"] for item in functions),
             "with_external_import": sum(bool(item["external_imports"]) for item in functions),
+            "verify_jwt_disabled": sum(item["verify_jwt"] is False for item in functions),
+            "verify_jwt_undeclared": sum(item["verify_jwt"] is None for item in functions),
+            "verify_jwt_disabled_without_guard_signal": sum(
+                item["verify_jwt"] is False and not item["guard_signals"] for item in functions),
         }
         evidence.update({
             "status": "validado_com_limitacoes",
