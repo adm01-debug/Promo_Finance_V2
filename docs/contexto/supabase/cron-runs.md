@@ -16,9 +16,9 @@
 
 | início (UTC) | status | duração (s) | mensagem |
 |---|---|---|---|
+| 2026-11-11 00:00:00 | succeeded | 0.30 | 1 row |
 | 2026-11-10 23:00:00 | succeeded | 0.35 | 1 row |
 | 2026-11-10 22:00:00 | succeeded | 0.37 | 1 row |
-| 2026-11-10 21:00:00 | succeeded | 1.69 | 1 row |
 
 
 ## 4 · cleanup-cron-logs
@@ -68,9 +68,9 @@
 
 | início (UTC) | status | duração (s) | mensagem |
 |---|---|---|---|
+| 2026-11-11 00:00:00 | succeeded | 0.37 | 1 row |
 | 2026-11-10 23:30:00 | succeeded | 0.10 | 1 row |
 | 2026-11-10 23:00:00 | succeeded | 0.26 | 1 row |
-| 2026-11-10 22:30:00 | succeeded | 0.23 | 1 row |
 
 
 ## 12 · integrity-invariants-hourly
@@ -107,9 +107,9 @@ _nenhum_
 
 | início (UTC) | status | duração (s) | mensagem |
 |---|---|---|---|
+| 2026-11-11 00:00:00 | succeeded | 0.04 | 1 row |
 | 2026-11-10 00:00:00 | succeeded | 0.05 | 1 row |
 | 2026-11-09 00:00:01 | succeeded | 0.03 | 1 row |
-| 2026-11-08 00:00:00 | succeeded | 0.02 | 1 row |
 
 
 ## 18 · refresh-performance-alerts-weekly
@@ -193,18 +193,18 @@ _nenhum_
 
 | início (UTC) | status | duração (s) | mensagem |
 |---|---|---|---|
+| 2026-11-11 00:00:00 | succeeded | 0.09 | 1 row |
 | 2026-11-10 23:45:00 | succeeded | 0.05 | 1 row |
 | 2026-11-10 23:30:00 | succeeded | 0.03 | 1 row |
-| 2026-11-10 23:15:00 | succeeded | 0.16 | 1 row |
 
 
 ## 33 · webhook-retry-worker-1min
 
 | início (UTC) | status | duração (s) | mensagem |
 |---|---|---|---|
-| 2026-11-10 23:51:00 | succeeded | 0.01 | 1 row |
-| 2026-11-10 23:50:00 | succeeded | 0.01 | 1 row |
-| 2026-11-10 23:49:00 | succeeded | 0.01 | 1 row |
+| 2026-11-11 00:02:00 | succeeded | 0.01 | 1 row |
+| 2026-11-11 00:01:00 | succeeded | 0.01 | 1 row |
+| 2026-11-11 00:00:00 | succeeded | 0.07 | 1 row |
 
 
 ## 34 · auditar-acessos-cross-tenant
@@ -229,18 +229,18 @@ _nenhum_
 
 | início (UTC) | status | duração (s) | mensagem |
 |---|---|---|---|
+| 2026-11-11 00:00:00 | succeeded | 0.04 | 1 row |
 | 2026-11-10 23:30:00 | succeeded | 0.07 | 1 row |
 | 2026-11-10 23:00:00 | succeeded | 0.05 | 1 row |
-| 2026-11-10 22:30:00 | succeeded | 0.06 | 1 row |
 
 
 ## 37 · evaluate-delivery-alerts-every-min
 
 | início (UTC) | status | duração (s) | mensagem |
 |---|---|---|---|
-| 2026-11-10 23:51:00 | succeeded | 0.01 | 1 row |
-| 2026-11-10 23:50:00 | succeeded | 0.02 | 1 row |
-| 2026-11-10 23:49:00 | succeeded | 0.02 | 1 row |
+| 2026-11-11 00:02:00 | succeeded | 0.03 | 1 row |
+| 2026-11-11 00:01:00 | succeeded | 0.01 | 1 row |
+| 2026-11-11 00:00:00 | succeeded | 0.05 | 1 row |
 
 
 ## 40 · gerar-snapshots-conformidade-mensal

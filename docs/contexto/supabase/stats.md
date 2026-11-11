@@ -314,15 +314,15 @@ _nenhum_
 ## Consultas mais custosas (pg_stat_statements, desde o último reset)
 | role | chamadas (~) | total ms (~) | média ms | query |
 |---|---|---|---|---|
-| postgres | ~29.2k | ~5M | 171.87 | `SELECT table_schema AS schema, table_name AS "table", column_name AS "column", grantee, string_agg(privilege_type, $2 ORDER BY privilege_type) AS privileges FROM information_schema.column_privileges cp WHERE grantee NOT ` |
+| postgres | ~29.4k | ~5M | 171.85 | `SELECT table_schema AS schema, table_name AS "table", column_name AS "column", grantee, string_agg(privilege_type, $2 ORDER BY privilege_type) AS privileges FROM information_schema.column_privileges cp WHERE grantee NOT ` |
 | postgres | ~1.8k | ~3M | 1610.15 | `SELECT public.watch_cron_failures($1,$2)` |
-| postgres | ~19.8k | ~2.4M | 122.46 | `SELECT public.detect_query_regressions()` |
+| postgres | ~19.8k | ~2.4M | 122.47 | `SELECT public.detect_query_regressions()` |
 | authenticated | ~278.6k | ~2M | 7.12 | `WITH pgrst_source AS ( SELECT "public"."alertas".* FROM "public"."alertas" ORDER BY "public"."alertas"."created_at" DESC LIMIT $1 OFFSET $2 ) SELECT $3::bigint AS total_result_set, pg_catalog.count(_postgrest_t) AS page_` |
-| postgres | ~270 | ~1.4M | 5064.14 | `SELECT jobid, runid, status, start_time, end_time, EXTRACT($2 FROM (end_time - start_time))::numeric(10,2) AS seconds, left(return_message, $3) AS return_message FROM (SELECT *, row_number() OVER (PARTITION BY jobid ORDE` |
+| postgres | ~270 | ~1.4M | 5045.79 | `SELECT jobid, runid, status, start_time, end_time, EXTRACT($2 FROM (end_time - start_time))::numeric(10,2) AS seconds, left(return_message, $3) AS return_message FROM (SELECT *, row_number() OVER (PARTITION BY jobid ORDE` |
 | authenticated | ~306k | ~1.3M | 4.39 | `WITH pgrst_source AS ( SELECT "public"."vw_contas_pagar_painel".* FROM "public"."vw_contas_pagar_painel" ORDER BY "public"."vw_contas_pagar_painel"."data_vencimento" ASC LIMIT $1 OFFSET $2 ) SELECT $3::bigint AS total_re` |
 | postgres | ~89.8k | ~1.3M | 14.95 | `SELECT net.http_post( url := $1, headers := jsonb_build_object($2,$3,$4, public.internal_job_secret()), body := jsonb_build_object($5,$6,$7, now()) ) AS request_id` |
 | postgres | ~89.8k | ~1.3M | 14.09 | `SELECT net.http_post( url := $1, headers := jsonb_build_object($2,$3,$4, public.internal_job_secret()), body := jsonb_build_object($5,$6,$7,$8) ) AS request_id` |
-| postgres | ~6.7k | ~1M | 153.14 | `SELECT public.capture_slow_queries()` |
+| postgres | ~6.7k | ~1M | 153.16 | `SELECT public.capture_slow_queries()` |
 | authenticator | ~2.6k | ~793.1k | 309.44 | `SELECT name FROM pg_timezone_names` |
 | authenticated | ~113.9k | ~687.7k | 6.04 | `WITH pgrst_source AS ( SELECT "public"."contas_pagar".* FROM "public"."contas_pagar" LIMIT $1 OFFSET $2 ) , pgrst_source_count AS (SELECT $3 FROM "public"."contas_pagar") SELECT (SELECT pg_catalog.count(*) FROM pgrst_sou` |
 | authenticated | ~80.2k | ~474.9k | 5.93 | `WITH pgrst_source AS ( SELECT "public"."vw_contas_receber_painel".* FROM "public"."vw_contas_receber_painel" ORDER BY "public"."vw_contas_receber_painel"."data_vencimento" ASC LIMIT $1 OFFSET $2 ) SELECT $3::bigint AS to` |
@@ -335,11 +335,10 @@ _nenhum_
 | usuário | estado | n |
 |---|---|---|
 | authenticator | idle | 2 |
-| pgbouncer | idle | 2 |
+| pgbouncer | idle | 1 |
 | postgres | active | 1 |
 | supabase_admin | idle | 2 |
 | supabase_admin |  | 2 |
-| supabase_storage_admin | idle | 1 |
 
 
 ## Saúde dos serviços
@@ -371,7 +370,7 @@ _nenhum_
       "connected_cluster": 0,
       "db_connected": false,
       "healthy": true,
-      "node": "realtime@2600:1f18:67fc:ac00:4bd3:c840:ffc1:f4d6",
+      "node": "realtime@2600:1f18:67fc:ac00:8426:34a9:e6f6:1269",
       "region": "us-east-1",
       "replication_connected": false
     },
