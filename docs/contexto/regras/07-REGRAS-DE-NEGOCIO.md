@@ -1,6 +1,6 @@
 # 07 · REGRAS DE NEGÓCIO
 
-> Gerado automaticamente por AI Context Sync v1.3.2 · commit `62bd983293` · branch `main` · 2026-11-11 15:54 UTC
+> Gerado automaticamente por AI Context Sync v1.3.2 · commit `e361b018aa` · branch `main` · 2026-11-11 16:26 UTC
 > Não edite à mão — regras humanas vão em `manual/`.
 
 ## A. Regras escritas por humanos (`manual/` — prioridade máxima, nunca sobrescrito)
@@ -5555,6 +5555,7 @@ Erros lançados por funções SQL (`RAISE EXCEPTION` = regra de negócio no banc
 | `asaas` | `supabase/migrations/20260913170000_boletos_add_asaas_cols.sql` |
 | `asaas` | `supabase/migrations/20260924220000_asaas_payment_links_empresa.sql` |
 | `asaas` | `supabase/migrations/20261101120600_boletos_asaas_defaults.sql` |
+| `asaas` | `supabase/migrations/20261102000000_registrar_grupo_b_rls_cross_tenant.sql` |
 
 ## N. Regras citadas em comentários do código
 

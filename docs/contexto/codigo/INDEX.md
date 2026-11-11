@@ -1,7 +1,7 @@
 # Contexto do projeto para agentes de IA
 
 GERADO AUTOMATICAMENTE por scripts/ai-context/gerar.mjs — não editar à mão; será sobrescrito.
-Publicado pelo workflow .github/workflows/contexto.yml em docs/contexto/codigo/ da branch gerada `contexto`. Índice único em docs/contexto/00-INDEX.md. Ler: git fetch origin contexto && git show origin/contexto:docs/contexto/00-INDEX.md Gere local com `node scripts/ai-context/gerar.mjs`. Commit-base: `62bd98329342bcc68e70a061a66d157120ae3cac` (2026-11-11T13:32:32Z).
+Publicado pelo workflow .github/workflows/contexto.yml em docs/contexto/codigo/ da branch gerada `contexto`. Índice único em docs/contexto/00-INDEX.md. Ler: git fetch origin contexto && git show origin/contexto:docs/contexto/00-INDEX.md Gere local com `node scripts/ai-context/gerar.mjs`. Commit-base: `e361b018aafd8c77ab0949b1209b7b0171d92660` (2026-11-11T16:06:30Z).
 
 ## Como usar (leia antes de planejar ou executar qualquer tarefa)
 1. **Tela/rota/menu** → `rotas.json` (url/vista/menu → arquivo → hooks → tabelas → edges; `rotas_http_backend` para APIs) e `modulos.json` (módulo inteiro + dependências entre módulos).
@@ -14,7 +14,7 @@ Publicado pelo workflow .github/workflows/contexto.yml em docs/contexto/codigo/ 
 Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua tarefa; não carregue tudo.
 
 ## Stack
-- linguagens: TypeScript (2104), SQL (1016), Markdown (188), JavaScript (57), JSON (37), Python (28), YAML (25), Shell (24)
+- linguagens: TypeScript (2104), SQL (1017), Markdown (189), JavaScript (57), JSON (37), Python (28), YAML (25), Shell (24)
 - linguagem_principal: TypeScript
 - framework: React
 - backend_http: n/d
@@ -34,7 +34,7 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 ## Números
 | item | qtd |
 |---|---|
-| arquivos_total | 3523 |
+| arquivos_total | 3525 |
 | arquivos_codigo | 2187 |
 | linhas_codigo | 410281 |
 | rotas | 128 |
@@ -46,12 +46,12 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 | hooks | 265 |
 | edge_functions | 106 |
 | tabelas | 314 |
-| migrations | 946 |
+| migrations | 947 |
 | cron_jobs | 21 |
 | testes | 372 |
 | workflows | 19 |
 | scripts | 104 |
-| docs_md | 188 |
+| docs_md | 189 |
 
 ## Onde ficam as coisas
 - telas: src/pages (125)
@@ -442,21 +442,21 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 - não gerado neste run. Neste repo NÃO execute `graphify update .` (proibido por AGENTS.md, seção Graphify). O fluxo autorizado é o piloto: `npm run graphify:pilot`, ou `npm run graphify:analyze -- --profile NOME` (revise antes com `npm run graphify:inventory -- --profile NOME`). Resultados privados em graphify-out/piloto-*/; consulte apenas grafo cuja evidencia.json tenha piloto validado e hashes compatíveis com os arquivos atuais.
 
 ## Hotspots (arquivos mais alterados, 90 dias)
-- package.json (36)
+- package.json (35)
 - bun.lock (28)
 - .github/workflows/ci.yml (22)
-- supabase/functions/asaas-proxy/index.ts (16)
+- supabase/functions/asaas-proxy/index.ts (15)
 - supabase/config.toml (14)
 - supabase/functions/mcp-query/index.ts (13)
 - .github/workflows/deno-tests.yml (12)
 - e2e/auth/admin-rbac.e2e.ts (12)
 - src/hooks/useConciliacaoPage.ts (12)
-- supabase/functions/bitrix24-webhook/index.ts (12)
 - PENDENCIAS.md (11)
 - RELATORIO_CI.md (11)
 - env.manifest.json (11)
+- supabase/functions/bitrix24-webhook/index.ts (11)
 - src/pages/Auth.hooks.ts (10)
-- supabase/functions/bling-proxy/index.ts (10)
+- .github/workflows/supabase-linter.yml (9)
 
 ## Workflows
 - `actionlint.yml` — Workflow Linter (actionlint + zizmor) (pull_request, push, workflow_dispatch)
@@ -606,6 +606,7 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 - CHANGELOG topo: [Unreleased]
 
 ## Últimos commits
+- 2026-11-11 `e361b01` chore(migrations): [STEP 22] reconciliar migrations não rastreadas (#238)
 - 2026-11-11 `62bd983` chore(db): [STEP 17] dropar 404 índices idle (idx_scan=0) (#243)
 - 2026-11-10 `8f43c3f` chore: [STEP 43] espacar cron jobs diagnosticos de alta frequencia (#234)
 - 2026-11-10 `4e177c3` chore(ddl): steps 12-16+19+21+23 — DDL banco produção (#235)
@@ -620,7 +621,6 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 - 2026-11-09 `e07fec7` chore: documentação final sessão merge-prs (prs.json + RELATORIO + dossiers)
 - 2026-11-09 `529236d` fix: compatibilidade TypeScript com Zod v4 (supersede #211)
 - 2026-11-09 `8ec6561` infra: bloqueia wipe de AGENTS.md e docs/agentes por sessão paralela (#263)
-- 2026-11-09 `34efae1` chore: atualiza prs.json — adiciona #283-#288, 48 PRs classificadas
 
 ## Arquivos deste diretório
 - `docs/contexto/codigo/rotas.json`

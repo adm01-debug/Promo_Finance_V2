@@ -2,11 +2,16 @@
  "aviso": "GERADO AUTOMATICAMENTE por scripts/ai-context/gerar.mjs — não editar à mão; será sobrescrito.",
  "format_version": 2,
  "git": {
-  "commit": "62bd98329342bcc68e70a061a66d157120ae3cac",
+  "commit": "e361b018aafd8c77ab0949b1209b7b0171d92660",
   "branch": "main",
-  "data_commit": "2026-11-11T13:32:32Z",
+  "data_commit": "2026-11-11T16:06:30Z",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
   "ultimos_commits": [
+   {
+    "sha": "e361b01",
+    "data": "2026-11-11",
+    "assunto": "chore(migrations): [STEP 22] reconciliar migrations não rastreadas (#238)"
+   },
    {
     "sha": "62bd983",
     "data": "2026-11-11",
@@ -126,14 +131,9 @@
     "sha": "8eef9b0",
     "data": "2026-11-09",
     "assunto": "fix: sanitizar fixture deploy-log-all para remover token real (supersede #253)"
-   },
-   {
-    "sha": "039e16d",
-    "data": "2026-11-09",
-    "assunto": "chore: dossiês completos por PR + relatório final sessão merge-prs (#280)"
    }
   ],
-  "arquivos_mudados_7d": 312,
+  "arquivos_mudados_7d": 315,
   "pastas_mais_mudadas_30d": [
    {
     "pasta": "supabase/functions/_shared",
@@ -172,12 +172,12 @@
     "mudancas": 7
    },
    {
-    "pasta": ".gitignore",
+    "pasta": ".github/workflows/prod-migrate.yml",
     "mudancas": 5
    },
    {
-    "pasta": ".github/workflows/prod-migrate.yml",
-    "mudancas": 4
+    "pasta": ".gitignore",
+    "mudancas": 5
    },
    {
     "pasta": ".github/workflows/supabase-linter.yml",
@@ -199,7 +199,7 @@
   "arquivos_mais_mudados_90d": [
    {
     "arquivo": "package.json",
-    "mudancas": 36
+    "mudancas": 35
    },
    {
     "arquivo": "bun.lock",
@@ -211,7 +211,7 @@
    },
    {
     "arquivo": "supabase/functions/asaas-proxy/index.ts",
-    "mudancas": 16
+    "mudancas": 15
    },
    {
     "arquivo": "supabase/config.toml",
@@ -234,10 +234,6 @@
     "mudancas": 12
    },
    {
-    "arquivo": "supabase/functions/bitrix24-webhook/index.ts",
-    "mudancas": 12
-   },
-   {
     "arquivo": "PENDENCIAS.md",
     "mudancas": 11
    },
@@ -250,27 +246,11 @@
     "mudancas": 11
    },
    {
+    "arquivo": "supabase/functions/bitrix24-webhook/index.ts",
+    "mudancas": 11
+   },
+   {
     "arquivo": "src/pages/Auth.hooks.ts",
-    "mudancas": 10
-   },
-   {
-    "arquivo": "supabase/functions/bling-proxy/index.ts",
-    "mudancas": 10
-   },
-   {
-    "arquivo": "supabase/functions/enviar-convite-organizacao/index.ts",
-    "mudancas": 10
-   },
-   {
-    "arquivo": "supabase/functions/gerar-pacote-evidencias/index.ts",
-    "mudancas": 10
-   },
-   {
-    "arquivo": "supabase/functions/n8n-callback/index.ts",
-    "mudancas": 10
-   },
-   {
-    "arquivo": "supabase/functions/whatsapp-webhook/index.ts",
     "mudancas": 10
    },
    {
@@ -282,26 +262,46 @@
     "mudancas": 9
    },
    {
-    "arquivo": "supabase/functions/bling-webhook/index.ts",
+    "arquivo": "supabase/functions/bling-proxy/index.ts",
     "mudancas": 9
    },
    {
-    "arquivo": "supabase/functions/n8n-dispatch/index.ts",
+    "arquivo": "supabase/functions/enviar-convite-organizacao/index.ts",
     "mudancas": 9
    },
    {
-    "arquivo": "supabase/functions/sync-profile-to-bitrix/index.ts",
+    "arquivo": "supabase/functions/gerar-pacote-evidencias/index.ts",
+    "mudancas": 9
+   },
+   {
+    "arquivo": "supabase/functions/n8n-callback/index.ts",
+    "mudancas": 9
+   },
+   {
+    "arquivo": "supabase/functions/whatsapp-webhook/index.ts",
     "mudancas": 9
    },
    {
     "arquivo": ".github/workflows/functions-deploy.yml",
+    "mudancas": 8
+   },
+   {
+    "arquivo": "analise-prs/progresso.json",
+    "mudancas": 8
+   },
+   {
+    "arquivo": "scripts/generate-env-manifest.mjs",
+    "mudancas": 8
+   },
+   {
+    "arquivo": "src/hooks/useBoletos.ts",
     "mudancas": 8
    }
   ],
   "autores_30d": [
    {
     "autor": "adm01-debug",
-    "commits": 69
+    "commits": 70
    },
    {
     "autor": "devin-ai-integration[bot]",
@@ -318,7 +318,7 @@
   ]
  },
  "contagens": {
-  "arquivos_total": 3523,
+  "arquivos_total": 3525,
   "arquivos_codigo": 2187,
   "linhas_codigo": 410281,
   "rotas": 128,
@@ -330,12 +330,12 @@
   "hooks": 265,
   "edge_functions": 106,
   "tabelas": 314,
-  "migrations": 946,
+  "migrations": 947,
   "cron_jobs": 21,
   "testes": 372,
   "workflows": 19,
   "scripts": 104,
-  "docs_md": 188
+  "docs_md": 189
  },
  "por_pasta": {
   "e2e/alertas-preditivos.e2e.ts": {
