@@ -7,7 +7,7 @@
    "SQL (1069)",
    "Markdown (189)",
    "JavaScript (68)",
-   "Python (44)",
+   "Python (45)",
    "JSON (37)",
    "Shell (26)",
    "YAML (25)"
@@ -1336,6 +1336,8 @@
    "DELETE_TEST_USERS",
    "GEN_TYPES",
    "HOME",
+   "INVENTARIO_PG_PORTA",
+   "INVENTARIO_PG_USUARIO",
    "PATH",
    "PF_TEST_PG_URL",
    "PGDUMP",
@@ -1475,6 +1477,10 @@
     "arquivos": 4
    },
    {
+    "host": "x.supabase.co",
+    "arquivos": 4
+   },
+   {
     "host": "ipapi.co",
     "arquivos": 3
    },
@@ -1484,10 +1490,6 @@
    },
    {
     "host": "www1.nfe.fazenda.gov.br",
-    "arquivos": 3
-   },
-   {
-    "host": "x.supabase.co",
     "arquivos": 3
    },
    {
@@ -1848,6 +1850,10 @@
    },
    {
     "host": "www.santander.com.br",
+    "arquivos": 1
+   },
+   {
+    "host": "x.com",
     "arquivos": 1
    }
   ],

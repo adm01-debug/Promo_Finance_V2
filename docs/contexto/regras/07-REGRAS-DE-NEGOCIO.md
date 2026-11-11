@@ -1,6 +1,6 @@
 # 07 · REGRAS DE NEGÓCIO
 
-> Gerado automaticamente por AI Context Sync v1.3.2 · commit `f0bad7436f` · branch `main` · 2026-11-11 18:10 UTC
+> Gerado automaticamente por AI Context Sync v1.3.2 · commit `67613f40ea` · branch `main` · 2026-11-11 18:50 UTC
 > Não edite à mão — regras humanas vão em `manual/`.
 
 ## A. Regras escritas por humanos (`manual/` — prioridade máxima, nunca sobrescrito)
@@ -4728,8 +4728,9 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | ${metodo} ${caminho} -> falha de rede (${erro.name}: ${erro.message}) | `scripts/ci/actions-kpi.mjs` |
 | fetch failed | `scripts/ci/actions-kpi.unit.mjs` |
 | rede não pode ser tocada | `scripts/ci/audit-env.unit.mjs` |
+| github-settings-baseline.json sem branch_protection_main.required_status_checks (lista de nomes) | `scripts/ci/fila-merge.mjs` |
 | rede caiu | `scripts/ci/fila-merge.unit.mjs` |
-| GitHub API ${method} ${path} → ${res.status}: ${text} | `scripts/ci/github-settings-guard.mjs` |
+| contexts ilegiveis ou vazios: restauracao abortada para nao apagar os checks obrigatorios | `scripts/ci/github-settings-guard.mjs` |
 | Glob com sintaxe não suportada por este script: ${glob} | `scripts/ci/listar-specs-quarentena.ts` |
 | config quebrado | `scripts/ci/listar-specs-quarentena.unit.mjs` |
 | bloco  | `scripts/ci/render-workflow-docs.mjs` |
@@ -4801,18 +4802,28 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | Nenhuma execução completa para o perfil: p | `scripts/graphify/test_benchmark.py` |
 | falha sintética de cópia | `scripts/graphify/test_run.py` |
 | canal indisponível | `scripts/healthcheck/03_realtime.unit.mjs` |
-| --entrada exige o caminho do arquivo com a resposta do banco.sql | `scripts/inventario/gerar-banco.mjs` |
-| Management API ${caminho} respondeu HTTP ${res.status} | `scripts/inventario/gerar-banco.mjs` |
+| ${a} exige o caminho de um arquivo | `scripts/inventario/gerar-banco.mjs` |
+| --functions so vale junto com --entrada | `scripts/inventario/gerar-banco.mjs` |
 | SUPABASE_PROJECT_REF=${ref} nao e o banco oficial (${PROJETO_OFICIAL}). | `scripts/inventario/gerar-banco.mjs` |
+| a lista de edge functions publicadas nao e uma lista de objetos com  | `scripts/inventario/gerar-banco.mjs` |
 | a resposta nao parece ser do banco oficial: ${comuns} tabelas em comum com types.ts  | `scripts/inventario/gerar-banco.mjs` |
 | a saida tem algo com cara de credencial; nada foi gravado. Revise banco.sql. | `scripts/inventario/gerar-banco.mjs` |
+| argumento desconhecido: ${a}\n${USO} | `scripts/inventario/gerar-banco.mjs` |
+| entrada com  | `scripts/inventario/gerar-banco.mjs` |
+| entrada com tabela sem  | `scripts/inventario/gerar-banco.mjs` |
 | entrada sem as chaves: ${faltando.join( | `scripts/inventario/gerar-banco.mjs` |
 | entrada sem tabelas | `scripts/inventario/gerar-banco.mjs` |
 | format_version ${dado.format_version} desconhecido (esperado 1) | `scripts/inventario/gerar-banco.mjs` |
 | sem --entrada e sem SUPABASE_ACCESS_TOKEN: nada para ler (veja o cabecalho do script). | `scripts/inventario/gerar-banco.mjs` |
 | types.ts sem o bloco  | `scripts/inventario/gerar-banco.mjs` |
+| nenhuma edge function em supabase/functions/*/index.ts: inventario vazio recusado. | `scripts/inventario/gerar-repo.mjs` |
 | ripgrep (rg) falhou com exit ${status}; o inventario nao foi gerado. | `scripts/inventario/gerar-repo.mjs` |
 | ripgrep (rg) nao encontrado; o inventario nao pode ser gerado com seguranca. | `scripts/inventario/gerar-repo.mjs` |
+| ${ARQUIVO_ROTAS} sem bloco <Routes>...</Routes>: o roteador mudou de lugar e o inventario nao tem o que ler. | `scripts/inventario/gerar-rotas.mjs` |
+| ${ARQUIVO_ROTAS} tem <Routes> mas nenhuma <Route path>: inventario vazio recusado. | `scripts/inventario/gerar-rotas.mjs` |
+| menu lateral sem nenhum href (${ARQUIVOS_MENU.join( | `scripts/inventario/gerar-rotas.mjs` |
+| INVENTARIO_REF invalida: ${ref} | `scripts/inventario/mudou-conteudo.mjs` |
+| arquivo(s) gerado(s) ausente(s): ${ausentes.join( | `scripts/inventario/mudou-conteudo.mjs` |
 | failed | `scripts/maintenance/lib.mjs` |
 | missing_dependencies | `scripts/maintenance/lib.mjs` |
 | skipped_busy | `scripts/maintenance/lib.mjs` |
@@ -5006,18 +5017,7 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | ; import { Badge } from  | `src/components/contabilidade/import-lancamentos-csv/PreviewStep.tsx` |
 | ; import { Badge } from  | `src/components/contabilidade/import-lancamentos-csv/ResultStep.tsx` |
 | ; import { downloadLancamentosCsvTemplate } from  | `src/components/contabilidade/import-lancamentos-csv/UploadStep.tsx` |
-| Falha ao copiar | `src/components/contabilidade/sped-contabil/useSpedContabilState.ts` |
-| Falha ao gerar link | `src/components/contabilidade/sped-contabil/useSpedContabilState.ts` |
-| Falha: ${e instanceof Error ? e.message :  | `src/components/contabilidade/sped-contabil/useSpedContabilState.ts` |
-| ; import { Badge } from  | `src/components/contabilidade/sped-ecf-historico/AlertasResumo.tsx` |
-| ; import { Badge } from  | `src/components/contabilidade/sped-ecf-wizard/Step1PeriodoEcd.tsx` |
-| ; import { Badge } from  | `src/components/contabilidade/sped-ecf-wizard/Step2Validacoes.tsx` |
-| Falha ao exportar checklist | `src/components/contabilidade/sped-ecf-wizard/Step2Validacoes.tsx` |
-| ; import { Button } from  | `src/components/contabilidade/sped-ecf-wizard/Step3Download.tsx` |
-| ; import { Badge } from  | `src/components/contabilidade/sped-ecf-wizard/Step3DownloadParts.tsx` |
-| Seção não encontrada | `src/components/contabilidade/sped-ecf-wizard/crosscheck.ts` |
-| Falha: ${e instanceof Error ? e.message :  | `src/components/contabilidade/sped-ecf-wizard/useSpedEcfWizardState.ts` |
-| … +758 linhas — lista completa em `context.json` | |
+| … +769 linhas — lista completa em `context.json` | |
 
 ## J. Controle de acesso no código (checagens de perfil/permissão)
 

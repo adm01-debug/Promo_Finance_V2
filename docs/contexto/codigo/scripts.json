@@ -55,7 +55,7 @@
   {
    "arquivo": "scripts/automation.mjs",
    "descricao": null,
-   "linhas": 994,
+   "linhas": 1198,
    "env": [
     "REPO_AUTOMATION_CHAINING",
     "REPO_AUTOMATION_STATE_FILE"
@@ -159,7 +159,7 @@
   {
    "arquivo": "scripts/ci/fila-merge.mjs",
    "descricao": "Fila de atualização de branch serial para as PRs abertas contra `main`. Por que existe: com `strict=true` na branch protection (8 required status checks),",
-   "linhas": 204,
+   "linhas": 282,
    "env": [
     "GITHUB_OUTPUT",
     "GITHUB_REPOSITORY",
@@ -185,9 +185,10 @@
   {
    "arquivo": "scripts/ci/github-settings-guard.mjs",
    "descricao": "* Confere o perimetro do GitHub contra o baseline versionado",
-   "linhas": 636,
+   "linhas": 826,
    "env": [
     "ADMIN_READ_TOKEN",
+    "GITHUB_API_URL",
     "GITHUB_REPOSITORY",
     "GITHUB_RUN_ID",
     "GITHUB_TOKEN",
@@ -442,7 +443,7 @@
   {
    "arquivo": "scripts/graphify-local.mjs",
    "descricao": null,
-   "linhas": 1139,
+   "linhas": 1229,
    "env": [],
    "npm_scripts": [],
    "workflows": [],
@@ -753,7 +754,7 @@
   {
    "arquivo": "scripts/inventario/banco.sql",
    "descricao": null,
-   "linhas": 148,
+   "linhas": 152,
    "env": [],
    "npm_scripts": [],
    "workflows": [],
@@ -762,7 +763,7 @@
   {
    "arquivo": "scripts/inventario/gerar-banco.mjs",
    "descricao": "* Inventario do banco oficial -> inventario/estado/banco.json (fonte de consulta dos agentes).",
-   "linhas": 289,
+   "linhas": 378,
    "env": [
     "INVENTARIO_PERMITIR_OUTRO_PROJETO",
     "SUPABASE_ACCESS_TOKEN",
@@ -778,7 +779,7 @@
   {
    "arquivo": "scripts/inventario/gerar-repo.mjs",
    "descricao": "Inventario gerado do lado do repositorio (sem acesso ao banco):  - edge functions: linhas, segredos lidos (Deno.env.get) e quem as invoca (src, migrations,",
-   "linhas": 82,
+   "linhas": 142,
    "env": [],
    "npm_scripts": [],
    "workflows": [
@@ -789,7 +790,7 @@
   {
    "arquivo": "scripts/inventario/gerar-rotas.mjs",
    "descricao": "* Inventario das rotas do front -> inventario/estado/rotas.json (fonte de consulta dos agentes).",
-   "linhas": 299,
+   "linhas": 536,
    "env": [],
    "npm_scripts": [],
    "workflows": [
@@ -800,10 +801,8 @@
   {
    "arquivo": "scripts/inventario/mudou-conteudo.mjs",
    "descricao": "* O inventario mudou de verdade? Compara cada arquivo de inventario/estado/ com a versao de uma ref",
-   "linhas": 80,
-   "env": [
-    "INVENTARIO_REF"
-   ],
+   "linhas": 104,
+   "env": [],
    "npm_scripts": [],
    "workflows": [
     "inventario-estado.yml"
@@ -813,7 +812,7 @@
   {
    "arquivo": "scripts/maintenance/lib.mjs",
    "descricao": null,
-   "linhas": 797,
+   "linhas": 811,
    "env": [],
    "npm_scripts": [],
    "workflows": [],
@@ -822,7 +821,7 @@
   {
    "arquivo": "scripts/maintenance/run.mjs",
    "descricao": null,
-   "linhas": 728,
+   "linhas": 802,
    "env": [
     "XDG_STATE_HOME"
    ],
@@ -832,8 +831,8 @@
   },
   {
    "arquivo": "scripts/maintenance/run.sh",
-   "descricao": null,
-   "linhas": 15,
+   "descricao": "Falhas do próprio wrapper saem em JSON com exit 1: 2 é reservado a missing_dependencies.",
+   "linhas": 22,
    "env": [],
    "npm_scripts": [
     "maintenance:doctor",
@@ -846,7 +845,7 @@
   {
    "arquivo": "scripts/maintenance/typecheck.mjs",
    "descricao": null,
-   "linhas": 81,
+   "linhas": 97,
    "env": [],
    "npm_scripts": [],
    "workflows": [],

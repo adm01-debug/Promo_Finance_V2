@@ -20,6 +20,9 @@
   "scripts/gerar-grafo-arquitetura.ts": [
    "src/lib/arquitetura/analisador-imports.ts"
   ],
+  "scripts/inventario/gerar-banco.mjs": [
+   "scripts/inventario/gerar-rotas.mjs"
+  ],
   "scripts/maintenance/run.mjs": [
    "scripts/maintenance/lib.mjs"
   ],

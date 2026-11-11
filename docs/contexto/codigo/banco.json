@@ -2755,12 +2755,22 @@
  ],
  "buckets": [
   {
+   "nome": "anexos",
+   "criado_em_sql": false,
+   "usado_em": 1
+  },
+  {
    "nome": "bucket",
    "criado_em_sql": false,
    "usado_em": 2
   },
   {
    "nome": "bucket-multilinha",
+   "criado_em_sql": false,
+   "usado_em": 1
+  },
+  {
+   "nome": "empresas",
    "criado_em_sql": false,
    "usado_em": 1
   },

@@ -1,15 +1,15 @@
 {
  "meta": {
-  "sha": "f0bad7436f3a53d9e944378a0b665706b0caf8db",
+  "sha": "67613f40eabb49ce03c27ce9470aa5fc0a1220f7",
   "branch": "main",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
-  "generated_at": "2026-11-11 18:10 UTC",
-  "files_total": 3650,
-  "code_files": 3285,
-  "code_lines": 486824
+  "generated_at": "2026-11-11 18:50 UTC",
+  "files_total": 3651,
+  "code_files": 3286,
+  "code_lines": 491200
  },
  "version": "1.3.2",
- "facts_hash": "2454d2680b7e5e45",
+ "facts_hash": "da264542cce7acb0",
  "stack": {
   "frameworks": [
    "React + Vite",
@@ -335,7 +335,7 @@
    ".sql": 1069,
    ".tsx": 993,
    ".mjs": 60,
-   ".py": 44,
+   ".py": 45,
    ".js": 8
   },
   "monorepo_packages": [],
@@ -65817,6 +65817,20 @@
    },
    {
     "path": "*",
+    "component": "NF",
+    "guard": "",
+    "roles": [],
+    "file": "scripts/inventario/inventario.unit.mjs"
+   },
+   {
+    "path": "*",
+    "component": "NotFound",
+    "guard": "",
+    "roles": [],
+    "file": "scripts/inventario/inventario.unit.mjs"
+   },
+   {
+    "path": "*",
     "component": "NotFound",
     "guard": "",
     "roles": [],
@@ -65835,6 +65849,13 @@
     "guard": "",
     "roles": [],
     "file": "scripts/ai-context/cenarios.mjs"
+   },
+   {
+    "path": "/",
+    "component": "Home",
+    "guard": "ProtectedRoute",
+    "roles": [],
+    "file": "scripts/inventario/inventario.unit.mjs"
    },
    {
     "path": "/",
@@ -65884,6 +65905,13 @@
     "guard": "",
     "roles": [],
     "file": "scripts/ai-context/cenarios.mjs"
+   },
+   {
+    "path": "/abs",
+    "component": "Abs",
+    "guard": "",
+    "roles": [],
+    "file": "scripts/inventario/inventario.unit.mjs"
    },
    {
     "path": "/admin",
@@ -66033,6 +66061,13 @@
     "file": "src/App.tsx"
    },
    {
+    "path": "/antiga",
+    "component": "Navigate",
+    "guard": "",
+    "roles": [],
+    "file": "scripts/inventario/inventario.unit.mjs"
+   },
+   {
     "path": "/app",
     "component": "Shell",
     "guard": "ProtectedRoute",
@@ -66054,11 +66089,25 @@
     "file": "scripts/ai-context/gerar.unit.mjs"
    },
    {
+    "path": "/arrow",
+    "component": "cond",
+    "guard": "",
+    "roles": [],
+    "file": "scripts/inventario/inventario.unit.mjs"
+   },
+   {
     "path": "/asaas",
     "component": "Asaas",
     "guard": "ProtectedRoute",
     "roles": [],
     "file": "src/App.tsx"
+   },
+   {
+    "path": "/aspas-simples",
+    "component": "A",
+    "guard": "",
+    "roles": [],
+    "file": "scripts/inventario/inventario.unit.mjs"
    },
    {
     "path": "/assinatura-digital",
@@ -66222,6 +66271,20 @@
     "file": "src/App.tsx"
    },
    {
+    "path": "/comentada",
+    "component": "X",
+    "guard": "",
+    "roles": [],
+    "file": "scripts/inventario/inventario.unit.mjs"
+   },
+   {
+    "path": "/comentada",
+    "component": "Velha",
+    "guard": "",
+    "roles": [],
+    "file": "scripts/inventario/inventario.unit.mjs"
+   },
+   {
     "path": "/compras",
     "component": "Compras",
     "guard": "ProtectedRoute",
@@ -66306,6 +66369,20 @@
     "file": "scripts/graphify/test_code_references.py"
    },
    {
+    "path": "/contas",
+    "component": "Contas",
+    "guard": "ProtectedRoute",
+    "roles": [],
+    "file": "scripts/inventario/inventario.unit.mjs"
+   },
+   {
+    "path": "/contas",
+    "component": "Home",
+    "guard": "",
+    "roles": [],
+    "file": "scripts/inventario/inventario.unit.mjs"
+   },
+   {
     "path": "/contas-bancarias",
     "component": "ContasBancarias",
     "guard": "ProtectedRoute",
@@ -66376,11 +66453,25 @@
     "file": "src/App.tsx"
    },
    {
+    "path": "/dentro-layout",
+    "component": "L",
+    "guard": "",
+    "roles": [],
+    "file": "scripts/inventario/inventario.unit.mjs"
+   },
+   {
     "path": "/design-system-debug",
     "component": "DesignSystemDebug",
     "guard": "",
     "roles": [],
     "file": "src/App.tsx"
+   },
+   {
+    "path": "/dev",
+    "component": "Dev",
+    "guard": "",
+    "roles": [],
+    "file": "scripts/inventario/inventario.unit.mjs"
    },
    {
     "path": "/empresas",
@@ -66451,6 +66542,20 @@
     "guard": "ProtectedRoute",
     "roles": [],
     "file": "scripts/ai-context/gerar.unit.mjs"
+   },
+   {
+    "path": "/jsx",
+    "component": "",
+    "guard": "",
+    "roles": [],
+    "file": "scripts/inventario/inventario.unit.mjs"
+   },
+   {
+    "path": "/linha",
+    "component": "Y",
+    "guard": "",
+    "roles": [],
+    "file": "scripts/inventario/inventario.unit.mjs"
    },
    {
     "path": "/login",
@@ -66537,6 +66642,20 @@
     "file": "src/App.tsx"
    },
    {
+    "path": "/pai",
+    "component": "Pai",
+    "guard": "",
+    "roles": [],
+    "file": "scripts/inventario/inventario.unit.mjs"
+   },
+   {
+    "path": "/pai",
+    "component": "Home",
+    "guard": "ProtectedRoute",
+    "roles": [],
+    "file": "scripts/inventario/inventario.unit.mjs"
+   },
+   {
     "path": "/painel",
     "component": "Painel",
     "guard": "ProtectedRoute",
@@ -66551,6 +66670,20 @@
     "file": "src/App.tsx"
    },
    {
+    "path": "/real",
+    "component": "",
+    "guard": "",
+    "roles": [],
+    "file": "scripts/inventario/inventario.unit.mjs"
+   },
+   {
+    "path": "/reforma",
+    "component": "Reforma",
+    "guard": "ProtectedRoute",
+    "roles": [],
+    "file": "scripts/inventario/inventario.unit.mjs"
+   },
+   {
     "path": "/reforma-tributaria",
     "component": "ReformaTributaria",
     "guard": "ProtectedRoute",
@@ -66563,6 +66696,13 @@
     "guard": "ProtectedRoute",
     "roles": [],
     "file": "src/App.tsx"
+   },
+   {
+    "path": "/reforma/:tab",
+    "component": "Reforma",
+    "guard": "ProtectedRoute",
+    "roles": [],
+    "file": "scripts/inventario/inventario.unit.mjs"
    },
    {
     "path": "/relatorios",
@@ -66908,6 +67048,13 @@
     "file": "src/App.tsx"
    },
    {
+    "path": "/velha",
+    "component": "",
+    "guard": "",
+    "roles": [],
+    "file": "scripts/inventario/gerar-rotas.mjs"
+   },
+   {
     "path": "/vendedores",
     "component": "Vendedores",
     "guard": "ProtectedRoute",
@@ -66922,6 +67069,27 @@
     "file": "scripts/ai-context/cenarios.mjs"
    },
    {
+    "path": "/x",
+    "component": "A",
+    "guard": "",
+    "roles": [],
+    "file": "scripts/inventario/inventario.unit.mjs"
+   },
+   {
+    "path": ":id",
+    "component": "D",
+    "guard": "",
+    "roles": [],
+    "file": "scripts/inventario/inventario.unit.mjs"
+   },
+   {
+    "path": "\\`/tpl/\\${id",
+    "component": "T",
+    "guard": "",
+    "roles": [],
+    "file": "scripts/inventario/inventario.unit.mjs"
+   },
+   {
     "path": "b",
     "component": "B",
     "guard": "",
@@ -66934,6 +67102,20 @@
     "guard": "",
     "roles": [],
     "file": "scripts/ai-context/gerar.unit.mjs"
+   },
+   {
+    "path": "filho",
+    "component": "F",
+    "guard": "",
+    "roles": [],
+    "file": "scripts/inventario/inventario.unit.mjs"
+   },
+   {
+    "path": "filho",
+    "component": "Detalhe",
+    "guard": "",
+    "roles": [],
+    "file": "scripts/inventario/inventario.unit.mjs"
    },
    {
     "path": "x",
@@ -69089,6 +69271,30 @@
    },
    {
     "guard": "ProtectedRoute",
+    "file": "scripts/inventario/inventario.unit.mjs"
+   },
+   {
+    "guard": "ProtectedRoute",
+    "file": "scripts/inventario/inventario.unit.mjs"
+   },
+   {
+    "guard": "ProtectedRoute",
+    "file": "scripts/inventario/inventario.unit.mjs"
+   },
+   {
+    "guard": "ProtectedRoute",
+    "file": "scripts/inventario/inventario.unit.mjs"
+   },
+   {
+    "guard": "ProtectedRoute",
+    "file": "scripts/inventario/inventario.unit.mjs"
+   },
+   {
+    "guard": "ProtectedRoute",
+    "file": "scripts/inventario/inventario.unit.mjs"
+   },
+   {
+    "guard": "ProtectedRoute",
     "file": "src/App.tsx"
    },
    {
@@ -69768,8 +69974,8 @@
   },
   {
    "module": "scripts",
-   "files": 141,
-   "lines": 44183,
+   "files": 142,
+   "lines": 48559,
    "tables": [
     "9comeca_com_digito",
     "a",
@@ -69782,6 +69988,8 @@
     "b",
     "bucket",
     "c",
+    "comentada",
+    "constructor",
     "contacts",
     "contas",
     "contas_pagar",
@@ -69819,6 +70027,9 @@
     "tabela",
     "tabela_depois",
     "tabela_fantasma",
+    "tabela_morta",
+    "tabela_nova",
+    "tabela_velha",
     "tools_runtime",
     "tx",
     "uploads",
@@ -69827,8 +70038,8 @@
     "webhook_simulation_runs"
    ],
    "exports": [
-    "automation.mjs: parseArgs, validateConfig, execute, appendExclude, removeExclude, main",
-    "graphify-local.mjs: GraphError, run, acquire, validateConfig, fingerprint, validateGraph",
+    "automation.mjs: USAGE, parseArgs, validateConfig, execute, appendExclude, removeExclude",
+    "graphify-local.mjs: secretPath, redact, GraphError, run, acquire, validateConfig",
     "test_check_external_secret_isolation.py: GuardSecretExterno",
     "test_migrate_cron_jobs.py: troca, Base, TestArgumentos, TestDryRun, TestAplicacao, TestInterpolacao",
     "test_migrate_functions.py: Sandbox, Base, TestArgumentosEPreflight, TestOnly, TestLoteCompleto, TestPoliticaJwt",
@@ -69842,7 +70053,7 @@
     "audit-env.ts: Var, Leitura, Estado, Buscar, get, Config",
     "fila-merge.mjs: checksObrigatorios, estadoDoCheck, classificar, decidir, confirmarCandidato, resolverDesconhecidos",
     "gerar-matriz-edge-tabela.mjs: extrairTabelas, montarMatriz, renderizar, main",
-    "github-settings-guard.mjs: assinaturaDe",
+    "github-settings-guard.mjs: assinaturaDe, validarBaseline",
     "listar-excecoes-npm-nativo.py: arquivos_ts, main",
     "render-workflow-docs.mjs: CAMPOS, extrairDocs, extrairNaoEBug, nomeDe, renderizar, main",
     "test_listar_excecoes_npm_nativo.py: Base, Cenarios, RepoReal",
@@ -69910,6 +70121,7 @@
     "src/components",
     "src/config",
     "src/hooks",
+    "src/integrations",
     "src/lib",
     "src/pages",
     "src/routes",
@@ -79236,12 +79448,16 @@
     "msg": "rede não pode ser tocada"
    },
    {
+    "file": "scripts/ci/fila-merge.mjs",
+    "msg": "github-settings-baseline.json sem branch_protection_main.required_status_checks (lista de nomes)"
+   },
+   {
     "file": "scripts/ci/fila-merge.unit.mjs",
     "msg": "rede caiu"
    },
    {
     "file": "scripts/ci/github-settings-guard.mjs",
-    "msg": "GitHub API ${method} ${path} → ${res.status}: ${text}"
+    "msg": "contexts ilegiveis ou vazios: restauracao abortada para nao apagar os checks obrigatorios"
    },
    {
     "file": "scripts/ci/listar-specs-quarentena.ts",
@@ -79529,15 +79745,19 @@
    },
    {
     "file": "scripts/inventario/gerar-banco.mjs",
-    "msg": "--entrada exige o caminho do arquivo com a resposta do banco.sql"
+    "msg": "${a} exige o caminho de um arquivo"
    },
    {
     "file": "scripts/inventario/gerar-banco.mjs",
-    "msg": "Management API ${caminho} respondeu HTTP ${res.status}"
+    "msg": "--functions so vale junto com --entrada"
    },
    {
     "file": "scripts/inventario/gerar-banco.mjs",
     "msg": "SUPABASE_PROJECT_REF=${ref} nao e o banco oficial (${PROJETO_OFICIAL})."
+   },
+   {
+    "file": "scripts/inventario/gerar-banco.mjs",
+    "msg": "a lista de edge functions publicadas nao e uma lista de objetos com "
    },
    {
     "file": "scripts/inventario/gerar-banco.mjs",
@@ -79546,6 +79766,18 @@
    {
     "file": "scripts/inventario/gerar-banco.mjs",
     "msg": "a saida tem algo com cara de credencial; nada foi gravado. Revise banco.sql."
+   },
+   {
+    "file": "scripts/inventario/gerar-banco.mjs",
+    "msg": "argumento desconhecido: ${a}\\n${USO}"
+   },
+   {
+    "file": "scripts/inventario/gerar-banco.mjs",
+    "msg": "entrada com "
+   },
+   {
+    "file": "scripts/inventario/gerar-banco.mjs",
+    "msg": "entrada com tabela sem "
    },
    {
     "file": "scripts/inventario/gerar-banco.mjs",
@@ -79569,11 +79801,35 @@
    },
    {
     "file": "scripts/inventario/gerar-repo.mjs",
+    "msg": "nenhuma edge function em supabase/functions/*/index.ts: inventario vazio recusado."
+   },
+   {
+    "file": "scripts/inventario/gerar-repo.mjs",
     "msg": "ripgrep (rg) falhou com exit ${status}; o inventario nao foi gerado."
    },
    {
     "file": "scripts/inventario/gerar-repo.mjs",
     "msg": "ripgrep (rg) nao encontrado; o inventario nao pode ser gerado com seguranca."
+   },
+   {
+    "file": "scripts/inventario/gerar-rotas.mjs",
+    "msg": "${ARQUIVO_ROTAS} sem bloco <Routes>...</Routes>: o roteador mudou de lugar e o inventario nao tem o que ler."
+   },
+   {
+    "file": "scripts/inventario/gerar-rotas.mjs",
+    "msg": "${ARQUIVO_ROTAS} tem <Routes> mas nenhuma <Route path>: inventario vazio recusado."
+   },
+   {
+    "file": "scripts/inventario/gerar-rotas.mjs",
+    "msg": "menu lateral sem nenhum href (${ARQUIVOS_MENU.join("
+   },
+   {
+    "file": "scripts/inventario/mudou-conteudo.mjs",
+    "msg": "INVENTARIO_REF invalida: ${ref}"
+   },
+   {
+    "file": "scripts/inventario/mudou-conteudo.mjs",
+    "msg": "arquivo(s) gerado(s) ausente(s): ${ausentes.join("
    },
    {
     "file": "scripts/maintenance/lib.mjs",
@@ -160437,6 +160693,7 @@
    "scripts/generate-env-manifest.mjs",
    "scripts/generate-env-manifest.unit.mjs",
    "scripts/generate-simulation-report.ts",
+   "scripts/graphify-local.unit.mjs",
    "scripts/graphify/edge_inventory.py",
    "scripts/graphify/test_edge_inventory.py",
    "scripts/graphify/test_run.py",
@@ -168762,6 +169019,30 @@
    },
    {
     "guard": "ProtectedRoute",
+    "file": "scripts/inventario/inventario.unit.mjs"
+   },
+   {
+    "guard": "ProtectedRoute",
+    "file": "scripts/inventario/inventario.unit.mjs"
+   },
+   {
+    "guard": "ProtectedRoute",
+    "file": "scripts/inventario/inventario.unit.mjs"
+   },
+   {
+    "guard": "ProtectedRoute",
+    "file": "scripts/inventario/inventario.unit.mjs"
+   },
+   {
+    "guard": "ProtectedRoute",
+    "file": "scripts/inventario/inventario.unit.mjs"
+   },
+   {
+    "guard": "ProtectedRoute",
+    "file": "scripts/inventario/inventario.unit.mjs"
+   },
+   {
+    "guard": "ProtectedRoute",
     "file": "src/App.tsx"
    },
    {
@@ -169240,6 +169521,13 @@
   "protected_routes": [
    {
     "path": "/",
+    "component": "Home",
+    "guard": "ProtectedRoute",
+    "roles": [],
+    "file": "scripts/inventario/inventario.unit.mjs"
+   },
+   {
+    "path": "/",
     "component": "Index",
     "guard": "ProtectedRoute",
     "roles": [],
@@ -169561,6 +169849,13 @@
     "file": "src/App.tsx"
    },
    {
+    "path": "/contas",
+    "component": "Contas",
+    "guard": "ProtectedRoute",
+    "roles": [],
+    "file": "scripts/inventario/inventario.unit.mjs"
+   },
+   {
     "path": "/contas-bancarias",
     "component": "ContasBancarias",
     "guard": "ProtectedRoute",
@@ -169743,6 +170038,13 @@
     "file": "src/App.tsx"
    },
    {
+    "path": "/pai",
+    "component": "Home",
+    "guard": "ProtectedRoute",
+    "roles": [],
+    "file": "scripts/inventario/inventario.unit.mjs"
+   },
+   {
     "path": "/painel",
     "component": "Painel",
     "guard": "ProtectedRoute",
@@ -169757,6 +170059,13 @@
     "file": "src/App.tsx"
    },
    {
+    "path": "/reforma",
+    "component": "Reforma",
+    "guard": "ProtectedRoute",
+    "roles": [],
+    "file": "scripts/inventario/inventario.unit.mjs"
+   },
+   {
     "path": "/reforma-tributaria",
     "component": "ReformaTributaria",
     "guard": "ProtectedRoute",
@@ -169769,6 +170078,13 @@
     "guard": "ProtectedRoute",
     "roles": [],
     "file": "src/App.tsx"
+   },
+   {
+    "path": "/reforma/:tab",
+    "component": "Reforma",
+    "guard": "ProtectedRoute",
+    "roles": [],
+    "file": "scripts/inventario/inventario.unit.mjs"
    },
    {
     "path": "/relatorios",
@@ -174539,8 +174855,9 @@
   },
   "scripts/automation.mjs": {
    "path": "scripts/automation.mjs",
-   "lines": 995,
+   "lines": 1199,
    "exports": [
+    "const USAGE",
     "function parseArgs",
     "function validateConfig",
     "function execute",
@@ -174553,6 +174870,7 @@
     "REPO_AUTOMATION_STATE_FILE"
    ],
    "rule_comments": [
+    "SIGHUP: terminal fechado não pode deixar o grupo filho (detached) órfão e rodando.",
     "Não trunque: um append concorrente deve sobreviver à reversão.",
     "Remove somente os arquivos conhecidos criados por esta instalação."
    ],
@@ -174571,7 +174889,7 @@
   },
   "scripts/automation.unit.mjs": {
    "path": "scripts/automation.unit.mjs",
-   "lines": 603,
+   "lines": 917,
    "env": [
     "FIXTURE_GRAPH_EXIT"
    ],
@@ -174579,6 +174897,7 @@
     "falha fixture"
    ],
    "temporal": [
+    "const r = await execute(['sh','-c','echo $$ > ' + ${JSON.stringify(pidFile)} + '; exec sleep 30'], { timeout: 20000 });",
     "timeout: 15000,",
     "{ timeout: 100, capture: true }"
    ]
@@ -174717,8 +175036,10 @@
   },
   "scripts/graphify-local.mjs": {
    "path": "scripts/graphify-local.mjs",
-   "lines": 1140,
+   "lines": 1230,
    "exports": [
+    "const secretPath",
+    "const redact",
     "class GraphError",
     "function run",
     "function acquire",
@@ -174731,7 +175052,7 @@
     "function acquireGlobal"
    ],
    "rule_comments": [
-    "1024 * 1024) fail('Arquivo de código excede o limite de512MB');"
+    "1024 * 1024) fail('Arquivo de código excede o limite de 512MB');"
    ],
    "doc": "!/usr/bin/env node",
    "calc_fns": [
@@ -174743,7 +175064,7 @@
     {
      "name": "validateGraph",
      "params": "file, partial = false",
-     "body": "const descriptor = await open( file, constants.O_RDONLY | constants.O_NOFOLLOW | constants.O_NONBLOCK ); try { const info = await descriptor.stat({ bigint: true }); if (!info.isFile() || info.size > 512n * 1024n * 1024n) fail('Artefato do grafo não é arquivo regular ou excede512MB'); const bytes = await descriptor.readFile(), after = await descriptor.stat({ bigint: true }); if ( BigInt(bytes.length) !== info.size || after.size !== info.size || after.mtimeNs !== info.mtimeNs || after.ctimeNs !== …"
+     "body": "const descriptor = await open( file, constants.O_RDONLY | constants.O_NOFOLLOW | constants.O_NONBLOCK ); try { const info = await descriptor.stat({ bigint: true }); if (!info.isFile() || info.size > 512n * 1024n * 1024n) fail('Artefato do grafo não é arquivo regular ou excede 512MB'); const bytes = await descriptor.readFile(), after = await descriptor.stat({ bigint: true }); if ( BigInt(bytes.length) !== info.size || after.size !== info.size || after.mtimeNs !== info.mtimeNs || after.ctimeNs !== …"
     },
     {
      "name": "generate",
@@ -174758,12 +175079,17 @@
   },
   "scripts/graphify-local.unit.mjs": {
    "path": "scripts/graphify-local.unit.mjs",
-   "lines": 463,
+   "lines": 922,
    "env": [
     "GRAPHIFY_FIXTURE_",
     "GRAPHIFY_FIXTURE_SECRET",
+    "HOME",
     "PATH"
-   ]
+   ],
+   "rule_comments": [
+    "metadado alterado DEPOIS da extração inicial: createdAt inválido não pode desligar essa checagem"
+   ],
+   "uses_service_role": true
   },
   "scripts/mcp-phd-suite.mjs": {
    "path": "scripts/mcp-phd-suite.mjs",
@@ -175839,7 +176165,7 @@
   },
   "scripts/ci/fila-merge.mjs": {
    "path": "scripts/ci/fila-merge.mjs",
-   "lines": 205,
+   "lines": 283,
    "exports": [
     "function checksObrigatorios",
     "function estadoDoCheck",
@@ -175853,19 +176179,42 @@
     "GITHUB_REPOSITORY",
     "GITHUB_STEP_SUMMARY"
    ],
+   "errors": [
+    "github-settings-baseline.json sem branch_protection_main.required_status_checks (lista de nomes)"
+   ],
+   "params": [
+    {
+     "name": "TIMEOUT_GH_MS",
+     "value": "60"
+    },
+    {
+     "name": "LIMITE_PRS",
+     "value": "100"
+    }
+   ],
    "rule_comments": [
     "// Por que existe: com `strict=true` na branch protection (8 required status checks),",
     "voo\" (CI rodando de propósito). Aqui o merge é manual (AGENTS.md regra 6.5 — a",
     "* Lê os required status checks da branch protection de `main` (fonte viva, não baseline).",
-    "nunca funcionaria. Fica fora da fila (não é \"conflito\", é limitação de permissão)."
+    "Baseline sem a lista não pode virar \"nenhum check obrigatório\" em silêncio: a fila",
+    "nunca funcionaria. Fica fora da fila (não é \"conflito\", é limitação de permissão).",
+    "`--limit 100` corta em silêncio: PR além da centésima nunca entraria na fila."
    ],
    "doc": "!/usr/bin/env node Fila de atualização de branch serial para as PRs abertas contra `main`. Por que existe: com `strict=true` na branch protection (8 required status checks), toda PR fica BEHIND a cada merge na main. Atualizar TODAS de uma vez faz as N recomeçarem a CI inteira ao mesmo tempo, disputa …"
   },
   "scripts/ci/fila-merge.unit.mjs": {
    "path": "scripts/ci/fila-merge.unit.mjs",
-   "lines": 123,
+   "lines": 457,
+   "env": [
+    "FAKE_GH_CENARIO",
+    "FAKE_GH_LOG",
+    "PATH"
+   ],
    "errors": [
     "rede caiu"
+   ],
+   "temporal": [
+    "timeout: 30_000,"
    ]
   },
   "scripts/ci/gerar-matriz-edge-tabela.mjs": {
@@ -176013,12 +176362,14 @@
   },
   "scripts/ci/github-settings-guard.mjs": {
    "path": "scripts/ci/github-settings-guard.mjs",
-   "lines": 637,
+   "lines": 827,
    "exports": [
-    "function assinaturaDe"
+    "function assinaturaDe",
+    "function validarBaseline"
    ],
    "env": [
     "ADMIN_READ_TOKEN",
+    "GITHUB_API_URL",
     "GITHUB_REPOSITORY",
     "GITHUB_RUN_ID",
     "GITHUB_TOKEN",
@@ -176026,9 +176377,13 @@
     "SETTINGS_GUARD_AUTOR"
    ],
    "errors": [
-    "GitHub API ${method} ${path} → ${res.status}: ${text}"
+    "contexts ilegiveis ou vazios: restauracao abortada para nao apagar os checks obrigatorios"
    ],
    "params": [
+    {
+     "name": "TENTATIVAS_GET",
+     "value": "3"
+    },
     {
      "name": "ISSUE_LABEL",
      "value": "'settings-guard'"
@@ -176050,13 +176405,26 @@
      "value": "7"
     }
    ],
+   "role_checks": [
+    "undefined"
+   ],
    "rule_comments": [
+    "* Falha transitória ou definitiva da API que NÃO é falta de escopo (5xx, 429, rate limit, rede, JSON ruim). */",
+    "403 de rate limit (primário ou secundário) NÃO é falta de escopo: virar \"ponto cego\"",
+    "deixaria o job verde sem ter olhado nada por causa de um limite transitório.",
     "W04: o GET /repos so devolve os campos de merge para quem tem permissao",
     ")`, 200, 'resposta sem os campos de merge: o token nao tem permissao push/admin para le-los');",
     "comentario humano ou de outro bot depois do marcador nao pode zerar o dedupe, e um",
     "marcador colado por terceiros nao pode acioná-lo (achado no port do Zapp_Web_V2)."
    ],
    "doc": "!/usr/bin/env node",
+   "calc_fns": [
+    {
+     "name": "validarBaseline",
+     "params": "bl",
+     "body": "const erros = []; if (!ehObjeto(bl)) return ['baseline nao e um objeto JSON']; const bp = bl.branch_protection_main; if (!ehObjeto(bp)) { erros.push('branch_protection_main ausente ou nao e objeto'); } else { if (typeof bp.strict !== 'boolean') erros.push('branch_protection_main.strict deve ser booleano'); if (typeof bp.enforce_admins !== 'boolean') erros.push('branch_protection_main.enforce_admins deve ser booleano'); if (!Array.isArray(bp.required_status_checks) || bp.required_status_checks.le …"
+    }
+   ],
    "temporal": [
     "const SEIS_HORAS_MS = 6 * 60 * 60 * 1000;",
     "const SETE_DIAS_MS = 7 * 24 * 60 * 60 * 1000;"
@@ -176064,7 +176432,10 @@
   },
   "scripts/ci/github-settings-guard.unit.mjs": {
    "path": "scripts/ci/github-settings-guard.unit.mjs",
-   "lines": 447,
+   "lines": 984,
+   "env": [
+    "PATH"
+   ],
    "params": [
     {
      "name": "TITULO",
@@ -177155,7 +177526,7 @@
   },
   "scripts/inventario/banco.sql": {
    "path": "scripts/inventario/banco.sql",
-   "lines": 149,
+   "lines": 153,
    "temporal": [
     "'mais_de_7_dias', (SELECT count(*) FROM cron.job_run_details WHERE start_time <= now() - interval '7 days'),",
     "WHERE d.start_time > now() - interval '7 days'",
@@ -177165,7 +177536,7 @@
   },
   "scripts/inventario/gerar-banco.mjs": {
    "path": "scripts/inventario/gerar-banco.mjs",
-   "lines": 290,
+   "lines": 379,
    "exports": [
     "const PROJETO_OFICIAL",
     "const LIMIARES",
@@ -177177,7 +177548,9 @@
     "function edgesNoRepo",
     "function compararEdges",
     "function rodaTodoDia",
-    "function montarInventario"
+    "function montarInventario",
+    "function redigir",
+    "function lerArgumentos"
    ],
    "tables": [
     {
@@ -177186,6 +177559,10 @@
     },
     {
      "table": "tabela",
+     "op": "ref"
+    },
+    {
+     "table": "tabela_velha",
      "op": "ref"
     }
    ],
@@ -177197,11 +177574,15 @@
     "SUPABASE_PROJECT_REF"
    ],
    "errors": [
-    "--entrada exige o caminho do arquivo com a resposta do banco.sql",
-    "Management API ${caminho} respondeu HTTP ${res.status}",
+    "${a} exige o caminho de um arquivo",
+    "--functions so vale junto com --entrada",
     "SUPABASE_PROJECT_REF=${ref} nao e o banco oficial (${PROJETO_OFICIAL}).",
+    "a lista de edge functions publicadas nao e uma lista de objetos com ",
     "a resposta nao parece ser do banco oficial: ${comuns} tabelas em comum com types.ts ",
     "a saida tem algo com cara de credencial; nada foi gravado. Revise banco.sql.",
+    "argumento desconhecido: ${a}\\n${USO}",
+    "entrada com ",
+    "entrada com tabela sem ",
     "entrada sem as chaves: ${faltando.join(",
     "entrada sem tabelas",
     "format_version ${dado.format_version} desconhecido (esperado 1)",
@@ -177216,6 +177597,7 @@
    ],
    "rule_comments": [
     "Limite conhecido: `.from(variavel)` nao e resolvido.",
+    "Caminho relativo: pasta-pai com `.test.` no nome (ou /home/x.spec/) nao pode apagar o repo inteiro.",
     "ha PR de DDL aberta (regra 8 do fluxo Git), e `supabase/migrations/` tem arquivos nao rastreados."
    ],
    "doc": "!/usr/bin/env node",
@@ -177227,7 +177609,11 @@
   },
   "scripts/inventario/gerar-repo.mjs": {
    "path": "scripts/inventario/gerar-repo.mjs",
-   "lines": 83,
+   "lines": 143,
+   "exports": [
+    "function listarEdges",
+    "function inventariarEdges"
+   ],
    "tables": [
     {
      "table": "tabela",
@@ -177235,25 +177621,52 @@
     }
    ],
    "errors": [
+    "nenhuma edge function em supabase/functions/*/index.ts: inventario vazio recusado.",
     "ripgrep (rg) falhou com exit ${status}; o inventario nao foi gerado.",
     "ripgrep (rg) nao encontrado; o inventario nao pode ser gerado com seguranca."
+   ],
+   "params": [
+    {
+     "name": "FIM",
+     "value": "'($|[^A-Za-z0-9_-])'"
+    }
+   ],
+   "rule_comments": [
+    "--no-config: o resultado nao pode depender do ~/.ripgreprc de quem roda."
    ],
    "doc": "!/usr/bin/env node Inventario gerado do lado do repositorio (sem acesso ao banco): - edge functions: linhas, segredos lidos (Deno.env.get) e quem as invoca (src, migrations, outras edges, e2e, CI/config) - tabelas: para cada nome recebido em stdin (uma por linha), quantos `.from('tabela')` ha em src …"
   },
   "scripts/inventario/gerar-rotas.mjs": {
    "path": "scripts/inventario/gerar-rotas.mjs",
-   "lines": 300,
+   "lines": 537,
    "exports": [
+    "function semComentarios",
     "function resolverImport",
     "function extrairImports",
     "function extrairChamadas",
     "const MAX_SALTOS",
     "function fechoDaRota",
+    "function lerRoutesDoJsx",
     "function lerUrls",
+    "function lerItensMenu",
     "function lerMenu",
+    "function casaRota",
     "const semAncora",
     "function gerarRotas",
     "const serializar"
+   ],
+   "routes": [
+    {
+     "path": "/velha",
+     "component": "",
+     "guard": "",
+     "roles": []
+    }
+   ],
+   "errors": [
+    "${ARQUIVO_ROTAS} sem bloco <Routes>...</Routes>: o roteador mudou de lugar e o inventario nao tem o que ler.",
+    "${ARQUIVO_ROTAS} tem <Routes> mas nenhuma <Route path>: inventario vazio recusado.",
+    "menu lateral sem nenhum href (${ARQUIVOS_MENU.join("
    ],
    "params": [
     {
@@ -177271,6 +177684,10 @@
     {
      "name": "MAX_SALTOS",
      "value": "2"
+    },
+    {
+     "name": "USO",
+     "value": "'uso: node scripts/inventario/gerar-rotas.mjs [--check]\\n'"
     }
    ],
    "guards": [
@@ -177284,32 +177701,272 @@
     {
      "name": "gerarRotas",
      "params": "raiz = RAIZ_PADRAO",
-     "body": "const urlsBase = lerUrls(raiz); const menu = lerMenu(raiz); const porCaminho = new Map(urlsBase.map((u) => [u.caminho, u])); const urls = urlsBase.map((u) => ({ ...u, menu: Object.entries(menu) .filter(([href]) => semAncora(href) === u.caminho) .map(([href, item]) => ({ href, ...item })) .sort((a, b) => a.href.localeCompare(b.href)), ...(u.arquivo ? fechoDaRota(raiz, path.join(raiz, u.arquivo)) : { arquivos_lidos: 0, hooks: [], buckets: [], edges: [], rpcs: [], tabelas: [], imports_quebrados: [] …"
+     "body": "const urlsBase = lerUrls(raiz); const itensMenu = lerItensMenu(raiz); if (itensMenu.length === 0) throw new Error(`menu lateral sem nenhum href (${ARQUIVOS_MENU.join(', ')}): o formato mudou e o inventario do menu sairia vazio.`); const menu = lerMenu(raiz); const porCaminho = new Map(); for (const u of urlsBase) if (!porCaminho.has(u.caminho)) porCaminho.set(u.caminho, u); // vale a primeira, como no react-router // Rota que atende o href do menu: a de caminho igual; senao a de `:param`/`*` com …"
     }
    ]
   },
   "scripts/inventario/inventario.unit.mjs": {
    "path": "scripts/inventario/inventario.unit.mjs",
-   "lines": 172,
+   "lines": 917,
    "tables": [
     {
      "table": "contas_pagar",
      "op": "select"
+    },
+    {
+     "table": "fantasma",
+     "op": "ref"
+    },
+    {
+     "table": "tabela_velha",
+     "op": "select"
+    },
+    {
+     "table": "tabela_nova",
+     "op": "select"
+    },
+    {
+     "table": "empresas",
+     "op": "ref"
+    },
+    {
+     "table": "tabela_morta",
+     "op": "select"
+    },
+    {
+     "table": "comentada",
+     "op": "ref"
+    },
+    {
+     "table": "empresas",
+     "op": "select"
+    },
+    {
+     "table": "comentada",
+     "op": "ref"
+    },
+    {
+     "table": "constructor",
+     "op": "ref"
+    },
+    {
+     "table": "so_em_teste",
+     "op": "ref"
+    },
+    {
+     "table": "empresas",
+     "op": "ref"
+    },
+    {
+     "table": "so_em_teste",
+     "op": "ref"
+    },
+    {
+     "table": "so_em_teste",
+     "op": "ref"
     }
    ],
    "rpc": [
+    "calc_reforma",
     "totais_movimentacoes"
    ],
    "invokes": [
-    "asaas-proxy"
+    "asaas-proxy",
+    "edge-velha"
+   ],
+   "storage": [
+    "anexos",
+    "empresas"
+   ],
+   "env": [
+    "CHAVE_A",
+    "CHAVE_B",
+    "DEV",
+    "SUPABASE_ACCESS_TOKEN"
+   ],
+   "routes": [
+    {
+     "path": "/jsx",
+     "component": "",
+     "guard": "",
+     "roles": []
+    },
+    {
+     "path": "/real",
+     "component": "",
+     "guard": "",
+     "roles": []
+    },
+    {
+     "path": "/comentada",
+     "component": "X",
+     "guard": "",
+     "roles": []
+    },
+    {
+     "path": "/linha",
+     "component": "Y",
+     "guard": "",
+     "roles": []
+    },
+    {
+     "path": "/aspas-simples",
+     "component": "A",
+     "guard": "",
+     "roles": []
+    },
+    {
+     "path": "/pai",
+     "component": "Pai",
+     "guard": "",
+     "roles": []
+    },
+    {
+     "path": "filho",
+     "component": "F",
+     "guard": "",
+     "roles": []
+    },
+    {
+     "path": ":id",
+     "component": "D",
+     "guard": "",
+     "roles": []
+    },
+    {
+     "path": "/abs",
+     "component": "Abs",
+     "guard": "",
+     "roles": []
+    },
+    {
+     "path": "*",
+     "component": "NF",
+     "guard": "",
+     "roles": []
+    },
+    {
+     "path": "/dentro-layout",
+     "component": "L",
+     "guard": "",
+     "roles": []
+    },
+    {
+     "path": "/arrow",
+     "component": "cond",
+     "guard": "",
+     "roles": []
+    },
+    {
+     "path": "\\`/tpl/\\${id",
+     "component": "T",
+     "guard": "",
+     "roles": []
+    },
+    {
+     "path": "/dev",
+     "component": "Dev",
+     "guard": "",
+     "roles": []
+    },
+    {
+     "path": "/comentada",
+     "component": "Velha",
+     "guard": "",
+     "roles": []
+    },
+    {
+     "path": "/",
+     "component": "Home",
+     "guard": "ProtectedRoute",
+     "roles": []
+    },
+    {
+     "path": "/contas",
+     "component": "Contas",
+     "guard": "ProtectedRoute",
+     "roles": []
+    },
+    {
+     "path": "/reforma",
+     "component": "Reforma",
+     "guard": "ProtectedRoute",
+     "roles": []
+    },
+    {
+     "path": "/reforma/:tab",
+     "component": "Reforma",
+     "guard": "ProtectedRoute",
+     "roles": []
+    },
+    {
+     "path": "/antiga",
+     "component": "Navigate",
+     "guard": "",
+     "roles": []
+    },
+    {
+     "path": "/pai",
+     "component": "Home",
+     "guard": "ProtectedRoute",
+     "roles": []
+    },
+    {
+     "path": "filho",
+     "component": "Detalhe",
+     "guard": "",
+     "roles": []
+    },
+    {
+     "path": "/contas",
+     "component": "Home",
+     "guard": "",
+     "roles": []
+    },
+    {
+     "path": "*",
+     "component": "NotFound",
+     "guard": "",
+     "roles": []
+    },
+    {
+     "path": "/x",
+     "component": "A",
+     "guard": "",
+     "roles": []
+    },
+    {
+     "path": "/",
+     "component": "Home",
+     "guard": "",
+     "roles": []
+    }
    ],
    "params": [
     {
      "name": "BUCKET",
      "value": "'comprovantes'"
+    },
+    {
+     "name": "BANCO_ANTERIOR",
+     "value": "'{\""
     }
    ],
+   "guards": [
+    "ProtectedRoute",
+    "ProtectedRoute",
+    "ProtectedRoute",
+    "ProtectedRoute",
+    "ProtectedRoute",
+    "ProtectedRoute"
+   ],
+   "rule_comments": [
+    "flag errada nao pode ter regravado o arquivo"
+   ],
    "doc": "!/usr/bin/env node",
+   "temporal": [
+    "cwd: raiz, env: ambienteLimpo(), encoding: 'utf8', input: '', timeout: 15000,"
+   ],
    "percents": [
     "assert.match(inv.alertas.find((a) => a.tipo === 'cron_falhando').detalhe[0], /^ruim \\(9\\.9% em 7d\\)$/);"
    ],
@@ -177320,20 +177977,57 @@
   },
   "scripts/inventario/mudou-conteudo.mjs": {
    "path": "scripts/inventario/mudou-conteudo.mjs",
-   "lines": 81,
+   "lines": 105,
    "exports": [
     "const PADRAO",
     "function semCarimbos",
     "function mudou"
    ],
-   "env": [
-    "INVENTARIO_REF"
+   "errors": [
+    "INVENTARIO_REF invalida: ${ref}",
+    "arquivo(s) gerado(s) ausente(s): ${ausentes.join("
    ],
    "doc": "!/usr/bin/env node"
   },
+  "scripts/inventario/test_banco_sql.py": {
+   "path": "scripts/inventario/test_banco_sql.py",
+   "lines": 448,
+   "exports": [
+    "def _achar",
+    "def _porta_livre",
+    "def setUpModule",
+    "def tearDownModule",
+    "def psql",
+    "def consulta",
+    "def criar_banco",
+    "def apagar_banco",
+    "def inventario",
+    "class BancoSqlHostil",
+    "class BancoSqlOrdemIndependenteDoLocale",
+    "class BancoSqlIncompleto",
+    "class BancoSqlContratoComGerarBanco"
+   ],
+   "env": [
+    "INVENTARIO_PG_PORTA",
+    "INVENTARIO_PG_USUARIO"
+   ],
+   "rule_comments": [
+    "`.` do nome nao pode virar curinga: f_metachar cita \"axb\" e \"c.d\""
+   ],
+   "temporal": [
+    "'e24', count(*) FILTER (WHERE start_time > now() - interval '24 hours'),",
+    "'e7', count(*) FILTER (WHERE start_time > now() - interval '7 days'),",
+    "'f7', count(*) FILTER (WHERE start_time > now() - interval '7 days' AND status = 'failed'),",
+    "SELECT 1,'succeeded','ok', now()-interval '1 hour', now()-interval '1 hour'+interval '3 seconds';",
+    "VALUES (2,'succeeded','x', now()-interval '10 days', now()-interval '10 days');",
+    "capture_output=True, text=True, env=env, cwd=raiz, timeout=60, check=False)",
+    "now()-(g||' minutes')::interval, now()-(g||' minutes')::interval + interval '1 second'",
+    "return subprocess.run(cmd, input=entrada, capture_output=True, text=True, env=env, timeout=120, check=False)"
+   ]
+  },
   "scripts/maintenance/lib.mjs": {
    "path": "scripts/maintenance/lib.mjs",
-   "lines": 798,
+   "lines": 812,
    "exports": [
     "class MaintenanceError",
     "const fail",
@@ -177373,18 +178067,21 @@
   },
   "scripts/maintenance/maintenance.unit.mjs": {
    "path": "scripts/maintenance/maintenance.unit.mjs",
-   "lines": 887,
+   "lines": 1346,
    "external_urls": [
     "http://192.0.2.1:9"
    ],
    "env": [
+    "HOME",
     "MAINTENANCE_TEST_",
     "MAINTENANCE_TEST_SECRET",
     "NODE_ENV",
+    "PATH",
     "SECRET_KEY",
     "VITE_SUPABASE_PROJECT_ID",
     "VITE_SUPABASE_PUBLISHABLE_KEY",
-    "VITE_SUPABASE_URL"
+    "VITE_SUPABASE_URL",
+    "XDG_STATE_HOME"
    ],
    "errors": [
     "formatter fixture failed"
@@ -177395,7 +178092,7 @@
   },
   "scripts/maintenance/run.mjs": {
    "path": "scripts/maintenance/run.mjs",
-   "lines": 729,
+   "lines": 803,
    "exports": [
     "function parseArgs",
     "function networkPrefix",
@@ -177410,11 +178107,14 @@
     "blocked_network_sandbox",
     "pending_patch"
    ],
+   "rule_comments": [
+    "não pode bloquear o heal para sempre."
+   ],
    "doc": "!/usr/bin/env node"
   },
   "scripts/maintenance/typecheck.mjs": {
    "path": "scripts/maintenance/typecheck.mjs",
-   "lines": 82,
+   "lines": 98,
    "doc": "!/usr/bin/env node"
   },
   "scripts/regras_negocio/generate.py": {
@@ -240970,10 +241670,41 @@
   }
  },
  "git": {
-  "sha": "f0bad7436f3a53d9e944378a0b665706b0caf8db",
+  "sha": "67613f40eabb49ce03c27ce9470aa5fc0a1220f7",
   "branch": "main",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
   "commits": [
+   {
+    "sha": "67613f4",
+    "date": "2026-11-11",
+    "author": "adm01-debug",
+    "subject": "fix: endurecimento dos scripts de automação, guard de perímetro, inventário e manutenção (#304)",
+    "files": [
+     "scripts/automation.config.json",
+     "scripts/automation.mjs",
+     "scripts/automation.unit.mjs",
+     "scripts/ci/fila-merge.mjs",
+     "scripts/ci/fila-merge.unit.mjs",
+     "scripts/ci/github-settings-guard.mjs",
+     "scripts/ci/github-settings-guard.unit.mjs",
+     "scripts/graphify-local.mjs",
+     "scripts/graphify-local.unit.mjs",
+     "scripts/inventario/README.md",
+     "scripts/inventario/banco.sql",
+     "scripts/inventario/gerar-banco.mjs",
+     "scripts/inventario/gerar-repo.mjs",
+     "scripts/inventario/gerar-rotas.mjs",
+     "scripts/inventario/inventario.unit.mjs",
+     "scripts/inventario/mudou-conteudo.mjs",
+     "scripts/inventario/test_banco_sql.py",
+     "scripts/maintenance/README.md",
+     "scripts/maintenance/lib.mjs",
+     "scripts/maintenance/maintenance.unit.mjs",
+     "scripts/maintenance/run.mjs",
+     "scripts/maintenance/run.sh",
+     "scripts/maintenance/typecheck.mjs"
+    ]
+   },
    {
     "sha": "f0bad74",
     "date": "2026-11-11",
@@ -241577,15 +242308,6 @@
     "files": [
      "docs/agentes/sistema.md"
     ]
-   },
-   {
-    "sha": "97b7711",
-    "date": "2026-11-09",
-    "author": "adm01-debug",
-    "subject": "fix(docs): corrige contagem de edge functions para 106 em mapa-repo.md",
-    "files": [
-     "docs/agentes/mapa-repo.md"
-    ]
    }
   ],
   "hot_files": [
@@ -241602,11 +242324,27 @@
     5
    ],
    [
+    "scripts/automation.config.json",
+    4
+   ],
+   [
     "bun.lock",
     4
    ],
    [
-    "scripts/automation.config.json",
+    "scripts/automation.mjs",
+    3
+   ],
+   [
+    "scripts/graphify-local.mjs",
+    3
+   ],
+   [
+    "scripts/maintenance/lib.mjs",
+    3
+   ],
+   [
+    "scripts/maintenance/run.mjs",
     3
    ],
    [
@@ -241618,55 +242356,39 @@
     3
    ],
    [
-    "scripts/ci/actions-kpi.mjs",
+    "scripts/automation.unit.mjs",
     2
    ],
    [
-    "scripts/ci/actions-kpi.unit.mjs",
+    "scripts/ci/fila-merge.mjs",
     2
    ],
    [
-    "scripts/ci/check-claude-md-integrity.mjs",
+    "scripts/ci/fila-merge.unit.mjs",
     2
    ],
    [
-    "scripts/ci/gerar-matriz-edge-tabela.mjs",
+    "scripts/ci/github-settings-guard.mjs",
     2
    ],
    [
-    "scripts/ci/gerar-matriz-edge-tabela.unit.mjs",
+    "scripts/ci/github-settings-guard.unit.mjs",
     2
    ],
    [
-    "scripts/ci/render-workflow-docs.mjs",
+    "scripts/graphify-local.unit.mjs",
     2
    ],
    [
-    "scripts/ci/render-workflow-docs.unit.mjs",
+    "scripts/inventario/README.md",
     2
    ],
    [
-    "scripts/edge-deploy/README.md",
+    "scripts/inventario/banco.sql",
     2
    ],
    [
-    "scripts/edge-deploy/deployment-record.mjs",
-    2
-   ],
-   [
-    "scripts/edge-deploy/deployment-record.unit.mjs",
-    2
-   ],
-   [
-    "scripts/edge-deploy/health-check.mjs",
-    2
-   ],
-   [
-    "scripts/edge-deploy/redigir-log.mjs",
-    2
-   ],
-   [
-    "scripts/edge-deploy/redigir-log.unit.mjs",
+    "scripts/inventario/gerar-banco.mjs",
     2
    ]
   ]

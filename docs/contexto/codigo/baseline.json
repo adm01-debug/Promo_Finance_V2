@@ -2,11 +2,16 @@
  "aviso": "GERADO AUTOMATICAMENTE por scripts/ai-context/gerar.mjs — não editar à mão; será sobrescrito.",
  "format_version": 2,
  "git": {
-  "commit": "f0bad7436f3a53d9e944378a0b665706b0caf8db",
+  "commit": "67613f40eabb49ce03c27ce9470aa5fc0a1220f7",
   "branch": "main",
-  "data_commit": "2026-11-11T14:46:49-03:00",
+  "data_commit": "2026-11-11T18:22:20Z",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
   "ultimos_commits": [
+   {
+    "sha": "67613f4",
+    "data": "2026-11-11",
+    "assunto": "fix: endurecimento dos scripts de automação, guard de perímetro, inventário e manutenção (#304)"
+   },
    {
     "sha": "f0bad74",
     "data": "2026-11-11",
@@ -126,14 +131,9 @@
     "sha": "68fa502",
     "data": "2026-11-09",
     "assunto": "chore: documentação analise-prs v2 + progresso.json corrigido (#284)"
-   },
-   {
-    "sha": "b0c226b",
-    "data": "2026-11-09",
-    "assunto": "fix: corrigir classificação #175/#208/#210/#216 em progresso.json"
    }
   ],
-  "arquivos_mudados_7d": 469,
+  "arquivos_mudados_7d": 470,
   "pastas_mais_mudadas_30d": [
    {
     "pasta": "package.json",
@@ -188,11 +188,11 @@
     "mudancas": 4
    },
    {
-    "pasta": "scripts/edge-deploy/fixtures",
+    "pasta": "scripts/automation.config.json",
     "mudancas": 4
    },
    {
-    "pasta": "scripts/security/test-canonical-db-gates.mjs",
+    "pasta": "scripts/edge-deploy/fixtures",
     "mudancas": 4
    }
   ],
@@ -301,7 +301,7 @@
   "autores_30d": [
    {
     "autor": "adm01-debug",
-    "commits": 72
+    "commits": 73
    },
    {
     "autor": "devin-ai-integration[bot]",
@@ -318,9 +318,9 @@
   ]
  },
  "contagens": {
-  "arquivos_total": 3608,
-  "arquivos_codigo": 2215,
-  "linhas_codigo": 424390,
+  "arquivos_total": 3609,
+  "arquivos_codigo": 2216,
+  "linhas_codigo": 428761,
   "rotas": 128,
   "rotas_http_backend": 25,
   "vistas_por_id": 0,
@@ -332,7 +332,7 @@
   "tabelas": 352,
   "migrations": 999,
   "cron_jobs": 21,
-  "testes": 425,
+  "testes": 426,
   "workflows": 19,
   "scripts": 107,
   "docs_md": 189
@@ -488,15 +488,15 @@
   },
   "scripts/automation.mjs": {
    "arquivos": 1,
-   "linhas": 994
+   "linhas": 1198
   },
   "scripts/automation.unit.mjs": {
    "arquivos": 1,
-   "linhas": 602
+   "linhas": 916
   },
   "scripts/ci": {
    "arquivos": 19,
-   "linhas": 5248
+   "linhas": 6387
   },
   "scripts/data": {
    "arquivos": 3,
@@ -536,11 +536,11 @@
   },
   "scripts/graphify-local.mjs": {
    "arquivos": 1,
-   "linhas": 1139
+   "linhas": 1229
   },
   "scripts/graphify-local.unit.mjs": {
    "arquivos": 1,
-   "linhas": 462
+   "linhas": 921
   },
   "scripts/healthcheck": {
    "arquivos": 3,
@@ -551,12 +551,12 @@
    "linhas": 877
   },
   "scripts/inventario": {
-   "arquivos": 5,
-   "linhas": 921
+   "arquivos": 6,
+   "linhas": 2523
   },
   "scripts/maintenance": {
    "arquivos": 4,
-   "linhas": 2492
+   "linhas": 3055
   },
   "scripts/mcp-phd-suite.mjs": {
    "arquivos": 1,
@@ -713,8 +713,16 @@
    "linhas": 1328
   },
   {
+   "arquivo": "scripts/graphify-local.mjs",
+   "linhas": 1229
+  },
+  {
    "arquivo": "supabase/functions/sso-callback/index.ts",
    "linhas": 1222
+  },
+  {
+   "arquivo": "scripts/automation.mjs",
+   "linhas": 1198
   },
   {
    "arquivo": "src/App.tsx",
@@ -723,10 +731,6 @@
   {
    "arquivo": "supabase/functions/scim-server/index.ts",
    "linhas": 1155
-  },
-  {
-   "arquivo": "scripts/graphify-local.mjs",
-   "linhas": 1139
   },
   {
    "arquivo": "supabase/functions/_shared/sql-write-guard.ts",
@@ -739,10 +743,6 @@
   {
    "arquivo": "scripts/mcp-phd-suite.mjs",
    "linhas": 1001
-  },
-  {
-   "arquivo": "scripts/automation.mjs",
-   "linhas": 994
   },
   {
    "arquivo": "scripts/ai-context/gerar.mjs",
@@ -761,12 +761,20 @@
    "linhas": 893
   },
   {
+   "arquivo": "scripts/ci/github-settings-guard.mjs",
+   "linhas": 826
+  },
+  {
+   "arquivo": "scripts/maintenance/lib.mjs",
+   "linhas": 811
+  },
+  {
    "arquivo": "src/lib/tributario/shared-logic.ts",
    "linhas": 809
   },
   {
-   "arquivo": "scripts/maintenance/lib.mjs",
-   "linhas": 797
+   "arquivo": "scripts/maintenance/run.mjs",
+   "linhas": 802
   },
   {
    "arquivo": "src/components/contas-receber/ContaReceberFormFields.tsx",
@@ -781,29 +789,21 @@
    "linhas": 730
   },
   {
-   "arquivo": "scripts/maintenance/run.mjs",
-   "linhas": 728
-  },
-  {
    "arquivo": "src/pages/BI.tsx",
    "linhas": 708
   },
   {
    "arquivo": "scripts/security/test-canonical-db-gates.mjs",
    "linhas": 699
-  },
-  {
-   "arquivo": "src/pages/AuditLogs.tsx",
-   "linhas": 672
   }
  ],
  "qualidade": {
   "any": 341,
-  "console_log": 207,
+  "console_log": 220,
   "ts_ignore": 1,
   "eslint_disable": 1,
   "todos": 45,
-  "arquivos_acima_500_linhas": 54
+  "arquivos_acima_500_linhas": 55
  },
  "todos": [
   {

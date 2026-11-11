@@ -1,7 +1,7 @@
 # Contexto do projeto para agentes de IA
 
 GERADO AUTOMATICAMENTE por scripts/ai-context/gerar.mjs — não editar à mão; será sobrescrito.
-Publicado pelo workflow .github/workflows/contexto.yml em docs/contexto/codigo/ da branch gerada `contexto`. Índice único em docs/contexto/00-INDEX.md. Ler: git fetch origin contexto && git show origin/contexto:docs/contexto/00-INDEX.md Gere local com `node scripts/ai-context/gerar.mjs`. Commit-base: `f0bad7436f3a53d9e944378a0b665706b0caf8db` (2026-11-11T14:46:49-03:00).
+Publicado pelo workflow .github/workflows/contexto.yml em docs/contexto/codigo/ da branch gerada `contexto`. Índice único em docs/contexto/00-INDEX.md. Ler: git fetch origin contexto && git show origin/contexto:docs/contexto/00-INDEX.md Gere local com `node scripts/ai-context/gerar.mjs`. Commit-base: `67613f40eabb49ce03c27ce9470aa5fc0a1220f7` (2026-11-11T18:22:20Z).
 
 ## Como usar (leia antes de planejar ou executar qualquer tarefa)
 1. **Tela/rota/menu** → `rotas.json` (url/vista/menu → arquivo → hooks → tabelas → edges; `rotas_http_backend` para APIs) e `modulos.json` (módulo inteiro + dependências entre módulos).
@@ -14,7 +14,7 @@ Publicado pelo workflow .github/workflows/contexto.yml em docs/contexto/codigo/ 
 Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua tarefa; não carregue tudo.
 
 ## Stack
-- linguagens: TypeScript (2105), SQL (1069), Markdown (189), JavaScript (68), Python (44), JSON (37), Shell (26), YAML (25)
+- linguagens: TypeScript (2105), SQL (1069), Markdown (189), JavaScript (68), Python (45), JSON (37), Shell (26), YAML (25)
 - linguagem_principal: TypeScript
 - framework: React
 - backend_http: n/d
@@ -34,9 +34,9 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 ## Números
 | item | qtd |
 |---|---|
-| arquivos_total | 3608 |
-| arquivos_codigo | 2215 |
-| linhas_codigo | 424390 |
+| arquivos_total | 3609 |
+| arquivos_codigo | 2216 |
+| linhas_codigo | 428761 |
 | rotas | 128 |
 | rotas_http_backend | 25 |
 | vistas_por_id | 0 |
@@ -48,7 +48,7 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 | tabelas | 352 |
 | migrations | 999 |
 | cron_jobs | 21 |
-| testes | 425 |
+| testes | 426 |
 | workflows | 19 |
 | scripts | 107 |
 | docs_md | 189 |
@@ -58,7 +58,7 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 - componentes: src/components (730), src/pages (174), src/hooks (2)
 - hooks: src/hooks (228), src/components (27), src/pages (5)
 - servicos_logica: src/lib (254), scripts/graphify (7), src/integrations (3)
-- testes: co-localizado (__tests__) (240), outro (105), co-localizado (*.test) (40)
+- testes: co-localizado (__tests__) (240), outro (106), co-localizado (*.test) (40)
 - edge_functions: supabase/functions
 - migrations: supabase/migrations
 - scripts: scripts/integrity (17), scripts/security (16), scripts/ci (13)
@@ -424,7 +424,7 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 
 ## Integrações externas
 - SDKs: Sentry, Supabase, i18next, react-query, zod
-- hosts mais citados: ai.gateway.lovable.dev, api.resend.com, www.portalfiscal.inf.br, test.supabase.co, api.supabase.com, app.promo-finance.com, app.test, bwwbeyolnnzppeuhgkcd.supabase.co, exemplo.com, idp.acme, ipapi.co, wa.me, www1.nfe.fazenda.gov.br, x.supabase.co, api.asaas.com
+- hosts mais citados: ai.gateway.lovable.dev, api.resend.com, www.portalfiscal.inf.br, test.supabase.co, api.supabase.com, app.promo-finance.com, app.test, bwwbeyolnnzppeuhgkcd.supabase.co, exemplo.com, idp.acme, x.supabase.co, ipapi.co, wa.me, www1.nfe.fazenda.gov.br, api.asaas.com
 - webhooks recebidos: analise-fluxo-ia, analyze-document, api-keys-manage, asaas-proxy, asaas-webhook, benchmarking-setorial, bitrix24-webhook, bling-proxy, bling-webhook, categorizar-despesa, ci-security-gate-log, cnpja-lookup, compare-schemas, convidar-usuario, decidir-regime, digest-silenciamentos-erro, enviar-alerta-email, enviar-bitrix24-tributario, executar-analise-preditiva, executar-regua-cobranca, executar-relatorios, expert-agent, external-data, gerar-alertas, gerar-alertas-dispatcher, gerar-alertas-tributarios, gerar-dre-tributaria, gerar-heatmap-tributario, gerar-pdf-tributario, get-vapid-key, health, insights-relatorio, mcp-query, monitor-health, monitorar-erros-frontend, n8n-callback, notify-performance-alert, prever-carga-tributaria, scim-server, sefaz-dfe-dispatcher, sefaz-dfe-puxar, send-device-alert, send-push-notification, sso-callback, sso-initiate, sso-logout, validar-token-contador, validate-ip-geo, webhook-replay, webhook-retry-worker, whatsapp-ia-proativo, whatsapp-webhook
 - env de integração (só nomes): ASAAS_API_KEY, ASAAS_WEBHOOK_TOKEN, BITRIX24_ACCESS_TOKEN, BITRIX24_CLIENT_ID, BITRIX24_CLIENT_SECRET, BLING_CLIENT_ID, BLING_CLIENT_SECRET, CI_GATE_LOG_SECRET, CNPJA_API_KEY, CONTADOR_INVITE_SECRET, CRON_DISPATCH_SECRET, EDGE_SENTRY_DSN, LOVABLE_API_KEY, MAPBOX_ACCESS_TOKEN, N8N_DISPATCH_SECRET, OPENAI_API_KEY, OPEN_FINANCE_CLIENT_ID, OPEN_FINANCE_CLIENT_SECRET, REGUA_CRON_SECRET, RESEND_API_KEY, RESEND_FROM, SEFAZ_CRON_SECRET, SENTRY_DSN, SENTRY_ENVIRONMENT, SLACK_WEBHOOK_URL, SUPABASE_JWT_SECRET, VITE_BLING_CLIENT_ID, VITE_SENTRY_DSN
 
@@ -619,6 +619,7 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 - CHANGELOG topo: [Unreleased]
 
 ## Últimos commits
+- 2026-11-11 `67613f4` fix: endurecimento dos scripts de automação, guard de perímetro, inventário e manutenção (#304)
 - 2026-11-11 `f0bad74` fix: endurecimento e cobertura de teste de todos os scripts em scripts/ (#299)
 - 2026-11-11 `85d018c` fix: shims para Supabase Preview — drop get_cron_jobs() antes de mudanças de return type (#131)
 - 2026-11-11 `e361b01` chore(migrations): [STEP 22] reconciliar migrations não rastreadas (#238)
@@ -633,7 +634,6 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 - 2026-11-10 `79382a6` feat(inventario): inventário autônomo do estado real (banco, rotas e edge functions) (#265)
 - 2026-11-09 `e914163` fix: bump date-fns from 2.30.0 to 4.4.0 (#298)
 - 2026-11-09 `9c94d00` fix: bump input-otp from 1.4.2 to 1.5.0 (#295)
-- 2026-11-09 `e07fec7` chore: documentação final sessão merge-prs (prs.json + RELATORIO + dossiers)
 
 ## Arquivos deste diretório
 - `docs/contexto/codigo/rotas.json`
