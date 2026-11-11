@@ -52310,8 +52310,8 @@
       },
       {
         "columns": [
-          "vigente_de",
-          "vigente_ate"
+          "vigente_ate",
+          "vigente_de"
         ],
         "deferrable": false,
         "definition": "CHECK (vigente_ate IS NULL OR vigente_ate >= vigente_de)",
@@ -52382,8 +52382,8 @@
       },
       {
         "columns": [
-          "vigente_de",
-          "vigente_ate"
+          "vigente_ate",
+          "vigente_de"
         ],
         "deferrable": false,
         "definition": "CHECK (vigente_ate IS NULL OR vigente_ate >= vigente_de)",
@@ -52453,8 +52453,8 @@
       },
       {
         "columns": [
-          "vigente_de",
-          "vigente_ate"
+          "vigente_ate",
+          "vigente_de"
         ],
         "deferrable": false,
         "definition": "CHECK (vigente_ate IS NULL OR vigente_ate >= vigente_de)",
@@ -53749,8 +53749,8 @@
       },
       {
         "columns": [
-          "vigencia_inicio",
-          "vigencia_fim"
+          "vigencia_fim",
+          "vigencia_inicio"
         ],
         "deferrable": false,
         "definition": "CHECK (vigencia_fim IS NULL OR vigencia_fim >= vigencia_inicio)",
@@ -53920,8 +53920,8 @@
       },
       {
         "columns": [
-          "vigente_de",
-          "vigente_ate"
+          "vigente_ate",
+          "vigente_de"
         ],
         "deferrable": false,
         "definition": "CHECK (vigente_ate IS NULL OR vigente_ate >= vigente_de)",
@@ -54231,8 +54231,8 @@
       },
       {
         "columns": [
-          "iniciado_em",
-          "finalizado_em"
+          "finalizado_em",
+          "iniciado_em"
         ],
         "deferrable": false,
         "definition": "CHECK (finalizado_em IS NULL OR finalizado_em >= iniciado_em)",
@@ -55993,8 +55993,8 @@
       },
       {
         "columns": [
-          "accepted_at",
-          "revoked_at"
+          "revoked_at",
+          "accepted_at"
         ],
         "deferrable": false,
         "definition": "CHECK (revoked_at IS NULL OR accepted_at IS NULL OR revoked_at >= accepted_at)",
@@ -57798,8 +57798,8 @@
       },
       {
         "columns": [
-          "rbt12_de",
-          "rbt12_ate"
+          "rbt12_ate",
+          "rbt12_de"
         ],
         "deferrable": false,
         "definition": "CHECK (rbt12_ate > rbt12_de)",
@@ -57884,8 +57884,8 @@
       },
       {
         "columns": [
-          "vigente_de",
-          "vigente_ate"
+          "vigente_ate",
+          "vigente_de"
         ],
         "deferrable": false,
         "definition": "CHECK (vigente_ate IS NULL OR vigente_ate >= vigente_de)",
@@ -59610,8 +59610,8 @@
       },
       {
         "columns": [
-          "ano_inicio",
-          "ano_fim"
+          "ano_fim",
+          "ano_inicio"
         ],
         "deferrable": false,
         "definition": "CHECK (ano_fim >= ano_inicio)",
@@ -59679,8 +59679,8 @@
       },
       {
         "columns": [
-          "ano_inicio",
-          "ano_fim"
+          "ano_fim",
+          "ano_inicio"
         ],
         "deferrable": false,
         "definition": "CHECK (ano_fim >= ano_inicio)",
@@ -59835,9 +59835,9 @@
       },
       {
         "columns": [
+          "snapshot_date",
           "schema_name",
-          "index_name",
-          "snapshot_date"
+          "index_name"
         ],
         "deferrable": false,
         "definition": "UNIQUE (snapshot_date, schema_name, index_name)",
@@ -60061,8 +60061,8 @@
       },
       {
         "columns": [
-          "vigente_de",
-          "vigente_ate"
+          "vigente_ate",
+          "vigente_de"
         ],
         "deferrable": false,
         "definition": "CHECK (vigente_ate IS NULL OR vigente_ate >= vigente_de)",
@@ -60168,8 +60168,8 @@
       },
       {
         "columns": [
-          "nome",
-          "user_id"
+          "user_id",
+          "nome"
         ],
         "deferrable": false,
         "definition": "UNIQUE (user_id, nome)",
@@ -60659,8 +60659,8 @@
       },
       {
         "columns": [
-          "vigente_de",
-          "vigente_ate"
+          "vigente_ate",
+          "vigente_de"
         ],
         "deferrable": false,
         "definition": "CHECK (vigente_ate IS NULL OR vigente_ate >= vigente_de)",
@@ -61454,8 +61454,8 @@
       },
       {
         "columns": [
-          "data_inicio",
-          "data_fim"
+          "data_fim",
+          "data_inicio"
         ],
         "deferrable": false,
         "definition": "CHECK (data_fim IS NULL OR data_fim >= data_inicio)",
@@ -62613,8 +62613,8 @@
       },
       {
         "columns": [
-          "vigente_de",
-          "vigente_ate"
+          "vigente_ate",
+          "vigente_de"
         ],
         "deferrable": false,
         "definition": "CHECK (vigente_ate IS NULL OR vigente_ate >= vigente_de)",
@@ -62720,8 +62720,8 @@
       },
       {
         "columns": [
-          "vigente_de",
-          "vigente_ate"
+          "vigente_ate",
+          "vigente_de"
         ],
         "deferrable": false,
         "definition": "CHECK (vigente_ate IS NULL OR vigente_ate >= vigente_de)",
@@ -63774,8 +63774,8 @@
       },
       {
         "columns": [
-          "coluna",
-          "dias"
+          "dias",
+          "coluna"
         ],
         "deferrable": false,
         "definition": "CHECK (dias IS NULL AND coluna IS NULL OR dias >= 1 AND coluna IS NOT NULL)",
@@ -64622,8 +64622,8 @@
       },
       {
         "columns": [
-          "periodo_inicio",
-          "periodo_fim"
+          "periodo_fim",
+          "periodo_inicio"
         ],
         "deferrable": false,
         "definition": "CHECK (periodo_fim >= periodo_inicio)",
@@ -65061,8 +65061,8 @@
       },
       {
         "columns": [
-          "periodo_inicio",
-          "periodo_fim"
+          "periodo_fim",
+          "periodo_inicio"
         ],
         "deferrable": false,
         "definition": "CHECK (periodo_fim >= periodo_inicio)",
@@ -65720,8 +65720,8 @@
       },
       {
         "columns": [
-          "vigente_de",
-          "vigente_ate"
+          "vigente_ate",
+          "vigente_de"
         ],
         "deferrable": false,
         "definition": "CHECK (vigente_ate IS NULL OR vigente_ate >= vigente_de)",
@@ -88267,6 +88267,12 @@
       },
       {
         "code": "fk_without_index",
+        "detail": "FK sem índice nas colunas ['conta_receber_id']: joins e DELETE/UPDATE na tabela pai ficam lentos.",
+        "object": "public.execucoes_regua_cobranca.execucoes_regua_cobranca_conta_receber_id_fkey",
+        "severity": "BAIXA"
+      },
+      {
+        "code": "fk_without_index",
         "detail": "FK sem índice nas colunas ['empresa_id']: joins e DELETE/UPDATE na tabela pai ficam lentos.",
         "object": "public.expert_conversations.expert_conversations_empresa_id_fkey",
         "severity": "BAIXA"
@@ -88431,6 +88437,12 @@
         "code": "fk_without_index",
         "detail": "FK sem índice nas colunas ['config_id']: joins e DELETE/UPDATE na tabela pai ficam lentos.",
         "object": "public.n8n_dispatch_logs.n8n_dispatch_logs_config_id_fkey",
+        "severity": "BAIXA"
+      },
+      {
+        "code": "fk_without_index",
+        "detail": "FK sem índice nas colunas ['created_by']: joins e DELETE/UPDATE na tabela pai ficam lentos.",
+        "object": "public.n8n_workflow_configs.n8n_workflow_configs_created_by_fkey",
         "severity": "BAIXA"
       },
       {
@@ -103873,6 +103885,7 @@
         "kind": "enum",
         "name": "alert_severity",
         "schema": "public",
+        "type_ref": "alert_severity",
         "values": [
           "INFO",
           "WARNING",
@@ -103884,6 +103897,7 @@
         "kind": "enum",
         "name": "alert_type",
         "schema": "public",
+        "type_ref": "alert_type",
         "values": [
           "DRIVER_BLOCKED",
           "ROUTE_DEVIATION",
@@ -103898,6 +103912,7 @@
         "kind": "enum",
         "name": "app_role",
         "schema": "public",
+        "type_ref": "app_role",
         "values": [
           "admin",
           "manager",
@@ -103914,6 +103929,7 @@
         "kind": "enum",
         "name": "approval_priority",
         "schema": "public",
+        "type_ref": "approval_priority",
         "values": [
           "LOW",
           "MEDIUM",
@@ -103927,6 +103943,7 @@
         "kind": "enum",
         "name": "approval_status",
         "schema": "public",
+        "type_ref": "approval_status",
         "values": [
           "PENDING",
           "APPROVED",
@@ -103938,6 +103955,7 @@
         "kind": "enum",
         "name": "atividade_economica",
         "schema": "public",
+        "type_ref": "atividade_economica",
         "values": [
           "INDUSTRIA",
           "COMERCIO",
@@ -103950,6 +103968,7 @@
         "kind": "enum",
         "name": "delivery_outcome",
         "schema": "public",
+        "type_ref": "delivery_outcome",
         "values": [
           "SUCCESS",
           "FAILED",
@@ -103965,6 +103984,7 @@
         "kind": "enum",
         "name": "driver_status",
         "schema": "public",
+        "type_ref": "driver_status",
         "values": [
           "APPROVED",
           "PENDING_APPROVAL",
@@ -103978,6 +103998,7 @@
         "kind": "enum",
         "name": "incident_severity",
         "schema": "public",
+        "type_ref": "incident_severity",
         "values": [
           "LOW",
           "MEDIUM",
@@ -103990,6 +104011,7 @@
         "kind": "enum",
         "name": "incident_type",
         "schema": "public",
+        "type_ref": "incident_type",
         "values": [
           "ROUTE_DEVIATION",
           "LONG_STOP",
@@ -104004,6 +104026,7 @@
         "kind": "enum",
         "name": "nfe_manifestacao_status",
         "schema": "public",
+        "type_ref": "nfe_manifestacao_status",
         "values": [
           "pendente",
           "ciencia",
@@ -104017,6 +104040,7 @@
         "kind": "enum",
         "name": "nfe_schema_tipo",
         "schema": "public",
+        "type_ref": "nfe_schema_tipo",
         "values": [
           "resNFe",
           "procNFe",
@@ -104031,6 +104055,7 @@
         "kind": "enum",
         "name": "nivel_risco",
         "schema": "public",
+        "type_ref": "nivel_risco",
         "values": [
           "BAIXO",
           "MEDIO",
@@ -104042,6 +104067,7 @@
         "kind": "enum",
         "name": "order_status",
         "schema": "public",
+        "type_ref": "order_status",
         "values": [
           "PENDING",
           "MATCHED",
@@ -104058,6 +104084,7 @@
         "kind": "enum",
         "name": "org_papel",
         "schema": "public",
+        "type_ref": "org_papel",
         "values": [
           "RESPONSAVEL",
           "ADMIN",
@@ -104070,6 +104097,7 @@
         "kind": "enum",
         "name": "prioridade_alerta",
         "schema": "public",
+        "type_ref": "prioridade_alerta",
         "values": [
           "baixa",
           "media",
@@ -104082,6 +104110,7 @@
         "kind": "enum",
         "name": "regiao_brasil",
         "schema": "public",
+        "type_ref": "regiao_brasil",
         "values": [
           "NORTE",
           "NORDESTE",
@@ -104095,6 +104124,7 @@
         "kind": "enum",
         "name": "regime_tributario_enum",
         "schema": "public",
+        "type_ref": "regime_tributario_enum",
         "values": [
           "MEI",
           "SIMPLES",
@@ -104108,6 +104138,7 @@
         "kind": "enum",
         "name": "sefaz_ambiente",
         "schema": "public",
+        "type_ref": "sefaz_ambiente",
         "values": [
           "homologacao",
           "producao"
@@ -104118,6 +104149,7 @@
         "kind": "enum",
         "name": "status_workflow",
         "schema": "public",
+        "type_ref": "status_workflow",
         "values": [
           "IDENTIFICADO",
           "EM_ANALISE",
@@ -104132,6 +104164,7 @@
         "kind": "enum",
         "name": "tipo_alerta_tributario",
         "schema": "public",
+        "type_ref": "tipo_alerta_tributario",
         "values": [
           "vencimento_apuracao",
           "vencimento_darf",
@@ -104152,6 +104185,7 @@
         "kind": "enum",
         "name": "tipo_cobranca",
         "schema": "public",
+        "type_ref": "tipo_cobranca",
         "values": [
           "transferencia",
           "pix",
@@ -104168,6 +104202,7 @@
         "kind": "enum",
         "name": "tipo_destinatario",
         "schema": "public",
+        "type_ref": "tipo_destinatario",
         "values": [
           "CONTRIBUINTE_REVENDA",
           "CONTRIBUINTE_USO_CONSUMO",
@@ -104180,6 +104215,7 @@
         "kind": "enum",
         "name": "uf_brasil",
         "schema": "public",
+        "type_ref": "uf_brasil",
         "values": [
           "AC",
           "AL",
@@ -104215,6 +104251,7 @@
         "kind": "enum",
         "name": "vehicle_type",
         "schema": "public",
+        "type_ref": "vehicle_type",
         "values": [
           "MOTORCYCLE",
           "CAR",

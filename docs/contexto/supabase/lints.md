@@ -62,6 +62,7 @@ Verificações objetivas feitas no catálogo. Um agente deve ler isto antes de p
 | BAIXA | fk_without_index | public.eventos_contabilizacao_log.eventos_contabilizacao_log_regra_id_fkey | FK sem índice nas colunas ['regra_id']: joins e DELETE/UPDATE na tabela pai ficam lentos. |
 | BAIXA | fk_without_index | public.evidencias_pacotes.evidencias_pacotes_verificacao_id_fkey | FK sem índice nas colunas ['verificacao_id']: joins e DELETE/UPDATE na tabela pai ficam lentos. |
 | BAIXA | fk_without_index | public.execucoes_cobranca.execucoes_cobranca_empresa_id_fkey | FK sem índice nas colunas ['empresa_id']: joins e DELETE/UPDATE na tabela pai ficam lentos. |
+| BAIXA | fk_without_index | public.execucoes_regua_cobranca.execucoes_regua_cobranca_conta_receber_id_fkey | FK sem índice nas colunas ['conta_receber_id']: joins e DELETE/UPDATE na tabela pai ficam lentos. |
 | BAIXA | fk_without_index | public.expert_conversations.expert_conversations_empresa_id_fkey | FK sem índice nas colunas ['empresa_id']: joins e DELETE/UPDATE na tabela pai ficam lentos. |
 | BAIXA | fk_without_index | public.expert_messages.expert_messages_conversation_id_fkey | FK sem índice nas colunas ['conversation_id']: joins e DELETE/UPDATE na tabela pai ficam lentos. |
 | BAIXA | fk_without_index | public.extrato_bancario.extrato_bancario_conta_bancaria_id_fkey | FK sem índice nas colunas ['conta_bancaria_id']: joins e DELETE/UPDATE na tabela pai ficam lentos. |
@@ -90,6 +91,7 @@ Verificações objetivas feitas no catálogo. Um agente deve ler isto antes de p
 | BAIXA | fk_without_index | public.movimentacoes.movimentacoes_conta_bancaria_id_fkey | FK sem índice nas colunas ['conta_bancaria_id']: joins e DELETE/UPDATE na tabela pai ficam lentos. |
 | BAIXA | fk_without_index | public.movimentacoes.movimentacoes_empresa_id_fkey | FK sem índice nas colunas ['empresa_id']: joins e DELETE/UPDATE na tabela pai ficam lentos. |
 | BAIXA | fk_without_index | public.n8n_dispatch_logs.n8n_dispatch_logs_config_id_fkey | FK sem índice nas colunas ['config_id']: joins e DELETE/UPDATE na tabela pai ficam lentos. |
+| BAIXA | fk_without_index | public.n8n_workflow_configs.n8n_workflow_configs_created_by_fkey | FK sem índice nas colunas ['created_by']: joins e DELETE/UPDATE na tabela pai ficam lentos. |
 | BAIXA | fk_without_index | public.negativacoes.negativacoes_cliente_id_fkey | FK sem índice nas colunas ['cliente_id']: joins e DELETE/UPDATE na tabela pai ficam lentos. |
 | BAIXA | fk_without_index | public.negativacoes.negativacoes_conta_receber_id_fkey | FK sem índice nas colunas ['conta_receber_id']: joins e DELETE/UPDATE na tabela pai ficam lentos. |
 | BAIXA | fk_without_index | public.new_device_alerts.new_device_alerts_device_id_fkey | FK sem índice nas colunas ['device_id']: joins e DELETE/UPDATE na tabela pai ficam lentos. |
