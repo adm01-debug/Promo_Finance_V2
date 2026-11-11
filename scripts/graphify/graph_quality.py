@@ -9,7 +9,7 @@ from pathlib import Path, PurePosixPath
 import re
 import tempfile
 
-from run import ROOT, command
+from run import PROFILE_NAME, ROOT, command
 
 
 def edges_of(graph):
@@ -36,7 +36,7 @@ def validate_file_hashes(root, files):
 
 
 def validate_freshness(root, evidence):
-    if evidence.get("status") != "validado_com_limitacoes":
+    if not isinstance(evidence, dict) or evidence.get("status") != "validado_com_limitacoes":
         raise ValueError("Evidência não está validada.")
     if evidence.get("commit") != command(["git", "rev-parse", "HEAD"], root).strip():
         raise ValueError("Evidência pertence a outro commit.")
@@ -62,6 +62,8 @@ def community_label(nodes):
         if not source:
             continue
         parts = Path(source).parts
+        if not parts:
+            continue
         if len(parts) >= 3 and parts[0] in {"src", "supabase"}:
             candidates.append("/".join(parts[:3]))
         else:
@@ -133,7 +135,7 @@ def query_graph(graph, term, max_nodes=20):
     for edge in edges_of(graph):
         adjacency.setdefault(edge.get("source"), []).append((edge.get("target"), edge))
         adjacency.setdefault(edge.get("target"), []).append((edge.get("source"), edge))
-    queue, seen, selected_edges = deque(starts), set(), []
+    queue, seen, selected_edge_keys, selected_edges = deque(starts), set(), set(), []
     while queue and len(seen) < max_nodes:
         current = queue.popleft()
         if current in seen:
@@ -142,7 +144,9 @@ def query_graph(graph, term, max_nodes=20):
         for target, edge in adjacency.get(current, []):
             if target not in seen and target not in queue:
                 queue.append(target)
-            if edge not in selected_edges:
+            edge_key = (edge.get("source"), edge.get("target"), edge.get("relation"))
+            if edge_key not in selected_edge_keys:
+                selected_edge_keys.add(edge_key)
                 selected_edges.append(edge)
     nodes = [node for node in graph.get("nodes", []) if node["id"] in seen]
     edges = [edge for edge in selected_edges if edge.get("source") in seen and edge.get("target") in seen]
@@ -159,16 +163,23 @@ def shortest_path(graph, source_term, target_term, directed=None):
         adjacency.setdefault(edge.get("source"), []).append(edge.get("target"))
         if not directed:
             adjacency.setdefault(edge.get("target"), []).append(edge.get("source"))
-    queue = deque((source, [source]) for source in sources)
+    queue = deque(sources)
     seen = set(sources)
+    predecessor: dict = {source: None for source in sources}
     while queue:
-        current, path = queue.popleft()
+        current = queue.popleft()
         if current in targets:
-            return path
+            path = []
+            node = current
+            while node is not None:
+                path.append(node)
+                node = predecessor[node]
+            return list(reversed(path))
         for neighbor in adjacency.get(current, []):
             if neighbor not in seen:
                 seen.add(neighbor)
-                queue.append((neighbor, path + [neighbor]))
+                predecessor[neighbor] = current
+                queue.append(neighbor)
     return []
 
 
@@ -191,8 +202,12 @@ def summary_svg(metrics):
 
 
 def latest_profile_files(root, profile):
+    # O perfil compõe um caminho: sem validar, "../x" leria execuções fora de graphify-out/.
+    if not isinstance(profile, str) or not PROFILE_NAME.fullmatch(profile):
+        raise ValueError("Nome de perfil inválido.")
+    # O nome desempata mtimes iguais para a escolha não depender da ordem do sistema de arquivos.
     executions = sorted((root / "graphify-out" / profile).glob("execucao-*"),
-                        key=lambda path: path.stat().st_mtime, reverse=True)
+                        key=lambda path: (path.stat().st_mtime, path.name), reverse=True)
     for run in executions:
         graph = run / "graphify-out" / "graph.json"
         raw = run / "extracao-bruta.json"
@@ -202,7 +217,7 @@ def latest_profile_files(root, profile):
                 manifest = json.loads(evidence.read_text())
             except (OSError, json.JSONDecodeError):
                 continue
-            if manifest.get("status") == "validado_com_limitacoes":
+            if isinstance(manifest, dict) and manifest.get("status") == "validado_com_limitacoes":
                 return graph, raw, evidence
     raise ValueError(f"Nenhuma execução completa para o perfil: {profile}")
 

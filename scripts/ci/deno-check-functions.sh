@@ -14,6 +14,19 @@ set -euo pipefail
 
 cd "$(dirname "$0")/../.." || exit 1
 
+# Sem isto o script validava a lista inteira e só então morria com
+# "deno: command not found" (127), sem dizer o que fazer.
+if ! command -v deno >/dev/null 2>&1; then
+  echo "::error::deno não encontrado no PATH — instale o Deno (no CI: denoland/setup-deno) antes de rodar este gate."
+  exit 127
+fi
+# `find` falhando dentro de `< <(...)` não derruba o script: sem o diretório, o
+# gate passaria só com a lista fixa, sem nenhum arquivo de _shared.
+if [ ! -d supabase/functions/_shared ]; then
+  echo "::error::supabase/functions/_shared não encontrado — o gate Deno não tem o que provar."
+  exit 1
+fi
+
 alvos=()
 while IFS= read -r arquivo; do
   alvos+=("$arquivo")
@@ -45,10 +58,14 @@ for arquivo in "${alvos[@]}"; do
 done
 
 echo "▶ Type-check de ${#alvos[@]} arquivos críticos alterados nesta trilha…"
-# Evita absorver o package.json da aplicação React e depender de node_modules.
-# O gate passa a validar apenas o grafo Deno das Edge Functions, inclusive em
-# um checkout limpo do runner.
-deno check --no-config --no-lock "${alvos[@]}"
+# --no-config evita carregar o deno.json da raiz (que tem nodeModulesDir=auto),
+# mantendo o gate isolado das dependências do frontend React.
+# O import map das Edge Functions é passado explicitamente via --import-map.
+IMPORT_MAP=""
+[ -f "supabase/functions/import_map.json" ] && IMPORT_MAP="--import-map=supabase/functions/import_map.json"
+
+# shellcheck disable=SC2086
+deno check --no-config --no-lock $IMPORT_MAP "${alvos[@]}"
 
 echo
 echo "✅ Gate Deno do escopo endurecido aprovado."

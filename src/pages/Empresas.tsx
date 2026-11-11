@@ -59,7 +59,7 @@ const itemVariants = {
     opacity: 1,
     y: 0,
     scale: 1,
-    transition: { type: 'spring', stiffness: 350, damping: 26 },
+    transition: { type: 'spring' as const, stiffness: 350, damping: 26 },
   },
 };
 const heroVariants = {
@@ -68,7 +68,7 @@ const heroVariants = {
     opacity: 1,
     y: 0,
     scale: 1,
-    transition: { type: 'spring', stiffness: 300, damping: 24, delay: 0.15 },
+    transition: { type: 'spring' as const, stiffness: 300, damping: 24, delay: 0.15 },
   },
 };
 

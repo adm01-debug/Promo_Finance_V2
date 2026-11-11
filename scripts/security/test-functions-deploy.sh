@@ -16,13 +16,23 @@ MOCK
 chmod +x "$TMP_DIR/bin/supabase"
 
 cd "$ROOT"
+# REQUIRED_SECRETS/FUNCTIONS_DIR/STOP_ON_FAIL vazios: o job de deploy exporta
+# REQUIRED_SECRETS (vars.REQUIRED_SECRETS) e, herdado aqui, fazia o script
+# consultar `supabase secrets list` no mock e abortar com exit 5.
 PATH="$TMP_DIR/bin:$PATH" \
 SUPABASE_TEST_CAPTURE="$CAPTURE" \
 SUPABASE_ACCESS_TOKEN="sbp_teste" \
 SUPABASE_PROJECT_REF="projeto_teste" \
+REQUIRED_SECRETS="" \
+FUNCTIONS_DIR="" \
+STOP_ON_FAIL="" \
 bash scripts/migrate-functions.sh \
   --only "detectar-anomalias-financeiras,compare-schemas" >/dev/null
 
+if [[ ! -f "$CAPTURE" ]]; then
+  echo "Falha: scripts/migrate-functions.sh terminou sem chamar a CLI supabase." >&2
+  exit 1
+fi
 mapfile -t calls < "$CAPTURE"
 [[ "${#calls[@]}" -eq 2 ]] || {
   echo "Falha: esperadas 2 chamadas da CLI; encontradas ${#calls[@]}." >&2

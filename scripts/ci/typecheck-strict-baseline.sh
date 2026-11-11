@@ -37,11 +37,37 @@ atualizar() {
     printf '%s\n' "$SAIDA" >&2
     return 1
   fi
+  # Linha "error TS" sem arquivo na frente é erro de CONFIGURAÇÃO (TS5083, TS18003…),
+  # não dívida de tipo: não pode virar assinatura de baseline.
+  if printf '%s\n' "$ERROS" | grep -q '^error TS'; then
+    echo "::error::tsc reportou erro de configuração — gate não avaliado:" >&2
+    printf '%s\n' "$ERROS" | grep '^error TS' >&2
+    return 1
+  fi
   [[ -z "$ERROS" ]] || printf '%s\n' "$ERROS"
 }
 
+case "${1:-}" in
+  ""|--update) ;;
+  -h|--help)
+    echo "Uso: scripts/ci/typecheck-strict-baseline.sh [--update]"
+    echo "  (sem argumento)  falha se houver erro de strictNullChecks fora do baseline"
+    echo "  --update         regera $BASELINE (só quando intencional)"
+    exit 0
+    ;;
+  *)
+    echo "::error::argumento desconhecido: $1 (use --update ou --help)" >&2
+    exit 2
+    ;;
+esac
+
 if [[ "${1:-}" = "--update" ]]; then
-  atualizar > "$BASELINE"
+  # Via temporário: com `atualizar > "$BASELINE"` um crash do tsc deixava o
+  # baseline versionado truncado (vazio) antes de o script abortar.
+  NOVO="$(mktemp)"
+  trap 'rm -f "$NOVO"' EXIT
+  atualizar > "$NOVO"
+  cat "$NOVO" > "$BASELINE"
   echo "Baseline regerado: $(wc -l < "$BASELINE") assinaturas"
   exit 0
 fi
@@ -56,6 +82,9 @@ atualizar > "$ATUAL"
 TOTAL_ATUAL=$(wc -l < "$ATUAL")
 TOTAL_BASELINE=$(wc -l < "$BASELINE")
 
+if ! sort -c "$BASELINE" 2>/dev/null; then
+  sort -u "$BASELINE" -o "$BASELINE"
+fi
 comm -23 "$ATUAL" "$BASELINE" > "$NOVOS"
 NOVOS_COUNT=$(wc -l < "$NOVOS")
 

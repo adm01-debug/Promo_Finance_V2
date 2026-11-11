@@ -23,9 +23,17 @@
  *
  * Variáveis obrigatórias: SUPABASE_URL, SUPABASE_ANON_KEY.
  * Opcional: CI_GATE_LOG_SECRET (registra falhas em ci_security_gate_events).
+ *
+ * Rodar: bun run scripts/security/test-anon-surface.ts
+ * Exit: 0 sem regressão · 1 regressão/vazamento · 2 variável ausente ou erro
+ * inesperado (rede, timeout).
+ * Testes: python3 scripts/security/test_gates_http.py (servidor local)
  */
 
-type Mode = "empty" | "denied";
+// Sem resposta em 30s a chamada aborta e o probe sai 2, em vez de pendurar o job.
+const FETCH_TIMEOUT_MS = 30_000;
+
+type Mode = 'empty' | 'denied';
 
 interface TableProbe {
   table: string;
@@ -44,56 +52,60 @@ interface RpcProbe {
 
 interface Failure {
   target: string;
-  kind: "read" | "write" | "rpc";
+  kind: 'read' | 'write' | 'rpc';
   expected: string;
   observed: string;
 }
 
-const SUPABASE_URL = mustEnv("SUPABASE_URL");
-const ANON_KEY = mustEnv("SUPABASE_ANON_KEY");
+const SUPABASE_URL = mustEnv('SUPABASE_URL');
+const ANON_KEY = mustEnv('SUPABASE_ANON_KEY');
 
 /**
  * Tabelas com dados de negócio: precisam responder 200 [] para anônimos.
  * Se alguma passar a devolver linhas, é exposição de dados.
  */
 const TABLES: TableProbe[] = [
-  { table: "profiles", read: "empty" },
-  { table: "user_roles", read: "empty" },
-  { table: "clientes", read: "empty" },
-  { table: "empresas", read: "empty" },
-  { table: "fornecedores", read: "empty" },
-  { table: "contas_pagar", read: "empty" },
-  { table: "contas_receber", read: "empty" },
-  { table: "audit_logs", read: "empty" },
+  { table: 'profiles', read: 'empty' },
+  { table: 'user_roles', read: 'empty' },
+  { table: 'clientes', read: 'empty' },
+  { table: 'empresas', read: 'empty' },
+  { table: 'fornecedores', read: 'empty' },
+  { table: 'contas_pagar', read: 'empty' },
+  { table: 'contas_receber', read: 'empty' },
+  { table: 'audit_logs', read: 'empty' },
   // Telemetria: escrita anônima é intencional (GRANT INSERT em colunas
   // específicas — ver Gap #22). A leitura continua restrita pela RLS.
   {
-    table: "frontend_error_logs",
-    read: "empty",
+    table: 'frontend_error_logs',
+    read: 'empty',
     writeAllowed: true,
-    writeBody: { error_message: "[ci-anon-surface-probe] canário de regressão", severity: "warning", url: "https://ci.local/anon-surface-probe" },
+    writeBody: {
+      error_message: '[ci-anon-surface-probe] canário de regressão',
+      severity: 'warning',
+      url: 'https://ci.local/anon-surface-probe',
+    },
   },
   // Cofres de credenciais / estado interno — privilégio revogado para anon.
-  { table: "api_keys", read: "denied" },
-  { table: "bling_tokens", read: "denied" },
-  { table: "bitrix_oauth_tokens", read: "denied" },
-  { table: "bitrix24_tokens", read: "denied" },
-  { table: "integration_secrets", read: "denied" },
-  { table: "portal_cliente_tokens", read: "denied" },
-  { table: "empresas_certificados", read: "denied" },
-  { table: "frontend_error_alert_state", read: "denied" },
+  { table: 'api_keys', read: 'denied' },
+  { table: 'bling_tokens', read: 'denied' },
+  { table: 'bitrix_oauth_tokens', read: 'denied' },
+  { table: 'bitrix24_tokens', read: 'denied' },
+  { table: 'integration_secrets', read: 'denied' },
+  { table: 'portal_cliente_tokens', read: 'denied' },
+  { table: 'empresas_certificados', read: 'denied' },
+  { table: 'frontend_error_alert_state', read: 'denied' },
 ];
 
 /** RPCs administrativas: nenhuma pode ser executada por anon. */
 const RPCS: RpcProbe[] = [
-  { fn: "get_frontend_error_groups", allowed: false },
-  { fn: "get_frontend_error_occurrences", allowed: false },
-  { fn: "claim_frontend_error_alerts", allowed: false },
-  { fn: "get_cobertura_fiscal_uf", allowed: false },
-  { fn: "get_catalogos_tributarios_health", allowed: false },
-  { fn: "get_user_permissions", allowed: false },
-  { fn: "export_asaas_audit_csv", allowed: false },
-  { fn: "certificado_get_password", allowed: false },
+  { fn: 'get_frontend_error_groups', allowed: false },
+  { fn: 'get_frontend_error_occurrences', allowed: false },
+  { fn: 'claim_frontend_error_alerts', allowed: false },
+  { fn: 'get_cobertura_fiscal_uf', allowed: false },
+  { fn: 'get_catalogos_tributarios_health', allowed: false },
+  { fn: 'get_user_permissions', allowed: false },
+  { fn: 'export_asaas_audit_csv', allowed: false },
+  { fn: 'certificado_get_password', allowed: false },
 ];
 
 function mustEnv(name: string): string {
@@ -109,7 +121,7 @@ function anonHeaders(): Record<string, string> {
   return {
     apikey: ANON_KEY,
     Authorization: `Bearer ${ANON_KEY}`,
-    "Content-Type": "application/json",
+    'Content-Type': 'application/json',
   };
 }
 
@@ -122,117 +134,173 @@ async function readBody(res: Response): Promise<unknown> {
 }
 
 function isDenied(status: number, code?: string): boolean {
-  return status === 401 || status === 403 || (status === 404 && code === "PGRST202");
+  // 400 com PGRST100/PGRST102 = PostgREST rejeita a requisição por schema mismatch,
+  // o que também indica bloqueio efectivo para o papel anônimo.
+  if (status === 400 && code != null && /^PGRST1/.test(code)) return true;
+  return status === 401 || status === 403 || (status === 404 && code === 'PGRST202');
 }
 
 function codeOf(body: unknown): string | undefined {
-  if (body && typeof body === "object" && "code" in body) {
+  if (body && typeof body === 'object' && 'code' in body) {
     const c = (body as { code?: unknown }).code;
-    return typeof c === "string" ? c : undefined;
+    return typeof c === 'string' ? c : undefined;
   }
   return undefined;
 }
 
 async function probeRead(p: TableProbe, failures: Failure[]): Promise<void> {
-  const res = await fetch(
-    `${SUPABASE_URL}/rest/v1/${p.table}?select=*&limit=1`,
-    { headers: anonHeaders() },
-  );
+  const res = await fetch(`${SUPABASE_URL}/rest/v1/${p.table}?select=*&limit=1`, {
+    headers: anonHeaders(),
+    signal: AbortSignal.timeout(FETCH_TIMEOUT_MS),
+  });
   const body = await readBody(res);
   const code = codeOf(body);
-  const observed = `${res.status}/${code ?? "-"}`;
+  const observed = `${res.status}/${code ?? '-'}`;
 
   if (res.status >= 500) {
-    failures.push({ target: p.table, kind: "read", expected: p.read, observed: `${observed} (erro interno)` });
+    failures.push({
+      target: p.table,
+      kind: 'read',
+      expected: p.read,
+      observed: `${observed} (erro interno)`,
+    });
     return;
   }
 
-  if (p.read === "denied") {
+  if (p.read === 'denied') {
     if (!isDenied(res.status, code)) {
-      failures.push({ target: p.table, kind: "read", expected: "401/403 (privilégio revogado)", observed });
+      failures.push({
+        target: p.table,
+        kind: 'read',
+        expected: '401/403 (privilégio revogado)',
+        observed,
+      });
     }
     return;
   }
 
   // Modo "empty": exige 200 com array vazio.
   if (res.status !== 200) {
-    failures.push({ target: p.table, kind: "read", expected: "200 []", observed });
+    failures.push({ target: p.table, kind: 'read', expected: '200 []', observed });
     return;
   }
-  if (Array.isArray(body) && body.length > 0) {
-    failures.push({ target: p.table, kind: "read", expected: "200 [] (sem linhas)", observed: `200 com ${body.length} linha(s) — VAZAMENTO` });
+  // 200 cujo corpo não é um array (JSON inválido, objeto, página de proxy) não
+  // prova que a RLS devolveu vazio — só `[]` conta.
+  if (!Array.isArray(body)) {
+    failures.push({
+      target: p.table,
+      kind: 'read',
+      expected: '200 []',
+      observed: `${observed} (corpo não é array JSON)`,
+    });
+    return;
+  }
+  if (body.length > 0) {
+    failures.push({
+      target: p.table,
+      kind: 'read',
+      expected: '200 [] (sem linhas)',
+      observed: `200 com ${body.length} linha(s) — VAZAMENTO`,
+    });
   }
 }
 
 async function probeWrite(p: TableProbe, failures: Failure[]): Promise<void> {
   const res = await fetch(`${SUPABASE_URL}/rest/v1/${p.table}`, {
-    method: "POST",
+    method: 'POST',
     headers: anonHeaders(),
     body: JSON.stringify(p.writeBody ?? {}),
+    signal: AbortSignal.timeout(FETCH_TIMEOUT_MS),
   });
   const body = await readBody(res);
   const code = codeOf(body);
-  const observed = `${res.status}/${code ?? "-"}`;
+  const observed = `${res.status}/${code ?? '-'}`;
   const accepted = res.status >= 200 && res.status < 300;
+
+  // 5xx nunca é aceito (ver cabeçalho): a escrita chegou a executar policy/gatilho.
+  if (res.status >= 500) {
+    failures.push({
+      target: p.table,
+      kind: 'write',
+      expected: p.writeAllowed ? 'escrita permitida' : 'escrita bloqueada',
+      observed: `${observed} (erro interno)`,
+    });
+    return;
+  }
 
   if (p.writeAllowed) {
     if (isDenied(res.status, code)) {
-      failures.push({ target: p.table, kind: "write", expected: "escrita permitida", observed });
+      failures.push({ target: p.table, kind: 'write', expected: 'escrita permitida', observed });
     }
     return;
   }
   if (accepted) {
-    failures.push({ target: p.table, kind: "write", expected: "escrita bloqueada", observed: `${observed} — ESCRITA ANÔNIMA ACEITA` });
+    failures.push({
+      target: p.table,
+      kind: 'write',
+      expected: 'escrita bloqueada',
+      observed: `${observed} — ESCRITA ANÔNIMA ACEITA`,
+    });
   }
 }
 
 async function probeRpc(p: RpcProbe, failures: Failure[]): Promise<void> {
   const res = await fetch(`${SUPABASE_URL}/rest/v1/rpc/${p.fn}`, {
-    method: "POST",
+    method: 'POST',
     headers: anonHeaders(),
     body: JSON.stringify(p.body ?? {}),
+    signal: AbortSignal.timeout(FETCH_TIMEOUT_MS),
   });
   const body = await readBody(res);
   const code = codeOf(body);
-  const observed = `${res.status}/${code ?? "-"}`;
+  const observed = `${res.status}/${code ?? '-'}`;
   const denied = isDenied(res.status, code);
 
   if (p.allowed && denied) {
-    failures.push({ target: p.fn, kind: "rpc", expected: "execução permitida", observed });
+    failures.push({ target: p.fn, kind: 'rpc', expected: 'execução permitida', observed });
   }
   if (!p.allowed && !denied) {
-    failures.push({ target: p.fn, kind: "rpc", expected: "execução bloqueada", observed });
+    failures.push({ target: p.fn, kind: 'rpc', expected: 'execução bloqueada', observed });
   }
 }
 
 async function reportFailures(failures: Failure[]): Promise<void> {
   const secret = process.env.CI_GATE_LOG_SECRET;
   if (!secret) {
-    console.warn("⚠️  CI_GATE_LOG_SECRET não definido — pulando registro remoto.");
+    console.warn('⚠️  CI_GATE_LOG_SECRET não definido — pulando registro remoto.');
     return;
   }
+  // Contrato do schema Zod de supabase/functions/ci-security-gate-log:
+  // `expected_state` é enum allow|deny, `observed_status` é inteiro e os campos
+  // opcionais não aceitam `null`. O texto livre do probe vai em exception_notes;
+  // fora desse contrato a função respondia 400 e nenhuma falha era registrada.
   const payload = {
-    git_sha: process.env.GITHUB_SHA ?? null,
-    git_ref: process.env.GITHUB_REF ?? null,
+    git_sha: process.env.GITHUB_SHA || undefined,
+    git_ref: process.env.GITHUB_REF || undefined,
     workflow_run_url:
       process.env.GITHUB_SERVER_URL && process.env.GITHUB_REPOSITORY && process.env.GITHUB_RUN_ID
         ? `${process.env.GITHUB_SERVER_URL}/${process.env.GITHUB_REPOSITORY}/actions/runs/${process.env.GITHUB_RUN_ID}`
-        : null,
-    migration_revision: process.env.MIGRATION_REVISION ?? null,
-    failures: failures.map((f) => ({
-      matrix: "anon_http_surface",
-      function_name: f.target,
-      role_tested: "anon",
-      expected_state: f.expected,
-      observed_status: null,
-      observed_code: f.observed,
-    })),
+        : undefined,
+    migration_revision: process.env.MIGRATION_REVISION || undefined,
+    failures: failures.map((f) => {
+      const status = Number.parseInt(f.observed, 10);
+      return {
+        matrix: 'anon_http_surface',
+        function_name: f.target,
+        role_tested: 'anon',
+        expected_state: /^(empty|200 \[\])|permitida$/.test(f.expected) ? 'allow' : 'deny',
+        observed_status: Number.isInteger(status) ? status : undefined,
+        observed_code: f.observed,
+        exception_notes: `[${f.kind}] esperado: ${f.expected}`,
+      };
+    }),
   };
   try {
     const res = await fetch(`${SUPABASE_URL}/functions/v1/ci-security-gate-log`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json", "x-ci-gate-secret": secret },
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'x-ci-gate-secret': secret },
       body: JSON.stringify(payload),
+      signal: AbortSignal.timeout(FETCH_TIMEOUT_MS),
     });
     console.warn(`ℹ️  Registro remoto do gate: HTTP ${res.status}`);
   } catch (err) {
@@ -254,19 +322,21 @@ async function main(): Promise<void> {
     checks += 1;
   }
 
-  console.log("\n=== Superfície anônima (HTTP probe) ===");
+  console.log('\n=== Superfície anônima (HTTP probe) ===');
   console.log(`Alvos verificados: ${checks} • Falhas: ${failures.length}`);
 
   if (failures.length > 0) {
-    console.error("\n❌ Regressões detectadas:");
+    console.error('\n❌ Regressões detectadas:');
     for (const f of failures) {
-      console.error(`  • [${f.kind}] ${f.target} — esperado: ${f.expected} • observado: ${f.observed}`);
+      console.error(
+        `  • [${f.kind}] ${f.target} — esperado: ${f.expected} • observado: ${f.observed}`
+      );
     }
     await reportFailures(failures);
     process.exit(1);
   }
 
-  console.log("✅ Nenhum vazamento nem regressão de policy para a identidade anônima.");
+  console.log('✅ Nenhum vazamento nem regressão de policy para a identidade anônima.');
 }
 
 main().catch((err) => {

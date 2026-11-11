@@ -108,13 +108,18 @@ WITH checks AS (
       'views com chave_pix mantêm máscara por papel'
     )
   FROM (
-    SELECT v.view_name
-    FROM information_schema.views v
-    WHERE v.table_schema = 'public'
-      AND v.view_name IN ('vw_contas_receber_painel', 'vw_transferencias_painel')
+    -- pg_class + pg_get_viewdef: information_schema.views não tem coluna
+    -- view_name (a consulta antiga abortava o arquivo inteiro) e devolve
+    -- view_definition NULL para quem não é dono da view (falso "pass").
+    SELECT c.relname AS view_name
+    FROM pg_class c
+    JOIN pg_namespace n ON n.oid = c.relnamespace
+    WHERE n.nspname = 'public'
+      AND c.relkind = 'v'
+      AND c.relname IN ('vw_contas_receber_painel', 'vw_transferencias_painel')
       AND (
-        v.view_definition NOT ILIKE '%mascarar_chave_pix%'
-        OR v.view_definition NOT ILIKE '%pode_ver_dado_sensivel%'
+        pg_get_viewdef(c.oid) NOT ILIKE '%mascarar_chave_pix%'
+        OR pg_get_viewdef(c.oid) NOT ILIKE '%pode_ver_dado_sensivel%'
       )
   ) bad_pii
 )

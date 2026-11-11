@@ -7,12 +7,25 @@ set -euo pipefail
 RUN_ID=""
 while [ $# -gt 0 ]; do
   case "$1" in
-    --run-id) RUN_ID="$2"; shift 2 ;;
+    --run-id) [ $# -ge 2 ] || { echo "flag --run-id exige um valor" >&2; exit 2; }
+              RUN_ID="$2"; shift 2 ;;
+    -h|--help)
+      echo "Uso: $(basename "$0") --run-id <uuid>"
+      echo ""
+      echo "Opcoes:"
+      echo "  --run-id <uuid>    UUID da execução de cópia a validar (obrigatório)"
+      echo "  -h, --help         Exibe esta ajuda"
+      echo ""
+      echo "Env obrigatório: PROD_DB_URL, STAGING_DB_URL"
+      exit 0 ;;
     *) echo "flag desconhecida: $1" >&2; exit 2 ;;
   esac
 done
 [ -n "$RUN_ID" ] || { echo "--run-id obrigatório" >&2; exit 2; }
 [ -n "${PROD_DB_URL:-}" ] && [ -n "${STAGING_DB_URL:-}" ] || { echo "PROD_DB_URL/STAGING_DB_URL ausentes" >&2; exit 2; }
+# O run-id entra em SQL: só UUID.
+[[ "$RUN_ID" =~ ^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$ ]] \
+  || { echo "run-id inválido (esperado UUID): $RUN_ID" >&2; exit 2; }
 
 emit() {
   printf '{"ts":"%s","assertion":"%s","table":"%s","status":"%s","expected":"%s","actual":"%s","detail":%s}\n' \
@@ -23,13 +36,21 @@ emit() {
 FAILS=0
 
 # Descobre tabelas do run (com WHERE do grupo se aplicável, salvo em notes)
-mapfile -t ROWS < <(psql "$STAGING_DB_URL" -Atc "
+# Sem process substitution: nela a falha do psql some e o verify "passava"
+# sem ter lido nenhum checkpoint.
+ROWS=()
+if LISTA=$(psql "$STAGING_DB_URL" -Atc "
   SELECT c.table_name || '|' || c.group_name || '|' || COALESCE(c.rows_source::text,'-1') || '|' || c.rows_copied
     FROM _migration.checkpoints c
    WHERE c.run_id='${RUN_ID}' AND c.status='done'
-   ORDER BY c.table_name")
+   ORDER BY c.table_name" 2>/dev/null); then
+  [ -z "$LISTA" ] || mapfile -t ROWS <<< "$LISTA"
+else
+  emit "checkpoints" "*" "fail" "lidos" "erro" "não foi possível ler _migration.checkpoints em staging"
+  FAILS=$((FAILS+1))
+fi
 
-for line in "${ROWS[@]}"; do
+for line in "${ROWS[@]+"${ROWS[@]}"}"; do
   IFS='|' read -r T G SRC DST <<< "$line"
 
   # count
@@ -61,15 +82,27 @@ for line in "${ROWS[@]}"; do
   fi
 done
 
-# FKs órfãos (rápido): valida constraints em staging
+# FKs órfão (rápido): valida constraints em staging
 BAD_FK=$(psql "$STAGING_DB_URL" -Atc "
-  SELECT count(*) FROM (
-    SELECT conrelid::regclass::text AS t
-      FROM pg_constraint
-     WHERE contype='f'
-       AND connamespace = 'public'::regnamespace
-  ) s
-  WHERE NOT EXISTS (SELECT 1)" 2>/dev/null || echo "0")
-emit "fk" "*" "pass" "0" "$BAD_FK" "structural check only"
+  SELECT count(*)
+    FROM pg_constraint c
+   WHERE c.contype = 'f'
+     AND c.connamespace = 'public'::regnamespace
+     AND NOT EXISTS (
+       SELECT 1 FROM pg_class pc
+        WHERE pc.oid = c.confrelid
+     )" 2>/dev/null || echo "erro")
+if [ "$BAD_FK" = "0" ]; then
+  emit "fk" "*" "pass" "0" "$BAD_FK" "structural check only"
+elif [ "$BAD_FK" = "erro" ]; then
+  # Consulta que falha não é aprovação.
+  emit "fk" "*" "unverified" "0" "-" "consulta de FK falhou em staging"
+else
+  emit "fk" "*" "fail" "0" "$BAD_FK" "FK constraints sem tabela referenciada"
+  FAILS=$((FAILS+1))
+fi
 
+# Exit code é módulo 256: 256 falhas viraria 0 (sucesso).
+[ "$FAILS" -gt 255 ] && FAILS=255
 exit "$FAILS"
+

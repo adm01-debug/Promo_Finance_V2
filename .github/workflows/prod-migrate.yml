@@ -152,6 +152,18 @@ jobs:
           # Versões locais pendentes (não constam do ledger)
           DIVERGENTES=0
           for f in supabase/migrations/*.sql; do
+            bn=$(basename "$f")
+            # Artefatos fora do fluxo rastreável não contam como divergência:
+            #  - UUID companion do Lovable (efeitos já no banco via ledger)
+            #  - arquivos pré-bootstrap (versão inválida p/ schema_migrations)
+            case "$bn" in
+              001_*|002_*|003_*) continue ;;
+              20241231000000_*|20241231000001_*) continue ;;
+              20251231000001_*|20251231000002_*|20251231000003_*) continue ;;
+              20251231000100_*|20251231000200_*|20251231000300_*) continue ;;
+              *_ledger_reconciliado.sql) continue ;;
+              *_????????-????-????-????-????????????.sql) continue ;;
+            esac
             V=$(basename "$f" | cut -d_ -f1)
             if ! grep -qx "$V" /tmp/ledger-remoto.txt; then
               if [ "$V" -le "$MAX_REMOTO" ]; then

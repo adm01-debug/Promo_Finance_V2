@@ -1,8 +1,8 @@
 // Edge Function: gerar-pdf-tributario
 // Gera PDF executivo com recomendação tributária e faz upload no bucket
-import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.49.4';
-import { jsPDF } from 'https://esm.sh/jspdf@2.5.1';
-import autoTable from 'https://esm.sh/jspdf-autotable@3.8.2';
+import { createClient } from 'npm:@supabase/supabase-js@2.49.4';
+import { jsPDF } from 'npm:jspdf@2.5.1';
+import autoTable from 'npm:jspdf-autotable@3.8.2';
 import { createLogger } from '../_shared/observability.ts';
 import { z } from 'https://deno.land/x/zod@v3.22.4/mod.ts';
 import { validateContract } from '../_shared/contract-validator.ts';
@@ -10,6 +10,7 @@ import { corsHeadersPara } from '../_shared/cors.ts';
 
 import { getRequestId } from '../_shared/correlation.ts';
 import { withEdgeObservability } from '../_shared/edge-observability.ts';
+import { checkRateLimit, rateLimitResponse } from '../_shared/rate-limit.ts';
 const PdfTributarioBodySchema = z.object({
   empresaId: z.string().uuid(),
   anoReferencia: z.number().int().min(2020).max(2100),
@@ -64,6 +65,18 @@ Deno.serve(
           headers: { ...corsHeaders, 'Content-Type': 'application/json' },
         });
       }
+
+      // Step 36: rate limit 30 req/min — geração de PDF consome CPU e storage
+      const rlClient = createClient(supabaseUrl, serviceKey);
+      const ip = (req.headers.get('x-forwarded-for') ?? 'unknown').split(',')[0].trim();
+      const rl = await checkRateLimit(rlClient, {
+        endpoint: 'gerar-pdf-tributario',
+        ip,
+        limit: 30,
+        windowSeconds: 60,
+        userAgent: req.headers.get('user-agent'),
+      });
+      if (!rl.allowed) return rateLimitResponse(rl, corsHeaders);
 
       const rawBody = await req.json().catch(() => ({}));
       const validation = await validateContract(PdfTributarioBodySchema, rawBody);

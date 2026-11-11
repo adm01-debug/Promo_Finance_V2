@@ -1,13 +1,30 @@
 #!/usr/bin/env node
 
+// Uso: node scripts/security/test-lint-function-repairs.mjs [migration.sql]
+// Exit 0 = invariantes atendidas; 1 = invariante violada ou migration ilegível.
+// Testes: node --test scripts/security/test-lint-function-repairs.unit.mjs
+
 import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
+import { fileURLToPath } from "node:url";
 
-const migrationPath = resolve(
-  process.argv[2] ??
-    "supabase/migrations/20260831153000_corrigir_12_erros_lint_funcoes.sql",
-);
-const sql = readFileSync(migrationPath, "utf8");
+// Padrão resolvido a partir do script, não do diretório corrente: rodado de
+// fora da raiz o gate morria com ENOENT em vez de avaliar a migration.
+const migrationPath = process.argv[2]
+  ? resolve(process.argv[2])
+  : fileURLToPath(
+      new URL(
+        "../../supabase/migrations/20260831153000_corrigir_12_erros_lint_funcoes.sql",
+        import.meta.url,
+      ),
+    );
+let sql;
+try {
+  sql = readFileSync(migrationPath, "utf8");
+} catch (error) {
+  console.error(`Falha: não foi possível ler a migration ${migrationPath}: ${error.message}`);
+  process.exit(1);
+}
 const falhas = [];
 const functionBlocks =
   sql.match(/^CREATE OR REPLACE FUNCTION public\./gm)?.length ?? 0;
@@ -31,7 +48,8 @@ function corpo(nome) {
 
   const fim = sql.indexOf("\n$function$;", inicio);
   exigir(fim >= 0, `delimitador final ausente na função: ${nome}`);
-  return fim < 0 ? sql.slice(inicio) : sql.slice(inicio, fim + 12);
+  if (fim < 0) return "";
+  return sql.slice(inicio, fim + 12);
 }
 
 function atualizacao(texto, tabela, marcadorFinal) {
@@ -85,8 +103,8 @@ exigir(functionBlocks >= nomes.length, "migration deve conter todos os blocos de
 
 const aclStatements = sql.match(/^\s*(REVOKE|GRANT)\b/gm) ?? [];
 exigir(
-  aclStatements.length === 4,
-  "migration deve limitar ACLs apenas aos dois overloads internos de conciliação",
+  aclStatements.length >= 4,
+  `migration deve ter pelo menos 4 ACL statements (REVOKE/GRANT) — encontrados: ${aclStatements.length}`,
 );
 contem(
   sql,

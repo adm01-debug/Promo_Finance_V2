@@ -13,6 +13,7 @@ CREATE INDEX IF NOT EXISTS idx_sso_role_mappings_provider ON public.sso_role_map
 GRANT SELECT, INSERT, UPDATE, DELETE ON public.sso_role_mappings TO authenticated;
 GRANT ALL ON public.sso_role_mappings TO service_role;
 ALTER TABLE public.sso_role_mappings ENABLE ROW LEVEL SECURITY;
+DROP POLICY IF EXISTS "sso_role_mappings_admin" ON public.sso_role_mappings;
 CREATE POLICY "sso_role_mappings_admin" ON public.sso_role_mappings
   FOR ALL TO authenticated
   USING (public.has_role(auth.uid(), 'admin'))
@@ -35,6 +36,7 @@ CREATE INDEX IF NOT EXISTS idx_sso_user_groups_user ON public.sso_user_groups (u
 GRANT SELECT ON public.sso_user_groups TO authenticated;
 GRANT ALL ON public.sso_user_groups TO service_role;
 ALTER TABLE public.sso_user_groups ENABLE ROW LEVEL SECURITY;
+DROP POLICY IF EXISTS "sso_user_groups_select" ON public.sso_user_groups;
 CREATE POLICY "sso_user_groups_select" ON public.sso_user_groups
   FOR SELECT TO authenticated
   USING (user_id = auth.uid() OR public.has_role(auth.uid(), 'admin'));
@@ -59,6 +61,7 @@ CREATE INDEX IF NOT EXISTS idx_scim_ops_token ON public.scim_operations_log (tok
 GRANT SELECT ON public.scim_operations_log TO authenticated;
 GRANT ALL ON public.scim_operations_log TO service_role;
 ALTER TABLE public.scim_operations_log ENABLE ROW LEVEL SECURITY;
+DROP POLICY IF EXISTS "scim_operations_log_admin_select" ON public.scim_operations_log;
 CREATE POLICY "scim_operations_log_admin_select" ON public.scim_operations_log
   FOR SELECT TO authenticated USING (public.has_role(auth.uid(), 'admin'));
 
@@ -85,14 +88,17 @@ CREATE INDEX IF NOT EXISTS idx_sso_sandbox_runs_batch ON public.sso_sandbox_runs
 GRANT SELECT, INSERT, DELETE ON public.sso_sandbox_runs TO authenticated;
 GRANT ALL ON public.sso_sandbox_runs TO service_role;
 ALTER TABLE public.sso_sandbox_runs ENABLE ROW LEVEL SECURITY;
+DROP POLICY IF EXISTS "sso_sandbox_runs_admin" ON public.sso_sandbox_runs;
 CREATE POLICY "sso_sandbox_runs_admin" ON public.sso_sandbox_runs
   FOR ALL TO authenticated
   USING (public.has_role(auth.uid(), 'admin'))
   WITH CHECK (public.has_role(auth.uid(), 'admin') AND created_by = auth.uid());
 
+DROP TRIGGER IF EXISTS trg_sso_role_mappings_updated_at ON public.sso_role_mappings;
 CREATE TRIGGER trg_sso_role_mappings_updated_at
   BEFORE UPDATE ON public.sso_role_mappings
   FOR EACH ROW EXECUTE FUNCTION public.handle_updated_at();
+DROP TRIGGER IF EXISTS trg_sso_user_groups_updated_at ON public.sso_user_groups;
 CREATE TRIGGER trg_sso_user_groups_updated_at
   BEFORE UPDATE ON public.sso_user_groups
   FOR EACH ROW EXECUTE FUNCTION public.handle_updated_at();

@@ -11,6 +11,12 @@ BASELINE="$HC_DIR/baseline/expected-webhooks.json"
 : "${FUNCTIONS_BASE:?FUNCTIONS_BASE ausente}"
 : "${STAGING_DB_URL:?STAGING_DB_URL ausente}"
 : "${STAGING_ANON_KEY:?STAGING_ANON_KEY ausente}"
+: "${OUT:?OUT ausente}"
+
+# Corpo da resposta em arquivo próprio (mktemp), removido na saída — antes era
+# /tmp/hc_body_<pid>, previsível e deixado para trás se o script morresse.
+BODY_TMP="$(mktemp "${TMPDIR:-/tmp}/hc_body.XXXXXX")"
+trap 'rm -f "$BODY_TMP"' EXIT
 
 # helper local (log_line pode não estar exportado dependendo do shell)
 _emit() {
@@ -67,8 +73,10 @@ for i in $(seq 0 $((count-1))); do
   # 1) Chamada VÁLIDA
   if [ "$can_valid" -eq 1 ]; then
     t0=$(date +%s%3N 2>/dev/null || python3 -c 'import time;print(int(time.time()*1000))')
-    code=$(curl -sS -o /tmp/hc_body_$$ -w '%{http_code}' -X POST "$url" \
-             "${hdr_valid[@]}" --data "$payload" --max-time 15 || echo 000)
+    # Em falha de rede o curl já escreve 000; `|| echo 000` gerava "000000".
+    code=$(curl -sS -o "$BODY_TMP" -w '%{http_code}' -X POST "$url" \
+             "${hdr_valid[@]}" --data "$payload" --max-time 15) || true
+    code="${code:-000}"
     t1=$(date +%s%3N 2>/dev/null || python3 -c 'import time;print(int(time.time()*1000))')
     dt=$((t1 - t0))
     if [ "$code" = "$expect_status" ] || { [ "$code" -ge 200 ] 2>/dev/null && [ "$code" -lt 300 ] 2>/dev/null; }; then
@@ -78,16 +86,17 @@ for i in $(seq 0 $((count-1))); do
         _emit webhooks "${name}.valid" fail "http=$code latency ${dt}ms > ${max_latency}ms" "$dt"
       fi
     else
-      body=$(head -c 200 /tmp/hc_body_$$ 2>/dev/null || true)
+      body=$(head -c 200 "$BODY_TMP" 2>/dev/null || true)
       _emit webhooks "${name}.valid" fail "http=$code body=$(echo "$body" | tr -d '\n')" "$dt"
     fi
-    rm -f /tmp/hc_body_$$
+    : > "$BODY_TMP"
   fi
 
   # 2) Chamada INVÁLIDA (só faz sentido se há auth verificável)
   if [ "$auth" = "token" ] && [ "$can_valid" -eq 1 ]; then
     code=$(curl -sS -o /dev/null -w '%{http_code}' -X POST "$url" \
-             "${hdr_invalid[@]}" --data "$payload" --max-time 15 || echo 000)
+             "${hdr_invalid[@]}" --data "$payload" --max-time 15) || true
+    code="${code:-000}"
     if [ "$code" = "$invalid_status" ] || [ "$code" = "401" ] || [ "$code" = "403" ]; then
       _emit webhooks "${name}.invalid" pass "http=$code rejected"
     else
@@ -101,7 +110,7 @@ for i in $(seq 0 $((count-1))); do
     for _ in 1 2 3 4 5; do
       n=$(psql "$STAGING_DB_URL" -Atc \
         "SELECT count(*) FROM public.webhooks_log
-          WHERE provider = '$provider'
+          WHERE provider = \$\$${provider//\$\$/}\$\$
             AND (payload ->> 'healthcheck_run_id') = '$RUN_ID';" 2>/dev/null || echo 0)
       if [ "${n:-0}" -ge 1 ]; then found=1; break; fi
       sleep 2
@@ -114,11 +123,20 @@ for i in $(seq 0 $((count-1))); do
   fi
 
   # 4) DLQ deve permanecer vazia para esse run_id
-  ndlq=$(psql "$STAGING_DB_URL" -Atc \
-    "SELECT count(*) FROM public.webhook_dlq
-      WHERE (payload ->> 'healthcheck_run_id') = '$RUN_ID'
-        AND source ILIKE '%$provider%';" 2>/dev/null || echo 0)
-  if [ "${ndlq:-0}" -eq 0 ]; then
+  if [ -n "$provider" ]; then
+    ndlq=$(psql "$STAGING_DB_URL" -Atc \
+      "SELECT count(*) FROM public.webhook_dlq
+        WHERE (payload ->> 'healthcheck_run_id') = '$RUN_ID'
+          AND source ILIKE \$\$%${provider//\$\$/}%\$\$;" 2>/dev/null) || ndlq=""
+  else
+    ndlq=$(psql "$STAGING_DB_URL" -Atc \
+      "SELECT count(*) FROM public.webhook_dlq
+        WHERE (payload ->> 'healthcheck_run_id') = '$RUN_ID';" 2>/dev/null) || ndlq=""
+  fi
+  # Consulta que falha (banco fora, tabela ausente) não prova DLQ vazia.
+  if ! [[ "$ndlq" =~ ^[0-9]+$ ]]; then
+    _emit webhooks "${name}.dlq_clean" unverified "consulta à webhook_dlq falhou"
+  elif [ "$ndlq" -eq 0 ]; then
     _emit webhooks "${name}.dlq_clean" pass "dlq=0"
   else
     _emit webhooks "${name}.dlq_clean" fail "dlq=$ndlq entries para run_id"

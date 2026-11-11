@@ -22,14 +22,18 @@ hit() {
   local method="$1" path="$2" hname="${3:-}" hval="${4:-}" body="${5:-}"
   local -a hdrs=(-H "apikey: $STAGING_ANON_KEY")
   [ -n "$hname" ] && hdrs+=(-H "$hname: $hval")
+  # Em falha de rede o curl já escreve 000 via -w; `|| echo "000"` somava um
+  # segundo "000" e o relatório mostrava o código "000000".
+  local code
   if [ -n "$body" ]; then
-    curl -sS --max-time 5 -o /dev/null -w '%{http_code}' \
+    code="$(curl -sS --max-time 5 -o /dev/null -w '%{http_code}' \
       -X "$method" "${hdrs[@]}" -H 'Content-Type: application/json' \
-      --data "$body" "$BASE$path" 2>/dev/null || echo "000"
+      --data "$body" "$BASE$path" 2>/dev/null)" || true
   else
-    curl -sS --max-time 5 -o /dev/null -w '%{http_code}' \
-      -X "$method" "${hdrs[@]}" "$BASE$path" 2>/dev/null || echo "000"
+    code="$(curl -sS --max-time 5 -o /dev/null -w '%{http_code}' \
+      -X "$method" "${hdrs[@]}" "$BASE$path" 2>/dev/null)" || true
   fi
+  printf '%s' "${code:-000}"
 }
 
 check() {

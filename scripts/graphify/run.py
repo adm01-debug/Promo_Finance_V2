@@ -39,6 +39,18 @@ def atomic_write_json(path, payload):
     temporary.replace(path)
 
 
+def load_config(path=CONFIG):
+    """Lê a configuração versionada; defeito de formato vira mensagem, não traceback."""
+    try:
+        config = json.loads(path.read_text())
+    except json.JSONDecodeError as error:
+        raise ValueError(f"{path.name} não é JSON válido: {error}") from error
+    if (not isinstance(config, dict) or not isinstance(config.get("profiles"), dict)
+            or not isinstance(config.get("version"), str)):
+        raise ValueError(f"{path.name} precisa de 'version' (texto) e 'profiles' (objeto).")
+    return config
+
+
 def profile_config(config, name):
     """Seleciona um perfil versionado; regras não vêm do terminal."""
     if not PROFILE_NAME.fullmatch(name):
@@ -102,14 +114,18 @@ def inventory(root, config):
         if name not in tracked or not is_allowed_path(name):
             raise ValueError(f"Arquivo fora da política do piloto: {name}")
         path = root / name
-        if any(parent.is_symlink() for parent in [path, *path.parents] if parent != root.parent):
+        # Só do arquivo até a raiz: link acima do repositório (/var no macOS) não é do corpus.
+        if any(parent.is_symlink() for parent in [path, *path.parents] if parent.is_relative_to(root)):
             raise ValueError(f"Link simbólico não permitido: {name}")
         if not path.is_file() or not path.resolve().is_relative_to(root.resolve()):
             raise ValueError(f"Arquivo ausente ou fora do repositório: {name}")
         if path.stat().st_size > config["maxBytes"]:
             raise ValueError("Arquivo excede o orçamento do piloto.")
         content = path.read_bytes()
-        decoded = content.decode("utf-8")
+        try:
+            decoded = content.decode("utf-8")
+        except UnicodeDecodeError as error:
+            raise ValueError(f"Arquivo não é UTF-8 válido: {name}") from error
         if "\0" in decoded or SECRET.search(decoded):
             raise ValueError(f"Conteúdo binário ou possível credencial; revisar sem divulgar: {name}")
         files[name] = content
@@ -213,7 +229,8 @@ def analyze(root, config, files):
             f"> {evidence['raw']['unresolved_edges']} referências sem destino no corpus bruto; consultar ../diagnostico.json.\n"
             "> Não executar a sugestão genérica `graphify update .`: repetir o comando do perfil.\n\n"
         )
-        report.write_text(warning + report.read_text())
+        existing = report.read_text() if report.exists() else ""
+        report.write_text(warning + existing)
         print(json.dumps(evidence["graph"], ensure_ascii=False))
         print(f"Referências sem destino no corpus bruto: {evidence['raw']['unresolved_edges']}; consulte o diagnóstico.")
         print(f"Grafo: {graph_path}\nEvidência: {manifest}")
@@ -231,9 +248,8 @@ def main():
     parser.add_argument("--profile", default="pilot")
     parser.add_argument("--list", action="store_true", help="lista arquivos após aplicar a política")
     args = parser.parse_args()
-    config = json.loads(CONFIG.read_text())
     try:
-        config = profile_config(config, args.profile)
+        config = profile_config(load_config(CONFIG), args.profile)
         files = inventory(ROOT, config)
         print(f"Perfil {config['name']}: {len(files)} arquivos, {sum(map(len, files.values()))} bytes; somente código.", flush=True)
         if args.action == "inventory":
@@ -244,6 +260,10 @@ def main():
     except (ValueError, OSError, subprocess.SubprocessError) as error:
         # Não imprimir stdout/stderr de dependência: podem conter conteúdo privado.
         message = str(error) if isinstance(error, (ValueError, FileNotFoundError)) else type(error).__name__
+        failed = getattr(error, "cmd", None)
+        if isinstance(failed, (list, tuple)) and failed:
+            # Só o nome do executável: diz onde falhou (git ou graphify) sem expor argumentos nem saída.
+            message += f" em {Path(str(failed[0])).name}"
         parser.exit(1, f"Falha na análise Graphify: {message}\n")
 
 
