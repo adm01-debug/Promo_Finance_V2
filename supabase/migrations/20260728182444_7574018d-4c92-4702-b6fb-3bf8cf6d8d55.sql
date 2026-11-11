@@ -21,10 +21,16 @@ CREATE POLICY "Users can view own auth logs" ON public.auth_logs
   USING ((SELECT auth.uid()) = user_id);
 
 -- email_verifications --------------------------------------------------------
-DROP POLICY IF EXISTS "Users can view own verifications" ON public.email_verifications;
-CREATE POLICY "Users can view own verifications" ON public.email_verifications
-  FOR SELECT TO authenticated
-  USING ((SELECT auth.uid()) = user_id);
+DO $$
+BEGIN
+  IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_schema = 'public' AND table_name = 'email_verifications') THEN
+    DROP POLICY IF EXISTS "Users can view own verifications" ON public.email_verifications;
+    CREATE POLICY "Users can view own verifications" ON public.email_verifications
+      FOR SELECT TO authenticated
+      USING ((SELECT auth.uid()) = user_id);
+  END IF;
+END;
+$$;
 
 -- expert_conversations (duas políticas idênticas → consolidadas em uma) -------
 DROP POLICY IF EXISTS "Usuários veem suas próprias conversas" ON public.expert_conversations;
