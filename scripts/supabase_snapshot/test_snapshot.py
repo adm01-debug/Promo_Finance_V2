@@ -13,6 +13,7 @@ import os
 import pathlib
 import re
 import shutil
+import subprocess
 import sys
 import tempfile
 import types
@@ -996,6 +997,621 @@ class SnapshotDsnScrubTests(SnapshotFixture):
         self.assertEqual(saida["connection_string"], "[REDACTED]")
         self.assertEqual(saida["db_host"], "h")
 
+
+
+def gfm_cells(line):
+    """Células de uma linha de tabela GFM: pipe só separa se precedido por nº par de barras."""
+    cells, current, backslashes = [], "", 0
+    for char in line.strip():
+        if char == "|" and backslashes % 2 == 0:
+            cells.append(current)
+            current = ""
+        else:
+            current += char
+        backslashes = backslashes + 1 if char == "\\" else 0
+    cells.append(current)
+    return cells[1:-1] if len(cells) >= 2 else cells
+
+
+def broken_markdown_tables(root):
+    """Linhas cuja quantidade de células difere do cabeçalho, em todos os .md de root."""
+    problems = []
+    for document in sorted(pathlib.Path(root).rglob("*.md")):
+        width, fence = None, None
+        lines = document.read_text(encoding="utf-8").split("\n")
+        for number, line in enumerate(lines, 1):
+            marker = re.match(r"\s{0,3}(`{3,})", line)
+            if marker and (fence is None or len(marker.group(1)) >= fence):
+                fence, width = (None if fence else len(marker.group(1))), None
+                continue
+            if fence:
+                continue
+            if not line.startswith("|"):
+                width = None
+            elif width is None:
+                if number < len(lines) and re.fullmatch(r"\|(---\|)+", lines[number]):
+                    width = len(gfm_cells(line))
+                else:
+                    problems.append(f"{document.name}:{number} linha de tabela sem cabeçalho")
+            elif len(gfm_cells(line)) != width:
+                problems.append(f"{document.name}:{number} {len(gfm_cells(line))} células, cabeçalho tem {width}")
+    return problems
+
+
+def table(schema, name, **changes):
+    return {"schema": schema, "name": name, "kind": "table", "rls_enabled": False, "rls_forced": False,
+            "owner": "postgres", "comment": None, "is_partition": False, "parent": None, "partition_key": None,
+            "partition_bound": None, "replica_identity": "default", "from_extension": False, **changes}
+
+
+def column(schema, table_name, name, type_name="integer", **changes):
+    return {"schema": schema, "table": table_name, "position": 1, "name": name, "type": type_name, "nullable": True,
+            "default": None, "identity": None, "generated": None, "comment": None, "is_enum": False, **changes}
+
+
+class SnapshotMarkdownRobustnessTests(SnapshotFixture):
+    """Nomes e comentários hostis não podem quebrar tabela Markdown nem sobrescrever arquivo alheio."""
+
+    def render(self, db, errors=()):
+        snapshot = self.snapshot
+        snapshot.ERRORS.clear()
+        snapshot.CARRIED.clear()
+        snapshot._SLUG_SEEN.clear()
+        snapshot.ERRORS.extend({"section": name, "error": "falha simulada"} for name in errors)
+        with contextlib.redirect_stdout(io.StringIO()):
+            snapshot.render_tables(db)
+            snapshot.render_simple(db, {"enabled": False})
+
+    def read(self, relative):
+        return (self.out / relative).read_text(encoding="utf-8")
+
+    def test_barra_antes_do_pipe_nao_abre_celula_nova(self):
+        md_table = self.snapshot.md_table
+        for value in ("a|b", "a\\|b", "a\\\\|b", "regex ^x\\|y$ e z|w", "fim\\", "|", "\\|\\|"):
+            with self.subTest(value=value):
+                row = md_table(["um", "dois"], [[value, "ok"]]).splitlines()[2]
+                self.assertEqual(len(gfm_cells(row)), 2, row)
+        # pipe simples continua com o mesmo escape de antes: saída já publicada não muda.
+        self.assertEqual(self.snapshot.md_cell("a|b"), "a\\|b")
+
+    def test_comentario_multilinha_fica_dentro_da_citacao(self):
+        comment = "Empresas | do grupo\r\n## Colunas\n| falso | cabeçalho |\nregex a\\|b"
+        self.render({"tables": [table("public", "empresas", comment=comment)]})
+        document = self.read("tables/public/empresas.md")
+        self.assertIn("> Empresas | do grupo\n> ## Colunas\n> | falso | cabeçalho |\n> regex a\\|b\n", document)
+        self.assertEqual(document.count("\n## Colunas\n"), 1)
+        self.assertEqual(broken_markdown_tables(self.out), [])
+
+    def test_schemas_que_colidem_no_slug_nao_dividem_o_mesmo_arquivo(self):
+        db = {"tables": [table("a b", "t"), table("a_b", "t"), table("public", "Ação"), table("public", "A_o")],
+              "columns": [column("a b", "t", "só_no_primeiro"), column("a_b", "t", "só_no_segundo")]}
+        self.render(db)
+        links = re.findall(r"\]\((tables/[^)]+)\)", self.read("tables.md"))
+        self.assertEqual(len(links), 4)
+        self.assertEqual(len(set(links)), 4, links)
+        titles = {self.read(link).splitlines()[0] for link in links}
+        self.assertEqual(titles, {"# a b.t", "# a_b.t", "# public.Ação", "# public.A_o"})
+        first, second = (self.read(link) for link in links[:2])
+        self.assertIn("só_no_primeiro", first)
+        self.assertIn("só_no_segundo", second)
+
+    def test_funcoes_que_colidem_no_slug_mantem_cada_corpo(self):
+        functions = [function("calc total", 1), function("calc_total", 2)]
+        for record in functions:
+            record["schema"] = "a b" if record["name"] == "calc total" else "a_b"
+        functions += [function("calc total", 3), function("calc_total", 4)]
+        self.assertEqual(self.collect(functions=functions), 0)
+        links = re.findall(r"\]\((functions/[^)]+)\)", self.read("functions.md"))
+        self.assertEqual(len(set(links)), 4, links)
+        bodies = sorted(re.search(r"SELECT (\d)", self.read(link)).group(1) for link in links)
+        self.assertEqual(bodies, ["1", "2", "3", "4"])
+
+    def test_nome_so_de_pontos_nao_sai_da_pasta_de_saida(self):
+        self.assertEqual(self.snapshot.slug(".."), "_")
+        self.assertEqual(self.snapshot.slug("."), "_")
+        self.assertEqual(self.snapshot.slug("a.b"), "a.b")
+        self.render({"tables": [table("..", "README"), table(".", "x")]})
+        self.assertFalse((self.out / "x.md").exists())
+        self.assertFalse((self.out / "README.md").exists())
+        self.assertEqual(len(list((self.out / "tables").rglob("*.md"))), 2)
+
+    def test_quebra_de_linha_e_crases_nao_partem_titulo_nem_bloco_sql(self):
+        view = {"schema": "public", "name": "v\ncerca", "kind": "view", "definition": "SELECT 'x\n```\ny' AS c;",
+                "options": None, "owner": "postgres", "comment": None, "populated": None,
+                "security_invoker": True, "depends_on": []}
+        policy = {"schema": "public", "table": "t\nnl", "name": "p\nnl", "permissive": "PERMISSIVE",
+                  "roles": ["public"], "cmd": "ALL", "using": "true", "with_check": None}
+        self.render({"tables": [table("public", "t\nnl", rls_enabled=True)], "views": [view], "policies": [policy]})
+        document = self.read("views.md")
+        self.assertIn("## public.v cerca (view)\n", document)
+        self.assertIn("\n````sql\nSELECT 'x\n```\ny' AS c;\n````\n", document)
+        table_document = self.read("tables/public/t_nl.md")
+        self.assertTrue(table_document.startswith("# public.t nl\n"))
+        self.assertIn("### `p nl`\n", table_document)
+        self.assertEqual(broken_markdown_tables(self.out), [])
+
+    def test_view_sem_crases_mantem_o_bloco_de_tres(self):
+        self.assertEqual(self.snapshot.sql_block("SELECT 1;"), "\n```sql\nSELECT 1;\n```\n")
+
+    def test_enum_homonimo_em_outro_schema_nao_recebe_o_uso_alheio(self):
+        types_ = [
+            {"schema": "financeiro", "name": "status", "kind": "enum", "values": ["a"], "definition": None,
+             "type_ref": "financeiro.status"},
+            {"schema": "public", "name": "status", "kind": "enum", "values": ["b"], "definition": None,
+             "type_ref": "status"},
+            # registro reaproveitado de snapshot anterior à correção: só o nome está disponível.
+            {"schema": "public", "name": "antigo", "kind": "enum", "values": ["c"], "definition": None},
+        ]
+        columns = [column("public", "contas", "st", "financeiro.status", is_enum=True),
+                   column("public", "pedidos", "st", "status", is_enum=True),
+                   column("public", "legado", "st", "antigo", is_enum=True)]
+        self.render({"types": types_, "columns": columns})
+        rows = {gfm_cells(line)[0].strip(): gfm_cells(line)[3].strip()
+                for line in self.read("types-enums.md").splitlines() if line.startswith("| ") and "enum" in line}
+        self.assertEqual(rows, {"financeiro.status": "public.contas.st", "public.status": "public.pedidos.st",
+                                "public.antigo": "public.legado.st"})
+
+    def test_type_ref_nao_entra_no_fingerprint(self):
+        old = {"schema": "public", "name": "status", "kind": "enum", "values": ["a"], "definition": None}
+        fingerprints = self.snapshot.fingerprints
+        before = fingerprints({"db": {"types": [old]}})
+        after = fingerprints({"db": {"types": [{**old, "type_ref": "status"}]}})
+        self.assertEqual(self.snapshot.diff_fingerprints(before, after), [])
+        changed = fingerprints({"db": {"types": [{**old, "values": ["a", "b"], "type_ref": "status"}]}})
+        self.assertEqual([entry[:2] for entry in self.snapshot.diff_fingerprints(before, changed)],
+                         [("types/enums", "alterado")])
+
+    def test_secao_que_falhou_sem_historico_nao_vira_ausencia(self):
+        db = {"tables": [table("public", "protegida", rls_enabled=True)], "policies": None, "columns": None,
+              "cron": None, "queues": None, "views": None}
+        self.render(db, errors=("policies", "columns", "cron", "queues", "views"))
+        document = self.read("tables/public/protegida.md")
+        self.assertNotIn("sem policies", document)
+        self.assertIn("Seção `policies` indisponível", document)
+        self.assertIn("Seção `columns` indisponível", document)
+        self.assertNotIn("não instalada", self.read("cron.md"))
+        self.assertIn("Seção `cron` indisponível", self.read("cron.md"))
+        self.assertNotIn("não instalada", self.read("queues.md"))
+        self.assertIn("Seção `queues` indisponível", self.read("queues.md"))
+        self.assertIn("Seção `views` indisponível", self.read("views.md"))
+
+    def test_secao_coletada_e_vazia_continua_sem_aviso(self):
+        db = {"tables": [table("public", "protegida", rls_enabled=True)], "policies": [], "columns": [],
+              "cron": {"installed": False, "jobs": []}, "queues": {"installed": False, "queues": []}, "views": []}
+        self.render(db)
+        document = self.read("tables/public/protegida.md")
+        self.assertIn("RLS habilitado **sem policies**", document)
+        self.assertNotIn("indisponível", document)
+        self.assertEqual(self.read("cron.md"), "# Cron (pg_cron)\n\n_extensão pg_cron não instalada_\n")
+        self.assertEqual(self.read("queues.md"), "# Queues (pgmq)\n\n_extensão pgmq não instalada_\n")
+        self.assertEqual(self.read("views.md"), "# Views\n\n_nenhuma_\n")
+
+    def test_opcao_security_invoker_aceita_as_grafias_do_postgres(self):
+        pattern = re.search(r"~\* '([^']+)'", self.snapshot.SECURITY_INVOKER_ON).group(1)
+        for option in ("security_invoker=true", "security_invoker=on", "security_invoker=1", "security_invoker=yes",
+                       "security_invoker=TRUE", "security_invoker=t"):
+            self.assertRegex(option.lower(), pattern)
+        for option in ("security_invoker=false", "security_invoker=off", "security_invoker=0", "security_invoker=no",
+                       "security_barrier=true", "xsecurity_invoker=true", "security_invoker=true1"):
+            self.assertNotRegex(option.lower(), pattern)
+
+
+class SnapshotUnavailableDatabaseTests(SnapshotFixture):
+    """Banco fora do ar ou DSN errado: sai com 1, sem renovar o frescor e sem ecoar a credencial."""
+
+    def tree(self):
+        return {path.relative_to(self.out): path.read_bytes() for path in sorted(self.out.rglob("*")) if path.is_file()}
+
+    def run_main(self, dsn, error):
+        snapshot = self.snapshot
+        snapshot.ERRORS.clear()
+        snapshot.CARRIED.clear()
+        with (mock.patch.object(snapshot, "DB_URL", dsn),
+              mock.patch.object(snapshot.psycopg, "connect", side_effect=error),
+              contextlib.redirect_stdout(io.StringIO()) as stdout,
+              contextlib.redirect_stderr(io.StringIO()) as stderr):
+            code = snapshot.main()
+        return code, stdout.getvalue() + stderr.getvalue()
+
+    def test_todas_as_secoes_falhando_com_historico_nao_renova_o_frescor(self):
+        self.assertEqual(self.collect(), 0)
+        before = self.tree()
+        self.assertEqual(self.collect(failures={"server", "functions", "migrations"}), 1)
+        self.assertEqual(self.tree(), before)
+
+    def test_uma_secao_nova_basta_para_publicar_a_coleta_parcial(self):
+        self.assertEqual(self.collect(), 0)
+        self.assertEqual(self.collect(failures={"functions", "migrations"}), 0)
+        self.assertEqual(set(self.metadata()["carried"]), {"functions", "migrations"})
+
+    def test_snapshot_anterior_com_estrutura_invalida_vira_primeira_coleta(self):
+        for body in ('{"format_version": 2, "db": [1], "api": {}}', '{"format_version": 2, "db": "x", "api": []}',
+                     '{"format_version": 2, "db": {"tables": "x"}, "api": {}}',
+                     '{"format_version": 2, "db": {"functions": [{"name": 1}]}, "api": {}}', "[1, 2]", "lixo{"):
+            with self.subTest(body=body):
+                self.assertEqual(self.collect(), 0)
+                (self.out / "snapshot.json").write_text(body, encoding="utf-8")
+                self.assertEqual(self.collect(), 0)
+                self.assertEqual(self.metadata()["db"]["functions"][0]["name"], "demo")
+                self.assertEqual(self.metadata()["errors"], [])
+                self.assertTrue((self.out / "manifest.json").is_file())
+                self.assertTrue(self.function_sql().is_file())
+
+    def test_falha_de_conexao_sai_com_1_sem_traceback_nem_pedaco_da_senha(self):
+        cases = (
+            ("postgresql://leitor:Senha@Arroba88@127.0.0.1:5432/db",
+             "failed to resolve host 'Arroba88@127.0.0.1': [Errno -2] Name or service not known", ("Arroba88",)),
+            ("postgresql://leitor:Senha Espaco55@127.0.0.1:5432/db",
+             'unexpected spaces found in "Senha Espaco55", use percent-encoded spaces (%20) instead', ("Espaco55",)),
+            ("postgresql://leitor:Senha%ZZporcento@127.0.0.1:5432/db",
+             'invalid percent-encoded token: "Senha%ZZporcento"', ("ZZporcento",)),
+            ("postgresql//leitor:SenhaTypo123@127.0.0.1:5432/db",
+             'missing "=" after "postgresql//leitor:SenhaTypo123@127.0.0.1:5432/db" in connection info string',
+             ("SenhaTypo123",)),
+            ("host=h user=u password=SenhaKw22 dbname=d", 'erro citando password=SenhaKw22 literalmente', ("SenhaKw22",)),
+            ("postgresql://u@h/db?password=SenhaQuery12&sslmode=require", "erro citando SenhaQuery12", ("SenhaQuery12",)),
+            ("postgresql://u:S3nh%40%2FLeitor%231@h/db", "erro citando S3nh@/Leitor#1 e S3nh%40%2FLeitor%231",
+             ("S3nh", "Leitor")),
+        )
+        for dsn, message, secrets in cases:
+            with self.subTest(dsn=dsn):
+                code, output = self.run_main(dsn, RuntimeError(message + "\nlinha 2 com " + secrets[0]))
+                self.assertEqual(code, 1)
+                self.assertIn("Banco indisponível: RuntimeError:", output)
+                self.assertIn("[REDACTED]", output)
+                self.assertNotIn("Traceback", output)
+                for secret in secrets:
+                    self.assertNotIn(secret, output)
+                self.assertFalse((self.out / "manifest.json").exists())
+                self.assertFalse((self.out / "snapshot.json").exists())
+
+    def test_falha_de_conexao_preserva_o_snapshot_anterior(self):
+        self.assertEqual(self.collect(), 0)
+        before = self.tree()
+        code, output = self.run_main("postgresql://u:SenhaBoa123@h/db", TimeoutError("connection timeout expired"))
+        self.assertEqual(code, 1)
+        self.assertIn("connection timeout expired", output)
+        self.assertEqual(self.tree(), before)
+
+    def test_excecao_original_do_driver_nao_fica_encadeada(self):
+        snapshot = self.snapshot
+        with (mock.patch.object(snapshot, "DB_URL", "postgresql://u:Senha@Arroba88@h/db"),
+              mock.patch.object(snapshot.psycopg, "connect", side_effect=RuntimeError("host 'Arroba88@h'")),
+              self.assertRaises(snapshot.DatabaseUnavailable) as caught):
+            snapshot.connect_db()
+        self.assertTrue(caught.exception.__suppress_context__)
+        self.assertNotIn("Arroba88", str(caught.exception))
+
+    def test_fragmentos_do_dsn_preservam_usuario_host_e_banco(self):
+        fragments = self.snapshot.dsn_secret_fragments
+        self.assertEqual(fragments("postgresql://postgres.ref:SenhaReal123@aws-0.pooler.supabase.com:5432/postgres"),
+                         ["SenhaReal123"])
+        self.assertEqual(fragments("postgresql://postgres@127.0.0.1:5432/postgres"), [])
+        self.assertEqual(fragments("postgresql://127.0.0.1:5432/postgres"), [])
+        self.assertEqual(fragments("offline-fixture"), [])
+        self.assertEqual(fragments("host=h port=5432 user=u password='Senha Kw' dbname=d"), ["Senha"])
+
+    def test_erro_de_secao_tambem_redige_pedaco_da_senha(self):
+        snapshot = self.snapshot
+        snapshot.ERRORS.clear()
+        with (mock.patch.object(snapshot, "DB_URL", "postgresql://u:Senha%ZZporcento@h/db"),
+              contextlib.redirect_stdout(io.StringIO()) as stdout):
+            snapshot.record_error("pg_dump", 'pg_dump: error: invalid percent-encoded token: "Senha%ZZporcento"')
+        self.assertNotIn("ZZporcento", snapshot.ERRORS[0]["error"] + stdout.getvalue())
+        self.assertIn("invalid percent-encoded token", snapshot.ERRORS[0]["error"])
+
+    def test_ajuda_nao_coleta_e_argumento_desconhecido_sai_com_2(self):
+        stub = pathlib.Path(self.temp.name) / "stub" / "psycopg"
+        stub.mkdir(parents=True)
+        (stub / "__init__.py").write_text("def connect(*args, **kwargs):\n    raise SystemExit(99)\n", encoding="utf-8")
+        (stub / "rows.py").write_text("dict_row = None\n", encoding="utf-8")
+        env = {"PATH": os.environ.get("PATH", ""), "PYTHONPATH": str(stub.parent), "PYTHONDONTWRITEBYTECODE": "1",
+               "SUPABASE_DB_URL": "postgresql://u:SenhaAjuda123@h/db", "SNAPSHOT_DIR": str(self.out)}
+        script = str(pathlib.Path(__file__).with_name("snapshot.py"))
+        for arguments, code in ((["--help"], 0), (["-h"], 0), (["--qualquer"], 2), (["docs/supabase"], 2)):
+            with self.subTest(arguments=arguments):
+                result = subprocess.run([sys.executable, script, *arguments], env=env, capture_output=True,
+                                        text=True, timeout=60, check=False)
+                self.assertEqual(result.returncode, code, result.stderr)
+                self.assertIn("SUPABASE_DB_URL", result.stdout if code == 0 else result.stderr)
+                self.assertNotIn("SenhaAjuda123", result.stdout + result.stderr)
+                self.assertFalse(self.out.exists(), "ajuda/argumento inválido não pode iniciar a coleta")
+
+
+def load_with_real_driver(dsn, out):
+    """Carrega snapshot.py com o psycopg instalado (as demais classes usam um driver falso)."""
+    spec = importlib.util.spec_from_file_location("snapshot_real_driver", pathlib.Path(__file__).with_name("snapshot.py"))
+    module = importlib.util.module_from_spec(spec)
+    env = {"SUPABASE_DB_URL": dsn, "SNAPSHOT_DIR": str(out), "PGDUMP": "false", "GEN_TYPES": "false", "REPO_ROOT": ""}
+    with mock.patch.dict(os.environ, env, clear=True):
+        spec.loader.exec_module(module)
+    return module
+
+
+def run_with_real_driver(dsn, out):
+    module = load_with_real_driver(dsn, out)
+    with contextlib.redirect_stdout(io.StringIO()) as stdout, contextlib.redirect_stderr(io.StringIO()) as stderr:
+        code = module.main()
+    return code, stdout.getvalue() + stderr.getvalue(), module
+
+
+try:
+    import psycopg as real_psycopg
+except ImportError:  # a suíte offline não depende do driver
+    real_psycopg = None
+
+
+@unittest.skipIf(real_psycopg is None, "psycopg não instalado")
+class SnapshotRealDriverDsnTests(unittest.TestCase):
+    """Mensagens reais do driver para DSN malformado; o erro acontece antes de qualquer conexão."""
+
+    def test_dsn_malformado_nao_ecoa_a_senha(self):
+        with tempfile.TemporaryDirectory(prefix="snapshot-dsn-test-") as temp:
+            for dsn, secret in (("postgresql://leitor:Senha Espaco55@127.0.0.1:1/db", "Espaco55"),
+                                ("postgresql://leitor:Senha%ZZporcento@127.0.0.1:1/db", "ZZporcento"),
+                                ("postgresql//leitor:SenhaTypo123@127.0.0.1:1/db", "SenhaTypo123")):
+                with self.subTest(dsn=dsn):
+                    out = pathlib.Path(temp) / "output"
+                    code, output, _ = run_with_real_driver(dsn, out)
+                    self.assertEqual(code, 1)
+                    self.assertIn("Banco indisponível", output)
+                    self.assertNotIn(secret, output)
+                    self.assertNotIn("Traceback", output)
+                    self.assertFalse((out / "manifest.json").exists())
+
+
+POSTGRES_FIXTURE = r"""
+CREATE ROLE anon NOLOGIN; CREATE ROLE authenticated NOLOGIN; CREATE ROLE service_role NOLOGIN;
+CREATE SCHEMA supabase_migrations;
+CREATE TABLE supabase_migrations.schema_migrations (version text PRIMARY KEY, statements text[], name text);
+INSERT INTO supabase_migrations.schema_migrations VALUES ('20260101000000', ARRAY['select 1'], 'inicial');
+CREATE SCHEMA financeiro; CREATE SCHEMA "a b"; CREATE SCHEMA a_b;
+CREATE TYPE public.status AS ENUM ('novo', 'pago|parcial');
+CREATE TYPE financeiro.status AS ENUM ('a', 'b');
+CREATE TABLE public.empresas (id int PRIMARY KEY, nome text);
+COMMENT ON TABLE public.empresas IS E'Empresas | do grupo\n## Colunas\n| falso | cabeçalho |\nregex a\\|b';
+COMMENT ON COLUMN public.empresas.nome IS E'nome | fantasia\ncom quebra e a\\|b';
+CREATE TABLE public."Pedidos 2024" (id int PRIMARY KEY, st public.status, empresa_id int REFERENCES public.empresas (id),
+  obs text DEFAULT 'a|b', CONSTRAINT "chk|pipe" CHECK (obs ~ '^a\|b'));
+CREATE TABLE public.pedidos_2024 (id int PRIMARY KEY, st financeiro.status);
+CREATE TABLE "a b".t (id int PRIMARY KEY, so_no_primeiro int);
+CREATE TABLE a_b.t (id int PRIMARY KEY, so_no_segundo int);
+CREATE TABLE public.vazia ();
+CREATE TABLE public.sem_policy (id int PRIMARY KEY);
+ALTER TABLE public.sem_policy ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.empresas ENABLE ROW LEVEL SECURITY;
+CREATE POLICY "tudo liberado" ON public.empresas USING (true);
+CREATE TABLE public.pai (a int, b int, PRIMARY KEY (b, a));
+CREATE TABLE public.filho_permutado (id int PRIMARY KEY, x int, z int, FOREIGN KEY (z, x) REFERENCES public.pai (b, a));
+CREATE INDEX ON public.filho_permutado (x, z);
+CREATE TABLE public.filho_parcial (id int PRIMARY KEY, x int, z int, FOREIGN KEY (x, z) REFERENCES public.pai (b, a));
+CREATE INDEX ON public.filho_parcial (x, z) WHERE id > 0;
+CREATE TABLE public.filho_indexado (id int PRIMARY KEY, x int, z int, FOREIGN KEY (x, z) REFERENCES public.pai (b, a));
+CREATE INDEX ON public.filho_indexado (x, z, id);
+CREATE TABLE public.lanc (id int, dt date NOT NULL) PARTITION BY RANGE (dt);
+CREATE TABLE public.lanc_2026 PARTITION OF public.lanc FOR VALUES FROM ('2026-01-01') TO ('2027-01-01');
+CREATE VIEW public.v_sem AS SELECT id FROM public.empresas;
+CREATE VIEW public.v_true WITH (security_invoker = true) AS SELECT id FROM public.empresas;
+CREATE VIEW public.v_on WITH (security_invoker = on) AS SELECT id FROM public.empresas;
+CREATE VIEW public.v_um WITH (security_invoker = 1) AS SELECT id FROM public.empresas;
+CREATE VIEW public.v_yes WITH (security_barrier = true, security_invoker = yes) AS SELECT id FROM public.empresas;
+CREATE VIEW public.v_off WITH (security_invoker = off) AS SELECT id FROM public.empresas;
+CREATE MATERIALIZED VIEW public.mv AS SELECT count(*) AS n FROM public.empresas WITH NO DATA;
+CREATE FUNCTION public.soma(a int, b int) RETURNS int LANGUAGE sql AS $$ SELECT a + b $$;
+CREATE FUNCTION public.soma(a text) RETURNS text LANGUAGE sql AS $$ SELECT a $$;
+CREATE FUNCTION public.secdef_ruim() RETURNS int LANGUAGE sql SECURITY DEFINER AS $$ SELECT 1 $$;
+CREATE FUNCTION public.secdef_bom() RETURNS int LANGUAGE sql SECURITY DEFINER SET search_path = '' AS $$ SELECT 1 $$;
+CREATE FUNCTION public.trg() RETURNS trigger LANGUAGE plpgsql AS $$ BEGIN RETURN NEW; END $$;
+CREATE TRIGGER "trg antes|x" BEFORE INSERT ON public."Pedidos 2024" FOR EACH ROW EXECUTE FUNCTION public.trg();
+"""
+
+
+class SnapshotPostgresTests(unittest.TestCase):
+    """Ponta a ponta contra um Postgres descartável. Só roda com SNAPSHOT_TEST_DSN apontando para
+    um servidor local (>= 15) onde o usuário pode criar banco; sem isso a classe inteira é pulada."""
+
+    @classmethod
+    def setUpClass(cls):
+        admin = os.environ.get("SNAPSHOT_TEST_DSN", "").strip()
+        if not admin:
+            raise unittest.SkipTest("SNAPSHOT_TEST_DSN não definido")
+        if real_psycopg is None:
+            raise unittest.SkipTest("psycopg não instalado")
+        from psycopg import conninfo
+        try:
+            host = conninfo.conninfo_to_dict(admin).get("host") or ""
+        except real_psycopg.Error:
+            raise unittest.SkipTest("SNAPSHOT_TEST_DSN inválido") from None
+        if host not in ("127.0.0.1", "localhost", "::1"):
+            raise unittest.SkipTest("SNAPSHOT_TEST_DSN precisa apontar para um servidor local descartável")
+        cls.database = f"snapshot_it_{os.getpid()}"
+        cls.role = f"snapshot_it_leitor_{os.getpid()}"
+        cls.roles = [cls.role]
+        try:
+            with real_psycopg.connect(admin, autocommit=True, connect_timeout=5) as conn:
+                if conn.info.server_version < 150000:
+                    raise unittest.SkipTest("security_invoker exige Postgres >= 15")
+                conn.execute(f'CREATE DATABASE "{cls.database}"')
+        except real_psycopg.Error as error:
+            raise unittest.SkipTest(f"Postgres local indisponível: {type(error).__name__}") from None
+        cls.admin = admin
+        cls.addClassCleanup(cls.drop_database)
+        cls.dsn = conninfo.make_conninfo(admin, dbname=cls.database)
+        with real_psycopg.connect(cls.dsn, autocommit=True) as conn:
+            existing = {row[0] for row in conn.execute("SELECT rolname FROM pg_roles").fetchall()}
+            fixture = POSTGRES_FIXTURE
+            for role in ("anon", "authenticated", "service_role"):
+                if role in existing:
+                    fixture = fixture.replace(f"CREATE ROLE {role} NOLOGIN;", "")
+                else:
+                    cls.roles.append(role)  # roles são do cluster: o que a suíte criou, a suíte remove
+            conn.execute(f'CREATE ROLE "{cls.role}" NOLOGIN')
+            conn.execute(fixture)
+        cls.restricted = conninfo.make_conninfo(cls.dsn, options=f"-c role={cls.role}")
+        cls.temp = tempfile.TemporaryDirectory(prefix="snapshot-pg-test-")
+        cls.addClassCleanup(cls.temp.cleanup)
+        cls.out = pathlib.Path(cls.temp.name) / "output"
+        cls.code, cls.log, cls.snapshot = run_with_real_driver(cls.dsn, cls.out)
+        cls.first = {path.relative_to(cls.out): path.read_bytes() for path in cls.out.rglob("*") if path.is_file()}
+
+    @classmethod
+    def drop_database(cls):
+        with real_psycopg.connect(cls.admin, autocommit=True) as conn:
+            conn.execute(f'DROP DATABASE IF EXISTS "{cls.database}" WITH (FORCE)')
+            for role in cls.roles:
+                conn.execute(f'DROP ROLE IF EXISTS "{role}"')
+
+    def read(self, relative):
+        return (self.out / relative).read_text(encoding="utf-8")
+
+    def data(self):
+        return json.loads(self.read("snapshot.json"))["db"]
+
+    def lints(self, code):
+        return {lint["object"] for lint in self.data()["lints"] if lint["code"] == code}
+
+    def test_coleta_completa_sem_erros(self):
+        self.assertEqual(self.code, 0, self.log)
+        # storage.* não existe num Postgres comum; todo o resto precisa ter sido coletado.
+        self.assertEqual({error["section"] for error in json.loads(self.read("manifest.json"))["erros"]},
+                         {"storage", "db_stats"})
+        self.assertEqual(self.read("cron.md"), "# Cron (pg_cron)\n\n_extensão pg_cron não instalada_\n")
+
+    def test_tabelas_do_catalogo_tem_um_arquivo_cada(self):
+        with real_psycopg.connect(self.dsn, autocommit=True) as conn:
+            catalog = {f"{schema}.{name}" for schema, name in conn.execute(
+                "SELECT n.nspname, c.relname FROM pg_class c JOIN pg_namespace n ON n.oid = c.relnamespace "
+                "WHERE c.relkind IN ('r','p') AND n.nspname IN ('public','financeiro','a b','a_b')").fetchall()}
+        self.assertEqual({f"{t['schema']}.{t['name']}" for t in self.data()["tables"]}, catalog)
+        files = [path for path in (self.out / "tables").rglob("*.md")]
+        self.assertEqual({path.read_text(encoding="utf-8").splitlines()[0][2:] for path in files}, catalog)
+        self.assertEqual(len(files), len(catalog))
+        self.assertIn("so_no_primeiro", self.read("tables/a_b/t.md"))
+
+    def test_markdown_integro_com_nomes_e_comentarios_hostis(self):
+        self.assertEqual(broken_markdown_tables(self.out), [])
+        self.assertEqual(self.read("tables/public/empresas.md").count("\n## Colunas\n"), 1)
+
+    def test_chave_composta_mantem_a_ordem_e_o_par_de_colunas(self):
+        constraints = {c["name"]: c for c in self.data()["constraints"]}
+        self.assertEqual(constraints["pai_pkey"]["columns"], ["b", "a"])
+        permuted = constraints["filho_permutado_z_x_fkey"]
+        self.assertEqual((permuted["columns"], permuted["ref_columns"]), (["z", "x"], ["b", "a"]))
+        partial = constraints["filho_parcial_x_z_fkey"]
+        self.assertEqual((partial["columns"], partial["ref_columns"]), (["x", "z"], ["b", "a"]))
+        self.assertIn("| public.filho_parcial | x, z | public.pai | b, a |", self.read("relationships.md"))
+
+    def test_lint_de_fk_sem_indice_aceita_permutacao_e_recusa_indice_parcial(self):
+        flagged = self.lints("fk_without_index")
+        self.assertNotIn("public.filho_permutado.filho_permutado_z_x_fkey", flagged)
+        self.assertNotIn("public.filho_indexado.filho_indexado_x_z_fkey", flagged)
+        self.assertIn("public.filho_parcial.filho_parcial_x_z_fkey", flagged)
+        self.assertIn("public.Pedidos 2024.Pedidos 2024_empresa_id_fkey", flagged)
+
+    def test_security_invoker_reconhece_on_yes_e_1(self):
+        views = {view["name"]: view["security_invoker"] for view in self.data()["views"]}
+        self.assertEqual(views, {"v_sem": False, "v_true": True, "v_on": True, "v_um": True, "v_yes": True,
+                                 "v_off": False, "mv": False})
+        self.assertEqual(self.lints("view_security_definer"), {"public.v_sem", "public.v_off"})
+
+    def test_lints_de_rls_e_security_definer(self):
+        self.assertEqual(self.lints("rls_no_policies"), {"public.sem_policy"})
+        self.assertIn("public.vazia", self.lints("rls_disabled"))
+        self.assertEqual(self.lints("secdef_mutable_search_path"), {"public.secdef_ruim()"})
+
+    def test_enum_homonimo_e_atribuido_ao_schema_certo(self):
+        rows = {gfm_cells(line)[0].strip(): gfm_cells(line)[3].strip()
+                for line in self.read("types-enums.md").splitlines() if line.startswith("| ") and "| enum |" in line}
+        self.assertEqual(rows, {"financeiro.status": "public.pedidos_2024.st", "public.status": "public.Pedidos 2024.st"})
+
+    def test_overloads_tem_um_sql_por_assinatura(self):
+        soma = [f for f in self.data()["functions"] if f["name"] == "soma"]
+        self.assertEqual(len(soma), 2)
+        links = re.findall(r"\]\((functions/public/soma__[^)]+)\)", self.read("functions.md"))
+        self.assertEqual(len(set(links)), 2)
+        self.assertTrue(all((self.out / link).is_file() for link in links))
+
+    def test_segunda_coleta_sem_mudanca_so_altera_o_carimbo(self):
+        code, log, _ = run_with_real_driver(self.dsn, self.out)
+        self.assertEqual(code, 0, log)
+        second = {path.relative_to(self.out): path.read_bytes() for path in self.out.rglob("*") if path.is_file()}
+        volatile = {pathlib.Path(name) for name in ("manifest.json", "stats.json", "stats.md", "cron-runs.md")}
+        self.assertEqual(set(second), set(self.first))
+        self.assertEqual([str(name) for name in sorted(self.first) if name not in volatile and self.first[name] != second[name]], [])
+        manifests = [json.loads(tree[pathlib.Path("manifest.json")]) for tree in (self.first, second)]
+        for manifest in manifests:
+            manifest.pop("gerado_em")
+        self.assertEqual(manifests[0], manifests[1])
+
+    def test_sessao_do_coletor_e_somente_leitura_com_timeouts(self):
+        snapshot = load_with_real_driver(self.dsn, self.out)
+        observed = {}
+
+        @snapshot.section("escrita")
+        def write_attempt(conn):
+            return snapshot.q(conn, "CREATE TABLE public.nao_pode_existir (id int)")
+
+        @snapshot.section("insercao")
+        def insert_attempt(conn):
+            return snapshot.q(conn, "INSERT INTO public.pai VALUES (1, 1) RETURNING a")
+
+        @snapshot.section("sessao")
+        def session(conn):
+            for name in ("statement_timeout", "lock_timeout", "default_transaction_read_only", "application_name"):
+                observed[name] = snapshot.q(conn, f"SHOW {name}")[0][name]
+            return observed
+
+        snapshot.DB_SECTIONS = [write_attempt, insert_attempt, session]
+        with contextlib.redirect_stdout(io.StringIO()):
+            db, _ = snapshot.introspect_db(None)
+        self.assertIsNone(db["escrita"])
+        self.assertIsNone(db["insercao"])
+        self.assertEqual([error["section"] for error in snapshot.ERRORS], ["escrita", "insercao"])
+        self.assertTrue(all("read-only" in error["error"] for error in snapshot.ERRORS), snapshot.ERRORS)
+        self.assertEqual(observed, {"statement_timeout": "90s", "lock_timeout": "5s",
+                                    "default_transaction_read_only": "on", "application_name": "supabase-snapshot"})
+        with real_psycopg.connect(self.dsn, autocommit=True) as conn:
+            self.assertEqual(conn.execute("SELECT to_regclass('public.nao_pode_existir')::text, "
+                                          "(SELECT count(*) FROM public.pai)").fetchone(), (None, 0))
+
+    def test_permissao_negada_em_um_catalogo_reaproveita_sem_apagar(self):
+        with tempfile.TemporaryDirectory(prefix="snapshot-pg-parcial-") as temp:
+            out = pathlib.Path(temp) / "output"
+            shutil.copytree(self.out, out)
+            migration = out / "migrations" / "20260101000000_inicial.sql"
+            before = migration.read_bytes()
+            code, log, _ = run_with_real_driver(self.restricted, out)
+            self.assertEqual(code, 0, log)
+            manifest = json.loads((out / "manifest.json").read_text(encoding="utf-8"))
+            self.assertIn("migrations", manifest["carried"])
+            self.assertIn("permission denied", {e["section"]: e["error"] for e in manifest["erros"]}["migrations"])
+            self.assertEqual(migration.read_bytes(), before)
+            self.assertIn("Seção `migrations` não pôde ser atualizada", (out / "migrations.md").read_text(encoding="utf-8"))
+            current = json.loads((out / "snapshot.json").read_text(encoding="utf-8"))["db"]
+            self.assertEqual(current["migrations"], self.data()["migrations"])
+            self.assertEqual(len(current["tables"]), len(self.data()["tables"]))
+
+    def test_permissao_negada_sem_historico_nao_afirma_lista_vazia(self):
+        with tempfile.TemporaryDirectory(prefix="snapshot-pg-inicial-") as temp:
+            out = pathlib.Path(temp) / "output"
+            code, log, _ = run_with_real_driver(self.restricted, out)
+            self.assertEqual(code, 0, log)
+            document = (out / "migrations.md").read_text(encoding="utf-8")
+            self.assertIn("Coleta indisponível", document)
+            self.assertNotIn("_nenhum_", document)
+            self.assertIn("| migrations | permission denied", (out / "errors.md").read_text(encoding="utf-8"))
+
+    def test_banco_inexistente_sai_com_1_e_preserva_a_saida(self):
+        from psycopg import conninfo
+        with tempfile.TemporaryDirectory(prefix="snapshot-pg-fora-") as temp:
+            out = pathlib.Path(temp) / "output"
+            shutil.copytree(self.out, out)
+            before = {path.relative_to(out): path.read_bytes() for path in out.rglob("*") if path.is_file()}
+            code, log, _ = run_with_real_driver(conninfo.make_conninfo(self.dsn, dbname="snapshot_it_nao_existe"), out)
+            self.assertEqual(code, 1)
+            self.assertIn("Banco indisponível", log)
+            self.assertNotIn("Traceback", log)
+            self.assertEqual({path.relative_to(out): path.read_bytes() for path in out.rglob("*") if path.is_file()}, before)
 
 if __name__ == "__main__":
     unittest.main()

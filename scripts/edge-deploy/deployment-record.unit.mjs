@@ -32,3 +32,31 @@ test('4. resumirDeployment devolve linhas úteis para o corpo da PR/log', () => 
   assert.ok(linha.includes('producao'));
   assert.ok(linha.includes('12'));
 });
+
+// ---------------------------------------------------------------------------
+// Bordas: entradas inválidas e resposta da API fora do formato.
+// ---------------------------------------------------------------------------
+test('5. construirDeployment recusa tudo que não é sha de 40 hex (branch, sha curto, vazio, com sufixo)', () => {
+  for (const ruim of ['main', 'abc1234', '', undefined, null, 'g'.repeat(40), `${'a'.repeat(40)}\nmain`, 'a'.repeat(41), 'refs/heads/main']) {
+    assert.throws(() => construirDeployment({ shaDeployado: ruim, runId: '1' }), /sha de 40 hex/, String(ruim));
+  }
+  const d = construirDeployment({ shaDeployado: `  ${'ABCDEF0123'.repeat(4)}\n`, runId: 7 });
+  assert.equal(d.ref, 'abcdef0123'.repeat(4), 'espaço nas pontas e maiúsculas são normalizados');
+  assert.equal(d.payload.run_id, '7');
+  assert.equal(d.payload.escopo, 'all');
+  assert.equal(d.payload.run_url, '');
+  assert.equal(d.description, 'Deploy de edge functions — run 7');
+});
+
+test('6. construirStatus exige id e aceita estado/descrição explícitos', () => {
+  for (const id of [undefined, null, 0, '']) assert.throws(() => construirStatus({ id }), /exige o id/);
+  const s = construirStatus({ id: 5, estado: 'error', descricao: 'smoke falhou', runUrl: 'https://x/y' });
+  assert.deepEqual(s, { deployment_id: 5, state: 'error', environment: AMBIENTE_PADRAO, log_url: 'https://x/y', description: 'smoke falhou', auto_inactive: false });
+});
+
+test('7. resumirDeployment não lança com resposta da API incompleta (antes: registro feito virava "Falha ao registrar")', () => {
+  assert.equal(resumirDeployment({ environment: 'producao', ref: 'a'.repeat(40) }), 'producao @ aaaaaaaa (run ?)');
+  assert.equal(resumirDeployment({ payload: '' }), '? @  (run ?)');
+  assert.equal(resumirDeployment({}), '? @  (run ?)');
+  assert.equal(resumirDeployment(null), '? @  (run ?)');
+});

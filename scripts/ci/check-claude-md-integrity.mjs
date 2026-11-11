@@ -11,7 +11,7 @@
  * Na base o conjunto e o que existir la.
  */
 import { readFileSync, readdirSync, existsSync } from 'node:fs';
-import { execSync } from 'node:child_process';
+import { execFileSync } from 'node:child_process';
 import { join } from 'node:path';
 
 const AGENTS = 'AGENTS.md';
@@ -65,7 +65,8 @@ function bytesNaBase(base) {
   const porArquivo = new Map();
   const tamanho = (path) => {
     try {
-      const out = execSync(`git cat-file -s ${base}:${path}`, {
+      // execFile (sem shell): nome de arquivo e ref vão como argumento, não como texto de comando.
+      const out = execFileSync('git', ['cat-file', '-s', `${base}:${path}`], {
         encoding: 'utf8',
         stdio: ['ignore', 'pipe', 'ignore'],
       });
@@ -77,14 +78,16 @@ function bytesNaBase(base) {
   for (const f of CONJUNTO_RAIZ) tamanho(f);
   let lista = '';
   try {
-    lista = execSync(`git ls-tree -r --name-only ${base} -- ${DOCS_DIR}`, {
+    // -z: sem ele o git devolve nome com acento entre aspas e escapado, e o arquivo
+    // (que não "termina em .md") saía do conjunto vigiado sem aviso.
+    lista = execFileSync('git', ['ls-tree', '-r', '-z', '--name-only', base, '--', DOCS_DIR], {
       encoding: 'utf8',
       stdio: ['ignore', 'pipe', 'ignore'],
     });
   } catch {
     lista = '';
   }
-  for (const path of lista.split('\n').map((l) => l.trim()).filter((l) => l.endsWith('.md'))) {
+  for (const path of lista.split('\0').filter((l) => l.endsWith('.md'))) {
     tamanho(path);
   }
   if (porArquivo.size === 0) return null;
