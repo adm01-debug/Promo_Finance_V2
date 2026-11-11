@@ -318,3 +318,33 @@ verify_jwt = false
 # contra a chave 'monitor_health_cron' em integration_secrets.
 [functions.monitor-health]
 verify_jwt = false
+
+# verify_jwt=true explícito (padrão da CLI): funções que autenticam por JWT de usuário (getUser no código ou invocadas pelo front via
+# supabase.functions.invoke) ou por bearer da service key (calcular-slo-metrics-diario). Os guards em código seguem como defesa em profundidade.
+# Sem bloco, scripts/migrate-functions.sh abortava com exit 6 e a função não entrava no deploy em lote.
+[functions.aceitar-convite]
+verify_jwt = true
+
+[functions.calcular-health-score-operacional]
+verify_jwt = true
+
+[functions.calcular-slo-metrics-diario]
+verify_jwt = true
+
+[functions.calculo-iva]
+verify_jwt = true
+
+[functions.comparar-benchmark-setorial]
+verify_jwt = true
+
+[functions.conciliacao-proxy]
+verify_jwt = true
+
+[functions.consulta-tributaria]
+verify_jwt = true
+
+[functions.contabilizar-evento]
+verify_jwt = true
+
+[functions.convidar-contador]
+verify_jwt = true
