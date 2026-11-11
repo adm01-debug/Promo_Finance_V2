@@ -164,7 +164,11 @@ BEGIN
           END IF;
         EXCEPTION
           WHEN insufficient_privilege THEN RESET ROLE;
-          WHEN foreign_key_violation THEN RESET ROLE;  -- chegou a apagar? FK barrou; tratado abaixo
+          WHEN foreign_key_violation THEN
+            -- A FK só dispara depois de a RLS liberar a linha: a policy de DELETE
+            -- está aberta e apenas a integridade referencial segurou a remoção.
+            RESET ROLE;
+            v_falhas := v_falhas || format('%s: DELETE passou pela RLS para usuário sem inquilino (barrado apenas por FK: %s)', r.t, SQLERRM);
           WHEN OTHERS THEN
             RESET ROLE;
             IF SQLSTATE IN ('42883', '42P01', '42704') THEN

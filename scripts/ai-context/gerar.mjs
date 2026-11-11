@@ -6,7 +6,7 @@
 //   scripts, workflows, git e baseline. Backends: Supabase (migrations/types/edges/config),
 //   Prisma, Drizzle, TypeORM, SQL solto.
 //
-// Uso: node scripts/ai-context/gerar.mjs [--root <dir>] [--out <dir>] [--quiet]
+// Uso: node scripts/ai-context/gerar.mjs [--root <dir>] [--out <dir>] [--quiet] [--help]
 // Config opcional na raiz do repo: ai-context.config.json
 //   { "out": "inventario/ia", "skipDirs": [...], "srcDirs": [...], "menuFiles": [...],
 //     "routeFiles": [...], "aliases": { "@/": "src/" }, "typesFile": "...", "maxFileMB": 8, "publicacao": "texto do rodapé do INDEX.md" }
@@ -19,8 +19,19 @@ import { execFileSync } from 'node:child_process';
 
 const FORMAT_VERSION = 2;
 const args = process.argv.slice(2);
+const USO = 'Uso: node scripts/ai-context/gerar.mjs [--root <dir>] [--out <dir>] [--quiet] [--help]';
+const abortar = (msg, code = 2) => { console.error(`[contexto-ia] ERRO: ${msg}`); if (code === 2) console.error(USO); process.exit(code); };
+if (args.includes('--help') || args.includes('-h')) { console.log(`${USO}\n  --root <dir>  raiz do repositório a ler (padrão: diretório atual ou env AI_CONTEXT_ROOT)\n  --out <dir>   onde gravar (padrão: inventario/ia, ai-context.config.json → out ou env AI_CONTEXT_DIR)\n  --quiet       sem log de progresso\nSaída: 0 = gerado; 1 = falha ao gravar; 2 = argumento inválido.`); process.exit(0); }
+// Argumento inválido aborta: antes `--out` sem valor gravava em silêncio no diretório padrão e `--out --quiet` criava a pasta "--quiet".
+for (let i = 0; i < args.length; i++) { if (args[i] === '--quiet') continue; if (args[i] !== '--root' && args[i] !== '--out') abortar(`argumento desconhecido: ${args[i]}`); if (!args[i + 1] || args[i + 1].startsWith('--')) abortar(`${args[i]} exige um diretório`); i++; }
 const argOf = (k, d) => { const i = args.indexOf(k); return i >= 0 && args[i + 1] ? args[i + 1] : d; };
 const ROOT = path.resolve(argOf('--root', process.env.AI_CONTEXT_ROOT || process.cwd()));
+// Raiz inexistente geraria um contexto vazio com exit 0 (e o workflow publicaria esse vazio).
+if (!fs.existsSync(ROOT) || !fs.statSync(ROOT).isDirectory()) abortar(`raiz do repositório inexistente, inacessível ou não é diretório: ${ROOT}`);
+// Ordenação independente do locale da máquina (LANG/LC_ALL): com cs_CZ ou lt_LT a ordem dos JSONs mudava.
+// 'en' ordena igual ao en-US que o Node resolve no runner do CI (C.UTF-8), então a saída publicada não muda.
+const COLLATOR = new Intl.Collator('en');
+String.prototype.localeCompare = function (outro) { return COLLATOR.compare(String(this), String(outro)); };
 const QUIET = args.includes('--quiet');
 const log = (...m) => { if (!QUIET) console.log('[contexto-ia]', ...m); };
 const ERROS = [];
@@ -29,7 +40,8 @@ const secao = (nome, fn, fallback) => { try { return fn(); } catch (e) { ERROS.p
 // ---------- util ----------
 const rel = (p) => path.relative(ROOT, p).split(path.sep).join('/');
 const abs = (p) => path.join(ROOT, p);
-const CFG = (() => { try { return JSON.parse(fs.readFileSync(abs('ai-context.config.json'), 'utf8')); } catch { return {}; } })();
+// Config ausente = padrão; config ilegível vira erro visível (antes sumia em silêncio e o INDEX.md perdia `publicacao`/`grafoComoGerar`).
+const CFG = (() => { let txt; try { txt = fs.readFileSync(abs('ai-context.config.json'), 'utf8'); } catch { return {}; } try { const j = JSON.parse(txt.replace(/^\uFEFF/, '')); if (!j || typeof j !== 'object' || Array.isArray(j)) throw new Error('esperado um objeto JSON'); return j; } catch (e) { ERROS.push({ secao: 'config', erro: `ai-context.config.json ignorado: ${e.message}` }); log(`ERRO: ai-context.config.json ignorado: ${e.message}`); return {}; } })();
 const OUT = path.resolve(ROOT, argOf('--out', process.env.AI_CONTEXT_DIR || CFG.out || 'inventario/ia'));
 const OUT_REL = rel(OUT);
 const MAX_FILE_BYTES = (CFG.maxFileMB || 8) * 1024 * 1024;
@@ -38,16 +50,56 @@ const MAX_FILE_BYTES = (CFG.maxFileMB || 8) * 1024 * 1024;
 const PUBLICACAO = process.env.AI_CONTEXT_PUBLICACAO || CFG.publicacao || 'Publicado pelo workflow de contexto do repositório (ver .github/workflows).';
 const GRAFO_COMO_GERAR = process.env.AI_CONTEXT_GRAFO_COMO_GERAR || CFG.grafoComoGerar || 'uvx --from "graphifyy[sql]" graphify update .  (ou: bun run graph:update); saída em graphify-out/ — graph.json e graph.html NÃO são versionados (dezenas de MB); use `graphify query/path/explain` localmente';
 const exists = (p) => fs.existsSync(abs(p));
+const isDir = (p) => { try { return fs.statSync(abs(p)).isDirectory(); } catch { return false; } }; // symlink quebrado ou arquivo = false, sem lançar
 const readText = (p) => { try { const a = path.isAbsolute(p) ? p : abs(p); if (fs.statSync(a).size > MAX_FILE_BYTES) return ''; return fs.readFileSync(a, 'utf8'); } catch { return ''; } };
 const readJson = (p) => { try { return JSON.parse(readText(p).replace(/^﻿/, '')); } catch { return null; } };
 const uniq = (a) => [...new Set(a)].sort();
 const sortObj = (o) => Object.fromEntries(Object.entries(o).sort(([a], [b]) => (a < b ? -1 : a > b ? 1 : 0)));
 const sha = (s) => crypto.createHash('sha256').update(s).digest('hex').slice(0, 16);
-const countLines = (s) => (s ? s.split('\n').length : 0);
-const git = (...args) => { try { return execFileSync('git', args, { cwd: ROOT, encoding: 'utf8', stdio: ['ignore', 'pipe', 'ignore'], maxBuffer: 64 * 1024 * 1024 }).trim(); } catch { return ''; } };
-const stripComments = (s) => s.replace(/\/\*[\s\S]*?\*\//g, '').replace(/(^|[^:\\'"`])\/\/[^\n]*/g, '$1');
+const countLines = (s) => (s ? s.split('\n').length - (s.endsWith('\n') ? 1 : 0) : 0); // "a\nb\n" tem 2 linhas, não 3
+const git = (...args) => { try { return execFileSync('git', ['-c', 'core.quotepath=false', ...args], { cwd: ROOT, encoding: 'utf8', stdio: ['ignore', 'pipe', 'ignore'], maxBuffer: 64 * 1024 * 1024 }).trim(); } catch { return ''; } };
+// Remove comentários sem confundir `/*` e `//` escritos dentro de string, template ou regex ('src/**/*.ts',
+// accept="image/*", `${a}//${b}`): o regex puro apagava o código real até o próximo `*/` do arquivo.
+// Devolve [código, máscara] do mesmo tamanho; na máscara o miolo dos literais vira espaço, o que permite saber se
+// um `import`/`export` casado é código de verdade ou texto dentro de um literal (fixture de teste, mensagem).
+// Comentário de bloco preserva as quebras de linha: número de linha no resultado = número no arquivo.
+const stripCommentsRegex = (s) => s.replace(/\/\*[\s\S]*?\*\//g, (m) => m.replace(/[^\n]/g, '')).replace(/(^|[^:\\'"`])\/\/[^\n]*/g, '$1');
+function stripComments(s) {
+  const out = [], mask = [], tpl = []; const n = s.length; let i = 0, emTemplate = false;
+  const put = (a, b, lit) => { const t = s.slice(a, b); out.push(t); mask.push(lit ? t.replace(/[^\n]/g, ' ') : t); };
+  const literal = (a, b) => { put(a, a + 1); put(a + 1, b, true); put(b, b + 1); };
+  while (i < n) {
+    const ch = s[i];
+    if (emTemplate) {
+      let j = i; while (j < n && s[j] !== '`' && !(s[j] === '$' && s[j + 1] === '{')) j += s[j] === '\\' ? 2 : 1;
+      if (j >= n) { i = n; break; }
+      put(i, j, true); emTemplate = false;
+      if (s[j] === '`') { put(j, j + 1); i = j + 1; } else { put(j, j + 2); i = j + 2; tpl.push(0); }
+      continue;
+    }
+    if (ch === '/' && s[i + 1] === '/' && !(i > 0 && ':\\\'"`'.includes(s[i - 1]))) { const j = s.indexOf('\n', i); i = j < 0 ? n : j; continue; }
+    if (ch === '/' && s[i + 1] === '*') { const j = s.indexOf('*/', i + 2); if (j >= 0) { const nl = s.slice(i, j + 2).replace(/[^\n]/g, ''); out.push(nl); mask.push(nl); i = j + 2; continue; } }
+    // aspas só valem como string se fecharem na mesma linha (apóstrofo em texto JSX não abre string)
+    if (ch === '"' || ch === "'") { let j = i + 1; while (j < n && s[j] !== ch && s[j] !== '\n') j += s[j] === '\\' ? 2 : 1; if (j < n && s[j] === ch) { literal(i, j); i = j + 1; continue; } }
+    if (ch === '/' && s[i + 1] !== '/' && s[i + 1] !== '*') { // regex literal: só onde uma expressão pode começar (senão é divisão ou </tag>)
+      let p = i - 1; while (p >= 0 && /\s/.test(s[p])) p--;
+      if (p < 0 || '(,=:[!&|?{};'.includes(s[p]) || (s[p] === '>' && s[p - 1] === '=') || /(?:^|[^\w$.])(?:return|typeof|case|throw|else)$/.test(s.slice(Math.max(0, p - 7), p + 1))) {
+        let j = i + 1, classe = false; while (j < n && s[j] !== '\n' && (classe || s[j] !== '/')) { if (s[j] === '\\') j++; else if (s[j] === '[') classe = true; else if (s[j] === ']') classe = false; j++; }
+        if (j < n && s[j] === '/') { literal(i, j); i = j + 1; continue; }
+      }
+    }
+    if (ch === '`') { put(i, i + 1); i++; emTemplate = true; continue; }
+    if (tpl.length) { if (ch === '{') tpl[tpl.length - 1]++; else if (ch === '}') { if (tpl[tpl.length - 1] === 0) { tpl.pop(); put(i, i + 1); i++; emTemplate = true; continue; } tpl[tpl.length - 1]--; } }
+    let j = i + 1; while (j < n && !'/\'"`{}'.includes(s[j])) j++;
+    put(i, j); i = j;
+  }
+  // template sem fecho = a leitura saiu de fase (crase solta em texto JSX): volta à remoção por regex, como era antes
+  if (emTemplate || tpl.length) { const t = stripCommentsRegex(s); return [t, t]; }
+  return [out.join(''), mask.join('')];
+}
 const cap = (arr, n = 200) => arr.slice(0, n);
-const allMatches = (re, s, g = 1) => { const out = []; re.lastIndex = 0; let m; while ((m = re.exec(s))) out.push(m[g]); return out; };
+// `mask` (opcional): descarta o casamento que começa dentro de um literal
+const allMatches = (re, s, g = 1, mask) => { const out = []; re.lastIndex = 0; let m; while ((m = re.exec(s))) if (!mask || mask[m.index] === s[m.index]) out.push(m[g]); return out; };
 const byCount = (arr) => Object.entries(arr.reduce((a, k) => { a[k] = (a[k] || 0) + 1; return a; }, {})).sort((a, b) => b[1] - a[1] || (a[0] < b[0] ? -1 : 1));
 const dirOf = (f) => path.posix.dirname(f);
 const baseOf = (f) => path.posix.basename(f).replace(/\.[^.]+$/, '');
@@ -75,7 +127,7 @@ log(`arquivos no repo: ${ALL.length}`);
 // ---------- linguagens / stack ----------
 const EXT_LANG = { '.ts': 'TypeScript', '.tsx': 'TypeScript', '.mts': 'TypeScript', '.cts': 'TypeScript', '.js': 'JavaScript', '.jsx': 'JavaScript', '.mjs': 'JavaScript', '.cjs': 'JavaScript', '.vue': 'Vue', '.svelte': 'Svelte', '.astro': 'Astro', '.py': 'Python', '.go': 'Go', '.rs': 'Rust', '.java': 'Java', '.kt': 'Kotlin', '.rb': 'Ruby', '.php': 'PHP', '.cs': 'C#', '.swift': 'Swift', '.dart': 'Dart', '.sql': 'SQL', '.sh': 'Shell', '.css': 'CSS', '.scss': 'SCSS', '.html': 'HTML', '.md': 'Markdown', '.json': 'JSON', '.yml': 'YAML', '.yaml': 'YAML', '.toml': 'TOML' };
 const CODE_EXT = new Set(['.ts', '.tsx', '.js', '.jsx', '.mjs', '.cjs', '.mts', '.cts', '.vue', '.svelte', '.astro']);
-const TEST_RE = /(\.(test|spec|e2e|contract|contracts|unit|fixture|fixtures)\.[cm]?[jt]sx?$)|(^|\/)(__tests__|tests?|fixtures|__fixtures__|e2e|qa|__mocks__|spec|cypress|playwright)\/|(^|\/)(test_\w+\.py|\w+_test\.py|conftest\.py)$/;
+const TEST_RE = /((\.(test|spec|e2e|contract|contracts|unit|fixture|fixtures)|_test)\.[cm]?[jt]sx?$)|(^|\/)(__tests__|tests?|fixtures|__fixtures__|e2e|qa|__mocks__|spec|cypress|playwright)\/|(^|\/)(test_\w+\.py|\w+_test\.py|conftest\.py)$/;
 const STORY_RE = /\.stories\.[cm]?[jt]sx?$/;
 const pkg = readJson('package.json') || {};
 const deps = { ...(pkg.dependencies || {}), ...(pkg.devDependencies || {}), ...(pkg.peerDependencies || {}) };
@@ -86,7 +138,7 @@ const hasPy = (d) => pyReqs.has(d) || pyImportados.has(d);
 const langCounts = byCount(ALL.map((f) => EXT_LANG[path.extname(f).toLowerCase()]).filter(Boolean));
 const workspaces = (() => {
   const w = Array.isArray(pkg.workspaces) ? pkg.workspaces : (pkg.workspaces && pkg.workspaces.packages) || []; const dirs = [];
-  for (const g of w) { const base = g.replace(/\/?\*+.*$/, ''); if (!exists(base)) continue; for (const d of fs.readdirSync(abs(base))) { const pj = `${base}/${d}/package.json`; if (FILESET.has(pj)) { const p = readJson(pj) || {}; dirs.push({ pasta: `${base}/${d}`, nome: p.name || null, scripts: Object.keys(p.scripts || {}) }); } } }
+  for (const g of w) { const base = g.replace(/\/?\*+.*$/, ''); if (!isDir(base)) continue; for (const d of fs.readdirSync(abs(base))) { const pj = `${base}/${d}/package.json`; if (FILESET.has(pj)) { const p = readJson(pj) || {}; dirs.push({ pasta: `${base}/${d}`, nome: p.name || null, scripts: Object.keys(p.scripts || {}) }); } } }
   for (const pj of ALL.filter((f) => /^(apps|packages|services|libs)\/[^/]+\/package\.json$/.test(f))) if (!dirs.some((d) => `${d.pasta}/package.json` === pj)) { const p = readJson(pj) || {}; dirs.push({ pasta: dirOf(pj), nome: p.name || null, scripts: Object.keys(p.scripts || {}) }); }
   return dirs.sort((a, b) => a.pasta.localeCompare(b.pasta));
 })();
@@ -146,6 +198,8 @@ function resolveImport(fromFile, spec) {
 }
 
 // ---------- análise por arquivo (JS/TS/Vue/Svelte/Astro) ----------
+const EDGE_DIR = ['supabase/functions', 'functions', 'netlify/functions', 'edge-functions'].find((d) => exists(d)) || 'supabase/functions';
+const EDGE_NAMES = new Set(isDir(EDGE_DIR) ? fs.readdirSync(abs(EDGE_DIR)).filter((n) => !n.startsWith('_') && isDir(`${EDGE_DIR}/${n}`)) : []);
 const CODE_FILES = ALL.filter((f) => CODE_EXT.has(path.extname(f)) && !f.endsWith('.d.ts'));
 const FILE = new Map();
 const RE = {
@@ -153,17 +207,20 @@ const RE = {
   dyn: /import\(\s*['"]([^'"]+)['"]\s*\)/g,
   req: /require\(\s*['"]([^'"]+)['"]\s*\)/g,
   hook: /\b(use[A-Z]\w*)\s*\(/g,
-  from: /\.from\(\s*['"`]([\w.]+)['"`]/g,
-  rpc: /\.rpc\(\s*['"`](\w+)['"`]/g,
-  invoke: /functions\.invoke\(\s*['"`]([\w-]+)['"`]/g,
+  // `(?:<…>)?` = argumento de tipo do TS: .from<Linha>('t'), .rpc<Tipo[]>('f'), functions.invoke<{ ok: boolean }>('edge')
+  from: /\.from\s*(?:<[^()]{0,300}?>)?\s*\(\s*['"`]([\w.]+)['"`]/g,
+  rpc: /\.rpc\s*(?:<[^()]{0,300}?>)?\s*\(\s*['"`](\w+)['"`]/g,
+  invoke: /functions\s*\.\s*invoke\s*(?:<[^()]{0,600}?>)?\s*\(\s*['"`]([\w-]+)['"`]/g,
+  // wrapper local (invokeEdge('x'), callEdgeFunction('x')): só conta quando 'x' é pasta de edge function existente
+  invokeWrap: /\b\w*(?:[iI]nvoke|[eE]dge)\w*\s*(?:<[^()]{0,600}?>)?\s*\(\s*['"`]([\w-]+)['"`]/g,
   fnUrl: /\/functions\/v1\/([\w-]+)/g,
   envVite: /import\.meta\.env\.(\w+)/g,
   envNode: /process\.env\.(\w+)/g,
   envDeno: /Deno\.env\.get\(\s*['"](\w+)['"]/g,
   exp: /export\s+(?:async\s+)?(?:const|let|var|function\*?|class|enum|interface|type|abstract\s+class)\s+([A-Za-z_$][\w$]*)/g,
-  expList: /export\s*\{([^}]+)\}/g,
+  expList: /export\s*(?:type\s*)?\{([^}]+)\}/g,
   expDefault: /export\s+default\s+(?:async\s+)?(?:function\s*\*?\s*|class\s+)?([A-Za-z_$][\w$]*)?/g,
-  storage: /storage\.from\(\s*['"`]([\w-]+)['"`]/g,
+  storage: /storage\s*\.\s*from\(\s*['"`]([\w-]+)['"`]/g,
   channel: /\.channel\(\s*['"`]([^'"`]+)['"`]/g,
   urlHost: /https?:\/\/([a-z0-9.-]+\.[a-z]{2,})(?=[/'"`\s)?]|$)/gi,
   flag: /(?:isFeatureEnabled|useFeatureFlag|useFlag|useFeature|getFlag|featureFlag|isEnabled)\(\s*['"`]([\w.:-]+)['"`]/g,
@@ -175,16 +232,18 @@ const RE = {
   httpRoute: /\b(?:app|router|server|api|r|fastify|hono)\.(get|post|put|patch|delete|all|options|head)\(\s*['"`]([^'"`]+)['"`]/g,
   nestRoute: /@(Get|Post|Put|Patch|Delete|All)\(\s*(?:['"`]([^'"`]*)['"`])?\s*\)/g,
   nestCtrl: /@Controller\(\s*(?:['"`]([^'"`]*)['"`])?\s*\)/,
+  // caso de teste: it(…)/test(…)/Deno.test(…)/t.test(…), com .each/.only/… e argumento de tipo; `regex.test(x)` não é caso
+  caso: /(?:(?<![.\w$])|\b(?:Deno|t)\.)(?:it|test)(?:\.(?:each|only|skip|concurrent|todo))?\s*(?:<[^()]{0,200}?>)?\s*\(/g,
 };
 const envNames = (s) => uniq([...allMatches(RE.envVite, s), ...allMatches(RE.envNode, s), ...allMatches(RE.envDeno, s)]);
 for (const f of CODE_FILES) secao(`arquivo:${f}`, () => {
   const raw = readText(f);
-  const src = stripComments(raw);
-  const specs = [...allMatches(RE.imp, src), ...allMatches(RE.dyn, src), ...allMatches(RE.req, src)];
+  const [src, mask] = stripComments(raw);
+  const specs = [...allMatches(RE.imp, src, 1, mask), ...allMatches(RE.dyn, src, 1, mask), ...allMatches(RE.req, src, 1, mask)];
   const local = uniq(specs.map((s) => resolveImport(f, s)).filter(Boolean));
   const external = uniq(specs.filter((s) => !s.startsWith('.') && !s.startsWith('/') && !isAliasSpec(f, s) && !resolveImport(f, s)).map((s) => (s.startsWith('@') ? s.split('/').slice(0, 2).join('/') : s.split('/')[0])));
-  const expDef = allMatches(RE.expDefault, src).filter(Boolean);
-  const exportsNamed = uniq([...allMatches(RE.exp, src), ...expDef, ...allMatches(RE.expList, src).flatMap((l) => l.split(',').map((x) => x.trim().split(/\s+as\s+/).pop()).filter((x) => x && /^[A-Za-z_$][\w$]*$/.test(x)))]);
+  const expDef = allMatches(RE.expDefault, src, 1, mask).filter(Boolean);
+  const exportsNamed = uniq([...allMatches(RE.exp, src, 1, mask), ...expDef, ...allMatches(RE.expList, src, 1, mask).flatMap((l) => l.split(',').map((x) => x.trim().replace(/^type\s+/, '').split(/\s+as\s+/).pop()).filter((x) => x && /^[A-Za-z_$][\w$]*$/.test(x)))]);
   const todos = []; let ln = 0;
   for (const line of raw.split('\n')) { ln++; const m = /\b(TODO|FIXME|HACK|XXX)\b[:\s-]*([^\n]{0,100})/.exec(line); if (m) todos.push({ linha: ln, tipo: m[1], texto: m[2].trim() }); }
   const isTest = TEST_RE.test(f); const isStory = STORY_RE.test(f);
@@ -196,11 +255,11 @@ for (const f of CODE_FILES) secao(`arquivo:${f}`, () => {
   FILE.set(f, {
     linhas: countLines(raw), bytes: Buffer.byteLength(raw), imports: local, externos: external, exports: exportsNamed, export_default: expDef[0] || (/export\s+default\b/.test(src) ? '(anônimo)' : null),
     hooks: uniq(allMatches(RE.hook, src)), tabelas: uniq([...allMatches(RE.from, src), ...allMatches(RE.prisma, src)]), rpcs: uniq(allMatches(RE.rpc, src)),
-    edges: uniq([...allMatches(RE.invoke, src), ...allMatches(RE.fnUrl, src)]), env: envNames(src), buckets: uniq(allMatches(RE.storage, src)), canais_realtime: uniq(allMatches(RE.channel, src)),
+    edges: uniq([...allMatches(RE.invoke, src), ...allMatches(RE.fnUrl, src), ...allMatches(RE.invokeWrap, src).filter((e) => EDGE_NAMES.has(e))]), env: envNames(src), buckets: uniq(allMatches(RE.storage, src)), canais_realtime: uniq(allMatches(RE.channel, src)),
     hosts_externos: uniq(allMatches(RE.urlHost, src).map((h) => h.toLowerCase())).filter((h) => !/localhost|example\.(com|org)|w3\.org|schema\.org|github\.com|npmjs\.com|deno\.land|esm\.sh|jsdelivr|unpkg/.test(h)),
     flags: uniq([...allMatches(RE.flag, src), ...allMatches(RE.flagEnv, src)]), papeis: uniq(allMatches(RE.role, src)), zod: (src.match(RE.zod) || []).length,
     rotas_http: rotasHttp, drizzle: uniq(allMatches(RE.drizzleTable, src)),
-    todos, teste: isTest, story: isStory,
+    todos, teste: isTest, story: isStory, casos: allMatches(RE.caso, src, 0, mask).length,
     componente: temJsx && !isTest && !isStory && (exportsNamed.some((e) => /^[A-Z]/.test(e)) || /\.(vue|svelte|astro)$/.test(f)),
     hook_arquivo: /^use[A-Z]/.test(base) && !isTest,
     any_count: (src.match(/:\s*any\b|<any>|as any\b/g) || []).length, console_count: (src.match(/console\.(log|debug)\(/g) || []).length, ts_ignore: (src.match(/@ts-(ignore|expect-error|nocheck)/g) || []).length,
@@ -319,7 +378,9 @@ secao('rotas-jsx', () => {
       if (!comp) { const inner = tags[tags.length - 1]; if (inner && !/^(Navigate|Redirect)$/.test(inner)) { comp = inner; file = componentFile(inner, rf); } }
       const redir = /<(?:Navigate|Redirect)\b[^>]*\bto=["']([^"']+)["']/.exec(attrs);
       const paiProtegido = parent ? !!rotas.find((r) => r.caminho === parent && r.definida_em === rf && r.protegida) : false;
-      if (p || isIndex) rotas.push(mk({ caminho: full, componente: comp, arquivo: file, protegida: tags.some((w) => /Protected|Private|Auth|Guard|Require|Admin/i.test(w)) || paiProtegido, wrappers: tags.filter((t) => t !== comp), pai: parent, indice: isIndex, definida_em: rf, lazy: comp ? lazyMap.has(comp) : false, tipo: redir && !comp ? 'redirect' : 'tela', redireciona: redir ? redir[1] : null }));
+      // A tela em si não é guarda só por se chamar Auth*/Admin*: <Route path="/auth" element={<Auth />} /> é o login público.
+      const guarda = (w) => /Protected|Private|Guard|Require/i.test(w) || (/Auth|Admin/i.test(w) && !(self && w === comp));
+      if (p || isIndex) rotas.push(mk({ caminho: full, componente: comp, arquivo: file, protegida: tags.some(guarda) || paiProtegido, wrappers: tags.filter((t) => t !== comp), pai: parent, indice: isIndex, definida_em: rf, lazy: comp ? lazyMap.has(comp) : false, tipo: redir && !comp ? 'redirect' : 'tela', redireciona: redir ? redir[1] : null }));
       if (!self) stack.push(full);
     }
     const scanObjs = (text, parent, depth) => {
@@ -399,8 +460,10 @@ secao('menu', () => {
   }
 });
 const menuUniq = Object.values(Object.fromEntries(menu.map((v) => [v.destino + '|' + v.rotulo, v]))).sort((a, b) => (a.grupo || '').localeCompare(b.grupo || '') || a.rotulo.localeCompare(b.rotulo));
-const norm = (p) => String(p).replace(/^\//, '').replace(/\/$/, '').split('?')[0];
-const resolveDestino = (dest) => rotasEnriched.find((r) => r.caminho === dest) || vistasEnriched.find((v) => v.id === dest) || rotasEnriched.find((r) => norm(r.caminho) === norm(dest)) || vistasEnriched.find((v) => norm(v.id) === norm(dest)) || null;
+const norm = (p) => String(p).split(/[?#]/)[0].replace(/^\//, '').replace(/\/$/, '');
+// '/reforma/visao-geral' casa com a rota '/reforma/:tab' (mesmo nº de segmentos, 1º segmento fixo); `*` não entra para o catch-all não engolir tudo
+const casaParametro = (rota, dest) => { const a = norm(rota).split('/'), b = norm(dest).split('/'); return String(dest).startsWith('/') && a.length === b.length && !a[0].startsWith(':') && a.some((x) => x.startsWith(':')) && a.every((x, i) => (x.startsWith(':') ? b[i] !== '' : x === b[i])); };
+const resolveDestino = (dest) => rotasEnriched.find((r) => r.caminho === dest) || vistasEnriched.find((v) => v.id === dest) || rotasEnriched.find((r) => norm(r.caminho) === norm(dest)) || vistasEnriched.find((v) => norm(v.id) === norm(dest)) || rotasEnriched.find((r) => casaParametro(r.caminho, dest)) || null;
 
 // ---------- módulos ----------
 const dominios = new Map();
@@ -551,7 +614,6 @@ secao('banco-types', () => {
   while ((m = re.exec(body))) { let j = re.lastIndex, d2 = 1, row = ''; while (j < body.length && d2 > 0) { const ch = body[j++]; if (ch === '{') d2++; if (ch === '}') d2--; if (d2 > 0) row += ch; } const campos = []; let dd = 0, cur = ''; for (const ch of row) { if (ch === '{' || ch === '[' || ch === '(') dd++; if (ch === '}' || ch === ']' || ch === ')') dd--; if ((ch === ';' || ch === '\n') && dd === 0) { campos.push(cur); cur = ''; } else cur += ch; } campos.push(cur); tabelasTypes[m[1]] = Object.fromEntries(campos.map((cmp) => /^\s*(\w+)\??:\s*([\s\S]+?)\s*$/.exec(cmp)).filter(Boolean).map((cm) => [cm[1], cm[2].replace(/\s+/g, ' ')])); }
 });
 for (const [t, cols] of Object.entries(tabelasTypes)) T(t).colunas_types = cols;
-const EDGE_DIR = ['supabase/functions', 'functions', 'netlify/functions', 'edge-functions'].find((d) => exists(d)) || 'supabase/functions';
 // Exemplos, testes e ferramentas continuam no inventário, mas não provam uso pela aplicação.
 // srcDirs explícito permite tratar uma raiz de ferramentas como código de aplicação.
 const TOOLING_ROOT = /^(?:(?:apps|packages|services|libs)\/[^/]+\/)?(?:scripts|bin|tools|\.github|docs|inventario|analise|examples?|samples?)\//;
@@ -577,10 +639,10 @@ const configToml = readText('supabase/config.toml');
 const verifyJwt = {}; { const re = /\[functions\.([\w-]+)\]\s*\n(?:[^[]*?)verify_jwt\s*=\s*(true|false)/g; let m; while ((m = re.exec(configToml))) verifyJwt[m[1]] = m[2] === 'true'; }
 const edges = secao('edges', () => {
   const out = [];
-  if (!exists(EDGE_DIR)) return out;
+  if (!isDir(EDGE_DIR)) return out;
   for (const name of fs.readdirSync(abs(EDGE_DIR)).sort()) {
     const dir = `${EDGE_DIR}/${name}`;
-    if (!fs.statSync(abs(dir)).isDirectory() || name.startsWith('_')) continue;
+    if (!isDir(dir) || name.startsWith('_')) continue; // um symlink quebrado derrubava a seção inteira (0 edge functions)
     const entry = ['index.ts', 'index.js', 'main.ts', 'handler.ts', 'mod.ts'].map((e) => `${dir}/${e}`).find((p) => FILESET.has(p));
     const files = ALL.filter((f) => f.startsWith(dir + '/') && CODE_EXT.has(path.extname(f)) && !TEST_RE.test(f));
     const a = aggregate(files);
@@ -611,7 +673,7 @@ const workflows = secao('workflows', () => ALL.filter((f) => /^\.github\/workflo
   const gatilhos = uniq([...onBlock.matchAll(/^\s{2}([a-z_]+):/gm)].map((m) => m[1]).concat((/^on:\s*\[([^\]]*)\]/m.exec(y) || [, ''])[1].split(',').map((s) => s.trim()).filter(Boolean)));
   const jobs = [...(y.split(/^jobs:/m)[1] || '').matchAll(/^\s{2}([\w-]+):\s*$/gm)].map((m) => m[1]);
   const branches = uniq([...onBlock.matchAll(/branches:\s*\[([^\]]*)\]/g)].flatMap((m) => m[1].split(',').map((s) => s.trim().replace(/['"]/g, ''))).concat([...onBlock.matchAll(/branches:\s*\n((?:\s+-\s*.+\n)+)/g)].flatMap((m) => (m[1].match(/-\s*(\S+)/g) || []).map((x) => x.replace(/-\s*/, '').replace(/['"]/g, '')))).filter(Boolean));
-  return { arquivo: f, nome: name, gatilhos, crons: [...y.matchAll(/cron:\s*['"]([^'"]+)['"]/g)].map((m) => m[1]), branches, jobs, permissoes: (/^permissions:[ \t]*\n((?:[ \t]+[\w-]+:[^\n]*\n)+)/m.exec(y) || [])[1]?.trim().split('\n').map((l) => l.trim()) || [], scripts_usados: uniq([...y.matchAll(/(?:node|bash|sh|npx tsx|bun|python3?|deno run)\s+((?:scripts|\.github|tools|bin)\/[\w./-]+)/g)].map((m) => m[1])), npm_scripts: uniq([...y.matchAll(/(?:npm|bun|pnpm|yarn)\s+(?:run\s+)?([\w:-]+)/g)].map((m) => m[1]).filter((s) => pkg.scripts && pkg.scripts[s])), secrets: uniq([...y.matchAll(/secrets\.(\w+)/g)].map((m) => m[1])), actions: uniq([...y.matchAll(/uses:\s*([\w./-]+)@/g)].map((m) => m[1])) };
+  return { arquivo: f, nome: name, gatilhos, crons: [...y.matchAll(/cron:\s*['"]([^'"]+)['"]/g)].map((m) => m[1]), branches, jobs, permissoes: (/^permissions:[ \t]*\n((?:[ \t]+[\w-]+:[^\n]*\n)+)/m.exec(y) || [])[1]?.trim().split('\n').map((l) => l.trim()) || [], scripts_usados: uniq([...y.matchAll(/(?:(?:node|bash|sh|npx tsx|bun|python3?|deno run)(?:\s+(?:run|-{1,2}[\w-]+))*|\s-f)\s+((?:scripts|\.github|tools|bin)\/[\w./-]+)/g)].map((m) => m[1])), npm_scripts: uniq([...y.matchAll(/(?:npm|bun|pnpm|yarn)\s+(?:run\s+)?([\w:-]+)/g)].map((m) => m[1]).filter((s) => pkg.scripts && pkg.scripts[s])), secrets: uniq([...y.matchAll(/secrets\.(\w+)/g)].map((m) => m[1])), actions: uniq([...y.matchAll(/uses:\s*([\w./-]+)@/g)].map((m) => m[1])) };
 }).sort((a, b) => a.arquivo.localeCompare(b.arquivo)), []);
 const TEXT_CORPUS = ALL.filter((o) => /\.(mjs|cjs|js|ts|tsx|sh|ya?ml|json|md|toml|py)$/.test(o) && !o.startsWith(OUT_REL)).map((o) => [o, FILE.get(o)?.conteudo ?? (fs.statSync(abs(o)).size < 512 * 1024 ? readText(o) : '')]);
 const scriptsRepo = secao('scripts', () => ALL.filter((f) => /^(scripts|bin|tools|\.github\/scripts)\//.test(f) && /\.(mjs|cjs|js|ts|sh|py|sql|ps1)$/.test(f) && !TEST_RE.test(f)).map((f) => {
@@ -673,7 +735,7 @@ const testes = secao('testes', () => ({
   frameworks: stack.testes, total: testFiles.length + ALL.filter((f) => /^supabase\/tests\/.*\.sql$/.test(f)).length,
   por_tipo: sortObj(testFiles.reduce((acc, [f]) => { const t = tipoTeste(f); acc[t] = (acc[t] || 0) + 1; return acc; }, {})),
   onde_ficam: byCount(testFiles.map(([f]) => (/__tests__\//.test(f) ? 'co-localizado (__tests__)' : /\.(test|spec)\./.test(f) && !/^(tests?|e2e|qa)\//.test(f) ? 'co-localizado (*.test)' : /^e2e\//.test(f) ? 'e2e/' : /^tests?\//.test(f) ? 'tests/' : 'outro'))).map(([k, n]) => ({ padrao: k, arquivos: n })),
-  arquivos: testFiles.map(([f, d]) => ({ arquivo: f, tipo: tipoTeste(f), linhas: d.linhas, testa: d.imports.filter((i) => !anyFile(i)?.teste), casos: d.conteudo ? (d.conteudo.match(/\b(?:it|test)(?:\.(?:each|only|skip|concurrent|todo))?\s*\(/g) || []).length : (d.defs || []).filter((x) => /^test_/.test(x)).length })).sort((a, b) => a.arquivo.localeCompare(b.arquivo)),
+  arquivos: testFiles.map(([f, d]) => ({ arquivo: f, tipo: tipoTeste(f), linhas: d.linhas, testa: d.imports.filter((i) => !anyFile(i)?.teste), casos: d.conteudo ? d.casos : (d.defs || []).filter((x) => /^test_/.test(x)).length })).sort((a, b) => a.arquivo.localeCompare(b.arquivo)),
   sql: ALL.filter((f) => /^supabase\/tests\/.*\.sql$/.test(f)),
   cobertura_por_arquivo: sortObj(Object.fromEntries(cobertoPor)),
   sem_teste: { telas: uniq(rotasEnriched.filter((r) => r.arquivo && !cobertoPor.has(r.arquivo)).map((r) => r.arquivo)), hooks: hooksOut.filter((h) => !h.coberto_por_testes).map((h) => h.arquivo), edges: edges.filter((e) => !e.testes).map((e) => e.nome), servicos: [] },
@@ -723,7 +785,7 @@ const graphify = secao('graphify', () => {
   // O comando sugerido é política do repo: ai-context.config.json → "grafoComoGerar"
   // (env AI_CONTEXT_GRAFO_COMO_GERAR tem precedência). Repo que proíbe `graphify update .`
   // declara ali o fluxo autorizado; sem config, segue o padrão do pacote.
-  const base = { presente: false, como_gerar: GRAFO_COMO_GERAR, relatorio: FILESET.has(`${gdir}/GRAPH_REPORT.md`) ? `${gdir}/GRAPH_REPORT.md` : null };
+  const base = { presente: false, como_gerar: GRAFO_COMO_GERAR, relatorio: fs.existsSync(abs(`${gdir}/GRAPH_REPORT.md`)) ? `${gdir}/GRAPH_REPORT.md` : null };
   if (!fs.existsSync(abs(gjson))) return base;
   const stat = fs.statSync(abs(gjson)); if (stat.size > 400 * 1024 * 1024) return { ...base, presente: true, erro: `graph.json com ${Math.round(stat.size / 1048576)} MB — acima do limite de leitura` };
   const g = JSON.parse(fs.readFileSync(abs(gjson), 'utf8'));
@@ -806,7 +868,7 @@ const baseline = {
 };
 
 // ---------- escrita ----------
-fs.mkdirSync(OUT, { recursive: true });
+const gravar = (nome, txt) => { try { fs.mkdirSync(OUT, { recursive: true }); fs.writeFileSync(path.join(OUT, nome), txt); } catch (e) { abortar(`não foi possível gravar ${path.join(OUT, nome)}: ${e.code || e.message}`, 1); } };
 const AVISO = 'GERADO AUTOMATICAMENTE por scripts/ai-context/gerar.mjs — não editar à mão; será sobrescrito.';
 const c = baseline.contagens;
 const files = {
@@ -827,7 +889,7 @@ const files = {
   'baseline.json': { aviso: AVISO, format_version: FORMAT_VERSION, ...baseline },
 };
 const hashes = {};
-for (const [name, data] of Object.entries(files)) { const txt = JSON.stringify(data, null, 1) + '\n'; fs.writeFileSync(path.join(OUT, name), txt); hashes[name] = sha(txt); }
+for (const [name, data] of Object.entries(files)) { const txt = JSON.stringify(data, null, 1) + '\n'; gravar(name, txt); hashes[name] = sha(txt); }
 const li = (arr, f = (x) => x) => (arr.length ? arr.map((x) => `- ${f(x)}`).join('\n') : '- (nenhum)');
 const kv = (o) => Object.entries(o || {}).map(([k, v]) => `- ${k}: ${Array.isArray(v) ? v.join(', ') || 'n/d' : v && typeof v === 'object' ? JSON.stringify(v) : v ?? 'n/d'}`).join('\n');
 const indexMd = `# Contexto do projeto para agentes de IA
@@ -920,8 +982,8 @@ ${li((gitInfo.ultimos_commits || []).slice(0, 15), (x) => `${x.data} \`${x.sha}\
 ${Object.keys(files).map((f) => `- \`${OUT_REL}/${f}\``).join('\n')}
 - \`${OUT_REL}/manifest.json\` (commit, data, hashes, erros — único arquivo com data/hora)
 `;
-fs.writeFileSync(path.join(OUT, 'INDEX.md'), indexMd);
+gravar('INDEX.md', indexMd);
 hashes['INDEX.md'] = sha(indexMd);
-fs.writeFileSync(path.join(OUT, 'manifest.json'), JSON.stringify({ aviso: AVISO, format_version: FORMAT_VERSION, gerado_em: new Date().toISOString(), commit: gitInfo.commit || null, branch: gitInfo.branch || null, gerador: 'scripts/ai-context/gerar.mjs', node: process.version, arquivos: sortObj(hashes), contagens: c, erros: ERROS }, null, 1) + '\n');
+gravar('manifest.json', JSON.stringify({ aviso: AVISO, format_version: FORMAT_VERSION, gerado_em: new Date().toISOString(), commit: gitInfo.commit || null, branch: gitInfo.branch || null, gerador: 'scripts/ai-context/gerar.mjs', node: process.version, arquivos: sortObj(hashes), contagens: c, erros: ERROS }, null, 1) + '\n');
 log(`escrito em ${OUT_REL}/ (${Object.keys(files).length + 2} arquivos)${ERROS.length ? `; ${ERROS.length} erro(s) de seção` : ''}`);
 log(`rotas=${c.rotas} http=${c.rotas_http_backend} vistas=${c.vistas_por_id} menu=${c.itens_menu} modulos=${c.modulos} hooks=${c.hooks} edges=${c.edge_functions} tabelas=${c.tabelas} cron=${c.cron_jobs} testes=${c.testes}`);

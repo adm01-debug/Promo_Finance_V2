@@ -8,7 +8,7 @@ ali, regras → acolá", com a idade de cada fonte. Se uma fonte não rodou, o �
 de quebrar.
 
 Uso:
-  python3 scripts/ai_context/indice.py --out docs/contexto/00-INDEX.md \
+  python3 scripts/regras_negocio/indice.py --out docs/contexto/00-INDEX.md \
       --fonte "banco real=docs/supabase@supabase-snapshot" \
       --fonte "código=inventario/ia@contexto-ia" \
       --fonte "regras de negócio=docs/contexto/regras"
@@ -27,7 +27,7 @@ import json
 import re
 import subprocess
 import sys
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
 ROTEIRO = {
@@ -103,7 +103,8 @@ def producer_health(d: Path, man: dict) -> tuple[str, list[str]]:
 
 def entry_file(d: Path, man: dict) -> str:
     cand = man.get("entrada") or man.get("entry") or ""
-    if cand and (d / cand).exists():
+    # manifest de outro produtor pode vir malformado: entrada que não é nome de arquivo da pasta é ignorada
+    if isinstance(cand, str) and cand and ".." not in Path(cand).parts and (d / cand).is_file():
         return cand
     for name in ("00-INDEX.md", "INDEX.md", "README.md", "index.md"):
         if (d / name).exists():
@@ -123,8 +124,16 @@ def main() -> int:
     ap.add_argument("--head", default="", help="sha do commit de código de referência (default: HEAD do --repo); use quando o índice é montado numa branch gerada")
     args = ap.parse_args()
     root = Path(args.repo).resolve()
+    if not root.is_dir():
+        ap.error(f"--repo não é um diretório: {root}")
+    if not args.fonte:
+        ap.error('informe ao menos uma --fonte "NOME=CAMINHO[@BRANCH]"')
     out = (root / args.out).resolve()
+    if out.is_dir():
+        ap.error(f"--out é um diretório, esperado um arquivo .md: {out}")
     remote = args.remote or re.sub(r"^.*github\.com[:/]|\.git$", "", git(root, "config", "--get", "remote.origin.url"))
+    if not re.fullmatch(r"[\w.-]+/[\w.-]+", remote):
+        remote = ""  # remote que não é owner/repo (outro host, URL com credencial) não vira link no índice
     now = datetime.now(timezone.utc)
     head = args.head or git(root, "rev-parse", "HEAD")
 
@@ -136,7 +145,11 @@ def main() -> int:
         caminho, _, branch = resto.partition("@")
         nome, caminho, branch = nome.strip(), caminho.strip().strip("/"), branch.strip()
         d = root / caminho
-        local = d.is_dir() and any(d.iterdir())
+        dentro = d.resolve() != root and d.resolve().is_relative_to(root)
+        if not nome or not caminho or not dentro or any(f["nome"] == nome for f in fontes):
+            print(f"[indice] fonte inválida (nome/caminho vazio, repetida ou fora do repo): {spec}", file=sys.stderr); return 2
+        # só subpasta (ex.: regras/manual/, que vem da main) não é saída de produtor
+        local = d.is_dir() and any(x.is_file() for x in d.iterdir())
         man = read_manifest(d) if local else {}
         gerado = parse_dt(man.get("gerado_em") or man.get("generated_at") or man.get("timestamp") or man.get("data"))
         if local and not gerado:
@@ -153,12 +166,23 @@ def main() -> int:
         status, avisos = producer_health(d, man) if local else ("ok", [])
         if not local:
             status = "não disponível neste checkout" if branch else "ainda não gerado"
+        if idade_min is not None and gerado > now + timedelta(minutes=10):
+            avisos.append("`gerado_em` no futuro — data não confiável")
+            idade_min = None
+            if status == "ok":
+                status = "não verificável"
+        elif idade_min is not None:
+            idade_min = max(0, idade_min)
         mesmo_commit = (isinstance(commit, str) and isinstance(head, str)
                         and min(len(commit), len(head)) >= 7
                         and (head.startswith(commit) or commit.startswith(head)))
         # Código/regras dependem do commit: o gate pode reutilizar a mesma revisão
         # por dias. O banco muda sem push e continua sujeito à idade da coleta.
         atual_por_commit = nome in ("código", "regras de negócio") and mesmo_commit
+        if local and gerado is None and not atual_por_commit and not man.get("_erro"):
+            avisos.append("sem data de geração (manifest sem `gerado_em`)")
+            if status == "ok":
+                status = "não verificável"
         if idade_min is not None and idade_min > args.stale_min and not atual_por_commit:
             avisos.append(f"desatualizado há {idade_min // 60}h{idade_min % 60:02d}")
             if status == "ok":
@@ -224,7 +248,7 @@ def main() -> int:
     out.parent.mkdir(parents=True, exist_ok=True)
     # não reescreve se só o timestamp/idade mudou e nada estrutural
     strip = lambda t: re.sub(r"\d{4}-\d{2}-\d{2} \d{2}:\d{2} UTC|\d+ min atrás|\d+h atrás|há \d+h\d{2}", "", t)
-    if out.exists() and strip(out.read_text(encoding="utf-8")) == strip(content):
+    if out.exists() and strip(out.read_text(encoding="utf-8", errors="replace")) == strip(content):
         print("[indice] sem mudança estrutural — não reescrito", file=sys.stderr)
         return 0
     out.write_text(content, encoding="utf-8")

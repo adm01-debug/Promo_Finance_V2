@@ -18,17 +18,17 @@ codes 2-6 do script atual**.
 
 ## Módulos
 
-| Módulo | O que faz | Entrada principal |
-| --- | --- | --- |
-| `redigir-log.mjs` | Redige secrets (valor literal via `--segredo-env=` e a chave `access_token`) de um `.log`/`.jsonl` antes do upload; fail-closed (exit 2) se o arquivo não existir; `confinar()` impede escrita fora da base autorizada | log de deploy + `REDIGIR_LOG_BASE` |
-| `unchanged-from-log.mjs` | Extrai de um log os slugs das funções com "No change found in Function:" (strip ANSI; ignora o eco do script) | log de deploy |
-| `deployment-record.mjs` | Constrói o registro de Deployment GitHub: `ref` = sha deployado (40 hex), `payload` com run e escopo | sha deployado |
-| `register-deployment.mjs` | Registra Deployment + status (success/error) no GitHub, best-effort, com allowlist https de destino | `DEPLOYED_GIT_SHA` + token |
-| `health-check.mjs` | Consulta a Management API (analytics) do projeto e degrada para `::warning::` sem abortar | `SUPABASE_ACCESS_TOKEN` + `--functions-list` |
-| `smoke-functions.mjs` | Smoke não-mutante por função: preflight CORS (origem canônica positiva + origem negada) e gateway anonymous (POST sem JWT → 401) | `--functions-list` + `--base-url` |
-| `verify-remote.mjs` | Confirma que cada função esperada existe no inventário remoto (`supabase functions list`) com status ACTIVO | `--expected` + `--remote` |
-| `secrets-scope.mjs` | Valida escopo de secrets: compara os nomes `required=true` do `env.manifest.json` contra o `secrets list` remoto; fail-closed se a leitura falhar | `--manifest` + `--lista` |
-| `allowed-origins.json` | Origens canônicas e exemplo negado para o CORS do smoke | — |
+| Módulo                    | O que faz                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          | Entrada principal                            |
+| ------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | -------------------------------------------- |
+| `redigir-log.mjs`         | Redige secrets de um `.log`/`.jsonl` antes do upload, em três camadas: (1) valor literal via `--segredo-env=NOME` — também percent-encoded, escapado de JSON, cortado por cor ANSI ou dobrado em linhas; (2) credencial reconhecível pela forma (JWT, `sbp_`, `sb_secret_`, `gh*_`, `Bearer`, senha em URL, webhook do Slack); (3) valor de chave sensível (`access_token`, `*_token`, `*secret`, `password`, `apikey`, `*_KEY`, `authorization`) em `k=v`, `k: v`, JSON e flag de CLI. Fail-closed (exit 2, log intocado) se o arquivo não existir, estiver fora da base ou houver argumento não reconhecido; `confinar()` impede escrita fora da base autorizada | log de deploy + `REDIGIR_LOG_BASE`           |
+| `unchanged-from-log.mjs`  | Extrai de um log os slugs das funções com "No change found in Function:" (strip ANSI; ignora o eco do script)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      | log de deploy                                |
+| `deployment-record.mjs`   | Constrói o registro de Deployment GitHub: `ref` = sha deployado (40 hex), `payload` com run e escopo                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               | sha deployado                                |
+| `register-deployment.mjs` | Registra Deployment + status (success/error) no GitHub, best-effort, com allowlist https de destino                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                | `DEPLOYED_GIT_SHA` + token                   |
+| `health-check.mjs`        | Consulta a Management API (analytics) do projeto e degrada para `::warning::` sem abortar; exit 1 só quando a taxa de 5xx medida supera `--threshold` (fração 0–1)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 | `SUPABASE_ACCESS_TOKEN` + `--functions-list` |
+| `smoke-functions.mjs`     | Smoke não-mutante por função: preflight CORS (origem canônica positiva + origem negada) e gateway anonymous (POST sem JWT → 401); não segue redirect; `--timeout-ms` (padrão 20000) e `--retries` por requisição                                                                                                                                                                                                                                                                                                                                                                                                                                                   | `--functions-list` + `--base-url`            |
+| `verify-remote.mjs`       | Confirma que cada função esperada existe no inventário remoto (`supabase functions list`) com status ACTIVO                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        | `--expected` + `--remote`                    |
+| `secrets-scope.mjs`       | Valida escopo de secrets: compara os nomes `required=true` do `env.manifest.json` contra o `secrets list` remoto; fail-closed se a leitura falhar                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  | `--manifest` + `--lista`                     |
+| `allowed-origins.json`    | Origens canônicas e exemplo negado para o CORS do smoke                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            | —                                            |
 
 ## Uso
 
@@ -38,9 +38,10 @@ Rodar os testes:
 node --test scripts/edge-deploy/*.unit.mjs
 ```
 
-Os testes não tocam rede nem production: fixtures em `scripts/edge-deploy/fixtures/`
-(logs reais dos runs do Zapp, inclusive o caso F-03 de byte ANSI) e fakes de fetch
-/ inventário remoto.
+Os testes não tocam rede externa nem production: fixtures em `scripts/edge-deploy/fixtures/`
+(logs reais dos runs do Zapp, inclusive o caso F-03 de byte ANSI), fakes de fetch
+/ inventário remoto e, para os caminhos HTTP (timeout, 5xx, redirect, corpo
+não-JSON, CORS), um servidor `node:http` efêmero em `127.0.0.1`.
 
 ## Divergências conscientes vs. Zapp
 
@@ -58,7 +59,12 @@ Os testes não tocam rede nem production: fixtures em `scripts/edge-deploy/fixtu
 
 ## Integração
 
-O `migrate-functions.sh` ganhou (aditivo) o bloco de **verificação pós-deploy**:
+> **Estado atual: não integrado.** `scripts/migrate-functions.sh` e
+> `.github/workflows/functions-deploy.yml` ainda não chamam nenhum módulo desta
+> pasta (`grep -rn edge-deploy scripts/*.sh .github/workflows` não retorna nada).
+> O que segue é o desenho da integração, não o que roda hoje.
+
+Desenho: bloco aditivo de **verificação pós-deploy** no `migrate-functions.sh`,
 após o loop de deploy, se `POST_DEPLOY_CHECK=true` (ou `--verify`):
 
 1. gera a lista de funções deployadas em JSON (`--functions-list` do smoke);
