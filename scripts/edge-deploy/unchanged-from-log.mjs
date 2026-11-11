@@ -13,7 +13,7 @@
 // âncora dava (só saída do CLI vira slug): strip de ANSI, a frase precisa abrir
 // a linha e o slug precisa ter forma de nome de função.
 
-import { readFileSync, writeFileSync } from 'node:fs';
+import { readFileSync, writeFileSync, realpathSync } from 'node:fs';
 import { pathToFileURL } from 'node:url';
 
 const ANSI = /\x1b\[[0-9;]*[A-Za-z]/g;
@@ -42,15 +42,31 @@ export function extractUnchangedSlugs(logBruto) {
   return saida;
 }
 
+// realpath: com o repo atrás de um symlink (ou /tmp no macOS) `argv[1]` não bate com
+// `import.meta.url` e o script saía 0 sem executar nada.
+function invocadoDireto() {
+  if (!process.argv[1]) return false;
+  try {
+    return import.meta.url === pathToFileURL(realpathSync(process.argv[1])).href;
+  } catch {
+    return false;
+  }
+}
+
 // Uso pelo workflow: node unchanged-from-log.mjs <log-do-deploy> <saida.json>
-if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) {
+if (invocadoDireto()) {
   const [entrada, saida] = process.argv.slice(2);
   if (!entrada || !saida) {
     console.error('Uso: node unchanged-from-log.mjs <log-do-deploy> <saida.json>');
     process.exitCode = 1;
   } else {
-    const slugs = extractUnchangedSlugs(readFileSync(entrada, 'utf8'));
-    writeFileSync(saida, `${JSON.stringify(slugs)}\n`);
-    console.log(`Funções sem mudança de bundle: ${slugs.length ? slugs.join(', ') : 'nenhuma'}`);
+    try {
+      const slugs = extractUnchangedSlugs(readFileSync(entrada, 'utf8'));
+      writeFileSync(saida, `${JSON.stringify(slugs)}\n`);
+      console.log(`Funções sem mudança de bundle: ${slugs.length ? slugs.join(', ') : 'nenhuma'}`);
+    } catch (erro) {
+      console.error(`::error::unchanged-from-log: ${erro.code ?? 'erro'} ao ler o log ou gravar a saída (${erro.path ?? erro.message})`);
+      process.exitCode = 1;
+    }
   }
 }

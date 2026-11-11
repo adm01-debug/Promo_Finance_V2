@@ -4,7 +4,7 @@ AI Context Sync — gera e mantém atualizada a base de contexto do repositório
 para agentes de IA (docs/ai-context/).
 
 Uso:
-  python scripts/ai_context/generate.py --repo . --out docs/ai-context [--llm] [--check]
+  python3 scripts/regras_negocio/generate.py --repo . --out docs/ai-context [--llm] [--check]
 
 Saída (Markdown + JSON):
   00-INDEX.md               ponto de entrada / ordem de leitura / checklist pré-tarefa
@@ -88,6 +88,8 @@ AUDIT_COLS = {"created_at", "updated_at", "created_by", "updated_by", "deleted_b
 PII_RE = re.compile(r"\b(cpf|cnpj|rg|email|e_mail|telefone|phone|celular|whatsapp|endereco|address|cep|logradouro|nascimento|birth|senha|password|cartao|card_number|pan|passaporte|passport|ip_address|latitude|longitude|salario|renda)\b", re.I)
 MONEY_RE = re.compile(r"\b(valor|preco|price|amount|total|subtotal|desconto|discount|frete|shipping|taxa|fee|custo|cost|saldo|balance|comissao|commission|imposto|tax|juros|multa)\w*", re.I)
 STATUS_COL_RE = re.compile(r"^(?:\w+_)?(status|estado|situacao|stage|etapa|fase|state|step|phase)(?!_(?:at|by|id|em|date|time|reason|message|msg|code|count|history|changed\w*|updated\w*|label|text|detail\w*))(?:_\w+)?$", re.I)
+# coluna com nome de status mas tipo que não guarda estado (status_alterado_em timestamptz, response_status integer)
+NON_STATE_TYPE_RE = re.compile(r"^\s*(?:timestamp|timestamptz|date|time|timetz|interval|uuid|smallint|integer|int|int2|int4|int8|bigint|serial|bigserial|numeric|decimal|real|double|float4|float8|bool|boolean|jsonb?|bytea|inet|number|Json)\b", re.IGNORECASE)
 NON_APP_DIRS = ("docs/", "doc/", "analise/", "qa/", "inventario/", "scripts/", "tools/", ".github/", "e2e/", "cypress/", "playwright/", "__mocks__/", "fixtures/", "examples/", "storybook/", "benchmarks?/")
 NON_APP_RE = re.compile(r"^(?:" + "|".join(NON_APP_DIRS) + r")")
 
@@ -177,6 +179,13 @@ def balanced(txt: str, start: int, open_ch: str = "(", close_ch: str = ")") -> i
                 in_str = None
         elif ch in ("'", '"', "`"):
             in_str = ch
+        elif ch == "/" and txt.startswith("/*", i):
+            # comentário não abre string: um apóstrofo em "// can't" engolia o resto do arquivo
+            j = txt.find("*/", i + 2)
+            i = len(txt) if j < 0 else j + 2; continue
+        elif ch == "/" and txt.startswith("//", i) and txt[i - 1:i] != ":":
+            j = txt.find("\n", i)
+            i = len(txt) if j < 0 else j; continue
         elif ch == open_ch:
             depth += 1
         elif ch == close_ch:
@@ -187,9 +196,76 @@ def balanced(txt: str, start: int, open_ch: str = "(", close_ch: str = ")") -> i
     return -1
 
 
+_SQL_TOKEN_RE = re.compile(r"""'|"|--|/\*|;|\$(?:[A-Za-z_][A-Za-z0-9_]*)?\$""")
+_SQL_BLOCK_COMMENT_RE = re.compile(r"/\*|\*/")
+
+
+def _sql_quoted_end(txt: str, start: int, tok: str) -> int:
+    """Índice logo após o fechamento do literal '...', do identificador "..." ou do $tag$...$tag$ aberto em start."""
+    i = start + len(tok)
+    if tok in ("'", '"'):
+        # E'...' aceita \' como aspa escapada; nos demais a barra é literal.
+        esc = tok == "'" and start > 0 and txt[start - 1] in "eE" and not (start > 1 and (txt[start - 2].isalnum() or txt[start - 2] in "_$"))
+        while True:
+            j = txt.find(tok, i)
+            if j < 0:
+                return len(txt)
+            if esc and (j - len(txt[i:j].rstrip("\\")) - i) % 2:
+                i = j + 1; continue
+            if txt.startswith(tok, j + 1):
+                i = j + 2; continue
+            return j + 1
+    j = txt.find(tok, i)
+    return len(txt) if j < 0 else j + len(tok)
+
+
+def _sql_comment_end(txt: str, start: int, tok: str) -> int:
+    if tok == "--":
+        j = txt.find("\n", start)
+        return len(txt) if j < 0 else j
+    depth, i = 1, start + 2
+    while depth:  # /* ... */ aninha no Postgres
+        m = _SQL_BLOCK_COMMENT_RE.search(txt, i)
+        if not m:
+            return len(txt)
+        depth += 1 if m.group(0) == "/*" else -1
+        i = m.end()
+    return i
+
+
+def _is_dollar_tag(txt: str, start: int) -> bool:
+    return not (start > 0 and (txt[start - 1].isalnum() or txt[start - 1] in "_$"))
+
+
 def strip_sql_comments(txt: str) -> str:
-    txt = re.sub(r"/\*[\s\S]*?\*/", "", txt)
-    return re.sub(r"--[^\n]*", "", txt)
+    """Remove -- e /* */ fora de literais e identificadores entre aspas. O corpo de $tag$...$tag$ é código
+    (função, DO, job) e também perde os comentários, mas com estado de aspas próprio."""
+    out, start, pos = [], 0, 0
+    while True:
+        m = _SQL_TOKEN_RE.search(txt, pos)
+        if not m:
+            break
+        tok = m.group(0)
+        if tok == ";":
+            pos = m.end()
+        elif tok in ("--", "/*"):
+            out.append(txt[start:m.start()])
+            if tok == "/*":
+                out.append(" ")
+            start = pos = _sql_comment_end(txt, m.start(), tok)
+        elif tok in ("'", '"'):
+            pos = _sql_quoted_end(txt, m.start(), tok)
+        elif not _is_dollar_tag(txt, m.start()):
+            pos = m.start() + 1
+        else:
+            end = _sql_quoted_end(txt, m.start(), tok)
+            closed = end - len(tok) >= m.end() and txt.startswith(tok, end - len(tok))
+            inner_end = end - len(tok) if closed else end
+            out.append(txt[start:m.end()])
+            out.append(strip_sql_comments(txt[m.end():inner_end]))
+            start, pos = inner_end, end
+    out.append(txt[start:])
+    return "".join(out)
 
 
 def is_test_file(r: str) -> bool:
@@ -556,11 +632,13 @@ def analyze_code_file(p: Path, root: Path) -> dict | None:
             info["params"].append({"name": name, "value": val})
     for m in TRANSITION_MAP_RE.finditer(txt):
         close = balanced(txt, m.end() - 1, "{", "}")
-        if close > 0:
+        if close > 0 and txt[m.end():close].strip():  # `const fluxoPorData = {}` não declara transição nenhuma
             info["transition_maps"].append({"name": m.group(1), "body": trunc(squash(txt[m.end():close]), 700)})
     if not info["is_test"] and is_app_code(r):
         for f, v in STATUS_WRITE_RE.findall(txt): info["status_values"].append({"field": f.lower(), "value": v, "kind": "escreve"})
-        for f, v in STATUS_CMP_RE.findall(txt): info["status_values"].append({"field": f.lower(), "value": v, "kind": "compara"})
+        for m in STATUS_CMP_RE.finditer(txt):
+            if not re.search(r"\btypeof\s+$", txt[max(0, m.start() - 12):m.start()]):  # typeof x.status === 'string' não é valor de status
+                info["status_values"].append({"field": m.group(1).lower(), "value": m.group(2), "kind": "compara"})
         for f, v in STATUS_EQ_RE.findall(txt): info["status_values"].append({"field": f.lower(), "value": v, "kind": "filtra"})
         for sm in re.finditer(r"switch\s*\(\s*(?:[\w.?]+\.)?(""" + STATUS_FIELDS + r""")\s*\)\s*\{""", txt, re.I):
             close = balanced(txt, sm.end() - 1, "{", "}")
@@ -622,25 +700,27 @@ def analyze_code_file(p: Path, root: Path) -> dict | None:
 # 4. Schema SQL (migrations / schema.sql / prisma / database.types.ts)
 # --------------------------------------------------------------------------- #
 SQL_CREATE_TABLE_RE = re.compile(r"create\s+(?:unlogged\s+|temp(?:orary)?\s+|global\s+|local\s+)*table\s+(?:if\s+not\s+exists\s+)?(?:\"?(\w+)\"?\.)?\"?(\w+)\"?\s*\(", re.I)
-SQL_ALTER_ADD_RE = re.compile(r"alter\s+table\s+(?:if\s+exists\s+)?(?:only\s+)?(?:\"?(\w+)\"?\.)?\"?(\w+)\"?\s+add\s+(?:column\s+)?(?:if\s+not\s+exists\s+)?\"?(\w+)\"?\s+([^,;]+)", re.I)
+SQL_ALTER_ADD_RE = re.compile(r"alter\s+table\s+(?:if\s+exists\s+)?(?:only\s+)?(?:\"?(\w+)\"?\.)?\"?(\w+)\"?\s+add\s+(?:column\s+)?(?:if\s+not\s+exists\s+)?\"?(\w+)\"?\s+([^;]+)", re.IGNORECASE)
 SQL_ALTER_ADD_CONSTRAINT_RE = re.compile(r"alter\s+table\s+(?:if\s+exists\s+)?(?:only\s+)?(?:\"?(\w+)\"?\.)?\"?(\w+)\"?\s+add\s+constraint\s+\"?(\w+)\"?\s+([^;]+);", re.I)
-SQL_ALTER_COL_RE = re.compile(r"alter\s+table\s+(?:if\s+exists\s+)?(?:only\s+)?(?:\"?(\w+)\"?\.)?\"?(\w+)\"?\s+alter\s+(?:column\s+)?\"?(\w+)\"?\s+(set\s+not\s+null|drop\s+not\s+null|set\s+default\s+[^,;]+|drop\s+default|(?:set\s+data\s+)?type\s+[^,;]+)", re.I)
+SQL_ALTER_COL_RE = re.compile(r"alter\s+table\s+(?:if\s+exists\s+)?(?:only\s+)?(?:\"?(\w+)\"?\.)?\"?(\w+)\"?\s+alter\s+(?:column\s+)?\"?(\w+)\"?\s+(set\s+not\s+null|drop\s+not\s+null|set\s+default\s+[^;]+|drop\s+default|(?:set\s+data\s+)?type\s+[^;]+)", re.IGNORECASE)
 SQL_ALTER_DROP_COL_RE = re.compile(r"alter\s+table\s+(?:if\s+exists\s+)?(?:only\s+)?(?:\"?(\w+)\"?\.)?\"?(\w+)\"?\s+drop\s+column\s+(?:if\s+exists\s+)?\"?(\w+)\"?", re.I)
-SQL_DROP_TABLE_RE = re.compile(r"drop\s+table\s+(?:if\s+exists\s+)?(?:\"?(\w+)\"?\.)?\"?(\w+)\"?", re.I)
+SQL_DROP_TABLE_RE = re.compile(r"drop\s+table\s+(?:if\s+exists\s+)?([^;]+?)(?:\s+(?:cascade|restrict))?\s*;", re.IGNORECASE)
+SQL_DROP_OTHER_RE = re.compile(r"drop\s+(materialized\s+view|view|type|index)\s+(?:concurrently\s+)?(?:if\s+exists\s+)?([^;]+?)(?:\s+(?:cascade|restrict))?\s*;", re.IGNORECASE)
+SQL_ALTER_HEAD_RE = re.compile(r"alter\s+table\s+(?:if\s+exists\s+)?(?:only\s+)?(?:\"?\w+\"?\.)?\"?\w+\"?\s+", re.IGNORECASE)
 SQL_POLICY_RE = re.compile(
     r"create\s+policy\s+\"?([^\"\n]+?)\"?\s+on\s+(?:\"?(\w+)\"?\.)?\"?(\w+)\"?\s*(?:as\s+(permissive|restrictive)\s*)?(?:for\s+(select|insert|update|delete|all)\s*)?(?:to\s+([\w,\s]+?)\s*)?(?:using\s*\(((?:[^()]|\([^()]*(?:\([^()]*\)[^()]*)*\))*)\)\s*)?(?:with\s+check\s*\(((?:[^()]|\([^()]*(?:\([^()]*\)[^()]*)*\))*)\)\s*)?;",
     re.I)
 SQL_DROP_POLICY_RE = re.compile(r"drop\s+policy\s+(?:if\s+exists\s+)?\"?([^\"\n]+?)\"?\s+on\s+(?:\"?(\w+)\"?\.)?\"?(\w+)\"?", re.I)
 SQL_RLS_RE = re.compile(r"alter\s+table\s+(?:if\s+exists\s+)?(?:only\s+)?(?:\"?(\w+)\"?\.)?\"?(\w+)\"?\s+(enable|disable|force|no\s+force)\s+row\s+level\s+security", re.I)
-SQL_TRIGGER_RE = re.compile(r"create\s+(?:or\s+replace\s+)?trigger\s+\"?(\w+)\"?\s+(before|after|instead\s+of)\s+([\w\s|]+?)\s+on\s+(?:\"?(\w+)\"?\.)?\"?(\w+)\"?([\s\S]*?)execute\s+(?:function|procedure)\s+(?:\"?(\w+)\"?\.)?\"?(\w+)\"?", re.I)
+SQL_TRIGGER_RE = re.compile(r"create\s+(?:or\s+replace\s+)?(?:constraint\s+)?trigger\s+\"?(\w+)\"?\s+(before|after|instead\s+of)\s+([\w\s|,]+?)\s+on\s+(?:\"?(\w+)\"?\.)?\"?(\w+)\"?([\s\S]*?)execute\s+(?:function|procedure)\s+(?:\"?(\w+)\"?\.)?\"?(\w+)\"?", re.I)
 SQL_FUNC_RE = re.compile(r"create\s+(?:or\s+replace\s+)?function\s+(?:\"?(\w+)\"?\.)?\"?(\w+)\"?\s*\(([^)]*)\)\s*returns\s+((?:setof\s+)?[\w\s\[\]\.]+?)\s+(?=language|as|security|stable|volatile|immutable)", re.I)
 SQL_FUNC_FULL_RE = re.compile(r"create\s+(?:or\s+replace\s+)?function\s+(?:\"?\w+\"?\.)?\"?(\w+)\"?\s*\(([\s\S]*?)\$([\w]*)\$([\s\S]*?)\$\3\$([^;]*);", re.I)
 SQL_ENUM_RE = re.compile(r"create\s+type\s+(?:\"?(\w+)\"?\.)?\"?(\w+)\"?\s+as\s+enum\s*\(([^)]*)\)", re.I)
 SQL_ENUM_ADD_RE = re.compile(r"alter\s+type\s+(?:\"?(\w+)\"?\.)?\"?(\w+)\"?\s+add\s+value\s+(?:if\s+not\s+exists\s+)?'([^']+)'", re.I)
-SQL_INDEX_RE = re.compile(r"create\s+(unique\s+)?index\s+(?:concurrently\s+)?(?:if\s+not\s+exists\s+)?\"?(\w+)\"?\s+on\s+(?:\"?(\w+)\"?\.)?\"?(\w+)\"?\s*(?:using\s+\w+\s*)?\(([^)]*)\)(\s*where\s+[^;]+)?", re.I)
-SQL_CRON_RE = re.compile(r"cron\.schedule\s*\(\s*'([^']+)'\s*,\s*'([^']+)'\s*,\s*(?:\$\$([\s\S]*?)\$\$|'([^']*)')", re.I)
+SQL_INDEX_RE = re.compile(r"create\s+(unique\s+)?index\s+(?:concurrently\s+)?(?:if\s+not\s+exists\s+)?\"?(\w+)\"?\s+on\s+(?:only\s+)?(?:\"?(\w+)\"?\.)?\"?(\w+)\"?\s*(?:using\s+\w+\s*)?\(([^)]*)\)(\s*where\s+[^;]+)?", re.I)
+SQL_CRON_RE = re.compile(r"cron\.(?:schedule\s*\(\s*'([^']+)'\s*,\s*'([^']+)'\s*,\s*(?:\$(\w*)\$([\s\S]*?)\$\3\$|'((?:[^']|'')*)')|unschedule\s*\(\s*'([^']+)')", re.IGNORECASE)
 SQL_COMMENT_RE = re.compile(r"comment\s+on\s+(table|column|function|type)\s+([\w.\"]+)\s+is\s+'((?:[^']|'')*)'", re.I)
-SQL_VIEW_RE = re.compile(r"create\s+(?:or\s+replace\s+)?(?:materialized\s+)?(?:recursive\s+)?view\s+(?:\"?(\w+)\"?\.)?\"?(\w+)\"?\s*(?:\([^)]*\))?\s*(?:with\s*\([^)]*\)\s*)?as\s+([\s\S]*?);", re.I)
+SQL_VIEW_RE = re.compile(r"create\s+(?:or\s+replace\s+)?(?:materialized\s+)?(?:recursive\s+)?view\s+(?:if\s+not\s+exists\s+)?(?:\"?(\w+)\"?\.)?\"?(\w+)\"?\s*(?:\([^)]*\))?\s*(?:with\s*\([^)]*\)\s*)?as\s+([\s\S]*?);", re.I)
 SQL_FK_RE = re.compile(r"references\s+(?:\"?(\w+)\"?\.)?\"?(\w+)\"?\s*(?:\(\s*\"?(\w+)\"?\s*\))?\s*(on\s+delete\s+(?:cascade|set\s+null|restrict|no\s+action|set\s+default))?", re.I)
 SQL_CHECK_RE = re.compile(r"check\s*\(((?:[^()]|\([^()]*\))*)\)", re.I)
 SQL_GENERATED_RE = re.compile(r"generated\s+always\s+as\s*\(((?:[^()]|\([^()]*\))*)\)\s*stored", re.I)
@@ -655,8 +735,8 @@ def split_columns(body: str) -> list[str]:
         if ch == "'":
             in_str = not in_str
         if not in_str:
-            if ch == "(": depth += 1
-            elif ch == ")": depth -= 1
+            if ch in "([": depth += 1
+            elif ch in ")]": depth -= 1
         if ch == "," and depth == 0 and not in_str:
             parts.append("".join(cur).strip()); cur = []
         else:
@@ -679,43 +759,94 @@ def parse_column(cname: str, ctype: str, src: str) -> dict:
 
 
 def split_sql_statements(txt: str) -> list[str]:
-    """Divide em statements no ';' de nível superior, respeitando aspas simples e dollar-quoting ($$, $tag$)."""
-    out, cur, i, n = [], [], 0, len(txt)
-    in_sq = False
-    dollar = None
-    while i < n:
-        ch = txt[i]
-        if dollar:
-            if txt.startswith(dollar, i):
-                cur.append(dollar); i += len(dollar); dollar = None; continue
-            cur.append(ch); i += 1; continue
-        if in_sq:
-            cur.append(ch)
-            if ch == "'":
-                in_sq = False
-            i += 1; continue
-        if ch == "'":
-            in_sq = True; cur.append(ch); i += 1; continue
-        if ch == "$":
-            m = re.match(r"\$[A-Za-z_]*\$", txt[i:i + 64])
-            if m:
-                dollar = m.group(0); cur.append(dollar); i += len(dollar); continue
-        if ch == ";":
-            st = "".join(cur).strip()
+    """Divide em statements no ';' de nível superior, respeitando literais, identificadores entre aspas,
+    dollar-quoting ($$, $tag$) e comentários."""
+    out, start, pos = [], 0, 0
+    while True:
+        m = _SQL_TOKEN_RE.search(txt, pos)
+        if not m:
+            break
+        tok = m.group(0)
+        if tok == ";":
+            st = txt[start:m.start()].strip()
             if st:
                 out.append(st + ";")
-            cur = []; i += 1; continue
-        cur.append(ch); i += 1
-    st = "".join(cur).strip()
+            start = pos = m.end()
+        elif tok in ("--", "/*"):
+            pos = _sql_comment_end(txt, m.start(), tok)
+        elif tok in ("'", '"') or _is_dollar_tag(txt, m.start()):
+            pos = _sql_quoted_end(txt, m.start(), tok)
+        else:
+            pos = m.start() + 1
+    st = txt[start:].strip()
     if st:
         out.append(st + ";")
     return out
+
+
+def mask_sql_literals(txt: str) -> str:
+    """Mesmo texto e mesmos índices, com o conteúdo de '...', "..." e $tag$...$tag$ trocado por espaços."""
+    out, start, pos = [], 0, 0
+    while True:
+        m = _SQL_TOKEN_RE.search(txt, pos)
+        if not m:
+            break
+        tok = m.group(0)
+        if tok in (";", "--", "/*") or (tok not in ("'", '"') and not _is_dollar_tag(txt, m.start())):
+            pos = m.start() + 1 if tok.startswith("$") else m.end()
+            continue
+        end = _sql_quoted_end(txt, m.start(), tok)
+        out.append(txt[start:m.end()]); out.append(" " * (end - m.end()))
+        start = pos = end
+    out.append(txt[start:])
+    return "".join(out)
+
+
+SQL_DO_BODY_RE = re.compile(r"do\s*(?:language\s+\w+\s+)?(\$(?:[A-Za-z_][A-Za-z0-9_]*)?\$)([\s\S]*)\1", re.IGNORECASE)
+SQL_DO_DDL_RE = re.compile(
+    r"(?:^|\b(?:begin|then|else|loop)\s)\s*((?:create\s+(?:or\s+replace\s+)?(?:unique\s+|constraint\s+|materialized\s+)?(?:table|policy|type|trigger|index|view|function)"
+    r"|alter\s+(?:table|type|policy)|drop\s+(?:table|policy|trigger|function|view|type|index))\b)", re.IGNORECASE)
+
+
+SQL_DO_EXEC_RE = re.compile(r"(?:^|\b(?:begin|then|else|loop)\s)\s*execute\s+(')", re.IGNORECASE)
+
+
+def do_block_statements(st: str) -> list[str]:
+    """DDL estático no corpo de um DO: escrito direto (CREATE TYPE/POLICY/..., ALTER TABLE ...) ou em
+    EXECUTE 'literal fixo'. Costuma vir atrás de IF NOT EXISTS/EXCEPTION para ser idempotente; num replay
+    do zero a guarda deixa passar, então o DDL conta. EXECUTE format(...)/concatenação segue de fora."""
+    m = SQL_DO_BODY_RE.match(st)
+    if not m:
+        return []
+    out = []
+    for frag in split_sql_statements(m.group(2)):
+        masked = mask_sql_literals(frag)
+        hit = SQL_DO_DDL_RE.search(masked)
+        if hit:
+            out.append(frag[hit.start(1):]); continue
+        hit = SQL_DO_EXEC_RE.search(masked)
+        if hit and _sql_quoted_end(frag, hit.start(1), "'") == len(frag.rstrip().rstrip(";").rstrip()):
+            literal = frag[hit.start(1) + 1:len(frag.rstrip().rstrip(";").rstrip()) - 1].replace("''", "'")
+            out += [x for x in split_sql_statements(strip_sql_comments(literal)) if SQL_DO_DDL_RE.match(x)]
+    return out
+
+
+def expand_alter_table(st: str) -> list[str]:
+    """ALTER TABLE t ação1, ação2 → um statement por ação (os regex de ALTER só leem a primeira)."""
+    m = SQL_ALTER_HEAD_RE.match(st)
+    if not m:
+        return [st]
+    actions = split_columns(st[m.end():].rstrip().rstrip(";"))
+    return [f"{m.group(0)}{a};" for a in actions] if len(actions) > 1 else [st]
 
 
 SQL_RENAME_COL_RE = re.compile(r"alter\s+table\s+(?:if\s+exists\s+)?(?:only\s+)?(?:\"?(\w+)\"?\.)?\"?(\w+)\"?\s+rename\s+(?:column\s+)?\"?(\w+)\"?\s+to\s+\"?(\w+)\"?", re.I)
 SQL_RENAME_TABLE_RE = re.compile(r"alter\s+table\s+(?:if\s+exists\s+)?(?:only\s+)?(?:\"?(\w+)\"?\.)?\"?(\w+)\"?\s+rename\s+to\s+\"?(\w+)\"?", re.I)
 SQL_DROP_CONSTRAINT_RE = re.compile(r"alter\s+table\s+(?:if\s+exists\s+)?(?:only\s+)?(?:\"?(\w+)\"?\.)?\"?(\w+)\"?\s+drop\s+constraint\s+(?:if\s+exists\s+)?\"?(\w+)\"?", re.I)
 SQL_POLICY_HEAD_RE = re.compile(r"create\s+policy\s+(?:\"([^\"]+)\"|(\w+))\s+on\s+(?:\"?(\w+)\"?\.)?\"?(\w+)\"?\s*(?:as\s+(permissive|restrictive)\s*)?(?:for\s+(select|insert|update|delete|all)\s*)?(?:to\s+([\w\s,]+?)\s*)?(?=using|with\s+check|;|$)", re.I)
+
+
+SQL_ALTER_POLICY_RE = re.compile(r"alter\s+policy\s+(?:\"([^\"]+)\"|(\w+))\s+on\s+(?:\"?(\w+)\"?\.)?\"?(\w+)\"?\s*", re.IGNORECASE)
 
 
 def parse_policy(st: str) -> dict | None:
@@ -733,6 +864,24 @@ def parse_policy(st: str) -> dict | None:
     return {"name": pname.strip(), "table": tkey(m.group(3), m.group(4)), "cmd": (m.group(6) or "ALL").upper(),
             "roles": squash(m.group(7) or "public"), "mode": (m.group(5) or "permissive").lower(),
             "using": trunc(clause(r"\busing"), 300), "check": trunc(clause(r"with\s+check"), 300)}
+
+
+def sql_name_list(names: str) -> list[tuple[str, str]]:
+    """'public.a, "b"' → [(schema, nome), ...]; itens que não são nome simples ficam de fora."""
+    out = []
+    for nm in names.split(","):
+        m = re.match(r"\s*(?:\"?(\w+)\"?\.)?\"?(\w+)\"?\s*$", nm)
+        if m:
+            out.append((m.group(1), m.group(2)))
+    return out
+
+
+def drop_named_constraint(t: dict, key: str, name: str) -> None:
+    """Tira a constraint pelo nome, inclusive o CHECK escrito na coluna (o Postgres o nomeia <tabela>_<coluna>_check)."""
+    t["constraints"] = [c for c in t["constraints"] if not re.match(rf"constraint\s+{re.escape(name)}\b", c, re.IGNORECASE)]
+    for c in t["columns"]:
+        if name.lower() == f"{key.split('.')[-1]}_{c['name']}_check".lower():
+            c["type"] = squash(SQL_CHECK_RE.sub("", c["type"]))
 
 
 def new_table(src: str) -> dict:
@@ -758,24 +907,30 @@ def parse_sql_schema(root: Path, files: list[Path]) -> dict:
             for sch, name, cols, vals in SQL_INSERT_RE.findall(txt_nc):
                 schema["seed"].append({"table": tkey(sch, name), "columns": squash(cols), "values": trunc(squash(vals), 400), "src": src})
             continue
-        for job, sched, body, body2 in SQL_CRON_RE.findall(txt):
-            schema["cron_jobs"].append({"job": job, "schedule": sched, "body": trunc(squash(body or body2), 300), "src": src})
-        for kind, target, comment in SQL_COMMENT_RE.findall(txt):
+        for job, sched, _tag, body, body2, unjob in SQL_CRON_RE.findall(txt_nc):
+            # cron.schedule com nome já existente substitui o job; cron.unschedule remove
+            schema["cron_jobs"] = [j for j in schema["cron_jobs"] if j["job"] != (job or unjob)]
+            if job:
+                schema["cron_jobs"].append({"job": job, "schedule": sched, "body": trunc(squash(body or body2.replace("''", "'")), 300), "src": src})
+        for kind, target, comment in SQL_COMMENT_RE.findall(txt_nc):
             tgt = target.replace('"', "").replace("public.", "")
             schema["comments"][f"{kind.lower()}:{tgt}"] = comment.replace("''", "'")
-        for st in split_sql_statements(txt_nc):
+        for st in (x for top in split_sql_statements(txt_nc) for raw in [top, *do_block_statements(top)] for x in expand_alter_table(raw)):
             low = st.lower().lstrip()
             # ---- políticas criadas por SQL dinâmico (DO $$ ... EXECUTE format('CREATE POLICY ...'))
             # Não são reconstruíveis estaticamente: registramos para a matriz avisar em vez de
             # publicar permissão incompleta como se fosse completa.
             if low.startswith("do ") or low.startswith("do$") or low.startswith("do\n"):
-                if re.search(r"create\s+policy", st, re.I):
+                # o DDL estático do corpo é lido logo abaixo; dinâmico é o que sobra (EXECUTE format/concatenação)
+                pol_re = r"(?:create|drop|alter)\s+policy"
+                if len(re.findall(pol_re, st, re.IGNORECASE)) > sum(1 for x in do_block_statements(st) if re.match(pol_re, x, re.IGNORECASE)):
                     # Candidatos vêm de literais ARRAY[...]; só entram os que são tabela de verdade
                     # no schema reconstruído — sem isso entram expressões de policy e nomes de role.
                     candidatos = set()
                     for bloco in re.findall(r"array\s*\[([^\]]*)\]", st, re.I | re.S):
                         for item in re.findall(r"'([a-z_][a-z0-9_]{0,62})'", bloco, re.I):
                             candidatos.add(item.lower())
+                    candidatos.update(c.lower() for c in re.findall(r"policy\s[^;]*?\son\s+(?:public\.)?\"?([a-z_][a-z0-9_]*)\"?", st, re.IGNORECASE))
                     conhecidas = {c for c in candidatos
                                   if any(k == c or k.endswith(f".{c}") for k in T)}
                     schema["policies_dinamicas"].append({"src": src, "tabelas": sorted(conhecidas)})
@@ -802,6 +957,7 @@ def parse_sql_schema(root: Path, files: list[Path]) -> dict:
                 if m:
                     key = tkey(m.group(1), m.group(2)); t = T.setdefault(key, new_table(src))
                     body = m.group(4)
+                    drop_named_constraint(t, key, m.group(3))  # mesmo nome de novo: a última definição vence
                     t["constraints"].append(trunc(f"constraint {m.group(3)} {squash(body)}", 300))
                     fkm = re.search(r"foreign\s+key\s*\(\s*\"?(\w+)\"?\s*\)\s*" + SQL_FK_RE.pattern, body, re.I)
                     if fkm:
@@ -813,7 +969,7 @@ def parse_sql_schema(root: Path, files: list[Path]) -> dict:
                 if m:
                     key = tkey(m.group(1), m.group(2))
                     if key in T:
-                        T[key]["constraints"] = [c for c in T[key]["constraints"] if not re.match(rf"constraint\s+{re.escape(m.group(3))}\b", c, re.I)]
+                        drop_named_constraint(T[key], key, m.group(3))
                     continue
                 m = SQL_ALTER_ADD_RE.match(st)
                 if m and m.group(3).lower() != "constraint":
@@ -830,9 +986,9 @@ def parse_sql_schema(root: Path, files: list[Path]) -> dict:
                                 a = m.group(4); al = a.lower()
                                 if al.startswith("set not null") and "not null" not in c["type"].lower(): c["type"] += " not null"
                                 elif al.startswith("drop not null"): c["type"] = re.sub(r"\s*not null", "", c["type"], flags=re.I)
-                                elif al.startswith("set default"): c["type"] = re.sub(r"\s*default\s+\S+(\([^)]*\))?", "", c["type"], flags=re.I) + " " + squash(a)
+                                elif al.startswith("set default"): c["type"] = re.sub(r"\s*default\s+\S+(\([^)]*\))?", "", c["type"], flags=re.IGNORECASE) + " " + squash(a)[4:]
                                 elif al.startswith("drop default"): c["type"] = re.sub(r"\s*default\s+\S+(\([^)]*\))?", "", c["type"], flags=re.I)
-                                elif "type" in al: c["type"] = squash(re.sub(r"^(set\s+data\s+)?type\s+", "", a, flags=re.I)) + " " + re.sub(r"^\S+(\([^)]*\))?", "", c["type"]).strip()
+                                elif "type" in al: c["type"] = squash(re.sub(r"^(set\s+data\s+)?type\s+|\s+using\s[\s\S]*$", "", a, flags=re.IGNORECASE)) + " " + re.sub(r"^\S+(\([^)]*\))?", "", c["type"]).strip()
                                 c["type"] = trunc(c["type"], 200)
                     continue
                 m = SQL_ALTER_DROP_COL_RE.match(st)
@@ -847,8 +1003,9 @@ def parse_sql_schema(root: Path, files: list[Path]) -> dict:
                     if key in T:
                         T[tkey(m.group(1), m.group(3))] = T.pop(key)
                         schema["rls"][tkey(m.group(1), m.group(3))] = schema["rls"].pop(key, "não encontrado")
-                        for pol in schema["policies"]:
-                            if pol["table"] == key: pol["table"] = tkey(m.group(1), m.group(3))
+                        for kind in ("policies", "triggers", "indexes"):
+                            for x in schema[kind]:
+                                if x["table"] == key: x["table"] = tkey(m.group(1), m.group(3))
                     continue
                 m = SQL_RENAME_COL_RE.match(st)
                 if m:
@@ -865,12 +1022,41 @@ def parse_sql_schema(root: Path, files: list[Path]) -> dict:
                 continue
             m = SQL_DROP_TABLE_RE.match(st)
             if m:
-                T.pop(tkey(m.group(1), m.group(2)), None); continue
+                for sch, name in sql_name_list(m.group(1)):
+                    key = tkey(sch, name)
+                    T.pop(key, None); schema["rls"].pop(key, None)
+                    for kind in ("policies", "triggers", "indexes"):
+                        schema[kind] = [x for x in schema[kind] if x["table"] != key]
+                continue
+            m = SQL_DROP_OTHER_RE.match(st)
+            if m:
+                kind = m.group(1).lower()
+                for sch, name in sql_name_list(m.group(2)):
+                    if kind == "type": schema["enums"].pop(name, None)
+                    elif kind == "index": schema["indexes"] = [x for x in schema["indexes"] if x["name"] != name]
+                    else: schema["views"].pop(tkey(sch, name), None)
+                continue
             if low.startswith("create policy"):
                 pol = parse_policy(st)
                 if pol:
                     schema["policies"] = [p for p in schema["policies"] if not (p["name"] == pol["name"] and p["table"] == pol["table"])]
                     schema["policies"].append({**pol, "src": src})
+                continue
+            m = SQL_ALTER_POLICY_RE.match(st)
+            if m:
+                name, key, rest = (m.group(1) or m.group(2)).strip(), tkey(m.group(3), m.group(4)), st[m.end():]
+                rn = re.match(r"rename\s+to\s+(?:\"([^\"]+)\"|(\w+))", rest, re.IGNORECASE)
+                novo = None if rn else parse_policy("create" + st.lstrip()[5:])
+                for pol in schema["policies"]:
+                    if pol["name"] == name and pol["table"] == key:
+                        if rn:
+                            pol["name"] = (rn.group(1) or rn.group(2)).strip()
+                        elif novo:
+                            # só muda o que o ALTER cita; o resto da política continua valendo
+                            if re.match(r"to\s", rest, re.IGNORECASE): pol["roles"] = novo["roles"]
+                            if novo["using"]: pol["using"] = novo["using"]
+                            if novo["check"]: pol["check"] = novo["check"]
+                            pol["src"] = src
                 continue
             m = SQL_DROP_POLICY_RE.match(st)
             if m:
@@ -961,10 +1147,23 @@ def parse_sql_schema(root: Path, files: list[Path]) -> dict:
             schema["sources"].append(rel(f, root))
     # database.types.ts (Supabase gen types) — fonte quando migrations não têm a tabela
     for f in files:
-        if f.name in ("types.ts", "database.types.ts", "database.ts", "supabase.ts") and "Tables:" in read_text(f) and "Row:" in read_text(f):
-            txt = read_text(f)
+        # o types.ts gerado passa fácil de MAX_FILE_BYTES; com o limite de código ele era ignorado calado
+        txt = read_text(f, MAX_SQL_BYTES) if f.name in ("types.ts", "database.types.ts", "database.ts", "supabase.ts") else ""
+        if "Tables:" in txt and "Row:" in txt:
             schema["types_file"] = rel(f, root)
-            for name, row in re.findall(r"\n\s+(\w+):\s*\{\s*\n\s*Row:\s*\{([^}]*)\}", txt):
+            def block(label: str, src: str = "") -> str:
+                src = src or pub
+                bm = re.search(r"\b" + label + r"\s*:\s*\{", src)
+                if not bm:
+                    return ""
+                end = balanced(src, bm.end() - 1, "{", "}")
+                return src[bm.end():end] if end > 0 else ""
+            pub = block("public", txt) or txt  # com vários schemas (graphql_public vem antes), só o public conta
+            row_re = re.compile(r"\n\s+(\w+):\s*\{\s*\n\s*Row:\s*\{([^}]*)\}")
+            for name, _row in row_re.findall(block("Views")):
+                # view não é tabela: sem isto ela entrava na matriz como tabela "sem RLS"
+                schema["views"].setdefault(name, {"body": "(definição fora das migrations — só em types.ts)", "src": rel(f, root)})
+            for name, row in row_re.findall(block("Tables") or pub):
                 cols = []
                 for line in row.strip().splitlines():
                     cm = re.match(r"\s*(\w+)\??:\s*(.+?)\s*;?$", line)
@@ -980,18 +1179,14 @@ def parse_sql_schema(root: Path, files: list[Path]) -> dict:
             for rels in re.findall(r"Relationships:\s*\[([\s\S]*?)\n\s{8}\]", txt):
                 for fcols, rt, rcols in re.findall(r"columns:\s*\[\s*\"(\w+)\"\s*\][\s\S]*?referencedRelation:\s*\"(\w+)\"[\s\S]*?referencedColumns:\s*\[\s*\"(\w+)\"\s*\]", rels):
                     pass  # ligação tabela→coluna exige contexto do bloco; FK por migrations é a fonte principal
-            def block(label: str) -> str:
-                bm = re.search(label + r"\s*:\s*\{", txt)
-                if not bm:
-                    return ""
-                end = balanced(txt, bm.end() - 1, "{", "}")
-                return txt[bm.end():end] if end > 0 else ""
-            for name, vals in re.findall(r"(\w+):\s*((?:\s*\|?\s*\"[^\"]+\")+)", block("Enums")):
+            for name, vals in re.findall(r"(\w+):\s*((?:\s*\|?\s*[\"'][^\"']+[\"'])+)", block("Enums")):
                 if name not in schema["enums"]:
-                    schema["enums"][name] = re.findall(r"\"([^\"]+)\"", vals)
+                    schema["enums"][name] = re.findall(r"[\"']([^\"']+)[\"']", vals)
             fb = block("Functions")
             if fb:
-                for name in re.findall(r"\n\s+(\w+):\s*\{", fb):
+                # só as chaves do 1º nível são funções; Args/Returns aninhados não
+                indent = re.match(r"\n([ \t]+)", fb)
+                for name in re.findall(r"\n" + (indent.group(1) if indent else r"\s+") + r"(\w+):\s*[\{|\n]", fb):
                     schema["functions"].setdefault(name, {"args": "", "returns": "?", "lang": "", "src": rel(f, root), "security_definer": False, "search_path": False, "body": "", "raises": [], "tables": []})
             schema["sources"].append(rel(f, root))
             break
@@ -1342,7 +1537,7 @@ def collect_rules(code: dict[str, dict], schema: dict, feats: dict, dataflow: di
     status_cols = []
     for tname, t in schema["tables"].items():
         for c in t["columns"]:
-            if STATUS_COL_RE.match(c["name"]):
+            if STATUS_COL_RE.match(c["name"]) and not NON_STATE_TYPE_RE.match(c["type"]):
                 enum_name = next((e for e in schema["enums"] if re.search(rf"\b{re.escape(e)}\b", c["type"])), None)
                 allowed = schema["enums"].get(enum_name, []) if enum_name else []
                 chk = SQL_CHECK_RE.search(c["type"])
@@ -1383,11 +1578,13 @@ def build_access(code, schema, feats, dataflow, stack, rules) -> dict:
     matrix = {}
     for key in sorted(schema["tables"]):
         pols = [p for p in schema["policies"] if p["table"] == key or p["table"] == key.split(".")[-1]]
-        row = {"rls": schema["rls"].get(key, "não encontrado"), "SELECT": [], "INSERT": [], "UPDATE": [], "DELETE": []}
+        row = {"rls": schema["rls"].get(key, "não verificado" if schema["tables"][key]["origin"] == "types.ts" else "não encontrado"), "SELECT": [], "INSERT": [], "UPDATE": [], "DELETE": []}
         for p in pols:
             cmds = ["SELECT", "INSERT", "UPDATE", "DELETE"] if p["cmd"] == "ALL" else [p["cmd"]]
+            quem = p["roles"] + (" [RESTRICTIVE]" if p["mode"] == "restrictive" else "")
             for c in cmds:
-                row[c].append(f"{p['roles']}: {p['using'] or p['check'] or 'true'}"[:140])
+                expr = (p["check"] or p["using"]) if c == "INSERT" else (p["using"] or p["check"])
+                row[c].append(trunc(f"{quem}: {expr or 'true'}", 140))
         matrix[key] = row
     frontend_files = {r for r, i in code.items() if not r.startswith("supabase/functions/") and not i["uses_service_role"] and not i["is_test"]
                       and not re.search(r"(server|api|backend|scripts?)/", r)}
@@ -1399,7 +1596,7 @@ def build_access(code, schema, feats, dataflow, stack, rules) -> dict:
         fe = sorted({f for fs in ops.values() for f in fs if f in frontend_files})
         st = schema["rls"].get(key, "não encontrado")
         pols = [p for p in schema["policies"] if p["table"] in (key, t)]
-        if fe and st in ("não encontrado", "disabled"):
+        if fe and st in ("não encontrado", "disabled") and schema["tables"][key]["origin"] != "types.ts":
             risky.append({"table": t, "issue": f"acessada do front ({len(fe)} arquivo(s)) sem RLS ({st})", "files": fe})
         if st in ("enabled", "forced") and not pols:
             risky.append({"table": t, "issue": "RLS ligado sem nenhuma política → só service_role acessa", "files": fe})
@@ -1477,7 +1674,10 @@ def build_audit(code, schema, feats, dataflow, rules, access, docs) -> dict:
     # lacunas para humanos
     if not docs["manual"]:
         gaps.append("Nenhuma regra manual em `manual/`: prazos, limites, exceções comerciais, quem aprova o quê — só o negócio sabe.")
+    so_types = {(k, c["name"]) for k, t in schema["tables"].items() for c in t["columns"] if c["src"] == schema.get("types_file")}
     for sc in rules["state_machines"]["columns"]:
+        if (sc["table"], sc["column"]) in so_types:
+            continue  # types.ts não traz CHECK: ausência de constraint ali não é verificável
         if not sc["allowed"]:
             gaps.append(f"`{sc['table']}.{sc['column']}` é uma coluna de status sem enum/CHECK — os valores válidos e as transições permitidas não estão no banco.")
         elif not rules["transition_maps"]:
@@ -1918,18 +2118,19 @@ def render_access(meta, access, schema) -> str:
     s += "## Matriz tabela × operação → quem pode (derivada das políticas RLS)\n\n"
     rows = []
     for t, row in access["matrix"].items():
-        cell = lambda xs: "<br>".join(xs) if xs else ("—" if row["rls"] in ("enabled", "forced") else "sem RLS")
+        cell = lambda xs: "<br>".join(xs) if xs else ("—" if row["rls"] in ("enabled", "forced") else "?" if row["rls"] == "não verificado" else "sem RLS")
         rows.append([f"`{t}`", row["rls"], cell(row["SELECT"]), cell(row["INSERT"]), cell(row["UPDATE"]), cell(row["DELETE"])])
     s += md_table(["Tabela", "RLS", "SELECT", "INSERT", "UPDATE", "DELETE"], rows)
-    s += "\n> `—` com RLS ligado = ninguém além de service_role. `sem RLS` = qualquer chave anon lê/escreve tudo.\n"
+    s += "\n> `—` com RLS ligado = ninguém além de service_role. `sem RLS` = qualquer chave anon lê/escreve tudo. `?` = tabela só conhecida pelo types.ts (sem migration no repo): RLS e políticas NÃO VERIFICADOS, confira no banco real.\n"
     dinamicas = schema.get("policies_dinamicas") or []
     if dinamicas:
         afetadas = sorted({t for d in dinamicas for t in d["tabelas"]})
         s += ("\n> **NÃO VERIFICADO — a matriz acima está incompleta.** Algumas migrations criam políticas por SQL\n"
               "> dinâmico (`DO $$ ... EXECUTE format('CREATE POLICY ...')`), que não é reconstruível estaticamente:\n"
-              "> as linhas destas tabelas podem omitir políticas que existem no banco. Confirme no snapshot do\n"
+              "> as linhas destas tabelas podem omitir políticas que existem no banco ou listar políticas que um\n"
+              "> `DROP POLICY` dinâmico já removeu. Confirme no snapshot do\n"
               "> banco real (`docs/contexto/supabase/`), que é o dono deste fato, antes de concluir que um perfil\n"
-              "> não tem acesso.\n>\n")
+              "> tem ou não tem acesso.\n>\n")
         if afetadas:
             s += "> Tabelas afetadas: " + ", ".join(f"`{t}`" for t in afetadas) + "\n>\n"
         else:
@@ -2055,7 +2256,13 @@ def main() -> int:
     args = ap.parse_args()
 
     root = Path(args.repo).resolve()
+    if not root.is_dir():
+        ap.error(f"--repo não é um diretório: {root}")
+    if args.profile not in ("full", *PROFILES):  # o default vem de AI_CONTEXT_PROFILE e o argparse não valida default
+        ap.error(f"perfil inválido: {args.profile!r} (use full, codigo ou regras)")
     out_dir = (root / args.out).resolve()
+    if out_dir == root or (out_dir.exists() and not out_dir.is_dir()):
+        ap.error(f"--out precisa ser uma pasta própria, não a raiz do repo nem um arquivo: {out_dir}")
     out_rel = rel(out_dir, root) if out_dir.is_relative_to(root) else args.out.rstrip("/")
     log(f"repo={root} out={out_dir}")
 
@@ -2099,7 +2306,9 @@ def main() -> int:
     if state_path.exists():
         try: prev = json.loads(state_path.read_text())
         except Exception: prev = {}
-    changed = prev.get("facts_hash") != facts_hash or prev.get("version") != VERSION
+        if not isinstance(prev, dict): prev = {}
+    # perfil faz parte do estado: trocar de perfil com os mesmos fatos precisa reescrever manifest e limpar o que sobrou
+    changed = prev.get("facts_hash") != facts_hash or prev.get("version") != VERSION or prev.get("profile") != args.profile
     # Sem isto, saida apagada passa por atual: o .state.json diria "igual" e nada seria reescrito.
     ausentes = sorted(n for n in (PROFILES.get(args.profile, set()) | {"context.json", "manifest.json"})
                       if not (out_dir / n).is_file())
@@ -2113,8 +2322,9 @@ def main() -> int:
         log("nada mudou — nenhuma escrita")
         return 0
 
+    now = datetime.now(timezone.utc)
     meta = {"sha": gitd["sha"], "branch": gitd["branch"], "remote": gitd["remote"],
-            "generated_at": datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M UTC"),
+            "generated_at": now.strftime("%Y-%m-%d %H:%M UTC"),
             "files_total": len(files), "code_files": len(code), "code_lines": sum(i["lines"] for i in code.values())}
     llm_text = llm_synthesis({k: facts[k] for k in ("stack", "schema", "features", "dataflow", "rules", "access", "audit", "readme")}, out_dir / ".cache", args.model) if args.llm else ""
 
@@ -2155,13 +2365,15 @@ def main() -> int:
     for name, content in outputs.items():
         p = out_dir / name
         content = redact(content)
-        if not p.exists() or p.read_text(encoding="utf-8") != content:
+        if not p.exists() or p.read_text(encoding="utf-8", errors="replace") != content:
             p.write_text(content, encoding="utf-8"); written.append(name)
     ctx = {"meta": meta, "version": VERSION, "facts_hash": facts_hash, **facts,
            "code_files": {k: {kk: vv for kk, vv in v.items() if kk != "imports" and vv not in ([], {}, "", 0, False)} for k, v in code.items()}, "git": gitd}
     (out_dir / "context.json").write_text(json.dumps(ctx, ensure_ascii=False, indent=1, default=list), encoding="utf-8")
-    state_path.write_text(json.dumps({"facts_hash": facts_hash, "sha": gitd["sha"], "version": VERSION, "generated_at": meta["generated_at"]}, indent=1), encoding="utf-8")
-    manifest = {"produtor": "ai-context-sync", "versao": VERSION, "perfil": args.profile, "gerado_em": meta["generated_at"], "commit": gitd["sha"],
+    state_path.write_text(json.dumps({"facts_hash": facts_hash, "sha": gitd["sha"], "version": VERSION, "profile": args.profile, "generated_at": meta["generated_at"]}, indent=1), encoding="utf-8")
+    # ISO-8601 como os outros produtores: o gate do contexto.yml lê com datetime.fromisoformat e, com
+    # "AAAA-MM-DD HH:MM UTC", nunca conseguia calcular a idade (regras era regerado a cada agendamento).
+    manifest = {"produtor": "ai-context-sync", "versao": VERSION, "perfil": args.profile, "gerado_em": now.strftime("%Y-%m-%dT%H:%M:%SZ"), "commit": gitd["sha"],
                 "fonte": {"full": "código do repo + migrations/types + manual/", "codigo": "código do repo", "regras": "código + migrations/types + manual/ (regras de negócio)"}[args.profile],
                 "entrada": sorted(outputs)[0] if outputs else "", "arquivos": sorted(outputs) + ["context.json"],
                 "schema_real_em": snap if snap_dir else "", "inconsistencias": len(audit["issues"]), "lacunas": len(audit["gaps"])}

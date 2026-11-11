@@ -14,6 +14,19 @@ set -euo pipefail
 
 cd "$(dirname "$0")/../.." || exit 1
 
+# Sem isto o script validava a lista inteira e só então morria com
+# "deno: command not found" (127), sem dizer o que fazer.
+if ! command -v deno >/dev/null 2>&1; then
+  echo "::error::deno não encontrado no PATH — instale o Deno (no CI: denoland/setup-deno) antes de rodar este gate."
+  exit 127
+fi
+# `find` falhando dentro de `< <(...)` não derruba o script: sem o diretório, o
+# gate passaria só com a lista fixa, sem nenhum arquivo de _shared.
+if [ ! -d supabase/functions/_shared ]; then
+  echo "::error::supabase/functions/_shared não encontrado — o gate Deno não tem o que provar."
+  exit 1
+fi
+
 alvos=()
 while IFS= read -r arquivo; do
   alvos+=("$arquivo")

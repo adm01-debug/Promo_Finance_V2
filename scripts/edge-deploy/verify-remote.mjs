@@ -13,8 +13,8 @@
 //   --scope <all|fn>                   escopo do deploy (opcional, default all)
 //   --output <saida.json>              atestação JSON
 import { readFile, writeFile } from 'node:fs/promises';
-import { fileURLToPath, pathToFileURL } from 'node:url';
-import { resolve } from 'node:path';
+import { realpathSync } from 'node:fs';
+import { pathToFileURL } from 'node:url';
 
 function parseArgs(argv) {
   const args = {};
@@ -48,13 +48,24 @@ export function extrairNomesRemotos(entrada) {
 }
 
 function somenteAtivas(lista) {
-  return lista.filter((f) => (typeof f === 'string' ? true : (f.status === 'ACTIVE' || f.status === 'active' || f.status === 'DEPLOYED' || f.status === 'deployed')));
+  return lista.filter((f) => (typeof f === 'string' ? true : f !== null && typeof f === 'object' && (f.status === 'ACTIVE' || f.status === 'active' || f.status === 'DEPLOYED' || f.status === 'deployed')));
 }
 
 export async function runVerifyRemote(args) {
   const expected = JSON.parse(await readFile(args.expectedPath, 'utf8'));
   const remoto = JSON.parse(await readFile(args.remotePath, 'utf8'));
-  const esperados = (expected.functions ?? []).map((fn) => fn.name).filter(Boolean);
+  // Lista esperada malformada (sem `functions`, item sem `name`) resultava em zero
+  // esperadas e `verified: true` — um atestado verde sem ter conferido nada.
+  if (!expected || !Array.isArray(expected.functions)) {
+    throw new Error(`--expected precisa ser { "functions": [...] }: ${args.expectedPath}`);
+  }
+  const esperados = expected.functions.map((fn) => (typeof fn === 'string' ? fn : fn?.name));
+  if (esperados.some((n) => typeof n !== 'string' || n.length === 0)) {
+    throw new Error(`--expected tem função sem "name": ${args.expectedPath}`);
+  }
+  if (remoto === null || typeof remoto !== 'object') {
+    throw new Error(`--remote precisa ser a saída JSON de \`supabase functions list\`: ${args.remotePath}`);
+  }
   const remotosAtivos = somenteAtivas(Array.isArray(remoto) ? remoto : (remoto.functions ?? []));
   const presentes = remotosAtivos.map((f) => (typeof f === 'string' ? f : (f.slug ?? f.name))).filter(Boolean);
   const presentesSet = new Set(presentes);
@@ -80,13 +91,27 @@ async function main() {
   const args = parseArgs(process.argv.slice(2));
   const atestacao = await runVerifyRemote(args);
   console.log(
-    `Remote OK: ${atestacao.expected_count} esperadas, ${atestacao.remote_active_count} ativas no remoto, ` +
+    `Remote ${atestacao.verified ? 'OK' : 'FALHOU'}: ${atestacao.expected_count} esperadas, ${atestacao.remote_active_count} ativas no remoto, ` +
     `faltando ${atestacao.missing.length}` + (atestacao.missing.length ? `: ${atestacao.missing.join(', ')}` : ''),
   );
+  if (atestacao.expected_count === 0) {
+    console.log('::warning::Verify remote: lista esperada vazia — nenhuma função foi conferida.');
+  }
   if (!atestacao.verified) process.exitCode = 1;
 }
 
-if (process.argv[1] && import.meta.url === pathToFileURL(resolve(process.argv[1])).href) {
+// realpath: com o repo atrás de um symlink (ou /tmp no macOS) `argv[1]` não bate com
+// `import.meta.url` e o script saía 0 sem executar nada.
+function invocadoDireto() {
+  if (!process.argv[1]) return false;
+  try {
+    return import.meta.url === pathToFileURL(realpathSync(process.argv[1])).href;
+  } catch {
+    return false;
+  }
+}
+
+if (invocadoDireto()) {
   main().catch((error) => {
     console.error(error.message);
     process.exitCode = 1;

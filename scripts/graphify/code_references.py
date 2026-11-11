@@ -13,25 +13,30 @@ from datetime import datetime, timezone
 
 from run import ROOT, SECRET, atomic_write_json, command, is_allowed_path
 from sql_inventory import inventory as migration_inventory
-from typescript_imports import extract_imports, resolve_imports
+from typescript_imports import extract_imports, mask_comments, resolve_imports
 
 
+# Literal seguido de cast TypeScript ('tabela' as never) continua sendo literal.
+CAST = r"(?:\s+as\s+[\w.]+)*"
 PATTERNS = {
-    "relation": re.compile(r"\.from\(\s*(['\"])([A-Za-z_][A-Za-z0-9_]*)\1\s*\)"),
-    "rpc": re.compile(r"\.rpc\(\s*(['\"])([A-Za-z_][A-Za-z0-9_]*)\1\s*[,)]"),
-    "edge_function": re.compile(r"\.functions\.invoke\(\s*(['\"])([A-Za-z0-9_-]+)\1\s*[,)]"),
-    "route": re.compile(r"(?:path\s*[=:]|navigate\()\s*(['\"])(/[^'\"]*)\1"),
+    "relation": re.compile(rf"\.from\(\s*(['\"])([A-Za-z_][A-Za-z0-9_]*)\1{CAST}\s*\)"),
+    "rpc": re.compile(rf"\.rpc\(\s*(['\"])([A-Za-z_][A-Za-z0-9_]*)\1{CAST}\s*[,)]"),
+    "edge_function": re.compile(rf"\.functions\.invoke\(\s*(['\"])([A-Za-z0-9_-]+)\1{CAST}\s*[,)]"),
+    "route": re.compile(r"(?:\bpath\s*[=:]|navigate\()\s*(['\"])(/[^'\"]*)\1"),
     "query_key": re.compile(r"\bqueryKey\s*:\s*\[\s*(['\"])([^'\"]+)\1"),
     "mutation_key": re.compile(r"\bmutationKey\s*:\s*\[\s*(['\"])([^'\"]+)\1"),
 }
+# \s no lookahead impede o backtracking de \s* de classificar literal em outra linha como dinâmico.
 DYNAMIC_PATTERNS = {
-    "relation": re.compile(r"\.from\(\s*(?!['\"])[^)]+\)"),
-    "rpc": re.compile(r"\.rpc\(\s*(?!['\"])[^)]+\)"),
-    "edge_function": re.compile(r"\.functions\.invoke\(\s*(?!['\"])[^)]+\)"),
+    "relation": re.compile(r"\.from\(\s*(?![\s'\"])[^)]+\)"),
+    "rpc": re.compile(r"\.rpc\(\s*(?![\s'\"])[^)]+\)"),
+    "edge_function": re.compile(r"\.functions\.invoke\(\s*(?![\s'\"])[^)]+\)"),
     "query_key": re.compile(r"\bqueryKey\s*:(?!\s*\[)\s*[^,}\n]+"),
     "mutation_key": re.compile(r"\bmutationKey\s*:(?!\s*\[)\s*[^,}\n]+"),
 }
 KEY_ARRAY = re.compile(r"\b(queryKey|mutationKey)\s*:\s*\[([^\]]*)\]", re.DOTALL)
+# Array.from/Uint8Array.from/Buffer.from convertem valores e storage.from nomeia bucket: não são tabelas.
+NOT_A_RELATION = re.compile(r"\b(?:(?:[A-Z]\w*)?Array|Buffer|storage)\s*$")
 STATIC_KEY_TOKEN = re.compile(
     r"(?:'(?:\\.|[^'\\])*'|\"(?:\\.|[^\"\\])*\"|-?\d+(?:\.\d+)?|\b(?:true|false|null)\b)"
 )
@@ -46,13 +51,21 @@ def line_of(text, position):
     return text.count("\n", 0, position) + 1
 
 
+def is_relation_call(text, position):
+    return not NOT_A_RELATION.search(text, max(0, position - 64), position)
+
+
 def extract_references(relative, text):
     references, dynamic = [], {kind: 0 for kind in PATTERNS}
+    text = mask_comments(text)
     for kind, pattern in PATTERNS.items():
         for match in pattern.finditer(text):
+            if kind == "relation" and not is_relation_call(text, match.start()):
+                continue
             references.append({"kind": kind, "name": match.group(2), "source": relative,
                                "line": line_of(text, match.start()), "confidence": "LITERAL"})
-        dynamic[kind] = len(DYNAMIC_PATTERNS.get(kind, re.compile("(?!x)x")).findall(text))
+        dynamic[kind] = sum(kind != "relation" or is_relation_call(text, match.start())
+                            for match in DYNAMIC_PATTERNS.get(kind, re.compile("(?!x)x")).finditer(text))
     for match in KEY_ARRAY.finditer(text):
         kind = "query_key" if match.group(1) == "queryKey" else "mutation_key"
         residue = STATIC_KEY_TOKEN.sub("", match.group(2)).strip(" \t\r\n,")

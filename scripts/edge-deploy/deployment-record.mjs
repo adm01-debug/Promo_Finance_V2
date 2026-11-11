@@ -48,6 +48,8 @@ export function construirStatus({ id, estado = 'success', ambiente = AMBIENTE_PA
   };
 }
 
+// Tolerante de propósito: `d` é a RESPOSTA da API. Se ela vier sem `ref`/`payload`, o
+// resumo lançava e o registro já feito era reportado como "Falha ao registrar".
 export function resumirDeployment(d) {
-  return `${d.environment} @ ${d.ref.slice(0, 8)} (run ${d.payload.run_id})`;
+  return `${d?.environment ?? '?'} @ ${String(d?.ref ?? '').slice(0, 8)} (run ${d?.payload?.run_id ?? '?'})`;
 }
