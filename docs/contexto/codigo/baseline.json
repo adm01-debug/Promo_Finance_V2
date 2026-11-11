@@ -2,11 +2,16 @@
  "aviso": "GERADO AUTOMATICAMENTE por scripts/ai-context/gerar.mjs — não editar à mão; será sobrescrito.",
  "format_version": 2,
  "git": {
-  "commit": "8f43c3f89fb6c63bf09280f21c8251dd9ae584da",
+  "commit": "62bd98329342bcc68e70a061a66d157120ae3cac",
   "branch": "main",
-  "data_commit": "2026-11-10T21:05:40Z",
+  "data_commit": "2026-11-11T13:32:32Z",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
   "ultimos_commits": [
+   {
+    "sha": "62bd983",
+    "data": "2026-11-11",
+    "assunto": "chore(db): [STEP 17] dropar 404 índices idle (idx_scan=0) (#243)"
+   },
    {
     "sha": "8f43c3f",
     "data": "2026-11-10",
@@ -126,14 +131,9 @@
     "sha": "039e16d",
     "data": "2026-11-09",
     "assunto": "chore: dossiês completos por PR + relatório final sessão merge-prs (#280)"
-   },
-   {
-    "sha": "8f63e2c",
-    "data": "2026-11-09",
-    "assunto": "chore(docs): atualiza contagem de edge functions para 106 em sistema.md"
    }
   ],
-  "arquivos_mudados_7d": 310,
+  "arquivos_mudados_7d": 312,
   "pastas_mais_mudadas_30d": [
    {
     "pasta": "supabase/functions/_shared",
@@ -172,15 +172,7 @@
     "mudancas": 7
    },
    {
-    "pasta": "src/components/ui",
-    "mudancas": 6
-   },
-   {
     "pasta": ".gitignore",
-    "mudancas": 5
-   },
-   {
-    "pasta": "src/components/navigation",
     "mudancas": 5
    },
    {
@@ -193,6 +185,14 @@
    },
    {
     "pasta": "analise-prs/prs.json",
+    "mudancas": 4
+   },
+   {
+    "pasta": "scripts/edge-deploy/fixtures",
+    "mudancas": 4
+   },
+   {
+    "pasta": "src/components/contas-receber",
     "mudancas": 4
    }
   ],
@@ -305,7 +305,7 @@
    },
    {
     "autor": "devin-ai-integration[bot]",
-    "commits": 19
+    "commits": 18
    },
    {
     "autor": "dependabot[bot]",
@@ -318,7 +318,7 @@
   ]
  },
  "contagens": {
-  "arquivos_total": 3522,
+  "arquivos_total": 3523,
   "arquivos_codigo": 2187,
   "linhas_codigo": 410281,
   "rotas": 128,
@@ -330,7 +330,7 @@
   "hooks": 265,
   "edge_functions": 106,
   "tabelas": 314,
-  "migrations": 945,
+  "migrations": 946,
   "cron_jobs": 21,
   "testes": 372,
   "workflows": 19,

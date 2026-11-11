@@ -8,7 +8,7 @@
   "supabase/migrations",
   "typeorm"
  ],
- "migrations": 945,
+ "migrations": 946,
  "seeds": [],
  "avisos": [
   "169 bloco(s) com DDL dinâmico (EXECUTE format/...) não modelado — policies/colunas criadas dinamicamente podem faltar; confira no banco vivo"
@@ -2974,16 +2974,6 @@
    ],
    "indices": [
     {
-     "nome": "idx_acessos_suspeitos_created",
-     "colunas": "created_at DESC",
-     "unico": false
-    },
-    {
-     "nome": "idx_acessos_suspeitos_empresa_id",
-     "colunas": "empresa_id",
-     "unico": false
-    },
-    {
      "nome": "uq_acessos_suspeitos_janela",
      "colunas": "tipo, janela_inicio, COALESCE(user_id, '00000000-0000-0000-0000-000000000000'::uuid",
      "unico": true
@@ -3533,18 +3523,7 @@
      "tipo": "permissive"
     }
    ],
-   "indices": [
-    {
-     "nome": "idx_alert_configurations_empresa",
-     "colunas": "empresa_id",
-     "unico": false
-    },
-    {
-     "nome": "idx_alert_configurations_is_enabled_true",
-     "colunas": "alert_type, channel",
-     "unico": false
-    }
-   ],
+   "indices": [],
    "fks": [
     "empresa_id->empresas"
    ],
@@ -3964,11 +3943,6 @@
    ],
    "indices": [
     {
-     "nome": "idx_alertas_preditivos_empresa_id",
-     "colunas": "empresa_id",
-     "unico": false
-    },
-    {
      "nome": "idx_alertas_preditivos_status",
      "colunas": "status, prioridade",
      "unico": false
@@ -4321,18 +4295,7 @@
      "tipo": "permissive"
     }
    ],
-   "indices": [
-    {
-     "nome": "idx_alerts_dedup",
-     "colunas": "type, order_id, created_at DESC",
-     "unico": false
-    },
-    {
-     "nome": "idx_alerts_empresa",
-     "colunas": "empresa_id",
-     "unico": false
-    }
-   ],
+   "indices": [],
    "fks": [
     "driver_id->drivers",
     "empresa_id->empresas",
@@ -4778,26 +4741,6 @@
      "nome": "aliq_iss_mun_geral_unq",
      "colunas": "codigo_ibge, vigente_de",
      "unico": true
-    },
-    {
-     "nome": "idx_aliq_iss_item",
-     "colunas": "item_lista_id",
-     "unico": false
-    },
-    {
-     "nome": "idx_aliq_iss_mun",
-     "colunas": "codigo_ibge, vigente_de DESC",
-     "unico": false
-    },
-    {
-     "nome": "idx_aliq_iss_uf",
-     "colunas": "uf",
-     "unico": false
-    },
-    {
-     "nome": "idx_aliquotas_iss_municipal_vigencia",
-     "colunas": "vigente_de, vigente_ate",
-     "unico": false
     }
    ],
    "fks": [
@@ -5022,13 +4965,7 @@
      "tipo": "permissive"
     }
    ],
-   "indices": [
-    {
-     "nome": "idx_allowed_ips_created_at",
-     "colunas": "created_at DESC",
-     "unico": false
-    }
-   ],
+   "indices": [],
    "fks": [
     "user_id->auth"
    ],
@@ -5203,18 +5140,7 @@
      "tipo": "permissive"
     }
    ],
-   "indices": [
-    {
-     "nome": "idx_anexos_financeiros_entidade",
-     "colunas": "entidade_id, entidade_tipo",
-     "unico": false
-    },
-    {
-     "nome": "idx_anexos_financeiros_storage_path",
-     "colunas": "storage_path",
-     "unico": false
-    }
-   ],
+   "indices": [],
    "fks": [],
    "criada_em": "20260317000749_a5a47522-0909-46d5-bc2e-1ee69a61a744.sql",
    "colunas_types": {
@@ -5858,11 +5784,6 @@
     },
     {
      "nome": "idx_anomalias_empresa",
-     "colunas": "empresa_id, detectada_em DESC",
-     "unico": false
-    },
-    {
-     "nome": "idx_anomalias_novas",
      "colunas": "empresa_id, detectada_em DESC",
      "unico": false
     },
@@ -7528,13 +7449,7 @@
      "tipo": "permissive"
     }
    ],
-   "indices": [
-    {
-     "nome": "idx_credit_risk_cliente",
-     "colunas": "cliente_id, created_at DESC",
-     "unico": false
-    }
-   ],
+   "indices": [],
    "fks": [
     "cliente_id->clientes"
    ],
@@ -7692,11 +7607,6 @@
      "nome": "idx_asaas_customers_empresa",
      "colunas": "empresa_id",
      "unico": false
-    },
-    {
-     "nome": "idx_asaas_customers_empresa_id",
-     "colunas": "empresa_id",
-     "unico": false
     }
    ],
    "fks": [
@@ -7816,13 +7726,7 @@
      "tipo": "permissive"
     }
    ],
-   "indices": [
-    {
-     "nome": "idx_asaas_payment_links_empresa",
-     "colunas": "empresa_id",
-     "unico": false
-    }
-   ],
+   "indices": [],
    "fks": [
     "created_by->auth",
     "empresa_id->empresas"
@@ -8068,11 +7972,6 @@
      "unico": false
     },
     {
-     "nome": "idx_asaas_payments_empresa_id",
-     "colunas": "empresa_id",
-     "unico": false
-    },
-    {
      "nome": "idx_asaas_payments_status",
      "colunas": "status",
      "unico": false
@@ -8257,13 +8156,7 @@
      "tipo": "permissive"
     }
    ],
-   "indices": [
-    {
-     "nome": "idx_asaas_reconciliation_suggestions_empresa_id",
-     "colunas": "empresa_id",
-     "unico": false
-    }
-   ],
+   "indices": [],
    "fks": [
     "conta_receber_id->contas_receber",
     "contas_pagar_id->contas_pagar",
@@ -9623,11 +9516,6 @@
      "nome": "idx_auditoria_financeira_created",
      "colunas": "created_at DESC",
      "unico": false
-    },
-    {
-     "nome": "idx_auditoria_financeira_empresa_id",
-     "colunas": "empresa_id",
-     "unico": false
     }
    ],
    "fks": [],
@@ -9768,11 +9656,6 @@
      "unico": false
     },
     {
-     "nome": "idx_auditoria_trib_entidade",
-     "colunas": "entidade_tipo, entidade_id",
-     "unico": false
-    },
-    {
      "nome": "idx_auditoria_trib_user",
      "colunas": "user_id, criado_em DESC",
      "unico": false
@@ -9842,13 +9725,7 @@
      "tipo": "permissive"
     }
    ],
-   "indices": [
-    {
-     "nome": "idx_auth_logs_ip_created",
-     "colunas": "ip_address, created_at DESC",
-     "unico": false
-    }
-   ],
+   "indices": [],
    "fks": [],
    "criada_em": null,
    "colunas_types": {
@@ -10155,13 +10032,7 @@
      "tipo": "permissive"
     }
    ],
-   "indices": [
-    {
-     "nome": "idx_beneficios_uf",
-     "colunas": "uf",
-     "unico": false
-    }
-   ],
+   "indices": [],
    "fks": [],
    "criada_em": "20260727190031_432a4b76-ee70-4633-abba-c5e5bc6a250a.sql",
    "colunas_types": {
@@ -10618,13 +10489,7 @@
      "tipo": "permissive"
     }
    ],
-   "indices": [
-    {
-     "nome": "idx_bitrix_tokens_created",
-     "colunas": "created_at DESC",
-     "unico": false
-    }
-   ],
+   "indices": [],
    "fks": [],
    "criada_em": "20251214201733_c19cef4d-a574-4450-8f54-5e15063f7ac4.sql",
    "colunas_types": {
@@ -11048,11 +10913,6 @@
    ],
    "indices": [
     {
-     "nome": "idx_bling_sync_logs_created",
-     "colunas": "created_at DESC",
-     "unico": false
-    },
-    {
      "nome": "idx_bling_sync_logs_modulo",
      "colunas": "modulo",
      "unico": false
@@ -11156,13 +11016,7 @@
      "tipo": "permissive"
     }
    ],
-   "indices": [
-    {
-     "nome": "idx_bling_tokens_created",
-     "colunas": "created_at DESC",
-     "unico": false
-    }
-   ],
+   "indices": [],
    "fks": [],
    "criada_em": "20260315210216_8a2ae26e-a254-45a0-9695-852ece9410e5.sql",
    "colunas_types": {
@@ -11296,11 +11150,6 @@
      "unico": false
     },
     {
-     "nome": "idx_bling_webhook_events_processed",
-     "colunas": "processed",
-     "unico": false
-    },
-    {
      "nome": "idx_bling_webhook_events_resource",
      "colunas": "module, resource_id",
      "unico": false
@@ -11428,13 +11277,7 @@
      "tipo": "permissive"
     }
    ],
-   "indices": [
-    {
-     "nome": "idx_bloat_snapshots_table_date",
-     "colunas": "table_name, snapshot_date DESC",
-     "unico": false
-    }
-   ],
+   "indices": [],
    "fks": [],
    "criada_em": "20260712184508_86499a5b-e277-4fe2-a955-d67ed759500a.sql",
    "colunas_types": {
@@ -12136,11 +11979,6 @@
      "unico": false
     },
     {
-     "nome": "idx_boletos_pendentes_venc",
-     "colunas": "empresa_id, vencimento",
-     "unico": false
-    },
-    {
      "nome": "idx_boletos_status",
      "colunas": "status",
      "unico": false
@@ -12484,11 +12322,6 @@
      "nome": "catalogos_fiscais_cargas_checksum_key",
      "colunas": "checksum",
      "unico": true
-    },
-    {
-     "nome": "catalogos_fiscais_cargas_last_updated_idx",
-     "colunas": "last_updated DESC",
-     "unico": false
     }
    ],
    "fks": [],
@@ -12921,13 +12754,7 @@
      "tipo": "permissive"
     }
    ],
-   "indices": [
-    {
-     "nome": "idx_centros_custo_empresa_id",
-     "colunas": "empresa_id",
-     "unico": false
-    }
-   ],
+   "indices": [],
    "fks": [
     "parent_id->centros_custo",
     "user_id->auth"
@@ -13094,23 +12921,7 @@
      "tipo": "permissive"
     }
    ],
-   "indices": [
-    {
-     "nome": "ci_security_gate_events_created_idx",
-     "colunas": "created_at DESC",
-     "unico": false
-    },
-    {
-     "nome": "ci_security_gate_events_function_idx",
-     "colunas": "function_name, role_tested, created_at DESC",
-     "unico": false
-    },
-    {
-     "nome": "ci_security_gate_events_sha_idx",
-     "colunas": "git_sha",
-     "unico": false
-    }
-   ],
+   "indices": [],
    "fks": [],
    "criada_em": "20260723131956_8b1caf7f-d4ff-4756-80be-e3d69099d1a0.sql",
    "colunas_types": {
@@ -13486,11 +13297,6 @@
      "unico": false
     },
     {
-     "nome": "idx_clientes_empresa_id",
-     "colunas": "empresa_id",
-     "unico": false
-    },
-    {
      "nome": "idx_clientes_nome",
      "colunas": "nome",
      "unico": false
@@ -13687,13 +13493,7 @@
      "tipo": "permissive"
     }
    ],
-   "indices": [
-    {
-     "nome": "idx_cnaes_anexo",
-     "colunas": "anexo_simples",
-     "unico": false
-    }
-   ],
+   "indices": [],
    "fks": [],
    "criada_em": "20260727185837_e55927cd-4203-4660-8ed3-653c76377123.sql",
    "colunas_types": {
@@ -13793,11 +13593,6 @@
     }
    ],
    "indices": [
-    {
-     "nome": "idx_cnpja_cache_expires",
-     "colunas": "expires_at DESC",
-     "unico": false
-    },
     {
      "nome": "idx_cnpja_cache_expires_at",
      "colunas": "expires_at",
@@ -14144,13 +13939,7 @@
      "tipo": "permissive"
     }
    ],
-   "indices": [
-    {
-     "nome": "idx_conciliacoes_empresa_id",
-     "colunas": "empresa_id",
-     "unico": false
-    }
-   ],
+   "indices": [],
    "fks": [
     "conta_bancaria_id->contas_bancarias",
     "empresa_id->empresas"
@@ -14390,13 +14179,7 @@
      "tipo": "permissive"
     }
    ],
-   "indices": [
-    {
-     "nome": "idx_configuracoes_aprovacao_empresa",
-     "colunas": "empresa_id",
-     "unico": false
-    }
-   ],
+   "indices": [],
    "fks": [
     "created_by->auth",
     "empresa_id->empresas"
@@ -14528,13 +14311,7 @@
      "tipo": "permissive"
     }
    ],
-   "indices": [
-    {
-     "nome": "idx_configuracoes_duplicidade_empresa_id",
-     "colunas": "empresa_id",
-     "unico": false
-    }
-   ],
+   "indices": [],
    "fks": [
     "criado_por->auth",
     "empresa_id->empresas"
@@ -16234,11 +16011,6 @@
    ],
    "indices": [
     {
-     "nome": "idx_contas_receber_bitrix_deal",
-     "colunas": "bitrix_deal_id",
-     "unico": false
-    },
-    {
      "nome": "idx_contas_receber_categoria",
      "colunas": "categoria",
      "unico": false
@@ -16924,23 +16696,7 @@
      "tipo": "permissive"
     }
    ],
-   "indices": [
-    {
-     "nome": "idx_convites_email",
-     "colunas": "email_convidado",
-     "unico": false
-    },
-    {
-     "nome": "idx_convites_organizacao_id",
-     "colunas": "organizacao_id",
-     "unico": false
-    },
-    {
-     "nome": "idx_convites_token",
-     "colunas": "token",
-     "unico": false
-    }
-   ],
+   "indices": [],
    "fks": [
     "organizacao_id->organizacoes"
    ],
@@ -17507,13 +17263,7 @@
      "tipo": "permissive"
     }
    ],
-   "indices": [
-    {
-     "nome": "idx_custom_field_definitions_empresa",
-     "colunas": "empresa_id",
-     "unico": false
-    }
-   ],
+   "indices": [],
    "fks": [
     "empresa_id->empresas"
    ],
@@ -17599,13 +17349,7 @@
      "tipo": "permissive"
     }
    ],
-   "indices": [
-    {
-     "nome": "idx_custom_field_values_definition",
-     "colunas": "definition_id",
-     "unico": false
-    }
-   ],
+   "indices": [],
    "fks": [
     "definition_id->custom_field_definitions"
    ],
@@ -17784,11 +17528,6 @@
    ],
    "indices": [
     {
-     "nome": "idx_darfs_alerta_id",
-     "colunas": "alerta_id",
-     "unico": false
-    },
-    {
      "nome": "idx_darfs_competencia",
      "colunas": "competencia",
      "unico": false
@@ -17799,18 +17538,8 @@
      "unico": false
     },
     {
-     "nome": "idx_darfs_empresa_competencia",
-     "colunas": "empresa_id, competencia",
-     "unico": false
-    },
-    {
      "nome": "idx_darfs_status",
      "colunas": "status",
-     "unico": false
-    },
-    {
-     "nome": "idx_darfs_status_vencimento",
-     "colunas": "status, data_vencimento",
      "unico": false
     }
    ],
@@ -17977,21 +17706,6 @@
      "nome": "idx_digest_envios_log_created_at",
      "colunas": "created_at DESC",
      "unico": false
-    },
-    {
-     "nome": "idx_digest_envios_log_email",
-     "colunas": "email, created_at DESC",
-     "unico": false
-    },
-    {
-     "nome": "idx_digest_envios_log_execucao",
-     "colunas": "execucao_id",
-     "unico": false
-    },
-    {
-     "nome": "idx_digest_envios_log_situacao",
-     "colunas": "situacao, created_at DESC",
-     "unico": false
     }
    ],
    "fks": [],
@@ -18120,13 +17834,7 @@
      "tipo": "permissive"
     }
    ],
-   "indices": [
-    {
-     "nome": "idx_dispositivos_user_fp",
-     "colunas": "user_id, device_fingerprint",
-     "unico": false
-    }
-   ],
+   "indices": [],
    "fks": [
     "user_id->auth"
    ],
@@ -18297,11 +18005,6 @@
     }
    ],
    "indices": [
-    {
-     "nome": "idx_divergencias_conciliacao_empresa_id",
-     "colunas": "empresa_id",
-     "unico": false
-    },
     {
      "nome": "idx_divergencias_resolvido_em",
      "colunas": "resolvido_em",
@@ -18629,11 +18332,6 @@
      "unico": false
     },
     {
-     "nome": "idx_edge_logs_level",
-     "colunas": "level, created_at DESC",
-     "unico": false
-    },
-    {
      "nome": "idx_edge_logs_level_created",
      "colunas": "level, created_at DESC",
      "unico": false
@@ -18798,13 +18496,7 @@
      "tipo": "permissive"
     }
    ],
-   "indices": [
-    {
-     "nome": "idx_elisao_alertas_empresa",
-     "colunas": "empresa_id, created_at DESC",
-     "unico": false
-    }
-   ],
+   "indices": [],
    "fks": [
     "empresa_id->empresas"
    ],
@@ -19103,18 +18795,7 @@
      "tipo": "permissive"
     }
    ],
-   "indices": [
-    {
-     "nome": "idx_cred_aud_empresa",
-     "colunas": "empresa_id, created_at DESC",
-     "unico": false
-    },
-    {
-     "nome": "idx_cred_aud_status",
-     "colunas": "empresa_id, status_aprovacao",
-     "unico": false
-    }
-   ],
+   "indices": [],
    "fks": [
     "aprovador_id->auth",
     "empresa_id->empresas",
@@ -19695,13 +19376,7 @@
      "tipo": "permissive"
     }
    ],
-   "indices": [
-    {
-     "nome": "idx_tarefas_elisao_empresa",
-     "colunas": "empresa_id, prazo",
-     "unico": false
-    }
-   ],
+   "indices": [],
    "fks": [
     "empresa_id->empresas",
     "responsavel_id->auth"
@@ -20218,33 +19893,7 @@
      "tipo": "permissive"
     }
    ],
-   "indices": [
-    {
-     "nome": "idx_emp_cert_ativo",
-     "colunas": "ativo",
-     "unico": false
-    },
-    {
-     "nome": "idx_emp_cert_cnpj",
-     "colunas": "cnpj",
-     "unico": false
-    },
-    {
-     "nome": "idx_emp_cert_empresa",
-     "colunas": "empresa_id",
-     "unico": false
-    },
-    {
-     "nome": "idx_emp_cert_vencimento",
-     "colunas": "valido_ate",
-     "unico": false
-    },
-    {
-     "nome": "idx_empresas_certificados_criado_por",
-     "colunas": "criado_por",
-     "unico": false
-    }
-   ],
+   "indices": [],
    "fks": [
     "criado_por->auth",
     "empresa_id->empresas"
@@ -20505,18 +20154,7 @@
      "tipo": "permissive"
     }
    ],
-   "indices": [
-    {
-     "nome": "idx_entregas_obrigacoes_empresa",
-     "colunas": "empresa_id, competencia",
-     "unico": false
-    },
-    {
-     "nome": "idx_entregas_obrigacoes_status",
-     "colunas": "status, prazo",
-     "unico": false
-    }
-   ],
+   "indices": [],
    "fks": [],
    "criada_em": "20260726170813_402b6044-fec6-41b8-b27f-61db1f34bdad.sql",
    "colunas_types": {
@@ -20657,13 +20295,7 @@
      "tipo": "permissive"
     }
    ],
-   "indices": [
-    {
-     "nome": "idx_estrategias_ativo",
-     "colunas": "ativo",
-     "unico": false
-    }
-   ],
+   "indices": [],
    "fks": [],
    "criada_em": "20260727190031_432a4b76-ee70-4633-abba-c5e5bc6a250a.sql",
    "colunas_types": {
@@ -20901,11 +20533,6 @@
      "unico": false
     },
     {
-     "nome": "idx_eventos_contab_empresa",
-     "colunas": "empresa_id, created_at DESC",
-     "unico": false
-    },
-    {
      "nome": "uq_eventos_contab_evento",
      "colunas": "tipo_evento, evento_id",
      "unico": true
@@ -21056,11 +20683,6 @@
     {
      "nome": "idx_evidencias_pacotes_created",
      "colunas": "created_at DESC",
-     "unico": false
-    },
-    {
-     "nome": "idx_evidencias_pacotes_verificacao_id",
-     "colunas": "verificacao_id",
      "unico": false
     }
    ],
@@ -21477,11 +21099,6 @@
     }
    ],
    "indices": [
-    {
-     "nome": "idx_execucoes_regua_conta",
-     "colunas": "conta_receber_id, etapa, created_at DESC",
-     "unico": false
-    },
     {
      "nome": "idx_execucoes_regua_empresa",
      "colunas": "empresa_id, created_at DESC",
@@ -22273,13 +21890,7 @@
      "tipo": "permissive"
     }
    ],
-   "indices": [
-    {
-     "nome": "idx_faixas_simples_anexo",
-     "colunas": "anexo, vigente_de DESC, faixa",
-     "unico": false
-    }
-   ],
+   "indices": [],
    "fks": [],
    "criada_em": "20260727190031_432a4b76-ee70-4633-abba-c5e5bc6a250a.sql",
    "colunas_types": {
@@ -23165,28 +22776,7 @@
      "tipo": "permissive"
     }
    ],
-   "indices": [
-    {
-     "nome": "idx_fila_cobrancas_conta_receber",
-     "colunas": "conta_receber_id",
-     "unico": false
-    },
-    {
-     "nome": "idx_fila_cobrancas_empresa_status",
-     "colunas": "empresa_id, status",
-     "unico": false
-    },
-    {
-     "nome": "idx_fila_cobrancas_pendentes",
-     "colunas": "empresa_id, created_at",
-     "unico": false
-    },
-    {
-     "nome": "idx_fila_cobrancas_status_created",
-     "colunas": "status, created_at DESC",
-     "unico": false
-    }
-   ],
+   "indices": [],
    "fks": [
     "cliente_id->clientes",
     "conta_receber_id->contas_receber",
@@ -24237,13 +23827,7 @@
      "tipo": "permissive"
     }
    ],
-   "indices": [
-    {
-     "nome": "idx_fe_alert_state_ultimo",
-     "colunas": "ultimo_alerta_em DESC",
-     "unico": false
-    }
-   ],
+   "indices": [],
    "fks": [],
    "criada_em": "20260728174442_e44754a7-e1a1-43e6-bd2a-1c4663c03e45.sql",
    "colunas_types": {
@@ -24351,23 +23935,7 @@
      "tipo": "permissive"
     }
    ],
-   "indices": [
-    {
-     "nome": "idx_fe_errors_created_at",
-     "colunas": "created_at DESC",
-     "unico": false
-    },
-    {
-     "nome": "idx_fe_errors_user",
-     "colunas": "user_id, created_at DESC",
-     "unico": false
-    },
-    {
-     "nome": "idx_frontend_error_logs_sev_created",
-     "colunas": "severity, created_at DESC",
-     "unico": false
-    }
-   ],
+   "indices": [],
    "fks": [],
    "criada_em": "20260711164339_65d9f8e7-58ad-4550-8f21-3bfd3f4abcc4.sql",
    "colunas_types": {
@@ -24550,13 +24118,7 @@
      "tipo": "permissive"
     }
    ],
-   "indices": [
-    {
-     "nome": "frontend_error_logs_2026_06_severity_created_at_idx",
-     "colunas": "severity, created_at DESC",
-     "unico": false
-    }
-   ],
+   "indices": [],
    "fks": [],
    "criada_em": null,
    "colunas_types": {
@@ -24608,13 +24170,7 @@
      "tipo": "permissive"
     }
    ],
-   "indices": [
-    {
-     "nome": "frontend_error_logs_2026_07_severity_created_at_idx",
-     "colunas": "severity, created_at DESC",
-     "unico": false
-    }
-   ],
+   "indices": [],
    "fks": [],
    "criada_em": null,
    "colunas_types": {
@@ -24666,13 +24222,7 @@
      "tipo": "permissive"
     }
    ],
-   "indices": [
-    {
-     "nome": "frontend_error_logs_2026_08_severity_created_at_idx",
-     "colunas": "severity, created_at DESC",
-     "unico": false
-    }
-   ],
+   "indices": [],
    "fks": [],
    "criada_em": null,
    "colunas_types": {
@@ -24724,13 +24274,7 @@
      "tipo": "permissive"
     }
    ],
-   "indices": [
-    {
-     "nome": "frontend_error_logs_2026_09_severity_created_at_idx",
-     "colunas": "severity, created_at DESC",
-     "unico": false
-    }
-   ],
+   "indices": [],
    "fks": [],
    "criada_em": null,
    "colunas_types": {
@@ -24782,13 +24326,7 @@
      "tipo": "permissive"
     }
    ],
-   "indices": [
-    {
-     "nome": "frontend_error_logs_2026_10_severity_created_at_idx",
-     "colunas": "severity, created_at DESC",
-     "unico": false
-    }
-   ],
+   "indices": [],
    "fks": [],
    "criada_em": null,
    "colunas_types": {
@@ -24864,13 +24402,7 @@
      "tipo": "permissive"
     }
    ],
-   "indices": [
-    {
-     "nome": "frontend_error_logs_default_severity_created_at_idx",
-     "colunas": "severity, created_at DESC",
-     "unico": false
-    }
-   ],
+   "indices": [],
    "fks": [],
    "criada_em": null,
    "colunas_types": {

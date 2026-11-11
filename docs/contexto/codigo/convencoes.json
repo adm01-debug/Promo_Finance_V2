@@ -58,11 +58,11 @@
  "commits": {
   "convencao": "conventional commits (observado)",
   "exemplos": [
+   "chore(db): [STEP 17] dropar 404 índices idle (idx_scan=0) (#243)",
    "chore: [STEP 43] espacar cron jobs diagnosticos de alta frequencia (#234)",
    "chore(ddl): steps 12-16+19+21+23 — DDL banco produção (#235)",
    "feat(ci): fila serial de atualização de branch das PRs contra main (#276)",
-   "fix: alinha admin_global com papel real admin (docs + guard asaas-proxy) (#255)",
-   "feat(ci): guard do perímetro do GitHub contra baseline versionado (#277)"
+   "fix: alinha admin_global com papel real admin (docs + guard asaas-proxy) (#255)"
   ]
  },
  "pr_template": ".github/PULL_REQUEST_TEMPLATE.md",
