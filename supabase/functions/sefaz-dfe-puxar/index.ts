@@ -555,7 +555,12 @@ Deno.serve(
     payload = parsedPayload.data;
 
     const admin = makeAdminClient();
-    const certs = await fetchCertificados(admin, payload.empresa_id, payload.cnpj, payload.ambiente);
+    const certs = await fetchCertificados(
+      admin,
+      payload.empresa_id,
+      payload.cnpj,
+      payload.ambiente
+    );
     const summaries: PullSummary[] = [];
 
     // Sequencial para evitar sobrecarga de sockets mTLS.
