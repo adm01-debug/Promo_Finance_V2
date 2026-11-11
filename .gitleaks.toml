@@ -27,3 +27,20 @@ paths = [
 regexes = [
   '''promo-brindes-api-v2''',
 ]
+
+[[allowlists]]
+description = "Literais fictícios de teste em scripts/ (tokens falsos que acendiam generic-api-key, sem valor real)"
+targetRules = ["generic-api-key"]
+condition = "AND"
+paths = [
+'''scripts/mcp-phd-suite\.unit\.mjs''',
+'''scripts/test_migrate_cron_jobs\.py''',
+'''scripts/edge-deploy/redigir-log\.unit\.mjs''',
+'''scripts/regras_negocio/test_generate\.py''',
+]
+regexes = [
+'''tok-secreto-9f8e7d''',
+'''eyJhbGciOi\.J9-_x''',
+'''eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9''',
+'''AbCdEfGhIjKlMnOpQrStUv_12345678''',
+]

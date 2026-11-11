@@ -32,7 +32,9 @@ def arquivos_ts() -> list[str]:
     saida: list[str] = []
     for base, _dirs, nomes in os.walk(RAIZ):
         for nome in nomes:
-            if nome.endswith(".ts"):
+            # .tsx também: o resolvedor abaixo já aceita import de .tsx, e sem varrê-lo
+            # a contaminação parava nele e não chegava a quem o importa.
+            if nome.endswith((".ts", ".tsx")):
                 saida.append(os.path.join(base, nome))
     return sorted(saida)
 
@@ -50,7 +52,10 @@ def main() -> int:
 
     for caminho in todos:
         try:
-            texto = open(caminho, encoding="utf-8").read()
+            # errors="replace": um byte inválido num .ts derrubava o script inteiro com
+            # UnicodeDecodeError (o `except OSError` não o cobre) e a lista saía vazia.
+            with open(caminho, encoding="utf-8", errors="replace") as arquivo:
+                texto = arquivo.read()
         except OSError:
             continue
         conteudo[caminho] = texto

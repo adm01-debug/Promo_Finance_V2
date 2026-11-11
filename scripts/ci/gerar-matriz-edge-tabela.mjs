@@ -2,14 +2,17 @@
 // Matriz edge function x tabela. Escaneia supabase/functions/<funcao>/**/*.ts
 // (sem testes, sem _shared) e anota cada tabela citada em `.from('tabela')`.
 // Uso: node scripts/ci/gerar-matriz-edge-tabela.mjs [--check]
-import { existsSync, mkdirSync, readFileSync, readdirSync, writeFileSync } from "node:fs";
+import { existsSync, mkdirSync, readFileSync, readdirSync, realpathSync, writeFileSync } from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 
 const RAIZ = path.join(path.dirname(fileURLToPath(import.meta.url)), "..", "..");
 const SAIDA = "docs/ci/MATRIZ_EDGE_TABELA.md";
-// `(?<!storage)` evita casar `sb.storage.from('bucket')`: bucket de storage não é tabela.
-const PADRAO_FROM = /(?<!storage)\.from\(\s*(['"`])([A-Za-z_][\w.]*)\1/g;
+// `(?<!storage\s*)` evita casar `sb.storage.from('bucket')`: bucket de storage não é tabela.
+// O `\s*` cobre a cadeia quebrada em linhas (`.storage\n  .from('bucket')`), que é como o
+// repo escreve; sem ele, só escapavam os buckets com hífen no nome. `Array`/`Buffer` ficam
+// de fora pelo mesmo motivo: `Buffer.from('abc')` não é tabela.
+const PADRAO_FROM = /(?<!(?:storage|\bArray|\bBuffer)\s*)\.from\(\s*(['"`])([A-Za-z_][\w.]*)\1/g;
 
 export function extrairTabelas(fonte) {
   const tabelas = new Set();
@@ -70,6 +73,18 @@ export function renderizar(matriz) {
 }
 
 export function main(argv = process.argv.slice(2)) {
+  if (argv.includes("-h") || argv.includes("--help")) {
+    console.log("Uso: node scripts/ci/gerar-matriz-edge-tabela.mjs [--check]");
+    console.log(`  (sem argumento)  escreve ${SAIDA}`);
+    console.log(`  --check          sai 1 se ${SAIDA} estiver desatualizado, sem escrever`);
+    return 0;
+  }
+  // `--chek` (erro de digitação) caía no modo de ESCRITA e sobrescrevia o documento.
+  const desconhecido = argv.find((a) => a !== "--check");
+  if (desconhecido !== undefined) {
+    console.error(`argumento desconhecido: ${desconhecido} (use --check ou --help)`);
+    return 2;
+  }
   const md = renderizar(montarMatriz(path.join(RAIZ, "supabase/functions")));
   const destino = path.join(RAIZ, SAIDA);
   if (argv.includes("--check")) {
@@ -86,6 +101,17 @@ export function main(argv = process.argv.slice(2)) {
   return 0;
 }
 
-if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
+// realpath: com o repo atrás de um symlink (ou /tmp no macOS) `argv[1]` não bate com
+// `import.meta.url` e o `--check` saía 0 sem conferir nada.
+function invocadoDireto() {
+  if (!process.argv[1]) return false;
+  try {
+    return realpathSync(process.argv[1]) === fileURLToPath(import.meta.url);
+  } catch {
+    return false;
+  }
+}
+
+if (invocadoDireto()) {
   process.exitCode = main();
 }

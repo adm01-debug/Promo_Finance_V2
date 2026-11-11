@@ -28,7 +28,8 @@ const scanDir = (dir, results = { classes: new Set(), fonts: [], colors: [] }) =
         let m;
         re.lastIndex = 0;
         while ((m = re.exec(content)) !== null) {
-          m[1].split(/\s+/).forEach(c => { if (c.trim()) results.classes.add(c.trim()); });
+          // Interpolações `${...}` de template literal não são classes.
+          m[1].replace(/\$\{[^}]*\}/g, ' ').split(/\s+/).forEach(c => { if (c.trim()) results.classes.add(c.trim()); });
         }
       }
     }
@@ -37,12 +38,20 @@ const scanDir = (dir, results = { classes: new Set(), fonts: [], colors: [] }) =
   return results;
 };
 
+if (!fs.existsSync(srcDir)) {
+  console.error(`❌ ${srcDir} não encontrado — execute a partir da raiz do repositório.`);
+  process.exit(1);
+}
+
 const audit = scanDir(srcDir);
+// Ordenado: a ordem do readdir depende do filesystem e fazia dois relatórios
+// do mesmo código diferirem entre máquinas.
+const classes = Array.from(audit.classes).sort();
 const report = {
-  totalClassesFound: audit.classes.size,
-  typographyClasses: Array.from(audit.classes).filter(c => c.startsWith('text-') || c.startsWith('font-')),
-  spacingClasses: Array.from(audit.classes).filter(c => c.startsWith('p-') || c.startsWith('m-') || c.startsWith('gap-')),
-  colorClasses: Array.from(audit.classes).filter(c => c.includes('bg-') || c.includes('text-') || c.includes('border-')),
+  totalClassesFound: classes.length,
+  typographyClasses: classes.filter(c => c.startsWith('text-') || c.startsWith('font-')),
+  spacingClasses: classes.filter(c => c.startsWith('p-') || c.startsWith('m-') || c.startsWith('gap-')),
+  colorClasses: classes.filter(c => c.includes('bg-') || c.includes('text-') || c.includes('border-')),
   timestamp: new Date().toISOString()
 };
 

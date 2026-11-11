@@ -230,3 +230,197 @@ test('o workflow semanal roda o KPI com as permissoes que ele precisa', () => {
   assert.match(y, /node scripts\/ci\/actions-kpi\.mjs/, 'o workflow tem de chamar o KPI');
   assert.doesNotMatch(y, /continue-on-error:\s*true/, 'etapa que nao bloqueia nao prova nada');
 });
+
+// ---------------------------------------------------------------------------
+// Rede simulada: `pedir` com fetch falso (retry, timeout, erro), aviso de paginação
+// truncada e CLI sem credencial. Nenhum teste fala com a API do GitHub.
+// ---------------------------------------------------------------------------
+import http from 'node:http';
+import { spawnSync } from 'node:child_process';
+import { mkdtempSync, rmSync } from 'node:fs';
+import { tmpdir } from 'node:os';
+import { dirname, join } from 'node:path';
+import { fileURLToPath } from 'node:url';
+import { gravarKpi, pedir, runsNaJanela } from './actions-kpi.mjs';
+
+const AQUI_KPI = dirname(fileURLToPath(import.meta.url));
+const TOKEN_KPI = ['gh', 's_', 'Kp1'.repeat(12)].join('');
+const SEM_ESPERA = { delaysMs: [1, 1, 1], api: 'https://api.github.invalid' };
+const jsonOk = (corpo, status = 200) => new Response(JSON.stringify(corpo), { status, headers: { 'Content-Type': 'application/json' } });
+
+async function capturarErro(fn) {
+  const linhas = [];
+  const original = console.error;
+  console.error = (...a) => linhas.push(a.join(' '));
+  try {
+    return { retorno: await fn(), avisos: linhas };
+  } finally {
+    console.error = original;
+  }
+}
+
+test('coletarRuns avisa quando o teto de paginas TRUNCA a janela (antes: calava justamente aqui)', async () => {
+  const cheia = Array.from({ length: 2 }, (_, i) => ({ ...run('CI', 1, 'success', 0), id: i }));
+  let n = 0;
+  const pedirFalso = async () => ({ workflow_runs: cheia.map((r) => ({ ...r, id: (n += 1) })) });
+  const { retorno, avisos } = await capturarErro(() => coletarRuns({ repo: 'o/r', token: 't', agora: AGORA, porPagina: 2, maxPaginas: 3, pedir: pedirFalso }));
+  assert.equal(retorno.length, 6);
+  assert.deepEqual(avisos, ['::warning::paginacao de runs parou no teto de 3 paginas']);
+});
+
+test('coletarRuns NAO avisa quando a ultima pagina permitida encerra a janela de verdade', async () => {
+  // Página cheia cujo run mais antigo já saiu da janela: a coleta terminou certo.
+  const pedirFalso = async (caminho) => ({
+    workflow_runs: paginaDe(caminho) === 1 ? [run('CI', 1, 'success', 0), run('CI', 1, 'success', 1)] : [run('CI', 1, 'success', 2), run('CI', 1, 'success', 30)],
+  });
+  const { retorno, avisos } = await capturarErro(() => coletarRuns({ repo: 'o/r', token: 't', agora: AGORA, porPagina: 2, maxPaginas: 2, pedir: pedirFalso }));
+  assert.equal(retorno.length, 4);
+  assert.deepEqual(avisos, [], 'antes: "parou no teto" disparava aqui, sem nada ter sido cortado');
+});
+
+test('coletarRuns tolera resposta sem workflow_runs e run sem id', async () => {
+  assert.deepEqual(await coletarRuns({ repo: 'o/r', token: 't', pedir: async () => ({}) }), []);
+  const semId = await coletarRuns({ repo: 'o/r', token: 't', agora: AGORA, pedir: async () => ({ workflow_runs: [run('A', 1, 'success'), run('A', 1, 'success')] }) });
+  assert.equal(semId.length, 2, 'sem id não há como deduplicar: os dois contam');
+});
+
+test('pedir: envia Bearer + versao da API, devolve o JSON e manda corpo em PATCH/POST', async () => {
+  const vistos = [];
+  const fetchImpl = async (url, init) => {
+    vistos.push({ url, init });
+    return jsonOk({ ok: true });
+  };
+  assert.deepEqual(await pedir('/repos/o/r/actions/runs?page=1', TOKEN_KPI, { ...SEM_ESPERA, fetchImpl }), { ok: true });
+  assert.equal(vistos[0].url, 'https://api.github.invalid/repos/o/r/actions/runs?page=1');
+  assert.equal(vistos[0].init.method, 'GET');
+  assert.equal(vistos[0].init.headers.Authorization, `Bearer ${TOKEN_KPI}`);
+  assert.equal(vistos[0].init.headers['X-GitHub-Api-Version'], '2022-11-28');
+  assert.equal(vistos[0].init.body, undefined);
+  assert.ok(vistos[0].init.signal instanceof AbortSignal, 'toda requisição tem teto de tempo');
+  await pedir('/repos/o/r/issues/1', TOKEN_KPI, { ...SEM_ESPERA, fetchImpl, metodo: 'PATCH', corpo: { title: 't' } });
+  assert.equal(vistos[1].init.body, '{"title":"t"}');
+  assert.equal(vistos[1].init.headers['Content-Type'], 'application/json');
+});
+
+test('pedir: 502/503/504 e queda de rede sao repetidos; a mensagem de erro nunca traz o token', async () => {
+  for (const falha of [() => new Response('x', { status: 502 }), () => new Response('x', { status: 503 }), () => new Response('x', { status: 504 }), () => { throw new TypeError('fetch failed'); }]) {
+    let n = 0;
+    const fetchImpl = async () => {
+      n += 1;
+      return n < 3 ? falha() : jsonOk({ n });
+    };
+    assert.deepEqual(await pedir('/x', TOKEN_KPI, { ...SEM_ESPERA, fetchImpl }), { n: 3 }, 'antes: erro de rede abortava na primeira tentativa');
+  }
+  let tentativas = 0;
+  const sempre503 = async () => { tentativas += 1; return new Response('x', { status: 503 }); };
+  await assert.rejects(pedir('/y', TOKEN_KPI, { ...SEM_ESPERA, fetchImpl: sempre503 }), (e) => e.message === 'GET /y -> 503' && !e.message.includes(TOKEN_KPI));
+  assert.equal(tentativas, 4);
+  tentativas = 0;
+  const semRede = async () => { tentativas += 1; throw new TypeError(`fetch failed`); };
+  await assert.rejects(pedir('/z', TOKEN_KPI, { ...SEM_ESPERA, fetchImpl: semRede, tentativas: 2 }), /GET \/z -> falha de rede \(TypeError: fetch failed\)/);
+  assert.equal(tentativas, 2);
+});
+
+test('pedir: 401/403/404/422 falham na hora, sem retry', async () => {
+  for (const status of [401, 403, 404, 422, 500]) {
+    let n = 0;
+    const fetchImpl = async () => { n += 1; return new Response('{"message":"x"}', { status }); };
+    await assert.rejects(pedir('/w', TOKEN_KPI, { ...SEM_ESPERA, fetchImpl }), new RegExp(`GET /w -> ${status}`));
+    assert.equal(n, 1, `HTTP ${status}`);
+  }
+});
+
+test('pedir: servidor local que nao responde e cortado pelo timeout e repetido', async () => {
+  let conexoes = 0;
+  const servidor = http.createServer(() => { conexoes += 1; });
+  await new Promise((ok) => servidor.listen(0, '127.0.0.1', ok));
+  try {
+    const inicio = Date.now();
+    await assert.rejects(
+      pedir('/lento', TOKEN_KPI, { api: `http://127.0.0.1:${servidor.address().port}`, delaysMs: [1], timeoutMs: 150, tentativas: 2 }),
+      /GET \/lento -> falha de rede \((TimeoutError|AbortError)/,
+    );
+    assert.equal(conexoes, 2);
+    assert.ok(Date.now() - inicio < 5000);
+  } finally {
+    servidor.closeAllConnections();
+    await new Promise((ok) => servidor.close(ok));
+  }
+});
+
+test('coletarRuns + coletarJobs + publicarIssue de ponta a ponta contra um servidor HTTP local', async () => {
+  const pedidos = [];
+  const servidor = http.createServer((req, res) => {
+    let corpo = '';
+    req.on('data', (c) => { corpo += c; });
+    req.on('end', () => {
+      pedidos.push({ method: req.method, url: req.url, corpo });
+      const url = new URL(req.url, 'http://x');
+      res.setHeader('Content-Type', 'application/json');
+      if (url.pathname.endsWith('/actions/runs')) return res.end(JSON.stringify({ workflow_runs: [{ ...run('CI Pipeline', 10, 'failure', 0, 'ci.yml'), id: 77 }] }));
+      if (url.pathname.endsWith('/runs/77/jobs')) return res.end(JSON.stringify({ jobs: [{ name: 'quality-gate', started_at: new Date(AGORA).toISOString(), completed_at: new Date(AGORA + 300000).toISOString() }] }));
+      if (req.method === 'GET' && url.pathname.endsWith('/issues')) return res.end('[]');
+      if (req.method === 'POST' && url.pathname.endsWith('/issues')) { res.statusCode = 201; return res.end('{"number": 12}'); }
+      res.statusCode = 404;
+      return res.end('{}');
+    });
+  });
+  await new Promise((ok) => servidor.listen(0, '127.0.0.1', ok));
+  try {
+    const buscar = (caminho, token, opcoes) => pedir(caminho, token, { ...opcoes, api: `http://127.0.0.1:${servidor.address().port}`, delaysMs: [1] });
+    const runs = await coletarRuns({ repo: 'o/r', token: TOKEN_KPI, agora: AGORA, pedir: buscar });
+    const jobs = await coletarJobs(runs, { repo: 'o/r', token: TOKEN_KPI, pedir: buscar });
+    const corpo = corpoDoKpi(runs, jobs, { agora: AGORA });
+    assert.match(corpo, /\| CI Pipeline \| 1 \| 0 \| 0% \| 1 \| 100% \| 10 \|/);
+    assert.match(corpo, /\| quality-gate \| CI Pipeline \| 5 \|/);
+    assert.deepEqual(await publicarIssue({ repo: 'o/r', token: TOKEN_KPI, marca: '[kpi-actions] Semana', corpo, pedir: buscar }), { acao: 'criada', numero: 12 });
+    const criacao = JSON.parse(pedidos.at(-1).corpo);
+    assert.deepEqual(criacao.labels, ['kpi-actions']);
+    assert.equal(criacao.body, corpo);
+  } finally {
+    servidor.closeAllConnections();
+    await new Promise((ok) => servidor.close(ok));
+  }
+});
+
+test('gravarKpi escreve JSON deterministico (chaves ordenadas, newline final) e e idempotente', () => {
+  const dir = mkdtempSync(join(tmpdir(), 'kpi grava-'));
+  try {
+    const destino = join(dir, 'sub', 'kpi.json');
+    const runs = [run('Z', 4, 'failure', 0, 'z.yml'), run('A', 2, 'success', 0, 'a.yml'), run('Velho', 9, 'failure', 30, 'velho.yml'), run('Sem path', 1, 'success', 0)];
+    const dados = gravarKpi(runs, { agora: AGORA, destino });
+    const texto = readFileSync(destino, 'utf8');
+    assert.equal(texto, `${JSON.stringify(dados, null, 2)}\n`);
+    assert.deepEqual(Object.keys(JSON.parse(texto)), ['a.yml', 'z.yml']);
+    gravarKpi([...runs].reverse(), { agora: AGORA, destino });
+    assert.equal(readFileSync(destino, 'utf8'), texto, 'a ordem dos runs não muda o arquivo');
+  } finally {
+    rmSync(dir, { recursive: true, force: true });
+  }
+});
+
+test('bordas do nucleo: carimbo invalido, run em andamento e janela vazia', () => {
+  assert.equal(duracaoMinutos({}), 0);
+  assert.equal(duracaoMinutos({ run_started_at: 'ontem', updated_at: 'hoje' }), 0);
+  assert.deepEqual(runsNaJanela(null), []);
+  assert.deepEqual(runsNaJanela([{ run_started_at: null }, {}], { agora: AGORA }), []);
+  assert.deepEqual(agregar([], { agora: AGORA }), []);
+  assert.deepEqual(kpiPorArquivo(undefined, { agora: AGORA }), {});
+  const emAndamento = agregar([run('CI', 3, null)], { agora: AGORA });
+  assert.deepEqual([emAndamento[0].falhas, emAndamento[0].cancelados, emAndamento[0].minutos], [0, 0, 3]);
+  assert.match(tabela([]), /Total: \*\*0\*\* runs, \*\*0\*\* minutos\./);
+  assert.equal(tabelaLentos([]), '_nenhum job registrado na janela_');
+  assert.deepEqual(maisLentos(undefined), []);
+});
+
+test('CLI: sem GITHUB_REPOSITORY ou sem token sai 2 antes de qualquer requisicao', () => {
+  const script = join(AQUI_KPI, 'actions-kpi.mjs');
+  // GITHUB_API_URL aponta para um destino morto: mesmo que a checagem regredisse, o teste não fala com o GitHub.
+  const base = { PATH: process.env.PATH, GITHUB_API_URL: 'http://127.0.0.1:9' };
+  for (const env of [base, { ...base, GITHUB_REPOSITORY: 'o/r' }, { ...base, GH_TOKEN: TOKEN_KPI }, { ...base, GITHUB_REPOSITORY: '', GITHUB_TOKEN: TOKEN_KPI }]) {
+    const r = spawnSync(process.execPath, [script], { encoding: 'utf8', env, timeout: 20_000 });
+    assert.equal(r.status, 2, JSON.stringify(Object.keys(env)));
+    assert.match(r.stderr, /::error::GITHUB_REPOSITORY e GH_TOKEN sao obrigatorios/);
+    assert.equal((r.stdout + r.stderr).includes(TOKEN_KPI), false);
+  }
+});

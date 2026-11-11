@@ -60,16 +60,16 @@ Lovable e o self-hosted AtomicaBR nunca são introspeccionados por aqui.
 
 ## O que é coletado
 
-| Fonte | O que entra |
-|---|---|
-| Postgres (catálogo) | schemas (+USAGE das roles da API), tabelas (RLS on/forced, partições, replica identity), colunas (tipo, default, identity/generated, enum, comentário), constraints (PK/FK/UNIQUE/CHECK com ON DELETE/UPDATE e referências reversas), índices (método, colunas, predicado), views + materialized (security_invoker, dependências), functions/procedures (corpo, security definer, search_path, quem pode executar via RPC), triggers (timing/eventos; inclui `auth.users` e `storage.objects`), policies RLS (inclui `storage` e `realtime.messages`), enums (+ onde são usados)/domains/composites, extensões, sequences (owned by), grants (tabela, coluna, sequence, **default privileges**), roles (+`rolconfig`: timeouts por role) |
-| Supabase | `cron.job`, `pgmq` (filas), `supabase_migrations.schema_migrations` (com SQL), `storage.buckets`, `vault.secrets` (só nomes), Database Webhooks, realtime publications, foreign servers (credenciais redigidas) |
-| Lints (`lints.md`) | RLS desabilitado / sem policies, tabela sem PK, FK sem índice, SECURITY DEFINER sem `search_path`, view em `public` sem `security_invoker`, função chamável por `anon`, extensão em `public`, policy com `auth.uid()` sem `(select …)`, tabela no Realtime sem REPLICA IDENTITY FULL |
-| Relacionamentos | todas as FKs + diagrama ER Mermaid (até 120 tabelas) |
-| Referências a cada função (`functions.md`, `snapshot.json` → `db.functions[].callers`) | referências estáticas (`.rpc('fn')` ou `fn(` em `src/`, `supabase/functions/`, migrations ativas, scripts operacionais…), jobs do pg_cron, triggers, outras funções e views |
-| Management API (opcional) | edge functions (versão, verify_jwt, entrypoint, URL), nomes dos secrets, auth (providers, hooks, config), PostgREST (schemas expostos, max_rows), Postgres/pooler/storage config, network/SSL, branches, PITR/backups — segredos redigidos |
-| Métricas voláteis (`stats.*`, `cron-runs.md`) | tamanho por tabela/schema, linhas e scans (aproximados), índices nunca usados, storage por bucket, auth (agregados), filas, top queries do `pg_stat_statements` (normalizadas), conexões, saúde dos serviços, últimas execuções do cron |
-| Ferramentas | `schema.sql` (pg_dump --schema-only), `types.ts` (supabase gen types) |
+| Fonte                                                                                  | O que entra                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              |
+| -------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Postgres (catálogo)                                                                    | schemas (+USAGE das roles da API), tabelas (RLS on/forced, partições, replica identity), colunas (tipo, default, identity/generated, enum, comentário), constraints (PK/FK/UNIQUE/CHECK com ON DELETE/UPDATE e referências reversas), índices (método, colunas, predicado), views + materialized (security_invoker, dependências), functions/procedures (corpo, security definer, search_path, quem pode executar via RPC), triggers (timing/eventos; inclui `auth.users` e `storage.objects`), policies RLS (inclui `storage` e `realtime.messages`), enums (+ onde são usados)/domains/composites, extensões, sequences (owned by), grants (tabela, coluna, sequence, **default privileges**), roles (+`rolconfig`: timeouts por role) |
+| Supabase                                                                               | `cron.job`, `pgmq` (filas), `supabase_migrations.schema_migrations` (com SQL), `storage.buckets`, `vault.secrets` (só nomes), Database Webhooks, realtime publications, foreign servers (credenciais redigidas)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          |
+| Lints (`lints.md`)                                                                     | RLS desabilitado / sem policies, tabela sem PK, FK sem índice, SECURITY DEFINER sem `search_path`, view em `public` sem `security_invoker`, função chamável por `anon`, extensão em `public`, policy com `auth.uid()` sem `(select …)`, tabela no Realtime sem REPLICA IDENTITY FULL                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
+| Relacionamentos                                                                        | todas as FKs + diagrama ER Mermaid (até 120 tabelas)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
+| Referências a cada função (`functions.md`, `snapshot.json` → `db.functions[].callers`) | referências estáticas (`.rpc('fn')` ou `fn(` em `src/`, `supabase/functions/`, migrations ativas, scripts operacionais…), jobs do pg_cron, triggers, outras funções e views                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              |
+| Management API (opcional)                                                              | edge functions (versão, verify_jwt, entrypoint, URL), nomes dos secrets, auth (providers, hooks, config), PostgREST (schemas expostos, max_rows), Postgres/pooler/storage config, network/SSL, branches, PITR/backups — segredos redigidos                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               |
+| Métricas voláteis (`stats.*`, `cron-runs.md`)                                          | tamanho por tabela/schema, linhas e scans (aproximados), índices nunca usados, storage por bucket, auth (agregados), filas, top queries do `pg_stat_statements` (normalizadas), conexões, saúde dos serviços, últimas execuções do cron                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  |
+| Ferramentas                                                                            | `schema.sql` (pg_dump --schema-only), `types.ts` (supabase gen types)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    |
 
 Nunca sai: linha de tabela, dado de usuário, valor de secret/chave/senha, connection string.
 
@@ -112,22 +112,23 @@ create role snapshot_reader login password '<senha-forte>';
 grant pg_read_all_data to snapshot_reader;           -- leitura de todos os schemas
 grant usage on schema cron, vault, storage, auth, supabase_migrations to snapshot_reader;
 ```
+
 `pg_read_all_data` cobre `cron.job`, `vault.secrets` (só metadados; o valor descriptografado fica em `vault.decrypted_secrets`, que o script não lê), `storage`, `auth` e `supabase_migrations`. Para `pg_stat_statements` e `pg_stat_activity` completos, adicione `grant pg_read_all_stats to snapshot_reader;`. Monte a `SUPABASE_DB_URL` com esse usuário.
 
 ## Variáveis opcionais (no workflow, bloco `env`)
 
-| Var | Default | Efeito |
-|---|---|---|
-| `SNAPSHOT_DIR` | `docs/supabase` (no workflow: `docs/contexto/supabase`) | pasta de saída |
-| `PGDUMP_SCHEMAS` | `public` | schemas do `schema.sql`, separados por vírgula |
-| `GEN_TYPES` | `true` | gera `types.ts` via `npx supabase gen types` |
-| `PGDUMP` | `true` | gera `schema.sql` via `pg_dump` (exige pg_dump >= versão do servidor) |
-| `SNAPSHOT_EXCLUDE_SCHEMAS` | vazio | schemas extras a ignorar na introspecção |
-| `SNAPSHOT_INCLUDE_SCHEMAS` | vazio | schemas internos do Supabase a forçar inclusão |
-| `STAT_STATEMENTS_TOP` | `15` | consultas mais custosas em `stats.md` (0 desliga) |
-| `CRON_RUNS_PER_JOB` | `3` | execuções recentes guardadas por job do pg_cron |
-| `REPO_ROOT` | `.` | raiz do repo para cruzar funções × código (vazio desliga) |
-| `CODE_SCAN_DIRS` | `src,supabase/functions,supabase/migrations,scripts,…` | pastas varridas na busca de chamadas |
+| Var                        | Default                                                 | Efeito                                                                |
+| -------------------------- | ------------------------------------------------------- | --------------------------------------------------------------------- |
+| `SNAPSHOT_DIR`             | `docs/supabase` (no workflow: `docs/contexto/supabase`) | pasta de saída                                                        |
+| `PGDUMP_SCHEMAS`           | `public`                                                | schemas do `schema.sql`, separados por vírgula                        |
+| `GEN_TYPES`                | `true`                                                  | gera `types.ts` via `npx supabase gen types`                          |
+| `PGDUMP`                   | `true`                                                  | gera `schema.sql` via `pg_dump` (exige pg_dump >= versão do servidor) |
+| `SNAPSHOT_EXCLUDE_SCHEMAS` | vazio                                                   | schemas extras a ignorar na introspecção                              |
+| `SNAPSHOT_INCLUDE_SCHEMAS` | vazio                                                   | schemas internos do Supabase a forçar inclusão                        |
+| `STAT_STATEMENTS_TOP`      | `15`                                                    | consultas mais custosas em `stats.md` (0 desliga)                     |
+| `CRON_RUNS_PER_JOB`        | `3`                                                     | execuções recentes guardadas por job do pg_cron                       |
+| `REPO_ROOT`                | `.`                                                     | raiz do repo para cruzar funções × código (vazio desliga)             |
+| `CODE_SCAN_DIRS`           | `src,supabase/functions,supabase/migrations,scripts,…`  | pastas varridas na busca de chamadas                                  |
 
 ## Comportamento
 
@@ -137,6 +138,15 @@ grant usage on schema cron, vault, storage, auth, supabase_migrations to snapsho
 - `CHANGELOG.md` registra, a cada mudança, o que foi adicionado/removido/alterado por categoria.
 - Falha em uma seção (ex.: sem permissão em `vault`) não derruba as outras: vai para `errors.md` e para o README. O job só falha se o banco inteiro não responder, se o push falhar 3 vezes, ou se o guard de segredos detectar algo.
 - Sessão read-only no Postgres, `statement_timeout` 90s, `lock_timeout` 5s.
+- Códigos de saída: `0` coleta publicada (completa ou parcial, com `erros`/`carried` no manifest); `1` banco
+  indisponível — conexão recusada/expirada, DSN malformado ou **nenhuma** seção coletada nesta execução (seção
+  reaproveitada não conta) — e a saída anterior fica intacta, inclusive `manifest.json`; `2` configuração inválida
+  (variável ausente/ruim, `SNAPSHOT_DIR` inseguro, argumento de linha de comando). `--help` mostra as variáveis.
+- Falha de conexão sai em uma linha (`Banco indisponível: …`), sem traceback; pedaços da senha que o driver ecoa
+  quando o DSN tem `@`, espaço ou `%` crus são redigidos antes de ir para o log ou para `errors.md`.
+- Schemas, tabelas e funções cujos nomes colidem depois de virar nome de arquivo (`a b` × `a_b`) ganham sufixo
+  com hash: cada objeto tem o seu arquivo. Seção que falhou e não tem versão anterior aparece como indisponível,
+  nunca como "nenhum"/"extensão não instalada".
 - A Management API devolve só o bundle compilado das edge functions, então o snapshot guarda metadados (`edge-functions/<slug>/README.md`); o fonte canônico é `supabase/functions/<slug>/` no repo.
 - Conexão com `prepare_threshold=None`: funciona tanto na conexão direta quanto no pooler (session ou transaction mode). `pg_dump` exige session mode ou conexão direta.
 - `concurrency` impede duas coletas simultâneas; push faz `pull --rebase` com 3 tentativas para conviver com outros agentes comitando na `main`.
@@ -166,6 +176,19 @@ além de fontes vazias, indisponíveis e recuperação, preservando a base anter
 Os casos de frescor verificam o manifest em UTC, coleta sem mudança estrutural, falha/recuperação e
 sua prioridade sobre um CHANGELOG antigo no índice; chamadas em DEFAULTs da assinatura também têm regressão.
 Neste repo não há adaptador Node no CI: a suíte Python roda sozinha (`python3 scripts/supabase_snapshot/test_snapshot.py`).
+
+Duas classes dependem do ambiente e se pulam sozinhas quando ele falta:
+
+- `SnapshotRealDriverDsnTests` precisa do pacote psycopg (mensagens reais do driver para DSN malformado; não conecta).
+- `SnapshotPostgresTests` roda o coletor de ponta a ponta contra um Postgres **local e descartável** (>= 15):
+  cria o banco `snapshot_it_<pid>` com nomes hostis, FKs compostas, views com `security_invoker`, enums
+  homônimos e um role sem permissão, confere a saída contra o catálogo e remove tudo ao final.
+
+```sh
+SNAPSHOT_TEST_DSN='postgresql://postgres@127.0.0.1:5432/postgres' python3 scripts/supabase_snapshot/test_snapshot.py
+```
+
+`SNAPSHOT_TEST_DSN` só é aceito com host `127.0.0.1`/`localhost`/`::1` e o usuário precisa poder criar banco e role.
 
 A matriz de estatísticas usa somente resultados sintéticos: schemas fora do `search_path`, aspas,
 espaços, `%` e palavras SQL no identificador; extensão ausente ou coleta desligada; erros de catálogo,

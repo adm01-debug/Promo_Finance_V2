@@ -4,12 +4,13 @@
 // barrel re-export, backend HTTP, Python, nested tsconfig) e confere a saída.
 // Rodar: node --test scripts/ai-context/gerar.unit.mjs
 
-import { test } from 'node:test';
+import { test, after } from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
-import { execFileSync } from 'node:child_process';
+import crypto from 'node:crypto';
+import { execFileSync, spawnSync } from 'node:child_process';
 
 const GERADOR = path.resolve(path.dirname(new URL(import.meta.url).pathname), 'gerar.mjs');
 const w = (root, rel, text) => { const p = path.join(root, rel); fs.mkdirSync(path.dirname(p), { recursive: true }); fs.writeFileSync(p, text); };
@@ -101,6 +102,7 @@ end $$;`);
 }
 
 const root = fixture();
+after(() => fs.rmSync(root, { recursive: true, force: true })); // a fixture compartilhada ficava para trás em os.tmpdir() a cada execução
 const out = path.join(root, 'inventario/ia');
 execFileSync(process.execPath, [GERADOR, '--quiet'], { cwd: root });
 const J = (f) => JSON.parse(fs.readFileSync(path.join(out, f), 'utf8'));
@@ -357,4 +359,294 @@ supabase.rpc('dashboard_rpc'); supabase.functions.invoke('dashboard-edge');`);
   assert.equal(orphan.orfa, true);
   assert.deepEqual(orphan.chamada_pelo_front, []);
   assert.deepEqual(orphan.chamada_por_edges, []);
+});
+
+// ---------- regressões achadas rodando o gerador contra o repositório real ----------
+// Repositório mínimo por teste: só o que o caso precisa, para a asserção apontar um único defeito.
+function mini(t, arquivos, { git = false, env = {} } = {}) {
+  const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'ctx-ia-mini-'));
+  t.after(() => fs.rmSync(dir, { recursive: true, force: true }));
+  w(dir, 'package.json', JSON.stringify({ name: 'mini', dependencies: { react: '18', 'react-router-dom': '6', '@supabase/supabase-js': '2' } }));
+  w(dir, 'tsconfig.json', JSON.stringify({ compilerOptions: { paths: { '@/*': ['./src/*'] } } }));
+  w(dir, 'src/lib/supabase.ts', `export const supabase = {} as any;`);
+  for (const [arquivo, texto] of Object.entries(arquivos)) w(dir, arquivo, texto);
+  if (git) {
+    execFileSync('git', ['init', '-q'], { cwd: dir });
+    execFileSync('git', ['-c', 'user.name=t', '-c', 'user.email=t@t', 'add', '-A'], { cwd: dir });
+    execFileSync('git', ['-c', 'user.name=t', '-c', 'user.email=t@t', 'commit', '-q', '-m', 'feat: mini'], { cwd: dir });
+  }
+  execFileSync(process.execPath, [GERADOR, '--quiet'], { cwd: dir, env: { ...process.env, ...env } });
+  const read = (name) => JSON.parse(fs.readFileSync(path.join(dir, 'inventario/ia', name), 'utf8'));
+  read.dir = dir;
+  return read;
+}
+const cli = (args, opts = {}) => spawnSync(process.execPath, [GERADOR, ...args], { encoding: 'utf8', ...opts });
+const porArquivo = (lista) => Object.fromEntries(lista.map((x) => [x.arquivo, x]));
+
+test('comentário: `/*` e `//` dentro de string, atributo JSX e template não apagam o código seguinte', (t) => {
+  const read = mini(t, {
+    'src/components/Upload.tsx': `import { useQuery } from '@tanstack/react-query';
+import { supabase } from '@/lib/supabase';
+export function Upload() {
+  useUploads();
+  return <input type="file" accept="image/*" onChange={() => supabase.from('uploads').select('*')} />;
+}
+export function useUploads() { return useQuery(['u'], () => supabase.rpc('listar_uploads')); }
+/** JSDoc real: o regex antigo apagava tudo entre accept="image/*" e este fecho */
+export const Depois = () => <b/>;
+`,
+    'src/lib/urls.ts': `export const GLOBS = ['**/api/**', 'src/**/*.ts'];
+export const depoisDoGlob = 1;
+export const sentryUrl = (u: URL, id: string) => \`\${u.protocol}//\${u.host}/api/\${id}/\`; export const depoisDoTemplate = 2;
+export const re = /['"\`]\\/\\*/; export const depoisDoRegex = 3; // comentário real some
+/* bloco real */
+export const fim = 4;
+`,
+  });
+  const comp = porArquivo(read('componentes.json').componentes)['src/components/Upload.tsx'];
+  assert.deepEqual(comp.exports, ['Depois', 'Upload']);
+  assert.deepEqual(comp.tabelas, ['uploads']);
+  const hook = porArquivo(read('hooks.json').hooks)['src/components/Upload.tsx'];
+  assert.deepEqual(hook.hooks_exportados, ['useUploads']);
+  assert.deepEqual(hook.rpcs, ['listar_uploads']);
+  const urls = porArquivo(read('logica.json').arquivos)['src/lib/urls.ts'];
+  assert.deepEqual(urls.exports, ['GLOBS', 'depoisDoGlob', 'depoisDoRegex', 'depoisDoTemplate', 'fim', 're', 'sentryUrl']);
+  assert.deepEqual(read('manifest.json').erros, []);
+});
+
+test('comentário: linha do alerta de segredo é a linha do arquivo, mesmo após comentário de bloco', (t) => {
+  // token montado por concatenação para este arquivo de teste não virar alerta no repositório real
+  const jwt = 'ey' + 'JhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.ey' + 'JzdWIiOiIxMjM0NTY3ODkwIn0.abc123';
+  const read = mini(t, { 'src/lib/segredo.ts': `/*\n * cabeçalho\n * de quatro linhas\n */\nexport const k = '${jwt}';\n` });
+  assert.deepEqual(read('baseline.json').alertas.possiveis_segredos_no_codigo, ['src/lib/segredo.ts:5']);
+});
+
+test('código escrito dentro de template literal (fixture, mensagem) não vira import, export, hook nem caso de teste', (t) => {
+  const read = mini(t, {
+    'src/lib/a.ts': `export const a = 1;`,
+    'scripts/gera-fixture.mjs': `import fs from 'node:fs';
+const FIXTURE = \`import { supabase } from '@/lib/supabase';
+export const useFalso = () => supabase;
+it('caso falso', () => {});\`;
+const MSG = "use import { a } from '@/lib/a' em vez disso";
+fs.writeFileSync('x.ts', FIXTURE + MSG);
+export const real = 1;
+`,
+    'src/lib/molde.test.ts': `import { it } from 'vitest';
+const MOLDE = \`import { a } from './a';
+it('falso', () => {});\`;
+it('real', () => { MOLDE; });
+`,
+  });
+  assert.equal(porArquivo(read('hooks.json').hooks)['scripts/gera-fixture.mjs'], undefined, 'export dentro de template não é hook');
+  assert.equal(read('grafo-arestas.json').arestas['scripts/gera-fixture.mjs'], undefined, 'import dentro de literal não é aresta');
+  const teste = porArquivo(read('testes.json').arquivos)['src/lib/molde.test.ts'];
+  assert.equal(teste.casos, 1);
+  assert.deepEqual(teste.testa, [], 'import dentro de template não conta como cobertura');
+  assert.equal(read('testes.json').cobertura_por_arquivo['src/lib/a.ts'], undefined);
+});
+
+test('exports: `export type { A }` e `export { type A as B, c }` entram na lista de exports', (t) => {
+  const read = mini(t, { 'src/lib/tipos.ts': `type A = 1; interface B { x: 1 }\nconst c = 1, d = 2;\nexport type { A, B as Bee };\nexport { type A as Alias, c, d as dee };\n` });
+  assert.deepEqual(porArquivo(read('logica.json').arquivos)['src/lib/tipos.ts'].exports, ['A', 'Alias', 'Bee', 'c', 'dee']);
+});
+
+test('chamadas tipadas e em várias linhas: .from<T>(), .rpc<T>(), functions.invoke<T>(), storage.from() e wrapper de invoke', (t) => {
+  const read = mini(t, {
+    'src/lib/edge.ts': `import { supabase } from '@/lib/supabase';\nexport const invokeEdge = <T,>(nome: string, body: unknown) => supabase.functions.invoke<T>(nome, { body });\nexport const invokeAsaas = (acao: string) => invokeEdge('edge-wrapper', { acao });\n`,
+    'src/hooks/useGen.ts': `import { supabase } from '@/lib/supabase';
+import { invokeEdge, invokeAsaas } from '@/lib/edge';
+export function useGen() {
+  supabase.from<Linha>('linhas_tipadas').select('*');
+  supabase.rpc<Resumo[]>(
+    'rpc_tipada');
+  supabase.functions
+    .invoke<{ ok: boolean; itens: Array<{ id: string }> }>('edge-tipada', { body: {} });
+  supabase.storage
+    .from('bucket-multilinha').download('a');
+  invokeEdge<Resp>('edge-wrapper', { a: 1 });
+  invokeAsaas('listar');
+}
+`,
+    'supabase/functions/edge-tipada/index.ts': `Deno.serve(() => new Response('ok'));`,
+    'supabase/functions/edge-wrapper/index.ts': `Deno.serve(() => new Response('ok'));`,
+    'supabase/functions/edge-sem-uso/index.ts': `Deno.serve(() => new Response('ok'));`,
+  });
+  const hook = porArquivo(read('hooks.json').hooks)['src/hooks/useGen.ts'];
+  assert.deepEqual(hook.tabelas, ['linhas_tipadas']);
+  assert.deepEqual(hook.rpcs, ['rpc_tipada']);
+  assert.deepEqual(hook.edges, ['edge-tipada', 'edge-wrapper']);
+  const edges = Object.fromEntries(read('edge-functions.json').edges.map((e) => [e.nome, e]));
+  assert.equal(edges['edge-tipada'].orfa, false, 'invoke<T>() em outra linha é chamada');
+  assert.equal(edges['edge-wrapper'].orfa, false, 'wrapper invokeEdge() é chamada');
+  assert.equal(edges['edge-sem-uso'].orfa, true);
+  assert.deepEqual(read('baseline.json').alertas.edges_chamadas_sem_pasta, [], "invokeAsaas('listar') não é edge function");
+  assert.deepEqual(read('banco.json').buckets, [{ nome: 'bucket-multilinha', criado_em_sql: false, usado_em: 1 }]);
+});
+
+test('rotas: tela chamada Auth/Admin não é "protegida" só pelo nome; guarda e layout com filhas continuam protegendo', (t) => {
+  const tela = (n) => `export default function ${n}() { return <div/>; }`;
+  const read = mini(t, {
+    'src/App.tsx': `import { Routes, Route } from 'react-router-dom';
+import Auth from '@/pages/Auth'; import AdminPanel from '@/pages/AdminPanel'; import Painel from '@/pages/Painel';
+import { ProtectedRoute } from '@/components/ProtectedRoute'; import { AuthLayout } from '@/components/AuthLayout';
+export const App = () => (<Routes>
+  <Route path="/auth" element={<Auth />} />
+  <Route path="/admin-aberto" element={<AdminPanel />} />
+  <Route path="/painel" element={<ProtectedRoute><Painel /></ProtectedRoute>} />
+  <Route path="/itens/:id" element={<ProtectedRoute><Painel /></ProtectedRoute>} />
+  <Route path="/area" element={<AuthLayout />}>
+    <Route path="x" element={<Painel />} />
+  </Route>
+  <Route path="*" element={<Painel />} />
+</Routes>);
+`,
+    'src/pages/Auth.tsx': tela('Auth'), 'src/pages/AdminPanel.tsx': tela('AdminPanel'), 'src/pages/Painel.tsx': tela('Painel'),
+    'src/components/ProtectedRoute.tsx': `export const ProtectedRoute = ({ children }) => <>{children}</>;`,
+    'src/components/AuthLayout.tsx': `export const AuthLayout = () => <div/>;`,
+    'src/components/layout/sidebarNav.ts': `export const itens = [{ label: 'Painel', path: '/painel#aba' }, { label: 'Busca', path: '/painel?q=1#topo' }, { label: 'Detalhe', path: '/itens/abc' }, { label: 'Solto', path: '/nao-existe/abc' }, { label: 'Aba', id: 'so-um-id' }];`,
+  });
+  const rotas = Object.fromEntries(read('rotas.json').urls.map((r) => [r.caminho, r]));
+  assert.equal(rotas['/auth'].protegida, false, 'tela pública de login');
+  assert.equal(rotas['/auth'].arquivo, 'src/pages/Auth.tsx');
+  assert.equal(rotas['/admin-aberto'].protegida, false, 'sem guarda na rota');
+  assert.equal(rotas['/painel'].protegida, true);
+  assert.equal(rotas['/area'].protegida, true, 'layout Auth* com filhas é guarda');
+  assert.equal(rotas['/area/x'].protegida, true, 'filha herda');
+  assert.ok(read('ferramentas.json').permissoes.rotas_publicas.includes('/auth'));
+  // menu: âncora (#) e query não quebram o destino; rota com :parâmetro resolve; catch-all `*` não engole destino inexistente
+  const menu = Object.fromEntries(read('rotas.json').menu.map((m) => [m.rotulo, m.resolve_para]));
+  assert.equal(menu.Painel, 'src/pages/Painel.tsx');
+  assert.equal(menu.Busca, 'src/pages/Painel.tsx');
+  assert.equal(menu.Detalhe, 'src/pages/Painel.tsx');
+  assert.deepEqual(read('baseline.json').alertas.menu_sem_destino, ['Aba -> so-um-id', 'Solto -> /nao-existe/abc']);
+});
+
+test('testes: regex.test() não é caso, it.each<T>() é; *_test.ts (Deno) é arquivo de teste', (t) => {
+  const read = mini(t, {
+    'src/lib/a.ts': `export const a = 1;`,
+    'src/lib/a.test.ts': `import { it, test, expect } from 'vitest';
+import { a } from './a';
+it('um', () => { expect(/abc/.test('abc')).toBe(true); });
+test.each<[number, number]>([[1, 2]])('dois %i', () => {});
+it.skip('três', () => {});
+const re = /x/; re.test('x');
+`,
+    'supabase/functions/minha-edge/index.ts': `Deno.serve(() => new Response('ok'));`,
+    'supabase/functions/minha-edge/index_test.ts': `import './index.ts';\nDeno.test('a', () => {});\nDeno.test({ name: 'b', fn() {} });\n`,
+    'supabase/functions/fuzz_test.ts': `Deno.test('fuzz', () => {});`,
+  });
+  const testes = read('testes.json');
+  const arq = porArquivo(testes.arquivos);
+  assert.equal(arq['src/lib/a.test.ts'].casos, 3);
+  assert.equal(arq['supabase/functions/minha-edge/index_test.ts'].casos, 2);
+  assert.ok(arq['supabase/functions/fuzz_test.ts'], 'teste Deno na raiz das functions');
+  assert.equal(testes.total, 3);
+  const edge = read('edge-functions.json').edges.find((e) => e.nome === 'minha-edge');
+  assert.equal(edge.testes, 1);
+  assert.equal(edge.arquivos, 1, 'arquivo de teste não entra na contagem da função');
+  assert.ok(!testes.sem_teste.edges.includes('minha-edge'));
+  assert.ok(!read('grafo.json').orfaos.some((f) => f.endsWith('_test.ts')), 'teste não é órfão de produção');
+});
+
+test('ferramentas: relatório do graphify e scripts chamados com flags no workflow', (t) => {
+  const read = mini(t, {
+    'graphify-out/GRAPH_REPORT.md': '# relatório\n',
+    'scripts/a.unit.mjs': `import { test } from 'node:test';\ntest('x', () => {});\n`,
+    'scripts/b.ts': `console.log(1);\n`, 'scripts/c.sql': `select 1;\n`, 'scripts/d.mjs': `console.log(1);\n`, 'scripts/e.sh': `echo 1\n`,
+    '.github/workflows/ci.yml': `name: CI\non: [push]\njobs:\n  t:\n    runs-on: ubuntu-latest\n    steps:\n      - run: node --test scripts/a.unit.mjs\n      - run: bun run scripts/b.ts > saida.txt\n      - run: |\n          psql "$DB" -v ON_ERROR_STOP=1 \\\n            -f scripts/c.sql\n      - run: node scripts/d.mjs\n`,
+  });
+  assert.equal(read('grafo-graphify.json').relatorio, 'graphify-out/GRAPH_REPORT.md');
+  assert.deepEqual(read('ferramentas.json').workflows[0].scripts_usados, ['scripts/a.unit.mjs', 'scripts/b.ts', 'scripts/c.sql', 'scripts/d.mjs']);
+  const scripts = porArquivo(read('scripts.json').scripts);
+  for (const f of ['scripts/b.ts', 'scripts/c.sql', 'scripts/d.mjs']) assert.deepEqual(scripts[f].workflows, ['ci.yml'], f);
+  assert.deepEqual(scripts['scripts/e.sh'].workflows, []);
+});
+
+test('linhas: mesma contagem do `wc -l` com e sem quebra final', (t) => {
+  const read = mini(t, { 'src/lib/com.ts': `export const a = 1;\nexport const b = 2;\n`, 'src/lib/sem.ts': `export const a = 1;\nexport const b = 2;`, 'src/lib/vazio.ts': '' });
+  const l = porArquivo(read('logica.json').arquivos);
+  assert.equal(l['src/lib/com.ts'].linhas, 2);
+  assert.equal(l['src/lib/sem.ts'].linhas, 2);
+  assert.equal(l['src/lib/vazio.ts'].linhas, 0);
+});
+
+test('determinismo: a ordem não depende do locale da máquina (LC_ALL)', (t) => {
+  // em tcheco "ch" ordena depois de "h"; em lituano "y" fica junto de "i"
+  const arquivos = Object.fromEntries(['ch', 'cz', 'h', 'i', 'y', 'z', 'Ab', 'ab', 'a_b', 'a-b'].map((n) => [`src/lib/${n}.ts`, `export const v = 1;`]));
+  const lidos = ['C', 'cs_CZ.UTF-8', 'lt_LT.UTF-8'].map((loc) => {
+    const read = mini(t, arquivos, { env: { LC_ALL: loc, LANG: loc } });
+    return ['logica.json', 'grafo.json', 'modulos.json', 'INDEX.md'].map((f) => fs.readFileSync(path.join(read.dir, 'inventario/ia', f), 'utf8')).join('\n');
+  });
+  assert.equal(lidos[1], lidos[0], 'cs_CZ');
+  assert.equal(lidos[2], lidos[0], 'lt_LT');
+});
+
+test('git: arquivo com acento aparece nos hotspots (core.quotepath não esconde o nome)', (t) => {
+  const read = mini(t, { 'src/lib/ação.ts': `export const a = 1;` }, { git: true });
+  assert.ok(read('baseline.json').git.arquivos_mais_mudados_90d.some((x) => x.arquivo === 'src/lib/ação.ts'));
+});
+
+test('config: ai-context.config.json ilegível vira erro visível em vez de ser ignorado em silêncio', (t) => {
+  const read = mini(t, { 'ai-context.config.json': '{ "publicacao": ' });
+  const erros = read('manifest.json').erros;
+  assert.equal(erros.length, 1);
+  assert.equal(erros[0].secao, 'config');
+  assert.match(fs.readFileSync(path.join(read.dir, 'inventario/ia/INDEX.md'), 'utf8'), /1 seção\(ões\) falharam/);
+  const ok = mini(t, { 'ai-context.config.json': '\uFEFF{ "publicacao": "Rodapé próprio." }' });
+  assert.deepEqual(ok('manifest.json').erros, [], 'BOM não invalida o config');
+  assert.match(fs.readFileSync(path.join(ok.dir, 'inventario/ia/INDEX.md'), 'utf8'), /Rodapé próprio\./);
+});
+
+test('CLI: --help não gera nada; argumento inválido, flag sem valor e raiz inexistente saem com 2 sem escrever', (t) => {
+  const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'ctx-ia-cli-'));
+  t.after(() => fs.rmSync(dir, { recursive: true, force: true }));
+  w(dir, 'src/a.ts', 'export const a = 1;');
+  const ajuda = cli(['--help'], { cwd: dir });
+  assert.equal(ajuda.status, 0);
+  assert.match(ajuda.stdout, /^Uso: node scripts\/ai-context\/gerar\.mjs/);
+  for (const args of [['--out'], ['--out', ''], ['--out', '--quiet'], ['--root'], ['--bogus'], ['--out=x'], ['x'], ['--root', path.join(dir, 'nao-existe')], ['--root', path.join(dir, 'src/a.ts')]]) {
+    const r = cli(args, { cwd: dir });
+    assert.equal(r.status, 2, JSON.stringify(args));
+    assert.match(r.stderr, /^\[contexto-ia\] ERRO: /, JSON.stringify(args));
+  }
+  assert.deepEqual(fs.readdirSync(dir), ['src'], 'nenhuma saída criada (nem inventario/ia, nem pasta "--quiet")');
+  const raizPorEnv = cli(['--quiet'], { cwd: dir, env: { ...process.env, AI_CONTEXT_ROOT: path.join(dir, 'nao-existe') } });
+  assert.equal(raizPorEnv.status, 2);
+});
+
+test('CLI: --root/--out com espaço e acento; falha de escrita sai com 1 e mensagem de uma linha', (t) => {
+  const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'ctx-ia cli ç-'));
+  t.after(() => fs.rmSync(dir, { recursive: true, force: true }));
+  w(dir, 'repo com espaço/src/a.ts', 'export const a = 1;');
+  const fora = path.join(dir, 'saída ç', 'ctx');
+  const ok = cli(['--quiet', '--out', fora, '--root', path.join(dir, 'repo com espaço')], { cwd: os.tmpdir() });
+  assert.equal(ok.status, 0, ok.stderr);
+  assert.equal(ok.stdout, '', '--quiet não escreve em stdout');
+  const manifest = JSON.parse(fs.readFileSync(path.join(fora, 'manifest.json'), 'utf8'));
+  assert.equal(fs.readdirSync(fora).length, 17);
+  assert.deepEqual(Object.keys(manifest.arquivos).sort(), fs.readdirSync(fora).filter((f) => f !== 'manifest.json').sort(), 'manifest lista exatamente o que foi emitido');
+  for (const [nome, hash] of Object.entries(manifest.arquivos)) assert.equal(crypto.createHash('sha256').update(fs.readFileSync(path.join(fora, nome))).digest('hex').slice(0, 16), hash, nome);
+  assert.deepEqual(fs.readdirSync(path.join(dir, 'repo com espaço')), ['src'], 'nada escrito dentro do repositório lido');
+  w(dir, 'arquivo', 'x');
+  const falha = cli(['--root', path.join(dir, 'repo com espaço'), '--out', path.join(dir, 'arquivo')]);
+  assert.equal(falha.status, 1);
+  assert.match(falha.stderr, /^\[contexto-ia\] ERRO: não foi possível gravar .+\n$/);
+});
+
+test('robustez: symlink quebrado em functions não zera a seção; workspace apontando para arquivo não derruba o gerador', (t) => {
+  const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'ctx-ia-rob-'));
+  t.after(() => fs.rmSync(dir, { recursive: true, force: true }));
+  w(dir, 'package.json', JSON.stringify({ name: 'rob', workspaces: ['packages/*', 'apps/*'] }));
+  w(dir, 'packages', 'isto é um arquivo, não uma pasta');
+  w(dir, 'apps/web/package.json', JSON.stringify({ name: 'web' }));
+  w(dir, 'supabase/functions/boa/index.ts', `Deno.serve(() => new Response('ok'));`);
+  w(dir, 'supabase/functions/README.md', '# solto\n');
+  try { fs.symlinkSync(path.join(dir, 'nao-existe'), path.join(dir, 'supabase/functions/quebrado')); } catch { /* sem permissão de symlink (Windows): o resto do caso continua valendo */ }
+  const r = cli(['--quiet'], { cwd: dir });
+  assert.equal(r.status, 0, r.stderr);
+  const read = (name) => JSON.parse(fs.readFileSync(path.join(dir, 'inventario/ia', name), 'utf8'));
+  assert.deepEqual(read('manifest.json').erros, []);
+  assert.deepEqual(read('edge-functions.json').edges.map((e) => e.nome), ['boa']);
+  assert.deepEqual(read('ferramentas.json').workspaces.map((x) => x.pasta), ['apps/web']);
 });

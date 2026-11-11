@@ -91,6 +91,22 @@ export function extrairNomesDeSecrets(entrada) {
 // --- CLI (usado pelo passo do workflow) ------------------------------------
 if (process.argv[1]?.endsWith('secrets-scope.mjs')) {
   const args = process.argv.slice(2);
+  // Flag desconhecida aborta: `--dryrun` (erro de digitação) era ignorada e a
+  // decisão saía como execução real, podendo mandar REESCREVER.
+  const COM_VALOR = ['--fn', '--lista', '--manifest'];
+  const SEM_VALOR = ['--rotate', '--rollback', '--dry-run'];
+  for (let i = 0; i < args.length; i += 1) {
+    if (COM_VALOR.includes(args[i])) {
+      if (args[i + 1] === undefined) {
+        console.error(`::error::${args[i]} exige um valor`);
+        process.exit(2);
+      }
+      i += 1;
+    } else if (!SEM_VALOR.includes(args[i])) {
+      console.error(`::error::argumento não reconhecido: ${args[i]} (aceitos: ${[...COM_VALOR, ...SEM_VALOR].join(', ')})`);
+      process.exit(2);
+    }
+  }
   const bandeira = (nome) => args.includes(nome);
   const valor = (nome) => {
     const i = args.indexOf(nome);
