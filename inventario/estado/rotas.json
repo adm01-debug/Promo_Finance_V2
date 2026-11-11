@@ -6,7 +6,7 @@
     "urls_protegidas": 118,
     "itens_de_menu": 89,
     "hooks_distintos": 389,
-    "problemas": 32
+    "problemas": 31
   },
   "urls": [
     {
@@ -159,12 +159,12 @@
           "arquivo": "src/hooks/useDivergenciasConciliacao.ts"
         },
         {
-          "nome": "useEmpresas",
-          "arquivo": "src/hooks/useFinancialData.ts"
-        },
-        {
           "nome": "useEmpresaScope",
           "arquivo": "src/contexts/useEmpresaScope.ts"
+        },
+        {
+          "nome": "useEmpresas",
+          "arquivo": "src/hooks/useFinancialData.ts"
         },
         {
           "nome": "useFinancialAlerts",
@@ -824,10 +824,6 @@
           "arquivo": "src/hooks/useOnboardingProgress.ts"
         },
         {
-          "nome": "useSavedFilters",
-          "arquivo": "src/hooks/savedFiltersValidation.ts"
-        },
-        {
           "nome": "useSharedFiltersAdmin",
           "arquivo": "src/pages/admin/shared-filters-admin/useSharedFiltersAdmin.ts"
         },
@@ -997,12 +993,12 @@
           "arquivo": "src/hooks/useSavedFilterAlerts.ts"
         },
         {
-          "nome": "useSavedFilters",
-          "arquivo": "src/hooks/useSavedFilters.ts"
-        },
-        {
           "nome": "useSavedFilterSubscriptions",
           "arquivo": "src/hooks/useSavedFilterSubscriptions.ts"
+        },
+        {
+          "nome": "useSavedFilters",
+          "arquivo": "src/hooks/useSavedFilters.ts"
         },
         {
           "nome": "useSincronizarAnomaliaBitrix",
@@ -1356,26 +1352,6 @@
           "arquivo": "src/hooks/useScimTokens.ts"
         },
         {
-          "nome": "useSaveSSOProvider",
-          "arquivo": "src/hooks/useSSO.ts"
-        },
-        {
-          "nome": "useSaveSSORoleMappings",
-          "arquivo": "src/hooks/useSSO.ts"
-        },
-        {
-          "nome": "useSaveSSOSandboxRun",
-          "arquivo": "src/hooks/useSSOSandboxRuns.ts"
-        },
-        {
-          "nome": "useScimChecklist",
-          "arquivo": "src/hooks/useScimChecklist.ts"
-        },
-        {
-          "nome": "useScimTokens",
-          "arquivo": "src/hooks/useScimTokens.ts"
-        },
-        {
           "nome": "useSSOConsistency",
           "arquivo": "src/hooks/useSSOConsistency.ts"
         },
@@ -1394,6 +1370,26 @@
         {
           "nome": "useSSOSandboxRuns",
           "arquivo": "src/hooks/useSSOSandboxRuns.ts"
+        },
+        {
+          "nome": "useSaveSSOProvider",
+          "arquivo": "src/hooks/useSSO.ts"
+        },
+        {
+          "nome": "useSaveSSORoleMappings",
+          "arquivo": "src/hooks/useSSO.ts"
+        },
+        {
+          "nome": "useSaveSSOSandboxRun",
+          "arquivo": "src/hooks/useSSOSandboxRuns.ts"
+        },
+        {
+          "nome": "useScimChecklist",
+          "arquivo": "src/hooks/useScimChecklist.ts"
+        },
+        {
+          "nome": "useScimTokens",
+          "arquivo": "src/hooks/useScimTokens.ts"
         },
         {
           "nome": "useTestSSOConfig",
@@ -1489,12 +1485,12 @@
           "arquivo": "src/hooks/useOnboardingProgress.ts"
         },
         {
-          "nome": "useSmartBack",
-          "arquivo": "src/hooks/useSmartBack.ts"
-        },
-        {
           "nome": "useSSOJitEvents",
           "arquivo": "src/hooks/useSSOJitEvents.ts"
+        },
+        {
+          "nome": "useSmartBack",
+          "arquivo": "src/hooks/useSmartBack.ts"
         },
         {
           "nome": "useSsoProfileSyncEvents",
@@ -1606,16 +1602,16 @@
           "arquivo": "src/hooks/useOnboardingProgress.ts"
         },
         {
-          "nome": "useSmartBack",
-          "arquivo": "src/hooks/useSmartBack.ts"
-        },
-        {
           "nome": "useSSOJitEvents",
           "arquivo": "src/hooks/useSSOJitEvents.ts"
         },
         {
           "nome": "useSSOProviders",
           "arquivo": "src/hooks/useSSO.ts"
+        },
+        {
+          "nome": "useSmartBack",
+          "arquivo": "src/hooks/useSmartBack.ts"
         },
         {
           "nome": "useSwipeBack",
@@ -1731,6 +1727,10 @@
           "arquivo": "src/components/admin/anomalias-review-queue/useReviewQueue.ts"
         },
         {
+          "nome": "useSLOMetrics",
+          "arquivo": "src/hooks/useSLOMetrics.ts"
+        },
+        {
           "nome": "useSaveAnomaliaPreferences",
           "arquivo": "src/components/admin/anomalia-preferences/useSaveAnomaliaPreferences.ts"
         },
@@ -1741,10 +1741,6 @@
         {
           "nome": "useSincronizarAnomaliaBitrix",
           "arquivo": "src/hooks/useSincronizarAnomaliaBitrix.ts"
-        },
-        {
-          "nome": "useSLOMetrics",
-          "arquivo": "src/hooks/useSLOMetrics.ts"
         }
       ],
       "buckets": [],
@@ -2470,12 +2466,12 @@
           "arquivo": "src/hooks/useOnboardingProgress.ts"
         },
         {
-          "nome": "useSmartBack",
-          "arquivo": "src/hooks/useSmartBack.ts"
-        },
-        {
           "nome": "useSSOJitEvents",
           "arquivo": "src/hooks/useSSOJitEvents.ts"
+        },
+        {
+          "nome": "useSmartBack",
+          "arquivo": "src/hooks/useSmartBack.ts"
         },
         {
           "nome": "useSsoProfileSyncEvents",
@@ -4396,12 +4392,12 @@
           "arquivo": "src/hooks/useSavedFilterAlerts.ts"
         },
         {
-          "nome": "useSavedFilters",
-          "arquivo": "src/hooks/useSavedFilters.ts"
-        },
-        {
           "nome": "useSavedFilterSubscriptions",
           "arquivo": "src/hooks/useSavedFilterSubscriptions.ts"
+        },
+        {
+          "nome": "useSavedFilters",
+          "arquivo": "src/hooks/useSavedFilters.ts"
         },
         {
           "nome": "useSmartBack",
@@ -5377,12 +5373,12 @@
           "arquivo": "src/hooks/useFinancialData.ts"
         },
         {
-          "nome": "useEmpresas",
-          "arquivo": "src/hooks/useFinancialData.ts"
-        },
-        {
           "nome": "useEmpresaScope",
           "arquivo": "src/contexts/useEmpresaScope.ts"
+        },
+        {
+          "nome": "useEmpresas",
+          "arquivo": "src/hooks/useFinancialData.ts"
         },
         {
           "nome": "useFinancialAlerts",
@@ -5686,12 +5682,12 @@
           "arquivo": "src/hooks/useOptimizedQueries.ts"
         },
         {
-          "nome": "useEmpresas",
-          "arquivo": "src/hooks/useFinancialData.ts"
-        },
-        {
           "nome": "useEmpresaScope",
           "arquivo": "src/contexts/useEmpresaScope.ts"
+        },
+        {
+          "nome": "useEmpresas",
+          "arquivo": "src/hooks/useFinancialData.ts"
         },
         {
           "nome": "useFinancialAlerts",
@@ -6066,12 +6062,12 @@
           "arquivo": "src/hooks/useDivergenciasConciliacao.ts"
         },
         {
-          "nome": "useEmpresas",
-          "arquivo": "src/hooks/useFinancialData.ts"
-        },
-        {
           "nome": "useEmpresaScope",
           "arquivo": "src/contexts/useEmpresaScope.ts"
+        },
+        {
+          "nome": "useEmpresas",
+          "arquivo": "src/hooks/useFinancialData.ts"
         },
         {
           "nome": "useFinancialAlerts",
@@ -8546,6 +8542,10 @@
           "arquivo": "src/hooks/useFinancialAlerts.tsx"
         },
         {
+          "nome": "useIRPJCSLL",
+          "arquivo": "src/hooks/useIRPJCSLL.ts"
+        },
+        {
           "nome": "useImportacaoXMLNFe",
           "arquivo": "src/hooks/useImportacaoXMLNFe.ts"
         },
@@ -8556,10 +8556,6 @@
         {
           "nome": "useInstallPrompt",
           "arquivo": "src/hooks/useInstallPrompt.ts"
-        },
-        {
-          "nome": "useIRPJCSLL",
-          "arquivo": "src/hooks/useIRPJCSLL.ts"
         },
         {
           "nome": "useIsMobile",
@@ -8672,7 +8668,18 @@
       "protegida": true,
       "papeis": [],
       "redireciona": null,
-      "menu": [],
+      "menu": [
+        {
+          "href": "/reforma-tributaria/visao-geral",
+          "rotulo": "Reforma Tributária",
+          "grupo": "Fiscal & Documentos",
+          "grupo_id": "fiscal",
+          "destaque": false,
+          "badge": null,
+          "secao": null,
+          "arquivo": "src/components/layout/sidebar/sidebarFiscalNavGroup.ts"
+        }
+      ],
       "arquivos_lidos": 100,
       "hooks": [
         {
@@ -8728,6 +8735,10 @@
           "arquivo": "src/hooks/useFinancialAlerts.tsx"
         },
         {
+          "nome": "useIRPJCSLL",
+          "arquivo": "src/hooks/useIRPJCSLL.ts"
+        },
+        {
           "nome": "useImportacaoXMLNFe",
           "arquivo": "src/hooks/useImportacaoXMLNFe.ts"
         },
@@ -8738,10 +8749,6 @@
         {
           "nome": "useInstallPrompt",
           "arquivo": "src/hooks/useInstallPrompt.ts"
-        },
-        {
-          "nome": "useIRPJCSLL",
-          "arquivo": "src/hooks/useIRPJCSLL.ts"
         },
         {
           "nome": "useIsMobile",
@@ -8885,12 +8892,12 @@
           "arquivo": "src/hooks/useRelatoriosData.ts"
         },
         {
-          "nome": "useEmpresas",
-          "arquivo": "src/hooks/useFinancialData.ts"
-        },
-        {
           "nome": "useEmpresaScope",
           "arquivo": "src/contexts/useEmpresaScope.ts"
+        },
+        {
+          "nome": "useEmpresas",
+          "arquivo": "src/hooks/useFinancialData.ts"
         },
         {
           "nome": "useFluxoMensal",
@@ -9454,16 +9461,16 @@
           "arquivo": "src/hooks/useConformidadeSnapshots.ts"
         },
         {
+          "nome": "useDRETributaria",
+          "arquivo": "src/hooks/useDRETributaria.ts"
+        },
+        {
           "nome": "useDashboardTributario",
           "arquivo": "src/hooks/useDashboardTributario.ts"
         },
         {
           "nome": "useDecidirRegimeServer",
           "arquivo": "src/hooks/useDecidirRegimeServer.ts"
-        },
-        {
-          "nome": "useDRETributaria",
-          "arquivo": "src/hooks/useDRETributaria.ts"
         },
         {
           "nome": "useEmpresaScope",
@@ -10676,16 +10683,16 @@
           "arquivo": "src/hooks/useConformidadeSnapshots.ts"
         },
         {
+          "nome": "useDRETributaria",
+          "arquivo": "src/hooks/useDRETributaria.ts"
+        },
+        {
           "nome": "useDashboardTributario",
           "arquivo": "src/hooks/useDashboardTributario.ts"
         },
         {
           "nome": "useDecidirRegimeServer",
           "arquivo": "src/hooks/useDecidirRegimeServer.ts"
-        },
-        {
-          "nome": "useDRETributaria",
-          "arquivo": "src/hooks/useDRETributaria.ts"
         },
         {
           "nome": "useEmpresaScope",
@@ -16450,9 +16457,8 @@
       ]
     },
     "useSavedFilters": {
-      "arquivo": "src/hooks/savedFiltersValidation.ts",
+      "arquivo": "src/hooks/useSavedFilters.ts",
       "rotas": [
-        "/admin/filtros-compartilhados",
         "/admin/insights-ia",
         "/admin/system-health",
         "/conciliacao"
@@ -17303,11 +17309,6 @@
     }
   },
   "problemas": [
-    {
-      "tipo": "menu_sem_rota",
-      "id": "/reforma-tributaria/visao-geral",
-      "detalhe": "item \"Reforma Tributária\" aponta para /reforma-tributaria/visao-geral, sem <Route path> correspondente em src/App.tsx"
-    },
     {
       "tipo": "rota_sem_menu",
       "id": "/admin/auditoria-ia",

@@ -9,7 +9,7 @@
     },
     {
       "detalhe": [
-        "203943 linhas com mais de 7 dias"
+        "207074 linhas com mais de 7 dias"
       ],
       "tipo": "historico_cron_sem_limpeza"
     },
@@ -27,10 +27,10 @@
       "max_worker_processes": "6"
     },
     "historico": {
-      "bytes": 127836160,
-      "linhas": 226552,
+      "bytes": 129613824,
+      "linhas": 229683,
       "mais_antigo": "2026-08-23T12:00:00Z",
-      "mais_de_7_dias": 203943
+      "mais_de_7_dias": 207074
     },
     "horas_paradas_7d": [],
     "jobs": [
@@ -72,7 +72,7 @@
         "chama": [
           "public.capture_slow_queries"
         ],
-        "duracao_max_s_7d": 1,
+        "duracao_max_s_7d": 2,
         "execucoes_24h": 24,
         "execucoes_7d": 168,
         "falhas_24h": 0,
@@ -200,7 +200,7 @@
         "chama": [
           "public.detect_query_regressions"
         ],
-        "duracao_max_s_7d": 1,
+        "duracao_max_s_7d": 2,
         "execucoes_24h": 48,
         "execucoes_7d": 336,
         "falhas_24h": 0,
@@ -240,7 +240,7 @@
         "nome": "enviar-digest-conformidade-horario",
         "startup_timeout_7d": 0,
         "taxa_falha_7d_pct": 100,
-        "ultima_falha": "2026-11-10T18:30:00Z"
+        "ultima_falha": "2026-11-11T18:30:00Z"
       },
       {
         "agenda": "* * * * *",
@@ -1323,7 +1323,7 @@
   ],
   "fonte": "scripts/inventario/banco.sql + GET /functions + .from() em src/ e supabase/functions/ (scripts/inventario/gerar-banco.mjs)",
   "format_version": 1,
-  "medido_em": "2026-11-10T19:21:25Z",
+  "medido_em": "2026-11-11T18:37:06Z",
   "origem": {
     "tabelas_em_comum_com_types_ts": 265,
     "tabelas_em_types_ts": 279
@@ -1339,7 +1339,7 @@
     "postgres": "17.6",
     "tabelas_public": 272,
     "tabelas_sem_rls": 0,
-    "tamanho_bytes": 531664019,
+    "tamanho_bytes": 540314771,
     "triggers_public": 169,
     "views_public": 21
   },
@@ -1405,9 +1405,9 @@
       }
     },
     {
-      "bytes": 540672,
+      "bytes": 548864,
       "citada_no_banco": true,
-      "linhas": 1646,
+      "linhas": 1688,
       "linhas_exatas": true,
       "nome": "alertas",
       "policies": 3,
@@ -2215,9 +2215,9 @@
       }
     },
     {
-      "bytes": 5193728,
+      "bytes": 5259264,
       "citada_no_banco": true,
-      "linhas": 21053,
+      "linhas": 21327,
       "linhas_exatas": true,
       "nome": "bloat_snapshots",
       "policies": 1,
@@ -2511,7 +2511,7 @@
       "triggers": 2,
       "uso_no_codigo": {
         "edges": 13,
-        "src": 29
+        "src": 28
       }
     },
     {
@@ -3325,9 +3325,9 @@
       }
     },
     {
-      "bytes": 24346624,
+      "bytes": 25837568,
       "citada_no_banco": true,
-      "linhas": 68341,
+      "linhas": 68212,
       "linhas_exatas": true,
       "nome": "frontend_performance_logs",
       "policies": 2,
@@ -3505,9 +3505,9 @@
       }
     },
     {
-      "bytes": 14827520,
+      "bytes": 14942208,
       "citada_no_banco": true,
-      "linhas": 51111,
+      "linhas": 51599,
       "linhas_exatas": true,
       "nome": "index_usage_snapshots",
       "policies": 1,
@@ -3550,9 +3550,9 @@
       }
     },
     {
-      "bytes": 1703936,
+      "bytes": 1720320,
       "citada_no_banco": true,
-      "linhas": 1852,
+      "linhas": 1875,
       "linhas_exatas": true,
       "nome": "integrity_alerts",
       "policies": 2,
@@ -3640,9 +3640,9 @@
       }
     },
     {
-      "bytes": 1769472,
+      "bytes": 2023424,
       "citada_no_banco": true,
-      "linhas": 1333,
+      "linhas": 1417,
       "linhas_exatas": true,
       "nome": "login_attempts",
       "policies": 4,
@@ -4090,9 +4090,9 @@
       }
     },
     {
-      "bytes": 3342336,
+      "bytes": 3506176,
       "citada_no_banco": true,
-      "linhas": 3974,
+      "linhas": 4062,
       "linhas_exatas": true,
       "nome": "performance_alerts",
       "policies": 1,
@@ -4332,7 +4332,7 @@
     {
       "bytes": 14311424,
       "citada_no_banco": true,
-      "linhas": 15964,
+      "linhas": 15500,
       "linhas_exatas": true,
       "nome": "query_telemetry",
       "policies": 3,
@@ -4872,7 +4872,7 @@
     {
       "bytes": 22020096,
       "citada_no_banco": true,
-      "linhas": 19358,
+      "linhas": 18859,
       "linhas_exatas": true,
       "nome": "slow_query_alerts",
       "policies": 1,
@@ -5255,7 +5255,7 @@
       "rls_forcado": true,
       "triggers": 3,
       "uso_no_codigo": {
-        "edges": 27,
+        "edges": 24,
         "src": 5
       }
     },
