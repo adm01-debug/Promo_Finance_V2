@@ -1,7 +1,7 @@
 # Contexto do projeto para agentes de IA
 
 GERADO AUTOMATICAMENTE por scripts/ai-context/gerar.mjs — não editar à mão; será sobrescrito.
-Publicado pelo workflow .github/workflows/contexto.yml em docs/contexto/codigo/ da branch gerada `contexto`. Índice único em docs/contexto/00-INDEX.md. Ler: git fetch origin contexto && git show origin/contexto:docs/contexto/00-INDEX.md Gere local com `node scripts/ai-context/gerar.mjs`. Commit-base: `85d018cc59951622b29dba2da297244f8fa6eb62` (2026-11-11T13:49:51-03:00).
+Publicado pelo workflow .github/workflows/contexto.yml em docs/contexto/codigo/ da branch gerada `contexto`. Índice único em docs/contexto/00-INDEX.md. Ler: git fetch origin contexto && git show origin/contexto:docs/contexto/00-INDEX.md Gere local com `node scripts/ai-context/gerar.mjs`. Commit-base: `f0bad7436f3a53d9e944378a0b665706b0caf8db` (2026-11-11T14:46:49-03:00).
 
 ## Como usar (leia antes de planejar ou executar qualquer tarefa)
 1. **Tela/rota/menu** → `rotas.json` (url/vista/menu → arquivo → hooks → tabelas → edges; `rotas_http_backend` para APIs) e `modulos.json` (módulo inteiro + dependências entre módulos).
@@ -14,7 +14,7 @@ Publicado pelo workflow .github/workflows/contexto.yml em docs/contexto/codigo/ 
 Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua tarefa; não carregue tudo.
 
 ## Stack
-- linguagens: TypeScript (2105), SQL (1069), Markdown (189), JavaScript (57), JSON (37), Python (28), YAML (25), Shell (24)
+- linguagens: TypeScript (2105), SQL (1069), Markdown (189), JavaScript (68), Python (44), JSON (37), Shell (26), YAML (25)
 - linguagem_principal: TypeScript
 - framework: React
 - backend_http: n/d
@@ -34,23 +34,23 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 ## Números
 | item | qtd |
 |---|---|
-| arquivos_total | 3579 |
-| arquivos_codigo | 2188 |
-| linhas_codigo | 410390 |
+| arquivos_total | 3608 |
+| arquivos_codigo | 2215 |
+| linhas_codigo | 424390 |
 | rotas | 128 |
-| rotas_http_backend | 12 |
+| rotas_http_backend | 25 |
 | vistas_por_id | 0 |
 | itens_menu | 117 |
 | modulos | 126 |
 | componentes | 908 |
-| hooks | 265 |
+| hooks | 264 |
 | edge_functions | 106 |
-| tabelas | 315 |
+| tabelas | 352 |
 | migrations | 999 |
 | cron_jobs | 21 |
-| testes | 373 |
+| testes | 425 |
 | workflows | 19 |
-| scripts | 104 |
+| scripts | 107 |
 | docs_md | 189 |
 
 ## Onde ficam as coisas
@@ -58,18 +58,18 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 - componentes: src/components (730), src/pages (174), src/hooks (2)
 - hooks: src/hooks (228), src/components (27), src/pages (5)
 - servicos_logica: src/lib (254), scripts/graphify (7), src/integrations (3)
-- testes: co-localizado (__tests__) (240), outro (53), co-localizado (*.test) (40)
+- testes: co-localizado (__tests__) (240), outro (105), co-localizado (*.test) (40)
 - edge_functions: supabase/functions
 - migrations: supabase/migrations
 - scripts: scripts/integrity (17), scripts/security (16), scripts/ci (13)
 - docs: docs (48), (raiz) (19), .github (2)
-- nomenclatura: {"componentes":"PascalCase (90%)","hooks":"use + PascalCase","servicos":"camelCase (52%)","edge_functions":"kebab-case (99%)","tabelas":"snake_case (90%)"}
+- nomenclatura: {"componentes":"PascalCase (90%)","hooks":"use + PascalCase","servicos":"camelCase (52%)","edge_functions":"kebab-case (99%)","tabelas":"snake_case (81%)"}
 - instruções para agentes no repo: .claude/CLAUDE.md, .github/copilot-instructions.md, AGENTS.md, CLAUDE.md
 
 ## Módulos (menu → domínio)
 | módulo | itens de menu | telas/rotas | arquivos | hooks locais | edges | tabelas |
 |---|---|---|---|---|---|---|
-| components/admin | 0 | 0 | 91 | 69 | 9 | 38 |
+| components/admin | 0 | 0 | 91 | 69 | 10 | 39 |
 | components/analytics | 0 | 0 | 5 | 10 | 0 | 12 |
 | components/aprovacoes | 0 | 0 | 5 | 15 | 0 | 7 |
 | components/asaas | 0 | 0 | 21 | 6 | 2 | 13 |
@@ -80,35 +80,35 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 | components/bling | 0 | 0 | 9 | 33 | 1 | 4 |
 | components/boletos | 0 | 0 | 5 | 3 | 2 | 8 |
 | components/charts | 0 | 0 | 5 | 0 | 0 | 0 |
-| components/clientes | 0 | 0 | 5 | 24 | 1 | 14 |
+| components/clientes | 0 | 0 | 5 | 24 | 1 | 15 |
 | components/cobranca | 0 | 0 | 15 | 31 | 3 | 21 |
 | components/compliance | 0 | 0 | 16 | 6 | 1 | 5 |
-| components/conciliacao | 0 | 0 | 25 | 36 | 2 | 31 |
+| components/conciliacao | 0 | 0 | 25 | 36 | 3 | 32 |
 | components/configuracoes | 0 | 0 | 11 | 6 | 2 | 10 |
-| components/contabilidade | 0 | 0 | 90 | 45 | 4 | 26 |
-| components/contas-bancarias | 0 | 0 | 6 | 25 | 1 | 18 |
-| components/contas-pagar | 0 | 0 | 12 | 33 | 4 | 20 |
-| components/contas-receber | 0 | 0 | 26 | 32 | 3 | 24 |
-| components/dashboard | 0 | 0 | 23 | 93 | 8 | 39 |
-| components/demonstrativos | 0 | 0 | 7 | 22 | 1 | 15 |
+| components/contabilidade | 0 | 0 | 90 | 45 | 5 | 29 |
+| components/contas-bancarias | 0 | 0 | 6 | 25 | 1 | 19 |
+| components/contas-pagar | 0 | 0 | 12 | 33 | 4 | 21 |
+| components/contas-receber | 0 | 0 | 26 | 32 | 3 | 25 |
+| components/dashboard | 0 | 0 | 23 | 93 | 8 | 40 |
+| components/demonstrativos | 0 | 0 | 7 | 22 | 1 | 16 |
 | components/expert | 0 | 0 | 7 | 8 | 2 | 12 |
 | components/fluxo-caixa | 0 | 0 | 11 | 0 | 1 | 2 |
-| components/fornecedores | 0 | 0 | 7 | 18 | 1 | 12 |
-| components/insights-ia | 0 | 0 | 15 | 14 | 2 | 9 |
+| components/fornecedores | 0 | 0 | 7 | 18 | 1 | 13 |
+| components/insights-ia | 0 | 0 | 15 | 14 | 3 | 9 |
 | components/integracoes | 0 | 0 | 6 | 1 | 3 | 5 |
 | components/layout | 0 | 0 | 27 | 30 | 1 | 14 |
 | components/navigation | 0 | 0 | 5 | 3 | 0 | 2 |
-| components/nfe | 0 | 0 | 24 | 17 | 2 | 12 |
+| components/nfe | 0 | 0 | 24 | 17 | 2 | 13 |
 | components/reforma-tributaria | 0 | 0 | 47 | 24 | 1 | 17 |
-| components/relatorios | 0 | 0 | 20 | 27 | 3 | 15 |
+| components/relatorios | 0 | 0 | 20 | 27 | 3 | 16 |
 | components/security | 0 | 0 | 6 | 5 | 2 | 10 |
 | components/shared | 0 | 0 | 15 | 4 | 0 | 6 |
-| components/tesouraria | 0 | 0 | 5 | 16 | 1 | 13 |
-| components/tributario | 0 | 0 | 49 | 34 | 11 | 30 |
+| components/tesouraria | 0 | 0 | 5 | 16 | 1 | 14 |
+| components/tributario | 0 | 0 | 49 | 34 | 13 | 30 |
 | components/ui | 0 | 0 | 102 | 17 | 0 | 3 |
-| hooks | 0 | 0 | 218 | 438 | 51 | 179 |
+| hooks | 0 | 0 | 218 | 438 | 59 | 180 |
 | hooks/bling | 0 | 0 | 11 | 33 | 1 | 4 |
-| hooks/financial | 0 | 0 | 10 | 18 | 1 | 12 |
+| hooks/financial | 0 | 0 | 10 | 18 | 1 | 13 |
 | lib | 0 | 0 | 67 | 10 | 3 | 9 |
 | lib/brazilian-validators | 0 | 0 | 9 | 0 | 0 | 0 |
 | lib/export-contabil | 0 | 0 | 8 | 0 | 0 | 0 |
@@ -120,15 +120,15 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 | lib/sped-generator | 0 | 0 | 5 | 0 | 0 | 0 |
 | lib/transaction-matcher | 0 | 0 | 6 | 0 | 0 | 0 |
 | lib/tributario | 0 | 0 | 114 | 0 | 0 | 11 |
-| pages | 54 | 64 | 75 | 356 | 40 | 160 |
-| pages/admin | 3 | 14 | 22 | 118 | 11 | 54 |
+| pages | 58 | 64 | 75 | 356 | 44 | 162 |
+| pages/admin | 3 | 14 | 22 | 118 | 14 | 55 |
 | pages/auth | 0 | 1 | 2 | 3 | 1 | 2 |
 | pages/bloqueios-duplicidade | 0 | 0 | 7 | 1 | 0 | 4 |
-| pages/clientes | 2 | 2 | 5 | 48 | 2 | 22 |
+| pages/clientes | 2 | 2 | 5 | 48 | 2 | 23 |
 | pages/configuracoes | 1 | 4 | 14 | 32 | 1 | 19 |
 | pages/dev | 0 | 1 | 1 | 1 | 0 | 0 |
-| pages/organizacoes | 1 | 2 | 3 | 36 | 2 | 18 |
-| pages/tributario | 32 | 40 | 65 | 100 | 19 | 56 |
+| pages/organizacoes | 1 | 2 | 3 | 36 | 3 | 18 |
+| pages/tributario | 32 | 40 | 65 | 100 | 22 | 56 |
 | types/reforma-tributaria | 0 | 0 | 13 | 0 | 0 | 0 |
 
 ## Rotas (url → arquivo)
@@ -157,7 +157,7 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 - `/assinatura-digital` [tela] → src/pages/AssinaturaDigital.tsx (protegida)
 - `/audit-logs` [tela] → src/pages/AuditLogs.tsx (protegida)
 - `/audit-sso-profile-sync` [tela] → src/pages/admin/AuditSsoProfileSync.tsx (protegida)
-- `/auth` [tela] → src/pages/Auth.tsx (protegida)
+- `/auth` [tela] → src/pages/Auth.tsx
 - `/auth/corporate` [tela] → src/pages/auth/CorporateOnboarding.tsx
 - `/benchmarking` [tela] → src/pages/BenchmarkingSetorial.tsx (protegida)
 - `/bi` [tela] → src/pages/BI.tsx (protegida)
@@ -274,6 +274,19 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 - `GET /users` → scripts/ai-context/cenarios.mjs
 - `POST /users/:id` → scripts/ai-context/cenarios.mjs
 - `GET /x` → scripts/ai-context/cenarios.mjs
+- `DJANGO prod` → scripts/data/test_data_migrate_pg_scenarios.py
+- `DJANGO prod` → scripts/data/test_data_migrate_pg_scenarios.py
+- `DJANGO prod` → scripts/data/test_data_migrate_pg_scenarios.py
+- `DJANGO prod` → scripts/data/test_data_migrate_pg_scenarios.py
+- `DJANGO prod` → scripts/data/test_data_migrate_pg_scenarios.py
+- `DJANGO prod` → scripts/data/test_data_migrate_pg_scenarios.py
+- `DJANGO stg` → scripts/data/test_data_migrate_pg_scenarios.py
+- `DJANGO stg` → scripts/healthcheck/test_healthcheck_scenarios.py
+- `DJANGO stg` → scripts/integrity/test_integrity_pg_scenarios.py
+- `DJANGO stg` → scripts/integrity/test_integrity_pg_scenarios.py
+- `DJANGO stg` → scripts/integrity/test_integrity_pg_scenarios.py
+- `DJANGO stg` → scripts/integrity/test_integrity_pg_scenarios.py
+- `DJANGO stg` → scripts/integrity/test_integrity_pg_scenarios.py
 
 ## Vistas por id (menu/ViewRouter → arquivo)
 - (nenhum)
@@ -284,7 +297,7 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 - `analise-preditiva` — tabelas: clientes, contas_pagar, contas_receber, transacoes_bancarias; chamada por 1 arquivo(s) do front
 - `analyze-document` (verify_jwt=false) — tabelas: -; chamada por 2 arquivo(s) do front
 - `api-keys-manage` (verify_jwt=false) — tabelas: api_keys, user_empresas; chamada por 1 arquivo(s) do front
-- `asaas-proxy` (verify_jwt=false) — tabelas: asaas_audit_trail, asaas_config, asaas_credit_risk_analysis, asaas_customers, asaas_payment_links, asaas_payments, asaas_reconciliation_suggestions, asaas_sync_queue, asaas_transfers, clientes, contas_receber, user_empresas, user_roles; chamada por 3 arquivo(s) do front
+- `asaas-proxy` (verify_jwt=false) — tabelas: asaas_audit_trail, asaas_config, asaas_credit_risk_analysis, asaas_customers, asaas_payment_links, asaas_payments, asaas_reconciliation_suggestions, asaas_sync_queue, asaas_transfers, clientes, contas_receber, user_empresas, user_roles; chamada por 4 arquivo(s) do front
 - `asaas-webhook` (verify_jwt=false) — tabelas: asaas_audit_trail, asaas_payments, asaas_transfers; chamada por 0 arquivo(s) do front
 - `benchmarking-setorial` (verify_jwt=false) — tabelas: -; chamada por 1 arquivo(s) do front
 - `bitrix24-sync` — tabelas: bitrix_field_mappings, bitrix_oauth_tokens, bitrix_sync_logs, clientes, contas_receber, elisao_tarefas_acionaveis, empresas; chamada por 3 arquivo(s) do front
@@ -300,9 +313,9 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 - `comparar-benchmark-setorial` — tabelas: empresas, faturamento_mensal, user_empresas; chamada por 1 arquivo(s) do front
 - `compare-schemas` (verify_jwt=false) — tabelas: -; chamada por 0 arquivo(s) do front
 - `conciliacao-ia` — tabelas: -; chamada por 1 arquivo(s) do front
-- `conciliacao-proxy` — tabelas: -; chamada por 0 arquivo(s) do front — **ÓRFÃ**
+- `conciliacao-proxy` — tabelas: -; chamada por 1 arquivo(s) do front
 - `consulta-tributaria` — tabelas: aliquotas_interestaduais, aliquotas_internas_uf, aliquotas_iss_municipal, beneficios_fiscais, cnaes, ncms, protocolos_st_ncms, protocolos_st_ufs; chamada por 1 arquivo(s) do front
-- `contabilizar-evento` — tabelas: eventos_contabilizacao_log, lancamentos_contabeis, partidas_contabeis, regras_contabilizacao_automatica, user_empresas, user_roles; chamada por 0 arquivo(s) do front — **ÓRFÃ**
+- `contabilizar-evento` — tabelas: eventos_contabilizacao_log, lancamentos_contabeis, partidas_contabeis, regras_contabilizacao_automatica, user_empresas, user_roles; chamada por 1 arquivo(s) do front
 - `convidar-contador` — tabelas: convites_contador, user_empresas; chamada por 1 arquivo(s) do front
 - `convidar-usuario` (verify_jwt=false) — tabelas: profiles, user_roles; chamada por 1 arquivo(s) do front
 - `copilot-global` — tabelas: acoes_recomendadas, alertas, contas_bancarias, contas_pagar, contas_receber, health_scores_operacionais, user_roles; chamada por 1 arquivo(s) do front
@@ -312,7 +325,7 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 - `digest-silenciamentos-erro` (verify_jwt=false) — tabelas: profiles, user_roles; chamada por 0 arquivo(s) do front, por SQL/cron
 - `enviar-alerta-email` (verify_jwt=false) — tabelas: alertas; chamada por 0 arquivo(s) do front
 - `enviar-bitrix24-tributario` (verify_jwt=false) — tabelas: user_empresas; chamada por 1 arquivo(s) do front
-- `enviar-convite-organizacao` — tabelas: convites, organizacao_membros, organizacoes; chamada por 0 arquivo(s) do front — **ÓRFÃ**
+- `enviar-convite-organizacao` — tabelas: convites, organizacao_membros, organizacoes; chamada por 1 arquivo(s) do front
 - `enviar-digest-conformidade` — tabelas: alertas_tributarios, digest_envios_log, empresas, integration_secrets, profiles, user_digest_preferences, user_roles; chamada por 0 arquivo(s) do front, por SQL/cron
 - `enviar-relatorios-tributarios-agendados` — tabelas: empresas, relatorios_tributarios_agendados; chamada por 0 arquivo(s) do front — **ÓRFÃ**
 - `executar-analise-preditiva` (verify_jwt=false) — tabelas: alertas_preditivos, clientes, contas_pagar, contas_receber, empresas, historico_analises_preditivas, historico_score_saude, metas_financeiras, recomendacoes_metas_ia, transacoes_bancarias, user_empresas; chamada por 0 arquivo(s) do front
@@ -346,10 +359,10 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 - `monitorar-erros-frontend` (verify_jwt=false) — tabelas: profiles, user_roles; chamada por 0 arquivo(s) do front
 - `n8n-callback` (verify_jwt=false) — tabelas: -; chamada por 0 arquivo(s) do front
 - `n8n-dispatch` — tabelas: n8n_dispatch_logs, n8n_workflow_configs; chamada por 0 arquivo(s) do front — **ÓRFÃ**
-- `nfe-upload-certificado` — tabelas: sefaz_dfe_cursor; chamada por 0 arquivo(s) do front — **ÓRFÃ**
-- `nfe-vinculo-proxy` — tabelas: -; chamada por 0 arquivo(s) do front — **ÓRFÃ**
+- `nfe-upload-certificado` — tabelas: sefaz_dfe_cursor; chamada por 1 arquivo(s) do front
+- `nfe-vinculo-proxy` — tabelas: -; chamada por 1 arquivo(s) do front
 - `notify-performance-alert` (verify_jwt=false) — tabelas: query_telemetry; chamada por 0 arquivo(s) do front, por SQL/cron
-- `notify-saved-filter` — tabelas: notification_history; chamada por 0 arquivo(s) do front — **ÓRFÃ**
+- `notify-saved-filter` — tabelas: notification_history; chamada por 1 arquivo(s) do front
 - `open-finance` — tabelas: contas_bancarias, open_finance_consents, transacoes_bancarias; chamada por 1 arquivo(s) do front
 - `overlay-rejeicoes-auditoria` — tabelas: overlay_rejeicoes_auditoria; chamada por 1 arquivo(s) do front
 - `prever-carga-tributaria` (verify_jwt=false) — tabelas: faturamento_mensal, user_empresas; chamada por 1 arquivo(s) do front
@@ -361,14 +374,14 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 - `scim-server` (verify_jwt=false) — tabelas: profiles, scim_operations_log, scim_tokens, sso_providers, sso_role_mappings, user_empresas, user_roles; chamada por 2 arquivo(s) do front
 - `sefaz-dfe-dispatcher` (verify_jwt=false) — tabelas: cron_job_logs, empresas_certificados, sefaz_dfe_cursor; chamada por 0 arquivo(s) do front
 - `sefaz-dfe-puxar` (verify_jwt=false) — tabelas: empresas_certificados, query_telemetry, sefaz_dfe_cursor; chamada por 0 arquivo(s) do front
-- `sefaz-manifestar` — tabelas: empresas_certificados, nfe_eventos, nfe_recebidas, user_empresas; chamada por 0 arquivo(s) do front — **ÓRFÃ**
+- `sefaz-manifestar` — tabelas: empresas_certificados, nfe_eventos, nfe_recebidas, user_empresas; chamada por 1 arquivo(s) do front
 - `send-device-alert` (verify_jwt=false) — tabelas: -; chamada por 1 arquivo(s) do front
-- `send-push-notification` (verify_jwt=false) — tabelas: alertas, push_subscriptions; chamada por 3 arquivo(s) do front, por SQL/cron
+- `send-push-notification` (verify_jwt=false) — tabelas: alertas, push_subscriptions; chamada por 4 arquivo(s) do front, por SQL/cron
 - `simular-presumido` — tabelas: -; chamada por 0 arquivo(s) do front — **ÓRFÃ**
 - `simular-real` — tabelas: -; chamada por 0 arquivo(s) do front — **ÓRFÃ**
 - `simular-simples` — tabelas: -; chamada por 0 arquivo(s) do front — **ÓRFÃ**
-- `sincronizar-anomalia-bitrix24` — tabelas: anomalias_detectadas; chamada por 0 arquivo(s) do front — **ÓRFÃ**
-- `sso-callback` (verify_jwt=false) — tabelas: audit_logs, profiles, sso_login_attempts, sso_providers, sso_role_mappings, sso_user_groups, user_empresas, user_roles; chamada por 1 arquivo(s) do front
+- `sincronizar-anomalia-bitrix24` — tabelas: anomalias_detectadas; chamada por 1 arquivo(s) do front
+- `sso-callback` (verify_jwt=false) — tabelas: audit_logs, profiles, sso_login_attempts, sso_providers, sso_role_mappings, sso_user_groups, user_empresas, user_roles; chamada por 2 arquivo(s) do front
 - `sso-generate-metadata` — tabelas: -; chamada por 1 arquivo(s) do front
 - `sso-initiate` (verify_jwt=false) — tabelas: sso_login_attempts, sso_providers; chamada por 2 arquivo(s) do front
 - `sso-logout` (verify_jwt=false) — tabelas: audit_logs, sso_login_attempts, sso_providers; chamada por 2 arquivo(s) do front
@@ -411,32 +424,32 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 
 ## Integrações externas
 - SDKs: Sentry, Supabase, i18next, react-query, zod
-- hosts mais citados: ai.gateway.lovable.dev, api.resend.com, www.portalfiscal.inf.br, test.supabase.co, app.promo-finance.com, api.supabase.com, app.test, bwwbeyolnnzppeuhgkcd.supabase.co, idp.acme, ipapi.co, wa.me, www1.nfe.fazenda.gov.br, x.supabase.co, api.asaas.com, api.bling.com.br
+- hosts mais citados: ai.gateway.lovable.dev, api.resend.com, www.portalfiscal.inf.br, test.supabase.co, api.supabase.com, app.promo-finance.com, app.test, bwwbeyolnnzppeuhgkcd.supabase.co, exemplo.com, idp.acme, ipapi.co, wa.me, www1.nfe.fazenda.gov.br, x.supabase.co, api.asaas.com
 - webhooks recebidos: analise-fluxo-ia, analyze-document, api-keys-manage, asaas-proxy, asaas-webhook, benchmarking-setorial, bitrix24-webhook, bling-proxy, bling-webhook, categorizar-despesa, ci-security-gate-log, cnpja-lookup, compare-schemas, convidar-usuario, decidir-regime, digest-silenciamentos-erro, enviar-alerta-email, enviar-bitrix24-tributario, executar-analise-preditiva, executar-regua-cobranca, executar-relatorios, expert-agent, external-data, gerar-alertas, gerar-alertas-dispatcher, gerar-alertas-tributarios, gerar-dre-tributaria, gerar-heatmap-tributario, gerar-pdf-tributario, get-vapid-key, health, insights-relatorio, mcp-query, monitor-health, monitorar-erros-frontend, n8n-callback, notify-performance-alert, prever-carga-tributaria, scim-server, sefaz-dfe-dispatcher, sefaz-dfe-puxar, send-device-alert, send-push-notification, sso-callback, sso-initiate, sso-logout, validar-token-contador, validate-ip-geo, webhook-replay, webhook-retry-worker, whatsapp-ia-proativo, whatsapp-webhook
 - env de integração (só nomes): ASAAS_API_KEY, ASAAS_WEBHOOK_TOKEN, BITRIX24_ACCESS_TOKEN, BITRIX24_CLIENT_ID, BITRIX24_CLIENT_SECRET, BLING_CLIENT_ID, BLING_CLIENT_SECRET, CI_GATE_LOG_SECRET, CNPJA_API_KEY, CONTADOR_INVITE_SECRET, CRON_DISPATCH_SECRET, EDGE_SENTRY_DSN, LOVABLE_API_KEY, MAPBOX_ACCESS_TOKEN, N8N_DISPATCH_SECRET, OPENAI_API_KEY, OPEN_FINANCE_CLIENT_ID, OPEN_FINANCE_CLIENT_SECRET, REGUA_CRON_SECRET, RESEND_API_KEY, RESEND_FROM, SEFAZ_CRON_SECRET, SENTRY_DSN, SENTRY_ENVIRONMENT, SLACK_WEBHOOK_URL, SUPABASE_JWT_SECRET, VITE_BLING_CLIENT_ID, VITE_SENTRY_DSN
 
 ## Permissões / papéis
-- papéis no código: user (24), system (19), alert (15), admin (14), status (13), assistant (5), region (5), AMBOS (4), ORIGEM (4), dialog (4), img (4), list (4), progressbar (4), DESTINO (3), financeiro (3), presentation (3), RESPONSAVEL (2), anon (2), combobox (2), contador_readonly (2), group (2), separator (2), visualizador (2), MEMBRO (1), agent (1), authenticated (1), button (1), checkbox (1), editor (1), link (1), listitem (1), note (1), operacional (1), radiogroup (1), root (1), sup (1), tool (1), treeitem (1)
+- papéis no código: user (24), system (19), alert (15), admin (14), status (13), assistant (5), region (5), AMBOS (4), ORIGEM (4), dialog (4), img (4), list (4), progressbar (4), DESTINO (3), financeiro (3), presentation (3), RESPONSAVEL (2), anon (2), combobox (2), contador_readonly (2), group (2), separator (2), visualizador (2), MEMBRO (1), agent (1), authenticated (1), button (1), checkbox (1), editor (1), link (1), listitem (1), note (1), operacional (1), radiogroup (1), root (1), service_role (1), sup (1), tool (1), treeitem (1)
 - enums de papel: app_role: admin|financeiro|operacional|visualizador|financeiro|operacional|visualizador|financeiro|operacional|visualizador|contador|viewer|manager|operator|viewer; org_papel: RESPONSAVEL|ADMIN|MEMBRO|LEITOR
-- guards: src/components/auth/EmpresaGuard.tsx, src/components/auth/ProtectedRoute.tsx, src/components/navigation/UnsavedGuardProvider.tsx · rotas protegidas: 119 · públicas: /__especimes, /*, /auth/corporate, /contador/:token, /convite/:token, /design-system-debug, /reset-password, /status, /theme-diagnostics
+- guards: src/components/auth/EmpresaGuard.tsx, src/components/auth/ProtectedRoute.tsx, src/components/navigation/UnsavedGuardProvider.tsx · rotas protegidas: 118 · públicas: /__especimes, /*, /auth, /auth/corporate, /contador/:token, /convite/:token, /design-system-debug, /reset-password, /status, /theme-diagnostics
 - feature flags: ENABLE_AUTHENTICATED_VISUAL_SNAPSHOTS, ENABLE_PRODUCTION_SIMULATION_AUDIT, FEATURE_X, nova-tela, novo-inbox
 
 ## Alertas (baseline.json → alertas)
 - rotas_sem_arquivo: 0
 - componentes_ambiguos: 0
-- menu_sem_destino: 24 — ex.: Action Matrix Audit -> /inteligencia#action-matrix, Apuração IBS/CBS -> apuracao, Auditoria -> auditoria
-- edges_orfas: 20 — ex.: calcular-slo-metrics-diario, calculo-iva, conciliacao-proxy
+- menu_sem_destino: 20 — ex.: Apuração IBS/CBS -> apuracao, Auditoria -> auditoria, Calculadora -> calculadora
+- edges_orfas: 12 — ex.: calcular-slo-metrics-diario, calculo-iva, enviar-relatorios-tributarios-agendados
 - edges_chamadas_sem_pasta: 0
 - tabelas_sem_rls: 0
 - tabelas_usadas_sem_definicao: 2 — ex.: companies, relatorios_tributarios
 - tabelas_com_drift_migration_vs_types: 135 — ex.: acoes_recomendadas, alertas_preditivos, alertas_tributarios
 - rpcs_sem_definicao: 3 — ex.: exec_sql, get_cron_run_history, pg_try_advisory_lock
 - componentes_orfaos: 44 — ex.: src/components/admin/FiscalHealthBadge.tsx, src/components/admin/telemetry/AcessosSuspeitosPanel.tsx, src/components/admin/telemetry/CatalogosTributariosHealthPanel.tsx
-- componentes_com_nome_duplicado: 30 — ex.: Accordion, AccordionItem, AnimatedCounter
-- scripts_orfaos: 13 — ex.: scripts/integrity/06_secdef.sql, scripts/integrity/07_exec_grants.sql, scripts/integrity/08_rpc_tenant_scope.sql
+- componentes_com_nome_duplicado: 31 — ex.: Accordion, AccordionItem, AnimatedCounter
+- scripts_orfaos: 0
 - env_usadas_nao_declaradas: 4 — ex.: DEV, MODE, NODE_ENV
 - ciclos_de_import: 6
-- possiveis_segredos_no_codigo: 1 — ex.: scripts/ai-context/cenarios.mjs:102
+- possiveis_segredos_no_codigo: 0
 
 ## Grafo de código (graphify)
 - não gerado neste run. Neste repo NÃO execute `graphify update .` (proibido por AGENTS.md, seção Graphify). O fluxo autorizado é o piloto: `npm run graphify:pilot`, ou `npm run graphify:analyze -- --profile NOME` (revise antes com `npm run graphify:inventory -- --profile NOME`). Resultados privados em graphify-out/piloto-*/; consulte apenas grafo cuja evidencia.json tenha piloto validado e hashes compatíveis com os arquivos atuais.
@@ -533,79 +546,80 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 - `automation:uninstall-hooks`: `node scripts/automation.mjs uninstall-hooks`
 
 ## Documentos (raiz e docs/)
-- `.github/PULL_REQUEST_TEMPLATE.md` (22 linhas)
-- `.github/copilot-instructions.md` (2 linhas)
-- `AGENTS.md` — AGENTS.md — Promo_Finance_V2 (68 linhas)
-- `AI_RULES.md` — AI_RULES (79 linhas)
-- `AUDITORIA.md` — AUDITORIA — Promo Finance V2 (648 linhas)
-- `CHANGELOG.md` — Changelog (114 linhas)
-- `CLAUDE.md` (2 linhas)
-- `CONTRIBUTING.md` — 🤝 Guia de Contribuição (290 linhas)
-- `ESTADO_ATUAL.md` — ESTADO ATUAL DO SISTEMA — Promo Finance v2 (779 linhas)
-- `EXECAO_RESTYLE_METRONIC_V9.md` — EXCEÇÃO FORMAL: Epic de Restyle Metronic v9 (119 linhas)
-- `EXECAO_VELA_DARK.md` — EXCEÇÃO FORMAL: Epic de Restyle Vela-dark (138 linhas)
-- `HANDOFF_VELA_DARK.md` — HANDOFF — Epic Vela-dark Promo_Finance_V2 (228 linhas)
-- `PENDENCIAS.md` — PENDÊNCIAS — Promo Finance V2 (309 linhas)
-- `PLANO_100.md` (561 linhas)
-- `PLANO_50.md` — PLANO_50 — 50 etapas de melhoria e correção (485 linhas)
-- `README.md` — Promo Finance (64 linhas)
-- `RELATORIO_ACEITE_VELA_DARK.md` — RELATÓRIO DE ACEITE — Epic Vela-dark · Promo_Finance_V2 (101 linhas)
-- `RELATORIO_CI.md` — RELATÓRIO CI — Promo Finance V2 (340 linhas)
-- `RELATORIO_IMPLEMENTACAO_EXAUSTIVO.md` — RELATÓRIO DE IMPLEMENTAÇÃO EXAUSTIVO — Epic Vela-dark (181 linhas)
-- `SECURITY.md` — Política de Segurança — Promo Finance V2 (51 linhas)
-- `SECURITY_RULES.md` — SECURITY_RULES (102 linhas)
-- `docs/ACCESSIBILITY.md` — ♿ Guia de Acessibilidade - Promo Finance (311 linhas)
-- `docs/ADR-001-LALAMOVE-FORA-DE-ESCOPO.md` — ADR-001 — Exclusão do módulo de logística/Lalamove (57 linhas)
-- `docs/ADR-002-FUNCOES-ESSENCIAIS-PROMO-FINANCE.md` — ADR-002 — Funções essenciais do Promo Finance V2 (57 linhas)
-- `docs/ADR-003-PAPEIS-POR-EMPRESA.md` — ADR-003 — Modelo de papéis e escopo de empresa (130 linhas)
-- `docs/ARCHITECTURE.md` — Arquitetura — Promo Finance (102 linhas)
-- `docs/ARCHITECTURE_GRAPH.md` — Grafo de Arquitetura — Promo Finance V2 (388 linhas)
-- `docs/AUDITORIA_PLANEJADO_X_EXECUTADO_2026-10-12.md` — Auditoria exaustiva — Planejado × Executado (Promo Finance V2) (1366 linhas)
-- `docs/AUDITORIA_SINCRONIA_2026-09-17.md` — Auditoria de Sincronia — Local ↔ GitHub ↔ Banco (2026-09-17) (80 linhas)
-- `docs/AUDITORIA_TECNICA_EXAUSTIVA_2026-09-02_R2_LIVE.md` — Auditoria Técnica Exaustiva R2 (validação live) — Promo Finance V2 (324 linhas)
-- `docs/AUTOMACAO_LOCAL.md` — Automação local — Promo_Finance_V2 (178 linhas)
-- `docs/COMPONENTS.md` — Documentação dos Componentes UI Aprimorados (457 linhas)
-- `docs/CSP_REVISAO.md` — Revisão CSP — Content Security Policy (47 linhas)
-- `docs/DATA_MIGRATION.md` — Runbook — Migração de Dados PROD → STAGING (171 linhas)
-- `docs/DB_HEALTH.md` — DB_HEALTH — Painel de Saúde do Banco (232 linhas)
-- `docs/DEPLOYMENT.md` — Deployment Guide (61 linhas)
-- `docs/DIAGRAMA_ER.md` — Diagrama ER — núcleo financeiro (156 linhas)
-- `docs/EDGE_FUNCTIONS_CATALOG.md` — Catálogo de Edge Functions (99 linhas)
-- `docs/FUNCIONALIDADES_SEM_UI.md` — 🔍 Funcionalidades sem UI completa — Promo Finance (169 linhas)
-- `docs/FUNCIONALIDADES_SISTEMA.md` — 📋 Funcionalidades do Sistema — Promo Finance (359 linhas)
-- `docs/GAPS_ENTERPRISE.md` — 🌐 Análise de Gaps Enterprise — Promo Finance (326 linhas)
-- `docs/GETTING-STARTED.md` — Getting Started - Promo Finance (46 linhas)
-- `docs/GRAPHIFY_PLANO_50_ETAPAS.md` — Graphify no Promo Finance V2 — implementação em 50 etapas (403 linhas)
-- `docs/GRAPHIFY_VALIDACAO_2026-09-11.md` — Validação Graphify e catálogo canônico — 11/09/2026 (203 linhas)
-- `docs/HEALTHCHECK.md` — Healthcheck pós-corte (69 linhas)
-- `docs/INVENTARIO_FUNCIONALIDADES.md` — 📋 Inventário Completo de Funcionalidades e Ferramentas (587 linhas)
-- `docs/INVENTARIO_REPOSITORIO.md` — 📋 INVENTÁRIO COMPLETO DO PROJETO FINANCEIRO (182 linhas)
-- `docs/MATRIZ_PAPEIS.md` — Matriz papel × rota × acesso a dados (63 linhas)
-- `docs/MIGRATIONS_ADR.md` — ADR — Migrations Consolidadas (356 migrations) (80 linhas)
-- `docs/MIGRATION_CHECKLIST.md` — Checklist de Migração — Schema, RLS/Policies e Índices entre Projetos Supabase (200 linhas)
-- `docs/MODULARIZATION_REPORT.md` — Relatório de Modularização (>400 linhas) (42 linhas)
-- `docs/N8N_WORKFLOWS.md` — Integração n8n — Triagem, Tarefas e Roteamento por Score (43 linhas)
-- `docs/PERFORMANCE.md` — ⚡ Guia de Performance - Promo Finance (316 linhas)
-- `docs/PLANO_EXCELENCIA_10_10.md` — Plano de Excelência 10/10 — Promo Finance (73 linhas)
-- `docs/PLANO_MELHORIAS_50_ETAPAS_2026-09-13.md` — Plano de Melhorias e Correções — 50 Etapas (742 linhas)
-- `docs/QA_EXHAUSTIVE_REPORT.md` — Relatório QA Exaustivo — 2026-07-22 (69 linhas)
-- `docs/QA_VALIDATION_REPORT.md` — QA Validation Report — Auditoria Exaustiva (124 linhas)
-- `docs/REAUDITORIA_FINAL.md` — Re-Auditoria Final — Plano 50 Etapas (142 linhas)
-- `docs/RECONCILIACAO_ONLINE_2026-08-31.md` — Reconciliação online — 2026-08-31 (138 linhas)
-- `docs/RLS_MATRIZ_NEGATIVA.md` — Matriz RLS negativa — o que o banco DEVE negar (138 linhas)
-- `docs/RUNBOOK.md` — Runbook Operacional — Promo Finance (235 linhas)
-- `docs/SCENARIOS.md` — Scenario Harness (103 linhas)
-- `docs/SECURITY.md` — Segurança (58 linhas)
-- `docs/SECURITY_DEFINER_ATTESTATION.md` — SECURITY DEFINER — Attestation & Justificativas (215 linhas)
-- `docs/STAGING_MIGRATION.md` — Runbook — Migração para Staging (138 linhas)
-- `docs/TESTING.md` — Guia de Testes (61 linhas)
-- `docs/VALIDACAO_EXAUSTIVA_R2_2026-09-03.md` — Validação Exaustiva R2 — 2026-09-03 (183 linhas)
-- `docs/VALIDACAO_SEGURANCA_GATEWAY_2026-08-27.md` — Validação de segurança dos gateways — 2026-08-27 (50 linhas)
-- `docs/testing-architecture.md` — Freight Quest Testing Architecture (39 linhas)
+- `.github/PULL_REQUEST_TEMPLATE.md` (21 linhas)
+- `.github/copilot-instructions.md` (1 linhas)
+- `AGENTS.md` — AGENTS.md — Promo_Finance_V2 (67 linhas)
+- `AI_RULES.md` — AI_RULES (78 linhas)
+- `AUDITORIA.md` — AUDITORIA — Promo Finance V2 (647 linhas)
+- `CHANGELOG.md` — Changelog (113 linhas)
+- `CLAUDE.md` (1 linhas)
+- `CONTRIBUTING.md` — 🤝 Guia de Contribuição (289 linhas)
+- `ESTADO_ATUAL.md` — ESTADO ATUAL DO SISTEMA — Promo Finance v2 (778 linhas)
+- `EXECAO_RESTYLE_METRONIC_V9.md` — EXCEÇÃO FORMAL: Epic de Restyle Metronic v9 (118 linhas)
+- `EXECAO_VELA_DARK.md` — EXCEÇÃO FORMAL: Epic de Restyle Vela-dark (137 linhas)
+- `HANDOFF_VELA_DARK.md` — HANDOFF — Epic Vela-dark Promo_Finance_V2 (227 linhas)
+- `PENDENCIAS.md` — PENDÊNCIAS — Promo Finance V2 (308 linhas)
+- `PLANO_100.md` (560 linhas)
+- `PLANO_50.md` — PLANO_50 — 50 etapas de melhoria e correção (484 linhas)
+- `README.md` — Promo Finance (63 linhas)
+- `RELATORIO_ACEITE_VELA_DARK.md` — RELATÓRIO DE ACEITE — Epic Vela-dark · Promo_Finance_V2 (100 linhas)
+- `RELATORIO_CI.md` — RELATÓRIO CI — Promo Finance V2 (339 linhas)
+- `RELATORIO_IMPLEMENTACAO_EXAUSTIVO.md` — RELATÓRIO DE IMPLEMENTAÇÃO EXAUSTIVO — Epic Vela-dark (180 linhas)
+- `SECURITY.md` — Política de Segurança — Promo Finance V2 (50 linhas)
+- `SECURITY_RULES.md` — SECURITY_RULES (101 linhas)
+- `docs/ACCESSIBILITY.md` — ♿ Guia de Acessibilidade - Promo Finance (310 linhas)
+- `docs/ADR-001-LALAMOVE-FORA-DE-ESCOPO.md` — ADR-001 — Exclusão do módulo de logística/Lalamove (56 linhas)
+- `docs/ADR-002-FUNCOES-ESSENCIAIS-PROMO-FINANCE.md` — ADR-002 — Funções essenciais do Promo Finance V2 (56 linhas)
+- `docs/ADR-003-PAPEIS-POR-EMPRESA.md` — ADR-003 — Modelo de papéis e escopo de empresa (129 linhas)
+- `docs/ARCHITECTURE.md` — Arquitetura — Promo Finance (101 linhas)
+- `docs/ARCHITECTURE_GRAPH.md` — Grafo de Arquitetura — Promo Finance V2 (387 linhas)
+- `docs/AUDITORIA_PLANEJADO_X_EXECUTADO_2026-10-12.md` — Auditoria exaustiva — Planejado × Executado (Promo Finance V2) (1365 linhas)
+- `docs/AUDITORIA_SINCRONIA_2026-09-17.md` — Auditoria de Sincronia — Local ↔ GitHub ↔ Banco (2026-09-17) (79 linhas)
+- `docs/AUDITORIA_TECNICA_EXAUSTIVA_2026-09-02_R2_LIVE.md` — Auditoria Técnica Exaustiva R2 (validação live) — Promo Finance V2 (323 linhas)
+- `docs/AUTOMACAO_LOCAL.md` — Automação local — Promo_Finance_V2 (177 linhas)
+- `docs/COMPONENTS.md` — Documentação dos Componentes UI Aprimorados (456 linhas)
+- `docs/CSP_REVISAO.md` — Revisão CSP — Content Security Policy (46 linhas)
+- `docs/DATA_MIGRATION.md` — Runbook — Migração de Dados PROD → STAGING (170 linhas)
+- `docs/DB_HEALTH.md` — DB_HEALTH — Painel de Saúde do Banco (231 linhas)
+- `docs/DEPLOYMENT.md` — Deployment Guide (60 linhas)
+- `docs/DIAGRAMA_ER.md` — Diagrama ER — núcleo financeiro (155 linhas)
+- `docs/EDGE_FUNCTIONS_CATALOG.md` — Catálogo de Edge Functions (98 linhas)
+- `docs/FUNCIONALIDADES_SEM_UI.md` — 🔍 Funcionalidades sem UI completa — Promo Finance (168 linhas)
+- `docs/FUNCIONALIDADES_SISTEMA.md` — 📋 Funcionalidades do Sistema — Promo Finance (358 linhas)
+- `docs/GAPS_ENTERPRISE.md` — 🌐 Análise de Gaps Enterprise — Promo Finance (325 linhas)
+- `docs/GETTING-STARTED.md` — Getting Started - Promo Finance (45 linhas)
+- `docs/GRAPHIFY_PLANO_50_ETAPAS.md` — Graphify no Promo Finance V2 — implementação em 50 etapas (402 linhas)
+- `docs/GRAPHIFY_VALIDACAO_2026-09-11.md` — Validação Graphify e catálogo canônico — 11/09/2026 (202 linhas)
+- `docs/HEALTHCHECK.md` — Healthcheck pós-corte (68 linhas)
+- `docs/INVENTARIO_FUNCIONALIDADES.md` — 📋 Inventário Completo de Funcionalidades e Ferramentas (586 linhas)
+- `docs/INVENTARIO_REPOSITORIO.md` — 📋 INVENTÁRIO COMPLETO DO PROJETO FINANCEIRO (181 linhas)
+- `docs/MATRIZ_PAPEIS.md` — Matriz papel × rota × acesso a dados (62 linhas)
+- `docs/MIGRATIONS_ADR.md` — ADR — Migrations Consolidadas (356 migrations) (79 linhas)
+- `docs/MIGRATION_CHECKLIST.md` — Checklist de Migração — Schema, RLS/Policies e Índices entre Projetos Supabase (199 linhas)
+- `docs/MODULARIZATION_REPORT.md` — Relatório de Modularização (>400 linhas) (41 linhas)
+- `docs/N8N_WORKFLOWS.md` — Integração n8n — Triagem, Tarefas e Roteamento por Score (42 linhas)
+- `docs/PERFORMANCE.md` — ⚡ Guia de Performance - Promo Finance (315 linhas)
+- `docs/PLANO_EXCELENCIA_10_10.md` — Plano de Excelência 10/10 — Promo Finance (72 linhas)
+- `docs/PLANO_MELHORIAS_50_ETAPAS_2026-09-13.md` — Plano de Melhorias e Correções — 50 Etapas (741 linhas)
+- `docs/QA_EXHAUSTIVE_REPORT.md` — Relatório QA Exaustivo — 2026-07-22 (68 linhas)
+- `docs/QA_VALIDATION_REPORT.md` — QA Validation Report — Auditoria Exaustiva (123 linhas)
+- `docs/REAUDITORIA_FINAL.md` — Re-Auditoria Final — Plano 50 Etapas (141 linhas)
+- `docs/RECONCILIACAO_ONLINE_2026-08-31.md` — Reconciliação online — 2026-08-31 (137 linhas)
+- `docs/RLS_MATRIZ_NEGATIVA.md` — Matriz RLS negativa — o que o banco DEVE negar (137 linhas)
+- `docs/RUNBOOK.md` — Runbook Operacional — Promo Finance (234 linhas)
+- `docs/SCENARIOS.md` — Scenario Harness (102 linhas)
+- `docs/SECURITY.md` — Segurança (57 linhas)
+- `docs/SECURITY_DEFINER_ATTESTATION.md` — SECURITY DEFINER — Attestation & Justificativas (214 linhas)
+- `docs/STAGING_MIGRATION.md` — Runbook — Migração para Staging (137 linhas)
+- `docs/TESTING.md` — Guia de Testes (60 linhas)
+- `docs/VALIDACAO_EXAUSTIVA_R2_2026-09-03.md` — Validação Exaustiva R2 — 2026-09-03 (182 linhas)
+- `docs/VALIDACAO_SEGURANCA_GATEWAY_2026-08-27.md` — Validação de segurança dos gateways — 2026-08-27 (49 linhas)
+- `docs/testing-architecture.md` — Freight Quest Testing Architecture (38 linhas)
 - subpastas de docs/: docs/archive (9), docs/guides (9), docs/agentes (8), docs/execucao-cline (5), docs/runbooks (5), docs/ci (2), docs/contexto (2), docs/migracao (2), docs/adr (1), docs/evidencias (1)
 - CHANGELOG topo: [Unreleased]
 
 ## Últimos commits
+- 2026-11-11 `f0bad74` fix: endurecimento e cobertura de teste de todos os scripts em scripts/ (#299)
 - 2026-11-11 `85d018c` fix: shims para Supabase Preview — drop get_cron_jobs() antes de mudanças de return type (#131)
 - 2026-11-11 `e361b01` chore(migrations): [STEP 22] reconciliar migrations não rastreadas (#238)
 - 2026-11-11 `62bd983` chore(db): [STEP 17] dropar 404 índices idle (idx_scan=0) (#243)
@@ -620,7 +634,6 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 - 2026-11-09 `e914163` fix: bump date-fns from 2.30.0 to 4.4.0 (#298)
 - 2026-11-09 `9c94d00` fix: bump input-otp from 1.4.2 to 1.5.0 (#295)
 - 2026-11-09 `e07fec7` chore: documentação final sessão merge-prs (prs.json + RELATORIO + dossiers)
-- 2026-11-09 `529236d` fix: compatibilidade TypeScript com Zod v4 (supersede #211)
 
 ## Arquivos deste diretório
 - `docs/contexto/codigo/rotas.json`

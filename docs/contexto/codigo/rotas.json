@@ -3,7 +3,7 @@
  "format_version": 2,
  "resumo": {
   "urls": 128,
-  "rotas_http_backend": 12,
+  "rotas_http_backend": 25,
   "vistas_por_id": 0,
   "itens_menu": 117,
   "lazy": 125
@@ -300,6 +300,7 @@
     "protocolos_st_ncms",
     "protocolos_st_ufs",
     "recomendacoes_metas_ia",
+    "regras_roteamento_financeiro",
     "regua_cobranca_status",
     "solicitacoes_aprovacao",
     "ufs",
@@ -1322,7 +1323,10 @@
    "edges": [
     "conciliacao-ia",
     "copilot-global",
-    "detectar-anomalias-financeiras"
+    "detectar-anomalias-financeiras",
+    "notify-saved-filter",
+    "send-push-notification",
+    "sincronizar-anomalia-bitrix24"
    ],
    "canais_realtime": [
     "${config.channel}-${Math.random().toString(36).slice(2, 8)}",
@@ -1491,7 +1495,8 @@
    ],
    "edges": [
     "copilot-global",
-    "detectar-anomalias-financeiras"
+    "detectar-anomalias-financeiras",
+    "sincronizar-anomalia-bitrix24"
    ],
    "canais_realtime": [
     "alertas-realtime-${Math.random().toString(36).slice(2, 8)}",
@@ -1753,6 +1758,11 @@
     "duplicate_saved_filter",
     "get_cron_jobs",
     "get_cron_run_history",
+    "get_integrity_alerts",
+    "get_performance_alerts",
+    "get_performance_alerts_weekly",
+    "get_retencao_politicas_status",
+    "get_retention_history",
     "has_role",
     "log_audit",
     "registrar_auditoria_config",
@@ -1761,7 +1771,8 @@
    "edges": [
     "copilot-global",
     "detectar-anomalias-financeiras",
-    "gerar-resumo-executivo-semanal"
+    "gerar-resumo-executivo-semanal",
+    "sincronizar-anomalia-bitrix24"
    ],
    "canais_realtime": [
     "alertas-realtime-${Math.random().toString(36).slice(2, 8)}",
@@ -1903,6 +1914,7 @@
     "fornecedores",
     "frontend_error_logs",
     "frontend_performance_logs",
+    "regras_roteamento_financeiro",
     "scim_setup_checklist",
     "scim_tokens",
     "sso_login_attempts",
@@ -2361,7 +2373,8 @@
    ],
    "edges": [
     "detectar-anomalias-financeiras",
-    "gerar-resumo-executivo-semanal"
+    "gerar-resumo-executivo-semanal",
+    "sincronizar-anomalia-bitrix24"
    ],
    "canais_realtime": [
     "anomalia_detection_runs_changes-${Math.random().toString(36).slice(2, 8)}",
@@ -2497,6 +2510,11 @@
     "user_onboarding_progress"
    ],
    "rpcs": [
+    "get_integrity_alerts",
+    "get_performance_alerts",
+    "get_performance_alerts_weekly",
+    "get_retencao_politicas_status",
+    "get_retention_history",
     "registrar_auditoria_config",
     "resolve_integrity_alert"
    ],
@@ -3351,7 +3369,7 @@
    "arquivos_puxados": 95
   },
   {
-   "protegida": true,
+   "protegida": false,
    "wrappers": [],
    "pai": null,
    "indice": false,
@@ -3603,6 +3621,7 @@
     "frontend_error_logs",
     "frontend_performance_logs",
     "historico_cobranca_whatsapp",
+    "regras_roteamento_financeiro",
     "solicitacoes_aprovacao",
     "user_anomalia_preferences",
     "user_empresas",
@@ -3799,6 +3818,7 @@
     "frontend_performance_logs",
     "historico_analises_preditivas",
     "historico_cobranca_whatsapp",
+    "regras_roteamento_financeiro",
     "solicitacoes_aprovacao",
     "user_anomalia_preferences",
     "user_empresas",
@@ -4703,6 +4723,7 @@
     "frontend_error_logs",
     "frontend_performance_logs",
     "historico_cobranca_whatsapp",
+    "regras_roteamento_financeiro",
     "solicitacoes_aprovacao",
     "user_active_filters",
     "user_anomalia_preferences",
@@ -4886,6 +4907,7 @@
     "historico_cobranca_whatsapp",
     "portal_cliente_acessos",
     "portal_cliente_tokens",
+    "regras_roteamento_financeiro",
     "solicitacoes_aprovacao",
     "user_anomalia_preferences",
     "user_empresas",
@@ -5813,6 +5835,7 @@
     "profiles",
     "push_subscriptions",
     "regras_conciliacao",
+    "regras_roteamento_financeiro",
     "saved_filter_subscriptions",
     "saved_filters",
     "solicitacoes_aprovacao",
@@ -5832,8 +5855,11 @@
    ],
    "edges": [
     "conciliacao-ia",
+    "conciliacao-proxy",
     "copilot-global",
-    "external-data"
+    "external-data",
+    "notify-saved-filter",
+    "send-push-notification"
    ],
    "canais_realtime": [
     "${config.channel}-${Math.random().toString(36).slice(2, 8)}",
@@ -5934,6 +5960,7 @@
    ],
    "rpcs": [
     "delete_cron_job",
+    "get_cron_jobs",
     "get_cron_run_history",
     "toggle_cron_job"
    ],
@@ -6552,6 +6579,7 @@
     "audit_logs",
     "auditoria_financeira",
     "boletos",
+    "categorias",
     "centros_custo",
     "clientes",
     "contas_pagar",
@@ -6561,6 +6589,7 @@
     "elisao_simulacoes_regime",
     "elisao_tarefas_acionaveis",
     "empresas",
+    "eventos_contabilizacao_log",
     "fornecedores",
     "frontend_error_logs",
     "frontend_performance_logs",
@@ -6569,6 +6598,7 @@
     "partidas_contabeis",
     "plano_contas",
     "regras_contabilizacao_automatica",
+    "regras_roteamento_financeiro",
     "solicitacoes_aprovacao",
     "sped_contabil_arquivos",
     "user_action_audit",
@@ -6582,12 +6612,14 @@
     "vw_contas_receber_painel"
    ],
    "rpcs": [
+    "calcular_potencial_elisao",
     "fn_balancete",
     "fn_indices_contabeis",
     "log_audit",
     "registrar_auditoria_config"
    ],
    "edges": [
+    "contabilizar-evento",
     "copilot-global",
     "external-data",
     "gerar-sped-ecd",
@@ -6810,6 +6842,7 @@
     "movimentacoes",
     "plano_contas",
     "regras_conciliacao",
+    "regras_roteamento_financeiro",
     "solicitacoes_aprovacao",
     "transferencias",
     "user_anomalia_preferences",
@@ -7072,6 +7105,7 @@
     "frontend_performance_logs",
     "historico_cobranca_whatsapp",
     "profiles",
+    "regras_roteamento_financeiro",
     "solicitacoes_aprovacao",
     "user_active_filters",
     "user_anomalia_preferences",
@@ -7475,6 +7509,7 @@
     "frontend_performance_logs",
     "historico_cobranca_whatsapp",
     "logs_baixa_automatica",
+    "regras_roteamento_financeiro",
     "solicitacoes_aprovacao",
     "transacoes_bancarias",
     "user_active_filters",
@@ -7715,7 +7750,8 @@
    ],
    "rpcs": [],
    "edges": [
-    "aceitar-convite"
+    "aceitar-convite",
+    "enviar-convite-organizacao"
    ],
    "canais_realtime": [],
    "flags": [],
@@ -8016,6 +8052,7 @@
     "protocolos_st_ncms",
     "protocolos_st_ufs",
     "recomendacoes_metas_ia",
+    "regras_roteamento_financeiro",
     "regua_cobranca_status",
     "solicitacoes_aprovacao",
     "ufs",
@@ -8201,6 +8238,7 @@
     "frontend_error_logs",
     "frontend_performance_logs",
     "historico_cobranca_whatsapp",
+    "regras_roteamento_financeiro",
     "solicitacoes_aprovacao",
     "user_anomalia_preferences",
     "user_empresas",
@@ -8384,6 +8422,7 @@
     "frontend_error_logs",
     "frontend_performance_logs",
     "historico_cobranca_whatsapp",
+    "regras_roteamento_financeiro",
     "solicitacoes_aprovacao",
     "user_active_filters",
     "user_anomalia_preferences",
@@ -8573,6 +8612,7 @@
     "lancamentos_contabeis",
     "partidas_contabeis",
     "plano_contas",
+    "regras_roteamento_financeiro",
     "solicitacoes_aprovacao",
     "user_anomalia_preferences",
     "user_empresas",
@@ -8742,6 +8782,7 @@
     "ncms",
     "protocolos_st_ncms",
     "protocolos_st_ufs",
+    "regras_roteamento_financeiro",
     "ufs",
     "vw_contas_pagar_painel",
     "vw_contas_receber_painel"
@@ -9397,6 +9438,7 @@
     "frontend_error_logs",
     "frontend_performance_logs",
     "historico_cobranca_whatsapp",
+    "regras_roteamento_financeiro",
     "solicitacoes_aprovacao",
     "user_active_filters",
     "user_anomalia_preferences",
@@ -10334,6 +10376,7 @@
     "frontend_error_logs",
     "frontend_performance_logs",
     "historico_cobranca_whatsapp",
+    "regras_roteamento_financeiro",
     "solicitacoes_aprovacao",
     "user_anomalia_preferences",
     "user_empresas",
@@ -10794,7 +10837,8 @@
    ],
    "edges": [
     "aceitar-convite",
-    "copilot-global"
+    "copilot-global",
+    "enviar-convite-organizacao"
    ],
    "canais_realtime": [
     "alertas-realtime-${Math.random().toString(36).slice(2, 8)}",
@@ -11069,6 +11113,7 @@
     "frontend_performance_logs",
     "historico_cobranca_whatsapp",
     "pix_templates",
+    "regras_roteamento_financeiro",
     "solicitacoes_aprovacao",
     "transferencias",
     "user_anomalia_preferences",
@@ -11082,6 +11127,7 @@
     "registrar_auditoria_config"
    ],
    "edges": [
+    "asaas-proxy",
     "copilot-global",
     "external-data"
    ],
@@ -11618,6 +11664,7 @@
     "frontend_error_logs",
     "frontend_performance_logs",
     "historico_relatorios",
+    "regras_roteamento_financeiro",
     "relatorios_agendados",
     "resumos_executivos_semanais",
     "user_empresas",
@@ -12192,6 +12239,7 @@
     "frontend_error_logs",
     "frontend_performance_logs",
     "historico_cobranca_whatsapp",
+    "regras_roteamento_financeiro",
     "solicitacoes_aprovacao",
     "transferencias",
     "user_anomalia_preferences",
@@ -13277,7 +13325,8 @@
     "registrar_auditoria_config"
    ],
    "edges": [
-    "copilot-global"
+    "copilot-global",
+    "nfe-upload-certificado"
    ],
    "canais_realtime": [
     "alertas-realtime-${Math.random().toString(36).slice(2, 8)}",
@@ -15442,7 +15491,10 @@
    "rpcs": [
     "registrar_auditoria_config"
    ],
-   "edges": [],
+   "edges": [
+    "nfe-vinculo-proxy",
+    "sefaz-manifestar"
+   ],
    "canais_realtime": [],
    "flags": [],
    "papeis": [],
@@ -17450,6 +17502,7 @@
     "frontend_error_logs",
     "frontend_performance_logs",
     "historico_cobranca_whatsapp",
+    "regras_roteamento_financeiro",
     "solicitacoes_aprovacao",
     "user_anomalia_preferences",
     "user_empresas",
@@ -17493,10 +17546,14 @@
    "arquivo": "scripts/ai-context/cenarios.mjs",
    "tabelas": [
     "a",
+    "anexos_fin",
     "fantasma",
     "so_teste",
     "t",
     "t1",
+    "t_gen",
+    "t_morta",
+    "tabela_depois",
     "tx"
    ],
    "env": [
@@ -17518,10 +17575,14 @@
    "arquivo": "scripts/ai-context/cenarios.mjs",
    "tabelas": [
     "a",
+    "anexos_fin",
     "fantasma",
     "so_teste",
     "t",
     "t1",
+    "t_gen",
+    "t_morta",
+    "tabela_depois",
     "tx"
    ],
    "env": [
@@ -17543,10 +17604,14 @@
    "arquivo": "scripts/ai-context/cenarios.mjs",
    "tabelas": [
     "a",
+    "anexos_fin",
     "fantasma",
     "so_teste",
     "t",
     "t1",
+    "t_gen",
+    "t_morta",
+    "tabela_depois",
     "tx"
    ],
    "env": [
@@ -17568,10 +17633,14 @@
    "arquivo": "scripts/ai-context/cenarios.mjs",
    "tabelas": [
     "a",
+    "anexos_fin",
     "fantasma",
     "so_teste",
     "t",
     "t1",
+    "t_gen",
+    "t_morta",
+    "tabela_depois",
     "tx"
    ],
    "env": [
@@ -17593,10 +17662,14 @@
    "arquivo": "scripts/ai-context/cenarios.mjs",
    "tabelas": [
     "a",
+    "anexos_fin",
     "fantasma",
     "so_teste",
     "t",
     "t1",
+    "t_gen",
+    "t_morta",
+    "tabela_depois",
     "tx"
    ],
    "env": [
@@ -17618,10 +17691,14 @@
    "arquivo": "scripts/ai-context/cenarios.mjs",
    "tabelas": [
     "a",
+    "anexos_fin",
     "fantasma",
     "so_teste",
     "t",
     "t1",
+    "t_gen",
+    "t_morta",
+    "tabela_depois",
     "tx"
    ],
    "env": [
@@ -17643,10 +17720,14 @@
    "arquivo": "scripts/ai-context/cenarios.mjs",
    "tabelas": [
     "a",
+    "anexos_fin",
     "fantasma",
     "so_teste",
     "t",
     "t1",
+    "t_gen",
+    "t_morta",
+    "tabela_depois",
     "tx"
    ],
    "env": [
@@ -17672,9 +17753,11 @@
     "emails",
     "fixture_table",
     "ghost_table",
+    "linhas_tipadas",
     "payments",
     "runtime_table",
-    "tools_runtime"
+    "tools_runtime",
+    "uploads"
    ],
    "env": [
     "DB_URL",
@@ -17689,10 +17772,14 @@
    "arquivo": "scripts/ai-context/cenarios.mjs",
    "tabelas": [
     "a",
+    "anexos_fin",
     "fantasma",
     "so_teste",
     "t",
     "t1",
+    "t_gen",
+    "t_morta",
+    "tabela_depois",
     "tx"
    ],
    "env": [
@@ -17714,10 +17801,14 @@
    "arquivo": "scripts/ai-context/cenarios.mjs",
    "tabelas": [
     "a",
+    "anexos_fin",
     "fantasma",
     "so_teste",
     "t",
     "t1",
+    "t_gen",
+    "t_morta",
+    "tabela_depois",
     "tx"
    ],
    "env": [
@@ -17739,10 +17830,14 @@
    "arquivo": "scripts/ai-context/cenarios.mjs",
    "tabelas": [
     "a",
+    "anexos_fin",
     "fantasma",
     "so_teste",
     "t",
     "t1",
+    "t_gen",
+    "t_morta",
+    "tabela_depois",
     "tx"
    ],
    "env": [
@@ -17764,10 +17859,14 @@
    "arquivo": "scripts/ai-context/cenarios.mjs",
    "tabelas": [
     "a",
+    "anexos_fin",
     "fantasma",
     "so_teste",
     "t",
     "t1",
+    "t_gen",
+    "t_morta",
+    "tabela_depois",
     "tx"
    ],
    "env": [
@@ -17782,6 +17881,111 @@
     "VITE_FEATURE_X",
     "X"
    ]
+  },
+  {
+   "metodo": "DJANGO",
+   "caminho": "prod",
+   "arquivo": "scripts/data/test_data_migrate_pg_scenarios.py",
+   "tabelas": [],
+   "env": [
+    "PATH"
+   ]
+  },
+  {
+   "metodo": "DJANGO",
+   "caminho": "prod",
+   "arquivo": "scripts/data/test_data_migrate_pg_scenarios.py",
+   "tabelas": [],
+   "env": [
+    "PATH"
+   ]
+  },
+  {
+   "metodo": "DJANGO",
+   "caminho": "prod",
+   "arquivo": "scripts/data/test_data_migrate_pg_scenarios.py",
+   "tabelas": [],
+   "env": [
+    "PATH"
+   ]
+  },
+  {
+   "metodo": "DJANGO",
+   "caminho": "prod",
+   "arquivo": "scripts/data/test_data_migrate_pg_scenarios.py",
+   "tabelas": [],
+   "env": [
+    "PATH"
+   ]
+  },
+  {
+   "metodo": "DJANGO",
+   "caminho": "prod",
+   "arquivo": "scripts/data/test_data_migrate_pg_scenarios.py",
+   "tabelas": [],
+   "env": [
+    "PATH"
+   ]
+  },
+  {
+   "metodo": "DJANGO",
+   "caminho": "prod",
+   "arquivo": "scripts/data/test_data_migrate_pg_scenarios.py",
+   "tabelas": [],
+   "env": [
+    "PATH"
+   ]
+  },
+  {
+   "metodo": "DJANGO",
+   "caminho": "stg",
+   "arquivo": "scripts/data/test_data_migrate_pg_scenarios.py",
+   "tabelas": [],
+   "env": [
+    "PATH"
+   ]
+  },
+  {
+   "metodo": "DJANGO",
+   "caminho": "stg",
+   "arquivo": "scripts/healthcheck/test_healthcheck_scenarios.py",
+   "tabelas": [],
+   "env": []
+  },
+  {
+   "metodo": "DJANGO",
+   "caminho": "stg",
+   "arquivo": "scripts/integrity/test_integrity_pg_scenarios.py",
+   "tabelas": [],
+   "env": []
+  },
+  {
+   "metodo": "DJANGO",
+   "caminho": "stg",
+   "arquivo": "scripts/integrity/test_integrity_pg_scenarios.py",
+   "tabelas": [],
+   "env": []
+  },
+  {
+   "metodo": "DJANGO",
+   "caminho": "stg",
+   "arquivo": "scripts/integrity/test_integrity_pg_scenarios.py",
+   "tabelas": [],
+   "env": []
+  },
+  {
+   "metodo": "DJANGO",
+   "caminho": "stg",
+   "arquivo": "scripts/integrity/test_integrity_pg_scenarios.py",
+   "tabelas": [],
+   "env": []
+  },
+  {
+   "metodo": "DJANGO",
+   "caminho": "stg",
+   "arquivo": "scripts/integrity/test_integrity_pg_scenarios.py",
+   "tabelas": [],
+   "env": []
   }
  ],
  "vistas": [],
@@ -17793,7 +17997,7 @@
    "papeis": [],
    "papeis_nao_resolvidos": null,
    "definido_em": "src/components/layout/sidebar/SidebarNavGroups.tsx",
-   "resolve_para": null
+   "resolve_para": "src/pages/InteligenciaOperacional.tsx"
   },
   {
    "rotulo": "Alertas",
@@ -18324,7 +18528,7 @@
    "papeis": [],
    "papeis_nao_resolvidos": null,
    "definido_em": "src/components/layout/sidebar/SidebarNavGroups.tsx",
-   "resolve_para": null
+   "resolve_para": "src/pages/Cobrancas.tsx"
   },
   {
    "rotulo": "Histórico Tributário",
@@ -18675,7 +18879,7 @@
    "papeis": [],
    "papeis_nao_resolvidos": null,
    "definido_em": "src/components/layout/sidebar/SidebarNavGroups.tsx",
-   "resolve_para": null
+   "resolve_para": "src/pages/InteligenciaOperacional.tsx"
   },
   {
    "rotulo": "Quantum-Sentinel: Tributário",
@@ -18702,7 +18906,7 @@
    "papeis": [],
    "papeis_nao_resolvidos": null,
    "definido_em": "src/components/layout/sidebar/sidebarFiscalNavGroup.ts",
-   "resolve_para": null
+   "resolve_para": "src/pages/ReformaTributaria.tsx"
   },
   {
    "rotulo": "Relatórios",

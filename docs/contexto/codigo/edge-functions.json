@@ -132,7 +132,7 @@
    "nome": "aceitar-convite",
    "entrada": "supabase/functions/aceitar-convite/index.ts",
    "arquivos": 1,
-   "linhas": 154,
+   "linhas": 153,
    "verify_jwt": true,
    "metodos": [
     "OPTIONS"
@@ -167,8 +167,8 @@
   {
    "nome": "analise-fluxo-ia",
    "entrada": "supabase/functions/analise-fluxo-ia/index.ts",
-   "arquivos": 2,
-   "linhas": 479,
+   "arquivos": 1,
+   "linhas": 336,
    "verify_jwt": false,
    "metodos": [
     "OPTIONS"
@@ -183,8 +183,7 @@
    "buckets": [],
    "chama_edges": [],
    "hosts_externos": [
-    "ai.gateway.lovable.dev",
-    "app.promo-finance.com"
+    "ai.gateway.lovable.dev"
    ],
    "usa_shared": [
     "auth-guard.ts",
@@ -202,13 +201,13 @@
    "chamada_por_edges": [],
    "chamada_por_sql_ou_cron": false,
    "orfa": false,
-   "testes": 0
+   "testes": 1
   },
   {
    "nome": "analise-preditiva",
    "entrada": "supabase/functions/analise-preditiva/index.ts",
    "arquivos": 1,
-   "linhas": 346,
+   "linhas": 345,
    "verify_jwt": true,
    "metodos": [
     "OPTIONS"
@@ -250,7 +249,7 @@
    "nome": "analyze-document",
    "entrada": "supabase/functions/analyze-document/index.ts",
    "arquivos": 1,
-   "linhas": 214,
+   "linhas": 213,
    "verify_jwt": false,
    "metodos": [
     "OPTIONS"
@@ -289,7 +288,7 @@
    "nome": "api-keys-manage",
    "entrada": "supabase/functions/api-keys-manage/index.ts",
    "arquivos": 1,
-   "linhas": 162,
+   "linhas": 161,
    "verify_jwt": false,
    "metodos": [
     "OPTIONS",
@@ -322,7 +321,7 @@
    "nome": "asaas-proxy",
    "entrada": "supabase/functions/asaas-proxy/index.ts",
    "arquivos": 3,
-   "linhas": 1374,
+   "linhas": 1371,
    "verify_jwt": false,
    "metodos": [
     "OPTIONS"
@@ -373,11 +372,10 @@
    "chamada_pelo_front": [
     "src/components/asaas/AssinaturasListPanel.tsx",
     "src/components/asaas/LinksListPanel.tsx",
+    "src/hooks/useAsaas.ts",
     "src/hooks/useBoletos.ts"
    ],
-   "chamada_por_edges": [
-    "functions"
-   ],
+   "chamada_por_edges": [],
    "chamada_por_sql_ou_cron": false,
    "orfa": false,
    "testes": 2
@@ -386,7 +384,7 @@
    "nome": "asaas-webhook",
    "entrada": "supabase/functions/asaas-webhook/index.ts",
    "arquivos": 1,
-   "linhas": 237,
+   "linhas": 236,
    "verify_jwt": false,
    "metodos": [
     "OPTIONS"
@@ -426,7 +424,7 @@
    "nome": "benchmarking-setorial",
    "entrada": "supabase/functions/benchmarking-setorial/index.ts",
    "arquivos": 1,
-   "linhas": 183,
+   "linhas": 182,
    "verify_jwt": false,
    "metodos": [
     "OPTIONS"
@@ -464,7 +462,7 @@
    "nome": "bitrix24-sync",
    "entrada": "supabase/functions/bitrix24-sync/index.ts",
    "arquivos": 1,
-   "linhas": 894,
+   "linhas": 893,
    "verify_jwt": true,
    "metodos": [
     "OPTIONS"
@@ -512,7 +510,7 @@
    "nome": "bitrix24-webhook",
    "entrada": "supabase/functions/bitrix24-webhook/index.ts",
    "arquivos": 1,
-   "linhas": 204,
+   "linhas": 203,
    "verify_jwt": false,
    "metodos": [
     "OPTIONS",
@@ -551,7 +549,7 @@
    "nome": "bling-proxy",
    "entrada": "supabase/functions/bling-proxy/index.ts",
    "arquivos": 1,
-   "linhas": 1013,
+   "linhas": 1012,
    "verify_jwt": false,
    "metodos": [
     "OPTIONS"
@@ -596,7 +594,7 @@
    "nome": "bling-webhook",
    "entrada": "supabase/functions/bling-webhook/index.ts",
    "arquivos": 1,
-   "linhas": 370,
+   "linhas": 369,
    "verify_jwt": false,
    "metodos": [
     "OPTIONS",
@@ -635,7 +633,7 @@
    "nome": "calcular-health-score-operacional",
    "entrada": "supabase/functions/calcular-health-score-operacional/index.ts",
    "arquivos": 1,
-   "linhas": 326,
+   "linhas": 325,
    "verify_jwt": true,
    "metodos": [
     "OPTIONS",
@@ -685,7 +683,7 @@
    "nome": "calcular-slo-metrics-diario",
    "entrada": "supabase/functions/calcular-slo-metrics-diario/index.ts",
    "arquivos": 1,
-   "linhas": 122,
+   "linhas": 121,
    "verify_jwt": true,
    "metodos": [
     "OPTIONS"
@@ -720,7 +718,7 @@
    "nome": "calculo-iva",
    "entrada": "supabase/functions/calculo-iva/index.ts",
    "arquivos": 1,
-   "linhas": 71,
+   "linhas": 70,
    "verify_jwt": true,
    "metodos": [
     "OPTIONS"
@@ -747,7 +745,7 @@
    "nome": "categorizar-despesa",
    "entrada": "supabase/functions/categorizar-despesa/index.ts",
    "arquivos": 1,
-   "linhas": 202,
+   "linhas": 201,
    "verify_jwt": false,
    "metodos": [
     "OPTIONS"
@@ -785,7 +783,7 @@
    "nome": "ci-security-gate-log",
    "entrada": "supabase/functions/ci-security-gate-log/index.ts",
    "arquivos": 1,
-   "linhas": 193,
+   "linhas": 192,
    "verify_jwt": false,
    "metodos": [
     "OPTIONS",
@@ -820,7 +818,7 @@
    "nome": "cnpja-lookup",
    "entrada": "supabase/functions/cnpja-lookup/index.ts",
    "arquivos": 1,
-   "linhas": 346,
+   "linhas": 345,
    "verify_jwt": false,
    "metodos": [
     "OPTIONS",
@@ -862,7 +860,7 @@
    "nome": "comparar-benchmark-setorial",
    "entrada": "supabase/functions/comparar-benchmark-setorial/index.ts",
    "arquivos": 1,
-   "linhas": 151,
+   "linhas": 150,
    "verify_jwt": true,
    "metodos": [
     "OPTIONS",
@@ -901,7 +899,7 @@
    "nome": "compare-schemas",
    "entrada": "supabase/functions/compare-schemas/index.ts",
    "arquivos": 1,
-   "linhas": 123,
+   "linhas": 122,
    "verify_jwt": false,
    "metodos": [
     "OPTIONS",
@@ -933,7 +931,7 @@
    "nome": "conciliacao-ia",
    "entrada": "supabase/functions/conciliacao-ia/index.ts",
    "arquivos": 1,
-   "linhas": 281,
+   "linhas": 280,
    "verify_jwt": true,
    "metodos": [
     "OPTIONS"
@@ -970,8 +968,8 @@
   {
    "nome": "conciliacao-proxy",
    "entrada": "supabase/functions/conciliacao-proxy/index.ts",
-   "arquivos": 2,
-   "linhas": 319,
+   "arquivos": 1,
+   "linhas": 134,
    "verify_jwt": true,
    "metodos": [
     "OPTIONS",
@@ -995,17 +993,19 @@
     "proxy-audit.ts",
     "validation.ts"
    ],
-   "chamada_pelo_front": [],
+   "chamada_pelo_front": [
+    "src/hooks/useConciliacao.ts"
+   ],
    "chamada_por_edges": [],
    "chamada_por_sql_ou_cron": false,
-   "orfa": true,
-   "testes": 0
+   "orfa": false,
+   "testes": 1
   },
   {
    "nome": "consulta-tributaria",
    "entrada": "supabase/functions/consulta-tributaria/index.ts",
    "arquivos": 2,
-   "linhas": 536,
+   "linhas": 534,
    "verify_jwt": true,
    "metodos": [
     "OPTIONS",
@@ -1048,7 +1048,7 @@
    "nome": "contabilizar-evento",
    "entrada": "supabase/functions/contabilizar-evento/index.ts",
    "arquivos": 1,
-   "linhas": 262,
+   "linhas": 261,
    "verify_jwt": true,
    "metodos": [
     "OPTIONS"
@@ -1077,17 +1077,19 @@
     "edge-observability.ts",
     "validation.ts"
    ],
-   "chamada_pelo_front": [],
+   "chamada_pelo_front": [
+    "src/components/contabilidade/contabilizacao-automatica/useContabilizacaoMutations.ts"
+   ],
    "chamada_por_edges": [],
    "chamada_por_sql_ou_cron": false,
-   "orfa": true,
+   "orfa": false,
    "testes": 0
   },
   {
    "nome": "convidar-contador",
    "entrada": "supabase/functions/convidar-contador/index.ts",
    "arquivos": 1,
-   "linhas": 246,
+   "linhas": 245,
    "verify_jwt": true,
    "metodos": [
     "OPTIONS"
@@ -1131,7 +1133,7 @@
    "nome": "convidar-usuario",
    "entrada": "supabase/functions/convidar-usuario/index.ts",
    "arquivos": 1,
-   "linhas": 240,
+   "linhas": 239,
    "verify_jwt": false,
    "metodos": [
     "OPTIONS",
@@ -1167,7 +1169,7 @@
    "nome": "copilot-global",
    "entrada": "supabase/functions/copilot-global/index.ts",
    "arquivos": 1,
-   "linhas": 305,
+   "linhas": 304,
    "verify_jwt": true,
    "metodos": [
     "OPTIONS"
@@ -1214,7 +1216,7 @@
    "nome": "copilot-tributario",
    "entrada": "supabase/functions/copilot-tributario/index.ts",
    "arquivos": 1,
-   "linhas": 177,
+   "linhas": 176,
    "verify_jwt": true,
    "metodos": [
     "OPTIONS"
@@ -1254,7 +1256,7 @@
    "nome": "decidir-regime",
    "entrada": "supabase/functions/decidir-regime/index.ts",
    "arquivos": 1,
-   "linhas": 386,
+   "linhas": 385,
    "verify_jwt": false,
    "metodos": [
     "OPTIONS"
@@ -1301,7 +1303,7 @@
    "nome": "detectar-anomalias-financeiras",
    "entrada": "supabase/functions/detectar-anomalias-financeiras/index.ts",
    "arquivos": 1,
-   "linhas": 415,
+   "linhas": 414,
    "verify_jwt": true,
    "metodos": [
     "OPTIONS",
@@ -1347,7 +1349,7 @@
    "nome": "digest-silenciamentos-erro",
    "entrada": "supabase/functions/digest-silenciamentos-erro/index.ts",
    "arquivos": 1,
-   "linhas": 263,
+   "linhas": 262,
    "verify_jwt": false,
    "metodos": [
     "OPTIONS"
@@ -1389,7 +1391,7 @@
    "nome": "enviar-alerta-email",
    "entrada": "supabase/functions/enviar-alerta-email/index.ts",
    "arquivos": 1,
-   "linhas": 227,
+   "linhas": 226,
    "verify_jwt": false,
    "metodos": [
     "OPTIONS"
@@ -1431,7 +1433,7 @@
    "nome": "enviar-bitrix24-tributario",
    "entrada": "supabase/functions/enviar-bitrix24-tributario/index.ts",
    "arquivos": 1,
-   "linhas": 201,
+   "linhas": 200,
    "verify_jwt": false,
    "metodos": [
     "OPTIONS"
@@ -1469,7 +1471,7 @@
    "nome": "enviar-convite-organizacao",
    "entrada": "supabase/functions/enviar-convite-organizacao/index.ts",
    "arquivos": 1,
-   "linhas": 218,
+   "linhas": 217,
    "verify_jwt": true,
    "metodos": [
     "OPTIONS"
@@ -1500,17 +1502,19 @@
     "observability.ts",
     "zod.ts"
    ],
-   "chamada_pelo_front": [],
+   "chamada_pelo_front": [
+    "src/hooks/useOrganizacoes.ts"
+   ],
    "chamada_por_edges": [],
    "chamada_por_sql_ou_cron": false,
-   "orfa": true,
+   "orfa": false,
    "testes": 0
   },
   {
    "nome": "enviar-digest-conformidade",
    "entrada": "supabase/functions/enviar-digest-conformidade/index.ts",
    "arquivos": 1,
-   "linhas": 471,
+   "linhas": 470,
    "verify_jwt": true,
    "metodos": [
     "OPTIONS",
@@ -1558,7 +1562,7 @@
    "nome": "enviar-relatorios-tributarios-agendados",
    "entrada": "supabase/functions/enviar-relatorios-tributarios-agendados/index.ts",
    "arquivos": 1,
-   "linhas": 225,
+   "linhas": 224,
    "verify_jwt": true,
    "metodos": [
     "OPTIONS"
@@ -1573,7 +1577,9 @@
     "SUPABASE_SERVICE_ROLE_KEY",
     "SUPABASE_URL"
    ],
-   "buckets": [],
+   "buckets": [
+    "relatorios-tributarios"
+   ],
    "chama_edges": [
     "gerar-relatorio-anual"
    ],
@@ -1597,7 +1603,7 @@
    "nome": "executar-analise-preditiva",
    "entrada": "supabase/functions/executar-analise-preditiva/index.ts",
    "arquivos": 1,
-   "linhas": 469,
+   "linhas": 468,
    "verify_jwt": false,
    "metodos": [
     "OPTIONS"
@@ -1646,7 +1652,7 @@
    "nome": "executar-fechamento-tributario",
    "entrada": "supabase/functions/executar-fechamento-tributario/index.ts",
    "arquivos": 1,
-   "linhas": 351,
+   "linhas": 350,
    "verify_jwt": true,
    "metodos": [
     "OPTIONS"
@@ -1693,7 +1699,7 @@
    "nome": "executar-regua-cobranca",
    "entrada": "supabase/functions/executar-regua-cobranca/index.ts",
    "arquivos": 2,
-   "linhas": 238,
+   "linhas": 236,
    "verify_jwt": false,
    "metodos": [
     "OPTIONS",
@@ -1734,7 +1740,7 @@
    "nome": "executar-relatorios",
    "entrada": "supabase/functions/executar-relatorios/index.ts",
    "arquivos": 1,
-   "linhas": 580,
+   "linhas": 579,
    "verify_jwt": false,
    "metodos": [
     "OPTIONS"
@@ -1775,7 +1781,7 @@
    "nome": "expert-agent",
    "entrada": "supabase/functions/expert-agent/index.ts",
    "arquivos": 1,
-   "linhas": 245,
+   "linhas": 244,
    "verify_jwt": false,
    "metodos": [
     "OPTIONS"
@@ -1813,8 +1819,8 @@
   {
    "nome": "exportar-sped-contribuicoes",
    "entrada": "supabase/functions/exportar-sped-contribuicoes/index.ts",
-   "arquivos": 3,
-   "linhas": 469,
+   "arquivos": 2,
+   "linhas": 347,
    "verify_jwt": true,
    "metodos": [
     "OPTIONS"
@@ -1831,7 +1837,9 @@
     "SUPABASE_SERVICE_ROLE_KEY",
     "SUPABASE_URL"
    ],
-   "buckets": [],
+   "buckets": [
+    "relatorios-tributarios"
+   ],
    "chama_edges": [],
    "hosts_externos": [],
    "usa_shared": [
@@ -1849,13 +1857,13 @@
    "chamada_por_edges": [],
    "chamada_por_sql_ou_cron": false,
    "orfa": false,
-   "testes": 2
+   "testes": 3
   },
   {
    "nome": "external-data",
    "entrada": "supabase/functions/external-data/index.ts",
    "arquivos": 2,
-   "linhas": 461,
+   "linhas": 459,
    "verify_jwt": false,
    "metodos": [
     "OPTIONS"
@@ -1897,7 +1905,7 @@
    "nome": "gerar-acoes-recomendadas",
    "entrada": "supabase/functions/gerar-acoes-recomendadas/index.ts",
    "arquivos": 1,
-   "linhas": 228,
+   "linhas": 227,
    "verify_jwt": true,
    "metodos": [
     "OPTIONS"
@@ -1944,7 +1952,7 @@
    "nome": "gerar-alertas",
    "entrada": "supabase/functions/gerar-alertas/index.ts",
    "arquivos": 1,
-   "linhas": 342,
+   "linhas": 341,
    "verify_jwt": false,
    "metodos": [
     "OPTIONS",
@@ -1986,7 +1994,7 @@
    "nome": "gerar-alertas-dispatcher",
    "entrada": "supabase/functions/gerar-alertas-dispatcher/index.ts",
    "arquivos": 1,
-   "linhas": 91,
+   "linhas": 90,
    "verify_jwt": false,
    "metodos": [
     "GET",
@@ -2019,7 +2027,7 @@
    "nome": "gerar-alertas-tributarios",
    "entrada": "supabase/functions/gerar-alertas-tributarios/index.ts",
    "arquivos": 1,
-   "linhas": 375,
+   "linhas": 374,
    "verify_jwt": false,
    "metodos": [
     "OPTIONS"
@@ -2058,7 +2066,7 @@
    "nome": "gerar-dre-tributaria",
    "entrada": "supabase/functions/gerar-dre-tributaria/index.ts",
    "arquivos": 1,
-   "linhas": 146,
+   "linhas": 145,
    "verify_jwt": false,
    "metodos": [
     "OPTIONS",
@@ -2097,7 +2105,7 @@
    "nome": "gerar-heatmap-tributario",
    "entrada": "supabase/functions/gerar-heatmap-tributario/index.ts",
    "arquivos": 1,
-   "linhas": 168,
+   "linhas": 167,
    "verify_jwt": false,
    "metodos": [
     "OPTIONS",
@@ -2135,7 +2143,7 @@
    "nome": "gerar-pacote-evidencias",
    "entrada": "supabase/functions/gerar-pacote-evidencias/index.ts",
    "arquivos": 1,
-   "linhas": 414,
+   "linhas": 413,
    "verify_jwt": true,
    "metodos": [
     "OPTIONS"
@@ -2153,7 +2161,9 @@
     "SUPABASE_SERVICE_ROLE_KEY",
     "SUPABASE_URL"
    ],
-   "buckets": [],
+   "buckets": [
+    "relatorios-tributarios"
+   ],
    "chama_edges": [],
    "hosts_externos": [],
    "usa_shared": [
@@ -2176,7 +2186,7 @@
    "nome": "gerar-pdf-tributario",
    "entrada": "supabase/functions/gerar-pdf-tributario/index.ts",
    "arquivos": 1,
-   "linhas": 363,
+   "linhas": 362,
    "verify_jwt": false,
    "metodos": [
     "OPTIONS"
@@ -2193,7 +2203,9 @@
     "SUPABASE_SERVICE_ROLE_KEY",
     "SUPABASE_URL"
    ],
-   "buckets": [],
+   "buckets": [
+    "relatorios-tributarios"
+   ],
    "chama_edges": [
     "decidir-regime"
    ],
@@ -2218,7 +2230,7 @@
    "nome": "gerar-relatorio-anual",
    "entrada": "supabase/functions/gerar-relatorio-anual/index.ts",
    "arquivos": 1,
-   "linhas": 204,
+   "linhas": 203,
    "verify_jwt": true,
    "metodos": [
     "OPTIONS"
@@ -2262,7 +2274,7 @@
    "nome": "gerar-resumo-executivo-semanal",
    "entrada": "supabase/functions/gerar-resumo-executivo-semanal/index.ts",
    "arquivos": 1,
-   "linhas": 317,
+   "linhas": 316,
    "verify_jwt": true,
    "metodos": [
     "OPTIONS"
@@ -2308,7 +2320,7 @@
    "nome": "gerar-resumo-financeiro-diario",
    "entrada": "supabase/functions/gerar-resumo-financeiro-diario/index.ts",
    "arquivos": 1,
-   "linhas": 111,
+   "linhas": 110,
    "verify_jwt": true,
    "metodos": [
     "OPTIONS"
@@ -2348,7 +2360,7 @@
    "nome": "gerar-snapshots-conformidade",
    "entrada": "supabase/functions/gerar-snapshots-conformidade/index.ts",
    "arquivos": 1,
-   "linhas": 286,
+   "linhas": 285,
    "verify_jwt": true,
    "metodos": [
     "OPTIONS",
@@ -2391,8 +2403,8 @@
   {
    "nome": "gerar-sped-ecd",
    "entrada": "supabase/functions/gerar-sped-ecd/index.ts",
-   "arquivos": 3,
-   "linhas": 730,
+   "arquivos": 2,
+   "linhas": 619,
    "verify_jwt": true,
    "metodos": [
     "OPTIONS"
@@ -2410,7 +2422,9 @@
     "SUPABASE_SERVICE_ROLE_KEY",
     "SUPABASE_URL"
    ],
-   "buckets": [],
+   "buckets": [
+    "relatorios-tributarios"
+   ],
    "chama_edges": [],
    "hosts_externos": [],
    "usa_shared": [
@@ -2426,13 +2440,13 @@
    "chamada_por_edges": [],
    "chamada_por_sql_ou_cron": false,
    "orfa": false,
-   "testes": 2
+   "testes": 3
   },
   {
    "nome": "gerar-sped-ecf",
    "entrada": "supabase/functions/gerar-sped-ecf/index.ts",
-   "arquivos": 3,
-   "linhas": 681,
+   "arquivos": 2,
+   "linhas": 604,
    "verify_jwt": true,
    "metodos": [
     "OPTIONS"
@@ -2450,7 +2464,9 @@
     "SUPABASE_SERVICE_ROLE_KEY",
     "SUPABASE_URL"
    ],
-   "buckets": [],
+   "buckets": [
+    "relatorios-tributarios"
+   ],
    "chama_edges": [],
    "hosts_externos": [],
    "usa_shared": [
@@ -2466,13 +2482,13 @@
    "chamada_por_edges": [],
    "chamada_por_sql_ou_cron": false,
    "orfa": false,
-   "testes": 2
+   "testes": 3
   },
   {
    "nome": "get-mapbox-token",
    "entrada": "supabase/functions/get-mapbox-token/index.ts",
    "arquivos": 1,
-   "linhas": 27,
+   "linhas": 26,
    "verify_jwt": true,
    "metodos": [
     "OPTIONS"
@@ -2499,7 +2515,7 @@
    "nome": "get-vapid-key",
    "entrada": "supabase/functions/get-vapid-key/index.ts",
    "arquivos": 1,
-   "linhas": 51,
+   "linhas": 50,
    "verify_jwt": false,
    "metodos": [
     "OPTIONS"
@@ -2530,7 +2546,7 @@
    "nome": "health",
    "entrada": "supabase/functions/health/index.ts",
    "arquivos": 1,
-   "linhas": 138,
+   "linhas": 137,
    "verify_jwt": false,
    "metodos": [
     "OPTIONS"
@@ -2566,7 +2582,7 @@
    "nome": "insights-relatorio",
    "entrada": "supabase/functions/insights-relatorio/index.ts",
    "arquivos": 1,
-   "linhas": 179,
+   "linhas": 178,
    "verify_jwt": false,
    "metodos": [
     "OPTIONS"
@@ -2605,7 +2621,7 @@
    "nome": "log-sped-bitrix24",
    "entrada": "supabase/functions/log-sped-bitrix24/index.ts",
    "arquivos": 1,
-   "linhas": 241,
+   "linhas": 240,
    "verify_jwt": true,
    "metodos": [
     "OPTIONS"
@@ -2643,8 +2659,8 @@
   {
    "nome": "mcp-query",
    "entrada": "supabase/functions/mcp-query/index.ts",
-   "arquivos": 4,
-   "linhas": 1228,
+   "arquivos": 2,
+   "linhas": 614,
    "verify_jwt": false,
    "metodos": [
     "OPTIONS",
@@ -2655,9 +2671,7 @@
    "env": [],
    "buckets": [],
    "chama_edges": [],
-   "hosts_externos": [
-    "supabase.local"
-   ],
+   "hosts_externos": [],
    "usa_shared": [
     "cors.ts",
     "edge-observability.ts",
@@ -2668,13 +2682,13 @@
    "chamada_por_edges": [],
    "chamada_por_sql_ou_cron": false,
    "orfa": false,
-   "testes": 0
+   "testes": 2
   },
   {
    "nome": "monitor-health",
    "entrada": "supabase/functions/monitor-health/index.ts",
    "arquivos": 1,
-   "linhas": 265,
+   "linhas": 264,
    "verify_jwt": false,
    "metodos": [
     "GET",
@@ -2708,7 +2722,7 @@
    "nome": "monitorar-erros-frontend",
    "entrada": "supabase/functions/monitorar-erros-frontend/index.ts",
    "arquivos": 1,
-   "linhas": 262,
+   "linhas": 261,
    "verify_jwt": false,
    "metodos": [
     "OPTIONS"
@@ -2751,7 +2765,7 @@
    "nome": "n8n-callback",
    "entrada": "supabase/functions/n8n-callback/index.ts",
    "arquivos": 1,
-   "linhas": 261,
+   "linhas": 260,
    "verify_jwt": false,
    "metodos": [
     "OPTIONS",
@@ -2785,7 +2799,7 @@
    "nome": "n8n-dispatch",
    "entrada": "supabase/functions/n8n-dispatch/index.ts",
    "arquivos": 1,
-   "linhas": 214,
+   "linhas": 213,
    "verify_jwt": true,
    "metodos": [
     "OPTIONS",
@@ -2823,7 +2837,7 @@
    "nome": "nfe-upload-certificado",
    "entrada": "supabase/functions/nfe-upload-certificado/index.ts",
    "arquivos": 1,
-   "linhas": 270,
+   "linhas": 269,
    "verify_jwt": true,
    "metodos": [
     "OPTIONS",
@@ -2842,7 +2856,9 @@
     "SUPABASE_SERVICE_ROLE_KEY",
     "SUPABASE_URL"
    ],
-   "buckets": [],
+   "buckets": [
+    "nfe-certificados"
+   ],
    "chama_edges": [],
    "hosts_externos": [],
    "usa_shared": [
@@ -2853,17 +2869,19 @@
     "edge-observability.ts",
     "observability.ts"
    ],
-   "chamada_pelo_front": [],
+   "chamada_pelo_front": [
+    "src/hooks/useCertificadosDigitais.ts"
+   ],
    "chamada_por_edges": [],
    "chamada_por_sql_ou_cron": false,
-   "orfa": true,
+   "orfa": false,
    "testes": 0
   },
   {
    "nome": "nfe-vinculo-proxy",
    "entrada": "supabase/functions/nfe-vinculo-proxy/index.ts",
-   "arquivos": 2,
-   "linhas": 297,
+   "arquivos": 1,
+   "linhas": 155,
    "verify_jwt": true,
    "metodos": [
     "OPTIONS",
@@ -2887,17 +2905,19 @@
     "proxy-audit.ts",
     "validation.ts"
    ],
-   "chamada_pelo_front": [],
+   "chamada_pelo_front": [
+    "src/hooks/useNfeVinculo.ts"
+   ],
    "chamada_por_edges": [],
    "chamada_por_sql_ou_cron": false,
-   "orfa": true,
-   "testes": 0
+   "orfa": false,
+   "testes": 1
   },
   {
    "nome": "notify-performance-alert",
    "entrada": "supabase/functions/notify-performance-alert/index.ts",
    "arquivos": 1,
-   "linhas": 204,
+   "linhas": 203,
    "verify_jwt": false,
    "metodos": [
     "OPTIONS",
@@ -2933,7 +2953,7 @@
    "nome": "notify-saved-filter",
    "entrada": "supabase/functions/notify-saved-filter/index.ts",
    "arquivos": 1,
-   "linhas": 251,
+   "linhas": 250,
    "verify_jwt": true,
    "metodos": [
     "OPTIONS"
@@ -2959,17 +2979,19 @@
     "observability.ts",
     "validation.ts"
    ],
-   "chamada_pelo_front": [],
+   "chamada_pelo_front": [
+    "src/hooks/saved-filter-alerts/useEntitySavedFilterAlerts.ts"
+   ],
    "chamada_por_edges": [],
    "chamada_por_sql_ou_cron": false,
-   "orfa": true,
+   "orfa": false,
    "testes": 0
   },
   {
    "nome": "open-finance",
    "entrada": "supabase/functions/open-finance/index.ts",
    "arquivos": 1,
-   "linhas": 638,
+   "linhas": 637,
    "verify_jwt": true,
    "metodos": [
     "OPTIONS"
@@ -3027,7 +3049,7 @@
    "nome": "overlay-rejeicoes-auditoria",
    "entrada": "supabase/functions/overlay-rejeicoes-auditoria/index.ts",
    "arquivos": 1,
-   "linhas": 192,
+   "linhas": 191,
    "verify_jwt": true,
    "metodos": [
     "OPTIONS",
@@ -3065,7 +3087,7 @@
    "nome": "prever-carga-tributaria",
    "entrada": "supabase/functions/prever-carga-tributaria/index.ts",
    "arquivos": 1,
-   "linhas": 194,
+   "linhas": 193,
    "verify_jwt": false,
    "metodos": [
     "OPTIONS",
@@ -3103,7 +3125,7 @@
    "nome": "processar-fila-cobrancas",
    "entrada": "supabase/functions/processar-fila-cobrancas/index.ts",
    "arquivos": 1,
-   "linhas": 158,
+   "linhas": 157,
    "verify_jwt": true,
    "metodos": [
     "OPTIONS"
@@ -3144,7 +3166,7 @@
    "nome": "processar-nf-ocr",
    "entrada": "supabase/functions/processar-nf-ocr/index.ts",
    "arquivos": 1,
-   "linhas": 197,
+   "linhas": 196,
    "verify_jwt": true,
    "metodos": [
     "OPTIONS"
@@ -3182,7 +3204,7 @@
    "nome": "processar-solicitacao-lgpd",
    "entrada": "supabase/functions/processar-solicitacao-lgpd/index.ts",
    "arquivos": 1,
-   "linhas": 238,
+   "linhas": 237,
    "verify_jwt": true,
    "metodos": [
     "OPTIONS"
@@ -3202,7 +3224,9 @@
     "SUPABASE_SERVICE_ROLE_KEY",
     "SUPABASE_URL"
    ],
-   "buckets": [],
+   "buckets": [
+    "relatorios-tributarios"
+   ],
    "chama_edges": [],
    "hosts_externos": [],
    "usa_shared": [
@@ -3225,7 +3249,7 @@
    "nome": "projecao-reforma",
    "entrada": "supabase/functions/projecao-reforma/index.ts",
    "arquivos": 1,
-   "linhas": 207,
+   "linhas": 206,
    "verify_jwt": true,
    "metodos": [
     "OPTIONS"
@@ -3253,7 +3277,7 @@
    "nome": "relatorio-diario-anomalias",
    "entrada": "supabase/functions/relatorio-diario-anomalias/index.ts",
    "arquivos": 1,
-   "linhas": 297,
+   "linhas": 296,
    "verify_jwt": true,
    "metodos": [
     "OPTIONS"
@@ -3294,7 +3318,7 @@
    "nome": "scim-server",
    "entrada": "supabase/functions/scim-server/index.ts",
    "arquivos": 1,
-   "linhas": 1156,
+   "linhas": 1155,
    "verify_jwt": false,
    "metodos": [
     "DELETE",
@@ -3339,8 +3363,8 @@
   {
    "nome": "sefaz-dfe-dispatcher",
    "entrada": "supabase/functions/sefaz-dfe-dispatcher/index.ts",
-   "arquivos": 3,
-   "linhas": 519,
+   "arquivos": 2,
+   "linhas": 340,
    "verify_jwt": false,
    "metodos": [
     "OPTIONS"
@@ -3372,13 +3396,13 @@
    "chamada_por_edges": [],
    "chamada_por_sql_ou_cron": false,
    "orfa": false,
-   "testes": 0
+   "testes": 1
   },
   {
    "nome": "sefaz-dfe-puxar",
    "entrada": "supabase/functions/sefaz-dfe-puxar/index.ts",
    "arquivos": 1,
-   "linhas": 563,
+   "linhas": 562,
    "verify_jwt": false,
    "metodos": [
     "OPTIONS",
@@ -3423,7 +3447,7 @@
    "nome": "sefaz-manifestar",
    "entrada": "supabase/functions/sefaz-manifestar/index.ts",
    "arquivos": 1,
-   "linhas": 311,
+   "linhas": 310,
    "verify_jwt": true,
    "metodos": [
     "OPTIONS",
@@ -3455,17 +3479,19 @@
     "pfx.ts",
     "validation.ts"
    ],
-   "chamada_pelo_front": [],
+   "chamada_pelo_front": [
+    "src/hooks/useManifestarNfe.ts"
+   ],
    "chamada_por_edges": [],
    "chamada_por_sql_ou_cron": false,
-   "orfa": true,
+   "orfa": false,
    "testes": 1
   },
   {
    "nome": "send-device-alert",
    "entrada": "supabase/functions/send-device-alert/index.ts",
    "arquivos": 1,
-   "linhas": 181,
+   "linhas": 180,
    "verify_jwt": false,
    "metodos": [
     "OPTIONS",
@@ -3501,7 +3527,7 @@
    "nome": "send-push-notification",
    "entrada": "supabase/functions/send-push-notification/index.ts",
    "arquivos": 1,
-   "linhas": 366,
+   "linhas": 365,
    "verify_jwt": false,
    "metodos": [
     "OPTIONS",
@@ -3530,6 +3556,7 @@
     "validation.ts"
    ],
    "chamada_pelo_front": [
+    "src/hooks/saved-filter-alerts/useEntitySavedFilterAlerts.ts",
     "src/hooks/useAlertasPreditivos.ts",
     "src/hooks/usePushNotifications.ts",
     "src/hooks/useSecurityAlerts.ts"
@@ -3546,7 +3573,7 @@
    "nome": "simular-presumido",
    "entrada": "supabase/functions/simular-presumido/index.ts",
    "arquivos": 1,
-   "linhas": 34,
+   "linhas": 33,
    "verify_jwt": true,
    "metodos": [
     "OPTIONS"
@@ -3574,7 +3601,7 @@
    "nome": "simular-real",
    "entrada": "supabase/functions/simular-real/index.ts",
    "arquivos": 1,
-   "linhas": 34,
+   "linhas": 33,
    "verify_jwt": true,
    "metodos": [
     "OPTIONS"
@@ -3602,7 +3629,7 @@
    "nome": "simular-simples",
    "entrada": "supabase/functions/simular-simples/index.ts",
    "arquivos": 1,
-   "linhas": 49,
+   "linhas": 48,
    "verify_jwt": true,
    "metodos": [
     "OPTIONS"
@@ -3630,7 +3657,7 @@
    "nome": "sincronizar-anomalia-bitrix24",
    "entrada": "supabase/functions/sincronizar-anomalia-bitrix24/index.ts",
    "arquivos": 1,
-   "linhas": 246,
+   "linhas": 245,
    "verify_jwt": true,
    "metodos": [
     "OPTIONS"
@@ -3657,17 +3684,19 @@
     "observability.ts",
     "resilience.ts"
    ],
-   "chamada_pelo_front": [],
+   "chamada_pelo_front": [
+    "src/hooks/useSincronizarAnomaliaBitrix.ts"
+   ],
    "chamada_por_edges": [],
    "chamada_por_sql_ou_cron": false,
-   "orfa": true,
+   "orfa": false,
    "testes": 0
   },
   {
    "nome": "sso-callback",
    "entrada": "supabase/functions/sso-callback/index.ts",
    "arquivos": 3,
-   "linhas": 1388,
+   "linhas": 1385,
    "verify_jwt": false,
    "metodos": [
     "OPTIONS",
@@ -3699,6 +3728,7 @@
     "observability.ts"
    ],
    "chamada_pelo_front": [
+    "src/hooks/AuthProvider.tsx",
     "src/pages/Auth.hooks.ts"
    ],
    "chamada_por_edges": [
@@ -3712,7 +3742,7 @@
    "nome": "sso-generate-metadata",
    "entrada": "supabase/functions/sso-generate-metadata/index.ts",
    "arquivos": 1,
-   "linhas": 78,
+   "linhas": 77,
    "verify_jwt": true,
    "metodos": [
     "OPTIONS"
@@ -3740,7 +3770,7 @@
    "nome": "sso-initiate",
    "entrada": "supabase/functions/sso-initiate/index.ts",
    "arquivos": 1,
-   "linhas": 167,
+   "linhas": 166,
    "verify_jwt": false,
    "metodos": [
     "OPTIONS"
@@ -3778,7 +3808,7 @@
    "nome": "sso-logout",
    "entrada": "supabase/functions/sso-logout/index.ts",
    "arquivos": 1,
-   "linhas": 106,
+   "linhas": 105,
    "verify_jwt": false,
    "metodos": [
     "OPTIONS"
@@ -3814,7 +3844,7 @@
    "nome": "sso-test-login",
    "entrada": "supabase/functions/sso-test-login/index.ts",
    "arquivos": 3,
-   "linhas": 437,
+   "linhas": 434,
    "verify_jwt": true,
    "metodos": [
     "OPTIONS"
@@ -3851,7 +3881,7 @@
    "nome": "sso-validate-config",
    "entrada": "supabase/functions/sso-validate-config/index.ts",
    "arquivos": 1,
-   "linhas": 148,
+   "linhas": 147,
    "verify_jwt": true,
    "metodos": [
     "OPTIONS"
@@ -3879,7 +3909,7 @@
    "nome": "sync-profile-to-bitrix",
    "entrada": "supabase/functions/sync-profile-to-bitrix/index.ts",
    "arquivos": 1,
-   "linhas": 307,
+   "linhas": 306,
    "verify_jwt": true,
    "metodos": [
     "OPTIONS",
@@ -3921,7 +3951,7 @@
    "nome": "upload-anexo",
    "entrada": "supabase/functions/upload-anexo/index.ts",
    "arquivos": 1,
-   "linhas": 218,
+   "linhas": 217,
    "verify_jwt": true,
    "metodos": [
     "OPTIONS",
@@ -3958,7 +3988,7 @@
    "nome": "validar-token-contador",
    "entrada": "supabase/functions/validar-token-contador/index.ts",
    "arquivos": 1,
-   "linhas": 152,
+   "linhas": 151,
    "verify_jwt": false,
    "metodos": [
     "OPTIONS"
@@ -3996,7 +4026,7 @@
    "nome": "validate-ip-geo",
    "entrada": "supabase/functions/validate-ip-geo/index.ts",
    "arquivos": 1,
-   "linhas": 218,
+   "linhas": 217,
    "verify_jwt": false,
    "metodos": [
     "OPTIONS"
@@ -4037,7 +4067,7 @@
    "nome": "verificar-conformidade-fiscal",
    "entrada": "supabase/functions/verificar-conformidade-fiscal/index.ts",
    "arquivos": 1,
-   "linhas": 323,
+   "linhas": 322,
    "verify_jwt": true,
    "metodos": [
     "OPTIONS"
@@ -4081,7 +4111,7 @@
    "nome": "webhook-replay",
    "entrada": "supabase/functions/webhook-replay/index.ts",
    "arquivos": 1,
-   "linhas": 113,
+   "linhas": 112,
    "verify_jwt": false,
    "metodos": [
     "OPTIONS"
@@ -4121,7 +4151,7 @@
    "nome": "webhook-retry-worker",
    "entrada": "supabase/functions/webhook-retry-worker/index.ts",
    "arquivos": 1,
-   "linhas": 110,
+   "linhas": 109,
    "verify_jwt": false,
    "metodos": [
     "OPTIONS"
@@ -4160,8 +4190,8 @@
   {
    "nome": "webhook-simulator",
    "entrada": "supabase/functions/webhook-simulator/index.ts",
-   "arquivos": 2,
-   "linhas": 352,
+   "arquivos": 1,
+   "linhas": 238,
    "verify_jwt": true,
    "metodos": [
     "OPTIONS"
@@ -4185,7 +4215,6 @@
     "contract-validator.ts",
     "correlation.ts",
     "edge-observability.ts",
-    "validation.ts",
     "webhook-auth.ts"
    ],
    "chamada_pelo_front": [
@@ -4194,13 +4223,13 @@
    "chamada_por_edges": [],
    "chamada_por_sql_ou_cron": false,
    "orfa": false,
-   "testes": 0
+   "testes": 1
   },
   {
    "nome": "whatsapp-ai-analyzer",
    "entrada": "supabase/functions/whatsapp-ai-analyzer/index.ts",
    "arquivos": 1,
-   "linhas": 93,
+   "linhas": 92,
    "verify_jwt": true,
    "metodos": [
     "OPTIONS"
@@ -4233,8 +4262,8 @@
   {
    "nome": "whatsapp-ia-proativo",
    "entrada": "supabase/functions/whatsapp-ia-proativo/index.ts",
-   "arquivos": 2,
-   "linhas": 1745,
+   "arquivos": 1,
+   "linhas": 917,
    "verify_jwt": false,
    "metodos": [
     "OPTIONS"
@@ -4255,8 +4284,6 @@
    "chama_edges": [],
    "hosts_externos": [
     "ai.gateway.lovable.dev",
-    "app.promo-finance.com",
-    "supabase.invalid",
     "wa.me"
    ],
    "usa_shared": [
@@ -4279,13 +4306,13 @@
    ],
    "chamada_por_sql_ou_cron": false,
    "orfa": false,
-   "testes": 0
+   "testes": 1
   },
   {
    "nome": "whatsapp-webhook",
    "entrada": "supabase/functions/whatsapp-webhook/index.ts",
    "arquivos": 1,
-   "linhas": 199,
+   "linhas": 198,
    "verify_jwt": false,
    "metodos": [
     "OPTIONS",

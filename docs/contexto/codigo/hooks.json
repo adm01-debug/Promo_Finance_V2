@@ -1,48 +1,14 @@
 {
  "aviso": "GERADO AUTOMATICAMENTE por scripts/ai-context/gerar.mjs — não editar à mão; será sobrescrito.",
  "format_version": 2,
- "total": 265,
+ "total": 264,
  "hooks": [
-  {
-   "arquivo": "scripts/ai-context/cenarios.mjs",
-   "hooks_exportados": [
-    "useA",
-    "useB",
-    "useC",
-    "useX"
-   ],
-   "linhas": 173,
-   "dominio": null,
-   "tabelas": [
-    "a",
-    "fantasma",
-    "so_teste",
-    "t",
-    "t1",
-    "tx"
-   ],
-   "rpcs": [
-    "r1"
-   ],
-   "edges": [
-    "inexistente",
-    "other",
-    "tick"
-   ],
-   "hooks_internos": [
-    "useFeatureFlag"
-   ],
-   "canais_realtime": [],
-   "usado_por": 0,
-   "usado_por_arquivos": [],
-   "coberto_por_testes": 0
-  },
   {
    "arquivo": "src/components/admin/anomalia-preferences/useSaveAnomaliaPreferences.ts",
    "hooks_exportados": [
     "useSaveAnomaliaPreferences"
    ],
-   "linhas": 136,
+   "linhas": 135,
    "dominio": "components/admin",
    "tabelas": [],
    "rpcs": [],
@@ -63,7 +29,7 @@
    "hooks_exportados": [
     "useAtalhosTeclado"
    ],
-   "linhas": 112,
+   "linhas": 111,
    "dominio": "components/admin",
    "tabelas": [],
    "rpcs": [],
@@ -84,7 +50,7 @@
    "hooks_exportados": [
     "useConflitoNotifier"
    ],
-   "linhas": 96,
+   "linhas": 95,
    "dominio": "components/admin",
    "tabelas": [
     "profiles"
@@ -106,7 +72,7 @@
    "hooks_exportados": [
     "useRetry"
    ],
-   "linhas": 37,
+   "linhas": 36,
    "dominio": "components/admin",
    "tabelas": [],
    "rpcs": [],
@@ -126,7 +92,7 @@
    "hooks_exportados": [
     "useReviewQueue"
    ],
-   "linhas": 450,
+   "linhas": 449,
    "dominio": "components/admin",
    "tabelas": [
     "anomalias_detectadas"
@@ -157,10 +123,12 @@
    "hooks_exportados": [
     "useWeeklyTrendData"
    ],
-   "linhas": 94,
+   "linhas": 93,
    "dominio": "components/admin",
    "tabelas": [],
-   "rpcs": [],
+   "rpcs": [
+    "get_performance_alerts_weekly"
+   ],
    "edges": [],
    "hooks_internos": [
     "useMemo"
@@ -177,7 +145,7 @@
    "hooks_exportados": [
     "useAnomaliasPanelDerivations"
    ],
-   "linhas": 250,
+   "linhas": 249,
    "dominio": "components/admin",
    "tabelas": [],
    "rpcs": [],
@@ -198,7 +166,7 @@
    "hooks_exportados": [
     "useIntegridadeVerifier"
    ],
-   "linhas": 183,
+   "linhas": 182,
    "dominio": "components/compliance",
    "tabelas": [],
    "rpcs": [],
@@ -218,13 +186,15 @@
    "hooks_exportados": [
     "useContabilizacaoMutations"
    ],
-   "linhas": 171,
+   "linhas": 170,
    "dominio": "components/contabilidade",
    "tabelas": [
     "regras_contabilizacao_automatica"
    ],
    "rpcs": [],
-   "edges": [],
+   "edges": [
+    "contabilizar-evento"
+   ],
    "hooks_internos": [
     "useQueryClient"
    ],
@@ -241,9 +211,14 @@
    "hooks_exportados": [
     "useContabilizacaoQueries"
    ],
-   "linhas": 73,
+   "linhas": 72,
    "dominio": "components/contabilidade",
-   "tabelas": [],
+   "tabelas": [
+    "categorias",
+    "eventos_contabilizacao_log",
+    "plano_contas",
+    "regras_contabilizacao_automatica"
+   ],
    "rpcs": [],
    "edges": [],
    "hooks_internos": [],
@@ -259,7 +234,7 @@
    "hooks_exportados": [
     "useRazaoDiarioData"
    ],
-   "linhas": 125,
+   "linhas": 124,
    "dominio": "components/contabilidade",
    "tabelas": [],
    "rpcs": [],
@@ -282,7 +257,7 @@
    "hooks_exportados": [
     "useSpedContabilState"
    ],
-   "linhas": 310,
+   "linhas": 309,
    "dominio": "components/contabilidade",
    "tabelas": [
     "empresas"
@@ -308,7 +283,7 @@
    "hooks_exportados": [
     "useSpedEcfWizardState"
    ],
-   "linhas": 159,
+   "linhas": 158,
    "dominio": "components/contabilidade",
    "tabelas": [],
    "rpcs": [],
@@ -334,7 +309,7 @@
    "hooks_exportados": [
     "usePageTransition"
    ],
-   "linhas": 40,
+   "linhas": 39,
    "dominio": "components/layout",
    "tabelas": [],
    "rpcs": [],
@@ -351,7 +326,7 @@
     "useTransition",
     "useTransitionDefaults"
    ],
-   "linhas": 9,
+   "linhas": 8,
    "dominio": "components/layout",
    "tabelas": [],
    "rpcs": [],
@@ -370,7 +345,7 @@
    "hooks_exportados": [
     "useTransitionDefaults"
    ],
-   "linhas": 15,
+   "linhas": 14,
    "dominio": "components/layout",
    "tabelas": [],
    "rpcs": [],
@@ -392,7 +367,7 @@
    "hooks_exportados": [
     "useTransition"
    ],
-   "linhas": 31,
+   "linhas": 30,
    "dominio": "components/layout",
    "tabelas": [],
    "rpcs": [],
@@ -415,7 +390,7 @@
    "hooks_exportados": [
     "useUnsavedChangesGuard"
    ],
-   "linhas": 25,
+   "linhas": 24,
    "dominio": "components/navigation",
    "tabelas": [],
    "rpcs": [],
@@ -438,7 +413,7 @@
    "hooks_exportados": [
     "useQuickCreate"
    ],
-   "linhas": 16,
+   "linhas": 15,
    "dominio": "components/quick-create",
    "tabelas": [],
    "rpcs": [],
@@ -456,7 +431,7 @@
    "hooks_exportados": [
     "useTheme"
    ],
-   "linhas": 20,
+   "linhas": 19,
    "dominio": "components/theme",
    "tabelas": [],
    "rpcs": [],
@@ -481,7 +456,7 @@
    "hooks_exportados": [
     "useActionState"
    ],
-   "linhas": 21,
+   "linhas": 20,
    "dominio": "components/ui",
    "tabelas": [],
    "rpcs": [],
@@ -497,7 +472,7 @@
    "hooks_exportados": [
     "useCommandMenu"
    ],
-   "linhas": 22,
+   "linhas": 21,
    "dominio": "components/ui",
    "tabelas": [],
    "rpcs": [],
@@ -517,7 +492,7 @@
     "useConfirmation",
     "useDeleteConfirmation"
    ],
-   "linhas": 123,
+   "linhas": 122,
    "dominio": "components/ui",
    "tabelas": [],
    "rpcs": [],
@@ -536,7 +511,7 @@
    "hooks_exportados": [
     "useLazyData"
    ],
-   "linhas": 120,
+   "linhas": 119,
    "dominio": "components/ui",
    "tabelas": [],
    "rpcs": [],
@@ -555,7 +530,7 @@
    "hooks_exportados": [
     "useQuickDateFilter"
    ],
-   "linhas": 46,
+   "linhas": 45,
    "dominio": "components/ui",
    "tabelas": [],
    "rpcs": [],
@@ -577,7 +552,7 @@
    "hooks_exportados": [
     "useSorting"
    ],
-   "linhas": 68,
+   "linhas": 67,
    "dominio": "components/ui",
    "tabelas": [],
    "rpcs": [],
@@ -597,7 +572,7 @@
    "hooks_exportados": [
     "useCelebrations"
    ],
-   "linhas": 155,
+   "linhas": 154,
    "dominio": "components/wrappers",
    "tabelas": [],
    "rpcs": [],
@@ -623,7 +598,7 @@
    "hooks_exportados": [
     "useEmpresaScope"
    ],
-   "linhas": 46,
+   "linhas": 45,
    "dominio": "contexts",
    "tabelas": [],
    "rpcs": [],
@@ -656,7 +631,7 @@
     "useBlingContatos",
     "useBlingTiposContato"
    ],
-   "linhas": 72,
+   "linhas": 71,
    "dominio": "hooks/bling",
    "tabelas": [],
    "rpcs": [],
@@ -680,7 +655,7 @@
     "useBlingEstoque",
     "useBlingEstoqueMutations"
    ],
-   "linhas": 44,
+   "linhas": 43,
    "dominio": "hooks/bling",
    "tabelas": [],
    "rpcs": [],
@@ -707,7 +682,7 @@
     "useBlingFinanceiroMutations",
     "useBlingFormasPagamento"
    ],
-   "linhas": 136,
+   "linhas": 135,
    "dominio": "hooks/bling",
    "tabelas": [],
    "rpcs": [],
@@ -733,7 +708,7 @@
     "useBlingRemessas",
     "useBlingServicosLogistica"
    ],
-   "linhas": 63,
+   "linhas": 62,
    "dominio": "hooks/bling",
    "tabelas": [],
    "rpcs": [],
@@ -757,7 +732,7 @@
     "useBlingNFeDetail",
     "useBlingNFeMutations"
    ],
-   "linhas": 86,
+   "linhas": 85,
    "dominio": "hooks/bling",
    "tabelas": [],
    "rpcs": [],
@@ -780,7 +755,7 @@
     "useBlingOAuth",
     "useBlingStatus"
    ],
-   "linhas": 43,
+   "linhas": 42,
    "dominio": "hooks/bling",
    "tabelas": [],
    "rpcs": [],
@@ -804,7 +779,7 @@
     "useBlingPedidoMutations",
     "useBlingPedidos"
    ],
-   "linhas": 111,
+   "linhas": 110,
    "dominio": "hooks/bling",
    "tabelas": [],
    "rpcs": [],
@@ -830,7 +805,7 @@
     "useBlingVariacoes",
     "useBlingVariacoesMutations"
    ],
-   "linhas": 84,
+   "linhas": 83,
    "dominio": "hooks/bling",
    "tabelas": [],
    "rpcs": [],
@@ -853,7 +828,7 @@
     "useBlingSyncLogs",
     "useBlingWebhookEvents"
    ],
-   "linhas": 33,
+   "linhas": 32,
    "dominio": "hooks/bling",
    "tabelas": [
     "bling_sync_logs",
@@ -879,7 +854,7 @@
     "useFornecedores",
     "useFornecedoresPaginated"
    ],
-   "linhas": 166,
+   "linhas": 165,
    "dominio": "hooks/financial",
    "tabelas": [
     "clientes",
@@ -906,7 +881,7 @@
     "useDeleteContaPagar",
     "useUpdateContaPagar"
    ],
-   "linhas": 192,
+   "linhas": 191,
    "dominio": "hooks/financial",
    "tabelas": [
     "contas_pagar",
@@ -933,7 +908,7 @@
     "useContasReceber",
     "useContasReceberPaginated"
    ],
-   "linhas": 110,
+   "linhas": 109,
    "dominio": "hooks/financial",
    "tabelas": [
     "contas_receber",
@@ -957,7 +932,7 @@
    "hooks_exportados": [
     "useDashboardKPIs"
    ],
-   "linhas": 30,
+   "linhas": 29,
    "dominio": "hooks/financial",
    "tabelas": [
     "boletos",
@@ -982,11 +957,12 @@
     "useContasBancarias",
     "useEmpresas"
    ],
-   "linhas": 94,
+   "linhas": 93,
    "dominio": "hooks/financial",
    "tabelas": [
     "centros_custo",
-    "empresas"
+    "empresas",
+    "regras_roteamento_financeiro"
    ],
    "rpcs": [],
    "edges": [],
@@ -1006,7 +982,7 @@
     "useTotaisContasPagar",
     "useTotaisContasReceber"
    ],
-   "linhas": 77,
+   "linhas": 76,
    "dominio": "hooks/financial",
    "tabelas": [],
    "rpcs": [
@@ -1027,13 +1003,16 @@
    "hooks_exportados": [
     "useEntitySavedFilterAlerts"
    ],
-   "linhas": 287,
+   "linhas": 286,
    "dominio": "hooks/saved-filter-alerts",
    "tabelas": [
     "saved_filter_subscriptions"
    ],
    "rpcs": [],
-   "edges": [],
+   "edges": [
+    "notify-saved-filter",
+    "send-push-notification"
+   ],
    "hooks_internos": [
     "useAuth",
     "useEffect",
@@ -1055,7 +1034,7 @@
    "hooks_exportados": [
     "useIsMobile"
    ],
-   "linhas": 20,
+   "linhas": 19,
    "dominio": "hooks",
    "tabelas": [],
    "rpcs": [],
@@ -1077,7 +1056,7 @@
    "hooks_exportados": [
     "useToast"
    ],
-   "linhas": 39,
+   "linhas": 38,
    "dominio": "hooks",
    "tabelas": [],
    "rpcs": [],
@@ -1116,7 +1095,7 @@
    "hooks_exportados": [
     "useAcoesRecomendadas"
    ],
-   "linhas": 57,
+   "linhas": 56,
    "dominio": "hooks",
    "tabelas": [
     "acoes_recomendadas"
@@ -1142,7 +1121,7 @@
    "hooks_exportados": [
     "useAcordosParcelamento"
    ],
-   "linhas": 527,
+   "linhas": 526,
    "dominio": "hooks",
    "tabelas": [
     "acordos_parcelamento",
@@ -1175,7 +1154,7 @@
     "useMarcarAlertaComoLido",
     "useMarcarTodosAlertasComoLidos"
    ],
-   "linhas": 177,
+   "linhas": 176,
    "dominio": "hooks",
    "tabelas": [
     "alertas",
@@ -1206,7 +1185,7 @@
    "hooks_exportados": [
     "useAlertasPreditivos"
    ],
-   "linhas": 235,
+   "linhas": 234,
    "dominio": "hooks",
    "tabelas": [],
    "rpcs": [],
@@ -1229,7 +1208,7 @@
    "hooks_exportados": [
     "useAlertasTributarios"
    ],
-   "linhas": 328,
+   "linhas": 327,
    "dominio": "hooks",
    "tabelas": [
     "alertas_tributarios",
@@ -1266,7 +1245,7 @@
    "hooks_exportados": [
     "useAlertasTributariosCount"
    ],
-   "linhas": 31,
+   "linhas": 30,
    "dominio": "hooks",
    "tabelas": [
     "alertas"
@@ -1288,7 +1267,7 @@
    "hooks_exportados": [
     "useAnomaliaAuditHistory"
    ],
-   "linhas": 39,
+   "linhas": 38,
    "dominio": "hooks",
    "tabelas": [
     "audit_logs"
@@ -1310,7 +1289,7 @@
    "hooks_exportados": [
     "useAnomaliaDetalhe"
    ],
-   "linhas": 142,
+   "linhas": 141,
    "dominio": "hooks",
    "tabelas": [
     "anomalias_detectadas",
@@ -1340,7 +1319,7 @@
    "hooks_exportados": [
     "useAnomaliaDetectionRun"
    ],
-   "linhas": 139,
+   "linhas": 138,
    "dominio": "hooks",
    "tabelas": [
     "anomalia_detection_runs"
@@ -1370,7 +1349,7 @@
    "hooks_exportados": [
     "useAnomaliaPreferences"
    ],
-   "linhas": 219,
+   "linhas": 218,
    "dominio": "hooks",
    "tabelas": [
     "user_anomalia_preferences"
@@ -1410,7 +1389,7 @@
    "hooks_exportados": [
     "useAnomaliasCriticasCount"
    ],
-   "linhas": 41,
+   "linhas": 40,
    "dominio": "hooks",
    "tabelas": [
     "anomalias_detectadas"
@@ -1438,7 +1417,7 @@
     "useReabrirAnomaliasLote",
     "useRevisarAnomalia"
    ],
-   "linhas": 356,
+   "linhas": 355,
    "dominio": "hooks",
    "tabelas": [
     "anomalias_detectadas"
@@ -1484,7 +1463,7 @@
    "hooks_exportados": [
     "useAnomaliasReabertasIndex"
    ],
-   "linhas": 58,
+   "linhas": 57,
    "dominio": "hooks",
    "tabelas": [
     "audit_logs"
@@ -1510,7 +1489,7 @@
     "useCreateApiKey",
     "useRevokeApiKey"
    ],
-   "linhas": 80,
+   "linhas": 79,
    "dominio": "hooks",
    "tabelas": [
     "api_keys"
@@ -1547,7 +1526,7 @@
     "useUpdateFluxoNivel",
     "useVerificarAprovacaoNecessaria"
    ],
-   "linhas": 382,
+   "linhas": 381,
    "dominio": "hooks",
    "tabelas": [
     "aprovacao_comentarios",
@@ -1582,7 +1561,7 @@
    "hooks_exportados": [
     "useAprovacoesPendentesCount"
    ],
-   "linhas": 93,
+   "linhas": 92,
    "dominio": "hooks",
    "tabelas": [
     "solicitacoes_aprovacao"
@@ -1610,7 +1589,7 @@
    "hooks_exportados": [
     "useApuracoesTributarias"
    ],
-   "linhas": 342,
+   "linhas": 341,
    "dominio": "hooks",
    "tabelas": [
     "apuracoes_tributarias",
@@ -1640,7 +1619,7 @@
    "hooks_exportados": [
     "useAsaas"
    ],
-   "linhas": 472,
+   "linhas": 471,
    "dominio": "hooks",
    "tabelas": [
     "asaas_config",
@@ -1650,7 +1629,9 @@
     "asaas_transfers"
    ],
    "rpcs": [],
-   "edges": [],
+   "edges": [
+    "asaas-proxy"
+   ],
    "hooks_internos": [
     "useMutation",
     "useQuery",
@@ -1679,14 +1660,14 @@
     "src/pages/Asaas.parts.tsx",
     "src/pages/Asaas.tsx"
    ],
-   "coberto_por_testes": 1
+   "coberto_por_testes": 0
   },
   {
    "arquivo": "src/hooks/useAuditLog.ts",
    "hooks_exportados": [
     "useLogAudit"
    ],
-   "linhas": 37,
+   "linhas": 36,
    "dominio": "hooks",
    "tabelas": [],
    "rpcs": [
@@ -1713,7 +1694,7 @@
    "hooks_exportados": [
     "useAuditoriaCFC"
    ],
-   "linhas": 90,
+   "linhas": 89,
    "dominio": "hooks",
    "tabelas": [],
    "rpcs": [],
@@ -1739,7 +1720,7 @@
    "hooks_exportados": [
     "useAuditoriaCompliance"
    ],
-   "linhas": 252,
+   "linhas": 251,
    "dominio": "hooks",
    "tabelas": [
     "apuracoes_tributarias",
@@ -1765,7 +1746,7 @@
    "hooks_exportados": [
     "useAuditoriaIA"
    ],
-   "linhas": 167,
+   "linhas": 166,
    "dominio": "hooks",
    "tabelas": [
     "contas_bancarias",
@@ -1792,7 +1773,7 @@
    "hooks_exportados": [
     "useAuditoriaLancamentos"
    ],
-   "linhas": 108,
+   "linhas": 107,
    "dominio": "hooks",
    "tabelas": [
     "auditoria_financeira"
@@ -1814,7 +1795,7 @@
    "hooks_exportados": [
     "useAuth"
    ],
-   "linhas": 43,
+   "linhas": 42,
    "dominio": "hooks",
    "tabelas": [],
    "rpcs": [],
@@ -1863,7 +1844,7 @@
    "hooks_exportados": [
     "useAuthValidation"
    ],
-   "linhas": 164,
+   "linhas": 163,
    "dominio": "hooks",
    "tabelas": [
     "blocked_ips",
@@ -1890,7 +1871,7 @@
    "hooks_exportados": [
     "useBalancete"
    ],
-   "linhas": 81,
+   "linhas": 80,
    "dominio": "hooks",
    "tabelas": [],
    "rpcs": [
@@ -1914,7 +1895,7 @@
     "useBankAccountTotals",
     "useBankAccounts"
    ],
-   "linhas": 255,
+   "linhas": 254,
    "dominio": "hooks",
    "tabelas": [
     "contas_bancarias"
@@ -1939,7 +1920,7 @@
    "hooks_exportados": [
     "useBenchmarkSetorial"
    ],
-   "linhas": 37,
+   "linhas": 36,
    "dominio": "hooks",
    "tabelas": [],
    "rpcs": [],
@@ -1961,7 +1942,7 @@
    "hooks_exportados": [
     "useBitrix24"
    ],
-   "linhas": 305,
+   "linhas": 304,
    "dominio": "hooks",
    "tabelas": [
     "bitrix_field_mappings",
@@ -1991,7 +1972,7 @@
   {
    "arquivo": "src/hooks/useBling.ts",
    "hooks_exportados": [],
-   "linhas": 2,
+   "linhas": 1,
    "dominio": "hooks",
    "tabelas": [],
    "rpcs": [],
@@ -2017,7 +1998,7 @@
    "hooks_exportados": [
     "useBlingNFe"
    ],
-   "linhas": 336,
+   "linhas": 335,
    "dominio": "hooks",
    "tabelas": [],
    "rpcs": [],
@@ -2040,7 +2021,7 @@
    "hooks_exportados": [
     "useBoletos"
    ],
-   "linhas": 474,
+   "linhas": 473,
    "dominio": "hooks",
    "tabelas": [
     "boletos",
@@ -2080,7 +2061,7 @@
     "useDeleteBudget",
     "useUpdateBudget"
    ],
-   "linhas": 159,
+   "linhas": 158,
    "dominio": "hooks",
    "tabelas": [
     "budgets",
@@ -2107,7 +2088,7 @@
    "hooks_exportados": [
     "useBulkActions"
    ],
-   "linhas": 309,
+   "linhas": 308,
    "dominio": "hooks",
    "tabelas": [],
    "rpcs": [],
@@ -2131,7 +2112,7 @@
    "hooks_exportados": [
     "useCalculadoraDadosReais"
    ],
-   "linhas": 93,
+   "linhas": 92,
    "dominio": "hooks",
    "tabelas": [
     "contas_receber",
@@ -2155,7 +2136,7 @@
    "hooks_exportados": [
     "useCashbackSimulador"
    ],
-   "linhas": 208,
+   "linhas": 207,
    "dominio": "hooks",
    "tabelas": [],
    "rpcs": [],
@@ -2177,7 +2158,7 @@
    "hooks_exportados": [
     "useCatalogoIssMunicipal"
    ],
-   "linhas": 23,
+   "linhas": 22,
    "dominio": "hooks",
    "tabelas": [],
    "rpcs": [],
@@ -2195,7 +2176,7 @@
    "hooks_exportados": [
     "useCatalogosFiscais"
    ],
-   "linhas": 210,
+   "linhas": 209,
    "dominio": "hooks",
    "tabelas": [],
    "rpcs": [],
@@ -2221,7 +2202,7 @@
     "useDeleteCategoria",
     "useUpdateCategoria"
    ],
-   "linhas": 220,
+   "linhas": 219,
    "dominio": "hooks",
    "tabelas": [
     "categorias"
@@ -2251,7 +2232,7 @@
    "hooks_exportados": [
     "useCategorizacaoIA"
    ],
-   "linhas": 155,
+   "linhas": 154,
    "dominio": "hooks",
    "tabelas": [],
    "rpcs": [],
@@ -2279,7 +2260,7 @@
     "useExcluirCentroCusto",
     "useReativarCentroCusto"
    ],
-   "linhas": 150,
+   "linhas": 149,
    "dominio": "hooks",
    "tabelas": [
     "centros_custo"
@@ -2311,13 +2292,15 @@
     "useToggleCertificado",
     "useUploadCertificado"
    ],
-   "linhas": 108,
+   "linhas": 107,
    "dominio": "hooks",
    "tabelas": [
     "empresas_certificados"
    ],
    "rpcs": [],
-   "edges": [],
+   "edges": [
+    "nfe-upload-certificado"
+   ],
    "hooks_internos": [
     "useMutation",
     "useQuery",
@@ -2336,7 +2319,7 @@
     "useCnaes",
     "useResolucaoCnae"
    ],
-   "linhas": 52,
+   "linhas": 51,
    "dominio": "hooks",
    "tabelas": [],
    "rpcs": [],
@@ -2357,7 +2340,7 @@
    "hooks_exportados": [
     "useCnpjaLookup"
    ],
-   "linhas": 95,
+   "linhas": 94,
    "dominio": "hooks",
    "tabelas": [],
    "rpcs": [],
@@ -2385,7 +2368,7 @@
     "useTopDevedores",
     "useUpdateEtapaCobranca"
    ],
-   "linhas": 368,
+   "linhas": 367,
    "dominio": "hooks",
    "tabelas": [
     "contas_receber",
@@ -2412,7 +2395,7 @@
    "hooks_exportados": [
     "useComparativoConformidade"
    ],
-   "linhas": 118,
+   "linhas": 117,
    "dominio": "hooks",
    "tabelas": [
     "conformidade_snapshots"
@@ -2435,7 +2418,7 @@
    "hooks_exportados": [
     "useComparativoRegimes"
    ],
-   "linhas": 311,
+   "linhas": 310,
    "dominio": "hooks",
    "tabelas": [],
    "rpcs": [],
@@ -2455,7 +2438,7 @@
    "hooks_exportados": [
     "useComplianceKpis"
    ],
-   "linhas": 47,
+   "linhas": 46,
    "dominio": "hooks",
    "tabelas": [
     "audit_logs",
@@ -2481,7 +2464,7 @@
     "useHistoricoCobranca",
     "useTransacoesBancarias"
    ],
-   "linhas": 317,
+   "linhas": 316,
    "dominio": "hooks",
    "tabelas": [
     "extrato_bancario",
@@ -2489,7 +2472,9 @@
     "transacoes_bancarias"
    ],
    "rpcs": [],
-   "edges": [],
+   "edges": [
+    "conciliacao-proxy"
+   ],
    "hooks_internos": [
     "useMutation",
     "useQueryClient"
@@ -2507,7 +2492,7 @@
    "hooks_exportados": [
     "useConciliacaoAudit"
    ],
-   "linhas": 61,
+   "linhas": 60,
    "dominio": "hooks",
    "tabelas": [
     "alertas",
@@ -2531,7 +2516,7 @@
    "hooks_exportados": [
     "useConciliacaoIA"
    ],
-   "linhas": 152,
+   "linhas": 151,
    "dominio": "hooks",
    "tabelas": [],
    "rpcs": [],
@@ -2560,7 +2545,7 @@
    "hooks_exportados": [
     "useConciliacaoIgnorarActions"
    ],
-   "linhas": 128,
+   "linhas": 127,
    "dominio": "hooks",
    "tabelas": [
     "transacoes_bancarias"
@@ -2583,7 +2568,7 @@
    "hooks_exportados": [
     "useConciliacaoPage"
    ],
-   "linhas": 463,
+   "linhas": 462,
    "dominio": "hooks",
    "tabelas": [
     "alertas",
@@ -2621,7 +2606,7 @@
     "useFiltrosConciliacaoPersistidos",
     "useTransacoesBancariasSelecionadas"
    ],
-   "linhas": 120,
+   "linhas": 119,
    "dominio": "hooks",
    "tabelas": [],
    "rpcs": [],
@@ -2645,7 +2630,7 @@
    "hooks_exportados": [
     "useConciliacaoRetroativa"
    ],
-   "linhas": 72,
+   "linhas": 71,
    "dominio": "hooks",
    "tabelas": [
     "logs_conciliacao_retroativa"
@@ -2668,7 +2653,7 @@
    "hooks_exportados": [
     "useConciliacaoTributaria"
    ],
-   "linhas": 252,
+   "linhas": 251,
    "dominio": "hooks",
    "tabelas": [
     "apuracoes_tributarias",
@@ -2695,7 +2680,7 @@
    "hooks_exportados": [
     "useConfetti"
    ],
-   "linhas": 76,
+   "linhas": 75,
    "dominio": "hooks",
    "tabelas": [],
    "rpcs": [],
@@ -2720,7 +2705,7 @@
    "hooks_exportados": [
     "useConformidadeFiscal"
    ],
-   "linhas": 97,
+   "linhas": 96,
    "dominio": "hooks",
    "tabelas": [
     "verificacoes_conformidade"
@@ -2747,7 +2732,7 @@
     "useConformidadeSnapshotsDaEmpresa",
     "useSalvarConformidadeSnapshots"
    ],
-   "linhas": 103,
+   "linhas": 102,
    "dominio": "hooks",
    "tabelas": [
     "conformidade_snapshots"
@@ -2776,7 +2761,7 @@
     "useConsultaTributaria",
     "useConsultaUF"
    ],
-   "linhas": 152,
+   "linhas": 151,
    "dominio": "hooks",
    "tabelas": [],
    "rpcs": [],
@@ -2799,7 +2784,7 @@
    "hooks_exportados": [
     "useContasPagarLogic"
    ],
-   "linhas": 625,
+   "linhas": 624,
    "dominio": "hooks",
    "tabelas": [
     "profiles",
@@ -2843,7 +2828,7 @@
    "hooks_exportados": [
     "useContasReceberLogic"
    ],
-   "linhas": 466,
+   "linhas": 465,
    "dominio": "hooks",
    "tabelas": [
     "contas_receber"
@@ -2883,7 +2868,7 @@
     "useDeleteContrato",
     "useUpdateContrato"
    ],
-   "linhas": 115,
+   "linhas": 114,
    "dominio": "hooks",
    "tabelas": [
     "contratos"
@@ -2907,7 +2892,7 @@
    "hooks_exportados": [
     "useCountUp"
    ],
-   "linhas": 54,
+   "linhas": 53,
    "dominio": "hooks",
    "tabelas": [],
    "rpcs": [],
@@ -2930,7 +2915,7 @@
    "hooks_exportados": [
     "useCreditosTributarios"
    ],
-   "linhas": 383,
+   "linhas": 382,
    "dominio": "hooks",
    "tabelas": [
     "creditos_tributarios",
@@ -2961,7 +2946,7 @@
     "useDeleteCustomFieldDefinition",
     "useSaveCustomFieldDefinition"
    ],
-   "linhas": 115,
+   "linhas": 114,
    "dominio": "hooks",
    "tabelas": [
     "custom_field_definitions"
@@ -2985,7 +2970,7 @@
    "hooks_exportados": [
     "useDashboardConfig"
    ],
-   "linhas": 230,
+   "linhas": 229,
    "dominio": "hooks",
    "tabelas": [],
    "rpcs": [],
@@ -3009,7 +2994,7 @@
    "hooks_exportados": [
     "useDashboardMetrics"
    ],
-   "linhas": 355,
+   "linhas": 354,
    "dominio": "hooks",
    "tabelas": [],
    "rpcs": [],
@@ -3042,7 +3027,7 @@
    "hooks_exportados": [
     "useDashboardTributario"
    ],
-   "linhas": 93,
+   "linhas": 92,
    "dominio": "hooks",
    "tabelas": [
     "vw_tributario_dashboard"
@@ -3075,7 +3060,7 @@
     "useTypingDetection",
     "useWindowSize"
    ],
-   "linhas": 280,
+   "linhas": 279,
    "dominio": "hooks",
    "tabelas": [],
    "rpcs": [],
@@ -3100,7 +3085,7 @@
    "hooks_exportados": [
     "useDecidirRegimeServer"
    ],
-   "linhas": 48,
+   "linhas": 47,
    "dominio": "hooks",
    "tabelas": [],
    "rpcs": [],
@@ -3120,7 +3105,7 @@
    "hooks_exportados": [
     "useDemonstrativosContabeis"
    ],
-   "linhas": 307,
+   "linhas": 306,
    "dominio": "hooks",
    "tabelas": [
     "partidas_contabeis"
@@ -3155,7 +3140,7 @@
    "hooks_exportados": [
     "useDeviceDetection"
    ],
-   "linhas": 221,
+   "linhas": 220,
    "dominio": "hooks",
    "tabelas": [
     "dispositivos_conhecidos",
@@ -3183,7 +3168,7 @@
    "hooks_exportados": [
     "useDigestEnviosLog"
    ],
-   "linhas": 78,
+   "linhas": 77,
    "dominio": "hooks",
    "tabelas": [
     "digest_envios_log"
@@ -3205,7 +3190,7 @@
    "hooks_exportados": [
     "useDigestPreferences"
    ],
-   "linhas": 109,
+   "linhas": 108,
    "dominio": "hooks",
    "tabelas": [
     "user_digest_preferences"
@@ -3229,7 +3214,7 @@
    "hooks_exportados": [
     "useDivergenciasConciliacao"
    ],
-   "linhas": 50,
+   "linhas": 49,
    "dominio": "hooks",
    "tabelas": [
     "divergencias_conciliacao"
@@ -3254,7 +3239,7 @@
    "hooks_exportados": [
     "useDRETributaria"
    ],
-   "linhas": 47,
+   "linhas": 46,
    "dominio": "hooks",
    "tabelas": [],
    "rpcs": [],
@@ -3280,7 +3265,7 @@
     "useExcluirEmpresa",
     "useReativarEmpresa"
    ],
-   "linhas": 111,
+   "linhas": 110,
    "dominio": "hooks",
    "tabelas": [
     "empresas"
@@ -3328,7 +3313,7 @@
     "useEntregasObrigacoes",
     "useRegistrarEntregaObrigacao"
    ],
-   "linhas": 121,
+   "linhas": 120,
    "dominio": "hooks",
    "tabelas": [
     "entregas_obrigacoes"
@@ -3353,7 +3338,7 @@
    "hooks_exportados": [
     "useEvidenciasPacotes"
    ],
-   "linhas": 76,
+   "linhas": 75,
    "dominio": "hooks",
    "tabelas": [
     "evidencias_pacotes"
@@ -3380,7 +3365,7 @@
    "hooks_exportados": [
     "useExpertActions"
    ],
-   "linhas": 99,
+   "linhas": 98,
    "dominio": "hooks",
    "tabelas": [],
    "rpcs": [],
@@ -3404,7 +3389,7 @@
    "hooks_exportados": [
     "useExpertContext"
    ],
-   "linhas": 255,
+   "linhas": 254,
    "dominio": "hooks",
    "tabelas": [
     "contas_bancarias",
@@ -3437,7 +3422,7 @@
     "useUpdateConversation",
     "useUpdateMessageActions"
    ],
-   "linhas": 217,
+   "linhas": 216,
    "dominio": "hooks",
    "tabelas": [
     "expert_conversations",
@@ -3463,7 +3448,7 @@
    "hooks_exportados": [
     "useExportarSped"
    ],
-   "linhas": 29,
+   "linhas": 28,
    "dominio": "hooks",
    "tabelas": [],
    "rpcs": [],
@@ -3489,7 +3474,7 @@
     "useWebhooksLog",
     "useWebhooksRecentes"
    ],
-   "linhas": 83,
+   "linhas": 82,
    "dominio": "hooks",
    "tabelas": [
     "conciliacoes",
@@ -3518,7 +3503,7 @@
    "hooks_exportados": [
     "useFechamentoTributario"
    ],
-   "linhas": 90,
+   "linhas": 89,
    "dominio": "hooks",
    "tabelas": [
     "fechamentos_tributarios"
@@ -3545,7 +3530,7 @@
    "hooks_exportados": [
     "useFilterPresets"
    ],
-   "linhas": 101,
+   "linhas": 100,
    "dominio": "hooks",
    "tabelas": [
     "user_filter_presets"
@@ -3570,7 +3555,7 @@
    "hooks_exportados": [
     "useFinancialAlerts"
    ],
-   "linhas": 75,
+   "linhas": 74,
    "dominio": "hooks",
    "tabelas": [],
    "rpcs": [],
@@ -3608,7 +3593,7 @@
     "useFornecedoresPaginated",
     "useUpdateContaPagar"
    ],
-   "linhas": 37,
+   "linhas": 36,
    "dominio": "hooks",
    "tabelas": [],
    "rpcs": [],
@@ -3662,7 +3647,7 @@
     "usePlanoContas",
     "useTransferencias"
    ],
-   "linhas": 281,
+   "linhas": 280,
    "dominio": "hooks",
    "tabelas": [
     "formas_pagamento",
@@ -3692,7 +3677,7 @@
     "useFluxoCaixaKPIs",
     "useFluxoCaixaProjetado"
    ],
-   "linhas": 210,
+   "linhas": 209,
    "dominio": "hooks",
    "tabelas": [
     "contas_bancarias",
@@ -3717,7 +3702,7 @@
    "hooks_exportados": [
     "useFluxoCaixaPage"
    ],
-   "linhas": 143,
+   "linhas": 142,
    "dominio": "hooks",
    "tabelas": [],
    "rpcs": [],
@@ -3746,7 +3731,7 @@
     "useSilenciamentosExpirando",
     "useSilenciarAlertaErro"
    ],
-   "linhas": 190,
+   "linhas": 189,
    "dominio": "hooks",
    "tabelas": [
     "frontend_error_alert_state"
@@ -3777,7 +3762,7 @@
    "hooks_exportados": [
     "useGerarEvidenciasStream"
    ],
-   "linhas": 263,
+   "linhas": 262,
    "dominio": "hooks",
    "tabelas": [],
    "rpcs": [],
@@ -3803,7 +3788,7 @@
    "hooks_exportados": [
     "useGlobalFilterSync"
    ],
-   "linhas": 25,
+   "linhas": 24,
    "dominio": "hooks",
    "tabelas": [],
    "rpcs": [],
@@ -3821,7 +3806,7 @@
    "hooks_exportados": [
     "useGlobalFinancialFilter"
    ],
-   "linhas": 44,
+   "linhas": 43,
    "dominio": "hooks",
    "tabelas": [],
    "rpcs": [],
@@ -3844,7 +3829,7 @@
    "hooks_exportados": [
     "useHealthScoreOperacional"
    ],
-   "linhas": 55,
+   "linhas": 54,
    "dominio": "hooks",
    "tabelas": [
     "health_scores_operacionais"
@@ -3870,7 +3855,7 @@
    "hooks_exportados": [
     "useHeatmapTributario"
    ],
-   "linhas": 38,
+   "linhas": 37,
    "dominio": "hooks",
    "tabelas": [],
    "rpcs": [],
@@ -3892,7 +3877,7 @@
    "hooks_exportados": [
     "useHighlightFromUrl"
    ],
-   "linhas": 87,
+   "linhas": 86,
    "dominio": "hooks",
    "tabelas": [],
    "rpcs": [],
@@ -3916,7 +3901,7 @@
    "hooks_exportados": [
     "useHistoricoBoletos"
    ],
-   "linhas": 47,
+   "linhas": 46,
    "dominio": "hooks",
    "tabelas": [
     "historico_cobrancas_boletos"
@@ -3938,7 +3923,7 @@
    "hooks_exportados": [
     "useHistoricoConciliacaoIA"
    ],
-   "linhas": 249,
+   "linhas": 248,
    "dominio": "hooks",
    "tabelas": [
     "feedback_conciliacao_ia",
@@ -3967,7 +3952,7 @@
    "hooks_exportados": [
     "useHistoricoFinanceiro"
    ],
-   "linhas": 142,
+   "linhas": 141,
    "dominio": "hooks",
    "tabelas": [
     "faturamento_mensal",
@@ -3994,7 +3979,7 @@
    "hooks_exportados": [
     "useImportacaoXMLNFe"
    ],
-   "linhas": 378,
+   "linhas": 377,
    "dominio": "hooks",
    "tabelas": [],
    "rpcs": [
@@ -4018,7 +4003,7 @@
    "hooks_exportados": [
     "useImportPlanoContas"
    ],
-   "linhas": 131,
+   "linhas": 130,
    "dominio": "hooks",
    "tabelas": [
     "plano_contas"
@@ -4045,7 +4030,7 @@
     "useRamosAtividade",
     "useVendedores"
    ],
-   "linhas": 333,
+   "linhas": 332,
    "dominio": "hooks",
    "tabelas": [
     "alertas_preditivos",
@@ -4072,7 +4057,7 @@
    "hooks_exportados": [
     "useIncentivosFiscais"
    ],
-   "linhas": 206,
+   "linhas": 205,
    "dominio": "hooks",
    "tabelas": [
     "incentivos_fiscais"
@@ -4097,7 +4082,7 @@
     "useIndicesContabeis",
     "useSerieIndices"
    ],
-   "linhas": 182,
+   "linhas": 181,
    "dominio": "hooks",
    "tabelas": [],
    "rpcs": [
@@ -4118,7 +4103,7 @@
    "hooks_exportados": [
     "useInsightsIAKpis"
    ],
-   "linhas": 57,
+   "linhas": 56,
    "dominio": "hooks",
    "tabelas": [
     "anomalias_detectadas",
@@ -4142,7 +4127,7 @@
    "hooks_exportados": [
     "useInstallPrompt"
    ],
-   "linhas": 77,
+   "linhas": 76,
    "dominio": "hooks",
    "tabelas": [],
    "rpcs": [],
@@ -4167,7 +4152,7 @@
     "usePlanosAcao",
     "useUpdatePlanoAcao"
    ],
-   "linhas": 108,
+   "linhas": 107,
    "dominio": "hooks",
    "tabelas": [
     "kpis_operacionais",
@@ -4192,7 +4177,7 @@
    "hooks_exportados": [
     "useIpMaskPreference"
    ],
-   "linhas": 19,
+   "linhas": 18,
    "dominio": "hooks",
    "tabelas": [],
    "rpcs": [],
@@ -4216,7 +4201,7 @@
    "hooks_exportados": [
     "useIRPJCSLL"
    ],
-   "linhas": 387,
+   "linhas": 386,
    "dominio": "hooks",
    "tabelas": [
     "apuracoes_irpj_csll",
@@ -4241,7 +4226,7 @@
    "hooks_exportados": [
     "useKeyboardNavigation"
    ],
-   "linhas": 65,
+   "linhas": 64,
    "dominio": "hooks",
    "tabelas": [],
    "rpcs": [],
@@ -4264,7 +4249,7 @@
    "hooks_exportados": [
     "useKeyboardShortcuts"
    ],
-   "linhas": 285,
+   "linhas": 284,
    "dominio": "hooks",
    "tabelas": [],
    "rpcs": [],
@@ -4289,7 +4274,7 @@
     "useImportLancamentosLote",
     "useLancamentosContabeis"
    ],
-   "linhas": 350,
+   "linhas": 349,
    "dominio": "hooks",
    "tabelas": [
     "lancamentos_contabeis",
@@ -4321,7 +4306,7 @@
    "hooks_exportados": [
     "useLastSsoProfileSync"
    ],
-   "linhas": 96,
+   "linhas": 95,
    "dominio": "hooks",
    "tabelas": [
     "audit_logs"
@@ -4348,7 +4333,7 @@
     "useLocalStorage",
     "useSessionStorage"
    ],
-   "linhas": 134,
+   "linhas": 133,
    "dominio": "hooks",
    "tabelas": [],
    "rpcs": [],
@@ -4369,7 +4354,7 @@
    "hooks_exportados": [
     "useLocalStorageState"
    ],
-   "linhas": 75,
+   "linhas": 74,
    "dominio": "hooks",
    "tabelas": [],
    "rpcs": [],
@@ -4395,7 +4380,7 @@
    "hooks_exportados": [
     "useManagedFilters"
    ],
-   "linhas": 354,
+   "linhas": 353,
    "dominio": "hooks",
    "tabelas": [
     "user_active_filters"
@@ -4433,11 +4418,13 @@
    "hooks_exportados": [
     "useManifestarNfe"
    ],
-   "linhas": 63,
+   "linhas": 62,
    "dominio": "hooks",
    "tabelas": [],
    "rpcs": [],
-   "edges": [],
+   "edges": [
+    "sefaz-manifestar"
+   ],
    "hooks_internos": [
     "useQueryClient"
    ],
@@ -4458,7 +4445,7 @@
     "useRecomendacoesIA",
     "useUpdateMeta"
    ],
-   "linhas": 136,
+   "linhas": 135,
    "dominio": "hooks",
    "tabelas": [
     "historico_score_saude",
@@ -4485,7 +4472,7 @@
    "hooks_exportados": [
     "useMetricasAprendizadoIA"
    ],
-   "linhas": 143,
+   "linhas": 142,
    "dominio": "hooks",
    "tabelas": [
     "anomalias_detectadas",
@@ -4510,7 +4497,7 @@
    "hooks_exportados": [
     "useMFA"
    ],
-   "linhas": 184,
+   "linhas": 183,
    "dominio": "hooks",
    "tabelas": [],
    "rpcs": [],
@@ -4535,7 +4522,7 @@
     "useNegativacoes",
     "useUpdateNegativacao"
    ],
-   "linhas": 90,
+   "linhas": 89,
    "dominio": "hooks",
    "tabelas": [
     "negativacoes"
@@ -4559,7 +4546,7 @@
    "hooks_exportados": [
     "useNetworkStatus"
    ],
-   "linhas": 95,
+   "linhas": 94,
    "dominio": "hooks",
    "tabelas": [],
    "rpcs": [],
@@ -4581,7 +4568,7 @@
    "hooks_exportados": [
     "useNfeRecebidas"
    ],
-   "linhas": 83,
+   "linhas": 82,
    "dominio": "hooks",
    "tabelas": [
     "nfe_recebidas"
@@ -4607,11 +4594,13 @@
     "useSugestoesContaPagar",
     "useVincularNfe"
    ],
-   "linhas": 109,
+   "linhas": 108,
    "dominio": "hooks",
    "tabelas": [],
    "rpcs": [],
-   "edges": [],
+   "edges": [
+    "nfe-vinculo-proxy"
+   ],
    "hooks_internos": [
     "useMutation",
     "useQuery",
@@ -4630,7 +4619,7 @@
    "hooks_exportados": [
     "useOnboardingProgress"
    ],
-   "linhas": 115,
+   "linhas": 114,
    "dominio": "hooks",
    "tabelas": [
     "user_onboarding_progress"
@@ -4656,7 +4645,7 @@
    "hooks_exportados": [
     "useOpenFinance"
    ],
-   "linhas": 268,
+   "linhas": 267,
    "dominio": "hooks",
    "tabelas": [
     "open_finance_consents"
@@ -4682,7 +4671,7 @@
    "hooks_exportados": [
     "useOperacoesTributaveis"
    ],
-   "linhas": 438,
+   "linhas": 437,
    "dominio": "hooks",
    "tabelas": [
     "notas_fiscais",
@@ -4710,7 +4699,7 @@
    "hooks_exportados": [
     "useOportunidadesElisao"
    ],
-   "linhas": 318,
+   "linhas": 317,
    "dominio": "hooks",
    "tabelas": [
     "elisao_alertas",
@@ -4751,7 +4740,7 @@
     "useInvalidateRelatedQueries",
     "usePrefetchCriticalData"
    ],
-   "linhas": 274,
+   "linhas": 273,
    "dominio": "hooks",
    "tabelas": [
     "centros_custo",
@@ -4790,7 +4779,7 @@
     "useOrganizacoes",
     "useRevogarConvite"
    ],
-   "linhas": 304,
+   "linhas": 303,
    "dominio": "hooks",
    "tabelas": [
     "convites",
@@ -4800,7 +4789,8 @@
    ],
    "rpcs": [],
    "edges": [
-    "aceitar-convite"
+    "aceitar-convite",
+    "enviar-convite-organizacao"
    ],
    "hooks_internos": [
     "useAuth",
@@ -4824,7 +4814,7 @@
     "useRegistrarRejeicoesOverlay",
     "useResolverRejeicaoOverlay"
    ],
-   "linhas": 108,
+   "linhas": 107,
    "dominio": "hooks",
    "tabelas": [
     "overlay_rejeicoes_auditoria"
@@ -4849,7 +4839,7 @@
    "hooks_exportados": [
     "usePagamentosRecorrentes"
    ],
-   "linhas": 249,
+   "linhas": 248,
    "dominio": "hooks",
    "tabelas": [
     "pagamentos_recorrentes"
@@ -4879,7 +4869,7 @@
     "useEnviarBitrix24Tributario",
     "useGerarPdfTributario"
    ],
-   "linhas": 85,
+   "linhas": 84,
    "dominio": "hooks",
    "tabelas": [],
    "rpcs": [],
@@ -4900,7 +4890,7 @@
    "hooks_exportados": [
     "usePerDcomp"
    ],
-   "linhas": 213,
+   "linhas": 212,
    "dominio": "hooks",
    "tabelas": [
     "per_dcomp"
@@ -4926,7 +4916,7 @@
    "hooks_exportados": [
     "usePermissions"
    ],
-   "linhas": 126,
+   "linhas": 125,
    "dominio": "hooks",
    "tabelas": [
     "permissions",
@@ -4955,7 +4945,7 @@
     "useIncrementTemplateUso",
     "usePixTemplates"
    ],
-   "linhas": 117,
+   "linhas": 116,
    "dominio": "hooks",
    "tabelas": [
     "pix_templates"
@@ -4980,7 +4970,7 @@
    "hooks_exportados": [
     "usePlanoContaHistory"
    ],
-   "linhas": 58,
+   "linhas": 57,
    "dominio": "hooks",
    "tabelas": [
     "audit_logs"
@@ -5004,7 +4994,7 @@
     "usePlanoContas",
     "useUpsertPlanoConta"
    ],
-   "linhas": 101,
+   "linhas": 100,
    "dominio": "hooks",
    "tabelas": [
     "plano_contas"
@@ -5040,7 +5030,7 @@
     "usePortalClienteTokens",
     "useRevokePortalToken"
    ],
-   "linhas": 93,
+   "linhas": 92,
    "dominio": "hooks",
    "tabelas": [
     "portal_cliente_acessos",
@@ -5066,7 +5056,7 @@
     "useLinkPrefetch",
     "usePrefetchRoutes"
    ],
-   "linhas": 185,
+   "linhas": 184,
    "dominio": "hooks",
    "tabelas": [],
    "rpcs": [],
@@ -5088,7 +5078,7 @@
   {
    "arquivo": "src/hooks/usePrefetchRoutes.tsx",
    "hooks_exportados": [],
-   "linhas": 31,
+   "linhas": 30,
    "dominio": "hooks",
    "tabelas": [],
    "rpcs": [],
@@ -5108,7 +5098,7 @@
    "hooks_exportados": [
     "usePreValidacaoSped"
    ],
-   "linhas": 333,
+   "linhas": 332,
    "dominio": "hooks",
    "tabelas": [],
    "rpcs": [],
@@ -5134,7 +5124,7 @@
    "hooks_exportados": [
     "usePrevisaoTributaria"
    ],
-   "linhas": 68,
+   "linhas": 67,
    "dominio": "hooks",
    "tabelas": [],
    "rpcs": [],
@@ -5159,7 +5149,7 @@
     "useProcessarNFMutation",
     "useProcessarNFOCR"
    ],
-   "linhas": 78,
+   "linhas": 77,
    "dominio": "hooks",
    "tabelas": [],
    "rpcs": [],
@@ -5183,7 +5173,7 @@
    "hooks_exportados": [
     "useProfilesByIds"
    ],
-   "linhas": 58,
+   "linhas": 57,
    "dominio": "hooks",
    "tabelas": [
     "profiles"
@@ -5208,7 +5198,7 @@
     "useProtestos",
     "useUpdateProtesto"
    ],
-   "linhas": 92,
+   "linhas": 91,
    "dominio": "hooks",
    "tabelas": [
     "protestos"
@@ -5232,7 +5222,7 @@
    "hooks_exportados": [
     "usePushNotifications"
    ],
-   "linhas": 344,
+   "linhas": 343,
    "dominio": "hooks",
    "tabelas": [
     "push_subscriptions"
@@ -5260,7 +5250,7 @@
    "hooks_exportados": [
     "useQueuedMessage"
    ],
-   "linhas": 32,
+   "linhas": 31,
    "dominio": "hooks",
    "tabelas": [],
    "rpcs": [],
@@ -5283,7 +5273,7 @@
    "hooks_exportados": [
     "useRateLimitLogs"
    ],
-   "linhas": 206,
+   "linhas": 205,
    "dominio": "hooks",
    "tabelas": [
     "blocked_ips",
@@ -5309,7 +5299,7 @@
    "hooks_exportados": [
     "useRealtimeAlertas"
    ],
-   "linhas": 52,
+   "linhas": 51,
    "dominio": "hooks",
    "tabelas": [],
    "rpcs": [],
@@ -5332,7 +5322,7 @@
    "hooks_exportados": [
     "useRealtimeAnomalias"
    ],
-   "linhas": 203,
+   "linhas": 202,
    "dominio": "hooks",
    "tabelas": [
     "anomalia_toast_eventos",
@@ -5362,7 +5352,7 @@
    "hooks_exportados": [
     "useRealtimeAuditToasts"
    ],
-   "linhas": 179,
+   "linhas": 178,
    "dominio": "hooks",
    "tabelas": [],
    "rpcs": [],
@@ -5386,7 +5376,7 @@
    "hooks_exportados": [
     "useRecentItems"
    ],
-   "linhas": 108,
+   "linhas": 107,
    "dominio": "hooks",
    "tabelas": [],
    "rpcs": [],
@@ -5408,7 +5398,7 @@
    "hooks_exportados": [
     "useRefetchAnomaliasOnFocus"
    ],
-   "linhas": 38,
+   "linhas": 37,
    "dominio": "hooks",
    "tabelas": [],
    "rpcs": [],
@@ -5431,7 +5421,7 @@
    "hooks_exportados": [
     "useReformaTributaria"
    ],
-   "linhas": 367,
+   "linhas": 366,
    "dominio": "hooks",
    "tabelas": [
     "apuracoes_tributarias",
@@ -5466,7 +5456,7 @@
     "useRegimesEspeciaisEmpresa",
     "useUpdateRegimeEspecial"
    ],
-   "linhas": 51,
+   "linhas": 50,
    "dominio": "hooks",
    "tabelas": [
     "regimes_especiais_empresa"
@@ -5488,7 +5478,7 @@
   {
    "arquivo": "src/hooks/useRegrasConciliacao.ts",
    "hooks_exportados": [],
-   "linhas": 85,
+   "linhas": 84,
    "dominio": "hooks",
    "tabelas": [
     "regras_conciliacao"
@@ -5516,7 +5506,7 @@
     "useUpdateReguaCobranca",
     "useUpdateTemplate"
    ],
-   "linhas": 197,
+   "linhas": 196,
    "dominio": "hooks",
    "tabelas": [
     "execucoes_cobranca",
@@ -5549,7 +5539,7 @@
    "hooks_exportados": [
     "useRelatorioAnual"
    ],
-   "linhas": 44,
+   "linhas": 43,
    "dominio": "hooks",
    "tabelas": [],
    "rpcs": [],
@@ -5569,7 +5559,7 @@
    "hooks_exportados": [
     "useRelatoriosAgendados"
    ],
-   "linhas": 243,
+   "linhas": 242,
    "dominio": "hooks",
    "tabelas": [
     "historico_relatorios",
@@ -5604,7 +5594,7 @@
     "useRelatorioKPIs",
     "useResumosSemanais"
    ],
-   "linhas": 416,
+   "linhas": 415,
    "dominio": "hooks",
    "tabelas": [
     "contas_pagar",
@@ -5629,7 +5619,7 @@
    "hooks_exportados": [
     "useRelatoriosTributariosAgendados"
    ],
-   "linhas": 95,
+   "linhas": 94,
    "dominio": "hooks",
    "tabelas": [
     "relatorios_tributarios_agendados"
@@ -5653,7 +5643,7 @@
    "hooks_exportados": [
     "useResumosExecutivos"
    ],
-   "linhas": 55,
+   "linhas": 54,
    "dominio": "hooks",
    "tabelas": [
     "resumos_executivos_semanais"
@@ -5679,7 +5669,7 @@
    "hooks_exportados": [
     "useRetencoesFonte"
    ],
-   "linhas": 333,
+   "linhas": 332,
    "dominio": "hooks",
    "tabelas": [
     "darfs",
@@ -5711,7 +5701,7 @@
     "useSavedFilterAlerts",
     "useSavedFilterAlertsConciliacao"
    ],
-   "linhas": 79,
+   "linhas": 78,
    "dominio": "hooks",
    "tabelas": [],
    "rpcs": [],
@@ -5730,7 +5720,7 @@
    "hooks_exportados": [
     "useSavedFilters"
    ],
-   "linhas": 304,
+   "linhas": 303,
    "dominio": "hooks",
    "tabelas": [
     "saved_filters",
@@ -5776,7 +5766,7 @@
    "hooks_exportados": [
     "useSavedFilterSubscriptions"
    ],
-   "linhas": 238,
+   "linhas": 237,
    "dominio": "hooks",
    "tabelas": [
     "saved_filter_subscriptions"
@@ -5811,7 +5801,7 @@
    "hooks_exportados": [
     "useScimChecklist"
    ],
-   "linhas": 74,
+   "linhas": 73,
    "dominio": "hooks",
    "tabelas": [
     "scim_setup_checklist"
@@ -5838,7 +5828,7 @@
     "useRevokeScimToken",
     "useScimTokens"
    ],
-   "linhas": 103,
+   "linhas": 102,
    "dominio": "hooks",
    "tabelas": [
     "scim_tokens"
@@ -5862,7 +5852,7 @@
    "hooks_exportados": [
     "useScoringClientes"
    ],
-   "linhas": 394,
+   "linhas": 393,
    "dominio": "hooks",
    "tabelas": [
     "clientes",
@@ -5888,7 +5878,7 @@
    "hooks_exportados": [
     "useSecurityAlerts"
    ],
-   "linhas": 213,
+   "linhas": 212,
    "dominio": "hooks",
    "tabelas": [
     "security_alerts"
@@ -5920,7 +5910,7 @@
     "useSefazAlerts",
     "useSefazObservability"
    ],
-   "linhas": 89,
+   "linhas": 88,
    "dominio": "hooks",
    "tabelas": [
     "integrity_alerts",
@@ -5947,7 +5937,7 @@
    "hooks_exportados": [
     "useSelectiveEmpresaInvalidation"
    ],
-   "linhas": 100,
+   "linhas": 99,
    "dominio": "hooks",
    "tabelas": [],
    "rpcs": [],
@@ -5968,7 +5958,7 @@
    "hooks_exportados": [
     "useSessions"
    ],
-   "linhas": 199,
+   "linhas": 198,
    "dominio": "hooks",
    "tabelas": [
     "user_sessions"
@@ -5993,7 +5983,7 @@
    "hooks_exportados": [
     "useSimulacaoRegimes"
    ],
-   "linhas": 324,
+   "linhas": 323,
    "dominio": "hooks",
    "tabelas": [
     "faturamento_mensal",
@@ -6026,11 +6016,13 @@
    "hooks_exportados": [
     "useSincronizarAnomaliaBitrix"
    ],
-   "linhas": 63,
+   "linhas": 62,
    "dominio": "hooks",
    "tabelas": [],
    "rpcs": [],
-   "edges": [],
+   "edges": [
+    "sincronizar-anomalia-bitrix24"
+   ],
    "hooks_internos": [
     "useLogAudit"
    ],
@@ -6052,7 +6044,7 @@
    "hooks_exportados": [
     "useSLOMetrics"
    ],
-   "linhas": 36,
+   "linhas": 35,
    "dominio": "hooks",
    "tabelas": [
     "slo_metrics_diarias"
@@ -6074,7 +6066,7 @@
    "hooks_exportados": [
     "useSmartBack"
    ],
-   "linhas": 72,
+   "linhas": 71,
    "dominio": "hooks",
    "tabelas": [],
    "rpcs": [],
@@ -6100,7 +6092,7 @@
    "hooks_exportados": [
     "useSolicitacoesLGPD"
    ],
-   "linhas": 83,
+   "linhas": 82,
    "dominio": "hooks",
    "tabelas": [
     "solicitacoes_lgpd"
@@ -6127,7 +6119,7 @@
    "hooks_exportados": [
     "useSoundFeedback"
    ],
-   "linhas": 44,
+   "linhas": 43,
    "dominio": "hooks",
    "tabelas": [],
    "rpcs": [],
@@ -6152,7 +6144,7 @@
     "useSpedEcdValidacao",
     "useSpedEcfValidacao"
    ],
-   "linhas": 278,
+   "linhas": 277,
    "dominio": "hooks",
    "tabelas": [
     "empresas",
@@ -6194,7 +6186,7 @@
    "hooks_exportados": [
     "useSpedEcfHistorico"
    ],
-   "linhas": 63,
+   "linhas": 62,
    "dominio": "hooks",
    "tabelas": [
     "empresas",
@@ -6220,7 +6212,7 @@
    "hooks_exportados": [
     "useSplitPayment"
    ],
-   "linhas": 200,
+   "linhas": 199,
    "dominio": "hooks",
    "tabelas": [
     "split_payment_transacoes"
@@ -6253,7 +6245,7 @@
     "useTestSSOLogin",
     "useToggleSSOProvider"
    ],
-   "linhas": 231,
+   "linhas": 230,
    "dominio": "hooks",
    "tabelas": [
     "sso_login_attempts",
@@ -6292,7 +6284,7 @@
    "hooks_exportados": [
     "useSSOConsistency"
    ],
-   "linhas": 7,
+   "linhas": 6,
    "dominio": "hooks",
    "tabelas": [],
    "rpcs": [],
@@ -6313,7 +6305,7 @@
    "hooks_exportados": [
     "useSsoDomainResolver"
    ],
-   "linhas": 78,
+   "linhas": 77,
    "dominio": "hooks",
    "tabelas": [],
    "rpcs": [
@@ -6335,7 +6327,7 @@
    "hooks_exportados": [
     "useSSOJitEvents"
    ],
-   "linhas": 53,
+   "linhas": 52,
    "dominio": "hooks",
    "tabelas": [
     "audit_logs"
@@ -6361,7 +6353,7 @@
    "hooks_exportados": [
     "useSsoOnboardingAudit"
    ],
-   "linhas": 82,
+   "linhas": 81,
    "dominio": "hooks",
    "tabelas": [],
    "rpcs": [
@@ -6383,7 +6375,7 @@
    "hooks_exportados": [
     "useSsoProfileSyncEvents"
    ],
-   "linhas": 84,
+   "linhas": 83,
    "dominio": "hooks",
    "tabelas": [
     "audit_logs"
@@ -6408,7 +6400,7 @@
     "useSSOSandboxRuns",
     "useSaveSSOSandboxRun"
    ],
-   "linhas": 115,
+   "linhas": 114,
    "dominio": "hooks",
    "tabelas": [
     "sso_sandbox_runs"
@@ -6436,7 +6428,7 @@
    "hooks_exportados": [
     "useStartupDiagnostic"
    ],
-   "linhas": 184,
+   "linhas": 183,
    "dominio": "hooks",
    "tabelas": [
     "profiles"
@@ -6460,7 +6452,7 @@
    "hooks_exportados": [
     "useSwipeBack"
    ],
-   "linhas": 81,
+   "linhas": 80,
    "dominio": "hooks",
    "tabelas": [],
    "rpcs": [],
@@ -6484,7 +6476,7 @@
    "hooks_exportados": [
     "useTableOptimization"
    ],
-   "linhas": 61,
+   "linhas": 60,
    "dominio": "hooks",
    "tabelas": [],
    "rpcs": [],
@@ -6505,7 +6497,7 @@
    "hooks_exportados": [
     "useTrilhaAuditoria"
    ],
-   "linhas": 142,
+   "linhas": 141,
    "dominio": "hooks",
    "tabelas": [],
    "rpcs": [],
@@ -6525,7 +6517,7 @@
    "hooks_exportados": [
     "useUrlTab"
    ],
-   "linhas": 44,
+   "linhas": 43,
    "dominio": "hooks",
    "tabelas": [],
    "rpcs": [],
@@ -6550,7 +6542,7 @@
    "hooks_exportados": [
     "useUserDemonstrativoPreferences"
    ],
-   "linhas": 79,
+   "linhas": 78,
    "dominio": "hooks",
    "tabelas": [
     "user_demonstrativo_preferences"
@@ -6576,7 +6568,7 @@
     "useDefinirEmpresaPadrao",
     "useUserEmpresas"
    ],
-   "linhas": 216,
+   "linhas": 215,
    "dominio": "hooks",
    "tabelas": [
     "empresas",
@@ -6618,7 +6610,7 @@
     "useVendedores",
     "useVendedoresAtivos"
    ],
-   "linhas": 93,
+   "linhas": 92,
    "dominio": "hooks",
    "tabelas": [
     "vendedores"
@@ -6644,7 +6636,7 @@
    "hooks_exportados": [
     "useVerificacaoIntegracoes"
    ],
-   "linhas": 160,
+   "linhas": 159,
    "dominio": "hooks",
    "tabelas": [
     "lancamentos_contabeis"
@@ -6671,7 +6663,7 @@
     "useSaldosContas",
     "useTransferenciasPainel"
    ],
-   "linhas": 134,
+   "linhas": 133,
    "dominio": "hooks",
    "tabelas": [
     "vw_dre_mensal",
@@ -6700,7 +6692,7 @@
    "hooks_exportados": [
     "useVirtualRows"
    ],
-   "linhas": 35,
+   "linhas": 34,
    "dominio": "hooks",
    "tabelas": [],
    "rpcs": [],
@@ -6721,7 +6713,7 @@
    "hooks_exportados": [
     "useWebAuthn"
    ],
-   "linhas": 377,
+   "linhas": 376,
    "dominio": "hooks",
    "tabelas": [
     "webauthn_credentials"
@@ -6747,7 +6739,7 @@
    "hooks_exportados": [
     "useWebPushSubscription"
    ],
-   "linhas": 152,
+   "linhas": 151,
    "dominio": "hooks",
    "tabelas": [
     "push_subscriptions"
@@ -6775,7 +6767,7 @@
     "useCreateWhatsAppCobranca",
     "useWhatsAppCobrancaHistory"
    ],
-   "linhas": 57,
+   "linhas": 56,
    "dominio": "hooks",
    "tabelas": [
     "historico_cobranca_whatsapp"
@@ -6800,7 +6792,7 @@
     "useSendMessage",
     "useWhatsAppConversas"
    ],
-   "linhas": 63,
+   "linhas": 62,
    "dominio": "hooks",
    "tabelas": [
     "whatsapp_conversas"
@@ -6824,7 +6816,7 @@
    "hooks_exportados": [
     "useWhatsAppUnreadCount"
    ],
-   "linhas": 22,
+   "linhas": 21,
    "dominio": "hooks",
    "tabelas": [
     "historico_cobranca_whatsapp"
@@ -6847,7 +6839,7 @@
     "useZodField",
     "useZodForm"
    ],
-   "linhas": 301,
+   "linhas": 300,
    "dominio": "hooks",
    "tabelas": [],
    "rpcs": [],
@@ -6870,7 +6862,7 @@
    "hooks_exportados": [
     "useHaptic"
    ],
-   "linhas": 80,
+   "linhas": 79,
    "dominio": "lib",
    "tabelas": [],
    "rpcs": [],
@@ -6891,7 +6883,7 @@
    "hooks_exportados": [
     "usePersistedState"
    ],
-   "linhas": 37,
+   "linhas": 36,
    "dominio": "lib",
    "tabelas": [],
    "rpcs": [],
@@ -6913,7 +6905,7 @@
    "hooks_exportados": [
     "useSoundFeedback"
    ],
-   "linhas": 198,
+   "linhas": 197,
    "dominio": "lib",
    "tabelas": [],
    "rpcs": [],
@@ -6946,7 +6938,7 @@
    "hooks_exportados": [
     "useSharedFiltersAdmin"
    ],
-   "linhas": 270,
+   "linhas": 269,
    "dominio": "pages/admin",
    "tabelas": [
     "empresas",
@@ -6974,7 +6966,7 @@
    "hooks_exportados": [
     "useAuthPage"
    ],
-   "linhas": 440,
+   "linhas": 439,
    "dominio": "pages",
    "tabelas": [
     "password_reset_requests"
@@ -7007,7 +6999,7 @@
    "hooks_exportados": [
     "useCorporateOnboarding"
    ],
-   "linhas": 224,
+   "linhas": 223,
    "dominio": "pages/auth",
    "tabelas": [],
    "rpcs": [],
@@ -7034,7 +7026,7 @@
    "hooks_exportados": [
     "useBloqueiosData"
    ],
-   "linhas": 60,
+   "linhas": 59,
    "dominio": "pages/bloqueios-duplicidade",
    "tabelas": [
     "bloqueios_duplicidade",
@@ -7057,7 +7049,7 @@
    "hooks_exportados": [
     "useFiltrosSalvosDiagnostics"
    ],
-   "linhas": 167,
+   "linhas": 166,
    "dominio": "pages/configuracoes",
    "tabelas": [
     "user_active_filters"

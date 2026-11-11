@@ -6,11 +6,11 @@
    "TypeScript (2105)",
    "SQL (1069)",
    "Markdown (189)",
-   "JavaScript (57)",
+   "JavaScript (68)",
+   "Python (44)",
    "JSON (37)",
-   "Python (28)",
-   "YAML (25)",
-   "Shell (24)"
+   "Shell (26)",
+   "YAML (25)"
   ],
   "linguagem_principal": "TypeScript",
   "framework": "React",
@@ -268,12 +268,18 @@
    "scripts_usados": [
     "scripts/check-external-secret-isolation.sh",
     "scripts/ci/check-claude-md-integrity.mjs",
+    "scripts/ci/listar-specs-quarentena.ts",
     "scripts/ci/require-env.sh",
     "scripts/generate-env-manifest.mjs",
+    "scripts/integrity/14_retencao.sql",
     "scripts/security/export-function-privileges.sh",
+    "scripts/security/test-canonical-db-gates.test.mjs",
     "scripts/security/test-functions-deploy.sh",
     "scripts/security/test-lint-function-repairs.mjs",
     "scripts/security/test-migration-replay-safety.sh",
+    "scripts/security/test-observability-privileges.sql",
+    "scripts/security/test-rpc-runtime.ts",
+    "scripts/security/test-security-definer-invocation.sql",
     "scripts/security/test-supabase-config.py",
     "scripts/security/zod-coverage.sh"
    ],
@@ -365,6 +371,7 @@
    "scripts_usados": [
     "scripts/ai-context/cenarios.mjs",
     "scripts/ai-context/gerar.mjs",
+    "scripts/ai-context/gerar.unit.mjs",
     "scripts/regras_negocio/generate.py",
     "scripts/regras_negocio/indice.py",
     "scripts/regras_negocio/test_generate.py",
@@ -566,6 +573,7 @@
     "scripts/inventario/gerar-banco.mjs",
     "scripts/inventario/gerar-repo.mjs",
     "scripts/inventario/gerar-rotas.mjs",
+    "scripts/inventario/inventario.unit.mjs",
     "scripts/inventario/mudou-conteudo.mjs"
    ],
    "npm_scripts": [],
@@ -776,6 +784,7 @@
     "scripts/ci/require-env.sh",
     "scripts/security/check-view-replay-order.mjs",
     "scripts/security/test-canonical-db-gates.mjs",
+    "scripts/security/test-canonical-db-gates.test.mjs",
     "scripts/security/test-lint-function-repairs.mjs",
     "scripts/security/test-migration-replay-safety.sh",
     "scripts/security/test-supabase-config.py"
@@ -818,347 +827,347 @@
   {
    "arquivo": ".github/PULL_REQUEST_TEMPLATE.md",
    "titulo": null,
-   "linhas": 22
+   "linhas": 21
   },
   {
    "arquivo": ".github/copilot-instructions.md",
    "titulo": null,
-   "linhas": 2
+   "linhas": 1
   },
   {
    "arquivo": "AGENTS.md",
    "titulo": "AGENTS.md — Promo_Finance_V2",
-   "linhas": 68
+   "linhas": 67
   },
   {
    "arquivo": "AI_RULES.md",
    "titulo": "AI_RULES",
-   "linhas": 79
+   "linhas": 78
   },
   {
    "arquivo": "AUDITORIA.md",
    "titulo": "AUDITORIA — Promo Finance V2",
-   "linhas": 648
+   "linhas": 647
   },
   {
    "arquivo": "CHANGELOG.md",
    "titulo": "Changelog",
-   "linhas": 114
+   "linhas": 113
   },
   {
    "arquivo": "CLAUDE.md",
    "titulo": null,
-   "linhas": 2
+   "linhas": 1
   },
   {
    "arquivo": "CONTRIBUTING.md",
    "titulo": "🤝 Guia de Contribuição",
-   "linhas": 290
+   "linhas": 289
   },
   {
    "arquivo": "ESTADO_ATUAL.md",
    "titulo": "ESTADO ATUAL DO SISTEMA — Promo Finance v2",
-   "linhas": 779
+   "linhas": 778
   },
   {
    "arquivo": "EXECAO_RESTYLE_METRONIC_V9.md",
    "titulo": "EXCEÇÃO FORMAL: Epic de Restyle Metronic v9",
-   "linhas": 119
+   "linhas": 118
   },
   {
    "arquivo": "EXECAO_VELA_DARK.md",
    "titulo": "EXCEÇÃO FORMAL: Epic de Restyle Vela-dark",
-   "linhas": 138
+   "linhas": 137
   },
   {
    "arquivo": "HANDOFF_VELA_DARK.md",
    "titulo": "HANDOFF — Epic Vela-dark Promo_Finance_V2",
-   "linhas": 228
+   "linhas": 227
   },
   {
    "arquivo": "PENDENCIAS.md",
    "titulo": "PENDÊNCIAS — Promo Finance V2",
-   "linhas": 309
+   "linhas": 308
   },
   {
    "arquivo": "PLANO_100.md",
    "titulo": null,
-   "linhas": 561
+   "linhas": 560
   },
   {
    "arquivo": "PLANO_50.md",
    "titulo": "PLANO_50 — 50 etapas de melhoria e correção",
-   "linhas": 485
+   "linhas": 484
   },
   {
    "arquivo": "README.md",
    "titulo": "Promo Finance",
-   "linhas": 64
+   "linhas": 63
   },
   {
    "arquivo": "RELATORIO_ACEITE_VELA_DARK.md",
    "titulo": "RELATÓRIO DE ACEITE — Epic Vela-dark · Promo_Finance_V2",
-   "linhas": 101
+   "linhas": 100
   },
   {
    "arquivo": "RELATORIO_CI.md",
    "titulo": "RELATÓRIO CI — Promo Finance V2",
-   "linhas": 340
+   "linhas": 339
   },
   {
    "arquivo": "RELATORIO_IMPLEMENTACAO_EXAUSTIVO.md",
    "titulo": "RELATÓRIO DE IMPLEMENTAÇÃO EXAUSTIVO — Epic Vela-dark",
-   "linhas": 181
+   "linhas": 180
   },
   {
    "arquivo": "SECURITY.md",
    "titulo": "Política de Segurança — Promo Finance V2",
-   "linhas": 51
+   "linhas": 50
   },
   {
    "arquivo": "SECURITY_RULES.md",
    "titulo": "SECURITY_RULES",
-   "linhas": 102
+   "linhas": 101
   },
   {
    "arquivo": "docs/ACCESSIBILITY.md",
    "titulo": "♿ Guia de Acessibilidade - Promo Finance",
-   "linhas": 311
+   "linhas": 310
   },
   {
    "arquivo": "docs/ADR-001-LALAMOVE-FORA-DE-ESCOPO.md",
    "titulo": "ADR-001 — Exclusão do módulo de logística/Lalamove",
-   "linhas": 57
+   "linhas": 56
   },
   {
    "arquivo": "docs/ADR-002-FUNCOES-ESSENCIAIS-PROMO-FINANCE.md",
    "titulo": "ADR-002 — Funções essenciais do Promo Finance V2",
-   "linhas": 57
+   "linhas": 56
   },
   {
    "arquivo": "docs/ADR-003-PAPEIS-POR-EMPRESA.md",
    "titulo": "ADR-003 — Modelo de papéis e escopo de empresa",
-   "linhas": 130
+   "linhas": 129
   },
   {
    "arquivo": "docs/ARCHITECTURE.md",
    "titulo": "Arquitetura — Promo Finance",
-   "linhas": 102
+   "linhas": 101
   },
   {
    "arquivo": "docs/ARCHITECTURE_GRAPH.md",
    "titulo": "Grafo de Arquitetura — Promo Finance V2",
-   "linhas": 388
+   "linhas": 387
   },
   {
    "arquivo": "docs/AUDITORIA_PLANEJADO_X_EXECUTADO_2026-10-12.md",
    "titulo": "Auditoria exaustiva — Planejado × Executado (Promo Finance V2)",
-   "linhas": 1366
+   "linhas": 1365
   },
   {
    "arquivo": "docs/AUDITORIA_SINCRONIA_2026-09-17.md",
    "titulo": "Auditoria de Sincronia — Local ↔ GitHub ↔ Banco (2026-09-17)",
-   "linhas": 80
+   "linhas": 79
   },
   {
    "arquivo": "docs/AUDITORIA_TECNICA_EXAUSTIVA_2026-09-02_R2_LIVE.md",
    "titulo": "Auditoria Técnica Exaustiva R2 (validação live) — Promo Finance V2",
-   "linhas": 324
+   "linhas": 323
   },
   {
    "arquivo": "docs/AUTOMACAO_LOCAL.md",
    "titulo": "Automação local — Promo_Finance_V2",
-   "linhas": 178
+   "linhas": 177
   },
   {
    "arquivo": "docs/COMPONENTS.md",
    "titulo": "Documentação dos Componentes UI Aprimorados",
-   "linhas": 457
+   "linhas": 456
   },
   {
    "arquivo": "docs/CSP_REVISAO.md",
    "titulo": "Revisão CSP — Content Security Policy",
-   "linhas": 47
+   "linhas": 46
   },
   {
    "arquivo": "docs/DATA_MIGRATION.md",
    "titulo": "Runbook — Migração de Dados PROD → STAGING",
-   "linhas": 171
+   "linhas": 170
   },
   {
    "arquivo": "docs/DB_HEALTH.md",
    "titulo": "DB_HEALTH — Painel de Saúde do Banco",
-   "linhas": 232
+   "linhas": 231
   },
   {
    "arquivo": "docs/DEPLOYMENT.md",
    "titulo": "Deployment Guide",
-   "linhas": 61
+   "linhas": 60
   },
   {
    "arquivo": "docs/DIAGRAMA_ER.md",
    "titulo": "Diagrama ER — núcleo financeiro",
-   "linhas": 156
+   "linhas": 155
   },
   {
    "arquivo": "docs/EDGE_FUNCTIONS_CATALOG.md",
    "titulo": "Catálogo de Edge Functions",
-   "linhas": 99
+   "linhas": 98
   },
   {
    "arquivo": "docs/FUNCIONALIDADES_SEM_UI.md",
    "titulo": "🔍 Funcionalidades sem UI completa — Promo Finance",
-   "linhas": 169
+   "linhas": 168
   },
   {
    "arquivo": "docs/FUNCIONALIDADES_SISTEMA.md",
    "titulo": "📋 Funcionalidades do Sistema — Promo Finance",
-   "linhas": 359
+   "linhas": 358
   },
   {
    "arquivo": "docs/GAPS_ENTERPRISE.md",
    "titulo": "🌐 Análise de Gaps Enterprise — Promo Finance",
-   "linhas": 326
+   "linhas": 325
   },
   {
    "arquivo": "docs/GETTING-STARTED.md",
    "titulo": "Getting Started - Promo Finance",
-   "linhas": 46
+   "linhas": 45
   },
   {
    "arquivo": "docs/GRAPHIFY_PLANO_50_ETAPAS.md",
    "titulo": "Graphify no Promo Finance V2 — implementação em 50 etapas",
-   "linhas": 403
+   "linhas": 402
   },
   {
    "arquivo": "docs/GRAPHIFY_VALIDACAO_2026-09-11.md",
    "titulo": "Validação Graphify e catálogo canônico — 11/09/2026",
-   "linhas": 203
+   "linhas": 202
   },
   {
    "arquivo": "docs/HEALTHCHECK.md",
    "titulo": "Healthcheck pós-corte",
-   "linhas": 69
+   "linhas": 68
   },
   {
    "arquivo": "docs/INVENTARIO_FUNCIONALIDADES.md",
    "titulo": "📋 Inventário Completo de Funcionalidades e Ferramentas",
-   "linhas": 587
+   "linhas": 586
   },
   {
    "arquivo": "docs/INVENTARIO_REPOSITORIO.md",
    "titulo": "📋 INVENTÁRIO COMPLETO DO PROJETO FINANCEIRO",
-   "linhas": 182
+   "linhas": 181
   },
   {
    "arquivo": "docs/MATRIZ_PAPEIS.md",
    "titulo": "Matriz papel × rota × acesso a dados",
-   "linhas": 63
+   "linhas": 62
   },
   {
    "arquivo": "docs/MIGRATIONS_ADR.md",
    "titulo": "ADR — Migrations Consolidadas (356 migrations)",
-   "linhas": 80
+   "linhas": 79
   },
   {
    "arquivo": "docs/MIGRATION_CHECKLIST.md",
    "titulo": "Checklist de Migração — Schema, RLS/Policies e Índices entre Projetos Supabase",
-   "linhas": 200
+   "linhas": 199
   },
   {
    "arquivo": "docs/MODULARIZATION_REPORT.md",
    "titulo": "Relatório de Modularização (>400 linhas)",
-   "linhas": 42
+   "linhas": 41
   },
   {
    "arquivo": "docs/N8N_WORKFLOWS.md",
    "titulo": "Integração n8n — Triagem, Tarefas e Roteamento por Score",
-   "linhas": 43
+   "linhas": 42
   },
   {
    "arquivo": "docs/PERFORMANCE.md",
    "titulo": "⚡ Guia de Performance - Promo Finance",
-   "linhas": 316
+   "linhas": 315
   },
   {
    "arquivo": "docs/PLANO_EXCELENCIA_10_10.md",
    "titulo": "Plano de Excelência 10/10 — Promo Finance",
-   "linhas": 73
+   "linhas": 72
   },
   {
    "arquivo": "docs/PLANO_MELHORIAS_50_ETAPAS_2026-09-13.md",
    "titulo": "Plano de Melhorias e Correções — 50 Etapas",
-   "linhas": 742
+   "linhas": 741
   },
   {
    "arquivo": "docs/QA_EXHAUSTIVE_REPORT.md",
    "titulo": "Relatório QA Exaustivo — 2026-07-22",
-   "linhas": 69
+   "linhas": 68
   },
   {
    "arquivo": "docs/QA_VALIDATION_REPORT.md",
    "titulo": "QA Validation Report — Auditoria Exaustiva",
-   "linhas": 124
+   "linhas": 123
   },
   {
    "arquivo": "docs/REAUDITORIA_FINAL.md",
    "titulo": "Re-Auditoria Final — Plano 50 Etapas",
-   "linhas": 142
+   "linhas": 141
   },
   {
    "arquivo": "docs/RECONCILIACAO_ONLINE_2026-08-31.md",
    "titulo": "Reconciliação online — 2026-08-31",
-   "linhas": 138
+   "linhas": 137
   },
   {
    "arquivo": "docs/RLS_MATRIZ_NEGATIVA.md",
    "titulo": "Matriz RLS negativa — o que o banco DEVE negar",
-   "linhas": 138
+   "linhas": 137
   },
   {
    "arquivo": "docs/RUNBOOK.md",
    "titulo": "Runbook Operacional — Promo Finance",
-   "linhas": 235
+   "linhas": 234
   },
   {
    "arquivo": "docs/SCENARIOS.md",
    "titulo": "Scenario Harness",
-   "linhas": 103
+   "linhas": 102
   },
   {
    "arquivo": "docs/SECURITY.md",
    "titulo": "Segurança",
-   "linhas": 58
+   "linhas": 57
   },
   {
    "arquivo": "docs/SECURITY_DEFINER_ATTESTATION.md",
    "titulo": "SECURITY DEFINER — Attestation & Justificativas",
-   "linhas": 215
+   "linhas": 214
   },
   {
    "arquivo": "docs/STAGING_MIGRATION.md",
    "titulo": "Runbook — Migração para Staging",
-   "linhas": 138
+   "linhas": 137
   },
   {
    "arquivo": "docs/TESTING.md",
    "titulo": "Guia de Testes",
-   "linhas": 61
+   "linhas": 60
   },
   {
    "arquivo": "docs/VALIDACAO_EXAUSTIVA_R2_2026-09-03.md",
    "titulo": "Validação Exaustiva R2 — 2026-09-03",
-   "linhas": 183
+   "linhas": 182
   },
   {
    "arquivo": "docs/VALIDACAO_SEGURANCA_GATEWAY_2026-08-27.md",
    "titulo": "Validação de segurança dos gateways — 2026-08-27",
-   "linhas": 50
+   "linhas": 49
   },
   {
    "arquivo": "docs/testing-architecture.md",
    "titulo": "Freight Quest Testing Architecture",
-   "linhas": 39
+   "linhas": 38
   }
  ],
  "docs_em_subpastas": [
@@ -1326,12 +1335,19 @@
    "CODE_SCAN_DIRS",
    "DELETE_TEST_USERS",
    "GEN_TYPES",
+   "HOME",
+   "PATH",
+   "PF_TEST_PG_URL",
    "PGDUMP",
    "PGDUMP_SCHEMAS",
+   "PG_EFEMERO_DIR",
+   "PG_EFEMERO_PORTA",
    "REPO_ROOT",
+   "SECURITY_SQL_TEST_DSN",
    "SNAPSHOT_DIR",
    "SNAPSHOT_EXCLUDE_SCHEMAS",
    "SNAPSHOT_INCLUDE_SCHEMAS",
+   "SNAPSHOT_TEST_DSN",
    "SUPABASE_ACCESS_TOKEN",
    "SUPABASE_DB_URL",
    "SUPABASE_PROJECT_REF",
@@ -1435,12 +1451,12 @@
     "arquivos": 7
    },
    {
-    "host": "app.promo-finance.com",
-    "arquivos": 5
+    "host": "api.supabase.com",
+    "arquivos": 6
    },
    {
-    "host": "api.supabase.com",
-    "arquivos": 4
+    "host": "app.promo-finance.com",
+    "arquivos": 5
    },
    {
     "host": "app.test",
@@ -1448,6 +1464,10 @@
    },
    {
     "host": "bwwbeyolnnzppeuhgkcd.supabase.co",
+    "arquivos": 4
+   },
+   {
+    "host": "exemplo.com",
     "arquivos": 4
    },
    {
@@ -1483,6 +1503,10 @@
     "arquivos": 2
    },
    {
+    "host": "api.vercel.com",
+    "arquivos": 2
+   },
+   {
     "host": "bwwbeyolnnzppeuhgkcd.functions.supabase.co",
     "arquivos": 2
    },
@@ -1499,10 +1523,6 @@
     "arquivos": 2
    },
    {
-    "host": "exemplo.com",
-    "arquivos": 2
-   },
-   {
     "host": "hom.nfe.fazenda.gov.br",
     "arquivos": 2
    },
@@ -1515,7 +1535,15 @@
     "arquivos": 2
    },
    {
+    "host": "worker.example.dev",
+    "arquivos": 2
+   },
+   {
     "host": "www.bling.com.br",
+    "arquivos": 2
+   },
+   {
+    "host": "x.test",
     "arquivos": 2
    },
    {
@@ -1532,6 +1560,10 @@
    },
    {
     "host": "api.cnpja.com",
+    "arquivos": 1
+   },
+   {
+    "host": "api.github.invalid",
     "arquivos": 1
    },
    {
@@ -1552,10 +1584,6 @@
    },
    {
     "host": "api.qualquer-coisa.com",
-    "arquivos": 1
-   },
-   {
-    "host": "api.vercel.com",
     "arquivos": 1
    },
    {
@@ -1603,6 +1631,10 @@
     "arquivos": 1
    },
    {
+    "host": "destino-recusado.invalid",
+    "arquivos": 1
+   },
+   {
     "host": "developers.facebook.com",
     "arquivos": 1
    },
@@ -1627,7 +1659,19 @@
     "arquivos": 1
    },
    {
+    "host": "evil.exemplo",
+    "arquivos": 1
+   },
+   {
+    "host": "exemplo.invalid",
+    "arquivos": 1
+   },
+   {
     "host": "existing.png",
+    "arquivos": 1
+   },
+   {
+    "host": "hooks.slack.com",
     "arquivos": 1
    },
    {
@@ -1715,6 +1759,10 @@
     "arquivos": 1
    },
    {
+    "host": "outro.exemplo",
+    "arquivos": 1
+   },
+   {
     "host": "prev.png",
     "arquivos": 1
    },
@@ -1755,6 +1803,10 @@
     "arquivos": 1
    },
    {
+    "host": "stgref.supabase.co",
+    "arquivos": 1
+   },
+   {
     "host": "supabase.invalid",
     "arquivos": 1
    },
@@ -1767,7 +1819,7 @@
     "arquivos": 1
    },
    {
-    "host": "worker.example.dev",
+    "host": "w.example.dev",
     "arquivos": 1
    },
    {
@@ -1796,10 +1848,6 @@
    },
    {
     "host": "www.santander.com.br",
-    "arquivos": 1
-   },
-   {
-    "host": "x.test",
     "arquivos": 1
    }
   ],
@@ -2050,6 +2098,10 @@
     "ocorrencias": 1
    },
    {
+    "papel": "service_role",
+    "ocorrencias": 1
+   },
+   {
     "papel": "sup",
     "ocorrencias": 1
    },
@@ -2107,10 +2159,11 @@
    "src/components/auth/ProtectedRoute.tsx",
    "src/components/navigation/UnsavedGuardProvider.tsx"
   ],
-  "rotas_protegidas": 119,
+  "rotas_protegidas": 118,
   "rotas_publicas": [
    "/__especimes",
    "/*",
+   "/auth",
    "/auth/corporate",
    "/contador/:token",
    "/convite/:token",
@@ -2131,7 +2184,7 @@
    },
    {
     "flag": "ENABLE_PRODUCTION_SIMULATION_AUDIT",
-    "arquivos": 1
+    "arquivos": 2
    },
    {
     "flag": "FEATURE_X",
@@ -2147,6 +2200,7 @@
    }
   ],
   "tabelas_de_flag": [
+   "TestFlagsDeEscopo",
    "security_settings"
   ]
  },

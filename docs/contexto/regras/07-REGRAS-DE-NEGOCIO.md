@@ -1,6 +1,6 @@
 # 07 · REGRAS DE NEGÓCIO
 
-> Gerado automaticamente por AI Context Sync v1.3.2 · commit `85d018cc59` · branch `main` · 2026-11-11 17:45 UTC
+> Gerado automaticamente por AI Context Sync v1.3.2 · commit `f0bad7436f` · branch `main` · 2026-11-11 18:10 UTC
 > Não edite à mão — regras humanas vão em `manual/`.
 
 ## A. Regras escritas por humanos (`manual/` — prioridade máxima, nunca sobrescrito)
@@ -36,7 +36,6 @@ _Nenhum arquivo em `manual/`. Copie `manual/TEMPLATE-regras-de-negocio.md` para 
 | `user_preferences` | Users can update own preferences | UPDATE | public | permissive | `auth.uid() = user_id` | `auth.uid() = user_id` |
 | `user_preferences` | Users can delete own preferences | DELETE | public | permissive | `auth.uid() = user_id` |  |
 | `audit_log` | Users can view own audit_log | SELECT | public | permissive | `auth.uid() = user_id` |  |
-| `audit_log` | System can insert audit_log | INSERT | public | permissive |  | `true` |
 | `entity_versions` | Users can view versions | SELECT | public | permissive | `true` |  |
 | `entity_versions` | Users can insert versions | INSERT | public | permissive |  | `auth.uid() = changed_by OR changed_by IS NULL` |
 | `transacoes_bancarias` | Financeiro+ can manage transacoes | ALL | public | permissive | `public.has_any_role(auth.uid(), ARRAY['admin', 'financeiro']::app_role[])` |  |
@@ -130,14 +129,9 @@ _Nenhum arquivo em `manual/`. Copie `manual/TEMPLATE-regras-de-negocio.md` para 
 | `ponto_sync_log` | Admin financeiro can view ponto_sync_log | SELECT | authenticated | permissive | `has_any_role(auth.uid(), ARRAY['admin'::app_role, 'financeiro'::app_role])` |  |
 | `ponto_funcionarios` | Admin can view ponto_funcionarios | SELECT | authenticated | permissive | `public.has_role(auth.uid(), 'admin'::app_role)` |  |
 | `ponto_funcionarios` | Admin can manage ponto_funcionarios | ALL | authenticated | permissive | `public.has_role(auth.uid(), 'admin'::app_role)` | `public.has_role(auth.uid(), 'admin'::app_role)` |
-| `estrategias_elisao_catalogo` | Catálogo elisão visível para autenticados | SELECT | authenticated | permissive | `true` |  |
-| `estrategias_elisao_catalogo` | Admins gerenciam catálogo elisão | ALL | authenticated | permissive | `public.has_role(auth.uid(), 'admin')` | `public.has_role(auth.uid(), 'admin')` |
 | `benchmarks_setoriais` | Benchmarks visíveis para autenticados | SELECT | authenticated | permissive | `true` |  |
 | `benchmarks_setoriais` | Admins gerenciam benchmarks | ALL | authenticated | permissive | `public.has_role(auth.uid(), 'admin')` | `public.has_role(auth.uid(), 'admin')` |
 | `rate_limit_logs` | Authenticated users can insert rate limit logs | INSERT | authenticated | permissive |  | `auth.uid() IS NOT NULL` |
-| `frontend_error_logs_legacy` | Users can view their own error logs | SELECT | authenticated | permissive | `auth.uid() = user_id` |  |
-| `frontend_error_logs_legacy` | Admins can view all error logs | SELECT | authenticated | permissive | `has_role(auth.uid(), 'admin')` |  |
-| `frontend_error_logs_legacy` | Admins can delete error logs | DELETE | authenticated | permissive | `has_role(auth.uid(), 'admin')` |  |
 | `storage.objects` | Service role can insert tax reports | INSERT | service_role | permissive |  | `bucket_id = 'relatorios-tributarios'` |
 | `edge_function_logs` | Admins podem visualizar logs de edge functions | SELECT | authenticated | permissive | `public.has_role(auth.uid(), 'admin')` |  |
 | `edge_function_logs` | Service role pode inserir logs | INSERT | service_role | permissive |  | `true` |
@@ -209,6 +203,9 @@ _Nenhum arquivo em `manual/`. Copie `manual/TEMPLATE-regras-de-negocio.md` para 
 | `divergencias_conciliacao` | Users can view divergencias | SELECT | public | permissive | `true` |  |
 | `divergencias_conciliacao` | Users can update divergencias | UPDATE | public | permissive | `true` |  |
 | `elisao_regras_creditos` | Everyone can view tax rules | SELECT | public | permissive | `true` |  |
+| `elisao_alertas` | Users can view alerts for their companies | SELECT | public | permissive | `EXISTS ( SELECT 1 FROM public.user_empresas WHERE empresa_id = elisao_alertas.empresa_id AND user_id = auth.uid() )` |  |
+| `auditoria_configuracoes` | Usuários podem ver auditoria das suas empresas | SELECT | public | permissive | `EXISTS ( SELECT 1 FROM public.user_roles WHERE user_id = auth.uid() AND (role = 'admin' OR role = 'financeiro') )` |  |
+| `auditoria_configuracoes` | Usuários podem inserir auditoria | INSERT | public | permissive |  | `auth.uid() = user_id` |
 | `regua_cobranca_status` | Usuários podem ver status da régua de sua empresa | SELECT | public | permissive | `auth.uid() IN (SELECT user_id FROM public.user_empresas WHERE empresa_id = regua_cobranca_status.empresa_id)` |  |
 | `conciliacao_sugestoes` | Usuários podem ver sugestões de sua empresa | SELECT | public | permissive | `auth.uid() IN (SELECT user_id FROM public.user_empresas WHERE empresa_id = conciliacao_sugestoes.empresa_id)` |  |
 | `boleto_events` | Users can view events of their companies' boletos | SELECT | public | permissive | `EXISTS ( SELECT 1 FROM public.boletos b JOIN public.user_roles ur ON ur.user_id = auth.uid() WHERE b.id = boleto_events.boleto_id )` |  |
@@ -218,7 +215,7 @@ _Nenhum arquivo em `manual/`. Copie `manual/TEMPLATE-regras-de-negocio.md` para 
 | `regras_roteamento_financeiro` | Users can view their company routing rules | SELECT | public | permissive | `EXISTS (SELECT 1 FROM public.empresas e WHERE e.id = empresa_id)` |  |
 | `regras_roteamento_financeiro` | Users can manage their company routing rules | ALL | public | permissive | `EXISTS (SELECT 1 FROM public.empresas e WHERE e.id = empresa_id)` |  |
 | `historico_cobrancas_boletos` | Users can view boleto history | SELECT | public | permissive | `EXISTS (SELECT 1 FROM public.boletos b JOIN public.empresas e ON b.empresa_id = e.id WHERE b.id = boleto_id)` |  |
-| `extratos_bancarios_importados` | Users can view their bank imports | SELECT | public | permissive | `EXISTS (SELECT 1 FROM public.contas_bancarias c WHERE c.id = conta_bancaria_id)` |  |
+| `regras_conciliacao` | Users can view their company's rules | SELECT | public | permissive | `EXISTS ( SELECT 1 FROM public.user_empresas WHERE user_empresas.empresa_id = regras_conciliacao.empresa_id AND user_empresas.user_id = auth.uid() )` |  |
 | `regras_conciliacao` | Users can insert rules for their company | INSERT | public | permissive |  | `EXISTS ( SELECT 1 FROM public.user_empresas WHERE user_empresas.empresa_id = empresa_id AND user_empresas.user_id = auth.uid() )` |
 | `regras_conciliacao` | Users can update rules for their company | UPDATE | public | permissive | `EXISTS ( SELECT 1 FROM public.user_empresas WHERE user_empresas.empresa_id = regras_conciliacao.empresa_id AND user_empresas.user_id = auth.uid() )` |  |
 | `regras_conciliacao` | Users can delete rules for their company | DELETE | public | permissive | `EXISTS ( SELECT 1 FROM public.user_empresas WHERE user_empresas.empresa_id = regras_conciliacao.empresa_id AND user_empresas.user_id = auth.uid() )` |  |
@@ -226,10 +223,12 @@ _Nenhum arquivo em `manual/`. Copie `manual/TEMPLATE-regras-de-negocio.md` para 
 | `budgets` | Users can insert budgets | INSERT | public | permissive |  | `EXISTS ( SELECT 1 FROM public.user_empresas WHERE user_id = auth.uid() AND empresa_id = budgets.company_id ) OR user_id = auth.uid()` |
 | `budgets` | Users can update budgets | UPDATE | public | permissive | `EXISTS ( SELECT 1 FROM public.user_empresas WHERE user_id = auth.uid() AND empresa_id = budgets.company_id ) OR user_id = auth.uid()` |  |
 | `budgets` | Users can delete budgets | DELETE | public | permissive | `EXISTS ( SELECT 1 FROM public.user_empresas WHERE user_id = auth.uid() AND empresa_id = budgets.company_id ) OR user_id = auth.uid()` |  |
+| `budgets` | Users can view their company budgets | SELECT | public | permissive | `company_id IN (SELECT empresa_id FROM public.user_empresas WHERE user_id = auth.uid())` |  |
+| `budgets` | Users can insert company budgets | INSERT | public | permissive |  | `company_id IN (SELECT empresa_id FROM public.user_empresas WHERE user_id = auth.uid())` |
+| `budgets` | Users can update company budgets | UPDATE | public | permissive | `company_id IN (SELECT empresa_id FROM public.user_empresas WHERE user_id = auth.uid())` |  |
+| `budgets` | Users can delete company budgets | DELETE | public | permissive | `company_id IN (SELECT empresa_id FROM public.user_empresas WHERE user_id = auth.uid())` |  |
 | `api_keys` | Users can view their own company api keys | SELECT | public | permissive | `auth.uid() IN ( SELECT user_id FROM public.user_empresas WHERE empresa_id = public.api_keys.empresa_id )` |  |
 | `api_keys` | Admins can manage api keys | ALL | public | permissive | `EXISTS ( SELECT 1 FROM public.user_empresas WHERE user_id = auth.uid() AND empresa_id = public.api_keys.empresa_id AND role = 'admin' )` |  |
-| `custom_field_definitions` | Users can view definitions of their company | SELECT | public | permissive | `auth.uid() IN ( SELECT user_id FROM public.user_empresas WHERE empresa_id = public.custom_field_definitions.empresa_id )` |  |
-| `custom_field_definitions` | Admins can manage definitions | ALL | public | permissive | `EXISTS ( SELECT 1 FROM public.user_empresas WHERE user_id = auth.uid() AND empresa_id = public.custom_field_definitions.empresa_id AND role = 'admin' )` |  |
 | `planos_acao` | Users can manage their own action plans | ALL | public | permissive | `auth.uid() = user_id` | `auth.uid() = user_id` |
 | `kpis_operacionais` | Users can manage their own operational KPIs | ALL | public | permissive | `auth.uid() = user_id` | `auth.uid() = user_id` |
 | `pedidos_compra` | Users can view their own purchase orders | SELECT | public | permissive | `auth.uid() = user_id` |  |
@@ -249,10 +248,8 @@ _Nenhum arquivo em `manual/`. Copie `manual/TEMPLATE-regras-de-negocio.md` para 
 | `glossario_tributario` | Anyone can view glossary | SELECT | public | permissive | `true` |  |
 | `tax_audit_trail` | Users can view audit trail of their companies | SELECT | public | permissive | `EXISTS ( SELECT 1 FROM public.user_empresas WHERE user_empresas.empresa_id = tax_audit_trail.empresa_id AND user_empresas.user_id = auth.uid() )` |  |
 | `tax_audit_trail` | Users can insert audit trail entries | INSERT | public | permissive |  | `EXISTS ( SELECT 1 FROM public.user_empresas WHERE user_empresas.empresa_id = tax_audit_trail.empresa_id AND user_empresas.user_id = auth.uid() )` |
-| `audit_logs_legacy` | Admins can view audit logs | SELECT | authenticated | permissive | `public.has_role(auth.uid(), 'admin')` |  |
 | `divergencias_conciliacao` | Users can view discrepancies | SELECT | authenticated | permissive | `true` |  |
 | `regras_conciliacao` | Users can view rules | SELECT | authenticated | permissive | `true` |  |
-| `frontend_error_logs_legacy` | frontend_error_user_insert | INSERT | authenticated | permissive |  | `auth.uid() = user_id` |
 | `configuracoes_duplicidade` | config_dup_auth_select | SELECT | authenticated | permissive | `true` |  |
 | `divergencias_conciliacao` | Users can manage their own divergencias | ALL | authenticated | permissive | `true` | `true` |
 | `feedback_conciliacao_ia` | Users can manage their own feedback_ia | ALL | authenticated | permissive | `true` | `true` |
@@ -284,6 +281,8 @@ _Nenhum arquivo em `manual/`. Copie `manual/TEMPLATE-regras-de-negocio.md` para 
 | `historico_cobranca_whatsapp` | Permitir acesso total historico_cobranca_whatsapp | ALL | public | permissive | `true` | `true` |
 | `resumos_executivos_semanais` | Permitir acesso total resumos_executivos_semanais | ALL | public | permissive | `true` | `true` |
 | `metas_financeiras` | Users can view metas | SELECT | public | permissive | `true` |  |
+| `aprovacao_comentarios` | Users can view comments on requests they can see | SELECT | public | permissive | `auth.role() = 'authenticated'` |  |
+| `audit_log` | System and auth users can insert audit_log | INSERT | public | permissive |  | `auth.uid() IS NOT NULL AND (user_id = auth.uid() OR user_id IS NULL)` |
 | `storage.objects` | nfe_xml_service_write | INSERT | service_role | permissive |  | `bucket_id = 'nfe-xml'` |
 | `storage.objects` | nfe_xml_service_update | UPDATE | service_role | permissive | `bucket_id = 'nfe-xml'` |  |
 | `storage.objects` | nfe_xml_service_delete | DELETE | service_role | permissive | `bucket_id = 'nfe-xml'` |  |
@@ -309,9 +308,10 @@ _Nenhum arquivo em `manual/`. Copie `manual/TEMPLATE-regras-de-negocio.md` para 
 | `asaas_credit_risk_analysis` | credit_risk_select | SELECT | authenticated | permissive | `(EXISTS ( SELECT 1 FROM public.clientes c WHERE ((c.id = asaas_credit_risk_analysis.cliente_id) AND public.empresa_acessivel(c.empresa_id))))` |  |
 | `benchmarks_setoriais` | benchmarks_select | SELECT | authenticated | permissive | `true` |  |
 | `beneficios_fiscais` | beneficios_select_authenticated | SELECT | authenticated | permissive | `true` |  |
-| `bitrix_oauth_tokens` | bitrix_oauth_tokens_service_role_only | ALL | service_role | permissive | `true` | `true` |
-| `bling_tokens` | bling_tokens_service_role_only | ALL | service_role | permissive | `true` | `true` |
-| … +561 linhas — lista completa em `context.json` | | | | | | |
+| `bitrix24_activities` | bitrix24_activities_tenant_delete | DELETE | authenticated | permissive | `((EXISTS ( SELECT 1 FROM public.lalamove_orders o WHERE ((o.id = bitrix24_activities.order_id) AND public.empresa_membro_ativo(o.empresa_id)))) AND (public.has_role(auth.uid(), 'admin'::public.app_role) OR public.has_role(auth.uid(), 'manager'::public.app_role)))` |  |
+| `bitrix24_activities` | bitrix24_activities_tenant_insert | INSERT | authenticated | permissive |  | `(EXISTS ( SELECT 1 FROM public.lalamove_orders o WHERE ((o.id = bitrix24_activities.order_id) AND public.empresa_membro_ativo(o.empresa_id))))` |
+| `bitrix24_activities` | bitrix24_activities_tenant_select | SELECT | authenticated | permissive | `(EXISTS ( SELECT 1 FROM public.lalamove_orders o WHERE ((o.id = bitrix24_activities.order_id) AND public.empresa_membro_ativo(o.empresa_id))))` |  |
+| … +564 linhas — lista completa em `context.json` | | | | | | |
 
 ## C. Restrições de dados (obrigatório / único / default / CHECK / FK / calculada)
 
@@ -319,51 +319,76 @@ _Nenhum arquivo em `manual/`. Copie `manual/TEMPLATE-regras-de-negocio.md` para 
 |---|---|---|
 | `clientes` | `id` | PK; default uuid_generate_v4() |
 | `clientes` | `cpf_cnpj` | único |
-| `clientes` | `tipo` | default 'PF'; CHECK tipo IN ('PF', 'PJ') |
+| `clientes` | `tipo` | default 'PF' |
 | `clientes` | `user_id` | FK → users.id ON DELETE CASCADE |
 | `clientes` | `created_at` | default NOW() |
 | `clientes` | `updated_at` | default NOW() |
+| `clientes` | `limite_credito` | default 0 |
+| `clientes` | `ativo` | default true |
+| `clientes` | `(tabela)` | constraint clientes_tipo_check CHECK (((tipo)::text = ANY ((ARRAY['PF'::character varying, 'PJ'::character varying])::text[]))) NOT VALID |
 | `fornecedores` | `id` | PK; default uuid_generate_v4() |
 | `fornecedores` | `razao_social` | obrigatório |
 | `fornecedores` | `cnpj` | único |
 | `fornecedores` | `user_id` | FK → users.id ON DELETE CASCADE |
 | `fornecedores` | `created_at` | default NOW() |
 | `fornecedores` | `updated_at` | default NOW() |
+| `fornecedores` | `ativo` | default true |
 | `contas_pagar` | `id` | PK; default uuid_generate_v4() |
 | `contas_pagar` | `descricao` | obrigatório |
-| `contas_pagar` | `valor` | obrigatório; CHECK valor >= 0 |
+| `contas_pagar` | `valor` | obrigatório |
 | `contas_pagar` | `data_vencimento` | obrigatório |
-| `contas_pagar` | `status` | default 'pendente'; CHECK status IN ('pendente', 'pago', 'atrasado', 'cancelado') |
+| `contas_pagar` | `status` | default 'pendente' |
 | `contas_pagar` | `fornecedor_id` | FK → fornecedores.id ON DELETE SET NULL |
 | `contas_pagar` | `user_id` | FK → users.id ON DELETE CASCADE |
 | `contas_pagar` | `created_at` | default NOW() |
 | `contas_pagar` | `updated_at` | default NOW() |
 | `contas_pagar` | `empresa_id` | FK → empresas.id ON DELETE CASCADE |
+| `contas_pagar` | `categoria_id` | FK → categorias.id ON DELETE SET NULL |
+| `contas_pagar` | `juros` | default 0 |
+| `contas_pagar` | `multa` | default 0 |
+| `contas_pagar` | `desconto` | default 0 |
+| `contas_pagar` | `recorrente` | default false |
+| `contas_pagar` | `metadata` | default '{}'::jsonb |
 | `contas_pagar` | `aprovado_por` | FK → users.id |
-| `contas_pagar` | `valor_pago` | default 0 |
+| `contas_pagar` | `(tabela)` | constraint contas_pagar_plano_conta_id_fkey FOREIGN KEY (plano_conta_id) REFERENCES public.plano_contas(id) |
 | `contas_pagar` | `(tabela)` | constraint contas_pagar_empresa_id_fkey FOREIGN KEY (empresa_id) REFERENCES public.empresas(id) ON DELETE CASCADE |
 | `contas_pagar` | `(tabela)` | constraint contas_pagar_categoria_id_fkey FOREIGN KEY (categoria_id) REFERENCES public.categorias(id) ON DELETE SET NULL |
+| `contas_pagar` | `(tabela)` | constraint chk_contas_pagar_status CHECK (((status)::text = ANY ((ARRAY['pendente'::character varying, 'pago'::character varying, 'vencido'::character varying, 'cancelado'::character varying, 'parcial'::character varying])::text[]))) NOT VALID |
+| `contas_pagar` | `(tabela)` | constraint contas_pagar_status_check CHECK (((status)::text = ANY ((ARRAY['pendente'::character varying, 'pago'::character varying, 'atrasado'::character varying, 'cancelado'::character varying])::text[]))) NOT VALID |
+| `contas_pagar` | `(tabela)` | constraint contas_pagar_valor_check CHECK ((valor >= (0)::numeric)) NOT VALID |
 | `contas_receber` | `id` | PK; default uuid_generate_v4() |
 | `contas_receber` | `descricao` | obrigatório |
-| `contas_receber` | `valor` | obrigatório; CHECK valor >= 0 |
+| `contas_receber` | `valor` | obrigatório |
 | `contas_receber` | `data_vencimento` | obrigatório |
-| `contas_receber` | `status` | default 'pendente'; CHECK status IN ('pendente', 'recebido', 'atrasado', 'cancelado') |
+| `contas_receber` | `status` | default 'pendente' |
 | `contas_receber` | `cliente_id` | FK → clientes.id ON DELETE SET NULL |
 | `contas_receber` | `user_id` | FK → users.id ON DELETE CASCADE |
 | `contas_receber` | `created_at` | default NOW() |
 | `contas_receber` | `updated_at` | default NOW() |
 | `contas_receber` | `empresa_id` | FK → empresas.id ON DELETE CASCADE |
+| `contas_receber` | `categoria_id` | FK → categorias.id ON DELETE SET NULL |
+| `contas_receber` | `juros` | default 0 |
+| `contas_receber` | `multa` | default 0 |
+| `contas_receber` | `desconto` | default 0 |
+| `contas_receber` | `recorrente` | default false |
+| `contas_receber` | `metadata` | default '{}'::jsonb |
+| `contas_receber` | `valor_desconto` | default 0 |
 | `contas_receber` | `data_emissao` | default CURRENT_DATE |
+| `contas_receber` | `(tabela)` | constraint contas_receber_plano_conta_id_fkey FOREIGN KEY (plano_conta_id) REFERENCES public.plano_contas(id) |
 | `contas_receber` | `(tabela)` | constraint contas_receber_empresa_id_fkey FOREIGN KEY (empresa_id) REFERENCES public.empresas(id) ON DELETE CASCADE |
 | `contas_receber` | `(tabela)` | constraint contas_receber_categoria_id_fkey FOREIGN KEY (categoria_id) REFERENCES public.categorias(id) ON DELETE SET NULL |
+| `contas_receber` | `(tabela)` | constraint contas_receber_valor_check CHECK ((valor >= (0)::numeric)) NOT VALID |
 | `contas_receber` | `(tabela)` | constraint contas_receber_status_check CHECK (status IN ( 'pendente', 'recebido', 'pago', 'vencido', 'cancelado', 'parcial', 'atrasado', 'em_acordo' )) |
 | `categorias` | `id` | PK; default gen_random_uuid() |
 | `categorias` | `nome` | obrigatório |
-| `categorias` | `tipo` | obrigatório; CHECK tipo IN ('receita', 'despesa') |
+| `categorias` | `tipo` | obrigatório |
 | `categorias` | `ativo` | default true |
 | `categorias` | `empresa_id` | FK → empresas.id |
 | `categorias` | `created_at` | default now() |
 | `categorias` | `updated_at` | default now() |
+| `categorias` | `plano_conta_id` | FK → plano_contas.id |
+| `categorias` | `(tabela)` | constraint categorias_plano_conta_id_fkey FOREIGN KEY (plano_conta_id) REFERENCES public.plano_contas(id) |
+| `categorias` | `(tabela)` | constraint categorias_tipo_check CHECK ((tipo = ANY (ARRAY['receita'::text, 'despesa'::text]))) NOT VALID |
 | `user_preferences` | `id` | PK; default gen_random_uuid() |
 | `user_preferences` | `user_id` | obrigatório; FK → users.id ON DELETE CASCADE |
 | `user_preferences` | `key` | obrigatório |
@@ -386,8 +411,8 @@ _Nenhum arquivo em `manual/`. Copie `manual/TEMPLATE-regras-de-negocio.md` para 
 | `saved_filters` | `shared_with_roles` | default '{}'::text[] |
 | `saved_filters` | `created_at` | default now() |
 | `saved_filters` | `updated_at` | default now() |
-| `saved_filters` | `(tabela)` | CONSTRAINT saved_filters_unique UNIQUE (user_id, entity_type, name) |
-| `saved_filters` | `(tabela)` | CONSTRAINT saved_filters_shared_requires_empresa CHECK (NOT is_shared OR empresa_id IS NOT NULL) |
+| `saved_filters` | `(tabela)` | constraint saved_filters_unique UNIQUE (user_id, entity_type, name) |
+| `saved_filters` | `(tabela)` | constraint saved_filters_shared_requires_empresa CHECK (((NOT is_shared) OR (empresa_id IS NOT NULL))) NOT VALID |
 | `entity_versions` | `id` | PK; default gen_random_uuid() |
 | `entity_versions` | `entity_type` | obrigatório |
 | `entity_versions` | `entity_id` | obrigatório |
@@ -401,23 +426,26 @@ _Nenhum arquivo em `manual/`. Copie `manual/TEMPLATE-regras-de-negocio.md` para 
 | `profiles` | `created_at` | default timezone('utc'::text |
 | `profiles` | `updated_at` | default timezone('utc'::text |
 | `user_roles` | `id` | default gen_random_uuid() |
-| `user_roles` | `user_id` | obrigatório |
+| `user_roles` | `user_id` | obrigatório; FK → users.id ON DELETE CASCADE |
 | `user_roles` | `role` | default 'viewer' |
 | `user_roles` | `assigned_at` | default now() |
 | `user_roles` | `is_active` | default true |
 | `user_roles` | `created_at` | default now() |
 | `user_roles` | `updated_at` | default now() |
 | `user_roles` | `(tabela)` | CONSTRAINT user_roles_pkey PRIMARY KEY (id) |
+| `user_roles` | `(tabela)` | constraint user_roles_user_id_fkey FOREIGN KEY (user_id) REFERENCES auth.users(id) ON DELETE CASCADE |
 | `empresas` | `id` | PK; default gen_random_uuid() |
 | `empresas` | `user_id` | default auth.uid() |
 | `empresas` | `razao_social` | obrigatório |
 | `empresas` | `ativo` | default true |
 | `empresas` | `created_at` | default now() |
 | `empresas` | `sigla` | default 'EMP' |
+| `empresas` | `cor_hex` | default 'chart-1' |
 | `empresas` | `is_padrao` | default false |
-| `empresas` | `(tabela)` | constraint empresas_aliquota_rat_range CHECK (aliquota_rat IS NULL OR (aliquota_rat >= 0 AND aliquota_rat <= 0.06)) |
-| `empresas` | `(tabela)` | constraint empresas_aliquota_terceiros_range CHECK (aliquota_terceiros IS NULL OR (aliquota_terceiros >= 0 AND aliquota_terceiros <= 0.08)) |
-| `empresas` | `(tabela)` | constraint empresas_cnae_principal_formato CHECK (cnae_principal IS NULL OR length(regexp_replace(cnae_principal, '\D', '', 'g')) BETWEEN 2 AND 7) |
+| `empresas` | `(tabela)` | constraint empresas_aliquota_rat_range CHECK (((aliquota_rat IS NULL) OR ((aliquota_rat >= (0)::numeric) AND (aliquota_rat <= 0.06)))) NOT VALID |
+| `empresas` | `(tabela)` | constraint empresas_aliquota_terceiros_range CHECK (((aliquota_terceiros IS NULL) OR ((aliquota_terceiros >= (0)::numeric) AND (aliquota_terceiros <= 0.08)))) NOT VALID |
+| `empresas` | `(tabela)` | constraint empresas_cnae_principal_formato CHECK (((cnae_principal IS NULL) OR ((length(regexp_replace(cnae_principal, '\D'::text, ''::text, 'g'::text)) >= 2) AND (length(regexp_replace(cnae_principal, '\D'::text, ''::text, 'g'::text)) <= 7)))) NOT VALID |
+| `empresas` | `(tabela)` | constraint empresas_regime_tributario_check CHECK (((regime_tributario IS NULL) OR (regime_tributario = ANY (ARRAY['mei'::text, 'simples_nacional'::text, 'lucro_presumido'::text, 'lucro_real'::text, 'arbitrado'::text])))) NOT VALID |
 | `contas_bancarias` | `id` | PK; default gen_random_uuid() |
 | `contas_bancarias` | `saldo_inicial` | default 0 |
 | `contas_bancarias` | `ativo` | default true |
@@ -426,6 +454,8 @@ _Nenhum arquivo em `manual/`. Copie `manual/TEMPLATE-regras-de-negocio.md` para 
 | `contas_bancarias` | `configuracoes_conciliacao` | default '{}'::jsonb |
 | `contas_bancarias` | `saldo_atual` | default 0 |
 | `contas_bancarias` | `tipo_conta` | default 'corrente' |
+| `contas_bancarias` | `codigo_banco` | default '000' |
+| `contas_bancarias` | `saldo_disponivel` | CALCULADA = saldo_atual |
 | `contas_bancarias` | `updated_at` | default now() |
 | `contas_bancarias` | `(tabela)` | constraint contas_bancarias_empresa_id_fkey FOREIGN KEY (empresa_id) REFERENCES public.empresas(id) ON DELETE CASCADE |
 | `centros_custo` | `id` | PK; default gen_random_uuid() |
@@ -433,6 +463,10 @@ _Nenhum arquivo em `manual/`. Copie `manual/TEMPLATE-regras-de-negocio.md` para 
 | `centros_custo` | `ativo` | default TRUE |
 | `centros_custo` | `user_id` | FK → users.id |
 | `centros_custo` | `created_at` | default NOW() |
+| `centros_custo` | `orcamento_previsto` | default 0 |
+| `centros_custo` | `orcamento_realizado` | default 0 |
+| `centros_custo` | `parent_id` | FK → centros_custo.id ON DELETE SET NULL |
+| `centros_custo` | `updated_at` | default now() |
 | `transacoes_bancarias` | `id` | PK; default gen_random_uuid() |
 | `transacoes_bancarias` | `data` | obrigatório |
 | `transacoes_bancarias` | `descricao` | obrigatório |
@@ -443,6 +477,7 @@ _Nenhum arquivo em `manual/`. Copie `manual/TEMPLATE-regras-de-negocio.md` para 
 | `transacoes_bancarias` | `conciliada` | default false |
 | `transacoes_bancarias` | `saldo` | default 0 |
 | `transacoes_bancarias` | `regra_id` | FK → regras_conciliacao.id |
+| `transacoes_bancarias` | `confirmado_por` | FK → users.id |
 | `notas_fiscais` | `id` | PK; default gen_random_uuid() |
 | `notas_fiscais` | `empresa_id` | FK → empresas.id ON DELETE CASCADE |
 | `notas_fiscais` | `chave_acesso` | único |
@@ -452,6 +487,8 @@ _Nenhum arquivo em `manual/`. Copie `manual/TEMPLATE-regras-de-negocio.md` para 
 | `notas_fiscais` | `data_emissao` | default now() |
 | `notas_fiscais` | `created_at` | default now() |
 | `notas_fiscais` | `valor_produtos` | default 0 |
+| `notas_fiscais` | `valor_desconto` | default 0 |
+| `notas_fiscais` | `valor_frete` | default 0 |
 | `alertas` | `id` | PK; default gen_random_uuid() |
 | `alertas` | `user_id` | default auth.uid() |
 | `alertas` | `tipo` | obrigatório |
@@ -460,11 +497,14 @@ _Nenhum arquivo em `manual/`. Copie `manual/TEMPLATE-regras-de-negocio.md` para 
 | `alertas` | `lido` | default false |
 | `alertas` | `created_at` | default now() |
 | `alertas` | `empresa_id` | FK → empresas.id ON DELETE CASCADE |
+| `alertas` | `(tabela)` | constraint alertas_empresa_id_fkey FOREIGN KEY (empresa_id) REFERENCES public.empresas(id) ON DELETE CASCADE |
 | `configuracoes_aprovacao` | `id` | PK; default gen_random_uuid() |
 | `configuracoes_aprovacao` | `empresa_id` | FK → empresas.id |
 | `configuracoes_aprovacao` | `ativo` | default true |
 | `configuracoes_aprovacao` | `created_at` | default now() |
 | `configuracoes_aprovacao` | `valor_minimo_aprovacao` | default 0 |
+| `configuracoes_aprovacao` | `aprovadores_obrigatorios` | default 1 |
+| `configuracoes_aprovacao` | `updated_at` | default now() |
 | `solicitacoes_aprovacao` | `id` | PK; default gen_random_uuid() |
 | `solicitacoes_aprovacao` | `user_id` | default auth.uid() |
 | `solicitacoes_aprovacao` | `entidade_tipo` | default 'conta_pagar' |
@@ -472,13 +512,12 @@ _Nenhum arquivo em `manual/`. Copie `manual/TEMPLATE-regras-de-negocio.md` para 
 | `solicitacoes_aprovacao` | `created_at` | default now() |
 | `solicitacoes_aprovacao` | `aprovado_por` | FK → users.id |
 | `solicitacoes_aprovacao` | `conta_pagar_id` | FK → contas_pagar.id |
+| `solicitacoes_aprovacao` | `solicitado_por` | FK → users.id |
 | `solicitacoes_aprovacao` | `solicitado_em` | default now() |
 | `relatorios_agendados` | `id` | PK; default gen_random_uuid() |
 | `relatorios_agendados` | `nome` | obrigatório |
 | `relatorios_agendados` | `tipo_relatorio` | obrigatório |
-| `relatorios_agendados` | `frequencia` | obrigatório; CHECK frequencia IN ('diario', 'semanal', 'quinzenal', 'mensal', 'trimestral') |
-| `relatorios_agendados` | `dia_semana` | CHECK dia_semana IS NULL OR dia_semana BETWEEN 0 AND 6 |
-| `relatorios_agendados` | `dia_mes` | CHECK dia_mes IS NULL OR dia_mes BETWEEN 1 AND 31 |
+| `relatorios_agendados` | `frequencia` | obrigatório |
 | `relatorios_agendados` | `hora_execucao` | default '08:00' |
 | `relatorios_agendados` | `empresa_id` | FK → empresas.id ON DELETE CASCADE |
 | `relatorios_agendados` | `destinatarios` | default '{}' |
@@ -487,32 +526,53 @@ _Nenhum arquivo em `manual/`. Copie `manual/TEMPLATE-regras-de-negocio.md` para 
 | `relatorios_agendados` | `created_by` | default auth.uid() |
 | `relatorios_agendados` | `created_at` | default now() |
 | `relatorios_agendados` | `updated_at` | default now() |
+| `relatorios_agendados` | `(tabela)` | constraint relatorios_agendados_dia_mes_check CHECK (((dia_mes IS NULL) OR ((dia_mes >= 1) AND (dia_mes <= 31)))) NOT VALID |
+| `relatorios_agendados` | `(tabela)` | constraint relatorios_agendados_dia_semana_check CHECK (((dia_semana IS NULL) OR ((dia_semana >= 0) AND (dia_semana <= 6)))) NOT VALID |
+| `relatorios_agendados` | `(tabela)` | constraint relatorios_agendados_frequencia_check CHECK ((frequencia = ANY (ARRAY['diario'::text, 'semanal'::text, 'quinzenal'::text, 'mensal'::text, 'trimestral'::text]))) NOT VALID |
 | `historico_relatorios` | `id` | PK; default gen_random_uuid() |
 | `historico_relatorios` | `relatorio_agendado_id` | obrigatório; FK → relatorios_agendados.id ON DELETE CASCADE |
-| `historico_relatorios` | `status` | default 'sucesso'; CHECK status IN ('sucesso', 'erro', 'parcial') |
+| `historico_relatorios` | `status` | default 'sucesso' |
 | `historico_relatorios` | `duracao_ms` | CHECK duracao_ms IS NULL OR duracao_ms >= 0 |
 | `historico_relatorios` | `executado_em` | default now() |
+| `historico_relatorios` | `(tabela)` | constraint historico_relatorios_status_check CHECK ((status = ANY (ARRAY['sucesso'::text, 'erro'::text, 'parcial'::text]))) NOT VALID |
 | `bitrix_sync_logs` | `id` | PK; default gen_random_uuid() |
 | `bitrix_sync_logs` | `empresa_id` | FK → empresas.id |
 | `bitrix_sync_logs` | `created_at` | default now() |
+| `bitrix_sync_logs` | `registros_processados` | default 0 |
+| `bitrix_sync_logs` | `registros_com_erro` | default 0 |
+| `bitrix_sync_logs` | `iniciado_em` | default now() |
 | `bitrix_field_mappings` | `id` | PK; default gen_random_uuid() |
 | `bitrix_field_mappings` | `empresa_id` | FK → empresas.id |
 | `bitrix_field_mappings` | `bitrix_field_name` | obrigatório |
 | `bitrix_field_mappings` | `internal_field_name` | obrigatório |
 | `bitrix_field_mappings` | `entity_type` | obrigatório |
 | `bitrix_field_mappings` | `created_at` | default now() |
+| `bitrix_field_mappings` | `ativo` | default true |
 | `bitrix_field_mappings` | `obrigatorio` | default false |
 | `bitrix_oauth_tokens` | `id` | default gen_random_uuid() |
 | `bitrix_oauth_tokens` | `access_token` | obrigatório |
 | `bitrix_oauth_tokens` | `expires_at` | obrigatório |
 | `bitrix_oauth_tokens` | `created_at` | default now() |
 | `bitrix_oauth_tokens` | `updated_at` | default now() |
+| `bitrix_oauth_tokens` | `(tabela)` | constraint bitrix_oauth_tokens_pkey PRIMARY KEY (id) |
 | `boletos` | `id` | PK; default gen_random_uuid() |
 | `boletos` | `user_id` | default auth.uid() |
 | `boletos` | `valor` | default 0 |
 | `boletos` | `status` | default 'emitido' |
 | `boletos` | `created_at` | default now() |
+| `boletos` | `data_emissao` | default CURRENT_DATE |
+| `boletos` | `juros_multa` | default 0 |
+| `boletos` | `desconto` | default 0 |
+| `boletos` | `rastreio_status` | default '[]'::JSONB |
+| `boletos` | `eventos_pagamento` | default '[]'::jsonb |
+| `boletos` | `conta_pagar_id` | FK → contas_pagar.id |
+| `boletos` | `conta_bancaria_id` | FK → contas_bancarias.id |
+| `boletos` | `created_by` | FK → users.id |
+| `boletos` | `empresa_id` | FK → empresas.id |
+| `boletos` | `updated_at` | default now() |
 | `boletos` | `asaas_id` | default '' |
+| `boletos` | `external_provider` | default 'none' |
+| `boletos` | `(tabela)` | constraint chk_boletos_status CHECK ((status = ANY (ARRAY['pendente'::text, 'enviado'::text, 'pago'::text, 'vencido'::text, 'cancelado'::text]))) NOT VALID |
 | `historico_cobranca` | `id` | PK; default gen_random_uuid() |
 | `historico_cobranca` | `cliente_id` | FK → clientes.id |
 | `historico_cobranca` | `conta_receber_id` | FK → contas_receber.id |
@@ -537,6 +597,7 @@ _Nenhum arquivo em `manual/`. Copie `manual/TEMPLATE-regras-de-negocio.md` para 
 | `expert_messages` | `role` | obrigatório |
 | `expert_messages` | `content` | obrigatório |
 | `expert_messages` | `created_at` | default now() |
+| `expert_messages` | `(tabela)` | constraint expert_messages_role_check CHECK ((role = ANY (ARRAY['user'::text, 'assistant'::text, 'system'::text]))) NOT VALID |
 | `historico_conciliacao_ia` | `id` | PK; default gen_random_uuid() |
 | `historico_conciliacao_ia` | `sessao_id` | FK → sessoes_conciliacao.id |
 | `historico_conciliacao_ia` | `created_at` | default now() |
@@ -549,75 +610,14 @@ _Nenhum arquivo em `manual/`. Copie `manual/TEMPLATE-regras-de-negocio.md` para 
 | `feedback_conciliacao_ia` | `user_id` | FK → users.id |
 | `feedback_conciliacao_ia` | `acao` | obrigatório |
 | `feedback_conciliacao_ia` | `created_at` | default now() |
+| `feedback_conciliacao_ia` | `score_original` | default 0 |
+| `feedback_conciliacao_ia` | `created_by` | FK → users.id |
 | `metas_financeiras` | `id` | PK; default gen_random_uuid() |
 | `metas_financeiras` | `empresa_id` | FK → empresas.id |
 | `metas_financeiras` | `titulo` | obrigatório |
 | `metas_financeiras` | `tipo` | obrigatório |
 | `metas_financeiras` | `valor_meta` | obrigatório |
-| `metas_financeiras` | `ano` | obrigatório |
-| `metas_financeiras` | `mes` | obrigatório |
-| `metas_financeiras` | `ativo` | default true |
-| `metas_financeiras` | `created_by` | FK → users.id |
-| `metas_financeiras` | `created_at` | default now() |
-| `metas_financeiras` | `updated_at` | default now() |
-| `historico_analises_preditivas` | `id` | PK; default gen_random_uuid() |
-| `historico_analises_preditivas` | `insights` | default '[]'::jsonb |
-| `historico_analises_preditivas` | `recomendacoes` | default '[]'::jsonb |
-| `historico_analises_preditivas` | `created_at` | default now() |
-| `historico_score_saude` | `id` | PK; default gen_random_uuid() |
-| `historico_score_saude` | `empresa_id` | FK → empresas.id |
-| `historico_score_saude` | `score` | obrigatório |
-| `historico_score_saude` | `data_calculo` | default now() |
-| `historico_score_saude` | `created_at` | default now() |
-| `alertas_preditivos` | `id` | PK; default gen_random_uuid() |
-| `alertas_preditivos` | `tipo` | obrigatório |
-| `alertas_preditivos` | `titulo` | obrigatório |
-| `alertas_preditivos` | `status` | default 'pendente' |
-| `alertas_preditivos` | `created_at` | default now() |
-| `alertas_preditivos` | `updated_at` | default now() |
-| `recomendacoes_metas_ia` | `id` | PK; default gen_random_uuid() |
-| `recomendacoes_metas_ia` | `empresa_id` | FK → empresas.id |
-| `recomendacoes_metas_ia` | `tipo` | obrigatório |
-| `recomendacoes_metas_ia` | `titulo` | obrigatório |
-| `recomendacoes_metas_ia` | `aplicada` | default false |
-| `recomendacoes_metas_ia` | `created_at` | default now() |
-| `bitrix_webhook_events` | `id` | PK; default gen_random_uuid() |
-| `bitrix_webhook_events` | `event_type` | obrigatório |
-| `bitrix_webhook_events` | `processed` | default false |
-| `bitrix_webhook_events` | `received_at` | default now() |
-| `bitrix_webhook_events` | `created_at` | default now() |
-| `open_finance_consents` | `id` | PK; default gen_random_uuid() |
-| `open_finance_consents` | `user_id` | obrigatório; FK → users.id |
-| `open_finance_consents` | `institution_id` | obrigatório |
-| `open_finance_consents` | `status` | default 'pending' |
-| `open_finance_consents` | `created_at` | default now() |
-| `open_finance_consents` | `updated_at` | default now() |
-| `portal_cliente_tokens` | `id` | PK; default gen_random_uuid() |
-| `portal_cliente_tokens` | `token` | obrigatório; único |
-| `portal_cliente_tokens` | `ativo` | default true |
-| `portal_cliente_tokens` | `created_at` | default now() |
-| `portal_cliente_tokens` | `updated_at` | default now() |
-| `portal_cliente_acessos` | `id` | PK; default gen_random_uuid() |
-| `portal_cliente_acessos` | `token_id` | FK → portal_cliente_tokens.id ON DELETE SET NULL |
-| `portal_cliente_acessos` | `metadata` | default '{}'::jsonb |
-| `portal_cliente_acessos` | `created_at` | default now() |
-| `pagamentos_recorrentes` | `id` | PK; default gen_random_uuid() |
-| `pagamentos_recorrentes` | `empresa_id` | obrigatório; FK → empresas.id ON DELETE CASCADE |
-| `pagamentos_recorrentes` | `descricao` | obrigatório |
-| `pagamentos_recorrentes` | `fornecedor_nome` | obrigatório |
-| `pagamentos_recorrentes` | `valor` | obrigatório; CHECK valor >= 0 |
-| `pagamentos_recorrentes` | `dia_vencimento` | obrigatório; CHECK dia_vencimento BETWEEN 1 AND 31 |
-| `pagamentos_recorrentes` | `frequencia` | obrigatório; CHECK frequencia IN ('semanal','quinzenal','mensal','bimestral','trimestral','semestral','anual') |
-| `pagamentos_recorrentes` | `data_inicio` | obrigatório |
-| `pagamentos_recorrentes` | `tipo_cobranca` | default 'transferencia' |
-| `pagamentos_recorrentes` | `ativo` | default TRUE |
-| `pagamentos_recorrentes` | `total_gerado` | default 0; CHECK total_gerado >= 0 |
-| `pagamentos_recorrentes` | `created_by` | default auth.uid() |
-| `pagamentos_recorrentes` | `created_at` | default now() |
-| `pagamentos_recorrentes` | `updated_at` | default now() |
-| `pagamentos_recorrentes` | `(tabela)` | CONSTRAINT pag_recorrente_periodo CHECK (data_fim IS NULL OR data_fim >= data_inicio) |
-| `regua_cobranca` | `id` | PK; default gen_random_uuid() |
-| … +1841 linhas — lista completa em `context.json` | | |
+| … +2406 linhas — lista completa em `context.json` | | |
 
 ## D. Automações no banco (triggers e funções — regras que rodam sozinhas)
 
@@ -694,8 +694,6 @@ _Nenhum arquivo em `manual/`. Copie `manual/TEMPLATE-regras-de-negocio.md` para 
 | update_faturamento_mensal_updated_at | BEFORE UPDATE | `faturamento_mensal` | `update_updated_at_column` |  |
 | update_folha_pagamento_updated_at | BEFORE UPDATE | `folha_pagamento` | `update_updated_at_column` |  |
 | update_regimes_simulados_updated_at | BEFORE UPDATE | `regimes_simulados` | `update_updated_at_column` |  |
-| update_oportunidades_elisao_updated_at | BEFORE UPDATE | `oportunidades_elisao` | `update_updated_at_column` |  |
-| trg_estrategias_elisao_updated_at | BEFORE UPDATE | `estrategias_elisao_catalogo` | `update_updated_at_column` |  |
 | trg_benchmarks_setoriais_updated_at | BEFORE UPDATE | `benchmarks_setoriais` | `update_updated_at_column` |  |
 | trg_invalidar_regime_cache | AFTER INSERT OR UPDATE OR DELETE | `apuracoes_tributarias` | `fn_invalidar_regime_cache` |  |
 | trg_verif_conf_updated_at | BEFORE UPDATE | `verificacoes_conformidade` | `update_updated_at_column` |  |
@@ -724,6 +722,7 @@ _Nenhum arquivo em `manual/`. Copie `manual/TEMPLATE-regras-de-negocio.md` para 
 | trg_audit_partidas_contabeis | AFTER INSERT OR UPDATE OR DELETE | `partidas_contabeis` | `fn_auditoria_financeira` |  |
 | trg_user_active_filters_uat | BEFORE UPDATE | `user_active_filters` | `update_updated_at` |  |
 | trg_scim_setup_checklist_updated_at | BEFORE UPDATE | `scim_setup_checklist` | `update_updated_at_column` |  |
+| trg_notificar_filtro_compartilhado | AFTER INSERT OR UPDATE OF IS_SHARED, SHARED_WITH_ROLES, EMPRESA_ID | `saved_filters` | `fn_notificar_filtro_compartilhado` |  |
 | trg_validate_saved_filter_subscription_rules | BEFORE INSERT OR UPDATE | `saved_filter_subscriptions` | `validate_saved_filter_subscription_rules` |  |
 | trg_revoke_orphan_subs_on_saved_filter | AFTER UPDATE OR DELETE | `saved_filters` | `fn_revoke_orphan_saved_filter_subscriptions` |  |
 | trg_revoke_orphan_subs_on_user_empresas | AFTER UPDATE OR DELETE | `user_empresas` | `fn_revoke_orphan_saved_filter_subscriptions` |  |
@@ -734,15 +733,16 @@ _Nenhum arquivo em `manual/`. Copie `manual/TEMPLATE-regras-de-negocio.md` para 
 | update_elisao_simulacoes_updated_at | BEFORE UPDATE | `elisao_simulacoes_regime` | `update_updated_at_column` |  |
 | update_elisao_tarefas_updated_at | BEFORE UPDATE | `elisao_tarefas_acionaveis` | `update_updated_at_column` |  |
 | tr_registrar_decisao_elisao | BEFORE UPDATE | `elisao_creditos_auditoria` | `registrar_decisao_elisao` |  |
+| on_boleto_status_change | AFTER UPDATE | `boletos` | `handle_boleto_payment_sync` |  |
 | update_asaas_sync_queue_updated_at | BEFORE UPDATE | `asaas_sync_queue` | `update_updated_at_column` |  |
 | update_asaas_config_updated_at | BEFORE UPDATE | `asaas_config` | `update_updated_at_column` |  |
 | tr_check_asaas_queue_failures | AFTER UPDATE | `asaas_sync_queue` | `check_asaas_queue_failures` | `NEW.status = 'failed'` |
+| trg_validar_duplicidade_pagamento | BEFORE INSERT OR UPDATE OF FORNECEDOR_ID, VALOR, DATA_VENCIMENTO, NUMERO_DOCUMENTO, CODIGO_BARRAS | `contas_pagar` | `validar_duplicidade_pagamento` |  |
 | trg_validar_duplicidade_pagar | BEFORE INSERT OR UPDATE | `contas_pagar` | `validar_duplicidade_avancada` |  |
 | tr_notificar_bloqueio_duplicidade | AFTER INSERT | `bloqueios_duplicidade` | `notificar_bloqueio_duplicidade` |  |
 | update_regras_roteamento_updated_at | BEFORE UPDATE | `regras_roteamento_financeiro` | `update_updated_at_column` |  |
 | update_budgets_updated_at | BEFORE UPDATE | `budgets` | `update_updated_at_column` |  |
 | update_api_keys_updated_at | BEFORE UPDATE | `api_keys` | `update_updated_at_column` |  |
-| update_custom_field_definitions_updated_at | BEFORE UPDATE | `custom_field_definitions` | `update_updated_at_column` |  |
 | update_planos_acao_updated_at | BEFORE UPDATE | `planos_acao` | `update_updated_at_column` |  |
 | update_kpis_operacionais_updated_at | BEFORE UPDATE | `kpis_operacionais` | `update_updated_at_column` |  |
 | update_pedidos_compra_updated_at | BEFORE UPDATE | `pedidos_compra` | `update_updated_at_column` |  |
@@ -812,6 +812,7 @@ _Nenhum arquivo em `manual/`. Copie `manual/TEMPLATE-regras-de-negocio.md` para 
 | trg_regras_creditos_updated_at | BEFORE UPDATE | `elisao_regras_creditos` | `handle_updated_at` |  |
 | trg_elisao_sim_updated_at | BEFORE UPDATE | `elisao_simulacoes_regime` | `handle_updated_at` |  |
 | trg_tarefas_elisao_updated_at | BEFORE UPDATE | `elisao_tarefas_acionaveis` | `handle_updated_at` |  |
+| trg_empresas_unica_padrao | BEFORE INSERT OR UPDATE OF IS_PADRAO, ATIVO | `empresas` | `empresas_unica_padrao` |  |
 | trg_emp_cert_updated | BEFORE UPDATE | `empresas_certificados` | `tg_touch_updated_at` |  |
 | trg_entregas_obrigacoes_updated_at | BEFORE UPDATE | `entregas_obrigacoes` | `update_updated_at_column` |  |
 | trg_estrategias_updated_at | BEFORE UPDATE | `estrategias_elisao` | `set_updated_at` |  |
@@ -849,6 +850,7 @@ _Nenhum arquivo em `manual/`. Copie `manual/TEMPLATE-regras-de-negocio.md` para 
 | trg_overlay_rejeicoes_updated_at | BEFORE UPDATE | `overlay_rejeicoes_auditoria` | `set_updated_at` |  |
 | trg_pag_recorr_updated_at | BEFORE UPDATE | `pagamentos_recorrentes` | `handle_updated_at` |  |
 | trg_normalizar_tipo_partida | BEFORE INSERT OR UPDATE | `partidas_contabeis` | `normalizar_tipo_partida` |  |
+| trg_validar_partidas_dobradas | AFTER INSERT OR DELETE OR UPDATE | `partidas_contabeis` | `validar_partidas_dobradas` |  |
 | trg_invalidate_old_tokens | AFTER INSERT | `password_reset_tokens` | `invalidate_old_tokens` |  |
 | trg_set_token_expiration | BEFORE INSERT | `password_reset_tokens` | `set_token_expiration` |  |
 | trg_per_dcomp_updated_at | BEFORE UPDATE | `per_dcomp` | `handle_updated_at` |  |
@@ -910,15 +912,18 @@ _Nenhum arquivo em `manual/`. Copie `manual/TEMPLATE-regras-de-negocio.md` para 
 | trg_auto_vincular_empresa_padrao | AFTER INSERT | `user_roles` | `auto_vincular_empresa_padrao` |  |
 | update_user_roles_updated_at | BEFORE UPDATE | `user_roles` | `update_updated_at_column` |  |
 | trg_webhook_dlq_updated | BEFORE UPDATE | `webhook_dlq` | `update_updated_at_column` |  |
+| trg_sync_integration_secret_identifier | BEFORE INSERT OR UPDATE OF NOME, CHAVE | `integration_secrets` | `sync_integration_secret_identifier` |  |
 | performance_alerts_notify_trigger | AFTER INSERT | `performance_alerts` | `notify_performance_alert_trigger` |  |
 | trg_notificar_alerta_critico_push | AFTER INSERT | `alertas` | `fn_notificar_alerta_critico_push` |  |
 | on_whatsapp_message_inserted | AFTER INSERT | `historico_cobranca_whatsapp` | `trigger_whatsapp_ai_analysis` |  |
 | trg_anexos_sync_empresa | AFTER UPDATE OF EMPRESA_ID | `contas_pagar` | `sincroniza_empresa_dos_anexos` | `OLD.empresa_id IS DISTINCT FROM NEW.empresa_id` |
 | trg_anexos_sync_empresa | AFTER UPDATE OF EMPRESA_ID | `contas_receber` | `sincroniza_empresa_dos_anexos` | `OLD.empresa_id IS DISTINCT FROM NEW.empresa_id` |
 | trg_anexos_sync_empresa | AFTER UPDATE OF EMPRESA_ID | `movimentacoes` | `sincroniza_empresa_dos_anexos` | `OLD.empresa_id IS DISTINCT FROM NEW.empresa_id` |
+| trg_anexos_atribui_empresa | BEFORE INSERT OR UPDATE OF ENTIDADE_TIPO, ENTIDADE_ID | `anexos_financeiros` | `atribui_empresa_do_anexo` |  |
 | trg_saldo_movimentacao | AFTER INSERT OR UPDATE OR DELETE | `movimentacoes` | `fn_saldo_movimentacao` |  |
 | trg_transferencia_movimentacao | AFTER INSERT OR UPDATE | `transferencias` | `fn_transferencia_movimentacao` |  |
-| trg_lancamento_estorno_marker | BEFORE UPDATE OF STATUS | `lancamentos_contabeis` | `fn_lancamento_estorno_marker` |  |
+| trg_sync_valor_pago | AFTER INSERT OR DELETE OR UPDATE OF DELETED_AT, CONTA_PAGAR_ID, CONTA_RECEBER_ID | `movimentacoes` | `fn_sync_valor_pago_movimentacao` |  |
+| … +2 linhas — lista completa em `context.json` | | | | |
 
 Erros lançados por funções SQL (`RAISE EXCEPTION` = regra de negócio no banco):
 
@@ -948,8 +953,8 @@ Erros lançados por funções SQL (`RAISE EXCEPTION` = regra de negócio no banc
 | `normalizar_tipo_partida` | Tipo de partida inválido: use D (débito) ou C (crédito) | `supabase/migrations/20260726144900_795aaff5-72d2-47dc-a391-fe63c63335f1.sql` |
 | `get_cron_jobs` | Acesso negado: apenas administradores podem visualizar automações. | `supabase/migrations/20260728110753_90823653-f205-4c49-97d5-ca8a3fc6b60c.sql` |
 | `check_catalogos_tributarios_invariants` | acesso negado: requer papel admin | `supabase/migrations/20260728131802_54d26aed-1c8e-418c-b13d-a380264ae29c.sql` |
-| `get_retencao_politicas_status` | acesso negado: requer papel admin | `supabase/migrations/20260730130116_9ba2393d-4c62-4120-acc7-8bcb8e39b251.sql` |
 | `invocar_regua_cobranca` | Secret regua_cron_secret ausente ou inválido no Vault | `supabase/migrations/20260822115000_agendar_regua_cobranca.sql` |
+| `get_retencao_politicas_status` | acesso negado: requer papel admin | `supabase/migrations/20260825100000_reconciliar_schema_completo.sql` |
 | `backfill_empresa_id` | backfill_empresa_id: acesso restrito a administradores | `supabase/migrations/20260825110000_reconciliar_schema_v3_completo.sql` |
 | `capture_pg_stat_statements_baseline` | access denied: admin role required | `supabase/migrations/20260825110000_reconciliar_schema_v3_completo.sql` |
 | `capture_slow_queries` | access denied: admin role required | `supabase/migrations/20260825110000_reconciliar_schema_v3_completo.sql` |
@@ -1078,7 +1083,9 @@ Erros lançados por funções SQL (`RAISE EXCEPTION` = regra de negócio no banc
 
 | Tabela | Coluna | Valores permitidos (enum/CHECK) | Default |
 |---|---|---|---|
-| `contas_pagar` | `status` | `atrasado`, `cancelado`, `pago`, `pendente` | `pendente` |
+| `clientes` | `estado` | **livre (sem enum/CHECK)** |  |
+| `fornecedores` | `estado` | **livre (sem enum/CHECK)** |  |
+| `contas_pagar` | `status` | `atrasado`, `cancelado`, `pago`, `parcial`, `pendente`, `vencido` | `pendente` |
 | `contas_receber` | `status` | `atrasado`, `cancelado`, `em_acordo`, `pago`, `parcial`, `pendente`, `recebido`, `vencido` | `pendente` |
 | `contas_receber` | `etapa_cobranca` | **livre (sem enum/CHECK)** |  |
 | `empresas` | `estado` | **livre (sem enum/CHECK)** |  |
@@ -1087,37 +1094,42 @@ Erros lançados por funções SQL (`RAISE EXCEPTION` = regra de negócio no banc
 | `solicitacoes_aprovacao` | `status` | **livre (sem enum/CHECK)** | `pendente` |
 | `historico_relatorios` | `status` | `erro`, `parcial`, `sucesso` | `sucesso` |
 | `bitrix_sync_logs` | `status` | **livre (sem enum/CHECK)** |  |
-| `boletos` | `status` | **livre (sem enum/CHECK)** | `emitido` |
+| `boletos` | `status` | `cancelado`, `enviado`, `pago`, `pendente`, `vencido` | `emitido` |
+| `boletos` | `bitrix_status` | **livre (sem enum/CHECK)** |  |
 | `historico_cobranca` | `status` | **livre (sem enum/CHECK)** |  |
 | `historico_cobranca` | `etapa` | **livre (sem enum/CHECK)** |  |
+| `expert_conversations` | `status` | **livre (sem enum/CHECK)** |  |
 | `alertas_preditivos` | `status` | **livre (sem enum/CHECK)** | `pendente` |
 | `open_finance_consents` | `status` | **livre (sem enum/CHECK)** | `pending` |
 | `regua_cobranca` | `etapa` | **livre (sem enum/CHECK)** |  |
 | `historico_cobranca_whatsapp` | `status` | **livre (sem enum/CHECK)** | `enviado` |
 | `acordos_parcelamento` | `status` | **livre (sem enum/CHECK)** | `ativo` |
 | `parcelas_acordo` | `status` | **livre (sem enum/CHECK)** | `pendente` |
-| `password_reset_requests` | `status` | `aprovado`, `pendente`, `rejeitado` | `pendente` |
+| `password_reset_requests` | `status` | `approved`, `pending`, `rejected` | `pendente` |
 | `apuracoes_tributarias` | `status` | **livre (sem enum/CHECK)** | `pendente` |
 | `creditos_tributarios` | `status` | **livre (sem enum/CHECK)** | `disponivel` |
 | `operacoes_tributaveis` | `status` | **livre (sem enum/CHECK)** | `pendente` |
 | `split_payment_transacoes` | `status` | **livre (sem enum/CHECK)** | `pendente` |
 | `apuracoes_irpj_csll` | `status` | **livre (sem enum/CHECK)** | `rascunho` |
+| `prejuizos_fiscais` | `status` | **livre (sem enum/CHECK)** | `disponivel` |
 | `retencoes_fonte` | `status` | `cancelado`, `compensado`, `pendente`, `recolhido` | `pendente` |
-| `darfs` | `status` | **livre (sem enum/CHECK)** | `gerado` |
+| `darfs` | `status` | `cancelado`, `gerado`, `pago`, `vencido` | `gerado` |
+| `alertas_tributarios` | `status` | **livre (sem enum/CHECK)** |  |
 | `per_dcomp` | `status` | `aguardando_transmissao`, `cancelado`, `deferido`, `em_analise`, `indeferido`, `rascunho`, `transmitido` | `rascunho` |
 | `asaas_payments` | `status` | **livre (sem enum/CHECK)** | `PENDING` |
 | `bling_sync_logs` | `status` | `erro`, `executando`, `parcial`, `pendente`, `sucesso` | `pendente` |
 | `contatos_financeiros` | `estado` | **livre (sem enum/CHECK)** |  |
 | `transferencias` | `status` | **livre (sem enum/CHECK)** | `concluido` |
 | `conciliacoes` | `status` | **livre (sem enum/CHECK)** | `em_andamento` |
-| `webhooks_log` | `status` | **livre (sem enum/CHECK)** | `received` |
+| `webhooks_log` | `status` | `dead`, `failed`, `pending`, `processing`, `retrying`, `success` | `received` |
 | `templates_cobranca` | `etapa` | **livre (sem enum/CHECK)** |  |
 | `fila_cobrancas` | `etapa` | **livre (sem enum/CHECK)** |  |
-| `fila_cobrancas` | `status` | **livre (sem enum/CHECK)** | `pendente` |
+| `fila_cobrancas` | `status` | `cancelado`, `enviado`, `falhou`, `pendente` | `pendente` |
 | `execucoes_cobranca` | `etapa` | **livre (sem enum/CHECK)** |  |
 | `execucoes_cobranca` | `status` | **livre (sem enum/CHECK)** | `enviado` |
 | `negativacoes` | `status` | **livre (sem enum/CHECK)** | `ativo` |
 | `protestos` | `status` | **livre (sem enum/CHECK)** | `ativo` |
+| `protestos` | `estado_cartorio` | **livre (sem enum/CHECK)** |  |
 | `ponto_funcionarios` | `situacao` | **livre (sem enum/CHECK)** | `ATIVO` |
 | `ponto_sync_log` | `status` | **livre (sem enum/CHECK)** | `running` |
 | `cnpja_cache` | `situacao_cadastral` | **livre (sem enum/CHECK)** |  |
@@ -1133,7 +1145,6 @@ Erros lançados por funções SQL (`RAISE EXCEPTION` = regra de negócio no banc
 | `anomalia_detection_runs` | `status` | **livre (sem enum/CHECK)** | `queued` |
 | `anomalia_toast_eventos` | `status` | **livre (sem enum/CHECK)** | `sent` |
 | `notification_history` | `status` | `failed`, `queued`, `sent` | `sent` |
-| `user_demonstrativo_preferences` | `drill_down_estado` | **livre (sem enum/CHECK)** |  |
 | `execucoes_regua_cobranca` | `etapa` | **livre (sem enum/CHECK)** |  |
 | `execucoes_regua_cobranca` | `status` | `erro`, `falha`, `ignorado`, `processando`, `sucesso` |  |
 | `logs_conciliacao_retroativa` | `status` | **livre (sem enum/CHECK)** | `processando` |
@@ -1144,6 +1155,7 @@ Erros lançados por funções SQL (`RAISE EXCEPTION` = regra de negócio no banc
 | `elisao_tarefas_acionaveis` | `status` | `cancelada`, `concluida`, `em_andamento`, `pendente` | `pendente` |
 | `elisao_tarefas_acionaveis` | `bitrix_sync_status` | `erro`, `nao_sincronizado`, `sincronizado`, `sincronizando` | `nao_sincronizado` |
 | `regua_cobranca_status` | `status_cobranca` | **livre (sem enum/CHECK)** |  |
+| `regua_cobranca_status` | `status` | **livre (sem enum/CHECK)** | `pendente` |
 | `conciliacao_sugestoes` | `status` | **livre (sem enum/CHECK)** | `pendente` |
 | `boleto_events` | `status_before` | **livre (sem enum/CHECK)** |  |
 | `boleto_events` | `status_after` | **livre (sem enum/CHECK)** |  |
@@ -1151,7 +1163,6 @@ Erros lançados por funções SQL (`RAISE EXCEPTION` = regra de negócio no banc
 | `asaas_transfers` | `status` | **livre (sem enum/CHECK)** | `PENDING` |
 | `asaas_reconciliation_suggestions` | `status` | **livre (sem enum/CHECK)** | `PENDING` |
 | `asaas_scheduled_transfers` | `status` | **livre (sem enum/CHECK)** | `PENDING` |
-| `budgets` | `status` | **livre (sem enum/CHECK)** | `ativo` |
 | `planos_acao` | `status` | `cancelado`, `concluido`, `em_andamento`, `pendente` | `pendente` |
 | `pedidos_compra` | `status` | **livre (sem enum/CHECK)** | `rascunho` |
 | `whatsapp_conversas` | `status` | **livre (sem enum/CHECK)** | `enviado` |
@@ -1159,34 +1170,33 @@ Erros lançados por funções SQL (`RAISE EXCEPTION` = regra de negócio no banc
 | `sessoes_conciliacao` | `status` | **livre (sem enum/CHECK)** | `aberta` |
 | `contratos` | `status` | **livre (sem enum/CHECK)** | `ativo` |
 | `webhook_simulation_runs` | `status` | **livre (sem enum/CHECK)** | `pending` |
-| `webhook_simulation_results` | `response_status` | **livre (sem enum/CHECK)** |  |
-| `n8n_dispatch_logs` | `response_status` | **livre (sem enum/CHECK)** |  |
+| `cron.job_run_details` | `status` | **livre (sem enum/CHECK)** |  |
 | `sefaz_dfe_cursor` | `ultimo_status` | **livre (sem enum/CHECK)** |  |
-| `nfe_recebidas` | `manifestacao_status` | **livre (sem enum/CHECK)** | `pendente` |
+| `nfe_recebidas` | `manifestacao_status` | `pendente`, `ciencia`, `confirmada`, `desconhecida`, `nao_realizada` | `pendente` |
 | `nfe_recebidas` | `situacao_nfe` | **livre (sem enum/CHECK)** |  |
 | `nfe_eventos` | `status_retorno` | **livre (sem enum/CHECK)** |  |
 | `ci_security_gate_events` | `expected_state` | **livre (sem enum/CHECK)** |  |
-| `ci_security_gate_events` | `observed_status` | **livre (sem enum/CHECK)** |  |
 | `entregas_obrigacoes` | `status` | `dispensada`, `entregue`, `pendente`, `retificada` | `pendente` |
 | `digest_envios_log` | `situacao` | `enviado`, `falhou`, `ignorado`, `simulado` |  |
 | `catalogos_fiscais_cargas` | `status` | `erro`, `ok`, `sem_alteracao` | `ok` |
 | `oportunidades_elisao` | `status` | `aprovada`, `descartada`, `em_analise`, `em_execucao`, `identificada`, `implementada` | `identificada` |
-| `oportunidades_elisao` | `status_alterado_em` | **livre (sem enum/CHECK)** |  |
-| `oportunidades_elisao` | `status_alterado_por` | **livre (sem enum/CHECK)** |  |
-| `alerts_sent` | `status` | **livre (sem enum/CHECK)** | `pending` |
 | `bitrix24_stage_mappings` | `lalamove_status` | **livre (sem enum/CHECK)** |  |
+| `bitrix24_stage_mappings` | `bitrix_stage_name` | **livre (sem enum/CHECK)** |  |
+| `alerts_sent` | `status` | **livre (sem enum/CHECK)** | `pending` |
 | `cron_job_logs` | `status` | **livre (sem enum/CHECK)** |  |
+| `drivers` | `status` | `APPROVED`, `PENDING_APPROVAL`, `BLOCKED`, `WHITELIST`, `BLACKLIST` |  |
+| `active_tracking` | `tracking_status` | **livre (sem enum/CHECK)** |  |
+| `bitrix24_sync` | `sync_status` | **livre (sem enum/CHECK)** |  |
+| `driver_approval_queue` | `status` | `PENDING`, `APPROVED`, `REJECTED` |  |
+| `lalamove_orders` | `internal_status` | **livre (sem enum/CHECK)** |  |
+| `lalamove_orders` | `status` | `PENDING`, `MATCHED`, `ON_GOING`, `PICKED_UP`, `COMPLETED`, `CANCELLED`, `REJECTED`, `EXPIRED` |  |
+| `lalamove_status_history` | `old_status` | **livre (sem enum/CHECK)** |  |
+| `lalamove_status_history` | `status` | `PENDING`, `MATCHED`, `ON_GOING`, `PICKED_UP`, `COMPLETED`, `CANCELLED`, `REJECTED`, `EXPIRED` |  |
+| `lalamove_stops` | `pod_status` | **livre (sem enum/CHECK)** |  |
 
 ### E.2 Mapas de transição declarados no código
 
-- **fluxoPorData** (`src/hooks/useFluxoCaixa.ts`):
-  ```ts
-  
-  ```
-- **fluxoPorData** (`src/hooks/useFluxoCaixa.ts`):
-  ```ts
-  
-  ```
+_nenhum mapa explícito encontrado — transições só existem implicitamente nos `if`s (veja E.3)_
 
 ### E.3 Valores de status usados no código (escreve / compara / filtra)
 
@@ -1413,7 +1423,6 @@ Erros lançados por funções SQL (`RAISE EXCEPTION` = regra de negócio no banc
 | `status` | `matched` | compara, escreve | `src/components/admin/sso/sandbox/ClaimFocusCard.tsx`<br>`src/components/admin/sso/sandbox/RulesAppliedCard.tsx`<br>`src/components/admin/sso/sandbox/SandboxRunDetailSheet.tsx`<br>`src/components/admin/sso/sandbox/outcome.ts`<br>`src/components/admin/sso/sandbox/types.ts`<br>… +2 |
 | `status` | `melhor` | compara, escreve | `src/components/analytics/BenchmarkingSetorial.tsx` |
 | `status` | `nova` | compara, escreve, filtra | `src/components/admin/AnomaliaDrillDownDrawer.tsx`<br>`src/components/admin/AnomaliasDetectadasPanel.helpers.ts`<br>`src/components/admin/AnomaliasList.tsx`<br>`src/components/admin/anomalias-review-queue/useReviewQueue.ts`<br>`src/components/insights-ia/anomalia/AcoesSugeridasCard.tsx`<br>… +7 |
-| `status` | `number` | compara | `src/main.tsx` |
 | `status` | `ok` | compara, escreve | `src/components/compliance/verificar-integridade/LinhaResultado.tsx`<br>`src/components/compliance/verificar-integridade/types.ts`<br>`src/components/compliance/verificar-integridade/useIntegridadeVerifier.ts`<br>`src/components/contabilidade/SpedChecklistRow.tsx`<br>`src/components/contabilidade/SpedEcdPreviewDialog.tsx`<br>… +13 |
 | `status` | `online` | escreve | `src/components/ui/badge.tsx` |
 | `status` | `operational` | compara, escreve | `src/pages/StatusPage.tsx`<br>`supabase/functions/health/index.ts` |
@@ -1452,7 +1461,6 @@ Erros lançados por funções SQL (`RAISE EXCEPTION` = regra de negócio no banc
 | `status` | `sent` | escreve | `src/pages/configuracoes/HistoricoNotificacoes.tsx`<br>`supabase/functions/notify-saved-filter/index.ts` |
 | `status` | `simulado` | compara, escreve | `src/components/contabilidade/contabilizacao-automatica/SimulacaoDialog.tsx`<br>`supabase/functions/contabilizar-evento/index.ts` |
 | `status` | `skipped` | compara | `src/components/admin/sso/sandbox/ClaimFocusCard.tsx`<br>`src/components/admin/sso/sandbox/RulesAppliedCard.tsx` |
-| `status` | `string` | compara | `supabase/functions/webhook-replay/index.ts` |
 | `status` | `succeeded` | compara | `src/components/admin/AutomacoesTab.tsx`<br>`src/components/admin/CronJobsStatus.tsx`<br>`supabase/functions/calcular-slo-metrics-diario/index.ts` |
 | `status` | `success` | compara, escreve | `src/components/compliance/EvidenciaStatusDialog.tsx`<br>`src/components/compliance/EvidenciasTab.tsx`<br>`src/components/contas-receber/WebhookConfigPanel.tsx`<br>`src/components/ui/file-upload.tsx`<br>`src/components/ui/ux-validator/ReportModal.tsx`<br>… +4 |
 | `status` | `sucesso` | compara, escreve, filtra | `src/components/contabilidade/contabilizacao-automatica/LogsTable.tsx`<br>`src/components/contabilidade/contabilizacao-automatica/StatsCards.tsx`<br>`src/components/tributario/dashboard/UploadNotaFiscalOCR.tsx`<br>`supabase/functions/contabilizar-evento/index.ts`<br>`supabase/functions/executar-relatorios/index.ts`<br>… +1 |
@@ -1492,25 +1500,55 @@ Erros lançados por funções SQL (`RAISE EXCEPTION` = regra de negócio no banc
 | `tipo` | `9999` | compara, escreve | `src/lib/sped-generator/efd-contribuicoes.ts`<br>`src/lib/sped-generator/efd-ibs-cbs.ts`<br>`supabase/functions/exportar-sped-contribuicoes/layout_test.ts`<br>`supabase/functions/gerar-sped-ecd/layout_test.ts`<br>`supabase/functions/gerar-sped-ecf/layout_test.ts` |
 | `tipo` | `A001` | escreve | `src/lib/sped-generator/efd-contribuicoes.ts` |
 | `tipo` | `A990` | escreve | `src/lib/sped-generator/efd-contribuicoes.ts` |
-| … +235 linhas — lista completa em `context.json` | | | |
+| `tipo` | `APURACAO_ATRASADA` | escreve | `src/hooks/useAuditoriaCompliance.ts` |
+| `tipo` | `AUTORIZACAO` | compara, escreve | `src/components/nfe/ContingenciaNFe.tsx`<br>`src/components/nfe/EventosHistorico.tsx`<br>`src/components/nfe/SefazAnalytics.tsx`<br>`src/lib/sefaz-event-logger.ts`<br>`src/lib/sefaz-rejection-monitor.ts` |
+| … +230 linhas — lista completa em `context.json` | | | |
 
 ### E.4 Enums e listas de valores
 
 | Nome | Valores | Onde |
 |---|---|---|
-| app_role | `admin`, `financeiro`, `operacional`, `visualizador` | banco |
+| app_role | `admin`, `financeiro`, `operacional`, `visualizador`, `contador`, `viewer`, `manager`, `operator` | banco |
 | status_pagamento | `pago`, `pendente`, `vencido`, `parcial`, `cancelado`, `atrasado` | banco |
 | tipo_transacao | `receita`, `despesa` | banco |
-| tipo_cobranca | `boleto`, `pix`, `cartao`, `transferencia`, `dinheiro` | banco |
+| tipo_cobranca | `boleto`, `pix`, `transferencia`, `cartao`, `debito_automatico`, `dinheiro`, `cheque` | banco |
 | prioridade_alerta | `baixa`, `media`, `alta`, `critica` | banco |
 | etapa_cobranca | `preventiva`, `lembrete`, `cobranca`, `negociacao`, `juridico` | banco |
 | status_nfe | `autorizada`, `pendente`, `cancelada`, `denegada`, `inutilizada` | banco |
 | audit_action | `INSERT`, `UPDATE`, `DELETE`, `LOGIN`, `LOGOUT`, `EXPORT`, `APPROVE`, `REJECT`, `revoke_execute_anon` | banco |
+| frequencia_relatorio | `mensal`, `trimestral`, `anual` | banco |
+| acao_auditoria_tributaria | `insert`, `update`, `delete` | banco |
+| status_fechamento_tributario | `aberto`, `em_revisao`, `fechado`, `reaberto` | banco |
+| status_nf_ocr | `processando`, `sucesso`, `erro` | banco |
 | tipo_solicitacao_lgpd | `acesso`, `portabilidade`, `exclusao`, `retificacao`, `anonimizacao` | banco |
 | status_solicitacao_lgpd | `aberta`, `em_analise`, `atendida`, `rejeitada` | banco |
 | tipo_anomalia | `movimentacao_outlier`, `pagamento_duplicado`, `conta_pagar_alta`, `conciliacao_atrasada`, `mudanca_regime_brusca` | banco |
 | severidade_anomalia | `baixa`, `media`, `alta`, `critica` | banco |
 | status_anomalia | `nova`, `investigando`, `falso_positivo`, `confirmada` | banco |
+| sso_tipo | `oidc`, `saml` | banco |
+| subscription_frequencia | `imediata`, `horaria`, `diaria` | banco |
+| tipo_alerta_tributario | `vencimento_apuracao`, `vencimento_darf`, `vencimento_obrigacao`, `prazo_credito`, `limite_compensacao`, `pendencia_conciliacao`, `inconsistencia_fiscal`, `atualizacao_legislacao`, `split_payment`, `retencao_pendente`, `nfe_rejeitada`, `saldo_negativo` | banco |
+| alert_severity | `INFO`, `WARNING`, `CRITICAL` | banco |
+| alert_type | `DRIVER_BLOCKED`, `ROUTE_DEVIATION`, `DRIVER_STOPPED`, `LATE_DELIVERY`, `APPROVAL_REQUIRED`, `ORDER_CANCELLED` | banco |
+| sefaz_ambiente | `homologacao`, `producao` | banco |
+| nfe_manifestacao_status | `pendente`, `ciencia`, `confirmada`, `desconhecida`, `nao_realizada` | banco |
+| nfe_schema_tipo | `resNFe`, `procNFe`, `resEvento`, `procEventoNFe`, `resCTe`, `procCTe` | banco |
+| regime_tributario_enum | `MEI`, `SIMPLES`, `PRESUMIDO`, `REAL`, `ARBITRADO` | banco |
+| atividade_economica | `INDUSTRIA`, `COMERCIO`, `SERVICOS`, `MISTA` | banco |
+| uf_brasil | `AC`, `AL`, `AP`, `AM`, `BA`, `CE`, `DF`, `ES`, `GO`, `MA`, `MT`, `MS`, `MG`, `PA`, `PB`, `PR`, `PE`, `PI`, `RJ`, `RN`, `RS`, `RO`, `RR`, `SC`, `SP`, `SE`, `TO` | banco |
+| regiao_brasil | `NORTE`, `NORDESTE`, `CENTRO_OESTE`, `SUDESTE`, `SUL` | banco |
+| nivel_risco | `BAIXO`, `MEDIO`, `ALTO` | banco |
+| status_workflow | `IDENTIFICADO`, `EM_ANALISE`, `APROVADO`, `EM_EXECUCAO`, `CONCLUIDO`, `CANCELADO` | banco |
+| tipo_destinatario | `CONTRIBUINTE_REVENDA`, `CONTRIBUINTE_USO_CONSUMO`, `NAO_CONTRIBUINTE`, `EXTERIOR` | banco |
+| org_papel | `RESPONSAVEL`, `ADMIN`, `MEMBRO`, `LEITOR` | banco |
+| approval_priority | `LOW`, `MEDIUM`, `HIGH`, `URGENT`, `CRITICAL` | banco |
+| approval_status | `PENDING`, `APPROVED`, `REJECTED` | banco |
+| delivery_outcome | `SUCCESS`, `FAILED`, `DAMAGED`, `STOLEN`, `LATE`, `WRONG_ADDRESS`, `CUSTOMER_UNAVAILABLE` | banco |
+| driver_status | `APPROVED`, `PENDING_APPROVAL`, `BLOCKED`, `WHITELIST`, `BLACKLIST` | banco |
+| incident_severity | `LOW`, `MEDIUM`, `HIGH`, `CRITICAL` | banco |
+| incident_type | `ROUTE_DEVIATION`, `LONG_STOP`, `LATE_DELIVERY`, `CUSTOMER_COMPLAINT`, `DAMAGE`, `OTHER` | banco |
+| order_status | `PENDING`, `MATCHED`, `ON_GOING`, `PICKED_UP`, `COMPLETED`, `CANCELLED`, `REJECTED`, `EXPIRED` | banco |
+| vehicle_type | `MOTORCYCLE`, `CAR`, `VAN`, `TRUCK` | banco |
 | TIPOS | { value: 'movimentacao_outlier', label: 'Movimentação atípica' }, { value: 'pagamento_duplicado', label: 'Pagamento duplicado' }, { value: 'conta_pagar_alta', label: 'Conta a pagar alta' }, { value: 'conciliacao_atrasada', label: 'Conciliação atrasada' }, { value: 'mudanca_regime_brusca', label: 'Va … | `src/components/admin/anomalia-preferences/constants.ts` |
 | SeveridadeBadgeVariant | destructive \| secondary \| outline | `src/components/admin/anomalias-review-queue/helpers.ts` |
 | SEVERIDADES | 'critica', 'alta', 'media', 'baixa' | `src/components/admin/anomalias-review-queue/types.ts` |
@@ -2376,34 +2414,40 @@ Erros lançados por funções SQL (`RAISE EXCEPTION` = regra de negócio no banc
 
 | Tabela | Coluna | Expressão |
 |---|---|---|
+| `contas_bancarias` | `saldo_disponivel` | `saldo_atual` |
 | `elisao_analise_gap` | `economia_identificada` | `valor_pago_efetivo - valor_otimizado_projetado` |
 
 ### G.2 Views (consultas derivadas)
 
 | View | SELECT |
 |---|---|
-| `vw_dre_mensal` | `SELECT gen_random_uuid() as id, id as empresa_id, to_char(now(), 'YYYY-MM') as mes, 50000.00 as receita_bruta, 30000.00 as custos, 20000.00 as lucro_bruto, 15000.00 as despesas_operacionais, 5000.00 as ebitda FROM public.empresas` |
-| `vw_fluxo_caixa_diario` | `SELECT gen_random_uuid() as id, id as empresa_id, now()::date as dia, 2500.00 as entradas_reais, 1200.00 as saidas_reais, 1300.00 as saldo_final FROM public.empresas` |
-| `vw_saldos_contas` | `SELECT gen_random_uuid() as id, id as empresa_id, 'Conta Corrente' as nome_conta, 1000.00 as saldo_atual, now() as ultima_atualizacao FROM public.empresas` |
-| `vw_transferencias_painel` | `SELECT t.id, t.empresa_id, e.razao_social, t.asaas_id, t.valor, t.status, t.tipo_chave, CASE WHEN public.pode_ver_dado_sensivel() THEN t.chave_pix ELSE public.mascarar_chave_pix(t.chave_pix) END AS chave_pix, t.descricao, t.created_at, t.updated_at FROM (public.asaas_transfers t LEFT JOIN public.emp …` |
-| `vw_webhooks_recentes` | `SELECT * FROM public.webhooks_log ORDER BY created_at DESC LIMIT 100` |
-| `vw_metricas_cobranca` | `SELECT id as empresa_id, 15.5 as taxa_inadimplencia, 120 as ticket_medio, 500 as total_cobrancas_mes FROM public.empresas` |
-| `vw_edge_health` | `SELECT l.function_name, COUNT(*)::bigint AS total_calls, COUNT(*) FILTER (WHERE l.level = 'error' OR l.error_message IS NOT NULL OR l.status_code >= 500)::bigint AS error_count, ROUND(100.0 * COUNT(*) FILTER (WHERE l.level = 'error' OR l.error_message IS NOT NULL OR l.status_code >= 500) / NULLIF(CO …` |
-| `vw_tributario_dashboard` | `SELECT e.id AS empresa_id, e.razao_social, COALESCE(e.regime_tributario, 'nao_informado') AS regime_tributario, at_.ano, at_.mes, at_.competencia, COALESCE(at_.total_geral, 0) AS total_tributos, COALESCE(at_.total_tributos_novos, 0) AS tributos_novos, COALESCE(at_.total_tributos_residuais, 0) AS tri …` |
-| `vw_auditoria_tributaria_recente` | `SELECT a.id, a.empresa_id, e.razao_social AS empresa_nome, a.user_id, p.full_name AS user_nome, a.user_email, a.acao, a.entidade_tipo, a.entidade_id, a.payload_anterior, a.payload_novo, a.criado_em FROM ((public.auditoria_tributaria a LEFT JOIN public.empresas e ON ((e.id = a.empresa_id))) LEFT JOIN …` |
-| `mv_benchmark_setorial` | `WITH carga AS ( SELECT regime_tributario AS regime, empresa_id, SUM(total_tributos)::numeric AS total_12m FROM public.vw_tributario_dashboard WHERE ano IS NOT NULL AND mes IS NOT NULL AND (ano * 12 + mes) >= (EXTRACT(YEAR FROM CURRENT_DATE)::int * 12 + EXTRACT(MONTH FROM CURRENT_DATE)::int - 12) GRO …` |
 | `vw_notification_history_duplicates` | `WITH ranked AS ( SELECT nh.id, nh.user_id, nh.source, nh.source_ref, nh.channel, nh.title, nh.created_at, LAG(nh.created_at) OVER ( PARTITION BY nh.user_id, nh.source, nh.source_ref, nh.channel ORDER BY nh.created_at ) AS prev_created_at FROM public.notification_history nh WHERE nh.source_ref IS NOT …` |
+| `mv_performance_alerts_weekly` | `WITH weekly AS ( SELECT date_trunc('week', created_at)::date AS week_start, source, severity, COUNT(*) AS alert_count, COUNT(DISTINCT alert_key) AS distinct_keys, ROUND(AVG(NULLIF(current_value, 0))::numeric, 2) AS avg_current_ms, ROUND(MAX(current_value)::numeric, 2) AS max_current_ms, ROUND(AVG(NU …` |
+| `vw_edge_health` | `SELECT l.function_name, COUNT(*)::bigint AS total_calls, COUNT(*) FILTER (WHERE l.level = 'error' OR l.error_message IS NOT NULL OR l.status_code >= 500)::bigint AS error_count, ROUND(100.0 * COUNT(*) FILTER (WHERE l.level = 'error' OR l.error_message IS NOT NULL OR l.status_code >= 500) / NULLIF(CO …` |
+| `drivers_safe_view` | `SELECT id, name, vehicle_type, status, rating, risk_score, risk_level, total_deliveries, completed_deliveries, failed_deliveries, cancelled_deliveries, success_rate, failure_rate, avg_delay_minutes, lalamove_id, vehicle_plate, photo_url, blacklisted, blacklist_reason, whitelisted, notes, last_active …` |
+| `estrategias_elisao_catalogo` | `SELECT id, codigo, nome, categoria, descricao, regimes_aplicaveis, economia_estimada_percentual, risco, base_legal, requisitos, ativo, created_at, updated_at FROM public.estrategias_elisao` |
+| `extratos_bancarios_importados` | `SELECT id, user_id, conta_bancaria_id, data, descricao, valor, tipo, numero_documento, numero_documento_banco, codigo_transacao, arquivo_origem, importado_de, importado_em, linha_arquivo, hash_transacao, saldo, conciliado, created_at FROM public.extrato_bancario` |
+| `mcp_probe` | `SELECT 1 AS probe, CURRENT_TIMESTAMP AS ts` |
+| `mv_benchmark_setorial` | `WITH carga AS ( SELECT vw_tributario_dashboard.regime_tributario AS regime, vw_tributario_dashboard.empresa_id, sum(vw_tributario_dashboard.total_tributos) AS total_12m FROM public.vw_tributario_dashboard WHERE ((vw_tributario_dashboard.ano IS NOT NULL) AND (vw_tributario_dashboard.mes IS NOT NULL) …` |
+| `orders_operator_view` | `SELECT id, lalamove_id, status, pickup_address, delivery_address, CASE WHEN (public.has_role(auth.uid(), 'admin'::public.app_role) OR public.has_role(auth.uid(), 'manager'::public.app_role)) THEN customer_phone ELSE '***RESTRITO***'::text END AS customer_phone, customer_name, vehicle_type, total_cos …` |
+| `orders_safe_view` | `SELECT id, lalamove_id, status, vehicle_type, customer_name, CASE WHEN (public.has_role(auth.uid(), 'admin'::public.app_role) OR public.has_role(auth.uid(), 'manager'::public.app_role)) THEN customer_phone ELSE '***RESTRITO***'::text END AS customer_phone, pickup_address, delivery_address, total_cos …` |
+| `v_sefaz_observability` | `SELECT c.cnpj, c.ambiente, c.ultimo_nsu, c.max_nsu, c.ultima_consulta, c.ultimo_status, c.circuit_open, c.retry_count, c.next_run_at, (EXTRACT(epoch FROM (now() - c.ultima_consulta)))::integer AS seconds_since_last, COALESCE(n.nfe_24h, (0)::bigint) AS nfe_24h, COALESCE(n.nfe_7d, (0)::bigint) AS nfe_ …` |
+| `v_table_bloat` | `SELECT schemaname, relname AS table_name, n_live_tup AS live_rows, n_dead_tup AS dead_rows, CASE WHEN ((n_live_tup + n_dead_tup) > 0) THEN round((((n_dead_tup)::numeric / ((n_live_tup + n_dead_tup))::numeric) * (100)::numeric), 2) ELSE (0)::numeric END AS dead_ratio_pct, pg_size_pretty(pg_total_rela …` |
+| `vw_auditoria_tributaria_recente` | `SELECT a.id, a.empresa_id, e.razao_social AS empresa_nome, a.user_id, p.full_name AS user_nome, a.user_email, a.acao, a.entidade_tipo, a.entidade_id, a.payload_anterior, a.payload_novo, a.criado_em FROM ((public.auditoria_tributaria a LEFT JOIN public.empresas e ON ((e.id = a.empresa_id))) LEFT JOIN …` |
 | `vw_contas_pagar_painel` | `SELECT cp.id, cp.descricao, cp.valor, cp.data_vencimento, cp.data_pagamento, cp.status, cp.fornecedor_id, cp.user_id, cp.created_at, cp.updated_at, cp.empresa_id, cp.categoria_id, cp.centro_custo_id, cp.forma_pagamento, cp.conta_bancaria_id, cp.numero_documento, cp.observacoes, cp.valor_pago, cp.jur …` |
 | `vw_contas_receber_painel` | `SELECT cr.id, cr.descricao, cr.valor, cr.data_vencimento, cr.data_recebimento, cr.status, cr.cliente_id, cr.user_id, cr.created_at, cr.updated_at, cr.empresa_id, cr.categoria_id, cr.centro_custo_id, cr.forma_recebimento, cr.conta_bancaria_id, cr.numero_documento, cr.observacoes, cr.valor_recebido, c …` |
-| `extratos_bancarios_importados` | `SELECT * FROM public.extrato_bancario` |
+| `vw_dre_mensal` | `SELECT gen_random_uuid() AS id, id AS empresa_id, to_char(now(), 'YYYY-MM'::text) AS mes, 50000.00 AS receita_bruta, 30000.00 AS custos, 20000.00 AS lucro_bruto, 15000.00 AS despesas_operacionais, 5000.00 AS ebitda FROM public.empresas` |
+| `vw_dso_aging` | `SELECT id AS empresa_id, 45 AS dso_atual, 5000.00 AS a_vencer, 2000.00 AS vencido_0_30, 1500.00 AS vencido_31_60, 1000.00 AS vencido_61_plus FROM public.empresas` |
+| `vw_fluxo_caixa_diario` | `SELECT gen_random_uuid() AS id, id AS empresa_id, (now())::date AS dia, 2500.00 AS entradas_reais, 1200.00 AS saidas_reais, 1300.00 AS saldo_final FROM public.empresas` |
+| `vw_gastos_centro_custo` | `SELECT id AS centro_custo_id, nome AS nome_centro_custo, empresa_id, 0.0 AS total_gasto FROM public.centros_custo` |
+| `vw_metricas_cobranca` | `SELECT id AS empresa_id, 15.5 AS taxa_inadimplencia, 120 AS ticket_medio, 500 AS total_cobrancas_mes FROM public.empresas` |
+| `vw_rpc_hotspots` | `SELECT function_name, date_trunc('hour'::text, called_at) AS bucket_hour, count(*) AS calls, count(*) FILTER (WHERE (NOT success)) AS errors, round(avg(duration_ms), 2) AS avg_ms, round((percentile_cont((0.5)::double precision) WITHIN GROUP (ORDER BY ((duration_ms)::double precision)))::numeric, 2) …` |
+| `vw_rpc_slow_calls` | `SELECT id, function_name, caller_user_id, caller_role, duration_ms, success, error_sqlstate, error_message, meta, called_at FROM public.rpc_observability_metrics WHERE (called_at >= (now() - '24:00:00'::interval)) ORDER BY duration_ms DESC LIMIT 200` |
+| `vw_saldos_contas` | `SELECT gen_random_uuid() AS id, id AS empresa_id, 'Conta Corrente'::text AS nome_conta, 1000.00 AS saldo_atual, now() AS ultima_atualizacao FROM public.empresas` |
+| `vw_transferencias_painel` | `SELECT t.id, t.empresa_id, e.razao_social, t.asaas_id, t.valor, t.status, t.tipo_chave, CASE WHEN public.pode_ver_dado_sensivel() THEN t.chave_pix ELSE public.mascarar_chave_pix(t.chave_pix) END AS chave_pix, t.descricao, t.created_at, t.updated_at FROM (public.asaas_transfers t LEFT JOIN public.emp …` |
+| `vw_tributario_dashboard` | `SELECT e.id AS empresa_id, e.razao_social, COALESCE(e.regime_tributario, 'nao_informado'::text) AS regime_tributario, at_.ano, at_.mes, at_.competencia, COALESCE(at_.total_geral, (0)::numeric) AS total_tributos, COALESCE(at_.total_tributos_novos, (0)::numeric) AS tributos_novos, COALESCE(at_.total_t …` |
+| `vw_webhooks_recentes` | `SELECT id, source, event_type, status, payload, response, error_message, created_at FROM public.webhooks_log ORDER BY created_at DESC LIMIT 100` |
 | `vw_fluxo_caixa` | `SELECT d.dia, COALESCE(r.valor,0) AS receitas_previstas, COALESCE(p.valor,0) AS despesas_previstas, COALESCE(r.valor,0)-COALESCE(p.valor,0) AS saldo_dia FROM generate_series(CURRENT_DATE,CURRENT_DATE+INTERVAL '90 days','1 day') AS d(dia) LEFT JOIN (SELECT data_vencimento AS dia, SUM(valor-COALESCE(v …` |
-| `vw_dso_aging` | `SELECT id as empresa_id, 45 as dso_atual, 5000.00 as a_vencer, 2000.00 as vencido_0_30, 1500.00 as vencido_31_60, 1000.00 as vencido_61_plus FROM public.empresas` |
-| `vw_gastos_centro_custo` | `SELECT id as centro_custo_id, nome as nome_centro_custo, empresa_id, 0.0 as total_gasto FROM public.centros_custo` |
-| `v_table_bloat` | `SELECT schemaname, relname AS table_name, n_live_tup AS live_rows, n_dead_tup AS dead_rows, CASE WHEN (n_live_tup + n_dead_tup) > 0 THEN round((n_dead_tup::numeric / (n_live_tup + n_dead_tup)) * 100, 2) ELSE 0 END AS dead_ratio_pct, pg_size_pretty(pg_total_relation_size(relid)) AS total_size_pretty, …` |
-| `v_sefaz_observability` | `SELECT c.cnpj, c.ambiente, c.ultimo_nsu, c.max_nsu, c.ultima_consulta, c.ultimo_status, c.circuit_open, c.retry_count, c.next_run_at, EXTRACT(EPOCH FROM (now() - c.ultima_consulta))::int AS seconds_since_last, COALESCE(n.nfe_24h, 0) AS nfe_24h, COALESCE(n.nfe_7d, 0) AS nfe_7d, COALESCE(a.open_alerts …` |
-| `vw_rpc_hotspots` | `SELECT function_name, date_trunc('hour', called_at) AS bucket_hour, count(*) AS calls, count(*) FILTER (WHERE NOT success) AS errors, round(avg(duration_ms)::numeric, 2) AS avg_ms, round((percentile_cont(0.5) WITHIN GROUP (ORDER BY duration_ms))::numeric, 2) AS p50_ms, round((percentile_cont(0.95) W …` |
-| `vw_rpc_slow_calls` | `SELECT id, function_name, caller_user_id, caller_role, duration_ms, success, error_sqlstate, error_message, meta, called_at FROM public.rpc_observability_metrics WHERE called_at >= now() - interval '24 hours' ORDER BY duration_ms DESC LIMIT 200` |
-| `estrategias_elisao_catalogo` | `SELECT id, codigo, nome, categoria, descricao, regimes_aplicaveis, economia_estimada_percentual, risco, base_legal, requisitos, ativo, created_at, updated_at FROM public.estrategias_elisao` |
 
 ### G.3 Funções de cálculo/decisão no código
 
@@ -4677,41 +4721,68 @@ Erros lançados por funções SQL (`RAISE EXCEPTION` = regra de negócio no banc
 | Pré-flight do logout destrutivo falhou: variável obrigatória ausente (${name}). | `e2e/auth/logout-real.e2e.ts` |
 | falha fixture | `scripts/automation.unit.mjs` |
 | ALERTS_EMAIL_FROM | `scripts/generate-env-manifest.mjs` |
+| ${raiz} não é a raiz do repositório (src/lib/arquitetura/modulos.ts ausente) | `scripts/gerar-grafo-arquitetura.ts` |
 | ${msg}: esperado ${JSON.stringify(b)} obtido ${JSON.stringify(a)} | `scripts/ai-context/cenarios.mjs` |
+| esperado um objeto JSON | `scripts/ai-context/gerar.mjs` |
 | ${metodo} ${caminho} -> ${r.status} | `scripts/ci/actions-kpi.mjs` |
+| ${metodo} ${caminho} -> falha de rede (${erro.name}: ${erro.message}) | `scripts/ci/actions-kpi.mjs` |
+| fetch failed | `scripts/ci/actions-kpi.unit.mjs` |
+| rede não pode ser tocada | `scripts/ci/audit-env.unit.mjs` |
 | rede caiu | `scripts/ci/fila-merge.unit.mjs` |
 | GitHub API ${method} ${path} → ${res.status}: ${text} | `scripts/ci/github-settings-guard.mjs` |
 | Glob com sintaxe não suportada por este script: ${glob} | `scripts/ci/listar-specs-quarentena.ts` |
+| config quebrado | `scripts/ci/listar-specs-quarentena.unit.mjs` |
 | bloco  | `scripts/ci/render-workflow-docs.mjs` |
 | shaDeployado precisa ser um sha de 40 hex: recebido  | `scripts/edge-deploy/deployment-record.mjs` |
 | status exige o id do deployment | `scripts/edge-deploy/deployment-record.mjs` |
+| ${argv[i]} exige um valor | `scripts/edge-deploy/health-check.mjs` |
 | --project-ref obrigatório | `scripts/edge-deploy/health-check.mjs` |
+| --threshold precisa ser uma fração entre 0 e 1 (ex.: 0.10 = 10%) | `scripts/edge-deploy/health-check.mjs` |
+| --wait-ms precisa ser inteiro >= 0 | `scripts/edge-deploy/health-check.mjs` |
 | Apenas o projeto canônico é aceito | `scripts/edge-deploy/health-check.mjs` |
 | Argumento desconhecido: ${argv[i]} | `scripts/edge-deploy/health-check.mjs` |
+| Management API devolveu corpo inesperado na consulta de analytics | `scripts/edge-deploy/health-check.mjs` |
+| Management API devolveu erro na consulta de analytics | `scripts/edge-deploy/health-check.mjs` |
 | Management API retornou HTTP ${res.status} na consulta de analytics | `scripts/edge-deploy/health-check.mjs` |
+| slug de função inválido para a consulta: ${JSON.stringify(invalido)} | `scripts/edge-deploy/health-check.mjs` |
 | caminho fora da base permitida (${raiz}): ${arquivo} | `scripts/edge-deploy/redigir-log.mjs` |
 | caminho resolve para fora da base via link (${raizReal}): ${arquivo} | `scripts/edge-deploy/redigir-log.mjs` |
 | ${caminho} -> ${r.status} ${(await r.text()).slice(0, 200)} | `scripts/edge-deploy/register-deployment.mjs` |
+| GITHUB_REPOSITORY ausente ou fora do formato dono/repo | `scripts/edge-deploy/register-deployment.mjs` |
+| GITHUB_TOKEN ausente | `scripts/edge-deploy/register-deployment.mjs` |
 | caminho recusado (precisa começar com / e não conter ..): ${c} | `scripts/edge-deploy/register-deployment.mjs` |
 | destino não permitido (allowlist): host ${destino.host} | `scripts/edge-deploy/register-deployment.mjs` |
 | destino não permitido (exige https, recebido ${destino.protocol}, host ${destino.host}): ${base} | `scripts/edge-deploy/register-deployment.mjs` |
 | destino recusado (URL inválida): ${base} | `scripts/edge-deploy/register-deployment.mjs` |
+| fetch failed | `scripts/edge-deploy/register-deployment.unit.mjs` |
+| rede não pode ser tocada | `scripts/edge-deploy/register-deployment.unit.mjs` |
 | Argumento desconhecido: ${key} | `scripts/edge-deploy/smoke-functions.mjs` |
 | Argumento obrigatório ausente: ${required} | `scripts/edge-deploy/smoke-functions.mjs` |
 | Argumento obrigatório ausente: --functions-list (JSON plano com { functions: [{ name, verify_jwt }] }) | `scripts/edge-deploy/smoke-functions.mjs` |
 | concurrency precisa ser inteiro entre 1 e 20 | `scripts/edge-deploy/smoke-functions.mjs` |
+| nenhuma origem canônica em allowed-origins.json (exact) — preflight positivo impossível | `scripts/edge-deploy/smoke-functions.mjs` |
 | retries precisa ser inteiro entre 1 e 5 | `scripts/edge-deploy/smoke-functions.mjs` |
+| timeout-ms precisa ser inteiro entre 100 e 120000 | `scripts/edge-deploy/smoke-functions.mjs` |
 | verify_jwt ausente no config.toml para a função  | `scripts/edge-deploy/smoke-functions.mjs` |
+| verify_jwt inválido no config.toml para a função  | `scripts/edge-deploy/smoke-functions.mjs` |
+| --expected precisa ser {  | `scripts/edge-deploy/verify-remote.mjs` |
+| --expected tem função sem  | `scripts/edge-deploy/verify-remote.mjs` |
+| --remote precisa ser a saída JSON de \ | `scripts/edge-deploy/verify-remote.mjs` |
 | Argumento desconhecido: ${key} | `scripts/edge-deploy/verify-remote.mjs` |
 | Argumento obrigatório ausente: ${required} | `scripts/edge-deploy/verify-remote.mjs` |
+| Arquivo de casos precisa ser uma lista não vazia. | `scripts/graphify/benchmark.py` |
+| Cada caso precisa de profile, term e expectedSource em texto. | `scripts/graphify/benchmark.py` |
 | Corpus preservado da execução não foi encontrado. | `scripts/graphify/benchmark.py` |
+| Mediana exige ao menos uma repetição. | `scripts/graphify/benchmark.py` |
 | ripgrep ( | `scripts/graphify/benchmark.py` |
 | Nenhuma Edge Function rastreada foi encontrada. | `scripts/graphify/edge_inventory.py` |
+| supabase/config.toml inválido:  | `scripts/graphify/edge_inventory.py` |
 | Evidência não contém inventário de arquivos. | `scripts/graphify/graph_quality.py` |
 | Evidência não está validada. | `scripts/graphify/graph_quality.py` |
 | Evidência não vincula os artefatos da execução. | `scripts/graphify/graph_quality.py` |
 | Evidência pertence a outro commit. | `scripts/graphify/graph_quality.py` |
 | Inventário de arquivos inválido. | `scripts/graphify/graph_quality.py` |
+| Nome de perfil inválido. | `scripts/graphify/graph_quality.py` |
 | Orçamento de nós deve ser positivo. | `scripts/graphify/graph_quality.py` |
 | Arquivo excede o orçamento do piloto. | `scripts/graphify/run.py` |
 | Corpus excede o orçamento total de bytes. | `scripts/graphify/run.py` |
@@ -4727,7 +4798,9 @@ Erros lançados por funções SQL (`RAISE EXCEPTION` = regra de negócio no banc
 | Comentário de bloco não fechado. | `scripts/graphify/sql_inventory.py` |
 | Nenhuma migration SQL encontrada. | `scripts/graphify/sql_inventory.py` |
 | SQL com string, comentário ou dollar-quote não fechado. | `scripts/graphify/sql_inventory.py` |
+| Nenhuma execução completa para o perfil: p | `scripts/graphify/test_benchmark.py` |
 | falha sintética de cópia | `scripts/graphify/test_run.py` |
+| canal indisponível | `scripts/healthcheck/03_realtime.unit.mjs` |
 | --entrada exige o caminho do arquivo com a resposta do banco.sql | `scripts/inventario/gerar-banco.mjs` |
 | Management API ${caminho} respondeu HTTP ${res.status} | `scripts/inventario/gerar-banco.mjs` |
 | SUPABASE_PROJECT_REF=${ref} nao e o banco oficial (${PROJETO_OFICIAL}). | `scripts/inventario/gerar-banco.mjs` |
@@ -4746,6 +4819,10 @@ Erros lançados por funções SQL (`RAISE EXCEPTION` = regra de negócio no banc
 | formatter fixture failed | `scripts/maintenance/maintenance.unit.mjs` |
 | blocked_network_sandbox | `scripts/maintenance/run.mjs` |
 | pending_patch | `scripts/maintenance/run.mjs` |
+| Descrição é obrigatória | `scripts/regras_negocio/test_generate.py` |
+| Erro do script de apoio | `scripts/regras_negocio/test_generate.py` |
+| Pedido não encontrado | `scripts/regras_negocio/test_generate.py` |
+| Token inválido para {token} | `scripts/regras_negocio/test_generate.py` |
 | ACL divergente em funções sensíveis: ${failures.join( | `scripts/security/test-canonical-db-gates.mjs` |
 | Constraint performance_alerts_source_check esperada em 1 linha, recebidas ${rows.length}. | `scripts/security/test-canonical-db-gates.mjs` |
 | Constraint performance_alerts_source_check sem o valor obrigatório  | `scripts/security/test-canonical-db-gates.mjs` |
@@ -4940,40 +5017,7 @@ Erros lançados por funções SQL (`RAISE EXCEPTION` = regra de negócio no banc
 | ; import { Badge } from  | `src/components/contabilidade/sped-ecf-wizard/Step3DownloadParts.tsx` |
 | Seção não encontrada | `src/components/contabilidade/sped-ecf-wizard/crosscheck.ts` |
 | Falha: ${e instanceof Error ? e.message :  | `src/components/contabilidade/sped-ecf-wizard/useSpedEcfWizardState.ts` |
-| Não foi possível copiar o hash | `src/components/contabilidade/sped-ecf-wizard/useSpedEcfWizardState.ts` |
-| Erro ao exportar JSON | `src/components/contabilidade/validacoes-pre-sped/exportUtils.ts` |
-| Erro ao exportar PDF | `src/components/contabilidade/validacoes-pre-sped/exportUtils.ts` |
-| Erro ao salvar mapeamento | `src/components/contas-bancarias/ContaBancariaCard.tsx` |
-| Erro ao adicionar conta:  | `src/components/contas-bancarias/NovaContaDialog.tsx` |
-| Preencha os campos obrigatórios (Empresa, Banco, Conta) | `src/components/contas-bancarias/NovaContaDialog.tsx` |
-| Contas de origem e destino devem ser diferentes | `src/components/contas-bancarias/TransferenciaDialog.tsx` |
-| Saldo insuficiente na conta de origem | `src/components/contas-bancarias/TransferenciaDialog.tsx` |
-| Selecione as contas de origem e destino | `src/components/contas-bancarias/TransferenciaDialog.tsx` |
-| Valor deve ser maior que zero | `src/components/contas-bancarias/TransferenciaDialog.tsx` |
-| Conta alterada por outra pessoa | `src/components/contas-pagar/ContaPagarForm.tsx` |
-| Erro ao aplicar categoria | `src/components/contas-pagar/ContasPagarTableRow.tsx` |
-| ; import { toast } from  | `src/components/contas-pagar/LeitorCodigoBarras.tsx` |
-| Erros encontrados: ${dados.erros.join( | `src/components/contas-pagar/LeitorCodigoBarras.tsx` |
-| Não foi possível acessar a câmera. Use a entrada manual. | `src/components/contas-pagar/LeitorCodigoBarras.tsx` |
-| Não foi possível colar da área de transferência | `src/components/contas-pagar/LeitorCodigoBarras.tsx` |
-| Não foi possível processar o código de barras | `src/components/contas-pagar/LeitorCodigoBarras.tsx` |
-| Aprovação necessária | `src/components/contas-pagar/RegistrarPagamentoDialog.tsx` |
-| Conta não encontrada | `src/components/contas-pagar/RegistrarPagamentoDialog.tsx` |
-| Erro ao registrar pagamento | `src/components/contas-pagar/RegistrarPagamentoDialog.tsx` |
-| Este pagamento requer aprovação antes de ser efetuado. | `src/components/contas-pagar/RegistrarPagamentoDialog.tsx` |
-| O valor não pode ser maior que o saldo restante (${formatCurrency(saldoRestante)}) | `src/components/contas-pagar/RegistrarPagamentoDialog.tsx` |
-| ; import { formatCurrency } from  | `src/components/contas-pagar/registrar-pagamento/PagamentoApprovalAlert.tsx` |
-| Conta não encontrada | `src/components/contas-receber/AplicarDescontoDialog.tsx` |
-| Erro ao aplicar desconto | `src/components/contas-receber/AplicarDescontoDialog.tsx` |
-| Erro ao processar baixa:  | `src/components/contas-receber/BaixaAutomaticaDialog.tsx` |
-| Conta alterada por outra pessoa | `src/components/contas-receber/ContaReceberForm.tsx` |
-| Conta não encontrada | `src/components/contas-receber/ContaReceberForm.tsx` |
-| Erro ao atualizar | `src/components/contas-receber/ContaReceberForm.tsx` |
-| Erro ao criar conta | `src/components/contas-receber/ContaReceberForm.tsx` |
-| Usuário não autenticado | `src/components/contas-receber/ContaReceberForm.tsx` |
-| ALERTA DE FLUXO | `src/components/contas-receber/ContasReceberKPIs.tsx` |
-| RISCO CRÍTICO DETECTADO | `src/components/contas-receber/ContasReceberKPIs.tsx` |
-| … +725 linhas — lista completa em `context.json` | |
+| … +758 linhas — lista completa em `context.json` | |
 
 ## J. Controle de acesso no código (checagens de perfil/permissão)
 
@@ -5031,7 +5075,7 @@ Erros lançados por funções SQL (`RAISE EXCEPTION` = regra de negócio no banc
 | `admin` | `supabase/migrations/20261101120500_rls_elisao_catalogo.sql` |
 | `admin_global` | `supabase/migrations/20261101120500_rls_elisao_catalogo.sql` |
 
-## K. Testes como especificação (3303 testes em 271 arquivos — nomes completos em `context.json`)
+## K. Testes como especificação (3319 testes em 271 arquivos — nomes completos em `context.json`)
 
 | Arquivo | Testes | Exemplos do que o sistema DEVE fazer |
 |---|---|---|
@@ -5061,6 +5105,7 @@ Erros lançados por funções SQL (`RAISE EXCEPTION` = regra de negócio no banc
 | `src/hooks/__tests__/anomaliaPreferencesValidation.test.ts` | 26 | validateAnomaliaPreferencesPatch — duração · aceita range válido · rejeita fora do range: %s · rejeita não-inteiro: %s … |
 | `src/lib/__tests__/supabase-write.test.ts` | 26 | mustSucceed · devolve data quando não há erro · aceita o builder thenable do PostgREST, não só Promise · lança SupabaseWriteError com o contexto de negócio na mensagem … |
 | `src/lib/tributario/__tests__/iss-overlay.test.ts` | 26 | normalização · aceita fração, percentual e string com vírgula · rejeita valores não numéricos ou negativos · normaliza nomes de município para busca tolerante … |
+| `scripts/security/test-canonical-db-gates.test.mjs` | 25 | evaluateRequiredMigrations falha quando uma migration obrigatória some · evaluateRequiredMigrations tolera migration introduzida pelo próprio PR · evaluateRequiredMigrations ainda falha para migration ausente que o PR não introduziu · pendingPrMigrations extrai versões dos arquivos adicionados pelo PR … |
 | `src/lib/__tests__/cashflow-scenarios.test.ts` | 25 | Cashflow Scenarios Engine · CENARIOS_CONFIG · contém 3 cenários · otimista tem multiplicador receitas > 1 … |
 | `src/lib/__tests__/import-checkpoint.test.ts` | 25 | import-checkpoint · createImportCheckpoint · confirma refs e persiste após microtask · ignora refs vazias e duplicadas … |
 | `src/lib/organizacoes/__tests__/convites.test.ts` | 25 | convites: token e validade · gera token hexadecimal de 64 caracteres · gera tokens distintos em 500 execuções (sem colisão) · respeita gerador determinístico injetado … |
@@ -5125,7 +5170,6 @@ Erros lançados por funções SQL (`RAISE EXCEPTION` = regra de negócio no banc
 | `src/lib/tributario/__tests__/digest-conformidade.test.ts` | 13 | digest de conformidade — utilitários · escapa os cinco caracteres perigosos · normaliza severidades desconhecidas para baixa · formata competência e tolera formatos inesperados … |
 | `src/lib/tributario/__tests__/projecao-reforma-transicao.test.ts` | 13 | Cronograma transição CBS/IBS · 2026: CBS 0,9% + IBS 0,1% (fase teste) · 2027: CBS pleno 8,8%, PIS/COFINS extintos · 2029: ICMS/ISS começam a reduzir (90% residual) … |
 | `src/lib/tributario/__tests__/snapshot-normalizacao.test.ts` | 13 | normalizarParametrosSnapshot — contrato · rejeita payloads que não são objeto · rejeita snapshot sem faturamento anual finito · coage faturamento anual persistido como string numérica … |
-| `scripts/security/test-canonical-db-gates.test.mjs` | 12 | evaluateRequiredMigrations falha quando uma migration obrigatória some · evaluateRequiredMigrations tolera migration introduzida pelo próprio PR · evaluateRequiredMigrations ainda falha para migration ausente que o PR não introduziu · pendingPrMigrations extrai versões dos arquivos adicionados pelo PR … |
 | `src/components/contas-receber/__tests__/ContasReceberKanban.test.tsx` | 12 | ContasReceberKanban · Gap #21 - Modo Kanban · renderiza 4 colunas: Pendente, Vencido, Parcial, Pago · agrupa contas por status corretamente … |
 | `src/components/navigation/__tests__/BackButton.test.tsx` | 12 | BackButton · renders on non-home pages · does NOT render on home page · does NOT render on /dashboard … |
 | `src/hooks/__tests__/useBulkActions.test.ts` | 12 | useBulkActions · toggle adiciona e remove id da seleção · selectAll seleciona todos e limpa quando já estão todos selecionados · deselectAll/clearSelection limpa a seleção … |
@@ -5175,6 +5219,7 @@ Erros lançados por funções SQL (`RAISE EXCEPTION` = regra de negócio no banc
 | `src/lib/tributario/__tests__/simular-presumido.test.ts` | 9 | simularPresumido · retorna inelegível quando faturamento > R$ 78mi · aplica presunção 8% comércio para empresa puramente comercial · aplica presunção 32% serviços … |
 | `src/test/scenarios/__tests__/invariants.spec.ts` | 9 | invariants · estado vazio passa em todos · detecta duplicidade de transacao_externa_id · detecta violação de conservação de saldo … |
 | `supabase/functions/sefaz-manifestar/__tests__/payload_test.ts` | 9 | payload: envelope contém chave, CNPJ autor e tpEvento corretos · payload: 210240 injeta xJust e propaga justificativa ao RPC · payload: 210210 NÃO injeta xJust mesmo se fornecida · payload: ambiente produção → endpoint www1 e tpAmb=1 … |
+| `scripts/security/test-rpc-runtime.evaluate.test.ts` | 8 | evaluate · aceita 404/PGRST202 para anon e authenticated · aceita 401 apenas para anon · aceita 403 apenas quando for ACL da função alvo … |
 | `src/components/admin/anomalias-review-queue/__tests__/useReviewQueue.idempotency.test.tsx` | 8 | useReviewQueue — idempotência e concorrência · #1 [idempotência] dois handleAcao paralelos para o mesmo id disparam a mutation UMA vez · #2 [retry] erro transitório  · #3 [retry esgotado] 3 falhas transitórias → toast.error + fila e stats intactos … |
 | `src/components/financeiro/__tests__/AnexoList.storage.test.tsx` | 8 | AnexoList — remoção · remove o objeto do storage usando o caminho extraído da URL · não apaga a linha quando o storage recusa a remoção · falha quando o delete do banco não atinge linha alguma … |
 | `src/hooks/__tests__/useKeyboardNavigation.test.tsx` | 8 | useKeyboardNavigation · navigates back to in-app entry on Alt+ArrowLeft · goes up to parent route on Alt+ArrowLeft without in-app history · navigates forward on Alt+ArrowRight … |
@@ -5232,7 +5277,6 @@ Erros lançados por funções SQL (`RAISE EXCEPTION` = regra de negócio no banc
 | `src/test/scenarios/__tests__/faults.spec.ts` | 6 | faults · reorder é permutação (mesmo multiset) · duplicate mantém todos os originais e não perde nenhum · shouldFail(none) nunca falha … |
 | `src/test/scenarios/__tests__/indices-simulation.spec.ts` | 6 | simulação de índices contábeis · executa ${CENARIOS} cenários sem NaN, Infinity ou exceção · empresa sem movimento não gera indicadores de razão zerados (usa  · classificação é monotônica em relação ao valor … |
 | `supabase/functions/_shared/sefaz/__tests__/manifestacao_test.ts` | 6 | buildInfEvento gera Id ID<tipo><chave><seq2> · buildInfEvento inclui xJust apenas em 210240 · buildEnvEvento serializa envelope SOAP · recepcaoEventoEndpoint distingue produção/homologação … |
-| `scripts/security/test-rpc-runtime.evaluate.test.ts` | 5 | evaluate · aceita 404/PGRST202 para anon e authenticated · aceita 401 apenas para anon · aceita 403 apenas quando for ACL da função alvo … |
 | `src/components/__tests__/regression-fixes.test.tsx` | 5 | EmpresaHeroKPI (regressão: require() no render quebrava a página) · renderiza sem lançar com dados consolidados · PageHeader (regressão: prop icon era aceito e nunca renderizado) · renderiza o ícone quando fornecido … |
 | `src/components/admin/telemetry/__tests__/RetentionPoliciesPanel.test.tsx` | 5 | RetentionPoliciesPanel · sinaliza cobertura total quando todas as tabelas têm política · destaca tabelas sem política de retenção · filtra apenas as tabelas com registros vencidos … |
 | `src/components/contabilidade/__tests__/ValidacoesPreSpedDialog.test.tsx` | 5 | ValidacoesPreSpedDialog — bloqueio de download por erros · desabilita .txt e .zip quando há erros em validacoes.erros · habilita .txt e .zip quando validacoes.erros está vazio (mesmo com avisos) · habilita downloads quando não há erros nem avisos … |

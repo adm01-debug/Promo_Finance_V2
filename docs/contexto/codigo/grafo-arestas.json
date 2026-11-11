@@ -3,8 +3,7 @@
  "format_version": 2,
  "arestas": {
   "eslint.config.js": [
-   "eslint-rules/no-floating-supabase-write.js",
-   "src/config/env.ts"
+   "eslint-rules/no-floating-supabase-write.js"
   ],
   "playwright.financeiro.config.ts": [
    "e2e/fixtures/sessao.ts"
@@ -10047,14 +10046,7 @@
   "supabase/functions/_shared/auth-guard.ts": [
    "supabase/functions/_shared/cors.ts"
   ],
-  "supabase/functions/_shared/auth-guard_test.ts": [
-   "supabase/functions/_shared/auth-guard.ts"
-  ],
   "supabase/functions/_shared/contract-response.ts": [
-   "supabase/functions/_shared/zod.ts"
-  ],
-  "supabase/functions/_shared/contract-response_test.ts": [
-   "supabase/functions/_shared/contract-response.ts",
    "supabase/functions/_shared/zod.ts"
   ],
   "supabase/functions/_shared/contract-validator.ts": [
@@ -10067,17 +10059,8 @@
   "supabase/functions/_shared/edge-observability.ts": [
    "supabase/functions/_shared/observability.ts"
   ],
-  "supabase/functions/_shared/edge-observability_test.ts": [
-   "supabase/functions/_shared/edge-observability.ts"
-  ],
   "supabase/functions/_shared/logger.ts": [
    "supabase/functions/_shared/observability.ts"
-  ],
-  "supabase/functions/_shared/magic-bytes_test.ts": [
-   "supabase/functions/_shared/magic-bytes.ts"
-  ],
-  "supabase/functions/_shared/nfe/xml-storage_test.ts": [
-   "supabase/functions/_shared/nfe/xml-storage.ts"
   ],
   "supabase/functions/_shared/obrigacoes/calendario.ts": [
    "supabase/functions/_shared/obrigacoes/catalogo.ts",
@@ -10100,12 +10083,6 @@
    "supabase/functions/_shared/correlation.ts",
    "supabase/functions/_shared/logger.ts"
   ],
-  "supabase/functions/_shared/rate-limit_test.ts": [
-   "supabase/functions/_shared/rate-limit.ts"
-  ],
-  "supabase/functions/_shared/resilience_test.ts": [
-   "supabase/functions/_shared/resilience.ts"
-  ],
   "supabase/functions/_shared/sefaz/soap.ts": [
    "supabase/functions/_shared/sefaz/endpoints.ts"
   ],
@@ -10115,16 +10092,6 @@
   ],
   "supabase/functions/_shared/sped/bloco9.ts": [
    "supabase/functions/_shared/sped/push-helper.ts"
-  ],
-  "supabase/functions/_shared/sped/bloco9_test.ts": [
-   "supabase/functions/_shared/sped/bloco9.ts",
-   "supabase/functions/_shared/sped/push-helper.ts"
-  ],
-  "supabase/functions/_shared/sql-write-guard_test.ts": [
-   "supabase/functions/_shared/sql-write-guard.ts"
-  ],
-  "supabase/functions/_shared/tributario-logic_test.ts": [
-   "supabase/functions/_shared/tributario-logic.ts"
   ],
   "supabase/functions/_shared/validation.ts": [
    "supabase/functions/_shared/contract-response.ts",
@@ -10136,25 +10103,10 @@
    "supabase/functions/_shared/contract-response.ts",
    "supabase/functions/_shared/zod.ts"
   ],
-  "supabase/functions/_shared/versioned-contract_test.ts": [
-   "supabase/functions/_shared/versioned-contract.ts",
-   "supabase/functions/_shared/zod.ts"
-  ],
-  "supabase/functions/_shared/webhook-auth_test.ts": [
-   "supabase/functions/_shared/cors.ts",
-   "supabase/functions/_shared/webhook-auth.ts"
-  ],
   "supabase/functions/aceitar-convite/index.ts": [
    "supabase/functions/_shared/cors.ts",
    "supabase/functions/_shared/edge-observability.ts",
    "supabase/functions/_shared/zod.ts"
-  ],
-  "supabase/functions/analise-fluxo-ia/auth_test.ts": [
-   "supabase/functions/analise-fluxo-ia/index.ts",
-   "supabase/functions/analyze-document/index.ts",
-   "supabase/functions/benchmarking-setorial/index.ts",
-   "supabase/functions/categorizar-despesa/index.ts",
-   "supabase/functions/insights-relatorio/index.ts"
   ],
   "supabase/functions/analise-fluxo-ia/index.ts": [
    "supabase/functions/_shared/auth-guard.ts",
@@ -10332,9 +10284,6 @@
    "supabase/functions/_shared/proxy-audit.ts",
    "supabase/functions/_shared/validation.ts"
   ],
-  "supabase/functions/conciliacao-proxy/index_test.ts": [
-   "supabase/functions/conciliacao-proxy/index.ts"
-  ],
   "supabase/functions/consulta-tributaria/index.ts": [
    "supabase/functions/_shared/cors.ts",
    "supabase/functions/_shared/edge-observability.ts",
@@ -10497,19 +10446,11 @@
    "supabase/functions/_shared/sped/bloco9.ts",
    "supabase/functions/_shared/sped/push-helper.ts"
   ],
-  "supabase/functions/exportar-sped-contribuicoes/layout_test.ts": [
-   "supabase/functions/exportar-sped-contribuicoes/__fixtures__/efd-contribuicoes-fixture.ts",
-   "supabase/functions/exportar-sped-contribuicoes/layout.ts"
-  ],
   "supabase/functions/external-data/index.ts": [
    "supabase/functions/_shared/cors.ts",
    "supabase/functions/_shared/edge-observability.ts",
    "supabase/functions/_shared/erros.ts",
    "supabase/functions/_shared/observability.ts"
-  ],
-  "supabase/functions/fuzz_test.ts": [
-   "supabase/functions/_shared/fuzzer.ts",
-   "supabase/functions/_shared/validation.ts"
   ],
   "supabase/functions/gerar-acoes-recomendadas/index.ts": [
    "supabase/functions/_shared/auth-guard.ts",
@@ -10612,10 +10553,6 @@
    "supabase/functions/_shared/sped/bloco9.ts",
    "supabase/functions/_shared/sped/push-helper.ts"
   ],
-  "supabase/functions/gerar-sped-ecd/layout_test.ts": [
-   "supabase/functions/gerar-sped-ecd/__fixtures__/ecd-fixture.ts",
-   "supabase/functions/gerar-sped-ecd/layout.ts"
-  ],
   "supabase/functions/gerar-sped-ecf/index.ts": [
    "supabase/functions/_shared/cors.ts",
    "supabase/functions/_shared/edge-observability.ts",
@@ -10625,10 +10562,6 @@
   "supabase/functions/gerar-sped-ecf/layout.ts": [
    "supabase/functions/_shared/sped/bloco9.ts",
    "supabase/functions/_shared/sped/push-helper.ts"
-  ],
-  "supabase/functions/gerar-sped-ecf/layout_test.ts": [
-   "supabase/functions/gerar-sped-ecf/__fixtures__/ecf-fixture.ts",
-   "supabase/functions/gerar-sped-ecf/layout.ts"
   ],
   "supabase/functions/get-mapbox-token/index.ts": [
    "supabase/functions/_shared/cors.ts",
@@ -10669,14 +10602,8 @@
    "supabase/functions/_shared/zod.ts",
    "supabase/functions/mcp-query/sql-policy.ts"
   ],
-  "supabase/functions/mcp-query/index_test.ts": [
-   "supabase/functions/mcp-query/index.ts"
-  ],
   "supabase/functions/mcp-query/sql-policy.ts": [
    "supabase/functions/_shared/sql-write-guard.ts"
-  ],
-  "supabase/functions/mcp-query/sql-policy_test.ts": [
-   "supabase/functions/mcp-query/sql-policy.ts"
   ],
   "supabase/functions/monitor-health/index.ts": [
    "supabase/functions/_shared/auth-guard.ts",
@@ -10725,9 +10652,6 @@
    "supabase/functions/_shared/edge-observability.ts",
    "supabase/functions/_shared/proxy-audit.ts",
    "supabase/functions/_shared/validation.ts"
-  ],
-  "supabase/functions/nfe-vinculo-proxy/index_test.ts": [
-   "supabase/functions/nfe-vinculo-proxy/index.ts"
   ],
   "supabase/functions/notify-performance-alert/index.ts": [
    "supabase/functions/_shared/auth-guard.ts",
@@ -10812,9 +10736,6 @@
    "supabase/functions/_shared/cors.ts",
    "supabase/functions/_shared/edge-observability.ts",
    "supabase/functions/_shared/logger.ts",
-   "supabase/functions/sefaz-dfe-dispatcher/policy.ts"
-  ],
-  "supabase/functions/sefaz-dfe-dispatcher/policy_test.ts": [
    "supabase/functions/sefaz-dfe-dispatcher/policy.ts"
   ],
   "supabase/functions/sefaz-dfe-puxar/index.ts": [
@@ -10917,9 +10838,6 @@
    "supabase/functions/_shared/edge-observability.ts",
    "supabase/functions/_shared/validation.ts"
   ],
-  "supabase/functions/stress_test.ts": [
-   "supabase/functions/_shared/load-tester.ts"
-  ],
   "supabase/functions/sync-profile-to-bitrix/index.ts": [
    "supabase/functions/_shared/contract-validator.ts",
    "supabase/functions/_shared/cors.ts",
@@ -10973,9 +10891,6 @@
    "supabase/functions/_shared/webhook-idempotency.ts",
    "supabase/functions/_shared/zod.ts"
   ],
-  "supabase/functions/webhook-simulator/contract_test.ts": [
-   "supabase/functions/_shared/validation.ts"
-  ],
   "supabase/functions/webhook-simulator/index.ts": [
    "supabase/functions/_shared/auth-guard.ts",
    "supabase/functions/_shared/concurrency-limiter.ts",
@@ -10997,9 +10912,6 @@
    "supabase/functions/_shared/observability.ts",
    "supabase/functions/_shared/rate-limit.ts",
    "supabase/functions/_shared/validation.ts"
-  ],
-  "supabase/functions/whatsapp-ia-proativo/index_test.ts": [
-   "supabase/functions/whatsapp-ia-proativo/index.ts"
   ],
   "supabase/functions/whatsapp-webhook/index.ts": [
    "supabase/functions/_shared/contract-response.ts",

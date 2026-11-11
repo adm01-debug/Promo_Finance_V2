@@ -1,8 +1,8 @@
 {
  "aviso": "GERADO AUTOMATICAMENTE por scripts/ai-context/gerar.mjs — não editar à mão; será sobrescrito.",
  "format_version": 2,
- "nos": 1821,
- "arestas": 7914,
+ "nos": 1796,
+ "arestas": 7876,
  "hubs": [
   {
    "arquivo": "src/components/ui/button.tsx",
@@ -273,22 +273,9 @@
   "src/hooks/useGlobalFilterSync.ts",
   "src/hooks/usePrefetchRoutes.tsx",
   "src/lib/arquitetura/escopo-empresa.ts",
-  "supabase/functions/analise-fluxo-ia/auth_test.ts",
   "supabase/functions/asaas-proxy/test_plan.ts",
-  "supabase/functions/conciliacao-proxy/index_test.ts",
-  "supabase/functions/exportar-sped-contribuicoes/layout_test.ts",
   "supabase/functions/external-data/validate_contract.ts",
-  "supabase/functions/fuzz_test.ts",
-  "supabase/functions/gerar-sped-ecd/layout_test.ts",
-  "supabase/functions/gerar-sped-ecf/layout_test.ts",
-  "supabase/functions/mcp-query/index_test.ts",
-  "supabase/functions/mcp-query/sql-policy_test.ts",
-  "supabase/functions/nfe-vinculo-proxy/index_test.ts",
-  "supabase/functions/sefaz-dfe-dispatcher/policy_test.ts",
-  "supabase/functions/sso-test-login/mocks.ts",
-  "supabase/functions/stress_test.ts",
-  "supabase/functions/webhook-simulator/contract_test.ts",
-  "supabase/functions/whatsapp-ia-proativo/index_test.ts"
+  "supabase/functions/sso-test-login/mocks.ts"
  ],
  "modulos_mais_acoplados": [
   {

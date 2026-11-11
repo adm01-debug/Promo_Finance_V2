@@ -2,11 +2,16 @@
  "aviso": "GERADO AUTOMATICAMENTE por scripts/ai-context/gerar.mjs — não editar à mão; será sobrescrito.",
  "format_version": 2,
  "git": {
-  "commit": "85d018cc59951622b29dba2da297244f8fa6eb62",
+  "commit": "f0bad7436f3a53d9e944378a0b665706b0caf8db",
   "branch": "main",
-  "data_commit": "2026-11-11T13:49:51-03:00",
+  "data_commit": "2026-11-11T14:46:49-03:00",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
   "ultimos_commits": [
+   {
+    "sha": "f0bad74",
+    "data": "2026-11-11",
+    "assunto": "fix: endurecimento e cobertura de teste de todos os scripts em scripts/ (#299)"
+   },
    {
     "sha": "85d018c",
     "data": "2026-11-11",
@@ -126,14 +131,9 @@
     "sha": "b0c226b",
     "data": "2026-11-09",
     "assunto": "fix: corrigir classificação #175/#208/#210/#216 em progresso.json"
-   },
-   {
-    "sha": "900925a",
-    "data": "2026-11-09",
-    "assunto": "chore: estado final sessao merge-prs — prs.json + progresso + dossies"
    }
   ],
-  "arquivos_mudados_7d": 403,
+  "arquivos_mudados_7d": 469,
   "pastas_mais_mudadas_30d": [
    {
     "pasta": "package.json",
@@ -192,7 +192,7 @@
     "mudancas": 4
    },
    {
-    "pasta": "src/components/contas-receber",
+    "pasta": "scripts/security/test-canonical-db-gates.mjs",
     "mudancas": 4
    }
   ],
@@ -258,6 +258,10 @@
     "mudancas": 9
    },
    {
+    "arquivo": "scripts/generate-env-manifest.mjs",
+    "mudancas": 9
+   },
+   {
     "arquivo": "src/App.tsx",
     "mudancas": 9
    },
@@ -290,18 +294,14 @@
     "mudancas": 8
    },
    {
-    "arquivo": "scripts/generate-env-manifest.mjs",
-    "mudancas": 8
-   },
-   {
-    "arquivo": "src/hooks/useBoletos.ts",
+    "arquivo": "scripts/security/test-canonical-db-gates.mjs",
     "mudancas": 8
    }
   ],
   "autores_30d": [
    {
     "autor": "adm01-debug",
-    "commits": 71
+    "commits": 72
    },
    {
     "autor": "devin-ai-integration[bot]",
@@ -318,467 +318,503 @@
   ]
  },
  "contagens": {
-  "arquivos_total": 3579,
-  "arquivos_codigo": 2188,
-  "linhas_codigo": 410390,
+  "arquivos_total": 3608,
+  "arquivos_codigo": 2215,
+  "linhas_codigo": 424390,
   "rotas": 128,
-  "rotas_http_backend": 12,
+  "rotas_http_backend": 25,
   "vistas_por_id": 0,
   "itens_menu": 117,
   "modulos": 126,
   "componentes": 908,
-  "hooks": 265,
+  "hooks": 264,
   "edge_functions": 106,
-  "tabelas": 315,
+  "tabelas": 352,
   "migrations": 999,
   "cron_jobs": 21,
-  "testes": 373,
+  "testes": 425,
   "workflows": 19,
-  "scripts": 104,
+  "scripts": 107,
   "docs_md": 189
  },
  "por_pasta": {
   "e2e/alertas-preditivos.e2e.ts": {
    "arquivos": 1,
-   "linhas": 9
+   "linhas": 8
   },
   "e2e/aprovacoes.e2e.ts": {
    "arquivos": 1,
-   "linhas": 9
+   "linhas": 8
   },
   "e2e/auth": {
    "arquivos": 5,
-   "linhas": 481
+   "linhas": 476
   },
   "e2e/calculadora-tributaria.e2e.ts": {
    "arquivos": 1,
-   "linhas": 31
+   "linhas": 30
   },
   "e2e/conciliacao.e2e.ts": {
    "arquivos": 1,
-   "linhas": 145
+   "linhas": 144
   },
   "e2e/contas-pagar.e2e.ts": {
    "arquivos": 1,
-   "linhas": 290
+   "linhas": 289
   },
   "e2e/dashboard.e2e.ts": {
    "arquivos": 1,
-   "linhas": 74
+   "linhas": 73
   },
   "e2e/error-states.e2e.ts": {
    "arquivos": 1,
-   "linhas": 38
+   "linhas": 37
   },
   "e2e/financeiro": {
    "arquivos": 2,
-   "linhas": 324
+   "linhas": 322
   },
   "e2e/fixtures": {
    "arquivos": 4,
-   "linhas": 840
+   "linhas": 836
   },
   "e2e/fixtures.ts": {
    "arquivos": 1,
-   "linhas": 350
+   "linhas": 349
   },
   "e2e/importacao-xml.e2e.ts": {
    "arquivos": 1,
-   "linhas": 9
+   "linhas": 8
   },
   "e2e/lgpd-privacidade.e2e.ts": {
    "arquivos": 1,
-   "linhas": 9
+   "linhas": 8
   },
   "e2e/nfe-fluxo-falhas.e2e.ts": {
    "arquivos": 1,
-   "linhas": 144
+   "linhas": 143
   },
   "e2e/nfe-fluxo.e2e.ts": {
    "arquivos": 1,
-   "linhas": 152
+   "linhas": 151
   },
   "e2e/onboarding-tributario.e2e.ts": {
    "arquivos": 1,
-   "linhas": 9
+   "linhas": 8
   },
   "e2e/proxies-sessao-expirada.e2e.ts": {
    "arquivos": 1,
-   "linhas": 174
+   "linhas": 173
   },
   "e2e/regua-cobranca.e2e.ts": {
    "arquivos": 1,
-   "linhas": 29
+   "linhas": 28
   },
   "e2e/relatorios.e2e.ts": {
    "arquivos": 1,
-   "linhas": 315
+   "linhas": 314
   },
   "e2e/sefaz-observabilidade.e2e.ts": {
    "arquivos": 1,
-   "linhas": 39
+   "linhas": 38
   },
   "e2e/sped-wizard.e2e.ts": {
    "arquivos": 1,
-   "linhas": 9
+   "linhas": 8
   },
   "e2e/split-payment.e2e.ts": {
    "arquivos": 1,
-   "linhas": 24
+   "linhas": 23
   },
   "e2e/sre-command-center.e2e.ts": {
    "arquivos": 1,
-   "linhas": 9
+   "linhas": 8
   },
   "e2e/system": {
    "arquivos": 1,
-   "linhas": 28
+   "linhas": 27
   },
   "e2e/tributario-dashboard.e2e.ts": {
    "arquivos": 1,
-   "linhas": 9
+   "linhas": 8
   },
   "e2e/visual-theme.e2e.ts": {
    "arquivos": 1,
-   "linhas": 159
+   "linhas": 158
   },
   "eslint-rules/no-floating-supabase-write.js": {
    "arquivos": 1,
-   "linhas": 157
+   "linhas": 156
   },
   "eslint.config.js": {
    "arquivos": 1,
-   "linhas": 187
+   "linhas": 186
   },
   "playwright.config.ts": {
    "arquivos": 1,
-   "linhas": 163
+   "linhas": 162
   },
   "playwright.critical.config.ts": {
    "arquivos": 1,
-   "linhas": 56
+   "linhas": 55
   },
   "playwright.destructive.config.ts": {
    "arquivos": 1,
-   "linhas": 51
+   "linhas": 50
   },
   "playwright.financeiro.config.ts": {
    "arquivos": 1,
-   "linhas": 127
+   "linhas": 126
   },
   "postcss.config.js": {
    "arquivos": 1,
-   "linhas": 7
+   "linhas": 6
   },
   "public/sw-push.js": {
    "arquivos": 1,
-   "linhas": 42
+   "linhas": 41
   },
   "public/sw.js": {
    "arquivos": 1,
-   "linhas": 264
+   "linhas": 263
   },
   "scripts/admin": {
-   "arquivos": 2,
-   "linhas": 584
+   "arquivos": 3,
+   "linhas": 951
   },
   "scripts/ai-context": {
    "arquivos": 3,
-   "linhas": 1462
+   "linhas": 1899
   },
   "scripts/automation.mjs": {
    "arquivos": 1,
-   "linhas": 995
+   "linhas": 994
   },
   "scripts/automation.unit.mjs": {
    "arquivos": 1,
-   "linhas": 603
+   "linhas": 602
   },
   "scripts/ci": {
-   "arquivos": 14,
-   "linhas": 2981
+   "arquivos": 19,
+   "linhas": 5248
   },
   "scripts/data": {
-   "arquivos": 1,
-   "linhas": 292
+   "arquivos": 3,
+   "linhas": 1060
   },
   "scripts/edge-deploy": {
-   "arquivos": 15,
-   "linhas": 1350
+   "arquivos": 16,
+   "linhas": 2980
   },
   "scripts/generate-design-audit.js": {
    "arquivos": 1,
-   "linhas": 51
+   "linhas": 59
+  },
+  "scripts/generate-design-audit.unit.mjs": {
+   "arquivos": 1,
+   "linhas": 91
   },
   "scripts/generate-env-manifest.mjs": {
    "arquivos": 1,
-   "linhas": 168
+   "linhas": 219
+  },
+  "scripts/generate-env-manifest.unit.mjs": {
+   "arquivos": 1,
+   "linhas": 326
   },
   "scripts/generate-simulation-report.ts": {
    "arquivos": 1,
-   "linhas": 68
+   "linhas": 77
   },
   "scripts/gerar-grafo-arquitetura.ts": {
    "arquivos": 1,
-   "linhas": 26
+   "linhas": 54
   },
   "scripts/graphify": {
    "arquivos": 17,
-   "linhas": 2160
+   "linhas": 3557
   },
   "scripts/graphify-local.mjs": {
    "arquivos": 1,
-   "linhas": 1140
+   "linhas": 1139
   },
   "scripts/graphify-local.unit.mjs": {
    "arquivos": 1,
-   "linhas": 463
+   "linhas": 462
   },
   "scripts/healthcheck": {
-   "arquivos": 1,
-   "linhas": 106
+   "arquivos": 3,
+   "linhas": 745
   },
   "scripts/integrity": {
-   "arquivos": 1,
-   "linhas": 202
+   "arquivos": 2,
+   "linhas": 877
   },
   "scripts/inventario": {
    "arquivos": 5,
-   "linhas": 926
+   "linhas": 921
   },
   "scripts/maintenance": {
    "arquivos": 4,
-   "linhas": 2496
+   "linhas": 2492
   },
   "scripts/mcp-phd-suite.mjs": {
    "arquivos": 1,
-   "linhas": 923
+   "linhas": 1001
+  },
+  "scripts/mcp-phd-suite.unit.mjs": {
+   "arquivos": 1,
+   "linhas": 289
   },
   "scripts/regras_negocio": {
-   "arquivos": 3,
-   "linhas": 2579
+   "arquivos": 4,
+   "linhas": 4397
   },
   "scripts/run-scenarios.ts": {
    "arquivos": 1,
-   "linhas": 45
+   "linhas": 79
+  },
+  "scripts/scripts-ts.unit.mjs": {
+   "arquivos": 1,
+   "linhas": 327
   },
   "scripts/security": {
-   "arquivos": 8,
-   "linhas": 1987
+   "arquivos": 13,
+   "linhas": 4425
   },
   "scripts/simular-observabilidade-digest.ts": {
    "arquivos": 1,
-   "linhas": 121
+   "linhas": 139
   },
   "scripts/simular-preferencias-digest.ts": {
    "arquivos": 1,
-   "linhas": 138
+   "linhas": 137
   },
   "scripts/simular-projecao-conformidade.ts": {
    "arquivos": 1,
-   "linhas": 223
+   "linhas": 222
   },
   "scripts/stress-test.ts": {
    "arquivos": 1,
-   "linhas": 47
+   "linhas": 112
   },
   "scripts/supabase_snapshot": {
    "arquivos": 2,
-   "linhas": 2826
+   "linhas": 3542
+  },
+  "scripts/test_check_external_secret_isolation.py": {
+   "arquivos": 1,
+   "linhas": 148
+  },
+  "scripts/test_migrate_cron_jobs.py": {
+   "arquivos": 1,
+   "linhas": 380
+  },
+  "scripts/test_migrate_functions.py": {
+   "arquivos": 1,
+   "linhas": 491
+  },
+  "scripts/test_staging_migrate.py": {
+   "arquivos": 1,
+   "linhas": 374
+  },
+  "scripts/test_validate_all.py": {
+   "arquivos": 1,
+   "linhas": 244
   },
   "src/App.tsx": {
    "arquivos": 1,
-   "linhas": 1188
+   "linhas": 1187
   },
   "src/__tests__": {
    "arquivos": 1,
-   "linhas": 45
+   "linhas": 44
   },
   "src/components": {
    "arquivos": 873,
-   "linhas": 159318
+   "linhas": 158445
   },
   "src/config": {
    "arquivos": 1,
-   "linhas": 113
+   "linhas": 112
   },
   "src/contexts": {
    "arquivos": 3,
-   "linhas": 346
+   "linhas": 343
   },
   "src/hooks": {
    "arquivos": 296,
-   "linhas": 44498
+   "linhas": 44202
   },
   "src/i18n.ts": {
    "arquivos": 1,
-   "linhas": 81
+   "linhas": 80
   },
   "src/integrations": {
    "arquivos": 3,
-   "linhas": 21551
+   "linhas": 21548
   },
   "src/lib": {
    "arquivos": 401,
-   "linhas": 54337
+   "linhas": 53936
   },
   "src/main.tsx": {
    "arquivos": 1,
-   "linhas": 77
+   "linhas": 76
   },
   "src/pages": {
    "arquivos": 211,
-   "linhas": 44688
+   "linhas": 44477
   },
   "src/test": {
    "arquivos": 21,
-   "linhas": 2126
+   "linhas": 2105
   },
   "src/types": {
    "arquivos": 15,
-   "linhas": 954
+   "linhas": 939
   },
   "supabase/functions": {
    "arquivos": 222,
-   "linhas": 49744
+   "linhas": 49522
   },
   "supabase/tests": {
    "arquivos": 2,
-   "linhas": 1251
+   "linhas": 1249
   },
   "tailwind.config.ts": {
    "arquivos": 1,
-   "linhas": 136
+   "linhas": 135
   },
   "vite.config.ts": {
    "arquivos": 1,
-   "linhas": 134
+   "linhas": 133
   },
   "vitest.config.ts": {
    "arquivos": 1,
-   "linhas": 78
+   "linhas": 77
   }
  },
  "maiores_arquivos": [
   {
    "arquivo": "src/integrations/supabase/types.ts",
-   "linhas": 21413
+   "linhas": 21412
   },
   {
    "arquivo": "scripts/regras_negocio/generate.py",
-   "linhas": 2178
+   "linhas": 2389
   },
   {
    "arquivo": "scripts/supabase_snapshot/snapshot.py",
-   "linhas": 1824
+   "linhas": 1925
   },
   {
    "arquivo": "supabase/functions/asaas-proxy/index.ts",
-   "linhas": 1329
+   "linhas": 1328
   },
   {
    "arquivo": "supabase/functions/sso-callback/index.ts",
-   "linhas": 1223
+   "linhas": 1222
   },
   {
    "arquivo": "src/App.tsx",
-   "linhas": 1188
+   "linhas": 1187
   },
   {
    "arquivo": "supabase/functions/scim-server/index.ts",
-   "linhas": 1156
+   "linhas": 1155
   },
   {
    "arquivo": "scripts/graphify-local.mjs",
-   "linhas": 1140
+   "linhas": 1139
   },
   {
    "arquivo": "supabase/functions/_shared/sql-write-guard.ts",
-   "linhas": 1064
+   "linhas": 1063
   },
   {
    "arquivo": "supabase/functions/bling-proxy/index.ts",
-   "linhas": 1013
-  },
-  {
-   "arquivo": "scripts/automation.mjs",
-   "linhas": 995
-  },
-  {
-   "arquivo": "supabase/functions/_shared/tributario-logic.ts",
-   "linhas": 961
-  },
-  {
-   "arquivo": "scripts/ai-context/gerar.mjs",
-   "linhas": 928
+   "linhas": 1012
   },
   {
    "arquivo": "scripts/mcp-phd-suite.mjs",
-   "linhas": 923
+   "linhas": 1001
+  },
+  {
+   "arquivo": "scripts/automation.mjs",
+   "linhas": 994
+  },
+  {
+   "arquivo": "scripts/ai-context/gerar.mjs",
+   "linhas": 989
+  },
+  {
+   "arquivo": "supabase/functions/_shared/tributario-logic.ts",
+   "linhas": 960
   },
   {
    "arquivo": "supabase/functions/whatsapp-ia-proativo/index.ts",
-   "linhas": 918
+   "linhas": 917
   },
   {
    "arquivo": "supabase/functions/bitrix24-sync/index.ts",
-   "linhas": 894
-  },
-  {
-   "arquivo": "supabase/functions/whatsapp-ia-proativo/index_test.ts",
-   "linhas": 827
+   "linhas": 893
   },
   {
    "arquivo": "src/lib/tributario/shared-logic.ts",
-   "linhas": 810
+   "linhas": 809
   },
   {
    "arquivo": "scripts/maintenance/lib.mjs",
-   "linhas": 798
+   "linhas": 797
   },
   {
    "arquivo": "src/components/contas-receber/ContaReceberFormFields.tsx",
-   "linhas": 751
+   "linhas": 750
   },
   {
    "arquivo": "src/components/ui/sidebar.tsx",
-   "linhas": 734
+   "linhas": 733
   },
   {
    "arquivo": "src/pages/Conciliacao.tsx",
-   "linhas": 731
+   "linhas": 730
   },
   {
    "arquivo": "scripts/maintenance/run.mjs",
-   "linhas": 729
+   "linhas": 728
   },
   {
    "arquivo": "src/pages/BI.tsx",
-   "linhas": 709
+   "linhas": 708
   },
   {
    "arquivo": "scripts/security/test-canonical-db-gates.mjs",
-   "linhas": 674
+   "linhas": 699
+  },
+  {
+   "arquivo": "src/pages/AuditLogs.tsx",
+   "linhas": 672
   }
  ],
  "qualidade": {
-  "any": 340,
-  "console_log": 194,
-  "ts_ignore": 0,
+  "any": 341,
+  "console_log": 207,
+  "ts_ignore": 1,
   "eslint_disable": 1,
-  "todos": 44,
-  "arquivos_acima_500_linhas": 56
+  "todos": 45,
+  "arquivos_acima_500_linhas": 54
  },
  "todos": [
   {
    "arquivo": "scripts/ai-context/gerar.mjs",
-   "linha": 189,
+   "linha": 248,
    "tipo": "TODO",
    "texto": "|FIXME|HACK|XXX)\\b[:\\s-]*([^\\n]{0,100})/.exec(line); if (m) todos.push({ linha: ln, tipo: m[1], text"
   },
   {
    "arquivo": "scripts/ai-context/gerar.mjs",
-   "linha": 223,
+   "linha": 282,
    "tipo": "TODO",
    "texto": "|FIXME|HACK|XXX)\\b[:\\s-]*([^\\n]{0,100})/.exec(l); return m ? { linha: i + 1, tipo: m[1], texto: m[2]"
   },
@@ -1030,16 +1066,21 @@
   },
   {
    "arquivo": "scripts/regras_negocio/generate.py",
-   "linha": 572,
+   "linha": 650,
    "tipo": "TODO",
    "texto": "\", \"http\", \"import\")) and \"://\" not in c:"
+  },
+  {
+   "arquivo": "scripts/security/test_gates_shell.py",
+   "linha": 112,
+   "tipo": "TODO",
+   "texto": "validatePayload(S, b)\\n */\\nconst b = await req.json();\\n\","
   }
  ],
  "alertas": {
   "rotas_sem_arquivo": [],
   "componentes_ambiguos": [],
   "menu_sem_destino": [
-   "Action Matrix Audit -> /inteligencia#action-matrix",
    "Apuração IBS/CBS -> apuracao",
    "Auditoria -> auditoria",
    "Calculadora -> calculadora",
@@ -1050,7 +1091,6 @@
    "Cronograma -> cronograma",
    "Dashboard -> visao-geral",
    "Fechamento Mensal -> fechamento-mensal",
-   "Histórico & Chat WA -> /cobrancas#whatsapp",
    "Importar XML -> importacao-xml",
    "Incentivos Fiscais -> incentivos",
    "IRPJ/CSLL -> irpj-csll",
@@ -1058,8 +1098,6 @@
    "Obrigações -> obrigacoes",
    "Operações -> operacoes",
    "PER/DCOMP -> per-dcomp",
-   "Quantum-Sentinel: Riscos -> /inteligencia#alertas-preditivos",
-   "Reforma Tributária -> /reforma-tributaria/visao-geral",
    "Retenções -> retencoes",
    "SPED -> exportacao",
    "Split Payment -> split-payment"
@@ -1067,23 +1105,15 @@
   "edges_orfas": [
    "calcular-slo-metrics-diario",
    "calculo-iva",
-   "conciliacao-proxy",
-   "contabilizar-evento",
-   "enviar-convite-organizacao",
    "enviar-relatorios-tributarios-agendados",
    "gerar-snapshots-conformidade",
    "get-mapbox-token",
    "n8n-dispatch",
-   "nfe-upload-certificado",
-   "nfe-vinculo-proxy",
-   "notify-saved-filter",
    "projecao-reforma",
    "relatorio-diario-anomalias",
-   "sefaz-manifestar",
    "simular-presumido",
    "simular-real",
    "simular-simples",
-   "sincronizar-anomalia-bitrix24",
    "sync-profile-to-bitrix"
   ],
   "edges_chamadas_sem_pasta": [],
@@ -1288,6 +1318,7 @@
    "BenchmarkingSetorial",
    "CategorizacaoIABadge",
    "ChartContainer",
+   "Column",
    "ComparativoRegimes",
    "ContasPagarFilters",
    "EmptyState",
@@ -1312,21 +1343,7 @@
    "StepPills",
    "TransferenciaDialog"
   ],
-  "scripts_orfaos": [
-   "scripts/integrity/06_secdef.sql",
-   "scripts/integrity/07_exec_grants.sql",
-   "scripts/integrity/08_rpc_tenant_scope.sql",
-   "scripts/integrity/09_views.sql",
-   "scripts/integrity/10_tenant_indexes.sql",
-   "scripts/integrity/11_pii_mask.sql",
-   "scripts/integrity/12_index_bloat.sql",
-   "scripts/integrity/13_unused_indexes.sql",
-   "scripts/integrity/15_views_pii_rpcs.sql",
-   "scripts/security/test-privilege-baseline.sql",
-   "scripts/security/test-tenant-isolation.sql",
-   "scripts/security/test-tenant-policy-scope.sql",
-   "scripts/security/test-write-isolation.sql"
-  ],
+  "scripts_orfaos": [],
   "env_usadas_nao_declaradas": [
    "DEV",
    "MODE",
@@ -1334,9 +1351,7 @@
    "SCENARIOS_COUNT"
   ],
   "ciclos_de_import": 6,
-  "possiveis_segredos_no_codigo": [
-   "scripts/ai-context/cenarios.mjs:102"
-  ]
+  "possiveis_segredos_no_codigo": []
  },
  "erros_do_gerador": []
 }

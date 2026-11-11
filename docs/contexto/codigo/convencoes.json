@@ -22,7 +22,7 @@
   ],
   "testes": [
    "co-localizado (__tests__) (240)",
-   "outro (53)",
+   "outro (105)",
    "co-localizado (*.test) (40)"
   ],
   "edge_functions": "supabase/functions",
@@ -43,7 +43,7 @@
   "hooks": "use + PascalCase",
   "servicos": "camelCase (52%)",
   "edge_functions": "kebab-case (99%)",
-  "tabelas": "snake_case (90%)"
+  "tabelas": "snake_case (81%)"
  },
  "barrels_index": 27,
  "extensao_componentes": [
@@ -58,11 +58,11 @@
  "commits": {
   "convencao": "conventional commits (observado)",
   "exemplos": [
+   "fix: endurecimento e cobertura de teste de todos os scripts em scripts/ (#299)",
    "fix: shims para Supabase Preview — drop get_cron_jobs() antes de mudanças de return type (#131)",
    "chore(migrations): [STEP 22] reconciliar migrations não rastreadas (#238)",
    "chore(db): [STEP 17] dropar 404 índices idle (idx_scan=0) (#243)",
-   "chore: [STEP 43] espacar cron jobs diagnosticos de alta frequencia (#234)",
-   "chore(ddl): steps 12-16+19+21+23 — DDL banco produção (#235)"
+   "chore: [STEP 43] espacar cron jobs diagnosticos de alta frequencia (#234)"
   ]
  },
  "pr_template": ".github/PULL_REQUEST_TEMPLATE.md",

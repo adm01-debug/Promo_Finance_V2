@@ -32,6 +32,10 @@
    "src/components/charts/ChartContainer.tsx",
    "src/components/ui/chart.tsx"
   ],
+  "Column": [
+   "src/components/ui/data-grid.tsx",
+   "src/components/ui/data-table.tsx"
+  ],
   "ComparativoRegimes": [
    "src/components/tributario/calculadora/ComparativoRegimes.tsx",
    "src/components/tributario/dashboard/ComparativoRegimes.tsx"
@@ -106,6 +110,7 @@
    "src/components/ui/skeleton.tsx"
   ],
   "SortDirection": [
+   "src/components/ui/data-grid.tsx",
    "src/components/ui/data-table.tsx",
    "src/components/ui/sortable-header.tsx"
   ],
@@ -120,6 +125,7 @@
   ],
   "Step": [
    "src/components/admin/sso/sandbox/Step.tsx",
+   "src/components/contabilidade/SpedEcdWizardBits.tsx",
    "src/pages/tributario/OnboardingTributario.parts.tsx"
   ],
   "StepPills": [
@@ -139,7 +145,7 @@
     "App"
    ],
    "export_default": "App",
-   "linhas": 1188,
+   "linhas": 1187,
    "dominio": null,
    "hooks_locais": [
     "useSelectiveEmpresaInvalidation"
@@ -155,7 +161,7 @@
     "SkipLinks"
    ],
    "export_default": null,
-   "linhas": 24,
+   "linhas": 23,
    "dominio": "components/accessibility",
    "hooks_locais": [],
    "tabelas": [],
@@ -169,7 +175,7 @@
     "AlertasProativosErros"
    ],
    "export_default": null,
-   "linhas": 145,
+   "linhas": 144,
    "dominio": "components/admin",
    "hooks_locais": [
     "useFrontendErrorAlertState",
@@ -186,7 +192,7 @@
     "AcoesSection"
    ],
    "export_default": null,
-   "linhas": 54,
+   "linhas": 53,
    "dominio": "components/admin",
    "hooks_locais": [],
    "tabelas": [],
@@ -200,7 +206,7 @@
     "DuracaoSection"
    ],
    "export_default": null,
-   "linhas": 41,
+   "linhas": 40,
    "dominio": "components/admin",
    "hooks_locais": [],
    "tabelas": [],
@@ -214,7 +220,7 @@
     "SeveridadesSection"
    ],
    "export_default": null,
-   "linhas": 48,
+   "linhas": 47,
    "dominio": "components/admin",
    "hooks_locais": [],
    "tabelas": [],
@@ -228,7 +234,7 @@
     "SilenciamentoSection"
    ],
    "export_default": null,
-   "linhas": 93,
+   "linhas": 92,
    "dominio": "components/admin",
    "hooks_locais": [],
    "tabelas": [],
@@ -242,7 +248,7 @@
     "SonecaSection"
    ],
    "export_default": null,
-   "linhas": 55,
+   "linhas": 54,
    "dominio": "components/admin",
    "hooks_locais": [],
    "tabelas": [],
@@ -256,7 +262,7 @@
     "AnomaliaDrillDownDrawer"
    ],
    "export_default": null,
-   "linhas": 180,
+   "linhas": 179,
    "dominio": "components/admin",
    "hooks_locais": [
     "useAnomaliaDetalhe",
@@ -277,7 +283,7 @@
     "AnomaliaHistoricoSection"
    ],
    "export_default": null,
-   "linhas": 209,
+   "linhas": 208,
    "dominio": "components/admin",
    "hooks_locais": [
     "useAnomaliaAuditHistory"
@@ -293,7 +299,7 @@
     "AnomaliaPreferencePresetPicker"
    ],
    "export_default": null,
-   "linhas": 83,
+   "linhas": 82,
    "dominio": "components/admin",
    "hooks_locais": [],
    "tabelas": [],
@@ -307,7 +313,7 @@
     "AnomaliaPreferencesDialog"
    ],
    "export_default": null,
-   "linhas": 211,
+   "linhas": 210,
    "dominio": "components/admin",
    "hooks_locais": [
     "useSaveAnomaliaPreferences"
@@ -325,7 +331,7 @@
     "AnomaliaDetailCard"
    ],
    "export_default": null,
-   "linhas": 49,
+   "linhas": 48,
    "dominio": "components/admin",
    "hooks_locais": [],
    "tabelas": [],
@@ -339,7 +345,7 @@
     "ConflitoBannerCard"
    ],
    "export_default": null,
-   "linhas": 73,
+   "linhas": 72,
    "dominio": "components/admin",
    "hooks_locais": [],
    "tabelas": [],
@@ -353,7 +359,7 @@
     "QueueProgressHeader"
    ],
    "export_default": null,
-   "linhas": 109,
+   "linhas": 108,
    "dominio": "components/admin",
    "hooks_locais": [],
    "tabelas": [],
@@ -370,7 +376,7 @@
     "TransitionState"
    ],
    "export_default": null,
-   "linhas": 46,
+   "linhas": 45,
    "dominio": "components/admin",
    "hooks_locais": [],
    "tabelas": [],
@@ -384,7 +390,7 @@
     "ReviewActionsBar"
    ],
    "export_default": null,
-   "linhas": 135,
+   "linhas": 134,
    "dominio": "components/admin",
    "hooks_locais": [],
    "tabelas": [],
@@ -398,7 +404,7 @@
     "AnomaliasDetectadasPanel"
    ],
    "export_default": null,
-   "linhas": 319,
+   "linhas": 318,
    "dominio": "components/admin",
    "hooks_locais": [
     "useAnomaliaDetectionRun",
@@ -422,7 +428,7 @@
     "AnomaliasFiltersBarProps"
    ],
    "export_default": null,
-   "linhas": 294,
+   "linhas": 293,
    "dominio": "components/admin",
    "hooks_locais": [],
    "tabelas": [],
@@ -437,7 +443,7 @@
     "AnomaliasListProps"
    ],
    "export_default": null,
-   "linhas": 257,
+   "linhas": 256,
    "dominio": "components/admin",
    "hooks_locais": [],
    "tabelas": [],
@@ -453,7 +459,7 @@
     "PendentesPorSev"
    ],
    "export_default": null,
-   "linhas": 108,
+   "linhas": 107,
    "dominio": "components/admin",
    "hooks_locais": [],
    "tabelas": [],
@@ -467,7 +473,7 @@
     "AnomaliasReviewQueue"
    ],
    "export_default": null,
-   "linhas": 111,
+   "linhas": 110,
    "dominio": "components/admin",
    "hooks_locais": [
     "useReviewQueue"
@@ -483,7 +489,7 @@
     "AnomaliaToastHistorico"
    ],
    "export_default": null,
-   "linhas": 161,
+   "linhas": 160,
    "dominio": "components/admin",
    "hooks_locais": [
     "useAuth"
@@ -501,7 +507,7 @@
     "AuditoriaTributariaTab"
    ],
    "export_default": null,
-   "linhas": 211,
+   "linhas": 210,
    "dominio": "components/admin",
    "hooks_locais": [],
    "tabelas": [
@@ -517,7 +523,7 @@
     "AutomacoesTab"
    ],
    "export_default": null,
-   "linhas": 235,
+   "linhas": 234,
    "dominio": "components/admin",
    "hooks_locais": [],
    "tabelas": [],
@@ -531,7 +537,7 @@
     "CronJobsStatus"
    ],
    "export_default": null,
-   "linhas": 182,
+   "linhas": 181,
    "dominio": "components/admin",
    "hooks_locais": [
     "useAuth"
@@ -547,7 +553,7 @@
     "DetectionRunProgress"
    ],
    "export_default": null,
-   "linhas": 65,
+   "linhas": 64,
    "dominio": "components/admin",
    "hooks_locais": [],
    "tabelas": [],
@@ -561,7 +567,7 @@
     "FiscalHealthBadge"
    ],
    "export_default": "FiscalHealthBadge",
-   "linhas": 112,
+   "linhas": 111,
    "dominio": "components/admin",
    "hooks_locais": [],
    "tabelas": [],
@@ -575,7 +581,7 @@
     "GerenciadorPermissoes"
    ],
    "export_default": null,
-   "linhas": 379,
+   "linhas": 378,
    "dominio": "components/admin",
    "hooks_locais": [],
    "tabelas": [
@@ -592,7 +598,7 @@
     "IpMaskToggle"
    ],
    "export_default": null,
-   "linhas": 39,
+   "linhas": 38,
    "dominio": "components/admin",
    "hooks_locais": [
     "useIpMaskPreference"
@@ -608,7 +614,7 @@
     "PreviewAnomaliaToastDrawer"
    ],
    "export_default": null,
-   "linhas": 329,
+   "linhas": 328,
    "dominio": "components/admin",
    "hooks_locais": [],
    "tabelas": [],
@@ -622,7 +628,7 @@
     "ResumosExecutivosTab"
    ],
    "export_default": null,
-   "linhas": 77,
+   "linhas": 76,
    "dominio": "components/admin",
    "hooks_locais": [
     "useResumosExecutivos"
@@ -638,7 +644,7 @@
     "SilenciamentosExpirando"
    ],
    "export_default": null,
-   "linhas": 68,
+   "linhas": 67,
    "dominio": "components/admin",
    "hooks_locais": [
     "useSilenciamentosExpirando",
@@ -655,7 +661,7 @@
     "SLOPanel"
    ],
    "export_default": null,
-   "linhas": 264,
+   "linhas": 263,
    "dominio": "components/admin",
    "hooks_locais": [
     "useSLOMetrics"
@@ -671,7 +677,7 @@
     "ClaimFocusCard"
    ],
    "export_default": null,
-   "linhas": 122,
+   "linhas": 121,
    "dominio": "components/admin",
    "hooks_locais": [],
    "tabelas": [],
@@ -685,7 +691,7 @@
     "RulesAppliedCard"
    ],
    "export_default": null,
-   "linhas": 185,
+   "linhas": 184,
    "dominio": "components/admin",
    "hooks_locais": [],
    "tabelas": [],
@@ -699,7 +705,7 @@
     "SandboxBulkPanel"
    ],
    "export_default": null,
-   "linhas": 513,
+   "linhas": 512,
    "dominio": "components/admin",
    "hooks_locais": [
     "useSSOProviders",
@@ -716,7 +722,7 @@
     "SandboxBulkSummary"
    ],
    "export_default": null,
-   "linhas": 154,
+   "linhas": 153,
    "dominio": "components/admin",
    "hooks_locais": [],
    "tabelas": [],
@@ -730,7 +736,7 @@
     "SandboxBulkTable"
    ],
    "export_default": null,
-   "linhas": 183,
+   "linhas": 182,
    "dominio": "components/admin",
    "hooks_locais": [],
    "tabelas": [],
@@ -744,7 +750,7 @@
     "SandboxCompareDialog"
    ],
    "export_default": null,
-   "linhas": 119,
+   "linhas": 118,
    "dominio": "components/admin",
    "hooks_locais": [],
    "tabelas": [],
@@ -758,7 +764,7 @@
     "SandboxHistory"
    ],
    "export_default": null,
-   "linhas": 273,
+   "linhas": 272,
    "dominio": "components/admin",
    "hooks_locais": [
     "useDeleteSSOSandboxRun",
@@ -776,7 +782,7 @@
     "SandboxRunDetailSheet"
    ],
    "export_default": null,
-   "linhas": 123,
+   "linhas": 122,
    "dominio": "components/admin",
    "hooks_locais": [],
    "tabelas": [],
@@ -790,7 +796,7 @@
     "Step"
    ],
    "export_default": null,
-   "linhas": 27,
+   "linhas": 26,
    "dominio": "components/admin",
    "hooks_locais": [],
    "tabelas": [],
@@ -804,7 +810,7 @@
     "ScimSetupGuide"
    ],
    "export_default": null,
-   "linhas": 525,
+   "linhas": 524,
    "dominio": "components/admin",
    "hooks_locais": [
     "useScimChecklist"
@@ -822,7 +828,7 @@
     "ScimTokensTab"
    ],
    "export_default": null,
-   "linhas": 314,
+   "linhas": 313,
    "dominio": "components/admin",
    "hooks_locais": [
     "useCreateScimToken",
@@ -843,7 +849,7 @@
     "ScimUserJsonGenerator"
    ],
    "export_default": null,
-   "linhas": 192,
+   "linhas": 191,
    "dominio": "components/admin",
    "hooks_locais": [],
    "tabelas": [],
@@ -857,7 +863,7 @@
     "SSOConsistencyPanel"
    ],
    "export_default": null,
-   "linhas": 196,
+   "linhas": 195,
    "dominio": "components/admin",
    "hooks_locais": [],
    "tabelas": [],
@@ -871,7 +877,7 @@
     "SSODocumentacao"
    ],
    "export_default": null,
-   "linhas": 54,
+   "linhas": 53,
    "dominio": "components/admin",
    "hooks_locais": [],
    "tabelas": [],
@@ -885,7 +891,7 @@
     "SsoLoginButtons"
    ],
    "export_default": null,
-   "linhas": 82,
+   "linhas": 81,
    "dominio": "components/admin",
    "hooks_locais": [],
    "tabelas": [],
@@ -901,7 +907,7 @@
     "SSOMetricsPanel"
    ],
    "export_default": null,
-   "linhas": 281,
+   "linhas": 280,
    "dominio": "components/admin",
    "hooks_locais": [
     "useSSOLoginAttempts",
@@ -918,7 +924,7 @@
     "SSOProvidersList"
    ],
    "export_default": null,
-   "linhas": 187,
+   "linhas": 186,
    "dominio": "components/admin",
    "hooks_locais": [
     "useDeleteSSOProvider",
@@ -936,7 +942,7 @@
     "SSOSandboxPanel"
    ],
    "export_default": null,
-   "linhas": 531,
+   "linhas": 530,
    "dominio": "components/admin",
    "hooks_locais": [
     "useSSOProviders",
@@ -954,7 +960,7 @@
     "SSOStepConexao"
    ],
    "export_default": null,
-   "linhas": 139,
+   "linhas": 138,
    "dominio": "components/admin",
    "hooks_locais": [],
    "tabelas": [],
@@ -968,7 +974,7 @@
     "SSOStepValidacao"
    ],
    "export_default": null,
-   "linhas": 199,
+   "linhas": 198,
    "dominio": "components/admin",
    "hooks_locais": [
     "useGenerateSSOMetadata",
@@ -985,7 +991,7 @@
     "SSOWizardDialog"
    ],
    "export_default": null,
-   "linhas": 465,
+   "linhas": 464,
    "dominio": "components/admin",
    "hooks_locais": [
     "useSSOConsistency",
@@ -1005,7 +1011,7 @@
     "AcessosSuspeitosPanel"
    ],
    "export_default": null,
-   "linhas": 205,
+   "linhas": 204,
    "dominio": "components/admin",
    "hooks_locais": [],
    "tabelas": [],
@@ -1019,7 +1025,7 @@
     "CatalogosTributariosHealthPanel"
    ],
    "export_default": null,
-   "linhas": 186,
+   "linhas": 185,
    "dominio": "components/admin",
    "hooks_locais": [],
    "tabelas": [],
@@ -1033,7 +1039,7 @@
     "CatalogosTributariosHistoryPanel"
    ],
    "export_default": "CatalogosTributariosHistoryPanel",
-   "linhas": 185,
+   "linhas": 184,
    "dominio": "components/admin",
    "hooks_locais": [],
    "tabelas": [],
@@ -1047,7 +1053,7 @@
     "CoberturaFiscalUFPanel"
    ],
    "export_default": null,
-   "linhas": 291,
+   "linhas": 290,
    "dominio": "components/admin",
    "hooks_locais": [],
    "tabelas": [],
@@ -1061,7 +1067,7 @@
     "IntegrityAlertsPanel"
    ],
    "export_default": null,
-   "linhas": 259,
+   "linhas": 258,
    "dominio": "components/admin",
    "hooks_locais": [],
    "tabelas": [],
@@ -1075,7 +1081,7 @@
     "PerformanceAlertsPanel"
    ],
    "export_default": null,
-   "linhas": 341,
+   "linhas": 340,
    "dominio": "components/admin",
    "hooks_locais": [],
    "tabelas": [],
@@ -1089,7 +1095,7 @@
     "PerformanceAlertsWeeklyTrend"
    ],
    "export_default": null,
-   "linhas": 227,
+   "linhas": 226,
    "dominio": "components/admin",
    "hooks_locais": [
     "useWeeklyTrendData"
@@ -1105,7 +1111,7 @@
     "PerformanceMetrics"
    ],
    "export_default": null,
-   "linhas": 111,
+   "linhas": 110,
    "dominio": "components/admin",
    "hooks_locais": [],
    "tabelas": [
@@ -1121,7 +1127,7 @@
     "RetentionHistoryPanel"
    ],
    "export_default": null,
-   "linhas": 234,
+   "linhas": 233,
    "dominio": "components/admin",
    "hooks_locais": [],
    "tabelas": [],
@@ -1136,7 +1142,7 @@
     "RetentionPoliciesPanel"
    ],
    "export_default": null,
-   "linhas": 274,
+   "linhas": 273,
    "dominio": "components/admin",
    "hooks_locais": [],
    "tabelas": [],
@@ -1150,7 +1156,7 @@
     "TelemetriaFilters"
    ],
    "export_default": null,
-   "linhas": 100,
+   "linhas": 99,
    "dominio": "components/admin",
    "hooks_locais": [],
    "tabelas": [],
@@ -1164,7 +1170,7 @@
     "TelemetriaStatsCards"
    ],
    "export_default": null,
-   "linhas": 68,
+   "linhas": 67,
    "dominio": "components/admin",
    "hooks_locais": [],
    "tabelas": [],
@@ -1178,7 +1184,7 @@
     "TelemetriaTopOffenders"
    ],
    "export_default": null,
-   "linhas": 40,
+   "linhas": 39,
    "dominio": "components/admin",
    "hooks_locais": [],
    "tabelas": [],
@@ -1192,7 +1198,7 @@
     "TelemetryCharts"
    ],
    "export_default": null,
-   "linhas": 242,
+   "linhas": 241,
    "dominio": "components/admin",
    "hooks_locais": [],
    "tabelas": [],
@@ -1207,7 +1213,7 @@
     "SeverityBadge"
    ],
    "export_default": null,
-   "linhas": 46,
+   "linhas": 45,
    "dominio": "components/admin",
    "hooks_locais": [],
    "tabelas": [],
@@ -1221,7 +1227,7 @@
     "SparklineCards"
    ],
    "export_default": null,
-   "linhas": 58,
+   "linhas": 57,
    "dominio": "components/admin",
    "hooks_locais": [],
    "tabelas": [],
@@ -1235,7 +1241,7 @@
     "TrendBarChart"
    ],
    "export_default": null,
-   "linhas": 69,
+   "linhas": 68,
    "dominio": "components/admin",
    "hooks_locais": [],
    "tabelas": [],
@@ -1249,7 +1255,7 @@
     "TrendTable"
    ],
    "export_default": null,
-   "linhas": 58,
+   "linhas": 57,
    "dominio": "components/admin",
    "hooks_locais": [],
    "tabelas": [],
@@ -1263,7 +1269,7 @@
     "WeekDetailDialog"
    ],
    "export_default": null,
-   "linhas": 144,
+   "linhas": 143,
    "dominio": "components/admin",
    "hooks_locais": [],
    "tabelas": [],
@@ -1277,7 +1283,7 @@
     "WebhookSimulator"
    ],
    "export_default": null,
-   "linhas": 210,
+   "linhas": 209,
    "dominio": "components/admin",
    "hooks_locais": [],
    "tabelas": [
@@ -1298,7 +1304,7 @@
     "AlertaRow"
    ],
    "export_default": null,
-   "linhas": 307,
+   "linhas": 306,
    "dominio": "components/alertas",
    "hooks_locais": [],
    "tabelas": [],
@@ -1312,7 +1318,7 @@
     "BenchmarkingSetorial"
    ],
    "export_default": null,
-   "linhas": 311,
+   "linhas": 310,
    "dominio": "components/analytics",
    "hooks_locais": [],
    "tabelas": [
@@ -1329,7 +1335,7 @@
     "HistoricoAnalisesPreditivasPanel"
    ],
    "export_default": null,
-   "linhas": 72,
+   "linhas": 71,
    "dominio": "components/analytics",
    "hooks_locais": [
     "useHistoricoAnalisesPreditivas"
@@ -1345,7 +1351,7 @@
     "InadimplenciaSegmentada"
    ],
    "export_default": null,
-   "linhas": 423,
+   "linhas": 422,
    "dominio": "components/analytics",
    "hooks_locais": [
     "useInadimplenciaPorRamo",
@@ -1363,7 +1369,7 @@
     "PredicaoTab"
    ],
    "export_default": null,
-   "linhas": 194,
+   "linhas": 193,
    "dominio": "components/analytics",
    "hooks_locais": [],
    "tabelas": [],
@@ -1377,7 +1383,7 @@
     "DocumentacaoAPI"
    ],
    "export_default": null,
-   "linhas": 124,
+   "linhas": 123,
    "dominio": "components/api",
    "hooks_locais": [],
    "tabelas": [],
@@ -1391,7 +1397,7 @@
     "AprovacoesPendentes"
    ],
    "export_default": null,
-   "linhas": 468,
+   "linhas": 467,
    "dominio": "components/aprovacoes",
    "hooks_locais": [
     "useAdicionarComentario",
@@ -1412,7 +1418,7 @@
     "ConfiguracaoAprovacaoCard"
    ],
    "export_default": null,
-   "linhas": 282,
+   "linhas": 281,
    "dominio": "components/aprovacoes",
    "hooks_locais": [
     "useConfiguracaoAprovacao",
@@ -1430,7 +1436,7 @@
     "HistoricoAprovacoes"
    ],
    "export_default": null,
-   "linhas": 142,
+   "linhas": 141,
    "dominio": "components/aprovacoes",
    "hooks_locais": [
     "useSolicitacoesAprovacao"
@@ -1446,7 +1452,7 @@
     "PasswordResetApprovals"
    ],
    "export_default": null,
-   "linhas": 249,
+   "linhas": 248,
    "dominio": "components/aprovacoes",
    "hooks_locais": [
     "useAuth"
@@ -1464,7 +1470,7 @@
     "WorkflowVisualizer"
    ],
    "export_default": null,
-   "linhas": 65,
+   "linhas": 64,
    "dominio": "components/aprovacoes",
    "hooks_locais": [],
    "tabelas": [],
@@ -1478,7 +1484,7 @@
     "AntecipacaoDialog"
    ],
    "export_default": null,
-   "linhas": 139,
+   "linhas": 138,
    "dominio": "components/asaas",
    "hooks_locais": [
     "useAsaas"
@@ -1494,7 +1500,7 @@
     "AssinaturaDialog"
    ],
    "export_default": null,
-   "linhas": 206,
+   "linhas": 205,
    "dominio": "components/asaas",
    "hooks_locais": [
     "useAsaas"
@@ -1510,7 +1516,7 @@
     "AssinaturasListPanel"
    ],
    "export_default": null,
-   "linhas": 199,
+   "linhas": 198,
    "dominio": "components/asaas",
    "hooks_locais": [
     "useAsaas"
@@ -1528,7 +1534,7 @@
     "ClientesAsaasDialog"
    ],
    "export_default": null,
-   "linhas": 203,
+   "linhas": 202,
    "dominio": "components/asaas",
    "hooks_locais": [
     "useAsaas"
@@ -1544,7 +1550,7 @@
     "CobrancaCardForm"
    ],
    "export_default": null,
-   "linhas": 128,
+   "linhas": 127,
    "dominio": "components/asaas",
    "hooks_locais": [],
    "tabelas": [],
@@ -1558,7 +1564,7 @@
     "EstornoDialog"
    ],
    "export_default": null,
-   "linhas": 109,
+   "linhas": 108,
    "dominio": "components/asaas",
    "hooks_locais": [
     "useAsaas"
@@ -1574,7 +1580,7 @@
     "ExtratoAsaasPanel"
    ],
    "export_default": null,
-   "linhas": 231,
+   "linhas": 230,
    "dominio": "components/asaas",
    "hooks_locais": [
     "useAsaas"
@@ -1590,7 +1596,7 @@
     "LinkPagamentoDialog"
    ],
    "export_default": null,
-   "linhas": 219,
+   "linhas": 218,
    "dominio": "components/asaas",
    "hooks_locais": [
     "useAsaas"
@@ -1606,7 +1612,7 @@
     "LinksListPanel"
    ],
    "export_default": null,
-   "linhas": 203,
+   "linhas": 202,
    "dominio": "components/asaas",
    "hooks_locais": [
     "useAsaas"
@@ -1624,7 +1630,7 @@
     "NovaCobrancaDialog"
    ],
    "export_default": null,
-   "linhas": 478,
+   "linhas": 477,
    "dominio": "components/asaas",
    "hooks_locais": [
     "useAsaas"
@@ -1643,7 +1649,7 @@
     "SplitCobrancaConfig"
    ],
    "export_default": null,
-   "linhas": 165,
+   "linhas": 164,
    "dominio": "components/asaas",
    "hooks_locais": [],
    "tabelas": [],
@@ -1657,7 +1663,7 @@
     "NovoClienteAsaasForm"
    ],
    "export_default": null,
-   "linhas": 86,
+   "linhas": 85,
    "dominio": "components/asaas",
    "hooks_locais": [],
    "tabelas": [],
@@ -1671,7 +1677,7 @@
     "PixQrCodeDialog"
    ],
    "export_default": null,
-   "linhas": 114,
+   "linhas": 113,
    "dominio": "components/asaas",
    "hooks_locais": [
     "useAsaas"
@@ -1687,7 +1693,7 @@
     "SegundaViaDialog"
    ],
    "export_default": null,
-   "linhas": 86,
+   "linhas": 85,
    "dominio": "components/asaas",
    "hooks_locais": [
     "useAsaas"
@@ -1704,7 +1710,7 @@
     "CobrancasTabProps"
    ],
    "export_default": null,
-   "linhas": 500,
+   "linhas": 499,
    "dominio": "components/asaas",
    "hooks_locais": [],
    "tabelas": [],
@@ -1719,7 +1725,7 @@
     "ConfigTabProps"
    ],
    "export_default": null,
-   "linhas": 265,
+   "linhas": 264,
    "dominio": "components/asaas",
    "hooks_locais": [],
    "tabelas": [],
@@ -1736,7 +1742,7 @@
     "FilaTabProps"
    ],
    "export_default": null,
-   "linhas": 255,
+   "linhas": 254,
    "dominio": "components/asaas",
    "hooks_locais": [],
    "tabelas": [],
@@ -1750,7 +1756,7 @@
     "TransferenciaPixDialog"
    ],
    "export_default": null,
-   "linhas": 201,
+   "linhas": 200,
    "dominio": "components/asaas",
    "hooks_locais": [
     "useAsaas"
@@ -1766,7 +1772,7 @@
     "TransferenciaPixHistoryPanel"
    ],
    "export_default": null,
-   "linhas": 198,
+   "linhas": 197,
    "dominio": "components/asaas",
    "hooks_locais": [
     "useAsaas"
@@ -1782,7 +1788,7 @@
     "WebhooksLogPanel"
    ],
    "export_default": null,
-   "linhas": 172,
+   "linhas": 171,
    "dominio": "components/asaas",
    "hooks_locais": [
     "useWebhooksLog",
@@ -1799,7 +1805,7 @@
     "CamposChavePanel"
    ],
    "export_default": null,
-   "linhas": 106,
+   "linhas": 105,
    "dominio": "components/audit",
    "hooks_locais": [],
    "tabelas": [],
@@ -1815,7 +1821,7 @@
     "ValueCell"
    ],
    "export_default": null,
-   "linhas": 96,
+   "linhas": 95,
    "dominio": "components/audit",
    "hooks_locais": [],
    "tabelas": [],
@@ -1829,7 +1835,7 @@
     "FiltersBar"
    ],
    "export_default": null,
-   "linhas": 84,
+   "linhas": 83,
    "dominio": "components/audit",
    "hooks_locais": [],
    "tabelas": [],
@@ -1843,7 +1849,7 @@
     "AuditDiffView"
    ],
    "export_default": null,
-   "linhas": 361,
+   "linhas": 360,
    "dominio": "components/audit",
    "hooks_locais": [],
    "tabelas": [],
@@ -1857,7 +1863,7 @@
     "AuditLogTable"
    ],
    "export_default": null,
-   "linhas": 231,
+   "linhas": 230,
    "dominio": "components/audit",
    "hooks_locais": [
     "useIpMaskPreference",
@@ -1874,7 +1880,7 @@
     "AuditSecurityAlerts"
    ],
    "export_default": null,
-   "linhas": 52,
+   "linhas": 51,
    "dominio": "components/audit",
    "hooks_locais": [],
    "tabelas": [],
@@ -1888,7 +1894,7 @@
     "SSOJitEventsKPIs"
    ],
    "export_default": null,
-   "linhas": 83,
+   "linhas": 82,
    "dominio": "components/audit",
    "hooks_locais": [],
    "tabelas": [],
@@ -1902,7 +1908,7 @@
     "SSOJitEventsTable"
    ],
    "export_default": null,
-   "linhas": 211,
+   "linhas": 210,
    "dominio": "components/audit",
    "hooks_locais": [
     "useIpMaskPreference"
@@ -1918,7 +1924,7 @@
     "AccountLockoutBanner"
    ],
    "export_default": null,
-   "linhas": 68,
+   "linhas": 67,
    "dominio": "components/auth",
    "hooks_locais": [],
    "tabelas": [],
@@ -1938,7 +1944,7 @@
     "AuthSocialProof"
    ],
    "export_default": null,
-   "linhas": 240,
+   "linhas": 239,
    "dominio": "components/auth",
    "hooks_locais": [],
    "tabelas": [],
@@ -1952,7 +1958,7 @@
     "EmpresaGuard"
    ],
    "export_default": null,
-   "linhas": 51,
+   "linhas": 50,
    "dominio": "components/auth",
    "hooks_locais": [
     "useUserEmpresas"
@@ -1968,7 +1974,7 @@
     "EmpresaSelectionGate"
    ],
    "export_default": null,
-   "linhas": 214,
+   "linhas": 213,
    "dominio": "components/auth",
    "hooks_locais": [
     "useAuth",
@@ -1986,7 +1992,7 @@
     "ForgotPasswordForm"
    ],
    "export_default": null,
-   "linhas": 118,
+   "linhas": 117,
    "dominio": "components/auth",
    "hooks_locais": [],
    "tabelas": [],
@@ -2000,7 +2006,7 @@
     "LoginForm"
    ],
    "export_default": null,
-   "linhas": 271,
+   "linhas": 270,
    "dominio": "components/auth",
    "hooks_locais": [],
    "tabelas": [],
@@ -2014,7 +2020,7 @@
     "MFASettings"
    ],
    "export_default": null,
-   "linhas": 305,
+   "linhas": 304,
    "dominio": "components/auth",
    "hooks_locais": [
     "useIpMaskPreference",
@@ -2032,7 +2038,7 @@
     "PasswordStrengthIndicator"
    ],
    "export_default": null,
-   "linhas": 238,
+   "linhas": 237,
    "dominio": "components/auth",
    "hooks_locais": [],
    "tabelas": [],
@@ -2046,7 +2052,7 @@
     "PermissionGate"
    ],
    "export_default": null,
-   "linhas": 66,
+   "linhas": 65,
    "dominio": "components/auth",
    "hooks_locais": [
     "useAuth",
@@ -2063,7 +2069,7 @@
     "ProtectedRoute"
    ],
    "export_default": null,
-   "linhas": 123,
+   "linhas": 122,
    "dominio": "components/auth",
    "hooks_locais": [
     "useAuth",
@@ -2080,7 +2086,7 @@
     "RegisterForm"
    ],
    "export_default": null,
-   "linhas": 168,
+   "linhas": 167,
    "dominio": "components/auth",
    "hooks_locais": [],
    "tabelas": [],
@@ -2094,7 +2100,7 @@
     "SloFailureBanner"
    ],
    "export_default": null,
-   "linhas": 214,
+   "linhas": 213,
    "dominio": "components/auth",
    "hooks_locais": [],
    "tabelas": [],
@@ -2110,7 +2116,7 @@
     "TwoFactorSetup"
    ],
    "export_default": null,
-   "linhas": 207,
+   "linhas": 206,
    "dominio": "components/auth",
    "hooks_locais": [],
    "tabelas": [],
@@ -2124,7 +2130,7 @@
     "WebAuthnManager"
    ],
    "export_default": null,
-   "linhas": 214,
+   "linhas": 213,
    "dominio": "components/auth",
    "hooks_locais": [
     "useAuth",
@@ -2145,7 +2151,7 @@
     "BIEvolucaoChart"
    ],
    "export_default": null,
-   "linhas": 274,
+   "linhas": 273,
    "dominio": "components/bi",
    "hooks_locais": [],
    "tabelas": [],
@@ -2159,7 +2165,7 @@
     "BIDrillDown"
    ],
    "export_default": null,
-   "linhas": 158,
+   "linhas": 157,
    "dominio": "components/bi",
    "hooks_locais": [],
    "tabelas": [],
@@ -2173,7 +2179,7 @@
     "BIEmpresasTab"
    ],
    "export_default": null,
-   "linhas": 422,
+   "linhas": 421,
    "dominio": "components/bi",
    "hooks_locais": [],
    "tabelas": [],
@@ -2188,7 +2194,7 @@
     "BISecondaryKpis"
    ],
    "export_default": null,
-   "linhas": 196,
+   "linhas": 195,
    "dominio": "components/bi",
    "hooks_locais": [],
    "tabelas": [],
@@ -2202,7 +2208,7 @@
     "FuturisticDashboard"
    ],
    "export_default": null,
-   "linhas": 325,
+   "linhas": 324,
    "dominio": "components/bi",
    "hooks_locais": [],
    "tabelas": [],
@@ -2216,7 +2222,7 @@
     "BitrixClientsTab"
    ],
    "export_default": null,
-   "linhas": 101,
+   "linhas": 100,
    "dominio": "components/bitrix",
    "hooks_locais": [],
    "tabelas": [],
@@ -2230,7 +2236,7 @@
     "BitrixConfigTab"
    ],
    "export_default": null,
-   "linhas": 158,
+   "linhas": 157,
    "dominio": "components/bitrix",
    "hooks_locais": [],
    "tabelas": [],
@@ -2244,7 +2250,7 @@
     "BitrixDealsTab"
    ],
    "export_default": null,
-   "linhas": 108,
+   "linhas": 107,
    "dominio": "components/bitrix",
    "hooks_locais": [],
    "tabelas": [],
@@ -2258,7 +2264,7 @@
     "BitrixKpiCards"
    ],
    "export_default": null,
-   "linhas": 90,
+   "linhas": 89,
    "dominio": "components/bitrix",
    "hooks_locais": [],
    "tabelas": [],
@@ -2272,7 +2278,7 @@
     "BitrixMappingTab"
    ],
    "export_default": null,
-   "linhas": 133,
+   "linhas": 132,
    "dominio": "components/bitrix",
    "hooks_locais": [],
    "tabelas": [],
@@ -2286,7 +2292,7 @@
     "BitrixSyncLogsTab"
    ],
    "export_default": null,
-   "linhas": 125,
+   "linhas": 124,
    "dominio": "components/bitrix",
    "hooks_locais": [],
    "tabelas": [],
@@ -2300,7 +2306,7 @@
     "BlingContatosPanel"
    ],
    "export_default": null,
-   "linhas": 398,
+   "linhas": 397,
    "dominio": "components/bling",
    "hooks_locais": [
     "useBlingContatoMutations",
@@ -2317,7 +2323,7 @@
     "BlingEstoquePanel"
    ],
    "export_default": null,
-   "linhas": 329,
+   "linhas": 328,
    "dominio": "components/bling",
    "hooks_locais": [
     "useBlingDepositos",
@@ -2335,7 +2341,7 @@
     "BlingFinanceiroPanel"
    ],
    "export_default": null,
-   "linhas": 650,
+   "linhas": 649,
    "dominio": "components/bling",
    "hooks_locais": [
     "useBlingBorderos",
@@ -2356,7 +2362,7 @@
     "BlingLogisticaPanel"
    ],
    "export_default": null,
-   "linhas": 399,
+   "linhas": 398,
    "dominio": "components/bling",
    "hooks_locais": [
     "useBlingLogisticaMutations",
@@ -2376,7 +2382,7 @@
     "BlingNFeTab"
    ],
    "export_default": null,
-   "linhas": 237,
+   "linhas": 236,
    "dominio": "components/bling",
    "hooks_locais": [
     "useBlingNFe",
@@ -2393,7 +2399,7 @@
     "BlingPedidosPanel"
    ],
    "export_default": null,
-   "linhas": 238,
+   "linhas": 237,
    "dominio": "components/bling",
    "hooks_locais": [
     "useBlingPedidoMutations",
@@ -2410,7 +2416,7 @@
     "BlingProdutosPanel"
    ],
    "export_default": null,
-   "linhas": 394,
+   "linhas": 393,
    "dominio": "components/bling",
    "hooks_locais": [
     "useBlingProdutoMutations",
@@ -2429,7 +2435,7 @@
     "PaginationControls"
    ],
    "export_default": null,
-   "linhas": 56,
+   "linhas": 55,
    "dominio": "components/bling",
    "hooks_locais": [],
    "tabelas": [],
@@ -2443,7 +2449,7 @@
     "BlingWebhooksPanel"
    ],
    "export_default": null,
-   "linhas": 167,
+   "linhas": 166,
    "dominio": "components/bling",
    "hooks_locais": [
     "useBlingSyncLogs",
@@ -2460,7 +2466,7 @@
     "BoletoBarcode"
    ],
    "export_default": null,
-   "linhas": 145,
+   "linhas": 144,
    "dominio": "components/boletos",
    "hooks_locais": [],
    "tabelas": [],
@@ -2474,7 +2480,7 @@
     "BoletoGlobalHistory"
    ],
    "export_default": null,
-   "linhas": 91,
+   "linhas": 90,
    "dominio": "components/boletos",
    "hooks_locais": [
     "useHistoricoBoletos"
@@ -2490,7 +2496,7 @@
     "BoletoHistorico"
    ],
    "export_default": null,
-   "linhas": 112,
+   "linhas": 111,
    "dominio": "components/boletos",
    "hooks_locais": [],
    "tabelas": [
@@ -2506,7 +2512,7 @@
     "BoletoPreviewPanel"
    ],
    "export_default": null,
-   "linhas": 306,
+   "linhas": 305,
    "dominio": "components/boletos",
    "hooks_locais": [],
    "tabelas": [],
@@ -2520,7 +2526,7 @@
     "NovoBoletoForm"
    ],
    "export_default": null,
-   "linhas": 249,
+   "linhas": 248,
    "dominio": "components/boletos",
    "hooks_locais": [],
    "tabelas": [
@@ -2537,7 +2543,7 @@
     "CategoriaForm"
    ],
    "export_default": null,
-   "linhas": 213,
+   "linhas": 212,
    "dominio": "components/categorias",
    "hooks_locais": [
     "useAuth",
@@ -2555,7 +2561,7 @@
     "CategoriaTable"
    ],
    "export_default": null,
-   "linhas": 116,
+   "linhas": 115,
    "dominio": "components/categorias",
    "hooks_locais": [
     "useDeleteCategoria"
@@ -2571,7 +2577,7 @@
     "CentroCustoExport"
    ],
    "export_default": null,
-   "linhas": 115,
+   "linhas": 114,
    "dominio": "components/centros-custo",
    "hooks_locais": [],
    "tabelas": [],
@@ -2585,7 +2591,7 @@
     "CentroCustoForm"
    ],
    "export_default": null,
-   "linhas": 247,
+   "linhas": 246,
    "dominio": "components/centros-custo",
    "hooks_locais": [
     "useAtualizarCentroCusto",
@@ -2602,7 +2608,7 @@
     "CentroCustoHistorico"
    ],
    "export_default": null,
-   "linhas": 149,
+   "linhas": 148,
    "dominio": "components/centros-custo",
    "hooks_locais": [],
    "tabelas": [
@@ -2618,7 +2624,7 @@
     "CentroCustoTree"
    ],
    "export_default": null,
-   "linhas": 322,
+   "linhas": 321,
    "dominio": "components/centros-custo",
    "hooks_locais": [],
    "tabelas": [],
@@ -2632,7 +2638,7 @@
     "ChartContainer"
    ],
    "export_default": null,
-   "linhas": 39,
+   "linhas": 38,
    "dominio": "components/charts",
    "hooks_locais": [],
    "tabelas": [],
@@ -2646,7 +2652,7 @@
     "RechartsExample"
    ],
    "export_default": null,
-   "linhas": 60,
+   "linhas": 59,
    "dominio": "components/charts",
    "hooks_locais": [],
    "tabelas": [],
@@ -2660,7 +2666,7 @@
     "Sparkline"
    ],
    "export_default": null,
-   "linhas": 42,
+   "linhas": 41,
    "dominio": "components/charts",
    "hooks_locais": [],
    "tabelas": [],
@@ -2674,7 +2680,7 @@
     "ClienteDetailDialog"
    ],
    "export_default": null,
-   "linhas": 220,
+   "linhas": 219,
    "dominio": "components/clientes",
    "hooks_locais": [],
    "tabelas": [
@@ -2690,7 +2696,7 @@
     "ClienteForm"
    ],
    "export_default": null,
-   "linhas": 288,
+   "linhas": 287,
    "dominio": "components/clientes",
    "hooks_locais": [
     "useAuth",
@@ -2709,7 +2715,7 @@
     "ClienteFormFields"
    ],
    "export_default": null,
-   "linhas": 288,
+   "linhas": 287,
    "dominio": "components/clientes",
    "hooks_locais": [],
    "tabelas": [],
@@ -2723,7 +2729,7 @@
     "PortalClientePanel"
    ],
    "export_default": null,
-   "linhas": 142,
+   "linhas": 141,
    "dominio": "components/clientes",
    "hooks_locais": [
     "useCreatePortalToken",
@@ -2742,7 +2748,7 @@
     "ScoringClientesPanel"
    ],
    "export_default": null,
-   "linhas": 331,
+   "linhas": 330,
    "dominio": "components/clientes",
    "hooks_locais": [
     "useScoringClientes"
@@ -2758,7 +2764,7 @@
     "AcordoParcelamentoDialog"
    ],
    "export_default": null,
-   "linhas": 442,
+   "linhas": 441,
    "dominio": "components/cobranca",
    "hooks_locais": [
     "useAcordosParcelamento",
@@ -2775,7 +2781,7 @@
     "CobrancaKpis"
    ],
    "export_default": null,
-   "linhas": 136,
+   "linhas": 135,
    "dominio": "components/cobranca",
    "hooks_locais": [],
    "tabelas": [],
@@ -2789,7 +2795,7 @@
     "CustomerDeepScore"
    ],
    "export_default": null,
-   "linhas": 199,
+   "linhas": 198,
    "dominio": "components/cobranca",
    "hooks_locais": [],
    "tabelas": [],
@@ -2803,7 +2809,7 @@
     "FilaCobrancasPanel"
    ],
    "export_default": null,
-   "linhas": 228,
+   "linhas": 227,
    "dominio": "components/cobranca",
    "hooks_locais": [
     "useExecucoesCobranca",
@@ -2824,7 +2830,7 @@
     "MetricasPorCanal"
    ],
    "export_default": null,
-   "linhas": 96,
+   "linhas": 95,
    "dominio": "components/cobranca",
    "hooks_locais": [],
    "tabelas": [],
@@ -2838,7 +2844,7 @@
     "NegativacoesProtestosPanel"
    ],
    "export_default": null,
-   "linhas": 394,
+   "linhas": 393,
    "dominio": "components/cobranca",
    "hooks_locais": [
     "useCreateNegativacao",
@@ -2859,7 +2865,7 @@
     "NegociacaoIA"
    ],
    "export_default": null,
-   "linhas": 347,
+   "linhas": 346,
    "dominio": "components/cobranca",
    "hooks_locais": [],
    "tabelas": [],
@@ -2876,7 +2882,7 @@
     "PrevisaoClienteCard"
    ],
    "export_default": null,
-   "linhas": 121,
+   "linhas": 120,
    "dominio": "components/cobranca",
    "hooks_locais": [],
    "tabelas": [],
@@ -2890,7 +2896,7 @@
     "PrevisaoClientesList"
    ],
    "export_default": null,
-   "linhas": 68,
+   "linhas": 67,
    "dominio": "components/cobranca",
    "hooks_locais": [],
    "tabelas": [],
@@ -2904,7 +2910,7 @@
     "PrevisaoKPIs"
    ],
    "export_default": null,
-   "linhas": 66,
+   "linhas": 65,
    "dominio": "components/cobranca",
    "hooks_locais": [],
    "tabelas": [],
@@ -2918,7 +2924,7 @@
     "PrevisaoInadimplencia"
    ],
    "export_default": null,
-   "linhas": 338,
+   "linhas": 337,
    "dominio": "components/cobranca",
    "hooks_locais": [],
    "tabelas": [
@@ -2934,7 +2940,7 @@
     "ReguaCobrancaConfig"
    ],
    "export_default": null,
-   "linhas": 252,
+   "linhas": 251,
    "dominio": "components/cobranca",
    "hooks_locais": [
     "useReguaCobranca",
@@ -2953,7 +2959,7 @@
     "ReguaCobrancaVisual"
    ],
    "export_default": null,
-   "linhas": 81,
+   "linhas": 80,
    "dominio": "components/cobranca",
    "hooks_locais": [],
    "tabelas": [],
@@ -2967,7 +2973,7 @@
     "WhatsAppHistoryPanel"
    ],
    "export_default": null,
-   "linhas": 161,
+   "linhas": 160,
    "dominio": "components/cobranca",
    "hooks_locais": [
     "useWhatsAppCobrancaHistory"
@@ -2983,7 +2989,7 @@
     "WhatsAppProativoPanel"
    ],
    "export_default": null,
-   "linhas": 367,
+   "linhas": 366,
    "dominio": "components/cobranca",
    "hooks_locais": [],
    "tabelas": [],
@@ -2999,7 +3005,7 @@
     "CommandPalette"
    ],
    "export_default": null,
-   "linhas": 194,
+   "linhas": 193,
    "dominio": "components/command-palette",
    "hooks_locais": [
     "useTheme"
@@ -3015,7 +3021,7 @@
     "DuplicateButton"
    ],
    "export_default": null,
-   "linhas": 64,
+   "linhas": 63,
    "dominio": "components/common",
    "hooks_locais": [],
    "tabelas": [],
@@ -3029,7 +3035,7 @@
     "StartupDiagnostic"
    ],
    "export_default": null,
-   "linhas": 40,
+   "linhas": 39,
    "dominio": "components/common",
    "hooks_locais": [
     "useStartupDiagnostic"
@@ -3045,7 +3051,7 @@
     "VersionHistory"
    ],
    "export_default": null,
-   "linhas": 143,
+   "linhas": 142,
    "dominio": "components/common",
    "hooks_locais": [],
    "tabelas": [
@@ -3061,7 +3067,7 @@
     "AuditDetailDialog"
    ],
    "export_default": null,
-   "linhas": 76,
+   "linhas": 75,
    "dominio": "components/compliance",
    "hooks_locais": [],
    "tabelas": [],
@@ -3077,7 +3083,7 @@
     "FiltrosState"
    ],
    "export_default": null,
-   "linhas": 275,
+   "linhas": 274,
    "dominio": "components/compliance",
    "hooks_locais": [],
    "tabelas": [],
@@ -3091,7 +3097,7 @@
     "ComplianceKpis"
    ],
    "export_default": null,
-   "linhas": 67,
+   "linhas": 66,
    "dominio": "components/compliance",
    "hooks_locais": [
     "useComplianceKpis"
@@ -3107,7 +3113,7 @@
     "ConformidadeFiscalTab"
    ],
    "export_default": null,
-   "linhas": 42,
+   "linhas": 41,
    "dominio": "components/compliance",
    "hooks_locais": [],
    "tabelas": [],
@@ -3121,7 +3127,7 @@
     "EvidenciasTab"
    ],
    "export_default": null,
-   "linhas": 303,
+   "linhas": 302,
    "dominio": "components/compliance",
    "hooks_locais": [
     "useAuth",
@@ -3139,7 +3145,7 @@
     "EvidenciaStatusDialog"
    ],
    "export_default": null,
-   "linhas": 270,
+   "linhas": 269,
    "dominio": "components/compliance",
    "hooks_locais": [],
    "tabelas": [],
@@ -3153,7 +3159,7 @@
     "TrilhaFinanceiraTab"
    ],
    "export_default": null,
-   "linhas": 40,
+   "linhas": 39,
    "dominio": "components/compliance",
    "hooks_locais": [],
    "tabelas": [],
@@ -3167,7 +3173,7 @@
     "TrilhaSistemaTab"
    ],
    "export_default": null,
-   "linhas": 55,
+   "linhas": 54,
    "dominio": "components/compliance",
    "hooks_locais": [],
    "tabelas": [],
@@ -3178,10 +3184,11 @@
   {
    "arquivo": "src/components/compliance/TrilhaTable.tsx",
    "exports": [
+    "ColunaDef",
     "TrilhaTable"
    ],
    "export_default": null,
-   "linhas": 309,
+   "linhas": 308,
    "dominio": "components/compliance",
    "hooks_locais": [
     "useTrilhaAuditoria"
@@ -3197,7 +3204,7 @@
     "TrilhaTributariaTab"
    ],
    "export_default": null,
-   "linhas": 40,
+   "linhas": 39,
    "dominio": "components/compliance",
    "hooks_locais": [],
    "tabelas": [],
@@ -3211,7 +3218,7 @@
     "KpiBox"
    ],
    "export_default": null,
-   "linhas": 25,
+   "linhas": 24,
    "dominio": "components/compliance",
    "hooks_locais": [],
    "tabelas": [],
@@ -3225,7 +3232,7 @@
     "LinhaResultado"
    ],
    "export_default": null,
-   "linhas": 71,
+   "linhas": 70,
    "dominio": "components/compliance",
    "hooks_locais": [],
    "tabelas": [],
@@ -3239,7 +3246,7 @@
     "VerificarIntegridadeTab"
    ],
    "export_default": null,
-   "linhas": 240,
+   "linhas": 239,
    "dominio": "components/compliance",
    "hooks_locais": [
     "useIntegridadeVerifier"
@@ -3255,7 +3262,7 @@
     "PedidoCompraForm"
    ],
    "export_default": null,
-   "linhas": 304,
+   "linhas": 303,
    "dominio": "components/compras",
    "hooks_locais": [],
    "tabelas": [
@@ -3274,7 +3281,7 @@
     "ComprovanteOCR"
    ],
    "export_default": null,
-   "linhas": 329,
+   "linhas": 328,
    "dominio": "components/comprovantes",
    "hooks_locais": [],
    "tabelas": [],
@@ -3290,7 +3297,7 @@
     "ConciliacaoAuditPanel"
    ],
    "export_default": null,
-   "linhas": 487,
+   "linhas": 486,
    "dominio": "components/conciliacao",
    "hooks_locais": [],
    "tabelas": [
@@ -3309,7 +3316,7 @@
     "ConciliacaoDashboard"
    ],
    "export_default": null,
-   "linhas": 206,
+   "linhas": 205,
    "dominio": "components/conciliacao",
    "hooks_locais": [],
    "tabelas": [
@@ -3327,7 +3334,7 @@
     "ConciliacaoExport"
    ],
    "export_default": null,
-   "linhas": 395,
+   "linhas": 394,
    "dominio": "components/conciliacao",
    "hooks_locais": [],
    "tabelas": [
@@ -3341,10 +3348,11 @@
   {
    "arquivo": "src/components/conciliacao/ConciliacaoFilters.tsx",
    "exports": [
+    "ConciliacaoFilterState",
     "ConciliacaoFilters"
    ],
    "export_default": null,
-   "linhas": 209,
+   "linhas": 208,
    "dominio": "components/conciliacao",
    "hooks_locais": [
     "useCentrosCusto"
@@ -3360,7 +3368,7 @@
     "ConciliacaoManualDialog"
    ],
    "export_default": null,
-   "linhas": 320,
+   "linhas": 319,
    "dominio": "components/conciliacao",
    "hooks_locais": [
     "useCelebrations",
@@ -3377,7 +3385,7 @@
     "ConciliacaoRetroativaPanel"
    ],
    "export_default": null,
-   "linhas": 374,
+   "linhas": 373,
    "dominio": "components/conciliacao",
    "hooks_locais": [
     "useConciliacaoRetroativa"
@@ -3395,7 +3403,7 @@
     "ConciliacaoSplitDialog"
    ],
    "export_default": null,
-   "linhas": 305,
+   "linhas": 304,
    "dominio": "components/conciliacao",
    "hooks_locais": [],
    "tabelas": [
@@ -3412,7 +3420,7 @@
     "ConciliacaoToolbar"
    ],
    "export_default": null,
-   "linhas": 131,
+   "linhas": 130,
    "dominio": "components/conciliacao",
    "hooks_locais": [],
    "tabelas": [],
@@ -3426,7 +3434,7 @@
     "ConfiguracaoConciliacaoPanel"
    ],
    "export_default": null,
-   "linhas": 350,
+   "linhas": 349,
    "dominio": "components/conciliacao",
    "hooks_locais": [],
    "tabelas": [
@@ -3442,7 +3450,7 @@
     "DivergenciasConciliacaoPanel"
    ],
    "export_default": null,
-   "linhas": 140,
+   "linhas": 139,
    "dominio": "components/conciliacao",
    "hooks_locais": [
     "useConciliacaoAudit",
@@ -3459,7 +3467,7 @@
     "ExtratoBancarioPanel"
    ],
    "export_default": null,
-   "linhas": 78,
+   "linhas": 77,
    "dominio": "components/conciliacao",
    "hooks_locais": [
     "useExtratoBancario"
@@ -3475,7 +3483,7 @@
     "ExtratoPreviewStep"
    ],
    "export_default": null,
-   "linhas": 407,
+   "linhas": 406,
    "dominio": "components/conciliacao",
    "hooks_locais": [
     "useAuth"
@@ -3490,10 +3498,11 @@
   {
    "arquivo": "src/components/conciliacao/ia/AprovarTodosDialog.tsx",
    "exports": [
-    "AprovarTodosDialog"
+    "AprovarTodosDialog",
+    "MatchAltaConfianca"
    ],
    "export_default": null,
-   "linhas": 78,
+   "linhas": 77,
    "dominio": "components/conciliacao",
    "hooks_locais": [],
    "tabelas": [],
@@ -3507,7 +3516,7 @@
     "DetalhesExpandidosDialog"
    ],
    "export_default": null,
-   "linhas": 178,
+   "linhas": 177,
    "dominio": "components/conciliacao",
    "hooks_locais": [],
    "tabelas": [],
@@ -3521,7 +3530,7 @@
     "HistoricoConciliacaoDialog"
    ],
    "export_default": null,
-   "linhas": 199,
+   "linhas": 198,
    "dominio": "components/conciliacao",
    "hooks_locais": [],
    "tabelas": [],
@@ -3532,10 +3541,11 @@
   {
    "arquivo": "src/components/conciliacao/ia/RejeicaoDialog.tsx",
    "exports": [
-    "RejeicaoDialog"
+    "RejeicaoDialog",
+    "RejeicaoPendente"
    ],
    "export_default": null,
-   "linhas": 107,
+   "linhas": 106,
    "dominio": "components/conciliacao",
    "hooks_locais": [],
    "tabelas": [],
@@ -3549,7 +3559,7 @@
     "ScoreBadgeIA"
    ],
    "export_default": null,
-   "linhas": 30,
+   "linhas": 29,
    "dominio": "components/conciliacao",
    "hooks_locais": [],
    "tabelas": [],
@@ -3565,7 +3575,7 @@
     "SugestoesHeaderIA"
    ],
    "export_default": null,
-   "linhas": 484,
+   "linhas": 483,
    "dominio": "components/conciliacao",
    "hooks_locais": [],
    "tabelas": [],
@@ -3579,7 +3589,7 @@
     "ImportarExtratoDialog"
    ],
    "export_default": null,
-   "linhas": 511,
+   "linhas": 510,
    "dominio": "components/conciliacao",
    "hooks_locais": [],
    "tabelas": [
@@ -3595,7 +3605,7 @@
     "RegrasConciliacaoPanel"
    ],
    "export_default": null,
-   "linhas": 400,
+   "linhas": 399,
    "dominio": "components/conciliacao",
    "hooks_locais": [
     "useAuth"
@@ -3614,7 +3624,7 @@
     "RelatorioImportacaoDialog"
    ],
    "export_default": null,
-   "linhas": 190,
+   "linhas": 189,
    "dominio": "components/conciliacao",
    "hooks_locais": [],
    "tabelas": [],
@@ -3628,7 +3638,7 @@
     "SessoesConciliacaoPanel"
    ],
    "export_default": null,
-   "linhas": 79,
+   "linhas": 78,
    "dominio": "components/conciliacao",
    "hooks_locais": [
     "useConciliacoes"
@@ -3644,7 +3654,7 @@
     "SugestoesMatchIA"
    ],
    "export_default": null,
-   "linhas": 428,
+   "linhas": 427,
    "dominio": "components/conciliacao",
    "hooks_locais": [
     "useConciliacaoIA",
@@ -3661,7 +3671,7 @@
     "BiometricSettings"
    ],
    "export_default": null,
-   "linhas": 242,
+   "linhas": 241,
    "dominio": "components/configuracoes",
    "hooks_locais": [
     "useWebAuthn"
@@ -3677,7 +3687,7 @@
     "CronJobsPanel"
    ],
    "export_default": null,
-   "linhas": 343,
+   "linhas": 342,
    "dominio": "components/configuracoes",
    "hooks_locais": [],
    "tabelas": [],
@@ -3691,7 +3701,7 @@
     "NotificacoesConfig"
    ],
    "export_default": null,
-   "linhas": 162,
+   "linhas": 161,
    "dominio": "components/configuracoes",
    "hooks_locais": [
     "usePushNotifications"
@@ -3708,7 +3718,7 @@
     "PreferenciasState"
    ],
    "export_default": null,
-   "linhas": 170,
+   "linhas": 169,
    "dominio": "components/configuracoes",
    "hooks_locais": [
     "useOnboardingProgress"
@@ -3724,7 +3734,7 @@
     "RegrasDuplicidadeTab"
    ],
    "export_default": null,
-   "linhas": 300,
+   "linhas": 299,
    "dominio": "components/configuracoes",
    "hooks_locais": [],
    "tabelas": [
@@ -3741,7 +3751,7 @@
     "RegrasRoteamentoTab"
    ],
    "export_default": null,
-   "linhas": 289,
+   "linhas": 288,
    "dominio": "components/configuracoes",
    "hooks_locais": [
     "useToast"
@@ -3757,7 +3767,7 @@
     "ReguaCobrancaTab"
    ],
    "export_default": null,
-   "linhas": 135,
+   "linhas": 134,
    "dominio": "components/configuracoes",
    "hooks_locais": [],
    "tabelas": [],
@@ -3771,7 +3781,7 @@
     "SecuritySettings"
    ],
    "export_default": null,
-   "linhas": 425,
+   "linhas": 424,
    "dominio": "components/configuracoes",
    "hooks_locais": [
     "useAuth"
@@ -3791,7 +3801,7 @@
     "SecurityStatusBanner"
    ],
    "export_default": null,
-   "linhas": 91,
+   "linhas": 90,
    "dominio": "components/configuracoes",
    "hooks_locais": [
     "useAuth"
@@ -3807,7 +3817,7 @@
     "SistemaTab"
    ],
    "export_default": null,
-   "linhas": 291,
+   "linhas": 290,
    "dominio": "components/configuracoes",
    "hooks_locais": [],
    "tabelas": [],
@@ -3822,7 +3832,7 @@
     "TemplatesTab"
    ],
    "export_default": null,
-   "linhas": 198,
+   "linhas": 197,
    "dominio": "components/configuracoes",
    "hooks_locais": [],
    "tabelas": [],
@@ -3839,7 +3849,7 @@
     "Row"
    ],
    "export_default": null,
-   "linhas": 188,
+   "linhas": 187,
    "dominio": "components/contabilidade",
    "hooks_locais": [],
    "tabelas": [],
@@ -3853,7 +3863,7 @@
     "AuditoriaCFCPanel"
    ],
    "export_default": null,
-   "linhas": 433,
+   "linhas": 432,
    "dominio": "components/contabilidade",
    "hooks_locais": [],
    "tabelas": [],
@@ -3867,7 +3877,7 @@
     "AuditoriaLancamentosPanel"
    ],
    "export_default": null,
-   "linhas": 349,
+   "linhas": 348,
    "dominio": "components/contabilidade",
    "hooks_locais": [
     "useAuditoriaLancamentos"
@@ -3883,7 +3893,7 @@
     "BalanceteTable"
    ],
    "export_default": null,
-   "linhas": 122,
+   "linhas": 121,
    "dominio": "components/contabilidade",
    "hooks_locais": [],
    "tabelas": [],
@@ -3897,7 +3907,7 @@
     "BalanceteToolbar"
    ],
    "export_default": null,
-   "linhas": 118,
+   "linhas": 117,
    "dominio": "components/contabilidade",
    "hooks_locais": [],
    "tabelas": [],
@@ -3911,7 +3921,7 @@
     "BalanceteTab"
    ],
    "export_default": null,
-   "linhas": 167,
+   "linhas": 166,
    "dominio": "components/contabilidade",
    "hooks_locais": [
     "useBalancete",
@@ -3929,7 +3939,7 @@
     "LogsTableProps"
    ],
    "export_default": null,
-   "linhas": 82,
+   "linhas": 81,
    "dominio": "components/contabilidade",
    "hooks_locais": [],
    "tabelas": [],
@@ -3944,7 +3954,7 @@
     "RegraFormDialogProps"
    ],
    "export_default": null,
-   "linhas": 176,
+   "linhas": 175,
    "dominio": "components/contabilidade",
    "hooks_locais": [],
    "tabelas": [],
@@ -3959,7 +3969,7 @@
     "RegrasTableProps"
    ],
    "export_default": null,
-   "linhas": 359,
+   "linhas": 358,
    "dominio": "components/contabilidade",
    "hooks_locais": [],
    "tabelas": [],
@@ -3974,7 +3984,7 @@
     "SimulacaoDialogProps"
    ],
    "export_default": null,
-   "linhas": 379,
+   "linhas": 378,
    "dominio": "components/contabilidade",
    "hooks_locais": [],
    "tabelas": [],
@@ -3989,7 +3999,7 @@
     "StatsCardsProps"
    ],
    "export_default": null,
-   "linhas": 48,
+   "linhas": 47,
    "dominio": "components/contabilidade",
    "hooks_locais": [],
    "tabelas": [],
@@ -4003,7 +4013,7 @@
     "ContabilizacaoAutomaticaTab"
    ],
    "export_default": null,
-   "linhas": 135,
+   "linhas": 134,
    "dominio": "components/contabilidade",
    "hooks_locais": [
     "useContabilizacaoMutations",
@@ -4021,7 +4031,7 @@
     "BalancoViewProps"
    ],
    "export_default": null,
-   "linhas": 277,
+   "linhas": 276,
    "dominio": "components/contabilidade",
    "hooks_locais": [],
    "tabelas": [],
@@ -4036,7 +4046,7 @@
     "DreBalancoToolbarProps"
    ],
    "export_default": null,
-   "linhas": 225,
+   "linhas": 224,
    "dominio": "components/contabilidade",
    "hooks_locais": [],
    "tabelas": [],
@@ -4051,7 +4061,7 @@
     "DreViewProps"
    ],
    "export_default": null,
-   "linhas": 268,
+   "linhas": 267,
    "dominio": "components/contabilidade",
    "hooks_locais": [],
    "tabelas": [],
@@ -4066,7 +4076,7 @@
     "LancamentosDrillDownProps"
    ],
    "export_default": null,
-   "linhas": 210,
+   "linhas": 209,
    "dominio": "components/contabilidade",
    "hooks_locais": [
     "useLancamentosContabeis"
@@ -4082,7 +4092,7 @@
     "DreBalancoTab"
    ],
    "export_default": null,
-   "linhas": 278,
+   "linhas": 277,
    "dominio": "components/contabilidade",
    "hooks_locais": [
     "useAuth",
@@ -4101,7 +4111,7 @@
     "ElisaoFiscalTab"
    ],
    "export_default": null,
-   "linhas": 442,
+   "linhas": 441,
    "dominio": "components/contabilidade",
    "hooks_locais": [],
    "tabelas": [
@@ -4119,7 +4129,7 @@
     "NovaSimulacaoElisaoDialog"
    ],
    "export_default": null,
-   "linhas": 114,
+   "linhas": 113,
    "dominio": "components/contabilidade",
    "hooks_locais": [],
    "tabelas": [],
@@ -4133,7 +4143,7 @@
     "SimuladorTab"
    ],
    "export_default": null,
-   "linhas": 82,
+   "linhas": 81,
    "dominio": "components/contabilidade",
    "hooks_locais": [],
    "tabelas": [],
@@ -4147,7 +4157,7 @@
     "FilterPresetsManager"
    ],
    "export_default": null,
-   "linhas": 173,
+   "linhas": 172,
    "dominio": "components/contabilidade",
    "hooks_locais": [
     "useAuth",
@@ -4164,7 +4174,7 @@
     "PreviewStep"
    ],
    "export_default": null,
-   "linhas": 409,
+   "linhas": 408,
    "dominio": "components/contabilidade",
    "hooks_locais": [],
    "tabelas": [],
@@ -4178,7 +4188,7 @@
     "ResultStep"
    ],
    "export_default": null,
-   "linhas": 237,
+   "linhas": 236,
    "dominio": "components/contabilidade",
    "hooks_locais": [],
    "tabelas": [],
@@ -4192,7 +4202,7 @@
     "UploadStep"
    ],
    "export_default": null,
-   "linhas": 86,
+   "linhas": 85,
    "dominio": "components/contabilidade",
    "hooks_locais": [],
    "tabelas": [],
@@ -4207,7 +4217,7 @@
     "ImportarPlanoContasDialogProps"
    ],
    "export_default": null,
-   "linhas": 230,
+   "linhas": 229,
    "dominio": "components/contabilidade",
    "hooks_locais": [
     "useImportPlanoContas"
@@ -4223,7 +4233,7 @@
     "ImportLancamentosCSVDialog"
    ],
    "export_default": null,
-   "linhas": 225,
+   "linhas": 224,
    "dominio": "components/contabilidade",
    "hooks_locais": [
     "useImportLancamentosLote"
@@ -4239,7 +4249,7 @@
     "IndicadorCard"
    ],
    "export_default": null,
-   "linhas": 91,
+   "linhas": 90,
    "dominio": "components/contabilidade",
    "hooks_locais": [],
    "tabelas": [],
@@ -4253,7 +4263,7 @@
     "IndicesGrid"
    ],
    "export_default": null,
-   "linhas": 71,
+   "linhas": 70,
    "dominio": "components/contabilidade",
    "hooks_locais": [],
    "tabelas": [],
@@ -4267,7 +4277,7 @@
     "IndicesSerieChart"
    ],
    "export_default": null,
-   "linhas": 114,
+   "linhas": 113,
    "dominio": "components/contabilidade",
    "hooks_locais": [],
    "tabelas": [],
@@ -4281,7 +4291,7 @@
     "IndicesToolbar"
    ],
    "export_default": null,
-   "linhas": 86,
+   "linhas": 85,
    "dominio": "components/contabilidade",
    "hooks_locais": [],
    "tabelas": [],
@@ -4295,7 +4305,7 @@
     "IndicesTab"
    ],
    "export_default": null,
-   "linhas": 189,
+   "linhas": 188,
    "dominio": "components/contabilidade",
    "hooks_locais": [
     "useEmpresas",
@@ -4313,7 +4323,7 @@
     "LancamentosTab"
    ],
    "export_default": null,
-   "linhas": 540,
+   "linhas": 539,
    "dominio": "components/contabilidade",
    "hooks_locais": [
     "useAuth",
@@ -4331,7 +4341,7 @@
     "NovoLancamentoDialog"
    ],
    "export_default": null,
-   "linhas": 288,
+   "linhas": 287,
    "dominio": "components/contabilidade",
    "hooks_locais": [
     "useCriarLancamento"
@@ -4347,7 +4357,7 @@
     "PlanoContaHistoryPanel"
    ],
    "export_default": null,
-   "linhas": 264,
+   "linhas": 263,
    "dominio": "components/contabilidade",
    "hooks_locais": [],
    "tabelas": [],
@@ -4361,7 +4371,7 @@
     "PlanoContasTab"
    ],
    "export_default": null,
-   "linhas": 510,
+   "linhas": 509,
    "dominio": "components/contabilidade",
    "hooks_locais": [
     "useAuditoriaCFC",
@@ -4381,7 +4391,7 @@
     "PreValidacaoSpedPanel"
    ],
    "export_default": null,
-   "linhas": 299,
+   "linhas": 298,
    "dominio": "components/contabilidade",
    "hooks_locais": [],
    "tabelas": [],
@@ -4395,7 +4405,7 @@
     "DiarioTable"
    ],
    "export_default": null,
-   "linhas": 142,
+   "linhas": 141,
    "dominio": "components/contabilidade",
    "hooks_locais": [],
    "tabelas": [],
@@ -4409,7 +4419,7 @@
     "FiltersBar"
    ],
    "export_default": null,
-   "linhas": 188,
+   "linhas": 187,
    "dominio": "components/contabilidade",
    "hooks_locais": [],
    "tabelas": [],
@@ -4423,7 +4433,7 @@
     "RazaoList"
    ],
    "export_default": null,
-   "linhas": 219,
+   "linhas": 218,
    "dominio": "components/contabilidade",
    "hooks_locais": [],
    "tabelas": [],
@@ -4437,7 +4447,7 @@
     "RazaoDiarioTab"
    ],
    "export_default": null,
-   "linhas": 371,
+   "linhas": 370,
    "dominio": "components/contabilidade",
    "hooks_locais": [
     "useAuth",
@@ -4454,7 +4464,7 @@
     "SpedFilterBar"
    ],
    "export_default": null,
-   "linhas": 102,
+   "linhas": 101,
    "dominio": "components/contabilidade",
    "hooks_locais": [],
    "tabelas": [],
@@ -4468,7 +4478,7 @@
     "SpedHistoricoTable"
    ],
    "export_default": null,
-   "linhas": 476,
+   "linhas": 475,
    "dominio": "components/contabilidade",
    "hooks_locais": [],
    "tabelas": [],
@@ -4482,7 +4492,7 @@
     "SpedKpiCards"
    ],
    "export_default": null,
-   "linhas": 101,
+   "linhas": 100,
    "dominio": "components/contabilidade",
    "hooks_locais": [],
    "tabelas": [],
@@ -4496,7 +4506,7 @@
     "SpedTransmissaoDialog"
    ],
    "export_default": null,
-   "linhas": 65,
+   "linhas": 64,
    "dominio": "components/contabilidade",
    "hooks_locais": [],
    "tabelas": [],
@@ -4513,7 +4523,7 @@
     "StepPills"
    ],
    "export_default": null,
-   "linhas": 120,
+   "linhas": 119,
    "dominio": "components/contabilidade",
    "hooks_locais": [],
    "tabelas": [],
@@ -4528,7 +4538,7 @@
     "ResumoAlertas"
    ],
    "export_default": null,
-   "linhas": 108,
+   "linhas": 107,
    "dominio": "components/contabilidade",
    "hooks_locais": [],
    "tabelas": [],
@@ -4544,7 +4554,7 @@
     "ValidacaoFilter"
    ],
    "export_default": null,
-   "linhas": 142,
+   "linhas": 141,
    "dominio": "components/contabilidade",
    "hooks_locais": [],
    "tabelas": [],
@@ -4558,7 +4568,7 @@
     "HistoricoRow"
    ],
    "export_default": null,
-   "linhas": 298,
+   "linhas": 297,
    "dominio": "components/contabilidade",
    "hooks_locais": [],
    "tabelas": [],
@@ -4572,7 +4582,7 @@
     "ValidacoesDialog"
    ],
    "export_default": null,
-   "linhas": 172,
+   "linhas": 171,
    "dominio": "components/contabilidade",
    "hooks_locais": [],
    "tabelas": [],
@@ -4586,7 +4596,7 @@
     "Step1PeriodoEcd"
    ],
    "export_default": null,
-   "linhas": 119,
+   "linhas": 118,
    "dominio": "components/contabilidade",
    "hooks_locais": [],
    "tabelas": [],
@@ -4600,7 +4610,7 @@
     "Step2Validacoes"
    ],
    "export_default": null,
-   "linhas": 303,
+   "linhas": 302,
    "dominio": "components/contabilidade",
    "hooks_locais": [],
    "tabelas": [],
@@ -4614,7 +4624,7 @@
     "Step3Download"
    ],
    "export_default": null,
-   "linhas": 229,
+   "linhas": 228,
    "dominio": "components/contabilidade",
    "hooks_locais": [],
    "tabelas": [],
@@ -4632,7 +4642,7 @@
     "ResultadoAlertas"
    ],
    "export_default": null,
-   "linhas": 308,
+   "linhas": 307,
    "dominio": "components/contabilidade",
    "hooks_locais": [],
    "tabelas": [],
@@ -4649,7 +4659,7 @@
     "StepPills"
    ],
    "export_default": null,
-   "linhas": 139,
+   "linhas": 138,
    "dominio": "components/contabilidade",
    "hooks_locais": [],
    "tabelas": [],
@@ -4663,7 +4673,7 @@
     "SpedChecklistRow"
    ],
    "export_default": null,
-   "linhas": 59,
+   "linhas": 58,
    "dominio": "components/contabilidade",
    "hooks_locais": [],
    "tabelas": [],
@@ -4677,7 +4687,7 @@
     "SpedContabilTab"
    ],
    "export_default": null,
-   "linhas": 301,
+   "linhas": 300,
    "dominio": "components/contabilidade",
    "hooks_locais": [
     "useSpedContabilState"
@@ -4693,7 +4703,7 @@
     "SpedEcdDownloadStep"
    ],
    "export_default": null,
-   "linhas": 262,
+   "linhas": 261,
    "dominio": "components/contabilidade",
    "hooks_locais": [],
    "tabelas": [],
@@ -4707,7 +4717,7 @@
     "SpedEcdPreviewDialog"
    ],
    "export_default": null,
-   "linhas": 294,
+   "linhas": 293,
    "dominio": "components/contabilidade",
    "hooks_locais": [
     "useAuditoriaCFC",
@@ -4725,7 +4735,7 @@
     "SpedEcdWizard"
    ],
    "export_default": null,
-   "linhas": 390,
+   "linhas": 389,
    "dominio": "components/contabilidade",
    "hooks_locais": [
     "useAuditoriaCFC",
@@ -4744,10 +4754,11 @@
     "KpiCard",
     "KpiChip",
     "MetaField",
+    "Step",
     "StepPills"
    ],
    "export_default": null,
-   "linhas": 122,
+   "linhas": 121,
    "dominio": "components/contabilidade",
    "hooks_locais": [],
    "tabelas": [],
@@ -4761,7 +4772,7 @@
     "SpedEcdWizardStep3"
    ],
    "export_default": null,
-   "linhas": 264,
+   "linhas": 263,
    "dominio": "components/contabilidade",
    "hooks_locais": [],
    "tabelas": [],
@@ -4775,7 +4786,7 @@
     "SpedEcfHistorico"
    ],
    "export_default": null,
-   "linhas": 237,
+   "linhas": 236,
    "dominio": "components/contabilidade",
    "hooks_locais": [
     "useSpedEcfHistorico"
@@ -4791,7 +4802,7 @@
     "SpedEcfWizard"
    ],
    "export_default": null,
-   "linhas": 145,
+   "linhas": 144,
    "dominio": "components/contabilidade",
    "hooks_locais": [
     "useSpedEcfWizardState"
@@ -4807,7 +4818,7 @@
     "CategoryList"
    ],
    "export_default": null,
-   "linhas": 121,
+   "linhas": 120,
    "dominio": "components/contabilidade",
    "hooks_locais": [],
    "tabelas": [],
@@ -4821,7 +4832,7 @@
     "FooterActions"
    ],
    "export_default": null,
-   "linhas": 179,
+   "linhas": 178,
    "dominio": "components/contabilidade",
    "hooks_locais": [],
    "tabelas": [],
@@ -4835,7 +4846,7 @@
     "SearchBar"
    ],
    "export_default": null,
-   "linhas": 54,
+   "linhas": 53,
    "dominio": "components/contabilidade",
    "hooks_locais": [],
    "tabelas": [],
@@ -4849,7 +4860,7 @@
     "StatsHeader"
    ],
    "export_default": null,
-   "linhas": 69,
+   "linhas": 68,
    "dominio": "components/contabilidade",
    "hooks_locais": [],
    "tabelas": [],
@@ -4860,10 +4871,11 @@
   {
    "arquivo": "src/components/contabilidade/ValidacoesPreSpedDialog.tsx",
    "exports": [
+    "ValidacoesPreSpedArquivo",
     "ValidacoesPreSpedDialog"
    ],
    "export_default": null,
-   "linhas": 210,
+   "linhas": 209,
    "dominio": "components/contabilidade",
    "hooks_locais": [],
    "tabelas": [],
@@ -4877,7 +4889,7 @@
     "VerificacaoIntegracoesPanel"
    ],
    "export_default": null,
-   "linhas": 592,
+   "linhas": 591,
    "dominio": "components/contabilidade",
    "hooks_locais": [
     "useVerificacaoIntegracoes"
@@ -4893,7 +4905,7 @@
     "ContaBancariaCard"
    ],
    "export_default": null,
-   "linhas": 224,
+   "linhas": 223,
    "dominio": "components/contas-bancarias",
    "hooks_locais": [],
    "tabelas": [
@@ -4909,7 +4921,7 @@
     "ContasBancariasKPIs"
    ],
    "export_default": null,
-   "linhas": 96,
+   "linhas": 95,
    "dominio": "components/contas-bancarias",
    "hooks_locais": [],
    "tabelas": [],
@@ -4923,7 +4935,7 @@
     "DistribuicaoBancos"
    ],
    "export_default": null,
-   "linhas": 70,
+   "linhas": 69,
    "dominio": "components/contas-bancarias",
    "hooks_locais": [],
    "tabelas": [],
@@ -4937,7 +4949,7 @@
     "NovaContaDialog"
    ],
    "export_default": null,
-   "linhas": 175,
+   "linhas": 174,
    "dominio": "components/contas-bancarias",
    "hooks_locais": [],
    "tabelas": [
@@ -4953,7 +4965,7 @@
     "RegrasConciliacaoDialog"
    ],
    "export_default": null,
-   "linhas": 38,
+   "linhas": 37,
    "dominio": "components/contas-bancarias",
    "hooks_locais": [],
    "tabelas": [],
@@ -4967,7 +4979,7 @@
     "TransferenciaDialog"
    ],
    "export_default": null,
-   "linhas": 227,
+   "linhas": 226,
    "dominio": "components/contas-bancarias",
    "hooks_locais": [
     "useContasBancarias",
@@ -4985,7 +4997,7 @@
     "CategorizacaoLoteButton"
    ],
    "export_default": null,
-   "linhas": 227,
+   "linhas": 226,
    "dominio": "components/contas-pagar",
    "hooks_locais": [
     "useCategorizacaoIA"
@@ -5001,7 +5013,7 @@
     "ContaPagarForm"
    ],
    "export_default": null,
-   "linhas": 532,
+   "linhas": 531,
    "dominio": "components/contas-pagar",
    "hooks_locais": [
     "useCategorias",
@@ -5028,7 +5040,7 @@
     "ContaPagarFormFields"
    ],
    "export_default": null,
-   "linhas": 376,
+   "linhas": 375,
    "dominio": "components/contas-pagar",
    "hooks_locais": [],
    "tabelas": [],
@@ -5042,7 +5054,7 @@
     "ContaPagarRowAprovacaoBadge"
    ],
    "export_default": null,
-   "linhas": 226,
+   "linhas": 225,
    "dominio": "components/contas-pagar",
    "hooks_locais": [],
    "tabelas": [],
@@ -5056,7 +5068,7 @@
     "ContasPagarFilters"
    ],
    "export_default": null,
-   "linhas": 172,
+   "linhas": 171,
    "dominio": "components/contas-pagar",
    "hooks_locais": [],
    "tabelas": [],
@@ -5070,7 +5082,7 @@
     "ContasPagarKPIs"
    ],
    "export_default": null,
-   "linhas": 136,
+   "linhas": 135,
    "dominio": "components/contas-pagar",
    "hooks_locais": [],
    "tabelas": [],
@@ -5084,7 +5096,7 @@
     "ContasPagarTableRow"
    ],
    "export_default": null,
-   "linhas": 448,
+   "linhas": 447,
    "dominio": "components/contas-pagar",
    "hooks_locais": [],
    "tabelas": [
@@ -5100,7 +5112,7 @@
     "LeitorCodigoBarras"
    ],
    "export_default": null,
-   "linhas": 339,
+   "linhas": 338,
    "dominio": "components/contas-pagar",
    "hooks_locais": [],
    "tabelas": [],
@@ -5114,7 +5126,7 @@
     "PagamentoApprovalAlert"
    ],
    "export_default": null,
-   "linhas": 64,
+   "linhas": 63,
    "dominio": "components/contas-pagar",
    "hooks_locais": [],
    "tabelas": [],
@@ -5128,7 +5140,7 @@
     "PagamentoSummary"
    ],
    "export_default": null,
-   "linhas": 45,
+   "linhas": 44,
    "dominio": "components/contas-pagar",
    "hooks_locais": [],
    "tabelas": [],
@@ -5142,7 +5154,7 @@
     "RegistrarPagamentoDialog"
    ],
    "export_default": null,
-   "linhas": 456,
+   "linhas": 455,
    "dominio": "components/contas-pagar",
    "hooks_locais": [
     "useConfiguracaoAprovacao",
@@ -5163,7 +5175,7 @@
     "SolicitarAprovacaoDialog"
    ],
    "export_default": null,
-   "linhas": 126,
+   "linhas": 125,
    "dominio": "components/contas-pagar",
    "hooks_locais": [],
    "tabelas": [],
@@ -5177,7 +5189,7 @@
     "AplicarDescontoDialog"
    ],
    "export_default": null,
-   "linhas": 169,
+   "linhas": 168,
    "dominio": "components/contas-receber",
    "hooks_locais": [],
    "tabelas": [
@@ -5193,7 +5205,7 @@
     "BaixaAutomaticaDialog"
    ],
    "export_default": null,
-   "linhas": 465,
+   "linhas": 464,
    "dominio": "components/contas-receber",
    "hooks_locais": [],
    "tabelas": [
@@ -5212,7 +5224,7 @@
     "CalculadoraJurosMulta"
    ],
    "export_default": null,
-   "linhas": 88,
+   "linhas": 87,
    "dominio": "components/contas-receber",
    "hooks_locais": [],
    "tabelas": [],
@@ -5226,7 +5238,7 @@
     "CategorizacaoIABadge"
    ],
    "export_default": null,
-   "linhas": 166,
+   "linhas": 165,
    "dominio": "components/contas-receber",
    "hooks_locais": [
     "useCategorizacaoIA"
@@ -5242,7 +5254,7 @@
     "ContaReceberDetailDrawer"
    ],
    "export_default": null,
-   "linhas": 415,
+   "linhas": 414,
    "dominio": "components/contas-receber",
    "hooks_locais": [],
    "tabelas": [
@@ -5262,7 +5274,7 @@
     "ContaReceberForm"
    ],
    "export_default": null,
-   "linhas": 405,
+   "linhas": 404,
    "dominio": "components/contas-receber",
    "hooks_locais": [
     "useAuth",
@@ -5288,7 +5300,7 @@
     "ContaReceberFormFields"
    ],
    "export_default": null,
-   "linhas": 751,
+   "linhas": 750,
    "dominio": "components/contas-receber",
    "hooks_locais": [],
    "tabelas": [],
@@ -5302,7 +5314,7 @@
     "ContasReceberFilters"
    ],
    "export_default": null,
-   "linhas": 170,
+   "linhas": 169,
    "dominio": "components/contas-receber",
    "hooks_locais": [],
    "tabelas": [],
@@ -5316,7 +5328,7 @@
     "ContasReceberKanban"
    ],
    "export_default": null,
-   "linhas": 175,
+   "linhas": 174,
    "dominio": "components/contas-receber",
    "hooks_locais": [],
    "tabelas": [],
@@ -5330,7 +5342,7 @@
     "ContasReceberKPIs"
    ],
    "export_default": null,
-   "linhas": 379,
+   "linhas": 378,
    "dominio": "components/contas-receber",
    "hooks_locais": [],
    "tabelas": [],
@@ -5341,10 +5353,11 @@
   {
    "arquivo": "src/components/contas-receber/ContasReceberTableRow.tsx",
    "exports": [
+    "ContaReceberWithRelations",
     "ContasReceberTableRow"
    ],
    "export_default": null,
-   "linhas": 114,
+   "linhas": 113,
    "dominio": "components/contas-receber",
    "hooks_locais": [],
    "tabelas": [],
@@ -5358,7 +5371,7 @@
     "DrawerAnexosTab"
    ],
    "export_default": null,
-   "linhas": 83,
+   "linhas": 82,
    "dominio": "components/contas-receber",
    "hooks_locais": [],
    "tabelas": [],
@@ -5372,7 +5385,7 @@
     "DrawerCobrancasTab"
    ],
    "export_default": null,
-   "linhas": 67,
+   "linhas": 66,
    "dominio": "components/contas-receber",
    "hooks_locais": [],
    "tabelas": [],
@@ -5386,7 +5399,7 @@
     "DrawerDetailsTab"
    ],
    "export_default": null,
-   "linhas": 252,
+   "linhas": 251,
    "dominio": "components/contas-receber",
    "hooks_locais": [],
    "tabelas": [],
@@ -5400,7 +5413,7 @@
     "DrawerTimelineTab"
    ],
    "export_default": null,
-   "linhas": 164,
+   "linhas": 163,
    "dominio": "components/contas-receber",
    "hooks_locais": [],
    "tabelas": [],
@@ -5414,7 +5427,7 @@
     "EnviarCobrancaDialog"
    ],
    "export_default": null,
-   "linhas": 143,
+   "linhas": 142,
    "dominio": "components/contas-receber",
    "hooks_locais": [],
    "tabelas": [],
@@ -5428,7 +5441,7 @@
     "RegistrarRecebimentoDialog"
    ],
    "export_default": null,
-   "linhas": 375,
+   "linhas": 374,
    "dominio": "components/contas-receber",
    "hooks_locais": [
     "useContasBancarias"
@@ -5447,7 +5460,7 @@
     "AcoesCell"
    ],
    "export_default": null,
-   "linhas": 208,
+   "linhas": 207,
    "dominio": "components/contas-receber",
    "hooks_locais": [],
    "tabelas": [],
@@ -5461,7 +5474,7 @@
     "ClienteCell"
    ],
    "export_default": null,
-   "linhas": 29,
+   "linhas": 28,
    "dominio": "components/contas-receber",
    "hooks_locais": [],
    "tabelas": [],
@@ -5475,7 +5488,7 @@
     "DescricaoCell"
    ],
    "export_default": null,
-   "linhas": 37,
+   "linhas": 36,
    "dominio": "components/contas-receber",
    "hooks_locais": [],
    "tabelas": [],
@@ -5490,7 +5503,7 @@
     "StatusCell"
    ],
    "export_default": null,
-   "linhas": 104,
+   "linhas": 103,
    "dominio": "components/contas-receber",
    "hooks_locais": [],
    "tabelas": [],
@@ -5504,7 +5517,7 @@
     "ValorCell"
    ],
    "export_default": null,
-   "linhas": 33,
+   "linhas": 32,
    "dominio": "components/contas-receber",
    "hooks_locais": [],
    "tabelas": [],
@@ -5519,7 +5532,7 @@
     "VencimentoCell"
    ],
    "export_default": null,
-   "linhas": 75,
+   "linhas": 74,
    "dominio": "components/contas-receber",
    "hooks_locais": [],
    "tabelas": [],
@@ -5533,7 +5546,7 @@
     "WebhookConfigDialog"
    ],
    "export_default": null,
-   "linhas": 35,
+   "linhas": 34,
    "dominio": "components/contas-receber",
    "hooks_locais": [],
    "tabelas": [],
@@ -5547,7 +5560,7 @@
     "WebhookConfigPanel"
    ],
    "export_default": null,
-   "linhas": 228,
+   "linhas": 227,
    "dominio": "components/contas-receber",
    "hooks_locais": [],
    "tabelas": [
@@ -5563,7 +5576,7 @@
     "GestaoContratos"
    ],
    "export_default": null,
-   "linhas": 260,
+   "linhas": 259,
    "dominio": "components/contratos",
    "hooks_locais": [
     "useContratos",
@@ -5581,7 +5594,7 @@
     "CopilotGlobalFloat"
    ],
    "export_default": null,
-   "linhas": 285,
+   "linhas": 284,
    "dominio": "components/copilot",
    "hooks_locais": [],
    "tabelas": [],
@@ -5597,7 +5610,7 @@
     "EmpresaChartsSection"
    ],
    "export_default": null,
-   "linhas": 158,
+   "linhas": 157,
    "dominio": "components/dashboard-empresa",
    "hooks_locais": [],
    "tabelas": [],
@@ -5611,7 +5624,7 @@
     "EmpresaDrillDownSection"
    ],
    "export_default": null,
-   "linhas": 296,
+   "linhas": 295,
    "dominio": "components/dashboard-empresa",
    "hooks_locais": [],
    "tabelas": [],
@@ -5625,7 +5638,7 @@
     "EmpresaKpiCards"
    ],
    "export_default": null,
-   "linhas": 115,
+   "linhas": 114,
    "dominio": "components/dashboard-empresa",
    "hooks_locais": [],
    "tabelas": [],
@@ -5639,7 +5652,7 @@
     "ReceberChartsSection"
    ],
    "export_default": null,
-   "linhas": 310,
+   "linhas": 309,
    "dominio": "components/dashboard-receber",
    "hooks_locais": [],
    "tabelas": [],
@@ -5654,7 +5667,7 @@
     "ReceberKpisCards"
    ],
    "export_default": null,
-   "linhas": 206,
+   "linhas": 205,
    "dominio": "components/dashboard-receber",
    "hooks_locais": [
     "useAuth",
@@ -5672,7 +5685,7 @@
     "AlertasCatalogosFiscaisCardProps"
    ],
    "export_default": null,
-   "linhas": 132,
+   "linhas": 131,
    "dominio": "components/dashboard",
    "hooks_locais": [
     "useCatalogosFiscais"
@@ -5688,7 +5701,7 @@
     "AlertasOrcamento"
    ],
    "export_default": null,
-   "linhas": 104,
+   "linhas": 103,
    "dominio": "components/dashboard",
    "hooks_locais": [
     "useAuth",
@@ -5705,7 +5718,7 @@
     "AlertasPreditivosPanel"
    ],
    "export_default": null,
-   "linhas": 249,
+   "linhas": 248,
    "dominio": "components/dashboard",
    "hooks_locais": [
     "useAlertasPreditivos"
@@ -5721,7 +5734,7 @@
     "CentroAcoesInteligentes"
    ],
    "export_default": null,
-   "linhas": 171,
+   "linhas": 170,
    "dominio": "components/dashboard",
    "hooks_locais": [
     "useAcoesRecomendadas"
@@ -5737,7 +5750,7 @@
     "DashboardConfigDialog"
    ],
    "export_default": null,
-   "linhas": 168,
+   "linhas": 167,
    "dominio": "components/dashboard",
    "hooks_locais": [],
    "tabelas": [],
@@ -5751,7 +5764,7 @@
     "DashboardExecutivo"
    ],
    "export_default": null,
-   "linhas": 468,
+   "linhas": 467,
    "dominio": "components/dashboard",
    "hooks_locais": [
     "useAuth",
@@ -5771,7 +5784,7 @@
     "DashboardFiltersHeader"
    ],
    "export_default": null,
-   "linhas": 148,
+   "linhas": 147,
    "dominio": "components/dashboard",
    "hooks_locais": [
     "useAuth"
@@ -5791,7 +5804,7 @@
     "TableSkeleton"
    ],
    "export_default": null,
-   "linhas": 236,
+   "linhas": 235,
    "dominio": "components/dashboard",
    "hooks_locais": [],
    "tabelas": [],
@@ -5805,7 +5818,7 @@
     "FluxoCaixaChart"
    ],
    "export_default": null,
-   "linhas": 174,
+   "linhas": 173,
    "dominio": "components/dashboard",
    "hooks_locais": [],
    "tabelas": [],
@@ -5819,7 +5832,7 @@
     "HealthScoreCard"
    ],
    "export_default": null,
-   "linhas": 154,
+   "linhas": 153,
    "dominio": "components/dashboard",
    "hooks_locais": [
     "useHealthScoreOperacional"
@@ -5836,7 +5849,7 @@
     "HeroKPIGrid"
    ],
    "export_default": null,
-   "linhas": 200,
+   "linhas": 199,
    "dominio": "components/dashboard",
    "hooks_locais": [
     "useCountUp"
@@ -5852,7 +5865,7 @@
     "MetasFinanceirasPanel"
    ],
    "export_default": null,
-   "linhas": 350,
+   "linhas": 349,
    "dominio": "components/dashboard",
    "hooks_locais": [
     "useCreateMeta",
@@ -5872,7 +5885,7 @@
     "PlanosAcaoPanel"
    ],
    "export_default": null,
-   "linhas": 239,
+   "linhas": 238,
    "dominio": "components/dashboard",
    "hooks_locais": [
     "usePlanosAcao",
@@ -5889,7 +5902,7 @@
     "PrevisaoIAAlertas"
    ],
    "export_default": null,
-   "linhas": 115,
+   "linhas": 114,
    "dominio": "components/dashboard",
    "hooks_locais": [],
    "tabelas": [],
@@ -5903,7 +5916,7 @@
     "PrevisaoIAProjecoes"
    ],
    "export_default": null,
-   "linhas": 170,
+   "linhas": 169,
    "dominio": "components/dashboard",
    "hooks_locais": [],
    "tabelas": [],
@@ -5917,7 +5930,7 @@
     "PrevisaoIATendencias"
    ],
    "export_default": null,
-   "linhas": 269,
+   "linhas": 268,
    "dominio": "components/dashboard",
    "hooks_locais": [],
    "tabelas": [],
@@ -5931,7 +5944,7 @@
     "PrevisaoIAVisaoGeral"
    ],
    "export_default": null,
-   "linhas": 172,
+   "linhas": 171,
    "dominio": "components/dashboard",
    "hooks_locais": [],
    "tabelas": [],
@@ -5945,7 +5958,7 @@
     "PrevisaoIA"
    ],
    "export_default": null,
-   "linhas": 329,
+   "linhas": 328,
    "dominio": "components/dashboard",
    "hooks_locais": [
     "useEmpresaScope",
@@ -5964,7 +5977,7 @@
     "SaldoPorBancoCard"
    ],
    "export_default": null,
-   "linhas": 110,
+   "linhas": 109,
    "dominio": "components/dashboard",
    "hooks_locais": [],
    "tabelas": [],
@@ -5978,7 +5991,7 @@
     "SecondaryKPICards"
    ],
    "export_default": null,
-   "linhas": 207,
+   "linhas": 206,
    "dominio": "components/dashboard",
    "hooks_locais": [
     "useCountUp"
@@ -5994,7 +6007,7 @@
     "StatusContasPieChart"
    ],
    "export_default": null,
-   "linhas": 123,
+   "linhas": 122,
    "dominio": "components/dashboard",
    "hooks_locais": [],
    "tabelas": [],
@@ -6008,7 +6021,7 @@
     "TopCentrosCustoChart"
    ],
    "export_default": null,
-   "linhas": 119,
+   "linhas": 118,
    "dominio": "components/dashboard",
    "hooks_locais": [],
    "tabelas": [],
@@ -6022,7 +6035,7 @@
     "TopClientesLeaderboard"
    ],
    "export_default": null,
-   "linhas": 119,
+   "linhas": 118,
    "dominio": "components/dashboard",
    "hooks_locais": [],
    "tabelas": [],
@@ -6036,7 +6049,7 @@
     "BalancoDesequilibrioIndicator"
    ],
    "export_default": null,
-   "linhas": 179,
+   "linhas": 178,
    "dominio": "components/demonstrativos",
    "hooks_locais": [
     "useLancamentosContabeis"
@@ -6052,7 +6065,7 @@
     "BalancoPatrimonial"
    ],
    "export_default": null,
-   "linhas": 386,
+   "linhas": 385,
    "dominio": "components/demonstrativos",
    "hooks_locais": [
     "useDemonstrativosContabeis"
@@ -6068,7 +6081,7 @@
     "ContasNaoClassificadasDialog"
    ],
    "export_default": null,
-   "linhas": 224,
+   "linhas": 223,
    "dominio": "components/demonstrativos",
    "hooks_locais": [],
    "tabelas": [
@@ -6084,7 +6097,7 @@
     "DREStatement"
    ],
    "export_default": null,
-   "linhas": 295,
+   "linhas": 294,
    "dominio": "components/demonstrativos",
    "hooks_locais": [
     "useDemonstrativosContabeis"
@@ -6101,7 +6114,7 @@
     "ExportDemonstrativoPDFProps"
    ],
    "export_default": null,
-   "linhas": 334,
+   "linhas": 333,
    "dominio": "components/demonstrativos",
    "hooks_locais": [],
    "tabelas": [],
@@ -6115,7 +6128,7 @@
     "FluxoCaixaContabil"
    ],
    "export_default": null,
-   "linhas": 540,
+   "linhas": 539,
    "dominio": "components/demonstrativos",
    "hooks_locais": [
     "useContasBancarias",
@@ -6133,7 +6146,7 @@
     "FonteDadosToggle"
    ],
    "export_default": null,
-   "linhas": 96,
+   "linhas": 95,
    "dominio": "components/demonstrativos",
    "hooks_locais": [],
    "tabelas": [],
@@ -6147,7 +6160,7 @@
     "DesignSystemAudit"
    ],
    "export_default": null,
-   "linhas": 456,
+   "linhas": 455,
    "dominio": "components/design-system-debug",
    "hooks_locais": [],
    "tabelas": [],
@@ -6161,7 +6174,7 @@
     "PixelPerfectOverlay"
    ],
    "export_default": null,
-   "linhas": 163,
+   "linhas": 162,
    "dominio": "components/design-system-debug",
    "hooks_locais": [],
    "tabelas": [],
@@ -6175,7 +6188,7 @@
     "AssinaturaDigital"
    ],
    "export_default": null,
-   "linhas": 129,
+   "linhas": 128,
    "dominio": "components/documentos",
    "hooks_locais": [],
    "tabelas": [],
@@ -6190,7 +6203,7 @@
     "AuroraBackgroundProps"
    ],
    "export_default": null,
-   "linhas": 23,
+   "linhas": 22,
    "dominio": "components/effects",
    "hooks_locais": [],
    "tabelas": [],
@@ -6205,7 +6218,7 @@
     "BlurTextProps"
    ],
    "export_default": "BlurText",
-   "linhas": 133,
+   "linhas": 132,
    "dominio": "components/effects",
    "hooks_locais": [],
    "tabelas": [],
@@ -6220,7 +6233,7 @@
     "EmpresaActionPickerProps"
    ],
    "export_default": null,
-   "linhas": 177,
+   "linhas": 176,
    "dominio": "components/empresa",
    "hooks_locais": [
     "useEmpresaScope"
@@ -6239,7 +6252,7 @@
     "EmpresaBadgeProps"
    ],
    "export_default": null,
-   "linhas": 95,
+   "linhas": 94,
    "dominio": "components/empresa",
    "hooks_locais": [
     "useEmpresaScope"
@@ -6255,7 +6268,7 @@
     "EmpresaScopeBar"
    ],
    "export_default": null,
-   "linhas": 229,
+   "linhas": 228,
    "dominio": "components/empresa",
    "hooks_locais": [
     "useEmpresaScope"
@@ -6272,7 +6285,7 @@
     "CnaeCatalogoInfoProps"
    ],
    "export_default": null,
-   "linhas": 79,
+   "linhas": 78,
    "dominio": "components/empresas",
    "hooks_locais": [],
    "tabelas": [],
@@ -6287,7 +6300,7 @@
     "EmpresaHeroKPI"
    ],
    "export_default": null,
-   "linhas": 425,
+   "linhas": 424,
    "dominio": "components/empresas",
    "hooks_locais": [],
    "tabelas": [],
@@ -6301,7 +6314,7 @@
     "EmpresaForm"
    ],
    "export_default": null,
-   "linhas": 453,
+   "linhas": 452,
    "dominio": "components/empresas",
    "hooks_locais": [
     "useAtualizarEmpresa",
@@ -6320,7 +6333,7 @@
     "ErrorBoundary"
    ],
    "export_default": null,
-   "linhas": 207,
+   "linhas": 206,
    "dominio": "components/error",
    "hooks_locais": [],
    "tabelas": [],
@@ -6334,7 +6347,7 @@
     "DocumentAnalyzer"
    ],
    "export_default": null,
-   "linhas": 232,
+   "linhas": 231,
    "dominio": "components/expert",
    "hooks_locais": [],
    "tabelas": [],
@@ -6350,7 +6363,7 @@
     "ExpertChatMessages"
    ],
    "export_default": null,
-   "linhas": 169,
+   "linhas": 168,
    "dominio": "components/expert",
    "hooks_locais": [],
    "tabelas": [],
@@ -6364,7 +6377,7 @@
     "ExpertHistoryPanel"
    ],
    "export_default": null,
-   "linhas": 175,
+   "linhas": 174,
    "dominio": "components/expert",
    "hooks_locais": [],
    "tabelas": [],
@@ -6378,7 +6391,7 @@
     "ExpertPromptComposer"
    ],
    "export_default": null,
-   "linhas": 87,
+   "linhas": 86,
    "dominio": "components/expert",
    "hooks_locais": [],
    "tabelas": [],
@@ -6392,7 +6405,7 @@
     "ExpertWelcomeScreen"
    ],
    "export_default": null,
-   "linhas": 132,
+   "linhas": 131,
    "dominio": "components/expert",
    "hooks_locais": [],
    "tabelas": [],
@@ -6406,7 +6419,7 @@
     "ProactiveSuggestions"
    ],
    "export_default": null,
-   "linhas": 337,
+   "linhas": 336,
    "dominio": "components/expert",
    "hooks_locais": [],
    "tabelas": [
@@ -6426,7 +6439,7 @@
     "DescribedFilter"
    ],
    "export_default": "ClearFiltersButton",
-   "linhas": 199,
+   "linhas": 198,
    "dominio": "components/filters",
    "hooks_locais": [],
    "tabelas": [],
@@ -6441,7 +6454,7 @@
     "FilterPreviewItem"
    ],
    "export_default": "FilterPreviewChips",
-   "linhas": 143,
+   "linhas": 142,
    "dominio": "components/filters",
    "hooks_locais": [],
    "tabelas": [],
@@ -6455,7 +6468,7 @@
     "AnexoList"
    ],
    "export_default": null,
-   "linhas": 282,
+   "linhas": 281,
    "dominio": "components/financeiro",
    "hooks_locais": [],
    "tabelas": [
@@ -6473,7 +6486,7 @@
     "BankAccountSwitcher"
    ],
    "export_default": null,
-   "linhas": 190,
+   "linhas": 189,
    "dominio": "components/financeiro",
    "hooks_locais": [
     "useBankAccounts"
@@ -6489,7 +6502,7 @@
     "WhatsAppHistoryIA"
    ],
    "export_default": null,
-   "linhas": 167,
+   "linhas": 166,
    "dominio": "components/financeiro",
    "hooks_locais": [
     "useSendMessage",
@@ -6506,7 +6519,7 @@
     "TransferenciaDialog"
    ],
    "export_default": null,
-   "linhas": 259,
+   "linhas": 258,
    "dominio": "components/financeiro",
    "hooks_locais": [
     "useContasBancarias",
@@ -6525,7 +6538,7 @@
     "AlertasRuptura"
    ],
    "export_default": null,
-   "linhas": 270,
+   "linhas": 269,
    "dominio": "components/fluxo-caixa",
    "hooks_locais": [],
    "tabelas": [],
@@ -6539,7 +6552,7 @@
     "CenarioSelector"
    ],
    "export_default": null,
-   "linhas": 82,
+   "linhas": 81,
    "dominio": "components/fluxo-caixa",
    "hooks_locais": [],
    "tabelas": [],
@@ -6553,7 +6566,7 @@
     "FluxoCaixaBarChart"
    ],
    "export_default": null,
-   "linhas": 108,
+   "linhas": 107,
    "dominio": "components/fluxo-caixa",
    "hooks_locais": [],
    "tabelas": [],
@@ -6567,7 +6580,7 @@
     "FluxoCaixaHeader"
    ],
    "export_default": null,
-   "linhas": 126,
+   "linhas": 125,
    "dominio": "components/fluxo-caixa",
    "hooks_locais": [],
    "tabelas": [],
@@ -6581,7 +6594,7 @@
     "FluxoCaixaKPIs"
    ],
    "export_default": null,
-   "linhas": 207,
+   "linhas": 206,
    "dominio": "components/fluxo-caixa",
    "hooks_locais": [],
    "tabelas": [],
@@ -6595,7 +6608,7 @@
     "GraficoCenarios"
    ],
    "export_default": null,
-   "linhas": 239,
+   "linhas": 238,
    "dominio": "components/fluxo-caixa",
    "hooks_locais": [],
    "tabelas": [],
@@ -6609,7 +6622,7 @@
     "IndicadorCobertura"
    ],
    "export_default": null,
-   "linhas": 169,
+   "linhas": 168,
    "dominio": "components/fluxo-caixa",
    "hooks_locais": [],
    "tabelas": [],
@@ -6623,7 +6636,7 @@
     "InsightsFluxoIA"
    ],
    "export_default": null,
-   "linhas": 316,
+   "linhas": 315,
    "dominio": "components/fluxo-caixa",
    "hooks_locais": [],
    "tabelas": [],
@@ -6639,7 +6652,7 @@
     "ProjecaoDiariaGrid"
    ],
    "export_default": null,
-   "linhas": 156,
+   "linhas": 155,
    "dominio": "components/fluxo-caixa",
    "hooks_locais": [],
    "tabelas": [],
@@ -6653,7 +6666,7 @@
     "ResumosCenarios"
    ],
    "export_default": null,
-   "linhas": 242,
+   "linhas": 241,
    "dominio": "components/fluxo-caixa",
    "hooks_locais": [],
    "tabelas": [],
@@ -6667,7 +6680,7 @@
     "SimulacaoMonteCarlo"
    ],
    "export_default": null,
-   "linhas": 365,
+   "linhas": 364,
    "dominio": "components/fluxo-caixa",
    "hooks_locais": [],
    "tabelas": [],
@@ -6681,7 +6694,7 @@
     "FornecedorContatoEndereco"
    ],
    "export_default": null,
-   "linhas": 111,
+   "linhas": 110,
    "dominio": "components/fornecedores",
    "hooks_locais": [],
    "tabelas": [],
@@ -6695,7 +6708,7 @@
     "FornecedorDadosBasicos"
    ],
    "export_default": null,
-   "linhas": 105,
+   "linhas": 104,
    "dominio": "components/fornecedores",
    "hooks_locais": [],
    "tabelas": [],
@@ -6709,7 +6722,7 @@
     "FornecedorObservacoes"
    ],
    "export_default": null,
-   "linhas": 55,
+   "linhas": 54,
    "dominio": "components/fornecedores",
    "hooks_locais": [],
    "tabelas": [],
@@ -6723,7 +6736,7 @@
     "FornecedorDetailDialog"
    ],
    "export_default": null,
-   "linhas": 214,
+   "linhas": 213,
    "dominio": "components/fornecedores",
    "hooks_locais": [],
    "tabelas": [
@@ -6739,7 +6752,7 @@
     "FornecedoresFiltersPanel"
    ],
    "export_default": null,
-   "linhas": 102,
+   "linhas": 101,
    "dominio": "components/fornecedores",
    "hooks_locais": [],
    "tabelas": [],
@@ -6753,7 +6766,7 @@
     "FornecedoresKPIs"
    ],
    "export_default": null,
-   "linhas": 59,
+   "linhas": 58,
    "dominio": "components/fornecedores",
    "hooks_locais": [],
    "tabelas": [],
@@ -6767,7 +6780,7 @@
     "FornecedorForm"
    ],
    "export_default": null,
-   "linhas": 254,
+   "linhas": 253,
    "dominio": "components/fornecedores",
    "hooks_locais": [
     "useConfetti"
@@ -6785,7 +6798,7 @@
     "AcoesSugeridasCard"
    ],
    "export_default": null,
-   "linhas": 178,
+   "linhas": 177,
    "dominio": "components/insights-ia",
    "hooks_locais": [
     "useAnomaliasDetectadas",
@@ -6802,7 +6815,7 @@
     "AnomaliaBreadcrumb"
    ],
    "export_default": null,
-   "linhas": 61,
+   "linhas": 60,
    "dominio": "components/insights-ia",
    "hooks_locais": [],
    "tabelas": [],
@@ -6816,7 +6829,7 @@
     "AnomaliaHeader"
    ],
    "export_default": null,
-   "linhas": 127,
+   "linhas": 126,
    "dominio": "components/insights-ia",
    "hooks_locais": [
     "useAnomaliasDetectadas",
@@ -6834,7 +6847,7 @@
     "AnomaliasRelacionadasCard"
    ],
    "export_default": null,
-   "linhas": 69,
+   "linhas": 68,
    "dominio": "components/insights-ia",
    "hooks_locais": [],
    "tabelas": [],
@@ -6848,7 +6861,7 @@
     "DetectoresContribuintesCard"
    ],
    "export_default": null,
-   "linhas": 118,
+   "linhas": 117,
    "dominio": "components/insights-ia",
    "hooks_locais": [],
    "tabelas": [],
@@ -6862,7 +6875,7 @@
     "EntidadeDetalheDrawer"
    ],
    "export_default": null,
-   "linhas": 220,
+   "linhas": 219,
    "dominio": "components/insights-ia",
    "hooks_locais": [],
    "tabelas": [],
@@ -6876,7 +6889,7 @@
     "EntidadeRelacionadaCard"
    ],
    "export_default": null,
-   "linhas": 90,
+   "linhas": 89,
    "dominio": "components/insights-ia",
    "hooks_locais": [],
    "tabelas": [],
@@ -6890,7 +6903,7 @@
     "ExportarEvidenciasButton"
    ],
    "export_default": null,
-   "linhas": 300,
+   "linhas": 299,
    "dominio": "components/insights-ia",
    "hooks_locais": [
     "useLogAudit"
@@ -6906,7 +6919,7 @@
     "HistoricoContextualCard"
    ],
    "export_default": null,
-   "linhas": 59,
+   "linhas": 58,
    "dominio": "components/insights-ia",
    "hooks_locais": [],
    "tabelas": [],
@@ -6920,7 +6933,7 @@
     "ReabrirAnomaliaDialog"
    ],
    "export_default": null,
-   "linhas": 140,
+   "linhas": 139,
    "dominio": "components/insights-ia",
    "hooks_locais": [
     "useReabrirAnomalia",
@@ -6937,7 +6950,7 @@
     "ReabrirAnomaliasLoteDialog"
    ],
    "export_default": null,
-   "linhas": 140,
+   "linhas": 139,
    "dominio": "components/insights-ia",
    "hooks_locais": [
     "useReabrirAnomaliasLote",
@@ -6954,7 +6967,7 @@
     "AprendizadoMetricasTab"
    ],
    "export_default": null,
-   "linhas": 209,
+   "linhas": 208,
    "dominio": "components/insights-ia",
    "hooks_locais": [
     "useMetricasAprendizadoIA"
@@ -6970,7 +6983,7 @@
     "AuditoriaDecisoesTab"
    ],
    "export_default": null,
-   "linhas": 122,
+   "linhas": 121,
    "dominio": "components/insights-ia",
    "hooks_locais": [
     "useHistoricoConciliacaoIA"
@@ -6986,7 +6999,7 @@
     "ConciliacaoHistoricoTab"
    ],
    "export_default": null,
-   "linhas": 176,
+   "linhas": 175,
    "dominio": "components/insights-ia",
    "hooks_locais": [
     "useHistoricoConciliacaoIA"
@@ -7002,7 +7015,7 @@
     "InsightsIAKpis"
    ],
    "export_default": null,
-   "linhas": 90,
+   "linhas": 89,
    "dominio": "components/insights-ia",
    "hooks_locais": [
     "useInsightsIAKpis"
@@ -7018,7 +7031,7 @@
     "BitrixWebhookPanel"
    ],
    "export_default": null,
-   "linhas": 270,
+   "linhas": 269,
    "dominio": "components/integracoes",
    "hooks_locais": [],
    "tabelas": [
@@ -7036,7 +7049,7 @@
     "OpenFinanceConnectDialog"
    ],
    "export_default": null,
-   "linhas": 101,
+   "linhas": 100,
    "dominio": "components/integracoes",
    "hooks_locais": [],
    "tabelas": [],
@@ -7051,7 +7064,7 @@
     "OpenFinanceConsentList"
    ],
    "export_default": null,
-   "linhas": 158,
+   "linhas": 157,
    "dominio": "components/integracoes",
    "hooks_locais": [],
    "tabelas": [],
@@ -7066,7 +7079,7 @@
     "OpenFinanceImportDialog"
    ],
    "export_default": null,
-   "linhas": 141,
+   "linhas": 140,
    "dominio": "components/integracoes",
    "hooks_locais": [],
    "tabelas": [],
@@ -7080,7 +7093,7 @@
     "OpenFinancePanel"
    ],
    "export_default": null,
-   "linhas": 176,
+   "linhas": 175,
    "dominio": "components/integracoes",
    "hooks_locais": [
     "useOpenFinance"
@@ -7098,7 +7111,7 @@
     "WhatsAppConfigPanel"
    ],
    "export_default": null,
-   "linhas": 150,
+   "linhas": 149,
    "dominio": "components/integracoes",
    "hooks_locais": [],
    "tabelas": [],
@@ -7114,7 +7127,7 @@
     "EmpresaSwitcher"
    ],
    "export_default": null,
-   "linhas": 264,
+   "linhas": 263,
    "dominio": "components/layout",
    "hooks_locais": [
     "useUserEmpresas"
@@ -7130,7 +7143,7 @@
     "Header"
    ],
    "export_default": null,
-   "linhas": 306,
+   "linhas": 305,
    "dominio": "components/layout",
    "hooks_locais": [
     "useAlertas",
@@ -7149,7 +7162,7 @@
     "KeyboardShortcutsDialog"
    ],
    "export_default": null,
-   "linhas": 108,
+   "linhas": 107,
    "dominio": "components/layout",
    "hooks_locais": [],
    "tabelas": [],
@@ -7163,7 +7176,7 @@
     "MainLayout"
    ],
    "export_default": null,
-   "linhas": 130,
+   "linhas": 129,
    "dominio": "components/layout",
    "hooks_locais": [
     "useFinancialAlerts",
@@ -7182,7 +7195,7 @@
     "MobileHeader"
    ],
    "export_default": null,
-   "linhas": 24,
+   "linhas": 23,
    "dominio": "components/layout",
    "hooks_locais": [],
    "tabelas": [],
@@ -7197,7 +7210,7 @@
     "PageHeader"
    ],
    "export_default": null,
-   "linhas": 118,
+   "linhas": 117,
    "dominio": "components/layout",
    "hooks_locais": [],
    "tabelas": [],
@@ -7211,7 +7224,7 @@
     "ResponsiveSidebar"
    ],
    "export_default": null,
-   "linhas": 116,
+   "linhas": 115,
    "dominio": "components/layout",
    "hooks_locais": [
     "useIsMobile"
@@ -7227,7 +7240,7 @@
     "MobileBottomNav"
    ],
    "export_default": null,
-   "linhas": 115,
+   "linhas": 114,
    "dominio": "components/layout",
    "hooks_locais": [
     "useAprovacoesPendentesCount"
@@ -7243,7 +7256,7 @@
     "MobileSidebarDrawer"
    ],
    "export_default": null,
-   "linhas": 65,
+   "linhas": 64,
    "dominio": "components/layout",
    "hooks_locais": [],
    "tabelas": [],
@@ -7257,7 +7270,7 @@
     "QuickCreateButton"
    ],
    "export_default": null,
-   "linhas": 55,
+   "linhas": 54,
    "dominio": "components/layout",
    "hooks_locais": [],
    "tabelas": [],
@@ -7271,7 +7284,7 @@
     "RecentAndFavorites"
    ],
    "export_default": null,
-   "linhas": 233,
+   "linhas": 232,
    "dominio": "components/layout",
    "hooks_locais": [
     "useEmpresaScope",
@@ -7288,7 +7301,7 @@
     "SidebarNavGroups"
    ],
    "export_default": null,
-   "linhas": 414,
+   "linhas": 413,
    "dominio": "components/layout",
    "hooks_locais": [
     "useAlertasNaoLidos",
@@ -7311,7 +7324,7 @@
     "PageTransitionProps"
    ],
    "export_default": null,
-   "linhas": 41,
+   "linhas": 40,
    "dominio": "components/layout",
    "hooks_locais": [
     "useTransition"
@@ -7328,7 +7341,7 @@
     "TransitionProviderProps"
    ],
    "export_default": null,
-   "linhas": 17,
+   "linhas": 16,
    "dominio": "components/layout",
    "hooks_locais": [],
    "tabelas": [],
@@ -7342,7 +7355,7 @@
     "VisualCorrectionOverlay"
    ],
    "export_default": null,
-   "linhas": 14,
+   "linhas": 13,
    "dominio": "components/layout",
    "hooks_locais": [],
    "tabelas": [],
@@ -7356,7 +7369,7 @@
     "AnimatedNumber"
    ],
    "export_default": null,
-   "linhas": 75,
+   "linhas": 74,
    "dominio": "components/motion",
    "hooks_locais": [],
    "tabelas": [],
@@ -7371,7 +7384,7 @@
     "StatCardProps"
    ],
    "export_default": null,
-   "linhas": 72,
+   "linhas": 71,
    "dominio": "components/motion",
    "hooks_locais": [],
    "tabelas": [],
@@ -7385,7 +7398,7 @@
     "BackButton"
    ],
    "export_default": null,
-   "linhas": 103,
+   "linhas": 102,
    "dominio": "components/navigation",
    "hooks_locais": [
     "useSmartBack"
@@ -7401,7 +7414,7 @@
     "ContextualBreadcrumbs"
    ],
    "export_default": "ContextualBreadcrumbs",
-   "linhas": 189,
+   "linhas": 188,
    "dominio": "components/navigation",
    "hooks_locais": [],
    "tabelas": [],
@@ -7415,7 +7428,7 @@
     "UnsavedGuardProvider"
    ],
    "export_default": null,
-   "linhas": 331,
+   "linhas": 330,
    "dominio": "components/navigation",
    "hooks_locais": [],
    "tabelas": [],
@@ -7429,7 +7442,7 @@
     "AlertasRejeicao"
    ],
    "export_default": null,
-   "linhas": 432,
+   "linhas": 431,
    "dominio": "components/nfe",
    "hooks_locais": [],
    "tabelas": [],
@@ -7443,7 +7456,7 @@
     "ContingenciaGlobalSettings"
    ],
    "export_default": null,
-   "linhas": 100,
+   "linhas": 99,
    "dominio": "components/nfe",
    "hooks_locais": [],
    "tabelas": [],
@@ -7458,7 +7471,7 @@
     "RuleFormData"
    ],
    "export_default": null,
-   "linhas": 293,
+   "linhas": 292,
    "dominio": "components/nfe",
    "hooks_locais": [],
    "tabelas": [],
@@ -7472,7 +7485,7 @@
     "ContingenciaRulesList"
    ],
    "export_default": null,
-   "linhas": 193,
+   "linhas": 192,
    "dominio": "components/nfe",
    "hooks_locais": [],
    "tabelas": [],
@@ -7486,7 +7499,7 @@
     "AutoContingenciaConfig"
    ],
    "export_default": null,
-   "linhas": 208,
+   "linhas": 207,
    "dominio": "components/nfe",
    "hooks_locais": [],
    "tabelas": [],
@@ -7500,7 +7513,7 @@
     "BlingNFePanel"
    ],
    "export_default": null,
-   "linhas": 452,
+   "linhas": 451,
    "dominio": "components/nfe",
    "hooks_locais": [
     "useBlingNFe"
@@ -7516,7 +7529,7 @@
     "CancelamentoNFe"
    ],
    "export_default": null,
-   "linhas": 325,
+   "linhas": 324,
    "dominio": "components/nfe",
    "hooks_locais": [],
    "tabelas": [],
@@ -7531,7 +7544,7 @@
     "DeactivateContingencyDialog"
    ],
    "export_default": null,
-   "linhas": 177,
+   "linhas": 176,
    "dominio": "components/nfe",
    "hooks_locais": [],
    "tabelas": [],
@@ -7545,7 +7558,7 @@
     "ContingenciaPendingList"
    ],
    "export_default": null,
-   "linhas": 113,
+   "linhas": 112,
    "dominio": "components/nfe",
    "hooks_locais": [],
    "tabelas": [],
@@ -7559,7 +7572,7 @@
     "ContingenciaNFe"
    ],
    "export_default": null,
-   "linhas": 435,
+   "linhas": 434,
    "dominio": "components/nfe",
    "hooks_locais": [],
    "tabelas": [],
@@ -7573,7 +7586,7 @@
     "DANFEGenerator"
    ],
    "export_default": null,
-   "linhas": 284,
+   "linhas": 283,
    "dominio": "components/nfe",
    "hooks_locais": [],
    "tabelas": [],
@@ -7587,7 +7600,7 @@
     "EventosHistorico"
    ],
    "export_default": null,
-   "linhas": 447,
+   "linhas": 446,
    "dominio": "components/nfe",
    "hooks_locais": [],
    "tabelas": [],
@@ -7601,7 +7614,7 @@
     "InutilizacaoNFe"
    ],
    "export_default": null,
-   "linhas": 435,
+   "linhas": 434,
    "dominio": "components/nfe",
    "hooks_locais": [
     "useEmpresas"
@@ -7617,7 +7630,7 @@
     "NFePreview"
    ],
    "export_default": null,
-   "linhas": 245,
+   "linhas": 244,
    "dominio": "components/nfe",
    "hooks_locais": [],
    "tabelas": [],
@@ -7631,7 +7644,7 @@
     "NovaNFeForm"
    ],
    "export_default": null,
-   "linhas": 263,
+   "linhas": 262,
    "dominio": "components/nfe",
    "hooks_locais": [
     "useEmpresas"
@@ -7647,7 +7660,7 @@
     "SefazAnalyticsKPIs"
    ],
    "export_default": null,
-   "linhas": 118,
+   "linhas": 117,
    "dominio": "components/nfe",
    "hooks_locais": [],
    "tabelas": [],
@@ -7661,7 +7674,7 @@
     "SefazContingencyAlerts"
    ],
    "export_default": null,
-   "linhas": 182,
+   "linhas": 181,
    "dominio": "components/nfe",
    "hooks_locais": [],
    "tabelas": [],
@@ -7675,7 +7688,7 @@
     "SefazChartsRow"
    ],
    "export_default": null,
-   "linhas": 146,
+   "linhas": 145,
    "dominio": "components/nfe",
    "hooks_locais": [],
    "tabelas": [],
@@ -7689,7 +7702,7 @@
     "SefazMetricsCards"
    ],
    "export_default": null,
-   "linhas": 151,
+   "linhas": 150,
    "dominio": "components/nfe",
    "hooks_locais": [],
    "tabelas": [],
@@ -7703,7 +7716,7 @@
     "SefazStatusBanner"
    ],
    "export_default": null,
-   "linhas": 122,
+   "linhas": 121,
    "dominio": "components/nfe",
    "hooks_locais": [],
    "tabelas": [],
@@ -7717,7 +7730,7 @@
     "SefazAnalytics"
    ],
    "export_default": null,
-   "linhas": 424,
+   "linhas": 423,
    "dominio": "components/nfe",
    "hooks_locais": [],
    "tabelas": [],
@@ -7731,7 +7744,7 @@
     "SefazMonitor"
    ],
    "export_default": null,
-   "linhas": 201,
+   "linhas": 200,
    "dominio": "components/nfe",
    "hooks_locais": [],
    "tabelas": [],
@@ -7745,7 +7758,7 @@
     "SefazStatusPanel"
    ],
    "export_default": null,
-   "linhas": 131,
+   "linhas": 130,
    "dominio": "components/nfe",
    "hooks_locais": [],
    "tabelas": [],
@@ -7760,7 +7773,7 @@
     "OfflineIndicator"
    ],
    "export_default": "OfflineBanner",
-   "linhas": 204,
+   "linhas": 203,
    "dominio": "components/offline",
    "hooks_locais": [
     "useNetworkStatus"
@@ -7777,7 +7790,7 @@
     "RestartTourButton"
    ],
    "export_default": null,
-   "linhas": 408,
+   "linhas": 407,
    "dominio": "components/onboarding",
    "hooks_locais": [],
    "tabelas": [],
@@ -7791,7 +7804,7 @@
     "OnboardingChecklist"
    ],
    "export_default": null,
-   "linhas": 410,
+   "linhas": 409,
    "dominio": "components/onboarding",
    "hooks_locais": [],
    "tabelas": [],
@@ -7805,7 +7818,7 @@
     "OnboardingTour"
    ],
    "export_default": null,
-   "linhas": 120,
+   "linhas": 119,
    "dominio": "components/onboarding",
    "hooks_locais": [
     "useOnboardingProgress"
@@ -7822,7 +7835,7 @@
     "OrcamentoCardsView"
    ],
    "export_default": null,
-   "linhas": 147,
+   "linhas": 146,
    "dominio": "components/orcamento",
    "hooks_locais": [],
    "tabelas": [],
@@ -7837,7 +7850,7 @@
     "OrcamentoChartsView"
    ],
    "export_default": null,
-   "linhas": 169,
+   "linhas": 168,
    "dominio": "components/orcamento",
    "hooks_locais": [],
    "tabelas": [],
@@ -7852,7 +7865,7 @@
     "OrcamentoKPIsData"
    ],
    "export_default": null,
-   "linhas": 82,
+   "linhas": 81,
    "dominio": "components/orcamento",
    "hooks_locais": [],
    "tabelas": [],
@@ -7866,7 +7879,7 @@
     "PagamentoRecorrenteForm"
    ],
    "export_default": null,
-   "linhas": 393,
+   "linhas": 392,
    "dominio": "components/pagamentos-recorrentes",
    "hooks_locais": [
     "useAllCentrosCusto",
@@ -7885,7 +7898,7 @@
     "PagamentosRecorrentesList"
    ],
    "export_default": null,
-   "linhas": 291,
+   "linhas": 290,
    "dominio": "components/pagamentos-recorrentes",
    "hooks_locais": [
     "usePagamentosRecorrentes"
@@ -7901,7 +7914,7 @@
     "AprovacaoRapidaMobile"
    ],
    "export_default": null,
-   "linhas": 275,
+   "linhas": 274,
    "dominio": "components/pix-hub",
    "hooks_locais": [
     "useAprovarSolicitacao",
@@ -7920,7 +7933,7 @@
     "PixDashboardRealtime"
    ],
    "export_default": null,
-   "linhas": 295,
+   "linhas": 294,
    "dominio": "components/pix-hub",
    "hooks_locais": [
     "useEmpresas"
@@ -7939,7 +7952,7 @@
     "PixRecebimento"
    ],
    "export_default": null,
-   "linhas": 237,
+   "linhas": 236,
    "dominio": "components/pix-hub",
    "hooks_locais": [
     "useAsaas",
@@ -7956,7 +7969,7 @@
     "PixTemplates"
    ],
    "export_default": null,
-   "linhas": 346,
+   "linhas": 345,
    "dominio": "components/pix-hub",
    "hooks_locais": [
     "useCreatePixTemplate",
@@ -7976,7 +7989,7 @@
     "SsoProfileSyncBanner"
    ],
    "export_default": null,
-   "linhas": 94,
+   "linhas": 93,
    "dominio": "components/profile",
    "hooks_locais": [
     "useLastSsoProfileSync"
@@ -7992,7 +8005,7 @@
     "InstallPWA"
    ],
    "export_default": null,
-   "linhas": 37,
+   "linhas": 36,
    "dominio": "components/pwa",
    "hooks_locais": [],
    "tabelas": [],
@@ -8006,7 +8019,7 @@
     "PWAInstallBanner"
    ],
    "export_default": null,
-   "linhas": 33,
+   "linhas": 32,
    "dominio": "components/pwa",
    "hooks_locais": [
     "useInstallPrompt"
@@ -8022,7 +8035,7 @@
     "QuickCreateModal"
    ],
    "export_default": null,
-   "linhas": 296,
+   "linhas": 295,
    "dominio": "components/quick-create",
    "hooks_locais": [],
    "tabelas": [],
@@ -8036,7 +8049,7 @@
     "AlertasTributarios"
    ],
    "export_default": "AlertasTributarios",
-   "linhas": 395,
+   "linhas": 394,
    "dominio": "components/reforma-tributaria",
    "hooks_locais": [
     "useAlertasTributarios",
@@ -8053,7 +8066,7 @@
     "AnimatedCounter"
    ],
    "export_default": "AnimatedCounter",
-   "linhas": 63,
+   "linhas": 62,
    "dominio": "components/reforma-tributaria",
    "hooks_locais": [],
    "tabelas": [],
@@ -8067,7 +8080,7 @@
     "ApuracaoDetalheCard"
    ],
    "export_default": null,
-   "linhas": 160,
+   "linhas": 159,
    "dominio": "components/reforma-tributaria",
    "hooks_locais": [],
    "tabelas": [],
@@ -8081,7 +8094,7 @@
     "ApuracaoMensal"
    ],
    "export_default": "ApuracaoMensal",
-   "linhas": 445,
+   "linhas": 444,
    "dominio": "components/reforma-tributaria",
    "hooks_locais": [
     "useAllEmpresas",
@@ -8098,7 +8111,7 @@
     "AuditoriaCompliancePanel"
    ],
    "export_default": "AuditoriaCompliancePanel",
-   "linhas": 153,
+   "linhas": 152,
    "dominio": "components/reforma-tributaria",
    "hooks_locais": [
     "useAuditoriaCompliance"
@@ -8114,7 +8127,7 @@
     "CalculadoraTributos"
    ],
    "export_default": "CalculadoraTributos",
-   "linhas": 287,
+   "linhas": 286,
    "dominio": "components/reforma-tributaria",
    "hooks_locais": [
     "useReformaTributaria"
@@ -8130,7 +8143,7 @@
     "CashbackSimuladorPanel"
    ],
    "export_default": "CashbackSimuladorPanel",
-   "linhas": 170,
+   "linhas": 169,
    "dominio": "components/reforma-tributaria",
    "hooks_locais": [
     "useCashbackSimulador"
@@ -8146,7 +8159,7 @@
     "ComparativoRegimesPanel"
    ],
    "export_default": "ComparativoRegimesPanel",
-   "linhas": 223,
+   "linhas": 222,
    "dominio": "components/reforma-tributaria",
    "hooks_locais": [
     "useComparativoRegimes",
@@ -8164,7 +8177,7 @@
     "ConciliacaoTributariaPanel"
    ],
    "export_default": "ConciliacaoTributariaPanel",
-   "linhas": 190,
+   "linhas": 189,
    "dominio": "components/reforma-tributaria",
    "hooks_locais": [
     "useConciliacaoTributaria"
@@ -8180,7 +8193,7 @@
     "CronogramaTransicao"
    ],
    "export_default": "CronogramaTransicao",
-   "linhas": 324,
+   "linhas": 323,
    "dominio": "components/reforma-tributaria",
    "hooks_locais": [
     "useReformaTributaria"
@@ -8196,7 +8209,7 @@
     "MetricasInsights"
    ],
    "export_default": null,
-   "linhas": 87,
+   "linhas": 86,
    "dominio": "components/reforma-tributaria",
    "hooks_locais": [],
    "tabelas": [],
@@ -8210,7 +8223,7 @@
     "DashboardMetricasTributarias"
    ],
    "export_default": "DashboardMetricasTributarias",
-   "linhas": 419,
+   "linhas": 418,
    "dominio": "components/reforma-tributaria",
    "hooks_locais": [
     "useAlertasTributarios",
@@ -8230,7 +8243,7 @@
     "DashboardReformaTributaria"
    ],
    "export_default": "DashboardReformaTributaria",
-   "linhas": 589,
+   "linhas": 588,
    "dominio": "components/reforma-tributaria",
    "hooks_locais": [
     "useAlertasTributarios",
@@ -8249,7 +8262,7 @@
     "EmptyStateTributario"
    ],
    "export_default": "EmptyStateTributario",
-   "linhas": 214,
+   "linhas": 213,
    "dominio": "components/reforma-tributaria",
    "hooks_locais": [],
    "tabelas": [],
@@ -8263,7 +8276,7 @@
     "ExportacaoSPED"
    ],
    "export_default": "ExportacaoSPED",
-   "linhas": 371,
+   "linhas": 370,
    "dominio": "components/reforma-tributaria",
    "hooks_locais": [
     "useAllEmpresas",
@@ -8282,7 +8295,7 @@
     "GestorCreditosTributarios"
    ],
    "export_default": "GestorCreditosTributarios",
-   "linhas": 435,
+   "linhas": 434,
    "dominio": "components/reforma-tributaria",
    "hooks_locais": [
     "useAllEmpresas",
@@ -8299,7 +8312,7 @@
     "GlossarioTooltip"
    ],
    "export_default": "GlossarioTooltip",
-   "linhas": 111,
+   "linhas": 110,
    "dominio": "components/reforma-tributaria",
    "hooks_locais": [],
    "tabelas": [],
@@ -8313,7 +8326,7 @@
     "HeroKPIs"
    ],
    "export_default": "HeroKPIs",
-   "linhas": 277,
+   "linhas": 276,
    "dominio": "components/reforma-tributaria",
    "hooks_locais": [],
    "tabelas": [],
@@ -8327,7 +8340,7 @@
     "ImportacaoXMLPanel"
    ],
    "export_default": "ImportacaoXMLPanel",
-   "linhas": 175,
+   "linhas": 174,
    "dominio": "components/reforma-tributaria",
    "hooks_locais": [
     "useImportacaoXMLNFe"
@@ -8343,7 +8356,7 @@
     "IncentivosFiscaisPanel"
    ],
    "export_default": "IncentivosFiscaisPanel",
-   "linhas": 487,
+   "linhas": 486,
    "dominio": "components/reforma-tributaria",
    "hooks_locais": [
     "useIncentivosFiscais"
@@ -8359,7 +8372,7 @@
     "IRPJCSLLApuracoesTable"
    ],
    "export_default": null,
-   "linhas": 88,
+   "linhas": 87,
    "dominio": "components/reforma-tributaria",
    "hooks_locais": [],
    "tabelas": [],
@@ -8373,7 +8386,7 @@
     "IRPJCSLLCalculadora"
    ],
    "export_default": null,
-   "linhas": 172,
+   "linhas": 171,
    "dominio": "components/reforma-tributaria",
    "hooks_locais": [],
    "tabelas": [],
@@ -8387,7 +8400,7 @@
     "IRPJCSLLLalurTab"
    ],
    "export_default": null,
-   "linhas": 110,
+   "linhas": 109,
    "dominio": "components/reforma-tributaria",
    "hooks_locais": [],
    "tabelas": [],
@@ -8401,7 +8414,7 @@
     "IRPJCSLLResumoCards"
    ],
    "export_default": null,
-   "linhas": 77,
+   "linhas": 76,
    "dominio": "components/reforma-tributaria",
    "hooks_locais": [],
    "tabelas": [],
@@ -8415,7 +8428,7 @@
     "KPIComparativo"
    ],
    "export_default": "KPIComparativo",
-   "linhas": 51,
+   "linhas": 50,
    "dominio": "components/reforma-tributaria",
    "hooks_locais": [],
    "tabelas": [],
@@ -8429,7 +8442,7 @@
     "ModuloIRPJCSLL"
    ],
    "export_default": "ModuloIRPJCSLL",
-   "linhas": 297,
+   "linhas": 296,
    "dominio": "components/reforma-tributaria",
    "hooks_locais": [
     "useAllEmpresas",
@@ -8446,7 +8459,7 @@
     "NavigationTributaria"
    ],
    "export_default": "NavigationTributaria",
-   "linhas": 318,
+   "linhas": 317,
    "dominio": "components/reforma-tributaria",
    "hooks_locais": [],
    "tabelas": [],
@@ -8460,7 +8473,7 @@
     "ObrigacoesAcessorias"
    ],
    "export_default": "ObrigacoesAcessorias",
-   "linhas": 511,
+   "linhas": 510,
    "dominio": "components/reforma-tributaria",
    "hooks_locais": [],
    "tabelas": [],
@@ -8474,7 +8487,7 @@
     "OperacoesLista"
    ],
    "export_default": "OperacoesLista",
-   "linhas": 114,
+   "linhas": 113,
    "dominio": "components/reforma-tributaria",
    "hooks_locais": [
     "useAllEmpresas",
@@ -8492,7 +8505,7 @@
     "PerDcompFormDialog"
    ],
    "export_default": null,
-   "linhas": 220,
+   "linhas": 219,
    "dominio": "components/reforma-tributaria",
    "hooks_locais": [],
    "tabelas": [],
@@ -8507,7 +8520,7 @@
     "PerDcompStats"
    ],
    "export_default": null,
-   "linhas": 67,
+   "linhas": 66,
    "dominio": "components/reforma-tributaria",
    "hooks_locais": [],
    "tabelas": [],
@@ -8521,7 +8534,7 @@
     "PerDcompTable"
    ],
    "export_default": null,
-   "linhas": 131,
+   "linhas": 130,
    "dominio": "components/reforma-tributaria",
    "hooks_locais": [],
    "tabelas": [],
@@ -8535,7 +8548,7 @@
     "PerDcompPanel"
    ],
    "export_default": "PerDcompPanel",
-   "linhas": 177,
+   "linhas": 176,
    "dominio": "components/reforma-tributaria",
    "hooks_locais": [
     "useAllEmpresas",
@@ -8553,7 +8566,7 @@
     "ProgressoMigracao"
    ],
    "export_default": "ProgressoMigracao",
-   "linhas": 145,
+   "linhas": 144,
    "dominio": "components/reforma-tributaria",
    "hooks_locais": [],
    "tabelas": [],
@@ -8567,7 +8580,7 @@
     "CargaEfetivaTab"
    ],
    "export_default": null,
-   "linhas": 107,
+   "linhas": 106,
    "dominio": "components/reforma-tributaria",
    "hooks_locais": [],
    "tabelas": [],
@@ -8581,7 +8594,7 @@
     "DRETributarioTab"
    ],
    "export_default": null,
-   "linhas": 91,
+   "linhas": 90,
    "dominio": "components/reforma-tributaria",
    "hooks_locais": [],
    "tabelas": [],
@@ -8595,7 +8608,7 @@
     "RelatoriosContabeisTributarios"
    ],
    "export_default": "RelatoriosContabeisTributarios",
-   "linhas": 609,
+   "linhas": 608,
    "dominio": "components/reforma-tributaria",
    "hooks_locais": [
     "useAllEmpresas",
@@ -8614,7 +8627,7 @@
     "ResultadoTributos"
    ],
    "export_default": null,
-   "linhas": 217,
+   "linhas": 216,
    "dominio": "components/reforma-tributaria",
    "hooks_locais": [],
    "tabelas": [],
@@ -8628,7 +8641,7 @@
     "DARFsTable"
    ],
    "export_default": null,
-   "linhas": 99,
+   "linhas": 98,
    "dominio": "components/reforma-tributaria",
    "hooks_locais": [],
    "tabelas": [],
@@ -8642,7 +8655,7 @@
     "ResumoPorTipoGrid"
    ],
    "export_default": null,
-   "linhas": 83,
+   "linhas": 82,
    "dominio": "components/reforma-tributaria",
    "hooks_locais": [],
    "tabelas": [],
@@ -8656,7 +8669,7 @@
     "RetencoesTable"
    ],
    "export_default": null,
-   "linhas": 125,
+   "linhas": 124,
    "dominio": "components/reforma-tributaria",
    "hooks_locais": [],
    "tabelas": [],
@@ -8670,7 +8683,7 @@
     "RetencoesFonte"
    ],
    "export_default": "RetencoesFonte",
-   "linhas": 415,
+   "linhas": 414,
    "dominio": "components/reforma-tributaria",
    "hooks_locais": [
     "useAllEmpresas",
@@ -8687,7 +8700,7 @@
     "SimuladorChartsGrid"
    ],
    "export_default": null,
-   "linhas": 104,
+   "linhas": 103,
    "dominio": "components/reforma-tributaria",
    "hooks_locais": [],
    "tabelas": [],
@@ -8701,7 +8714,7 @@
     "SimuladorInputForm"
    ],
    "export_default": null,
-   "linhas": 189,
+   "linhas": 188,
    "dominio": "components/reforma-tributaria",
    "hooks_locais": [],
    "tabelas": [],
@@ -8715,7 +8728,7 @@
     "SimuladorResultadoCard"
    ],
    "export_default": null,
-   "linhas": 135,
+   "linhas": 134,
    "dominio": "components/reforma-tributaria",
    "hooks_locais": [],
    "tabelas": [],
@@ -8729,7 +8742,7 @@
     "SimuladorCenariosTributarios"
    ],
    "export_default": "SimuladorCenariosTributarios",
-   "linhas": 122,
+   "linhas": 121,
    "dominio": "components/reforma-tributaria",
    "hooks_locais": [
     "useReformaTributaria"
@@ -8745,7 +8758,7 @@
     "SplitPaymentPanel"
    ],
    "export_default": "SplitPaymentPanel",
-   "linhas": 314,
+   "linhas": 313,
    "dominio": "components/reforma-tributaria",
    "hooks_locais": [
     "useAllEmpresas",
@@ -8762,7 +8775,7 @@
     "AgendamentoCard"
    ],
    "export_default": null,
-   "linhas": 127,
+   "linhas": 126,
    "dominio": "components/relatorios",
    "hooks_locais": [],
    "tabelas": [],
@@ -8776,7 +8789,7 @@
     "CriarAgendamentoDialog"
    ],
    "export_default": null,
-   "linhas": 206,
+   "linhas": 205,
    "dominio": "components/relatorios",
    "hooks_locais": [],
    "tabelas": [],
@@ -8790,7 +8803,7 @@
     "ExportRelatorioAvancadoPDF"
    ],
    "export_default": null,
-   "linhas": 237,
+   "linhas": 236,
    "dominio": "components/relatorios",
    "hooks_locais": [],
    "tabelas": [],
@@ -8804,7 +8817,7 @@
     "InsightsIA"
    ],
    "export_default": null,
-   "linhas": 236,
+   "linhas": 235,
    "dominio": "components/relatorios",
    "hooks_locais": [],
    "tabelas": [],
@@ -8821,7 +8834,7 @@
     "ContasReceberView"
    ],
    "export_default": null,
-   "linhas": 174,
+   "linhas": 173,
    "dominio": "components/relatorios",
    "hooks_locais": [],
    "tabelas": [],
@@ -8838,7 +8851,7 @@
     "JSONView"
    ],
    "export_default": null,
-   "linhas": 243,
+   "linhas": 242,
    "dominio": "components/relatorios",
    "hooks_locais": [],
    "tabelas": [],
@@ -8852,7 +8865,7 @@
     "FluxoCaixaView"
    ],
    "export_default": null,
-   "linhas": 103,
+   "linhas": 102,
    "dominio": "components/relatorios",
    "hooks_locais": [],
    "tabelas": [],
@@ -8866,7 +8879,7 @@
     "RelatorioDrillDown"
    ],
    "export_default": null,
-   "linhas": 269,
+   "linhas": 268,
    "dominio": "components/relatorios",
    "hooks_locais": [],
    "tabelas": [
@@ -8889,7 +8902,7 @@
     "ResumoDrillLevel"
    ],
    "export_default": null,
-   "linhas": 288,
+   "linhas": 287,
    "dominio": "components/relatorios",
    "hooks_locais": [],
    "tabelas": [],
@@ -8903,7 +8916,7 @@
     "RelatoriosAgendados"
    ],
    "export_default": null,
-   "linhas": 471,
+   "linhas": 470,
    "dominio": "components/relatorios",
    "hooks_locais": [
     "useEmpresas",
@@ -8923,7 +8936,7 @@
     "RelatoriosComparativo"
    ],
    "export_default": null,
-   "linhas": 111,
+   "linhas": 110,
    "dominio": "components/relatorios",
    "hooks_locais": [],
    "tabelas": [],
@@ -8937,7 +8950,7 @@
     "RelatoriosDetalhado"
    ],
    "export_default": null,
-   "linhas": 170,
+   "linhas": 169,
    "dominio": "components/relatorios",
    "hooks_locais": [],
    "tabelas": [],
@@ -8951,7 +8964,7 @@
     "RelatoriosFilters"
    ],
    "export_default": null,
-   "linhas": 127,
+   "linhas": 126,
    "dominio": "components/relatorios",
    "hooks_locais": [],
    "tabelas": [],
@@ -8965,7 +8978,7 @@
     "RelatoriosInadimplenciaCard"
    ],
    "export_default": null,
-   "linhas": 121,
+   "linhas": 120,
    "dominio": "components/relatorios",
    "hooks_locais": [],
    "tabelas": [],
@@ -8979,7 +8992,7 @@
     "RelatoriosKpiCards"
    ],
    "export_default": null,
-   "linhas": 177,
+   "linhas": 176,
    "dominio": "components/relatorios",
    "hooks_locais": [],
    "tabelas": [],
@@ -8993,7 +9006,7 @@
     "RelatoriosModelos"
    ],
    "export_default": null,
-   "linhas": 54,
+   "linhas": 53,
    "dominio": "components/relatorios",
    "hooks_locais": [],
    "tabelas": [],
@@ -9007,7 +9020,7 @@
     "RelatoriosResumosSemanais"
    ],
    "export_default": null,
-   "linhas": 158,
+   "linhas": 157,
    "dominio": "components/relatorios",
    "hooks_locais": [
     "useResumosSemanais"
@@ -9023,7 +9036,7 @@
     "RelatoriosVisaoGeral"
    ],
    "export_default": null,
-   "linhas": 329,
+   "linhas": 328,
    "dominio": "components/relatorios",
    "hooks_locais": [],
    "tabelas": [],
@@ -9037,7 +9050,7 @@
     "VisualizarRelatorioDialog"
    ],
    "export_default": null,
-   "linhas": 178,
+   "linhas": 177,
    "dominio": "components/relatorios",
    "hooks_locais": [
     "useToast"
@@ -9053,7 +9066,7 @@
     "GeoRestrictionPanel"
    ],
    "export_default": null,
-   "linhas": 332,
+   "linhas": 331,
    "dominio": "components/security",
    "hooks_locais": [
     "useAuth"
@@ -9072,7 +9085,7 @@
     "KnownDevicesPanel"
    ],
    "export_default": null,
-   "linhas": 171,
+   "linhas": 170,
    "dominio": "components/security",
    "hooks_locais": [
     "useAuth",
@@ -9089,7 +9102,7 @@
     "BlockedIPsTab"
    ],
    "export_default": null,
-   "linhas": 133,
+   "linhas": 132,
    "dominio": "components/security",
    "hooks_locais": [
     "useIpMaskPreference"
@@ -9105,7 +9118,7 @@
     "BlockIpDialog"
    ],
    "export_default": null,
-   "linhas": 90,
+   "linhas": 89,
    "dominio": "components/security",
    "hooks_locais": [],
    "tabelas": [],
@@ -9119,7 +9132,7 @@
     "SecurityAlertsTab"
    ],
    "export_default": null,
-   "linhas": 99,
+   "linhas": 98,
    "dominio": "components/security",
    "hooks_locais": [],
    "tabelas": [],
@@ -9133,7 +9146,7 @@
     "RateLimitDashboard"
    ],
    "export_default": null,
-   "linhas": 363,
+   "linhas": 362,
    "dominio": "components/security",
    "hooks_locais": [
     "useIpMaskPreference",
@@ -9151,7 +9164,7 @@
     "PushNotificationsBanner"
    ],
    "export_default": null,
-   "linhas": 43,
+   "linhas": 42,
    "dominio": "components/settings",
    "hooks_locais": [
     "useWebPushSubscription"
@@ -9170,7 +9183,7 @@
     "SeverityPreview"
    ],
    "export_default": null,
-   "linhas": 258,
+   "linhas": 257,
    "dominio": "components/shared",
    "hooks_locais": [],
    "tabelas": [],
@@ -9185,7 +9198,7 @@
     "ColumnVisibilityMenu"
    ],
    "export_default": null,
-   "linhas": 83,
+   "linhas": 82,
    "dominio": "components/shared",
    "hooks_locais": [],
    "tabelas": [],
@@ -9199,7 +9212,7 @@
     "PresetListItem"
    ],
    "export_default": null,
-   "linhas": 168,
+   "linhas": 167,
    "dominio": "components/shared",
    "hooks_locais": [],
    "tabelas": [],
@@ -9213,7 +9226,7 @@
     "PresetsDropdownMenu"
    ],
    "export_default": null,
-   "linhas": 201,
+   "linhas": 200,
    "dominio": "components/shared",
    "hooks_locais": [],
    "tabelas": [],
@@ -9227,7 +9240,7 @@
     "RestoreConfirmDialog"
    ],
    "export_default": null,
-   "linhas": 62,
+   "linhas": 61,
    "dominio": "components/shared",
    "hooks_locais": [],
    "tabelas": [],
@@ -9241,7 +9254,7 @@
     "RoleCheckboxGroup"
    ],
    "export_default": null,
-   "linhas": 29,
+   "linhas": 28,
    "dominio": "components/shared",
    "hooks_locais": [],
    "tabelas": [],
@@ -9255,7 +9268,7 @@
     "SavePresetDialog"
    ],
    "export_default": null,
-   "linhas": 131,
+   "linhas": 130,
    "dominio": "components/shared",
    "hooks_locais": [],
    "tabelas": [],
@@ -9269,7 +9282,7 @@
     "ShareFilterDialog"
    ],
    "export_default": null,
-   "linhas": 97,
+   "linhas": 96,
    "dominio": "components/shared",
    "hooks_locais": [],
    "tabelas": [],
@@ -9283,7 +9296,7 @@
     "SavedFiltersBar"
    ],
    "export_default": null,
-   "linhas": 367,
+   "linhas": 366,
    "dominio": "components/shared",
    "hooks_locais": [
     "useAuth",
@@ -9301,7 +9314,7 @@
     "StandardFilterSection"
    ],
    "export_default": null,
-   "linhas": 61,
+   "linhas": 60,
    "dominio": "components/shared",
    "hooks_locais": [],
    "tabelas": [],
@@ -9315,7 +9328,7 @@
     "StandardTableCard"
    ],
    "export_default": null,
-   "linhas": 58,
+   "linhas": 57,
    "dominio": "components/shared",
    "hooks_locais": [],
    "tabelas": [],
@@ -9330,7 +9343,7 @@
     "SubscriptionPopoverProps"
    ],
    "export_default": null,
-   "linhas": 364,
+   "linhas": 363,
    "dominio": "components/shared",
    "hooks_locais": [],
    "tabelas": [],
@@ -9345,7 +9358,7 @@
     "ViewExportColumn"
    ],
    "export_default": null,
-   "linhas": 170,
+   "linhas": 169,
    "dominio": "components/shared",
    "hooks_locais": [],
    "tabelas": [],
@@ -9359,7 +9372,7 @@
     "SimuladorAntecipacao"
    ],
    "export_default": null,
-   "linhas": 398,
+   "linhas": 397,
    "dominio": "components/simuladores",
    "hooks_locais": [],
    "tabelas": [
@@ -9376,7 +9389,7 @@
     "RecebivelItem"
    ],
    "export_default": null,
-   "linhas": 123,
+   "linhas": 122,
    "dominio": "components/simuladores",
    "hooks_locais": [],
    "tabelas": [],
@@ -9390,7 +9403,7 @@
     "ConsolidacaoMultiCNPJ"
    ],
    "export_default": null,
-   "linhas": 287,
+   "linhas": 286,
    "dominio": "components/tesouraria",
    "hooks_locais": [
     "useContasBancarias",
@@ -9409,7 +9422,7 @@
     "FluxoInterEmpresas"
    ],
    "export_default": null,
-   "linhas": 200,
+   "linhas": 199,
    "dominio": "components/tesouraria",
    "hooks_locais": [
     "useContasBancarias",
@@ -9428,7 +9441,7 @@
     "MatrizCNPJBanco"
    ],
    "export_default": null,
-   "linhas": 211,
+   "linhas": 210,
    "dominio": "components/tesouraria",
    "hooks_locais": [
     "useContasBancarias",
@@ -9445,7 +9458,7 @@
     "ProjectedCashFlowChart"
    ],
    "export_default": null,
-   "linhas": 140,
+   "linhas": 139,
    "dominio": "components/tesouraria",
    "hooks_locais": [],
    "tabelas": [],
@@ -9459,7 +9472,7 @@
     "TesourariaCentralizada"
    ],
    "export_default": null,
-   "linhas": 214,
+   "linhas": 213,
    "dominio": "components/tesouraria",
    "hooks_locais": [
     "useContasBancarias",
@@ -9478,7 +9491,7 @@
     "ThemeProvider"
    ],
    "export_default": null,
-   "linhas": 62,
+   "linhas": 61,
    "dominio": "components/theme",
    "hooks_locais": [],
    "tabelas": [],
@@ -9492,7 +9505,7 @@
     "ComparativoRegimes"
    ],
    "export_default": null,
-   "linhas": 62,
+   "linhas": 61,
    "dominio": "components/tributario",
    "hooks_locais": [],
    "tabelas": [],
@@ -9506,7 +9519,7 @@
     "HistoricoCenariosCalculadora"
    ],
    "export_default": null,
-   "linhas": 75,
+   "linhas": 74,
    "dominio": "components/tributario",
    "hooks_locais": [],
    "tabelas": [
@@ -9522,7 +9535,7 @@
     "MemoriaCalculo"
    ],
    "export_default": null,
-   "linhas": 54,
+   "linhas": 53,
    "dominio": "components/tributario",
    "hooks_locais": [],
    "tabelas": [],
@@ -9536,7 +9549,7 @@
     "NumberField"
    ],
    "export_default": null,
-   "linhas": 46,
+   "linhas": 45,
    "dominio": "components/tributario",
    "hooks_locais": [],
    "tabelas": [],
@@ -9550,7 +9563,7 @@
     "ResultadoBreakdown"
    ],
    "export_default": null,
-   "linhas": 103,
+   "linhas": 102,
    "dominio": "components/tributario",
    "hooks_locais": [],
    "tabelas": [],
@@ -9564,7 +9577,7 @@
     "CertificadosDigitaisTab"
    ],
    "export_default": null,
-   "linhas": 325,
+   "linhas": 324,
    "dominio": "components/tributario",
    "hooks_locais": [
     "useCertificadosDigitais",
@@ -9584,7 +9597,7 @@
     "ComparativoTemporalChartProps"
    ],
    "export_default": "ComparativoTemporalChart",
-   "linhas": 190,
+   "linhas": 189,
    "dominio": "components/tributario",
    "hooks_locais": [],
    "tabelas": [],
@@ -9599,7 +9612,7 @@
     "ConformidadeCardProps"
    ],
    "export_default": null,
-   "linhas": 107,
+   "linhas": 106,
    "dominio": "components/tributario",
    "hooks_locais": [],
    "tabelas": [],
@@ -9614,7 +9627,7 @@
     "ConformidadeHistoricoCardProps"
    ],
    "export_default": null,
-   "linhas": 213,
+   "linhas": 212,
    "dominio": "components/tributario",
    "hooks_locais": [],
    "tabelas": [],
@@ -9628,7 +9641,7 @@
     "CsvImportDialog"
    ],
    "export_default": null,
-   "linhas": 272,
+   "linhas": 271,
    "dominio": "components/tributario",
    "hooks_locais": [],
    "tabelas": [],
@@ -9642,7 +9655,7 @@
     "AlertasAtivosResumo"
    ],
    "export_default": null,
-   "linhas": 58,
+   "linhas": 57,
    "dominio": "components/tributario",
    "hooks_locais": [],
    "tabelas": [],
@@ -9656,7 +9669,7 @@
     "AssistenteFechamentoMensal"
    ],
    "export_default": null,
-   "linhas": 176,
+   "linhas": 175,
    "dominio": "components/tributario",
    "hooks_locais": [
     "useFechamentoTributario"
@@ -9672,7 +9685,7 @@
     "BenchmarkSetorialCard"
    ],
    "export_default": null,
-   "linhas": 134,
+   "linhas": 133,
    "dominio": "components/tributario",
    "hooks_locais": [
     "useBenchmarkSetorial"
@@ -9688,7 +9701,7 @@
     "CalculadoraWidget"
    ],
    "export_default": null,
-   "linhas": 89,
+   "linhas": 88,
    "dominio": "components/tributario",
    "hooks_locais": [],
    "tabelas": [
@@ -9704,7 +9717,7 @@
     "ComparativoRegimes"
    ],
    "export_default": null,
-   "linhas": 74,
+   "linhas": 73,
    "dominio": "components/tributario",
    "hooks_locais": [],
    "tabelas": [],
@@ -9718,7 +9731,7 @@
     "ConformidadeFiscalCard"
    ],
    "export_default": null,
-   "linhas": 102,
+   "linhas": 101,
    "dominio": "components/tributario",
    "hooks_locais": [
     "useConformidadeFiscal"
@@ -9735,7 +9748,7 @@
     "ConformidadeTendenciaWidgetProps"
    ],
    "export_default": null,
-   "linhas": 267,
+   "linhas": 266,
    "dominio": "components/tributario",
    "hooks_locais": [
     "useConformidadeSnapshotsDaEmpresa"
@@ -9751,7 +9764,7 @@
     "CopilotTributarioFloat"
    ],
    "export_default": null,
-   "linhas": 284,
+   "linhas": 283,
    "dominio": "components/tributario",
    "hooks_locais": [],
    "tabelas": [],
@@ -9767,7 +9780,7 @@
     "DRETributariaPanel"
    ],
    "export_default": null,
-   "linhas": 173,
+   "linhas": 172,
    "dominio": "components/tributario",
    "hooks_locais": [
     "useDRETributaria"
@@ -9783,7 +9796,7 @@
     "EvolucaoCargaChart"
    ],
    "export_default": null,
-   "linhas": 82,
+   "linhas": 81,
    "dominio": "components/tributario",
    "hooks_locais": [],
    "tabelas": [],
@@ -9797,7 +9810,7 @@
     "HeatmapTributarioAnual"
    ],
    "export_default": null,
-   "linhas": 163,
+   "linhas": 162,
    "dominio": "components/tributario",
    "hooks_locais": [
     "useHeatmapTributario"
@@ -9813,7 +9826,7 @@
     "OportunidadesElisaoWidget"
    ],
    "export_default": null,
-   "linhas": 59,
+   "linhas": 58,
    "dominio": "components/tributario",
    "hooks_locais": [],
    "tabelas": [],
@@ -9827,7 +9840,7 @@
     "PrevisaoTributariaIA"
    ],
    "export_default": null,
-   "linhas": 149,
+   "linhas": 148,
    "dominio": "components/tributario",
    "hooks_locais": [
     "usePrevisaoTributaria"
@@ -9843,7 +9856,7 @@
     "ProximosVencimentosTimeline"
    ],
    "export_default": null,
-   "linhas": 63,
+   "linhas": 62,
    "dominio": "components/tributario",
    "hooks_locais": [],
    "tabelas": [],
@@ -9857,7 +9870,7 @@
     "RelatoriosAgendadosCard"
    ],
    "export_default": null,
-   "linhas": 187,
+   "linhas": 186,
    "dominio": "components/tributario",
    "hooks_locais": [
     "useRelatoriosTributariosAgendados"
@@ -9874,7 +9887,7 @@
     "SaudeCatalogosBadgeProps"
    ],
    "export_default": null,
-   "linhas": 155,
+   "linhas": 154,
    "dominio": "components/tributario",
    "hooks_locais": [
     "useCatalogosFiscais"
@@ -9890,7 +9903,7 @@
     "UploadNotaFiscalOCR"
    ],
    "export_default": null,
-   "linhas": 171,
+   "linhas": 170,
    "dominio": "components/tributario",
    "hooks_locais": [
     "useListaNotasFiscaisOCR",
@@ -9908,7 +9921,7 @@
     "EvolucaoPoint"
    ],
    "export_default": null,
-   "linhas": 113,
+   "linhas": 112,
    "dominio": "components/tributario",
    "hooks_locais": [],
    "tabelas": [],
@@ -9922,7 +9935,7 @@
     "FaturamentoTab"
    ],
    "export_default": null,
-   "linhas": 236,
+   "linhas": 235,
    "dominio": "components/tributario",
    "hooks_locais": [
     "useHistoricoFinanceiro"
@@ -9938,7 +9951,7 @@
     "FolhaTab"
    ],
    "export_default": null,
-   "linhas": 230,
+   "linhas": 229,
    "dominio": "components/tributario",
    "hooks_locais": [
     "useHistoricoFinanceiro"
@@ -9954,7 +9967,7 @@
     "DetalhamentoTable"
    ],
    "export_default": null,
-   "linhas": 84,
+   "linhas": 83,
    "dominio": "components/tributario",
    "hooks_locais": [],
    "tabelas": [],
@@ -9968,7 +9981,7 @@
     "MixEditor"
    ],
    "export_default": null,
-   "linhas": 150,
+   "linhas": 149,
    "dominio": "components/tributario",
    "hooks_locais": [],
    "tabelas": [],
@@ -9982,7 +9995,7 @@
     "ResumoCards"
    ],
    "export_default": null,
-   "linhas": 65,
+   "linhas": 64,
    "dominio": "components/tributario",
    "hooks_locais": [],
    "tabelas": [],
@@ -9996,7 +10009,7 @@
     "NfeVinculoDialog"
    ],
    "export_default": null,
-   "linhas": 140,
+   "linhas": 139,
    "dominio": "components/tributario",
    "hooks_locais": [
     "useCriarContaDaNfe",
@@ -10014,7 +10027,7 @@
     "StepConvidarContador"
    ],
    "export_default": null,
-   "linhas": 132,
+   "linhas": 131,
    "dominio": "components/tributario",
    "hooks_locais": [],
    "tabelas": [],
@@ -10031,7 +10044,7 @@
     "ResultadoPfProps"
    ],
    "export_default": null,
-   "linhas": 181,
+   "linhas": 180,
    "dominio": "components/tributario",
    "hooks_locais": [],
    "tabelas": [],
@@ -10046,7 +10059,7 @@
     "ProjecaoConformidadeCardProps"
    ],
    "export_default": null,
-   "linhas": 228,
+   "linhas": 227,
    "dominio": "components/tributario",
    "hooks_locais": [],
    "tabelas": [],
@@ -10061,7 +10074,7 @@
     "AjustesParametrosAlertProps"
    ],
    "export_default": null,
-   "linhas": 49,
+   "linhas": 48,
    "dominio": "components/tributario",
    "hooks_locais": [],
    "tabelas": [],
@@ -10075,7 +10088,7 @@
     "CenarioDetalhes"
    ],
    "export_default": null,
-   "linhas": 89,
+   "linhas": 88,
    "dominio": "components/tributario",
    "hooks_locais": [],
    "tabelas": [],
@@ -10090,7 +10103,7 @@
     "ConfirmarSalvamentoAjustesDialogProps"
    ],
    "export_default": null,
-   "linhas": 72,
+   "linhas": 71,
    "dominio": "components/tributario",
    "hooks_locais": [],
    "tabelas": [],
@@ -10104,7 +10117,7 @@
     "LucroTrimestralFields"
    ],
    "export_default": null,
-   "linhas": 117,
+   "linhas": 116,
    "dominio": "components/tributario",
    "hooks_locais": [],
    "tabelas": [],
@@ -10118,7 +10131,7 @@
     "ParametrosForm"
    ],
    "export_default": null,
-   "linhas": 447,
+   "linhas": 446,
    "dominio": "components/tributario",
    "hooks_locais": [
     "useResolucaoCnae"
@@ -10135,7 +10148,7 @@
     "PeriodicidadeComparativoCardProps"
    ],
    "export_default": null,
-   "linhas": 133,
+   "linhas": 132,
    "dominio": "components/tributario",
    "hooks_locais": [],
    "tabelas": [],
@@ -10149,7 +10162,7 @@
     "SimulacaoHeaderActions"
    ],
    "export_default": null,
-   "linhas": 91,
+   "linhas": 90,
    "dominio": "components/tributario",
    "hooks_locais": [],
    "tabelas": [],
@@ -10169,7 +10182,7 @@
     "NestedAccordion"
    ],
    "export_default": null,
-   "linhas": 241,
+   "linhas": 240,
    "dominio": "components/ui",
    "hooks_locais": [],
    "tabelas": [],
@@ -10184,7 +10197,7 @@
     "ActionState"
    ],
    "export_default": null,
-   "linhas": 80,
+   "linhas": 79,
    "dominio": "components/ui",
    "hooks_locais": [],
    "tabelas": [],
@@ -10199,7 +10212,7 @@
     "AdvancedFiltersPopover"
    ],
    "export_default": null,
-   "linhas": 399,
+   "linhas": 398,
    "dominio": "components/ui",
    "hooks_locais": [],
    "tabelas": [],
@@ -10223,7 +10236,7 @@
     "AlertDialogTrigger"
    ],
    "export_default": null,
-   "linhas": 130,
+   "linhas": 129,
    "dominio": "components/ui",
    "hooks_locais": [],
    "tabelas": [],
@@ -10239,7 +10252,7 @@
     "AlertTitle"
    ],
    "export_default": null,
-   "linhas": 66,
+   "linhas": 65,
    "dominio": "components/ui",
    "hooks_locais": [],
    "tabelas": [],
@@ -10258,7 +10271,7 @@
     "AvatarWithName"
    ],
    "export_default": null,
-   "linhas": 253,
+   "linhas": 252,
    "dominio": "components/ui",
    "hooks_locais": [],
    "tabelas": [],
@@ -10277,7 +10290,7 @@
     "StatusBadge"
    ],
    "export_default": null,
-   "linhas": 211,
+   "linhas": 210,
    "dominio": "components/ui",
    "hooks_locais": [],
    "tabelas": [],
@@ -10297,7 +10310,7 @@
     "BreadcrumbSeparator"
    ],
    "export_default": null,
-   "linhas": 105,
+   "linhas": 104,
    "dominio": "components/ui",
    "hooks_locais": [],
    "tabelas": [],
@@ -10311,7 +10324,7 @@
     "BulkActionsBar"
    ],
    "export_default": null,
-   "linhas": 160,
+   "linhas": 159,
    "dominio": "components/ui",
    "hooks_locais": [],
    "tabelas": [],
@@ -10326,7 +10339,7 @@
     "ButtonProps"
    ],
    "export_default": null,
-   "linhas": 24,
+   "linhas": 23,
    "dominio": "components/ui",
    "hooks_locais": [],
    "tabelas": [],
@@ -10341,7 +10354,7 @@
     "CalendarProps"
    ],
    "export_default": null,
-   "linhas": 60,
+   "linhas": 59,
    "dominio": "components/ui",
    "hooks_locais": [],
    "tabelas": [],
@@ -10367,7 +10380,7 @@
     "TiltCard"
    ],
    "export_default": null,
-   "linhas": 407,
+   "linhas": 406,
    "dominio": "components/ui",
    "hooks_locais": [],
    "tabelas": [],
@@ -10379,13 +10392,14 @@
    "arquivo": "src/components/ui/carousel.tsx",
    "exports": [
     "Carousel",
+    "CarouselApi",
     "CarouselContent",
     "CarouselItem",
     "CarouselNext",
     "CarouselPrevious"
    ],
    "export_default": null,
-   "linhas": 241,
+   "linhas": 240,
    "dominio": "components/ui",
    "hooks_locais": [],
    "tabelas": [],
@@ -10405,7 +10419,7 @@
     "ChartTooltipContent"
    ],
    "export_default": null,
-   "linhas": 328,
+   "linhas": 327,
    "dominio": "components/ui",
    "hooks_locais": [],
    "tabelas": [],
@@ -10420,7 +10434,7 @@
     "CheckboxGroup"
    ],
    "export_default": null,
-   "linhas": 130,
+   "linhas": 129,
    "dominio": "components/ui",
    "hooks_locais": [],
    "tabelas": [],
@@ -10440,7 +10454,7 @@
     "ShowMore"
    ],
    "export_default": "Collapse",
-   "linhas": 368,
+   "linhas": 367,
    "dominio": "components/ui",
    "hooks_locais": [],
    "tabelas": [],
@@ -10463,7 +10477,7 @@
     "Spotlight"
    ],
    "export_default": null,
-   "linhas": 384,
+   "linhas": 383,
    "dominio": "components/ui",
    "hooks_locais": [],
    "tabelas": [],
@@ -10480,7 +10494,7 @@
     "LogoutConfirmDialog"
    ],
    "export_default": "ConfirmDialog",
-   "linhas": 264,
+   "linhas": 263,
    "dominio": "components/ui",
    "hooks_locais": [],
    "tabelas": [],
@@ -10496,7 +10510,7 @@
     "DeleteConfirmationDialog"
    ],
    "export_default": null,
-   "linhas": 249,
+   "linhas": 248,
    "dominio": "components/ui",
    "hooks_locais": [],
    "tabelas": [],
@@ -10525,7 +10539,7 @@
     "QuickActionsContext"
    ],
    "export_default": null,
-   "linhas": 295,
+   "linhas": 294,
    "dominio": "components/ui",
    "hooks_locais": [],
    "tabelas": [],
@@ -10541,7 +10555,7 @@
     "SimpleCurrencyInput"
    ],
    "export_default": "CurrencyInput",
-   "linhas": 195,
+   "linhas": 194,
    "dominio": "components/ui",
    "hooks_locais": [],
    "tabelas": [],
@@ -10552,10 +10566,12 @@
   {
    "arquivo": "src/components/ui/data-grid.tsx",
    "exports": [
-    "DataGrid"
+    "Column",
+    "DataGrid",
+    "SortDirection"
    ],
    "export_default": "DataGrid",
-   "linhas": 420,
+   "linhas": 419,
    "dominio": "components/ui",
    "hooks_locais": [],
    "tabelas": [],
@@ -10572,7 +10588,7 @@
     "SortState"
    ],
    "export_default": "DataTable",
-   "linhas": 340,
+   "linhas": 339,
    "dominio": "components/ui",
    "hooks_locais": [],
    "tabelas": [],
@@ -10587,7 +10603,7 @@
     "DateRangePicker"
    ],
    "export_default": "DateRangePicker",
-   "linhas": 301,
+   "linhas": 300,
    "dominio": "components/ui",
    "hooks_locais": [],
    "tabelas": [],
@@ -10610,7 +10626,7 @@
     "DialogTrigger"
    ],
    "export_default": null,
-   "linhas": 124,
+   "linhas": 123,
    "dominio": "components/ui",
    "hooks_locais": [],
    "tabelas": [],
@@ -10633,7 +10649,7 @@
     "DrawerTrigger"
    ],
    "export_default": null,
-   "linhas": 99,
+   "linhas": 98,
    "dominio": "components/ui",
    "hooks_locais": [],
    "tabelas": [],
@@ -10661,7 +10677,7 @@
     "DropdownMenuTrigger"
    ],
    "export_default": null,
-   "linhas": 193,
+   "linhas": 192,
    "dominio": "components/ui",
    "hooks_locais": [],
    "tabelas": [],
@@ -10682,7 +10698,7 @@
     "DropdownTrigger"
    ],
    "export_default": null,
-   "linhas": 305,
+   "linhas": 304,
    "dominio": "components/ui",
    "hooks_locais": [],
    "tabelas": [],
@@ -10700,7 +10716,7 @@
     "NoResults"
    ],
    "export_default": null,
-   "linhas": 438,
+   "linhas": 437,
    "dominio": "components/ui",
    "hooks_locais": [],
    "tabelas": [],
@@ -10714,7 +10730,7 @@
     "ExportMenu"
    ],
    "export_default": null,
-   "linhas": 75,
+   "linhas": 74,
    "dominio": "components/ui",
    "hooks_locais": [],
    "tabelas": [],
@@ -10729,7 +10745,7 @@
     "SimpleFileInput"
    ],
    "export_default": "FileUpload",
-   "linhas": 353,
+   "linhas": 352,
    "dominio": "components/ui",
    "hooks_locais": [],
    "tabelas": [],
@@ -10749,7 +10765,7 @@
     "FormMessage"
    ],
    "export_default": null,
-   "linhas": 159,
+   "linhas": 158,
    "dominio": "components/ui",
    "hooks_locais": [],
    "tabelas": [],
@@ -10769,7 +10785,7 @@
     "ProfileHoverCard"
    ],
    "export_default": null,
-   "linhas": 250,
+   "linhas": 249,
    "dominio": "components/ui",
    "hooks_locais": [],
    "tabelas": [],
@@ -10786,7 +10802,7 @@
     "QuickHelpCard"
    ],
    "export_default": null,
-   "linhas": 233,
+   "linhas": 232,
    "dominio": "components/ui",
    "hooks_locais": [],
    "tabelas": [],
@@ -10803,7 +10819,7 @@
     "InputOTPSlot"
    ],
    "export_default": null,
-   "linhas": 70,
+   "linhas": 69,
    "dominio": "components/ui",
    "hooks_locais": [],
    "tabelas": [],
@@ -10824,7 +10840,7 @@
     "ValidatedInput"
    ],
    "export_default": null,
-   "linhas": 376,
+   "linhas": 375,
    "dominio": "components/ui",
    "hooks_locais": [],
    "tabelas": [],
@@ -10838,7 +10854,7 @@
     "Label"
    ],
    "export_default": null,
-   "linhas": 20,
+   "linhas": 19,
    "dominio": "components/ui",
    "hooks_locais": [],
    "tabelas": [],
@@ -10856,7 +10872,7 @@
     "Skeleton"
    ],
    "export_default": "LazyLoad",
-   "linhas": 244,
+   "linhas": 243,
    "dominio": "components/ui",
    "hooks_locais": [],
    "tabelas": [],
@@ -10872,7 +10888,7 @@
     "TableShimmerSkeleton"
    ],
    "export_default": null,
-   "linhas": 371,
+   "linhas": 370,
    "dominio": "components/ui",
    "hooks_locais": [],
    "tabelas": [],
@@ -10901,7 +10917,7 @@
     "MenubarTrigger"
    ],
    "export_default": null,
-   "linhas": 220,
+   "linhas": 219,
    "dominio": "components/ui",
    "hooks_locais": [],
    "tabelas": [],
@@ -10926,7 +10942,7 @@
     "SuccessCheck"
    ],
    "export_default": null,
-   "linhas": 361,
+   "linhas": 360,
    "dominio": "components/ui",
    "hooks_locais": [],
    "tabelas": [],
@@ -10941,7 +10957,7 @@
     "Modal"
    ],
    "export_default": null,
-   "linhas": 198,
+   "linhas": 197,
    "dominio": "components/ui",
    "hooks_locais": [],
    "tabelas": [],
@@ -10962,7 +10978,7 @@
     "NavigationMenuViewport"
    ],
    "export_default": null,
-   "linhas": 116,
+   "linhas": 115,
    "dominio": "components/ui",
    "hooks_locais": [],
    "tabelas": [],
@@ -10977,7 +10993,7 @@
     "NetworkStatusIndicator"
    ],
    "export_default": null,
-   "linhas": 267,
+   "linhas": 266,
    "dominio": "components/ui",
    "hooks_locais": [
     "useNetworkStatus"
@@ -10995,7 +11011,7 @@
     "PaginationWithPageSize"
    ],
    "export_default": "Pagination",
-   "linhas": 233,
+   "linhas": 232,
    "dominio": "components/ui",
    "hooks_locais": [],
    "tabelas": [],
@@ -11010,7 +11026,7 @@
     "PhoneInput"
    ],
    "export_default": "PhoneInput",
-   "linhas": 267,
+   "linhas": 266,
    "dominio": "components/ui",
    "hooks_locais": [],
    "tabelas": [],
@@ -11026,7 +11042,7 @@
     "PopoverTrigger"
    ],
    "export_default": null,
-   "linhas": 30,
+   "linhas": 29,
    "dominio": "components/ui",
    "hooks_locais": [],
    "tabelas": [],
@@ -11043,7 +11059,7 @@
     "ProgressSteps"
    ],
    "export_default": "Progress",
-   "linhas": 318,
+   "linhas": 317,
    "dominio": "components/ui",
    "hooks_locais": [],
    "tabelas": [],
@@ -11058,7 +11074,7 @@
     "QuickDateFilters"
    ],
    "export_default": null,
-   "linhas": 154,
+   "linhas": 153,
    "dominio": "components/ui",
    "hooks_locais": [],
    "tabelas": [],
@@ -11073,7 +11089,7 @@
     "RadioGroupItem"
    ],
    "export_default": null,
-   "linhas": 36,
+   "linhas": 35,
    "dominio": "components/ui",
    "hooks_locais": [],
    "tabelas": [],
@@ -11089,7 +11105,7 @@
     "RadioGroup"
    ],
    "export_default": null,
-   "linhas": 225,
+   "linhas": 224,
    "dominio": "components/ui",
    "hooks_locais": [],
    "tabelas": [],
@@ -11108,7 +11124,7 @@
     "RankType"
    ],
    "export_default": null,
-   "linhas": 218,
+   "linhas": 217,
    "dominio": "components/ui",
    "hooks_locais": [],
    "tabelas": [],
@@ -11127,7 +11143,7 @@
     "TwoPanelLayout"
    ],
    "export_default": "PanelGroup",
-   "linhas": 416,
+   "linhas": 415,
    "dominio": "components/ui",
    "hooks_locais": [],
    "tabelas": [],
@@ -11143,7 +11159,7 @@
     "ResizablePanelGroup"
    ],
    "export_default": null,
-   "linhas": 60,
+   "linhas": 59,
    "dominio": "components/ui",
    "hooks_locais": [],
    "tabelas": [],
@@ -11158,7 +11174,7 @@
     "RichTextEditor"
    ],
    "export_default": "RichTextEditor",
-   "linhas": 439,
+   "linhas": 438,
    "dominio": "components/ui",
    "hooks_locais": [],
    "tabelas": [],
@@ -11173,7 +11189,7 @@
     "ScrollBar"
    ],
    "export_default": null,
-   "linhas": 45,
+   "linhas": 44,
    "dominio": "components/ui",
    "hooks_locais": [],
    "tabelas": [],
@@ -11188,7 +11204,7 @@
     "SearchInputWithButton"
    ],
    "export_default": "SearchInput",
-   "linhas": 192,
+   "linhas": 191,
    "dominio": "components/ui",
    "hooks_locais": [
     "useDebounce"
@@ -11213,7 +11229,7 @@
     "SelectValue"
    ],
    "export_default": null,
-   "linhas": 160,
+   "linhas": 159,
    "dominio": "components/ui",
    "hooks_locais": [],
    "tabelas": [],
@@ -11227,7 +11243,7 @@
     "Separator"
    ],
    "export_default": null,
-   "linhas": 25,
+   "linhas": 24,
    "dominio": "components/ui",
    "hooks_locais": [],
    "tabelas": [],
@@ -11252,7 +11268,7 @@
     "SheetTrigger"
    ],
    "export_default": null,
-   "linhas": 284,
+   "linhas": 283,
    "dominio": "components/ui",
    "hooks_locais": [],
    "tabelas": [],
@@ -11288,7 +11304,7 @@
     "SidebarTrigger"
    ],
    "export_default": null,
-   "linhas": 734,
+   "linhas": 733,
    "dominio": "components/ui",
    "hooks_locais": [
     "useIsMobile"
@@ -11312,7 +11328,7 @@
     "SkeletonText"
    ],
    "export_default": null,
-   "linhas": 303,
+   "linhas": 302,
    "dominio": "components/ui",
    "hooks_locais": [],
    "tabelas": [],
@@ -11326,7 +11342,7 @@
     "Slider"
    ],
    "export_default": null,
-   "linhas": 24,
+   "linhas": 23,
    "dominio": "components/ui",
    "hooks_locais": [],
    "tabelas": [],
@@ -11341,7 +11357,7 @@
     "SortableHeader"
    ],
    "export_default": null,
-   "linhas": 47,
+   "linhas": 46,
    "dominio": "components/ui",
    "hooks_locais": [],
    "tabelas": [],
@@ -11353,10 +11369,11 @@
    "arquivo": "src/components/ui/split-button.tsx",
    "exports": [
     "DropdownButton",
-    "SplitButton"
+    "SplitButton",
+    "SplitButtonOption"
    ],
    "export_default": "SplitButton",
-   "linhas": 289,
+   "linhas": 288,
    "dominio": "components/ui",
    "hooks_locais": [],
    "tabelas": [],
@@ -11371,7 +11388,7 @@
     "StatusDot"
    ],
    "export_default": "StatusBadge",
-   "linhas": 234,
+   "linhas": 233,
    "dominio": "components/ui",
    "hooks_locais": [],
    "tabelas": [],
@@ -11385,7 +11402,7 @@
     "Switch"
    ],
    "export_default": null,
-   "linhas": 28,
+   "linhas": 27,
    "dominio": "components/ui",
    "hooks_locais": [],
    "tabelas": [],
@@ -11399,7 +11416,7 @@
     "TablePagination"
    ],
    "export_default": null,
-   "linhas": 118,
+   "linhas": 117,
    "dominio": "components/ui",
    "hooks_locais": [],
    "tabelas": [],
@@ -11420,7 +11437,7 @@
     "TableRow"
    ],
    "export_default": null,
-   "linhas": 112,
+   "linhas": 111,
    "dominio": "components/ui",
    "hooks_locais": [],
    "tabelas": [],
@@ -11440,7 +11457,7 @@
     "VerticalTabs"
    ],
    "export_default": null,
-   "linhas": 333,
+   "linhas": 332,
    "dominio": "components/ui",
    "hooks_locais": [],
    "tabelas": [],
@@ -11451,13 +11468,14 @@
   {
    "arquivo": "src/components/ui/tag-input.tsx",
    "exports": [
+    "Tag",
     "TagButton",
     "TagFilter",
     "TagInput",
     "TagsDisplay"
    ],
    "export_default": "TagInput",
-   "linhas": 356,
+   "linhas": 355,
    "dominio": "components/ui",
    "hooks_locais": [],
    "tabelas": [],
@@ -11472,7 +11490,7 @@
     "TextareaProps"
    ],
    "export_default": null,
-   "linhas": 24,
+   "linhas": 23,
    "dominio": "components/ui",
    "hooks_locais": [],
    "tabelas": [],
@@ -11486,7 +11504,7 @@
     "Toaster"
    ],
    "export_default": null,
-   "linhas": 31,
+   "linhas": 30,
    "dominio": "components/ui",
    "hooks_locais": [
     "useTheme"
@@ -11503,7 +11521,7 @@
     "ToggleGroupItem"
    ],
    "export_default": null,
-   "linhas": 56,
+   "linhas": 55,
    "dominio": "components/ui",
    "hooks_locais": [],
    "tabelas": [],
@@ -11517,7 +11535,7 @@
     "Toggle"
    ],
    "export_default": null,
-   "linhas": 22,
+   "linhas": 21,
    "dominio": "components/ui",
    "hooks_locais": [],
    "tabelas": [],
@@ -11538,7 +11556,7 @@
     "TruncatedText"
    ],
    "export_default": null,
-   "linhas": 179,
+   "linhas": 178,
    "dominio": "components/ui",
    "hooks_locais": [],
    "tabelas": [],
@@ -11551,10 +11569,11 @@
    "exports": [
     "CategoryTree",
     "FileTree",
+    "TreeNode",
     "TreeView"
    ],
    "export_default": "TreeView",
-   "linhas": 428,
+   "linhas": 427,
    "dominio": "components/ui",
    "hooks_locais": [],
    "tabelas": [],
@@ -11568,7 +11587,7 @@
     "VisualValidator"
    ],
    "export_default": null,
-   "linhas": 332,
+   "linhas": 331,
    "dominio": "components/ui",
    "hooks_locais": [],
    "tabelas": [],
@@ -11582,7 +11601,7 @@
     "AuditTab"
    ],
    "export_default": null,
-   "linhas": 47,
+   "linhas": 46,
    "dominio": "components/ui",
    "hooks_locais": [],
    "tabelas": [],
@@ -11596,7 +11615,7 @@
     "BreakpointsTab"
    ],
    "export_default": null,
-   "linhas": 100,
+   "linhas": 99,
    "dominio": "components/ui",
    "hooks_locais": [],
    "tabelas": [],
@@ -11616,7 +11635,7 @@
     "TypographyRow"
    ],
    "export_default": null,
-   "linhas": 132,
+   "linhas": 131,
    "dominio": "components/ui",
    "hooks_locais": [],
    "tabelas": [],
@@ -11630,7 +11649,7 @@
     "RegressionTab"
    ],
    "export_default": null,
-   "linhas": 332,
+   "linhas": 331,
    "dominio": "components/ui",
    "hooks_locais": [],
    "tabelas": [],
@@ -11644,7 +11663,7 @@
     "ReportModal"
    ],
    "export_default": null,
-   "linhas": 207,
+   "linhas": 206,
    "dominio": "components/ui",
    "hooks_locais": [],
    "tabelas": [],
@@ -11659,11 +11678,12 @@
     "WizardHeader",
     "WizardNavigation",
     "WizardProgress",
+    "WizardStep",
     "WizardStepContent",
     "WizardVerticalHeader"
    ],
    "export_default": "Wizard",
-   "linhas": 402,
+   "linhas": 401,
    "dominio": "components/ui",
    "hooks_locais": [],
    "tabelas": [],
@@ -11677,7 +11697,7 @@
     "ConviteUsuarioDialog"
    ],
    "export_default": null,
-   "linhas": 152,
+   "linhas": 151,
    "dominio": "components/usuarios",
    "hooks_locais": [],
    "tabelas": [],
@@ -11693,7 +11713,7 @@
     "VendedorDashboard"
    ],
    "export_default": null,
-   "linhas": 199,
+   "linhas": 198,
    "dominio": "components/vendedores",
    "hooks_locais": [
     "useContasReceber",
@@ -11710,7 +11730,7 @@
     "EmpresaScopeProvider"
    ],
    "export_default": null,
-   "linhas": 195,
+   "linhas": 194,
    "dominio": "contexts",
    "hooks_locais": [
     "useUserEmpresas"
@@ -11726,7 +11746,7 @@
     "AuthProvider"
    ],
    "export_default": null,
-   "linhas": 372,
+   "linhas": 371,
    "dominio": "hooks",
    "hooks_locais": [],
    "tabelas": [
@@ -11736,6 +11756,7 @@
     "user_sessions"
    ],
    "edges": [
+    "sso-callback",
     "sso-logout"
    ],
    "usado_por": 1,
@@ -11747,7 +11768,7 @@
     "PrefetchOnVisible"
    ],
    "export_default": null,
-   "linhas": 31,
+   "linhas": 30,
    "dominio": "hooks",
    "hooks_locais": [
     "usePrefetchRoutes"
@@ -11763,7 +11784,7 @@
     "TelemetriaTable"
    ],
    "export_default": null,
-   "linhas": 189,
+   "linhas": 188,
    "dominio": "pages/admin-telemetria",
    "hooks_locais": [
     "useVirtualRows"
@@ -11779,7 +11800,7 @@
     "AdminBloatMonitor"
    ],
    "export_default": "AdminBloatMonitor",
-   "linhas": 405,
+   "linhas": 404,
    "dominio": "pages/admin",
    "hooks_locais": [],
    "tabelas": [],
@@ -11793,7 +11814,7 @@
     "AdminErrosFrontend"
    ],
    "export_default": "AdminErrosFrontend",
-   "linhas": 238,
+   "linhas": 237,
    "dominio": "pages/admin",
    "hooks_locais": [
     "useFrontendErrorGroups",
@@ -11811,7 +11832,7 @@
     "AnomaliaDetalhe"
    ],
    "export_default": "AnomaliaDetalhe",
-   "linhas": 174,
+   "linhas": 173,
    "dominio": "pages/admin",
    "hooks_locais": [
     "useAnomaliaDetalhe",
@@ -11828,7 +11849,7 @@
     "ApiManagement"
    ],
    "export_default": "ApiManagement",
-   "linhas": 375,
+   "linhas": 374,
    "dominio": "pages/admin",
    "hooks_locais": [
     "useApiKeys",
@@ -11847,7 +11868,7 @@
     "AuditoriaIA"
    ],
    "export_default": "AuditoriaIA",
-   "linhas": 376,
+   "linhas": 375,
    "dominio": "pages/admin",
    "hooks_locais": [
     "useAuditoriaIA"
@@ -11864,7 +11885,7 @@
     "UnifiedRow"
    ],
    "export_default": null,
-   "linhas": 146,
+   "linhas": 145,
    "dominio": "pages/admin",
    "hooks_locais": [],
    "tabelas": [],
@@ -11878,7 +11899,7 @@
     "AuditSsoProfileSync"
    ],
    "export_default": "AuditSsoProfileSync",
-   "linhas": 294,
+   "linhas": 293,
    "dominio": "pages/admin",
    "hooks_locais": [
     "useSSOJitEvents",
@@ -11895,7 +11916,7 @@
     "ComplianceAuditoria"
    ],
    "export_default": "ComplianceAuditoria",
-   "linhas": 106,
+   "linhas": 105,
    "dominio": "pages/admin",
    "hooks_locais": [
     "useRealtimeAuditToasts"
@@ -11911,7 +11932,7 @@
     "CustomFieldsAdmin"
    ],
    "export_default": "CustomFieldsAdmin",
-   "linhas": 374,
+   "linhas": 373,
    "dominio": "pages/admin",
    "hooks_locais": [
     "useAuth",
@@ -11930,7 +11951,7 @@
     "InsightsIA"
    ],
    "export_default": "InsightsIA",
-   "linhas": 73,
+   "linhas": 72,
    "dominio": "pages/admin",
    "hooks_locais": [
     "useSavedFilterAlerts"
@@ -11946,7 +11967,7 @@
     "ScimAudit"
    ],
    "export_default": "ScimAudit",
-   "linhas": 442,
+   "linhas": 441,
    "dominio": "pages/admin",
    "hooks_locais": [
     "useAuth"
@@ -11965,7 +11986,7 @@
     "FilterCard"
    ],
    "export_default": null,
-   "linhas": 139,
+   "linhas": 138,
    "dominio": "pages/admin",
    "hooks_locais": [],
    "tabelas": [],
@@ -11979,7 +12000,7 @@
     "SummaryCard"
    ],
    "export_default": null,
-   "linhas": 27,
+   "linhas": 26,
    "dominio": "pages/admin",
    "hooks_locais": [],
    "tabelas": [],
@@ -11993,7 +12014,7 @@
     "SharedFiltersAdmin"
    ],
    "export_default": "SharedFiltersAdmin",
-   "linhas": 267,
+   "linhas": 266,
    "dominio": "pages/admin",
    "hooks_locais": [
     "useAuth",
@@ -12010,7 +12031,7 @@
     "SRECommandCenter"
    ],
    "export_default": "SRECommandCenter",
-   "linhas": 155,
+   "linhas": 154,
    "dominio": "pages/admin",
    "hooks_locais": [
     "useAuth"
@@ -12026,7 +12047,7 @@
     "SSOAdmin"
    ],
    "export_default": "SSOAdmin",
-   "linhas": 103,
+   "linhas": 102,
    "dominio": "pages/admin",
    "hooks_locais": [
     "useAuth"
@@ -12042,7 +12063,7 @@
     "SsoEvents"
    ],
    "export_default": "SsoEvents",
-   "linhas": 12,
+   "linhas": 11,
    "dominio": "pages/admin",
    "hooks_locais": [],
    "tabelas": [],
@@ -12056,7 +12077,7 @@
     "SSOJitEvents"
    ],
    "export_default": "SSOJitEvents",
-   "linhas": 353,
+   "linhas": 352,
    "dominio": "pages/admin",
    "hooks_locais": [
     "useSSOJitEvents",
@@ -12073,7 +12094,7 @@
     "AdminEdgeHealth"
    ],
    "export_default": "AdminEdgeHealth",
-   "linhas": 246,
+   "linhas": 245,
    "dominio": "pages",
    "hooks_locais": [
     "useAuth"
@@ -12092,7 +12113,7 @@
     "AdminSystemHealth"
    ],
    "export_default": "AdminSystemHealth",
-   "linhas": 289,
+   "linhas": 288,
    "dominio": "pages",
    "hooks_locais": [
     "useAuth"
@@ -12113,7 +12134,7 @@
     "AdminTelemetriaPage"
    ],
    "export_default": "AdminTelemetriaPage",
-   "linhas": 362,
+   "linhas": 361,
    "dominio": "pages",
    "hooks_locais": [],
    "tabelas": [
@@ -12129,7 +12150,7 @@
     "Alertas"
    ],
    "export_default": "Alertas",
-   "linhas": 386,
+   "linhas": 385,
    "dominio": "pages",
    "hooks_locais": [
     "useAlertas",
@@ -12148,7 +12169,7 @@
     "Aprovacoes"
    ],
    "export_default": "Aprovacoes",
-   "linhas": 74,
+   "linhas": 73,
    "dominio": "pages",
    "hooks_locais": [
     "useAuth"
@@ -12171,7 +12192,7 @@
     "ReprocessDialog"
    ],
    "export_default": null,
-   "linhas": 404,
+   "linhas": 403,
    "dominio": "pages",
    "hooks_locais": [],
    "tabelas": [],
@@ -12185,7 +12206,7 @@
     "Asaas"
    ],
    "export_default": "Asaas",
-   "linhas": 406,
+   "linhas": 405,
    "dominio": "pages",
    "hooks_locais": [
     "useAllEmpresas",
@@ -12203,7 +12224,7 @@
     "QueueHistoryDialog"
    ],
    "export_default": null,
-   "linhas": 36,
+   "linhas": 35,
    "dominio": "pages",
    "hooks_locais": [],
    "tabelas": [],
@@ -12217,7 +12238,7 @@
     "AssinaturaDigitalPage"
    ],
    "export_default": "AssinaturaDigitalPage",
-   "linhas": 19,
+   "linhas": 18,
    "dominio": "pages",
    "hooks_locais": [],
    "tabelas": [],
@@ -12231,7 +12252,7 @@
     "AuditLogs"
    ],
    "export_default": "AuditLogs",
-   "linhas": 673,
+   "linhas": 672,
    "dominio": "pages",
    "hooks_locais": [
     "useIpMaskPreference",
@@ -12250,7 +12271,7 @@
     "Auth"
    ],
    "export_default": "Auth",
-   "linhas": 209,
+   "linhas": 208,
    "dominio": "pages",
    "hooks_locais": [
     "useAuthPage"
@@ -12266,7 +12287,7 @@
     "CorporateOnboarding"
    ],
    "export_default": "CorporateOnboarding",
-   "linhas": 319,
+   "linhas": 318,
    "dominio": "pages/auth",
    "hooks_locais": [
     "useCorporateOnboarding"
@@ -12282,7 +12303,7 @@
     "BenchmarkingConcorrentes"
    ],
    "export_default": null,
-   "linhas": 263,
+   "linhas": 262,
    "dominio": "pages/benchmarking",
    "hooks_locais": [],
    "tabelas": [],
@@ -12296,7 +12317,7 @@
     "BenchmarkResultTabs"
    ],
    "export_default": null,
-   "linhas": 354,
+   "linhas": 353,
    "dominio": "pages/benchmarking",
    "hooks_locais": [],
    "tabelas": [],
@@ -12310,7 +12331,7 @@
     "BenchmarkingSetorial"
    ],
    "export_default": "BenchmarkingSetorial",
-   "linhas": 279,
+   "linhas": 278,
    "dominio": "pages",
    "hooks_locais": [
     "useContasPagar",
@@ -12330,7 +12351,7 @@
     "BI"
    ],
    "export_default": "BI",
-   "linhas": 709,
+   "linhas": 708,
    "dominio": "pages",
    "hooks_locais": [
     "useAuth",
@@ -12352,7 +12373,7 @@
     "Bitrix24"
    ],
    "export_default": "Bitrix24",
-   "linhas": 254,
+   "linhas": 253,
    "dominio": "pages",
    "hooks_locais": [
     "useBitrix24",
@@ -12369,7 +12390,7 @@
     "Bling"
    ],
    "export_default": "Bling",
-   "linhas": 176,
+   "linhas": 175,
    "dominio": "pages",
    "hooks_locais": [
     "useBlingOAuth",
@@ -12386,7 +12407,7 @@
     "BloqueiosTable"
    ],
    "export_default": null,
-   "linhas": 206,
+   "linhas": 205,
    "dominio": "pages/bloqueios-duplicidade",
    "hooks_locais": [],
    "tabelas": [],
@@ -12400,7 +12421,7 @@
     "DetailsDialog"
    ],
    "export_default": null,
-   "linhas": 130,
+   "linhas": 129,
    "dominio": "pages/bloqueios-duplicidade",
    "hooks_locais": [],
    "tabelas": [],
@@ -12414,7 +12435,7 @@
     "FiltersBar"
    ],
    "export_default": null,
-   "linhas": 101,
+   "linhas": 100,
    "dominio": "pages/bloqueios-duplicidade",
    "hooks_locais": [],
    "tabelas": [],
@@ -12428,7 +12449,7 @@
     "StatsCards"
    ],
    "export_default": null,
-   "linhas": 72,
+   "linhas": 71,
    "dominio": "pages/bloqueios-duplicidade",
    "hooks_locais": [],
    "tabelas": [],
@@ -12442,7 +12463,7 @@
     "BloqueiosDuplicidade"
    ],
    "export_default": "BloqueiosDuplicidade",
-   "linhas": 182,
+   "linhas": 181,
    "dominio": "pages",
    "hooks_locais": [
     "useBloqueiosData"
@@ -12458,7 +12479,7 @@
     "Boletos"
    ],
    "export_default": "Boletos",
-   "linhas": 475,
+   "linhas": 474,
    "dominio": "pages",
    "hooks_locais": [
     "useBoletos"
@@ -12474,7 +12495,7 @@
     "Categorias"
    ],
    "export_default": "Categorias",
-   "linhas": 102,
+   "linhas": 101,
    "dominio": "pages",
    "hooks_locais": [
     "useCategorias"
@@ -12490,7 +12511,7 @@
     "CentroCustoCards"
    ],
    "export_default": null,
-   "linhas": 146,
+   "linhas": 145,
    "dominio": "pages/centro-custos",
    "hooks_locais": [],
    "tabelas": [],
@@ -12504,7 +12525,7 @@
     "CentroCustos"
    ],
    "export_default": "CentroCustos",
-   "linhas": 513,
+   "linhas": 512,
    "dominio": "pages",
    "hooks_locais": [
     "useAllCentrosCusto",
@@ -12522,7 +12543,7 @@
     "CentroPrivacidadeLGPD"
    ],
    "export_default": "CentroPrivacidadeLGPD",
-   "linhas": 207,
+   "linhas": 206,
    "dominio": "pages",
    "hooks_locais": [
     "useSolicitacoesLGPD"
@@ -12538,7 +12559,7 @@
     "Clientes"
    ],
    "export_default": "Clientes",
-   "linhas": 401,
+   "linhas": 400,
    "dominio": "pages",
    "hooks_locais": [
     "useClientes",
@@ -12559,7 +12580,7 @@
     "ClientesFiltersPanel"
    ],
    "export_default": null,
-   "linhas": 143,
+   "linhas": 142,
    "dominio": "pages/clientes",
    "hooks_locais": [],
    "tabelas": [],
@@ -12573,7 +12594,7 @@
     "ClientesKPIs"
    ],
    "export_default": null,
-   "linhas": 73,
+   "linhas": 72,
    "dominio": "pages/clientes",
    "hooks_locais": [],
    "tabelas": [],
@@ -12587,7 +12608,7 @@
     "ClientesTableBody"
    ],
    "export_default": null,
-   "linhas": 162,
+   "linhas": 161,
    "dominio": "pages/clientes",
    "hooks_locais": [],
    "tabelas": [],
@@ -12601,7 +12622,7 @@
     "PortalTokensPage"
    ],
    "export_default": "PortalTokensPage",
-   "linhas": 83,
+   "linhas": 82,
    "dominio": "pages/clientes",
    "hooks_locais": [
     "useClientes"
@@ -12617,7 +12638,7 @@
     "ScoringClientesPage"
    ],
    "export_default": "ScoringClientesPage",
-   "linhas": 29,
+   "linhas": 28,
    "dominio": "pages/clientes",
    "hooks_locais": [],
    "tabelas": [],
@@ -12631,7 +12652,7 @@
     "Cobrancas"
    ],
    "export_default": "Cobrancas",
-   "linhas": 390,
+   "linhas": 389,
    "dominio": "pages",
    "hooks_locais": [
     "useAgingData",
@@ -12651,7 +12672,7 @@
     "Compras"
    ],
    "export_default": "Compras",
-   "linhas": 310,
+   "linhas": 309,
    "dominio": "pages",
    "hooks_locais": [],
    "tabelas": [
@@ -12667,7 +12688,7 @@
     "ComprovanteOCRPage"
    ],
    "export_default": "ComprovanteOCRPage",
-   "linhas": 19,
+   "linhas": 18,
    "dominio": "pages",
    "hooks_locais": [],
    "tabelas": [],
@@ -12681,7 +12702,7 @@
     "Conciliacao"
    ],
    "export_default": "Conciliacao",
-   "linhas": 731,
+   "linhas": 730,
    "dominio": "pages",
    "hooks_locais": [
     "useConciliacaoPage",
@@ -12699,7 +12720,7 @@
     "ConciliacaoIgnorarDialogs"
    ],
    "export_default": null,
-   "linhas": 54,
+   "linhas": 53,
    "dominio": "pages",
    "hooks_locais": [],
    "tabelas": [],
@@ -12713,7 +12734,7 @@
     "ConciliacaoToolbarHost"
    ],
    "export_default": null,
-   "linhas": 47,
+   "linhas": 46,
    "dominio": "pages",
    "hooks_locais": [],
    "tabelas": [],
@@ -12727,7 +12748,7 @@
     "AtalhosRapidos"
    ],
    "export_default": null,
-   "linhas": 60,
+   "linhas": 59,
    "dominio": "pages",
    "hooks_locais": [],
    "tabelas": [],
@@ -12741,7 +12762,7 @@
     "Configuracoes"
    ],
    "export_default": "Configuracoes",
-   "linhas": 399,
+   "linhas": 398,
    "dominio": "pages",
    "hooks_locais": [
     "useToast",
@@ -12760,7 +12781,7 @@
     "RemoteBadge"
    ],
    "export_default": null,
-   "linhas": 161,
+   "linhas": 160,
    "dominio": "pages/configuracoes",
    "hooks_locais": [],
    "tabelas": [],
@@ -12774,7 +12795,7 @@
     "FilterRow"
    ],
    "export_default": null,
-   "linhas": 276,
+   "linhas": 275,
    "dominio": "pages/configuracoes",
    "hooks_locais": [],
    "tabelas": [
@@ -12790,7 +12811,7 @@
     "HydrationFailuresAlert"
    ],
    "export_default": null,
-   "linhas": 78,
+   "linhas": 77,
    "dominio": "pages/configuracoes",
    "hooks_locais": [],
    "tabelas": [],
@@ -12804,7 +12825,7 @@
     "FiltrosSalvos"
    ],
    "export_default": "FiltrosSalvos",
-   "linhas": 206,
+   "linhas": 205,
    "dominio": "pages/configuracoes",
    "hooks_locais": [
     "useAuth",
@@ -12821,7 +12842,7 @@
     "HistoricoNotificacoes"
    ],
    "export_default": "HistoricoNotificacoes",
-   "linhas": 370,
+   "linhas": 369,
    "dominio": "pages/configuracoes",
    "hooks_locais": [
     "useAuth"
@@ -12841,7 +12862,7 @@
     "PreferenciaRow"
    ],
    "export_default": null,
-   "linhas": 267,
+   "linhas": 266,
    "dominio": "pages/configuracoes",
    "hooks_locais": [],
    "tabelas": [],
@@ -12855,7 +12876,7 @@
     "MinhasPreferencias"
    ],
    "export_default": "MinhasPreferencias",
-   "linhas": 293,
+   "linhas": 292,
    "dominio": "pages/configuracoes",
    "hooks_locais": [
     "useAuth"
@@ -12873,7 +12894,7 @@
     "SubscriptionRow"
    ],
    "export_default": null,
-   "linhas": 136,
+   "linhas": 135,
    "dominio": "pages/configuracoes",
    "hooks_locais": [],
    "tabelas": [],
@@ -12887,7 +12908,7 @@
     "SinoNotificacoesFiltros"
    ],
    "export_default": "SinoNotificacoesFiltros",
-   "linhas": 304,
+   "linhas": 303,
    "dominio": "pages/configuracoes",
    "hooks_locais": [
     "useAuth",
@@ -12907,7 +12928,7 @@
     "Contabilidade"
    ],
    "export_default": "Contabilidade",
-   "linhas": 536,
+   "linhas": 535,
    "dominio": "pages",
    "hooks_locais": [
     "useEmpresas",
@@ -12924,7 +12945,7 @@
     "ContadorReadonly"
    ],
    "export_default": "ContadorReadonly",
-   "linhas": 129,
+   "linhas": 128,
    "dominio": "pages",
    "hooks_locais": [],
    "tabelas": [],
@@ -12940,7 +12961,7 @@
     "ContasBancarias"
    ],
    "export_default": "ContasBancarias",
-   "linhas": 319,
+   "linhas": 318,
    "dominio": "pages",
    "hooks_locais": [
     "useContasBancarias",
@@ -12959,7 +12980,7 @@
     "ContasPagar"
    ],
    "export_default": "ContasPagar",
-   "linhas": 302,
+   "linhas": 301,
    "dominio": "pages",
    "hooks_locais": [
     "useContasPagarLogic",
@@ -12976,7 +12997,7 @@
     "ContasPagarFilters"
    ],
    "export_default": null,
-   "linhas": 44,
+   "linhas": 43,
    "dominio": "pages/ContasPagar",
    "hooks_locais": [],
    "tabelas": [],
@@ -12990,7 +13011,7 @@
     "ContasPagarList"
    ],
    "export_default": null,
-   "linhas": 188,
+   "linhas": 187,
    "dominio": "pages/ContasPagar",
    "hooks_locais": [],
    "tabelas": [],
@@ -13004,7 +13025,7 @@
     "ContasReceber"
    ],
    "export_default": "ContasReceber",
-   "linhas": 536,
+   "linhas": 535,
    "dominio": "pages",
    "hooks_locais": [
     "useContasReceberLogic",
@@ -13021,7 +13042,7 @@
     "Contratos"
    ],
    "export_default": "Contratos",
-   "linhas": 17,
+   "linhas": 16,
    "dominio": "pages",
    "hooks_locais": [],
    "tabelas": [],
@@ -13035,7 +13056,7 @@
     "DashboardEmpresa"
    ],
    "export_default": "DashboardEmpresa",
-   "linhas": 371,
+   "linhas": 370,
    "dominio": "pages",
    "hooks_locais": [
     "useAuth",
@@ -13056,7 +13077,7 @@
     "DashboardReceber"
    ],
    "export_default": "DashboardReceber",
-   "linhas": 459,
+   "linhas": 458,
    "dominio": "pages",
    "hooks_locais": [
     "useAuth",
@@ -13076,7 +13097,7 @@
     "Demonstrativos"
    ],
    "export_default": "Demonstrativos",
-   "linhas": 323,
+   "linhas": 322,
    "dominio": "pages",
    "hooks_locais": [
     "useDemonstrativosContabeis",
@@ -13093,7 +13114,7 @@
     "DesignSystemDebugPage"
    ],
    "export_default": "DesignSystemDebugPage",
-   "linhas": 12,
+   "linhas": 11,
    "dominio": "pages",
    "hooks_locais": [],
    "tabelas": [],
@@ -13107,7 +13128,7 @@
     "Especimes"
    ],
    "export_default": "Especimes",
-   "linhas": 497,
+   "linhas": 496,
    "dominio": "pages/dev",
    "hooks_locais": [
     "useTheme"
@@ -13123,7 +13144,7 @@
     "Empresas"
    ],
    "export_default": "Empresas",
-   "linhas": 622,
+   "linhas": 621,
    "dominio": "pages",
    "hooks_locais": [
     "useAllEmpresas",
@@ -13145,7 +13166,7 @@
     "Expert"
    ],
    "export_default": "Expert",
-   "linhas": 415,
+   "linhas": 414,
    "dominio": "pages",
    "hooks_locais": [
     "useCreateConversation",
@@ -13170,7 +13191,7 @@
     "Financeiro"
    ],
    "export_default": "Financeiro",
-   "linhas": 383,
+   "linhas": 382,
    "dominio": "pages",
    "hooks_locais": [
     "useBoletos",
@@ -13188,7 +13209,7 @@
     "FluxoCaixa"
    ],
    "export_default": "FluxoCaixa",
-   "linhas": 186,
+   "linhas": 185,
    "dominio": "pages",
    "hooks_locais": [
     "useFluxoCaixaPage"
@@ -13204,7 +13225,7 @@
     "Fornecedores"
    ],
    "export_default": "Fornecedores",
-   "linhas": 361,
+   "linhas": 360,
    "dominio": "pages",
    "hooks_locais": [
     "useDebounce",
@@ -13225,7 +13246,7 @@
     "FornecedoresTableRow"
    ],
    "export_default": null,
-   "linhas": 123,
+   "linhas": 122,
    "dominio": "pages/fornecedores",
    "hooks_locais": [],
    "tabelas": [],
@@ -13239,7 +13260,7 @@
     "Index"
    ],
    "export_default": "Index",
-   "linhas": 13,
+   "linhas": 12,
    "dominio": "pages",
    "hooks_locais": [],
    "tabelas": [],
@@ -13253,7 +13274,7 @@
     "Integracoes"
    ],
    "export_default": "Integracoes",
-   "linhas": 259,
+   "linhas": 258,
    "dominio": "pages",
    "hooks_locais": [
     "useUrlTab"
@@ -13269,7 +13290,7 @@
     "InteligenciaOperacionalPage"
    ],
    "export_default": "InteligenciaOperacionalPage",
-   "linhas": 105,
+   "linhas": 104,
    "dominio": "pages",
    "hooks_locais": [],
    "tabelas": [],
@@ -13283,7 +13304,7 @@
     "MetasFinanceirasPage"
    ],
    "export_default": "MetasFinanceirasPage",
-   "linhas": 29,
+   "linhas": 28,
    "dominio": "pages",
    "hooks_locais": [],
    "tabelas": [],
@@ -13297,7 +13318,7 @@
     "MeuPerfil"
    ],
    "export_default": "MeuPerfil",
-   "linhas": 170,
+   "linhas": 169,
    "dominio": "pages",
    "hooks_locais": [
     "useAuth"
@@ -13315,7 +13336,7 @@
     "Movimentacoes"
    ],
    "export_default": "Movimentacoes",
-   "linhas": 379,
+   "linhas": 378,
    "dominio": "pages",
    "hooks_locais": [
     "useHighlightFromUrl",
@@ -13332,7 +13353,7 @@
     "NotasFiscais"
    ],
    "export_default": "NotasFiscais",
-   "linhas": 492,
+   "linhas": 491,
    "dominio": "pages",
    "hooks_locais": [],
    "tabelas": [],
@@ -13346,7 +13367,7 @@
     "NotFound"
    ],
    "export_default": "NotFound",
-   "linhas": 84,
+   "linhas": 83,
    "dominio": "pages",
    "hooks_locais": [],
    "tabelas": [],
@@ -13360,7 +13381,7 @@
     "OrcamentoEvento"
    ],
    "export_default": "OrcamentoEvento",
-   "linhas": 231,
+   "linhas": 230,
    "dominio": "pages",
    "hooks_locais": [],
    "tabelas": [
@@ -13378,7 +13399,7 @@
     "Orcamentos"
    ],
    "export_default": "Orcamentos",
-   "linhas": 423,
+   "linhas": 422,
    "dominio": "pages",
    "hooks_locais": [
     "useBudgetsWithSpent",
@@ -13399,7 +13420,7 @@
     "OrcamentosFormDialog"
    ],
    "export_default": null,
-   "linhas": 114,
+   "linhas": 113,
    "dominio": "pages",
    "hooks_locais": [],
    "tabelas": [],
@@ -13413,7 +13434,7 @@
     "AceitarConvite"
    ],
    "export_default": "AceitarConvite",
-   "linhas": 104,
+   "linhas": 103,
    "dominio": "pages/organizacoes",
    "hooks_locais": [
     "useAceitarConvite",
@@ -13431,7 +13452,7 @@
     "MembrosCard"
    ],
    "export_default": null,
-   "linhas": 247,
+   "linhas": 246,
    "dominio": "pages/organizacoes",
    "hooks_locais": [],
    "tabelas": [],
@@ -13445,7 +13466,7 @@
     "Organizacoes"
    ],
    "export_default": "Organizacoes",
-   "linhas": 279,
+   "linhas": 278,
    "dominio": "pages/organizacoes",
    "hooks_locais": [
     "useAtualizarMembro",
@@ -13468,7 +13489,7 @@
     "PagamentosRecorrentes"
    ],
    "export_default": "PagamentosRecorrentes",
-   "linhas": 89,
+   "linhas": 88,
    "dominio": "pages",
    "hooks_locais": [],
    "tabelas": [],
@@ -13482,7 +13503,7 @@
     "PixHub"
    ],
    "export_default": "PixHub",
-   "linhas": 115,
+   "linhas": 114,
    "dominio": "pages",
    "hooks_locais": [
     "useEmpresas"
@@ -13498,7 +13519,7 @@
     "ReformaTributaria"
    ],
    "export_default": "ReformaTributaria",
-   "linhas": 19,
+   "linhas": 18,
    "dominio": "pages",
    "hooks_locais": [],
    "tabelas": [],
@@ -13512,7 +13533,7 @@
     "Relatorios"
    ],
    "export_default": "Relatorios",
-   "linhas": 378,
+   "linhas": 377,
    "dominio": "pages",
    "hooks_locais": [
     "useComparativoPeriodos",
@@ -13537,7 +13558,7 @@
     "ResetPassword"
    ],
    "export_default": "ResetPassword",
-   "linhas": 282,
+   "linhas": 281,
    "dominio": "pages",
    "hooks_locais": [],
    "tabelas": [],
@@ -13551,7 +13572,7 @@
     "Seguranca"
    ],
    "export_default": "Seguranca",
-   "linhas": 112,
+   "linhas": 111,
    "dominio": "pages",
    "hooks_locais": [
     "useAuth",
@@ -13568,7 +13589,7 @@
     "SimuladorAntecipacaoPage"
    ],
    "export_default": "SimuladorAntecipacaoPage",
-   "linhas": 65,
+   "linhas": 64,
    "dominio": "pages",
    "hooks_locais": [],
    "tabelas": [],
@@ -13582,7 +13603,7 @@
     "StatusPage"
    ],
    "export_default": "StatusPage",
-   "linhas": 234,
+   "linhas": 233,
    "dominio": "pages",
    "hooks_locais": [],
    "tabelas": [],
@@ -13598,7 +13619,7 @@
     "StyleGuide"
    ],
    "export_default": "StyleGuide",
-   "linhas": 263,
+   "linhas": 262,
    "dominio": "pages",
    "hooks_locais": [],
    "tabelas": [],
@@ -13612,7 +13633,7 @@
     "Tesouraria"
    ],
    "export_default": "Tesouraria",
-   "linhas": 76,
+   "linhas": 75,
    "dominio": "pages",
    "hooks_locais": [],
    "tabelas": [],
@@ -13626,7 +13647,7 @@
     "ThemeDiagnosticsPage"
    ],
    "export_default": "ThemeDiagnosticsPage",
-   "linhas": 314,
+   "linhas": 313,
    "dominio": "pages",
    "hooks_locais": [
     "useTheme"
@@ -13642,7 +13663,7 @@
     "ArquiteturaModular"
    ],
    "export_default": "ArquiteturaModular",
-   "linhas": 160,
+   "linhas": 159,
    "dominio": "pages/tributario",
    "hooks_locais": [],
    "tabelas": [],
@@ -13656,7 +13677,7 @@
     "AuditoriaCompliancePage"
    ],
    "export_default": "AuditoriaCompliancePage",
-   "linhas": 32,
+   "linhas": 31,
    "dominio": "pages/tributario",
    "hooks_locais": [
     "useAuth"
@@ -13672,7 +13693,7 @@
     "AuditoriaOverlay"
    ],
    "export_default": "AuditoriaOverlay",
-   "linhas": 359,
+   "linhas": 358,
    "dominio": "pages/tributario",
    "hooks_locais": [
     "useCatalogosFiscais",
@@ -13691,7 +13712,7 @@
     "ParametrosCard"
    ],
    "export_default": null,
-   "linhas": 374,
+   "linhas": 373,
    "dominio": "pages/tributario",
    "hooks_locais": [],
    "tabelas": [],
@@ -13705,7 +13726,7 @@
     "CalculadoraTributaria"
    ],
    "export_default": "CalculadoraTributaria",
-   "linhas": 242,
+   "linhas": 241,
    "dominio": "pages/tributario",
    "hooks_locais": [
     "useAllEmpresas",
@@ -13724,7 +13745,7 @@
     "CashbackSimuladorPage"
    ],
    "export_default": "CashbackSimuladorPage",
-   "linhas": 29,
+   "linhas": 28,
    "dominio": "pages/tributario",
    "hooks_locais": [],
    "tabelas": [],
@@ -13738,7 +13759,7 @@
     "CatalogoObrigacoesTable"
    ],
    "export_default": null,
-   "linhas": 41,
+   "linhas": 40,
    "dominio": "pages/tributario",
    "hooks_locais": [],
    "tabelas": [],
@@ -13752,7 +13773,7 @@
     "CatalogosFiscais"
    ],
    "export_default": "CatalogosFiscais",
-   "linhas": 432,
+   "linhas": 431,
    "dominio": "pages/tributario",
    "hooks_locais": [
     "useCatalogosFiscais"
@@ -13768,7 +13789,7 @@
     "CertificadosDigitais"
    ],
    "export_default": "CertificadosDigitais",
-   "linhas": 20,
+   "linhas": 19,
    "dominio": "pages/tributario",
    "hooks_locais": [],
    "tabelas": [],
@@ -13782,7 +13803,7 @@
     "ComparativoConformidade"
    ],
    "export_default": "ComparativoConformidade",
-   "linhas": 341,
+   "linhas": 340,
    "dominio": "pages/tributario",
    "hooks_locais": [
     "useComparativoConformidade",
@@ -13799,7 +13820,7 @@
     "ComparativoRegimesPage"
    ],
    "export_default": "ComparativoRegimesPage",
-   "linhas": 29,
+   "linhas": 28,
    "dominio": "pages/tributario",
    "hooks_locais": [],
    "tabelas": [],
@@ -13813,7 +13834,7 @@
     "ConciliacaoTributariaPage"
    ],
    "export_default": "ConciliacaoTributariaPage",
-   "linhas": 32,
+   "linhas": 31,
    "dominio": "pages/tributario",
    "hooks_locais": [
     "useAuth"
@@ -13829,7 +13850,7 @@
     "ConsultaCnaeTab"
    ],
    "export_default": null,
-   "linhas": 75,
+   "linhas": 74,
    "dominio": "pages/tributario",
    "hooks_locais": [
     "useConsultaCNAE"
@@ -13845,7 +13866,7 @@
     "ConsultaNcmTab"
    ],
    "export_default": null,
-   "linhas": 188,
+   "linhas": 187,
    "dominio": "pages/tributario",
    "hooks_locais": [
     "useConsultaNCM"
@@ -13861,7 +13882,7 @@
     "ConsultaUFTab"
    ],
    "export_default": null,
-   "linhas": 171,
+   "linhas": 170,
    "dominio": "pages/tributario",
    "hooks_locais": [
     "useConsultaUF"
@@ -13878,7 +13899,7 @@
     "MatchBadgeProps"
    ],
    "export_default": null,
-   "linhas": 39,
+   "linhas": 38,
    "dominio": "pages/tributario",
    "hooks_locais": [],
    "tabelas": [],
@@ -13893,7 +13914,7 @@
     "OfflineBadgeProps"
    ],
    "export_default": null,
-   "linhas": 39,
+   "linhas": 38,
    "dominio": "pages/tributario",
    "hooks_locais": [],
    "tabelas": [],
@@ -13910,7 +13931,7 @@
     "UFS"
    ],
    "export_default": null,
-   "linhas": 88,
+   "linhas": 87,
    "dominio": "pages/tributario",
    "hooks_locais": [],
    "tabelas": [],
@@ -13924,7 +13945,7 @@
     "ConsultaRapidaFiscal"
    ],
    "export_default": "ConsultaRapidaFiscal",
-   "linhas": 46,
+   "linhas": 45,
    "dominio": "pages/tributario",
    "hooks_locais": [],
    "tabelas": [],
@@ -13938,7 +13959,7 @@
     "DarfConsolidado"
    ],
    "export_default": "DarfConsolidado",
-   "linhas": 427,
+   "linhas": 426,
    "dominio": "pages/tributario",
    "hooks_locais": [],
    "tabelas": [],
@@ -13952,7 +13973,7 @@
     "DashboardTributario"
    ],
    "export_default": "DashboardTributario",
-   "linhas": 403,
+   "linhas": 402,
    "dominio": "pages/tributario",
    "hooks_locais": [
     "useAllEmpresas",
@@ -13971,7 +13992,7 @@
     "FechamentoMensalPage"
    ],
    "export_default": "FechamentoMensalPage",
-   "linhas": 53,
+   "linhas": 52,
    "dominio": "pages/tributario",
    "hooks_locais": [
     "useAuth"
@@ -13987,7 +14008,7 @@
     "FolhaEncargosPage"
    ],
    "export_default": "FolhaEncargosPage",
-   "linhas": 335,
+   "linhas": 334,
    "dominio": "pages/tributario",
    "hooks_locais": [],
    "tabelas": [],
@@ -14001,7 +14022,7 @@
     "GlossarioTributario"
    ],
    "export_default": "GlossarioTributario",
-   "linhas": 124,
+   "linhas": 123,
    "dominio": "pages/tributario",
    "hooks_locais": [],
    "tabelas": [
@@ -14017,7 +14038,7 @@
     "HistoricoFinanceiro"
    ],
    "export_default": "HistoricoFinanceiro",
-   "linhas": 72,
+   "linhas": 71,
    "dominio": "pages/tributario",
    "hooks_locais": [
     "useAllEmpresas"
@@ -14033,7 +14054,7 @@
     "IcmsStDifalPage"
    ],
    "export_default": "IcmsStDifalPage",
-   "linhas": 608,
+   "linhas": 607,
    "dominio": "pages/tributario",
    "hooks_locais": [
     "useCatalogosFiscais"
@@ -14049,7 +14070,7 @@
     "ImportacaoXMLPage"
    ],
    "export_default": "ImportacaoXMLPage",
-   "linhas": 32,
+   "linhas": 31,
    "dominio": "pages/tributario",
    "hooks_locais": [
     "useAuth"
@@ -14065,7 +14086,7 @@
     "IncentivosFiscaisPage"
    ],
    "export_default": "IncentivosFiscaisPage",
-   "linhas": 32,
+   "linhas": 31,
    "dominio": "pages/tributario",
    "hooks_locais": [
     "useAuth"
@@ -14081,7 +14102,7 @@
     "IpiIss"
    ],
    "export_default": "IpiIss",
-   "linhas": 592,
+   "linhas": 591,
    "dominio": "pages/tributario",
    "hooks_locais": [
     "useCatalogoIssMunicipal"
@@ -14097,7 +14118,7 @@
     "IrpjCsllLucroReal"
    ],
    "export_default": "IrpjCsllLucroReal",
-   "linhas": 506,
+   "linhas": 505,
    "dominio": "pages/tributario",
    "hooks_locais": [],
    "tabelas": [],
@@ -14111,7 +14132,7 @@
     "MonofasicoPage"
    ],
    "export_default": "MonofasicoPage",
-   "linhas": 205,
+   "linhas": 204,
    "dominio": "pages/tributario",
    "hooks_locais": [],
    "tabelas": [],
@@ -14125,7 +14146,7 @@
     "NfeRecebidasPage"
    ],
    "export_default": "NfeRecebidasPage",
-   "linhas": 448,
+   "linhas": 447,
    "dominio": "pages/tributario",
    "hooks_locais": [
     "useDesvincularNfe",
@@ -14143,7 +14164,7 @@
     "ObrigacoesAcessorias"
    ],
    "export_default": "ObrigacoesAcessorias",
-   "linhas": 437,
+   "linhas": 436,
    "dominio": "pages/tributario",
    "hooks_locais": [
     "useEmpresaScope",
@@ -14162,7 +14183,7 @@
     "ObservabilidadeDigest"
    ],
    "export_default": "ObservabilidadeDigest",
-   "linhas": 351,
+   "linhas": 350,
    "dominio": "pages/tributario",
    "hooks_locais": [
     "useDigestEnviosLog"
@@ -14182,7 +14203,7 @@
     "StepIndicator"
    ],
    "export_default": null,
-   "linhas": 197,
+   "linhas": 196,
    "dominio": "pages/tributario",
    "hooks_locais": [],
    "tabelas": [],
@@ -14196,7 +14217,7 @@
     "OnboardingTributario"
    ],
    "export_default": "OnboardingTributario",
-   "linhas": 352,
+   "linhas": 351,
    "dominio": "pages/tributario",
    "hooks_locais": [
     "useAllEmpresas",
@@ -14215,7 +14236,7 @@
     "AcoesTab"
    ],
    "export_default": null,
-   "linhas": 69,
+   "linhas": 68,
    "dominio": "pages/tributario",
    "hooks_locais": [],
    "tabelas": [],
@@ -14229,7 +14250,7 @@
     "AlertasTab"
    ],
    "export_default": null,
-   "linhas": 43,
+   "linhas": 42,
    "dominio": "pages/tributario",
    "hooks_locais": [],
    "tabelas": [],
@@ -14243,7 +14264,7 @@
     "AnaliseTab"
    ],
    "export_default": null,
-   "linhas": 107,
+   "linhas": 106,
    "dominio": "pages/tributario",
    "hooks_locais": [],
    "tabelas": [],
@@ -14257,7 +14278,7 @@
     "AuditoriaTab"
    ],
    "export_default": null,
-   "linhas": 252,
+   "linhas": 251,
    "dominio": "pages/tributario",
    "hooks_locais": [],
    "tabelas": [],
@@ -14271,7 +14292,7 @@
     "ContextoForm"
    ],
    "export_default": null,
-   "linhas": 230,
+   "linhas": 229,
    "dominio": "pages/tributario",
    "hooks_locais": [],
    "tabelas": [],
@@ -14285,7 +14306,7 @@
     "HistoricoTab"
    ],
    "export_default": null,
-   "linhas": 69,
+   "linhas": 68,
    "dominio": "pages/tributario",
    "hooks_locais": [],
    "tabelas": [],
@@ -14299,7 +14320,7 @@
     "KpisCards"
    ],
    "export_default": null,
-   "linhas": 38,
+   "linhas": 37,
    "dominio": "pages/tributario",
    "hooks_locais": [],
    "tabelas": [],
@@ -14313,7 +14334,7 @@
     "OportunidadesElisao"
    ],
    "export_default": "OportunidadesElisao",
-   "linhas": 153,
+   "linhas": 152,
    "dominio": "pages/tributario",
    "hooks_locais": [
     "useAllEmpresas",
@@ -14330,7 +14351,7 @@
     "PerDcompPage"
    ],
    "export_default": "PerDcompPage",
-   "linhas": 32,
+   "linhas": 31,
    "dominio": "pages/tributario",
    "hooks_locais": [
     "useAuth"
@@ -14346,7 +14367,7 @@
     "PfVinculada"
    ],
    "export_default": "PfVinculada",
-   "linhas": 336,
+   "linhas": 335,
    "dominio": "pages/tributario",
    "hooks_locais": [],
    "tabelas": [],
@@ -14360,7 +14381,7 @@
     "PisCofinsCreditos"
    ],
    "export_default": "PisCofinsCreditos",
-   "linhas": 467,
+   "linhas": 466,
    "dominio": "pages/tributario",
    "hooks_locais": [],
    "tabelas": [],
@@ -14374,7 +14395,7 @@
     "PreferenciasDigest"
    ],
    "export_default": "PreferenciasDigest",
-   "linhas": 334,
+   "linhas": 333,
    "dominio": "pages/tributario",
    "hooks_locais": [
     "useDigestPreferences"
@@ -14390,7 +14411,7 @@
     "ProjecaoReforma"
    ],
    "export_default": "ProjecaoReforma",
-   "linhas": 360,
+   "linhas": 359,
    "dominio": "pages/tributario",
    "hooks_locais": [],
    "tabelas": [],
@@ -14404,7 +14425,7 @@
     "RecomendacaoExecutiva"
    ],
    "export_default": "RecomendacaoExecutiva",
-   "linhas": 412,
+   "linhas": 411,
    "dominio": "pages/tributario",
    "hooks_locais": [
     "useAllEmpresas",
@@ -14423,7 +14444,7 @@
     "RelatoriosContabeisPage"
    ],
    "export_default": "RelatoriosContabeisPage",
-   "linhas": 32,
+   "linhas": 31,
    "dominio": "pages/tributario",
    "hooks_locais": [
     "useAuth"
@@ -14439,7 +14460,7 @@
     "RetencoesFontePage"
    ],
    "export_default": "RetencoesFontePage",
-   "linhas": 32,
+   "linhas": 31,
    "dominio": "pages/tributario",
    "hooks_locais": [
     "useAuth"
@@ -14455,7 +14476,7 @@
     "SefazObservabilidade"
    ],
    "export_default": "SefazObservabilidade",
-   "linhas": 286,
+   "linhas": 285,
    "dominio": "pages/tributario",
    "hooks_locais": [
     "useResolveAlert",
@@ -14477,7 +14498,7 @@
     "RegimeRecomendadoCard"
    ],
    "export_default": null,
-   "linhas": 401,
+   "linhas": 400,
    "dominio": "pages/tributario",
    "hooks_locais": [],
    "tabelas": [],
@@ -14491,7 +14512,7 @@
     "SimulacaoRegimes"
    ],
    "export_default": "SimulacaoRegimes",
-   "linhas": 362,
+   "linhas": 361,
    "dominio": "pages/tributario",
    "hooks_locais": [
     "useAllEmpresas",
@@ -14510,7 +14531,7 @@
     "SimuladorMultaCard"
    ],
    "export_default": null,
-   "linhas": 147,
+   "linhas": 146,
    "dominio": "pages/tributario",
    "hooks_locais": [],
    "tabelas": [],
@@ -14524,7 +14545,7 @@
     "SpedExportPage"
    ],
    "export_default": "SpedExportPage",
-   "linhas": 32,
+   "linhas": 31,
    "dominio": "pages/tributario",
    "hooks_locais": [
     "useAuth"
@@ -14540,7 +14561,7 @@
     "SplitPaymentPage"
    ],
    "export_default": "SplitPaymentPage",
-   "linhas": 29,
+   "linhas": 28,
    "dominio": "pages/tributario",
    "hooks_locais": [],
    "tabelas": [],
@@ -14554,7 +14575,7 @@
     "Usuarios"
    ],
    "export_default": "Usuarios",
-   "linhas": 371,
+   "linhas": 370,
    "dominio": "pages",
    "hooks_locais": [
     "useAuth"
@@ -14573,7 +14594,7 @@
     "Vendedores"
    ],
    "export_default": "Vendedores",
-   "linhas": 287,
+   "linhas": 286,
    "dominio": "pages",
    "hooks_locais": [
     "useCreateVendedor",

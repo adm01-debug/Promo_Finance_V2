@@ -1,12 +1,12 @@
 {
  "aviso": "GERADO AUTOMATICAMENTE por scripts/ai-context/gerar.mjs — não editar à mão; será sobrescrito.",
  "format_version": 2,
- "total": 104,
+ "total": 107,
  "scripts": [
   {
    "arquivo": "scripts/admin/supabase_admin_ops.py",
    "descricao": "scripts/admin/supabase_admin_ops.py Operações administrativas no projeto Supabase canônico via Management API.",
-   "linhas": 321,
+   "linhas": 338,
    "env": [],
    "npm_scripts": [],
    "workflows": [
@@ -17,7 +17,7 @@
   {
    "arquivo": "scripts/ai-context/cenarios.mjs",
    "descricao": "Simulação de cenários do gerador: monta centenas de repositórios sintéticos (variantes de SQL, rotas, menus, edges, workflows, monorepo, Python, arquivos corrompidos, fuzz) e confere:",
-   "linhas": 173,
+   "linhas": 258,
    "env": [
     "A",
     "K",
@@ -39,7 +39,7 @@
   {
    "arquivo": "scripts/ai-context/gerar.mjs",
    "descricao": "Gera o contexto de projeto para agentes de IA (padrão: inventario/ia/*). Zero dependências. Node >= 18. Genérico: funciona em qualquer repositório.",
-   "linhas": 928,
+   "linhas": 989,
    "env": [
     "AI_CONTEXT_DIR",
     "AI_CONTEXT_GRAFO_COMO_GERAR",
@@ -55,7 +55,7 @@
   {
    "arquivo": "scripts/automation.mjs",
    "descricao": null,
-   "linhas": 995,
+   "linhas": 994,
    "env": [
     "REPO_AUTOMATION_CHAINING",
     "REPO_AUTOMATION_STATE_FILE"
@@ -79,7 +79,7 @@
   {
    "arquivo": "scripts/check-external-secret-isolation.sh",
    "descricao": "============================================================================ Guard: EXTERNAL_SUPABASE_SERVICE_ROLE_KEY é uma chave `service_role` de outro",
-   "linhas": 51,
+   "linhas": 84,
    "env": [],
    "npm_scripts": [],
    "workflows": [
@@ -90,7 +90,7 @@
   {
    "arquivo": "scripts/ci/actions-kpi.mjs",
    "descricao": "KPI de uso do GitHub Actions: quanto cada workflow custa e com que frequência falha, medido da API em vez de estimado. Alimenta `docs/ci/kpi.json`, que o",
-   "linhas": 285,
+   "linhas": 312,
    "env": [
     "GH_TOKEN",
     "GITHUB_API_URL",
@@ -109,7 +109,7 @@
   {
    "arquivo": "scripts/ci/audit-env.ts",
    "descricao": "* scripts/ci/audit-env.ts",
-   "linhas": 158,
+   "linhas": 342,
    "env": [
     "GITHUB_REPO",
     "GITHUB_TOKEN",
@@ -126,7 +126,7 @@
   {
    "arquivo": "scripts/ci/check-baseline-drift.sh",
    "descricao": "Gate #26 — Drift de schema/policies vs. baseline versionado. Compara o estado real do banco (PROD_DB_URL, somente leitura) com os",
-   "linhas": 151,
+   "linhas": 186,
    "env": [],
    "npm_scripts": [],
    "workflows": [],
@@ -135,7 +135,7 @@
   {
    "arquivo": "scripts/ci/check-claude-md-integrity.mjs",
    "descricao": "* Garante que as instrucoes para agentes nao foram apagadas ou esvaziadas por outra sessao.",
-   "linhas": 142,
+   "linhas": 144,
    "env": [
     "CLAUDE_MD_BASE"
    ],
@@ -148,7 +148,7 @@
   {
    "arquivo": "scripts/ci/deno-check-functions.sh",
    "descricao": "Type-check do escopo endurecido. Todo o `_shared/` é coberto por glob — um arquivo compartilhado novo entra",
-   "linhas": 59,
+   "linhas": 71,
    "env": [],
    "npm_scripts": [],
    "workflows": [
@@ -159,7 +159,7 @@
   {
    "arquivo": "scripts/ci/fila-merge.mjs",
    "descricao": "Fila de atualização de branch serial para as PRs abertas contra `main`. Por que existe: com `strict=true` na branch protection (8 required status checks),",
-   "linhas": 205,
+   "linhas": 204,
    "env": [
     "GITHUB_OUTPUT",
     "GITHUB_REPOSITORY",
@@ -174,7 +174,7 @@
   {
    "arquivo": "scripts/ci/gerar-matriz-edge-tabela.mjs",
    "descricao": "Matriz edge function x tabela. Escaneia supabase/functions/<funcao>/**/*.ts (sem testes, sem _shared) e anota cada tabela citada em `.from('tabela')`.",
-   "linhas": 92,
+   "linhas": 117,
    "env": [],
    "npm_scripts": [],
    "workflows": [
@@ -185,7 +185,7 @@
   {
    "arquivo": "scripts/ci/github-settings-guard.mjs",
    "descricao": "* Confere o perimetro do GitHub contra o baseline versionado",
-   "linhas": 637,
+   "linhas": 636,
    "env": [
     "ADMIN_READ_TOKEN",
     "GITHUB_REPOSITORY",
@@ -203,7 +203,7 @@
   {
    "arquivo": "scripts/ci/listar-excecoes-npm-nativo.py",
    "descricao": null,
-   "linhas": 95,
+   "linhas": 99,
    "env": [],
    "npm_scripts": [],
    "workflows": [],
@@ -212,16 +212,18 @@
   {
    "arquivo": "scripts/ci/listar-specs-quarentena.ts",
    "descricao": "* Imprime, uma por linha, as specs E2E que NÃO são cobertas por nenhum gate",
-   "linhas": 164,
+   "linhas": 182,
    "env": [],
    "npm_scripts": [],
-   "workflows": [],
+   "workflows": [
+    "ci.yml"
+   ],
    "orfao": false
   },
   {
    "arquivo": "scripts/ci/render-workflow-docs.mjs",
    "descricao": "* Gera `docs/ci/README.md` a partir dos blocos `# docs:` e `# nao-e-bug:` de cada workflow.",
-   "linhas": 249,
+   "linhas": 282,
    "env": [],
    "npm_scripts": [],
    "workflows": [
@@ -232,7 +234,7 @@
   {
    "arquivo": "scripts/ci/require-env.sh",
    "descricao": null,
-   "linhas": 117,
+   "linhas": 124,
    "env": [],
    "npm_scripts": [],
    "workflows": [
@@ -246,7 +248,7 @@
   {
    "arquivo": "scripts/ci/typecheck-strict-baseline.sh",
    "descricao": "Ratchet de strictNullChecks — \"o baseline só encolhe\". O tsconfig principal já roda strict global (PR #141). Este gate roda",
-   "linhas": 78,
+   "linhas": 103,
    "env": [],
    "npm_scripts": [
     "type-check:strict"
@@ -256,8 +258,8 @@
   },
   {
    "arquivo": "scripts/data-migrate.sh",
-   "descricao": "data-migrate.sh — orquestrador de cópia de dados PROD → STAGING. Fluxo: preflight → plan → init-run → snapshot+copy (por tabela) → verify → finalize",
-   "linhas": 265,
+   "descricao": "data-migrate.sh — orquestrador de cópia de dados PROD → STAGING. Fluxo: preflight → plan → init-run → snapshot (todas) → copy (por tabela) → verify → finalize",
+   "linhas": 386,
    "env": [],
    "npm_scripts": [],
    "workflows": [],
@@ -266,7 +268,7 @@
   {
    "arquivo": "scripts/data/checkpoint.sql",
    "descricao": null,
-   "linhas": 66,
+   "linhas": 65,
    "env": [],
    "npm_scripts": [],
    "workflows": [],
@@ -275,7 +277,25 @@
   {
    "arquivo": "scripts/data/copy-table.sh",
    "descricao": "copy-table.sh — copia UMA tabela de PROD para STAGING via COPY | COPY. Args: --run-id UUID --table NAME --group GNAME [--where SQL] [--columns \"*\"]",
-   "linhas": 124,
+   "linhas": 226,
+   "env": [],
+   "npm_scripts": [],
+   "workflows": [],
+   "orfao": false
+  },
+  {
+   "arquivo": "scripts/data/lib-alvo.sh",
+   "descricao": "lib-alvo.sh — travas compartilhadas dos scripts de cópia de dados (usar via `source`). Os scripts desta pasta fazem TRUNCATE/INSERT no banco apontado por",
+   "linhas": 52,
+   "env": [],
+   "npm_scripts": [],
+   "workflows": [],
+   "orfao": false
+  },
+  {
+   "arquivo": "scripts/data/pg_efemero.py",
+   "descricao": null,
+   "linhas": 94,
    "env": [],
    "npm_scripts": [],
    "workflows": [],
@@ -284,7 +304,7 @@
   {
    "arquivo": "scripts/data/rollback.sh",
    "descricao": "rollback.sh — restaura snapshots de um run em staging. Uso: ./scripts/data/rollback.sh --run-id <uuid> [--dry-run]",
-   "linhas": 73,
+   "linhas": 166,
    "env": [],
    "npm_scripts": [],
    "workflows": [],
@@ -293,7 +313,7 @@
   {
    "arquivo": "scripts/data/verify.sh",
    "descricao": "verify.sh — valida cópia por contagem + hash de amostra por tabela. Uso: ./scripts/data/verify.sh --run-id <uuid>",
-   "linhas": 92,
+   "linhas": 108,
    "env": [],
    "npm_scripts": [],
    "workflows": [],
@@ -302,7 +322,7 @@
   {
    "arquivo": "scripts/edge-deploy/deployment-record.mjs",
    "descricao": "Porto de Zapp_Web_V2/scripts/edge-deploy/deployment-record.mjs (E60). Rastreabilidade do deploy de edge via GitHub Deployment.",
-   "linhas": 54,
+   "linhas": 55,
    "env": [],
    "npm_scripts": [],
    "workflows": [],
@@ -311,10 +331,8 @@
   {
    "arquivo": "scripts/edge-deploy/health-check.mjs",
    "descricao": "Porto de Zapp_Web_V2/scripts/edge-deploy/health-check.mjs (W65), adaptado ao Promo_Finance_V2 (project ref canônico e escopo via lista plana, sem manifest).",
-   "linhas": 159,
-   "env": [
-    "SUPABASE_ACCESS_TOKEN"
-   ],
+   "linhas": 209,
+   "env": [],
    "npm_scripts": [],
    "workflows": [],
    "orfao": false
@@ -322,7 +340,7 @@
   {
    "arquivo": "scripts/edge-deploy/redigir-log.mjs",
    "descricao": "Porto de Zapp_Web_V2/scripts/edge-deploy/redigir-log.mjs (E74). O log do deploy vai para o artifact do GitHub. A saída do CLI Supabase carrega",
-   "linhas": 87,
+   "linhas": 226,
    "env": [
     "REDIGIR_LOG_BASE",
     "RUNNER_TEMP"
@@ -334,9 +352,8 @@
   {
    "arquivo": "scripts/edge-deploy/register-deployment.mjs",
    "descricao": "Porto de Zapp_Web_V2/scripts/edge-deploy/register-deployment.mjs (E60). Registra o Deployment de rastreabilidade do deploy de edge.",
-   "linhas": 109,
+   "linhas": 136,
    "env": [
-    "GITHUB_API_URL",
     "GITHUB_SERVER_URL"
    ],
    "npm_scripts": [],
@@ -346,7 +363,7 @@
   {
    "arquivo": "scripts/edge-deploy/secrets-scope.mjs",
    "descricao": "Porto de Zapp_Web_V2/scripts/edge-deploy/secrets-scope.mjs (E58), adaptado ao Promo_Finance_V2: os secrets de escopo vêm do env.manifest.json (dest",
-   "linhas": 137,
+   "linhas": 152,
    "env": [
     "GITHUB_OUTPUT"
    ],
@@ -357,7 +374,7 @@
   {
    "arquivo": "scripts/edge-deploy/smoke-functions.mjs",
    "descricao": "Porto de Zapp_Web_V2/scripts/edge-deploy/smoke-functions.mjs (W61), adaptado ao Promo_Finance_V2: sem manifest (o PF não tem deployment-manifest.json) — a",
-   "linhas": 232,
+   "linhas": 262,
    "env": [],
    "npm_scripts": [],
    "workflows": [],
@@ -366,7 +383,7 @@
   {
    "arquivo": "scripts/edge-deploy/unchanged-from-log.mjs",
    "descricao": "Porto de Zapp_Web_V2/scripts/edge-deploy/unchanged-from-log.mjs (E56). Extrator testável de \"No change found in Function: X\", com fixture do log real.",
-   "linhas": 57,
+   "linhas": 72,
    "env": [],
    "npm_scripts": [],
    "workflows": [],
@@ -375,7 +392,7 @@
   {
    "arquivo": "scripts/edge-deploy/verify-remote.mjs",
    "descricao": "Porto de Zapp_Web_V2/scripts/edge-deploy/verify-remote.mjs (E74), simplificado para o Promo_Finance_V2: o PF não tem deployment-manifest.json, então a",
-   "linhas": 95,
+   "linhas": 119,
    "env": [],
    "npm_scripts": [],
    "workflows": [],
@@ -384,7 +401,7 @@
   {
    "arquivo": "scripts/generate-design-audit.js",
    "descricao": "Simple script to scan for tailwind classes and generate an audit report",
-   "linhas": 51,
+   "linhas": 59,
    "env": [],
    "npm_scripts": [],
    "workflows": [],
@@ -393,7 +410,7 @@
   {
    "arquivo": "scripts/generate-env-manifest.mjs",
    "descricao": "* scripts/generate-env-manifest.mjs",
-   "linhas": 168,
+   "linhas": 219,
    "env": [],
    "npm_scripts": [],
    "workflows": [
@@ -403,8 +420,8 @@
   },
   {
    "arquivo": "scripts/generate-simulation-report.ts",
-   "descricao": null,
-   "linhas": 68,
+   "descricao": "Relatório (somente leitura) da última execução do simulador de webhooks.   SUPABASE_URL=... SUPABASE_SERVICE_ROLE_KEY=... bun run scripts/generate-simulation-report.ts",
+   "linhas": 77,
    "env": [
     "SUPABASE_SERVICE_ROLE_KEY",
     "SUPABASE_URL"
@@ -415,8 +432,8 @@
   },
   {
    "arquivo": "scripts/gerar-grafo-arquitetura.ts",
-   "descricao": null,
-   "linhas": 26,
+   "descricao": "Gera src/lib/arquitetura/grafo-observado.json a partir dos imports reais.   bun run scripts/gerar-grafo-arquitetura.ts           regenera o snapshot",
+   "linhas": 54,
    "env": [],
    "npm_scripts": [],
    "workflows": [],
@@ -425,7 +442,7 @@
   {
    "arquivo": "scripts/graphify-local.mjs",
    "descricao": null,
-   "linhas": 1140,
+   "linhas": 1139,
    "env": [],
    "npm_scripts": [],
    "workflows": [],
@@ -434,7 +451,7 @@
   {
    "arquivo": "scripts/graphify/benchmark.py",
    "descricao": "Compara navegação estrutural e busca textual em casos versionados.\"\"\"",
-   "linhas": 97,
+   "linhas": 111,
    "env": [],
    "npm_scripts": [
     "graphify:benchmark"
@@ -445,7 +462,7 @@
   {
    "arquivo": "scripts/graphify/code_references.py",
    "descricao": "Correlaciona referências literais TypeScript com migrations e Edge Functions.",
-   "linhas": 153,
+   "linhas": 165,
    "env": [],
    "npm_scripts": [
     "graphify:code-references"
@@ -458,7 +475,7 @@
   {
    "arquivo": "scripts/graphify/edge_inventory.py",
    "descricao": "Inventário estático de Edge Functions Deno; não inicia handlers nem acessa a rede.\"\"\"",
-   "linhas": 119,
+   "linhas": 152,
    "env": [],
    "npm_scripts": [
     "graphify:edge-inventory"
@@ -471,7 +488,7 @@
   {
    "arquivo": "scripts/graphify/graph_quality.py",
    "descricao": "Valida frescor, qualidade, navegação e resumo visual de um grafo privado.\"\"\"",
-   "linhas": 252,
+   "linhas": 257,
    "env": [],
    "npm_scripts": [
     "graphify:quality"
@@ -484,7 +501,7 @@
   {
    "arquivo": "scripts/graphify/run.py",
    "descricao": "Piloto Graphify local: corpus explícito, sem execução do código analisado.\"\"\"",
-   "linhas": 253,
+   "linhas": 271,
    "env": [],
    "npm_scripts": [
     "graphify:inventory",
@@ -499,7 +516,7 @@
   {
    "arquivo": "scripts/graphify/sql_inventory.py",
    "descricao": "Inventário lexical de migrations PostgreSQL; não conecta nem executa SQL.\"\"\"",
-   "linhas": 245,
+   "linhas": 315,
    "env": [],
    "npm_scripts": [
     "graphify:sql-inventory"
@@ -512,7 +529,7 @@
   {
    "arquivo": "scripts/graphify/typescript_imports.py",
    "descricao": "Inventaria imports TypeScript sem executar módulos ou resolver pacotes externos.\"\"\"",
-   "linhas": 70,
+   "linhas": 77,
    "env": [],
    "npm_scripts": [],
    "workflows": [],
@@ -521,7 +538,7 @@
   {
    "arquivo": "scripts/healthcheck/01_webhooks.sh",
    "descricao": "01_webhooks.sh — dispara webhooks reais no staging e valida recepção. Executado por run.sh; usa emit/log_line exportados.",
-   "linhas": 133,
+   "linhas": 144,
    "env": [],
    "npm_scripts": [],
    "workflows": [],
@@ -530,7 +547,7 @@
   {
    "arquivo": "scripts/healthcheck/02_crons.sql",
    "descricao": null,
-   "linhas": 81,
+   "linhas": 82,
    "env": [],
    "npm_scripts": [],
    "workflows": [],
@@ -539,7 +556,7 @@
   {
    "arquivo": "scripts/healthcheck/03_realtime.mjs",
    "descricao": "03_realtime.mjs — assina postgres_changes, insere linha sintética, mede latência insert→recepção. Cleanup via delete no final.",
-   "linhas": 106,
+   "linhas": 107,
    "env": [
     "JSON_ONLY",
     "OUT",
@@ -564,7 +581,7 @@
   {
    "arquivo": "scripts/healthcheck/run.sh",
    "descricao": "scripts/healthcheck/run.sh Healthcheck pós-corte — valida comportamento real (não estrutura).",
-   "linhas": 121,
+   "linhas": 155,
    "env": [],
    "npm_scripts": [
     "maintenance:doctor",
@@ -577,7 +594,7 @@
   {
    "arquivo": "scripts/integrity/01_schema.sql",
    "descricao": null,
-   "linhas": 83,
+   "linhas": 82,
    "env": [],
    "npm_scripts": [],
    "workflows": [],
@@ -586,7 +603,7 @@
   {
    "arquivo": "scripts/integrity/02_rls.sql",
    "descricao": null,
-   "linhas": 76,
+   "linhas": 78,
    "env": [],
    "npm_scripts": [],
    "workflows": [],
@@ -595,7 +612,7 @@
   {
    "arquivo": "scripts/integrity/03_grants.sql",
    "descricao": null,
-   "linhas": 65,
+   "linhas": 64,
    "env": [],
    "npm_scripts": [],
    "workflows": [],
@@ -604,7 +621,7 @@
   {
    "arquivo": "scripts/integrity/04_endpoints.sh",
    "descricao": "04_endpoints.sh — Smoke HTTP das Edge Functions críticas. Emite JSONL para stdout. Nunca imprime segredos.",
-   "linhas": 100,
+   "linhas": 103,
    "env": [],
    "npm_scripts": [],
    "workflows": [],
@@ -613,7 +630,7 @@
   {
    "arquivo": "scripts/integrity/05_crons.sql",
    "descricao": null,
-   "linhas": 58,
+   "linhas": 57,
    "env": [],
    "npm_scripts": [],
    "workflows": [],
@@ -622,97 +639,99 @@
   {
    "arquivo": "scripts/integrity/06_secdef.sql",
    "descricao": null,
-   "linhas": 69,
-   "env": [],
-   "npm_scripts": [],
-   "workflows": [],
-   "orfao": true
-  },
-  {
-   "arquivo": "scripts/integrity/07_exec_grants.sql",
-   "descricao": null,
-   "linhas": 84,
-   "env": [],
-   "npm_scripts": [],
-   "workflows": [],
-   "orfao": true
-  },
-  {
-   "arquivo": "scripts/integrity/08_rpc_tenant_scope.sql",
-   "descricao": null,
-   "linhas": 29,
-   "env": [],
-   "npm_scripts": [],
-   "workflows": [],
-   "orfao": true
-  },
-  {
-   "arquivo": "scripts/integrity/09_views.sql",
-   "descricao": null,
-   "linhas": 30,
-   "env": [],
-   "npm_scripts": [],
-   "workflows": [],
-   "orfao": true
-  },
-  {
-   "arquivo": "scripts/integrity/10_tenant_indexes.sql",
-   "descricao": null,
-   "linhas": 24,
-   "env": [],
-   "npm_scripts": [],
-   "workflows": [],
-   "orfao": true
-  },
-  {
-   "arquivo": "scripts/integrity/11_pii_mask.sql",
-   "descricao": null,
-   "linhas": 24,
-   "env": [],
-   "npm_scripts": [],
-   "workflows": [],
-   "orfao": true
-  },
-  {
-   "arquivo": "scripts/integrity/12_index_bloat.sql",
-   "descricao": null,
-   "linhas": 26,
-   "env": [],
-   "npm_scripts": [],
-   "workflows": [],
-   "orfao": true
-  },
-  {
-   "arquivo": "scripts/integrity/13_unused_indexes.sql",
-   "descricao": null,
-   "linhas": 31,
-   "env": [],
-   "npm_scripts": [],
-   "workflows": [],
-   "orfao": true
-  },
-  {
-   "arquivo": "scripts/integrity/14_retencao.sql",
-   "descricao": null,
-   "linhas": 79,
+   "linhas": 68,
    "env": [],
    "npm_scripts": [],
    "workflows": [],
    "orfao": false
   },
   {
-   "arquivo": "scripts/integrity/15_views_pii_rpcs.sql",
+   "arquivo": "scripts/integrity/07_exec_grants.sql",
    "descricao": null,
-   "linhas": 123,
+   "linhas": 83,
    "env": [],
    "npm_scripts": [],
    "workflows": [],
-   "orfao": true
+   "orfao": false
+  },
+  {
+   "arquivo": "scripts/integrity/08_rpc_tenant_scope.sql",
+   "descricao": null,
+   "linhas": 28,
+   "env": [],
+   "npm_scripts": [],
+   "workflows": [],
+   "orfao": false
+  },
+  {
+   "arquivo": "scripts/integrity/09_views.sql",
+   "descricao": null,
+   "linhas": 29,
+   "env": [],
+   "npm_scripts": [],
+   "workflows": [],
+   "orfao": false
+  },
+  {
+   "arquivo": "scripts/integrity/10_tenant_indexes.sql",
+   "descricao": null,
+   "linhas": 23,
+   "env": [],
+   "npm_scripts": [],
+   "workflows": [],
+   "orfao": false
+  },
+  {
+   "arquivo": "scripts/integrity/11_pii_mask.sql",
+   "descricao": null,
+   "linhas": 23,
+   "env": [],
+   "npm_scripts": [],
+   "workflows": [],
+   "orfao": false
+  },
+  {
+   "arquivo": "scripts/integrity/12_index_bloat.sql",
+   "descricao": null,
+   "linhas": 25,
+   "env": [],
+   "npm_scripts": [],
+   "workflows": [],
+   "orfao": false
+  },
+  {
+   "arquivo": "scripts/integrity/13_unused_indexes.sql",
+   "descricao": null,
+   "linhas": 30,
+   "env": [],
+   "npm_scripts": [],
+   "workflows": [],
+   "orfao": false
+  },
+  {
+   "arquivo": "scripts/integrity/14_retencao.sql",
+   "descricao": null,
+   "linhas": 78,
+   "env": [],
+   "npm_scripts": [],
+   "workflows": [
+    "ci.yml"
+   ],
+   "orfao": false
+  },
+  {
+   "arquivo": "scripts/integrity/15_views_pii_rpcs.sql",
+   "descricao": null,
+   "linhas": 127,
+   "env": [],
+   "npm_scripts": [],
+   "workflows": [],
+   "orfao": false
   },
   {
    "arquivo": "scripts/integrity/dump-baseline.sh",
    "descricao": "dump-baseline.sh — Regera baselines JSON a partir de PROD_DB_URL. Grava em scripts/integrity/baseline/. NUNCA escreve em produção.",
-   "linhas": 49,
+   "linhas": 62,
    "env": [],
    "npm_scripts": [],
    "workflows": [],
@@ -720,8 +739,8 @@
   },
   {
    "arquivo": "scripts/integrity/run.sh",
-   "descricao": "integrity/run.sh — Executa 01→05 em ordem, agrega JSONL e falha com exit code igual ao número de assertions em fail.",
-   "linhas": 98,
+   "descricao": "integrity/run.sh — Executa todos os passos NN_*.sql|sh em ordem, agrega JSONL e falha com exit code igual ao número de assertions em fail (teto 255).",
+   "linhas": 123,
    "env": [],
    "npm_scripts": [
     "maintenance:doctor",
@@ -734,7 +753,7 @@
   {
    "arquivo": "scripts/inventario/banco.sql",
    "descricao": null,
-   "linhas": 149,
+   "linhas": 148,
    "env": [],
    "npm_scripts": [],
    "workflows": [],
@@ -743,7 +762,7 @@
   {
    "arquivo": "scripts/inventario/gerar-banco.mjs",
    "descricao": "* Inventario do banco oficial -> inventario/estado/banco.json (fonte de consulta dos agentes).",
-   "linhas": 290,
+   "linhas": 289,
    "env": [
     "INVENTARIO_PERMITIR_OUTRO_PROJETO",
     "SUPABASE_ACCESS_TOKEN",
@@ -759,7 +778,7 @@
   {
    "arquivo": "scripts/inventario/gerar-repo.mjs",
    "descricao": "Inventario gerado do lado do repositorio (sem acesso ao banco):  - edge functions: linhas, segredos lidos (Deno.env.get) e quem as invoca (src, migrations,",
-   "linhas": 83,
+   "linhas": 82,
    "env": [],
    "npm_scripts": [],
    "workflows": [
@@ -770,7 +789,7 @@
   {
    "arquivo": "scripts/inventario/gerar-rotas.mjs",
    "descricao": "* Inventario das rotas do front -> inventario/estado/rotas.json (fonte de consulta dos agentes).",
-   "linhas": 300,
+   "linhas": 299,
    "env": [],
    "npm_scripts": [],
    "workflows": [
@@ -781,7 +800,7 @@
   {
    "arquivo": "scripts/inventario/mudou-conteudo.mjs",
    "descricao": "* O inventario mudou de verdade? Compara cada arquivo de inventario/estado/ com a versao de uma ref",
-   "linhas": 81,
+   "linhas": 80,
    "env": [
     "INVENTARIO_REF"
    ],
@@ -794,7 +813,7 @@
   {
    "arquivo": "scripts/maintenance/lib.mjs",
    "descricao": null,
-   "linhas": 798,
+   "linhas": 797,
    "env": [],
    "npm_scripts": [],
    "workflows": [],
@@ -803,7 +822,7 @@
   {
    "arquivo": "scripts/maintenance/run.mjs",
    "descricao": null,
-   "linhas": 729,
+   "linhas": 728,
    "env": [
     "XDG_STATE_HOME"
    ],
@@ -814,7 +833,7 @@
   {
    "arquivo": "scripts/maintenance/run.sh",
    "descricao": null,
-   "linhas": 16,
+   "linhas": 15,
    "env": [],
    "npm_scripts": [
     "maintenance:doctor",
@@ -827,7 +846,7 @@
   {
    "arquivo": "scripts/maintenance/typecheck.mjs",
    "descricao": null,
-   "linhas": 82,
+   "linhas": 81,
    "env": [],
    "npm_scripts": [],
    "workflows": [],
@@ -836,7 +855,7 @@
   {
    "arquivo": "scripts/mcp-phd-suite.mjs",
    "descricao": "* Suíte exaustiva MCP — Promo Finance",
-   "linhas": 923,
+   "linhas": 1001,
    "env": [],
    "npm_scripts": [],
    "workflows": [],
@@ -845,7 +864,7 @@
   {
    "arquivo": "scripts/migrate-cron-jobs.sh",
    "descricao": "scripts/migrate-cron-jobs.sh Wrapper: faz envsubst em migrate-cron-jobs.sql e aplica via psql no destino.",
-   "linhas": 68,
+   "linhas": 96,
    "env": [],
    "npm_scripts": [],
    "workflows": [],
@@ -854,7 +873,7 @@
   {
    "arquivo": "scripts/migrate-cron-jobs.sql",
    "descricao": null,
-   "linhas": 132,
+   "linhas": 133,
    "env": [],
    "npm_scripts": [],
    "workflows": [],
@@ -863,7 +882,7 @@
   {
    "arquivo": "scripts/migrate-functions.sh",
    "descricao": "scripts/migrate-functions.sh Deploy em lote das Edge Functions para um projeto Supabase destino.",
-   "linhas": 270,
+   "linhas": 339,
    "env": [],
    "npm_scripts": [],
    "workflows": [
@@ -874,7 +893,7 @@
   {
    "arquivo": "scripts/regras_negocio/generate.py",
    "descricao": null,
-   "linhas": 2178,
+   "linhas": 2389,
    "env": [],
    "npm_scripts": [],
    "workflows": [
@@ -885,7 +904,7 @@
   {
    "arquivo": "scripts/regras_negocio/indice.py",
    "descricao": null,
-   "linhas": 237,
+   "linhas": 260,
    "env": [],
    "npm_scripts": [],
    "workflows": [
@@ -896,7 +915,7 @@
   {
    "arquivo": "scripts/run-scenarios.ts",
    "descricao": "* CLI: gera e executa N cenários, escreve relatório Markdown + JSON.",
-   "linhas": 45,
+   "linhas": 79,
    "env": [],
    "npm_scripts": [],
    "workflows": [],
@@ -905,7 +924,7 @@
   {
    "arquivo": "scripts/security/check-view-replay-order.mjs",
    "descricao": "* check-view-replay-order.mjs",
-   "linhas": 148,
+   "linhas": 156,
    "env": [],
    "npm_scripts": [],
    "workflows": [
@@ -916,7 +935,7 @@
   {
    "arquivo": "scripts/security/export-function-privileges.sh",
    "descricao": "============================================================================== Gera resumo de privilégios EXECUTE (função × role) em CSV e JSON.",
-   "linhas": 130,
+   "linhas": 140,
    "env": [],
    "npm_scripts": [],
    "workflows": [
@@ -927,7 +946,7 @@
   {
    "arquivo": "scripts/security/test-anon-surface.ts",
    "descricao": "* Gap #25 — Probe HTTP de superfície anônima (regressão automática no CI).",
-   "linhas": 279,
+   "linhas": 345,
    "env": [
     "CI_GATE_LOG_SECRET",
     "GITHUB_REF",
@@ -944,7 +963,7 @@
   {
    "arquivo": "scripts/security/test-canonical-db-gates.mjs",
    "descricao": null,
-   "linhas": 674,
+   "linhas": 699,
    "env": [],
    "npm_scripts": [],
    "workflows": [
@@ -955,7 +974,7 @@
   {
    "arquivo": "scripts/security/test-functions-deploy.sh",
    "descricao": null,
-   "linhas": 45,
+   "linhas": 54,
    "env": [],
    "npm_scripts": [],
    "workflows": [
@@ -966,8 +985,8 @@
   },
   {
    "arquivo": "scripts/security/test-lint-function-repairs.mjs",
-   "descricao": null,
-   "linhas": 256,
+   "descricao": "Uso: node scripts/security/test-lint-function-repairs.mjs [migration.sql] Exit 0 = invariantes atendidas; 1 = invariante violada ou migration ilegível.",
+   "linhas": 272,
    "env": [],
    "npm_scripts": [],
    "workflows": [
@@ -979,7 +998,7 @@
   {
    "arquivo": "scripts/security/test-migration-replay-safety.sh",
    "descricao": null,
-   "linhas": 70,
+   "linhas": 96,
    "env": [],
    "npm_scripts": [],
    "workflows": [
@@ -991,10 +1010,12 @@
   {
    "arquivo": "scripts/security/test-observability-privileges.sql",
    "descricao": null,
-   "linhas": 186,
+   "linhas": 185,
    "env": [],
    "npm_scripts": [],
-   "workflows": [],
+   "workflows": [
+    "ci.yml"
+   ],
    "orfao": false
   },
   {
@@ -1004,12 +1025,12 @@
    "env": [],
    "npm_scripts": [],
    "workflows": [],
-   "orfao": true
+   "orfao": false
   },
   {
    "arquivo": "scripts/security/test-rpc-runtime.ts",
    "descricao": "* Runtime privilege test — invoca cada RPC nfe_* e conciliacao_* via",
-   "linhas": 274,
+   "linhas": 334,
    "env": [
     "CI_GATE_LOG_SECRET",
     "GITHUB_REF",
@@ -1020,22 +1041,26 @@
     "MIGRATION_REVISION"
    ],
    "npm_scripts": [],
-   "workflows": [],
+   "workflows": [
+    "ci.yml"
+   ],
    "orfao": false
   },
   {
    "arquivo": "scripts/security/test-security-definer-invocation.sql",
    "descricao": null,
-   "linhas": 213,
+   "linhas": 218,
    "env": [],
    "npm_scripts": [],
-   "workflows": [],
+   "workflows": [
+    "ci.yml"
+   ],
    "orfao": false
   },
   {
    "arquivo": "scripts/security/test-supabase-config.py",
-   "descricao": "Valida a sintaxe e contratos críticos do supabase/config.toml.\"\"\"",
-   "linhas": 47,
+   "descricao": "Valida a sintaxe e contratos críticos do supabase/config.toml.",
+   "linhas": 81,
    "env": [],
    "npm_scripts": [],
    "workflows": [
@@ -1048,34 +1073,34 @@
   {
    "arquivo": "scripts/security/test-tenant-isolation.sql",
    "descricao": null,
-   "linhas": 124,
+   "linhas": 123,
    "env": [],
    "npm_scripts": [],
    "workflows": [],
-   "orfao": true
+   "orfao": false
   },
   {
    "arquivo": "scripts/security/test-tenant-policy-scope.sql",
    "descricao": null,
-   "linhas": 162,
+   "linhas": 167,
    "env": [],
    "npm_scripts": [],
    "workflows": [],
-   "orfao": true
+   "orfao": false
   },
   {
    "arquivo": "scripts/security/test-write-isolation.sql",
    "descricao": null,
-   "linhas": 189,
+   "linhas": 192,
    "env": [],
    "npm_scripts": [],
    "workflows": [],
-   "orfao": true
+   "orfao": false
   },
   {
    "arquivo": "scripts/security/zod-coverage.sh",
    "descricao": "Zod coverage gate for Supabase Edge Functions. Emite a lista de funções que consomem `req.json()` sem passar por",
-   "linhas": 58,
+   "linhas": 88,
    "env": [],
    "npm_scripts": [],
    "workflows": [
@@ -1086,7 +1111,7 @@
   {
    "arquivo": "scripts/simular-observabilidade-digest.ts",
    "descricao": "* Etapa T — Simulação massiva do motor de observabilidade do digest.",
-   "linhas": 121,
+   "linhas": 139,
    "env": [],
    "npm_scripts": [],
    "workflows": [],
@@ -1095,7 +1120,7 @@
   {
    "arquivo": "scripts/simular-preferencias-digest.ts",
    "descricao": "* Etapa R — Simulação exaustiva do motor de preferências do digest.",
-   "linhas": 138,
+   "linhas": 137,
    "env": [],
    "npm_scripts": [],
    "workflows": [],
@@ -1104,7 +1129,7 @@
   {
    "arquivo": "scripts/simular-projecao-conformidade.ts",
    "descricao": "* Etapa S — Simulação exaustiva do motor de projeção de conformidade.",
-   "linhas": 223,
+   "linhas": 222,
    "env": [],
    "npm_scripts": [],
    "workflows": [],
@@ -1113,7 +1138,7 @@
   {
    "arquivo": "scripts/staging-migrate.sh",
    "descricao": "staging-migrate.sh — Orquestrador end-to-end de promoção para staging. Fases:",
-   "linhas": 247,
+   "linhas": 271,
    "env": [],
    "npm_scripts": [],
    "workflows": [
@@ -1123,9 +1148,10 @@
   },
   {
    "arquivo": "scripts/stress-test.ts",
-   "descricao": null,
-   "linhas": 47,
+   "descricao": "Teste de carga: N leituras em `profiles` no projeto apontado por SUPABASE_URL.   SUPABASE_URL=... SUPABASE_SERVICE_ROLE_KEY=... bun run scripts/stress-test.ts",
+   "linhas": 112,
    "env": [
+    "STRESS_ALLOW_PRODUCTION",
     "SUPABASE_SERVICE_ROLE_KEY",
     "SUPABASE_URL"
    ],
@@ -1136,7 +1162,7 @@
   {
    "arquivo": "scripts/supabase_snapshot/snapshot.py",
    "descricao": "Somente leitura no banco (sessão read-only, statement_timeout, lock_timeout). Nunca grava linhas de tabelas, valores de segredos, chaves, senhas ou DSN.",
-   "linhas": 1824,
+   "linhas": 1925,
    "env": [],
    "npm_scripts": [],
    "workflows": [
@@ -1145,9 +1171,18 @@
    "orfao": false
   },
   {
+   "arquivo": "scripts/test-all.sh",
+   "descricao": "test-all.sh — roda TODAS as suítes de teste dos scripts em scripts/ e resume o resultado. Descobre as suítes pela convenção do repo, sem lista fixa (suíte nova entra sozinha):",
+   "linhas": 111,
+   "env": [],
+   "npm_scripts": [],
+   "workflows": [],
+   "orfao": false
+  },
+  {
    "arquivo": "scripts/validate-all.sh",
    "descricao": "Smoke-test de todos os scripts: verifica sintaxe, --help e modo dry-run. Falha com exit 1 se qualquer script retornar erro inesperado.",
-   "linhas": 467,
+   "linhas": 508,
    "env": [],
    "npm_scripts": [],
    "workflows": [],

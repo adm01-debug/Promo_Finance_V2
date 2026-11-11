@@ -4,6 +4,7 @@
  "nota": "Reconstruído de migrations/schemas/types do repo — visão do CÓDIGO, não do banco vivo. `drift` compara colunas (migrations) com colunas_types (types.ts).",
  "fonte": [
   "drizzle",
+  "python-models",
   "src/integrations/supabase/types.ts",
   "supabase/migrations",
   "typeorm"
@@ -2756,6 +2757,16 @@
   {
    "nome": "bucket",
    "criado_em_sql": false,
+   "usado_em": 2
+  },
+  {
+   "nome": "bucket-multilinha",
+   "criado_em_sql": false,
+   "usado_em": 1
+  },
+  {
+   "nome": "espacado",
+   "criado_em_sql": false,
    "usado_em": 1
   },
   {
@@ -2766,7 +2777,7 @@
   {
    "nome": "nfe-certificados",
    "criado_em_sql": true,
-   "usado_em": 1
+   "usado_em": 2
   },
   {
    "nome": "nfe-xml",
@@ -2781,10 +2792,496 @@
   {
    "nome": "relatorios-tributarios",
    "criado_em_sql": true,
-   "usado_em": 0
+   "usado_em": 10
+  },
+  {
+   "nome": "t3",
+   "criado_em_sql": false,
+   "usado_em": 1
   }
  ],
  "tabelas": {
+  "AnonSurface": {
+   "colunas": {},
+   "rls": false,
+   "policies": [],
+   "indices": [],
+   "fks": [],
+   "criada_em": "scripts/security/test_gates_http.py",
+   "usada_no_front": 0,
+   "usada_em_edges": [],
+   "triggers": [],
+   "sem_rls": false,
+   "nao_usada": true
+  },
+  "BaselineDrift": {
+   "colunas": {},
+   "rls": false,
+   "policies": [],
+   "indices": [],
+   "fks": [],
+   "criada_em": "scripts/ci/test_scripts_shell.py",
+   "usada_no_front": 0,
+   "usada_em_edges": [],
+   "triggers": [],
+   "sem_rls": false,
+   "nao_usada": true
+  },
+  "Cenarios": {
+   "colunas": {},
+   "rls": false,
+   "policies": [],
+   "indices": [],
+   "fks": [],
+   "criada_em": "scripts/ci/test_listar_excecoes_npm_nativo.py",
+   "usada_no_front": 0,
+   "usada_em_edges": [],
+   "triggers": [],
+   "sem_rls": false,
+   "nao_usada": true
+  },
+  "DenoCheck": {
+   "colunas": {},
+   "rls": false,
+   "policies": [],
+   "indices": [],
+   "fks": [],
+   "criada_em": "scripts/ci/test_scripts_shell.py",
+   "usada_no_front": 0,
+   "usada_em_edges": [],
+   "triggers": [],
+   "sem_rls": false,
+   "nao_usada": true
+  },
+  "ObservabilityPrivileges": {
+   "colunas": {},
+   "rls": false,
+   "policies": [],
+   "indices": [],
+   "fks": [],
+   "criada_em": "scripts/security/test_gates_sql.py",
+   "usada_no_front": 0,
+   "usada_em_edges": [],
+   "triggers": [],
+   "sem_rls": false,
+   "nao_usada": true
+  },
+  "PrivilegeBaseline": {
+   "colunas": {},
+   "rls": false,
+   "policies": [],
+   "indices": [],
+   "fks": [],
+   "criada_em": "scripts/security/test_gates_sql.py",
+   "usada_no_front": 0,
+   "usada_em_edges": [],
+   "triggers": [],
+   "sem_rls": false,
+   "nao_usada": true
+  },
+  "RequireEnv": {
+   "colunas": {},
+   "rls": false,
+   "policies": [],
+   "indices": [],
+   "fks": [],
+   "criada_em": "scripts/ci/test_scripts_shell.py",
+   "usada_no_front": 0,
+   "usada_em_edges": [],
+   "triggers": [],
+   "sem_rls": false,
+   "nao_usada": true
+  },
+  "RpcRuntime": {
+   "colunas": {},
+   "rls": false,
+   "policies": [],
+   "indices": [],
+   "fks": [],
+   "criada_em": "scripts/security/test_gates_http.py",
+   "usada_no_front": 0,
+   "usada_em_edges": [],
+   "triggers": [],
+   "sem_rls": false,
+   "nao_usada": true
+  },
+  "SecurityDefinerInvocation": {
+   "colunas": {},
+   "rls": false,
+   "policies": [],
+   "indices": [],
+   "fks": [],
+   "criada_em": "scripts/security/test_gates_sql.py",
+   "usada_no_front": 0,
+   "usada_em_edges": [],
+   "triggers": [],
+   "sem_rls": false,
+   "nao_usada": true
+  },
+  "TenantIsolation": {
+   "colunas": {},
+   "rls": false,
+   "policies": [],
+   "indices": [],
+   "fks": [],
+   "criada_em": "scripts/security/test_gates_sql.py",
+   "usada_no_front": 0,
+   "usada_em_edges": [],
+   "triggers": [],
+   "sem_rls": false,
+   "nao_usada": true
+  },
+  "TenantPolicyScope": {
+   "colunas": {},
+   "rls": false,
+   "policies": [],
+   "indices": [],
+   "fks": [],
+   "criada_em": "scripts/security/test_gates_sql.py",
+   "usada_no_front": 0,
+   "usada_em_edges": [],
+   "triggers": [],
+   "sem_rls": false,
+   "nao_usada": true
+  },
+  "TestAplicacao": {
+   "colunas": {},
+   "rls": false,
+   "policies": [],
+   "indices": [],
+   "fks": [],
+   "criada_em": "scripts/test_migrate_cron_jobs.py",
+   "usada_no_front": 0,
+   "usada_em_edges": [],
+   "triggers": [],
+   "sem_rls": false,
+   "nao_usada": true
+  },
+  "TestApply": {
+   "colunas": {},
+   "rls": false,
+   "policies": [],
+   "indices": [],
+   "fks": [],
+   "criada_em": "scripts/admin/test_supabase_admin_ops_main_scenarios.py",
+   "usada_no_front": 0,
+   "usada_em_edges": [],
+   "triggers": [],
+   "sem_rls": false,
+   "nao_usada": true
+  },
+  "TestArgumentos": {
+   "colunas": {},
+   "rls": false,
+   "policies": [],
+   "indices": [],
+   "fks": [],
+   "criada_em": "scripts/test_migrate_cron_jobs.py",
+   "usada_no_front": 0,
+   "usada_em_edges": [],
+   "triggers": [],
+   "sem_rls": false,
+   "nao_usada": true
+  },
+  "TestArgumentosEPreflight": {
+   "colunas": {},
+   "rls": false,
+   "policies": [],
+   "indices": [],
+   "fks": [],
+   "criada_em": "scripts/test_migrate_functions.py",
+   "usada_no_front": 0,
+   "usada_em_edges": [],
+   "triggers": [],
+   "sem_rls": false,
+   "nao_usada": true
+  },
+  "TestArvoreSaudavel": {
+   "colunas": {},
+   "rls": false,
+   "policies": [],
+   "indices": [],
+   "fks": [],
+   "criada_em": "scripts/test_validate_all.py",
+   "usada_no_front": 0,
+   "usada_em_edges": [],
+   "triggers": [],
+   "sem_rls": false,
+   "nao_usada": true
+  },
+  "TestCenariosDeScripts": {
+   "colunas": {},
+   "rls": false,
+   "policies": [],
+   "indices": [],
+   "fks": [],
+   "criada_em": "scripts/test_validate_all.py",
+   "usada_no_front": 0,
+   "usada_em_edges": [],
+   "triggers": [],
+   "sem_rls": false,
+   "nao_usada": true
+  },
+  "TestCheck": {
+   "colunas": {},
+   "rls": false,
+   "policies": [],
+   "indices": [],
+   "fks": [],
+   "criada_em": "scripts/admin/test_supabase_admin_ops_main_scenarios.py",
+   "usada_no_front": 0,
+   "usada_em_edges": [],
+   "triggers": [],
+   "sem_rls": false,
+   "nao_usada": true
+  },
+  "TestDryRun": {
+   "colunas": {},
+   "rls": false,
+   "policies": [],
+   "indices": [],
+   "fks": [],
+   "criada_em": "scripts/test_migrate_cron_jobs.py",
+   "usada_no_front": 0,
+   "usada_em_edges": [],
+   "triggers": [],
+   "sem_rls": false,
+   "nao_usada": true
+  },
+  "TestEntrada": {
+   "colunas": {},
+   "rls": false,
+   "policies": [],
+   "indices": [],
+   "fks": [],
+   "criada_em": "scripts/admin/test_supabase_admin_ops_main_scenarios.py",
+   "usada_no_front": 0,
+   "usada_em_edges": [],
+   "triggers": [],
+   "sem_rls": false,
+   "nao_usada": true
+  },
+  "TestEvents": {
+   "colunas": {},
+   "rls": false,
+   "policies": [],
+   "indices": [],
+   "fks": [],
+   "criada_em": "scripts/healthcheck/test_healthcheck_scenarios.py",
+   "usada_no_front": 0,
+   "usada_em_edges": [],
+   "triggers": [],
+   "sem_rls": false,
+   "nao_usada": true
+  },
+  "TestFalhas": {
+   "colunas": {},
+   "rls": false,
+   "policies": [],
+   "indices": [],
+   "fks": [],
+   "criada_em": "scripts/test_staging_migrate.py",
+   "usada_no_front": 0,
+   "usada_em_edges": [],
+   "triggers": [],
+   "sem_rls": false,
+   "nao_usada": true
+  },
+  "TestFlagsDeEscopo": {
+   "colunas": {},
+   "rls": false,
+   "policies": [],
+   "indices": [],
+   "fks": [],
+   "criada_em": "scripts/test_staging_migrate.py",
+   "usada_no_front": 0,
+   "usada_em_edges": [],
+   "triggers": [],
+   "sem_rls": false,
+   "nao_usada": true
+  },
+  "TestFluxoCompleto": {
+   "colunas": {},
+   "rls": false,
+   "policies": [],
+   "indices": [],
+   "fks": [],
+   "criada_em": "scripts/test_staging_migrate.py",
+   "usada_no_front": 0,
+   "usada_em_edges": [],
+   "triggers": [],
+   "sem_rls": false,
+   "nao_usada": true
+  },
+  "TestGateDeSecrets": {
+   "colunas": {},
+   "rls": false,
+   "policies": [],
+   "indices": [],
+   "fks": [],
+   "criada_em": "scripts/test_migrate_functions.py",
+   "usada_no_front": 0,
+   "usada_em_edges": [],
+   "triggers": [],
+   "sem_rls": false,
+   "nao_usada": true
+  },
+  "TestIntegracaoPostgresLocal": {
+   "colunas": {},
+   "rls": false,
+   "policies": [],
+   "indices": [],
+   "fks": [],
+   "criada_em": "scripts/test_migrate_cron_jobs.py",
+   "usada_no_front": 0,
+   "usada_em_edges": [],
+   "triggers": [],
+   "sem_rls": false,
+   "nao_usada": true
+  },
+  "TestInterpolacao": {
+   "colunas": {},
+   "rls": false,
+   "policies": [],
+   "indices": [],
+   "fks": [],
+   "criada_em": "scripts/test_migrate_cron_jobs.py",
+   "usada_no_front": 0,
+   "usada_em_edges": [],
+   "triggers": [],
+   "sem_rls": false,
+   "nao_usada": true
+  },
+  "TestLoteCompleto": {
+   "colunas": {},
+   "rls": false,
+   "policies": [],
+   "indices": [],
+   "fks": [],
+   "criada_em": "scripts/test_migrate_functions.py",
+   "usada_no_front": 0,
+   "usada_em_edges": [],
+   "triggers": [],
+   "sem_rls": false,
+   "nao_usada": true
+  },
+  "TestOnly": {
+   "colunas": {},
+   "rls": false,
+   "policies": [],
+   "indices": [],
+   "fks": [],
+   "criada_em": "scripts/test_migrate_functions.py",
+   "usada_no_front": 0,
+   "usada_em_edges": [],
+   "triggers": [],
+   "sem_rls": false,
+   "nao_usada": true
+  },
+  "TestPoliticaJwt": {
+   "colunas": {},
+   "rls": false,
+   "policies": [],
+   "indices": [],
+   "fks": [],
+   "criada_em": "scripts/test_migrate_functions.py",
+   "usada_no_front": 0,
+   "usada_em_edges": [],
+   "triggers": [],
+   "sem_rls": false,
+   "nao_usada": true
+  },
+  "TestPreflight": {
+   "colunas": {},
+   "rls": false,
+   "policies": [],
+   "indices": [],
+   "fks": [],
+   "criada_em": "scripts/test_staging_migrate.py",
+   "usada_no_front": 0,
+   "usada_em_edges": [],
+   "triggers": [],
+   "sem_rls": false,
+   "nao_usada": true
+  },
+  "TestRunSh": {
+   "colunas": {},
+   "rls": false,
+   "policies": [],
+   "indices": [],
+   "fks": [],
+   "criada_em": "scripts/healthcheck/test_healthcheck_scenarios.py",
+   "usada_no_front": 0,
+   "usada_em_edges": [],
+   "triggers": [],
+   "sem_rls": false,
+   "nao_usada": true
+  },
+  "TestSintaxe": {
+   "colunas": {},
+   "rls": false,
+   "policies": [],
+   "indices": [],
+   "fks": [],
+   "criada_em": "scripts/test_validate_all.py",
+   "usada_no_front": 0,
+   "usada_em_edges": [],
+   "triggers": [],
+   "sem_rls": false,
+   "nao_usada": true
+  },
+  "TestSuites": {
+   "colunas": {},
+   "rls": false,
+   "policies": [],
+   "indices": [],
+   "fks": [],
+   "criada_em": "scripts/test_validate_all.py",
+   "usada_no_front": 0,
+   "usada_em_edges": [],
+   "triggers": [],
+   "sem_rls": false,
+   "nao_usada": true
+  },
+  "TestWebhooks": {
+   "colunas": {},
+   "rls": false,
+   "policies": [],
+   "indices": [],
+   "fks": [],
+   "criada_em": "scripts/healthcheck/test_healthcheck_scenarios.py",
+   "usada_no_front": 0,
+   "usada_em_edges": [],
+   "triggers": [],
+   "sem_rls": false,
+   "nao_usada": true
+  },
+  "TypecheckStrict": {
+   "colunas": {},
+   "rls": false,
+   "policies": [],
+   "indices": [],
+   "fks": [],
+   "criada_em": "scripts/ci/test_scripts_shell.py",
+   "usada_no_front": 0,
+   "usada_em_edges": [],
+   "triggers": [],
+   "sem_rls": false,
+   "nao_usada": true
+  },
+  "WriteIsolation": {
+   "colunas": {},
+   "rls": false,
+   "policies": [],
+   "indices": [],
+   "fks": [],
+   "criada_em": "scripts/security/test_gates_sql.py",
+   "usada_no_front": 0,
+   "usada_em_edges": [],
+   "triggers": [],
+   "sem_rls": false,
+   "nao_usada": true
+  },
   "account_lockouts": {
    "colunas": {
     "created_at": {
@@ -13129,7 +13626,7 @@
     ],
     "so_no_types": []
    },
-   "usada_no_front": 1,
+   "usada_no_front": 2,
    "usada_em_edges": [],
    "triggers": [
     "set_updated_at_18e8b04fb0e329ecb61f",
@@ -21234,7 +21731,7 @@
     "so_na_migration": [],
     "so_no_types": []
    },
-   "usada_no_front": 0,
+   "usada_no_front": 1,
    "usada_em_edges": [
     "contabilizar-evento"
    ],
@@ -35479,7 +35976,7 @@
     "so_na_migration": [],
     "so_no_types": []
    },
-   "usada_no_front": 4,
+   "usada_no_front": 5,
    "usada_em_edges": [
     "gerar-sped-ecd",
     "gerar-sped-ecf"
@@ -39295,7 +39792,7 @@
     ],
     "so_no_types": []
    },
-   "usada_no_front": 1,
+   "usada_no_front": 2,
    "usada_em_edges": [
     "contabilizar-evento"
    ],
@@ -39525,7 +40022,7 @@
     ],
     "so_no_types": []
    },
-   "usada_no_front": 0,
+   "usada_no_front": 1,
    "usada_em_edges": [],
    "triggers": [
     "set_updated_at_411e7594aa600ded799f",
@@ -39533,7 +40030,7 @@
     "update_regras_roteamento_updated_at"
    ],
    "sem_rls": false,
-   "nao_usada": true
+   "nao_usada": false
   },
   "regua_cobranca": {
    "colunas": {
@@ -50331,6 +50828,11 @@
    "usada_em": 2
   },
   {
+   "nome": "calcular_potencial_elisao",
+   "definida": true,
+   "usada_em": 1
+  },
+  {
    "nome": "certificado_get_password",
    "definida": true,
    "usada_em": 1
@@ -50416,6 +50918,11 @@
    "usada_em": 1
   },
   {
+   "nome": "get_acessos_suspeitos",
+   "definida": true,
+   "usada_em": 1
+  },
+  {
    "nome": "get_bloat_history",
    "definida": true,
    "usada_em": 1
@@ -50423,7 +50930,7 @@
   {
    "nome": "get_catalogos_tributarios_health",
    "definida": true,
-   "usada_em": 1
+   "usada_em": 2
   },
   {
    "nome": "get_catalogos_tributarios_history",
@@ -50431,9 +50938,14 @@
    "usada_em": 1
   },
   {
-   "nome": "get_cron_jobs",
+   "nome": "get_cobertura_fiscal_uf",
    "definida": true,
    "usada_em": 1
+  },
+  {
+   "nome": "get_cron_jobs",
+   "definida": true,
+   "usada_em": 2
   },
   {
    "nome": "get_cron_run_history",
@@ -50451,7 +50963,32 @@
    "usada_em": 1
   },
   {
+   "nome": "get_integrity_alerts",
+   "definida": true,
+   "usada_em": 1
+  },
+  {
+   "nome": "get_performance_alerts",
+   "definida": true,
+   "usada_em": 1
+  },
+  {
+   "nome": "get_performance_alerts_weekly",
+   "definida": true,
+   "usada_em": 1
+  },
+  {
+   "nome": "get_retencao_politicas_status",
+   "definida": true,
+   "usada_em": 1
+  },
+  {
    "nome": "get_retencoes_pendentes_count",
+   "definida": true,
+   "usada_em": 1
+  },
+  {
+   "nome": "get_retention_history",
    "definida": true,
    "usada_em": 1
   },
@@ -50462,6 +50999,11 @@
   },
   {
    "nome": "get_table_bloat",
+   "definida": true,
+   "usada_em": 1
+  },
+  {
+   "nome": "get_ultima_carga_fiscal",
    "definida": true,
    "usada_em": 1
   },
