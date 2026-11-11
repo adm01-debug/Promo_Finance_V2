@@ -6,9 +6,9 @@ serve(async (req) => {
   if (req.method === 'OPTIONS') return new Response(null, { headers: corsHeaders });
 
   try {
-    const raw = await req.json();
+    const raw = await req.json().catch(() => null);
     const parsed = validatePayload(ParametrosSimulacaoSchema, raw, 'simular-real');
-    if (!parsed.success) return createErrorResponse(parsed.error, 400, parsed.details);
+    if (!parsed.success) return createErrorResponse(parsed.error, 422, parsed.details);
     const result = simularReal(parsed.data as Parameters<typeof simularReal>[0]);
     return new Response(JSON.stringify(result), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },

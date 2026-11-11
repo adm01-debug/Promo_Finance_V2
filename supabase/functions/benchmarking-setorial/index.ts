@@ -23,10 +23,10 @@ serve(async (req) => {
       if (!rl.allowed) return rateLimitResponse(rl, corsHeaders);
     }
 
-    const rawBody = await req.json();
+    const rawBody = await req.json().catch(() => null);
     const validation = validatePayload(BenchmarkingSetorialSchema, rawBody, "benchmarking-setorial");
     if (!validation.success) {
-      return createErrorResponse(validation.error, 400, validation.details);
+      return createErrorResponse(validation.error, 422, validation.details);
     }
     const { metricas, setor } = validation.data;
 

@@ -144,9 +144,11 @@ serve(async (req) => {
     
     const supabase = createClient(supabaseUrl, supabaseServiceKey);
 
-    const raw = await req.json();
     const { z } = await import('https://deno.land/x/zod@v3.22.4/mod.ts');
-    const { validatePayload, createErrorResponse } = await import('../_shared/validation.ts');
+    const { validatePayload, createErrorResponse, parseJsonBody } = await import('../_shared/validation.ts');
+    const rawBody = await parseJsonBody(req, corsHeaders, 'send-push-notification');
+    if (!rawBody.success) return rawBody.response;
+    const raw = rawBody.data;
     const Schema = z.object({
       userId: z.string().uuid().optional(),
       title: z.string().min(1),
@@ -158,7 +160,7 @@ serve(async (req) => {
       prioridade: z.enum(['baixa', 'media', 'alta', 'critica']).optional(),
     }).passthrough();
     const parsed = validatePayload(Schema, raw, 'send-push-notification');
-    if (!parsed.success) return createErrorResponse(parsed.error, 400, parsed.details);
+    if (!parsed.success) return createErrorResponse(parsed.error, 422, parsed.details);
     const { userId, title, body, icon, badge, tag, data, prioridade } = parsed.data as PushNotificationRequest;
 
     console.log("[send-push-notification] Enviando notificação:", { userId, title, prioridade });

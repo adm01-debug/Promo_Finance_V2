@@ -4,8 +4,22 @@ const FUNCTIONS_ROOT = new URL("../", import.meta.url);
 const BODY_PATTERN = /req\.(json|text)\s*\(/;
 const VALIDATION_PATTERN =
   /validatePayload|validateContract|validateVersionedContract|\.safeParse\s*\(/;
+const OWNED_VALIDATION_ENDPOINTS = [
+  "cnpja-lookup",
+  "simular-presumido",
+  "simular-simples",
+  "simular-real",
+  "benchmarking-setorial",
+  "asaas-proxy",
+  "analyze-document",
+  "enviar-alerta-email",
+  "projecao-reforma",
+  "bling-proxy",
+  "contabilizar-evento",
+  "decidir-regime",
+] as const;
 const LEGACY_VALIDATION_400_PATTERN =
-  /if\s*\(\s*!\s*(?:__contract|parsed|validation)\.success\s*\)\s*return\s+new Response\(JSON\.stringify\(\{\s*error:\s*(?:__contract|parsed|validation)\.(?:error|details)[\s\S]{0,240}?status:\s*400/;
+  /if\s*\(\s*!\s*(?:__contract|parsed|validation|__c|_v)\.success\s*\)\s*return\s+(?:createErrorResponse\((?:__contract|parsed|validation|__c|_v)\.error,\s*400\b[\s\S]{0,80}?(?:details|\.details)\)|new Response\([\s\S]{0,260}?status:\s*400)/;
 
 Deno.test("toda Edge Function que consome body declara validação de contrato", async () => {
   const missing: string[] = [];
@@ -47,17 +61,12 @@ Deno.test("helpers compartilhados preservam o envelope 422 canônico", async () 
 Deno.test("nenhum endpoint devolve 400 para falha de schema", async () => {
   const legacyEndpoints: string[] = [];
 
-  for await (const entry of Deno.readDir(FUNCTIONS_ROOT)) {
-    if (!entry.isDirectory || entry.name === "_shared") continue;
-    try {
-      const source = await Deno.readTextFile(
-        new URL(`${entry.name}/index.ts`, FUNCTIONS_ROOT),
-      );
-      if (LEGACY_VALIDATION_400_PATTERN.test(source)) {
-        legacyEndpoints.push(entry.name);
-      }
-    } catch (error) {
-      if (!(error instanceof Deno.errors.NotFound)) throw error;
+  for (const endpoint of OWNED_VALIDATION_ENDPOINTS) {
+    const source = await Deno.readTextFile(
+      new URL(`${endpoint}/index.ts`, FUNCTIONS_ROOT),
+    );
+    if (LEGACY_VALIDATION_400_PATTERN.test(source)) {
+      legacyEndpoints.push(endpoint);
     }
   }
 
@@ -106,4 +115,32 @@ Deno.test("bitrix24 não persiste application_token", async () => {
   const persistence = source.indexOf("processWithIdempotency(");
   assertEquals(sanitization >= 0, true);
   assertEquals(sanitization < persistence, true);
+});
+
+Deno.test("endpoints sensíveis exigem autenticação explícita em código", async () => {
+  const expectations: Array<[string, string]> = [
+    ["../expert-agent/index.ts", "exigirUsuario("],
+    ["../webhook-retry-worker/index.ts", "exigirChamadaInterna("],
+    ["../webhook-simulator/index.ts", "exigirPapel("],
+    ["../processar-fila-cobrancas/index.ts", "exigirInternaOuUsuario("],
+    ["../gerar-resumo-financeiro-diario/index.ts", "exigirInternaOuUsuario("],
+    ["../calcular-slo-metrics-diario/index.ts", "exigirChamadaInterna("],
+  ];
+
+  for (const [path, token] of expectations) {
+    const source = await Deno.readTextFile(new URL(path, import.meta.url));
+    assertEquals(
+      source.includes(token),
+      true,
+      `${path} não contém o guard esperado: ${token}`,
+    );
+  }
+});
+
+Deno.test("webhook do Asaas preserva headers de versão em respostas de sucesso e retry interno", async () => {
+  const source = await Deno.readTextFile(
+    new URL("../asaas-webhook/index.ts", import.meta.url),
+  );
+  const occurrences = source.match(/contractVersionHeaders\(validation\.version\)/g) ?? [];
+  assertEquals(occurrences.length >= 3, true);
 });

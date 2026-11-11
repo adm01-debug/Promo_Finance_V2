@@ -22,11 +22,11 @@ serve(async (req) => {
       if (!rl.allowed) return rateLimitResponse(rl, corsHeaders);
     }
 
-    const body = await req.json();
+    const body = await req.json().catch(() => null);
     const validation = validatePayload(AnalyzeDocumentSchema, body);
-    
+
     if (!validation.success) {
-      return createErrorResponse(validation.error, 400, validation.details);
+      return createErrorResponse(validation.error, 422, validation.details);
     }
 
     const { fileName, fileType, fileContent } = validation.data;

@@ -1,6 +1,6 @@
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.49.4";
-import { Bitrix24SyncSchema, corsHeaders, validatePayload, createErrorResponse } from "../_shared/validation.ts";
+import { Bitrix24SyncSchema, corsHeaders, validatePayload, createErrorResponse, parseJsonBody } from "../_shared/validation.ts";
 
 
 interface BitrixResponse {
@@ -699,10 +699,12 @@ serve(async (req) => {
       throw new Error("Invalid authentication token");
     }
 
-    const rawBody = await req.json();
+    const parsedBody = await parseJsonBody(req, corsHeaders, "bitrix24-sync");
+    if (!parsedBody.success) return parsedBody.response;
+    const rawBody = parsedBody.data;
     const validation = validatePayload(Bitrix24SyncSchema, rawBody, "bitrix24-sync");
     if (!validation.success) {
-      return createErrorResponse(validation.error, 400, validation.details);
+      return createErrorResponse(validation.error, 422, validation.details);
     }
     const { action, params } = validation.data;
     console.log(`[bitrix24-sync] Action: ${action}, User: ${user.id}`);

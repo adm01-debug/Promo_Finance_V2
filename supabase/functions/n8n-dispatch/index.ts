@@ -86,9 +86,11 @@ Deno.serve(async (req) => {
       });
     }
 
-    const raw = await req.json();
     const { z } = await import('https://deno.land/x/zod@v3.22.4/mod.ts');
-    const { validatePayload, createErrorResponse } = await import('../_shared/validation.ts');
+    const { validatePayload, createErrorResponse, parseJsonBody } = await import('../_shared/validation.ts');
+    const rawBody = await parseJsonBody(req, corsHeaders, 'n8n-dispatch');
+    if (!rawBody.success) return rawBody.response;
+    const raw = rawBody.data;
     const Schema = z.object({
       event_type: z.string().min(1),
       risk_score: z.number().optional(),
@@ -96,7 +98,7 @@ Deno.serve(async (req) => {
       payload: z.record(z.any()),
     }).passthrough();
     const parsed = validatePayload(Schema, raw, 'n8n-dispatch');
-    if (!parsed.success) return createErrorResponse(parsed.error, 400, parsed.details);
+    if (!parsed.success) return createErrorResponse(parsed.error, 422, parsed.details);
     const body = parsed.data as DispatchRequest;
     if (!body.event_type || !body.payload) {
       return new Response(JSON.stringify({ error: "event_type e payload são obrigatórios" }), {

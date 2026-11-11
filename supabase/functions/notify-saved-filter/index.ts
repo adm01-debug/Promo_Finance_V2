@@ -61,9 +61,11 @@ const handler = async (req: Request): Promise<Response> => {
     const userId = userData.user.id;
     const userEmail = userData.user.email ?? null;
 
-    const raw = await req.json();
     const { z } = await import('https://deno.land/x/zod@v3.22.4/mod.ts');
-    const { validatePayload, createErrorResponse } = await import('../_shared/validation.ts');
+    const { validatePayload, createErrorResponse, parseJsonBody } = await import('../_shared/validation.ts');
+    const rawBody = await parseJsonBody(req, corsHeaders, 'notify-saved-filter');
+    if (!rawBody.success) return rawBody.response;
+    const raw = rawBody.data;
     const Schema = z.object({
       sourceRef: z.string().optional(),
       filterName: z.string().min(1),
@@ -74,7 +76,7 @@ const handler = async (req: Request): Promise<Response> => {
       url: z.string().optional(),
     }).passthrough();
     const parsed = validatePayload(Schema, raw, 'notify-saved-filter');
-    if (!parsed.success) return createErrorResponse(parsed.error, 400, parsed.details);
+    if (!parsed.success) return createErrorResponse(parsed.error, 422, parsed.details);
     const payload = parsed.data as NotifyRequest;
     if (!payload?.title || !payload?.filterName || !payload?.channels) {
       return new Response(JSON.stringify({ error: "invalid_payload" }), {

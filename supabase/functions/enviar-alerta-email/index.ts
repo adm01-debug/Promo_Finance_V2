@@ -14,10 +14,10 @@ const handler = async (req: Request): Promise<Response> => {
     const resendApiKey = Deno.env.get("RESEND_API_KEY");
     
     const supabase = createClient(supabaseUrl, supabaseKey);
-    const rawBody = await req.json();
+    const rawBody = await req.json().catch(() => null);
     const validation = validatePayload(EnviarAlertaEmailSchema, rawBody, "enviar-alerta-email");
     if (!validation.success) {
-      return createErrorResponse(validation.error, 400, validation.details);
+      return createErrorResponse(validation.error, 422, validation.details);
     }
     const { tipo, destinatario, dados } = validation.data;
 

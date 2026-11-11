@@ -132,10 +132,10 @@ Deno.serve(async (req: Request) => {
       );
     }
 
-    const rawBody = await req.json().catch(() => ({}));
+    const rawBody = await req.json().catch(() => null);
     const validation = validatePayload(CnpjaLookupSchema, rawBody, "cnpja-lookup");
     if (!validation.success) {
-      return createErrorResponse(validation.error, 400, validation.details);
+      return createErrorResponse(validation.error, 422, validation.details);
     }
 
     const cnpj = sanitizeCnpj(String(validation.data.cnpj));

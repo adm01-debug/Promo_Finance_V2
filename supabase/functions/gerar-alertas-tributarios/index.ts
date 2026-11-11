@@ -4,11 +4,7 @@
 // Hardened: structured logging, retry com exponential backoff, top-level try/catch
 // ============================================
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.49.4';
-
-const corsHeaders = {
-  'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
-};
+import { corsHeadersComSegredo, exigirChamadaInterna } from '../_shared/auth-guard.ts';
 
 const SIMPLES_SUBLIMITE = 4_800_000;
 const SIMPLES_LIMITE_ALERTA = SIMPLES_SUBLIMITE * 0.9;
@@ -58,7 +54,12 @@ async function withRetry<T>(op: () => Promise<T>, label: string, maxAttempts = 3
 }
 
 Deno.serve(async (req) => {
-  if (req.method === 'OPTIONS') return new Response('ok', { headers: corsHeaders });
+  if (req.method === 'OPTIONS') {
+    return new Response('ok', { headers: corsHeadersComSegredo });
+  }
+
+  const guard = await exigirChamadaInterna(req);
+  if (!guard.ok) return guard.resposta;
 
   const startedAt = Date.now();
 
@@ -333,7 +334,7 @@ Deno.serve(async (req) => {
         alertas_avaliados: novosAlertas.length,
         duration_ms,
       }),
-      { headers: { ...corsHeaders, 'Content-Type': 'application/json' } },
+      { headers: { ...corsHeadersComSegredo, 'Content-Type': 'application/json' } },
     );
   } catch (e) {
     const duration_ms = Date.now() - startedAt;
@@ -357,7 +358,7 @@ Deno.serve(async (req) => {
 
     return new Response(
       JSON.stringify({ ok: false, error: error_message }),
-      { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } },
+      { status: 500, headers: { ...corsHeadersComSegredo, 'Content-Type': 'application/json' } },
     );
   }
 });

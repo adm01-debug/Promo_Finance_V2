@@ -1,6 +1,6 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.49.4";
-import { WhatsappIaProativoSchema, corsHeaders, validatePayload, createErrorResponse } from "../_shared/validation.ts";
+import { WhatsappIaProativoSchema, corsHeaders, validatePayload, createErrorResponse, parseJsonBody } from "../_shared/validation.ts";
 import { checkRateLimit, rateLimitResponse } from "../_shared/rate-limit.ts";
 
 
@@ -36,10 +36,12 @@ serve(async (req) => {
 
 
     
-    const rawBody = await req.json();
+    const parsedBody = await parseJsonBody(req, corsHeaders, "whatsapp-ia-proativo");
+    if (!parsedBody.success) return parsedBody.response;
+    const rawBody = parsedBody.data;
     const validation = validatePayload(WhatsappIaProativoSchema, rawBody, "whatsapp-ia-proativo");
     if (!validation.success) {
-      return createErrorResponse(validation.error, 400, validation.details);
+      return createErrorResponse(validation.error, 422, validation.details);
     }
     const { action, data } = validation.data;
 
