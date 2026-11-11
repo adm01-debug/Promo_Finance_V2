@@ -6487,7 +6487,6 @@ DROP POLICY IF EXISTS saved_filter_subscriptions_owner ON public.saved_filter_su
 CREATE POLICY saved_filter_subscriptions_owner ON public.saved_filter_subscriptions TO authenticated USING ((user_id = auth.uid())) WITH CHECK ((user_id = auth.uid()));
 
 DROP POLICY IF EXISTS saved_filters_select ON public.saved_filters;
-ALTER TABLE public.saved_filters ALTER COLUMN shared_with_roles TYPE text[] USING shared_with_roles::text[];
 
 DROP POLICY IF EXISTS saved_filters_owner_write ON public.saved_filters;
 CREATE POLICY saved_filters_owner_write ON public.saved_filters TO authenticated USING ((user_id = auth.uid())) WITH CHECK ((user_id = auth.uid()));
