@@ -68227,6 +68227,10 @@
               "hits": 1
             },
             {
+              "file": "supabase/migrations/20260518172812_52b52fb1-15af-4387-aed5-98bf813bea0f.sql",
+              "hits": 1
+            },
+            {
               "file": "supabase/migrations/20260711182305_235d2c5d-ac26-468a-88df-339dbccf4c61.sql",
               "hits": 1
             },
@@ -68239,7 +68243,7 @@
               "hits": 1
             }
           ],
-          "code_total_files": 4,
+          "code_total_files": 5,
           "cron": [
             "5:cleanup-expired-tokens"
           ],
@@ -68335,6 +68339,10 @@
               "hits": 1
             },
             {
+              "file": "supabase/migrations/20260518172812_52b52fb1-15af-4387-aed5-98bf813bea0f.sql",
+              "hits": 1
+            },
+            {
               "file": "supabase/migrations/20260711182305_235d2c5d-ac26-468a-88df-339dbccf4c61.sql",
               "hits": 1
             },
@@ -68347,7 +68355,7 @@
               "hits": 1
             }
           ],
-          "code_total_files": 4,
+          "code_total_files": 5,
           "cron": [
             "4:cleanup-cron-logs"
           ],
@@ -68384,6 +68392,10 @@
               "hits": 1
             },
             {
+              "file": "supabase/migrations/20260518172812_52b52fb1-15af-4387-aed5-98bf813bea0f.sql",
+              "hits": 1
+            },
+            {
               "file": "supabase/migrations/20260711182305_235d2c5d-ac26-468a-88df-339dbccf4c61.sql",
               "hits": 1
             },
@@ -68396,7 +68408,7 @@
               "hits": 1
             }
           ],
-          "code_total_files": 4,
+          "code_total_files": 5,
           "cron": [
             "6:cleanup-login-attempts"
           ],
@@ -68509,11 +68521,15 @@
         "callers": {
           "code": [
             {
+              "file": "supabase/migrations/20260518172812_52b52fb1-15af-4387-aed5-98bf813bea0f.sql",
+              "hits": 1
+            },
+            {
               "file": "supabase/migrations/20260711182305_235d2c5d-ac26-468a-88df-339dbccf4c61.sql",
               "hits": 1
             }
           ],
-          "code_total_files": 1,
+          "code_total_files": 2,
           "cron": [],
           "db": [],
           "triggers": [],
@@ -69407,7 +69423,7 @@
             },
             {
               "file": "supabase/migrations/20260728214221_0cb29975-9b45-43c5-9853-d4ed66f527ad.sql",
-              "hits": 10
+              "hits": 15
             },
             {
               "file": "supabase/migrations/20260728215820_761a88ca-53cb-4d43-add4-9b1d3a6d516c.sql",
@@ -70252,6 +70268,10 @@
               "hits": 1
             },
             {
+              "file": "supabase/migrations/20260825090000_hardening_seguranca_destino.sql",
+              "hits": 1
+            },
+            {
               "file": "supabase/migrations/20260825100000_reconciliar_schema_completo.sql",
               "hits": 1
             },
@@ -70260,7 +70280,7 @@
               "hits": 1
             }
           ],
-          "code_total_files": 3,
+          "code_total_files": 4,
           "cron": [],
           "db": [
             "public.fn_indices_contabeis"
@@ -70998,11 +71018,15 @@
               "hits": 1
             },
             {
+              "file": "supabase/migrations/20260825090000_hardening_seguranca_destino.sql",
+              "hits": 1
+            },
+            {
               "file": "supabase/migrations/20260827101000_hardening_views_pii_rpcs.sql",
               "hits": 1
             }
           ],
-          "code_total_files": 3,
+          "code_total_files": 4,
           "cron": [],
           "db": [],
           "triggers": [],
@@ -71147,9 +71171,13 @@
             {
               "file": "src/pages/admin/AdminBloatMonitor.tsx",
               "hits": 1
+            },
+            {
+              "file": "supabase/migrations/20260825090000_hardening_seguranca_destino.sql",
+              "hits": 1
             }
           ],
-          "code_total_files": 2,
+          "code_total_files": 3,
           "cron": [],
           "db": [],
           "triggers": [],
@@ -71218,11 +71246,15 @@
               "hits": 1
             },
             {
+              "file": "supabase/migrations/20260825090000_hardening_seguranca_destino.sql",
+              "hits": 1
+            },
+            {
               "file": "supabase/migrations/20260831153000_corrigir_12_erros_lint_funcoes.sql",
               "hits": 1
             }
           ],
-          "code_total_files": 3,
+          "code_total_files": 4,
           "cron": [],
           "db": [],
           "triggers": [],
@@ -71339,11 +71371,19 @@
               "hits": 1
             },
             {
+              "file": "supabase/migrations/20260619145927_drop-get-cron-jobs-before-stub.sql",
+              "hits": 1
+            },
+            {
               "file": "supabase/migrations/20260711182522_70a54a27-3f2e-42ea-8ff2-71bd1b76dc2b.sql",
+              "hits": 1
+            },
+            {
+              "file": "supabase/migrations/20260825090000_hardening_seguranca_destino.sql",
               "hits": 1
             }
           ],
-          "code_total_files": 4,
+          "code_total_files": 6,
           "cron": [],
           "db": [],
           "triggers": [],
@@ -71391,6 +71431,14 @@
             },
             {
               "file": "supabase/migrations/20260518170823_65a0ae3a-c384-4e61-9712-3680962a1a10.sql",
+              "hits": 2
+            },
+            {
+              "file": "supabase/migrations/20260518172812_52b52fb1-15af-4387-aed5-98bf813bea0f.sql",
+              "hits": 1
+            },
+            {
+              "file": "supabase/migrations/20260619145926_drop-get-cron-run-history-2-before-stub.sql",
               "hits": 1
             },
             {
@@ -71402,11 +71450,15 @@
               "hits": 1
             },
             {
+              "file": "supabase/migrations/20260825090000_hardening_seguranca_destino.sql",
+              "hits": 1
+            },
+            {
               "file": "supabase/migrations/20260825130000_fixes_phd_validation.sql",
               "hits": 1
             }
           ],
-          "code_total_files": 8,
+          "code_total_files": 11,
           "cron": [],
           "db": [],
           "triggers": [],
@@ -71691,9 +71743,13 @@
             {
               "file": "scripts/security/test-privilege-baseline.sql",
               "hits": 1
+            },
+            {
+              "file": "supabase/migrations/20260825090000_hardening_seguranca_destino.sql",
+              "hits": 1
             }
           ],
-          "code_total_files": 1,
+          "code_total_files": 2,
           "cron": [],
           "db": [],
           "triggers": [],
@@ -71769,9 +71825,13 @@
             {
               "file": "src/hooks/useAlertasTributarios.ts",
               "hits": 1
+            },
+            {
+              "file": "supabase/migrations/20260825090000_hardening_seguranca_destino.sql",
+              "hits": 1
             }
           ],
-          "code_total_files": 2,
+          "code_total_files": 3,
           "cron": [],
           "db": [],
           "triggers": [],
@@ -71808,9 +71868,13 @@
             {
               "file": "src/components/admin/telemetry/RetentionHistoryPanel.tsx",
               "hits": 1
+            },
+            {
+              "file": "supabase/migrations/20260825090000_hardening_seguranca_destino.sql",
+              "hits": 1
             }
           ],
-          "code_total_files": 2,
+          "code_total_files": 3,
           "cron": [],
           "db": [],
           "triggers": [],
@@ -71886,9 +71950,13 @@
             {
               "file": "src/pages/admin/AdminBloatMonitor.tsx",
               "hits": 1
+            },
+            {
+              "file": "supabase/migrations/20260825090000_hardening_seguranca_destino.sql",
+              "hits": 1
             }
           ],
-          "code_total_files": 2,
+          "code_total_files": 3,
           "cron": [],
           "db": [],
           "triggers": [],
@@ -71960,9 +72028,13 @@
             {
               "file": "supabase/migrations/20260531163029_9e4fd52a-5975-4da4-80b6-87cf5007d2f0.sql",
               "hits": 1
+            },
+            {
+              "file": "supabase/migrations/20260825090000_hardening_seguranca_destino.sql",
+              "hits": 1
             }
           ],
-          "code_total_files": 2,
+          "code_total_files": 3,
           "cron": [],
           "db": [],
           "triggers": [],
@@ -71999,9 +72071,13 @@
             {
               "file": "supabase/migrations/20260531163029_9e4fd52a-5975-4da4-80b6-87cf5007d2f0.sql",
               "hits": 1
+            },
+            {
+              "file": "supabase/migrations/20260825090000_hardening_seguranca_destino.sql",
+              "hits": 1
             }
           ],
-          "code_total_files": 2,
+          "code_total_files": 3,
           "cron": [],
           "db": [],
           "triggers": [],
@@ -72533,7 +72609,7 @@
               "hits": 6
             }
           ],
-          "code_total_files": 188,
+          "code_total_files": 189,
           "cron": [],
           "db": [
             "public.auditar_acessos_cross_tenant",
@@ -72733,7 +72809,7 @@
             },
             {
               "file": "supabase/migrations/20260825110000_reconciliar_schema_v3_completo.sql",
-              "hits": 1
+              "hits": 2
             },
             {
               "file": "supabase/migrations/20260826050000_revoke_execute_authenticated_e09.sql",
@@ -73527,6 +73603,10 @@
               "hits": 1
             },
             {
+              "file": "supabase/migrations/20260519134953_drop-log-sso-onboarding-event-uuid.sql",
+              "hits": 1
+            },
+            {
               "file": "supabase/migrations/20260711182305_235d2c5d-ac26-468a-88df-339dbccf4c61.sql",
               "hits": 1
             },
@@ -73535,7 +73615,7 @@
               "hits": 1
             }
           ],
-          "code_total_files": 4,
+          "code_total_files": 5,
           "cron": [],
           "db": [],
           "triggers": [],
@@ -74778,9 +74858,13 @@
             {
               "file": "src/hooks/useUserEmpresas.ts",
               "hits": 1
+            },
+            {
+              "file": "supabase/migrations/20260825090000_hardening_seguranca_destino.sql",
+              "hits": 1
             }
           ],
-          "code_total_files": 2,
+          "code_total_files": 3,
           "cron": [],
           "db": [],
           "triggers": [],
@@ -74851,9 +74935,13 @@
             {
               "file": "supabase/migrations/20260519122416_65243730-45f3-40c5-8c2f-f36ca29e9650.sql",
               "hits": 1
+            },
+            {
+              "file": "supabase/migrations/20260825090000_hardening_seguranca_destino.sql",
+              "hits": 1
             }
           ],
-          "code_total_files": 3,
+          "code_total_files": 4,
           "cron": [],
           "db": [],
           "triggers": [],
@@ -74910,9 +74998,13 @@
             {
               "file": "supabase/migrations/20260519122416_65243730-45f3-40c5-8c2f-f36ca29e9650.sql",
               "hits": 1
+            },
+            {
+              "file": "supabase/migrations/20260825090000_hardening_seguranca_destino.sql",
+              "hits": 1
             }
           ],
-          "code_total_files": 7,
+          "code_total_files": 8,
           "cron": [],
           "db": [],
           "triggers": [],
@@ -74969,9 +75061,13 @@
             {
               "file": "supabase/migrations/20260519122416_65243730-45f3-40c5-8c2f-f36ca29e9650.sql",
               "hits": 1
+            },
+            {
+              "file": "supabase/migrations/20260825090000_hardening_seguranca_destino.sql",
+              "hits": 1
             }
           ],
-          "code_total_files": 7,
+          "code_total_files": 8,
           "cron": [],
           "db": [],
           "triggers": [],
@@ -75212,9 +75308,13 @@
             {
               "file": "src/hooks/useSsoDomainResolver.ts",
               "hits": 1
+            },
+            {
+              "file": "supabase/migrations/20260825090000_hardening_seguranca_destino.sql",
+              "hits": 1
             }
           ],
-          "code_total_files": 4,
+          "code_total_files": 5,
           "cron": [],
           "db": [],
           "triggers": [],
@@ -75245,6 +75345,10 @@
         "callers": {
           "code": [
             {
+              "file": "supabase/migrations/20260518172812_52b52fb1-15af-4387-aed5-98bf813bea0f.sql",
+              "hits": 1
+            },
+            {
               "file": "supabase/migrations/20260711182305_235d2c5d-ac26-468a-88df-339dbccf4c61.sql",
               "hits": 1
             },
@@ -75253,7 +75357,7 @@
               "hits": 1
             }
           ],
-          "code_total_files": 2,
+          "code_total_files": 3,
           "cron": [
             "9:daily-log-cleanup"
           ],
@@ -75288,6 +75392,10 @@
         "callers": {
           "code": [
             {
+              "file": "supabase/migrations/20260518172812_52b52fb1-15af-4387-aed5-98bf813bea0f.sql",
+              "hits": 1
+            },
+            {
               "file": "supabase/migrations/20260711182522_70a54a27-3f2e-42ea-8ff2-71bd1b76dc2b.sql",
               "hits": 1
             },
@@ -75300,7 +75408,7 @@
               "hits": 1
             }
           ],
-          "code_total_files": 3,
+          "code_total_files": 4,
           "cron": [],
           "db": [],
           "triggers": [],
@@ -75406,7 +75514,7 @@
             },
             {
               "file": "supabase/migrations/20260825110000_reconciliar_schema_v3_completo.sql",
-              "hits": 1
+              "hits": 2
             },
             {
               "file": "supabase/migrations/20260826050000_revoke_execute_authenticated_e09.sql",
@@ -75802,7 +75910,7 @@
             },
             {
               "file": "supabase/migrations/20260825110000_reconciliar_schema_v3_completo.sql",
-              "hits": 1
+              "hits": 2
             },
             {
               "file": "supabase/migrations/20260826050000_revoke_execute_authenticated_e09.sql",

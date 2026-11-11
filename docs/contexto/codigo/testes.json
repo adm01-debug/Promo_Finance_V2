@@ -5,16 +5,16 @@
   "vitest",
   "playwright"
  ],
- "total": 372,
+ "total": 373,
  "por_tipo": {
   "e2e": 35,
   "pytest": 15,
-  "unit": 316
+  "unit": 317
  },
  "onde_ficam": [
   {
    "padrao": "co-localizado (__tests__)",
-   "arquivos": 239
+   "arquivos": 240
   },
   {
    "padrao": "outro",
@@ -654,6 +654,16 @@
    "linhas": 51,
    "testa": [
     "src/components/common/StartupDiagnostic.tsx"
+   ],
+   "casos": 2
+  },
+  {
+   "arquivo": "src/components/conciliacao/__tests__/ConciliacaoManualDialog.test.tsx",
+   "tipo": "unit",
+   "linhas": 109,
+   "testa": [
+    "src/components/conciliacao/ConciliacaoManualDialog.tsx",
+    "src/lib/transaction-matcher.ts"
    ],
    "casos": 2
   },
@@ -3351,6 +3361,7 @@
   "src/components/cobranca/ReguaCobrancaConfig.tsx": 1,
   "src/components/command-palette/commandPaletteManagement.ts": 1,
   "src/components/common/StartupDiagnostic.tsx": 1,
+  "src/components/conciliacao/ConciliacaoManualDialog.tsx": 1,
   "src/components/contabilidade/ValidacoesPreSpedDialog.tsx": 1,
   "src/components/contabilidade/indices/IndicesGrid.tsx": 1,
   "src/components/contabilidade/indices/IndicesToolbar.tsx": 1,
@@ -3494,7 +3505,7 @@
   "src/lib/storage-path.ts": 1,
   "src/lib/supabase-write.ts": 1,
   "src/lib/telemetry.ts": 1,
-  "src/lib/transaction-matcher.ts": 5,
+  "src/lib/transaction-matcher.ts": 6,
   "src/lib/transaction-matcher/converters.ts": 1,
   "src/lib/tributario/aliquotas-simples.ts": 8,
   "src/lib/tributario/calculadora/atividade-cnae.ts": 1,

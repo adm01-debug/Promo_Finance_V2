@@ -2,6 +2,10 @@
 
 Diff semântico gerado a cada coleta em que algo mudou.
 
+## 2026-11-11 17:07 UTC
+
+- **functions** alterado (29): `public.cleanup_expired_tokens()`, `public.cleanup_old_cron_logs()`, `public.cleanup_old_login_attempts()`, `public.clear_login_attempts(p_email text)`, `public.empresa_acessivel(_empresa_id uuid)`, `public.fn_norm_conta_codigo(p_codigo text)`, `public.gerar_numero_acordo()`, `public.get_bloat_history(p_days integer)`, `public.get_catalogos_tributarios_health()`, `public.get_cron_jobs()`, `public.get_cron_run_history(p_job_name text, p_limit integer)`, `public.get_performance_alerts_weekly(p_weeks integer)`, `public.get_retencoes_pendentes_count(p_empresa_id uuid)`, `public.get_retention_history(p_days integer)`, `public.get_table_bloat()`, `public.get_user_permissions(user_id uuid)`, `public.get_user_roles(user_id uuid)`, `public.has_role(_user_id uuid, _role app_role)`, `public.invalidate_old_tokens()`, `public.log_sso_onboarding_event(_email text, _event_type text, _provider_id text, _context jsonb, _success boolean, _error_code text, _error_message text)`, `public.registrar_auditoria_config(_tipo_acao text, _empresa_id uuid, _detalhes jsonb)`, `public.registrar_evento_pagar(p_conta_id uuid, p_tipo text, p_mensagem text, p_metadata jsonb)`, `public.registrar_evento_receber(p_conta_id uuid, p_evento text, p_detalhes jsonb)`, `public.registrar_evento_receber(p_conta_id uuid, p_evento text, p_detalhes jsonb, p_tipo text, p_mensagem text, p_metadata jsonb)`, `public.resolve_sso_providers_for_domain(p_domain text)`, `public.run_daily_cleanup()`, `public.run_daily_cleanup_with_logging()`, `public.sanitize_auth_log_metadata()`, `public.set_token_expiration()`
+
 ## 2026-11-11 16:59 UTC
 
 - **functions** alterado (1): `public.empresa_acessivel(_empresa_id uuid)`

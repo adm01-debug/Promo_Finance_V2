@@ -1,7 +1,7 @@
 # Contexto do projeto para agentes de IA
 
 GERADO AUTOMATICAMENTE por scripts/ai-context/gerar.mjs — não editar à mão; será sobrescrito.
-Publicado pelo workflow .github/workflows/contexto.yml em docs/contexto/codigo/ da branch gerada `contexto`. Índice único em docs/contexto/00-INDEX.md. Ler: git fetch origin contexto && git show origin/contexto:docs/contexto/00-INDEX.md Gere local com `node scripts/ai-context/gerar.mjs`. Commit-base: `e361b018aafd8c77ab0949b1209b7b0171d92660` (2026-11-11T16:06:30Z).
+Publicado pelo workflow .github/workflows/contexto.yml em docs/contexto/codigo/ da branch gerada `contexto`. Índice único em docs/contexto/00-INDEX.md. Ler: git fetch origin contexto && git show origin/contexto:docs/contexto/00-INDEX.md Gere local com `node scripts/ai-context/gerar.mjs`. Commit-base: `85d018cc59951622b29dba2da297244f8fa6eb62` (2026-11-11T13:49:51-03:00).
 
 ## Como usar (leia antes de planejar ou executar qualquer tarefa)
 1. **Tela/rota/menu** → `rotas.json` (url/vista/menu → arquivo → hooks → tabelas → edges; `rotas_http_backend` para APIs) e `modulos.json` (módulo inteiro + dependências entre módulos).
@@ -14,7 +14,7 @@ Publicado pelo workflow .github/workflows/contexto.yml em docs/contexto/codigo/ 
 Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua tarefa; não carregue tudo.
 
 ## Stack
-- linguagens: TypeScript (2104), SQL (1017), Markdown (189), JavaScript (57), JSON (37), Python (28), YAML (25), Shell (24)
+- linguagens: TypeScript (2105), SQL (1069), Markdown (189), JavaScript (57), JSON (37), Python (28), YAML (25), Shell (24)
 - linguagem_principal: TypeScript
 - framework: React
 - backend_http: n/d
@@ -34,9 +34,9 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 ## Números
 | item | qtd |
 |---|---|
-| arquivos_total | 3525 |
-| arquivos_codigo | 2187 |
-| linhas_codigo | 410281 |
+| arquivos_total | 3579 |
+| arquivos_codigo | 2188 |
+| linhas_codigo | 410390 |
 | rotas | 128 |
 | rotas_http_backend | 12 |
 | vistas_por_id | 0 |
@@ -45,10 +45,10 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 | componentes | 908 |
 | hooks | 265 |
 | edge_functions | 106 |
-| tabelas | 314 |
-| migrations | 947 |
+| tabelas | 315 |
+| migrations | 999 |
 | cron_jobs | 21 |
-| testes | 372 |
+| testes | 373 |
 | workflows | 19 |
 | scripts | 104 |
 | docs_md | 189 |
@@ -58,12 +58,12 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 - componentes: src/components (730), src/pages (174), src/hooks (2)
 - hooks: src/hooks (228), src/components (27), src/pages (5)
 - servicos_logica: src/lib (254), scripts/graphify (7), src/integrations (3)
-- testes: co-localizado (__tests__) (239), outro (53), co-localizado (*.test) (40)
+- testes: co-localizado (__tests__) (240), outro (53), co-localizado (*.test) (40)
 - edge_functions: supabase/functions
 - migrations: supabase/migrations
 - scripts: scripts/integrity (17), scripts/security (16), scripts/ci (13)
 - docs: docs (48), (raiz) (19), .github (2)
-- nomenclatura: {"componentes":"PascalCase (90%)","hooks":"use + PascalCase","servicos":"camelCase (52%)","edge_functions":"kebab-case (99%)","tabelas":"snake_case (91%)"}
+- nomenclatura: {"componentes":"PascalCase (90%)","hooks":"use + PascalCase","servicos":"camelCase (52%)","edge_functions":"kebab-case (99%)","tabelas":"snake_case (90%)"}
 - instruções para agentes no repo: .claude/CLAUDE.md, .github/copilot-instructions.md, AGENTS.md, CLAUDE.md
 
 ## Módulos (menu → domínio)
@@ -417,7 +417,7 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 
 ## Permissões / papéis
 - papéis no código: user (24), system (19), alert (15), admin (14), status (13), assistant (5), region (5), AMBOS (4), ORIGEM (4), dialog (4), img (4), list (4), progressbar (4), DESTINO (3), financeiro (3), presentation (3), RESPONSAVEL (2), anon (2), combobox (2), contador_readonly (2), group (2), separator (2), visualizador (2), MEMBRO (1), agent (1), authenticated (1), button (1), checkbox (1), editor (1), link (1), listitem (1), note (1), operacional (1), radiogroup (1), root (1), sup (1), tool (1), treeitem (1)
-- enums de papel: app_role: admin|financeiro|operacional|visualizador|financeiro|operacional|visualizador|financeiro|operacional|visualizador|contador; org_papel: RESPONSAVEL|ADMIN|MEMBRO|LEITOR
+- enums de papel: app_role: admin|financeiro|operacional|visualizador|financeiro|operacional|visualizador|financeiro|operacional|visualizador|contador|viewer|manager|operator|viewer; org_papel: RESPONSAVEL|ADMIN|MEMBRO|LEITOR
 - guards: src/components/auth/EmpresaGuard.tsx, src/components/auth/ProtectedRoute.tsx, src/components/navigation/UnsavedGuardProvider.tsx · rotas protegidas: 119 · públicas: /__especimes, /*, /auth/corporate, /contador/:token, /convite/:token, /design-system-debug, /reset-password, /status, /theme-diagnostics
 - feature flags: ENABLE_AUTHENTICATED_VISUAL_SNAPSHOTS, ENABLE_PRODUCTION_SIMULATION_AUDIT, FEATURE_X, nova-tela, novo-inbox
 
@@ -429,7 +429,7 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 - edges_chamadas_sem_pasta: 0
 - tabelas_sem_rls: 0
 - tabelas_usadas_sem_definicao: 2 — ex.: companies, relatorios_tributarios
-- tabelas_com_drift_migration_vs_types: 132 — ex.: acoes_recomendadas, alert_configurations, alertas_preditivos
+- tabelas_com_drift_migration_vs_types: 135 — ex.: acoes_recomendadas, alertas_preditivos, alertas_tributarios
 - rpcs_sem_definicao: 3 — ex.: exec_sql, get_cron_run_history, pg_try_advisory_lock
 - componentes_orfaos: 44 — ex.: src/components/admin/FiscalHealthBadge.tsx, src/components/admin/telemetry/AcessosSuspeitosPanel.tsx, src/components/admin/telemetry/CatalogosTributariosHealthPanel.tsx
 - componentes_com_nome_duplicado: 30 — ex.: Accordion, AccordionItem, AnimatedCounter
@@ -606,6 +606,7 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 - CHANGELOG topo: [Unreleased]
 
 ## Últimos commits
+- 2026-11-11 `85d018c` fix: shims para Supabase Preview — drop get_cron_jobs() antes de mudanças de return type (#131)
 - 2026-11-11 `e361b01` chore(migrations): [STEP 22] reconciliar migrations não rastreadas (#238)
 - 2026-11-11 `62bd983` chore(db): [STEP 17] dropar 404 índices idle (idx_scan=0) (#243)
 - 2026-11-10 `8f43c3f` chore: [STEP 43] espacar cron jobs diagnosticos de alta frequencia (#234)
@@ -620,7 +621,6 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 - 2026-11-09 `9c94d00` fix: bump input-otp from 1.4.2 to 1.5.0 (#295)
 - 2026-11-09 `e07fec7` chore: documentação final sessão merge-prs (prs.json + RELATORIO + dossiers)
 - 2026-11-09 `529236d` fix: compatibilidade TypeScript com Zod v4 (supersede #211)
-- 2026-11-09 `8ec6561` infra: bloqueia wipe de AGENTS.md e docs/agentes por sessão paralela (#263)
 
 ## Arquivos deste diretório
 - `docs/contexto/codigo/rotas.json`

@@ -8,12 +8,13 @@
   "supabase/migrations",
   "typeorm"
  ],
- "migrations": 947,
+ "migrations": 999,
  "seeds": [],
  "avisos": [
-  "169 bloco(s) com DDL dinâmico (EXECUTE format/...) não modelado — policies/colunas criadas dinamicamente podem faltar; confira no banco vivo"
+  "178 bloco(s) com DDL dinâmico (EXECUTE format/...) não modelado — policies/colunas criadas dinamicamente podem faltar; confira no banco vivo"
  ],
  "extensoes": [
+  "ignorado",
   "pg_cron",
   "pg_net",
   "pgcrypto",
@@ -24,6 +25,19 @@
    "insert",
    "update",
    "delete"
+  ],
+  "alert_severity": [
+   "INFO",
+   "WARNING",
+   "CRITICAL"
+  ],
+  "alert_type": [
+   "DRIVER_BLOCKED",
+   "ROUTE_DEVIATION",
+   "DRIVER_STOPPED",
+   "LATE_DELIVERY",
+   "APPROVAL_REQUIRED",
+   "ORDER_CANCELLED"
   ],
   "app_role": [
    "admin",
@@ -36,7 +50,11 @@
    "financeiro",
    "operacional",
    "visualizador",
-   "contador"
+   "contador",
+   "viewer",
+   "manager",
+   "operator",
+   "viewer"
   ],
   "atividade_economica": [
    "INDUSTRIA",
@@ -52,7 +70,8 @@
    "LOGOUT",
    "EXPORT",
    "APPROVE",
-   "REJECT"
+   "REJECT",
+   "revoke_execute_anon"
   ],
   "etapa_cobranca": [
    "preventiva",
@@ -315,7 +334,10 @@
   "check_nfe_xml_path_invariants",
   "claim_frontend_error_alerts",
   "claim_silenciamentos_digest",
+  "cleanup_expired_tokens",
   "cleanup_log_tables",
+  "cleanup_old_cron_logs",
+  "cleanup_old_login_attempts",
   "cleanup_pgss_baseline",
   "cleanup_rpc_observability_metrics",
   "clear_login_attempts",
@@ -325,6 +347,7 @@
   "confirmar_conciliacao_manual",
   "confirmar_envio_cobranca",
   "create_default_categories_for_user",
+  "cron",
   "definir_empresa_padrao",
   "delete_cron_job",
   "desfazer_conciliacao",
@@ -486,6 +509,8 @@
   "reset_failed_attempts",
   "resolve_integrity_alert",
   "resolve_sso_providers_for_domain",
+  "run_daily_cleanup",
+  "run_daily_cleanup_with_logging",
   "run_integrity_cycle",
   "run_observability_rpc",
   "sefaz_cursor_advance",
@@ -3407,7 +3432,8 @@
    "fks": [
     "cliente_id->clientes",
     "created_by->auth",
-    "empresa_id->empresas"
+    "empresa_id->empresas",
+    "user_id->auth"
    ],
    "criada_em": "20251224131348_fe27fd87-b490-4b0c-b954-c10dbe4f56e4.sql",
    "colunas_types": {
@@ -3488,15 +3514,190 @@
   },
   "alert_configurations": {
    "colunas": {
+    "alert_type": {
+     "tipo": "public",
+     "nn": true,
+     "pk": false,
+     "default": null,
+     "ref": null
+    },
+    "bitrix24_user_ids": {
+     "tipo": "integer[]",
+     "nn": false,
+     "pk": false,
+     "default": null,
+     "ref": null
+    },
+    "channel": {
+     "tipo": "text",
+     "nn": true,
+     "pk": false,
+     "default": null,
+     "ref": null
+    },
+    "conditions": {
+     "tipo": "jsonb",
+     "nn": false,
+     "pk": false,
+     "default": null,
+     "ref": null
+    },
+    "config": {
+     "tipo": "jsonb",
+     "nn": false,
+     "pk": false,
+     "default": "'{}'",
+     "ref": null
+    },
+    "created_at": {
+     "tipo": "timestamptz",
+     "nn": true,
+     "pk": false,
+     "default": "now()",
+     "ref": null
+    },
+    "created_by": {
+     "tipo": "text",
+     "nn": false,
+     "pk": false,
+     "default": null,
+     "ref": null
+    },
+    "email_addresses": {
+     "tipo": "text[]",
+     "nn": false,
+     "pk": false,
+     "default": null,
+     "ref": null
+    },
     "empresa_id": {
      "tipo": "uuid",
      "nn": false,
      "pk": false,
      "default": null,
      "ref": null
+    },
+    "id": {
+     "tipo": "uuid",
+     "nn": false,
+     "pk": true,
+     "default": "gen_random_uuid()",
+     "ref": null
+    },
+    "is_enabled": {
+     "tipo": "boolean",
+     "nn": false,
+     "pk": false,
+     "default": "true",
+     "ref": null
+    },
+    "message_template": {
+     "tipo": "text",
+     "nn": false,
+     "pk": false,
+     "default": null,
+     "ref": null
+    },
+    "min_interval_seconds": {
+     "tipo": "integer",
+     "nn": false,
+     "pk": false,
+     "default": "300",
+     "ref": null
+    },
+    "n8n_webhook_url": {
+     "tipo": "text",
+     "nn": false,
+     "pk": false,
+     "default": null,
+     "ref": null
+    },
+    "name": {
+     "tipo": "text",
+     "nn": false,
+     "pk": false,
+     "default": null,
+     "ref": null
+    },
+    "notify_bitrix24_task": {
+     "tipo": "boolean",
+     "nn": false,
+     "pk": false,
+     "default": "false",
+     "ref": null
+    },
+    "notify_email": {
+     "tipo": "boolean",
+     "nn": false,
+     "pk": false,
+     "default": "false",
+     "ref": null
+    },
+    "notify_n8n_webhook": {
+     "tipo": "boolean",
+     "nn": false,
+     "pk": false,
+     "default": "false",
+     "ref": null
+    },
+    "notify_slack": {
+     "tipo": "boolean",
+     "nn": false,
+     "pk": false,
+     "default": "false",
+     "ref": null
+    },
+    "notify_sms": {
+     "tipo": "boolean",
+     "nn": false,
+     "pk": false,
+     "default": "false",
+     "ref": null
+    },
+    "notify_whatsapp": {
+     "tipo": "boolean",
+     "nn": false,
+     "pk": false,
+     "default": "false",
+     "ref": null
+    },
+    "recipients": {
+     "tipo": "text[]",
+     "nn": false,
+     "pk": false,
+     "default": "'{}'",
+     "ref": null
+    },
+    "slack_channels": {
+     "tipo": "text[]",
+     "nn": false,
+     "pk": false,
+     "default": null,
+     "ref": null
+    },
+    "sms_numbers": {
+     "tipo": "text[]",
+     "nn": false,
+     "pk": false,
+     "default": null,
+     "ref": null
+    },
+    "updated_at": {
+     "tipo": "timestamptz",
+     "nn": true,
+     "pk": false,
+     "default": "now()",
+     "ref": null
+    },
+    "whatsapp_numbers": {
+     "tipo": "text[]",
+     "nn": false,
+     "pk": false,
+     "default": null,
+     "ref": null
     }
    },
-   "rls": false,
+   "rls": true,
    "policies": [
     {
      "nome": "alert_configurations_tenant_delete",
@@ -3527,7 +3728,7 @@
    "fks": [
     "empresa_id->empresas"
    ],
-   "criada_em": null,
+   "criada_em": "20260712223141_stub-alerts-tables.sql",
    "colunas_types": {
     "alert_type": "Database['public']['Enums']['alert_type']",
     "bitrix24_user_ids": "number[] | null",
@@ -3558,33 +3759,7 @@
    },
    "drift": {
     "so_na_migration": [],
-    "so_no_types": [
-     "alert_type",
-     "bitrix24_user_ids",
-     "channel",
-     "conditions",
-     "config",
-     "created_at",
-     "created_by",
-     "email_addresses",
-     "id",
-     "is_enabled",
-     "message_template",
-     "min_interval_seconds",
-     "n8n_webhook_url",
-     "name",
-     "notify_bitrix24_task",
-     "notify_email",
-     "notify_n8n_webhook",
-     "notify_slack",
-     "notify_sms",
-     "notify_whatsapp",
-     "recipients",
-     "slack_channels",
-     "sms_numbers",
-     "updated_at",
-     "whatsapp_numbers"
-    ]
+    "so_no_types": []
    },
    "usada_no_front": 0,
    "usada_em_edges": [],
@@ -4260,15 +4435,92 @@
   },
   "alerts": {
    "colunas": {
+    "created_at": {
+     "tipo": "timestamptz",
+     "nn": true,
+     "pk": false,
+     "default": "now()",
+     "ref": null
+    },
+    "driver_id": {
+     "tipo": "uuid",
+     "nn": false,
+     "pk": false,
+     "default": null,
+     "ref": null
+    },
     "empresa_id": {
      "tipo": "uuid",
      "nn": false,
      "pk": false,
      "default": null,
      "ref": null
+    },
+    "id": {
+     "tipo": "uuid",
+     "nn": false,
+     "pk": true,
+     "default": "gen_random_uuid()",
+     "ref": null
+    },
+    "is_dismissed": {
+     "tipo": "boolean",
+     "nn": false,
+     "pk": false,
+     "default": "false",
+     "ref": null
+    },
+    "is_read": {
+     "tipo": "boolean",
+     "nn": false,
+     "pk": false,
+     "default": "false",
+     "ref": null
+    },
+    "message": {
+     "tipo": "text",
+     "nn": true,
+     "pk": false,
+     "default": null,
+     "ref": null
+    },
+    "metadata": {
+     "tipo": "jsonb",
+     "nn": false,
+     "pk": false,
+     "default": "'{}'",
+     "ref": null
+    },
+    "order_id": {
+     "tipo": "uuid",
+     "nn": false,
+     "pk": false,
+     "default": null,
+     "ref": null
+    },
+    "severity": {
+     "tipo": "public",
+     "nn": true,
+     "pk": false,
+     "default": "'INFO'",
+     "ref": null
+    },
+    "title": {
+     "tipo": "text",
+     "nn": true,
+     "pk": false,
+     "default": null,
+     "ref": null
+    },
+    "type": {
+     "tipo": "public",
+     "nn": true,
+     "pk": false,
+     "default": null,
+     "ref": null
     }
    },
-   "rls": false,
+   "rls": true,
    "policies": [
     {
      "nome": "alerts_tenant_delete",
@@ -4301,7 +4553,7 @@
     "empresa_id->empresas",
     "order_id->lalamove_orders"
    ],
-   "criada_em": null,
+   "criada_em": "20260712223141_stub-alerts-tables.sql",
    "colunas_types": {
     "created_at": "string",
     "driver_id": "string | null",
@@ -4318,19 +4570,7 @@
    },
    "drift": {
     "so_na_migration": [],
-    "so_no_types": [
-     "created_at",
-     "driver_id",
-     "id",
-     "is_dismissed",
-     "is_read",
-     "message",
-     "metadata",
-     "order_id",
-     "severity",
-     "title",
-     "type"
-    ]
+    "so_no_types": []
    },
    "usada_no_front": 0,
    "usada_em_edges": [],
@@ -4341,8 +4581,86 @@
    "nao_usada": true
   },
   "alerts_sent": {
-   "colunas": {},
-   "rls": false,
+   "colunas": {
+    "alert_id": {
+     "tipo": "uuid",
+     "nn": true,
+     "pk": false,
+     "default": null,
+     "ref": null
+    },
+    "channel": {
+     "tipo": "text",
+     "nn": true,
+     "pk": false,
+     "default": null,
+     "ref": null
+    },
+    "created_at": {
+     "tipo": "timestamp with time zone",
+     "nn": true,
+     "pk": false,
+     "default": "now()",
+     "ref": null
+    },
+    "delivered_at": {
+     "tipo": "timestamp with time zone",
+     "nn": false,
+     "pk": false,
+     "default": null,
+     "ref": null
+    },
+    "error_message": {
+     "tipo": "text",
+     "nn": false,
+     "pk": false,
+     "default": null,
+     "ref": null
+    },
+    "id": {
+     "tipo": "uuid",
+     "nn": true,
+     "pk": false,
+     "default": "gen_random_uuid()",
+     "ref": null
+    },
+    "metadata": {
+     "tipo": "jsonb",
+     "nn": false,
+     "pk": false,
+     "default": "'{}'::jsonb",
+     "ref": null
+    },
+    "recipient": {
+     "tipo": "text",
+     "nn": true,
+     "pk": false,
+     "default": null,
+     "ref": null
+    },
+    "retry_count": {
+     "tipo": "integer",
+     "nn": false,
+     "pk": false,
+     "default": "0",
+     "ref": null
+    },
+    "sent_at": {
+     "tipo": "timestamp with time zone",
+     "nn": false,
+     "pk": false,
+     "default": null,
+     "ref": null
+    },
+    "status": {
+     "tipo": "text",
+     "nn": true,
+     "pk": false,
+     "default": "'pending'::text",
+     "ref": null
+    }
+   },
+   "rls": true,
    "policies": [
     {
      "nome": "Admins can delete alerts sent",
@@ -4395,7 +4713,7 @@
    ],
    "indices": [],
    "fks": [],
-   "criada_em": null,
+   "criada_em": "20260825110000_reconciliar_schema_v3_completo.sql",
    "colunas_types": {
     "alert_id": "string",
     "channel": "string",
@@ -4408,6 +4726,10 @@
     "retry_count": "number | null",
     "sent_at": "string | null",
     "status": "string"
+   },
+   "drift": {
+    "so_na_migration": [],
+    "so_no_types": []
    },
    "usada_no_front": 0,
    "usada_em_edges": [],
@@ -5141,7 +5463,9 @@
     }
    ],
    "indices": [],
-   "fks": [],
+   "fks": [
+    "user_id->auth"
+   ],
    "criada_em": "20260317000749_a5a47522-0909-46d5-bc2e-1ee69a61a744.sql",
    "colunas_types": {
     "created_at": "string",
@@ -9486,7 +9810,7 @@
      "nn": false,
      "pk": false,
      "default": null,
-     "ref": null
+     "ref": "auth"
     },
     "usuario": {
      "tipo": "text",
@@ -9518,7 +9842,9 @@
      "unico": false
     }
    ],
-   "fks": [],
+   "fks": [
+    "user_id->auth"
+   ],
    "criada_em": "20260317000749_a5a47522-0909-46d5-bc2e-1ee69a61a744.sql",
    "colunas_types": {
     "created_at": "string",
@@ -9703,8 +10029,72 @@
    "nao_usada": false
   },
   "auth_logs": {
-   "colunas": {},
-   "rls": false,
+   "colunas": {
+    "created_at": {
+     "tipo": "timestamptz",
+     "nn": false,
+     "pk": false,
+     "default": "now()",
+     "ref": null
+    },
+    "event_type": {
+     "tipo": "text",
+     "nn": true,
+     "pk": false,
+     "default": null,
+     "ref": null
+    },
+    "failure_reason": {
+     "tipo": "text",
+     "nn": false,
+     "pk": false,
+     "default": null,
+     "ref": null
+    },
+    "id": {
+     "tipo": "uuid",
+     "nn": true,
+     "pk": false,
+     "default": "gen_random_uuid()",
+     "ref": null
+    },
+    "ip_address": {
+     "tipo": "inet",
+     "nn": false,
+     "pk": false,
+     "default": null,
+     "ref": null
+    },
+    "metadata": {
+     "tipo": "jsonb",
+     "nn": false,
+     "pk": false,
+     "default": "'{}'::jsonb",
+     "ref": null
+    },
+    "success": {
+     "tipo": "boolean",
+     "nn": false,
+     "pk": false,
+     "default": "true",
+     "ref": null
+    },
+    "user_agent": {
+     "tipo": "text",
+     "nn": false,
+     "pk": false,
+     "default": null,
+     "ref": null
+    },
+    "user_id": {
+     "tipo": "uuid",
+     "nn": false,
+     "pk": false,
+     "default": null,
+     "ref": null
+    }
+   },
+   "rls": true,
    "policies": [
     {
      "nome": "Admins can view all auth logs",
@@ -9727,7 +10117,7 @@
    ],
    "indices": [],
    "fks": [],
-   "criada_em": null,
+   "criada_em": "20260711145610_create-auth-logs-stub.sql",
    "colunas_types": {
     "created_at": "string | null",
     "event_type": "string",
@@ -9738,6 +10128,10 @@
     "success": "boolean | null",
     "user_agent": "string | null",
     "user_id": "string | null"
+   },
+   "drift": {
+    "so_na_migration": [],
+    "so_no_types": []
    },
    "usada_no_front": 0,
    "usada_em_edges": [
@@ -10065,7 +10459,36 @@
    "nao_usada": false
   },
   "bitrix24_activities": {
-   "colunas": {},
+   "colunas": {
+    "activity_type": {
+     "tipo": "text",
+     "nn": false,
+     "pk": false,
+     "default": null,
+     "ref": null
+    },
+    "created_at": {
+     "tipo": "timestamp with time zone",
+     "nn": true,
+     "pk": false,
+     "default": "now()",
+     "ref": null
+    },
+    "id": {
+     "tipo": "uuid",
+     "nn": true,
+     "pk": false,
+     "default": "gen_random_uuid()",
+     "ref": null
+    },
+    "order_id": {
+     "tipo": "uuid",
+     "nn": false,
+     "pk": false,
+     "default": null,
+     "ref": null
+    }
+   },
    "rls": true,
    "policies": [
     {
@@ -10121,7 +10544,7 @@
    "fks": [
     "order_id->lalamove_orders"
    ],
-   "criada_em": null,
+   "criada_em": "20260825110000_reconciliar_schema_v3_completo.sql",
    "colunas_types": {
     "activity_id": "number",
     "activity_type": "string",
@@ -10131,6 +10554,14 @@
     "order_id": "string | null",
     "subject": "string"
    },
+   "drift": {
+    "so_na_migration": [],
+    "so_no_types": [
+     "activity_id",
+     "deal_id",
+     "subject"
+    ]
+   },
    "usada_no_front": 0,
    "usada_em_edges": [],
    "triggers": [],
@@ -10139,6 +10570,27 @@
   },
   "bitrix24_stage_mappings": {
    "colunas": {
+    "created_at": {
+     "tipo": "timestamp with time zone",
+     "nn": true,
+     "pk": false,
+     "default": "now()",
+     "ref": null
+    },
+    "empresa_id": {
+     "tipo": "uuid",
+     "nn": false,
+     "pk": false,
+     "default": null,
+     "ref": null
+    },
+    "id": {
+     "tipo": "uuid",
+     "nn": true,
+     "pk": false,
+     "default": "gen_random_uuid()",
+     "ref": null
+    },
     "lalamove_status": {
      "tipo": "text",
      "nn": true,
@@ -10147,7 +10599,7 @@
      "ref": null
     }
    },
-   "rls": false,
+   "rls": true,
    "policies": [
     {
      "nome": "Admins can delete stage mappings",
@@ -10176,7 +10628,7 @@
    ],
    "indices": [],
    "fks": [],
-   "criada_em": null,
+   "criada_em": "20260825110000_reconciliar_schema_v3_completo.sql",
    "colunas_types": {
     "bitrix_stage_id": "string",
     "bitrix_stage_name": "string | null",
@@ -10185,12 +10637,12 @@
     "lalamove_status": "string"
    },
    "drift": {
-    "so_na_migration": [],
+    "so_na_migration": [
+     "empresa_id"
+    ],
     "so_no_types": [
      "bitrix_stage_id",
-     "bitrix_stage_name",
-     "created_at",
-     "id"
+     "bitrix_stage_name"
     ]
    },
    "usada_no_front": 0,
@@ -10224,8 +10676,58 @@
    "nao_usada": true
   },
   "bitrix24_tokens": {
-   "colunas": {},
-   "rls": false,
+   "colunas": {
+    "access_token": {
+     "tipo": "text",
+     "nn": true,
+     "pk": false,
+     "default": null,
+     "ref": null
+    },
+    "created_at": {
+     "tipo": "timestamp with time zone",
+     "nn": true,
+     "pk": false,
+     "default": "now()",
+     "ref": null
+    },
+    "domain": {
+     "tipo": "text",
+     "nn": true,
+     "pk": false,
+     "default": null,
+     "ref": null
+    },
+    "expires_at": {
+     "tipo": "timestamp with time zone",
+     "nn": true,
+     "pk": false,
+     "default": null,
+     "ref": null
+    },
+    "id": {
+     "tipo": "uuid",
+     "nn": true,
+     "pk": false,
+     "default": "gen_random_uuid()",
+     "ref": null
+    },
+    "refresh_token": {
+     "tipo": "text",
+     "nn": true,
+     "pk": false,
+     "default": null,
+     "ref": null
+    },
+    "updated_at": {
+     "tipo": "timestamp with time zone",
+     "nn": true,
+     "pk": false,
+     "default": "now()",
+     "ref": null
+    }
+   },
+   "rls": true,
    "policies": [
     {
      "nome": "Admins can delete tokens",
@@ -10254,7 +10756,7 @@
    ],
    "indices": [],
    "fks": [],
-   "criada_em": null,
+   "criada_em": "20260825110000_reconciliar_schema_v3_completo.sql",
    "colunas_types": {
     "access_token": "string",
     "created_at": "string",
@@ -10263,6 +10765,10 @@
     "id": "string",
     "refresh_token": "string",
     "updated_at": "string"
+   },
+   "drift": {
+    "so_na_migration": [],
+    "so_no_types": []
    },
    "usada_no_front": 0,
    "usada_em_edges": [],
@@ -11995,7 +12501,8 @@
     "conta_receber_id->contas_receber",
     "created_by->auth",
     "empresa_id->empresas",
-    "transacao_conciliada_id->transacoes_bancarias"
+    "transacao_conciliada_id->transacoes_bancarias",
+    "user_id->auth"
    ],
    "criada_em": "20251214202322_c2c8f197-ca41-4b7a-bc54-9b03076d0d5c.sql",
    "colunas_types": {
@@ -12673,7 +13180,7 @@
      "nn": false,
      "pk": false,
      "default": null,
-     "ref": null
+     "ref": "empresas"
     },
     "id": {
      "tipo": "uuid",
@@ -12756,6 +13263,7 @@
    ],
    "indices": [],
    "fks": [
+    "empresa_id->empresas",
     "parent_id->centros_custo",
     "user_id->auth"
    ],
@@ -13942,7 +14450,8 @@
    "indices": [],
    "fks": [
     "conta_bancaria_id->contas_bancarias",
-    "empresa_id->empresas"
+    "empresa_id->empresas",
+    "user_id->auth"
    ],
    "criada_em": "20260317000749_a5a47522-0909-46d5-bc2e-1ee69a61a744.sql",
    "colunas_types": {
@@ -14126,7 +14635,7 @@
      "nn": false,
      "pk": false,
      "default": null,
-     "ref": "empresas"
+     "ref": null
     },
     "id": {
      "tipo": "uuid",
@@ -17134,9 +17643,213 @@
    "sem_rls": false,
    "nao_usada": false
   },
-  "cron_job_logs": {
-   "colunas": {},
+  "cron.job": {
+   "colunas": {
+    "active": {
+     "tipo": "boolean",
+     "nn": false,
+     "pk": false,
+     "default": "true",
+     "ref": null
+    },
+    "command": {
+     "tipo": "text",
+     "nn": false,
+     "pk": false,
+     "default": null,
+     "ref": null
+    },
+    "database": {
+     "tipo": "text",
+     "nn": false,
+     "pk": false,
+     "default": "current_database()",
+     "ref": null
+    },
+    "jobid": {
+     "tipo": "bigserial",
+     "nn": false,
+     "pk": true,
+     "default": null,
+     "ref": null
+    },
+    "jobname": {
+     "tipo": "text",
+     "nn": false,
+     "pk": false,
+     "default": null,
+     "ref": null
+    },
+    "nodename": {
+     "tipo": "text",
+     "nn": false,
+     "pk": false,
+     "default": "''::text",
+     "ref": null
+    },
+    "nodeport": {
+     "tipo": "integer",
+     "nn": false,
+     "pk": false,
+     "default": "5432",
+     "ref": null
+    },
+    "schedule": {
+     "tipo": "text",
+     "nn": false,
+     "pk": false,
+     "default": null,
+     "ref": null
+    },
+    "username": {
+     "tipo": "text",
+     "nn": false,
+     "pk": false,
+     "default": "current_user",
+     "ref": null
+    }
+   },
    "rls": false,
+   "policies": [],
+   "indices": [],
+   "fks": [],
+   "criada_em": "20260711192250_pg-cron-stub-before-192251.sql",
+   "usada_no_front": 0,
+   "usada_em_edges": [],
+   "triggers": [],
+   "sem_rls": false,
+   "nao_usada": true
+  },
+  "cron.job_run_details": {
+   "colunas": {
+    "command": {
+     "tipo": "text",
+     "nn": false,
+     "pk": false,
+     "default": null,
+     "ref": null
+    },
+    "database": {
+     "tipo": "text",
+     "nn": false,
+     "pk": false,
+     "default": null,
+     "ref": null
+    },
+    "end_time": {
+     "tipo": "timestamptz",
+     "nn": false,
+     "pk": false,
+     "default": null,
+     "ref": null
+    },
+    "job_pid": {
+     "tipo": "integer",
+     "nn": false,
+     "pk": false,
+     "default": null,
+     "ref": null
+    },
+    "jobid": {
+     "tipo": "bigint",
+     "nn": false,
+     "pk": false,
+     "default": null,
+     "ref": null
+    },
+    "return_message": {
+     "tipo": "text",
+     "nn": false,
+     "pk": false,
+     "default": null,
+     "ref": null
+    },
+    "runid": {
+     "tipo": "bigint",
+     "nn": false,
+     "pk": true,
+     "default": null,
+     "ref": null
+    },
+    "start_time": {
+     "tipo": "timestamptz",
+     "nn": false,
+     "pk": false,
+     "default": null,
+     "ref": null
+    },
+    "status": {
+     "tipo": "text",
+     "nn": false,
+     "pk": false,
+     "default": null,
+     "ref": null
+    },
+    "username": {
+     "tipo": "text",
+     "nn": false,
+     "pk": false,
+     "default": null,
+     "ref": null
+    }
+   },
+   "rls": false,
+   "policies": [],
+   "indices": [],
+   "fks": [],
+   "criada_em": "20260711192250_pg-cron-stub-before-192251.sql",
+   "usada_no_front": 0,
+   "usada_em_edges": [],
+   "triggers": [],
+   "sem_rls": false,
+   "nao_usada": true
+  },
+  "cron_job_logs": {
+   "colunas": {
+    "error_message": {
+     "tipo": "text",
+     "nn": false,
+     "pk": false,
+     "default": null,
+     "ref": null
+    },
+    "finished_at": {
+     "tipo": "timestamp with time zone",
+     "nn": false,
+     "pk": false,
+     "default": null,
+     "ref": null
+    },
+    "id": {
+     "tipo": "uuid",
+     "nn": true,
+     "pk": false,
+     "default": "gen_random_uuid()",
+     "ref": null
+    },
+    "job_name": {
+     "tipo": "text",
+     "nn": false,
+     "pk": false,
+     "default": null,
+     "ref": null
+    },
+    "started_at": {
+     "tipo": "timestamp with time zone",
+     "nn": true,
+     "pk": false,
+     "default": "now()",
+     "ref": null
+    },
+    "status": {
+     "tipo": "text",
+     "nn": false,
+     "pk": false,
+     "default": null,
+     "ref": null
+    }
+   },
+   "rls": true,
    "policies": [
     {
      "nome": "Admins can view cron logs",
@@ -17147,7 +17860,7 @@
    ],
    "indices": [],
    "fks": [],
-   "criada_em": null,
+   "criada_em": "20260825110000_reconciliar_schema_v3_completo.sql",
    "colunas_types": {
     "completed_at": "string | null",
     "created_at": "string",
@@ -17158,6 +17871,21 @@
     "job_name": "string",
     "result": "Json | null",
     "success": "boolean | null"
+   },
+   "drift": {
+    "so_na_migration": [
+     "status",
+     "started_at",
+     "finished_at"
+    ],
+    "so_no_types": [
+     "completed_at",
+     "created_at",
+     "duration_ms",
+     "executed_at",
+     "result",
+     "success"
+    ]
    },
    "usada_no_front": 0,
    "usada_em_edges": [
@@ -17381,7 +18109,7 @@
      "nn": false,
      "pk": false,
      "default": null,
-     "ref": "alertas_tributarios"
+     "ref": null
     },
     "codigo_barras": {
      "tipo": "text",
@@ -19418,8 +20146,44 @@
    "nao_usada": false
   },
   "email_verifications": {
-   "colunas": {},
-   "rls": false,
+   "colunas": {
+    "created_at": {
+     "tipo": "timestamp with time zone",
+     "nn": true,
+     "pk": false,
+     "default": "now()",
+     "ref": null
+    },
+    "id": {
+     "tipo": "uuid",
+     "nn": true,
+     "pk": false,
+     "default": "gen_random_uuid()",
+     "ref": null
+    },
+    "token": {
+     "tipo": "text",
+     "nn": false,
+     "pk": false,
+     "default": null,
+     "ref": null
+    },
+    "user_id": {
+     "tipo": "uuid",
+     "nn": true,
+     "pk": false,
+     "default": null,
+     "ref": null
+    },
+    "verified_at": {
+     "tipo": "timestamp with time zone",
+     "nn": false,
+     "pk": false,
+     "default": null,
+     "ref": null
+    }
+   },
+   "rls": true,
    "policies": [
     {
      "nome": "Admins can delete verifications",
@@ -19448,7 +20212,7 @@
    ],
    "indices": [],
    "fks": [],
-   "criada_em": null,
+   "criada_em": "20260825110000_reconciliar_schema_v3_completo.sql",
    "colunas_types": {
     "created_at": "string | null",
     "email": "string",
@@ -19457,6 +20221,16 @@
     "token_hash": "string",
     "user_id": "string",
     "verified_at": "string | null"
+   },
+   "drift": {
+    "so_na_migration": [
+     "token"
+    ],
+    "so_no_types": [
+     "email",
+     "expires_at",
+     "token_hash"
+    ]
    },
    "usada_no_front": 0,
    "usada_em_edges": [],
@@ -19705,7 +20479,9 @@
      "unico": true
     }
    ],
-   "fks": [],
+   "fks": [
+    "user_id->auth"
+   ],
    "criada_em": "20251214170739_b7e0e8b0-39a4-42c5-844e-0a57a5e3916d.sql",
    "colunas_types": {
     "aliquota_rat": "number | null",
@@ -20326,117 +21102,12 @@
    "nao_usada": true
   },
   "estrategias_elisao_catalogo": {
-   "colunas": {
-    "aplicavel_a": {
-     "tipo": "text[]",
-     "nn": true,
-     "pk": false,
-     "default": "'{}'",
-     "ref": null
-    },
-    "ativo": {
-     "tipo": "boolean",
-     "nn": true,
-     "pk": false,
-     "default": "true",
-     "ref": null
-    },
-    "base_legal": {
-     "tipo": "text",
-     "nn": true,
-     "pk": false,
-     "default": null,
-     "ref": null
-    },
-    "codigo": {
-     "tipo": "text",
-     "nn": true,
-     "pk": false,
-     "default": null,
-     "ref": null
-    },
-    "created_at": {
-     "tipo": "timestamptz",
-     "nn": true,
-     "pk": false,
-     "default": "now()",
-     "ref": null
-    },
-    "descricao": {
-     "tipo": "text",
-     "nn": true,
-     "pk": false,
-     "default": null,
-     "ref": null
-    },
-    "economia_potencial_max": {
-     "tipo": "numeric",
-     "nn": false,
-     "pk": false,
-     "default": null,
-     "ref": null
-    },
-    "economia_potencial_min": {
-     "tipo": "numeric",
-     "nn": false,
-     "pk": false,
-     "default": null,
-     "ref": null
-    },
-    "id": {
-     "tipo": "uuid",
-     "nn": false,
-     "pk": true,
-     "default": "gen_random_uuid()",
-     "ref": null
-    },
-    "nome": {
-     "tipo": "text",
-     "nn": true,
-     "pk": false,
-     "default": null,
-     "ref": null
-    },
-    "requisitos": {
-     "tipo": "jsonb",
-     "nn": true,
-     "pk": false,
-     "default": "'{}'::jsonb",
-     "ref": null
-    },
-    "risco": {
-     "tipo": "text",
-     "nn": true,
-     "pk": false,
-     "default": null,
-     "ref": null
-    },
-    "updated_at": {
-     "tipo": "timestamptz",
-     "nn": true,
-     "pk": false,
-     "default": "now()",
-     "ref": null
-    }
-   },
-   "rls": true,
-   "policies": [
-    {
-     "nome": "Admins gerenciam catálogo elisão",
-     "comando": "all",
-     "para": "authenticated",
-     "tipo": "permissive"
-    },
-    {
-     "nome": "Catálogo elisão visível para autenticados",
-     "comando": "select",
-     "para": "authenticated",
-     "tipo": "permissive"
-    }
-   ],
+   "colunas": {},
+   "rls": false,
+   "policies": [],
    "indices": [],
    "fks": [],
-   "criada_em": "20260417155857_5c06caf2-e6b0-4ece-925b-519946ed2233.sql",
+   "criada_em": null,
    "usada_no_front": 1,
    "usada_em_edges": [],
    "triggers": [
@@ -20655,7 +21326,7 @@
      "nn": false,
      "pk": false,
      "default": null,
-     "ref": "verificacoes_conformidade"
+     "ref": null
     }
    },
    "rls": true,
@@ -20780,7 +21451,7 @@
      "nn": false,
      "pk": false,
      "default": null,
-     "ref": "empresas"
+     "ref": null
     },
     "entregue": {
      "tipo": "boolean",
@@ -20964,7 +21635,8 @@
     "cliente_id->clientes",
     "conta_receber_id->contas_receber",
     "empresa_id->empresas",
-    "fila_id->fila_cobrancas"
+    "fila_id->fila_cobrancas",
+    "user_id->auth"
    ],
    "criada_em": "20260317000817_da859349-1cb7-47b0-bfeb-9778ec6eb75b.sql",
    "colunas_types": {
@@ -21647,7 +22319,8 @@
    "fks": [
     "conta_bancaria_id->contas_bancarias",
     "empresa_id->empresas",
-    "transacao_bancaria_id->transacoes_bancarias"
+    "transacao_bancaria_id->transacoes_bancarias",
+    "user_id->auth"
    ],
    "criada_em": "20260317000749_a5a47522-0909-46d5-bc2e-1ee69a61a744.sql",
    "colunas_types": {
@@ -21693,100 +22366,6 @@
    ],
    "sem_rls": false,
    "nao_usada": false
-  },
-  "extratos_bancarios_importados": {
-   "colunas": {
-    "conta_bancaria_id": {
-     "tipo": "uuid",
-     "nn": true,
-     "pk": false,
-     "default": null,
-     "ref": "contas_bancarias"
-    },
-    "created_at": {
-     "tipo": "timestamp with time zone",
-     "nn": false,
-     "pk": false,
-     "default": "now()",
-     "ref": null
-    },
-    "created_by": {
-     "tipo": "uuid",
-     "nn": false,
-     "pk": false,
-     "default": null,
-     "ref": "auth"
-    },
-    "data_fim": {
-     "tipo": "date",
-     "nn": false,
-     "pk": false,
-     "default": null,
-     "ref": null
-    },
-    "data_inicio": {
-     "tipo": "date",
-     "nn": false,
-     "pk": false,
-     "default": null,
-     "ref": null
-    },
-    "hash_arquivo": {
-     "tipo": "text",
-     "nn": false,
-     "pk": false,
-     "default": null,
-     "ref": null
-    },
-    "id": {
-     "tipo": "uuid",
-     "nn": false,
-     "pk": true,
-     "default": "gen_random_uuid()",
-     "ref": null
-    },
-    "metadados": {
-     "tipo": "jsonb",
-     "nn": false,
-     "pk": false,
-     "default": "'{}'",
-     "ref": null
-    },
-    "nome_arquivo": {
-     "tipo": "text",
-     "nn": true,
-     "pk": false,
-     "default": null,
-     "ref": null
-    },
-    "total_transacoes": {
-     "tipo": "integer",
-     "nn": false,
-     "pk": false,
-     "default": null,
-     "ref": null
-    }
-   },
-   "rls": true,
-   "policies": [
-    {
-     "nome": "Users can view their bank imports",
-     "comando": "select",
-     "para": "public",
-     "tipo": "permissive"
-    }
-   ],
-   "indices": [],
-   "fks": [
-    "conta_bancaria_id->contas_bancarias",
-    "created_by->auth"
-   ],
-   "criada_em": "20260509114452_e9e75f8c-10ff-4a6e-b9d6-667c0a677641.sql",
-   "usada_no_front": 0,
-   "usada_em_edges": [],
-   "triggers": [],
-   "sem_rls": false,
-   "nao_usada": true
   },
   "faixas_simples_nacional": {
    "colunas": {
@@ -23215,10 +23794,10 @@
     },
     "empresa_id": {
      "tipo": "uuid",
-     "nn": true,
+     "nn": false,
      "pk": false,
      "default": null,
-     "ref": "empresas"
+     "ref": null
     },
     "icone": {
      "tipo": "text",
@@ -24635,8 +25214,79 @@
    "nao_usada": false
   },
   "geo_blocks": {
-   "colunas": {},
-   "rls": false,
+   "colunas": {
+    "block_type": {
+     "tipo": "text",
+     "nn": true,
+     "pk": false,
+     "default": "'full'::text",
+     "ref": null
+    },
+    "blocked_by": {
+     "tipo": "uuid",
+     "nn": false,
+     "pk": false,
+     "default": null,
+     "ref": null
+    },
+    "country_code": {
+     "tipo": "text",
+     "nn": true,
+     "pk": false,
+     "default": null,
+     "ref": null
+    },
+    "country_name": {
+     "tipo": "text",
+     "nn": true,
+     "pk": false,
+     "default": null,
+     "ref": null
+    },
+    "created_at": {
+     "tipo": "timestamp with time zone",
+     "nn": true,
+     "pk": false,
+     "default": "now()",
+     "ref": null
+    },
+    "expires_at": {
+     "tipo": "timestamp with time zone",
+     "nn": false,
+     "pk": false,
+     "default": null,
+     "ref": null
+    },
+    "id": {
+     "tipo": "uuid",
+     "nn": true,
+     "pk": false,
+     "default": "gen_random_uuid()",
+     "ref": null
+    },
+    "is_blocked": {
+     "tipo": "boolean",
+     "nn": true,
+     "pk": false,
+     "default": "true",
+     "ref": null
+    },
+    "reason": {
+     "tipo": "text",
+     "nn": false,
+     "pk": false,
+     "default": null,
+     "ref": null
+    },
+    "updated_at": {
+     "tipo": "timestamp with time zone",
+     "nn": true,
+     "pk": false,
+     "default": "now()",
+     "ref": null
+    }
+   },
+   "rls": true,
    "policies": [
     {
      "nome": "Admins can delete geo blocks",
@@ -24671,7 +25321,7 @@
    ],
    "indices": [],
    "fks": [],
-   "criada_em": null,
+   "criada_em": "20260825110000_reconciliar_schema_v3_completo.sql",
    "colunas_types": {
     "block_type": "string",
     "blocked_by": "string | null",
@@ -24683,6 +25333,10 @@
     "is_blocked": "boolean",
     "reason": "string | null",
     "updated_at": "string"
+   },
+   "drift": {
+    "so_na_migration": [],
+    "so_no_types": []
    },
    "usada_no_front": 0,
    "usada_em_edges": [],
@@ -25127,7 +25781,7 @@
      "nn": false,
      "pk": false,
      "default": null,
-     "ref": null
+     "ref": "auth"
     }
    },
    "rls": true,
@@ -25164,7 +25818,8 @@
     }
    ],
    "fks": [
-    "created_by->auth"
+    "created_by->auth",
+    "user_id->auth"
    ],
    "criada_em": "20251220134032_9ce91f24-94e8-4623-a345-c8bbe12835c1.sql",
    "colunas_types": {
@@ -25247,7 +25902,7 @@
      "nn": false,
      "pk": false,
      "default": null,
-     "ref": "empresas"
+     "ref": null
     },
     "etapa": {
      "tipo": "text",
@@ -25439,7 +26094,7 @@
      "nn": false,
      "pk": false,
      "default": null,
-     "ref": "empresas"
+     "ref": null
     },
     "entregue_em": {
      "tipo": "timestamp with time zone",
@@ -25627,7 +26282,7 @@
      "nn": false,
      "pk": false,
      "default": null,
-     "ref": null
+     "ref": "contas_receber"
     },
     "created_at": {
      "tipo": "timestamptz",
@@ -25676,7 +26331,7 @@
      "nn": false,
      "pk": false,
      "default": null,
-     "ref": null
+     "ref": "auth"
     }
    },
    "rls": true,
@@ -25702,7 +26357,9 @@
    ],
    "indices": [],
    "fks": [
-    "boleto_id->boletos"
+    "boleto_id->boletos",
+    "conta_receber_id->contas_receber",
+    "user_id->auth"
    ],
    "criada_em": "20260509114452_e9e75f8c-10ff-4a6e-b9d6-667c0a677641.sql",
    "colunas_types": {
@@ -25825,7 +26482,7 @@
      "nn": false,
      "pk": false,
      "default": null,
-     "ref": "sessoes_conciliacao"
+     "ref": null
     },
     "tipo_lancamento": {
      "tipo": "text",
@@ -26047,7 +26704,7 @@
      "nn": false,
      "pk": false,
      "default": null,
-     "ref": "empresas"
+     "ref": null
     },
     "id": {
      "tipo": "uuid",
@@ -26731,8 +27388,65 @@
    "nao_usada": false
   },
   "ip_whitelist": {
-   "colunas": {},
-   "rls": false,
+   "colunas": {
+    "added_by": {
+     "tipo": "uuid",
+     "nn": false,
+     "pk": false,
+     "default": null,
+     "ref": null
+    },
+    "cidr_range": {
+     "tipo": "text",
+     "nn": false,
+     "pk": false,
+     "default": null,
+     "ref": null
+    },
+    "created_at": {
+     "tipo": "timestamptz",
+     "nn": false,
+     "pk": false,
+     "default": "now()",
+     "ref": null
+    },
+    "description": {
+     "tipo": "text",
+     "nn": true,
+     "pk": false,
+     "default": "''",
+     "ref": null
+    },
+    "id": {
+     "tipo": "uuid",
+     "nn": true,
+     "pk": false,
+     "default": "gen_random_uuid()",
+     "ref": null
+    },
+    "ip_address": {
+     "tipo": "inet",
+     "nn": true,
+     "pk": false,
+     "default": null,
+     "ref": null
+    },
+    "is_active": {
+     "tipo": "boolean",
+     "nn": false,
+     "pk": false,
+     "default": "true",
+     "ref": null
+    },
+    "updated_at": {
+     "tipo": "timestamptz",
+     "nn": false,
+     "pk": false,
+     "default": "now()",
+     "ref": null
+    }
+   },
+   "rls": true,
    "policies": [
     {
      "nome": "Admins can delete whitelist",
@@ -26767,7 +27481,7 @@
    ],
    "indices": [],
    "fks": [],
-   "criada_em": null,
+   "criada_em": "20260711164723_create-security-tables-stub.sql",
    "colunas_types": {
     "added_by": "string | null",
     "cidr_range": "string | null",
@@ -26777,6 +27491,10 @@
     "ip_address": "unknown",
     "is_active": "boolean | null",
     "updated_at": "string | null"
+   },
+   "drift": {
+    "so_na_migration": [],
+    "so_no_types": []
    },
    "usada_no_front": 0,
    "usada_em_edges": [],
@@ -26933,7 +27651,7 @@
     },
     "pedido_id": {
      "tipo": "uuid",
-     "nn": true,
+     "nn": false,
      "pk": false,
      "default": null,
      "ref": "pedidos_compra"
@@ -27654,7 +28372,9 @@
      "unico": false
     }
    ],
-   "fks": [],
+   "fks": [
+    "user_id->auth"
+   ],
    "criada_em": "20260421123700_26d4bd4b-8ec6-422d-9f6b-0800a6b95659.sql",
    "colunas_types": {
     "competencia": "string | null",
@@ -27698,7 +28418,7 @@
    "colunas": {
     "attempt_count": {
      "tipo": "integer",
-     "nn": false,
+     "nn": true,
      "pk": false,
      "default": "1",
      "ref": null
@@ -27718,45 +28438,66 @@
      "ref": null
     },
     "created_at": {
-     "tipo": "timestamp with time zone",
+     "tipo": "timestamptz",
      "nn": true,
      "pk": false,
      "default": "now()",
      "ref": null
     },
+    "email": {
+     "tipo": "text",
+     "nn": true,
+     "pk": false,
+     "default": null,
+     "ref": null
+    },
     "first_attempt_at": {
-     "tipo": "timestamp with time zone",
-     "nn": false,
+     "tipo": "timestamptz",
+     "nn": true,
      "pk": false,
      "default": "now()",
      "ref": null
     },
     "id": {
      "tipo": "uuid",
-     "nn": false,
-     "pk": true,
+     "nn": true,
+     "pk": false,
      "default": "gen_random_uuid()",
      "ref": null
     },
     "ip_address": {
-     "tipo": "text",
+     "tipo": "inet",
+     "nn": false,
+     "pk": false,
+     "default": null,
+     "ref": null
+    },
+    "is_suspicious": {
+     "tipo": "boolean",
      "nn": false,
      "pk": false,
      "default": null,
      "ref": null
     },
     "last_attempt_at": {
-     "tipo": "timestamp with time zone",
-     "nn": false,
+     "tipo": "timestamptz",
+     "nn": true,
      "pk": false,
      "default": "now()",
+     "ref": null
+    },
+    "locked_until": {
+     "tipo": "timestamptz",
+     "nn": false,
+     "pk": false,
+     "default": null,
      "ref": null
     },
     "success": {
      "tipo": "boolean",
      "nn": false,
      "pk": false,
-     "default": "false",
+     "default": null,
      "ref": null
     },
     "user_agent": {
@@ -27845,11 +28586,7 @@
    },
    "drift": {
     "so_na_migration": [],
-    "so_no_types": [
-     "email",
-     "is_suspicious",
-     "locked_until"
-    ]
+    "so_no_types": []
    },
    "usada_no_front": 2,
    "usada_em_edges": [],
@@ -27988,7 +28725,8 @@
    "indices": [],
    "fks": [
     "created_by->auth",
-    "empresa_id->empresas"
+    "empresa_id->empresas",
+    "user_id->auth"
    ],
    "criada_em": "20260508114336_c960aea0-385e-4f66-863e-e47093fb9341.sql",
    "colunas_types": {
@@ -28175,7 +28913,8 @@
    ],
    "fks": [
     "conta_bancaria_id->contas_bancarias",
-    "created_by->auth"
+    "created_by->auth",
+    "user_id->auth"
    ],
    "criada_em": "20260508115859_fdb6b6f7-0ab1-4c36-b14b-9ce769d5bf1c.sql",
    "colunas_types": {
@@ -28245,7 +28984,7 @@
      "nn": false,
      "pk": false,
      "default": null,
-     "ref": "empresas"
+     "ref": null
     },
     "id": {
      "tipo": "uuid",
@@ -28363,8 +29102,51 @@
    "nao_usada": false
   },
   "mfa_sessions": {
-   "colunas": {},
-   "rls": false,
+   "colunas": {
+    "created_at": {
+     "tipo": "timestamp with time zone",
+     "nn": true,
+     "pk": false,
+     "default": "now()",
+     "ref": null
+    },
+    "expires_at": {
+     "tipo": "timestamp with time zone",
+     "nn": false,
+     "pk": false,
+     "default": null,
+     "ref": null
+    },
+    "id": {
+     "tipo": "uuid",
+     "nn": true,
+     "pk": false,
+     "default": "gen_random_uuid()",
+     "ref": null
+    },
+    "method": {
+     "tipo": "text",
+     "nn": false,
+     "pk": false,
+     "default": null,
+     "ref": null
+    },
+    "user_id": {
+     "tipo": "uuid",
+     "nn": true,
+     "pk": false,
+     "default": null,
+     "ref": null
+    },
+    "verified_at": {
+     "tipo": "timestamp with time zone",
+     "nn": false,
+     "pk": false,
+     "default": null,
+     "ref": null
+    }
+   },
+   "rls": true,
    "policies": [
     {
      "nome": "Users can delete their MFA sessions",
@@ -28393,7 +29175,7 @@
    ],
    "indices": [],
    "fks": [],
-   "criada_em": null,
+   "criada_em": "20260825110000_reconciliar_schema_v3_completo.sql",
    "colunas_types": {
     "created_at": "string | null",
     "expires_at": "string",
@@ -28404,6 +29186,17 @@
     "user_id": "string",
     "verified": "boolean | null",
     "verified_at": "string | null"
+   },
+   "drift": {
+    "so_na_migration": [
+     "method"
+    ],
+    "so_no_types": [
+     "factor_id",
+     "ip_address",
+     "user_agent",
+     "verified"
+    ]
    },
    "usada_no_front": 0,
    "usada_em_edges": [],
@@ -30226,7 +31019,7 @@
      "nn": false,
      "pk": false,
      "default": null,
-     "ref": "empresas"
+     "ref": null
     },
     "id": {
      "tipo": "uuid",
@@ -31521,7 +32314,7 @@
      "nn": false,
      "pk": false,
      "default": null,
-     "ref": "empresas"
+     "ref": null
     },
     "erro_mensagem": {
      "tipo": "text",
@@ -33288,8 +34081,58 @@
    "nao_usada": false
   },
   "password_reset_tokens": {
-   "colunas": {},
-   "rls": false,
+   "colunas": {
+    "created_at": {
+     "tipo": "timestamptz",
+     "nn": false,
+     "pk": false,
+     "default": "now()",
+     "ref": null
+    },
+    "expires_at": {
+     "tipo": "timestamptz",
+     "nn": true,
+     "pk": false,
+     "default": null,
+     "ref": null
+    },
+    "id": {
+     "tipo": "uuid",
+     "nn": true,
+     "pk": false,
+     "default": "gen_random_uuid()",
+     "ref": null
+    },
+    "ip_address": {
+     "tipo": "inet",
+     "nn": false,
+     "pk": false,
+     "default": null,
+     "ref": null
+    },
+    "token_hash": {
+     "tipo": "text",
+     "nn": true,
+     "pk": false,
+     "default": null,
+     "ref": null
+    },
+    "used_at": {
+     "tipo": "timestamptz",
+     "nn": false,
+     "pk": false,
+     "default": null,
+     "ref": null
+    },
+    "user_id": {
+     "tipo": "uuid",
+     "nn": true,
+     "pk": false,
+     "default": null,
+     "ref": null
+    }
+   },
+   "rls": true,
    "policies": [
     {
      "nome": "Admins can delete reset tokens",
@@ -33324,7 +34167,7 @@
     }
    ],
    "fks": [],
-   "criada_em": null,
+   "criada_em": "20260711164723_create-security-tables-stub.sql",
    "colunas_types": {
     "created_at": "string | null",
     "expires_at": "string",
@@ -33333,6 +34176,10 @@
     "token_hash": "string",
     "used_at": "string | null",
     "user_id": "string"
+   },
+   "drift": {
+    "so_na_migration": [],
+    "so_no_types": []
    },
    "usada_no_front": 0,
    "usada_em_edges": [],
@@ -35696,10 +36543,10 @@
     },
     "empresa_id": {
      "tipo": "uuid",
-     "nn": true,
+     "nn": false,
      "pk": false,
      "default": null,
-     "ref": "empresas"
+     "ref": null
     },
     "id": {
      "tipo": "uuid",
@@ -37286,7 +38133,7 @@
      "nn": false,
      "pk": false,
      "default": null,
-     "ref": "empresas"
+     "ref": null
     },
     "id": {
      "tipo": "uuid",
@@ -37756,10 +38603,10 @@
     },
     "empresa_id": {
      "tipo": "uuid",
-     "nn": true,
+     "nn": false,
      "pk": false,
      "default": null,
-     "ref": "empresas"
+     "ref": null
     },
     "fator_r": {
      "tipo": "decimal(5,4)",
@@ -38944,7 +39791,7 @@
     },
     "regua_id": {
      "tipo": "uuid",
-     "nn": true,
+     "nn": false,
      "pk": false,
      "default": null,
      "ref": "regua_cobranca"
@@ -40085,15 +40932,71 @@
   },
   "risk_rules": {
    "colunas": {
+    "condition": {
+     "tipo": "jsonb",
+     "nn": true,
+     "pk": false,
+     "default": null,
+     "ref": null
+    },
+    "created_at": {
+     "tipo": "timestamp with time zone",
+     "nn": true,
+     "pk": false,
+     "default": "now()",
+     "ref": null
+    },
+    "description": {
+     "tipo": "text",
+     "nn": false,
+     "pk": false,
+     "default": null,
+     "ref": null
+    },
     "empresa_id": {
      "tipo": "uuid",
      "nn": false,
      "pk": false,
      "default": null,
      "ref": null
+    },
+    "id": {
+     "tipo": "uuid",
+     "nn": true,
+     "pk": false,
+     "default": "gen_random_uuid()",
+     "ref": null
+    },
+    "is_active": {
+     "tipo": "boolean",
+     "nn": false,
+     "pk": false,
+     "default": "true",
+     "ref": null
+    },
+    "name": {
+     "tipo": "text",
+     "nn": true,
+     "pk": false,
+     "default": null,
+     "ref": null
+    },
+    "score_impact": {
+     "tipo": "numeric",
+     "nn": true,
+     "pk": false,
+     "default": null,
+     "ref": null
+    },
+    "updated_at": {
+     "tipo": "timestamp with time zone",
+     "nn": true,
+     "pk": false,
+     "default": "now()",
+     "ref": null
     }
    },
-   "rls": false,
+   "rls": true,
    "policies": [
     {
      "nome": "risk_rules_tenant_delete",
@@ -40130,7 +41033,7 @@
    "fks": [
     "empresa_id->empresas"
    ],
-   "criada_em": null,
+   "criada_em": "20260825110000_reconciliar_schema_v3_completo.sql",
    "colunas_types": {
     "condition": "Json",
     "created_at": "string",
@@ -40144,16 +41047,7 @@
    },
    "drift": {
     "so_na_migration": [],
-    "so_no_types": [
-     "condition",
-     "created_at",
-     "description",
-     "id",
-     "is_active",
-     "name",
-     "score_impact",
-     "updated_at"
-    ]
+    "so_no_types": []
    },
    "usada_no_front": 0,
    "usada_em_edges": [],
@@ -40382,8 +41276,156 @@
    "nao_usada": true
   },
   "runtime_error_logs": {
-   "colunas": {},
-   "rls": false,
+   "colunas": {
+    "app_version": {
+     "tipo": "text",
+     "nn": false,
+     "pk": false,
+     "default": null,
+     "ref": null
+    },
+    "component_stack": {
+     "tipo": "text",
+     "nn": false,
+     "pk": false,
+     "default": null,
+     "ref": null
+    },
+    "created_at": {
+     "tipo": "timestamptz",
+     "nn": true,
+     "pk": false,
+     "default": "now()",
+     "ref": null
+    },
+    "error_id": {
+     "tipo": "text",
+     "nn": true,
+     "pk": false,
+     "default": null,
+     "ref": null
+    },
+    "error_message": {
+     "tipo": "text",
+     "nn": true,
+     "pk": false,
+     "default": null,
+     "ref": null
+    },
+    "error_name": {
+     "tipo": "text",
+     "nn": true,
+     "pk": false,
+     "default": null,
+     "ref": null
+    },
+    "fingerprint": {
+     "tipo": "text",
+     "nn": false,
+     "pk": false,
+     "default": null,
+     "ref": null
+    },
+    "first_seen_at": {
+     "tipo": "timestamptz",
+     "nn": true,
+     "pk": false,
+     "default": "now()",
+     "ref": null
+    },
+    "id": {
+     "tipo": "uuid",
+     "nn": true,
+     "pk": false,
+     "default": "gen_random_uuid()",
+     "ref": null
+    },
+    "last_seen_at": {
+     "tipo": "timestamptz",
+     "nn": true,
+     "pk": false,
+     "default": "now()",
+     "ref": null
+    },
+    "metadata": {
+     "tipo": "jsonb",
+     "nn": false,
+     "pk": false,
+     "default": "'{}'::jsonb",
+     "ref": null
+    },
+    "occurrence_count": {
+     "tipo": "integer",
+     "nn": true,
+     "pk": false,
+     "default": "1",
+     "ref": null
+    },
+    "resolved": {
+     "tipo": "boolean",
+     "nn": true,
+     "pk": false,
+     "default": "false",
+     "ref": null
+    },
+    "resolved_at": {
+     "tipo": "timestamptz",
+     "nn": false,
+     "pk": false,
+     "default": null,
+     "ref": null
+    },
+    "resolved_by": {
+     "tipo": "uuid",
+     "nn": false,
+     "pk": false,
+     "default": null,
+     "ref": null
+    },
+    "severity": {
+     "tipo": "text",
+     "nn": true,
+     "pk": false,
+     "default": "'error'",
+     "ref": null
+    },
+    "source": {
+     "tipo": "text",
+     "nn": true,
+     "pk": false,
+     "default": "'unknown'",
+     "ref": null
+    },
+    "stack_trace": {
+     "tipo": "text",
+     "nn": false,
+     "pk": false,
+     "default": null,
+     "ref": null
+    },
+    "url": {
+     "tipo": "text",
+     "nn": false,
+     "pk": false,
+     "default": null,
+     "ref": null
+    },
+    "user_agent": {
+     "tipo": "text",
+     "nn": false,
+     "pk": false,
+     "default": null,
+     "ref": null
+    },
+    "user_id": {
+     "tipo": "uuid",
+     "nn": false,
+     "pk": false,
+     "default": null,
+     "ref": null
+    }
+   },
+   "rls": true,
    "policies": [
     {
      "nome": "Admins can delete error logs",
@@ -40412,7 +41454,7 @@
    ],
    "indices": [],
    "fks": [],
-   "criada_em": null,
+   "criada_em": "20260711184935_create-runtime-error-logs-stub.sql",
    "colunas_types": {
     "app_version": "string | null",
     "component_stack": "string | null",
@@ -40435,6 +41477,10 @@
     "url": "string | null",
     "user_agent": "string | null",
     "user_id": "string | null"
+   },
+   "drift": {
+    "so_na_migration": [],
+    "so_no_types": []
    },
    "usada_no_front": 0,
    "usada_em_edges": [],
@@ -41456,7 +42502,7 @@
   "security_audit_logs": {
    "colunas": {
     "created_at": {
-     "tipo": "timestamp with time zone",
+     "tipo": "timestamptz",
      "nn": false,
      "pk": false,
      "default": "now()",
@@ -41471,8 +42517,8 @@
     },
     "id": {
      "tipo": "uuid",
-     "nn": false,
-     "pk": true,
+     "nn": true,
+     "pk": false,
      "default": "gen_random_uuid()",
      "ref": null
     },
@@ -41487,14 +42533,14 @@
      "tipo": "jsonb",
      "nn": false,
      "pk": false,
-     "default": "'{}'",
+     "default": null,
      "ref": null
     },
     "severity": {
      "tipo": "text",
      "nn": false,
      "pk": false,
-     "default": "'info'",
+     "default": null,
      "ref": null
     },
     "user_agent": {
@@ -41516,7 +42562,7 @@
      "nn": false,
      "pk": false,
      "default": null,
-     "ref": "auth"
+     "ref": null
     }
    },
    "rls": true,
@@ -42608,7 +43654,7 @@
      "tipo": "text",
      "nn": false,
      "pk": false,
-     "default": "'conta_pagar'",
+     "default": null,
      "ref": null
     },
     "id": {
@@ -42712,7 +43758,8 @@
    "fks": [
     "aprovado_por->auth",
     "conta_pagar_id->contas_pagar",
-    "solicitado_por->auth"
+    "solicitado_por->auth",
+    "user_id->auth"
    ],
    "criada_em": "20251214183409_2d920032-956a-4d3d-bc0f-5c5b7e299487.sql",
    "colunas_types": {
@@ -43210,10 +44257,10 @@
     },
     "empresa_id": {
      "tipo": "uuid",
-     "nn": true,
+     "nn": false,
      "pk": false,
      "default": null,
-     "ref": "empresas"
+     "ref": null
     },
     "erro_mensagem": {
      "tipo": "text",
@@ -43397,11 +44444,11 @@
      "tipo": "jsonb",
      "nn": false,
      "pk": false,
-     "default": "'{}'::jsonb",
+     "default": null,
      "ref": null
     },
     "created_at": {
-     "tipo": "timestamp with time zone",
+     "tipo": "timestamptz",
      "nn": false,
      "pk": false,
      "default": "now()",
@@ -43458,8 +44505,8 @@
     },
     "id": {
      "tipo": "uuid",
-     "nn": false,
-     "pk": true,
+     "nn": true,
+     "pk": false,
      "default": "gen_random_uuid()",
      "ref": null
     },
@@ -43488,7 +44535,7 @@
      "tipo": "boolean",
      "nn": false,
      "pk": false,
-     "default": "true",
+     "default": null,
      "ref": null
     },
     "user_agent": {
@@ -45931,12 +46978,6 @@
    "rls": true,
    "policies": [
     {
-     "nome": "System can insert audit logs",
-     "comando": "insert",
-     "para": "public",
-     "tipo": "permissive"
-    },
-    {
      "nome": "Users can insert their own audit logs",
      "comando": "insert",
      "para": "authenticated",
@@ -46372,8 +47413,51 @@
    "nao_usada": false
   },
   "user_devices": {
-   "colunas": {},
-   "rls": false,
+   "colunas": {
+    "created_at": {
+     "tipo": "timestamp with time zone",
+     "nn": true,
+     "pk": false,
+     "default": "now()",
+     "ref": null
+    },
+    "device_name": {
+     "tipo": "text",
+     "nn": false,
+     "pk": false,
+     "default": null,
+     "ref": null
+    },
+    "device_type": {
+     "tipo": "text",
+     "nn": false,
+     "pk": false,
+     "default": null,
+     "ref": null
+    },
+    "id": {
+     "tipo": "uuid",
+     "nn": true,
+     "pk": false,
+     "default": "gen_random_uuid()",
+     "ref": null
+    },
+    "last_seen_at": {
+     "tipo": "timestamp with time zone",
+     "nn": false,
+     "pk": false,
+     "default": null,
+     "ref": null
+    },
+    "user_id": {
+     "tipo": "uuid",
+     "nn": true,
+     "pk": false,
+     "default": null,
+     "ref": null
+    }
+   },
+   "rls": true,
    "policies": [
     {
      "nome": "Users can delete their devices",
@@ -46408,7 +47492,7 @@
    ],
    "indices": [],
    "fks": [],
-   "criada_em": null,
+   "criada_em": "20260825110000_reconciliar_schema_v3_completo.sql",
    "colunas_types": {
     "browser": "string | null",
     "created_at": "string | null",
@@ -46424,6 +47508,22 @@
     "os": "string | null",
     "user_agent": "string | null",
     "user_id": "string"
+   },
+   "drift": {
+    "so_na_migration": [
+     "device_type"
+    ],
+    "so_no_types": [
+     "browser",
+     "device_fingerprint",
+     "first_seen_at",
+     "ip_address",
+     "is_trusted",
+     "location_city",
+     "location_country",
+     "os",
+     "user_agent"
+    ]
    },
    "usada_no_front": 0,
    "usada_em_edges": [],
@@ -47061,8 +48161,44 @@
    "nao_usada": false
   },
   "user_passkeys": {
-   "colunas": {},
-   "rls": false,
+   "colunas": {
+    "created_at": {
+     "tipo": "timestamp with time zone",
+     "nn": true,
+     "pk": false,
+     "default": "now()",
+     "ref": null
+    },
+    "credential_id": {
+     "tipo": "text",
+     "nn": false,
+     "pk": false,
+     "default": null,
+     "ref": null
+    },
+    "id": {
+     "tipo": "uuid",
+     "nn": true,
+     "pk": false,
+     "default": "gen_random_uuid()",
+     "ref": null
+    },
+    "public_key": {
+     "tipo": "text",
+     "nn": false,
+     "pk": false,
+     "default": null,
+     "ref": null
+    },
+    "user_id": {
+     "tipo": "uuid",
+     "nn": true,
+     "pk": false,
+     "default": null,
+     "ref": null
+    }
+   },
+   "rls": true,
    "policies": [
     {
      "nome": "Users can delete own passkeys",
@@ -47109,7 +48245,7 @@
    ],
    "indices": [],
    "fks": [],
-   "criada_em": null,
+   "criada_em": "20260825110000_reconciliar_schema_v3_completo.sql",
    "colunas_types": {
     "backed_up": "boolean | null",
     "counter": "number",
@@ -47122,6 +48258,17 @@
     "public_key": "string",
     "transports": "string[] | null",
     "user_id": "string"
+   },
+   "drift": {
+    "so_na_migration": [],
+    "so_no_types": [
+     "backed_up",
+     "counter",
+     "device_type",
+     "friendly_name",
+     "last_used_at",
+     "transports"
+    ]
    },
    "usada_no_front": 0,
    "usada_em_edges": [],
@@ -47271,9 +48418,23 @@
   },
   "user_roles": {
    "colunas": {
+    "assigned_at": {
+     "tipo": "timestamptz",
+     "nn": false,
+     "pk": false,
+     "default": "now()",
+     "ref": null
+    },
+    "assigned_by": {
+     "tipo": "uuid",
+     "nn": false,
+     "pk": false,
+     "default": null,
+     "ref": null
+    },
     "created_at": {
      "tipo": "timestamptz",
-     "nn": true,
+     "nn": false,
      "pk": false,
      "default": "now()",
      "ref": null
@@ -47285,18 +48446,46 @@
      "default": null,
      "ref": "auth"
     },
+    "expires_at": {
+     "tipo": "timestamptz",
+     "nn": false,
+     "pk": false,
+     "default": null,
+     "ref": null
+    },
     "id": {
      "tipo": "uuid",
-     "nn": false,
-     "pk": true,
+     "nn": true,
+     "pk": false,
      "default": "gen_random_uuid()",
      "ref": null
     },
+    "is_active": {
+     "tipo": "boolean",
+     "nn": false,
+     "pk": false,
+     "default": "true",
+     "ref": null
+    },
+    "notes": {
+     "tipo": "text",
+     "nn": false,
+     "pk": false,
+     "default": null,
+     "ref": null
+    },
     "role": {
-     "tipo": "app_role",
+     "tipo": "public",
      "nn": true,
      "pk": false,
-     "default": "'visualizador'",
+     "default": "'viewer'",
+     "ref": null
+    },
+    "updated_at": {
+     "tipo": "timestamptz",
+     "nn": false,
+     "pk": false,
+     "default": "now()",
      "ref": null
     },
     "user_id": {
@@ -47304,7 +48493,7 @@
      "nn": true,
      "pk": false,
      "default": null,
-     "ref": "auth"
+     "ref": null
     }
    },
    "rls": true,
@@ -47368,14 +48557,7 @@
     "so_na_migration": [
      "created_by"
     ],
-    "so_no_types": [
-     "assigned_at",
-     "assigned_by",
-     "expires_at",
-     "is_active",
-     "notes",
-     "updated_at"
-    ]
+    "so_no_types": []
    },
    "usada_no_front": 2,
    "usada_em_edges": [
@@ -47428,8 +48610,8 @@
     },
     "id": {
      "tipo": "uuid",
-     "nn": false,
-     "pk": true,
+     "nn": true,
+     "pk": false,
      "default": "gen_random_uuid()",
      "ref": null
     },
@@ -47455,10 +48637,10 @@
      "ref": null
     },
     "last_activity": {
-     "tipo": "timestamp with time zone",
+     "tipo": "timestamptz",
      "nn": false,
      "pk": false,
-     "default": "now()",
+     "default": null,
      "ref": null
     },
     "revoked": {
@@ -47484,10 +48666,10 @@
     },
     "user_id": {
      "tipo": "uuid",
-     "nn": false,
+     "nn": true,
      "pk": false,
      "default": null,
-     "ref": "auth"
+     "ref": null
     }
    },
    "rls": true,
@@ -47862,8 +49044,44 @@
    "nao_usada": false
   },
   "webauthn_challenges": {
-   "colunas": {},
-   "rls": false,
+   "colunas": {
+    "challenge": {
+     "tipo": "text",
+     "nn": true,
+     "pk": false,
+     "default": null,
+     "ref": null
+    },
+    "created_at": {
+     "tipo": "timestamp with time zone",
+     "nn": true,
+     "pk": false,
+     "default": "now()",
+     "ref": null
+    },
+    "expires_at": {
+     "tipo": "timestamp with time zone",
+     "nn": false,
+     "pk": false,
+     "default": null,
+     "ref": null
+    },
+    "id": {
+     "tipo": "uuid",
+     "nn": true,
+     "pk": false,
+     "default": "gen_random_uuid()",
+     "ref": null
+    },
+    "user_id": {
+     "tipo": "uuid",
+     "nn": true,
+     "pk": false,
+     "default": null,
+     "ref": null
+    }
+   },
+   "rls": true,
    "policies": [
     {
      "nome": "Authenticated can create challenges",
@@ -47898,7 +49116,7 @@
    ],
    "indices": [],
    "fks": [],
-   "criada_em": null,
+   "criada_em": "20260825110000_reconciliar_schema_v3_completo.sql",
    "colunas_types": {
     "challenge": "string",
     "created_at": "string",
@@ -47906,6 +49124,12 @@
     "id": "string",
     "type": "string",
     "user_id": "string | null"
+   },
+   "drift": {
+    "so_na_migration": [],
+    "so_no_types": [
+     "type"
+    ]
    },
    "usada_no_front": 0,
    "usada_em_edges": [],
@@ -48055,7 +49279,7 @@
      "tipo": "integer",
      "nn": true,
      "pk": false,
-     "default": "3",
+     "default": "0",
      "ref": null
     },
     "created_at": {
@@ -48097,13 +49321,13 @@
      "tipo": "jsonb",
      "nn": false,
      "pk": false,
-     "default": "'{}'::jsonb",
+     "default": null,
      "ref": null
     },
     "id": {
      "tipo": "uuid",
      "nn": true,
-     "pk": true,
+     "pk": false,
      "default": "gen_random_uuid()",
      "ref": null
     },
@@ -48125,7 +49349,7 @@
      "tipo": "jsonb",
      "nn": true,
      "pk": false,
-     "default": "'{}'::jsonb",
+     "default": "'{}'",
      "ref": null
     },
     "resolved_at": {
@@ -48221,8 +49445,65 @@
    "nao_usada": true
   },
   "webhook_events": {
-   "colunas": {},
-   "rls": false,
+   "colunas": {
+    "error_message": {
+     "tipo": "text",
+     "nn": false,
+     "pk": false,
+     "default": null,
+     "ref": null
+    },
+    "event_type": {
+     "tipo": "text",
+     "nn": true,
+     "pk": false,
+     "default": null,
+     "ref": null
+    },
+    "id": {
+     "tipo": "uuid",
+     "nn": true,
+     "pk": false,
+     "default": "gen_random_uuid()",
+     "ref": null
+    },
+    "lalamove_order_id": {
+     "tipo": "text",
+     "nn": false,
+     "pk": false,
+     "default": null,
+     "ref": null
+    },
+    "processed": {
+     "tipo": "boolean",
+     "nn": false,
+     "pk": false,
+     "default": "false",
+     "ref": null
+    },
+    "processed_at": {
+     "tipo": "timestamptz",
+     "nn": false,
+     "pk": false,
+     "default": null,
+     "ref": null
+    },
+    "raw_payload": {
+     "tipo": "jsonb",
+     "nn": true,
+     "pk": false,
+     "default": null,
+     "ref": null
+    },
+    "received_at": {
+     "tipo": "timestamptz",
+     "nn": true,
+     "pk": false,
+     "default": "now()",
+     "ref": null
+    }
+   },
+   "rls": true,
    "policies": [
     {
      "nome": "Admins can delete events",
@@ -48269,7 +49550,7 @@
     }
    ],
    "fks": [],
-   "criada_em": null,
+   "criada_em": "20260711152457_create-webhook-events-stub.sql",
    "colunas_types": {
     "error_message": "string | null",
     "event_type": "string",
@@ -48279,6 +49560,10 @@
     "processed_at": "string | null",
     "raw_payload": "Json",
     "received_at": "string"
+   },
+   "drift": {
+    "so_na_migration": [],
+    "so_no_types": []
    },
    "usada_no_front": 0,
    "usada_em_edges": [],
@@ -48910,7 +50195,7 @@
      "nn": false,
      "pk": false,
      "default": null,
-     "ref": "empresas"
+     "ref": null
     },
     "id": {
      "tipo": "uuid",

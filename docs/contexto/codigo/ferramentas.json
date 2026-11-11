@@ -3,8 +3,8 @@
  "format_version": 2,
  "stack": {
   "linguagens": [
-   "TypeScript (2104)",
-   "SQL (1017)",
+   "TypeScript (2105)",
+   "SQL (1069)",
    "Markdown (189)",
    "JavaScript (57)",
    "JSON (37)",
@@ -2076,7 +2076,11 @@
      "financeiro",
      "operacional",
      "visualizador",
-     "contador"
+     "contador",
+     "viewer",
+     "manager",
+     "operator",
+     "viewer"
     ]
    },
    {

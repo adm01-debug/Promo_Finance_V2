@@ -1,6 +1,6 @@
 # 07 · REGRAS DE NEGÓCIO
 
-> Gerado automaticamente por AI Context Sync v1.3.2 · commit `e361b018aa` · branch `main` · 2026-11-11 16:59 UTC
+> Gerado automaticamente por AI Context Sync v1.3.2 · commit `85d018cc59` · branch `main` · 2026-11-11 17:05 UTC
 > Não edite à mão — regras humanas vão em `manual/`.
 
 ## A. Regras escritas por humanos (`manual/` — prioridade máxima, nunca sobrescrito)
@@ -204,7 +204,6 @@ _Nenhum arquivo em `manual/`. Copie `manual/TEMPLATE-regras-de-negocio.md` para 
 | `logs_baixa_automatica` | Users can view their write-off logs | SELECT | public | permissive | `true` |  |
 | `user_preferences` | Users can manage their own preferences | ALL | public | permissive | `auth.uid() = user_id` |  |
 | `user_filter_presets` | Users can manage their own filter presets | ALL | public | permissive | `auth.uid() = user_id` |  |
-| `user_action_audit` | System can insert audit logs | INSERT | public | permissive |  | `auth.uid() = user_id` |
 | `logs_conciliacao_retroativa` | Users can view logs | SELECT | public | permissive | `true` |  |
 | `logs_conciliacao_retroativa` | Users can insert logs | INSERT | public | permissive |  | `auth.uid() IS NOT NULL` |
 | `divergencias_conciliacao` | Users can view divergencias | SELECT | public | permissive | `true` |  |
@@ -310,8 +309,9 @@ _Nenhum arquivo em `manual/`. Copie `manual/TEMPLATE-regras-de-negocio.md` para 
 | `asaas_credit_risk_analysis` | credit_risk_select | SELECT | authenticated | permissive | `(EXISTS ( SELECT 1 FROM public.clientes c WHERE ((c.id = asaas_credit_risk_analysis.cliente_id) AND public.empresa_acessivel(c.empresa_id))))` |  |
 | `benchmarks_setoriais` | benchmarks_select | SELECT | authenticated | permissive | `true` |  |
 | `beneficios_fiscais` | beneficios_select_authenticated | SELECT | authenticated | permissive | `true` |  |
-| `bitrix24_activities` | bitrix24_activities_tenant_delete | DELETE | authenticated | permissive | `((EXISTS ( SELECT 1 FROM public.lalamove_orders o WHERE ((o.id = bitrix24_activities.order_id) AND public.empresa_membro_ativo(o.empresa_id)))) AND (public.has_role(auth.uid(), 'admin'::public.app_role) OR public.has_role(auth.uid(), 'manager'::public.app_role)))` |  |
-| … +566 linhas — lista completa em `context.json` | | | | | | |
+| `bitrix_oauth_tokens` | bitrix_oauth_tokens_service_role_only | ALL | service_role | permissive | `true` | `true` |
+| `bling_tokens` | bling_tokens_service_role_only | ALL | service_role | permissive | `true` | `true` |
+| … +561 linhas — lista completa em `context.json` | | | | | | |
 
 ## C. Restrições de dados (obrigatório / único / default / CHECK / FK / calculada)
 
@@ -329,7 +329,6 @@ _Nenhum arquivo em `manual/`. Copie `manual/TEMPLATE-regras-de-negocio.md` para 
 | `fornecedores` | `user_id` | FK → users.id ON DELETE CASCADE |
 | `fornecedores` | `created_at` | default NOW() |
 | `fornecedores` | `updated_at` | default NOW() |
-| `fornecedores` | `ativo` | default true |
 | `contas_pagar` | `id` | PK; default uuid_generate_v4() |
 | `contas_pagar` | `descricao` | obrigatório |
 | `contas_pagar` | `valor` | obrigatório; CHECK valor >= 0 |
@@ -389,7 +388,6 @@ _Nenhum arquivo em `manual/`. Copie `manual/TEMPLATE-regras-de-negocio.md` para 
 | `saved_filters` | `updated_at` | default now() |
 | `saved_filters` | `(tabela)` | CONSTRAINT saved_filters_unique UNIQUE (user_id, entity_type, name) |
 | `saved_filters` | `(tabela)` | CONSTRAINT saved_filters_shared_requires_empresa CHECK (NOT is_shared OR empresa_id IS NOT NULL) |
-| `saved_filters` | `(tabela)` | constraint saved_filters_unique UNIQUE (user_id, entity_type, name) |
 | `entity_versions` | `id` | PK; default gen_random_uuid() |
 | `entity_versions` | `entity_type` | obrigatório |
 | `entity_versions` | `entity_id` | obrigatório |
@@ -402,14 +400,14 @@ _Nenhum arquivo em `manual/`. Copie `manual/TEMPLATE-regras-de-negocio.md` para 
 | `profiles` | `role` | default 'visualizador' |
 | `profiles` | `created_at` | default timezone('utc'::text |
 | `profiles` | `updated_at` | default timezone('utc'::text |
-| `user_roles` | `id` | PK; default gen_random_uuid() |
-| `user_roles` | `user_id` | obrigatório; FK → users.id ON DELETE CASCADE |
-| `user_roles` | `role` | default 'visualizador' |
+| `user_roles` | `id` | default gen_random_uuid() |
+| `user_roles` | `user_id` | obrigatório |
+| `user_roles` | `role` | default 'viewer' |
+| `user_roles` | `assigned_at` | default now() |
+| `user_roles` | `is_active` | default true |
 | `user_roles` | `created_at` | default now() |
-| `user_roles` | `created_by` | FK → users.id |
-| `user_roles` | `(tabela)` | UNIQUE (user_id, role) |
-| `user_roles` | `(tabela)` | constraint user_roles_user_id_fkey FOREIGN KEY (user_id) REFERENCES auth.users(id) ON DELETE CASCADE |
-| `user_roles` | `(tabela)` | constraint user_roles_user_id_fkey FOREIGN KEY (user_id) REFERENCES auth.users(id) ON DELETE CASCADE |
+| `user_roles` | `updated_at` | default now() |
+| `user_roles` | `(tabela)` | CONSTRAINT user_roles_pkey PRIMARY KEY (id) |
 | `empresas` | `id` | PK; default gen_random_uuid() |
 | `empresas` | `user_id` | default auth.uid() |
 | `empresas` | `razao_social` | obrigatório |
@@ -454,8 +452,6 @@ _Nenhum arquivo em `manual/`. Copie `manual/TEMPLATE-regras-de-negocio.md` para 
 | `notas_fiscais` | `data_emissao` | default now() |
 | `notas_fiscais` | `created_at` | default now() |
 | `notas_fiscais` | `valor_produtos` | default 0 |
-| `notas_fiscais` | `valor_desconto` | default 0 |
-| `notas_fiscais` | `valor_frete` | default 0 |
 | `alertas` | `id` | PK; default gen_random_uuid() |
 | `alertas` | `user_id` | default auth.uid() |
 | `alertas` | `tipo` | obrigatório |
@@ -464,7 +460,6 @@ _Nenhum arquivo em `manual/`. Copie `manual/TEMPLATE-regras-de-negocio.md` para 
 | `alertas` | `lido` | default false |
 | `alertas` | `created_at` | default now() |
 | `alertas` | `empresa_id` | FK → empresas.id ON DELETE CASCADE |
-| `alertas` | `(tabela)` | constraint alertas_empresa_id_fkey FOREIGN KEY (empresa_id) REFERENCES public.empresas(id) ON DELETE CASCADE |
 | `configuracoes_aprovacao` | `id` | PK; default gen_random_uuid() |
 | `configuracoes_aprovacao` | `empresa_id` | FK → empresas.id |
 | `configuracoes_aprovacao` | `ativo` | default true |
@@ -512,7 +507,6 @@ _Nenhum arquivo em `manual/`. Copie `manual/TEMPLATE-regras-de-negocio.md` para 
 | `bitrix_oauth_tokens` | `expires_at` | obrigatório |
 | `bitrix_oauth_tokens` | `created_at` | default now() |
 | `bitrix_oauth_tokens` | `updated_at` | default now() |
-| `bitrix_oauth_tokens` | `(tabela)` | constraint bitrix_oauth_tokens_pkey PRIMARY KEY (id) |
 | `boletos` | `id` | PK; default gen_random_uuid() |
 | `boletos` | `user_id` | default auth.uid() |
 | `boletos` | `valor` | default 0 |
@@ -617,7 +611,13 @@ _Nenhum arquivo em `manual/`. Copie `manual/TEMPLATE-regras-de-negocio.md` para 
 | `pagamentos_recorrentes` | `data_inicio` | obrigatório |
 | `pagamentos_recorrentes` | `tipo_cobranca` | default 'transferencia' |
 | `pagamentos_recorrentes` | `ativo` | default TRUE |
-| … +1846 linhas — lista completa em `context.json` | | |
+| `pagamentos_recorrentes` | `total_gerado` | default 0; CHECK total_gerado >= 0 |
+| `pagamentos_recorrentes` | `created_by` | default auth.uid() |
+| `pagamentos_recorrentes` | `created_at` | default now() |
+| `pagamentos_recorrentes` | `updated_at` | default now() |
+| `pagamentos_recorrentes` | `(tabela)` | CONSTRAINT pag_recorrente_periodo CHECK (data_fim IS NULL OR data_fim >= data_inicio) |
+| `regua_cobranca` | `id` | PK; default gen_random_uuid() |
+| … +1841 linhas — lista completa em `context.json` | | |
 
 ## D. Automações no banco (triggers e funções — regras que rodam sozinhas)
 
@@ -948,8 +948,8 @@ Erros lançados por funções SQL (`RAISE EXCEPTION` = regra de negócio no banc
 | `normalizar_tipo_partida` | Tipo de partida inválido: use D (débito) ou C (crédito) | `supabase/migrations/20260726144900_795aaff5-72d2-47dc-a391-fe63c63335f1.sql` |
 | `get_cron_jobs` | Acesso negado: apenas administradores podem visualizar automações. | `supabase/migrations/20260728110753_90823653-f205-4c49-97d5-ca8a3fc6b60c.sql` |
 | `check_catalogos_tributarios_invariants` | acesso negado: requer papel admin | `supabase/migrations/20260728131802_54d26aed-1c8e-418c-b13d-a380264ae29c.sql` |
+| `get_retencao_politicas_status` | acesso negado: requer papel admin | `supabase/migrations/20260730130116_9ba2393d-4c62-4120-acc7-8bcb8e39b251.sql` |
 | `invocar_regua_cobranca` | Secret regua_cron_secret ausente ou inválido no Vault | `supabase/migrations/20260822115000_agendar_regua_cobranca.sql` |
-| `get_retencao_politicas_status` | acesso negado: requer papel admin | `supabase/migrations/20260825100000_reconciliar_schema_completo.sql` |
 | `backfill_empresa_id` | backfill_empresa_id: acesso restrito a administradores | `supabase/migrations/20260825110000_reconciliar_schema_v3_completo.sql` |
 | `capture_pg_stat_statements_baseline` | access denied: admin role required | `supabase/migrations/20260825110000_reconciliar_schema_v3_completo.sql` |
 | `capture_slow_queries` | access denied: admin role required | `supabase/migrations/20260825110000_reconciliar_schema_v3_completo.sql` |
@@ -1078,7 +1078,6 @@ Erros lançados por funções SQL (`RAISE EXCEPTION` = regra de negócio no banc
 
 | Tabela | Coluna | Valores permitidos (enum/CHECK) | Default |
 |---|---|---|---|
-| `fornecedores` | `estado` | **livre (sem enum/CHECK)** |  |
 | `contas_pagar` | `status` | `atrasado`, `cancelado`, `pago`, `pendente` | `pendente` |
 | `contas_receber` | `status` | `atrasado`, `cancelado`, `em_acordo`, `pago`, `parcial`, `pendente`, `recebido`, `vencido` | `pendente` |
 | `contas_receber` | `etapa_cobranca` | **livre (sem enum/CHECK)** |  |
@@ -1174,7 +1173,9 @@ Erros lançados por funções SQL (`RAISE EXCEPTION` = regra de negócio no banc
 | `oportunidades_elisao` | `status` | `aprovada`, `descartada`, `em_analise`, `em_execucao`, `identificada`, `implementada` | `identificada` |
 | `oportunidades_elisao` | `status_alterado_em` | **livre (sem enum/CHECK)** |  |
 | `oportunidades_elisao` | `status_alterado_por` | **livre (sem enum/CHECK)** |  |
+| `alerts_sent` | `status` | **livre (sem enum/CHECK)** | `pending` |
 | `bitrix24_stage_mappings` | `lalamove_status` | **livre (sem enum/CHECK)** |  |
+| `cron_job_logs` | `status` | **livre (sem enum/CHECK)** |  |
 
 ### E.2 Mapas de transição declarados no código
 
@@ -1504,7 +1505,7 @@ Erros lançados por funções SQL (`RAISE EXCEPTION` = regra de negócio no banc
 | prioridade_alerta | `baixa`, `media`, `alta`, `critica` | banco |
 | etapa_cobranca | `preventiva`, `lembrete`, `cobranca`, `negociacao`, `juridico` | banco |
 | status_nfe | `autorizada`, `pendente`, `cancelada`, `denegada`, `inutilizada` | banco |
-| audit_action | `INSERT`, `UPDATE`, `DELETE`, `LOGIN`, `LOGOUT`, `EXPORT`, `APPROVE`, `REJECT` | banco |
+| audit_action | `INSERT`, `UPDATE`, `DELETE`, `LOGIN`, `LOGOUT`, `EXPORT`, `APPROVE`, `REJECT`, `revoke_execute_anon` | banco |
 | tipo_solicitacao_lgpd | `acesso`, `portabilidade`, `exclusao`, `retificacao`, `anonimizacao` | banco |
 | status_solicitacao_lgpd | `aberta`, `em_analise`, `atendida`, `rejeitada` | banco |
 | tipo_anomalia | `movimentacao_outlier`, `pagamento_duplicado`, `conta_pagar_alta`, `conciliacao_atrasada`, `mudanca_regime_brusca` | banco |
@@ -2381,32 +2382,28 @@ Erros lançados por funções SQL (`RAISE EXCEPTION` = regra de negócio no banc
 
 | View | SELECT |
 |---|---|
-| `vw_dre_mensal` | `SELECT gen_random_uuid() AS id, id AS empresa_id, to_char(now(), 'YYYY-MM'::text) AS mes, 50000.00 AS receita_bruta, 30000.00 AS custos, 20000.00 AS lucro_bruto, 15000.00 AS despesas_operacionais, 5000.00 AS ebitda FROM public.empresas` |
-| `vw_fluxo_caixa_diario` | `SELECT gen_random_uuid() AS id, id AS empresa_id, (now())::date AS dia, 2500.00 AS entradas_reais, 1200.00 AS saidas_reais, 1300.00 AS saldo_final FROM public.empresas` |
-| `vw_saldos_contas` | `SELECT gen_random_uuid() AS id, id AS empresa_id, 'Conta Corrente'::text AS nome_conta, 1000.00 AS saldo_atual, now() AS ultima_atualizacao FROM public.empresas` |
+| `vw_dre_mensal` | `SELECT gen_random_uuid() as id, id as empresa_id, to_char(now(), 'YYYY-MM') as mes, 50000.00 as receita_bruta, 30000.00 as custos, 20000.00 as lucro_bruto, 15000.00 as despesas_operacionais, 5000.00 as ebitda FROM public.empresas` |
+| `vw_fluxo_caixa_diario` | `SELECT gen_random_uuid() as id, id as empresa_id, now()::date as dia, 2500.00 as entradas_reais, 1200.00 as saidas_reais, 1300.00 as saldo_final FROM public.empresas` |
+| `vw_saldos_contas` | `SELECT gen_random_uuid() as id, id as empresa_id, 'Conta Corrente' as nome_conta, 1000.00 as saldo_atual, now() as ultima_atualizacao FROM public.empresas` |
 | `vw_transferencias_painel` | `SELECT t.id, t.empresa_id, e.razao_social, t.asaas_id, t.valor, t.status, t.tipo_chave, CASE WHEN public.pode_ver_dado_sensivel() THEN t.chave_pix ELSE public.mascarar_chave_pix(t.chave_pix) END AS chave_pix, t.descricao, t.created_at, t.updated_at FROM (public.asaas_transfers t LEFT JOIN public.emp …` |
-| `vw_webhooks_recentes` | `SELECT id, source, event_type, status, payload, response, error_message, created_at FROM public.webhooks_log ORDER BY created_at DESC LIMIT 100` |
-| `vw_metricas_cobranca` | `SELECT id AS empresa_id, 15.5 AS taxa_inadimplencia, 120 AS ticket_medio, 500 AS total_cobrancas_mes FROM public.empresas` |
+| `vw_webhooks_recentes` | `SELECT * FROM public.webhooks_log ORDER BY created_at DESC LIMIT 100` |
+| `vw_metricas_cobranca` | `SELECT id as empresa_id, 15.5 as taxa_inadimplencia, 120 as ticket_medio, 500 as total_cobrancas_mes FROM public.empresas` |
 | `vw_edge_health` | `SELECT l.function_name, COUNT(*)::bigint AS total_calls, COUNT(*) FILTER (WHERE l.level = 'error' OR l.error_message IS NOT NULL OR l.status_code >= 500)::bigint AS error_count, ROUND(100.0 * COUNT(*) FILTER (WHERE l.level = 'error' OR l.error_message IS NOT NULL OR l.status_code >= 500) / NULLIF(CO …` |
-| `vw_tributario_dashboard` | `SELECT e.id AS empresa_id, e.razao_social, COALESCE(e.regime_tributario, 'nao_informado'::text) AS regime_tributario, at_.ano, at_.mes, at_.competencia, COALESCE(at_.total_geral, (0)::numeric) AS total_tributos, COALESCE(at_.total_tributos_novos, (0)::numeric) AS tributos_novos, COALESCE(at_.total_t …` |
+| `vw_tributario_dashboard` | `SELECT e.id AS empresa_id, e.razao_social, COALESCE(e.regime_tributario, 'nao_informado') AS regime_tributario, at_.ano, at_.mes, at_.competencia, COALESCE(at_.total_geral, 0) AS total_tributos, COALESCE(at_.total_tributos_novos, 0) AS tributos_novos, COALESCE(at_.total_tributos_residuais, 0) AS tri …` |
 | `vw_auditoria_tributaria_recente` | `SELECT a.id, a.empresa_id, e.razao_social AS empresa_nome, a.user_id, p.full_name AS user_nome, a.user_email, a.acao, a.entidade_tipo, a.entidade_id, a.payload_anterior, a.payload_novo, a.criado_em FROM ((public.auditoria_tributaria a LEFT JOIN public.empresas e ON ((e.id = a.empresa_id))) LEFT JOIN …` |
-| `mv_benchmark_setorial` | `WITH carga AS ( SELECT vw_tributario_dashboard.regime_tributario AS regime, vw_tributario_dashboard.empresa_id, sum(vw_tributario_dashboard.total_tributos) AS total_12m FROM public.vw_tributario_dashboard WHERE ((vw_tributario_dashboard.ano IS NOT NULL) AND (vw_tributario_dashboard.mes IS NOT NULL) …` |
+| `mv_benchmark_setorial` | `WITH carga AS ( SELECT regime_tributario AS regime, empresa_id, SUM(total_tributos)::numeric AS total_12m FROM public.vw_tributario_dashboard WHERE ano IS NOT NULL AND mes IS NOT NULL AND (ano * 12 + mes) >= (EXTRACT(YEAR FROM CURRENT_DATE)::int * 12 + EXTRACT(MONTH FROM CURRENT_DATE)::int - 12) GRO …` |
 | `vw_notification_history_duplicates` | `WITH ranked AS ( SELECT nh.id, nh.user_id, nh.source, nh.source_ref, nh.channel, nh.title, nh.created_at, LAG(nh.created_at) OVER ( PARTITION BY nh.user_id, nh.source, nh.source_ref, nh.channel ORDER BY nh.created_at ) AS prev_created_at FROM public.notification_history nh WHERE nh.source_ref IS NOT …` |
 | `vw_contas_pagar_painel` | `SELECT cp.id, cp.descricao, cp.valor, cp.data_vencimento, cp.data_pagamento, cp.status, cp.fornecedor_id, cp.user_id, cp.created_at, cp.updated_at, cp.empresa_id, cp.categoria_id, cp.centro_custo_id, cp.forma_pagamento, cp.conta_bancaria_id, cp.numero_documento, cp.observacoes, cp.valor_pago, cp.jur …` |
 | `vw_contas_receber_painel` | `SELECT cr.id, cr.descricao, cr.valor, cr.data_vencimento, cr.data_recebimento, cr.status, cr.cliente_id, cr.user_id, cr.created_at, cr.updated_at, cr.empresa_id, cr.categoria_id, cr.centro_custo_id, cr.forma_recebimento, cr.conta_bancaria_id, cr.numero_documento, cr.observacoes, cr.valor_recebido, c …` |
-| `extratos_bancarios_importados` | `SELECT id, user_id, conta_bancaria_id, data, descricao, valor, tipo, numero_documento, numero_documento_banco, codigo_transacao, arquivo_origem, importado_de, importado_em, linha_arquivo, hash_transacao, saldo, conciliado, created_at FROM public.extrato_bancario` |
+| `extratos_bancarios_importados` | `SELECT * FROM public.extrato_bancario` |
 | `vw_fluxo_caixa` | `SELECT d.dia, COALESCE(r.valor,0) AS receitas_previstas, COALESCE(p.valor,0) AS despesas_previstas, COALESCE(r.valor,0)-COALESCE(p.valor,0) AS saldo_dia FROM generate_series(CURRENT_DATE,CURRENT_DATE+INTERVAL '90 days','1 day') AS d(dia) LEFT JOIN (SELECT data_vencimento AS dia, SUM(valor-COALESCE(v …` |
-| `vw_dso_aging` | `SELECT id AS empresa_id, 45 AS dso_atual, 5000.00 AS a_vencer, 2000.00 AS vencido_0_30, 1500.00 AS vencido_31_60, 1000.00 AS vencido_61_plus FROM public.empresas` |
-| `vw_gastos_centro_custo` | `SELECT id AS centro_custo_id, nome AS nome_centro_custo, empresa_id, 0.0 AS total_gasto FROM public.centros_custo` |
-| `v_table_bloat` | `SELECT schemaname, relname AS table_name, n_live_tup AS live_rows, n_dead_tup AS dead_rows, CASE WHEN ((n_live_tup + n_dead_tup) > 0) THEN round((((n_dead_tup)::numeric / ((n_live_tup + n_dead_tup))::numeric) * (100)::numeric), 2) ELSE (0)::numeric END AS dead_ratio_pct, pg_size_pretty(pg_total_rela …` |
-| `v_sefaz_observability` | `SELECT c.cnpj, c.ambiente, c.ultimo_nsu, c.max_nsu, c.ultima_consulta, c.ultimo_status, c.circuit_open, c.retry_count, c.next_run_at, (EXTRACT(epoch FROM (now() - c.ultima_consulta)))::integer AS seconds_since_last, COALESCE(n.nfe_24h, (0)::bigint) AS nfe_24h, COALESCE(n.nfe_7d, (0)::bigint) AS nfe_ …` |
-| `vw_rpc_hotspots` | `SELECT function_name, date_trunc('hour'::text, called_at) AS bucket_hour, count(*) AS calls, count(*) FILTER (WHERE (NOT success)) AS errors, round(avg(duration_ms), 2) AS avg_ms, round((percentile_cont((0.5)::double precision) WITHIN GROUP (ORDER BY ((duration_ms)::double precision)))::numeric, 2) …` |
-| `vw_rpc_slow_calls` | `SELECT id, function_name, caller_user_id, caller_role, duration_ms, success, error_sqlstate, error_message, meta, called_at FROM public.rpc_observability_metrics WHERE (called_at >= (now() - '24:00:00'::interval)) ORDER BY duration_ms DESC LIMIT 200` |
+| `vw_dso_aging` | `SELECT id as empresa_id, 45 as dso_atual, 5000.00 as a_vencer, 2000.00 as vencido_0_30, 1500.00 as vencido_31_60, 1000.00 as vencido_61_plus FROM public.empresas` |
+| `vw_gastos_centro_custo` | `SELECT id as centro_custo_id, nome as nome_centro_custo, empresa_id, 0.0 as total_gasto FROM public.centros_custo` |
+| `v_table_bloat` | `SELECT schemaname, relname AS table_name, n_live_tup AS live_rows, n_dead_tup AS dead_rows, CASE WHEN (n_live_tup + n_dead_tup) > 0 THEN round((n_dead_tup::numeric / (n_live_tup + n_dead_tup)) * 100, 2) ELSE 0 END AS dead_ratio_pct, pg_size_pretty(pg_total_relation_size(relid)) AS total_size_pretty, …` |
+| `v_sefaz_observability` | `SELECT c.cnpj, c.ambiente, c.ultimo_nsu, c.max_nsu, c.ultima_consulta, c.ultimo_status, c.circuit_open, c.retry_count, c.next_run_at, EXTRACT(EPOCH FROM (now() - c.ultima_consulta))::int AS seconds_since_last, COALESCE(n.nfe_24h, 0) AS nfe_24h, COALESCE(n.nfe_7d, 0) AS nfe_7d, COALESCE(a.open_alerts …` |
+| `vw_rpc_hotspots` | `SELECT function_name, date_trunc('hour', called_at) AS bucket_hour, count(*) AS calls, count(*) FILTER (WHERE NOT success) AS errors, round(avg(duration_ms)::numeric, 2) AS avg_ms, round((percentile_cont(0.5) WITHIN GROUP (ORDER BY duration_ms))::numeric, 2) AS p50_ms, round((percentile_cont(0.95) W …` |
+| `vw_rpc_slow_calls` | `SELECT id, function_name, caller_user_id, caller_role, duration_ms, success, error_sqlstate, error_message, meta, called_at FROM public.rpc_observability_metrics WHERE called_at >= now() - interval '24 hours' ORDER BY duration_ms DESC LIMIT 200` |
 | `estrategias_elisao_catalogo` | `SELECT id, codigo, nome, categoria, descricao, regimes_aplicaveis, economia_estimada_percentual, risco, base_legal, requisitos, ativo, created_at, updated_at FROM public.estrategias_elisao` |
-| `drivers_safe_view` | `SELECT id, name, vehicle_type, status, rating, risk_score, risk_level, total_deliveries, completed_deliveries, failed_deliveries, cancelled_deliveries, success_rate, failure_rate, avg_delay_minutes, lalamove_id, vehicle_plate, photo_url, blacklisted, blacklist_reason, whitelisted, notes, last_active …` |
-| `mcp_probe` | `SELECT 1 AS probe, CURRENT_TIMESTAMP AS ts` |
-| `orders_operator_view` | `SELECT id, lalamove_id, status, pickup_address, delivery_address, CASE WHEN (public.has_role(auth.uid(), 'admin'::public.app_role) OR public.has_role(auth.uid(), 'manager'::public.app_role)) THEN customer_phone ELSE '***RESTRITO***'::text END AS customer_phone, customer_name, vehicle_type, total_cos …` |
-| `orders_safe_view` | `SELECT id, lalamove_id, status, vehicle_type, customer_name, CASE WHEN (public.has_role(auth.uid(), 'admin'::public.app_role) OR public.has_role(auth.uid(), 'manager'::public.app_role)) THEN customer_phone ELSE '***RESTRITO***'::text END AS customer_phone, pickup_address, delivery_address, total_cos …` |
 
 ### G.3 Funções de cálculo/decisão no código
 
@@ -4530,6 +4527,7 @@ Erros lançados por funções SQL (`RAISE EXCEPTION` = regra de negócio no banc
 | `IF v_lockout_duration > interval '15 minutes' THEN` | `supabase/migrations/20260825110000_reconciliar_schema_v3_completo.sql` |
 | `IF v_record IS NOT NULL AND v_record.first_attempt_at < now() - interval '24 hours' THEN` | `supabase/migrations/20260825110000_reconciliar_schema_v3_completo.sql` |
 | `IF v_record.first_attempt_at < now() - interval '24 hours' THEN` | `supabase/migrations/20260825110000_reconciliar_schema_v3_completo.sql` |
+| `NEW.expires_at := now() + interval '2 hours';` | `supabase/migrations/20260825110000_reconciliar_schema_v3_completo.sql` |
 | `VALUES (p_ip_address, 'Excesso de tentativas de login', now() + interval '1 hour')` | `supabase/migrations/20260825110000_reconciliar_schema_v3_completo.sql` |
 | `WHERE a.created_at >= v_ini - interval '7 days' AND a.created_at < v_ini` | `supabase/migrations/20260825110000_reconciliar_schema_v3_completo.sql` |
 | `expires_at = now() + interval '1 hour',` | `supabase/migrations/20260825110000_reconciliar_schema_v3_completo.sql` |
@@ -5033,7 +5031,7 @@ Erros lançados por funções SQL (`RAISE EXCEPTION` = regra de negócio no banc
 | `admin` | `supabase/migrations/20261101120500_rls_elisao_catalogo.sql` |
 | `admin_global` | `supabase/migrations/20261101120500_rls_elisao_catalogo.sql` |
 
-## K. Testes como especificação (3300 testes em 270 arquivos — nomes completos em `context.json`)
+## K. Testes como especificação (3303 testes em 271 arquivos — nomes completos em `context.json`)
 
 | Arquivo | Testes | Exemplos do que o sistema DEVE fazer |
 |---|---|---|
@@ -5273,6 +5271,7 @@ Erros lançados por funções SQL (`RAISE EXCEPTION` = regra de negócio no banc
 | `src/components/cobranca/__tests__/CustomerDeepScore.test.tsx` | 3 | CustomerDeepScore · não inventa scores de bureaus nem data de consulta quando a integração não forneceu dados · apresenta somente scores externos informados por uma integração |
 | `src/components/cobranca/__tests__/MetricasPorCanal.test.tsx` | 3 | MetricasPorCanal · não projeta métricas financeiras quando não há registros reais por canal · apresenta apenas os números fornecidos por uma fonte de dados |
 | `src/components/common/StartupDiagnostic.test.tsx` | 3 | StartupDiagnostic · não bloqueia a rota pública quando a checagem falha · mantém a tela da aplicação disponível durante a verificação |
+| `src/components/conciliacao/__tests__/ConciliacaoManualDialog.test.tsx` | 3 | ConciliacaoManualDialog — fluxo de confirmação · chama mutateAsync antes de invocar onSuccess no caminho feliz · não invoca onSuccess quando mutateAsync rejeita |
 | `src/components/usuarios/__tests__/ConviteUsuarioDialog.test.tsx` | 3 | ConviteUsuarioDialog · envia o convite ao backend protegido, sem registrar um falso sucesso local · não anuncia convite quando a Edge Function falha |
 | `src/contexts/__tests__/EmpresaScopeContext.test.tsx` | 3 | EmpresaScopeContext — sincronização com sistema legado · focusEmpresa dispara current-empresa-changed e sync-financial-filters com o id correto · toggleEmpresa (modo consolidado) também dispara os eventos de sincronização |
 | `src/hooks/useSimulacaoRegimes.spec.tsx` | 3 | useSimulacaoRegimes Integration · deve alternar para resultado do servidor ao chamar sincronizarComServer · deve invalidar o resultado do servidor ao alterar parâmetros |
@@ -5519,6 +5518,12 @@ Erros lançados por funções SQL (`RAISE EXCEPTION` = regra de negócio no banc
 | `notify_performance_alert_trigger` | `supabase/migrations/20260712194415_c4e0a8ab-3005-4479-9858-77678c1e8a88.sql` |
 | `notify_performance_alert_trigger` | `supabase/migrations/20260712194438_59fca68e-c1d7-46ba-98c1-b84f68d4c48f.sql` |
 | `asaas` | `supabase/migrations/20260712215738_9b315482-89ce-40b1-8d45-d8307a89edd9.sql` |
+| `notify_bitrix24_task` | `supabase/migrations/20260712223141_stub-alerts-tables.sql` |
+| `notify_email` | `supabase/migrations/20260712223141_stub-alerts-tables.sql` |
+| `notify_n8n_webhook` | `supabase/migrations/20260712223141_stub-alerts-tables.sql` |
+| `notify_slack` | `supabase/migrations/20260712223141_stub-alerts-tables.sql` |
+| `notify_sms` | `supabase/migrations/20260712223141_stub-alerts-tables.sql` |
+| `notify_whatsapp` | `supabase/migrations/20260712223141_stub-alerts-tables.sql` |
 | `asaas` | `supabase/migrations/20260728110130_b8a2d224-0794-43a0-a42c-8bcbc86d4d55.sql` |
 | `asaas` | `supabase/migrations/20260728114852_99ef6cf7-e4b9-4b64-a0a8-3f1293380e97.sql` |
 | `asaas` | `supabase/migrations/20260728130820_c525ef8a-673f-4f31-a5cb-b2f7eea6fa35.sql` |

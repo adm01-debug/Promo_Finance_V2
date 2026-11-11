@@ -2,11 +2,16 @@
  "aviso": "GERADO AUTOMATICAMENTE por scripts/ai-context/gerar.mjs — não editar à mão; será sobrescrito.",
  "format_version": 2,
  "git": {
-  "commit": "e361b018aafd8c77ab0949b1209b7b0171d92660",
+  "commit": "85d018cc59951622b29dba2da297244f8fa6eb62",
   "branch": "main",
-  "data_commit": "2026-11-11T16:06:30Z",
+  "data_commit": "2026-11-11T13:49:51-03:00",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
   "ultimos_commits": [
+   {
+    "sha": "85d018c",
+    "data": "2026-11-11",
+    "assunto": "fix: shims para Supabase Preview — drop get_cron_jobs() antes de mudanças de return type (#131)"
+   },
    {
     "sha": "e361b01",
     "data": "2026-11-11",
@@ -126,25 +131,20 @@
     "sha": "900925a",
     "data": "2026-11-09",
     "assunto": "chore: estado final sessao merge-prs — prs.json + progresso + dossies"
-   },
-   {
-    "sha": "8eef9b0",
-    "data": "2026-11-09",
-    "assunto": "fix: sanitizar fixture deploy-log-all para remover token real (supersede #253)"
    }
   ],
-  "arquivos_mudados_7d": 315,
+  "arquivos_mudados_7d": 403,
   "pastas_mais_mudadas_30d": [
-   {
-    "pasta": "supabase/functions/_shared",
-    "mudancas": 19
-   },
    {
     "pasta": "package.json",
     "mudancas": 18
    },
    {
     "pasta": "bun.lock",
+    "mudancas": 17
+   },
+   {
+    "pasta": "supabase/functions/_shared",
     "mudancas": 17
    },
    {
@@ -172,12 +172,12 @@
     "mudancas": 7
    },
    {
-    "pasta": ".github/workflows/prod-migrate.yml",
+    "pasta": ".gitignore",
     "mudancas": 5
    },
    {
-    "pasta": ".gitignore",
-    "mudancas": 5
+    "pasta": ".github/workflows/prod-migrate.yml",
+    "mudancas": 4
    },
    {
     "pasta": ".github/workflows/supabase-linter.yml",
@@ -301,11 +301,11 @@
   "autores_30d": [
    {
     "autor": "adm01-debug",
-    "commits": 70
+    "commits": 71
    },
    {
     "autor": "devin-ai-integration[bot]",
-    "commits": 18
+    "commits": 17
    },
    {
     "autor": "dependabot[bot]",
@@ -318,9 +318,9 @@
   ]
  },
  "contagens": {
-  "arquivos_total": 3525,
-  "arquivos_codigo": 2187,
-  "linhas_codigo": 410281,
+  "arquivos_total": 3579,
+  "arquivos_codigo": 2188,
+  "linhas_codigo": 410390,
   "rotas": 128,
   "rotas_http_backend": 12,
   "vistas_por_id": 0,
@@ -329,10 +329,10 @@
   "componentes": 908,
   "hooks": 265,
   "edge_functions": 106,
-  "tabelas": 314,
-  "migrations": 947,
+  "tabelas": 315,
+  "migrations": 999,
   "cron_jobs": 21,
-  "testes": 372,
+  "testes": 373,
   "workflows": 19,
   "scripts": 104,
   "docs_md": 189
@@ -595,8 +595,8 @@
    "linhas": 45
   },
   "src/components": {
-   "arquivos": 872,
-   "linhas": 159209
+   "arquivos": 873,
+   "linhas": 159318
   },
   "src/config": {
    "arquivos": 1,
@@ -1094,10 +1094,8 @@
   ],
   "tabelas_com_drift_migration_vs_types": [
    "acoes_recomendadas",
-   "alert_configurations",
    "alertas_preditivos",
    "alertas_tributarios",
-   "alerts",
    "allowed_countries",
    "anexos_financeiros",
    "anomalia_detection_runs",
@@ -1117,6 +1115,7 @@
    "auditoria_financeira",
    "auditoria_tributaria",
    "benchmarks_setoriais",
+   "bitrix24_activities",
    "bitrix24_stage_mappings",
    "bitrix_field_mappings",
    "bitrix_sync_logs",
@@ -1136,6 +1135,7 @@
    "contas_pagar",
    "contas_receber",
    "creditos_tributarios",
+   "cron_job_logs",
    "darfs",
    "divergencias_conciliacao",
    "edge_function_logs",
@@ -1144,6 +1144,7 @@
    "elisao_regras_creditos",
    "elisao_simulacoes_regime",
    "elisao_tarefas_acionaveis",
+   "email_verifications",
    "empresas",
    "evidencias_pacotes",
    "execucoes_cobranca",
@@ -1171,10 +1172,10 @@
    "integration_secrets",
    "itens_pedido_compra",
    "lancamentos_contabeis",
-   "login_attempts",
    "logs_baixa_automatica",
    "logs_conciliacao_retroativa",
    "metas_financeiras",
+   "mfa_sessions",
    "movimentacoes",
    "negativacoes",
    "new_device_alerts",
@@ -1206,7 +1207,6 @@
    "regua_cobranca_status",
    "resumos_executivos_semanais",
    "retencoes_fonte",
-   "risk_rules",
    "saved_filter_subscriptions",
    "scim_setup_checklist",
    "scim_tokens",
@@ -1217,12 +1217,15 @@
    "templates_cobranca",
    "transacoes_bancarias",
    "transferencias",
+   "user_devices",
    "user_filter_presets",
    "user_onboarding_progress",
+   "user_passkeys",
    "user_roles",
    "user_sessions",
    "vendedores",
    "verificacoes_conformidade",
+   "webauthn_challenges",
    "webhooks_log",
    "whatsapp_conversas"
   ],
