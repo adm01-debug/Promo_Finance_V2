@@ -8,7 +8,8 @@
 -- Imprime UMA linha com UM JSON. So SELECT em catalogo e em tabelas de estado; nada de texto livre
 -- que possa carregar segredo: de cron.job sai so o nome das funcoes chamadas (nome seguido de "("),
 -- nunca o `command` inteiro, que pode ter URL, cabecalho ou chave. Ordem de toda lista e explicita
--- para o diff entre execucoes ficar estavel.
+-- para o diff entre execucoes ficar estavel (COLLATE "C": a ordem do locale do banco muda com a
+-- versao da glibc e geraria diff sem mudanca real).
 
 WITH
 -- Linhas: count(*) exato quando a estimativa do planner (reltuples, persiste entre reinicios) fica
@@ -88,7 +89,7 @@ SELECT jsonb_build_object(
 
   'extensoes', (
     SELECT coalesce(jsonb_agg(jsonb_build_object('nome', e.extname, 'versao', e.extversion,
-                                                 'schema', n.nspname) ORDER BY e.extname), '[]'::jsonb)
+                                                 'schema', n.nspname) ORDER BY e.extname COLLATE "C"), '[]'::jsonb)
       FROM pg_extension e JOIN pg_namespace n ON n.oid = e.extnamespace
   ),
 
@@ -102,22 +103,25 @@ SELECT jsonb_build_object(
              'linhas', t.linhas,
              'linhas_exatas', t.linhas_exatas,
              'bytes', t.bytes,
-             'citada_no_banco', EXISTS (SELECT 1 FROM corpos c WHERE c.txt ~ ('\m' || t.nome || '\M'))
-           ) ORDER BY t.nome), '[]'::jsonb)
+             -- Nome escapado: tabela com ( [ * + . | \ no nome derrubava o inventario inteiro com
+             -- "invalid regular expression" (ou casava com o que nao devia).
+             'citada_no_banco', EXISTS (SELECT 1 FROM corpos c
+                                         WHERE c.txt ~ ('\m' || regexp_replace(t.nome, '([][\\.^$*+?(){}|-])', '\\\1', 'g') || '\M'))
+           ) ORDER BY t.nome COLLATE "C"), '[]'::jsonb)
       FROM tabelas t
       LEFT JOIN policies p ON p.nome = t.nome
       LEFT JOIN gatilhos g ON g.oid = t.oid
   ),
 
   'cron', jsonb_build_object(
-    'config', (SELECT jsonb_object_agg(name, setting ORDER BY name) FROM pg_settings
+    'config', (SELECT jsonb_object_agg(name, setting ORDER BY name COLLATE "C") FROM pg_settings
                 WHERE name IN ('cron.use_background_workers', 'cron.max_running_jobs', 'max_worker_processes')),
     'jobs', (
       SELECT coalesce(jsonb_agg(jsonb_build_object(
                'nome', j.jobname,
                'agenda', j.schedule,
                'ativo', j.active,
-               'chama', (SELECT coalesce(jsonb_agg(DISTINCT m[1] ORDER BY m[1]), '[]'::jsonb)
+               'chama', (SELECT coalesce(jsonb_agg(DISTINCT m[1] COLLATE "C" ORDER BY m[1] COLLATE "C"), '[]'::jsonb)
                            FROM regexp_matches(j.command, '((?:public|net|cron|extensions)\.[a-z_0-9]+)\s*\(', 'g') AS m),
                'execucoes_24h', coalesce(pj.exec_24h, 0),
                'falhas_24h', coalesce(pj.falhas_24h, 0),
@@ -128,7 +132,7 @@ SELECT jsonb_build_object(
                                          ELSE round(100.0 * pj.falhas_7d / pj.exec_7d, 1) END,
                'ultima_falha', to_char(pj.ultima_falha AT TIME ZONE 'UTC', 'YYYY-MM-DD"T"HH24:MI:SS"Z"'),
                'duracao_max_s_7d', pj.duracao_max_s_7d
-             ) ORDER BY j.jobname), '[]'::jsonb)
+             ) ORDER BY j.jobname COLLATE "C"), '[]'::jsonb)
         FROM cron.job j LEFT JOIN por_job pj ON pj.jobid = j.jobid
     ),
     -- Hora com mais da metade das execucoes falhando: o cron ficou parado naquela hora.

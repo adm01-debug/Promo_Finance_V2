@@ -8,6 +8,7 @@ import {
   readSync,
   writeSync,
   existsSync,
+  linkSync,
   lstatSync,
   mkdirSync,
   readFileSync,
@@ -72,6 +73,8 @@ const nonempty = (dir) =>
     (e) => !e.isDirectory() || nonempty(join(dir, e.name))
   );
 const fail = (message, code = 1) => Object.assign(new Error(message), { code });
+// Erro de uso (argumento/flag inválido) sai com 2, distinto de falha de verificação (1).
+const usage = (message) => fail(message, 2);
 const within = (base, target) => target === base || target.startsWith(base + sep);
 const json = (path) => JSON.parse(readFileSync(path, 'utf8'));
 const atomic = (path, data, mode = 0o600) => {
@@ -100,6 +103,7 @@ const relativePath = (value) =>
   !isAbsolute(value) &&
   !value.split(/[\\/]/).includes('..') &&
   !value.includes('\0');
+const pathLike = (value) => typeof value === 'string' && (relativePath(value) || isAbsolute(value));
 const command = (value) =>
   Array.isArray(value) &&
   value.length > 0 &&
@@ -111,12 +115,23 @@ function onlyKeys(value, keys, label) {
     if (!keys.includes(k)) throw fail(`${label}: chave desconhecida ${k}`);
 }
 
+export const USAGE = `uso: node scripts/automation.mjs <comando> [opções]
+  doctor [--static]            valida config, aliases, workflow e ponte de hooks
+  test                         executa as suites registradas (node:test)
+  check|heal --ref <ref>       motor de manutenção (ref explícita obrigatória)
+  nightly --ref <ref>          grafo (ensure) + heal
+  graph [subcomando]           grafo local (install|status|mark|ensure|query|path|explain)
+  install-hooks | uninstall-hooks
+  hook <evento> -- [args]      uso interno da ponte de hooks
+opções: --root <dir>  --config <arquivo>  --help`;
+
 export function parseArgs(argv) {
   let root = process.cwd(),
     config,
     staticOnly = false,
     ref,
     action,
+    help = false,
     positional = [];
   for (let i = 0; i < argv.length; i++) {
     const a = argv[i];
@@ -126,15 +141,20 @@ export function parseArgs(argv) {
     }
     if (['--root', '--config', '--ref'].includes(a)) {
       const v = argv[++i];
-      if (!v || v.startsWith('--')) throw fail(`${a} exige valor`);
+      if (!v || v.startsWith('--')) throw usage(`${a} exige valor`);
+      // Uma ref iniciada em "-" seria lida como opção pelo git/motor.
+      if (a === '--ref' && v.startsWith('-'))
+        throw usage('--ref inválida: não pode iniciar com "-"');
       if (a === '--root') root = resolve(v);
       else if (a === '--config') config = v;
       else ref = v;
     } else if (a === '--static') staticOnly = true;
-    else if (a.startsWith('--') && action !== 'graph') throw fail(`opção desconhecida ${a}`);
+    else if ((a === '--help' || a === '-h') && action !== 'graph') help = true;
+    else if (a.startsWith('--') && action !== 'graph') throw usage(`opção desconhecida ${a}`);
     else if (!action) action = a;
     else positional.push(a);
   }
+  if (help || action === 'help') return { help: true };
   if (
     ![
       'doctor',
@@ -148,14 +168,14 @@ export function parseArgs(argv) {
       'uninstall-hooks',
     ].includes(action)
   )
-    throw fail('comando desconhecido');
-  if (staticOnly && action !== 'doctor') throw fail('--static só é aceito em doctor');
+    throw usage('comando desconhecido');
+  if (staticOnly && action !== 'doctor') throw usage('--static só é aceito em doctor');
   if (ref && !['check', 'heal', 'nightly'].includes(action))
-    throw fail('--ref só é aceito em check/heal/nightly');
+    throw usage('--ref só é aceito em check/heal/nightly');
   if (['check', 'heal', 'nightly'].includes(action) && !ref)
-    throw fail('--ref explícita obrigatória');
+    throw usage('--ref explícita obrigatória');
   if (!['graph', 'hook'].includes(action) && positional.length)
-    throw fail('argumentos adicionais não aceitos');
+    throw usage('argumentos adicionais não aceitos');
   return {
     root: resolve(root),
     config: resolve(root, config || 'scripts/automation.config.json'),
@@ -209,10 +229,8 @@ export function validateConfig(c) {
     )
       throw fail(`${k}: comando node/sh e arquivo explícito obrigatórios`);
   for (const k of ['motorConfig', 'motorSource'])
-    if (c[k] !== undefined && !relativePath(c[k]) && !isAbsolute(c[k]))
-      throw fail(`${k}: caminho inválido`);
-  if (!relativePath(c.graphConfig) && !isAbsolute(c.graphConfig || ''))
-    throw fail('graphConfig obrigatório');
+    if (c[k] !== undefined && !pathLike(c[k])) throw fail(`${k}: caminho inválido`);
+  if (!pathLike(c.graphConfig)) throw fail('graphConfig obrigatório');
   onlyKeys(c.aliases, Object.keys(c.aliases || {}), 'aliases');
   if (
     !Object.keys(c.aliases).length ||
@@ -266,10 +284,7 @@ export function validateConfig(c) {
       throw fail('ci: contrato inválido');
   }
   onlyKeys(c.nightly, ['command', 'file'], 'nightly');
-  if (
-    !command(c.nightly.command) ||
-    (c.nightly.file && !relativePath(c.nightly.file) && !isAbsolute(c.nightly.file))
-  )
+  if (!command(c.nightly.command) || (c.nightly.file && !pathLike(c.nightly.file)))
     throw fail('nightly: comando obrigatório');
   for (const k of ['toolingPatterns', 'sourcePatterns', 'requirements'])
     if (c[k] && (!Array.isArray(c[k]) || c[k].some((p) => !relativePath(p))))
@@ -281,12 +296,18 @@ export function validateConfig(c) {
     throw fail('timeoutMs inválido');
   if (c.snapshot) {
     onlyKeys(c.snapshot, ['root', 'ref'], 'snapshot');
-    if (!isAbsolute(c.snapshot.root || '') || !/^[a-f0-9]{40}$/i.test(c.snapshot.ref || ''))
+    if (
+      typeof c.snapshot.root !== 'string' ||
+      !isAbsolute(c.snapshot.root) ||
+      !/^[a-f0-9]{40}$/i.test(c.snapshot.ref || '')
+    )
       throw fail('snapshot: root absoluto/ref SHA obrigatórios');
   }
   return c;
 }
 
+// SIGHUP: terminal fechado não pode deixar o grupo filho (detached) órfão e rodando.
+const SIGNALS = ['SIGTERM', 'SIGINT', 'SIGHUP'];
 export async function execute(
   argv,
   { cwd, timeout = 300000, capture = false, env = process.env } = {}
@@ -301,10 +322,14 @@ export async function execute(
       stdio: capture ? ['ignore', 'pipe', 'pipe'] : 'inherit',
     });
     const chunks = [],
-      errors = [];
+      errors = [],
+      LIMIT = 4 * 1024 * 1024;
     let finished = false,
       timedOut = false,
       interrupted = false,
+      truncated = false,
+      size = 0,
+      errSize = 0,
       forced;
     const kill = (signal) => {
       try {
@@ -318,11 +343,11 @@ export async function execute(
       finished = true;
       clearTimeout(timer);
       clearTimeout(forced);
-      process.removeListener('SIGTERM', terminate);
-      process.removeListener('SIGINT', terminate);
+      for (const sig of SIGNALS) process.removeListener(sig, terminate);
       done({
         code,
         timedOut,
+        ...(truncated ? { truncated } : {}),
         ...(capture
           ? {
               stdout: Buffer.concat(chunks).toString('utf8'),
@@ -335,26 +360,33 @@ export async function execute(
     const terminate = () => {
       interrupted = true;
       kill('SIGTERM');
+      clearTimeout(forced);
       forced = setTimeout(() => {
         kill('SIGKILL');
         finish(130, 'interrompido');
       }, 500);
     };
-    process.once('SIGTERM', terminate);
-    process.once('SIGINT', terminate);
+    for (const sig of SIGNALS) process.once(sig, terminate);
     const timer = setTimeout(() => {
       timedOut = true;
       kill('SIGTERM');
+      clearTimeout(forced);
       forced = setTimeout(() => {
         kill('SIGKILL');
         finish(124, 'timeout');
       }, 500);
     }, timeout);
     child.stdout?.on('data', (x) => {
-      if (chunks.reduce((a, b) => a + b.length, 0) < 4 * 1024 * 1024) chunks.push(x);
+      if (size < LIMIT) {
+        chunks.push(x);
+        size += x.length;
+      } else truncated = true;
     });
     child.stderr?.on('data', (x) => {
-      if (errors.reduce((a, b) => a + b.length, 0) < 4 * 1024 * 1024) errors.push(x);
+      if (errSize < LIMIT) {
+        errors.push(x);
+        errSize += x.length;
+      } else truncated = true;
     });
     child.once('error', (e) => finish(127, e.code || 'spawn_failed'));
     child.once('close', (code, signal) => {
@@ -371,6 +403,8 @@ async function git(root, args, allowed = [0]) {
     timeout: 15000,
   });
   if (!allowed.includes(r.code)) throw fail(`git ${args[0]} falhou (${r.code})`);
+  // Saída cortada em silêncio poderia esconder arquivos (ex.: diff --cached) e aprovar por omissão.
+  if (r.truncated) throw fail(`git ${args[0]}: saída excede o limite de captura`);
   return r;
 }
 function approved(path, configPath) {
@@ -420,37 +454,142 @@ function scan(dir, prefix = '') {
   }
   return out;
 }
-function workflowEvent(text, event) {
-  const plain = text
-    .split('\n')
-    .filter((l) => !/^\s*#/.test(l))
-    .join('\n');
-  const on = /^(?:on|'on'|"on"):\s*([^\n]*)(?:\n([\s\S]*?))?(?=^\S|(?![\s\S]))/m.exec(plain);
-  const block = on ? on[0] : '';
-  return event === 'PR'
-    ? /\bpull_request\b/.test(block)
-    : /\bpush\b/.test(block) && /\bmain\b/.test(block);
+const lineOf = (text) => text.split(/\r?\n/);
+const unquote = (v) => v.trim().replace(/^(['"])(.*)\1$/, '$2');
+const noComment = (v) => v.replace(/\s+#.*$/, '').trim();
+// Entradas do nível mais raso de um bloco YAML (chave: valor, ou item "- x"), sem dependência de parser.
+function entries(lines) {
+  const out = [];
+  let base = -1;
+  for (const l of lines) {
+    if (!l.trim() || /^\s*#/.test(l)) continue;
+    const indent = l.search(/\S/);
+    if (base < 0) base = indent;
+    const text = l.trim();
+    const item = /^-\s+(.*)$/.exec(text);
+    const prev = out.at(-1);
+    // Lista no mesmo recuo da chave ("branches:\n- main") pertence à chave anterior.
+    if (indent > base || (item && indent === base && prev && !prev.item && !prev.value)) {
+      prev?.rest.push(l);
+      continue;
+    }
+    if (indent < base) break;
+    const kv = /^(['"]?)([\w.-]+)\1\s*:\s*(.*)$/.exec(text);
+    if (item) out.push({ key: unquote(noComment(item[1])), value: '', item: true, rest: [] });
+    else out.push({ key: kv ? kv[2] : '', value: kv ? noComment(kv[3]) : '', rest: [] });
+  }
+  return out;
 }
+const listOf = (v) =>
+  v.startsWith('[')
+    ? v
+        .slice(1, v.indexOf(']') < 0 ? undefined : v.indexOf(']'))
+        .split(',')
+        .map(unquote)
+        .filter(Boolean)
+    : v
+      ? [unquote(v)]
+      : [];
+const valuesOf = (e) =>
+  e.value
+    ? listOf(e.value)
+    : entries(e.rest)
+        .filter((x) => x.item)
+        .map((x) => x.key);
+// O gatilho precisa alcançar a branch main: branches/branches-ignore/tags são respeitados.
+function reachesMain(section, want) {
+  const f = {};
+  if (section.value.startsWith('{'))
+    for (const m of section.value.matchAll(
+      /(branches-ignore|branches|tags-ignore|tags)\s*:\s*(\[[^\]]*\]|[^,}\s]+)/g
+    ))
+      f[m[1]] = listOf(m[2]);
+  else
+    for (const e of entries(section.rest))
+      if (['branches', 'branches-ignore', 'tags', 'tags-ignore'].includes(e.key))
+        f[e.key] = valuesOf(e);
+  const hit = (g) => pattern(g).test('main');
+  if (f.branches) {
+    const positive = f.branches.filter((g) => !g.startsWith('!'));
+    const negative = f.branches.filter((g) => g.startsWith('!'));
+    return positive.some(hit) && !negative.some((g) => hit(g.slice(1)));
+  }
+  if (f['branches-ignore']) return !f['branches-ignore'].some(hit);
+  // Só tags/tags-ignore: push em branch não dispara o workflow.
+  return !(want === 'push' && (f.tags || f['tags-ignore']));
+}
+function workflowEvent(text, event) {
+  const lines = lineOf(text).filter((l) => !/^\s*#/.test(l));
+  const at = lines.findIndex((l) => /^(?:on|'on'|"on"):/.test(l));
+  if (at < 0) return false;
+  const head = noComment(lines[at].replace(/^(?:on|'on'|"on"):/, ''));
+  const want = event === 'PR' ? 'pull_request' : 'push';
+  if (head.startsWith('{'))
+    return event === 'PR' ? /\bpull_request\b/.test(head) : /\bpush\b/.test(head);
+  let sections;
+  if (head)
+    sections = listOf(head.startsWith('[') ? head : '[' + head + ']').map((key) => ({
+      key,
+      value: '',
+      rest: [],
+    }));
+  else {
+    const body = [];
+    for (const l of lines.slice(at + 1)) {
+      if (l.trim() && !/^\s/.test(l) && !/^-\s/.test(l)) break;
+      body.push(l);
+    }
+    sections = entries(body);
+  }
+  const section = sections.find((x) => x.key === want);
+  return Boolean(section) && reachesMain(section, want);
+}
+// Um passo desligado (continue-on-error/if: false) não conta como gate real.
+function stepDisabled(lines, at) {
+  let start = at,
+    stepIndent;
+  const own = /^(\s*)-\s/.exec(lines[at]);
+  if (own) stepIndent = own[1].length;
+  else {
+    const runIndent = lines[at].search(/\S/);
+    for (start = at - 1; start >= 0; start--) {
+      const m = /^(\s*)-\s/.exec(lines[start]);
+      if (m && m[1].length < runIndent) {
+        stepIndent = m[1].length;
+        break;
+      }
+    }
+    if (stepIndent === undefined) return false;
+  }
+  let end = at + 1;
+  while (end < lines.length && (!lines[end].trim() || lines[end].search(/\S/) > stepIndent)) end++;
+  return lines
+    .slice(start, end)
+    .some((l) =>
+      /^\s*(?:-\s+)?(?:continue-on-error\s*:\s*['"]?true['"]?|if\s*:\s*['"]?(?:false|0)['"]?)\s*(?:#.*)?$/.test(
+        l
+      )
+    );
+}
+const SWALLOWED = /\|\|\s*(?:true|:|exit\s+0)(?=\s|;|&|$)|;\s*(?:true|exit\s+0)\s*$/;
 function workflowRuns(text, commandText) {
-  const lines = text.split('\n');
-  let indent = -1;
-  for (const line of lines) {
+  const lines = lineOf(text);
+  const calls = (v) => (v === commandText || v.startsWith(commandText + ' ')) && !SWALLOWED.test(v);
+  let indent = -1,
+    runAt = -1;
+  for (const [i, line] of lines.entries()) {
     if (/^\s*#/.test(line)) continue;
     const run = /^(\s*)(?:-\s*)?run:\s*(.*)$/.exec(line);
     if (run) {
       indent = run[1].length;
+      runAt = i;
       const value = run[2].trim().replace(/^(['"])(.*)\1$/, '$2');
-      if (
-        (value === commandText || value.startsWith(commandText + ' ')) &&
-        !value.includes('|| true')
-      )
-        return true;
+      if (calls(value) && !stepDisabled(lines, i)) return true;
       continue;
     }
     if (indent >= 0 && line.trim()) {
       if (line.search(/\S/) <= indent) indent = -1;
-      else if (line.trim() === commandText || line.trim().startsWith(commandText + ' '))
-        return true;
+      else if (calls(line.trim()) && !stepDisabled(lines, runAt)) return true;
     }
   }
   return false;
@@ -490,7 +629,7 @@ async function doctor(ctx, staticOnly) {
     root,
     ...(c.snapshot ? [check(() => approved(c.snapshot.root, config))].filter(Boolean) : []),
   ];
-  const scripts = [...new Set(roots.flatMap((r) => scan(join(r, 'scripts'), 'scripts')))];
+  const scripts = [...new Set(roots.flatMap((r) => scan(join(r, 'scripts'), 'scripts')))].sort();
   const matches = (p, glob) => pattern(glob).test(p);
   for (const path of scripts)
     if (!c.registrations.some((r) => r.files.some((g) => matches(path, g))))
@@ -561,12 +700,16 @@ async function doctor(ctx, staticOnly) {
   const stateFile = await statePath(root);
   let hooks = 'not_installed';
   if (existsSync(stateFile)) {
-    const state = check(() => json(stateFile));
+    let state = check(() => json(stateFile));
+    if (state && (typeof state !== 'object' || typeof state.hooks !== 'string')) {
+      issues.push('estado da ponte inválido: ' + stateFile);
+      state = null;
+    }
     const effective = (
       await git(root, ['config', '--get', 'core.hooksPath'], [0, 1])
     ).stdout.trim();
     if (state && effective === state.hooks) hooks = 'installed';
-    else issues.push('ponte instalada não é o hooksPath efetivo');
+    else if (state) issues.push('ponte instalada não é o hooksPath efetivo');
     if (state)
       for (const event of EVENTS)
         if (!existsSync(join(state.hooks, event))) issues.push(`ponte ausente: ${event}`);
@@ -636,7 +779,7 @@ async function graph(ctx, args) {
   const action = args[0] || 'status';
   const mapped = { doctor: 'status', build: 'ensure', update: 'ensure' }[action] || action;
   if (!['install', 'status', 'mark', 'ensure', 'query', 'path', 'explain'].includes(mapped))
-    throw fail('subcomando graph desconhecido');
+    throw usage('subcomando graph desconhecido');
   return execute(
     [
       ...adapter(ctx, 'graph'),
@@ -738,6 +881,40 @@ export function removeExclude(path, addition) {
     return true;
   } finally {
     closeSync(fd);
+  }
+}
+
+// install/uninstall alteram state.json, info/exclude e core.hooksPath: duas execuções
+// simultâneas perdiam o bloco de exclude do estado. Trava por worktree, falha rápida.
+async function withLock(ctx, fn) {
+  const gitDir = resolve(ctx.root, (await git(ctx.root, ['rev-parse', '--git-dir'])).stdout.trim());
+  const lock = join(gitDir, 'repo-automation.lock');
+  for (let attempt = 0; ; attempt++) {
+    // link() é atômico: o lock nunca aparece sem o pid dentro.
+    const temp = lock + '.' + randomUUID();
+    writeFileSync(temp, String(process.pid), { mode: 0o600 });
+    try {
+      linkSync(temp, lock);
+      break;
+    } catch (e) {
+      if (e.code !== 'EEXIST') throw e;
+    } finally {
+      rmSync(temp, { force: true });
+    }
+    let alive = true;
+    try {
+      process.kill(Number(readFileSync(lock, 'utf8')), 0);
+    } catch (e) {
+      alive = e.code === 'EPERM';
+    }
+    if (alive || attempt > 0)
+      throw fail('install/uninstall-hooks já em andamento neste repositório; aguarde e repita');
+    rmSync(lock, { force: true }); // dono morreu: lock obsoleto
+  }
+  try {
+    return await fn();
+  } finally {
+    rmSync(lock, { force: true });
   }
 }
 
@@ -843,7 +1020,8 @@ async function uninstall(ctx) {
   if (!existsSync(stateFile)) return { ok: true, status: 'not_installed' };
   const state = json(stateFile),
     expected = join(ctx.root, '.tools/repo-automation/hooks');
-  if (state.root !== ctx.root || state.hooks !== expected) throw fail('estado de hooks inválido');
+  if (state.root !== ctx.root || state.hooks !== expected || !Array.isArray(state.previousLocal))
+    throw fail('estado de hooks inválido');
   for (const path of [dirname(expected), expected, join(dirname(expected), 'runtime')])
     if (existsSync(path) && lstatSync(path).isSymbolicLink())
       throw fail('diretório da ponte alterado para symlink; restauração recusada');
@@ -873,7 +1051,7 @@ async function uninstall(ctx) {
 }
 async function hook(ctx, args) {
   const event = args[0];
-  if (!EVENTS.includes(event)) throw fail('evento Git desconhecido');
+  if (!EVENTS.includes(event)) throw usage('evento Git desconhecido');
   const savedPath = await statePath(ctx.root);
   if (!existsSync(savedPath)) throw fail('ponte sem estado instalado');
   const state = json(savedPath);
@@ -937,9 +1115,23 @@ async function hook(ctx, args) {
   return { code: 0, status: 'hook_chained' };
 }
 
+function loadConfig(path) {
+  try {
+    return json(path);
+  } catch (e) {
+    throw fail(
+      e.code === 'ENOENT' ? `config ausente: ${path}` : `config ilegível (${path}): ${e.message}`
+    );
+  }
+}
+
 export async function main(argv) {
   const opts = parseArgs(argv);
-  const c = opts.action === 'uninstall-hooks' ? null : validateConfig(json(opts.config));
+  if (opts.help) {
+    console.log(USAGE);
+    return 0;
+  }
+  const c = opts.action === 'uninstall-hooks' ? null : validateConfig(loadConfig(opts.config));
   const root = (await git(opts.root, ['rev-parse', '--show-toplevel'])).stdout.trim();
     const normalize = (p) => realpathSync.native(p).toLowerCase().replace(/[\\/]+$/, '');
     if (normalize(root) !== normalize(opts.root))
@@ -979,12 +1171,24 @@ export async function main(argv) {
     const health = await doctor(ctx, true);
     if (!health.ok) throw fail('instalação bloqueada: ' + health.issues.join('; '));
   }
-  const r = await (opts.action === 'install-hooks' ? install(ctx) : uninstall(ctx));
+  const r = await withLock(ctx, () =>
+    opts.action === 'install-hooks' ? install(ctx) : uninstall(ctx)
+  );
   console.log(JSON.stringify(r));
   return 0;
 }
 
-if (process.argv[1] && resolve(process.argv[1]) === SELF) {
+// import.meta.url já vem com symlinks resolvidos; argv[1] não. Sem realpath, execução via
+// symlink ou diretório linkado saía 0 sem fazer nada (hooks e CI passavam em silêncio).
+const invoked = (() => {
+  if (!process.argv[1]) return false;
+  try {
+    return realpathSync(process.argv[1]) === realpathSync(SELF);
+  } catch {
+    return resolve(process.argv[1]) === SELF;
+  }
+})();
+if (invoked) {
   try {
     process.exitCode = await main(process.argv.slice(2));
   } catch (error) {
