@@ -1,6 +1,6 @@
 # GitHub Actions — Workflows do Promo Finance V2
 
-Referência viva dos 8 workflows ativos. Atualizada em 2026-09-27.
+Referência viva dos workflows ativos. Atualizada em 2026-09-27.
 
 ---
 
@@ -16,6 +16,8 @@ Referência viva dos 8 workflows ativos. Atualizada em 2026-09-27.
 | `functions-deploy.yml`  | `workflow_dispatch` (somente `main`)         | N/A (manual)                 | ~5 min         |
 | `staging-migrate.yml`   | `workflow_dispatch`                          | N/A (manual)                 | ~10 min        |
 | `graphify.yml`          | push `main` + schedule semanal               | Não                          | ~5 min         |
+| `contexto.yml`          | push `main` + PR (só testes) + cada 10 min   | Não (publica na branch `contexto`) | ~3 min         |
+| `inventario-estado.yml` | segunda 09:41 UTC + push `main` (rotas/menu/edges) + PR (só testes) | Não (publica na branch `inventario`) | ~3 min |
 
 ---
 
@@ -110,6 +112,31 @@ Requer 5 secrets no repositório: `PROD_DB_URL`, `STAGING_DB_URL`,
 
 Gera o Knowledge Graph em `graphify-out/`. Roda em push em `main` e
 semanalmente (terças 02:00 UTC). Resultados visíveis em `graphify-out/GRAPH_REPORT.md`.
+
+---
+
+## `contexto.yml` — Estado real do projeto para agentes de IA
+
+Três produtores independentes, um índice, uma branch gerada (`contexto`). Nunca faz push na `main`.
+
+| Job | Script | O que publica |
+| --- | --- | --- |
+| `codigo` | `scripts/ai-context/gerar.mjs` | `docs/contexto/codigo/` — rotas, módulos, hooks, edge functions, grafo, testes, convenções |
+| `banco` | `scripts/supabase_snapshot/snapshot.py` | `docs/contexto/supabase/` — banco `bwwbeyolnnzppeuhgkcd` ao vivo (tabelas, RLS, funções, triggers, cron, lints) |
+| `regras` | `scripts/regras_negocio/generate.py` | `docs/contexto/regras/` — RLS por operação, estados, validações, fórmulas, lacunas |
+| `publicar` | `scripts/regras_negocio/indice.py` | `docs/contexto/00-INDEX.md` + commit na branch `contexto` |
+| `testes` | as três suítes (351 verificações) | nada — é gate; único job que roda em `pull_request` |
+
+- O job `banco` resolve o DSN em três passos: secret `SUPABASE_DB_URL`/`PROD_DB_URL`; senão compõe com
+  `SUPABASE_DB_PASSWORD` (environment `Production`) + host do session pooler lido da Management API;
+  senão sai verde com aviso. Detalhe em `scripts/supabase_snapshot/README.md`.
+- O job `banco` também exporta `SUPABASE_PROJECT_REF`/`SUPABASE_ACCESS_TOKEN`: sem eles o `snapshot.py`
+  desliga a Management API e edge functions, auth/PostgREST, backups, rede, SSL e health saem vazios.
+- Em `pull_request` nada é gerado nem publicado — só o job `testes`.
+- Guard de project-ref: a URL precisa conter `bwwbeyolnnzppeuhgkcd`; Lovable e AtomicaBR nunca são lidos.
+- Só commita quando algo muda; métricas puras aguardam 60 min para não gerar 144 commits/dia.
+- A branch tem `vercel.json` com `ignoreCommand` próprio — a Vercel não builda preview dela.
+- Ler: `git fetch origin contexto && git show origin/contexto:docs/contexto/00-INDEX.md`.
 
 ---
 

@@ -11,7 +11,7 @@
 // qual fallback foi aplicado (prefixo hierárquico do NCM/CNAE, categoria padrão
 // da UF, etc.). Nunca retornamos 404 silencioso: devolvemos o melhor candidato
 // disponível e sinalizamos a estratégia usada, para o motor tributário decidir.
-import { createClient, type SupabaseClient } from 'https://esm.sh/@supabase/supabase-js@2.49.4';
+import { createClient, type SupabaseClient } from 'npm:@supabase/supabase-js@2.49.4';
 import { z } from '../_shared/zod.ts';
 import { corsHeaders, corsHeadersPara } from '../_shared/cors.ts';
 import {

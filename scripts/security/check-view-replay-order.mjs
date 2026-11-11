@@ -50,14 +50,17 @@ const KEYWORDS_COL = new Set([
 files.forEach((f, i) => {
   const s = fs.readFileSync(path.join(DIR, f), 'utf8');
 
-  // ALTER TABLE ... ADD COLUMN [IF NOT EXISTS] <col>
+  // ALTER TABLE ... ADD [COLUMN] [IF NOT EXISTS] <col>  (COLUMN é opcional no Postgres)
   for (const m of s.matchAll(
     /ALTER\s+TABLE\s+(?:IF\s+EXISTS\s+)?([\w."]+)([\s\S]*?);/gi
   )) {
     const t = strip(m[1]);
     for (const mc of m[2].matchAll(
-      /ADD\s+COLUMN\s+(?:IF\s+NOT\s+EXISTS\s+)?([\w"]+)/gi
-    )) note(t, mc[1], i);
+      /ADD\s+(?:COLUMN\s+)?(?:IF\s+NOT\s+EXISTS\s+)?([\w"]+)/gi
+    )) {
+      // ADD CONSTRAINT / PRIMARY KEY / ... não criam coluna.
+      if (!KEYWORDS_COL.has(strip(mc[1]))) note(t, mc[1], i);
+    }
   }
 
   // CREATE TABLE [IF NOT EXISTS] <t> (...)  — captura colunas
@@ -83,24 +86,30 @@ const findings = [];
 
 files.forEach((f, i) => {
   const raw = fs.readFileSync(path.join(DIR, f), 'utf8');
-  // Remove blocos DO $$ ... $$; para ignorar guards já corretos
-  const s = raw.replace(/DO\s*\$\$[\s\S]*?\$\$\s*;/gi,
-    '\n-- [GUARDED BLOCK REMOVIDO]\n');
+  // Remove blocos DO $tag$ ... $tag$; (qualquer tag, não só $$) para ignorar
+  // guards já corretos, e comentários, que não são executados no replay.
+  const s = raw
+    .replace(/DO\s*(\$[A-Za-z_]*\$)[\s\S]*?\1\s*;/gi, '\n')
+    .replace(/\/\*[\s\S]*?\*\//g, ' ')
+    .replace(/--[^\n]*/g, '');
 
   for (const m of s.matchAll(
     /CREATE\s+(?:OR\s+REPLACE\s+)?(?:MATERIALIZED\s+)?VIEW\s+([\w."]+)([\s\S]*?);\s*(?:\r?\n|$)/gi
   )) {
     const view = strip(m[1]);
-    const body = m[2];
+    // Sem aspas: `pc."tipo"` e `"public"."pagamentos"` são as mesmas referências.
+    const body = m[2].replace(/"/g, '');
 
     // Mapeia alias → nome de tabela real
     const alias = new Map();
     for (const ma of body.matchAll(
-      /(?:FROM|JOIN)\s+([\w."]+)(?:\s+AS)?\s+([a-z_]\w*)/gi
+      /(?:FROM|JOIN)\s+([\w.]+)(?:(?:\s+AS)?\s+([a-z_]\w*))?/gi
     )) {
       const t = strip(ma[1]);
-      const a = ma[2].toLowerCase();
-      if (!SKIP_ALIAS.has(a)) alias.set(a, t);
+      // Tabela sem alias é referenciada pelo próprio nome (`pagamentos.tipo`).
+      if (!alias.has(t)) alias.set(t, t);
+      const a = ma[2]?.toLowerCase();
+      if (a && !SKIP_ALIAS.has(a)) alias.set(a, t);
     }
 
     // Resolve "alias.coluna" → "tabela.coluna" e verifica ordem

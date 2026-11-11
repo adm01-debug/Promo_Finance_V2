@@ -12,7 +12,7 @@ class TesteLockGraphify(unittest.TestCase):
         text = (ROOT / "requirements-linux-py311.lock").read_text()
         stanzas = re.split(r"\n(?=[A-Za-z0-9_.-]+==)", text)
         packages = [stanza for stanza in stanzas if re.match(r"[A-Za-z0-9_.-]+==", stanza)]
-        self.assertEqual(len(packages), 31)
+        self.assertEqual(len(packages), 32)
         for stanza in packages:
             self.assertRegex(stanza.splitlines()[0], r"^[A-Za-z0-9_.-]+==[^ \\]+")
             self.assertIn("--hash=sha256:", stanza)

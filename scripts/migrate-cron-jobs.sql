@@ -1,9 +1,11 @@
 -- scripts/migrate-cron-jobs.sql
 -- Recria os 13 cron jobs do projeto de origem no projeto de destino.
 --
--- Placeholders substituídos por envsubst no wrapper migrate-cron-jobs.sh:
---   ${PROJECT_REF}  → ref do projeto destino
---   ${ANON_KEY}     → anon key do destino
+-- Placeholders substituídos por envsubst no wrapper migrate-cron-jobs.sh
+-- (sintaxe cifrão + chaves; sem o cifrão aqui para o envsubst não expandir
+-- este comentário):
+--   {PROJECT_REF}  → ref do projeto destino
+--   {ANON_KEY}     → anon key do destino
 --
 -- Idempotente: cada job é desagendado (se existir) antes de recriar.
 -- Requer extensão pg_cron.

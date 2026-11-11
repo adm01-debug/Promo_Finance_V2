@@ -23,20 +23,38 @@ def source_hits(graph, term):
 
 
 def rg_hits(root, term, files):
-    result = subprocess.run(["rg", "-l", "-F", "--", term, *files], cwd=root,
-                            capture_output=True, text=True)
+    try:
+        result = subprocess.run(["rg", "-l", "-F", "--", term, *files], cwd=root,
+                                capture_output=True, text=True)
+    except FileNotFoundError:
+        raise FileNotFoundError("ripgrep ('rg') não está instalado — instale com 'apt install ripgrep' ou 'brew install ripgrep'")
     if result.returncode not in (0, 1):
         raise subprocess.CalledProcessError(result.returncode, result.args)
     return sorted(line for line in result.stdout.splitlines() if line)
 
 
 def median_time(callable_, repetitions):
+    if repetitions < 1:
+        raise ValueError("Mediana exige ao menos uma repetição.")
     samples, result = [], None
     for _ in range(repetitions):
         start = perf_counter()
         result = callable_()
         samples.append((perf_counter() - start) * 1000)
     return round(statistics.median(samples), 4), result
+
+
+def load_cases(path):
+    """Benchmark sem caso, ou com caso incompleto, não mede nada: falha em vez de reportar zero."""
+    cases = json.loads(path.read_text())
+    if not isinstance(cases, list) or not cases:
+        raise ValueError("Arquivo de casos precisa ser uma lista não vazia.")
+    for case in cases:
+        if not isinstance(case, dict) or any(
+                not isinstance(case.get(key), str) or not case[key]
+                for key in ("profile", "term", "expectedSource")):
+            raise ValueError("Cada caso precisa de profile, term e expectedSource em texto.")
+    return cases
 
 
 def run_case(root, case, repetitions=5):
@@ -69,7 +87,7 @@ def main():
     args = parser.parse_args()
     if args.repetitions < 3:
         parser.exit(2, "Use ao menos três repetições.\n")
-    cases = json.loads(args.cases.read_text())
+    cases = load_cases(args.cases)
     results = [run_case(ROOT, case, args.repetitions) for case in cases]
     summary = {
         "cases": len(results),

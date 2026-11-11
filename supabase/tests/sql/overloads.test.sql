@@ -141,11 +141,11 @@ SELECT is(
 );
 
 -- ---------------------------------------------------------------------------
--- 6) Índice de investigação IP/Geo em auth_logs existe
+-- 6) Índice de investigação IP/Geo em auth_logs removido (idle, ver STEP 17)
 -- ---------------------------------------------------------------------------
-SELECT has_index(
+SELECT hasnt_index(
   'public', 'auth_logs', 'idx_auth_logs_ip_created',
-  'índice idx_auth_logs_ip_created deve existir'
+  'índice idx_auth_logs_ip_created não deve existir após o drop de índices idle'
 );
 
 -- ---------------------------------------------------------------------------

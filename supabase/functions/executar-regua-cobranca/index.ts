@@ -1,4 +1,4 @@
-import { createClient, type SupabaseClient } from 'https://esm.sh/@supabase/supabase-js@2.49.4';
+import { createClient, type SupabaseClient } from 'npm:@supabase/supabase-js@2.49.4';
 import { dataAlvoUtc, normalizarCanais, normalizarDiasGatilho, type CanalRegua } from './domain.ts';
 import { z } from '../_shared/zod.ts';
 import { corsHeaders, corsHeadersPara } from '../_shared/cors.ts';

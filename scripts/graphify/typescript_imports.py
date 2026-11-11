@@ -9,24 +9,32 @@ IMPORT_PATTERNS = (
     ("type_import", re.compile(r"\bimport\s+type\s+[^;]+?\s+from\s*(['\"])([^'\"]+)\1")),
     ("static_import", re.compile(r"\bimport\s+(?!type\b|['\"])[^;]+?\s+from\s*(['\"])([^'\"]+)\1")),
     ("side_effect_import", re.compile(r"\bimport\s*(['\"])([^'\"]+)\1")),
-    ("reexport", re.compile(r"\bexport\s+(?:type\s+)?(?:\*|\{[^}]*\})\s+from\s*(['\"])([^'\"]+)\1")),
+    ("reexport", re.compile(r"\bexport\s+(?:type\s+)?(?:\*(?:\s+as\s+[\w$]+)?|\{[^}]*\})\s+from\s*(['\"])([^'\"]+)\1")),
     ("lazy_import", re.compile(r"\bimport\s*\(\s*(['\"])([^'\"]+)\1\s*\)")),
 )
 SOURCE_SUFFIXES = (".ts", ".tsx", ".js", ".jsx")
+# Só comentário que começa a linha: os demais (após código) exigiriam um lexer TypeScript completo.
+FULL_LINE_COMMENT = re.compile(r"^[ \t]*(?://[^\n]*|/\*.*?\*/)", re.M | re.S)
 
 
 def line_of(text, position):
     return text.count("\n", 0, position) + 1
 
 
+def mask_comments(text):
+    """Troca comentários de linha inteira por espaços, preservando posições e quebras de linha."""
+    return FULL_LINE_COMMENT.sub(lambda match: re.sub(r"[^\n]", " ", match.group(0)), text)
+
+
 def extract_imports(relative, text):
-    found, occupied = [], set()
+    found, occupied_ranges = [], []
+    text = mask_comments(text)
     for kind, pattern in IMPORT_PATTERNS:
         for match in pattern.finditer(text):
-            span = range(match.start(), match.end())
-            if any(position in occupied for position in span):
+            ms, me = match.start(), match.end()
+            if any(ms < e and me > s for s, e in occupied_ranges):
                 continue
-            occupied.update(span)
+            occupied_ranges.append((ms, me))
             found.append({
                 "kind": kind,
                 "specifier": match.group(2),

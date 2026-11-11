@@ -32,7 +32,9 @@ def arquivos_ts() -> list[str]:
     saida: list[str] = []
     for base, _dirs, nomes in os.walk(RAIZ):
         for nome in nomes:
-            if nome.endswith(".ts"):
+            # .tsx também: o resolvedor abaixo já aceita import de .tsx, e sem varrê-lo
+            # a contaminação parava nele e não chegava a quem o importa.
+            if nome.endswith((".ts", ".tsx")):
                 saida.append(os.path.join(base, nome))
     return sorted(saida)
 
@@ -50,7 +52,10 @@ def main() -> int:
 
     for caminho in todos:
         try:
-            texto = open(caminho, encoding="utf-8").read()
+            # errors="replace": um byte inválido num .ts derrubava o script inteiro com
+            # UnicodeDecodeError (o `except OSError` não o cobre) e a lista saía vazia.
+            with open(caminho, encoding="utf-8", errors="replace") as arquivo:
+                texto = arquivo.read()
         except OSError:
             continue
         conteudo[caminho] = texto
@@ -63,9 +68,14 @@ def main() -> int:
             if not spec.startswith("."):
                 continue
             alvo = os.path.normpath(os.path.join(os.path.dirname(caminho), spec))
-            if not alvo.endswith(".ts"):
-                alvo += ".ts"
-            if os.path.isfile(alvo):
+            # Resolve extensão ou index.ts quando spec é diretório
+            candidates = [alvo + ".ts", alvo + ".tsx", os.path.join(alvo, "index.ts"), os.path.join(alvo, "index.tsx")]
+            if not alvo.endswith((".ts", ".tsx")):
+                for c in candidates:
+                    if os.path.isfile(c):
+                        locais.add(c)
+                        break
+            elif os.path.isfile(alvo):
                 locais.add(alvo)
         deps[caminho] = locais
 

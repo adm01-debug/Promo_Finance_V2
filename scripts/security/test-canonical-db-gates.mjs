@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 
 import { execFileSync } from "node:child_process";
+import { realpathSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 
 export const EXPECTED_PROJECT_REF = "bwwbeyolnnzppeuhgkcd";
@@ -129,7 +130,6 @@ export const ALLOWED_LITERAL_TRUE_POLICIES = Object.freeze([
   allowPolicy("ufs", "ufs_select_authenticated", "SELECT", "authenticated"),
   allowPolicy("elisao_regras_creditos", "regras_creditos_leitura", "SELECT", "authenticated"),
   allowPolicy("asaas_payment_links", "Service role full access asaas_payment_links", "ALL", "service_role"),
-  allowPolicy("estrategias_elisao_catalogo", "estrategias_elisao_catalogo_select", "SELECT", "authenticated"),
 ]);
 
 export const ALLOWED_ANON_WRITE_GRANTS = Object.freeze([
@@ -329,6 +329,14 @@ export function evaluateFixedPolicies(rows, expected = EXPECTED_FIXED_POLICIES) 
     const actualQual = normalizeExpression(actual.qual);
     const actualWithCheck = normalizeExpression(actual.with_check);
 
+    // Conter o fragmento esperado não basta: `(user_id = auth.uid()) OR true`
+    // contém o predicado e libera todas as linhas.
+    for (const [campo, expressao] of [["qual", actual.qual], ["with_check", actual.with_check]]) {
+      if (hasTrueDisjunction(expressao)) {
+        failures.push(`${entry.tableName}.${entry.policyName} ${campo} anulado por "OR true"`);
+      }
+    }
+
     for (const fragment of entry.qualMustInclude) {
       if (!actualQual.includes(normalizeExpression(fragment))) {
         failures.push(`${entry.tableName}.${entry.policyName} qual sem "${fragment}"`);
@@ -347,6 +355,11 @@ export function evaluateFixedPolicies(rows, expected = EXPECTED_FIXED_POLICIES) 
   }
 
   return { checked: expected.length };
+}
+
+export function hasTrueDisjunction(value) {
+  const texto = String(value ?? "").toLowerCase();
+  return /\bor\s*\(*\s*true\b/.test(texto) || /\btrue\s*\)*\s*or\b/.test(texto);
 }
 
 export function evaluateLiteralTruePolicies(rows, allowlist = ALLOWED_LITERAL_TRUE_POLICIES) {
@@ -595,6 +608,8 @@ export async function queryReadOnlyCatalog({ fetchImpl, accessToken, projectRef,
       accept: "application/json",
     },
     body: JSON.stringify({ query: sql }),
+    // Sem resposta em 30s a consulta aborta e o gate reprova, em vez de pendurar o job.
+    signal: AbortSignal.timeout(30_000),
   });
 
   const rawBody = await response.text();
@@ -664,9 +679,19 @@ async function main() {
   );
 }
 
-const isDirectExecution = process.argv[1] && fileURLToPath(import.meta.url) === process.argv[1];
+// O Node resolve symlinks do módulo principal, mas não de `process.argv[1]`:
+// invocado por um caminho com symlink a comparação crua falhava e o gate live
+// saía 0 sem consultar o banco.
+function isDirectExecution() {
+  if (!process.argv[1]) return false;
+  try {
+    return realpathSync(process.argv[1]) === realpathSync(fileURLToPath(import.meta.url));
+  } catch {
+    return false;
+  }
+}
 
-if (isDirectExecution) {
+if (isDirectExecution()) {
   main().catch((error) => {
     console.error(`❌ ${error instanceof Error ? error.message : String(error)}`);
     process.exit(1);

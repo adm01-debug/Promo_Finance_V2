@@ -1,6 +1,8 @@
 #!/usr/bin/env bash
-# integrity/run.sh — Executa 01→05 em ordem, agrega JSONL e falha com exit code
-# igual ao número de assertions em fail.
+# integrity/run.sh — Executa todos os passos NN_*.sql|sh em ordem, agrega JSONL
+# e falha com exit code igual ao número de assertions em fail (teto 255).
+# Passo que não consegue rodar (psql/script com erro) vira uma assertion
+# "<passo>.execucao" em fail e os demais passos seguem.
 #
 # Env: STAGING_DB_URL, STAGING_PROJECT_REF, STAGING_ANON_KEY, TEST_ADMIN_JWT?
 set -euo pipefail
@@ -8,7 +10,21 @@ set -euo pipefail
 DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 BASELINE="$DIR/baseline"
 JSON_ONLY=0
+if [ "${1:-}" = "--help" ] || [ "${1:-}" = "-h" ]; then
+  echo "Uso: $(basename "$0") [--json-only] [-h|--help]"
+  echo ""
+  echo "Opcoes:"
+  echo "  --json-only   Emite apenas JSONL em stdout (sem cabeçalho humano)"
+  echo "  -h, --help    Exibe esta ajuda"
+  echo ""
+  echo "Env obrigatório: STAGING_DB_URL, STAGING_PROJECT_REF, STAGING_ANON_KEY"
+  exit 0
+fi
 [ "${1:-}" = "--json-only" ] && JSON_ONLY=1
+if [ $# -gt 1 ] || { [ $# -eq 1 ] && [ "$JSON_ONLY" -eq 0 ]; }; then
+  echo "argumento desconhecido: $* (use --json-only ou --help)" >&2
+  exit 2
+fi
 
 : "${STAGING_DB_URL:?STAGING_DB_URL obrigatório}"
 : "${STAGING_PROJECT_REF:?STAGING_PROJECT_REF obrigatório}"
@@ -29,27 +45,45 @@ emit() {
 
 run_sql() {
   local file="$1" step="$2"
-  local schema_counts allowed policies crons
+  local schema_counts allowed policies crons secdef saida rc=0 raw_line lixo=""
   schema_counts="$(cat "$BASELINE/schema-counts.json" 2>/dev/null || echo '{}')"
   allowed="$(cat "$BASELINE/allowed-public-tables.json" 2>/dev/null || echo '[]')"
   policies="$(cat "$BASELINE/expected-policies.json" 2>/dev/null || echo '{}')"
   crons="$(cat "$BASELINE/expected-crons.json" 2>/dev/null || echo '[]')"
+  # 07_exec_grants.sql lê :'allowed_secdef'; sem esta variável o psql abortava
+  # no passo 07 e o run inteiro morria com exit 3 e stdout vazio.
+  secdef="$(cat "$BASELINE/allowed-secdef-exec.json" 2>/dev/null || echo '{"anon":[],"authenticated":[]}')"
 
-  psql "$STAGING_DB_URL" -v ON_ERROR_STOP=1 -A -t -F $'\t' \
+  # -q: sem ele cada \pset do .sql imprime "Output format is unaligned." etc.,
+  # que entravam no JSONL como assertions de status vazio.
+  saida="$(psql "$STAGING_DB_URL" -v ON_ERROR_STOP=1 -q -A -t -F $'\t' \
     -v baseline_counts="$schema_counts" \
     -v allow_public="$allowed" \
     -v expected_policies="$policies" \
     -v expected_crons="$crons" \
-    -f "$file" 2>&1 | while IFS=$'\t' read -r ass st exp act detail; do
+    -v allowed_secdef="$secdef" \
+    -f "$file" 2>&1)" || rc=$?
+
+  while IFS='' read -r raw_line; do
+      # Separa em até 5 campos pelo primeiro \t para suportar `detail` com tabs.
+      IFS=$'\t' read -r ass st exp act detail <<< "$raw_line"
       [ -z "$ass" ] && continue
-      emit "$step" "$ass" "$st" "$exp" "$act" "$detail"
-    done
+      case "$st" in
+        pass|fail|unverified) emit "$step" "$ass" "$st" "$exp" "$act" "$detail" ;;
+        # Qualquer outra linha é mensagem do psql (ERROR/NOTICE), não assertion.
+        *) lixo="${lixo}${raw_line} " ;;
+      esac
+  done <<< "$saida"
+
+  if [ "$rc" -ne 0 ]; then
+    emit "$step" "${step}.execucao" fail "psql rc=0" "psql rc=$rc" "${lixo:0:300}"
+  fi
 }
 
 # Executa TODOS os passos em ordem lexicográfica (01…NN). Antes desta versão a
 # lista era hard-coded em 01→05, então os gates #26–#34 (06_secdef …
 # 13_unused_indexes) existiam no repositório mas nunca eram executados.
-for arquivo in "$DIR"/[0-9][0-9]_*.{sql,sh}; do
+for arquivo in "$DIR"/[0-9][0-9]_*; do
   [ -e "$arquivo" ] || continue
   nome="$(basename "$arquivo")"
   step="${nome%.*}"; step="${step#[0-9][0-9]_}"
@@ -59,10 +93,12 @@ for arquivo in "$DIR"/[0-9][0-9]_*.{sql,sh}; do
       run_sql "$arquivo" "$step"
       ;;
     *.sh)
+      rc_sh=0
       STAGING_PROJECT_REF="$STAGING_PROJECT_REF" \
       STAGING_ANON_KEY="$STAGING_ANON_KEY" \
       TEST_ADMIN_JWT="${TEST_ADMIN_JWT:-}" \
-        bash "$arquivo" >> "$OUT"
+        bash "$arquivo" >> "$OUT" || rc_sh=$?
+      [ "$rc_sh" -eq 0 ] || emit "$step" "${step}.execucao" fail "rc=0" "rc=$rc_sh" "$nome terminou com erro"
       ;;
   esac
 done
@@ -82,4 +118,6 @@ else
   echo "total=$TOTAL fails=$FAILS unverified=$UNVER"
 fi
 
+# Exit code é módulo 256: 256 falhas viraria 0 (sucesso).
+[ "$FAILS" -gt 255 ] && FAILS=255
 exit "$FAILS"

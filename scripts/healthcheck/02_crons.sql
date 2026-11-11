@@ -24,7 +24,9 @@ BEGIN
     RETURN;
   END IF;
 
-  SELECT count(*), count(*) FILTER (WHERE active) INTO total, active FROM cron.job;
+  -- Coluna qualificada (j.active): sem o alias ela colide com a variável
+  -- `active` deste bloco e o plpgsql aborta com "column reference is ambiguous".
+  SELECT count(*), count(*) FILTER (WHERE j.active) INTO total, active FROM cron.job j;
 
   RAISE NOTICE '%', jsonb_build_object(
     'ts', to_char(now() AT TIME ZONE 'UTC','YYYY-MM-DD"T"HH24:MI:SS"Z"'),
