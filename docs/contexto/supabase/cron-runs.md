@@ -77,9 +77,9 @@
 
 | início (UTC) | status | duração (s) | mensagem |
 |---|---|---|---|
+| 2026-11-11 11:45:00 | succeeded | 0.03 | 1 row |
 | 2026-11-11 10:45:00 | succeeded | 0.01 | 1 row |
 | 2026-11-11 09:45:00 | succeeded | 0.01 | 1 row |
-| 2026-11-11 08:45:00 | succeeded | 0.02 | 1 row |
 
 
 ## 13 · maintain-monthly-partitions
@@ -193,18 +193,18 @@ _nenhum_
 
 | início (UTC) | status | duração (s) | mensagem |
 |---|---|---|---|
+| 2026-11-11 11:45:00 | succeeded | 0.01 | 1 row |
 | 2026-11-11 11:30:00 | succeeded | 0.05 | 1 row |
 | 2026-11-11 11:15:00 | succeeded | 0.06 | 1 row |
-| 2026-11-11 11:00:00 | succeeded | 0.02 | 1 row |
 
 
 ## 33 · webhook-retry-worker-1min
 
 | início (UTC) | status | duração (s) | mensagem |
 |---|---|---|---|
-| 2026-11-11 11:39:00 | succeeded | 0.02 | 1 row |
-| 2026-11-11 11:38:00 | succeeded | 0.01 | 1 row |
-| 2026-11-11 11:37:00 | succeeded | 0.02 | 1 row |
+| 2026-11-11 11:47:00 | succeeded | 0.04 | 1 row |
+| 2026-11-11 11:46:00 | succeeded | 0.01 | 1 row |
+| 2026-11-11 11:45:00 | succeeded | 0.01 | 1 row |
 
 
 ## 34 · auditar-acessos-cross-tenant
@@ -238,9 +238,9 @@ _nenhum_
 
 | início (UTC) | status | duração (s) | mensagem |
 |---|---|---|---|
-| 2026-11-11 11:39:00 | succeeded | 0.01 | 1 row |
-| 2026-11-11 11:38:00 | succeeded | 0.02 | 1 row |
-| 2026-11-11 11:37:00 | succeeded | 0.01 | 1 row |
+| 2026-11-11 11:47:00 | succeeded | 0.01 | 1 row |
+| 2026-11-11 11:46:00 | succeeded | 0.03 | 1 row |
+| 2026-11-11 11:45:00 | succeeded | 0.04 | 1 row |
 
 
 ## 40 · gerar-snapshots-conformidade-mensal
