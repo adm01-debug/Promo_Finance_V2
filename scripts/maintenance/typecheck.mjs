@@ -13,8 +13,14 @@ if (
   console.error('Projetos TypeScript explícitos obrigatórios');
   process.exit(1);
 }
-const { req, dir } = tool(root, 'typescript'),
+let req, dir, ts;
+try {
+  ({ req, dir } = tool(root, 'typescript'));
   ts = req('typescript');
+} catch (e) {
+  console.error(e.message || `Não foi possível carregar o TypeScript: ${e.code}`);
+  process.exit(1);
+}
 const hasApi =
   typeof ts.readConfigFile === 'function' &&
   typeof ts.parseJsonConfigFileContent === 'function' &&
@@ -29,12 +35,18 @@ try {
     if (hasApi) {
       const parsed = ts.readConfigFile(filename, ts.sys.readFile);
       if (parsed.error) {
+        console.error(
+          `Não foi possível ler o projeto TypeScript ${config}: ${ts.flattenDiagnosticMessageText?.(parsed.error.messageText, '\n') ?? parsed.error.messageText}`
+        );
         process.exitCode = 1;
         break;
       }
       const resolved = ts.parseJsonConfigFileContent(parsed.config, ts.sys, path.dirname(filename));
       if (resolved.errors.length || !resolved.fileNames.length) {
-        console.error(`Projeto TypeScript vazio ou inválido: ${config}`);
+        const detail = resolved.errors[0]?.messageText;
+        console.error(
+          `Projeto TypeScript vazio ou inválido: ${config}${detail ? ` (${ts.flattenDiagnosticMessageText?.(detail, '\n') ?? detail})` : ''}`
+        );
         process.exitCode = 1;
         break;
       }
@@ -58,7 +70,9 @@ try {
           .split('\n')
           .some((f) => path.isAbsolute(f.trim()) && /\.[cm]?[jt]sx?$/.test(f.trim()))
       ) {
-        console.error(`Projeto TypeScript vazio ou inválido na CLI: ${config}`);
+        console.error(
+          `Projeto TypeScript vazio ou inválido na CLI: ${config}${listed.error ? ` (${listed.error.code})` : ''}`
+        );
         process.exitCode = listed.status || 1;
         break;
       }
@@ -72,6 +86,8 @@ try {
       stdio: 'inherit',
     });
     if (result.error || result.status !== 0) {
+      if (result.error)
+        console.error(`Não foi possível executar o TypeScript: ${result.error.code}`);
       process.exitCode = result.status || 1;
       break;
     }

@@ -28,13 +28,53 @@ const ARQUIVOS_MENU = [
   'src/components/layout/sidebar/SidebarNavGroups.tsx',
   'src/components/layout/sidebar/sidebarFiscalNavGroup.ts',
 ];
-const EXTENSOES = ['.tsx', '.ts', '.jsx', '.js', '/index.tsx', '/index.ts'];
+// .ts antes de .tsx, como o TS e o Vite resolvem (src/hooks tem usePrefetchRoutes.ts e .tsx).
+const EXTENSOES = ['.ts', '.tsx', '.js', '.jsx', '/index.ts', '/index.tsx', '/index.js', '/index.jsx'];
 // Pastas que o fecho de imports segue sem gastar salto (codigo da propria pagina e infraestrutura).
 const PASTAS_LIVRES = ['src/hooks', 'src/lib', 'src/contexts', 'src/integrations'];
 
 const ler = (raiz, rel) => fs.readFileSync(path.join(raiz, rel), 'utf8');
 const rel = (raiz, abs) => path.relative(raiz, abs).split(path.sep).join('/');
 const unico = (lista) => [...new Set(lista)].sort();
+// Ordem por code point, igual em qualquer maquina: localeCompare depende da versao do ICU do Node.
+const cmp = (a, b) => (a < b ? -1 : a > b ? 1 : 0);
+
+/**
+ * Texto sem comentarios (de linha e de bloco, inclusive o de bloco dentro de chaves do JSX), com o
+ * mesmo comprimento e as mesmas quebras de linha. Pula string/template para nao confundir `'http://x'` com comentario;
+ * aspas simples/duplas nao atravessam linha (apostrofo em texto JSX nao desalinha o resto do arquivo).
+ * Sem isto, `// <Route path="/velha" ...>` ou `// import x from './sumiu'` viravam rota/import reais.
+ */
+export function semComentarios(texto) {
+  const partes = [];
+  const n = texto.length;
+  let ini = 0;
+  let i = 0;
+  while (i < n) {
+    const c = texto[i];
+    if (c === '"' || c === "'" || c === '`') {
+      i++;
+      while (i < n && texto[i] !== c) {
+        if (texto[i] === '\\') i++;
+        else if (c !== '`' && texto[i] === '\n') break;
+        i++;
+      }
+      i++;
+    } else if (c === '/' && texto[i + 1] === '/') {
+      const fim = texto.indexOf('\n', i);
+      const f = fim === -1 ? n : fim;
+      partes.push(texto.slice(ini, i), ' '.repeat(f - i));
+      i = ini = f;
+    } else if (c === '/' && texto[i + 1] === '*') {
+      const fim = texto.indexOf('*/', i + 2);
+      const f = fim === -1 ? n : fim + 2;
+      partes.push(texto.slice(ini, i), texto.slice(i, f).replace(/[^\n]/g, ' '));
+      i = ini = f;
+    } else i++;
+  }
+  partes.push(texto.slice(ini));
+  return partes.join('');
+}
 
 /** Resolve um especificador de import para um arquivo do repo (null = externo, undefined = local inexistente). */
 export function resolverImport(raiz, deArquivoAbs, especificador) {
@@ -48,9 +88,12 @@ export function resolverImport(raiz, deArquivoAbs, especificador) {
 }
 
 /** Imports de um arquivo: [{ especificador, nomes[] }] (estaticos e import() dinamico). */
-export function extrairImports(texto) {
+export function extrairImports(bruto) {
+  const texto = semComentarios(bruto);
   const out = [];
-  for (const m of texto.matchAll(/import\s+(type\s+)?([\s\S]*?)\s+from\s+['"]([^'"]+)['"]/g)) {
+  // `[^'";]*?`: a lista de nomes nao atravessa o fim de outro import (`import './a.css';` seguido de
+  // `import type { T } from 'x'` fazia o de tipo passar por import de valor).
+  for (const m of texto.matchAll(/\bimport\s+(type\s+)?([^'";]*?)\s+from\s+['"]([^'"]+)['"]/g)) {
     if (m[1]) continue;
     const nomes = [...m[2].matchAll(/\b([A-Za-z_$][\w$]*)\b(?!\s*as\b)/g)].map((x) => x[1])
       .filter((n) => !['type', 'as', 'default'].includes(n));
@@ -88,7 +131,8 @@ function constantesDeString(texto) {
  * Chamadas ao Supabase num texto: tabelas (`.from` do cliente e `/rest/v1/<tabela>`), buckets
  * (`storage.from`), RPCs (`.rpc`) e edges (`functions.invoke`, `invokeEdge`, `/functions/v1/<edge>`).
  */
-export function extrairChamadas(texto) {
+export function extrairChamadas(bruto) {
+  const texto = semComentarios(bruto);
   const pegar = (re) => [...texto.matchAll(re)].map((m) => m[1]);
   const consts = constantesDeString(texto);
   const tabelas = [];
@@ -152,7 +196,7 @@ export function fechoDaRota(raiz, arquivoPaginaAbs) {
   }
   return {
     arquivos_lidos: saltosVistos.size,
-    hooks: [...hooks.entries()].map(([nome, arquivo]) => ({ nome, arquivo })).sort((a, b) => a.nome.localeCompare(b.nome)),
+    hooks: [...hooks.entries()].map(([nome, arquivo]) => ({ nome, arquivo })).sort((a, b) => cmp(a.nome, b.nome)),
     buckets: unico(chamadas.buckets),
     edges: unico(chamadas.edges),
     rpcs: unico(chamadas.rpcs),
@@ -161,21 +205,128 @@ export function fechoDaRota(raiz, arquivoPaginaAbs) {
   };
 }
 
+/** Fim da tag de abertura que comeca em `ini` (logo apos `<Route`): posicao do `>` e se fecha em `/>`. */
+function fimDaTag(texto, ini) {
+  let prof = 0;
+  for (let i = ini; i < texto.length; i++) {
+    const c = texto[i];
+    if (c === '"' || c === "'" || c === '`') {
+      for (i++; i < texto.length && texto[i] !== c; i++) {
+        if (texto[i] === '\\') i++;
+        else if (c !== '`' && texto[i] === '\n') break;
+      }
+    } else if (c === '{') prof++;
+    else if (c === '}') prof--;
+    else if (c === '>' && prof <= 0) return { fim: i, autoFecha: /\/\s*$/.test(texto.slice(ini, i)) };
+  }
+  return { fim: texto.length, autoFecha: true };
+}
+
+/** Atributos de nivel zero de uma tag: nome -> texto cru do valor (`"/x"`, `{...}`) ou `true`. */
+function atributosDaTag(props) {
+  const attrs = new Map();
+  const n = props.length;
+  let i = 0;
+  const pular = (abre, fecha) => { // balanceia {..}; strings dentro das chaves nao contam chaves
+    let prof = 0;
+    const ini = i;
+    for (; i < n; i++) {
+      const c = props[i];
+      if (c === '"' || c === "'" || c === '`') {
+        for (i++; i < n && props[i] !== c; i++) if (props[i] === '\\') i++;
+      } else if (c === abre) prof++;
+      else if (c === fecha && --prof === 0) { i++; break; }
+    }
+    return props.slice(ini, i);
+  };
+  while (i < n) {
+    if (props[i] === '{') { pular('{', '}'); continue; } // {...spread}
+    const nome = /^[A-Za-z_][\w:.-]*/.exec(props.slice(i));
+    if (!nome) { i++; continue; }
+    i += nome[0].length;
+    const resto = /^\s*=\s*/.exec(props.slice(i));
+    if (!resto) { attrs.set(nome[0], true); continue; }
+    i += resto[0].length;
+    const c = props[i];
+    if (c === '"' || c === "'") {
+      const fim = props.indexOf(c, i + 1);
+      const f = fim === -1 ? n : fim + 1;
+      attrs.set(nome[0], props.slice(i, f));
+      i = f;
+    } else if (c === '{') attrs.set(nome[0], pular('{', '}'));
+    else attrs.set(nome[0], '');
+  }
+  return attrs;
+}
+
+/** Literal de string de um valor de atributo (`"/x"`, `{'/x'}`, `{"/x"}`); null se for expressao. */
+function literalDoAtributo(valor) {
+  if (typeof valor !== 'string') return null;
+  const cru = valor.trim().replace(/^\{\s*([\s\S]*?)\s*\}$/, '$1');
+  const m = /^(["'`])([^"'`\\]*)\1$/.exec(cru);
+  return m && !cru.includes('${') ? m[2] : null;
+}
+
+/** `/a` + `b` -> `/a/b`; caminho absoluto ou sem pai fica como esta. */
+function juntarCaminho(pai, filho) {
+  if (filho.startsWith('/') || !pai) return filho;
+  const junto = `${pai.replace(/\/+$/, '')}/${filho}`.replace(/\/{2,}/g, '/');
+  return junto.length > 1 ? junto.replace(/\/+$/, '') : junto;
+}
+
+/**
+ * Cada `<Route>` do trecho JSX (ja sem comentarios), com aninhamento: caminho relativo de rota filha
+ * e rota `index` herdam o caminho do pai; rota de layout sem `path` so repassa o do pai.
+ */
+export function lerRoutesDoJsx(corpo) {
+  const eventos = [];
+  const re = /<Route(?![\w.-])|<\/Route\s*>/g;
+  let m;
+  while ((m = re.exec(corpo))) {
+    if (m[0][1] === '/') eventos.push({ ini: m.index, fecha: true });
+    else {
+      const { fim, autoFecha } = fimDaTag(corpo, m.index + m[0].length);
+      eventos.push({ ini: m.index, props: corpo.slice(m.index + m[0].length, fim), autoFecha });
+      re.lastIndex = fim;
+    }
+  }
+  const pilha = [];
+  const rotas = [];
+  eventos.forEach((ev, k) => {
+    if (ev.fecha) { pilha.pop(); return; }
+    const pedaco = corpo.slice(ev.ini, k + 1 < eventos.length ? eventos[k + 1].ini : corpo.length);
+    const attrs = atributosDaTag(ev.props);
+    const pai = pilha.at(-1) ?? '';
+    const proprio = attrs.has('path') ? literalDoAtributo(attrs.get('path')) : null;
+    const indice = attrs.has('index');
+    let caminho;
+    if (proprio !== null) caminho = juntarCaminho(pai, proprio);
+    else if (indice) caminho = pai || '/';
+    if (!ev.autoFecha) pilha.push(caminho ?? pai);
+    rotas.push({ caminho, indice, pedaco });
+  });
+  return rotas;
+}
+
 /** URLs do react-router em src/App.tsx. */
 export function lerUrls(raiz) {
-  const texto = ler(raiz, ARQUIVO_ROTAS);
+  const texto = semComentarios(ler(raiz, ARQUIVO_ROTAS));
   const abs = path.join(raiz, ARQUIVO_ROTAS);
-  const lazy = Object.fromEntries([...texto.matchAll(/const\s+(\w+)\s*=\s*lazy\w*\(\s*\(\)\s*=>\s*import\(\s*['"]([^'"]+)['"]\s*\)/g)]
-    .map((m) => [m[1], m[2]]));
-  const corpo = texto.slice(texto.indexOf('<Routes>'), texto.lastIndexOf('</Routes>'));
-  return corpo.split(/<Route\b/).slice(1).map((pedaco) => {
-    const caminho = (pedaco.match(/path(?:=|:\s*)["']([^"']+)["']/) || [])[1];
-    const redireciona = (pedaco.match(/<Navigate\s+to=["']([^"']+)["']/) || [])[1] ?? null;
-    const componente = [...pedaco.matchAll(/<([A-Z]\w*)/g)].map((m) => m[1])
+  // import de pagina: `lazy(() => import(..))` (tambem `React.lazy`, `lazyWithRetry`, `async () =>`)
+  // e import estatico (`import Pagina from './pages/Pagina'`).
+  const lazy = {};
+  for (const m of texto.matchAll(/const\s+(\w+)\s*=\s*(?:React\s*\.\s*)?lazy\w*\(\s*(?:async\s*)?\(\s*\)\s*=>\s*(?:\{\s*return\s+)?import\(\s*['"]([^'"]+)['"]\s*\)/g)) lazy[m[1]] = m[2];
+  for (const imp of extrairImports(texto)) for (const nome of imp.nomes) lazy[nome] ??= imp.especificador;
+  const ini = texto.search(/<Routes(?![\w.-])/);
+  const fim = texto.lastIndexOf('</Routes>');
+  if (ini === -1 || fim < ini) throw new Error(`${ARQUIVO_ROTAS} sem bloco <Routes>...</Routes>: o roteador mudou de lugar e o inventario nao tem o que ler.`);
+  const urls = lerRoutesDoJsx(texto.slice(ini, fim)).map(({ caminho, indice, pedaco }) => {
+    const redireciona = (pedaco.match(/<Navigate\s+to=\{?\s*["'`]([^"'`]+)["'`]/) || [])[1] ?? null;
+    const componente = [...pedaco.matchAll(/<([A-Z]\w*)/g)].map((x) => x[1])
       .filter((n) => !['ProtectedRoute', 'Navigate', 'Route', 'Suspense', 'ErrorBoundary', 'MainLayout'].includes(n))
       .pop() ?? null;
     const papeis = ((pedaco.match(/requiredRoles=\{\[([^\]]*)\]\}/) || [])[1] || '')
-      .match(/['"]([^'"]+)['"]/g)?.map((s) => s.slice(1, -1)) ?? [];
+      .match(/['"]([^'"]+)['"]/g)?.map((x) => x.slice(1, -1)) ?? [];
     const alvo = componente && lazy[componente] ? resolverImport(raiz, abs, lazy[componente]) : null;
     return {
       caminho,
@@ -184,41 +335,68 @@ export function lerUrls(raiz) {
       protegida: pedaco.includes('<ProtectedRoute'),
       papeis,
       redireciona,
+      ...(indice ? { indice: true } : {}),
     };
-  }).filter((u) => u.caminho).sort((a, b) => a.caminho.localeCompare(b.caminho));
+  }).filter((u) => u.caminho).sort((a, b) => cmp(a.caminho, b.caminho));
+  if (urls.length === 0) throw new Error(`${ARQUIVO_ROTAS} tem <Routes> mas nenhuma <Route path>: inventario vazio recusado.`);
+  return urls;
 }
 
 /**
- * Itens do menu lateral: href -> { rotulo, grupo, grupo_id, destaque, badge, secao, arquivo }.
- * Le os grupos declarados nos arquivos de ARQUIVOS_MENU. Para cada `href`, o rotulo e o `label`
- * mais proximo antes dele (mesmo objeto) e o grupo e o ultimo `{ id, label }` de grupo aberto antes.
+ * Itens do menu lateral na ordem do codigo: { href, rotulo, grupo, grupo_id, destaque, badge, secao, arquivo }.
+ * Para cada `href`, o rotulo e o `label` mais proximo antes dele (mesmo objeto) e o grupo e o ultimo
+ * `{ id, label }` de grupo aberto antes. Aceita aspas simples e duplas (Prettier troca para duplas
+ * quando o texto tem apostrofo).
  */
-export function lerMenu(raiz) {
-  const menu = {};
+const STR = String.raw`(?:'([^']*)'|"([^"]*)")`;
+const textoDe = (m) => (m ? (m[1] ?? m[2]) : null);
+export function lerItensMenu(raiz) {
+  const itens = [];
   for (const arquivoMenu of ARQUIVOS_MENU) {
-    const texto = ler(raiz, arquivoMenu);
-    const grupos = [...texto.matchAll(/id:\s*'([^']+)',\s*\n\s*label:\s*'([^']+)'/g)]
-      .map((m) => ({ id: m[1], label: m[2], pos: m.index }));
-    for (const m of texto.matchAll(/href:\s*'([^']+)'/g)) {
+    const texto = semComentarios(ler(raiz, arquivoMenu));
+    const grupos = [...texto.matchAll(new RegExp(String.raw`\bid:\s*${STR}\s*,\s*label:\s*${STR}`, 'g'))]
+      .map((m) => ({ id: m[1] ?? m[2], label: m[3] ?? m[4], pos: m.index }));
+    const reLabel = new RegExp(String.raw`\blabel:\s*${STR}`, 'g');
+    for (const m of texto.matchAll(new RegExp(String.raw`\bhref:\s*${STR}`, 'g'))) {
       const antes = texto.slice(0, m.index);
-      const rotulo = [...antes.matchAll(/label:\s*'([^']+)'/g)].pop()?.[1] ?? null;
+      const rotulo = textoDe([...antes.matchAll(reLabel)].pop());
       const grupo = grupos.filter((g) => g.pos < m.index).pop() ?? null;
       // Bloco do item: do `{` que o abre ate o `}` depois do href, para ler as flags.
       const item = texto.slice(antes.lastIndexOf('{'), texto.indexOf('}', m.index) + 1);
-      const href = m[1];
-      if (menu[href]) continue; // primeiro item ganha; duplicata entra em `problemas`
-      menu[href] = {
+      itens.push({
+        href: m[1] ?? m[2],
         rotulo,
         grupo: grupo?.label ?? null,
         grupo_id: grupo?.id ?? null,
-        destaque: /highlight:\s*true/.test(item),
-        badge: (item.match(/badgeKey:\s*'([^']+)'/) || [])[1] ?? null,
-        secao: (item.match(/sectionHeader:\s*'([^']+)'/) || [])[1] ?? null,
+        destaque: /\bhighlight:\s*true/.test(item),
+        badge: textoDe(item.match(new RegExp(String.raw`\bbadgeKey:\s*${STR}`))),
+        secao: textoDe(item.match(new RegExp(String.raw`\bsectionHeader:\s*${STR}`))),
         arquivo: arquivoMenu,
-      };
+      });
     }
   }
+  return itens;
+}
+
+/** href -> item do menu (o primeiro item ganha; as duplicatas saem em `problemas`). */
+export function lerMenu(raiz) {
+  const menu = {};
+  for (const { href, ...item } of lerItensMenu(raiz)) menu[href] ??= item;
   return menu;
+}
+
+/** O caminho de uma rota (com `:param` e `*` final) casa com este caminho concreto? Devolve o numero de curingas ou null. */
+export function casaRota(padrao, concreto) {
+  if (padrao === '*' || padrao === '/*') return null; // 404 nao e destino de item de menu
+  const p = padrao.split('/');
+  const c = concreto.split('/');
+  let curingas = 0;
+  for (let i = 0; i < p.length; i++) {
+    if (p[i] === '*' && i === p.length - 1) return c.length >= i ? curingas + 1 : null;
+    if (i >= c.length) return null;
+    if (p[i].startsWith(':')) { if (!c[i]) return null; curingas++; } else if (p[i] !== c[i]) return null;
+  }
+  return p.length === c.length ? curingas : null;
 }
 
 /** Caminho da URL sem hash nem query (o menu usa `/rota#ancora`). */
@@ -227,15 +405,31 @@ export const semAncora = (href) => String(href).split(/[#?]/)[0] || '/';
 /** Monta o inventario inteiro a partir de uma raiz de repo. */
 export function gerarRotas(raiz = RAIZ_PADRAO) {
   const urlsBase = lerUrls(raiz);
+  const itensMenu = lerItensMenu(raiz);
+  if (itensMenu.length === 0) throw new Error(`menu lateral sem nenhum href (${ARQUIVOS_MENU.join(', ')}): o formato mudou e o inventario do menu sairia vazio.`);
   const menu = lerMenu(raiz);
-  const porCaminho = new Map(urlsBase.map((u) => [u.caminho, u]));
+  const porCaminho = new Map();
+  for (const u of urlsBase) if (!porCaminho.has(u.caminho)) porCaminho.set(u.caminho, u); // vale a primeira, como no react-router
+
+  // Rota que atende o href do menu: a de caminho igual; senao a de `:param`/`*` com menos curingas.
+  const rotaDoMenu = (href) => {
+    const caminho = semAncora(href);
+    if (porCaminho.has(caminho)) return caminho;
+    let melhor = null;
+    for (const c of porCaminho.keys()) {
+      const curingas = casaRota(c, caminho);
+      if (curingas !== null && (melhor === null || curingas < melhor.curingas)) melhor = { c, curingas };
+    }
+    return melhor?.c ?? null;
+  };
+  const destino = Object.fromEntries(Object.keys(menu).map((href) => [href, rotaDoMenu(href)]));
 
   const urls = urlsBase.map((u) => ({
     ...u,
     menu: Object.entries(menu)
-      .filter(([href]) => semAncora(href) === u.caminho)
+      .filter(([href]) => destino[href] === u.caminho && porCaminho.get(u.caminho) === u)
       .map(([href, item]) => ({ href, ...item }))
-      .sort((a, b) => a.href.localeCompare(b.href)),
+      .sort((a, b) => cmp(a.href, b.href)),
     ...(u.arquivo
       ? fechoDaRota(raiz, path.join(raiz, u.arquivo))
       : { arquivos_lidos: 0, hooks: [], buckets: [], edges: [], rpcs: [], tabelas: [], imports_quebrados: [] }),
@@ -247,9 +441,17 @@ export function gerarRotas(raiz = RAIZ_PADRAO) {
     hooks[h.nome].rotas.push(u.caminho);
   }
 
+  const repetidos = (lista) => [...new Set(lista.filter((x, i) => lista.indexOf(x) !== i))];
+  const duplicadas = repetidos(urlsBase.filter((u) => !u.indice).map((u) => u.caminho)); // index + pai no mesmo caminho e normal
+  const menuDuplicado = repetidos(itensMenu.map((i) => i.href));
+
   const problemas = [
-    ...Object.keys(menu).filter((href) => !porCaminho.has(semAncora(href))).sort()
+    ...Object.keys(menu).filter((href) => destino[href] === null).sort(cmp)
       .map((href) => ({ tipo: 'menu_sem_rota', id: href, detalhe: `item "${menu[href].rotulo}" aponta para ${href}, sem <Route path> correspondente em ${ARQUIVO_ROTAS}` })),
+    ...menuDuplicado.sort(cmp)
+      .map((href) => ({ tipo: 'menu_duplicado', id: href, detalhe: `${href} aparece em mais de um item do menu; so o primeiro entra em "menu"` })),
+    ...duplicadas.sort(cmp)
+      .map((caminho) => ({ tipo: 'rota_duplicada', id: caminho, detalhe: `${caminho} declarado em mais de um <Route> em ${ARQUIVO_ROTAS}; vale o primeiro` })),
     ...urls.filter((u) => u.protegida && u.menu.length === 0 && !u.redireciona && !u.caminho.includes(':')).map((u) => ({
       tipo: 'rota_sem_menu', id: u.caminho, detalhe: 'rota protegida sem item no menu lateral: so acessivel por URL direta',
     })),
@@ -277,7 +479,32 @@ export function gerarRotas(raiz = RAIZ_PADRAO) {
 
 export const serializar = (inv) => JSON.stringify(inv, null, 2) + '\n';
 
+const USO = 'uso: node scripts/inventario/gerar-rotas.mjs [--check]\n'
+  + '  sem flag: grava inventario/estado/rotas.json; --check: exit 1 se o arquivo gravado difere do codigo atual.\n';
+
+/** Grava por arquivo temporario + rename: queda no meio nao deixa rotas.json truncado. */
+function gravarAtomico(destino, conteudo) {
+  fs.mkdirSync(path.dirname(destino), { recursive: true });
+  const tmp = `${destino}.${process.pid}.tmp`;
+  try {
+    fs.writeFileSync(tmp, conteudo);
+    fs.renameSync(tmp, destino);
+  } catch (erro) {
+    fs.rmSync(tmp, { force: true });
+    throw erro;
+  }
+}
+
 function main(argv) {
+  const invalidas = argv.filter((a) => a !== '--check' && a !== '--help' && a !== '-h');
+  if (invalidas.length) {
+    console.error(`ERRO: argumento desconhecido: ${invalidas.join(' ')}\n${USO}`);
+    process.exit(2);
+  }
+  if (argv.includes('--help') || argv.includes('-h')) {
+    process.stdout.write(USO);
+    return;
+  }
   const saida = path.join(RAIZ_PADRAO, SAIDA_REL);
   const conteudo = serializar(gerarRotas(RAIZ_PADRAO));
   if (argv.includes('--check')) {
@@ -289,11 +516,21 @@ function main(argv) {
     console.log(`${SAIDA_REL} em dia.`);
     return;
   }
-  fs.mkdirSync(path.dirname(saida), { recursive: true });
-  fs.writeFileSync(saida, conteudo);
+  gravarAtomico(saida, conteudo);
   const r = JSON.parse(conteudo).resumo;
   console.log(`rotas.json: ${r.urls} URLs (${r.urls_protegidas} protegidas), ${r.itens_de_menu} itens de menu, `
     + `${r.hooks_distintos} hooks, ${r.problemas} problemas.`);
 }
 
-if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) main(process.argv.slice(2));
+// realpath: process.argv[1] pode vir por symlink/caminho relativo; import.meta.url ja vem resolvido.
+const executadoDireto = () => {
+  try { return Boolean(process.argv[1]) && import.meta.url === pathToFileURL(fs.realpathSync(process.argv[1])).href; } catch { return false; }
+};
+if (executadoDireto()) {
+  try {
+    main(process.argv.slice(2));
+  } catch (erro) {
+    console.error(`ERRO: ${erro.message}`);
+    process.exit(2);
+  }
+}

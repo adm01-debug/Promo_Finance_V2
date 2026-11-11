@@ -12,11 +12,14 @@ import {
   lstat,
   rename,
   truncate,
+  stat,
+  copyFile,
 } from 'node:fs/promises';
 import { createHash } from 'node:crypto';
 import { tmpdir } from 'node:os';
 import path from 'node:path';
 import { spawnSync } from 'node:child_process';
+import { fileURLToPath } from 'node:url';
 import {
   main,
   acquire,
@@ -26,6 +29,9 @@ import {
   run,
   adoptInitial,
   assertResources,
+  GraphError,
+  redact,
+  secretPath,
 } from './graphify-local.mjs';
 
 function git(root, ...args) {
@@ -459,4 +465,457 @@ test('política de recursos usa amostra determinística e bloqueia memória/carg
     await writeFile(f.configFile, JSON.stringify({ ...f.config, [key]: { availableMb: 1e9 } }));
     assert.equal((await f.call('ensure')).exitCode, 1);
   }
+});
+
+// ---------------------------------------------------------------------------------------------
+// Rodada 2 de endurecimento
+// ---------------------------------------------------------------------------------------------
+
+const script = fileURLToPath(new URL('./graphify-local.mjs', import.meta.url));
+const cleanEnv = { PATH: process.env.PATH, HOME: process.env.HOME };
+const cli = (file, args) =>
+  spawnSync(process.execPath, [file, ...args], { encoding: 'utf8', env: cleanEnv });
+
+test('CLI executa mesmo via symlink e caminho com espaço/acento (não pode sair 0 mudo)', async (t) => {
+  const f = await fixture(t);
+  const real = path.join(f.dir, 'pasta real');
+  await mkdir(real);
+  await copyFile(script, path.join(real, 'graphify-local.mjs'));
+  const linkFile = path.join(f.dir, 'atalho.mjs');
+  await symlink(path.join(real, 'graphify-local.mjs'), linkFile);
+  const linkDir = path.join(f.dir, 'atalho-dir');
+  await symlink(real, linkDir);
+  const accented = path.join(f.dir, 'ação ç');
+  await mkdir(accented);
+  await copyFile(script, path.join(accented, 'g.mjs'));
+  for (const file of [
+    linkFile,
+    path.join(linkDir, 'graphify-local.mjs'),
+    path.join(accented, 'g.mjs'),
+    path.join(real, 'graphify-local.mjs'),
+  ]) {
+    const r = cli(file, ['status', '--config', f.configFile, '--root', f.root]);
+    assert.equal(r.status, 3, `${file}: ${r.stderr}`);
+    assert.equal(JSON.parse(r.stdout).status, 'missing_graph', file);
+  }
+});
+
+test('importar o módulo não executa o CLI nem escreve nada', async (t) => {
+  const f = await fixture(t);
+  const r = spawnSync(
+    process.execPath,
+    ['--input-type=module', '-e', `await import(${JSON.stringify(script)})`],
+    { encoding: 'utf8', env: cleanEnv, cwd: f.root }
+  );
+  assert.equal(r.status, 0, r.stderr);
+  assert.equal(r.stdout, '');
+});
+
+test('argumentos inválidos falham com mensagem que nomeia a opção e termos vazios são recusados', async (t) => {
+  const f = await fixture(t);
+  const cases = [
+    [['--dryrun', 'status'], /desconhecida: --dryrun/],
+    [['status', '--root=/x'], /--root VALOR/],
+    [['status', '--config'], /--config duplicada ou sem valor/],
+    [['status', '--root', f.root, '--root', f.root], /--root duplicada ou sem valor/],
+    [['query', ''], /Termo de consulta inválido/],
+    [['query', '   '], /Termo de consulta inválido/],
+    [['query', '-x'], /Termo de consulta inválido/],
+    [['path', 'a'], /Quantidade de argumentos/],
+    [['ensure', 'extra'], /Quantidade de argumentos/],
+    [[], /Use install/],
+    [['limpar'], /Use install/],
+  ];
+  for (const [args, message] of cases) {
+    const r = await main(args, f.options);
+    assert.equal(r.exitCode, 1, JSON.stringify(args));
+    assert.match(r.report.message, message, JSON.stringify(args));
+  }
+  await assert.rejects(readFile(f.graph), /ENOENT/);
+});
+
+test('config e raiz ilegíveis dão mensagem acionável, não "Falha interna"', async (t) => {
+  const f = await fixture(t);
+  const missing = await main([
+    'status',
+    '--config',
+    path.join(f.dir, 'nao-existe.json'),
+    '--root',
+    f.root,
+  ]);
+  assert.equal(missing.exitCode, 1);
+  assert.match(missing.report.message, /Configuração Graphify ilegível \(ENOENT\)/);
+  await writeFile(f.configFile, '{quebrado');
+  const broken = await f.call('status');
+  assert.match(broken.report.message, /ilegível \(SyntaxError\)/);
+  const noRoot = await main(['status', '--root', path.join(f.dir, 'nao-existe')]);
+  assert.match(noRoot.report.message, /--root inexistente/);
+  const notGit = await main(['status', '--root', f.dir, '--config', f.configFile]);
+  assert.match(notGit.report.message, /Leitura Git falhou: .*(not a git repository|repositório)/i);
+});
+
+const corruptGraphs = {
+  vazio: '',
+  truncado: '{"nodes":[{"id":"a"}',
+  null: 'null',
+  'nó nulo': '{"nodes":[null],"links":[]}',
+  'nó escalar': '{"nodes":[1],"links":[]}',
+  'relação nula': '{"nodes":[{"id":"a"}],"links":[null]}',
+  'relações objeto': '{"nodes":[{"id":"a"}],"links":{}}',
+  lista: '[]',
+};
+for (const [name, body] of Object.entries(corruptGraphs))
+  test(`grafo ${name} é recusado com erro de domínio (GraphError), nunca SyntaxError/TypeError`, async (t) => {
+    const f = await fixture(t);
+    const file = path.join(f.dir, 'graph.json');
+    await writeFile(file, body);
+    await assert.rejects(
+      validateGraph(file),
+      (e) => e instanceof GraphError && e.status === 'failed'
+    );
+    await assert.rejects(validateGraph(file, true), (e) => e instanceof GraphError);
+  });
+
+test('status e ensure com graph.json corrompido preservam o arquivo e explicam o motivo', async (t) => {
+  const f = await fixture(t);
+  assert.equal((await f.call('ensure')).exitCode, 0);
+  await writeFile(f.graph, '{truncado');
+  for (const action of ['status', 'ensure']) {
+    const r = await f.call(action);
+    assert.equal(r.exitCode, 1, action);
+    assert.match(r.report.message, /não é JSON válido/, action);
+  }
+  assert.equal(await readFile(f.graph, 'utf8'), '{truncado');
+});
+
+for (const body of ['', 'null', '[]', '{quebrado', '"texto"', '{"version":1,"graph":null}'])
+  test(`proveniência ilegível (${JSON.stringify(body)}) vira stale e ensure regenera`, async (t) => {
+    const f = await fixture(t);
+    assert.equal((await f.call('ensure')).exitCode, 0);
+    const prov = path.join(path.dirname(f.graph), 'graphify-local-provenance.json');
+    await writeFile(prov, body);
+    const status = await f.call('status');
+    assert.equal(status.report.status, 'stale', JSON.stringify(status.report));
+    assert.equal(status.exitCode, 3);
+    const again = await f.call('ensure');
+    assert.equal(again.exitCode, 0, JSON.stringify(again.report));
+    assert.equal(again.report.status, 'generated');
+    assert.equal((await f.call('status')).report.status, 'current');
+  });
+
+test('redact cobre DSN, Authorization, JSON, valores com espaço e prefixos de token, sem deixar resto', () => {
+  const cases = [
+    ['postgres://user:p4ss@db.host:5432/x', ['p4ss'], 'postgres://[REDIGIDO]@db.host:5432/x'],
+    ['https://u:ghp_abcdefghijklmnop@github.com/x', ['ghp_abcdefghijklmnop']],
+    ['Authorization: Basic dXNlcjpwYXNz', ['dXNlcjpwYXNz']],
+    ['authorization: token abc123', ['abc123']],
+    ['Authorization: Bearer abc.def', ['abc.def']],
+    ['{"api_key":"abc123def","password": "hunter2"}', ['abc123def', 'hunter2']],
+    [
+      'SUPABASE_SERVICE_ROLE_KEY=eyJhbGciOiJ.eyJzdWIiOiJ.sig',
+      ['eyJ', 'sig'],
+      'SUPABASE_SERVICE_ROLE_KEY=[REDIGIDO]',
+    ],
+    ['API_KEY="duas palavras"', ['duas', 'palavras'], 'API_KEY=[REDIGIDO]'],
+    ["DB_PASSWORD='a b c' next", ['a b c', ' c'], 'DB_PASSWORD=[REDIGIDO] next'],
+    ['AUTH_TOKEN=Bearer abc123', ['abc123']],
+    // Tokens fictícios montados em tempo de execução: o literal inteiro no fonte bloqueia o push (secret scanning).
+    ['password=hunter2&x=1', ['hunter2'], 'password=[REDIGIDO]&x=1'],
+    ['?access_token=zzz999&y=2', ['zzz999']],
+    [['sbp', '_0123456789abcdef0123456789abcdef01234567'].join(''), ['0123456789abcdef']],
+    [['npm', '_abcdefghijklmnopqrstuvwxyz0123456789'].join(''), ['abcdefghijklmnop']],
+    [['AK', 'IAIOSFODNN7EXAMPLE'].join(''), ['IOSFODNN7']],
+    [
+      `export OPENAI_API_KEY=${['sk', '-abcdefghijklmnopqrstuvwxyz'].join('')}`,
+      ['abcdefghijklmnop'],
+      'export OPENAI_API_KEY=[REDIGIDO]',
+    ],
+    [['xox', 'b-1234567890-abcdefghij'].join(''), ['1234567890']],
+    ['eyJhbGciOi.eyJzdWIi.c2ln', ['eyJzdWIi']],
+  ];
+  for (const [input, leaked, expected] of cases) {
+    const out = redact(input);
+    for (const secret of leaked) assert.ok(!out.includes(secret), `vazou ${secret}: ${out}`);
+    if (expected) assert.equal(out, expected);
+  }
+});
+
+test('redact não destrói texto comum nem URLs sem credencial e é idempotente', () => {
+  for (const text of [
+    'http://localhost:3000/foo@bar',
+    'git@github.com:org/repo.git',
+    'tokenCount: number',
+    'const key = chave;',
+    'risk-assessment-engine-component-name',
+    'Nada a ocultar aqui, ação concluída.',
+  ])
+    assert.equal(redact(text), text);
+  const once = redact('API_KEY=abc password=zzz https://u:p@h/x');
+  assert.equal(redact(once), once);
+});
+
+test('saída de query não vaza segredos do rótulo do grafo', async (t) => {
+  const f = await fixture(t);
+  await writeFile(
+    path.join(f.root, 'src/value.ts'),
+    'export const v = "postgres://user:s3cretpw@db/x"; // SUPABASE_KEY="aa bb"\n'
+  );
+  const r = await f.call('query', 'v');
+  assert.equal(r.exitCode, 0, JSON.stringify(r.report));
+  assert.ok(!r.report.output.includes('s3cretpw'), r.report.output);
+  assert.ok(!r.report.output.includes('aa bb'), r.report.output);
+  const saved = await readFile(path.join(f.root, f.config.state, 'last-report.json'), 'utf8');
+  assert.ok(!saved.includes('s3cretpw'));
+});
+
+test('secretPath exclui arquivos de dados com nome de credencial e preserva código comum', () => {
+  for (const file of [
+    'google-credentials.json',
+    'service-account.json',
+    'config/client_secret_123.json',
+    'secrets.local.json',
+    'firebase-adminsdk-abc.json',
+    'app.private_key.yaml',
+    'x/.env',
+    'x/.env.local',
+    'chave.pem',
+    'id.key',
+    'ops/Credentials.TOML',
+  ])
+    assert.equal(secretPath(file), true, file);
+  for (const file of [
+    'src/secret-santa.ts',
+    'src/lib/token.ts',
+    'package.json',
+    'supabase/config.toml',
+    'src/secretaria/lista.json',
+    'src/accounts.json',
+    'src/a.envrc.ts',
+  ])
+    assert.equal(secretPath(file), false, file);
+});
+
+test('fingerprint e corpus isolado não incluem JSON com nome de credencial', async (t) => {
+  const f = await fixture(t);
+  await writeFile(path.join(f.root, 'src/client_secret_9.json'), '{"k":"v"}');
+  await writeFile(path.join(f.root, 'src/service-account.json'), '{"k":"v"}');
+  const fp = await fingerprint(f.root, f.config);
+  assert.equal(
+    Object.keys(fp.files).some((x) => /secret|service-account/.test(x)),
+    false
+  );
+});
+
+test('run() decodifica UTF-8 por fluxo (multibyte cortado entre chunks) e reporta spawn inexistente', async (t) => {
+  const code =
+    "const w=Buffer.from('€ação');process.stdout.write(w.subarray(0,2));setTimeout(()=>process.stdout.write(w.subarray(2)),80)";
+  const r = await run(
+    [process.execPath, '-e', code],
+    process.cwd(),
+    { PATH: process.env.PATH },
+    5000
+  );
+  assert.equal(r.code, 0);
+  assert.equal(r.output, '€ação');
+  const missing = await run(
+    ['comando-que-nao-existe-xyz'],
+    process.cwd(),
+    { PATH: '/nonexistent' },
+    5000
+  );
+  assert.equal(missing.code, 1);
+  assert.equal(missing.spawnError, 'ENOENT');
+});
+
+test('adoção inicial recusa createdAt ausente/inválido e JSON malformado sem lançar', async (t) => {
+  const f = await fixture(t);
+  await mkdir(path.dirname(f.graph));
+  await writeFile(f.graph, JSON.stringify({ nodes: [{ id: 'initial' }], links: [] }));
+  const fp = await fingerprint(f.root, f.config),
+    info = await validateGraph(f.graph);
+  const initial = path.join(f.root, 'graphify-out/graphify-local-initial-provenance.json');
+  const valid = {
+    generator: 'initial-code-only',
+    root: f.root,
+    graphifyVersion: '0.9.97',
+    partial: false,
+    scope: ['.'],
+    sourceFingerprint: { head: fp.head, files: fp.files },
+    graphSha256: info.sha256,
+    createdAt: new Date(Date.now() + 1000).toISOString(),
+  };
+  const ctx = {
+    root: f.root,
+    config: f.config,
+    graph: f.graph,
+    outputRoot: path.dirname(f.graph),
+    provenance: path.join(path.dirname(f.graph), 'graphify-local-provenance.json'),
+  };
+  // metadado alterado DEPOIS da extração inicial: createdAt inválido não pode desligar essa checagem
+  const { createdAt, ...semData } = valid;
+  const { scope, ...semEscopo } = valid;
+  for (const [body, esperado] of [
+    [JSON.stringify(semData), false],
+    [JSON.stringify({ ...valid, createdAt: 'ontem' }), false],
+    [JSON.stringify(semEscopo), false],
+    ['{quebrado', false],
+    ['null', false],
+    ['', false],
+    [JSON.stringify(valid), true],
+  ]) {
+    await rm(ctx.provenance, { force: true });
+    await writeFile(initial, body);
+    assert.equal(await adoptInitial(ctx, fp), esperado, body.slice(0, 40));
+  }
+});
+
+test('promoção não deixa .tmp órfão e relatório sai atômico', async (t) => {
+  const f = await fixture(t);
+  assert.equal((await f.call('ensure')).exitCode, 0);
+  await writeFile(path.join(f.root, 'src/value.ts'), 'export const value = "v3";\n');
+  assert.equal((await f.call('ensure')).exitCode, 0);
+  const out = await readdir(path.dirname(f.graph));
+  assert.deepEqual(
+    out.filter((n) => n.endsWith('.tmp')),
+    []
+  );
+  const state = await readdir(path.join(f.root, f.config.state));
+  assert.deepEqual(
+    state.filter((n) => n.endsWith('.tmp')),
+    []
+  );
+});
+
+test('saída determinística: duas execuções de status idênticas salvo carimbos de tempo', async (t) => {
+  const f = await fixture(t);
+  assert.equal((await f.call('ensure')).exitCode, 0);
+  const strip = ({ startedAt, finishedAt, ...rest }) => JSON.stringify(rest);
+  const a = strip((await f.call('status')).report),
+    b = strip((await f.call('status')).report);
+  assert.equal(a, b);
+  const g1 = await readFile(f.graph, 'utf8');
+  assert.equal((await f.call('ensure')).report.status, 'current');
+  assert.equal(await readFile(f.graph, 'utf8'), g1);
+});
+
+// --- adaptador Finance (perfil real do repositório): antes sem nenhuma cobertura ---------------
+
+const PILOT_FILES = [
+  'src/lib/arquitetura/analisador-imports.ts',
+  'src/lib/arquitetura/modulos.ts',
+  'src/integrations/supabase/client.ts',
+  'supabase/functions/_shared/auth-guard.ts',
+  'supabase/functions/_shared/webhook-auth.ts',
+];
+async function financeFixture(t, { mode = 'ok', wrapperFiles = PILOT_FILES } = {}) {
+  const f = await fixture(t);
+  const bin = path.join(f.env, 'bin');
+  await writeFile(path.join(bin, 'package.json'), '{"type":"commonjs"}');
+  await writeFile(path.join(bin, 'mode'), mode);
+  const python = `#!${process.execPath}
+const fs=require('node:fs'),path=require('node:path'),cp=require('node:child_process');
+const a=process.argv.slice(2);
+if(a[0]==='-I'){const prefix=path.resolve(__dirname,'..');console.log(JSON.stringify({version:'0.9.97',prefix,module:path.join(prefix,'lib/graphify/__init__.py')}));process.exit(0);}
+const mode=fs.readFileSync(path.join(__dirname,'mode'),'utf8');
+const probe=cp.spawnSync('graphify',['extract','x','--max-workers','4'],{encoding:'utf8'});
+if(probe.status!==0)process.exit(7);
+const make=(name,status)=>{const dir=path.join('graphify-out/pilot',name);fs.mkdirSync(path.join(dir,'graphify-out'),{recursive:true});
+ fs.writeFileSync(path.join(dir,'evidencia.json'),JSON.stringify({status}));
+ fs.writeFileSync(path.join(dir,'graphify-out/graph.json'),JSON.stringify({nodes:[{id:'n1',source_file:'${PILOT_FILES[0]}'}],links:[{source:'n1',target:'externo',relation:'imports'}]}));};
+if(mode==='ok')make('execucao-aaa','validado_com_limitacoes');
+if(mode==='recusa')make('execucao-aaa','falhou');
+if(mode==='duas'){make('execucao-aaa','validado_com_limitacoes');make('execucao-bbb','validado_com_limitacoes');}
+`;
+  await writeFile(path.join(bin, 'python'), python, { mode: 0o700 });
+  await writeFile(
+    path.join(bin, 'graphify'),
+    `#!${process.execPath}
+const fs=require('node:fs'),path=require('node:path');const a=process.argv.slice(2);
+if(a[0]==='--version'){console.log('graphify 0.9.97');process.exit(0);}
+fs.appendFileSync(path.resolve(__dirname,'..','args.log'),a.join(' ')+'\\n');
+if(a[0]==='query'){console.log('ok:'+a.join(' '));}
+`,
+    { mode: 0o700 }
+  );
+  await writeFile(path.join(f.root, 'package.json'), '{"name":"fixture","type":"module"}');
+  for (const file of PILOT_FILES) {
+    await mkdir(path.dirname(path.join(f.root, file)), { recursive: true });
+    await writeFile(path.join(f.root, file), `export const x = ${JSON.stringify(file)};\n`);
+  }
+  await mkdir(path.join(f.root, 'scripts/graphify'), { recursive: true });
+  await writeFile(
+    path.join(f.root, 'scripts/graphify/config.json'),
+    JSON.stringify({ version: '0.9.97', profiles: { pilot: { files: wrapperFiles } } })
+  );
+  await writeFile(path.join(f.root, 'scripts/graphify/run.py'), '# emulado pelo python falso\n');
+  git(f.root, 'add', '.');
+  git(f.root, 'commit', '-m', 'finance');
+  const config = {
+    ...f.config,
+    adapter: 'finance',
+    scope: PILOT_FILES,
+    partial: true,
+    output: 'graphify-out/pilot',
+    metadata: [
+      '.gitignore',
+      'package.json',
+      'scripts/graphify/config.json',
+      'scripts/graphify/run.py',
+    ],
+  };
+  await writeFile(f.configFile, JSON.stringify(config));
+  return { ...f, config, argsLog: path.join(f.env, 'args.log') };
+}
+
+test('Finance: wrapper roda com shim --max-workers 1, grafo parcial é promovido e vira current', async (t) => {
+  const f = await financeFixture(t);
+  const r = await f.call('ensure');
+  assert.equal(r.exitCode, 0, JSON.stringify(r.report));
+  assert.equal(r.report.status, 'generated');
+  assert.equal(r.report.graph.unresolvedImports, 1);
+  assert.match(await readFile(f.argsLog, 'utf8'), /^extract x --max-workers 1$/m);
+  const meta = JSON.parse(await readFile(r.report.provenance, 'utf8'));
+  assert.match(meta.wrapperEvidence, /execucao-aaa\/evidencia\.json$/);
+  assert.equal(meta.partial, true);
+  assert.equal((await f.call('status')).report.status, 'current');
+  const q = await f.call('query', 'x');
+  assert.equal(q.exitCode, 0, JSON.stringify(q.report));
+  assert.match(q.report.output, /^ok:query x --graph .*graph\.json --budget 1500$/);
+});
+
+test('Finance: wrapper que recusa o corpus ou gera 0/2 execuções não promove nada', async (t) => {
+  for (const [mode, message] of [
+    ['recusa', /recusou o corpus/],
+    ['nenhuma', /execução única/],
+    ['duas', /execução única/],
+  ]) {
+    const f = await financeFixture(t, { mode });
+    const r = await f.call('ensure');
+    assert.equal(r.exitCode, 1, mode);
+    assert.match(r.report.message, message, mode);
+    await assert.rejects(readFile(f.graph), /ENOENT/);
+  }
+});
+
+test('Finance: perfil divergente ou config do wrapper ausente falha fechado com mensagem clara', async (t) => {
+  const f = await financeFixture(t, { wrapperFiles: PILOT_FILES.slice(1) });
+  const diverge = await f.call('ensure');
+  assert.equal(diverge.exitCode, 1);
+  assert.match(diverge.report.message, /diverge do wrapper/);
+  await rm(path.join(f.root, 'scripts/graphify/config.json'));
+  const ausente = await f.call('ensure');
+  assert.equal(ausente.exitCode, 1);
+  assert.match(ausente.report.message, /Config do wrapper Finance ilegível \(ENOENT\)/);
+  await writeFile(path.join(f.root, 'scripts/graphify/config.json'), '{"version":"0.9.97"}');
+  const semPerfil = await f.call('ensure');
+  assert.match(semPerfil.report.message, /diverge do wrapper/);
+});
+
+test('install do Finance sem lock com hashes recusa antes de criar o ambiente', async (t) => {
+  const f = await financeFixture(t);
+  await rm(f.env, { recursive: true, force: true });
+  const r = await f.call('install');
+  assert.equal(r.exitCode, 1, JSON.stringify(r.report));
+  assert.match(r.report.message, /Lock com hashes ausente/);
+  await assert.rejects(stat(f.env), /ENOENT/);
 });
