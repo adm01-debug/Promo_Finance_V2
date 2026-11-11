@@ -1,4 +1,4 @@
-# [STEP 22] Reconciliacao de Migrations Nao Rastreadas
+﻿# [STEP 22] Reconciliacao de Migrations Nao Rastreadas
 
 **Data de execucao:** 2026-10-31
 **Branch:** `chore-migration-reconcile-261031-2010`
@@ -174,3 +174,45 @@ SELECT EXISTS(SELECT 1 FROM pg_proc WHERE proname='get_lockout_details')        
 SELECT EXISTS(SELECT 1 FROM pg_proc WHERE proname='increment_failed_attempts')                                             -- TRUE  (grants incertos -> INDETERMINADO)
 SELECT count(*) FROM pg_policies WHERE tablename='contas_pagar'                                                            -- 3 (versoes das policies incertas -> INDETERMINADO)
 ```
+
+---
+
+## Procedimento de reconciliacao dos arquivos UUID shadow (gate prod-migrate)
+
+### Contexto
+
+O gate `prod-migrate.yml` ("Gate — divergencia historica do ledger") bloqueia `db push`
+quando existem migrations locais com versao <= maximo do ledger remoto que nao constam
+de `supabase_migrations.schema_migrations`. Isso protege contra reaplicacao parcial do
+historico, mas conta como divergentes os artefatos que nunca devem ser rastreados:
+
+- **UUID companion do Lovable** (510 arquivos hoje): cada migration gerada pelo Lovable
+  produz 2 arquivos — `TIMESTAMP_ledger_reconciliado.sql` (rastreado) + `TIMESTAMP+Ns_UUID.sql`
+  (shadow). Os efeitos ja estao no banco via ledger; inserir na `schema_migrations` causaria
+  duplo-rastreamento e versao invalida (+Ns).
+- **Pre-bootstrap** (11 arquivos): `001_`, `002_`, `003_`, `20241231000000/000001_*`,
+  `20251231000001/000002/000003_*` e `20251231000100/000200/000300_*` — criados antes do
+  sistema de migrations, nome sem timestamp valido para INSERT.
+
+### O que o gate faz agora
+
+O loop do gate ignora esses artefatos antes de comparar com o ledger
+(`case "$bn" in ... esac`). Resultado medido na branch desta PR: 946 arquivos .sql,
+845 fora do fluxo rastreavel, 101 avaliados contra o ledger.
+
+### Passos manuais eventuais (fora do gate)
+
+1. **Conferir overflow de versao**: se algum shadow nao casar com um `_ledger_reconciliado.sql`
+   do mesmo timestamp (ex.: o padrao `*_????????-????-????-????-????????????.sql` nao cobrir
+   algum nome), listar o par com:
+   `ls supabase/migrations/ | grep -E '^[0-9]{14}.*uuid'` e validar no banco se ha efeito
+   nao aplicado (`SELECT version FROM supabase_migrations.schema_migrations`).
+2. **Nunca inserir shadow na schema_migrations**: versao invalida quebraria o sort do ledger
+   e o `db push` reagiria mal. A reconciliacao correta de efeito aplicado-fora-do-ledger e
+   `supabase migration repair --status applied <timestamp>` usando o timestamp do PAR
+   `_ledger_reconciliado.sql` (o do arquivo rastreado), nunca o do shadow.
+3. **Novo par Lovable**: adicionar o shadow novo na lista de `continue` do gate apenas se o
+   glob existente nao o cobrir (padrao canonical: `*_[0-9a-f]{8}-[0-9a-f]{4}-...12].sql` via
+   glob de 8-4-4-4-12 hex + `.sql`).
+4. **Apos reconciliacao manual**: re-rodar o gate (dry_run=true) e confirmar
+   "pendentes fora de ordem: 0".
