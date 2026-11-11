@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 import { spawn } from 'node:child_process';
-import { createReadStream, constants } from 'node:fs';
+import { createReadStream, constants, realpathSync } from 'node:fs';
 import { createHash, randomUUID } from 'node:crypto';
 import {
   readFile,
@@ -58,7 +58,7 @@ const canonical = (v) =>
             .map((k) => [k, canonical(v[k])])
         )
       : v;
-const digest = (v) => hash(JSON.stringify(canonical(v)));
+const digest = (v) => hash(JSON.stringify(canonical(v)) ?? 'null');
 const inside = (root, file) => {
   const rel = path.relative(root, file);
   return rel === '' || (rel !== '..' && !rel.startsWith(`..${path.sep}`) && !path.isAbsolute(rel));
@@ -69,20 +69,37 @@ const safeRelative = (v) =>
   !v.startsWith('-') &&
   !path.isAbsolute(v) &&
   !v.split(/[\\/]/).includes('..');
-const secretPath = (file) =>
+export const secretPath = (file) =>
   file.split('/').some((p) => /^\.env(?:\.|$)/i.test(p)) ||
-  /(?:^|\/)(?:credentials?|secrets?|private[-_]keys?)\.(?:json|ya?ml|toml)$|\.(?:pem|key|p12|pfx|keystore)$/i.test(
+  /(?:^|\/)[^/]*(?:credential|secret|private[-_]?key|service[-_]?account|adminsdk)[^/]*\.(?:json|ya?ml|toml)$|\.(?:pem|key|p12|pfx|keystore)$/i.test(
     file
   );
-const redact = (text) =>
+export const redact = (text) =>
   String(text)
-    .replace(/\beyJ[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+\b/g, '[JWT REDIGIDO]')
-    .replace(/\bBearer\s+\S+/gi, 'Bearer [REDIGIDO]')
-    .replace(/\b(?:gh[pousr]_|github_pat_|sk-|sb_secret_)[A-Za-z0-9_-]{12,}/g, '[TOKEN REDIGIDO]')
+    .replace(/\b([a-z][a-z0-9+.-]*:\/\/)[^\s/@:]+:[^\s/@]+@/gi, '$1[REDIGIDO]@')
     .replace(
-      /\b([A-Z][A-Z0-9_]*(?:KEY|TOKEN|SECRET|PASSWORD|CREDENTIAL)[A-Z0-9_]*\s*[=:]\s*)[^\s,;]+/g,
+      /\b(authorization\s*[:=]\s*)(?:(?:basic|bearer|token|digest)\s+)?[^\s,;"']+/gi,
       '$1[REDIGIDO]'
-    );
+    )
+    .replace(
+      /\b([A-Z][A-Z0-9_]*(?:KEY|TOKEN|SECRET|PASSWORD|CREDENTIAL)[A-Z0-9_]*\s*[=:]\s*)(?:(?:Bearer|Basic|Token)\s+)?(?:"[^"]*"|'[^']*'|[^\s,;]+)/g,
+      '$1[REDIGIDO]'
+    )
+    .replace(
+      /(["'][\w.-]*(?:api[_-]?key|secret|token|password|passwd|credential|private[_-]?key)[\w.-]*["']\s*:\s*)"[^"]*"/gi,
+      '$1"[REDIGIDO]"'
+    )
+    .replace(
+      /\b((?:[a-z0-9]+[_-])*(?:password|passwd|secret|token|api[_-]?key|apikey|access[_-]?key)=)[^\s&,;"']+/gi,
+      '$1[REDIGIDO]'
+    )
+    .replace(/\bBearer\s+\S+/gi, 'Bearer [REDIGIDO]')
+    .replace(/\beyJ[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+\b/g, '[JWT REDIGIDO]')
+    .replace(
+      /\b(?:gh[pousr]_|github_pat_|sk-|sb_secret_|sbp_|npm_|glpat-|xox[abprs]-)[A-Za-z0-9_-]{12,}/g,
+      '[TOKEN REDIGIDO]'
+    )
+    .replace(/\b(?:AKIA|ASIA)[0-9A-Z]{16}\b/g, '[TOKEN REDIGIDO]');
 export class GraphError extends Error {
   constructor(status, message) {
     super(message);
@@ -126,6 +143,8 @@ export function run(command, cwd, env, timeoutMs = 120000) {
       stdio: ['ignore', 'pipe', 'pipe'],
     });
     let output = '',
+      size = 0,
+      spawnError,
       timedOut = false,
       overflow = false,
       canceled = false,
@@ -154,6 +173,7 @@ export function run(command, cwd, env, timeoutMs = 120000) {
         timedOut,
         overflow,
         canceled,
+        spawnError,
       });
     };
     const stop = () => {
@@ -173,14 +193,23 @@ export function run(command, cwd, env, timeoutMs = 120000) {
       stop();
     }, timeoutMs);
     const collect = (chunk) => {
-      if (Buffer.byteLength(output) + chunk.length > 4 * 1024 * 1024) {
+      if (size + Buffer.byteLength(chunk) > 4 * 1024 * 1024) {
         overflow = true;
         stop();
-      } else output += chunk;
+      } else {
+        size += Buffer.byteLength(chunk);
+        output += chunk;
+      }
     };
+    // Decodifica por fluxo: caractere multibyte cortado entre dois chunks não vira U+FFFD.
+    child.stdout.setEncoding('utf8');
+    child.stderr.setEncoding('utf8');
     child.stdout.on('data', collect);
     child.stderr.on('data', collect);
-    child.once('error', () => finish(1));
+    child.once('error', (error) => {
+      spawnError = error.code || error.name;
+      finish(1);
+    });
     child.once('close', finish);
   });
 }
@@ -200,6 +229,10 @@ function environment(extra = {}) {
 }
 async function checked(command, root, env, timeout) {
   const r = await run(command, root, env, timeout);
+  if (r.spawnError)
+    fail(
+      `Comando ${path.basename(command[0])} indisponível (${r.spawnError}); confira PATH e dependências`
+    );
   if (r.code !== 0 || r.timedOut || r.overflow || r.canceled)
     fail(`Comando ${path.basename(command[0])} falhou (exit=${r.code}, timeout=${r.timedOut})`);
   return r.output.trim();
@@ -211,14 +244,22 @@ const git = async (root, args) => {
     environment(),
     30000
   );
-  if (r.code !== 0 || r.timedOut || r.overflow || r.canceled) fail('Leitura Git falhou');
+  if (r.code !== 0 || r.timedOut || r.overflow || r.canceled) {
+    const cause = redact(r.spawnError || r.output.trim().split('\n')[0] || '').slice(0, 200);
+    fail(cause ? `Leitura Git falhou: ${cause}` : 'Leitura Git falhou');
+  }
   return args.includes('-z') ? r.output : r.output.trim();
 };
 async function atomic(file, value) {
   await mkdir(path.dirname(file), { recursive: true, mode: 0o700 });
   const temp = `${file}.${randomUUID()}.tmp`;
-  await writeFile(temp, JSON.stringify(value, null, 2) + '\n', { mode: 0o600 });
-  await rename(temp, file);
+  try {
+    await writeFile(temp, JSON.stringify(value, null, 2) + '\n', { mode: 0o600 });
+    await rename(temp, file);
+  } catch (error) {
+    await rm(temp, { force: true });
+    throw error;
+  }
 }
 async function holdAdvisoryLock(file) {
   const handle = await open(file, 'a', 0o600);
@@ -393,16 +434,23 @@ function parse(args) {
     if (value === '--root' || value === '--config') {
       const key = value.slice(2);
       if (options[key] || !args[i + 1] || args[i + 1].startsWith('--'))
-        fail('Opção duplicada ou sem valor');
+        fail(`Opção ${value} duplicada ou sem valor`);
       options[key] = args[++i];
-    } else if (value.startsWith('--')) fail('Opção desconhecida');
-    else if (!options.action) options.action = value;
+    } else if (value.startsWith('--')) {
+      const name = value.split('=')[0];
+      fail(
+        `Opção desconhecida: ${name}` +
+          (value.includes('=') && ['--root', '--config'].includes(name)
+            ? ` (use "${name} VALOR", separado por espaço)`
+            : '')
+      );
+    } else if (!options.action) options.action = value;
     else options.terms.push(value);
   }
   const { action } = options;
   if (!['install', 'status', 'mark', 'ensure', 'query', 'path', 'explain'].includes(action))
     fail('Use install/status/mark/ensure/query/path/explain');
-  if (options.terms.some((term) => term.startsWith('-') || term.includes('\0')))
+  if (options.terms.some((term) => !term.trim() || term.startsWith('-') || term.includes('\0')))
     fail('Termo de consulta inválido');
   const count = action === 'path' ? 2 : ['query', 'explain'].includes(action) ? 1 : 0;
   if (options.terms.length !== count) fail('Quantidade de argumentos inválida');
@@ -462,7 +510,7 @@ export async function fingerprint(root, config) {
       skipped.push(file);
       continue;
     }
-    if (info.size > 512 * 1024 * 1024) fail('Arquivo de código excede o limite de512MB');
+    if (info.size > 512 * 1024 * 1024) fail('Arquivo de código excede o limite de 512MB');
     files[file] = await fileHash(full);
   }
   if (!Object.keys(files).length) fail('Corpus permitido não contém código');
@@ -523,7 +571,7 @@ export async function validateGraph(file, partial = false) {
   try {
     const info = await descriptor.stat({ bigint: true });
     if (!info.isFile() || info.size > 512n * 1024n * 1024n)
-      fail('Artefato do grafo não é arquivo regular ou excede512MB');
+      fail('Artefato do grafo não é arquivo regular ou excede 512MB');
     const bytes = await descriptor.readFile(),
       after = await descriptor.stat({ bigint: true });
     if (
@@ -533,8 +581,15 @@ export async function validateGraph(file, partial = false) {
       after.ctimeNs !== info.ctimeNs
     )
       fail('Artefato do grafo mudou durante a leitura');
-    const graph = JSON.parse(bytes.toString('utf8'));
-    if (!Array.isArray(graph.nodes) || !graph.nodes.length) fail('Grafo vazio ou inválido');
+    let graph;
+    try {
+      graph = JSON.parse(bytes.toString('utf8'));
+    } catch {
+      fail('Artefato do grafo não é JSON válido (vazio, truncado ou corrompido)');
+    }
+    if (!graph || !Array.isArray(graph.nodes) || !graph.nodes.length)
+      fail('Grafo vazio ou inválido');
+    if (graph.nodes.some((n) => !n || typeof n !== 'object')) fail('Nós do grafo inválidos');
     const ids = new Set(graph.nodes.map((n) => String(n.id)));
     if (
       ids.size !== graph.nodes.length ||
@@ -547,7 +602,8 @@ export async function validateGraph(file, partial = false) {
     )
       fail('IDs do grafo inválidos ou duplicados');
     const edges = graph.links || graph.edges;
-    if (!Array.isArray(edges)) fail('Relações do grafo inválidas');
+    if (!Array.isArray(edges) || edges.some((e) => !e || typeof e !== 'object'))
+      fail('Relações do grafo inválidas');
     let unresolvedImports = 0;
     for (const edge of edges) {
       if (ids.has(String(edge.source)) && ids.has(String(edge.target))) continue;
@@ -594,13 +650,19 @@ async function status(ctx, currentFingerprint) {
       scope: ctx.config.scope,
     };
   if ((await lstat(ctx.provenance)).isSymbolicLink()) fail('Proveniência não pode ser symlink');
-  const meta = await json(ctx.provenance);
+  // Proveniência ilegível (vazia/truncada/não-objeto) não prova nada: trata como stale e regenera.
+  const meta = await json(ctx.provenance).catch((e) => {
+    if (e instanceof SyntaxError) return null;
+    throw e;
+  });
   const valid =
+    !!meta &&
+    typeof meta === 'object' &&
     meta.version === 1 &&
     meta.root === ctx.root &&
     meta.pin === ctx.config.pin &&
     meta.fingerprint === fp.hash &&
-    meta.graph.sha256 === graph.sha256;
+    meta.graph?.sha256 === graph.sha256;
   return {
     status: valid ? 'current' : 'stale',
     runtime: runtimeInfo,
@@ -665,7 +727,9 @@ async function generate(ctx, fp, expectedGraph) {
   try {
     let candidate, wrapperEvidence;
     if (ctx.config.adapter === 'finance') {
-      const wrapperConfig = await json(path.join(ctx.root, 'scripts/graphify/config.json'));
+      const wrapperConfig = await json(path.join(ctx.root, 'scripts/graphify/config.json')).catch(
+        (e) => fail(`Config do wrapper Finance ilegível (${e.code || e.name})`)
+      );
       if (
         wrapperConfig.version !== ctx.config.pin ||
         digest(wrapperConfig.profiles?.pilot?.files) !== digest(ctx.config.scope)
@@ -686,9 +750,9 @@ async function generate(ctx, fp, expectedGraph) {
         ...ctx.env,
         PATH: `${shims}:${ctx.env.PATH}`,
       });
-      const runs = (await readdir(path.join(ctx.root, 'graphify-out/pilot'))).filter(
-        (n) => n.startsWith('execucao-') && !previous.has(n)
-      );
+      const runs = (
+        await readdir(path.join(ctx.root, 'graphify-out/pilot')).catch(() => [])
+      ).filter((n) => n.startsWith('execucao-') && !previous.has(n));
       if (runs.length !== 1) fail('Wrapper Finance não produziu execução única verificável');
       wrapperEvidence = path.join(ctx.root, 'graphify-out/pilot', runs[0], 'evidencia.json');
       if ((await json(wrapperEvidence)).status !== 'validado_com_limitacoes')
@@ -776,16 +840,16 @@ async function generate(ctx, fp, expectedGraph) {
     }
     if (ctx.lockAlive && !ctx.lockAlive()) fail('Lease global perdeu a trava durante extração');
     const temp = path.join(ctx.outputRoot, `.graphify-local-${randomUUID()}.tmp`);
-    await copyFile(candidate, temp);
-    await chmod(temp, 0o600);
-    if (!currentGraph) {
-      const { link } = await import('node:fs/promises');
-      try {
+    try {
+      await copyFile(candidate, temp);
+      await chmod(temp, 0o600);
+      if (!currentGraph) {
+        const { link } = await import('node:fs/promises');
         await link(temp, ctx.graph);
-      } finally {
-        await rm(temp, { force: true });
-      }
-    } else await rename(temp, ctx.graph);
+      } else await rename(temp, ctx.graph);
+    } finally {
+      await rm(temp, { force: true });
+    }
     const meta = {
       version: 1,
       generator: 'graphify-local',
@@ -828,8 +892,15 @@ export async function adoptInitial(ctx, fp) {
   const file = path.join(ctx.outputRoot, 'graphify-local-initial-provenance.json');
   if (!(await exists(file)) || (await exists(ctx.provenance))) return false;
   if ((await lstat(file)).isSymbolicLink()) return false;
-  const initial = await json(file);
+  const initial = await json(file).catch((e) => {
+    if (e instanceof SyntaxError) return null;
+    throw e;
+  });
+  const createdAt = Date.parse(initial?.createdAt);
   if (
+    !initial ||
+    typeof initial !== 'object' ||
+    !Number.isFinite(createdAt) ||
     initial.generator !== 'initial-code-only' ||
     initial.root !== ctx.root ||
     initial.graphifyVersion !== ctx.config.pin ||
@@ -845,7 +916,7 @@ export async function adoptInitial(ctx, fp) {
   // Metadados que alteram descoberta precisam ser anteriores à própria extração.
   for (const file of ctx.config.metadata) {
     const info = await lstat(path.join(ctx.root, file)).catch(() => null);
-    if (info && info.mtimeMs > Date.parse(initial.createdAt)) return false;
+    if (info && info.mtimeMs > createdAt) return false;
   }
   await atomic(ctx.provenance, {
     version: 1,
@@ -881,13 +952,18 @@ export async function main(args = process.argv.slice(2), options = {}) {
   const report = { version: 1, startedAt: new Date().toISOString(), status: 'failed' };
   try {
     const parsed = parse(args),
-      root = await realpath(path.resolve(parsed.root || process.cwd()));
+      root = await realpath(path.resolve(parsed.root || process.cwd())).catch((e) =>
+        fail(`--root inexistente ou inacessível (${e.code || e.name})`)
+      );
     report.action = parsed.action;
     report.root = root;
     if ((await realpath(await git(root, ['rev-parse', '--show-toplevel']))) !== root)
       fail('--root deve apontar para a raiz Git');
+    const configFile = path.resolve(root, parsed.config || 'graphify.local.json');
     const config = validateConfig(
-      await json(path.resolve(root, parsed.config || 'graphify.local.json'))
+      await json(configFile).catch((e) =>
+        fail(`Configuração Graphify ilegível (${e.code || e.name}): ${configFile}`)
+      )
     );
     report.project = config.project;
     ctx = {
@@ -919,6 +995,13 @@ export async function main(args = process.argv.slice(2), options = {}) {
       } else {
         if (await exists(path.join(ctx.envRoot, 'pyvenv.cfg')))
           fail('Ambiente incompleto preservado; reparo precisa ser explícito', 'missing_runtime');
+        const lock =
+          config.adapter === 'finance'
+            ? path.join(root, 'scripts/graphify/requirements-linux-py311.lock')
+            : path.join(root, 'scripts/graphify/requirements.lock');
+        // Sem o lock com hashes o Finance cairia em instalação sem hashes: recusa antes de tocar no ambiente.
+        if (config.adapter === 'finance' && !(await exists(lock)))
+          fail(`Lock com hashes ausente (${path.relative(root, lock)}); instalação recusada`);
         await checked(
           ['uv', 'venv', '--allow-existing', '--python', config.pythonVersion, ctx.envRoot],
           root,
@@ -961,10 +1044,6 @@ export async function main(args = process.argv.slice(2), options = {}) {
             config.timeoutMs
           );
         } else {
-          const lock =
-            config.adapter === 'finance'
-              ? path.join(root, 'scripts/graphify/requirements-linux-py311.lock')
-              : path.join(root, 'scripts/graphify/requirements.lock');
           if (await exists(lock))
             await checked(
               [
@@ -1061,7 +1140,18 @@ export async function main(args = process.argv.slice(2), options = {}) {
   }
   return { exitCode: codes[report.status] ?? 1, report };
 }
-if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
+// realpath nos dois lados: com symlink no caminho, argv[1] e import.meta.url divergem e o CLI saía 0 sem fazer nada.
+const invokedDirectly = (() => {
+  try {
+    return (
+      !!process.argv[1] &&
+      realpathSync(process.argv[1]) === realpathSync(fileURLToPath(import.meta.url))
+    );
+  } catch {
+    return false;
+  }
+})();
+if (invokedDirectly) {
   const result = await main();
   console.log(JSON.stringify(result.report));
   process.exitCode = result.exitCode;

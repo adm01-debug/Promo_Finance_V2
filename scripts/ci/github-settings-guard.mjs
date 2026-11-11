@@ -18,9 +18,9 @@
  * não um vermelho por run, que ensina a ignorar o vermelho. Tudo OK: fecha a issue.
  */
 
-import { readFileSync, writeFileSync } from 'node:fs';
+import { readFileSync, realpathSync, writeFileSync } from 'node:fs';
 import { createHash } from 'node:crypto';
-import { pathToFileURL } from 'node:url';
+import { fileURLToPath } from 'node:url';
 
 const REPO = process.env.GITHUB_REPOSITORY ?? 'adm01-debug/Promo_Finance_V2';
 const TOKEN = process.env.GITHUB_TOKEN;
@@ -38,6 +38,17 @@ let adminRejeitado = false;
 // (PAT fine-grained, administration:read, só este repo) — nenhum runbook a referenciar.
 const ORIENTACAO_SEGREDO = 'secret `SETTINGS_GUARD_TOKEN` (PAT fine-grained, escopo administration:read, só este repositório)';
 const [OWNER, REPO_NAME] = REPO.split('/');
+// Runner do Actions já define GITHUB_API_URL (= https://api.github.com); permite apontar
+// para um servidor local nos testes sem tocar a API real.
+const API_URL = (process.env.GITHUB_API_URL || 'https://api.github.com').replace(/\/+$/, '');
+const numEnv = (nome, padrao, minimo) => {
+  const bruto = process.env[nome];
+  const n = bruto === undefined || bruto.trim() === '' ? NaN : Number(bruto);
+  return Number.isFinite(n) && n >= minimo ? n : padrao;
+};
+const TIMEOUT_MS = numEnv('SETTINGS_GUARD_TIMEOUT_MS', 30_000, 1);
+const RETRY_BASE_MS = numEnv('SETTINGS_GUARD_RETRY_MS', 1_000, 0);
+const TENTATIVAS_GET = 3;
 
 const ISSUE_LABEL = 'settings-guard';
 const ISSUE_TITLE = '[settings-guard] perimeter regression detected';
@@ -80,32 +91,76 @@ class TokenRecusado extends Error {
   }
 }
 
-async function gh(method, path, body, overrideToken) {
+/** Falha transitória ou definitiva da API que NÃO é falta de escopo (5xx, 429, rate limit, rede, JSON ruim). */
+class ErroApi extends Error {
+  constructor(mensagem, status, transitorio) {
+    super(mensagem);
+    this.status = status;
+    this.transitorio = transitorio;
+  }
+}
+
+const dormir = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+
+async function ghUmaVez(method, path, body, overrideToken) {
   const tok = overrideToken ?? TOKEN;
-  const url = `https://api.github.com${path}`;
-  const res = await fetch(url, {
-    method,
-    headers: {
-      Authorization: `Bearer ${tok}`,
-      Accept: 'application/vnd.github+json',
-      'X-GitHub-Api-Version': '2022-11-28',
-      'User-Agent': 'settings-guard/2.0',
-      ...(body ? { 'Content-Type': 'application/json' } : {}),
-    },
-    body: body ? JSON.stringify(body) : undefined,
-  });
+  const url = `${API_URL}${path}`;
+  let res;
+  try {
+    res = await fetch(url, {
+      method,
+      headers: {
+        Authorization: `Bearer ${tok}`,
+        Accept: 'application/vnd.github+json',
+        'X-GitHub-Api-Version': '2022-11-28',
+        'User-Agent': 'settings-guard/2.0',
+        ...(body ? { 'Content-Type': 'application/json' } : {}),
+      },
+      body: body ? JSON.stringify(body) : undefined,
+      signal: AbortSignal.timeout(TIMEOUT_MS),
+    });
+  } catch (e) {
+    throw new ErroApi(`GitHub API ${method} ${path} → falha de rede/timeout: ${e?.name ?? 'Error'}`, 0, true);
+  }
   if (res.status === 401) throw new TokenRecusado(path);
   if (res.status === 403 || res.status === 404) {
     const text = await res.text().catch(() => '');
+    // 403 de rate limit (primário ou secundário) NÃO é falta de escopo: virar "ponto cego"
+    // deixaria o job verde sem ter olhado nada por causa de um limite transitório.
+    if (res.status === 403 && /rate limit|abuse detection/i.test(text)) {
+      throw new ErroApi(`GitHub API ${method} ${path} → 403 rate limit`, 403, true);
+    }
     // 404 aqui também costuma ser escopo, não ausência: a API esconde o recurso.
     throw new NaoVerificavel(path, res.status, text.slice(0, 200));
   }
   if (!res.ok) {
-    const text = await res.text();
-    throw new Error(`GitHub API ${method} ${path} → ${res.status}: ${text}`);
+    const text = (await res.text().catch(() => '')).slice(0, 300);
+    throw new ErroApi(`GitHub API ${method} ${path} → ${res.status}: ${text}`, res.status, res.status === 429 || res.status >= 500);
   }
   if (res.status === 204 || res.headers.get('content-length') === '0') return null;
-  return res.json().catch(() => null);
+  const texto = await res.text().catch(() => null);
+  if (texto === null) throw new ErroApi(`GitHub API ${method} ${path} → corpo ilegível`, res.status, true);
+  if (texto.trim() === '') return null;
+  try {
+    return JSON.parse(texto);
+  } catch {
+    // Antes: `res.json().catch(() => null)` — JSON inválido virava `null`, que as checagens
+    // liam como "0 rulesets"/"campo ausente" (falso OK). Agora é erro explícito.
+    throw new ErroApi(`GitHub API ${method} ${path} → resposta 200 com JSON inválido`, res.status, true);
+  }
+}
+
+// Só GET é re-tentado (idempotente); POST/PATCH com 5xx podem ter sido aplicados.
+async function gh(method, path, body, overrideToken) {
+  const tentativas = method === 'GET' ? TENTATIVAS_GET : 1;
+  for (let i = 1; ; i++) {
+    try {
+      return await ghUmaVez(method, path, body, overrideToken);
+    } catch (e) {
+      if (!(e instanceof ErroApi) || !e.transitorio || i >= tentativas) throw e;
+      await dormir(RETRY_BASE_MS * i);
+    }
+  }
 }
 // Leituras administrativas usam o PAT fine-grained (administration:read) quando existe;
 // escritas (issues, PATCH de restauracao) continuam com o GITHUB_TOKEN.
@@ -137,9 +192,28 @@ function fonteDaLeituraAdmin() {
 // Cada checagem devolve { campo, esperado, encontrado } ou lança NaoVerificavel.
 // `restauravel` diz se o guard sabe desfazer a divergência sozinho.
 
+// Campos de branch_protection_main do baseline cuja leitura é `protection.<campo>.enabled`.
+const CAMPOS_ENABLED = ['enforce_admins', 'required_linear_history', 'allow_force_pushes', 'allow_deletions', 'required_conversation_resolution', 'block_creations', 'lock_branch', 'required_signatures'];
+const CAMPOS_BP_CONHECIDOS = new Set(['strict', 'required_status_checks', 'required_approving_review_count', ...CAMPOS_ENABLED]);
+
 async function checarBranchProtection() {
-  const protection = await ghAdmin('GET', `/repos/${OWNER}/${REPO_NAME}/branches/${BRANCH}/protection`);
   const esperado = baseline.branch_protection_main;
+  let protection;
+  try {
+    protection = await ghAdmin('GET', `/repos/${OWNER}/${REPO_NAME}/branches/${BRANCH}/protection`);
+  } catch (e) {
+    // A API responde 404 "Branch not protected" quando a proteção foi REMOVIDA. Tratar esse 404
+    // como falta de escopo deixava o job verde justamente na pior regressão possível.
+    if (e instanceof NaoVerificavel && e.status === 404 && /branch not protected/i.test(e.message)) {
+      return [{
+        campo: 'branch_protection_main',
+        esperado: 'branch protection ativa',
+        encontrado: 'branch sem protecao (404 Branch not protected)',
+        restauravel: false,
+      }];
+    }
+    throw e;
+  }
   const divergencias = [];
 
   // W04: resposta 200 que nao e um objeto e ponto cego. Mas `required_status_checks`
@@ -168,6 +242,9 @@ async function checarBranchProtection() {
     divergencias.push({ campo: 'branch_protection_main.enforce_admins', esperado: esperado.enforce_admins, encontrado: enforceAdmins, restauravel: false });
   }
 
+  if (!checksDesligados && checks.contexts != null && !Array.isArray(checks.contexts)) {
+    throw new NaoVerificavel(`/branches/${BRANCH}/protection`, 200, 'required_status_checks.contexts nao e uma lista');
+  }
   const contexts = checksDesligados ? [] : [...(checks.contexts ?? [])].sort(porCodigo);
   const esperados = [...esperado.required_status_checks].sort(porCodigo);
   if (contexts.join('|') !== esperados.join('|')) {
@@ -187,6 +264,22 @@ async function checarBranchProtection() {
   const allowForcePushes = protection?.allow_force_pushes?.enabled ?? null;
   if (allowForcePushes !== (esperado.allow_force_pushes ?? null)) {
     divergencias.push({ campo: 'branch_protection_main.allow_force_pushes', esperado: esperado.allow_force_pushes ?? null, encontrado: allowForcePushes, restauravel: false });
+  }
+
+  // Campos do baseline que antes eram ignorados (falso OK: o baseline "prometia" conferir).
+  if (esperado.required_approving_review_count !== undefined) {
+    const reviews = protection.required_pull_request_reviews?.required_approving_review_count ?? 0;
+    if (reviews !== esperado.required_approving_review_count) {
+      divergencias.push({ campo: 'branch_protection_main.required_approving_review_count', esperado: esperado.required_approving_review_count, encontrado: reviews, restauravel: false });
+    }
+  }
+  for (const campo of CAMPOS_ENABLED) {
+    if (['enforce_admins', 'required_linear_history', 'allow_force_pushes'].includes(campo)) continue; // já conferidos acima
+    if (esperado[campo] === undefined) continue;
+    const encontrado = protection[campo]?.enabled ?? null;
+    if (encontrado !== esperado[campo]) {
+      divergencias.push({ campo: `branch_protection_main.${campo}`, esperado: esperado[campo], encontrado, restauravel: false });
+    }
   }
 
   return divergencias;
@@ -238,30 +331,42 @@ async function checarRepo() {
   return divergencias;
 }
 
-async function checarActions() {
-  const perms = await ghAdmin('GET', `/repos/${OWNER}/${REPO_NAME}/actions/permissions`);
+// Compara `esperados` (seção do baseline) com `perms` (resposta da API). Campo AUSENTE/null na
+// resposta é "nao consegui ler" (ponto cego parcial), nunca divergência — mesmo critério de
+// W04 em checarRepo. Resposta que nem é objeto (null por 204/JSON vazio) é ponto cego total.
+function compararSecao(perms, esperados, prefixo, caminho) {
+  if (!perms || typeof perms !== 'object' || Array.isArray(perms)) {
+    throw new NaoVerificavel(caminho, 200, 'resposta nao e um objeto');
+  }
   const divergencias = [];
-  for (const [campo, esperado] of Object.entries(baseline.actions)) {
-    const encontrado = perms?.[campo] ?? null;
-    if (encontrado !== esperado) {
-      divergencias.push({ campo: `actions.${campo}`, esperado, encontrado, restauravel: false });
+  const ausentes = [];
+  for (const [campo, esperado] of Object.entries(esperados)) {
+    if (campo.startsWith('_')) continue; // skip JSON comment fields
+    const encontrado = perms[campo] ?? null;
+    if (encontrado === null) {
+      ausentes.push(`${prefixo}.${campo}`);
+      continue;
     }
+    if (encontrado !== esperado) {
+      divergencias.push({ campo: `${prefixo}.${campo}`, esperado, encontrado, restauravel: false });
+    }
+  }
+  if (ausentes.length > 0) {
+    return { divergencias, cego: `200 — campos nao expostos ao token: ${ausentes.join(', ')}`, campos: ausentes };
   }
   return divergencias;
 }
 
+async function checarActions() {
+  const caminho = `/repos/${OWNER}/${REPO_NAME}/actions/permissions`;
+  const perms = await ghAdmin('GET', caminho);
+  return compararSecao(perms, baseline.actions, 'actions', caminho);
+}
+
 async function checarWorkflowPermissions() {
-  const perms = await ghAdmin('GET', `/repos/${OWNER}/${REPO_NAME}/actions/permissions/workflow`);
-  const divergencias = [];
-  const bl = baseline.workflow_permissions ?? {};
-  for (const [campo, esperado] of Object.entries(bl)) {
-    if (campo.startsWith('_')) continue; // skip JSON comment fields
-    const encontrado = perms?.[campo] ?? null;
-    if (encontrado !== esperado) {
-      divergencias.push({ campo: `workflow_permissions.${campo}`, esperado, encontrado, restauravel: false });
-    }
-  }
-  return divergencias;
+  const caminho = `/repos/${OWNER}/${REPO_NAME}/actions/permissions/workflow`;
+  const perms = await ghAdmin('GET', caminho);
+  return compararSecao(perms, baseline.workflow_permissions ?? {}, 'workflow_permissions', caminho);
 }
 
 async function checarSelectedActions() {
@@ -278,7 +383,7 @@ async function checarSelectedActions() {
     // real, mas `checarActions()` já a reporta (actions.allowed_actions). Sem este
     // catch, o 409 derrubava o processo inteiro ANTES de abrir a issue — exatamente o
     // defeito que este guard existe para evitar (NaoVerificavel/403 tratados, 409 não).
-    if (e?.message?.includes('409')) return [];
+    if (e?.status === 409) return [];
     throw e;
   }
   const divergencias = [];
@@ -310,9 +415,13 @@ async function checarSelectedActions() {
 
 async function checarRulesets() {
   const rulesets = await ghAdmin('GET', `/repos/${OWNER}/${REPO_NAME}/rulesets`);
+  // `null`/objeto NAO e "0 rulesets": contava como 0 e aprovava o baseline `rulesets_count: 0`.
+  if (!Array.isArray(rulesets)) {
+    throw new NaoVerificavel(`/repos/${OWNER}/${REPO_NAME}/rulesets`, 200, 'resposta nao e uma lista de rulesets');
+  }
   const divergencias = [];
   const esperado = baseline.rulesets_count ?? 0;
-  const encontrado = (rulesets ?? []).length;
+  const encontrado = rulesets.length;
   if (encontrado !== esperado) {
     divergencias.push({ campo: 'rulesets.count', esperado, encontrado, restauravel: false });
   }
@@ -320,8 +429,19 @@ async function checarRulesets() {
 }
 
 async function checarEnvironments() {
-  const dados = await ghAdmin('GET', `/repos/${OWNER}/${REPO_NAME}/environments`);
-  const encontrados = (dados?.environments ?? []).map((e) => e.name).sort();
+  // A API pagina (default 30): com os environments `Preview – <branch>` da Vercel passa de 30
+  // e o que ficava na pagina 2 nao era conferido (extra inesperado ali passava despercebido).
+  const brutos = [];
+  for (let pagina = 1; pagina <= 20; pagina += 1) {
+    const dados = await ghAdmin('GET', `/repos/${OWNER}/${REPO_NAME}/environments?per_page=100&page=${pagina}`);
+    if (!dados || typeof dados !== 'object' || !Array.isArray(dados.environments)) {
+      throw new NaoVerificavel(`/repos/${OWNER}/${REPO_NAME}/environments`, 200, 'resposta sem lista de environments');
+    }
+    brutos.push(...dados.environments);
+    const total = Number(dados.total_count);
+    if (dados.environments.length === 0 || !Number.isFinite(total) || brutos.length >= total) break;
+  }
+  const encontrados = brutos.map((e) => e?.name).filter((n) => typeof n === 'string').sort();
   const esperados = [...baseline.environments].sort();
   const prefixosVercel = (baseline.environments_vercel_managed?.prefixos ?? []);
   const faltando = esperados.filter((e) => !encontrados.includes(e));
@@ -363,8 +483,13 @@ async function restaurar(campo) {
   // pode continuar empurrando o valor antigo — isso seria "restaurar" para o errado
   // e ainda assim declarar sucesso.
   if (campo === 'branch_protection_main.strict') {
-    const protection = await gh('GET', `/repos/${OWNER}/${REPO_NAME}/branches/${BRANCH}/protection`);
-    const contexts = protection?.required_status_checks?.contexts ?? [];
+    // Leitura com o mesmo token da checagem (o GITHUB_TOKEN nao le branch protection).
+    const protection = await ghAdmin('GET', `/repos/${OWNER}/${REPO_NAME}/branches/${BRANCH}/protection`);
+    const contexts = protection?.required_status_checks?.contexts;
+    // PATCH com `contexts: []` APAGARIA os checks obrigatorios: so restaura com lista lida e nao vazia.
+    if (!Array.isArray(contexts) || contexts.length === 0) {
+      throw new Error('contexts ilegiveis ou vazios: restauracao abortada para nao apagar os checks obrigatorios');
+    }
     const valor = baseline.branch_protection_main.strict;
     await gh('PATCH', `/repos/${OWNER}/${REPO_NAME}/branches/${BRANCH}/protection/required_status_checks`, {
       strict: valor,
@@ -383,7 +508,7 @@ async function restaurar(campo) {
 // ---------------------------------------------------------------- issue
 
 async function findIssue() {
-  const issues = await gh('GET', `/repos/${OWNER}/${REPO_NAME}/issues?labels=${ISSUE_LABEL}&state=open&per_page=10`);
+  const issues = await gh('GET', `/repos/${OWNER}/${REPO_NAME}/issues?labels=${ISSUE_LABEL}&state=open&per_page=100`);
   return Array.isArray(issues) ? issues.find((i) => i.title === ISSUE_TITLE) ?? null : null;
 }
 
@@ -480,12 +605,67 @@ async function fecharIssue() {
   console.log(`Issue #${existing.number} fechada.`);
 }
 
+// ---------------------------------------------------------------- baseline
+
+const ehObjeto = (v) => v !== null && typeof v === 'object' && !Array.isArray(v);
+const chavesReais = (o) => Object.keys(o).filter((k) => !k.startsWith('_'));
+
+/**
+ * Valida a FORMA do baseline antes de usá-lo. Baseline com seção faltando/vazia/tipo errado
+ * fazia o guard conferir "nada" e aprovar (seção `{}`), ou morrer num TypeError obscuro
+ * (seção ausente). Devolve a lista de problemas (vazia = baseline utilizável).
+ */
+export function validarBaseline(bl) {
+  const erros = [];
+  if (!ehObjeto(bl)) return ['baseline nao e um objeto JSON'];
+  const bp = bl.branch_protection_main;
+  if (!ehObjeto(bp)) {
+    erros.push('branch_protection_main ausente ou nao e objeto');
+  } else {
+    if (typeof bp.strict !== 'boolean') erros.push('branch_protection_main.strict deve ser booleano');
+    if (typeof bp.enforce_admins !== 'boolean') erros.push('branch_protection_main.enforce_admins deve ser booleano');
+    if (!Array.isArray(bp.required_status_checks) || bp.required_status_checks.length === 0
+      || !bp.required_status_checks.every((c) => typeof c === 'string' && c.trim() !== '')) {
+      erros.push('branch_protection_main.required_status_checks deve ser lista nao vazia de nomes');
+    }
+    if (bp.required_approving_review_count !== undefined && !(Number.isInteger(bp.required_approving_review_count) && bp.required_approving_review_count >= 0)) {
+      erros.push('branch_protection_main.required_approving_review_count deve ser inteiro >= 0');
+    }
+    for (const campo of CAMPOS_ENABLED) {
+      if (bp[campo] !== undefined && typeof bp[campo] !== 'boolean') erros.push(`branch_protection_main.${campo} deve ser booleano`);
+    }
+    for (const campo of chavesReais(bp)) {
+      if (!CAMPOS_BP_CONHECIDOS.has(campo)) erros.push(`branch_protection_main.${campo}: campo sem checagem implementada no guard (seria ignorado)`);
+    }
+  }
+  for (const secao of ['merge', 'actions']) {
+    if (!ehObjeto(bl[secao]) || chavesReais(bl[secao]).length === 0) erros.push(`${secao} ausente, vazio ou nao e objeto`);
+  }
+  if (bl.workflow_permissions !== undefined && !ehObjeto(bl.workflow_permissions)) erros.push('workflow_permissions nao e objeto');
+  if (bl.security_and_analysis !== undefined && !ehObjeto(bl.security_and_analysis)) erros.push('security_and_analysis nao e objeto');
+  if (bl.rulesets_count !== undefined && !(Number.isInteger(bl.rulesets_count) && bl.rulesets_count >= 0)) erros.push('rulesets_count deve ser inteiro >= 0');
+  if (!Array.isArray(bl.environments) || !bl.environments.every((e) => typeof e === 'string' && e !== '')) {
+    erros.push('environments deve ser lista de nomes');
+  }
+  return erros;
+}
+
 // ---------------------------------------------------------------- principal
 
 async function main() {
   if (!TOKEN) {
     console.error('::error::GITHUB_TOKEN ausente');
     process.exit(1);
+  }
+  if (!/^[\w.-]+\/[\w.-]+$/.test(REPO)) {
+    console.error(`::error::GITHUB_REPOSITORY invalido: ${semQuebra(JSON.stringify(REPO))} (esperado dono/repo)`);
+    process.exit(2);
+  }
+  const errosBaseline = validarBaseline(baseline);
+  if (errosBaseline.length > 0) {
+    // Nao confere contra um baseline que nao entendemos: aprovar seria falso OK.
+    for (const e of errosBaseline) console.error(`::error::baseline invalido: ${semQuebra(e)}`);
+    process.exit(2);
   }
   console.log(`Leitura administrativa: ${fonteDaLeituraAdmin()}`);
   const checagens = [
@@ -597,7 +777,7 @@ async function main() {
       '',
       '| Checagem | Motivo |',
       '|---|---|',
-      ...naoVerificaveis.map((n) => `| ${n.nome} | ${n.motivo.replace(/\|/g, '/')} |`),
+      ...naoVerificaveis.map((n) => `| ${semQuebra(n.nome)} | ${semQuebra(n.motivo).replace(/\|/g, '/')} |`),
       '',
     );
   }
@@ -628,9 +808,19 @@ async function main() {
   process.exit(1);
 }
 
-if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) {
+// `import.meta.url === pathToFileURL(argv[1]).href` falha com symlink no caminho (Node resolve o
+// módulo para o caminho real; argv[1] não) e o guard sairia 0 SEM conferir nada: falso OK.
+function executadoDiretamente() {
+  try {
+    return realpathSync(process.argv[1]) === realpathSync(fileURLToPath(import.meta.url));
+  } catch {
+    return false;
+  }
+}
+
+if (executadoDiretamente()) {
   main().catch((e) => {
-    console.error('::error::' + e.message);
+    console.error('::error::' + semQuebra(e?.message ?? e).slice(0, 500));
     process.exit(1);
   });
 }

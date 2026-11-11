@@ -10,12 +10,15 @@ import {
   utimes,
   lstat,
   rename,
+  readdir,
+  chmod,
 } from 'node:fs/promises';
 import { spawn } from 'node:child_process';
+import { createRequire } from 'node:module';
 import { once } from 'node:events';
 import os from 'node:os';
 import path from 'node:path';
-import { main, parseArgs, networkPrefix } from './run.mjs';
+import { main, parseArgs, networkPrefix, allowedSourceFiles } from './run.mjs';
 import {
   git,
   run,
@@ -883,4 +886,460 @@ test('leitura vendor vincula validação e bytes ao mesmo inode', async (t) => {
   await writeFile(replacement, 'replacement fixture');
   await rename(replacement, file);
   await assert.rejects(readRegularDependency(file, expected), /substituído durante a inspeção/);
+});
+
+// ---- Endurecimento: run.sh, guarda de CLI, typecheck, config, pending, sinais, gitleaks, redação ----
+const here = path.dirname(new URL(import.meta.url).pathname);
+const cliEnv = (extra = {}) => {
+  const env = { ...process.env, ...extra };
+  delete env.GITHUB_TOKEN;
+  delete env.GH_TOKEN;
+  return env;
+};
+async function exec(command, args, { env = cliEnv(), cwd = here } = {}) {
+  const child = spawn(command, args, { env, cwd, stdio: ['ignore', 'pipe', 'pipe'] });
+  let stdout = '',
+    stderr = '';
+  child.stdout.on('data', (d) => (stdout += d));
+  child.stderr.on('data', (d) => (stderr += d));
+  const [code] = await once(child, 'close');
+  return { code, stdout, stderr };
+}
+async function copiaComEspaco(t) {
+  const dir = await mkdtemp(path.join(os.tmpdir(), 'maintenance-cópia com espaço-'));
+  t.after(() => rm(dir, { recursive: true, force: true }));
+  for (const name of ['run.sh', 'run.mjs', 'lib.mjs', 'typecheck.mjs', 'config.json'])
+    await writeFile(path.join(dir, name), await readFile(path.join(here, name)));
+  return dir;
+}
+
+test('run.sh sem HOME falha em JSON com exit 1, nunca 2 nem sem mensagem', async (t) => {
+  const env = cliEnv();
+  delete env.HOME;
+  const r = await exec('sh', [path.join(here, 'run.sh'), 'doctor'], { env });
+  assert.equal(r.code, 1, r.stderr);
+  assert.equal(JSON.parse(r.stdout).status, 'failed');
+  assert.match(JSON.parse(r.stdout).message, /HOME/);
+});
+test('run.sh com HOME vazio não cria estado na raiz do sistema', async () => {
+  const r = await exec('sh', [path.join(here, 'run.sh'), 'doctor'], { env: cliEnv({ HOME: '' }) });
+  assert.equal(r.code, 1, r.stderr);
+  assert.match(JSON.parse(r.stdout).message, /HOME/);
+});
+test('run.sh com diretório de trava impossível falha em JSON', async () => {
+  const r = await exec('sh', [path.join(here, 'run.sh'), 'doctor'], {
+    env: cliEnv({ HOME: '/proc/inexistente-maintenance' }),
+  });
+  assert.equal(r.code, 1);
+  assert.match(JSON.parse(r.stdout).message, /trava global/);
+});
+test('run.sh sem node no PATH falha em JSON em vez de exit 127', async (t) => {
+  const home = await mkdtemp(path.join(os.tmpdir(), 'maintenance-home-')),
+    bin = await mkdtemp(path.join(os.tmpdir(), 'maintenance-bin-'));
+  t.after(() => Promise.all([home, bin].map((d) => rm(d, { recursive: true, force: true }))));
+  for (const tool of ['mkdir', 'chmod', 'flock', 'dirname']) {
+    const found = (await exec('sh', ['-c', `command -v ${tool}`])).stdout.trim();
+    await symlink(found, path.join(bin, tool));
+  }
+  const r = await exec('/bin/sh', [path.join(here, 'run.sh'), 'doctor'], {
+    env: cliEnv({ HOME: home, PATH: bin }),
+  });
+  assert.equal(r.code, 1, r.stderr);
+  assert.match(JSON.parse(r.stdout).message, /node/);
+});
+test('run.sh em caminho com espaço/acento propaga argumentos e exit code do node', async (t) => {
+  const dir = await copiaComEspaco(t),
+    home = await mkdtemp(path.join(os.tmpdir(), 'maintenance-home-'));
+  t.after(() => rm(home, { recursive: true, force: true }));
+  const r = await exec('sh', [path.join(dir, 'run.sh'), 'doctor', '--root'], {
+    env: cliEnv({ HOME: home }),
+  });
+  assert.equal(r.code, 1);
+  assert.match(JSON.parse(r.stdout).message, /Argumento desconhecido, duplicado ou sem valor/);
+  const bare = await exec('sh', [path.join(dir, 'run.sh')], { env: cliEnv({ HOME: home }) });
+  assert.equal(bare.code, 1);
+  assert.match(JSON.parse(bare.stdout).message, /Use doctor, check ou heal/);
+});
+test('run.sh devolve 75 com trava global ocupada', async (t) => {
+  const home = await mkdtemp(path.join(os.tmpdir(), 'maintenance-home-'));
+  t.after(() => rm(home, { recursive: true, force: true }));
+  const state = path.join(home, '.cache/repo-maintenance');
+  await mkdir(state, { recursive: true });
+  const holder = spawn('flock', [path.join(state, 'fleet.lock'), 'sleep', '30'], {
+    stdio: 'ignore',
+  });
+  t.after(() => holder.kill('SIGKILL'));
+  await new Promise((resolve) => setTimeout(resolve, 300));
+  const r = await exec('sh', [path.join(here, 'run.sh'), 'doctor'], {
+    env: cliEnv({ HOME: home }),
+  });
+  assert.equal(r.code, 75, r.stderr);
+  assert.equal(JSON.parse(r.stdout).status, 'skipped_busy');
+});
+
+test('run.mjs chamado por symlink ou caminho com espaço executa em vez de sair 0 calado', async (t) => {
+  const dir = await copiaComEspaco(t),
+    link = path.join(dir, 'link-para-cópia');
+  await symlink(dir, link);
+  for (const entry of [path.join(dir, 'run.mjs'), path.join(link, 'run.mjs')]) {
+    const r = await exec(process.execPath, [entry], { env: cliEnv({ HOME: dir }) });
+    assert.equal(r.code, 1, `${entry}: ${r.stdout}${r.stderr}`);
+    assert.match(JSON.parse(r.stdout).message, /Use doctor, check ou heal/);
+  }
+});
+
+test('parseArgs recusa flag vazia, sem valor, duplicada, desconhecida e posicional', () => {
+  const casos = [
+    ['check', '--root', '/x', '--ref'],
+    ['check', '--root', '', '--ref', 'main'],
+    ['check', '--root', '/x', '--ref', '--config'],
+    ['check', '--root', '/x', '--ref', 'a', '--ref', 'b'],
+    ['check', '--root=/x', '--ref', 'main'],
+    ['check', '--root', '/x', '--ref', 'main', '--dryrun', 'yes'],
+    ['check', 'extra', '--root', '/x', '--ref', 'main'],
+    ['', '--root', '/x'],
+    [],
+  ];
+  for (const argv of casos)
+    assert.throws(() => parseArgs(argv), /Argumento|Use doctor|--root/, argv.join(' '));
+});
+
+test('validateConfig devolve erro acionável (não TypeError) para tipos errados', async () => {
+  const base = JSON.parse(await readFile(path.join(here, 'config.json'), 'utf8'));
+  const variantes = {
+    'gate nulo': (c) => (c.gates[0] = null),
+    'gate array': (c) => (c.gates[0] = []),
+    'raiz numérica': (c) => (c.fix.roots = [1]),
+    'raiz nula': (c) => (c.fix.roots = [null]),
+    'raiz com barra final': (c) => (c.fix.roots = ['src/']),
+    'raiz com ponto': (c) => (c.fix.roots = ['src/./x']),
+    'raiz com barra dupla': (c) => (c.fix.roots = ['src//x']),
+  };
+  for (const [nome, mutar] of Object.entries(variantes)) {
+    const c = JSON.parse(JSON.stringify(base));
+    mutar(c);
+    assert.throws(
+      () => validateConfig(c),
+      (e) => e.code === 'failed' && e.constructor.name === 'MaintenanceError',
+      nome
+    );
+  }
+  assert.doesNotThrow(() => validateConfig(JSON.parse(JSON.stringify(base))));
+  const exemplo = JSON.parse(await readFile(path.join(here, 'config.example.json'), 'utf8'));
+  assert.doesNotThrow(() => validateConfig(exemplo));
+});
+
+test('mensagens de erro de entrada dizem a causa (ref, root, config, git)', async (t) => {
+  const f = await fixture(t);
+  const falha = async (argv) => (await main(argv)).report;
+  const [, ...resto] = f.args('check');
+  const com = (troca) => {
+    const a = ['check', ...resto];
+    for (const [k, v] of Object.entries(troca)) a[a.indexOf(k) + 1] = v;
+    return a;
+  };
+  let r = await falha(com({ '--ref': 'origin/main' }));
+  assert.equal(r.status, 'failed');
+  assert.match(r.message, /Referência origin\/main não resolve para um commit/);
+  r = await falha(com({ '--root': path.join(f.dir, 'nao-existe') }));
+  assert.match(r.message, /--root inexistente/);
+  r = await falha(com({ '--root': f.dir }));
+  assert.match(r.message, /not a git repository/);
+  r = await falha(com({ '--config': path.join(f.dir, 'nao-existe.json') }));
+  assert.match(r.message, /Não foi possível ler a configuração .*nao-existe\.json: ENOENT/);
+  await writeFile(path.join(f.dir, 'quebrado.json'), '{oops');
+  r = await falha(com({ '--config': path.join(f.dir, 'quebrado.json') }));
+  assert.match(r.message, /Configuração não é JSON válido/);
+});
+test('--root via symlink é aceito e resolve para a raiz real', isolated, async (t) => {
+  const f = await fixture(t);
+  const link = path.join(f.dir, 'link-repo');
+  await symlink(f.root, link);
+  const r = await main(f.args('check').map((v) => (v === f.root ? link : v)));
+  assert.equal(r.report.status, 'checked', JSON.stringify(r.report));
+  assert.equal(r.report.root, await (await import('node:fs/promises')).realpath(f.root));
+});
+test('XDG_STATE_HOME relativo é ignorado (estado não depende do cwd)', async (t) => {
+  const f = await fixture(t);
+  const home = await mkdtemp(path.join(os.tmpdir(), 'maintenance-xdg-')),
+    antes = process.cwd(),
+    env = { HOME: process.env.HOME, XDG: process.env.XDG_STATE_HOME };
+  t.after(async () => {
+    process.chdir(antes);
+    process.env.HOME = env.HOME;
+    if (env.XDG === undefined) delete process.env.XDG_STATE_HOME;
+    else process.env.XDG_STATE_HOME = env.XDG;
+    await rm(home, { recursive: true, force: true });
+  });
+  process.chdir(home);
+  process.env.HOME = home;
+  process.env.XDG_STATE_HOME = 'estado-relativo';
+  const args = f.args('doctor');
+  args.splice(args.indexOf('--state'), 2);
+  const r = await main(args);
+  assert.equal(r.report.status, 'healthy', JSON.stringify(r.report));
+  assert.ok(r.report.reportFile.startsWith(path.join(home, '.local/state/repo-maintenance')));
+  assert.equal(await exists(path.join(home, 'estado-relativo')), false);
+});
+
+test(
+  'fix.roots sem nenhum arquivo rastreado falha em vez de aprovar por vacuidade',
+  isolated,
+  async (t) => {
+    const f = await fixture(t);
+    f.config.fix.roots = ['src/inexistente'];
+    await saveConfig(f);
+    const r = await main(f.args());
+    assert.equal(r.report.status, 'failed', JSON.stringify(r.report));
+    assert.match(r.report.message, /Nenhum arquivo rastreado em fix\.roots/);
+    await assert.rejects(allowedSourceFiles(f.root, f.config), /Nenhum arquivo rastreado/);
+  }
+);
+test('detecção de arquivo gerado é linear e continua reconhecendo cabeçalhos', async (t) => {
+  const f = await fixture(t);
+  await writeFile(path.join(f.root, 'src/vazio.ts'), '\n'.repeat(60000) + 'export const a = 1;\n');
+  await writeFile(path.join(f.root, 'src/gen-crlf.ts'), '\r\n\r\n  // Generated by tool\r\nx\r\n');
+  await writeFile(path.join(f.root, 'src/gen-meio.ts'), 'x\n\n\n   /* do not edit */\n');
+  await writeFile(path.join(f.root, 'src/normal.ts'), 'const generated = 1; // ok\n');
+  await git(f.root, ['add', '.']);
+  const inicio = Date.now();
+  const allowed = await allowedSourceFiles(f.root, f.config);
+  assert.ok(Date.now() - inicio < 1500, `lento: ${Date.now() - inicio}ms`);
+  assert.ok(
+    allowed.has('src/vazio.ts') && allowed.has('src/normal.ts') && allowed.has('src/value.ts')
+  );
+  assert.ok(!allowed.has('src/gen-crlf.ts') && !allowed.has('src/gen-meio.ts'));
+});
+
+test(
+  'pending cuja branch foi removida pelo dono não bloqueia o heal para sempre',
+  isolated,
+  async (t) => {
+    const f = await fixture(t);
+    const first = await main(f.args());
+    assert.equal(first.report.status, 'validated_patch', JSON.stringify(first.report));
+    const blocked = await main(f.args());
+    assert.equal(blocked.report.status, 'pending_patch');
+    assert.match(blocked.report.message, /manifesto .*pending\.json/);
+    await git(f.root, ['branch', '-D', first.report.branch]);
+    const second = await main(f.args());
+    assert.equal(second.report.status, 'validated_patch', JSON.stringify(second.report));
+    assert.notEqual(second.report.commit, first.report.commit);
+    const stateDir = path.join(f.state, (await readdir(f.state))[0]);
+    assert.equal(
+      await exists(path.join(stateDir, 'discarded', `${first.report.commit}.json`)),
+      true
+    );
+    assert.equal(await exists(first.report.patch), true);
+  }
+);
+test(
+  'pending com branch viva e manifesto inválido continuam bloqueando/falhando',
+  isolated,
+  async (t) => {
+    const f = await fixture(t);
+    const first = await main(f.args());
+    assert.equal((await main(f.args())).report.status, 'pending_patch');
+    assert.equal(
+      await git(f.root, ['rev-parse', '--verify', first.report.branch]),
+      first.report.commit
+    );
+    const stateDir = path.join(f.state, (await readdir(f.state))[0]);
+    await writeFile(path.join(stateDir, 'pending.json'), '{"commit":"x"}');
+    const r = await main(f.args());
+    assert.equal(r.report.status, 'failed');
+    assert.match(r.report.message, /Manifesto de patch pendente inválido/);
+    assert.equal(await exists(path.join(stateDir, 'pending.json')), true);
+  }
+);
+
+test(
+  'SIGTERM durante gate é falha por sinal, não blocked_baseline, e limpa a worktree',
+  isolated,
+  async (t) => {
+    const f = await fixture(t, { failure: 'timeout' });
+    f.config.timeoutMs = 20000;
+    await saveConfig(f);
+    const child = spawn(process.execPath, [path.join(here, 'run.mjs'), ...f.args('heal')], {
+      env: cliEnv(),
+      stdio: ['ignore', 'pipe', 'pipe'],
+    });
+    t.after(() => child.kill('SIGKILL'));
+    let stdout = '';
+    child.stdout.on('data', (d) => (stdout += d));
+    const closed = once(child, 'close');
+    const logs = async () => {
+      const root = path.join(
+        f.state,
+        ...(await readdir(f.state).catch(() => [])).slice(0, 1),
+        'runs'
+      );
+      const runs = await readdir(root).catch(() => []);
+      return runs.length ? readdir(path.join(root, runs[0])).catch(() => []) : [];
+    };
+    for (let i = 0; i < 200 && !(await logs()).includes('1-baseline-types.log'); i++)
+      await new Promise((resolve) => setTimeout(resolve, 50));
+    await new Promise((resolve) => setTimeout(resolve, 300));
+    child.kill('SIGTERM');
+    const [code] = await closed;
+    const report = JSON.parse(stdout);
+    assert.equal(report.status, 'failed', stdout);
+    assert.match(report.message, /interrompida por sinal/);
+    assert.equal(code, 1);
+    assert.equal(
+      (await git(f.root, ['worktree', 'list', '--porcelain'])).match(/worktree /g).length,
+      1
+    );
+    assert.equal(await git(f.root, ['branch', '--format=%(refname:short)']), 'main');
+  }
+);
+
+async function fakeGitleaks(t, exitCode = 0) {
+  const dir = await mkdtemp(path.join(os.tmpdir(), 'maintenance-gitleaks-'));
+  const args = path.join(dir, 'args.txt');
+  await writeFile(
+    path.join(dir, 'gitleaks'),
+    `#!/bin/sh\nprintf '%s\\n' "$@" > '${args}'\nprev=''; for a in "$@"; do if [ "$prev" = '--baseline-path' ] && [ ! -f "$a" ]; then echo 'baseline ausente' >&2; exit 9; fi; prev="$a"; done\nexit ${exitCode}\n`,
+    { mode: 0o755 }
+  );
+  const antes = process.env.PATH;
+  process.env.PATH = `${dir}:${antes}`;
+  t.after(async () => {
+    process.env.PATH = antes;
+    await rm(dir, { recursive: true, force: true });
+  });
+  return args;
+}
+test(
+  'gitleaks sem .gitleaks-baseline.json no repo não recebe --baseline-path',
+  isolated,
+  async (t) => {
+    const args = await fakeGitleaks(t);
+    const f = await fixture(t);
+    const r = await main(f.args());
+    assert.equal(r.report.status, 'validated_patch', JSON.stringify(r.report));
+    const recebido = (await readFile(args, 'utf8')).split('\n');
+    assert.deepEqual(recebido.slice(0, 3), ['git', '--staged', '--no-banner']);
+    assert.ok(!recebido.includes('--baseline-path'));
+  }
+);
+test(
+  'gitleaks com baseline versionado recebe --baseline-path e reprovação bloqueia',
+  isolated,
+  async (t) => {
+    const args = await fakeGitleaks(t);
+    const f = await fixture(t);
+    await writeFile(path.join(f.root, '.gitleaks-baseline.json'), '[]');
+    await saveFixture(f);
+    const ok = await main(f.args());
+    assert.equal(ok.report.status, 'validated_patch', JSON.stringify(ok.report));
+    assert.ok((await readFile(args, 'utf8')).includes('.gitleaks-baseline.json'));
+    const reprovado = await fixture(t);
+    const bin = await fakeGitleaks(t, 1);
+    const r = await main(reprovado.args());
+    assert.equal(r.report.status, 'failed');
+    assert.match(r.report.message, /gitleaks/);
+    assert.equal(await git(reprovado.root, ['branch', '--format=%(refname:short)']), 'main');
+    assert.ok(await exists(bin));
+  }
+);
+
+test('segredos em saída de gate são redigidos no relatório e no log', isolated, async (t) => {
+  const f = await fixture(t);
+  await writeFile(
+    path.join(f.root, 'scripts/gate.mjs'),
+    `console.error('Error: postgres://app:S3cr3tPw@db.example:5432/x Authorization: Basic dXNlcjpwYXNz sbp${'_'}0123456789abcdef0123456789 ok');process.exit(21);\n`
+  );
+  await saveFixture(f);
+  const r = await main(f.args());
+  assert.equal(r.report.status, 'blocked_baseline', JSON.stringify(r.report));
+  const visto =
+    JSON.stringify(r.report) +
+    (await readFile(path.join(path.dirname(r.report.reportFile), r.report.steps[0].log), 'utf8'));
+  for (const segredo of ['S3cr3tPw', 'dXNlcjpwYXNz', 'sbp_0123456789'])
+    assert.ok(!visto.includes(segredo), `vazou ${segredo}`);
+  assert.match(visto, /postgres:\/\/\[REDIGIDO\]@db\.example/);
+  assert.match(r.report.steps[0].diagnostics[0], /Error: /);
+});
+
+const typescriptReal = (() => {
+  try {
+    return path.dirname(createRequire(import.meta.url).resolve('typescript/package.json'));
+  } catch {
+    return null;
+  }
+})();
+async function projetoTs(t, arquivos) {
+  const dir = await mkdtemp(path.join(os.tmpdir(), 'maintenance-tsc com espaço-'));
+  t.after(() => rm(dir, { recursive: true, force: true }));
+  await mkdir(path.join(dir, 'src'));
+  await mkdir(path.join(dir, 'node_modules'));
+  await symlink(typescriptReal, path.join(dir, 'node_modules/typescript'));
+  await writeFile(path.join(dir, 'package.json'), '{"name":"p"}');
+  for (const [nome, conteudo] of Object.entries(arquivos))
+    await writeFile(path.join(dir, nome), conteudo);
+  return dir;
+}
+const tsc = { skip: !typescriptReal && 'typescript indisponível' };
+test(
+  'typecheck.mjs: projeto válido passa e erro de tipo reprova com o diagnóstico',
+  tsc,
+  async (t) => {
+    const dir = await projetoTs(t, {
+      'src/ok.ts': 'export const a: number = 1;\n',
+      'src/err.ts': 'export const b: number = "x";\n',
+      'ok.json': '{"compilerOptions":{"strict":true,"noEmit":true},"include":["src/ok.ts"]}',
+      'err.json': '{"compilerOptions":{"strict":true,"noEmit":true},"include":["src/err.ts"]}',
+    });
+    const script = path.join(here, 'typecheck.mjs');
+    assert.equal((await exec(process.execPath, [script, 'ok.json'], { cwd: dir })).code, 0);
+    const bad = await exec(process.execPath, [script, 'ok.json', 'err.json'], { cwd: dir });
+    assert.notEqual(bad.code, 0);
+    assert.match(bad.stdout + bad.stderr, /error TS2322/);
+  }
+);
+test(
+  'typecheck.mjs: config inválida/ausente nunca vira verde e explica a causa',
+  tsc,
+  async (t) => {
+    const dir = await projetoTs(t, {
+      'src/ok.ts': 'export const a: number = 1;\n',
+      'quebrado.json': '{"compilerOptions":{"strict":true,',
+      'vazio.json': '{"compilerOptions":{"strict":true},"include":["nada"]}',
+      'opcao.json': '{"compilerOptions":{"bogusOption":true},"include":["src/ok.ts"]}',
+      'extends.json': '{"extends":"./nope.json","include":["src"]}',
+    });
+    const script = path.join(here, 'typecheck.mjs');
+    for (const [config, causa] of [
+      ['quebrado.json', /Não foi possível ler o projeto TypeScript quebrado\.json: .+/],
+      ['inexistente.json', /Não foi possível ler o projeto TypeScript inexistente\.json/],
+      ['vazio.json', /vazio ou inválido: vazio\.json \(No inputs were found/],
+      ['opcao.json', /vazio ou inválido: opcao\.json \(Unknown compiler option/],
+      ['extends.json', /vazio ou inválido: extends\.json \(Cannot read file/],
+    ]) {
+      const r = await exec(process.execPath, [script, config], { cwd: dir });
+      assert.equal(r.code, 1, `${config}: ${r.stdout}${r.stderr}`);
+      assert.match(r.stderr, causa, config);
+    }
+  }
+);
+test('typecheck.mjs: argumentos inválidos e typescript ausente falham sem stack trace', async (t) => {
+  const dir = await mkdtemp(path.join(os.tmpdir(), 'maintenance-tsc-vazio-'));
+  t.after(() => rm(dir, { recursive: true, force: true }));
+  await writeFile(path.join(dir, 'package.json'), '{"name":"p"}');
+  const script = path.join(here, 'typecheck.mjs');
+  for (const argv of [[], ['/abs.json'], ['-p'], ['../fora.json']]) {
+    const r = await exec(process.execPath, [script, ...argv], { cwd: dir });
+    assert.equal(r.code, 1);
+    assert.match(r.stderr, /Projetos TypeScript explícitos obrigatórios/);
+  }
+  await mkdir(path.join(dir, 'node_modules/typescript'), { recursive: true });
+  await writeFile(
+    path.join(dir, 'node_modules/typescript/package.json'),
+    '{"name":"typescript","main":"nao-existe.js"}'
+  );
+  const r = await exec(process.execPath, [script, 'tsconfig.json'], { cwd: dir });
+  assert.equal(r.code, 1);
+  assert.match(r.stderr, /Cannot find module|Não foi possível carregar o TypeScript/);
+  assert.ok(!/\n\s+at /.test(r.stderr), r.stderr);
 });
