@@ -10,7 +10,7 @@
 // O núcleo é puro de propósito: `agregar`, `maisLentos`, `paginaTemMais`, `kpiPorArquivo` e
 // `tabela` não tocam rede nem disco, então a conta é testável com runs sintéticos. O CLI só
 // busca, chama e publica.
-import { appendFileSync, mkdirSync, writeFileSync } from 'node:fs';
+import { appendFileSync, mkdirSync, realpathSync, writeFileSync } from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 
@@ -158,16 +158,32 @@ const CABECALHOS = (token) => ({
   'X-GitHub-Api-Version': '2022-11-28',
 });
 
-async function pedir(caminho, token, { metodo = 'GET', corpo, tentativas = 4, delaysMs = [5000, 10000, 20000] } = {}) {
+// `fetchImpl`, `api` e `timeoutMs` são injetáveis para o teste exercitar retry e timeout sem rede.
+export async function pedir(
+  caminho,
+  token,
+  { metodo = 'GET', corpo, tentativas = 4, delaysMs = [5000, 10000, 20000], timeoutMs = 30_000, api = API, fetchImpl = fetch } = {},
+) {
   for (let i = 0; i < tentativas; i++) {
-    const r = await fetch(`${API}${caminho}`, {
-      method: metodo,
-      headers: { ...CABECALHOS(token), ...(corpo ? { 'Content-Type': 'application/json' } : {}) },
-      body: corpo ? JSON.stringify(corpo) : undefined,
-    });
+    const ultima = i >= tentativas - 1;
+    let r;
+    try {
+      r = await fetchImpl(`${api}${caminho}`, {
+        method: metodo,
+        headers: { ...CABECALHOS(token), ...(corpo ? { 'Content-Type': 'application/json' } : {}) },
+        body: corpo ? JSON.stringify(corpo) : undefined,
+        // Sem teto, uma conexão pendurada segurava o job até o timeout de 15 min do workflow.
+        signal: AbortSignal.timeout(timeoutMs),
+      });
+    } catch (erro) {
+      // Queda de rede/timeout é tão transitória quanto um 502: entra no mesmo retry.
+      if (ultima) throw new Error(`${metodo} ${caminho} -> falha de rede (${erro.name}: ${erro.message})`);
+      await new Promise((res) => setTimeout(res, delaysMs[Math.min(i, delaysMs.length - 1)]));
+      continue;
+    }
     if (r.ok) return r.json();
     const transitorio = r.status === 502 || r.status === 503 || r.status === 504;
-    if (!transitorio || i >= tentativas - 1) throw new Error(`${metodo} ${caminho} -> ${r.status}`);
+    if (!transitorio || ultima) throw new Error(`${metodo} ${caminho} -> ${r.status}`);
     await new Promise((res) => setTimeout(res, delaysMs[Math.min(i, delaysMs.length - 1)]));
   }
 }
@@ -195,11 +211,12 @@ export async function coletarRuns({
       if (run.id !== undefined) vistos.add(run.id);
       todos.push(run);
     }
-    if (!paginaTemMais(runs, { janelaDias, agora, porPagina })) {
-      if (pagina === maxPaginas && runs.length >= porPagina) {
-        console.error(`::warning::paginacao de runs parou no teto de ${maxPaginas} paginas`);
-      }
-      break;
+    if (!paginaTemMais(runs, { janelaDias, agora, porPagina })) break;
+    // Ainda havia página dentro da janela e o teto cortou: o KPI sai incompleto, e é
+    // ESTE o caso que precisa de aviso (a condição anterior só avisava quando a
+    // coleta já tinha terminado direito, e calava quando truncava).
+    if (pagina === maxPaginas) {
+      console.error(`::warning::paginacao de runs parou no teto de ${maxPaginas} paginas`);
     }
   }
   return todos;
@@ -276,7 +293,18 @@ async function principal() {
   console.log(`issue ${r.acao}: #${r.numero}`);
 }
 
-if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) {
+// realpath: com o repo atrás de um symlink (ou /tmp no macOS) `argv[1]` não bate com
+// `import.meta.url` e o script saía 0 sem executar nada.
+function invocadoDireto() {
+  if (!process.argv[1]) return false;
+  try {
+    return import.meta.url === pathToFileURL(realpathSync(process.argv[1])).href;
+  } catch {
+    return false;
+  }
+}
+
+if (invocadoDireto()) {
   principal().catch((e) => {
     console.error(`::error::${e.message}`);
     process.exit(1);

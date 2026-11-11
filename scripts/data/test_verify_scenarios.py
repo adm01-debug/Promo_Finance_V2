@@ -127,7 +127,7 @@ class TestVerifyShFKCheckFix(unittest.TestCase):
                 responses.append(str(stg_hash))   # hash stg
         responses.append(str(bad_fk))  # FK check
         mock_psql = _make_psql(self.tmpdir, responses)
-        return _run_verify("test-run-123", mock_psql)
+        return _run_verify("7f3c1a52-9b0e-4c1d-8a77-0d6f2e5b9c10", mock_psql)
 
     # C6: sem tabelas, FK ok → exit 0
     def test_c6_no_tables_fk_ok(self):

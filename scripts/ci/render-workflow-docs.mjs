@@ -33,6 +33,7 @@
  */
 
 import { readFile, readdir, writeFile, mkdir } from 'node:fs/promises';
+import { realpathSync } from 'node:fs';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 import { dirname, join } from 'node:path';
 
@@ -205,11 +206,33 @@ async function lerWorkflows() {
 }
 
 export async function main(argv = process.argv.slice(2)) {
+  if (argv.includes('-h') || argv.includes('--help')) {
+    console.log('Uso: node scripts/ci/render-workflow-docs.mjs [--check]');
+    console.log('  (sem argumento)  escreve docs/ci/README.md');
+    console.log('  --check          sai 1 se docs/ci/README.md divergir dos workflows, sem escrever');
+    return 0;
+  }
+  // `--chek` (erro de digitação) caía no modo de ESCRITA e sobrescrevia o README.
+  const desconhecido = argv.find((a) => a !== '--check');
+  if (desconhecido !== undefined) {
+    console.error(`ERRO: argumento desconhecido: ${desconhecido} (use --check ou --help)`);
+    return 2;
+  }
+
   let kpi = {};
   try {
     kpi = JSON.parse(await readFile(KPI_PATH, 'utf8'));
-  } catch {
-    // sem KPI → colunas ficam "—"
+  } catch (erro) {
+    // sem KPI → colunas ficam "—". Arquivo presente e corrompido é outra coisa: seguir
+    // adiante apagaria as colunas de custo/falha do README sem dizer por quê.
+    if (erro.code !== 'ENOENT') {
+      console.error(`ERRO: docs/ci/kpi.json ilegível (${erro.message}). Regere com scripts/ci/actions-kpi.mjs ou apague o arquivo.`);
+      return 1;
+    }
+  }
+  if (kpi === null || typeof kpi !== 'object' || Array.isArray(kpi)) {
+    console.error('ERRO: docs/ci/kpi.json precisa ser um objeto { "<arquivo>.yml": { ... } }.');
+    return 1;
   }
 
   let conteudo;
@@ -243,6 +266,17 @@ export async function main(argv = process.argv.slice(2)) {
   return 0;
 }
 
-if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) {
+// realpath: com o repo atrás de um symlink (ou /tmp no macOS) `argv[1]` não bate com
+// `import.meta.url` e o `--check` saía 0 sem conferir nada.
+function invocadoDireto() {
+  if (!process.argv[1]) return false;
+  try {
+    return import.meta.url === pathToFileURL(realpathSync(process.argv[1])).href;
+  } catch {
+    return false;
+  }
+}
+
+if (invocadoDireto()) {
   process.exitCode = await main();
 }

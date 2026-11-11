@@ -34,7 +34,6 @@ const admin = createClient(url, service, { auth: { persistSession: false } });
 
 async function testTable(table, buildRow) {
   let received = null;
-  const t0 = Date.now();
   const channel = sub
     .channel(`hc-${table}-${RUN_ID}`)
     .on('postgres_changes', { event: 'INSERT', schema: 'public', table }, (payload) => {
@@ -63,6 +62,9 @@ async function testTable(table, buildRow) {
   });
 
   const row = buildRow();
+  // t0 aqui, não antes do subscribe: a latência reportada é insert→recepção e
+  // não deve somar os até 3 s de espera pela inscrição no canal.
+  const t0 = Date.now();
   const { error } = await admin.from(table).insert(row).select('id').single();
   if (error) {
     emit(table, 'fail', `insert error: ${error.message}`);

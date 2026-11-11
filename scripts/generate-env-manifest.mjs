@@ -9,10 +9,51 @@
  *   node scripts/generate-env-manifest.mjs           — regenera em disco (atualiza `generated`)
  *   node scripts/generate-env-manifest.mjs --check   — compara com o arquivo em disco;
  *     exit 0 se as variáveis batem, exit 1 se diferirem (ignora o campo `generated`)
+ *
+ * Executar da raiz do repositório (caminhos relativos ao diretório atual).
+ * Testes: node --test scripts/generate-env-manifest.unit.mjs
  */
-import { readFileSync, writeFileSync, readdirSync } from 'fs';
+import { readFileSync, writeFileSync, readdirSync, existsSync } from 'fs';
 
-const CHECK_MODE = process.argv.includes('--check');
+const ARGS = process.argv.slice(2);
+if (ARGS.includes('--help') || ARGS.includes('-h')) {
+  console.log('Uso: node scripts/generate-env-manifest.mjs [--check]\n  (sem flag) regenera env.manifest.json\n  --check    compara com o arquivo em disco; exit 1 se desatualizado');
+  process.exit(0);
+}
+// Flag desconhecida aborta: um `--chek` digitado errado regenerava o arquivo
+// em vez de só comparar.
+const desconhecidos = ARGS.filter((a) => a !== '--check');
+if (desconhecidos.length) {
+  console.error(`✗ Argumento desconhecido: ${desconhecidos.join(' ')} (use --help)`);
+  process.exit(2);
+}
+const CHECK_MODE = ARGS.includes('--check');
+for (const dir of ['supabase/functions', '.github/workflows']) {
+  if (!existsSync(dir)) {
+    console.error(`✗ ${dir} não encontrado — execute a partir da raiz do repositório.`);
+    process.exit(1);
+  }
+}
+
+const EH_TESTE = (nome) => /(?:[._]test|\.spec)\.tsx?$/.test(nome);
+const DIR_DE_TESTE = /^(?:__tests__|__mocks__|__fixtures__)$/;
+/** Lista recursiva de .ts/.tsx de produção (sem testes, mocks e fixtures). */
+function fontes(raiz) {
+  const achados = [];
+  const stack = [raiz];
+  while (stack.length) {
+    const cur = stack.pop();
+    for (const e of readdirSync(cur, { withFileTypes: true })) {
+      const full = `${cur}/${e.name}`;
+      if (e.isDirectory()) {
+        if (!DIR_DE_TESTE.test(e.name)) stack.push(full);
+      } else if (/\.tsx?$/.test(e.name) && !e.name.endsWith('.d.ts') && !EH_TESTE(e.name)) {
+        achados.push(full);
+      }
+    }
+  }
+  return achados.sort();
+}
 
 // Frontend vars — lidos de src/config/env.ts (fonte de verdade)
 const frontend = [
@@ -23,42 +64,46 @@ const frontend = [
   { name: 'VITE_VAPID_PUBLIC_KEY',        scope: 'frontend', required: false, dest: 'vercel',   consumers: ['src/hooks/useWebPushSubscription.ts'] },
   { name: 'VITE_SENTRY_DSN',              scope: 'frontend', required: false, dest: 'vercel',   consumers: ['src/config/env.ts', 'src/lib/error-tracking.ts'] },
 ];
+// A lista acima é curada (required/consumers). Uma VITE_* lida em src/ e ainda
+// não catalogada entra como opcional — sem isso o gate `--check` não acusava
+// variável nova de frontend.
+if (existsSync('src')) {
+  const catalogadas = new Set(frontend.map((v) => v.name));
+  const novas = new Map();
+  for (const arq of fontes('src')) {
+    if (arq.startsWith('src/test/')) continue;
+    const t = readFileSync(arq, 'utf8');
+    for (const m of t.matchAll(/import\.meta\.env(?:\.|\[\s*['"`])(VITE_[A-Z0-9_]+)/g)) {
+      if (catalogadas.has(m[1])) continue;
+      if (!novas.has(m[1])) novas.set(m[1], new Set());
+      novas.get(m[1]).add(arq);
+    }
+  }
+  for (const name of [...novas.keys()].sort()) {
+    frontend.push({ name, scope: 'frontend', required: false, dest: 'vercel', consumers: [...novas.get(name)].sort() });
+  }
+}
 
-// Edge functions — extrair Deno.env.get de supabase/functions/*/index.ts
+// Edge functions — todo .ts de produção sob supabase/functions/<fn>/ e
+// _shared/ (recursivo): helpers ao lado do index.ts (policy.ts, layout.ts,
+// handlers aninhados) também leem envs. Arquivos soltos na raiz não são
+// implantados e ficam de fora.
 const funcsDir = 'supabase/functions';
 const edgeSet = new Set();
-for (const dir of readdirSync(funcsDir)) {
-  if (dir === '_shared') {
-    // Scan recursivo de _shared/**/*.ts (exceto testes/mocks/fixtures) —
-    // helpers aninhados (sefaz/, nfe/, sped/, obrigacoes/) também leem envs.
-    const stack = [`${funcsDir}/_shared`];
-    try {
-      while (stack.length) {
-        const cur = stack.pop();
-        for (const e of readdirSync(cur, { withFileTypes: true })) {
-          const full = `${cur}/${e.name}`;
-          if (e.isDirectory()) {
-            if (!/^(?:__tests__|__mocks__|__fixtures__)$/.test(e.name)) stack.push(full);
-            continue;
-          }
-          if (!e.name.endsWith('.ts') || e.name.endsWith('_test.ts') || e.name.endsWith('.test.ts')) continue;
-          const t = readFileSync(full, 'utf8');
-          for (const m of t.matchAll(/Deno\.env\.get\(['"]([A-Z0-9_]+)['"]\)/g)) edgeSet.add(m[1]);
-          // deps.getEnv('X') — indireção dos handlers testáveis (n8n-callback,
-          // enviar-alerta-email, alertas): mesma leitura de env por outro nome.
-          for (const m of t.matchAll(/getEnv\(['"]([A-Z0-9_]+)['"]\)/g)) edgeSet.add(m[1]);
-        }
-      }
-    } catch { /* _shared ausente */ }
-    continue;
+const LEITURAS_DE_ENV = [
+  /Deno\.env\.(?:get|has)\(\s*['"`]([A-Z0-9_]+)['"`]\s*\)/g,
+  // deps.getEnv('X') — indireção dos handlers testáveis (n8n-callback,
+  // enviar-alerta-email, alertas): mesma leitura de env por outro nome.
+  /getEnv\(\s*['"`]([A-Z0-9_]+)['"`]\s*\)/g,
+];
+for (const e of readdirSync(funcsDir, { withFileTypes: true })) {
+  if (!e.isDirectory() || DIR_DE_TESTE.test(e.name)) continue;
+  for (const arq of fontes(`${funcsDir}/${e.name}`)) {
+    const t = readFileSync(arq, 'utf8');
+    for (const re of LEITURAS_DE_ENV) {
+      for (const m of t.matchAll(re)) edgeSet.add(m[1]);
+    }
   }
-  try {
-    const t = readFileSync(`${funcsDir}/${dir}/index.ts`, 'utf8');
-    for (const m of t.matchAll(/Deno\.env\.get\(['"]([A-Z0-9_]+)['"]\)/g)) edgeSet.add(m[1]);
-          // deps.getEnv('X') — indireção dos handlers testáveis (n8n-callback,
-          // enviar-alerta-email, alertas): mesma leitura de env por outro nome.
-          for (const m of t.matchAll(/getEnv\(['"]([A-Z0-9_]+)['"]\)/g)) edgeSet.add(m[1]);
-  } catch { /* pasta sem index.ts */ }
 }
 // Lidos por template `${provider}_WEBHOOK_SECRET` em _shared/webhook-auth.ts
 // (resolveSecret tem fallback em integration_secrets — ausência é válida,
@@ -151,6 +196,13 @@ if (CHECK_MODE) {
     const removed = diskNames.filter(n => !freshNames.includes(n));
     if (added.length) console.error('  Novas vars não registradas:', added.join(', '));
     if (removed.length) console.error('  Vars removidas do código:', removed.join(', '));
+    // Mesmo conjunto de nomes e ainda assim diferente: atributo ou ordem.
+    // dest na chave: o mesmo nome pode existir como secret E como variável do Actions.
+    const chave = (v) => `${v.scope}:${v.dest}:${v.name}`;
+    const emDisco = new Map((existing.vars ?? []).map((v) => [chave(v), JSON.stringify(v)]));
+    const alteradas = freshVars.filter((v) => emDisco.has(chave(v)) && emDisco.get(chave(v)) !== JSON.stringify(v));
+    if (alteradas.length) console.error('  Vars com atributos alterados:', alteradas.map((v) => v.name).join(', '));
+    if (!added.length && !removed.length && !alteradas.length) console.error('  Mesmas vars em ordem diferente (ou duplicadas).');
     process.exit(1);
   }
 }

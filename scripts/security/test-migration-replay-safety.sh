@@ -17,12 +17,20 @@ cd "$repo_root"
 
 fail=0
 
+# PCRE só é usado no passe multilinha; sem ele (grep BSD) vale o passe por linha.
+has_pcre=0
+if printf 'a' | grep -qP 'a' 2>/dev/null; then
+  has_pcre=1
+fi
+
 check_absent() {
   local pattern="$1"
   local status
   shift
-  if grep -nER -- "$pattern" "$@"; then
+  # -i: SQL não diferencia caixa — `create function auth.x` é o mesmo DDL.
+  if grep -nERi -- "$pattern" "$@"; then
     fail=1
+    return 0
   else
     status=$?
     if [[ "$status" -ne 1 ]]; then
@@ -30,23 +38,42 @@ check_absent() {
       exit "$status"
     fi
   fi
+  # Statement quebrado em várias linhas: com o arquivo inteiro como um único
+  # registro (-z) o `[[:space:]]` atravessa a quebra. O lookbehind faz o papel
+  # do `^` por linha (versões antigas do grep recusam `^` com -Pz).
+  local multiline="$pattern"
+  if [[ "$pattern" == ^* ]]; then
+    multiline="(?<![^\n])${pattern#^}"
+  fi
+  if [[ "$has_pcre" -eq 1 ]]; then
+    if grep -lRPzi -- "$multiline" "$@"; then
+      echo "  ^ DDL proibido quebrado em várias linhas no(s) arquivo(s) acima." >&2
+      fail=1
+    else
+      status=$?
+      if [[ "$status" -ne 1 ]]; then
+        echo "Falha: não foi possível verificar o padrão multilinha '$pattern'." >&2
+        exit "$status"
+      fi
+    fi
+  fi
 }
 
 echo "Verificando replay safety das migrations críticas..."
 
-check_absent '^[[:space:]]*ALTER DATABASE[[:space:]]+("postgres"|postgres)[[:space:]]+SET[[:space:]]+"app\.jwt_secret"' \
+check_absent '^[[:space:]]*ALTER[[:space:]]+DATABASE[[:space:]]+"?postgres"?[[:space:]]+SET[[:space:]]+"?app\.jwt_secret' \
   supabase/migrations/001_create_tables.sql
 
 # O schema `auth` é gerenciado pelo Supabase e não concede CREATE ao papel de
 # migrations do Preview. Helpers do projeto devem permanecer em `public` ou
 # `private`; `auth.uid()` já é fornecida pela plataforma.
-check_absent '^[[:space:]]*CREATE([[:space:]]+OR[[:space:]]+REPLACE)?[[:space:]]+FUNCTION[[:space:]]+auth\.' \
+check_absent '^[[:space:]]*CREATE([[:space:]]+OR[[:space:]]+REPLACE)?[[:space:]]+(FUNCTION|PROCEDURE)[[:space:]]+"?auth"?[[:space:]]*\.' \
   supabase/migrations
 
-check_absent 'AS \$\$' \
+check_absent '\bAS[[:space:]]+\$\$' \
   supabase/migrations/20260826010000_restaurar_exec_sql_wrapper_e03.sql
 
-check_absent '^[[:space:]]*INSERT[[:space:]]+INTO[[:space:]]+supabase_migrations\.schema_migrations' \
+check_absent '^[[:space:]]*(INSERT[[:space:]]+INTO|UPDATE|DELETE[[:space:]]+FROM)[[:space:]]+"?supabase_migrations"?[[:space:]]*\.[[:space:]]*"?schema_migrations' \
   supabase/migrations/20260826030000_add_colunas_ausentes_e30.sql \
   supabase/migrations/20260826040000_fechar_policies_abertas_e06_e08.sql \
   supabase/migrations/20260826050000_revoke_execute_authenticated_e09.sql
@@ -55,10 +82,10 @@ check_absent '^[[:space:]]*INSERT[[:space:]]+INTO[[:space:]]+supabase_migrations
 # da migration histórica consolidada de 2025. Esses triggers precisam ser
 # idempotentes para não quebrar Preview/DB reset com "trigger ... already
 # exists".
-check_absent '^[[:space:]]*CREATE[[:space:]]+TRIGGER[[:space:]]+update_(fornecedores|clientes|contas_pagar|contas_receber)_updated_at\b' \
+check_absent '^[[:space:]]*CREATE[[:space:]]+TRIGGER[[:space:]]+"?update_(fornecedores|clientes|contas_pagar|contas_receber)_updated_at\b' \
   supabase/migrations/20251214170739_b7e0e8b0-39a4-42c5-844e-0a57a5e3916d.sql
 
-check_absent '^[[:space:]]*CREATE[[:space:]]+TRIGGER[[:space:]]+on_auth_user_created\b' \
+check_absent '^[[:space:]]*CREATE[[:space:]]+TRIGGER[[:space:]]+"?on_auth_user_created\b' \
   supabase/migrations/20251214170739_b7e0e8b0-39a4-42c5-844e-0a57a5e3916d.sql
 
 if [[ "$fail" -ne 0 ]]; then

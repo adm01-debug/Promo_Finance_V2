@@ -10,7 +10,7 @@ defaults:
   columns: "*"                 # projeção
   truncate_before: true        # TRUNCATE staging antes de copiar (evita PK dup)
   snapshot: true               # snapshot para rollback
-  snapshot_max_rows: 500000    # se > que isto e snapshot=true, aborta a tabela
+  snapshot_max_rows: 500000    # se > que isto e snapshot=true, aborta o run antes de truncar (env SNAPSHOT_MAX_ROWS sobrepõe)
 
 # Blacklist explícita (defensivo — nenhuma dessas nunca é copiada, mesmo que
 # entre por engano em um grupo). O engine também rejeita por padrão de nome:
