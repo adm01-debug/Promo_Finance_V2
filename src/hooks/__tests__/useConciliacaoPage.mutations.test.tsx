@@ -31,14 +31,20 @@ describe('useConciliacaoPage — confirmação e conciliação manual', () => {
     expect(result.current.transacoes[0].conciliada).toBe(true);
   });
 
-  it('atualiza estado local no fluxo manual (mutation já rodou no diálogo)', async () => {
-    // handleManualSuccess é chamado pelo ConciliacaoManualDialog SÓ após
-    // confirmarConciliacao.mutateAsync já ter sido executado com sucesso dentro
-    // do próprio diálogo. O callback apenas sincroniza o estado local.
+  it('fluxo manual: o diálogo já persistiu — handleManualSuccess NÃO confirma de novo, só atualiza o estado', async () => {
     const { result } = await mountWithRows([linha('tx-b', 'receita')]);
     await act(async () => result.current.handleManualSuccess('tx-b', 'lanc-r', 'receber'));
     expect(mocks.mutations.confirmarConciliacao.mutateAsync).not.toHaveBeenCalled();
     expect(result.current.transacoes[0].conciliada).toBe(true);
+  });
+
+  it('preserva estado não conciliado após rejeição da mutation', async () => {
+    vi.mocked(mocks.mutations.confirmarConciliacao.mutateAsync).mockRejectedValue(
+      new Error('rpc failed')
+    );
+    const { result } = await mountWithRows([linha('tx-fail', 'despesa')]);
+    await act(async () => result.current.handleConfirmarMatch('tx-fail', 'lanc-x', 'pagar'));
+    expect(result.current.transacoes[0].conciliada).toBe(false);
   });
 });
 

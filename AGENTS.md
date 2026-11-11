@@ -1,73 +1,67 @@
 # AGENTS.md — Promo_Finance_V2
 
-Regras de ouro — Perfil Otimizado (Hermes Agent / multi-agente).
-Auto-carregado por agentes compatíveis (Hermes, Claude Code, Codex, OpenCode).
+Regras do dono para todo agente de IA; em conflito com `docs/`/README/relatórios, vence este arquivo. Sempre PT-BR. `docs/agentes/`: ler quando indicado.
 
-## Idioma
+## 1. Contexto, stack, IDs
 
-**SEMPRE comunicar em Português do Brasil (pt-BR)** — respostas, comentários de código, mensagens de commit, descrições de PR e qualquer saída de texto em pt-BR. Nunca alternar para inglês.
+- Financeiro multi-empresa da Promo Brindes, ~80% pronto, em manutenção. Módulos, integrações, 105 Edge Functions, URLs e IDs completos: `docs/agentes/sistema.md` (ler ao mexer em função/integração ou precisar de URL/ID).
+- O dono não é dev: decide negócio, o agente executa. Princípio: qualidade + velocidade — máximo de tarefas com êxito total pelo caminho mais rápido e barato em tokens (decide ferramenta, leitura, diff e resposta).
+- Vite 6, React 18, TypeScript, Tailwind, shadcn/ui, TanStack Query; Supabase Cloud (Postgres, RLS, Auth, Edge Functions Deno); Vercel (time `juca1`): merge em `main` = produção.
+- Supabase OFICIAL `bwwbeyolnnzppeuhgkcd` (MCP `SUPABASE - PROMO FINANCE V2 - MCP`); fora do projeto: VPS AtomicaBR e `pgxfvjmuubtbowutlide` (só leitura).
+- `bun run test:run` · `type-check` · `lint:strict` · `test:e2e`; meta 2689/2689 testes, 0 erros TS.
 
-## Sistema
+## 2. Como trabalhar
 
-- **Repo:** adm01-debug/Promo_Finance_V2
-- **Visibilidade:** privado
-- **Descrição:** —
-- **Branch padrão:** main
+1. End-to-end via MCP (GitHub, Supabase, Vercel, infra): o dono manda print/descrição, o agente resolve inteiro. Nunca "copie e cole", "roda aí", "você faz X e eu Y".
+2. Aja como dev sênior e decida; pergunte só com custo, mudança de arquitetura, dado destrutivo em produção, trade-off real de negócio ou item da regra 6.6. Para ler/inspecionar, nunca peça.
+3. Verdade acima de validação: não sabe/falhou → diga. Afirmação sobre código cita evidência (arquivo:linha, diff, saída de comando) ou é "NÃO VERIFICADO" + motivo. Branch/commit/PR não provam nada — leia o código.
+4. Diff mínimo, zero churn: causa raiz, não reescrita; não refatore, renomeie, "melhore" ou comente o que não foi pedido, nem reescreva arquivo inteiro por 3 linhas. Dependência nova/bump major só se indispensável, avisando na PR.
+5. `APROVADO` = execute o plano como descrito, sem reconfirmar.
+6. Uma tarefa por vez, cada uma com sua branch/PR. Outro bug → "Próximos passos", não conserte. Travou (acesso, MCP, dependência) → reporte o erro exato e pare; não pivote nem contorne regra. Antes de concluir, releia o pedido.
+7. Tokens: só o trecho necessário (range, grep); grafo (seção 8) antes de busca textual; exploração ampla → subagente; sem tool "por garantia", código não aplicado ou replanejar a cada turno.
+8. Segredos só em env/secret — nunca em código, commit ou resposta.
+9. Leia o README e o doc relevante em `docs/` antes de mudar.
 
-## Regra de ouro antes de agir
+## 3. Bugs e funcionalidades
 
-1. **Leia o README.md** (se existir) e qualquer doc em `docs/` antes de qualquer mudança — ele é a fonte de verdade do projeto.
-2. **Pronto = ligado em produção com tráfego real.** Código existir não é pronto.
-3. **Diagnóstico antes de patch.** Em bug de produção: leia logs/estado real antes de qualquer fix.
+- Diagnóstico antes de patch (logs e estado real → arquivo:linha → causa; sem chute; várias causas → liste todas, corrija a pedida). Antes da PR: typecheck/lint/testes do que tocou; erro herdado do `main` vai para "Próximos passos".
+- "Pronto" = PR mergeada + deploy confirmado + comportamento verificado em produção com evidência; funcionalidade pronta = integrada ponta a ponta, sem mock, hardcode ou TODO. Checklist: `docs/agentes/definicao-de-pronto.md` (ler antes de entregar feature ou bug). Não cabe na sessão → entregue o integrado e liste o que falta, com arquivos.
 
-## GIT: Isolamento Worktree (OBRIGATÓRIO)
+## 4. Banco de dados
 
-**NUNCA usar `git checkout -b` diretamente.** Sempre criar worktree isolado:
+- Nunca `supabase_apply_migration`: DDL via `supabase_db_query` + arquivo em `supabase/migrations/` com comentário e timestamp `YYYYMMDDHHmmss` estritamente crescente (conferir `SELECT max(version)`).
+- `CREATE INDEX` simples — `CONCURRENTLY` falha no gateway transacional.
+- Views com `security_invoker = true`. RLS em toda tabela pública.
+- Isolamento por `empresa_id` (policies: `empresa_acessivel(empresa_id)`); `organizacao_id` é só do subsistema de organizações — não usar em queries, policies ou migrations financeiras.
+- Policy `USING (true)` exige allowlist em `scripts/security/test-canonical-db-gates.mjs`.
 
-```bash
-# 1. Gerar ID único
-HERMES_BRANCH_ID="{{ h$(date +%s | tail -c 7) }}"
-BRANCH="fix/hermes-${HERMES_BRANCH_ID}-<descricao>"
-WORKSPACE="$HOME/hermes-workspaces/chat-${HERMES_BRANCH_ID}"
+## 5. Front, Edge, CI, segurança
 
-# 2. Criar worktree
-git worktree add "$WORKSPACE" -b "$BRANCH" && cd "$WORKSPACE"
+- Componentes em `src/components/`, preferindo shadcn/ui existentes; queries via TanStack Query (não fetch direto); `src/integrations/supabase/types.ts` é gerado, não editar; sem `any` implícito nem `// @ts-ignore` sem justificativa documentada.
+- Edge Function nova: `validatePayload` com Zod (gate no CI); `verify_jwt` ligado (desligar só com justificativa em comentário); imports `npm:`/`jsr:`, sem CDN externo.
+- CI: actions por tag aceitas (`sha_pinning_required=false` — ver `docs/agentes/github-ci.md`); secrets de produção só no environment `Production`.
+- Sem credencial em código, nem em teste; `EXTERNAL_SUPABASE_SERVICE_ROLE_KEY` só na função `external-data`; nunca imprimir/commitar `.git-credentials`, `.env.local`, tokens, chaves de API, service_role keys.
 
-# 3. Verificar isolamento
-[ "$(git branch --show-current)" = "$BRANCH" ] || exit 1
+## 6. Git
 
-# ... trabalhar, commit, push, PR, merge ...
+Escrita no GitHub (`adm01-debug`): MCP `GITHUB - MCP - FOREVER` (o padrão dá 403; `git push`/`gh` só em repo fonte autorizada da sessão). Fluxo completo: `docs/agentes/fluxo-git.md` (ler antes da primeira branch). Perímetro, branch protection e workflows: `docs/agentes/github-ci.md` (ler ao mexer em settings ou `.github/workflows/`). Deploy e Vercel: `docs/agentes/vercel-deploy.md` (ler ao confirmar deploy ou mexer em env/domínio). Onde fica cada coisa: `docs/agentes/mapa-repo.md` (ler antes de buscar por texto).
 
-# 4. Cleanup obrigatório
-git branch -D "$BRANCH"
-git worktree remove "$WORKSPACE" --force
-git worktree prune
-```
+1. Nunca commite em `main`; nunca reaproveite branch nem escreva em branch alheia (só leitura, sem exceção). Branch própria em worktree isolado, de `main` atualizado: `claude/<tipo>-<slug>-<AAMMDD-HHMM>` (`fix`|`feat`|`chore`|`infra`); sem carimbo não é aceito. Uma tarefa = uma branch = uma PR.
+2. Antes de começar, liste PRs abertas (`github_graphql`, não `github_list_pull_requests`); PR aberta nos mesmos arquivos → pare e avise. Antes de push, confirme que o último commit é seu.
+3. Commits curtos em PT-BR com prefixo `fix:`/`feat:`/`chore:`/`infra:` (convenção; não há commitlint), 1 atômico se possível. Hooks husky rodam em commit/push; `--no-verify` só em emergência documentada na PR. Só o orquestrador mexe em git.
+4. PR sempre: título = o que muda; corpo = causa + o que foi verificado, com evidência. Reporte no fim: link + estado (mergeada / aguardando o dono / CI vermelha e por quê).
+5. Mergeie sem aprovação PR sua pronta (CI verde, sem conflito, escopo comum: front, edge function, workflow, config): squash e apague a branch. Merge = produção: confira o deploy; CI vermelha → leia a falha antes de patch, corrija em branch nova.
+6. Deixe aberta e chame o dono: DDL/migration em produção; CI/workflows, segredos, Dockerfile, stack/Swarm, Traefik; deleção de dado, arquitetura ou custo; conflito com PR alheia.
+7. Conflito: rebase em `main`, `--force-with-lease` só na sua branch; nunca force-push em `main` nem toque em branch alheia.
 
-**Por quê:** múltiplos agentes/chats no mesmo repo = colisão de branches.
+## 7. Comunicação
 
-## PR Flow
+- Resultado primeiro, só o que muda decisão do dono. Sem introdução, recapitulação, resumo, "vou fazer X", narração, hedging, disclaimer, desculpa, lição de moral, cortesia de fechamento. O que mudou e o efeito no negócio; técnica só se perguntarem.
+- Proporcional: fix de 3 linhas = 5 linhas de resposta; não despeje log/arquivo/tool, cite a linha que importa; caminhos, comandos e links completos. Destrutivo: uma linha ("apaga X, sem volta — confirma?").
+- Não pergunte "quer que eu faça?" após pedido; sem plano de 12 fases para fix de 20 linhas; sem passo manual quando há MCP (nem pedir ao dono revisar diff, rodar comando ou testar).
+- Feche toda execução com exatamente 3 "Próximos passos" (`N. [título] — [por quê] · [onde]`), por impacto, do que viu nesta sessão, executáveis via MCP, em linguagem de negócio; é um menu (`1`, `1 e 3`, `APROVADO 2`, "todos" = executar na ordem sem reconfirmar). Regras: `docs/agentes/proximos-passos.md` (ler antes da primeira entrega).
 
-branch → commit → push → PR via GitHub → CI → merge squash → delete branch.
-Os hooks de husky (lint-staged + type-check/testes afetados) rodam em todo commit/push.
-`--no-verify` só em emergência documentada no PR, nunca no fluxo normal.
-Workers/editores NUNCA mexem em git/branches — só o orquestrador.
+## 8. Graphify
 
-## Regras de trabalho
-
-1. **Aja como dev sênior e decida.** Escolha de biblioteca, nome de arquivo, abordagem de fix: decida e siga. Só pergunte se envolver custo, mudança de arquitetura, dado destrutivo em produção ou trade-off real de negócio.
-2. **Verdade acima de validação.** Não sabe → diga. Falhou → diga. Nunca "sucesso" fabricado.
-3. **Zero churn / diff mínimo.** Não refatore nem reescreva arquivo inteiro para mudar 3 linhas.
-4. **Execução end-to-end.** Nunca proponha "copie e cole" — execute inteiro até o artefato funcionar, com evidência real.
-
-## Graphify — análise estrutural complementar
-
-- Ler `docs/GRAPHIFY_PLANO_50_ETAPAS.md`. O piloto é `npm run graphify:pilot`;
-  perfis explícitos usam `npm run graphify:analyze -- --profile NOME` e podem ser
-  revisados antes com `npm run graphify:inventory -- --profile NOME`.
-- Consultar apenas um grafo cuja `evidencia.json` tenha status de piloto validado,
-  commit e hashes compatíveis com os arquivos atuais. Um grafo parcial não é o sistema inteiro.
-- Os resultados ficam privados em `graphify-out/piloto-*/`. Não executar `graphify update .`
-  nem ativar hooks globais, LLM, MCP público ou banco automaticamente.
-- Preservar `src/lib/arquitetura/` e seu analisador existente. Confirmar relações no código;
-  nó isolado não significa lixo e AST não comprova implantação, RLS ou segurança financeira.
+- Grafo upstream (`graphify-out/graph.json`): `graphify query "<pergunta>"` para o código, `path`/`explain` para relações. Só nele: `graphify update .` após mudar código (AST); grafo atrás do HEAD → auto-sync N8N em 15 min.
+- Wrapper do piloto (`npm run graphify:pilot` → `graphify-out/piloto-*/`): só grafo com `evidencia.json` validado; nunca `update .`/`extract .`, hooks, LLM, MCP público ou banco por fora dele. Preservar `src/lib/arquitetura/`; nó isolado ≠ lixo, AST não prova RLS. `docs/agentes/graphify.md`: ler antes de consultar/validar o grafo.

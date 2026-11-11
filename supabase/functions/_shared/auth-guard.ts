@@ -23,7 +23,7 @@
  * equivalente a não autenticar nada.
  */
 
-import { createClient, type SupabaseClient } from 'https://esm.sh/@supabase/supabase-js@2.49.4';
+import { createClient, type SupabaseClient } from 'npm:@supabase/supabase-js@2.49.4';
 import { corsHeadersPara } from './cors.ts';
 
 /** Headers CORS por requisição — ecoa o Origin permitido (allowlist em cors.ts). */

@@ -23,5 +23,5 @@ export function getAppBaseUrl(): string {
     }
   }
 
-  return '';
+  throw new Error('[app-url] Nenhuma URL base configurada. Defina APP_BASE_URL.');
 }

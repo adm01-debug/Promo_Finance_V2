@@ -117,6 +117,7 @@ export const ALLOWED_LITERAL_TRUE_POLICIES = Object.freeze([
   allowPolicy("cnaes", "cnaes_select_authenticated", "SELECT", "authenticated"),
   allowPolicy("cnpja_cache", "cnpja_cache_service_role_only", "ALL", "service_role"),
   allowPolicy("estrategias_elisao", "estrategias_select_authenticated", "SELECT", "authenticated"),
+  allowPolicy("estrategias_elisao_catalogo", "estrategias_elisao_catalogo_select", "SELECT", "authenticated"),
   allowPolicy("faixas_simples_nacional", "faixas_simples_select_authenticated", "SELECT", "authenticated"),
   allowPolicy("frontend_error_logs", "frontend_error_anon_insert", "INSERT", "anon"),
   allowPolicy("integrity_alerts", "integrity_alerts_service_all", "ALL", "service_role"),

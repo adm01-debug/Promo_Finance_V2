@@ -271,8 +271,11 @@ export function useConciliacaoPage() {
     [transacoes]
   );
 
-  // Chamado pelo ConciliacaoManualDialog após confirmarConciliacao.mutateAsync
-  // já ter rodado com sucesso dentro do diálogo. Só atualiza estado local.
+  // Callback `onSuccess` do ConciliacaoManualDialog: o diálogo JÁ persistiu a
+  // conciliação (confirmarConciliacao.mutateAsync, com ajusteCentavos) e só
+  // chama isto depois do sucesso. Confirmar de novo aqui gravava a mesma
+  // conciliação duas vezes (sem o ajuste de centavos) e repetia toast/confete.
+  // Por isso só atualiza o estado local.
   const handleManualSuccess = useCallback(
     (transacaoId: string, _lancamentoId: string, _tipo: 'pagar' | 'receber') => {
       setTransacoes((prev) =>
