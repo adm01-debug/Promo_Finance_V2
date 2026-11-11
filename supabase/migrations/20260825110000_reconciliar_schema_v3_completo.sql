@@ -259,8 +259,22 @@ CREATE OR REPLACE FUNCTION public.calcular_potencial_elisao(p_empresa_id uuid) R
     LANGUAGE sql STABLE
     SET search_path TO 'public'
     AS $$
-    SELECT NULL::text, NULL::text, NULL::numeric, NULL::text WHERE false
-
+  SELECT 'oportunidade_elisao'::TEXT,
+         COALESCE(o.categoria, o.estrategia),
+         o.economia_estimada,
+         NULL::TEXT
+  FROM public.oportunidades_elisao o
+  WHERE o.empresa_id = p_empresa_id
+    AND o.aplicavel
+    AND o.status <> 'descartada'
+  UNION ALL
+  SELECT 'credito_tributario'::TEXT,
+         COALESCE(c.metodologia_aplicada, 'Crédito identificado em auditoria'),
+         c.valor_credito_calculado,
+         c.ncm
+  FROM public.elisao_creditos_auditoria c
+  WHERE c.empresa_id = p_empresa_id
+    AND c.status_aprovacao = 'aprovado';
 $$;
 
 -- same name, different sig — drop first
@@ -733,8 +747,38 @@ CREATE OR REPLACE FUNCTION public.compare_pg_stat_baseline(p_label text DEFAULT 
     LANGUAGE sql SECURITY DEFINER
     SET search_path TO 'public', 'extensions'
     AS $$
-    SELECT NULL::bigint, NULL::text, NULL::bigint, NULL::bigint, NULL::bigint, NULL::double precision, NULL::double precision, NULL::numeric, NULL::double precision, NULL::double precision WHERE false
-
+  WITH base AS (
+    SELECT DISTINCT ON (b.queryid)
+      b.queryid, b.query, b.calls, b.mean_exec_time, b.total_exec_time
+    FROM public.pg_stat_statements_baseline b
+    WHERE b.label = p_label
+    ORDER BY b.queryid, b.captured_at DESC
+  ),
+  curr AS (
+    SELECT s.queryid, s.calls, s.mean_exec_time, s.total_exec_time, s.query
+    FROM extensions.pg_stat_statements s
+    WHERE s.dbid = (SELECT oid FROM pg_database WHERE datname = current_database())
+  )
+  SELECT
+    COALESCE(base.queryid, curr.queryid) AS queryid,
+    COALESCE(base.query, curr.query) AS query,
+    COALESCE(base.calls, 0) AS baseline_calls,
+    COALESCE(curr.calls, 0) AS current_calls,
+    COALESCE(curr.calls, 0) - COALESCE(base.calls, 0) AS calls_delta,
+    COALESCE(base.mean_exec_time, 0) AS baseline_mean_ms,
+    COALESCE(curr.mean_exec_time, 0) AS current_mean_ms,
+    CASE
+      WHEN COALESCE(base.mean_exec_time, 0) > 0
+        THEN ROUND(((COALESCE(curr.mean_exec_time, 0) - base.mean_exec_time) / base.mean_exec_time * 100)::NUMERIC, 2)
+      ELSE NULL
+    END AS mean_delta_pct,
+    COALESCE(base.total_exec_time, 0) AS baseline_total_ms,
+    COALESCE(curr.total_exec_time, 0) AS current_total_ms
+  FROM base
+  FULL OUTER JOIN curr ON curr.queryid = base.queryid
+  WHERE public.has_role(auth.uid(), 'admin')
+  ORDER BY COALESCE(curr.total_exec_time, 0) DESC
+  LIMIT 200;
 $$;
 
 CREATE OR REPLACE FUNCTION public.confirmar_conciliacao(p_conciliacao_id uuid, p_user_id uuid, p_transacao_id uuid DEFAULT NULL::uuid, p_conta_pagar_id uuid DEFAULT NULL::uuid, p_conta_receber_id uuid DEFAULT NULL::uuid, p_ajuste_centavos numeric DEFAULT 0) RETURNS void
@@ -1806,8 +1850,34 @@ CREATE OR REPLACE FUNCTION public.gate_34_indices_nao_utilizados(_min_dias integ
     LANGUAGE sql STABLE SECURITY DEFINER
     SET search_path TO 'public', 'pg_catalog'
     AS $$
-    SELECT NULL::text, NULL::text, NULL::integer, NULL::bigint WHERE false
-
+  WITH janela AS (
+    SELECT index_name,
+           max(table_name)  AS table_name,
+           max(idx_scan)    AS scans_max,
+           min(idx_scan)    AS scans_min,
+           max(size_bytes)  AS size_bytes,
+           bool_or(is_unique OR is_primary) AS protegido,
+           (max(snapshot_date) - min(snapshot_date))::int AS dias
+    FROM public.index_usage_snapshots
+    WHERE snapshot_date >= CURRENT_DATE - (_min_dias * 2)
+    GROUP BY index_name
+  )
+  SELECT j.table_name,
+         j.index_name,
+         j.dias,
+         (j.size_bytes / 1024)::bigint
+  FROM janela j
+  WHERE NOT j.protegido
+    AND j.dias >= _min_dias
+    AND j.scans_max = 0
+    AND j.scans_min = 0
+    AND NOT EXISTS (
+      SELECT 1 FROM public.indices_uso_excecoes e WHERE e.index_name = j.index_name
+    )
+    AND EXISTS (
+      SELECT 1 FROM pg_indexes p
+      WHERE p.schemaname = 'public' AND p.indexname = j.index_name
+    )
 $$;
 
 -- same name, different sig — drop first
@@ -2017,16 +2087,28 @@ CREATE OR REPLACE FUNCTION public.get_acessos_suspeitos(_horas integer DEFAULT 1
     LANGUAGE sql STABLE SECURITY DEFINER
     SET search_path TO 'public'
     AS $$
-    SELECT NULL::public.acessos_suspeitos WHERE false
-
+  SELECT s.* FROM public.acessos_suspeitos s
+  WHERE public.has_role((SELECT auth.uid()), 'admin'::app_role)
+    AND (s.empresa_id IS NULL OR public.empresa_acessivel(s.empresa_id))
+    AND s.created_at >= now() - make_interval(hours => GREATEST(COALESCE(_horas, 168), 1))
+    AND (NOT COALESCE(_somente_abertos, true) OR s.revisado_em IS NULL)
+  ORDER BY (s.severidade = 'critical') DESC, s.created_at DESC
+  LIMIT 500;
 $$;
 
 CREATE OR REPLACE FUNCTION public.get_active_uapi_token() RETURNS TABLE(access_token text, refresh_token text, user_fid text, token_age_hours numeric, needs_refresh boolean)
     LANGUAGE sql STABLE SECURITY DEFINER
     SET search_path TO 'public', 'pg_catalog'
     AS $$
-  SELECT NULL::text, NULL::text, NULL::text, NULL::numeric, NULL::boolean WHERE false
-
+  SELECT 
+    s.access_token,
+    s.refresh_token,
+    s.user_fid,
+    EXTRACT(EPOCH FROM (now() - s.token_obtained_at)) / 3600 AS token_age_hours,
+    EXTRACT(EPOCH FROM (now() - s.token_obtained_at)) / 3600 > 20 AS needs_refresh
+  FROM public.lalamove_uapi_sessions s
+  WHERE s.is_active = true
+  LIMIT 1;
 $$;
 
 CREATE OR REPLACE FUNCTION public.get_asaas_payment_stats(p_empresa_id uuid) RETURNS jsonb
@@ -4572,14 +4654,23 @@ CREATE OR REPLACE TRIGGER set_updated_at_358c32867d1f3b611c3b BEFORE UPDATE ON p
 
 CREATE OR REPLACE TRIGGER set_updated_at_750f942dec954ad99332 BEFORE UPDATE ON public.asaas_transfers FOR EACH ROW EXECUTE FUNCTION public.update_updated_at_column();
 
-CREATE OR REPLACE FUNCTION public.sanitize_auth_log_metadata() RETURNS trigger
-    LANGUAGE plpgsql SECURITY DEFINER
-    SET search_path TO 'public', 'pg_catalog'
-    AS $$
+DO $fn_sanitize$
 BEGIN
-    RETURN NEW;
-END;
-$$;
+  IF to_regprocedure('public.sanitize_auth_log_metadata()') IS NULL THEN
+    EXECUTE $body$
+      CREATE FUNCTION public.sanitize_auth_log_metadata() RETURNS trigger
+      LANGUAGE plpgsql SECURITY DEFINER
+      SET search_path TO 'public', 'pg_catalog'
+      AS $fn$
+      BEGIN
+        NEW.metadata := NEW.metadata - ARRAY['token','access_token','refresh_token','password','secret','cookie','authorization','headers'];
+        RETURN NEW;
+      END;
+      $fn$;
+    $body$;
+  END IF;
+END
+$fn_sanitize$;
 
 CREATE OR REPLACE TRIGGER sanitize_auth_log_metadata_trigger BEFORE INSERT ON public.auth_logs FOR EACH ROW EXECUTE FUNCTION public.sanitize_auth_log_metadata();
 
@@ -4745,25 +4836,47 @@ CREATE OR REPLACE TRIGGER trg_normalizar_tipo_partida BEFORE INSERT OR UPDATE ON
 DROP TRIGGER IF EXISTS trg_validar_partidas_dobradas ON public.partidas_contabeis;
 CREATE CONSTRAINT TRIGGER trg_validar_partidas_dobradas AFTER INSERT OR DELETE OR UPDATE ON public.partidas_contabeis DEFERRABLE INITIALLY DEFERRED FOR EACH ROW EXECUTE FUNCTION public.validar_partidas_dobradas();
 
-CREATE OR REPLACE FUNCTION public.invalidate_old_tokens() RETURNS trigger
-    LANGUAGE plpgsql SECURITY DEFINER
-    SET search_path TO 'public', 'pg_catalog'
-    AS $$
+DO $fn_invalidate$
 BEGIN
-    RETURN NEW;
-END;
-$$;
+  IF to_regprocedure('public.invalidate_old_tokens()') IS NULL THEN
+    EXECUTE $body$
+      CREATE FUNCTION public.invalidate_old_tokens() RETURNS trigger
+      LANGUAGE plpgsql SECURITY DEFINER
+      SET search_path TO 'public', 'pg_catalog'
+      AS $fn$
+      BEGIN
+        UPDATE public.password_reset_tokens
+           SET used_at = COALESCE(used_at, now())
+         WHERE user_id = NEW.user_id AND used_at IS NULL AND id <> NEW.id;
+        RETURN NEW;
+      END;
+      $fn$;
+    $body$;
+  END IF;
+END
+$fn_invalidate$;
 
 CREATE OR REPLACE TRIGGER trg_invalidate_old_tokens AFTER INSERT ON public.password_reset_tokens FOR EACH ROW EXECUTE FUNCTION public.invalidate_old_tokens();
 
-CREATE OR REPLACE FUNCTION public.set_token_expiration() RETURNS trigger
-    LANGUAGE plpgsql SECURITY DEFINER
-    SET search_path TO 'public', 'pg_catalog'
-    AS $$
+DO $fn_set_exp$
 BEGIN
-    RETURN NEW;
-END;
-$$;
+  IF to_regprocedure('public.set_token_expiration()') IS NULL THEN
+    EXECUTE $body$
+      CREATE FUNCTION public.set_token_expiration() RETURNS trigger
+      LANGUAGE plpgsql SECURITY DEFINER
+      SET search_path TO 'public', 'pg_catalog'
+      AS $fn$
+      BEGIN
+        IF NEW.expires_at IS NULL THEN
+          NEW.expires_at := now() + interval '2 hours';
+        END IF;
+        RETURN NEW;
+      END;
+      $fn$;
+    $body$;
+  END IF;
+END
+$fn_set_exp$;
 
 CREATE OR REPLACE TRIGGER trg_set_token_expiration BEFORE INSERT ON public.password_reset_tokens FOR EACH ROW EXECUTE FUNCTION public.set_token_expiration();
 
