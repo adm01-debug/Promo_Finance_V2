@@ -16,9 +16,9 @@
 
 | início (UTC) | status | duração (s) | mensagem |
 |---|---|---|---|
+| 2026-11-11 22:00:00 | succeeded | 0.25 | 1 row |
+| 2026-11-11 21:00:00 | succeeded | 0.30 | 1 row |
 | 2026-11-11 20:00:00 | succeeded | 0.46 | 1 row |
-| 2026-11-11 19:00:00 | succeeded | 0.49 | 1 row |
-| 2026-11-11 18:00:01 | succeeded | 1.07 | 1 row |
 
 
 ## 4 · cleanup-cron-logs
@@ -68,18 +68,18 @@
 
 | início (UTC) | status | duração (s) | mensagem |
 |---|---|---|---|
-| 2026-11-11 20:30:00 | succeeded | 0.31 | 1 row |
-| 2026-11-11 20:00:00 | succeeded | 0.52 | 1 row |
-| 2026-11-11 19:30:00 | succeeded | 0.31 | 1 row |
+| 2026-11-11 22:00:00 | succeeded | 0.27 | 1 row |
+| 2026-11-11 21:30:00 | succeeded | 0.24 | 1 row |
+| 2026-11-11 21:00:00 | succeeded | 0.20 | 1 row |
 
 
 ## 12 · integrity-invariants-hourly
 
 | início (UTC) | status | duração (s) | mensagem |
 |---|---|---|---|
+| 2026-11-11 21:45:00 | succeeded | 0.01 | 1 row |
 | 2026-11-11 20:45:00 | succeeded | 0.07 | 1 row |
 | 2026-11-11 19:45:00 | succeeded | 0.07 | 1 row |
-| 2026-11-11 18:45:00 | succeeded | 0.03 | 1 row |
 
 
 ## 13 · maintain-monthly-partitions
@@ -123,9 +123,9 @@ _nenhum_
 
 | início (UTC) | status | duração (s) | mensagem |
 |---|---|---|---|
+| 2026-11-11 22:15:00 | succeeded | 0.11 | 1 row |
+| 2026-11-11 21:15:00 | succeeded | 0.07 | 1 row |
 | 2026-11-11 20:15:00 | succeeded | 0.15 | 1 row |
-| 2026-11-11 19:15:00 | succeeded | 0.06 | 1 row |
-| 2026-11-11 18:15:00 | succeeded | 0.12 | 1 row |
 
 
 ## 20 · snapshot-table-bloat-daily
@@ -175,9 +175,9 @@ _nenhum_
 
 | início (UTC) | status | duração (s) | mensagem |
 |---|---|---|---|
+| 2026-11-11 22:10:00 | succeeded | 11.81 | 1 row |
+| 2026-11-11 21:10:00 | succeeded | 3.02 | 1 row |
 | 2026-11-11 20:10:00 | succeeded | 12.55 | 1 row |
-| 2026-11-11 19:10:00 | succeeded | 14.29 | 1 row |
-| 2026-11-11 18:10:00 | succeeded | 13.69 | 1 row |
 
 
 ## 31 · daily-log-retention
@@ -193,27 +193,27 @@ _nenhum_
 
 | início (UTC) | status | duração (s) | mensagem |
 |---|---|---|---|
-| 2026-11-11 20:45:00 | succeeded | 0.03 | 1 row |
-| 2026-11-11 20:30:00 | succeeded | 0.03 | 1 row |
-| 2026-11-11 20:15:00 | succeeded | 0.03 | 1 row |
+| 2026-11-11 22:15:00 | succeeded | 0.05 | 1 row |
+| 2026-11-11 22:00:00 | succeeded | 0.03 | 1 row |
+| 2026-11-11 21:45:00 | succeeded | 0.07 | 1 row |
 
 
 ## 33 · webhook-retry-worker-1min
 
 | início (UTC) | status | duração (s) | mensagem |
 |---|---|---|---|
-| 2026-11-11 20:58:00 | succeeded | 0.04 | 1 row |
-| 2026-11-11 20:57:00 | succeeded | 0.02 | 1 row |
-| 2026-11-11 20:56:00 | succeeded | 0.00 | 1 row |
+| 2026-11-11 22:17:00 | succeeded | 0.02 | 1 row |
+| 2026-11-11 22:16:00 | succeeded | 0.01 | 1 row |
+| 2026-11-11 22:15:00 | succeeded | 0.02 | 1 row |
 
 
 ## 34 · auditar-acessos-cross-tenant
 
 | início (UTC) | status | duração (s) | mensagem |
 |---|---|---|---|
+| 2026-11-11 22:10:00 | succeeded | 0.03 | 1 row |
+| 2026-11-11 21:10:00 | succeeded | 0.09 | 1 row |
 | 2026-11-11 20:10:00 | succeeded | 0.08 | 1 row |
-| 2026-11-11 19:10:00 | succeeded | 0.08 | 1 row |
-| 2026-11-11 18:10:00 | succeeded | 0.14 | 1 row |
 
 
 ## 35 · capture-index-usage-daily
@@ -229,18 +229,18 @@ _nenhum_
 
 | início (UTC) | status | duração (s) | mensagem |
 |---|---|---|---|
-| 2026-11-11 20:30:00 | succeeded | 0.06 | 1 row |
-| 2026-11-11 20:00:00 | succeeded | 0.14 | 1 row |
-| 2026-11-11 19:30:00 | succeeded | 0.04 | 1 row |
+| 2026-11-11 22:00:00 | succeeded | 0.02 | 1 row |
+| 2026-11-11 21:30:00 | succeeded | 0.07 | 1 row |
+| 2026-11-11 21:00:00 | succeeded | 0.03 | 1 row |
 
 
 ## 37 · evaluate-delivery-alerts-every-min
 
 | início (UTC) | status | duração (s) | mensagem |
 |---|---|---|---|
-| 2026-11-11 20:58:00 | succeeded | 0.02 | 1 row |
-| 2026-11-11 20:57:00 | succeeded | 0.01 | 1 row |
-| 2026-11-11 20:56:00 | succeeded | 0.03 | 1 row |
+| 2026-11-11 22:17:00 | succeeded | 0.02 | 1 row |
+| 2026-11-11 22:16:00 | succeeded | 0.02 | 1 row |
+| 2026-11-11 22:15:00 | succeeded | 0.03 | 1 row |
 
 
 ## 40 · gerar-snapshots-conformidade-mensal
@@ -261,6 +261,6 @@ _nenhum_
 
 | início (UTC) | status | duração (s) | mensagem |
 |---|---|---|---|
+| 2026-11-11 21:30:00 | failed | 0.05 | ERROR:  Secret "anon_key" ausente no Vault. Crie-o em Project Settings > Vault com a anon key de bwwbeyolnnzppeuhgkcd. CONTEXT:  PL/pgSQL function chave_anon_vault() line 11 at RAISE SQL statement "SELECT net.http_post(     url := 'https://bwwbeyolnnzppeuhgkcd.supabase.co/functions/v1/enviar-digest- |
 | 2026-11-11 20:30:00 | failed | 0.05 | ERROR:  Secret "anon_key" ausente no Vault. Crie-o em Project Settings > Vault com a anon key de bwwbeyolnnzppeuhgkcd. CONTEXT:  PL/pgSQL function chave_anon_vault() line 11 at RAISE SQL statement "SELECT net.http_post(     url := 'https://bwwbeyolnnzppeuhgkcd.supabase.co/functions/v1/enviar-digest- |
 | 2026-11-11 19:30:00 | failed | 0.03 | ERROR:  Secret "anon_key" ausente no Vault. Crie-o em Project Settings > Vault com a anon key de bwwbeyolnnzppeuhgkcd. CONTEXT:  PL/pgSQL function chave_anon_vault() line 11 at RAISE SQL statement "SELECT net.http_post(     url := 'https://bwwbeyolnnzppeuhgkcd.supabase.co/functions/v1/enviar-digest- |
-| 2026-11-11 18:30:00 | failed | 0.09 | ERROR:  Secret "anon_key" ausente no Vault. Crie-o em Project Settings > Vault com a anon key de bwwbeyolnnzppeuhgkcd. CONTEXT:  PL/pgSQL function chave_anon_vault() line 11 at RAISE SQL statement "SELECT net.http_post(     url := 'https://bwwbeyolnnzppeuhgkcd.supabase.co/functions/v1/enviar-digest- |
