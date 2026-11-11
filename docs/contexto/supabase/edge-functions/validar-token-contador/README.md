@@ -4,7 +4,7 @@
 |---|---|
 | nome | validar-token-contador |
 | status | ACTIVE |
-| versão | 13 |
+| versão | 15 |
 | verify_jwt | não |
 | entrypoint | file:///home/joaquim_ataides/hermes-workspaces/chat-c696391/supabase/functions/validar-token-contador/index.ts |
 | import_map |  |

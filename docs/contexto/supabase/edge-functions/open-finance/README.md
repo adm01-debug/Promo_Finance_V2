@@ -4,7 +4,7 @@
 |---|---|
 | nome | open-finance |
 | status | ACTIVE |
-| versão | 18 |
+| versão | 20 |
 | verify_jwt | sim |
 | entrypoint | file:///home/joaquim_ataides/hermes-workspaces/chat-c696391/supabase/functions/open-finance/index.ts |
 | import_map |  |

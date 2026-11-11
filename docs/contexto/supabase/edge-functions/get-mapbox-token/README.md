@@ -4,7 +4,7 @@
 |---|---|
 | nome | get-mapbox-token |
 | status | ACTIVE |
-| versão | 12 |
+| versão | 14 |
 | verify_jwt | sim |
 | entrypoint | file:///tmp/user_fn_bwwbeyolnnzppeuhgkcd_bb2e6751-a158-4872-887b-2127c4a9b976_1/source/supabase/functions/get-mapbox-token/index.ts |
 | import_map |  |

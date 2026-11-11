@@ -4,7 +4,7 @@
 |---|---|
 | nome | scim-server |
 | status | ACTIVE |
-| versão | 12 |
+| versão | 14 |
 | verify_jwt | não |
 | entrypoint | file:///tmp/user_fn_bwwbeyolnnzppeuhgkcd_4bdc38d4-2ce8-4db7-93dc-8f12c92c464b_1/source/supabase/functions/scim-server/index.ts |
 | import_map |  |

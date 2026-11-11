@@ -4,7 +4,7 @@
 |---|---|
 | nome | executar-analise-preditiva |
 | status | ACTIVE |
-| versão | 14 |
+| versão | 16 |
 | verify_jwt | não |
 | entrypoint | file:///tmp/promo-finance-postmerge-h0831-02/supabase/functions/executar-analise-preditiva/index.ts |
 | import_map |  |
