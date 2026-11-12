@@ -1,5 +1,6 @@
 import { useState } from 'react';
-import type { AsaasPayment, useAsaas } from '@/hooks/useAsaas';
+import type { useAsaas } from '@/hooks/useAsaas';
+import type { AsaasPayment } from '@/hooks/useAsaas.types';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';

@@ -39,7 +39,8 @@ import {
 
 import { formatCurrency, formatDate } from '@/lib/formatters';
 import { toast } from 'sonner';
-import { useBoletos, Boleto } from '@/hooks/useBoletos';
+import { useBoletos } from '@/hooks/useBoletos';
+import { Boleto } from '@/hooks/useBoletos.types';
 import { toastWithUndo } from '@/lib/toast-with-undo';
 import { cn } from '@/lib/utils';
 import { EmptyState } from '@/components/ui/micro-interactions';

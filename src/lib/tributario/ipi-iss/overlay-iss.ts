@@ -15,7 +15,7 @@
  * Módulo puro: sem I/O, sem mutação das entradas.
  */
 
-import { ISS_ALIQUOTA_MAXIMA, ISS_ALIQUOTA_MINIMA } from './tabelas';
+import { ISS_ALIQUOTA_MAXIMA, ISS_ALIQUOTA_MINIMA } from './tabelas.helpers';
 
 /** Registro cru vindo do catálogo `aliquotas_iss_municipal`. */
 export interface RegistroIssMunicipalBanco {

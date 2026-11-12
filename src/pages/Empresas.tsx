@@ -42,7 +42,8 @@ import {
   type Empresa,
 } from '@/hooks/useEmpresas';
 import { EmpresaForm } from '@/components/empresas/EmpresaForm';
-import { EmpresaHeroKPI, EmpresaCardView } from '@/components/empresas/EmpresaCardView';
+import { EmpresaCardView } from '@/components/empresas/EmpresaCardView';
+import { EmpresaHeroKPI } from '@/components/empresas/EmpresaHeroKPI';
 import { formatCurrency } from '@/lib/formatters';
 import { cn } from '@/lib/utils';
 import { TableShimmerSkeleton } from '@/components/ui/loading-skeleton';

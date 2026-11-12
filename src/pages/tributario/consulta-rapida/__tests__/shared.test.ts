@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { UFS } from '@/pages/tributario/consulta-rapida/shared';
+import { UFS } from '@/pages/tributario/consulta-rapida/ufs';
 import { pct } from '@/pages/tributario/consulta-rapida/format';
 
 describe('pct', () => {

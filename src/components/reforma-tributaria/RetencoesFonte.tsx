@@ -28,20 +28,8 @@ import { useAllEmpresas } from '@/hooks/useEmpresas';
 import { RetencoesTable } from './retencoes/RetencoesTable';
 import { DARFsTable } from './retencoes/DARFsTable';
 import { ResumoPorTipoGrid } from './retencoes/ResumoPorTipoGrid';
-
-const TIPO_LABELS: Record<TipoRetencao, string> = {
-  irrf: 'IRRF',
-  csrf: 'CSRF',
-  pis_cofins_csll: 'PIS/COFINS/CSLL',
-  inss: 'INSS',
-  iss: 'ISS',
-  cbs: 'CBS',
-  ibs: 'IBS',
-};
-
-interface Props {
-  empresaId?: string;
-}
+import type { Props } from './RetencoesFonte.types';
+import { TIPO_LABELS } from './RetencoesFonte.helpers';
 
 export function RetencoesFonte({ empresaId: initialEmpresaId }: Props) {
   const [empresaId, setEmpresaId] = useState<string>(initialEmpresaId || '');

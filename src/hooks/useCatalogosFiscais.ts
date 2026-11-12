@@ -37,7 +37,7 @@ import {
   descreverRejeicoesNcm,
   type ResultadoOverlayNcm,
 } from '@/lib/tributario/ipi-iss/overlay-ncm';
-import { definirTabelaTipiEfetiva } from '@/lib/tributario/ipi-iss/tabelas';
+import { definirTabelaTipiEfetiva } from '@/lib/tributario/ipi-iss/tabelas.helpers';
 import {
   aplicarOverlayMonofasico,
   descreverRejeicoesMonofasico,

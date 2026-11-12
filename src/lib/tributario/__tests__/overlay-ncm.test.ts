@@ -14,7 +14,7 @@ import {
   definirTabelaTipiEfetiva,
   resetarTabelaTipiEfetiva,
   normalizarNcm,
-} from '@/lib/tributario/ipi-iss/tabelas';
+} from '@/lib/tributario/ipi-iss/tabelas.helpers';
 
 afterEach(() => resetarTabelaTipiEfetiva());
 

@@ -1,5 +1,4 @@
 import { useMemo, useState } from 'react';
-
 import {
   CheckCircle2,
   Download,
@@ -50,33 +49,14 @@ import {
 } from '@/components/ui/dialog';
 import { Textarea } from '@/components/ui/textarea';
 import { toast } from 'sonner';
-import {
-  getNfeXmlSignedUrl,
-  useNfeRecebidas,
-  type ManifestacaoStatus,
-  type NfeFiltros,
-  type NfeRecebida,
-} from '@/hooks/useNfeRecebidas';
-import {
-  MANIFESTACAO_LABEL,
-  useManifestarNfe,
-  type ManifestacaoTipo,
-} from '@/hooks/useManifestarNfe';
+import { getNfeXmlSignedUrl, useNfeRecebidas } from '@/hooks/useNfeRecebidas';
+import type { NfeFiltros, NfeRecebida } from '@/hooks/useNfeRecebidas';
+import { MANIFESTACAO_LABEL, useManifestarNfe } from '@/hooks/useManifestarNfe';
+import type { ManifestacaoTipo } from '@/hooks/useManifestarNfe';
 import { useDesvincularNfe } from '@/hooks/useNfeVinculo';
 import { NfeVinculoDialog } from '@/components/tributario/NfeVinculoDialog';
-
-const STATUS_LABELS: Record<
-  ManifestacaoStatus,
-  { label: string; variant: 'default' | 'secondary' | 'destructive' | 'outline' }
-> = {
-  pendente: { label: 'Pendente', variant: 'outline' },
-  ciencia: { label: 'Ciência', variant: 'secondary' },
-  confirmada: { label: 'Confirmada', variant: 'default' },
-  desconhecida: { label: 'Desconhecida', variant: 'secondary' },
-  nao_realizada: { label: 'Não realizada', variant: 'destructive' },
-};
-
-const currency = new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' });
+import { KpiCard } from './KpiCard';
+import { currency, STATUS_LABELS } from './NfeRecebidas.helpers';
 
 export default function NfeRecebidasPage() {
   const [filtros, setFiltros] = useState<NfeFiltros>({
@@ -413,35 +393,5 @@ export default function NfeRecebidasPage() {
         onClose={() => setVincDialog(null)}
       />
     </>
-  );
-}
-
-function KpiCard({
-  label,
-  value,
-  icon,
-  tone,
-}: {
-  label: string;
-  value: string;
-  icon?: React.ReactNode;
-  tone?: 'warning' | 'muted';
-}) {
-  const valueClass =
-    tone === 'warning'
-      ? 'text-warning'
-      : tone === 'muted'
-        ? 'text-muted-foreground'
-        : 'text-foreground';
-  return (
-    <Card>
-      <CardContent className="flex items-center justify-between p-4">
-        <div>
-          <div className="text-xs text-muted-foreground">{label}</div>
-          <div className={`mt-1 text-2xl font-semibold ${valueClass}`}>{value}</div>
-        </div>
-        {icon && <div className="text-muted-foreground">{icon}</div>}
-      </CardContent>
-    </Card>
   );
 }

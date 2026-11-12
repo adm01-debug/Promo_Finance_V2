@@ -16,7 +16,6 @@ import {
   Clock,
 } from 'lucide-react';
 import { supabaseDyn as supabase } from '@/lib/supabase-dynamic';
-
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -32,32 +31,12 @@ import {
 } from '@/components/ui/table';
 import { NovaSimulacaoElisaoDialog } from './NovaSimulacaoElisaoDialog';
 import { SimuladorTab } from './SimuladorTab';
-
-type SimulacaoElisao = { id: string; ano_base: number; updated_at: string; nome: string };
-type AuditoriaLogElisao = {
-  id: string;
-  nota_fiscal_id: string;
-  created_at: string;
-  ncm?: string;
-  elisao_regras_creditos?: { tipo_credito?: string } | null;
-  metodologia_applied?: string;
-  valor_credito_calculado: number;
-  status_validacao?: string;
-};
-type TarefaElisao = {
-  id: string;
-  status?: string;
-  tipo_oportunidade?: string;
-  prazo: string;
-  titulo?: string;
-  descricao?: string;
-  checklist?: Array<{ done?: boolean }>;
-  valor_envolvido?: number;
-};
-
-interface ElisaoTabProps {
-  empresaId: string;
-}
+import type {
+  ElisaoTabProps,
+  SimulacaoElisao,
+  TarefaElisao,
+  AuditoriaLogElisao,
+} from './ElisaoFiscalTab.types';
 
 export function ElisaoFiscalTab({ empresaId }: ElisaoTabProps) {
   const [activeTab, setActiveTab] = useState('simulador');

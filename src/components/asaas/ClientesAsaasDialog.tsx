@@ -22,7 +22,8 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { EmptyState } from '@/components/ui/empty-state';
 import { ConfirmationDialog } from '@/components/ui/confirmation-dialog';
 import { Pencil, Trash2, Users, Loader2, Save, X } from 'lucide-react';
-import { useAsaas, type AsaasCustomer } from '@/hooks/useAsaas';
+import { useAsaas } from '@/hooks/useAsaas';
+import { type AsaasCustomer } from '@/hooks/useAsaas.types';
 
 interface Props {
   open: boolean;

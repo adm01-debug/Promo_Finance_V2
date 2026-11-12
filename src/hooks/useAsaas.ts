@@ -1,83 +1,9 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
-
-export type AsaasPaymentStatus =
-  | 'PENDING'
-  | 'RECEIVED'
-  | 'CONFIRMED'
-  | 'OVERDUE'
-  | 'REFUNDED'
-  | 'CANCELLED'
-  | 'CHARGEBACK';
-
-export type AsaasBillingType = 'boleto' | 'pix' | 'credit_card' | 'debit_card';
-
-export interface AsaasCustomer {
-  id: string;
-  asaas_id: string;
-  cliente_id: string | null;
-  empresa_id: string;
-  nome: string;
-  cpf_cnpj: string | null;
-  email: string | null;
-  telefone: string | null;
-  created_at: string;
-}
-
-export interface AsaasPayment {
-  id: string;
-  asaas_id: string;
-  empresa_id: string;
-  asaas_customer_id: string | null;
-  conta_receber_id: string | null;
-  tipo: AsaasBillingType;
-  valor: number;
-  valor_liquido: number | null;
-  data_vencimento: string;
-  data_pagamento: string | null;
-  status: string;
-  descricao: string | null;
-  nosso_numero: string | null;
-  codigo_barras: string | null;
-  linha_digitavel: string | null;
-  pix_qrcode: string | null;
-  pix_copia_cola: string | null;
-  link_boleto: string | null;
-  link_fatura: string | null;
-  sacado_nome?: string;
-  sacado_cpf_cnpj?: string;
-  created_at: string;
-}
-
-export interface AsaasSyncQueueItem {
-  id: string;
-  payment_id: string | null;
-  attempts: number;
-  max_attempts: number;
-  next_retry_at: string | null;
-  status: string;
-  error_history: Record<string, unknown>[] | null;
-}
-
-import { invokeEdge, EdgeFunctionError, handleEdgeError } from '@/lib/edge-function-error';
-
-async function invokeAsaas<T = unknown>(action: string, data: Record<string, unknown>): Promise<T> {
-  const result = await invokeEdge<T>('asaas-proxy', { action, data });
-  if (result && typeof result === 'object') {
-    const errors = (result as { errors?: Array<{ description: string }> }).errors;
-    if (Array.isArray(errors)) {
-      throw new EdgeFunctionError({
-        functionName: 'asaas-proxy',
-        status: 400,
-        code: 'ASAAS_VALIDATION',
-        message: errors.map((e) => e.description).join(', '),
-        body: { details: errors },
-      });
-    }
-  }
-  return result;
-}
+import { handleEdgeError } from '@/lib/edge-function-error';
+import type { AsaasCustomer, AsaasPayment, AsaasSyncQueueItem } from './useAsaas.types';
+import { invokeAsaas } from './useAsaas.helpers';
 
 export function useAsaas(empresaId?: string) {
   const queryClient = useQueryClient();
