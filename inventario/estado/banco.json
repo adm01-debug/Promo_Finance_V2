@@ -9,7 +9,7 @@
     },
     {
       "detalhe": [
-        "208155 linhas com mais de 7 dias"
+        "208568 linhas com mais de 7 dias"
       ],
       "tipo": "historico_cron_sem_limpeza"
     },
@@ -27,10 +27,10 @@
       "max_worker_processes": "6"
     },
     "historico": {
-      "bytes": 130064384,
-      "linhas": 230556,
+      "bytes": 130170880,
+      "linhas": 230785,
       "mais_antigo": "2026-08-23T12:00:00Z",
-      "mais_de_7_dias": 208155
+      "mais_de_7_dias": 208568
     },
     "horas_paradas_7d": [],
     "jobs": [
@@ -184,7 +184,7 @@
         "chama": [
           "public.cleanup_log_tables"
         ],
-        "duracao_max_s_7d": 2,
+        "duracao_max_s_7d": 3,
         "execucoes_24h": 1,
         "execucoes_7d": 7,
         "falhas_24h": 0,
@@ -240,7 +240,7 @@
         "nome": "enviar-digest-conformidade-horario",
         "startup_timeout_7d": 0,
         "taxa_falha_7d_pct": 100,
-        "ultima_falha": "2026-11-12T02:30:00Z"
+        "ultima_falha": "2026-11-12T05:30:00Z"
       },
       {
         "agenda": "0 12 * * *",
@@ -296,9 +296,9 @@
         "chama": [
           "net.http_post"
         ],
-        "duracao_max_s_7d": 0,
+        "duracao_max_s_7d": null,
         "execucoes_24h": 0,
-        "execucoes_7d": 1,
+        "execucoes_7d": 0,
         "falhas_24h": 0,
         "falhas_7d": 0,
         "nome": "gerar-snapshots-conformidade-mensal",
@@ -1078,18 +1078,18 @@
         "versao": 16
       },
       {
-        "atualizada_em": "2026-08-25T10:56Z",
+        "atualizada_em": "2026-11-12T05:37Z",
         "slug": "sefaz-dfe-dispatcher",
         "status": "ACTIVE",
         "verify_jwt": false,
-        "versao": 16
+        "versao": 17
       },
       {
-        "atualizada_em": "2026-08-25T22:35Z",
+        "atualizada_em": "2026-11-12T05:41Z",
         "slug": "sefaz-dfe-puxar",
         "status": "ACTIVE",
         "verify_jwt": false,
-        "versao": 18
+        "versao": 19
       },
       {
         "atualizada_em": "2026-08-25T22:35Z",
@@ -1306,7 +1306,7 @@
   ],
   "fonte": "scripts/inventario/banco.sql + GET /functions + .from() em src/ e supabase/functions/ (scripts/inventario/gerar-banco.mjs)",
   "format_version": 1,
-  "medido_em": "2026-11-12T02:39:59Z",
+  "medido_em": "2026-11-12T05:42:11Z",
   "origem": {
     "tabelas_em_comum_com_types_ts": 265,
     "tabelas_em_types_ts": 279
@@ -1322,7 +1322,7 @@
     "postgres": "17.6",
     "tabelas_public": 272,
     "tabelas_sem_rls": 0,
-    "tamanho_bytes": 542739603,
+    "tamanho_bytes": 545918099,
     "triggers_public": 171,
     "views_public": 21
   },
@@ -2303,9 +2303,9 @@
       }
     },
     {
-      "bytes": 81920,
+      "bytes": 106496,
       "citada_no_banco": true,
-      "linhas": 14,
+      "linhas": 7,
       "linhas_exatas": true,
       "nome": "categorias",
       "policies": 1,
@@ -2575,7 +2575,7 @@
     {
       "bytes": 131072,
       "citada_no_banco": true,
-      "linhas": 86,
+      "linhas": 96,
       "linhas_exatas": true,
       "nome": "cron_job_logs",
       "policies": 1,
@@ -3308,9 +3308,9 @@
       }
     },
     {
-      "bytes": 26255360,
+      "bytes": 28786688,
       "citada_no_banco": true,
-      "linhas": 73050,
+      "linhas": 71912,
       "linhas_exatas": true,
       "nome": "frontend_performance_logs",
       "policies": 2,
@@ -3488,9 +3488,9 @@
       }
     },
     {
-      "bytes": 14942208,
+      "bytes": 15065088,
       "citada_no_banco": true,
-      "linhas": 51599,
+      "linhas": 52088,
       "linhas_exatas": true,
       "nome": "index_usage_snapshots",
       "policies": 1,
@@ -3535,7 +3535,7 @@
     {
       "bytes": 1736704,
       "citada_no_banco": true,
-      "linhas": 1883,
+      "linhas": 1886,
       "linhas_exatas": true,
       "nome": "integrity_alerts",
       "policies": 2,
@@ -3623,9 +3623,9 @@
       }
     },
     {
-      "bytes": 2031616,
+      "bytes": 2072576,
       "citada_no_banco": true,
-      "linhas": 1462,
+      "linhas": 1523,
       "linhas_exatas": true,
       "nome": "login_attempts",
       "policies": 4,
@@ -4075,7 +4075,7 @@
     {
       "bytes": 3506176,
       "citada_no_banco": true,
-      "linhas": 4094,
+      "linhas": 4106,
       "linhas_exatas": true,
       "nome": "performance_alerts",
       "policies": 1,
@@ -4315,7 +4315,7 @@
     {
       "bytes": 14311424,
       "citada_no_banco": true,
-      "linhas": 15604,
+      "linhas": 14979,
       "linhas_exatas": true,
       "nome": "query_telemetry",
       "policies": 3,
@@ -4788,7 +4788,7 @@
       "rls_forcado": false,
       "triggers": 1,
       "uso_no_codigo": {
-        "edges": 3,
+        "edges": 4,
         "src": 0
       }
     },
@@ -4855,7 +4855,7 @@
     {
       "bytes": 22020096,
       "citada_no_banco": true,
-      "linhas": 18705,
+      "linhas": 18641,
       "linhas_exatas": true,
       "nome": "slow_query_alerts",
       "policies": 1,
