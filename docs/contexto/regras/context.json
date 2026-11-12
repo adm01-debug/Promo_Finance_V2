@@ -1,15 +1,15 @@
 {
  "meta": {
-  "sha": "b99e6a8cceb0b3631afd27786d05befee5de9678",
+  "sha": "251d639964eed3a9347bb91518e6253a597c19c8",
   "branch": "main",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
-  "generated_at": "2026-11-12 04:04 UTC",
-  "files_total": 3652,
-  "code_files": 3287,
-  "code_lines": 491228
+  "generated_at": "2026-11-12 05:15 UTC",
+  "files_total": 3653,
+  "code_files": 3288,
+  "code_lines": 491270
  },
  "version": "1.3.2",
- "facts_hash": "dcd07cd8f1210091",
+ "facts_hash": "37d61c2ea162975d",
  "stack": {
   "frameworks": [
    "React + Vite",
@@ -332,7 +332,7 @@
   "package_manager": "bun",
   "languages": {
    ".ts": 1112,
-   ".sql": 1070,
+   ".sql": 1071,
    ".tsx": 993,
    ".mjs": 60,
    ".py": 45,
@@ -40921,15 +40921,6 @@
     "src": "supabase/migrations/20260825110000_reconciliar_schema_v3_completo.sql"
    },
    {
-    "name": "trg_validar_partidas_dobradas",
-    "when": "AFTER INSERT OR DELETE OR UPDATE",
-    "table": "partidas_contabeis",
-    "function": "validar_partidas_dobradas",
-    "condition": "",
-    "each": "row",
-    "src": "supabase/migrations/20260825110000_reconciliar_schema_v3_completo.sql"
-   },
-   {
     "name": "trg_invalidate_old_tokens",
     "when": "AFTER INSERT",
     "table": "password_reset_tokens",
@@ -41594,6 +41585,15 @@
     "condition": "",
     "each": "row",
     "src": "supabase/migrations/20261027120000_transferencias_movimentacao_bilateral.sql"
+   },
+   {
+    "name": "trg_validar_partidas_dobradas",
+    "when": "AFTER INSERT OR UPDATE OR DELETE",
+    "table": "partidas_contabeis",
+    "function": "validar_partidas_dobradas",
+    "condition": "",
+    "each": "row",
+    "src": "supabase/migrations/20261112003647_validar_partidas_dobradas_ativa.sql"
    }
   ],
   "functions": {
@@ -43610,17 +43610,17 @@
     "args": "",
     "returns": "trigger",
     "lang": "plpgsql",
-    "src": "supabase/migrations/20260726144646_f20d43c4-d2ab-4d31-bdf3-a0f412ef0948.sql",
-    "security_definer": true,
+    "src": "supabase/migrations/20261112003647_validar_partidas_dobradas_ativa.sql",
+    "security_definer": false,
     "search_path": true,
-    "body": "DECLARE v_lanc uuid := COALESCE(NEW.lancamento_id, OLD.lancamento_id); v_debito numeric; v_credito numeric; v_qtd integer; BEGIN SELECT COALESCE(SUM(CASE WHEN tipo = 'D' THEN valor ELSE 0 END), 0), COALESCE(SUM(CASE WHEN tipo = 'C' THEN valor ELSE 0 END), 0), COUNT(*) INTO v_debito, v_credito, v_qtd FROM public.partidas_contabeis WHERE lancamento_id = v_lanc; IF v_qtd = 0 THEN RETURN NULL; END IF; IF v_qtd < 2 THEN RAISE EXCEPTION 'Lançamento contábil exige no mínimo 2 partidas (encontradas: %)', v_qtd; END IF; IF round(v_debito, 2) <> round(v_credito, 2) THEN RAISE EXCEPTION 'Partidas desbalanceadas: débitos % ≠ créditos %', round(v_debito, 2), round(v_credito, 2); END IF; RETURN NULL; END;",
+    "body": "DECLARE v_deb numeric; v_cre numeric; v_lanc uuid := COALESCE(NEW.lancamento_id, OLD.lancamento_id); BEGIN IF NOT EXISTS (SELECT 1 FROM public.lancamentos_contabeis WHERE id = v_lanc) THEN RETURN NULL; END IF; SELECT COALESCE(SUM(valor) FILTER (WHERE tipo = 'debito'), 0), COALESCE(SUM(valor) FILTER (WHERE tipo = 'credito'), 0) INTO v_deb, v_cre FROM public.partidas_contabeis WHERE lancamento_id = v_lanc; IF ABS(v_deb - v_cre) > 0.01 THEN RAISE EXCEPTION 'Partidas não balanceadas no lançamento %: Débitos=% Créditos=%', v_lanc, v_deb, v_cre USING ERRCODE = 'check_violation'; END IF; RETURN NULL; END;",
     "raises": [
-     "Lançamento contábil exige no mínimo 2 partidas (encontradas: %)",
-     "Partidas desbalanceadas: débitos % ≠ créditos %"
+     "Partidas não balanceadas no lançamento %: Débitos=% Créditos=%"
     ],
     "tables": [
+     "lancamentos_contabeis",
      "partidas_contabeis",
-     "v_debito"
+     "v_deb"
     ]
    },
    "normalizar_tipo_partida": {
@@ -51791,6 +51791,7 @@
    "supabase/migrations/20261101200000_monitor_health_cron.sql",
    "supabase/migrations/20261102000000_registrar_grupo_b_rls_cross_tenant.sql",
    "supabase/migrations/20261111233323_cron_webhook_retry_sem_trigger.sql",
+   "supabase/migrations/20261112003647_validar_partidas_dobradas_ativa.sql",
    "supabase/tests/sql/catalogos_tributarios.test.sql",
    "supabase/tests/sql/infra.test.sql",
    "supabase/tests/sql/integrity_cycle.test.sql",
@@ -59881,16 +59882,6 @@
     "src": "supabase/migrations/20260726144646_f20d43c4-d2ab-4d31-bdf3-a0f412ef0948.sql"
    },
    {
-    "function": "validar_partidas_dobradas",
-    "msg": "Lançamento contábil exige no mínimo 2 partidas (encontradas: %)",
-    "src": "supabase/migrations/20260726144646_f20d43c4-d2ab-4d31-bdf3-a0f412ef0948.sql"
-   },
-   {
-    "function": "validar_partidas_dobradas",
-    "msg": "Partidas desbalanceadas: débitos % ≠ créditos %",
-    "src": "supabase/migrations/20260726144646_f20d43c4-d2ab-4d31-bdf3-a0f412ef0948.sql"
-   },
-   {
     "function": "normalizar_tipo_partida",
     "msg": "Tipo de partida inválido: use D (débito) ou C (crédito)",
     "src": "supabase/migrations/20260726144900_795aaff5-72d2-47dc-a391-fe63c63335f1.sql"
@@ -60519,6 +60510,11 @@
     "function": "fn_sync_valor_pago_movimentacao",
     "msg": "movimentacao vinculada a conta_receber de outra empresa (%)",
     "src": "supabase/migrations/20261027120000_transferencias_movimentacao_bilateral.sql"
+   },
+   {
+    "function": "validar_partidas_dobradas",
+    "msg": "Partidas não balanceadas no lançamento %: Débitos=% Créditos=%",
+    "src": "supabase/migrations/20261112003647_validar_partidas_dobradas_ativa.sql"
    }
   ],
   "seed": [
@@ -71629,8 +71625,8 @@
   },
   {
    "module": "supabase/migrations",
-   "files": 1000,
-   "lines": 75706,
+   "files": 1001,
+   "lines": 75748,
    "tables": [],
    "exports": [],
    "docs": [],
@@ -145978,15 +145974,6 @@
     "src": "supabase/migrations/20260825110000_reconciliar_schema_v3_completo.sql"
    },
    {
-    "name": "trg_validar_partidas_dobradas",
-    "when": "AFTER INSERT OR DELETE OR UPDATE",
-    "table": "partidas_contabeis",
-    "function": "validar_partidas_dobradas",
-    "condition": "",
-    "each": "row",
-    "src": "supabase/migrations/20260825110000_reconciliar_schema_v3_completo.sql"
-   },
-   {
     "name": "trg_invalidate_old_tokens",
     "when": "AFTER INSERT",
     "table": "password_reset_tokens",
@@ -146651,6 +146638,15 @@
     "condition": "",
     "each": "row",
     "src": "supabase/migrations/20261027120000_transferencias_movimentacao_bilateral.sql"
+   },
+   {
+    "name": "trg_validar_partidas_dobradas",
+    "when": "AFTER INSERT OR UPDATE OR DELETE",
+    "table": "partidas_contabeis",
+    "function": "validar_partidas_dobradas",
+    "condition": "",
+    "each": "row",
+    "src": "supabase/migrations/20261112003647_validar_partidas_dobradas_ativa.sql"
    }
   ],
   "db_functions": {
@@ -148667,17 +148663,17 @@
     "args": "",
     "returns": "trigger",
     "lang": "plpgsql",
-    "src": "supabase/migrations/20260726144646_f20d43c4-d2ab-4d31-bdf3-a0f412ef0948.sql",
-    "security_definer": true,
+    "src": "supabase/migrations/20261112003647_validar_partidas_dobradas_ativa.sql",
+    "security_definer": false,
     "search_path": true,
-    "body": "DECLARE v_lanc uuid := COALESCE(NEW.lancamento_id, OLD.lancamento_id); v_debito numeric; v_credito numeric; v_qtd integer; BEGIN SELECT COALESCE(SUM(CASE WHEN tipo = 'D' THEN valor ELSE 0 END), 0), COALESCE(SUM(CASE WHEN tipo = 'C' THEN valor ELSE 0 END), 0), COUNT(*) INTO v_debito, v_credito, v_qtd FROM public.partidas_contabeis WHERE lancamento_id = v_lanc; IF v_qtd = 0 THEN RETURN NULL; END IF; IF v_qtd < 2 THEN RAISE EXCEPTION 'Lançamento contábil exige no mínimo 2 partidas (encontradas: %)', v_qtd; END IF; IF round(v_debito, 2) <> round(v_credito, 2) THEN RAISE EXCEPTION 'Partidas desbalanceadas: débitos % ≠ créditos %', round(v_debito, 2), round(v_credito, 2); END IF; RETURN NULL; END;",
+    "body": "DECLARE v_deb numeric; v_cre numeric; v_lanc uuid := COALESCE(NEW.lancamento_id, OLD.lancamento_id); BEGIN IF NOT EXISTS (SELECT 1 FROM public.lancamentos_contabeis WHERE id = v_lanc) THEN RETURN NULL; END IF; SELECT COALESCE(SUM(valor) FILTER (WHERE tipo = 'debito'), 0), COALESCE(SUM(valor) FILTER (WHERE tipo = 'credito'), 0) INTO v_deb, v_cre FROM public.partidas_contabeis WHERE lancamento_id = v_lanc; IF ABS(v_deb - v_cre) > 0.01 THEN RAISE EXCEPTION 'Partidas não balanceadas no lançamento %: Débitos=% Créditos=%', v_lanc, v_deb, v_cre USING ERRCODE = 'check_violation'; END IF; RETURN NULL; END;",
     "raises": [
-     "Lançamento contábil exige no mínimo 2 partidas (encontradas: %)",
-     "Partidas desbalanceadas: débitos % ≠ créditos %"
+     "Partidas não balanceadas no lançamento %: Débitos=% Créditos=%"
     ],
     "tables": [
+     "lancamentos_contabeis",
      "partidas_contabeis",
-     "v_debito"
+     "v_deb"
     ]
    },
    "normalizar_tipo_partida": {
@@ -150856,16 +150852,6 @@
     "src": "supabase/migrations/20260726144646_f20d43c4-d2ab-4d31-bdf3-a0f412ef0948.sql"
    },
    {
-    "function": "validar_partidas_dobradas",
-    "msg": "Lançamento contábil exige no mínimo 2 partidas (encontradas: %)",
-    "src": "supabase/migrations/20260726144646_f20d43c4-d2ab-4d31-bdf3-a0f412ef0948.sql"
-   },
-   {
-    "function": "validar_partidas_dobradas",
-    "msg": "Partidas desbalanceadas: débitos % ≠ créditos %",
-    "src": "supabase/migrations/20260726144646_f20d43c4-d2ab-4d31-bdf3-a0f412ef0948.sql"
-   },
-   {
     "function": "normalizar_tipo_partida",
     "msg": "Tipo de partida inválido: use D (débito) ou C (crédito)",
     "src": "supabase/migrations/20260726144900_795aaff5-72d2-47dc-a391-fe63c63335f1.sql"
@@ -151494,6 +151480,11 @@
     "function": "fn_sync_valor_pago_movimentacao",
     "msg": "movimentacao vinculada a conta_receber de outra empresa (%)",
     "src": "supabase/migrations/20261027120000_transferencias_movimentacao_bilateral.sql"
+   },
+   {
+    "function": "validar_partidas_dobradas",
+    "msg": "Partidas não balanceadas no lançamento %: Débitos=% Créditos=%",
+    "src": "supabase/migrations/20261112003647_validar_partidas_dobradas_ativa.sql"
    }
   ],
   "db_generated": [
@@ -161209,7 +161200,6 @@
    "user_role_in_empresa",
    "validar_duplicidade_avancada",
    "validar_duplicidade_financeira",
-   "validar_partidas_dobradas",
    "webhook_claim",
    "webhook_dequeue_retries",
    "webhook_mark_failure",
@@ -241567,6 +241557,10 @@
    "path": "supabase/migrations/20261111233323_cron_webhook_retry_sem_trigger.sql",
    "lines": 23
   },
+  "supabase/migrations/20261112003647_validar_partidas_dobradas_ativa.sql": {
+   "path": "supabase/migrations/20261112003647_validar_partidas_dobradas_ativa.sql",
+   "lines": 42
+  },
   "supabase/tests/test_harness.js": {
    "path": "supabase/tests/test_harness.js",
    "lines": 454,
@@ -241675,10 +241669,19 @@
   }
  },
  "git": {
-  "sha": "b99e6a8cceb0b3631afd27786d05befee5de9678",
+  "sha": "251d639964eed3a9347bb91518e6253a597c19c8",
   "branch": "main",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
   "commits": [
+   {
+    "sha": "251d639",
+    "date": "2026-11-12",
+    "author": "adm01-debug",
+    "subject": "fix: validação de partidas dobradas passa a valer (minúsculo + adiada para o commit) (#314)",
+    "files": [
+     "supabase/migrations/20261112003647_validar_partidas_dobradas_ativa.sql"
+    ]
+   },
    {
     "sha": "b99e6a8",
     "date": "2026-11-12",
@@ -242278,18 +242281,6 @@
      "bun.lock",
      "package.json"
     ]
-   },
-   {
-    "sha": "b6e60a5",
-    "date": "2026-11-09",
-    "author": "adm01-debug",
-    "subject": "chore: docs analise-prs estado final 15 mergeadas esta sessao",
-    "files": [
-     "analise-prs/RELATORIO_PRS.md",
-     "analise-prs/dossiers/pr277.md",
-     "analise-prs/dossiers/pr285.md",
-     "analise-prs/progresso.json"
-    ]
    }
   ],
   "hot_files": [
@@ -242330,10 +242321,6 @@
     3
    ],
    [
-    "analise-prs/RELATORIO_PRS.md",
-    3
-   ],
-   [
     ".github/workflows/prod-migrate.yml",
     2
    ],
@@ -242371,6 +242358,10 @@
    ],
    [
     "scripts/inventario/gerar-banco.mjs",
+    2
+   ],
+   [
+    "scripts/inventario/gerar-repo.mjs",
     2
    ]
   ]

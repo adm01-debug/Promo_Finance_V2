@@ -58,11 +58,11 @@
  "commits": {
   "convencao": "conventional commits (observado)",
   "exemplos": [
+   "fix: validação de partidas dobradas passa a valer (minúsculo + adiada para o commit) (#314)",
    "chore(deps): bump the radix-ui group across 1 directory with 20 updates (#208)",
    "fix: cron webhook-retry-worker para de enviar chave trigger recusada (422) (#313)",
    "fix: sanitiza parâmetro search no filtro .or() da external-data (#308)",
-   "infra: E2E rodam em ubuntu-24.04 (Playwright não suporta ubuntu-26.04) (#315)",
-   "fix: bump msw from 2.12.7 to 3.0.4 (#297)"
+   "infra: E2E rodam em ubuntu-24.04 (Playwright não suporta ubuntu-26.04) (#315)"
   ]
  },
  "pr_template": ".github/PULL_REQUEST_TEMPLATE.md",

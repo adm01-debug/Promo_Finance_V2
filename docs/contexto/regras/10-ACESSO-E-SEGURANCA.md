@@ -1,6 +1,6 @@
 # 10 · ACESSO E SEGURANÇA — quem pode o quê
 
-> Gerado automaticamente por AI Context Sync v1.3.2 · commit `b99e6a8cce` · branch `main` · 2026-11-12 04:04 UTC
+> Gerado automaticamente por AI Context Sync v1.3.2 · commit `251d639964` · branch `main` · 2026-11-12 05:15 UTC
 > Não edite à mão — regras humanas vão em `manual/`.
 
 ## Perfis / roles identificados
@@ -671,7 +671,6 @@
 - `user_role_in_empresa`
 - `validar_duplicidade_avancada`
 - `validar_duplicidade_financeira`
-- `validar_partidas_dobradas`
 - `webhook_claim`
 - `webhook_dequeue_retries`
 - `webhook_mark_failure`

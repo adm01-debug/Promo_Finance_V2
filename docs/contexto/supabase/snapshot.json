@@ -76856,9 +76856,13 @@
             {
               "file": "supabase/migrations/20260825110000_reconciliar_schema_v3_completo.sql",
               "hits": 1
+            },
+            {
+              "file": "supabase/migrations/20261112003647_validar_partidas_dobradas_ativa.sql",
+              "hits": 1
             }
           ],
-          "code_total_files": 2,
+          "code_total_files": 3,
           "cron": [],
           "db": [],
           "triggers": [

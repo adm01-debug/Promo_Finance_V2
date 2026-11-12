@@ -2,11 +2,16 @@
  "aviso": "GERADO AUTOMATICAMENTE por scripts/ai-context/gerar.mjs — não editar à mão; será sobrescrito.",
  "format_version": 2,
  "git": {
-  "commit": "b99e6a8cceb0b3631afd27786d05befee5de9678",
+  "commit": "251d639964eed3a9347bb91518e6253a597c19c8",
   "branch": "main",
-  "data_commit": "2026-11-12T03:48:10Z",
+  "data_commit": "2026-11-12T01:50:00-03:00",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
   "ultimos_commits": [
+   {
+    "sha": "251d639",
+    "data": "2026-11-12",
+    "assunto": "fix: validação de partidas dobradas passa a valer (minúsculo + adiada para o commit) (#314)"
+   },
    {
     "sha": "b99e6a8",
     "data": "2026-11-12",
@@ -126,14 +131,9 @@
     "sha": "529236d",
     "data": "2026-11-09",
     "assunto": "fix: compatibilidade TypeScript com Zod v4 (supersede #211)"
-   },
-   {
-    "sha": "8ec6561",
-    "data": "2026-11-09",
-    "assunto": "infra: bloqueia wipe de AGENTS.md e docs/agentes por sessão paralela (#263)"
    }
   ],
-  "arquivos_mudados_7d": 482,
+  "arquivos_mudados_7d": 483,
   "pastas_mais_mudadas_30d": [
    {
     "pasta": "package.json",
@@ -301,7 +301,7 @@
   "autores_30d": [
    {
     "autor": "adm01-debug",
-    "commits": 77
+    "commits": 78
    },
    {
     "autor": "devin-ai-integration[bot]",
@@ -318,7 +318,7 @@
   ]
  },
  "contagens": {
-  "arquivos_total": 3610,
+  "arquivos_total": 3611,
   "arquivos_codigo": 2216,
   "linhas_codigo": 428766,
   "rotas": 128,
@@ -330,7 +330,7 @@
   "hooks": 264,
   "edge_functions": 106,
   "tabelas": 352,
-  "migrations": 1000,
+  "migrations": 1001,
   "cron_jobs": 21,
   "testes": 426,
   "workflows": 19,

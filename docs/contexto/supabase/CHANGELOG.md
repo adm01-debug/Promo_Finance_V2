@@ -2,6 +2,10 @@
 
 Diff semântico gerado a cada coleta em que algo mudou.
 
+## 2026-11-12 05:19 UTC
+
+- **functions** alterado (1): `public.validar_partidas_dobradas()`
+
 ## 2026-11-12 03:21 UTC
 
 - **constraints** alterado (1): `public.contas_pagar.contas_pagar_status_check`
