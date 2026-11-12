@@ -2,6 +2,10 @@
 
 Diff semântico gerado a cada coleta em que algo mudou.
 
+## 2026-11-12 07:17 UTC
+
+- **edge functions** alterado (1): `enviar-alerta-email`
+
 ## 2026-11-12 05:52 UTC
 
 - **edge functions** alterado (2): `sefaz-dfe-dispatcher`, `sefaz-dfe-puxar`

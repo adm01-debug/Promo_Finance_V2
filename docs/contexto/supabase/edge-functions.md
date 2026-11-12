@@ -35,7 +35,7 @@ URL base: `https://bwwbeyolnnzppeuhgkcd.supabase.co/functions/v1/<slug>`. Metada
 | decidir-regime | decidir-regime | ACTIVE | 18 | não | file:///home/joaquim_ataides/hermes-workspaces/chat-c696391/supabase/functions/decidir-regime/index.ts |
 | detectar-anomalias-financeiras | detectar-anomalias-financeiras | ACTIVE | 18 | sim | file:///home/runner/work/Promo_Finance_V2/Promo_Finance_V2/supabase/functions/detectar-anomalias-financeiras/index.ts |
 | digest-silenciamentos-erro | digest-silenciamentos-erro | ACTIVE | 18 | não | file:///home/joaquim_ataides/hermes-workspaces/chat-c696391/supabase/functions/digest-silenciamentos-erro/index.ts |
-| enviar-alerta-email | enviar-alerta-email | ACTIVE | 19 | não | file:///tmp/promo-finance-postmerge-h0831-02/supabase/functions/enviar-alerta-email/index.ts |
+| enviar-alerta-email | enviar-alerta-email | ACTIVE | 20 | não | file:///home/runner/work/Promo_Finance_V2/Promo_Finance_V2/supabase/functions/enviar-alerta-email/index.ts |
 | enviar-bitrix24-tributario | enviar-bitrix24-tributario | ACTIVE | 17 | não | file:///home/joaquim_ataides/hermes-workspaces/chat-c696391/supabase/functions/enviar-bitrix24-tributario/index.ts |
 | enviar-convite-organizacao | enviar-convite-organizacao | ACTIVE | 17 | sim | file:///home/joaquim_ataides/hermes-workspaces/chat-c696391/supabase/functions/enviar-convite-organizacao/index.ts |
 | enviar-digest-conformidade | enviar-digest-conformidade | ACTIVE | 17 | sim | file:///home/joaquim_ataides/hermes-workspaces/chat-c696391/supabase/functions/enviar-digest-conformidade/index.ts |

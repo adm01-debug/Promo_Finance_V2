@@ -680,15 +680,15 @@
       },
       {
         "created_at": 1787655368587,
-        "entrypoint_path": "file:///tmp/promo-finance-postmerge-h0831-02/supabase/functions/enviar-alerta-email/index.ts",
+        "entrypoint_path": "file:///home/runner/work/Promo_Finance_V2/Promo_Finance_V2/supabase/functions/enviar-alerta-email/index.ts",
         "import_map": false,
         "import_map_path": null,
         "name": "enviar-alerta-email",
         "slug": "enviar-alerta-email",
         "status": "ACTIVE",
-        "updated_at": 1788177026757,
+        "updated_at": 1794467696399,
         "verify_jwt": false,
-        "version": 19
+        "version": 20
       },
       {
         "created_at": 1787655368587,
