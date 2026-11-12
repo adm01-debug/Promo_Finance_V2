@@ -1,15 +1,15 @@
 {
  "meta": {
-  "sha": "3efb5c7882668bc3df66f7fb83d7415f076154f7",
+  "sha": "f2bda64f670da2b41a2f9cee5ac0917d06f7ddf1",
   "branch": "main",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
-  "generated_at": "2026-11-12 06:42 UTC",
+  "generated_at": "2026-11-12 07:14 UTC",
   "files_total": 3653,
   "code_files": 3288,
-  "code_lines": 491312
+  "code_lines": 491313
  },
  "version": "1.3.2",
- "facts_hash": "cbd847dfa0749769",
+ "facts_hash": "f19cb7b70698c251",
  "stack": {
   "frameworks": [
    "React + Vite",
@@ -63345,6 +63345,7 @@
      "CONTADOR_INVITE_SECRET",
      "LOVABLE_API_KEY",
      "RESEND_API_KEY",
+     "RESEND_FROM",
      "SUPABASE_ANON_KEY",
      "SUPABASE_JWT_SECRET",
      "SUPABASE_SERVICE_ROLE_KEY",
@@ -63535,6 +63536,7 @@
     ],
     "env": [
      "RESEND_API_KEY",
+     "RESEND_FROM",
      "SLACK_WEBHOOK_URL",
      "SUPABASE_SERVICE_ROLE_KEY",
      "SUPABASE_URL"
@@ -63565,6 +63567,7 @@
     ],
     "env": [
      "RESEND_API_KEY",
+     "RESEND_FROM",
      "SUPABASE_SERVICE_ROLE_KEY",
      "SUPABASE_URL"
     ],
@@ -63690,6 +63693,7 @@
     ],
     "env": [
      "RESEND_API_KEY",
+     "RESEND_FROM",
      "SUPABASE_SERVICE_ROLE_KEY",
      "SUPABASE_URL"
     ],
@@ -63773,6 +63777,7 @@
     ],
     "env": [
      "RESEND_API_KEY",
+     "RESEND_FROM",
      "SUPABASE_ANON_KEY",
      "SUPABASE_SERVICE_ROLE_KEY",
      "SUPABASE_URL"
@@ -64221,6 +64226,7 @@
     "env": [
      "LOVABLE_API_KEY",
      "RESEND_API_KEY",
+     "RESEND_FROM",
      "SUPABASE_SERVICE_ROLE_KEY",
      "SUPABASE_URL"
     ],
@@ -64553,6 +64559,7 @@
     ],
     "env": [
      "RESEND_API_KEY",
+     "RESEND_FROM",
      "SLACK_WEBHOOK_URL",
      "SUPABASE_SERVICE_ROLE_KEY",
      "SUPABASE_URL"
@@ -64724,6 +64731,7 @@
     ],
     "env": [
      "RESEND_API_KEY",
+     "RESEND_FROM",
      "SUPABASE_SERVICE_ROLE_KEY",
      "SUPABASE_URL"
     ],
@@ -64951,6 +64959,7 @@
     ],
     "env": [
      "RESEND_API_KEY",
+     "RESEND_FROM",
      "SUPABASE_SERVICE_ROLE_KEY",
      "SUPABASE_URL"
     ],
@@ -65114,7 +65123,8 @@
      "user_roles"
     ],
     "env": [
-     "RESEND_API_KEY"
+     "RESEND_API_KEY",
+     "RESEND_FROM"
     ],
     "external": [
      "https://api.resend.com/emails"
@@ -71366,7 +71376,7 @@
   {
    "module": "supabase/functions",
    "files": 222,
-   "lines": 49791,
+   "lines": 49792,
    "tables": [
     "acoes_recomendadas",
     "alertas",
@@ -75571,8 +75581,18 @@
     "supabase/functions/send-device-alert/index.ts"
    ],
    "RESEND_FROM": [
+    "supabase/functions/convidar-contador/index.ts",
+    "supabase/functions/digest-silenciamentos-erro/index.ts",
+    "supabase/functions/enviar-alerta-email/index.ts",
     "supabase/functions/enviar-convite-organizacao/index.ts",
-    "supabase/functions/enviar-digest-conformidade/index.ts"
+    "supabase/functions/enviar-digest-conformidade/index.ts",
+    "supabase/functions/enviar-relatorios-tributarios-agendados/index.ts",
+    "supabase/functions/executar-fechamento-tributario/index.ts",
+    "supabase/functions/gerar-resumo-executivo-semanal/index.ts",
+    "supabase/functions/monitorar-erros-frontend/index.ts",
+    "supabase/functions/notify-saved-filter/index.ts",
+    "supabase/functions/relatorio-diario-anomalias/index.ts",
+    "supabase/functions/send-device-alert/index.ts"
    ],
    "SCHEMA_COMPARE_EXTERNAL_SERVICE_ROLE_KEY": [
     "supabase/functions/compare-schemas/index.ts"
@@ -229554,6 +229574,7 @@
     "CONTADOR_INVITE_SECRET",
     "LOVABLE_API_KEY",
     "RESEND_API_KEY",
+    "RESEND_FROM",
     "SUPABASE_ANON_KEY",
     "SUPABASE_JWT_SECRET",
     "SUPABASE_SERVICE_ROLE_KEY",
@@ -230223,6 +230244,7 @@
    ],
    "env": [
     "RESEND_API_KEY",
+    "RESEND_FROM",
     "SLACK_WEBHOOK_URL",
     "SUPABASE_SERVICE_ROLE_KEY",
     "SUPABASE_URL"
@@ -230286,6 +230308,7 @@
    ],
    "env": [
     "RESEND_API_KEY",
+    "RESEND_FROM",
     "SUPABASE_SERVICE_ROLE_KEY",
     "SUPABASE_URL"
    ],
@@ -230620,6 +230643,7 @@
    ],
    "env": [
     "RESEND_API_KEY",
+    "RESEND_FROM",
     "SUPABASE_SERVICE_ROLE_KEY",
     "SUPABASE_URL"
    ],
@@ -230790,7 +230814,7 @@
   },
   "supabase/functions/executar-fechamento-tributario/index.ts": {
    "path": "supabase/functions/executar-fechamento-tributario/index.ts",
-   "lines": 351,
+   "lines": 352,
    "tables": [
     {
      "table": "user_roles",
@@ -230846,6 +230870,7 @@
    ],
    "env": [
     "RESEND_API_KEY",
+    "RESEND_FROM",
     "SUPABASE_ANON_KEY",
     "SUPABASE_SERVICE_ROLE_KEY",
     "SUPABASE_URL"
@@ -232316,6 +232341,7 @@
    "env": [
     "LOVABLE_API_KEY",
     "RESEND_API_KEY",
+    "RESEND_FROM",
     "SUPABASE_SERVICE_ROLE_KEY",
     "SUPABASE_URL"
    ],
@@ -233473,6 +233499,7 @@
    ],
    "env": [
     "RESEND_API_KEY",
+    "RESEND_FROM",
     "SLACK_WEBHOOK_URL",
     "SUPABASE_SERVICE_ROLE_KEY",
     "SUPABASE_URL"
@@ -233733,6 +233760,7 @@
    ],
    "env": [
     "RESEND_API_KEY",
+    "RESEND_FROM",
     "SUPABASE_SERVICE_ROLE_KEY",
     "SUPABASE_URL"
    ],
@@ -234466,6 +234494,7 @@
    ],
    "env": [
     "RESEND_API_KEY",
+    "RESEND_FROM",
     "SUPABASE_SERVICE_ROLE_KEY",
     "SUPABASE_URL"
    ],
@@ -235301,7 +235330,8 @@
     "https://api.resend.com/emails"
    ],
    "env": [
-    "RESEND_API_KEY"
+    "RESEND_API_KEY",
+    "RESEND_FROM"
    ],
    "errors": [
     ");\n\nconst RESEND_API_KEY = Deno.env.get(",
@@ -241694,10 +241724,28 @@
   }
  },
  "git": {
-  "sha": "3efb5c7882668bc3df66f7fb83d7415f076154f7",
+  "sha": "f2bda64f670da2b41a2f9cee5ac0917d06f7ddf1",
   "branch": "main",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
   "commits": [
+   {
+    "sha": "f2bda64",
+    "date": "2026-11-12",
+    "author": "adm01-debug",
+    "subject": "fix: remetente de e-mail usa RESEND_FROM em vez de @resend.dev fixo (#311)",
+    "files": [
+     "supabase/functions/convidar-contador/index.ts",
+     "supabase/functions/digest-silenciamentos-erro/index.ts",
+     "supabase/functions/enviar-alerta-email/index.ts",
+     "supabase/functions/enviar-relatorios-tributarios-agendados/index.ts",
+     "supabase/functions/executar-fechamento-tributario/index.ts",
+     "supabase/functions/gerar-resumo-executivo-semanal/index.ts",
+     "supabase/functions/monitorar-erros-frontend/index.ts",
+     "supabase/functions/notify-saved-filter/index.ts",
+     "supabase/functions/relatorio-diario-anomalias/index.ts",
+     "supabase/functions/send-device-alert/index.ts"
+    ]
+   },
    {
     "sha": "3efb5c7",
     "date": "2026-11-12",
@@ -242288,23 +242336,6 @@
     "subject": "chore: atualiza prs.json — adiciona #283-#288, 48 PRs classificadas",
     "files": [
      "analise-prs/prs.json"
-    ]
-   },
-   {
-    "sha": "ea42a9b",
-    "date": "2026-11-09",
-    "author": "adm01-debug",
-    "subject": "feat(ci): documentos gerados do estado real do CI e das edge functions (#275)",
-    "files": [
-     ".github/workflows/estado-real.yml",
-     "docs/ci/MATRIZ_EDGE_TABELA.md",
-     "docs/ci/README.md",
-     "scripts/ci/actions-kpi.mjs",
-     "scripts/ci/actions-kpi.unit.mjs",
-     "scripts/ci/gerar-matriz-edge-tabela.mjs",
-     "scripts/ci/gerar-matriz-edge-tabela.unit.mjs",
-     "scripts/ci/render-workflow-docs.mjs",
-     "scripts/ci/render-workflow-docs.unit.mjs"
     ]
    }
   ],

@@ -1103,6 +1103,7 @@
     "CONTADOR_INVITE_SECRET",
     "LOVABLE_API_KEY",
     "RESEND_API_KEY",
+    "RESEND_FROM",
     "SUPABASE_ANON_KEY",
     "SUPABASE_JWT_SECRET",
     "SUPABASE_SERVICE_ROLE_KEY",
@@ -1363,6 +1364,7 @@
    ],
    "env": [
     "RESEND_API_KEY",
+    "RESEND_FROM",
     "SLACK_WEBHOOK_URL",
     "SUPABASE_SERVICE_ROLE_KEY",
     "SUPABASE_URL"
@@ -1402,6 +1404,7 @@
    "rpcs": [],
    "env": [
     "RESEND_API_KEY",
+    "RESEND_FROM",
     "SUPABASE_SERVICE_ROLE_KEY",
     "SUPABASE_URL"
    ],
@@ -1574,6 +1577,7 @@
    "rpcs": [],
    "env": [
     "RESEND_API_KEY",
+    "RESEND_FROM",
     "SUPABASE_SERVICE_ROLE_KEY",
     "SUPABASE_URL"
    ],
@@ -1652,7 +1656,7 @@
    "nome": "executar-fechamento-tributario",
    "entrada": "supabase/functions/executar-fechamento-tributario/index.ts",
    "arquivos": 1,
-   "linhas": 350,
+   "linhas": 351,
    "verify_jwt": true,
    "metodos": [
     "OPTIONS"
@@ -1670,6 +1674,7 @@
    "rpcs": [],
    "env": [
     "RESEND_API_KEY",
+    "RESEND_FROM",
     "SUPABASE_ANON_KEY",
     "SUPABASE_SERVICE_ROLE_KEY",
     "SUPABASE_URL"
@@ -2291,6 +2296,7 @@
    "env": [
     "LOVABLE_API_KEY",
     "RESEND_API_KEY",
+    "RESEND_FROM",
     "SUPABASE_SERVICE_ROLE_KEY",
     "SUPABASE_URL"
    ],
@@ -2736,6 +2742,7 @@
    ],
    "env": [
     "RESEND_API_KEY",
+    "RESEND_FROM",
     "SLACK_WEBHOOK_URL",
     "SUPABASE_SERVICE_ROLE_KEY",
     "SUPABASE_URL"
@@ -2964,6 +2971,7 @@
    "rpcs": [],
    "env": [
     "RESEND_API_KEY",
+    "RESEND_FROM",
     "SUPABASE_SERVICE_ROLE_KEY",
     "SUPABASE_URL"
    ],
@@ -3291,6 +3299,7 @@
    "rpcs": [],
    "env": [
     "RESEND_API_KEY",
+    "RESEND_FROM",
     "SUPABASE_SERVICE_ROLE_KEY",
     "SUPABASE_URL"
    ],
@@ -3501,7 +3510,8 @@
    "tabelas": [],
    "rpcs": [],
    "env": [
-    "RESEND_API_KEY"
+    "RESEND_API_KEY",
+    "RESEND_FROM"
    ],
    "buckets": [],
    "chama_edges": [],

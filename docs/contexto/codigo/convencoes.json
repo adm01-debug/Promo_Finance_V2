@@ -58,11 +58,11 @@
  "commits": {
   "convencao": "conventional commits (observado)",
   "exemplos": [
+   "fix: remetente de e-mail usa RESEND_FROM em vez de @resend.dev fixo (#311)",
    "chore(ci): bump codeql-action v4.39.3 nos 3 steps (unifica codeql.yml)",
    "fix: destrava busca automática de DF-e na SEFAZ (dispatcher → puxar) (#306)",
    "fix: validação de partidas dobradas passa a valer (minúsculo + adiada para o commit) (#314)",
-   "chore(deps): bump the radix-ui group across 1 directory with 20 updates (#208)",
-   "fix: cron webhook-retry-worker para de enviar chave trigger recusada (422) (#313)"
+   "chore(deps): bump the radix-ui group across 1 directory with 20 updates (#208)"
   ]
  },
  "pr_template": ".github/PULL_REQUEST_TEMPLATE.md",
