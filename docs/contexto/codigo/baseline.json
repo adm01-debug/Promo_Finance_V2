@@ -2,11 +2,16 @@
  "aviso": "GERADO AUTOMATICAMENTE por scripts/ai-context/gerar.mjs — não editar à mão; será sobrescrito.",
  "format_version": 2,
  "git": {
-  "commit": "252bc6669fa1883bd52df87fc34d6d387b616489",
+  "commit": "a516e9a6eb9017444c65496acc55cd87736f3253",
   "branch": "main",
-  "data_commit": "2026-11-11T23:34:21Z",
+  "data_commit": "2026-11-11T22:59:30-03:00",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
   "ultimos_commits": [
+   {
+    "sha": "a516e9a",
+    "data": "2026-11-11",
+    "assunto": "infra: E2E rodam em ubuntu-24.04 (Playwright não suporta ubuntu-26.04) (#315)"
+   },
    {
     "sha": "252bc66",
     "data": "2026-11-11",
@@ -126,11 +131,6 @@
     "sha": "94bb4af",
     "data": "2026-11-09",
     "assunto": "chore: relatorio final sessao merge-prs (total 46, 16 mergeadas, #287 sentry bump) (#288)"
-   },
-   {
-    "sha": "e8620bd",
-    "data": "2026-11-09",
-    "assunto": "chore: bump @sentry/react 11.0.0 → 11.9.0 (supersede #210) (#287)"
    }
   ],
   "arquivos_mudados_7d": 481,
@@ -149,7 +149,7 @@
    },
    {
     "pasta": ".github/workflows/ci.yml",
-    "mudancas": 11
+    "mudancas": 12
    },
    {
     "pasta": "PENDENCIAS.md",
@@ -207,7 +207,7 @@
    },
    {
     "arquivo": ".github/workflows/ci.yml",
-    "mudancas": 23
+    "mudancas": 24
    },
    {
     "arquivo": "supabase/config.toml",
@@ -301,7 +301,7 @@
   "autores_30d": [
    {
     "autor": "adm01-debug",
-    "commits": 74
+    "commits": 75
    },
    {
     "autor": "devin-ai-integration[bot]",

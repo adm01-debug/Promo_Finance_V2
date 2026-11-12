@@ -1,9 +1,9 @@
 {
  "meta": {
-  "sha": "252bc6669fa1883bd52df87fc34d6d387b616489",
+  "sha": "a516e9a6eb9017444c65496acc55cd87736f3253",
   "branch": "main",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
-  "generated_at": "2026-11-12 01:29 UTC",
+  "generated_at": "2026-11-12 02:29 UTC",
   "files_total": 3651,
   "code_files": 3286,
   "code_lines": 491200
@@ -241670,10 +241670,19 @@
   }
  },
  "git": {
-  "sha": "252bc6669fa1883bd52df87fc34d6d387b616489",
+  "sha": "a516e9a6eb9017444c65496acc55cd87736f3253",
   "branch": "main",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
   "commits": [
+   {
+    "sha": "a516e9a",
+    "date": "2026-11-11",
+    "author": "adm01-debug",
+    "subject": "infra: E2E rodam em ubuntu-24.04 (Playwright não suporta ubuntu-26.04) (#315)",
+    "files": [
+     ".github/workflows/ci.yml"
+    ]
+   },
    {
     "sha": "252bc66",
     "date": "2026-11-11",
@@ -242280,36 +242289,11 @@
     "files": [
      "analise-prs/progresso.json"
     ]
-   },
-   {
-    "sha": "900925a",
-    "date": "2026-11-09",
-    "author": "adm01-debug",
-    "subject": "chore: estado final sessao merge-prs — prs.json + progresso + dossies",
-    "files": [
-     "analise-prs/dossiers/pr-131-conflito-escopo.md",
-     "analise-prs/dossiers/pr-175-recharts-bun-lock.md",
-     "analise-prs/dossiers/pr-208-210-216-bun-lock.md",
-     "analise-prs/dossiers/pr274.md",
-     "analise-prs/dossiers/pr275.md",
-     "analise-prs/dossiers/pr276.md",
-     "analise-prs/dossiers/pr277.md",
-     "analise-prs/dossiers/pr279.md",
-     "analise-prs/dossiers/pr280.md",
-     "analise-prs/dossiers/pr281.md",
-     "analise-prs/dossiers/pr282.md",
-     "analise-prs/progresso.json",
-     "analise-prs/prs.json"
-    ]
    }
   ],
   "hot_files": [
    [
     "package.json",
-    6
-   ],
-   [
-    "analise-prs/progresso.json",
     6
    ],
    [
@@ -242321,8 +242305,16 @@
     5
    ],
    [
+    "analise-prs/progresso.json",
+    5
+   ],
+   [
     "scripts/automation.config.json",
     4
+   ],
+   [
+    ".github/workflows/ci.yml",
+    3
    ],
    [
     "scripts/automation.mjs",
@@ -242343,14 +242335,6 @@
    [
     ".gitignore",
     3
-   ],
-   [
-    "analise-prs/prs.json",
-    3
-   ],
-   [
-    ".github/workflows/ci.yml",
-    2
    ],
    [
     ".github/workflows/prod-migrate.yml",
@@ -242382,6 +242366,10 @@
    ],
    [
     "scripts/inventario/README.md",
+    2
+   ],
+   [
+    "scripts/inventario/banco.sql",
     2
    ]
   ]
