@@ -2,6 +2,10 @@
 
 Diff semântico gerado a cada coleta em que algo mudou.
 
+## 2026-11-12 07:35 UTC
+
+- **edge functions** alterado (2): `digest-silenciamentos-erro`, `enviar-relatorios-tributarios-agendados`
+
 ## 2026-11-12 07:26 UTC
 
 - **edge functions** alterado (3): `convidar-contador`, `executar-fechamento-tributario`, `notify-saved-filter`

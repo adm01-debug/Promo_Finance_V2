@@ -68,9 +68,9 @@
 
 | início (UTC) | status | duração (s) | mensagem |
 |---|---|---|---|
+| 2026-11-12 07:30:00 | succeeded | 0.36 | 1 row |
 | 2026-11-12 07:00:00 | succeeded | 0.92 | 1 row |
 | 2026-11-12 06:30:00 | succeeded | 0.17 | 1 row |
-| 2026-11-12 06:00:01 | succeeded | 1.28 | 1 row |
 
 
 ## 12 · integrity-invariants-hourly
@@ -193,18 +193,18 @@ _nenhum_
 
 | início (UTC) | status | duração (s) | mensagem |
 |---|---|---|---|
+| 2026-11-12 07:30:00 | succeeded | 0.10 | 1 row |
 | 2026-11-12 07:15:00 | succeeded | 0.03 | 1 row |
 | 2026-11-12 07:00:00 | succeeded | 0.12 | 1 row |
-| 2026-11-12 06:45:00 | succeeded | 0.04 | 1 row |
 
 
 ## 33 · webhook-retry-worker-1min
 
 | início (UTC) | status | duração (s) | mensagem |
 |---|---|---|---|
-| 2026-11-12 07:26:00 | succeeded | 0.05 | 1 row |
-| 2026-11-12 07:25:00 | succeeded | 0.02 | 1 row |
-| 2026-11-12 07:24:00 | succeeded | 0.03 | 1 row |
+| 2026-11-12 07:35:00 | succeeded | 0.03 | 1 row |
+| 2026-11-12 07:34:00 | succeeded | 0.02 | 1 row |
+| 2026-11-12 07:33:00 | succeeded | 0.04 | 1 row |
 
 
 ## 34 · auditar-acessos-cross-tenant
@@ -229,9 +229,9 @@ _nenhum_
 
 | início (UTC) | status | duração (s) | mensagem |
 |---|---|---|---|
+| 2026-11-12 07:30:00 | succeeded | 0.09 | 1 row |
 | 2026-11-12 07:00:00 | succeeded | 0.15 | 1 row |
 | 2026-11-12 06:30:00 | succeeded | 0.03 | 1 row |
-| 2026-11-12 06:00:01 | succeeded | 0.16 | 1 row |
 
 
 ## 40 · gerar-snapshots-conformidade-mensal
@@ -250,6 +250,6 @@ _nenhum_
 
 | início (UTC) | status | duração (s) | mensagem |
 |---|---|---|---|
+| 2026-11-12 07:30:00 | failed | 0.02 | ERROR:  Secret "anon_key" ausente no Vault. Crie-o em Project Settings > Vault com a anon key de bwwbeyolnnzppeuhgkcd. CONTEXT:  PL/pgSQL function chave_anon_vault() line 11 at RAISE SQL statement "SELECT net.http_post(     url := 'https://bwwbeyolnnzppeuhgkcd.supabase.co/functions/v1/enviar-digest- |
 | 2026-11-12 06:30:00 | failed | 0.02 | ERROR:  Secret "anon_key" ausente no Vault. Crie-o em Project Settings > Vault com a anon key de bwwbeyolnnzppeuhgkcd. CONTEXT:  PL/pgSQL function chave_anon_vault() line 11 at RAISE SQL statement "SELECT net.http_post(     url := 'https://bwwbeyolnnzppeuhgkcd.supabase.co/functions/v1/enviar-digest- |
 | 2026-11-12 05:30:00 | failed | 0.09 | ERROR:  Secret "anon_key" ausente no Vault. Crie-o em Project Settings > Vault com a anon key de bwwbeyolnnzppeuhgkcd. CONTEXT:  PL/pgSQL function chave_anon_vault() line 11 at RAISE SQL statement "SELECT net.http_post(     url := 'https://bwwbeyolnnzppeuhgkcd.supabase.co/functions/v1/enviar-digest- |
-| 2026-11-12 04:30:00 | failed | 0.02 | ERROR:  Secret "anon_key" ausente no Vault. Crie-o em Project Settings > Vault com a anon key de bwwbeyolnnzppeuhgkcd. CONTEXT:  PL/pgSQL function chave_anon_vault() line 11 at RAISE SQL statement "SELECT net.http_post(     url := 'https://bwwbeyolnnzppeuhgkcd.supabase.co/functions/v1/enviar-digest- |

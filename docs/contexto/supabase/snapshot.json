@@ -668,15 +668,15 @@
       },
       {
         "created_at": 1787655368587,
-        "entrypoint_path": "file:///home/joaquim_ataides/hermes-workspaces/chat-c696391/supabase/functions/digest-silenciamentos-erro/index.ts",
+        "entrypoint_path": "file:///home/runner/work/Promo_Finance_V2/Promo_Finance_V2/supabase/functions/digest-silenciamentos-erro/index.ts",
         "import_map": false,
         "import_map_path": null,
         "name": "digest-silenciamentos-erro",
         "slug": "digest-silenciamentos-erro",
         "status": "ACTIVE",
-        "updated_at": 1787697111184,
+        "updated_at": 1794468844945,
         "verify_jwt": false,
-        "version": 18
+        "version": 19
       },
       {
         "created_at": 1787655368587,
@@ -728,15 +728,15 @@
       },
       {
         "created_at": 1787655368587,
-        "entrypoint_path": "file:///tmp/user_fn_bwwbeyolnnzppeuhgkcd_b308dda6-672d-471a-8236-f3cb088b5f0b_1/source/supabase/functions/enviar-relatorios-tributarios-agendados/index.ts",
+        "entrypoint_path": "file:///home/runner/work/Promo_Finance_V2/Promo_Finance_V2/supabase/functions/enviar-relatorios-tributarios-agendados/index.ts",
         "import_map": false,
         "import_map_path": null,
         "name": "enviar-relatorios-tributarios-agendados",
         "slug": "enviar-relatorios-tributarios-agendados",
         "status": "ACTIVE",
-        "updated_at": 1787655368587,
+        "updated_at": 1794468600644,
         "verify_jwt": true,
-        "version": 16
+        "version": 17
       },
       {
         "created_at": 1787655368587,
