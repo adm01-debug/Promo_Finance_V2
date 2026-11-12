@@ -184,7 +184,7 @@ Deno.serve(
               'X-Connection-Api-Key': RESEND_API_KEY,
             },
             body: JSON.stringify({
-              from: 'PromoFinance <onboarding@resend.dev>',
+              from: Deno.env.get('RESEND_FROM') ?? 'PromoFinance <onboarding@resend.dev>',
               to: [email],
               subject: 'Seu acesso ao painel tributário',
               html,

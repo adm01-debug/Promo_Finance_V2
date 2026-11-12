@@ -223,7 +223,7 @@ Deno.serve(
                 'Content-Type': 'application/json',
               },
               body: JSON.stringify({
-                from: 'Monitoramento <onboarding@resend.dev>',
+                from: Deno.env.get('RESEND_FROM') ?? 'Monitoramento <onboarding@resend.dev>',
                 to: destinatarios,
                 subject: `🔕 ${itens.length} silenciamento(s) de alerta vencendo`,
                 html: montarHtml(itens, janelaHoras),
