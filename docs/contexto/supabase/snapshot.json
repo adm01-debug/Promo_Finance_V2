@@ -69040,9 +69040,13 @@
             {
               "file": "supabase/migrations/20261112023645_contabilizacao_regras_entrada_saida.sql",
               "hits": 2
+            },
+            {
+              "file": "supabase/migrations/20261112024013_contabilizacao_conta_da_categoria.sql",
+              "hits": 1
             }
           ],
-          "code_total_files": 1,
+          "code_total_files": 2,
           "cron": [],
           "db": [
             "public.contabilizar_movimentacao"

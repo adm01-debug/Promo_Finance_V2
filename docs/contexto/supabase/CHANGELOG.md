@@ -2,6 +2,10 @@
 
 Diff semântico gerado a cada coleta em que algo mudou.
 
+## 2026-11-12 10:48 UTC
+
+- **functions** alterado (1): `public.contabilizar_movimentacao_registro(m movimentacoes)`
+
 ## 2026-11-12 10:04 UTC
 
 - **config: auth_config** alterado (1): `auth_config`
