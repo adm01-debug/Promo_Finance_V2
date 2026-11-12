@@ -55632,7 +55632,7 @@
           "status"
         ],
         "deferrable": false,
-        "definition": "CHECK (status::text = ANY (ARRAY['pendente'::character varying::text, 'pago'::character varying::text, 'atrasado'::character varying::text, 'cancelado'::character varying::text]))",
+        "definition": "CHECK (status::text = ANY (ARRAY['pendente'::text, 'pago'::text, 'atrasado'::text, 'cancelado'::text, 'parcial'::text]))",
         "name": "contas_pagar_status_check",
         "on_delete": null,
         "on_update": null,
@@ -69044,7 +69044,7 @@
           "search_path=public, extensions, pg_temp"
         ],
         "definition": null,
-        "definition_sha": "8664ba38f74acd73",
+        "definition_sha": "aa1b9f3414076293",
         "execute_api_roles": "service_role",
         "execute_public": false,
         "is_trigger_fn": false,
@@ -82580,6 +82580,21 @@
         "predicate": null,
         "schema": "public",
         "table": "catalogos_tributarios_health_history"
+      },
+      {
+        "columns": [
+          "empresa_id",
+          "tipo"
+        ],
+        "definition": "CREATE UNIQUE INDEX categorias_empresa_tipo_nome_uq ON public.categorias USING btree (empresa_id, tipo, lower(btrim(nome)))",
+        "is_primary": false,
+        "is_unique": true,
+        "is_valid": true,
+        "method": "btree",
+        "name": "categorias_empresa_tipo_nome_uq",
+        "predicate": null,
+        "schema": "public",
+        "table": "categorias"
       },
       {
         "columns": [

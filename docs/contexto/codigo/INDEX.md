@@ -1,7 +1,7 @@
 # Contexto do projeto para agentes de IA
 
 GERADO AUTOMATICAMENTE por scripts/ai-context/gerar.mjs — não editar à mão; será sobrescrito.
-Publicado pelo workflow .github/workflows/contexto.yml em docs/contexto/codigo/ da branch gerada `contexto`. Índice único em docs/contexto/00-INDEX.md. Ler: git fetch origin contexto && git show origin/contexto:docs/contexto/00-INDEX.md Gere local com `node scripts/ai-context/gerar.mjs`. Commit-base: `a516e9a6eb9017444c65496acc55cd87736f3253` (2026-11-11T22:59:30-03:00).
+Publicado pelo workflow .github/workflows/contexto.yml em docs/contexto/codigo/ da branch gerada `contexto`. Índice único em docs/contexto/00-INDEX.md. Ler: git fetch origin contexto && git show origin/contexto:docs/contexto/00-INDEX.md Gere local com `node scripts/ai-context/gerar.mjs`. Commit-base: `8eec022d3d3d15ab32183686b896f25bae8bbfd6` (2026-11-11T23:30:49-03:00).
 
 ## Como usar (leia antes de planejar ou executar qualquer tarefa)
 1. **Tela/rota/menu** → `rotas.json` (url/vista/menu → arquivo → hooks → tabelas → edges; `rotas_http_backend` para APIs) e `modulos.json` (módulo inteiro + dependências entre módulos).
@@ -36,7 +36,7 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 |---|---|
 | arquivos_total | 3609 |
 | arquivos_codigo | 2216 |
-| linhas_codigo | 428761 |
+| linhas_codigo | 428766 |
 | rotas | 128 |
 | rotas_http_backend | 25 |
 | vistas_por_id | 0 |
@@ -619,6 +619,7 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 - CHANGELOG topo: [Unreleased]
 
 ## Últimos commits
+- 2026-11-11 `8eec022` fix: sanitiza parâmetro search no filtro .or() da external-data (#308)
 - 2026-11-11 `a516e9a` infra: E2E rodam em ubuntu-24.04 (Playwright não suporta ubuntu-26.04) (#315)
 - 2026-11-11 `252bc66` fix: bump msw from 2.12.7 to 3.0.4 (#297)
 - 2026-11-11 `5215111` chore(deps): bump actions/checkout from 5.1.0 to 7.0.1 (#206)
@@ -633,7 +634,6 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 - 2026-11-10 `4a01788` feat(ci): fila serial de atualização de branch das PRs contra main (#276)
 - 2026-11-10 `ab802d4` fix: alinha admin_global com papel real admin (docs + guard asaas-proxy) (#255)
 - 2026-11-10 `bec7163` feat(ci): guard do perímetro do GitHub contra baseline versionado (#277)
-- 2026-11-10 `3e0b415` fix(automacao): aplica findings do Codex no #300 (#301)
 
 ## Arquivos deste diretório
 - `docs/contexto/codigo/rotas.json`

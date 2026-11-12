@@ -2,7 +2,7 @@
   "carried": [],
   "entrada": "README.md",
   "erros": [],
-  "gerado_em": "2026-11-12T02:40:24Z",
+  "gerado_em": "2026-11-12T03:21:05Z",
   "gerador": "scripts/supabase_snapshot/snapshot.py",
   "produtor": "supabase-snapshot"
 }

@@ -1863,7 +1863,7 @@
    "nome": "external-data",
    "entrada": "supabase/functions/external-data/index.ts",
    "arquivos": 2,
-   "linhas": 459,
+   "linhas": 464,
    "verify_jwt": false,
    "metodos": [
     "OPTIONS"

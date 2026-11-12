@@ -50,6 +50,7 @@
 
 | nome | método | colunas | único | válido | predicado | definição |
 |---|---|---|---|---|---|---|
+| categorias_empresa_tipo_nome_uq | btree | empresa_id, tipo | sim | sim |  | `CREATE UNIQUE INDEX categorias_empresa_tipo_nome_uq ON public.categorias USING btree (empresa_id, tipo, lower(btrim(nome)))` |
 | categorias_pkey | btree | id | sim | sim |  | `CREATE UNIQUE INDEX categorias_pkey ON public.categorias USING btree (id)` |
 | idx_categorias_empresa | btree | empresa_id | não | sim |  | `CREATE INDEX idx_categorias_empresa ON public.categorias USING btree (empresa_id)` |
 

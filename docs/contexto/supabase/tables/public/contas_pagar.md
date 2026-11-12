@@ -65,7 +65,7 @@
 | contas_pagar_empresa_id_fkey | FOREIGN KEY | `FOREIGN KEY (empresa_id) REFERENCES empresas(id) ON DELETE CASCADE` | CASCADE | NO ACTION | sim |
 | contas_pagar_fornecedor_id_fkey | FOREIGN KEY | `FOREIGN KEY (fornecedor_id) REFERENCES fornecedores(id) ON DELETE SET NULL` | SET NULL | NO ACTION | sim |
 | contas_pagar_pkey | PRIMARY KEY | `PRIMARY KEY (id)` |  |  | sim |
-| contas_pagar_status_check | CHECK | `CHECK (status::text = ANY (ARRAY['pendente'::character varying::text, 'pago'::character varying::text, 'atrasado'::character varying::text, 'cancelado'::character varying::text]))` |  |  | sim |
+| contas_pagar_status_check | CHECK | `CHECK (status::text = ANY (ARRAY['pendente'::text, 'pago'::text, 'atrasado'::text, 'cancelado'::text, 'parcial'::text]))` |  |  | sim |
 | contas_pagar_user_id_fkey | FOREIGN KEY | `FOREIGN KEY (user_id) REFERENCES auth.users(id) ON DELETE CASCADE` | CASCADE | NO ACTION | sim |
 | contas_pagar_valor_check | CHECK | `CHECK (valor >= 0::numeric)` |  |  | sim |
 

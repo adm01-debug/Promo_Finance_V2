@@ -58,11 +58,11 @@
  "commits": {
   "convencao": "conventional commits (observado)",
   "exemplos": [
+   "fix: sanitiza parâmetro search no filtro .or() da external-data (#308)",
    "infra: E2E rodam em ubuntu-24.04 (Playwright não suporta ubuntu-26.04) (#315)",
    "fix: bump msw from 2.12.7 to 3.0.4 (#297)",
    "chore(deps): bump actions/checkout from 5.1.0 to 7.0.1 (#206)",
-   "fix: 9 edge functions ganham bloco verify_jwt no config.toml (deploy em lote abortava com exit 6) (#305)",
-   "fix: endurecimento dos scripts de automação, guard de perímetro, inventário e manutenção (#304)"
+   "fix: 9 edge functions ganham bloco verify_jwt no config.toml (deploy em lote abortava com exit 6) (#305)"
   ]
  },
  "pr_template": ".github/PULL_REQUEST_TEMPLATE.md",

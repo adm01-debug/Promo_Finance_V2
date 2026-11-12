@@ -2,6 +2,12 @@
 
 Diff semântico gerado a cada coleta em que algo mudou.
 
+## 2026-11-12 03:21 UTC
+
+- **constraints** alterado (1): `public.contas_pagar.contas_pagar_status_check`
+- **functions** alterado (1): `public.contabilizar_movimentacao_registro(m movimentacoes)`
+- **indexes** adicionado (1): `public.categorias_empresa_tipo_nome_uq`
+
 ## 2026-11-12 02:40 UTC
 
 - **functions** adicionado (3): `public.contabilizar_movimentacao()`, `public.contabilizar_movimentacao_registro(m movimentacoes)`, `public.sincronizar_conta_partida()`

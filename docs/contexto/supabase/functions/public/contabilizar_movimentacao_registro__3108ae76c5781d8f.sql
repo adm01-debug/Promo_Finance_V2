@@ -9,6 +9,9 @@ DECLARE
   v_regra public.regras_contabilizacao_automatica%ROWTYPE;
   v_lanc uuid;
   v_hist text;
+  v_conta_cat uuid;
+  v_deb uuid;
+  v_cred uuid;
 BEGIN
   IF m.deleted_at IS NOT NULL OR m.transferencia_id IS NOT NULL
      OR m.origem = 'transferencia' OR m.empresa_id IS NULL
@@ -48,6 +51,19 @@ BEGIN
       RETURN 'sem_regra';
     END IF;
 
+    -- Regra genérica + categoria com conta contábil: o lado de resultado usa a
+    -- conta da categoria (saída -> débito; entrada -> crédito).
+    v_deb := v_regra.conta_debito_id;
+    v_cred := v_regra.conta_credito_id;
+    IF v_regra.categoria_id IS NULL AND v_categoria IS NOT NULL THEN
+      SELECT plano_conta_id INTO v_conta_cat FROM public.categorias WHERE id = v_categoria;
+      IF v_conta_cat IS NOT NULL THEN
+        IF m.tipo = 'saida' THEN v_deb := v_conta_cat;
+        ELSIF m.tipo = 'entrada' THEN v_cred := v_conta_cat;
+        END IF;
+      END IF;
+    END IF;
+
     v_hist := replace(replace(replace(v_regra.historico_template,
                 '{descricao}', COALESCE(m.descricao, '')),
                 '{valor}', to_char(m.valor, 'FM999999999990.00')),
@@ -62,8 +78,8 @@ BEGIN
     INSERT INTO public.partidas_contabeis
       (lancamento_id, empresa_id, conta_contabil_id, tipo, valor, historico_complementar, ordem)
     VALUES
-      (v_lanc, m.empresa_id, v_regra.conta_debito_id,  'debito',  m.valor, v_hist, 1),
-      (v_lanc, m.empresa_id, v_regra.conta_credito_id, 'credito', m.valor, v_hist, 2);
+      (v_lanc, m.empresa_id, v_deb,  'debito',  m.valor, v_hist, 1),
+      (v_lanc, m.empresa_id, v_cred, 'credito', m.valor, v_hist, 2);
 
     INSERT INTO public.eventos_contabilizacao_log
       (empresa_id, tipo_evento, evento, evento_id, regra_id, lancamento_id, status)

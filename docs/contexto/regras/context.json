@@ -1,15 +1,15 @@
 {
  "meta": {
-  "sha": "a516e9a6eb9017444c65496acc55cd87736f3253",
+  "sha": "8eec022d3d3d15ab32183686b896f25bae8bbfd6",
   "branch": "main",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
-  "generated_at": "2026-11-12 02:29 UTC",
+  "generated_at": "2026-11-12 03:20 UTC",
   "files_total": 3651,
   "code_files": 3286,
-  "code_lines": 491200
+  "code_lines": 491205
  },
  "version": "1.3.2",
- "facts_hash": "da264542cce7acb0",
+ "facts_hash": "b21a285a002025ca",
  "stack": {
   "frameworks": [
    "React + Vite",
@@ -71367,7 +71367,7 @@
   {
    "module": "supabase/functions",
    "files": 222,
-   "lines": 49744,
+   "lines": 49749,
    "tables": [
     "acoes_recomendadas",
     "alertas",
@@ -231373,7 +231373,7 @@
   },
   "supabase/functions/external-data/index.ts": {
    "path": "supabase/functions/external-data/index.ts",
-   "lines": 393,
+   "lines": 398,
    "tables": [
     {
      "table": "query_telemetry",
@@ -241670,10 +241670,19 @@
   }
  },
  "git": {
-  "sha": "a516e9a6eb9017444c65496acc55cd87736f3253",
+  "sha": "8eec022d3d3d15ab32183686b896f25bae8bbfd6",
   "branch": "main",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
   "commits": [
+   {
+    "sha": "8eec022",
+    "date": "2026-11-11",
+    "author": "adm01-debug",
+    "subject": "fix: sanitiza parâmetro search no filtro .or() da external-data (#308)",
+    "files": [
+     "supabase/functions/external-data/index.ts"
+    ]
+   },
    {
     "sha": "a516e9a",
     "date": "2026-11-11",
@@ -242280,15 +242289,6 @@
      "analise-prs/RELATORIO_PRS.md",
      "analise-prs/progresso.json"
     ]
-   },
-   {
-    "sha": "b0c226b",
-    "date": "2026-11-09",
-    "author": "adm01-debug",
-    "subject": "fix: corrigir classificação #175/#208/#210/#216 em progresso.json",
-    "files": [
-     "analise-prs/progresso.json"
-    ]
    }
   ],
   "hot_files": [
@@ -242305,11 +242305,11 @@
     5
    ],
    [
-    "analise-prs/progresso.json",
-    5
+    "scripts/automation.config.json",
+    4
    ],
    [
-    "scripts/automation.config.json",
+    "analise-prs/progresso.json",
     4
    ],
    [

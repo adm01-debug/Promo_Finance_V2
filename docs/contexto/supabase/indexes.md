@@ -109,6 +109,7 @@ Uso e tamanho em `stats.md`.
 | public.catalogos_fiscais_cargas | catalogos_fiscais_cargas_pkey | btree | id | sim | sim |  |
 | public.catalogos_tributarios_health_history | catalogos_health_history_dia_key | btree | dia | sim | sim |  |
 | public.catalogos_tributarios_health_history | catalogos_tributarios_health_history_pkey | btree | id | sim | sim |  |
+| public.categorias | categorias_empresa_tipo_nome_uq | btree | empresa_id, tipo | sim | sim |  |
 | public.categorias | categorias_pkey | btree | id | sim | sim |  |
 | public.categorias | idx_categorias_empresa | btree | empresa_id | não | sim |  |
 | public.centros_custo | centros_custo_pkey | btree | id | sim | sim |  |
