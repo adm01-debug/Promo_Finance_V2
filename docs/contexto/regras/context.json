@@ -1,15 +1,15 @@
 {
  "meta": {
-  "sha": "8eec022d3d3d15ab32183686b896f25bae8bbfd6",
+  "sha": "ea47e0c858ddafbc7b7028645b4b72969f4a4293",
   "branch": "main",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
-  "generated_at": "2026-11-12 03:20 UTC",
-  "files_total": 3651,
-  "code_files": 3286,
-  "code_lines": 491205
+  "generated_at": "2026-11-12 03:35 UTC",
+  "files_total": 3652,
+  "code_files": 3287,
+  "code_lines": 491228
  },
  "version": "1.3.2",
- "facts_hash": "b21a285a002025ca",
+ "facts_hash": "dcd07cd8f1210091",
  "stack": {
   "frameworks": [
    "React + Vite",
@@ -332,7 +332,7 @@
   "package_manager": "bun",
   "languages": {
    ".ts": 1112,
-   ".sql": 1069,
+   ".sql": 1070,
    ".tsx": 993,
    ".mjs": 60,
    ".py": 45,
@@ -51790,6 +51790,7 @@
    "supabase/migrations/20261101140000_drop_idle_indexes.sql",
    "supabase/migrations/20261101200000_monitor_health_cron.sql",
    "supabase/migrations/20261102000000_registrar_grupo_b_rls_cross_tenant.sql",
+   "supabase/migrations/20261111233323_cron_webhook_retry_sem_trigger.sql",
    "supabase/tests/sql/catalogos_tributarios.test.sql",
    "supabase/tests/sql/infra.test.sql",
    "supabase/tests/sql/integrity_cycle.test.sql",
@@ -71628,8 +71629,8 @@
   },
   {
    "module": "supabase/migrations",
-   "files": 999,
-   "lines": 75683,
+   "files": 1000,
+   "lines": 75706,
    "tables": [],
    "exports": [],
    "docs": [],
@@ -241562,6 +241563,10 @@
     "asaas"
    ]
   },
+  "supabase/migrations/20261111233323_cron_webhook_retry_sem_trigger.sql": {
+   "path": "supabase/migrations/20261111233323_cron_webhook_retry_sem_trigger.sql",
+   "lines": 23
+  },
   "supabase/tests/test_harness.js": {
    "path": "supabase/tests/test_harness.js",
    "lines": 454,
@@ -241670,10 +241675,19 @@
   }
  },
  "git": {
-  "sha": "8eec022d3d3d15ab32183686b896f25bae8bbfd6",
+  "sha": "ea47e0c858ddafbc7b7028645b4b72969f4a4293",
   "branch": "main",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
   "commits": [
+   {
+    "sha": "ea47e0c",
+    "date": "2026-11-12",
+    "author": "adm01-debug",
+    "subject": "fix: cron webhook-retry-worker para de enviar chave trigger recusada (422) (#313)",
+    "files": [
+     "supabase/migrations/20261111233323_cron_webhook_retry_sem_trigger.sql"
+    ]
+   },
    {
     "sha": "8eec022",
     "date": "2026-11-11",
@@ -242279,16 +242293,6 @@
      "analise-prs/dossiers/pr284.md",
      "analise-prs/progresso.json"
     ]
-   },
-   {
-    "sha": "68fa502",
-    "date": "2026-11-09",
-    "author": "adm01-debug",
-    "subject": "chore: documentação analise-prs v2 + progresso.json corrigido (#284)",
-    "files": [
-     "analise-prs/RELATORIO_PRS.md",
-     "analise-prs/progresso.json"
-    ]
    }
   ],
   "hot_files": [
@@ -242301,15 +242305,11 @@
     5
    ],
    [
-    "analise-prs/RELATORIO_PRS.md",
-    5
-   ],
-   [
     "scripts/automation.config.json",
     4
    ],
    [
-    "analise-prs/progresso.json",
+    "analise-prs/RELATORIO_PRS.md",
     4
    ],
    [
@@ -242334,6 +242334,10 @@
    ],
    [
     ".gitignore",
+    3
+   ],
+   [
+    "analise-prs/progresso.json",
     3
    ],
    [
