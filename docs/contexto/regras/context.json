@@ -1,9 +1,9 @@
 {
  "meta": {
-  "sha": "cc0b762b780ee47e0d7243388a965cc195048de5",
+  "sha": "3efb5c7882668bc3df66f7fb83d7415f076154f7",
   "branch": "main",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
-  "generated_at": "2026-11-12 05:47 UTC",
+  "generated_at": "2026-11-12 06:42 UTC",
   "files_total": 3653,
   "code_files": 3288,
   "code_lines": 491312
@@ -241694,10 +241694,19 @@
   }
  },
  "git": {
-  "sha": "cc0b762b780ee47e0d7243388a965cc195048de5",
+  "sha": "3efb5c7882668bc3df66f7fb83d7415f076154f7",
   "branch": "main",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
   "commits": [
+   {
+    "sha": "3efb5c7",
+    "date": "2026-11-12",
+    "author": "adm01-debug",
+    "subject": "chore(ci): bump codeql-action v4.39.3 nos 3 steps (unifica codeql.yml)",
+    "files": [
+     ".github/workflows/codeql.yml"
+    ]
+   },
    {
     "sha": "cc0b762",
     "date": "2026-11-12",
@@ -242297,15 +242306,6 @@
      "scripts/ci/render-workflow-docs.mjs",
      "scripts/ci/render-workflow-docs.unit.mjs"
     ]
-   },
-   {
-    "sha": "94bb4af",
-    "date": "2026-11-09",
-    "author": "adm01-debug",
-    "subject": "chore: relatorio final sessao merge-prs (total 46, 16 mergeadas, #287 sentry bump) (#288)",
-    "files": [
-     "analise-prs/RELATORIO_PRS.md"
-    ]
    }
   ],
   "hot_files": [
@@ -242346,6 +242346,10 @@
     3
    ],
    [
+    ".github/workflows/codeql.yml",
+    2
+   ],
+   [
     ".github/workflows/prod-migrate.yml",
     2
    ],
@@ -242383,10 +242387,6 @@
    ],
    [
     "scripts/inventario/gerar-banco.mjs",
-    2
-   ],
-   [
-    "scripts/inventario/gerar-repo.mjs",
     2
    ]
   ]

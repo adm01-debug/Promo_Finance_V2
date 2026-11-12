@@ -2,11 +2,16 @@
  "aviso": "GERADO AUTOMATICAMENTE por scripts/ai-context/gerar.mjs — não editar à mão; será sobrescrito.",
  "format_version": 2,
  "git": {
-  "commit": "cc0b762b780ee47e0d7243388a965cc195048de5",
+  "commit": "3efb5c7882668bc3df66f7fb83d7415f076154f7",
   "branch": "main",
-  "data_commit": "2026-11-12T02:32:11-03:00",
+  "data_commit": "2026-11-12T03:22:46-03:00",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
   "ultimos_commits": [
+   {
+    "sha": "3efb5c7",
+    "data": "2026-11-12",
+    "assunto": "chore(ci): bump codeql-action v4.39.3 nos 3 steps (unifica codeql.yml)"
+   },
    {
     "sha": "cc0b762",
     "data": "2026-11-12",
@@ -126,11 +131,6 @@
     "sha": "9c94d00",
     "data": "2026-11-09",
     "assunto": "fix: bump input-otp from 1.4.2 to 1.5.0 (#295)"
-   },
-   {
-    "sha": "e07fec7",
-    "data": "2026-11-09",
-    "assunto": "chore: documentação final sessão merge-prs (prs.json + RELATORIO + dossiers)"
    }
   ],
   "arquivos_mudados_7d": 485,
@@ -301,7 +301,7 @@
   "autores_30d": [
    {
     "autor": "adm01-debug",
-    "commits": 79
+    "commits": 80
    },
    {
     "autor": "devin-ai-integration[bot]",

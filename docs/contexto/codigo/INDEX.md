@@ -1,7 +1,7 @@
 # Contexto do projeto para agentes de IA
 
 GERADO AUTOMATICAMENTE por scripts/ai-context/gerar.mjs — não editar à mão; será sobrescrito.
-Publicado pelo workflow .github/workflows/contexto.yml em docs/contexto/codigo/ da branch gerada `contexto`. Índice único em docs/contexto/00-INDEX.md. Ler: git fetch origin contexto && git show origin/contexto:docs/contexto/00-INDEX.md Gere local com `node scripts/ai-context/gerar.mjs`. Commit-base: `cc0b762b780ee47e0d7243388a965cc195048de5` (2026-11-12T02:32:11-03:00).
+Publicado pelo workflow .github/workflows/contexto.yml em docs/contexto/codigo/ da branch gerada `contexto`. Índice único em docs/contexto/00-INDEX.md. Ler: git fetch origin contexto && git show origin/contexto:docs/contexto/00-INDEX.md Gere local com `node scripts/ai-context/gerar.mjs`. Commit-base: `3efb5c7882668bc3df66f7fb83d7415f076154f7` (2026-11-12T03:22:46-03:00).
 
 ## Como usar (leia antes de planejar ou executar qualquer tarefa)
 1. **Tela/rota/menu** → `rotas.json` (url/vista/menu → arquivo → hooks → tabelas → edges; `rotas_http_backend` para APIs) e `modulos.json` (módulo inteiro + dependências entre módulos).
@@ -619,6 +619,7 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 - CHANGELOG topo: [Unreleased]
 
 ## Últimos commits
+- 2026-11-12 `3efb5c7` chore(ci): bump codeql-action v4.39.3 nos 3 steps (unifica codeql.yml)
 - 2026-11-12 `cc0b762` fix: destrava busca automática de DF-e na SEFAZ (dispatcher → puxar) (#306)
 - 2026-11-12 `251d639` fix: validação de partidas dobradas passa a valer (minúsculo + adiada para o commit) (#314)
 - 2026-11-12 `b99e6a8` chore(deps): bump the radix-ui group across 1 directory with 20 updates (#208)
@@ -633,7 +634,6 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 - 2026-11-11 `85d018c` fix: shims para Supabase Preview — drop get_cron_jobs() antes de mudanças de return type (#131)
 - 2026-11-11 `e361b01` chore(migrations): [STEP 22] reconciliar migrations não rastreadas (#238)
 - 2026-11-11 `62bd983` chore(db): [STEP 17] dropar 404 índices idle (idx_scan=0) (#243)
-- 2026-11-10 `8f43c3f` chore: [STEP 43] espacar cron jobs diagnosticos de alta frequencia (#234)
 
 ## Arquivos deste diretório
 - `docs/contexto/codigo/rotas.json`
