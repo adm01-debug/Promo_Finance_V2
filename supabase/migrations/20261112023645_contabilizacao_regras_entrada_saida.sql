@@ -105,6 +105,7 @@ SELECT e, 'Movimentação de entrada (padrão)', '{"tipo":"entrada"}', '{}', tru
        (SELECT id FROM public.plano_contas WHERE empresa_id=e AND codigo='3.01.01'),
        'Recebimento: {descricao}'
 FROM (VALUES ('610db558-22b8-45e9-821f-f203cca01c3a'::uuid)) v(e)
+WHERE (SELECT count(*) FROM public.plano_contas WHERE empresa_id=e AND codigo IN ('1.01.02','3.01.01','4.02.01')) = 3
 ON CONFLICT (empresa_id, nome) DO NOTHING;
 INSERT INTO public.regras_contabilizacao_automatica
   (empresa_id, nome, condicoes, acoes, ativo, prioridade, tipo_evento, conta_debito_id, conta_credito_id, historico_template)
@@ -113,6 +114,7 @@ SELECT e, 'Movimentação de saída (padrão)', '{"tipo":"saida"}', '{}', true, 
        (SELECT id FROM public.plano_contas WHERE empresa_id=e AND codigo='1.01.02'),
        'Pagamento: {descricao}'
 FROM (VALUES ('610db558-22b8-45e9-821f-f203cca01c3a'::uuid)) v(e)
+WHERE (SELECT count(*) FROM public.plano_contas WHERE empresa_id=e AND codigo IN ('1.01.02','3.01.01','4.02.01')) = 3
 ON CONFLICT (empresa_id, nome) DO NOTHING;
 
 -- Contabilização retroativa (idempotente: só cria o que ainda não existe).
