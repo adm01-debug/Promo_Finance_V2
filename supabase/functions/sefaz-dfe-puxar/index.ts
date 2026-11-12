@@ -21,7 +21,14 @@ import { createClient, type SupabaseClient } from 'npm:@supabase/supabase-js@2.4
 import { z } from '../_shared/zod.ts';
 import { createValidationErrorResponse } from '../_shared/contract-response.ts';
 
-const RequestBodySchema = z.object({ empresa_id: z.string().uuid().optional() }).strict();
+const RequestBodySchema = z
+  .object({
+    empresa_id: z.string().uuid().optional(),
+    // Enviados pelo sefaz-dfe-dispatcher: restringe ao certificado do cursor elegível.
+    cnpj: z.string().optional(),
+    ambiente: z.enum(['producao', 'homologacao']).optional(),
+  })
+  .strict();
 
 import { loadCertificado, makeAdminClient, type CertificadoRow } from '../_shared/sefaz/pfx.ts';
 import { distDFeEndpoint } from '../_shared/sefaz/endpoints.ts';
@@ -89,7 +96,9 @@ function slog(level: LogLevel, event: string, fields: Record<string, unknown> = 
 
 async function fetchCertificados(
   admin: SupabaseClient,
-  empresaId?: string
+  empresaId?: string,
+  cnpj?: string,
+  ambiente?: 'producao' | 'homologacao'
 ): Promise<CertificadoRow[]> {
   let query = admin
     .from('empresas_certificados')
@@ -99,6 +108,8 @@ async function fetchCertificados(
     .eq('ativo', true)
     .gte('valido_ate', new Date().toISOString());
   if (empresaId) query = query.eq('empresa_id', empresaId);
+  if (cnpj) query = query.eq('cnpj', cnpj);
+  if (ambiente) query = query.eq('ambiente', ambiente);
   const { data, error } = await query;
   if (error) throw new Error(`fetch_certificados_failed: ${error.message}`);
   return (data ?? []) as CertificadoRow[];
@@ -531,7 +542,7 @@ Deno.serve(
       return res(401, { error: 'unauthorized' });
     }
 
-    let payload: { empresa_id?: string } = {};
+    let payload: { empresa_id?: string; cnpj?: string; ambiente?: 'producao' | 'homologacao' } = {};
     try {
       const text = await req.text();
       if (text) payload = JSON.parse(text);
@@ -544,7 +555,12 @@ Deno.serve(
     payload = parsedPayload.data;
 
     const admin = makeAdminClient();
-    const certs = await fetchCertificados(admin, payload.empresa_id);
+    const certs = await fetchCertificados(
+      admin,
+      payload.empresa_id,
+      payload.cnpj,
+      payload.ambiente
+    );
     const summaries: PullSummary[] = [];
 
     // Sequencial para evitar sobrecarga de sockets mTLS.
