@@ -2,6 +2,10 @@
 
 Diff semântico gerado a cada coleta em que algo mudou.
 
+## 2026-11-11 23:57 UTC
+
+- **functions** alterado (1): `public.normalizar_tipo_partida()`
+
 ## 2026-11-11 23:26 UTC
 
 - **config: auth_config** alterado (1): `auth_config`

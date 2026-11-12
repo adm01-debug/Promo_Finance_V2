@@ -74111,7 +74111,7 @@
           "search_path=public, extensions, pg_temp"
         ],
         "definition": null,
-        "definition_sha": "4a60de922a7fb607",
+        "definition_sha": "2b5893a940339b2f",
         "execute_api_roles": "service_role",
         "execute_public": false,
         "is_trigger_fn": true,
