@@ -58,11 +58,11 @@
  "commits": {
   "convencao": "conventional commits (observado)",
   "exemplos": [
+   "chore: fixa search_path das functions e remove cron órfão evaluate-delivery-alerts (#309)",
    "chore: manifesto de env reconhece MCP_SECRET e marca fallbacks como opcionais (#310)",
    "feat: contabilização automática de movimentações pelas regras (#316)",
    "fix: remetente de e-mail usa RESEND_FROM em vez de @resend.dev fixo (#311)",
-   "chore(ci): bump codeql-action v4.39.3 nos 3 steps (unifica codeql.yml)",
-   "fix: destrava busca automática de DF-e na SEFAZ (dispatcher → puxar) (#306)"
+   "chore(ci): bump codeql-action v4.39.3 nos 3 steps (unifica codeql.yml)"
   ]
  },
  "pr_template": ".github/PULL_REQUEST_TEMPLATE.md",

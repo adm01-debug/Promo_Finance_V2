@@ -2,11 +2,16 @@
  "aviso": "GERADO AUTOMATICAMENTE por scripts/ai-context/gerar.mjs — não editar à mão; será sobrescrito.",
  "format_version": 2,
  "git": {
-  "commit": "9308705c839c8b0ce0cac48d45f6503a4e8564d5",
+  "commit": "0821a38bb53a8637de02e257d0422c3f12c9659c",
   "branch": "main",
-  "data_commit": "2026-11-12T05:21:17-03:00",
+  "data_commit": "2026-11-12T06:16:09-03:00",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
   "ultimos_commits": [
+   {
+    "sha": "0821a38",
+    "data": "2026-11-12",
+    "assunto": "chore: fixa search_path das functions e remove cron órfão evaluate-delivery-alerts (#309)"
+   },
    {
     "sha": "9308705",
     "data": "2026-11-12",
@@ -126,14 +131,9 @@
     "sha": "3e0b415",
     "data": "2026-11-10",
     "assunto": "fix(automacao): aplica findings do Codex no #300 (#301)"
-   },
-   {
-    "sha": "acebea0",
-    "data": "2026-11-10",
-    "assunto": "chore(automacao): conecta testes, grafo e manutenção aos gatilhos (#300)"
    }
   ],
-  "arquivos_mudados_7d": 488,
+  "arquivos_mudados_7d": 489,
   "pastas_mais_mudadas_30d": [
    {
     "pasta": "package.json",
@@ -301,7 +301,7 @@
   "autores_30d": [
    {
     "autor": "adm01-debug",
-    "commits": 83
+    "commits": 84
    },
    {
     "autor": "devin-ai-integration[bot]",
@@ -318,7 +318,7 @@
   ]
  },
  "contagens": {
-  "arquivos_total": 3613,
+  "arquivos_total": 3614,
   "arquivos_codigo": 2216,
   "linhas_codigo": 428821,
   "rotas": 128,
@@ -330,7 +330,7 @@
   "hooks": 264,
   "edge_functions": 106,
   "tabelas": 352,
-  "migrations": 1003,
+  "migrations": 1004,
   "cron_jobs": 21,
   "testes": 426,
   "workflows": 19,
