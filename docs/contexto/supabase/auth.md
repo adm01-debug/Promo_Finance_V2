@@ -47,6 +47,7 @@ Contagens de usuários em `stats.md` (apenas agregados — sem dados pessoais).
   "external_discord_enabled": false,
   "external_discord_secret": "[REDACTED]",
   "external_email_enabled": true,
+  "external_email_magic_link_disabled": false,
   "external_facebook_client_id": null,
   "external_facebook_email_optional": false,
   "external_facebook_enabled": false,

@@ -2,6 +2,10 @@
 
 Diff semântico gerado a cada coleta em que algo mudou.
 
+## 2026-11-12 10:04 UTC
+
+- **config: auth_config** alterado (1): `auth_config`
+
 ## 2026-11-12 08:33 UTC
 
 - **edge functions** alterado (3): `contabilizar-evento`, `external-data`, `send-device-alert`
