@@ -24,6 +24,7 @@ const IDEMPOTENCY_WINDOW_MS = 5 * 60 * 1000; // pula CNPJ consultado nos último
 const PER_CNPJ_TIMEOUT_MS = 45_000;
 
 interface EligibleCnpj {
+  empresa_id: string;
   cursor_id: string;
   cnpj: string;
   ambiente: 'producao' | 'homologacao';
@@ -74,16 +75,34 @@ Deno.serve(
     try {
       // ---- Query de elegíveis: certificado ativo + válido + cursor sem circuit + due ----
       const nowIso = new Date().toISOString();
-      const { data: rows, error } = await supabase
+      // Não há FK entre empresas_certificados e sefaz_dfe_cursor (o vínculo é
+      // cnpj+ambiente), então o embed do PostgREST falhava com "Could not find
+      // a relationship". Duas queries + junção em memória, mesma semântica do
+      // !inner (certificado sem cursor não entra).
+      const { data: certs, error } = await supabase
         .from('empresas_certificados')
-        .select(
-          `cnpj, ambiente, ativo, valido_ate,
-         sefaz_dfe_cursor!inner(id, cnpj, ambiente, retry_count, next_run_at, last_error_at, circuit_open, ultima_consulta)`
-        )
+        .select('empresa_id, cnpj, ambiente, ativo, valido_ate')
         .eq('ativo', true)
         .gt('valido_ate', nowIso);
 
       if (error) throw new Error(`query elegíveis falhou: ${error.message}`);
+
+      const cnpjs = [...new Set((certs ?? []).map((c) => c.cnpj))];
+      const { data: cursorRows, error: curErr } = cnpjs.length
+        ? await supabase
+            .from('sefaz_dfe_cursor')
+            .select(
+              'id, cnpj, ambiente, retry_count, next_run_at, last_error_at, circuit_open, ultima_consulta'
+            )
+            .in('cnpj', cnpjs)
+        : { data: [], error: null };
+
+      if (curErr) throw new Error(`query elegíveis falhou: ${curErr.message}`);
+
+      const rows = (certs ?? []).map((cert) => ({
+        ...cert,
+        sefaz_dfe_cursor: (cursorRows ?? []).filter((c) => c.cnpj === cert.cnpj),
+      }));
 
       const now = Date.now();
       const elegiveis: EligibleCnpj[] = [];
@@ -109,6 +128,7 @@ Deno.serve(
             continue;
           }
           elegiveis.push({
+            empresa_id: row.empresa_id,
             cursor_id: c.id,
             cnpj: c.cnpj,
             ambiente: c.ambiente,
@@ -220,8 +240,14 @@ async function invokePuller(
   const timer = setTimeout(() => ac.abort(), PER_CNPJ_TIMEOUT_MS);
   try {
     const { data, error } = await supabase.functions.invoke('sefaz-dfe-puxar', {
-      body: { cnpj: e.cnpj, ambiente: e.ambiente },
-      headers: { 'x-request-id': requestId },
+      // sefaz-dfe-puxar exige x-cron-secret (index.ts:526) e aceita só os campos
+      // do RequestBodySchema — empresa_id/cnpj/ambiente.
+      body: { empresa_id: e.empresa_id, cnpj: e.cnpj, ambiente: e.ambiente },
+      headers: {
+        'x-request-id': requestId,
+        'x-cron-secret':
+          Deno.env.get('SEFAZ_CRON_SECRET') ?? Deno.env.get('CRON_DISPATCH_SECRET') ?? '',
+      },
     });
     if (error) {
       // Puxador ainda não deployado (Fase 2): falha neutra — não penaliza retry.
