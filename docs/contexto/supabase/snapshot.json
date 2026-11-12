@@ -596,15 +596,15 @@
       },
       {
         "created_at": 1787655368587,
-        "entrypoint_path": "file:///home/joaquim_ataides/hermes-workspaces/chat-c696391/supabase/functions/convidar-contador/index.ts",
+        "entrypoint_path": "file:///home/runner/work/Promo_Finance_V2/Promo_Finance_V2/supabase/functions/convidar-contador/index.ts",
         "import_map": false,
         "import_map_path": null,
         "name": "convidar-contador",
         "slug": "convidar-contador",
         "status": "ACTIVE",
-        "updated_at": 1787697647606,
+        "updated_at": 1794468133864,
         "verify_jwt": true,
-        "version": 18
+        "version": 19
       },
       {
         "created_at": 1789217313886,
@@ -752,15 +752,15 @@
       },
       {
         "created_at": 1787655368587,
-        "entrypoint_path": "file:///home/joaquim_ataides/hermes-workspaces/chat-c696391/supabase/functions/executar-fechamento-tributario/index.ts",
+        "entrypoint_path": "file:///home/runner/work/Promo_Finance_V2/Promo_Finance_V2/supabase/functions/executar-fechamento-tributario/index.ts",
         "import_map": false,
         "import_map_path": null,
         "name": "executar-fechamento-tributario",
         "slug": "executar-fechamento-tributario",
         "status": "ACTIVE",
-        "updated_at": 1787697139675,
+        "updated_at": 1794468357009,
         "verify_jwt": true,
-        "version": 17
+        "version": 18
       },
       {
         "created_at": 1787410714411,
@@ -1136,15 +1136,15 @@
       },
       {
         "created_at": 1787655368587,
-        "entrypoint_path": "file:///home/joaquim_ataides/hermes-workspaces/chat-c696391/supabase/functions/notify-saved-filter/index.ts",
+        "entrypoint_path": "file:///home/runner/work/Promo_Finance_V2/Promo_Finance_V2/supabase/functions/notify-saved-filter/index.ts",
         "import_map": false,
         "import_map_path": null,
         "name": "notify-saved-filter",
         "slug": "notify-saved-filter",
         "status": "ACTIVE",
-        "updated_at": 1787697281434,
+        "updated_at": 1794467868121,
         "verify_jwt": true,
-        "version": 17
+        "version": 18
       },
       {
         "created_at": 1785410693262,

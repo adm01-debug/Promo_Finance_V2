@@ -28,7 +28,7 @@ URL base: `https://bwwbeyolnnzppeuhgkcd.supabase.co/functions/v1/<slug>`. Metada
 | conciliacao-proxy | conciliacao-proxy | ACTIVE | 17 | sim | file:///home/joaquim_ataides/hermes-workspaces/chat-c696391/supabase/functions/conciliacao-proxy/index.ts |
 | consulta-tributaria | consulta-tributaria | ACTIVE | 17 | sim | file:///home/joaquim_ataides/hermes-workspaces/chat-c696391/supabase/functions/consulta-tributaria/index.ts |
 | contabilizar-evento | contabilizar-evento | ACTIVE | 17 | sim | file:///home/joaquim_ataides/hermes-workspaces/chat-c696391/supabase/functions/contabilizar-evento/index.ts |
-| convidar-contador | convidar-contador | ACTIVE | 18 | sim | file:///home/joaquim_ataides/hermes-workspaces/chat-c696391/supabase/functions/convidar-contador/index.ts |
+| convidar-contador | convidar-contador | ACTIVE | 19 | sim | file:///home/runner/work/Promo_Finance_V2/Promo_Finance_V2/supabase/functions/convidar-contador/index.ts |
 | convidar-usuario | convidar-usuario | ACTIVE | 6 | não | file:///home/runner/work/Promo_Finance_V2/Promo_Finance_V2/supabase/functions/convidar-usuario/index.ts |
 | copilot-global | copilot-global | ACTIVE | 17 | sim | file:///home/joaquim_ataides/hermes-workspaces/chat-c696391/supabase/functions/copilot-global/index.ts |
 | copilot-tributario | copilot-tributario | ACTIVE | 17 | sim | file:///home/joaquim_ataides/hermes-workspaces/chat-c696391/supabase/functions/copilot-tributario/index.ts |
@@ -41,7 +41,7 @@ URL base: `https://bwwbeyolnnzppeuhgkcd.supabase.co/functions/v1/<slug>`. Metada
 | enviar-digest-conformidade | enviar-digest-conformidade | ACTIVE | 17 | sim | file:///home/joaquim_ataides/hermes-workspaces/chat-c696391/supabase/functions/enviar-digest-conformidade/index.ts |
 | enviar-relatorios-tributarios-agendados | enviar-relatorios-tributarios-agendados | ACTIVE | 16 | sim | file:///tmp/user_fn_bwwbeyolnnzppeuhgkcd_b308dda6-672d-471a-8236-f3cb088b5f0b_1/source/supabase/functions/enviar-relatorios-tributarios-agendados/index.ts |
 | executar-analise-preditiva | executar-analise-preditiva | ACTIVE | 18 | não | file:///tmp/promo-finance-postmerge-h0831-02/supabase/functions/executar-analise-preditiva/index.ts |
-| executar-fechamento-tributario | executar-fechamento-tributario | ACTIVE | 17 | sim | file:///home/joaquim_ataides/hermes-workspaces/chat-c696391/supabase/functions/executar-fechamento-tributario/index.ts |
+| executar-fechamento-tributario | executar-fechamento-tributario | ACTIVE | 18 | sim | file:///home/runner/work/Promo_Finance_V2/Promo_Finance_V2/supabase/functions/executar-fechamento-tributario/index.ts |
 | executar-regua-cobranca | executar-regua-cobranca | ACTIVE | 23 | não | file:///home/joaquim_ataides/hermes-workspaces/chat-c696391/supabase/functions/executar-regua-cobranca/index.ts |
 | executar-relatorios | executar-relatorios | ACTIVE | 17 | não | file:///home/joaquim_ataides/hermes-workspaces/chat-c696391/supabase/functions/executar-relatorios/index.ts |
 | expert-agent | expert-agent | ACTIVE | 17 | não | file:///home/joaquim_ataides/hermes-workspaces/chat-c696391/supabase/functions/expert-agent/index.ts |
@@ -73,7 +73,7 @@ URL base: `https://bwwbeyolnnzppeuhgkcd.supabase.co/functions/v1/<slug>`. Metada
 | nfe-upload-certificado | nfe-upload-certificado | ACTIVE | 17 | sim | file:///home/joaquim_ataides/hermes-workspaces/chat-c696391/supabase/functions/nfe-upload-certificado/index.ts |
 | nfe-vinculo-proxy | nfe-vinculo-proxy | ACTIVE | 17 | sim | file:///home/joaquim_ataides/hermes-workspaces/chat-c696391/supabase/functions/nfe-vinculo-proxy/index.ts |
 | notify-performance-alert | notify-performance-alert | ACTIVE | 17 | não | file:///home/joaquim_ataides/hermes-workspaces/chat-c696391/supabase/functions/notify-performance-alert/index.ts |
-| notify-saved-filter | notify-saved-filter | ACTIVE | 17 | sim | file:///home/joaquim_ataides/hermes-workspaces/chat-c696391/supabase/functions/notify-saved-filter/index.ts |
+| notify-saved-filter | notify-saved-filter | ACTIVE | 18 | sim | file:///home/runner/work/Promo_Finance_V2/Promo_Finance_V2/supabase/functions/notify-saved-filter/index.ts |
 | open-finance | open-finance | ACTIVE | 22 | sim | file:///home/joaquim_ataides/hermes-workspaces/chat-c696391/supabase/functions/open-finance/index.ts |
 | overlay-rejeicoes-auditoria | overlay-rejeicoes-auditoria | ACTIVE | 17 | sim | file:///home/joaquim_ataides/hermes-workspaces/chat-c696391/supabase/functions/overlay-rejeicoes-auditoria/index.ts |
 | prever-carga-tributaria | prever-carga-tributaria | ACTIVE | 22 | não | file:///home/joaquim_ataides/hermes-workspaces/chat-c696391/supabase/functions/prever-carga-tributaria/index.ts |
