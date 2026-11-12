@@ -1,6 +1,6 @@
 # 07 · REGRAS DE NEGÓCIO
 
-> Gerado automaticamente por AI Context Sync v1.3.2 · commit `8afbe7ad37` · branch `main` · 2026-11-12 12:20 UTC
+> Gerado automaticamente por AI Context Sync v1.3.2 · commit `bd5e644351` · branch `main` · 2026-11-12 13:05 UTC
 > Não edite à mão — regras humanas vão em `manual/`.
 
 ## A. Regras escritas por humanos (`manual/` — prioridade máxima, nunca sobrescrito)
@@ -5015,7 +5015,7 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | ; import { Badge } from  | `src/components/contabilidade/import-lancamentos-csv/PreviewStep.tsx` |
 | ; import { Badge } from  | `src/components/contabilidade/import-lancamentos-csv/ResultStep.tsx` |
 | ; import { downloadLancamentosCsvTemplate } from  | `src/components/contabilidade/import-lancamentos-csv/UploadStep.tsx` |
-| … +770 linhas — lista completa em `context.json` | |
+| … +771 linhas — lista completa em `context.json` | |
 
 ## J. Controle de acesso no código (checagens de perfil/permissão)
 

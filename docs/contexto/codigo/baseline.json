@@ -2,11 +2,16 @@
  "aviso": "GERADO AUTOMATICAMENTE por scripts/ai-context/gerar.mjs — não editar à mão; será sobrescrito.",
  "format_version": 2,
  "git": {
-  "commit": "8afbe7ad37b4b008f7188596c1dedbf605ebd85c",
+  "commit": "bd5e6443511b6d810af4cfcdadc65e1021e98fc3",
   "branch": "main",
-  "data_commit": "2026-11-12T09:00:50-03:00",
+  "data_commit": "2026-11-12T09:42:14-03:00",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
   "ultimos_commits": [
+   {
+    "sha": "bd5e644",
+    "data": "2026-11-12",
+    "assunto": "chore: impede categorias duplicadas por empresa e tipo (#320)"
+   },
    {
     "sha": "8afbe7a",
     "data": "2026-11-12",
@@ -126,14 +131,9 @@
     "sha": "8f43c3f",
     "data": "2026-11-10",
     "assunto": "chore: [STEP 43] espacar cron jobs diagnosticos de alta frequencia (#234)"
-   },
-   {
-    "sha": "4e177c3",
-    "data": "2026-11-10",
-    "assunto": "chore(ddl): steps 12-16+19+21+23 — DDL banco produção (#235)"
    }
   ],
-  "arquivos_mudados_7d": 493,
+  "arquivos_mudados_7d": 495,
   "pastas_mais_mudadas_30d": [
    {
     "pasta": "package.json",
@@ -301,7 +301,7 @@
   "autores_30d": [
    {
     "autor": "adm01-debug",
-    "commits": 88
+    "commits": 89
    },
    {
     "autor": "devin-ai-integration[bot]",
@@ -318,9 +318,9 @@
   ]
  },
  "contagens": {
-  "arquivos_total": 3618,
+  "arquivos_total": 3619,
   "arquivos_codigo": 2216,
-  "linhas_codigo": 428821,
+  "linhas_codigo": 428829,
   "rotas": 128,
   "rotas_http_backend": 25,
   "vistas_por_id": 0,
@@ -330,7 +330,7 @@
   "hooks": 264,
   "edge_functions": 106,
   "tabelas": 352,
-  "migrations": 1008,
+  "migrations": 1009,
   "cron_jobs": 21,
   "testes": 426,
   "workflows": 19,
@@ -644,7 +644,7 @@
   },
   "src/hooks": {
    "arquivos": 296,
-   "linhas": 44202
+   "linhas": 44210
   },
   "src/i18n.ts": {
    "arquivos": 1,

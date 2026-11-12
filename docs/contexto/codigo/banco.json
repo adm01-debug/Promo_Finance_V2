@@ -9,7 +9,7 @@
   "supabase/migrations",
   "typeorm"
  ],
- "migrations": 1008,
+ "migrations": 1009,
  "seeds": [],
  "avisos": [
   "179 bloco(s) com DDL dinâmico (EXECUTE format/...) não modelado — policies/colunas criadas dinamicamente podem faltar; confira no banco vivo"
@@ -13605,6 +13605,11 @@
     }
    ],
    "indices": [
+    {
+     "nome": "categorias_empresa_tipo_nome_uq",
+     "colunas": "empresa_id, tipo, lower(btrim(nome",
+     "unico": true
+    },
     {
      "nome": "idx_categorias_empresa",
      "colunas": "empresa_id",

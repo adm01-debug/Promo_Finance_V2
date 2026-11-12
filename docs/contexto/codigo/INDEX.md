@@ -1,7 +1,7 @@
 # Contexto do projeto para agentes de IA
 
 GERADO AUTOMATICAMENTE por scripts/ai-context/gerar.mjs — não editar à mão; será sobrescrito.
-Publicado pelo workflow .github/workflows/contexto.yml em docs/contexto/codigo/ da branch gerada `contexto`. Índice único em docs/contexto/00-INDEX.md. Ler: git fetch origin contexto && git show origin/contexto:docs/contexto/00-INDEX.md Gere local com `node scripts/ai-context/gerar.mjs`. Commit-base: `8afbe7ad37b4b008f7188596c1dedbf605ebd85c` (2026-11-12T09:00:50-03:00).
+Publicado pelo workflow .github/workflows/contexto.yml em docs/contexto/codigo/ da branch gerada `contexto`. Índice único em docs/contexto/00-INDEX.md. Ler: git fetch origin contexto && git show origin/contexto:docs/contexto/00-INDEX.md Gere local com `node scripts/ai-context/gerar.mjs`. Commit-base: `bd5e6443511b6d810af4cfcdadc65e1021e98fc3` (2026-11-12T09:42:14-03:00).
 
 ## Como usar (leia antes de planejar ou executar qualquer tarefa)
 1. **Tela/rota/menu** → `rotas.json` (url/vista/menu → arquivo → hooks → tabelas → edges; `rotas_http_backend` para APIs) e `modulos.json` (módulo inteiro + dependências entre módulos).
@@ -14,7 +14,7 @@ Publicado pelo workflow .github/workflows/contexto.yml em docs/contexto/codigo/ 
 Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua tarefa; não carregue tudo.
 
 ## Stack
-- linguagens: TypeScript (2105), SQL (1078), Markdown (189), JavaScript (68), Python (45), JSON (37), Shell (26), YAML (25)
+- linguagens: TypeScript (2105), SQL (1079), Markdown (189), JavaScript (68), Python (45), JSON (37), Shell (26), YAML (25)
 - linguagem_principal: TypeScript
 - framework: React
 - backend_http: n/d
@@ -34,9 +34,9 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 ## Números
 | item | qtd |
 |---|---|
-| arquivos_total | 3618 |
+| arquivos_total | 3619 |
 | arquivos_codigo | 2216 |
-| linhas_codigo | 428821 |
+| linhas_codigo | 428829 |
 | rotas | 128 |
 | rotas_http_backend | 25 |
 | vistas_por_id | 0 |
@@ -46,7 +46,7 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 | hooks | 264 |
 | edge_functions | 106 |
 | tabelas | 352 |
-| migrations | 1008 |
+| migrations | 1009 |
 | cron_jobs | 21 |
 | testes | 426 |
 | workflows | 19 |
@@ -619,6 +619,7 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 - CHANGELOG topo: [Unreleased]
 
 ## Últimos commits
+- 2026-11-12 `bd5e644` chore: impede categorias duplicadas por empresa e tipo (#320)
 - 2026-11-12 `8afbe7a` chore: remove categorias duplicadas e repassa referências (#319)
 - 2026-11-12 `05920df` fix: contas a pagar aceita status parcial (#318)
 - 2026-11-12 `7c4bc25` feat: contabilização usa a conta contábil da categoria (#317)
@@ -633,7 +634,6 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 - 2026-11-12 `b99e6a8` chore(deps): bump the radix-ui group across 1 directory with 20 updates (#208)
 - 2026-11-12 `ea47e0c` fix: cron webhook-retry-worker para de enviar chave trigger recusada (422) (#313)
 - 2026-11-11 `8eec022` fix: sanitiza parâmetro search no filtro .or() da external-data (#308)
-- 2026-11-11 `a516e9a` infra: E2E rodam em ubuntu-24.04 (Playwright não suporta ubuntu-26.04) (#315)
 
 ## Arquivos deste diretório
 - `docs/contexto/codigo/rotas.json`

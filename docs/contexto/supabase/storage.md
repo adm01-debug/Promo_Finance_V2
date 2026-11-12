@@ -44,6 +44,6 @@ Policies de `storage.objects`/`storage.buckets` em `policies.md`. Contagens em `
     }
   },
   "fileSizeLimit": 52428800,
-  "migrationVersion": "lifecycle-writer-coordination"
+  "migrationVersion": "revoke-extra-lifecycle-postgres-grants"
 }
 ```

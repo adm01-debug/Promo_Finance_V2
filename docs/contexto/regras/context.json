@@ -1,15 +1,15 @@
 {
  "meta": {
-  "sha": "8afbe7ad37b4b008f7188596c1dedbf605ebd85c",
+  "sha": "bd5e6443511b6d810af4cfcdadc65e1021e98fc3",
   "branch": "main",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
-  "generated_at": "2026-11-12 12:20 UTC",
-  "files_total": 3660,
-  "code_files": 3295,
-  "code_lines": 491806
+  "generated_at": "2026-11-12 13:05 UTC",
+  "files_total": 3661,
+  "code_files": 3296,
+  "code_lines": 491819
  },
  "version": "1.3.2",
- "facts_hash": "eb31268e260628c0",
+ "facts_hash": "c3dc93ec82b1ec0d",
  "stack": {
   "frameworks": [
    "React + Vite",
@@ -332,7 +332,7 @@
   "package_manager": "bun",
   "languages": {
    ".ts": 1112,
-   ".sql": 1078,
+   ".sql": 1079,
    ".tsx": 993,
    ".mjs": 60,
    ".py": 45,
@@ -50583,6 +50583,14 @@
     "unique": false,
     "where": "",
     "src": "supabase/migrations/20261101120400_fk_indexes_outras.sql"
+   },
+   {
+    "name": "categorias_empresa_tipo_nome_uq",
+    "table": "categorias",
+    "columns": "empresa_id, tipo, lower(btrim(nome",
+    "unique": true,
+    "where": "",
+    "src": "supabase/migrations/20261112024404_categorias_nome_unico.sql"
    }
   ],
   "cron_jobs": [
@@ -51840,6 +51848,7 @@
    "supabase/migrations/20261112024013_contabilizacao_conta_da_categoria.sql",
    "supabase/migrations/20261112024215_contas_pagar_status_parcial.sql",
    "supabase/migrations/20261112024218_remove_categorias_duplicadas.sql",
+   "supabase/migrations/20261112024404_categorias_nome_unico.sql",
    "supabase/tests/sql/catalogos_tributarios.test.sql",
    "supabase/tests/sql/infra.test.sql",
    "supabase/tests/sql/integrity_cycle.test.sql",
@@ -70615,7 +70624,7 @@
   {
    "module": "src/hooks",
    "files": 296,
-   "lines": 44498,
+   "lines": 44506,
    "tables": [
     "acoes_recomendadas",
     "acordos_parcelamento",
@@ -71704,8 +71713,8 @@
   },
   {
    "module": "supabase/migrations",
-   "files": 1008,
-   "lines": 76229,
+   "files": 1009,
+   "lines": 76234,
    "tables": [],
    "exports": [],
    "docs": [],
@@ -81661,6 +81670,10 @@
    {
     "file": "src/hooks/useCategorias.ts",
     "msg": "Erro ao desativar categoria: ${error.message}"
+   },
+   {
+    "file": "src/hooks/useCategorias.ts",
+    "msg": "Já existe uma categoria com esse nome e tipo."
    },
    {
     "file": "src/hooks/useCategorizacaoIA.ts",
@@ -199137,7 +199150,7 @@
   },
   "src/hooks/useCategorias.ts": {
    "path": "src/hooks/useCategorias.ts",
-   "lines": 220,
+   "lines": 228,
    "exports": [
     "interface Categoria",
     "interface CategoriaInput",
@@ -199182,7 +199195,8 @@
     "Empresa não selecionada",
     "Erro ao atualizar categoria: ${error.message}",
     "Erro ao criar categoria: ${error.message}",
-    "Erro ao desativar categoria: ${error.message}"
+    "Erro ao desativar categoria: ${error.message}",
+    "Já existe uma categoria com esse nome e tipo."
    ],
    "status_values": [
     {
@@ -241789,6 +241803,10 @@
    "path": "supabase/migrations/20261112024218_remove_categorias_duplicadas.sql",
    "lines": 24
   },
+  "supabase/migrations/20261112024404_categorias_nome_unico.sql": {
+   "path": "supabase/migrations/20261112024404_categorias_nome_unico.sql",
+   "lines": 5
+  },
   "supabase/tests/test_harness.js": {
    "path": "supabase/tests/test_harness.js",
    "lines": 454,
@@ -241897,10 +241915,20 @@
   }
  },
  "git": {
-  "sha": "8afbe7ad37b4b008f7188596c1dedbf605ebd85c",
+  "sha": "bd5e6443511b6d810af4cfcdadc65e1021e98fc3",
   "branch": "main",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
   "commits": [
+   {
+    "sha": "bd5e644",
+    "date": "2026-11-12",
+    "author": "adm01-debug",
+    "subject": "chore: impede categorias duplicadas por empresa e tipo (#320)",
+    "files": [
+     "src/hooks/useCategorias.ts",
+     "supabase/migrations/20261112024404_categorias_nome_unico.sql"
+    ]
+   },
    {
     "sha": "8afbe7a",
     "date": "2026-11-12",
@@ -242464,58 +242492,11 @@
      "scripts/maintenance/lib.mjs",
      "scripts/maintenance/run.mjs"
     ]
-   },
-   {
-    "sha": "acebea0",
-    "date": "2026-11-10",
-    "author": "adm01-debug",
-    "subject": "chore(automacao): conecta testes, grafo e manutenção aos gatilhos (#300)",
-    "files": [
-     ".github/workflows/automation-local.yml",
-     ".gitignore",
-     "docs/AUTOMACAO_LOCAL.md",
-     "docs/ci/README.md",
-     "graphify.local.json",
-     "package.json",
-     "scripts/automation.config.json",
-     "scripts/automation.mjs",
-     "scripts/automation.unit.mjs",
-     "scripts/graphify-local.mjs",
-     "scripts/graphify-local.unit.mjs",
-     "scripts/maintenance/README.md",
-     "scripts/maintenance/config.example.json",
-     "scripts/maintenance/config.json",
-     "scripts/maintenance/lib.mjs",
-     "scripts/maintenance/maintenance.unit.mjs",
-     "scripts/maintenance/run.mjs",
-     "scripts/maintenance/run.sh",
-     "scripts/maintenance/typecheck.mjs"
-    ]
    }
   ],
   "hot_files": [
    [
     "scripts/automation.config.json",
-    4
-   ],
-   [
-    "package.json",
-    3
-   ],
-   [
-    "scripts/automation.mjs",
-    3
-   ],
-   [
-    "scripts/graphify-local.mjs",
-    3
-   ],
-   [
-    "scripts/maintenance/lib.mjs",
-    3
-   ],
-   [
-    "scripts/maintenance/run.mjs",
     3
    ],
    [
@@ -242535,6 +242516,10 @@
     2
    ],
    [
+    "package.json",
+    2
+   ],
+   [
     ".github/workflows/ci.yml",
     2
    ],
@@ -242543,7 +242528,7 @@
     2
    ],
    [
-    "scripts/automation.unit.mjs",
+    "scripts/automation.mjs",
     2
    ],
    [
@@ -242563,16 +242548,32 @@
     2
    ],
    [
-    "scripts/graphify-local.unit.mjs",
+    "scripts/graphify-local.mjs",
     2
    ],
    [
-    "scripts/maintenance/README.md",
+    "scripts/maintenance/lib.mjs",
     2
    ],
    [
-    "scripts/maintenance/maintenance.unit.mjs",
+    "scripts/maintenance/run.mjs",
     2
+   ],
+   [
+    "src/hooks/useCategorias.ts",
+    1
+   ],
+   [
+    "supabase/migrations/20261112024404_categorias_nome_unico.sql",
+    1
+   ],
+   [
+    "supabase/migrations/20261112024218_remove_categorias_duplicadas.sql",
+    1
+   ],
+   [
+    "supabase/migrations/20261112024215_contas_pagar_status_parcial.sql",
+    1
    ]
   ]
  }
