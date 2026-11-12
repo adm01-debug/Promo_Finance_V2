@@ -4,7 +4,7 @@
 |---|---|
 | nome | analise-fluxo-ia |
 | status | ACTIVE |
-| versão | 18 |
+| versão | 19 |
 | verify_jwt | não |
 | entrypoint | file:///tmp/promo-finance-postmerge-h0831-02/supabase/functions/analise-fluxo-ia/index.ts |
 | import_map |  |

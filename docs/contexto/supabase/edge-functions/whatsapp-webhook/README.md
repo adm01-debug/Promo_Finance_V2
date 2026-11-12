@@ -4,7 +4,7 @@
 |---|---|
 | nome | whatsapp-webhook |
 | status | ACTIVE |
-| versão | 19 |
+| versão | 20 |
 | verify_jwt | não |
 | entrypoint | file:///home/joaquim_ataides/hermes-workspaces/chat-c696391/supabase/functions/whatsapp-webhook/index.ts |
 | import_map |  |

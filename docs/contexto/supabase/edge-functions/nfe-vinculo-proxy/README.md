@@ -4,7 +4,7 @@
 |---|---|
 | nome | nfe-vinculo-proxy |
 | status | ACTIVE |
-| versão | 16 |
+| versão | 17 |
 | verify_jwt | sim |
 | entrypoint | file:///home/joaquim_ataides/hermes-workspaces/chat-c696391/supabase/functions/nfe-vinculo-proxy/index.ts |
 | import_map |  |

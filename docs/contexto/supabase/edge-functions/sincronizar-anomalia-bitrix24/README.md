@@ -4,7 +4,7 @@
 |---|---|
 | nome | sincronizar-anomalia-bitrix24 |
 | status | ACTIVE |
-| versão | 16 |
+| versão | 17 |
 | verify_jwt | sim |
 | entrypoint | file:///home/joaquim_ataides/hermes-workspaces/chat-c696391/supabase/functions/sincronizar-anomalia-bitrix24/index.ts |
 | import_map |  |

@@ -2,6 +2,16 @@
 
 Diff semântico gerado a cada coleta em que algo mudou.
 
+## 2026-11-12 01:31 UTC
+
+- **constraints** adicionado (1): `public.partidas_contabeis.trg_validar_partidas_dobradas`
+- **cron jobs** alterado (1): `33:webhook-retry-worker-1min`
+- **edge functions** alterado (105): `aceitar-convite`, `analise-fluxo-ia`, `analise-preditiva`, `analyze-document`, `api-keys-manage`, `asaas-proxy`, `asaas-webhook`, `benchmarking-setorial`, `bitrix24-sync`, `bitrix24-webhook`, `bling-proxy`, `bling-webhook`, `calcular-health-score-operacional`, `calcular-slo-metrics-diario`, `calculo-iva`, `categorizar-despesa`, `ci-security-gate-log`, `cnpja-lookup`, `comparar-benchmark-setorial`, `compare-schemas`, `conciliacao-ia`, `conciliacao-proxy`, `consulta-tributaria`, `contabilizar-evento`, `convidar-contador`, `convidar-usuario`, `copilot-global`, `copilot-tributario`, `decidir-regime`, `detectar-anomalias-financeiras`, `digest-silenciamentos-erro`, `enviar-alerta-email`, `enviar-bitrix24-tributario`, `enviar-convite-organizacao`, `enviar-digest-conformidade`, `enviar-relatorios-tributarios-agendados`, `executar-analise-preditiva`, `executar-fechamento-tributario`, `executar-regua-cobranca`, `executar-relatorios` … (+65)
+- **functions** alterado (1): `public.validar_partidas_dobradas()`
+- **realtime** adicionado (1): `supabase_realtime_messages_publication:realtime.messages_2026_11_15`
+- **realtime** removido (1): `supabase_realtime_messages_publication:realtime.messages_2026_11_08`
+- **triggers** alterado (1): `public.partidas_contabeis.trg_validar_partidas_dobradas`
+
 ## 2026-11-11 23:57 UTC
 
 - **functions** alterado (1): `public.normalizar_tipo_partida()`

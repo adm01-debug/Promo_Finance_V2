@@ -4,7 +4,7 @@
 |---|---|
 | nome | decidir-regime |
 | status | ACTIVE |
-| versão | 17 |
+| versão | 18 |
 | verify_jwt | não |
 | entrypoint | file:///home/joaquim_ataides/hermes-workspaces/chat-c696391/supabase/functions/decidir-regime/index.ts |
 | import_map |  |

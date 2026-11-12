@@ -316,7 +316,7 @@
         "status": "ACTIVE",
         "updated_at": 1787696970226,
         "verify_jwt": true,
-        "version": 16
+        "version": 17
       },
       {
         "created_at": 1787655368587,
@@ -328,7 +328,7 @@
         "status": "ACTIVE",
         "updated_at": 1788176997233,
         "verify_jwt": false,
-        "version": 18
+        "version": 19
       },
       {
         "created_at": 1787655368587,
@@ -340,7 +340,7 @@
         "status": "ACTIVE",
         "updated_at": 1787696980102,
         "verify_jwt": true,
-        "version": 16
+        "version": 17
       },
       {
         "created_at": 1787655368587,
@@ -352,7 +352,7 @@
         "status": "ACTIVE",
         "updated_at": 1788177003471,
         "verify_jwt": false,
-        "version": 18
+        "version": 19
       },
       {
         "created_at": 1789232363492,
@@ -364,7 +364,7 @@
         "status": "ACTIVE",
         "updated_at": 1789232363492,
         "verify_jwt": false,
-        "version": 4
+        "version": 5
       },
       {
         "created_at": 1785325583131,
@@ -376,7 +376,7 @@
         "status": "ACTIVE",
         "updated_at": 1787696990680,
         "verify_jwt": false,
-        "version": 23
+        "version": 24
       },
       {
         "created_at": 1787655368587,
@@ -388,7 +388,7 @@
         "status": "ACTIVE",
         "updated_at": 1787697544100,
         "verify_jwt": false,
-        "version": 18
+        "version": 19
       },
       {
         "created_at": 1787655368587,
@@ -400,7 +400,7 @@
         "status": "ACTIVE",
         "updated_at": 1788177009512,
         "verify_jwt": false,
-        "version": 18
+        "version": 19
       },
       {
         "created_at": 1787655368587,
@@ -412,7 +412,7 @@
         "status": "ACTIVE",
         "updated_at": 1787697007178,
         "verify_jwt": true,
-        "version": 16
+        "version": 17
       },
       {
         "created_at": 1787655368587,
@@ -424,7 +424,7 @@
         "status": "ACTIVE",
         "updated_at": 1787700268390,
         "verify_jwt": false,
-        "version": 19
+        "version": 20
       },
       {
         "created_at": 1787655368587,
@@ -436,7 +436,7 @@
         "status": "ACTIVE",
         "updated_at": 1787697020135,
         "verify_jwt": false,
-        "version": 16
+        "version": 17
       },
       {
         "created_at": 1787655368587,
@@ -448,7 +448,7 @@
         "status": "ACTIVE",
         "updated_at": 1787700262710,
         "verify_jwt": false,
-        "version": 18
+        "version": 19
       },
       {
         "created_at": 1787655368587,
@@ -460,7 +460,7 @@
         "status": "ACTIVE",
         "updated_at": 1787697031589,
         "verify_jwt": true,
-        "version": 16
+        "version": 17
       },
       {
         "created_at": 1787655368587,
@@ -472,7 +472,7 @@
         "status": "ACTIVE",
         "updated_at": 1787655368587,
         "verify_jwt": true,
-        "version": 15
+        "version": 16
       },
       {
         "created_at": 1787655368587,
@@ -484,7 +484,7 @@
         "status": "ACTIVE",
         "updated_at": 1787697036873,
         "verify_jwt": true,
-        "version": 16
+        "version": 17
       },
       {
         "created_at": 1787655368587,
@@ -496,7 +496,7 @@
         "status": "ACTIVE",
         "updated_at": 1788177015239,
         "verify_jwt": false,
-        "version": 18
+        "version": 19
       },
       {
         "created_at": 1787655368587,
@@ -508,7 +508,7 @@
         "status": "ACTIVE",
         "updated_at": 1787697047153,
         "verify_jwt": false,
-        "version": 16
+        "version": 17
       },
       {
         "created_at": 1787655368587,
@@ -520,7 +520,7 @@
         "status": "ACTIVE",
         "updated_at": 1787697052991,
         "verify_jwt": false,
-        "version": 16
+        "version": 17
       },
       {
         "created_at": 1785349017739,
@@ -532,7 +532,7 @@
         "status": "ACTIVE",
         "updated_at": 1787697058765,
         "verify_jwt": false,
-        "version": 21
+        "version": 22
       },
       {
         "created_at": 1787655368587,
@@ -544,7 +544,7 @@
         "status": "ACTIVE",
         "updated_at": 1789233838252,
         "verify_jwt": false,
-        "version": 16
+        "version": 17
       },
       {
         "created_at": 1787655368587,
@@ -556,7 +556,7 @@
         "status": "ACTIVE",
         "updated_at": 1787697063103,
         "verify_jwt": true,
-        "version": 16
+        "version": 17
       },
       {
         "created_at": 1787655368587,
@@ -568,7 +568,7 @@
         "status": "ACTIVE",
         "updated_at": 1787697069793,
         "verify_jwt": true,
-        "version": 16
+        "version": 17
       },
       {
         "created_at": 1787655368587,
@@ -580,7 +580,7 @@
         "status": "ACTIVE",
         "updated_at": 1787697074968,
         "verify_jwt": true,
-        "version": 16
+        "version": 17
       },
       {
         "created_at": 1787655368587,
@@ -592,7 +592,7 @@
         "status": "ACTIVE",
         "updated_at": 1787697080338,
         "verify_jwt": true,
-        "version": 16
+        "version": 17
       },
       {
         "created_at": 1787655368587,
@@ -604,7 +604,7 @@
         "status": "ACTIVE",
         "updated_at": 1787697647606,
         "verify_jwt": true,
-        "version": 17
+        "version": 18
       },
       {
         "created_at": 1789217313886,
@@ -616,7 +616,7 @@
         "status": "ACTIVE",
         "updated_at": 1789232397889,
         "verify_jwt": false,
-        "version": 5
+        "version": 6
       },
       {
         "created_at": 1787655368587,
@@ -628,7 +628,7 @@
         "status": "ACTIVE",
         "updated_at": 1787697090319,
         "verify_jwt": true,
-        "version": 16
+        "version": 17
       },
       {
         "created_at": 1787655368587,
@@ -640,7 +640,7 @@
         "status": "ACTIVE",
         "updated_at": 1787697095339,
         "verify_jwt": true,
-        "version": 16
+        "version": 17
       },
       {
         "created_at": 1787416826942,
@@ -652,7 +652,7 @@
         "status": "ACTIVE",
         "updated_at": 1787697101000,
         "verify_jwt": false,
-        "version": 17
+        "version": 18
       },
       {
         "created_at": 1787655368587,
@@ -664,7 +664,7 @@
         "status": "ACTIVE",
         "updated_at": 1789234546799,
         "verify_jwt": true,
-        "version": 17
+        "version": 18
       },
       {
         "created_at": 1787655368587,
@@ -676,7 +676,7 @@
         "status": "ACTIVE",
         "updated_at": 1787697111184,
         "verify_jwt": false,
-        "version": 17
+        "version": 18
       },
       {
         "created_at": 1787655368587,
@@ -688,7 +688,7 @@
         "status": "ACTIVE",
         "updated_at": 1788177026757,
         "verify_jwt": false,
-        "version": 18
+        "version": 19
       },
       {
         "created_at": 1787655368587,
@@ -700,7 +700,7 @@
         "status": "ACTIVE",
         "updated_at": 1787697121260,
         "verify_jwt": false,
-        "version": 16
+        "version": 17
       },
       {
         "created_at": 1787655368587,
@@ -712,7 +712,7 @@
         "status": "ACTIVE",
         "updated_at": 1787697128436,
         "verify_jwt": true,
-        "version": 16
+        "version": 17
       },
       {
         "created_at": 1787655368587,
@@ -724,7 +724,7 @@
         "status": "ACTIVE",
         "updated_at": 1787697134470,
         "verify_jwt": true,
-        "version": 16
+        "version": 17
       },
       {
         "created_at": 1787655368587,
@@ -736,7 +736,7 @@
         "status": "ACTIVE",
         "updated_at": 1787655368587,
         "verify_jwt": true,
-        "version": 15
+        "version": 16
       },
       {
         "created_at": 1787655368587,
@@ -748,7 +748,7 @@
         "status": "ACTIVE",
         "updated_at": 1788177031877,
         "verify_jwt": false,
-        "version": 17
+        "version": 18
       },
       {
         "created_at": 1787655368587,
@@ -760,7 +760,7 @@
         "status": "ACTIVE",
         "updated_at": 1787697139675,
         "verify_jwt": true,
-        "version": 16
+        "version": 17
       },
       {
         "created_at": 1787410714411,
@@ -772,7 +772,7 @@
         "status": "ACTIVE",
         "updated_at": 1787697145096,
         "verify_jwt": false,
-        "version": 22
+        "version": 23
       },
       {
         "created_at": 1787655368587,
@@ -784,7 +784,7 @@
         "status": "ACTIVE",
         "updated_at": 1787697150175,
         "verify_jwt": false,
-        "version": 16
+        "version": 17
       },
       {
         "created_at": 1787655368587,
@@ -796,7 +796,7 @@
         "status": "ACTIVE",
         "updated_at": 1787697155992,
         "verify_jwt": false,
-        "version": 16
+        "version": 17
       },
       {
         "created_at": 1787655421259,
@@ -808,7 +808,7 @@
         "status": "ACTIVE",
         "updated_at": 1787697161269,
         "verify_jwt": true,
-        "version": 16
+        "version": 17
       },
       {
         "created_at": 1785267975129,
@@ -820,7 +820,7 @@
         "status": "ACTIVE",
         "updated_at": 1787655368587,
         "verify_jwt": false,
-        "version": 19
+        "version": 20
       },
       {
         "created_at": 1787655368587,
@@ -832,7 +832,7 @@
         "status": "ACTIVE",
         "updated_at": 1787697166092,
         "verify_jwt": true,
-        "version": 16
+        "version": 17
       },
       {
         "created_at": 1787655368587,
@@ -844,7 +844,7 @@
         "status": "ACTIVE",
         "updated_at": 1787697171203,
         "verify_jwt": false,
-        "version": 16
+        "version": 17
       },
       {
         "created_at": 1787655368587,
@@ -856,7 +856,7 @@
         "status": "ACTIVE",
         "updated_at": 1787697175869,
         "verify_jwt": false,
-        "version": 17
+        "version": 18
       },
       {
         "created_at": 1787655368587,
@@ -868,7 +868,7 @@
         "status": "ACTIVE",
         "updated_at": 1788177035940,
         "verify_jwt": false,
-        "version": 17
+        "version": 18
       },
       {
         "created_at": 1785349068086,
@@ -880,7 +880,7 @@
         "status": "ACTIVE",
         "updated_at": 1787697181144,
         "verify_jwt": false,
-        "version": 21
+        "version": 22
       },
       {
         "created_at": 1785349108621,
@@ -892,7 +892,7 @@
         "status": "ACTIVE",
         "updated_at": 1787697187002,
         "verify_jwt": false,
-        "version": 21
+        "version": 22
       },
       {
         "created_at": 1787655368587,
@@ -904,7 +904,7 @@
         "status": "ACTIVE",
         "updated_at": 1787697192109,
         "verify_jwt": true,
-        "version": 16
+        "version": 17
       },
       {
         "created_at": 1787655368587,
@@ -916,7 +916,7 @@
         "status": "ACTIVE",
         "updated_at": 1787697198194,
         "verify_jwt": false,
-        "version": 16
+        "version": 17
       },
       {
         "created_at": 1787655368587,
@@ -928,7 +928,7 @@
         "status": "ACTIVE",
         "updated_at": 1787697203274,
         "verify_jwt": true,
-        "version": 16
+        "version": 17
       },
       {
         "created_at": 1787655368587,
@@ -940,7 +940,7 @@
         "status": "ACTIVE",
         "updated_at": 1787697208273,
         "verify_jwt": true,
-        "version": 16
+        "version": 17
       },
       {
         "created_at": 1787655368587,
@@ -952,7 +952,7 @@
         "status": "ACTIVE",
         "updated_at": 1787655368587,
         "verify_jwt": true,
-        "version": 15
+        "version": 16
       },
       {
         "created_at": 1787655368587,
@@ -964,7 +964,7 @@
         "status": "ACTIVE",
         "updated_at": 1787697213449,
         "verify_jwt": true,
-        "version": 16
+        "version": 17
       },
       {
         "created_at": 1787655368587,
@@ -976,7 +976,7 @@
         "status": "ACTIVE",
         "updated_at": 1787697218858,
         "verify_jwt": true,
-        "version": 16
+        "version": 17
       },
       {
         "created_at": 1787655368587,
@@ -988,7 +988,7 @@
         "status": "ACTIVE",
         "updated_at": 1787697224001,
         "verify_jwt": true,
-        "version": 16
+        "version": 17
       },
       {
         "created_at": 1787655368587,
@@ -1000,7 +1000,7 @@
         "status": "ACTIVE",
         "updated_at": 1787655368587,
         "verify_jwt": true,
-        "version": 15
+        "version": 16
       },
       {
         "created_at": 1787655368587,
@@ -1012,7 +1012,7 @@
         "status": "ACTIVE",
         "updated_at": 1787655368587,
         "verify_jwt": false,
-        "version": 15
+        "version": 16
       },
       {
         "created_at": 1787655368587,
@@ -1024,7 +1024,7 @@
         "status": "ACTIVE",
         "updated_at": 1787655368587,
         "verify_jwt": false,
-        "version": 15
+        "version": 16
       },
       {
         "created_at": 1787655368587,
@@ -1036,7 +1036,7 @@
         "status": "ACTIVE",
         "updated_at": 1788177020992,
         "verify_jwt": false,
-        "version": 18
+        "version": 19
       },
       {
         "created_at": 1787655368587,
@@ -1048,7 +1048,7 @@
         "status": "ACTIVE",
         "updated_at": 1787697234905,
         "verify_jwt": true,
-        "version": 16
+        "version": 17
       },
       {
         "created_at": 1787655368587,
@@ -1060,7 +1060,7 @@
         "status": "ACTIVE",
         "updated_at": 1788176991622,
         "verify_jwt": false,
-        "version": 18
+        "version": 19
       },
       {
         "created_at": 1787655368587,
@@ -1072,7 +1072,7 @@
         "status": "ACTIVE",
         "updated_at": 1787697245085,
         "verify_jwt": false,
-        "version": 17
+        "version": 18
       },
       {
         "created_at": 1787655368587,
@@ -1084,7 +1084,7 @@
         "status": "ACTIVE",
         "updated_at": 1787697250753,
         "verify_jwt": false,
-        "version": 16
+        "version": 17
       },
       {
         "created_at": 1787655368587,
@@ -1096,7 +1096,7 @@
         "status": "ACTIVE",
         "updated_at": 1787697256597,
         "verify_jwt": true,
-        "version": 16
+        "version": 17
       },
       {
         "created_at": 1787655368587,
@@ -1108,7 +1108,7 @@
         "status": "ACTIVE",
         "updated_at": 1787697264520,
         "verify_jwt": true,
-        "version": 16
+        "version": 17
       },
       {
         "created_at": 1787655368587,
@@ -1120,7 +1120,7 @@
         "status": "ACTIVE",
         "updated_at": 1787697270343,
         "verify_jwt": true,
-        "version": 16
+        "version": 17
       },
       {
         "created_at": 1787655368587,
@@ -1132,7 +1132,7 @@
         "status": "ACTIVE",
         "updated_at": 1787697276031,
         "verify_jwt": false,
-        "version": 16
+        "version": 17
       },
       {
         "created_at": 1787655368587,
@@ -1144,7 +1144,7 @@
         "status": "ACTIVE",
         "updated_at": 1787697281434,
         "verify_jwt": true,
-        "version": 16
+        "version": 17
       },
       {
         "created_at": 1785410693262,
@@ -1156,7 +1156,7 @@
         "status": "ACTIVE",
         "updated_at": 1787697286601,
         "verify_jwt": true,
-        "version": 21
+        "version": 22
       },
       {
         "created_at": 1787655368587,
@@ -1168,7 +1168,7 @@
         "status": "ACTIVE",
         "updated_at": 1787697294786,
         "verify_jwt": true,
-        "version": 16
+        "version": 17
       },
       {
         "created_at": 1785348804189,
@@ -1180,7 +1180,7 @@
         "status": "ACTIVE",
         "updated_at": 1787697299956,
         "verify_jwt": false,
-        "version": 21
+        "version": 22
       },
       {
         "created_at": 1787655368587,
@@ -1192,7 +1192,7 @@
         "status": "ACTIVE",
         "updated_at": 1787655368587,
         "verify_jwt": true,
-        "version": 15
+        "version": 16
       },
       {
         "created_at": 1787655368587,
@@ -1204,7 +1204,7 @@
         "status": "ACTIVE",
         "updated_at": 1787697304838,
         "verify_jwt": true,
-        "version": 16
+        "version": 17
       },
       {
         "created_at": 1787655426108,
@@ -1216,7 +1216,7 @@
         "status": "ACTIVE",
         "updated_at": 1787697309817,
         "verify_jwt": true,
-        "version": 16
+        "version": 17
       },
       {
         "created_at": 1787655368587,
@@ -1228,7 +1228,7 @@
         "status": "ACTIVE",
         "updated_at": 1787697315152,
         "verify_jwt": true,
-        "version": 16
+        "version": 17
       },
       {
         "created_at": 1787655368587,
@@ -1240,7 +1240,7 @@
         "status": "ACTIVE",
         "updated_at": 1787697320321,
         "verify_jwt": true,
-        "version": 16
+        "version": 17
       },
       {
         "created_at": 1787655368587,
@@ -1252,7 +1252,7 @@
         "status": "ACTIVE",
         "updated_at": 1787655368587,
         "verify_jwt": false,
-        "version": 15
+        "version": 16
       },
       {
         "created_at": 1787655368587,
@@ -1264,7 +1264,7 @@
         "status": "ACTIVE",
         "updated_at": 1787655368587,
         "verify_jwt": false,
-        "version": 15
+        "version": 16
       },
       {
         "created_at": 1787655368587,
@@ -1276,7 +1276,7 @@
         "status": "ACTIVE",
         "updated_at": 1787697325660,
         "verify_jwt": false,
-        "version": 17
+        "version": 18
       },
       {
         "created_at": 1787655368587,
@@ -1288,7 +1288,7 @@
         "status": "ACTIVE",
         "updated_at": 1787697331685,
         "verify_jwt": true,
-        "version": 16
+        "version": 17
       },
       {
         "created_at": 1787655368587,
@@ -1300,7 +1300,7 @@
         "status": "ACTIVE",
         "updated_at": 1787697337221,
         "verify_jwt": false,
-        "version": 16
+        "version": 17
       },
       {
         "created_at": 1787655368587,
@@ -1312,7 +1312,7 @@
         "status": "ACTIVE",
         "updated_at": 1789234579971,
         "verify_jwt": false,
-        "version": 17
+        "version": 18
       },
       {
         "created_at": 1787655368587,
@@ -1324,7 +1324,7 @@
         "status": "ACTIVE",
         "updated_at": 1787697347914,
         "verify_jwt": true,
-        "version": 16
+        "version": 17
       },
       {
         "created_at": 1787655368587,
@@ -1336,7 +1336,7 @@
         "status": "ACTIVE",
         "updated_at": 1787697353333,
         "verify_jwt": true,
-        "version": 16
+        "version": 17
       },
       {
         "created_at": 1787655368587,
@@ -1348,7 +1348,7 @@
         "status": "ACTIVE",
         "updated_at": 1787697358414,
         "verify_jwt": true,
-        "version": 16
+        "version": 17
       },
       {
         "created_at": 1787655368587,
@@ -1360,7 +1360,7 @@
         "status": "ACTIVE",
         "updated_at": 1787697363495,
         "verify_jwt": true,
-        "version": 16
+        "version": 17
       },
       {
         "created_at": 1787655368587,
@@ -1372,7 +1372,7 @@
         "status": "ACTIVE",
         "updated_at": 1787655368587,
         "verify_jwt": false,
-        "version": 15
+        "version": 16
       },
       {
         "created_at": 1787655368587,
@@ -1384,7 +1384,7 @@
         "status": "ACTIVE",
         "updated_at": 1787697368284,
         "verify_jwt": true,
-        "version": 16
+        "version": 17
       },
       {
         "created_at": 1787655368587,
@@ -1396,7 +1396,7 @@
         "status": "ACTIVE",
         "updated_at": 1787697373673,
         "verify_jwt": false,
-        "version": 16
+        "version": 17
       },
       {
         "created_at": 1787655368587,
@@ -1408,7 +1408,7 @@
         "status": "ACTIVE",
         "updated_at": 1787655368587,
         "verify_jwt": false,
-        "version": 15
+        "version": 16
       },
       {
         "created_at": 1787418259817,
@@ -1420,7 +1420,7 @@
         "status": "ACTIVE",
         "updated_at": 1787697380039,
         "verify_jwt": true,
-        "version": 17
+        "version": 18
       },
       {
         "created_at": 1787655368587,
@@ -1432,7 +1432,7 @@
         "status": "ACTIVE",
         "updated_at": 1787697385208,
         "verify_jwt": true,
-        "version": 16
+        "version": 17
       },
       {
         "created_at": 1787655368587,
@@ -1444,7 +1444,7 @@
         "status": "ACTIVE",
         "updated_at": 1787697391159,
         "verify_jwt": true,
-        "version": 16
+        "version": 17
       },
       {
         "created_at": 1791907976432,
@@ -1456,7 +1456,7 @@
         "status": "ACTIVE",
         "updated_at": 1791907976432,
         "verify_jwt": true,
-        "version": 4
+        "version": 5
       },
       {
         "created_at": 1787655368587,
@@ -1468,7 +1468,7 @@
         "status": "ACTIVE",
         "updated_at": 1787697396610,
         "verify_jwt": false,
-        "version": 16
+        "version": 17
       },
       {
         "created_at": 1787655368587,
@@ -1480,7 +1480,7 @@
         "status": "ACTIVE",
         "updated_at": 1787697401569,
         "verify_jwt": false,
-        "version": 16
+        "version": 17
       },
       {
         "created_at": 1787655368587,
@@ -1492,7 +1492,7 @@
         "status": "ACTIVE",
         "updated_at": 1787697406878,
         "verify_jwt": true,
-        "version": 16
+        "version": 17
       },
       {
         "created_at": 1787655368587,
@@ -1504,7 +1504,7 @@
         "status": "ACTIVE",
         "updated_at": 1787697412155,
         "verify_jwt": false,
-        "version": 17
+        "version": 18
       },
       {
         "created_at": 1787655368587,
@@ -1516,7 +1516,7 @@
         "status": "ACTIVE",
         "updated_at": 1787697417074,
         "verify_jwt": false,
-        "version": 17
+        "version": 18
       },
       {
         "created_at": 1787655368587,
@@ -1528,7 +1528,7 @@
         "status": "ACTIVE",
         "updated_at": 1789234622224,
         "verify_jwt": true,
-        "version": 17
+        "version": 18
       },
       {
         "created_at": 1787655368587,
@@ -1540,7 +1540,7 @@
         "status": "ACTIVE",
         "updated_at": 1787697427396,
         "verify_jwt": true,
-        "version": 16
+        "version": 17
       },
       {
         "created_at": 1787655368587,
@@ -1552,7 +1552,7 @@
         "status": "ACTIVE",
         "updated_at": 1788177041242,
         "verify_jwt": false,
-        "version": 19
+        "version": 20
       },
       {
         "created_at": 1787655368587,
@@ -1564,7 +1564,7 @@
         "status": "ACTIVE",
         "updated_at": 1787700274081,
         "verify_jwt": false,
-        "version": 19
+        "version": 20
       }
     ],
     "enabled": true,
@@ -61718,6 +61718,21 @@
         "validated": true
       },
       {
+        "columns": [],
+        "deferrable": true,
+        "definition": "TRIGGER DEFERRABLE INITIALLY DEFERRED",
+        "name": "trg_validar_partidas_dobradas",
+        "on_delete": null,
+        "on_update": null,
+        "ref_columns": [],
+        "ref_schema": null,
+        "ref_table": null,
+        "schema": "public",
+        "table": "partidas_contabeis",
+        "type": "t",
+        "validated": true
+      },
+      {
         "columns": [
           "id"
         ],
@@ -67097,7 +67112,7 @@
         },
         {
           "active": true,
-          "command": "\n  SELECT net.http_post(\n    url := 'https://bwwbeyolnnzppeuhgkcd.supabase.co/functions/v1/webhook-retry-worker',\n    headers := jsonb_build_object('Content-Type','application/json','x-cron-secret', public.internal_job_secret()),\n    body := jsonb_build_object('trigger','cron','limit',50)\n  ) AS request_id;\n  ",
+          "command": "\n  SELECT net.http_post(\n    url := 'https://bwwbeyolnnzppeuhgkcd.supabase.co/functions/v1/webhook-retry-worker',\n    headers := jsonb_build_object('Content-Type','application/json','x-cron-secret', public.internal_job_secret()),\n    body := jsonb_build_object('limit',50)\n  ) AS request_id;\n  ",
           "database": "postgres",
           "jobid": 33,
           "jobname": "webhook-retry-worker-1min",
@@ -76795,7 +76810,7 @@
           "search_path=public, extensions, pg_temp"
         ],
         "definition": null,
-        "definition_sha": "b54eda1027a75d5a",
+        "definition_sha": "3fb4cc8033b48bf0",
         "execute_api_roles": "service_role",
         "execute_public": false,
         "is_trigger_fn": true,
@@ -97460,11 +97475,6 @@
         {
           "publication": "supabase_realtime_messages_publication",
           "schema": "realtime",
-          "table": "messages_2026_11_08"
-        },
-        {
-          "publication": "supabase_realtime_messages_publication",
-          "schema": "realtime",
           "table": "messages_2026_11_09"
         },
         {
@@ -97491,6 +97501,11 @@
           "publication": "supabase_realtime_messages_publication",
           "schema": "realtime",
           "table": "messages_2026_11_14"
+        },
+        {
+          "publication": "supabase_realtime_messages_publication",
+          "schema": "realtime",
+          "table": "messages_2026_11_15"
         }
       ]
     },
@@ -103092,7 +103107,7 @@
         "timing": "BEFORE"
       },
       {
-        "definition": "CREATE TRIGGER trg_validar_partidas_dobradas AFTER INSERT OR DELETE OR UPDATE ON partidas_contabeis FOR EACH ROW EXECUTE FUNCTION validar_partidas_dobradas()",
+        "definition": "CREATE CONSTRAINT TRIGGER trg_validar_partidas_dobradas AFTER INSERT OR DELETE OR UPDATE ON partidas_contabeis DEFERRABLE INITIALLY DEFERRED FOR EACH ROW EXECUTE FUNCTION validar_partidas_dobradas()",
         "events": "INSERT OR DELETE OR UPDATE",
         "function": "public.validar_partidas_dobradas",
         "level": "ROW",

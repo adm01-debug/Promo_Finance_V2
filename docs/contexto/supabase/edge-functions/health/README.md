@@ -4,7 +4,7 @@
 |---|---|
 | nome | health |
 | status | ACTIVE |
-| versão | 15 |
+| versão | 16 |
 | verify_jwt | não |
 | entrypoint | file:///tmp/user_fn_bwwbeyolnnzppeuhgkcd_9e65c81b-1ea9-49b0-a90e-c56f0a53cbaf_1/source/supabase/functions/health/index.ts |
 | import_map |  |

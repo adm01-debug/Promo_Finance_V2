@@ -4,7 +4,7 @@
 |---|---|
 | nome | ci-security-gate-log |
 | status | ACTIVE |
-| versão | 16 |
+| versão | 17 |
 | verify_jwt | não |
 | entrypoint | file:///home/joaquim_ataides/hermes-workspaces/chat-c696391/supabase/functions/ci-security-gate-log/index.ts |
 | import_map |  |

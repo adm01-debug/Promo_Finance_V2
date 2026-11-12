@@ -1,7 +1,7 @@
 # Contexto do projeto para agentes de IA
 
 GERADO AUTOMATICAMENTE por scripts/ai-context/gerar.mjs — não editar à mão; será sobrescrito.
-Publicado pelo workflow .github/workflows/contexto.yml em docs/contexto/codigo/ da branch gerada `contexto`. Índice único em docs/contexto/00-INDEX.md. Ler: git fetch origin contexto && git show origin/contexto:docs/contexto/00-INDEX.md Gere local com `node scripts/ai-context/gerar.mjs`. Commit-base: `5215111cf73d9b6a89e2e5654650f7f4c9ac8c30` (2026-11-11T19:49:39-03:00).
+Publicado pelo workflow .github/workflows/contexto.yml em docs/contexto/codigo/ da branch gerada `contexto`. Índice único em docs/contexto/00-INDEX.md. Ler: git fetch origin contexto && git show origin/contexto:docs/contexto/00-INDEX.md Gere local com `node scripts/ai-context/gerar.mjs`. Commit-base: `252bc6669fa1883bd52df87fc34d6d387b616489` (2026-11-11T23:34:21Z).
 
 ## Como usar (leia antes de planejar ou executar qualquer tarefa)
 1. **Tela/rota/menu** → `rotas.json` (url/vista/menu → arquivo → hooks → tabelas → edges; `rotas_http_backend` para APIs) e `modulos.json` (módulo inteiro + dependências entre módulos).
@@ -455,8 +455,8 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 - não gerado neste run. Neste repo NÃO execute `graphify update .` (proibido por AGENTS.md, seção Graphify). O fluxo autorizado é o piloto: `npm run graphify:pilot`, ou `npm run graphify:analyze -- --profile NOME` (revise antes com `npm run graphify:inventory -- --profile NOME`). Resultados privados em graphify-out/piloto-*/; consulte apenas grafo cuja evidencia.json tenha piloto validado e hashes compatíveis com os arquivos atuais.
 
 ## Hotspots (arquivos mais alterados, 90 dias)
-- package.json (35)
-- bun.lock (28)
+- package.json (36)
+- bun.lock (29)
 - .github/workflows/ci.yml (23)
 - supabase/config.toml (15)
 - supabase/functions/asaas-proxy/index.ts (15)
@@ -619,6 +619,7 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 - CHANGELOG topo: [Unreleased]
 
 ## Últimos commits
+- 2026-11-11 `252bc66` fix: bump msw from 2.12.7 to 3.0.4 (#297)
 - 2026-11-11 `5215111` chore(deps): bump actions/checkout from 5.1.0 to 7.0.1 (#206)
 - 2026-11-11 `f1d42f8` fix: 9 edge functions ganham bloco verify_jwt no config.toml (deploy em lote abortava com exit 6) (#305)
 - 2026-11-11 `67613f4` fix: endurecimento dos scripts de automação, guard de perímetro, inventário e manutenção (#304)
@@ -633,7 +634,6 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 - 2026-11-10 `bec7163` feat(ci): guard do perímetro do GitHub contra baseline versionado (#277)
 - 2026-11-10 `3e0b415` fix(automacao): aplica findings do Codex no #300 (#301)
 - 2026-11-10 `acebea0` chore(automacao): conecta testes, grafo e manutenção aos gatilhos (#300)
-- 2026-11-10 `79382a6` feat(inventario): inventário autônomo do estado real (banco, rotas e edge functions) (#265)
 
 ## Arquivos deste diretório
 - `docs/contexto/codigo/rotas.json`

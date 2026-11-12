@@ -37,6 +37,7 @@
 | partidas_contabeis_pkey | PRIMARY KEY | `PRIMARY KEY (id)` |  |  | sim |
 | partidas_contabeis_tipo_check | CHECK | `CHECK (tipo = ANY (ARRAY['debito'::text, 'credito'::text]))` |  |  | sim |
 | partidas_contabeis_valor_positivo | CHECK | `CHECK (valor > 0::numeric)` |  |  | sim |
+| trg_validar_partidas_dobradas | t | `TRIGGER DEFERRABLE INITIALLY DEFERRED` |  |  | sim |
 
 
 ## Índices

@@ -4,7 +4,7 @@
 |---|---|
 | nome | insights-relatorio |
 | status | ACTIVE |
-| versão | 18 |
+| versão | 19 |
 | verify_jwt | não |
 | entrypoint | file:///tmp/promo-finance-postmerge-h0831-02/supabase/functions/insights-relatorio/index.ts |
 | import_map |  |

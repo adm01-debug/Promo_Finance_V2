@@ -4,7 +4,7 @@
 |---|---|
 | nome | bling-webhook |
 | status | ACTIVE |
-| versão | 18 |
+| versão | 19 |
 | verify_jwt | não |
 | entrypoint | file:///home/joaquim_ataides/hermes-workspaces/chat-c696391/supabase/functions/bling-webhook/index.ts |
 | import_map |  |

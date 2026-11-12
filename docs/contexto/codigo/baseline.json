@@ -2,11 +2,16 @@
  "aviso": "GERADO AUTOMATICAMENTE por scripts/ai-context/gerar.mjs — não editar à mão; será sobrescrito.",
  "format_version": 2,
  "git": {
-  "commit": "5215111cf73d9b6a89e2e5654650f7f4c9ac8c30",
+  "commit": "252bc6669fa1883bd52df87fc34d6d387b616489",
   "branch": "main",
-  "data_commit": "2026-11-11T19:49:39-03:00",
+  "data_commit": "2026-11-11T23:34:21Z",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
   "ultimos_commits": [
+   {
+    "sha": "252bc66",
+    "data": "2026-11-11",
+    "assunto": "fix: bump msw from 2.12.7 to 3.0.4 (#297)"
+   },
    {
     "sha": "5215111",
     "data": "2026-11-11",
@@ -126,22 +131,17 @@
     "sha": "e8620bd",
     "data": "2026-11-09",
     "assunto": "chore: bump @sentry/react 11.0.0 → 11.9.0 (supersede #210) (#287)"
-   },
-   {
-    "sha": "b6e60a5",
-    "data": "2026-11-09",
-    "assunto": "chore: docs analise-prs estado final 15 mergeadas esta sessao"
    }
   ],
-  "arquivos_mudados_7d": 480,
+  "arquivos_mudados_7d": 481,
   "pastas_mais_mudadas_30d": [
    {
     "pasta": "package.json",
-    "mudancas": 18
+    "mudancas": 19
    },
    {
     "pasta": "bun.lock",
-    "mudancas": 17
+    "mudancas": 18
    },
    {
     "pasta": "supabase/functions/_shared",
@@ -192,18 +192,18 @@
     "mudancas": 4
    },
    {
-    "pasta": "scripts/automation.config.json",
+    "pasta": "deno.lock",
     "mudancas": 4
    }
   ],
   "arquivos_mais_mudados_90d": [
    {
     "arquivo": "package.json",
-    "mudancas": 35
+    "mudancas": 36
    },
    {
     "arquivo": "bun.lock",
-    "mudancas": 28
+    "mudancas": 29
    },
    {
     "arquivo": ".github/workflows/ci.yml",
@@ -309,7 +309,7 @@
    },
    {
     "autor": "dependabot[bot]",
-    "commits": 10
+    "commits": 11
    },
    {
     "autor": "Joaquim Ataides",

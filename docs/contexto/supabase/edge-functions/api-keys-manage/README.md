@@ -4,7 +4,7 @@
 |---|---|
 | nome | api-keys-manage |
 | status | ACTIVE |
-| versão | 4 |
+| versão | 5 |
 | verify_jwt | não |
 | entrypoint | file:///home/runner/work/Promo_Finance_V2/Promo_Finance_V2/supabase/functions/api-keys-manage/index.ts |
 | import_map |  |

@@ -4,7 +4,7 @@
 |---|---|
 | nome | overlay-rejeicoes-auditoria |
 | status | ACTIVE |
-| versão | 16 |
+| versão | 17 |
 | verify_jwt | sim |
 | entrypoint | file:///home/joaquim_ataides/hermes-workspaces/chat-c696391/supabase/functions/overlay-rejeicoes-auditoria/index.ts |
 | import_map |  |

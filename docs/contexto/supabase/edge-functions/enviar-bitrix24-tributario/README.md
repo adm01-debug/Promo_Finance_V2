@@ -4,7 +4,7 @@
 |---|---|
 | nome | enviar-bitrix24-tributario |
 | status | ACTIVE |
-| versão | 16 |
+| versão | 17 |
 | verify_jwt | não |
 | entrypoint | file:///home/joaquim_ataides/hermes-workspaces/chat-c696391/supabase/functions/enviar-bitrix24-tributario/index.ts |
 | import_map |  |

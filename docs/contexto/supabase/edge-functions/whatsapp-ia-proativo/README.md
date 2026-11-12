@@ -4,7 +4,7 @@
 |---|---|
 | nome | whatsapp-ia-proativo |
 | status | ACTIVE |
-| versão | 19 |
+| versão | 20 |
 | verify_jwt | não |
 | entrypoint | file:///tmp/promo-finance-postmerge-h0831-02/supabase/functions/whatsapp-ia-proativo/index.ts |
 | import_map |  |

@@ -4,7 +4,7 @@
 |---|---|
 | nome | compare-schemas |
 | status | ACTIVE |
-| versão | 16 |
+| versão | 17 |
 | verify_jwt | não |
 | entrypoint | file:///home/runner/work/Promo_Finance_V2/Promo_Finance_V2/supabase/functions/compare-schemas/index.ts |
 | import_map |  |

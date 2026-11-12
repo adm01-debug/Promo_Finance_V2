@@ -4,7 +4,7 @@
 |---|---|
 | nome | gerar-resumo-financeiro-diario |
 | status | ACTIVE |
-| versão | 15 |
+| versão | 16 |
 | verify_jwt | sim |
 | entrypoint | file:///tmp/user_fn_bwwbeyolnnzppeuhgkcd_e988233a-1b29-46e6-8a8d-4ee03033d0cb_1/source/supabase/functions/gerar-resumo-financeiro-diario/index.ts |
 | import_map |  |

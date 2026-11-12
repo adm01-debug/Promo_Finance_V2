@@ -1,9 +1,9 @@
 {
  "meta": {
-  "sha": "5215111cf73d9b6a89e2e5654650f7f4c9ac8c30",
+  "sha": "252bc6669fa1883bd52df87fc34d6d387b616489",
   "branch": "main",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
-  "generated_at": "2026-11-11 23:26 UTC",
+  "generated_at": "2026-11-12 01:29 UTC",
   "files_total": 3651,
   "code_files": 3286,
   "code_lines": 491200
@@ -241670,10 +241670,21 @@
   }
  },
  "git": {
-  "sha": "5215111cf73d9b6a89e2e5654650f7f4c9ac8c30",
+  "sha": "252bc6669fa1883bd52df87fc34d6d387b616489",
   "branch": "main",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
   "commits": [
+   {
+    "sha": "252bc66",
+    "date": "2026-11-11",
+    "author": "dependabot[bot]",
+    "subject": "fix: bump msw from 2.12.7 to 3.0.4 (#297)",
+    "files": [
+     "bun.lock",
+     "deno.lock",
+     "package.json"
+    ]
+   },
    {
     "sha": "5215111",
     "date": "2026-11-11",
@@ -242290,44 +242301,19 @@
      "analise-prs/progresso.json",
      "analise-prs/prs.json"
     ]
-   },
-   {
-    "sha": "8eef9b0",
-    "date": "2026-11-09",
-    "author": "adm01-debug",
-    "subject": "fix: sanitizar fixture deploy-log-all para remover token real (supersede #253)",
-    "files": [
-     "scripts/edge-deploy/README.md",
-     "scripts/edge-deploy/allowed-origins.json",
-     "scripts/edge-deploy/deployment-record.mjs",
-     "scripts/edge-deploy/deployment-record.unit.mjs",
-     "scripts/edge-deploy/fixtures/deploy-log-all-36583351162.txt",
-     "scripts/edge-deploy/fixtures/deploy-log-ansi-f03.txt",
-     "scripts/edge-deploy/fixtures/deploy-log-echo-only.txt",
-     "scripts/edge-deploy/fixtures/deploy-log-single-36852598923.txt",
-     "scripts/edge-deploy/health-check.mjs",
-     "scripts/edge-deploy/redigir-log.mjs",
-     "scripts/edge-deploy/redigir-log.unit.mjs",
-     "scripts/edge-deploy/register-deployment.mjs",
-     "scripts/edge-deploy/register-deployment.unit.mjs",
-     "scripts/edge-deploy/secrets-scope.mjs",
-     "scripts/edge-deploy/secrets-scope.unit.mjs",
-     "scripts/edge-deploy/smoke-functions.mjs",
-     "scripts/edge-deploy/smoke-functions.unit.mjs",
-     "scripts/edge-deploy/unchanged-from-log.mjs",
-     "scripts/edge-deploy/unchanged-from-log.unit.mjs",
-     "scripts/edge-deploy/verify-remote.mjs",
-     "scripts/edge-deploy/verify-remote.unit.mjs"
-    ]
    }
   ],
   "hot_files": [
+   [
+    "package.json",
+    6
+   ],
    [
     "analise-prs/progresso.json",
     6
    ],
    [
-    "package.json",
+    "bun.lock",
     5
    ],
    [
@@ -242336,10 +242322,6 @@
    ],
    [
     "scripts/automation.config.json",
-    4
-   ],
-   [
-    "bun.lock",
     4
    ],
    [

@@ -4,7 +4,7 @@
 |---|---|
 | nome | convidar-usuario |
 | status | ACTIVE |
-| versão | 5 |
+| versão | 6 |
 | verify_jwt | não |
 | entrypoint | file:///home/runner/work/Promo_Finance_V2/Promo_Finance_V2/supabase/functions/convidar-usuario/index.ts |
 | import_map |  |
