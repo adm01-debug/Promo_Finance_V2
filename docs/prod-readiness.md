@@ -1,6 +1,6 @@
 # Prontidão para produção — Promo_Finance_V2
 
-> Auditoria de 12/11/2026 (sessão Claude Code). Linha de base: `main` em `bd5e644` (PR #320).
+> Auditoria de 12/11/2026 (sessão Claude Code). Linha de base: `main` em `bd5e644` (PR #320). Estado conferido no fechamento: `main` em `821385c` (PRs #322, #323 e #321 mergeadas), produção `dpl_2YJKioxK9AG14enSioWDKzuiaxU8`.
 > Toda marcação abaixo tem prova (comando, query, log ou request real). Nada marcado como
 > "não verificado": o que não pôde ser provado está como **BLOQUEADO** com o erro exato.
 
@@ -12,9 +12,9 @@
 | 2 | Cobertura | OK | todo item da seção 1 está OK ou BLOQUEADO |
 | 3 | Qualidade | OK (ver nota lint:strict) | seção 2 |
 | 4 | GitHub Actions | OK (ver nota sobre `contexto.yml`) | seção 3 |
-| 5 | Sem "pela metade" | BLOQUEADO (parcial) | seção 6 — 3 itens corrigidos (#322, #323, #325); restantes dependem de DDL/credencial/decisão de produto |
+| 5 | Sem "pela metade" | BLOQUEADO (parcial) | seção 6 — 2 itens corrigidos em produção (#322, #323); #325 (regressão de layout/rótulos da #322) com CI verde exceto `E2E Destructive Logout` na fila; restantes dependem de DDL/credencial/decisão de produto |
 | 6 | Banco | OK com 1 drift BLOQUEADO | seção 4 |
-| 7 | Produção | BLOQUEADO (parcial) | seção 5 — 4 crons falhando: 1 corrigível pela PR #321, 3 dependem de segredo/DDL (dono) |
+| 7 | Produção | BLOQUEADO (parcial) | seção 5 — 3 crons falhando, todos dependem de segredo/DDL (dono); `monitorar-erros-frontend` corrigido pela #321 (aplicada ~19:42 UTC, 200 desde 20:00) |
 | 8 | Entrega | OK | seção 7 |
 | 9 | Relatório | OK | este arquivo |
 
@@ -24,7 +24,7 @@ Fonte: varredura do código no `bd5e644` (`src/App.tsx`, `supabase/functions/*`,
 `.github/workflows/*`) cruzada com o estado real de produção (Supabase `bwwbeyolnnzppeuhgkcd`,
 Vercel `promo-finance-v2`).
 
-### 1.1 Rotas/telas — 128 registradas no `main` + 2 páginas órfãs
+### 1.1 Rotas/telas — 128 na linha de base (`bd5e644`) + 2 registradas pela #323 (130 no `main` `821385c`)
 
 Status OK = rota registrada, guard correto e página compila. Prova comum: `tsc --noEmit` exit 0, `vite build` exit 0 (bundle contém o chunk lazy de cada página), deploy de produção `dpl_CE8yX9sNzaU2sDgPwMnrkVCTuHvb` READY no commit `bd5e644` e `GET https://promo-finance-v2.vercel.app/` → 200 (SPA; todas as rotas servem o mesmo `index.html` via rewrite). A renderização por rota não é provada por esse 200 — é coberta pelos E2E da CI (`E2E Critical Gate`, `E2E Financeiro`, verdes em 12/11) só nas rotas que eles visitam.
 
@@ -158,8 +158,8 @@ Status OK = rota registrada, guard correto e página compila. Prova comum: `tsc 
 | 126 | `/compras` | Compras | Protected | src/App.tsx:1138 | OK |
 | 127 | `/style-guide` | StyleGuide | Protected | src/App.tsx:1146 | OK |
 | 128 | `*` | NotFound | público | src/App.tsx:1154 | OK |
-| 129 | `/admin/erros-frontend` | AdminErrosFrontend | admin | sem rota no `main` → PR #323 | BLOQUEADO até merge da #323 (CI) |
-| 130 | `/tributario/consulta-rapida` | ConsultaRapidaFiscal | autenticado | sem rota no `main` → PR #323 | BLOQUEADO até merge da #323 (CI) |
+| 129 | `/admin/erros-frontend` | AdminErrosFrontend | admin | src/App.tsx:904 (`821385c`, PR #323) | OK |
+| 130 | `/tributario/consulta-rapida` | ConsultaRapidaFiscal | autenticado | src/App.tsx:531 (`821385c`, PR #323) | OK |
 
 ### 1.2 Edge Functions — 106 pastas em `supabase/functions`
 
@@ -582,21 +582,21 @@ Criadas em migration mas ausentes em produção (22) — histórico abandonado, 
 
 ### 1.4 Workflows (`.github/workflows`: 19 workflows + `README.md`)
 
-Prova: última execução não cancelada de cada workflow no `main` (API do Actions, 12/11/2026). Conferido após o último merge (`51d0405`, PR #322).
+Prova: última execução não cancelada de cada workflow no `main` (API do Actions, 12/11/2026 ~21:45 UTC). `main` atual: `821385c` (PR #321, só SQL).
 
 | workflow | gatilhos | última execução no `main` | status |
 |---|---|---|---|
 | `actionlint.yml` | push main (paths), PR, dispatch | 43167726933 push · success | OK |
 | `auto-update-pr-branch.yml` | push main, workflow_run, schedule, dispatch | 43225710766 schedule · success | OK |
-| `automation-local.yml` | PR, push main, dispatch | 43239116942 push (`51d0405`) · success | OK |
-| `ci.yml` | push main, PR | 43220341742 push (`bd5e644`) · success; run do push `51d0405` (43239117187) na fila do Actions no fechamento | OK |
+| `automation-local.yml` | PR, push main, dispatch | 43292483535 push (`821385c`) · success | OK |
+| `ci.yml` | push main, PR | 43266511057 push (`6e462aa`) · success; run do push `821385c` (43292483803) ainda na fila do Actions às 21:45 UTC | OK |
 | `codeql.yml` | push main, PR, schedule semanal | 43239116996 push (`51d0405`) · success | OK |
 | `contexto.yml` | push main (paths), PR (paths), schedule 10 min, dispatch | 43221896982 schedule · success (execuções seguintes canceladas por `concurrency`, não por falha) | OK |
-| `deno-tests.yml` | push main, PR, dispatch | 43220341753 push (`bd5e644`) · success; run do push `51d0405` (43239117352) na fila no fechamento | OK |
+| `deno-tests.yml` | push main, PR, dispatch | 43292483724 push (`821385c`) · success | OK |
 | `dependency-review.yml` | só PR | 43214628619 pull_request · success | OK |
 | `estado-real.yml` | schedule semanal, push main (paths), dispatch | 43177623881 push · success | OK |
 | `functions-deploy.yml` | só dispatch | 43183475894 dispatch · success | OK |
-| `graphify.yml` | push main (paths), PR (paths), dispatch | 43239117322 push (`51d0405`) · success | OK |
+| `graphify.yml` | push main (paths), PR (paths), dispatch | 43292483673 push (`821385c`) · success | OK |
 | `inventario-estado.yml` | schedule semanal, push/PR (paths), dispatch | 43177624081 push · success | OK |
 | `migration-ledger.yml` | só dispatch | 39134497416 dispatch · success | OK |
 | `prod-migrate.yml` | só dispatch | 41048078008 dispatch · success | OK |
@@ -604,7 +604,7 @@ Prova: última execução não cancelada de cada workflow no `main` (API do Acti
 | `settings-guard.yml` | schedule diário, dispatch | 43175053162 schedule · success | OK |
 | `staging-migrate.yml` | só dispatch | 40908210665 dispatch · success | OK |
 | `supabase-admin-ops.yml` | só dispatch | 38429016227 dispatch · success | OK |
-| `supabase-linter.yml` | push main (paths), PR, dispatch | 43220341709 push (`bd5e644`) · success (só roda com mudança em banco/funções) | OK |
+| `supabase-linter.yml` | push main (paths), PR, dispatch | 43292483702 push (`821385c`) · success (só roda com mudança em banco/funções) | OK |
 
 Registrados no GitHub sem arquivo no repo (não executam no `main`): `e2e-cloud-probe.yml`
 (1 execução em 30/08, branch `hermes/probe-e2e-h102635`) e `tmp-update-bun-lock.yml` (1 execução em
@@ -620,7 +620,7 @@ ponta exige conta/credencial do provedor ativada pelo dono.
 |---|---|---|---|
 | Supabase externo (Gestão de Clientes) via `external-data` | `EXTERNAL_SUPABASE_URL`, `EXTERNAL_SUPABASE_SERVICE_KEY` | `edge_function_logs` 7d: 4.948 requests, códigos 200/401, 0 erros 5xx | OK |
 | SEFAZ DF-e (`sefaz-dfe-dispatcher`) | `SEFAZ_CRON_SECRET`, `NFE_CERT_MASTER_KEY` | 33 execuções 24h, todas `status_code=200`; `nfe_recebidas` = 31 | OK |
-| Resend (e-mail de alertas) | `RESEND_API_KEY`, `RESEND_FROM` | `net._http_response` 24h: 24× `{"ok":true,"results":{"email":{"status":200,"ok":true}}}` | OK |
+| Resend (e-mail de alertas) | `RESEND_API_KEY`, `RESEND_FROM` | `net._http_response` 24h: 24× `{"ok":true,"results":{"email":{"status":200,"ok":true}}}`; 1× `{"email":{"status":429,"ok":false}}` (rate limit do Resend) às 21:10 UTC de 12/11 | OK (1 rate limit pontual) |
 | Web Push (`send-push-notification`) | `VAPID_*` | 42× `200 {"success":true,"sent":0,..."Nenhuma subscription ativa"}`; `push_subscriptions` = 0; envio sem `Authorization` VAPID nem criptografia `aes128gcm` (`supabase/functions/send-push-notification/index.ts:121-129`) | BLOQUEADO — com assinante real o push seria rejeitado; nunca exercido |
 | SSO (OIDC/SAML) | config no banco | `sso_providers` = 4 | OK |
 | Lovable AI Gateway / OpenAI (18 funções de IA) | `LOVABLE_API_KEY`, `OPENAI_API_KEY` | funções publicadas (ping 200); `expert_messages` = 0 | BLOQUEADO — sem uso real em produção; teste exige chamada paga ao provedor (custo) |
@@ -647,6 +647,8 @@ não alterado).
 | `vite build` (com `VITE_SUPABASE_*` definidos) | exit 0 (`✓ built in 7.16s`) | exit 0 |
 | `vitest run` | exit 0 — 247 arquivos, **3025 testes** | exit 0 — 247 arquivos, **3025 testes** (= linha de base) |
 
+Após a #323: `ci.yml` 43266511057 (push `6e462aa`, quality gate + testes) success; `821385c` só altera SQL. Local no `main` `821385c`: `tsc` exit 0, `npm run lint` exit 0 (74 avisos), `vite build` exit 0, `vitest` 247 arquivos / 3025 testes.
+
 Nenhum teste removido, pulado ou afrouxado. `lint:strict` não é gate da CI; zerar exige quebrar 73
 arquivos grandes (refatoração fora do escopo "diff mínimo") → BLOQUEADO por decisão do dono.
 
@@ -670,27 +672,27 @@ Ver 1.4. Nenhuma execução vermelha no `main`. `contexto.yml` (schedule a cada 
 
 | verificação | prova | status |
 |---|---|---|
-| Deploy front | Vercel `dpl_3EBzYSfwDVpZKZZBTmDoh1qb4d5j` READY, commit `51d0405` | OK |
+| Deploy front | Vercel `dpl_2YJKioxK9AG14enSioWDKzuiaxU8` READY, commit `821385c` (anteriores: `dpl_8dw192HzBpRkKmFqW13q6gRGean8` `6e462aa`, `dpl_3EBzYSfwDVpZKZZBTmDoh1qb4d5j` `51d0405`) | OK |
 | Front no ar | `GET https://promo-finance-v2.vercel.app/` → 200, `<title>Promo Finance \| Sistema Financeiro Corporativo</title>` | OK |
 | Erros de runtime Vercel | `get_runtime_errors` 24h: "No runtime errors found" | OK |
 | Edge functions | 105/106 publicadas e respondendo (ping); `edge_function_logs` desde 12/11 05:45 UTC (11 funções instrumentadas): 0 linhas 5xx/`error` | OK (exceto `monitor-health`, seção 4) |
 | Cron `enviar-digest-conformidade-horario` | 24/24 falhas em 24h desde 31/10/2026: `ERROR: Secret "anon_key" ausente no Vault` (`chave_anon_vault()` linha 11) | BLOQUEADO — criar segredo `anon_key` no Vault (segredo → dono) |
 | Cron `refresh-performance-alerts-weekly` | 11/11 falhas desde 30/08 (0 sucesso): `new row for relation "performance_alerts" violates check constraint "performance_alerts_source_check"` | BLOQUEADO — exige ajuste de DDL/função (dono) |
 | Cron `maintain-monthly-partitions` | 3/3 falhas (última 01/11): `"audit_logs" is not partitioned` ao criar `audit_logs_2026_11 PARTITION OF`; as 22 tabelas `audit_logs_*`/`frontend_error_logs_*` são soltas (~31 linhas de auditoria fora de `audit_logs`) | BLOQUEADO — exige decisão de DDL (particionar ou remover o job) |
-| Cron `monitorar-erros-frontend` | 12/12 execuções → 401 `chamada_nao_autorizada` (cron envia Vault `regua_cron_secret`; função valida `integration_secrets.internal_jobs`). Com o segredo certo → 200 `{"success":true,"alertas":0}` (request 199266) | BLOQUEADO — correção na PR #321 (pg_cron em produção → dono); a PR também alinha `webhook-retry-worker-1min`, que só funciona hoje porque a versão publicada diverge do repo |
+| Cron `monitorar-erros-frontend` | antes: 12/12 → 401 `chamada_nao_autorizada`; PR #321 mergeada pelo dono (`821385c`) e SQL aplicado em produção ~19:42 UTC: `net._http_response` 200 `{"success":true,"alertas":0,"message":"nenhum pico detectado"}` às 20:00, 20:30, 21:00 e 21:30 UTC; `webhook-retry-worker-1min` segue 200 `{"picked":0,...}` | OK |
 | `external-data` 401 | 2.337 respostas 401 entre 08:26 e 12:00 de 12/11 (token inválido/expirado, ~500/h) e só 3 esporádicas depois das 12:42; gate `auth.getUser` em `supabase/functions/external-data/index.ts:134-143` responde corretamente | OK |
 | Fluxo contas a pagar (prod, transação revertida) | `insert → status=pendente; update parcial → parcial; update pago → pago; delete → 1 linha` | OK |
 | Fluxo contas a receber (prod, revertido) | `insert ok; update 1; delete 1` | OK |
 | Fluxo movimentação → contabilização automática (prod, revertido) | `insert ok; lancamentos_contabeis novos = 1; delete 1` | OK |
-| Login | `auth.users`: último `last_sign_in_at` 2026-11-12 13:10 UTC | OK |
+| Login | `auth.users`: último `last_sign_in_at` 2026-11-12 21:39 UTC | OK |
 | Teste de RLS como usuário final | `exec_sql` é `SECURITY DEFINER` (`cannot set parameter "role" within security-definer function`) e o proxy da sessão bloqueia `*.supabase.co` (CONNECT 403) | BLOQUEADO — coberto indiretamente pelo gate de RLS (seção 4) |
 
 ## 6. "Pela metade" no código de produção
 
 | item | onde | status |
 |---|---|---|
-| Botões "ocultar/exibir" e "tamanho" do diálogo Configurar Dashboard sem ação | `src/components/dashboard/DashboardExecutivo.tsx:461-462` (`() => {}`) | OK — corrigido na PR #322 (mergeada, deploy READY) |
-| Rótulos duplicados/errados no Configurar Dashboard e widgets estreitos (regressão da #322) | `DashboardConfigDialog.tsx:98`; grid `md:grid-cols-6` em `DashboardExecutivo.tsx` | PR #325 — CI em andamento no fechamento desta versão |
+| Botões "ocultar/exibir" e "tamanho" do diálogo Configurar Dashboard sem ação | `src/components/dashboard/DashboardExecutivo.tsx:461-462` no `bd5e644` (`() => {}`) | OK — corrigido na PR #322 (mergeada, deploy READY) |
+| Rótulos duplicados/errados no Configurar Dashboard e widgets estreitos (regressão da #322) | `DashboardConfigDialog.tsx:98`; grid `md:grid-cols-6` em `DashboardExecutivo.tsx` | PR #325 aberta — 28 checks verdes (inclui E2E Critical Gate e Financeiro), `E2E Destructive Logout` na fila |
 | Telemetria de erros do front não grava (tela 'Erros do Front-end' sempre vazia) | papel `authenticated` sem `INSERT` em `public.frontend_error_logs`; `src/lib/telemetry.ts:208-227` | BLOQUEADO — exige `GRANT INSERT` (DDL em produção → dono) |
 | Itens de menu de admin visíveis a todos os papéis (não-admin cai em 'Acesso restrito') | `src/components/layout/sidebar/SidebarNavGroups.tsx:313` não filtra por `requiredRoles` de `src/lib/navigation.ts` (vale para Segurança, Logs de Auditoria, Eventos JIT e o novo Erros do Front-end) | BLOQUEADO — padrão herdado; mudança de comportamento do menu para decisão do dono |
 | Botão SMS "funcionalidade em desenvolvimento" | `src/components/contas-receber/EnviarCobrancaDialog.tsx:68` (usado em `ContasReceber.tsx`) | BLOQUEADO — sem provedor de SMS (custo) |
@@ -698,7 +700,7 @@ Ver 1.4. Nenhuma execução vermelha no `main`. `contexto.yml` (schedule a cada 
 | Filtro de movimentações por conta bancária removido ("coluna não existe") | `src/hooks/useFinancialOperations.ts:76` — a coluna existe em produção; único chamador (`Movimentacoes.tsx:131`) passa `undefined` | BLOQUEADO — junto com a regeneração do `types.ts` |
 | Envio de Web Push sem VAPID/criptografia | `supabase/functions/send-push-notification/index.ts:121-129` | BLOQUEADO — reimplementar envio com VAPID (sem assinantes hoje) |
 | Painéis duplicados no dashboard (PrevisaoIA, Metas, Alertas de Orçamento no grid e na lateral) | `DashboardExecutivo.tsx:146,186,196` e coluna lateral | BLOQUEADO — decisão de produto |
-| Páginas prontas sem rota (inalcançáveis) | `src/pages/admin/AdminErrosFrontend.tsx`, `src/pages/tributario/ConsultaRapidaFiscal.tsx` | PR #323 — CI em andamento no fechamento desta versão |
+| Páginas prontas sem rota (inalcançáveis) | `src/pages/admin/AdminErrosFrontend.tsx`, `src/pages/tributario/ConsultaRapidaFiscal.tsx` | OK — corrigido na PR #323 (mergeada `6e462aa`, deploy `dpl_8dw192HzBpRkKmFqW13q6gRGean8` READY) |
 | Open Finance simulado (instituições, consentimento, saldos e transações inventados) | `supabase/functions/open-finance/index.ts:195,284,348,392,430`; `src/components/conciliacao/ImportarExtratoDialog.tsx:81-126` (usado em `ContasBancarias.tsx:304` e Conciliação) | BLOQUEADO — exige contrato com provedor Open Finance (custo/arquitetura) |
 | Prévia de regras de conciliação com extrato fixo | `src/components/conciliacao/RegrasConciliacaoPanel.tsx:86,110` | BLOQUEADO — decisão de produto (usar extrato real exige definir a fonte) |
 | 39 TODOs de campos preenchidos no formulário e não salvos (coluna inexistente) | lista em `src/hooks/*` e `src/components/*` (ex.: `ContaReceberForm.tsx:189` `codigo_barras/link_boleto`, `ContasPagarTableRow.tsx:217` `tags`, `useProtestos.ts:32`) — 23 colunas conferidas em produção: **não existem** | BLOQUEADO — exige DDL em produção (criar colunas) ou decisão de remover os campos (dono) |
@@ -715,19 +717,20 @@ Ver 1.4. Nenhuma execução vermelha no `main`. `contexto.yml` (schedule a cada 
 | PR | o que muda | evidência | estado |
 |---|---|---|---|
 | [#322](https://github.com/adm01-debug/Promo_Finance_V2/pull/322) | Configurar Dashboard: ocultar/exibir e tamanho dos widgets passam a funcionar (`DashboardExecutivo.tsx`) | causa: handlers `() => {}` em `DashboardExecutivo.tsx:461-462`; CI 26/26 obrigatórios verdes; local `tsc` 0, `vitest` 3025/3025, `vite build` OK | mergeada (`51d0405`), deploy `dpl_3EBzYSfwDVpZKZZBTmDoh1qb4d5j` READY |
-| [#323](https://github.com/adm01-debug/Promo_Finance_V2/pull/323) | Páginas 'Erros do Front-end' (`/admin/erros-frontend`) e 'Consulta Rápida Fiscal' (`/tributario/consulta-rapida`) ganham rota, menu e breadcrumb | páginas sem rota/import no `main`; local `tsc` 0, `vitest` 3025/3025 | CI em andamento |
-| [#321](https://github.com/adm01-debug/Promo_Finance_V2/pull/321) | Crons `monitorar-erros-frontend` e `webhook-retry-worker-1min` enviam o segredo que as functions validam | 12/12 execuções 401; com o segredo certo → 200 (net 199266 e 199467); simulação com rollback: altera os 2 jobs, 2ª execução no-op | **aberta, aguardando o dono** (pg_cron em produção) |
-| [#325](https://github.com/adm01-debug/Promo_Finance_V2/pull/325) | Corrige a regressão de layout da #322 (grid só a partir de 1536px), rótulos duplicados no Configurar Dashboard, mutação do array e config salva inválida; +3 testes | validação adversarial mediu widgets de 146px em 1024px; testes novos falham no código antigo (2/3) e passam no novo; `vitest` 3028/3028 | CI em andamento |
+| [#323](https://github.com/adm01-debug/Promo_Finance_V2/pull/323) | Páginas 'Erros do Front-end' (`/admin/erros-frontend`) e 'Consulta Rápida Fiscal' (`/tributario/consulta-rapida`) ganham rota, menu e breadcrumb | páginas sem rota/import no `main`; local `tsc` 0, `vitest` 3025/3025 | mergeada (`6e462aa`), CI `ci.yml` 43266511057 success, deploy `dpl_8dw192HzBpRkKmFqW13q6gRGean8` READY |
+| [#321](https://github.com/adm01-debug/Promo_Finance_V2/pull/321) | Crons `monitorar-erros-frontend` e `webhook-retry-worker-1min` enviam o segredo que as functions validam | 12/12 execuções 401; com o segredo certo → 200 (net 199266 e 199467); simulação com rollback: altera os 2 jobs, 2ª execução no-op | mergeada pelo dono (`821385c`); SQL aplicado em produção ~19:42 UTC; cron 200 desde 20:00 UTC |
+| [#325](https://github.com/adm01-debug/Promo_Finance_V2/pull/325) | Corrige a regressão de layout da #322 (grid só a partir de 1536px), rótulos duplicados no Configurar Dashboard, mutação do array e config salva inválida; +3 testes | validação adversarial mediu widgets de 146px em 1024px; testes novos falham no código antigo (2/3) e passam no novo; `vitest` 3028/3028 | aberta, MERGEABLE; CI verde exceto `E2E Destructive Logout` (na fila do Actions) |
+| [#324](https://github.com/adm01-debug/Promo_Finance_V2/pull/324) | Este relatório (`docs/prod-readiness.md`) | — | aberta |
 
 ## 8. BLOQUEADO / aguardando o dono
 
 | item | erro exato / motivo | o que falta |
 |---|---|---|
-| PR #321 — cron `monitorar-erros-frontend` | 401 em 100% das execuções | aplicar o SQL da migration em produção e mergear (pg_cron = regra 8) |
 | Cron `enviar-digest-conformidade-horario` | `Secret "anon_key" ausente no Vault` desde 31/10 | criar o segredo `anon_key` no Vault do projeto |
 | Cron `refresh-performance-alerts-weekly` | `violates check constraint "performance_alerts_source_check"` (11/11) | corrigir a função/constraint (DDL) |
 | Cron `maintain-monthly-partitions` | `"audit_logs" is not partitioned` (3/3) | particionar `audit_logs`/`frontend_error_logs` ou remover o job e as 22 tabelas soltas (DDL) |
 | Telemetria de erros do front | `authenticated` sem `INSERT` em `frontend_error_logs` | `GRANT INSERT` (DDL) |
+| `webhook-retry-worker` publicado diverge do repo | a versão no ar aceita dois segredos internos (Vault `regua_cron_secret` e `internal_jobs`; ambos → 200 em 12/11), o código do repo (`webhook-retry-worker/index.ts:49`) aceita só `internal_jobs` | republicar a função a partir do `main` pelo `functions-deploy.yml` (deploy controlado → dono); o cron já envia `internal_jobs`, então é seguro |
 | Menu mostra itens de admin a todos | filtro por papel inexistente no sidebar | decidir e implementar filtro por `requiredRoles` |
 | `monitor-health` | função não publicada (404) e cron não agendado; migration exige aprovação | decidir se ativa: publicar via `functions-deploy.yml` + aplicar `20261101200000_monitor_health_cron.sql` + canal de alerta |
 | Campos de formulário sem coluna (23 colunas) | colunas ausentes em produção | decidir: criar colunas (DDL) ou remover campos |
@@ -735,4 +738,4 @@ Ver 1.4. Nenhuma execução vermelha no `main`. `contexto.yml` (schedule a cada 
 | Open Finance / prévia de conciliação / SPED "Em breve" | simulação ou funcionalidade inexistente | decisão de produto/contrato |
 | Integrações sem uso (Asaas, Bling, Bitrix24, n8n, CNPJá, IA, WhatsApp, Slack/Sentry/Mapbox) | nunca exercidas em produção | ativar contas/credenciais e testar com o provedor |
 | `lint:strict` | 74 avisos herdados (73× `max-lines`) | decidir se o limite de 400 linhas vira gate |
-| PR #293 (Dependabot `mapbox-gl`) | aberta por outro agente | revisão do dono |
+| PR #293 (Dependabot `mapbox-gl` 3.26.0→3.34.2) | `Dependency Review`: "Dependency review detected incompatible licenses" — `mapbox-gl@^3.34.2` com licença `LicenseRef-bad-see-license-in-license.txt` (fora do `allow-licenses`); E2E vermelhos são de infra do runner (`Playwright does not support chromium on ubuntu26.04-x64`), não do bump | decisão do dono: aceitar a licença proprietária do Mapbox (exceção no `dependency-review.yml`) ou fechar a PR |
