@@ -12,9 +12,9 @@
 | 2 | Cobertura | OK | todo item da seção 1 está OK ou BLOQUEADO |
 | 3 | Qualidade | OK (ver nota lint:strict) | seção 2 |
 | 4 | GitHub Actions | OK (ver nota sobre `contexto.yml`) | seção 3 |
-| 5 | Sem "pela metade" | BLOQUEADO (parcial) | seção 6 — 2 itens corrigidos; restantes dependem de DDL/credencial/decisão de produto |
+| 5 | Sem "pela metade" | BLOQUEADO (parcial) | seção 6 — 3 itens corrigidos (#322, #323, #325); restantes dependem de DDL/credencial/decisão de produto |
 | 6 | Banco | OK com 1 drift BLOQUEADO | seção 4 |
-| 7 | Produção | BLOQUEADO (parcial) | seção 5 — 2 crons falhando por segredo/config (PR #321 + Vault) |
+| 7 | Produção | BLOQUEADO (parcial) | seção 5 — 4 crons falhando: 1 corrigível pela PR #321, 3 dependem de segredo/DDL (dono) |
 | 8 | Entrega | OK | seção 7 |
 | 9 | Relatório | OK | este arquivo |
 
@@ -26,7 +26,7 @@ Vercel `promo-finance-v2`).
 
 ### 1.1 Rotas/telas — 128 registradas no `main` + 2 páginas órfãs
 
-Prova comum a todas as rotas OK: `tsc --noEmit` exit 0, `vite build` exit 0 (bundle contém o chunk lazy de cada página), deploy de produção `dpl_CE8yX9sNzaU2sDgPwMnrkVCTuHvb` READY no commit `bd5e644` e `GET https://promo-finance-v2.vercel.app/` → 200 (SPA; todas as rotas servem o mesmo `index.html` via rewrite).
+Status OK = rota registrada, guard correto e página compila. Prova comum: `tsc --noEmit` exit 0, `vite build` exit 0 (bundle contém o chunk lazy de cada página), deploy de produção `dpl_CE8yX9sNzaU2sDgPwMnrkVCTuHvb` READY no commit `bd5e644` e `GET https://promo-finance-v2.vercel.app/` → 200 (SPA; todas as rotas servem o mesmo `index.html` via rewrite). A renderização por rota não é provada por esse 200 — é coberta pelos E2E da CI (`E2E Critical Gate`, `E2E Financeiro`, verdes em 12/11) só nas rotas que eles visitam.
 
 | # | rota | página | guard | registro | status |
 |---|---|---|---|---|---|
@@ -163,7 +163,7 @@ Prova comum a todas as rotas OK: `tsc --noEmit` exit 0, `vite build` exit 0 (bun
 
 ### 1.2 Edge Functions — 106 pastas em `supabase/functions`
 
-Prova: `supabase_functions_ping` em produção (`bwwbeyolnnzppeuhgkcd`) em 12/11/2026 — status HTTP da função publicada (404 = não publicada). Erros 5xx/`level=error` em `edge_function_logs` nos últimos 7 dias: **0** (query `select ... where status_code>=500 or level in ('error','fatal')`).
+Prova: `supabase_functions_ping` em produção (`bwwbeyolnnzppeuhgkcd`) em 12/11/2026 — status HTTP da função publicada (404 = não publicada). Coluna status = função publicada e respondendo; o estado funcional de `open-finance` (simulada) e `send-push-notification` (sem VAPID) está na seção 6. `edge_function_logs`: 0 linhas com `status_code>=500` ou `level in ('error','fatal')` — atenção: a tabela só tem dados desde 12/11 05:45 UTC e cobre 11 funções instrumentadas; as outras 95 não registram nela.
 
 | # | função | verify_jwt | chamada do front | ping prod | status |
 |---|---|---|---|---|---|
@@ -312,17 +312,17 @@ Prova: `pg_tables`/`pg_policies` em produção (12/11/2026): 272 tabelas, 0 sem 
 | 30 | `asaas_sync_queue` | ativa | 2 | 0 | OK |
 | 31 | `asaas_transfers` | ativa | 3 | 1 | OK |
 | 32 | `audit_logs` | ativa | 3 | 13 | OK |
-| 33 | `audit_logs_2026_01` | ativa | 1 | 0 (partição/uso por RPC/edge) | OK |
-| 34 | `audit_logs_2026_02` | ativa | 1 | 0 (partição/uso por RPC/edge) | OK |
-| 35 | `audit_logs_2026_03` | ativa | 1 | 0 (partição/uso por RPC/edge) | OK |
-| 36 | `audit_logs_2026_04` | ativa | 1 | 0 (partição/uso por RPC/edge) | OK |
-| 37 | `audit_logs_2026_05` | ativa | 1 | 0 (partição/uso por RPC/edge) | OK |
-| 38 | `audit_logs_2026_06` | ativa | 1 | 0 (partição/uso por RPC/edge) | OK |
-| 39 | `audit_logs_2026_07` | ativa | 1 | 0 (partição/uso por RPC/edge) | OK |
-| 40 | `audit_logs_2026_08` | ativa | 1 | 0 (partição/uso por RPC/edge) | OK |
-| 41 | `audit_logs_2026_09` | ativa | 1 | 0 (partição/uso por RPC/edge) | OK |
-| 42 | `audit_logs_2026_10` | ativa | 1 | 0 (partição/uso por RPC/edge) | OK |
-| 43 | `audit_logs_default` | ativa | 1 | 0 (partição/uso por RPC/edge) | OK |
+| 33 | `audit_logs_2026_01` | ativa | 1 | 0 (sem `.from()` literal no front) | BLOQUEADO — tabela solta: a mãe não é particionada (`relkind=r`, 0 em `pg_inherits`); cron `maintain-monthly-partitions` falha (seção 5) |
+| 34 | `audit_logs_2026_02` | ativa | 1 | 0 (sem `.from()` literal no front) | BLOQUEADO — tabela solta: a mãe não é particionada (`relkind=r`, 0 em `pg_inherits`); cron `maintain-monthly-partitions` falha (seção 5) |
+| 35 | `audit_logs_2026_03` | ativa | 1 | 0 (sem `.from()` literal no front) | BLOQUEADO — tabela solta: a mãe não é particionada (`relkind=r`, 0 em `pg_inherits`); cron `maintain-monthly-partitions` falha (seção 5) |
+| 36 | `audit_logs_2026_04` | ativa | 1 | 0 (sem `.from()` literal no front) | BLOQUEADO — tabela solta: a mãe não é particionada (`relkind=r`, 0 em `pg_inherits`); cron `maintain-monthly-partitions` falha (seção 5) |
+| 37 | `audit_logs_2026_05` | ativa | 1 | 0 (sem `.from()` literal no front) | BLOQUEADO — tabela solta: a mãe não é particionada (`relkind=r`, 0 em `pg_inherits`); cron `maintain-monthly-partitions` falha (seção 5) |
+| 38 | `audit_logs_2026_06` | ativa | 1 | 0 (sem `.from()` literal no front) | BLOQUEADO — tabela solta: a mãe não é particionada (`relkind=r`, 0 em `pg_inherits`); cron `maintain-monthly-partitions` falha (seção 5) |
+| 39 | `audit_logs_2026_07` | ativa | 1 | 0 (sem `.from()` literal no front) | BLOQUEADO — tabela solta: a mãe não é particionada (`relkind=r`, 0 em `pg_inherits`); cron `maintain-monthly-partitions` falha (seção 5) |
+| 40 | `audit_logs_2026_08` | ativa | 1 | 0 (sem `.from()` literal no front) | BLOQUEADO — tabela solta: a mãe não é particionada (`relkind=r`, 0 em `pg_inherits`); cron `maintain-monthly-partitions` falha (seção 5) |
+| 41 | `audit_logs_2026_09` | ativa | 1 | 0 (sem `.from()` literal no front) | BLOQUEADO — tabela solta: a mãe não é particionada (`relkind=r`, 0 em `pg_inherits`); cron `maintain-monthly-partitions` falha (seção 5) |
+| 42 | `audit_logs_2026_10` | ativa | 1 | 0 (sem `.from()` literal no front) | BLOQUEADO — tabela solta: a mãe não é particionada (`relkind=r`, 0 em `pg_inherits`); cron `maintain-monthly-partitions` falha (seção 5) |
+| 43 | `audit_logs_default` | ativa | 1 | 0 (sem `.from()` literal no front) | BLOQUEADO — tabela solta: a mãe não é particionada (`relkind=r`, 0 em `pg_inherits`); cron `maintain-monthly-partitions` falha (seção 5) |
 | 44 | `auditoria_financeira` | ativa | 2 | 3 | OK |
 | 45 | `auditoria_tributaria` | ativa | 1 | 0 | OK |
 | 46 | `auth_logs` | ativa | 3 | 0 | OK |
@@ -400,17 +400,17 @@ Prova: `pg_tables`/`pg_policies` em produção (12/11/2026): 272 tabelas, 0 sem 
 | 118 | `fornecedores` | ativa | 4 | 6 | OK |
 | 119 | `frontend_error_alert_state` | ativa | 1 | 1 | OK |
 | 120 | `frontend_error_logs` | ativa | 3 | 1 | OK |
-| 121 | `frontend_error_logs_2026_01` | ativa | 1 | 0 (partição/uso por RPC/edge) | OK |
-| 122 | `frontend_error_logs_2026_02` | ativa | 1 | 0 (partição/uso por RPC/edge) | OK |
-| 123 | `frontend_error_logs_2026_03` | ativa | 1 | 0 (partição/uso por RPC/edge) | OK |
-| 124 | `frontend_error_logs_2026_04` | ativa | 1 | 0 (partição/uso por RPC/edge) | OK |
-| 125 | `frontend_error_logs_2026_05` | ativa | 1 | 0 (partição/uso por RPC/edge) | OK |
-| 126 | `frontend_error_logs_2026_06` | ativa | 1 | 0 (partição/uso por RPC/edge) | OK |
-| 127 | `frontend_error_logs_2026_07` | ativa | 1 | 0 (partição/uso por RPC/edge) | OK |
-| 128 | `frontend_error_logs_2026_08` | ativa | 1 | 0 (partição/uso por RPC/edge) | OK |
-| 129 | `frontend_error_logs_2026_09` | ativa | 1 | 0 (partição/uso por RPC/edge) | OK |
-| 130 | `frontend_error_logs_2026_10` | ativa | 1 | 0 (partição/uso por RPC/edge) | OK |
-| 131 | `frontend_error_logs_default` | ativa | 1 | 0 (partição/uso por RPC/edge) | OK |
+| 121 | `frontend_error_logs_2026_01` | ativa | 1 | 0 (sem `.from()` literal no front) | BLOQUEADO — tabela solta: a mãe não é particionada (`relkind=r`, 0 em `pg_inherits`); cron `maintain-monthly-partitions` falha (seção 5) |
+| 122 | `frontend_error_logs_2026_02` | ativa | 1 | 0 (sem `.from()` literal no front) | BLOQUEADO — tabela solta: a mãe não é particionada (`relkind=r`, 0 em `pg_inherits`); cron `maintain-monthly-partitions` falha (seção 5) |
+| 123 | `frontend_error_logs_2026_03` | ativa | 1 | 0 (sem `.from()` literal no front) | BLOQUEADO — tabela solta: a mãe não é particionada (`relkind=r`, 0 em `pg_inherits`); cron `maintain-monthly-partitions` falha (seção 5) |
+| 124 | `frontend_error_logs_2026_04` | ativa | 1 | 0 (sem `.from()` literal no front) | BLOQUEADO — tabela solta: a mãe não é particionada (`relkind=r`, 0 em `pg_inherits`); cron `maintain-monthly-partitions` falha (seção 5) |
+| 125 | `frontend_error_logs_2026_05` | ativa | 1 | 0 (sem `.from()` literal no front) | BLOQUEADO — tabela solta: a mãe não é particionada (`relkind=r`, 0 em `pg_inherits`); cron `maintain-monthly-partitions` falha (seção 5) |
+| 126 | `frontend_error_logs_2026_06` | ativa | 1 | 0 (sem `.from()` literal no front) | BLOQUEADO — tabela solta: a mãe não é particionada (`relkind=r`, 0 em `pg_inherits`); cron `maintain-monthly-partitions` falha (seção 5) |
+| 127 | `frontend_error_logs_2026_07` | ativa | 1 | 0 (sem `.from()` literal no front) | BLOQUEADO — tabela solta: a mãe não é particionada (`relkind=r`, 0 em `pg_inherits`); cron `maintain-monthly-partitions` falha (seção 5) |
+| 128 | `frontend_error_logs_2026_08` | ativa | 1 | 0 (sem `.from()` literal no front) | BLOQUEADO — tabela solta: a mãe não é particionada (`relkind=r`, 0 em `pg_inherits`); cron `maintain-monthly-partitions` falha (seção 5) |
+| 129 | `frontend_error_logs_2026_09` | ativa | 1 | 0 (sem `.from()` literal no front) | BLOQUEADO — tabela solta: a mãe não é particionada (`relkind=r`, 0 em `pg_inherits`); cron `maintain-monthly-partitions` falha (seção 5) |
+| 130 | `frontend_error_logs_2026_10` | ativa | 1 | 0 (sem `.from()` literal no front) | BLOQUEADO — tabela solta: a mãe não é particionada (`relkind=r`, 0 em `pg_inherits`); cron `maintain-monthly-partitions` falha (seção 5) |
+| 131 | `frontend_error_logs_default` | ativa | 1 | 0 (sem `.from()` literal no front) | BLOQUEADO — tabela solta: a mãe não é particionada (`relkind=r`, 0 em `pg_inherits`); cron `maintain-monthly-partitions` falha (seção 5) |
 | 132 | `frontend_error_silence_digest_log` | ativa | 1 | 0 | OK |
 | 133 | `frontend_performance_logs` | ativa | 2 | 2 | OK |
 | 134 | `geo_blocks` | ativa | 5 | 0 | OK |
@@ -553,7 +553,7 @@ Prova: `pg_tables`/`pg_policies` em produção (12/11/2026): 272 tabelas, 0 sem 
 | 271 | `webhooks_log` | ativa | 2 | 3 | OK |
 | 272 | `whatsapp_conversas` | ativa | 1 | 2 | OK |
 
-Criadas em migration mas ausentes em produção (22) — histórico abandonado, **sem perda de funcionalidade**: 0 referências em `src/`, `supabase/functions/` (grep `.from("<tabela>")`) e em `pg_proc.prosrc` de produção (query vazia). Status: OK (não fazem parte da linha de base funcional).
+Criadas em migration mas ausentes em produção (22) — histórico abandonado, **sem perda de funcionalidade**: 0 referências em `src/`, `supabase/functions/` (grep `.from("<tabela>")`) e em `pg_proc.prosrc` de produção (sem uso real). Exceções: `extratos_bancarios_importados` existe em produção como VIEW (a tabela foi substituída); `active_tracking` só aparece num comentário de `check_integrity_invariants`. Status: OK (não fazem parte da linha de base funcional).
 
 | tabela | refs `.from()` no front | DROP em migration |
 |---|---|---|
@@ -580,7 +580,7 @@ Criadas em migration mas ausentes em produção (22) — histórico abandonado, 
 | `registro_duplicidade` | 0 | não |
 | `user_preferences` | 0 | não |
 
-### 1.4 Workflows (`.github/workflows`, 20 arquivos)
+### 1.4 Workflows (`.github/workflows`: 19 workflows + `README.md`)
 
 Prova: última execução não cancelada de cada workflow no `main` (API do Actions, 12/11/2026). Conferido após o último merge (`51d0405`, PR #322).
 
@@ -596,7 +596,7 @@ Prova: última execução não cancelada de cada workflow no `main` (API do Acti
 | `dependency-review.yml` | só PR | 43214628619 pull_request · success | OK |
 | `estado-real.yml` | schedule semanal, push main (paths), dispatch | 43177623881 push · success | OK |
 | `functions-deploy.yml` | só dispatch | 43183475894 dispatch · success | OK |
-| `graphify.yml` | push main (paths), PR (paths), dispatch | push (`51d0405`) · success | OK |
+| `graphify.yml` | push main (paths), PR (paths), dispatch | 43239117322 push (`51d0405`) · success | OK |
 | `inventario-estado.yml` | schedule semanal, push/PR (paths), dispatch | 43177624081 push · success | OK |
 | `migration-ledger.yml` | só dispatch | 39134497416 dispatch · success | OK |
 | `prod-migrate.yml` | só dispatch | 41048078008 dispatch · success | OK |
@@ -621,7 +621,7 @@ ponta exige conta/credencial do provedor ativada pelo dono.
 | Supabase externo (Gestão de Clientes) via `external-data` | `EXTERNAL_SUPABASE_URL`, `EXTERNAL_SUPABASE_SERVICE_KEY` | `edge_function_logs` 7d: 4.948 requests, códigos 200/401, 0 erros 5xx | OK |
 | SEFAZ DF-e (`sefaz-dfe-dispatcher`) | `SEFAZ_CRON_SECRET`, `NFE_CERT_MASTER_KEY` | 33 execuções 24h, todas `status_code=200`; `nfe_recebidas` = 31 | OK |
 | Resend (e-mail de alertas) | `RESEND_API_KEY`, `RESEND_FROM` | `net._http_response` 24h: 24× `{"ok":true,"results":{"email":{"status":200,"ok":true}}}` | OK |
-| Web Push (`send-push-notification`) | `VAPID_*` | 42× `200 {"success":true,"sent":0,"message":"Nenhuma subscription ativa"}`; `push_subscriptions` = 0 | OK (função responde; nenhum assinante) |
+| Web Push (`send-push-notification`) | `VAPID_*` | 42× `200 {"success":true,"sent":0,..."Nenhuma subscription ativa"}`; `push_subscriptions` = 0; envio sem `Authorization` VAPID nem criptografia `aes128gcm` (`supabase/functions/send-push-notification/index.ts:121-129`) | BLOQUEADO — com assinante real o push seria rejeitado; nunca exercido |
 | SSO (OIDC/SAML) | config no banco | `sso_providers` = 4 | OK |
 | Lovable AI Gateway / OpenAI (18 funções de IA) | `LOVABLE_API_KEY`, `OPENAI_API_KEY` | funções publicadas (ping 200); `expert_messages` = 0 | BLOQUEADO — sem uso real em produção; teste exige chamada paga ao provedor (custo) |
 | Asaas | `ASAAS_API_KEY`, `ASAAS_WEBHOOK_TOKEN` | `asaas_payments` = 0, `asaas_sync_queue` = 0 | BLOQUEADO — nunca exercida; exige conta Asaas ativa |
@@ -673,10 +673,12 @@ Ver 1.4. Nenhuma execução vermelha no `main`. `contexto.yml` (schedule a cada 
 | Deploy front | Vercel `dpl_3EBzYSfwDVpZKZZBTmDoh1qb4d5j` READY, commit `51d0405` | OK |
 | Front no ar | `GET https://promo-finance-v2.vercel.app/` → 200, `<title>Promo Finance \| Sistema Financeiro Corporativo</title>` | OK |
 | Erros de runtime Vercel | `get_runtime_errors` 24h: "No runtime errors found" | OK |
-| Edge functions | 105/106 publicadas e respondendo (ping); 0 erros 5xx em 7 dias | OK (exceto `monitor-health`, seção 4) |
+| Edge functions | 105/106 publicadas e respondendo (ping); `edge_function_logs` desde 12/11 05:45 UTC (11 funções instrumentadas): 0 linhas 5xx/`error` | OK (exceto `monitor-health`, seção 4) |
 | Cron `enviar-digest-conformidade-horario` | 24/24 falhas em 24h desde 31/10/2026: `ERROR: Secret "anon_key" ausente no Vault` (`chave_anon_vault()` linha 11) | BLOQUEADO — criar segredo `anon_key` no Vault (segredo → dono) |
-| Cron `monitorar-erros-frontend` | 12/12 execuções → 401 `chamada_nao_autorizada` (cron envia Vault `regua_cron_secret`; função valida `integration_secrets.internal_jobs`). Com o segredo certo → 200 `{"success":true,"alertas":0}` (request 199266) | BLOQUEADO — correção na PR #321 (pg_cron em produção → dono) |
-| `external-data` 401 | 2.337 respostas 401 entre 08:26 e 12:00 de 12/11 (token inválido/expirado), nenhuma após o deploy de 12:42; gate `auth.getUser` em `supabase/functions/external-data/index.ts:134-143` responde corretamente | OK |
+| Cron `refresh-performance-alerts-weekly` | 11/11 falhas desde 30/08 (0 sucesso): `new row for relation "performance_alerts" violates check constraint "performance_alerts_source_check"` | BLOQUEADO — exige ajuste de DDL/função (dono) |
+| Cron `maintain-monthly-partitions` | 3/3 falhas (última 01/11): `"audit_logs" is not partitioned` ao criar `audit_logs_2026_11 PARTITION OF`; as 22 tabelas `audit_logs_*`/`frontend_error_logs_*` são soltas (~31 linhas de auditoria fora de `audit_logs`) | BLOQUEADO — exige decisão de DDL (particionar ou remover o job) |
+| Cron `monitorar-erros-frontend` | 12/12 execuções → 401 `chamada_nao_autorizada` (cron envia Vault `regua_cron_secret`; função valida `integration_secrets.internal_jobs`). Com o segredo certo → 200 `{"success":true,"alertas":0}` (request 199266) | BLOQUEADO — correção na PR #321 (pg_cron em produção → dono); a PR também alinha `webhook-retry-worker-1min`, que só funciona hoje porque a versão publicada diverge do repo |
+| `external-data` 401 | 2.337 respostas 401 entre 08:26 e 12:00 de 12/11 (token inválido/expirado, ~500/h) e só 3 esporádicas depois das 12:42; gate `auth.getUser` em `supabase/functions/external-data/index.ts:134-143` responde corretamente | OK |
 | Fluxo contas a pagar (prod, transação revertida) | `insert → status=pendente; update parcial → parcial; update pago → pago; delete → 1 linha` | OK |
 | Fluxo contas a receber (prod, revertido) | `insert ok; update 1; delete 1` | OK |
 | Fluxo movimentação → contabilização automática (prod, revertido) | `insert ok; lancamentos_contabeis novos = 1; delete 1` | OK |
@@ -688,6 +690,14 @@ Ver 1.4. Nenhuma execução vermelha no `main`. `contexto.yml` (schedule a cada 
 | item | onde | status |
 |---|---|---|
 | Botões "ocultar/exibir" e "tamanho" do diálogo Configurar Dashboard sem ação | `src/components/dashboard/DashboardExecutivo.tsx:461-462` (`() => {}`) | OK — corrigido na PR #322 (mergeada, deploy READY) |
+| Rótulos duplicados/errados no Configurar Dashboard e widgets estreitos (regressão da #322) | `DashboardConfigDialog.tsx:98`; grid `md:grid-cols-6` em `DashboardExecutivo.tsx` | PR #325 — CI em andamento no fechamento desta versão |
+| Telemetria de erros do front não grava (tela 'Erros do Front-end' sempre vazia) | papel `authenticated` sem `INSERT` em `public.frontend_error_logs`; `src/lib/telemetry.ts:208-227` | BLOQUEADO — exige `GRANT INSERT` (DDL em produção → dono) |
+| Itens de menu de admin visíveis a todos os papéis (não-admin cai em 'Acesso restrito') | `src/components/layout/sidebar/SidebarNavGroups.tsx:313` não filtra por `requiredRoles` de `src/lib/navigation.ts` (vale para Segurança, Logs de Auditoria, Eventos JIT e o novo Erros do Front-end) | BLOQUEADO — padrão herdado; mudança de comportamento do menu para decisão do dono |
+| Botão SMS "funcionalidade em desenvolvimento" | `src/components/contas-receber/EnviarCobrancaDialog.tsx:68` (usado em `ContasReceber.tsx`) | BLOQUEADO — sem provedor de SMS (custo) |
+| Vinculação manual "em desenvolvimento" na baixa automática | `src/components/contas-receber/BaixaAutomaticaDialog.tsx:400` | BLOQUEADO — decisão de produto |
+| Filtro de movimentações por conta bancária removido ("coluna não existe") | `src/hooks/useFinancialOperations.ts:76` — a coluna existe em produção; único chamador (`Movimentacoes.tsx:131`) passa `undefined` | BLOQUEADO — junto com a regeneração do `types.ts` |
+| Envio de Web Push sem VAPID/criptografia | `supabase/functions/send-push-notification/index.ts:121-129` | BLOQUEADO — reimplementar envio com VAPID (sem assinantes hoje) |
+| Painéis duplicados no dashboard (PrevisaoIA, Metas, Alertas de Orçamento no grid e na lateral) | `DashboardExecutivo.tsx:146,186,196` e coluna lateral | BLOQUEADO — decisão de produto |
 | Páginas prontas sem rota (inalcançáveis) | `src/pages/admin/AdminErrosFrontend.tsx`, `src/pages/tributario/ConsultaRapidaFiscal.tsx` | PR #323 — CI em andamento no fechamento desta versão |
 | Open Finance simulado (instituições, consentimento, saldos e transações inventados) | `supabase/functions/open-finance/index.ts:195,284,348,392,430`; `src/components/conciliacao/ImportarExtratoDialog.tsx:81-126` (usado em `ContasBancarias.tsx:304` e Conciliação) | BLOQUEADO — exige contrato com provedor Open Finance (custo/arquitetura) |
 | Prévia de regras de conciliação com extrato fixo | `src/components/conciliacao/RegrasConciliacaoPanel.tsx:86,110` | BLOQUEADO — decisão de produto (usar extrato real exige definir a fonte) |
@@ -706,7 +716,8 @@ Ver 1.4. Nenhuma execução vermelha no `main`. `contexto.yml` (schedule a cada 
 |---|---|---|---|
 | [#322](https://github.com/adm01-debug/Promo_Finance_V2/pull/322) | Configurar Dashboard: ocultar/exibir e tamanho dos widgets passam a funcionar (`DashboardExecutivo.tsx`) | causa: handlers `() => {}` em `DashboardExecutivo.tsx:461-462`; CI 26/26 obrigatórios verdes; local `tsc` 0, `vitest` 3025/3025, `vite build` OK | mergeada (`51d0405`), deploy `dpl_3EBzYSfwDVpZKZZBTmDoh1qb4d5j` READY |
 | [#323](https://github.com/adm01-debug/Promo_Finance_V2/pull/323) | Páginas 'Erros do Front-end' (`/admin/erros-frontend`) e 'Consulta Rápida Fiscal' (`/tributario/consulta-rapida`) ganham rota, menu e breadcrumb | páginas sem rota/import no `main`; local `tsc` 0, `vitest` 3025/3025 | CI em andamento |
-| [#321](https://github.com/adm01-debug/Promo_Finance_V2/pull/321) | Cron `monitorar-erros-frontend` envia o segredo esperado | 12/12 execuções 401; com o segredo certo → 200 (request 199266) | **aberta, aguardando o dono** (pg_cron em produção) |
+| [#321](https://github.com/adm01-debug/Promo_Finance_V2/pull/321) | Crons `monitorar-erros-frontend` e `webhook-retry-worker-1min` enviam o segredo que as functions validam | 12/12 execuções 401; com o segredo certo → 200 (net 199266 e 199467); simulação com rollback: altera os 2 jobs, 2ª execução no-op | **aberta, aguardando o dono** (pg_cron em produção) |
+| [#325](https://github.com/adm01-debug/Promo_Finance_V2/pull/325) | Corrige a regressão de layout da #322 (grid só a partir de 1536px), rótulos duplicados no Configurar Dashboard, mutação do array e config salva inválida; +3 testes | validação adversarial mediu widgets de 146px em 1024px; testes novos falham no código antigo (2/3) e passam no novo; `vitest` 3028/3028 | CI em andamento |
 
 ## 8. BLOQUEADO / aguardando o dono
 
@@ -714,6 +725,10 @@ Ver 1.4. Nenhuma execução vermelha no `main`. `contexto.yml` (schedule a cada 
 |---|---|---|
 | PR #321 — cron `monitorar-erros-frontend` | 401 em 100% das execuções | aplicar o SQL da migration em produção e mergear (pg_cron = regra 8) |
 | Cron `enviar-digest-conformidade-horario` | `Secret "anon_key" ausente no Vault` desde 31/10 | criar o segredo `anon_key` no Vault do projeto |
+| Cron `refresh-performance-alerts-weekly` | `violates check constraint "performance_alerts_source_check"` (11/11) | corrigir a função/constraint (DDL) |
+| Cron `maintain-monthly-partitions` | `"audit_logs" is not partitioned` (3/3) | particionar `audit_logs`/`frontend_error_logs` ou remover o job e as 22 tabelas soltas (DDL) |
+| Telemetria de erros do front | `authenticated` sem `INSERT` em `frontend_error_logs` | `GRANT INSERT` (DDL) |
+| Menu mostra itens de admin a todos | filtro por papel inexistente no sidebar | decidir e implementar filtro por `requiredRoles` |
 | `monitor-health` | função não publicada (404) e cron não agendado; migration exige aprovação | decidir se ativa: publicar via `functions-deploy.yml` + aplicar `20261101200000_monitor_health_cron.sql` + canal de alerta |
 | Campos de formulário sem coluna (23 colunas) | colunas ausentes em produção | decidir: criar colunas (DDL) ou remover campos |
 | `types.ts` desatualizado | `movimentacoes` tem 6 colunas a mais em produção; `types.ts` do repo tem 4.706 linhas a mais que o gerado (tabelas que não existem em produção) | PR dedicada: regenerar `types.ts` + corrigir os 7 erros de tipo listados na seção 6 |
