@@ -1,9 +1,9 @@
 {
  "meta": {
-  "sha": "ea47e0c858ddafbc7b7028645b4b72969f4a4293",
+  "sha": "b99e6a8cceb0b3631afd27786d05befee5de9678",
   "branch": "main",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
-  "generated_at": "2026-11-12 03:35 UTC",
+  "generated_at": "2026-11-12 04:04 UTC",
   "files_total": 3652,
   "code_files": 3287,
   "code_lines": 491228
@@ -241675,10 +241675,20 @@
   }
  },
  "git": {
-  "sha": "ea47e0c858ddafbc7b7028645b4b72969f4a4293",
+  "sha": "b99e6a8cceb0b3631afd27786d05befee5de9678",
   "branch": "main",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
   "commits": [
+   {
+    "sha": "b99e6a8",
+    "date": "2026-11-12",
+    "author": "dependabot[bot]",
+    "subject": "chore(deps): bump the radix-ui group across 1 directory with 20 updates (#208)",
+    "files": [
+     "bun.lock",
+     "package.json"
+    ]
+   },
    {
     "sha": "ea47e0c",
     "date": "2026-11-12",
@@ -242280,36 +242290,19 @@
      "analise-prs/dossiers/pr285.md",
      "analise-prs/progresso.json"
     ]
-   },
-   {
-    "sha": "fc35825",
-    "date": "2026-11-09",
-    "author": "adm01-debug",
-    "subject": "chore: docs analise-prs estado final 14 mergeadas esta sessao (#285)",
-    "files": [
-     "analise-prs/RELATORIO_PRS.md",
-     "analise-prs/dossiers/pr270.md",
-     "analise-prs/dossiers/pr271.md",
-     "analise-prs/dossiers/pr284.md",
-     "analise-prs/progresso.json"
-    ]
    }
   ],
   "hot_files": [
    [
     "package.json",
-    6
+    7
    ],
    [
     "bun.lock",
-    5
+    6
    ],
    [
     "scripts/automation.config.json",
-    4
-   ],
-   [
-    "analise-prs/RELATORIO_PRS.md",
     4
    ],
    [
@@ -242337,7 +242330,7 @@
     3
    ],
    [
-    "analise-prs/progresso.json",
+    "analise-prs/RELATORIO_PRS.md",
     3
    ],
    [
@@ -242374,6 +242367,10 @@
    ],
    [
     "scripts/inventario/banco.sql",
+    2
+   ],
+   [
+    "scripts/inventario/gerar-banco.mjs",
     2
    ]
   ]

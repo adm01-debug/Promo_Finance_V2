@@ -1,7 +1,7 @@
 # Contexto do projeto para agentes de IA
 
 GERADO AUTOMATICAMENTE por scripts/ai-context/gerar.mjs — não editar à mão; será sobrescrito.
-Publicado pelo workflow .github/workflows/contexto.yml em docs/contexto/codigo/ da branch gerada `contexto`. Índice único em docs/contexto/00-INDEX.md. Ler: git fetch origin contexto && git show origin/contexto:docs/contexto/00-INDEX.md Gere local com `node scripts/ai-context/gerar.mjs`. Commit-base: `ea47e0c858ddafbc7b7028645b4b72969f4a4293` (2026-11-12T00:19:02-03:00).
+Publicado pelo workflow .github/workflows/contexto.yml em docs/contexto/codigo/ da branch gerada `contexto`. Índice único em docs/contexto/00-INDEX.md. Ler: git fetch origin contexto && git show origin/contexto:docs/contexto/00-INDEX.md Gere local com `node scripts/ai-context/gerar.mjs`. Commit-base: `b99e6a8cceb0b3631afd27786d05befee5de9678` (2026-11-12T03:48:10Z).
 
 ## Como usar (leia antes de planejar ou executar qualquer tarefa)
 1. **Tela/rota/menu** → `rotas.json` (url/vista/menu → arquivo → hooks → tabelas → edges; `rotas_http_backend` para APIs) e `modulos.json` (módulo inteiro + dependências entre módulos).
@@ -455,8 +455,8 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 - não gerado neste run. Neste repo NÃO execute `graphify update .` (proibido por AGENTS.md, seção Graphify). O fluxo autorizado é o piloto: `npm run graphify:pilot`, ou `npm run graphify:analyze -- --profile NOME` (revise antes com `npm run graphify:inventory -- --profile NOME`). Resultados privados em graphify-out/piloto-*/; consulte apenas grafo cuja evidencia.json tenha piloto validado e hashes compatíveis com os arquivos atuais.
 
 ## Hotspots (arquivos mais alterados, 90 dias)
-- package.json (36)
-- bun.lock (29)
+- package.json (37)
+- bun.lock (30)
 - .github/workflows/ci.yml (24)
 - supabase/config.toml (15)
 - supabase/functions/asaas-proxy/index.ts (15)
@@ -619,6 +619,7 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 - CHANGELOG topo: [Unreleased]
 
 ## Últimos commits
+- 2026-11-12 `b99e6a8` chore(deps): bump the radix-ui group across 1 directory with 20 updates (#208)
 - 2026-11-12 `ea47e0c` fix: cron webhook-retry-worker para de enviar chave trigger recusada (422) (#313)
 - 2026-11-11 `8eec022` fix: sanitiza parâmetro search no filtro .or() da external-data (#308)
 - 2026-11-11 `a516e9a` infra: E2E rodam em ubuntu-24.04 (Playwright não suporta ubuntu-26.04) (#315)
@@ -633,7 +634,6 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 - 2026-11-10 `8f43c3f` chore: [STEP 43] espacar cron jobs diagnosticos de alta frequencia (#234)
 - 2026-11-10 `4e177c3` chore(ddl): steps 12-16+19+21+23 — DDL banco produção (#235)
 - 2026-11-10 `4a01788` feat(ci): fila serial de atualização de branch das PRs contra main (#276)
-- 2026-11-10 `ab802d4` fix: alinha admin_global com papel real admin (docs + guard asaas-proxy) (#255)
 
 ## Arquivos deste diretório
 - `docs/contexto/codigo/rotas.json`

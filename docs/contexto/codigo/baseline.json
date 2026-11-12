@@ -2,11 +2,16 @@
  "aviso": "GERADO AUTOMATICAMENTE por scripts/ai-context/gerar.mjs — não editar à mão; será sobrescrito.",
  "format_version": 2,
  "git": {
-  "commit": "ea47e0c858ddafbc7b7028645b4b72969f4a4293",
+  "commit": "b99e6a8cceb0b3631afd27786d05befee5de9678",
   "branch": "main",
-  "data_commit": "2026-11-12T00:19:02-03:00",
+  "data_commit": "2026-11-12T03:48:10Z",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
   "ultimos_commits": [
+   {
+    "sha": "b99e6a8",
+    "data": "2026-11-12",
+    "assunto": "chore(deps): bump the radix-ui group across 1 directory with 20 updates (#208)"
+   },
    {
     "sha": "ea47e0c",
     "data": "2026-11-12",
@@ -126,22 +131,17 @@
     "sha": "8ec6561",
     "data": "2026-11-09",
     "assunto": "infra: bloqueia wipe de AGENTS.md e docs/agentes por sessão paralela (#263)"
-   },
-   {
-    "sha": "34efae1",
-    "data": "2026-11-09",
-    "assunto": "chore: atualiza prs.json — adiciona #283-#288, 48 PRs classificadas"
    }
   ],
   "arquivos_mudados_7d": 482,
   "pastas_mais_mudadas_30d": [
    {
     "pasta": "package.json",
-    "mudancas": 19
+    "mudancas": 20
    },
    {
     "pasta": "bun.lock",
-    "mudancas": 18
+    "mudancas": 19
    },
    {
     "pasta": "supabase/functions/_shared",
@@ -199,11 +199,11 @@
   "arquivos_mais_mudados_90d": [
    {
     "arquivo": "package.json",
-    "mudancas": 36
+    "mudancas": 37
    },
    {
     "arquivo": "bun.lock",
-    "mudancas": 29
+    "mudancas": 30
    },
    {
     "arquivo": ".github/workflows/ci.yml",
@@ -309,7 +309,7 @@
    },
    {
     "autor": "dependabot[bot]",
-    "commits": 11
+    "commits": 12
    },
    {
     "autor": "Joaquim Ataides",
