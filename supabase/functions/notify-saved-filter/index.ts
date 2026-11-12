@@ -143,7 +143,7 @@ const handler = async (req: Request): Promise<Response> => {
               'Content-Type': 'application/json',
             },
             body: JSON.stringify({
-              from: 'Alertas <onboarding@resend.dev>',
+              from: Deno.env.get('RESEND_FROM') ?? 'Alertas <onboarding@resend.dev>',
               to: [userEmail],
               subject: `[${payload.filterName}] ${payload.title}`,
               html,
