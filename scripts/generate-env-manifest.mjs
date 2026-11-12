@@ -95,6 +95,9 @@ const LEITURAS_DE_ENV = [
   // deps.getEnv('X') — indireção dos handlers testáveis (n8n-callback,
   // enviar-alerta-email, alertas): mesma leitura de env por outro nome.
   /getEnv\(\s*['"`]([A-Z0-9_]+)['"`]\s*\)/g,
+  // runtimeValue(deps.x, 'X') — indireção do mcp-query (valor injetado em
+  // teste ou lido do env pelo nome do 2º argumento).
+  /runtimeValue\([^,()]*,\s*['"`]([A-Z0-9_]+)['"`]\s*\)/g,
 ];
 for (const e of readdirSync(funcsDir, { withFileTypes: true })) {
   if (!e.isDirectory() || DIR_DE_TESTE.test(e.name)) continue;
@@ -129,6 +132,11 @@ const opcionais = new Set([
   'NFE_CERT_MASTER_KEY_PREV',
   'SUPABASE_FUNCTION_NAME',
   'CONTADOR_INVITE_SECRET',
+  // fallback de CONTADOR_INVITE_SECRET → service role (convidar/validar-token-contador)
+  'SUPABASE_JWT_SECRET',
+  // compare-schemas (ferramenta dev sem chamador) responde 503 quando ausentes
+  'SCHEMA_COMPARE_EXTERNAL_URL',
+  'SCHEMA_COMPARE_EXTERNAL_SERVICE_ROLE_KEY',
   'DENO_TESTING',
   'EDGE_SENTRY_DSN',
   'SENTRY_DSN',
