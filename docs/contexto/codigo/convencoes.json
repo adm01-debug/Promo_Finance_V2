@@ -58,11 +58,11 @@
  "commits": {
   "convencao": "conventional commits (observado)",
   "exemplos": [
+   "fix: contas a pagar aceita status parcial (#318)",
    "feat: contabilização usa a conta contábil da categoria (#317)",
    "fix: normalizar_tipo_partida grava tipo em minúsculo (constraint exige debito/credito) (#312)",
    "chore: fixa search_path das functions e remove cron órfão evaluate-delivery-alerts (#309)",
-   "chore: manifesto de env reconhece MCP_SECRET e marca fallbacks como opcionais (#310)",
-   "feat: contabilização automática de movimentações pelas regras (#316)"
+   "chore: manifesto de env reconhece MCP_SECRET e marca fallbacks como opcionais (#310)"
   ]
  },
  "pr_template": ".github/PULL_REQUEST_TEMPLATE.md",

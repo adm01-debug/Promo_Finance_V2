@@ -1,6 +1,6 @@
 # 07 · REGRAS DE NEGÓCIO
 
-> Gerado automaticamente por AI Context Sync v1.3.2 · commit `7c4bc25795` · branch `main` · 2026-11-12 10:40 UTC
+> Gerado automaticamente por AI Context Sync v1.3.2 · commit `05920dff44` · branch `main` · 2026-11-12 11:07 UTC
 > Não edite à mão — regras humanas vão em `manual/`.
 
 ## A. Regras escritas por humanos (`manual/` — prioridade máxima, nunca sobrescrito)
@@ -354,8 +354,8 @@ _Nenhum arquivo em `manual/`. Copie `manual/TEMPLATE-regras-de-negocio.md` para 
 | `contas_pagar` | `(tabela)` | constraint contas_pagar_empresa_id_fkey FOREIGN KEY (empresa_id) REFERENCES public.empresas(id) ON DELETE CASCADE |
 | `contas_pagar` | `(tabela)` | constraint contas_pagar_categoria_id_fkey FOREIGN KEY (categoria_id) REFERENCES public.categorias(id) ON DELETE SET NULL |
 | `contas_pagar` | `(tabela)` | constraint chk_contas_pagar_status CHECK (((status)::text = ANY ((ARRAY['pendente'::character varying, 'pago'::character varying, 'vencido'::character varying, 'cancelado'::character varying, 'parcial'::character varying])::text[]))) NOT VALID |
-| `contas_pagar` | `(tabela)` | constraint contas_pagar_status_check CHECK (((status)::text = ANY ((ARRAY['pendente'::character varying, 'pago'::character varying, 'atrasado'::character varying, 'cancelado'::character varying])::text[]))) NOT VALID |
 | `contas_pagar` | `(tabela)` | constraint contas_pagar_valor_check CHECK ((valor >= (0)::numeric)) NOT VALID |
+| `contas_pagar` | `(tabela)` | constraint contas_pagar_status_check CHECK ((status)::text = ANY (ARRAY['pendente','pago','atrasado','cancelado','parcial']::text[])) |
 | `contas_receber` | `id` | PK; default uuid_generate_v4() |
 | `contas_receber` | `descricao` | obrigatório |
 | `contas_receber` | `valor` | obrigatório |
