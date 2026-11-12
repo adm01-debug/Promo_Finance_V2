@@ -9,7 +9,7 @@
   "supabase/migrations",
   "typeorm"
  ],
- "migrations": 1001,
+ "migrations": 1003,
  "seeds": [],
  "avisos": [
   "178 bloco(s) com DDL dinâmico (EXECUTE format/...) não modelado — policies/colunas criadas dinamicamente podem faltar; confira no banco vivo"
@@ -347,6 +347,8 @@
   "compare_pg_stat_baseline",
   "confirmar_conciliacao_manual",
   "confirmar_envio_cobranca",
+  "contabilizar_movimentacao",
+  "contabilizar_movimentacao_registro",
   "create_default_categories_for_user",
   "cron",
   "definir_empresa_padrao",
@@ -407,7 +409,6 @@
   "gerar_contas_recorrentes",
   "gerar_darf_retencoes",
   "gerar_hash_pagamento",
-  "gerar_lancamento_contabil_automatico",
   "gerar_numero_acordo",
   "gerar_sigla_empresa",
   "get_acessos_suspeitos",
@@ -524,6 +525,7 @@
   "set_empresa_id_from_profile",
   "set_updated_at",
   "silenciar_alerta_erro_frontend",
+  "sincronizar_conta_partida",
   "snapshot_table_bloat",
   "sync_integration_secret_identifier",
   "sync_regime_tributario_empresa",
@@ -1668,6 +1670,13 @@
    "evento": "insert or update or delete",
    "tabela": "movimentacoes",
    "funcao": "fn_auditoria_financeira"
+  },
+  {
+   "nome": "trg_contabilizar_movimentacao",
+   "quando": "after",
+   "evento": "insert",
+   "tabela": "movimentacoes",
+   "funcao": "contabilizar_movimentacao"
   },
   {
    "nome": "trg_saldo_movimentacao",
@@ -30067,6 +30076,7 @@
    "triggers": [
     "trg_anexos_sync_empresa",
     "trg_auditoria_movimentacoes",
+    "trg_contabilizar_movimentacao",
     "trg_saldo_movimentacao",
     "trigger_gerar_contabilidade",
     "update_movimentacoes_updated_at"

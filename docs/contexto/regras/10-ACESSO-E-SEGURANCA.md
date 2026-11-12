@@ -1,6 +1,6 @@
 # 10 · ACESSO E SEGURANÇA — quem pode o quê
 
-> Gerado automaticamente por AI Context Sync v1.3.2 · commit `f2bda64f67` · branch `main` · 2026-11-12 07:14 UTC
+> Gerado automaticamente por AI Context Sync v1.3.2 · commit `155df0d419` · branch `main` · 2026-11-12 07:51 UTC
 > Não edite à mão — regras humanas vão em `manual/`.
 
 ## Perfis / roles identificados
@@ -518,6 +518,8 @@
 - `compare_pg_stat_baseline`
 - `confirmar_conciliacao_manual`
 - `confirmar_envio_cobranca`
+- `contabilizar_movimentacao`
+- `contabilizar_movimentacao_registro`
 - `definir_empresa_padrao`
 - `delete_cron_job`
 - `desfazer_conciliacao`
@@ -564,7 +566,6 @@
 - `gerar_alerta_falha_regua`
 - `gerar_alertas_pendencias_conciliacao`
 - `gerar_alertas_vencimento`
-- `gerar_lancamento_contabil_automatico`
 - `get_acessos_suspeitos`
 - `get_active_uapi_token`
 - `get_asaas_payment_stats`
@@ -912,7 +913,7 @@ Middleware matcher (Next.js): nenhum
 | revoke | PUBLIC | execute | `run_daily_cleanup`, `run_daily_cleanup_with_logging`, `cleanup_expired_tokens`, `cleanup_old_login_attempts`, `cleanup_old_cron_logs`, `get_cron_jobs`, `get_cron_run_history`, `get_cron_run_history`, `clear_login_attempts`, `reset_failed_attempts`, `increment_failed_attempts`, `registrar_auditoria_config`, `log_audit`, `export_asaas_audit_csv`, `confirmar_conciliacao_manual` … +6 |
 | revoke | PUBLIC, anon | all | `get_table_bloat`, `get_bloat_history`, `get_bloat_snapshots`, `get_performance_alerts`, `get_performance_alerts_weekly`, `get_integrity_alerts`, `sefaz_cursor_advance`, `nfe_suggest_contas_pagar`, `nfe_link_conta_pagar`, `nfe_unlink_conta_pagar`, `nfe_create_conta_pagar_from_nfe`, `fn_balancete`, `fn_livro_razao`, `fn_norm_conta_codigo`, `fn_indices_contabeis` … +49 |
 | revoke | PUBLIC, anon | execute | `registrar_evento_receber`, `get_asaas_payment_stats`, `export_asaas_audit_csv`, `registrar_evento_receber`, `registrar_evento_cobranca`, `capture_pg_stat_statements_baseline`, `capture_slow_queries`, `monitor_table_bloat`, `snapshot_table_bloat`, `refresh_performance_alerts_weekly`, `sefaz_run_observability_checks`, `log_rpc_observability_call`, `run_observability_rpc`, `cleanup_rpc_observability_metrics`, `webhook_replay` … +11 |
-| revoke | PUBLIC, anon, authenticated | all | `v_table_bloat`, `monitor_table_bloat`, `snapshot_table_bloat`, `detect_query_regressions`, `notify_performance_alert_trigger`, `mv_performance_alerts_weekly`, `refresh_performance_alerts_weekly`, `check_integrity_invariants`, `certificado_upsert`, `certificado_get_password`, `sefaz_process_batch`, `nfe_apply_manifestacao`, `sefaz_detect_nsu_gaps`, `sefaz_detect_stuck_cursors`, `sefaz_run_observability_checks` … +45 |
+| revoke | PUBLIC, anon, authenticated | all | `v_table_bloat`, `monitor_table_bloat`, `snapshot_table_bloat`, `detect_query_regressions`, `notify_performance_alert_trigger`, `mv_performance_alerts_weekly`, `refresh_performance_alerts_weekly`, `check_integrity_invariants`, `certificado_upsert`, `certificado_get_password`, `sefaz_process_batch`, `nfe_apply_manifestacao`, `sefaz_detect_nsu_gaps`, `sefaz_detect_stuck_cursors`, `sefaz_run_observability_checks` … +47 |
 | revoke | PUBLIC, anon, authenticated | execute | `webhook_claim`, `webhook_mark_success`, `webhook_mark_failure`, `webhook_dequeue_retries`, `nfe_suggest_contas_pagar`, `nfe_link_conta_pagar`, `nfe_unlink_conta_pagar`, `nfe_create_conta_pagar_from_nfe`, `confirmar_conciliacao_manual`, `desfazer_conciliacao_manual`, `generate_reconciliation_suggestions`, `lancamento_contabil_before_insert`, `lancamento_contabil_before_update`, `validar_partidas_dobradas`, `normalizar_tipo_partida` … +9 |
 | revoke | anon | all | `catalogos_tributarios_health_history`, `cnpja_cache`, `overlay_rejeicoes_auditoria`, `is_org_membro`, `is_org_responsavel`, `public`, `public`, `public` |
 | revoke | anon | execute | `run_daily_cleanup`, `run_daily_cleanup_with_logging`, `cleanup_expired_tokens`, `cleanup_old_login_attempts`, `cleanup_old_cron_logs`, `get_cron_jobs`, `get_cron_run_history`, `get_cron_run_history`, `clear_login_attempts`, `reset_failed_attempts`, `increment_failed_attempts`, `registrar_auditoria_config`, `log_audit`, `export_asaas_audit_csv`, `confirmar_conciliacao_manual` … +21 |

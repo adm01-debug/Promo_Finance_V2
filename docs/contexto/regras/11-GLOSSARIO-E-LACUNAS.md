@@ -1,6 +1,6 @@
 # 11 · GLOSSÁRIO, DADOS DE REFERÊNCIA E LACUNAS
 
-> Gerado automaticamente por AI Context Sync v1.3.2 · commit `f2bda64f67` · branch `main` · 2026-11-12 07:14 UTC
+> Gerado automaticamente por AI Context Sync v1.3.2 · commit `155df0d419` · branch `main` · 2026-11-12 07:51 UTC
 > Não edite à mão — regras humanas vão em `manual/`.
 
 ## Glossário do domínio (entidades do sistema)
@@ -448,7 +448,6 @@
 | segurança | função `notificar_bloqueio_duplicidade` é SECURITY DEFINER sem `set search_path` (risco de escalação) | `supabase/migrations/20260509105046_1e9ee222-6d3a-4fda-a164-1b989b8fa091.sql` |
 | segurança | função `audit_trigger_function` é SECURITY DEFINER sem `set search_path` (risco de escalação) | `supabase/migrations/20260509132729_3a9718e5-502c-4c7e-b15a-33ff2f016fb5.sql` |
 | segurança | função `handle_asaas_payment_settlement` é SECURITY DEFINER sem `set search_path` (risco de escalação) | `supabase/migrations/20260509132829_55841dda-6108-4acd-88b5-07d9eced49ae.sql` |
-| segurança | função `gerar_lancamento_contabil_automatico` é SECURITY DEFINER sem `set search_path` (risco de escalação) | `supabase/migrations/20261027120000_transferencias_movimentacao_bilateral.sql` |
 | segurança | função `gerar_alerta_falha_processamento` é SECURITY DEFINER sem `set search_path` (risco de escalação) | `supabase/migrations/20260509154202_d99d3b8f-f6aa-4431-af7a-28130c913911.sql` |
 | segurança | função `gerar_alerta_falha_regua` é SECURITY DEFINER sem `set search_path` (risco de escalação) | `supabase/migrations/20260509154202_d99d3b8f-f6aa-4431-af7a-28130c913911.sql` |
 | webhook | edge function `conciliacao-proxy` processa eventos de webhook sem sinal de idempotência (evento duplicado = efeito duplicado) | `supabase/functions/conciliacao-proxy/index.ts` |

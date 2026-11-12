@@ -1,15 +1,15 @@
 {
  "meta": {
-  "sha": "f2bda64f670da2b41a2f9cee5ac0917d06f7ddf1",
+  "sha": "155df0d41951b2a6420580a2d8c29b05116ee966",
   "branch": "main",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
-  "generated_at": "2026-11-12 07:14 UTC",
-  "files_total": 3653,
-  "code_files": 3288,
-  "code_lines": 491313
+  "generated_at": "2026-11-12 07:51 UTC",
+  "files_total": 3655,
+  "code_files": 3290,
+  "code_lines": 491585
  },
  "version": "1.3.2",
- "facts_hash": "f19cb7b70698c251",
+ "facts_hash": "d152c85d79dc7013",
  "stack": {
   "frameworks": [
    "React + Vite",
@@ -332,7 +332,7 @@
   "package_manager": "bun",
   "languages": {
    ".ts": 1112,
-   ".sql": 1071,
+   ".sql": 1073,
    ".tsx": 993,
    ".mjs": 60,
    ".py": 45,
@@ -41594,6 +41594,24 @@
     "condition": "",
     "each": "row",
     "src": "supabase/migrations/20261112003647_validar_partidas_dobradas_ativa.sql"
+   },
+   {
+    "name": "trg_sincronizar_conta_partida",
+    "when": "BEFORE INSERT OR UPDATE OF CONTA_ID, CONTA_CONTABIL_ID",
+    "table": "partidas_contabeis",
+    "function": "sincronizar_conta_partida",
+    "condition": "",
+    "each": "row",
+    "src": "supabase/migrations/20261112023354_contabilizacao_automatica_movimentacoes.sql"
+   },
+   {
+    "name": "trg_contabilizar_movimentacao",
+    "when": "AFTER INSERT",
+    "table": "movimentacoes",
+    "function": "contabilizar_movimentacao",
+    "condition": "",
+    "each": "row",
+    "src": "supabase/migrations/20261112023354_contabilizacao_automatica_movimentacoes.sql"
    }
   ],
   "functions": {
@@ -42432,26 +42450,6 @@
      "contas_receber",
      "movimentacoes",
      "v_conta_bancaria_id"
-    ]
-   },
-   "gerar_lancamento_contabil_automatico": {
-    "args": "",
-    "returns": "TRIGGER",
-    "lang": "plpgsql",
-    "src": "supabase/migrations/20261027120000_transferencias_movimentacao_bilateral.sql",
-    "security_definer": true,
-    "search_path": false,
-    "body": "DECLARE v_lancamento_id uuid; v_conta_contabil_id uuid; v_conta_bancaria_contabil_id uuid; v_empresa_id uuid; v_historico text; BEGIN IF NEW.origem = 'transferencia' THEN RETURN NEW; END IF; v_empresa_id := NEW.empresa_id; v_historico := 'Lançamento Automático: ' || COALESCE(NEW.descricao, 'Movimentação ' || NEW.id); SELECT COALESCE( (SELECT plano_conta_id FROM public.categorias WHERE id = (to_jsonb(NEW)->>'categoria_id')::uuid), (to_jsonb(NEW)->>'plano_conta_id')::uuid ) INTO v_conta_contabil_id; SELECT plano_conta_id INTO v_conta_bancaria_contabil_id FROM public.contas_bancarias WHERE id = NEW.conta_bancaria_id; IF v_conta_bancaria_contabil_id IS NULL THEN SELECT id INTO v_conta_bancaria_c …",
-    "raises": [],
-    "tables": [
-     "categorias",
-     "contas_bancarias",
-     "lancamentos_contabeis",
-     "partidas_contabeis",
-     "plano_contas",
-     "v_conta_bancaria_contabil_id",
-     "v_conta_contabil_id",
-     "v_lancamento_id"
     ]
    },
    "trigger_whatsapp_ai_analysis": {
@@ -43627,13 +43625,11 @@
     "args": "",
     "returns": "trigger",
     "lang": "plpgsql",
-    "src": "supabase/migrations/20260726144900_795aaff5-72d2-47dc-a391-fe63c63335f1.sql",
+    "src": "supabase/migrations/20261112023354_contabilizacao_automatica_movimentacoes.sql",
     "security_definer": false,
     "search_path": true,
-    "body": "BEGIN NEW.tipo := CASE upper(btrim(NEW.tipo)) WHEN 'D' THEN 'D' WHEN 'DEBITO' THEN 'D' WHEN 'DÉBITO' THEN 'D' WHEN 'C' THEN 'C' WHEN 'CREDITO' THEN 'C' WHEN 'CRÉDITO' THEN 'C' ELSE NULL END; IF NEW.tipo IS NULL THEN RAISE EXCEPTION 'Tipo de partida inválido: use D (débito) ou C (crédito)'; END IF; RETURN NEW; END;",
-    "raises": [
-     "Tipo de partida inválido: use D (débito) ou C (crédito)"
-    ],
+    "body": "BEGIN IF NEW.tipo IS NOT NULL THEN NEW.tipo := CASE LOWER(BTRIM(NEW.tipo)) WHEN 'd' THEN 'debito' WHEN 'débito' THEN 'debito' WHEN 'c' THEN 'credito' WHEN 'crédito' THEN 'credito' ELSE LOWER(BTRIM(NEW.tipo)) END; END IF; RETURN NEW; END;",
+    "raises": [],
     "tables": []
    },
    "fn_balancete": {
@@ -45384,6 +45380,49 @@
     "raises": [],
     "tables": [
      "OLD"
+    ]
+   },
+   "sincronizar_conta_partida": {
+    "args": "",
+    "returns": "trigger",
+    "lang": "plpgsql",
+    "src": "supabase/migrations/20261112023354_contabilizacao_automatica_movimentacoes.sql",
+    "security_definer": false,
+    "search_path": true,
+    "body": "BEGIN NEW.conta_contabil_id := COALESCE(NEW.conta_contabil_id, NEW.conta_id); NEW.conta_id := COALESCE(NEW.conta_id, NEW.conta_contabil_id); RETURN NEW; END;",
+    "raises": [],
+    "tables": []
+   },
+   "contabilizar_movimentacao": {
+    "args": "",
+    "returns": "trigger",
+    "lang": "plpgsql",
+    "src": "supabase/migrations/20261112023645_contabilizacao_regras_entrada_saida.sql",
+    "security_definer": true,
+    "search_path": true,
+    "body": "BEGIN PERFORM public.contabilizar_movimentacao_registro(NEW); RETURN NULL; END;",
+    "raises": [],
+    "tables": []
+   },
+   "contabilizar_movimentacao_registro": {
+    "args": "m public.movimentacoes",
+    "returns": "text",
+    "lang": "plpgsql",
+    "src": "supabase/migrations/20261112023645_contabilizacao_regras_entrada_saida.sql",
+    "security_definer": true,
+    "search_path": true,
+    "body": "DECLARE v_categoria uuid; v_regra public.regras_contabilizacao_automatica%ROWTYPE; v_lanc uuid; v_hist text; BEGIN IF m.deleted_at IS NOT NULL OR m.transferencia_id IS NOT NULL OR m.origem = 'transferencia' OR m.empresa_id IS NULL OR COALESCE(m.valor, 0) <= 0 THEN RETURN 'ignorada'; END IF; IF EXISTS (SELECT 1 FROM public.lancamentos_contabeis WHERE origem = 'movimentacao' AND origem_id = m.id) THEN RETURN 'duplicado'; END IF; BEGIN SELECT COALESCE( (SELECT categoria_id FROM public.contas_pagar WHERE id = m.conta_pagar_id), (SELECT categoria_id FROM public.contas_receber WHERE id = m.conta_receber_id)) INTO v_categoria; SELECT * INTO v_regra FROM public.regras_contabilizacao_automatica r WHE …",
+    "raises": [],
+    "tables": [
+     "contas_pagar",
+     "contas_receber",
+     "eventos_contabilizacao_log",
+     "lancamentos_contabeis",
+     "partidas_contabeis",
+     "regras_contabilizacao_automatica",
+     "v_categoria",
+     "v_lanc",
+     "v_regra"
     ]
    },
    "confirmar_conciliacao": {
@@ -51792,6 +51831,8 @@
    "supabase/migrations/20261102000000_registrar_grupo_b_rls_cross_tenant.sql",
    "supabase/migrations/20261111233323_cron_webhook_retry_sem_trigger.sql",
    "supabase/migrations/20261112003647_validar_partidas_dobradas_ativa.sql",
+   "supabase/migrations/20261112023354_contabilizacao_automatica_movimentacoes.sql",
+   "supabase/migrations/20261112023645_contabilizacao_regras_entrada_saida.sql",
    "supabase/tests/sql/catalogos_tributarios.test.sql",
    "supabase/tests/sql/infra.test.sql",
    "supabase/tests/sql/integrity_cycle.test.sql",
@@ -59783,6 +59824,22 @@
     "objkind": "function",
     "roles": "PUBLIC, anon",
     "src": "supabase/migrations/20261013120000_anexos_rls_metadados_e_orfaos.sql"
+   },
+   {
+    "kind": "revoke",
+    "privs": "all",
+    "object": "contabilizar_movimentacao",
+    "objkind": "function",
+    "roles": "PUBLIC, anon, authenticated",
+    "src": "supabase/migrations/20261112023354_contabilizacao_automatica_movimentacoes.sql"
+   },
+   {
+    "kind": "revoke",
+    "privs": "all",
+    "object": "contabilizar_movimentacao_registro",
+    "objkind": "function",
+    "roles": "PUBLIC, anon, authenticated",
+    "src": "supabase/migrations/20261112023645_contabilizacao_regras_entrada_saida.sql"
    }
   ],
   "raises": [
@@ -59880,11 +59937,6 @@
     "function": "lancamento_contabil_before_update",
     "msg": "Lançamento % está encerrado e não pode ser alterado",
     "src": "supabase/migrations/20260726144646_f20d43c4-d2ab-4d31-bdf3-a0f412ef0948.sql"
-   },
-   {
-    "function": "normalizar_tipo_partida",
-    "msg": "Tipo de partida inválido: use D (débito) ou C (crédito)",
-    "src": "supabase/migrations/20260726144900_795aaff5-72d2-47dc-a391-fe63c63335f1.sql"
    },
    {
     "function": "get_cron_jobs",
@@ -71376,7 +71428,7 @@
   {
    "module": "supabase/functions",
    "files": 222,
-   "lines": 49792,
+   "lines": 49796,
    "tables": [
     "acoes_recomendadas",
     "alertas",
@@ -71637,8 +71689,8 @@
   },
   {
    "module": "supabase/migrations",
-   "files": 1001,
-   "lines": 75748,
+   "files": 1003,
+   "lines": 76016,
    "tables": [],
    "exports": [],
    "docs": [],
@@ -114171,6 +114223,18 @@
    },
    {
     "file": "supabase/functions/contabilizar-evento/index.ts",
+    "field": "tipo",
+    "value": "debito",
+    "kind": "escreve"
+   },
+   {
+    "file": "supabase/functions/contabilizar-evento/index.ts",
+    "field": "tipo",
+    "value": "credito",
+    "kind": "escreve"
+   },
+   {
+    "file": "supabase/functions/contabilizar-evento/index.ts",
     "field": "status",
     "value": "erro",
     "kind": "escreve"
@@ -146678,6 +146742,24 @@
     "condition": "",
     "each": "row",
     "src": "supabase/migrations/20261112003647_validar_partidas_dobradas_ativa.sql"
+   },
+   {
+    "name": "trg_sincronizar_conta_partida",
+    "when": "BEFORE INSERT OR UPDATE OF CONTA_ID, CONTA_CONTABIL_ID",
+    "table": "partidas_contabeis",
+    "function": "sincronizar_conta_partida",
+    "condition": "",
+    "each": "row",
+    "src": "supabase/migrations/20261112023354_contabilizacao_automatica_movimentacoes.sql"
+   },
+   {
+    "name": "trg_contabilizar_movimentacao",
+    "when": "AFTER INSERT",
+    "table": "movimentacoes",
+    "function": "contabilizar_movimentacao",
+    "condition": "",
+    "each": "row",
+    "src": "supabase/migrations/20261112023354_contabilizacao_automatica_movimentacoes.sql"
    }
   ],
   "db_functions": {
@@ -147516,26 +147598,6 @@
      "contas_receber",
      "movimentacoes",
      "v_conta_bancaria_id"
-    ]
-   },
-   "gerar_lancamento_contabil_automatico": {
-    "args": "",
-    "returns": "TRIGGER",
-    "lang": "plpgsql",
-    "src": "supabase/migrations/20261027120000_transferencias_movimentacao_bilateral.sql",
-    "security_definer": true,
-    "search_path": false,
-    "body": "DECLARE v_lancamento_id uuid; v_conta_contabil_id uuid; v_conta_bancaria_contabil_id uuid; v_empresa_id uuid; v_historico text; BEGIN IF NEW.origem = 'transferencia' THEN RETURN NEW; END IF; v_empresa_id := NEW.empresa_id; v_historico := 'Lançamento Automático: ' || COALESCE(NEW.descricao, 'Movimentação ' || NEW.id); SELECT COALESCE( (SELECT plano_conta_id FROM public.categorias WHERE id = (to_jsonb(NEW)->>'categoria_id')::uuid), (to_jsonb(NEW)->>'plano_conta_id')::uuid ) INTO v_conta_contabil_id; SELECT plano_conta_id INTO v_conta_bancaria_contabil_id FROM public.contas_bancarias WHERE id = NEW.conta_bancaria_id; IF v_conta_bancaria_contabil_id IS NULL THEN SELECT id INTO v_conta_bancaria_c …",
-    "raises": [],
-    "tables": [
-     "categorias",
-     "contas_bancarias",
-     "lancamentos_contabeis",
-     "partidas_contabeis",
-     "plano_contas",
-     "v_conta_bancaria_contabil_id",
-     "v_conta_contabil_id",
-     "v_lancamento_id"
     ]
    },
    "trigger_whatsapp_ai_analysis": {
@@ -148711,13 +148773,11 @@
     "args": "",
     "returns": "trigger",
     "lang": "plpgsql",
-    "src": "supabase/migrations/20260726144900_795aaff5-72d2-47dc-a391-fe63c63335f1.sql",
+    "src": "supabase/migrations/20261112023354_contabilizacao_automatica_movimentacoes.sql",
     "security_definer": false,
     "search_path": true,
-    "body": "BEGIN NEW.tipo := CASE upper(btrim(NEW.tipo)) WHEN 'D' THEN 'D' WHEN 'DEBITO' THEN 'D' WHEN 'DÉBITO' THEN 'D' WHEN 'C' THEN 'C' WHEN 'CREDITO' THEN 'C' WHEN 'CRÉDITO' THEN 'C' ELSE NULL END; IF NEW.tipo IS NULL THEN RAISE EXCEPTION 'Tipo de partida inválido: use D (débito) ou C (crédito)'; END IF; RETURN NEW; END;",
-    "raises": [
-     "Tipo de partida inválido: use D (débito) ou C (crédito)"
-    ],
+    "body": "BEGIN IF NEW.tipo IS NOT NULL THEN NEW.tipo := CASE LOWER(BTRIM(NEW.tipo)) WHEN 'd' THEN 'debito' WHEN 'débito' THEN 'debito' WHEN 'c' THEN 'credito' WHEN 'crédito' THEN 'credito' ELSE LOWER(BTRIM(NEW.tipo)) END; END IF; RETURN NEW; END;",
+    "raises": [],
     "tables": []
    },
    "fn_balancete": {
@@ -150470,6 +150530,49 @@
      "OLD"
     ]
    },
+   "sincronizar_conta_partida": {
+    "args": "",
+    "returns": "trigger",
+    "lang": "plpgsql",
+    "src": "supabase/migrations/20261112023354_contabilizacao_automatica_movimentacoes.sql",
+    "security_definer": false,
+    "search_path": true,
+    "body": "BEGIN NEW.conta_contabil_id := COALESCE(NEW.conta_contabil_id, NEW.conta_id); NEW.conta_id := COALESCE(NEW.conta_id, NEW.conta_contabil_id); RETURN NEW; END;",
+    "raises": [],
+    "tables": []
+   },
+   "contabilizar_movimentacao": {
+    "args": "",
+    "returns": "trigger",
+    "lang": "plpgsql",
+    "src": "supabase/migrations/20261112023645_contabilizacao_regras_entrada_saida.sql",
+    "security_definer": true,
+    "search_path": true,
+    "body": "BEGIN PERFORM public.contabilizar_movimentacao_registro(NEW); RETURN NULL; END;",
+    "raises": [],
+    "tables": []
+   },
+   "contabilizar_movimentacao_registro": {
+    "args": "m public.movimentacoes",
+    "returns": "text",
+    "lang": "plpgsql",
+    "src": "supabase/migrations/20261112023645_contabilizacao_regras_entrada_saida.sql",
+    "security_definer": true,
+    "search_path": true,
+    "body": "DECLARE v_categoria uuid; v_regra public.regras_contabilizacao_automatica%ROWTYPE; v_lanc uuid; v_hist text; BEGIN IF m.deleted_at IS NOT NULL OR m.transferencia_id IS NOT NULL OR m.origem = 'transferencia' OR m.empresa_id IS NULL OR COALESCE(m.valor, 0) <= 0 THEN RETURN 'ignorada'; END IF; IF EXISTS (SELECT 1 FROM public.lancamentos_contabeis WHERE origem = 'movimentacao' AND origem_id = m.id) THEN RETURN 'duplicado'; END IF; BEGIN SELECT COALESCE( (SELECT categoria_id FROM public.contas_pagar WHERE id = m.conta_pagar_id), (SELECT categoria_id FROM public.contas_receber WHERE id = m.conta_receber_id)) INTO v_categoria; SELECT * INTO v_regra FROM public.regras_contabilizacao_automatica r WHE …",
+    "raises": [],
+    "tables": [
+     "contas_pagar",
+     "contas_receber",
+     "eventos_contabilizacao_log",
+     "lancamentos_contabeis",
+     "partidas_contabeis",
+     "regras_contabilizacao_automatica",
+     "v_categoria",
+     "v_lanc",
+     "v_regra"
+    ]
+   },
    "confirmar_conciliacao": {
     "args": "",
     "returns": "?",
@@ -150881,11 +150984,6 @@
     "function": "lancamento_contabil_before_update",
     "msg": "Lançamento % está encerrado e não pode ser alterado",
     "src": "supabase/migrations/20260726144646_f20d43c4-d2ab-4d31-bdf3-a0f412ef0948.sql"
-   },
-   {
-    "function": "normalizar_tipo_partida",
-    "msg": "Tipo de partida inválido: use D (débito) ou C (crédito)",
-    "src": "supabase/migrations/20260726144900_795aaff5-72d2-47dc-a391-fe63c63335f1.sql"
    },
    {
     "function": "get_cron_jobs",
@@ -154941,12 +155039,14 @@
       "escreve:src/lib/ofx-parser/csv.ts",
       "escreve:src/lib/ofx-parser/ofx-sgml.ts",
       "escreve:src/lib/ofx-parser/types.ts",
-      "escreve:src/lib/ofx-parser/xlsx.ts"
+      "escreve:src/lib/ofx-parser/xlsx.ts",
+      "escreve:supabase/functions/contabilizar-evento/index.ts"
      ],
      "debito": [
       "compara:src/components/conciliacao/ExtratoPreviewStep.tsx",
       "escreve:src/components/conciliacao/ImportarExtratoDialog.tsx",
-      "escreve:src/components/conciliacao/RegrasConciliacaoPanel.tsx"
+      "escreve:src/components/conciliacao/RegrasConciliacaoPanel.tsx",
+      "escreve:supabase/functions/contabilizar-evento/index.ts"
      ],
      "todos": [
       "compara:src/hooks/saved-filter-alerts/matchers.ts",
@@ -161078,6 +161178,8 @@
    "compare_pg_stat_baseline",
    "confirmar_conciliacao_manual",
    "confirmar_envio_cobranca",
+   "contabilizar_movimentacao",
+   "contabilizar_movimentacao_registro",
    "definir_empresa_padrao",
    "delete_cron_job",
    "desfazer_conciliacao",
@@ -161124,7 +161226,6 @@
    "gerar_alerta_falha_regua",
    "gerar_alertas_pendencias_conciliacao",
    "gerar_alertas_vencimento",
-   "gerar_lancamento_contabil_automatico",
    "get_acessos_suspeitos",
    "get_active_uapi_token",
    "get_asaas_payment_stats",
@@ -169008,6 +169109,22 @@
     "objkind": "function",
     "roles": "PUBLIC, anon",
     "src": "supabase/migrations/20261013120000_anexos_rls_metadados_e_orfaos.sql"
+   },
+   {
+    "kind": "revoke",
+    "privs": "all",
+    "object": "contabilizar_movimentacao",
+    "objkind": "function",
+    "roles": "PUBLIC, anon, authenticated",
+    "src": "supabase/migrations/20261112023354_contabilizacao_automatica_movimentacoes.sql"
+   },
+   {
+    "kind": "revoke",
+    "privs": "all",
+    "object": "contabilizar_movimentacao_registro",
+    "objkind": "function",
+    "roles": "PUBLIC, anon, authenticated",
+    "src": "supabase/migrations/20261112023645_contabilizacao_regras_entrada_saida.sql"
    }
   ],
   "guards": [
@@ -173852,13 +173969,6 @@
     "msg": "função `handle_asaas_payment_settlement` é SECURITY DEFINER sem `set search_path` (risco de escalação)",
     "where": [
      "supabase/migrations/20260509132829_55841dda-6108-4acd-88b5-07d9eced49ae.sql"
-    ]
-   },
-   {
-    "kind": "segurança",
-    "msg": "função `gerar_lancamento_contabil_automatico` é SECURITY DEFINER sem `set search_path` (risco de escalação)",
-    "where": [
-     "supabase/migrations/20261027120000_transferencias_movimentacao_bilateral.sql"
     ]
    },
    {
@@ -229397,7 +229507,7 @@
   },
   "supabase/functions/contabilizar-evento/index.ts": {
    "path": "supabase/functions/contabilizar-evento/index.ts",
-   "lines": 262,
+   "lines": 266,
    "tables": [
     {
      "table": "user_roles",
@@ -229509,6 +229619,16 @@
     {
      "field": "status",
      "value": "erro",
+     "kind": "escreve"
+    },
+    {
+     "field": "tipo",
+     "value": "debito",
+     "kind": "escreve"
+    },
+    {
+     "field": "tipo",
+     "value": "credito",
      "kind": "escreve"
     },
     {
@@ -241616,6 +241736,14 @@
    "path": "supabase/migrations/20261112003647_validar_partidas_dobradas_ativa.sql",
    "lines": 42
   },
+  "supabase/migrations/20261112023354_contabilizacao_automatica_movimentacoes.sql": {
+   "path": "supabase/migrations/20261112023354_contabilizacao_automatica_movimentacoes.sql",
+   "lines": 146
+  },
+  "supabase/migrations/20261112023645_contabilizacao_regras_entrada_saida.sql": {
+   "path": "supabase/migrations/20261112023645_contabilizacao_regras_entrada_saida.sql",
+   "lines": 122
+  },
   "supabase/tests/test_harness.js": {
    "path": "supabase/tests/test_harness.js",
    "lines": 454,
@@ -241724,10 +241852,21 @@
   }
  },
  "git": {
-  "sha": "f2bda64f670da2b41a2f9cee5ac0917d06f7ddf1",
+  "sha": "155df0d41951b2a6420580a2d8c29b05116ee966",
   "branch": "main",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
   "commits": [
+   {
+    "sha": "155df0d",
+    "date": "2026-11-12",
+    "author": "adm01-debug",
+    "subject": "feat: contabilização automática de movimentações pelas regras (#316)",
+    "files": [
+     "supabase/functions/contabilizar-evento/index.ts",
+     "supabase/migrations/20261112023354_contabilizacao_automatica_movimentacoes.sql",
+     "supabase/migrations/20261112023645_contabilizacao_regras_entrada_saida.sql"
+    ]
+   },
    {
     "sha": "f2bda64",
     "date": "2026-11-12",
@@ -242327,15 +242466,6 @@
     "files": [
      ".github/workflows/ci.yml",
      "scripts/ci/check-claude-md-integrity.mjs"
-    ]
-   },
-   {
-    "sha": "34efae1",
-    "date": "2026-11-09",
-    "author": "adm01-debug",
-    "subject": "chore: atualiza prs.json — adiciona #283-#288, 48 PRs classificadas",
-    "files": [
-     "analise-prs/prs.json"
     ]
    }
   ],

@@ -1,7 +1,7 @@
 # Contexto do projeto para agentes de IA
 
 GERADO AUTOMATICAMENTE por scripts/ai-context/gerar.mjs — não editar à mão; será sobrescrito.
-Publicado pelo workflow .github/workflows/contexto.yml em docs/contexto/codigo/ da branch gerada `contexto`. Índice único em docs/contexto/00-INDEX.md. Ler: git fetch origin contexto && git show origin/contexto:docs/contexto/00-INDEX.md Gere local com `node scripts/ai-context/gerar.mjs`. Commit-base: `f2bda64f670da2b41a2f9cee5ac0917d06f7ddf1` (2026-11-12T04:12:26-03:00).
+Publicado pelo workflow .github/workflows/contexto.yml em docs/contexto/codigo/ da branch gerada `contexto`. Índice único em docs/contexto/00-INDEX.md. Ler: git fetch origin contexto && git show origin/contexto:docs/contexto/00-INDEX.md Gere local com `node scripts/ai-context/gerar.mjs`. Commit-base: `155df0d41951b2a6420580a2d8c29b05116ee966` (2026-11-12T04:45:30-03:00).
 
 ## Como usar (leia antes de planejar ou executar qualquer tarefa)
 1. **Tela/rota/menu** → `rotas.json` (url/vista/menu → arquivo → hooks → tabelas → edges; `rotas_http_backend` para APIs) e `modulos.json` (módulo inteiro + dependências entre módulos).
@@ -14,7 +14,7 @@ Publicado pelo workflow .github/workflows/contexto.yml em docs/contexto/codigo/ 
 Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua tarefa; não carregue tudo.
 
 ## Stack
-- linguagens: TypeScript (2105), SQL (1071), Markdown (189), JavaScript (68), Python (45), JSON (37), Shell (26), YAML (25)
+- linguagens: TypeScript (2105), SQL (1073), Markdown (189), JavaScript (68), Python (45), JSON (37), Shell (26), YAML (25)
 - linguagem_principal: TypeScript
 - framework: React
 - backend_http: n/d
@@ -34,9 +34,9 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 ## Números
 | item | qtd |
 |---|---|
-| arquivos_total | 3611 |
+| arquivos_total | 3613 |
 | arquivos_codigo | 2216 |
-| linhas_codigo | 428809 |
+| linhas_codigo | 428813 |
 | rotas | 128 |
 | rotas_http_backend | 25 |
 | vistas_por_id | 0 |
@@ -46,7 +46,7 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 | hooks | 264 |
 | edge_functions | 106 |
 | tabelas | 352 |
-| migrations | 1001 |
+| migrations | 1003 |
 | cron_jobs | 21 |
 | testes | 426 |
 | workflows | 19 |
@@ -619,6 +619,7 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 - CHANGELOG topo: [Unreleased]
 
 ## Últimos commits
+- 2026-11-12 `155df0d` feat: contabilização automática de movimentações pelas regras (#316)
 - 2026-11-12 `f2bda64` fix: remetente de e-mail usa RESEND_FROM em vez de @resend.dev fixo (#311)
 - 2026-11-12 `3efb5c7` chore(ci): bump codeql-action v4.39.3 nos 3 steps (unifica codeql.yml)
 - 2026-11-12 `cc0b762` fix: destrava busca automática de DF-e na SEFAZ (dispatcher → puxar) (#306)
@@ -633,7 +634,6 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 - 2026-11-11 `67613f4` fix: endurecimento dos scripts de automação, guard de perímetro, inventário e manutenção (#304)
 - 2026-11-11 `f0bad74` fix: endurecimento e cobertura de teste de todos os scripts em scripts/ (#299)
 - 2026-11-11 `85d018c` fix: shims para Supabase Preview — drop get_cron_jobs() antes de mudanças de return type (#131)
-- 2026-11-11 `e361b01` chore(migrations): [STEP 22] reconciliar migrations não rastreadas (#238)
 
 ## Arquivos deste diretório
 - `docs/contexto/codigo/rotas.json`

@@ -2,11 +2,16 @@
  "aviso": "GERADO AUTOMATICAMENTE por scripts/ai-context/gerar.mjs — não editar à mão; será sobrescrito.",
  "format_version": 2,
  "git": {
-  "commit": "f2bda64f670da2b41a2f9cee5ac0917d06f7ddf1",
+  "commit": "155df0d41951b2a6420580a2d8c29b05116ee966",
   "branch": "main",
-  "data_commit": "2026-11-12T04:12:26-03:00",
+  "data_commit": "2026-11-12T04:45:30-03:00",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
   "ultimos_commits": [
+   {
+    "sha": "155df0d",
+    "data": "2026-11-12",
+    "assunto": "feat: contabilização automática de movimentações pelas regras (#316)"
+   },
    {
     "sha": "f2bda64",
     "data": "2026-11-12",
@@ -126,14 +131,9 @@
     "sha": "79382a6",
     "data": "2026-11-10",
     "assunto": "feat(inventario): inventário autônomo do estado real (banco, rotas e edge functions) (#265)"
-   },
-   {
-    "sha": "e914163",
-    "data": "2026-11-09",
-    "assunto": "fix: bump date-fns from 2.30.0 to 4.4.0 (#298)"
    }
   ],
-  "arquivos_mudados_7d": 486,
+  "arquivos_mudados_7d": 488,
   "pastas_mais_mudadas_30d": [
    {
     "pasta": "package.json",
@@ -301,7 +301,7 @@
   "autores_30d": [
    {
     "autor": "adm01-debug",
-    "commits": 81
+    "commits": 82
    },
    {
     "autor": "devin-ai-integration[bot]",
@@ -318,9 +318,9 @@
   ]
  },
  "contagens": {
-  "arquivos_total": 3611,
+  "arquivos_total": 3613,
   "arquivos_codigo": 2216,
-  "linhas_codigo": 428809,
+  "linhas_codigo": 428813,
   "rotas": 128,
   "rotas_http_backend": 25,
   "vistas_por_id": 0,
@@ -330,7 +330,7 @@
   "hooks": 264,
   "edge_functions": 106,
   "tabelas": 352,
-  "migrations": 1001,
+  "migrations": 1003,
   "cron_jobs": 21,
   "testes": 426,
   "workflows": 19,
@@ -676,7 +676,7 @@
   },
   "supabase/functions": {
    "arquivos": 222,
-   "linhas": 49570
+   "linhas": 49574
   },
   "supabase/tests": {
    "arquivos": 2,

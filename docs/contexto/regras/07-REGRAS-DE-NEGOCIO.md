@@ -1,6 +1,6 @@
 # 07 · REGRAS DE NEGÓCIO
 
-> Gerado automaticamente por AI Context Sync v1.3.2 · commit `f2bda64f67` · branch `main` · 2026-11-12 07:14 UTC
+> Gerado automaticamente por AI Context Sync v1.3.2 · commit `155df0d419` · branch `main` · 2026-11-12 07:51 UTC
 > Não edite à mão — regras humanas vão em `manual/`.
 
 ## A. Regras escritas por humanos (`manual/` — prioridade máxima, nunca sobrescrito)
@@ -923,7 +923,7 @@ _Nenhum arquivo em `manual/`. Copie `manual/TEMPLATE-regras-de-negocio.md` para 
 | trg_transferencia_movimentacao | AFTER INSERT OR UPDATE | `transferencias` | `fn_transferencia_movimentacao` |  |
 | trg_sync_valor_pago | AFTER INSERT OR DELETE OR UPDATE OF DELETED_AT, CONTA_PAGAR_ID, CONTA_RECEBER_ID | `movimentacoes` | `fn_sync_valor_pago_movimentacao` |  |
 | trg_movimentacao_origem_guard | BEFORE INSERT OR UPDATE OF ORIGEM, TRANSFERENCIA_ID | `movimentacoes` | `fn_movimentacao_origem_guard` |  |
-| … +2 linhas — lista completa em `context.json` | | | | |
+| … +4 linhas — lista completa em `context.json` | | | | |
 
 Erros lançados por funções SQL (`RAISE EXCEPTION` = regra de negócio no banco):
 
@@ -948,7 +948,6 @@ Erros lançados por funções SQL (`RAISE EXCEPTION` = regra de negócio no banc
 | `get_table_bloat` | Acesso negado: apenas administradores podem consultar bloat. | `supabase/migrations/20260712184014_472856ac-a9cb-4701-ac4c-a0e6ad43f73f.sql` |
 | `monitor_table_bloat` | access denied: admin role required | `supabase/migrations/20260723123522_d6b8d22c-f32c-4adb-b70d-34c526113dc6.sql` |
 | `lancamento_contabil_before_update` | Lançamento % está encerrado e não pode ser alterado | `supabase/migrations/20260726144646_f20d43c4-d2ab-4d31-bdf3-a0f412ef0948.sql` |
-| `normalizar_tipo_partida` | Tipo de partida inválido: use D (débito) ou C (crédito) | `supabase/migrations/20260726144900_795aaff5-72d2-47dc-a391-fe63c63335f1.sql` |
 | `get_cron_jobs` | Acesso negado: apenas administradores podem visualizar automações. | `supabase/migrations/20260728110753_90823653-f205-4c49-97d5-ca8a3fc6b60c.sql` |
 | `check_catalogos_tributarios_invariants` | acesso negado: requer papel admin | `supabase/migrations/20260728131802_54d26aed-1c8e-418c-b13d-a380264ae29c.sql` |
 | `invocar_regua_cobranca` | Secret regua_cron_secret ausente ou inválido no Vault | `supabase/migrations/20260822115000_agendar_regua_cobranca.sql` |
