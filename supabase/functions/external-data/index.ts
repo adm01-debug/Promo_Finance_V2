@@ -171,7 +171,12 @@ Deno.serve(
         // Parse request
         const url = new URL(req.url);
         const tabela = url.searchParams.get('tabela');
-        const search = url.searchParams.get('search') || '';
+        // Remove caracteres reservados da sintaxe de filtro do PostgREST (`,` `(` `)` `"` `\`)
+        // para que o termo não altere a cláusula `.or()` montada abaixo.
+        const search = (url.searchParams.get('search') || '')
+          .replace(/[,()"\\]/g, ' ')
+          .trim()
+          .slice(0, 100);
         const page = parseInt(url.searchParams.get('page') || '1');
         const limit = Math.min(parseInt(url.searchParams.get('limit') || '50'), 200);
         const offset = (page - 1) * limit;
