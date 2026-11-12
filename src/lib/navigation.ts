@@ -71,6 +71,7 @@ export const ROUTE_META: Record<string, RouteMeta> = {
   '/tributario/calculadora': { label: 'Calculadora Tributária', parent: '/tributario' },
   '/tributario/cashback': { label: 'Cashback', parent: '/tributario' },
   '/tributario/catalogos-fiscais': { label: 'Catálogos Fiscais', parent: '/tributario' },
+  '/tributario/consulta-rapida': { label: 'Consulta Rápida Fiscal', parent: '/tributario' },
   '/tributario/certificados-digitais': { label: 'Certificados Digitais', parent: '/tributario' },
   '/tributario/comparativo': { label: 'Comparativo de Regimes', parent: '/tributario' },
   '/tributario/comparativo-conformidade': {
@@ -152,6 +153,11 @@ export const ROUTE_META: Record<string, RouteMeta> = {
   '/admin/sso-events': { label: 'Eventos SSO', parent: '/configuracoes', requiredRoles: ['admin'] },
   '/admin/sso-jit-events': {
     label: 'Eventos JIT SSO',
+    parent: '/configuracoes',
+    requiredRoles: ['admin'],
+  },
+  '/admin/erros-frontend': {
+    label: 'Erros do Front-end',
     parent: '/configuracoes',
     requiredRoles: ['admin'],
   },
