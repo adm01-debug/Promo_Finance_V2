@@ -252,7 +252,7 @@ serve(
                     'Content-Type': 'application/json',
                   },
                   body: JSON.stringify({
-                    from: 'Resumo Executivo <onboarding@resend.dev>',
+                    from: Deno.env.get('RESEND_FROM') ?? 'Resumo Executivo <onboarding@resend.dev>',
                     to: dest,
                     subject: `📊 Resumo semanal — ${emp.razao_social} (${sIni} a ${sFim})`,
                     html: `<div style="font-family:system-ui,sans-serif;max-width:680px;margin:auto"><h1>Resumo Executivo Semanal</h1><p><strong>${escapeHtml(emp.razao_social)}</strong> · ${sIni} a ${sFim}</p><pre style="white-space:pre-wrap;font-family:inherit">${escapeHtml(resumoMd)}</pre></div>`,
