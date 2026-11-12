@@ -147,7 +147,13 @@ export function useDashboardConfig() {
           // Merge with defaults to handle new widgets
           const merged = DEFAULT_WIDGETS.map((defaultWidget) => {
             const saved = parsed.find((w: DashboardWidget) => w.id === defaultWidget.id);
-            return saved ? { ...defaultWidget, ...saved } : defaultWidget;
+            if (!saved) return defaultWidget;
+            return {
+              ...defaultWidget,
+              visible: typeof saved.visible === 'boolean' ? saved.visible : defaultWidget.visible,
+              order: typeof saved.order === 'number' ? saved.order : defaultWidget.order,
+              size: ['sm', 'md', 'lg'].includes(saved.size) ? saved.size : defaultWidget.size,
+            };
           });
           setWidgets(merged);
         } catch {
