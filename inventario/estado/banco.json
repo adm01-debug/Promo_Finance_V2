@@ -9,7 +9,7 @@
     },
     {
       "detalhe": [
-        "208857 linhas com mais de 7 dias"
+        "210390 linhas com mais de 7 dias"
       ],
       "tipo": "historico_cron_sem_limpeza"
     },
@@ -27,10 +27,10 @@
       "max_worker_processes": "6"
     },
     "historico": {
-      "bytes": 130236416,
-      "linhas": 230945,
+      "bytes": 130605056,
+      "linhas": 231794,
       "mais_antigo": "2026-08-23T12:00:00Z",
-      "mais_de_7_dias": 208857
+      "mais_de_7_dias": 210390
     },
     "horas_paradas_7d": [],
     "jobs": [
@@ -240,7 +240,7 @@
         "nome": "enviar-digest-conformidade-horario",
         "startup_timeout_7d": 0,
         "taxa_falha_7d_pct": 100,
-        "ultima_falha": "2026-11-12T07:30:00Z"
+        "ultima_falha": "2026-11-12T18:30:00Z"
       },
       {
         "agenda": "0 12 * * *",
@@ -686,11 +686,11 @@
         "versao": 17
       },
       {
-        "atualizada_em": "2026-08-25T22:31Z",
+        "atualizada_em": "2026-11-12T08:26Z",
         "slug": "contabilizar-evento",
         "status": "ACTIVE",
         "verify_jwt": true,
-        "versao": 17
+        "versao": 18
       },
       {
         "atualizada_em": "2026-11-12T07:22Z",
@@ -819,11 +819,11 @@
         "versao": 17
       },
       {
-        "atualizada_em": "2026-08-25T10:56Z",
+        "atualizada_em": "2026-11-12T08:23Z",
         "slug": "external-data",
         "status": "ACTIVE",
         "verify_jwt": false,
-        "versao": 20
+        "versao": 21
       },
       {
         "atualizada_em": "2026-08-25T22:32Z",
@@ -1099,11 +1099,11 @@
         "versao": 17
       },
       {
-        "atualizada_em": "2026-08-25T22:35Z",
+        "atualizada_em": "2026-11-12T08:31Z",
         "slug": "send-device-alert",
         "status": "ACTIVE",
         "verify_jwt": false,
-        "versao": 17
+        "versao": 18
       },
       {
         "atualizada_em": "2026-09-12T17:36Z",
@@ -1306,7 +1306,7 @@
   ],
   "fonte": "scripts/inventario/banco.sql + GET /functions + .from() em src/ e supabase/functions/ (scripts/inventario/gerar-banco.mjs)",
   "format_version": 1,
-  "medido_em": "2026-11-12T07:51:24Z",
+  "medido_em": "2026-11-12T19:15:53Z",
   "origem": {
     "tabelas_em_comum_com_types_ts": 265,
     "tabelas_em_types_ts": 279
@@ -1322,7 +1322,7 @@
     "postgres": "17.6",
     "tabelas_public": 272,
     "tabelas_sem_rls": 0,
-    "tamanho_bytes": 547409043,
+    "tamanho_bytes": 555953299,
     "triggers_public": 171,
     "views_public": 21
   },
@@ -1388,9 +1388,9 @@
       }
     },
     {
-      "bytes": 548864,
+      "bytes": 557056,
       "citada_no_banco": true,
-      "linhas": 1688,
+      "linhas": 1730,
       "linhas_exatas": true,
       "nome": "alertas",
       "policies": 3,
@@ -2573,9 +2573,9 @@
       }
     },
     {
-      "bytes": 131072,
+      "bytes": 147456,
       "citada_no_banco": true,
-      "linhas": 105,
+      "linhas": 151,
       "linhas_exatas": true,
       "nome": "cron_job_logs",
       "policies": 1,
@@ -2678,9 +2678,9 @@
       }
     },
     {
-      "bytes": 65536,
+      "bytes": 6619136,
       "citada_no_banco": true,
-      "linhas": 28,
+      "linhas": 21977,
       "linhas_exatas": true,
       "nome": "edge_function_logs",
       "policies": 1,
@@ -3308,9 +3308,9 @@
       }
     },
     {
-      "bytes": 29949952,
+      "bytes": 30130176,
       "citada_no_banco": true,
-      "linhas": 74062,
+      "linhas": 80916,
       "linhas_exatas": true,
       "nome": "frontend_performance_logs",
       "policies": 2,
@@ -3533,9 +3533,9 @@
       }
     },
     {
-      "bytes": 1736704,
+      "bytes": 1744896,
       "citada_no_banco": true,
-      "linhas": 1888,
+      "linhas": 1900,
       "linhas_exatas": true,
       "nome": "integrity_alerts",
       "policies": 2,
@@ -3623,9 +3623,9 @@
       }
     },
     {
-      "bytes": 2080768,
+      "bytes": 2088960,
       "citada_no_banco": true,
-      "linhas": 1562,
+      "linhas": 1624,
       "linhas_exatas": true,
       "nome": "login_attempts",
       "policies": 4,
@@ -4075,7 +4075,7 @@
     {
       "bytes": 3506176,
       "citada_no_banco": true,
-      "linhas": 4114,
+      "linhas": 4166,
       "linhas_exatas": true,
       "nome": "performance_alerts",
       "policies": 1,
@@ -4315,7 +4315,7 @@
     {
       "bytes": 14311424,
       "citada_no_banco": true,
-      "linhas": 15012,
+      "linhas": 15184,
       "linhas_exatas": true,
       "nome": "query_telemetry",
       "policies": 3,
@@ -4855,7 +4855,7 @@
     {
       "bytes": 22020096,
       "citada_no_banco": true,
-      "linhas": 18597,
+      "linhas": 18339,
       "linhas_exatas": true,
       "nome": "slow_query_alerts",
       "policies": 1,

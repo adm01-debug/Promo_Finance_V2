@@ -2,10 +2,10 @@
   "format_version": 1,
   "fonte": "scripts/inventario/gerar-rotas.mjs (le src/App.tsx, src/components/layout/sidebar/SidebarNavGroups.tsx, src/components/layout/sidebar/sidebarFiscalNavGroup.ts e os imports de cada pagina)",
   "resumo": {
-    "urls": 128,
-    "urls_protegidas": 118,
-    "itens_de_menu": 89,
-    "hooks_distintos": 389,
+    "urls": 130,
+    "urls_protegidas": 120,
+    "itens_de_menu": 91,
+    "hooks_distintos": 397,
     "problemas": 31
   },
   "urls": [
@@ -772,6 +772,127 @@
         "frontend_error_logs",
         "frontend_performance_logs",
         "vw_edge_health"
+      ],
+      "imports_quebrados": []
+    },
+    {
+      "caminho": "/admin/erros-frontend",
+      "componente": "AdminErrosFrontend",
+      "arquivo": "src/pages/admin/AdminErrosFrontend.tsx",
+      "protegida": true,
+      "papeis": [
+        "admin"
+      ],
+      "redireciona": null,
+      "menu": [
+        {
+          "href": "/admin/erros-frontend",
+          "rotulo": "Erros do Front-end",
+          "grupo": "Administração",
+          "grupo_id": "admin",
+          "destaque": false,
+          "badge": null,
+          "secao": null,
+          "arquivo": "src/components/layout/sidebar/SidebarNavGroups.tsx"
+        }
+      ],
+      "arquivos_lidos": 42,
+      "hooks": [
+        {
+          "nome": "useAlertas",
+          "arquivo": "src/hooks/useAlertas.ts"
+        },
+        {
+          "nome": "useAprovacoesPendentesCount",
+          "arquivo": "src/hooks/useAprovacoesPendentesCount.ts"
+        },
+        {
+          "nome": "useAuth",
+          "arquivo": "src/hooks/useAuth.tsx"
+        },
+        {
+          "nome": "useFinancialAlerts",
+          "arquivo": "src/hooks/useFinancialAlerts.tsx"
+        },
+        {
+          "nome": "useFrontendErrorAlertState",
+          "arquivo": "src/hooks/useFrontendErrorLogs.ts"
+        },
+        {
+          "nome": "useFrontendErrorGroups",
+          "arquivo": "src/hooks/useFrontendErrorLogs.ts"
+        },
+        {
+          "nome": "useFrontendErrorOccurrences",
+          "arquivo": "src/hooks/useFrontendErrorLogs.ts"
+        },
+        {
+          "nome": "useInstallPrompt",
+          "arquivo": "src/hooks/useInstallPrompt.ts"
+        },
+        {
+          "nome": "useIsMobile",
+          "arquivo": "src/hooks/use-mobile.tsx"
+        },
+        {
+          "nome": "useKeyboardNavigation",
+          "arquivo": "src/hooks/useKeyboardNavigation.ts"
+        },
+        {
+          "nome": "useNetworkStatus",
+          "arquivo": "src/hooks/useNetworkStatus.ts"
+        },
+        {
+          "nome": "useOnboardingProgress",
+          "arquivo": "src/hooks/useOnboardingProgress.ts"
+        },
+        {
+          "nome": "useSilenciamentosExpirando",
+          "arquivo": "src/hooks/useFrontendErrorLogs.ts"
+        },
+        {
+          "nome": "useSilenciarAlertaErro",
+          "arquivo": "src/hooks/useFrontendErrorLogs.ts"
+        },
+        {
+          "nome": "useSmartBack",
+          "arquivo": "src/hooks/useSmartBack.ts"
+        },
+        {
+          "nome": "useSwipeBack",
+          "arquivo": "src/hooks/useSwipeBack.ts"
+        },
+        {
+          "nome": "useTheme",
+          "arquivo": "src/components/theme/ThemeContext.ts"
+        },
+        {
+          "nome": "useUserEmpresas",
+          "arquivo": "src/hooks/useUserEmpresas.ts"
+        }
+      ],
+      "buckets": [],
+      "edges": [
+        "copilot-global"
+      ],
+      "rpcs": [
+        "get_frontend_error_groups",
+        "get_frontend_error_occurrences",
+        "get_silenciamentos_expirando",
+        "registrar_auditoria_config",
+        "silenciar_alerta_erro_frontend"
+      ],
+      "tabelas": [
+        "alertas",
+        "contas_pagar",
+        "contas_receber",
+        "empresas",
+        "frontend_error_alert_state",
+        "frontend_error_logs",
+        "frontend_performance_logs",
+        "solicitacoes_aprovacao",
+        "user_empresas",
+        "user_onboarding_progress"
       ],
       "imports_quebrados": []
     },
@@ -10528,6 +10649,117 @@
       "imports_quebrados": []
     },
     {
+      "caminho": "/tributario/consulta-rapida",
+      "componente": "ConsultaRapidaFiscal",
+      "arquivo": "src/pages/tributario/ConsultaRapidaFiscal.tsx",
+      "protegida": true,
+      "papeis": [],
+      "redireciona": null,
+      "menu": [
+        {
+          "href": "/tributario/consulta-rapida",
+          "rotulo": "Consulta Rápida Fiscal",
+          "grupo": "Fiscal & Documentos",
+          "grupo_id": "fiscal",
+          "destaque": false,
+          "badge": null,
+          "secao": null,
+          "arquivo": "src/components/layout/sidebar/sidebarFiscalNavGroup.ts"
+        }
+      ],
+      "arquivos_lidos": 52,
+      "hooks": [
+        {
+          "nome": "useAlertas",
+          "arquivo": "src/hooks/useAlertas.ts"
+        },
+        {
+          "nome": "useAprovacoesPendentesCount",
+          "arquivo": "src/hooks/useAprovacoesPendentesCount.ts"
+        },
+        {
+          "nome": "useAuth",
+          "arquivo": "src/hooks/useAuth.tsx"
+        },
+        {
+          "nome": "useConsultaCNAE",
+          "arquivo": "src/hooks/useConsultaTributaria.ts"
+        },
+        {
+          "nome": "useConsultaNCM",
+          "arquivo": "src/hooks/useConsultaTributaria.ts"
+        },
+        {
+          "nome": "useConsultaUF",
+          "arquivo": "src/hooks/useConsultaTributaria.ts"
+        },
+        {
+          "nome": "useEmpresaScope",
+          "arquivo": "src/contexts/useEmpresaScope.ts"
+        },
+        {
+          "nome": "useFinancialAlerts",
+          "arquivo": "src/hooks/useFinancialAlerts.tsx"
+        },
+        {
+          "nome": "useInstallPrompt",
+          "arquivo": "src/hooks/useInstallPrompt.ts"
+        },
+        {
+          "nome": "useIsMobile",
+          "arquivo": "src/hooks/use-mobile.tsx"
+        },
+        {
+          "nome": "useKeyboardNavigation",
+          "arquivo": "src/hooks/useKeyboardNavigation.ts"
+        },
+        {
+          "nome": "useNetworkStatus",
+          "arquivo": "src/hooks/useNetworkStatus.ts"
+        },
+        {
+          "nome": "useOnboardingProgress",
+          "arquivo": "src/hooks/useOnboardingProgress.ts"
+        },
+        {
+          "nome": "useSmartBack",
+          "arquivo": "src/hooks/useSmartBack.ts"
+        },
+        {
+          "nome": "useSwipeBack",
+          "arquivo": "src/hooks/useSwipeBack.ts"
+        },
+        {
+          "nome": "useTheme",
+          "arquivo": "src/components/theme/ThemeContext.ts"
+        },
+        {
+          "nome": "useUserEmpresas",
+          "arquivo": "src/hooks/useUserEmpresas.ts"
+        }
+      ],
+      "buckets": [],
+      "edges": [
+        "consulta-tributaria",
+        "copilot-global"
+      ],
+      "rpcs": [
+        "registrar_auditoria_config"
+      ],
+      "tabelas": [
+        "alertas",
+        "contas_pagar",
+        "contas_receber",
+        "empresas",
+        "frontend_error_logs",
+        "frontend_performance_logs",
+        "solicitacoes_aprovacao",
+        "user_empresas",
+        "user_onboarding_progress"
+      ],
+      "imports_quebrados": []
+    },
+    {
       "caminho": "/tributario/darf",
       "componente": "DarfConsolidadoPage",
       "arquivo": "src/pages/tributario/DarfConsolidado.tsx",
@@ -13436,6 +13668,7 @@
         "/admin/api",
         "/admin/campos-customizados",
         "/admin/compliance",
+        "/admin/erros-frontend",
         "/admin/filtros-compartilhados",
         "/admin/insights-ia",
         "/admin/insights-ia/anomalia/:id",
@@ -13502,6 +13735,7 @@
         "/tributario/comparativo",
         "/tributario/comparativo-conformidade",
         "/tributario/conciliacao",
+        "/tributario/consulta-rapida",
         "/tributario/darf",
         "/tributario/dashboard",
         "/tributario/fechamento-mensal",
@@ -13643,6 +13877,7 @@
         "/admin/api",
         "/admin/campos-customizados",
         "/admin/compliance",
+        "/admin/erros-frontend",
         "/admin/filtros-compartilhados",
         "/admin/insights-ia",
         "/admin/insights-ia/anomalia/:id",
@@ -13708,6 +13943,7 @@
         "/tributario/comparativo",
         "/tributario/comparativo-conformidade",
         "/tributario/conciliacao",
+        "/tributario/consulta-rapida",
         "/tributario/darf",
         "/tributario/dashboard",
         "/tributario/fechamento-mensal",
@@ -13808,6 +14044,7 @@
         "/admin/campos-customizados",
         "/admin/compliance",
         "/admin/edge-health",
+        "/admin/erros-frontend",
         "/admin/filtros-compartilhados",
         "/admin/insights-ia",
         "/admin/insights-ia/anomalia/:id",
@@ -13885,6 +14122,7 @@
         "/tributario/comparativo",
         "/tributario/comparativo-conformidade",
         "/tributario/conciliacao",
+        "/tributario/consulta-rapida",
         "/tributario/darf",
         "/tributario/dashboard",
         "/tributario/fechamento-mensal",
@@ -14396,6 +14634,24 @@
         "/tributario/dashboard"
       ]
     },
+    "useConsultaCNAE": {
+      "arquivo": "src/hooks/useConsultaTributaria.ts",
+      "rotas": [
+        "/tributario/consulta-rapida"
+      ]
+    },
+    "useConsultaNCM": {
+      "arquivo": "src/hooks/useConsultaTributaria.ts",
+      "rotas": [
+        "/tributario/consulta-rapida"
+      ]
+    },
+    "useConsultaUF": {
+      "arquivo": "src/hooks/useConsultaTributaria.ts",
+      "rotas": [
+        "/tributario/consulta-rapida"
+      ]
+    },
     "useContaBancariaSelecionada": {
       "arquivo": "src/hooks/useConciliacaoPageState.ts",
       "rotas": [
@@ -14862,6 +15118,7 @@
         "/tributario/comparativo",
         "/tributario/comparativo-conformidade",
         "/tributario/conciliacao",
+        "/tributario/consulta-rapida",
         "/tributario/darf",
         "/tributario/dashboard",
         "/tributario/fechamento-mensal",
@@ -15033,6 +15290,7 @@
         "/admin/api",
         "/admin/campos-customizados",
         "/admin/compliance",
+        "/admin/erros-frontend",
         "/admin/filtros-compartilhados",
         "/admin/insights-ia",
         "/admin/insights-ia/anomalia/:id",
@@ -15098,6 +15356,7 @@
         "/tributario/comparativo",
         "/tributario/comparativo-conformidade",
         "/tributario/conciliacao",
+        "/tributario/consulta-rapida",
         "/tributario/darf",
         "/tributario/dashboard",
         "/tributario/fechamento-mensal",
@@ -15163,6 +15422,24 @@
       "arquivo": "src/hooks/useFinancialData.ts",
       "rotas": [
         "/fornecedores"
+      ]
+    },
+    "useFrontendErrorAlertState": {
+      "arquivo": "src/hooks/useFrontendErrorLogs.ts",
+      "rotas": [
+        "/admin/erros-frontend"
+      ]
+    },
+    "useFrontendErrorGroups": {
+      "arquivo": "src/hooks/useFrontendErrorLogs.ts",
+      "rotas": [
+        "/admin/erros-frontend"
+      ]
+    },
+    "useFrontendErrorOccurrences": {
+      "arquivo": "src/hooks/useFrontendErrorLogs.ts",
+      "rotas": [
+        "/admin/erros-frontend"
       ]
     },
     "useGenerateSSOMetadata": {
@@ -15337,6 +15614,7 @@
         "/admin/api",
         "/admin/campos-customizados",
         "/admin/compliance",
+        "/admin/erros-frontend",
         "/admin/filtros-compartilhados",
         "/admin/insights-ia",
         "/admin/insights-ia/anomalia/:id",
@@ -15402,6 +15680,7 @@
         "/tributario/comparativo",
         "/tributario/comparativo-conformidade",
         "/tributario/conciliacao",
+        "/tributario/consulta-rapida",
         "/tributario/darf",
         "/tributario/dashboard",
         "/tributario/fechamento-mensal",
@@ -15447,6 +15726,7 @@
         "/admin/api",
         "/admin/campos-customizados",
         "/admin/compliance",
+        "/admin/erros-frontend",
         "/admin/filtros-compartilhados",
         "/admin/insights-ia",
         "/admin/insights-ia/anomalia/:id",
@@ -15512,6 +15792,7 @@
         "/tributario/comparativo",
         "/tributario/comparativo-conformidade",
         "/tributario/conciliacao",
+        "/tributario/consulta-rapida",
         "/tributario/darf",
         "/tributario/dashboard",
         "/tributario/fechamento-mensal",
@@ -15543,6 +15824,7 @@
         "/admin/api",
         "/admin/campos-customizados",
         "/admin/compliance",
+        "/admin/erros-frontend",
         "/admin/filtros-compartilhados",
         "/admin/insights-ia",
         "/admin/insights-ia/anomalia/:id",
@@ -15608,6 +15890,7 @@
         "/tributario/comparativo",
         "/tributario/comparativo-conformidade",
         "/tributario/conciliacao",
+        "/tributario/consulta-rapida",
         "/tributario/darf",
         "/tributario/dashboard",
         "/tributario/fechamento-mensal",
@@ -15759,6 +16042,7 @@
         "/admin/api",
         "/admin/campos-customizados",
         "/admin/compliance",
+        "/admin/erros-frontend",
         "/admin/filtros-compartilhados",
         "/admin/insights-ia",
         "/admin/insights-ia/anomalia/:id",
@@ -15824,6 +16108,7 @@
         "/tributario/comparativo",
         "/tributario/comparativo-conformidade",
         "/tributario/conciliacao",
+        "/tributario/consulta-rapida",
         "/tributario/darf",
         "/tributario/dashboard",
         "/tributario/fechamento-mensal",
@@ -15861,6 +16146,7 @@
         "/admin/api",
         "/admin/campos-customizados",
         "/admin/compliance",
+        "/admin/erros-frontend",
         "/admin/filtros-compartilhados",
         "/admin/insights-ia",
         "/admin/insights-ia/anomalia/:id",
@@ -15927,6 +16213,7 @@
         "/tributario/comparativo",
         "/tributario/comparativo-conformidade",
         "/tributario/conciliacao",
+        "/tributario/consulta-rapida",
         "/tributario/darf",
         "/tributario/dashboard",
         "/tributario/fechamento-mensal",
@@ -16519,6 +16806,18 @@
         "/admin/filtros-compartilhados"
       ]
     },
+    "useSilenciamentosExpirando": {
+      "arquivo": "src/hooks/useFrontendErrorLogs.ts",
+      "rotas": [
+        "/admin/erros-frontend"
+      ]
+    },
+    "useSilenciarAlertaErro": {
+      "arquivo": "src/hooks/useFrontendErrorLogs.ts",
+      "rotas": [
+        "/admin/erros-frontend"
+      ]
+    },
     "useSimulacaoRegimes": {
       "arquivo": "src/hooks/useSimulacaoRegimes.ts",
       "rotas": [
@@ -16544,6 +16843,7 @@
         "/admin/auditoria-ia",
         "/admin/campos-customizados",
         "/admin/compliance",
+        "/admin/erros-frontend",
         "/admin/filtros-compartilhados",
         "/admin/insights-ia",
         "/admin/insights-ia/anomalia/:id",
@@ -16610,6 +16910,7 @@
         "/tributario/comparativo",
         "/tributario/comparativo-conformidade",
         "/tributario/conciliacao",
+        "/tributario/consulta-rapida",
         "/tributario/darf",
         "/tributario/dashboard",
         "/tributario/fechamento-mensal",
@@ -16739,6 +17040,7 @@
         "/admin/api",
         "/admin/campos-customizados",
         "/admin/compliance",
+        "/admin/erros-frontend",
         "/admin/filtros-compartilhados",
         "/admin/insights-ia",
         "/admin/insights-ia/anomalia/:id",
@@ -16804,6 +17106,7 @@
         "/tributario/comparativo",
         "/tributario/comparativo-conformidade",
         "/tributario/conciliacao",
+        "/tributario/consulta-rapida",
         "/tributario/darf",
         "/tributario/dashboard",
         "/tributario/fechamento-mensal",
@@ -16861,6 +17164,7 @@
         "/admin/api",
         "/admin/campos-customizados",
         "/admin/compliance",
+        "/admin/erros-frontend",
         "/admin/filtros-compartilhados",
         "/admin/insights-ia",
         "/admin/insights-ia/anomalia/:id",
@@ -16927,6 +17231,7 @@
         "/tributario/comparativo",
         "/tributario/comparativo-conformidade",
         "/tributario/conciliacao",
+        "/tributario/consulta-rapida",
         "/tributario/darf",
         "/tributario/dashboard",
         "/tributario/fechamento-mensal",
@@ -17140,6 +17445,7 @@
         "/admin/auditoria-ia",
         "/admin/campos-customizados",
         "/admin/compliance",
+        "/admin/erros-frontend",
         "/admin/filtros-compartilhados",
         "/admin/insights-ia",
         "/admin/insights-ia/anomalia/:id",
@@ -17205,6 +17511,7 @@
         "/tributario/comparativo",
         "/tributario/comparativo-conformidade",
         "/tributario/conciliacao",
+        "/tributario/consulta-rapida",
         "/tributario/darf",
         "/tributario/dashboard",
         "/tributario/fechamento-mensal",
