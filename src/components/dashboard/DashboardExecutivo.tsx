@@ -42,6 +42,12 @@ import { Link } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 
+const WIDGET_SIZE_CLASS: Record<DashboardWidget['size'], string> = {
+  sm: 'md:col-span-2',
+  md: 'md:col-span-3',
+  lg: 'md:col-span-6',
+};
+
 const containerVariants = {
   hidden: { opacity: 0 },
   visible: { opacity: 1, transition: { staggerChildren: 0.05 } },
@@ -73,7 +79,7 @@ export const DashboardExecutivo = () => {
   const [periodoFluxo, setPeriodoFluxo] = useState('30');
   const [configDialogOpen, setConfigDialogOpen] = useState(false);
 
-  const { widgets, resetToDefault } = useDashboardConfig();
+  const { widgets, resetToDefault, toggleWidget, resizeWidget } = useDashboardConfig();
 
   const metrics = useDashboardMetrics({
     empresaFilter,
@@ -425,11 +431,17 @@ export const DashboardExecutivo = () => {
                 </motion.div>
               </div>
 
-              <motion.div variants={itemVariants} className="space-y-6">
+              <motion.div
+                variants={itemVariants}
+                className="grid grid-cols-1 md:grid-cols-6 gap-6 grid-flow-row-dense"
+              >
                 {widgets
                   .filter((w) => w.visible)
                   .map((widget) => (
-                    <div key={widget.id} className="w-full">
+                    <div
+                      key={widget.id}
+                      className={`min-w-0 ${WIDGET_SIZE_CLASS[widget.size] ?? 'md:col-span-6'}`}
+                    >
                       {renderWidget(widget)}
                     </div>
                   ))}
@@ -458,8 +470,8 @@ export const DashboardExecutivo = () => {
         open={configDialogOpen}
         onOpenChange={setConfigDialogOpen}
         widgets={widgets}
-        onToggleWidget={() => {}}
-        onResizeWidget={() => {}}
+        onToggleWidget={toggleWidget}
+        onResizeWidget={resizeWidget}
         onResetToDefault={resetToDefault}
       />
     </div>
