@@ -9,7 +9,7 @@
     },
     {
       "detalhe": [
-        "208775 linhas com mais de 7 dias"
+        "208857 linhas com mais de 7 dias"
       ],
       "tipo": "historico_cron_sem_limpeza"
     },
@@ -27,10 +27,10 @@
       "max_worker_processes": "6"
     },
     "historico": {
-      "bytes": 130211840,
-      "linhas": 230900,
+      "bytes": 130236416,
+      "linhas": 230945,
       "mais_antigo": "2026-08-23T12:00:00Z",
-      "mais_de_7_dias": 208775
+      "mais_de_7_dias": 208857
     },
     "horas_paradas_7d": [],
     "jobs": [
@@ -240,7 +240,7 @@
         "nome": "enviar-digest-conformidade-horario",
         "startup_timeout_7d": 0,
         "taxa_falha_7d_pct": 100,
-        "ultima_falha": "2026-11-12T06:30:00Z"
+        "ultima_falha": "2026-11-12T07:30:00Z"
       },
       {
         "agenda": "0 12 * * *",
@@ -693,11 +693,11 @@
         "versao": 17
       },
       {
-        "atualizada_em": "2026-08-25T22:40Z",
+        "atualizada_em": "2026-11-12T07:22Z",
         "slug": "convidar-contador",
         "status": "ACTIVE",
         "verify_jwt": true,
-        "versao": 18
+        "versao": 19
       },
       {
         "atualizada_em": "2026-09-12T16:59Z",
@@ -735,18 +735,18 @@
         "versao": 18
       },
       {
-        "atualizada_em": "2026-08-25T22:31Z",
+        "atualizada_em": "2026-11-12T07:34Z",
         "slug": "digest-silenciamentos-erro",
         "status": "ACTIVE",
         "verify_jwt": false,
-        "versao": 18
+        "versao": 19
       },
       {
-        "atualizada_em": "2026-08-31T11:50Z",
+        "atualizada_em": "2026-11-12T07:14Z",
         "slug": "enviar-alerta-email",
         "status": "ACTIVE",
         "verify_jwt": false,
-        "versao": 19
+        "versao": 20
       },
       {
         "atualizada_em": "2026-08-25T22:32Z",
@@ -770,11 +770,11 @@
         "versao": 17
       },
       {
-        "atualizada_em": "2026-08-25T10:56Z",
+        "atualizada_em": "2026-11-12T07:30Z",
         "slug": "enviar-relatorios-tributarios-agendados",
         "status": "ACTIVE",
         "verify_jwt": true,
-        "versao": 16
+        "versao": 17
       },
       {
         "atualizada_em": "2026-08-31T11:50Z",
@@ -784,11 +784,11 @@
         "versao": 18
       },
       {
-        "atualizada_em": "2026-08-25T22:32Z",
+        "atualizada_em": "2026-11-12T07:25Z",
         "slug": "executar-fechamento-tributario",
         "status": "ACTIVE",
         "verify_jwt": true,
-        "versao": 17
+        "versao": 18
       },
       {
         "atualizada_em": "2026-08-25T22:32Z",
@@ -889,11 +889,11 @@
         "versao": 17
       },
       {
-        "atualizada_em": "2026-08-25T22:33Z",
+        "atualizada_em": "2026-11-12T07:42Z",
         "slug": "gerar-resumo-executivo-semanal",
         "status": "ACTIVE",
         "verify_jwt": true,
-        "versao": 17
+        "versao": 18
       },
       {
         "atualizada_em": "2026-08-25T10:56Z",
@@ -966,11 +966,11 @@
         "versao": 19
       },
       {
-        "atualizada_em": "2026-08-25T22:34Z",
+        "atualizada_em": "2026-11-12T07:38Z",
         "slug": "monitorar-erros-frontend",
         "status": "ACTIVE",
         "verify_jwt": false,
-        "versao": 18
+        "versao": 19
       },
       {
         "atualizada_em": "2026-08-25T22:34Z",
@@ -1008,11 +1008,11 @@
         "versao": 17
       },
       {
-        "atualizada_em": "2026-08-25T22:34Z",
+        "atualizada_em": "2026-11-12T07:17Z",
         "slug": "notify-saved-filter",
         "status": "ACTIVE",
         "verify_jwt": true,
-        "versao": 17
+        "versao": 18
       },
       {
         "atualizada_em": "2026-08-25T22:34Z",
@@ -1064,11 +1064,11 @@
         "versao": 17
       },
       {
-        "atualizada_em": "2026-08-25T22:35Z",
+        "atualizada_em": "2026-11-12T07:51Z",
         "slug": "relatorio-diario-anomalias",
         "status": "ACTIVE",
         "verify_jwt": true,
-        "versao": 17
+        "versao": 18
       },
       {
         "atualizada_em": "2026-08-25T10:56Z",
@@ -1306,7 +1306,7 @@
   ],
   "fonte": "scripts/inventario/banco.sql + GET /functions + .from() em src/ e supabase/functions/ (scripts/inventario/gerar-banco.mjs)",
   "format_version": 1,
-  "medido_em": "2026-11-12T07:14:04Z",
+  "medido_em": "2026-11-12T07:51:24Z",
   "origem": {
     "tabelas_em_comum_com_types_ts": 265,
     "tabelas_em_types_ts": 279
@@ -1322,7 +1322,7 @@
     "postgres": "17.6",
     "tabelas_public": 272,
     "tabelas_sem_rls": 0,
-    "tamanho_bytes": 547048595,
+    "tamanho_bytes": 547409043,
     "triggers_public": 171,
     "views_public": 21
   },
@@ -2575,7 +2575,7 @@
     {
       "bytes": 131072,
       "citada_no_banco": true,
-      "linhas": 102,
+      "linhas": 105,
       "linhas_exatas": true,
       "nome": "cron_job_logs",
       "policies": 1,
@@ -2680,7 +2680,7 @@
     {
       "bytes": 65536,
       "citada_no_banco": true,
-      "linhas": 19,
+      "linhas": 28,
       "linhas_exatas": true,
       "nome": "edge_function_logs",
       "policies": 1,
@@ -3308,9 +3308,9 @@
       }
     },
     {
-      "bytes": 29687808,
+      "bytes": 29949952,
       "citada_no_banco": true,
-      "linhas": 73491,
+      "linhas": 74062,
       "linhas_exatas": true,
       "nome": "frontend_performance_logs",
       "policies": 2,
@@ -3535,7 +3535,7 @@
     {
       "bytes": 1736704,
       "citada_no_banco": true,
-      "linhas": 1887,
+      "linhas": 1888,
       "linhas_exatas": true,
       "nome": "integrity_alerts",
       "policies": 2,
@@ -3625,7 +3625,7 @@
     {
       "bytes": 2080768,
       "citada_no_banco": true,
-      "linhas": 1547,
+      "linhas": 1562,
       "linhas_exatas": true,
       "nome": "login_attempts",
       "policies": 4,
@@ -4315,7 +4315,7 @@
     {
       "bytes": 14311424,
       "citada_no_banco": true,
-      "linhas": 15007,
+      "linhas": 15012,
       "linhas_exatas": true,
       "nome": "query_telemetry",
       "policies": 3,
