@@ -1,6 +1,6 @@
 # Prontidão para produção — Promo_Finance_V2
 
-> Auditoria de 12/11/2026 (sessão Claude Code). Linha de base: `main` em `bd5e644` (PR #320). Estado conferido no fechamento: `main` em `821385c` (PRs #322, #323 e #321 mergeadas), produção `dpl_2YJKioxK9AG14enSioWDKzuiaxU8`.
+> Auditoria de 12/11/2026 (sessão Claude Code). Linha de base: `main` em `bd5e644` (PR #320). Estado conferido no fechamento: `main` em `68bac76` (PRs #322, #323, #321 e #325 mergeadas), produção `dpl_9Fw6ewRRSxVwnWosXbyMyTcGtuCQ` READY.
 > Toda marcação abaixo tem prova (comando, query, log ou request real). Nada marcado como
 > "não verificado": o que não pôde ser provado está como **BLOQUEADO** com o erro exato.
 
@@ -11,8 +11,8 @@
 | 1 | Inventário | OK | seção 1 (rotas, edge functions, tabelas, workflows, integrações) |
 | 2 | Cobertura | OK | todo item da seção 1 está OK ou BLOQUEADO |
 | 3 | Qualidade | OK (ver nota lint:strict) | seção 2 |
-| 4 | GitHub Actions | OK (ver nota sobre `contexto.yml`) | seção 3 |
-| 5 | Sem "pela metade" | BLOQUEADO (parcial) | seção 6 — 2 itens corrigidos em produção (#322, #323); #325 (regressão de layout/rótulos da #322) com CI verde exceto `E2E Destructive Logout` na fila; restantes dependem de DDL/credencial/decisão de produto |
+| 4 | GitHub Actions | OK até `6e462aa` (todos os workflows de push verdes); `821385c`/`68bac76`: nenhum vermelho, CI Pipeline ainda na fila do Actions no fechamento (fila congestionada, não falha) | seção 3 |
+| 5 | Sem "pela metade" | BLOQUEADO (parcial) | seção 6 — 3 itens corrigidos em produção (#322, #323, #325); restantes dependem de DDL/credencial/decisão de produto |
 | 6 | Banco | OK com 1 drift BLOQUEADO | seção 4 |
 | 7 | Produção | BLOQUEADO (parcial) | seção 5 — 3 crons falhando, todos dependem de segredo/DDL (dono); `monitorar-erros-frontend` corrigido pela #321 (aplicada ~19:42 UTC, 200 desde 20:00) |
 | 8 | Entrega | OK | seção 7 |
@@ -639,15 +639,15 @@ Ambiente local: Node 22, deps instaladas do `bun.lock` (URLs do mirror privado `
 bloqueadas pelo proxy da sessão → trocadas por `registry.npmjs.org` só em memória para o install; lockfile
 não alterado).
 
-| verificação | linha de base `bd5e644` | final `51d0405` |
+| verificação | linha de base `bd5e644` | final `68bac76` |
 |---|---|---|
 | `tsc --noEmit` | exit 0 | exit 0 |
 | `npm run lint` (gate da CI, `ci.yml:272`) | exit 0 (0 erros, 74 avisos) | exit 0 (0 erros, 74 avisos — iguais à linha de base) |
 | `npm run lint:strict` (`--max-warnings 0`) | exit 1 — 74 avisos herdados: 73× `max-lines` + 1× `react-refresh/only-export-components` | exit 1 — os mesmos 74 avisos herdados |
 | `vite build` (com `VITE_SUPABASE_*` definidos) | exit 0 (`✓ built in 7.16s`) | exit 0 |
-| `vitest run` | exit 0 — 247 arquivos, **3025 testes** | exit 0 — 247 arquivos, **3025 testes** (= linha de base) |
+| `vitest run` | exit 0 — 247 arquivos, **3025 testes** | exit 0 — 248 arquivos, **3028 testes** (+3 da #325) |
 
-Após a #323: `ci.yml` 43266511057 (push `6e462aa`, quality gate + testes) success; `821385c` só altera SQL. Local no `main` `821385c`: `tsc` exit 0, `npm run lint` exit 0 (74 avisos), `vite build` exit 0, `vitest` 247 arquivos / 3025 testes.
+Após a #323: `ci.yml` 43266511057 (push `6e462aa`, quality gate + testes) success. No `main` final `68bac76` (local, 12/11 22:15 UTC): `tsc` exit 0, `npm run lint` exit 0 (74 avisos herdados), `vite build` exit 0, `vitest` 248 arquivos / 3028 testes.
 
 Nenhum teste removido, pulado ou afrouxado. `lint:strict` não é gate da CI; zerar exige quebrar 73
 arquivos grandes (refatoração fora do escopo "diff mínimo") → BLOQUEADO por decisão do dono.
@@ -672,7 +672,7 @@ Ver 1.4. Nenhuma execução vermelha no `main`. `contexto.yml` (schedule a cada 
 
 | verificação | prova | status |
 |---|---|---|
-| Deploy front | Vercel `dpl_2YJKioxK9AG14enSioWDKzuiaxU8` READY, commit `821385c` (anteriores: `dpl_8dw192HzBpRkKmFqW13q6gRGean8` `6e462aa`, `dpl_3EBzYSfwDVpZKZZBTmDoh1qb4d5j` `51d0405`) | OK |
+| Deploy front | Vercel `dpl_9Fw6ewRRSxVwnWosXbyMyTcGtuCQ` READY, commit `68bac76`; `get_runtime_errors` desde 17:00 UTC: nenhum erro (anteriores: `dpl_2YJKioxK9AG14enSioWDKzuiaxU8` `821385c`, `dpl_8dw192HzBpRkKmFqW13q6gRGean8` `6e462aa`, `dpl_3EBzYSfwDVpZKZZBTmDoh1qb4d5j` `51d0405`) | OK |
 | Front no ar | `GET https://promo-finance-v2.vercel.app/` → 200, `<title>Promo Finance \| Sistema Financeiro Corporativo</title>` | OK |
 | Erros de runtime Vercel | `get_runtime_errors` 24h: "No runtime errors found" | OK |
 | Edge functions | 105/106 publicadas e respondendo (ping); `edge_function_logs` desde 12/11 05:45 UTC (11 funções instrumentadas): 0 linhas 5xx/`error` | OK (exceto `monitor-health`, seção 4) |
@@ -692,7 +692,7 @@ Ver 1.4. Nenhuma execução vermelha no `main`. `contexto.yml` (schedule a cada 
 | item | onde | status |
 |---|---|---|
 | Botões "ocultar/exibir" e "tamanho" do diálogo Configurar Dashboard sem ação | `src/components/dashboard/DashboardExecutivo.tsx:461-462` no `bd5e644` (`() => {}`) | OK — corrigido na PR #322 (mergeada, deploy READY) |
-| Rótulos duplicados/errados no Configurar Dashboard e widgets estreitos (regressão da #322) | `DashboardConfigDialog.tsx:98`; grid `md:grid-cols-6` em `DashboardExecutivo.tsx` | PR #325 aberta — 28 checks verdes (inclui E2E Critical Gate e Financeiro), `E2E Destructive Logout` na fila |
+| Rótulos duplicados/errados no Configurar Dashboard e widgets estreitos (regressão da #322) | `DashboardConfigDialog.tsx:98`; grid `md:grid-cols-6` em `DashboardExecutivo.tsx` | OK — corrigido na PR #325 (mergeada `68bac76`, deploy `dpl_9Fw6ewRRSxVwnWosXbyMyTcGtuCQ` READY) |
 | Telemetria de erros do front não grava (tela 'Erros do Front-end' sempre vazia) | papel `authenticated` sem `INSERT` em `public.frontend_error_logs`; `src/lib/telemetry.ts:208-227` | BLOQUEADO — exige `GRANT INSERT` (DDL em produção → dono) |
 | Itens de menu de admin visíveis a todos os papéis (não-admin cai em 'Acesso restrito') | `src/components/layout/sidebar/SidebarNavGroups.tsx:313` não filtra por `requiredRoles` de `src/lib/navigation.ts` (vale para Segurança, Logs de Auditoria, Eventos JIT e o novo Erros do Front-end) | BLOQUEADO — padrão herdado; mudança de comportamento do menu para decisão do dono |
 | Botão SMS "funcionalidade em desenvolvimento" | `src/components/contas-receber/EnviarCobrancaDialog.tsx:68` (usado em `ContasReceber.tsx`) | BLOQUEADO — sem provedor de SMS (custo) |
@@ -719,7 +719,7 @@ Ver 1.4. Nenhuma execução vermelha no `main`. `contexto.yml` (schedule a cada 
 | [#322](https://github.com/adm01-debug/Promo_Finance_V2/pull/322) | Configurar Dashboard: ocultar/exibir e tamanho dos widgets passam a funcionar (`DashboardExecutivo.tsx`) | causa: handlers `() => {}` em `DashboardExecutivo.tsx:461-462`; CI 26/26 obrigatórios verdes; local `tsc` 0, `vitest` 3025/3025, `vite build` OK | mergeada (`51d0405`), deploy `dpl_3EBzYSfwDVpZKZZBTmDoh1qb4d5j` READY |
 | [#323](https://github.com/adm01-debug/Promo_Finance_V2/pull/323) | Páginas 'Erros do Front-end' (`/admin/erros-frontend`) e 'Consulta Rápida Fiscal' (`/tributario/consulta-rapida`) ganham rota, menu e breadcrumb | páginas sem rota/import no `main`; local `tsc` 0, `vitest` 3025/3025 | mergeada (`6e462aa`), CI `ci.yml` 43266511057 success, deploy `dpl_8dw192HzBpRkKmFqW13q6gRGean8` READY |
 | [#321](https://github.com/adm01-debug/Promo_Finance_V2/pull/321) | Crons `monitorar-erros-frontend` e `webhook-retry-worker-1min` enviam o segredo que as functions validam | 12/12 execuções 401; com o segredo certo → 200 (net 199266 e 199467); simulação com rollback: altera os 2 jobs, 2ª execução no-op | mergeada pelo dono (`821385c`); SQL aplicado em produção ~19:42 UTC; cron 200 desde 20:00 UTC |
-| [#325](https://github.com/adm01-debug/Promo_Finance_V2/pull/325) | Corrige a regressão de layout da #322 (grid só a partir de 1536px), rótulos duplicados no Configurar Dashboard, mutação do array e config salva inválida; +3 testes | validação adversarial mediu widgets de 146px em 1024px; testes novos falham no código antigo (2/3) e passam no novo; `vitest` 3028/3028 | aberta, MERGEABLE; CI verde exceto `E2E Destructive Logout` (na fila do Actions) |
+| [#325](https://github.com/adm01-debug/Promo_Finance_V2/pull/325) | Corrige a regressão de layout da #322 (grid só a partir de 1536px), rótulos duplicados no Configurar Dashboard, mutação do array e config salva inválida; +3 testes | validação adversarial mediu widgets de 146px em 1024px; testes novos falham no código antigo (2/3) e passam no novo; `vitest` 3028/3028 | mergeada (`68bac76`) com todos os checks obrigatórios verdes (28/28, inclui `E2E Destructive Logout`), deploy `dpl_9Fw6ewRRSxVwnWosXbyMyTcGtuCQ` READY |
 | [#324](https://github.com/adm01-debug/Promo_Finance_V2/pull/324) | Este relatório (`docs/prod-readiness.md`) | — | aberta |
 
 ## 8. BLOQUEADO / aguardando o dono
