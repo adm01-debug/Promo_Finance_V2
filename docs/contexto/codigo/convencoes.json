@@ -58,11 +58,11 @@
  "commits": {
   "convencao": "conventional commits (observado)",
   "exemplos": [
+   "feat: contabilização usa a conta contábil da categoria (#317)",
    "fix: normalizar_tipo_partida grava tipo em minúsculo (constraint exige debito/credito) (#312)",
    "chore: fixa search_path das functions e remove cron órfão evaluate-delivery-alerts (#309)",
    "chore: manifesto de env reconhece MCP_SECRET e marca fallbacks como opcionais (#310)",
-   "feat: contabilização automática de movimentações pelas regras (#316)",
-   "fix: remetente de e-mail usa RESEND_FROM em vez de @resend.dev fixo (#311)"
+   "feat: contabilização automática de movimentações pelas regras (#316)"
   ]
  },
  "pr_template": ".github/PULL_REQUEST_TEMPLATE.md",
