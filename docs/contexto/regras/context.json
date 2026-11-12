@@ -1,15 +1,15 @@
 {
  "meta": {
-  "sha": "251d639964eed3a9347bb91518e6253a597c19c8",
+  "sha": "cc0b762b780ee47e0d7243388a965cc195048de5",
   "branch": "main",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
-  "generated_at": "2026-11-12 05:15 UTC",
+  "generated_at": "2026-11-12 05:47 UTC",
   "files_total": 3653,
   "code_files": 3288,
-  "code_lines": 491270
+  "code_lines": 491312
  },
  "version": "1.3.2",
- "facts_hash": "37d61c2ea162975d",
+ "facts_hash": "cbd847dfa0749769",
  "stack": {
   "frameworks": [
    "React + Vite",
@@ -65019,6 +65019,7 @@
     ],
     "env": [
      "CRON_DISPATCH_SECRET",
+     "SEFAZ_CRON_SECRET",
      "SUPABASE_SERVICE_ROLE_KEY",
      "SUPABASE_URL"
     ],
@@ -65028,6 +65029,7 @@
     ],
     "doc": "Edge Function: sefaz-dfe-dispatcher Cron entrypoint (a cada 15min) que faz fan-out do puxador DFe por CNPJ ativo, aplicando política de retry + backoff exponencial + circuit breaker. Política pura em ./policy.ts (testada em policy_test.ts com 1000 cenários).",
     "errors": [
+     "query elegíveis falhou: ${curErr.message}",
      "query elegíveis falhou: ${error.message}"
     ],
     "side_effects": [
@@ -71364,7 +71366,7 @@
   {
    "module": "supabase/functions",
    "files": 222,
-   "lines": 49749,
+   "lines": 49791,
    "tables": [
     "acoes_recomendadas",
     "alertas",
@@ -73721,11 +73723,12 @@
     "upsert": [
      "supabase/functions/nfe-upload-certificado/index.ts"
     ],
+    "select": [
+     "supabase/functions/sefaz-dfe-dispatcher/index.ts",
+     "supabase/functions/sefaz-dfe-puxar/index.ts"
+    ],
     "update": [
      "supabase/functions/sefaz-dfe-dispatcher/index.ts"
-    ],
-    "select": [
-     "supabase/functions/sefaz-dfe-puxar/index.ts"
     ]
    },
    "solicitacoes_aprovacao": {
@@ -75176,7 +75179,10 @@
     "circuit_open",
     "cnpj",
     "id",
+    "last_error_at",
     "next_run_at",
+    "retry_count",
+    "ultima_consulta",
     "ultimo_nsu"
    ],
    "solicitacoes_aprovacao": [
@@ -75575,6 +75581,7 @@
     "supabase/functions/compare-schemas/index.ts"
    ],
    "SEFAZ_CRON_SECRET": [
+    "supabase/functions/sefaz-dfe-dispatcher/index.ts",
     "supabase/functions/sefaz-dfe-puxar/index.ts"
    ],
    "SENTRY_AUTH_TOKEN": [
@@ -77755,7 +77762,7 @@
     "file": "supabase/functions/sefaz-dfe-puxar/index.ts",
     "name": "RequestBodySchema",
     "kind": "object",
-    "body": "{ empresa_id: z.string().uuid().optional() }",
+    "body": "{ empresa_id: z.string().uuid().optional(), // Enviados pelo sefaz-dfe-dispatcher: restringe ao certificado do cursor elegível. cnpj: z.string().optional(), ambiente: z.enum(['producao', 'homologacao']).optional(), }",
     "refines": [],
     "chain": []
    },
@@ -83503,6 +83510,10 @@
    {
     "file": "supabase/functions/relatorio-diario-anomalias/index.ts",
     "msg": "Falha ao enviar: ${resp.status}"
+   },
+   {
+    "file": "supabase/functions/sefaz-dfe-dispatcher/index.ts",
+    "msg": "query elegíveis falhou: ${curErr.message}"
    },
    {
     "file": "supabase/functions/sefaz-dfe-dispatcher/index.ts",
@@ -234820,10 +234831,14 @@
   },
   "supabase/functions/sefaz-dfe-dispatcher/index.ts": {
    "path": "supabase/functions/sefaz-dfe-dispatcher/index.ts",
-   "lines": 260,
+   "lines": 286,
    "tables": [
     {
      "table": "empresas_certificados",
+     "op": "select"
+    },
+    {
+     "table": "sefaz_dfe_cursor",
      "op": "select"
     },
     {
@@ -234844,10 +234859,18 @@
      "ambiente",
      "ativo",
      "cnpj",
+     "empresa_id",
      "valido_ate"
     ],
     "sefaz_dfe_cursor": [
-     "id"
+     "ambiente",
+     "circuit_open",
+     "cnpj",
+     "id",
+     "last_error_at",
+     "next_run_at",
+     "retry_count",
+     "ultima_consulta"
     ]
    },
    "invokes": [
@@ -234855,10 +234878,12 @@
    ],
    "env": [
     "CRON_DISPATCH_SECRET",
+    "SEFAZ_CRON_SECRET",
     "SUPABASE_SERVICE_ROLE_KEY",
     "SUPABASE_URL"
    ],
    "errors": [
+    "query elegíveis falhou: ${curErr.message}",
     "query elegíveis falhou: ${error.message}"
    ],
    "params": [
@@ -234965,7 +234990,7 @@
   },
   "supabase/functions/sefaz-dfe-puxar/index.ts": {
    "path": "supabase/functions/sefaz-dfe-puxar/index.ts",
-   "lines": 563,
+   "lines": 579,
    "exports": [
     "type SefazFetch",
     "function runPuxador"
@@ -235021,7 +235046,7 @@
     {
      "name": "RequestBodySchema",
      "kind": "object",
-     "body": "{ empresa_id: z.string().uuid().optional() }",
+     "body": "{ empresa_id: z.string().uuid().optional(), // Enviados pelo sefaz-dfe-dispatcher: restringe ao certificado do cursor elegível. cnpj: z.string().optional(), ambiente: z.enum(['producao', 'homologacao']).optional(), }",
      "refines": [],
      "chain": []
     }
@@ -241669,10 +241694,20 @@
   }
  },
  "git": {
-  "sha": "251d639964eed3a9347bb91518e6253a597c19c8",
+  "sha": "cc0b762b780ee47e0d7243388a965cc195048de5",
   "branch": "main",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
   "commits": [
+   {
+    "sha": "cc0b762",
+    "date": "2026-11-12",
+    "author": "adm01-debug",
+    "subject": "fix: destrava busca automática de DF-e na SEFAZ (dispatcher → puxar) (#306)",
+    "files": [
+     "supabase/functions/sefaz-dfe-dispatcher/index.ts",
+     "supabase/functions/sefaz-dfe-puxar/index.ts"
+    ]
+   },
    {
     "sha": "251d639",
     "date": "2026-11-12",
@@ -242271,26 +242306,16 @@
     "files": [
      "analise-prs/RELATORIO_PRS.md"
     ]
-   },
-   {
-    "sha": "e8620bd",
-    "date": "2026-11-09",
-    "author": "adm01-debug",
-    "subject": "chore: bump @sentry/react 11.0.0 → 11.9.0 (supersede #210) (#287)",
-    "files": [
-     "bun.lock",
-     "package.json"
-    ]
    }
   ],
   "hot_files": [
    [
     "package.json",
-    7
+    6
    ],
    [
     "bun.lock",
-    6
+    5
    ],
    [
     "scripts/automation.config.json",

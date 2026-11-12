@@ -2,11 +2,16 @@
  "aviso": "GERADO AUTOMATICAMENTE por scripts/ai-context/gerar.mjs — não editar à mão; será sobrescrito.",
  "format_version": 2,
  "git": {
-  "commit": "251d639964eed3a9347bb91518e6253a597c19c8",
+  "commit": "cc0b762b780ee47e0d7243388a965cc195048de5",
   "branch": "main",
-  "data_commit": "2026-11-12T01:50:00-03:00",
+  "data_commit": "2026-11-12T02:32:11-03:00",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
   "ultimos_commits": [
+   {
+    "sha": "cc0b762",
+    "data": "2026-11-12",
+    "assunto": "fix: destrava busca automática de DF-e na SEFAZ (dispatcher → puxar) (#306)"
+   },
    {
     "sha": "251d639",
     "data": "2026-11-12",
@@ -126,14 +131,9 @@
     "sha": "e07fec7",
     "data": "2026-11-09",
     "assunto": "chore: documentação final sessão merge-prs (prs.json + RELATORIO + dossiers)"
-   },
-   {
-    "sha": "529236d",
-    "data": "2026-11-09",
-    "assunto": "fix: compatibilidade TypeScript com Zod v4 (supersede #211)"
    }
   ],
-  "arquivos_mudados_7d": 483,
+  "arquivos_mudados_7d": 485,
   "pastas_mais_mudadas_30d": [
    {
     "pasta": "package.json",
@@ -301,7 +301,7 @@
   "autores_30d": [
    {
     "autor": "adm01-debug",
-    "commits": 78
+    "commits": 79
    },
    {
     "autor": "devin-ai-integration[bot]",
@@ -320,7 +320,7 @@
  "contagens": {
   "arquivos_total": 3611,
   "arquivos_codigo": 2216,
-  "linhas_codigo": 428766,
+  "linhas_codigo": 428808,
   "rotas": 128,
   "rotas_http_backend": 25,
   "vistas_por_id": 0,
@@ -676,7 +676,7 @@
   },
   "supabase/functions": {
    "arquivos": 222,
-   "linhas": 49527
+   "linhas": 49569
   },
   "supabase/tests": {
    "arquivos": 2,

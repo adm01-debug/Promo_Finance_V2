@@ -1256,27 +1256,27 @@
       },
       {
         "created_at": 1787655368587,
-        "entrypoint_path": "file:///tmp/user_fn_bwwbeyolnnzppeuhgkcd_ed884b7e-d9b7-4a92-a572-340ed5ad9aaa_1/source/supabase/functions/sefaz-dfe-dispatcher/index.ts",
+        "entrypoint_path": "file:///home/runner/work/Promo_Finance_V2/Promo_Finance_V2/supabase/functions/sefaz-dfe-dispatcher/index.ts",
         "import_map": false,
         "import_map_path": null,
         "name": "sefaz-dfe-dispatcher",
         "slug": "sefaz-dfe-dispatcher",
         "status": "ACTIVE",
-        "updated_at": 1787655368587,
+        "updated_at": 1794461826437,
         "verify_jwt": false,
-        "version": 16
+        "version": 17
       },
       {
         "created_at": 1787655368587,
-        "entrypoint_path": "file:///home/joaquim_ataides/hermes-workspaces/chat-c696391/supabase/functions/sefaz-dfe-puxar/index.ts",
+        "entrypoint_path": "file:///home/runner/work/Promo_Finance_V2/Promo_Finance_V2/supabase/functions/sefaz-dfe-puxar/index.ts",
         "import_map": false,
         "import_map_path": null,
         "name": "sefaz-dfe-puxar",
         "slug": "sefaz-dfe-puxar",
         "status": "ACTIVE",
-        "updated_at": 1787697325660,
+        "updated_at": 1794462091065,
         "verify_jwt": false,
-        "version": 18
+        "version": 19
       },
       {
         "created_at": 1787655368587,

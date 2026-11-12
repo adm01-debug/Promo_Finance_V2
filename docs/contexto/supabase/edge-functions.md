@@ -83,8 +83,8 @@ URL base: `https://bwwbeyolnnzppeuhgkcd.supabase.co/functions/v1/<slug>`. Metada
 | projecao-reforma | projecao-reforma | ACTIVE | 17 | sim | file:///home/joaquim_ataides/hermes-workspaces/chat-c696391/supabase/functions/projecao-reforma/index.ts |
 | relatorio-diario-anomalias | relatorio-diario-anomalias | ACTIVE | 17 | sim | file:///home/joaquim_ataides/hermes-workspaces/chat-c696391/supabase/functions/relatorio-diario-anomalias/index.ts |
 | scim-server | scim-server | ACTIVE | 16 | não | file:///tmp/user_fn_bwwbeyolnnzppeuhgkcd_4bdc38d4-2ce8-4db7-93dc-8f12c92c464b_1/source/supabase/functions/scim-server/index.ts |
-| sefaz-dfe-dispatcher | sefaz-dfe-dispatcher | ACTIVE | 16 | não | file:///tmp/user_fn_bwwbeyolnnzppeuhgkcd_ed884b7e-d9b7-4a92-a572-340ed5ad9aaa_1/source/supabase/functions/sefaz-dfe-dispatcher/index.ts |
-| sefaz-dfe-puxar | sefaz-dfe-puxar | ACTIVE | 18 | não | file:///home/joaquim_ataides/hermes-workspaces/chat-c696391/supabase/functions/sefaz-dfe-puxar/index.ts |
+| sefaz-dfe-dispatcher | sefaz-dfe-dispatcher | ACTIVE | 17 | não | file:///home/runner/work/Promo_Finance_V2/Promo_Finance_V2/supabase/functions/sefaz-dfe-dispatcher/index.ts |
+| sefaz-dfe-puxar | sefaz-dfe-puxar | ACTIVE | 19 | não | file:///home/runner/work/Promo_Finance_V2/Promo_Finance_V2/supabase/functions/sefaz-dfe-puxar/index.ts |
 | sefaz-manifestar | sefaz-manifestar | ACTIVE | 17 | sim | file:///home/joaquim_ataides/hermes-workspaces/chat-c696391/supabase/functions/sefaz-manifestar/index.ts |
 | send-device-alert | send-device-alert | ACTIVE | 17 | não | file:///home/joaquim_ataides/hermes-workspaces/chat-c696391/supabase/functions/send-device-alert/index.ts |
 | send-push-notification | send-push-notification | ACTIVE | 18 | não | file:///home/runner/work/Promo_Finance_V2/Promo_Finance_V2/supabase/functions/send-push-notification/index.ts |

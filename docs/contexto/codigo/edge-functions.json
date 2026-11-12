@@ -3364,7 +3364,7 @@
    "nome": "sefaz-dfe-dispatcher",
    "entrada": "supabase/functions/sefaz-dfe-dispatcher/index.ts",
    "arquivos": 2,
-   "linhas": 340,
+   "linhas": 366,
    "verify_jwt": false,
    "metodos": [
     "OPTIONS"
@@ -3377,6 +3377,7 @@
    "rpcs": [],
    "env": [
     "CRON_DISPATCH_SECRET",
+    "SEFAZ_CRON_SECRET",
     "SUPABASE_SERVICE_ROLE_KEY",
     "SUPABASE_URL"
    ],
@@ -3402,7 +3403,7 @@
    "nome": "sefaz-dfe-puxar",
    "entrada": "supabase/functions/sefaz-dfe-puxar/index.ts",
    "arquivos": 1,
-   "linhas": 562,
+   "linhas": 578,
    "verify_jwt": false,
    "metodos": [
     "OPTIONS",
