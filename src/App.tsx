@@ -148,6 +148,8 @@ const Orcamentos = lazy(() => import('./pages/Orcamentos'));
 const Categorias = lazy(() => import('./pages/Categorias'));
 const ApiManagement = lazy(() => import('./pages/admin/ApiManagement'));
 const CustomFieldsAdmin = lazy(() => import('./pages/admin/CustomFieldsAdmin'));
+const AdminErrosFrontend = lazy(() => import('./pages/admin/AdminErrosFrontend'));
+const ConsultaRapidaFiscal = lazy(() => import('./pages/tributario/ConsultaRapidaFiscal'));
 const StatusPage = lazy(() => import('./pages/StatusPage'));
 const Compras = lazy(() => import('./pages/Compras'));
 const Integracoes = lazy(() => import('./pages/Integracoes'));
@@ -527,6 +529,14 @@ function AppRoutes() {
                 }
               />
               <Route
+                path="/tributario/consulta-rapida"
+                element={
+                  <ProtectedRoute>
+                    <ConsultaRapidaFiscal />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
                 path="/tributario/arquitetura"
                 element={
                   <ProtectedRoute>
@@ -890,6 +900,14 @@ function AppRoutes() {
                 element={
                   <ProtectedRoute requiredRoles={['admin']}>
                     <CustomFieldsAdmin />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/admin/erros-frontend"
+                element={
+                  <ProtectedRoute requiredRoles={['admin']}>
+                    <AdminErrosFrontend />
                   </ProtectedRoute>
                 }
               />
