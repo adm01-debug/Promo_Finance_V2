@@ -651,7 +651,7 @@ jobs:
   # ---------------------------------------------------------------------------
   e2e-quarantine:
     name: E2E Quarantine (non-blocking)
-    if: ${{ always() && github.actor != 'dependabot[bot]' && !github.event.pull_request.head.repo.fork }}
+    if: ${{ !cancelled() && github.actor != 'dependabot[bot]' && !github.event.pull_request.head.repo.fork }}
     needs: [quality-gate, e2e-critical, e2e-destructive, e2e-financeiro]
     runs-on: ubuntu-24.04  # Playwright 1.58 não instala chromium no ubuntu-26.04 (ubuntu-latest)
     timeout-minutes: 30
