@@ -43,9 +43,9 @@ import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 
 const WIDGET_SIZE_CLASS: Record<DashboardWidget['size'], string> = {
-  sm: 'md:col-span-2',
-  md: 'md:col-span-3',
-  lg: 'md:col-span-6',
+  sm: '2xl:col-span-1',
+  md: '2xl:col-span-1',
+  lg: '2xl:col-span-2',
 };
 
 const containerVariants = {
@@ -433,14 +433,14 @@ export const DashboardExecutivo = () => {
 
               <motion.div
                 variants={itemVariants}
-                className="grid grid-cols-1 md:grid-cols-6 gap-6 grid-flow-row-dense"
+                className="grid grid-cols-1 2xl:grid-cols-2 gap-6"
               >
                 {widgets
                   .filter((w) => w.visible)
                   .map((widget) => (
                     <div
                       key={widget.id}
-                      className={`min-w-0 ${WIDGET_SIZE_CLASS[widget.size] ?? 'md:col-span-6'}`}
+                      className={`min-w-0 ${WIDGET_SIZE_CLASS[widget.size] ?? '2xl:col-span-2'}`}
                     >
                       {renderWidget(widget)}
                     </div>

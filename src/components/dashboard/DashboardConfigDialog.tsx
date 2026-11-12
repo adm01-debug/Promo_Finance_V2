@@ -92,12 +92,13 @@ export const DashboardConfigDialog = forwardRef<HTMLDivElement, DashboardConfigD
 
           <ScrollArea className="h-[400px] pr-4">
             <div className="space-y-3">
-              {widgets
+              {[...widgets]
                 .sort((a, b) => a.order - b.order)
                 .map((widget) => {
-                  const info = WIDGET_LABELS[widget.type] || {
+                  const tipo = WIDGET_LABELS[widget.type];
+                  const info = {
                     label: widget.title,
-                    description: '',
+                    description: tipo?.label === widget.title ? tipo.description : '',
                   };
 
                   return (
