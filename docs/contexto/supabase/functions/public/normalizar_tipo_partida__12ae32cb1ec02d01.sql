@@ -6,7 +6,11 @@ AS $function$
 BEGIN
   -- A constraint partidas_contabeis_tipo_check só aceita 'debito'/'credito'.
   IF NEW.tipo IS NOT NULL THEN
-    NEW.tipo = LOWER(NEW.tipo);
+    NEW.tipo := CASE LOWER(BTRIM(NEW.tipo))
+      WHEN 'd' THEN 'debito'   WHEN 'débito' THEN 'debito'
+      WHEN 'c' THEN 'credito'  WHEN 'crédito' THEN 'credito'
+      ELSE LOWER(BTRIM(NEW.tipo))
+    END;
   END IF;
   RETURN NEW;
 END;

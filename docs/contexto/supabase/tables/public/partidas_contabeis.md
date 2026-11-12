@@ -66,6 +66,7 @@
 | nome | timing | eventos | nível | status | função |
 |---|---|---|---|---|---|
 | trg_normalizar_tipo_partida | BEFORE | INSERT OR UPDATE | ROW | enabled | public.normalizar_tipo_partida |
+| trg_sincronizar_conta_partida | BEFORE | INSERT OR UPDATE | ROW | enabled | public.sincronizar_conta_partida |
 | trg_validar_partidas_dobradas | AFTER | INSERT OR DELETE OR UPDATE | ROW | enabled | public.validar_partidas_dobradas |
 
 

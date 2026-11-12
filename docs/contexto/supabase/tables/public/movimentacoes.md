@@ -68,6 +68,7 @@
 | nome | timing | eventos | nível | status | função |
 |---|---|---|---|---|---|
 | trg_anexos_sync_empresa | AFTER | UPDATE | ROW | enabled | private.sincroniza_empresa_dos_anexos |
+| trg_contabilizar_movimentacao | AFTER | INSERT | ROW | enabled | public.contabilizar_movimentacao |
 | trg_movimentacao_origem_guard | BEFORE | INSERT OR UPDATE | ROW | enabled | public.fn_movimentacao_origem_guard |
 | trg_saldo_movimentacao | AFTER | INSERT OR DELETE OR UPDATE | ROW | enabled | public.fn_saldo_movimentacao |
 | trg_sync_valor_pago | AFTER | INSERT OR DELETE OR UPDATE | ROW | enabled | public.fn_sync_valor_pago_movimentacao |

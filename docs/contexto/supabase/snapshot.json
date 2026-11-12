@@ -68996,6 +68996,70 @@
         "volatility": "volatile"
       },
       {
+        "args": "",
+        "callers": {
+          "code": [],
+          "code_total_files": 0,
+          "cron": [],
+          "db": [],
+          "triggers": [
+            "public.movimentacoes.trg_contabilizar_movimentacao"
+          ],
+          "views": []
+        },
+        "comment": null,
+        "config": [
+          "search_path=public, extensions, pg_temp"
+        ],
+        "definition": null,
+        "definition_sha": "ddf9bddf392c8c16",
+        "execute_api_roles": "service_role",
+        "execute_public": false,
+        "is_trigger_fn": true,
+        "kind": "function",
+        "language": "plpgsql",
+        "leakproof": false,
+        "name": "contabilizar_movimentacao",
+        "owner": "postgres",
+        "returns": "trigger",
+        "schema": "public",
+        "security_definer": true,
+        "strict": false,
+        "volatility": "volatile"
+      },
+      {
+        "args": "m movimentacoes",
+        "callers": {
+          "code": [],
+          "code_total_files": 0,
+          "cron": [],
+          "db": [
+            "public.contabilizar_movimentacao"
+          ],
+          "triggers": [],
+          "views": []
+        },
+        "comment": null,
+        "config": [
+          "search_path=public, extensions, pg_temp"
+        ],
+        "definition": null,
+        "definition_sha": "8664ba38f74acd73",
+        "execute_api_roles": "service_role",
+        "execute_public": false,
+        "is_trigger_fn": false,
+        "kind": "function",
+        "language": "plpgsql",
+        "leakproof": false,
+        "name": "contabilizar_movimentacao_registro",
+        "owner": "postgres",
+        "returns": "text",
+        "schema": "public",
+        "security_definer": true,
+        "strict": false,
+        "volatility": "volatile"
+      },
+      {
         "args": "_empresa_id uuid",
         "callers": {
           "code": [],
@@ -71005,41 +71069,6 @@
         "returns": "darfs",
         "schema": "public",
         "security_definer": false,
-        "strict": false,
-        "volatility": "volatile"
-      },
-      {
-        "args": "",
-        "callers": {
-          "code": [
-            {
-              "file": "supabase/migrations/20260509132924_d16cce12-8ff2-4a12-93ea-2d9558c4b5a3.sql",
-              "hits": 1
-            }
-          ],
-          "code_total_files": 1,
-          "cron": [],
-          "db": [],
-          "triggers": [],
-          "views": []
-        },
-        "comment": null,
-        "config": [
-          "search_path=public, extensions, pg_temp"
-        ],
-        "definition": null,
-        "definition_sha": "17a3cd3f5117d72a",
-        "execute_api_roles": "anon, authenticated, service_role",
-        "execute_public": true,
-        "is_trigger_fn": true,
-        "kind": "function",
-        "language": "plpgsql",
-        "leakproof": false,
-        "name": "gerar_lancamento_contabil_automatico",
-        "owner": "postgres",
-        "returns": "trigger",
-        "schema": "public",
-        "security_definer": true,
         "strict": false,
         "volatility": "volatile"
       },
@@ -74126,7 +74155,7 @@
           "search_path=public, extensions, pg_temp"
         ],
         "definition": null,
-        "definition_sha": "2b5893a940339b2f",
+        "definition_sha": "240be6c9dfe0072e",
         "execute_api_roles": "service_role",
         "execute_public": false,
         "is_trigger_fn": true,
@@ -76118,6 +76147,38 @@
         "returns": "frontend_error_alert_state",
         "schema": "public",
         "security_definer": true,
+        "strict": false,
+        "volatility": "volatile"
+      },
+      {
+        "args": "",
+        "callers": {
+          "code": [],
+          "code_total_files": 0,
+          "cron": [],
+          "db": [],
+          "triggers": [
+            "public.partidas_contabeis.trg_sincronizar_conta_partida"
+          ],
+          "views": []
+        },
+        "comment": null,
+        "config": [
+          "search_path=public, extensions, pg_temp"
+        ],
+        "definition": null,
+        "definition_sha": "28a55bb0dd88a27b",
+        "execute_api_roles": "anon, authenticated, service_role",
+        "execute_public": true,
+        "is_trigger_fn": true,
+        "kind": "function",
+        "language": "plpgsql",
+        "leakproof": false,
+        "name": "sincronizar_conta_partida",
+        "owner": "postgres",
+        "returns": "trigger",
+        "schema": "public",
+        "security_definer": false,
         "strict": false,
         "volatility": "volatile"
       },
@@ -102920,6 +102981,17 @@
         "timing": "AFTER"
       },
       {
+        "definition": "CREATE TRIGGER trg_contabilizar_movimentacao AFTER INSERT ON movimentacoes FOR EACH ROW EXECUTE FUNCTION contabilizar_movimentacao()",
+        "events": "INSERT",
+        "function": "public.contabilizar_movimentacao",
+        "level": "ROW",
+        "name": "trg_contabilizar_movimentacao",
+        "schema": "public",
+        "status": "enabled",
+        "table": "movimentacoes",
+        "timing": "AFTER"
+      },
+      {
         "definition": "CREATE TRIGGER trg_movimentacao_origem_guard BEFORE INSERT OR UPDATE OF origem, transferencia_id ON movimentacoes FOR EACH ROW EXECUTE FUNCTION fn_movimentacao_origem_guard()",
         "events": "INSERT OR UPDATE",
         "function": "public.fn_movimentacao_origem_guard",
@@ -103101,6 +103173,17 @@
         "function": "public.normalizar_tipo_partida",
         "level": "ROW",
         "name": "trg_normalizar_tipo_partida",
+        "schema": "public",
+        "status": "enabled",
+        "table": "partidas_contabeis",
+        "timing": "BEFORE"
+      },
+      {
+        "definition": "CREATE TRIGGER trg_sincronizar_conta_partida BEFORE INSERT OR UPDATE OF conta_id, conta_contabil_id ON partidas_contabeis FOR EACH ROW EXECUTE FUNCTION sincronizar_conta_partida()",
+        "events": "INSERT OR UPDATE",
+        "function": "public.sincronizar_conta_partida",
+        "level": "ROW",
+        "name": "trg_sincronizar_conta_partida",
         "schema": "public",
         "status": "enabled",
         "table": "partidas_contabeis",

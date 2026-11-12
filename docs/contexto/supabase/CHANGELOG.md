@@ -2,6 +2,13 @@
 
 Diff semântico gerado a cada coleta em que algo mudou.
 
+## 2026-11-12 02:40 UTC
+
+- **functions** adicionado (3): `public.contabilizar_movimentacao()`, `public.contabilizar_movimentacao_registro(m movimentacoes)`, `public.sincronizar_conta_partida()`
+- **functions** removido (1): `public.gerar_lancamento_contabil_automatico()`
+- **functions** alterado (1): `public.normalizar_tipo_partida()`
+- **triggers** adicionado (2): `public.movimentacoes.trg_contabilizar_movimentacao`, `public.partidas_contabeis.trg_sincronizar_conta_partida`
+
 ## 2026-11-12 01:31 UTC
 
 - **constraints** adicionado (1): `public.partidas_contabeis.trg_validar_partidas_dobradas`

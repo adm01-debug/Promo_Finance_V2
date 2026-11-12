@@ -68,9 +68,9 @@
 
 | início (UTC) | status | duração (s) | mensagem |
 |---|---|---|---|
+| 2026-11-12 02:30:00 | succeeded | 0.18 | 1 row |
 | 2026-11-12 02:00:00 | succeeded | 0.41 | 1 row |
 | 2026-11-12 01:30:00 | succeeded | 0.28 | 1 row |
-| 2026-11-12 01:00:00 | succeeded | 0.34 | 1 row |
 
 
 ## 12 · integrity-invariants-hourly
@@ -132,9 +132,9 @@ _nenhum_
 
 | início (UTC) | status | duração (s) | mensagem |
 |---|---|---|---|
+| 2026-11-12 02:30:00 | succeeded | 0.41 | 1 row |
 | 2026-11-11 02:30:00 | succeeded | 0.51 | 1 row |
 | 2026-11-10 02:30:00 | succeeded | 0.45 | 1 row |
-| 2026-11-09 02:30:00 | succeeded | 0.91 | 1 row |
 
 
 ## 22 · gerar-alertas-vencimento-diario
@@ -193,18 +193,18 @@ _nenhum_
 
 | início (UTC) | status | duração (s) | mensagem |
 |---|---|---|---|
+| 2026-11-12 02:30:00 | succeeded | 0.02 | 1 row |
 | 2026-11-12 02:15:00 | succeeded | 0.05 | 1 row |
 | 2026-11-12 02:00:00 | succeeded | 0.04 | 1 row |
-| 2026-11-12 01:45:00 | succeeded | 0.02 | 1 row |
 
 
 ## 33 · webhook-retry-worker-1min
 
 | início (UTC) | status | duração (s) | mensagem |
 |---|---|---|---|
-| 2026-11-12 02:29:00 | succeeded | 0.01 | 1 row |
-| 2026-11-12 02:28:00 | succeeded | 0.03 | 1 row |
-| 2026-11-12 02:27:00 | succeeded | 0.01 | 1 row |
+| 2026-11-12 02:40:00 | succeeded | 0.03 | 1 row |
+| 2026-11-12 02:39:00 | succeeded | 0.01 | 1 row |
+| 2026-11-12 02:38:00 | succeeded | 0.04 | 1 row |
 
 
 ## 34 · auditar-acessos-cross-tenant
@@ -229,9 +229,9 @@ _nenhum_
 
 | início (UTC) | status | duração (s) | mensagem |
 |---|---|---|---|
+| 2026-11-12 02:30:00 | succeeded | 0.08 | 1 row |
 | 2026-11-12 02:00:00 | succeeded | 0.18 | 1 row |
 | 2026-11-12 01:30:00 | succeeded | 0.06 | 1 row |
-| 2026-11-12 01:00:00 | succeeded | 0.10 | 1 row |
 
 
 ## 40 · gerar-snapshots-conformidade-mensal
@@ -252,6 +252,6 @@ _nenhum_
 
 | início (UTC) | status | duração (s) | mensagem |
 |---|---|---|---|
+| 2026-11-12 02:30:00 | failed | 0.01 | ERROR:  Secret "anon_key" ausente no Vault. Crie-o em Project Settings > Vault com a anon key de bwwbeyolnnzppeuhgkcd. CONTEXT:  PL/pgSQL function chave_anon_vault() line 11 at RAISE SQL statement "SELECT net.http_post(     url := 'https://bwwbeyolnnzppeuhgkcd.supabase.co/functions/v1/enviar-digest- |
 | 2026-11-12 01:30:00 | failed | 0.03 | ERROR:  Secret "anon_key" ausente no Vault. Crie-o em Project Settings > Vault com a anon key de bwwbeyolnnzppeuhgkcd. CONTEXT:  PL/pgSQL function chave_anon_vault() line 11 at RAISE SQL statement "SELECT net.http_post(     url := 'https://bwwbeyolnnzppeuhgkcd.supabase.co/functions/v1/enviar-digest- |
 | 2026-11-12 00:30:00 | failed | 0.17 | ERROR:  Secret "anon_key" ausente no Vault. Crie-o em Project Settings > Vault com a anon key de bwwbeyolnnzppeuhgkcd. CONTEXT:  PL/pgSQL function chave_anon_vault() line 11 at RAISE SQL statement "SELECT net.http_post(     url := 'https://bwwbeyolnnzppeuhgkcd.supabase.co/functions/v1/enviar-digest- |
-| 2026-11-11 23:30:00 | failed | 0.05 | ERROR:  Secret "anon_key" ausente no Vault. Crie-o em Project Settings > Vault com a anon key de bwwbeyolnnzppeuhgkcd. CONTEXT:  PL/pgSQL function chave_anon_vault() line 11 at RAISE SQL statement "SELECT net.http_post(     url := 'https://bwwbeyolnnzppeuhgkcd.supabase.co/functions/v1/enviar-digest- |
