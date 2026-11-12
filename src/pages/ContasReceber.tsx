@@ -1,8 +1,6 @@
 import { useEffect } from 'react';
-import { motion } from 'framer-motion';
 import { useLocation, useNavigate } from 'react-router-dom';
 import {
-  Inbox,
   CheckCircle2,
   XCircle,
   LayoutGrid,
@@ -13,36 +11,15 @@ import {
   RefreshCcw,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Checkbox } from '@/components/ui/checkbox';
-import { Table, TableBody, TableCell, TableHeader } from '@/components/ui/table';
 import { ExportMenu } from '@/components/ui/export-menu';
-import { SortableHeader } from '@/components/ui/sortable-header';
-import { QuickDateFilters } from '@/components/ui/quick-date-filters';
-import { BulkActionsBar } from '@/components/ui/bulk-actions-bar';
-import { EmptyState } from '@/components/ui/micro-interactions';
 import { MainLayout } from '@/components/layout/MainLayout';
-import { PageHeader } from '@/components/layout/PageHeader';
-import { StandardTableCard } from '@/components/shared/StandardTableCard';
-import { ContaReceberForm } from '@/components/contas-receber/ContaReceberForm';
-import { RegistrarRecebimentoDialog } from '@/components/contas-receber/RegistrarRecebimentoDialog';
-import { ContaReceberDetailDrawer } from '@/components/contas-receber/ContaReceberDetailDrawer';
-import { EnviarCobrancaDialog } from '@/components/contas-receber/EnviarCobrancaDialog';
-import { AplicarDescontoDialog } from '@/components/contas-receber/AplicarDescontoDialog';
-import { ContasReceberKanban } from '@/components/contas-receber/ContasReceberKanban';
-import { ConfirmDialog } from '@/components/ui/confirm-dialog';
-import { ContasReceberKPIs } from '@/components/contas-receber/ContasReceberKPIs';
-import { ContasReceberFilters } from '@/components/contas-receber/ContasReceberFilters';
-import { ContasReceberTableRow } from '@/components/contas-receber/ContasReceberTableRow';
 import { useContasReceberLogic } from '@/hooks/useContasReceberLogic';
 import { useHighlightFromUrl } from '@/hooks/useHighlightFromUrl';
 import { contasReceberColumns } from '@/lib/export-utils';
-import { formatCurrency } from '@/lib/formatters';
 import { cn } from '@/lib/utils';
 import { BankAccountSwitcher } from '@/components/financeiro/BankAccountSwitcher';
-import { BaixaAutomaticaDialog } from '@/components/contas-receber/BaixaAutomaticaDialog';
-import { WebhookConfigDialog } from '@/components/contas-receber/WebhookConfigDialog';
 import { deveAbrirNovoRegistro } from '@/lib/navigation-intent';
-import { containerVariants, itemVariants } from './ContasReceber.helpers';
+import { ContasReceberConteudo } from './ContasReceberConteudo';
 
 export default function ContasReceber() {
   const location = useLocation();
@@ -258,268 +235,83 @@ export default function ContasReceber() {
           />
         </div>
 
-        <motion.div
-          variants={containerVariants}
-          initial="hidden"
-          animate="visible"
-          className="relative z-10 space-y-12 pb-32"
-        >
-          <PageHeader
-            title="Contas a Receber"
-            subtitle="Monitore ativos financeiros e maximize a eficiência do capital de giro."
-            badge="Receivables Governance"
-            showEmpresaSwitcher
-            actions={headerActions}
-            showUxValidator
-          />
-
-          <motion.div variants={itemVariants}>
-            <ContasReceberKPIs {...kpis} onKpiClick={handleKpiClick} />
-          </motion.div>
-
-          <div className="space-y-6">
-            <motion.div variants={itemVariants}>
-              <QuickDateFilters value={filterType} onChange={handleFilterChange} showOverdue />
-            </motion.div>
-
-            <motion.div variants={itemVariants}>
-              <ContasReceberFilters
-                searchTerm={searchTerm}
-                onSearchChange={handleSearchChange}
-                statusFilter={statusFilter}
-                onStatusChange={handleStatusChange}
-                centroCustoFilter={centroCustoFilter}
-                onCentroCustoChange={handleCentroCustoChange}
-                centrosCusto={centrosCusto}
-                empresaFilter={empresaFilter}
-                onEmpresaChange={handleEmpresaChange}
-                empresas={empresas}
-                formaFilter={formaFilter}
-                onFormaChange={handleFormaChange}
-                contaBancariaFilter={contaBancariaFilter}
-                onContaBancariaChange={handleContaBancariaChange}
-                contasBancarias={contasBancarias}
-                advancedFilters={advancedFilters}
-                onAdvancedFiltersChange={setAdvancedFilters}
-              />
-            </motion.div>
-          </div>
-
-          <motion.div variants={itemVariants} className="min-h-[600px]">
-            {viewMode === 'kanban' ? (
-              <ContasReceberKanban
-                contas={
-                  sortedContas as unknown as React.ComponentProps<
-                    typeof ContasReceberKanban
-                  >['contas']
-                }
-                onSelectConta={handleViewConta}
-              />
-            ) : (
-              <StandardTableCard
-                isLoading={isLoading}
-                pageSize={pageSize}
-                pagination={{
-                  currentPage,
-                  totalPages,
-                  pageSize,
-                  totalItems: totalCount,
-                  onPageChange: setCurrentPage,
-                  onPageSizeChange: handlePageSizeChange,
-                }}
-              >
-                <Table>
-                  <TableHeader>
-                    <tr className="bg-card/[0.02] border-b border-white/5">
-                      <th className="w-16 p-6 text-center">
-                        <Checkbox checked={isAllSelected} onChange={selectAll} />
-                      </th>
-                      <th className="w-[300px] p-6">
-                        <SortableHeader
-                          label="Entity / Client"
-                          sortKey="cliente_nome"
-                          currentSort={sortKey}
-                          currentDirection={sortDirection}
-                          onSort={handleSort}
-                        />
-                      </th>
-                      <th className="p-6 text-caption text-left">Reference Description</th>
-                      <th className="p-6">
-                        <SortableHeader
-                          label="Nominal Value"
-                          sortKey="valor"
-                          currentSort={sortKey}
-                          currentDirection={sortDirection}
-                          onSort={handleSort}
-                        />
-                      </th>
-                      <th className="p-6">
-                        <SortableHeader
-                          label="Maturity Date"
-                          sortKey="data_vencimento"
-                          currentSort={sortKey}
-                          currentDirection={sortDirection}
-                          onSort={handleSort}
-                        />
-                      </th>
-                      <th className="w-24 p-6 text-center">
-                        <SortableHeader
-                          label="Delay"
-                          sortKey="data_vencimento"
-                          currentSort={sortKey}
-                          currentDirection={sortDirection}
-                          onSort={handleSort}
-                        />
-                      </th>
-                      <th className="p-6 text-caption text-center">Status</th>
-                      <th className="p-6 text-caption text-left">Conta Bancária</th>
-                      {empresas.length > 1 && (
-                        <th className="p-6 text-caption text-left">Corporate</th>
-                      )}
-                      <th className="p-6 text-caption text-center">Credit Score</th>
-                      <th className="w-20 p-6"></th>
-                    </tr>
-                  </TableHeader>
-                  <TableBody className="divide-y divide-white/5">
-                    {sortedContas.length === 0 ? (
-                      <tr>
-                        <TableCell colSpan={colCount} className="p-0 h-[400px]">
-                          <EmptyState
-                            icon={<Inbox className="h-12 w-12 text-muted-foreground/30" />}
-                            title={
-                              contas.length === 0 ? 'Repositório Vazio' : 'Nenhuma Correspondência'
-                            }
-                            description={
-                              contas.length === 0
-                                ? 'Inicie a governança de ativos adicionando seu primeiro título.'
-                                : 'Ajuste os algoritmos de busca para encontrar o registro.'
-                            }
-                            action={
-                              contas.length === 0 ? (
-                                <Button
-                                  size="lg"
-                                  className="h-12 rounded-xl bg-primary text-primary-foreground font-black mt-6"
-                                  onClick={() => setFormOpen(true)}
-                                >
-                                  <Plus className="h-5 w-5" /> Adicionar Título Alpha
-                                </Button>
-                              ) : undefined
-                            }
-                          />
-                        </TableCell>
-                      </tr>
-                    ) : (
-                      sortedContas.map((conta, index) => (
-                        <ContasReceberTableRow
-                          key={conta.id}
-                          conta={
-                            conta as unknown as React.ComponentProps<
-                              typeof ContasReceberTableRow
-                            >['conta']
-                          }
-                          index={index}
-                          isSelected={isSelected(conta.id)}
-                          onToggleSelect={toggleSelect}
-                          onEdit={(c) => {
-                            setEditingConta(c);
-                            setFormOpen(true);
-                          }}
-                          onDelete={handleOpenDeleteDialog}
-                          onRegistrarRecebimento={(c) => {
-                            setSelectedConta(c);
-                            setRecebimentoDialogOpen(true);
-                          }}
-                          onView={handleViewConta}
-                          onEnviarCobranca={handleEnviarCobranca}
-                          onAplicarDesconto={handleAplicarDesconto}
-                          showEmpresa={empresas.length > 1}
-                          showDiasAtraso
-                        />
-                      ))
-                    )}
-                  </TableBody>
-                </Table>
-              </StandardTableCard>
-            )}
-          </motion.div>
-
-          <ContaReceberForm
-            open={formOpen}
-            onOpenChange={(open) => {
-              setFormOpen(open);
-              if (!open) setEditingConta(null);
-            }}
-            conta={
-              editingConta as unknown as React.ComponentProps<typeof ContaReceberForm>['conta']
-            }
-          />
-          <RegistrarRecebimentoDialog
-            conta={
-              selectedConta && {
-                ...selectedConta,
-                cliente_nome: selectedConta.cliente_nome ?? '',
-                status: selectedConta.status ?? '',
-              }
-            }
-            open={recebimentoDialogOpen}
-            onOpenChange={setRecebimentoDialogOpen}
-          />
-          <ContaReceberDetailDrawer
-            conta={detailConta}
-            open={detailDrawerOpen}
-            onOpenChange={setDetailDrawerOpen}
-            onEdit={(c) => {
-              setEditingConta(c);
-              setFormOpen(true);
-            }}
-            onRegistrarRecebimento={(c) => {
-              setSelectedConta(c);
-              setRecebimentoDialogOpen(true);
-            }}
-            onEnviarCobranca={handleEnviarCobranca}
-          />
-          <EnviarCobrancaDialog
-            conta={
-              cobrancaConta && {
-                ...cobrancaConta,
-                cliente_nome: cobrancaConta.cliente_nome ?? '',
-                status: cobrancaConta.status ?? '',
-              }
-            }
-            open={cobrancaDialogOpen}
-            onOpenChange={setCobrancaDialogOpen}
-          />
-          <AplicarDescontoDialog
-            conta={
-              descontoConta && { ...descontoConta, cliente_nome: descontoConta.cliente_nome ?? '' }
-            }
-            open={descontoDialogOpen}
-            onOpenChange={setDescontoDialogOpen}
-          />
-          <ConfirmDialog
-            open={deleteDialogOpen}
-            onOpenChange={setDeleteDialogOpen}
-            title="Exclusão Irreversível"
-            description={`Confirmar a remoção definitiva do título "${deletingConta?.descricao}" (${deletingConta?.valor ? formatCurrency(deletingConta.valor) : ''}) do repositório?`}
-            confirmLabel="Confirmar Exclusão"
-            variant="danger"
-            isLoading={isDeleting}
-            onConfirm={handleDeleteConta}
-          />
-          <BaixaAutomaticaDialog
-            open={baixaDialogOpen}
-            onOpenChange={setBaixaDialogOpen}
-            empresaId={empresaFilter !== 'all' ? empresaFilter : ''}
-          />
-          <WebhookConfigDialog open={webhookDialogOpen} onOpenChange={setWebhookDialogOpen} />
-          <BulkActionsBar
-            selectedCount={selectedCount}
-            isProcessing={isProcessing}
-            progress={progress}
-            actions={bulkActions}
-            onClear={clearSelection}
-          />
-        </motion.div>
+        <ContasReceberConteudo
+          headerActions={headerActions}
+          kpis={kpis}
+          handleKpiClick={handleKpiClick}
+          filterType={filterType}
+          handleFilterChange={handleFilterChange}
+          searchTerm={searchTerm}
+          handleSearchChange={handleSearchChange}
+          statusFilter={statusFilter}
+          handleStatusChange={handleStatusChange}
+          centroCustoFilter={centroCustoFilter}
+          handleCentroCustoChange={handleCentroCustoChange}
+          centrosCusto={centrosCusto}
+          empresaFilter={empresaFilter}
+          handleEmpresaChange={handleEmpresaChange}
+          empresas={empresas}
+          formaFilter={formaFilter}
+          handleFormaChange={handleFormaChange}
+          contaBancariaFilter={contaBancariaFilter}
+          handleContaBancariaChange={handleContaBancariaChange}
+          contasBancarias={contasBancarias}
+          advancedFilters={advancedFilters}
+          setAdvancedFilters={setAdvancedFilters}
+          viewMode={viewMode}
+          sortedContas={sortedContas}
+          handleViewConta={handleViewConta}
+          isLoading={isLoading}
+          pageSize={pageSize}
+          currentPage={currentPage}
+          totalPages={totalPages}
+          totalCount={totalCount}
+          setCurrentPage={setCurrentPage}
+          handlePageSizeChange={handlePageSizeChange}
+          isAllSelected={isAllSelected}
+          selectAll={selectAll}
+          sortKey={sortKey}
+          sortDirection={sortDirection}
+          handleSort={handleSort}
+          colCount={colCount}
+          contas={contas}
+          setFormOpen={setFormOpen}
+          isSelected={isSelected}
+          toggleSelect={toggleSelect}
+          setEditingConta={setEditingConta}
+          handleOpenDeleteDialog={handleOpenDeleteDialog}
+          setSelectedConta={setSelectedConta}
+          setRecebimentoDialogOpen={setRecebimentoDialogOpen}
+          handleEnviarCobranca={handleEnviarCobranca}
+          handleAplicarDesconto={handleAplicarDesconto}
+          formOpen={formOpen}
+          editingConta={editingConta}
+          selectedConta={selectedConta}
+          recebimentoDialogOpen={recebimentoDialogOpen}
+          detailConta={detailConta}
+          detailDrawerOpen={detailDrawerOpen}
+          setDetailDrawerOpen={setDetailDrawerOpen}
+          cobrancaConta={cobrancaConta}
+          cobrancaDialogOpen={cobrancaDialogOpen}
+          setCobrancaDialogOpen={setCobrancaDialogOpen}
+          descontoConta={descontoConta}
+          descontoDialogOpen={descontoDialogOpen}
+          setDescontoDialogOpen={setDescontoDialogOpen}
+          deleteDialogOpen={deleteDialogOpen}
+          setDeleteDialogOpen={setDeleteDialogOpen}
+          deletingConta={deletingConta}
+          isDeleting={isDeleting}
+          handleDeleteConta={handleDeleteConta}
+          baixaDialogOpen={baixaDialogOpen}
+          setBaixaDialogOpen={setBaixaDialogOpen}
+          webhookDialogOpen={webhookDialogOpen}
+          setWebhookDialogOpen={setWebhookDialogOpen}
+          selectedCount={selectedCount}
+          isProcessing={isProcessing}
+          progress={progress}
+          bulkActions={bulkActions}
+          clearSelection={clearSelection}
+        />
       </div>
     </MainLayout>
   );

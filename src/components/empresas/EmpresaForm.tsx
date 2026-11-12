@@ -15,13 +15,7 @@ import {
 import { Loader2 } from 'lucide-react';
 import { useCriarEmpresa, useAtualizarEmpresa } from '@/hooks/useEmpresas';
 import { applyCnpjMask, applyPhoneMask, applyCepMask } from '@/lib/masks';
-import {
-  paraPercentual,
-  paraFracao,
-  applyCnaeMask,
-  ESTADOS,
-  empresaSchema,
-} from './empresa-form-model';
+import { paraPercentual, paraFracao, applyCnaeMask, empresaSchema } from './empresa-form-model';
 import type { EmpresaFormData } from './empresa-form-model';
 import { useCelebrations } from '@/components/wrappers/CelebrationActions';
 import {
@@ -32,6 +26,7 @@ import {
 import { useResolucaoCnae } from '@/hooks/useCnaes';
 import { CnaeCatalogoInfo } from './CnaeCatalogoInfo';
 import type { EmpresaFormProps } from './EmpresaForm.types';
+import { EmpresaFormCidade } from './EmpresaFormCidade';
 
 export function EmpresaForm({ empresa, onSuccess, onCancel }: EmpresaFormProps) {
   const isEditing = !!empresa;
@@ -285,45 +280,14 @@ export function EmpresaForm({ empresa, onSuccess, onCancel }: EmpresaFormProps) 
         {errors.endereco && <p className="text-sm text-destructive">{errors.endereco.message}</p>}
       </div>
 
-      <div className="grid grid-cols-3 gap-4">
-        <div className="space-y-2">
-          <Label htmlFor="cidade">Cidade</Label>
-          <Input id="cidade" {...register('cidade')} placeholder="Cidade" disabled={isLoading} />
-          {errors.cidade && <p className="text-sm text-destructive">{errors.cidade.message}</p>}
-        </div>
-        <div className="space-y-2">
-          <Label htmlFor="estado">Estado</Label>
-          <Select
-            value={estadoValue || ''}
-            onValueChange={(value) => setValue('estado', value)}
-            disabled={isLoading}
-          >
-            <SelectTrigger>
-              <SelectValue placeholder="UF" />
-            </SelectTrigger>
-            <SelectContent>
-              {ESTADOS.map((uf) => (
-                <SelectItem key={uf} value={uf}>
-                  {uf}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-          {errors.estado && <p className="text-sm text-destructive">{errors.estado.message}</p>}
-        </div>
-        <div className="space-y-2">
-          <Label htmlFor="cep">CEP</Label>
-          <Input
-            id="cep"
-            {...register('cep')}
-            onChange={handleCepChange}
-            placeholder="00000-000"
-            maxLength={9}
-            disabled={isLoading}
-          />
-          {errors.cep && <p className="text-sm text-destructive">{errors.cep.message}</p>}
-        </div>
-      </div>
+      <EmpresaFormCidade
+        register={register}
+        isLoading={isLoading}
+        errors={errors}
+        estadoValue={estadoValue}
+        setValue={setValue}
+        handleCepChange={handleCepChange}
+      />
 
       {/* Parâmetros de folha (eSocial / FPAS) — usados pelo motor tributário */}
       <div className="space-y-4 pt-4 border-t">

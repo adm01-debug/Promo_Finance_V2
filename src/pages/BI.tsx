@@ -1,36 +1,6 @@
 import { useState, useMemo, useEffect } from 'react';
-import { motion } from 'framer-motion';
-import {
-  Building2,
-  Calendar,
-  CalendarIcon,
-  BarChart3,
-  PieChart as PieChartIcon,
-  LineChart as LineChartIcon,
-  AlertTriangle,
-  Zap,
-  LayoutGrid,
-  Download,
-  Wallet,
-} from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
 import { MainLayout } from '@/components/layout/MainLayout';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
-import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
-import { Button } from '@/components/ui/button';
-import { Calendar as CalendarComponent } from '@/components/ui/calendar';
-import { cn } from '@/lib/utils';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Switch } from '@/components/ui/switch';
-import { Label } from '@/components/ui/label';
-import { Badge } from '@/components/ui/badge';
 import {
   useEmpresas,
   useContasPagar,
@@ -41,16 +11,8 @@ import {
 } from '@/hooks/useFinancialData';
 import { format, subMonths, startOfMonth, endOfMonth, differenceInDays } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
-import { BIMainKpis, BISecondaryKpis } from '@/components/bi/BIKpis';
-import { BIEvolucaoChart, BIAgingChart, BICentrosChart } from '@/components/bi/BICharts';
-import { BIEmpresasTab } from '@/components/bi/BIEmpresasTab';
-import { FuturisticDashboard } from '@/components/bi/FuturisticDashboard';
-import { InadimplenciaSegmentada } from '@/components/analytics/InadimplenciaSegmentada';
-import { BenchmarkingSetorial } from '@/components/analytics/BenchmarkingSetorial';
-import { HistoricoAnalisesPreditivasPanel } from '@/components/analytics/HistoricoAnalisesPreditivasPanel';
-import { BIDrillDown } from '@/components/bi/BIDrillDown';
 import { valorRecebidoEfetivo } from '@/lib/financeiro/valor-recebido-efetivo';
-import { containerVariants, itemVariants } from './BI.helpers';
+import { BIFuturista } from './BIFuturista';
 
 export default function BI() {
   const { currentEmpresaId } = useAuth();
@@ -404,299 +366,35 @@ export default function BI() {
 
   return (
     <MainLayout>
-      <motion.div
-        className={cn(
-          'space-y-6 p-6 min-h-screen transition-all duration-1000 relative',
-          futuristicMode ? 'bg-background text-foreground' : 'bg-background'
-        )}
-        variants={containerVariants}
-        initial="hidden"
-        animate="visible"
-      >
-        {futuristicMode && (
-          <div className="absolute inset-0 pointer-events-none overflow-hidden opacity-30">
-            <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] rounded-full bg-primary/10 blur-[120px]" />
-            <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] rounded-full bg-success/5 blur-[120px]" />
-            <div className="absolute inset-0 bg-[linear-gradient(to_right,var(--line)_1px,transparent_1px),linear-gradient(to_bottom,var(--line)_1px,transparent_1px)] bg-[size:40px_40px]" />
-          </div>
-        )}
-
-        <motion.div
-          variants={itemVariants}
-          className="flex flex-col md:flex-row md:items-center justify-between gap-4 relative z-10"
-        >
-          <div>
-            <h1
-              className={cn(
-                'text-3xl font-bold tracking-tight flex items-center gap-3',
-                futuristicMode
-                  ? 'text-foreground drop-shadow-[0_0_10px_rgba(var(--primary),0.5)]'
-                  : 'bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-transparent'
-              )}
-            >
-              Business Intelligence
-              {empresaId !== 'todas' && (
-                <Badge
-                  variant="outline"
-                  className="text-[10px] uppercase tracking-widest border-primary/30 text-primary"
-                >
-                  CNPJ: {empresas.find((e) => e.id === empresaId)?.cnpj}
-                </Badge>
-              )}
-            </h1>
-            <p className="text-muted-foreground">
-              Visão executiva consolidada para gestão estratégica
-            </p>
-          </div>
-          <div className="flex flex-wrap items-center gap-3">
-            <div className="flex items-center space-x-2 bg-muted/30 p-2 rounded-lg border border-white/5 mr-2">
-              <Label
-                htmlFor="futuristic-mode"
-                className="text-xs font-semibold flex items-center gap-1 cursor-pointer"
-              >
-                <Zap
-                  className={cn(
-                    'w-3 h-3 transition-colors',
-                    futuristicMode ? 'text-primary fill-primary' : 'text-muted-foreground'
-                  )}
-                />
-                BI FUTURISTA
-              </Label>
-              <Switch
-                id="futuristic-mode"
-                checked={futuristicMode}
-                onCheckedChange={setFuturisticMode}
-                className="scale-90"
-              />
-            </div>
-            <Select value={empresaId} onValueChange={setEmpresaId}>
-              <SelectTrigger className="w-[200px] bg-background/50 backdrop-blur-sm border-border">
-                <Building2 className="w-4 h-4 mr-2" />
-                <SelectValue placeholder="Empresa" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="todas">Todas as Empresas</SelectItem>
-                {empresas
-                  .filter((e) => e.ativo)
-                  .map((empresa) => (
-                    <SelectItem key={empresa.id} value={empresa.id}>
-                      {empresa.nome_fantasia || empresa.razao_social}
-                    </SelectItem>
-                  ))}
-              </SelectContent>
-            </Select>
-            <Select
-              value={filters?.centroCustoId || 'todos'}
-              onValueChange={(val) => setFilters((f) => ({ ...f, centroCustoId: val }))}
-            >
-              <SelectTrigger className="w-[180px] bg-background/50 backdrop-blur-sm border-border">
-                <LayoutGrid className="w-4 h-4 mr-2" />
-                <SelectValue placeholder="Centro de Custo" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="todos">Todos os Centros</SelectItem>
-                {centrosCusto?.map((c) => (
-                  <SelectItem key={c.id} value={c.id}>
-                    {c.nome}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-            <Select
-              value={filters?.contaBancariaId || 'todos'}
-              onValueChange={(val) => setFilters((f) => ({ ...f, contaBancariaId: val }))}
-            >
-              <SelectTrigger className="w-[180px] bg-background/50 backdrop-blur-sm border-border">
-                <Wallet className="w-4 h-4 mr-2" />
-                <SelectValue placeholder="Conta Bancária" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="todos">Todas as Contas</SelectItem>
-                {contasBancarias?.map((c) => (
-                  <SelectItem key={c.id} value={c.id}>
-                    {c.nome}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-
-            <Select
-              value={usarPeriodoCustom ? 'custom' : periodo}
-              onValueChange={(val) => {
-                if (val === 'custom') {
-                  setUsarPeriodoCustom(true);
-                } else {
-                  setUsarPeriodoCustom(false);
-                  setPeriodo(val);
-                  setDataInicio(undefined);
-                  setDataFim(undefined);
-                }
-              }}
-            >
-              <SelectTrigger className="w-[160px] bg-background/50 backdrop-blur-sm border-border">
-                <Calendar className="w-4 h-4 mr-2" />
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="3">3 meses</SelectItem>
-                <SelectItem value="6">6 meses</SelectItem>
-                <SelectItem value="12">12 meses</SelectItem>
-                <SelectItem value="custom">Personalizado</SelectItem>
-              </SelectContent>
-            </Select>
-            {usarPeriodoCustom && (
-              <div className="flex items-center gap-2">
-                {[
-                  { state: dataInicio, setter: setDataInicio, label: 'Início' },
-                  { state: dataFim, setter: setDataFim, label: 'Fim' },
-                ].map((item) => (
-                  <Popover key={item.label}>
-                    <PopoverTrigger asChild>
-                      <Button
-                        variant="outline"
-                        className={cn(
-                          'w-[130px] justify-start text-left font-normal bg-background/50 backdrop-blur-sm border-border',
-                          !item.state && 'text-muted-foreground'
-                        )}
-                      >
-                        <CalendarIcon className="mr-2 h-4 w-4" />
-                        {item.state ? format(item.state, 'dd/MM/yyyy') : item.label}
-                      </Button>
-                    </PopoverTrigger>
-                    <PopoverContent className="w-auto p-0" align="start">
-                      <CalendarComponent
-                        mode="single"
-                        selected={item.state}
-                        onSelect={item.setter}
-                        initialFocus
-                        className="pointer-events-auto"
-                      />
-                    </PopoverContent>
-                  </Popover>
-                ))}
-              </div>
-            )}
-          </div>
-          <div className="flex items-center gap-2">
-            <Button
-              variant="outline"
-              size="sm"
-              className="bg-background/50 backdrop-blur-sm border-border gap-2"
-            >
-              <Download className="w-4 h-4" /> Exportar BI
-            </Button>
-          </div>
-        </motion.div>
-
-        {futuristicMode ? (
-          <FuturisticDashboard
-            kpis={kpis}
-            evolucaoMensal={evolucaoMensal}
-            onMetricClick={(metric: string) => setDrillDownItem(metric)}
-          />
-        ) : (
-          <>
-            <BIMainKpis kpis={kpis} />
-            <BISecondaryKpis kpis={kpis} />
-
-            <Tabs defaultValue="evolucao" className="space-y-4">
-              <TabsList className="grid grid-cols-4 w-full max-w-lg">
-                <TabsTrigger value="evolucao" className="flex items-center gap-2">
-                  <LineChartIcon className="w-4 h-4" />
-                  Evolução
-                </TabsTrigger>
-                <TabsTrigger value="aging" className="flex items-center gap-2">
-                  <BarChart3 className="w-4 h-4" />
-                  Aging
-                </TabsTrigger>
-                <TabsTrigger value="centros" className="flex items-center gap-2">
-                  <PieChartIcon className="w-4 h-4" />
-                  Custos
-                </TabsTrigger>
-                <TabsTrigger value="empresas" className="flex items-center gap-2">
-                  <Building2 className="w-4 h-4" />
-                  Empresas
-                </TabsTrigger>
-              </TabsList>
-              <TabsContent value="evolucao">
-                <BIEvolucaoChart evolucaoMensal={evolucaoMensal} statusReceber={statusReceber} />
-              </TabsContent>
-              <TabsContent value="aging">
-                <BIAgingChart agingReceber={agingReceber} topClientes={topClientes} />
-              </TabsContent>
-              <TabsContent value="centros">
-                <BICentrosChart distribuicaoCentros={distribuicaoCentros} />
-              </TabsContent>
-              <TabsContent value="empresas">
-                <BIEmpresasTab comparativoEmpresas={comparativoEmpresas} />
-              </TabsContent>
-            </Tabs>
-          </>
-        )}
-
-        <motion.div variants={itemVariants} className="mt-6 relative z-10">
-          <Card
-            className={cn(
-              'transition-all duration-500',
-              futuristicMode ? 'premium-card border-border bg-card/40 backdrop-blur-xl' : ''
-            )}
-          >
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <AlertTriangle className="h-5 w-5 text-destructive" />
-                Inadimplência Segmentada
-              </CardTitle>
-              <CardDescription>
-                Análise de inadimplência por ramo de atividade e vendedor
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <InadimplenciaSegmentada />
-            </CardContent>
-          </Card>
-        </motion.div>
-
-        <motion.div variants={itemVariants} className="mt-6 relative z-10">
-          <div
-            className={cn(
-              'transition-all duration-500',
-              futuristicMode
-                ? 'premium-card p-0 border-border overflow-hidden bg-card/40 backdrop-blur-xl'
-                : ''
-            )}
-          >
-            <BenchmarkingSetorial />
-          </div>
-        </motion.div>
-
-        <motion.div variants={itemVariants} className="mt-6 relative z-10">
-          <div
-            className={cn(
-              'transition-all duration-500',
-              futuristicMode
-                ? 'premium-card p-0 border-border overflow-hidden bg-card/40 backdrop-blur-xl'
-                : ''
-            )}
-          >
-            <HistoricoAnalisesPreditivasPanel />
-          </div>
-        </motion.div>
-        <BIDrillDown
-          isOpen={!!drillDownItem}
-          onClose={() => setDrillDownItem(null)}
-          title={
-            drillDownItem === 'receber'
-              ? 'Detalhamento: Contas a Receber'
-              : drillDownItem === 'pagar'
-                ? 'Detalhamento: Contas a Pagar'
-                : drillDownItem === 'atraso'
-                  ? 'Detalhamento: Pagamentos em Atraso'
-                  : 'Detalhamento de Lançamentos'
-          }
-          type={drillDownItem === 'receber' || drillDownItem === 'atraso' ? 'receber' : 'pagar'}
-          data={drillDownData}
-        />
-      </motion.div>
+      <BIFuturista
+        futuristicMode={futuristicMode}
+        empresaId={empresaId}
+        empresas={empresas}
+        setFuturisticMode={setFuturisticMode}
+        setEmpresaId={setEmpresaId}
+        filters={filters}
+        setFilters={setFilters}
+        centrosCusto={centrosCusto}
+        contasBancarias={contasBancarias}
+        usarPeriodoCustom={usarPeriodoCustom}
+        periodo={periodo}
+        setUsarPeriodoCustom={setUsarPeriodoCustom}
+        setPeriodo={setPeriodo}
+        setDataInicio={setDataInicio}
+        setDataFim={setDataFim}
+        dataInicio={dataInicio}
+        dataFim={dataFim}
+        kpis={kpis}
+        evolucaoMensal={evolucaoMensal}
+        setDrillDownItem={setDrillDownItem}
+        statusReceber={statusReceber}
+        agingReceber={agingReceber}
+        topClientes={topClientes}
+        distribuicaoCentros={distribuicaoCentros}
+        comparativoEmpresas={comparativoEmpresas}
+        drillDownItem={drillDownItem}
+        drillDownData={drillDownData}
+      />
     </MainLayout>
   );
 }

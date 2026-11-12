@@ -1,7 +1,6 @@
 import { todayISOLocal } from '@/lib/formatters';
 import { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -14,33 +13,9 @@ import {
   TableRow,
 } from '@/components/ui/table';
 import { EmptyState } from '@/components/ui/empty-state';
-import {
-  Dialog,
-  DialogContent,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { ConfirmDialog } from '@/components/ui/confirm-dialog';
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-  DropdownMenuSeparator,
-} from '@/components/ui/dropdown-menu';
-import {
-  DollarSign,
-  Tag,
-  Receipt,
-  CreditCard,
-  RefreshCw,
-  CheckCircle2,
-  RotateCcw,
-  Trash2,
-  Loader2,
-  MoreHorizontal,
-} from 'lucide-react';
+import { Tag, Receipt, CreditCard } from 'lucide-react';
 import {
   useBlingFinanceiro,
   useBlingFinanceiroMutations,
@@ -49,14 +24,16 @@ import {
   useBlingCategoriasFinanceiras,
   useBlingBorderos,
 } from '@/hooks/useBling';
-import { PaginationControls, LoadingSkeleton } from './BlingShared';
+import { LoadingSkeleton } from './BlingShared';
 import type {
-  BlingContaFinanceira,
   BlingFormaPagamento,
   BlingPortador,
   BlingCategoriaFinanceira,
   BlingBordero,
 } from './BlingFinanceiroPanel.types';
+import { BlingFinanceiroPanelFinanceiro } from './BlingFinanceiroPanelFinanceiro';
+import { BlingFinanceiroPanelConteudo } from './BlingFinanceiroPanelConteudo';
+import { BlingFinanceiroPanelConteudo2 } from './BlingFinanceiroPanelConteudo2';
 
 export function BlingFinanceiroPanel() {
   const [tipo, setTipo] = useState<'receber' | 'pagar'>('receber');
@@ -114,220 +91,29 @@ export function BlingFinanceiroPanel() {
 
   return (
     <div className="space-y-4">
-      <div className="flex gap-2 flex-wrap">
-        <Button
-          variant={subTab === 'contas' ? 'default' : 'outline'}
-          onClick={() => setSubTab('contas')}
-          size="sm"
-        >
-          <DollarSign className="h-4 w-4 mr-1" /> Contas
-        </Button>
-        <Button
-          variant={subTab === 'formas' ? 'default' : 'outline'}
-          onClick={() => {
-            setSubTab('formas');
-            refetchFormas();
-          }}
-          size="sm"
-        >
-          <Tag className="h-4 w-4 mr-1" /> Formas de Pagamento
-        </Button>
-        <Button
-          variant={subTab === 'portadores' ? 'default' : 'outline'}
-          onClick={() => {
-            setSubTab('portadores');
-            refetchPortadores();
-          }}
-          size="sm"
-        >
-          <Receipt className="h-4 w-4 mr-1" /> Portadores
-        </Button>
-        <Button
-          variant={subTab === 'categorias' ? 'default' : 'outline'}
-          onClick={() => {
-            setSubTab('categorias');
-            refetchCategorias();
-          }}
-          size="sm"
-        >
-          <Tag className="h-4 w-4 mr-1" /> Categorias
-        </Button>
-        <Button
-          variant={subTab === 'borderos' ? 'default' : 'outline'}
-          onClick={() => {
-            setSubTab('borderos');
-            refetchBorderos();
-          }}
-          size="sm"
-        >
-          <CreditCard className="h-4 w-4 mr-1" /> Borderôs
-        </Button>
-      </div>
+      <BlingFinanceiroPanelConteudo
+        subTab={subTab}
+        setSubTab={setSubTab}
+        refetchFormas={refetchFormas}
+        refetchPortadores={refetchPortadores}
+        refetchCategorias={refetchCategorias}
+        refetchBorderos={refetchBorderos}
+      />
 
       {subTab === 'contas' && (
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <DollarSign className="h-5 w-5" /> Financeiro
-            </CardTitle>
-            <CardDescription>Contas a receber e a pagar — baixa, estorno, exclusão</CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="flex gap-2">
-              <Button
-                variant={tipo === 'receber' ? 'default' : 'outline'}
-                onClick={() => {
-                  setTipo('receber');
-                  setPagina(1);
-                }}
-              >
-                A Receber
-              </Button>
-              <Button
-                variant={tipo === 'pagar' ? 'default' : 'outline'}
-                onClick={() => {
-                  setTipo('pagar');
-                  setPagina(1);
-                }}
-              >
-                A Pagar
-              </Button>
-              <Button
-                onClick={() => {
-                  setPagina(1);
-                  refetch();
-                }}
-                disabled={isFetching}
-                variant="outline"
-                className="gap-1.5"
-              >
-                {isFetching ? (
-                  <Loader2 className="h-4 w-4 animate-spin" />
-                ) : (
-                  <RefreshCw className="h-4 w-4" />
-                )}{' '}
-                Carregar
-              </Button>
-            </div>
-            {contas.length === 0 && !isFetching && (
-              <EmptyState
-                icon={DollarSign}
-                title={`Nenhuma conta a ${tipo}`}
-                description="Carregue as contas financeiras do Bling"
-              />
-            )}
-            {contas.length > 0 && (
-              <>
-                <div className="rounded-md border overflow-auto">
-                  <Table>
-                    <TableHeader>
-                      <TableRow>
-                        <TableHead>Vencimento</TableHead>
-                        <TableHead>Contato</TableHead>
-                        <TableHead>Descrição</TableHead>
-                        <TableHead className="text-right">Valor</TableHead>
-                        <TableHead>Situação</TableHead>
-                        <TableHead className="w-10">Ações</TableHead>
-                      </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                      {contas.map((c: BlingContaFinanceira) => {
-                        const sitLabel =
-                          c.situacao === 1
-                            ? 'Em aberto'
-                            : c.situacao === 2
-                              ? tipo === 'receber'
-                                ? 'Recebido'
-                                : 'Pago'
-                              : c.situacao === 3
-                                ? 'Parcial'
-                                : c.situacao === 4
-                                  ? 'Vencido'
-                                  : c.situacao === 5
-                                    ? 'Cancelado'
-                                    : c.situacao === 6
-                                      ? 'Inadimplente'
-                                      : `#${c.situacao}`;
-                        const sitVariant: 'outline' | 'default' | 'destructive' | 'secondary' =
-                          c.situacao === 1
-                            ? 'outline'
-                            : c.situacao === 2
-                              ? 'default'
-                              : c.situacao === 4 || c.situacao === 6
-                                ? 'destructive'
-                                : 'secondary';
-                        return (
-                          <TableRow key={c.id}>
-                            <TableCell>
-                              {c.vencimento
-                                ? new Date(c.vencimento).toLocaleDateString('pt-BR')
-                                : '-'}
-                            </TableCell>
-                            <TableCell>{c.contato?.nome || '-'}</TableCell>
-                            <TableCell>{c.historico || c.numeroDocumento || '-'}</TableCell>
-                            <TableCell className="text-right font-semibold">
-                              R${' '}
-                              {Number(c.valor || 0).toLocaleString('pt-BR', {
-                                minimumFractionDigits: 2,
-                              })}
-                            </TableCell>
-                            <TableCell>
-                              <Badge variant={sitVariant}>{sitLabel}</Badge>
-                            </TableCell>
-                            <TableCell>
-                              <DropdownMenu>
-                                <DropdownMenuTrigger asChild>
-                                  <Button variant="ghost" size="icon">
-                                    <MoreHorizontal className="h-4 w-4" />
-                                  </Button>
-                                </DropdownMenuTrigger>
-                                <DropdownMenuContent align="end">
-                                  {c.situacao !== 2 && (
-                                    <DropdownMenuItem
-                                      onClick={() => {
-                                        setBaixaForm({
-                                          valorRecebido: String(c.valor || ''),
-                                          data: todayISOLocal(),
-                                        });
-                                        setShowBaixa({ id: String(c.id), tipo });
-                                      }}
-                                    >
-                                      <CheckCircle2 className="h-4 w-4 mr-2" /> Dar Baixa
-                                    </DropdownMenuItem>
-                                  )}
-                                  {c.situacao === 2 && (
-                                    <DropdownMenuItem
-                                      onClick={() => setConfirmEstorno({ id: String(c.id), tipo })}
-                                    >
-                                      <RotateCcw className="h-4 w-4 mr-2" /> Estornar Baixa
-                                    </DropdownMenuItem>
-                                  )}
-                                  <DropdownMenuSeparator />
-                                  <DropdownMenuItem
-                                    className="text-destructive"
-                                    onClick={() => setConfirmExclusao({ id: String(c.id), tipo })}
-                                  >
-                                    <Trash2 className="h-4 w-4 mr-2" /> Excluir
-                                  </DropdownMenuItem>
-                                </DropdownMenuContent>
-                              </DropdownMenu>
-                            </TableCell>
-                          </TableRow>
-                        );
-                      })}
-                    </TableBody>
-                  </Table>
-                </div>
-                <PaginationControls
-                  pagina={pagina}
-                  setPagina={setPagina}
-                  hasMore={contas.length === 100}
-                  onRefetch={refetch}
-                />
-              </>
-            )}
-          </CardContent>
-        </Card>
+        <BlingFinanceiroPanelFinanceiro
+          tipo={tipo}
+          setTipo={setTipo}
+          setPagina={setPagina}
+          refetch={refetch}
+          isFetching={isFetching}
+          contas={contas}
+          setBaixaForm={setBaixaForm}
+          setShowBaixa={setShowBaixa}
+          setConfirmEstorno={setConfirmEstorno}
+          setConfirmExclusao={setConfirmExclusao}
+          pagina={pagina}
+        />
       )}
 
       {subTab === 'formas' && (
@@ -551,38 +337,14 @@ export function BlingFinanceiroPanel() {
               />
             </div>
           </div>
-          <DialogFooter>
-            <Button variant="outline" onClick={() => setShowBaixa(null)}>
-              Cancelar
-            </Button>
-            <Button
-              onClick={() => {
-                if (!showBaixa) return;
-                const payload = {
-                  valorRecebido: Number(baixaForm.valorRecebido),
-                  data: baixaForm.data,
-                };
-                const mutation = showBaixa.tipo === 'receber' ? darBaixaReceber : darBaixaPagar;
-                mutation.mutate(
-                  { id: showBaixa.id, data: payload },
-                  {
-                    onSuccess: () => {
-                      setShowBaixa(null);
-                      refetch();
-                    },
-                  }
-                );
-              }}
-              disabled={
-                !baixaForm.valorRecebido || darBaixaReceber.isPending || darBaixaPagar.isPending
-              }
-            >
-              {(darBaixaReceber.isPending || darBaixaPagar.isPending) && (
-                <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-              )}{' '}
-              Confirmar Baixa
-            </Button>
-          </DialogFooter>
+          <BlingFinanceiroPanelConteudo2
+            setShowBaixa={setShowBaixa}
+            showBaixa={showBaixa}
+            baixaForm={baixaForm}
+            darBaixaReceber={darBaixaReceber}
+            darBaixaPagar={darBaixaPagar}
+            refetch={refetch}
+          />
         </DialogContent>
       </Dialog>
 

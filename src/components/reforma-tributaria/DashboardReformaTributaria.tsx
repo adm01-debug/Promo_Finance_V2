@@ -6,16 +6,8 @@ import { AssistenteFechamentoMensal } from '@/components/tributario/dashboard/As
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
 import { Skeleton } from '@/components/ui/skeleton';
-import { Calendar, Receipt, Landmark, AlertTriangle, CheckCircle2, Building2 } from 'lucide-react';
+import { Receipt, Landmark, AlertTriangle, CheckCircle2 } from 'lucide-react';
 import {
   XAxis,
   YAxis,
@@ -35,7 +27,6 @@ import useAlertasTributarios from '@/hooks/useAlertasTributarios';
 import { useApuracoesTributarias } from '@/hooks/useApuracoesTributarias';
 import { formatCurrency } from '@/lib/formatters';
 import { NavigationTributaria } from './NavigationTributaria';
-import { HeroKPIs } from './HeroKPIs';
 import { ProgressoMigracao } from './ProgressoMigracao';
 import { SimuladorCenariosTributarios } from './SimuladorCenariosTributarios';
 import { CronogramaTransicao } from './CronogramaTransicao';
@@ -61,6 +52,8 @@ import { ImportacaoXMLPanel } from './ImportacaoXMLPanel';
 import { EmptyStateTributario } from './EmptyStateTributario';
 import { GlossarioTooltip } from './GlossarioTooltip';
 import { itemVariants, COLORS, containerVariants } from './DashboardReformaTributaria.helpers';
+import { DashboardReformaTributariaHeaderWithGlobalEmpresa } from './DashboardReformaTributariaHeaderWithGlobalEmpresa';
+import { DashboardReformaTributariaConteudo } from './DashboardReformaTributariaConteudo';
 
 export function DashboardReformaTributaria({ initialTab }: { initialTab?: string }) {
   const [activeTab, setActiveTab] = useState(initialTab || 'visao-geral');
@@ -470,61 +463,14 @@ export function DashboardReformaTributaria({ initialTab }: { initialTab?: string
       className="space-y-6"
     >
       {/* Header with Global Empresa Selector */}
-      <div className="flex flex-col gap-4">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-          <div className="min-w-0 flex-1">
-            <h1 className="text-xl sm:text-2xl md:text-3xl font-bold tracking-tight truncate">
-              Reforma Tributária
-            </h1>
-            <p className="text-xs sm:text-sm text-muted-foreground line-clamp-1">
-              Gestão contábil - LC 214/2025
-            </p>
-          </div>
-
-          <div className="flex items-center gap-2 sm:gap-3 flex-shrink-0 flex-wrap">
-            {/* Seletor de Empresa Global */}
-            <Select value={empresaId} onValueChange={setEmpresaId}>
-              <SelectTrigger className="w-36 sm:w-48 h-8 sm:h-10 text-xs sm:text-sm">
-                <Building2 className="h-3 w-3 sm:h-4 sm:w-4 mr-1 flex-shrink-0" />
-                <SelectValue placeholder="Todas empresas" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">Todas Empresas</SelectItem>
-                {empresas.map((emp) => (
-                  <SelectItem key={emp.id} value={emp.id}>
-                    {emp.razao_social || emp.nome_fantasia}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-
-            <Badge
-              variant="outline"
-              className="px-2 sm:px-4 py-1 sm:py-2 text-xs whitespace-nowrap"
-            >
-              <Calendar className="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2" />
-              <span className="hidden sm:inline">Fase: </span>
-              {faseAtual.replace('_', ' ').toUpperCase()}
-            </Badge>
-
-            <Select
-              value={String(anoReferencia)}
-              onValueChange={(v) => setAnoReferencia(Number(v))}
-            >
-              <SelectTrigger className="w-20 sm:w-32 h-8 sm:h-10 text-xs sm:text-sm">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                {[2024, 2025, 2026, 2027, 2028, 2029, 2030, 2031, 2032, 2033].map((ano) => (
-                  <SelectItem key={ano} value={String(ano)}>
-                    {ano}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-        </div>
-      </div>
+      <DashboardReformaTributariaHeaderWithGlobalEmpresa
+        empresaId={empresaId}
+        setEmpresaId={setEmpresaId}
+        empresas={empresas}
+        faseAtual={faseAtual}
+        anoReferencia={anoReferencia}
+        setAnoReferencia={setAnoReferencia}
+      />
 
       {/* Navegação com badge de alertas */}
       <NavigationTributaria
@@ -535,21 +481,12 @@ export function DashboardReformaTributaria({ initialTab }: { initialTab?: string
 
       {/* Hero KPIs com deep-linking e alertas reais */}
       {activeTab === 'visao-geral' && !isFirstAccess && (
-        <motion.div variants={itemVariants}>
-          <HeroKPIs
-            cargaTributaria={metricas?.cargaTributariaEfetiva || 0}
-            cbsSaldo={metricas?.cbsSaldoAPagar || 0}
-            ibsSaldo={metricas?.ibsSaldoAPagar || 0}
-            creditosDisponiveis={metricas?.creditosDisponiveis || 0}
-            creditosUtilizados={metricas?.creditosUtilizados || 0}
-            creditosAcumulados={metricas?.creditosAcumulados || 0}
-            percentualMigracao={metricas?.percentualMigracao || 0}
-            aliquotaCbs={aliquotasAtuais.cbs}
-            aliquotaIbs={aliquotasAtuais.ibs}
-            alertasCriticos={alertasCriticos}
-            onKPIClick={handleKPIClick}
-          />
-        </motion.div>
+        <DashboardReformaTributariaConteudo
+          metricas={metricas}
+          aliquotasAtuais={aliquotasAtuais}
+          alertasCriticos={alertasCriticos}
+          handleKPIClick={handleKPIClick}
+        />
       )}
 
       {/* Progresso da Migração */}

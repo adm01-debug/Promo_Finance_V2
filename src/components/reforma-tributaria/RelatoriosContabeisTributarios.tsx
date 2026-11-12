@@ -1,17 +1,7 @@
 import { useState, useMemo } from 'react';
 import { toast } from 'sonner';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import {
   Table,
@@ -21,15 +11,7 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
-import {
-  FileText,
-  Download,
-  Printer,
-  BarChart3,
-  TrendingUp,
-  TrendingDown,
-  Calculator,
-} from 'lucide-react';
+import { BarChart3, TrendingUp, TrendingDown, Calculator } from 'lucide-react';
 import {
   BarChart,
   Bar,
@@ -54,6 +36,7 @@ import { DRETributarioTab } from './relatorios-tributarios/DRETributarioTab';
 import { CargaEfetivaTab } from './relatorios-tributarios/CargaEfetivaTab';
 import type { Props, TipoRelatorio } from './RelatoriosContabeisTributarios.types';
 import { CORES_GRAFICO } from './RelatoriosContabeisTributarios.helpers';
+import { RelatoriosContabeisTributariosFiltros } from './RelatoriosContabeisTributariosFiltros';
 
 export function RelatoriosContabeisTributarios({ empresaId: initialEmpresaId }: Props) {
   const [empresaId, setEmpresaId] = useState<string>(initialEmpresaId || '');
@@ -242,68 +225,16 @@ export function RelatoriosContabeisTributarios({ empresaId: initialEmpresaId }: 
   return (
     <div className="space-y-6">
       {/* Filtros */}
-      <Card>
-        <CardHeader className="pb-4">
-          <CardTitle className="flex items-center gap-2">
-            <FileText className="h-5 w-5" />
-            Relatórios Contábeis Tributários
-          </CardTitle>
-          <CardDescription>
-            DRE Tributário, Balancete e Análises de Carga Tributária
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <div className="flex flex-wrap gap-4 items-end">
-            <div className="space-y-2 min-w-48">
-              <Label>Empresa</Label>
-              <Select value={empresaId} onValueChange={setEmpresaId}>
-                <SelectTrigger>
-                  <SelectValue placeholder="Selecione a empresa" />
-                </SelectTrigger>
-                <SelectContent>
-                  {empresas.map((emp) => (
-                    <SelectItem key={emp.id} value={emp.id}>
-                      {emp.razao_social}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-            <div className="space-y-2">
-              <Label>Período Inicial</Label>
-              <Input
-                type="month"
-                value={periodoInicio}
-                onChange={(e) => setPeriodoInicio(e.target.value)}
-                className="w-36"
-              />
-            </div>
-            <div className="space-y-2">
-              <Label>Período Final</Label>
-              <Input
-                type="month"
-                value={periodoFim}
-                onChange={(e) => setPeriodoFim(e.target.value)}
-                className="w-36"
-              />
-            </div>
-            <div className="flex gap-2">
-              <Button
-                variant="outline"
-                disabled={!empresaId}
-                onClick={() => handleExportar('excel')}
-              >
-                <Download className="h-4 w-4 mr-2" />
-                Excel (CSV)
-              </Button>
-              <Button variant="outline" disabled={!empresaId} onClick={() => handleExportar('pdf')}>
-                <Printer className="h-4 w-4 mr-2" />
-                Imprimir / PDF
-              </Button>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
+      <RelatoriosContabeisTributariosFiltros
+        empresaId={empresaId}
+        setEmpresaId={setEmpresaId}
+        empresas={empresas}
+        periodoInicio={periodoInicio}
+        setPeriodoInicio={setPeriodoInicio}
+        periodoFim={periodoFim}
+        setPeriodoFim={setPeriodoFim}
+        handleExportar={handleExportar}
+      />
 
       {empresaId && (
         <>
