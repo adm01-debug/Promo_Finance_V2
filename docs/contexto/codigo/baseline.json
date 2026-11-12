@@ -2,11 +2,16 @@
  "aviso": "GERADO AUTOMATICAMENTE por scripts/ai-context/gerar.mjs — não editar à mão; será sobrescrito.",
  "format_version": 2,
  "git": {
-  "commit": "bd5e6443511b6d810af4cfcdadc65e1021e98fc3",
+  "commit": "51d040560b2aa72c48add58873dfa3696b165dbf",
   "branch": "main",
-  "data_commit": "2026-11-12T09:42:14-03:00",
+  "data_commit": "2026-11-12T11:37:23-03:00",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
   "ultimos_commits": [
+   {
+    "sha": "51d0405",
+    "data": "2026-11-12",
+    "assunto": "fix: configurar widgets do dashboard executivo passa a ocultar/exibir e redimensionar (#322)"
+   },
    {
     "sha": "bd5e644",
     "data": "2026-11-12",
@@ -126,14 +131,9 @@
     "sha": "62bd983",
     "data": "2026-11-11",
     "assunto": "chore(db): [STEP 17] dropar 404 índices idle (idx_scan=0) (#243)"
-   },
-   {
-    "sha": "8f43c3f",
-    "data": "2026-11-10",
-    "assunto": "chore: [STEP 43] espacar cron jobs diagnosticos de alta frequencia (#234)"
    }
   ],
-  "arquivos_mudados_7d": 495,
+  "arquivos_mudados_7d": 496,
   "pastas_mais_mudadas_30d": [
    {
     "pasta": "package.json",
@@ -145,7 +145,7 @@
    },
    {
     "pasta": "supabase/functions/_shared",
-    "mudancas": 17
+    "mudancas": 15
    },
    {
     "pasta": ".github/workflows/ci.yml",
@@ -301,11 +301,11 @@
   "autores_30d": [
    {
     "autor": "adm01-debug",
-    "commits": 89
+    "commits": 90
    },
    {
     "autor": "devin-ai-integration[bot]",
-    "commits": 17
+    "commits": 15
    },
    {
     "autor": "dependabot[bot]",
@@ -320,7 +320,7 @@
  "contagens": {
   "arquivos_total": 3619,
   "arquivos_codigo": 2216,
-  "linhas_codigo": 428829,
+  "linhas_codigo": 428841,
   "rotas": 128,
   "rotas_http_backend": 25,
   "vistas_por_id": 0,
@@ -632,7 +632,7 @@
   },
   "src/components": {
    "arquivos": 873,
-   "linhas": 158445
+   "linhas": 158457
   },
   "src/config": {
    "arquivos": 1,

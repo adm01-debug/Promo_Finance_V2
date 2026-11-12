@@ -1,7 +1,7 @@
 # Contexto do projeto para agentes de IA
 
 GERADO AUTOMATICAMENTE por scripts/ai-context/gerar.mjs — não editar à mão; será sobrescrito.
-Publicado pelo workflow .github/workflows/contexto.yml em docs/contexto/codigo/ da branch gerada `contexto`. Índice único em docs/contexto/00-INDEX.md. Ler: git fetch origin contexto && git show origin/contexto:docs/contexto/00-INDEX.md Gere local com `node scripts/ai-context/gerar.mjs`. Commit-base: `bd5e6443511b6d810af4cfcdadc65e1021e98fc3` (2026-11-12T09:42:14-03:00).
+Publicado pelo workflow .github/workflows/contexto.yml em docs/contexto/codigo/ da branch gerada `contexto`. Índice único em docs/contexto/00-INDEX.md. Ler: git fetch origin contexto && git show origin/contexto:docs/contexto/00-INDEX.md Gere local com `node scripts/ai-context/gerar.mjs`. Commit-base: `51d040560b2aa72c48add58873dfa3696b165dbf` (2026-11-12T11:37:23-03:00).
 
 ## Como usar (leia antes de planejar ou executar qualquer tarefa)
 1. **Tela/rota/menu** → `rotas.json` (url/vista/menu → arquivo → hooks → tabelas → edges; `rotas_http_backend` para APIs) e `modulos.json` (módulo inteiro + dependências entre módulos).
@@ -36,7 +36,7 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 |---|---|
 | arquivos_total | 3619 |
 | arquivos_codigo | 2216 |
-| linhas_codigo | 428829 |
+| linhas_codigo | 428841 |
 | rotas | 128 |
 | rotas_http_backend | 25 |
 | vistas_por_id | 0 |
@@ -619,6 +619,7 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 - CHANGELOG topo: [Unreleased]
 
 ## Últimos commits
+- 2026-11-12 `51d0405` fix: configurar widgets do dashboard executivo passa a ocultar/exibir e redimensionar (#322)
 - 2026-11-12 `bd5e644` chore: impede categorias duplicadas por empresa e tipo (#320)
 - 2026-11-12 `8afbe7a` chore: remove categorias duplicadas e repassa referências (#319)
 - 2026-11-12 `05920df` fix: contas a pagar aceita status parcial (#318)
@@ -633,7 +634,6 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 - 2026-11-12 `251d639` fix: validação de partidas dobradas passa a valer (minúsculo + adiada para o commit) (#314)
 - 2026-11-12 `b99e6a8` chore(deps): bump the radix-ui group across 1 directory with 20 updates (#208)
 - 2026-11-12 `ea47e0c` fix: cron webhook-retry-worker para de enviar chave trigger recusada (422) (#313)
-- 2026-11-11 `8eec022` fix: sanitiza parâmetro search no filtro .or() da external-data (#308)
 
 ## Arquivos deste diretório
 - `docs/contexto/codigo/rotas.json`

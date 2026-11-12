@@ -5764,7 +5764,7 @@
     "DashboardExecutivo"
    ],
    "export_default": null,
-   "linhas": 467,
+   "linhas": 479,
    "dominio": "components/dashboard",
    "hooks_locais": [
     "useAuth",
