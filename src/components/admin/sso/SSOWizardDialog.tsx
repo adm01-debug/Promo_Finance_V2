@@ -14,14 +14,10 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { Loader2, Check, ChevronLeft, ChevronRight, Plus, Trash2, X } from 'lucide-react';
-import { IDP_PRESETS, type IdpPreset } from './IdpPresets';
-import {
-  useSaveSSOProvider,
-  useSaveSSORoleMappings,
-  useSSORoleMappings,
-  type SSOProvider,
-  type AppRole,
-} from '@/hooks/useSSO';
+import { IDP_PRESETS } from './IdpPresets';
+import type { IdpPreset } from './IdpPresets';
+import { useSaveSSOProvider, useSaveSSORoleMappings, useSSORoleMappings } from '@/hooks/useSSO';
+import type { SSOProvider, AppRole } from '@/hooks/useSSO';
 import { useSSOConsistency } from '@/hooks/useSSOConsistency';
 import { SSOConsistencyPanel } from './SSOConsistencyPanel';
 import { SSOStepConexao } from './SSOStepConexao';
@@ -29,15 +25,8 @@ import { SSOStepValidacao } from './SSOStepValidacao';
 import type { AutoFix } from '@/lib/sso/consistency';
 import { cn } from '@/lib/utils';
 import { toast } from 'sonner';
-
-interface Props {
-  open: boolean;
-  onOpenChange: (v: boolean) => void;
-  editing: SSOProvider | null;
-}
-
-const ROLES: AppRole[] = ['admin', 'financeiro', 'operacional', 'visualizador'];
-const STEPS = ['Tipo', 'Conexão', 'Mapeamento', 'Validação'];
+import type { Props } from './SSOWizardDialog.types';
+import { STEPS, ROLES } from './SSOWizardDialog.helpers';
 
 export function SSOWizardDialog({ open, onOpenChange, editing }: Props) {
   const [step, setStep] = useState(0);

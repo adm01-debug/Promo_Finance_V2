@@ -28,15 +28,7 @@ import { parseExtratoBancario, ExtratoOFX, ResultadoImportacao } from '@/lib/ofx
 import { ExtratoPreviewStep } from './ExtratoPreviewStep';
 import { toast } from 'sonner';
 import { validarMagicBytes } from '@/lib/magic-bytes';
-
-interface ImportarExtratoDialogProps {
-  open: boolean;
-  onOpenChange: (open: boolean) => void;
-  onImportSuccess: (extrato: ExtratoOFX) => void;
-  contaBancariaId?: string;
-}
-
-type Step = 'upload' | 'processing' | 'preview' | 'error' | 'open-finance-loading';
+import type { ImportarExtratoDialogProps, Step } from './ImportarExtratoDialog.types';
 
 export function ImportarExtratoDialog({
   open,

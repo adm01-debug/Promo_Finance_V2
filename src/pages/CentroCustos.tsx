@@ -26,8 +26,8 @@ import {
   useAllCentrosCusto,
   useExcluirCentroCusto,
   useReativarCentroCusto,
-  type CentroCusto,
 } from '@/hooks/useCentrosCusto';
+import type { CentroCusto } from '@/hooks/useCentrosCusto';
 import { CentroCustoTree } from '@/components/centros-custo/CentroCustoTree';
 import { CentroCustoForm } from '@/components/centros-custo/CentroCustoForm';
 import { CentroCustoExport } from '@/components/centros-custo/CentroCustoExport';
@@ -51,22 +51,7 @@ import {
   Tooltip,
   Legend,
 } from 'recharts';
-
-const COLORS = [
-  'hsl(24, 95%, 46%)',
-  'hsl(215, 90%, 42%)',
-  'hsl(150, 70%, 32%)',
-  'hsl(275, 75%, 48%)',
-  'hsl(42, 95%, 48%)',
-];
-const containerVariants = {
-  hidden: { opacity: 0 },
-  visible: { opacity: 1, transition: { staggerChildren: 0.08 } },
-} as const;
-const itemVariants = {
-  hidden: { opacity: 0, y: 20 },
-  visible: { opacity: 1, y: 0, transition: { type: 'spring', stiffness: 300, damping: 24 } },
-} as const;
+import { containerVariants, itemVariants, COLORS } from './CentroCustos.helpers';
 
 export default function CentroCustos() {
   const { data: centros = [], isLoading } = useAllCentrosCusto();

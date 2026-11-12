@@ -34,8 +34,6 @@ import { useAllEmpresas } from '@/hooks/useEmpresas';
 import useAlertasTributarios from '@/hooks/useAlertasTributarios';
 import { useApuracoesTributarias } from '@/hooks/useApuracoesTributarias';
 import { formatCurrency } from '@/lib/formatters';
-
-// Componentes internos
 import { NavigationTributaria } from './NavigationTributaria';
 import { HeroKPIs } from './HeroKPIs';
 import { ProgressoMigracao } from './ProgressoMigracao';
@@ -62,18 +60,7 @@ import { CashbackSimuladorPanel } from './CashbackSimuladorPanel';
 import { ImportacaoXMLPanel } from './ImportacaoXMLPanel';
 import { EmptyStateTributario } from './EmptyStateTributario';
 import { GlossarioTooltip } from './GlossarioTooltip';
-
-const containerVariants = {
-  hidden: { opacity: 0 },
-  visible: { opacity: 1, transition: { staggerChildren: 0.05 } },
-};
-
-const itemVariants = {
-  hidden: { y: 20, opacity: 0 },
-  visible: { y: 0, opacity: 1, transition: { duration: 0.3 } },
-};
-
-const COLORS = ['hsl(var(--primary))', 'hsl(var(--chart-2))', 'hsl(var(--muted-foreground))'];
+import { itemVariants, COLORS, containerVariants } from './DashboardReformaTributaria.helpers';
 
 export function DashboardReformaTributaria({ initialTab }: { initialTab?: string }) {
   const [activeTab, setActiveTab] = useState(initialTab || 'visao-geral');

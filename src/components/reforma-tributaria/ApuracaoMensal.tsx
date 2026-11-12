@@ -47,21 +47,7 @@ import { useApuracoesTributarias, ApuracaoTributaria } from '@/hooks/useApuracoe
 import { useAllEmpresas } from '@/hooks/useEmpresas';
 import { formatCurrency } from '@/lib/formatters';
 import { ApuracaoDetalheCard } from './apuracao/ApuracaoDetalheCard';
-
-const meses = [
-  'Janeiro',
-  'Fevereiro',
-  'Março',
-  'Abril',
-  'Maio',
-  'Junho',
-  'Julho',
-  'Agosto',
-  'Setembro',
-  'Outubro',
-  'Novembro',
-  'Dezembro',
-];
+import { meses } from './ApuracaoMensal.helpers';
 
 export function ApuracaoMensal() {
   const { data: empresas } = useAllEmpresas();

@@ -32,13 +32,10 @@ import {
   FileText,
   FileSpreadsheet,
 } from 'lucide-react';
-import { useSSOProviders, type AppRole, type SSOProvider } from '@/hooks/useSSO';
-import {
-  runBulk,
-  BULK_MAX_USERS,
-  type BulkResult,
-  type BulkUserInput,
-} from '@/lib/sso/sandbox-bulk-runner';
+import { useSSOProviders } from '@/hooks/useSSO';
+import type { AppRole, SSOProvider } from '@/hooks/useSSO';
+import { runBulk, BULK_MAX_USERS } from '@/lib/sso/sandbox-bulk-runner';
+import type { BulkResult, BulkUserInput } from '@/lib/sso/sandbox-bulk-runner';
 import { aggregateBulk } from '@/lib/sso/sandbox-bulk-aggregator';
 import {
   parseBulkCsv,
@@ -52,18 +49,7 @@ import { computeOutcome } from './outcome';
 import { SandboxBulkSummary } from './SandboxBulkSummary';
 import { SandboxBulkTable } from './SandboxBulkTable';
 import { toast } from 'sonner';
-
-interface Props {
-  onOpenInSimulator: (claims: Record<string, unknown>, base: BasePayload) => void;
-}
-
-interface BasePayload {
-  provider_id?: string;
-  claim_mapping?: { email?: string; full_name?: string; groups?: string };
-  default_role?: string;
-  allowed_domains?: string[];
-  role_mappings?: Array<{ idp_group: string; app_role: string }>;
-}
+import type { Props, BasePayload } from './SandboxBulkPanel.types';
 
 export function SandboxBulkPanel({ onOpenInSimulator }: Props) {
   const { data: providers = [] } = useSSOProviders();

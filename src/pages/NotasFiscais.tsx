@@ -57,16 +57,7 @@ import { InutilizacaoNFe } from '@/components/nfe/InutilizacaoNFe';
 import { ContingenciaNFe } from '@/components/nfe/ContingenciaNFe';
 import { SefazMonitor } from '@/components/nfe/SefazMonitor';
 import { BlingNFePanel } from '@/components/nfe/BlingNFePanel';
-
-const containerVariants = {
-  hidden: { opacity: 0 },
-  visible: { opacity: 1, transition: { staggerChildren: 0.1 } },
-};
-
-const itemVariants = {
-  hidden: { opacity: 0, y: 20 },
-  visible: { opacity: 1, y: 0 },
-};
+import { containerVariants, itemVariants } from './NotasFiscais.helpers';
 
 export default function NotasFiscais() {
   const [searchTerm, setSearchTerm] = useState('');

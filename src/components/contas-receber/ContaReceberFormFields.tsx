@@ -1,15 +1,10 @@
 import { useMemo, useState } from 'react';
-import { UseFormReturn } from 'react-hook-form';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
-  Building2,
   Calendar,
   FileText,
   Tag,
-  CreditCard,
-  Banknote,
   QrCode,
-  Wallet,
   Link2,
   User,
   RefreshCw,
@@ -32,99 +27,8 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { cn } from '@/lib/utils';
-
-interface ContaReceberFormValues {
-  cliente_id?: string;
-  cliente_nome?: string;
-  descricao?: string;
-  valor?: number;
-  data_vencimento?: string;
-  data_emissao?: string;
-  empresa_id?: string;
-  centro_custo_id?: string;
-  categoria_id?: string;
-  conta_bancaria_id?: string;
-  vendedor_id?: string;
-  tipo_cobranca?: 'boleto' | 'pix' | 'cartao' | 'transferencia' | 'dinheiro';
-  numero_documento?: string;
-  codigo_barras?: string;
-  chave_pix?: string;
-  link_boleto?: string;
-  observacoes?: string;
-  recorrente?: boolean;
-  frequencia_recorrencia?: string;
-  parcelado?: boolean;
-  numero_parcelas?: number;
-}
-
-interface ClienteOption {
-  id: string;
-  razao_social: string;
-  nome_fantasia?: string | null;
-  cnpj_cpf?: string | null;
-  score?: number | null;
-}
-
-interface EmpresaOption {
-  id: string;
-  razao_social: string;
-  nome_fantasia: string | null;
-}
-
-interface CentroCustoOption {
-  id: string;
-  codigo: string | null;
-  nome: string | null;
-}
-
-interface ContaBancariaOption {
-  id: string;
-  banco: string | null;
-  agencia: string | null;
-  conta: string | null;
-}
-
-interface VendedorOption {
-  id: string;
-  nome: string;
-}
-
-interface CategoriaOption {
-  id: string;
-  nome: string;
-}
-
-const tipoCobrancaOptions = [
-  { value: 'boleto', label: 'Boleto', icon: Banknote },
-  { value: 'pix', label: 'PIX', icon: QrCode },
-  { value: 'cartao', label: 'Cartão', icon: CreditCard },
-  { value: 'transferencia', label: 'Transferência', icon: Building2 },
-  { value: 'dinheiro', label: 'Dinheiro', icon: Wallet },
-];
-
-const frequenciaOptions = [
-  { value: 'semanal', label: 'Semanal' },
-  { value: 'quinzenal', label: 'Quinzenal' },
-  { value: 'mensal', label: 'Mensal' },
-  { value: 'bimestral', label: 'Bimestral' },
-  { value: 'trimestral', label: 'Trimestral' },
-  { value: 'semestral', label: 'Semestral' },
-  { value: 'anual', label: 'Anual' },
-];
-
-interface Props {
-  form: UseFormReturn<ContaReceberFormValues>;
-  isEditing: boolean;
-  clientes: ClienteOption[];
-  empresas: EmpresaOption[];
-  centrosCusto: CentroCustoOption[];
-  contasBancarias: ContaBancariaOption[];
-  vendedores: VendedorOption[];
-  showClienteSelect: boolean;
-  setShowClienteSelect: (v: boolean) => void;
-  onClienteSelect: (id: string) => void;
-  categorias?: CategoriaOption[];
-}
+import type { Props } from './ContaReceberFormFields.types';
+import { tipoCobrancaOptions, frequenciaOptions } from './ContaReceberFormFields.helpers';
 
 export function ContaReceberFormFields({
   form,

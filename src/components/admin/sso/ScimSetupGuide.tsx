@@ -3,7 +3,6 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
 import {
   Table,
   TableBody,
@@ -13,7 +12,6 @@ import {
   TableRow,
 } from '@/components/ui/table';
 import {
-  Copy,
   ExternalLink,
   Info,
   Loader2,
@@ -22,7 +20,6 @@ import {
   PlugZap,
   ListChecks,
 } from 'lucide-react';
-import { toast } from 'sonner';
 import { useState, useMemo } from 'react';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Progress } from '@/components/ui/progress';
@@ -30,94 +27,14 @@ import { useScimChecklist } from '@/hooks/useScimChecklist';
 import { formatDistanceToNow } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import { ScimUserJsonGenerator } from './ScimUserJsonGenerator';
-import { env } from '@/config/env';
-
-const SCIM_BASE = `${env.SUPABASE_URL}/functions/v1/scim-server/scim/v2`;
-
-const ATTR_MAPPINGS = [
-  { scim: 'userName', source: 'user.userPrincipalName / user.email', required: true },
-  { scim: 'name.formatted', source: 'user.displayName', required: false },
-  { scim: 'emails[type eq "work"].value', source: 'user.mail', required: false },
-  { scim: 'externalId', source: 'objectId / user.id', required: true },
-  { scim: 'active', source: 'Not([Suspended]) ou user.accountEnabled', required: true },
-];
-
-function CopyField({ label, value }: { label: string; value: string }) {
-  return (
-    <div>
-      <label className="text-xs font-medium text-muted-foreground">{label}</label>
-      <div className="flex gap-2 mt-1">
-        <Input readOnly value={value} className="font-mono text-xs" />
-        <Button
-          size="icon"
-          variant="outline"
-          onClick={() => {
-            navigator.clipboard.writeText(value);
-            toast.success('Copiado');
-          }}
-          aria-label={`Copiar ${label}`}
-        >
-          <Copy className="h-4 w-4" />
-        </Button>
-      </div>
-    </div>
-  );
-}
-
-type TestResult =
-  | { ok: true; status: number; latencyMs: number }
-  | { ok: false; status?: number; latencyMs?: number; message: string; hint?: string };
-
-const SCIM_SP_CONFIG_SCHEMA = 'urn:ietf:params:scim:schemas:core:2.0:ServiceProviderConfig';
-
-const CHECKLIST_ITEMS: Array<{ key: string; label: string; description: string }> = [
-  {
-    key: 'token_generated',
-    label: 'Token SCIM gerado e copiado',
-    description:
-      'Gerei um token na aba "Tokens" e armazenei em local seguro (exibido uma única vez).',
-  },
-  {
-    key: 'tenant_url_configured',
-    label: 'Tenant URL configurada no IdP',
-    description: 'Colei a URL base SCIM no painel do provedor (Azure AD / Okta).',
-  },
-  {
-    key: 'auth_header_configured',
-    label: 'Authorization header configurado',
-    description: 'Configurei o header Bearer com o token SCIM.',
-  },
-  {
-    key: 'test_connection_passed',
-    label: 'Test Connection retornou 200 OK',
-    description: 'O teste de conexão do IdP passou sem erros.',
-  },
-  {
-    key: 'attr_userName',
-    label: 'Mapeamento userName confirmado',
-    description: 'userName apontando para userPrincipalName / email.',
-  },
-  {
-    key: 'attr_externalId',
-    label: 'Mapeamento externalId confirmado',
-    description: 'externalId apontando para objectId / user.id (estável).',
-  },
-  {
-    key: 'attr_active',
-    label: 'Mapeamento active confirmado',
-    description: 'Atributo active refletindo o status da conta no IdP.',
-  },
-  {
-    key: 'scope_assigned',
-    label: 'Scope restrito a usuários atribuídos',
-    description: 'Provisionamento limitado a usuários/grupos atribuídos.',
-  },
-  {
-    key: 'sync_enabled',
-    label: 'Provisionamento ativado',
-    description: 'Sync ativo no IdP e primeira execução validada.',
-  },
-];
+import type { TestResult } from './ScimSetupGuide.types';
+import {
+  CHECKLIST_ITEMS,
+  SCIM_BASE,
+  SCIM_SP_CONFIG_SCHEMA,
+  ATTR_MAPPINGS,
+} from './ScimSetupGuide.helpers';
+import { CopyField } from './CopyField';
 
 export function ScimSetupGuide() {
   const [testing, setTesting] = useState(false);

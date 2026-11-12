@@ -1,6 +1,4 @@
 import { useState } from 'react';
-import type { useAsaas } from '@/hooks/useAsaas';
-import type { AsaasPayment } from '@/hooks/useAsaas.types';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -49,47 +47,12 @@ import {
   Download,
   MoreHorizontal,
 } from 'lucide-react';
-import { format, parseISO } from 'date-fns';
-import { ptBR } from 'date-fns/locale';
 import { formatCurrency } from '@/lib/currency';
 import { toast } from 'sonner';
 import { supabase } from '@/integrations/supabase/client';
 import { statusConfig, tipoIcons, tipoLabels } from './constants';
-
-type AsaasHook = ReturnType<typeof useAsaas>;
-
-export interface CobrancasTabProps {
-  payments: AsaasHook['payments'];
-  loadingPayments: AsaasHook['loadingPayments'];
-  reprocessarManual: AsaasHook['reprocessarManual'];
-  onNovaCobranca: () => void;
-  onOpenPixQr: (payload: {
-    asaasId: string;
-    pixCola?: string | null;
-    pixQr?: string | null;
-  }) => void;
-  onOpenEstorno: (payload: { asaasId: string; valor: number }) => void;
-  onOpenSegundaVia: (asaasId: string) => void;
-  onOpenAudit: (paymentId: string) => void;
-  onOpenBoletoPreview: (payment: AsaasPayment) => void;
-  onOpenAnticipation: (asaasId: string) => void;
-  onOpenReprocess: (payload: { paymentId: string; asaasId: string }) => void;
-  onCancel: (asaasId: string) => void;
-  onDownloadComprovante: (asaasId: string) => void;
-}
-
-function copyToClipboard(text: string) {
-  navigator.clipboard.writeText(text);
-  toast.success('Copiado!');
-}
-
-function formatDate(dateStr: string) {
-  try {
-    return format(parseISO(dateStr), 'dd/MM/yyyy', { locale: ptBR });
-  } catch {
-    return dateStr;
-  }
-}
+import type { CobrancasTabProps } from './CobrancasTab.types';
+import { formatDate, copyToClipboard } from './CobrancasTab.helpers';
 
 export function CobrancasTab({
   payments,

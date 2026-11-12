@@ -1,9 +1,8 @@
 import { useState, useEffect, useMemo } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { z } from 'zod';
 import { useMutation, useQueryClient, useQuery } from '@tanstack/react-query';
-import { Loader2, DollarSign, Calendar, Wallet, ShieldCheck } from 'lucide-react';
+import { Loader2, DollarSign, Calendar, ShieldCheck } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useContasBancarias } from '@/hooks/useFinancialData';
 import { useConfiguracaoAprovacao, useCriarSolicitacaoAprovacao } from '@/hooks/useAprovacoes';
@@ -41,38 +40,11 @@ import {
 import { cn } from '@/lib/utils';
 import { PagamentoApprovalAlert } from './registrar-pagamento/PagamentoApprovalAlert';
 import { PagamentoSummary } from './registrar-pagamento/PagamentoSummary';
-
-interface ContaPagar {
-  id: string;
-  fornecedor_nome: string;
-  descricao: string;
-  valor: number;
-  valor_pago: number | null;
-  data_vencimento: string;
-  status: string;
-  aprovado_por?: string | null;
-  aprovado_em?: string | null;
-}
-
-interface RegistrarPagamentoDialogProps {
-  conta: ContaPagar | null;
-  open: boolean;
-  onOpenChange: (open: boolean) => void;
-}
-
-const pagamentoSchema = z.object({
-  valor_pago: z.number().positive('Valor deve ser maior que zero'),
-  data_pagamento: z.string().min(1, 'Data é obrigatória'),
-  conta_bancaria_id: z.string().optional(),
-  observacoes: z.string().max(500, 'Observações muito longas').optional(),
-});
-
-type PagamentoFormData = z.infer<typeof pagamentoSchema>;
-
-const tiposPagamento = [
-  { value: 'total', label: 'Pagamento Total', icon: DollarSign },
-  { value: 'parcial', label: 'Pagamento Parcial', icon: Wallet },
-];
+import type {
+  RegistrarPagamentoDialogProps,
+  PagamentoFormData,
+} from './RegistrarPagamentoDialog.types';
+import { pagamentoSchema, tiposPagamento } from './RegistrarPagamentoDialog.helpers';
 
 export function RegistrarPagamentoDialog({
   conta,

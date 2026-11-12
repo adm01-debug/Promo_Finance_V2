@@ -42,11 +42,8 @@ import {
 } from '@/components/ui/alert-dialog';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Skeleton } from '@/components/ui/skeleton';
-import {
-  useRelatoriosAgendados,
-  type CreateRelatorioInput,
-  type HistoricoRelatorio,
-} from '@/hooks/useRelatoriosAgendados';
+import { useRelatoriosAgendados } from '@/hooks/useRelatoriosAgendados';
+import type { CreateRelatorioInput, HistoricoRelatorio } from '@/hooks/useRelatoriosAgendados';
 import { useEmpresas } from '@/hooks/useFinancialData';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
@@ -56,21 +53,7 @@ import { useToast } from '@/hooks/use-toast';
 import { logger } from '@/lib/logger';
 import { AgendamentoCard } from './agendados/AgendamentoCard';
 import { CriarAgendamentoDialog } from './agendados/CriarAgendamentoDialog';
-
-const tiposRelatorio = [
-  { value: 'fluxo_caixa', label: 'Fluxo de Caixa' },
-  { value: 'contas_pagar', label: 'Contas a Pagar' },
-  { value: 'contas_receber', label: 'Contas a Receber' },
-  { value: 'dre', label: 'DRE - Demonstrativo de Resultados' },
-  { value: 'balanco', label: 'Balanço Patrimonial' },
-  { value: 'inadimplencia', label: 'Análise de Inadimplência' },
-];
-
-const frequencias = [
-  { value: 'diario', label: 'Diário' },
-  { value: 'semanal', label: 'Semanal' },
-  { value: 'mensal', label: 'Mensal' },
-];
+import { tiposRelatorio, frequencias } from './RelatoriosAgendados.helpers';
 
 export function RelatoriosAgendados() {
   const {

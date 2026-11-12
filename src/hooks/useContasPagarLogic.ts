@@ -12,7 +12,6 @@ import {
   useContasBancarias,
   useDeleteContaPagar,
   useUpdateContaPagar,
-  ContaPagar,
 } from '@/hooks/useFinancialData';
 import { useConfiguracaoAprovacao, useCriarSolicitacaoAprovacao } from '@/hooks/useAprovacoes';
 import { useAuth } from '@/hooks/useAuth';
@@ -22,7 +21,6 @@ import { useQuickDateFilter } from '@/components/ui/quick-date-filters.hooks';
 import { supabase } from '@/integrations/supabase/client';
 import { AdvancedFilters } from '@/components/ui/advanced-filters';
 import { useGlobalFinancialFilter } from '@/hooks/useGlobalFinancialFilter';
-
 import {
   subMonths,
   isSameDay,
@@ -31,7 +29,7 @@ import {
   parseISO,
   isWithinInterval,
 } from 'date-fns';
-type ContaPagarType = ContaPagar;
+import type { ContaPagarType } from './useContasPagarLogic.types';
 
 export function useContasPagarLogic() {
   const { currentEmpresaId, currentBankAccountId } = useGlobalFinancialFilter();

@@ -55,27 +55,8 @@ import { usePlanoContas } from '@/hooks/usePlanoContas';
 import { formatCurrency } from '@/lib/formatters';
 import { cn } from '@/lib/utils';
 import { ImportLancamentosCSVDialog } from './ImportLancamentosCSVDialog';
-
-interface Props {
-  empresaId?: string;
-  ano: number;
-}
-
-type DatePreset = 'all' | 'today' | 'last7' | 'last30' | 'mes' | 'ano' | 'custom';
-
-interface LancamentosFilters extends Record<string, unknown> {
-  busca: string;
-  preset: DatePreset;
-  dataInicio: string | null; // ISO yyyy-MM-dd
-  dataFim: string | null;
-}
-
-const LANCAMENTOS_DEFAULTS: LancamentosFilters = {
-  busca: '',
-  preset: 'all',
-  dataInicio: null,
-  dataFim: null,
-};
+import type { Props, LancamentosFilters, DatePreset } from './LancamentosTab.types';
+import { LANCAMENTOS_DEFAULTS } from './LancamentosTab.helpers';
 
 export function LancamentosTab({ empresaId, ano }: Props) {
   const { user } = useAuth();

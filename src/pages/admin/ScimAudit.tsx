@@ -28,38 +28,8 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { ShieldCheck, Filter, RefreshCw, Eye, Clock, AlertCircle } from 'lucide-react';
 import { BackButton } from '@/components/navigation/BackButton';
 import { logger } from '@/lib/logger';
-
-interface ScimLogRow {
-  id: string;
-  token_id: string | null;
-  empresa_id: string | null;
-  resource_type: string;
-  operation: string;
-  external_id: string | null;
-  user_id: string | null;
-  status_code: number;
-  request_body: unknown;
-  response_body: unknown;
-  duration_ms: number | null;
-  created_at: string;
-}
-
-const operations = ['all', 'list', 'get', 'create', 'update', 'patch', 'replace', 'delete', 'auth'];
-const resources = ['all', 'Users', 'Groups', 'ServiceProviderConfig', 'Schemas', 'ResourceTypes'];
-type StatusBucket = 'all' | '2xx' | '4xx' | '5xx';
-
-function statusVariant(code: number) {
-  if (code >= 500) return 'destructive' as const;
-  if (code >= 400) return 'secondary' as const;
-  if (code >= 200 && code < 300) return 'default' as const;
-  return 'outline' as const;
-}
-
-function formatMs(ms: number | null) {
-  if (ms == null) return '—';
-  if (ms < 1000) return `${ms} ms`;
-  return `${(ms / 1000).toFixed(2)} s`;
-}
+import type { StatusBucket, ScimLogRow } from './ScimAudit.types';
+import { formatMs, resources, operations, statusVariant } from './ScimAudit.helpers';
 
 export default function ScimAudit() {
   const { user } = useAuth();

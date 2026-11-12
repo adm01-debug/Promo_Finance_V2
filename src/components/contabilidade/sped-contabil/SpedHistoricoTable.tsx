@@ -29,18 +29,7 @@ import {
 } from '@/components/ui/table';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { agruparValidacoes } from '@/lib/sped-validacoes-categorias';
-import type { HistoricoRow } from './types';
-
-interface Props {
-  isLoading: boolean;
-  historicoFiltrado: HistoricoRow[];
-  expandedAudit: Set<string>;
-  onToggleAudit: (id: string) => void;
-  onCopyHash: (hash: string | null) => void;
-  onOpenValidacoes: (h: HistoricoRow) => void;
-  onOpenTransmissao: (h: HistoricoRow) => void;
-  onClearFilters: () => void;
-}
+import type { Props } from './SpedHistoricoTable.types';
 
 export function SpedHistoricoTable({
   isLoading,

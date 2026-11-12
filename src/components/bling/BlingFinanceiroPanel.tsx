@@ -50,43 +50,13 @@ import {
   useBlingBorderos,
 } from '@/hooks/useBling';
 import { PaginationControls, LoadingSkeleton } from './BlingShared';
-
-interface BlingContaFinanceira {
-  id: string;
-  situacao: number;
-  vencimento?: string;
-  contato?: { nome?: string } | null;
-  historico?: string;
-  numeroDocumento?: string;
-  valor?: number;
-}
-
-interface BlingFormaPagamento {
-  id: string;
-  descricao?: string;
-  tipoPagamento?: string;
-  situacao?: string | number;
-}
-
-interface BlingPortador {
-  id: string;
-  descricao?: string;
-  tipo?: string;
-}
-
-interface BlingCategoriaFinanceira {
-  id: string;
-  descricao?: string;
-  tipo?: number;
-}
-
-interface BlingBordero {
-  id: string;
-  data?: string;
-  portador?: { descricao?: string } | null;
-  valorTotal?: number;
-  situacao?: string;
-}
+import type {
+  BlingContaFinanceira,
+  BlingFormaPagamento,
+  BlingPortador,
+  BlingCategoriaFinanceira,
+  BlingBordero,
+} from './BlingFinanceiroPanel.types';
 
 export function BlingFinanceiroPanel() {
   const [tipo, setTipo] = useState<'receber' | 'pagar'>('receber');

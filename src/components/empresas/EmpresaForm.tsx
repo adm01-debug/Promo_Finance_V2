@@ -13,7 +13,7 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { Loader2 } from 'lucide-react';
-import { useCriarEmpresa, useAtualizarEmpresa, type Empresa } from '@/hooks/useEmpresas';
+import { useCriarEmpresa, useAtualizarEmpresa } from '@/hooks/useEmpresas';
 import { applyCnpjMask, applyPhoneMask, applyCepMask } from '@/lib/masks';
 import {
   paraPercentual,
@@ -21,8 +21,8 @@ import {
   applyCnaeMask,
   ESTADOS,
   empresaSchema,
-  type EmpresaFormData,
 } from './empresa-form-model';
+import type { EmpresaFormData } from './empresa-form-model';
 import { useCelebrations } from '@/components/wrappers/CelebrationActions';
 import {
   TABELA_FPAS,
@@ -31,12 +31,7 @@ import {
 } from '@/lib/tributario/folha/fpas-terceiros';
 import { useResolucaoCnae } from '@/hooks/useCnaes';
 import { CnaeCatalogoInfo } from './CnaeCatalogoInfo';
-
-interface EmpresaFormProps {
-  empresa?: Empresa | null;
-  onSuccess: () => void;
-  onCancel: () => void;
-}
+import type { EmpresaFormProps } from './EmpresaForm.types';
 
 export function EmpresaForm({ empresa, onSuccess, onCancel }: EmpresaFormProps) {
   const isEditing = !!empresa;

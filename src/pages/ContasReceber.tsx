@@ -42,16 +42,7 @@ import { BankAccountSwitcher } from '@/components/financeiro/BankAccountSwitcher
 import { BaixaAutomaticaDialog } from '@/components/contas-receber/BaixaAutomaticaDialog';
 import { WebhookConfigDialog } from '@/components/contas-receber/WebhookConfigDialog';
 import { deveAbrirNovoRegistro } from '@/lib/navigation-intent';
-
-const containerVariants = {
-  hidden: { opacity: 0 },
-  visible: { opacity: 1, transition: { staggerChildren: 0.05 } },
-} as const;
-
-const itemVariants = {
-  hidden: { opacity: 0, y: 20 },
-  visible: { opacity: 1, y: 0, transition: { type: 'spring', stiffness: 300, damping: 24 } },
-} as const;
+import { containerVariants, itemVariants } from './ContasReceber.helpers';
 
 export default function ContasReceber() {
   const location = useLocation();

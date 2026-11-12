@@ -13,37 +13,19 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
 import { cn } from '@/lib/utils';
-import {
-  parseExtratoBancario,
-  ExtratoOFX,
-  ResultadoImportacao,
-  TransacaoOFX,
-} from '@/lib/ofx-parser';
+import { parseExtratoBancario, ExtratoOFX, ResultadoImportacao } from '@/lib/ofx-parser';
 import { useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { registrarEventoFinanceiroOrThrow } from '@/lib/financeiro/registrarEvento';
 import type { Json } from '@/integrations/supabase/types';
 import { toast } from 'sonner';
 import { formatCurrency, formatDate, toISOLocal } from '@/lib/formatters';
-
-interface BaixaAutomaticaDialogProps {
-  open: boolean;
-  onOpenChange: (open: boolean) => void;
-  empresaId: string;
-}
-
-type Step = 'upload' | 'processing' | 'preview' | 'success' | 'error';
-
-type TransacaoBancaria = TransacaoOFX & { conta_bancaria_id?: string };
-
-interface MatchResult {
-  transacao: TransacaoBancaria;
-  contaId: string;
-  cliente: string;
-  vencimento: string;
-  valor: number;
-  confianca: 'alta' | 'media' | 'baixa';
-}
+import type {
+  BaixaAutomaticaDialogProps,
+  Step,
+  MatchResult,
+  TransacaoBancaria,
+} from './BaixaAutomaticaDialog.types';
 
 export function BaixaAutomaticaDialog({
   open,

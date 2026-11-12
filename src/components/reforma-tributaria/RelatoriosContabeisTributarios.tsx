@@ -52,20 +52,8 @@ import { useCreditosTributarios } from '@/hooks/useCreditosTributarios';
 import { useOperacoesTributaveis } from '@/hooks/useOperacoesTributaveis';
 import { DRETributarioTab } from './relatorios-tributarios/DRETributarioTab';
 import { CargaEfetivaTab } from './relatorios-tributarios/CargaEfetivaTab';
-
-const CORES_GRAFICO = [
-  'hsl(var(--primary))',
-  'hsl(var(--secondary))',
-  'hsl(220, 70%, 50%)',
-  'hsl(160, 70%, 40%)',
-  'hsl(280, 70%, 50%)',
-  'hsl(30, 80%, 50%)',
-];
-type TipoRelatorio = 'dre-tributario' | 'balancete' | 'comparativo' | 'creditos' | 'carga-efetiva';
-
-interface Props {
-  empresaId?: string;
-}
+import type { Props, TipoRelatorio } from './RelatoriosContabeisTributarios.types';
+import { CORES_GRAFICO } from './RelatoriosContabeisTributarios.helpers';
 
 export function RelatoriosContabeisTributarios({ empresaId: initialEmpresaId }: Props) {
   const [empresaId, setEmpresaId] = useState<string>(initialEmpresaId || '');

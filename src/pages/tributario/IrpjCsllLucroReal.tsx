@@ -30,66 +30,16 @@ import {
   PRESUNCAO_CSLL,
   PRESUNCAO_IRPJ,
   apurarIrpjCsll,
-  type AjusteLalur,
-  type AtividadePresuncao,
-  type FormaApuracao,
-  type LinhaMemoriaIrpj,
-  type PeriodoApuracao,
+} from '@/lib/tributario/irpj-csll';
+import type {
+  AtividadePresuncao,
+  FormaApuracao,
+  PeriodoApuracao,
 } from '@/lib/tributario/irpj-csll';
 import { formatCurrency } from '@/lib/formatters';
-
-const pct = (v: number) => `${(v * 100).toLocaleString('pt-BR', { maximumFractionDigits: 2 })}%`;
-const num = (v: string) => {
-  const parsed = Number(v.replace(/\./g, '').replace(',', '.'));
-  return Number.isFinite(parsed) ? parsed : 0;
-};
-
-interface LinhaPeriodo {
-  id: string;
-  rotulo: string;
-  lucroLiquido: number;
-  receitaBruta: number;
-  irrf: number;
-  csllRetida: number;
-  ajustes: AjusteLalur[];
-}
-
-const novoPeriodo = (rotulo: string): LinhaPeriodo => ({
-  id: crypto.randomUUID(),
-  rotulo,
-  lucroLiquido: 0,
-  receitaBruta: 0,
-  irrf: 0,
-  csllRetida: 0,
-  ajustes: [],
-});
-
-function MemoriaTable({ linhas }: { linhas: readonly LinhaMemoriaIrpj[] }) {
-  return (
-    <div className="overflow-x-auto rounded-md border border-border">
-      <Table>
-        <TableHeader>
-          <TableRow>
-            <TableHead>Rubrica</TableHead>
-            <TableHead className="text-right">Valor</TableHead>
-            <TableHead>Fundamento legal</TableHead>
-          </TableRow>
-        </TableHeader>
-        <TableBody>
-          {linhas.map((l, i) => (
-            <TableRow key={`${l.rubrica}-${i}`}>
-              <TableCell>{l.rubrica}</TableCell>
-              <TableCell className="text-right font-medium tabular-nums">
-                {formatCurrency(l.valor)}
-              </TableCell>
-              <TableCell className="text-xs text-muted-foreground">{l.fundamento}</TableCell>
-            </TableRow>
-          ))}
-        </TableBody>
-      </Table>
-    </div>
-  );
-}
+import type { LinhaPeriodo } from './IrpjCsllLucroReal.types';
+import { novoPeriodo, pct, num } from './IrpjCsllLucroReal.helpers';
+import { MemoriaTable } from './IrpjCsllLucroReal.MemoriaTable';
 
 export default function IrpjCsllLucroReal() {
   const [forma, setForma] = useState<FormaApuracao>('trimestral');

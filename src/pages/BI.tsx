@@ -14,7 +14,6 @@ import {
   Wallet,
 } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
-
 import { MainLayout } from '@/components/layout/MainLayout';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import {
@@ -51,12 +50,7 @@ import { BenchmarkingSetorial } from '@/components/analytics/BenchmarkingSetoria
 import { HistoricoAnalisesPreditivasPanel } from '@/components/analytics/HistoricoAnalisesPreditivasPanel';
 import { BIDrillDown } from '@/components/bi/BIDrillDown';
 import { valorRecebidoEfetivo } from '@/lib/financeiro/valor-recebido-efetivo';
-
-const containerVariants = {
-  hidden: { opacity: 0 },
-  visible: { opacity: 1, transition: { staggerChildren: 0.05 } },
-};
-const itemVariants = { hidden: { opacity: 0, y: 20 }, visible: { opacity: 1, y: 0 } };
+import { containerVariants, itemVariants } from './BI.helpers';
 
 export default function BI() {
   const { currentEmpresaId } = useAuth();

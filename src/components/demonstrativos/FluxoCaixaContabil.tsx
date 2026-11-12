@@ -7,21 +7,7 @@ import { useContasPagar, useContasReceber, useContasBancarias } from '@/hooks/us
 import { formatCurrency } from '@/lib/formatters';
 import { cn } from '@/lib/utils';
 import { valorRecebidoEfetivo } from '@/lib/financeiro/valor-recebido-efetivo';
-
-interface FluxoCaixaContabilProps {
-  periodo: string;
-  mes: number;
-  ano: number;
-  empresaId: string;
-}
-
-interface FluxoLinha {
-  codigo: string;
-  descricao: string;
-  valor: number;
-  nivel: number;
-  tipo: 'entrada' | 'saida' | 'subtotal' | 'total';
-}
+import type { FluxoCaixaContabilProps, FluxoLinha } from './FluxoCaixaContabil.types';
 
 export const FluxoCaixaContabil = ({ mes, ano, empresaId }: FluxoCaixaContabilProps) => {
   const { data: contasReceber } = useContasReceber();

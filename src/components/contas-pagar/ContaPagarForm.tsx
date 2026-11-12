@@ -2,7 +2,6 @@ import { todayISOLocal, toISOLocal } from '@/lib/formatters';
 import { useState, useEffect, useMemo, useRef } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { z } from 'zod';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Building2, DollarSign, Edit, Scan, Loader2 } from 'lucide-react';
 import { ActionButton } from '@/components/ui/action-button';
@@ -46,55 +45,8 @@ import {
 import { cn } from '@/lib/utils';
 import { ContaPagarFormFields } from './ContaPagarFormFields';
 import { AnexoList } from '@/components/financeiro/AnexoList';
-
-const contaPagarSchema = z.object({
-  fornecedor_id: z.string().optional(),
-  fornecedor_nome: z
-    .string()
-    .min(2, 'Nome do fornecedor é obrigatório')
-    .max(200, 'Nome muito longo'),
-  descricao: z.string().min(3, 'Descrição é obrigatória').max(500, 'Descrição muito longa'),
-  valor: z.number().positive('Valor deve ser maior que zero').max(999999999, 'Valor muito alto'),
-  data_vencimento: z.string().min(1, 'Data de vencimento é obrigatória'),
-  data_emissao: z.string().optional(),
-  empresa_id: z.string().min(1, 'Empresa é obrigatória'),
-  centro_custo_id: z.string().optional(),
-  categoria_id: z.string().optional(),
-  conta_bancaria_id: z.string().optional(),
-  tipo_cobranca: z.enum(['boleto', 'pix', 'cartao', 'transferencia', 'dinheiro']),
-  numero_documento: z.string().max(50, 'Número muito longo').optional(),
-  codigo_barras: z.string().max(100, 'Código muito longo').optional(),
-  observacoes: z.string().max(1000, 'Observações muito longas').optional(),
-  recorrente: z.boolean().default(false),
-});
-
-type ContaPagarFormData = z.infer<typeof contaPagarSchema>;
-
-interface ContaPagar {
-  id: string;
-  fornecedor_id: string | null;
-  fornecedor_nome: string;
-  descricao: string;
-  valor: number;
-  data_vencimento: string;
-  data_emissao: string;
-  empresa_id: string;
-  centro_custo_id: string | null;
-  categoria_id: string | null;
-  conta_bancaria_id: string | null;
-  tipo_cobranca: 'boleto' | 'pix' | 'cartao' | 'transferencia' | 'dinheiro';
-  numero_documento: string | null;
-  codigo_barras: string | null;
-  observacoes: string | null;
-  recorrente: boolean;
-  updated_at: string;
-}
-
-interface ContaPagarFormProps {
-  open: boolean;
-  onOpenChange: (open: boolean) => void;
-  conta?: ContaPagar | null;
-}
+import type { ContaPagarFormProps, ContaPagarFormData } from './ContaPagarForm.types';
+import { contaPagarSchema } from './ContaPagarForm.helpers';
 
 export function ContaPagarForm({ open, onOpenChange, conta }: ContaPagarFormProps) {
   const { celebrateSuccess } = useCelebrations();

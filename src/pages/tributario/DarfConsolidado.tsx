@@ -25,38 +25,10 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { Download, Info, Plus, Receipt, Trash2 } from 'lucide-react';
-import {
-  CODIGOS_RECEITA,
-  consolidarDarf,
-  exportarDarfCsv,
-  type DebitoApurado,
-} from '@/lib/tributario/darf';
-
-const brl = (v: number) => v.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
-const pct = (v: number) => `${(v * 100).toLocaleString('pt-BR', { maximumFractionDigits: 2 })}%`;
-const dataBR = (iso: string) => iso.split('-').reverse().join('/');
-const num = (v: string) => {
-  const parsed = Number(v.replace(/\./g, '').replace(',', '.'));
-  return Number.isFinite(parsed) ? parsed : 0;
-};
-
-interface LinhaDebito {
-  id: string;
-  codigo: string;
-  periodoApuracao: string;
-  principal: number;
-  origem: string;
-}
-
-const competenciaAtual = () => new Date().toISOString().slice(0, 7);
-
-const novaLinha = (): LinhaDebito => ({
-  id: crypto.randomUUID(),
-  codigo: '5856',
-  periodoApuracao: competenciaAtual(),
-  principal: 0,
-  origem: '',
-});
+import { CODIGOS_RECEITA, consolidarDarf, exportarDarfCsv } from '@/lib/tributario/darf';
+import type { DebitoApurado } from '@/lib/tributario/darf';
+import type { LinhaDebito } from './DarfConsolidado.types';
+import { novaLinha, num, brl, dataBR, pct } from './DarfConsolidado.helpers';
 
 export default function DarfConsolidado() {
   const [linhas, setLinhas] = useState<LinhaDebito[]>([novaLinha()]);

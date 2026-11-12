@@ -42,33 +42,8 @@ import { ReceberChartsSection } from '@/components/dashboard-receber/ReceberChar
 import { useManagedFilters } from '@/hooks/useManagedFilters';
 import { ClearFiltersButton } from '@/components/filters/ClearFiltersButton';
 import { useAuth } from '@/hooks/useAuth';
-
-const containerVariants = {
-  hidden: { opacity: 0 },
-  visible: { opacity: 1, transition: { staggerChildren: 0.05 } },
-};
-
-interface ReceberFilters extends Record<string, unknown> {
-  empresaId: string;
-  vendedorId: string;
-  ramoAtividade: string;
-  statusFilter: string;
-  clienteId: string;
-  periodo: string;
-  dataInicioIso: string;
-  dataFimIso: string;
-}
-
-const RECEBER_DEFAULTS: ReceberFilters = {
-  empresaId: 'todas',
-  vendedorId: 'todos',
-  ramoAtividade: 'todos',
-  statusFilter: 'todos',
-  clienteId: 'todos',
-  periodo: '30',
-  dataInicioIso: subDays(new Date(), 30).toISOString(),
-  dataFimIso: new Date().toISOString(),
-};
+import type { ReceberFilters } from './DashboardReceber.types';
+import { RECEBER_DEFAULTS, containerVariants } from './DashboardReceber.helpers';
 
 export default function DashboardReceber() {
   const filtersController = useManagedFilters<ReceberFilters>({

@@ -35,12 +35,8 @@ import {
 } from '@/components/ui/table';
 import { ConfirmDialog } from '@/components/ui/confirm-dialog';
 import { useContasBancarias, useContasReceber, useContasPagar } from '@/hooks/useFinancialData';
-import {
-  useAllEmpresas,
-  useExcluirEmpresa,
-  useReativarEmpresa,
-  type Empresa,
-} from '@/hooks/useEmpresas';
+import { useAllEmpresas, useExcluirEmpresa, useReativarEmpresa } from '@/hooks/useEmpresas';
+import type { Empresa } from '@/hooks/useEmpresas';
 import { EmpresaForm } from '@/components/empresas/EmpresaForm';
 import { EmpresaCardView } from '@/components/empresas/EmpresaCardView';
 import { EmpresaHeroKPI } from '@/components/empresas/EmpresaHeroKPI';
@@ -49,29 +45,7 @@ import { cn } from '@/lib/utils';
 import { TableShimmerSkeleton } from '@/components/ui/loading-skeleton';
 import { useToast } from '@/hooks/use-toast';
 import { toastDeleteWithUndo } from '@/lib/toast-with-undo';
-
-const containerVariants = {
-  hidden: { opacity: 0 },
-  visible: { opacity: 1, transition: { staggerChildren: 0.07, delayChildren: 0.1 } },
-};
-const itemVariants = {
-  hidden: { opacity: 0, y: 16, scale: 0.98 },
-  visible: {
-    opacity: 1,
-    y: 0,
-    scale: 1,
-    transition: { type: 'spring' as const, stiffness: 350, damping: 26 },
-  },
-};
-const heroVariants = {
-  hidden: { opacity: 0, y: 24, scale: 0.96 },
-  visible: {
-    opacity: 1,
-    y: 0,
-    scale: 1,
-    transition: { type: 'spring' as const, stiffness: 300, damping: 24, delay: 0.15 },
-  },
-};
+import { containerVariants, itemVariants, heroVariants } from './Empresas.helpers';
 
 export default function Empresas() {
   const { data: empresas = [], isLoading } = useAllEmpresas({ includeInactive: true });

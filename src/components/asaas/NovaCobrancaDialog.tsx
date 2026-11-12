@@ -1,6 +1,4 @@
 import { todayISOLocal } from '@/lib/formatters';
-// DIALOG: Nova Cobrança ASAAS (com parcelas, juros, multa, desconto)
-
 import { useState } from 'react';
 import {
   Dialog,
@@ -25,17 +23,12 @@ import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { QrCode, Banknote, CreditCard, Loader2, UserPlus } from 'lucide-react';
 import { useAsaas } from '@/hooks/useAsaas';
-import { type AsaasBillingType } from '@/hooks/useAsaas.types';
+import type { AsaasBillingType } from '@/hooks/useAsaas.types';
 import { toast } from 'sonner';
 import { CobrancaCardForm } from './CobrancaCardForm';
 import { NovoClienteAsaasForm } from './NovoClienteAsaasForm';
 import { ConfiguracoesAvancadas, SplitCobrancaConfig } from './NovaCobrancaSections';
-
-interface Props {
-  open: boolean;
-  onOpenChange: (open: boolean) => void;
-  empresaId?: string;
-}
+import type { Props } from './NovaCobrancaDialog.types';
 
 export function NovaCobrancaDialog({ open, onOpenChange, empresaId }: Props) {
   const { customers, criarCliente, criarCobranca } = useAsaas(empresaId);

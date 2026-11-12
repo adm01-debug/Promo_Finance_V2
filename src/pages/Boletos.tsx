@@ -27,16 +27,13 @@ import {
   Plus,
   Search,
   Copy,
-  Mail,
   Barcode,
   Clock,
   CheckCircle2,
   XCircle,
-  AlertCircle,
   Ban,
   History as HistoryIcon,
 } from 'lucide-react';
-
 import { formatCurrency, formatDate } from '@/lib/formatters';
 import { toast } from 'sonner';
 import { useBoletos } from '@/hooks/useBoletos';
@@ -44,47 +41,10 @@ import { Boleto } from '@/hooks/useBoletos.types';
 import { toastWithUndo } from '@/lib/toast-with-undo';
 import { cn } from '@/lib/utils';
 import { EmptyState } from '@/components/ui/micro-interactions';
-
-const containerVariants = {
-  hidden: { opacity: 0 },
-  visible: {
-    opacity: 1,
-    transition: { staggerChildren: 0.1 },
-  },
-};
-
-const itemVariants = {
-  hidden: { opacity: 0, y: 20 },
-  visible: { opacity: 1, y: 0 },
-};
-
-const statusConfig = {
-  gerado: {
-    label: 'Gerado',
-    color: 'bg-secondary/10 text-secondary border-secondary/20',
-    icon: FileText,
-  },
-  enviado: { label: 'Enviado', color: 'bg-warning/10 text-warning border-warning/20', icon: Mail },
-  pago: {
-    label: 'Pago',
-    color: 'bg-success/10 text-success border-success/20',
-    icon: CheckCircle2,
-  },
-  vencido: {
-    label: 'Vencido',
-    color: 'bg-destructive/10 text-destructive border-destructive/20',
-    icon: XCircle,
-  },
-  cancelado: {
-    label: 'Cancelado',
-    color: 'bg-muted text-muted-foreground border-muted',
-    icon: AlertCircle,
-  },
-};
-
 import { BoletoPreviewPanel } from '@/components/boletos/BoletoPreviewPanel';
 import { NovoBoletoForm } from '@/components/boletos/NovoBoletoForm';
 import { BoletoGlobalHistory } from '@/components/boletos/BoletoGlobalHistory';
+import { containerVariants, itemVariants, statusConfig } from './Boletos.helpers';
 
 export default function Boletos() {
   const [searchTerm, setSearchTerm] = useState('');

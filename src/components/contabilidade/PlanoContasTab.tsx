@@ -49,10 +49,7 @@ import { useEmpresas } from '@/hooks/useFinancialData';
 import { AuditoriaCFCPanel } from './AuditoriaCFCPanel';
 import { PlanoContaHistoryPanel } from './PlanoContaHistoryPanel';
 import { ImportarPlanoContasDialog } from './ImportarPlanoContasDialog';
-
-interface Props {
-  empresaId?: string;
-}
+import type { Props } from './PlanoContasTab.types';
 
 export function PlanoContasTab({ empresaId }: Props) {
   const [busca, setBusca] = useState('');
