@@ -1,15 +1,15 @@
 {
  "meta": {
-  "sha": "51d040560b2aa72c48add58873dfa3696b165dbf",
+  "sha": "821385c628540cac75fdaed2b5cf43bf86d1291c",
   "branch": "main",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
-  "generated_at": "2026-11-12 16:29 UTC",
-  "files_total": 3661,
-  "code_files": 3296,
-  "code_lines": 491831
+  "generated_at": "2026-11-12 21:41 UTC",
+  "files_total": 3662,
+  "code_files": 3297,
+  "code_lines": 491902
  },
  "version": "1.3.2",
- "facts_hash": "92e5530af97c267d",
+ "facts_hash": "39639f6fb08d455a",
  "stack": {
   "frameworks": [
    "React + Vite",
@@ -332,7 +332,7 @@
   "package_manager": "bun",
   "languages": {
    ".ts": 1112,
-   ".sql": 1079,
+   ".sql": 1080,
    ".tsx": 993,
    ".mjs": 60,
    ".py": 45,
@@ -51849,6 +51849,7 @@
    "supabase/migrations/20261112024215_contas_pagar_status_parcial.sql",
    "supabase/migrations/20261112024218_remove_categorias_duplicadas.sql",
    "supabase/migrations/20261112024404_categorias_nome_unico.sql",
+   "supabase/migrations/20261112134324_cron_monitorar_erros_segredo_internal_jobs.sql",
    "supabase/tests/sql/catalogos_tributarios.test.sql",
    "supabase/tests/sql/infra.test.sql",
    "supabase/tests/sql/integrity_cycle.test.sql",
@@ -66062,6 +66063,13 @@
     "file": "src/App.tsx"
    },
    {
+    "path": "/admin/erros-frontend",
+    "component": "AdminErrosFrontend",
+    "guard": "ProtectedRoute",
+    "roles": [],
+    "file": "src/App.tsx"
+   },
+   {
     "path": "/admin/filtros-compartilhados",
     "component": "SharedFiltersAdmin",
     "guard": "ProtectedRoute",
@@ -66918,6 +66926,13 @@
    {
     "path": "/tributario/conciliacao",
     "component": "ConciliacaoTributariaPage",
+    "guard": "ProtectedRoute",
+    "roles": [],
+    "file": "src/App.tsx"
+   },
+   {
+    "path": "/tributario/consulta-rapida",
+    "component": "ConsultaRapidaFiscal",
     "guard": "ProtectedRoute",
     "roles": [],
     "file": "src/App.tsx"
@@ -69852,6 +69867,14 @@
    },
    {
     "guard": "ProtectedRoute",
+    "file": "src/App.tsx"
+   },
+   {
+    "guard": "ProtectedRoute",
+    "file": "src/App.tsx"
+   },
+   {
+    "guard": "ProtectedRoute",
     "file": "src/pages/admin/AuditoriaIA.tsx"
    }
   ]
@@ -70300,7 +70323,7 @@
   {
    "module": "src",
    "files": 4,
-   "lines": 1353,
+   "lines": 1371,
    "tables": [],
    "exports": [
     "App.tsx: App",
@@ -70356,7 +70379,7 @@
   {
    "module": "src/components",
    "files": 873,
-   "lines": 159330,
+   "lines": 159332,
    "tables": [
     "acordos_parcelamento",
     "alertas",
@@ -70961,7 +70984,7 @@
   {
    "module": "src/lib",
    "files": 401,
-   "lines": 54337,
+   "lines": 54343,
    "tables": [
     "aliquotas_interestaduais",
     "aliquotas_iss_municipal",
@@ -71158,7 +71181,7 @@
   {
    "module": "src/pages",
    "files": 211,
-   "lines": 44688,
+   "lines": 44697,
    "tables": [
     "audit_logs",
     "bloqueios_duplicidade",
@@ -71713,8 +71736,8 @@
   },
   {
    "module": "supabase/migrations",
-   "files": 1009,
-   "lines": 76234,
+   "files": 1010,
+   "lines": 76270,
    "tables": [],
    "exports": [],
    "docs": [],
@@ -169692,6 +169715,14 @@
    },
    {
     "guard": "ProtectedRoute",
+    "file": "src/App.tsx"
+   },
+   {
+    "guard": "ProtectedRoute",
+    "file": "src/App.tsx"
+   },
+   {
+    "guard": "ProtectedRoute",
     "file": "src/pages/admin/AuditoriaIA.tsx"
    }
   ],
@@ -169748,6 +169779,13 @@
    {
     "path": "/admin/edge-health",
     "component": "MainLayout",
+    "guard": "ProtectedRoute",
+    "roles": [],
+    "file": "src/App.tsx"
+   },
+   {
+    "path": "/admin/erros-frontend",
+    "component": "AdminErrosFrontend",
     "guard": "ProtectedRoute",
     "roles": [],
     "file": "src/App.tsx"
@@ -170371,6 +170409,13 @@
    {
     "path": "/tributario/conciliacao",
     "component": "ConciliacaoTributariaPage",
+    "guard": "ProtectedRoute",
+    "roles": [],
+    "file": "src/App.tsx"
+   },
+   {
+    "path": "/tributario/consulta-rapida",
+    "component": "ConsultaRapidaFiscal",
     "guard": "ProtectedRoute",
     "roles": [],
     "file": "src/App.tsx"
@@ -179128,7 +179173,7 @@
   },
   "src/App.tsx": {
    "path": "src/App.tsx",
-   "lines": 1188,
+   "lines": 1206,
    "exports": [
     "default App"
    ],
@@ -179437,6 +179482,12 @@
      "roles": []
     },
     {
+     "path": "/tributario/consulta-rapida",
+     "component": "ConsultaRapidaFiscal",
+     "guard": "ProtectedRoute",
+     "roles": []
+    },
+    {
      "path": "/tributario/arquitetura",
      "component": "ArquiteturaModularPage",
      "guard": "ProtectedRoute",
@@ -179707,6 +179758,12 @@
      "roles": []
     },
     {
+     "path": "/admin/erros-frontend",
+     "component": "AdminErrosFrontend",
+     "guard": "ProtectedRoute",
+     "roles": []
+    },
+    {
      "path": "/tributario/split-payment",
      "component": "SplitPaymentPage",
      "guard": "ProtectedRoute",
@@ -179906,6 +179963,8 @@
     }
    ],
    "guards": [
+    "ProtectedRoute",
+    "ProtectedRoute",
     "ProtectedRoute",
     "ProtectedRoute",
     "ProtectedRoute",
@@ -191154,7 +191213,7 @@
   },
   "src/components/layout/sidebar/SidebarNavGroups.tsx": {
    "path": "src/components/layout/sidebar/SidebarNavGroups.tsx",
-   "lines": 414,
+   "lines": 415,
    "exports": [
     "const SidebarNavGroups"
    ],
@@ -191164,7 +191223,7 @@
   },
   "src/components/layout/sidebar/sidebarFiscalNavGroup.ts": {
    "path": "src/components/layout/sidebar/sidebarFiscalNavGroup.ts",
-   "lines": 149,
+   "lines": 150,
    "exports": [
     "const fiscalNavGroup"
    ]
@@ -210266,7 +210325,7 @@
   },
   "src/lib/navigation.ts": {
    "path": "src/lib/navigation.ts",
-   "lines": 426,
+   "lines": 432,
    "exports": [
     "interface RouteMeta",
     "const ROUTE_META",
@@ -222744,7 +222803,7 @@
   },
   "src/pages/admin/AdminErrosFrontend.tsx": {
    "path": "src/pages/admin/AdminErrosFrontend.tsx",
-   "lines": 238,
+   "lines": 247,
    "exports": [
     "function AdminErrosFrontend"
    ]
@@ -241807,6 +241866,10 @@
    "path": "supabase/migrations/20261112024404_categorias_nome_unico.sql",
    "lines": 5
   },
+  "supabase/migrations/20261112134324_cron_monitorar_erros_segredo_internal_jobs.sql": {
+   "path": "supabase/migrations/20261112134324_cron_monitorar_erros_segredo_internal_jobs.sql",
+   "lines": 36
+  },
   "supabase/tests/test_harness.js": {
    "path": "supabase/tests/test_harness.js",
    "lines": 454,
@@ -241915,10 +241978,32 @@
   }
  },
  "git": {
-  "sha": "51d040560b2aa72c48add58873dfa3696b165dbf",
+  "sha": "821385c628540cac75fdaed2b5cf43bf86d1291c",
   "branch": "main",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
   "commits": [
+   {
+    "sha": "821385c",
+    "date": "2026-11-12",
+    "author": "adm01-debug",
+    "subject": "fix: cron monitorar-erros-frontend envia o segredo internal_jobs esperado pela function (#321)",
+    "files": [
+     "supabase/migrations/20261112134324_cron_monitorar_erros_segredo_internal_jobs.sql"
+    ]
+   },
+   {
+    "sha": "6e462aa",
+    "date": "2026-11-12",
+    "author": "adm01-debug",
+    "subject": "fix: registra rotas e menu das p?ginas Erros do Front-end e Consulta R?pida Fiscal (#323)",
+    "files": [
+     "src/App.tsx",
+     "src/components/layout/sidebar/SidebarNavGroups.tsx",
+     "src/components/layout/sidebar/sidebarFiscalNavGroup.ts",
+     "src/lib/navigation.ts",
+     "src/pages/admin/AdminErrosFrontend.tsx"
+    ]
+   },
    {
     "sha": "51d0405",
     "date": "2026-11-12",
@@ -242464,39 +242549,12 @@
      "scripts/ci/fila-merge.mjs",
      "scripts/ci/fila-merge.unit.mjs"
     ]
-   },
-   {
-    "sha": "ab802d4",
-    "date": "2026-11-10",
-    "author": "adm01-debug",
-    "subject": "fix: alinha admin_global com papel real admin (docs + guard asaas-proxy) (#255)",
-    "files": [
-     "SECURITY_RULES.md",
-     "supabase/functions/asaas-proxy/index.ts"
-    ]
-   },
-   {
-    "sha": "bec7163",
-    "date": "2026-11-10",
-    "author": "adm01-debug",
-    "subject": "feat(ci): guard do perímetro do GitHub contra baseline versionado (#277)",
-    "files": [
-     ".github/workflows/settings-guard.yml",
-     "env.manifest.json",
-     "scripts/ci/github-settings-baseline.json",
-     "scripts/ci/github-settings-guard.mjs",
-     "scripts/ci/github-settings-guard.unit.mjs"
-    ]
    }
   ],
   "hot_files": [
    [
     "scripts/automation.config.json",
     3
-   ],
-   [
-    "env.manifest.json",
-    2
    ],
    [
     "scripts/generate-env-manifest.mjs",
@@ -242531,12 +242589,28 @@
     2
    ],
    [
-    "scripts/ci/github-settings-guard.mjs",
-    2
+    "supabase/migrations/20261112134324_cron_monitorar_erros_segredo_internal_jobs.sql",
+    1
    ],
    [
-    "scripts/ci/github-settings-guard.unit.mjs",
-    2
+    "src/App.tsx",
+    1
+   ],
+   [
+    "src/components/layout/sidebar/SidebarNavGroups.tsx",
+    1
+   ],
+   [
+    "src/components/layout/sidebar/sidebarFiscalNavGroup.ts",
+    1
+   ],
+   [
+    "src/lib/navigation.ts",
+    1
+   ],
+   [
+    "src/pages/admin/AdminErrosFrontend.tsx",
+    1
    ],
    [
     "src/components/dashboard/DashboardExecutivo.tsx",
@@ -242556,18 +242630,6 @@
    ],
    [
     "supabase/migrations/20261112024215_contas_pagar_status_parcial.sql",
-    1
-   ],
-   [
-    "supabase/migrations/20261112024013_contabilizacao_conta_da_categoria.sql",
-    1
-   ],
-   [
-    "supabase/migrations/20261111233235_normalizar_tipo_partida_minusculo.sql",
-    1
-   ],
-   [
-    "supabase/migrations/20261111231350_hardening_search_path_e_cron_orfao.sql",
     1
    ]
   ]

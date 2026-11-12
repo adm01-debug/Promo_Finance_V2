@@ -145,7 +145,7 @@
     "App"
    ],
    "export_default": "App",
-   "linhas": 1187,
+   "linhas": 1205,
    "dominio": null,
    "hooks_locais": [
     "useSelectiveEmpresaInvalidation"
@@ -7186,7 +7186,7 @@
    ],
    "tabelas": [],
    "edges": [],
-   "usado_por": 89,
+   "usado_por": 90,
    "orfao": false
   },
   {
@@ -7301,7 +7301,7 @@
     "SidebarNavGroups"
    ],
    "export_default": null,
-   "linhas": 413,
+   "linhas": 414,
    "dominio": "components/layout",
    "hooks_locais": [
     "useAlertasNaoLidos",
@@ -11814,7 +11814,7 @@
     "AdminErrosFrontend"
    ],
    "export_default": "AdminErrosFrontend",
-   "linhas": 237,
+   "linhas": 246,
    "dominio": "pages/admin",
    "hooks_locais": [
     "useFrontendErrorGroups",
@@ -11822,7 +11822,7 @@
    ],
    "tabelas": [],
    "edges": [],
-   "usado_por": 0,
+   "usado_por": 1,
    "orfao": false
   },
   {
@@ -13950,7 +13950,7 @@
    "hooks_locais": [],
    "tabelas": [],
    "edges": [],
-   "usado_por": 0,
+   "usado_por": 1,
    "orfao": false
   },
   {

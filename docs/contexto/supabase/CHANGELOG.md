@@ -2,6 +2,11 @@
 
 Diff semântico gerado a cada coleta em que algo mudou.
 
+## 2026-11-12 21:41 UTC
+
+- **cron jobs** alterado (2): `33:webhook-retry-worker-1min`, `36:monitorar-erros-frontend`
+- **functions** alterado (1): `public.internal_job_secret()`
+
 ## 2026-11-12 13:08 UTC
 
 - **config: storage_config** alterado (1): `storage_config`

@@ -67113,7 +67113,7 @@
         },
         {
           "active": true,
-          "command": "\n  SELECT net.http_post(\n    url := 'https://bwwbeyolnnzppeuhgkcd.supabase.co/functions/v1/webhook-retry-worker',\n    headers := jsonb_build_object('Content-Type','application/json','x-cron-secret', public.internal_job_secret()),\n    body := jsonb_build_object('limit',50)\n  ) AS request_id;\n  ",
+          "command": "\n  SELECT net.http_post(\n    url := 'https://bwwbeyolnnzppeuhgkcd.supabase.co/functions/v1/webhook-retry-worker',\n    headers := jsonb_build_object('Content-Type','application/json','x-cron-secret', (SELECT valor FROM public.integration_secrets WHERE chave = 'internal_jobs' LIMIT 1)),\n    body := jsonb_build_object('limit',50)\n  ) AS request_id;\n  ",
           "database": "postgres",
           "jobid": 33,
           "jobname": "webhook-retry-worker-1min",
@@ -67140,7 +67140,7 @@
         },
         {
           "active": true,
-          "command": "\n  SELECT net.http_post(\n    url := 'https://bwwbeyolnnzppeuhgkcd.supabase.co/functions/v1/monitorar-erros-frontend',\n    headers := jsonb_build_object('Content-Type','application/json','x-cron-secret', public.internal_job_secret()),\n    body := jsonb_build_object('windowMinutes', 15, 'threshold', 10, 'cooldownMinutes', 60)\n  ) AS request_id;\n  ",
+          "command": "\n  SELECT net.http_post(\n    url := 'https://bwwbeyolnnzppeuhgkcd.supabase.co/functions/v1/monitorar-erros-frontend',\n    headers := jsonb_build_object('Content-Type','application/json','x-cron-secret', (SELECT valor FROM public.integration_secrets WHERE chave = 'internal_jobs' LIMIT 1)),\n    body := jsonb_build_object('windowMinutes', 15, 'threshold', 10, 'cooldownMinutes', 60)\n  ) AS request_id;\n  ",
           "database": "postgres",
           "jobid": 36,
           "jobname": "monitorar-erros-frontend",
@@ -72849,13 +72849,14 @@
             {
               "file": "supabase/migrations/20260825200000_plano_correcoes_100_etapas_wave1.sql",
               "hits": 1
+            },
+            {
+              "file": "supabase/migrations/20261112134324_cron_monitorar_erros_segredo_internal_jobs.sql",
+              "hits": 3
             }
           ],
-          "code_total_files": 2,
-          "cron": [
-            "33:webhook-retry-worker-1min",
-            "36:monitorar-erros-frontend"
-          ],
+          "code_total_files": 3,
+          "cron": [],
           "db": [],
           "triggers": [],
           "views": []

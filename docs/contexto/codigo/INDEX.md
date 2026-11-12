@@ -1,7 +1,7 @@
 # Contexto do projeto para agentes de IA
 
 GERADO AUTOMATICAMENTE por scripts/ai-context/gerar.mjs — não editar à mão; será sobrescrito.
-Publicado pelo workflow .github/workflows/contexto.yml em docs/contexto/codigo/ da branch gerada `contexto`. Índice único em docs/contexto/00-INDEX.md. Ler: git fetch origin contexto && git show origin/contexto:docs/contexto/00-INDEX.md Gere local com `node scripts/ai-context/gerar.mjs`. Commit-base: `51d040560b2aa72c48add58873dfa3696b165dbf` (2026-11-12T11:37:23-03:00).
+Publicado pelo workflow .github/workflows/contexto.yml em docs/contexto/codigo/ da branch gerada `contexto`. Índice único em docs/contexto/00-INDEX.md. Ler: git fetch origin contexto && git show origin/contexto:docs/contexto/00-INDEX.md Gere local com `node scripts/ai-context/gerar.mjs`. Commit-base: `821385c628540cac75fdaed2b5cf43bf86d1291c` (2026-11-12T16:39:57-03:00).
 
 ## Como usar (leia antes de planejar ou executar qualquer tarefa)
 1. **Tela/rota/menu** → `rotas.json` (url/vista/menu → arquivo → hooks → tabelas → edges; `rotas_http_backend` para APIs) e `modulos.json` (módulo inteiro + dependências entre módulos).
@@ -14,7 +14,7 @@ Publicado pelo workflow .github/workflows/contexto.yml em docs/contexto/codigo/ 
 Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua tarefa; não carregue tudo.
 
 ## Stack
-- linguagens: TypeScript (2105), SQL (1079), Markdown (189), JavaScript (68), Python (45), JSON (37), Shell (26), YAML (25)
+- linguagens: TypeScript (2105), SQL (1080), Markdown (189), JavaScript (68), Python (45), JSON (37), Shell (26), YAML (25)
 - linguagem_principal: TypeScript
 - framework: React
 - backend_http: n/d
@@ -34,19 +34,19 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 ## Números
 | item | qtd |
 |---|---|
-| arquivos_total | 3619 |
+| arquivos_total | 3620 |
 | arquivos_codigo | 2216 |
-| linhas_codigo | 428841 |
-| rotas | 128 |
+| linhas_codigo | 428876 |
+| rotas | 130 |
 | rotas_http_backend | 25 |
 | vistas_por_id | 0 |
-| itens_menu | 117 |
+| itens_menu | 119 |
 | modulos | 126 |
 | componentes | 908 |
 | hooks | 264 |
 | edge_functions | 106 |
 | tabelas | 352 |
-| migrations | 1009 |
+| migrations | 1010 |
 | cron_jobs | 21 |
 | testes | 426 |
 | workflows | 19 |
@@ -54,7 +54,7 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 | docs_md | 189 |
 
 ## Onde ficam as coisas
-- telas: src/pages (125)
+- telas: src/pages (127)
 - componentes: src/components (730), src/pages (174), src/hooks (2)
 - hooks: src/hooks (228), src/components (27), src/pages (5)
 - servicos_logica: src/lib (254), scripts/graphify (7), src/integrations (3)
@@ -121,14 +121,14 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 | lib/transaction-matcher | 0 | 0 | 6 | 0 | 0 | 0 |
 | lib/tributario | 0 | 0 | 114 | 0 | 0 | 11 |
 | pages | 58 | 64 | 75 | 356 | 44 | 162 |
-| pages/admin | 3 | 14 | 22 | 118 | 14 | 55 |
+| pages/admin | 4 | 15 | 22 | 118 | 14 | 55 |
 | pages/auth | 0 | 1 | 2 | 3 | 1 | 2 |
 | pages/bloqueios-duplicidade | 0 | 0 | 7 | 1 | 0 | 4 |
 | pages/clientes | 2 | 2 | 5 | 48 | 2 | 23 |
 | pages/configuracoes | 1 | 4 | 14 | 32 | 1 | 19 |
 | pages/dev | 0 | 1 | 1 | 1 | 0 | 0 |
 | pages/organizacoes | 1 | 2 | 3 | 36 | 3 | 18 |
-| pages/tributario | 32 | 40 | 65 | 100 | 22 | 56 |
+| pages/tributario | 33 | 41 | 65 | 100 | 22 | 56 |
 | types/reforma-tributaria | 0 | 0 | 13 | 0 | 0 | 0 |
 
 ## Rotas (url → arquivo)
@@ -141,6 +141,7 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 - `/admin/campos-customizados` [tela] → src/pages/admin/CustomFieldsAdmin.tsx (protegida)
 - `/admin/compliance` [tela] → src/pages/admin/ComplianceAuditoria.tsx (protegida)
 - `/admin/edge-health` [tela] → src/pages/AdminEdgeHealth.tsx (protegida)
+- `/admin/erros-frontend` [tela] → src/pages/admin/AdminErrosFrontend.tsx (protegida)
 - `/admin/filtros-compartilhados` [tela] → src/pages/admin/SharedFiltersAdmin.tsx (protegida)
 - `/admin/insights-ia` [tela] → src/pages/admin/InsightsIA.tsx (protegida)
 - `/admin/insights-ia/anomalia/:id` [tela] → src/pages/admin/AnomaliaDetalhe.tsx (protegida)
@@ -229,6 +230,7 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 - `/tributario/comparativo` [tela] → src/pages/tributario/ComparativoRegimes.tsx (protegida)
 - `/tributario/comparativo-conformidade` [tela] → src/pages/tributario/ComparativoConformidade.tsx (protegida)
 - `/tributario/conciliacao` [tela] → src/pages/tributario/ConciliacaoTributaria.tsx (protegida)
+- `/tributario/consulta-rapida` [tela] → src/pages/tributario/ConsultaRapidaFiscal.tsx (protegida)
 - `/tributario/darf` [tela] → src/pages/tributario/DarfConsolidado.tsx (protegida)
 - `/tributario/dashboard` [tela] → src/pages/tributario/DashboardTributario.tsx (protegida)
 - `/tributario/fechamento-mensal` [tela] → src/pages/tributario/FechamentoMensal.tsx (protegida)
@@ -431,7 +433,7 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 ## Permissões / papéis
 - papéis no código: user (24), system (19), alert (15), admin (14), status (13), assistant (5), region (5), AMBOS (4), ORIGEM (4), dialog (4), img (4), list (4), progressbar (4), DESTINO (3), financeiro (3), presentation (3), RESPONSAVEL (2), anon (2), combobox (2), contador_readonly (2), group (2), separator (2), visualizador (2), MEMBRO (1), agent (1), authenticated (1), button (1), checkbox (1), editor (1), link (1), listitem (1), note (1), operacional (1), radiogroup (1), root (1), service_role (1), sup (1), tool (1), treeitem (1)
 - enums de papel: app_role: admin|financeiro|operacional|visualizador|financeiro|operacional|visualizador|financeiro|operacional|visualizador|contador|viewer|manager|operator|viewer; org_papel: RESPONSAVEL|ADMIN|MEMBRO|LEITOR
-- guards: src/components/auth/EmpresaGuard.tsx, src/components/auth/ProtectedRoute.tsx, src/components/navigation/UnsavedGuardProvider.tsx · rotas protegidas: 118 · públicas: /__especimes, /*, /auth, /auth/corporate, /contador/:token, /convite/:token, /design-system-debug, /reset-password, /status, /theme-diagnostics
+- guards: src/components/auth/EmpresaGuard.tsx, src/components/auth/ProtectedRoute.tsx, src/components/navigation/UnsavedGuardProvider.tsx · rotas protegidas: 120 · públicas: /__especimes, /*, /auth, /auth/corporate, /contador/:token, /convite/:token, /design-system-debug, /reset-password, /status, /theme-diagnostics
 - feature flags: ENABLE_AUTHENTICATED_VISUAL_SNAPSHOTS, ENABLE_PRODUCTION_SIMULATION_AUDIT, FEATURE_X, nova-tela, novo-inbox
 
 ## Alertas (baseline.json → alertas)
@@ -455,8 +457,8 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 - não gerado neste run. Neste repo NÃO execute `graphify update .` (proibido por AGENTS.md, seção Graphify). O fluxo autorizado é o piloto: `npm run graphify:pilot`, ou `npm run graphify:analyze -- --profile NOME` (revise antes com `npm run graphify:inventory -- --profile NOME`). Resultados privados em graphify-out/piloto-*/; consulte apenas grafo cuja evidencia.json tenha piloto validado e hashes compatíveis com os arquivos atuais.
 
 ## Hotspots (arquivos mais alterados, 90 dias)
-- package.json (37)
-- bun.lock (30)
+- package.json (36)
+- bun.lock (29)
 - .github/workflows/ci.yml (24)
 - supabase/config.toml (15)
 - supabase/functions/asaas-proxy/index.ts (15)
@@ -464,12 +466,12 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 - supabase/functions/mcp-query/index.ts (13)
 - e2e/auth/admin-rbac.e2e.ts (12)
 - env.manifest.json (12)
-- src/hooks/useConciliacaoPage.ts (12)
 - PENDENCIAS.md (11)
 - RELATORIO_CI.md (11)
-- supabase/functions/bitrix24-webhook/index.ts (11)
+- src/hooks/useConciliacaoPage.ts (11)
 - .github/workflows/supabase-linter.yml (10)
 - scripts/generate-env-manifest.mjs (10)
+- src/App.tsx (10)
 
 ## Workflows
 - `actionlint.yml` — Workflow Linter (actionlint + zizmor) (pull_request, push, workflow_dispatch)
@@ -619,6 +621,8 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 - CHANGELOG topo: [Unreleased]
 
 ## Últimos commits
+- 2026-11-12 `821385c` fix: cron monitorar-erros-frontend envia o segredo internal_jobs esperado pela function (#321)
+- 2026-11-12 `6e462aa` fix: registra rotas e menu das p?ginas Erros do Front-end e Consulta R?pida Fiscal (#323)
 - 2026-11-12 `51d0405` fix: configurar widgets do dashboard executivo passa a ocultar/exibir e redimensionar (#322)
 - 2026-11-12 `bd5e644` chore: impede categorias duplicadas por empresa e tipo (#320)
 - 2026-11-12 `8afbe7a` chore: remove categorias duplicadas e repassa referências (#319)
@@ -632,8 +636,6 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 - 2026-11-12 `3efb5c7` chore(ci): bump codeql-action v4.39.3 nos 3 steps (unifica codeql.yml)
 - 2026-11-12 `cc0b762` fix: destrava busca automática de DF-e na SEFAZ (dispatcher → puxar) (#306)
 - 2026-11-12 `251d639` fix: validação de partidas dobradas passa a valer (minúsculo + adiada para o commit) (#314)
-- 2026-11-12 `b99e6a8` chore(deps): bump the radix-ui group across 1 directory with 20 updates (#208)
-- 2026-11-12 `ea47e0c` fix: cron webhook-retry-worker para de enviar chave trigger recusada (422) (#313)
 
 ## Arquivos deste diretório
 - `docs/contexto/codigo/rotas.json`

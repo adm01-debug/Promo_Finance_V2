@@ -2,11 +2,21 @@
  "aviso": "GERADO AUTOMATICAMENTE por scripts/ai-context/gerar.mjs — não editar à mão; será sobrescrito.",
  "format_version": 2,
  "git": {
-  "commit": "51d040560b2aa72c48add58873dfa3696b165dbf",
+  "commit": "821385c628540cac75fdaed2b5cf43bf86d1291c",
   "branch": "main",
-  "data_commit": "2026-11-12T11:37:23-03:00",
+  "data_commit": "2026-11-12T16:39:57-03:00",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
   "ultimos_commits": [
+   {
+    "sha": "821385c",
+    "data": "2026-11-12",
+    "assunto": "fix: cron monitorar-erros-frontend envia o segredo internal_jobs esperado pela function (#321)"
+   },
+   {
+    "sha": "6e462aa",
+    "data": "2026-11-12",
+    "assunto": "fix: registra rotas e menu das p?ginas Erros do Front-end e Consulta R?pida Fiscal (#323)"
+   },
    {
     "sha": "51d0405",
     "data": "2026-11-12",
@@ -121,19 +131,9 @@
     "sha": "85d018c",
     "data": "2026-11-11",
     "assunto": "fix: shims para Supabase Preview — drop get_cron_jobs() antes de mudanças de return type (#131)"
-   },
-   {
-    "sha": "e361b01",
-    "data": "2026-11-11",
-    "assunto": "chore(migrations): [STEP 22] reconciliar migrations não rastreadas (#238)"
-   },
-   {
-    "sha": "62bd983",
-    "data": "2026-11-11",
-    "assunto": "chore(db): [STEP 17] dropar 404 índices idle (idx_scan=0) (#243)"
    }
   ],
-  "arquivos_mudados_7d": 496,
+  "arquivos_mudados_7d": 502,
   "pastas_mais_mudadas_30d": [
    {
     "pasta": "package.json",
@@ -148,6 +148,10 @@
     "mudancas": 15
    },
    {
+    "pasta": "src/components/layout",
+    "mudancas": 13
+   },
+   {
     "pasta": ".github/workflows/ci.yml",
     "mudancas": 12
    },
@@ -157,10 +161,6 @@
    },
    {
     "pasta": "RELATORIO_CI.md",
-    "mudancas": 11
-   },
-   {
-    "pasta": "src/components/layout",
     "mudancas": 11
    },
    {
@@ -199,11 +199,11 @@
   "arquivos_mais_mudados_90d": [
    {
     "arquivo": "package.json",
-    "mudancas": 37
+    "mudancas": 36
    },
    {
     "arquivo": "bun.lock",
-    "mudancas": 30
+    "mudancas": 29
    },
    {
     "arquivo": ".github/workflows/ci.yml",
@@ -234,10 +234,6 @@
     "mudancas": 12
    },
    {
-    "arquivo": "src/hooks/useConciliacaoPage.ts",
-    "mudancas": 12
-   },
-   {
     "arquivo": "PENDENCIAS.md",
     "mudancas": 11
    },
@@ -246,7 +242,7 @@
     "mudancas": 11
    },
    {
-    "arquivo": "supabase/functions/bitrix24-webhook/index.ts",
+    "arquivo": "src/hooks/useConciliacaoPage.ts",
     "mudancas": 11
    },
    {
@@ -258,6 +254,10 @@
     "mudancas": 10
    },
    {
+    "arquivo": "src/App.tsx",
+    "mudancas": 10
+   },
+   {
     "arquivo": "src/pages/Auth.hooks.ts",
     "mudancas": 10
    },
@@ -266,7 +266,7 @@
     "mudancas": 9
    },
    {
-    "arquivo": "src/App.tsx",
+    "arquivo": "supabase/functions/bitrix24-webhook/index.ts",
     "mudancas": 9
    },
    {
@@ -286,22 +286,22 @@
     "mudancas": 9
    },
    {
-    "arquivo": "supabase/functions/whatsapp-webhook/index.ts",
-    "mudancas": 9
-   },
-   {
     "arquivo": ".github/workflows/graphify.yml",
     "mudancas": 8
    },
    {
     "arquivo": "analise-prs/progresso.json",
     "mudancas": 8
+   },
+   {
+    "arquivo": "scripts/security/test-canonical-db-gates.mjs",
+    "mudancas": 8
    }
   ],
   "autores_30d": [
    {
     "autor": "adm01-debug",
-    "commits": 90
+    "commits": 92
    },
    {
     "autor": "devin-ai-integration[bot]",
@@ -318,19 +318,19 @@
   ]
  },
  "contagens": {
-  "arquivos_total": 3619,
+  "arquivos_total": 3620,
   "arquivos_codigo": 2216,
-  "linhas_codigo": 428841,
-  "rotas": 128,
+  "linhas_codigo": 428876,
+  "rotas": 130,
   "rotas_http_backend": 25,
   "vistas_por_id": 0,
-  "itens_menu": 117,
+  "itens_menu": 119,
   "modulos": 126,
   "componentes": 908,
   "hooks": 264,
   "edge_functions": 106,
   "tabelas": 352,
-  "migrations": 1009,
+  "migrations": 1010,
   "cron_jobs": 21,
   "testes": 426,
   "workflows": 19,
@@ -624,7 +624,7 @@
   },
   "src/App.tsx": {
    "arquivos": 1,
-   "linhas": 1187
+   "linhas": 1205
   },
   "src/__tests__": {
    "arquivos": 1,
@@ -632,7 +632,7 @@
   },
   "src/components": {
    "arquivos": 873,
-   "linhas": 158457
+   "linhas": 158459
   },
   "src/config": {
    "arquivos": 1,
@@ -656,7 +656,7 @@
   },
   "src/lib": {
    "arquivos": 401,
-   "linhas": 53936
+   "linhas": 53942
   },
   "src/main.tsx": {
    "arquivos": 1,
@@ -664,7 +664,7 @@
   },
   "src/pages": {
    "arquivos": 211,
-   "linhas": 44477
+   "linhas": 44486
   },
   "src/test": {
    "arquivos": 21,
@@ -721,12 +721,12 @@
    "linhas": 1222
   },
   {
-   "arquivo": "scripts/automation.mjs",
-   "linhas": 1198
+   "arquivo": "src/App.tsx",
+   "linhas": 1205
   },
   {
-   "arquivo": "src/App.tsx",
-   "linhas": 1187
+   "arquivo": "scripts/automation.mjs",
+   "linhas": 1198
   },
   {
    "arquivo": "supabase/functions/scim-server/index.ts",

@@ -130,6 +130,7 @@
    "src/pages/Usuarios.tsx",
    "src/pages/Vendedores.tsx",
    "src/pages/admin/AdminBloatMonitor.tsx",
+   "src/pages/admin/AdminErrosFrontend.tsx",
    "src/pages/admin/AnomaliaDetalhe.tsx",
    "src/pages/admin/ApiManagement.tsx",
    "src/pages/admin/AuditSsoProfileSync.tsx",
@@ -164,6 +165,7 @@
    "src/pages/tributario/ComparativoConformidade.tsx",
    "src/pages/tributario/ComparativoRegimes.tsx",
    "src/pages/tributario/ConciliacaoTributaria.tsx",
+   "src/pages/tributario/ConsultaRapidaFiscal.tsx",
    "src/pages/tributario/DarfConsolidado.tsx",
    "src/pages/tributario/DashboardTributario.tsx",
    "src/pages/tributario/FechamentoMensal.tsx",
@@ -8885,6 +8887,7 @@
   ],
   "src/pages/admin/AdminErrosFrontend.tsx": [
    "src/components/admin/AlertasProativosErros.tsx",
+   "src/components/layout/MainLayout.tsx",
    "src/components/ui/badge.tsx",
    "src/components/ui/button.tsx",
    "src/components/ui/card.tsx",

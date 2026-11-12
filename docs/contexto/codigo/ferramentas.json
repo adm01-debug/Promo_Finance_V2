@@ -4,7 +4,7 @@
  "stack": {
   "linguagens": [
    "TypeScript (2105)",
-   "SQL (1079)",
+   "SQL (1080)",
    "Markdown (189)",
    "JavaScript (68)",
    "Python (45)",
@@ -2165,7 +2165,7 @@
    "src/components/auth/ProtectedRoute.tsx",
    "src/components/navigation/UnsavedGuardProvider.tsx"
   ],
-  "rotas_protegidas": 118,
+  "rotas_protegidas": 120,
   "rotas_publicas": [
    "/__especimes",
    "/*",

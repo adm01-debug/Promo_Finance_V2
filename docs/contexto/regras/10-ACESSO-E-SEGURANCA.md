@@ -1,6 +1,6 @@
 # 10 · ACESSO E SEGURANÇA — quem pode o quê
 
-> Gerado automaticamente por AI Context Sync v1.3.2 · commit `51d040560b` · branch `main` · 2026-11-12 16:29 UTC
+> Gerado automaticamente por AI Context Sync v1.3.2 · commit `821385c628` · branch `main` · 2026-11-12 21:41 UTC
 > Não edite à mão — regras humanas vão em `manual/`.
 
 ## Perfis / roles identificados
@@ -749,6 +749,7 @@
 | /admin/campos-customizados | ProtectedRoute |  | `src/App.tsx` |
 | /admin/compliance | ProtectedRoute |  | `src/App.tsx` |
 | /admin/edge-health | ProtectedRoute |  | `src/App.tsx` |
+| /admin/erros-frontend | ProtectedRoute |  | `src/App.tsx` |
 | /admin/filtros-compartilhados | ProtectedRoute |  | `src/App.tsx` |
 | /admin/insights-ia | ProtectedRoute |  | `src/App.tsx` |
 | /admin/insights-ia/anomalia/:id | ProtectedRoute |  | `src/App.tsx` |
@@ -838,6 +839,7 @@
 | /tributario/comparativo | ProtectedRoute |  | `src/App.tsx` |
 | /tributario/comparativo-conformidade | ProtectedRoute |  | `src/App.tsx` |
 | /tributario/conciliacao | ProtectedRoute |  | `src/App.tsx` |
+| /tributario/consulta-rapida | ProtectedRoute |  | `src/App.tsx` |
 | /tributario/darf | ProtectedRoute |  | `src/App.tsx` |
 | /tributario/dashboard | ProtectedRoute |  | `src/App.tsx` |
 | /tributario/fechamento-mensal | ProtectedRoute |  | `src/App.tsx` |

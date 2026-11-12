@@ -3,7 +3,7 @@
  "format_version": 2,
  "onde_ficam": {
   "telas": [
-   "src/pages (125)"
+   "src/pages (127)"
   ],
   "componentes": [
    "src/components (730)",
@@ -58,11 +58,11 @@
  "commits": {
   "convencao": "conventional commits (observado)",
   "exemplos": [
+   "fix: cron monitorar-erros-frontend envia o segredo internal_jobs esperado pela function (#321)",
+   "fix: registra rotas e menu das p?ginas Erros do Front-end e Consulta R?pida Fiscal (#323)",
    "fix: configurar widgets do dashboard executivo passa a ocultar/exibir e redimensionar (#322)",
    "chore: impede categorias duplicadas por empresa e tipo (#320)",
-   "chore: remove categorias duplicadas e repassa referências (#319)",
-   "fix: contas a pagar aceita status parcial (#318)",
-   "feat: contabilização usa a conta contábil da categoria (#317)"
+   "chore: remove categorias duplicadas e repassa referências (#319)"
   ]
  },
  "pr_template": ".github/PULL_REQUEST_TEMPLATE.md",
