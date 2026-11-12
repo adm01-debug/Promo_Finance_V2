@@ -2,6 +2,10 @@
 
 Diff semântico gerado a cada coleta em que algo mudou.
 
+## 2026-11-12 07:45 UTC
+
+- **edge functions** alterado (2): `gerar-resumo-executivo-semanal`, `monitorar-erros-frontend`
+
 ## 2026-11-12 07:35 UTC
 
 - **edge functions** alterado (2): `digest-silenciamentos-erro`, `enviar-relatorios-tributarios-agendados`

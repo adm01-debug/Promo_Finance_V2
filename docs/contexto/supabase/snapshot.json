@@ -932,15 +932,15 @@
       },
       {
         "created_at": 1787655368587,
-        "entrypoint_path": "file:///home/joaquim_ataides/hermes-workspaces/chat-c696391/supabase/functions/gerar-resumo-executivo-semanal/index.ts",
+        "entrypoint_path": "file:///home/runner/work/Promo_Finance_V2/Promo_Finance_V2/supabase/functions/gerar-resumo-executivo-semanal/index.ts",
         "import_map": false,
         "import_map_path": null,
         "name": "gerar-resumo-executivo-semanal",
         "slug": "gerar-resumo-executivo-semanal",
         "status": "ACTIVE",
-        "updated_at": 1787697208273,
+        "updated_at": 1794469340620,
         "verify_jwt": true,
-        "version": 17
+        "version": 18
       },
       {
         "created_at": 1787655368587,
@@ -1064,15 +1064,15 @@
       },
       {
         "created_at": 1787655368587,
-        "entrypoint_path": "file:///home/joaquim_ataides/hermes-workspaces/chat-c696391/supabase/functions/monitorar-erros-frontend/index.ts",
+        "entrypoint_path": "file:///home/runner/work/Promo_Finance_V2/Promo_Finance_V2/supabase/functions/monitorar-erros-frontend/index.ts",
         "import_map": false,
         "import_map_path": null,
         "name": "monitorar-erros-frontend",
         "slug": "monitorar-erros-frontend",
         "status": "ACTIVE",
-        "updated_at": 1787697245085,
+        "updated_at": 1794469089939,
         "verify_jwt": false,
-        "version": 18
+        "version": 19
       },
       {
         "created_at": 1787655368587,

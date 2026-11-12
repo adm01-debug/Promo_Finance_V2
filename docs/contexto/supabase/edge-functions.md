@@ -56,7 +56,7 @@ URL base: `https://bwwbeyolnnzppeuhgkcd.supabase.co/functions/v1/<slug>`. Metada
 | gerar-pacote-evidencias | gerar-pacote-evidencias | ACTIVE | 17 | sim | file:///home/joaquim_ataides/hermes-workspaces/chat-c696391/supabase/functions/gerar-pacote-evidencias/index.ts |
 | gerar-pdf-tributario | gerar-pdf-tributario | ACTIVE | 17 | não | file:///home/joaquim_ataides/hermes-workspaces/chat-c696391/supabase/functions/gerar-pdf-tributario/index.ts |
 | gerar-relatorio-anual | gerar-relatorio-anual | ACTIVE | 17 | sim | file:///home/joaquim_ataides/hermes-workspaces/chat-c696391/supabase/functions/gerar-relatorio-anual/index.ts |
-| gerar-resumo-executivo-semanal | gerar-resumo-executivo-semanal | ACTIVE | 17 | sim | file:///home/joaquim_ataides/hermes-workspaces/chat-c696391/supabase/functions/gerar-resumo-executivo-semanal/index.ts |
+| gerar-resumo-executivo-semanal | gerar-resumo-executivo-semanal | ACTIVE | 18 | sim | file:///home/runner/work/Promo_Finance_V2/Promo_Finance_V2/supabase/functions/gerar-resumo-executivo-semanal/index.ts |
 | gerar-resumo-financeiro-diario | gerar-resumo-financeiro-diario | ACTIVE | 16 | sim | file:///tmp/user_fn_bwwbeyolnnzppeuhgkcd_e988233a-1b29-46e6-8a8d-4ee03033d0cb_1/source/supabase/functions/gerar-resumo-financeiro-diario/index.ts |
 | gerar-snapshots-conformidade | gerar-snapshots-conformidade | ACTIVE | 17 | sim | file:///home/joaquim_ataides/hermes-workspaces/chat-c696391/supabase/functions/gerar-snapshots-conformidade/index.ts |
 | gerar-sped-ecd | gerar-sped-ecd | ACTIVE | 17 | sim | file:///home/joaquim_ataides/hermes-workspaces/chat-c696391/supabase/functions/gerar-sped-ecd/index.ts |
@@ -67,7 +67,7 @@ URL base: `https://bwwbeyolnnzppeuhgkcd.supabase.co/functions/v1/<slug>`. Metada
 | insights-relatorio | insights-relatorio | ACTIVE | 19 | não | file:///tmp/promo-finance-postmerge-h0831-02/supabase/functions/insights-relatorio/index.ts |
 | log-sped-bitrix24 | log-sped-bitrix24 | ACTIVE | 17 | sim | file:///home/joaquim_ataides/hermes-workspaces/chat-c696391/supabase/functions/log-sped-bitrix24/index.ts |
 | mcp-query | mcp-query | ACTIVE | 19 | não | file:///tmp/promo-finance-postmerge-h0831-02/supabase/functions/mcp-query/index.ts |
-| monitorar-erros-frontend | monitorar-erros-frontend | ACTIVE | 18 | não | file:///home/joaquim_ataides/hermes-workspaces/chat-c696391/supabase/functions/monitorar-erros-frontend/index.ts |
+| monitorar-erros-frontend | monitorar-erros-frontend | ACTIVE | 19 | não | file:///home/runner/work/Promo_Finance_V2/Promo_Finance_V2/supabase/functions/monitorar-erros-frontend/index.ts |
 | n8n-callback | n8n-callback | ACTIVE | 17 | não | file:///home/joaquim_ataides/hermes-workspaces/chat-c696391/supabase/functions/n8n-callback/index.ts |
 | n8n-dispatch | n8n-dispatch | ACTIVE | 17 | sim | file:///home/joaquim_ataides/hermes-workspaces/chat-c696391/supabase/functions/n8n-dispatch/index.ts |
 | nfe-upload-certificado | nfe-upload-certificado | ACTIVE | 17 | sim | file:///home/joaquim_ataides/hermes-workspaces/chat-c696391/supabase/functions/nfe-upload-certificado/index.ts |

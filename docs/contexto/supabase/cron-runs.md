@@ -202,9 +202,9 @@ _nenhum_
 
 | início (UTC) | status | duração (s) | mensagem |
 |---|---|---|---|
-| 2026-11-12 07:35:00 | succeeded | 0.03 | 1 row |
-| 2026-11-12 07:34:00 | succeeded | 0.02 | 1 row |
-| 2026-11-12 07:33:00 | succeeded | 0.04 | 1 row |
+| 2026-11-12 07:44:00 | succeeded | 0.02 | 1 row |
+| 2026-11-12 07:43:00 | succeeded | 0.02 | 1 row |
+| 2026-11-12 07:42:00 | succeeded | 0.02 | 1 row |
 
 
 ## 34 · auditar-acessos-cross-tenant
