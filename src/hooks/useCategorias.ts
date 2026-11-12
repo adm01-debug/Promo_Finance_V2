@@ -101,7 +101,11 @@ export function useCreateCategoria() {
         .insert({ ...dados, ativo: true, empresa_id: currentEmpresaId })
         .select()
         .single();
-      if (error) throw error;
+      if (error) {
+        if (error.code === '23505')
+          throw new Error('Já existe uma categoria com esse nome e tipo.');
+        throw error;
+      }
       return data;
     },
     onSuccess: () => {
@@ -129,7 +133,11 @@ export function useUpdateCategoria() {
         .eq('empresa_id', currentEmpresaId)
         .select()
         .single();
-      if (error) throw error;
+      if (error) {
+        if (error.code === '23505')
+          throw new Error('Já existe uma categoria com esse nome e tipo.');
+        throw error;
+      }
       return data;
     },
     onSuccess: () => {
