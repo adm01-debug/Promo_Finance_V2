@@ -2,11 +2,16 @@
  "aviso": "GERADO AUTOMATICAMENTE por scripts/ai-context/gerar.mjs — não editar à mão; será sobrescrito.",
  "format_version": 2,
  "git": {
-  "commit": "155df0d41951b2a6420580a2d8c29b05116ee966",
+  "commit": "9308705c839c8b0ce0cac48d45f6503a4e8564d5",
   "branch": "main",
-  "data_commit": "2026-11-12T04:45:30-03:00",
+  "data_commit": "2026-11-12T05:21:17-03:00",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
   "ultimos_commits": [
+   {
+    "sha": "9308705",
+    "data": "2026-11-12",
+    "assunto": "chore: manifesto de env reconhece MCP_SECRET e marca fallbacks como opcionais (#310)"
+   },
    {
     "sha": "155df0d",
     "data": "2026-11-12",
@@ -126,11 +131,6 @@
     "sha": "acebea0",
     "data": "2026-11-10",
     "assunto": "chore(automacao): conecta testes, grafo e manutenção aos gatilhos (#300)"
-   },
-   {
-    "sha": "79382a6",
-    "data": "2026-11-10",
-    "assunto": "feat(inventario): inventário autônomo do estado real (banco, rotas e edge functions) (#265)"
    }
   ],
   "arquivos_mudados_7d": 488,
@@ -230,6 +230,10 @@
     "mudancas": 12
    },
    {
+    "arquivo": "env.manifest.json",
+    "mudancas": 12
+   },
+   {
     "arquivo": "src/hooks/useConciliacaoPage.ts",
     "mudancas": 12
    },
@@ -242,10 +246,6 @@
     "mudancas": 11
    },
    {
-    "arquivo": "env.manifest.json",
-    "mudancas": 11
-   },
-   {
     "arquivo": "supabase/functions/bitrix24-webhook/index.ts",
     "mudancas": 11
    },
@@ -254,15 +254,15 @@
     "mudancas": 10
    },
    {
+    "arquivo": "scripts/generate-env-manifest.mjs",
+    "mudancas": 10
+   },
+   {
     "arquivo": "src/pages/Auth.hooks.ts",
     "mudancas": 10
    },
    {
     "arquivo": ".github/workflows/functions-deploy.yml",
-    "mudancas": 9
-   },
-   {
-    "arquivo": "scripts/generate-env-manifest.mjs",
     "mudancas": 9
    },
    {
@@ -301,7 +301,7 @@
   "autores_30d": [
    {
     "autor": "adm01-debug",
-    "commits": 82
+    "commits": 83
    },
    {
     "autor": "devin-ai-integration[bot]",
@@ -320,7 +320,7 @@
  "contagens": {
   "arquivos_total": 3613,
   "arquivos_codigo": 2216,
-  "linhas_codigo": 428813,
+  "linhas_codigo": 428821,
   "rotas": 128,
   "rotas_http_backend": 25,
   "vistas_por_id": 0,
@@ -516,7 +516,7 @@
   },
   "scripts/generate-env-manifest.mjs": {
    "arquivos": 1,
-   "linhas": 219
+   "linhas": 227
   },
   "scripts/generate-env-manifest.unit.mjs": {
    "arquivos": 1,

@@ -584,15 +584,15 @@
       },
       {
         "created_at": 1787655368587,
-        "entrypoint_path": "file:///home/joaquim_ataides/hermes-workspaces/chat-c696391/supabase/functions/contabilizar-evento/index.ts",
+        "entrypoint_path": "file:///home/runner/work/Promo_Finance_V2/Promo_Finance_V2/supabase/functions/contabilizar-evento/index.ts",
         "import_map": false,
         "import_map_path": null,
         "name": "contabilizar-evento",
         "slug": "contabilizar-evento",
         "status": "ACTIVE",
-        "updated_at": 1787697080338,
+        "updated_at": 1794472008318,
         "verify_jwt": true,
-        "version": 17
+        "version": 18
       },
       {
         "created_at": 1787655368587,
@@ -812,15 +812,15 @@
       },
       {
         "created_at": 1785267975129,
-        "entrypoint_path": "file:///tmp/user_fn_bwwbeyolnnzppeuhgkcd_c0f09b4a-5b91-41c4-b3fe-2ee1553babe0_5/source/supabase/functions/external-data/index.ts",
+        "entrypoint_path": "file:///home/runner/work/Promo_Finance_V2/Promo_Finance_V2/supabase/functions/external-data/index.ts",
         "import_map": false,
         "import_map_path": null,
         "name": "external-data",
         "slug": "external-data",
         "status": "ACTIVE",
-        "updated_at": 1787655368587,
+        "updated_at": 1794471808316,
         "verify_jwt": false,
-        "version": 20
+        "version": 21
       },
       {
         "created_at": 1787655368587,
@@ -1292,15 +1292,15 @@
       },
       {
         "created_at": 1787655368587,
-        "entrypoint_path": "file:///home/joaquim_ataides/hermes-workspaces/chat-c696391/supabase/functions/send-device-alert/index.ts",
+        "entrypoint_path": "file:///home/runner/work/Promo_Finance_V2/Promo_Finance_V2/supabase/functions/send-device-alert/index.ts",
         "import_map": false,
         "import_map_path": null,
         "name": "send-device-alert",
         "slug": "send-device-alert",
         "status": "ACTIVE",
-        "updated_at": 1787697337221,
+        "updated_at": 1794472270159,
         "verify_jwt": false,
-        "version": 17
+        "version": 18
       },
       {
         "created_at": 1787655368587,

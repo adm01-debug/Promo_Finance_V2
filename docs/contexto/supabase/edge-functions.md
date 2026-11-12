@@ -27,7 +27,7 @@ URL base: `https://bwwbeyolnnzppeuhgkcd.supabase.co/functions/v1/<slug>`. Metada
 | conciliacao-ia | conciliacao-ia | ACTIVE | 17 | sim | file:///home/joaquim_ataides/hermes-workspaces/chat-c696391/supabase/functions/conciliacao-ia/index.ts |
 | conciliacao-proxy | conciliacao-proxy | ACTIVE | 17 | sim | file:///home/joaquim_ataides/hermes-workspaces/chat-c696391/supabase/functions/conciliacao-proxy/index.ts |
 | consulta-tributaria | consulta-tributaria | ACTIVE | 17 | sim | file:///home/joaquim_ataides/hermes-workspaces/chat-c696391/supabase/functions/consulta-tributaria/index.ts |
-| contabilizar-evento | contabilizar-evento | ACTIVE | 17 | sim | file:///home/joaquim_ataides/hermes-workspaces/chat-c696391/supabase/functions/contabilizar-evento/index.ts |
+| contabilizar-evento | contabilizar-evento | ACTIVE | 18 | sim | file:///home/runner/work/Promo_Finance_V2/Promo_Finance_V2/supabase/functions/contabilizar-evento/index.ts |
 | convidar-contador | convidar-contador | ACTIVE | 19 | sim | file:///home/runner/work/Promo_Finance_V2/Promo_Finance_V2/supabase/functions/convidar-contador/index.ts |
 | convidar-usuario | convidar-usuario | ACTIVE | 6 | não | file:///home/runner/work/Promo_Finance_V2/Promo_Finance_V2/supabase/functions/convidar-usuario/index.ts |
 | copilot-global | copilot-global | ACTIVE | 17 | sim | file:///home/joaquim_ataides/hermes-workspaces/chat-c696391/supabase/functions/copilot-global/index.ts |
@@ -46,7 +46,7 @@ URL base: `https://bwwbeyolnnzppeuhgkcd.supabase.co/functions/v1/<slug>`. Metada
 | executar-relatorios | executar-relatorios | ACTIVE | 17 | não | file:///home/joaquim_ataides/hermes-workspaces/chat-c696391/supabase/functions/executar-relatorios/index.ts |
 | expert-agent | expert-agent | ACTIVE | 17 | não | file:///home/joaquim_ataides/hermes-workspaces/chat-c696391/supabase/functions/expert-agent/index.ts |
 | exportar-sped-contribuicoes | exportar-sped-contribuicoes | ACTIVE | 17 | sim | file:///home/joaquim_ataides/hermes-workspaces/chat-c696391/supabase/functions/exportar-sped-contribuicoes/index.ts |
-| external-data | external-data | ACTIVE | 20 | não | file:///tmp/user_fn_bwwbeyolnnzppeuhgkcd_c0f09b4a-5b91-41c4-b3fe-2ee1553babe0_5/source/supabase/functions/external-data/index.ts |
+| external-data | external-data | ACTIVE | 21 | não | file:///home/runner/work/Promo_Finance_V2/Promo_Finance_V2/supabase/functions/external-data/index.ts |
 | gerar-acoes-recomendadas | gerar-acoes-recomendadas | ACTIVE | 17 | sim | file:///home/joaquim_ataides/hermes-workspaces/chat-c696391/supabase/functions/gerar-acoes-recomendadas/index.ts |
 | gerar-alertas | gerar-alertas | ACTIVE | 17 | não | file:///home/joaquim_ataides/hermes-workspaces/chat-c696391/supabase/functions/gerar-alertas/index.ts |
 | gerar-alertas-dispatcher | gerar-alertas-dispatcher | ACTIVE | 18 | não | file:///home/joaquim_ataides/hermes-workspaces/chat-c696391/supabase/functions/gerar-alertas-dispatcher/index.ts |
@@ -86,7 +86,7 @@ URL base: `https://bwwbeyolnnzppeuhgkcd.supabase.co/functions/v1/<slug>`. Metada
 | sefaz-dfe-dispatcher | sefaz-dfe-dispatcher | ACTIVE | 17 | não | file:///home/runner/work/Promo_Finance_V2/Promo_Finance_V2/supabase/functions/sefaz-dfe-dispatcher/index.ts |
 | sefaz-dfe-puxar | sefaz-dfe-puxar | ACTIVE | 19 | não | file:///home/runner/work/Promo_Finance_V2/Promo_Finance_V2/supabase/functions/sefaz-dfe-puxar/index.ts |
 | sefaz-manifestar | sefaz-manifestar | ACTIVE | 17 | sim | file:///home/joaquim_ataides/hermes-workspaces/chat-c696391/supabase/functions/sefaz-manifestar/index.ts |
-| send-device-alert | send-device-alert | ACTIVE | 17 | não | file:///home/joaquim_ataides/hermes-workspaces/chat-c696391/supabase/functions/send-device-alert/index.ts |
+| send-device-alert | send-device-alert | ACTIVE | 18 | não | file:///home/runner/work/Promo_Finance_V2/Promo_Finance_V2/supabase/functions/send-device-alert/index.ts |
 | send-push-notification | send-push-notification | ACTIVE | 18 | não | file:///home/runner/work/Promo_Finance_V2/Promo_Finance_V2/supabase/functions/send-push-notification/index.ts |
 | simular-presumido | simular-presumido | ACTIVE | 17 | sim | file:///home/joaquim_ataides/hermes-workspaces/chat-c696391/supabase/functions/simular-presumido/index.ts |
 | simular-real | simular-real | ACTIVE | 17 | sim | file:///home/joaquim_ataides/hermes-workspaces/chat-c696391/supabase/functions/simular-real/index.ts |

@@ -1,15 +1,15 @@
 {
  "meta": {
-  "sha": "155df0d41951b2a6420580a2d8c29b05116ee966",
+  "sha": "9308705c839c8b0ce0cac48d45f6503a4e8564d5",
   "branch": "main",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
-  "generated_at": "2026-11-12 07:51 UTC",
+  "generated_at": "2026-11-12 08:32 UTC",
   "files_total": 3655,
   "code_files": 3290,
-  "code_lines": 491585
+  "code_lines": 491593
  },
  "version": "1.3.2",
- "facts_hash": "d152c85d79dc7013",
+ "facts_hash": "81c4857ae486fae5",
  "stack": {
   "frameworks": [
    "React + Vite",
@@ -70036,7 +70036,7 @@
   {
    "module": "scripts",
    "files": 142,
-   "lines": 48559,
+   "lines": 48567,
    "tables": [
     "9comeca_com_digito",
     "a",
@@ -175048,7 +175048,7 @@
   },
   "scripts/generate-env-manifest.mjs": {
    "path": "scripts/generate-env-manifest.mjs",
-   "lines": 220,
+   "lines": 228,
    "errors": [
     "ALERTS_EMAIL_FROM"
    ],
@@ -241852,10 +241852,20 @@
   }
  },
  "git": {
-  "sha": "155df0d41951b2a6420580a2d8c29b05116ee966",
+  "sha": "9308705c839c8b0ce0cac48d45f6503a4e8564d5",
   "branch": "main",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
   "commits": [
+   {
+    "sha": "9308705",
+    "date": "2026-11-12",
+    "author": "adm01-debug",
+    "subject": "chore: manifesto de env reconhece MCP_SECRET e marca fallbacks como opcionais (#310)",
+    "files": [
+     "env.manifest.json",
+     "scripts/generate-env-manifest.mjs"
+    ]
+   },
    {
     "sha": "155df0d",
     "date": "2026-11-12",
@@ -242457,16 +242467,6 @@
      "src/hooks/useZodForm.ts",
      "src/pages/Auth.hooks.ts"
     ]
-   },
-   {
-    "sha": "8ec6561",
-    "date": "2026-11-09",
-    "author": "adm01-debug",
-    "subject": "infra: bloqueia wipe de AGENTS.md e docs/agentes por sessão paralela (#263)",
-    "files": [
-     ".github/workflows/ci.yml",
-     "scripts/ci/check-claude-md-integrity.mjs"
-    ]
    }
   ],
   "hot_files": [
@@ -242481,10 +242481,6 @@
    [
     "scripts/automation.config.json",
     4
-   ],
-   [
-    ".github/workflows/ci.yml",
-    3
    ],
    [
     "scripts/automation.mjs",
@@ -242507,7 +242503,19 @@
     3
    ],
    [
+    "env.manifest.json",
+    2
+   ],
+   [
+    "scripts/generate-env-manifest.mjs",
+    2
+   ],
+   [
     ".github/workflows/codeql.yml",
+    2
+   ],
+   [
+    ".github/workflows/ci.yml",
     2
    ],
    [
@@ -242540,14 +242548,6 @@
    ],
    [
     "scripts/inventario/README.md",
-    2
-   ],
-   [
-    "scripts/inventario/banco.sql",
-    2
-   ],
-   [
-    "scripts/inventario/gerar-banco.mjs",
     2
    ]
   ]

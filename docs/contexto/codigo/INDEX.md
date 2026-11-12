@@ -1,7 +1,7 @@
 # Contexto do projeto para agentes de IA
 
 GERADO AUTOMATICAMENTE por scripts/ai-context/gerar.mjs — não editar à mão; será sobrescrito.
-Publicado pelo workflow .github/workflows/contexto.yml em docs/contexto/codigo/ da branch gerada `contexto`. Índice único em docs/contexto/00-INDEX.md. Ler: git fetch origin contexto && git show origin/contexto:docs/contexto/00-INDEX.md Gere local com `node scripts/ai-context/gerar.mjs`. Commit-base: `155df0d41951b2a6420580a2d8c29b05116ee966` (2026-11-12T04:45:30-03:00).
+Publicado pelo workflow .github/workflows/contexto.yml em docs/contexto/codigo/ da branch gerada `contexto`. Índice único em docs/contexto/00-INDEX.md. Ler: git fetch origin contexto && git show origin/contexto:docs/contexto/00-INDEX.md Gere local com `node scripts/ai-context/gerar.mjs`. Commit-base: `9308705c839c8b0ce0cac48d45f6503a4e8564d5` (2026-11-12T05:21:17-03:00).
 
 ## Como usar (leia antes de planejar ou executar qualquer tarefa)
 1. **Tela/rota/menu** → `rotas.json` (url/vista/menu → arquivo → hooks → tabelas → edges; `rotas_http_backend` para APIs) e `modulos.json` (módulo inteiro + dependências entre módulos).
@@ -36,7 +36,7 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 |---|---|
 | arquivos_total | 3613 |
 | arquivos_codigo | 2216 |
-| linhas_codigo | 428813 |
+| linhas_codigo | 428821 |
 | rotas | 128 |
 | rotas_http_backend | 25 |
 | vistas_por_id | 0 |
@@ -463,13 +463,13 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 - .github/workflows/deno-tests.yml (13)
 - supabase/functions/mcp-query/index.ts (13)
 - e2e/auth/admin-rbac.e2e.ts (12)
+- env.manifest.json (12)
 - src/hooks/useConciliacaoPage.ts (12)
 - PENDENCIAS.md (11)
 - RELATORIO_CI.md (11)
-- env.manifest.json (11)
 - supabase/functions/bitrix24-webhook/index.ts (11)
 - .github/workflows/supabase-linter.yml (10)
-- src/pages/Auth.hooks.ts (10)
+- scripts/generate-env-manifest.mjs (10)
 
 ## Workflows
 - `actionlint.yml` — Workflow Linter (actionlint + zizmor) (pull_request, push, workflow_dispatch)
@@ -619,6 +619,7 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 - CHANGELOG topo: [Unreleased]
 
 ## Últimos commits
+- 2026-11-12 `9308705` chore: manifesto de env reconhece MCP_SECRET e marca fallbacks como opcionais (#310)
 - 2026-11-12 `155df0d` feat: contabilização automática de movimentações pelas regras (#316)
 - 2026-11-12 `f2bda64` fix: remetente de e-mail usa RESEND_FROM em vez de @resend.dev fixo (#311)
 - 2026-11-12 `3efb5c7` chore(ci): bump codeql-action v4.39.3 nos 3 steps (unifica codeql.yml)
@@ -633,7 +634,6 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 - 2026-11-11 `f1d42f8` fix: 9 edge functions ganham bloco verify_jwt no config.toml (deploy em lote abortava com exit 6) (#305)
 - 2026-11-11 `67613f4` fix: endurecimento dos scripts de automação, guard de perímetro, inventário e manutenção (#304)
 - 2026-11-11 `f0bad74` fix: endurecimento e cobertura de teste de todos os scripts em scripts/ (#299)
-- 2026-11-11 `85d018c` fix: shims para Supabase Preview — drop get_cron_jobs() antes de mudanças de return type (#131)
 
 ## Arquivos deste diretório
 - `docs/contexto/codigo/rotas.json`

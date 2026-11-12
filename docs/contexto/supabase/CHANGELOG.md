@@ -2,6 +2,10 @@
 
 Diff semântico gerado a cada coleta em que algo mudou.
 
+## 2026-11-12 08:33 UTC
+
+- **edge functions** alterado (3): `contabilizar-evento`, `external-data`, `send-device-alert`
+
 ## 2026-11-12 07:56 UTC
 
 - **edge functions** alterado (1): `relatorio-diario-anomalias`
