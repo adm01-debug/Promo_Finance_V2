@@ -52,6 +52,7 @@ export const fiscalNavGroup: NavGroup = {
       sectionHeader: 'Documentos Fiscais',
     },
     { label: 'Exportação SPED', icon: BookOpen, href: '/tributario/sped' },
+    { label: 'Consulta Rápida Fiscal', icon: FileCheck, href: '/tributario/consulta-rapida' },
     {
       label: 'Relatórios Contábeis',
       icon: FileSpreadsheet,

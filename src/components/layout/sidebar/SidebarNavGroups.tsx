@@ -155,6 +155,7 @@ const navGroups: NavGroup[] = [
       { label: 'Segurança', icon: Shield, href: '/seguranca', highlight: true },
       { label: 'Logs de Auditoria', icon: ScrollText, href: '/audit-logs' },
       { label: 'Eventos JIT (SSO)', icon: ShieldCheck, href: '/admin/sso-jit-events' },
+      { label: 'Erros do Front-end', icon: ScrollText, href: '/admin/erros-frontend' },
       {
         label: 'Privacidade & LGPD',
         icon: Shield,

@@ -1,3 +1,4 @@
+import { MainLayout } from '@/components/layout/MainLayout';
 import { useMemo, useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -44,6 +45,14 @@ function severityBadge(sev: string) {
 }
 
 export default function AdminErrosFrontend() {
+  return (
+    <MainLayout>
+      <AdminErrosFrontendConteudo />
+    </MainLayout>
+  );
+}
+
+function AdminErrosFrontendConteudo() {
   const [win, setWin] = useState<ErrorWindow>('7d');
   const [severity, setSeverity] = useState<string>('todos');
   const [busca, setBusca] = useState('');
