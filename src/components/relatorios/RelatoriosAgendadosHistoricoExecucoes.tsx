@@ -23,6 +23,7 @@ import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import { tiposRelatorio } from './RelatoriosAgendados.helpers';
 
+import type { Dispatch, SetStateAction } from 'react';
 interface RelatoriosAgendadosHistoricoExecucoesProps {
   historicoFiltrado: HistoricoRelatorio[];
   historico: HistoricoRelatorio[];
@@ -39,9 +40,7 @@ interface RelatoriosAgendadosHistoricoExecucoesProps {
   relatorios: import('@/hooks/useRelatoriosAgendados').RelatorioAgendado[];
   getTipoLabel: (tipo: string) => string;
   getStatusBadge: (status: string) => import('react/jsx-runtime').JSX.Element;
-  setSelectedHistorico: import('react').Dispatch<
-    import('react').SetStateAction<HistoricoRelatorio>
-  >;
+  setSelectedHistorico: Dispatch<SetStateAction<HistoricoRelatorio | null>>;
   setViewDialogOpen: import('react').Dispatch<import('react').SetStateAction<boolean>>;
 }
 

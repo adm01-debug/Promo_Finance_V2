@@ -30,6 +30,7 @@ import {
 import { PaginationControls } from './BlingShared';
 import type { BlingContaFinanceira } from './BlingFinanceiroPanel.types';
 
+import type { Dispatch, SetStateAction } from 'react';
 /* eslint-disable @typescript-eslint/no-explicit-any -- tipos herdados dos valores de origem (já eram any) */
 interface BlingFinanceiroPanelFinanceiroProps {
   tipo: 'receber' | 'pagar';
@@ -46,24 +47,9 @@ interface BlingFinanceiroPanelFinanceiroProps {
       data: string;
     }>
   >;
-  setShowBaixa: import('react').Dispatch<
-    import('react').SetStateAction<{
-      id: string;
-      tipo: 'receber' | 'pagar';
-    }>
-  >;
-  setConfirmEstorno: import('react').Dispatch<
-    import('react').SetStateAction<{
-      id: string;
-      tipo: 'receber' | 'pagar';
-    }>
-  >;
-  setConfirmExclusao: import('react').Dispatch<
-    import('react').SetStateAction<{
-      id: string;
-      tipo: 'receber' | 'pagar';
-    }>
-  >;
+  setShowBaixa: Dispatch<SetStateAction<{ id: string; tipo: 'receber' | 'pagar' } | null>>;
+  setConfirmEstorno: Dispatch<SetStateAction<{ id: string; tipo: 'receber' | 'pagar' } | null>>;
+  setConfirmExclusao: Dispatch<SetStateAction<{ id: string; tipo: 'receber' | 'pagar' } | null>>;
   pagina: number;
 }
 /* eslint-enable @typescript-eslint/no-explicit-any */

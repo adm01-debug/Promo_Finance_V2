@@ -6,12 +6,9 @@ import { getRiskBg } from './inadimplencia-config';
 
 interface InadimplenciaKpisProps {
   taxaGeralRamo: number;
-  totaisRamo: {
-    valor_total: number;
-    valor_vencido: number;
-    total_contas: number;
-    total_vencido: number;
-  };
+  totaisRamo:
+    | { valor_total: number; valor_vencido: number; total_contas: number; total_vencido: number }
+    | undefined;
 }
 
 export function InadimplenciaKpis({ taxaGeralRamo, totaisRamo }: InadimplenciaKpisProps) {

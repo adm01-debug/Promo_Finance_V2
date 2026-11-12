@@ -14,12 +14,12 @@ import {
 import { frequenciaOptions } from './ContaReceberFormFields.helpers';
 
 interface ContaReceberFormFieldsRecorrenteProps {
-  isRecorrente: boolean;
+  isRecorrente: boolean | undefined;
   form: import('react-hook-form').UseFormReturn<
     import('@/components/contas-receber/ContaReceberFormFields.types').ContaReceberFormValues
   >;
-  isParcelado: boolean;
-  valorTotal: number;
+  isParcelado: boolean | undefined;
+  valorTotal: number | undefined;
   numParcelas: number;
   valorParcela: number;
 }

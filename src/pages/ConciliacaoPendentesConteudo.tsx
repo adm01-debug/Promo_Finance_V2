@@ -25,19 +25,17 @@ import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip
 import { formatCurrency, formatDate } from '@/lib/formatters';
 import { cn } from '@/lib/utils';
 
+import type { Dispatch, SetStateAction } from 'react';
+import type { TransacaoExtrato } from '@/hooks/conciliacaoPage.types';
 interface ConciliacaoPendentesConteudoProps {
   sortedTransacoes: import('@/lib/conciliacao-page-helpers').TransacaoImportada[];
   selectedIds: Set<string>;
   toggleSelect: (id: string) => void;
   showCol: (key: string) => boolean;
   handleConciliar: (transacao: import('@/hooks/conciliacaoPage.types').TransacaoExtrato) => void;
-  setSelectedTransacaoManual: import('react').Dispatch<
-    import('react').SetStateAction<import('@/hooks/conciliacaoPage.types').TransacaoExtrato>
-  >;
+  setSelectedTransacaoManual: Dispatch<SetStateAction<TransacaoExtrato | null>>;
   setShowManualDialog: import('react').Dispatch<import('react').SetStateAction<boolean>>;
-  setSelectedTransacaoSplit: import('react').Dispatch<
-    import('react').SetStateAction<import('@/hooks/conciliacaoPage.types').TransacaoExtrato>
-  >;
+  setSelectedTransacaoSplit: Dispatch<SetStateAction<TransacaoExtrato | null>>;
   setShowSplitDialog: import('react').Dispatch<import('react').SetStateAction<boolean>>;
   handleIgnorar: (id: string) => void;
   handleDesfazerConciliacao: (transacaoId: string) => Promise<void>;

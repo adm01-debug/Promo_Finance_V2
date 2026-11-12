@@ -9,60 +9,14 @@ import {
 } from '@/components/ui/select';
 import { ESTADOS } from './empresa-form-model';
 
+import type { FieldErrors, UseFormRegister, UseFormSetValue } from 'react-hook-form';
+import type { EmpresaFormData } from './empresa-form-model';
 interface EmpresaFormCidadeProps {
-  register: import('react-hook-form').UseFormRegister<{
-    cnpj: string;
-    razao_social: string;
-    ativo: boolean;
-    nome_fantasia?: string;
-    inscricao_estadual?: string;
-    telefone?: string;
-    email?: string;
-    endereco?: string;
-    cidade?: string;
-    estado?: string;
-    cep?: string;
-    cnae_principal?: string;
-    codigo_fpas?: string;
-    aliquota_rat?: number;
-    aliquota_terceiros?: number;
-  }>;
+  register: UseFormRegister<EmpresaFormData>;
   isLoading: boolean;
-  errors: import('react-hook-form').FieldErrors<{
-    cnpj: string;
-    razao_social: string;
-    ativo: boolean;
-    nome_fantasia?: string;
-    inscricao_estadual?: string;
-    telefone?: string;
-    email?: string;
-    endereco?: string;
-    cidade?: string;
-    estado?: string;
-    cep?: string;
-    cnae_principal?: string;
-    codigo_fpas?: string;
-    aliquota_rat?: number;
-    aliquota_terceiros?: number;
-  }>;
-  estadoValue: string;
-  setValue: import('react-hook-form').UseFormSetValue<{
-    cnpj: string;
-    razao_social: string;
-    ativo: boolean;
-    nome_fantasia?: string;
-    inscricao_estadual?: string;
-    telefone?: string;
-    email?: string;
-    endereco?: string;
-    cidade?: string;
-    estado?: string;
-    cep?: string;
-    cnae_principal?: string;
-    codigo_fpas?: string;
-    aliquota_rat?: number;
-    aliquota_terceiros?: number;
-  }>;
+  errors: FieldErrors<EmpresaFormData>;
+  estadoValue: string | null | undefined;
+  setValue: UseFormSetValue<EmpresaFormData>;
   handleCepChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
 }
 

@@ -13,7 +13,6 @@ import { User, Clock, Link2, CheckCircle2 } from 'lucide-react';
 import { Loader2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
-/* eslint-disable @typescript-eslint/no-explicit-any -- tipos herdados dos valores de origem (já eram any) */
 interface ConciliacaoAuditPanelConteudoProps {
   isLoading: boolean;
   filteredItems: {
@@ -24,12 +23,11 @@ interface ConciliacaoAuditPanelConteudoProps {
     responsavel: string;
     data: string;
     regra: string;
-    classificacao: string;
-    evidencia_url: any;
+    classificacao: string | undefined;
+    evidencia_url: string | null;
     conta: string;
   }[];
 }
-/* eslint-enable @typescript-eslint/no-explicit-any */
 
 export function ConciliacaoAuditPanelConteudo({
   isLoading,

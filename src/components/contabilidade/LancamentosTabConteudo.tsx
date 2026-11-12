@@ -31,16 +31,16 @@ import { cn } from '@/lib/utils';
 import type { LancamentosFilters, DatePreset } from './LancamentosTab.types';
 
 interface LancamentosTabConteudoProps {
-  empresaId: string;
+  empresaId: string | undefined;
   filtersController: import('@/hooks/useManagedFilters').ManagedFiltersController<LancamentosFilters>;
   busca: string;
   setBusca: (v: string) => void;
   preset: DatePreset;
   handlePreset: (p: DatePreset) => void;
   ano: number;
-  dataInicio: Date;
+  dataInicio: Date | undefined;
   setDataInicio: (d: Date | undefined) => void;
-  dataFim: Date;
+  dataFim: Date | undefined;
   setDataFim: (d: Date | undefined) => void;
   lancsFiltrados: {
     id: string;

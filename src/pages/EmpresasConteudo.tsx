@@ -22,6 +22,7 @@ import { formatCurrency } from '@/lib/formatters';
 import { cn } from '@/lib/utils';
 import { itemVariants } from './Empresas.helpers';
 
+import type { Dispatch, SetStateAction } from 'react';
 interface EmpresasConteudoProps {
   empresasFiltradas: {
     aliquota_rat: number | null;
@@ -57,10 +58,10 @@ interface EmpresasConteudoProps {
     titulosReceber: number;
     titulosPagar: number;
   };
-  selectedEmpresa: string;
+  selectedEmpresa: string | null;
   copyToClipboard: (text: string) => void;
   formatCNPJ: (cnpj: string) => string;
-  setSelectedEmpresa: import('react').Dispatch<import('react').SetStateAction<string>>;
+  setSelectedEmpresa: Dispatch<SetStateAction<string | null>>;
   handleOpenDialog: (empresa?: Empresa) => void;
   handleToggleAtivo: (empresa: Empresa) => Promise<void>;
 }

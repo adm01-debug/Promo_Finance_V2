@@ -2,15 +2,11 @@ import { Button } from '@/components/ui/button';
 import { DialogFooter } from '@/components/ui/dialog';
 import { Loader2 } from 'lucide-react';
 
+import type { Dispatch, SetStateAction } from 'react';
 /* eslint-disable @typescript-eslint/no-explicit-any -- tipos herdados dos valores de origem (já eram any) */
 interface BlingFinanceiroPanelConteudo2Props {
-  setShowBaixa: import('react').Dispatch<
-    import('react').SetStateAction<{
-      id: string;
-      tipo: 'receber' | 'pagar';
-    }>
-  >;
-  showBaixa: { id: string; tipo: 'receber' | 'pagar' };
+  setShowBaixa: Dispatch<SetStateAction<{ id: string; tipo: 'receber' | 'pagar' } | null>>;
+  showBaixa: { id: string; tipo: 'receber' | 'pagar' } | null;
   baixaForm: { valorRecebido: string; data: string };
   darBaixaReceber: import('@tanstack/react-query').UseMutationResult<
     any,

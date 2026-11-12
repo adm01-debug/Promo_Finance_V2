@@ -51,13 +51,14 @@ import { ContingenciaNFe } from '@/components/nfe/ContingenciaNFe';
 import { SefazMonitor } from '@/components/nfe/SefazMonitor';
 import { BlingNFePanel } from '@/components/nfe/BlingNFePanel';
 
+import type { Dispatch, SetStateAction } from 'react';
 interface NotasFiscaisAbasProps {
   searchTerm: string;
   setSearchTerm: import('react').Dispatch<import('react').SetStateAction<string>>;
   statusFilter: string;
   setStatusFilter: import('react').Dispatch<import('react').SetStateAction<string>>;
   filteredNotas: NotaFiscal[];
-  setNotaCancelar: import('react').Dispatch<import('react').SetStateAction<NotaFiscal>>;
+  setNotaCancelar: Dispatch<SetStateAction<NotaFiscal | null>>;
   notas: NotaFiscal[];
   totalEmitido: number;
   notasAutorizadas: number;

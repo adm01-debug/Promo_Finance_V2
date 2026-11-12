@@ -12,6 +12,9 @@ import type { ConciliacaoFilterState } from '@/components/conciliacao/Conciliaca
 import { ConciliacaoToolbarHost } from './ConciliacaoToolbarHost';
 import { ConciliacaoPendentesConteudo } from './ConciliacaoPendentesConteudo';
 
+import type { Dispatch, SetStateAction } from 'react';
+import type { TransacaoExtrato } from '@/hooks/conciliacaoPage.types';
+import type { QueryObserverResult, RefetchOptions } from '@tanstack/react-query';
 interface ConciliacaoPendentesProps {
   statusTab: string;
   setStatusTab: import('react').Dispatch<import('react').SetStateAction<string>>;
@@ -25,7 +28,7 @@ interface ConciliacaoPendentesProps {
   setSort: import('react').Dispatch<import('react').SetStateAction<ConciliacaoSort>>;
   visibleCols: string[];
   setVisibleCols: import('react').Dispatch<import('react').SetStateAction<string[]>>;
-  activePresetId: string;
+  activePresetId: string | null;
   handleLoadPreset: (preset: {
     id: string;
     payload: SavedFilterPayload<ConciliacaoFilterState>;
@@ -48,13 +51,9 @@ interface ConciliacaoPendentesProps {
   toggleSelect: (id: string) => void;
   showCol: (key: string) => boolean;
   handleConciliar: (transacao: import('@/hooks/conciliacaoPage.types').TransacaoExtrato) => void;
-  setSelectedTransacaoManual: import('react').Dispatch<
-    import('react').SetStateAction<import('@/hooks/conciliacaoPage.types').TransacaoExtrato>
-  >;
+  setSelectedTransacaoManual: Dispatch<SetStateAction<TransacaoExtrato | null>>;
   setShowManualDialog: import('react').Dispatch<import('react').SetStateAction<boolean>>;
-  setSelectedTransacaoSplit: import('react').Dispatch<
-    import('react').SetStateAction<import('@/hooks/conciliacaoPage.types').TransacaoExtrato>
-  >;
+  setSelectedTransacaoSplit: Dispatch<SetStateAction<TransacaoExtrato | null>>;
   setShowSplitDialog: import('react').Dispatch<import('react').SetStateAction<boolean>>;
   handleIgnorar: (id: string) => void;
   handleDesfazerConciliacao: (transacaoId: string) => Promise<void>;
@@ -62,15 +61,8 @@ interface ConciliacaoPendentesProps {
     isLoading: boolean;
     isFetching: boolean;
     isError: boolean;
-    error: Error;
-    refetch: (
-      options?: import('@tanstack/react-query').RefetchOptions
-    ) => Promise<
-      import('@tanstack/react-query').QueryObserverResult<
-        import('@/hooks/conciliacaoPage.types').TransacaoExtrato[],
-        Error
-      >
-    >;
+    error: Error | null;
+    refetch: (options?: RefetchOptions) => Promise<QueryObserverResult<TransacaoExtrato[], Error>>;
   };
 }
 

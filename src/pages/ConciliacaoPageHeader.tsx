@@ -14,29 +14,9 @@ interface ConciliacaoPageHeaderProps {
   setShowSugestoesFila: import('react').Dispatch<import('react').SetStateAction<boolean>>;
   showSugestoesFila: boolean;
   transacoesImportadas: import('@/lib/ofx-parser').TransacaoOFX[];
-  exportData: {
-    transacoes: {
-      id: string;
-      descricao: string;
-      data: Date;
-      valor: number;
-      tipo: 'credito' | 'debito';
-      status: string;
-      compensacao_valor: number;
-      compensacao_motivo: string;
-      compensacao_classificacao: string;
-      compensacao_regra: string;
-      compensacao_evidencia_url: string;
-    }[];
-    stats: {
-      total: number;
-      conciliadas: number;
-      pendentes: number;
-      percentual: number;
-      valorConciliado: number;
-      valorPendente: number;
-    };
-  };
+  exportData: ReturnType<
+    typeof import('@/hooks/useConciliacaoPage').useConciliacaoPage
+  >['exportData'];
   filters: ConciliacaoFilterState;
   setShowImportDialog: import('react').Dispatch<import('react').SetStateAction<boolean>>;
   showImportDialog: boolean;

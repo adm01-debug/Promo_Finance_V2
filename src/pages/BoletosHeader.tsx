@@ -17,14 +17,10 @@ interface BoletosHeaderProps {
   setActiveTab: import('react').Dispatch<import('react').SetStateAction<string>>;
   showNovoBoleto: boolean;
   setShowNovoBoleto: import('react').Dispatch<import('react').SetStateAction<boolean>>;
-  empresas: { id: string; razao_social: string; cnpj: string }[];
-  contasBancarias: {
-    banco: string;
-    agencia: string;
-    conta: string;
-    empresa_id: string;
-    id: string;
-  }[];
+  empresas: { id: string; razao_social: string; cnpj: string | null }[] | undefined;
+  contasBancarias:
+    | { banco: string; agencia: string; conta: string; empresa_id: string; id: string }[]
+    | undefined;
   createBoleto: import('@tanstack/react-query').UseMutateFunction<
     {
       agencia: string | null;

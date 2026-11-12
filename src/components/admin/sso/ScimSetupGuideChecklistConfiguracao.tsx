@@ -12,7 +12,7 @@ interface ScimSetupGuideChecklistConfiguracaoProps {
   progressPct: number;
   isConfirmed: (key: string) => boolean;
   items: Record<string, import('@/hooks/useScimChecklist').ScimChecklistItem>;
-  saving: string;
+  saving: string | null;
   checklistLoading: boolean;
   toggle: (itemKey: string, confirmed: boolean) => Promise<void>;
 }

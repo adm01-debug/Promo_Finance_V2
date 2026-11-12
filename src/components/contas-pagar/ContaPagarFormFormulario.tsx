@@ -23,6 +23,7 @@ import { ContaPagarFormFields } from './ContaPagarFormFields';
 import { AnexoList } from '@/components/financeiro/AnexoList';
 import type { ContaPagarFormData } from './ContaPagarForm.types';
 
+import type { ContaPagar } from '@/components/contas-pagar/ContaPagarForm.types';
 /* eslint-disable @typescript-eslint/no-explicit-any -- tipos herdados dos valores de origem (já eram any) */
 interface ContaPagarFormFormularioProps {
   form: import('react-hook-form').UseFormReturn<
@@ -98,7 +99,7 @@ interface ContaPagarFormFormularioProps {
   contasBancariasOptions: { id: string; banco: string; agencia: string; conta: string }[];
   categoriasDespesa: import('@/hooks/useCategorias').Categoria[];
   isEditing: boolean;
-  conta: import('@/components/contas-pagar/ContaPagarForm.types').ContaPagar;
+  conta: ContaPagar | null | undefined;
   requestClose: (next: boolean) => void;
   isPending: boolean;
 }

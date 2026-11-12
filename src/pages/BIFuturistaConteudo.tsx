@@ -17,6 +17,7 @@ import { Badge } from '@/components/ui/badge';
 import { format } from 'date-fns';
 import { itemVariants } from './BI.helpers';
 
+import type { Dispatch, SetStateAction } from 'react';
 interface BIFuturistaConteudoProps {
   futuristicMode: boolean;
   empresaId: string;
@@ -76,10 +77,10 @@ interface BIFuturistaConteudoProps {
   periodo: string;
   setUsarPeriodoCustom: import('react').Dispatch<import('react').SetStateAction<boolean>>;
   setPeriodo: import('react').Dispatch<import('react').SetStateAction<string>>;
-  setDataInicio: import('react').Dispatch<import('react').SetStateAction<Date>>;
-  setDataFim: import('react').Dispatch<import('react').SetStateAction<Date>>;
-  dataInicio: Date;
-  dataFim: Date;
+  setDataInicio: Dispatch<SetStateAction<Date | undefined>>;
+  setDataFim: Dispatch<SetStateAction<Date | undefined>>;
+  dataInicio: Date | undefined;
+  dataFim: Date | undefined;
 }
 
 export function BIFuturistaConteudo({

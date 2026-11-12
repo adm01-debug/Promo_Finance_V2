@@ -26,6 +26,7 @@ import { EmptyState } from '@/components/ui/micro-interactions';
 import { containerVariants, itemVariants } from './CentroCustos.helpers';
 import { CentroCustosArvoreOrcadoVsRealizado } from './CentroCustosArvoreOrcadoVsRealizado';
 
+import type { Dispatch, SetStateAction } from 'react';
 interface CentroCustosArvoreProps {
   viewMode: 'cards' | 'tree';
   setViewMode: import('react').Dispatch<import('react').SetStateAction<'cards' | 'tree'>>;
@@ -91,8 +92,8 @@ interface CentroCustosArvoreProps {
   handleOpenEdit: (centro: CentroCusto) => void;
   handleDelete: (centro: CentroCusto) => Promise<void>;
   handleReactivate: (centro: CentroCusto) => Promise<void>;
-  setHistoryCentro: import('react').Dispatch<
-    import('react').SetStateAction<{
+  setHistoryCentro: Dispatch<
+    SetStateAction<{
       ativo: boolean | null;
       codigo: string | null;
       created_at: string | null;
@@ -107,7 +108,7 @@ interface CentroCustosArvoreProps {
       tipo: string | null;
       updated_at: string | null;
       user_id: string | null;
-    }>
+    } | null>
   >;
 }
 

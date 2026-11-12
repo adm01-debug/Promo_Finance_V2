@@ -3,6 +3,7 @@ import { Building2 } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 
+import type { Dispatch, SetStateAction } from 'react';
 interface EmpresasConteudo2Props {
   empresas: {
     aliquota_rat: number | null;
@@ -31,7 +32,7 @@ interface EmpresasConteudo2Props {
     user_id: string;
   }[];
   selectedEmpresa: string;
-  setSelectedEmpresa: import('react').Dispatch<import('react').SetStateAction<string>>;
+  setSelectedEmpresa: Dispatch<SetStateAction<string | null>>;
 }
 
 export function EmpresasConteudo2({

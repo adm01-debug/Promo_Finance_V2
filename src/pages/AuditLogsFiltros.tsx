@@ -33,6 +33,7 @@ import { ClearFiltersButton } from '@/components/filters/ClearFiltersButton';
 import type { AuditLog } from './AuditLogs.types';
 import { AuditLogsFiltrosConteudo } from './AuditLogsFiltrosConteudo';
 
+import type { Dispatch, SetStateAction } from 'react';
 interface AuditLogsFiltrosProps {
   stats: { total: number; inserts: number; updates: number; deletes: number };
   searchTerm: string;
@@ -41,12 +42,12 @@ interface AuditLogsFiltrosProps {
   setActionFilter: import('react').Dispatch<import('react').SetStateAction<string>>;
   tableFilter: string;
   setTableFilter: import('react').Dispatch<import('react').SetStateAction<string>>;
-  uniqueTables: string[];
+  uniqueTables: (string | null)[];
   userFilter: string;
   setUserFilter: import('react').Dispatch<import('react').SetStateAction<string>>;
-  uniqueUsers: string[];
-  dateRange: DateRange;
-  setDateRange: import('react').Dispatch<import('react').SetStateAction<DateRange>>;
+  uniqueUsers: (string | null)[];
+  dateRange: DateRange | undefined;
+  setDateRange: Dispatch<SetStateAction<DateRange | undefined>>;
   isSsoProfileSyncScope: boolean;
   providerFilter: string;
   setProviderFilter: import('react').Dispatch<import('react').SetStateAction<string>>;
@@ -66,7 +67,7 @@ interface AuditLogsFiltrosProps {
     description: string;
   }[];
   setDismissedAlerts: import('react').Dispatch<import('react').SetStateAction<Set<string>>>;
-  filteredLogs: AuditLog[];
+  filteredLogs: AuditLog[] | undefined;
   handleExportCSV: () => void;
   handleExportJSON: () => void;
   handleExportJSONFull: () => Promise<void>;

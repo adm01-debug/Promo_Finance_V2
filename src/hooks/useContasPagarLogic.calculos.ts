@@ -10,12 +10,13 @@ import {
 import type { AdvancedFilters } from '@/components/ui/advanced-filters';
 import type { ContaPagarType } from './useContasPagarLogic.types';
 
-export type AprovacaoStatusMap = ReadonlyMap<string, string>;
+// conta_pagar_id e status vêm do banco podendo ser null (montarAprovacaoStatusMap devolve exatamente isso)
+export type AprovacaoStatusMap = ReadonlyMap<string | null, string | null>;
 export type RequerAprovacao = (valor: number) => boolean;
 
 /** Campos que os KPIs leem — vale para a lista normalizada (allContas) e para ContaPagarType. */
 export interface ContaKpi {
-  id: string;
+  id: string | null;
   valor: number;
   data_vencimento: string;
   status?: string | null;

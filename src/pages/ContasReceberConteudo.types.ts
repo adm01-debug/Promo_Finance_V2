@@ -1,3 +1,5 @@
+import type { Dispatch, SetStateAction } from 'react';
+import type { ContaReceberWithRelations } from '@/components/contas-receber/row/rowConfig';
 export interface ContasReceberConteudoProps {
   headerActions: import('react/jsx-runtime').JSX.Element;
   kpis: {
@@ -92,7 +94,7 @@ export interface ContasReceberConteudoProps {
   handlePageSizeChange: (size: number) => void;
   isAllSelected: boolean;
   selectAll: () => void;
-  sortKey: string;
+  sortKey: string | null;
   sortDirection: import('@/components/ui/sortable-header').SortDirection;
   handleSort: (key: string) => void;
   colCount: number;
@@ -102,19 +104,11 @@ export interface ContasReceberConteudoProps {
   setFormOpen: import('react').Dispatch<import('react').SetStateAction<boolean>>;
   isSelected: (id: string) => boolean;
   toggleSelect: (id: string) => void;
-  setEditingConta: import('react').Dispatch<
-    import('react').SetStateAction<
-      import('@/components/contas-receber/ContasReceberTableRow').ContaReceberWithRelations
-    >
-  >;
+  setEditingConta: Dispatch<SetStateAction<ContaReceberWithRelations | null>>;
   handleOpenDeleteDialog: (
     conta: import('@/components/contas-receber/ContasReceberTableRow').ContaReceberWithRelations
   ) => void;
-  setSelectedConta: import('react').Dispatch<
-    import('react').SetStateAction<
-      import('@/components/contas-receber/ContasReceberTableRow').ContaReceberWithRelations
-    >
-  >;
+  setSelectedConta: Dispatch<SetStateAction<ContaReceberWithRelations | null>>;
   setRecebimentoDialogOpen: import('react').Dispatch<import('react').SetStateAction<boolean>>;
   handleEnviarCobranca: (
     conta: import('@/components/contas-receber/ContasReceberTableRow').ContaReceberWithRelations
@@ -123,21 +117,21 @@ export interface ContasReceberConteudoProps {
     conta: import('@/components/contas-receber/ContasReceberTableRow').ContaReceberWithRelations
   ) => void;
   formOpen: boolean;
-  editingConta: import('@/components/contas-receber/ContasReceberTableRow').ContaReceberWithRelations;
-  selectedConta: import('@/components/contas-receber/ContasReceberTableRow').ContaReceberWithRelations;
+  editingConta: ContaReceberWithRelations | null;
+  selectedConta: ContaReceberWithRelations | null;
   recebimentoDialogOpen: boolean;
-  detailConta: import('@/components/contas-receber/ContasReceberTableRow').ContaReceberWithRelations;
+  detailConta: ContaReceberWithRelations | null;
   detailDrawerOpen: boolean;
   setDetailDrawerOpen: import('react').Dispatch<import('react').SetStateAction<boolean>>;
-  cobrancaConta: import('@/components/contas-receber/ContasReceberTableRow').ContaReceberWithRelations;
+  cobrancaConta: ContaReceberWithRelations | null;
   cobrancaDialogOpen: boolean;
   setCobrancaDialogOpen: import('react').Dispatch<import('react').SetStateAction<boolean>>;
-  descontoConta: import('@/components/contas-receber/ContasReceberTableRow').ContaReceberWithRelations;
+  descontoConta: ContaReceberWithRelations | null;
   descontoDialogOpen: boolean;
   setDescontoDialogOpen: import('react').Dispatch<import('react').SetStateAction<boolean>>;
   deleteDialogOpen: boolean;
   setDeleteDialogOpen: import('react').Dispatch<import('react').SetStateAction<boolean>>;
-  deletingConta: import('@/components/contas-receber/ContasReceberTableRow').ContaReceberWithRelations;
+  deletingConta: ContaReceberWithRelations | null;
   isDeleting: boolean;
   handleDeleteConta: () => Promise<void>;
   baixaDialogOpen: boolean;

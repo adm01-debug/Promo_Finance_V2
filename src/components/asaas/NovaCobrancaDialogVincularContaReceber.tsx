@@ -21,7 +21,9 @@ interface NovaCobrancaDialogVincularContaReceberProps {
   setTipo: import('react').Dispatch<import('react').SetStateAction<AsaasBillingType>>;
   contaReceberId: string;
   handleSelectPendencia: (id: string) => void;
-  pendencias: { id: string; descricao: string; valor: number; data_vencimento: string }[];
+  pendencias:
+    | { id: string; descricao: string; valor: number; data_vencimento: string }[]
+    | undefined;
   customers: import('@/hooks/useAsaas.types').AsaasCustomer[];
   setTab: import('react').Dispatch<import('react').SetStateAction<'cliente' | 'cobranca'>>;
   customerId: string;

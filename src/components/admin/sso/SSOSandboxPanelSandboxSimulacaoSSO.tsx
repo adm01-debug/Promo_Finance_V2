@@ -28,7 +28,7 @@ interface SSOSandboxPanelSandboxSimulacaoSSOProps {
   loadPreset: (presetId: string) => void;
   claimsJson: string;
   setClaimsJson: import('react').Dispatch<import('react').SetStateAction<string>>;
-  jsonError: string;
+  jsonError: string | null;
   manualEmail: string;
   setManualEmail: import('react').Dispatch<import('react').SetStateAction<string>>;
   manualName: string;

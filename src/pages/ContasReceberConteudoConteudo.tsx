@@ -10,6 +10,8 @@ import { ContasReceberKanban } from '@/components/contas-receber/ContasReceberKa
 import { ContasReceberTableRow } from '@/components/contas-receber/ContasReceberTableRow';
 import { itemVariants } from './ContasReceber.helpers';
 
+import type { Dispatch, SetStateAction } from 'react';
+import type { ContaReceberWithRelations } from '@/components/contas-receber/row/rowConfig';
 interface ContasReceberConteudoConteudoProps {
   viewMode: 'table' | 'kanban';
   sortedContas: ReturnType<
@@ -27,7 +29,7 @@ interface ContasReceberConteudoConteudoProps {
   handlePageSizeChange: (size: number) => void;
   isAllSelected: boolean;
   selectAll: () => void;
-  sortKey: string;
+  sortKey: string | null;
   sortDirection: import('@/components/ui/sortable-header').SortDirection;
   handleSort: (key: string) => void;
   empresas: {
@@ -63,19 +65,11 @@ interface ContasReceberConteudoConteudoProps {
   setFormOpen: import('react').Dispatch<import('react').SetStateAction<boolean>>;
   isSelected: (id: string) => boolean;
   toggleSelect: (id: string) => void;
-  setEditingConta: import('react').Dispatch<
-    import('react').SetStateAction<
-      import('@/components/contas-receber/ContasReceberTableRow').ContaReceberWithRelations
-    >
-  >;
+  setEditingConta: Dispatch<SetStateAction<ContaReceberWithRelations | null>>;
   handleOpenDeleteDialog: (
     conta: import('@/components/contas-receber/ContasReceberTableRow').ContaReceberWithRelations
   ) => void;
-  setSelectedConta: import('react').Dispatch<
-    import('react').SetStateAction<
-      import('@/components/contas-receber/ContasReceberTableRow').ContaReceberWithRelations
-    >
-  >;
+  setSelectedConta: Dispatch<SetStateAction<ContaReceberWithRelations | null>>;
   setRecebimentoDialogOpen: import('react').Dispatch<import('react').SetStateAction<boolean>>;
   handleEnviarCobranca: (
     conta: import('@/components/contas-receber/ContasReceberTableRow').ContaReceberWithRelations

@@ -2,8 +2,9 @@ import { motion } from 'framer-motion';
 import { HeroKPIs } from './HeroKPIs';
 import { itemVariants } from './DashboardReformaTributaria.helpers';
 
+import type { MetricasReformaTributaria } from '@/types/reforma-tributaria/metricas';
 interface DashboardReformaTributariaConteudoProps {
-  metricas: import('@/types/reforma-tributaria').MetricasReformaTributaria;
+  metricas: MetricasReformaTributaria | undefined;
   aliquotasAtuais: import('@/types/reforma-tributaria').AliquotasTransicao;
   alertasCriticos: number;
   handleKPIClick: (tabId: string) => void;

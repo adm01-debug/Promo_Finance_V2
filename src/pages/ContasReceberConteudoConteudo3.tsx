@@ -1,20 +1,14 @@
 import { ContaReceberDetailDrawer } from '@/components/contas-receber/ContaReceberDetailDrawer';
 
+import type { Dispatch, SetStateAction } from 'react';
+import type { ContaReceberWithRelations } from '@/components/contas-receber/row/rowConfig';
 interface ContasReceberConteudoConteudo3Props {
-  detailConta: import('@/components/contas-receber/ContasReceberTableRow').ContaReceberWithRelations;
+  detailConta: ContaReceberWithRelations | null;
   detailDrawerOpen: boolean;
   setDetailDrawerOpen: import('react').Dispatch<import('react').SetStateAction<boolean>>;
-  setEditingConta: import('react').Dispatch<
-    import('react').SetStateAction<
-      import('@/components/contas-receber/ContasReceberTableRow').ContaReceberWithRelations
-    >
-  >;
+  setEditingConta: Dispatch<SetStateAction<ContaReceberWithRelations | null>>;
   setFormOpen: import('react').Dispatch<import('react').SetStateAction<boolean>>;
-  setSelectedConta: import('react').Dispatch<
-    import('react').SetStateAction<
-      import('@/components/contas-receber/ContasReceberTableRow').ContaReceberWithRelations
-    >
-  >;
+  setSelectedConta: Dispatch<SetStateAction<ContaReceberWithRelations | null>>;
   setRecebimentoDialogOpen: import('react').Dispatch<import('react').SetStateAction<boolean>>;
   handleEnviarCobranca: (
     conta: import('@/components/contas-receber/ContasReceberTableRow').ContaReceberWithRelations

@@ -20,6 +20,7 @@ import { BIDrillDown } from '@/components/bi/BIDrillDown';
 import { containerVariants, itemVariants } from './BI.helpers';
 import { BIFuturistaConteudo } from './BIFuturistaConteudo';
 
+import type { Dispatch, SetStateAction } from 'react';
 interface BIFuturistaProps {
   futuristicMode: boolean;
   empresaId: string;
@@ -79,10 +80,10 @@ interface BIFuturistaProps {
   periodo: string;
   setUsarPeriodoCustom: import('react').Dispatch<import('react').SetStateAction<boolean>>;
   setPeriodo: import('react').Dispatch<import('react').SetStateAction<string>>;
-  setDataInicio: import('react').Dispatch<import('react').SetStateAction<Date>>;
-  setDataFim: import('react').Dispatch<import('react').SetStateAction<Date>>;
-  dataInicio: Date;
-  dataFim: Date;
+  setDataInicio: Dispatch<SetStateAction<Date | undefined>>;
+  setDataFim: Dispatch<SetStateAction<Date | undefined>>;
+  dataInicio: Date | undefined;
+  dataFim: Date | undefined;
   kpis: {
     saldoTotal: number;
     totalReceber: number;
@@ -105,7 +106,7 @@ interface BIFuturistaProps {
     lucro: number;
     margem: number;
   }[];
-  setDrillDownItem: import('react').Dispatch<import('react').SetStateAction<string>>;
+  setDrillDownItem: Dispatch<SetStateAction<string | null>>;
   statusReceber: { name: string; value: number; color: string }[];
   agingReceber: { faixa: string; valor: number; fill: string }[];
   topClientes: { nome: string; valor: number }[];
@@ -127,25 +128,25 @@ interface BIFuturistaProps {
     ticketMedio: number;
     saldoProjetado: number;
   }[];
-  drillDownItem: string;
+  drillDownItem: string | null;
   drillDownData:
     | {
         id: string;
-        fornecedor_nome: string;
-        descricao: string;
-        data_vencimento: string;
-        data_pagamento: string;
-        created_at: string;
-        status: string;
+        fornecedor_nome: string | null;
+        descricao: string | null;
+        data_vencimento: string | null;
+        data_pagamento: string | null;
+        created_at: string | null;
+        status: string | null;
         valor: number;
       }[]
     | {
         id: string;
-        cliente_nome: string;
-        descricao: string;
-        data_vencimento: string;
-        created_at: string;
-        status: string;
+        cliente_nome: string | null;
+        descricao: string | null;
+        data_vencimento: string | null;
+        created_at: string | null;
+        status: string | null;
         valor: number;
       }[];
 }

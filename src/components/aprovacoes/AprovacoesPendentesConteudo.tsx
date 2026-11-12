@@ -6,9 +6,10 @@ import { formatCurrency, formatDateTime } from '@/lib/formatters';
 import { WorkflowVisualizer } from './WorkflowVisualizer';
 import { ScrollArea } from '@/components/ui/scroll-area';
 
+import type { ComentarioAprovacao } from '@/hooks/useAprovacoes';
 interface AprovacoesPendentesConteudoProps {
   detailsDialog: { open: boolean; solicitacao: SolicitacaoAprovacao | null };
-  comentarios: import('@/hooks/useAprovacoes').ComentarioAprovacao[];
+  comentarios: ComentarioAprovacao[] | undefined;
   novoComentario: string;
   setNovoComentario: import('react').Dispatch<import('react').SetStateAction<string>>;
   handleAddComentario: () => void;

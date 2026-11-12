@@ -87,32 +87,34 @@ interface RelatoriosContabeisTributariosTabsProps {
         destaque?: undefined;
       }
   )[];
-  empresaSelecionada: {
-    aliquota_rat: number | null;
-    aliquota_terceiros: number | null;
-    ativo: boolean;
-    bairro: string | null;
-    cep: string | null;
-    cidade: string | null;
-    cnae_principal: string | null;
-    cnpj: string | null;
-    codigo_fpas: string | null;
-    cor_hex: string | null;
-    created_at: string;
-    email: string | null;
-    endereco: string | null;
-    estado: string | null;
-    id: string;
-    inscricao_estadual: string | null;
-    is_padrao: boolean;
-    logo_url: string | null;
-    nome_fantasia: string | null;
-    razao_social: string;
-    regime_tributario: string | null;
-    sigla: string | null;
-    telefone: string | null;
-    user_id: string;
-  };
+  empresaSelecionada:
+    | {
+        aliquota_rat: number | null;
+        aliquota_terceiros: number | null;
+        ativo: boolean;
+        bairro: string | null;
+        cep: string | null;
+        cidade: string | null;
+        cnae_principal: string | null;
+        cnpj: string | null;
+        codigo_fpas: string | null;
+        cor_hex: string | null;
+        created_at: string;
+        email: string | null;
+        endereco: string | null;
+        estado: string | null;
+        id: string;
+        inscricao_estadual: string | null;
+        is_padrao: boolean;
+        logo_url: string | null;
+        nome_fantasia: string | null;
+        razao_social: string;
+        regime_tributario: string | null;
+        sigla: string | null;
+        telefone: string | null;
+        user_id: string;
+      }
+    | undefined;
   periodoInicio: string;
   periodoFim: string;
   faturamentoPeriodo: number;
