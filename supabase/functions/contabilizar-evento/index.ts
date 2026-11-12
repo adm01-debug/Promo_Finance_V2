@@ -139,6 +139,7 @@ Deno.serve(
 
     if (!regra) {
       await admin.from('eventos_contabilizacao_log').insert({
+        evento: `${body.tipo_evento}.manual`,
         empresa_id: body.empresa_id,
         tipo_evento: body.tipo_evento,
         evento_id: body.evento_id,
@@ -191,6 +192,7 @@ Deno.serve(
 
     if (lancErr || !lanc) {
       await admin.from('eventos_contabilizacao_log').insert({
+        evento: `${body.tipo_evento}.manual`,
         empresa_id: body.empresa_id,
         tipo_evento: body.tipo_evento,
         evento_id: body.evento_id,
@@ -207,15 +209,15 @@ Deno.serve(
     const { error: partErr } = await admin.from('partidas_contabeis').insert([
       {
         lancamento_id: lanc.id,
-        conta_id: regra.conta_debito_id,
-        tipo: 'D',
+        conta_contabil_id: regra.conta_debito_id,
+        tipo: 'debito',
         valor: body.valor,
         historico_complementar: historico,
       },
       {
         lancamento_id: lanc.id,
-        conta_id: regra.conta_credito_id,
-        tipo: 'C',
+        conta_contabil_id: regra.conta_credito_id,
+        tipo: 'credito',
         valor: body.valor,
         historico_complementar: historico,
       },
@@ -224,6 +226,7 @@ Deno.serve(
     if (partErr) {
       await admin.from('lancamentos_contabeis').delete().eq('id', lanc.id);
       await admin.from('eventos_contabilizacao_log').insert({
+        evento: `${body.tipo_evento}.manual`,
         empresa_id: body.empresa_id,
         tipo_evento: body.tipo_evento,
         evento_id: body.evento_id,
@@ -238,6 +241,7 @@ Deno.serve(
     }
 
     await admin.from('eventos_contabilizacao_log').insert({
+      evento: `${body.tipo_evento}.manual`,
       empresa_id: body.empresa_id,
       tipo_evento: body.tipo_evento,
       evento_id: body.evento_id,
