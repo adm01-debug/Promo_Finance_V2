@@ -81,7 +81,7 @@ URL base: `https://bwwbeyolnnzppeuhgkcd.supabase.co/functions/v1/<slug>`. Metada
 | processar-nf-ocr | processar-nf-ocr | ACTIVE | 17 | sim | file:///home/joaquim_ataides/hermes-workspaces/chat-c696391/supabase/functions/processar-nf-ocr/index.ts |
 | processar-solicitacao-lgpd | processar-solicitacao-lgpd | ACTIVE | 17 | sim | file:///home/joaquim_ataides/hermes-workspaces/chat-c696391/supabase/functions/processar-solicitacao-lgpd/index.ts |
 | projecao-reforma | projecao-reforma | ACTIVE | 17 | sim | file:///home/joaquim_ataides/hermes-workspaces/chat-c696391/supabase/functions/projecao-reforma/index.ts |
-| relatorio-diario-anomalias | relatorio-diario-anomalias | ACTIVE | 17 | sim | file:///home/joaquim_ataides/hermes-workspaces/chat-c696391/supabase/functions/relatorio-diario-anomalias/index.ts |
+| relatorio-diario-anomalias | relatorio-diario-anomalias | ACTIVE | 18 | sim | file:///home/runner/work/Promo_Finance_V2/Promo_Finance_V2/supabase/functions/relatorio-diario-anomalias/index.ts |
 | scim-server | scim-server | ACTIVE | 16 | não | file:///tmp/user_fn_bwwbeyolnnzppeuhgkcd_4bdc38d4-2ce8-4db7-93dc-8f12c92c464b_1/source/supabase/functions/scim-server/index.ts |
 | sefaz-dfe-dispatcher | sefaz-dfe-dispatcher | ACTIVE | 17 | não | file:///home/runner/work/Promo_Finance_V2/Promo_Finance_V2/supabase/functions/sefaz-dfe-dispatcher/index.ts |
 | sefaz-dfe-puxar | sefaz-dfe-puxar | ACTIVE | 19 | não | file:///home/runner/work/Promo_Finance_V2/Promo_Finance_V2/supabase/functions/sefaz-dfe-puxar/index.ts |

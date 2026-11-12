@@ -2,6 +2,11 @@
 
 Diff semântico gerado a cada coleta em que algo mudou.
 
+## 2026-11-12 07:56 UTC
+
+- **edge functions** alterado (1): `relatorio-diario-anomalias`
+- **functions** alterado (3): `public.contabilizar_movimentacao()`, `public.contabilizar_movimentacao_registro(m movimentacoes)`, `public.sincronizar_conta_partida()`
+
 ## 2026-11-12 07:45 UTC
 
 - **edge functions** alterado (2): `gerar-resumo-executivo-semanal`, `monitorar-erros-frontend`
