@@ -19,46 +19,28 @@ import type { BulkResult } from '@/lib/sso/sandbox-bulk-runner';
 
 interface SandboxBulkPanelProvedorSSOProps {
   providerId: string;
-  setProviderId: import('/home/joaquim_ataides/.cache/repo-maintenance-deps/Promo_Finance_V2/node_modules/@types/react/index').Dispatch<
-    import('/home/joaquim_ataides/.cache/repo-maintenance-deps/Promo_Finance_V2/node_modules/@types/react/index').SetStateAction<string>
-  >;
+  setProviderId: import('react').Dispatch<import('react').SetStateAction<string>>;
   providers: SSOProvider[];
   useProviderConfig: boolean;
-  setUseProviderConfig: import('/home/joaquim_ataides/.cache/repo-maintenance-deps/Promo_Finance_V2/node_modules/@types/react/index').Dispatch<
-    import('/home/joaquim_ataides/.cache/repo-maintenance-deps/Promo_Finance_V2/node_modules/@types/react/index').SetStateAction<boolean>
-  >;
+  setUseProviderConfig: import('react').Dispatch<import('react').SetStateAction<boolean>>;
   manualEmail: string;
-  setManualEmail: import('/home/joaquim_ataides/.cache/repo-maintenance-deps/Promo_Finance_V2/node_modules/@types/react/index').Dispatch<
-    import('/home/joaquim_ataides/.cache/repo-maintenance-deps/Promo_Finance_V2/node_modules/@types/react/index').SetStateAction<string>
-  >;
+  setManualEmail: import('react').Dispatch<import('react').SetStateAction<string>>;
   manualName: string;
-  setManualName: import('/home/joaquim_ataides/.cache/repo-maintenance-deps/Promo_Finance_V2/node_modules/@types/react/index').Dispatch<
-    import('/home/joaquim_ataides/.cache/repo-maintenance-deps/Promo_Finance_V2/node_modules/@types/react/index').SetStateAction<string>
-  >;
+  setManualName: import('react').Dispatch<import('react').SetStateAction<string>>;
   manualGroups: string;
-  setManualGroups: import('/home/joaquim_ataides/.cache/repo-maintenance-deps/Promo_Finance_V2/node_modules/@types/react/index').Dispatch<
-    import('/home/joaquim_ataides/.cache/repo-maintenance-deps/Promo_Finance_V2/node_modules/@types/react/index').SetStateAction<string>
-  >;
+  setManualGroups: import('react').Dispatch<import('react').SetStateAction<string>>;
   manualRole: AppRole;
-  setManualRole: import('/home/joaquim_ataides/.cache/repo-maintenance-deps/Promo_Finance_V2/node_modules/@types/react/index').Dispatch<
-    import('/home/joaquim_ataides/.cache/repo-maintenance-deps/Promo_Finance_V2/node_modules/@types/react/index').SetStateAction<AppRole>
-  >;
+  setManualRole: import('react').Dispatch<import('react').SetStateAction<AppRole>>;
   manualDomains: string;
-  setManualDomains: import('/home/joaquim_ataides/.cache/repo-maintenance-deps/Promo_Finance_V2/node_modules/@types/react/index').Dispatch<
-    import('/home/joaquim_ataides/.cache/repo-maintenance-deps/Promo_Finance_V2/node_modules/@types/react/index').SetStateAction<string>
-  >;
+  setManualDomains: import('react').Dispatch<import('react').SetStateAction<string>>;
   manualMappings: string;
-  setManualMappings: import('/home/joaquim_ataides/.cache/repo-maintenance-deps/Promo_Finance_V2/node_modules/@types/react/index').Dispatch<
-    import('/home/joaquim_ataides/.cache/repo-maintenance-deps/Promo_Finance_V2/node_modules/@types/react/index').SetStateAction<string>
-  >;
+  setManualMappings: import('react').Dispatch<import('react').SetStateAction<string>>;
   persistHistory: boolean;
-  setPersistHistory: import('/home/joaquim_ataides/.cache/repo-maintenance-deps/Promo_Finance_V2/node_modules/@types/react/index').Dispatch<
-    import('/home/joaquim_ataides/.cache/repo-maintenance-deps/Promo_Finance_V2/node_modules/@types/react/index').SetStateAction<boolean>
-  >;
+  setPersistHistory: import('react').Dispatch<import('react').SetStateAction<boolean>>;
   running: boolean;
   progress: { done: number; total: number };
   execute: () => Promise<void>;
-  parsed: import('/home/joaquim_ataides/projetos/_worktrees/Promo_Finance_V2-lint-zero/src/lib/sso/sandbox-csv').ParsedCsv;
+  parsed: import('@/lib/sso/sandbox-csv').ParsedCsv;
   cancel: () => void;
   results: BulkResult[];
   exportCsv: () => void;

@@ -30,9 +30,7 @@ import { CORES_GRAFICO } from './RelatoriosContabeisTributarios.helpers';
 
 interface RelatoriosContabeisTributariosTabsProps {
   tipoRelatorio: TipoRelatorio;
-  setTipoRelatorio: import('/home/joaquim_ataides/.cache/repo-maintenance-deps/Promo_Finance_V2/node_modules/@types/react/index').Dispatch<
-    import('/home/joaquim_ataides/.cache/repo-maintenance-deps/Promo_Finance_V2/node_modules/@types/react/index').SetStateAction<TipoRelatorio>
-  >;
+  setTipoRelatorio: import('react').Dispatch<import('react').SetStateAction<TipoRelatorio>>;
   linhasDRE: (
     | {
         grupo: string;
@@ -139,7 +137,7 @@ interface RelatoriosContabeisTributariosTabsProps {
     residuais: number;
     total: number;
   }[];
-  creditos: import('/home/joaquim_ataides/projetos/_worktrees/Promo_Finance_V2-lint-zero/src/hooks/useCreditosTributarios').CreditoTributario[];
+  creditos: import('@/hooks/useCreditosTributarios').CreditoTributario[];
   cargaTributariaEfetiva: number;
 }
 

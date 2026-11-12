@@ -3,8 +3,8 @@ import { HeroKPIs } from './HeroKPIs';
 import { itemVariants } from './DashboardReformaTributaria.helpers';
 
 interface DashboardReformaTributariaConteudoProps {
-  metricas: import('/home/joaquim_ataides/projetos/_worktrees/Promo_Finance_V2-lint-zero/src/types/reforma-tributaria').MetricasReformaTributaria;
-  aliquotasAtuais: import('/home/joaquim_ataides/projetos/_worktrees/Promo_Finance_V2-lint-zero/src/types/reforma-tributaria').AliquotasTransicao;
+  metricas: import('@/types/reforma-tributaria').MetricasReformaTributaria;
+  aliquotasAtuais: import('@/types/reforma-tributaria').AliquotasTransicao;
   alertasCriticos: number;
   handleKPIClick: (tabId: string) => void;
 }

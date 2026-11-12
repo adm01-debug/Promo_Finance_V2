@@ -29,32 +29,20 @@ interface RelatoriosAgendadosHistoricoExecucoesProps {
   temFiltrosAtivos: string | true;
   limparFiltros: () => void;
   filtroTipo: string;
-  setFiltroTipo: import('/home/joaquim_ataides/.cache/repo-maintenance-deps/Promo_Finance_V2/node_modules/@types/react/index').Dispatch<
-    import('/home/joaquim_ataides/.cache/repo-maintenance-deps/Promo_Finance_V2/node_modules/@types/react/index').SetStateAction<string>
-  >;
+  setFiltroTipo: import('react').Dispatch<import('react').SetStateAction<string>>;
   filtroStatus: string;
-  setFiltroStatus: import('/home/joaquim_ataides/.cache/repo-maintenance-deps/Promo_Finance_V2/node_modules/@types/react/index').Dispatch<
-    import('/home/joaquim_ataides/.cache/repo-maintenance-deps/Promo_Finance_V2/node_modules/@types/react/index').SetStateAction<string>
-  >;
+  setFiltroStatus: import('react').Dispatch<import('react').SetStateAction<string>>;
   filtroDataInicio: string;
-  setFiltroDataInicio: import('/home/joaquim_ataides/.cache/repo-maintenance-deps/Promo_Finance_V2/node_modules/@types/react/index').Dispatch<
-    import('/home/joaquim_ataides/.cache/repo-maintenance-deps/Promo_Finance_V2/node_modules/@types/react/index').SetStateAction<string>
-  >;
+  setFiltroDataInicio: import('react').Dispatch<import('react').SetStateAction<string>>;
   filtroDataFim: string;
-  setFiltroDataFim: import('/home/joaquim_ataides/.cache/repo-maintenance-deps/Promo_Finance_V2/node_modules/@types/react/index').Dispatch<
-    import('/home/joaquim_ataides/.cache/repo-maintenance-deps/Promo_Finance_V2/node_modules/@types/react/index').SetStateAction<string>
-  >;
-  relatorios: import('/home/joaquim_ataides/projetos/_worktrees/Promo_Finance_V2-lint-zero/src/hooks/useRelatoriosAgendados').RelatorioAgendado[];
+  setFiltroDataFim: import('react').Dispatch<import('react').SetStateAction<string>>;
+  relatorios: import('@/hooks/useRelatoriosAgendados').RelatorioAgendado[];
   getTipoLabel: (tipo: string) => string;
-  getStatusBadge: (
-    status: string
-  ) => import('/home/joaquim_ataides/.cache/repo-maintenance-deps/Promo_Finance_V2/node_modules/@types/react/jsx-runtime').JSX.Element;
-  setSelectedHistorico: import('/home/joaquim_ataides/.cache/repo-maintenance-deps/Promo_Finance_V2/node_modules/@types/react/index').Dispatch<
-    import('/home/joaquim_ataides/.cache/repo-maintenance-deps/Promo_Finance_V2/node_modules/@types/react/index').SetStateAction<HistoricoRelatorio>
+  getStatusBadge: (status: string) => import('react/jsx-runtime').JSX.Element;
+  setSelectedHistorico: import('react').Dispatch<
+    import('react').SetStateAction<HistoricoRelatorio>
   >;
-  setViewDialogOpen: import('/home/joaquim_ataides/.cache/repo-maintenance-deps/Promo_Finance_V2/node_modules/@types/react/index').Dispatch<
-    import('/home/joaquim_ataides/.cache/repo-maintenance-deps/Promo_Finance_V2/node_modules/@types/react/index').SetStateAction<boolean>
-  >;
+  setViewDialogOpen: import('react').Dispatch<import('react').SetStateAction<boolean>>;
 }
 
 export function RelatoriosAgendadosHistoricoExecucoes({

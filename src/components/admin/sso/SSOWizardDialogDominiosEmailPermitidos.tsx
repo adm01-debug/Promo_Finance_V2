@@ -18,27 +18,19 @@ import { ROLES } from './SSOWizardDialog.helpers';
 
 interface SSOWizardDialogDominiosEmailPermitidosProps {
   domainInput: string;
-  setDomainInput: import('/home/joaquim_ataides/.cache/repo-maintenance-deps/Promo_Finance_V2/node_modules/@types/react/index').Dispatch<
-    import('/home/joaquim_ataides/.cache/repo-maintenance-deps/Promo_Finance_V2/node_modules/@types/react/index').SetStateAction<string>
-  >;
+  setDomainInput: import('react').Dispatch<import('react').SetStateAction<string>>;
   addDomain: () => void;
   form: Partial<SSOProvider>;
-  setForm: import('/home/joaquim_ataides/.cache/repo-maintenance-deps/Promo_Finance_V2/node_modules/@types/react/index').Dispatch<
-    import('/home/joaquim_ataides/.cache/repo-maintenance-deps/Promo_Finance_V2/node_modules/@types/react/index').SetStateAction<
-      Partial<SSOProvider>
-    >
-  >;
-  setRoleMappings: import('/home/joaquim_ataides/.cache/repo-maintenance-deps/Promo_Finance_V2/node_modules/@types/react/index').Dispatch<
-    import('/home/joaquim_ataides/.cache/repo-maintenance-deps/Promo_Finance_V2/node_modules/@types/react/index').SetStateAction<
-      { idp_group: string; app_role: AppRole }[]
-    >
+  setForm: import('react').Dispatch<import('react').SetStateAction<Partial<SSOProvider>>>;
+  setRoleMappings: import('react').Dispatch<
+    import('react').SetStateAction<{ idp_group: string; app_role: AppRole }[]>
   >;
   roleMappings: { idp_group: string; app_role: AppRole }[];
   consistency: {
-    issues: import('/home/joaquim_ataides/projetos/_worktrees/Promo_Finance_V2-lint-zero/src/lib/sso/consistency').ConsistencyIssue[];
-    errors: import('/home/joaquim_ataides/projetos/_worktrees/Promo_Finance_V2-lint-zero/src/lib/sso/consistency').ConsistencyIssue[];
-    warnings: import('/home/joaquim_ataides/projetos/_worktrees/Promo_Finance_V2-lint-zero/src/lib/sso/consistency').ConsistencyIssue[];
-    infos: import('/home/joaquim_ataides/projetos/_worktrees/Promo_Finance_V2-lint-zero/src/lib/sso/consistency').ConsistencyIssue[];
+    issues: import('@/lib/sso/consistency').ConsistencyIssue[];
+    errors: import('@/lib/sso/consistency').ConsistencyIssue[];
+    warnings: import('@/lib/sso/consistency').ConsistencyIssue[];
+    infos: import('@/lib/sso/consistency').ConsistencyIssue[];
     hasBlocker: boolean;
     total: number;
   };

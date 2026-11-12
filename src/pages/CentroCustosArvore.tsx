@@ -28,11 +28,7 @@ import { CentroCustosArvoreOrcadoVsRealizado } from './CentroCustosArvoreOrcadoV
 
 interface CentroCustosArvoreProps {
   viewMode: 'cards' | 'tree';
-  setViewMode: import('/home/joaquim_ataides/.cache/repo-maintenance-deps/Promo_Finance_V2/node_modules/@types/react/index').Dispatch<
-    import('/home/joaquim_ataides/.cache/repo-maintenance-deps/Promo_Finance_V2/node_modules/@types/react/index').SetStateAction<
-      'cards' | 'tree'
-    >
-  >;
+  setViewMode: import('react').Dispatch<import('react').SetStateAction<'cards' | 'tree'>>;
   centros: {
     ativo: boolean | null;
     codigo: string | null;
@@ -49,15 +45,11 @@ interface CentroCustosArvoreProps {
     updated_at: string | null;
     user_id: string | null;
   }[];
-  setShowInactive: import('/home/joaquim_ataides/.cache/repo-maintenance-deps/Promo_Finance_V2/node_modules/@types/react/index').Dispatch<
-    import('/home/joaquim_ataides/.cache/repo-maintenance-deps/Promo_Finance_V2/node_modules/@types/react/index').SetStateAction<boolean>
-  >;
+  setShowInactive: import('react').Dispatch<import('react').SetStateAction<boolean>>;
   showInactive: boolean;
   handleOpenCreate: (parentId?: string) => void;
   searchTerm: string;
-  setSearchTerm: import('/home/joaquim_ataides/.cache/repo-maintenance-deps/Promo_Finance_V2/node_modules/@types/react/index').Dispatch<
-    import('/home/joaquim_ataides/.cache/repo-maintenance-deps/Promo_Finance_V2/node_modules/@types/react/index').SetStateAction<string>
-  >;
+  setSearchTerm: import('react').Dispatch<import('react').SetStateAction<string>>;
   totalOrcado: number;
   totalRealizado: number;
   percentualGasto: number;
@@ -99,8 +91,8 @@ interface CentroCustosArvoreProps {
   handleOpenEdit: (centro: CentroCusto) => void;
   handleDelete: (centro: CentroCusto) => Promise<void>;
   handleReactivate: (centro: CentroCusto) => Promise<void>;
-  setHistoryCentro: import('/home/joaquim_ataides/.cache/repo-maintenance-deps/Promo_Finance_V2/node_modules/@types/react/index').Dispatch<
-    import('/home/joaquim_ataides/.cache/repo-maintenance-deps/Promo_Finance_V2/node_modules/@types/react/index').SetStateAction<{
+  setHistoryCentro: import('react').Dispatch<
+    import('react').SetStateAction<{
       ativo: boolean | null;
       codigo: string | null;
       created_at: string | null;

@@ -46,15 +46,11 @@ interface BIFuturistaConteudoProps {
     telefone: string | null;
     user_id: string;
   }[];
-  setFuturisticMode: import('/home/joaquim_ataides/.cache/repo-maintenance-deps/Promo_Finance_V2/node_modules/@types/react/index').Dispatch<
-    import('/home/joaquim_ataides/.cache/repo-maintenance-deps/Promo_Finance_V2/node_modules/@types/react/index').SetStateAction<boolean>
-  >;
-  setEmpresaId: import('/home/joaquim_ataides/.cache/repo-maintenance-deps/Promo_Finance_V2/node_modules/@types/react/index').Dispatch<
-    import('/home/joaquim_ataides/.cache/repo-maintenance-deps/Promo_Finance_V2/node_modules/@types/react/index').SetStateAction<string>
-  >;
+  setFuturisticMode: import('react').Dispatch<import('react').SetStateAction<boolean>>;
+  setEmpresaId: import('react').Dispatch<import('react').SetStateAction<string>>;
   filters: { centroCustoId: string; contaBancariaId: string };
-  setFilters: import('/home/joaquim_ataides/.cache/repo-maintenance-deps/Promo_Finance_V2/node_modules/@types/react/index').Dispatch<
-    import('/home/joaquim_ataides/.cache/repo-maintenance-deps/Promo_Finance_V2/node_modules/@types/react/index').SetStateAction<{
+  setFilters: import('react').Dispatch<
+    import('react').SetStateAction<{
       centroCustoId: string;
       contaBancariaId: string;
     }>
@@ -75,21 +71,13 @@ interface BIFuturistaConteudoProps {
     updated_at: string | null;
     user_id: string | null;
   }[];
-  contasBancarias: import('/home/joaquim_ataides/projetos/_worktrees/Promo_Finance_V2-lint-zero/src/hooks/financial/types').ContaBancariaComRegras[];
+  contasBancarias: import('@/hooks/financial/types').ContaBancariaComRegras[];
   usarPeriodoCustom: boolean;
   periodo: string;
-  setUsarPeriodoCustom: import('/home/joaquim_ataides/.cache/repo-maintenance-deps/Promo_Finance_V2/node_modules/@types/react/index').Dispatch<
-    import('/home/joaquim_ataides/.cache/repo-maintenance-deps/Promo_Finance_V2/node_modules/@types/react/index').SetStateAction<boolean>
-  >;
-  setPeriodo: import('/home/joaquim_ataides/.cache/repo-maintenance-deps/Promo_Finance_V2/node_modules/@types/react/index').Dispatch<
-    import('/home/joaquim_ataides/.cache/repo-maintenance-deps/Promo_Finance_V2/node_modules/@types/react/index').SetStateAction<string>
-  >;
-  setDataInicio: import('/home/joaquim_ataides/.cache/repo-maintenance-deps/Promo_Finance_V2/node_modules/@types/react/index').Dispatch<
-    import('/home/joaquim_ataides/.cache/repo-maintenance-deps/Promo_Finance_V2/node_modules/@types/react/index').SetStateAction<Date>
-  >;
-  setDataFim: import('/home/joaquim_ataides/.cache/repo-maintenance-deps/Promo_Finance_V2/node_modules/@types/react/index').Dispatch<
-    import('/home/joaquim_ataides/.cache/repo-maintenance-deps/Promo_Finance_V2/node_modules/@types/react/index').SetStateAction<Date>
-  >;
+  setUsarPeriodoCustom: import('react').Dispatch<import('react').SetStateAction<boolean>>;
+  setPeriodo: import('react').Dispatch<import('react').SetStateAction<string>>;
+  setDataInicio: import('react').Dispatch<import('react').SetStateAction<Date>>;
+  setDataFim: import('react').Dispatch<import('react').SetStateAction<Date>>;
   dataInicio: Date;
   dataFim: Date;
 }

@@ -1,5 +1,5 @@
 export interface ContasReceberConteudoProps {
-  headerActions: import('/home/joaquim_ataides/.cache/repo-maintenance-deps/Promo_Finance_V2/node_modules/@types/react/jsx-runtime').JSX.Element;
+  headerActions: import('react/jsx-runtime').JSX.Element;
   kpis: {
     totalReceber: number;
     totalVencido: number;
@@ -12,9 +12,9 @@ export interface ContasReceberConteudoProps {
     totalVencidoAnterior: number;
   };
   handleKpiClick: (filter: string) => void;
-  filterType: import('/home/joaquim_ataides/projetos/_worktrees/Promo_Finance_V2-lint-zero/src/components/ui/quick-date-filters').DateFilterOption;
+  filterType: import('@/components/ui/quick-date-filters').DateFilterOption;
   handleFilterChange: (
-    type: import('/home/joaquim_ataides/projetos/_worktrees/Promo_Finance_V2-lint-zero/src/components/ui/quick-date-filters').DateFilterOption,
+    type: import('@/components/ui/quick-date-filters').DateFilterOption,
     range: { start: Date; end: Date } | null
   ) => void;
   searchTerm: string;
@@ -71,185 +71,79 @@ export interface ContasReceberConteudoProps {
   handleFormaChange: (value: string) => void;
   contaBancariaFilter: string;
   handleContaBancariaChange: (value: string) => void;
-  contasBancarias: import('/home/joaquim_ataides/projetos/_worktrees/Promo_Finance_V2-lint-zero/src/hooks/financial/types').ContaBancariaComRegras[];
-  advancedFilters: import('/home/joaquim_ataides/projetos/_worktrees/Promo_Finance_V2-lint-zero/src/components/ui/advanced-filters').AdvancedFilters;
-  setAdvancedFilters: import('/home/joaquim_ataides/.cache/repo-maintenance-deps/Promo_Finance_V2/node_modules/@types/react/index').Dispatch<
-    import('/home/joaquim_ataides/.cache/repo-maintenance-deps/Promo_Finance_V2/node_modules/@types/react/index').SetStateAction<
-      import('/home/joaquim_ataides/projetos/_worktrees/Promo_Finance_V2-lint-zero/src/components/ui/advanced-filters').AdvancedFilters
-    >
+  contasBancarias: import('@/hooks/financial/types').ContaBancariaComRegras[];
+  advancedFilters: import('@/components/ui/advanced-filters').AdvancedFilters;
+  setAdvancedFilters: import('react').Dispatch<
+    import('react').SetStateAction<import('@/components/ui/advanced-filters').AdvancedFilters>
   >;
   viewMode: 'table' | 'kanban';
-  sortedContas: {
-    anexo_url: string | null;
-    bitrix_deal_id: string | null;
-    categoria_id: string | null;
-    categoria_nome: string | null;
-    centro_custo_id: string | null;
-    chave_pix: string | null;
-    cliente_id: string | null;
-    cliente_nome: string | null;
-    conta_bancaria_id: string | null;
-    created_at: string | null;
-    data_emissao: string | null;
-    data_recebimento: string | null;
-    data_vencimento: string;
-    deleted_at: string | null;
-    desconto: number | null;
-    descricao: string;
-    empresa_id: string | null;
-    etapa_cobranca: string | null;
-    forma_recebimento: string | null;
-    id: string;
-    juros: number | null;
-    metadata:
-      | import('/home/joaquim_ataides/projetos/_worktrees/Promo_Finance_V2-lint-zero/src/integrations/supabase/types').Json
-      | null;
-    multa: number | null;
-    numero_documento: string | null;
-    numero_parcela_atual: number | null;
-    observacoes: string | null;
-    parcela_atual: number | null;
-    recorrente: boolean | null;
-    score: number | null;
-    status: string | null;
-    tipo_cobranca: string | null;
-    total_parcelas: number | null;
-    transacao_conciliada_id: string | null;
-    updated_at: string | null;
-    user_id: string | null;
-    valor: number;
-    valor_desconto: number | null;
-    valor_recebido: number | null;
-    vendedor_id: string | null;
-    centros_custo: import('/home/joaquim_ataides/.cache/repo-maintenance-deps/Promo_Finance_V2/node_modules/@supabase/postgrest-js/dist/cjs/select-query-parser/utils').SelectQueryError<'could not find the relation between contas_receber and centro_custo_id'>;
-    contas_bancarias: import('/home/joaquim_ataides/.cache/repo-maintenance-deps/Promo_Finance_V2/node_modules/@supabase/postgrest-js/dist/cjs/select-query-parser/utils').SelectQueryError<'could not find the relation between contas_receber and conta_bancaria_id'>;
-    clientes: { razao_social: string; nome_fantasia: string; score: number };
-  }[];
+  sortedContas: ReturnType<
+    typeof import('@/hooks/useContasReceberLogic').useContasReceberLogic
+  >['sortedContas'];
   handleViewConta: (
-    conta: import('/home/joaquim_ataides/projetos/_worktrees/Promo_Finance_V2-lint-zero/src/components/contas-receber/ContasReceberTableRow').ContaReceberWithRelations
+    conta: import('@/components/contas-receber/ContasReceberTableRow').ContaReceberWithRelations
   ) => void;
   isLoading: boolean;
   pageSize: number;
   currentPage: number;
   totalPages: number;
   totalCount: number;
-  setCurrentPage: import('/home/joaquim_ataides/.cache/repo-maintenance-deps/Promo_Finance_V2/node_modules/@types/react/index').Dispatch<
-    import('/home/joaquim_ataides/.cache/repo-maintenance-deps/Promo_Finance_V2/node_modules/@types/react/index').SetStateAction<number>
-  >;
+  setCurrentPage: import('react').Dispatch<import('react').SetStateAction<number>>;
   handlePageSizeChange: (size: number) => void;
   isAllSelected: boolean;
   selectAll: () => void;
   sortKey: string;
-  sortDirection: import('/home/joaquim_ataides/projetos/_worktrees/Promo_Finance_V2-lint-zero/src/components/ui/sortable-header').SortDirection;
+  sortDirection: import('@/components/ui/sortable-header').SortDirection;
   handleSort: (key: string) => void;
   colCount: number;
-  contas: {
-    anexo_url: string | null;
-    bitrix_deal_id: string | null;
-    categoria_id: string | null;
-    categoria_nome: string | null;
-    centro_custo_id: string | null;
-    chave_pix: string | null;
-    cliente_id: string | null;
-    cliente_nome: string | null;
-    conta_bancaria_id: string | null;
-    created_at: string | null;
-    data_emissao: string | null;
-    data_recebimento: string | null;
-    data_vencimento: string;
-    deleted_at: string | null;
-    desconto: number | null;
-    descricao: string;
-    empresa_id: string | null;
-    etapa_cobranca: string | null;
-    forma_recebimento: string | null;
-    id: string;
-    juros: number | null;
-    metadata:
-      | import('/home/joaquim_ataides/projetos/_worktrees/Promo_Finance_V2-lint-zero/src/integrations/supabase/types').Json
-      | null;
-    multa: number | null;
-    numero_documento: string | null;
-    numero_parcela_atual: number | null;
-    observacoes: string | null;
-    parcela_atual: number | null;
-    recorrente: boolean | null;
-    score: number | null;
-    status: string | null;
-    tipo_cobranca: string | null;
-    total_parcelas: number | null;
-    transacao_conciliada_id: string | null;
-    updated_at: string | null;
-    user_id: string | null;
-    valor: number;
-    valor_desconto: number | null;
-    valor_recebido: number | null;
-    vendedor_id: string | null;
-    centros_custo: import('/home/joaquim_ataides/.cache/repo-maintenance-deps/Promo_Finance_V2/node_modules/@supabase/postgrest-js/dist/cjs/select-query-parser/utils').SelectQueryError<'could not find the relation between contas_receber and centro_custo_id'>;
-    contas_bancarias: import('/home/joaquim_ataides/.cache/repo-maintenance-deps/Promo_Finance_V2/node_modules/@supabase/postgrest-js/dist/cjs/select-query-parser/utils').SelectQueryError<'could not find the relation between contas_receber and conta_bancaria_id'>;
-    clientes: { razao_social: string; nome_fantasia: string; score: number };
-  }[];
-  setFormOpen: import('/home/joaquim_ataides/.cache/repo-maintenance-deps/Promo_Finance_V2/node_modules/@types/react/index').Dispatch<
-    import('/home/joaquim_ataides/.cache/repo-maintenance-deps/Promo_Finance_V2/node_modules/@types/react/index').SetStateAction<boolean>
-  >;
+  contas: ReturnType<
+    typeof import('@/hooks/useContasReceberLogic').useContasReceberLogic
+  >['contas'];
+  setFormOpen: import('react').Dispatch<import('react').SetStateAction<boolean>>;
   isSelected: (id: string) => boolean;
   toggleSelect: (id: string) => void;
-  setEditingConta: import('/home/joaquim_ataides/.cache/repo-maintenance-deps/Promo_Finance_V2/node_modules/@types/react/index').Dispatch<
-    import('/home/joaquim_ataides/.cache/repo-maintenance-deps/Promo_Finance_V2/node_modules/@types/react/index').SetStateAction<
-      import('/home/joaquim_ataides/projetos/_worktrees/Promo_Finance_V2-lint-zero/src/components/contas-receber/ContasReceberTableRow').ContaReceberWithRelations
+  setEditingConta: import('react').Dispatch<
+    import('react').SetStateAction<
+      import('@/components/contas-receber/ContasReceberTableRow').ContaReceberWithRelations
     >
   >;
   handleOpenDeleteDialog: (
-    conta: import('/home/joaquim_ataides/projetos/_worktrees/Promo_Finance_V2-lint-zero/src/components/contas-receber/ContasReceberTableRow').ContaReceberWithRelations
+    conta: import('@/components/contas-receber/ContasReceberTableRow').ContaReceberWithRelations
   ) => void;
-  setSelectedConta: import('/home/joaquim_ataides/.cache/repo-maintenance-deps/Promo_Finance_V2/node_modules/@types/react/index').Dispatch<
-    import('/home/joaquim_ataides/.cache/repo-maintenance-deps/Promo_Finance_V2/node_modules/@types/react/index').SetStateAction<
-      import('/home/joaquim_ataides/projetos/_worktrees/Promo_Finance_V2-lint-zero/src/components/contas-receber/ContasReceberTableRow').ContaReceberWithRelations
+  setSelectedConta: import('react').Dispatch<
+    import('react').SetStateAction<
+      import('@/components/contas-receber/ContasReceberTableRow').ContaReceberWithRelations
     >
   >;
-  setRecebimentoDialogOpen: import('/home/joaquim_ataides/.cache/repo-maintenance-deps/Promo_Finance_V2/node_modules/@types/react/index').Dispatch<
-    import('/home/joaquim_ataides/.cache/repo-maintenance-deps/Promo_Finance_V2/node_modules/@types/react/index').SetStateAction<boolean>
-  >;
+  setRecebimentoDialogOpen: import('react').Dispatch<import('react').SetStateAction<boolean>>;
   handleEnviarCobranca: (
-    conta: import('/home/joaquim_ataides/projetos/_worktrees/Promo_Finance_V2-lint-zero/src/components/contas-receber/ContasReceberTableRow').ContaReceberWithRelations
+    conta: import('@/components/contas-receber/ContasReceberTableRow').ContaReceberWithRelations
   ) => void;
   handleAplicarDesconto: (
-    conta: import('/home/joaquim_ataides/projetos/_worktrees/Promo_Finance_V2-lint-zero/src/components/contas-receber/ContasReceberTableRow').ContaReceberWithRelations
+    conta: import('@/components/contas-receber/ContasReceberTableRow').ContaReceberWithRelations
   ) => void;
   formOpen: boolean;
-  editingConta: import('/home/joaquim_ataides/projetos/_worktrees/Promo_Finance_V2-lint-zero/src/components/contas-receber/ContasReceberTableRow').ContaReceberWithRelations;
-  selectedConta: import('/home/joaquim_ataides/projetos/_worktrees/Promo_Finance_V2-lint-zero/src/components/contas-receber/ContasReceberTableRow').ContaReceberWithRelations;
+  editingConta: import('@/components/contas-receber/ContasReceberTableRow').ContaReceberWithRelations;
+  selectedConta: import('@/components/contas-receber/ContasReceberTableRow').ContaReceberWithRelations;
   recebimentoDialogOpen: boolean;
-  detailConta: import('/home/joaquim_ataides/projetos/_worktrees/Promo_Finance_V2-lint-zero/src/components/contas-receber/ContasReceberTableRow').ContaReceberWithRelations;
+  detailConta: import('@/components/contas-receber/ContasReceberTableRow').ContaReceberWithRelations;
   detailDrawerOpen: boolean;
-  setDetailDrawerOpen: import('/home/joaquim_ataides/.cache/repo-maintenance-deps/Promo_Finance_V2/node_modules/@types/react/index').Dispatch<
-    import('/home/joaquim_ataides/.cache/repo-maintenance-deps/Promo_Finance_V2/node_modules/@types/react/index').SetStateAction<boolean>
-  >;
-  cobrancaConta: import('/home/joaquim_ataides/projetos/_worktrees/Promo_Finance_V2-lint-zero/src/components/contas-receber/ContasReceberTableRow').ContaReceberWithRelations;
+  setDetailDrawerOpen: import('react').Dispatch<import('react').SetStateAction<boolean>>;
+  cobrancaConta: import('@/components/contas-receber/ContasReceberTableRow').ContaReceberWithRelations;
   cobrancaDialogOpen: boolean;
-  setCobrancaDialogOpen: import('/home/joaquim_ataides/.cache/repo-maintenance-deps/Promo_Finance_V2/node_modules/@types/react/index').Dispatch<
-    import('/home/joaquim_ataides/.cache/repo-maintenance-deps/Promo_Finance_V2/node_modules/@types/react/index').SetStateAction<boolean>
-  >;
-  descontoConta: import('/home/joaquim_ataides/projetos/_worktrees/Promo_Finance_V2-lint-zero/src/components/contas-receber/ContasReceberTableRow').ContaReceberWithRelations;
+  setCobrancaDialogOpen: import('react').Dispatch<import('react').SetStateAction<boolean>>;
+  descontoConta: import('@/components/contas-receber/ContasReceberTableRow').ContaReceberWithRelations;
   descontoDialogOpen: boolean;
-  setDescontoDialogOpen: import('/home/joaquim_ataides/.cache/repo-maintenance-deps/Promo_Finance_V2/node_modules/@types/react/index').Dispatch<
-    import('/home/joaquim_ataides/.cache/repo-maintenance-deps/Promo_Finance_V2/node_modules/@types/react/index').SetStateAction<boolean>
-  >;
+  setDescontoDialogOpen: import('react').Dispatch<import('react').SetStateAction<boolean>>;
   deleteDialogOpen: boolean;
-  setDeleteDialogOpen: import('/home/joaquim_ataides/.cache/repo-maintenance-deps/Promo_Finance_V2/node_modules/@types/react/index').Dispatch<
-    import('/home/joaquim_ataides/.cache/repo-maintenance-deps/Promo_Finance_V2/node_modules/@types/react/index').SetStateAction<boolean>
-  >;
-  deletingConta: import('/home/joaquim_ataides/projetos/_worktrees/Promo_Finance_V2-lint-zero/src/components/contas-receber/ContasReceberTableRow').ContaReceberWithRelations;
+  setDeleteDialogOpen: import('react').Dispatch<import('react').SetStateAction<boolean>>;
+  deletingConta: import('@/components/contas-receber/ContasReceberTableRow').ContaReceberWithRelations;
   isDeleting: boolean;
   handleDeleteConta: () => Promise<void>;
   baixaDialogOpen: boolean;
-  setBaixaDialogOpen: import('/home/joaquim_ataides/.cache/repo-maintenance-deps/Promo_Finance_V2/node_modules/@types/react/index').Dispatch<
-    import('/home/joaquim_ataides/.cache/repo-maintenance-deps/Promo_Finance_V2/node_modules/@types/react/index').SetStateAction<boolean>
-  >;
+  setBaixaDialogOpen: import('react').Dispatch<import('react').SetStateAction<boolean>>;
   webhookDialogOpen: boolean;
-  setWebhookDialogOpen: import('/home/joaquim_ataides/.cache/repo-maintenance-deps/Promo_Finance_V2/node_modules/@types/react/index').Dispatch<
-    import('/home/joaquim_ataides/.cache/repo-maintenance-deps/Promo_Finance_V2/node_modules/@types/react/index').SetStateAction<boolean>
-  >;
+  setWebhookDialogOpen: import('react').Dispatch<import('react').SetStateAction<boolean>>;
   selectedCount: number;
   isProcessing: boolean;
   progress: number;
@@ -257,7 +151,7 @@ export interface ContasReceberConteudoProps {
     | {
         id: string;
         label: string;
-        icon: import('/home/joaquim_ataides/.cache/repo-maintenance-deps/Promo_Finance_V2/node_modules/@types/react/jsx-runtime').JSX.Element;
+        icon: import('react/jsx-runtime').JSX.Element;
         variant: 'default';
         onClick: () => void;
         confirm?: undefined;
@@ -265,7 +159,7 @@ export interface ContasReceberConteudoProps {
     | {
         id: string;
         label: string;
-        icon: import('/home/joaquim_ataides/.cache/repo-maintenance-deps/Promo_Finance_V2/node_modules/@types/react/jsx-runtime').JSX.Element;
+        icon: import('react/jsx-runtime').JSX.Element;
         variant: 'destructive';
         onClick: () => void;
         confirm: { title: string; description: string; confirmLabel: string };

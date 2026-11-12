@@ -5,11 +5,7 @@ interface ConciliacaoBulkActionsBarProps {
   selectedIds: Set<string>;
   handleBulkConciliar: () => void;
   handleBulkIgnorar: () => void;
-  setSelectedIds: import('/home/joaquim_ataides/.cache/repo-maintenance-deps/Promo_Finance_V2/node_modules/@types/react/index').Dispatch<
-    import('/home/joaquim_ataides/.cache/repo-maintenance-deps/Promo_Finance_V2/node_modules/@types/react/index').SetStateAction<
-      Set<string>
-    >
-  >;
+  setSelectedIds: import('react').Dispatch<import('react').SetStateAction<Set<string>>>;
 }
 
 export function ConciliacaoBulkActionsBar({

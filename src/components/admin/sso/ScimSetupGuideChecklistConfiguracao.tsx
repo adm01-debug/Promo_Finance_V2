@@ -11,10 +11,7 @@ interface ScimSetupGuideChecklistConfiguracaoProps {
   completedCount: number;
   progressPct: number;
   isConfirmed: (key: string) => boolean;
-  items: Record<
-    string,
-    import('/home/joaquim_ataides/projetos/_worktrees/Promo_Finance_V2-lint-zero/src/hooks/useScimChecklist').ScimChecklistItem
-  >;
+  items: Record<string, import('@/hooks/useScimChecklist').ScimChecklistItem>;
   saving: string;
   checklistLoading: boolean;
   toggle: (itemKey: string, confirmed: boolean) => Promise<void>;

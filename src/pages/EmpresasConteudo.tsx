@@ -60,9 +60,7 @@ interface EmpresasConteudoProps {
   selectedEmpresa: string;
   copyToClipboard: (text: string) => void;
   formatCNPJ: (cnpj: string) => string;
-  setSelectedEmpresa: import('/home/joaquim_ataides/.cache/repo-maintenance-deps/Promo_Finance_V2/node_modules/@types/react/index').Dispatch<
-    import('/home/joaquim_ataides/.cache/repo-maintenance-deps/Promo_Finance_V2/node_modules/@types/react/index').SetStateAction<string>
-  >;
+  setSelectedEmpresa: import('react').Dispatch<import('react').SetStateAction<string>>;
   handleOpenDialog: (empresa?: Empresa) => void;
   handleToggleAtivo: (empresa: Empresa) => Promise<void>;
 }

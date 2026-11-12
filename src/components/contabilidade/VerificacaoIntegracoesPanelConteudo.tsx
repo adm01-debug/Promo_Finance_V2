@@ -14,7 +14,7 @@ import { formatCurrency } from '@/lib/formatters';
 import { cn } from '@/lib/utils';
 
 interface VerificacaoIntegracoesPanelConteudoProps {
-  resumos: import('/home/joaquim_ataides/projetos/_worktrees/Promo_Finance_V2-lint-zero/src/hooks/useVerificacaoIntegracoes').ResumoIntegracao[];
+  resumos: import('@/hooks/useVerificacaoIntegracoes').ResumoIntegracao[];
 }
 
 export function VerificacaoIntegracoesPanelConteudo({

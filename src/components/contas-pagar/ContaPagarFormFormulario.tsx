@@ -25,7 +25,7 @@ import type { ContaPagarFormData } from './ContaPagarForm.types';
 
 /* eslint-disable @typescript-eslint/no-explicit-any -- tipos herdados dos valores de origem (já eram any) */
 interface ContaPagarFormFormularioProps {
-  form: import('/home/joaquim_ataides/.cache/repo-maintenance-deps/Promo_Finance_V2/node_modules/react-hook-form/dist/index').UseFormReturn<
+  form: import('react-hook-form').UseFormReturn<
     {
       fornecedor_nome: string;
       descricao: string;
@@ -63,15 +63,11 @@ interface ContaPagarFormFormularioProps {
     }
   >;
   onSubmit: (data: ContaPagarFormData) => void;
-  setShowFornecedorSelect: import('/home/joaquim_ataides/.cache/repo-maintenance-deps/Promo_Finance_V2/node_modules/@types/react/index').Dispatch<
-    import('/home/joaquim_ataides/.cache/repo-maintenance-deps/Promo_Finance_V2/node_modules/@types/react/index').SetStateAction<boolean>
-  >;
+  setShowFornecedorSelect: import('react').Dispatch<import('react').SetStateAction<boolean>>;
   showFornecedorSelect: boolean;
   handleFornecedorSelect: (fornecedorId: string) => void;
-  fornecedores: import('/home/joaquim_ataides/projetos/_worktrees/Promo_Finance_V2-lint-zero/src/hooks/useFinancialData').ExternalCliente[];
-  formForFields: import('/home/joaquim_ataides/.cache/repo-maintenance-deps/Promo_Finance_V2/node_modules/react-hook-form/dist/index').UseFormReturn<
-    import('/home/joaquim_ataides/.cache/repo-maintenance-deps/Promo_Finance_V2/node_modules/react-hook-form/dist/index').FieldValues
-  >;
+  fornecedores: import('@/hooks/useFinancialData').ExternalCliente[];
+  formForFields: import('react-hook-form').UseFormReturn<import('react-hook-form').FieldValues>;
   empresas: {
     aliquota_rat: number | null;
     aliquota_terceiros: number | null;
@@ -100,9 +96,9 @@ interface ContaPagarFormFormularioProps {
   }[];
   centrosCustoOptions: { id: string; codigo: string; nome: string }[];
   contasBancariasOptions: { id: string; banco: string; agencia: string; conta: string }[];
-  categoriasDespesa: import('/home/joaquim_ataides/projetos/_worktrees/Promo_Finance_V2-lint-zero/src/hooks/useCategorias').Categoria[];
+  categoriasDespesa: import('@/hooks/useCategorias').Categoria[];
   isEditing: boolean;
-  conta: import('/home/joaquim_ataides/projetos/_worktrees/Promo_Finance_V2-lint-zero/src/components/contas-pagar/ContaPagarForm.types').ContaPagar;
+  conta: import('@/components/contas-pagar/ContaPagarForm.types').ContaPagar;
   requestClose: (next: boolean) => void;
   isPending: boolean;
 }

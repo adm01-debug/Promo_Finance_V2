@@ -29,9 +29,7 @@ import { MemoriaTable } from './IrpjCsllLucroReal.MemoriaTable';
 
 interface IrpjCsllLucroRealApuracaoProps {
   forma: FormaApuracao;
-  setForma: import('/home/joaquim_ataides/.cache/repo-maintenance-deps/Promo_Finance_V2/node_modules/@types/react/index').Dispatch<
-    import('/home/joaquim_ataides/.cache/repo-maintenance-deps/Promo_Finance_V2/node_modules/@types/react/index').SetStateAction<FormaApuracao>
-  >;
+  setForma: import('react').Dispatch<import('react').SetStateAction<FormaApuracao>>;
   atividade:
     | 'comercio_industria'
     | 'revenda_combustivel'
@@ -40,8 +38,8 @@ interface IrpjCsllLucroRealApuracaoProps {
     | 'servicos_gerais'
     | 'servicos_hospitalares'
     | 'servicos_ate_120k';
-  setAtividade: import('/home/joaquim_ataides/.cache/repo-maintenance-deps/Promo_Finance_V2/node_modules/@types/react/index').Dispatch<
-    import('/home/joaquim_ataides/.cache/repo-maintenance-deps/Promo_Finance_V2/node_modules/@types/react/index').SetStateAction<
+  setAtividade: import('react').Dispatch<
+    import('react').SetStateAction<
       | 'comercio_industria'
       | 'revenda_combustivel'
       | 'transporte_carga'
@@ -51,23 +49,15 @@ interface IrpjCsllLucroRealApuracaoProps {
       | 'servicos_ate_120k'
     >
   >;
-  setPrejuizoInicial: import('/home/joaquim_ataides/.cache/repo-maintenance-deps/Promo_Finance_V2/node_modules/@types/react/index').Dispatch<
-    import('/home/joaquim_ataides/.cache/repo-maintenance-deps/Promo_Finance_V2/node_modules/@types/react/index').SetStateAction<number>
-  >;
-  setBaseNegativaInicial: import('/home/joaquim_ataides/.cache/repo-maintenance-deps/Promo_Finance_V2/node_modules/@types/react/index').Dispatch<
-    import('/home/joaquim_ataides/.cache/repo-maintenance-deps/Promo_Finance_V2/node_modules/@types/react/index').SetStateAction<number>
-  >;
+  setPrejuizoInicial: import('react').Dispatch<import('react').SetStateAction<number>>;
+  setBaseNegativaInicial: import('react').Dispatch<import('react').SetStateAction<number>>;
   periodos: LinhaPeriodo[];
-  setPeriodos: import('/home/joaquim_ataides/.cache/repo-maintenance-deps/Promo_Finance_V2/node_modules/@types/react/index').Dispatch<
-    import('/home/joaquim_ataides/.cache/repo-maintenance-deps/Promo_Finance_V2/node_modules/@types/react/index').SetStateAction<
-      LinhaPeriodo[]
-    >
-  >;
+  setPeriodos: import('react').Dispatch<import('react').SetStateAction<LinhaPeriodo[]>>;
   atualizar: (id: string, patch: Partial<LinhaPeriodo>) => void;
   adicionarAjuste: (periodoId: string, modeloIdx: number) => void;
   atualizarAjuste: (periodoId: string, ajusteId: string, valor: number) => void;
   removerAjuste: (periodoId: string, ajusteId: string) => void;
-  resultado: import('/home/joaquim_ataides/projetos/_worktrees/Promo_Finance_V2-lint-zero/src/lib/tributario/irpj-csll/types').ResultadoApuracao;
+  resultado: import('@/lib/tributario/irpj-csll/types').ResultadoApuracao;
 }
 
 export function IrpjCsllLucroRealApuracao({

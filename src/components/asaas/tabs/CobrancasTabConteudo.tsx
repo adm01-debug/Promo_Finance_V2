@@ -38,12 +38,8 @@ import { formatDate, copyToClipboard } from './CobrancasTab.helpers';
 
 interface CobrancasTabConteudoProps {
   selectedPayments: string[];
-  filteredPayments: import('/home/joaquim_ataides/projetos/_worktrees/Promo_Finance_V2-lint-zero/src/hooks/useAsaas.types').AsaasPayment[];
-  setSelectedPayments: import('/home/joaquim_ataides/.cache/repo-maintenance-deps/Promo_Finance_V2/node_modules/@types/react/index').Dispatch<
-    import('/home/joaquim_ataides/.cache/repo-maintenance-deps/Promo_Finance_V2/node_modules/@types/react/index').SetStateAction<
-      string[]
-    >
-  >;
+  filteredPayments: import('@/hooks/useAsaas.types').AsaasPayment[];
+  setSelectedPayments: import('react').Dispatch<import('react').SetStateAction<string[]>>;
   onOpenPixQr: (payload: {
     asaasId: string;
     pixCola?: string | null;
@@ -53,9 +49,7 @@ interface CobrancasTabConteudoProps {
   onOpenEstorno: (payload: { asaasId: string; valor: number }) => void;
   onOpenSegundaVia: (asaasId: string) => void;
   onOpenAudit: (paymentId: string) => void;
-  onOpenBoletoPreview: (
-    payment: import('/home/joaquim_ataides/projetos/_worktrees/Promo_Finance_V2-lint-zero/src/hooks/useAsaas.types').AsaasPayment
-  ) => void;
+  onOpenBoletoPreview: (payment: import('@/hooks/useAsaas.types').AsaasPayment) => void;
   onOpenAnticipation: (asaasId: string) => void;
   onOpenReprocess: (payload: { paymentId: string; asaasId: string }) => void;
   reprocessarManual: {

@@ -10,9 +10,7 @@ import { Calendar, Building2 } from 'lucide-react';
 
 interface DashboardReformaTributariaHeaderWithGlobalEmpresaProps {
   empresaId: string;
-  setEmpresaId: import('/home/joaquim_ataides/.cache/repo-maintenance-deps/Promo_Finance_V2/node_modules/@types/react/index').Dispatch<
-    import('/home/joaquim_ataides/.cache/repo-maintenance-deps/Promo_Finance_V2/node_modules/@types/react/index').SetStateAction<string>
-  >;
+  setEmpresaId: import('react').Dispatch<import('react').SetStateAction<string>>;
   empresas: {
     aliquota_rat: number | null;
     aliquota_terceiros: number | null;
@@ -39,7 +37,7 @@ interface DashboardReformaTributariaHeaderWithGlobalEmpresaProps {
     telefone: string | null;
     user_id: string;
   }[];
-  faseAtual: import('/home/joaquim_ataides/projetos/_worktrees/Promo_Finance_V2-lint-zero/src/types/reforma-tributaria').FaseTransicao;
+  faseAtual: import('@/types/reforma-tributaria').FaseTransicao;
   anoReferencia: number;
   setAnoReferencia: (ano: number) => void;
 }

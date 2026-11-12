@@ -13,9 +13,7 @@ import { FileText, Download, Printer } from 'lucide-react';
 
 interface RelatoriosContabeisTributariosFiltrosProps {
   empresaId: string;
-  setEmpresaId: import('/home/joaquim_ataides/.cache/repo-maintenance-deps/Promo_Finance_V2/node_modules/@types/react/index').Dispatch<
-    import('/home/joaquim_ataides/.cache/repo-maintenance-deps/Promo_Finance_V2/node_modules/@types/react/index').SetStateAction<string>
-  >;
+  setEmpresaId: import('react').Dispatch<import('react').SetStateAction<string>>;
   empresas: {
     aliquota_rat: number | null;
     aliquota_terceiros: number | null;
@@ -43,13 +41,9 @@ interface RelatoriosContabeisTributariosFiltrosProps {
     user_id: string;
   }[];
   periodoInicio: string;
-  setPeriodoInicio: import('/home/joaquim_ataides/.cache/repo-maintenance-deps/Promo_Finance_V2/node_modules/@types/react/index').Dispatch<
-    import('/home/joaquim_ataides/.cache/repo-maintenance-deps/Promo_Finance_V2/node_modules/@types/react/index').SetStateAction<string>
-  >;
+  setPeriodoInicio: import('react').Dispatch<import('react').SetStateAction<string>>;
   periodoFim: string;
-  setPeriodoFim: import('/home/joaquim_ataides/.cache/repo-maintenance-deps/Promo_Finance_V2/node_modules/@types/react/index').Dispatch<
-    import('/home/joaquim_ataides/.cache/repo-maintenance-deps/Promo_Finance_V2/node_modules/@types/react/index').SetStateAction<string>
-  >;
+  setPeriodoFim: import('react').Dispatch<import('react').SetStateAction<string>>;
   handleExportar: (formato: 'pdf' | 'excel') => void;
 }
 

@@ -47,11 +47,11 @@ interface DashboardExecutivoConteudoProps {
       updated_at: string | null;
       user_id: string | null;
     }[];
-    contasBancarias: import('/home/joaquim_ataides/projetos/_worktrees/Promo_Finance_V2-lint-zero/src/hooks/financial/types').ContaBancariaComRegras[];
-    contasBancariasFiltradas: import('/home/joaquim_ataides/projetos/_worktrees/Promo_Finance_V2-lint-zero/src/hooks/financial/types').ContaBancariaComRegras[];
-    contasPagarFiltradas: import('/home/joaquim_ataides/projetos/_worktrees/Promo_Finance_V2-lint-zero/src/hooks/financial/views.types').ContasPagarPainelRow[];
-    contasReceberFiltradas: import('/home/joaquim_ataides/projetos/_worktrees/Promo_Finance_V2-lint-zero/src/hooks/financial/views.types').ContasReceberPainelRow[];
-    clientes: import('/home/joaquim_ataides/projetos/_worktrees/Promo_Finance_V2-lint-zero/src/hooks/useFinancialData').ExternalCliente[];
+    contasBancarias: import('@/hooks/financial/types').ContaBancariaComRegras[];
+    contasBancariasFiltradas: import('@/hooks/financial/types').ContaBancariaComRegras[];
+    contasPagarFiltradas: import('@/hooks/financial/views.types').ContasPagarPainelRow[];
+    contasReceberFiltradas: import('@/hooks/financial/views.types').ContasReceberPainelRow[];
+    clientes: import('@/hooks/useFinancialData').ExternalCliente[];
     aprovacoesPendentes: number;
     saldoTotal: number;
     receitasMes: number;
@@ -61,10 +61,10 @@ interface DashboardExecutivoConteudoProps {
     totalVencidasReceber: number;
     totalVencidasPagar: number;
     inadimplencia: number;
-    venceHojeReceber: import('/home/joaquim_ataides/projetos/_worktrees/Promo_Finance_V2-lint-zero/src/hooks/financial/views.types').ContasReceberPainelRow[];
-    venceHojePagar: import('/home/joaquim_ataides/projetos/_worktrees/Promo_Finance_V2-lint-zero/src/hooks/financial/views.types').ContasPagarPainelRow[];
-    vencidasReceber: import('/home/joaquim_ataides/projetos/_worktrees/Promo_Finance_V2-lint-zero/src/hooks/financial/views.types').ContasReceberPainelRow[];
-    vencidasPagar: import('/home/joaquim_ataides/projetos/_worktrees/Promo_Finance_V2-lint-zero/src/hooks/financial/views.types').ContasPagarPainelRow[];
+    venceHojeReceber: import('@/hooks/financial/views.types').ContasReceberPainelRow[];
+    venceHojePagar: import('@/hooks/financial/views.types').ContasPagarPainelRow[];
+    vencidasReceber: import('@/hooks/financial/views.types').ContasReceberPainelRow[];
+    vencidasPagar: import('@/hooks/financial/views.types').ContasPagarPainelRow[];
     statusContasPagar: { name: string; value: number; fill: string }[];
     dadosPorCentroCusto: { saldo: number; nome: string; pagar: number; receber: number }[];
     topClientesReceita: {
@@ -90,7 +90,7 @@ interface DashboardExecutivoConteudoProps {
       countPago: number;
       countVencido: number;
     };
-    cobrancaKpis: import('/home/joaquim_ataides/projetos/_worktrees/Promo_Finance_V2-lint-zero/src/hooks/useCobrancas').CobrancaKPIs;
+    cobrancaKpis: import('@/hooks/useCobrancas').CobrancaKPIs;
   };
   inadimplenciaBadge: string;
   inadimplenciaBadgeVariant: 'destructive' | 'secondary';

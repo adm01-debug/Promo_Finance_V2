@@ -4,43 +4,21 @@ import { DollarSign, Tag, Receipt, CreditCard } from 'lucide-react';
 /* eslint-disable @typescript-eslint/no-explicit-any -- tipos herdados dos valores de origem (já eram any) */
 interface BlingFinanceiroPanelConteudoProps {
   subTab: 'contas' | 'formas' | 'portadores' | 'categorias' | 'borderos';
-  setSubTab: import('/home/joaquim_ataides/.cache/repo-maintenance-deps/Promo_Finance_V2/node_modules/@types/react/index').Dispatch<
-    import('/home/joaquim_ataides/.cache/repo-maintenance-deps/Promo_Finance_V2/node_modules/@types/react/index').SetStateAction<
-      'contas' | 'formas' | 'portadores' | 'categorias' | 'borderos'
-    >
+  setSubTab: import('react').Dispatch<
+    import('react').SetStateAction<'contas' | 'formas' | 'portadores' | 'categorias' | 'borderos'>
   >;
   refetchFormas: (
-    options?: import('/home/joaquim_ataides/.cache/repo-maintenance-deps/Promo_Finance_V2/node_modules/@tanstack/query-core/build/modern/hydration-BlEVG2Lp').aq
-  ) => Promise<
-    import('/home/joaquim_ataides/.cache/repo-maintenance-deps/Promo_Finance_V2/node_modules/@tanstack/query-core/build/modern/hydration-BlEVG2Lp').aH<
-      any,
-      Error
-    >
-  >;
+    options?: import('@tanstack/react-query').RefetchOptions
+  ) => Promise<import('@tanstack/react-query').QueryObserverResult<any, Error>>;
   refetchPortadores: (
-    options?: import('/home/joaquim_ataides/.cache/repo-maintenance-deps/Promo_Finance_V2/node_modules/@tanstack/query-core/build/modern/hydration-BlEVG2Lp').aq
-  ) => Promise<
-    import('/home/joaquim_ataides/.cache/repo-maintenance-deps/Promo_Finance_V2/node_modules/@tanstack/query-core/build/modern/hydration-BlEVG2Lp').aH<
-      any,
-      Error
-    >
-  >;
+    options?: import('@tanstack/react-query').RefetchOptions
+  ) => Promise<import('@tanstack/react-query').QueryObserverResult<any, Error>>;
   refetchCategorias: (
-    options?: import('/home/joaquim_ataides/.cache/repo-maintenance-deps/Promo_Finance_V2/node_modules/@tanstack/query-core/build/modern/hydration-BlEVG2Lp').aq
-  ) => Promise<
-    import('/home/joaquim_ataides/.cache/repo-maintenance-deps/Promo_Finance_V2/node_modules/@tanstack/query-core/build/modern/hydration-BlEVG2Lp').aH<
-      any,
-      Error
-    >
-  >;
+    options?: import('@tanstack/react-query').RefetchOptions
+  ) => Promise<import('@tanstack/react-query').QueryObserverResult<any, Error>>;
   refetchBorderos: (
-    options?: import('/home/joaquim_ataides/.cache/repo-maintenance-deps/Promo_Finance_V2/node_modules/@tanstack/query-core/build/modern/hydration-BlEVG2Lp').aq
-  ) => Promise<
-    import('/home/joaquim_ataides/.cache/repo-maintenance-deps/Promo_Finance_V2/node_modules/@tanstack/query-core/build/modern/hydration-BlEVG2Lp').aH<
-      any,
-      Error
-    >
-  >;
+    options?: import('@tanstack/react-query').RefetchOptions
+  ) => Promise<import('@tanstack/react-query').QueryObserverResult<any, Error>>;
 }
 /* eslint-enable @typescript-eslint/no-explicit-any */
 

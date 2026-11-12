@@ -11,11 +11,9 @@ import { EmpresaScopeBar } from '@/components/empresa/EmpresaScopeBar';
 import { itemVariants } from './conciliacao-variants';
 
 interface ConciliacaoPageHeaderProps {
-  setShowSugestoesFila: import('/home/joaquim_ataides/.cache/repo-maintenance-deps/Promo_Finance_V2/node_modules/@types/react/index').Dispatch<
-    import('/home/joaquim_ataides/.cache/repo-maintenance-deps/Promo_Finance_V2/node_modules/@types/react/index').SetStateAction<boolean>
-  >;
+  setShowSugestoesFila: import('react').Dispatch<import('react').SetStateAction<boolean>>;
   showSugestoesFila: boolean;
-  transacoesImportadas: import('/home/joaquim_ataides/projetos/_worktrees/Promo_Finance_V2-lint-zero/src/lib/ofx-parser').TransacaoOFX[];
+  transacoesImportadas: import('@/lib/ofx-parser').TransacaoOFX[];
   exportData: {
     transacoes: {
       id: string;
@@ -40,13 +38,9 @@ interface ConciliacaoPageHeaderProps {
     };
   };
   filters: ConciliacaoFilterState;
-  setShowImportDialog: import('/home/joaquim_ataides/.cache/repo-maintenance-deps/Promo_Finance_V2/node_modules/@types/react/index').Dispatch<
-    import('/home/joaquim_ataides/.cache/repo-maintenance-deps/Promo_Finance_V2/node_modules/@types/react/index').SetStateAction<boolean>
-  >;
+  setShowImportDialog: import('react').Dispatch<import('react').SetStateAction<boolean>>;
   showImportDialog: boolean;
-  handleImportSuccess: (
-    extrato: import('/home/joaquim_ataides/projetos/_worktrees/Promo_Finance_V2-lint-zero/src/lib/ofx-parser').ExtratoOFX
-  ) => Promise<void>;
+  handleImportSuccess: (extrato: import('@/lib/ofx-parser').ExtratoOFX) => Promise<void>;
   selectedBanco: string;
 }
 

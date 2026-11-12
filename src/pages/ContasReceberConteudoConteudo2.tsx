@@ -4,9 +4,9 @@ import { ContasReceberFilters } from '@/components/contas-receber/ContasReceberF
 import { itemVariants } from './ContasReceber.helpers';
 
 interface ContasReceberConteudoConteudo2Props {
-  filterType: import('/home/joaquim_ataides/projetos/_worktrees/Promo_Finance_V2-lint-zero/src/components/ui/quick-date-filters').DateFilterOption;
+  filterType: import('@/components/ui/quick-date-filters').DateFilterOption;
   handleFilterChange: (
-    type: import('/home/joaquim_ataides/projetos/_worktrees/Promo_Finance_V2-lint-zero/src/components/ui/quick-date-filters').DateFilterOption,
+    type: import('@/components/ui/quick-date-filters').DateFilterOption,
     range: { start: Date; end: Date } | null
   ) => void;
   searchTerm: string;
@@ -63,12 +63,10 @@ interface ContasReceberConteudoConteudo2Props {
   handleFormaChange: (value: string) => void;
   contaBancariaFilter: string;
   handleContaBancariaChange: (value: string) => void;
-  contasBancarias: import('/home/joaquim_ataides/projetos/_worktrees/Promo_Finance_V2-lint-zero/src/hooks/financial/types').ContaBancariaComRegras[];
-  advancedFilters: import('/home/joaquim_ataides/projetos/_worktrees/Promo_Finance_V2-lint-zero/src/components/ui/advanced-filters').AdvancedFilters;
-  setAdvancedFilters: import('/home/joaquim_ataides/.cache/repo-maintenance-deps/Promo_Finance_V2/node_modules/@types/react/index').Dispatch<
-    import('/home/joaquim_ataides/.cache/repo-maintenance-deps/Promo_Finance_V2/node_modules/@types/react/index').SetStateAction<
-      import('/home/joaquim_ataides/projetos/_worktrees/Promo_Finance_V2-lint-zero/src/components/ui/advanced-filters').AdvancedFilters
-    >
+  contasBancarias: import('@/hooks/financial/types').ContaBancariaComRegras[];
+  advancedFilters: import('@/components/ui/advanced-filters').AdvancedFilters;
+  setAdvancedFilters: import('react').Dispatch<
+    import('react').SetStateAction<import('@/components/ui/advanced-filters').AdvancedFilters>
   >;
 }
 

@@ -13,7 +13,7 @@ import {
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 
 interface PlanoContasTabConteudoProps {
-  filtered: import('/home/joaquim_ataides/projetos/_worktrees/Promo_Finance_V2-lint-zero/src/hooks/usePlanoContas').PlanoContaRow[];
+  filtered: import('@/hooks/usePlanoContas').PlanoContaRow[];
 }
 
 export function PlanoContasTabConteudo({ filtered }: PlanoContasTabConteudoProps) {

@@ -58,7 +58,7 @@ interface DashboardReceberConteudoProps {
   setStatusFilter: (v: string) => void;
   clienteId: string;
   setClienteId: (v: string) => void;
-  clientes: import('/home/joaquim_ataides/projetos/_worktrees/Promo_Finance_V2-lint-zero/src/hooks/useFinancialData').ExternalCliente[];
+  clientes: import('@/hooks/useFinancialData').ExternalCliente[];
 }
 
 export function DashboardReceberConteudo({

@@ -33,44 +33,33 @@ import type { BlingContaFinanceira } from './BlingFinanceiroPanel.types';
 /* eslint-disable @typescript-eslint/no-explicit-any -- tipos herdados dos valores de origem (já eram any) */
 interface BlingFinanceiroPanelFinanceiroProps {
   tipo: 'receber' | 'pagar';
-  setTipo: import('/home/joaquim_ataides/.cache/repo-maintenance-deps/Promo_Finance_V2/node_modules/@types/react/index').Dispatch<
-    import('/home/joaquim_ataides/.cache/repo-maintenance-deps/Promo_Finance_V2/node_modules/@types/react/index').SetStateAction<
-      'receber' | 'pagar'
-    >
-  >;
-  setPagina: import('/home/joaquim_ataides/.cache/repo-maintenance-deps/Promo_Finance_V2/node_modules/@types/react/index').Dispatch<
-    import('/home/joaquim_ataides/.cache/repo-maintenance-deps/Promo_Finance_V2/node_modules/@types/react/index').SetStateAction<number>
-  >;
+  setTipo: import('react').Dispatch<import('react').SetStateAction<'receber' | 'pagar'>>;
+  setPagina: import('react').Dispatch<import('react').SetStateAction<number>>;
   refetch: (
-    options?: import('/home/joaquim_ataides/.cache/repo-maintenance-deps/Promo_Finance_V2/node_modules/@tanstack/query-core/build/modern/hydration-BlEVG2Lp').aq
-  ) => Promise<
-    import('/home/joaquim_ataides/.cache/repo-maintenance-deps/Promo_Finance_V2/node_modules/@tanstack/query-core/build/modern/hydration-BlEVG2Lp').aH<
-      any,
-      Error
-    >
-  >;
+    options?: import('@tanstack/react-query').RefetchOptions
+  ) => Promise<import('@tanstack/react-query').QueryObserverResult<any, Error>>;
   isFetching: boolean;
   contas: any;
-  setBaixaForm: import('/home/joaquim_ataides/.cache/repo-maintenance-deps/Promo_Finance_V2/node_modules/@types/react/index').Dispatch<
-    import('/home/joaquim_ataides/.cache/repo-maintenance-deps/Promo_Finance_V2/node_modules/@types/react/index').SetStateAction<{
+  setBaixaForm: import('react').Dispatch<
+    import('react').SetStateAction<{
       valorRecebido: string;
       data: string;
     }>
   >;
-  setShowBaixa: import('/home/joaquim_ataides/.cache/repo-maintenance-deps/Promo_Finance_V2/node_modules/@types/react/index').Dispatch<
-    import('/home/joaquim_ataides/.cache/repo-maintenance-deps/Promo_Finance_V2/node_modules/@types/react/index').SetStateAction<{
+  setShowBaixa: import('react').Dispatch<
+    import('react').SetStateAction<{
       id: string;
       tipo: 'receber' | 'pagar';
     }>
   >;
-  setConfirmEstorno: import('/home/joaquim_ataides/.cache/repo-maintenance-deps/Promo_Finance_V2/node_modules/@types/react/index').Dispatch<
-    import('/home/joaquim_ataides/.cache/repo-maintenance-deps/Promo_Finance_V2/node_modules/@types/react/index').SetStateAction<{
+  setConfirmEstorno: import('react').Dispatch<
+    import('react').SetStateAction<{
       id: string;
       tipo: 'receber' | 'pagar';
     }>
   >;
-  setConfirmExclusao: import('/home/joaquim_ataides/.cache/repo-maintenance-deps/Promo_Finance_V2/node_modules/@types/react/index').Dispatch<
-    import('/home/joaquim_ataides/.cache/repo-maintenance-deps/Promo_Finance_V2/node_modules/@types/react/index').SetStateAction<{
+  setConfirmExclusao: import('react').Dispatch<
+    import('react').SetStateAction<{
       id: string;
       tipo: 'receber' | 'pagar';
     }>

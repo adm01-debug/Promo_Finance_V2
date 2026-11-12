@@ -53,17 +53,11 @@ import { BlingNFePanel } from '@/components/nfe/BlingNFePanel';
 
 interface NotasFiscaisAbasProps {
   searchTerm: string;
-  setSearchTerm: import('/home/joaquim_ataides/.cache/repo-maintenance-deps/Promo_Finance_V2/node_modules/@types/react/index').Dispatch<
-    import('/home/joaquim_ataides/.cache/repo-maintenance-deps/Promo_Finance_V2/node_modules/@types/react/index').SetStateAction<string>
-  >;
+  setSearchTerm: import('react').Dispatch<import('react').SetStateAction<string>>;
   statusFilter: string;
-  setStatusFilter: import('/home/joaquim_ataides/.cache/repo-maintenance-deps/Promo_Finance_V2/node_modules/@types/react/index').Dispatch<
-    import('/home/joaquim_ataides/.cache/repo-maintenance-deps/Promo_Finance_V2/node_modules/@types/react/index').SetStateAction<string>
-  >;
+  setStatusFilter: import('react').Dispatch<import('react').SetStateAction<string>>;
   filteredNotas: NotaFiscal[];
-  setNotaCancelar: import('/home/joaquim_ataides/.cache/repo-maintenance-deps/Promo_Finance_V2/node_modules/@types/react/index').Dispatch<
-    import('/home/joaquim_ataides/.cache/repo-maintenance-deps/Promo_Finance_V2/node_modules/@types/react/index').SetStateAction<NotaFiscal>
-  >;
+  setNotaCancelar: import('react').Dispatch<import('react').SetStateAction<NotaFiscal>>;
   notas: NotaFiscal[];
   totalEmitido: number;
   notasAutorizadas: number;

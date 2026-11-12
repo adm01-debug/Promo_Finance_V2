@@ -31,9 +31,7 @@ interface EmpresasConteudo2Props {
     user_id: string;
   }[];
   selectedEmpresa: string;
-  setSelectedEmpresa: import('/home/joaquim_ataides/.cache/repo-maintenance-deps/Promo_Finance_V2/node_modules/@types/react/index').Dispatch<
-    import('/home/joaquim_ataides/.cache/repo-maintenance-deps/Promo_Finance_V2/node_modules/@types/react/index').SetStateAction<string>
-  >;
+  setSelectedEmpresa: import('react').Dispatch<import('react').SetStateAction<string>>;
 }
 
 export function EmpresasConteudo2({

@@ -22,7 +22,7 @@ interface DashboardReformaVisaoGeralProps {
   dadosComparativoMensal: { mes: string; cbsIbs: number; antigosResidual: number }[];
   dadosDistribuicaoTributos: { name: string; value: number }[];
   handleKPIClick: (tabId: string) => void;
-  aliquotasAtuais: import('/home/joaquim_ataides/projetos/_worktrees/Promo_Finance_V2-lint-zero/src/types/reforma-tributaria').AliquotasTransicao;
+  aliquotasAtuais: import('@/types/reforma-tributaria').AliquotasTransicao;
 }
 
 export function DashboardReformaVisaoGeral({

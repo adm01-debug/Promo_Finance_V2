@@ -19,50 +19,30 @@ import type { FocusClaim } from './sandbox/types';
 
 interface SSOSandboxPanelSandboxSimulacaoSSOProps {
   providerId: string;
-  setProviderId: import('/home/joaquim_ataides/.cache/repo-maintenance-deps/Promo_Finance_V2/node_modules/@types/react/index').Dispatch<
-    import('/home/joaquim_ataides/.cache/repo-maintenance-deps/Promo_Finance_V2/node_modules/@types/react/index').SetStateAction<string>
-  >;
-  providers: import('/home/joaquim_ataides/projetos/_worktrees/Promo_Finance_V2-lint-zero/src/hooks/useSSO').SSOProvider[];
+  setProviderId: import('react').Dispatch<import('react').SetStateAction<string>>;
+  providers: import('@/hooks/useSSO').SSOProvider[];
   useProviderConfig: boolean;
-  setUseProviderConfig: import('/home/joaquim_ataides/.cache/repo-maintenance-deps/Promo_Finance_V2/node_modules/@types/react/index').Dispatch<
-    import('/home/joaquim_ataides/.cache/repo-maintenance-deps/Promo_Finance_V2/node_modules/@types/react/index').SetStateAction<boolean>
-  >;
+  setUseProviderConfig: import('react').Dispatch<import('react').SetStateAction<boolean>>;
   focusClaim: FocusClaim;
-  setFocusClaim: import('/home/joaquim_ataides/.cache/repo-maintenance-deps/Promo_Finance_V2/node_modules/@types/react/index').Dispatch<
-    import('/home/joaquim_ataides/.cache/repo-maintenance-deps/Promo_Finance_V2/node_modules/@types/react/index').SetStateAction<FocusClaim>
-  >;
+  setFocusClaim: import('react').Dispatch<import('react').SetStateAction<FocusClaim>>;
   loadPreset: (presetId: string) => void;
   claimsJson: string;
-  setClaimsJson: import('/home/joaquim_ataides/.cache/repo-maintenance-deps/Promo_Finance_V2/node_modules/@types/react/index').Dispatch<
-    import('/home/joaquim_ataides/.cache/repo-maintenance-deps/Promo_Finance_V2/node_modules/@types/react/index').SetStateAction<string>
-  >;
+  setClaimsJson: import('react').Dispatch<import('react').SetStateAction<string>>;
   jsonError: string;
   manualEmail: string;
-  setManualEmail: import('/home/joaquim_ataides/.cache/repo-maintenance-deps/Promo_Finance_V2/node_modules/@types/react/index').Dispatch<
-    import('/home/joaquim_ataides/.cache/repo-maintenance-deps/Promo_Finance_V2/node_modules/@types/react/index').SetStateAction<string>
-  >;
+  setManualEmail: import('react').Dispatch<import('react').SetStateAction<string>>;
   manualName: string;
-  setManualName: import('/home/joaquim_ataides/.cache/repo-maintenance-deps/Promo_Finance_V2/node_modules/@types/react/index').Dispatch<
-    import('/home/joaquim_ataides/.cache/repo-maintenance-deps/Promo_Finance_V2/node_modules/@types/react/index').SetStateAction<string>
-  >;
+  setManualName: import('react').Dispatch<import('react').SetStateAction<string>>;
   manualGroups: string;
-  setManualGroups: import('/home/joaquim_ataides/.cache/repo-maintenance-deps/Promo_Finance_V2/node_modules/@types/react/index').Dispatch<
-    import('/home/joaquim_ataides/.cache/repo-maintenance-deps/Promo_Finance_V2/node_modules/@types/react/index').SetStateAction<string>
-  >;
+  setManualGroups: import('react').Dispatch<import('react').SetStateAction<string>>;
   manualRole: AppRole;
-  setManualRole: import('/home/joaquim_ataides/.cache/repo-maintenance-deps/Promo_Finance_V2/node_modules/@types/react/index').Dispatch<
-    import('/home/joaquim_ataides/.cache/repo-maintenance-deps/Promo_Finance_V2/node_modules/@types/react/index').SetStateAction<AppRole>
-  >;
+  setManualRole: import('react').Dispatch<import('react').SetStateAction<AppRole>>;
   manualDomains: string;
-  setManualDomains: import('/home/joaquim_ataides/.cache/repo-maintenance-deps/Promo_Finance_V2/node_modules/@types/react/index').Dispatch<
-    import('/home/joaquim_ataides/.cache/repo-maintenance-deps/Promo_Finance_V2/node_modules/@types/react/index').SetStateAction<string>
-  >;
+  setManualDomains: import('react').Dispatch<import('react').SetStateAction<string>>;
   manualMappings: string;
-  setManualMappings: import('/home/joaquim_ataides/.cache/repo-maintenance-deps/Promo_Finance_V2/node_modules/@types/react/index').Dispatch<
-    import('/home/joaquim_ataides/.cache/repo-maintenance-deps/Promo_Finance_V2/node_modules/@types/react/index').SetStateAction<string>
-  >;
+  setManualMappings: import('react').Dispatch<import('react').SetStateAction<string>>;
   simulate: () => Promise<void>;
-  testMutation: import('/home/joaquim_ataides/.cache/repo-maintenance-deps/Promo_Finance_V2/node_modules/@tanstack/react-query/build/modern/types').UseMutationResult<
+  testMutation: import('@tanstack/react-query').UseMutationResult<
     { success: boolean; preview: Record<string, unknown>; errors: string[] },
     Error,
     Record<string, unknown>,

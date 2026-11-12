@@ -7,9 +7,7 @@ import { cn } from '@/lib/utils';
 
 interface ImportarExtratoDialogArquivoLocalProps {
   activeTab: string;
-  setActiveTab: import('/home/joaquim_ataides/.cache/repo-maintenance-deps/Promo_Finance_V2/node_modules/@types/react/index').Dispatch<
-    import('/home/joaquim_ataides/.cache/repo-maintenance-deps/Promo_Finance_V2/node_modules/@types/react/index').SetStateAction<string>
-  >;
+  setActiveTab: import('react').Dispatch<import('react').SetStateAction<string>>;
   dragActive: boolean;
   handleDrag: (e: React.DragEvent) => void;
   handleDrop: (e: React.DragEvent) => void;

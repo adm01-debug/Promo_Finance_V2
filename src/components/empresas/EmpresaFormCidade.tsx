@@ -10,7 +10,7 @@ import {
 import { ESTADOS } from './empresa-form-model';
 
 interface EmpresaFormCidadeProps {
-  register: import('/home/joaquim_ataides/.cache/repo-maintenance-deps/Promo_Finance_V2/node_modules/react-hook-form/dist/index').UseFormRegister<{
+  register: import('react-hook-form').UseFormRegister<{
     cnpj: string;
     razao_social: string;
     ativo: boolean;
@@ -28,7 +28,7 @@ interface EmpresaFormCidadeProps {
     aliquota_terceiros?: number;
   }>;
   isLoading: boolean;
-  errors: import('/home/joaquim_ataides/.cache/repo-maintenance-deps/Promo_Finance_V2/node_modules/react-hook-form/dist/index').FieldErrors<{
+  errors: import('react-hook-form').FieldErrors<{
     cnpj: string;
     razao_social: string;
     ativo: boolean;
@@ -46,7 +46,7 @@ interface EmpresaFormCidadeProps {
     aliquota_terceiros?: number;
   }>;
   estadoValue: string;
-  setValue: import('/home/joaquim_ataides/.cache/repo-maintenance-deps/Promo_Finance_V2/node_modules/react-hook-form/dist/index').UseFormSetValue<{
+  setValue: import('react-hook-form').UseFormSetValue<{
     cnpj: string;
     razao_social: string;
     ativo: boolean;

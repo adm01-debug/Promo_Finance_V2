@@ -14,29 +14,17 @@ import { ConciliacaoPendentesConteudo } from './ConciliacaoPendentesConteudo';
 
 interface ConciliacaoPendentesProps {
   statusTab: string;
-  setStatusTab: import('/home/joaquim_ataides/.cache/repo-maintenance-deps/Promo_Finance_V2/node_modules/@types/react/index').Dispatch<
-    import('/home/joaquim_ataides/.cache/repo-maintenance-deps/Promo_Finance_V2/node_modules/@types/react/index').SetStateAction<string>
-  >;
+  setStatusTab: import('react').Dispatch<import('react').SetStateAction<string>>;
   pendentes: number;
   conciliadas: number;
   searchTerm: string;
-  setSearchTerm: import('/home/joaquim_ataides/.cache/repo-maintenance-deps/Promo_Finance_V2/node_modules/@types/react/index').Dispatch<
-    import('/home/joaquim_ataides/.cache/repo-maintenance-deps/Promo_Finance_V2/node_modules/@types/react/index').SetStateAction<string>
-  >;
+  setSearchTerm: import('react').Dispatch<import('react').SetStateAction<string>>;
   filters: ConciliacaoFilterState;
-  setFilters: import('/home/joaquim_ataides/.cache/repo-maintenance-deps/Promo_Finance_V2/node_modules/@types/react/index').Dispatch<
-    import('/home/joaquim_ataides/.cache/repo-maintenance-deps/Promo_Finance_V2/node_modules/@types/react/index').SetStateAction<ConciliacaoFilterState>
-  >;
+  setFilters: import('react').Dispatch<import('react').SetStateAction<ConciliacaoFilterState>>;
   sort: ConciliacaoSort;
-  setSort: import('/home/joaquim_ataides/.cache/repo-maintenance-deps/Promo_Finance_V2/node_modules/@types/react/index').Dispatch<
-    import('/home/joaquim_ataides/.cache/repo-maintenance-deps/Promo_Finance_V2/node_modules/@types/react/index').SetStateAction<ConciliacaoSort>
-  >;
+  setSort: import('react').Dispatch<import('react').SetStateAction<ConciliacaoSort>>;
   visibleCols: string[];
-  setVisibleCols: import('/home/joaquim_ataides/.cache/repo-maintenance-deps/Promo_Finance_V2/node_modules/@types/react/index').Dispatch<
-    import('/home/joaquim_ataides/.cache/repo-maintenance-deps/Promo_Finance_V2/node_modules/@types/react/index').SetStateAction<
-      string[]
-    >
-  >;
+  setVisibleCols: import('react').Dispatch<import('react').SetStateAction<string[]>>;
   activePresetId: string;
   handleLoadPreset: (preset: {
     id: string;
@@ -44,8 +32,8 @@ interface ConciliacaoPendentesProps {
   }) => void;
   handleClearPreset: () => void;
   showSugestoesFila: boolean;
-  transacoesImportadas: import('/home/joaquim_ataides/projetos/_worktrees/Promo_Finance_V2-lint-zero/src/lib/ofx-parser').TransacaoOFX[];
-  lancamentosSistema: import('/home/joaquim_ataides/projetos/_worktrees/Promo_Finance_V2-lint-zero/src/lib/transaction-matcher').LancamentoSistema[];
+  transacoesImportadas: import('@/lib/ofx-parser').TransacaoOFX[];
+  lancamentosSistema: import('@/lib/transaction-matcher').LancamentoSistema[];
   handleConfirmarMatch: (
     transacaoId: string,
     lancamentoId: string,
@@ -54,30 +42,20 @@ interface ConciliacaoPendentesProps {
   handleRejeitarMatch: (transacaoId: string, _lancamentoId: string) => void;
   handleConciliarManual: (transacaoId: string) => void;
   selectedIds: Set<string>;
-  filteredTransacoes: import('/home/joaquim_ataides/projetos/_worktrees/Promo_Finance_V2-lint-zero/src/lib/conciliacao-page-helpers').TransacaoImportada[];
+  filteredTransacoes: import('@/lib/conciliacao-page-helpers').TransacaoImportada[];
   toggleSelectAll: () => void;
-  sortedTransacoes: import('/home/joaquim_ataides/projetos/_worktrees/Promo_Finance_V2-lint-zero/src/lib/conciliacao-page-helpers').TransacaoImportada[];
+  sortedTransacoes: import('@/lib/conciliacao-page-helpers').TransacaoImportada[];
   toggleSelect: (id: string) => void;
   showCol: (key: string) => boolean;
-  handleConciliar: (
-    transacao: import('/home/joaquim_ataides/projetos/_worktrees/Promo_Finance_V2-lint-zero/src/hooks/conciliacaoPage.types').TransacaoExtrato
-  ) => void;
-  setSelectedTransacaoManual: import('/home/joaquim_ataides/.cache/repo-maintenance-deps/Promo_Finance_V2/node_modules/@types/react/index').Dispatch<
-    import('/home/joaquim_ataides/.cache/repo-maintenance-deps/Promo_Finance_V2/node_modules/@types/react/index').SetStateAction<
-      import('/home/joaquim_ataides/projetos/_worktrees/Promo_Finance_V2-lint-zero/src/hooks/conciliacaoPage.types').TransacaoExtrato
-    >
+  handleConciliar: (transacao: import('@/hooks/conciliacaoPage.types').TransacaoExtrato) => void;
+  setSelectedTransacaoManual: import('react').Dispatch<
+    import('react').SetStateAction<import('@/hooks/conciliacaoPage.types').TransacaoExtrato>
   >;
-  setShowManualDialog: import('/home/joaquim_ataides/.cache/repo-maintenance-deps/Promo_Finance_V2/node_modules/@types/react/index').Dispatch<
-    import('/home/joaquim_ataides/.cache/repo-maintenance-deps/Promo_Finance_V2/node_modules/@types/react/index').SetStateAction<boolean>
+  setShowManualDialog: import('react').Dispatch<import('react').SetStateAction<boolean>>;
+  setSelectedTransacaoSplit: import('react').Dispatch<
+    import('react').SetStateAction<import('@/hooks/conciliacaoPage.types').TransacaoExtrato>
   >;
-  setSelectedTransacaoSplit: import('/home/joaquim_ataides/.cache/repo-maintenance-deps/Promo_Finance_V2/node_modules/@types/react/index').Dispatch<
-    import('/home/joaquim_ataides/.cache/repo-maintenance-deps/Promo_Finance_V2/node_modules/@types/react/index').SetStateAction<
-      import('/home/joaquim_ataides/projetos/_worktrees/Promo_Finance_V2-lint-zero/src/hooks/conciliacaoPage.types').TransacaoExtrato
-    >
-  >;
-  setShowSplitDialog: import('/home/joaquim_ataides/.cache/repo-maintenance-deps/Promo_Finance_V2/node_modules/@types/react/index').Dispatch<
-    import('/home/joaquim_ataides/.cache/repo-maintenance-deps/Promo_Finance_V2/node_modules/@types/react/index').SetStateAction<boolean>
-  >;
+  setShowSplitDialog: import('react').Dispatch<import('react').SetStateAction<boolean>>;
   handleIgnorar: (id: string) => void;
   handleDesfazerConciliacao: (transacaoId: string) => Promise<void>;
   transacoesQuery: {
@@ -86,10 +64,10 @@ interface ConciliacaoPendentesProps {
     isError: boolean;
     error: Error;
     refetch: (
-      options?: import('/home/joaquim_ataides/.cache/repo-maintenance-deps/Promo_Finance_V2/node_modules/@tanstack/query-core/build/modern/hydration-BlEVG2Lp').aq
+      options?: import('@tanstack/react-query').RefetchOptions
     ) => Promise<
-      import('/home/joaquim_ataides/.cache/repo-maintenance-deps/Promo_Finance_V2/node_modules/@tanstack/query-core/build/modern/hydration-BlEVG2Lp').aH<
-        import('/home/joaquim_ataides/projetos/_worktrees/Promo_Finance_V2-lint-zero/src/hooks/conciliacaoPage.types').TransacaoExtrato[],
+      import('@tanstack/react-query').QueryObserverResult<
+        import('@/hooks/conciliacaoPage.types').TransacaoExtrato[],
         Error
       >
     >;

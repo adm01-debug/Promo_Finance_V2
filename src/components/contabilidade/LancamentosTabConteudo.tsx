@@ -32,7 +32,7 @@ import type { LancamentosFilters, DatePreset } from './LancamentosTab.types';
 
 interface LancamentosTabConteudoProps {
   empresaId: string;
-  filtersController: import('/home/joaquim_ataides/projetos/_worktrees/Promo_Finance_V2-lint-zero/src/hooks/useManagedFilters').ManagedFiltersController<LancamentosFilters>;
+  filtersController: import('@/hooks/useManagedFilters').ManagedFiltersController<LancamentosFilters>;
   busca: string;
   setBusca: (v: string) => void;
   preset: DatePreset;
@@ -51,32 +51,9 @@ interface LancamentosTabConteudoProps {
     valor_total: number;
     status: string;
   }[];
-  lancs: {
-    competencia: string | null;
-    created_at: string;
-    created_by: string | null;
-    data_lancamento: string;
-    empresa_id: string | null;
-    historico: string | null;
-    id: string;
-    numero_lancamento: number | null;
-    origem: string | null;
-    status: string;
-    updated_at: string;
-    user_id: string;
-    valor_total: number;
-    partidas: {
-      conta_id: string | null;
-      created_at: string | null;
-      historico_complementar: string | null;
-      id: string;
-      lancamento_id: string | null;
-      ordem: number | null;
-      tipo: string;
-      valor: number;
-      conta: import('/home/joaquim_ataides/.cache/repo-maintenance-deps/Promo_Finance_V2/node_modules/@supabase/postgrest-js/dist/cjs/select-query-parser/utils').SelectQueryError<'could not find the relation between partidas_contabeis and plano_contas'>;
-    }[];
-  }[];
+  lancs: NonNullable<
+    ReturnType<typeof import('@/hooks/useLancamentosContabeis').useLancamentosContabeis>['data']
+  >;
   isLoading: boolean;
 }
 

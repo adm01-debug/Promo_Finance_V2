@@ -8,14 +8,10 @@ import {
 
 interface AuditLogsFiltrosConteudoProps {
   providerFilter: string;
-  setProviderFilter: import('/home/joaquim_ataides/.cache/repo-maintenance-deps/Promo_Finance_V2/node_modules/@types/react/index').Dispatch<
-    import('/home/joaquim_ataides/.cache/repo-maintenance-deps/Promo_Finance_V2/node_modules/@types/react/index').SetStateAction<string>
-  >;
+  setProviderFilter: import('react').Dispatch<import('react').SetStateAction<string>>;
   uniqueSsoProviders: string[];
   ssoFieldFilter: string;
-  setSsoFieldFilter: import('/home/joaquim_ataides/.cache/repo-maintenance-deps/Promo_Finance_V2/node_modules/@types/react/index').Dispatch<
-    import('/home/joaquim_ataides/.cache/repo-maintenance-deps/Promo_Finance_V2/node_modules/@types/react/index').SetStateAction<string>
-  >;
+  setSsoFieldFilter: import('react').Dispatch<import('react').SetStateAction<string>>;
 }
 
 export function AuditLogsFiltrosConteudo({

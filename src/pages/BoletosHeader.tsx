@@ -14,13 +14,9 @@ import { itemVariants } from './Boletos.helpers';
 
 interface BoletosHeaderProps {
   activeTab: string;
-  setActiveTab: import('/home/joaquim_ataides/.cache/repo-maintenance-deps/Promo_Finance_V2/node_modules/@types/react/index').Dispatch<
-    import('/home/joaquim_ataides/.cache/repo-maintenance-deps/Promo_Finance_V2/node_modules/@types/react/index').SetStateAction<string>
-  >;
+  setActiveTab: import('react').Dispatch<import('react').SetStateAction<string>>;
   showNovoBoleto: boolean;
-  setShowNovoBoleto: import('/home/joaquim_ataides/.cache/repo-maintenance-deps/Promo_Finance_V2/node_modules/@types/react/index').Dispatch<
-    import('/home/joaquim_ataides/.cache/repo-maintenance-deps/Promo_Finance_V2/node_modules/@types/react/index').SetStateAction<boolean>
-  >;
+  setShowNovoBoleto: import('react').Dispatch<import('react').SetStateAction<boolean>>;
   empresas: { id: string; razao_social: string; cnpj: string }[];
   contasBancarias: {
     banco: string;
@@ -29,7 +25,7 @@ interface BoletosHeaderProps {
     empresa_id: string;
     id: string;
   }[];
-  createBoleto: import('/home/joaquim_ataides/.cache/repo-maintenance-deps/Promo_Finance_V2/node_modules/@tanstack/react-query/build/modern/types').UseMutateFunction<
+  createBoleto: import('@tanstack/react-query').UseMutateFunction<
     {
       agencia: string | null;
       asaas_id: string | null;
@@ -51,9 +47,7 @@ interface BoletosHeaderProps {
       desconto: number | null;
       descricao: string | null;
       empresa_id: string | null;
-      eventos_pagamento:
-        | import('/home/joaquim_ataides/projetos/_worktrees/Promo_Finance_V2-lint-zero/src/integrations/supabase/types').Json
-        | null;
+      eventos_pagamento: import('@/integrations/supabase/types').Json | null;
       external_provider: string | null;
       id: string;
       juros_multa: number | null;
@@ -61,9 +55,7 @@ interface BoletosHeaderProps {
       nosso_numero: string | null;
       numero: string | null;
       observacoes: string | null;
-      rastreio_status:
-        | import('/home/joaquim_ataides/projetos/_worktrees/Promo_Finance_V2-lint-zero/src/integrations/supabase/types').Json
-        | null;
+      rastreio_status: import('@/integrations/supabase/types').Json | null;
       sacado_cpf_cnpj: string | null;
       sacado_nome: string | null;
       status: string | null;
@@ -75,7 +67,7 @@ interface BoletosHeaderProps {
       vencimento: string | null;
     },
     Error,
-    import('/home/joaquim_ataides/projetos/_worktrees/Promo_Finance_V2-lint-zero/src/hooks/useBoletos.types').NovoBoletoData,
+    import('@/hooks/useBoletos.types').NovoBoletoData,
     unknown
   >;
   isCreating: boolean;

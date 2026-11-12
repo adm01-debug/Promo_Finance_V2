@@ -36,38 +36,24 @@ import { AuditLogsFiltrosConteudo } from './AuditLogsFiltrosConteudo';
 interface AuditLogsFiltrosProps {
   stats: { total: number; inserts: number; updates: number; deletes: number };
   searchTerm: string;
-  setSearchTerm: import('/home/joaquim_ataides/.cache/repo-maintenance-deps/Promo_Finance_V2/node_modules/@types/react/index').Dispatch<
-    import('/home/joaquim_ataides/.cache/repo-maintenance-deps/Promo_Finance_V2/node_modules/@types/react/index').SetStateAction<string>
-  >;
+  setSearchTerm: import('react').Dispatch<import('react').SetStateAction<string>>;
   actionFilter: string;
-  setActionFilter: import('/home/joaquim_ataides/.cache/repo-maintenance-deps/Promo_Finance_V2/node_modules/@types/react/index').Dispatch<
-    import('/home/joaquim_ataides/.cache/repo-maintenance-deps/Promo_Finance_V2/node_modules/@types/react/index').SetStateAction<string>
-  >;
+  setActionFilter: import('react').Dispatch<import('react').SetStateAction<string>>;
   tableFilter: string;
-  setTableFilter: import('/home/joaquim_ataides/.cache/repo-maintenance-deps/Promo_Finance_V2/node_modules/@types/react/index').Dispatch<
-    import('/home/joaquim_ataides/.cache/repo-maintenance-deps/Promo_Finance_V2/node_modules/@types/react/index').SetStateAction<string>
-  >;
+  setTableFilter: import('react').Dispatch<import('react').SetStateAction<string>>;
   uniqueTables: string[];
   userFilter: string;
-  setUserFilter: import('/home/joaquim_ataides/.cache/repo-maintenance-deps/Promo_Finance_V2/node_modules/@types/react/index').Dispatch<
-    import('/home/joaquim_ataides/.cache/repo-maintenance-deps/Promo_Finance_V2/node_modules/@types/react/index').SetStateAction<string>
-  >;
+  setUserFilter: import('react').Dispatch<import('react').SetStateAction<string>>;
   uniqueUsers: string[];
   dateRange: DateRange;
-  setDateRange: import('/home/joaquim_ataides/.cache/repo-maintenance-deps/Promo_Finance_V2/node_modules/@types/react/index').Dispatch<
-    import('/home/joaquim_ataides/.cache/repo-maintenance-deps/Promo_Finance_V2/node_modules/@types/react/index').SetStateAction<DateRange>
-  >;
+  setDateRange: import('react').Dispatch<import('react').SetStateAction<DateRange>>;
   isSsoProfileSyncScope: boolean;
   providerFilter: string;
-  setProviderFilter: import('/home/joaquim_ataides/.cache/repo-maintenance-deps/Promo_Finance_V2/node_modules/@types/react/index').Dispatch<
-    import('/home/joaquim_ataides/.cache/repo-maintenance-deps/Promo_Finance_V2/node_modules/@types/react/index').SetStateAction<string>
-  >;
+  setProviderFilter: import('react').Dispatch<import('react').SetStateAction<string>>;
   uniqueSsoProviders: string[];
   ssoFieldFilter: string;
-  setSsoFieldFilter: import('/home/joaquim_ataides/.cache/repo-maintenance-deps/Promo_Finance_V2/node_modules/@types/react/index').Dispatch<
-    import('/home/joaquim_ataides/.cache/repo-maintenance-deps/Promo_Finance_V2/node_modules/@types/react/index').SetStateAction<string>
-  >;
-  filtersController: import('/home/joaquim_ataides/projetos/_worktrees/Promo_Finance_V2-lint-zero/src/hooks/useManagedFilters').ManagedFiltersController<{
+  setSsoFieldFilter: import('react').Dispatch<import('react').SetStateAction<string>>;
+  filtersController: import('@/hooks/useManagedFilters').ManagedFiltersController<{
     search: string;
     action: string;
     table: string;
@@ -79,11 +65,7 @@ interface AuditLogsFiltrosProps {
     title: string;
     description: string;
   }[];
-  setDismissedAlerts: import('/home/joaquim_ataides/.cache/repo-maintenance-deps/Promo_Finance_V2/node_modules/@types/react/index').Dispatch<
-    import('/home/joaquim_ataides/.cache/repo-maintenance-deps/Promo_Finance_V2/node_modules/@types/react/index').SetStateAction<
-      Set<string>
-    >
-  >;
+  setDismissedAlerts: import('react').Dispatch<import('react').SetStateAction<Set<string>>>;
   filteredLogs: AuditLog[];
   handleExportCSV: () => void;
   handleExportJSON: () => void;
@@ -91,13 +73,8 @@ interface AuditLogsFiltrosProps {
   isExportingFull: boolean;
   handleExportPDF: () => void;
   refetch: (
-    options?: import('/home/joaquim_ataides/.cache/repo-maintenance-deps/Promo_Finance_V2/node_modules/@tanstack/query-core/build/modern/hydration-BlEVG2Lp').aq
-  ) => Promise<
-    import('/home/joaquim_ataides/.cache/repo-maintenance-deps/Promo_Finance_V2/node_modules/@tanstack/query-core/build/modern/hydration-BlEVG2Lp').aH<
-      AuditLog[],
-      Error
-    >
-  >;
+    options?: import('@tanstack/react-query').RefetchOptions
+  ) => Promise<import('@tanstack/react-query').QueryObserverResult<AuditLog[], Error>>;
   isLoading: boolean;
 }
 

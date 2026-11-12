@@ -5,21 +5,13 @@ import { num } from './PisCofinsCreditos.helpers';
 
 interface PisCofinsCreditosSaldoCredorPISProps {
   saldoPis: number;
-  setSaldoPis: import('/home/joaquim_ataides/.cache/repo-maintenance-deps/Promo_Finance_V2/node_modules/@types/react/index').Dispatch<
-    import('/home/joaquim_ataides/.cache/repo-maintenance-deps/Promo_Finance_V2/node_modules/@types/react/index').SetStateAction<number>
-  >;
+  setSaldoPis: import('react').Dispatch<import('react').SetStateAction<number>>;
   saldoCofins: number;
-  setSaldoCofins: import('/home/joaquim_ataides/.cache/repo-maintenance-deps/Promo_Finance_V2/node_modules/@types/react/index').Dispatch<
-    import('/home/joaquim_ataides/.cache/repo-maintenance-deps/Promo_Finance_V2/node_modules/@types/react/index').SetStateAction<number>
-  >;
+  setSaldoCofins: import('react').Dispatch<import('react').SetStateAction<number>>;
   retPis: number;
-  setRetPis: import('/home/joaquim_ataides/.cache/repo-maintenance-deps/Promo_Finance_V2/node_modules/@types/react/index').Dispatch<
-    import('/home/joaquim_ataides/.cache/repo-maintenance-deps/Promo_Finance_V2/node_modules/@types/react/index').SetStateAction<number>
-  >;
+  setRetPis: import('react').Dispatch<import('react').SetStateAction<number>>;
   retCofins: number;
-  setRetCofins: import('/home/joaquim_ataides/.cache/repo-maintenance-deps/Promo_Finance_V2/node_modules/@types/react/index').Dispatch<
-    import('/home/joaquim_ataides/.cache/repo-maintenance-deps/Promo_Finance_V2/node_modules/@types/react/index').SetStateAction<number>
-  >;
+  setRetCofins: import('react').Dispatch<import('react').SetStateAction<number>>;
 }
 
 export function PisCofinsCreditosSaldoCredorPIS({

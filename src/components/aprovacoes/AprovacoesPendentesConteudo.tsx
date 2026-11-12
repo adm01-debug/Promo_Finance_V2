@@ -8,11 +8,9 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 
 interface AprovacoesPendentesConteudoProps {
   detailsDialog: { open: boolean; solicitacao: SolicitacaoAprovacao | null };
-  comentarios: import('/home/joaquim_ataides/projetos/_worktrees/Promo_Finance_V2-lint-zero/src/hooks/useAprovacoes').ComentarioAprovacao[];
+  comentarios: import('@/hooks/useAprovacoes').ComentarioAprovacao[];
   novoComentario: string;
-  setNovoComentario: import('/home/joaquim_ataides/.cache/repo-maintenance-deps/Promo_Finance_V2/node_modules/@types/react/index').Dispatch<
-    import('/home/joaquim_ataides/.cache/repo-maintenance-deps/Promo_Finance_V2/node_modules/@types/react/index').SetStateAction<string>
-  >;
+  setNovoComentario: import('react').Dispatch<import('react').SetStateAction<string>>;
   handleAddComentario: () => void;
 }
 

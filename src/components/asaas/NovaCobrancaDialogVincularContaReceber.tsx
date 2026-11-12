@@ -18,108 +18,58 @@ import { ConfiguracoesAvancadas, SplitCobrancaConfig } from './NovaCobrancaSecti
 
 interface NovaCobrancaDialogVincularContaReceberProps {
   tipo: AsaasBillingType;
-  setTipo: import('/home/joaquim_ataides/.cache/repo-maintenance-deps/Promo_Finance_V2/node_modules/@types/react/index').Dispatch<
-    import('/home/joaquim_ataides/.cache/repo-maintenance-deps/Promo_Finance_V2/node_modules/@types/react/index').SetStateAction<AsaasBillingType>
-  >;
+  setTipo: import('react').Dispatch<import('react').SetStateAction<AsaasBillingType>>;
   contaReceberId: string;
   handleSelectPendencia: (id: string) => void;
   pendencias: { id: string; descricao: string; valor: number; data_vencimento: string }[];
-  customers: import('/home/joaquim_ataides/projetos/_worktrees/Promo_Finance_V2-lint-zero/src/hooks/useAsaas.types').AsaasCustomer[];
-  setTab: import('/home/joaquim_ataides/.cache/repo-maintenance-deps/Promo_Finance_V2/node_modules/@types/react/index').Dispatch<
-    import('/home/joaquim_ataides/.cache/repo-maintenance-deps/Promo_Finance_V2/node_modules/@types/react/index').SetStateAction<
-      'cliente' | 'cobranca'
-    >
-  >;
+  customers: import('@/hooks/useAsaas.types').AsaasCustomer[];
+  setTab: import('react').Dispatch<import('react').SetStateAction<'cliente' | 'cobranca'>>;
   customerId: string;
-  setCustomerId: import('/home/joaquim_ataides/.cache/repo-maintenance-deps/Promo_Finance_V2/node_modules/@types/react/index').Dispatch<
-    import('/home/joaquim_ataides/.cache/repo-maintenance-deps/Promo_Finance_V2/node_modules/@types/react/index').SetStateAction<string>
-  >;
+  setCustomerId: import('react').Dispatch<import('react').SetStateAction<string>>;
   valor: string;
-  setValor: import('/home/joaquim_ataides/.cache/repo-maintenance-deps/Promo_Finance_V2/node_modules/@types/react/index').Dispatch<
-    import('/home/joaquim_ataides/.cache/repo-maintenance-deps/Promo_Finance_V2/node_modules/@types/react/index').SetStateAction<string>
-  >;
+  setValor: import('react').Dispatch<import('react').SetStateAction<string>>;
   vencimento: string;
-  setVencimento: import('/home/joaquim_ataides/.cache/repo-maintenance-deps/Promo_Finance_V2/node_modules/@types/react/index').Dispatch<
-    import('/home/joaquim_ataides/.cache/repo-maintenance-deps/Promo_Finance_V2/node_modules/@types/react/index').SetStateAction<string>
-  >;
+  setVencimento: import('react').Dispatch<import('react').SetStateAction<string>>;
   parcelas: string;
-  setParcelas: import('/home/joaquim_ataides/.cache/repo-maintenance-deps/Promo_Finance_V2/node_modules/@types/react/index').Dispatch<
-    import('/home/joaquim_ataides/.cache/repo-maintenance-deps/Promo_Finance_V2/node_modules/@types/react/index').SetStateAction<string>
-  >;
+  setParcelas: import('react').Dispatch<import('react').SetStateAction<string>>;
   cardHolderName: string;
-  setCardHolderName: import('/home/joaquim_ataides/.cache/repo-maintenance-deps/Promo_Finance_V2/node_modules/@types/react/index').Dispatch<
-    import('/home/joaquim_ataides/.cache/repo-maintenance-deps/Promo_Finance_V2/node_modules/@types/react/index').SetStateAction<string>
-  >;
+  setCardHolderName: import('react').Dispatch<import('react').SetStateAction<string>>;
   cardNumber: string;
-  setCardNumber: import('/home/joaquim_ataides/.cache/repo-maintenance-deps/Promo_Finance_V2/node_modules/@types/react/index').Dispatch<
-    import('/home/joaquim_ataides/.cache/repo-maintenance-deps/Promo_Finance_V2/node_modules/@types/react/index').SetStateAction<string>
-  >;
+  setCardNumber: import('react').Dispatch<import('react').SetStateAction<string>>;
   cardExpiryMonth: string;
-  setCardExpiryMonth: import('/home/joaquim_ataides/.cache/repo-maintenance-deps/Promo_Finance_V2/node_modules/@types/react/index').Dispatch<
-    import('/home/joaquim_ataides/.cache/repo-maintenance-deps/Promo_Finance_V2/node_modules/@types/react/index').SetStateAction<string>
-  >;
+  setCardExpiryMonth: import('react').Dispatch<import('react').SetStateAction<string>>;
   cardExpiryYear: string;
-  setCardExpiryYear: import('/home/joaquim_ataides/.cache/repo-maintenance-deps/Promo_Finance_V2/node_modules/@types/react/index').Dispatch<
-    import('/home/joaquim_ataides/.cache/repo-maintenance-deps/Promo_Finance_V2/node_modules/@types/react/index').SetStateAction<string>
-  >;
+  setCardExpiryYear: import('react').Dispatch<import('react').SetStateAction<string>>;
   cardCcv: string;
-  setCardCcv: import('/home/joaquim_ataides/.cache/repo-maintenance-deps/Promo_Finance_V2/node_modules/@types/react/index').Dispatch<
-    import('/home/joaquim_ataides/.cache/repo-maintenance-deps/Promo_Finance_V2/node_modules/@types/react/index').SetStateAction<string>
-  >;
+  setCardCcv: import('react').Dispatch<import('react').SetStateAction<string>>;
   cardEmail: string;
-  setCardEmail: import('/home/joaquim_ataides/.cache/repo-maintenance-deps/Promo_Finance_V2/node_modules/@types/react/index').Dispatch<
-    import('/home/joaquim_ataides/.cache/repo-maintenance-deps/Promo_Finance_V2/node_modules/@types/react/index').SetStateAction<string>
-  >;
+  setCardEmail: import('react').Dispatch<import('react').SetStateAction<string>>;
   cardCpfCnpj: string;
-  setCardCpfCnpj: import('/home/joaquim_ataides/.cache/repo-maintenance-deps/Promo_Finance_V2/node_modules/@types/react/index').Dispatch<
-    import('/home/joaquim_ataides/.cache/repo-maintenance-deps/Promo_Finance_V2/node_modules/@types/react/index').SetStateAction<string>
-  >;
+  setCardCpfCnpj: import('react').Dispatch<import('react').SetStateAction<string>>;
   cardCep: string;
-  setCardCep: import('/home/joaquim_ataides/.cache/repo-maintenance-deps/Promo_Finance_V2/node_modules/@types/react/index').Dispatch<
-    import('/home/joaquim_ataides/.cache/repo-maintenance-deps/Promo_Finance_V2/node_modules/@types/react/index').SetStateAction<string>
-  >;
+  setCardCep: import('react').Dispatch<import('react').SetStateAction<string>>;
   cardPhone: string;
-  setCardPhone: import('/home/joaquim_ataides/.cache/repo-maintenance-deps/Promo_Finance_V2/node_modules/@types/react/index').Dispatch<
-    import('/home/joaquim_ataides/.cache/repo-maintenance-deps/Promo_Finance_V2/node_modules/@types/react/index').SetStateAction<string>
-  >;
+  setCardPhone: import('react').Dispatch<import('react').SetStateAction<string>>;
   descricao: string;
-  setDescricao: import('/home/joaquim_ataides/.cache/repo-maintenance-deps/Promo_Finance_V2/node_modules/@types/react/index').Dispatch<
-    import('/home/joaquim_ataides/.cache/repo-maintenance-deps/Promo_Finance_V2/node_modules/@types/react/index').SetStateAction<string>
-  >;
+  setDescricao: import('react').Dispatch<import('react').SetStateAction<string>>;
   showAdvanced: boolean;
-  setShowAdvanced: import('/home/joaquim_ataides/.cache/repo-maintenance-deps/Promo_Finance_V2/node_modules/@types/react/index').Dispatch<
-    import('/home/joaquim_ataides/.cache/repo-maintenance-deps/Promo_Finance_V2/node_modules/@types/react/index').SetStateAction<boolean>
-  >;
+  setShowAdvanced: import('react').Dispatch<import('react').SetStateAction<boolean>>;
   juros: string;
-  setJuros: import('/home/joaquim_ataides/.cache/repo-maintenance-deps/Promo_Finance_V2/node_modules/@types/react/index').Dispatch<
-    import('/home/joaquim_ataides/.cache/repo-maintenance-deps/Promo_Finance_V2/node_modules/@types/react/index').SetStateAction<string>
-  >;
+  setJuros: import('react').Dispatch<import('react').SetStateAction<string>>;
   multa: string;
-  setMulta: import('/home/joaquim_ataides/.cache/repo-maintenance-deps/Promo_Finance_V2/node_modules/@types/react/index').Dispatch<
-    import('/home/joaquim_ataides/.cache/repo-maintenance-deps/Promo_Finance_V2/node_modules/@types/react/index').SetStateAction<string>
-  >;
+  setMulta: import('react').Dispatch<import('react').SetStateAction<string>>;
   descontoValor: string;
-  setDescontoValor: import('/home/joaquim_ataides/.cache/repo-maintenance-deps/Promo_Finance_V2/node_modules/@types/react/index').Dispatch<
-    import('/home/joaquim_ataides/.cache/repo-maintenance-deps/Promo_Finance_V2/node_modules/@types/react/index').SetStateAction<string>
-  >;
+  setDescontoValor: import('react').Dispatch<import('react').SetStateAction<string>>;
   descontoDias: string;
-  setDescontoDias: import('/home/joaquim_ataides/.cache/repo-maintenance-deps/Promo_Finance_V2/node_modules/@types/react/index').Dispatch<
-    import('/home/joaquim_ataides/.cache/repo-maintenance-deps/Promo_Finance_V2/node_modules/@types/react/index').SetStateAction<string>
-  >;
+  setDescontoDias: import('react').Dispatch<import('react').SetStateAction<string>>;
   showSplit: boolean;
-  setShowSplit: import('/home/joaquim_ataides/.cache/repo-maintenance-deps/Promo_Finance_V2/node_modules/@types/react/index').Dispatch<
-    import('/home/joaquim_ataides/.cache/repo-maintenance-deps/Promo_Finance_V2/node_modules/@types/react/index').SetStateAction<boolean>
-  >;
+  setShowSplit: import('react').Dispatch<import('react').SetStateAction<boolean>>;
   splitWalletId: string;
-  setSplitWalletId: import('/home/joaquim_ataides/.cache/repo-maintenance-deps/Promo_Finance_V2/node_modules/@types/react/index').Dispatch<
-    import('/home/joaquim_ataides/.cache/repo-maintenance-deps/Promo_Finance_V2/node_modules/@types/react/index').SetStateAction<string>
-  >;
+  setSplitWalletId: import('react').Dispatch<import('react').SetStateAction<string>>;
   splitPercent: string;
-  setSplitPercent: import('/home/joaquim_ataides/.cache/repo-maintenance-deps/Promo_Finance_V2/node_modules/@types/react/index').Dispatch<
-    import('/home/joaquim_ataides/.cache/repo-maintenance-deps/Promo_Finance_V2/node_modules/@types/react/index').SetStateAction<string>
-  >;
+  setSplitPercent: import('react').Dispatch<import('react').SetStateAction<string>>;
   handleCriarCobranca: () => Promise<void>;
-  criarCobranca: import('/home/joaquim_ataides/.cache/repo-maintenance-deps/Promo_Finance_V2/node_modules/@tanstack/react-query/build/modern/types').UseMutationResult<
+  criarCobranca: import('@tanstack/react-query').UseMutationResult<
     unknown,
     Error,
     Record<string, unknown>,

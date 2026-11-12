@@ -4,34 +4,29 @@ import { Loader2 } from 'lucide-react';
 
 /* eslint-disable @typescript-eslint/no-explicit-any -- tipos herdados dos valores de origem (já eram any) */
 interface BlingFinanceiroPanelConteudo2Props {
-  setShowBaixa: import('/home/joaquim_ataides/.cache/repo-maintenance-deps/Promo_Finance_V2/node_modules/@types/react/index').Dispatch<
-    import('/home/joaquim_ataides/.cache/repo-maintenance-deps/Promo_Finance_V2/node_modules/@types/react/index').SetStateAction<{
+  setShowBaixa: import('react').Dispatch<
+    import('react').SetStateAction<{
       id: string;
       tipo: 'receber' | 'pagar';
     }>
   >;
   showBaixa: { id: string; tipo: 'receber' | 'pagar' };
   baixaForm: { valorRecebido: string; data: string };
-  darBaixaReceber: import('/home/joaquim_ataides/.cache/repo-maintenance-deps/Promo_Finance_V2/node_modules/@tanstack/react-query/build/modern/types').UseMutationResult<
+  darBaixaReceber: import('@tanstack/react-query').UseMutationResult<
     any,
     Error,
     { id: string; data: Record<string, unknown> },
     unknown
   >;
-  darBaixaPagar: import('/home/joaquim_ataides/.cache/repo-maintenance-deps/Promo_Finance_V2/node_modules/@tanstack/react-query/build/modern/types').UseMutationResult<
+  darBaixaPagar: import('@tanstack/react-query').UseMutationResult<
     any,
     Error,
     { id: string; data: Record<string, unknown> },
     unknown
   >;
   refetch: (
-    options?: import('/home/joaquim_ataides/.cache/repo-maintenance-deps/Promo_Finance_V2/node_modules/@tanstack/query-core/build/modern/hydration-BlEVG2Lp').aq
-  ) => Promise<
-    import('/home/joaquim_ataides/.cache/repo-maintenance-deps/Promo_Finance_V2/node_modules/@tanstack/query-core/build/modern/hydration-BlEVG2Lp').aH<
-      any,
-      Error
-    >
-  >;
+    options?: import('@tanstack/react-query').RefetchOptions
+  ) => Promise<import('@tanstack/react-query').QueryObserverResult<any, Error>>;
 }
 /* eslint-enable @typescript-eslint/no-explicit-any */
 

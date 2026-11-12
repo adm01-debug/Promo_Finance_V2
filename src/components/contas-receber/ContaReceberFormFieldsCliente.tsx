@@ -16,14 +16,12 @@ interface ContaReceberFormFieldsClienteProps {
   setShowClienteSelect: (v: boolean) => void;
   showClienteSelect: boolean;
   clienteSearch: string;
-  setClienteSearch: import('/home/joaquim_ataides/.cache/repo-maintenance-deps/Promo_Finance_V2/node_modules/@types/react/index').Dispatch<
-    import('/home/joaquim_ataides/.cache/repo-maintenance-deps/Promo_Finance_V2/node_modules/@types/react/index').SetStateAction<string>
-  >;
+  setClienteSearch: import('react').Dispatch<import('react').SetStateAction<string>>;
   onClienteSelect: (id: string) => void;
-  form: import('/home/joaquim_ataides/.cache/repo-maintenance-deps/Promo_Finance_V2/node_modules/react-hook-form/dist/index').UseFormReturn<
-    import('/home/joaquim_ataides/projetos/_worktrees/Promo_Finance_V2-lint-zero/src/components/contas-receber/ContaReceberFormFields.types').ContaReceberFormValues
+  form: import('react-hook-form').UseFormReturn<
+    import('@/components/contas-receber/ContaReceberFormFields.types').ContaReceberFormValues
   >;
-  filteredClientes: import('/home/joaquim_ataides/projetos/_worktrees/Promo_Finance_V2-lint-zero/src/components/contas-receber/ContaReceberFormFields.types').ClienteOption[];
+  filteredClientes: import('@/components/contas-receber/ContaReceberFormFields.types').ClienteOption[];
 }
 
 export function ContaReceberFormFieldsCliente({

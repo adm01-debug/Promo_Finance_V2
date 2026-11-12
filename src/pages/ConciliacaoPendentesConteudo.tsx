@@ -26,29 +26,19 @@ import { formatCurrency, formatDate } from '@/lib/formatters';
 import { cn } from '@/lib/utils';
 
 interface ConciliacaoPendentesConteudoProps {
-  sortedTransacoes: import('/home/joaquim_ataides/projetos/_worktrees/Promo_Finance_V2-lint-zero/src/lib/conciliacao-page-helpers').TransacaoImportada[];
+  sortedTransacoes: import('@/lib/conciliacao-page-helpers').TransacaoImportada[];
   selectedIds: Set<string>;
   toggleSelect: (id: string) => void;
   showCol: (key: string) => boolean;
-  handleConciliar: (
-    transacao: import('/home/joaquim_ataides/projetos/_worktrees/Promo_Finance_V2-lint-zero/src/hooks/conciliacaoPage.types').TransacaoExtrato
-  ) => void;
-  setSelectedTransacaoManual: import('/home/joaquim_ataides/.cache/repo-maintenance-deps/Promo_Finance_V2/node_modules/@types/react/index').Dispatch<
-    import('/home/joaquim_ataides/.cache/repo-maintenance-deps/Promo_Finance_V2/node_modules/@types/react/index').SetStateAction<
-      import('/home/joaquim_ataides/projetos/_worktrees/Promo_Finance_V2-lint-zero/src/hooks/conciliacaoPage.types').TransacaoExtrato
-    >
+  handleConciliar: (transacao: import('@/hooks/conciliacaoPage.types').TransacaoExtrato) => void;
+  setSelectedTransacaoManual: import('react').Dispatch<
+    import('react').SetStateAction<import('@/hooks/conciliacaoPage.types').TransacaoExtrato>
   >;
-  setShowManualDialog: import('/home/joaquim_ataides/.cache/repo-maintenance-deps/Promo_Finance_V2/node_modules/@types/react/index').Dispatch<
-    import('/home/joaquim_ataides/.cache/repo-maintenance-deps/Promo_Finance_V2/node_modules/@types/react/index').SetStateAction<boolean>
+  setShowManualDialog: import('react').Dispatch<import('react').SetStateAction<boolean>>;
+  setSelectedTransacaoSplit: import('react').Dispatch<
+    import('react').SetStateAction<import('@/hooks/conciliacaoPage.types').TransacaoExtrato>
   >;
-  setSelectedTransacaoSplit: import('/home/joaquim_ataides/.cache/repo-maintenance-deps/Promo_Finance_V2/node_modules/@types/react/index').Dispatch<
-    import('/home/joaquim_ataides/.cache/repo-maintenance-deps/Promo_Finance_V2/node_modules/@types/react/index').SetStateAction<
-      import('/home/joaquim_ataides/projetos/_worktrees/Promo_Finance_V2-lint-zero/src/hooks/conciliacaoPage.types').TransacaoExtrato
-    >
-  >;
-  setShowSplitDialog: import('/home/joaquim_ataides/.cache/repo-maintenance-deps/Promo_Finance_V2/node_modules/@types/react/index').Dispatch<
-    import('/home/joaquim_ataides/.cache/repo-maintenance-deps/Promo_Finance_V2/node_modules/@types/react/index').SetStateAction<boolean>
-  >;
+  setShowSplitDialog: import('react').Dispatch<import('react').SetStateAction<boolean>>;
   handleIgnorar: (id: string) => void;
   handleDesfazerConciliacao: (transacaoId: string) => Promise<void>;
 }

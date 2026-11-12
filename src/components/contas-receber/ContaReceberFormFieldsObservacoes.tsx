@@ -2,8 +2,8 @@ import { FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/comp
 import { Textarea } from '@/components/ui/textarea';
 
 interface ContaReceberFormFieldsObservacoesProps {
-  form: import('/home/joaquim_ataides/.cache/repo-maintenance-deps/Promo_Finance_V2/node_modules/react-hook-form/dist/index').UseFormReturn<
-    import('/home/joaquim_ataides/projetos/_worktrees/Promo_Finance_V2-lint-zero/src/components/contas-receber/ContaReceberFormFields.types').ContaReceberFormValues
+  form: import('react-hook-form').UseFormReturn<
+    import('@/components/contas-receber/ContaReceberFormFields.types').ContaReceberFormValues
   >;
 }
 
