@@ -11,10 +11,10 @@
 | 1 | Inventário | OK | seção 1 (rotas, edge functions, tabelas, workflows, integrações) |
 | 2 | Cobertura | OK | todo item da seção 1 está OK ou BLOQUEADO |
 | 3 | Qualidade | OK (ver nota lint:strict) | seção 2 |
-| 4 | GitHub Actions | OK até `6e462aa` (todos os workflows de push verdes); `821385c`/`68bac76`: nenhum vermelho, CI Pipeline ainda na fila do Actions no fechamento (fila congestionada, não falha) | seção 3 |
+| 4 | GitHub Actions | OK até `821385c` (todos os workflows de push verdes; CI Pipeline 43292483803 success); `68bac76`: nenhum vermelho — Quality Gate & Tests, Unit tests, E2E Critical Gate e E2E Financeiro success; CI Pipeline 43317296949 (Integration tests, E2E Destructive Logout) e Deno 43317297004 na fila do Actions às ~22:45 UTC (fila congestionada pelo job `e2e-quarantine` com `always()` — correção na PR #326, aguardando o dono) | seção 3 |
 | 5 | Sem "pela metade" | BLOQUEADO (parcial) | seção 6 — 3 itens corrigidos em produção (#322, #323, #325); restantes dependem de DDL/credencial/decisão de produto |
 | 6 | Banco | OK com 1 drift BLOQUEADO | seção 4 |
-| 7 | Produção | BLOQUEADO (parcial) | seção 5 — 3 crons falhando, todos dependem de segredo/DDL (dono); `monitorar-erros-frontend` corrigido pela #321 (aplicada ~19:42 UTC, 200 desde 20:00) |
+| 7 | Produção | BLOQUEADO (parcial) | seção 5 — 3 crons falhando, todos dependem de segredo/DDL (dono); teste de RLS como usuário final BLOQUEADO (sem caminho de execução com papel final); `monitorar-erros-frontend` corrigido pela #321 (aplicada ~19:42 UTC, 200 desde 20:00) |
 | 8 | Entrega | OK | seção 7 |
 | 9 | Relatório | OK | este arquivo |
 
@@ -158,7 +158,7 @@ Status OK = rota registrada, guard correto e página compila. Prova comum: `tsc 
 | 126 | `/compras` | Compras | Protected | src/App.tsx:1138 | OK |
 | 127 | `/style-guide` | StyleGuide | Protected | src/App.tsx:1146 | OK |
 | 128 | `*` | NotFound | público | src/App.tsx:1154 | OK |
-| 129 | `/admin/erros-frontend` | AdminErrosFrontend | admin | src/App.tsx:904 (`821385c`, PR #323) | OK |
+| 129 | `/admin/erros-frontend` | AdminErrosFrontend | admin | src/App.tsx:906 (`821385c`, PR #323) | OK |
 | 130 | `/tributario/consulta-rapida` | ConsultaRapidaFiscal | autenticado | src/App.tsx:531 (`821385c`, PR #323) | OK |
 
 ### 1.2 Edge Functions — 106 pastas em `supabase/functions`
@@ -582,14 +582,14 @@ Criadas em migration mas ausentes em produção (22) — histórico abandonado, 
 
 ### 1.4 Workflows (`.github/workflows`: 19 workflows + `README.md`)
 
-Prova: última execução não cancelada de cada workflow no `main` (API do Actions, 12/11/2026 ~21:45 UTC). `main` atual: `821385c` (PR #321, só SQL).
+Prova: última execução não cancelada de cada workflow no `main` (API do Actions, 12/11/2026 ~21:45 UTC). `main` atual: `68bac76` (PR #325); runs do push `68bac76` citadas onde já concluíram.
 
 | workflow | gatilhos | última execução no `main` | status |
 |---|---|---|---|
 | `actionlint.yml` | push main (paths), PR, dispatch | 43167726933 push · success | OK |
 | `auto-update-pr-branch.yml` | push main, workflow_run, schedule, dispatch | 43225710766 schedule · success | OK |
 | `automation-local.yml` | PR, push main, dispatch | 43292483535 push (`821385c`) · success | OK |
-| `ci.yml` | push main, PR | 43266511057 push (`6e462aa`) · success; run do push `821385c` (43292483803) ainda na fila do Actions às 21:45 UTC | OK |
+| `ci.yml` | push main, PR | 43292483803 push (`821385c`) · success (antes 43266511057 `6e462aa` success); run do push `68bac76` (43317296949) na fila às ~22:45 UTC, jobs já concluídos todos success | OK |
 | `codeql.yml` | push main, PR, schedule semanal | 43239116996 push (`51d0405`) · success | OK |
 | `contexto.yml` | push main (paths), PR (paths), schedule 10 min, dispatch | 43221896982 schedule · success (execuções seguintes canceladas por `concurrency`, não por falha) | OK |
 | `deno-tests.yml` | push main, PR, dispatch | 43292483724 push (`821385c`) · success | OK |
@@ -627,8 +627,8 @@ ponta exige conta/credencial do provedor ativada pelo dono.
 | Asaas | `ASAAS_API_KEY`, `ASAAS_WEBHOOK_TOKEN` | `asaas_payments` = 0, `asaas_sync_queue` = 0 | BLOQUEADO — nunca exercida; exige conta Asaas ativa |
 | Bling ERP | `BLING_CLIENT_ID/SECRET` | `bling_sync_logs` = 0 | BLOQUEADO — nunca exercida; exige OAuth Bling |
 | Bitrix24 | `BITRIX24_*` | `bitrix_sync_logs` = 0 | BLOQUEADO — nunca exercida; exige OAuth Bitrix24 |
-| n8n | `N8N_DISPATCH_SECRET`, `N8N_CALLBACK_SECRET` | `n8n_dispatch_logs` = 0 | BLOQUEADO — nunca exercida |
-| CNPJá | `CNPJA_API_KEY` | `cnpja_cache` = 0 | BLOQUEADO — nunca exercida |
+| n8n | `N8N_DISPATCH_SECRET`, `N8N_CALLBACK_SECRET` | `n8n_dispatch_logs` = 0 | BLOQUEADO — nunca exercida; exige fluxo n8n ativo apontando para a função e um disparo real |
+| CNPJá | `CNPJA_API_KEY` | `cnpja_cache` = 0 | BLOQUEADO — nunca exercida; exige chamada real com `CNPJA_API_KEY` válida (custo por consulta) |
 | Open Finance | `OPEN_FINANCE_CLIENT_ID` | função 100% simulada (seção 6) | BLOQUEADO — não há integração real |
 | WhatsApp (IA proativa) | via LLM | front só abre `wa.me` | BLOQUEADO — sem provedor de envio configurado |
 | Slack / Sentry / Mapbox / Geo-IP / HIBP | `SLACK_WEBHOOK_URL`, `SENTRY_DSN`, `MAPBOX_ACCESS_TOKEN` | sem tráfego observável nesta auditoria (sem acesso aos painéis desses provedores) | BLOQUEADO — prova exige acesso ao painel do provedor |
@@ -647,7 +647,7 @@ não alterado).
 | `vite build` (com `VITE_SUPABASE_*` definidos) | exit 0 (`✓ built in 7.16s`) | exit 0 |
 | `vitest run` | exit 0 — 247 arquivos, **3025 testes** | exit 0 — 248 arquivos, **3028 testes** (+3 da #325) |
 
-Após a #323: `ci.yml` 43266511057 (push `6e462aa`, quality gate + testes) success. No `main` final `68bac76` (local, 12/11 22:15 UTC): `tsc` exit 0, `npm run lint` exit 0 (74 avisos herdados), `vite build` exit 0, `vitest` 248 arquivos / 3028 testes.
+Após a #323: `ci.yml` 43266511057 (push `6e462aa`) success; após a #321: 43292483803 (push `821385c`) success. E2E locais no `68bac76` (Playwright, mesmos configs da CI, Chromium do ambiente): `playwright.financeiro.config.ts` 16 passed / 0 failed; `playwright.critical.config.ts` 37 passed / 0 failed / 1 skipped (login real exige credencial). No `main` final `68bac76` (local, 12/11 22:15 UTC): `tsc` exit 0, `npm run lint` exit 0 (74 avisos herdados), `vite build` exit 0, `vitest` 248 arquivos / 3028 testes.
 
 Nenhum teste removido, pulado ou afrouxado. `lint:strict` não é gate da CI; zerar exige quebrar 73
 arquivos grandes (refatoração fora do escopo "diff mínimo") → BLOQUEADO por decisão do dono.
@@ -716,11 +716,12 @@ Ver 1.4. Nenhuma execução vermelha no `main`. `contexto.yml` (schedule a cada 
 
 | PR | o que muda | evidência | estado |
 |---|---|---|---|
-| [#322](https://github.com/adm01-debug/Promo_Finance_V2/pull/322) | Configurar Dashboard: ocultar/exibir e tamanho dos widgets passam a funcionar (`DashboardExecutivo.tsx`) | causa: handlers `() => {}` em `DashboardExecutivo.tsx:461-462`; CI 26/26 obrigatórios verdes; local `tsc` 0, `vitest` 3025/3025, `vite build` OK | mergeada (`51d0405`), deploy `dpl_3EBzYSfwDVpZKZZBTmDoh1qb4d5j` READY |
+| [#322](https://github.com/adm01-debug/Promo_Finance_V2/pull/322) | Configurar Dashboard: ocultar/exibir e tamanho dos widgets passam a funcionar (`DashboardExecutivo.tsx`) | causa: handlers `() => {}` em `DashboardExecutivo.tsx:461-462`; CI 8/8 obrigatórios verdes (26 check runs + 2 status verdes, 0 falha); local `tsc` 0, `vitest` 3025/3025, `vite build` OK | mergeada (`51d0405`), deploy `dpl_3EBzYSfwDVpZKZZBTmDoh1qb4d5j` READY |
 | [#323](https://github.com/adm01-debug/Promo_Finance_V2/pull/323) | Páginas 'Erros do Front-end' (`/admin/erros-frontend`) e 'Consulta Rápida Fiscal' (`/tributario/consulta-rapida`) ganham rota, menu e breadcrumb | páginas sem rota/import no `main`; local `tsc` 0, `vitest` 3025/3025 | mergeada (`6e462aa`), CI `ci.yml` 43266511057 success, deploy `dpl_8dw192HzBpRkKmFqW13q6gRGean8` READY |
 | [#321](https://github.com/adm01-debug/Promo_Finance_V2/pull/321) | Crons `monitorar-erros-frontend` e `webhook-retry-worker-1min` enviam o segredo que as functions validam | 12/12 execuções 401; com o segredo certo → 200 (net 199266 e 199467); simulação com rollback: altera os 2 jobs, 2ª execução no-op | mergeada pelo dono (`821385c`); SQL aplicado em produção ~19:42 UTC; cron 200 desde 20:00 UTC |
-| [#325](https://github.com/adm01-debug/Promo_Finance_V2/pull/325) | Corrige a regressão de layout da #322 (grid só a partir de 1536px), rótulos duplicados no Configurar Dashboard, mutação do array e config salva inválida; +3 testes | validação adversarial mediu widgets de 146px em 1024px; testes novos falham no código antigo (2/3) e passam no novo; `vitest` 3028/3028 | mergeada (`68bac76`) com todos os checks obrigatórios verdes (28/28, inclui `E2E Destructive Logout`), deploy `dpl_9Fw6ewRRSxVwnWosXbyMyTcGtuCQ` READY |
+| [#325](https://github.com/adm01-debug/Promo_Finance_V2/pull/325) | Corrige a regressão de layout da #322 (grid só a partir de 1536px), rótulos duplicados no Configurar Dashboard, mutação do array e config salva inválida; +3 testes | validação adversarial mediu widgets de 146px em 1024px; testes novos falham no código antigo (2/3) e passam no novo; `vitest` 3028/3028 | mergeada (`68bac76`) com os 8/8 checks obrigatórios verdes (inclui `E2E Destructive Logout`; no total 25 check runs + 2 status verdes, 0 falha; `E2E Quarantine (non-blocking)` sem conclusão), deploy `dpl_9Fw6ewRRSxVwnWosXbyMyTcGtuCQ` READY |
 | [#324](https://github.com/adm01-debug/Promo_Finance_V2/pull/324) | Este relatório (`docs/prod-readiness.md`) | — | aberta |
+| [#326](https://github.com/adm01-debug/Promo_Finance_V2/pull/326) | `ci.yml:654` quarentena E2E `always()` → `!cancelled()` (libera runners presos em CI cancelada) | YAML válido; 1 linha | **aberta, aguardando o dono** (workflow) |
 
 ## 8. BLOQUEADO / aguardando o dono
 
@@ -734,8 +735,15 @@ Ver 1.4. Nenhuma execução vermelha no `main`. `contexto.yml` (schedule a cada 
 | Menu mostra itens de admin a todos | filtro por papel inexistente no sidebar | decidir e implementar filtro por `requiredRoles` |
 | `monitor-health` | função não publicada (404) e cron não agendado; migration exige aprovação | decidir se ativa: publicar via `functions-deploy.yml` + aplicar `20261101200000_monitor_health_cron.sql` + canal de alerta |
 | Campos de formulário sem coluna (23 colunas) | colunas ausentes em produção | decidir: criar colunas (DDL) ou remover campos |
-| `types.ts` desatualizado | `movimentacoes` tem 6 colunas a mais em produção; `types.ts` do repo tem 4.706 linhas a mais que o gerado (tabelas que não existem em produção) | PR dedicada: regenerar `types.ts` + corrigir os 7 erros de tipo listados na seção 6 |
+| `types.ts` desatualizado | `movimentacoes` tem 6 colunas a mais em produção; `types.ts` do repo tem 4.706 linhas a mais que o gerado (tabelas que não existem em produção) | PR dedicada: regenerar `types.ts` + corrigir os 7 erros de tipo listados na seção 6; reativar o filtro por `conta_bancaria_id` em `useFinancialOperations.ts:76` |
 | Open Finance / prévia de conciliação / SPED "Em breve" | simulação ou funcionalidade inexistente | decisão de produto/contrato |
-| Integrações sem uso (Asaas, Bling, Bitrix24, n8n, CNPJá, IA, WhatsApp, Slack/Sentry/Mapbox) | nunca exercidas em produção | ativar contas/credenciais e testar com o provedor |
+| Integrações sem uso (Asaas, Bling, Bitrix24, n8n, CNPJá, IA, WhatsApp) e sem prova (Slack/Sentry/Mapbox/Geo-IP/HIBP) | as primeiras nunca exercidas em produção (tabelas de log = 0); as últimas sem tráfego observável e sem acesso ao painel do provedor | ativar contas/credenciais e testar com o provedor; acesso aos painéis Slack/Sentry/Mapbox para prova |
+| Teste de RLS como usuário final | `cannot set parameter "role" within security-definer function` (`exec_sql`) e proxy da sessão bloqueia `*.supabase.co` (CONNECT 403) | sessão com acesso direto a `*.supabase.co` ou conexão Postgres com papel `authenticated` + JWT de teste |
+| Botão SMS em Enviar Cobrança | "funcionalidade em desenvolvimento" (`EnviarCobrancaDialog.tsx:68`); sem provedor de SMS | escolher/contratar provedor de SMS (custo) |
+| Vinculação manual na baixa automática | "em desenvolvimento" (`BaixaAutomaticaDialog.tsx:400`) | decisão de produto sobre o fluxo |
+| Web Push | envio sem VAPID nem `aes128gcm` (`send-push-notification/index.ts:121-129`); 0 assinantes | reimplementar envio com VAPID antes de ter assinantes |
+| Painéis duplicados no dashboard | PrevisaoIA, Metas e Alertas de Orçamento no grid e na lateral (`DashboardExecutivo.tsx:146,186,196`) | decisão de produto: qual posição manter |
+| PR #326 — quarentena E2E com `always()` | `ci.yml:654`: job não bloqueante roda até 30 min em CI cancelada e segura runners (fila do Actions de 12/11 com CI horas em `queued`) | revisar e mergear a #326 (`always()` → `!cancelled()`; workflow → dono) |
+| Ledger `supabase_migrations.schema_migrations` | 391 versões registradas (máx. `20261101140005`) × 1010 arquivos; as migrations de 12/11 têm efeito conferido no banco mas não estão no ledger (política do repo: DDL via `supabase_db_query`, AGENTS.md §4) | decidir se o ledger deve ser reconciliado (registro das versões sem reaplicar) |
 | `lint:strict` | 74 avisos herdados (73× `max-lines`) | decidir se o limite de 400 linhas vira gate |
 | PR #293 (Dependabot `mapbox-gl` 3.26.0→3.34.2) | `Dependency Review`: "Dependency review detected incompatible licenses" — `mapbox-gl@^3.34.2` com licença `LicenseRef-bad-see-license-in-license.txt` (fora do `allow-licenses`); E2E vermelhos são de infra do runner (`Playwright does not support chromium on ubuntu26.04-x64`), não do bump | decisão do dono: aceitar a licença proprietária do Mapbox (exceção no `dependency-review.yml`) ou fechar a PR |
