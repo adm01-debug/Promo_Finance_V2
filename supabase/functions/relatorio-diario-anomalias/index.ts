@@ -243,7 +243,7 @@ serve(
               'Content-Type': 'application/json',
             },
             body: JSON.stringify({
-              from: 'Anomalias <onboarding@resend.dev>',
+              from: Deno.env.get('RESEND_FROM') ?? 'Anomalias <onboarding@resend.dev>',
               to: destinatarios,
               subject,
               html,

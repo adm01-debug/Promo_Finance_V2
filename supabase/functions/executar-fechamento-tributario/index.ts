@@ -302,7 +302,8 @@ Deno.serve(
                 Authorization: `Bearer ${resendKey}`,
               },
               body: JSON.stringify({
-                from: 'Fechamento Tributário <onboarding@resend.dev>',
+                from:
+                  Deno.env.get('RESEND_FROM') ?? 'Fechamento Tributário <onboarding@resend.dev>',
                 to: [dest],
                 subject: `Fechamento ${periodo} concluído — ${empresa?.razao_social ?? ''}`,
                 html: `<h2>Fechamento tributário concluído</h2>

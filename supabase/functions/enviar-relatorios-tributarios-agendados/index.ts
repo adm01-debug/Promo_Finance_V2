@@ -90,7 +90,7 @@ async function enviarEmail(
     method: 'POST',
     headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${apiKey}` },
     body: JSON.stringify({
-      from: 'Tributário <onboarding@resend.dev>',
+      from: Deno.env.get('RESEND_FROM') ?? 'Tributário <onboarding@resend.dev>',
       to: destinatarios,
       subject: assunto,
       html: `${corpoHtml}<p><a href="${anexoUrl}">Baixar relatório PDF</a> (link válido por 7 dias)</p>`,
