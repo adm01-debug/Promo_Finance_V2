@@ -2,11 +2,16 @@
  "aviso": "GERADO AUTOMATICAMENTE por scripts/ai-context/gerar.mjs — não editar à mão; será sobrescrito.",
  "format_version": 2,
  "git": {
-  "commit": "0821a38bb53a8637de02e257d0422c3f12c9659c",
+  "commit": "4589361ebcd123d74fdbf6f670f78c1bfbb21fe3",
   "branch": "main",
-  "data_commit": "2026-11-12T06:16:09-03:00",
+  "data_commit": "2026-11-12T06:57:46-03:00",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
   "ultimos_commits": [
+   {
+    "sha": "4589361",
+    "data": "2026-11-12",
+    "assunto": "fix: normalizar_tipo_partida grava tipo em minúsculo (constraint exige debito/credito) (#312)"
+   },
    {
     "sha": "0821a38",
     "data": "2026-11-12",
@@ -126,14 +131,9 @@
     "sha": "bec7163",
     "data": "2026-11-10",
     "assunto": "feat(ci): guard do perímetro do GitHub contra baseline versionado (#277)"
-   },
-   {
-    "sha": "3e0b415",
-    "data": "2026-11-10",
-    "assunto": "fix(automacao): aplica findings do Codex no #300 (#301)"
    }
   ],
-  "arquivos_mudados_7d": 489,
+  "arquivos_mudados_7d": 490,
   "pastas_mais_mudadas_30d": [
    {
     "pasta": "package.json",
@@ -301,7 +301,7 @@
   "autores_30d": [
    {
     "autor": "adm01-debug",
-    "commits": 84
+    "commits": 85
    },
    {
     "autor": "devin-ai-integration[bot]",
@@ -318,7 +318,7 @@
   ]
  },
  "contagens": {
-  "arquivos_total": 3614,
+  "arquivos_total": 3615,
   "arquivos_codigo": 2216,
   "linhas_codigo": 428821,
   "rotas": 128,
@@ -330,7 +330,7 @@
   "hooks": 264,
   "edge_functions": 106,
   "tabelas": 352,
-  "migrations": 1004,
+  "migrations": 1005,
   "cron_jobs": 21,
   "testes": 426,
   "workflows": 19,
