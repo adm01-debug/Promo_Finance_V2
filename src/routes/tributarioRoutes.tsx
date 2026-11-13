@@ -38,11 +38,20 @@ import {
   ComparativoConformidadePage,
   PreferenciasDigestPage,
   ObservabilidadeDigestPage,
+  ConsultaRapidaFiscal,
 } from './tributarioPages';
 
 export function tributarioRoutes() {
   return (
     <>
+      <Route
+        path="/tributario/consulta-rapida"
+        element={
+          <ProtectedRoute>
+            <ConsultaRapidaFiscal />
+          </ProtectedRoute>
+        }
+      />
       <Route
         path="/tributario/simulacao-regimes"
         element={

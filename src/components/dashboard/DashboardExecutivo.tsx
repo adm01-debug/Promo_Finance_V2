@@ -33,6 +33,12 @@ import { containerVariants, itemVariants } from './DashboardExecutivo.helpers';
 import { SectionDivider } from './SectionDivider';
 import { DashboardExecutivoConteudo } from './DashboardExecutivoConteudo';
 
+const WIDGET_SIZE_CLASS: Record<DashboardWidget['size'], string> = {
+  sm: '2xl:col-span-1',
+  md: '2xl:col-span-1',
+  lg: '2xl:col-span-2',
+};
+
 export const DashboardExecutivo = () => {
   const { currentEmpresaId } = useAuth();
   const [empresaFilter, setEmpresaFilter] = useState<string>(currentEmpresaId || 'all');
@@ -40,7 +46,7 @@ export const DashboardExecutivo = () => {
   const [periodoFluxo, setPeriodoFluxo] = useState('30');
   const [configDialogOpen, setConfigDialogOpen] = useState(false);
 
-  const { widgets, resetToDefault } = useDashboardConfig();
+  const { widgets, resetToDefault, toggleWidget, resizeWidget } = useDashboardConfig();
 
   const metrics = useDashboardMetrics({
     empresaFilter,
@@ -312,11 +318,17 @@ export const DashboardExecutivo = () => {
                 </motion.div>
               </div>
 
-              <motion.div variants={itemVariants} className="space-y-6">
+              <motion.div
+                variants={itemVariants}
+                className="grid grid-cols-1 2xl:grid-cols-2 gap-6"
+              >
                 {widgets
                   .filter((w) => w.visible)
                   .map((widget) => (
-                    <div key={widget.id} className="w-full">
+                    <div
+                      key={widget.id}
+                      className={`min-w-0 ${WIDGET_SIZE_CLASS[widget.size] ?? '2xl:col-span-2'}`}
+                    >
                       {renderWidget(widget)}
                     </div>
                   ))}
@@ -345,8 +357,8 @@ export const DashboardExecutivo = () => {
         open={configDialogOpen}
         onOpenChange={setConfigDialogOpen}
         widgets={widgets}
-        onToggleWidget={() => {}}
-        onResizeWidget={() => {}}
+        onToggleWidget={toggleWidget}
+        onResizeWidget={resizeWidget}
         onResetToDefault={resetToDefault}
       />
     </div>

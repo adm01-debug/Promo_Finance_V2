@@ -31,3 +31,4 @@ export const SinoNotificacoesFiltros = lazy(
 export const SharedFiltersAdmin = lazy(() => import('../pages/admin/SharedFiltersAdmin'));
 export const ApiManagement = lazy(() => import('../pages/admin/ApiManagement'));
 export const CustomFieldsAdmin = lazy(() => import('../pages/admin/CustomFieldsAdmin'));
+export const AdminErrosFrontend = lazy(() => import('../pages/admin/AdminErrosFrontend'));

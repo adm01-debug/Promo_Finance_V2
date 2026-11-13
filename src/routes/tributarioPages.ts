@@ -57,3 +57,4 @@ export const PreferenciasDigestPage = lazy(() => import('../pages/tributario/Pre
 export const ObservabilidadeDigestPage = lazy(
   () => import('../pages/tributario/ObservabilidadeDigest')
 );
+export const ConsultaRapidaFiscal = lazy(() => import('../pages/tributario/ConsultaRapidaFiscal'));

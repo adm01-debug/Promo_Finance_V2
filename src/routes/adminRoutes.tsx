@@ -29,6 +29,7 @@ import {
   SharedFiltersAdmin,
   ApiManagement,
   CustomFieldsAdmin,
+  AdminErrosFrontend,
 } from './adminPages';
 
 export function adminRoutes() {
@@ -75,6 +76,14 @@ export function adminRoutes() {
         element={
           <ProtectedRoute>
             <Integracoes />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/admin/erros-frontend"
+        element={
+          <ProtectedRoute requiredRoles={['admin']}>
+            <AdminErrosFrontend />
           </ProtectedRoute>
         }
       />
