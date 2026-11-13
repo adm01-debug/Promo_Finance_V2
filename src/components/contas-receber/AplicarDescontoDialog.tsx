@@ -48,7 +48,7 @@ export function AplicarDescontoDialog({ conta, open, onOpenChange }: AplicarDesc
         .from('contas_receber')
         .update({
           valor_desconto: descontoReal,
-          // TODO: coluna 'valor_final' não existe em contas_receber no types.ts (removida)
+          valor_final: valorFinal,
           observacoes: motivo ? `Desconto: ${motivo}` : undefined,
         })
         .eq('id', conta.id);

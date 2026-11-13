@@ -29,7 +29,7 @@ export function useCreateProtesto() {
     }) => {
       const { data, error } = await supabase
         .from('protestos')
-        // TODO(2026-08-14): observacoes/created_by removidos — não existem em protestos (types.ts)
+        // created_by fica com o DEFAULT auth.uid() da coluna.
         .insert({
           valor: input.valor,
           cliente_id: input.cliente_id,
@@ -38,6 +38,7 @@ export function useCreateProtesto() {
           cartorio: input.cartorio,
           cidade_cartorio: input.cidade_cartorio,
           estado_cartorio: input.estado_cartorio,
+          observacoes: input.observacoes,
           status: 'pendente',
         })
         .select()
@@ -71,13 +72,14 @@ export function useUpdateProtesto() {
     }) => {
       const { error } = await supabase
         .from('protestos')
-        // TODO(2026-08-14): data_protocolo→data_protesto (renomeada); data_pagamento/observacoes removidos (não existem no schema)
-        // TODO(2026-08-14): protocolo→numero_protesto (nome canônico em protestos)
+        // protocolo→numero_protesto e data_protocolo→data_protesto (nomes das colunas)
         .update({
           status: data.status,
           numero_protesto: data.protocolo,
           data_protesto: data.data_protocolo ?? data.data_protesto,
           custas: data.custas,
+          data_pagamento: data.data_pagamento,
+          observacoes: data.observacoes,
         })
         .eq('id', id);
       if (error) throw error;

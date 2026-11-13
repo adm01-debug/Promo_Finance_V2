@@ -13,6 +13,7 @@ export interface PixTemplate {
   favorecido_cpf_cnpj: string | null;
   chave_pix: string;
   tipo_chave_pix: string;
+  cidade: string;
   valor_padrao: number;
   valor_fixo: boolean;
   categoria: string | null;
@@ -53,7 +54,13 @@ export const useCreatePixTemplate = () => {
     ) => {
       const { data, error } = await supabase
         .from('pix_templates')
-        .insert({ ...template, created_by: user!.id })
+        .insert({
+          ...template,
+          // Colunas NOT NULL do schema (beneficiario_nome/tipo_chave) espelham as do formulário.
+          beneficiario_nome: template.favorecido_nome,
+          tipo_chave: template.tipo_chave_pix,
+          created_by: user!.id,
+        })
         .select()
         .single();
       if (error) throw error;
