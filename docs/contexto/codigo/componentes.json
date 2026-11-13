@@ -1,7 +1,7 @@
 {
  "aviso": "GERADO AUTOMATICAMENTE por scripts/ai-context/gerar.mjs — não editar à mão; será sobrescrito.",
  "format_version": 2,
- "total": 908,
+ "total": 990,
  "orfaos": 44,
  "nomes_duplicados": {
   "Accordion": [
@@ -12,7 +12,12 @@
    "src/components/ui/accordion.tsx",
    "src/components/ui/collapse.tsx"
   ],
+  "Alertas": [
+   "src/pages/Alertas.tsx",
+   "src/pages/tributario/Alertas.tsx"
+  ],
   "AnimatedCounter": [
+   "src/components/empresas/AnimatedCounter.tsx",
    "src/components/reforma-tributaria/AnimatedCounter.tsx",
    "src/components/ui/micro-interactions.tsx"
   ],
@@ -73,7 +78,8 @@
   "KpiCard": [
    "src/components/contabilidade/sped-ecd-atoms.tsx",
    "src/components/contabilidade/sped-ecf-wizard/wizard-atoms.tsx",
-   "src/components/contabilidade/SpedEcdWizardBits.tsx"
+   "src/components/contabilidade/SpedEcdWizardBits.tsx",
+   "src/pages/tributario/KpiCard.tsx"
   ],
   "KpiChip": [
    "src/components/contabilidade/sped-ecd-atoms.tsx",
@@ -84,10 +90,20 @@
    "src/components/bling/BlingShared.tsx",
    "src/components/ui/loading-skeleton.tsx"
   ],
+  "MemoriaTable": [
+   "src/pages/tributario/IpiIss.MemoriaTable.tsx",
+   "src/pages/tributario/IrpjCsllLucroReal.MemoriaTable.tsx",
+   "src/pages/tributario/MemoriaTable.tsx",
+   "src/pages/tributario/PisCofinsCreditos.MemoriaTable.tsx"
+  ],
   "MetaField": [
    "src/components/contabilidade/sped-ecd-atoms.tsx",
    "src/components/contabilidade/sped-ecf-wizard/wizard-atoms.tsx",
    "src/components/contabilidade/SpedEcdWizardBits.tsx"
+  ],
+  "NumberField": [
+   "src/components/tributario/calculadora/NumberField.tsx",
+   "src/pages/tributario/NumberField.tsx"
   ],
   "ObrigacoesAcessorias": [
    "src/components/reforma-tributaria/ObrigacoesAcessorias.tsx",
@@ -113,6 +129,11 @@
    "src/components/ui/data-grid.tsx",
    "src/components/ui/data-table.tsx",
    "src/components/ui/sortable-header.tsx"
+  ],
+  "StatCard": [
+   "src/components/contabilidade/StatCard.tsx",
+   "src/components/design-system-debug/StatCard.tsx",
+   "src/components/motion/StatCard.tsx"
   ],
   "StatsCards": [
    "src/components/contabilidade/contabilizacao-automatica/StatsCards.tsx",
@@ -145,7 +166,7 @@
     "App"
    ],
    "export_default": "App",
-   "linhas": 1205,
+   "linhas": 122,
    "dominio": null,
    "hooks_locais": [
     "useSelectiveEmpresaInvalidation"
@@ -672,6 +693,20 @@
    "orfao": false
   },
   {
+   "arquivo": "src/components/admin/sso/CopyField.tsx",
+   "exports": [
+    "CopyField"
+   ],
+   "export_default": null,
+   "linhas": 26,
+   "dominio": "components/admin",
+   "hooks_locais": [],
+   "tabelas": [],
+   "edges": [],
+   "usado_por": 1,
+   "orfao": false
+  },
+  {
    "arquivo": "src/components/admin/sso/sandbox/ClaimFocusCard.tsx",
    "exports": [
     "ClaimFocusCard"
@@ -705,12 +740,26 @@
     "SandboxBulkPanel"
    ],
    "export_default": null,
-   "linhas": 512,
+   "linhas": 364,
    "dominio": "components/admin",
    "hooks_locais": [
     "useSSOProviders",
     "useSaveSSOSandboxRun"
    ],
+   "tabelas": [],
+   "edges": [],
+   "usado_por": 1,
+   "orfao": false
+  },
+  {
+   "arquivo": "src/components/admin/sso/sandbox/SandboxBulkPanelProvedorSSO.tsx",
+   "exports": [
+    "SandboxBulkPanelProvedorSSO"
+   ],
+   "export_default": null,
+   "linhas": 225,
+   "dominio": "components/admin",
+   "hooks_locais": [],
    "tabelas": [],
    "edges": [],
    "usado_por": 1,
@@ -810,15 +859,27 @@
     "ScimSetupGuide"
    ],
    "export_default": null,
-   "linhas": 524,
+   "linhas": 375,
    "dominio": "components/admin",
    "hooks_locais": [
     "useScimChecklist"
    ],
    "tabelas": [],
-   "edges": [
-    "scim-server"
+   "edges": [],
+   "usado_por": 1,
+   "orfao": false
+  },
+  {
+   "arquivo": "src/components/admin/sso/ScimSetupGuideChecklistConfiguracao.tsx",
+   "exports": [
+    "ScimSetupGuideChecklistConfiguracao"
    ],
+   "export_default": null,
+   "linhas": 95,
+   "dominio": "components/admin",
+   "hooks_locais": [],
+   "tabelas": [],
+   "edges": [],
    "usado_por": 1,
    "orfao": false
   },
@@ -942,13 +1003,27 @@
     "SSOSandboxPanel"
    ],
    "export_default": null,
-   "linhas": 530,
+   "linhas": 358,
    "dominio": "components/admin",
    "hooks_locais": [
     "useSSOProviders",
     "useSaveSSOSandboxRun",
     "useTestSSOLogin"
    ],
+   "tabelas": [],
+   "edges": [],
+   "usado_por": 1,
+   "orfao": false
+  },
+  {
+   "arquivo": "src/components/admin/sso/SSOSandboxPanelSandboxSimulacaoSSO.tsx",
+   "exports": [
+    "SSOSandboxPanelSandboxSimulacaoSSO"
+   ],
+   "export_default": null,
+   "linhas": 265,
+   "dominio": "components/admin",
+   "hooks_locais": [],
    "tabelas": [],
    "edges": [],
    "usado_por": 1,
@@ -991,7 +1066,7 @@
     "SSOWizardDialog"
    ],
    "export_default": null,
-   "linhas": 464,
+   "linhas": 263,
    "dominio": "components/admin",
    "hooks_locais": [
     "useSSOConsistency",
@@ -999,6 +1074,20 @@
     "useSaveSSOProvider",
     "useSaveSSORoleMappings"
    ],
+   "tabelas": [],
+   "edges": [],
+   "usado_por": 1,
+   "orfao": false
+  },
+  {
+   "arquivo": "src/components/admin/sso/SSOWizardDialogDominiosEmailPermitidos.tsx",
+   "exports": [
+    "SSOWizardDialogDominiosEmailPermitidos"
+   ],
+   "export_default": null,
+   "linhas": 242,
+   "dominio": "components/admin",
+   "hooks_locais": [],
    "tabelas": [],
    "edges": [],
    "usado_por": 1,
@@ -1346,12 +1435,26 @@
    "orfao": false
   },
   {
+   "arquivo": "src/components/analytics/InadimplenciaKpis.tsx",
+   "exports": [
+    "InadimplenciaKpis"
+   ],
+   "export_default": null,
+   "linhas": 113,
+   "dominio": "components/analytics",
+   "hooks_locais": [],
+   "tabelas": [],
+   "edges": [],
+   "usado_por": 1,
+   "orfao": false
+  },
+  {
    "arquivo": "src/components/analytics/InadimplenciaSegmentada.tsx",
    "exports": [
     "InadimplenciaSegmentada"
    ],
    "export_default": null,
-   "linhas": 422,
+   "linhas": 317,
    "dominio": "components/analytics",
    "hooks_locais": [
     "useInadimplenciaPorRamo",
@@ -1397,7 +1500,7 @@
     "AprovacoesPendentes"
    ],
    "export_default": null,
-   "linhas": 467,
+   "linhas": 373,
    "dominio": "components/aprovacoes",
    "hooks_locais": [
     "useAdicionarComentario",
@@ -1407,6 +1510,20 @@
     "useRejeitarSolicitacao",
     "useSolicitacoesPendentes"
    ],
+   "tabelas": [],
+   "edges": [],
+   "usado_por": 1,
+   "orfao": false
+  },
+  {
+   "arquivo": "src/components/aprovacoes/AprovacoesPendentesConteudo.tsx",
+   "exports": [
+    "AprovacoesPendentesConteudo"
+   ],
+   "export_default": null,
+   "linhas": 123,
+   "dominio": "components/aprovacoes",
+   "hooks_locais": [],
    "tabelas": [],
    "edges": [],
    "usado_por": 1,
@@ -1534,7 +1651,7 @@
     "ClientesAsaasDialog"
    ],
    "export_default": null,
-   "linhas": 202,
+   "linhas": 203,
    "dominio": "components/asaas",
    "hooks_locais": [
     "useAsaas"
@@ -1630,7 +1747,7 @@
     "NovaCobrancaDialog"
    ],
    "export_default": null,
-   "linhas": 477,
+   "linhas": 336,
    "dominio": "components/asaas",
    "hooks_locais": [
     "useAsaas"
@@ -1640,6 +1757,20 @@
    ],
    "edges": [],
    "usado_por": 2,
+   "orfao": false
+  },
+  {
+   "arquivo": "src/components/asaas/NovaCobrancaDialogVincularContaReceber.tsx",
+   "exports": [
+    "NovaCobrancaDialogVincularContaReceber"
+   ],
+   "export_default": null,
+   "linhas": 316,
+   "dominio": "components/asaas",
+   "hooks_locais": [],
+   "tabelas": [],
+   "edges": [],
+   "usado_por": 1,
    "orfao": false
   },
   {
@@ -1706,11 +1837,24 @@
   {
    "arquivo": "src/components/asaas/tabs/CobrancasTab.tsx",
    "exports": [
-    "CobrancasTab",
-    "CobrancasTabProps"
+    "CobrancasTab"
    ],
    "export_default": null,
-   "linhas": 499,
+   "linhas": 218,
+   "dominio": "components/asaas",
+   "hooks_locais": [],
+   "tabelas": [],
+   "edges": [],
+   "usado_por": 1,
+   "orfao": false
+  },
+  {
+   "arquivo": "src/components/asaas/tabs/CobrancasTabConteudo.tsx",
+   "exports": [
+    "CobrancasTabConteudo"
+   ],
+   "export_default": null,
+   "linhas": 291,
    "dominio": "components/asaas",
    "hooks_locais": [],
    "tabelas": [],
@@ -2077,7 +2221,7 @@
    ],
    "tabelas": [],
    "edges": [],
-   "usado_por": 2,
+   "usado_por": 9,
    "orfao": false
   },
   {
@@ -2179,7 +2323,7 @@
     "BIEmpresasTab"
    ],
    "export_default": null,
-   "linhas": 421,
+   "linhas": 400,
    "dominio": "components/bi",
    "hooks_locais": [],
    "tabelas": [],
@@ -2341,7 +2485,7 @@
     "BlingFinanceiroPanel"
    ],
    "export_default": null,
-   "linhas": 649,
+   "linhas": 381,
    "dominio": "components/bling",
    "hooks_locais": [
     "useBlingBorderos",
@@ -2354,6 +2498,48 @@
    "tabelas": [],
    "edges": [],
    "usado_por": 2,
+   "orfao": false
+  },
+  {
+   "arquivo": "src/components/bling/BlingFinanceiroPanelConteudo.tsx",
+   "exports": [
+    "BlingFinanceiroPanelConteudo"
+   ],
+   "export_default": null,
+   "linhas": 84,
+   "dominio": "components/bling",
+   "hooks_locais": [],
+   "tabelas": [],
+   "edges": [],
+   "usado_por": 1,
+   "orfao": false
+  },
+  {
+   "arquivo": "src/components/bling/BlingFinanceiroPanelConteudo2.tsx",
+   "exports": [
+    "BlingFinanceiroPanelConteudo2"
+   ],
+   "export_default": null,
+   "linhas": 69,
+   "dominio": "components/bling",
+   "hooks_locais": [],
+   "tabelas": [],
+   "edges": [],
+   "usado_por": 1,
+   "orfao": false
+  },
+  {
+   "arquivo": "src/components/bling/BlingFinanceiroPanelFinanceiro.tsx",
+   "exports": [
+    "BlingFinanceiroPanelFinanceiro"
+   ],
+   "export_default": null,
+   "linhas": 233,
+   "dominio": "components/bling",
+   "hooks_locais": [],
+   "tabelas": [],
+   "edges": [],
+   "usado_por": 1,
    "orfao": false
   },
   {
@@ -2440,7 +2626,7 @@
    "hooks_locais": [],
    "tabelas": [],
    "edges": [],
-   "usado_por": 7,
+   "usado_por": 8,
    "orfao": false
   },
   {
@@ -2764,7 +2950,7 @@
     "AcordoParcelamentoDialog"
    ],
    "export_default": null,
-   "linhas": 441,
+   "linhas": 419,
    "dominio": "components/cobranca",
    "hooks_locais": [
     "useAcordosParcelamento",
@@ -3297,7 +3483,7 @@
     "ConciliacaoAuditPanel"
    ],
    "export_default": null,
-   "linhas": 486,
+   "linhas": 378,
    "dominio": "components/conciliacao",
    "hooks_locais": [],
    "tabelas": [
@@ -3306,6 +3492,20 @@
     "profiles",
     "transacoes_bancarias"
    ],
+   "edges": [],
+   "usado_por": 1,
+   "orfao": false
+  },
+  {
+   "arquivo": "src/components/conciliacao/ConciliacaoAuditPanelConteudo.tsx",
+   "exports": [
+    "ConciliacaoAuditPanelConteudo"
+   ],
+   "export_default": null,
+   "linhas": 121,
+   "dominio": "components/conciliacao",
+   "hooks_locais": [],
+   "tabelas": [],
    "edges": [],
    "usado_por": 1,
    "orfao": false
@@ -3359,7 +3559,7 @@
    ],
    "tabelas": [],
    "edges": [],
-   "usado_por": 4,
+   "usado_por": 6,
    "orfao": false
   },
   {
@@ -3568,14 +3768,26 @@
    "orfao": false
   },
   {
-   "arquivo": "src/components/conciliacao/ia/SugestoesMatchSections.tsx",
+   "arquivo": "src/components/conciliacao/ia/SugestoesHeaderIA.tsx",
    "exports": [
-    "EstatisticasIA",
-    "SugestaoMatchCard",
     "SugestoesHeaderIA"
    ],
    "export_default": null,
-   "linhas": 483,
+   "linhas": 140,
+   "dominio": "components/conciliacao",
+   "hooks_locais": [],
+   "tabelas": [],
+   "edges": [],
+   "usado_por": 1,
+   "orfao": false
+  },
+  {
+   "arquivo": "src/components/conciliacao/ia/SugestoesMatchSections.tsx",
+   "exports": [
+    "SugestaoMatchCard"
+   ],
+   "export_default": null,
+   "linhas": 306,
    "dominio": "components/conciliacao",
    "hooks_locais": [],
    "tabelas": [],
@@ -3589,7 +3801,7 @@
     "ImportarExtratoDialog"
    ],
    "export_default": null,
-   "linhas": 510,
+   "linhas": 371,
    "dominio": "components/conciliacao",
    "hooks_locais": [],
    "tabelas": [
@@ -3597,6 +3809,20 @@
    ],
    "edges": [],
    "usado_por": 2,
+   "orfao": false
+  },
+  {
+   "arquivo": "src/components/conciliacao/ImportarExtratoDialogArquivoLocal.tsx",
+   "exports": [
+    "ImportarExtratoDialogArquivoLocal"
+   ],
+   "export_default": null,
+   "linhas": 159,
+   "dominio": "components/conciliacao",
+   "hooks_locais": [],
+   "tabelas": [],
+   "edges": [],
+   "usado_por": 1,
    "orfao": false
   },
   {
@@ -3654,7 +3880,7 @@
     "SugestoesMatchIA"
    ],
    "export_default": null,
-   "linhas": 427,
+   "linhas": 428,
    "dominio": "components/conciliacao",
    "hooks_locais": [
     "useConciliacaoIA",
@@ -3863,7 +4089,7 @@
     "AuditoriaCFCPanel"
    ],
    "export_default": null,
-   "linhas": 432,
+   "linhas": 391,
    "dominio": "components/contabilidade",
    "hooks_locais": [],
    "tabelas": [],
@@ -4111,7 +4337,7 @@
     "ElisaoFiscalTab"
    ],
    "export_default": null,
-   "linhas": 441,
+   "linhas": 372,
    "dominio": "components/contabilidade",
    "hooks_locais": [],
    "tabelas": [
@@ -4119,6 +4345,20 @@
     "elisao_simulacoes_regime",
     "elisao_tarefas_acionaveis"
    ],
+   "edges": [],
+   "usado_por": 1,
+   "orfao": false
+  },
+  {
+   "arquivo": "src/components/contabilidade/elisao/ElisaoStatCards.tsx",
+   "exports": [
+    "ElisaoStatCards"
+   ],
+   "export_default": null,
+   "linhas": 61,
+   "dominio": "components/contabilidade",
+   "hooks_locais": [],
+   "tabelas": [],
    "edges": [],
    "usado_por": 1,
    "orfao": false
@@ -4249,7 +4489,7 @@
     "IndicadorCard"
    ],
    "export_default": null,
-   "linhas": 90,
+   "linhas": 91,
    "dominio": "components/contabilidade",
    "hooks_locais": [],
    "tabelas": [],
@@ -4263,7 +4503,7 @@
     "IndicesGrid"
    ],
    "export_default": null,
-   "linhas": 70,
+   "linhas": 71,
    "dominio": "components/contabilidade",
    "hooks_locais": [],
    "tabelas": [],
@@ -4323,13 +4563,27 @@
     "LancamentosTab"
    ],
    "export_default": null,
-   "linhas": 539,
+   "linhas": 254,
    "dominio": "components/contabilidade",
    "hooks_locais": [
     "useAuth",
     "useLancamentosContabeis",
     "usePlanoContas"
    ],
+   "tabelas": [],
+   "edges": [],
+   "usado_por": 1,
+   "orfao": false
+  },
+  {
+   "arquivo": "src/components/contabilidade/LancamentosTabConteudo.tsx",
+   "exports": [
+    "LancamentosTabConteudo"
+   ],
+   "export_default": null,
+   "linhas": 327,
+   "dominio": "components/contabilidade",
+   "hooks_locais": [],
    "tabelas": [],
    "edges": [],
    "usado_por": 1,
@@ -4371,7 +4625,7 @@
     "PlanoContasTab"
    ],
    "export_default": null,
-   "linhas": 509,
+   "linhas": 378,
    "dominio": "components/contabilidade",
    "hooks_locais": [
     "useAuditoriaCFC",
@@ -4380,6 +4634,20 @@
     "usePlanoContas",
     "useUpsertPlanoConta"
    ],
+   "tabelas": [],
+   "edges": [],
+   "usado_por": 1,
+   "orfao": false
+  },
+  {
+   "arquivo": "src/components/contabilidade/PlanoContasTabConteudo.tsx",
+   "exports": [
+    "PlanoContasTabConteudo"
+   ],
+   "export_default": null,
+   "linhas": 137,
+   "dominio": "components/contabilidade",
+   "hooks_locais": [],
    "tabelas": [],
    "edges": [],
    "usado_por": 1,
@@ -4473,12 +4741,40 @@
    "orfao": false
   },
   {
+   "arquivo": "src/components/contabilidade/sped-contabil/SpedHistoricoRow.tsx",
+   "exports": [
+    "SpedHistoricoRow"
+   ],
+   "export_default": null,
+   "linhas": 393,
+   "dominio": "components/contabilidade",
+   "hooks_locais": [],
+   "tabelas": [],
+   "edges": [],
+   "usado_por": 1,
+   "orfao": false
+  },
+  {
    "arquivo": "src/components/contabilidade/sped-contabil/SpedHistoricoTable.tsx",
    "exports": [
     "SpedHistoricoTable"
    ],
    "export_default": null,
-   "linhas": 475,
+   "linhas": 59,
+   "dominio": "components/contabilidade",
+   "hooks_locais": [],
+   "tabelas": [],
+   "edges": [],
+   "usado_por": 1,
+   "orfao": false
+  },
+  {
+   "arquivo": "src/components/contabilidade/sped-contabil/SpedHistoricoTableConteudo.tsx",
+   "exports": [
+    "SpedHistoricoTableConteudo"
+   ],
+   "export_default": null,
+   "linhas": 29,
    "dominio": "components/contabilidade",
    "hooks_locais": [],
    "tabelas": [],
@@ -4813,6 +5109,20 @@
    "orfao": false
   },
   {
+   "arquivo": "src/components/contabilidade/StatCard.tsx",
+   "exports": [
+    "StatCard"
+   ],
+   "export_default": null,
+   "linhas": 59,
+   "dominio": "components/contabilidade",
+   "hooks_locais": [],
+   "tabelas": [],
+   "edges": [],
+   "usado_por": 1,
+   "orfao": false
+  },
+  {
    "arquivo": "src/components/contabilidade/validacoes-pre-sped/CategoryList.tsx",
    "exports": [
     "CategoryList"
@@ -4889,11 +5199,25 @@
     "VerificacaoIntegracoesPanel"
    ],
    "export_default": null,
-   "linhas": 591,
+   "linhas": 372,
    "dominio": "components/contabilidade",
    "hooks_locais": [
     "useVerificacaoIntegracoes"
    ],
+   "tabelas": [],
+   "edges": [],
+   "usado_por": 1,
+   "orfao": false
+  },
+  {
+   "arquivo": "src/components/contabilidade/VerificacaoIntegracoesPanelConteudo.tsx",
+   "exports": [
+    "VerificacaoIntegracoesPanelConteudo"
+   ],
+   "export_default": null,
+   "linhas": 133,
+   "dominio": "components/contabilidade",
+   "hooks_locais": [],
    "tabelas": [],
    "edges": [],
    "usado_por": 1,
@@ -5013,7 +5337,7 @@
     "ContaPagarForm"
    ],
    "export_default": null,
-   "linhas": 531,
+   "linhas": 375,
    "dominio": "components/contas-pagar",
    "hooks_locais": [
     "useCategorias",
@@ -5041,6 +5365,20 @@
    ],
    "export_default": null,
    "linhas": 375,
+   "dominio": "components/contas-pagar",
+   "hooks_locais": [],
+   "tabelas": [],
+   "edges": [],
+   "usado_por": 2,
+   "orfao": false
+  },
+  {
+   "arquivo": "src/components/contas-pagar/ContaPagarFormFormulario.tsx",
+   "exports": [
+    "ContaPagarFormFormulario"
+   ],
+   "export_default": null,
+   "linhas": 228,
    "dominio": "components/contas-pagar",
    "hooks_locais": [],
    "tabelas": [],
@@ -5096,7 +5434,7 @@
     "ContasPagarTableRow"
    ],
    "export_default": null,
-   "linhas": 447,
+   "linhas": 351,
    "dominio": "components/contas-pagar",
    "hooks_locais": [],
    "tabelas": [
@@ -5154,7 +5492,7 @@
     "RegistrarPagamentoDialog"
    ],
    "export_default": null,
-   "linhas": 455,
+   "linhas": 427,
    "dominio": "components/contas-pagar",
    "hooks_locais": [
     "useConfiguracaoAprovacao",
@@ -5205,7 +5543,7 @@
     "BaixaAutomaticaDialog"
    ],
    "export_default": null,
-   "linhas": 464,
+   "linhas": 366,
    "dominio": "components/contas-receber",
    "hooks_locais": [],
    "tabelas": [
@@ -5214,6 +5552,20 @@
     "logs_baixa_automatica",
     "transacoes_bancarias"
    ],
+   "edges": [],
+   "usado_por": 1,
+   "orfao": false
+  },
+  {
+   "arquivo": "src/components/contas-receber/BaixaAutomaticaDialogCorrespondenciasAutomaticas.tsx",
+   "exports": [
+    "BaixaAutomaticaDialogCorrespondenciasAutomaticas"
+   ],
+   "export_default": null,
+   "linhas": 100,
+   "dominio": "components/contas-receber",
+   "hooks_locais": [],
+   "tabelas": [],
    "edges": [],
    "usado_por": 1,
    "orfao": false
@@ -5300,7 +5652,63 @@
     "ContaReceberFormFields"
    ],
    "export_default": null,
-   "linhas": 750,
+   "linhas": 398,
+   "dominio": "components/contas-receber",
+   "hooks_locais": [],
+   "tabelas": [],
+   "edges": [],
+   "usado_por": 1,
+   "orfao": false
+  },
+  {
+   "arquivo": "src/components/contas-receber/ContaReceberFormFieldsCamposCondicionais.tsx",
+   "exports": [
+    "ContaReceberFormFieldsCamposCondicionais"
+   ],
+   "export_default": null,
+   "linhas": 89,
+   "dominio": "components/contas-receber",
+   "hooks_locais": [],
+   "tabelas": [],
+   "edges": [],
+   "usado_por": 1,
+   "orfao": false
+  },
+  {
+   "arquivo": "src/components/contas-receber/ContaReceberFormFieldsCliente.tsx",
+   "exports": [
+    "ContaReceberFormFieldsCliente"
+   ],
+   "export_default": null,
+   "linhas": 132,
+   "dominio": "components/contas-receber",
+   "hooks_locais": [],
+   "tabelas": [],
+   "edges": [],
+   "usado_por": 1,
+   "orfao": false
+  },
+  {
+   "arquivo": "src/components/contas-receber/ContaReceberFormFieldsObservacoes.tsx",
+   "exports": [
+    "ContaReceberFormFieldsObservacoes"
+   ],
+   "export_default": null,
+   "linhas": 32,
+   "dominio": "components/contas-receber",
+   "hooks_locais": [],
+   "tabelas": [],
+   "edges": [],
+   "usado_por": 1,
+   "orfao": false
+  },
+  {
+   "arquivo": "src/components/contas-receber/ContaReceberFormFieldsRecorrente.tsx",
+   "exports": [
+    "ContaReceberFormFieldsRecorrente"
+   ],
+   "export_default": null,
+   "linhas": 117,
    "dominio": "components/contas-receber",
    "hooks_locais": [],
    "tabelas": [],
@@ -5362,7 +5770,7 @@
    "hooks_locais": [],
    "tabelas": [],
    "edges": [],
-   "usado_por": 5,
+   "usado_por": 7,
    "orfao": false
   },
   {
@@ -5764,7 +6172,7 @@
     "DashboardExecutivo"
    ],
    "export_default": null,
-   "linhas": 479,
+   "linhas": 366,
    "dominio": "components/dashboard",
    "hooks_locais": [
     "useAuth",
@@ -5774,6 +6182,20 @@
    "tabelas": [
     "bloqueios_duplicidade"
    ],
+   "edges": [],
+   "usado_por": 1,
+   "orfao": false
+  },
+  {
+   "arquivo": "src/components/dashboard/DashboardExecutivoConteudo.tsx",
+   "exports": [
+    "DashboardExecutivoConteudo"
+   ],
+   "export_default": null,
+   "linhas": 99,
+   "dominio": "components/dashboard",
+   "hooks_locais": [],
+   "tabelas": [],
    "edges": [],
    "usado_por": 1,
    "orfao": false
@@ -6002,6 +6424,20 @@
    "orfao": false
   },
   {
+   "arquivo": "src/components/dashboard/SectionDivider.tsx",
+   "exports": [
+    "SectionDivider"
+   ],
+   "export_default": null,
+   "linhas": 13,
+   "dominio": "components/dashboard",
+   "hooks_locais": [],
+   "tabelas": [],
+   "edges": [],
+   "usado_por": 1,
+   "orfao": false
+  },
+  {
    "arquivo": "src/components/dashboard/StatusContasPieChart.tsx",
    "exports": [
     "StatusContasPieChart"
@@ -6128,13 +6564,27 @@
     "FluxoCaixaContabil"
    ],
    "export_default": null,
-   "linhas": 539,
+   "linhas": 400,
    "dominio": "components/demonstrativos",
    "hooks_locais": [
     "useContasBancarias",
     "useContasPagar",
     "useContasReceber"
    ],
+   "tabelas": [],
+   "edges": [],
+   "usado_por": 1,
+   "orfao": false
+  },
+  {
+   "arquivo": "src/components/demonstrativos/FluxoCaixaContabilCardsResumo.tsx",
+   "exports": [
+    "FluxoCaixaContabilCardsResumo"
+   ],
+   "export_default": null,
+   "linhas": 152,
+   "dominio": "components/demonstrativos",
+   "hooks_locais": [],
    "tabelas": [],
    "edges": [],
    "usado_por": 1,
@@ -6160,7 +6610,7 @@
     "DesignSystemAudit"
    ],
    "export_default": null,
-   "linhas": 455,
+   "linhas": 394,
    "dominio": "components/design-system-debug",
    "hooks_locais": [],
    "tabelas": [],
@@ -6180,6 +6630,20 @@
    "tabelas": [],
    "edges": [],
    "usado_por": 2,
+   "orfao": false
+  },
+  {
+   "arquivo": "src/components/design-system-debug/StatCard.tsx",
+   "exports": [
+    "StatCard"
+   ],
+   "export_default": null,
+   "linhas": 24,
+   "dominio": "components/design-system-debug",
+   "hooks_locais": [],
+   "tabelas": [],
+   "edges": [],
+   "usado_por": 1,
    "orfao": false
   },
   {
@@ -6279,6 +6743,20 @@
    "orfao": false
   },
   {
+   "arquivo": "src/components/empresas/AnimatedCounter.tsx",
+   "exports": [
+    "AnimatedCounter"
+   ],
+   "export_default": null,
+   "linhas": 34,
+   "dominio": "components/empresas",
+   "hooks_locais": [],
+   "tabelas": [],
+   "edges": [],
+   "usado_por": 1,
+   "orfao": false
+  },
+  {
    "arquivo": "src/components/empresas/CnaeCatalogoInfo.tsx",
    "exports": [
     "CnaeCatalogoInfo",
@@ -6296,11 +6774,10 @@
   {
    "arquivo": "src/components/empresas/EmpresaCardView.tsx",
    "exports": [
-    "EmpresaCardView",
-    "EmpresaHeroKPI"
+    "EmpresaCardView"
    ],
    "export_default": null,
-   "linhas": 424,
+   "linhas": 237,
    "dominio": "components/empresas",
    "hooks_locais": [],
    "tabelas": [],
@@ -6314,7 +6791,7 @@
     "EmpresaForm"
    ],
    "export_default": null,
-   "linhas": 452,
+   "linhas": 411,
    "dominio": "components/empresas",
    "hooks_locais": [
     "useAtualizarEmpresa",
@@ -6322,6 +6799,34 @@
     "useCriarEmpresa",
     "useResolucaoCnae"
    ],
+   "tabelas": [],
+   "edges": [],
+   "usado_por": 1,
+   "orfao": false
+  },
+  {
+   "arquivo": "src/components/empresas/EmpresaFormCidade.tsx",
+   "exports": [
+    "EmpresaFormCidade"
+   ],
+   "export_default": null,
+   "linhas": 72,
+   "dominio": "components/empresas",
+   "hooks_locais": [],
+   "tabelas": [],
+   "edges": [],
+   "usado_por": 1,
+   "orfao": false
+  },
+  {
+   "arquivo": "src/components/empresas/EmpresaHeroKPI.tsx",
+   "exports": [
+    "EmpresaHeroKPI"
+   ],
+   "export_default": null,
+   "linhas": 129,
+   "dominio": "components/empresas",
+   "hooks_locais": [],
    "tabelas": [],
    "edges": [],
    "usado_por": 1,
@@ -7186,7 +7691,7 @@
    ],
    "tabelas": [],
    "edges": [],
-   "usado_por": 90,
+   "usado_por": 94,
    "orfao": false
   },
   {
@@ -7513,7 +8018,7 @@
     "BlingNFePanel"
    ],
    "export_default": null,
-   "linhas": 451,
+   "linhas": 408,
    "dominio": "components/nfe",
    "hooks_locais": [
     "useBlingNFe"
@@ -7572,7 +8077,21 @@
     "ContingenciaNFe"
    ],
    "export_default": null,
-   "linhas": 434,
+   "linhas": 387,
+   "dominio": "components/nfe",
+   "hooks_locais": [],
+   "tabelas": [],
+   "edges": [],
+   "usado_por": 1,
+   "orfao": false
+  },
+  {
+   "arquivo": "src/components/nfe/CustomTooltip.tsx",
+   "exports": [
+    "CustomTooltip"
+   ],
+   "export_default": null,
+   "linhas": 17,
    "dominio": "components/nfe",
    "hooks_locais": [],
    "tabelas": [],
@@ -7595,12 +8114,26 @@
    "orfao": false
   },
   {
+   "arquivo": "src/components/nfe/EventoDetalhes.tsx",
+   "exports": [
+    "EventoDetalhes"
+   ],
+   "export_default": null,
+   "linhas": 133,
+   "dominio": "components/nfe",
+   "hooks_locais": [],
+   "tabelas": [],
+   "edges": [],
+   "usado_por": 1,
+   "orfao": false
+  },
+  {
    "arquivo": "src/components/nfe/EventosHistorico.tsx",
    "exports": [
     "EventosHistorico"
    ],
    "export_default": null,
-   "linhas": 446,
+   "linhas": 248,
    "dominio": "components/nfe",
    "hooks_locais": [],
    "tabelas": [],
@@ -7730,7 +8263,7 @@
     "SefazAnalytics"
    ],
    "export_default": null,
-   "linhas": 423,
+   "linhas": 390,
    "dominio": "components/nfe",
    "hooks_locais": [],
    "tabelas": [],
@@ -8094,12 +8627,26 @@
     "ApuracaoMensal"
    ],
    "export_default": "ApuracaoMensal",
-   "linhas": 444,
+   "linhas": 377,
    "dominio": "components/reforma-tributaria",
    "hooks_locais": [
     "useAllEmpresas",
     "useApuracoesTributarias"
    ],
+   "tabelas": [],
+   "edges": [],
+   "usado_por": 1,
+   "orfao": false
+  },
+  {
+   "arquivo": "src/components/reforma-tributaria/ApuracaoMensalKPICards.tsx",
+   "exports": [
+    "ApuracaoMensalKPICards"
+   ],
+   "export_default": null,
+   "linhas": 75,
+   "dominio": "components/reforma-tributaria",
+   "hooks_locais": [],
    "tabelas": [],
    "edges": [],
    "usado_por": 1,
@@ -8223,7 +8770,7 @@
     "DashboardMetricasTributarias"
    ],
    "export_default": "DashboardMetricasTributarias",
-   "linhas": 418,
+   "linhas": 359,
    "dominio": "components/reforma-tributaria",
    "hooks_locais": [
     "useAlertasTributarios",
@@ -8243,7 +8790,7 @@
     "DashboardReformaTributaria"
    ],
    "export_default": "DashboardReformaTributaria",
-   "linhas": 588,
+   "linhas": 308,
    "dominio": "components/reforma-tributaria",
    "hooks_locais": [
     "useAlertasTributarios",
@@ -8251,6 +8798,48 @@
     "useApuracoesTributarias",
     "useReformaTributaria"
    ],
+   "tabelas": [],
+   "edges": [],
+   "usado_por": 1,
+   "orfao": false
+  },
+  {
+   "arquivo": "src/components/reforma-tributaria/DashboardReformaTributariaConteudo.tsx",
+   "exports": [
+    "DashboardReformaTributariaConteudo"
+   ],
+   "export_default": null,
+   "linhas": 36,
+   "dominio": "components/reforma-tributaria",
+   "hooks_locais": [],
+   "tabelas": [],
+   "edges": [],
+   "usado_por": 1,
+   "orfao": false
+  },
+  {
+   "arquivo": "src/components/reforma-tributaria/DashboardReformaTributariaHeaderWithGlobalEmpresa.tsx",
+   "exports": [
+    "DashboardReformaTributariaHeaderWithGlobalEmpresa"
+   ],
+   "export_default": null,
+   "linhas": 104,
+   "dominio": "components/reforma-tributaria",
+   "hooks_locais": [],
+   "tabelas": [],
+   "edges": [],
+   "usado_por": 1,
+   "orfao": false
+  },
+  {
+   "arquivo": "src/components/reforma-tributaria/DashboardReformaVisaoGeral.tsx",
+   "exports": [
+    "DashboardReformaVisaoGeral"
+   ],
+   "export_default": null,
+   "linhas": 230,
+   "dominio": "components/reforma-tributaria",
+   "hooks_locais": [],
    "tabelas": [],
    "edges": [],
    "usado_por": 1,
@@ -8295,7 +8884,7 @@
     "GestorCreditosTributarios"
    ],
    "export_default": "GestorCreditosTributarios",
-   "linhas": 434,
+   "linhas": 397,
    "dominio": "components/reforma-tributaria",
    "hooks_locais": [
     "useAllEmpresas",
@@ -8356,7 +8945,7 @@
     "IncentivosFiscaisPanel"
    ],
    "export_default": "IncentivosFiscaisPanel",
-   "linhas": 486,
+   "linhas": 388,
    "dominio": "components/reforma-tributaria",
    "hooks_locais": [
     "useIncentivosFiscais"
@@ -8364,6 +8953,20 @@
    "tabelas": [],
    "edges": [],
    "usado_por": 2,
+   "orfao": false
+  },
+  {
+   "arquivo": "src/components/reforma-tributaria/IncentivosFiscaisPanelCardsResumo.tsx",
+   "exports": [
+    "IncentivosFiscaisPanelCardsResumo"
+   ],
+   "export_default": null,
+   "linhas": 93,
+   "dominio": "components/reforma-tributaria",
+   "hooks_locais": [],
+   "tabelas": [],
+   "edges": [],
+   "usado_por": 1,
    "orfao": false
   },
   {
@@ -8454,6 +9057,20 @@
    "orfao": false
   },
   {
+   "arquivo": "src/components/reforma-tributaria/NaoCumulatividadeInfoCard.tsx",
+   "exports": [
+    "NaoCumulatividadeInfoCard"
+   ],
+   "export_default": null,
+   "linhas": 38,
+   "dominio": "components/reforma-tributaria",
+   "hooks_locais": [],
+   "tabelas": [],
+   "edges": [],
+   "usado_por": 1,
+   "orfao": false
+  },
+  {
    "arquivo": "src/components/reforma-tributaria/NavigationTributaria.tsx",
    "exports": [
     "NavigationTributaria"
@@ -8473,7 +9090,7 @@
     "ObrigacoesAcessorias"
    ],
    "export_default": "ObrigacoesAcessorias",
-   "linhas": 510,
+   "linhas": 379,
    "dominio": "components/reforma-tributaria",
    "hooks_locais": [],
    "tabelas": [],
@@ -8608,7 +9225,7 @@
     "RelatoriosContabeisTributarios"
    ],
    "export_default": "RelatoriosContabeisTributarios",
-   "linhas": 608,
+   "linhas": 289,
    "dominio": "components/reforma-tributaria",
    "hooks_locais": [
     "useAllEmpresas",
@@ -8619,6 +9236,34 @@
    "tabelas": [],
    "edges": [],
    "usado_por": 2,
+   "orfao": false
+  },
+  {
+   "arquivo": "src/components/reforma-tributaria/RelatoriosContabeisTributariosFiltros.tsx",
+   "exports": [
+    "RelatoriosContabeisTributariosFiltros"
+   ],
+   "export_default": null,
+   "linhas": 118,
+   "dominio": "components/reforma-tributaria",
+   "hooks_locais": [],
+   "tabelas": [],
+   "edges": [],
+   "usado_por": 1,
+   "orfao": false
+  },
+  {
+   "arquivo": "src/components/reforma-tributaria/RelatoriosContabeisTributariosTabs.tsx",
+   "exports": [
+    "RelatoriosContabeisTributariosTabs"
+   ],
+   "export_default": null,
+   "linhas": 380,
+   "dominio": "components/reforma-tributaria",
+   "hooks_locais": [],
+   "tabelas": [],
+   "edges": [],
+   "usado_por": 1,
    "orfao": false
   },
   {
@@ -8683,7 +9328,7 @@
     "RetencoesFonte"
    ],
    "export_default": "RetencoesFonte",
-   "linhas": 414,
+   "linhas": 402,
    "dominio": "components/reforma-tributaria",
    "hooks_locais": [
     "useAllEmpresas",
@@ -8916,7 +9561,7 @@
     "RelatoriosAgendados"
    ],
    "export_default": null,
-   "linhas": 470,
+   "linhas": 318,
    "dominio": "components/relatorios",
    "hooks_locais": [
     "useEmpresas",
@@ -8927,6 +9572,20 @@
    "edges": [
     "executar-relatorios"
    ],
+   "usado_por": 1,
+   "orfao": false
+  },
+  {
+   "arquivo": "src/components/relatorios/RelatoriosAgendadosHistoricoExecucoes.tsx",
+   "exports": [
+    "RelatoriosAgendadosHistoricoExecucoes"
+   ],
+   "export_default": null,
+   "linhas": 193,
+   "dominio": "components/relatorios",
+   "hooks_locais": [],
+   "tabelas": [],
+   "edges": [],
    "usado_por": 1,
    "orfao": false
   },
@@ -10131,7 +10790,7 @@
     "ParametrosForm"
    ],
    "export_default": null,
-   "linhas": 446,
+   "linhas": 431,
    "dominio": "components/tributario",
    "hooks_locais": [
     "useResolucaoCnae"
@@ -10217,7 +10876,7 @@
    "hooks_locais": [],
    "tabelas": [],
    "edges": [],
-   "usado_por": 5,
+   "usado_por": 8,
    "orfao": false
   },
   {
@@ -10257,7 +10916,7 @@
    "hooks_locais": [],
    "tabelas": [],
    "edges": [],
-   "usado_por": 77,
+   "usado_por": 80,
    "orfao": false
   },
   {
@@ -10295,7 +10954,7 @@
    "hooks_locais": [],
    "tabelas": [],
    "edges": [],
-   "usado_por": 428,
+   "usado_por": 446,
    "orfao": false
   },
   {
@@ -10344,7 +11003,7 @@
    "hooks_locais": [],
    "tabelas": [],
    "edges": [],
-   "usado_por": 503,
+   "usado_por": 527,
    "orfao": false
   },
   {
@@ -10385,7 +11044,7 @@
    "hooks_locais": [],
    "tabelas": [],
    "edges": [],
-   "usado_por": 450,
+   "usado_por": 480,
    "orfao": false
   },
   {
@@ -10439,7 +11098,7 @@
    "hooks_locais": [],
    "tabelas": [],
    "edges": [],
-   "usado_por": 29,
+   "usado_por": 30,
    "orfao": false
   },
   {
@@ -10631,7 +11290,7 @@
    "hooks_locais": [],
    "tabelas": [],
    "edges": [],
-   "usado_por": 134,
+   "usado_por": 137,
    "orfao": false
   },
   {
@@ -10721,7 +11380,7 @@
    "hooks_locais": [],
    "tabelas": [],
    "edges": [],
-   "usado_por": 16,
+   "usado_por": 17,
    "orfao": false
   },
   {
@@ -10770,7 +11429,7 @@
    "hooks_locais": [],
    "tabelas": [],
    "edges": [],
-   "usado_por": 18,
+   "usado_por": 22,
    "orfao": false
   },
   {
@@ -10845,7 +11504,7 @@
    "hooks_locais": [],
    "tabelas": [],
    "edges": [],
-   "usado_por": 208,
+   "usado_por": 216,
    "orfao": false
   },
   {
@@ -10859,7 +11518,7 @@
    "hooks_locais": [],
    "tabelas": [],
    "edges": [],
-   "usado_por": 158,
+   "usado_por": 164,
    "orfao": false
   },
   {
@@ -11064,7 +11723,7 @@
    "hooks_locais": [],
    "tabelas": [],
    "edges": [],
-   "usado_por": 79,
+   "usado_por": 80,
    "orfao": false
   },
   {
@@ -11079,7 +11738,7 @@
    "hooks_locais": [],
    "tabelas": [],
    "edges": [],
-   "usado_por": 4,
+   "usado_por": 5,
    "orfao": false
   },
   {
@@ -11234,7 +11893,7 @@
    "hooks_locais": [],
    "tabelas": [],
    "edges": [],
-   "usado_por": 161,
+   "usado_por": 168,
    "orfao": false
   },
   {
@@ -11362,7 +12021,7 @@
    "hooks_locais": [],
    "tabelas": [],
    "edges": [],
-   "usado_por": 2,
+   "usado_por": 3,
    "orfao": false
   },
   {
@@ -11407,7 +12066,7 @@
    "hooks_locais": [],
    "tabelas": [],
    "edges": [],
-   "usado_por": 68,
+   "usado_por": 70,
    "orfao": false
   },
   {
@@ -11442,7 +12101,7 @@
    "hooks_locais": [],
    "tabelas": [],
    "edges": [],
-   "usado_por": 120,
+   "usado_por": 128,
    "orfao": false
   },
   {
@@ -11462,7 +12121,7 @@
    "hooks_locais": [],
    "tabelas": [],
    "edges": [],
-   "usado_por": 88,
+   "usado_por": 90,
    "orfao": false
   },
   {
@@ -11495,7 +12154,7 @@
    "hooks_locais": [],
    "tabelas": [],
    "edges": [],
-   "usado_por": 45,
+   "usado_por": 47,
    "orfao": false
   },
   {
@@ -11561,7 +12220,7 @@
    "hooks_locais": [],
    "tabelas": [],
    "edges": [],
-   "usado_por": 55,
+   "usado_por": 58,
    "orfao": false
   },
   {
@@ -11967,7 +12626,7 @@
     "ScimAudit"
    ],
    "export_default": "ScimAudit",
-   "linhas": 441,
+   "linhas": 411,
    "dominio": "pages/admin",
    "hooks_locais": [
     "useAuth"
@@ -12206,7 +12865,7 @@
     "Asaas"
    ],
    "export_default": "Asaas",
-   "linhas": 405,
+   "linhas": 406,
    "dominio": "pages",
    "hooks_locais": [
     "useAllEmpresas",
@@ -12252,7 +12911,7 @@
     "AuditLogs"
    ],
    "export_default": "AuditLogs",
-   "linhas": 672,
+   "linhas": 370,
    "dominio": "pages",
    "hooks_locais": [
     "useIpMaskPreference",
@@ -12261,6 +12920,34 @@
    "tabelas": [
     "audit_logs"
    ],
+   "edges": [],
+   "usado_por": 1,
+   "orfao": false
+  },
+  {
+   "arquivo": "src/pages/AuditLogsFiltros.tsx",
+   "exports": [
+    "AuditLogsFiltros"
+   ],
+   "export_default": null,
+   "linhas": 359,
+   "dominio": "pages",
+   "hooks_locais": [],
+   "tabelas": [],
+   "edges": [],
+   "usado_por": 1,
+   "orfao": false
+  },
+  {
+   "arquivo": "src/pages/AuditLogsFiltrosConteudo.tsx",
+   "exports": [
+    "AuditLogsFiltrosConteudo"
+   ],
+   "export_default": null,
+   "linhas": 58,
+   "dominio": "pages",
+   "hooks_locais": [],
+   "tabelas": [],
    "edges": [],
    "usado_por": 1,
    "orfao": false
@@ -12351,7 +13038,7 @@
     "BI"
    ],
    "export_default": "BI",
-   "linhas": 708,
+   "linhas": 400,
    "dominio": "pages",
    "hooks_locais": [
     "useAuth",
@@ -12365,6 +13052,34 @@
    "tabelas": [],
    "edges": [],
    "usado_por": 2,
+   "orfao": false
+  },
+  {
+   "arquivo": "src/pages/BIFuturista.tsx",
+   "exports": [
+    "BIFuturista"
+   ],
+   "export_default": null,
+   "linhas": 331,
+   "dominio": "pages",
+   "hooks_locais": [],
+   "tabelas": [],
+   "edges": [],
+   "usado_por": 1,
+   "orfao": false
+  },
+  {
+   "arquivo": "src/pages/BIFuturistaConteudo.tsx",
+   "exports": [
+    "BIFuturistaConteudo"
+   ],
+   "export_default": null,
+   "linhas": 271,
+   "dominio": "pages",
+   "hooks_locais": [],
+   "tabelas": [],
+   "edges": [],
+   "usado_por": 1,
    "orfao": false
   },
   {
@@ -12479,7 +13194,7 @@
     "Boletos"
    ],
    "export_default": "Boletos",
-   "linhas": 474,
+   "linhas": 373,
    "dominio": "pages",
    "hooks_locais": [
     "useBoletos"
@@ -12487,6 +13202,20 @@
    "tabelas": [],
    "edges": [],
    "usado_por": 2,
+   "orfao": false
+  },
+  {
+   "arquivo": "src/pages/BoletosHeader.tsx",
+   "exports": [
+    "BoletosHeader"
+   ],
+   "export_default": null,
+   "linhas": 139,
+   "dominio": "pages",
+   "hooks_locais": [],
+   "tabelas": [],
+   "edges": [],
+   "usado_por": 1,
    "orfao": false
   },
   {
@@ -12525,13 +13254,41 @@
     "CentroCustos"
    ],
    "export_default": "CentroCustos",
-   "linhas": 512,
+   "linhas": 201,
    "dominio": "pages",
    "hooks_locais": [
     "useAllCentrosCusto",
     "useExcluirCentroCusto",
     "useReativarCentroCusto"
    ],
+   "tabelas": [],
+   "edges": [],
+   "usado_por": 1,
+   "orfao": false
+  },
+  {
+   "arquivo": "src/pages/CentroCustosArvore.tsx",
+   "exports": [
+    "CentroCustosArvore"
+   ],
+   "export_default": null,
+   "linhas": 340,
+   "dominio": "pages",
+   "hooks_locais": [],
+   "tabelas": [],
+   "edges": [],
+   "usado_por": 1,
+   "orfao": false
+  },
+  {
+   "arquivo": "src/pages/CentroCustosArvoreOrcadoVsRealizado.tsx",
+   "exports": [
+    "CentroCustosArvoreOrcadoVsRealizado"
+   ],
+   "export_default": null,
+   "linhas": 97,
+   "dominio": "pages",
+   "hooks_locais": [],
    "tabelas": [],
    "edges": [],
    "usado_por": 1,
@@ -12702,7 +13459,7 @@
     "Conciliacao"
    ],
    "export_default": "Conciliacao",
-   "linhas": 730,
+   "linhas": 352,
    "dominio": "pages",
    "hooks_locais": [
     "useConciliacaoPage",
@@ -12715,12 +13472,82 @@
    "orfao": false
   },
   {
+   "arquivo": "src/pages/ConciliacaoBulkActionsBar.tsx",
+   "exports": [
+    "ConciliacaoBulkActionsBar"
+   ],
+   "export_default": null,
+   "linhas": 38,
+   "dominio": "pages",
+   "hooks_locais": [],
+   "tabelas": [],
+   "edges": [],
+   "usado_por": 1,
+   "orfao": false
+  },
+  {
+   "arquivo": "src/pages/ConciliacaoConteudo.tsx",
+   "exports": [
+    "ConciliacaoConteudo"
+   ],
+   "export_default": null,
+   "linhas": 44,
+   "dominio": "pages",
+   "hooks_locais": [],
+   "tabelas": [],
+   "edges": [],
+   "usado_por": 1,
+   "orfao": false
+  },
+  {
    "arquivo": "src/pages/ConciliacaoIgnorarDialogs.tsx",
    "exports": [
     "ConciliacaoIgnorarDialogs"
    ],
    "export_default": null,
    "linhas": 53,
+   "dominio": "pages",
+   "hooks_locais": [],
+   "tabelas": [],
+   "edges": [],
+   "usado_por": 1,
+   "orfao": false
+  },
+  {
+   "arquivo": "src/pages/ConciliacaoPageHeader.tsx",
+   "exports": [
+    "ConciliacaoPageHeader"
+   ],
+   "export_default": null,
+   "linhas": 99,
+   "dominio": "pages",
+   "hooks_locais": [],
+   "tabelas": [],
+   "edges": [],
+   "usado_por": 1,
+   "orfao": false
+  },
+  {
+   "arquivo": "src/pages/ConciliacaoPendentes.tsx",
+   "exports": [
+    "ConciliacaoPendentes"
+   ],
+   "export_default": null,
+   "linhas": 243,
+   "dominio": "pages",
+   "hooks_locais": [],
+   "tabelas": [],
+   "edges": [],
+   "usado_por": 1,
+   "orfao": false
+  },
+  {
+   "arquivo": "src/pages/ConciliacaoPendentesConteudo.tsx",
+   "exports": [
+    "ConciliacaoPendentesConteudo"
+   ],
+   "export_default": null,
+   "linhas": 233,
    "dominio": "pages",
    "hooks_locais": [],
    "tabelas": [],
@@ -12928,12 +13755,26 @@
     "Contabilidade"
    ],
    "export_default": "Contabilidade",
-   "linhas": 535,
+   "linhas": 316,
    "dominio": "pages",
    "hooks_locais": [
     "useEmpresas",
     "useSpedContabilHistorico"
    ],
+   "tabelas": [],
+   "edges": [],
+   "usado_por": 1,
+   "orfao": false
+  },
+  {
+   "arquivo": "src/pages/ContabilidadeHome.tsx",
+   "exports": [
+    "ContabilidadeHome"
+   ],
+   "export_default": null,
+   "linhas": 118,
+   "dominio": "pages",
+   "hooks_locais": [],
    "tabelas": [],
    "edges": [],
    "usado_por": 1,
@@ -13025,7 +13866,7 @@
     "ContasReceber"
    ],
    "export_default": "ContasReceber",
-   "linhas": 535,
+   "linhas": 318,
    "dominio": "pages",
    "hooks_locais": [
     "useContasReceberLogic",
@@ -13034,6 +13875,62 @@
    "tabelas": [],
    "edges": [],
    "usado_por": 2,
+   "orfao": false
+  },
+  {
+   "arquivo": "src/pages/ContasReceberConteudo.tsx",
+   "exports": [
+    "ContasReceberConteudo"
+   ],
+   "export_default": null,
+   "linhas": 240,
+   "dominio": "pages",
+   "hooks_locais": [],
+   "tabelas": [],
+   "edges": [],
+   "usado_por": 1,
+   "orfao": false
+  },
+  {
+   "arquivo": "src/pages/ContasReceberConteudoConteudo.tsx",
+   "exports": [
+    "ContasReceberConteudoConteudo"
+   ],
+   "export_default": null,
+   "linhas": 244,
+   "dominio": "pages",
+   "hooks_locais": [],
+   "tabelas": [],
+   "edges": [],
+   "usado_por": 1,
+   "orfao": false
+  },
+  {
+   "arquivo": "src/pages/ContasReceberConteudoConteudo2.tsx",
+   "exports": [
+    "ContasReceberConteudoConteudo2"
+   ],
+   "export_default": null,
+   "linhas": 123,
+   "dominio": "pages",
+   "hooks_locais": [],
+   "tabelas": [],
+   "edges": [],
+   "usado_por": 1,
+   "orfao": false
+  },
+  {
+   "arquivo": "src/pages/ContasReceberConteudoConteudo3.tsx",
+   "exports": [
+    "ContasReceberConteudoConteudo3"
+   ],
+   "export_default": null,
+   "linhas": 44,
+   "dominio": "pages",
+   "hooks_locais": [],
+   "tabelas": [],
+   "edges": [],
+   "usado_por": 1,
    "orfao": false
   },
   {
@@ -13077,7 +13974,7 @@
     "DashboardReceber"
    ],
    "export_default": "DashboardReceber",
-   "linhas": 458,
+   "linhas": 352,
    "dominio": "pages",
    "hooks_locais": [
     "useAuth",
@@ -13086,6 +13983,20 @@
     "useEmpresas",
     "useVendedores"
    ],
+   "tabelas": [],
+   "edges": [],
+   "usado_por": 1,
+   "orfao": false
+  },
+  {
+   "arquivo": "src/pages/DashboardReceberConteudo.tsx",
+   "exports": [
+    "DashboardReceberConteudo"
+   ],
+   "export_default": null,
+   "linhas": 169,
+   "dominio": "pages",
+   "hooks_locais": [],
    "tabelas": [],
    "edges": [],
    "usado_por": 1,
@@ -13144,7 +14055,7 @@
     "Empresas"
    ],
    "export_default": "Empresas",
-   "linhas": 621,
+   "linhas": 422,
    "dominio": "pages",
    "hooks_locais": [
     "useAllEmpresas",
@@ -13155,6 +14066,34 @@
     "useReativarEmpresa",
     "useToast"
    ],
+   "tabelas": [],
+   "edges": [],
+   "usado_por": 1,
+   "orfao": false
+  },
+  {
+   "arquivo": "src/pages/EmpresasConteudo.tsx",
+   "exports": [
+    "EmpresasConteudo"
+   ],
+   "export_default": null,
+   "linhas": 210,
+   "dominio": "pages",
+   "hooks_locais": [],
+   "tabelas": [],
+   "edges": [],
+   "usado_por": 1,
+   "orfao": false
+  },
+  {
+   "arquivo": "src/pages/EmpresasConteudo2.tsx",
+   "exports": [
+    "EmpresasConteudo2"
+   ],
+   "export_default": null,
+   "linhas": 86,
+   "dominio": "pages",
+   "hooks_locais": [],
    "tabelas": [],
    "edges": [],
    "usado_por": 1,
@@ -13353,12 +14292,26 @@
     "NotasFiscais"
    ],
    "export_default": "NotasFiscais",
-   "linhas": 491,
+   "linhas": 180,
    "dominio": "pages",
    "hooks_locais": [],
    "tabelas": [],
    "edges": [],
    "usado_por": 2,
+   "orfao": false
+  },
+  {
+   "arquivo": "src/pages/NotasFiscaisAbas.tsx",
+   "exports": [
+    "NotasFiscaisAbas"
+   ],
+   "export_default": null,
+   "linhas": 344,
+   "dominio": "pages",
+   "hooks_locais": [],
+   "tabelas": [],
+   "edges": [],
+   "usado_por": 1,
    "orfao": false
   },
   {
@@ -13658,6 +14611,20 @@
    "orfao": false
   },
   {
+   "arquivo": "src/pages/tributario/Alertas.tsx",
+   "exports": [
+    "Alertas"
+   ],
+   "export_default": null,
+   "linhas": 16,
+   "dominio": "pages/tributario",
+   "hooks_locais": [],
+   "tabelas": [],
+   "edges": [],
+   "usado_por": 2,
+   "orfao": false
+  },
+  {
    "arquivo": "src/pages/tributario/ArquiteturaModular.tsx",
    "exports": [
     "ArquiteturaModular"
@@ -13866,7 +14833,7 @@
     "ConsultaNcmTab"
    ],
    "export_default": null,
-   "linhas": 187,
+   "linhas": 188,
    "dominio": "pages/tributario",
    "hooks_locais": [
     "useConsultaNCM"
@@ -13882,7 +14849,7 @@
     "ConsultaUFTab"
    ],
    "export_default": null,
-   "linhas": 170,
+   "linhas": 171,
    "dominio": "pages/tributario",
    "hooks_locais": [
     "useConsultaUF"
@@ -13926,12 +14893,10 @@
    "arquivo": "src/pages/tributario/consulta-rapida/shared.tsx",
    "exports": [
     "ResultBlock",
-    "ResultBlockProps",
-    "UF",
-    "UFS"
+    "ResultBlockProps"
    ],
    "export_default": null,
-   "linhas": 87,
+   "linhas": 55,
    "dominio": "pages/tributario",
    "hooks_locais": [],
    "tabelas": [],
@@ -13959,7 +14924,7 @@
     "DarfConsolidado"
    ],
    "export_default": "DarfConsolidado",
-   "linhas": 426,
+   "linhas": 398,
    "dominio": "pages/tributario",
    "hooks_locais": [],
    "tabelas": [],
@@ -13981,6 +14946,20 @@
     "useExportarSped",
     "useRelatorioAnual"
    ],
+   "tabelas": [],
+   "edges": [],
+   "usado_por": 1,
+   "orfao": false
+  },
+  {
+   "arquivo": "src/pages/tributario/DiferencialAliquotas.tsx",
+   "exports": [
+    "DiferencialAliquotas"
+   ],
+   "export_default": null,
+   "linhas": 145,
+   "dominio": "pages/tributario",
+   "hooks_locais": [],
    "tabelas": [],
    "edges": [],
    "usado_por": 1,
@@ -14054,11 +15033,9 @@
     "IcmsStDifalPage"
    ],
    "export_default": "IcmsStDifalPage",
-   "linhas": 607,
+   "linhas": 102,
    "dominio": "pages/tributario",
-   "hooks_locais": [
-    "useCatalogosFiscais"
-   ],
+   "hooks_locais": [],
    "tabelas": [],
    "edges": [],
    "usado_por": 1,
@@ -14097,16 +15074,56 @@
    "orfao": false
   },
   {
+   "arquivo": "src/pages/tributario/IpiIss.MemoriaTable.tsx",
+   "exports": [
+    "MemoriaTable"
+   ],
+   "export_default": null,
+   "linhas": 41,
+   "dominio": "pages/tributario",
+   "hooks_locais": [],
+   "tabelas": [],
+   "edges": [],
+   "usado_por": 2,
+   "orfao": false
+  },
+  {
    "arquivo": "src/pages/tributario/IpiIss.tsx",
    "exports": [
     "IpiIss"
    ],
    "export_default": "IpiIss",
-   "linhas": 591,
+   "linhas": 44,
    "dominio": "pages/tributario",
-   "hooks_locais": [
-    "useCatalogoIssMunicipal"
+   "hooks_locais": [],
+   "tabelas": [],
+   "edges": [],
+   "usado_por": 1,
+   "orfao": false
+  },
+  {
+   "arquivo": "src/pages/tributario/IpiSimulador.tsx",
+   "exports": [
+    "IpiSimulador"
    ],
+   "export_default": null,
+   "linhas": 152,
+   "dominio": "pages/tributario",
+   "hooks_locais": [],
+   "tabelas": [],
+   "edges": [],
+   "usado_por": 1,
+   "orfao": false
+  },
+  {
+   "arquivo": "src/pages/tributario/IrpjCsllLucroReal.MemoriaTable.tsx",
+   "exports": [
+    "MemoriaTable"
+   ],
+   "export_default": null,
+   "linhas": 37,
+   "dominio": "pages/tributario",
+   "hooks_locais": [],
    "tabelas": [],
    "edges": [],
    "usado_por": 1,
@@ -14118,12 +15135,70 @@
     "IrpjCsllLucroReal"
    ],
    "export_default": "IrpjCsllLucroReal",
-   "linhas": 505,
+   "linhas": 175,
    "dominio": "pages/tributario",
    "hooks_locais": [],
    "tabelas": [],
    "edges": [],
    "usado_por": 1,
+   "orfao": false
+  },
+  {
+   "arquivo": "src/pages/tributario/IrpjCsllLucroRealApuracao.tsx",
+   "exports": [
+    "IrpjCsllLucroRealApuracao"
+   ],
+   "export_default": null,
+   "linhas": 346,
+   "dominio": "pages/tributario",
+   "hooks_locais": [],
+   "tabelas": [],
+   "edges": [],
+   "usado_por": 1,
+   "orfao": false
+  },
+  {
+   "arquivo": "src/pages/tributario/IssSimulador.tsx",
+   "exports": [
+    "IssSimulador"
+   ],
+   "export_default": null,
+   "linhas": 247,
+   "dominio": "pages/tributario",
+   "hooks_locais": [
+    "useCatalogoIssMunicipal"
+   ],
+   "tabelas": [],
+   "edges": [],
+   "usado_por": 1,
+   "orfao": false
+  },
+  {
+   "arquivo": "src/pages/tributario/KpiCard.tsx",
+   "exports": [
+    "KpiCard"
+   ],
+   "export_default": null,
+   "linhas": 31,
+   "dominio": "pages/tributario",
+   "hooks_locais": [],
+   "tabelas": [],
+   "edges": [],
+   "usado_por": 1,
+   "orfao": false
+  },
+  {
+   "arquivo": "src/pages/tributario/MemoriaTable.tsx",
+   "exports": [
+    "MemoriaTable"
+   ],
+   "export_default": null,
+   "linhas": 42,
+   "dominio": "pages/tributario",
+   "hooks_locais": [],
+   "tabelas": [],
+   "edges": [],
+   "usado_por": 2,
    "orfao": false
   },
   {
@@ -14146,7 +15221,7 @@
     "NfeRecebidasPage"
    ],
    "export_default": "NfeRecebidasPage",
-   "linhas": 447,
+   "linhas": 397,
    "dominio": "pages/tributario",
    "hooks_locais": [
     "useDesvincularNfe",
@@ -14156,6 +15231,20 @@
    "tabelas": [],
    "edges": [],
    "usado_por": 1,
+   "orfao": false
+  },
+  {
+   "arquivo": "src/pages/tributario/NumberField.tsx",
+   "exports": [
+    "NumberField"
+   ],
+   "export_default": null,
+   "linhas": 29,
+   "dominio": "pages/tributario",
+   "hooks_locais": [],
+   "tabelas": [],
+   "edges": [],
+   "usado_por": 2,
    "orfao": false
   },
   {
@@ -14376,12 +15465,40 @@
    "orfao": false
   },
   {
+   "arquivo": "src/pages/tributario/PisCofinsCreditos.MemoriaTable.tsx",
+   "exports": [
+    "MemoriaTable"
+   ],
+   "export_default": null,
+   "linhas": 47,
+   "dominio": "pages/tributario",
+   "hooks_locais": [],
+   "tabelas": [],
+   "edges": [],
+   "usado_por": 1,
+   "orfao": false
+  },
+  {
    "arquivo": "src/pages/tributario/PisCofinsCreditos.tsx",
    "exports": [
     "PisCofinsCreditos"
    ],
    "export_default": "PisCofinsCreditos",
-   "linhas": 466,
+   "linhas": 396,
+   "dominio": "pages/tributario",
+   "hooks_locais": [],
+   "tabelas": [],
+   "edges": [],
+   "usado_por": 1,
+   "orfao": false
+  },
+  {
+   "arquivo": "src/pages/tributario/PisCofinsCreditosSaldoCredorPIS.tsx",
+   "exports": [
+    "PisCofinsCreditosSaldoCredorPIS"
+   ],
+   "export_default": null,
+   "linhas": 63,
    "dominio": "pages/tributario",
    "hooks_locais": [],
    "tabelas": [],
@@ -14567,6 +15684,50 @@
    "tabelas": [],
    "edges": [],
    "usado_por": 1,
+   "orfao": false
+  },
+  {
+   "arquivo": "src/pages/tributario/SubstituicaoTributaria.tsx",
+   "exports": [
+    "SubstituicaoTributaria"
+   ],
+   "export_default": null,
+   "linhas": 295,
+   "dominio": "pages/tributario",
+   "hooks_locais": [
+    "useCatalogosFiscais"
+   ],
+   "tabelas": [],
+   "edges": [],
+   "usado_por": 1,
+   "orfao": false
+  },
+  {
+   "arquivo": "src/pages/tributario/TabelasConsulta.tsx",
+   "exports": [
+    "TabelasConsulta"
+   ],
+   "export_default": null,
+   "linhas": 90,
+   "dominio": "pages/tributario",
+   "hooks_locais": [],
+   "tabelas": [],
+   "edges": [],
+   "usado_por": 1,
+   "orfao": false
+  },
+  {
+   "arquivo": "src/pages/tributario/UfSelect.tsx",
+   "exports": [
+    "UfSelect"
+   ],
+   "export_default": null,
+   "linhas": 41,
+   "dominio": "pages/tributario",
+   "hooks_locais": [],
+   "tabelas": [],
+   "edges": [],
+   "usado_por": 2,
    "orfao": false
   },
   {

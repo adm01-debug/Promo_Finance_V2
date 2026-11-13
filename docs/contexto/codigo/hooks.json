@@ -1,7 +1,7 @@
 {
  "aviso": "GERADO AUTOMATICAMENTE por scripts/ai-context/gerar.mjs — não editar à mão; será sobrescrito.",
  "format_version": 2,
- "total": 264,
+ "total": 273,
  "hooks": [
   {
    "arquivo": "src/components/admin/anomalia-preferences/useSaveAnomaliaPreferences.ts",
@@ -1117,11 +1117,27 @@
    "coberto_por_testes": 0
   },
   {
+   "arquivo": "src/hooks/useAcordosParcelamento.helpers.ts",
+   "hooks_exportados": [],
+   "linhas": 22,
+   "dominio": "hooks",
+   "tabelas": [],
+   "rpcs": [],
+   "edges": [],
+   "hooks_internos": [],
+   "canais_realtime": [],
+   "usado_por": 1,
+   "usado_por_arquivos": [
+    "src/components/cobranca/AcordoParcelamentoDialog.tsx"
+   ],
+   "coberto_por_testes": 0
+  },
+  {
    "arquivo": "src/hooks/useAcordosParcelamento.ts",
    "hooks_exportados": [
     "useAcordosParcelamento"
    ],
-   "linhas": 526,
+   "linhas": 455,
    "dominio": "hooks",
    "tabelas": [
     "acordos_parcelamento",
@@ -1143,7 +1159,23 @@
    "usado_por_arquivos": [
     "src/components/cobranca/AcordoParcelamentoDialog.tsx"
    ],
-   "coberto_por_testes": 1
+   "coberto_por_testes": 2
+  },
+  {
+   "arquivo": "src/hooks/useAcordosParcelamento.types.ts",
+   "hooks_exportados": [],
+   "linhas": 52,
+   "dominio": "hooks",
+   "tabelas": [],
+   "rpcs": [],
+   "edges": [],
+   "hooks_internos": [],
+   "canais_realtime": [],
+   "usado_por": 1,
+   "usado_por_arquivos": [
+    "src/hooks/useAcordosParcelamento.ts"
+   ],
+   "coberto_por_testes": 0
   },
   {
    "arquivo": "src/hooks/useAlertas.ts",
@@ -1545,9 +1577,10 @@
     "useToast"
    ],
    "canais_realtime": [],
-   "usado_por": 6,
+   "usado_por": 7,
    "usado_por_arquivos": [
     "src/components/aprovacoes/AprovacoesPendentes.tsx",
+    "src/components/aprovacoes/AprovacoesPendentesConteudo.tsx",
     "src/components/aprovacoes/ConfiguracaoAprovacaoCard.tsx",
     "src/components/aprovacoes/HistoricoAprovacoes.tsx",
     "src/components/contas-pagar/RegistrarPagamentoDialog.tsx",
@@ -1603,9 +1636,11 @@
     "useQueryClient"
    ],
    "canais_realtime": [],
-   "usado_por": 6,
+   "usado_por": 8,
    "usado_por_arquivos": [
     "src/components/reforma-tributaria/ApuracaoMensal.tsx",
+    "src/components/reforma-tributaria/ApuracaoMensalKPICards.tsx",
+    "src/components/reforma-tributaria/DashboardMetricasTributarias.helpers.ts",
     "src/components/reforma-tributaria/DashboardMetricasTributarias.tsx",
     "src/components/reforma-tributaria/DashboardReformaTributaria.tsx",
     "src/components/reforma-tributaria/ExportacaoSPED.tsx",
@@ -1615,11 +1650,29 @@
    "coberto_por_testes": 0
   },
   {
+   "arquivo": "src/hooks/useAsaas.helpers.ts",
+   "hooks_exportados": [],
+   "linhas": 21,
+   "dominio": "hooks",
+   "tabelas": [],
+   "rpcs": [],
+   "edges": [
+    "asaas-proxy"
+   ],
+   "hooks_internos": [],
+   "canais_realtime": [],
+   "usado_por": 1,
+   "usado_por_arquivos": [
+    "src/hooks/useAsaas.ts"
+   ],
+   "coberto_por_testes": 0
+  },
+  {
    "arquivo": "src/hooks/useAsaas.ts",
    "hooks_exportados": [
     "useAsaas"
    ],
-   "linhas": 471,
+   "linhas": 397,
    "dominio": "hooks",
    "tabelas": [
     "asaas_config",
@@ -1629,16 +1682,14 @@
     "asaas_transfers"
    ],
    "rpcs": [],
-   "edges": [
-    "asaas-proxy"
-   ],
+   "edges": [],
    "hooks_internos": [
     "useMutation",
     "useQuery",
     "useQueryClient"
    ],
    "canais_realtime": [],
-   "usado_por": 19,
+   "usado_por": 18,
    "usado_por_arquivos": [
     "src/components/asaas/AntecipacaoDialog.tsx",
     "src/components/asaas/AssinaturaDialog.tsx",
@@ -1653,10 +1704,32 @@
     "src/components/asaas/SegundaViaDialog.tsx",
     "src/components/asaas/TransferenciaPixDialog.tsx",
     "src/components/asaas/TransferenciaPixHistoryPanel.tsx",
-    "src/components/asaas/tabs/CobrancasTab.tsx",
+    "src/components/asaas/tabs/CobrancasTab.types.ts",
     "src/components/asaas/tabs/ConfigTab.tsx",
     "src/components/asaas/tabs/FilaTab.tsx",
     "src/components/pix-hub/PixRecebimento.tsx",
+    "src/pages/Asaas.tsx"
+   ],
+   "coberto_por_testes": 0
+  },
+  {
+   "arquivo": "src/hooks/useAsaas.types.ts",
+   "hooks_exportados": [],
+   "linhas": 57,
+   "dominio": "hooks",
+   "tabelas": [],
+   "rpcs": [],
+   "edges": [],
+   "hooks_internos": [],
+   "canais_realtime": [],
+   "usado_por": 8,
+   "usado_por_arquivos": [
+    "src/components/asaas/ClientesAsaasDialog.tsx",
+    "src/components/asaas/NovaCobrancaDialog.tsx",
+    "src/components/asaas/NovaCobrancaDialogVincularContaReceber.tsx",
+    "src/components/asaas/tabs/CobrancasTab.types.ts",
+    "src/components/asaas/tabs/CobrancasTabConteudo.tsx",
+    "src/hooks/useAsaas.ts",
     "src/pages/Asaas.parts.tsx",
     "src/pages/Asaas.tsx"
    ],
@@ -1705,7 +1778,7 @@
    "canais_realtime": [],
    "usado_por": 7,
    "usado_por_arquivos": [
-    "src/components/contabilidade/AuditoriaCFCPanel.tsx",
+    "src/components/contabilidade/AuditoriaCFCPanel.types.ts",
     "src/components/contabilidade/PlanoContasTab.tsx",
     "src/components/contabilidade/SpedEcdPreviewDialog.tsx",
     "src/components/contabilidade/SpedEcdWizard.tsx",
@@ -2017,11 +2090,29 @@
    "coberto_por_testes": 0
   },
   {
+   "arquivo": "src/hooks/useBoletos.helpers.ts",
+   "hooks_exportados": [],
+   "linhas": 52,
+   "dominio": "hooks",
+   "tabelas": [
+    "boletos"
+   ],
+   "rpcs": [],
+   "edges": [],
+   "hooks_internos": [],
+   "canais_realtime": [],
+   "usado_por": 1,
+   "usado_por_arquivos": [
+    "src/hooks/useBoletos.ts"
+   ],
+   "coberto_por_testes": 1
+  },
+  {
    "arquivo": "src/hooks/useBoletos.ts",
    "hooks_exportados": [
     "useBoletos"
    ],
-   "linhas": 473,
+   "linhas": 376,
    "dominio": "hooks",
    "tabelas": [
     "boletos",
@@ -2042,15 +2133,34 @@
     "useToast"
    ],
    "canais_realtime": [],
-   "usado_por": 5,
+   "usado_por": 3,
    "usado_por_arquivos": [
-    "src/components/boletos/BoletoPreviewPanel.tsx",
-    "src/components/boletos/NovoBoletoForm.tsx",
     "src/hooks/useDashboardMetrics.ts",
     "src/pages/Boletos.tsx",
     "src/pages/Financeiro.tsx"
    ],
-   "coberto_por_testes": 1
+   "coberto_por_testes": 0
+  },
+  {
+   "arquivo": "src/hooks/useBoletos.types.ts",
+   "hooks_exportados": [],
+   "linhas": 57,
+   "dominio": "hooks",
+   "tabelas": [],
+   "rpcs": [],
+   "edges": [],
+   "hooks_internos": [],
+   "canais_realtime": [],
+   "usado_por": 6,
+   "usado_por_arquivos": [
+    "src/components/boletos/BoletoPreviewPanel.tsx",
+    "src/components/boletos/NovoBoletoForm.tsx",
+    "src/hooks/useBoletos.helpers.ts",
+    "src/hooks/useBoletos.ts",
+    "src/pages/Boletos.tsx",
+    "src/pages/BoletosHeader.tsx"
+   ],
+   "coberto_por_testes": 0
   },
   {
    "arquivo": "src/hooks/useBudget.ts",
@@ -2167,7 +2277,7 @@
    "canais_realtime": [],
    "usado_por": 1,
    "usado_por_arquivos": [
-    "src/pages/tributario/IpiIss.tsx"
+    "src/pages/tributario/IssSimulador.tsx"
    ],
    "coberto_por_testes": 0
   },
@@ -2189,7 +2299,7 @@
     "src/components/tributario/dashboard/SaudeCatalogosBadge.tsx",
     "src/pages/tributario/AuditoriaOverlay.tsx",
     "src/pages/tributario/CatalogosFiscais.tsx",
-    "src/pages/tributario/IcmsStDifal.tsx"
+    "src/pages/tributario/SubstituicaoTributaria.tsx"
    ],
    "coberto_por_testes": 0
   },
@@ -2216,11 +2326,12 @@
     "useQueryClient"
    ],
    "canais_realtime": [],
-   "usado_por": 6,
+   "usado_por": 7,
    "usado_por_arquivos": [
     "src/components/categorias/CategoriaForm.tsx",
     "src/components/categorias/CategoriaTable.tsx",
     "src/components/contas-pagar/ContaPagarForm.tsx",
+    "src/components/contas-pagar/ContaPagarFormFormulario.tsx",
     "src/components/contas-receber/ContaReceberForm.tsx",
     "src/pages/Categorias.tsx",
     "src/pages/Orcamentos.tsx"
@@ -2274,13 +2385,14 @@
     "useQueryClient"
    ],
    "canais_realtime": [],
-   "usado_por": 6,
+   "usado_por": 7,
    "usado_por_arquivos": [
     "src/components/centros-custo/CentroCustoExport.tsx",
     "src/components/centros-custo/CentroCustoForm.tsx",
     "src/components/centros-custo/CentroCustoTree.tsx",
     "src/components/pagamentos-recorrentes/PagamentoRecorrenteForm.tsx",
     "src/pages/CentroCustos.tsx",
+    "src/pages/CentroCustosArvore.tsx",
     "src/pages/centro-custos/CentroCustoCards.tsx"
    ],
    "coberto_por_testes": 1
@@ -2535,7 +2647,7 @@
     "src/components/conciliacao/ia/AprovarTodosDialog.tsx",
     "src/components/conciliacao/ia/DetalhesExpandidosDialog.tsx",
     "src/components/conciliacao/ia/RejeicaoDialog.tsx",
-    "src/components/conciliacao/ia/SugestoesMatchSections.tsx",
+    "src/components/conciliacao/ia/SugestoesMatchSections.types.ts",
     "src/hooks/useHistoricoConciliacaoIA.ts"
    ],
    "coberto_por_testes": 1
@@ -2593,9 +2705,10 @@
     "useTransacoesBancariasSelecionadas"
    ],
    "canais_realtime": [],
-   "usado_por": 1,
+   "usado_por": 2,
    "usado_por_arquivos": [
-    "src/pages/Conciliacao.tsx"
+    "src/pages/Conciliacao.tsx",
+    "src/pages/ConciliacaoPageHeader.tsx"
    ],
    "coberto_por_testes": 3
   },
@@ -2780,11 +2893,27 @@
    "coberto_por_testes": 1
   },
   {
+   "arquivo": "src/hooks/useContasPagarLogic.calculos.ts",
+   "hooks_exportados": [],
+   "linhas": 249,
+   "dominio": "hooks",
+   "tabelas": [],
+   "rpcs": [],
+   "edges": [],
+   "hooks_internos": [],
+   "canais_realtime": [],
+   "usado_por": 1,
+   "usado_por_arquivos": [
+    "src/hooks/useContasPagarLogic.ts"
+   ],
+   "coberto_por_testes": 0
+  },
+  {
    "arquivo": "src/hooks/useContasPagarLogic.ts",
    "hooks_exportados": [
     "useContasPagarLogic"
    ],
-   "linhas": 624,
+   "linhas": 470,
    "dominio": "hooks",
    "tabelas": [
     "profiles",
@@ -2824,11 +2953,44 @@
    "coberto_por_testes": 0
   },
   {
+   "arquivo": "src/hooks/useContasPagarLogic.types.ts",
+   "hooks_exportados": [],
+   "linhas": 3,
+   "dominio": "hooks",
+   "tabelas": [],
+   "rpcs": [],
+   "edges": [],
+   "hooks_internos": [],
+   "canais_realtime": [],
+   "usado_por": 2,
+   "usado_por_arquivos": [
+    "src/hooks/useContasPagarLogic.calculos.ts",
+    "src/hooks/useContasPagarLogic.ts"
+   ],
+   "coberto_por_testes": 0
+  },
+  {
+   "arquivo": "src/hooks/useContasReceberLogic.calculos.ts",
+   "hooks_exportados": [],
+   "linhas": 97,
+   "dominio": "hooks",
+   "tabelas": [],
+   "rpcs": [],
+   "edges": [],
+   "hooks_internos": [],
+   "canais_realtime": [],
+   "usado_por": 1,
+   "usado_por_arquivos": [
+    "src/hooks/useContasReceberLogic.ts"
+   ],
+   "coberto_por_testes": 0
+  },
+  {
    "arquivo": "src/hooks/useContasReceberLogic.ts",
    "hooks_exportados": [
     "useContasReceberLogic"
    ],
-   "linhas": 465,
+   "linhas": 380,
    "dominio": "hooks",
    "tabelas": [
     "contas_receber"
@@ -2854,9 +3016,11 @@
     "useTableOptimization"
    ],
    "canais_realtime": [],
-   "usado_por": 1,
+   "usado_por": 3,
    "usado_por_arquivos": [
-    "src/pages/ContasReceber.tsx"
+    "src/pages/ContasReceber.tsx",
+    "src/pages/ContasReceberConteudo.types.ts",
+    "src/pages/ContasReceberConteudoConteudo.tsx"
    ],
    "coberto_por_testes": 0
   },
@@ -2929,13 +3093,15 @@
     "useQueryClient"
    ],
    "canais_realtime": [],
-   "usado_por": 5,
+   "usado_por": 7,
    "usado_por_arquivos": [
+    "src/components/reforma-tributaria/DashboardMetricasTributarias.helpers.ts",
     "src/components/reforma-tributaria/DashboardMetricasTributarias.tsx",
     "src/components/reforma-tributaria/ExportacaoSPED.tsx",
     "src/components/reforma-tributaria/GestorCreditosTributarios.tsx",
     "src/components/reforma-tributaria/PerDcompPanel.tsx",
-    "src/components/reforma-tributaria/RelatoriosContabeisTributarios.tsx"
+    "src/components/reforma-tributaria/RelatoriosContabeisTributarios.tsx",
+    "src/components/reforma-tributaria/RelatoriosContabeisTributariosTabs.tsx"
    ],
    "coberto_por_testes": 0
   },
@@ -3016,9 +3182,10 @@
     "useTotaisContasReceber"
    ],
    "canais_realtime": [],
-   "usado_por": 1,
+   "usado_por": 2,
    "usado_por_arquivos": [
-    "src/components/dashboard/DashboardExecutivo.tsx"
+    "src/components/dashboard/DashboardExecutivo.tsx",
+    "src/components/dashboard/DashboardExecutivoConteudo.tsx"
    ],
    "coberto_por_testes": 1
   },
@@ -3278,10 +3445,11 @@
     "useQueryClient"
    ],
    "canais_realtime": [],
-   "usado_por": 24,
+   "usado_por": 26,
    "usado_por_arquivos": [
-    "src/components/empresas/EmpresaCardView.tsx",
+    "src/components/empresas/EmpresaCardView.types.ts",
     "src/components/empresas/EmpresaForm.tsx",
+    "src/components/empresas/EmpresaForm.types.ts",
     "src/components/pagamentos-recorrentes/PagamentoRecorrenteForm.tsx",
     "src/components/reforma-tributaria/AlertasTributarios.tsx",
     "src/components/reforma-tributaria/ApuracaoMensal.tsx",
@@ -3297,6 +3465,7 @@
     "src/components/reforma-tributaria/SplitPaymentPanel.tsx",
     "src/pages/Asaas.tsx",
     "src/pages/Empresas.tsx",
+    "src/pages/EmpresasConteudo.tsx",
     "src/pages/tributario/CalculadoraTributaria.tsx",
     "src/pages/tributario/DashboardTributario.tsx",
     "src/pages/tributario/HistoricoFinanceiro.tsx",
@@ -3600,7 +3769,7 @@
    "edges": [],
    "hooks_internos": [],
    "canais_realtime": [],
-   "usado_por": 49,
+   "usado_por": 52,
    "usado_por_arquivos": [
     "src/components/admin/sso/ScimTokensTab.tsx",
     "src/components/clientes/ClienteDetailDialog.tsx",
@@ -3614,6 +3783,7 @@
     "src/components/contas-bancarias/DistribuicaoBancos.tsx",
     "src/components/contas-bancarias/TransferenciaDialog.tsx",
     "src/components/contas-pagar/ContaPagarForm.tsx",
+    "src/components/contas-pagar/ContaPagarFormFormulario.tsx",
     "src/components/contas-pagar/RegistrarPagamentoDialog.tsx",
     "src/components/contas-receber/ContaReceberForm.tsx",
     "src/components/contas-receber/RegistrarRecebimentoDialog.tsx",
@@ -3630,8 +3800,7 @@
     "src/components/tesouraria/FluxoInterEmpresas.tsx",
     "src/components/tesouraria/MatrizCNPJBanco.tsx",
     "src/components/tesouraria/TesourariaCentralizada.tsx",
-    "src/components/vendedores/VendedorDashboard.tsx",
-    "src/hooks/useConciliacaoPage.ts"
+    "src/components/vendedores/VendedorDashboard.tsx"
    ],
    "coberto_por_testes": 0
   },
@@ -4082,7 +4251,7 @@
     "useIndicesContabeis",
     "useSerieIndices"
    ],
-   "linhas": 181,
+   "linhas": 182,
    "dominio": "hooks",
    "tabelas": [],
    "rpcs": [
@@ -4288,10 +4457,11 @@
     "useQueryClient"
    ],
    "canais_realtime": [],
-   "usado_por": 8,
+   "usado_por": 9,
    "usado_por_arquivos": [
     "src/components/contabilidade/ImportLancamentosCSVDialog.tsx",
     "src/components/contabilidade/LancamentosTab.tsx",
+    "src/components/contabilidade/LancamentosTabConteudo.tsx",
     "src/components/contabilidade/NovoLancamentoDialog.tsx",
     "src/components/contabilidade/dre-balanco/LancamentosDrillDown.tsx",
     "src/components/contabilidade/import-lancamentos-csv/ResultStep.tsx",
@@ -4396,14 +4566,16 @@
     "useState"
    ],
    "canais_realtime": [],
-   "usado_por": 12,
+   "usado_por": 14,
    "usado_por_arquivos": [
     "src/components/contabilidade/LancamentosTab.tsx",
+    "src/components/contabilidade/LancamentosTabConteudo.tsx",
     "src/components/contabilidade/RazaoDiarioTab.tsx",
     "src/components/contabilidade/razao-diario/FiltersBar.tsx",
     "src/components/filters/ClearFiltersButton.tsx",
     "src/components/ui/advanced-filters.tsx",
     "src/pages/AuditLogs.tsx",
+    "src/pages/AuditLogsFiltros.tsx",
     "src/pages/Clientes.tsx",
     "src/pages/DashboardReceber.tsx",
     "src/pages/Expert.tsx",
@@ -4580,8 +4752,9 @@
     "useQuery"
    ],
    "canais_realtime": [],
-   "usado_por": 1,
+   "usado_por": 2,
    "usado_por_arquivos": [
+    "src/pages/tributario/NfeRecebidas.helpers.ts",
     "src/pages/tributario/NfeRecebidas.tsx"
    ],
    "coberto_por_testes": 0
@@ -4685,8 +4858,9 @@
     "useQueryClient"
    ],
    "canais_realtime": [],
-   "usado_por": 4,
+   "usado_por": 5,
    "usado_por_arquivos": [
+    "src/components/reforma-tributaria/DashboardMetricasTributarias.helpers.ts",
     "src/components/reforma-tributaria/DashboardMetricasTributarias.tsx",
     "src/components/reforma-tributaria/ExportacaoSPED.tsx",
     "src/components/reforma-tributaria/OperacoesLista.tsx",
@@ -5009,12 +5183,13 @@
     "useQueryClient"
    ],
    "canais_realtime": [],
-   "usado_por": 8,
+   "usado_por": 9,
    "usado_por_arquivos": [
     "src/components/contabilidade/ImportLancamentosCSVDialog.tsx",
     "src/components/contabilidade/LancamentosTab.tsx",
     "src/components/contabilidade/NovoLancamentoDialog.tsx",
     "src/components/contabilidade/PlanoContasTab.tsx",
+    "src/components/contabilidade/PlanoContasTabConteudo.tsx",
     "src/components/contabilidade/razao-diario/useRazaoDiarioData.ts",
     "src/hooks/useAuditoriaCFC.ts",
     "src/lib/cfc-validator.ts",
@@ -5575,9 +5750,10 @@
     "useToast"
    ],
    "canais_realtime": [],
-   "usado_por": 2,
+   "usado_por": 3,
    "usado_por_arquivos": [
     "src/components/relatorios/RelatoriosAgendados.tsx",
+    "src/components/relatorios/RelatoriosAgendadosHistoricoExecucoes.tsx",
     "src/components/relatorios/agendados/CriarAgendamentoDialog.tsx"
    ],
    "coberto_por_testes": 0
@@ -5686,8 +5862,9 @@
     "useQueryClient"
    ],
    "canais_realtime": [],
-   "usado_por": 4,
+   "usado_por": 5,
    "usado_por_arquivos": [
+    "src/components/reforma-tributaria/RetencoesFonte.helpers.ts",
     "src/components/reforma-tributaria/RetencoesFonte.tsx",
     "src/components/reforma-tributaria/retencoes/DARFsTable.tsx",
     "src/components/reforma-tributaria/retencoes/ResumoPorTipoGrid.tsx",
@@ -5738,7 +5915,7 @@
     "useQueryClient"
    ],
    "canais_realtime": [],
-   "usado_por": 18,
+   "usado_por": 19,
    "usado_por_arquivos": [
     "src/components/admin/AnomaliasDetectadasPanel.helpers.ts",
     "src/components/admin/AnomaliasDetectadasPanel.tsx",
@@ -5757,6 +5934,7 @@
     "src/hooks/saved-filter-alerts/types.ts",
     "src/hooks/saved-filter-alerts/useEntitySavedFilterAlerts.ts",
     "src/pages/Conciliacao.tsx",
+    "src/pages/ConciliacaoPendentes.tsx",
     "src/pages/ConciliacaoToolbarHost.tsx"
    ],
    "coberto_por_testes": 0
@@ -5815,9 +5993,10 @@
     "useState"
    ],
    "canais_realtime": [],
-   "usado_por": 1,
+   "usado_por": 2,
    "usado_por_arquivos": [
-    "src/components/admin/sso/ScimSetupGuide.tsx"
+    "src/components/admin/sso/ScimSetupGuide.tsx",
+    "src/components/admin/sso/ScimSetupGuideChecklistConfiguracao.tsx"
    ],
    "coberto_por_testes": 0
   },
@@ -6264,15 +6443,20 @@
     "useQueryClient"
    ],
    "canais_realtime": [],
-   "usado_por": 10,
+   "usado_por": 15,
    "usado_por_arquivos": [
     "src/components/admin/sso/SSOMetricsPanel.tsx",
     "src/components/admin/sso/SSOProvidersList.tsx",
     "src/components/admin/sso/SSOSandboxPanel.tsx",
+    "src/components/admin/sso/SSOSandboxPanelSandboxSimulacaoSSO.tsx",
     "src/components/admin/sso/SSOStepConexao.tsx",
     "src/components/admin/sso/SSOStepValidacao.tsx",
+    "src/components/admin/sso/SSOWizardDialog.helpers.ts",
     "src/components/admin/sso/SSOWizardDialog.tsx",
+    "src/components/admin/sso/SSOWizardDialog.types.ts",
+    "src/components/admin/sso/SSOWizardDialogDominiosEmailPermitidos.tsx",
     "src/components/admin/sso/sandbox/SandboxBulkPanel.tsx",
+    "src/components/admin/sso/sandbox/SandboxBulkPanelProvedorSSO.tsx",
     "src/components/admin/sso/sandbox/SandboxHistory.tsx",
     "src/pages/admin/SSOAdmin.tsx",
     "src/pages/admin/SSOJitEvents.tsx"
@@ -6645,9 +6829,11 @@
    "edges": [],
    "hooks_internos": [],
    "canais_realtime": [],
-   "usado_por": 1,
+   "usado_por": 3,
    "usado_por_arquivos": [
-    "src/components/contabilidade/VerificacaoIntegracoesPanel.tsx"
+    "src/components/contabilidade/VerificacaoIntegracoesPanel.helpers.tsx",
+    "src/components/contabilidade/VerificacaoIntegracoesPanel.tsx",
+    "src/components/contabilidade/VerificacaoIntegracoesPanelConteudo.tsx"
    ],
    "coberto_por_testes": 0
   },

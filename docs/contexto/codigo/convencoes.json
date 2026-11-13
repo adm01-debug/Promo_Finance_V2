@@ -6,22 +6,22 @@
    "src/pages (127)"
   ],
   "componentes": [
-   "src/components (730)",
-   "src/pages (174)",
+   "src/components (776)",
+   "src/pages (210)",
    "src/hooks (2)"
   ],
   "hooks": [
-   "src/hooks (228)",
+   "src/hooks (237)",
    "src/components (27)",
    "src/pages (5)"
   ],
   "servicos_logica": [
-   "src/lib (254)",
+   "src/lib (260)",
    "scripts/graphify (7)",
    "src/integrations (3)"
   ],
   "testes": [
-   "co-localizado (__tests__) (241)",
+   "co-localizado (__tests__) (246)",
    "outro (106)",
    "co-localizado (*.test) (40)"
   ],
@@ -47,7 +47,7 @@
  },
  "barrels_index": 27,
  "extensao_componentes": [
-  ".tsx (908)"
+  ".tsx (990)"
  ],
  "alias_imports": {
   "(raiz)": {
@@ -58,11 +58,11 @@
  "commits": {
   "convencao": "conventional commits (observado)",
   "exemplos": [
+   "lint zero + type-check estrito zerado (72→0) (#328)",
    "fix: aceita origem weekly_trend em performance_alerts (destrava cron semanal) (#327)",
    "infra: quarentena E2E não roda em CI cancelada (!cancelled() em vez de always()) (#326)",
    "chore(docs): auditoria prod-readiness (#324)",
-   "fix: dashboard executivo sem widgets estreitos e com r?tulos corretos no Configurar (#325)",
-   "fix: cron monitorar-erros-frontend envia o segredo internal_jobs esperado pela function (#321)"
+   "fix: dashboard executivo sem widgets estreitos e com r?tulos corretos no Configurar (#325)"
   ]
  },
  "pr_template": ".github/PULL_REQUEST_TEMPLATE.md",

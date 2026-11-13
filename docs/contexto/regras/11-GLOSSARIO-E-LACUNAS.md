@@ -1,6 +1,6 @@
 # 11 · GLOSSÁRIO, DADOS DE REFERÊNCIA E LACUNAS
 
-> Gerado automaticamente por AI Context Sync v1.3.2 · commit `2d3e3db134` · branch `main` · 2026-11-13 13:12 UTC
+> Gerado automaticamente por AI Context Sync v1.3.2 · commit `7cbba6f349` · branch `main` · 2026-11-13 14:11 UTC
 > Não edite à mão — regras humanas vão em `manual/`.
 
 ## Glossário do domínio (entidades do sistema)
@@ -307,7 +307,7 @@
 | `webhook_dlq` | _(sem COMMENT ON TABLE — significado não documentado)_ | 15 colunas | migration |
 | `webhook_events` | _(sem COMMENT ON TABLE — significado não documentado)_ | 8 colunas | migration |
 | `webhook_simulation_results` | _(sem COMMENT ON TABLE — significado não documentado)_ | 10 colunas | migration |
-| … +262 linhas — lista completa em `context.json` | | | |
+| … +270 linhas — lista completa em `context.json` | | | |
 
 ## Dados de referência (seed — planos, categorias, perfis fixos)
 
@@ -330,8 +330,8 @@
 | status | valor `melhor` para `status` usado no código não existe em nenhum enum do banco/TS | `compara:src/components/analytics/BenchmarkingSetorial.tsx`<br>`escreve:src/components/analytics/BenchmarkingSetorial.tsx` |
 | status | valor `igual` para `status` usado no código não existe em nenhum enum do banco/TS | `compara:src/components/analytics/BenchmarkingSetorial.tsx` |
 | status | valor `pior` para `status` usado no código não existe em nenhum enum do banco/TS | `compara:src/components/analytics/BenchmarkingSetorial.tsx` |
-| status | valor `completo` para `status` usado no código não existe em nenhum enum do banco/TS | `compara:src/components/aprovacoes/WorkflowVisualizer.tsx`<br>`escreve:src/components/aprovacoes/AprovacoesPendentes.tsx`<br>`escreve:src/components/aprovacoes/WorkflowVisualizer.tsx` |
-| status | valor `atual` para `status` usado no código não existe em nenhum enum do banco/TS | `compara:src/components/aprovacoes/WorkflowVisualizer.tsx`<br>`escreve:src/components/aprovacoes/AprovacoesPendentes.tsx` |
+| status | valor `completo` para `status` usado no código não existe em nenhum enum do banco/TS | `compara:src/components/aprovacoes/WorkflowVisualizer.tsx`<br>`escreve:src/components/aprovacoes/AprovacoesPendentesConteudo.tsx`<br>`escreve:src/components/aprovacoes/WorkflowVisualizer.tsx` |
+| status | valor `atual` para `status` usado no código não existe em nenhum enum do banco/TS | `compara:src/components/aprovacoes/WorkflowVisualizer.tsx`<br>`escreve:src/components/aprovacoes/AprovacoesPendentesConteudo.tsx` |
 | status | valor `ACTIVE` para `status` usado no código não existe em nenhum enum do banco/TS | `compara:src/components/asaas/AssinaturasListPanel.tsx` |
 | status | valor `DONE` para `status` usado no código não existe em nenhum enum do banco/TS | `compara:src/components/asaas/TransferenciaPixHistoryPanel.tsx` |
 | status | valor `PROCESSING` para `status` usado no código não existe em nenhum enum do banco/TS | `compara:src/components/asaas/TransferenciaPixHistoryPanel.tsx` |
@@ -347,7 +347,7 @@
 | status | valor `aceito` para `status` usado no código não existe em nenhum enum do banco/TS | `compara:src/components/conciliacao/DivergenciasConciliacaoPanel.tsx`<br>`escreve:src/components/conciliacao/DivergenciasConciliacaoPanel.tsx`<br>`escreve:src/hooks/useDivergenciasConciliacao.ts`<br>`filtra:src/components/conciliacao/ConciliacaoAuditPanel.tsx` |
 | status | valor `conciliada` para `status` usado no código não existe em nenhum enum do banco/TS | `compara:src/components/conciliacao/ConciliacaoExport.tsx` |
 | status | valor `corrigido` para `status` usado no código não existe em nenhum enum do banco/TS | `escreve:src/components/conciliacao/DivergenciasConciliacaoPanel.tsx` |
-| status | valor `confirmado` para `status` usado no código não existe em nenhum enum do banco/TS | `compara:src/components/contabilidade/LancamentosTab.tsx`<br>`escreve:src/components/contas-receber/BaixaAutomaticaDialog.tsx`<br>`escreve:src/components/contas-receber/RegistrarRecebimentoDialog.tsx`<br>`escreve:supabase/functions/contabilizar-evento/index.ts` |
+| status | valor `confirmado` para `status` usado no código não existe em nenhum enum do banco/TS | `compara:src/components/contabilidade/LancamentosTabConteudo.tsx`<br>`escreve:src/components/contas-receber/BaixaAutomaticaDialog.tsx`<br>`escreve:src/components/contas-receber/RegistrarRecebimentoDialog.tsx`<br>`escreve:supabase/functions/contabilizar-evento/index.ts` |
 | status | valor `warn` para `status` usado no código não existe em nenhum enum do banco/TS | `compara:src/components/contabilidade/SpedChecklistRow.tsx`<br>`compara:src/components/contabilidade/SpedEcdPreviewDialog.tsx`<br>`compara:supabase/functions/gerar-sped-ecd/index.ts`<br>`compara:supabase/functions/gerar-sped-ecf/index.ts` |
 | status | valor `assinado` para `status` usado no código não existe em nenhum enum do banco/TS | `compara:src/components/documentos/AssinaturaDigital.tsx` |
 | status | valor `realizado` para `status` usado no código não existe em nenhum enum do banco/TS | `escreve:src/components/financeiro/TransferenciaDialog.tsx`<br>`escreve:src/hooks/useFinancialOperations.ts` |
@@ -385,9 +385,6 @@
 | status | valor `intro` para `step` usado no código não existe em nenhum enum do banco/TS | `compara:src/components/auth/TwoFactorSetup.tsx` |
 | status | valor `qr` para `step` usado no código não existe em nenhum enum do banco/TS | `compara:src/components/auth/TwoFactorSetup.tsx` |
 | status | valor `verify` para `step` usado no código não existe em nenhum enum do banco/TS | `compara:src/components/auth/TwoFactorSetup.tsx` |
-| status | valor `preview` para `step` usado no código não existe em nenhum enum do banco/TS | `compara:src/components/conciliacao/ImportarExtratoDialog.tsx`<br>`compara:src/components/contabilidade/ImportLancamentosCSVDialog.tsx`<br>`compara:src/components/contas-receber/BaixaAutomaticaDialog.tsx` |
-| status | valor `upload` para `step` usado no código não existe em nenhum enum do banco/TS | `compara:src/components/conciliacao/ImportarExtratoDialog.tsx`<br>`compara:src/components/contabilidade/ImportLancamentosCSVDialog.tsx`<br>`compara:src/components/contas-receber/BaixaAutomaticaDialog.tsx` |
-| status | valor `open-finance-loading` para `step` usado no código não existe em nenhum enum do banco/TS | `compara:src/components/conciliacao/ImportarExtratoDialog.tsx` |
 | status | valor `result` para `step` usado no código não existe em nenhum enum do banco/TS | `compara:src/components/contabilidade/ImportLancamentosCSVDialog.tsx` |
 | status | valor `expanded` para `state` usado no código não existe em nenhum enum do banco/TS | `escreve:src/components/ui/sidebar.tsx` |
 | status | valor `collapsed` para `state` usado no código não existe em nenhum enum do banco/TS | `compara:src/components/ui/sidebar.tsx` |

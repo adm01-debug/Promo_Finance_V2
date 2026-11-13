@@ -5,17 +5,17 @@
   "vitest",
   "playwright"
  ],
- "total": 427,
+ "total": 432,
  "por_tipo": {
   "contrato": 4,
   "e2e": 35,
   "pytest": 31,
-  "unit": 351
+  "unit": 356
  },
  "onde_ficam": [
   {
    "padrao": "co-localizado (__tests__)",
-   "arquivos": 241
+   "arquivos": 246
   },
   {
    "padrao": "outro",
@@ -754,7 +754,7 @@
    "tipo": "unit",
    "linhas": 60,
    "testa": [
-    "src/components/empresas/EmpresaCardView.tsx",
+    "src/components/empresas/EmpresaHeroKPI.tsx",
     "src/components/layout/PageHeader.tsx"
    ],
    "casos": 3
@@ -1138,13 +1138,29 @@
    "casos": 8
   },
   {
-   "arquivo": "src/hooks/__tests__/useAcordosParcelamento.pagamento.test.tsx",
+   "arquivo": "src/hooks/__tests__/useAcordosParcelamento.harness.tsx",
    "tipo": "unit",
-   "linhas": 621,
+   "linhas": 59,
+   "testa": [],
+   "casos": 0
+  },
+  {
+   "arquivo": "src/hooks/__tests__/useAcordosParcelamento.pagamento-rateio.test.tsx",
+   "tipo": "unit",
+   "linhas": 367,
    "testa": [
     "src/hooks/useAcordosParcelamento.ts"
    ],
-   "casos": 18
+   "casos": 7
+  },
+  {
+   "arquivo": "src/hooks/__tests__/useAcordosParcelamento.pagamento.test.tsx",
+   "tipo": "unit",
+   "linhas": 277,
+   "testa": [
+    "src/hooks/useAcordosParcelamento.ts"
+   ],
+   "casos": 11
   },
   {
    "arquivo": "src/hooks/__tests__/useAlertasPreditivos.test.ts",
@@ -1487,7 +1503,7 @@
    "tipo": "unit",
    "linhas": 28,
    "testa": [
-    "src/hooks/useBoletos.ts"
+    "src/hooks/useBoletos.helpers.ts"
    ],
    "casos": 3
   },
@@ -1700,11 +1716,25 @@
    "casos": 4
   },
   {
+   "arquivo": "src/lib/__tests__/emitTelemetry.test.helpers.ts",
+   "tipo": "unit",
+   "linhas": 40,
+   "testa": [],
+   "casos": 0
+  },
+  {
    "arquivo": "src/lib/__tests__/emitTelemetry.test.ts",
    "tipo": "unit",
-   "linhas": 501,
+   "linhas": 458,
    "testa": [],
    "casos": 72
+  },
+  {
+   "arquivo": "src/lib/__tests__/emitTelemetry.test.types.ts",
+   "tipo": "unit",
+   "linhas": 12,
+   "testa": [],
+   "casos": 0
   },
   {
    "arquivo": "src/lib/__tests__/eslint-no-floating-supabase-write.test.ts",
@@ -2059,7 +2089,9 @@
    "tipo": "unit",
    "linhas": 155,
    "testa": [
-    "src/lib/contabil/indices.ts"
+    "src/lib/contabil/indices.helpers.ts",
+    "src/lib/contabil/indices.ts",
+    "src/lib/contabil/indices.types.ts"
    ],
    "casos": 44
   },
@@ -2231,7 +2263,7 @@
    "linhas": 133,
    "testa": [
     "src/lib/tributario/catalogos/coerencia-ncm.ts",
-    "src/lib/tributario/ipi-iss/tabelas.ts",
+    "src/lib/tributario/ipi-iss/tabelas.helpers.ts",
     "src/lib/tributario/monofasico/classificar.ts"
    ],
    "casos": 9
@@ -2397,7 +2429,7 @@
   {
    "arquivo": "src/lib/tributario/__tests__/drift-guard-motor.test.ts",
    "tipo": "unit",
-   "linhas": 89,
+   "linhas": 93,
    "testa": [],
    "casos": 3
   },
@@ -2502,13 +2534,22 @@
    "casos": 9
   },
   {
-   "arquivo": "src/lib/tributario/__tests__/icms-st-difal.test.ts",
+   "arquivo": "src/lib/tributario/__tests__/icms-st-difal.difal.test.ts",
    "tipo": "unit",
-   "linhas": 464,
+   "linhas": 158,
    "testa": [
     "src/lib/tributario/icms/index.ts"
    ],
-   "casos": 29
+   "casos": 9
+  },
+  {
+   "arquivo": "src/lib/tributario/__tests__/icms-st-difal.test.ts",
+   "tipo": "unit",
+   "linhas": 307,
+   "testa": [
+    "src/lib/tributario/icms/index.ts"
+   ],
+   "casos": 20
   },
   {
    "arquivo": "src/lib/tributario/__tests__/imunidade-exportacao.test.ts",
@@ -2618,7 +2659,7 @@
    "linhas": 245,
    "testa": [
     "src/lib/tributario/ipi-iss/overlay-ncm.ts",
-    "src/lib/tributario/ipi-iss/tabelas.ts"
+    "src/lib/tributario/ipi-iss/tabelas.helpers.ts"
    ],
    "casos": 18
   },
@@ -3043,7 +3084,7 @@
    "linhas": 32,
    "testa": [
     "src/pages/tributario/consulta-rapida/format.ts",
-    "src/pages/tributario/consulta-rapida/shared.tsx"
+    "src/pages/tributario/consulta-rapida/ufs.ts"
    ],
    "casos": 5
   },
@@ -3062,10 +3103,11 @@
   {
    "arquivo": "src/test/a11y/indices-tab.test.tsx",
    "tipo": "unit",
-   "linhas": 56,
+   "linhas": 57,
    "testa": [
     "src/components/contabilidade/indices/IndicesGrid.tsx",
     "src/components/contabilidade/indices/IndicesToolbar.tsx",
+    "src/lib/contabil/indices.helpers.ts",
     "src/lib/contabil/indices.ts"
    ],
    "casos": 2
@@ -3080,9 +3122,11 @@
   {
    "arquivo": "src/test/scenarios/__tests__/indices-simulation.spec.ts",
    "tipo": "unit",
-   "linhas": 176,
+   "linhas": 178,
    "testa": [
-    "src/lib/contabil/indices.ts"
+    "src/lib/contabil/indices.helpers.ts",
+    "src/lib/contabil/indices.ts",
+    "src/lib/contabil/indices.types.ts"
    ],
    "casos": 5
   },
@@ -3816,7 +3860,7 @@
   "src/components/contas-receber/ContasReceberTableRow.tsx": 2,
   "src/components/contas-receber/EnviarCobrancaDialog.tsx": 1,
   "src/components/dashboard/DashboardConfigDialog.tsx": 1,
-  "src/components/empresas/EmpresaCardView.tsx": 1,
+  "src/components/empresas/EmpresaHeroKPI.tsx": 1,
   "src/components/financeiro/AnexoList.tsx": 1,
   "src/components/layout/PageHeader.tsx": 1,
   "src/components/layout/sidebar/sidebarNavState.ts": 1,
@@ -3850,13 +3894,13 @@
   "src/hooks/savedFilterDedup.ts": 1,
   "src/hooks/savedFiltersValidation.ts": 1,
   "src/hooks/use-toast.ts": 1,
-  "src/hooks/useAcordosParcelamento.ts": 1,
+  "src/hooks/useAcordosParcelamento.ts": 2,
   "src/hooks/useAlertasPreditivos.ts": 1,
   "src/hooks/useAlertasTributariosCount.ts": 1,
   "src/hooks/useAnomaliaPreferences.ts": 1,
   "src/hooks/useApiKeys.ts": 1,
   "src/hooks/useAprovacoes.ts": 1,
-  "src/hooks/useBoletos.ts": 1,
+  "src/hooks/useBoletos.helpers.ts": 1,
   "src/hooks/useBulkActions.ts": 1,
   "src/hooks/useCashbackSimulador.ts": 1,
   "src/hooks/useCategorias.ts": 1,
@@ -3907,7 +3951,9 @@
   "src/lib/compras/pedidos.ts": 1,
   "src/lib/concurrency-limiter.ts": 1,
   "src/lib/contabil/balancete-utils.ts": 1,
+  "src/lib/contabil/indices.helpers.ts": 3,
   "src/lib/contabil/indices.ts": 3,
+  "src/lib/contabil/indices.types.ts": 2,
   "src/lib/contabil/termos-livro.ts": 1,
   "src/lib/correlation-id.ts": 1,
   "src/lib/csv-importer.ts": 1,
@@ -3987,7 +4033,7 @@
   "src/lib/tributario/folha/fpas-terceiros.ts": 1,
   "src/lib/tributario/folha/index.ts": 1,
   "src/lib/tributario/historico-simulacao.ts": 3,
-  "src/lib/tributario/icms/index.ts": 1,
+  "src/lib/tributario/icms/index.ts": 2,
   "src/lib/tributario/icms/overlay-mva.ts": 4,
   "src/lib/tributario/icms/overlay.ts": 2,
   "src/lib/tributario/icms/st.ts": 3,
@@ -3996,7 +4042,8 @@
   "src/lib/tributario/ipi-iss/index.ts": 1,
   "src/lib/tributario/ipi-iss/overlay-iss.ts": 1,
   "src/lib/tributario/ipi-iss/overlay-ncm.ts": 1,
-  "src/lib/tributario/ipi-iss/tabelas.ts": 3,
+  "src/lib/tributario/ipi-iss/tabelas.helpers.ts": 2,
+  "src/lib/tributario/ipi-iss/tabelas.ts": 1,
   "src/lib/tributario/irpfm.ts": 1,
   "src/lib/tributario/irpj-csll/index.ts": 1,
   "src/lib/tributario/monofasico/calcular.ts": 1,
@@ -4031,7 +4078,7 @@
   "src/pages/auth/CorporateOnboarding.tsx": 4,
   "src/pages/tributario/consulta-rapida/format.ts": 1,
   "src/pages/tributario/consulta-rapida/offlineMeta.ts": 1,
-  "src/pages/tributario/consulta-rapida/shared.tsx": 1,
+  "src/pages/tributario/consulta-rapida/ufs.ts": 1,
   "src/types/reforma-tributaria.ts": 1,
   "supabase/functions/_shared/auth-guard.ts": 1,
   "supabase/functions/_shared/contract-response.ts": 1,
@@ -4270,6 +4317,8 @@
    "src/hooks/saved-filter-alerts/useEntitySavedFilterAlerts.ts",
    "src/hooks/use-mobile.tsx",
    "src/hooks/useAcoesRecomendadas.ts",
+   "src/hooks/useAcordosParcelamento.helpers.ts",
+   "src/hooks/useAcordosParcelamento.types.ts",
    "src/hooks/useAlertas.ts",
    "src/hooks/useAlertasTributarios.ts",
    "src/hooks/useAnomaliaAuditHistory.ts",
@@ -4280,7 +4329,9 @@
    "src/hooks/useAnomaliasReabertasIndex.ts",
    "src/hooks/useAprovacoesPendentesCount.ts",
    "src/hooks/useApuracoesTributarias.ts",
+   "src/hooks/useAsaas.helpers.ts",
    "src/hooks/useAsaas.ts",
+   "src/hooks/useAsaas.types.ts",
    "src/hooks/useAuditLog.ts",
    "src/hooks/useAuditoriaCFC.ts",
    "src/hooks/useAuditoriaCompliance.ts",
@@ -4294,6 +4345,8 @@
    "src/hooks/useBitrix24.ts",
    "src/hooks/useBling.ts",
    "src/hooks/useBlingNFe.ts",
+   "src/hooks/useBoletos.ts",
+   "src/hooks/useBoletos.types.ts",
    "src/hooks/useBudget.ts",
    "src/hooks/useCalculadoraDadosReais.ts",
    "src/hooks/useCatalogoIssMunicipal.ts",
@@ -4312,7 +4365,10 @@
    "src/hooks/useConfetti.ts",
    "src/hooks/useConformidadeFiscal.ts",
    "src/hooks/useConformidadeSnapshots.ts",
+   "src/hooks/useContasPagarLogic.calculos.ts",
    "src/hooks/useContasPagarLogic.ts",
+   "src/hooks/useContasPagarLogic.types.ts",
+   "src/hooks/useContasReceberLogic.calculos.ts",
    "src/hooks/useContasReceberLogic.ts",
    "src/hooks/useCountUp.ts",
    "src/hooks/useCreditosTributarios.ts",

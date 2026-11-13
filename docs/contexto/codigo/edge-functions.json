@@ -372,7 +372,7 @@
    "chamada_pelo_front": [
     "src/components/asaas/AssinaturasListPanel.tsx",
     "src/components/asaas/LinksListPanel.tsx",
-    "src/hooks/useAsaas.ts",
+    "src/hooks/useAsaas.helpers.ts",
     "src/hooks/useBoletos.ts"
    ],
    "chamada_por_edges": [],
@@ -3361,7 +3361,7 @@
     "edge-observability.ts"
    ],
    "chamada_pelo_front": [
-    "src/components/admin/sso/ScimSetupGuide.tsx",
+    "src/components/admin/sso/ScimSetupGuide.helpers.ts",
     "src/components/admin/sso/ScimTokensTab.tsx"
    ],
    "chamada_por_edges": [],

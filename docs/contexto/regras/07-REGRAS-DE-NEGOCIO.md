@@ -1,6 +1,6 @@
 # 07 · REGRAS DE NEGÓCIO
 
-> Gerado automaticamente por AI Context Sync v1.3.2 · commit `2d3e3db134` · branch `main` · 2026-11-13 13:12 UTC
+> Gerado automaticamente por AI Context Sync v1.3.2 · commit `7cbba6f349` · branch `main` · 2026-11-13 14:11 UTC
 > Não edite à mão — regras humanas vão em `manual/`.
 
 ## A. Regras escritas por humanos (`manual/` — prioridade máxima, nunca sobrescrito)
@@ -1262,13 +1262,13 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | `type` | `criar_alerta` | compara | `src/components/expert/ExpertChatMessages.tsx`<br>`src/hooks/useExpertActions.ts` |
 | `type` | `criar_conta_pagar` | compara | `src/hooks/useExpertActions.ts` |
 | `type` | `criar_conta_receber` | compara | `src/hooks/useExpertActions.ts` |
-| `type` | `critical` | compara, escreve | `src/components/audit/AuditSecurityAlerts.tsx`<br>`src/pages/AuditLogs.tsx` |
-| `type` | `divergencia` | compara, escreve | `src/components/conciliacao/ConciliacaoAuditPanel.tsx` |
+| `type` | `critical` | compara, escreve | `src/components/audit/AuditSecurityAlerts.tsx`<br>`src/pages/AuditLogs.tsx`<br>`src/pages/AuditLogsFiltros.tsx` |
+| `type` | `divergencia` | compara, escreve | `src/components/conciliacao/ConciliacaoAuditPanel.tsx`<br>`src/components/conciliacao/ConciliacaoAuditPanelConteudo.tsx` |
 | `type` | `dragenter` | compara | `src/components/conciliacao/ImportarExtratoDialog.tsx`<br>`src/components/contas-receber/BaixaAutomaticaDialog.tsx` |
 | `type` | `dragleave` | compara | `src/components/conciliacao/ImportarExtratoDialog.tsx`<br>`src/components/contas-receber/BaixaAutomaticaDialog.tsx` |
 | `type` | `dragover` | compara | `src/components/conciliacao/ImportarExtratoDialog.tsx`<br>`src/components/contas-receber/BaixaAutomaticaDialog.tsx` |
 | `type` | `email` | compara | `src/lib/brazilian-validators/pix.ts` |
-| `type` | `error` | compara, escreve | `src/components/contabilidade/SpedEcdWizard.tsx`<br>`src/components/contabilidade/sped-contabil/SpedHistoricoTable.tsx`<br>`src/components/contabilidade/sped-ecf-historico/HistoricoRow.tsx`<br>`src/components/contabilidade/sped-ecf-wizard/Step2Validacoes.tsx`<br>`src/components/nfe/SefazMonitor.tsx`<br>… +1 |
+| `type` | `error` | compara, escreve | `src/components/contabilidade/SpedEcdWizard.tsx`<br>`src/components/contabilidade/sped-contabil/SpedHistoricoRow.tsx`<br>`src/components/contabilidade/sped-ecf-historico/HistoricoRow.tsx`<br>`src/components/contabilidade/sped-ecf-wizard/Step2Validacoes.tsx`<br>`src/components/nfe/SefazMonitor.tsx`<br>… +1 |
 | `type` | `event` | escreve | `src/components/contas-receber/DrawerTimelineTab.tsx`<br>`supabase/functions/_shared/edge-observability.ts` |
 | `type` | `failure_count` | compara, escreve | `src/components/nfe/AutoContingenciaConfig.tsx`<br>`src/components/nfe/SefazMonitor.tsx`<br>`src/components/nfe/auto-contingencia/ContingenciaRuleDialog.tsx`<br>`src/components/nfe/auto-contingencia/ContingenciaRulesList.tsx`<br>`src/lib/sefaz-contingency/constants.ts`<br>… +2 |
 | `type` | `file` | compara, escreve | `src/components/ui/tree-view.tsx` |
@@ -1307,7 +1307,7 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | `type` | `saml` | escreve | `supabase/functions/sso-initiate/index.ts` |
 | `type` | `schedule` | compara, escreve | `src/components/nfe/AutoContingenciaConfig.tsx`<br>`src/components/nfe/auto-contingencia/ContingenciaRuleDialog.tsx`<br>`src/components/nfe/auto-contingencia/ContingenciaRulesList.tsx`<br>`src/lib/sefaz-contingency/constants.ts`<br>`src/lib/sefaz-contingency/rules.ts` |
 | `type` | `single` | compara, escreve | `src/components/contabilidade/contabilizacao-automatica/SimulacaoDialog.tsx`<br>`src/components/contabilidade/contabilizacao-automatica/types.ts`<br>`src/components/contabilidade/contabilizacao-automatica/useContabilizacaoMutations.ts` |
-| `type` | `spring` | escreve | `src/components/alertas/AlertaComponents.tsx`<br>`src/components/auth/AuthBackground.tsx`<br>`src/components/auth/ForgotPasswordForm.tsx`<br>`src/components/cobranca/CobrancaKpis.tsx`<br>`src/components/cobranca/MetricasPorCanal.tsx`<br>… +51 |
+| `type` | `spring` | escreve | `src/components/alertas/AlertaComponents.tsx`<br>`src/components/auth/AuthBackground.tsx`<br>`src/components/auth/ForgotPasswordForm.tsx`<br>`src/components/cobranca/CobrancaKpis.tsx`<br>`src/components/cobranca/MetricasPorCanal.tsx`<br>… +52 |
 | `type` | `sso-slo-initiated` | compara, escreve | `src/lib/sso-sync.ts` |
 | `type` | `string` | escreve | `eslint-rules/no-floating-supabase-write.js`<br>`supabase/functions/analise-fluxo-ia/index.ts`<br>`supabase/functions/processar-nf-ocr/index.ts`<br>`supabase/functions/scim-server/index.ts` |
 | `type` | `success` | compara | `src/components/nfe/SefazMonitor.tsx`<br>`src/components/nfe/sefaz-monitor/SefazAlertsPanel.tsx` |
@@ -1318,7 +1318,7 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | `type` | `uint8array` | escreve | `supabase/functions/gerar-pacote-evidencias/index.ts` |
 | `type` | `unhandledrejection` | escreve | `src/lib/telemetry.ts` |
 | `type` | `vencimentos` | escreve | `src/hooks/useDashboardConfig.ts` |
-| `type` | `warn` | escreve | `src/components/contabilidade/SpedEcdWizard.tsx`<br>`src/components/contabilidade/sped-contabil/SpedHistoricoTable.tsx`<br>`src/components/contabilidade/sped-ecf-historico/HistoricoRow.tsx`<br>`src/components/contabilidade/sped-ecf-wizard/Step2Validacoes.tsx` |
+| `type` | `warn` | escreve | `src/components/contabilidade/SpedEcdWizard.tsx`<br>`src/components/contabilidade/sped-contabil/SpedHistoricoRow.tsx`<br>`src/components/contabilidade/sped-ecf-historico/HistoricoRow.tsx`<br>`src/components/contabilidade/sped-ecf-wizard/Step2Validacoes.tsx` |
 | `type` | `warning` | compara, escreve | `src/components/nfe/SefazMonitor.tsx`<br>`src/components/nfe/sefaz-monitor/SefazAlertsPanel.tsx`<br>`src/pages/AuditLogs.tsx` |
 | `type` | `window` | escreve | `public/sw-push.js`<br>`public/sw.js` |
 | `type` | `work` | escreve | `src/lib/scim/userTemplate.ts`<br>`supabase/functions/scim-server/index.ts` |
@@ -1327,15 +1327,15 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | `status` | `CANCELLED` | escreve | `supabase/functions/asaas-proxy/index.ts` |
 | `status` | `CLOSED` | escreve | `supabase/functions/_shared/resilience.ts` |
 | `status` | `COMPLETED` | escreve | `supabase/functions/asaas-proxy/index.ts`<br>`supabase/functions/open-finance/index.ts` |
-| `status` | `CONFIRMED` | compara | `src/components/asaas/TransferenciaPixHistoryPanel.tsx`<br>`src/components/asaas/tabs/CobrancasTab.tsx`<br>`src/components/pix-hub/PixRecebimento.tsx`<br>`src/pages/Asaas.parts.tsx` |
+| `status` | `CONFIRMED` | compara | `src/components/asaas/TransferenciaPixHistoryPanel.tsx`<br>`src/components/asaas/tabs/CobrancasTabConteudo.tsx`<br>`src/components/pix-hub/PixRecebimento.tsx`<br>`src/pages/Asaas.parts.tsx` |
 | `status` | `Conciliado` | compara | `src/components/relatorios/RelatoriosDetalhado.tsx` |
 | `status` | `DONE` | compara | `src/components/asaas/TransferenciaPixHistoryPanel.tsx` |
 | `status` | `EXPIRADO` | compara | `src/lib/organizacoes/convites.ts` |
 | `status` | `FAILED` | compara, escreve, filtra | `src/components/asaas/TransferenciaPixHistoryPanel.tsx`<br>`supabase/functions/asaas-proxy/index.ts` |
 | `status` | `OPEN` | compara | `supabase/functions/_shared/resilience.ts` |
-| `status` | `OVERDUE` | compara | `src/components/asaas/tabs/CobrancasTab.tsx`<br>`src/hooks/useAsaas.ts`<br>`src/pages/Asaas.parts.tsx` |
+| `status` | `OVERDUE` | compara | `src/components/asaas/tabs/CobrancasTabConteudo.tsx`<br>`src/hooks/useAsaas.ts`<br>`src/pages/Asaas.parts.tsx` |
 | `status` | `PENDENTE` | compara | `src/pages/organizacoes/Organizacoes.parts.tsx` |
-| `status` | `PENDING` | compara, escreve, filtra | `src/components/asaas/TransferenciaPixHistoryPanel.tsx`<br>`src/components/asaas/tabs/CobrancasTab.tsx`<br>`src/hooks/financial/useDashboardKPIs.ts`<br>`src/hooks/useAsaas.ts`<br>`src/pages/Asaas.parts.tsx`<br>… +2 |
+| `status` | `PENDING` | compara, escreve, filtra | `src/components/asaas/TransferenciaPixHistoryPanel.tsx`<br>`src/components/asaas/tabs/CobrancasTabConteudo.tsx`<br>`src/hooks/financial/useDashboardKPIs.ts`<br>`src/hooks/useAsaas.ts`<br>`src/pages/Asaas.parts.tsx`<br>… +2 |
 | `status` | `PROCESSING` | compara | `src/components/asaas/TransferenciaPixHistoryPanel.tsx` |
 | `status` | `RECEIVED` | compara, escreve, filtra | `src/components/pix-hub/PixRecebimento.tsx`<br>`src/pages/Asaas.parts.tsx`<br>`supabase/functions/gerar-resumo-financeiro-diario/index.ts`<br>`supabase/functions/webhook-simulator/contract_test.ts`<br>`supabase/functions/webhook-simulator/index.ts` |
 | `status` | `REFUNDED` | escreve | `supabase/functions/asaas-proxy/index.ts` |
@@ -1347,32 +1347,32 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | `status` | `all` | compara, escreve | `src/hooks/financial/useContasPagar.ts`<br>`src/hooks/financial/useContasReceber.ts`<br>`src/pages/Clientes.tsx`<br>`src/pages/Fornecedores.tsx` |
 | `status` | `analyzing` | compara, escreve | `src/components/comprovantes/ComprovanteOCR.tsx`<br>`src/components/expert/DocumentAnalyzer.tsx` |
 | `status` | `aprovada` | compara | `src/components/contas-pagar/ContaPagarRowAprovacaoBadge.tsx` |
-| `status` | `aprovado` | compara, escreve | `src/components/aprovacoes/HistoricoAprovacoes.tsx`<br>`src/components/aprovacoes/PasswordResetApprovals.tsx`<br>`src/components/contas-pagar/RegistrarPagamentoDialog.tsx`<br>`src/hooks/useConformidadeFiscal.ts`<br>`src/hooks/useContasPagarLogic.ts`<br>… +4 |
+| `status` | `aprovado` | compara, escreve | `src/components/aprovacoes/HistoricoAprovacoes.tsx`<br>`src/components/aprovacoes/PasswordResetApprovals.tsx`<br>`src/components/contas-pagar/RegistrarPagamentoDialog.tsx`<br>`src/hooks/useConformidadeFiscal.ts`<br>`src/hooks/useContasPagarLogic.calculos.ts`<br>… +4 |
 | `status` | `assinado` | compara | `src/components/documentos/AssinaturaDigital.tsx` |
 | `status` | `atencao` | compara | `src/pages/OrcamentoEvento.tsx`<br>`supabase/functions/verificar-conformidade-fiscal/index.ts` |
 | `status` | `atendida` | compara, escreve | `src/pages/CentroPrivacidadeLGPD.tsx`<br>`supabase/functions/processar-solicitacao-lgpd/index.ts` |
-| `status` | `ativo` | compara, escreve | `src/components/contratos/GestaoContratos.tsx`<br>`src/hooks/useAcordosParcelamento.ts`<br>`src/hooks/useContratos.ts`<br>`src/pages/Integracoes.tsx`<br>`supabase/functions/external-data/index.ts` |
+| `status` | `ativo` | compara, escreve | `src/components/contratos/GestaoContratos.tsx`<br>`src/hooks/useAcordosParcelamento.ts`<br>`src/hooks/useAcordosParcelamento.types.ts`<br>`src/hooks/useContratos.ts`<br>`src/pages/Integracoes.tsx`<br>… +1 |
 | `status` | `atrasada` | compara | `src/components/reforma-tributaria/ObrigacoesAcessorias.tsx` |
 | `status` | `atrasado` | compara | `src/pages/Financeiro.tsx` |
-| `status` | `atual` | compara, escreve | `src/components/aprovacoes/AprovacoesPendentes.tsx`<br>`src/components/aprovacoes/WorkflowVisualizer.tsx` |
+| `status` | `atual` | compara, escreve | `src/components/aprovacoes/AprovacoesPendentesConteudo.tsx`<br>`src/components/aprovacoes/WorkflowVisualizer.tsx` |
 | `status` | `ausente` | compara, escreve | `src/components/compliance/verificar-integridade/LinhaResultado.tsx`<br>`src/components/compliance/verificar-integridade/types.ts`<br>`src/components/compliance/verificar-integridade/useIntegridadeVerifier.ts` |
 | `status` | `authorized` | compara, filtra | `src/components/integracoes/open-finance/OpenFinanceConsentList.tsx`<br>`supabase/functions/open-finance/index.ts` |
-| `status` | `autorizada` | compara, escreve | `src/components/nfe/CancelamentoNFe.tsx`<br>`src/components/nfe/DANFEGenerator.tsx`<br>`src/components/nfe/contingencia/ContingenciaPendingList.tsx`<br>`src/components/nfe/nfe-types.ts`<br>`src/hooks/useImportacaoXMLNFe.ts`<br>… +1 |
+| `status` | `autorizada` | compara, escreve | `src/components/nfe/CancelamentoNFe.tsx`<br>`src/components/nfe/DANFEGenerator.tsx`<br>`src/components/nfe/contingencia/ContingenciaPendingList.tsx`<br>`src/components/nfe/nfe-types.ts`<br>`src/hooks/useImportacaoXMLNFe.ts`<br>… +2 |
 | `status` | `awaiting_authorization` | compara, escreve | `src/components/integracoes/open-finance/OpenFinanceConsentList.tsx`<br>`supabase/functions/open-finance/index.ts` |
 | `status` | `bloqueado` | compara, escreve | `src/hooks/useSpedContabil.ts`<br>`supabase/functions/log-sped-bitrix24/index.ts` |
 | `status` | `calculado` | compara, escreve | `src/components/reforma-tributaria/ApuracaoMensal.tsx`<br>`src/hooks/useApuracoesTributarias.ts`<br>`src/hooks/useIRPJCSLL.ts` |
 | `status` | `cancelada` | compara, escreve | `src/components/nfe/NFePreview.tsx`<br>`src/components/nfe/nfe-types.ts`<br>`src/pages/NotasFiscais.tsx` |
-| `status` | `cancelado` | compara, escreve, filtra | `src/components/boletos/BoletoPreviewPanel.tsx`<br>`src/components/contas-receber/BaixaAutomaticaDialog.tsx`<br>`src/components/contas-receber/ContaReceberDetailDrawer.tsx`<br>`src/components/contas-receber/row/AcoesCell.tsx`<br>`src/components/contas-receber/row/VencimentoCell.tsx`<br>… +19 |
+| `status` | `cancelado` | compara, escreve, filtra | `src/components/boletos/BoletoPreviewPanel.tsx`<br>`src/components/contas-receber/BaixaAutomaticaDialog.tsx`<br>`src/components/contas-receber/ContaReceberDetailDrawer.tsx`<br>`src/components/contas-receber/row/AcoesCell.tsx`<br>`src/components/contas-receber/row/VencimentoCell.tsx`<br>… +21 |
 | `status` | `cancelled` | escreve | `supabase/functions/detectar-anomalias-financeiras/index.ts` |
 | `status` | `compensado` | compara | `src/components/reforma-tributaria/GestorCreditosTributarios.tsx` |
 | `status` | `complete` | compara, escreve | `src/components/comprovantes/ComprovanteOCR.tsx`<br>`src/components/expert/DocumentAnalyzer.tsx` |
 | `status` | `completed` | compara, escreve | `src/components/admin/WebhookSimulator.tsx`<br>`src/hooks/useAnomaliaDetectionRun.ts`<br>`supabase/functions/asaas-proxy/index.ts`<br>`supabase/functions/detectar-anomalias-financeiras/index.ts`<br>`supabase/functions/webhook-simulator/index.ts` |
-| `status` | `completo` | compara, escreve | `src/components/aprovacoes/AprovacoesPendentes.tsx`<br>`src/components/aprovacoes/WorkflowVisualizer.tsx` |
+| `status` | `completo` | compara, escreve | `src/components/aprovacoes/AprovacoesPendentesConteudo.tsx`<br>`src/components/aprovacoes/WorkflowVisualizer.tsx` |
 | `status` | `conciliada` | compara | `src/components/conciliacao/ConciliacaoExport.tsx` |
 | `status` | `concluido` | compara | `src/components/bling/BlingWebhooksPanel.tsx`<br>`src/components/conciliacao/ConciliacaoRetroativaPanel.tsx`<br>`src/components/dashboard/PlanosAcaoPanel.tsx`<br>`src/components/reforma-tributaria/CronogramaTransicao.tsx` |
 | `status` | `configurando` | escreve | `src/pages/Integracoes.tsx` |
 | `status` | `confirmada` | compara, escreve, filtra | `src/components/admin/AnomaliasList.tsx`<br>`src/components/admin/anomalias-review-queue/atalhos.ts`<br>`src/components/admin/anomalias-review-queue/conflito.ts`<br>`src/components/admin/anomalias-review-queue/useReviewQueue.ts`<br>`src/components/insights-ia/anomalia/AnomaliaHeader.tsx`<br>… +2 |
-| `status` | `confirmado` | compara, escreve | `src/components/contabilidade/LancamentosTab.tsx`<br>`src/components/contas-receber/BaixaAutomaticaDialog.tsx`<br>`src/components/contas-receber/RegistrarRecebimentoDialog.tsx`<br>`supabase/functions/contabilizar-evento/index.ts` |
+| `status` | `confirmado` | compara, escreve | `src/components/contabilidade/LancamentosTabConteudo.tsx`<br>`src/components/contas-receber/BaixaAutomaticaDialog.tsx`<br>`src/components/contas-receber/RegistrarRecebimentoDialog.tsx`<br>`supabase/functions/contabilizar-evento/index.ts` |
 | `status` | `contact_not_found` | escreve | `supabase/functions/sync-profile-to-bitrix/index.ts` |
 | `status` | `corrigido` | escreve | `src/components/conciliacao/DivergenciasConciliacaoPanel.tsx` |
 | `status` | `dead` | compara | `supabase/functions/monitor-health/index.ts` |
@@ -1380,7 +1380,7 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | `status` | `degraded` | compara | `src/pages/StatusPage.tsx` |
 | `status` | `delivered` | compara | `supabase/functions/whatsapp-webhook/index.ts` |
 | `status` | `dispensada` | compara | `src/lib/tributario/obrigacoes/conformidade.ts`<br>`src/pages/tributario/ObrigacoesAcessorias.tsx`<br>`supabase/functions/_shared/obrigacoes/conformidade.ts` |
-| `status` | `disponivel` | compara, escreve, filtra | `src/components/reforma-tributaria/DashboardMetricasTributarias.tsx`<br>`src/components/reforma-tributaria/GestorCreditosTributarios.tsx`<br>`src/components/reforma-tributaria/PerDcompPanel.tsx`<br>`src/components/reforma-tributaria/RelatoriosContabeisTributarios.tsx`<br>`src/hooks/useAlertasTributarios.ts`<br>… +4 |
+| `status` | `disponivel` | compara, escreve, filtra | `src/components/reforma-tributaria/DashboardMetricasTributarias.helpers.ts`<br>`src/components/reforma-tributaria/GestorCreditosTributarios.tsx`<br>`src/components/reforma-tributaria/PerDcompPanel.tsx`<br>`src/components/reforma-tributaria/RelatoriosContabeisTributariosTabs.tsx`<br>`src/hooks/useAlertasTributarios.ts`<br>… +4 |
 | `status` | `divergente` | compara, escreve | `src/components/compliance/verificar-integridade/LinhaResultado.tsx`<br>`src/components/compliance/verificar-integridade/types.ts`<br>`src/components/compliance/verificar-integridade/useIntegridadeVerifier.ts`<br>`src/hooks/useConciliacaoTributaria.ts`<br>`src/lib/tributario/ipi-iss/overlay-iss.ts`<br>… +1 |
 | `status` | `done` | compara | `src/components/contabilidade/elisao/ElisaoFiscalTab.tsx` |
 | `status` | `duplicado` | escreve | `supabase/functions/contabilizar-evento/index.ts` |
@@ -1407,7 +1407,7 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | `status` | `finalizado` | compara | `supabase/functions/calcular-health-score-operacional/index.ts` |
 | `status` | `fulfilled` | compara | `src/hooks/useConciliacaoIgnorarActions.ts` |
 | `status` | `gap` | compara, escreve | `src/lib/pdf-generator/benchmarking.ts`<br>`src/pages/benchmarking/BenchmarkingConcorrentes.tsx` |
-| `status` | `gerado` | compara, escreve, filtra | `src/components/contabilidade/sped-contabil/SpedKpiCards.tsx`<br>`src/components/reforma-tributaria/retencoes/DARFsTable.tsx`<br>`src/components/relatorios/RelatoriosAgendados.tsx`<br>`src/hooks/useAlertasTributarios.ts`<br>`src/hooks/useBoletos.ts`<br>… +6 |
+| `status` | `gerado` | compara, escreve, filtra | `src/components/contabilidade/sped-contabil/SpedKpiCards.tsx`<br>`src/components/reforma-tributaria/retencoes/DARFsTable.tsx`<br>`src/components/relatorios/RelatoriosAgendados.tsx`<br>`src/components/relatorios/RelatoriosAgendadosHistoricoExecucoes.tsx`<br>`src/hooks/useAlertasTributarios.ts`<br>… +8 |
 | `status` | `identificada` | escreve, filtra | `src/hooks/useOportunidadesElisao.ts` |
 | `status` | `idle` | escreve | `src/types/financial.ts` |
 | `status` | `ignorado` | escreve | `src/hooks/useAuditoriaCompliance.ts` |
@@ -1425,10 +1425,10 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | `status` | `online` | escreve | `src/components/ui/badge.tsx` |
 | `status` | `operational` | compara, escreve | `src/pages/StatusPage.tsx`<br>`supabase/functions/health/index.ts` |
 | `status` | `outage` | compara | `src/pages/StatusPage.tsx`<br>`supabase/functions/health/index.ts` |
-| `status` | `pago` | compara, escreve, filtra | `src/components/analytics/BenchmarkingSetorial.tsx`<br>`src/components/bi/BIDrillDown.tsx`<br>`src/components/bitrix/BitrixDealsTab.tsx`<br>`src/components/boletos/BoletoPreviewPanel.tsx`<br>`src/components/clientes/ClienteDetailDialog.tsx`<br>… +44 |
+| `status` | `pago` | compara, escreve, filtra | `src/components/analytics/BenchmarkingSetorial.tsx`<br>`src/components/bi/BIDrillDown.tsx`<br>`src/components/bitrix/BitrixDealsTab.tsx`<br>`src/components/boletos/BoletoPreviewPanel.tsx`<br>`src/components/clientes/ClienteDetailDialog.tsx`<br>… +46 |
 | `status` | `parcial` | compara | `src/components/clientes/ClienteDetailDialog.tsx`<br>`src/components/contas-pagar/ContasPagarTableRow.tsx`<br>`src/components/fornecedores/FornecedorDetailDialog.tsx`<br>`src/lib/transaction-matcher/converters.ts` |
 | `status` | `partial` | compara, escreve | `src/pages/benchmarking/BenchmarkingConcorrentes.tsx` |
-| `status` | `pendente` | compara, escreve, filtra | `src/components/aprovacoes/AprovacoesPendentes.tsx`<br>`src/components/aprovacoes/HistoricoAprovacoes.tsx`<br>`src/components/aprovacoes/PasswordResetApprovals.tsx`<br>`src/components/asaas/NovaCobrancaDialog.tsx`<br>`src/components/clientes/ClienteDetailDialog.tsx`<br>… +59 |
+| `status` | `pendente` | compara, escreve, filtra | `src/components/aprovacoes/AprovacoesPendentesConteudo.tsx`<br>`src/components/aprovacoes/HistoricoAprovacoes.tsx`<br>`src/components/aprovacoes/PasswordResetApprovals.tsx`<br>`src/components/asaas/NovaCobrancaDialog.tsx`<br>`src/components/clientes/ClienteDetailDialog.tsx`<br>… +60 |
 | `status` | `pendente_aprovacao` | compara, escreve | `src/components/compras/PedidoCompraForm.tsx`<br>`src/lib/compras/pedidos.ts`<br>`src/pages/Compras.tsx` |
 | `status` | `pending` | compara, escreve | `src/components/admin/WebhookSimulator.tsx`<br>`src/components/ui/file-upload.tsx`<br>`src/components/ui/ux-validator.tsx`<br>`src/components/ui/ux-validator/ReportModal.tsx`<br>`src/components/ui/ux-validator/helpers.tsx`<br>… +2 |
 | `status` | `pior` | compara | `src/components/analytics/BenchmarkingSetorial.tsx` |
@@ -1440,11 +1440,11 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | `status` | `rascunho` | compara, escreve, filtra | `src/components/reforma-tributaria/ApuracaoMensal.tsx`<br>`src/components/reforma-tributaria/PerDcompPanel.tsx`<br>`src/components/reforma-tributaria/irpj-csll/IRPJCSLLCalculadora.tsx`<br>`src/components/reforma-tributaria/per-dcomp/PerDcompTable.tsx`<br>`src/hooks/useApuracoesTributarias.ts`<br>… +3 |
 | `status` | `read` | compara | `supabase/functions/whatsapp-webhook/index.ts` |
 | `status` | `realizado` | escreve | `src/components/financeiro/TransferenciaDialog.tsx`<br>`src/hooks/useFinancialOperations.ts` |
-| `status` | `recebido` | compara, escreve, filtra | `src/components/contas-receber/row/AcoesCell.tsx`<br>`src/hooks/useAcordosParcelamento.ts`<br>`src/hooks/useCalculadoraDadosReais.ts`<br>`src/hooks/useContasReceberLogic.ts`<br>`src/hooks/useWhatsAppUnreadCount.ts`<br>… +3 |
+| `status` | `recebido` | compara, escreve, filtra | `src/components/contas-receber/row/AcoesCell.tsx`<br>`src/hooks/useAcordosParcelamento.ts`<br>`src/hooks/useCalculadoraDadosReais.ts`<br>`src/hooks/useContasReceberLogic.calculos.ts`<br>`src/hooks/useContasReceberLogic.ts`<br>… +4 |
 | `status` | `recolhido` | compara | `src/components/reforma-tributaria/RetencoesFonte.tsx`<br>`src/hooks/useRetencoesFonte.ts` |
 | `status` | `rejected` | compara | `src/lib/adaptive-chunk.ts`<br>`supabase/functions/sefaz-dfe-dispatcher/index.ts` |
 | `status` | `rejeitada` | compara, escreve | `src/components/nfe/ContingenciaNFe.tsx`<br>`src/components/nfe/contingencia/ContingenciaPendingList.tsx`<br>`src/pages/CentroPrivacidadeLGPD.tsx` |
-| `status` | `rejeitado` | compara, escreve | `src/components/aprovacoes/HistoricoAprovacoes.tsx`<br>`src/components/aprovacoes/PasswordResetApprovals.tsx`<br>`src/components/contabilidade/SpedEcfHistorico.tsx`<br>`src/components/contabilidade/ValidacoesPreSpedDialog.tsx`<br>`src/components/contabilidade/sped-contabil/SpedHistoricoTable.tsx`<br>… +7 |
+| `status` | `rejeitado` | compara, escreve | `src/components/aprovacoes/HistoricoAprovacoes.tsx`<br>`src/components/aprovacoes/PasswordResetApprovals.tsx`<br>`src/components/contabilidade/SpedEcfHistorico.tsx`<br>`src/components/contabilidade/ValidacoesPreSpedDialog.tsx`<br>`src/components/contabilidade/sped-contabil/SpedHistoricoRow.tsx`<br>… +7 |
 | `status` | `resolvido` | compara, escreve | `src/hooks/useAuditoriaCompliance.ts` |
 | `status` | `retificada` | compara | `src/lib/tributario/obrigacoes/conformidade.ts`<br>`supabase/functions/_shared/obrigacoes/conformidade.ts` |
 | `status` | `retificado` | compara | `src/components/reforma-tributaria/ApuracaoMensal.tsx` |
@@ -1454,7 +1454,7 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | `status` | `running` | compara, escreve, filtra | `src/components/admin/DetectionRunProgress.tsx`<br>`src/components/compliance/EvidenciaStatusDialog.tsx`<br>`src/components/compliance/EvidenciasTab.tsx`<br>`supabase/functions/detectar-anomalias-financeiras/index.ts`<br>`supabase/functions/webhook-simulator/index.ts` |
 | `status` | `saudavel` | compara | `src/lib/tributario/catalogos/saude.ts` |
 | `status` | `sem_alteracao` | compara | `src/components/admin/telemetry/CoberturaFiscalUFPanel.tsx` |
-| `status` | `sem_catalogo` | compara, escreve | `src/lib/tributario/ipi-iss/overlay-iss.ts`<br>`src/pages/tributario/IpiIss.tsx` |
+| `status` | `sem_catalogo` | compara, escreve | `src/lib/tributario/ipi-iss/overlay-iss.ts`<br>`src/pages/tributario/IssSimulador.tsx` |
 | `status` | `sem_regra` | compara, escreve | `src/components/contabilidade/contabilizacao-automatica/SimulacaoDialog.tsx`<br>`src/components/contabilidade/contabilizacao-automatica/StatsCards.tsx`<br>`supabase/functions/contabilizar-evento/index.ts` |
 | `status` | `sent` | escreve | `src/pages/configuracoes/HistoricoNotificacoes.tsx`<br>`supabase/functions/notify-saved-filter/index.ts` |
 | `status` | `simulado` | compara, escreve | `src/components/contabilidade/contabilizacao-automatica/SimulacaoDialog.tsx`<br>`supabase/functions/contabilizar-evento/index.ts` |
@@ -1465,7 +1465,7 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | `status` | `todas` | compara | `src/components/admin/AnomaliasDetectadasPanel.tsx`<br>`src/hooks/saved-filter-alerts/matchers.ts` |
 | `status` | `todos` | compara, escreve | `src/hooks/useNfeRecebidas.ts`<br>`src/pages/tributario/NfeRecebidas.tsx` |
 | `status` | `transmitida` | compara | `src/components/reforma-tributaria/ObrigacoesAcessorias.tsx`<br>`supabase/functions/verificar-conformidade-fiscal/index.ts` |
-| `status` | `transmitido` | compara, escreve | `src/components/contabilidade/SpedEcfHistorico.tsx`<br>`src/components/contabilidade/sped-contabil/SpedHistoricoTable.tsx`<br>`src/components/contabilidade/sped-contabil/SpedKpiCards.tsx`<br>`src/components/contabilidade/sped-contabil/useSpedContabilState.ts`<br>`src/components/contabilidade/sped-ecf-historico/HistoricoRow.tsx`<br>… +7 |
+| `status` | `transmitido` | compara, escreve | `src/components/contabilidade/SpedEcfHistorico.tsx`<br>`src/components/contabilidade/sped-contabil/SpedHistoricoRow.tsx`<br>`src/components/contabilidade/sped-contabil/SpedKpiCards.tsx`<br>`src/components/contabilidade/sped-contabil/useSpedContabilState.ts`<br>`src/components/contabilidade/sped-ecf-historico/HistoricoRow.tsx`<br>… +7 |
 | `status` | `transmitindo` | compara, escreve | `src/components/nfe/ContingenciaNFe.tsx`<br>`src/components/nfe/contingencia/ContingenciaPendingList.tsx` |
 | `status` | `unknown` | escreve | `supabase/functions/health/index.ts` |
 | `status` | `uploading` | compara, escreve | `src/components/comprovantes/ComprovanteOCR.tsx`<br>`src/components/expert/DocumentAnalyzer.tsx`<br>`src/components/ui/file-upload.tsx` |
@@ -1499,7 +1499,7 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | `tipo` | `A001` | escreve | `src/lib/sped-generator/efd-contribuicoes.ts` |
 | `tipo` | `A990` | escreve | `src/lib/sped-generator/efd-contribuicoes.ts` |
 | `tipo` | `APURACAO_ATRASADA` | escreve | `src/hooks/useAuditoriaCompliance.ts` |
-| `tipo` | `AUTORIZACAO` | compara, escreve | `src/components/nfe/ContingenciaNFe.tsx`<br>`src/components/nfe/EventosHistorico.tsx`<br>`src/components/nfe/SefazAnalytics.tsx`<br>`src/lib/sefaz-event-logger.ts`<br>`src/lib/sefaz-rejection-monitor.ts` |
+| `tipo` | `AUTORIZACAO` | compara, escreve | `src/components/nfe/ContingenciaNFe.tsx`<br>`src/components/nfe/EventosHistorico.helpers.ts`<br>`src/components/nfe/SefazAnalytics.tsx`<br>`src/lib/sefaz-event-logger.ts`<br>`src/lib/sefaz-rejection-monitor.ts` |
 | … +230 linhas — lista completa em `context.json` | | | |
 
 ### E.4 Enums e listas de valores
@@ -1554,6 +1554,8 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | FocusClaim | all \| email \| name \| groups \| domain | `src/components/admin/sso/sandbox/types.ts` |
 | MappingFilter | all \| matched \| skipped \| no_match | `src/components/admin/sso/sandbox/types.ts` |
 | SeverityFilter | all \| critical \| warning \| info | `src/components/admin/telemetry/performance-alerts-deeplink.ts` |
+| Step | upload \| processing \| preview \| error \| open-finance-loading | `src/components/conciliacao/ImportarExtratoDialog.types.ts` |
+| DatePreset | all \| today \| last7 \| last30 \| mes \| ano \| custom | `src/components/contabilidade/LancamentosTab.types.ts` |
 | TipoEvento | conta_pagar \| conta_receber \| movimentacao | `src/components/contabilidade/contabilizacao-automatica/types.ts` |
 | EVENTOS | { value: 'conta_pagar', label: 'Pagamento (Conta a Pagar)' }, { value: 'conta_receber', label: 'Recebimento (Conta a Receber)' }, { value: 'movimentacao', label: 'Movimentação Bancária' }, | `src/components/contabilidade/contabilizacao-automatica/types.ts` |
 | ModoDemonstrativo | dre \| balanco | `src/components/contabilidade/dre-balanco/types.ts` |
@@ -1564,9 +1566,13 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | StatusFilter | all \| liberada \| bloqueada \| transmitida | `src/components/contabilidade/sped-ecf-historico/HistoricoFilters.tsx` |
 | ValidacaoFilter | all \| com_erros \| com_avisos \| sem_alertas | `src/components/contabilidade/sped-ecf-historico/HistoricoFilters.tsx` |
 | DivergTone | success \| warning \| destructive \| info | `src/components/contabilidade/sped-ecf-wizard/types.ts` |
+| Step | upload \| processing \| preview \| success \| error | `src/components/contas-receber/BaixaAutomaticaDialog.types.ts` |
 | TransitionName | fade \| blur-rise \| slide-left \| slide-right \| slide-up \| slide-down \| zoom-in \| zoom-out \| flip-x \| flip-y \| parallax \| scale \| none | `src/components/layout/transitions/types.ts` |
 | EasingPreset | anticipate \| easeOut \| easeInOut \| spring | `src/components/layout/transitions/types.ts` |
+| Periodo | 24h \| 7d \| 30d \| 90d | `src/components/nfe/SefazAnalytics.types.ts` |
 | TipoCobranca | boleto \| pix \| transferencia \| cartao \| dinheiro | `src/components/pagamentos-recorrentes/pagamento-recorrente-model.ts` |
+| StatusObrigacao | pendente \| em_andamento \| transmitida \| atrasada \| nao_aplicavel | `src/components/reforma-tributaria/ObrigacoesAcessorias.types.ts` |
+| TipoRelatorio | dre-tributario \| balancete \| comparativo \| creditos \| carga-efetiva | `src/components/reforma-tributaria/RelatoriosContabeisTributarios.types.ts` |
 | SeverityKey | critica \| alta \| media \| baixa | `src/components/shared/AdvancedSearchPopover.tsx` |
 | Theme | light \| dark \| system | `src/components/theme/ThemeContext.ts` |
 | ActionState | idle \| loading \| success \| error | `src/components/ui/action-button.tsx` |
@@ -1590,8 +1596,8 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | Severidade | baixa \| media \| alta \| critica | `src/hooks/useAnomaliaPreferences.ts` |
 | ToastAcaoKey | drill_down \| abrir_pagina \| copiar_id \| marcar_lida | `src/hooks/useAnomaliaPreferences.ts` |
 | DrawerAcaoKey | abrir_entidade \| pagina_completa \| copiar_id \| marcar_lida | `src/hooks/useAnomaliaPreferences.ts` |
-| AsaasPaymentStatus | PENDING \| RECEIVED \| CONFIRMED \| OVERDUE \| REFUNDED \| CANCELLED \| CHARGEBACK | `src/hooks/useAsaas.ts` |
-| AsaasBillingType | boleto \| pix \| credit_card \| debit_card | `src/hooks/useAsaas.ts` |
+| AsaasPaymentStatus | PENDING \| RECEIVED \| CONFIRMED \| OVERDUE \| REFUNDED \| CANCELLED \| CHARGEBACK | `src/hooks/useAsaas.types.ts` |
+| AsaasBillingType | boleto \| pix \| credit_card \| debit_card | `src/hooks/useAsaas.types.ts` |
 | AppRole | admin \| financeiro \| operacional \| visualizador | `src/hooks/useAuth.tsx` |
 | CategoriaCashback | cesta_basica \| energia_eletrica \| gas_cozinha \| agua_saneamento \| telecomunicacoes \| medicamentos \| transporte_publico \| demais | `src/hooks/useCashbackSimulador.ts` |
 | EntityType | contas_pagar \| contas_receber \| clientes \| fornecedores \| empresas | `src/hooks/useCustomFields.ts` |
@@ -1646,9 +1652,9 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | SloRetryKind | slo_retry_provider_started \| slo_retry_provider_succeeded \| slo_retry_provider_failed \| slo_retry_local_started \| slo_retry_local_succeeded \| slo_retry_local_failed | `src/lib/sso-slo-audit.ts` |
 | SloFailureReason | provider_logout_failed \| local_cleanup_failed \| unknown | `src/lib/sso-slo-state.ts` |
 | ModuloId | M01 \| M02 \| M03 \| M04 \| M05 \| M06 \| M07 \| M08 \| M09 \| M10 \| M11 \| M12 | `src/lib/arquitetura/modulos.ts` |
-| CategoriaIndice | liquidez \| endividamento \| rentabilidade \| atividade \| estrutura | `src/lib/contabil/indices.ts` |
-| FormatoIndice | indice \| percentual \| dias \| moeda | `src/lib/contabil/indices.ts` |
-| FaixaIndice | bom \| atencao \| critico \| neutro \| indefinido | `src/lib/contabil/indices.ts` |
+| CategoriaIndice | liquidez \| endividamento \| rentabilidade \| atividade \| estrutura | `src/lib/contabil/indices.types.ts` |
+| FormatoIndice | indice \| percentual \| dias \| moeda | `src/lib/contabil/indices.types.ts` |
+| FaixaIndice | bom \| atencao \| critico \| neutro \| indefinido | `src/lib/contabil/indices.types.ts` |
 | TipoLivro | DIARIO \| RAZAO | `src/lib/contabil/termos-livro.ts` |
 | FonteDemonstrativo | competencia \| caixa | `src/lib/contabilidade/demonstrativos-competencia.ts` |
 | EventoContaTipo | receber \| pagar | `src/lib/financeiro/registrarEvento.ts` |
@@ -1665,9 +1671,6 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | OrdenacaoHistorico | data_desc \| data_asc \| economia_desc \| pendencia | `src/lib/tributario/historico-simulacao.ts` |
 | SeveridadeAlertaPF | alta \| media \| baixa | `src/lib/tributario/pf-vinculada.ts` |
 | TipoOperacao | venda_produto \| venda_servico \| compra_produto \| compra_servico | `src/lib/tributario/recomendar-empresa.ts` |
-| RegimeTributario | simples_nacional \| lucro_presumido \| lucro_real | `src/lib/tributario/shared-logic.ts` |
-| AnexoSimples | I \| II \| III \| IV \| V | `src/lib/tributario/shared-logic.ts` |
-| PeriodicidadeApuracao | trimestral \| anual | `src/lib/tributario/shared-logic.ts` |
 | RegimeTributario | simples_nacional \| lucro_presumido \| lucro_real | `src/lib/tributario/types.ts` |
 | AnexoSimples | I \| II \| III \| IV \| V | `src/lib/tributario/types.ts` |
 | PeriodicidadeApuracao | trimestral \| anual | `src/lib/tributario/types.ts` |
@@ -1707,6 +1710,9 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | MotivoRejeicaoMonofasico | codigo_invalido \| duplicado | `src/lib/tributario/monofasico/overlay-monofasico.ts` |
 | PosicaoCadeia | industria \| importador \| produtor \| distribuidor \| atacado \| varejo \| revenda | `src/lib/tributario/monofasico/types.ts` |
 | RegimeApuracaoPisCofins | presumido \| real \| simples | `src/lib/tributario/monofasico/types.ts` |
+| RegimeTributario | simples_nacional \| lucro_presumido \| lucro_real | `src/lib/tributario/motor/base.ts` |
+| AnexoSimples | I \| II \| III \| IV \| V | `src/lib/tributario/motor/base.ts` |
+| PeriodicidadeApuracao | trimestral \| anual | `src/lib/tributario/motor/base.ts` |
 | TipoAlertaConformidade | score_baixo \| queda_abrupta \| tendencia_negativa \| obrigacoes_vencidas \| multa_acumulada | `src/lib/tributario/obrigacoes/alertas.ts` |
 | SeveridadeAlerta | baixa \| media \| alta \| critica | `src/lib/tributario/obrigacoes/alertas.ts` |
 | StatusRegistro | pendente \| entregue \| dispensada \| retificada | `src/lib/tributario/obrigacoes/conformidade.ts` |
@@ -1724,10 +1730,12 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | SituacaoObrigacao | entregue \| vencida \| vence_hoje \| proxima \| futura | `src/lib/tributario/obrigacoes/types.ts` |
 | NaturezaCredito | bens_revenda \| insumos \| energia_eletrica \| energia_termica \| alugueis_pj \| arrendamento_mercantil \| depreciacao_maquinas \| edificacoes_benfeitorias \| devolucoes_vendas \| armazenagem_frete_venda \| vale_transporte_alimentacao \| bens_importados | `src/lib/tributario/pis-cofins/types.ts` |
 | NaturezaReceita | tributada \| monofasica \| substituicao_tributaria \| aliquota_zero \| isenta \| suspensa \| exportacao | `src/lib/tributario/pis-cofins/types.ts` |
+| VALID_TABS | 'inicio', 'plano', 'lancamentos', 'razao', 'balancete', 'indices', 'dre', 'auto', 'elisao', 'integracoes', 'auditoria', 'ecd', 'ecf', | `src/pages/Contabilidade.helpers.ts` |
 | EventKind | jit \| profile_sync | `src/pages/admin/AuditSsoProfileSync.helpers.ts` |
+| StatusBucket | all \| 2xx \| 4xx \| 5xx | `src/pages/admin/ScimAudit.types.ts` |
 | AppRole | admin \| financeiro \| operacional \| visualizador | `src/pages/admin/shared-filters-admin/types.ts` |
 | DivergenceDirection | in-sync \| remote-newer \| local-newer \| remote-only \| local-only \| none \| unknown | `src/pages/configuracoes/filtros-salvos/types.ts` |
-| UFS | 'AC', 'AL', 'AP', 'AM', 'BA', 'CE', 'DF', 'ES', 'GO', 'MA', 'MT', 'MS', 'MG', 'PA', 'PB', 'PR', 'PE', 'PI', 'RJ', 'RN', 'RS', 'RO', 'RR', 'SC', 'SP', 'SE', 'TO', | `src/pages/tributario/consulta-rapida/shared.tsx` |
+| UFS | 'AC', 'AL', 'AP', 'AM', 'BA', 'CE', 'DF', 'ES', 'GO', 'MA', 'MT', 'MS', 'MG', 'PA', 'PB', 'PR', 'PE', 'PI', 'RJ', 'RN', 'RS', 'RO', 'RR', 'SC', 'SP', 'SE', 'TO', | `src/pages/tributario/consulta-rapida/ufs.ts` |
 | StatusPagamento | pago \| pendente \| vencido \| parcial \| cancelado | `src/types/financial.ts` |
 | TipoTransacao | receita \| despesa | `src/types/financial.ts` |
 | TipoCobranca | boleto \| pix \| cartao \| transferencia \| dinheiro | `src/types/financial.ts` |
@@ -1783,7 +1791,7 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
   { razao_social: z.string().min(2, 'Razão social é obrigatória').max(200, 'Nome muito longo'), nome_fantasia: z.string().max(200, 'Nome muito longo').optional(), cnpj_cpf: z .string() .max(18, 'CNPJ/CPF inválido') .optional() .superRefine((val, ctx) => { if (val) { const result = validateCnpjCpf(val); if (!result.valid) { ctx.addIssue({ code: 'custom', message: result.message ?? 'CNPJ/CPF inválido' }); } } }), email: z .string() .email('E-mail inválido') .max(255, 'E-mail muito longo') .optional() .or(z.literal('')), telefone: z.string().max(20, 'Telefone muito longo').optional(), endereco: z.string().max(300, 'Endereço muito longo').optional(), cidade: z.string().max(100, 'Cidade muito longa').optional(), estado: z.string().max(2, 'Use a sigla do estado').optional(), contato: z.string().ma …
   ```
   - Regras cruzadas (refine): “E-mail muito longo”
-- **formSchema** (`src/components/cobranca/AcordoParcelamentoDialog.tsx`, z.object):
+- **formSchema** (`src/components/cobranca/AcordoParcelamentoDialog.helpers.ts`, z.object):
   ```ts
   { cliente_nome: z.string().min(2, 'Nome do cliente é obrigatório'), cliente_email: z.string().email().optional().or(z.literal('')), cliente_telefone: z.string().optional(), valor_original: z.number().positive('Valor deve ser maior que zero'), desconto_percentual: z.number().min(0).max(100).default(0), juros_percentual: z.number().min(0).max(100).default(0), numero_parcelas: z.number().min(1).max(60), data_primeiro_vencimento: z.date(), dia_vencimento: z.number().min(1).max(31), observacoes: z.string().optional(), }
   ```
@@ -1799,11 +1807,11 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
   ```ts
   
   ```
-- **contaPagarSchema** (`src/components/contas-pagar/ContaPagarForm.tsx`, z.object):
+- **contaPagarSchema** (`src/components/contas-pagar/ContaPagarForm.helpers.ts`, z.object):
   ```ts
   { fornecedor_id: z.string().optional(), fornecedor_nome: z .string() .min(2, 'Nome do fornecedor é obrigatório') .max(200, 'Nome muito longo'), descricao: z.string().min(3, 'Descrição é obrigatória').max(500, 'Descrição muito longa'), valor: z.number().positive('Valor deve ser maior que zero').max(999999999, 'Valor muito alto'), data_vencimento: z.string().min(1, 'Data de vencimento é obrigatória'), data_emissao: z.string().optional(), empresa_id: z.string().min(1, 'Empresa é obrigatória'), centro_custo_id: z.string().optional(), categoria_id: z.string().optional(), conta_bancaria_id: z.string().optional(), tipo_cobranca: z.enum(['boleto', 'pix', 'cartao', 'transferencia', 'dinheiro']), numero_documento: z.string().max(50, 'Número muito longo').optional(), codigo_barras: z.string().max(100 …
   ```
-- **pagamentoSchema** (`src/components/contas-pagar/RegistrarPagamentoDialog.tsx`, z.object):
+- **pagamentoSchema** (`src/components/contas-pagar/RegistrarPagamentoDialog.helpers.ts`, z.object):
   ```ts
   { valor_pago: z.number().positive('Valor deve ser maior que zero'), data_pagamento: z.string().min(1, 'Data é obrigatória'), conta_bancaria_id: z.string().optional(), observacoes: z.string().max(500, 'Observações muito longas').optional(), }
   ```
@@ -2332,7 +2340,7 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | `verify-code` | max | `src/components/auth/TwoFactorSetup.tsx` |
 | `valor` | type=number, step=0.01 | `src/components/boletos/NovoBoletoForm.tsx` |
 | `vencimento` | type=date | `src/components/boletos/NovoBoletoForm.tsx` |
-| `ofx-file-upload` | accept=.ofx,.ofc,.csv,.txt,.xlsx,.xls | `src/components/conciliacao/ImportarExtratoDialog.tsx` |
+| `ofx-file-upload` | accept=.ofx,.ofc,.csv,.txt,.xlsx,.xls | `src/components/conciliacao/ImportarExtratoDialogArquivoLocal.tsx` |
 | `bal-inicio` | type=date | `src/components/contabilidade/balancete/BalanceteToolbar.tsx` |
 | `bal-fim` | type=date | `src/components/contabilidade/balancete/BalanceteToolbar.tsx` |
 | `idx-inicio` | type=date | `src/components/contabilidade/indices/IndicesToolbar.tsx` |
@@ -2346,11 +2354,11 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | `telefone` | max, disabled=isLoading | `src/components/empresas/EmpresaForm.tsx` |
 | `email` | type=email, disabled=isLoading | `src/components/empresas/EmpresaForm.tsx` |
 | `endereco` | disabled=isLoading | `src/components/empresas/EmpresaForm.tsx` |
-| `cidade` | disabled=isLoading | `src/components/empresas/EmpresaForm.tsx` |
-| `cep` | max, disabled=isLoading | `src/components/empresas/EmpresaForm.tsx` |
 | `cnae_principal` | max, disabled=isLoading | `src/components/empresas/EmpresaForm.tsx` |
 | `aliquota_rat` | type=number, step=0.1, min=0, max=6, disabled=isLoading | `src/components/empresas/EmpresaForm.tsx` |
 | `aliquota_terceiros` | type=number, step=0.1, min=0, max=8, disabled=isLoading | `src/components/empresas/EmpresaForm.tsx` |
+| `cidade` | disabled=isLoading | `src/components/empresas/EmpresaFormCidade.tsx` |
+| `cep` | max, disabled=isLoading | `src/components/empresas/EmpresaFormCidade.tsx` |
 | `file-upload` | disabled=uploading | `src/components/financeiro/AnexoList.tsx` |
 | `numeroInicial` | type=number | `src/components/nfe/InutilizacaoNFe.tsx` |
 | `numeroFinal` | type=number | `src/components/nfe/InutilizacaoNFe.tsx` |
@@ -2383,25 +2391,25 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | `orcamento-valor` | type=number, step=0.01 | `src/pages/OrcamentosFormDialog.tsx` |
 | `corp-email` | type=email | `src/pages/auth/CorporateOnboarding.tsx` |
 | `convite-email` | type=email | `src/pages/organizacoes/Organizacoes.parts.tsx` |
+| `df-valor` | type=number, min=0 | `src/pages/tributario/DiferencialAliquotas.tsx` |
 | `folha` | type=number, min=0 | `src/pages/tributario/FolhaEncargos.tsx` |
 | `prolabore` | type=number, min=0 | `src/pages/tributario/FolhaEncargos.tsx` |
 | `fap` | type=number, step=0.0001, min=FAP_MINIMO, max=FAP_MAXIMO | `src/pages/tributario/FolhaEncargos.tsx` |
 | `receita` | type=number, min=0 | `src/pages/tributario/FolhaEncargos.tsx` |
-| `st-valor` | type=number, min=0 | `src/pages/tributario/IcmsStDifal.tsx` |
-| `st-frete` | type=number, min=0 | `src/pages/tributario/IcmsStDifal.tsx` |
-| `st-ipi` | type=number, min=0 | `src/pages/tributario/IcmsStDifal.tsx` |
-| `st-desc` | type=number, min=0 | `src/pages/tributario/IcmsStDifal.tsx` |
-| `st-ncm` | max | `src/pages/tributario/IcmsStDifal.tsx` |
-| `st-mva` | type=number, step=0.0001, min=0, disabled=usarProtocolo && resolucao.encontrado | `src/pages/tributario/IcmsStDifal.tsx` |
-| `st-pmpf` | type=number, min=0 | `src/pages/tributario/IcmsStDifal.tsx` |
-| `df-valor` | type=number, min=0 | `src/pages/tributario/IcmsStDifal.tsx` |
-| `id` | type=number, step=step ??  | `src/pages/tributario/IpiIss.tsx` |
+| `id` | type=number, step=step ??  | `src/pages/tributario/NumberField.tsx` |
 | `hoje` | type=date | `src/pages/tributario/ObrigacoesAcessorias.tsx` |
 | `prolabore` | type=number, min=0, step=1000 | `src/pages/tributario/PfVinculada.tsx` |
 | `digest-max` | max, type=number, min=1, max=500, max | `src/pages/tributario/PreferenciasDigest.tsx` |
 | `digest-email` | type=email | `src/pages/tributario/PreferenciasDigest.tsx` |
 | `multa-prazo` | type=date | `src/pages/tributario/SimuladorMultaCard.tsx` |
 | `multa-entrega` | type=date | `src/pages/tributario/SimuladorMultaCard.tsx` |
+| `st-valor` | type=number, min=0 | `src/pages/tributario/SubstituicaoTributaria.tsx` |
+| `st-frete` | type=number, min=0 | `src/pages/tributario/SubstituicaoTributaria.tsx` |
+| `st-ipi` | type=number, min=0 | `src/pages/tributario/SubstituicaoTributaria.tsx` |
+| `st-desc` | type=number, min=0 | `src/pages/tributario/SubstituicaoTributaria.tsx` |
+| `st-ncm` | max | `src/pages/tributario/SubstituicaoTributaria.tsx` |
+| `st-mva` | type=number, step=0.0001, min=0, disabled=usarProtocolo && resolucao.encontrado | `src/pages/tributario/SubstituicaoTributaria.tsx` |
+| `st-pmpf` | type=number, min=0 | `src/pages/tributario/SubstituicaoTributaria.tsx` |
 | `elisao-lucros-acumulados` | type=number, min=0 | `src/pages/tributario/oportunidades-elisao/ContextoForm.tsx` |
 | `elisao-creditos-pis` | type=number, min=0 | `src/pages/tributario/oportunidades-elisao/ContextoForm.tsx` |
 | `elisao-investimento-maquinas` | type=number, min=0 | `src/pages/tributario/oportunidades-elisao/ContextoForm.tsx` |
@@ -2525,7 +2533,7 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
   ```
   const isSmall = size === 'sm'; return ( <div className={cn( 'flex items-center gap-1 rounded-full font-mono font-bold', isSmall ? 'text-xs px-2 py-0.5' : 'text-sm px-3 py-1', confianca === 'alta' && 'bg-success/20 text-success border border-success/30', confianca === 'media' && 'bg-warning/20 text-warning border border-warning/30', confianca === 'baixa' && 'bg-muted text-muted-foreground border border-border' )} > <Brain className={cn(isSmall ? 'h-3 w-3' : 'h-4 w-4')} /> {score}% </div> );
   ```
-- **scoreColor(score: number)** — `src/components/contabilidade/AuditoriaCFCPanel.tsx`
+- **scoreColor(score: number)** — `src/components/contabilidade/AuditoriaCFCPanel.helpers.ts`
   ```
   if (score >= 95) return { tone: 'text-success', bg: 'bg-success/10', border: 'border-success/20', label: 'Excelente', shadow: 'shadow-success/20', }; if (score >= 80) return { tone: 'text-primary', bg: 'bg-primary/10', border: 'border-primary/20', label: 'Bom', shadow: 'shadow-primary/20', }; if (score >= 60) return { tone: 'text-warning', bg: 'bg-warning/10', border: 'border-warning/20', label: 'Atenção', shadow: 'shadow-warning/20', }; return { tone: 'text-destructive', bg: 'bg-destructive/10' …
   ```
@@ -2637,6 +2645,14 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
   ```
   const { anoReferencia, calcularTributos, regimesEspeciais, impostosSeletivos, faseAtual } = useReformaTributaria(); // Estado do formulário const [valorOperacao, setValorOperacao] = useState<number>(10000); const [tipoOperacao, setTipoOperacao] = useState<TipoOperacao>('venda'); const [ufOrigem, setUfOrigem] = useState('SP'); const [ufDestino, setUfDestino] = useState('RJ'); const [cfop, setCfop] = useState('5102'); const [ncm, setNcm] = useState(''); const [regimeEspecial, setRegimeEspecial] = …
   ```
+- **calcularMetricas({ apuracoesPeriodo, apuracoes, creditos, operacoes, periodoInicio, periodoMeses, }: MetricasInput)** — `src/components/reforma-tributaria/DashboardMetricasTributarias.helpers.ts`
+  ```
+  const totalTributosNovos = apuracoesPeriodo.reduce( (sum, a) => sum + (a.cbs_a_pagar || 0) + (a.ibs_a_pagar || 0) + (a.is_a_pagar || 0), 0 ); const totalTributosResiduais = apuracoesPeriodo.reduce( (sum, a) => sum + (a.pis_residual || 0) + (a.cofins_residual || 0) + (a.icms_residual || 0) + (a.iss_residual || 0), 0 ); const totalCreditos = apuracoesPeriodo.reduce( (sum, a) => sum + (a.cbs_creditos || 0) + (a.ibs_creditos || 0), 0 ); const totalDebitos = apuracoesPeriodo.reduce( (sum, a) => sum + …
+  ```
+- **calcularScoreSaude(criticos: number, metricas: MetricasTributarias)** — `src/components/reforma-tributaria/DashboardMetricasTributarias.helpers.ts`
+  ```
+  let score = 100; score -= criticos * 10; if (metricas.taxaAproveitamentoCreditos < 80) score -= (80 - metricas.taxaAproveitamentoCreditos) / 2; if (metricas.cargaEfetiva > 30) score -= metricas.cargaEfetiva - 30; if (metricas.percentualMigracao > 50) score += 5; return Math.max(0, Math.min(100, score));
+  ```
 - **scoreColor(score: number)** — `src/components/relatorios/InsightsIA.tsx`
   ```
   if (score >= 70) return 'text-success'; if (score >= 40) return 'text-warning'; return 'text-destructive';
@@ -2709,6 +2725,10 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
   ```
   // Caso 1: usuário desligou o compartilhamento — sempre válido, // forçamos a limpeza dos campos derivados. if (!input.isShared) { return { isShared: false, sharedWithRoles: [], empresaId: null, }; } if (!input.empresaId) { throw new SavedFilterSharingError( 'Selecione uma empresa atual para compartilhar o filtro.', 'EMPRESA_REQUIRED' ); } const requested = normalizeRoles(input.sharedWithRoles); // Lista vazia = "todos do tenant"; é permitido por design, // mas se o tenant não tem nenhum papel a …
   ```
+- **simularParcelamento(params: { valorOriginal: number; descontoPercentual?: number; jurosPercentual?: number; numeroParcelas: number; })** — `src/hooks/useAcordosParcelamento.helpers.ts`
+  ```
+  const desconto = params.valorOriginal * ((params.descontoPercentual || 0) / 100); const valorComDesconto = params.valorOriginal - desconto; const juros = valorComDesconto * ((params.jurosPercentual || 0) / 100); const valorTotal = valorComDesconto + juros; const valorParcela = Math.ceil((valorTotal / params.numeroParcelas) * 100) / 100; return { valorOriginal: params.valorOriginal, desconto, juros, valorTotal, valorParcela, numeroParcelas: params.numeroParcelas, };
+  ```
 - **buscarParcelas(acordoId: string)** — `src/hooks/useAcordosParcelamento.ts`
   ```
   const { data, error } = await supabase .from('parcelas_acordo') .select('*') .eq('acordo_id', acordoId) .order('numero_parcela'); if (error) throw error; return data as ParcelaAcordo[];
@@ -2716,10 +2736,6 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 - **elegivel(i: number)** — `src/hooks/useAcordosParcelamento.ts`
   ```
   marcadores[i] === null && lista[i].status === 'em_acordo';
-  ```
-- **simularParcelamento(params: { valorOriginal: number; descontoPercentual?: number; jurosPercentual?: number; numeroParcelas: number; })** — `src/hooks/useAcordosParcelamento.ts`
-  ```
-  const desconto = params.valorOriginal * ((params.descontoPercentual || 0) / 100); const valorComDesconto = params.valorOriginal - desconto; const juros = valorComDesconto * ((params.jurosPercentual || 0) / 100); const valorTotal = valorComDesconto + juros; const valorParcela = Math.ceil((valorTotal / params.numeroParcelas) * 100) / 100; return { valorOriginal: params.valorOriginal, desconto, juros, valorTotal, valorParcela, numeroParcelas: params.numeroParcelas, };
   ```
 - **gerarAlertasAutomaticos()** — `src/hooks/useAlertas.ts`
   ```
@@ -2729,7 +2745,7 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
   ```
   if (!prefs) return true; if (!prefs.toast_enabled) return false; if (prefs.silenciar_ate && new Date(prefs.silenciar_ate) > new Date()) return false; const sev = (anomalia.severidade ?? 'baixa') as Severidade; // Lista explícita de severidades ativas é a fonte da verdade if ( prefs.toast_severidades_ativas && prefs.toast_severidades_ativas.length > 0 && !prefs.toast_severidades_ativas.includes(sev) ) { return false; } if ( anomalia.centro_custo_id && prefs.centros_custo_silenciados.includes(anom …
   ```
-- **validarEmissaoBoletoConfirmada(resposta: unknown)** — `src/hooks/useBoletos.ts`
+- **validarEmissaoBoletoConfirmada(resposta: unknown)** — `src/hooks/useBoletos.helpers.ts`
   ```
   if (!resposta || typeof resposta !== 'object') { throw new Error('ASAAS não retornou confirmação da emissão.'); } const dados = resposta as Record<string, unknown>; const id = dados.id; const linhaDigitavel = dados.identificationField; const codigoBarras = dados.barCode; if (typeof id !== 'string' || id.trim() === '') { const mensagem = typeof dados.error === 'string' && dados.error.trim() ? dados.error : 'ASAAS não retornou identificador'; throw new Error(mensagem); } if ( typeof linhaDigitavel …
   ```
@@ -2745,9 +2761,13 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
   ```
   if (params.faturamentoAnual > 4800000) { return { regime: 'simples_nacional', nome: 'Simples Nacional', irpj: 0, csll: 0, pis: 0, cofins: 0, cbs: 0, ibs: 0, icms: 0, iss: 0, creditosRecuperaveis: 0, totalTributos: 0, cargaEfetiva: 0, baseCalculoIR: 0, observacoes: ['NÃO ELEGÍVEL - Faturamento acima de R$ 4,8 milhões'], }; } const anexo = params.atividadePrincipal === 'servicos' ? SIMPLES_ANEXO_III : SIMPLES_ANEXO_I; const faixaAtual = anexo.find((f) => params.faturamentoAnual <= f.ate) || anexo[ …
   ```
-- **calcularPrioridadeAprovacao(conta: ContaPagarType)** — `src/hooks/useContasPagarLogic.ts`
+- **calcularPrioridadeAprovacao(conta: ContaPagarType)** — `src/hooks/useContasPagarLogic.calculos.ts`
   ```
   const precisaAprovacao = requerAprovacao(conta.valor); const temSolicitacaoPendente = aprovacaoStatusMap.get(conta.id) === 'pendente'; const naoAprovado = !conta.aprovado_por && precisaAprovacao; const pendente = (temSolicitacaoPendente || (naoAprovado && !aprovacaoStatusMap.has(conta.id))) && conta.status !== 'pago' && conta.status !== 'cancelado'; if (!pendente) return 999; const dataVenc = new Date(conta.data_vencimento); const hoje = new Date(); hoje.setHours(0, 0, 0, 0); dataVenc.setHours(0 …
+  ```
+- **calcularKpisContasReceber(allContas: ContaReceberKpi[])** — `src/hooks/useContasReceberLogic.calculos.ts`
+  ```
+  const today = new Date(); today.setHours(0, 0, 0, 0); const endOfWeek = addDays(today, 7); const startOfPrevMonth = startOfMonth(subMonths(today, 1)); const endOfPrevMonth = endOfMonth(subMonths(today, 1)); const totalReceber = allContas.reduce( (sum, c) => c.status !== 'pago' && c.status !== 'recebido' && c.status !== 'cancelado' ? sum + (c.valor ?? 0) - (c.valor_recebido || 0) : sum, 0 ); const totalVencido = allContas .filter((c) => c.status === 'vencido') .reduce((sum, c) => sum + (c.valor ? …
   ```
 - **generateDeviceFingerprint()** — `src/hooks/useDeviceDetection.ts`
   ```
@@ -3057,7 +3077,7 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
   ```
   const termo = (busca ?? '').trim().toLowerCase(); return rows.filter((r) => { if (nivelMax != null && r.nivel > nivelMax) return false; if (apenasComMovimento) { const semMovimento = Math.abs(r.debitos) < TOLERANCIA && Math.abs(r.creditos) < TOLERANCIA && Math.abs(r.saldo_anterior) < TOLERANCIA && Math.abs(r.saldo_final) < TOLERANCIA; if (semMovimento) return false; } if (termo && !`${r.codigo} ${r.nome}`.toLowerCase().includes(termo)) return false; return true; });
   ```
-- **round2(v: number)** — `src/lib/contabil/indices.ts`
+- **round2(v: number)** — `src/lib/contabil/indices.helpers.ts`
   ```
   return Math.round((v + Number.EPSILON) * 100) / 100;
   ```
@@ -3245,14 +3265,6 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
   ```
   return faturamentoHistorico .filter((f) => f.ano === ano) .reduce((acc, f) => acc + (f.receita_bruta || 0), 0);
   ```
-- **calcularRBT12(hist: FaturamentoMes[], ano: number, mes: number)** — `src/lib/tributario/shared-logic.ts`
-  ```
-  if (!hist?.length) return 0; const ord = [...hist].sort((a, b) => (a.ano !== b.ano ? b.ano - a.ano : b.mes - a.mes)); const ant = ord.filter((f) => f.ano < ano || (f.ano === ano && f.mes < mes)); if (!ant.length) return 0; const u12 = ant.slice(0, 12); const soma = u12.reduce((a, f) => a + (f.receita_bruta || 0), 0); return u12.length < 12 ? (soma / u12.length) * 12 : soma;
-  ```
-- **calcularFolha12m(hist: FolhaMes[], ano: number, mes: number)** — `src/lib/tributario/shared-logic.ts`
-  ```
-  if (!hist?.length) return 0; const ord = [...hist].sort((a, b) => (a.ano !== b.ano ? b.ano - a.ano : b.mes - a.mes)); const ant = ord.filter((f) => f.ano < ano || (f.ano === ano && f.mes < mes)); const u12 = ant.slice(0, 12); const soma = u12.reduce((a, f) => a + (f.total_folha || 0), 0); return u12.length < 12 && u12.length > 0 ? (soma / u12.length) * 12 : soma;
-  ```
 - **validarConsistenciaNcmCst(ncm: string, cst: string)** — `src/lib/tributario/validador-ncm-cst.ts`
   ```
   let score = 100; const divergencias: ValidacaoNCM['divergencias'] = []; const ncmLimpo = ncm.replace(/\D/g, ''); // Regras de exemplo para incidência monofásica (PIS/COFINS) // Ex: 3004 (Medicamentos), 4011 (Pneus), 2203 (Cervejas) const isMonofasico = ['3004', '4011', '2203', '3808'].some((prefix) => ncmLimpo.startsWith(prefix) ); if (isMonofasico) { // Para monofásicos, o CST de saída deveria ser 04 ou 06 // E o CST de entrada (crédito) deveria ser consistente if (cst !== '060' && cst !== '04' …
@@ -3404,6 +3416,14 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 - **aplicarOverlayMonofasico(registros: readonly RegistroNcmMonofasicoBanco[])** — `src/lib/tributario/monofasico/overlay-monofasico.ts`
   ```
   const override: Record<string, boolean> = {}; const descricoes: Record<string, string> = {}; const inclusoes: InclusaoMonofasica[] = []; const exclusoes: ExclusaoMonofasica[] = []; const rejeitadas: RejeicaoMonofasico[] = []; const vistos = new Set<string>(); for (const registro of registros ?? []) { const bruto = (registro?.codigo ?? '').toString(); const codigo = normalizarNcm(bruto); if (codigo.length !== 8) { rejeitadas.push({ ncm: bruto.trim(), motivo: 'codigo_invalido', valor: codigo.lengt …
+  ```
+- **calcularRBT12(hist: FaturamentoMes[], ano: number, mes: number)** — `src/lib/tributario/motor/base.ts`
+  ```
+  if (!hist?.length) return 0; const ord = [...hist].sort((a, b) => (a.ano !== b.ano ? b.ano - a.ano : b.mes - a.mes)); const ant = ord.filter((f) => f.ano < ano || (f.ano === ano && f.mes < mes)); if (!ant.length) return 0; const u12 = ant.slice(0, 12); const soma = u12.reduce((a, f) => a + (f.receita_bruta || 0), 0); return u12.length < 12 ? (soma / u12.length) * 12 : soma;
+  ```
+- **calcularFolha12m(hist: FolhaMes[], ano: number, mes: number)** — `src/lib/tributario/motor/base.ts`
+  ```
+  if (!hist?.length) return 0; const ord = [...hist].sort((a, b) => (a.ano !== b.ano ? b.ano - a.ano : b.mes - a.mes)); const ant = ord.filter((f) => f.ano < ano || (f.ano === ano && f.mes < mes)); const u12 = ant.slice(0, 12); const soma = u12.reduce((a, f) => a + (f.total_folha || 0), 0); return u12.length < 12 && u12.length > 0 ? (soma / u12.length) * 12 : soma;
   ```
 - **round1(v: number)** — `src/lib/tributario/obrigacoes/alertas.ts`
   ```
@@ -3756,10 +3776,10 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | `// muito deixou de valer: a cobertura podia despencar de 71% para 7% sem` | `vitest.config.ts` |
 | `transition={{ delay: i * 0.05 }}` | `src/components/admin/sso/SSOProvidersList.tsx` |
 | `transition={{ delay: 0.3 + i * 0.1 }}` | `src/components/alertas/AlertaComponents.tsx` |
-| `<span>-2.4% vs mês anterior</span>` | `src/components/analytics/InadimplenciaSegmentada.tsx` |
-| `Estimado via IA (72% de confiança)` | `src/components/analytics/InadimplenciaSegmentada.tsx` |
+| `<span>-2.4% vs mês anterior</span>` | `src/components/analytics/InadimplenciaKpis.tsx` |
+| `Estimado via IA (72% de confiança)` | `src/components/analytics/InadimplenciaKpis.tsx` |
+| `{formatCurrency((totaisRamo?.valor_vencido \|\| 0) * 0.72)}` | `src/components/analytics/InadimplenciaKpis.tsx` |
 | `transition={{ delay: index * 0.05 }}` | `src/components/analytics/InadimplenciaSegmentada.tsx` |
-| `{formatCurrency((totaisRamo?.valor_vencido \|\| 0) * 0.72)}` | `src/components/analytics/InadimplenciaSegmentada.tsx` |
 | `O setor de "Construção Civil" apresentou um aumento de 15% na propensão de atraso` | `src/components/analytics/PredicaoTab.tsx` |
 | `transition={{ delay: idx * 0.1 }}` | `src/components/analytics/PredicaoTab.tsx` |
 | `transition={{ delay: index * 0.05 }}` | `src/components/aprovacoes/AprovacoesPendentes.tsx` |
@@ -3779,11 +3799,11 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | `≥80%. Esta ação conciliará automaticamente as transações selecionadas.` | `src/components/conciliacao/ia/AprovarTodosDialog.tsx` |
 | `transition={{ delay: index * 0.1 }}` | `src/components/configuracoes/RegrasRoteamentoTab.tsx` |
 | `<AlertTitle>Plano de contas 100% conforme!</AlertTitle>` | `src/components/contabilidade/AuditoriaCFCPanel.tsx` |
-| `transition={{ delay: idx * 0.005 }}` | `src/components/contabilidade/LancamentosTab.tsx` |
-| `transition={{ delay: idx * 0.005 }}` | `src/components/contabilidade/PlanoContasTab.tsx` |
+| `transition={{ delay: idx * 0.005 }}` | `src/components/contabilidade/LancamentosTabConteudo.tsx` |
+| `transition={{ delay: idx * 0.005 }}` | `src/components/contabilidade/PlanoContasTabConteudo.tsx` |
 | `transition={{ delay: idx * 0.05 }}` | `src/components/contabilidade/PreValidacaoSpedPanel.tsx` |
 | `transition={{ delay: idx * 0.005 }}` | `src/components/contabilidade/VerificacaoIntegracoesPanel.tsx` |
-| `transition={{ delay: idx * 0.05 }}` | `src/components/contabilidade/VerificacaoIntegracoesPanel.tsx` |
+| `transition={{ delay: idx * 0.05 }}` | `src/components/contabilidade/VerificacaoIntegracoesPanelConteudo.tsx` |
 | `transition={{ delay: index * 0.02 }}` | `src/components/contabilidade/dre-balanco/BalancoView.tsx` |
 | `transition={{ delay: index * 0.05 }}` | `src/components/contabilidade/dre-balanco/DreView.tsx` |
 | `transition={{ delay: (i % 20) * 0.005 }}` | `src/components/contabilidade/razao-diario/DiarioTable.tsx` |
@@ -3902,9 +3922,9 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | `diferenca: totalCreditosCBS - totalCBSEsperado * 0.5,` | `src/hooks/useConciliacaoTributaria.ts` |
 | `if (totalCreditosCBS > 0 && Math.abs(totalCreditosCBS - totalCBSEsperado * 0.5) > 100) {` | `src/hooks/useConciliacaoTributaria.ts` |
 | `valorEsperado: totalCBSEsperado * 0.5,` | `src/hooks/useConciliacaoTributaria.ts` |
-| `.reduce((sum, c) => sum + (c.valor_pago \|\| 0), 0) \|\| totalPagoMes * 0.95;` | `src/hooks/useContasPagarLogic.ts` |
-| `.reduce((sum, c) => sum + (c.valor ?? 0), 0) * 0.9; // Simulação de dados anteriores` | `src/hooks/useContasReceberLogic.ts` |
-| `.reduce((sum, c) => sum + valorRecebidoEfetivo(c), 0) \|\| totalRecebidoMes * 0.95;` | `src/hooks/useContasReceberLogic.ts` |
+| `.reduce((sum, c) => sum + (c.valor_pago \|\| 0), 0) \|\| totalPagoMes * 0.95;` | `src/hooks/useContasPagarLogic.calculos.ts` |
+| `.reduce((sum, c) => sum + (c.valor ?? 0), 0) * 0.9; // Simulação de dados anteriores` | `src/hooks/useContasReceberLogic.calculos.ts` |
+| `.reduce((sum, c) => sum + valorRecebidoEfetivo(c), 0) \|\| totalRecebidoMes * 0.95;` | `src/hooks/useContasReceberLogic.calculos.ts` |
 | `const deducoes = receitaBruta * 0.0925;` | `src/hooks/useDemonstrativosContabeis.ts` |
 | `const irCs = lucroAntesIR > 0 ? lucroAntesIR * 0.15 : 0;` | `src/hooks/useDemonstrativosContabeis.ts` |
 | `const obrTrib = cpPend * 0.1;` | `src/hooks/useDemonstrativosContabeis.ts` |
@@ -3986,21 +4006,6 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | `/** Alíquota efetiva atual de PIS+COFINS (default 9,25% Lucro Real / 3,65% Presumido) */` | `src/lib/tributario/projecao-reforma.ts` |
 | `return 0.4; // 60% de redução` | `src/lib/tributario/projecao-reforma.ts` |
 | `const LIMITE_SIMPLES_ALERTA = 4_320_000; // 90% — janela de risco de desenquadramento` | `src/lib/tributario/recomendar-empresa.ts` |
-| `/** Base negativa de CSLL acumulada (positivo). Trava de 30% na compensação. */` | `src/lib/tributario/shared-logic.ts` |
-| `/** Prejuízo fiscal de IRPJ acumulado (positivo). Trava de 30% na compensação. */` | `src/lib/tributario/shared-logic.ts` |
-| `// (Lei 9.430/96, art. 1º), com adicional de 10% sobre o que exceder` | `src/lib/tributario/shared-logic.ts` |
-| `// Presunção da receita de serviços: 32% é apenas o caso geral. Transporte de` | `src/lib/tributario/shared-logic.ts` |
-| `// Trava dos 30% (Lei 9.065/95, arts. 15 e 16): o estoque de prejuízo fiscal e` | `src/lib/tributario/shared-logic.ts` |
-| `// a empresa recolhe 20% sobre a folha + RAT/FAP em GPS/DCTFWeb. Ignorar essa` | `src/lib/tributario/shared-logic.ts` |
-| `// de base negativa reduz a base tributável em no máximo 30% do lucro do período.` | `src/lib/tributario/shared-logic.ts` |
-| `const baseIrpj = rs * presIrpjServ + rc * 0.08;` | `src/lib/tributario/shared-logic.ts` |
-| `const basesTrimestrais = trimestres.map((f) => f * ps * presIrpjServ + f * pc * 0.08);` | `src/lib/tributario/shared-logic.ts` |
-| `const cofins = Math.max(0, receitaTributavelPisCofins * 0.076 - baseCred * 0.076);` | `src/lib/tributario/shared-logic.ts` |
-| `const cofins = receitaTributavelPisCofins * 0.03;` | `src/lib/tributario/shared-logic.ts` |
-| `const csll = (rs * presCsllServ + rc * 0.12) * 0.09;` | `src/lib/tributario/shared-logic.ts` |
-| `const csllAnual = Math.max(0, compCsll.baseAjustada) * 0.09;` | `src/lib/tributario/shared-logic.ts` |
-| `const pis = Math.max(0, receitaTributavelPisCofins * 0.0165 - baseCred * 0.0165);` | `src/lib/tributario/shared-logic.ts` |
-| `const pis = receitaTributavelPisCofins * 0.0065;` | `src/lib/tributario/shared-logic.ts` |
 | `* A compensação é limitada a 30% do lucro real do período (Lei 9.065/95, art. 15).` | `src/lib/tributario/types.ts` |
 | `* Compensação limitada a 30% da base positiva (Lei 9.065/95, art. 16).` | `src/lib/tributario/types.ts` |
 | `// Serviços hospitalares (8%/12% exige estrutura hospitalar — IN RFB 1.700/17, art. 33)` | `src/lib/tributario/calculadora/atividade-cnae.ts` |
@@ -4050,6 +4055,21 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | `/** Multa de mora: 0,33% ao dia, limitada a 20% (Lei 9.430/96, art. 61). */` | `src/lib/tributario/darf/tabelas.ts` |
 | `* ao pagamento, acrescida de 1% no mês do pagamento (Lei 9.430/96, art. 61, §3º).` | `src/lib/tributario/darf/vencimento.ts` |
 | `// Bonificação reduz base ICMS/PIS/COFINS — economia estimada de 2-9% sobre volume` | `src/lib/tributario/elisao/detectar-bonificacao.ts` |
+| `const economiaEstimada = aplicavel ? volumeEstimado * 0.18 : 0;` | `src/lib/tributario/elisao/detectar-bonificacao.ts` |
+| `const volumeEstimado = faturamento * 0.05; // assume 5% potencial de bonificação` | `src/lib/tributario/elisao/detectar-bonificacao.ts` |
+| `economia_min: economiaEstimada * 0.5,` | `src/lib/tributario/elisao/detectar-bonificacao.ts` |
+| `economia_min: economiaEstimada * 0.9,` | `src/lib/tributario/elisao/detectar-deliberacao-lucros.ts` |
+| `* (valor do dinheiro no tempo), não como o valor cheio de 34% do investimento.` | `src/lib/tributario/elisao/detectar-depreciacao-acelerada.ts` |
+| `// Dedução antecipada em relação ao regime normal (10 anos, 10% a.a.):` | `src/lib/tributario/elisao/detectar-depreciacao-acelerada.ts` |
+| `// no 1º ano deduz-se 100% em vez de 10% → 90% do investimento antecipado.` | `src/lib/tributario/elisao/detectar-depreciacao-acelerada.ts` |
+| `const baseAntecipada = investimento * 0.9;` | `src/lib/tributario/elisao/detectar-depreciacao-acelerada.ts` |
+| `economia_min: economiaEstimada * 0.7,` | `src/lib/tributario/elisao/detectar-depreciacao-acelerada.ts` |
+| `// Economia estimada: ~18% sobre o valor importado vinculado à exportação` | `src/lib/tributario/elisao/detectar-drawback.ts` |
+| `const economiaEstimada = aplicavel ? valorVinculado * 0.18 : 0;` | `src/lib/tributario/elisao/detectar-drawback.ts` |
+| `const valorVinculado = Math.min(importacao, exportacao * 0.4);` | `src/lib/tributario/elisao/detectar-drawback.ts` |
+| `economia_min: economiaEstimada * 0.7,` | `src/lib/tributario/elisao/detectar-drawback.ts` |
+| `const economiaEstimada = irpfmEstimado * 0.7; // assume 70% de eficiência` | `src/lib/tributario/elisao/detectar-holding.ts` |
+| `const irpfmEstimado = aplicavel ? Math.max(0, dividendos - TETO_DIVIDENDOS_IRPFM) * 0.1 : 0;` | `src/lib/tributario/elisao/detectar-holding.ts` |
 | … +173 linhas — lista completa em `context.json` | |
 
 ## H. Parâmetros de negócio (constantes, prazos, limites)
@@ -4064,7 +4084,7 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | `TRIBUTARIO_JOB` | `'gerar-alertas-tributarios-diario'` | `src/components/admin/CronJobsStatus.tsx` |
 | `MIN_CONFIRMAR` | `10` | `src/components/admin/anomalias-review-queue/types.ts` |
 | `MIN_FALSO_POSITIVO` | `15` | `src/components/admin/anomalias-review-queue/types.ts` |
-| `SCIM_SP_CONFIG_SCHEMA` | `'urn:ietf:params:scim:schemas:core:2.0:ServiceProviderConfig'` | `src/components/admin/sso/ScimSetupGuide.tsx` |
+| `SCIM_SP_CONFIG_SCHEMA` | `'urn:ietf:params:scim:schemas:core:2.0:ServiceProviderConfig'` | `src/components/admin/sso/ScimSetupGuide.helpers.ts` |
 | `ALPHA` | `0.3` | `src/components/contabilidade/ImportLancamentosCSVDialog.tsx` |
 | `TITULO` | `'ÍNDICES ECONÔMICO-FINANCEIROS'` | `src/components/contabilidade/indices/exporters.ts` |
 | `COOLDOWN` | `60000` | `src/components/contas-receber/ContasReceberKPIs.tsx` |
@@ -4122,7 +4142,7 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | `UNSAVED_GUARD_SENTINEL` | `'__unsaved_guard__'` | `src/lib/unsaved-guard.ts` |
 | `OPEN_DIALOG_SELECTOR` | `'[role="` | `src/lib/unsaved-guard.ts` |
 | `TOLERANCIA` | `0.005` | `src/lib/contabil/balancete-utils.ts` |
-| `EPS` | `1` | `src/lib/contabil/indices.ts` |
+| `EPS` | `1` | `src/lib/contabil/indices.helpers.ts` |
 | `MARGIN` | `40` | `src/lib/export-contabil/livro-oficial.ts` |
 | `BOM` | `'\uFEFF'` | `src/lib/export-contabil/utils.ts` |
 | `STORE` | `'consultas'` | `src/lib/offline/fiscal-cache.ts` |
@@ -4149,8 +4169,6 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | `PF_ALIQUOTA_OUTRAS_RENDAS` | `0.15` | `src/lib/tributario/pf-vinculada.ts` |
 | `LIMITE_SIMPLES` | `4` | `src/lib/tributario/recomendar-empresa.ts` |
 | `LIMITE_SIMPLES_ALERTA` | `4` | `src/lib/tributario/recomendar-empresa.ts` |
-| `LIMITE_SIMPLES` | `4800000` | `src/lib/tributario/shared-logic.ts` |
-| `LIMITE_PRESUMIDO` | `78000000` | `src/lib/tributario/shared-logic.ts` |
 | `VERSAO_MOTOR_TRIBUTARIO` | `'3.8.0'` | `src/lib/tributario/versao.ts` |
 | `LIMITE_ANUAL` | `78` | `src/lib/tributario/calculadora/lucro-presumido.ts` |
 | `LIMITE_ADICIONAL_TRIMESTRAL` | `60` | `src/lib/tributario/calculadora/lucro-presumido.ts` |
@@ -4212,20 +4230,22 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | `TOLERANCIA` | `5` | `src/lib/tributario/ipi-iss/overlay-iss.ts` |
 | `IPI_ALIQUOTA_MAXIMA` | `3` | `src/lib/tributario/ipi-iss/overlay-ncm.ts` |
 | `EPSILON` | `1` | `src/lib/tributario/ipi-iss/overlay-ncm.ts` |
-| `ISS_ALIQUOTA_MINIMA` | `0.02` | `src/lib/tributario/ipi-iss/tabelas.ts` |
-| `ISS_ALIQUOTA_MAXIMA` | `0.05` | `src/lib/tributario/ipi-iss/tabelas.ts` |
-| `CSRF_PIS` | `0.0065` | `src/lib/tributario/ipi-iss/tabelas.ts` |
-| `CSRF_COFINS` | `0.03` | `src/lib/tributario/ipi-iss/tabelas.ts` |
-| `CSRF_CSLL` | `0.01` | `src/lib/tributario/ipi-iss/tabelas.ts` |
-| `CSRF_PISO_PAGAMENTO` | `215.05` | `src/lib/tributario/ipi-iss/tabelas.ts` |
-| `IRRF_PISO_RECOLHIMENTO` | `10` | `src/lib/tributario/ipi-iss/tabelas.ts` |
-| `INSS_RETENCAO_CESSAO` | `0.11` | `src/lib/tributario/ipi-iss/tabelas.ts` |
+| `ISS_ALIQUOTA_MINIMA` | `0.02` | `src/lib/tributario/ipi-iss/tabelas.helpers.ts` |
+| `ISS_ALIQUOTA_MAXIMA` | `0.05` | `src/lib/tributario/ipi-iss/tabelas.helpers.ts` |
+| `CSRF_PIS` | `0.0065` | `src/lib/tributario/ipi-iss/tabelas.helpers.ts` |
+| `CSRF_COFINS` | `0.03` | `src/lib/tributario/ipi-iss/tabelas.helpers.ts` |
+| `CSRF_CSLL` | `0.01` | `src/lib/tributario/ipi-iss/tabelas.helpers.ts` |
+| `CSRF_PISO_PAGAMENTO` | `215.05` | `src/lib/tributario/ipi-iss/tabelas.helpers.ts` |
+| `IRRF_PISO_RECOLHIMENTO` | `10` | `src/lib/tributario/ipi-iss/tabelas.helpers.ts` |
+| `INSS_RETENCAO_CESSAO` | `0.11` | `src/lib/tributario/ipi-iss/tabelas.helpers.ts` |
 | `ALIQUOTA_IRPJ` | `0.15` | `src/lib/tributario/irpj-csll/tabelas.ts` |
 | `ALIQUOTA_ADICIONAL_IRPJ` | `0.1` | `src/lib/tributario/irpj-csll/tabelas.ts` |
 | `ALIQUOTA_CSLL` | `0.09` | `src/lib/tributario/irpj-csll/tabelas.ts` |
 | `LIMITE_ADICIONAL_MENSAL` | `20000` | `src/lib/tributario/irpj-csll/tabelas.ts` |
 | `TRAVA_COMPENSACAO` | `0.3` | `src/lib/tributario/irpj-csll/tabelas.ts` |
 | `MESES_RECUPERACAO_RETROATIVA` | `60` | `src/lib/tributario/monofasico/grupos.ts` |
+| `LIMITE_SIMPLES` | `4800000` | `src/lib/tributario/motor/base.ts` |
+| `LIMITE_PRESUMIDO` | `78000000` | `src/lib/tributario/motor/base.ts` |
 | `MS_DIA` | `86` | `src/lib/tributario/obrigacoes/calendario.ts` |
 | `PESO_ENTREGUE` | `1` | `src/lib/tributario/obrigacoes/conformidade.ts` |
 | `PESO_ATRASADO` | `0.6` | `src/lib/tributario/obrigacoes/conformidade.ts` |
@@ -4414,13 +4434,13 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | `staleTime: 30 * 60 * 1000,` | `src/hooks/useCnaes.ts` |
 | `const trintaDiasAtras = toISOLocal(subDays(new Date(), 30));` | `src/hooks/useCobrancas.ts` |
 | `staleTime: 5 * 60 * 1000,` | `src/hooks/useConformidadeFiscal.ts` |
-| `const diffDias = Math.ceil((dataVenc.getTime() - hoje.getTime()) / (1000 * 60 * 60 * 24));` | `src/hooks/useContasPagarLogic.ts` |
-| `const endOfPrevMonth = endOfMonth(subMonths(today, 1));` | `src/hooks/useContasPagarLogic.ts` |
-| `const startOfPrevMonth = startOfMonth(subMonths(today, 1));` | `src/hooks/useContasPagarLogic.ts` |
-| `return Math.ceil((dataVenc.getTime() - hoje.getTime()) / (1000 * 60 * 60 * 24));` | `src/hooks/useContasPagarLogic.ts` |
-| `const endOfPrevMonth = endOfMonth(subMonths(today, 1));` | `src/hooks/useContasReceberLogic.ts` |
-| `const endOfWeek = addDays(today, 7);` | `src/hooks/useContasReceberLogic.ts` |
-| `const startOfPrevMonth = startOfMonth(subMonths(today, 1));` | `src/hooks/useContasReceberLogic.ts` |
+| `const diffDias = Math.ceil((dataVenc.getTime() - hoje.getTime()) / (1000 * 60 * 60 * 24));` | `src/hooks/useContasPagarLogic.calculos.ts` |
+| `const endOfPrevMonth = endOfMonth(subMonths(today, 1));` | `src/hooks/useContasPagarLogic.calculos.ts` |
+| `const startOfPrevMonth = startOfMonth(subMonths(today, 1));` | `src/hooks/useContasPagarLogic.calculos.ts` |
+| `return Math.ceil((dataVenc.getTime() - hoje.getTime()) / (1000 * 60 * 60 * 24));` | `src/hooks/useContasPagarLogic.calculos.ts` |
+| `const endOfPrevMonth = endOfMonth(subMonths(today, 1));` | `src/hooks/useContasReceberLogic.calculos.ts` |
+| `const endOfWeek = addDays(today, 7);` | `src/hooks/useContasReceberLogic.calculos.ts` |
+| `const startOfPrevMonth = startOfMonth(subMonths(today, 1));` | `src/hooks/useContasReceberLogic.calculos.ts` |
 | `staleTime: 30 * 60 * 1000,` | `src/hooks/useDRETributaria.ts` |
 | `staleTime: 5 * 60 * 1000,` | `src/hooks/useDashboardTributario.ts` |
 | `staleTime: 5 * 60 * 1000,` | `src/hooks/useDemonstrativosContabeis.ts` |
@@ -4483,9 +4503,9 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | `from: subDays(new Date(), 7),` | `src/pages/AuditLogs.tsx` |
 | `const t = setTimeout(() => sessionStorage.removeItem('sso-slo-done-shown'), 5000);` | `src/pages/Auth.hooks.ts` |
 | `const lastMonth = subMonths(new Date(), 1);` | `src/pages/BI.tsx` |
+| `dataInicioIso: subDays(new Date(), 30).toISOString(),` | `src/pages/DashboardReceber.helpers.ts` |
 | `const em30dias = format(addDays(hoje, 30), 'yyyy-MM-dd');` | `src/pages/DashboardReceber.tsx` |
 | `const em7dias = format(addDays(hoje, 7), 'yyyy-MM-dd');` | `src/pages/DashboardReceber.tsx` |
-| `dataInicioIso: subDays(new Date(), 30).toISOString(),` | `src/pages/DashboardReceber.tsx` |
 | `else if (value === '30') ini = subDays(hoje, 30);` | `src/pages/DashboardReceber.tsx` |
 | `else if (value === '365') ini = subDays(hoje, 365);` | `src/pages/DashboardReceber.tsx` |
 | `else if (value === '90') ini = subDays(hoje, 90);` | `src/pages/DashboardReceber.tsx` |
@@ -4617,7 +4637,7 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | 2000 | `src/hooks/useAnomaliasReabertasIndex.ts` |
 | 500 | `src/hooks/useAuditoriaIA.ts` |
 | 50 | `src/hooks/useBitrix24.ts` |
-| 1 | `src/hooks/useBoletos.ts` |
+| 1 | `src/hooks/useBoletos.helpers.ts` |
 | 20 | `src/hooks/useComplianceKpis.ts` |
 | 1 | `src/hooks/useConformidadeFiscal.ts` |
 | 20000 | `src/hooks/useDemonstrativosContabeis.ts` |
@@ -4895,7 +4915,7 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | Corrija os erros antes de copiar | `src/components/admin/sso/ScimUserJsonGenerator.tsx` |
 | Falha ao copiar para a área de transferência | `src/components/admin/sso/ScimUserJsonGenerator.tsx` |
 | Falha ao iniciar SSO | `src/components/admin/sso/SsoLoginButtons.tsx` |
-| ; import {   Select,   SelectContent,   SelectItem,   SelectTrigger,   SelectValue, } from  | `src/components/admin/sso/sandbox/SandboxBulkPanel.tsx` |
+| ; import {   Tabs as InnerTabs,   TabsContent as InnerTabsContent,   TabsList as InnerTabsList,   TabsTrigger as InnerTabsTrigger, } from  | `src/components/admin/sso/sandbox/SandboxBulkPanel.tsx` |
 | Corrija os erros de parsing antes de executar | `src/components/admin/sso/sandbox/SandboxBulkPanel.tsx` |
 | Erro ao executar lote | `src/components/admin/sso/sandbox/SandboxBulkPanel.tsx` |
 | Lote cancelado | `src/components/admin/sso/sandbox/SandboxBulkPanel.tsx` |
@@ -5015,7 +5035,7 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | ; import { Badge } from  | `src/components/contabilidade/import-lancamentos-csv/PreviewStep.tsx` |
 | ; import { Badge } from  | `src/components/contabilidade/import-lancamentos-csv/ResultStep.tsx` |
 | ; import { downloadLancamentosCsvTemplate } from  | `src/components/contabilidade/import-lancamentos-csv/UploadStep.tsx` |
-| … +771 linhas — lista completa em `context.json` | |
+| … +774 linhas — lista completa em `context.json` | |
 
 ## J. Controle de acesso no código (checagens de perfil/permissão)
 
@@ -5073,7 +5093,7 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | `admin` | `supabase/migrations/20261101120500_rls_elisao_catalogo.sql` |
 | `admin_global` | `supabase/migrations/20261101120500_rls_elisao_catalogo.sql` |
 
-## K. Testes como especificação (3324 testes em 272 arquivos — nomes completos em `context.json`)
+## K. Testes como especificação (3325 testes em 274 arquivos — nomes completos em `context.json`)
 
 | Arquivo | Testes | Exemplos do que o sistema DEVE fazer |
 |---|---|---|
@@ -5086,7 +5106,6 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | `src/pages/__tests__/admin-telemetria-logica.test.ts` | 50 | Severity classification thresholds · < 3000ms = no color class · >= 3000ms = yellow · >= 8000ms = destructive … |
 | `src/lib/__tests__/reforma-tributaria-calculator.test.ts` | 47 | Reforma Tributária Calculator · determinarFaseTransicao · 2025 → 2026_teste · 2026 → 2026_teste … |
 | `src/lib/__tests__/masks.test.ts` | 38 | maskCnpjCpf · aplica máscara CPF parcial · aplica máscara CPF completo · aplica máscara CNPJ … |
-| `src/lib/tributario/__tests__/icms-st-difal.test.ts` | 34 | icms — tabelas e alíquotas interestaduais · cobre as 27 unidades federativas com parâmetros consistentes · valida UFs e identifica mercadoria importada pela origem · aplica 7% de S/SE para N/NE/CO e ES … |
 | `src/lib/tributario/__tests__/historico-simulacao.test.ts` | 32 | normalizarParametrosSnapshot · aceita objeto com faturamentoAnual numérico finito · rejeita %s · coage faturamento persistido como string numérica … |
 | `src/lib/tributario/__tests__/monofasico.test.ts` | 31 | normalizarNcm · remove pontuação e limita a 8 dígitos · classificarNcmMonofasico · classifica cerveja em BEBIDAS_FRIAS … |
 | `src/lib/tributario/__tests__/obrigacoes-acessorias.test.ts` | 31 | obrigações acessórias — dias úteis · postergarDiaUtil pula fim de semana e feriado · enesimoDiaUtil retorna sempre um dia útil dentro do mês · enesimoDiaUtil é monotônico crescente … |
@@ -5113,13 +5132,13 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | `src/components/reforma-tributaria/__tests__/HeroKPIs.test.tsx` | 23 | HeroKPIs · Renderização dos cards · exibe carga tributária efetiva · exibe alíquotas CBS e IBS como badges … |
 | `src/lib/__tests__/ofx-parser.test.ts` | 23 | OFX/CSV Parser · parseOFX · arquivo vazio retorna erro · arquivo sem transações retorna erro … |
 | `src/lib/tributario/__tests__/darf-consolidacao.test.ts` | 23 | darf/tabelas — calendário · reconhece fins de semana e feriados nacionais · antecipa sempre para um dia útil · não possui códigos de receita duplicados … |
+| `src/lib/tributario/__tests__/icms-st-difal.test.ts` | 23 | icms — tabelas e alíquotas interestaduais · cobre as 27 unidades federativas com parâmetros consistentes · valida UFs e identifica mercadoria importada pela origem · aplica 7% de S/SE para N/NE/CO e ES … |
 | `src/lib/tributario/__tests__/periodicidade-apuracao.test.ts` | 23 | IRPJ por período de apuração · não aplica adicional até R$ 60 mil no trimestre · aplica 10% sobre o excedente trimestral · usa limite de R$ 240 mil no período anual … |
 | `src/lib/tributario/__tests__/pis-cofins-creditos.test.ts` | 23 | base de cálculo da receita (Tema 69) · exclui ICMS, IPI e descontos incondicionais · nunca retorna base negativa · ignora valores inválidos ou negativos … |
 | `src/lib/__tests__/navigation.test.ts` | 22 | getRouteMeta · resolve rotas exatas · resolve rotas com parâmetro · retorna undefined para rota desconhecida … |
 | `src/lib/tributario/elisao/__tests__/novas-estrategias.test.ts` | 22 | detectarDeliberacaoLucros · é aplicável dentro da janela com saldo e sem ata registrada · não é aplicável após 31/12/2025 · não é aplicável quando a ata já foi registrada … |
 | `src/components/admin/telemetry/__tests__/performance-alerts-deeplink.test.ts` | 21 | performance-alerts-deeplink · isSeverity · aceita valores válidos · rejeita valores inválidos … |
 | `src/lib/tributario/elisao/__tests__/detectar-jcp.test.ts` | 21 | detectarJCP · deve identificar oportunidade aplicável para empresa Lucro Real com PL e lucro positivos · deve limitar JCP a 50% do lucro se o limite do PL for superior · não deve ser aplicável para empresas fora do Lucro Real … |
-| `src/hooks/__tests__/useAcordosParcelamento.pagamento.test.tsx` | 20 | registrarPagamento · quita o acordo quando todas as parcelas estão pagas · quita o acordo e reverte contas_receber vinculadas para  · rateia pelo saldo devedor quando há pagamento parcial anterior … |
 | `src/lib/__tests__/barcode-parser.test.ts` | 19 | Barcode Parser · parseBoleto · código inválido com poucos dígitos retorna erros · 44 dígitos é reconhecido como código de barras … |
 | `src/lib/tributario/__tests__/conformidade-fiscal.test.ts` | 19 | classificarConformidade · mapeia as quatro faixas nos limites exatos · calcularConformidade — casos unitários · retorna 100 para conjunto vazio (sem obrigações, sem risco) … |
 | `src/components/reforma-tributaria/__tests__/KPIComparativo.test.tsx` | 18 | KPIComparativo · Cálculo de variação · exibe variação positiva · exibe variação negativa … |
@@ -5159,6 +5178,7 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | `supabase/functions/sso-test-login/pipeline.test.ts` | 14 | pipeline: JIT + role por grupo (usuário não existe) · pipeline: usuário JÁ existe → não provisiona · pipeline: auto_provision_users=false bloqueia JIT com motivo · pipeline: múltiplos grupos — primeiro match vence, demais  … |
 | `src/components/reforma-tributaria/__tests__/AnimatedCounter.test.tsx` | 13 | AnimatedCounter · Renderização inicial · renderiza com classe tabular-nums · renderiza prefix … |
 | `src/components/ui/__tests__/badge.test.tsx` | 13 | Badge · renders with children · renders default variant with bg-acc (Vela) · renders secondary variant … |
+| `src/hooks/__tests__/useAcordosParcelamento.pagamento.test.tsx` | 13 | registrarPagamento · quita o acordo quando todas as parcelas estão pagas · quita o acordo e reverte contas_receber vinculadas para  · quita o acordo sem quebrar quando contas_receber_ids vem vazio/nulo … |
 | `src/hooks/__tests__/useIndicesContabeis.test.ts` | 13 | normalizarAgregados · aceita retorno em array (RPC set-returning) · preenche zeros quando o campo está ausente · nunca produz NaN a partir de lixo … |
 | `src/lib/__tests__/audit-diff.test.ts` | 13 | audit-diff · computeDiff · objetos vazios ou nulos → diff vazio · classifica added/removed/changed/unchanged … |
 | `src/lib/__tests__/magic-bytes.test.ts` | 13 | detectarTipo · identifica PDF, PNG e ZIP/XLSX pelas assinaturas · identifica executáveis: PE, ELF e shebang · identifica texto UTF-8 e XML … |
@@ -5185,6 +5205,7 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | `src/lib/tributario/__tests__/decidir-regime.test.ts` | 11 | decidirRegime · retorna 3 cenários (Simples, Presumido, Real) · recomenda o cenário de menor carga entre os elegíveis · faturamento > R$ 4,8 mi torna Simples inelegível … |
 | `src/lib/tributario/__tests__/fpas-terceiros.test.ts` | 11 | FPAS / Terceiros por CNAE · tabela é internamente coerente (soma das parcelas = alíquota total) · divisaoCnae normaliza formatações diversas · enquadra atividades conhecidas … |
 | `src/lib/tributario/__tests__/icms-overlay.test.ts` | 11 | normalizarAliquota · aceita fração, percentual e string com vírgula · rejeita valores não numéricos ou negativos · aplicarOverlayUfs … |
+| `src/lib/tributario/__tests__/icms-st-difal.difal.test.ts` | 11 | icms — DIFAL (EC 87/2015 e LC 190/2022) · aplica base dupla para consumidor final não contribuinte · aplica base única para destinatário contribuinte · base dupla é sempre maior ou igual à base única … |
 | `src/lib/tributario/calculadora/__tests__/lucro-real.test.ts` | 11 | calcularLucroReal · calcula IRPJ com adicional 10% acima de R$ 240k anual · CSLL padrão 9% · CSLL 15% quando flag financeira … |
 | `src/__tests__/validators.test.ts` | 10 | Validators · validateCPF · should return true for valid CPF · should return false for invalid CPF … |
 | `src/components/cobranca/__tests__/ReguaCobrancaConfig.test.tsx` | 10 | ReguaCobrancaConfig · Renderização da régua · exibe título da configuração · exibe etapa Preventiva … |
@@ -5220,6 +5241,7 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | `scripts/security/test-rpc-runtime.evaluate.test.ts` | 8 | evaluate · aceita 404/PGRST202 para anon e authenticated · aceita 401 apenas para anon · aceita 403 apenas quando for ACL da função alvo … |
 | `src/components/admin/anomalias-review-queue/__tests__/useReviewQueue.idempotency.test.tsx` | 8 | useReviewQueue — idempotência e concorrência · #1 [idempotência] dois handleAcao paralelos para o mesmo id disparam a mutation UMA vez · #2 [retry] erro transitório  · #3 [retry esgotado] 3 falhas transitórias → toast.error + fila e stats intactos … |
 | `src/components/financeiro/__tests__/AnexoList.storage.test.tsx` | 8 | AnexoList — remoção · remove o objeto do storage usando o caminho extraído da URL · não apaga a linha quando o storage recusa a remoção · falha quando o delete do banco não atinge linha alguma … |
+| `src/hooks/__tests__/useAcordosParcelamento.pagamento-rateio.test.tsx` | 8 | registrarPagamento — rateio em contas_receber · rateia pelo saldo devedor quando há pagamento parcial anterior · aborta a quitação quando uma conta contratada não volta do select · propaga falha de escrita em contas_receber sem quitar o acordo … |
 | `src/hooks/__tests__/useKeyboardNavigation.test.tsx` | 8 | useKeyboardNavigation · navigates back to in-app entry on Alt+ArrowLeft · goes up to parent route on Alt+ArrowLeft without in-app history · navigates forward on Alt+ArrowRight … |
 | `src/hooks/__tests__/useKeyboardShortcuts.test.ts` | 8 | useKeyboardShortcuts · registra o listener de keydown UMA única vez mesmo com re-renders · remove o listener de keydown no unmount · Alt+D navega para o dashboard … |
 | `src/hooks/expert-actions/__tests__/financial-actions.aprovacao.test.ts` | 8 | aprovarPagamento · aprova as duas tabelas numa transação só, sem escrita do cliente · usa o fornecedor lido dentro da transação, não o retrato anterior · não confirma ao usuário quando a função recusa a gravação … |
@@ -5366,7 +5388,6 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 
 | Chamada | Arquivo |
 |---|---|
-| `asaas` | `src/App.tsx` |
 | `invoke(` | `src/components/admin/AutomacoesTab.tsx` |
 | `asaas` | `src/components/admin/WebhookSimulator.tsx` |
 | `invoke(` | `src/components/admin/WebhookSimulator.tsx` |
@@ -5379,11 +5400,14 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | `asaas` | `src/components/asaas/LinksListPanel.tsx` |
 | `invoke(` | `src/components/asaas/LinksListPanel.tsx` |
 | `asaas` | `src/components/asaas/NovaCobrancaDialog.tsx` |
+| `asaas` | `src/components/asaas/NovaCobrancaDialogVincularContaReceber.tsx` |
 | `asaas` | `src/components/asaas/PixQrCodeDialog.tsx` |
 | `asaas` | `src/components/asaas/SegundaViaDialog.tsx` |
 | `asaas` | `src/components/asaas/TransferenciaPixHistoryPanel.tsx` |
 | `asaas` | `src/components/asaas/WebhooksLogPanel.tsx` |
 | `asaas` | `src/components/asaas/tabs/CobrancasTab.tsx` |
+| `asaas` | `src/components/asaas/tabs/CobrancasTab.types.ts` |
+| `asaas` | `src/components/asaas/tabs/CobrancasTabConteudo.tsx` |
 | `invoke(` | `src/components/asaas/tabs/ConfigTab.tsx` |
 | `asaas` | `src/components/asaas/tabs/FilaTab.tsx` |
 | `invoke(` | `src/components/auth/SloFailureBanner.tsx` |
@@ -5420,12 +5444,15 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | `invoke(` | `src/hooks/useAnomaliaDetectionRun.ts` |
 | `invoke(` | `src/hooks/useAnomaliasDetectadas.ts` |
 | `invoke(` | `src/hooks/useApiKeys.ts` |
+| `asaas` | `src/hooks/useAsaas.helpers.ts` |
 | `asaas` | `src/hooks/useAsaas.ts` |
+| `asaas` | `src/hooks/useAsaas.types.ts` |
 | `invoke(` | `src/hooks/useAuthValidation.ts` |
 | `invoke(` | `src/hooks/useBenchmarkSetorial.ts` |
 | `invoke(` | `src/hooks/useBlingNFe.ts` |
 | `asaas` | `src/hooks/useBoletos.ts` |
 | `invoke(` | `src/hooks/useBoletos.ts` |
+| `asaas` | `src/hooks/useBoletos.types.ts` |
 | `invoke(` | `src/hooks/useCategorizacaoIA.ts` |
 | `invoke(` | `src/hooks/useCnpjaLookup.ts` |
 | `invoke(` | `src/hooks/useConciliacaoIA.ts` |
@@ -5482,6 +5509,7 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | `asaas` | `src/pages/Asaas.tsx` |
 | `asaas` | `src/pages/AsaasQueueHistoryDialog.tsx` |
 | `invoke(` | `src/pages/BenchmarkingSetorial.tsx` |
+| `asaas` | `src/pages/BoletosHeader.tsx` |
 | `asaas` | `src/pages/Configuracoes.tsx` |
 | `invoke(` | `src/pages/ContadorReadonly.tsx` |
 | `asaas` | `src/pages/PixHub.tsx` |
@@ -5496,6 +5524,7 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | `notify_email` | `src/pages/configuracoes/SinoNotificacoesFiltros.tsx` |
 | `notify_inapp` | `src/pages/configuracoes/SinoNotificacoesFiltros.tsx` |
 | `notify_push` | `src/pages/configuracoes/SinoNotificacoesFiltros.tsx` |
+| `asaas` | `src/routes/financeiroRoutes.tsx` |
 | `asaas` | `supabase/functions/stress_test.ts` |
 | `asaas` | `supabase/functions/_shared/cors.ts` |
 | `enqueue(` | `supabase/functions/_shared/edge-observability.ts` |
@@ -5641,9 +5670,8 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | Ajuste para prazo desde emissão | `src/components/analytics/BenchmarkingSetorial.tsx` |
 | Valor Mínimo */} | `src/components/aprovacoes/ConfiguracaoAprovacaoCard.tsx` |
 | DIALOG: Estorno de Cobrança ASAAS | `src/components/asaas/EstornoDialog.tsx` |
-| DIALOG: Nova Cobrança ASAAS (com parcelas, juros, multa, desconto) | `src/components/asaas/NovaCobrancaDialog.tsx` |
 | Juros, Multa, Desconto | `src/components/asaas/NovaCobrancaDialog.tsx` |
-| Valor, Vencimento e Parcelas */} | `src/components/asaas/NovaCobrancaDialog.tsx` |
+| Valor, Vencimento e Parcelas */} | `src/components/asaas/NovaCobrancaDialogVincularContaReceber.tsx` |
 | No permission specified, allow access | `src/components/auth/PermissionGate.tsx` |
 | Provedor sem end_session_endpoint — apenas confirmamos sucesso local. | `src/components/auth/SloFailureBanner.tsx` |
 | Limite de Crédito */} | `src/components/clientes/ClienteFormFields.tsx` |
@@ -5709,8 +5737,8 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | Validação IP/Geo agora é feita 100% no servidor pela edge function | `src/hooks/useAuthValidation.ts` |
 | Channel name must be unique per (mount, accountId) so we don't | `src/hooks/useBankAccounts.ts` |
 | If less than limit returned, we've reached the last page | `src/hooks/useBlingNFe.ts` |
-| * Aceita somente uma resposta que permita pagar o boleto de fato. Não é uma | `src/hooks/useBoletos.ts` |
-| validação de dígitos bancários: essa responsabilidade é do emissor, que | `src/hooks/useBoletos.ts` |
+| * Aceita somente uma resposta que permita pagar o boleto de fato. Não é uma | `src/hooks/useBoletos.helpers.ts` |
+| validação de dígitos bancários: essa responsabilidade é do emissor, que | `src/hooks/useBoletos.helpers.ts` |
 | Simplificação: assume que já existe ou deve ser criado | `src/hooks/useBoletos.ts` |
 | VAL-GAP-04: proxy não lança em 400/422 (negócio ASAAS) — sem esta | `src/hooks/useBoletos.ts` |
 | validação o boleto nasceria sem vínculo ASAAS silenciosamente. | `src/hooks/useBoletos.ts` |
@@ -5864,7 +5892,7 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | * Diferença D-C; deve ser zero em escrituração íntegra. */ | `src/lib/contabil/balancete-utils.ts` |
 | * Totaliza apenas as contas analíticas (`aceita_lancamento`), pois as | `src/lib/contabil/balancete-utils.ts` |
 | * Exibe apenas contas até este nível hierárquico. */ | `src/lib/contabil/balancete-utils.ts` |
-| * Preenchido apenas quando `valor === null`. */ | `src/lib/contabil/indices.ts` |
+| * Preenchido apenas quando `valor === null`. */ | `src/lib/contabil/indices.types.ts` |
 | ---------- DRE (apenas período) ---------- | `src/lib/contabilidade/demonstrativos-competencia.ts` |
 | Linhas extras na DRE para "Não classificadas" (apenas se houver) | `src/lib/contabilidade/demonstrativos-competencia.ts` |
 | fatal (abortar a mutação) ou apenas degradação (avisar via toast). | `src/lib/financeiro/registrarEvento.ts` |
@@ -5903,10 +5931,11 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | IRRF 10% incide sobre o valor integral quando o pagamento mensal supera o limite. | `src/lib/tributario/pf-vinculada.ts` |
 | Filtra apenas meses anteriores ao mês de referência | `src/lib/tributario/rbt12.ts` |
 | - Limite de faturamento (RBT12 < R$ 4.8M no Simples) | `src/lib/tributario/recomendar-empresa.ts` |
-| Corrige a simplificação anterior (apenas Anexo I x III/V), que classificava | `src/lib/tributario/shared-logic.ts` |
-| Presunção da receita de serviços: 32% é apenas o caso geral. Transporte de | `src/lib/tributario/shared-logic.ts` |
-| Defesa: margemLucro ausente/inválida não pode propagar NaN para o total. | `src/lib/tributario/shared-logic.ts` |
-| de base negativa reduz a base tributável em no máximo 30% do lucro do período. | `src/lib/tributario/shared-logic.ts` |
 | Regra de Substituição Tributária (ST) | `src/lib/tributario/validador-ncm-cst.ts` |
 | Validação básica de tamanho de NCM | `src/lib/tributario/validador-ncm-cst.ts` |
-| … +361 linhas — lista completa em `context.json` | |
+| * Regra de bump: | `src/lib/tributario/versao.ts` |
+| - MINOR: nova regra fiscal (ex.: CPP Anexo IV, FPAS/Terceiros). | `src/lib/tributario/versao.ts` |
+| - PATCH: correção de cálculo sem nova regra. | `src/lib/tributario/versao.ts` |
+| Compensação de prejuízo fiscal — limite 30% | `src/lib/tributario/calculadora/lucro-real.ts` |
+| * Valor conhecido pelo motor/pela regra legal (null quando inaplicável). */ | `src/lib/tributario/catalogos/alertas.ts` |
+| … +360 linhas — lista completa em `context.json` | |

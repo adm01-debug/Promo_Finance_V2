@@ -13067,7 +13067,7 @@
     ],
     "so_no_types": []
    },
-   "usada_no_front": 3,
+   "usada_no_front": 4,
    "usada_em_edges": [],
    "triggers": [
     "on_boleto_status_change",

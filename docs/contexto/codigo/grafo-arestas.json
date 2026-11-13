@@ -48,12 +48,10 @@
    "src/lib/tributario/obrigacoes/projecao.ts"
   ],
   "src/App.tsx": [
-   "src/components/auth/ProtectedRoute.tsx",
    "src/components/command-palette/CommandPalette.tsx",
    "src/components/common/StartupDiagnostic.tsx",
    "src/components/error/ErrorBoundary.tsx",
    "src/components/layout/KeyboardShortcutsProvider.tsx",
-   "src/components/layout/MainLayout.tsx",
    "src/components/layout/VisualCorrectionOverlay.tsx",
    "src/components/layout/transitions/index.ts",
    "src/components/navigation/ModalHistoryManager.tsx",
@@ -68,133 +66,23 @@
    "src/hooks/AuthProvider.tsx",
    "src/hooks/useSelectiveEmpresaInvalidation.ts",
    "src/lib/queryClient.ts",
-   "src/pages/AdminEdgeHealth.tsx",
-   "src/pages/AdminSystemHealth.tsx",
-   "src/pages/AdminTelemetria.tsx",
-   "src/pages/Alertas.tsx",
-   "src/pages/Aprovacoes.tsx",
-   "src/pages/Asaas.tsx",
-   "src/pages/AssinaturaDigital.tsx",
-   "src/pages/AuditLogs.tsx",
    "src/pages/Auth.tsx",
-   "src/pages/BI.tsx",
-   "src/pages/BenchmarkingSetorial.tsx",
-   "src/pages/Bitrix24.tsx",
-   "src/pages/Bling.tsx",
-   "src/pages/BloqueiosDuplicidade.tsx",
-   "src/pages/Boletos.tsx",
-   "src/pages/Categorias.tsx",
-   "src/pages/CentroCustos.tsx",
-   "src/pages/CentroPrivacidadeLGPD.tsx",
-   "src/pages/Clientes.tsx",
-   "src/pages/Cobrancas.tsx",
-   "src/pages/Compras.tsx",
-   "src/pages/ComprovanteOCR.tsx",
-   "src/pages/Conciliacao.tsx",
-   "src/pages/Configuracoes.tsx",
-   "src/pages/Contabilidade.tsx",
    "src/pages/ContadorReadonly.tsx",
-   "src/pages/ContasBancarias.tsx",
-   "src/pages/ContasPagar.tsx",
-   "src/pages/ContasReceber.tsx",
-   "src/pages/Contratos.tsx",
-   "src/pages/DashboardEmpresa.tsx",
-   "src/pages/DashboardReceber.tsx",
-   "src/pages/Demonstrativos.tsx",
-   "src/pages/Empresas.tsx",
-   "src/pages/Expert.tsx",
-   "src/pages/Financeiro.tsx",
-   "src/pages/FluxoCaixa.tsx",
-   "src/pages/Fornecedores.tsx",
-   "src/pages/Index.tsx",
-   "src/pages/Integracoes.tsx",
-   "src/pages/InteligenciaOperacional.tsx",
-   "src/pages/MetasFinanceiras.tsx",
-   "src/pages/MeuPerfil.tsx",
-   "src/pages/Movimentacoes.tsx",
    "src/pages/NotFound.tsx",
-   "src/pages/NotasFiscais.tsx",
-   "src/pages/OrcamentoEvento.tsx",
-   "src/pages/Orcamentos.tsx",
-   "src/pages/PagamentosRecorrentes.tsx",
-   "src/pages/PixHub.tsx",
-   "src/pages/ReformaTributaria.tsx",
-   "src/pages/Relatorios.tsx",
    "src/pages/ResetPassword.tsx",
-   "src/pages/Seguranca.tsx",
-   "src/pages/SimuladorAntecipacao.tsx",
    "src/pages/StatusPage.tsx",
-   "src/pages/StyleGuide.tsx",
-   "src/pages/Tesouraria.tsx",
    "src/pages/ThemeDiagnostics.tsx",
-   "src/pages/Usuarios.tsx",
-   "src/pages/Vendedores.tsx",
-   "src/pages/admin/AdminBloatMonitor.tsx",
-   "src/pages/admin/AdminErrosFrontend.tsx",
-   "src/pages/admin/AnomaliaDetalhe.tsx",
-   "src/pages/admin/ApiManagement.tsx",
-   "src/pages/admin/AuditSsoProfileSync.tsx",
-   "src/pages/admin/AuditoriaIA.tsx",
-   "src/pages/admin/ComplianceAuditoria.tsx",
-   "src/pages/admin/CustomFieldsAdmin.tsx",
-   "src/pages/admin/InsightsIA.tsx",
-   "src/pages/admin/SRECommandCenter.tsx",
-   "src/pages/admin/SSOAdmin.tsx",
-   "src/pages/admin/SSOJitEvents.tsx",
-   "src/pages/admin/ScimAudit.tsx",
-   "src/pages/admin/SharedFiltersAdmin.tsx",
-   "src/pages/admin/SsoEvents.tsx",
    "src/pages/auth/CorporateOnboarding.tsx",
-   "src/pages/clientes/PortalTokens.tsx",
-   "src/pages/clientes/ScoringClientes.tsx",
-   "src/pages/configuracoes/FiltrosSalvos.tsx",
-   "src/pages/configuracoes/HistoricoNotificacoes.tsx",
-   "src/pages/configuracoes/MinhasPreferencias.tsx",
-   "src/pages/configuracoes/SinoNotificacoesFiltros.tsx",
    "src/pages/design-system-debug.tsx",
    "src/pages/dev/Especimes.tsx",
-   "src/pages/organizacoes/AceitarConvite.tsx",
-   "src/pages/organizacoes/Organizacoes.tsx",
-   "src/pages/tributario/ArquiteturaModular.tsx",
-   "src/pages/tributario/AuditoriaCompliance.tsx",
-   "src/pages/tributario/AuditoriaOverlay.tsx",
-   "src/pages/tributario/CalculadoraTributaria.tsx",
-   "src/pages/tributario/CashbackSimulador.tsx",
-   "src/pages/tributario/CatalogosFiscais.tsx",
-   "src/pages/tributario/CertificadosDigitais.tsx",
-   "src/pages/tributario/ComparativoConformidade.tsx",
-   "src/pages/tributario/ComparativoRegimes.tsx",
-   "src/pages/tributario/ConciliacaoTributaria.tsx",
-   "src/pages/tributario/ConsultaRapidaFiscal.tsx",
-   "src/pages/tributario/DarfConsolidado.tsx",
-   "src/pages/tributario/DashboardTributario.tsx",
-   "src/pages/tributario/FechamentoMensal.tsx",
-   "src/pages/tributario/FolhaEncargos.tsx",
-   "src/pages/tributario/GlossarioTributario.tsx",
-   "src/pages/tributario/HistoricoFinanceiro.tsx",
-   "src/pages/tributario/IcmsStDifal.tsx",
-   "src/pages/tributario/ImportacaoXML.tsx",
-   "src/pages/tributario/IncentivosFiscais.tsx",
-   "src/pages/tributario/IpiIss.tsx",
-   "src/pages/tributario/IrpjCsllLucroReal.tsx",
-   "src/pages/tributario/Monofasico.tsx",
-   "src/pages/tributario/NfeRecebidas.tsx",
-   "src/pages/tributario/ObrigacoesAcessorias.tsx",
-   "src/pages/tributario/ObservabilidadeDigest.tsx",
-   "src/pages/tributario/OnboardingTributario.tsx",
-   "src/pages/tributario/OportunidadesElisao.tsx",
-   "src/pages/tributario/PerDcomp.tsx",
-   "src/pages/tributario/PfVinculada.tsx",
-   "src/pages/tributario/PisCofinsCreditos.tsx",
-   "src/pages/tributario/PreferenciasDigest.tsx",
-   "src/pages/tributario/ProjecaoReforma.tsx",
-   "src/pages/tributario/RecomendacaoExecutiva.tsx",
-   "src/pages/tributario/RelatoriosContabeis.tsx",
-   "src/pages/tributario/RetencoesFonte.tsx",
-   "src/pages/tributario/SefazObservabilidade.tsx",
-   "src/pages/tributario/SimulacaoRegimes.tsx",
-   "src/pages/tributario/SpedExport.tsx",
-   "src/pages/tributario/SplitPayment.tsx"
+   "src/routes/adminRoutes.tsx",
+   "src/routes/analiseRoutes.tsx",
+   "src/routes/contabilRoutes.tsx",
+   "src/routes/financeiroRoutes.tsx",
+   "src/routes/fiscalRoutes.tsx",
+   "src/routes/geralRoutes.tsx",
+   "src/routes/reformaTributariaRoutes.tsx",
+   "src/routes/tributarioRoutes.tsx"
   ],
   "src/components/admin/AlertasProativosErros.tsx": [
    "src/components/admin/SilenciamentosExpirando.tsx",
@@ -512,6 +400,10 @@
    "src/hooks/useSincronizarAnomaliaBitrix.ts",
    "src/integrations/supabase/client.ts"
   ],
+  "src/components/admin/sso/CopyField.tsx": [
+   "src/components/ui/button.tsx",
+   "src/components/ui/input.tsx"
+  ],
   "src/components/admin/sso/SSOConsistencyPanel.tsx": [
    "src/components/ui/badge.tsx",
    "src/components/ui/button.tsx",
@@ -542,7 +434,7 @@
    "src/hooks/useSSO.ts"
   ],
   "src/components/admin/sso/SSOSandboxPanel.tsx": [
-   "src/components/admin/sso/IdpPresets.ts",
+   "src/components/admin/sso/SSOSandboxPanelSandboxSimulacaoSSO.tsx",
    "src/components/admin/sso/sandbox/ClaimFocusCard.tsx",
    "src/components/admin/sso/sandbox/RulesAppliedCard.tsx",
    "src/components/admin/sso/sandbox/SandboxBulkPanel.tsx",
@@ -551,17 +443,24 @@
    "src/components/admin/sso/sandbox/outcome.ts",
    "src/components/admin/sso/sandbox/types.ts",
    "src/components/ui/alert.tsx",
-   "src/components/ui/badge.tsx",
    "src/components/ui/button.tsx",
    "src/components/ui/card.tsx",
    "src/components/ui/collapsible.tsx",
+   "src/components/ui/tabs.tsx",
+   "src/hooks/useSSO.ts",
+   "src/hooks/useSSOSandboxRuns.ts"
+  ],
+  "src/components/admin/sso/SSOSandboxPanelSandboxSimulacaoSSO.tsx": [
+   "src/components/admin/sso/IdpPresets.ts",
+   "src/components/admin/sso/sandbox/types.ts",
+   "src/components/ui/badge.tsx",
+   "src/components/ui/button.tsx",
+   "src/components/ui/card.tsx",
    "src/components/ui/label.tsx",
    "src/components/ui/select.tsx",
    "src/components/ui/switch.tsx",
-   "src/components/ui/tabs.tsx",
    "src/components/ui/textarea.tsx",
-   "src/hooks/useSSO.ts",
-   "src/hooks/useSSOSandboxRuns.ts"
+   "src/hooks/useSSO.ts"
   ],
   "src/components/admin/sso/SSOStepConexao.tsx": [
    "src/components/admin/sso/IdpPresets.ts",
@@ -584,36 +483,63 @@
    "src/hooks/useSSOConsistency.ts",
    "src/lib/sso/consistency.ts"
   ],
+  "src/components/admin/sso/SSOWizardDialog.helpers.ts": [
+   "src/hooks/useSSO.ts"
+  ],
   "src/components/admin/sso/SSOWizardDialog.tsx": [
    "src/components/admin/sso/IdpPresets.ts",
-   "src/components/admin/sso/SSOConsistencyPanel.tsx",
    "src/components/admin/sso/SSOStepConexao.tsx",
    "src/components/admin/sso/SSOStepValidacao.tsx",
+   "src/components/admin/sso/SSOWizardDialog.helpers.ts",
+   "src/components/admin/sso/SSOWizardDialog.types.ts",
+   "src/components/admin/sso/SSOWizardDialogDominiosEmailPermitidos.tsx",
    "src/components/ui/badge.tsx",
    "src/components/ui/button.tsx",
    "src/components/ui/card.tsx",
    "src/components/ui/dialog.tsx",
-   "src/components/ui/input.tsx",
-   "src/components/ui/label.tsx",
-   "src/components/ui/select.tsx",
-   "src/components/ui/switch.tsx",
    "src/hooks/useSSO.ts",
    "src/hooks/useSSOConsistency.ts",
    "src/lib/sso/consistency.ts",
    "src/lib/utils.ts"
   ],
+  "src/components/admin/sso/SSOWizardDialog.types.ts": [
+   "src/hooks/useSSO.ts"
+  ],
+  "src/components/admin/sso/SSOWizardDialogDominiosEmailPermitidos.tsx": [
+   "src/components/admin/sso/SSOConsistencyPanel.tsx",
+   "src/components/admin/sso/SSOWizardDialog.helpers.ts",
+   "src/components/ui/badge.tsx",
+   "src/components/ui/button.tsx",
+   "src/components/ui/input.tsx",
+   "src/components/ui/label.tsx",
+   "src/components/ui/select.tsx",
+   "src/components/ui/switch.tsx",
+   "src/hooks/useSSO.ts",
+   "src/lib/sso/consistency.ts"
+  ],
+  "src/components/admin/sso/ScimSetupGuide.helpers.ts": [
+   "src/config/env.ts"
+  ],
   "src/components/admin/sso/ScimSetupGuide.tsx": [
+   "src/components/admin/sso/CopyField.tsx",
+   "src/components/admin/sso/ScimSetupGuide.helpers.ts",
+   "src/components/admin/sso/ScimSetupGuide.types.ts",
+   "src/components/admin/sso/ScimSetupGuideChecklistConfiguracao.tsx",
    "src/components/admin/sso/ScimUserJsonGenerator.tsx",
    "src/components/ui/alert.tsx",
    "src/components/ui/badge.tsx",
    "src/components/ui/button.tsx",
    "src/components/ui/card.tsx",
-   "src/components/ui/checkbox.tsx",
-   "src/components/ui/input.tsx",
-   "src/components/ui/progress.tsx",
    "src/components/ui/table.tsx",
    "src/components/ui/tabs.tsx",
-   "src/config/env.ts",
+   "src/hooks/useScimChecklist.ts"
+  ],
+  "src/components/admin/sso/ScimSetupGuideChecklistConfiguracao.tsx": [
+   "src/components/admin/sso/ScimSetupGuide.helpers.ts",
+   "src/components/ui/badge.tsx",
+   "src/components/ui/card.tsx",
+   "src/components/ui/checkbox.tsx",
+   "src/components/ui/progress.tsx",
    "src/hooks/useScimChecklist.ts"
   ],
   "src/components/admin/sso/ScimTokensTab.tsx": [
@@ -660,10 +586,24 @@
    "src/lib/utils.ts"
   ],
   "src/components/admin/sso/sandbox/SandboxBulkPanel.tsx": [
+   "src/components/admin/sso/sandbox/SandboxBulkPanel.types.ts",
+   "src/components/admin/sso/sandbox/SandboxBulkPanelProvedorSSO.tsx",
    "src/components/admin/sso/sandbox/SandboxBulkSummary.tsx",
    "src/components/admin/sso/sandbox/SandboxBulkTable.tsx",
    "src/components/admin/sso/sandbox/outcome.ts",
    "src/components/ui/alert.tsx",
+   "src/components/ui/badge.tsx",
+   "src/components/ui/button.tsx",
+   "src/components/ui/card.tsx",
+   "src/components/ui/tabs.tsx",
+   "src/components/ui/textarea.tsx",
+   "src/hooks/useSSO.ts",
+   "src/hooks/useSSOSandboxRuns.ts",
+   "src/lib/sso/sandbox-bulk-aggregator.ts",
+   "src/lib/sso/sandbox-bulk-runner.ts",
+   "src/lib/sso/sandbox-csv.ts"
+  ],
+  "src/components/admin/sso/sandbox/SandboxBulkPanelProvedorSSO.tsx": [
    "src/components/ui/badge.tsx",
    "src/components/ui/button.tsx",
    "src/components/ui/card.tsx",
@@ -672,11 +612,8 @@
    "src/components/ui/progress.tsx",
    "src/components/ui/select.tsx",
    "src/components/ui/switch.tsx",
-   "src/components/ui/tabs.tsx",
    "src/components/ui/textarea.tsx",
    "src/hooks/useSSO.ts",
-   "src/hooks/useSSOSandboxRuns.ts",
-   "src/lib/sso/sandbox-bulk-aggregator.ts",
    "src/lib/sso/sandbox-bulk-runner.ts",
    "src/lib/sso/sandbox-csv.ts"
   ],
@@ -875,7 +812,13 @@
    "src/hooks/useExtratoWebhooks.ts",
    "src/lib/formatters.ts"
   ],
+  "src/components/analytics/InadimplenciaKpis.tsx": [
+   "src/components/analytics/inadimplencia-config.ts",
+   "src/components/ui/card.tsx",
+   "src/lib/formatters.ts"
+  ],
   "src/components/analytics/InadimplenciaSegmentada.tsx": [
+   "src/components/analytics/InadimplenciaKpis.tsx",
    "src/components/analytics/PredicaoTab.tsx",
    "src/components/analytics/inadimplencia-config.ts",
    "src/components/ui/badge.tsx",
@@ -901,17 +844,23 @@
    "src/components/ui/tabs.tsx"
   ],
   "src/components/aprovacoes/AprovacoesPendentes.tsx": [
-   "src/components/aprovacoes/WorkflowVisualizer.tsx",
+   "src/components/aprovacoes/AprovacoesPendentesConteudo.tsx",
    "src/components/ui/badge.tsx",
    "src/components/ui/button.tsx",
    "src/components/ui/card.tsx",
    "src/components/ui/dialog.tsx",
-   "src/components/ui/input.tsx",
    "src/components/ui/label.tsx",
    "src/components/ui/micro-interactions.tsx",
-   "src/components/ui/scroll-area.tsx",
    "src/components/ui/textarea.tsx",
    "src/components/wrappers/CelebrationActions.tsx",
+   "src/hooks/useAprovacoes.ts",
+   "src/lib/formatters.ts"
+  ],
+  "src/components/aprovacoes/AprovacoesPendentesConteudo.tsx": [
+   "src/components/aprovacoes/WorkflowVisualizer.tsx",
+   "src/components/ui/button.tsx",
+   "src/components/ui/input.tsx",
+   "src/components/ui/scroll-area.tsx",
    "src/hooks/useAprovacoes.ts",
    "src/lib/formatters.ts"
   ],
@@ -984,7 +933,8 @@
    "src/components/ui/input.tsx",
    "src/components/ui/skeleton.tsx",
    "src/components/ui/table.tsx",
-   "src/hooks/useAsaas.ts"
+   "src/hooks/useAsaas.ts",
+   "src/hooks/useAsaas.types.ts"
   ],
   "src/components/asaas/CobrancaCardForm.tsx": [
    "src/components/ui/input.tsx",
@@ -1033,18 +983,25 @@
    "src/lib/currency.ts"
   ],
   "src/components/asaas/NovaCobrancaDialog.tsx": [
+   "src/components/asaas/NovaCobrancaDialog.types.ts",
+   "src/components/asaas/NovaCobrancaDialogVincularContaReceber.tsx",
+   "src/components/asaas/NovoClienteAsaasForm.tsx",
+   "src/components/ui/dialog.tsx",
+   "src/components/ui/tabs.tsx",
+   "src/hooks/useAsaas.ts",
+   "src/hooks/useAsaas.types.ts",
+   "src/integrations/supabase/client.ts"
+  ],
+  "src/components/asaas/NovaCobrancaDialogVincularContaReceber.tsx": [
    "src/components/asaas/CobrancaCardForm.tsx",
    "src/components/asaas/NovaCobrancaSections.tsx",
-   "src/components/asaas/NovoClienteAsaasForm.tsx",
    "src/components/ui/button.tsx",
-   "src/components/ui/dialog.tsx",
    "src/components/ui/input.tsx",
    "src/components/ui/label.tsx",
    "src/components/ui/select.tsx",
    "src/components/ui/tabs.tsx",
    "src/components/ui/textarea.tsx",
-   "src/hooks/useAsaas.ts",
-   "src/integrations/supabase/client.ts",
+   "src/hooks/useAsaas.types.ts",
    "src/lib/formatters.ts"
   ],
   "src/components/asaas/NovaCobrancaSections.tsx": [
@@ -1102,20 +1059,31 @@
    "src/lib/formatters.ts"
   ],
   "src/components/asaas/tabs/CobrancasTab.tsx": [
+   "src/components/asaas/tabs/CobrancasTab.types.ts",
+   "src/components/asaas/tabs/CobrancasTabConteudo.tsx",
    "src/components/asaas/tabs/constants.ts",
-   "src/components/ui/badge.tsx",
    "src/components/ui/button.tsx",
    "src/components/ui/card.tsx",
-   "src/components/ui/checkbox.tsx",
-   "src/components/ui/dropdown-menu.tsx",
    "src/components/ui/empty-state.tsx",
    "src/components/ui/input.tsx",
    "src/components/ui/progress.tsx",
    "src/components/ui/select.tsx",
    "src/components/ui/skeleton.tsx",
-   "src/components/ui/table.tsx",
+   "src/integrations/supabase/client.ts"
+  ],
+  "src/components/asaas/tabs/CobrancasTab.types.ts": [
    "src/hooks/useAsaas.ts",
-   "src/integrations/supabase/client.ts",
+   "src/hooks/useAsaas.types.ts"
+  ],
+  "src/components/asaas/tabs/CobrancasTabConteudo.tsx": [
+   "src/components/asaas/tabs/CobrancasTab.helpers.ts",
+   "src/components/asaas/tabs/constants.ts",
+   "src/components/ui/badge.tsx",
+   "src/components/ui/button.tsx",
+   "src/components/ui/checkbox.tsx",
+   "src/components/ui/dropdown-menu.tsx",
+   "src/components/ui/table.tsx",
+   "src/hooks/useAsaas.types.ts",
    "src/lib/currency.ts"
   ],
   "src/components/asaas/tabs/ConfigTab.tsx": [
@@ -1315,6 +1283,7 @@
    "src/lib/formatters.ts"
   ],
   "src/components/bi/BIEmpresasTab.tsx": [
+   "src/components/bi/BIEmpresasTab.types.ts",
    "src/components/ui/badge.tsx",
    "src/components/ui/card.tsx",
    "src/components/ui/rank-badge.tsx",
@@ -1403,18 +1372,38 @@
    "src/hooks/useBling.ts"
   ],
   "src/components/bling/BlingFinanceiroPanel.tsx": [
+   "src/components/bling/BlingFinanceiroPanel.types.ts",
+   "src/components/bling/BlingFinanceiroPanelConteudo.tsx",
+   "src/components/bling/BlingFinanceiroPanelConteudo2.tsx",
+   "src/components/bling/BlingFinanceiroPanelFinanceiro.tsx",
    "src/components/bling/BlingShared.tsx",
    "src/components/ui/badge.tsx",
-   "src/components/ui/button.tsx",
    "src/components/ui/card.tsx",
    "src/components/ui/confirm-dialog.tsx",
    "src/components/ui/dialog.tsx",
-   "src/components/ui/dropdown-menu.tsx",
    "src/components/ui/empty-state.tsx",
    "src/components/ui/input.tsx",
    "src/components/ui/label.tsx",
    "src/components/ui/table.tsx",
    "src/hooks/useBling.ts",
+   "src/lib/formatters.ts"
+  ],
+  "src/components/bling/BlingFinanceiroPanelConteudo.tsx": [
+   "src/components/ui/button.tsx"
+  ],
+  "src/components/bling/BlingFinanceiroPanelConteudo2.tsx": [
+   "src/components/ui/button.tsx",
+   "src/components/ui/dialog.tsx"
+  ],
+  "src/components/bling/BlingFinanceiroPanelFinanceiro.tsx": [
+   "src/components/bling/BlingFinanceiroPanel.types.ts",
+   "src/components/bling/BlingShared.tsx",
+   "src/components/ui/badge.tsx",
+   "src/components/ui/button.tsx",
+   "src/components/ui/card.tsx",
+   "src/components/ui/dropdown-menu.tsx",
+   "src/components/ui/empty-state.tsx",
+   "src/components/ui/table.tsx",
    "src/lib/formatters.ts"
   ],
   "src/components/bling/BlingLogisticaPanel.tsx": [
@@ -1499,7 +1488,7 @@
    "src/components/ui/badge.tsx",
    "src/components/ui/button.tsx",
    "src/components/ui/separator.tsx",
-   "src/hooks/useBoletos.ts",
+   "src/hooks/useBoletos.types.ts",
    "src/lib/formatters.ts",
    "src/lib/pdf-generator.ts"
   ],
@@ -1508,7 +1497,7 @@
    "src/components/ui/input.tsx",
    "src/components/ui/label.tsx",
    "src/components/ui/select.tsx",
-   "src/hooks/useBoletos.ts",
+   "src/hooks/useBoletos.types.ts",
    "src/integrations/supabase/client.ts",
    "src/lib/formatters.ts"
   ],
@@ -1625,6 +1614,8 @@
    "src/lib/formatters.ts"
   ],
   "src/components/cobranca/AcordoParcelamentoDialog.tsx": [
+   "src/components/cobranca/AcordoParcelamentoDialog.helpers.ts",
+   "src/components/cobranca/AcordoParcelamentoDialog.types.ts",
    "src/components/ui/button.tsx",
    "src/components/ui/calendar.tsx",
    "src/components/ui/card.tsx",
@@ -1636,11 +1627,15 @@
    "src/components/ui/separator.tsx",
    "src/components/ui/slider.tsx",
    "src/components/ui/textarea.tsx",
+   "src/hooks/useAcordosParcelamento.helpers.ts",
    "src/hooks/useAcordosParcelamento.ts",
    "src/hooks/useConfetti.ts",
    "src/lib/formatters.ts",
    "src/lib/sound-feedback.ts",
    "src/lib/utils.ts"
+  ],
+  "src/components/cobranca/AcordoParcelamentoDialog.types.ts": [
+   "src/components/cobranca/AcordoParcelamentoDialog.helpers.ts"
   ],
   "src/components/cobranca/CobrancaKpis.tsx": [
    "src/components/ui/card.tsx",
@@ -1896,15 +1891,19 @@
    "src/lib/utils.ts"
   ],
   "src/components/conciliacao/ConciliacaoAuditPanel.tsx": [
-   "src/components/ui/badge.tsx",
+   "src/components/conciliacao/ConciliacaoAuditPanelConteudo.tsx",
    "src/components/ui/button.tsx",
    "src/components/ui/card.tsx",
    "src/components/ui/input.tsx",
    "src/components/ui/select.tsx",
-   "src/components/ui/table.tsx",
    "src/integrations/supabase/client.ts",
+   "src/lib/pdf-generator.ts"
+  ],
+  "src/components/conciliacao/ConciliacaoAuditPanelConteudo.tsx": [
+   "src/components/ui/badge.tsx",
+   "src/components/ui/button.tsx",
+   "src/components/ui/table.tsx",
    "src/lib/formatters.ts",
-   "src/lib/pdf-generator.ts",
    "src/lib/utils.ts"
   ],
   "src/components/conciliacao/ConciliacaoDashboard.tsx": [
@@ -2025,14 +2024,23 @@
   ],
   "src/components/conciliacao/ImportarExtratoDialog.tsx": [
    "src/components/conciliacao/ExtratoPreviewStep.tsx",
-   "src/components/ui/badge.tsx",
+   "src/components/conciliacao/ImportarExtratoDialog.types.ts",
+   "src/components/conciliacao/ImportarExtratoDialogArquivoLocal.tsx",
    "src/components/ui/button.tsx",
    "src/components/ui/dialog.tsx",
    "src/components/ui/progress.tsx",
-   "src/components/ui/tabs.tsx",
    "src/integrations/supabase/client.ts",
    "src/lib/magic-bytes.ts",
    "src/lib/ofx-parser.ts",
+   "src/lib/utils.ts"
+  ],
+  "src/components/conciliacao/ImportarExtratoDialog.types.ts": [
+   "src/lib/ofx-parser.ts"
+  ],
+  "src/components/conciliacao/ImportarExtratoDialogArquivoLocal.tsx": [
+   "src/components/ui/badge.tsx",
+   "src/components/ui/button.tsx",
+   "src/components/ui/tabs.tsx",
    "src/lib/utils.ts"
   ],
   "src/components/conciliacao/RegrasConciliacaoPanel.tsx": [
@@ -2073,6 +2081,7 @@
    "src/components/conciliacao/ia/DetalhesExpandidosDialog.tsx",
    "src/components/conciliacao/ia/HistoricoConciliacaoDialog.tsx",
    "src/components/conciliacao/ia/RejeicaoDialog.tsx",
+   "src/components/conciliacao/ia/SugestoesHeaderIA.tsx",
    "src/components/conciliacao/ia/SugestoesMatchSections.tsx",
    "src/components/ui/button.tsx",
    "src/components/ui/card.tsx",
@@ -2120,18 +2129,28 @@
   "src/components/conciliacao/ia/ScoreBadgeIA.tsx": [
    "src/lib/utils.ts"
   ],
-  "src/components/conciliacao/ia/SugestoesMatchSections.tsx": [
-   "src/components/conciliacao/ia/ScoreBadgeIA.tsx",
+  "src/components/conciliacao/ia/SugestoesHeaderIA.tsx": [
+   "src/components/conciliacao/ia/SugestoesMatchSections.types.ts",
    "src/components/ui/badge.tsx",
    "src/components/ui/button.tsx",
    "src/components/ui/card.tsx",
-   "src/components/ui/collapsible.tsx",
    "src/components/ui/progress.tsx",
    "src/components/ui/tooltip.tsx",
-   "src/hooks/useConciliacaoIA.ts",
+   "src/lib/formatters.ts"
+  ],
+  "src/components/conciliacao/ia/SugestoesMatchSections.tsx": [
+   "src/components/conciliacao/ia/ScoreBadgeIA.tsx",
+   "src/components/conciliacao/ia/SugestoesMatchSections.types.ts",
+   "src/components/ui/badge.tsx",
+   "src/components/ui/button.tsx",
+   "src/components/ui/collapsible.tsx",
+   "src/components/ui/tooltip.tsx",
    "src/lib/formatters.ts",
-   "src/lib/ofx-parser.ts",
    "src/lib/utils.ts"
+  ],
+  "src/components/conciliacao/ia/SugestoesMatchSections.types.ts": [
+   "src/hooks/useConciliacaoIA.ts",
+   "src/lib/ofx-parser.ts"
   ],
   "src/components/configuracoes/BiometricSettings.tsx": [
    "src/components/ui/alert-dialog.tsx",
@@ -2240,15 +2259,20 @@
   ],
   "src/components/contabilidade/AuditoriaCFCPanel.tsx": [
    "src/components/contabilidade/AuditoriaCFCKpis.tsx",
+   "src/components/contabilidade/AuditoriaCFCPanel.helpers.ts",
+   "src/components/contabilidade/AuditoriaCFCPanel.types.ts",
    "src/components/ui/alert.tsx",
    "src/components/ui/badge.tsx",
    "src/components/ui/button.tsx",
    "src/components/ui/card.tsx",
    "src/components/ui/separator.tsx",
    "src/components/ui/tabs.tsx",
-   "src/hooks/useAuditoriaCFC.ts",
    "src/lib/export-contabil.ts",
    "src/lib/utils.ts"
+  ],
+  "src/components/contabilidade/AuditoriaCFCPanel.types.ts": [
+   "src/hooks/useAuditoriaCFC.ts",
+   "src/lib/export-contabil.ts"
   ],
   "src/components/contabilidade/AuditoriaLancamentosPanel.tsx": [
    "src/components/audit/AuditDiffView.tsx",
@@ -2354,10 +2378,27 @@
    "src/hooks/useLocalStorageState.ts",
    "src/lib/export-contabil.ts"
   ],
+  "src/components/contabilidade/LancamentosTab.helpers.ts": [
+   "src/components/contabilidade/LancamentosTab.types.ts"
+  ],
   "src/components/contabilidade/LancamentosTab.tsx": [
-   "src/components/contabilidade/FilterPresetsManager.tsx",
    "src/components/contabilidade/ImportLancamentosCSVDialog.tsx",
+   "src/components/contabilidade/LancamentosTab.helpers.ts",
+   "src/components/contabilidade/LancamentosTab.types.ts",
+   "src/components/contabilidade/LancamentosTabConteudo.tsx",
    "src/components/contabilidade/NovoLancamentoDialog.tsx",
+   "src/components/ui/badge.tsx",
+   "src/components/ui/card.tsx",
+   "src/hooks/useAuth.tsx",
+   "src/hooks/useLancamentosContabeis.ts",
+   "src/hooks/useManagedFilters.ts",
+   "src/hooks/usePlanoContas.ts",
+   "src/lib/audit-logger.ts",
+   "src/lib/formatters.ts"
+  ],
+  "src/components/contabilidade/LancamentosTabConteudo.tsx": [
+   "src/components/contabilidade/FilterPresetsManager.tsx",
+   "src/components/contabilidade/LancamentosTab.types.ts",
    "src/components/filters/ClearFiltersButton.tsx",
    "src/components/ui/badge.tsx",
    "src/components/ui/button.tsx",
@@ -2368,11 +2409,8 @@
    "src/components/ui/select.tsx",
    "src/components/ui/table.tsx",
    "src/components/ui/tooltip.tsx",
-   "src/hooks/useAuth.tsx",
    "src/hooks/useLancamentosContabeis.ts",
    "src/hooks/useManagedFilters.ts",
-   "src/hooks/usePlanoContas.ts",
-   "src/lib/audit-logger.ts",
    "src/lib/formatters.ts",
    "src/lib/utils.ts"
   ],
@@ -2398,6 +2436,8 @@
    "src/components/contabilidade/AuditoriaCFCPanel.tsx",
    "src/components/contabilidade/ImportarPlanoContasDialog.tsx",
    "src/components/contabilidade/PlanoContaHistoryPanel.tsx",
+   "src/components/contabilidade/PlanoContasTab.types.ts",
+   "src/components/contabilidade/PlanoContasTabConteudo.tsx",
    "src/components/ui/badge.tsx",
    "src/components/ui/button.tsx",
    "src/components/ui/card.tsx",
@@ -2405,11 +2445,16 @@
    "src/components/ui/input.tsx",
    "src/components/ui/label.tsx",
    "src/components/ui/select.tsx",
-   "src/components/ui/table.tsx",
    "src/components/ui/tooltip.tsx",
    "src/hooks/useAuditoriaCFC.ts",
    "src/hooks/useFinancialData.ts",
    "src/hooks/usePlanoContaHistory.ts",
+   "src/hooks/usePlanoContas.ts"
+  ],
+  "src/components/contabilidade/PlanoContasTabConteudo.tsx": [
+   "src/components/ui/badge.tsx",
+   "src/components/ui/table.tsx",
+   "src/components/ui/tooltip.tsx",
    "src/hooks/usePlanoContas.ts",
    "src/lib/utils.ts"
   ],
@@ -2548,6 +2593,9 @@
    "src/components/ui/dialog.tsx",
    "src/components/ui/progress.tsx"
   ],
+  "src/components/contabilidade/StatCard.tsx": [
+   "src/lib/utils.ts"
+  ],
   "src/components/contabilidade/ValidacoesPreSpedDialog.tsx": [
    "src/components/contabilidade/validacoes-pre-sped/CategoryList.tsx",
    "src/components/contabilidade/validacoes-pre-sped/FooterActions.tsx",
@@ -2559,7 +2607,15 @@
    "src/components/ui/dialog.tsx",
    "src/lib/sped-validacoes-categorias.ts"
   ],
+  "src/components/contabilidade/VerificacaoIntegracoesPanel.helpers.tsx": [
+   "src/components/ui/badge.tsx",
+   "src/hooks/useVerificacaoIntegracoes.ts"
+  ],
   "src/components/contabilidade/VerificacaoIntegracoesPanel.tsx": [
+   "src/components/contabilidade/StatCard.tsx",
+   "src/components/contabilidade/VerificacaoIntegracoesPanel.helpers.tsx",
+   "src/components/contabilidade/VerificacaoIntegracoesPanel.types.ts",
+   "src/components/contabilidade/VerificacaoIntegracoesPanelConteudo.tsx",
    "src/components/ui/badge.tsx",
    "src/components/ui/button.tsx",
    "src/components/ui/card.tsx",
@@ -2567,6 +2623,13 @@
    "src/components/ui/select.tsx",
    "src/components/ui/table.tsx",
    "src/components/ui/tooltip.tsx",
+   "src/hooks/useVerificacaoIntegracoes.ts",
+   "src/lib/formatters.ts",
+   "src/lib/utils.ts"
+  ],
+  "src/components/contabilidade/VerificacaoIntegracoesPanelConteudo.tsx": [
+   "src/components/ui/badge.tsx",
+   "src/components/ui/table.tsx",
    "src/hooks/useVerificacaoIntegracoes.ts",
    "src/lib/formatters.ts",
    "src/lib/utils.ts"
@@ -2689,6 +2752,8 @@
    "src/lib/pdf-layout.ts"
   ],
   "src/components/contabilidade/elisao/ElisaoFiscalTab.tsx": [
+   "src/components/contabilidade/elisao/ElisaoFiscalTab.types.ts",
+   "src/components/contabilidade/elisao/ElisaoStatCards.tsx",
    "src/components/contabilidade/elisao/NovaSimulacaoElisaoDialog.tsx",
    "src/components/contabilidade/elisao/SimuladorTab.tsx",
    "src/components/ui/badge.tsx",
@@ -2698,6 +2763,11 @@
    "src/components/ui/table.tsx",
    "src/components/ui/tabs.tsx",
    "src/lib/supabase-dynamic.ts"
+  ],
+  "src/components/contabilidade/elisao/ElisaoStatCards.tsx": [
+   "src/components/ui/badge.tsx",
+   "src/components/ui/card.tsx",
+   "src/components/ui/progress.tsx"
   ],
   "src/components/contabilidade/elisao/NovaSimulacaoElisaoDialog.tsx": [
    "src/components/ui/button.tsx",
@@ -2750,18 +2820,20 @@
    "src/components/ui/badge.tsx",
    "src/components/ui/card.tsx",
    "src/components/ui/tooltip.tsx",
-   "src/lib/contabil/indices.ts",
+   "src/lib/contabil/indices.helpers.ts",
+   "src/lib/contabil/indices.types.ts",
    "src/lib/utils.ts"
   ],
   "src/components/contabilidade/indices/IndicesGrid.tsx": [
    "src/components/contabilidade/indices/IndicadorCard.tsx",
-   "src/lib/contabil/indices.ts"
+   "src/lib/contabil/indices.helpers.ts",
+   "src/lib/contabil/indices.types.ts"
   ],
   "src/components/contabilidade/indices/IndicesSerieChart.tsx": [
    "src/components/ui/badge.tsx",
    "src/components/ui/skeleton.tsx",
    "src/hooks/useIndicesContabeis.ts",
-   "src/lib/contabil/indices.ts",
+   "src/lib/contabil/indices.types.ts",
    "src/lib/utils.ts"
   ],
   "src/components/contabilidade/indices/IndicesToolbar.tsx": [
@@ -2771,7 +2843,8 @@
    "src/components/ui/switch.tsx"
   ],
   "src/components/contabilidade/indices/exporters.ts": [
-   "src/lib/contabil/indices.ts",
+   "src/lib/contabil/indices.helpers.ts",
+   "src/lib/contabil/indices.types.ts",
    "src/lib/export-contabil.ts",
    "src/lib/export-contabil/pdf-common.ts",
    "src/lib/export-contabil/utils.ts"
@@ -2813,14 +2886,27 @@
    "src/components/ui/label.tsx",
    "src/components/ui/select.tsx"
   ],
-  "src/components/contabilidade/sped-contabil/SpedHistoricoTable.tsx": [
-   "src/components/contabilidade/sped-contabil/types.ts",
+  "src/components/contabilidade/sped-contabil/SpedHistoricoRow.tsx": [
+   "src/components/contabilidade/sped-contabil/SpedHistoricoTable.types.ts",
    "src/components/ui/badge.tsx",
    "src/components/ui/button.tsx",
    "src/components/ui/table.tsx",
    "src/components/ui/tooltip.tsx",
    "src/lib/sped-validacoes-categorias.ts",
    "src/lib/utils.ts"
+  ],
+  "src/components/contabilidade/sped-contabil/SpedHistoricoTable.tsx": [
+   "src/components/contabilidade/sped-contabil/SpedHistoricoRow.tsx",
+   "src/components/contabilidade/sped-contabil/SpedHistoricoTable.types.ts",
+   "src/components/contabilidade/sped-contabil/SpedHistoricoTableConteudo.tsx",
+   "src/components/ui/button.tsx",
+   "src/components/ui/table.tsx"
+  ],
+  "src/components/contabilidade/sped-contabil/SpedHistoricoTable.types.ts": [
+   "src/components/contabilidade/sped-contabil/types.ts"
+  ],
+  "src/components/contabilidade/sped-contabil/SpedHistoricoTableConteudo.tsx": [
+   "src/components/ui/table.tsx"
   ],
   "src/components/contabilidade/sped-contabil/SpedKpiCards.tsx": [
    "src/components/contabilidade/sped-contabil/types.ts"
@@ -3022,16 +3108,15 @@
    "src/lib/utils.ts"
   ],
   "src/components/contas-pagar/ContaPagarForm.tsx": [
+   "src/components/contas-pagar/ContaPagarForm.helpers.ts",
+   "src/components/contas-pagar/ContaPagarForm.types.ts",
    "src/components/contas-pagar/ContaPagarFormFields.tsx",
+   "src/components/contas-pagar/ContaPagarFormFormulario.tsx",
    "src/components/contas-pagar/LeitorCodigoBarras.tsx",
-   "src/components/financeiro/AnexoList.tsx",
    "src/components/navigation/unsaved-guard-context.ts",
-   "src/components/ui/action-button.tsx",
    "src/components/ui/button.tsx",
    "src/components/ui/dialog.tsx",
-   "src/components/ui/form.tsx",
    "src/components/ui/input.tsx",
-   "src/components/ui/select.tsx",
    "src/components/wrappers/CelebrationActions.tsx",
    "src/hooks/use-toast.ts",
    "src/hooks/useCategorias.ts",
@@ -3045,6 +3130,9 @@
    "src/lib/unsaved-guard.ts",
    "src/lib/utils.ts"
   ],
+  "src/components/contas-pagar/ContaPagarForm.types.ts": [
+   "src/components/contas-pagar/ContaPagarForm.helpers.ts"
+  ],
   "src/components/contas-pagar/ContaPagarFormFields.tsx": [
    "src/components/contas-pagar/CategorizacaoIABadge.tsx",
    "src/components/ui/button.tsx",
@@ -3054,6 +3142,19 @@
    "src/components/ui/select.tsx",
    "src/components/ui/switch.tsx",
    "src/components/ui/textarea.tsx",
+   "src/lib/utils.ts"
+  ],
+  "src/components/contas-pagar/ContaPagarFormFormulario.tsx": [
+   "src/components/contas-pagar/ContaPagarForm.types.ts",
+   "src/components/contas-pagar/ContaPagarFormFields.tsx",
+   "src/components/financeiro/AnexoList.tsx",
+   "src/components/ui/action-button.tsx",
+   "src/components/ui/button.tsx",
+   "src/components/ui/form.tsx",
+   "src/components/ui/input.tsx",
+   "src/components/ui/select.tsx",
+   "src/hooks/useCategorias.ts",
+   "src/hooks/useFinancialData.ts",
    "src/lib/utils.ts"
   ],
   "src/components/contas-pagar/ContaPagarRowAprovacaoBadge.tsx": [
@@ -3072,11 +3173,16 @@
    "src/lib/formatters.ts",
    "src/lib/utils.ts"
   ],
+  "src/components/contas-pagar/ContasPagarTableRow.helpers.ts": [
+   "src/types/financial.ts"
+  ],
   "src/components/contas-pagar/ContasPagarTableRow.tsx": [
    "src/components/common/DuplicateButton.tsx",
    "src/components/common/VersionHistory.tsx",
    "src/components/contas-pagar/CategorizacaoIABadge.tsx",
    "src/components/contas-pagar/ContaPagarRowAprovacaoBadge.tsx",
+   "src/components/contas-pagar/ContasPagarTableRow.helpers.ts",
+   "src/components/contas-pagar/ContasPagarTableRow.types.ts",
    "src/components/ui/badge.tsx",
    "src/components/ui/button.tsx",
    "src/components/ui/checkbox.tsx",
@@ -3101,6 +3207,8 @@
    "src/lib/logger.ts"
   ],
   "src/components/contas-pagar/RegistrarPagamentoDialog.tsx": [
+   "src/components/contas-pagar/RegistrarPagamentoDialog.helpers.ts",
+   "src/components/contas-pagar/RegistrarPagamentoDialog.types.ts",
    "src/components/contas-pagar/registrar-pagamento/PagamentoApprovalAlert.tsx",
    "src/components/contas-pagar/registrar-pagamento/PagamentoSummary.tsx",
    "src/components/ui/button.tsx",
@@ -3119,6 +3227,9 @@
    "src/lib/sound-feedback.ts",
    "src/lib/toast-confetti.tsx",
    "src/lib/utils.ts"
+  ],
+  "src/components/contas-pagar/RegistrarPagamentoDialog.types.ts": [
+   "src/components/contas-pagar/RegistrarPagamentoDialog.helpers.ts"
   ],
   "src/components/contas-pagar/SolicitarAprovacaoDialog.tsx": [
    "src/components/ui/badge.tsx",
@@ -3145,7 +3256,8 @@
    "src/lib/formatters.ts"
   ],
   "src/components/contas-receber/BaixaAutomaticaDialog.tsx": [
-   "src/components/ui/badge.tsx",
+   "src/components/contas-receber/BaixaAutomaticaDialog.types.ts",
+   "src/components/contas-receber/BaixaAutomaticaDialogCorrespondenciasAutomaticas.tsx",
    "src/components/ui/button.tsx",
    "src/components/ui/dialog.tsx",
    "src/components/ui/progress.tsx",
@@ -3155,6 +3267,15 @@
    "src/lib/formatters.ts",
    "src/lib/ofx-parser.ts",
    "src/lib/utils.ts"
+  ],
+  "src/components/contas-receber/BaixaAutomaticaDialog.types.ts": [
+   "src/lib/ofx-parser.ts"
+  ],
+  "src/components/contas-receber/BaixaAutomaticaDialogCorrespondenciasAutomaticas.tsx": [
+   "src/components/contas-receber/BaixaAutomaticaDialog.types.ts",
+   "src/components/ui/badge.tsx",
+   "src/components/ui/button.tsx",
+   "src/lib/formatters.ts"
   ],
   "src/components/contas-receber/CalculadoraJurosMulta.tsx": [
    "src/lib/formatters.ts"
@@ -3208,15 +3329,46 @@
   ],
   "src/components/contas-receber/ContaReceberFormFields.tsx": [
    "src/components/contas-receber/CategorizacaoIABadge.tsx",
+   "src/components/contas-receber/ContaReceberFormFields.helpers.ts",
+   "src/components/contas-receber/ContaReceberFormFields.types.ts",
+   "src/components/contas-receber/ContaReceberFormFieldsCamposCondicionais.tsx",
+   "src/components/contas-receber/ContaReceberFormFieldsCliente.tsx",
+   "src/components/contas-receber/ContaReceberFormFieldsObservacoes.tsx",
+   "src/components/contas-receber/ContaReceberFormFieldsRecorrente.tsx",
    "src/components/ui/button.tsx",
    "src/components/ui/form.tsx",
    "src/components/ui/info-tooltip.tsx",
    "src/components/ui/input.tsx",
-   "src/components/ui/label.tsx",
    "src/components/ui/select.tsx",
-   "src/components/ui/switch.tsx",
    "src/components/ui/textarea.tsx",
    "src/lib/utils.ts"
+  ],
+  "src/components/contas-receber/ContaReceberFormFieldsCamposCondicionais.tsx": [
+   "src/components/contas-receber/ContaReceberFormFields.types.ts",
+   "src/components/ui/form.tsx",
+   "src/components/ui/input.tsx"
+  ],
+  "src/components/contas-receber/ContaReceberFormFieldsCliente.tsx": [
+   "src/components/contas-receber/ContaReceberFormFields.types.ts",
+   "src/components/ui/button.tsx",
+   "src/components/ui/form.tsx",
+   "src/components/ui/input.tsx",
+   "src/components/ui/select.tsx",
+   "src/lib/utils.ts"
+  ],
+  "src/components/contas-receber/ContaReceberFormFieldsObservacoes.tsx": [
+   "src/components/contas-receber/ContaReceberFormFields.types.ts",
+   "src/components/ui/form.tsx",
+   "src/components/ui/textarea.tsx"
+  ],
+  "src/components/contas-receber/ContaReceberFormFieldsRecorrente.tsx": [
+   "src/components/contas-receber/ContaReceberFormFields.helpers.ts",
+   "src/components/contas-receber/ContaReceberFormFields.types.ts",
+   "src/components/ui/form.tsx",
+   "src/components/ui/input.tsx",
+   "src/components/ui/label.tsx",
+   "src/components/ui/select.tsx",
+   "src/components/ui/switch.tsx"
   ],
   "src/components/contas-receber/ContasReceberFilters.tsx": [
    "src/components/shared/StandardFilterSection.tsx",
@@ -3466,14 +3618,16 @@
    "src/components/dashboard/AlertasPreditivosPanel.tsx",
    "src/components/dashboard/CentroAcoesInteligentes.tsx",
    "src/components/dashboard/DashboardConfigDialog.tsx",
+   "src/components/dashboard/DashboardExecutivo.helpers.ts",
+   "src/components/dashboard/DashboardExecutivoConteudo.tsx",
    "src/components/dashboard/DashboardFiltersHeader.tsx",
    "src/components/dashboard/DashboardSkeleton.tsx",
    "src/components/dashboard/FluxoCaixaChart.tsx",
-   "src/components/dashboard/HeroKPICards.tsx",
    "src/components/dashboard/MetasFinanceirasPanel.tsx",
    "src/components/dashboard/PrevisaoIA.tsx",
    "src/components/dashboard/SaldoPorBancoCard.tsx",
    "src/components/dashboard/SecondaryKPICards.tsx",
+   "src/components/dashboard/SectionDivider.tsx",
    "src/components/dashboard/StatusContasPieChart.tsx",
    "src/components/dashboard/TopCentrosCustoChart.tsx",
    "src/components/dashboard/TopClientesLeaderboard.tsx",
@@ -3484,6 +3638,11 @@
    "src/integrations/supabase/client.ts",
    "src/lib/formatters.ts",
    "src/lib/utils.ts"
+  ],
+  "src/components/dashboard/DashboardExecutivoConteudo.tsx": [
+   "src/components/dashboard/HeroKPICards.tsx",
+   "src/hooks/useDashboardMetrics.ts",
+   "src/lib/formatters.ts"
   ],
   "src/components/dashboard/DashboardFiltersHeader.tsx": [
    "src/components/ui/button.tsx",
@@ -3637,10 +3796,18 @@
    "src/lib/pdf-layout.ts"
   ],
   "src/components/demonstrativos/FluxoCaixaContabil.tsx": [
-   "src/components/ui/badge.tsx",
+   "src/components/demonstrativos/FluxoCaixaContabil.types.ts",
+   "src/components/demonstrativos/FluxoCaixaContabilCardsResumo.tsx",
    "src/components/ui/card.tsx",
    "src/hooks/useFinancialData.ts",
    "src/lib/financeiro/valor-recebido-efetivo.ts",
+   "src/lib/formatters.ts",
+   "src/lib/utils.ts"
+  ],
+  "src/components/demonstrativos/FluxoCaixaContabilCardsResumo.tsx": [
+   "src/components/demonstrativos/FluxoCaixaContabil.types.ts",
+   "src/components/ui/badge.tsx",
+   "src/components/ui/card.tsx",
    "src/lib/formatters.ts",
    "src/lib/utils.ts"
   ],
@@ -3652,16 +3819,22 @@
    "src/hooks/useDemonstrativosContabeis.ts"
   ],
   "src/components/design-system-debug/DesignSystemAudit.tsx": [
+   "src/components/design-system-debug/DesignSystemAudit.types.ts",
+   "src/components/design-system-debug/StatCard.tsx",
    "src/components/ui/badge.tsx",
    "src/components/ui/button.tsx",
    "src/components/ui/card.tsx",
-   "src/components/ui/tabs.tsx",
-   "src/lib/utils.ts"
+   "src/components/ui/tabs.tsx"
   ],
   "src/components/design-system-debug/PixelPerfectOverlay.tsx": [
    "src/components/ui/button.tsx",
    "src/components/ui/label.tsx",
    "src/components/ui/slider.tsx"
+  ],
+  "src/components/design-system-debug/StatCard.tsx": [
+   "src/components/design-system-debug/DesignSystemAudit.types.ts",
+   "src/components/ui/card.tsx",
+   "src/lib/utils.ts"
   ],
   "src/components/documentos/AssinaturaDigital.tsx": [
    "src/components/ui/badge.tsx",
@@ -3697,17 +3870,22 @@
    "src/hooks/useCnaes.ts"
   ],
   "src/components/empresas/EmpresaCardView.tsx": [
+   "src/components/empresas/EmpresaCardView.types.ts",
    "src/components/ui/badge.tsx",
    "src/components/ui/button.tsx",
    "src/components/ui/card.tsx",
    "src/components/ui/dropdown-menu.tsx",
    "src/components/ui/micro-interactions.tsx",
-   "src/hooks/useEmpresas.ts",
    "src/lib/formatters.ts",
    "src/lib/utils.ts"
   ],
+  "src/components/empresas/EmpresaCardView.types.ts": [
+   "src/hooks/useEmpresas.ts"
+  ],
   "src/components/empresas/EmpresaForm.tsx": [
    "src/components/empresas/CnaeCatalogoInfo.tsx",
+   "src/components/empresas/EmpresaForm.types.ts",
+   "src/components/empresas/EmpresaFormCidade.tsx",
    "src/components/empresas/empresa-form-model.ts",
    "src/components/ui/button.tsx",
    "src/components/ui/input.tsx",
@@ -3719,6 +3897,22 @@
    "src/hooks/useEmpresas.ts",
    "src/lib/masks.ts",
    "src/lib/tributario/folha/fpas-terceiros.ts"
+  ],
+  "src/components/empresas/EmpresaForm.types.ts": [
+   "src/hooks/useEmpresas.ts"
+  ],
+  "src/components/empresas/EmpresaFormCidade.tsx": [
+   "src/components/empresas/empresa-form-model.ts",
+   "src/components/ui/input.tsx",
+   "src/components/ui/label.tsx",
+   "src/components/ui/select.tsx"
+  ],
+  "src/components/empresas/EmpresaHeroKPI.tsx": [
+   "src/components/empresas/AnimatedCounter.tsx",
+   "src/components/empresas/EmpresaCardView.types.ts",
+   "src/components/ui/card.tsx",
+   "src/lib/formatters.ts",
+   "src/lib/utils.ts"
   ],
   "src/components/error/ErrorBoundary.tsx": [
    "src/components/ui/button.tsx",
@@ -4289,6 +4483,7 @@
    "src/lib/sefaz-contingency.ts"
   ],
   "src/components/nfe/BlingNFePanel.tsx": [
+   "src/components/nfe/BlingNFePanel.helpers.ts",
    "src/components/ui/badge.tsx",
    "src/components/ui/button.tsx",
    "src/components/ui/card.tsx",
@@ -4310,8 +4505,12 @@
    "src/lib/sefaz-event-logger.ts",
    "src/lib/sefaz-simulator.ts"
   ],
+  "src/components/nfe/ContingenciaNFe.helpers.ts": [
+   "src/lib/sefaz-contingency.ts"
+  ],
   "src/components/nfe/ContingenciaNFe.tsx": [
    "src/components/nfe/AutoContingenciaConfig.tsx",
+   "src/components/nfe/ContingenciaNFe.helpers.ts",
    "src/components/nfe/contingencia/ContingenciaDialogs.tsx",
    "src/components/nfe/contingencia/ContingenciaPendingList.tsx",
    "src/components/ui/badge.tsx",
@@ -4324,6 +4523,9 @@
    "src/lib/sefaz-contingency.ts",
    "src/lib/sefaz-event-logger.ts"
   ],
+  "src/components/nfe/CustomTooltip.tsx": [
+   "src/components/nfe/SefazAnalytics.types.ts"
+  ],
   "src/components/nfe/DANFEGenerator.tsx": [
    "src/components/ui/badge.tsx",
    "src/components/ui/button.tsx",
@@ -4331,7 +4533,18 @@
    "src/components/ui/separator.tsx",
    "src/lib/formatters.ts"
   ],
+  "src/components/nfe/EventoDetalhes.tsx": [
+   "src/components/nfe/EventosHistorico.helpers.ts",
+   "src/components/ui/badge.tsx",
+   "src/components/ui/button.tsx",
+   "src/lib/sefaz-event-logger.ts"
+  ],
+  "src/components/nfe/EventosHistorico.helpers.ts": [
+   "src/lib/sefaz-event-logger.ts"
+  ],
   "src/components/nfe/EventosHistorico.tsx": [
+   "src/components/nfe/EventoDetalhes.tsx",
+   "src/components/nfe/EventosHistorico.helpers.ts",
    "src/components/ui/badge.tsx",
    "src/components/ui/button.tsx",
    "src/components/ui/card.tsx",
@@ -4376,6 +4589,9 @@
    "src/lib/formatters.ts"
   ],
   "src/components/nfe/SefazAnalytics.tsx": [
+   "src/components/nfe/CustomTooltip.tsx",
+   "src/components/nfe/SefazAnalytics.helpers.ts",
+   "src/components/nfe/SefazAnalytics.types.ts",
    "src/components/nfe/sefaz-analytics/SefazAnalyticsKPIs.tsx",
    "src/components/ui/card.tsx",
    "src/components/ui/select.tsx",
@@ -4616,6 +4832,8 @@
    "src/lib/utils.ts"
   ],
   "src/components/reforma-tributaria/ApuracaoMensal.tsx": [
+   "src/components/reforma-tributaria/ApuracaoMensal.helpers.ts",
+   "src/components/reforma-tributaria/ApuracaoMensalKPICards.tsx",
    "src/components/reforma-tributaria/apuracao/ApuracaoDetalheCard.tsx",
    "src/components/ui/badge.tsx",
    "src/components/ui/button.tsx",
@@ -4626,6 +4844,11 @@
    "src/components/ui/table.tsx",
    "src/hooks/useApuracoesTributarias.ts",
    "src/hooks/useEmpresas.ts",
+   "src/lib/formatters.ts"
+  ],
+  "src/components/reforma-tributaria/ApuracaoMensalKPICards.tsx": [
+   "src/components/ui/card.tsx",
+   "src/hooks/useApuracoesTributarias.ts",
    "src/lib/formatters.ts"
   ],
   "src/components/reforma-tributaria/AuditoriaCompliancePanel.tsx": [
@@ -4687,7 +4910,13 @@
    "src/components/ui/progress.tsx",
    "src/hooks/useReformaTributaria.ts"
   ],
+  "src/components/reforma-tributaria/DashboardMetricasTributarias.helpers.ts": [
+   "src/hooks/useApuracoesTributarias.ts",
+   "src/hooks/useCreditosTributarios.ts",
+   "src/hooks/useOperacoesTributaveis.ts"
+  ],
   "src/components/reforma-tributaria/DashboardMetricasTributarias.tsx": [
+   "src/components/reforma-tributaria/DashboardMetricasTributarias.helpers.ts",
    "src/components/reforma-tributaria/dashboard-metricas/MetricasInsights.tsx",
    "src/components/ui/badge.tsx",
    "src/components/ui/card.tsx",
@@ -4710,11 +4939,13 @@
    "src/components/reforma-tributaria/ConciliacaoTributariaPanel.tsx",
    "src/components/reforma-tributaria/CronogramaTransicao.tsx",
    "src/components/reforma-tributaria/DashboardMetricasTributarias.tsx",
+   "src/components/reforma-tributaria/DashboardReformaTributaria.helpers.ts",
+   "src/components/reforma-tributaria/DashboardReformaTributariaConteudo.tsx",
+   "src/components/reforma-tributaria/DashboardReformaTributariaHeaderWithGlobalEmpresa.tsx",
+   "src/components/reforma-tributaria/DashboardReformaVisaoGeral.tsx",
    "src/components/reforma-tributaria/EmptyStateTributario.tsx",
    "src/components/reforma-tributaria/ExportacaoSPED.tsx",
    "src/components/reforma-tributaria/GestorCreditosTributarios.tsx",
-   "src/components/reforma-tributaria/GlossarioTooltip.tsx",
-   "src/components/reforma-tributaria/HeroKPIs.tsx",
    "src/components/reforma-tributaria/ImportacaoXMLPanel.tsx",
    "src/components/reforma-tributaria/IncentivosFiscaisPanel.tsx",
    "src/components/reforma-tributaria/ModuloIRPJCSLL.tsx",
@@ -4728,15 +4959,29 @@
    "src/components/reforma-tributaria/SimuladorCenariosTributarios.tsx",
    "src/components/reforma-tributaria/SplitPaymentPanel.tsx",
    "src/components/tributario/dashboard/AssistenteFechamentoMensal.tsx",
-   "src/components/ui/badge.tsx",
-   "src/components/ui/card.tsx",
-   "src/components/ui/select.tsx",
    "src/components/ui/skeleton.tsx",
    "src/hooks/useAlertasTributarios.ts",
    "src/hooks/useApuracoesTributarias.ts",
    "src/hooks/useEmpresas.ts",
-   "src/hooks/useReformaTributaria.ts",
-   "src/lib/formatters.ts"
+   "src/hooks/useReformaTributaria.ts"
+  ],
+  "src/components/reforma-tributaria/DashboardReformaTributariaConteudo.tsx": [
+   "src/components/reforma-tributaria/DashboardReformaTributaria.helpers.ts",
+   "src/components/reforma-tributaria/HeroKPIs.tsx",
+   "src/types/reforma-tributaria.ts",
+   "src/types/reforma-tributaria/metricas.ts"
+  ],
+  "src/components/reforma-tributaria/DashboardReformaTributariaHeaderWithGlobalEmpresa.tsx": [
+   "src/components/ui/badge.tsx",
+   "src/components/ui/select.tsx",
+   "src/types/reforma-tributaria.ts"
+  ],
+  "src/components/reforma-tributaria/DashboardReformaVisaoGeral.tsx": [
+   "src/components/reforma-tributaria/DashboardReformaTributaria.helpers.ts",
+   "src/components/reforma-tributaria/GlossarioTooltip.tsx",
+   "src/components/ui/card.tsx",
+   "src/lib/formatters.ts",
+   "src/types/reforma-tributaria.ts"
   ],
   "src/components/reforma-tributaria/EmptyStateTributario.tsx": [
    "src/components/ui/button.tsx",
@@ -4759,6 +5004,7 @@
    "src/lib/sped-generator.ts"
   ],
   "src/components/reforma-tributaria/GestorCreditosTributarios.tsx": [
+   "src/components/reforma-tributaria/NaoCumulatividadeInfoCard.tsx",
    "src/components/ui/badge.tsx",
    "src/components/ui/button.tsx",
    "src/components/ui/card.tsx",
@@ -4793,6 +5039,9 @@
    "src/lib/formatters.ts"
   ],
   "src/components/reforma-tributaria/IncentivosFiscaisPanel.tsx": [
+   "src/components/reforma-tributaria/IncentivosFiscaisPanel.helpers.ts",
+   "src/components/reforma-tributaria/IncentivosFiscaisPanel.types.ts",
+   "src/components/reforma-tributaria/IncentivosFiscaisPanelCardsResumo.tsx",
    "src/components/ui/badge.tsx",
    "src/components/ui/button.tsx",
    "src/components/ui/card.tsx",
@@ -4804,6 +5053,10 @@
    "src/components/ui/switch.tsx",
    "src/components/ui/table.tsx",
    "src/hooks/useIncentivosFiscais.ts",
+   "src/lib/formatters.ts"
+  ],
+  "src/components/reforma-tributaria/IncentivosFiscaisPanelCardsResumo.tsx": [
+   "src/components/ui/card.tsx",
    "src/lib/formatters.ts"
   ],
   "src/components/reforma-tributaria/KPIComparativo.tsx": [
@@ -4825,11 +5078,16 @@
    "src/hooks/useEmpresas.ts",
    "src/hooks/useIRPJCSLL.ts"
   ],
+  "src/components/reforma-tributaria/NaoCumulatividadeInfoCard.tsx": [
+   "src/components/ui/card.tsx"
+  ],
   "src/components/reforma-tributaria/NavigationTributaria.tsx": [
    "src/components/ui/button.tsx",
    "src/lib/utils.ts"
   ],
   "src/components/reforma-tributaria/ObrigacoesAcessorias.tsx": [
+   "src/components/reforma-tributaria/ObrigacoesAcessorias.helpers.ts",
+   "src/components/reforma-tributaria/ObrigacoesAcessorias.types.ts",
    "src/components/ui/badge.tsx",
    "src/components/ui/button.tsx",
    "src/components/ui/card.tsx",
@@ -4866,21 +5124,34 @@
    "src/lib/utils.ts"
   ],
   "src/components/reforma-tributaria/RelatoriosContabeisTributarios.tsx": [
-   "src/components/reforma-tributaria/relatorios-tributarios/CargaEfetivaTab.tsx",
-   "src/components/reforma-tributaria/relatorios-tributarios/DRETributarioTab.tsx",
-   "src/components/ui/badge.tsx",
-   "src/components/ui/button.tsx",
+   "src/components/reforma-tributaria/RelatoriosContabeisTributarios.types.ts",
+   "src/components/reforma-tributaria/RelatoriosContabeisTributariosFiltros.tsx",
+   "src/components/reforma-tributaria/RelatoriosContabeisTributariosTabs.tsx",
    "src/components/ui/card.tsx",
-   "src/components/ui/input.tsx",
-   "src/components/ui/label.tsx",
-   "src/components/ui/select.tsx",
-   "src/components/ui/table.tsx",
-   "src/components/ui/tabs.tsx",
    "src/hooks/useApuracoesTributarias.ts",
    "src/hooks/useCreditosTributarios.ts",
    "src/hooks/useEmpresas.ts",
    "src/hooks/useOperacoesTributaveis.ts",
    "src/lib/export-utils.ts",
+   "src/lib/formatters.ts"
+  ],
+  "src/components/reforma-tributaria/RelatoriosContabeisTributariosFiltros.tsx": [
+   "src/components/ui/button.tsx",
+   "src/components/ui/card.tsx",
+   "src/components/ui/input.tsx",
+   "src/components/ui/label.tsx",
+   "src/components/ui/select.tsx"
+  ],
+  "src/components/reforma-tributaria/RelatoriosContabeisTributariosTabs.tsx": [
+   "src/components/reforma-tributaria/RelatoriosContabeisTributarios.helpers.ts",
+   "src/components/reforma-tributaria/RelatoriosContabeisTributarios.types.ts",
+   "src/components/reforma-tributaria/relatorios-tributarios/CargaEfetivaTab.tsx",
+   "src/components/reforma-tributaria/relatorios-tributarios/DRETributarioTab.tsx",
+   "src/components/ui/badge.tsx",
+   "src/components/ui/card.tsx",
+   "src/components/ui/table.tsx",
+   "src/components/ui/tabs.tsx",
+   "src/hooks/useCreditosTributarios.ts",
    "src/lib/formatters.ts"
   ],
   "src/components/reforma-tributaria/ResultadoTributos.tsx": [
@@ -4890,7 +5161,12 @@
    "src/lib/formatters.ts",
    "src/lib/reforma-tributaria-calculator.ts"
   ],
+  "src/components/reforma-tributaria/RetencoesFonte.helpers.ts": [
+   "src/hooks/useRetencoesFonte.ts"
+  ],
   "src/components/reforma-tributaria/RetencoesFonte.tsx": [
+   "src/components/reforma-tributaria/RetencoesFonte.helpers.ts",
+   "src/components/reforma-tributaria/RetencoesFonte.types.ts",
    "src/components/reforma-tributaria/retencoes/DARFsTable.tsx",
    "src/components/reforma-tributaria/retencoes/ResumoPorTipoGrid.tsx",
    "src/components/reforma-tributaria/retencoes/RetencoesTable.tsx",
@@ -5067,6 +5343,8 @@
    "src/lib/formatters.ts"
   ],
   "src/components/relatorios/RelatoriosAgendados.tsx": [
+   "src/components/relatorios/RelatoriosAgendados.helpers.ts",
+   "src/components/relatorios/RelatoriosAgendadosHistoricoExecucoes.tsx",
    "src/components/relatorios/VisualizarRelatorioDialog.tsx",
    "src/components/relatorios/agendados/AgendamentoCard.tsx",
    "src/components/relatorios/agendados/CriarAgendamentoDialog.tsx",
@@ -5074,16 +5352,23 @@
    "src/components/ui/badge.tsx",
    "src/components/ui/button.tsx",
    "src/components/ui/card.tsx",
-   "src/components/ui/input.tsx",
-   "src/components/ui/select.tsx",
    "src/components/ui/skeleton.tsx",
-   "src/components/ui/table.tsx",
    "src/components/ui/tabs.tsx",
    "src/hooks/use-toast.ts",
    "src/hooks/useFinancialData.ts",
    "src/hooks/useRelatoriosAgendados.ts",
    "src/integrations/supabase/client.ts",
    "src/lib/logger.ts"
+  ],
+  "src/components/relatorios/RelatoriosAgendadosHistoricoExecucoes.tsx": [
+   "src/components/relatorios/RelatoriosAgendados.helpers.ts",
+   "src/components/ui/badge.tsx",
+   "src/components/ui/button.tsx",
+   "src/components/ui/card.tsx",
+   "src/components/ui/input.tsx",
+   "src/components/ui/select.tsx",
+   "src/components/ui/table.tsx",
+   "src/hooks/useRelatoriosAgendados.ts"
   ],
   "src/components/relatorios/RelatoriosComparativo.tsx": [
    "src/components/ui/card.tsx",
@@ -5722,12 +6007,16 @@
   "src/components/tributario/simulacao/ParametrosForm.tsx": [
    "src/components/empresas/CnaeCatalogoInfo.tsx",
    "src/components/tributario/simulacao/LucroTrimestralFields.tsx",
+   "src/components/tributario/simulacao/ParametrosForm.types.ts",
    "src/components/ui/card.tsx",
    "src/components/ui/input.tsx",
    "src/components/ui/label.tsx",
    "src/components/ui/select.tsx",
    "src/hooks/useCnaes.ts",
    "src/lib/tributario/folha/fpas-terceiros.ts",
+   "src/lib/tributario/index.ts"
+  ],
+  "src/components/tributario/simulacao/ParametrosForm.types.ts": [
    "src/lib/tributario/index.ts"
   ],
   "src/components/tributario/simulacao/PeriodicidadeComparativoCard.tsx": [
@@ -6282,6 +6571,7 @@
    "src/integrations/supabase/client.ts"
   ],
   "src/hooks/useAcordosParcelamento.ts": [
+   "src/hooks/useAcordosParcelamento.types.ts",
    "src/hooks/useAuth.tsx",
    "src/integrations/supabase/client.ts",
    "src/integrations/supabase/types.ts",
@@ -6347,7 +6637,12 @@
    "src/integrations/supabase/client.ts",
    "src/lib/formatters.ts"
   ],
+  "src/hooks/useAsaas.helpers.ts": [
+   "src/lib/edge-function-error.ts"
+  ],
   "src/hooks/useAsaas.ts": [
+   "src/hooks/useAsaas.helpers.ts",
+   "src/hooks/useAsaas.types.ts",
    "src/integrations/supabase/client.ts",
    "src/lib/edge-function-error.ts"
   ],
@@ -6398,11 +6693,19 @@
   "src/hooks/useBlingNFe.ts": [
    "src/integrations/supabase/client.ts"
   ],
+  "src/hooks/useBoletos.helpers.ts": [
+   "src/hooks/useBoletos.types.ts",
+   "src/integrations/supabase/client.ts"
+  ],
   "src/hooks/useBoletos.ts": [
    "src/hooks/use-toast.ts",
+   "src/hooks/useBoletos.helpers.ts",
+   "src/hooks/useBoletos.types.ts",
    "src/integrations/supabase/client.ts",
-   "src/integrations/supabase/types.ts",
    "src/lib/financeiro/registrarEvento.ts"
+  ],
+  "src/hooks/useBoletos.types.ts": [
+   "src/integrations/supabase/types.ts"
   ],
   "src/hooks/useBudget.ts": [
    "src/integrations/supabase/client.ts"
@@ -6433,7 +6736,7 @@
    "src/lib/tributario/icms/types.ts",
    "src/lib/tributario/ipi-iss/overlay-iss.ts",
    "src/lib/tributario/ipi-iss/overlay-ncm.ts",
-   "src/lib/tributario/ipi-iss/tabelas.ts",
+   "src/lib/tributario/ipi-iss/tabelas.helpers.ts",
    "src/lib/tributario/monofasico/classificar.ts",
    "src/lib/tributario/monofasico/overlay-monofasico.ts"
   ],
@@ -6545,12 +6848,18 @@
    "src/integrations/supabase/client.ts",
    "src/lib/offline/fiscal-cache.ts"
   ],
+  "src/hooks/useContasPagarLogic.calculos.ts": [
+   "src/components/ui/advanced-filters.tsx",
+   "src/hooks/useContasPagarLogic.types.ts"
+  ],
   "src/hooks/useContasPagarLogic.ts": [
    "src/components/ui/advanced-filters.tsx",
    "src/components/ui/quick-date-filters.hooks.ts",
    "src/hooks/useAprovacoes.ts",
    "src/hooks/useAuth.tsx",
    "src/hooks/useBulkActions.ts",
+   "src/hooks/useContasPagarLogic.calculos.ts",
+   "src/hooks/useContasPagarLogic.types.ts",
    "src/hooks/useFinancialData.ts",
    "src/hooks/useGlobalFinancialFilter.ts",
    "src/hooks/useOptimizedQueries.ts",
@@ -6559,19 +6868,25 @@
    "src/lib/formatters.ts",
    "src/lib/toast-with-undo.tsx"
   ],
+  "src/hooks/useContasPagarLogic.types.ts": [
+   "src/hooks/useFinancialData.ts"
+  ],
+  "src/hooks/useContasReceberLogic.calculos.ts": [
+   "src/lib/financeiro/valor-recebido-efetivo.ts"
+  ],
   "src/hooks/useContasReceberLogic.ts": [
    "src/components/contas-receber/ContasReceberTableRow.tsx",
    "src/components/ui/advanced-filters.tsx",
    "src/components/ui/quick-date-filters.hooks.ts",
    "src/components/ui/sortable-header.hooks.ts",
    "src/hooks/useBulkActions.ts",
+   "src/hooks/useContasReceberLogic.calculos.ts",
    "src/hooks/useFinancialData.ts",
    "src/hooks/useGlobalFinancialFilter.ts",
    "src/hooks/useOptimizedQueries.ts",
    "src/hooks/useTableOptimization.ts",
    "src/integrations/supabase/client.ts",
    "src/lib/collection-engine.ts",
-   "src/lib/financeiro/valor-recebido-efetivo.ts",
    "src/lib/formatters.ts",
    "src/lib/toast-with-undo.tsx"
   ],
@@ -6753,7 +7068,8 @@
   ],
   "src/hooks/useIndicesContabeis.ts": [
    "src/integrations/supabase/client.ts",
-   "src/lib/contabil/indices.ts"
+   "src/lib/contabil/indices.ts",
+   "src/lib/contabil/indices.types.ts"
   ],
   "src/hooks/useInsightsIA.ts": [
    "src/integrations/supabase/client.ts"
@@ -7194,6 +7510,13 @@
    "src/lib/ofx-parser.ts",
    "src/lib/transaction-matcher.ts"
   ],
+  "src/lib/contabil/indices.helpers.ts": [
+   "src/lib/contabil/indices.types.ts"
+  ],
+  "src/lib/contabil/indices.ts": [
+   "src/lib/contabil/indices.helpers.ts",
+   "src/lib/contabil/indices.types.ts"
+  ],
   "src/lib/edge-function-error.ts": [
    "src/integrations/supabase/client.ts",
    "src/lib/error-tracking.ts",
@@ -7520,7 +7843,7 @@
    "src/lib/tributario/icms/types.ts"
   ],
   "src/lib/tributario/catalogos/coerencia-ncm.ts": [
-   "src/lib/tributario/ipi-iss/tabelas.ts",
+   "src/lib/tributario/ipi-iss/tabelas.helpers.ts",
    "src/lib/tributario/monofasico/classificar.ts"
   ],
   "src/lib/tributario/catalogos/coerencia-ufs.ts": [
@@ -7725,22 +8048,27 @@
   "src/lib/tributario/ipi-iss/index.ts": [
    "src/lib/tributario/ipi-iss/ipi.ts",
    "src/lib/tributario/ipi-iss/iss.ts",
+   "src/lib/tributario/ipi-iss/tabelas.helpers.ts",
    "src/lib/tributario/ipi-iss/tabelas.ts",
    "src/lib/tributario/ipi-iss/types.ts"
   ],
   "src/lib/tributario/ipi-iss/ipi.ts": [
-   "src/lib/tributario/ipi-iss/tabelas.ts",
+   "src/lib/tributario/ipi-iss/tabelas.helpers.ts",
    "src/lib/tributario/ipi-iss/types.ts"
   ],
   "src/lib/tributario/ipi-iss/iss.ts": [
+   "src/lib/tributario/ipi-iss/tabelas.helpers.ts",
    "src/lib/tributario/ipi-iss/tabelas.ts",
    "src/lib/tributario/ipi-iss/types.ts"
   ],
   "src/lib/tributario/ipi-iss/overlay-iss.ts": [
-   "src/lib/tributario/ipi-iss/tabelas.ts"
+   "src/lib/tributario/ipi-iss/tabelas.helpers.ts"
   ],
   "src/lib/tributario/ipi-iss/overlay-ncm.ts": [
-   "src/lib/tributario/ipi-iss/tabelas.ts",
+   "src/lib/tributario/ipi-iss/tabelas.helpers.ts",
+   "src/lib/tributario/ipi-iss/types.ts"
+  ],
+  "src/lib/tributario/ipi-iss/tabelas.helpers.ts": [
    "src/lib/tributario/ipi-iss/types.ts"
   ],
   "src/lib/tributario/ipi-iss/tabelas.ts": [
@@ -7779,6 +8107,20 @@
   ],
   "src/lib/tributario/monofasico/overlay-monofasico.ts": [
    "src/lib/tributario/monofasico/classificar.ts"
+  ],
+  "src/lib/tributario/motor/base.ts": [
+   "src/lib/tributario/anexos.ts",
+   "src/lib/tributario/parametros.ts"
+  ],
+  "src/lib/tributario/motor/lucro.ts": [
+   "src/lib/tributario/apuracao.ts",
+   "src/lib/tributario/encargos-folha.ts",
+   "src/lib/tributario/motor/base.ts",
+   "src/lib/tributario/parametros.ts"
+  ],
+  "src/lib/tributario/motor/simples.ts": [
+   "src/lib/tributario/motor/base.ts",
+   "src/lib/tributario/parametros.ts"
   ],
   "src/lib/tributario/obrigacoes/alertas.ts": [
    "src/lib/tributario/obrigacoes/historico.ts"
@@ -7882,6 +8224,9 @@
    "src/lib/tributario/anexos.ts",
    "src/lib/tributario/apuracao.ts",
    "src/lib/tributario/encargos-folha.ts",
+   "src/lib/tributario/motor/base.ts",
+   "src/lib/tributario/motor/lucro.ts",
+   "src/lib/tributario/motor/simples.ts",
    "src/lib/tributario/parametros.ts"
   ],
   "src/lib/tributario/simular-presumido.ts": [
@@ -7985,7 +8330,7 @@
    "src/components/ui/input.tsx",
    "src/components/ui/label.tsx",
    "src/components/ui/progress.tsx",
-   "src/hooks/useAsaas.ts",
+   "src/hooks/useAsaas.types.ts",
    "src/lib/currency.ts",
    "src/pages/Asaas.types.ts",
    "src/pages/AsaasQueueHistoryDialog.tsx"
@@ -8015,6 +8360,7 @@
    "src/components/ui/skeleton.tsx",
    "src/components/ui/tabs.tsx",
    "src/hooks/useAsaas.ts",
+   "src/hooks/useAsaas.types.ts",
    "src/hooks/useEmpresas.ts",
    "src/hooks/useUrlTab.ts",
    "src/integrations/supabase/client.ts",
@@ -8029,11 +8375,22 @@
    "src/components/layout/MainLayout.tsx"
   ],
   "src/pages/AuditLogs.tsx": [
+   "src/components/layout/MainLayout.tsx",
+   "src/hooks/useIpMaskPreference.ts",
+   "src/hooks/useManagedFilters.ts",
+   "src/integrations/supabase/client.ts",
+   "src/lib/export-utils.ts",
+   "src/lib/formatters.ts",
+   "src/lib/ip-mask.ts",
+   "src/pages/AuditLogs.helpers.ts",
+   "src/pages/AuditLogs.types.ts",
+   "src/pages/AuditLogsFiltros.tsx"
+  ],
+  "src/pages/AuditLogsFiltros.tsx": [
    "src/components/admin/IpMaskToggle.tsx",
    "src/components/audit/AuditLogTable.tsx",
    "src/components/audit/AuditSecurityAlerts.tsx",
    "src/components/filters/ClearFiltersButton.tsx",
-   "src/components/layout/MainLayout.tsx",
    "src/components/ui/button.tsx",
    "src/components/ui/calendar.tsx",
    "src/components/ui/card.tsx",
@@ -8041,13 +8398,13 @@
    "src/components/ui/loading-skeleton.tsx",
    "src/components/ui/popover.tsx",
    "src/components/ui/select.tsx",
-   "src/hooks/useIpMaskPreference.ts",
    "src/hooks/useManagedFilters.ts",
-   "src/integrations/supabase/client.ts",
-   "src/lib/export-utils.ts",
-   "src/lib/formatters.ts",
-   "src/lib/ip-mask.ts",
-   "src/lib/utils.ts"
+   "src/lib/utils.ts",
+   "src/pages/AuditLogs.types.ts",
+   "src/pages/AuditLogsFiltrosConteudo.tsx"
+  ],
+  "src/pages/AuditLogsFiltrosConteudo.tsx": [
+   "src/components/ui/select.tsx"
   ],
   "src/pages/Auth.hooks.ts": [
    "src/config/env.ts",
@@ -8072,6 +8429,13 @@
    "src/pages/Auth.hooks.ts"
   ],
   "src/pages/BI.tsx": [
+   "src/components/layout/MainLayout.tsx",
+   "src/hooks/useAuth.tsx",
+   "src/hooks/useFinancialData.ts",
+   "src/lib/financeiro/valor-recebido-efetivo.ts",
+   "src/pages/BIFuturista.tsx"
+  ],
+  "src/pages/BIFuturista.tsx": [
    "src/components/analytics/BenchmarkingSetorial.tsx",
    "src/components/analytics/HistoricoAnalisesPreditivasPanel.tsx",
    "src/components/analytics/InadimplenciaSegmentada.tsx",
@@ -8080,20 +8444,24 @@
    "src/components/bi/BIEmpresasTab.tsx",
    "src/components/bi/BIKpis.tsx",
    "src/components/bi/FuturisticDashboard.tsx",
-   "src/components/layout/MainLayout.tsx",
+   "src/components/ui/card.tsx",
+   "src/components/ui/tabs.tsx",
+   "src/hooks/financial/types.ts",
+   "src/lib/utils.ts",
+   "src/pages/BI.helpers.ts",
+   "src/pages/BIFuturistaConteudo.tsx"
+  ],
+  "src/pages/BIFuturistaConteudo.tsx": [
    "src/components/ui/badge.tsx",
    "src/components/ui/button.tsx",
    "src/components/ui/calendar.tsx",
-   "src/components/ui/card.tsx",
    "src/components/ui/label.tsx",
    "src/components/ui/popover.tsx",
    "src/components/ui/select.tsx",
    "src/components/ui/switch.tsx",
-   "src/components/ui/tabs.tsx",
-   "src/hooks/useAuth.tsx",
-   "src/hooks/useFinancialData.ts",
-   "src/lib/financeiro/valor-recebido-efetivo.ts",
-   "src/lib/utils.ts"
+   "src/hooks/financial/types.ts",
+   "src/lib/utils.ts",
+   "src/pages/BI.helpers.ts"
   ],
   "src/pages/BenchmarkingSetorial.tsx": [
    "src/components/layout/MainLayout.tsx",
@@ -8159,7 +8527,6 @@
   "src/pages/Boletos.tsx": [
    "src/components/boletos/BoletoGlobalHistory.tsx",
    "src/components/boletos/BoletoPreviewPanel.tsx",
-   "src/components/boletos/NovoBoletoForm.tsx",
    "src/components/layout/MainLayout.tsx",
    "src/components/ui/badge.tsx",
    "src/components/ui/button.tsx",
@@ -8169,11 +8536,22 @@
    "src/components/ui/loading-skeleton.tsx",
    "src/components/ui/micro-interactions.tsx",
    "src/components/ui/select.tsx",
-   "src/components/ui/tabs.tsx",
    "src/hooks/useBoletos.ts",
+   "src/hooks/useBoletos.types.ts",
    "src/lib/formatters.ts",
    "src/lib/toast-with-undo.tsx",
-   "src/lib/utils.ts"
+   "src/lib/utils.ts",
+   "src/pages/Boletos.helpers.ts",
+   "src/pages/BoletosHeader.tsx"
+  ],
+  "src/pages/BoletosHeader.tsx": [
+   "src/components/boletos/NovoBoletoForm.tsx",
+   "src/components/ui/button.tsx",
+   "src/components/ui/dialog.tsx",
+   "src/components/ui/tabs.tsx",
+   "src/hooks/useBoletos.types.ts",
+   "src/integrations/supabase/types.ts",
+   "src/pages/Boletos.helpers.ts"
   ],
   "src/pages/Categorias.tsx": [
    "src/components/categorias/CategoriaForm.tsx",
@@ -8187,24 +8565,35 @@
    "src/hooks/useCategorias.ts"
   ],
   "src/pages/CentroCustos.tsx": [
-   "src/components/centros-custo/CentroCustoExport.tsx",
    "src/components/centros-custo/CentroCustoForm.tsx",
    "src/components/centros-custo/CentroCustoHistorico.tsx",
-   "src/components/centros-custo/CentroCustoTree.tsx",
    "src/components/layout/MainLayout.tsx",
-   "src/components/ui/badge.tsx",
+   "src/components/ui/dialog.tsx",
+   "src/hooks/useCentrosCusto.ts",
+   "src/lib/toast-with-undo.tsx",
+   "src/pages/CentroCustosArvore.tsx"
+  ],
+  "src/pages/CentroCustosArvore.tsx": [
+   "src/components/centros-custo/CentroCustoExport.tsx",
+   "src/components/centros-custo/CentroCustoTree.tsx",
    "src/components/ui/button.tsx",
    "src/components/ui/card.tsx",
-   "src/components/ui/dialog.tsx",
    "src/components/ui/input.tsx",
    "src/components/ui/micro-interactions.tsx",
    "src/components/ui/progress.tsx",
    "src/components/ui/tabs.tsx",
    "src/hooks/useCentrosCusto.ts",
    "src/lib/formatters.ts",
-   "src/lib/toast-with-undo.tsx",
    "src/lib/utils.ts",
+   "src/pages/CentroCustos.helpers.ts",
+   "src/pages/CentroCustosArvoreOrcadoVsRealizado.tsx",
    "src/pages/centro-custos/CentroCustoCards.tsx"
+  ],
+  "src/pages/CentroCustosArvoreOrcadoVsRealizado.tsx": [
+   "src/components/ui/badge.tsx",
+   "src/components/ui/card.tsx",
+   "src/lib/formatters.ts",
+   "src/pages/CentroCustos.helpers.ts"
   ],
   "src/pages/CentroPrivacidadeLGPD.tsx": [
    "src/components/ui/badge.tsx",
@@ -8281,7 +8670,6 @@
   "src/pages/Conciliacao.tsx": [
    "src/components/conciliacao/ConciliacaoAuditPanel.tsx",
    "src/components/conciliacao/ConciliacaoDashboard.tsx",
-   "src/components/conciliacao/ConciliacaoExport.tsx",
    "src/components/conciliacao/ConciliacaoFilters.tsx",
    "src/components/conciliacao/ConciliacaoManualDialog.tsx",
    "src/components/conciliacao/ConciliacaoRetroativaPanel.tsx",
@@ -8289,38 +8677,80 @@
    "src/components/conciliacao/ConfiguracaoConciliacaoPanel.tsx",
    "src/components/conciliacao/DivergenciasConciliacaoPanel.tsx",
    "src/components/conciliacao/ExtratoBancarioPanel.tsx",
-   "src/components/conciliacao/ImportarExtratoDialog.tsx",
    "src/components/conciliacao/RegrasConciliacaoPanel.tsx",
    "src/components/conciliacao/RelatorioImportacaoDialog.tsx",
    "src/components/conciliacao/SessoesConciliacaoPanel.tsx",
-   "src/components/conciliacao/SugestoesMatchIA.tsx",
    "src/components/conciliacao/conciliacao-toolbar.constants.ts",
-   "src/components/empresa/EmpresaScopeBar.tsx",
-   "src/components/financeiro/BankAccountSwitcher.tsx",
    "src/components/layout/MainLayout.tsx",
    "src/components/shared/ColumnVisibilityMenu.utils.ts",
    "src/components/ui/badge.tsx",
-   "src/components/ui/bulk-actions-bar.tsx",
-   "src/components/ui/button.tsx",
-   "src/components/ui/card.tsx",
-   "src/components/ui/checkbox.tsx",
-   "src/components/ui/dropdown-menu.tsx",
-   "src/components/ui/progress.tsx",
-   "src/components/ui/skeleton.tsx",
    "src/components/ui/tabs.tsx",
-   "src/components/ui/tooltip.tsx",
    "src/hooks/useConciliacaoPage.ts",
    "src/hooks/useHighlightFromUrl.ts",
    "src/hooks/useSavedFilterAlerts.ts",
    "src/hooks/useSavedFilters.ts",
-   "src/lib/formatters.ts",
-   "src/lib/utils.ts",
+   "src/pages/ConciliacaoBulkActionsBar.tsx",
+   "src/pages/ConciliacaoConteudo.tsx",
    "src/pages/ConciliacaoIgnorarDialogs.tsx",
-   "src/pages/ConciliacaoToolbarHost.tsx",
+   "src/pages/ConciliacaoPageHeader.tsx",
+   "src/pages/ConciliacaoPendentes.tsx",
+   "src/pages/conciliacao-variants.ts"
+  ],
+  "src/pages/ConciliacaoBulkActionsBar.tsx": [
+   "src/components/ui/bulk-actions-bar.tsx"
+  ],
+  "src/pages/ConciliacaoConteudo.tsx": [
+   "src/components/ui/badge.tsx",
+   "src/components/ui/card.tsx",
+   "src/components/ui/progress.tsx",
+   "src/lib/utils.ts",
    "src/pages/conciliacao-variants.ts"
   ],
   "src/pages/ConciliacaoIgnorarDialogs.tsx": [
    "src/components/ui/confirm-dialog.tsx"
+  ],
+  "src/pages/ConciliacaoPageHeader.tsx": [
+   "src/components/conciliacao/ConciliacaoExport.tsx",
+   "src/components/conciliacao/ConciliacaoFilters.tsx",
+   "src/components/conciliacao/ImportarExtratoDialog.tsx",
+   "src/components/empresa/EmpresaScopeBar.tsx",
+   "src/components/financeiro/BankAccountSwitcher.tsx",
+   "src/components/ui/button.tsx",
+   "src/components/ui/tooltip.tsx",
+   "src/hooks/useConciliacaoPage.ts",
+   "src/lib/ofx-parser.ts",
+   "src/lib/utils.ts",
+   "src/pages/conciliacao-variants.ts"
+  ],
+  "src/pages/ConciliacaoPendentes.tsx": [
+   "src/components/conciliacao/ConciliacaoFilters.tsx",
+   "src/components/conciliacao/SugestoesMatchIA.tsx",
+   "src/components/conciliacao/conciliacao-toolbar.constants.ts",
+   "src/components/ui/badge.tsx",
+   "src/components/ui/button.tsx",
+   "src/components/ui/card.tsx",
+   "src/components/ui/checkbox.tsx",
+   "src/components/ui/skeleton.tsx",
+   "src/components/ui/tabs.tsx",
+   "src/hooks/conciliacaoPage.types.ts",
+   "src/hooks/useSavedFilters.ts",
+   "src/lib/conciliacao-page-helpers.ts",
+   "src/lib/ofx-parser.ts",
+   "src/lib/transaction-matcher.ts",
+   "src/pages/ConciliacaoPendentesConteudo.tsx",
+   "src/pages/ConciliacaoToolbarHost.tsx"
+  ],
+  "src/pages/ConciliacaoPendentesConteudo.tsx": [
+   "src/components/ui/badge.tsx",
+   "src/components/ui/button.tsx",
+   "src/components/ui/card.tsx",
+   "src/components/ui/checkbox.tsx",
+   "src/components/ui/dropdown-menu.tsx",
+   "src/components/ui/tooltip.tsx",
+   "src/hooks/conciliacaoPage.types.ts",
+   "src/lib/conciliacao-page-helpers.ts",
+   "src/lib/formatters.ts",
+   "src/lib/utils.ts"
   ],
   "src/pages/ConciliacaoToolbarHost.tsx": [
    "src/components/conciliacao/ConciliacaoFilters.tsx",
@@ -8367,6 +8797,9 @@
    "src/pages/Configuracoes.constants.ts",
    "src/pages/Configuracoes.parts.tsx"
   ],
+  "src/pages/Contabilidade.helpers.ts": [
+   "src/pages/Contabilidade.types.ts"
+  ],
   "src/pages/Contabilidade.tsx": [
    "src/components/contabilidade/AuditoriaLancamentosPanel.tsx",
    "src/components/contabilidade/BalanceteTab.tsx",
@@ -8381,8 +8814,6 @@
    "src/components/contabilidade/elisao/ElisaoFiscalTab.tsx",
    "src/components/layout/MainLayout.tsx",
    "src/components/ui/badge.tsx",
-   "src/components/ui/button.tsx",
-   "src/components/ui/card.tsx",
    "src/components/ui/input.tsx",
    "src/components/ui/label.tsx",
    "src/components/ui/select.tsx",
@@ -8391,7 +8822,20 @@
    "src/hooks/useFinancialData.ts",
    "src/hooks/useLocalStorageState.ts",
    "src/hooks/useSpedContabil.ts",
-   "src/lib/brazilian-validators.ts"
+   "src/lib/brazilian-validators.ts",
+   "src/pages/Contabilidade.helpers.ts",
+   "src/pages/Contabilidade.types.ts",
+   "src/pages/ContabilidadeHome.tsx"
+  ],
+  "src/pages/Contabilidade.types.ts": [
+   "src/pages/Contabilidade.helpers.ts"
+  ],
+  "src/pages/ContabilidadeHome.tsx": [
+   "src/components/ui/badge.tsx",
+   "src/components/ui/button.tsx",
+   "src/components/ui/card.tsx",
+   "src/pages/Contabilidade.helpers.ts",
+   "src/pages/Contabilidade.types.ts"
   ],
   "src/pages/ContadorReadonly.tsx": [
    "src/components/ui/badge.tsx",
@@ -8452,36 +8896,68 @@
    "src/integrations/supabase/types.ts"
   ],
   "src/pages/ContasReceber.tsx": [
-   "src/components/contas-receber/AplicarDescontoDialog.tsx",
-   "src/components/contas-receber/BaixaAutomaticaDialog.tsx",
-   "src/components/contas-receber/ContaReceberDetailDrawer.tsx",
-   "src/components/contas-receber/ContaReceberForm.tsx",
-   "src/components/contas-receber/ContasReceberFilters.tsx",
-   "src/components/contas-receber/ContasReceberKPIs.tsx",
-   "src/components/contas-receber/ContasReceberKanban.tsx",
-   "src/components/contas-receber/ContasReceberTableRow.tsx",
-   "src/components/contas-receber/EnviarCobrancaDialog.tsx",
-   "src/components/contas-receber/RegistrarRecebimentoDialog.tsx",
-   "src/components/contas-receber/WebhookConfigDialog.tsx",
    "src/components/financeiro/BankAccountSwitcher.tsx",
    "src/components/layout/MainLayout.tsx",
-   "src/components/layout/PageHeader.tsx",
-   "src/components/shared/StandardTableCard.tsx",
-   "src/components/ui/bulk-actions-bar.tsx",
    "src/components/ui/button.tsx",
-   "src/components/ui/checkbox.tsx",
-   "src/components/ui/confirm-dialog.tsx",
    "src/components/ui/export-menu.tsx",
-   "src/components/ui/micro-interactions.tsx",
-   "src/components/ui/quick-date-filters.tsx",
-   "src/components/ui/sortable-header.tsx",
-   "src/components/ui/table.tsx",
    "src/hooks/useContasReceberLogic.ts",
    "src/hooks/useHighlightFromUrl.ts",
    "src/lib/export-utils.ts",
-   "src/lib/formatters.ts",
    "src/lib/navigation-intent.ts",
-   "src/lib/utils.ts"
+   "src/lib/utils.ts",
+   "src/pages/ContasReceberConteudo.tsx"
+  ],
+  "src/pages/ContasReceberConteudo.tsx": [
+   "src/components/contas-receber/AplicarDescontoDialog.tsx",
+   "src/components/contas-receber/BaixaAutomaticaDialog.tsx",
+   "src/components/contas-receber/ContaReceberForm.tsx",
+   "src/components/contas-receber/ContasReceberKPIs.tsx",
+   "src/components/contas-receber/EnviarCobrancaDialog.tsx",
+   "src/components/contas-receber/RegistrarRecebimentoDialog.tsx",
+   "src/components/contas-receber/WebhookConfigDialog.tsx",
+   "src/components/layout/PageHeader.tsx",
+   "src/components/ui/bulk-actions-bar.tsx",
+   "src/components/ui/confirm-dialog.tsx",
+   "src/lib/formatters.ts",
+   "src/pages/ContasReceber.helpers.ts",
+   "src/pages/ContasReceberConteudo.types.ts",
+   "src/pages/ContasReceberConteudoConteudo.tsx",
+   "src/pages/ContasReceberConteudoConteudo2.tsx",
+   "src/pages/ContasReceberConteudoConteudo3.tsx"
+  ],
+  "src/pages/ContasReceberConteudo.types.ts": [
+   "src/components/contas-receber/ContasReceberTableRow.tsx",
+   "src/components/contas-receber/row/rowConfig.ts",
+   "src/components/ui/advanced-filters.tsx",
+   "src/components/ui/quick-date-filters.tsx",
+   "src/components/ui/sortable-header.tsx",
+   "src/hooks/financial/types.ts",
+   "src/hooks/useContasReceberLogic.ts"
+  ],
+  "src/pages/ContasReceberConteudoConteudo.tsx": [
+   "src/components/contas-receber/ContasReceberKanban.tsx",
+   "src/components/contas-receber/ContasReceberTableRow.tsx",
+   "src/components/contas-receber/row/rowConfig.ts",
+   "src/components/shared/StandardTableCard.tsx",
+   "src/components/ui/button.tsx",
+   "src/components/ui/checkbox.tsx",
+   "src/components/ui/micro-interactions.tsx",
+   "src/components/ui/sortable-header.tsx",
+   "src/components/ui/table.tsx",
+   "src/hooks/useContasReceberLogic.ts",
+   "src/pages/ContasReceber.helpers.ts"
+  ],
+  "src/pages/ContasReceberConteudoConteudo2.tsx": [
+   "src/components/contas-receber/ContasReceberFilters.tsx",
+   "src/components/ui/advanced-filters.tsx",
+   "src/components/ui/quick-date-filters.tsx",
+   "src/hooks/financial/types.ts",
+   "src/pages/ContasReceber.helpers.ts"
+  ],
+  "src/pages/ContasReceberConteudoConteudo3.tsx": [
+   "src/components/contas-receber/ContaReceberDetailDrawer.tsx",
+   "src/components/contas-receber/ContasReceberTableRow.tsx",
+   "src/components/contas-receber/row/rowConfig.ts"
   ],
   "src/pages/Contratos.tsx": [
    "src/components/contratos/GestaoContratos.tsx",
@@ -8501,6 +8977,9 @@
    "src/lib/financeiro/valor-recebido-efetivo.ts",
    "src/lib/formatters.ts"
   ],
+  "src/pages/DashboardReceber.helpers.ts": [
+   "src/pages/DashboardReceber.types.ts"
+  ],
   "src/pages/DashboardReceber.tsx": [
    "src/components/dashboard-receber/ReceberCharts.tsx",
    "src/components/dashboard-receber/ReceberKpis.tsx",
@@ -8509,11 +8988,18 @@
    "src/components/ui/badge.tsx",
    "src/components/ui/button.tsx",
    "src/components/ui/card.tsx",
-   "src/components/ui/select.tsx",
    "src/hooks/useAuth.tsx",
    "src/hooks/useFinancialData.ts",
    "src/hooks/useInadimplenciaSegmentada.ts",
-   "src/hooks/useManagedFilters.ts"
+   "src/hooks/useManagedFilters.ts",
+   "src/pages/DashboardReceber.helpers.ts",
+   "src/pages/DashboardReceber.types.ts",
+   "src/pages/DashboardReceberConteudo.tsx"
+  ],
+  "src/pages/DashboardReceberConteudo.tsx": [
+   "src/components/ui/card.tsx",
+   "src/components/ui/select.tsx",
+   "src/hooks/useFinancialData.ts"
   ],
   "src/pages/Demonstrativos.tsx": [
    "src/components/demonstrativos/BalancoPatrimonial.tsx",
@@ -8530,21 +9016,36 @@
   "src/pages/Empresas.tsx": [
    "src/components/empresas/EmpresaCardView.tsx",
    "src/components/empresas/EmpresaForm.tsx",
-   "src/components/ui/badge.tsx",
+   "src/components/empresas/EmpresaHeroKPI.tsx",
    "src/components/ui/button.tsx",
    "src/components/ui/card.tsx",
    "src/components/ui/confirm-dialog.tsx",
    "src/components/ui/dialog.tsx",
-   "src/components/ui/dropdown-menu.tsx",
    "src/components/ui/input.tsx",
    "src/components/ui/loading-skeleton.tsx",
-   "src/components/ui/table.tsx",
    "src/hooks/use-toast.ts",
    "src/hooks/useEmpresas.ts",
    "src/hooks/useFinancialData.ts",
-   "src/lib/formatters.ts",
    "src/lib/toast-with-undo.tsx",
-   "src/lib/utils.ts"
+   "src/lib/utils.ts",
+   "src/pages/Empresas.helpers.ts",
+   "src/pages/EmpresasConteudo.tsx",
+   "src/pages/EmpresasConteudo2.tsx"
+  ],
+  "src/pages/EmpresasConteudo.tsx": [
+   "src/components/ui/badge.tsx",
+   "src/components/ui/button.tsx",
+   "src/components/ui/card.tsx",
+   "src/components/ui/dropdown-menu.tsx",
+   "src/components/ui/table.tsx",
+   "src/hooks/useEmpresas.ts",
+   "src/lib/formatters.ts",
+   "src/lib/utils.ts",
+   "src/pages/Empresas.helpers.ts"
+  ],
+  "src/pages/EmpresasConteudo2.tsx": [
+   "src/components/ui/button.tsx",
+   "src/components/ui/card.tsx"
   ],
   "src/pages/Expert.tsx": [
    "src/components/expert/ExpertChatMessages.tsx",
@@ -8684,14 +9185,23 @@
   ],
   "src/pages/NotasFiscais.tsx": [
    "src/components/layout/MainLayout.tsx",
+   "src/components/nfe/CancelamentoNFe.tsx",
+   "src/components/nfe/NovaNFeForm.tsx",
+   "src/components/nfe/nfe-types.ts",
+   "src/components/ui/button.tsx",
+   "src/components/ui/card.tsx",
+   "src/components/ui/dialog.tsx",
+   "src/lib/formatters.ts",
+   "src/pages/NotasFiscais.helpers.ts",
+   "src/pages/NotasFiscaisAbas.tsx"
+  ],
+  "src/pages/NotasFiscaisAbas.tsx": [
    "src/components/nfe/AlertasRejeicao.tsx",
    "src/components/nfe/BlingNFePanel.tsx",
-   "src/components/nfe/CancelamentoNFe.tsx",
    "src/components/nfe/ContingenciaNFe.tsx",
    "src/components/nfe/EventosHistorico.tsx",
    "src/components/nfe/InutilizacaoNFe.tsx",
    "src/components/nfe/NFePreview.tsx",
-   "src/components/nfe/NovaNFeForm.tsx",
    "src/components/nfe/SefazAnalytics.tsx",
    "src/components/nfe/SefazMonitor.tsx",
    "src/components/nfe/nfe-types.ts",
@@ -9062,7 +9572,9 @@
    "src/components/ui/table.tsx",
    "src/hooks/useAuth.tsx",
    "src/integrations/supabase/client.ts",
-   "src/lib/logger.ts"
+   "src/lib/logger.ts",
+   "src/pages/admin/ScimAudit.helpers.ts",
+   "src/pages/admin/ScimAudit.types.ts"
   ],
   "src/pages/admin/SharedFiltersAdmin.tsx": [
    "src/components/layout/MainLayout.tsx",
@@ -9379,6 +9891,9 @@
    "src/lib/organizacoes/convites.ts",
    "src/pages/organizacoes/Organizacoes.parts.tsx"
   ],
+  "src/pages/tributario/Alertas.tsx": [
+   "src/components/ui/alert.tsx"
+  ],
   "src/pages/tributario/ArquiteturaModular.tsx": [
    "src/components/ui/alert.tsx",
    "src/components/ui/badge.tsx",
@@ -9505,6 +10020,9 @@
    "src/pages/tributario/consulta-rapida/ConsultaNcmTab.tsx",
    "src/pages/tributario/consulta-rapida/ConsultaUFTab.tsx"
   ],
+  "src/pages/tributario/DarfConsolidado.helpers.ts": [
+   "src/pages/tributario/DarfConsolidado.types.ts"
+  ],
   "src/pages/tributario/DarfConsolidado.tsx": [
    "src/components/layout/MainLayout.tsx",
    "src/components/layout/PageHeader.tsx",
@@ -9518,7 +10036,9 @@
    "src/components/ui/switch.tsx",
    "src/components/ui/table.tsx",
    "src/components/ui/tabs.tsx",
-   "src/lib/tributario/darf/index.ts"
+   "src/lib/tributario/darf/index.ts",
+   "src/pages/tributario/DarfConsolidado.helpers.ts",
+   "src/pages/tributario/DarfConsolidado.types.ts"
   ],
   "src/pages/tributario/DashboardTributario.tsx": [
    "src/components/layout/MainLayout.tsx",
@@ -9551,6 +10071,18 @@
    "src/hooks/useExportarSped.ts",
    "src/hooks/useRelatorioAnual.ts",
    "src/lib/formatters.ts"
+  ],
+  "src/pages/tributario/DiferencialAliquotas.tsx": [
+   "src/components/ui/alert.tsx",
+   "src/components/ui/card.tsx",
+   "src/components/ui/input.tsx",
+   "src/components/ui/label.tsx",
+   "src/components/ui/select.tsx",
+   "src/components/ui/switch.tsx",
+   "src/lib/tributario/icms/index.ts",
+   "src/pages/tributario/IcmsStDifal.helpers.ts",
+   "src/pages/tributario/MemoriaTable.tsx",
+   "src/pages/tributario/UfSelect.tsx"
   ],
   "src/pages/tributario/FechamentoMensal.tsx": [
    "src/components/layout/MainLayout.tsx",
@@ -9589,21 +10121,21 @@
    "src/components/ui/tabs.tsx",
    "src/hooks/useEmpresas.ts"
   ],
+  "src/pages/tributario/IcmsStDifal.helpers.ts": [
+   "src/lib/tributario/icms/index.ts"
+  ],
   "src/pages/tributario/IcmsStDifal.tsx": [
    "src/components/layout/MainLayout.tsx",
    "src/components/layout/PageHeader.tsx",
    "src/components/ui/alert.tsx",
    "src/components/ui/badge.tsx",
    "src/components/ui/card.tsx",
-   "src/components/ui/input.tsx",
-   "src/components/ui/label.tsx",
-   "src/components/ui/select.tsx",
-   "src/components/ui/switch.tsx",
    "src/components/ui/table.tsx",
    "src/components/ui/tabs.tsx",
-   "src/hooks/useCatalogosFiscais.ts",
    "src/lib/tributario/icms/index.ts",
-   "src/lib/tributario/icms/overlay-mva.ts"
+   "src/pages/tributario/DiferencialAliquotas.tsx",
+   "src/pages/tributario/IcmsStDifal.helpers.ts",
+   "src/pages/tributario/SubstituicaoTributaria.tsx"
   ],
   "src/pages/tributario/ImportacaoXML.tsx": [
    "src/components/layout/MainLayout.tsx",
@@ -9617,27 +10149,54 @@
    "src/components/reforma-tributaria/IncentivosFiscaisPanel.tsx",
    "src/hooks/useAuth.tsx"
   ],
+  "src/pages/tributario/IpiIss.MemoriaTable.tsx": [
+   "src/components/ui/table.tsx",
+   "src/lib/tributario/ipi-iss/index.ts",
+   "src/pages/tributario/IpiIss.helpers.ts"
+  ],
   "src/pages/tributario/IpiIss.tsx": [
    "src/components/layout/MainLayout.tsx",
    "src/components/layout/PageHeader.tsx",
-   "src/components/ui/alert.tsx",
+   "src/components/ui/tabs.tsx",
+   "src/pages/tributario/IpiSimulador.tsx",
+   "src/pages/tributario/IssSimulador.tsx",
+   "src/pages/tributario/TabelasConsulta.tsx"
+  ],
+  "src/pages/tributario/IpiSimulador.tsx": [
    "src/components/ui/badge.tsx",
-   "src/components/ui/button.tsx",
    "src/components/ui/card.tsx",
-   "src/components/ui/input.tsx",
    "src/components/ui/label.tsx",
    "src/components/ui/select.tsx",
    "src/components/ui/switch.tsx",
-   "src/components/ui/table.tsx",
-   "src/components/ui/tabs.tsx",
-   "src/hooks/useCatalogoIssMunicipal.ts",
    "src/lib/tributario/ipi-iss/index.ts",
-   "src/lib/tributario/ipi-iss/overlay-iss.ts"
+   "src/pages/tributario/Alertas.tsx",
+   "src/pages/tributario/IpiIss.MemoriaTable.tsx",
+   "src/pages/tributario/IpiIss.helpers.ts",
+   "src/pages/tributario/NumberField.tsx"
+  ],
+  "src/pages/tributario/IrpjCsllLucroReal.MemoriaTable.tsx": [
+   "src/components/ui/table.tsx",
+   "src/lib/formatters.ts",
+   "src/lib/tributario/irpj-csll/index.ts"
+  ],
+  "src/pages/tributario/IrpjCsllLucroReal.helpers.ts": [
+   "src/pages/tributario/IrpjCsllLucroReal.types.ts"
   ],
   "src/pages/tributario/IrpjCsllLucroReal.tsx": [
    "src/components/layout/MainLayout.tsx",
    "src/components/layout/PageHeader.tsx",
    "src/components/ui/alert.tsx",
+   "src/components/ui/card.tsx",
+   "src/lib/formatters.ts",
+   "src/lib/tributario/irpj-csll/index.ts",
+   "src/pages/tributario/IrpjCsllLucroReal.helpers.ts",
+   "src/pages/tributario/IrpjCsllLucroReal.types.ts",
+   "src/pages/tributario/IrpjCsllLucroRealApuracao.tsx"
+  ],
+  "src/pages/tributario/IrpjCsllLucroReal.types.ts": [
+   "src/lib/tributario/irpj-csll/index.ts"
+  ],
+  "src/pages/tributario/IrpjCsllLucroRealApuracao.tsx": [
    "src/components/ui/badge.tsx",
    "src/components/ui/button.tsx",
    "src/components/ui/card.tsx",
@@ -9647,7 +10206,35 @@
    "src/components/ui/table.tsx",
    "src/components/ui/tabs.tsx",
    "src/lib/formatters.ts",
-   "src/lib/tributario/irpj-csll/index.ts"
+   "src/lib/tributario/irpj-csll/index.ts",
+   "src/lib/tributario/irpj-csll/types.ts",
+   "src/pages/tributario/IrpjCsllLucroReal.MemoriaTable.tsx",
+   "src/pages/tributario/IrpjCsllLucroReal.helpers.ts",
+   "src/pages/tributario/IrpjCsllLucroReal.types.ts"
+  ],
+  "src/pages/tributario/IssSimulador.tsx": [
+   "src/components/ui/alert.tsx",
+   "src/components/ui/badge.tsx",
+   "src/components/ui/button.tsx",
+   "src/components/ui/card.tsx",
+   "src/components/ui/input.tsx",
+   "src/components/ui/label.tsx",
+   "src/components/ui/select.tsx",
+   "src/components/ui/switch.tsx",
+   "src/hooks/useCatalogoIssMunicipal.ts",
+   "src/lib/tributario/ipi-iss/index.ts",
+   "src/lib/tributario/ipi-iss/overlay-iss.ts",
+   "src/pages/tributario/Alertas.tsx",
+   "src/pages/tributario/IpiIss.MemoriaTable.tsx",
+   "src/pages/tributario/IpiIss.helpers.ts",
+   "src/pages/tributario/NumberField.tsx"
+  ],
+  "src/pages/tributario/KpiCard.tsx": [
+   "src/components/ui/card.tsx"
+  ],
+  "src/pages/tributario/MemoriaTable.tsx": [
+   "src/components/ui/table.tsx",
+   "src/pages/tributario/IcmsStDifal.helpers.ts"
   ],
   "src/pages/tributario/Monofasico.tsx": [
    "src/components/layout/MainLayout.tsx",
@@ -9665,6 +10252,9 @@
    "src/lib/formatters.ts",
    "src/lib/tributario/monofasico/index.ts"
   ],
+  "src/pages/tributario/NfeRecebidas.helpers.ts": [
+   "src/hooks/useNfeRecebidas.ts"
+  ],
   "src/pages/tributario/NfeRecebidas.tsx": [
    "src/components/tributario/NfeVinculoDialog.tsx",
    "src/components/ui/badge.tsx",
@@ -9678,7 +10268,13 @@
    "src/components/ui/textarea.tsx",
    "src/hooks/useManifestarNfe.ts",
    "src/hooks/useNfeRecebidas.ts",
-   "src/hooks/useNfeVinculo.ts"
+   "src/hooks/useNfeVinculo.ts",
+   "src/pages/tributario/KpiCard.tsx",
+   "src/pages/tributario/NfeRecebidas.helpers.ts"
+  ],
+  "src/pages/tributario/NumberField.tsx": [
+   "src/components/ui/input.tsx",
+   "src/components/ui/label.tsx"
   ],
   "src/pages/tributario/ObrigacoesAcessorias.tsx": [
    "src/components/layout/MainLayout.tsx",
@@ -9780,6 +10376,15 @@
    "src/lib/formatters.ts",
    "src/lib/tributario/index.ts"
   ],
+  "src/pages/tributario/PisCofinsCreditos.MemoriaTable.tsx": [
+   "src/components/ui/table.tsx",
+   "src/lib/formatters.ts",
+   "src/lib/tributario/pis-cofins/index.ts",
+   "src/pages/tributario/PisCofinsCreditos.helpers.ts"
+  ],
+  "src/pages/tributario/PisCofinsCreditos.helpers.ts": [
+   "src/lib/tributario/pis-cofins/index.ts"
+  ],
   "src/pages/tributario/PisCofinsCreditos.tsx": [
    "src/components/layout/MainLayout.tsx",
    "src/components/layout/PageHeader.tsx",
@@ -9794,7 +10399,16 @@
    "src/components/ui/table.tsx",
    "src/components/ui/tabs.tsx",
    "src/lib/formatters.ts",
-   "src/lib/tributario/pis-cofins/index.ts"
+   "src/lib/tributario/pis-cofins/index.ts",
+   "src/pages/tributario/PisCofinsCreditos.MemoriaTable.tsx",
+   "src/pages/tributario/PisCofinsCreditos.helpers.ts",
+   "src/pages/tributario/PisCofinsCreditosSaldoCredorPIS.tsx"
+  ],
+  "src/pages/tributario/PisCofinsCreditosSaldoCredorPIS.tsx": [
+   "src/components/ui/card.tsx",
+   "src/components/ui/input.tsx",
+   "src/components/ui/label.tsx",
+   "src/pages/tributario/PisCofinsCreditos.helpers.ts"
   ],
   "src/pages/tributario/PreferenciasDigest.tsx": [
    "src/components/layout/MainLayout.tsx",
@@ -9909,6 +10523,33 @@
    "src/components/layout/PageHeader.tsx",
    "src/components/reforma-tributaria/SplitPaymentPanel.tsx"
   ],
+  "src/pages/tributario/SubstituicaoTributaria.tsx": [
+   "src/components/ui/alert.tsx",
+   "src/components/ui/card.tsx",
+   "src/components/ui/input.tsx",
+   "src/components/ui/label.tsx",
+   "src/components/ui/select.tsx",
+   "src/components/ui/switch.tsx",
+   "src/hooks/useCatalogosFiscais.ts",
+   "src/lib/tributario/icms/index.ts",
+   "src/lib/tributario/icms/overlay-mva.ts",
+   "src/pages/tributario/IcmsStDifal.helpers.ts",
+   "src/pages/tributario/MemoriaTable.tsx",
+   "src/pages/tributario/UfSelect.tsx"
+  ],
+  "src/pages/tributario/TabelasConsulta.tsx": [
+   "src/components/ui/badge.tsx",
+   "src/components/ui/card.tsx",
+   "src/components/ui/table.tsx",
+   "src/lib/tributario/ipi-iss/index.ts",
+   "src/pages/tributario/IpiIss.helpers.ts"
+  ],
+  "src/pages/tributario/UfSelect.tsx": [
+   "src/components/ui/label.tsx",
+   "src/components/ui/select.tsx",
+   "src/lib/tributario/icms/index.ts",
+   "src/pages/tributario/IcmsStDifal.helpers.ts"
+  ],
   "src/pages/tributario/consulta-rapida/ConsultaCnaeTab.tsx": [
    "src/components/ui/badge.tsx",
    "src/components/ui/input.tsx",
@@ -9930,7 +10571,8 @@
    "src/pages/tributario/consulta-rapida/MatchBadge.tsx",
    "src/pages/tributario/consulta-rapida/OfflineBadge.tsx",
    "src/pages/tributario/consulta-rapida/format.ts",
-   "src/pages/tributario/consulta-rapida/shared.tsx"
+   "src/pages/tributario/consulta-rapida/shared.tsx",
+   "src/pages/tributario/consulta-rapida/ufs.ts"
   ],
   "src/pages/tributario/consulta-rapida/ConsultaUFTab.tsx": [
    "src/components/ui/badge.tsx",
@@ -9941,7 +10583,8 @@
    "src/pages/tributario/consulta-rapida/MatchBadge.tsx",
    "src/pages/tributario/consulta-rapida/OfflineBadge.tsx",
    "src/pages/tributario/consulta-rapida/format.ts",
-   "src/pages/tributario/consulta-rapida/shared.tsx"
+   "src/pages/tributario/consulta-rapida/shared.tsx",
+   "src/pages/tributario/consulta-rapida/ufs.ts"
   ],
   "src/pages/tributario/consulta-rapida/MatchBadge.tsx": [
    "src/components/ui/badge.tsx",
@@ -10016,6 +10659,177 @@
   ],
   "src/pages/tributario/oportunidades-elisao/constants.ts": [
    "src/lib/tributario/elisao/index.ts"
+  ],
+  "src/routes/adminPages.ts": [
+   "src/pages/AdminEdgeHealth.tsx",
+   "src/pages/AdminSystemHealth.tsx",
+   "src/pages/AdminTelemetria.tsx",
+   "src/pages/AuditLogs.tsx",
+   "src/pages/Configuracoes.tsx",
+   "src/pages/Integracoes.tsx",
+   "src/pages/Seguranca.tsx",
+   "src/pages/Usuarios.tsx",
+   "src/pages/admin/AdminBloatMonitor.tsx",
+   "src/pages/admin/AdminErrosFrontend.tsx",
+   "src/pages/admin/AnomaliaDetalhe.tsx",
+   "src/pages/admin/ApiManagement.tsx",
+   "src/pages/admin/AuditSsoProfileSync.tsx",
+   "src/pages/admin/AuditoriaIA.tsx",
+   "src/pages/admin/ComplianceAuditoria.tsx",
+   "src/pages/admin/CustomFieldsAdmin.tsx",
+   "src/pages/admin/InsightsIA.tsx",
+   "src/pages/admin/SRECommandCenter.tsx",
+   "src/pages/admin/SSOAdmin.tsx",
+   "src/pages/admin/SSOJitEvents.tsx",
+   "src/pages/admin/ScimAudit.tsx",
+   "src/pages/admin/SharedFiltersAdmin.tsx",
+   "src/pages/admin/SsoEvents.tsx",
+   "src/pages/configuracoes/FiltrosSalvos.tsx",
+   "src/pages/configuracoes/HistoricoNotificacoes.tsx",
+   "src/pages/configuracoes/MinhasPreferencias.tsx",
+   "src/pages/configuracoes/SinoNotificacoesFiltros.tsx"
+  ],
+  "src/routes/adminRoutes.tsx": [
+   "src/components/auth/ProtectedRoute.tsx",
+   "src/components/layout/MainLayout.tsx",
+   "src/routes/adminPages.ts"
+  ],
+  "src/routes/analisePages.ts": [
+   "src/pages/BI.tsx",
+   "src/pages/Bitrix24.tsx",
+   "src/pages/DashboardEmpresa.tsx",
+   "src/pages/Expert.tsx",
+   "src/pages/Index.tsx",
+   "src/pages/Relatorios.tsx"
+  ],
+  "src/routes/analiseRoutes.tsx": [
+   "src/components/auth/ProtectedRoute.tsx",
+   "src/components/layout/MainLayout.tsx",
+   "src/routes/analisePages.ts"
+  ],
+  "src/routes/contabilPages.ts": [
+   "src/pages/CentroCustos.tsx",
+   "src/pages/CentroPrivacidadeLGPD.tsx",
+   "src/pages/Contabilidade.tsx",
+   "src/pages/DashboardReceber.tsx",
+   "src/pages/Demonstrativos.tsx"
+  ],
+  "src/routes/contabilRoutes.tsx": [
+   "src/components/auth/ProtectedRoute.tsx",
+   "src/components/layout/MainLayout.tsx",
+   "src/routes/contabilPages.ts"
+  ],
+  "src/routes/financeiroPages.ts": [
+   "src/pages/Aprovacoes.tsx",
+   "src/pages/Asaas.tsx",
+   "src/pages/Bling.tsx",
+   "src/pages/Boletos.tsx",
+   "src/pages/Clientes.tsx",
+   "src/pages/Cobrancas.tsx",
+   "src/pages/Compras.tsx",
+   "src/pages/Conciliacao.tsx",
+   "src/pages/ContasBancarias.tsx",
+   "src/pages/ContasPagar.tsx",
+   "src/pages/ContasReceber.tsx",
+   "src/pages/Financeiro.tsx",
+   "src/pages/FluxoCaixa.tsx",
+   "src/pages/Fornecedores.tsx",
+   "src/pages/MetasFinanceiras.tsx",
+   "src/pages/PagamentosRecorrentes.tsx",
+   "src/pages/Tesouraria.tsx",
+   "src/pages/clientes/PortalTokens.tsx",
+   "src/pages/clientes/ScoringClientes.tsx"
+  ],
+  "src/routes/financeiroRoutes.tsx": [
+   "src/components/auth/ProtectedRoute.tsx",
+   "src/components/layout/MainLayout.tsx",
+   "src/routes/financeiroPages.ts"
+  ],
+  "src/routes/fiscalPages.ts": [
+   "src/pages/NotasFiscais.tsx"
+  ],
+  "src/routes/fiscalRoutes.tsx": [
+   "src/components/auth/ProtectedRoute.tsx",
+   "src/routes/fiscalPages.ts"
+  ],
+  "src/routes/geralPages.ts": [
+   "src/pages/Alertas.tsx",
+   "src/pages/AssinaturaDigital.tsx",
+   "src/pages/BenchmarkingSetorial.tsx",
+   "src/pages/BloqueiosDuplicidade.tsx",
+   "src/pages/Categorias.tsx",
+   "src/pages/ComprovanteOCR.tsx",
+   "src/pages/Contratos.tsx",
+   "src/pages/Empresas.tsx",
+   "src/pages/InteligenciaOperacional.tsx",
+   "src/pages/MeuPerfil.tsx",
+   "src/pages/Movimentacoes.tsx",
+   "src/pages/OrcamentoEvento.tsx",
+   "src/pages/Orcamentos.tsx",
+   "src/pages/PixHub.tsx",
+   "src/pages/SimuladorAntecipacao.tsx",
+   "src/pages/StyleGuide.tsx",
+   "src/pages/Vendedores.tsx",
+   "src/pages/organizacoes/AceitarConvite.tsx",
+   "src/pages/organizacoes/Organizacoes.tsx"
+  ],
+  "src/routes/geralRoutes.tsx": [
+   "src/components/auth/ProtectedRoute.tsx",
+   "src/components/layout/MainLayout.tsx",
+   "src/routes/geralPages.ts"
+  ],
+  "src/routes/reformaTributariaPages.ts": [
+   "src/pages/ReformaTributaria.tsx",
+   "src/pages/tributario/CashbackSimulador.tsx",
+   "src/pages/tributario/ProjecaoReforma.tsx",
+   "src/pages/tributario/SplitPayment.tsx"
+  ],
+  "src/routes/reformaTributariaRoutes.tsx": [
+   "src/components/auth/ProtectedRoute.tsx",
+   "src/routes/reformaTributariaPages.ts"
+  ],
+  "src/routes/tributarioPages.ts": [
+   "src/pages/tributario/ArquiteturaModular.tsx",
+   "src/pages/tributario/AuditoriaCompliance.tsx",
+   "src/pages/tributario/AuditoriaOverlay.tsx",
+   "src/pages/tributario/CalculadoraTributaria.tsx",
+   "src/pages/tributario/CatalogosFiscais.tsx",
+   "src/pages/tributario/CertificadosDigitais.tsx",
+   "src/pages/tributario/ComparativoConformidade.tsx",
+   "src/pages/tributario/ComparativoRegimes.tsx",
+   "src/pages/tributario/ConciliacaoTributaria.tsx",
+   "src/pages/tributario/ConsultaRapidaFiscal.tsx",
+   "src/pages/tributario/DarfConsolidado.tsx",
+   "src/pages/tributario/DashboardTributario.tsx",
+   "src/pages/tributario/FechamentoMensal.tsx",
+   "src/pages/tributario/FolhaEncargos.tsx",
+   "src/pages/tributario/GlossarioTributario.tsx",
+   "src/pages/tributario/HistoricoFinanceiro.tsx",
+   "src/pages/tributario/IcmsStDifal.tsx",
+   "src/pages/tributario/ImportacaoXML.tsx",
+   "src/pages/tributario/IncentivosFiscais.tsx",
+   "src/pages/tributario/IpiIss.tsx",
+   "src/pages/tributario/IrpjCsllLucroReal.tsx",
+   "src/pages/tributario/Monofasico.tsx",
+   "src/pages/tributario/NfeRecebidas.tsx",
+   "src/pages/tributario/ObrigacoesAcessorias.tsx",
+   "src/pages/tributario/ObservabilidadeDigest.tsx",
+   "src/pages/tributario/OnboardingTributario.tsx",
+   "src/pages/tributario/OportunidadesElisao.tsx",
+   "src/pages/tributario/PerDcomp.tsx",
+   "src/pages/tributario/PfVinculada.tsx",
+   "src/pages/tributario/PisCofinsCreditos.tsx",
+   "src/pages/tributario/PreferenciasDigest.tsx",
+   "src/pages/tributario/RecomendacaoExecutiva.tsx",
+   "src/pages/tributario/RelatoriosContabeis.tsx",
+   "src/pages/tributario/RetencoesFonte.tsx",
+   "src/pages/tributario/SefazObservabilidade.tsx",
+   "src/pages/tributario/SimulacaoRegimes.tsx",
+   "src/pages/tributario/SpedExport.tsx"
+  ],
+  "src/routes/tributarioRoutes.tsx": [
+   "src/components/auth/ProtectedRoute.tsx",
+   "src/routes/tributarioPages.ts"
   ],
   "src/types/reforma-tributaria.ts": [
    "src/types/reforma-tributaria/index.ts"

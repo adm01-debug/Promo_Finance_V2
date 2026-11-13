@@ -21,7 +21,7 @@
    "caminho": "/",
    "componente": "Index",
    "arquivo": "src/pages/Index.tsx",
-   "definida_em": "src/App.tsx",
+   "definida_em": "src/routes/analiseRoutes.tsx",
    "redireciona": null,
    "hooks": [
     "useAcoesRecomendadas",
@@ -347,7 +347,7 @@
     "region",
     "user"
    ],
-   "arquivos_puxados": 200
+   "arquivos_puxados": 211
   },
   {
    "protegida": false,
@@ -420,7 +420,7 @@
    "caminho": "/admin/api",
    "componente": "ApiManagement",
    "arquivo": "src/pages/admin/ApiManagement.tsx",
-   "definida_em": "src/App.tsx",
+   "definida_em": "src/routes/adminRoutes.tsx",
    "redireciona": null,
    "hooks": [
     "useAlertas",
@@ -562,7 +562,7 @@
    "caminho": "/admin/auditoria-ia",
    "componente": "AuditoriaIA",
    "arquivo": "src/pages/admin/AuditoriaIA.tsx",
-   "definida_em": "src/App.tsx",
+   "definida_em": "src/routes/adminRoutes.tsx",
    "redireciona": null,
    "hooks": [
     "useAuditoriaIA",
@@ -633,7 +633,7 @@
    "caminho": "/admin/bloat-monitor",
    "componente": "AdminBloatMonitor",
    "arquivo": "src/pages/admin/AdminBloatMonitor.tsx",
-   "definida_em": "src/App.tsx",
+   "definida_em": "src/routes/adminRoutes.tsx",
    "redireciona": null,
    "hooks": [
     "useMemo",
@@ -670,7 +670,7 @@
    "caminho": "/admin/campos-customizados",
    "componente": "CustomFieldsAdmin",
    "arquivo": "src/pages/admin/CustomFieldsAdmin.tsx",
-   "definida_em": "src/App.tsx",
+   "definida_em": "src/routes/adminRoutes.tsx",
    "redireciona": null,
    "hooks": [
     "useAlertas",
@@ -811,7 +811,7 @@
    "caminho": "/admin/compliance",
    "componente": "ComplianceAuditoria",
    "arquivo": "src/pages/admin/ComplianceAuditoria.tsx",
-   "definida_em": "src/App.tsx",
+   "definida_em": "src/routes/adminRoutes.tsx",
    "redireciona": null,
    "hooks": [
     "useAlertas",
@@ -965,7 +965,7 @@
    "caminho": "/admin/edge-health",
    "componente": "AdminEdgeHealth",
    "arquivo": "src/pages/AdminEdgeHealth.tsx",
-   "definida_em": "src/App.tsx",
+   "definida_em": "src/routes/adminRoutes.tsx",
    "redireciona": null,
    "hooks": [
     "useAuth",
@@ -1008,7 +1008,7 @@
    "caminho": "/admin/erros-frontend",
    "componente": "AdminErrosFrontend",
    "arquivo": "src/pages/admin/AdminErrosFrontend.tsx",
-   "definida_em": "src/App.tsx",
+   "definida_em": "src/routes/adminRoutes.tsx",
    "redireciona": null,
    "hooks": [
     "useAlertas",
@@ -1157,7 +1157,7 @@
    "caminho": "/admin/filtros-compartilhados",
    "componente": "SharedFiltersAdmin",
    "arquivo": "src/pages/admin/SharedFiltersAdmin.tsx",
-   "definida_em": "src/App.tsx",
+   "definida_em": "src/routes/adminRoutes.tsx",
    "redireciona": null,
    "hooks": [
     "useAlertas",
@@ -1295,7 +1295,7 @@
    "caminho": "/admin/insights-ia",
    "componente": "InsightsIA",
    "arquivo": "src/pages/admin/InsightsIA.tsx",
-   "definida_em": "src/App.tsx",
+   "definida_em": "src/routes/adminRoutes.tsx",
    "redireciona": null,
    "hooks": [
     "useAlertas",
@@ -1516,7 +1516,7 @@
    "caminho": "/admin/insights-ia/anomalia/:id",
    "componente": "AnomaliaDetalhe",
    "arquivo": "src/pages/admin/AnomaliaDetalhe.tsx",
-   "definida_em": "src/App.tsx",
+   "definida_em": "src/routes/adminRoutes.tsx",
    "redireciona": null,
    "hooks": [
     "useAlertas",
@@ -1680,7 +1680,7 @@
    "caminho": "/admin/scim-audit",
    "componente": "ScimAudit",
    "arquivo": "src/pages/admin/ScimAudit.tsx",
-   "definida_em": "src/App.tsx",
+   "definida_em": "src/routes/adminRoutes.tsx",
    "redireciona": null,
    "hooks": [
     "useAuth",
@@ -1717,7 +1717,7 @@
    "papeis": [
     "dialog"
    ],
-   "arquivos_puxados": 24
+   "arquivos_puxados": 26
   },
   {
    "protegida": true,
@@ -1731,7 +1731,7 @@
    "caminho": "/admin/sre",
    "componente": "SRECommandCenter",
    "arquivo": "src/pages/admin/SRECommandCenter.tsx",
-   "definida_em": "src/App.tsx",
+   "definida_em": "src/routes/adminRoutes.tsx",
    "redireciona": null,
    "hooks": [
     "useAlertas",
@@ -1963,7 +1963,7 @@
    "caminho": "/admin/sso",
    "componente": "SSOAdmin",
    "arquivo": "src/pages/admin/SSOAdmin.tsx",
-   "definida_em": "src/App.tsx",
+   "definida_em": "src/routes/adminRoutes.tsx",
    "redireciona": null,
    "hooks": [
     "useAuth",
@@ -2088,7 +2088,7 @@
     "dialog",
     "progressbar"
    ],
-   "arquivos_puxados": 79
+   "arquivos_puxados": 89
   },
   {
    "protegida": true,
@@ -2102,7 +2102,7 @@
    "caminho": "/admin/sso-events",
    "componente": "SsoEvents",
    "arquivo": "src/pages/admin/SsoEvents.tsx",
-   "definida_em": "src/App.tsx",
+   "definida_em": "src/routes/adminRoutes.tsx",
    "redireciona": null,
    "hooks": [
     "useAlertas",
@@ -2242,7 +2242,7 @@
    "caminho": "/admin/sso-jit-events",
    "componente": "SSOJitEvents",
    "arquivo": "src/pages/admin/SSOJitEvents.tsx",
-   "definida_em": "src/App.tsx",
+   "definida_em": "src/routes/adminRoutes.tsx",
    "redireciona": null,
    "hooks": [
     "useAlertas",
@@ -2410,7 +2410,7 @@
    "caminho": "/admin/system-health",
    "componente": "AdminSystemHealth",
    "arquivo": "src/pages/AdminSystemHealth.tsx",
-   "definida_em": "src/App.tsx",
+   "definida_em": "src/routes/adminRoutes.tsx",
    "redireciona": null,
    "hooks": [
     "useAnomaliaAuditHistory",
@@ -2556,7 +2556,7 @@
    "caminho": "/admin/telemetria",
    "componente": "AdminTelemetria",
    "arquivo": "src/pages/AdminTelemetria.tsx",
-   "definida_em": "src/App.tsx",
+   "definida_em": "src/routes/adminRoutes.tsx",
    "redireciona": null,
    "hooks": [
     "useAlertas",
@@ -2703,7 +2703,7 @@
    "caminho": "/alertas",
    "componente": "Alertas",
    "arquivo": "src/pages/Alertas.tsx",
-   "definida_em": "src/App.tsx",
+   "definida_em": "src/routes/geralRoutes.tsx",
    "redireciona": null,
    "hooks": [
     "useAlertas",
@@ -2765,7 +2765,7 @@
    "caminho": "/aprovacoes",
    "componente": "Aprovacoes",
    "arquivo": "src/pages/Aprovacoes.tsx",
-   "definida_em": "src/App.tsx",
+   "definida_em": "src/routes/financeiroRoutes.tsx",
    "redireciona": null,
    "hooks": [
     "useAdicionarComentario",
@@ -2916,7 +2916,7 @@
     "region",
     "user"
    ],
-   "arquivos_puxados": 104
+   "arquivos_puxados": 105
   },
   {
    "protegida": true,
@@ -2930,7 +2930,7 @@
    "caminho": "/asaas",
    "componente": "Asaas",
    "arquivo": "src/pages/Asaas.tsx",
-   "definida_em": "src/App.tsx",
+   "definida_em": "src/routes/financeiroRoutes.tsx",
    "redireciona": null,
    "hooks": [
     "useAlertas",
@@ -2942,7 +2942,6 @@
     "useAsaas",
     "useAtualizarEmpresa",
     "useAuth",
-    "useBoletos",
     "useCallback",
     "useConciliacoes",
     "useContext",
@@ -2984,7 +2983,6 @@
     "useSwipeBack",
     "useSyncExternalStore",
     "useTheme",
-    "useToast",
     "useTransform",
     "useTransition",
     "useTransitionDefaults",
@@ -3005,7 +3003,6 @@
     "useAsaas",
     "useAtualizarEmpresa",
     "useAuth",
-    "useBoletos",
     "useConciliacoes",
     "useCriarAlerta",
     "useCriarEmpresa",
@@ -3030,7 +3027,6 @@
     "useSoundFeedback",
     "useSwipeBack",
     "useTheme",
-    "useToast",
     "useTransition",
     "useTransitionDefaults",
     "useUrlTab",
@@ -3048,10 +3044,8 @@
     "asaas_payments",
     "asaas_reconciliation_suggestions",
     "asaas_transfers",
-    "boletos",
     "centros_custo",
     "conciliacoes",
-    "contas_bancarias",
     "contas_pagar",
     "contas_receber",
     "empresas",
@@ -3073,7 +3067,6 @@
    ],
    "edges": [
     "asaas-proxy",
-    "bitrix24-sync",
     "copilot-global",
     "gerar-resumo-financeiro-diario"
    ],
@@ -3096,7 +3089,7 @@
     "region",
     "user"
    ],
-   "arquivos_puxados": 153
+   "arquivos_puxados": 158
   },
   {
    "protegida": true,
@@ -3110,7 +3103,7 @@
    "caminho": "/assinatura-digital",
    "componente": "AssinaturaDigitalPage",
    "arquivo": "src/pages/AssinaturaDigital.tsx",
-   "definida_em": "src/App.tsx",
+   "definida_em": "src/routes/geralRoutes.tsx",
    "redireciona": null,
    "hooks": [
     "useAlertas",
@@ -3243,7 +3236,7 @@
    "caminho": "/audit-logs",
    "componente": "AuditLogs",
    "arquivo": "src/pages/AuditLogs.tsx",
-   "definida_em": "src/App.tsx",
+   "definida_em": "src/routes/adminRoutes.tsx",
    "redireciona": null,
    "hooks": [
     "useAlertas",
@@ -3375,7 +3368,7 @@
     "status",
     "user"
    ],
-   "arquivos_puxados": 118
+   "arquivos_puxados": 122
   },
   {
    "protegida": true,
@@ -3389,7 +3382,7 @@
    "caminho": "/audit-sso-profile-sync",
    "componente": "AuditSsoProfileSync",
    "arquivo": "src/pages/admin/AuditSsoProfileSync.tsx",
-   "definida_em": "src/App.tsx",
+   "definida_em": "src/routes/adminRoutes.tsx",
    "redireciona": null,
    "hooks": [
     "useAlertas",
@@ -3645,7 +3638,7 @@
    "caminho": "/benchmarking",
    "componente": "BenchmarkingSetorial",
    "arquivo": "src/pages/BenchmarkingSetorial.tsx",
-   "definida_em": "src/App.tsx",
+   "definida_em": "src/routes/geralRoutes.tsx",
    "redireciona": null,
    "hooks": [
     "useAlertas",
@@ -3818,7 +3811,7 @@
    "caminho": "/bi",
    "componente": "BI",
    "arquivo": "src/pages/BI.tsx",
-   "definida_em": "src/App.tsx",
+   "definida_em": "src/routes/analiseRoutes.tsx",
    "redireciona": null,
    "hooks": [
     "useAlertas",
@@ -4003,7 +3996,7 @@
     "region",
     "user"
    ],
-   "arquivos_puxados": 123
+   "arquivos_puxados": 128
   },
   {
    "protegida": true,
@@ -4018,7 +4011,7 @@
    "caminho": "/bitrix24",
    "componente": "Bitrix24",
    "arquivo": "src/pages/Bitrix24.tsx",
-   "definida_em": "src/App.tsx",
+   "definida_em": "src/routes/analiseRoutes.tsx",
    "redireciona": null,
    "hooks": [
     "useBitrix24",
@@ -4068,7 +4061,7 @@
    "caminho": "/bling",
    "componente": "BlingPage",
    "arquivo": "src/pages/Bling.tsx",
-   "definida_em": "src/App.tsx",
+   "definida_em": "src/routes/financeiroRoutes.tsx",
    "redireciona": null,
    "hooks": [
     "useAlertas",
@@ -4258,7 +4251,7 @@
     "region",
     "user"
    ],
-   "arquivos_puxados": 115
+   "arquivos_puxados": 119
   },
   {
    "protegida": true,
@@ -4272,7 +4265,7 @@
    "caminho": "/boletos",
    "componente": "Boletos",
    "arquivo": "src/pages/Boletos.tsx",
-   "definida_em": "src/App.tsx",
+   "definida_em": "src/routes/financeiroRoutes.tsx",
    "redireciona": null,
    "hooks": [
     "useAlertas",
@@ -4402,7 +4395,7 @@
     "region",
     "user"
    ],
-   "arquivos_puxados": 111
+   "arquivos_puxados": 115
   },
   {
    "protegida": true,
@@ -4416,7 +4409,7 @@
    "caminho": "/categorias",
    "componente": "Categorias",
    "arquivo": "src/pages/Categorias.tsx",
-   "definida_em": "src/App.tsx",
+   "definida_em": "src/routes/geralRoutes.tsx",
    "redireciona": null,
    "hooks": [
     "useAlertas",
@@ -4563,7 +4556,7 @@
    "caminho": "/centro-custos",
    "componente": "CentroCustos",
    "arquivo": "src/pages/CentroCustos.tsx",
-   "definida_em": "src/App.tsx",
+   "definida_em": "src/routes/contabilRoutes.tsx",
    "redireciona": null,
    "hooks": [
     "useAlertas",
@@ -4699,7 +4692,7 @@
     "region",
     "user"
    ],
-   "arquivos_puxados": 101
+   "arquivos_puxados": 104
   },
   {
    "protegida": true,
@@ -4713,7 +4706,7 @@
    "caminho": "/clientes",
    "componente": "Clientes",
    "arquivo": "src/pages/Clientes.tsx",
-   "definida_em": "src/App.tsx",
+   "definida_em": "src/routes/financeiroRoutes.tsx",
    "redireciona": null,
    "hooks": [
     "useAlertas",
@@ -4921,7 +4914,7 @@
    "caminho": "/clientes/portal-tokens",
    "componente": "PortalTokensPage",
    "arquivo": "src/pages/clientes/PortalTokens.tsx",
-   "definida_em": "src/App.tsx",
+   "definida_em": "src/routes/financeiroRoutes.tsx",
    "redireciona": null,
    "hooks": [
     "useAlertas",
@@ -5102,7 +5095,7 @@
    "caminho": "/clientes/scoring",
    "componente": "ScoringClientesPage",
    "arquivo": "src/pages/clientes/ScoringClientes.tsx",
-   "definida_em": "src/App.tsx",
+   "definida_em": "src/routes/financeiroRoutes.tsx",
    "redireciona": null,
    "hooks": [
     "useAlertas",
@@ -5239,7 +5232,7 @@
    "caminho": "/cobrancas",
    "componente": "Cobrancas",
    "arquivo": "src/pages/Cobrancas.tsx",
-   "definida_em": "src/App.tsx",
+   "definida_em": "src/routes/financeiroRoutes.tsx",
    "redireciona": null,
    "hooks": [
     "useAcordosParcelamento",
@@ -5468,7 +5461,7 @@
     "system",
     "user"
    ],
-   "arquivos_puxados": 125
+   "arquivos_puxados": 130
   },
   {
    "protegida": true,
@@ -5482,7 +5475,7 @@
    "caminho": "/compras",
    "componente": "Compras",
    "arquivo": "src/pages/Compras.tsx",
-   "definida_em": "src/App.tsx",
+   "definida_em": "src/routes/financeiroRoutes.tsx",
    "redireciona": null,
    "hooks": [
     "useAlertas",
@@ -5621,7 +5614,7 @@
    "caminho": "/comprovante-ocr",
    "componente": "ComprovanteOCRPage",
    "arquivo": "src/pages/ComprovanteOCR.tsx",
-   "definida_em": "src/App.tsx",
+   "definida_em": "src/routes/geralRoutes.tsx",
    "redireciona": null,
    "hooks": [
     "useAlertas",
@@ -5756,7 +5749,7 @@
    "caminho": "/conciliacao",
    "componente": "Conciliacao",
    "arquivo": "src/pages/Conciliacao.tsx",
-   "definida_em": "src/App.tsx",
+   "definida_em": "src/routes/financeiroRoutes.tsx",
    "redireciona": null,
    "hooks": [
     "useAlertas",
@@ -6035,7 +6028,7 @@
     "status",
     "user"
    ],
-   "arquivos_puxados": 216
+   "arquivos_puxados": 226
   },
   {
    "protegida": true,
@@ -6050,7 +6043,7 @@
    "caminho": "/configuracoes",
    "componente": "Configuracoes",
    "arquivo": "src/pages/Configuracoes.tsx",
-   "definida_em": "src/App.tsx",
+   "definida_em": "src/routes/adminRoutes.tsx",
    "redireciona": null,
    "hooks": [
     "useAuth",
@@ -6141,7 +6134,7 @@
    "caminho": "/configuracoes/filtros-salvos",
    "componente": "FiltrosSalvos",
    "arquivo": "src/pages/configuracoes/FiltrosSalvos.tsx",
-   "definida_em": "src/App.tsx",
+   "definida_em": "src/routes/adminRoutes.tsx",
    "redireciona": null,
    "hooks": [
     "useAlertas",
@@ -6277,7 +6270,7 @@
    "caminho": "/configuracoes/notificacoes/historico",
    "componente": "HistoricoNotificacoes",
    "arquivo": "src/pages/configuracoes/HistoricoNotificacoes.tsx",
-   "definida_em": "src/App.tsx",
+   "definida_em": "src/routes/adminRoutes.tsx",
    "redireciona": null,
    "hooks": [
     "useAuth",
@@ -6321,7 +6314,7 @@
    "caminho": "/configuracoes/notificacoes/sino",
    "componente": "SinoNotificacoesFiltros",
    "arquivo": "src/pages/configuracoes/SinoNotificacoesFiltros.tsx",
-   "definida_em": "src/App.tsx",
+   "definida_em": "src/routes/adminRoutes.tsx",
    "redireciona": null,
    "hooks": [
     "useAuth",
@@ -6374,7 +6367,7 @@
    "caminho": "/configuracoes/preferencias",
    "componente": "MinhasPreferencias",
    "arquivo": "src/pages/configuracoes/MinhasPreferencias.tsx",
-   "definida_em": "src/App.tsx",
+   "definida_em": "src/routes/adminRoutes.tsx",
    "redireciona": null,
    "hooks": [
     "useAlertas",
@@ -6509,7 +6502,7 @@
    "caminho": "/configuracoes/privacidade",
    "componente": "CentroPrivacidadeLGPD",
    "arquivo": "src/pages/CentroPrivacidadeLGPD.tsx",
-   "definida_em": "src/App.tsx",
+   "definida_em": "src/routes/contabilRoutes.tsx",
    "redireciona": null,
    "hooks": [
     "useAuth",
@@ -6553,7 +6546,7 @@
    "caminho": "/contabilidade",
    "componente": "Contabilidade",
    "arquivo": "src/pages/Contabilidade.tsx",
-   "definida_em": "src/App.tsx",
+   "definida_em": "src/routes/contabilRoutes.tsx",
    "redireciona": null,
    "hooks": [
     "useAlertas",
@@ -6797,7 +6790,7 @@
     "status",
     "user"
    ],
-   "arquivos_puxados": 270
+   "arquivos_puxados": 291
   },
   {
    "protegida": false,
@@ -6844,7 +6837,7 @@
    "caminho": "/contas-bancarias",
    "componente": "ContasBancarias",
    "arquivo": "src/pages/ContasBancarias.tsx",
-   "definida_em": "src/App.tsx",
+   "definida_em": "src/routes/financeiroRoutes.tsx",
    "redireciona": null,
    "hooks": [
     "useAlertas",
@@ -7026,7 +7019,7 @@
     "region",
     "user"
    ],
-   "arquivos_puxados": 130
+   "arquivos_puxados": 132
   },
   {
    "protegida": true,
@@ -7040,7 +7033,7 @@
    "caminho": "/contas-pagar",
    "componente": "ContasPagar",
    "arquivo": "src/pages/ContasPagar.tsx",
-   "definida_em": "src/App.tsx",
+   "definida_em": "src/routes/financeiroRoutes.tsx",
    "redireciona": null,
    "hooks": [
     "useAlertas",
@@ -7295,7 +7288,7 @@
     "status",
     "user"
    ],
-   "arquivos_puxados": 185
+   "arquivos_puxados": 194
   },
   {
    "protegida": true,
@@ -7309,7 +7302,7 @@
    "caminho": "/contas-pagar/bloqueios",
    "componente": "BloqueiosDuplicidade",
    "arquivo": "src/pages/BloqueiosDuplicidade.tsx",
-   "definida_em": "src/App.tsx",
+   "definida_em": "src/routes/geralRoutes.tsx",
    "redireciona": null,
    "hooks": [
     "useAlertas",
@@ -7445,7 +7438,7 @@
    "caminho": "/contas-receber",
    "componente": "ContasReceber",
    "arquivo": "src/pages/ContasReceber.tsx",
-   "definida_em": "src/App.tsx",
+   "definida_em": "src/routes/financeiroRoutes.tsx",
    "redireciona": null,
    "hooks": [
     "useAlertas",
@@ -7701,7 +7694,7 @@
     "status",
     "user"
    ],
-   "arquivos_puxados": 203
+   "arquivos_puxados": 218
   },
   {
    "protegida": true,
@@ -7715,7 +7708,7 @@
    "caminho": "/contratos",
    "componente": "Contratos",
    "arquivo": "src/pages/Contratos.tsx",
-   "definida_em": "src/App.tsx",
+   "definida_em": "src/routes/geralRoutes.tsx",
    "redireciona": null,
    "hooks": [
     "useAlertas",
@@ -7855,7 +7848,7 @@
    "caminho": "/convite/:token",
    "componente": "AceitarConvitePage",
    "arquivo": "src/pages/organizacoes/AceitarConvite.tsx",
-   "definida_em": "src/App.tsx",
+   "definida_em": "src/routes/geralRoutes.tsx",
    "redireciona": null,
    "hooks": [
     "useAceitarConvite",
@@ -7922,7 +7915,7 @@
    "caminho": "/dashboard",
    "componente": "Index",
    "arquivo": "src/pages/Index.tsx",
-   "definida_em": "src/App.tsx",
+   "definida_em": "src/routes/analiseRoutes.tsx",
    "redireciona": null,
    "hooks": [
     "useAcoesRecomendadas",
@@ -8248,7 +8241,7 @@
     "region",
     "user"
    ],
-   "arquivos_puxados": 200
+   "arquivos_puxados": 211
   },
   {
    "protegida": true,
@@ -8262,7 +8255,7 @@
    "caminho": "/dashboard-empresa",
    "componente": "DashboardEmpresa",
    "arquivo": "src/pages/DashboardEmpresa.tsx",
-   "definida_em": "src/App.tsx",
+   "definida_em": "src/routes/analiseRoutes.tsx",
    "redireciona": null,
    "hooks": [
     "useAlertas",
@@ -8434,7 +8427,7 @@
    "caminho": "/dashboard-receber",
    "componente": "DashboardReceber",
    "arquivo": "src/pages/DashboardReceber.tsx",
-   "definida_em": "src/App.tsx",
+   "definida_em": "src/routes/contabilRoutes.tsx",
    "redireciona": null,
    "hooks": [
     "useAlertas",
@@ -8607,7 +8600,7 @@
     "status",
     "user"
    ],
-   "arquivos_puxados": 118
+   "arquivos_puxados": 121
   },
   {
    "protegida": true,
@@ -8621,7 +8614,7 @@
    "caminho": "/demonstrativos",
    "componente": "Demonstrativos",
    "arquivo": "src/pages/Demonstrativos.tsx",
-   "definida_em": "src/App.tsx",
+   "definida_em": "src/routes/contabilRoutes.tsx",
    "redireciona": null,
    "hooks": [
     "useAlertas",
@@ -8795,7 +8788,7 @@
     "region",
     "user"
    ],
-   "arquivos_puxados": 123
+   "arquivos_puxados": 125
   },
   {
    "protegida": false,
@@ -8823,7 +8816,7 @@
    "canais_realtime": [],
    "flags": [],
    "papeis": [],
-   "arquivos_puxados": 11
+   "arquivos_puxados": 13
   },
   {
    "protegida": true,
@@ -8838,7 +8831,7 @@
    "caminho": "/empresas",
    "componente": "Empresas",
    "arquivo": "src/pages/Empresas.tsx",
-   "definida_em": "src/App.tsx",
+   "definida_em": "src/routes/geralRoutes.tsx",
    "redireciona": null,
    "hooks": [
     "useAllEmpresas",
@@ -8945,7 +8938,7 @@
    "papeis": [
     "dialog"
    ],
-   "arquivos_puxados": 66
+   "arquivos_puxados": 74
   },
   {
    "protegida": true,
@@ -8959,7 +8952,7 @@
    "caminho": "/expert",
    "componente": "Expert",
    "arquivo": "src/pages/Expert.tsx",
-   "definida_em": "src/App.tsx",
+   "definida_em": "src/routes/analiseRoutes.tsx",
    "redireciona": null,
    "hooks": [
     "useAlertas",
@@ -9125,7 +9118,7 @@
    "caminho": "/financeiro",
    "componente": "Financeiro",
    "arquivo": "src/pages/Financeiro.tsx",
-   "definida_em": "src/App.tsx",
+   "definida_em": "src/routes/financeiroRoutes.tsx",
    "redireciona": null,
    "hooks": [
     "useAlertas",
@@ -9269,7 +9262,7 @@
     "region",
     "user"
    ],
-   "arquivos_puxados": 101
+   "arquivos_puxados": 103
   },
   {
    "protegida": true,
@@ -9283,7 +9276,7 @@
    "caminho": "/fluxo-caixa",
    "componente": "FluxoCaixa",
    "arquivo": "src/pages/FluxoCaixa.tsx",
-   "definida_em": "src/App.tsx",
+   "definida_em": "src/routes/financeiroRoutes.tsx",
    "redireciona": null,
    "hooks": [
     "useAlertas",
@@ -9430,7 +9423,7 @@
    "caminho": "/fornecedores",
    "componente": "Fornecedores",
    "arquivo": "src/pages/Fornecedores.tsx",
-   "definida_em": "src/App.tsx",
+   "definida_em": "src/routes/financeiroRoutes.tsx",
    "redireciona": null,
    "hooks": [
     "useAlertas",
@@ -9635,7 +9628,7 @@
    "caminho": "/integracoes",
    "componente": "Integracoes",
    "arquivo": "src/pages/Integracoes.tsx",
-   "definida_em": "src/App.tsx",
+   "definida_em": "src/routes/adminRoutes.tsx",
    "redireciona": null,
    "hooks": [
     "useAlertas",
@@ -9781,7 +9774,7 @@
    "caminho": "/inteligencia",
    "componente": "InteligenciaOperacionalPage",
    "arquivo": "src/pages/InteligenciaOperacional.tsx",
-   "definida_em": "src/App.tsx",
+   "definida_em": "src/routes/geralRoutes.tsx",
    "redireciona": null,
    "hooks": [
     "useAcoesRecomendadas",
@@ -9951,7 +9944,7 @@
    "caminho": "/metas",
    "componente": "MetasFinanceirasPage",
    "arquivo": "src/pages/MetasFinanceiras.tsx",
-   "definida_em": "src/App.tsx",
+   "definida_em": "src/routes/financeiroRoutes.tsx",
    "redireciona": null,
    "hooks": [
     "useAlertas",
@@ -10099,7 +10092,7 @@
    "caminho": "/meu-perfil",
    "componente": "MeuPerfil",
    "arquivo": "src/pages/MeuPerfil.tsx",
-   "definida_em": "src/App.tsx",
+   "definida_em": "src/routes/geralRoutes.tsx",
    "redireciona": null,
    "hooks": [
     "useAlertas",
@@ -10240,7 +10233,7 @@
    "caminho": "/movimentacoes",
    "componente": "Movimentacoes",
    "arquivo": "src/pages/Movimentacoes.tsx",
-   "definida_em": "src/App.tsx",
+   "definida_em": "src/routes/geralRoutes.tsx",
    "redireciona": null,
    "hooks": [
     "useAlertas",
@@ -10398,7 +10391,7 @@
    "caminho": "/notas-fiscais",
    "componente": "NotasFiscais",
    "arquivo": "src/pages/NotasFiscais.tsx",
-   "definida_em": "src/App.tsx",
+   "definida_em": "src/routes/fiscalRoutes.tsx",
    "redireciona": null,
    "hooks": [
     "useAlertas",
@@ -10560,7 +10553,7 @@
     "region",
     "user"
    ],
-   "arquivos_puxados": 148
+   "arquivos_puxados": 157
   },
   {
    "protegida": true,
@@ -10574,7 +10567,7 @@
    "caminho": "/orcamento-evento",
    "componente": "OrcamentoEvento",
    "arquivo": "src/pages/OrcamentoEvento.tsx",
-   "definida_em": "src/App.tsx",
+   "definida_em": "src/routes/geralRoutes.tsx",
    "redireciona": null,
    "hooks": [
     "useAlertas",
@@ -10709,7 +10702,7 @@
    "caminho": "/orcamentos",
    "componente": "Orcamentos",
    "arquivo": "src/pages/Orcamentos.tsx",
-   "definida_em": "src/App.tsx",
+   "definida_em": "src/routes/geralRoutes.tsx",
    "redireciona": null,
    "hooks": [
     "useAlertas",
@@ -10865,7 +10858,7 @@
    "caminho": "/organizacoes",
    "componente": "OrganizacoesPage",
    "arquivo": "src/pages/organizacoes/Organizacoes.tsx",
-   "definida_em": "src/App.tsx",
+   "definida_em": "src/routes/geralRoutes.tsx",
    "redireciona": null,
    "hooks": [
     "useAceitarConvite",
@@ -11024,7 +11017,7 @@
    "caminho": "/pagamentos-recorrentes",
    "componente": "PagamentosRecorrentes",
    "arquivo": "src/pages/PagamentosRecorrentes.tsx",
-   "definida_em": "src/App.tsx",
+   "definida_em": "src/routes/financeiroRoutes.tsx",
    "redireciona": null,
    "hooks": [
     "useAllCentrosCusto",
@@ -11101,7 +11094,7 @@
    "caminho": "/pix-hub",
    "componente": "PixHub",
    "arquivo": "src/pages/PixHub.tsx",
-   "definida_em": "src/App.tsx",
+   "definida_em": "src/routes/geralRoutes.tsx",
    "redireciona": null,
    "hooks": [
     "useAlertas",
@@ -11297,7 +11290,7 @@
     "region",
     "user"
    ],
-   "arquivos_puxados": 123
+   "arquivos_puxados": 127
   },
   {
    "protegida": true,
@@ -11311,7 +11304,7 @@
    "caminho": "/reforma-tributaria",
    "componente": "ReformaTributaria",
    "arquivo": "src/pages/ReformaTributaria.tsx",
-   "definida_em": "src/App.tsx",
+   "definida_em": "src/routes/reformaTributariaRoutes.tsx",
    "redireciona": null,
    "hooks": [
     "useAlertas",
@@ -11503,7 +11496,7 @@
     "status",
     "user"
    ],
-   "arquivos_puxados": 195
+   "arquivos_puxados": 214
   },
   {
    "protegida": true,
@@ -11517,7 +11510,7 @@
    "caminho": "/reforma-tributaria/:tab",
    "componente": "ReformaTributaria",
    "arquivo": "src/pages/ReformaTributaria.tsx",
-   "definida_em": "src/App.tsx",
+   "definida_em": "src/routes/reformaTributariaRoutes.tsx",
    "redireciona": null,
    "hooks": [
     "useAlertas",
@@ -11709,7 +11702,7 @@
     "status",
     "user"
    ],
-   "arquivos_puxados": 195
+   "arquivos_puxados": 214
   },
   {
    "protegida": true,
@@ -11724,7 +11717,7 @@
    "caminho": "/relatorios",
    "componente": "Relatorios",
    "arquivo": "src/pages/Relatorios.tsx",
-   "definida_em": "src/App.tsx",
+   "definida_em": "src/routes/analiseRoutes.tsx",
    "redireciona": null,
    "hooks": [
     "useAuth",
@@ -11834,7 +11827,7 @@
     "alert",
     "progressbar"
    ],
-   "arquivos_puxados": 89
+   "arquivos_puxados": 91
   },
   {
    "protegida": false,
@@ -11881,7 +11874,7 @@
    "caminho": "/seguranca",
    "componente": "Seguranca",
    "arquivo": "src/pages/Seguranca.tsx",
-   "definida_em": "src/App.tsx",
+   "definida_em": "src/routes/adminRoutes.tsx",
    "redireciona": null,
    "hooks": [
     "useAuth",
@@ -11959,7 +11952,7 @@
    "caminho": "/simulador-antecipacao",
    "componente": "SimuladorAntecipacaoPage",
    "arquivo": "src/pages/SimuladorAntecipacao.tsx",
-   "definida_em": "src/App.tsx",
+   "definida_em": "src/routes/geralRoutes.tsx",
    "redireciona": null,
    "hooks": [
     "useAlertas",
@@ -12127,7 +12120,7 @@
    "caminho": "/style-guide",
    "componente": "StyleGuide",
    "arquivo": "src/pages/StyleGuide.tsx",
-   "definida_em": "src/App.tsx",
+   "definida_em": "src/routes/geralRoutes.tsx",
    "redireciona": null,
    "hooks": [
     "useAlertas",
@@ -12260,7 +12253,7 @@
    "caminho": "/tesouraria",
    "componente": "Tesouraria",
    "arquivo": "src/pages/Tesouraria.tsx",
-   "definida_em": "src/App.tsx",
+   "definida_em": "src/routes/financeiroRoutes.tsx",
    "redireciona": null,
    "hooks": [
     "useAlertas",
@@ -12470,7 +12463,7 @@
    "caminho": "/tributario",
    "componente": "DashboardTributario",
    "arquivo": "src/pages/tributario/DashboardTributario.tsx",
-   "definida_em": "src/App.tsx",
+   "definida_em": "src/routes/tributarioRoutes.tsx",
    "redireciona": null,
    "hooks": [
     "useAlertas",
@@ -12688,7 +12681,7 @@
     "region",
     "user"
    ],
-   "arquivos_puxados": 212
+   "arquivos_puxados": 216
   },
   {
    "protegida": true,
@@ -12702,7 +12695,7 @@
    "caminho": "/tributario/arquitetura",
    "componente": "ArquiteturaModularPage",
    "arquivo": "src/pages/tributario/ArquiteturaModular.tsx",
-   "definida_em": "src/App.tsx",
+   "definida_em": "src/routes/tributarioRoutes.tsx",
    "redireciona": null,
    "hooks": [
     "useMemo",
@@ -12734,7 +12727,7 @@
    "caminho": "/tributario/auditoria",
    "componente": "AuditoriaCompliancePage",
    "arquivo": "src/pages/tributario/AuditoriaCompliance.tsx",
-   "definida_em": "src/App.tsx",
+   "definida_em": "src/routes/tributarioRoutes.tsx",
    "redireciona": null,
    "hooks": [
     "useAlertas",
@@ -12873,7 +12866,7 @@
    "caminho": "/tributario/auditoria-overlay",
    "componente": "AuditoriaOverlayPage",
    "arquivo": "src/pages/tributario/AuditoriaOverlay.tsx",
-   "definida_em": "src/App.tsx",
+   "definida_em": "src/routes/tributarioRoutes.tsx",
    "redireciona": null,
    "hooks": [
     "useAlertas",
@@ -13015,7 +13008,7 @@
     "region",
     "user"
    ],
-   "arquivos_puxados": 128
+   "arquivos_puxados": 129
   },
   {
    "protegida": true,
@@ -13029,7 +13022,7 @@
    "caminho": "/tributario/calculadora",
    "componente": "CalculadoraTributaria",
    "arquivo": "src/pages/tributario/CalculadoraTributaria.tsx",
-   "definida_em": "src/App.tsx",
+   "definida_em": "src/routes/tributarioRoutes.tsx",
    "redireciona": null,
    "hooks": [
     "useAllEmpresas",
@@ -13084,7 +13077,7 @@
    "caminho": "/tributario/cashback",
    "componente": "CashbackSimuladorPage",
    "arquivo": "src/pages/tributario/CashbackSimulador.tsx",
-   "definida_em": "src/App.tsx",
+   "definida_em": "src/routes/reformaTributariaRoutes.tsx",
    "redireciona": null,
    "hooks": [
     "useAlertas",
@@ -13219,7 +13212,7 @@
    "caminho": "/tributario/catalogos-fiscais",
    "componente": "CatalogosFiscaisPage",
    "arquivo": "src/pages/tributario/CatalogosFiscais.tsx",
-   "definida_em": "src/App.tsx",
+   "definida_em": "src/routes/tributarioRoutes.tsx",
    "redireciona": null,
    "hooks": [
     "useAlertas",
@@ -13353,7 +13346,7 @@
     "region",
     "user"
    ],
-   "arquivos_puxados": 125
+   "arquivos_puxados": 126
   },
   {
    "protegida": true,
@@ -13367,7 +13360,7 @@
    "caminho": "/tributario/certificados-digitais",
    "componente": "CertificadosDigitais",
    "arquivo": "src/pages/tributario/CertificadosDigitais.tsx",
-   "definida_em": "src/App.tsx",
+   "definida_em": "src/routes/tributarioRoutes.tsx",
    "redireciona": null,
    "hooks": [
     "useAlertas",
@@ -13509,7 +13502,7 @@
    "caminho": "/tributario/comparativo",
    "componente": "ComparativoRegimesPage",
    "arquivo": "src/pages/tributario/ComparativoRegimes.tsx",
-   "definida_em": "src/App.tsx",
+   "definida_em": "src/routes/tributarioRoutes.tsx",
    "redireciona": null,
    "hooks": [
     "useAlertas",
@@ -13649,7 +13642,7 @@
    "caminho": "/tributario/comparativo-conformidade",
    "componente": "ComparativoConformidadePage",
    "arquivo": "src/pages/tributario/ComparativoConformidade.tsx",
-   "definida_em": "src/App.tsx",
+   "definida_em": "src/routes/tributarioRoutes.tsx",
    "redireciona": null,
    "hooks": [
     "useAlertas",
@@ -13786,7 +13779,7 @@
    "caminho": "/tributario/conciliacao",
    "componente": "ConciliacaoTributariaPage",
    "arquivo": "src/pages/tributario/ConciliacaoTributaria.tsx",
-   "definida_em": "src/App.tsx",
+   "definida_em": "src/routes/tributarioRoutes.tsx",
    "redireciona": null,
    "hooks": [
     "useAlertas",
@@ -13926,7 +13919,7 @@
    "caminho": "/tributario/consulta-rapida",
    "componente": "ConsultaRapidaFiscal",
    "arquivo": "src/pages/tributario/ConsultaRapidaFiscal.tsx",
-   "definida_em": "src/App.tsx",
+   "definida_em": "src/routes/tributarioRoutes.tsx",
    "redireciona": null,
    "hooks": [
     "useAlertas",
@@ -14052,7 +14045,7 @@
     "region",
     "user"
    ],
-   "arquivos_puxados": 112
+   "arquivos_puxados": 113
   },
   {
    "protegida": true,
@@ -14066,7 +14059,7 @@
    "caminho": "/tributario/darf",
    "componente": "DarfConsolidadoPage",
    "arquivo": "src/pages/tributario/DarfConsolidado.tsx",
-   "definida_em": "src/App.tsx",
+   "definida_em": "src/routes/tributarioRoutes.tsx",
    "redireciona": null,
    "hooks": [
     "useAlertas",
@@ -14186,7 +14179,7 @@
     "region",
     "user"
    ],
-   "arquivos_puxados": 107
+   "arquivos_puxados": 109
   },
   {
    "protegida": true,
@@ -14200,7 +14193,7 @@
    "caminho": "/tributario/dashboard",
    "componente": "DashboardTributario",
    "arquivo": "src/pages/tributario/DashboardTributario.tsx",
-   "definida_em": "src/App.tsx",
+   "definida_em": "src/routes/tributarioRoutes.tsx",
    "redireciona": null,
    "hooks": [
     "useAlertas",
@@ -14418,7 +14411,7 @@
     "region",
     "user"
    ],
-   "arquivos_puxados": 212
+   "arquivos_puxados": 216
   },
   {
    "protegida": true,
@@ -14432,7 +14425,7 @@
    "caminho": "/tributario/fechamento-mensal",
    "componente": "FechamentoMensalPage",
    "arquivo": "src/pages/tributario/FechamentoMensal.tsx",
-   "definida_em": "src/App.tsx",
+   "definida_em": "src/routes/tributarioRoutes.tsx",
    "redireciona": null,
    "hooks": [
     "useAlertas",
@@ -14572,7 +14565,7 @@
    "caminho": "/tributario/folha-encargos",
    "componente": "FolhaEncargosPage",
    "arquivo": "src/pages/tributario/FolhaEncargos.tsx",
-   "definida_em": "src/App.tsx",
+   "definida_em": "src/routes/tributarioRoutes.tsx",
    "redireciona": null,
    "hooks": [
     "useAlertas",
@@ -14706,7 +14699,7 @@
    "caminho": "/tributario/glossario",
    "componente": "GlossarioTributario",
    "arquivo": "src/pages/tributario/GlossarioTributario.tsx",
-   "definida_em": "src/App.tsx",
+   "definida_em": "src/routes/tributarioRoutes.tsx",
    "redireciona": null,
    "hooks": [
     "useAlertas",
@@ -14840,7 +14833,7 @@
    "caminho": "/tributario/historico-financeiro",
    "componente": "HistoricoFinanceiroTributario",
    "arquivo": "src/pages/tributario/HistoricoFinanceiro.tsx",
-   "definida_em": "src/App.tsx",
+   "definida_em": "src/routes/tributarioRoutes.tsx",
    "redireciona": null,
    "hooks": [
     "useAllEmpresas",
@@ -14900,7 +14893,7 @@
    "caminho": "/tributario/icms-st",
    "componente": "IcmsStDifalPage",
    "arquivo": "src/pages/tributario/IcmsStDifal.tsx",
-   "definida_em": "src/App.tsx",
+   "definida_em": "src/routes/tributarioRoutes.tsx",
    "redireciona": null,
    "hooks": [
     "useAlertas",
@@ -15034,7 +15027,7 @@
     "region",
     "user"
    ],
-   "arquivos_puxados": 129
+   "arquivos_puxados": 135
   },
   {
    "protegida": true,
@@ -15048,7 +15041,7 @@
    "caminho": "/tributario/importacao-xml",
    "componente": "ImportacaoXMLPage",
    "arquivo": "src/pages/tributario/ImportacaoXML.tsx",
-   "definida_em": "src/App.tsx",
+   "definida_em": "src/routes/tributarioRoutes.tsx",
    "redireciona": null,
    "hooks": [
     "useAlertas",
@@ -15185,7 +15178,7 @@
    "caminho": "/tributario/incentivos",
    "componente": "IncentivosFiscaisPage",
    "arquivo": "src/pages/tributario/IncentivosFiscais.tsx",
-   "definida_em": "src/App.tsx",
+   "definida_em": "src/routes/tributarioRoutes.tsx",
    "redireciona": null,
    "hooks": [
     "useAlertas",
@@ -15308,7 +15301,7 @@
     "region",
     "user"
    ],
-   "arquivos_puxados": 103
+   "arquivos_puxados": 106
   },
   {
    "protegida": true,
@@ -15322,7 +15315,7 @@
    "caminho": "/tributario/ipi-iss",
    "componente": "IpiIssPage",
    "arquivo": "src/pages/tributario/IpiIss.tsx",
-   "definida_em": "src/App.tsx",
+   "definida_em": "src/routes/tributarioRoutes.tsx",
    "redireciona": null,
    "hooks": [
     "useAlertas",
@@ -15453,7 +15446,7 @@
     "region",
     "user"
    ],
-   "arquivos_puxados": 116
+   "arquivos_puxados": 124
   },
   {
    "protegida": true,
@@ -15467,7 +15460,7 @@
    "caminho": "/tributario/irpj-csll",
    "componente": "IrpjCsllLucroRealPage",
    "arquivo": "src/pages/tributario/IrpjCsllLucroReal.tsx",
-   "definida_em": "src/App.tsx",
+   "definida_em": "src/routes/tributarioRoutes.tsx",
    "redireciona": null,
    "hooks": [
     "useAlertas",
@@ -15587,7 +15580,7 @@
     "region",
     "user"
    ],
-   "arquivos_puxados": 105
+   "arquivos_puxados": 109
   },
   {
    "protegida": true,
@@ -15601,7 +15594,7 @@
    "caminho": "/tributario/monofasico",
    "componente": "MonofasicoPage",
    "arquivo": "src/pages/tributario/Monofasico.tsx",
-   "definida_em": "src/App.tsx",
+   "definida_em": "src/routes/tributarioRoutes.tsx",
    "redireciona": null,
    "hooks": [
     "useAlertas",
@@ -15735,7 +15728,7 @@
    "caminho": "/tributario/nfe-recebidas",
    "componente": "NfeRecebidasPage",
    "arquivo": "src/pages/tributario/NfeRecebidas.tsx",
-   "definida_em": "src/App.tsx",
+   "definida_em": "src/routes/tributarioRoutes.tsx",
    "redireciona": null,
    "hooks": [
     "useAuth",
@@ -15787,7 +15780,7 @@
    "canais_realtime": [],
    "flags": [],
    "papeis": [],
-   "arquivos_puxados": 27
+   "arquivos_puxados": 29
   },
   {
    "protegida": true,
@@ -15801,7 +15794,7 @@
    "caminho": "/tributario/obrigacoes",
    "componente": "ObrigacoesAcessoriasPage",
    "arquivo": "src/pages/tributario/ObrigacoesAcessorias.tsx",
-   "definida_em": "src/App.tsx",
+   "definida_em": "src/routes/tributarioRoutes.tsx",
    "redireciona": null,
    "hooks": [
     "useAlertas",
@@ -15948,7 +15941,7 @@
    "caminho": "/tributario/observabilidade-digest",
    "componente": "ObservabilidadeDigestPage",
    "arquivo": "src/pages/tributario/ObservabilidadeDigest.tsx",
-   "definida_em": "src/App.tsx",
+   "definida_em": "src/routes/tributarioRoutes.tsx",
    "redireciona": null,
    "hooks": [
     "useAlertas",
@@ -16085,7 +16078,7 @@
    "caminho": "/tributario/onboarding",
    "componente": "OnboardingTributario",
    "arquivo": "src/pages/tributario/OnboardingTributario.tsx",
-   "definida_em": "src/App.tsx",
+   "definida_em": "src/routes/tributarioRoutes.tsx",
    "redireciona": null,
    "hooks": [
     "useAllEmpresas",
@@ -16152,7 +16145,7 @@
    "caminho": "/tributario/oportunidades-elisao",
    "componente": "OportunidadesElisao",
    "arquivo": "src/pages/tributario/OportunidadesElisao.tsx",
-   "definida_em": "src/App.tsx",
+   "definida_em": "src/routes/tributarioRoutes.tsx",
    "redireciona": null,
    "hooks": [
     "useAllEmpresas",
@@ -16204,7 +16197,7 @@
     "alert",
     "progressbar"
    ],
-   "arquivos_puxados": 71
+   "arquivos_puxados": 74
   },
   {
    "protegida": true,
@@ -16218,7 +16211,7 @@
    "caminho": "/tributario/per-dcomp",
    "componente": "PerDcompPage",
    "arquivo": "src/pages/tributario/PerDcomp.tsx",
-   "definida_em": "src/App.tsx",
+   "definida_em": "src/routes/tributarioRoutes.tsx",
    "redireciona": null,
    "hooks": [
     "useAlertas",
@@ -16368,7 +16361,7 @@
    "caminho": "/tributario/pf-vinculada",
    "componente": "PfVinculada",
    "arquivo": "src/pages/tributario/PfVinculada.tsx",
-   "definida_em": "src/App.tsx",
+   "definida_em": "src/routes/tributarioRoutes.tsx",
    "redireciona": null,
    "hooks": [
     "useEffect",
@@ -16387,7 +16380,7 @@
    "papeis": [
     "alert"
    ],
-   "arquivos_puxados": 29
+   "arquivos_puxados": 32
   },
   {
    "protegida": true,
@@ -16401,7 +16394,7 @@
    "caminho": "/tributario/pis-cofins",
    "componente": "PisCofinsCreditosPage",
    "arquivo": "src/pages/tributario/PisCofinsCreditos.tsx",
-   "definida_em": "src/App.tsx",
+   "definida_em": "src/routes/tributarioRoutes.tsx",
    "redireciona": null,
    "hooks": [
     "useAlertas",
@@ -16521,7 +16514,7 @@
     "region",
     "user"
    ],
-   "arquivos_puxados": 106
+   "arquivos_puxados": 109
   },
   {
    "protegida": true,
@@ -16535,7 +16528,7 @@
    "caminho": "/tributario/preferencias-digest",
    "componente": "PreferenciasDigestPage",
    "arquivo": "src/pages/tributario/PreferenciasDigest.tsx",
-   "definida_em": "src/App.tsx",
+   "definida_em": "src/routes/tributarioRoutes.tsx",
    "redireciona": null,
    "hooks": [
     "useAlertas",
@@ -16672,7 +16665,7 @@
    "caminho": "/tributario/projecao-reforma",
    "componente": "ProjecaoReformaPage",
    "arquivo": "src/pages/tributario/ProjecaoReforma.tsx",
-   "definida_em": "src/App.tsx",
+   "definida_em": "src/routes/reformaTributariaRoutes.tsx",
    "redireciona": null,
    "hooks": [
     "useMemo",
@@ -16705,7 +16698,7 @@
    "caminho": "/tributario/recomendacao",
    "componente": "RecomendacaoExecutiva",
    "arquivo": "src/pages/tributario/RecomendacaoExecutiva.tsx",
-   "definida_em": "src/App.tsx",
+   "definida_em": "src/routes/tributarioRoutes.tsx",
    "redireciona": null,
    "hooks": [
     "useAllEmpresas",
@@ -16761,7 +16754,7 @@
    "papeis": [
     "alert"
    ],
-   "arquivos_puxados": 62
+   "arquivos_puxados": 65
   },
   {
    "protegida": true,
@@ -16775,7 +16768,7 @@
    "caminho": "/tributario/relatorios-contabeis",
    "componente": "RelatoriosContabeisPage",
    "arquivo": "src/pages/tributario/RelatoriosContabeis.tsx",
-   "definida_em": "src/App.tsx",
+   "definida_em": "src/routes/tributarioRoutes.tsx",
    "redireciona": null,
    "hooks": [
     "useAlertas",
@@ -16914,7 +16907,7 @@
     "region",
     "user"
    ],
-   "arquivos_puxados": 123
+   "arquivos_puxados": 127
   },
   {
    "protegida": true,
@@ -16928,7 +16921,7 @@
    "caminho": "/tributario/retencoes",
    "componente": "RetencoesFontePage",
    "arquivo": "src/pages/tributario/RetencoesFonte.tsx",
-   "definida_em": "src/App.tsx",
+   "definida_em": "src/routes/tributarioRoutes.tsx",
    "redireciona": null,
    "hooks": [
     "useAlertas",
@@ -17064,7 +17057,7 @@
     "region",
     "user"
    ],
-   "arquivos_puxados": 109
+   "arquivos_puxados": 111
   },
   {
    "protegida": true,
@@ -17078,7 +17071,7 @@
    "caminho": "/tributario/sefaz-observabilidade",
    "componente": "SefazObservabilidadePage",
    "arquivo": "src/pages/tributario/SefazObservabilidade.tsx",
-   "definida_em": "src/App.tsx",
+   "definida_em": "src/routes/tributarioRoutes.tsx",
    "redireciona": null,
    "hooks": [
     "useMemo",
@@ -17125,7 +17118,7 @@
    "caminho": "/tributario/simulacao-regimes",
    "componente": "SimulacaoRegimes",
    "arquivo": "src/pages/tributario/SimulacaoRegimes.tsx",
-   "definida_em": "src/App.tsx",
+   "definida_em": "src/routes/tributarioRoutes.tsx",
    "redireciona": null,
    "hooks": [
     "useAllEmpresas",
@@ -17199,7 +17192,7 @@
     "img",
     "status"
    ],
-   "arquivos_puxados": 90
+   "arquivos_puxados": 94
   },
   {
    "protegida": true,
@@ -17213,7 +17206,7 @@
    "caminho": "/tributario/sped",
    "componente": "SpedExportPage",
    "arquivo": "src/pages/tributario/SpedExport.tsx",
-   "definida_em": "src/App.tsx",
+   "definida_em": "src/routes/tributarioRoutes.tsx",
    "redireciona": null,
    "hooks": [
     "useAlertas",
@@ -17368,7 +17361,7 @@
    "caminho": "/tributario/split-payment",
    "componente": "SplitPaymentPage",
    "arquivo": "src/pages/tributario/SplitPayment.tsx",
-   "definida_em": "src/App.tsx",
+   "definida_em": "src/routes/reformaTributariaRoutes.tsx",
    "redireciona": null,
    "hooks": [
     "useAlertas",
@@ -17514,7 +17507,7 @@
    "caminho": "/usuarios",
    "componente": "Usuarios",
    "arquivo": "src/pages/Usuarios.tsx",
-   "definida_em": "src/App.tsx",
+   "definida_em": "src/routes/adminRoutes.tsx",
    "redireciona": null,
    "hooks": [
     "useAlertas",
@@ -17656,7 +17649,7 @@
    "caminho": "/vendedores",
    "componente": "Vendedores",
    "arquivo": "src/pages/Vendedores.tsx",
-   "definida_em": "src/App.tsx",
+   "definida_em": "src/routes/geralRoutes.tsx",
    "redireciona": null,
    "hooks": [
     "useAlertas",

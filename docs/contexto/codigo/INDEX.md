@@ -1,7 +1,7 @@
 # Contexto do projeto para agentes de IA
 
 GERADO AUTOMATICAMENTE por scripts/ai-context/gerar.mjs — não editar à mão; será sobrescrito.
-Publicado pelo workflow .github/workflows/contexto.yml em docs/contexto/codigo/ da branch gerada `contexto`. Índice único em docs/contexto/00-INDEX.md. Ler: git fetch origin contexto && git show origin/contexto:docs/contexto/00-INDEX.md Gere local com `node scripts/ai-context/gerar.mjs`. Commit-base: `2d3e3db134c5450d41a01a0b70650fd15716ebe4` (2026-11-13T09:36:31-03:00).
+Publicado pelo workflow .github/workflows/contexto.yml em docs/contexto/codigo/ da branch gerada `contexto`. Índice único em docs/contexto/00-INDEX.md. Ler: git fetch origin contexto && git show origin/contexto:docs/contexto/00-INDEX.md Gere local com `node scripts/ai-context/gerar.mjs`. Commit-base: `7cbba6f349c2d47b90b13ad8c3a3185d6fd63202` (2026-11-13T13:32:58Z).
 
 ## Como usar (leia antes de planejar ou executar qualquer tarefa)
 1. **Tela/rota/menu** → `rotas.json` (url/vista/menu → arquivo → hooks → tabelas → edges; `rotas_http_backend` para APIs) e `modulos.json` (módulo inteiro + dependências entre módulos).
@@ -14,7 +14,7 @@ Publicado pelo workflow .github/workflows/contexto.yml em docs/contexto/codigo/ 
 Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua tarefa; não carregue tudo.
 
 ## Stack
-- linguagens: TypeScript (2106), SQL (1081), Markdown (190), JavaScript (68), Python (45), JSON (37), Shell (26), YAML (25)
+- linguagens: TypeScript (2303), SQL (1081), Markdown (190), JavaScript (68), Python (45), JSON (37), Shell (26), YAML (25)
 - linguagem_principal: TypeScript
 - framework: React
 - backend_http: n/d
@@ -34,31 +34,31 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 ## Números
 | item | qtd |
 |---|---|
-| arquivos_total | 3623 |
-| arquivos_codigo | 2217 |
-| linhas_codigo | 428947 |
+| arquivos_total | 3820 |
+| arquivos_codigo | 2414 |
+| linhas_codigo | 433270 |
 | rotas | 130 |
 | rotas_http_backend | 25 |
 | vistas_por_id | 0 |
 | itens_menu | 119 |
-| modulos | 126 |
-| componentes | 908 |
-| hooks | 264 |
+| modulos | 127 |
+| componentes | 990 |
+| hooks | 273 |
 | edge_functions | 106 |
 | tabelas | 352 |
 | migrations | 1011 |
 | cron_jobs | 21 |
-| testes | 427 |
+| testes | 432 |
 | workflows | 19 |
 | scripts | 107 |
 | docs_md | 190 |
 
 ## Onde ficam as coisas
 - telas: src/pages (127)
-- componentes: src/components (730), src/pages (174), src/hooks (2)
-- hooks: src/hooks (228), src/components (27), src/pages (5)
-- servicos_logica: src/lib (254), scripts/graphify (7), src/integrations (3)
-- testes: co-localizado (__tests__) (241), outro (106), co-localizado (*.test) (40)
+- componentes: src/components (776), src/pages (210), src/hooks (2)
+- hooks: src/hooks (237), src/components (27), src/pages (5)
+- servicos_logica: src/lib (260), scripts/graphify (7), src/integrations (3)
+- testes: co-localizado (__tests__) (246), outro (106), co-localizado (*.test) (40)
 - edge_functions: supabase/functions
 - migrations: supabase/migrations
 - scripts: scripts/integrity (17), scripts/security (16), scripts/ci (13)
@@ -69,28 +69,29 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 ## Módulos (menu → domínio)
 | módulo | itens de menu | telas/rotas | arquivos | hooks locais | edges | tabelas |
 |---|---|---|---|---|---|---|
-| components/admin | 0 | 0 | 91 | 69 | 10 | 39 |
-| components/analytics | 0 | 0 | 5 | 10 | 0 | 12 |
-| components/aprovacoes | 0 | 0 | 5 | 15 | 0 | 7 |
-| components/asaas | 0 | 0 | 21 | 6 | 2 | 13 |
+| components/admin | 0 | 0 | 101 | 69 | 10 | 39 |
+| components/analytics | 0 | 0 | 6 | 10 | 0 | 12 |
+| components/aprovacoes | 0 | 0 | 6 | 15 | 0 | 7 |
+| components/asaas | 0 | 0 | 26 | 6 | 2 | 13 |
 | components/audit | 0 | 0 | 10 | 3 | 0 | 3 |
 | components/auth | 0 | 0 | 15 | 10 | 2 | 8 |
-| components/bi | 0 | 0 | 5 | 0 | 0 | 0 |
+| components/bi | 0 | 0 | 6 | 0 | 0 | 0 |
 | components/bitrix | 0 | 0 | 6 | 0 | 0 | 0 |
-| components/bling | 0 | 0 | 9 | 33 | 1 | 4 |
-| components/boletos | 0 | 0 | 5 | 3 | 2 | 8 |
+| components/bling | 0 | 0 | 13 | 33 | 1 | 4 |
+| components/boletos | 0 | 0 | 5 | 1 | 0 | 5 |
 | components/charts | 0 | 0 | 5 | 0 | 0 | 0 |
 | components/clientes | 0 | 0 | 5 | 24 | 1 | 15 |
-| components/cobranca | 0 | 0 | 15 | 31 | 3 | 21 |
+| components/cobranca | 0 | 0 | 17 | 31 | 3 | 21 |
 | components/compliance | 0 | 0 | 16 | 6 | 1 | 5 |
-| components/conciliacao | 0 | 0 | 25 | 36 | 3 | 32 |
+| components/conciliacao | 0 | 0 | 30 | 36 | 3 | 32 |
 | components/configuracoes | 0 | 0 | 11 | 6 | 2 | 10 |
-| components/contabilidade | 0 | 0 | 90 | 45 | 5 | 29 |
+| components/contabilidade | 0 | 0 | 106 | 45 | 5 | 29 |
 | components/contas-bancarias | 0 | 0 | 6 | 25 | 1 | 19 |
-| components/contas-pagar | 0 | 0 | 12 | 33 | 4 | 21 |
-| components/contas-receber | 0 | 0 | 26 | 32 | 3 | 25 |
-| components/dashboard | 0 | 0 | 23 | 93 | 8 | 40 |
-| components/demonstrativos | 0 | 0 | 7 | 22 | 1 | 16 |
+| components/contas-pagar | 0 | 0 | 19 | 33 | 4 | 21 |
+| components/contas-receber | 0 | 0 | 34 | 32 | 3 | 25 |
+| components/dashboard | 0 | 0 | 26 | 93 | 8 | 40 |
+| components/demonstrativos | 0 | 0 | 9 | 22 | 1 | 16 |
+| components/empresas | 0 | 0 | 9 | 11 | 0 | 12 |
 | components/expert | 0 | 0 | 7 | 8 | 2 | 12 |
 | components/fluxo-caixa | 0 | 0 | 11 | 0 | 1 | 2 |
 | components/fornecedores | 0 | 0 | 7 | 18 | 1 | 13 |
@@ -98,19 +99,20 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 | components/integracoes | 0 | 0 | 6 | 1 | 3 | 5 |
 | components/layout | 0 | 0 | 27 | 30 | 1 | 14 |
 | components/navigation | 0 | 0 | 5 | 3 | 0 | 2 |
-| components/nfe | 0 | 0 | 24 | 17 | 2 | 13 |
-| components/reforma-tributaria | 0 | 0 | 47 | 24 | 1 | 17 |
-| components/relatorios | 0 | 0 | 20 | 27 | 3 | 16 |
+| components/nfe | 0 | 0 | 31 | 17 | 2 | 13 |
+| components/reforma-tributaria | 0 | 0 | 66 | 24 | 1 | 17 |
+| components/relatorios | 0 | 0 | 22 | 27 | 3 | 16 |
 | components/security | 0 | 0 | 6 | 5 | 2 | 10 |
 | components/shared | 0 | 0 | 15 | 4 | 0 | 6 |
 | components/tesouraria | 0 | 0 | 5 | 16 | 1 | 14 |
-| components/tributario | 0 | 0 | 49 | 34 | 13 | 30 |
+| components/tributario | 0 | 0 | 50 | 34 | 13 | 30 |
 | components/ui | 0 | 0 | 102 | 17 | 0 | 3 |
-| hooks | 0 | 0 | 218 | 438 | 59 | 180 |
+| hooks | 0 | 0 | 227 | 438 | 59 | 180 |
 | hooks/bling | 0 | 0 | 11 | 33 | 1 | 4 |
 | hooks/financial | 0 | 0 | 10 | 18 | 1 | 13 |
 | lib | 0 | 0 | 67 | 10 | 3 | 9 |
 | lib/brazilian-validators | 0 | 0 | 9 | 0 | 0 | 0 |
+| lib/contabil | 0 | 0 | 5 | 0 | 0 | 0 |
 | lib/export-contabil | 0 | 0 | 8 | 0 | 0 | 0 |
 | lib/ofx-parser | 0 | 0 | 6 | 0 | 0 | 0 |
 | lib/pdf-generator | 0 | 0 | 5 | 0 | 0 | 0 |
@@ -119,16 +121,17 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 | lib/sefaz-simulator | 0 | 0 | 6 | 0 | 0 | 0 |
 | lib/sped-generator | 0 | 0 | 5 | 0 | 0 | 0 |
 | lib/transaction-matcher | 0 | 0 | 6 | 0 | 0 | 0 |
-| lib/tributario | 0 | 0 | 114 | 0 | 0 | 11 |
-| pages | 58 | 64 | 75 | 356 | 44 | 162 |
-| pages/admin | 4 | 15 | 22 | 118 | 14 | 55 |
+| lib/tributario | 0 | 0 | 118 | 0 | 0 | 11 |
+| pages | 58 | 64 | 109 | 356 | 44 | 162 |
+| pages/admin | 4 | 15 | 24 | 118 | 14 | 55 |
 | pages/auth | 0 | 1 | 2 | 3 | 1 | 2 |
 | pages/bloqueios-duplicidade | 0 | 0 | 7 | 1 | 0 | 4 |
 | pages/clientes | 2 | 2 | 5 | 48 | 2 | 23 |
 | pages/configuracoes | 1 | 4 | 14 | 32 | 1 | 19 |
 | pages/dev | 0 | 1 | 1 | 1 | 0 | 0 |
 | pages/organizacoes | 1 | 2 | 3 | 36 | 3 | 18 |
-| pages/tributario | 33 | 41 | 65 | 100 | 22 | 56 |
+| pages/tributario | 33 | 41 | 89 | 100 | 22 | 56 |
+| routes | 0 | 0 | 16 | 452 | 64 | 197 |
 | types/reforma-tributaria | 0 | 0 | 13 | 0 | 0 | 0 |
 
 ## Rotas (url → arquivo)
@@ -447,10 +450,10 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 - tabelas_com_drift_migration_vs_types: 135 — ex.: acoes_recomendadas, alertas_preditivos, alertas_tributarios
 - rpcs_sem_definicao: 3 — ex.: exec_sql, get_cron_run_history, pg_try_advisory_lock
 - componentes_orfaos: 44 — ex.: src/components/admin/FiscalHealthBadge.tsx, src/components/admin/telemetry/AcessosSuspeitosPanel.tsx, src/components/admin/telemetry/CatalogosTributariosHealthPanel.tsx
-- componentes_com_nome_duplicado: 31 — ex.: Accordion, AccordionItem, AnimatedCounter
+- componentes_com_nome_duplicado: 35 — ex.: Accordion, AccordionItem, Alertas
 - scripts_orfaos: 0
 - env_usadas_nao_declaradas: 4 — ex.: DEV, MODE, NODE_ENV
-- ciclos_de_import: 6
+- ciclos_de_import: 7
 - possiveis_segredos_no_codigo: 0
 
 ## Grafo de código (graphify)
@@ -470,8 +473,8 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 - e2e/auth/admin-rbac.e2e.ts (11)
 - .github/workflows/supabase-linter.yml (10)
 - scripts/generate-env-manifest.mjs (10)
+- src/App.tsx (10)
 - .github/workflows/functions-deploy.yml (9)
-- src/App.tsx (9)
 
 ## Workflows
 - `actionlint.yml` — Workflow Linter (actionlint + zizmor) (pull_request, push, workflow_dispatch)
@@ -622,6 +625,7 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 - CHANGELOG topo: [Unreleased]
 
 ## Últimos commits
+- 2026-11-13 `7cbba6f` lint zero + type-check estrito zerado (72→0) (#328)
 - 2026-11-13 `2d3e3db` fix: aceita origem weekly_trend em performance_alerts (destrava cron semanal) (#327)
 - 2026-11-13 `04e82b5` infra: quarentena E2E não roda em CI cancelada (!cancelled() em vez de always()) (#326)
 - 2026-11-12 `841109a` chore(docs): auditoria prod-readiness (#324)
@@ -636,7 +640,6 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 - 2026-11-12 `4589361` fix: normalizar_tipo_partida grava tipo em minúsculo (constraint exige debito/credito) (#312)
 - 2026-11-12 `0821a38` chore: fixa search_path das functions e remove cron órfão evaluate-delivery-alerts (#309)
 - 2026-11-12 `9308705` chore: manifesto de env reconhece MCP_SECRET e marca fallbacks como opcionais (#310)
-- 2026-11-12 `155df0d` feat: contabilização automática de movimentações pelas regras (#316)
 
 ## Arquivos deste diretório
 - `docs/contexto/codigo/rotas.json`

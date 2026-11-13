@@ -1,12 +1,12 @@
 {
  "aviso": "GERADO AUTOMATICAMENTE por scripts/ai-context/gerar.mjs — não editar à mão; será sobrescrito.",
  "format_version": 2,
- "total": 273,
+ "total": 279,
  "por_camada": {
   "config": 1,
   "contexts": 1,
   "integrations": 3,
-  "lib": 254,
+  "lib": 260,
   "python": 14
  },
  "arquivos": [
@@ -725,7 +725,7 @@
    "zod_schemas": 0,
    "flags": [],
    "papeis": [],
-   "usado_por": 308,
+   "usado_por": 309,
    "usado_por_modulos": [
     "components/admin",
     "components/analytics",
@@ -804,7 +804,7 @@
    "zod_schemas": 0,
    "flags": [],
    "papeis": [],
-   "usado_por": 34,
+   "usado_por": 35,
    "usado_por_modulos": [
     "components/centros-custo",
     "components/cobranca",
@@ -1493,9 +1493,10 @@
    "zod_schemas": 0,
    "flags": [],
    "papeis": [],
-   "usado_por": 2,
+   "usado_por": 4,
    "usado_por_modulos": [
-    "hooks"
+    "hooks",
+    "pages"
    ],
    "coberto_por_testes": 0,
    "orfao": false
@@ -1578,25 +1579,23 @@
    "orfao": false
   },
   {
-   "arquivo": "src/lib/contabil/indices.ts",
+   "arquivo": "src/lib/contabil/indices.helpers.ts",
    "camada": "lib",
    "exports": [
     "AGREGADOS_ZERO",
-    "AgregadosContabeis",
     "CATEGORIA_LABEL",
-    "CategoriaIndice",
-    "FaixaIndice",
-    "FormatoIndice",
-    "Indicador",
-    "calcularIndices",
+    "DEFS",
+    "EPS",
     "classificar",
     "formatarIndice",
+    "pct",
+    "razao",
     "round2",
     "safeDiv",
     "variacao"
    ],
    "export_default": null,
-   "linhas": 446,
+   "linhas": 369,
    "tabelas": [],
    "rpcs": [],
    "edges": [],
@@ -1605,12 +1604,65 @@
    "zod_schemas": 0,
    "flags": [],
    "papeis": [],
-   "usado_por": 5,
+   "usado_por": 4,
    "usado_por_modulos": [
     "components/contabilidade",
+    "lib/contabil"
+   ],
+   "coberto_por_testes": 3,
+   "orfao": false
+  },
+  {
+   "arquivo": "src/lib/contabil/indices.ts",
+   "camada": "lib",
+   "exports": [
+    "calcularIndices"
+   ],
+   "export_default": null,
+   "linhas": 29,
+   "tabelas": [],
+   "rpcs": [],
+   "edges": [],
+   "env": [],
+   "externos": [],
+   "zod_schemas": 0,
+   "flags": [],
+   "papeis": [],
+   "usado_por": 1,
+   "usado_por_modulos": [
     "hooks"
    ],
    "coberto_por_testes": 3,
+   "orfao": false
+  },
+  {
+   "arquivo": "src/lib/contabil/indices.types.ts",
+   "camada": "lib",
+   "exports": [
+    "AgregadosContabeis",
+    "CategoriaIndice",
+    "Def",
+    "FaixaIndice",
+    "FormatoIndice",
+    "Indicador"
+   ],
+   "export_default": null,
+   "linhas": 65,
+   "tabelas": [],
+   "rpcs": [],
+   "edges": [],
+   "env": [],
+   "externos": [],
+   "zod_schemas": 0,
+   "flags": [],
+   "papeis": [],
+   "usado_por": 7,
+   "usado_por_modulos": [
+    "components/contabilidade",
+    "hooks",
+    "lib/contabil"
+   ],
+   "coberto_por_testes": 2,
    "orfao": false
   },
   {
@@ -1790,7 +1842,7 @@
    "zod_schemas": 0,
    "flags": [],
    "papeis": [],
-   "usado_por": 4,
+   "usado_por": 5,
    "usado_por_modulos": [
     "hooks"
    ],
@@ -1843,7 +1895,7 @@
    "zod_schemas": 0,
    "flags": [],
    "papeis": [],
-   "usado_por": 7,
+   "usado_por": 8,
    "usado_por_modulos": [
     "components/contabilidade"
    ],
@@ -2309,7 +2361,7 @@
    "zod_schemas": 0,
    "flags": [],
    "papeis": [],
-   "usado_por": 281,
+   "usado_por": 299,
    "usado_por_modulos": [
     "components/admin",
     "components/analytics",
@@ -2703,13 +2755,14 @@
    "zod_schemas": 0,
    "flags": [],
    "papeis": [],
-   "usado_por": 13,
+   "usado_por": 17,
    "usado_por_modulos": [
     "components/conciliacao",
     "components/contas-receber",
     "hooks",
     "lib",
-    "lib/transaction-matcher"
+    "lib/transaction-matcher",
+    "pages"
    ],
    "coberto_por_testes": 6,
    "orfao": false
@@ -3480,7 +3533,7 @@
    "zod_schemas": 0,
    "flags": [],
    "papeis": [],
-   "usado_por": 11,
+   "usado_por": 12,
    "usado_por_modulos": [
     "components/nfe"
    ],
@@ -3687,7 +3740,7 @@
    "zod_schemas": 0,
    "flags": [],
    "papeis": [],
-   "usado_por": 6,
+   "usado_por": 8,
    "usado_por_modulos": [
     "components/nfe",
     "lib"
@@ -4321,7 +4374,7 @@
    "zod_schemas": 0,
    "flags": [],
    "papeis": [],
-   "usado_por": 4,
+   "usado_por": 5,
    "usado_por_modulos": [
     "components/admin",
     "hooks"
@@ -4377,7 +4430,7 @@
    "zod_schemas": 0,
    "flags": [],
    "papeis": [],
-   "usado_por": 4,
+   "usado_por": 5,
    "usado_por_modulos": [
     "components/admin",
     "lib/sso"
@@ -4406,7 +4459,7 @@
    "zod_schemas": 0,
    "flags": [],
    "papeis": [],
-   "usado_por": 1,
+   "usado_por": 2,
    "usado_por_modulos": [
     "components/admin"
    ],
@@ -4622,11 +4675,12 @@
    "zod_schemas": 0,
    "flags": [],
    "papeis": [],
-   "usado_por": 7,
+   "usado_por": 8,
    "usado_por_modulos": [
     "components/conciliacao",
     "hooks",
-    "lib"
+    "lib",
+    "pages"
    ],
    "coberto_por_testes": 6,
    "orfao": false
@@ -4827,7 +4881,7 @@
    "zod_schemas": 0,
    "flags": [],
    "papeis": [],
-   "usado_por": 1,
+   "usado_por": 2,
    "usado_por_modulos": [
     "lib/tributario"
    ],
@@ -4855,7 +4909,7 @@
    "zod_schemas": 0,
    "flags": [],
    "papeis": [],
-   "usado_por": 1,
+   "usado_por": 2,
    "usado_por_modulos": [
     "lib/tributario"
    ],
@@ -6031,7 +6085,7 @@
    "zod_schemas": 0,
    "flags": [],
    "papeis": [],
-   "usado_por": 1,
+   "usado_por": 2,
    "usado_por_modulos": [
     "lib/tributario"
    ],
@@ -6260,11 +6314,11 @@
    "zod_schemas": 0,
    "flags": [],
    "papeis": [],
-   "usado_por": 1,
+   "usado_por": 5,
    "usado_por_modulos": [
     "pages/tributario"
    ],
-   "coberto_por_testes": 1,
+   "coberto_por_testes": 2,
    "orfao": false
   },
   {
@@ -6462,7 +6516,7 @@
    "zod_schemas": 0,
    "flags": [],
    "papeis": [],
-   "usado_por": 11,
+   "usado_por": 12,
    "usado_por_modulos": [
     "components/tributario",
     "hooks",
@@ -6477,7 +6531,7 @@
    "camada": "lib",
    "exports": [],
    "export_default": null,
-   "linhas": 4,
+   "linhas": 5,
    "tabelas": [],
    "rpcs": [],
    "edges": [],
@@ -6486,7 +6540,7 @@
    "zod_schemas": 0,
    "flags": [],
    "papeis": [],
-   "usado_por": 1,
+   "usado_por": 4,
    "usado_por_modulos": [
     "pages/tributario"
    ],
@@ -6616,7 +6670,7 @@
    "orfao": false
   },
   {
-   "arquivo": "src/lib/tributario/ipi-iss/tabelas.ts",
+   "arquivo": "src/lib/tributario/ipi-iss/tabelas.helpers.ts",
    "camada": "lib",
    "exports": [
     "CSRF_COFINS",
@@ -6628,18 +6682,18 @@
     "IRRF_PISO_RECOLHIMENTO",
     "ISS_ALIQUOTA_MAXIMA",
     "ISS_ALIQUOTA_MINIMA",
-    "LISTA_LC116",
     "TIPI",
-    "buscarItemLc116",
+    "TIPI_INDEX",
     "buscarTipi",
     "buscarTipiCanonica",
     "definirTabelaTipiEfetiva",
     "normalizarNcm",
     "obterTabelaTipiEfetiva",
-    "resetarTabelaTipiEfetiva"
+    "resetarTabelaTipiEfetiva",
+    "tabelaTipiEfetiva"
    ],
    "export_default": null,
-   "linhas": 469,
+   "linhas": 198,
    "tabelas": [],
    "rpcs": [],
    "edges": [],
@@ -6648,12 +6702,36 @@
    "zod_schemas": 0,
    "flags": [],
    "papeis": [],
-   "usado_por": 8,
+   "usado_por": 7,
    "usado_por_modulos": [
     "hooks",
     "lib/tributario"
    ],
-   "coberto_por_testes": 3,
+   "coberto_por_testes": 2,
+   "orfao": false
+  },
+  {
+   "arquivo": "src/lib/tributario/ipi-iss/tabelas.ts",
+   "camada": "lib",
+   "exports": [
+    "LISTA_LC116",
+    "buscarItemLc116"
+   ],
+   "export_default": null,
+   "linhas": 280,
+   "tabelas": [],
+   "rpcs": [],
+   "edges": [],
+   "env": [],
+   "externos": [],
+   "zod_schemas": 0,
+   "flags": [],
+   "papeis": [],
+   "usado_por": 3,
+   "usado_por_modulos": [
+    "lib/tributario"
+   ],
+   "coberto_por_testes": 1,
    "orfao": false
   },
   {
@@ -6680,7 +6758,7 @@
    "zod_schemas": 0,
    "flags": [],
    "papeis": [],
-   "usado_por": 5,
+   "usado_por": 6,
    "usado_por_modulos": [
     "lib/tributario"
    ],
@@ -6752,7 +6830,7 @@
    "zod_schemas": 0,
    "flags": [],
    "papeis": [],
-   "usado_por": 1,
+   "usado_por": 4,
    "usado_por_modulos": [
     "pages/tributario"
    ],
@@ -6817,9 +6895,10 @@
    "zod_schemas": 0,
    "flags": [],
    "papeis": [],
-   "usado_por": 3,
+   "usado_por": 4,
    "usado_por_modulos": [
-    "lib/tributario"
+    "lib/tributario",
+    "pages/tributario"
    ],
    "coberto_por_testes": 0,
    "orfao": false
@@ -7010,6 +7089,89 @@
    "flags": [],
    "papeis": [],
    "usado_por": 5,
+   "usado_por_modulos": [
+    "lib/tributario"
+   ],
+   "coberto_por_testes": 0,
+   "orfao": false
+  },
+  {
+   "arquivo": "src/lib/tributario/motor/base.ts",
+   "camada": "lib",
+   "exports": [
+    "ANEXOS",
+    "AnexoSimples",
+    "FaturamentoMes",
+    "FolhaMes",
+    "LIMITE_PRESUMIDO",
+    "LIMITE_SIMPLES",
+    "ParametrosSimulacao",
+    "PeriodicidadeApuracao",
+    "RegimeTributario",
+    "ResultadoCenario",
+    "calcularFolha12m",
+    "calcularRBT12",
+    "determinarAnexoSimples",
+    "sanitizarParametros"
+   ],
+   "export_default": null,
+   "linhas": 350,
+   "tabelas": [],
+   "rpcs": [],
+   "edges": [],
+   "env": [],
+   "externos": [],
+   "zod_schemas": 0,
+   "flags": [],
+   "papeis": [],
+   "usado_por": 3,
+   "usado_por_modulos": [
+    "lib/tributario"
+   ],
+   "coberto_por_testes": 0,
+   "orfao": false
+  },
+  {
+   "arquivo": "src/lib/tributario/motor/lucro.ts",
+   "camada": "lib",
+   "exports": [
+    "simularPresumido",
+    "simularReal"
+   ],
+   "export_default": null,
+   "linhas": 263,
+   "tabelas": [],
+   "rpcs": [],
+   "edges": [],
+   "env": [],
+   "externos": [],
+   "zod_schemas": 0,
+   "flags": [],
+   "papeis": [],
+   "usado_por": 1,
+   "usado_por_modulos": [
+    "lib/tributario"
+   ],
+   "coberto_por_testes": 0,
+   "orfao": false
+  },
+  {
+   "arquivo": "src/lib/tributario/motor/simples.ts",
+   "camada": "lib",
+   "exports": [
+    "simularSimples"
+   ],
+   "export_default": null,
+   "linhas": 214,
+   "tabelas": [],
+   "rpcs": [],
+   "edges": [],
+   "env": [],
+   "externos": [],
+   "zod_schemas": 0,
+   "flags": [],
+   "papeis": [],
+   "usado_por": 1,
    "usado_por_modulos": [
     "lib/tributario"
    ],
@@ -7441,7 +7603,7 @@
    "zod_schemas": 0,
    "flags": [],
    "papeis": [],
-   "usado_por": 1,
+   "usado_por": 4,
    "usado_por_modulos": [
     "lib/tributario"
    ],
@@ -7527,7 +7689,7 @@
    "zod_schemas": 0,
    "flags": [],
    "papeis": [],
-   "usado_por": 1,
+   "usado_por": 3,
    "usado_por_modulos": [
     "pages/tributario"
    ],
@@ -7857,27 +8019,9 @@
   {
    "arquivo": "src/lib/tributario/shared-logic.ts",
    "camada": "lib",
-   "exports": [
-    "ANEXOS",
-    "AnexoSimples",
-    "FaturamentoMes",
-    "FolhaMes",
-    "LIMITE_PRESUMIDO",
-    "LIMITE_SIMPLES",
-    "ParametrosSimulacao",
-    "PeriodicidadeApuracao",
-    "RegimeTributario",
-    "ResultadoCenario",
-    "calcularFolha12m",
-    "calcularRBT12",
-    "determinarAnexoSimples",
-    "sanitizarParametros",
-    "simularPresumido",
-    "simularReal",
-    "simularSimples"
-   ],
+   "exports": [],
    "export_default": null,
-   "linhas": 809,
+   "linhas": 12,
    "tabelas": [],
    "rpcs": [],
    "edges": [],
@@ -8114,7 +8258,7 @@
    "zod_schemas": 0,
    "flags": [],
    "papeis": [],
-   "usado_por": 299,
+   "usado_por": 310,
    "usado_por_modulos": [
     "components/admin",
     "components/alertas",

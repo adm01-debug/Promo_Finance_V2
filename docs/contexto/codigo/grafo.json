@@ -1,56 +1,56 @@
 {
  "aviso": "GERADO AUTOMATICAMENTE por scripts/ai-context/gerar.mjs — não editar à mão; será sobrescrito.",
  "format_version": 2,
- "nos": 1796,
- "arestas": 7880,
+ "nos": 1988,
+ "arestas": 8414,
  "hubs": [
   {
    "arquivo": "src/components/ui/button.tsx",
-   "importado_por": 505
+   "importado_por": 529
   },
   {
    "arquivo": "src/components/ui/card.tsx",
-   "importado_por": 451
+   "importado_por": 481
   },
   {
    "arquivo": "src/components/ui/badge.tsx",
-   "importado_por": 429
+   "importado_por": 447
   },
   {
    "arquivo": "src/integrations/supabase/client.ts",
-   "importado_por": 310
+   "importado_por": 311
   },
   {
    "arquivo": "src/lib/utils.ts",
-   "importado_por": 300
+   "importado_por": 311
   },
   {
    "arquivo": "src/lib/formatters.ts",
-   "importado_por": 282
+   "importado_por": 300
   },
   {
    "arquivo": "src/components/ui/input.tsx",
-   "importado_por": 210
+   "importado_por": 218
   },
   {
    "arquivo": "src/components/ui/select.tsx",
-   "importado_por": 161
+   "importado_por": 168
   },
   {
    "arquivo": "src/components/ui/label.tsx",
-   "importado_por": 159
+   "importado_por": 165
   },
   {
    "arquivo": "src/components/ui/dialog.tsx",
-   "importado_por": 134
+   "importado_por": 137
+  },
+  {
+   "arquivo": "src/components/ui/table.tsx",
+   "importado_por": 129
   },
   {
    "arquivo": "src/components/ui/skeleton.tsx",
    "importado_por": 125
-  },
-  {
-   "arquivo": "src/components/ui/table.tsx",
-   "importado_por": 121
   },
   {
    "arquivo": "supabase/functions/_shared/edge-observability.ts",
@@ -65,24 +65,24 @@
    "importado_por": 100
   },
   {
+   "arquivo": "src/components/layout/MainLayout.tsx",
+   "importado_por": 94
+  },
+  {
    "arquivo": "src/lib/logger.ts",
    "importado_por": 91
   },
   {
-   "arquivo": "src/components/layout/MainLayout.tsx",
+   "arquivo": "src/components/ui/tabs.tsx",
    "importado_por": 90
   },
   {
-   "arquivo": "src/components/ui/tabs.tsx",
-   "importado_por": 88
+   "arquivo": "src/components/ui/alert.tsx",
+   "importado_por": 81
   },
   {
    "arquivo": "src/components/ui/progress.tsx",
-   "importado_por": 79
-  },
-  {
-   "arquivo": "src/components/ui/alert.tsx",
-   "importado_por": 78
+   "importado_por": 80
   },
   {
    "arquivo": "supabase/functions/_shared/observability.ts",
@@ -94,11 +94,15 @@
   },
   {
    "arquivo": "src/components/ui/switch.tsx",
-   "importado_por": 68
+   "importado_por": 70
   },
   {
    "arquivo": "src/components/ui/tooltip.tsx",
-   "importado_por": 56
+   "importado_por": 59
+  },
+  {
+   "arquivo": "src/hooks/useFinancialData.ts",
+   "importado_por": 52
   },
   {
    "arquivo": "supabase/functions/_shared/auth-guard.ts",
@@ -113,16 +117,12 @@
    "importado_por": 49
   },
   {
-   "arquivo": "src/hooks/useFinancialData.ts",
-   "importado_por": 49
-  },
-  {
    "arquivo": "supabase/functions/_shared/validation.ts",
    "importado_por": 48
   },
   {
    "arquivo": "src/components/ui/textarea.tsx",
-   "importado_por": 45
+   "importado_por": 47
   },
   {
    "arquivo": "src/components/ui/dropdown-menu.tsx",
@@ -134,7 +134,7 @@
   },
   {
    "arquivo": "src/integrations/supabase/types.ts",
-   "importado_por": 34
+   "importado_por": 35
   },
   {
    "arquivo": "src/lib/supabase-dynamic.ts",
@@ -146,19 +146,19 @@
   },
   {
    "arquivo": "src/components/ui/checkbox.tsx",
-   "importado_por": 29
+   "importado_por": 30
   },
   {
    "arquivo": "supabase/functions/_shared/zod.ts",
    "importado_por": 28
   },
   {
-   "arquivo": "supabase/functions/_shared/contract-validator.ts",
-   "importado_por": 25
+   "arquivo": "src/hooks/useEmpresas.ts",
+   "importado_por": 26
   },
   {
-   "arquivo": "src/hooks/useEmpresas.ts",
-   "importado_por": 24
+   "arquivo": "supabase/functions/_shared/contract-validator.ts",
+   "importado_por": 25
   },
   {
    "arquivo": "src/hooks/use-toast.ts",
@@ -166,13 +166,16 @@
   }
  ],
  "ciclos": {
-  "total": 6,
+  "total": 7,
   "maiores": [
    {
-    "tamanho": 4,
+    "tamanho": 7,
     "arquivos": [
      "src/lib/tributario/apuracao.ts",
      "src/lib/tributario/encargos-folha.ts",
+     "src/lib/tributario/motor/base.ts",
+     "src/lib/tributario/motor/lucro.ts",
+     "src/lib/tributario/motor/simples.ts",
      "src/lib/tributario/parametros.ts",
      "src/lib/tributario/shared-logic.ts"
     ]
@@ -210,6 +213,13 @@
     "arquivos": [
      "src/integrations/supabase/client.ts",
      "src/lib/telemetry.ts"
+    ]
+   },
+   {
+    "tamanho": 2,
+    "arquivos": [
+     "src/pages/Contabilidade.helpers.ts",
+     "src/pages/Contabilidade.types.ts"
     ]
    }
   ]
@@ -296,7 +306,7 @@
   {
    "modulo": "pages",
    "depende_de": 72,
-   "importado_por": 2
+   "importado_por": 3
   },
   {
    "modulo": "integrations/supabase",
@@ -306,12 +316,17 @@
   {
    "modulo": "components/layout",
    "depende_de": 14,
-   "importado_por": 6
+   "importado_por": 7
   },
   {
    "modulo": "components/admin",
    "depende_de": 9,
    "importado_por": 7
+  },
+  {
+   "modulo": "pages/admin",
+   "depende_de": 13,
+   "importado_por": 1
   },
   {
    "modulo": "components/contas-pagar",
@@ -324,11 +339,6 @@
    "importado_por": 2
   },
   {
-   "modulo": "pages/admin",
-   "depende_de": 13,
-   "importado_por": 0
-  },
-  {
    "modulo": "components/shared",
    "depende_de": 3,
    "importado_por": 9
@@ -337,6 +347,11 @@
    "modulo": "components/tributario",
    "depende_de": 9,
    "importado_por": 3
+  },
+  {
+   "modulo": "pages/tributario",
+   "depende_de": 11,
+   "importado_por": 1
   },
   {
    "modulo": "components/conciliacao",
@@ -354,24 +369,19 @@
    "importado_por": 11
   },
   {
-   "modulo": "pages/tributario",
-   "depende_de": 11,
-   "importado_por": 0
-  },
-  {
    "modulo": "components/auth",
    "depende_de": 7,
-   "importado_por": 2
+   "importado_por": 3
+  },
+  {
+   "modulo": "components/reforma-tributaria",
+   "depende_de": 7,
+   "importado_por": 3
   },
   {
    "modulo": "components/dashboard",
    "depende_de": 8,
    "importado_por": 1
-  },
-  {
-   "modulo": "components/reforma-tributaria",
-   "depende_de": 6,
-   "importado_por": 3
   },
   {
    "modulo": "components/empresas",
