@@ -1,0 +1,13 @@
+-- Publica a tabela de performance_alerts no supabase_realtime.
+--
+-- A tabela performance_alerts foi criada fora do fluxo de migrations
+-- (SQL editor / Lovable) e publicada em PROD manualmente, mas nunca
+-- registrada em uma migration. O guard-rail "Verificar publicação
+-- supabase_realtime em PROD" do prod-migrate.yml exige paridade EXATA
+-- entre o esperado (derivado das migrations) e o real em PROD; sem esta
+-- migration, performance_alerts apareceria como diferença (extra) e o
+-- workflow falharia.
+--
+-- O painel PerformanceAlertsPanel consome essa publicação via realtime,
+-- então remover a tabela da publicação não é opção.
+ALTER PUBLICATION supabase_realtime ADD TABLE public.performance_alerts;
