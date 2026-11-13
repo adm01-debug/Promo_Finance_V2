@@ -1,16 +1,18 @@
 import { describe, it, expect, vi } from 'vitest';
-import { render, screen, fireEvent } from '@testing-library/react';
+import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { AplicarDescontoDialog } from '../AplicarDescontoDialog';
+
+const { mockUpdate } = vi.hoisted(() => ({
+  mockUpdate: vi.fn(() => ({
+    eq: vi.fn(() => Promise.resolve({ error: null })),
+  })),
+}));
 
 // Mock supabase
 vi.mock('@/integrations/supabase/client', () => ({
   supabase: {
-    from: vi.fn(() => ({
-      update: vi.fn(() => ({
-        eq: vi.fn(() => Promise.resolve({ error: null })),
-      })),
-    })),
+    from: vi.fn(() => ({ update: mockUpdate })),
   },
 }));
 
@@ -129,6 +131,18 @@ describe('AplicarDescontoDialog', () => {
       fireEvent.change(input, { target: { value: '1500' } });
       const applyBtn = screen.getByRole('button', { name: /Aplicar Desconto/i });
       expect(applyBtn).toBeDisabled();
+    });
+
+    it('grava valor_final = valor − desconto, igual ao exibido', async () => {
+      render(<AplicarDescontoDialog conta={conta} open={true} onOpenChange={vi.fn()} />, {
+        wrapper,
+      });
+      fireEvent.change(screen.getByRole('spinbutton'), { target: { value: '50' } });
+      fireEvent.click(screen.getByRole('button', { name: /Aplicar Desconto/i }));
+      await waitFor(() => expect(mockUpdate).toHaveBeenCalled());
+      expect(mockUpdate).toHaveBeenCalledWith(
+        expect.objectContaining({ valor_desconto: 50, valor_final: 950 })
+      );
     });
 
     it('fecha ao clicar cancelar', () => {

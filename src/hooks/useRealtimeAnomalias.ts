@@ -178,7 +178,7 @@ export function useRealtimeAnomalias() {
               tipo_anomalia: a.tipo_anomalia ?? null,
               titulo,
               descricao: descricaoToast ?? null,
-              // TODO(2026-08-14): centro_custo_id removido — não existe em anomalia_toast_eventos (types.ts)
+              centro_custo_id: a.centro_custo_id ?? null,
               centro_custo_nome: centroCustoNome,
               acoes_disponiveis: acoesDisponiveis,
               duracao_segundos: duracaoSeg,
