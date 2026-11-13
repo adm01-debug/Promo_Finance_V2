@@ -147,13 +147,10 @@ export function useApuracoesTributarias(empresaId?: string) {
     mutationFn: async ({
       id,
       ...dados
-    }: Omit<
-      Partial<ApuracaoTributaria>,
-      'id' | 'data_transmissao' | 'protocolo_transmissao' | 'created_by'
-    > & { id: string }) => {
+    }: Omit<Partial<ApuracaoTributaria>, 'id' | 'created_by'> & { id: string }) => {
+      // created_by é preenchido pelo DEFAULT auth.uid() no insert e não muda na edição.
       const { data, error } = await supabase
         .from('apuracoes_tributarias')
-        // TODO(2026-08-14): data_transmissao/protocolo_transmissao/created_by excluídos — não existem em apuracoes_tributarias (types.ts)
         .update(dados)
         .eq('id', id)
         .select()

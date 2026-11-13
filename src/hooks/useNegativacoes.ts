@@ -31,7 +31,7 @@ export function useCreateNegativacao() {
     }) => {
       const { data, error } = await supabase
         .from('negativacoes')
-        // TODO(2026-08-14): observacoes/created_by removidos — não existem em negativacoes (types.ts)
+        // created_by fica com o DEFAULT auth.uid() da coluna.
         .insert({
           bureau: input.bureau,
           valor: input.valor,
@@ -39,6 +39,7 @@ export function useCreateNegativacao() {
           conta_receber_id: input.conta_receber_id,
           empresa_id: input.empresa_id,
           motivo: input.motivo,
+          observacoes: input.observacoes,
           status: 'pendente',
         })
         .select()
@@ -70,12 +71,13 @@ export function useUpdateNegativacao() {
     }) => {
       const { error } = await supabase
         .from('negativacoes')
-        // TODO(2026-08-14): data_inclusao→data_negativacao e data_exclusao→data_baixa (renomeadas); observacoes removido
+        // data_inclusao→data_negativacao e data_exclusao→data_baixa (nomes das colunas)
         .update({
           status: data.status,
           protocolo: data.protocolo,
           data_negativacao: data.data_inclusao,
           data_baixa: data.data_exclusao,
+          observacoes: data.observacoes,
         })
         .eq('id', id);
       if (error) throw error;
