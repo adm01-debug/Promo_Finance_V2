@@ -137,6 +137,7 @@ export function useOportunidadesElisao({ empresaId, contexto }: UseElisaoOptions
 
       const linhas = aplicaveis.map((o) => ({
         empresa_id: empresaId,
+        titulo: o.nome,
         estrategia: o.estrategia,
         categoria: o.nome,
         aplicavel: o.aplicavel,
