@@ -20,7 +20,7 @@ import { toast } from 'sonner';
 import { BoletoBarcode } from './BoletoBarcode';
 import { BoletoHistorico } from './BoletoHistorico';
 import { Badge } from '@/components/ui/badge';
-import type { Boleto as BoletoDb } from '@/hooks/useBoletos';
+import type { Boleto as BoletoDb } from '@/hooks/useBoletos.types';
 
 interface EventoPagamento {
   tipo?: string;

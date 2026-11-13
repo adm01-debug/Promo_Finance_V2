@@ -6,6 +6,7 @@
  * e Lei 8.212/1991, art. 31 (retenção de 11% de INSS).
  */
 
+import { buscarItemLc116 } from './tabelas';
 import {
   CSRF_COFINS,
   CSRF_CSLL,
@@ -15,8 +16,7 @@ import {
   IRRF_PISO_RECOLHIMENTO,
   ISS_ALIQUOTA_MAXIMA,
   ISS_ALIQUOTA_MINIMA,
-  buscarItemLc116,
-} from './tabelas';
+} from './tabelas.helpers';
 import type { InputIss, LinhaMemoria, LocalIncidencia, ResultadoIss } from './types';
 
 const round2 = (v: number) => Math.round((v + Number.EPSILON) * 100) / 100;

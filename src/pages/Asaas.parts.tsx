@@ -36,7 +36,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/u
 import { BoletoPreviewPanel } from '@/components/boletos/BoletoPreviewPanel';
 import { statusConfig } from '@/components/asaas/tabs/constants';
 import { formatCurrency } from '@/lib/currency';
-import type { AsaasPayment } from '@/hooks/useAsaas';
+import type { AsaasPayment } from '@/hooks/useAsaas.types';
 import type { AsaasStats, AuditTrailLog, DetailStatEntry, SaldoAsaas } from './Asaas.types';
 
 export { QueueHistoryDialog } from './AsaasQueueHistoryDialog';

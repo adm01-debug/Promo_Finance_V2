@@ -3,16 +3,7 @@
 
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import {
-  Plus,
-  Edit,
-  Trash2,
-  Gift,
-  TrendingUp,
-  DollarSign,
-  Percent,
-  CheckCircle,
-} from 'lucide-react';
+import { Plus, Edit, Trash2, Gift, CheckCircle } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -42,29 +33,12 @@ import {
   TableRow,
 } from '@/components/ui/table';
 import { Progress } from '@/components/ui/progress';
-import {
-  useIncentivosFiscais,
-  type CreateIncentivoInput,
-  type IncentivoFiscal,
-} from '@/hooks/useIncentivosFiscais';
+import { useIncentivosFiscais } from '@/hooks/useIncentivosFiscais';
+import type { CreateIncentivoInput, IncentivoFiscal } from '@/hooks/useIncentivosFiscais';
 import { formatCurrency } from '@/lib/formatters';
-
-interface Props {
-  empresaId: string;
-}
-
-const TIPOS_INCENTIVO = [
-  { value: 'reducao_aliquota', label: 'Redução de Alíquota' },
-  { value: 'credito_presumido', label: 'Crédito Presumido' },
-  { value: 'isencao', label: 'Isenção' },
-  { value: 'diferimento', label: 'Diferimento' },
-  { value: 'suspensao', label: 'Suspensão' },
-  { value: 'zona_franca', label: 'Zona Franca' },
-  { value: 'lei_rouanet', label: 'Lei Rouanet (Cultura)' },
-  { value: 'lei_incentivo_esporte', label: 'Lei de Incentivo ao Esporte' },
-  { value: 'padis', label: 'PADIS (Semicondutores)' },
-  { value: 'reidi', label: 'REIDI (Infraestrutura)' },
-];
+import type { Props } from './IncentivosFiscaisPanel.types';
+import { TIPOS_INCENTIVO } from './IncentivosFiscaisPanel.helpers';
+import { IncentivosFiscaisPanelCardsResumo } from './IncentivosFiscaisPanelCardsResumo';
 
 export function IncentivosFiscaisPanel({ empresaId }: Props) {
   const [dialogOpen, setDialogOpen] = useState(false);
@@ -295,79 +269,7 @@ export function IncentivosFiscaisPanel({ empresaId }: Props) {
       </div>
 
       {/* Cards Resumo */}
-      <div className="grid gap-4 md:grid-cols-4">
-        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
-          <Card>
-            <CardHeader className="pb-2">
-              <CardTitle className="text-sm font-medium text-muted-foreground flex items-center gap-2">
-                <Gift className="h-4 w-4" />
-                Incentivos Ativos
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">{resumo.totalAtivos}</div>
-            </CardContent>
-          </Card>
-        </motion.div>
-
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.1 }}
-        >
-          <Card>
-            <CardHeader className="pb-2">
-              <CardTitle className="text-sm font-medium text-muted-foreground flex items-center gap-2">
-                <TrendingUp className="h-4 w-4 text-success" />
-                Limite Total
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold text-success">
-                {formatCurrency(resumo.valorLimiteTotal)}
-              </div>
-            </CardContent>
-          </Card>
-        </motion.div>
-
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.2 }}
-        >
-          <Card>
-            <CardHeader className="pb-2">
-              <CardTitle className="text-sm font-medium text-muted-foreground flex items-center gap-2">
-                <DollarSign className="h-4 w-4" />
-                Utilizado
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">{formatCurrency(resumo.valorUtilizado)}</div>
-            </CardContent>
-          </Card>
-        </motion.div>
-
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.3 }}
-        >
-          <Card>
-            <CardHeader className="pb-2">
-              <CardTitle className="text-sm font-medium text-muted-foreground flex items-center gap-2">
-                <Percent className="h-4 w-4" />
-                Disponível
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">
-                {formatCurrency(resumo.valorLimiteTotal - resumo.valorUtilizado)}
-              </div>
-            </CardContent>
-          </Card>
-        </motion.div>
-      </div>
+      <IncentivosFiscaisPanelCardsResumo resumo={resumo} />
 
       {/* Lista de Incentivos */}
       <Card>

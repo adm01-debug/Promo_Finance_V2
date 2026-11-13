@@ -3,111 +3,14 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { registrarEventoFinanceiro } from '@/lib/financeiro/registrarEvento';
 import { useToast } from '@/hooks/use-toast';
-import type { Database, Json } from '@/integrations/supabase/types';
-
-type BoletosInsert = Database['public']['Tables']['boletos']['Insert'];
-type BoletosUpdate = Database['public']['Tables']['boletos']['Update'];
-type EventoPagamento = Record<string, Json>;
-
-export interface Boleto {
-  id: string;
-  numero: string;
-  valor: number;
-  vencimento: string;
-  sacado_nome: string;
-  sacado_cpf_cnpj: string | null;
-  cedente_nome: string;
-  cedente_cnpj: string | null;
-  banco: string;
-  agencia: string;
-  conta: string;
-  linha_digitavel: string;
-  codigo_barras: string;
-  status: 'gerado' | 'enviado' | 'pago' | 'vencido' | 'cancelado' | 'rastreio';
-  asaas_id?: string | null;
-  external_provider?: string | null;
-  bitrix_id?: string | null;
-  bitrix_status?: string | null;
-  eventos_pagamento?: EventoPagamento[] | null;
-  descricao: string | null;
-  observacoes: string | null;
-  conta_receber_id: string | null;
-  conta_pagar_id: string | null;
-  conta_bancaria_id: string | null;
-  empresa_id: string;
-  created_by: string;
-  created_at: string;
-  updated_at: string;
-}
-
-export interface NovoBoletoData {
-  sacado_nome: string;
-  sacado_cpf_cnpj: string;
-  valor: number;
-  vencimento: string;
-  empresa_id: string;
-  conta_bancaria_id: string;
-  descricao?: string;
-  conta_receber_id?: string;
-  conta_pagar_id?: string;
-  provider?: 'asaas';
-}
-
-export interface EmissaoBoletoConfirmada {
-  id: string;
-  linhaDigitavel: string;
-  codigoBarras: string;
-}
-
-/**
- * Aceita somente uma resposta que permita pagar o boleto de fato. Não é uma
- * validação de dígitos bancários: essa responsabilidade é do emissor, que
- * também precisa devolver um identificador externo rastreável.
- */
-export function validarEmissaoBoletoConfirmada(resposta: unknown): EmissaoBoletoConfirmada {
-  if (!resposta || typeof resposta !== 'object') {
-    throw new Error('ASAAS não retornou confirmação da emissão.');
-  }
-  const dados = resposta as Record<string, unknown>;
-  const id = dados.id;
-  const linhaDigitavel = dados.identificationField;
-  const codigoBarras = dados.barCode;
-  if (typeof id !== 'string' || id.trim() === '') {
-    const mensagem =
-      typeof dados.error === 'string' && dados.error.trim()
-        ? dados.error
-        : 'ASAAS não retornou identificador';
-    throw new Error(mensagem);
-  }
-  if (
-    typeof linhaDigitavel !== 'string' ||
-    linhaDigitavel.trim() === '' ||
-    typeof codigoBarras !== 'string' ||
-    codigoBarras.trim() === ''
-  ) {
-    throw new Error(
-      'ASAAS não retornou linha digitável e código de barras válidos. Nenhum boleto foi criado.'
-    );
-  }
-  return { id, linhaDigitavel, codigoBarras };
-}
-
-async function getNextBoletoNumber(): Promise<string> {
-  const { data, error } = await supabase
-    .from('boletos')
-    .select('numero')
-    .order('created_at', { ascending: false })
-    .limit(1);
-
-  if (error) throw error;
-
-  if (data && data.length > 0) {
-    const lastNumber = parseInt(data[0].numero ?? '0', 10);
-    return (lastNumber + 1).toString().padStart(5, '0');
-  }
-
-  return '00001';
-}
+import type {
+  Boleto,
+  NovoBoletoData,
+  BoletosInsert,
+  EventoPagamento,
+  BoletosUpdate,
+} from './useBoletos.types';
+import { getNextBoletoNumber, validarEmissaoBoletoConfirmada } from './useBoletos.helpers';
 
 export function useBoletos() {
   const { toast } = useToast();

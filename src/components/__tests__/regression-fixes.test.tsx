@@ -1,7 +1,7 @@
 import { describe, it, expect, vi } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import { Target } from 'lucide-react';
-import { EmpresaHeroKPI } from '../empresas/EmpresaCardView';
+import { EmpresaHeroKPI } from '../empresas/EmpresaHeroKPI';
 import { PageHeader } from '../layout/PageHeader';
 
 vi.mock('framer-motion', () => ({

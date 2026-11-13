@@ -1,5 +1,6 @@
 // Painel de auditoria de códigos referenciais CFC. Mostra score, KPIs e lista
 // detalhada de problemas. Usado em modal (PlanoContasTab) e inline (SpedEcdWizard).
+
 import { useState } from 'react';
 import {
   AlertCircle,
@@ -25,53 +26,11 @@ import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Separator } from '@/components/ui/separator';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { cn } from '@/lib/utils';
-import type { AuditoriaCFCResult } from '@/hooks/useAuditoriaCFC';
-import type { EmpresaHeader } from '@/lib/export-contabil';
 import { KPI, ProblemKPI, Row, EmptyOk } from './AuditoriaCFCKpis';
 import { exportAuditoriaCFCCSV, exportAuditoriaCFCPDF } from '@/lib/export-contabil';
 import { toast } from 'sonner';
-
-interface Props {
-  resultado: AuditoriaCFCResult;
-  empresa?: EmpresaHeader;
-  className?: string;
-  /** Modo compacto, sem ações de exportação (usado inline nos wizards) */
-  compact?: boolean;
-}
-
-function scoreColor(score: number) {
-  if (score >= 95)
-    return {
-      tone: 'text-success',
-      bg: 'bg-success/10',
-      border: 'border-success/20',
-      label: 'Excelente',
-      shadow: 'shadow-success/20',
-    };
-  if (score >= 80)
-    return {
-      tone: 'text-primary',
-      bg: 'bg-primary/10',
-      border: 'border-primary/20',
-      label: 'Bom',
-      shadow: 'shadow-primary/20',
-    };
-  if (score >= 60)
-    return {
-      tone: 'text-warning',
-      bg: 'bg-warning/10',
-      border: 'border-warning/20',
-      label: 'Atenção',
-      shadow: 'shadow-warning/20',
-    };
-  return {
-    tone: 'text-destructive',
-    bg: 'bg-destructive/10',
-    border: 'border-destructive/20',
-    label: 'Crítico',
-    shadow: 'shadow-destructive/20',
-  };
-}
+import type { Props } from './AuditoriaCFCPanel.types';
+import { scoreColor } from './AuditoriaCFCPanel.helpers';
 
 export function AuditoriaCFCPanel({ resultado, empresa, className, compact = false }: Props) {
   const [tab, setTab] = useState<'formato' | 'prefixo' | 'duplicidade' | 'sem-ref'>('formato');

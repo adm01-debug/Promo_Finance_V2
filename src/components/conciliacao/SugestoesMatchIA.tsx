@@ -15,7 +15,8 @@ import { useHistoricoConciliacaoIA } from '@/hooks/useHistoricoConciliacaoIA';
 import { DetalhesExpandidosDialog } from './ia/DetalhesExpandidosDialog';
 import { HistoricoConciliacaoDialog } from './ia/HistoricoConciliacaoDialog';
 import { RejeicaoDialog, type RejeicaoPendente } from './ia/RejeicaoDialog';
-import { SugestoesHeaderIA, SugestaoMatchCard } from './ia/SugestoesMatchSections';
+import { SugestaoMatchCard } from './ia/SugestoesMatchSections';
+import { SugestoesHeaderIA } from './ia/SugestoesHeaderIA';
 import { AprovarTodosDialog } from './ia/AprovarTodosDialog';
 
 interface SugestoesMatchIAProps {

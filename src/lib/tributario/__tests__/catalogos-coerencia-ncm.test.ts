@@ -7,7 +7,7 @@ import {
   ncmsForaDaTipi,
   type NcmBanco,
 } from '@/lib/tributario/catalogos/coerencia-ncm';
-import { TIPI } from '@/lib/tributario/ipi-iss/tabelas';
+import { TIPI } from '@/lib/tributario/ipi-iss/tabelas.helpers';
 import {
   classificarNcmMonofasicoCanonico,
   normalizarNcm,

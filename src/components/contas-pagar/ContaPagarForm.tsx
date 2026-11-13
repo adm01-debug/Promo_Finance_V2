@@ -2,10 +2,7 @@ import { todayISOLocal, toISOLocal } from '@/lib/formatters';
 import { useState, useEffect, useMemo, useRef } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { z } from 'zod';
-import { motion, AnimatePresence } from 'framer-motion';
 import { Building2, DollarSign, Edit, Scan, Loader2 } from 'lucide-react';
-import { ActionButton } from '@/components/ui/action-button';
 import { LeitorCodigoBarras } from './LeitorCodigoBarras';
 import { DadosBoleto } from '@/lib/barcode-parser';
 import {
@@ -26,75 +23,13 @@ import { ConflitoVersaoError } from '@/lib/optimistic-lock';
 import { useUnsavedChangesGuard } from '@/components/navigation/unsaved-guard-context';
 import { navigateWithUnsavedGuard } from '@/lib/unsaved-guard';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
 import { cn } from '@/lib/utils';
 import { ContaPagarFormFields } from './ContaPagarFormFields';
-import { AnexoList } from '@/components/financeiro/AnexoList';
-
-const contaPagarSchema = z.object({
-  fornecedor_id: z.string().optional(),
-  fornecedor_nome: z
-    .string()
-    .min(2, 'Nome do fornecedor é obrigatório')
-    .max(200, 'Nome muito longo'),
-  descricao: z.string().min(3, 'Descrição é obrigatória').max(500, 'Descrição muito longa'),
-  valor: z.number().positive('Valor deve ser maior que zero').max(999999999, 'Valor muito alto'),
-  data_vencimento: z.string().min(1, 'Data de vencimento é obrigatória'),
-  data_emissao: z.string().optional(),
-  empresa_id: z.string().min(1, 'Empresa é obrigatória'),
-  centro_custo_id: z.string().optional(),
-  categoria_id: z.string().optional(),
-  conta_bancaria_id: z.string().optional(),
-  tipo_cobranca: z.enum(['boleto', 'pix', 'cartao', 'transferencia', 'dinheiro']),
-  numero_documento: z.string().max(50, 'Número muito longo').optional(),
-  codigo_barras: z.string().max(100, 'Código muito longo').optional(),
-  observacoes: z.string().max(1000, 'Observações muito longas').optional(),
-  recorrente: z.boolean().default(false),
-});
-
-type ContaPagarFormData = z.infer<typeof contaPagarSchema>;
-
-interface ContaPagar {
-  id: string;
-  fornecedor_id: string | null;
-  fornecedor_nome: string;
-  descricao: string;
-  valor: number;
-  data_vencimento: string;
-  data_emissao: string;
-  empresa_id: string;
-  centro_custo_id: string | null;
-  categoria_id: string | null;
-  conta_bancaria_id: string | null;
-  tipo_cobranca: 'boleto' | 'pix' | 'cartao' | 'transferencia' | 'dinheiro';
-  numero_documento: string | null;
-  codigo_barras: string | null;
-  observacoes: string | null;
-  recorrente: boolean;
-  updated_at: string;
-}
-
-interface ContaPagarFormProps {
-  open: boolean;
-  onOpenChange: (open: boolean) => void;
-  conta?: ContaPagar | null;
-}
+import type { ContaPagarFormProps, ContaPagarFormData } from './ContaPagarForm.types';
+import { contaPagarSchema } from './ContaPagarForm.helpers';
+import { ContaPagarFormFormulario } from './ContaPagarFormFormulario';
 
 export function ContaPagarForm({ open, onOpenChange, conta }: ContaPagarFormProps) {
   const { celebrateSuccess } = useCelebrations();
@@ -416,114 +351,23 @@ export function ContaPagarForm({ open, onOpenChange, conta }: ContaPagarFormProp
             )}
           </DialogHeader>
 
-          <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-              <div className="space-y-3">
-                <div className="flex items-center justify-between">
-                  <FormLabel className="text-sm font-medium">Fornecedor</FormLabel>
-                  <Button
-                    type="button"
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => setShowFornecedorSelect(!showFornecedorSelect)}
-                    className="text-xs h-7"
-                  >
-                    {showFornecedorSelect ? 'Digitar manualmente' : 'Selecionar cadastrado'}
-                  </Button>
-                </div>
-                <AnimatePresence mode="wait">
-                  {showFornecedorSelect ? (
-                    <motion.div
-                      key="select"
-                      initial={{ opacity: 0, y: -10 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      exit={{ opacity: 0, y: -10 }}
-                    >
-                      <Select
-                        onValueChange={handleFornecedorSelect}
-                        value={form.watch('fornecedor_id')}
-                      >
-                        <SelectTrigger>
-                          <SelectValue placeholder="Selecione um fornecedor" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          {fornecedores.map((f) => (
-                            <SelectItem key={f.id} value={f.id}>
-                              {f.razao_social}
-                              {f.nome_fantasia && ` (${f.nome_fantasia})`}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                    </motion.div>
-                  ) : (
-                    <motion.div
-                      key="input"
-                      initial={{ opacity: 0, y: -10 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      exit={{ opacity: 0, y: -10 }}
-                    >
-                      <FormField
-                        control={form.control}
-                        name="fornecedor_nome"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormControl>
-                              <div className="relative">
-                                <Building2 className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                                <Input
-                                  {...field}
-                                  placeholder="Nome do fornecedor"
-                                  className="pl-10"
-                                />
-                              </div>
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                    </motion.div>
-                  )}
-                </AnimatePresence>
-              </div>
-
-              <div className="space-y-6 max-h-[40vh] overflow-y-auto pr-2 custom-scrollbar">
-                <ContaPagarFormFields
-                  form={formForFields}
-                  empresas={empresas}
-                  centrosCusto={centrosCustoOptions}
-                  contasBancarias={contasBancariasOptions}
-                  categorias={categoriasDespesa}
-                />
-
-                {isEditing && conta?.id && (
-                  <div className="pt-6 border-t border-white/5">
-                    <AnexoList entidadeId={conta.id} entidadeTipo="contas_pagar" />
-                  </div>
-                )}
-              </div>
-
-              <div className="flex justify-end gap-3 pt-4 border-t">
-                <Button type="button" variant="outline" onClick={() => requestClose(false)}>
-                  Cancelar
-                </Button>
-                <ActionButton
-                  type="submit"
-                  state={isPending ? 'loading' : 'idle'}
-                  loadingText="Salvando..."
-                  successText="Salvo!"
-                  className={cn(
-                    'gap-2 shadow-lg',
-                    isEditing
-                      ? 'bg-gradient-to-r from-secondary to-secondary/80 shadow-secondary/25'
-                      : 'bg-gradient-to-r from-primary to-primary/80 shadow-primary/25'
-                  )}
-                >
-                  {isEditing ? 'Salvar Alterações' : 'Criar Conta'}
-                </ActionButton>
-              </div>
-            </form>
-          </Form>
+          <ContaPagarFormFormulario
+            form={form}
+            onSubmit={onSubmit}
+            setShowFornecedorSelect={setShowFornecedorSelect}
+            showFornecedorSelect={showFornecedorSelect}
+            handleFornecedorSelect={handleFornecedorSelect}
+            fornecedores={fornecedores}
+            formForFields={formForFields}
+            empresas={empresas}
+            centrosCustoOptions={centrosCustoOptions}
+            contasBancariasOptions={contasBancariasOptions}
+            categoriasDespesa={categoriasDespesa}
+            isEditing={isEditing}
+            conta={conta}
+            requestClose={requestClose}
+            isPending={isPending}
+          />
         </DialogContent>
       </Dialog>
     </>

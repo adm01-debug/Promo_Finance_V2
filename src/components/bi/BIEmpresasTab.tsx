@@ -28,28 +28,7 @@ import { cn } from '@/lib/utils';
 import { formatCurrency } from '@/lib/formatters';
 import { PositionBadge, RankBadge, RankLegend } from '@/components/ui/rank-badge';
 import { getRankFromScore } from '@/components/ui/rank-badge.utils';
-
-interface EmpresaComparativo {
-  id: string;
-  nome: string;
-  cnpj: string;
-  receitas: number;
-  despesas: number;
-  lucro: number;
-  margem: number;
-  saldo: number;
-  aReceber: number;
-  aPagar: number;
-  inadimplencia: number;
-  liquidez: number;
-  contasCount: number;
-  ticketMedio: number;
-  saldoProjetado: number;
-}
-
-interface BIEmpresasTabProps {
-  comparativoEmpresas: EmpresaComparativo[];
-}
+import type { BIEmpresasTabProps, EmpresaComparativo } from './BIEmpresasTab.types';
 
 export function BIEmpresasTab({ comparativoEmpresas }: BIEmpresasTabProps) {
   return (

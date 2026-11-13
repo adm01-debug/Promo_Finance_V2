@@ -5,7 +5,7 @@
  * 226 (crédito) e 259 (apuração por período); Decreto 11.158/2022 (TIPI).
  */
 
-import { buscarTipi, normalizarNcm } from './tabelas';
+import { buscarTipi, normalizarNcm } from './tabelas.helpers';
 import type { InputIpi, LinhaMemoria, ResultadoIpi, SituacaoIpi } from './types';
 
 const round2 = (v: number) => Math.round((v + Number.EPSILON) * 100) / 100;
