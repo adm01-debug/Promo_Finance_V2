@@ -10,7 +10,7 @@
     },
     {
       "detalhe": [
-        "enviar-digest-conformidade-horario (97% em 7d)",
+        "enviar-digest-conformidade-horario (95.2% em 7d)",
         "refresh-performance-alerts-weekly (100% em 7d)"
       ],
       "tipo": "cron_falhando"
@@ -23,7 +23,7 @@
     },
     {
       "detalhe": [
-        "213811 linhas com mais de 7 dias"
+        "214229 linhas com mais de 7 dias"
       ],
       "tipo": "historico_cron_sem_limpeza"
     }
@@ -35,10 +35,10 @@
       "max_worker_processes": "6"
     },
     "historico": {
-      "bytes": 131735552,
-      "linhas": 233697,
+      "bytes": 131883008,
+      "linhas": 233934,
       "mais_antigo": "2026-08-23T12:00:00Z",
-      "mais_de_7_dias": 213811
+      "mais_de_7_dias": 214229
     },
     "horas_paradas_7d": [],
     "jobs": [
@@ -257,11 +257,11 @@
         "duracao_max_s_7d": 0,
         "execucoes_24h": 24,
         "execucoes_7d": 168,
-        "falhas_24h": 19,
-        "falhas_7d": 163,
+        "falhas_24h": 16,
+        "falhas_7d": 160,
         "nome": "enviar-digest-conformidade-horario",
         "startup_timeout_7d": 0,
-        "taxa_falha_7d_pct": 97,
+        "taxa_falha_7d_pct": 95.2,
         "ultima_falha": "2026-11-13T15:30:00Z"
       },
       {
@@ -367,8 +367,8 @@
           "net.http_post"
         ],
         "duracao_max_s_7d": 0,
-        "execucoes_24h": 9,
-        "execucoes_7d": 9,
+        "execucoes_24h": 15,
+        "execucoes_7d": 15,
         "falhas_24h": 0,
         "falhas_7d": 0,
         "nome": "monitor-health-check",
@@ -1347,7 +1347,7 @@
   ],
   "fonte": "scripts/inventario/banco.sql + GET /functions + .from() em src/ e supabase/functions/ (scripts/inventario/gerar-banco.mjs)",
   "format_version": 1,
-  "medido_em": "2026-11-13T20:42:31Z",
+  "medido_em": "2026-11-13T23:49:29Z",
   "origem": {
     "tabelas_em_comum_com_types_ts": 272,
     "tabelas_em_types_ts": 272
@@ -1363,7 +1363,7 @@
     "postgres": "17.6",
     "tabelas_public": 272,
     "tabelas_sem_rls": 0,
-    "tamanho_bytes": 569486483,
+    "tamanho_bytes": 572230803,
     "triggers_public": 171,
     "views_public": 22
   },
@@ -2616,7 +2616,7 @@
     {
       "bytes": 196608,
       "citada_no_banco": true,
-      "linhas": 252,
+      "linhas": 265,
       "linhas_exatas": true,
       "nome": "cron_job_logs",
       "policies": 1,
@@ -2719,9 +2719,9 @@
       }
     },
     {
-      "bytes": 12828672,
+      "bytes": 14966784,
       "citada_no_banco": true,
-      "linhas": 43471,
+      "linhas": 50037,
       "linhas_exatas": true,
       "nome": "edge_function_logs",
       "policies": 1,
@@ -3349,9 +3349,9 @@
       }
     },
     {
-      "bytes": 30531584,
+      "bytes": 30670848,
       "citada_no_banco": true,
-      "linhas": 82801,
+      "linhas": 84693,
       "linhas_exatas": true,
       "nome": "frontend_performance_logs",
       "policies": 2,
@@ -3574,9 +3574,9 @@
       }
     },
     {
-      "bytes": 1761280,
+      "bytes": 1769472,
       "citada_no_banco": true,
-      "linhas": 1925,
+      "linhas": 1928,
       "linhas_exatas": true,
       "nome": "integrity_alerts",
       "policies": 2,
@@ -3666,7 +3666,7 @@
     {
       "bytes": 2097152,
       "citada_no_banco": true,
-      "linhas": 1695,
+      "linhas": 1722,
       "linhas_exatas": true,
       "nome": "login_attempts",
       "policies": 4,
@@ -4114,9 +4114,9 @@
       }
     },
     {
-      "bytes": 3727360,
+      "bytes": 3751936,
       "citada_no_banco": true,
-      "linhas": 4244,
+      "linhas": 4253,
       "linhas_exatas": true,
       "nome": "performance_alerts",
       "policies": 1,
@@ -4356,7 +4356,7 @@
     {
       "bytes": 14311424,
       "citada_no_banco": true,
-      "linhas": 14826,
+      "linhas": 14865,
       "linhas_exatas": true,
       "nome": "query_telemetry",
       "policies": 3,
@@ -4896,7 +4896,7 @@
     {
       "bytes": 22020096,
       "citada_no_banco": true,
-      "linhas": 17765,
+      "linhas": 17705,
       "linhas_exatas": true,
       "nome": "slow_query_alerts",
       "policies": 1,
