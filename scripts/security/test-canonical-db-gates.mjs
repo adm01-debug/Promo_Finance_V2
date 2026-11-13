@@ -35,11 +35,9 @@ export const EXPECTED_FUNCTION_PRIVILEGES = Object.freeze([
   { functionName: "public.nfe_link_conta_pagar(p_nfe_id uuid, p_conta_pagar_id uuid)", expected: freezeMatrix() },
   { functionName: "public.nfe_suggest_contas_pagar(p_nfe_id uuid)", expected: freezeMatrix() },
   { functionName: "public.nfe_unlink_conta_pagar(p_nfe_id uuid)", expected: freezeMatrix() },
-  {
-    functionName:
-      "public.confirmar_conciliacao(p_conciliacao_id uuid, p_user_id uuid, p_transacao_id uuid, p_conta_pagar_id uuid, p_conta_receber_id uuid, p_ajuste_centavos numeric)",
-    expected: freezeMatrix(),
-  },
+  // confirmar_conciliacao(6 args) foi removida de propósito por
+  // 20260902170000_fix_rpcs_security_definer_sem_escopo.sql (SECURITY DEFINER
+  // sem escopo de empresa); não deve existir no canônico.
   {
     functionName:
       "public.confirmar_conciliacao_manual(p_transacao_id uuid, p_conta_pagar_id uuid, p_conta_receber_id uuid, p_ajuste_centavos numeric)",
