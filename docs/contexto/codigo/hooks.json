@@ -2970,7 +2970,7 @@
    "hooks_exportados": [
     "useDashboardConfig"
    ],
-   "linhas": 229,
+   "linhas": 235,
    "dominio": "hooks",
    "tabelas": [],
    "rpcs": [],
@@ -2987,7 +2987,7 @@
     "src/components/dashboard/DashboardConfigDialog.tsx",
     "src/components/dashboard/DashboardExecutivo.tsx"
    ],
-   "coberto_por_testes": 0
+   "coberto_por_testes": 1
   },
   {
    "arquivo": "src/hooks/useDashboardMetrics.ts",

@@ -1,6 +1,6 @@
 # 07 · REGRAS DE NEGÓCIO
 
-> Gerado automaticamente por AI Context Sync v1.3.2 · commit `821385c628` · branch `main` · 2026-11-12 21:41 UTC
+> Gerado automaticamente por AI Context Sync v1.3.2 · commit `68bac76a27` · branch `main` · 2026-11-13 00:24 UTC
 > Não edite à mão — regras humanas vão em `manual/`.
 
 ## A. Regras escritas por humanos (`manual/` — prioridade máxima, nunca sobrescrito)
@@ -5073,7 +5073,7 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | `admin` | `supabase/migrations/20261101120500_rls_elisao_catalogo.sql` |
 | `admin_global` | `supabase/migrations/20261101120500_rls_elisao_catalogo.sql` |
 
-## K. Testes como especificação (3319 testes em 271 arquivos — nomes completos em `context.json`)
+## K. Testes como especificação (3324 testes em 272 arquivos — nomes completos em `context.json`)
 
 | Arquivo | Testes | Exemplos do que o sistema DEVE fazer |
 |---|---|---|
@@ -5280,6 +5280,7 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | `src/components/contabilidade/__tests__/ValidacoesPreSpedDialog.test.tsx` | 5 | ValidacoesPreSpedDialog — bloqueio de download por erros · desabilita .txt e .zip quando há erros em validacoes.erros · habilita .txt e .zip quando validacoes.erros está vazio (mesmo com avisos) · habilita downloads quando não há erros nem avisos … |
 | `src/hooks/__tests__/useAlertasTributariosCount.test.ts` | 5 | useAlertasTributariosCount · retorna count quando query bem-sucedida · retorna 0 quando count é null · filtra por tipos tributários e lido=false … |
 | `src/hooks/__tests__/useConciliacaoIA.test.ts` | 5 | useConciliacaoIA · deve retornar erro se não houver dados para análise · deve processar matches retornados pela Edge Function com sucesso · deve lidar com erros de rate limit (429) graciosamente … |
+| `src/hooks/__tests__/useDashboardConfig.test.tsx` | 5 | useDashboardConfig · ocultar/exibir e redimensionar persistem e sobrevivem ao recarregar · valores inválidos salvos voltam ao padrão · DashboardConfigDialog … |
 | `src/hooks/__tests__/useGlobalFilterSync.test.ts` | 5 | useGlobalFilterSync · deve registrar o listener de evento ao montar · deve disparar toast quando o evento current-empresa-changed ocorre · não deve disparar se o detalhe do evento estiver vazio … |
 | `src/hooks/__tests__/useNfeVinculo.sugestoes.test.tsx` | 5 | useSugestoesContaPagar — formato do payload · devolve a lista quando o proxy responde o formato esperado · devolve lista vazia — não um objeto — quando o proxy responde fora do formato · trata null como ausência de candidatas, sem alarde … |
 | `src/hooks/__tests__/useUrlTab.test.tsx` | 5 | useUrlTab · usa a aba da URL quando válida · cai na aba padrão quando o valor da URL é inválido · grava a aba na URL e remove o parâmetro na aba padrão … |

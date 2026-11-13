@@ -2,11 +2,16 @@
  "aviso": "GERADO AUTOMATICAMENTE por scripts/ai-context/gerar.mjs — não editar à mão; será sobrescrito.",
  "format_version": 2,
  "git": {
-  "commit": "821385c628540cac75fdaed2b5cf43bf86d1291c",
+  "commit": "68bac76a27e7d5fa0680129f46f1798ba6fbed4f",
   "branch": "main",
-  "data_commit": "2026-11-12T16:39:57-03:00",
+  "data_commit": "2026-11-12T19:09:44-03:00",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
   "ultimos_commits": [
+   {
+    "sha": "68bac76",
+    "data": "2026-11-12",
+    "assunto": "fix: dashboard executivo sem widgets estreitos e com r?tulos corretos no Configurar (#325)"
+   },
    {
     "sha": "821385c",
     "data": "2026-11-12",
@@ -126,14 +131,9 @@
     "sha": "f0bad74",
     "data": "2026-11-11",
     "assunto": "fix: endurecimento e cobertura de teste de todos os scripts em scripts/ (#299)"
-   },
-   {
-    "sha": "85d018c",
-    "data": "2026-11-11",
-    "assunto": "fix: shims para Supabase Preview — drop get_cron_jobs() antes de mudanças de return type (#131)"
    }
   ],
-  "arquivos_mudados_7d": 502,
+  "arquivos_mudados_7d": 505,
   "pastas_mais_mudadas_30d": [
    {
     "pasta": "package.json",
@@ -226,10 +226,6 @@
     "mudancas": 13
    },
    {
-    "arquivo": "e2e/auth/admin-rbac.e2e.ts",
-    "mudancas": 12
-   },
-   {
     "arquivo": "env.manifest.json",
     "mudancas": 12
    },
@@ -242,7 +238,7 @@
     "mudancas": 11
    },
    {
-    "arquivo": "src/hooks/useConciliacaoPage.ts",
+    "arquivo": "e2e/auth/admin-rbac.e2e.ts",
     "mudancas": 11
    },
    {
@@ -254,7 +250,7 @@
     "mudancas": 10
    },
    {
-    "arquivo": "src/App.tsx",
+    "arquivo": "src/hooks/useConciliacaoPage.ts",
     "mudancas": 10
    },
    {
@@ -263,6 +259,10 @@
    },
    {
     "arquivo": ".github/workflows/functions-deploy.yml",
+    "mudancas": 9
+   },
+   {
+    "arquivo": "src/App.tsx",
     "mudancas": 9
    },
    {
@@ -301,7 +301,7 @@
   "autores_30d": [
    {
     "autor": "adm01-debug",
-    "commits": 92
+    "commits": 93
    },
    {
     "autor": "devin-ai-integration[bot]",
@@ -318,9 +318,9 @@
   ]
  },
  "contagens": {
-  "arquivos_total": 3620,
-  "arquivos_codigo": 2216,
-  "linhas_codigo": 428876,
+  "arquivos_total": 3621,
+  "arquivos_codigo": 2217,
+  "linhas_codigo": 428947,
   "rotas": 130,
   "rotas_http_backend": 25,
   "vistas_por_id": 0,
@@ -332,7 +332,7 @@
   "tabelas": 352,
   "migrations": 1010,
   "cron_jobs": 21,
-  "testes": 426,
+  "testes": 427,
   "workflows": 19,
   "scripts": 107,
   "docs_md": 189
@@ -632,7 +632,7 @@
   },
   "src/components": {
    "arquivos": 873,
-   "linhas": 158459
+   "linhas": 158460
   },
   "src/config": {
    "arquivos": 1,
@@ -643,8 +643,8 @@
    "linhas": 343
   },
   "src/hooks": {
-   "arquivos": 296,
-   "linhas": 44210
+   "arquivos": 297,
+   "linhas": 44280
   },
   "src/i18n.ts": {
    "arquivos": 1,

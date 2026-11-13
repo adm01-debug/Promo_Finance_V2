@@ -5750,7 +5750,7 @@
     "DashboardConfigDialog"
    ],
    "export_default": null,
-   "linhas": 167,
+   "linhas": 168,
    "dominio": "components/dashboard",
    "hooks_locais": [],
    "tabelas": [],

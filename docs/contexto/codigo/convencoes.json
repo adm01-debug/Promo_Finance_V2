@@ -21,7 +21,7 @@
    "src/integrations (3)"
   ],
   "testes": [
-   "co-localizado (__tests__) (240)",
+   "co-localizado (__tests__) (241)",
    "outro (106)",
    "co-localizado (*.test) (40)"
   ],
@@ -58,11 +58,11 @@
  "commits": {
   "convencao": "conventional commits (observado)",
   "exemplos": [
+   "fix: dashboard executivo sem widgets estreitos e com r?tulos corretos no Configurar (#325)",
    "fix: cron monitorar-erros-frontend envia o segredo internal_jobs esperado pela function (#321)",
    "fix: registra rotas e menu das p?ginas Erros do Front-end e Consulta R?pida Fiscal (#323)",
    "fix: configurar widgets do dashboard executivo passa a ocultar/exibir e redimensionar (#322)",
-   "chore: impede categorias duplicadas por empresa e tipo (#320)",
-   "chore: remove categorias duplicadas e repassa referências (#319)"
+   "chore: impede categorias duplicadas por empresa e tipo (#320)"
   ]
  },
  "pr_template": ".github/PULL_REQUEST_TEMPLATE.md",

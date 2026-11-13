@@ -1,7 +1,7 @@
 # Contexto do projeto para agentes de IA
 
 GERADO AUTOMATICAMENTE por scripts/ai-context/gerar.mjs — não editar à mão; será sobrescrito.
-Publicado pelo workflow .github/workflows/contexto.yml em docs/contexto/codigo/ da branch gerada `contexto`. Índice único em docs/contexto/00-INDEX.md. Ler: git fetch origin contexto && git show origin/contexto:docs/contexto/00-INDEX.md Gere local com `node scripts/ai-context/gerar.mjs`. Commit-base: `821385c628540cac75fdaed2b5cf43bf86d1291c` (2026-11-12T16:39:57-03:00).
+Publicado pelo workflow .github/workflows/contexto.yml em docs/contexto/codigo/ da branch gerada `contexto`. Índice único em docs/contexto/00-INDEX.md. Ler: git fetch origin contexto && git show origin/contexto:docs/contexto/00-INDEX.md Gere local com `node scripts/ai-context/gerar.mjs`. Commit-base: `68bac76a27e7d5fa0680129f46f1798ba6fbed4f` (2026-11-12T19:09:44-03:00).
 
 ## Como usar (leia antes de planejar ou executar qualquer tarefa)
 1. **Tela/rota/menu** → `rotas.json` (url/vista/menu → arquivo → hooks → tabelas → edges; `rotas_http_backend` para APIs) e `modulos.json` (módulo inteiro + dependências entre módulos).
@@ -14,7 +14,7 @@ Publicado pelo workflow .github/workflows/contexto.yml em docs/contexto/codigo/ 
 Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua tarefa; não carregue tudo.
 
 ## Stack
-- linguagens: TypeScript (2105), SQL (1080), Markdown (189), JavaScript (68), Python (45), JSON (37), Shell (26), YAML (25)
+- linguagens: TypeScript (2106), SQL (1080), Markdown (189), JavaScript (68), Python (45), JSON (37), Shell (26), YAML (25)
 - linguagem_principal: TypeScript
 - framework: React
 - backend_http: n/d
@@ -34,9 +34,9 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 ## Números
 | item | qtd |
 |---|---|
-| arquivos_total | 3620 |
-| arquivos_codigo | 2216 |
-| linhas_codigo | 428876 |
+| arquivos_total | 3621 |
+| arquivos_codigo | 2217 |
+| linhas_codigo | 428947 |
 | rotas | 130 |
 | rotas_http_backend | 25 |
 | vistas_por_id | 0 |
@@ -48,7 +48,7 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 | tabelas | 352 |
 | migrations | 1010 |
 | cron_jobs | 21 |
-| testes | 426 |
+| testes | 427 |
 | workflows | 19 |
 | scripts | 107 |
 | docs_md | 189 |
@@ -58,7 +58,7 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 - componentes: src/components (730), src/pages (174), src/hooks (2)
 - hooks: src/hooks (228), src/components (27), src/pages (5)
 - servicos_logica: src/lib (254), scripts/graphify (7), src/integrations (3)
-- testes: co-localizado (__tests__) (240), outro (106), co-localizado (*.test) (40)
+- testes: co-localizado (__tests__) (241), outro (106), co-localizado (*.test) (40)
 - edge_functions: supabase/functions
 - migrations: supabase/migrations
 - scripts: scripts/integrity (17), scripts/security (16), scripts/ci (13)
@@ -464,14 +464,14 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 - supabase/functions/asaas-proxy/index.ts (15)
 - .github/workflows/deno-tests.yml (13)
 - supabase/functions/mcp-query/index.ts (13)
-- e2e/auth/admin-rbac.e2e.ts (12)
 - env.manifest.json (12)
 - PENDENCIAS.md (11)
 - RELATORIO_CI.md (11)
-- src/hooks/useConciliacaoPage.ts (11)
+- e2e/auth/admin-rbac.e2e.ts (11)
 - .github/workflows/supabase-linter.yml (10)
 - scripts/generate-env-manifest.mjs (10)
-- src/App.tsx (10)
+- src/hooks/useConciliacaoPage.ts (10)
+- src/pages/Auth.hooks.ts (10)
 
 ## Workflows
 - `actionlint.yml` — Workflow Linter (actionlint + zizmor) (pull_request, push, workflow_dispatch)
@@ -621,6 +621,7 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 - CHANGELOG topo: [Unreleased]
 
 ## Últimos commits
+- 2026-11-12 `68bac76` fix: dashboard executivo sem widgets estreitos e com r?tulos corretos no Configurar (#325)
 - 2026-11-12 `821385c` fix: cron monitorar-erros-frontend envia o segredo internal_jobs esperado pela function (#321)
 - 2026-11-12 `6e462aa` fix: registra rotas e menu das p?ginas Erros do Front-end e Consulta R?pida Fiscal (#323)
 - 2026-11-12 `51d0405` fix: configurar widgets do dashboard executivo passa a ocultar/exibir e redimensionar (#322)
@@ -635,7 +636,6 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 - 2026-11-12 `f2bda64` fix: remetente de e-mail usa RESEND_FROM em vez de @resend.dev fixo (#311)
 - 2026-11-12 `3efb5c7` chore(ci): bump codeql-action v4.39.3 nos 3 steps (unifica codeql.yml)
 - 2026-11-12 `cc0b762` fix: destrava busca automática de DF-e na SEFAZ (dispatcher → puxar) (#306)
-- 2026-11-12 `251d639` fix: validação de partidas dobradas passa a valer (minúsculo + adiada para o commit) (#314)
 
 ## Arquivos deste diretório
 - `docs/contexto/codigo/rotas.json`
