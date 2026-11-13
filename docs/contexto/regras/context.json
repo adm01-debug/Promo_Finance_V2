@@ -1,15 +1,15 @@
 {
  "meta": {
-  "sha": "7cbba6f349c2d47b90b13ad8c3a3185d6fd63202",
+  "sha": "309bc9bf5fea77512786808c26d585e5e19928dd",
   "branch": "main",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
-  "generated_at": "2026-11-13 14:11 UTC",
-  "files_total": 3862,
-  "code_files": 3496,
-  "code_lines": 496505
+  "generated_at": "2026-11-13 14:41 UTC",
+  "files_total": 3863,
+  "code_files": 3497,
+  "code_lines": 496581
  },
  "version": "1.3.2",
- "facts_hash": "c92cca085361e387",
+ "facts_hash": "e1106caf786157a3",
  "stack": {
   "frameworks": [
    "React + Vite",
@@ -333,7 +333,7 @@
   "languages": {
    ".ts": 1216,
    ".tsx": 1087,
-   ".sql": 1081,
+   ".sql": 1082,
    ".mjs": 60,
    ".py": 45,
    ".js": 8
@@ -42912,14 +42912,16 @@
     "args": "p_table text, p_months_back integer DEFAULT 6, p_months_forward integer DEFAULT 3",
     "returns": "integer",
     "lang": "plpgsql",
-    "src": "supabase/migrations/20260825110000_reconciliar_schema_v3_completo.sql",
+    "src": "supabase/migrations/20261113114335_ensure_monthly_partitions_ignora_pai_nao_particionado.sql",
     "security_definer": true,
     "search_path": true,
-    "body": "DECLARE v_start date; v_end date; v_partition_name text; v_created int := 0; i int; BEGIN FOR i IN -p_months_back..p_months_forward LOOP v_start := date_trunc('month', now() + make_interval(months => i))::date; v_end := (v_start + interval '1 month')::date; v_partition_name := format('%s_%s', p_table, to_char(v_start, 'YYYY_MM')); IF NOT EXISTS ( SELECT 1 FROM pg_class c JOIN pg_namespace n ON n.oid = c.relnamespace WHERE n.nspname = 'public' AND c.relname = v_partition_name ) THEN EXECUTE format( 'CREATE TABLE public.%I PARTITION OF public.%I FOR VALUES FROM (%L) TO (%L)', v_partition_name, p_table, v_start, v_end ); EXECUTE format('ALTER TABLE public.%I ENABLE ROW LEVEL SECURITY', v_partit …",
+    "body": "DECLARE v_start date; v_end date; v_partition_name text; v_created int := 0; v_relkind \"char\"; i int; BEGIN SELECT c.relkind INTO v_relkind FROM pg_catalog.pg_class c JOIN pg_catalog.pg_namespace n ON n.oid = c.relnamespace WHERE n.nspname = 'public' AND c.relname = p_table; IF v_relkind IS DISTINCT FROM 'p' THEN RAISE NOTICE 'ensure_monthly_partitions: public.% não particionada (relkind %) — nada criado', p_table, coalesce(v_relkind::text, 'inexistente'); RETURN 0; END IF; FOR i IN -p_months_back..p_months_forward LOOP v_start := date_trunc('month', now() + make_interval(months => i))::date; v_end := (v_start + interval '1 month')::date; v_partition_name := format('%s_%s', p_table, to_char( …",
     "raises": [],
     "tables": [
+     "pg_catalog",
      "pg_class",
-     "pg_namespace"
+     "pg_namespace",
+     "v_relkind"
     ]
    },
    "maintain_monthly_partitions": {
@@ -51851,6 +51853,7 @@
    "supabase/migrations/20261112024404_categorias_nome_unico.sql",
    "supabase/migrations/20261112134324_cron_monitorar_erros_segredo_internal_jobs.sql",
    "supabase/migrations/20261113112425_performance_alerts_source_weekly_trend.sql",
+   "supabase/migrations/20261113114335_ensure_monthly_partitions_ignora_pai_nao_particionado.sql",
    "supabase/tests/sql/catalogos_tributarios.test.sql",
    "supabase/tests/sql/infra.test.sql",
    "supabase/tests/sql/integrity_cycle.test.sql",
@@ -59866,6 +59869,22 @@
     "objkind": "function",
     "roles": "PUBLIC, anon, authenticated",
     "src": "supabase/migrations/20261112024013_contabilizacao_conta_da_categoria.sql"
+   },
+   {
+    "kind": "revoke",
+    "privs": "all",
+    "object": "ensure_monthly_partitions",
+    "objkind": "function",
+    "roles": "PUBLIC, anon, authenticated",
+    "src": "supabase/migrations/20261113114335_ensure_monthly_partitions_ignora_pai_nao_particionado.sql"
+   },
+   {
+    "kind": "grant",
+    "privs": "execute",
+    "object": "ensure_monthly_partitions",
+    "objkind": "function",
+    "roles": "service_role",
+    "src": "supabase/migrations/20261113114335_ensure_monthly_partitions_ignora_pai_nao_particionado.sql"
    }
   ],
   "raises": [
@@ -72101,8 +72120,8 @@
   },
   {
    "module": "supabase/migrations",
-   "files": 1011,
-   "lines": 76281,
+   "files": 1012,
+   "lines": 76357,
    "tables": [],
    "exports": [],
    "docs": [],
@@ -119755,6 +119774,10 @@
    {
     "file": "supabase/migrations/20260903000700_fix_auditar_cross_tenant_coalesce_ativo.sql",
     "line": "WHERE a.created_at >= v_ini - interval '7 days' AND a.created_at < v_ini"
+   },
+   {
+    "file": "supabase/migrations/20261113114335_ensure_monthly_partitions_ignora_pai_nao_particionado.sql",
+    "line": "v_end := (v_start + interval '1 month')::date;"
    }
   ],
   "percents": [
@@ -148643,14 +148666,16 @@
     "args": "p_table text, p_months_back integer DEFAULT 6, p_months_forward integer DEFAULT 3",
     "returns": "integer",
     "lang": "plpgsql",
-    "src": "supabase/migrations/20260825110000_reconciliar_schema_v3_completo.sql",
+    "src": "supabase/migrations/20261113114335_ensure_monthly_partitions_ignora_pai_nao_particionado.sql",
     "security_definer": true,
     "search_path": true,
-    "body": "DECLARE v_start date; v_end date; v_partition_name text; v_created int := 0; i int; BEGIN FOR i IN -p_months_back..p_months_forward LOOP v_start := date_trunc('month', now() + make_interval(months => i))::date; v_end := (v_start + interval '1 month')::date; v_partition_name := format('%s_%s', p_table, to_char(v_start, 'YYYY_MM')); IF NOT EXISTS ( SELECT 1 FROM pg_class c JOIN pg_namespace n ON n.oid = c.relnamespace WHERE n.nspname = 'public' AND c.relname = v_partition_name ) THEN EXECUTE format( 'CREATE TABLE public.%I PARTITION OF public.%I FOR VALUES FROM (%L) TO (%L)', v_partition_name, p_table, v_start, v_end ); EXECUTE format('ALTER TABLE public.%I ENABLE ROW LEVEL SECURITY', v_partit …",
+    "body": "DECLARE v_start date; v_end date; v_partition_name text; v_created int := 0; v_relkind \"char\"; i int; BEGIN SELECT c.relkind INTO v_relkind FROM pg_catalog.pg_class c JOIN pg_catalog.pg_namespace n ON n.oid = c.relnamespace WHERE n.nspname = 'public' AND c.relname = p_table; IF v_relkind IS DISTINCT FROM 'p' THEN RAISE NOTICE 'ensure_monthly_partitions: public.% não particionada (relkind %) — nada criado', p_table, coalesce(v_relkind::text, 'inexistente'); RETURN 0; END IF; FOR i IN -p_months_back..p_months_forward LOOP v_start := date_trunc('month', now() + make_interval(months => i))::date; v_end := (v_start + interval '1 month')::date; v_partition_name := format('%s_%s', p_table, to_char( …",
     "raises": [],
     "tables": [
+     "pg_catalog",
      "pg_class",
-     "pg_namespace"
+     "pg_namespace",
+     "v_relkind"
     ]
    },
    "maintain_monthly_partitions": {
@@ -161745,6 +161770,7 @@
    "supabase/migrations/20261004220000_vw_edge_health_eventos_conclusao.sql",
    "supabase/migrations/20261013120000_anexos_rls_metadados_e_orfaos.sql",
    "supabase/migrations/20261013160000_anexos_resolver_fecha_fechado_duplicado.sql",
+   "supabase/migrations/20261113114335_ensure_monthly_partitions_ignora_pai_nao_particionado.sql",
    "supabase/tests/sql/lint_function_repairs.test.sql",
    "supabase/tests/sql/rls_multi_empresa.sql",
    "supabase/tests/test_harness.js",
@@ -169737,6 +169763,22 @@
     "objkind": "function",
     "roles": "PUBLIC, anon, authenticated",
     "src": "supabase/migrations/20261112024013_contabilizacao_conta_da_categoria.sql"
+   },
+   {
+    "kind": "revoke",
+    "privs": "all",
+    "object": "ensure_monthly_partitions",
+    "objkind": "function",
+    "roles": "PUBLIC, anon, authenticated",
+    "src": "supabase/migrations/20261113114335_ensure_monthly_partitions_ignora_pai_nao_particionado.sql"
+   },
+   {
+    "kind": "grant",
+    "privs": "execute",
+    "object": "ensure_monthly_partitions",
+    "objkind": "function",
+    "roles": "service_role",
+    "src": "supabase/migrations/20261113114335_ensure_monthly_partitions_ignora_pai_nao_particionado.sql"
    }
   ],
   "guards": [
@@ -244284,6 +244326,14 @@
    "path": "supabase/migrations/20261113112425_performance_alerts_source_weekly_trend.sql",
    "lines": 11
   },
+  "supabase/migrations/20261113114335_ensure_monthly_partitions_ignora_pai_nao_particionado.sql": {
+   "path": "supabase/migrations/20261113114335_ensure_monthly_partitions_ignora_pai_nao_particionado.sql",
+   "lines": 76,
+   "temporal": [
+    "v_end := (v_start + interval '1 month')::date;"
+   ],
+   "uses_service_role": true
+  },
   "supabase/tests/test_harness.js": {
    "path": "supabase/tests/test_harness.js",
    "lines": 454,
@@ -244392,10 +244442,19 @@
   }
  },
  "git": {
-  "sha": "7cbba6f349c2d47b90b13ad8c3a3185d6fd63202",
+  "sha": "309bc9bf5fea77512786808c26d585e5e19928dd",
   "branch": "main",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
   "commits": [
+   {
+    "sha": "309bc9b",
+    "date": "2026-11-13",
+    "author": "adm01-debug",
+    "subject": "fix: ensure_monthly_partitions ignora tabela não particionada (destrava cron mensal) (#329)",
+    "files": [
+     "supabase/migrations/20261113114335_ensure_monthly_partitions_ignora_pai_nao_particionado.sql"
+    ]
+   },
    {
     "sha": "7cbba6f",
     "date": "2026-11-13",
@@ -245154,102 +245213,6 @@
      "scripts/test_validate_all.py",
      "scripts/validate-all.sh"
     ]
-   },
-   {
-    "sha": "85d018c",
-    "date": "2026-11-11",
-    "author": "adm01-debug",
-    "subject": "fix: shims para Supabase Preview — drop get_cron_jobs() antes de mudanças de return type (#131)",
-    "files": [
-     ".sonarcloud.properties",
-     "sonar-project.properties",
-     "src/components/conciliacao/__tests__/ConciliacaoManualDialog.test.tsx",
-     "supabase/migrations/20260417150749_b6e9c524-6f89-4e46-9255-2fe95f70c17f.sql",
-     "supabase/migrations/20260518153331_be2ce6da-4935-46a4-a2ab-13b18d4a6792.sql",
-     "supabase/migrations/20260518164609_add-coluna-is-active-user-roles.sql",
-     "supabase/migrations/20260518170823_65a0ae3a-c384-4e61-9712-3680962a1a10.sql",
-     "supabase/migrations/20260518171340_6777b0e0-6572-4932-a1ea-97291a1d31b9.sql",
-     "supabase/migrations/20260518171613_cd715539-b99e-4b37-883d-315ae970ecc7.sql",
-     "supabase/migrations/20260518171948_add-user-id-feedback-conciliacao-ia.sql",
-     "supabase/migrations/20260518172811_add-user-id-historico-analises-preditivas.sql",
-     "supabase/migrations/20260518172812_52b52fb1-15af-4387-aed5-98bf813bea0f.sql",
-     "supabase/migrations/20260518172813_add-user-id-logs-conciliacao-retroativa.sql",
-     "supabase/migrations/20260518172814_add-user-id-extrato-conciliacoes.sql",
-     "supabase/migrations/20260518172815_add-numero-conta-contas-bancarias.sql",
-     "supabase/migrations/20260518172816_add-user-id-lancamentos-contabeis.sql",
-     "supabase/migrations/20260518172817_add-email-login-attempts.sql",
-     "supabase/migrations/20260518172818_add-user-id-before-180000.sql",
-     "supabase/migrations/20260518172819_drop-processar-regua-cobranca.sql",
-     "supabase/migrations/20260518190709_drop-views-contas-painel.sql",
-     "supabase/migrations/20260519121026_drop-funcs-asaas-reconciliation.sql",
-     "supabase/migrations/20260519121216_drop-is-country-allowed-login.sql",
-     "supabase/migrations/20260519121318_add-empresa-id-bitrix-sync-logs.sql",
-     "supabase/migrations/20260519121418_add-empresa-id-bitrix-mappings-budgets.sql",
-     "supabase/migrations/20260519122033_add-cols-budgets-contas-bancarias.sql",
-     "supabase/migrations/20260519122034_0a6cac91-c6d5-4a20-b6ad-2edf69138786.sql",
-     "supabase/migrations/20260519122540_drop-desfazer-conciliacao.sql",
-     "supabase/migrations/20260519122542_drop-confirmar-conciliacao.sql",
-     "supabase/migrations/20260519122750_drop-extratos-bancarios-importados-table.sql",
-     "supabase/migrations/20260519131226_prep-expert-conversations-rename.sql",
-     "supabase/migrations/20260519134953_drop-log-sso-onboarding-event-uuid.sql",
-     "supabase/migrations/20260519134955_drop-user-action-audit-policies.sql",
-     "supabase/migrations/20260519160630_add-empresa-id-centros-custo.sql",
-     "supabase/migrations/20260519161428_drop-split-payment-trigger.sql",
-     "supabase/migrations/20260531123733_add-verificacao-id-evidencias-pacotes.sql",
-     "supabase/migrations/20260531163028_drop-has-permission.sql",
-     "supabase/migrations/20260619145921_add-empresa-id-batch-score-saude.sql",
-     "supabase/migrations/20260619145925_drop-fns-stmts-11-19-before-stub.sql",
-     "supabase/migrations/20260619145926_drop-get-cron-run-history-2-before-stub.sql",
-     "supabase/migrations/20260619145927_drop-get-cron-jobs-before-stub.sql",
-     "supabase/migrations/20260619145929_add-empresa-id-auditoria-financeira.sql",
-     "supabase/migrations/20260619150000_create-active-tracking-stub.sql",
-     "supabase/migrations/20260619150001_add-empresa-id-batch-150341.sql",
-     "supabase/migrations/20260619150002_add-empresa-id-historico-analises-preditivas.sql",
-     "supabase/migrations/20260619150003_add-fk-cols-boletos-itens-pedido.sql",
-     "supabase/migrations/20260619150004_add-cols-aprovacao-templates-regua.sql",
-     "supabase/migrations/20260619150005_add-alerta-id-darfs.sql",
-     "supabase/migrations/20260619150006_drop-profiles-policies-before-152721.sql",
-     "supabase/migrations/20260619150007_create-stubs-revoke-anon-fns.sql",
-     "supabase/migrations/20260711145321_add-revoke-execute-anon-enum.sql",
-     "supabase/migrations/20260711145610_create-auth-logs-stub.sql",
-     "supabase/migrations/20260711152456_add-historico-cobranca-columns-stub.sql",
-     "supabase/migrations/20260711152457_create-webhook-events-stub.sql",
-     "supabase/migrations/20260711153446_add-webhooks-log-columns-stub.sql",
-     "supabase/migrations/20260711164723_create-security-tables-stub.sql",
-     "supabase/migrations/20260711182521_create-get-active-uapi-token-stub.sql",
-     "supabase/migrations/20260711184935_create-runtime-error-logs-stub.sql",
-     "supabase/migrations/20260711192250_pg-cron-stub-before-192251.sql",
-     "supabase/migrations/20260711192251_c1dc2634-dbaa-4bff-8194-994acdf8672f.sql",
-     "supabase/migrations/20260712223141_stub-alerts-tables.sql",
-     "supabase/migrations/20260712223143_stub-app-role-values.sql",
-     "supabase/migrations/20260723124730_stub-webhooks-log-error-message.sql",
-     "supabase/migrations/20260726180528_stub-cron-digest-conformidade-diario.sql",
-     "supabase/migrations/20260728110753_90823653-f205-4c49-97d5-ca8a3fc6b60c.sql",
-     "supabase/migrations/20260728154320_3cdfd99b-2449-4a1c-a645-f84411caef36.sql",
-     "supabase/migrations/20260728154640_2b62d1ef-e8c2-4812-a8bd-7bf2e02354cf.sql",
-     "supabase/migrations/20260728160259_f22e3449-d8b5-405f-877d-5a38820147b5.sql",
-     "supabase/migrations/20260728160530_a0e7fc9f-0c43-4400-b662-ff577cc36b88.sql",
-     "supabase/migrations/20260728161110_af990465-73e6-46a7-ba8e-016cb87e3705.sql",
-     "supabase/migrations/20260728161348_94713320-4a93-4b2a-9e35-56a9659a4e50.sql",
-     "supabase/migrations/20260728162329_b9e88578-46ee-4d4c-845f-751733c42746.sql",
-     "supabase/migrations/20260728163046_71e17e9c-fb61-4c88-a7d5-3fd2a8d4aa7d.sql",
-     "supabase/migrations/20260728164124_441c6019-8d63-40d7-a994-6bae5fd3e4d2.sql",
-     "supabase/migrations/20260728164222_ab71d84e-770a-4dcb-ad3d-2a7063b3396e.sql",
-     "supabase/migrations/20260728164313_0d1a1fc8-b3cf-4a88-a13f-c86a7782048a.sql",
-     "supabase/migrations/20260728165000_afddf160-b74b-4f3d-8aa5-d7f5595b55ee.sql",
-     "supabase/migrations/20260728165121_a4f0f57d-5eea-4460-b758-ed38ab8f6331.sql",
-     "supabase/migrations/20260728170640_5f70d392-005d-458f-80ba-f0e573ef414e.sql",
-     "supabase/migrations/20260728171739_760d8c46-2f21-4d74-9fdd-0c3e06088453.sql",
-     "supabase/migrations/20260728175413_7fb048da-1211-403e-835c-3c90a76cf15b.sql",
-     "supabase/migrations/20260728182444_7574018d-4c92-4702-b6fb-3bf8cf6d8d55.sql",
-     "supabase/migrations/20260728214221_0cb29975-9b45-43c5-9853-d4ed66f527ad.sql",
-     "supabase/migrations/20260728215040_cc625266-ea37-4fa7-9fc3-02b304292281.sql",
-     "supabase/migrations/20260728215129_68943d1e-0b53-4955-980b-d5c220bdfc46.sql",
-     "supabase/migrations/20260824124500_descomissionar_modulo_lalamove.sql",
-     "supabase/migrations/20260825090000_hardening_seguranca_destino.sql",
-     "supabase/migrations/20260825100000_reconciliar_schema_completo.sql",
-     "supabase/migrations/20260825110000_reconciliar_schema_v3_completo.sql"
-    ]
    }
   ],
   "hot_files": [
@@ -245290,6 +245253,10 @@
     2
    ],
    [
+    "supabase/migrations/20261113114335_ensure_monthly_partitions_ignora_pai_nao_particionado.sql",
+    1
+   ],
+   [
     "src/components/__tests__/regression-fixes.test.tsx",
     1
    ],
@@ -245327,10 +245294,6 @@
    ],
    [
     "src/components/admin/sso/ScimSetupGuide.tsx",
-    1
-   ],
-   [
-    "src/components/admin/sso/ScimSetupGuide.types.ts",
     1
    ]
   ]

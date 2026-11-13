@@ -1,6 +1,6 @@
 # 07 · REGRAS DE NEGÓCIO
 
-> Gerado automaticamente por AI Context Sync v1.3.2 · commit `7cbba6f349` · branch `main` · 2026-11-13 14:11 UTC
+> Gerado automaticamente por AI Context Sync v1.3.2 · commit `309bc9bf5f` · branch `main` · 2026-11-13 14:41 UTC
 > Não edite à mão — regras humanas vão em `manual/`.
 
 ## A. Regras escritas por humanos (`manual/` — prioridade máxima, nunca sobrescrito)
@@ -4607,6 +4607,7 @@ _nenhum mapa explícito encontrado — transições só existem implicitamente n
 | `WHERE resolved_at >= now() - interval '24 hours'` | `supabase/migrations/20260831153000_corrigir_12_erros_lint_funcoes.sql` |
 | `WHERE snapshot_date < current_date - interval '180 days';` | `supabase/migrations/20260831153000_corrigir_12_erros_lint_funcoes.sql` |
 | `WHERE a.created_at >= v_ini - interval '7 days' AND a.created_at < v_ini` | `supabase/migrations/20260903000700_fix_auditar_cross_tenant_coalesce_ativo.sql` |
+| `v_end := (v_start + interval '1 month')::date;` | `supabase/migrations/20261113114335_ensure_monthly_partitions_ignora_pai_nao_particionado.sql` |
 
 ### H.3 Limites de paginação
 
