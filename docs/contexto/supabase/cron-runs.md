@@ -68,9 +68,9 @@
 
 | início (UTC) | status | duração (s) | mensagem |
 |---|---|---|---|
+| 2026-11-13 22:30:00 | succeeded | 0.67 | 1 row |
 | 2026-11-13 22:00:00 | succeeded | 2.22 | 1 row |
 | 2026-11-13 21:30:00 | succeeded | 0.79 | 1 row |
-| 2026-11-13 21:00:00 | succeeded | 1.62 | 1 row |
 
 
 ## 12 · integrity-invariants-hourly
@@ -123,9 +123,9 @@ _nenhum_
 
 | início (UTC) | status | duração (s) | mensagem |
 |---|---|---|---|
+| 2026-11-13 22:15:00 | succeeded | 0.12 | 1 row |
 | 2026-11-13 21:15:00 | succeeded | 0.15 | 1 row |
 | 2026-11-13 20:15:00 | succeeded | 0.07 | 1 row |
-| 2026-11-13 19:15:00 | succeeded | 0.13 | 1 row |
 
 
 ## 20 · snapshot-table-bloat-daily
@@ -193,18 +193,18 @@ _nenhum_
 
 | início (UTC) | status | duração (s) | mensagem |
 |---|---|---|---|
+| 2026-11-13 22:30:00 | succeeded | 0.10 | 1 row |
+| 2026-11-13 22:15:00 | succeeded | 0.04 | 1 row |
 | 2026-11-13 22:00:00 | succeeded | 0.25 | 1 row |
-| 2026-11-13 21:45:00 | succeeded | 0.05 | 1 row |
-| 2026-11-13 21:30:00 | succeeded | 0.11 | 1 row |
 
 
 ## 33 · webhook-retry-worker-1min
 
 | início (UTC) | status | duração (s) | mensagem |
 |---|---|---|---|
-| 2026-11-13 22:10:00 | succeeded | 0.04 | 1 row |
-| 2026-11-13 22:09:00 | succeeded | 0.01 | 1 row |
-| 2026-11-13 22:08:00 | succeeded | 0.02 | 1 row |
+| 2026-11-13 22:43:00 | succeeded | 0.04 | 1 row |
+| 2026-11-13 22:42:00 | succeeded | 0.03 | 1 row |
+| 2026-11-13 22:41:00 | succeeded | 0.04 | 1 row |
 
 
 ## 34 · auditar-acessos-cross-tenant
@@ -229,9 +229,9 @@ _nenhum_
 
 | início (UTC) | status | duração (s) | mensagem |
 |---|---|---|---|
+| 2026-11-13 22:30:00 | succeeded | 0.02 | 1 row |
 | 2026-11-13 22:00:00 | succeeded | 0.13 | 1 row |
 | 2026-11-13 21:30:00 | succeeded | 0.01 | 1 row |
-| 2026-11-13 21:00:00 | succeeded | 0.12 | 1 row |
 
 
 ## 40 · gerar-snapshots-conformidade-mensal
@@ -250,9 +250,9 @@ _nenhum_
 
 | início (UTC) | status | duração (s) | mensagem |
 |---|---|---|---|
+| 2026-11-13 22:30:00 | succeeded | 0.02 | 1 row |
 | 2026-11-13 21:30:00 | succeeded | 0.18 | 1 row |
 | 2026-11-13 20:30:00 | succeeded | 0.08 | 1 row |
-| 2026-11-13 19:30:00 | succeeded | 0.04 | 1 row |
 
 
 ## 43 · enviar-digest-conformidade-diario
@@ -264,6 +264,6 @@ _nenhum_
 
 | início (UTC) | status | duração (s) | mensagem |
 |---|---|---|---|
+| 2026-11-13 22:30:00 | succeeded | 0.01 | 1 row |
 | 2026-11-13 22:00:00 | succeeded | 0.12 | 1 row |
 | 2026-11-13 21:30:00 | succeeded | 0.09 | 1 row |
-| 2026-11-13 21:00:00 | succeeded | 0.17 | 1 row |

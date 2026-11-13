@@ -1,9 +1,9 @@
 {
  "meta": {
-  "sha": "0ce338f9d232cfed5083e131d2a6abd0ec614e87",
+  "sha": "4870aaca691cc9d571d950cf7f8b68286638c507",
   "branch": "main",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
-  "generated_at": "2026-11-13 22:04 UTC",
+  "generated_at": "2026-11-13 22:41 UTC",
   "files_total": 3869,
   "code_files": 3503,
   "code_lines": 497275
@@ -245274,10 +245274,19 @@
   }
  },
  "git": {
-  "sha": "0ce338f9d232cfed5083e131d2a6abd0ec614e87",
+  "sha": "4870aaca691cc9d571d950cf7f8b68286638c507",
   "branch": "main",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
   "commits": [
+   {
+    "sha": "4870aac",
+    "date": "2026-11-13",
+    "author": "adm01-debug",
+    "subject": "chore(docs): fecha prod-readiness com #326–#330, qualidade do 7cbba6f e bloqueios atuais (#331)",
+    "files": [
+     "docs/prod-readiness.md"
+    ]
+   },
    {
     "sha": "0ce338f",
     "date": "2026-11-13",
@@ -245892,18 +245901,13 @@
     "files": [
      "supabase/functions/external-data/index.ts"
     ]
-   },
-   {
-    "sha": "a516e9a",
-    "date": "2026-11-11",
-    "author": "adm01-debug",
-    "subject": "infra: E2E rodam em ubuntu-24.04 (Playwright não suporta ubuntu-26.04) (#315)",
-    "files": [
-     ".github/workflows/ci.yml"
-    ]
    }
   ],
   "hot_files": [
+   [
+    "docs/prod-readiness.md",
+    3
+   ],
    [
     "src/components/dashboard/DashboardExecutivo.tsx",
     3
@@ -245921,15 +245925,7 @@
     2
    ],
    [
-    "docs/prod-readiness.md",
-    2
-   ],
-   [
     "src/App.tsx",
-    2
-   ],
-   [
-    ".github/workflows/ci.yml",
     2
    ],
    [
@@ -245982,6 +245978,10 @@
    ],
    [
     "src/hooks/useContratos.ts",
+    1
+   ],
+   [
+    "src/hooks/useCreditosTributarios.ts",
     1
    ]
   ]

@@ -1,7 +1,7 @@
 # Contexto do projeto para agentes de IA
 
 GERADO AUTOMATICAMENTE por scripts/ai-context/gerar.mjs — não editar à mão; será sobrescrito.
-Publicado pelo workflow .github/workflows/contexto.yml em docs/contexto/codigo/ da branch gerada `contexto`. Índice único em docs/contexto/00-INDEX.md. Ler: git fetch origin contexto && git show origin/contexto:docs/contexto/00-INDEX.md Gere local com `node scripts/ai-context/gerar.mjs`. Commit-base: `0ce338f9d232cfed5083e131d2a6abd0ec614e87` (2026-11-13T20:53:47Z).
+Publicado pelo workflow .github/workflows/contexto.yml em docs/contexto/codigo/ da branch gerada `contexto`. Índice único em docs/contexto/00-INDEX.md. Ler: git fetch origin contexto && git show origin/contexto:docs/contexto/00-INDEX.md Gere local com `node scripts/ai-context/gerar.mjs`. Commit-base: `4870aaca691cc9d571d950cf7f8b68286638c507` (2026-11-13T21:41:43Z).
 
 ## Como usar (leia antes de planejar ou executar qualquer tarefa)
 1. **Tela/rota/menu** → `rotas.json` (url/vista/menu → arquivo → hooks → tabelas → edges; `rotas_http_backend` para APIs) e `modulos.json` (módulo inteiro + dependências entre módulos).
@@ -619,12 +619,13 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 - `docs/TESTING.md` — Guia de Testes (60 linhas)
 - `docs/VALIDACAO_EXAUSTIVA_R2_2026-09-03.md` — Validação Exaustiva R2 — 2026-09-03 (182 linhas)
 - `docs/VALIDACAO_SEGURANCA_GATEWAY_2026-08-27.md` — Validação de segurança dos gateways — 2026-08-27 (49 linhas)
-- `docs/prod-readiness.md` — Prontidão para produção — Promo_Finance_V2 (749 linhas)
+- `docs/prod-readiness.md` — Prontidão para produção — Promo_Finance_V2 (834 linhas)
 - `docs/testing-architecture.md` — Freight Quest Testing Architecture (38 linhas)
 - subpastas de docs/: docs/archive (9), docs/guides (9), docs/agentes (8), docs/execucao-cline (5), docs/runbooks (5), docs/ci (2), docs/contexto (2), docs/migracao (2), docs/adr (1), docs/evidencias (1)
 - CHANGELOG topo: [Unreleased]
 
 ## Últimos commits
+- 2026-11-13 `4870aac` chore(docs): fecha prod-readiness com #326–#330, qualidade do 7cbba6f e bloqueios atuais (#331)
 - 2026-11-13 `0ce338f` fix: religa campos de formulário às colunas criadas em produção (#343)
 - 2026-11-13 `fd8c431` fix: regenera tipos do banco a partir de produção e corrige 6 gravações que falhavam (#336)
 - 2026-11-13 `b933544` feat: cria colunas faltantes para campos de formulário voltarem a ser salvos (#334)
@@ -639,7 +640,6 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 - 2026-11-12 `821385c` fix: cron monitorar-erros-frontend envia o segredo internal_jobs esperado pela function (#321)
 - 2026-11-12 `6e462aa` fix: registra rotas e menu das p?ginas Erros do Front-end e Consulta R?pida Fiscal (#323)
 - 2026-11-12 `51d0405` fix: configurar widgets do dashboard executivo passa a ocultar/exibir e redimensionar (#322)
-- 2026-11-12 `bd5e644` chore: impede categorias duplicadas por empresa e tipo (#320)
 
 ## Arquivos deste diretório
 - `docs/contexto/codigo/rotas.json`

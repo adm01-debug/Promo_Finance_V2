@@ -2,11 +2,16 @@
  "aviso": "GERADO AUTOMATICAMENTE por scripts/ai-context/gerar.mjs — não editar à mão; será sobrescrito.",
  "format_version": 2,
  "git": {
-  "commit": "0ce338f9d232cfed5083e131d2a6abd0ec614e87",
+  "commit": "4870aaca691cc9d571d950cf7f8b68286638c507",
   "branch": "main",
-  "data_commit": "2026-11-13T20:53:47Z",
+  "data_commit": "2026-11-13T21:41:43Z",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
   "ultimos_commits": [
+   {
+    "sha": "4870aac",
+    "data": "2026-11-13",
+    "assunto": "chore(docs): fecha prod-readiness com #326–#330, qualidade do 7cbba6f e bloqueios atuais (#331)"
+   },
    {
     "sha": "0ce338f",
     "data": "2026-11-13",
@@ -126,11 +131,6 @@
     "sha": "3efb5c7",
     "data": "2026-11-12",
     "assunto": "chore(ci): bump codeql-action v4.39.3 nos 3 steps (unifica codeql.yml)"
-   },
-   {
-    "sha": "cc0b762",
-    "data": "2026-11-12",
-    "assunto": "fix: destrava busca automática de DF-e na SEFAZ (dispatcher → puxar) (#306)"
    }
   ],
   "arquivos_mudados_7d": 828,
@@ -301,7 +301,7 @@
   "autores_30d": [
    {
     "autor": "adm01-debug",
-    "commits": 103
+    "commits": 104
    },
    {
     "autor": "devin-ai-integration[bot]",
