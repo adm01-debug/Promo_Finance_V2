@@ -125,7 +125,8 @@ export function ConciliacaoSplitDialog({
         .from('transacoes_bancarias')
         .update({
           conciliada: true,
-          // TODO: colunas 'conciliacao_parcial' e 'valor_conciliado' não existem em transacoes_bancarias no types.ts (removidas)
+          conciliacao_parcial: true,
+          valor_conciliado: totalSplit,
           data_confirmacao: new Date().toISOString(),
         })
         .eq('id', transacao.id);
