@@ -53,6 +53,7 @@ export function PixTemplates() {
     favorecido_cpf_cnpj: '',
     chave_pix: '',
     tipo_chave_pix: 'cpf',
+    cidade: '',
     valor_padrao: 0,
     valor_fixo: false,
     empresa_id: '',
@@ -71,8 +72,8 @@ export function PixTemplates() {
   });
 
   const handleCreate = () => {
-    if (!form.nome || !form.favorecido_nome || !form.chave_pix) {
-      toast.error('Preencha nome, favorecido e chave PIX');
+    if (!form.nome || !form.favorecido_nome || !form.chave_pix || !form.cidade.trim()) {
+      toast.error('Preencha nome, favorecido, chave PIX e cidade');
       return;
     }
     createMutation.mutate(
@@ -85,6 +86,7 @@ export function PixTemplates() {
         favorecido_cpf_cnpj: form.favorecido_cpf_cnpj || null,
         chave_pix: form.chave_pix,
         tipo_chave_pix: form.tipo_chave_pix,
+        cidade: form.cidade.trim(),
         valor_padrao: form.valor_padrao,
         valor_fixo: form.valor_fixo,
         categoria: form.categoria || null,
@@ -100,6 +102,7 @@ export function PixTemplates() {
             favorecido_cpf_cnpj: '',
             chave_pix: '',
             tipo_chave_pix: 'cpf',
+            cidade: '',
             valor_padrao: 0,
             valor_fixo: false,
             empresa_id: '',
@@ -259,6 +262,14 @@ export function PixTemplates() {
                 placeholder="Opcional"
                 value={form.favorecido_cpf_cnpj}
                 onChange={(e) => setForm((f) => ({ ...f, favorecido_cpf_cnpj: e.target.value }))}
+              />
+            </div>
+            <div>
+              <Label>Cidade do Favorecido *</Label>
+              <Input
+                placeholder="Ex: São Paulo"
+                value={form.cidade}
+                onChange={(e) => setForm((f) => ({ ...f, cidade: e.target.value }))}
               />
             </div>
             <div className="grid grid-cols-2 gap-3">
