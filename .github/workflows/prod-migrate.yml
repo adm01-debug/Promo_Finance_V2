@@ -293,27 +293,38 @@ jobs:
           perl -0777 -ne 'while (/CREATE (?:OR REPLACE )?VIEW public\.([a-z0-9_]+)[^;]*?WITH\s*\(\s*security_invoker/gi) { print "$1\n" }' \
             supabase/migrations/*.sql | sort -u >> /tmp/si-esperado.txt || true
           sort -u -o /tmp/si-esperado.txt /tmp/si-esperado.txt
-          # Views Lalamove excluídas por docs/ADR-001-LALAMOVE-FORA-DE-ESCOPO.md
-          # (decisão de produto): o estado canônico é AUSENTE em PROD. Saem da
-          # lista esperada, mas o guard falha se alguma reaparecer.
-          sed -i '/^\(drivers_safe_view\|orders_safe_view\|orders_operator_view\)$/d' /tmp/si-esperado.txt
+          # Views Lalamove listadas em docs/ADR-001-LALAMOVE-FORA-DE-ESCOPO.md
+          # (drivers_safe_view, orders_safe_view): o estado canônico é AUSENTE
+          # em PROD. Saem da lista esperada, mas o guard falha se reaparecerem.
+          sed -i '/^\(drivers_safe_view\|orders_safe_view\)$/d' /tmp/si-esperado.txt
           LALAMOVE_EM_PROD=$(psql "$PROD_DB_URL" -Atc \
-            "SELECT string_agg(c.relname, ',') FROM pg_class c JOIN pg_namespace n ON n.oid=c.relnamespace WHERE n.nspname='public' AND c.relname IN ('drivers_safe_view','orders_safe_view','orders_operator_view')")
+            "SELECT string_agg(c.relname, ',') FROM pg_class c JOIN pg_namespace n ON n.oid=c.relnamespace WHERE n.nspname='public' AND c.relname IN ('drivers_safe_view','orders_safe_view')")
           if [ -n "$LALAMOVE_EM_PROD" ]; then
             echo "::error::Objetos Lalamove presentes em PROD ($LALAMOVE_EM_PROD) — ADR-001 exige ausência."
             exit 1
+          fi
+          # orders_operator_view não está no ADR-001: é derivada de
+          # lalamove_orders (tabela do ADR) e a própria migration
+          # 20260825100000_reconciliar_schema_completo.sql ignora a criação em
+          # undefined_table. Ausente em PROD, sai da lista; se existir, segue
+          # na conferência normal de security_invoker.
+          if [ -z "$(psql "$PROD_DB_URL" -Atc "SELECT to_regclass('public.orders_operator_view')")" ]; then
+            sed -i '/^orders_operator_view$/d' /tmp/si-esperado.txt
           fi
           # estrategias_elisao_catalogo é TABELA em PROD (relkind 'r', RLS
           # ligado), não view: as migrations a declaram view
           # (20260728154640_2b62d1ef-…sql:62 e
           # 20260825100000_reconciliar_schema_completo.sql:10803), mas PROD
           # manteve a tabela. Sem view não há security_invoker a conferir.
-          # A exceção só vale enquanto o objeto for tabela: se virar view,
-          # volta a ser conferido.
-          RELKIND_CATALOGO=$(psql "$PROD_DB_URL" -Atc \
-            "SELECT c.relkind FROM pg_class c JOIN pg_namespace n ON n.oid=c.relnamespace WHERE n.nspname='public' AND c.relname='estrategias_elisao_catalogo'")
-          if [ "$RELKIND_CATALOGO" = "r" ]; then
+          # A exceção só vale enquanto o objeto for tabela COM RLS ligado: se
+          # virar view, volta a ser conferido; se for tabela sem RLS, falha.
+          CATALOGO=$(psql "$PROD_DB_URL" -Atc \
+            "SELECT c.relkind::text || ':' || c.relrowsecurity::text FROM pg_class c JOIN pg_namespace n ON n.oid=c.relnamespace WHERE n.nspname='public' AND c.relname='estrategias_elisao_catalogo'")
+          if [ "$CATALOGO" = "r:true" ]; then
             sed -i '/^estrategias_elisao_catalogo$/d' /tmp/si-esperado.txt
+          elif [ "${CATALOGO%%:*}" = "r" ]; then
+            echo "::error::estrategias_elisao_catalogo é tabela em PROD sem RLS ($CATALOGO) — escrita sem as policies de admin."
+            exit 1
           fi
           # Só conta como protegida se o valor for verdadeiro — um
           # security_invoker=false gravado em PROD não satisfaz a matriz.
