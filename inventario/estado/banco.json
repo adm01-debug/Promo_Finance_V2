@@ -9,7 +9,7 @@
     },
     {
       "detalhe": [
-        "210390 linhas com mais de 7 dias"
+        "212889 linhas com mais de 7 dias"
       ],
       "tipo": "historico_cron_sem_limpeza"
     },
@@ -27,10 +27,10 @@
       "max_worker_processes": "6"
     },
     "historico": {
-      "bytes": 130605056,
-      "linhas": 231794,
+      "bytes": 131416064,
+      "linhas": 233179,
       "mais_antigo": "2026-08-23T12:00:00Z",
-      "mais_de_7_dias": 210390
+      "mais_de_7_dias": 212889
     },
     "horas_paradas_7d": [],
     "jobs": [
@@ -240,7 +240,7 @@
         "nome": "enviar-digest-conformidade-horario",
         "startup_timeout_7d": 0,
         "taxa_falha_7d_pct": 100,
-        "ultima_falha": "2026-11-12T18:30:00Z"
+        "ultima_falha": "2026-11-13T13:30:00Z"
       },
       {
         "agenda": "0 12 * * *",
@@ -358,8 +358,7 @@
         "agenda": "*/30 * * * *",
         "ativo": true,
         "chama": [
-          "net.http_post",
-          "public.internal_job_secret"
+          "net.http_post"
         ],
         "duracao_max_s_7d": 0,
         "execucoes_24h": 48,
@@ -503,8 +502,7 @@
         "agenda": "* * * * *",
         "ativo": true,
         "chama": [
-          "net.http_post",
-          "public.internal_job_secret"
+          "net.http_post"
         ],
         "duracao_max_s_7d": 1,
         "execucoes_24h": 1440,
@@ -1306,7 +1304,7 @@
   ],
   "fonte": "scripts/inventario/banco.sql + GET /functions + .from() em src/ e supabase/functions/ (scripts/inventario/gerar-banco.mjs)",
   "format_version": 1,
-  "medido_em": "2026-11-12T19:15:53Z",
+  "medido_em": "2026-11-13T13:49:09Z",
   "origem": {
     "tabelas_em_comum_com_types_ts": 265,
     "tabelas_em_types_ts": 279
@@ -1322,7 +1320,7 @@
     "postgres": "17.6",
     "tabelas_public": 272,
     "tabelas_sem_rls": 0,
-    "tamanho_bytes": 555953299,
+    "tamanho_bytes": 562588819,
     "triggers_public": 171,
     "views_public": 21
   },
@@ -2198,9 +2196,9 @@
       }
     },
     {
-      "bytes": 5341184,
+      "bytes": 5431296,
       "citada_no_banco": true,
-      "linhas": 21601,
+      "linhas": 21875,
       "linhas_exatas": true,
       "nome": "bloat_snapshots",
       "policies": 1,
@@ -2573,9 +2571,9 @@
       }
     },
     {
-      "bytes": 147456,
+      "bytes": 188416,
       "citada_no_banco": true,
-      "linhas": 151,
+      "linhas": 225,
       "linhas_exatas": true,
       "nome": "cron_job_logs",
       "policies": 1,
@@ -2678,9 +2676,9 @@
       }
     },
     {
-      "bytes": 6619136,
+      "bytes": 9781248,
       "citada_no_banco": true,
-      "linhas": 21977,
+      "linhas": 33889,
       "linhas_exatas": true,
       "nome": "edge_function_logs",
       "policies": 1,
@@ -3308,9 +3306,9 @@
       }
     },
     {
-      "bytes": 30130176,
+      "bytes": 30367744,
       "citada_no_banco": true,
-      "linhas": 80916,
+      "linhas": 79888,
       "linhas_exatas": true,
       "nome": "frontend_performance_logs",
       "policies": 2,
@@ -3488,9 +3486,9 @@
       }
     },
     {
-      "bytes": 15065088,
+      "bytes": 15187968,
       "citada_no_banco": true,
-      "linhas": 52088,
+      "linhas": 52577,
       "linhas_exatas": true,
       "nome": "index_usage_snapshots",
       "policies": 1,
@@ -3533,9 +3531,9 @@
       }
     },
     {
-      "bytes": 1744896,
+      "bytes": 1761280,
       "citada_no_banco": true,
-      "linhas": 1900,
+      "linhas": 1918,
       "linhas_exatas": true,
       "nome": "integrity_alerts",
       "policies": 2,
@@ -3623,9 +3621,9 @@
       }
     },
     {
-      "bytes": 2088960,
+      "bytes": 2097152,
       "citada_no_banco": true,
-      "linhas": 1624,
+      "linhas": 1653,
       "linhas_exatas": true,
       "nome": "login_attempts",
       "policies": 4,
@@ -4075,7 +4073,7 @@
     {
       "bytes": 3506176,
       "citada_no_banco": true,
-      "linhas": 4166,
+      "linhas": 4223,
       "linhas_exatas": true,
       "nome": "performance_alerts",
       "policies": 1,
@@ -4315,7 +4313,7 @@
     {
       "bytes": 14311424,
       "citada_no_banco": true,
-      "linhas": 15184,
+      "linhas": 14734,
       "linhas_exatas": true,
       "nome": "query_telemetry",
       "policies": 3,
@@ -4855,7 +4853,7 @@
     {
       "bytes": 22020096,
       "citada_no_banco": true,
-      "linhas": 18339,
+      "linhas": 17925,
       "linhas_exatas": true,
       "nome": "slow_query_alerts",
       "policies": 1,
