@@ -1,7 +1,7 @@
 # Contexto do projeto para agentes de IA
 
 GERADO AUTOMATICAMENTE por scripts/ai-context/gerar.mjs — não editar à mão; será sobrescrito.
-Publicado pelo workflow .github/workflows/contexto.yml em docs/contexto/codigo/ da branch gerada `contexto`. Índice único em docs/contexto/00-INDEX.md. Ler: git fetch origin contexto && git show origin/contexto:docs/contexto/00-INDEX.md Gere local com `node scripts/ai-context/gerar.mjs`. Commit-base: `04e82b57fafe8aadd0b783a04c799e6ccf626070` (2026-11-13T07:30:34-03:00).
+Publicado pelo workflow .github/workflows/contexto.yml em docs/contexto/codigo/ da branch gerada `contexto`. Índice único em docs/contexto/00-INDEX.md. Ler: git fetch origin contexto && git show origin/contexto:docs/contexto/00-INDEX.md Gere local com `node scripts/ai-context/gerar.mjs`. Commit-base: `2d3e3db134c5450d41a01a0b70650fd15716ebe4` (2026-11-13T09:36:31-03:00).
 
 ## Como usar (leia antes de planejar ou executar qualquer tarefa)
 1. **Tela/rota/menu** → `rotas.json` (url/vista/menu → arquivo → hooks → tabelas → edges; `rotas_http_backend` para APIs) e `modulos.json` (módulo inteiro + dependências entre módulos).
@@ -14,7 +14,7 @@ Publicado pelo workflow .github/workflows/contexto.yml em docs/contexto/codigo/ 
 Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua tarefa; não carregue tudo.
 
 ## Stack
-- linguagens: TypeScript (2106), SQL (1080), Markdown (190), JavaScript (68), Python (45), JSON (37), Shell (26), YAML (25)
+- linguagens: TypeScript (2106), SQL (1081), Markdown (190), JavaScript (68), Python (45), JSON (37), Shell (26), YAML (25)
 - linguagem_principal: TypeScript
 - framework: React
 - backend_http: n/d
@@ -34,7 +34,7 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 ## Números
 | item | qtd |
 |---|---|
-| arquivos_total | 3622 |
+| arquivos_total | 3623 |
 | arquivos_codigo | 2217 |
 | linhas_codigo | 428947 |
 | rotas | 130 |
@@ -46,7 +46,7 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 | hooks | 264 |
 | edge_functions | 106 |
 | tabelas | 352 |
-| migrations | 1010 |
+| migrations | 1011 |
 | cron_jobs | 21 |
 | testes | 427 |
 | workflows | 19 |
@@ -622,6 +622,7 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 - CHANGELOG topo: [Unreleased]
 
 ## Últimos commits
+- 2026-11-13 `2d3e3db` fix: aceita origem weekly_trend em performance_alerts (destrava cron semanal) (#327)
 - 2026-11-13 `04e82b5` infra: quarentena E2E não roda em CI cancelada (!cancelled() em vez de always()) (#326)
 - 2026-11-12 `841109a` chore(docs): auditoria prod-readiness (#324)
 - 2026-11-12 `68bac76` fix: dashboard executivo sem widgets estreitos e com r?tulos corretos no Configurar (#325)
@@ -636,7 +637,6 @@ Os JSONs são grandes: filtre com `grep`/`jq` pelo caminho/arquivo/tabela da sua
 - 2026-11-12 `0821a38` chore: fixa search_path das functions e remove cron órfão evaluate-delivery-alerts (#309)
 - 2026-11-12 `9308705` chore: manifesto de env reconhece MCP_SECRET e marca fallbacks como opcionais (#310)
 - 2026-11-12 `155df0d` feat: contabilização automática de movimentações pelas regras (#316)
-- 2026-11-12 `f2bda64` fix: remetente de e-mail usa RESEND_FROM em vez de @resend.dev fixo (#311)
 
 ## Arquivos deste diretório
 - `docs/contexto/codigo/rotas.json`

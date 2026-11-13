@@ -2,11 +2,16 @@
  "aviso": "GERADO AUTOMATICAMENTE por scripts/ai-context/gerar.mjs — não editar à mão; será sobrescrito.",
  "format_version": 2,
  "git": {
-  "commit": "04e82b57fafe8aadd0b783a04c799e6ccf626070",
+  "commit": "2d3e3db134c5450d41a01a0b70650fd15716ebe4",
   "branch": "main",
-  "data_commit": "2026-11-13T07:30:34-03:00",
+  "data_commit": "2026-11-13T09:36:31-03:00",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
   "ultimos_commits": [
+   {
+    "sha": "2d3e3db",
+    "data": "2026-11-13",
+    "assunto": "fix: aceita origem weekly_trend em performance_alerts (destrava cron semanal) (#327)"
+   },
    {
     "sha": "04e82b5",
     "data": "2026-11-13",
@@ -126,14 +131,9 @@
     "sha": "5215111",
     "data": "2026-11-11",
     "assunto": "chore(deps): bump actions/checkout from 5.1.0 to 7.0.1 (#206)"
-   },
-   {
-    "sha": "f1d42f8",
-    "data": "2026-11-11",
-    "assunto": "fix: 9 edge functions ganham bloco verify_jwt no config.toml (deploy em lote abortava com exit 6) (#305)"
    }
   ],
-  "arquivos_mudados_7d": 505,
+  "arquivos_mudados_7d": 506,
   "pastas_mais_mudadas_30d": [
    {
     "pasta": "package.json",
@@ -258,14 +258,6 @@
     "mudancas": 9
    },
    {
-    "arquivo": "src/pages/Auth.hooks.ts",
-    "mudancas": 9
-   },
-   {
-    "arquivo": "supabase/functions/bitrix24-webhook/index.ts",
-    "mudancas": 9
-   },
-   {
     "arquivo": "supabase/functions/bling-proxy/index.ts",
     "mudancas": 9
    },
@@ -296,12 +288,20 @@
    {
     "arquivo": "src/components/layout/sidebar/SidebarNavGroups.tsx",
     "mudancas": 8
+   },
+   {
+    "arquivo": "src/hooks/useConciliacaoPage.ts",
+    "mudancas": 8
+   },
+   {
+    "arquivo": "src/pages/Auth.hooks.ts",
+    "mudancas": 8
    }
   ],
   "autores_30d": [
    {
     "autor": "adm01-debug",
-    "commits": 95
+    "commits": 96
    },
    {
     "autor": "devin-ai-integration[bot]",
@@ -318,7 +318,7 @@
   ]
  },
  "contagens": {
-  "arquivos_total": 3622,
+  "arquivos_total": 3623,
   "arquivos_codigo": 2217,
   "linhas_codigo": 428947,
   "rotas": 130,
@@ -330,7 +330,7 @@
   "hooks": 264,
   "edge_functions": 106,
   "tabelas": 352,
-  "migrations": 1010,
+  "migrations": 1011,
   "cron_jobs": 21,
   "testes": 427,
   "workflows": 19,
