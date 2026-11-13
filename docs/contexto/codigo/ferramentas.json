@@ -5,7 +5,7 @@
   "linguagens": [
    "TypeScript (2106)",
    "SQL (1080)",
-   "Markdown (189)",
+   "Markdown (190)",
    "JavaScript (68)",
    "Python (45)",
    "JSON (37)",
@@ -1163,6 +1163,11 @@
    "arquivo": "docs/VALIDACAO_SEGURANCA_GATEWAY_2026-08-27.md",
    "titulo": "Validação de segurança dos gateways — 2026-08-27",
    "linhas": 49
+  },
+  {
+   "arquivo": "docs/prod-readiness.md",
+   "titulo": "Prontidão para produção — Promo_Finance_V2",
+   "linhas": 749
   },
   {
    "arquivo": "docs/testing-architecture.md",

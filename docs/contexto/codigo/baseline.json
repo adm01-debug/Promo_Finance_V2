@@ -2,11 +2,16 @@
  "aviso": "GERADO AUTOMATICAMENTE por scripts/ai-context/gerar.mjs — não editar à mão; será sobrescrito.",
  "format_version": 2,
  "git": {
-  "commit": "68bac76a27e7d5fa0680129f46f1798ba6fbed4f",
+  "commit": "841109abfb19582329950e6568419ba1a33b9435",
   "branch": "main",
-  "data_commit": "2026-11-12T19:09:44-03:00",
+  "data_commit": "2026-11-12T21:08:59-03:00",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
   "ultimos_commits": [
+   {
+    "sha": "841109a",
+    "data": "2026-11-12",
+    "assunto": "chore(docs): auditoria prod-readiness (#324)"
+   },
    {
     "sha": "68bac76",
     "data": "2026-11-12",
@@ -126,14 +131,9 @@
     "sha": "67613f4",
     "data": "2026-11-11",
     "assunto": "fix: endurecimento dos scripts de automação, guard de perímetro, inventário e manutenção (#304)"
-   },
-   {
-    "sha": "f0bad74",
-    "data": "2026-11-11",
-    "assunto": "fix: endurecimento e cobertura de teste de todos os scripts em scripts/ (#299)"
    }
   ],
-  "arquivos_mudados_7d": 505,
+  "arquivos_mudados_7d": 506,
   "pastas_mais_mudadas_30d": [
    {
     "pasta": "package.json",
@@ -250,19 +250,15 @@
     "mudancas": 10
    },
    {
-    "arquivo": "src/hooks/useConciliacaoPage.ts",
-    "mudancas": 10
-   },
-   {
-    "arquivo": "src/pages/Auth.hooks.ts",
-    "mudancas": 10
-   },
-   {
     "arquivo": ".github/workflows/functions-deploy.yml",
     "mudancas": 9
    },
    {
     "arquivo": "src/App.tsx",
+    "mudancas": 9
+   },
+   {
+    "arquivo": "src/pages/Auth.hooks.ts",
     "mudancas": 9
    },
    {
@@ -296,12 +292,16 @@
    {
     "arquivo": "scripts/security/test-canonical-db-gates.mjs",
     "mudancas": 8
+   },
+   {
+    "arquivo": "src/components/layout/sidebar/SidebarNavGroups.tsx",
+    "mudancas": 8
    }
   ],
   "autores_30d": [
    {
     "autor": "adm01-debug",
-    "commits": 93
+    "commits": 94
    },
    {
     "autor": "devin-ai-integration[bot]",
@@ -318,7 +318,7 @@
   ]
  },
  "contagens": {
-  "arquivos_total": 3621,
+  "arquivos_total": 3622,
   "arquivos_codigo": 2217,
   "linhas_codigo": 428947,
   "rotas": 130,
@@ -335,7 +335,7 @@
   "testes": 427,
   "workflows": 19,
   "scripts": 107,
-  "docs_md": 189
+  "docs_md": 190
  },
  "por_pasta": {
   "e2e/alertas-preditivos.e2e.ts": {

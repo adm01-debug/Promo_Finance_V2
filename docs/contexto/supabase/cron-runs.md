@@ -16,9 +16,9 @@
 
 | início (UTC) | status | duração (s) | mensagem |
 |---|---|---|---|
+| 2026-11-13 02:00:00 | succeeded | 0.44 | 1 row |
+| 2026-11-13 01:00:00 | succeeded | 0.18 | 1 row |
 | 2026-11-13 00:00:00 | succeeded | 0.32 | 1 row |
-| 2026-11-12 23:00:00 | succeeded | 0.21 | 1 row |
-| 2026-11-12 22:00:00 | succeeded | 0.32 | 1 row |
 
 
 ## 4 · cleanup-cron-logs
@@ -32,18 +32,18 @@
 
 | início (UTC) | status | duração (s) | mensagem |
 |---|---|---|---|
+| 2026-11-13 01:00:00 | succeeded | 0.05 | 1 row |
 | 2026-11-12 01:00:00 | succeeded | 0.05 | 1 row |
 | 2026-11-11 01:00:00 | succeeded | 0.02 | 1 row |
-| 2026-11-10 01:00:00 | succeeded | 0.09 | 1 row |
 
 
 ## 6 · cleanup-login-attempts
 
 | início (UTC) | status | duração (s) | mensagem |
 |---|---|---|---|
+| 2026-11-13 01:30:00 | succeeded | 0.04 | 1 row |
 | 2026-11-12 01:30:00 | succeeded | 0.06 | 1 row |
 | 2026-11-11 01:30:00 | succeeded | 0.14 | 1 row |
-| 2026-11-10 01:30:00 | succeeded | 0.03 | 1 row |
 
 
 ## 7 · cleanup-rpc-obs-metrics-daily
@@ -68,18 +68,18 @@
 
 | início (UTC) | status | duração (s) | mensagem |
 |---|---|---|---|
-| 2026-11-13 00:00:00 | succeeded | 0.29 | 1 row |
-| 2026-11-12 23:30:00 | succeeded | 0.19 | 1 row |
-| 2026-11-12 23:00:00 | succeeded | 0.30 | 1 row |
+| 2026-11-13 02:00:00 | succeeded | 0.42 | 1 row |
+| 2026-11-13 01:30:00 | succeeded | 0.17 | 1 row |
+| 2026-11-13 01:00:00 | succeeded | 0.92 | 1 row |
 
 
 ## 12 · integrity-invariants-hourly
 
 | início (UTC) | status | duração (s) | mensagem |
 |---|---|---|---|
+| 2026-11-13 01:45:00 | succeeded | 0.01 | 1 row |
+| 2026-11-13 00:45:00 | succeeded | 0.00 | 1 row |
 | 2026-11-12 23:45:00 | succeeded | 0.01 | 1 row |
-| 2026-11-12 22:45:00 | succeeded | 0.01 | 1 row |
-| 2026-11-12 21:45:00 | succeeded | 0.04 | 1 row |
 
 
 ## 13 · maintain-monthly-partitions
@@ -91,9 +91,9 @@ _nenhum_
 
 | início (UTC) | status | duração (s) | mensagem |
 |---|---|---|---|
+| 2026-11-13 02:00:00 | succeeded | 0.24 | 1 row |
 | 2026-11-12 02:00:00 | succeeded | 0.13 | 1 row |
 | 2026-11-11 02:00:00 | succeeded | 0.11 | 1 row |
-| 2026-11-10 02:00:00 | succeeded | 0.08 | 1 row |
 
 
 ## 15 · pgss-baseline-cleanup
@@ -123,9 +123,9 @@ _nenhum_
 
 | início (UTC) | status | duração (s) | mensagem |
 |---|---|---|---|
+| 2026-11-13 01:15:00 | succeeded | 0.17 | 1 row |
 | 2026-11-13 00:15:00 | succeeded | 0.05 | 1 row |
 | 2026-11-12 23:15:00 | succeeded | 0.05 | 1 row |
-| 2026-11-12 22:15:00 | succeeded | 0.11 | 1 row |
 
 
 ## 20 · snapshot-table-bloat-daily
@@ -175,9 +175,9 @@ _nenhum_
 
 | início (UTC) | status | duração (s) | mensagem |
 |---|---|---|---|
+| 2026-11-13 01:10:00 | succeeded | 11.05 | 1 row |
 | 2026-11-13 00:10:00 | succeeded | 12.07 | 1 row |
 | 2026-11-12 23:10:00 | succeeded | 5.03 | 1 row |
-| 2026-11-12 22:10:00 | succeeded | 3.24 | 1 row |
 
 
 ## 31 · daily-log-retention
@@ -193,27 +193,27 @@ _nenhum_
 
 | início (UTC) | status | duração (s) | mensagem |
 |---|---|---|---|
-| 2026-11-13 00:15:00 | succeeded | 0.02 | 1 row |
-| 2026-11-13 00:00:00 | succeeded | 0.12 | 1 row |
-| 2026-11-12 23:45:00 | succeeded | 0.03 | 1 row |
+| 2026-11-13 02:00:00 | succeeded | 0.05 | 1 row |
+| 2026-11-13 01:45:00 | succeeded | 0.05 | 1 row |
+| 2026-11-13 01:30:00 | succeeded | 0.06 | 1 row |
 
 
 ## 33 · webhook-retry-worker-1min
 
 | início (UTC) | status | duração (s) | mensagem |
 |---|---|---|---|
-| 2026-11-13 00:26:00 | succeeded | 0.01 | 1 row |
-| 2026-11-13 00:25:00 | succeeded | 0.02 | 1 row |
-| 2026-11-13 00:24:00 | succeeded | 0.01 | 1 row |
+| 2026-11-13 02:00:00 | succeeded | 0.05 | 1 row |
+| 2026-11-13 01:59:00 | succeeded | 0.01 | 1 row |
+| 2026-11-13 01:58:00 | succeeded | 0.00 | 1 row |
 
 
 ## 34 · auditar-acessos-cross-tenant
 
 | início (UTC) | status | duração (s) | mensagem |
 |---|---|---|---|
+| 2026-11-13 01:10:00 | succeeded | 0.09 | 1 row |
 | 2026-11-13 00:10:00 | succeeded | 0.06 | 1 row |
 | 2026-11-12 23:10:00 | succeeded | 0.07 | 1 row |
-| 2026-11-12 22:10:00 | succeeded | 0.13 | 1 row |
 
 
 ## 35 · capture-index-usage-daily
@@ -229,9 +229,9 @@ _nenhum_
 
 | início (UTC) | status | duração (s) | mensagem |
 |---|---|---|---|
-| 2026-11-13 00:00:00 | succeeded | 0.04 | 1 row |
-| 2026-11-12 23:30:00 | succeeded | 0.02 | 1 row |
-| 2026-11-12 23:00:00 | succeeded | 0.09 | 1 row |
+| 2026-11-13 02:00:00 | succeeded | 0.03 | 1 row |
+| 2026-11-13 01:30:00 | succeeded | 0.01 | 1 row |
+| 2026-11-13 01:00:00 | succeeded | 0.02 | 1 row |
 
 
 ## 40 · gerar-snapshots-conformidade-mensal
@@ -250,6 +250,6 @@ _nenhum_
 
 | início (UTC) | status | duração (s) | mensagem |
 |---|---|---|---|
+| 2026-11-13 01:30:00 | failed | 0.06 | ERROR:  Secret "anon_key" ausente no Vault. Crie-o em Project Settings > Vault com a anon key de bwwbeyolnnzppeuhgkcd. CONTEXT:  PL/pgSQL function chave_anon_vault() line 11 at RAISE SQL statement "SELECT net.http_post(     url := 'https://bwwbeyolnnzppeuhgkcd.supabase.co/functions/v1/enviar-digest- |
+| 2026-11-13 00:30:00 | failed | 0.02 | ERROR:  Secret "anon_key" ausente no Vault. Crie-o em Project Settings > Vault com a anon key de bwwbeyolnnzppeuhgkcd. CONTEXT:  PL/pgSQL function chave_anon_vault() line 11 at RAISE SQL statement "SELECT net.http_post(     url := 'https://bwwbeyolnnzppeuhgkcd.supabase.co/functions/v1/enviar-digest- |
 | 2026-11-12 23:30:00 | failed | 0.02 | ERROR:  Secret "anon_key" ausente no Vault. Crie-o em Project Settings > Vault com a anon key de bwwbeyolnnzppeuhgkcd. CONTEXT:  PL/pgSQL function chave_anon_vault() line 11 at RAISE SQL statement "SELECT net.http_post(     url := 'https://bwwbeyolnnzppeuhgkcd.supabase.co/functions/v1/enviar-digest- |
-| 2026-11-12 22:30:00 | failed | 0.04 | ERROR:  Secret "anon_key" ausente no Vault. Crie-o em Project Settings > Vault com a anon key de bwwbeyolnnzppeuhgkcd. CONTEXT:  PL/pgSQL function chave_anon_vault() line 11 at RAISE SQL statement "SELECT net.http_post(     url := 'https://bwwbeyolnnzppeuhgkcd.supabase.co/functions/v1/enviar-digest- |
-| 2026-11-12 21:30:00 | failed | 0.02 | ERROR:  Secret "anon_key" ausente no Vault. Crie-o em Project Settings > Vault com a anon key de bwwbeyolnnzppeuhgkcd. CONTEXT:  PL/pgSQL function chave_anon_vault() line 11 at RAISE SQL statement "SELECT net.http_post(     url := 'https://bwwbeyolnnzppeuhgkcd.supabase.co/functions/v1/enviar-digest- |

@@ -1,10 +1,10 @@
 {
  "meta": {
-  "sha": "68bac76a27e7d5fa0680129f46f1798ba6fbed4f",
+  "sha": "841109abfb19582329950e6568419ba1a33b9435",
   "branch": "main",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
-  "generated_at": "2026-11-13 00:24 UTC",
-  "files_total": 3663,
+  "generated_at": "2026-11-13 01:58 UTC",
+  "files_total": 3664,
   "code_files": 3298,
   "code_lines": 491974
  },
@@ -242010,10 +242010,19 @@
   }
  },
  "git": {
-  "sha": "68bac76a27e7d5fa0680129f46f1798ba6fbed4f",
+  "sha": "841109abfb19582329950e6568419ba1a33b9435",
   "branch": "main",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
   "commits": [
+   {
+    "sha": "841109a",
+    "date": "2026-11-12",
+    "author": "adm01-debug",
+    "subject": "chore(docs): auditoria prod-readiness (#324)",
+    "files": [
+     "docs/prod-readiness.md"
+    ]
+   },
    {
     "sha": "68bac76",
     "date": "2026-11-12",
@@ -242561,26 +242570,6 @@
     "files": [
      "supabase/migrations/20261031180000_cron_step43_espacar_diagnosticos.sql"
     ]
-   },
-   {
-    "sha": "4e177c3",
-    "date": "2026-11-10",
-    "author": "adm01-debug",
-    "subject": "chore(ddl): steps 12-16+19+21+23 — DDL banco produção (#235)",
-    "files": [
-     "supabase/migrations/20260421115901_ddfe6f1a-4ea1-40b8-9fb4-07d923b4a604.sql",
-     "supabase/migrations/20260421122811_1d34a765-6548-4cb2-8343-5ad54d6b8395.sql",
-     "supabase/migrations/20260421123700_26d4bd4b-8ec6-422d-9f6b-0800a6b95659.sql",
-     "supabase/migrations/20260421125350_0f4955ac-8b77-4791-9cee-335c9d5093fd.sql",
-     "supabase/migrations/20260421144212_a6d288d1-17aa-411d-80de-0ab86a4a7f41.sql",
-     "supabase/migrations/20261101120000_drop_dead_rls_policy.sql",
-     "supabase/migrations/20261101120100_drop_duplicate_indexes.sql",
-     "supabase/migrations/20261101120200_autovacuum_scale_factor.sql",
-     "supabase/migrations/20261101120300_fk_indexes_contas.sql",
-     "supabase/migrations/20261101120400_fk_indexes_outras.sql",
-     "supabase/migrations/20261101120500_rls_elisao_catalogo.sql",
-     "supabase/migrations/20261101120600_boletos_asaas_defaults.sql"
-    ]
    }
   ],
   "hot_files": [
@@ -242615,6 +242604,10 @@
    [
     "scripts/automation.config.json",
     2
+   ],
+   [
+    "docs/prod-readiness.md",
+    1
    ],
    [
     "src/components/dashboard/DashboardConfigDialog.tsx",
@@ -242658,10 +242651,6 @@
    ],
    [
     "supabase/migrations/20261112024404_categorias_nome_unico.sql",
-    1
-   ],
-   [
-    "supabase/migrations/20261112024218_remove_categorias_duplicadas.sql",
     1
    ]
   ]
