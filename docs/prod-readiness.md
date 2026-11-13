@@ -24,142 +24,144 @@ Fonte: varredura do código no `bd5e644` (`src/App.tsx`, `supabase/functions/*`,
 `.github/workflows/*`) cruzada com o estado real de produção (Supabase `bwwbeyolnnzppeuhgkcd`,
 Vercel `promo-finance-v2`).
 
-### 1.1 Rotas/telas — 128 na linha de base (`bd5e644`) + 2 registradas pela #323 (130 no `main` `821385c`)
+### 1.1 Rotas/telas — 128 na linha de base (`bd5e644`) + 2 registradas pela #323 = 130 no `main` `b933544`
+
+Revalidação no `main` `b933544` (13/11): a #328 reduziu `src/App.tsx` para 122 linhas e moveu as rotas para `src/routes/*Routes.tsx`. Script `rotas.py` (extrai `path`, página e `ProtectedRoute requiredRoles`/`MainLayout` de `src/App.tsx` e `src/routes/*Routes.tsx`) → **130 rotas, 130/130 iguais à linha de base em página e guard** (só diferenças de grafia: espaço após vírgula em `roles=admin,financeiro`; `/__especimes` continua só em DEV via `import.meta.env.DEV`, `src/App.tsx:70`). A coluna _registro_ abaixo foi atualizada para o arquivo:linha atual.
 
 Status OK = rota registrada, guard correto e página compila. Prova comum: `tsc --noEmit` exit 0, `vite build` exit 0 (bundle contém o chunk lazy de cada página), deploy de produção `dpl_CE8yX9sNzaU2sDgPwMnrkVCTuHvb` READY no commit `bd5e644` e `GET https://promo-finance-v2.vercel.app/` → 200 (SPA; todas as rotas servem o mesmo `index.html` via rewrite). A renderização por rota não é provada por esse 200 — é coberta pelos E2E da CI (`E2E Critical Gate`, `E2E Financeiro`, verdes em 12/11) só nas rotas que eles visitam.
 
-| #   | rota                                    | página                        | guard                             | registro                             | status |
-| --- | --------------------------------------- | ----------------------------- | --------------------------------- | ------------------------------------ | ------ |
-| 1   | `/auth`                                 | Auth                          | público                           | src/App.tsx:178                      | OK     |
-| 2   | `/auth/corporate`                       | CorporateOnboarding           | público                           | src/App.tsx:179                      | OK     |
-| 3   | `/reset-password`                       | ResetPassword                 | público                           | src/App.tsx:180                      | OK     |
-| 4   | `/contador/:token`                      | ContadorReadonly              | público                           | src/App.tsx:181                      | OK     |
-| 5   | `/status`                               | StatusPage                    | público                           | src/App.tsx:182                      | OK     |
-| 6   | `/design-system-debug`                  | DesignSystemDebug             | público                           | src/App.tsx:183                      | OK     |
-| 7   | `/__especimes`                          | Especimes                     | público (só DEV)                  | src/App.tsx:184                      | OK     |
-| 8   | `/theme-diagnostics`                    | ThemeDiagnostics              | público                           | src/App.tsx:185                      | OK     |
-| 9   | `/`                                     | Index                         | Protected                         | src/App.tsx:186                      | OK     |
-| 10  | `/dashboard`                            | Index                         | Protected                         | src/App.tsx:194                      | OK     |
-| 11  | `/dashboard-receber`                    | DashboardReceber              | Protected                         | src/App.tsx:202                      | OK     |
-| 12  | `/dashboard-empresa`                    | DashboardEmpresa              | Protected                         | src/App.tsx:210                      | OK     |
-| 13  | `/bi`                                   | BI                            | Protected                         | src/App.tsx:218                      | OK     |
-| 14  | `/contas-pagar`                         | ContasPagar                   | Protected                         | src/App.tsx:226                      | OK     |
-| 15  | `/contas-pagar/bloqueios`               | BloqueiosDuplicidade          | Protected                         | src/App.tsx:234                      | OK     |
-| 16  | `/contas-receber`                       | ContasReceber                 | Protected                         | src/App.tsx:242                      | OK     |
-| 17  | `/notas-fiscais`                        | NotasFiscais                  | Protected                         | src/App.tsx:250                      | OK     |
-| 18  | `/fluxo-caixa`                          | FluxoCaixa                    | Protected                         | src/App.tsx:258                      | OK     |
-| 19  | `/relatorios`                           | Relatorios                    | Protected +MainLayout             | src/App.tsx:266                      | OK     |
-| 20  | `/expert`                               | Expert                        | Protected                         | src/App.tsx:276                      | OK     |
-| 21  | `/conciliacao`                          | Conciliacao                   | Protected                         | src/App.tsx:284                      | OK     |
-| 22  | `/cobrancas`                            | Cobrancas                     | Protected                         | src/App.tsx:292                      | OK     |
-| 23  | `/boletos`                              | Boletos                       | Protected                         | src/App.tsx:300                      | OK     |
-| 24  | `/clientes`                             | Clientes                      | Protected                         | src/App.tsx:308                      | OK     |
-| 25  | `/fornecedores`                         | Fornecedores                  | Protected                         | src/App.tsx:316                      | OK     |
-| 26  | `/empresas`                             | Empresas                      | Protected +MainLayout             | src/App.tsx:324                      | OK     |
-| 27  | `/contas-bancarias`                     | ContasBancarias               | Protected                         | src/App.tsx:334                      | OK     |
-| 28  | `/centro-custos`                        | CentroCustos                  | Protected                         | src/App.tsx:342                      | OK     |
-| 29  | `/aprovacoes`                           | Aprovacoes                    | Protected                         | src/App.tsx:350                      | OK     |
-| 30  | `/alertas`                              | Alertas                       | Protected +MainLayout             | src/App.tsx:358                      | OK     |
-| 31  | `/configuracoes`                        | Configuracoes                 | Protected +MainLayout             | src/App.tsx:368                      | OK     |
-| 32  | `/organizacoes`                         | OrganizacoesPage              | Protected                         | src/App.tsx:378                      | OK     |
-| 33  | `/convite/:token`                       | AceitarConvitePage            | público                           | src/App.tsx:386                      | OK     |
-| 34  | `/usuarios`                             | Usuarios                      | Protected                         | src/App.tsx:387                      | OK     |
-| 35  | `/audit-logs`                           | AuditLogs                     | Protected                         | src/App.tsx:395                      | OK     |
-| 36  | `/seguranca`                            | Seguranca                     | Protected +MainLayout             | src/App.tsx:403                      | OK     |
-| 37  | `/integracoes`                          | Integracoes                   | Protected                         | src/App.tsx:413                      | OK     |
-| 38  | `/demonstrativos`                       | Demonstrativos                | Protected                         | src/App.tsx:421                      | OK     |
-| 39  | `/contabilidade`                        | Contabilidade                 | Protected roles=admin, financeiro | src/App.tsx:429                      | OK     |
-| 40  | `/financeiro`                           | Financeiro                    | Protected                         | src/App.tsx:437                      | OK     |
-| 41  | `/pagamentos-recorrentes`               | PagamentosRecorrentes         | Protected +MainLayout             | src/App.tsx:445                      | OK     |
-| 42  | `/bitrix24`                             | Bitrix24                      | Protected +MainLayout             | src/App.tsx:455                      | OK     |
-| 43  | `/reforma-tributaria`                   | ReformaTributaria             | Protected                         | src/App.tsx:465                      | OK     |
-| 44  | `/reforma-tributaria/:tab`              | ReformaTributaria             | Protected                         | src/App.tsx:473                      | OK     |
-| 45  | `/tributario/simulacao-regimes`         | SimulacaoRegimes              | Protected                         | src/App.tsx:481                      | OK     |
-| 46  | `/tributario/historico-financeiro`      | HistoricoFinanceiroTributario | Protected                         | src/App.tsx:489                      | OK     |
-| 47  | `/tributario/oportunidades-elisao`      | OportunidadesElisao           | Protected                         | src/App.tsx:497                      | OK     |
-| 48  | `/tributario/projecao-reforma`          | ProjecaoReformaPage           | Protected                         | src/App.tsx:505                      | OK     |
-| 49  | `/tributario`                           | DashboardTributario           | Protected                         | src/App.tsx:513                      | OK     |
-| 50  | `/tributario/catalogos-fiscais`         | CatalogosFiscaisPage          | Protected                         | src/App.tsx:521                      | OK     |
-| 51  | `/tributario/arquitetura`               | ArquiteturaModularPage        | Protected                         | src/App.tsx:529                      | OK     |
-| 52  | `/tributario/auditoria-overlay`         | AuditoriaOverlayPage          | Protected                         | src/App.tsx:537                      | OK     |
-| 53  | `/tributario/dashboard`                 | DashboardTributario           | Protected                         | src/App.tsx:545                      | OK     |
-| 54  | `/tributario/recomendacao`              | RecomendacaoExecutiva         | Protected                         | src/App.tsx:553                      | OK     |
-| 55  | `/tributario/pf-vinculada`              | PfVinculada                   | Protected                         | src/App.tsx:561                      | OK     |
-| 56  | `/tributario/onboarding`                | OnboardingTributario          | Protected                         | src/App.tsx:569                      | OK     |
-| 57  | `/tributario/certificados-digitais`     | CertificadosDigitais          | Protected                         | src/App.tsx:577                      | OK     |
-| 58  | `/tributario/nfe-recebidas`             | NfeRecebidasPage              | Protected                         | src/App.tsx:585                      | OK     |
-| 59  | `/tributario/sefaz-observabilidade`     | SefazObservabilidadePage      | Protected                         | src/App.tsx:593                      | OK     |
-| 60  | `/tributario/calculadora`               | CalculadoraTributaria         | Protected                         | src/App.tsx:601                      | OK     |
-| 61  | `/asaas`                                | Asaas                         | Protected                         | src/App.tsx:610                      | OK     |
-| 62  | `/bling`                                | BlingPage                     | Protected                         | src/App.tsx:618                      | OK     |
-| 63  | `/vendedores`                           | Vendedores                    | Protected                         | src/App.tsx:626                      | OK     |
-| 64  | `/meu-perfil`                           | MeuPerfil                     | Protected                         | src/App.tsx:634                      | OK     |
-| 65  | `/contratos`                            | Contratos                     | Protected                         | src/App.tsx:642                      | OK     |
-| 66  | `/simulador-antecipacao`                | SimuladorAntecipacaoPage      | Protected                         | src/App.tsx:650                      | OK     |
-| 67  | `/assinatura-digital`                   | AssinaturaDigitalPage         | Protected                         | src/App.tsx:658                      | OK     |
-| 68  | `/comprovante-ocr`                      | ComprovanteOCRPage            | Protected                         | src/App.tsx:666                      | OK     |
-| 69  | `/movimentacoes`                        | Movimentacoes                 | Protected                         | src/App.tsx:674                      | OK     |
-| 70  | `/tesouraria`                           | Tesouraria                    | Protected                         | src/App.tsx:682                      | OK     |
-| 71  | `/pix-hub`                              | PixHub                        | Protected                         | src/App.tsx:690                      | OK     |
-| 72  | `/orcamento-evento`                     | OrcamentoEvento               | Protected                         | src/App.tsx:698                      | OK     |
-| 73  | `/benchmarking`                         | BenchmarkingSetorial          | Protected                         | src/App.tsx:706                      | OK     |
-| 74  | `/admin/telemetria`                     | AdminTelemetria               | Protected roles=admin             | src/App.tsx:714                      | OK     |
-| 75  | `/admin/edge-health`                    | AdminEdgeHealth               | Protected roles=admin +MainLayout | src/App.tsx:722                      | OK     |
-| 76  | `/admin/system-health`                  | AdminSystemHealth             | Protected roles=admin +MainLayout | src/App.tsx:732                      | OK     |
-| 77  | `/admin/sre`                            | SRECommandCenter              | Protected roles=admin             | src/App.tsx:742                      | OK     |
-| 78  | `/admin/bloat-monitor`                  | AdminBloatMonitor             | Protected roles=admin             | src/App.tsx:750                      | OK     |
-| 79  | `/admin/sso`                            | SSOAdmin                      | Protected roles=admin             | src/App.tsx:758                      | OK     |
-| 80  | `/admin/sso-jit-events`                 | SSOJitEvents                  | Protected roles=admin             | src/App.tsx:766                      | OK     |
-| 81  | `/admin/scim-audit`                     | ScimAudit                     | Protected roles=admin             | src/App.tsx:774                      | OK     |
-| 82  | `/audit-sso-profile-sync`               | AuditSsoProfileSync           | Protected roles=admin             | src/App.tsx:782                      | OK     |
-| 83  | `/admin/sso-events`                     | SsoEvents                     | Protected roles=admin             | src/App.tsx:790                      | OK     |
-| 84  | `/admin/insights-ia`                    | InsightsIA                    | Protected roles=admin, financeiro | src/App.tsx:798                      | OK     |
-| 85  | `/admin/insights-ia/anomalia/:id`       | AnomaliaDetalhe               | Protected roles=admin, financeiro | src/App.tsx:806                      | OK     |
-| 86  | `/admin/compliance`                     | ComplianceAuditoria           | Protected roles=admin             | src/App.tsx:814                      | OK     |
-| 87  | `/admin/auditoria-ia`                   | AuditoriaIA                   | Protected roles=admin, financeiro | src/App.tsx:822                      | OK     |
-| 88  | `/configuracoes/privacidade`            | CentroPrivacidadeLGPD         | Protected +MainLayout             | src/App.tsx:830                      | OK     |
-| 89  | `/configuracoes/filtros-salvos`         | FiltrosSalvos                 | Protected                         | src/App.tsx:840                      | OK     |
-| 90  | `/configuracoes/preferencias`           | MinhasPreferencias            | Protected                         | src/App.tsx:848                      | OK     |
-| 91  | `/configuracoes/notificacoes/historico` | HistoricoNotificacoes         | Protected                         | src/App.tsx:856                      | OK     |
-| 92  | `/configuracoes/notificacoes/sino`      | SinoNotificacoesFiltros       | Protected                         | src/App.tsx:864                      | OK     |
-| 93  | `/admin/filtros-compartilhados`         | SharedFiltersAdmin            | Protected roles=admin             | src/App.tsx:872                      | OK     |
-| 94  | `/admin/api`                            | ApiManagement                 | Protected roles=admin             | src/App.tsx:880                      | OK     |
-| 95  | `/admin/campos-customizados`            | CustomFieldsAdmin             | Protected roles=admin             | src/App.tsx:888                      | OK     |
-| 96  | `/tributario/split-payment`             | SplitPaymentPage              | Protected                         | src/App.tsx:896                      | OK     |
-| 97  | `/tributario/conciliacao`               | ConciliacaoTributariaPage     | Protected                         | src/App.tsx:904                      | OK     |
-| 98  | `/tributario/incentivos`                | IncentivosFiscaisPage         | Protected                         | src/App.tsx:912                      | OK     |
-| 99  | `/tributario/auditoria`                 | AuditoriaCompliancePage       | Protected                         | src/App.tsx:920                      | OK     |
-| 100 | `/tributario/comparativo`               | ComparativoRegimesPage        | Protected                         | src/App.tsx:928                      | OK     |
-| 101 | `/tributario/cashback`                  | CashbackSimuladorPage         | Protected                         | src/App.tsx:936                      | OK     |
-| 102 | `/tributario/importacao-xml`            | ImportacaoXMLPage             | Protected                         | src/App.tsx:944                      | OK     |
-| 103 | `/tributario/sped`                      | SpedExportPage                | Protected                         | src/App.tsx:952                      | OK     |
-| 104 | `/tributario/relatorios-contabeis`      | RelatoriosContabeisPage       | Protected                         | src/App.tsx:960                      | OK     |
-| 105 | `/tributario/per-dcomp`                 | PerDcompPage                  | Protected                         | src/App.tsx:968                      | OK     |
-| 106 | `/tributario/retencoes`                 | RetencoesFontePage            | Protected                         | src/App.tsx:976                      | OK     |
-| 107 | `/tributario/fechamento-mensal`         | FechamentoMensalPage          | Protected                         | src/App.tsx:984                      | OK     |
-| 108 | `/tributario/glossario`                 | GlossarioTributario           | Protected                         | src/App.tsx:992                      | OK     |
-| 109 | `/tributario/monofasico`                | MonofasicoPage                | Protected                         | src/App.tsx:1000                     | OK     |
-| 110 | `/tributario/folha-encargos`            | FolhaEncargosPage             | Protected                         | src/App.tsx:1008                     | OK     |
-| 111 | `/tributario/icms-st`                   | IcmsStDifalPage               | Protected                         | src/App.tsx:1016                     | OK     |
-| 112 | `/tributario/ipi-iss`                   | IpiIssPage                    | Protected                         | src/App.tsx:1024                     | OK     |
-| 113 | `/tributario/pis-cofins`                | PisCofinsCreditosPage         | Protected                         | src/App.tsx:1032                     | OK     |
-| 114 | `/tributario/irpj-csll`                 | IrpjCsllLucroRealPage         | Protected                         | src/App.tsx:1040                     | OK     |
-| 115 | `/tributario/darf`                      | DarfConsolidadoPage           | Protected                         | src/App.tsx:1048                     | OK     |
-| 116 | `/tributario/obrigacoes`                | ObrigacoesAcessoriasPage      | Protected                         | src/App.tsx:1056                     | OK     |
-| 117 | `/tributario/comparativo-conformidade`  | ComparativoConformidadePage   | Protected                         | src/App.tsx:1064                     | OK     |
-| 118 | `/tributario/preferencias-digest`       | PreferenciasDigestPage        | Protected                         | src/App.tsx:1072                     | OK     |
-| 119 | `/tributario/observabilidade-digest`    | ObservabilidadeDigestPage     | Protected                         | src/App.tsx:1080                     | OK     |
-| 120 | `/inteligencia`                         | InteligenciaOperacionalPage   | Protected                         | src/App.tsx:1089                     | OK     |
-| 121 | `/metas`                                | MetasFinanceirasPage          | Protected                         | src/App.tsx:1097                     | OK     |
-| 122 | `/orcamentos`                           | Orcamentos                    | Protected                         | src/App.tsx:1105                     | OK     |
-| 123 | `/categorias`                           | Categorias                    | Protected                         | src/App.tsx:1113                     | OK     |
-| 124 | `/clientes/portal-tokens`               | PortalTokensPage              | Protected                         | src/App.tsx:1121                     | OK     |
-| 125 | `/clientes/scoring`                     | ScoringClientesPage           | Protected                         | src/App.tsx:1129                     | OK     |
-| 126 | `/compras`                              | Compras                       | Protected                         | src/App.tsx:1138                     | OK     |
-| 127 | `/style-guide`                          | StyleGuide                    | Protected                         | src/App.tsx:1146                     | OK     |
-| 128 | `*`                                     | NotFound                      | público                           | src/App.tsx:1154                     | OK     |
-| 129 | `/admin/erros-frontend`                 | AdminErrosFrontend            | admin                             | src/App.tsx:906 (`821385c`, PR #323) | OK     |
-| 130 | `/tributario/consulta-rapida`           | ConsultaRapidaFiscal          | autenticado                       | src/App.tsx:531 (`821385c`, PR #323) | OK     |
+| #   | rota                                    | página                        | guard                             | registro                                  | status |
+| --- | --------------------------------------- | ----------------------------- | --------------------------------- | ----------------------------------------- | ------ |
+| 1   | `/auth`                                 | Auth                          | público                           | src/App.tsx:64                            | OK     |
+| 2   | `/auth/corporate`                       | CorporateOnboarding           | público                           | src/App.tsx:65                            | OK     |
+| 3   | `/reset-password`                       | ResetPassword                 | público                           | src/App.tsx:66                            | OK     |
+| 4   | `/contador/:token`                      | ContadorReadonly              | público                           | src/App.tsx:67                            | OK     |
+| 5   | `/status`                               | StatusPage                    | público                           | src/App.tsx:68                            | OK     |
+| 6   | `/design-system-debug`                  | DesignSystemDebug             | público                           | src/App.tsx:69                            | OK     |
+| 7   | `/__especimes`                          | Especimes                     | público (só DEV)                  | src/App.tsx:70                            | OK     |
+| 8   | `/theme-diagnostics`                    | ThemeDiagnostics              | público                           | src/App.tsx:71                            | OK     |
+| 9   | `/`                                     | Index                         | Protected                         | src/routes/analiseRoutes.tsx:10           | OK     |
+| 10  | `/dashboard`                            | Index                         | Protected                         | src/routes/analiseRoutes.tsx:18           | OK     |
+| 11  | `/dashboard-receber`                    | DashboardReceber              | Protected                         | src/routes/contabilRoutes.tsx:16          | OK     |
+| 12  | `/dashboard-empresa`                    | DashboardEmpresa              | Protected                         | src/routes/analiseRoutes.tsx:26           | OK     |
+| 13  | `/bi`                                   | BI                            | Protected                         | src/routes/analiseRoutes.tsx:34           | OK     |
+| 14  | `/contas-pagar`                         | ContasPagar                   | Protected                         | src/routes/financeiroRoutes.tsx:30        | OK     |
+| 15  | `/contas-pagar/bloqueios`               | BloqueiosDuplicidade          | Protected                         | src/routes/geralRoutes.tsx:30             | OK     |
+| 16  | `/contas-receber`                       | ContasReceber                 | Protected                         | src/routes/financeiroRoutes.tsx:38        | OK     |
+| 17  | `/notas-fiscais`                        | NotasFiscais                  | Protected                         | src/routes/fiscalRoutes.tsx:9             | OK     |
+| 18  | `/fluxo-caixa`                          | FluxoCaixa                    | Protected                         | src/routes/financeiroRoutes.tsx:46        | OK     |
+| 19  | `/relatorios`                           | Relatorios                    | Protected +MainLayout             | src/routes/analiseRoutes.tsx:42           | OK     |
+| 20  | `/expert`                               | Expert                        | Protected                         | src/routes/analiseRoutes.tsx:52           | OK     |
+| 21  | `/conciliacao`                          | Conciliacao                   | Protected                         | src/routes/financeiroRoutes.tsx:54        | OK     |
+| 22  | `/cobrancas`                            | Cobrancas                     | Protected                         | src/routes/financeiroRoutes.tsx:62        | OK     |
+| 23  | `/boletos`                              | Boletos                       | Protected                         | src/routes/financeiroRoutes.tsx:70        | OK     |
+| 24  | `/clientes`                             | Clientes                      | Protected                         | src/routes/financeiroRoutes.tsx:78        | OK     |
+| 25  | `/fornecedores`                         | Fornecedores                  | Protected                         | src/routes/financeiroRoutes.tsx:86        | OK     |
+| 26  | `/empresas`                             | Empresas                      | Protected +MainLayout             | src/routes/geralRoutes.tsx:38             | OK     |
+| 27  | `/contas-bancarias`                     | ContasBancarias               | Protected                         | src/routes/financeiroRoutes.tsx:94        | OK     |
+| 28  | `/centro-custos`                        | CentroCustos                  | Protected                         | src/routes/contabilRoutes.tsx:24          | OK     |
+| 29  | `/aprovacoes`                           | Aprovacoes                    | Protected                         | src/routes/financeiroRoutes.tsx:102       | OK     |
+| 30  | `/alertas`                              | Alertas                       | Protected +MainLayout             | src/routes/geralRoutes.tsx:48             | OK     |
+| 31  | `/configuracoes`                        | Configuracoes                 | Protected +MainLayout             | src/routes/adminRoutes.tsx:38             | OK     |
+| 32  | `/organizacoes`                         | OrganizacoesPage              | Protected                         | src/routes/geralRoutes.tsx:58             | OK     |
+| 33  | `/convite/:token`                       | AceitarConvitePage            | público                           | src/routes/geralRoutes.tsx:66             | OK     |
+| 34  | `/usuarios`                             | Usuarios                      | Protected                         | src/routes/adminRoutes.tsx:48             | OK     |
+| 35  | `/audit-logs`                           | AuditLogs                     | Protected                         | src/routes/adminRoutes.tsx:56             | OK     |
+| 36  | `/seguranca`                            | Seguranca                     | Protected +MainLayout             | src/routes/adminRoutes.tsx:64             | OK     |
+| 37  | `/integracoes`                          | Integracoes                   | Protected                         | src/routes/adminRoutes.tsx:74             | OK     |
+| 38  | `/demonstrativos`                       | Demonstrativos                | Protected                         | src/routes/contabilRoutes.tsx:32          | OK     |
+| 39  | `/contabilidade`                        | Contabilidade                 | Protected roles=admin, financeiro | src/routes/contabilRoutes.tsx:40          | OK     |
+| 40  | `/financeiro`                           | Financeiro                    | Protected                         | src/routes/financeiroRoutes.tsx:110       | OK     |
+| 41  | `/pagamentos-recorrentes`               | PagamentosRecorrentes         | Protected +MainLayout             | src/routes/financeiroRoutes.tsx:118       | OK     |
+| 42  | `/bitrix24`                             | Bitrix24                      | Protected +MainLayout             | src/routes/analiseRoutes.tsx:60           | OK     |
+| 43  | `/reforma-tributaria`                   | ReformaTributaria             | Protected                         | src/routes/reformaTributariaRoutes.tsx:14 | OK     |
+| 44  | `/reforma-tributaria/:tab`              | ReformaTributaria             | Protected                         | src/routes/reformaTributariaRoutes.tsx:22 | OK     |
+| 45  | `/tributario/simulacao-regimes`         | SimulacaoRegimes              | Protected                         | src/routes/tributarioRoutes.tsx:55        | OK     |
+| 46  | `/tributario/historico-financeiro`      | HistoricoFinanceiroTributario | Protected                         | src/routes/tributarioRoutes.tsx:63        | OK     |
+| 47  | `/tributario/oportunidades-elisao`      | OportunidadesElisao           | Protected                         | src/routes/tributarioRoutes.tsx:71        | OK     |
+| 48  | `/tributario/projecao-reforma`          | ProjecaoReformaPage           | Protected                         | src/routes/reformaTributariaRoutes.tsx:30 | OK     |
+| 49  | `/tributario`                           | DashboardTributario           | Protected                         | src/routes/tributarioRoutes.tsx:79        | OK     |
+| 50  | `/tributario/catalogos-fiscais`         | CatalogosFiscaisPage          | Protected                         | src/routes/tributarioRoutes.tsx:87        | OK     |
+| 51  | `/tributario/arquitetura`               | ArquiteturaModularPage        | Protected                         | src/routes/tributarioRoutes.tsx:95        | OK     |
+| 52  | `/tributario/auditoria-overlay`         | AuditoriaOverlayPage          | Protected                         | src/routes/tributarioRoutes.tsx:103       | OK     |
+| 53  | `/tributario/dashboard`                 | DashboardTributario           | Protected                         | src/routes/tributarioRoutes.tsx:111       | OK     |
+| 54  | `/tributario/recomendacao`              | RecomendacaoExecutiva         | Protected                         | src/routes/tributarioRoutes.tsx:119       | OK     |
+| 55  | `/tributario/pf-vinculada`              | PfVinculada                   | Protected                         | src/routes/tributarioRoutes.tsx:127       | OK     |
+| 56  | `/tributario/onboarding`                | OnboardingTributario          | Protected                         | src/routes/tributarioRoutes.tsx:135       | OK     |
+| 57  | `/tributario/certificados-digitais`     | CertificadosDigitais          | Protected                         | src/routes/tributarioRoutes.tsx:143       | OK     |
+| 58  | `/tributario/nfe-recebidas`             | NfeRecebidasPage              | Protected                         | src/routes/tributarioRoutes.tsx:151       | OK     |
+| 59  | `/tributario/sefaz-observabilidade`     | SefazObservabilidadePage      | Protected                         | src/routes/tributarioRoutes.tsx:159       | OK     |
+| 60  | `/tributario/calculadora`               | CalculadoraTributaria         | Protected                         | src/routes/tributarioRoutes.tsx:167       | OK     |
+| 61  | `/asaas`                                | Asaas                         | Protected                         | src/routes/financeiroRoutes.tsx:128       | OK     |
+| 62  | `/bling`                                | BlingPage                     | Protected                         | src/routes/financeiroRoutes.tsx:136       | OK     |
+| 63  | `/vendedores`                           | Vendedores                    | Protected                         | src/routes/geralRoutes.tsx:67             | OK     |
+| 64  | `/meu-perfil`                           | MeuPerfil                     | Protected                         | src/routes/geralRoutes.tsx:75             | OK     |
+| 65  | `/contratos`                            | Contratos                     | Protected                         | src/routes/geralRoutes.tsx:83             | OK     |
+| 66  | `/simulador-antecipacao`                | SimuladorAntecipacaoPage      | Protected                         | src/routes/geralRoutes.tsx:91             | OK     |
+| 67  | `/assinatura-digital`                   | AssinaturaDigitalPage         | Protected                         | src/routes/geralRoutes.tsx:99             | OK     |
+| 68  | `/comprovante-ocr`                      | ComprovanteOCRPage            | Protected                         | src/routes/geralRoutes.tsx:107            | OK     |
+| 69  | `/movimentacoes`                        | Movimentacoes                 | Protected                         | src/routes/geralRoutes.tsx:115            | OK     |
+| 70  | `/tesouraria`                           | Tesouraria                    | Protected                         | src/routes/financeiroRoutes.tsx:144       | OK     |
+| 71  | `/pix-hub`                              | PixHub                        | Protected                         | src/routes/geralRoutes.tsx:123            | OK     |
+| 72  | `/orcamento-evento`                     | OrcamentoEvento               | Protected                         | src/routes/geralRoutes.tsx:131            | OK     |
+| 73  | `/benchmarking`                         | BenchmarkingSetorial          | Protected                         | src/routes/geralRoutes.tsx:139            | OK     |
+| 74  | `/admin/telemetria`                     | AdminTelemetria               | Protected roles=admin             | src/routes/adminRoutes.tsx:90             | OK     |
+| 75  | `/admin/edge-health`                    | AdminEdgeHealth               | Protected roles=admin +MainLayout | src/routes/adminRoutes.tsx:98             | OK     |
+| 76  | `/admin/system-health`                  | AdminSystemHealth             | Protected roles=admin +MainLayout | src/routes/adminRoutes.tsx:108            | OK     |
+| 77  | `/admin/sre`                            | SRECommandCenter              | Protected roles=admin             | src/routes/adminRoutes.tsx:118            | OK     |
+| 78  | `/admin/bloat-monitor`                  | AdminBloatMonitor             | Protected roles=admin             | src/routes/adminRoutes.tsx:126            | OK     |
+| 79  | `/admin/sso`                            | SSOAdmin                      | Protected roles=admin             | src/routes/adminRoutes.tsx:134            | OK     |
+| 80  | `/admin/sso-jit-events`                 | SSOJitEvents                  | Protected roles=admin             | src/routes/adminRoutes.tsx:142            | OK     |
+| 81  | `/admin/scim-audit`                     | ScimAudit                     | Protected roles=admin             | src/routes/adminRoutes.tsx:150            | OK     |
+| 82  | `/audit-sso-profile-sync`               | AuditSsoProfileSync           | Protected roles=admin             | src/routes/adminRoutes.tsx:158            | OK     |
+| 83  | `/admin/sso-events`                     | SsoEvents                     | Protected roles=admin             | src/routes/adminRoutes.tsx:166            | OK     |
+| 84  | `/admin/insights-ia`                    | InsightsIA                    | Protected roles=admin, financeiro | src/routes/adminRoutes.tsx:174            | OK     |
+| 85  | `/admin/insights-ia/anomalia/:id`       | AnomaliaDetalhe               | Protected roles=admin, financeiro | src/routes/adminRoutes.tsx:182            | OK     |
+| 86  | `/admin/compliance`                     | ComplianceAuditoria           | Protected roles=admin             | src/routes/adminRoutes.tsx:190            | OK     |
+| 87  | `/admin/auditoria-ia`                   | AuditoriaIA                   | Protected roles=admin, financeiro | src/routes/adminRoutes.tsx:198            | OK     |
+| 88  | `/configuracoes/privacidade`            | CentroPrivacidadeLGPD         | Protected +MainLayout             | src/routes/contabilRoutes.tsx:48          | OK     |
+| 89  | `/configuracoes/filtros-salvos`         | FiltrosSalvos                 | Protected                         | src/routes/adminRoutes.tsx:206            | OK     |
+| 90  | `/configuracoes/preferencias`           | MinhasPreferencias            | Protected                         | src/routes/adminRoutes.tsx:214            | OK     |
+| 91  | `/configuracoes/notificacoes/historico` | HistoricoNotificacoes         | Protected                         | src/routes/adminRoutes.tsx:222            | OK     |
+| 92  | `/configuracoes/notificacoes/sino`      | SinoNotificacoesFiltros       | Protected                         | src/routes/adminRoutes.tsx:230            | OK     |
+| 93  | `/admin/filtros-compartilhados`         | SharedFiltersAdmin            | Protected roles=admin             | src/routes/adminRoutes.tsx:238            | OK     |
+| 94  | `/admin/api`                            | ApiManagement                 | Protected roles=admin             | src/routes/adminRoutes.tsx:246            | OK     |
+| 95  | `/admin/campos-customizados`            | CustomFieldsAdmin             | Protected roles=admin             | src/routes/adminRoutes.tsx:254            | OK     |
+| 96  | `/tributario/split-payment`             | SplitPaymentPage              | Protected                         | src/routes/reformaTributariaRoutes.tsx:38 | OK     |
+| 97  | `/tributario/conciliacao`               | ConciliacaoTributariaPage     | Protected                         | src/routes/tributarioRoutes.tsx:175       | OK     |
+| 98  | `/tributario/incentivos`                | IncentivosFiscaisPage         | Protected                         | src/routes/tributarioRoutes.tsx:183       | OK     |
+| 99  | `/tributario/auditoria`                 | AuditoriaCompliancePage       | Protected                         | src/routes/tributarioRoutes.tsx:191       | OK     |
+| 100 | `/tributario/comparativo`               | ComparativoRegimesPage        | Protected                         | src/routes/tributarioRoutes.tsx:199       | OK     |
+| 101 | `/tributario/cashback`                  | CashbackSimuladorPage         | Protected                         | src/routes/reformaTributariaRoutes.tsx:46 | OK     |
+| 102 | `/tributario/importacao-xml`            | ImportacaoXMLPage             | Protected                         | src/routes/tributarioRoutes.tsx:207       | OK     |
+| 103 | `/tributario/sped`                      | SpedExportPage                | Protected                         | src/routes/tributarioRoutes.tsx:215       | OK     |
+| 104 | `/tributario/relatorios-contabeis`      | RelatoriosContabeisPage       | Protected                         | src/routes/tributarioRoutes.tsx:223       | OK     |
+| 105 | `/tributario/per-dcomp`                 | PerDcompPage                  | Protected                         | src/routes/tributarioRoutes.tsx:231       | OK     |
+| 106 | `/tributario/retencoes`                 | RetencoesFontePage            | Protected                         | src/routes/tributarioRoutes.tsx:239       | OK     |
+| 107 | `/tributario/fechamento-mensal`         | FechamentoMensalPage          | Protected                         | src/routes/tributarioRoutes.tsx:247       | OK     |
+| 108 | `/tributario/glossario`                 | GlossarioTributario           | Protected                         | src/routes/tributarioRoutes.tsx:255       | OK     |
+| 109 | `/tributario/monofasico`                | MonofasicoPage                | Protected                         | src/routes/tributarioRoutes.tsx:263       | OK     |
+| 110 | `/tributario/folha-encargos`            | FolhaEncargosPage             | Protected                         | src/routes/tributarioRoutes.tsx:271       | OK     |
+| 111 | `/tributario/icms-st`                   | IcmsStDifalPage               | Protected                         | src/routes/tributarioRoutes.tsx:279       | OK     |
+| 112 | `/tributario/ipi-iss`                   | IpiIssPage                    | Protected                         | src/routes/tributarioRoutes.tsx:287       | OK     |
+| 113 | `/tributario/pis-cofins`                | PisCofinsCreditosPage         | Protected                         | src/routes/tributarioRoutes.tsx:295       | OK     |
+| 114 | `/tributario/irpj-csll`                 | IrpjCsllLucroRealPage         | Protected                         | src/routes/tributarioRoutes.tsx:303       | OK     |
+| 115 | `/tributario/darf`                      | DarfConsolidadoPage           | Protected                         | src/routes/tributarioRoutes.tsx:311       | OK     |
+| 116 | `/tributario/obrigacoes`                | ObrigacoesAcessoriasPage      | Protected                         | src/routes/tributarioRoutes.tsx:319       | OK     |
+| 117 | `/tributario/comparativo-conformidade`  | ComparativoConformidadePage   | Protected                         | src/routes/tributarioRoutes.tsx:327       | OK     |
+| 118 | `/tributario/preferencias-digest`       | PreferenciasDigestPage        | Protected                         | src/routes/tributarioRoutes.tsx:335       | OK     |
+| 119 | `/tributario/observabilidade-digest`    | ObservabilidadeDigestPage     | Protected                         | src/routes/tributarioRoutes.tsx:343       | OK     |
+| 120 | `/inteligencia`                         | InteligenciaOperacionalPage   | Protected                         | src/routes/geralRoutes.tsx:147            | OK     |
+| 121 | `/metas`                                | MetasFinanceirasPage          | Protected                         | src/routes/financeiroRoutes.tsx:152       | OK     |
+| 122 | `/orcamentos`                           | Orcamentos                    | Protected                         | src/routes/geralRoutes.tsx:155            | OK     |
+| 123 | `/categorias`                           | Categorias                    | Protected                         | src/routes/geralRoutes.tsx:163            | OK     |
+| 124 | `/clientes/portal-tokens`               | PortalTokensPage              | Protected                         | src/routes/financeiroRoutes.tsx:160       | OK     |
+| 125 | `/clientes/scoring`                     | ScoringClientesPage           | Protected                         | src/routes/financeiroRoutes.tsx:168       | OK     |
+| 126 | `/compras`                              | Compras                       | Protected                         | src/routes/financeiroRoutes.tsx:176       | OK     |
+| 127 | `/style-guide`                          | StyleGuide                    | Protected                         | src/routes/geralRoutes.tsx:171            | OK     |
+| 128 | `*`                                     | NotFound                      | público                           | src/App.tsx:89                            | OK     |
+| 129 | `/admin/erros-frontend`                 | AdminErrosFrontend            | Protected roles=admin             | src/routes/adminRoutes.tsx:82             | OK     |
+| 130 | `/tributario/consulta-rapida`           | ConsultaRapidaFiscal          | Protected                         | src/routes/tributarioRoutes.tsx:47        | OK     |
 
 ### 1.2 Edge Functions — 106 pastas em `supabase/functions`
 
