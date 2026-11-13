@@ -21,6 +21,13 @@ export interface SecurityAlert {
   created_at: string;
 }
 
+const SEVERIDADE_PT = {
+  low: 'BAIXA',
+  medium: 'MEDIA',
+  high: 'ALTA',
+  critical: 'CRITICA',
+} as const;
+
 // Function to send push notification for security alerts
 async function sendSecurityPushAlert(alert: SecurityAlert) {
   try {
@@ -176,6 +183,11 @@ export function useSecurityAlerts() {
       const { data, error } = await supabase
         .from('security_alerts')
         .insert({
+          // A tabela mantém as duas famílias de colunas; tipo/severidade/descricao são NOT NULL
+          // (severidade usa o padrão BAIXA/MEDIA/ALTA/CRITICA do default 'MEDIA').
+          tipo: type,
+          severidade: SEVERIDADE_PT[severity],
+          descricao: description,
           type,
           severity,
           title,

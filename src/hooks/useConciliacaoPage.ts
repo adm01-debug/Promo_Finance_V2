@@ -128,8 +128,6 @@ export function useConciliacaoPage() {
             });
 
             // Adicionar alerta automático no sistema
-            // TODO(2026-08-14): status/metadata removidos — não existem em alertas (types.ts canônico);
-            // cast `as never` removido (anti-padrão)
             // eslint-disable-next-line local/no-floating-supabase-write -- débito de integridade de escrita, herdado do inventário da Etapa 15
             await supabase.from('alertas').insert({
               empresa_id: contasBancarias?.find((c) => c.id === selectedBanco)?.empresa_id,
@@ -137,6 +135,12 @@ export function useConciliacaoPage() {
               prioridade: 'critica',
               titulo: 'Divergência de Saldo Bancário',
               mensagem: `O saldo final do extrato ${extrato.nomeArquivo} (R$ ${extrato.conta.saldoFinal.toFixed(2)}) não confere com o cálculo dos lançamentos. Diferença de R$ ${(extrato.conta.saldoFinal - saldoCalculado).toFixed(2)}.`,
+              // status: DEFAULT 'pendente' da coluna; nome do arquivo já vai na mensagem.
+              metadata: {
+                conta_bancaria_id: selectedBanco,
+                saldo_ofx: extrato.conta.saldoFinal,
+                saldo_calculado: saldoCalculado,
+              },
             });
           }
         }
@@ -158,10 +162,8 @@ export function useConciliacaoPage() {
 
       if (selectedBanco) {
         try {
-          // TODO(2026-08-14): insert em extratos_bancarios_importados removido — colunas usadas
-          // (nome_arquivo/hash_arquivo/total_transacoes/metadados) não existem no schema canônico;
-          // a tabela existe no types.ts com outro schema (arquivo_origem/hash_transacao/importado_em),
-          // então o insert original falharia com PGRST205 em runtime.
+          // TODO(2026-08-14): sem registro de cabeçalho do arquivo — extratos_importacoes não existe
+          // em produção e extratos_bancarios_importados é VIEW (não aceita esse insert).
 
           const result = await salvarExtratoBanco.mutateAsync({
             extrato,
