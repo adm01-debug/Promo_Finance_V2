@@ -2,11 +2,16 @@
  "aviso": "GERADO AUTOMATICAMENTE por scripts/ai-context/gerar.mjs — não editar à mão; será sobrescrito.",
  "format_version": 2,
  "git": {
-  "commit": "841109abfb19582329950e6568419ba1a33b9435",
+  "commit": "04e82b57fafe8aadd0b783a04c799e6ccf626070",
   "branch": "main",
-  "data_commit": "2026-11-12T21:08:59-03:00",
+  "data_commit": "2026-11-13T07:30:34-03:00",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
   "ultimos_commits": [
+   {
+    "sha": "04e82b5",
+    "data": "2026-11-13",
+    "assunto": "infra: quarentena E2E não roda em CI cancelada (!cancelled() em vez de always()) (#326)"
+   },
    {
     "sha": "841109a",
     "data": "2026-11-12",
@@ -126,14 +131,9 @@
     "sha": "f1d42f8",
     "data": "2026-11-11",
     "assunto": "fix: 9 edge functions ganham bloco verify_jwt no config.toml (deploy em lote abortava com exit 6) (#305)"
-   },
-   {
-    "sha": "67613f4",
-    "data": "2026-11-11",
-    "assunto": "fix: endurecimento dos scripts de automação, guard de perímetro, inventário e manutenção (#304)"
    }
   ],
-  "arquivos_mudados_7d": 506,
+  "arquivos_mudados_7d": 505,
   "pastas_mais_mudadas_30d": [
    {
     "pasta": "package.json",
@@ -148,12 +148,12 @@
     "mudancas": 15
    },
    {
-    "pasta": "src/components/layout",
+    "pasta": ".github/workflows/ci.yml",
     "mudancas": 13
    },
    {
-    "pasta": ".github/workflows/ci.yml",
-    "mudancas": 12
+    "pasta": "src/components/layout",
+    "mudancas": 13
    },
    {
     "pasta": "PENDENCIAS.md",
@@ -207,7 +207,7 @@
    },
    {
     "arquivo": ".github/workflows/ci.yml",
-    "mudancas": 24
+    "mudancas": 25
    },
    {
     "arquivo": "supabase/config.toml",
@@ -301,7 +301,7 @@
   "autores_30d": [
    {
     "autor": "adm01-debug",
-    "commits": 94
+    "commits": 95
    },
    {
     "autor": "devin-ai-integration[bot]",

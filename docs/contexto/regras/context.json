@@ -1,9 +1,9 @@
 {
  "meta": {
-  "sha": "841109abfb19582329950e6568419ba1a33b9435",
+  "sha": "04e82b57fafe8aadd0b783a04c799e6ccf626070",
   "branch": "main",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
-  "generated_at": "2026-11-13 01:58 UTC",
+  "generated_at": "2026-11-13 10:49 UTC",
   "files_total": 3664,
   "code_files": 3298,
   "code_lines": 491974
@@ -242010,10 +242010,19 @@
   }
  },
  "git": {
-  "sha": "841109abfb19582329950e6568419ba1a33b9435",
+  "sha": "04e82b57fafe8aadd0b783a04c799e6ccf626070",
   "branch": "main",
   "remote": "https://github.com/adm01-debug/Promo_Finance_V2",
   "commits": [
+   {
+    "sha": "04e82b5",
+    "date": "2026-11-13",
+    "author": "adm01-debug",
+    "subject": "infra: quarentena E2E não roda em CI cancelada (!cancelled() em vez de always()) (#326)",
+    "files": [
+     ".github/workflows/ci.yml"
+    ]
+   },
    {
     "sha": "841109a",
     "date": "2026-11-12",
@@ -242561,18 +242570,13 @@
      "supabase/migrations/20261101140000_drop_idle_indexes.sql",
      "supabase/tests/sql/overloads.test.sql"
     ]
-   },
-   {
-    "sha": "8f43c3f",
-    "date": "2026-11-10",
-    "author": "adm01-debug",
-    "subject": "chore: [STEP 43] espacar cron jobs diagnosticos de alta frequencia (#234)",
-    "files": [
-     "supabase/migrations/20261031180000_cron_step43_espacar_diagnosticos.sql"
-    ]
    }
   ],
   "hot_files": [
+   [
+    ".github/workflows/ci.yml",
+    3
+   ],
    [
     "src/components/dashboard/DashboardExecutivo.tsx",
     2
@@ -242591,10 +242595,6 @@
    ],
    [
     "package.json",
-    2
-   ],
-   [
-    ".github/workflows/ci.yml",
     2
    ],
    [

@@ -58,11 +58,11 @@
  "commits": {
   "convencao": "conventional commits (observado)",
   "exemplos": [
+   "infra: quarentena E2E não roda em CI cancelada (!cancelled() em vez de always()) (#326)",
    "chore(docs): auditoria prod-readiness (#324)",
    "fix: dashboard executivo sem widgets estreitos e com r?tulos corretos no Configurar (#325)",
    "fix: cron monitorar-erros-frontend envia o segredo internal_jobs esperado pela function (#321)",
-   "fix: registra rotas e menu das p?ginas Erros do Front-end e Consulta R?pida Fiscal (#323)",
-   "fix: configurar widgets do dashboard executivo passa a ocultar/exibir e redimensionar (#322)"
+   "fix: registra rotas e menu das p?ginas Erros do Front-end e Consulta R?pida Fiscal (#323)"
   ]
  },
  "pr_template": ".github/PULL_REQUEST_TEMPLATE.md",
