@@ -135,15 +135,20 @@ export function useAcordosParcelamento() {
   const registrarPagamentoMutation = useMutation({
     mutationFn: async ({
       parcelaId,
-      valorPago: _valorPago,
+      valorPago,
+      dataPagamento,
     }: {
       parcelaId: string;
       valorPago: number;
+      dataPagamento?: string;
     }) => {
       const { data, error } = await supabase
         .from('parcelas_acordo')
-        // TODO(2026-08-14): data_pagamento/valor_pago removidos — não existem em parcelas_acordo (types.ts)
-        .update({ status: 'pago' })
+        .update({
+          status: 'pago',
+          data_pagamento: dataPagamento ?? format(new Date(), 'yyyy-MM-dd'),
+          valor_pago: valorPago,
+        })
         .eq('id', parcelaId)
         .select('acordo_id')
         .single();

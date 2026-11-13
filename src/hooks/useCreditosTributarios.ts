@@ -4,6 +4,7 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
+import { todayISOLocal } from '@/lib/formatters';
 
 export interface CreditoTributario {
   id: string;
@@ -140,11 +141,19 @@ export function useCreditosTributarios(empresaId?: string) {
     mutationFn: async (input: CreateCreditoInput) => {
       const { data, error } = await supabase
         .from('creditos_tributarios')
-        // TODO(2026-08-14): campos de CreateCreditoInput fora do schema canônico não são enviados:
-        // tipo_credito, documento_tipo/numero/chave, fornecedor_id/cnpj/nome, valor_base, aliquota, observacoes
         .insert({
           empresa_id: input.empresa_id,
           tipo_tributo: input.tipo_tributo,
+          tipo_credito: input.tipo_credito,
+          documento_tipo: input.documento_tipo,
+          documento_numero: input.documento_numero,
+          documento_chave: input.documento_chave,
+          fornecedor_id: input.fornecedor_id,
+          fornecedor_cnpj: input.fornecedor_cnpj,
+          fornecedor_nome: input.fornecedor_nome,
+          valor_base: input.valor_base,
+          aliquota: input.aliquota,
+          observacoes: input.observacoes,
           valor_credito: input.valor_credito,
           data_origem: input.data_origem,
           competencia_origem: input.competencia_origem,
@@ -173,7 +182,7 @@ export function useCreditosTributarios(empresaId?: string) {
     mutationFn: async ({
       id,
       valorUtilizar,
-      apuracaoId: _apuracaoId,
+      apuracaoId,
     }: {
       id: string;
       valorUtilizar: number;
@@ -206,7 +215,8 @@ export function useCreditosTributarios(empresaId?: string) {
           valor_utilizado: novoValorUtilizado,
           saldo_disponivel: novoSaldo,
           status: novoStatus,
-          // TODO(2026-08-14): apuracao_id/competencia_utilizacao removidos — não existem em creditos_tributarios (types.ts)
+          apuracao_id: apuracaoId,
+          competencia_utilizacao: todayISOLocal().slice(0, 7) + '-01',
         })
         .eq('id', id)
         .select()
@@ -226,12 +236,12 @@ export function useCreditosTributarios(empresaId?: string) {
 
   // Estornar crédito
   const estornarCredito = useMutation({
-    mutationFn: async ({ id, motivo: _motivo }: { id: string; motivo: string }) => {
+    mutationFn: async ({ id, motivo }: { id: string; motivo: string }) => {
       const { data, error } = await supabase
         .from('creditos_tributarios')
         .update({
           status: 'estornado',
-          // TODO(2026-08-14): observacoes removido — coluna não existe em creditos_tributarios (types.ts)
+          observacoes: `Estorno: ${motivo}`,
         })
         .eq('id', id)
         .select()
@@ -284,9 +294,7 @@ export function useCreditosTributarios(empresaId?: string) {
       const creditoCBS = valorBase * aliquotaCBS;
       const creditoIBS = valorBase * aliquotaIBS;
 
-      // Shape completo do crédito gerado; campos fora do schema canônico de
-      // creditos_tributarios (tipo_credito, documento_*, valor_base, aliquota)
-      // são extras tolerados pelo PostgREST no insert em massa.
+      // Shape completo do crédito gerado (colunas de creditos_tributarios).
       interface CreditoGerado {
         empresa_id: string;
         tipo_tributo: 'CBS' | 'IBS';

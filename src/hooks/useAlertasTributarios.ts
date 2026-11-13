@@ -140,15 +140,21 @@ export function useAlertasTributarios(empresaId?: string) {
     ) => {
       const { data, error } = await supabase
         .from('alertas_tributarios')
-        // TODO(2026-08-14): campos de AlertaTributario fora do schema canônico não são enviados:
-        // user_id, data_lembrete, entidade_tipo/id, competencia, resolvido_em/por, acao_url, acao_label
+        // user_id ausente fica com o DEFAULT auth.uid() da coluna.
         .insert({
           empresa_id: alerta.empresa_id,
+          user_id: alerta.user_id,
           tipo: alerta.tipo,
           titulo: alerta.titulo,
           mensagem: alerta.mensagem,
           prioridade: alerta.prioridade,
           data_vencimento: alerta.data_vencimento,
+          data_lembrete: alerta.data_lembrete,
+          entidade_tipo: alerta.entidade_tipo,
+          entidade_id: alerta.entidade_id,
+          competencia: alerta.competencia,
+          acao_url: alerta.acao_url,
+          acao_label: alerta.acao_label,
           lido: false,
           resolvido: false,
         })
@@ -180,11 +186,15 @@ export function useAlertasTributarios(empresaId?: string) {
 
   // Resolver alerta
   const resolverAlerta = useMutation({
-    mutationFn: async ({ alertaId, userId: _userId }: { alertaId: string; userId?: string }) => {
+    mutationFn: async ({ alertaId, userId }: { alertaId: string; userId?: string }) => {
+      const resolvidoPor = userId ?? (await supabase.auth.getUser()).data.user?.id ?? null;
       const { error } = await supabase
         .from('alertas_tributarios')
-        // TODO(2026-08-14): resolvido_em/resolvido_por removidos — não existem em alertas_tributarios (types.ts)
-        .update({ resolvido: true })
+        .update({
+          resolvido: true,
+          resolvido_em: new Date().toISOString(),
+          resolvido_por: resolvidoPor,
+        })
         .eq('id', alertaId);
 
       if (error) throw error;
