@@ -2,22 +2,30 @@
   "alertas": [
     {
       "detalhe": [
-        "enviar-digest-conformidade-horario (100% em 7d)",
+        "alert_configurations",
+        "alerts",
+        "risk_rules"
+      ],
+      "tipo": "rls_sem_policy"
+    },
+    {
+      "detalhe": [
+        "enviar-digest-conformidade-horario (97% em 7d)",
         "refresh-performance-alerts-weekly (100% em 7d)"
       ],
       "tipo": "cron_falhando"
     },
     {
       "detalhe": [
-        "212889 linhas com mais de 7 dias"
+        "enviar-digest-conformidade-diario"
       ],
-      "tipo": "historico_cron_sem_limpeza"
+      "tipo": "cron_sem_execucao"
     },
     {
       "detalhe": [
-        "monitor-health"
+        "213811 linhas com mais de 7 dias"
       ],
-      "tipo": "edge_sem_deploy"
+      "tipo": "historico_cron_sem_limpeza"
     }
   ],
   "cron": {
@@ -27,10 +35,10 @@
       "max_worker_processes": "6"
     },
     "historico": {
-      "bytes": 131416064,
-      "linhas": 233179,
+      "bytes": 131735552,
+      "linhas": 233697,
       "mais_antigo": "2026-08-23T12:00:00Z",
-      "mais_de_7_dias": 212889
+      "mais_de_7_dias": 213811
     },
     "horas_paradas_7d": [],
     "jobs": [
@@ -227,20 +235,34 @@
         "ultima_falha": null
       },
       {
+        "agenda": "0 8 * * *",
+        "ativo": true,
+        "chama": [],
+        "duracao_max_s_7d": null,
+        "execucoes_24h": 0,
+        "execucoes_7d": 0,
+        "falhas_24h": 0,
+        "falhas_7d": 0,
+        "nome": "enviar-digest-conformidade-diario",
+        "startup_timeout_7d": 0,
+        "taxa_falha_7d_pct": 0,
+        "ultima_falha": null
+      },
+      {
         "agenda": "30 * * * *",
         "ativo": true,
         "chama": [
           "public.invocar_digest_conformidade"
         ],
-        "duracao_max_s_7d": null,
+        "duracao_max_s_7d": 0,
         "execucoes_24h": 24,
         "execucoes_7d": 168,
-        "falhas_24h": 24,
-        "falhas_7d": 168,
+        "falhas_24h": 19,
+        "falhas_7d": 163,
         "nome": "enviar-digest-conformidade-horario",
         "startup_timeout_7d": 0,
-        "taxa_falha_7d_pct": 100,
-        "ultima_falha": "2026-11-13T13:30:00Z"
+        "taxa_falha_7d_pct": 97,
+        "ultima_falha": "2026-11-13T15:30:00Z"
       },
       {
         "agenda": "0 12 * * *",
@@ -334,6 +356,22 @@
         "falhas_24h": 0,
         "falhas_7d": 0,
         "nome": "maintain-monthly-partitions",
+        "startup_timeout_7d": 0,
+        "taxa_falha_7d_pct": 0,
+        "ultima_falha": null
+      },
+      {
+        "agenda": "*/30 * * * *",
+        "ativo": true,
+        "chama": [
+          "net.http_post"
+        ],
+        "duracao_max_s_7d": 0,
+        "execucoes_24h": 9,
+        "execucoes_7d": 9,
+        "falhas_24h": 0,
+        "falhas_7d": 0,
+        "nome": "monitor-health-check",
         "startup_timeout_7d": 0,
         "taxa_falha_7d_pct": 0,
         "ultima_falha": null
@@ -518,9 +556,7 @@
   },
   "edge_functions": {
     "no_repo": 106,
-    "no_repo_sem_deploy": [
-      "monitor-health"
-    ],
+    "no_repo_sem_deploy": [],
     "publicadas": [
       {
         "atualizada_em": "2026-08-25T22:29Z",
@@ -964,6 +1000,13 @@
         "versao": 19
       },
       {
+        "atualizada_em": "2026-11-13T16:20Z",
+        "slug": "monitor-health",
+        "status": "ACTIVE",
+        "verify_jwt": false,
+        "versao": 1
+      },
+      {
         "atualizada_em": "2026-11-12T07:38Z",
         "slug": "monitorar-erros-frontend",
         "status": "ACTIVE",
@@ -1304,25 +1347,25 @@
   ],
   "fonte": "scripts/inventario/banco.sql + GET /functions + .from() em src/ e supabase/functions/ (scripts/inventario/gerar-banco.mjs)",
   "format_version": 1,
-  "medido_em": "2026-11-13T13:49:09Z",
+  "medido_em": "2026-11-13T20:42:31Z",
   "origem": {
-    "tabelas_em_comum_com_types_ts": 265,
-    "tabelas_em_types_ts": 279
+    "tabelas_em_comum_com_types_ts": 272,
+    "tabelas_em_types_ts": 272
   },
   "resumo": {
-    "cron_ativos": 30,
-    "cron_jobs": 30,
-    "funcoes_public": 208,
-    "ledger_registros": 391,
-    "ledger_versao_max": "20261101140005",
+    "cron_ativos": 32,
+    "cron_jobs": 32,
+    "funcoes_public": 210,
+    "ledger_registros": 509,
+    "ledger_versao_max": "20261113163037",
     "max_connections": 60,
-    "policies": 535,
+    "policies": 599,
     "postgres": "17.6",
     "tabelas_public": 272,
     "tabelas_sem_rls": 0,
-    "tamanho_bytes": 562588819,
+    "tamanho_bytes": 569486483,
     "triggers_public": 171,
-    "views_public": 21
+    "views_public": 22
   },
   "tabelas": [
     {
@@ -1341,7 +1384,7 @@
       }
     },
     {
-      "bytes": 16384,
+      "bytes": 24576,
       "citada_no_banco": false,
       "linhas": 0,
       "linhas_exatas": true,
@@ -1356,7 +1399,7 @@
       }
     },
     {
-      "bytes": 24576,
+      "bytes": 32768,
       "citada_no_banco": true,
       "linhas": 0,
       "linhas_exatas": true,
@@ -1371,12 +1414,12 @@
       }
     },
     {
-      "bytes": 49152,
+      "bytes": 65536,
       "citada_no_banco": false,
       "linhas": 3,
       "linhas_exatas": true,
       "nome": "alert_configurations",
-      "policies": 5,
+      "policies": 0,
       "rls": true,
       "rls_forcado": false,
       "triggers": 3,
@@ -1388,10 +1431,10 @@
     {
       "bytes": 557056,
       "citada_no_banco": true,
-      "linhas": 1730,
+      "linhas": 1731,
       "linhas_exatas": true,
       "nome": "alertas",
-      "policies": 3,
+      "policies": 4,
       "rls": true,
       "rls_forcado": false,
       "triggers": 2,
@@ -1406,7 +1449,7 @@
       "linhas": 6,
       "linhas_exatas": true,
       "nome": "alertas_preditivos",
-      "policies": 1,
+      "policies": 4,
       "rls": true,
       "rls_forcado": false,
       "triggers": 1,
@@ -1416,7 +1459,7 @@
       }
     },
     {
-      "bytes": 32768,
+      "bytes": 81920,
       "citada_no_banco": true,
       "linhas": 6,
       "linhas_exatas": true,
@@ -1431,12 +1474,12 @@
       }
     },
     {
-      "bytes": 16384,
+      "bytes": 24576,
       "citada_no_banco": true,
       "linhas": 0,
       "linhas_exatas": true,
       "nome": "alerts",
-      "policies": 5,
+      "policies": 0,
       "rls": true,
       "rls_forcado": false,
       "triggers": 1,
@@ -1536,7 +1579,7 @@
       }
     },
     {
-      "bytes": 16384,
+      "bytes": 24576,
       "citada_no_banco": false,
       "linhas": 0,
       "linhas_exatas": true,
@@ -1566,7 +1609,7 @@
       }
     },
     {
-      "bytes": 24576,
+      "bytes": 65536,
       "citada_no_banco": false,
       "linhas": 0,
       "linhas_exatas": true,
@@ -1581,12 +1624,12 @@
       }
     },
     {
-      "bytes": 24576,
+      "bytes": 32768,
       "citada_no_banco": false,
       "linhas": 0,
       "linhas_exatas": true,
       "nome": "anomalias_detectadas",
-      "policies": 3,
+      "policies": 2,
       "rls": true,
       "rls_forcado": false,
       "triggers": 1,
@@ -1626,12 +1669,12 @@
       }
     },
     {
-      "bytes": 49152,
+      "bytes": 65536,
       "citada_no_banco": false,
       "linhas": 2,
       "linhas_exatas": true,
       "nome": "apuracoes_irpj_csll",
-      "policies": 1,
+      "policies": 5,
       "rls": true,
       "rls_forcado": false,
       "triggers": 0,
@@ -1641,12 +1684,12 @@
       }
     },
     {
-      "bytes": 49152,
+      "bytes": 65536,
       "citada_no_banco": true,
       "linhas": 3,
       "linhas_exatas": true,
       "nome": "apuracoes_tributarias",
-      "policies": 3,
+      "policies": 6,
       "rls": true,
       "rls_forcado": false,
       "triggers": 1,
@@ -1661,7 +1704,7 @@
       "linhas": 0,
       "linhas_exatas": true,
       "nome": "asaas_audit_trail",
-      "policies": 2,
+      "policies": 3,
       "rls": true,
       "rls_forcado": false,
       "triggers": 0,
@@ -1676,7 +1719,7 @@
       "linhas": 0,
       "linhas_exatas": true,
       "nome": "asaas_config",
-      "policies": 2,
+      "policies": 8,
       "rls": true,
       "rls_forcado": false,
       "triggers": 1,
@@ -1691,7 +1734,7 @@
       "linhas": 0,
       "linhas_exatas": true,
       "nome": "asaas_credit_risk_analysis",
-      "policies": 1,
+      "policies": 2,
       "rls": true,
       "rls_forcado": false,
       "triggers": 0,
@@ -1706,7 +1749,7 @@
       "linhas": 0,
       "linhas_exatas": true,
       "nome": "asaas_customers",
-      "policies": 3,
+      "policies": 2,
       "rls": true,
       "rls_forcado": false,
       "triggers": 1,
@@ -1716,7 +1759,7 @@
       }
     },
     {
-      "bytes": 24576,
+      "bytes": 32768,
       "citada_no_banco": false,
       "linhas": 0,
       "linhas_exatas": true,
@@ -1736,7 +1779,7 @@
       "linhas": 0,
       "linhas_exatas": true,
       "nome": "asaas_payments",
-      "policies": 3,
+      "policies": 2,
       "rls": true,
       "rls_forcado": false,
       "triggers": 1,
@@ -1751,7 +1794,7 @@
       "linhas": 0,
       "linhas_exatas": true,
       "nome": "asaas_reconciliation_suggestions",
-      "policies": 3,
+      "policies": 2,
       "rls": true,
       "rls_forcado": false,
       "triggers": 1,
@@ -1776,12 +1819,12 @@
       }
     },
     {
-      "bytes": 24576,
+      "bytes": 32768,
       "citada_no_banco": true,
       "linhas": 0,
       "linhas_exatas": true,
       "nome": "asaas_transfers",
-      "policies": 3,
+      "policies": 4,
       "rls": true,
       "rls_forcado": false,
       "triggers": 1,
@@ -2091,12 +2134,12 @@
       }
     },
     {
-      "bytes": 16384,
+      "bytes": 24576,
       "citada_no_banco": false,
       "linhas": 0,
       "linhas_exatas": true,
       "nome": "bitrix_field_mappings",
-      "policies": 1,
+      "policies": 2,
       "rls": true,
       "rls_forcado": false,
       "triggers": 0,
@@ -2106,7 +2149,7 @@
       }
     },
     {
-      "bytes": 16384,
+      "bytes": 24576,
       "citada_no_banco": false,
       "linhas": 0,
       "linhas_exatas": true,
@@ -2121,12 +2164,12 @@
       }
     },
     {
-      "bytes": 16384,
+      "bytes": 24576,
       "citada_no_banco": false,
       "linhas": 0,
       "linhas_exatas": true,
       "nome": "bitrix_sync_logs",
-      "policies": 1,
+      "policies": 2,
       "rls": true,
       "rls_forcado": false,
       "triggers": 0,
@@ -2151,7 +2194,7 @@
       }
     },
     {
-      "bytes": 16384,
+      "bytes": 24576,
       "citada_no_banco": false,
       "linhas": 0,
       "linhas_exatas": true,
@@ -2181,7 +2224,7 @@
       }
     },
     {
-      "bytes": 24576,
+      "bytes": 32768,
       "citada_no_banco": false,
       "linhas": 0,
       "linhas_exatas": true,
@@ -2226,7 +2269,7 @@
       }
     },
     {
-      "bytes": 32768,
+      "bytes": 49152,
       "citada_no_banco": false,
       "linhas": 6,
       "linhas_exatas": true,
@@ -2241,12 +2284,12 @@
       }
     },
     {
-      "bytes": 49152,
+      "bytes": 98304,
       "citada_no_banco": true,
       "linhas": 6,
       "linhas_exatas": true,
       "nome": "boletos",
-      "policies": 2,
+      "policies": 5,
       "rls": true,
       "rls_forcado": false,
       "triggers": 1,
@@ -2301,7 +2344,7 @@
       }
     },
     {
-      "bytes": 106496,
+      "bytes": 98304,
       "citada_no_banco": true,
       "linhas": 7,
       "linhas_exatas": true,
@@ -2316,12 +2359,12 @@
       }
     },
     {
-      "bytes": 49152,
+      "bytes": 81920,
       "citada_no_banco": true,
       "linhas": 8,
       "linhas_exatas": true,
       "nome": "centros_custo",
-      "policies": 3,
+      "policies": 2,
       "rls": true,
       "rls_forcado": false,
       "triggers": 1,
@@ -2351,7 +2394,7 @@
       "linhas": 12,
       "linhas_exatas": true,
       "nome": "clientes",
-      "policies": 10,
+      "policies": 11,
       "rls": true,
       "rls_forcado": false,
       "triggers": 1,
@@ -2396,7 +2439,7 @@
       "linhas": 10,
       "linhas_exatas": true,
       "nome": "conciliacoes",
-      "policies": 1,
+      "policies": 3,
       "rls": true,
       "rls_forcado": false,
       "triggers": 0,
@@ -2421,12 +2464,12 @@
       }
     },
     {
-      "bytes": 32768,
+      "bytes": 49152,
       "citada_no_banco": false,
       "linhas": 6,
       "linhas_exatas": true,
       "nome": "configuracoes_aprovacao",
-      "policies": 3,
+      "policies": 2,
       "rls": true,
       "rls_forcado": false,
       "triggers": 1,
@@ -2441,7 +2484,7 @@
       "linhas": 0,
       "linhas_exatas": true,
       "nome": "configuracoes_duplicidade",
-      "policies": 3,
+      "policies": 2,
       "rls": true,
       "rls_forcado": false,
       "triggers": 0,
@@ -2471,7 +2514,7 @@
       "linhas": 8,
       "linhas_exatas": true,
       "nome": "contas_bancarias",
-      "policies": 1,
+      "policies": 2,
       "rls": true,
       "rls_forcado": false,
       "triggers": 1,
@@ -2481,12 +2524,12 @@
       }
     },
     {
-      "bytes": 196608,
+      "bytes": 245760,
       "citada_no_banco": true,
       "linhas": 20,
       "linhas_exatas": true,
       "nome": "contas_pagar",
-      "policies": 3,
+      "policies": 2,
       "rls": true,
       "rls_forcado": false,
       "triggers": 2,
@@ -2496,12 +2539,12 @@
       }
     },
     {
-      "bytes": 131072,
+      "bytes": 212992,
       "citada_no_banco": true,
       "linhas": 20,
       "linhas_exatas": true,
       "nome": "contas_receber",
-      "policies": 3,
+      "policies": 2,
       "rls": true,
       "rls_forcado": false,
       "triggers": 2,
@@ -2511,7 +2554,7 @@
       }
     },
     {
-      "bytes": 24576,
+      "bytes": 65536,
       "citada_no_banco": true,
       "linhas": 0,
       "linhas_exatas": true,
@@ -2556,12 +2599,12 @@
       }
     },
     {
-      "bytes": 32768,
+      "bytes": 81920,
       "citada_no_banco": true,
       "linhas": 12,
       "linhas_exatas": true,
       "nome": "creditos_tributarios",
-      "policies": 1,
+      "policies": 5,
       "rls": true,
       "rls_forcado": false,
       "triggers": 0,
@@ -2571,9 +2614,9 @@
       }
     },
     {
-      "bytes": 188416,
+      "bytes": 196608,
       "citada_no_banco": true,
-      "linhas": 225,
+      "linhas": 252,
       "linhas_exatas": true,
       "nome": "cron_job_logs",
       "policies": 1,
@@ -2586,7 +2629,7 @@
       }
     },
     {
-      "bytes": 16384,
+      "bytes": 24576,
       "citada_no_banco": false,
       "linhas": 0,
       "linhas_exatas": true,
@@ -2616,12 +2659,12 @@
       }
     },
     {
-      "bytes": 16384,
+      "bytes": 24576,
       "citada_no_banco": true,
       "linhas": 0,
       "linhas_exatas": true,
       "nome": "darfs",
-      "policies": 3,
+      "policies": 5,
       "rls": true,
       "rls_forcado": false,
       "triggers": 1,
@@ -2648,7 +2691,7 @@
     {
       "bytes": 49152,
       "citada_no_banco": false,
-      "linhas": 12,
+      "linhas": 13,
       "linhas_exatas": true,
       "nome": "dispositivos_conhecidos",
       "policies": 1,
@@ -2676,9 +2719,9 @@
       }
     },
     {
-      "bytes": 9781248,
+      "bytes": 12828672,
       "citada_no_banco": true,
-      "linhas": 33889,
+      "linhas": 43471,
       "linhas_exatas": true,
       "nome": "edge_function_logs",
       "policies": 1,
@@ -2691,7 +2734,7 @@
       }
     },
     {
-      "bytes": 32768,
+      "bytes": 49152,
       "citada_no_banco": false,
       "linhas": 5,
       "linhas_exatas": true,
@@ -2706,12 +2749,12 @@
       }
     },
     {
-      "bytes": 32768,
+      "bytes": 49152,
       "citada_no_banco": true,
       "linhas": 4,
       "linhas_exatas": true,
       "nome": "elisao_creditos_auditoria",
-      "policies": 3,
+      "policies": 4,
       "rls": true,
       "rls_forcado": false,
       "triggers": 1,
@@ -2741,7 +2784,7 @@
       "linhas": 0,
       "linhas_exatas": true,
       "nome": "elisao_simulacoes_regime",
-      "policies": 1,
+      "policies": 2,
       "rls": true,
       "rls_forcado": false,
       "triggers": 1,
@@ -2751,12 +2794,12 @@
       }
     },
     {
-      "bytes": 32768,
+      "bytes": 49152,
       "citada_no_banco": false,
       "linhas": 5,
       "linhas_exatas": true,
       "nome": "elisao_tarefas_acionaveis",
-      "policies": 1,
+      "policies": 2,
       "rls": true,
       "rls_forcado": false,
       "triggers": 1,
@@ -2786,7 +2829,7 @@
       "linhas": 1,
       "linhas_exatas": true,
       "nome": "empresas",
-      "policies": 2,
+      "policies": 3,
       "rls": true,
       "rls_forcado": false,
       "triggers": 1,
@@ -2801,7 +2844,7 @@
       "linhas": 0,
       "linhas_exatas": true,
       "nome": "empresas_certificados",
-      "policies": 3,
+      "policies": 2,
       "rls": true,
       "rls_forcado": false,
       "triggers": 1,
@@ -2856,12 +2899,12 @@
       }
     },
     {
-      "bytes": 81920,
+      "bytes": 106496,
       "citada_no_banco": true,
       "linhas": 30,
       "linhas_exatas": true,
       "nome": "eventos_contabilizacao_log",
-      "policies": 1,
+      "policies": 2,
       "rls": true,
       "rls_forcado": false,
       "triggers": 0,
@@ -2886,7 +2929,7 @@
       }
     },
     {
-      "bytes": 32768,
+      "bytes": 49152,
       "citada_no_banco": false,
       "linhas": 10,
       "linhas_exatas": true,
@@ -2916,7 +2959,7 @@
       }
     },
     {
-      "bytes": 24576,
+      "bytes": 32768,
       "citada_no_banco": false,
       "linhas": 0,
       "linhas_exatas": true,
@@ -2996,7 +3039,7 @@
       "linhas": 2,
       "linhas_exatas": true,
       "nome": "fechamentos_tributarios",
-      "policies": 5,
+      "policies": 6,
       "rls": true,
       "rls_forcado": false,
       "triggers": 1,
@@ -3021,12 +3064,12 @@
       }
     },
     {
-      "bytes": 16384,
+      "bytes": 24576,
       "citada_no_banco": true,
       "linhas": 0,
       "linhas_exatas": true,
       "nome": "fila_cobrancas",
-      "policies": 3,
+      "policies": 2,
       "rls": true,
       "rls_forcado": false,
       "triggers": 1,
@@ -3036,7 +3079,7 @@
       }
     },
     {
-      "bytes": 16384,
+      "bytes": 24576,
       "citada_no_banco": false,
       "linhas": 0,
       "linhas_exatas": true,
@@ -3066,7 +3109,7 @@
       }
     },
     {
-      "bytes": 49152,
+      "bytes": 65536,
       "citada_no_banco": false,
       "linhas": 10,
       "linhas_exatas": true,
@@ -3306,9 +3349,9 @@
       }
     },
     {
-      "bytes": 30367744,
+      "bytes": 30531584,
       "citada_no_banco": true,
-      "linhas": 79888,
+      "linhas": 82801,
       "linhas_exatas": true,
       "nome": "frontend_performance_logs",
       "policies": 2,
@@ -3351,12 +3394,12 @@
       }
     },
     {
-      "bytes": 32768,
+      "bytes": 49152,
       "citada_no_banco": false,
       "linhas": 4,
       "linhas_exatas": true,
       "nome": "health_scores_operacionais",
-      "policies": 1,
+      "policies": 2,
       "rls": true,
       "rls_forcado": false,
       "triggers": 0,
@@ -3366,12 +3409,12 @@
       }
     },
     {
-      "bytes": 32768,
+      "bytes": 49152,
       "citada_no_banco": false,
       "linhas": 4,
       "linhas_exatas": true,
       "nome": "historico_analises_preditivas",
-      "policies": 2,
+      "policies": 3,
       "rls": true,
       "rls_forcado": false,
       "triggers": 0,
@@ -3381,7 +3424,7 @@
       }
     },
     {
-      "bytes": 32768,
+      "bytes": 49152,
       "citada_no_banco": true,
       "linhas": 10,
       "linhas_exatas": true,
@@ -3396,7 +3439,7 @@
       }
     },
     {
-      "bytes": 16384,
+      "bytes": 24576,
       "citada_no_banco": false,
       "linhas": 0,
       "linhas_exatas": true,
@@ -3456,12 +3499,12 @@
       }
     },
     {
-      "bytes": 32768,
+      "bytes": 49152,
       "citada_no_banco": false,
       "linhas": 6,
       "linhas_exatas": true,
       "nome": "historico_score_saude",
-      "policies": 1,
+      "policies": 2,
       "rls": true,
       "rls_forcado": false,
       "triggers": 0,
@@ -3476,7 +3519,7 @@
       "linhas": 5,
       "linhas_exatas": true,
       "nome": "incentivos_fiscais",
-      "policies": 2,
+      "policies": 6,
       "rls": true,
       "rls_forcado": false,
       "triggers": 1,
@@ -3502,7 +3545,7 @@
     },
     {
       "bytes": 24576,
-      "citada_no_banco": false,
+      "citada_no_banco": true,
       "linhas": 0,
       "linhas_exatas": true,
       "nome": "indices_uso_excecoes",
@@ -3516,7 +3559,7 @@
       }
     },
     {
-      "bytes": 49152,
+      "bytes": 65536,
       "citada_no_banco": true,
       "linhas": 4,
       "linhas_exatas": true,
@@ -3533,7 +3576,7 @@
     {
       "bytes": 1761280,
       "citada_no_banco": true,
-      "linhas": 1918,
+      "linhas": 1925,
       "linhas_exatas": true,
       "nome": "integrity_alerts",
       "policies": 2,
@@ -3591,7 +3634,7 @@
       }
     },
     {
-      "bytes": 24576,
+      "bytes": 32768,
       "citada_no_banco": false,
       "linhas": 0,
       "linhas_exatas": true,
@@ -3611,7 +3654,7 @@
       "linhas": 51,
       "linhas_exatas": true,
       "nome": "lancamentos_contabeis",
-      "policies": 2,
+      "policies": 1,
       "rls": true,
       "rls_forcado": false,
       "triggers": 3,
@@ -3623,7 +3666,7 @@
     {
       "bytes": 2097152,
       "citada_no_banco": true,
-      "linhas": 1653,
+      "linhas": 1695,
       "linhas_exatas": true,
       "nome": "login_attempts",
       "policies": 4,
@@ -3651,7 +3694,7 @@
       }
     },
     {
-      "bytes": 16384,
+      "bytes": 24576,
       "citada_no_banco": false,
       "linhas": 0,
       "linhas_exatas": true,
@@ -3666,7 +3709,7 @@
       }
     },
     {
-      "bytes": 49152,
+      "bytes": 65536,
       "citada_no_banco": false,
       "linhas": 6,
       "linhas_exatas": true,
@@ -3696,7 +3739,7 @@
       }
     },
     {
-      "bytes": 49152,
+      "bytes": 131072,
       "citada_no_banco": true,
       "linhas": 42,
       "linhas_exatas": true,
@@ -3756,12 +3799,12 @@
       }
     },
     {
-      "bytes": 16384,
+      "bytes": 65536,
       "citada_no_banco": true,
       "linhas": 0,
       "linhas_exatas": true,
       "nome": "negativacoes",
-      "policies": 3,
+      "policies": 2,
       "rls": true,
       "rls_forcado": false,
       "triggers": 0,
@@ -3816,12 +3859,12 @@
       }
     },
     {
-      "bytes": 49152,
+      "bytes": 65536,
       "citada_no_banco": true,
       "linhas": 5,
       "linhas_exatas": true,
       "nome": "notas_fiscais",
-      "policies": 2,
+      "policies": 3,
       "rls": true,
       "rls_forcado": false,
       "triggers": 0,
@@ -3831,12 +3874,12 @@
       }
     },
     {
-      "bytes": 32768,
+      "bytes": 49152,
       "citada_no_banco": false,
       "linhas": 3,
       "linhas_exatas": true,
       "nome": "notas_fiscais_ocr",
-      "policies": 3,
+      "policies": 5,
       "rls": true,
       "rls_forcado": false,
       "triggers": 1,
@@ -3846,8 +3889,8 @@
       }
     },
     {
-      "bytes": 16384,
-      "citada_no_banco": false,
+      "bytes": 40960,
+      "citada_no_banco": true,
       "linhas": 0,
       "linhas_exatas": true,
       "nome": "notification_history",
@@ -3876,7 +3919,7 @@
       }
     },
     {
-      "bytes": 16384,
+      "bytes": 24576,
       "citada_no_banco": false,
       "linhas": 0,
       "linhas_exatas": true,
@@ -3891,12 +3934,12 @@
       }
     },
     {
-      "bytes": 32768,
+      "bytes": 49152,
       "citada_no_banco": true,
       "linhas": 8,
       "linhas_exatas": true,
       "nome": "operacoes_tributaveis",
-      "policies": 1,
+      "policies": 5,
       "rls": true,
       "rls_forcado": false,
       "triggers": 0,
@@ -3906,12 +3949,12 @@
       }
     },
     {
-      "bytes": 32768,
+      "bytes": 49152,
       "citada_no_banco": true,
       "linhas": 4,
       "linhas_exatas": true,
       "nome": "oportunidades_elisao",
-      "policies": 1,
+      "policies": 5,
       "rls": true,
       "rls_forcado": false,
       "triggers": 1,
@@ -3951,7 +3994,7 @@
       }
     },
     {
-      "bytes": 16384,
+      "bytes": 24576,
       "citada_no_banco": false,
       "linhas": 0,
       "linhas_exatas": true,
@@ -3966,12 +4009,12 @@
       }
     },
     {
-      "bytes": 24576,
+      "bytes": 32768,
       "citada_no_banco": true,
       "linhas": 0,
       "linhas_exatas": true,
       "nome": "pagamentos_recorrentes",
-      "policies": 1,
+      "policies": 4,
       "rls": true,
       "rls_forcado": false,
       "triggers": 1,
@@ -3986,7 +4029,7 @@
       "linhas": 0,
       "linhas_exatas": true,
       "nome": "parcelas_acordo",
-      "policies": 3,
+      "policies": 2,
       "rls": true,
       "rls_forcado": false,
       "triggers": 0,
@@ -3996,12 +4039,12 @@
       }
     },
     {
-      "bytes": 106496,
+      "bytes": 122880,
       "citada_no_banco": true,
       "linhas": 102,
       "linhas_exatas": true,
       "nome": "partidas_contabeis",
-      "policies": 1,
+      "policies": 5,
       "rls": true,
       "rls_forcado": false,
       "triggers": 3,
@@ -4041,7 +4084,7 @@
       }
     },
     {
-      "bytes": 32768,
+      "bytes": 81920,
       "citada_no_banco": true,
       "linhas": 6,
       "linhas_exatas": true,
@@ -4061,7 +4104,7 @@
       "linhas": 0,
       "linhas_exatas": true,
       "nome": "per_dcomp",
-      "policies": 2,
+      "policies": 5,
       "rls": true,
       "rls_forcado": false,
       "triggers": 1,
@@ -4071,9 +4114,9 @@
       }
     },
     {
-      "bytes": 3506176,
+      "bytes": 3727360,
       "citada_no_banco": true,
-      "linhas": 4223,
+      "linhas": 4244,
       "linhas_exatas": true,
       "nome": "performance_alerts",
       "policies": 1,
@@ -4116,12 +4159,12 @@
       }
     },
     {
-      "bytes": 16384,
+      "bytes": 49152,
       "citada_no_banco": true,
       "linhas": 0,
       "linhas_exatas": true,
       "nome": "pix_templates",
-      "policies": 3,
+      "policies": 2,
       "rls": true,
       "rls_forcado": false,
       "triggers": 2,
@@ -4191,12 +4234,12 @@
       }
     },
     {
-      "bytes": 24576,
+      "bytes": 32768,
       "citada_no_banco": false,
       "linhas": 0,
       "linhas_exatas": true,
       "nome": "prejuizos_fiscais",
-      "policies": 3,
+      "policies": 6,
       "rls": true,
       "rls_forcado": false,
       "triggers": 0,
@@ -4206,12 +4249,12 @@
       }
     },
     {
-      "bytes": 49152,
+      "bytes": 65536,
       "citada_no_banco": true,
       "linhas": 3,
       "linhas_exatas": true,
       "nome": "profiles",
-      "policies": 3,
+      "policies": 5,
       "rls": true,
       "rls_forcado": true,
       "triggers": 2,
@@ -4221,7 +4264,7 @@
       }
     },
     {
-      "bytes": 16384,
+      "bytes": 24576,
       "citada_no_banco": false,
       "linhas": 0,
       "linhas_exatas": true,
@@ -4236,12 +4279,12 @@
       }
     },
     {
-      "bytes": 16384,
+      "bytes": 65536,
       "citada_no_banco": true,
       "linhas": 0,
       "linhas_exatas": true,
       "nome": "protestos",
-      "policies": 3,
+      "policies": 2,
       "rls": true,
       "rls_forcado": false,
       "triggers": 0,
@@ -4313,7 +4356,7 @@
     {
       "bytes": 14311424,
       "citada_no_banco": true,
-      "linhas": 14734,
+      "linhas": 14826,
       "linhas_exatas": true,
       "nome": "query_telemetry",
       "policies": 3,
@@ -4341,12 +4384,12 @@
       }
     },
     {
-      "bytes": 32768,
+      "bytes": 49152,
       "citada_no_banco": false,
       "linhas": 4,
       "linhas_exatas": true,
       "nome": "recomendacoes_metas_ia",
-      "policies": 1,
+      "policies": 2,
       "rls": true,
       "rls_forcado": false,
       "triggers": 0,
@@ -4371,12 +4414,12 @@
       }
     },
     {
-      "bytes": 16384,
+      "bytes": 24576,
       "citada_no_banco": false,
       "linhas": 0,
       "linhas_exatas": true,
       "nome": "regimes_especiais_empresa",
-      "policies": 1,
+      "policies": 5,
       "rls": true,
       "rls_forcado": false,
       "triggers": 0,
@@ -4386,12 +4429,12 @@
       }
     },
     {
-      "bytes": 49152,
+      "bytes": 65536,
       "citada_no_banco": false,
       "linhas": 4,
       "linhas_exatas": true,
       "nome": "regimes_simulados",
-      "policies": 2,
+      "policies": 4,
       "rls": true,
       "rls_forcado": false,
       "triggers": 1,
@@ -4401,7 +4444,7 @@
       }
     },
     {
-      "bytes": 32768,
+      "bytes": 49152,
       "citada_no_banco": false,
       "linhas": 8,
       "linhas_exatas": true,
@@ -4416,7 +4459,7 @@
       }
     },
     {
-      "bytes": 65536,
+      "bytes": 81920,
       "citada_no_banco": false,
       "linhas": 4,
       "linhas_exatas": true,
@@ -4446,7 +4489,7 @@
       }
     },
     {
-      "bytes": 32768,
+      "bytes": 49152,
       "citada_no_banco": false,
       "linhas": 4,
       "linhas_exatas": true,
@@ -4461,7 +4504,7 @@
       }
     },
     {
-      "bytes": 32768,
+      "bytes": 49152,
       "citada_no_banco": false,
       "linhas": 6,
       "linhas_exatas": true,
@@ -4476,12 +4519,12 @@
       }
     },
     {
-      "bytes": 32768,
+      "bytes": 49152,
       "citada_no_banco": true,
       "linhas": 2,
       "linhas_exatas": true,
       "nome": "regua_cobranca",
-      "policies": 3,
+      "policies": 2,
       "rls": true,
       "rls_forcado": false,
       "triggers": 1,
@@ -4506,7 +4549,7 @@
       }
     },
     {
-      "bytes": 32768,
+      "bytes": 49152,
       "citada_no_banco": false,
       "linhas": 10,
       "linhas_exatas": true,
@@ -4526,7 +4569,7 @@
       "linhas": 0,
       "linhas_exatas": true,
       "nome": "relatorios_agendados",
-      "policies": 1,
+      "policies": 4,
       "rls": true,
       "rls_forcado": false,
       "triggers": 1,
@@ -4541,7 +4584,7 @@
       "linhas": 3,
       "linhas_exatas": true,
       "nome": "relatorios_tributarios_agendados",
-      "policies": 3,
+      "policies": 6,
       "rls": true,
       "rls_forcado": false,
       "triggers": 1,
@@ -4551,7 +4594,7 @@
       }
     },
     {
-      "bytes": 16384,
+      "bytes": 24576,
       "citada_no_banco": false,
       "linhas": 0,
       "linhas_exatas": true,
@@ -4581,12 +4624,12 @@
       }
     },
     {
-      "bytes": 32768,
+      "bytes": 49152,
       "citada_no_banco": true,
       "linhas": 14,
       "linhas_exatas": true,
       "nome": "retencoes_fonte",
-      "policies": 1,
+      "policies": 5,
       "rls": true,
       "rls_forcado": false,
       "triggers": 0,
@@ -4596,12 +4639,12 @@
       }
     },
     {
-      "bytes": 16384,
+      "bytes": 24576,
       "citada_no_banco": false,
       "linhas": 0,
       "linhas_exatas": true,
       "nome": "risk_rules",
-      "policies": 5,
+      "policies": 0,
       "rls": true,
       "rls_forcado": false,
       "triggers": 3,
@@ -4686,12 +4729,12 @@
       }
     },
     {
-      "bytes": 16384,
+      "bytes": 24576,
       "citada_no_banco": true,
       "linhas": 0,
       "linhas_exatas": true,
       "nome": "scim_operations_log",
-      "policies": 1,
+      "policies": 2,
       "rls": true,
       "rls_forcado": false,
       "triggers": 0,
@@ -4701,7 +4744,7 @@
       }
     },
     {
-      "bytes": 16384,
+      "bytes": 32768,
       "citada_no_banco": false,
       "linhas": 0,
       "linhas_exatas": true,
@@ -4712,11 +4755,11 @@
       "triggers": 1,
       "uso_no_codigo": {
         "edges": 0,
-        "src": 2
+        "src": 4
       }
     },
     {
-      "bytes": 32768,
+      "bytes": 40960,
       "citada_no_banco": true,
       "linhas": 0,
       "linhas_exatas": true,
@@ -4731,7 +4774,7 @@
       }
     },
     {
-      "bytes": 16384,
+      "bytes": 49152,
       "citada_no_banco": false,
       "linhas": 0,
       "linhas_exatas": true,
@@ -4791,7 +4834,7 @@
       }
     },
     {
-      "bytes": 32768,
+      "bytes": 49152,
       "citada_no_banco": true,
       "linhas": 4,
       "linhas_exatas": true,
@@ -4806,7 +4849,7 @@
       }
     },
     {
-      "bytes": 16384,
+      "bytes": 24576,
       "citada_no_banco": false,
       "linhas": 0,
       "linhas_exatas": true,
@@ -4853,7 +4896,7 @@
     {
       "bytes": 22020096,
       "citada_no_banco": true,
-      "linhas": 17925,
+      "linhas": 17765,
       "linhas_exatas": true,
       "nome": "slow_query_alerts",
       "policies": 1,
@@ -4881,7 +4924,7 @@
       }
     },
     {
-      "bytes": 32768,
+      "bytes": 40960,
       "citada_no_banco": false,
       "linhas": 0,
       "linhas_exatas": true,
@@ -4896,7 +4939,7 @@
       }
     },
     {
-      "bytes": 16384,
+      "bytes": 24576,
       "citada_no_banco": false,
       "linhas": 0,
       "linhas_exatas": true,
@@ -4911,12 +4954,12 @@
       }
     },
     {
-      "bytes": 32768,
+      "bytes": 49152,
       "citada_no_banco": false,
       "linhas": 3,
       "linhas_exatas": true,
       "nome": "split_payment_transacoes",
-      "policies": 3,
+      "policies": 7,
       "rls": true,
       "rls_forcado": false,
       "triggers": 1,
@@ -4931,7 +4974,7 @@
       "linhas": 0,
       "linhas_exatas": true,
       "nome": "sso_login_attempts",
-      "policies": 1,
+      "policies": 2,
       "rls": true,
       "rls_forcado": true,
       "triggers": 0,
@@ -4941,7 +4984,7 @@
       }
     },
     {
-      "bytes": 32768,
+      "bytes": 49152,
       "citada_no_banco": true,
       "linhas": 4,
       "linhas_exatas": true,
@@ -4956,7 +4999,7 @@
       }
     },
     {
-      "bytes": 24576,
+      "bytes": 32768,
       "citada_no_banco": true,
       "linhas": 0,
       "linhas_exatas": true,
@@ -5016,12 +5059,12 @@
       }
     },
     {
-      "bytes": 32768,
+      "bytes": 49152,
       "citada_no_banco": false,
       "linhas": 6,
       "linhas_exatas": true,
       "nome": "templates_cobranca",
-      "policies": 3,
+      "policies": 2,
       "rls": true,
       "rls_forcado": false,
       "triggers": 1,
@@ -5046,7 +5089,7 @@
       }
     },
     {
-      "bytes": 65536,
+      "bytes": 81920,
       "citada_no_banco": true,
       "linhas": 6,
       "linhas_exatas": true,
@@ -5181,7 +5224,7 @@
       }
     },
     {
-      "bytes": 49152,
+      "bytes": 65536,
       "citada_no_banco": false,
       "linhas": 4,
       "linhas_exatas": true,
@@ -5256,7 +5299,7 @@
       }
     },
     {
-      "bytes": 32768,
+      "bytes": 49152,
       "citada_no_banco": true,
       "linhas": 5,
       "linhas_exatas": true,
@@ -5271,7 +5314,7 @@
       }
     },
     {
-      "bytes": 16384,
+      "bytes": 24576,
       "citada_no_banco": false,
       "linhas": 0,
       "linhas_exatas": true,
@@ -5391,7 +5434,7 @@
       }
     },
     {
-      "bytes": 16384,
+      "bytes": 24576,
       "citada_no_banco": false,
       "linhas": 0,
       "linhas_exatas": true,
@@ -5435,7 +5478,6 @@
       "frontend_error_logs_2026_09",
       "frontend_error_logs_2026_10",
       "frontend_error_logs_default",
-      "indices_uso_excecoes",
       "mfa_sessions",
       "operacoes_icms",
       "projecoes_reforma",
