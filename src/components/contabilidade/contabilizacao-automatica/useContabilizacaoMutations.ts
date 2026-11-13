@@ -2,7 +2,34 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { toast } from 'sonner';
 import { supabase } from '@/integrations/supabase/client';
 import { supabaseDyn } from '@/lib/supabase-dynamic';
-import type { DryRunEntry, DryRunInput, DryRunOutcome, Regra, RegraFormState } from './types';
+import type {
+  DryRunEntry,
+  DryRunInput,
+  DryRunOutcome,
+  Regra,
+  RegraFormState,
+  SimFormState,
+} from './types';
+
+/**
+ * Monta o body da simulação para a edge `contabilizar-evento`.
+ * O schema `ContabilizarEventoSchema` (supabase/functions/_shared/validation.ts)
+ * é `.strict()` e exige `evento_id` uuid: só os campos aceitos vão no body
+ * (sem `lote_quantidade`) e cada chamada recebe um uuid novo.
+ */
+export function buildDryRunPayload(simForm: SimFormState, empresaId: string, ignoreRules = false) {
+  return {
+    empresa_id: empresaId,
+    tipo_evento: simForm.tipo_evento,
+    evento_id: crypto.randomUUID(),
+    valor: simForm.valor,
+    data: simForm.data,
+    descricao: simForm.descricao,
+    categoria_id: simForm.categoria_id === 'none' ? null : simForm.categoria_id || null,
+    dry_run: true,
+    ...(ignoreRules ? { ignore_rules: true } : {}),
+  };
+}
 
 /**
  * Mutations da aba de Contabilização Automática.
@@ -107,19 +134,12 @@ export function useContabilizacaoMutations(empresaId: string) {
 
   const dryRunSimulation = useMutation<DryRunOutcome, Error, DryRunInput>({
     mutationFn: async ({ simForm, isLote, onBefore }) => {
-      const payload = {
-        ...simForm,
-        categoria_id: simForm.categoria_id === 'none' ? null : simForm.categoria_id || null,
-        empresa_id: empresaId,
-        dry_run: true,
-      };
-
       if (isLote) {
         const results: DryRunEntry[] = [];
         for (let i = 0; i < simForm.lote_quantidade; i++) {
           const { data, error } = await supabase.functions.invoke<DryRunEntry>(
             'contabilizar-evento',
-            { body: { ...payload, evento_id: `sim-lote-${i}-${Date.now()}` } }
+            { body: buildDryRunPayload(simForm, empresaId) }
           );
           if (error) throw error;
           if (data) results.push(data);
@@ -129,22 +149,14 @@ export function useContabilizacaoMutations(empresaId: string) {
 
       const { data: before, error: errBefore } = await supabase.functions.invoke<DryRunEntry>(
         'contabilizar-evento',
-        {
-          body: {
-            ...payload,
-            evento_id: 'sim-before-' + Date.now(),
-            ignore_rules: true,
-          },
-        }
+        { body: buildDryRunPayload(simForm, empresaId, true) }
       );
       if (errBefore) throw errBefore;
       if (before && onBefore) onBefore(before);
 
       const { data: after, error: errAfter } = await supabase.functions.invoke<DryRunEntry>(
         'contabilizar-evento',
-        {
-          body: { ...payload, evento_id: 'sim-after-' + Date.now() },
-        }
+        { body: buildDryRunPayload(simForm, empresaId) }
       );
       if (errAfter) throw errAfter;
       if (!after) throw new Error('Sem retorno da simulação');
